@@ -91,10 +91,14 @@ n8n supports **8 AI connection types** for building agent workflows:
 ### 6. Output Processing
 **Purpose**: Format AI response for delivery
 
+**Critical**: The AI Agent node puts its response in **`$json.output`** — not `$json.text` or `$json.response`. Downstream nodes reference `{{ $json.output }}`.
+
 **Common patterns**:
 - Return directly (chat response)
 - Store in database (conversation history)
 - Send to communication channel (Slack, email)
+
+**Fan-out tip**: When several agents run in parallel (e.g. multiple research agents feeding one report), avoid funneling them into a Merge node — Merge `combineAll` does a cross-product and mishandles inputs arriving at different times (often yielding 0 output). Either have each agent deliver its own output directly, or collect same-shaped items with an **Aggregate** node followed by a Code node for formatting.
 
 ---
 

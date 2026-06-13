@@ -12,7 +12,7 @@ Every skill in `skills/*/SKILL.md` is authored to a portable subset of the
 Claude Code skill spec. Validate compatibility with your harness via:
 
 ```bash
-python scripts/portability_check.py
+python3 scripts/portability_check.py
 ```
 
 The check confirms each `SKILL.md` has the minimum frontmatter every harness
@@ -54,7 +54,7 @@ in case a recipe needs a specific call.
 
 Claude SEO is a Tier 4 SEO analysis skill with 25 sub-skills (21 core + 1 orchestrator +
 1 framework integration + 2 extension mirrors), 18 sub-agents (15 core + 1 framework
-integration + 2 extension mirrors), and 30 Python execution scripts.
+integration + 2 extension mirrors), and 50 Python execution scripts.
 
 ## Quick Reference
 
@@ -97,19 +97,19 @@ provide execution capabilities.
 **Running scripts directly** (Cursor doesn't have MCP):
 ```bash
 # Page fetching with SSRF protection
-python scripts/fetch_page.py https://example.com
+python3 scripts/fetch_page.py https://example.com
 
 # HTML parsing for SEO elements
-python scripts/parse_html.py https://example.com
+python3 scripts/parse_html.py https://example.com
 
 # PageSpeed Insights
-python scripts/pagespeed_check.py https://example.com --json
+python3 scripts/pagespeed_check.py https://example.com --json
 
 # Drift baseline
-python scripts/drift_baseline.py https://example.com
+python3 scripts/drift_baseline.py https://example.com
 
 # DataForSEO (requires credentials)
-DATAFORSEO_USERNAME=user DATAFORSEO_PASSWORD=pass python scripts/dataforseo_merchant.py search "keyword"
+DATAFORSEO_USERNAME=user DATAFORSEO_PASSWORD=pass python3 scripts/dataforseo_merchant.py search "keyword"
 ```
 
 **Cursor Cloud gotchas:**
@@ -119,7 +119,7 @@ DATAFORSEO_USERNAME=user DATAFORSEO_PASSWORD=pass python scripts/dataforseo_merc
 
 ## Using with Google Antigravity
 
-Antigravity discovers this project via `plugin.json` at the repo root.
+Antigravity discovers this project via `.claude-plugin/plugin.json`.
 Place the repo in `~/.gemini/antigravity/plugins/claude-seo/` or install via:
 
 ```bash
@@ -154,7 +154,7 @@ skills/                    # 25 sub-skills (auto-discovered)
   seo-dataforseo/         # DataForSEO (extension)
   seo-image-gen/          # AI images (extension)
 agents/                    # 18 subagents
-scripts/                   # 30 Python scripts
+scripts/                   # 50 Python scripts
 schema/                    # JSON-LD templates
 extensions/                # Optional add-ons (DataForSEO, Firecrawl, Banana, ASO)
 ```

@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/ai-seo/../../../marketing-skill/skills/ai-seo/SKILL.md

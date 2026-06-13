@@ -17,10 +17,10 @@ elements by comparing current page state against stored baselines.
 ## Tools
 
 All page fetching goes through the project's existing scripts with SSRF protection:
-- `python scripts/drift_baseline.py <url>` -- capture a new baseline
-- `python scripts/drift_compare.py <url>` -- compare current state to baseline
-- `python scripts/drift_history.py <url>` -- show change history
-- `python scripts/drift_report.py <file> --output report.html` -- generate HTML report
+- `python3 scripts/drift_baseline.py <url>` -- capture a new baseline
+- `python3 scripts/drift_compare.py <url>` -- compare current state to baseline
+- `python3 scripts/drift_history.py <url>` -- show change history
+- `python3 scripts/drift_report.py <file> --output report.html` -- generate HTML report
 
 Never use curl, wget, or raw HTTP requests. All fetching is handled by
 `scripts/fetch_page.py` internally, which validates URLs against private/loopback
@@ -57,3 +57,9 @@ For comparisons, present:
 2. Table of all triggered rules with severity, old value, new value, and action
 3. Cross-skill recommendations for any CRITICAL or WARNING findings
 4. Offer HTML report generation for sharing with stakeholders
+
+## Audit Persistence
+
+If `output_dir` is provided by the audit orchestrator, write:
+- `output_dir/findings/drift.md`: baseline availability, triggered rules, old/new values, and regression findings
+- Structured JSON-compatible findings for `audit-data.json` under the SEO Drift category

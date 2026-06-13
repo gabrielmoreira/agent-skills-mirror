@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 232 file(s) materialized.
+Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 234 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 232 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 232 |
+| Files         | 234 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -206,91 +206,93 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 145 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
 | 146 | ✓ | [`agents/openclaw/policy-permissive.yaml`](agents/openclaw/policy-permissive.yaml) |
 | 147 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 148 | ✓ | [`skills/catalog-metadata.json`](skills/catalog-metadata.json) |
-| 149 | ✓ | [`skills/nemoclaw-user-agent-skills/BENCHMARK.md`](skills/nemoclaw-user-agent-skills/BENCHMARK.md) |
-| 150 | ✓ | [`skills/nemoclaw-user-agent-skills/evals/evals.json`](skills/nemoclaw-user-agent-skills/evals/evals.json) |
-| 151 | ✓ | [`skills/nemoclaw-user-agent-skills/references/agent-skills.md`](skills/nemoclaw-user-agent-skills/references/agent-skills.md) |
-| 152 | ✓ | [`skills/nemoclaw-user-agent-skills/skill-card.md`](skills/nemoclaw-user-agent-skills/skill-card.md) |
-| 153 | ✓ | [`skills/nemoclaw-user-agent-skills/SKILL.md`](skills/nemoclaw-user-agent-skills/SKILL.md) |
-| 154 | ✓ | [`skills/nemoclaw-user-agent-skills/skill.oms.sig`](skills/nemoclaw-user-agent-skills/skill.oms.sig) |
-| 155 | ✓ | [`skills/nemoclaw-user-configure-inference/BENCHMARK.md`](skills/nemoclaw-user-configure-inference/BENCHMARK.md) |
-| 156 | ✓ | [`skills/nemoclaw-user-configure-inference/evals/evals.json`](skills/nemoclaw-user-configure-inference/evals/evals.json) |
-| 157 | ✓ | [`skills/nemoclaw-user-configure-inference/references/inference-options.md`](skills/nemoclaw-user-configure-inference/references/inference-options.md) |
-| 158 | ✓ | [`skills/nemoclaw-user-configure-inference/references/set-up-sub-agent.md`](skills/nemoclaw-user-configure-inference/references/set-up-sub-agent.md) |
-| 159 | ✓ | [`skills/nemoclaw-user-configure-inference/references/switch-inference-providers.md`](skills/nemoclaw-user-configure-inference/references/switch-inference-providers.md) |
-| 160 | ✓ | [`skills/nemoclaw-user-configure-inference/references/tool-calling-reliability.md`](skills/nemoclaw-user-configure-inference/references/tool-calling-reliability.md) |
-| 161 | ✓ | [`skills/nemoclaw-user-configure-inference/skill-card.md`](skills/nemoclaw-user-configure-inference/skill-card.md) |
-| 162 | ✓ | [`skills/nemoclaw-user-configure-inference/SKILL.md`](skills/nemoclaw-user-configure-inference/SKILL.md) |
-| 163 | ✓ | [`skills/nemoclaw-user-configure-inference/skill.oms.sig`](skills/nemoclaw-user-configure-inference/skill.oms.sig) |
-| 164 | ✓ | [`skills/nemoclaw-user-configure-security/BENCHMARK.md`](skills/nemoclaw-user-configure-security/BENCHMARK.md) |
-| 165 | ✓ | [`skills/nemoclaw-user-configure-security/evals/evals.json`](skills/nemoclaw-user-configure-security/evals/evals.json) |
-| 166 | ✓ | [`skills/nemoclaw-user-configure-security/references/best-practices.md`](skills/nemoclaw-user-configure-security/references/best-practices.md) |
-| 167 | ✓ | [`skills/nemoclaw-user-configure-security/references/credential-storage.md`](skills/nemoclaw-user-configure-security/references/credential-storage.md) |
-| 168 | ✓ | [`skills/nemoclaw-user-configure-security/references/openclaw-controls.md`](skills/nemoclaw-user-configure-security/references/openclaw-controls.md) |
-| 169 | ✓ | [`skills/nemoclaw-user-configure-security/skill-card.md`](skills/nemoclaw-user-configure-security/skill-card.md) |
-| 170 | ✓ | [`skills/nemoclaw-user-configure-security/SKILL.md`](skills/nemoclaw-user-configure-security/SKILL.md) |
-| 171 | ✓ | [`skills/nemoclaw-user-configure-security/skill.oms.sig`](skills/nemoclaw-user-configure-security/skill.oms.sig) |
-| 172 | ✓ | [`skills/nemoclaw-user-deploy-remote/BENCHMARK.md`](skills/nemoclaw-user-deploy-remote/BENCHMARK.md) |
-| 173 | ✓ | [`skills/nemoclaw-user-deploy-remote/evals/evals.json`](skills/nemoclaw-user-deploy-remote/evals/evals.json) |
-| 174 | ✓ | [`skills/nemoclaw-user-deploy-remote/references/brev-web-ui.md`](skills/nemoclaw-user-deploy-remote/references/brev-web-ui.md) |
-| 175 | ✓ | [`skills/nemoclaw-user-deploy-remote/references/install-openclaw-plugins.md`](skills/nemoclaw-user-deploy-remote/references/install-openclaw-plugins.md) |
-| 176 | ✓ | [`skills/nemoclaw-user-deploy-remote/references/sandbox-hardening.md`](skills/nemoclaw-user-deploy-remote/references/sandbox-hardening.md) |
-| 177 | ✓ | [`skills/nemoclaw-user-deploy-remote/skill-card.md`](skills/nemoclaw-user-deploy-remote/skill-card.md) |
-| 178 | ✓ | [`skills/nemoclaw-user-deploy-remote/SKILL.md`](skills/nemoclaw-user-deploy-remote/SKILL.md) |
-| 179 | ✓ | [`skills/nemoclaw-user-deploy-remote/skill.oms.sig`](skills/nemoclaw-user-deploy-remote/skill.oms.sig) |
-| 180 | ✓ | [`skills/nemoclaw-user-get-started/BENCHMARK.md`](skills/nemoclaw-user-get-started/BENCHMARK.md) |
-| 181 | ✓ | [`skills/nemoclaw-user-get-started/evals/evals.json`](skills/nemoclaw-user-get-started/evals/evals.json) |
-| 182 | ✓ | [`skills/nemoclaw-user-get-started/references/prerequisites.md`](skills/nemoclaw-user-get-started/references/prerequisites.md) |
-| 183 | ✓ | [`skills/nemoclaw-user-get-started/references/quickstart-details.md`](skills/nemoclaw-user-get-started/references/quickstart-details.md) |
-| 184 | ✓ | [`skills/nemoclaw-user-get-started/references/quickstart-hermes.md`](skills/nemoclaw-user-get-started/references/quickstart-hermes.md) |
-| 185 | ✓ | [`skills/nemoclaw-user-get-started/references/windows-preparation.md`](skills/nemoclaw-user-get-started/references/windows-preparation.md) |
-| 186 | ✓ | [`skills/nemoclaw-user-get-started/skill-card.md`](skills/nemoclaw-user-get-started/skill-card.md) |
-| 187 | ✓ | [`skills/nemoclaw-user-get-started/SKILL.md`](skills/nemoclaw-user-get-started/SKILL.md) |
-| 188 | ✓ | [`skills/nemoclaw-user-get-started/skill.oms.sig`](skills/nemoclaw-user-get-started/skill.oms.sig) |
-| 189 | ✓ | [`skills/nemoclaw-user-manage-policy/BENCHMARK.md`](skills/nemoclaw-user-manage-policy/BENCHMARK.md) |
-| 190 | ✓ | [`skills/nemoclaw-user-manage-policy/evals/evals.json`](skills/nemoclaw-user-manage-policy/evals/evals.json) |
-| 191 | ✓ | [`skills/nemoclaw-user-manage-policy/references/approve-network-requests.md`](skills/nemoclaw-user-manage-policy/references/approve-network-requests.md) |
-| 192 | ✓ | [`skills/nemoclaw-user-manage-policy/references/customize-network-policy-details.md`](skills/nemoclaw-user-manage-policy/references/customize-network-policy-details.md) |
-| 193 | ✓ | [`skills/nemoclaw-user-manage-policy/references/integration-policy-examples.md`](skills/nemoclaw-user-manage-policy/references/integration-policy-examples.md) |
-| 194 | ✓ | [`skills/nemoclaw-user-manage-policy/skill-card.md`](skills/nemoclaw-user-manage-policy/skill-card.md) |
-| 195 | ✓ | [`skills/nemoclaw-user-manage-policy/SKILL.md`](skills/nemoclaw-user-manage-policy/SKILL.md) |
-| 196 | ✓ | [`skills/nemoclaw-user-manage-policy/skill.oms.sig`](skills/nemoclaw-user-manage-policy/skill.oms.sig) |
-| 197 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/BENCHMARK.md`](skills/nemoclaw-user-manage-sandboxes/BENCHMARK.md) |
-| 198 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/evals/evals.json`](skills/nemoclaw-user-manage-sandboxes/evals/evals.json) |
-| 199 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/references/backup-restore.md`](skills/nemoclaw-user-manage-sandboxes/references/backup-restore.md) |
-| 200 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/references/lifecycle-details.md`](skills/nemoclaw-user-manage-sandboxes/references/lifecycle-details.md) |
-| 201 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/references/messaging-channels.md`](skills/nemoclaw-user-manage-sandboxes/references/messaging-channels.md) |
-| 202 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/references/runtime-controls.md`](skills/nemoclaw-user-manage-sandboxes/references/runtime-controls.md) |
-| 203 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/references/workspace-files.md`](skills/nemoclaw-user-manage-sandboxes/references/workspace-files.md) |
-| 204 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/skill-card.md`](skills/nemoclaw-user-manage-sandboxes/skill-card.md) |
-| 205 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/SKILL.md`](skills/nemoclaw-user-manage-sandboxes/SKILL.md) |
-| 206 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/skill.oms.sig`](skills/nemoclaw-user-manage-sandboxes/skill.oms.sig) |
-| 207 | ✓ | [`skills/nemoclaw-user-monitor-sandbox/BENCHMARK.md`](skills/nemoclaw-user-monitor-sandbox/BENCHMARK.md) |
-| 208 | ✓ | [`skills/nemoclaw-user-monitor-sandbox/evals/evals.json`](skills/nemoclaw-user-monitor-sandbox/evals/evals.json) |
-| 209 | ✓ | [`skills/nemoclaw-user-monitor-sandbox/skill-card.md`](skills/nemoclaw-user-monitor-sandbox/skill-card.md) |
-| 210 | ✓ | [`skills/nemoclaw-user-monitor-sandbox/SKILL.md`](skills/nemoclaw-user-monitor-sandbox/SKILL.md) |
-| 211 | ✓ | [`skills/nemoclaw-user-monitor-sandbox/skill.oms.sig`](skills/nemoclaw-user-monitor-sandbox/skill.oms.sig) |
-| 212 | ✓ | [`skills/nemoclaw-user-overview/BENCHMARK.md`](skills/nemoclaw-user-overview/BENCHMARK.md) |
-| 213 | ✓ | [`skills/nemoclaw-user-overview/evals/evals.json`](skills/nemoclaw-user-overview/evals/evals.json) |
-| 214 | ✓ | [`skills/nemoclaw-user-overview/references/ecosystem.md`](skills/nemoclaw-user-overview/references/ecosystem.md) |
-| 215 | ✓ | [`skills/nemoclaw-user-overview/references/how-it-works.md`](skills/nemoclaw-user-overview/references/how-it-works.md) |
-| 216 | ✓ | [`skills/nemoclaw-user-overview/references/images/nemoclaw-highlevel-component-diagram.png`](skills/nemoclaw-user-overview/references/images/nemoclaw-highlevel-component-diagram.png) |
-| 217 | ✓ | [`skills/nemoclaw-user-overview/references/overview.md`](skills/nemoclaw-user-overview/references/overview.md) |
-| 218 | ✓ | [`skills/nemoclaw-user-overview/references/release-notes.md`](skills/nemoclaw-user-overview/references/release-notes.md) |
-| 219 | ✓ | [`skills/nemoclaw-user-overview/skill-card.md`](skills/nemoclaw-user-overview/skill-card.md) |
-| 220 | ✓ | [`skills/nemoclaw-user-overview/SKILL.md`](skills/nemoclaw-user-overview/SKILL.md) |
-| 221 | ✓ | [`skills/nemoclaw-user-overview/skill.oms.sig`](skills/nemoclaw-user-overview/skill.oms.sig) |
-| 222 | ✓ | [`skills/nemoclaw-user-reference/BENCHMARK.md`](skills/nemoclaw-user-reference/BENCHMARK.md) |
-| 223 | ✓ | [`skills/nemoclaw-user-reference/evals/evals.json`](skills/nemoclaw-user-reference/evals/evals.json) |
-| 224 | ✓ | [`skills/nemoclaw-user-reference/references/architecture.md`](skills/nemoclaw-user-reference/references/architecture.md) |
-| 225 | ✓ | [`skills/nemoclaw-user-reference/references/cli-selection-guide.md`](skills/nemoclaw-user-reference/references/cli-selection-guide.md) |
-| 226 | ✓ | [`skills/nemoclaw-user-reference/references/commands.md`](skills/nemoclaw-user-reference/references/commands.md) |
-| 227 | ✓ | [`skills/nemoclaw-user-reference/references/network-policies.md`](skills/nemoclaw-user-reference/references/network-policies.md) |
-| 228 | ✓ | [`skills/nemoclaw-user-reference/references/troubleshooting.md`](skills/nemoclaw-user-reference/references/troubleshooting.md) |
-| 229 | ✓ | [`skills/nemoclaw-user-reference/skill-card.md`](skills/nemoclaw-user-reference/skill-card.md) |
-| 230 | ✓ | [`skills/nemoclaw-user-reference/SKILL.md`](skills/nemoclaw-user-reference/SKILL.md) |
-| 231 | ✓ | [`skills/nemoclaw-user-reference/skill.oms.sig`](skills/nemoclaw-user-reference/skill.oms.sig) |
-| 232 | ✓ | [`skills/README.md`](skills/README.md) |
+| 148 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 149 | ✓ | [`fern/AGENTS.md`](fern/AGENTS.md) |
+| 150 | ✓ | [`skills/catalog-metadata.json`](skills/catalog-metadata.json) |
+| 151 | ✓ | [`skills/nemoclaw-user-agent-skills/BENCHMARK.md`](skills/nemoclaw-user-agent-skills/BENCHMARK.md) |
+| 152 | ✓ | [`skills/nemoclaw-user-agent-skills/evals/evals.json`](skills/nemoclaw-user-agent-skills/evals/evals.json) |
+| 153 | ✓ | [`skills/nemoclaw-user-agent-skills/references/agent-skills.md`](skills/nemoclaw-user-agent-skills/references/agent-skills.md) |
+| 154 | ✓ | [`skills/nemoclaw-user-agent-skills/skill-card.md`](skills/nemoclaw-user-agent-skills/skill-card.md) |
+| 155 | ✓ | [`skills/nemoclaw-user-agent-skills/SKILL.md`](skills/nemoclaw-user-agent-skills/SKILL.md) |
+| 156 | ✓ | [`skills/nemoclaw-user-agent-skills/skill.oms.sig`](skills/nemoclaw-user-agent-skills/skill.oms.sig) |
+| 157 | ✓ | [`skills/nemoclaw-user-configure-inference/BENCHMARK.md`](skills/nemoclaw-user-configure-inference/BENCHMARK.md) |
+| 158 | ✓ | [`skills/nemoclaw-user-configure-inference/evals/evals.json`](skills/nemoclaw-user-configure-inference/evals/evals.json) |
+| 159 | ✓ | [`skills/nemoclaw-user-configure-inference/references/inference-options.md`](skills/nemoclaw-user-configure-inference/references/inference-options.md) |
+| 160 | ✓ | [`skills/nemoclaw-user-configure-inference/references/set-up-sub-agent.md`](skills/nemoclaw-user-configure-inference/references/set-up-sub-agent.md) |
+| 161 | ✓ | [`skills/nemoclaw-user-configure-inference/references/switch-inference-providers.md`](skills/nemoclaw-user-configure-inference/references/switch-inference-providers.md) |
+| 162 | ✓ | [`skills/nemoclaw-user-configure-inference/references/tool-calling-reliability.md`](skills/nemoclaw-user-configure-inference/references/tool-calling-reliability.md) |
+| 163 | ✓ | [`skills/nemoclaw-user-configure-inference/skill-card.md`](skills/nemoclaw-user-configure-inference/skill-card.md) |
+| 164 | ✓ | [`skills/nemoclaw-user-configure-inference/SKILL.md`](skills/nemoclaw-user-configure-inference/SKILL.md) |
+| 165 | ✓ | [`skills/nemoclaw-user-configure-inference/skill.oms.sig`](skills/nemoclaw-user-configure-inference/skill.oms.sig) |
+| 166 | ✓ | [`skills/nemoclaw-user-configure-security/BENCHMARK.md`](skills/nemoclaw-user-configure-security/BENCHMARK.md) |
+| 167 | ✓ | [`skills/nemoclaw-user-configure-security/evals/evals.json`](skills/nemoclaw-user-configure-security/evals/evals.json) |
+| 168 | ✓ | [`skills/nemoclaw-user-configure-security/references/best-practices.md`](skills/nemoclaw-user-configure-security/references/best-practices.md) |
+| 169 | ✓ | [`skills/nemoclaw-user-configure-security/references/credential-storage.md`](skills/nemoclaw-user-configure-security/references/credential-storage.md) |
+| 170 | ✓ | [`skills/nemoclaw-user-configure-security/references/openclaw-controls.md`](skills/nemoclaw-user-configure-security/references/openclaw-controls.md) |
+| 171 | ✓ | [`skills/nemoclaw-user-configure-security/skill-card.md`](skills/nemoclaw-user-configure-security/skill-card.md) |
+| 172 | ✓ | [`skills/nemoclaw-user-configure-security/SKILL.md`](skills/nemoclaw-user-configure-security/SKILL.md) |
+| 173 | ✓ | [`skills/nemoclaw-user-configure-security/skill.oms.sig`](skills/nemoclaw-user-configure-security/skill.oms.sig) |
+| 174 | ✓ | [`skills/nemoclaw-user-deploy-remote/BENCHMARK.md`](skills/nemoclaw-user-deploy-remote/BENCHMARK.md) |
+| 175 | ✓ | [`skills/nemoclaw-user-deploy-remote/evals/evals.json`](skills/nemoclaw-user-deploy-remote/evals/evals.json) |
+| 176 | ✓ | [`skills/nemoclaw-user-deploy-remote/references/brev-web-ui.md`](skills/nemoclaw-user-deploy-remote/references/brev-web-ui.md) |
+| 177 | ✓ | [`skills/nemoclaw-user-deploy-remote/references/install-openclaw-plugins.md`](skills/nemoclaw-user-deploy-remote/references/install-openclaw-plugins.md) |
+| 178 | ✓ | [`skills/nemoclaw-user-deploy-remote/references/sandbox-hardening.md`](skills/nemoclaw-user-deploy-remote/references/sandbox-hardening.md) |
+| 179 | ✓ | [`skills/nemoclaw-user-deploy-remote/skill-card.md`](skills/nemoclaw-user-deploy-remote/skill-card.md) |
+| 180 | ✓ | [`skills/nemoclaw-user-deploy-remote/SKILL.md`](skills/nemoclaw-user-deploy-remote/SKILL.md) |
+| 181 | ✓ | [`skills/nemoclaw-user-deploy-remote/skill.oms.sig`](skills/nemoclaw-user-deploy-remote/skill.oms.sig) |
+| 182 | ✓ | [`skills/nemoclaw-user-get-started/BENCHMARK.md`](skills/nemoclaw-user-get-started/BENCHMARK.md) |
+| 183 | ✓ | [`skills/nemoclaw-user-get-started/evals/evals.json`](skills/nemoclaw-user-get-started/evals/evals.json) |
+| 184 | ✓ | [`skills/nemoclaw-user-get-started/references/prerequisites.md`](skills/nemoclaw-user-get-started/references/prerequisites.md) |
+| 185 | ✓ | [`skills/nemoclaw-user-get-started/references/quickstart-details.md`](skills/nemoclaw-user-get-started/references/quickstart-details.md) |
+| 186 | ✓ | [`skills/nemoclaw-user-get-started/references/quickstart-hermes.md`](skills/nemoclaw-user-get-started/references/quickstart-hermes.md) |
+| 187 | ✓ | [`skills/nemoclaw-user-get-started/references/windows-preparation.md`](skills/nemoclaw-user-get-started/references/windows-preparation.md) |
+| 188 | ✓ | [`skills/nemoclaw-user-get-started/skill-card.md`](skills/nemoclaw-user-get-started/skill-card.md) |
+| 189 | ✓ | [`skills/nemoclaw-user-get-started/SKILL.md`](skills/nemoclaw-user-get-started/SKILL.md) |
+| 190 | ✓ | [`skills/nemoclaw-user-get-started/skill.oms.sig`](skills/nemoclaw-user-get-started/skill.oms.sig) |
+| 191 | ✓ | [`skills/nemoclaw-user-manage-policy/BENCHMARK.md`](skills/nemoclaw-user-manage-policy/BENCHMARK.md) |
+| 192 | ✓ | [`skills/nemoclaw-user-manage-policy/evals/evals.json`](skills/nemoclaw-user-manage-policy/evals/evals.json) |
+| 193 | ✓ | [`skills/nemoclaw-user-manage-policy/references/approve-network-requests.md`](skills/nemoclaw-user-manage-policy/references/approve-network-requests.md) |
+| 194 | ✓ | [`skills/nemoclaw-user-manage-policy/references/customize-network-policy-details.md`](skills/nemoclaw-user-manage-policy/references/customize-network-policy-details.md) |
+| 195 | ✓ | [`skills/nemoclaw-user-manage-policy/references/integration-policy-examples.md`](skills/nemoclaw-user-manage-policy/references/integration-policy-examples.md) |
+| 196 | ✓ | [`skills/nemoclaw-user-manage-policy/skill-card.md`](skills/nemoclaw-user-manage-policy/skill-card.md) |
+| 197 | ✓ | [`skills/nemoclaw-user-manage-policy/SKILL.md`](skills/nemoclaw-user-manage-policy/SKILL.md) |
+| 198 | ✓ | [`skills/nemoclaw-user-manage-policy/skill.oms.sig`](skills/nemoclaw-user-manage-policy/skill.oms.sig) |
+| 199 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/BENCHMARK.md`](skills/nemoclaw-user-manage-sandboxes/BENCHMARK.md) |
+| 200 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/evals/evals.json`](skills/nemoclaw-user-manage-sandboxes/evals/evals.json) |
+| 201 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/references/backup-restore.md`](skills/nemoclaw-user-manage-sandboxes/references/backup-restore.md) |
+| 202 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/references/lifecycle-details.md`](skills/nemoclaw-user-manage-sandboxes/references/lifecycle-details.md) |
+| 203 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/references/messaging-channels.md`](skills/nemoclaw-user-manage-sandboxes/references/messaging-channels.md) |
+| 204 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/references/runtime-controls.md`](skills/nemoclaw-user-manage-sandboxes/references/runtime-controls.md) |
+| 205 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/references/workspace-files.md`](skills/nemoclaw-user-manage-sandboxes/references/workspace-files.md) |
+| 206 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/skill-card.md`](skills/nemoclaw-user-manage-sandboxes/skill-card.md) |
+| 207 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/SKILL.md`](skills/nemoclaw-user-manage-sandboxes/SKILL.md) |
+| 208 | ✓ | [`skills/nemoclaw-user-manage-sandboxes/skill.oms.sig`](skills/nemoclaw-user-manage-sandboxes/skill.oms.sig) |
+| 209 | ✓ | [`skills/nemoclaw-user-monitor-sandbox/BENCHMARK.md`](skills/nemoclaw-user-monitor-sandbox/BENCHMARK.md) |
+| 210 | ✓ | [`skills/nemoclaw-user-monitor-sandbox/evals/evals.json`](skills/nemoclaw-user-monitor-sandbox/evals/evals.json) |
+| 211 | ✓ | [`skills/nemoclaw-user-monitor-sandbox/skill-card.md`](skills/nemoclaw-user-monitor-sandbox/skill-card.md) |
+| 212 | ✓ | [`skills/nemoclaw-user-monitor-sandbox/SKILL.md`](skills/nemoclaw-user-monitor-sandbox/SKILL.md) |
+| 213 | ✓ | [`skills/nemoclaw-user-monitor-sandbox/skill.oms.sig`](skills/nemoclaw-user-monitor-sandbox/skill.oms.sig) |
+| 214 | ✓ | [`skills/nemoclaw-user-overview/BENCHMARK.md`](skills/nemoclaw-user-overview/BENCHMARK.md) |
+| 215 | ✓ | [`skills/nemoclaw-user-overview/evals/evals.json`](skills/nemoclaw-user-overview/evals/evals.json) |
+| 216 | ✓ | [`skills/nemoclaw-user-overview/references/ecosystem.md`](skills/nemoclaw-user-overview/references/ecosystem.md) |
+| 217 | ✓ | [`skills/nemoclaw-user-overview/references/how-it-works.md`](skills/nemoclaw-user-overview/references/how-it-works.md) |
+| 218 | ✓ | [`skills/nemoclaw-user-overview/references/images/nemoclaw-highlevel-component-diagram.png`](skills/nemoclaw-user-overview/references/images/nemoclaw-highlevel-component-diagram.png) |
+| 219 | ✓ | [`skills/nemoclaw-user-overview/references/overview.md`](skills/nemoclaw-user-overview/references/overview.md) |
+| 220 | ✓ | [`skills/nemoclaw-user-overview/references/release-notes.md`](skills/nemoclaw-user-overview/references/release-notes.md) |
+| 221 | ✓ | [`skills/nemoclaw-user-overview/skill-card.md`](skills/nemoclaw-user-overview/skill-card.md) |
+| 222 | ✓ | [`skills/nemoclaw-user-overview/SKILL.md`](skills/nemoclaw-user-overview/SKILL.md) |
+| 223 | ✓ | [`skills/nemoclaw-user-overview/skill.oms.sig`](skills/nemoclaw-user-overview/skill.oms.sig) |
+| 224 | ✓ | [`skills/nemoclaw-user-reference/BENCHMARK.md`](skills/nemoclaw-user-reference/BENCHMARK.md) |
+| 225 | ✓ | [`skills/nemoclaw-user-reference/evals/evals.json`](skills/nemoclaw-user-reference/evals/evals.json) |
+| 226 | ✓ | [`skills/nemoclaw-user-reference/references/architecture.md`](skills/nemoclaw-user-reference/references/architecture.md) |
+| 227 | ✓ | [`skills/nemoclaw-user-reference/references/cli-selection-guide.md`](skills/nemoclaw-user-reference/references/cli-selection-guide.md) |
+| 228 | ✓ | [`skills/nemoclaw-user-reference/references/commands.md`](skills/nemoclaw-user-reference/references/commands.md) |
+| 229 | ✓ | [`skills/nemoclaw-user-reference/references/network-policies.md`](skills/nemoclaw-user-reference/references/network-policies.md) |
+| 230 | ✓ | [`skills/nemoclaw-user-reference/references/troubleshooting.md`](skills/nemoclaw-user-reference/references/troubleshooting.md) |
+| 231 | ✓ | [`skills/nemoclaw-user-reference/skill-card.md`](skills/nemoclaw-user-reference/skill-card.md) |
+| 232 | ✓ | [`skills/nemoclaw-user-reference/SKILL.md`](skills/nemoclaw-user-reference/SKILL.md) |
+| 233 | ✓ | [`skills/nemoclaw-user-reference/skill.oms.sig`](skills/nemoclaw-user-reference/skill.oms.sig) |
+| 234 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

@@ -53,10 +53,23 @@ This skill detects and ranks trending market themes by analyzing cross-sector mo
 ## Prerequisites
 
 **Required:**
-- Python 3.7+ with core dependencies:
+- Python 3.10+ with core dependencies. The scripts use modern type-hint syntax such as `dict | None`, so Python 3.9 and older can fail at import time even when dependencies are installed.
   ```bash
   pip install requests beautifulsoup4 lxml pandas numpy yfinance
   ```
+
+**Cron / mixed-Python fallback:** If the active `python3` is older than 3.10, or a newer Hermes venv lacks the data-science dependencies, run the detector through `uv` with an explicit modern interpreter and temporary dependencies instead of editing the environment mid-cron:
+```bash
+uv run --python 3.12 \
+  --with requests --with beautifulsoup4 --with lxml \
+  --with pandas --with numpy --with yfinance \
+  --with finvizfinance --with PyYAML \
+  python skills/theme-detector/scripts/theme_detector.py \
+  --finviz-api-key "$FINVIZ_API_KEY" \
+  --fmp-api-key "$FMP_API_KEY" \
+  --output-dir reports/
+```
+Use this as a setup workaround, not as evidence that the detector is broken; still report FINVIZ/FMP/API-data caveats separately.
 
 **Optional API Keys:**
 

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `dannote/dot-pi` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `dannote/dot-pi` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dannote/dot-pi` — 26 default patterns, 0 followed patterns, 35 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,13 +87,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`skills/session-reflect/references/intervention-events.md`](skills/session-reflect/references/intervention-events.md) |
 | 27 | ✓ | [`skills/session-reflect/references/query-cookbook.md`](skills/session-reflect/references/query-cookbook.md) |
 | 28 | ✓ | [`skills/session-reflect/references/reflection-protocol.md`](skills/session-reflect/references/reflection-protocol.md) |
-| 29 | ✓ | [`skills/session-reflect/scripts/session-db.ts`](skills/session-reflect/scripts/session-db.ts) |
-| 30 | ✓ | [`skills/session-reflect/SKILL.md`](skills/session-reflect/SKILL.md) |
-| 31 | ✓ | [`skills/session-reflect/tests/session-db.integration.ts`](skills/session-reflect/tests/session-db.integration.ts) |
-| 32 | ✓ | [`skills/session-reflect/tsconfig.json`](skills/session-reflect/tsconfig.json) |
-| 33 | ✓ | [`skills/session-reflect/types/session-reflect-deps.d.ts`](skills/session-reflect/types/session-reflect-deps.d.ts) |
-| 34 | ✓ | [`skills/skill-discovery/SKILL.md`](skills/skill-discovery/SKILL.md) |
-| 35 | ✓ | [`skills/vibe-merge/SKILL.md`](skills/vibe-merge/SKILL.md) |
+| 29 | ✓ | [`skills/session-reflect/scripts/output.ts`](skills/session-reflect/scripts/output.ts) |
+| 30 | ✓ | [`skills/session-reflect/scripts/session-db.ts`](skills/session-reflect/scripts/session-db.ts) |
+| 31 | ✓ | [`skills/session-reflect/scripts/sql.ts`](skills/session-reflect/scripts/sql.ts) |
+| 32 | ✓ | [`skills/session-reflect/SKILL.md`](skills/session-reflect/SKILL.md) |
+| 33 | ✓ | [`skills/session-reflect/tests/output.test.ts`](skills/session-reflect/tests/output.test.ts) |
+| 34 | ✓ | [`skills/session-reflect/tests/session-db.integration.ts`](skills/session-reflect/tests/session-db.integration.ts) |
+| 35 | ✓ | [`skills/session-reflect/tests/sql.test.ts`](skills/session-reflect/tests/sql.test.ts) |
+| 36 | ✓ | [`skills/session-reflect/tsconfig.json`](skills/session-reflect/tsconfig.json) |
+| 37 | ✓ | [`skills/session-reflect/types/session-reflect-deps.d.ts`](skills/session-reflect/types/session-reflect-deps.d.ts) |
+| 38 | ✓ | [`skills/skill-discovery/SKILL.md`](skills/skill-discovery/SKILL.md) |
+| 39 | ✓ | [`skills/vibe-merge/SKILL.md`](skills/vibe-merge/SKILL.md) |
 
 ---
 

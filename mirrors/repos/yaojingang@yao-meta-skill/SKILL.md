@@ -32,7 +32,7 @@ Mode rules: [Method](references/skill-engineering-method.md), [Operating Modes](
 6. Add only folders and gates that earn their keep.
 7. Surface the top three next iteration directions.
 
-Core playbooks: [Method](references/skill-engineering-method.md), [Intent Dialogue](references/intent-dialogue.md), [Reference Scan](references/reference-scan.md), [Artifact Design](references/artifact-design-doctrine.md), [Prompt Engineering](references/prompt-engineering-doctrine.md), [Systems Thinking](references/systems-thinking-doctrine.md).
+Core playbooks: [Method](references/skill-engineering-method.md), [Intent Dialogue](references/intent-dialogue.md), [Reference Scan](references/reference-scan.md), [Skill IR](references/skill-ir-method.md), [Output Eval](references/output-eval-method.md), [Artifact Design](references/artifact-design-doctrine.md), [Prompt Engineering](references/prompt-engineering-doctrine.md), [Systems Thinking](references/systems-thinking-doctrine.md).
 
 ## First-Turn Style
 

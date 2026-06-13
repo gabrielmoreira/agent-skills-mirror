@@ -39,6 +39,7 @@ $scriptRefs = @{
     'node' = @('js-reverse/SKILL.md')
     'npx' = @('js-reverse/SKILL.md')
     'jshookmcp' = @('js-reverse/SKILL.md')
+    'seclists' = @('pentest-tools/SKILL.md')
     'agent-browser' = @('browser-automation/SKILL.md')
     'playwright' = @('browser-automation/SKILL.md', 'browser-automation/scripts/setup.ps1')
     'analyzeHeadless' = @('reverse-engineering/SKILL.md')
@@ -55,7 +56,7 @@ $markdownLines = @(
     "- 扫描时间: $generatedAt",
     '- 路由入口: `SKILL.md` → `routing.md` → 对应子 skill',
     '- 说明: 本表由 `skills/scripts/refresh-tool-index.ps1` 自动生成，优先用于 Claude 路由和工具路径确认。',
-    '- 注意: 对于 jshookmcp 这类 MCP server，`yes` 只表示本机具备通过 node/npx 拉起它的条件，不表示它已经在 Claude MCP 配置里注册并启用。',
+    '- 注意: 对于 jshookmcp 这类 MCP server，`yes` 只表示本机具备通过 node/npx 拉起它的条件，不表示它已经在 MCP 配置里注册并启用。',
     '',
     '| 工具 | 归属 skill | 作用 | 可用 | 路径 | 版本 | 来源 | 脚本引用 |',
     '|---|---|---|---|---|---|---|---|'
@@ -94,6 +95,7 @@ foreach ($capName in $capabilityNames) {
     $capabilityRows += [pscustomobject]@{
         name = $capName
         tool_available = $toolAvailable
+        ready = $state.Ready
         mcp_registered = $state.Registered
         service_online = $state.ServiceOnline
         can_auto_install = $state.CanAutoInstall
@@ -108,16 +110,17 @@ $markdownCapLines = @(
     '',
     '## 能力状态视图 (Capability Status)',
     '',
-    '| 能力 | 工具可用 | MCP 已注册 | 服务在线 | 可自动安装 | 安装方式 |',
-    '|------|---------|-----------|---------|-----------|---------|'
+    '| 能力 | 工具可用 | Ready | MCP 已注册 | 服务在线 | 可自动安装 | 安装方式 |',
+    '|------|---------|-------|-----------|---------|-----------|---------|'
 )
 foreach ($cap in $capabilityRows) {
     $toolText = if ($cap.tool_available) { '✓' } else { '✗' }
+    $readyText = if ($cap.ready) { '✓' } else { '✗' }
     $mcpText = if ($cap.mcp_registered) { '✓' } else { '—' }
     $svcText = if ($cap.service_online) { '✓' } else { '—' }
     $autoText = if ($cap.can_auto_install) { '✓' } else { '✗' }
     $kindText = if ($cap.bootstrap_kind) { $cap.bootstrap_kind } else { '—' }
-    $markdownCapLines += "| $($cap.name) | $toolText | $mcpText | $svcText | $autoText | $kindText |"
+    $markdownCapLines += "| $($cap.name) | $toolText | $readyText | $mcpText | $svcText | $autoText | $kindText |"
 }
 $markdownCapLines += ''
 $markdownCapLines += '> ✓ = 是 | ✗ = 否 | — = 不适用或未检测'
@@ -132,6 +135,8 @@ $jsonRows = foreach ($report in $reports) {
         skill = $report.Skill
         purpose = $report.Purpose
         available = $report.Available
+        is_executable = $report.IsExecutable
+        is_directory = $report.IsDirectory
         resolved_path = $report.ResolvedPath
         version = $report.Version
         source = $report.Source

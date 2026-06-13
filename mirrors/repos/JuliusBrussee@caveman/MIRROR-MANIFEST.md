@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JuliusBrussee/caveman` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
+Mirror of `JuliusBrussee/caveman` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JuliusBrussee/caveman` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 37 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,43 +59,38 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
-| 2 | ✓ | [`.agents/skills/cavecrew/SKILL.md`](.agents/skills/cavecrew/SKILL.md) |
-| 3 | ✓ | [`.junie/skills/cavecrew/SKILL.md`](.junie/skills/cavecrew/SKILL.md) |
-| 4 | ✓ | [`.kiro/skills/cavecrew/SKILL.md`](.kiro/skills/cavecrew/SKILL.md) |
-| 5 | ✓ | [`.roo/skills/cavecrew/SKILL.md`](.roo/skills/cavecrew/SKILL.md) |
-| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 7 | ✓ | [`agents/cavecrew-builder.md`](agents/cavecrew-builder.md) |
-| 8 | ✓ | [`agents/cavecrew-investigator.md`](agents/cavecrew-investigator.md) |
-| 9 | ✓ | [`agents/cavecrew-reviewer.md`](agents/cavecrew-reviewer.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 11 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 12 | ✓ | [`plugins/caveman/skills/cavecrew/SKILL.md`](plugins/caveman/skills/cavecrew/SKILL.md) |
-| 13 | ✓ | [`plugins/caveman/skills/caveman-compress/SKILL.md`](plugins/caveman/skills/caveman-compress/SKILL.md) |
-| 14 | ✓ | [`plugins/caveman/skills/caveman-stats/SKILL.md`](plugins/caveman/skills/caveman-stats/SKILL.md) |
-| 15 | ✓ | [`plugins/caveman/skills/caveman/SKILL.md`](plugins/caveman/skills/caveman/SKILL.md) |
-| 16 | ✓ | [`skills/cavecrew/README.md`](skills/cavecrew/README.md) |
-| 17 | ✓ | [`skills/cavecrew/SKILL.md`](skills/cavecrew/SKILL.md) |
-| 18 | ✓ | [`skills/caveman-commit/README.md`](skills/caveman-commit/README.md) |
-| 19 | ✓ | [`skills/caveman-commit/SKILL.md`](skills/caveman-commit/SKILL.md) |
-| 20 | ✓ | [`skills/caveman-compress/README.md`](skills/caveman-compress/README.md) |
-| 21 | ✓ | [`skills/caveman-compress/scripts/__init__.py`](skills/caveman-compress/scripts/__init__.py) |
-| 22 | ✓ | [`skills/caveman-compress/scripts/__main__.py`](skills/caveman-compress/scripts/__main__.py) |
-| 23 | ✓ | [`skills/caveman-compress/scripts/benchmark.py`](skills/caveman-compress/scripts/benchmark.py) |
-| 24 | ✓ | [`skills/caveman-compress/scripts/cli.py`](skills/caveman-compress/scripts/cli.py) |
-| 25 | ✓ | [`skills/caveman-compress/scripts/compress.py`](skills/caveman-compress/scripts/compress.py) |
-| 26 | ✓ | [`skills/caveman-compress/scripts/detect.py`](skills/caveman-compress/scripts/detect.py) |
-| 27 | ✓ | [`skills/caveman-compress/scripts/validate.py`](skills/caveman-compress/scripts/validate.py) |
-| 28 | ✓ | [`skills/caveman-compress/SECURITY.md`](skills/caveman-compress/SECURITY.md) |
-| 29 | ✓ | [`skills/caveman-compress/SKILL.md`](skills/caveman-compress/SKILL.md) |
-| 30 | ✓ | [`skills/caveman-help/README.md`](skills/caveman-help/README.md) |
-| 31 | ✓ | [`skills/caveman-help/SKILL.md`](skills/caveman-help/SKILL.md) |
-| 32 | ✓ | [`skills/caveman-review/README.md`](skills/caveman-review/README.md) |
-| 33 | ✓ | [`skills/caveman-review/SKILL.md`](skills/caveman-review/SKILL.md) |
-| 34 | ✓ | [`skills/caveman-stats/README.md`](skills/caveman-stats/README.md) |
-| 35 | ✓ | [`skills/caveman-stats/SKILL.md`](skills/caveman-stats/SKILL.md) |
-| 36 | ✓ | [`skills/caveman/README.md`](skills/caveman/README.md) |
-| 37 | ✓ | [`skills/caveman/SKILL.md`](skills/caveman/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`agents/cavecrew-builder.md`](agents/cavecrew-builder.md) |
+| 3 | ✓ | [`agents/cavecrew-investigator.md`](agents/cavecrew-investigator.md) |
+| 4 | ✓ | [`agents/cavecrew-reviewer.md`](agents/cavecrew-reviewer.md) |
+| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 6 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 7 | ✓ | [`plugins/caveman/skills/cavecrew/SKILL.md`](plugins/caveman/skills/cavecrew/SKILL.md) |
+| 8 | ✓ | [`plugins/caveman/skills/caveman-compress/SKILL.md`](plugins/caveman/skills/caveman-compress/SKILL.md) |
+| 9 | ✓ | [`plugins/caveman/skills/caveman-stats/SKILL.md`](plugins/caveman/skills/caveman-stats/SKILL.md) |
+| 10 | ✓ | [`plugins/caveman/skills/caveman/SKILL.md`](plugins/caveman/skills/caveman/SKILL.md) |
+| 11 | ✓ | [`skills/cavecrew/README.md`](skills/cavecrew/README.md) |
+| 12 | ✓ | [`skills/cavecrew/SKILL.md`](skills/cavecrew/SKILL.md) |
+| 13 | ✓ | [`skills/caveman-commit/README.md`](skills/caveman-commit/README.md) |
+| 14 | ✓ | [`skills/caveman-commit/SKILL.md`](skills/caveman-commit/SKILL.md) |
+| 15 | ✓ | [`skills/caveman-compress/README.md`](skills/caveman-compress/README.md) |
+| 16 | ✓ | [`skills/caveman-compress/scripts/__init__.py`](skills/caveman-compress/scripts/__init__.py) |
+| 17 | ✓ | [`skills/caveman-compress/scripts/__main__.py`](skills/caveman-compress/scripts/__main__.py) |
+| 18 | ✓ | [`skills/caveman-compress/scripts/benchmark.py`](skills/caveman-compress/scripts/benchmark.py) |
+| 19 | ✓ | [`skills/caveman-compress/scripts/cli.py`](skills/caveman-compress/scripts/cli.py) |
+| 20 | ✓ | [`skills/caveman-compress/scripts/compress.py`](skills/caveman-compress/scripts/compress.py) |
+| 21 | ✓ | [`skills/caveman-compress/scripts/detect.py`](skills/caveman-compress/scripts/detect.py) |
+| 22 | ✓ | [`skills/caveman-compress/scripts/validate.py`](skills/caveman-compress/scripts/validate.py) |
+| 23 | ✓ | [`skills/caveman-compress/SECURITY.md`](skills/caveman-compress/SECURITY.md) |
+| 24 | ✓ | [`skills/caveman-compress/SKILL.md`](skills/caveman-compress/SKILL.md) |
+| 25 | ✓ | [`skills/caveman-help/README.md`](skills/caveman-help/README.md) |
+| 26 | ✓ | [`skills/caveman-help/SKILL.md`](skills/caveman-help/SKILL.md) |
+| 27 | ✓ | [`skills/caveman-review/README.md`](skills/caveman-review/README.md) |
+| 28 | ✓ | [`skills/caveman-review/SKILL.md`](skills/caveman-review/SKILL.md) |
+| 29 | ✓ | [`skills/caveman-stats/README.md`](skills/caveman-stats/README.md) |
+| 30 | ✓ | [`skills/caveman-stats/SKILL.md`](skills/caveman-stats/SKILL.md) |
+| 31 | ✓ | [`skills/caveman/README.md`](skills/caveman/README.md) |
+| 32 | ✓ | [`skills/caveman/SKILL.md`](skills/caveman/SKILL.md) |
 
 ---
 

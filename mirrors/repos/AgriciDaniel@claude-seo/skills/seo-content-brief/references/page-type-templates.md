@@ -97,7 +97,7 @@ Select the template that matches the page type. Adapt sections based on the spec
 | 8-15 questions | Grouped by subtopic | Each answered in 40-60 words, FS target for each |
 | CTA after last question | Convert | Contextual next step |
 
-**Schema:** FAQPage (every Q&A as mainEntity, critical for rich results)
+**Schema:** FAQPage (every Q&A as mainEntity) — Google retired FAQ rich results for all sites on May 7, 2026, so this no longer produces a SERP rich result; the markup still aids AI Mode / AI Overviews entity resolution (treat as a supporting signal, not a ranking feature). For genuine user Q&A pages, use QAPage instead. See the seo-schema skill for the canonical position.
 **Primary keyword:** In H1 as "[Topic]: Frequently Asked Questions", in first answer
 
 ## Location Page

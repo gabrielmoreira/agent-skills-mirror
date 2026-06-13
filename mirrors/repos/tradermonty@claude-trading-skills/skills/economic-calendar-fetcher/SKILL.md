@@ -133,11 +133,29 @@ python3 skills/economic-calendar-fetcher/scripts/get_economic_calendar.py \
 - `--format`: Output format (json or text) - default: json
 - `--output`: Output file path (optional, default: stdout)
 
-**Handle errors:**
+**Handle errors and empty results:**
 - Invalid API key → Ask user to verify key
 - Rate limit exceeded (429) → Suggest waiting or upgrading FMP tier
 - Network errors → Check your connection and re-run the script
 - Invalid date format → Provide correct format example
+- **Unexpected empty list for a plausible current/future range:** Do not declare the calendar empty yet. Verify the same range against the primary v3 endpoint directly, then locally filter rows by parsed `date` because FMP may return adjacent-date rows. This applies even when the helper script itself returned `[]` (not only when a stable endpoint was used).
+
+Direct v3 fallback probe:
+```bash
+python3 - <<'PY'
+import os, json, urllib.parse, urllib.request, datetime
+start = datetime.date.fromisoformat("YYYY-MM-DD")
+end = datetime.date.fromisoformat("YYYY-MM-DD")
+url = "https://financialmodelingprep.com/api/v3/economic_calendar?" + urllib.parse.urlencode({
+    "from": start.isoformat(), "to": end.isoformat(), "apikey": os.environ["FMP_API_KEY"]
+})
+with urllib.request.urlopen(url, timeout=30) as r:
+    data = json.loads(r.read())
+filtered = [e for e in data if start <= datetime.date.fromisoformat(e["date"][:10]) <= end]
+filtered.sort(key=lambda e: e.get("date", ""))
+print(json.dumps(filtered, indent=2))
+PY
+```
 
 ### Step 4: Parse and Filter Events
 
@@ -341,7 +359,9 @@ If user requested specific filters, note at top:
   - Best practices for caching and efficiency
 
 **API Details:**
-- Endpoint: `https://financialmodelingprep.com/api/v3/economic_calendar`
+- Primary endpoint: `https://financialmodelingprep.com/api/v3/economic_calendar`
+- Stable endpoint caveat: if a helper script or docs use `https://financialmodelingprep.com/stable/economics-calendar` and it returns `404` or `[]` for an otherwise valid date range, fall back to the v3 endpoint above before declaring the calendar empty.
+- Date-range caveat: v3 responses can include rows just outside the requested `from`/`to` window; after fetching, filter events locally by parsed `date` so only the requested date range is reported.
 - Authentication: API key required (free tier: 250 requests/day)
 - Max date range: 90 days per request
 - Response format: JSON array of event objects
@@ -364,4 +384,5 @@ If user requested specific filters, note at top:
 - API key errors: Clear user guidance for obtaining free key
 - Rate limits (429): Suggest waiting or upgrading FMP tier; re-run the script after the wait
 - Network failures: Check connection and re-run; no automatic retry or cache in the script
+- Stable endpoint returns `404` or an empty list for a valid range: retry the same range through `https://financialmodelingprep.com/api/v3/economic_calendar`, then locally filter returned events to the requested dates before reporting.
 - Invalid dates: Validation with helpful error messages

@@ -31,6 +31,21 @@ Attribution header on every bundled prompt file (automated by `scripts/sync_flow
 
 ## Community Pull Requests
 
+### v2.2.0
+
+| Contributor | PR | What |
+|------------|-----|------|
+| [@manishpaulsimon](https://github.com/manishpaulsimon) | [#117](https://github.com/AgriciDaniel/claude-seo/pull/117) | Cross-platform `drift_baseline` fetch -> parse handoff (synthesis basis) |
+| [@solbergryan](https://github.com/solbergryan) | [#128](https://github.com/AgriciDaniel/claude-seo/pull/128) | Windows compatibility for drift scripts and installer |
+| [@GieriGuru](https://github.com/GieriGuru) | [#111](https://github.com/AgriciDaniel/claude-seo/pull/111) | Handle Windows Store Python alias in `install.ps1` |
+| [@Shieldxx](https://github.com/Shieldxx) | [#115](https://github.com/AgriciDaniel/claude-seo/pull/115) | Windows + non-Latin-1 baseline portability |
+| [@imranaliraqi](https://github.com/imranaliraqi) | [#125](https://github.com/AgriciDaniel/claude-seo/pull/125) | Windows path + UTF-8 baseline portability |
+| [@eduardofortesr](https://github.com/eduardofortesr) | [#101](https://github.com/AgriciDaniel/claude-seo/pull/101) | Cross-platform JSON-LD validator hook (python3) |
+| [@fayerman-source](https://github.com/fayerman-source) | [#104](https://github.com/AgriciDaniel/claude-seo/pull/104) | Move Google API key from URL to request header |
+| [@nickgraynews](https://github.com/nickgraynews) | [#113](https://github.com/AgriciDaniel/claude-seo/pull/113) | Drop deprecated GSC Sitemaps `indexed` field |
+| [@PenthouseWaldkirchen](https://github.com/PenthouseWaldkirchen) | [#118](https://github.com/AgriciDaniel/claude-seo/pull/118) | Add authors and keywords to `pyproject.toml` |
+| [@chat2deskmx](https://github.com/chat2deskmx) | [#123](https://github.com/AgriciDaniel/claude-seo/pull/123) | Add ruff config and lint cleanup |
+
 ### v1.9.7
 
 | Contributor | PR | What |
@@ -52,6 +67,16 @@ Attribution header on every bundled prompt file (automated by `scripts/sync_flow
 | [@edocltd](https://github.com/edocltd) | [#50](https://github.com/AgriciDaniel/claude-seo/pull/50) | Ukrainian localization |
 | [@MalteBerlin](https://github.com/MalteBerlin) | [#45](https://github.com/AgriciDaniel/claude-seo/pull/45) | Sub-skills count correction |
 | [@olivierroy](https://github.com/olivierroy) | [#43](https://github.com/AgriciDaniel/claude-seo/pull/43) | Extension install fix |
+
+## Security Disclosures
+
+Responsible disclosures incorporated into v2.2.0. Thank you for reporting privately or via issues:
+
+| Reporter | Report | What |
+|----------|--------|------|
+| [@Fushuling](https://github.com/Fushuling) | [#110](https://github.com/AgriciDaniel/claude-seo/issues/110) | SSRF parser-differential bypass in `validate_url` |
+| [@webgunnz](https://github.com/webgunnz) | [#122](https://github.com/AgriciDaniel/claude-seo/issues/122), [#121](https://github.com/AgriciDaniel/claude-seo/issues/121) | Google API key leak in error output; UTF-8 double-encode |
+| [@fayerman-source](https://github.com/fayerman-source) | [#130](https://github.com/AgriciDaniel/claude-seo/issues/130), [#103](https://github.com/AgriciDaniel/claude-seo/issues/103) | GSC false "0 clicks" totals; NLP V1 entity metadata |
 
 ## How to Contribute
 

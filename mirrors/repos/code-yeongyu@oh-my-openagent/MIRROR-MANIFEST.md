@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 1 followed patterns, 233 file(s) materialized.
+Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 19 followed patterns, 319 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 1 followed pat
 | Ref Type      | `branch` |
 | Ref           | `dev` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 233 |
+| Followed pats | 19 |
+| Files         | 319 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,24 @@ Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 1 followed pat
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `ROADMAP.md`
+- `docs/guide/team-mode.md`
+- `docs/reference/lazycodex-npm-reservation.md`
+- `CHANGELOG.md`
+- `docs/reference/prompt-async-gate-rfc.md`
+- `docs/reference/release-process.md`
+- `README.ru.md`
+- `README.md`
+- `README.ko.md`
+- `README.ja.md`
+- `README.zh-cn.md`
+- `docs/guide/installation.md`
+- `docs/legal/privacy-policy.md`
+- `docs/legal/terms-of-service.md`
+- `docs/guide/overview.md`
+- `docs/reference/features.md`
+- `docs/guide/orchestration.md`
+- `docs/reference/configuration.md`
+- `docs/manifesto.md`
 
 ## File Index
 
@@ -174,124 +192,210 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 113 | ✓ | [`.opencode/skills/work-with-pr/SKILL.md`](.opencode/skills/work-with-pr/SKILL.md) |
 | 114 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 115 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 116 | ✓ | [`packages/AGENTS.md`](packages/AGENTS.md) |
-| 117 | ✓ | [`packages/lsp-daemon/AGENTS.md`](packages/lsp-daemon/AGENTS.md) |
-| 118 | ✓ | [`packages/omo-codex/AGENTS.md`](packages/omo-codex/AGENTS.md) |
-| 119 | ✓ | [`packages/omo-codex/plugin/components/comment-checker/AGENTS.md`](packages/omo-codex/plugin/components/comment-checker/AGENTS.md) |
-| 120 | ✓ | [`packages/omo-codex/plugin/components/comment-checker/skills/comment-checker/SKILL.md`](packages/omo-codex/plugin/components/comment-checker/skills/comment-checker/SKILL.md) |
-| 121 | ✓ | [`packages/omo-codex/plugin/components/lsp/AGENTS.md`](packages/omo-codex/plugin/components/lsp/AGENTS.md) |
-| 122 | ✓ | [`packages/omo-codex/plugin/components/lsp/skills/lsp/SKILL.md`](packages/omo-codex/plugin/components/lsp/skills/lsp/SKILL.md) |
-| 123 | ✓ | [`packages/omo-codex/plugin/components/rules/AGENTS.md`](packages/omo-codex/plugin/components/rules/AGENTS.md) |
-| 124 | ✓ | [`packages/omo-codex/plugin/components/rules/skills/rules/SKILL.md`](packages/omo-codex/plugin/components/rules/skills/rules/SKILL.md) |
-| 125 | ✓ | [`packages/omo-codex/plugin/components/start-work-continuation/AGENTS.md`](packages/omo-codex/plugin/components/start-work-continuation/AGENTS.md) |
-| 126 | ✓ | [`packages/omo-codex/plugin/components/telemetry/AGENTS.md`](packages/omo-codex/plugin/components/telemetry/AGENTS.md) |
-| 127 | ✓ | [`packages/omo-codex/plugin/components/ultrawork/AGENTS.md`](packages/omo-codex/plugin/components/ultrawork/AGENTS.md) |
-| 128 | ✓ | [`packages/omo-codex/plugin/components/ultrawork/skills/ulw-plan/SKILL.md`](packages/omo-codex/plugin/components/ultrawork/skills/ulw-plan/SKILL.md) |
-| 129 | ✓ | [`packages/omo-codex/plugin/components/ulw-loop/AGENTS.md`](packages/omo-codex/plugin/components/ulw-loop/AGENTS.md) |
-| 130 | ✓ | [`packages/omo-codex/plugin/components/ulw-loop/skills/ulw-loop/SKILL.md`](packages/omo-codex/plugin/components/ulw-loop/skills/ulw-loop/SKILL.md) |
-| 131 | ✓ | [`packages/omo-codex/plugin/skills/comment-checker/SKILL.md`](packages/omo-codex/plugin/skills/comment-checker/SKILL.md) |
-| 132 | ✓ | [`packages/omo-codex/plugin/skills/debugging/SKILL.md`](packages/omo-codex/plugin/skills/debugging/SKILL.md) |
-| 133 | ✓ | [`packages/omo-codex/plugin/skills/frontend-ui-ux/SKILL.md`](packages/omo-codex/plugin/skills/frontend-ui-ux/SKILL.md) |
-| 134 | ✓ | [`packages/omo-codex/plugin/skills/git-master/SKILL.md`](packages/omo-codex/plugin/skills/git-master/SKILL.md) |
-| 135 | ✓ | [`packages/omo-codex/plugin/skills/init-deep/SKILL.md`](packages/omo-codex/plugin/skills/init-deep/SKILL.md) |
-| 136 | ✓ | [`packages/omo-codex/plugin/skills/lcx-contribute-bug-fix/SKILL.md`](packages/omo-codex/plugin/skills/lcx-contribute-bug-fix/SKILL.md) |
-| 137 | ✓ | [`packages/omo-codex/plugin/skills/lcx-doctor/SKILL.md`](packages/omo-codex/plugin/skills/lcx-doctor/SKILL.md) |
-| 138 | ✓ | [`packages/omo-codex/plugin/skills/lcx-report-bug/SKILL.md`](packages/omo-codex/plugin/skills/lcx-report-bug/SKILL.md) |
-| 139 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/SKILL.md`](packages/omo-codex/plugin/skills/lsp-setup/SKILL.md) |
-| 140 | ✓ | [`packages/omo-codex/plugin/skills/lsp/SKILL.md`](packages/omo-codex/plugin/skills/lsp/SKILL.md) |
-| 141 | ✓ | [`packages/omo-codex/plugin/skills/programming/SKILL.md`](packages/omo-codex/plugin/skills/programming/SKILL.md) |
-| 142 | ✓ | [`packages/omo-codex/plugin/skills/refactor/SKILL.md`](packages/omo-codex/plugin/skills/refactor/SKILL.md) |
-| 143 | ✓ | [`packages/omo-codex/plugin/skills/remove-ai-slops/SKILL.md`](packages/omo-codex/plugin/skills/remove-ai-slops/SKILL.md) |
-| 144 | ✓ | [`packages/omo-codex/plugin/skills/review-work/SKILL.md`](packages/omo-codex/plugin/skills/review-work/SKILL.md) |
-| 145 | ✓ | [`packages/omo-codex/plugin/skills/rules/SKILL.md`](packages/omo-codex/plugin/skills/rules/SKILL.md) |
-| 146 | ✓ | [`packages/omo-codex/plugin/skills/start-work/SKILL.md`](packages/omo-codex/plugin/skills/start-work/SKILL.md) |
-| 147 | ✓ | [`packages/omo-codex/plugin/skills/ultraresearch/SKILL.md`](packages/omo-codex/plugin/skills/ultraresearch/SKILL.md) |
-| 148 | ✓ | [`packages/omo-codex/plugin/skills/ulw-loop/SKILL.md`](packages/omo-codex/plugin/skills/ulw-loop/SKILL.md) |
-| 149 | ✓ | [`packages/omo-codex/plugin/skills/ulw-plan/SKILL.md`](packages/omo-codex/plugin/skills/ulw-plan/SKILL.md) |
-| 150 | ✓ | [`packages/omo-codex/plugin/skills/visual-qa/SKILL.md`](packages/omo-codex/plugin/skills/visual-qa/SKILL.md) |
-| 151 | ✓ | [`packages/omo-opencode/src/__tests__/AGENTS.md`](packages/omo-opencode/src/__tests__/AGENTS.md) |
-| 152 | ✓ | [`packages/omo-opencode/src/__tests__/perf/fixtures/in-tree/AGENTS.md`](packages/omo-opencode/src/__tests__/perf/fixtures/in-tree/AGENTS.md) |
-| 153 | ✓ | [`packages/omo-opencode/src/__tests__/perf/fixtures/in-tree/packages/pkg-one/AGENTS.md`](packages/omo-opencode/src/__tests__/perf/fixtures/in-tree/packages/pkg-one/AGENTS.md) |
-| 154 | ✓ | [`packages/omo-opencode/src/__tests__/perf/fixtures/in-tree/src/AGENTS.md`](packages/omo-opencode/src/__tests__/perf/fixtures/in-tree/src/AGENTS.md) |
-| 155 | ✓ | [`packages/omo-opencode/src/AGENTS.md`](packages/omo-opencode/src/AGENTS.md) |
-| 156 | ✓ | [`packages/omo-opencode/src/agents/AGENTS.md`](packages/omo-opencode/src/agents/AGENTS.md) |
-| 157 | ✓ | [`packages/omo-opencode/src/agents/atlas/AGENTS.md`](packages/omo-opencode/src/agents/atlas/AGENTS.md) |
-| 158 | ✓ | [`packages/omo-opencode/src/agents/builtin-agents/AGENTS.md`](packages/omo-opencode/src/agents/builtin-agents/AGENTS.md) |
-| 159 | ✓ | [`packages/omo-opencode/src/agents/hephaestus/AGENTS.md`](packages/omo-opencode/src/agents/hephaestus/AGENTS.md) |
-| 160 | ✓ | [`packages/omo-opencode/src/agents/prometheus/AGENTS.md`](packages/omo-opencode/src/agents/prometheus/AGENTS.md) |
-| 161 | ✓ | [`packages/omo-opencode/src/agents/sisyphus-junior/AGENTS.md`](packages/omo-opencode/src/agents/sisyphus-junior/AGENTS.md) |
-| 162 | ✓ | [`packages/omo-opencode/src/agents/sisyphus/AGENTS.md`](packages/omo-opencode/src/agents/sisyphus/AGENTS.md) |
-| 163 | ✓ | [`packages/omo-opencode/src/cli/AGENTS.md`](packages/omo-opencode/src/cli/AGENTS.md) |
-| 164 | ✓ | [`packages/omo-opencode/src/cli/config-manager/AGENTS.md`](packages/omo-opencode/src/cli/config-manager/AGENTS.md) |
-| 165 | ✓ | [`packages/omo-opencode/src/cli/doctor/AGENTS.md`](packages/omo-opencode/src/cli/doctor/AGENTS.md) |
-| 166 | ✓ | [`packages/omo-opencode/src/cli/install-codex/AGENTS.md`](packages/omo-opencode/src/cli/install-codex/AGENTS.md) |
-| 167 | ✓ | [`packages/omo-opencode/src/cli/run/AGENTS.md`](packages/omo-opencode/src/cli/run/AGENTS.md) |
-| 168 | ✓ | [`packages/omo-opencode/src/config/AGENTS.md`](packages/omo-opencode/src/config/AGENTS.md) |
-| 169 | ✓ | [`packages/omo-opencode/src/features/AGENTS.md`](packages/omo-opencode/src/features/AGENTS.md) |
-| 170 | ✓ | [`packages/omo-opencode/src/features/background-agent/AGENTS.md`](packages/omo-opencode/src/features/background-agent/AGENTS.md) |
-| 171 | ✓ | [`packages/omo-opencode/src/features/boulder-state/AGENTS.md`](packages/omo-opencode/src/features/boulder-state/AGENTS.md) |
-| 172 | ✓ | [`packages/omo-opencode/src/features/builtin-commands/AGENTS.md`](packages/omo-opencode/src/features/builtin-commands/AGENTS.md) |
-| 173 | ✓ | [`packages/omo-opencode/src/features/builtin-skills/agent-browser/SKILL.md`](packages/omo-opencode/src/features/builtin-skills/agent-browser/SKILL.md) |
-| 174 | ✓ | [`packages/omo-opencode/src/features/builtin-skills/AGENTS.md`](packages/omo-opencode/src/features/builtin-skills/AGENTS.md) |
-| 175 | ✓ | [`packages/omo-opencode/src/features/builtin-skills/dev-browser/SKILL.md`](packages/omo-opencode/src/features/builtin-skills/dev-browser/SKILL.md) |
-| 176 | ✓ | [`packages/omo-opencode/src/features/builtin-skills/frontend-ui-ux/SKILL.md`](packages/omo-opencode/src/features/builtin-skills/frontend-ui-ux/SKILL.md) |
-| 177 | ✓ | [`packages/omo-opencode/src/features/builtin-skills/git-master/SKILL.md`](packages/omo-opencode/src/features/builtin-skills/git-master/SKILL.md) |
-| 178 | ✓ | [`packages/omo-opencode/src/features/builtin-skills/security-research/SKILL.md`](packages/omo-opencode/src/features/builtin-skills/security-research/SKILL.md) |
-| 179 | ✓ | [`packages/omo-opencode/src/features/claude-code-agent-loader/AGENTS.md`](packages/omo-opencode/src/features/claude-code-agent-loader/AGENTS.md) |
-| 180 | ✓ | [`packages/omo-opencode/src/features/claude-code-mcp-loader/AGENTS.md`](packages/omo-opencode/src/features/claude-code-mcp-loader/AGENTS.md) |
-| 181 | ✓ | [`packages/omo-opencode/src/features/claude-code-plugin-loader/AGENTS.md`](packages/omo-opencode/src/features/claude-code-plugin-loader/AGENTS.md) |
-| 182 | ✓ | [`packages/omo-opencode/src/features/claude-tasks/AGENTS.md`](packages/omo-opencode/src/features/claude-tasks/AGENTS.md) |
-| 183 | ✓ | [`packages/omo-opencode/src/features/mcp-oauth/AGENTS.md`](packages/omo-opencode/src/features/mcp-oauth/AGENTS.md) |
-| 184 | ✓ | [`packages/omo-opencode/src/features/opencode-skill-loader/AGENTS.md`](packages/omo-opencode/src/features/opencode-skill-loader/AGENTS.md) |
-| 185 | ✓ | [`packages/omo-opencode/src/features/skill-mcp-manager/AGENTS.md`](packages/omo-opencode/src/features/skill-mcp-manager/AGENTS.md) |
-| 186 | ✓ | [`packages/omo-opencode/src/features/team-mode/AGENTS.md`](packages/omo-opencode/src/features/team-mode/AGENTS.md) |
-| 187 | ✓ | [`packages/omo-opencode/src/features/tmux-subagent/AGENTS.md`](packages/omo-opencode/src/features/tmux-subagent/AGENTS.md) |
-| 188 | ✓ | [`packages/omo-opencode/src/hooks/AGENTS.md`](packages/omo-opencode/src/hooks/AGENTS.md) |
-| 189 | ✓ | [`packages/omo-opencode/src/hooks/anthropic-context-window-limit-recovery/AGENTS.md`](packages/omo-opencode/src/hooks/anthropic-context-window-limit-recovery/AGENTS.md) |
-| 190 | ✓ | [`packages/omo-opencode/src/hooks/atlas/AGENTS.md`](packages/omo-opencode/src/hooks/atlas/AGENTS.md) |
-| 191 | ✓ | [`packages/omo-opencode/src/hooks/auto-update-checker/AGENTS.md`](packages/omo-opencode/src/hooks/auto-update-checker/AGENTS.md) |
-| 192 | ✓ | [`packages/omo-opencode/src/hooks/claude-code-hooks/AGENTS.md`](packages/omo-opencode/src/hooks/claude-code-hooks/AGENTS.md) |
-| 193 | ✓ | [`packages/omo-opencode/src/hooks/comment-checker/AGENTS.md`](packages/omo-opencode/src/hooks/comment-checker/AGENTS.md) |
-| 194 | ✓ | [`packages/omo-opencode/src/hooks/compaction-context-injector/AGENTS.md`](packages/omo-opencode/src/hooks/compaction-context-injector/AGENTS.md) |
-| 195 | ✓ | [`packages/omo-opencode/src/hooks/keyword-detector/AGENTS.md`](packages/omo-opencode/src/hooks/keyword-detector/AGENTS.md) |
-| 196 | ✓ | [`packages/omo-opencode/src/hooks/ralph-loop/AGENTS.md`](packages/omo-opencode/src/hooks/ralph-loop/AGENTS.md) |
-| 197 | ✓ | [`packages/omo-opencode/src/hooks/rules-injector/AGENTS.md`](packages/omo-opencode/src/hooks/rules-injector/AGENTS.md) |
-| 198 | ✓ | [`packages/omo-opencode/src/hooks/runtime-fallback/AGENTS.md`](packages/omo-opencode/src/hooks/runtime-fallback/AGENTS.md) |
-| 199 | ✓ | [`packages/omo-opencode/src/hooks/session-recovery/AGENTS.md`](packages/omo-opencode/src/hooks/session-recovery/AGENTS.md) |
-| 200 | ✓ | [`packages/omo-opencode/src/hooks/todo-continuation-enforcer/AGENTS.md`](packages/omo-opencode/src/hooks/todo-continuation-enforcer/AGENTS.md) |
-| 201 | ✓ | [`packages/omo-opencode/src/mcp/AGENTS.md`](packages/omo-opencode/src/mcp/AGENTS.md) |
-| 202 | ✓ | [`packages/omo-opencode/src/openclaw/AGENTS.md`](packages/omo-opencode/src/openclaw/AGENTS.md) |
-| 203 | ✓ | [`packages/omo-opencode/src/plugin-handlers/AGENTS.md`](packages/omo-opencode/src/plugin-handlers/AGENTS.md) |
-| 204 | ✓ | [`packages/omo-opencode/src/plugin/AGENTS.md`](packages/omo-opencode/src/plugin/AGENTS.md) |
-| 205 | ✓ | [`packages/omo-opencode/src/shared/AGENTS.md`](packages/omo-opencode/src/shared/AGENTS.md) |
-| 206 | ✓ | [`packages/omo-opencode/src/tools/AGENTS.md`](packages/omo-opencode/src/tools/AGENTS.md) |
-| 207 | ✓ | [`packages/omo-opencode/src/tools/background-task/AGENTS.md`](packages/omo-opencode/src/tools/background-task/AGENTS.md) |
-| 208 | ✓ | [`packages/omo-opencode/src/tools/call-omo-agent/AGENTS.md`](packages/omo-opencode/src/tools/call-omo-agent/AGENTS.md) |
-| 209 | ✓ | [`packages/omo-opencode/src/tools/delegate-task/AGENTS.md`](packages/omo-opencode/src/tools/delegate-task/AGENTS.md) |
-| 210 | ✓ | [`packages/omo-opencode/src/tools/hashline-edit/AGENTS.md`](packages/omo-opencode/src/tools/hashline-edit/AGENTS.md) |
-| 211 | ✓ | [`packages/omo-opencode/src/tools/look-at/AGENTS.md`](packages/omo-opencode/src/tools/look-at/AGENTS.md) |
-| 212 | ✓ | [`packages/omo-opencode/src/tools/skill/AGENTS.md`](packages/omo-opencode/src/tools/skill/AGENTS.md) |
-| 213 | ✓ | [`packages/prompts-core/prompts/atlas/gemini.md`](packages/prompts-core/prompts/atlas/gemini.md) |
-| 214 | ✓ | [`packages/prompts-core/prompts/prometheus/gemini.md`](packages/prompts-core/prompts/prometheus/gemini.md) |
-| 215 | ✓ | [`packages/prompts-core/prompts/ultrawork/gemini.md`](packages/prompts-core/prompts/ultrawork/gemini.md) |
-| 216 | ✓ | [`packages/shared-skills/skills/debugging/SKILL.md`](packages/shared-skills/skills/debugging/SKILL.md) |
-| 217 | ✓ | [`packages/shared-skills/skills/frontend-ui-ux/SKILL.md`](packages/shared-skills/skills/frontend-ui-ux/SKILL.md) |
-| 218 | ✓ | [`packages/shared-skills/skills/git-master/SKILL.md`](packages/shared-skills/skills/git-master/SKILL.md) |
-| 219 | ✓ | [`packages/shared-skills/skills/init-deep/SKILL.md`](packages/shared-skills/skills/init-deep/SKILL.md) |
-| 220 | ✓ | [`packages/shared-skills/skills/lcx-contribute-bug-fix/SKILL.md`](packages/shared-skills/skills/lcx-contribute-bug-fix/SKILL.md) |
-| 221 | ✓ | [`packages/shared-skills/skills/lcx-doctor/SKILL.md`](packages/shared-skills/skills/lcx-doctor/SKILL.md) |
-| 222 | ✓ | [`packages/shared-skills/skills/lcx-report-bug/SKILL.md`](packages/shared-skills/skills/lcx-report-bug/SKILL.md) |
-| 223 | ✓ | [`packages/shared-skills/skills/lsp-setup/SKILL.md`](packages/shared-skills/skills/lsp-setup/SKILL.md) |
-| 224 | ✓ | [`packages/shared-skills/skills/programming/SKILL.md`](packages/shared-skills/skills/programming/SKILL.md) |
-| 225 | ✓ | [`packages/shared-skills/skills/refactor/SKILL.md`](packages/shared-skills/skills/refactor/SKILL.md) |
-| 226 | ✓ | [`packages/shared-skills/skills/remove-ai-slops/SKILL.md`](packages/shared-skills/skills/remove-ai-slops/SKILL.md) |
-| 227 | ✓ | [`packages/shared-skills/skills/review-work/SKILL.md`](packages/shared-skills/skills/review-work/SKILL.md) |
-| 228 | ✓ | [`packages/shared-skills/skills/start-work/SKILL.md`](packages/shared-skills/skills/start-work/SKILL.md) |
-| 229 | ✓ | [`packages/shared-skills/skills/ultraresearch/SKILL.md`](packages/shared-skills/skills/ultraresearch/SKILL.md) |
-| 230 | ✓ | [`packages/shared-skills/skills/visual-qa/SKILL.md`](packages/shared-skills/skills/visual-qa/SKILL.md) |
-| 231 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
-| 232 | ✓ | [`script/AGENTS.md`](script/AGENTS.md) |
-| 233 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 116 | ✓ | [`docs/guide/agent-model-matching.md`](docs/guide/agent-model-matching.md) |
+| 117 | ✓ | [`packages/AGENTS.md`](packages/AGENTS.md) |
+| 118 | ✓ | [`packages/lsp-daemon/AGENTS.md`](packages/lsp-daemon/AGENTS.md) |
+| 119 | ✓ | [`packages/lsp-tools-mcp/CHANGELOG.md`](packages/lsp-tools-mcp/CHANGELOG.md) |
+| 120 | ✓ | [`packages/lsp-tools-mcp/README.md`](packages/lsp-tools-mcp/README.md) |
+| 121 | ✓ | [`packages/omo-codex/AGENTS.md`](packages/omo-codex/AGENTS.md) |
+| 122 | ✓ | [`packages/omo-codex/plugin/components/comment-checker/AGENTS.md`](packages/omo-codex/plugin/components/comment-checker/AGENTS.md) |
+| 123 | ✓ | [`packages/omo-codex/plugin/components/comment-checker/CHANGELOG.md`](packages/omo-codex/plugin/components/comment-checker/CHANGELOG.md) |
+| 124 | ✓ | [`packages/omo-codex/plugin/components/comment-checker/README.md`](packages/omo-codex/plugin/components/comment-checker/README.md) |
+| 125 | ✓ | [`packages/omo-codex/plugin/components/comment-checker/skills/comment-checker/SKILL.md`](packages/omo-codex/plugin/components/comment-checker/skills/comment-checker/SKILL.md) |
+| 126 | ✓ | [`packages/omo-codex/plugin/components/lsp/AGENTS.md`](packages/omo-codex/plugin/components/lsp/AGENTS.md) |
+| 127 | ✓ | [`packages/omo-codex/plugin/components/lsp/CHANGELOG.md`](packages/omo-codex/plugin/components/lsp/CHANGELOG.md) |
+| 128 | ✓ | [`packages/omo-codex/plugin/components/lsp/README.md`](packages/omo-codex/plugin/components/lsp/README.md) |
+| 129 | ✓ | [`packages/omo-codex/plugin/components/lsp/skills/lsp/SKILL.md`](packages/omo-codex/plugin/components/lsp/skills/lsp/SKILL.md) |
+| 130 | ✓ | [`packages/omo-codex/plugin/components/rules/AGENTS.md`](packages/omo-codex/plugin/components/rules/AGENTS.md) |
+| 131 | ✓ | [`packages/omo-codex/plugin/components/rules/CHANGELOG.md`](packages/omo-codex/plugin/components/rules/CHANGELOG.md) |
+| 132 | ✓ | [`packages/omo-codex/plugin/components/rules/README.md`](packages/omo-codex/plugin/components/rules/README.md) |
+| 133 | ✓ | [`packages/omo-codex/plugin/components/rules/skills/rules/SKILL.md`](packages/omo-codex/plugin/components/rules/skills/rules/SKILL.md) |
+| 134 | ✓ | [`packages/omo-codex/plugin/components/start-work-continuation/AGENTS.md`](packages/omo-codex/plugin/components/start-work-continuation/AGENTS.md) |
+| 135 | ✓ | [`packages/omo-codex/plugin/components/start-work-continuation/CHANGELOG.md`](packages/omo-codex/plugin/components/start-work-continuation/CHANGELOG.md) |
+| 136 | ✓ | [`packages/omo-codex/plugin/components/start-work-continuation/README.md`](packages/omo-codex/plugin/components/start-work-continuation/README.md) |
+| 137 | ✓ | [`packages/omo-codex/plugin/components/telemetry/AGENTS.md`](packages/omo-codex/plugin/components/telemetry/AGENTS.md) |
+| 138 | ✓ | [`packages/omo-codex/plugin/components/telemetry/README.md`](packages/omo-codex/plugin/components/telemetry/README.md) |
+| 139 | ✓ | [`packages/omo-codex/plugin/components/ultrawork/AGENTS.md`](packages/omo-codex/plugin/components/ultrawork/AGENTS.md) |
+| 140 | ✓ | [`packages/omo-codex/plugin/components/ultrawork/CHANGELOG.md`](packages/omo-codex/plugin/components/ultrawork/CHANGELOG.md) |
+| 141 | ✓ | [`packages/omo-codex/plugin/components/ultrawork/README.md`](packages/omo-codex/plugin/components/ultrawork/README.md) |
+| 142 | ✓ | [`packages/omo-codex/plugin/components/ultrawork/skills/ulw-plan/SKILL.md`](packages/omo-codex/plugin/components/ultrawork/skills/ulw-plan/SKILL.md) |
+| 143 | ✓ | [`packages/omo-codex/plugin/components/ulw-loop/AGENTS.md`](packages/omo-codex/plugin/components/ulw-loop/AGENTS.md) |
+| 144 | ✓ | [`packages/omo-codex/plugin/components/ulw-loop/CHANGELOG.md`](packages/omo-codex/plugin/components/ulw-loop/CHANGELOG.md) |
+| 145 | ✓ | [`packages/omo-codex/plugin/components/ulw-loop/README.md`](packages/omo-codex/plugin/components/ulw-loop/README.md) |
+| 146 | ✓ | [`packages/omo-codex/plugin/components/ulw-loop/skills/ulw-loop/SKILL.md`](packages/omo-codex/plugin/components/ulw-loop/skills/ulw-loop/SKILL.md) |
+| 147 | ✓ | [`packages/omo-codex/plugin/README.md`](packages/omo-codex/plugin/README.md) |
+| 148 | ✓ | [`packages/omo-codex/plugin/skills/comment-checker/SKILL.md`](packages/omo-codex/plugin/skills/comment-checker/SKILL.md) |
+| 149 | ✓ | [`packages/omo-codex/plugin/skills/debugging/SKILL.md`](packages/omo-codex/plugin/skills/debugging/SKILL.md) |
+| 150 | ✓ | [`packages/omo-codex/plugin/skills/frontend-ui-ux/SKILL.md`](packages/omo-codex/plugin/skills/frontend-ui-ux/SKILL.md) |
+| 151 | ✓ | [`packages/omo-codex/plugin/skills/git-master/SKILL.md`](packages/omo-codex/plugin/skills/git-master/SKILL.md) |
+| 152 | ✓ | [`packages/omo-codex/plugin/skills/init-deep/SKILL.md`](packages/omo-codex/plugin/skills/init-deep/SKILL.md) |
+| 153 | ✓ | [`packages/omo-codex/plugin/skills/lcx-contribute-bug-fix/SKILL.md`](packages/omo-codex/plugin/skills/lcx-contribute-bug-fix/SKILL.md) |
+| 154 | ✓ | [`packages/omo-codex/plugin/skills/lcx-doctor/SKILL.md`](packages/omo-codex/plugin/skills/lcx-doctor/SKILL.md) |
+| 155 | ✓ | [`packages/omo-codex/plugin/skills/lcx-report-bug/SKILL.md`](packages/omo-codex/plugin/skills/lcx-report-bug/SKILL.md) |
+| 156 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/bash/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/bash/README.md) |
+| 157 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/c-cpp/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/c-cpp/README.md) |
+| 158 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/csharp/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/csharp/README.md) |
+| 159 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/dart/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/dart/README.md) |
+| 160 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/elixir/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/elixir/README.md) |
+| 161 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/go/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/go/README.md) |
+| 162 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/haskell/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/haskell/README.md) |
+| 163 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/java/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/java/README.md) |
+| 164 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/julia/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/julia/README.md) |
+| 165 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/kotlin/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/kotlin/README.md) |
+| 166 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/lua/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/lua/README.md) |
+| 167 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/php/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/php/README.md) |
+| 168 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/python/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/python/README.md) |
+| 169 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/ruby/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/ruby/README.md) |
+| 170 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/rust/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/rust/README.md) |
+| 171 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/swift/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/swift/README.md) |
+| 172 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/terraform/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/terraform/README.md) |
+| 173 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/typescript/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/typescript/README.md) |
+| 174 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/yaml/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/yaml/README.md) |
+| 175 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/references/zig/README.md`](packages/omo-codex/plugin/skills/lsp-setup/references/zig/README.md) |
+| 176 | ✓ | [`packages/omo-codex/plugin/skills/lsp-setup/SKILL.md`](packages/omo-codex/plugin/skills/lsp-setup/SKILL.md) |
+| 177 | ✓ | [`packages/omo-codex/plugin/skills/lsp/SKILL.md`](packages/omo-codex/plugin/skills/lsp/SKILL.md) |
+| 178 | ✓ | [`packages/omo-codex/plugin/skills/programming/references/go/README.md`](packages/omo-codex/plugin/skills/programming/references/go/README.md) |
+| 179 | ✓ | [`packages/omo-codex/plugin/skills/programming/references/python/README.md`](packages/omo-codex/plugin/skills/programming/references/python/README.md) |
+| 180 | ✓ | [`packages/omo-codex/plugin/skills/programming/references/rust-ub/README.md`](packages/omo-codex/plugin/skills/programming/references/rust-ub/README.md) |
+| 181 | ✓ | [`packages/omo-codex/plugin/skills/programming/references/rust/README.md`](packages/omo-codex/plugin/skills/programming/references/rust/README.md) |
+| 182 | ✓ | [`packages/omo-codex/plugin/skills/programming/references/typescript/README.md`](packages/omo-codex/plugin/skills/programming/references/typescript/README.md) |
+| 183 | ✓ | [`packages/omo-codex/plugin/skills/programming/SKILL.md`](packages/omo-codex/plugin/skills/programming/SKILL.md) |
+| 184 | ✓ | [`packages/omo-codex/plugin/skills/refactor/SKILL.md`](packages/omo-codex/plugin/skills/refactor/SKILL.md) |
+| 185 | ✓ | [`packages/omo-codex/plugin/skills/remove-ai-slops/SKILL.md`](packages/omo-codex/plugin/skills/remove-ai-slops/SKILL.md) |
+| 186 | ✓ | [`packages/omo-codex/plugin/skills/review-work/SKILL.md`](packages/omo-codex/plugin/skills/review-work/SKILL.md) |
+| 187 | ✓ | [`packages/omo-codex/plugin/skills/rules/SKILL.md`](packages/omo-codex/plugin/skills/rules/SKILL.md) |
+| 188 | ✓ | [`packages/omo-codex/plugin/skills/start-work/SKILL.md`](packages/omo-codex/plugin/skills/start-work/SKILL.md) |
+| 189 | ✓ | [`packages/omo-codex/plugin/skills/ultraresearch/SKILL.md`](packages/omo-codex/plugin/skills/ultraresearch/SKILL.md) |
+| 190 | ✓ | [`packages/omo-codex/plugin/skills/ulw-loop/SKILL.md`](packages/omo-codex/plugin/skills/ulw-loop/SKILL.md) |
+| 191 | ✓ | [`packages/omo-codex/plugin/skills/ulw-plan/SKILL.md`](packages/omo-codex/plugin/skills/ulw-plan/SKILL.md) |
+| 192 | ✓ | [`packages/omo-codex/plugin/skills/visual-qa/SKILL.md`](packages/omo-codex/plugin/skills/visual-qa/SKILL.md) |
+| 193 | ✓ | [`packages/omo-codex/README.md`](packages/omo-codex/README.md) |
+| 194 | ✓ | [`packages/omo-opencode/src/__tests__/AGENTS.md`](packages/omo-opencode/src/__tests__/AGENTS.md) |
+| 195 | ✓ | [`packages/omo-opencode/src/__tests__/perf/fixtures/in-tree/AGENTS.md`](packages/omo-opencode/src/__tests__/perf/fixtures/in-tree/AGENTS.md) |
+| 196 | ✓ | [`packages/omo-opencode/src/__tests__/perf/fixtures/in-tree/packages/pkg-one/AGENTS.md`](packages/omo-opencode/src/__tests__/perf/fixtures/in-tree/packages/pkg-one/AGENTS.md) |
+| 197 | ✓ | [`packages/omo-opencode/src/__tests__/perf/fixtures/in-tree/src/AGENTS.md`](packages/omo-opencode/src/__tests__/perf/fixtures/in-tree/src/AGENTS.md) |
+| 198 | ✓ | [`packages/omo-opencode/src/AGENTS.md`](packages/omo-opencode/src/AGENTS.md) |
+| 199 | ✓ | [`packages/omo-opencode/src/agents/AGENTS.md`](packages/omo-opencode/src/agents/AGENTS.md) |
+| 200 | ✓ | [`packages/omo-opencode/src/agents/atlas/AGENTS.md`](packages/omo-opencode/src/agents/atlas/AGENTS.md) |
+| 201 | ✓ | [`packages/omo-opencode/src/agents/builtin-agents/AGENTS.md`](packages/omo-opencode/src/agents/builtin-agents/AGENTS.md) |
+| 202 | ✓ | [`packages/omo-opencode/src/agents/hephaestus/AGENTS.md`](packages/omo-opencode/src/agents/hephaestus/AGENTS.md) |
+| 203 | ✓ | [`packages/omo-opencode/src/agents/prometheus/AGENTS.md`](packages/omo-opencode/src/agents/prometheus/AGENTS.md) |
+| 204 | ✓ | [`packages/omo-opencode/src/agents/sisyphus-junior/AGENTS.md`](packages/omo-opencode/src/agents/sisyphus-junior/AGENTS.md) |
+| 205 | ✓ | [`packages/omo-opencode/src/agents/sisyphus/AGENTS.md`](packages/omo-opencode/src/agents/sisyphus/AGENTS.md) |
+| 206 | ✓ | [`packages/omo-opencode/src/cli/AGENTS.md`](packages/omo-opencode/src/cli/AGENTS.md) |
+| 207 | ✓ | [`packages/omo-opencode/src/cli/config-manager/AGENTS.md`](packages/omo-opencode/src/cli/config-manager/AGENTS.md) |
+| 208 | ✓ | [`packages/omo-opencode/src/cli/doctor/AGENTS.md`](packages/omo-opencode/src/cli/doctor/AGENTS.md) |
+| 209 | ✓ | [`packages/omo-opencode/src/cli/install-codex/AGENTS.md`](packages/omo-opencode/src/cli/install-codex/AGENTS.md) |
+| 210 | ✓ | [`packages/omo-opencode/src/cli/run/AGENTS.md`](packages/omo-opencode/src/cli/run/AGENTS.md) |
+| 211 | ✓ | [`packages/omo-opencode/src/config/AGENTS.md`](packages/omo-opencode/src/config/AGENTS.md) |
+| 212 | ✓ | [`packages/omo-opencode/src/features/AGENTS.md`](packages/omo-opencode/src/features/AGENTS.md) |
+| 213 | ✓ | [`packages/omo-opencode/src/features/background-agent/AGENTS.md`](packages/omo-opencode/src/features/background-agent/AGENTS.md) |
+| 214 | ✓ | [`packages/omo-opencode/src/features/boulder-state/AGENTS.md`](packages/omo-opencode/src/features/boulder-state/AGENTS.md) |
+| 215 | ✓ | [`packages/omo-opencode/src/features/builtin-commands/AGENTS.md`](packages/omo-opencode/src/features/builtin-commands/AGENTS.md) |
+| 216 | ✓ | [`packages/omo-opencode/src/features/builtin-skills/agent-browser/SKILL.md`](packages/omo-opencode/src/features/builtin-skills/agent-browser/SKILL.md) |
+| 217 | ✓ | [`packages/omo-opencode/src/features/builtin-skills/AGENTS.md`](packages/omo-opencode/src/features/builtin-skills/AGENTS.md) |
+| 218 | ✓ | [`packages/omo-opencode/src/features/builtin-skills/dev-browser/references/installation.md`](packages/omo-opencode/src/features/builtin-skills/dev-browser/references/installation.md) |
+| 219 | ✓ | [`packages/omo-opencode/src/features/builtin-skills/dev-browser/SKILL.md`](packages/omo-opencode/src/features/builtin-skills/dev-browser/SKILL.md) |
+| 220 | ✓ | [`packages/omo-opencode/src/features/builtin-skills/frontend-ui-ux/SKILL.md`](packages/omo-opencode/src/features/builtin-skills/frontend-ui-ux/SKILL.md) |
+| 221 | ✓ | [`packages/omo-opencode/src/features/builtin-skills/git-master/SKILL.md`](packages/omo-opencode/src/features/builtin-skills/git-master/SKILL.md) |
+| 222 | ✓ | [`packages/omo-opencode/src/features/builtin-skills/security-research/SKILL.md`](packages/omo-opencode/src/features/builtin-skills/security-research/SKILL.md) |
+| 223 | ✓ | [`packages/omo-opencode/src/features/claude-code-agent-loader/AGENTS.md`](packages/omo-opencode/src/features/claude-code-agent-loader/AGENTS.md) |
+| 224 | ✓ | [`packages/omo-opencode/src/features/claude-code-mcp-loader/AGENTS.md`](packages/omo-opencode/src/features/claude-code-mcp-loader/AGENTS.md) |
+| 225 | ✓ | [`packages/omo-opencode/src/features/claude-code-plugin-loader/AGENTS.md`](packages/omo-opencode/src/features/claude-code-plugin-loader/AGENTS.md) |
+| 226 | ✓ | [`packages/omo-opencode/src/features/claude-tasks/AGENTS.md`](packages/omo-opencode/src/features/claude-tasks/AGENTS.md) |
+| 227 | ✓ | [`packages/omo-opencode/src/features/mcp-oauth/AGENTS.md`](packages/omo-opencode/src/features/mcp-oauth/AGENTS.md) |
+| 228 | ✓ | [`packages/omo-opencode/src/features/opencode-skill-loader/AGENTS.md`](packages/omo-opencode/src/features/opencode-skill-loader/AGENTS.md) |
+| 229 | ✓ | [`packages/omo-opencode/src/features/skill-mcp-manager/AGENTS.md`](packages/omo-opencode/src/features/skill-mcp-manager/AGENTS.md) |
+| 230 | ✓ | [`packages/omo-opencode/src/features/team-mode/AGENTS.md`](packages/omo-opencode/src/features/team-mode/AGENTS.md) |
+| 231 | ✓ | [`packages/omo-opencode/src/features/tmux-subagent/AGENTS.md`](packages/omo-opencode/src/features/tmux-subagent/AGENTS.md) |
+| 232 | ✓ | [`packages/omo-opencode/src/hooks/AGENTS.md`](packages/omo-opencode/src/hooks/AGENTS.md) |
+| 233 | ✓ | [`packages/omo-opencode/src/hooks/anthropic-context-window-limit-recovery/AGENTS.md`](packages/omo-opencode/src/hooks/anthropic-context-window-limit-recovery/AGENTS.md) |
+| 234 | ✓ | [`packages/omo-opencode/src/hooks/atlas/AGENTS.md`](packages/omo-opencode/src/hooks/atlas/AGENTS.md) |
+| 235 | ✓ | [`packages/omo-opencode/src/hooks/auto-update-checker/AGENTS.md`](packages/omo-opencode/src/hooks/auto-update-checker/AGENTS.md) |
+| 236 | ✓ | [`packages/omo-opencode/src/hooks/claude-code-hooks/AGENTS.md`](packages/omo-opencode/src/hooks/claude-code-hooks/AGENTS.md) |
+| 237 | ✓ | [`packages/omo-opencode/src/hooks/comment-checker/AGENTS.md`](packages/omo-opencode/src/hooks/comment-checker/AGENTS.md) |
+| 238 | ✓ | [`packages/omo-opencode/src/hooks/compaction-context-injector/AGENTS.md`](packages/omo-opencode/src/hooks/compaction-context-injector/AGENTS.md) |
+| 239 | ✓ | [`packages/omo-opencode/src/hooks/keyword-detector/AGENTS.md`](packages/omo-opencode/src/hooks/keyword-detector/AGENTS.md) |
+| 240 | ✓ | [`packages/omo-opencode/src/hooks/ralph-loop/AGENTS.md`](packages/omo-opencode/src/hooks/ralph-loop/AGENTS.md) |
+| 241 | ✓ | [`packages/omo-opencode/src/hooks/rules-injector/AGENTS.md`](packages/omo-opencode/src/hooks/rules-injector/AGENTS.md) |
+| 242 | ✓ | [`packages/omo-opencode/src/hooks/runtime-fallback/AGENTS.md`](packages/omo-opencode/src/hooks/runtime-fallback/AGENTS.md) |
+| 243 | ✓ | [`packages/omo-opencode/src/hooks/todo-continuation-enforcer/AGENTS.md`](packages/omo-opencode/src/hooks/todo-continuation-enforcer/AGENTS.md) |
+| 244 | ✓ | [`packages/omo-opencode/src/mcp/AGENTS.md`](packages/omo-opencode/src/mcp/AGENTS.md) |
+| 245 | ✓ | [`packages/omo-opencode/src/openclaw/AGENTS.md`](packages/omo-opencode/src/openclaw/AGENTS.md) |
+| 246 | ✓ | [`packages/omo-opencode/src/plugin-handlers/AGENTS.md`](packages/omo-opencode/src/plugin-handlers/AGENTS.md) |
+| 247 | ✓ | [`packages/omo-opencode/src/plugin/AGENTS.md`](packages/omo-opencode/src/plugin/AGENTS.md) |
+| 248 | ✓ | [`packages/omo-opencode/src/shared/AGENTS.md`](packages/omo-opencode/src/shared/AGENTS.md) |
+| 249 | ✓ | [`packages/omo-opencode/src/tools/AGENTS.md`](packages/omo-opencode/src/tools/AGENTS.md) |
+| 250 | ✓ | [`packages/omo-opencode/src/tools/background-task/AGENTS.md`](packages/omo-opencode/src/tools/background-task/AGENTS.md) |
+| 251 | ✓ | [`packages/omo-opencode/src/tools/call-omo-agent/AGENTS.md`](packages/omo-opencode/src/tools/call-omo-agent/AGENTS.md) |
+| 252 | ✓ | [`packages/omo-opencode/src/tools/delegate-task/AGENTS.md`](packages/omo-opencode/src/tools/delegate-task/AGENTS.md) |
+| 253 | ✓ | [`packages/omo-opencode/src/tools/hashline-edit/AGENTS.md`](packages/omo-opencode/src/tools/hashline-edit/AGENTS.md) |
+| 254 | ✓ | [`packages/omo-opencode/src/tools/look-at/AGENTS.md`](packages/omo-opencode/src/tools/look-at/AGENTS.md) |
+| 255 | ✓ | [`packages/omo-opencode/src/tools/skill/AGENTS.md`](packages/omo-opencode/src/tools/skill/AGENTS.md) |
+| 256 | ✓ | [`packages/prompts-core/prompts/atlas/gemini.md`](packages/prompts-core/prompts/atlas/gemini.md) |
+| 257 | ✓ | [`packages/prompts-core/prompts/prometheus/gemini.md`](packages/prompts-core/prompts/prometheus/gemini.md) |
+| 258 | ✓ | [`packages/prompts-core/prompts/ultrawork/gemini.md`](packages/prompts-core/prompts/ultrawork/gemini.md) |
+| 259 | ✓ | [`packages/shared-skills/skills/debugging/SKILL.md`](packages/shared-skills/skills/debugging/SKILL.md) |
+| 260 | ✓ | [`packages/shared-skills/skills/frontend-ui-ux/SKILL.md`](packages/shared-skills/skills/frontend-ui-ux/SKILL.md) |
+| 261 | ✓ | [`packages/shared-skills/skills/git-master/SKILL.md`](packages/shared-skills/skills/git-master/SKILL.md) |
+| 262 | ✓ | [`packages/shared-skills/skills/init-deep/SKILL.md`](packages/shared-skills/skills/init-deep/SKILL.md) |
+| 263 | ✓ | [`packages/shared-skills/skills/lcx-contribute-bug-fix/SKILL.md`](packages/shared-skills/skills/lcx-contribute-bug-fix/SKILL.md) |
+| 264 | ✓ | [`packages/shared-skills/skills/lcx-doctor/SKILL.md`](packages/shared-skills/skills/lcx-doctor/SKILL.md) |
+| 265 | ✓ | [`packages/shared-skills/skills/lcx-report-bug/SKILL.md`](packages/shared-skills/skills/lcx-report-bug/SKILL.md) |
+| 266 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/bash/README.md`](packages/shared-skills/skills/lsp-setup/references/bash/README.md) |
+| 267 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/c-cpp/README.md`](packages/shared-skills/skills/lsp-setup/references/c-cpp/README.md) |
+| 268 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/csharp/README.md`](packages/shared-skills/skills/lsp-setup/references/csharp/README.md) |
+| 269 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/dart/README.md`](packages/shared-skills/skills/lsp-setup/references/dart/README.md) |
+| 270 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/elixir/README.md`](packages/shared-skills/skills/lsp-setup/references/elixir/README.md) |
+| 271 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/go/README.md`](packages/shared-skills/skills/lsp-setup/references/go/README.md) |
+| 272 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/haskell/README.md`](packages/shared-skills/skills/lsp-setup/references/haskell/README.md) |
+| 273 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/java/README.md`](packages/shared-skills/skills/lsp-setup/references/java/README.md) |
+| 274 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/julia/README.md`](packages/shared-skills/skills/lsp-setup/references/julia/README.md) |
+| 275 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/kotlin/README.md`](packages/shared-skills/skills/lsp-setup/references/kotlin/README.md) |
+| 276 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/lua/README.md`](packages/shared-skills/skills/lsp-setup/references/lua/README.md) |
+| 277 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/php/README.md`](packages/shared-skills/skills/lsp-setup/references/php/README.md) |
+| 278 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/python/README.md`](packages/shared-skills/skills/lsp-setup/references/python/README.md) |
+| 279 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/ruby/README.md`](packages/shared-skills/skills/lsp-setup/references/ruby/README.md) |
+| 280 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/rust/README.md`](packages/shared-skills/skills/lsp-setup/references/rust/README.md) |
+| 281 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/swift/README.md`](packages/shared-skills/skills/lsp-setup/references/swift/README.md) |
+| 282 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/terraform/README.md`](packages/shared-skills/skills/lsp-setup/references/terraform/README.md) |
+| 283 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/typescript/README.md`](packages/shared-skills/skills/lsp-setup/references/typescript/README.md) |
+| 284 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/yaml/README.md`](packages/shared-skills/skills/lsp-setup/references/yaml/README.md) |
+| 285 | ✓ | [`packages/shared-skills/skills/lsp-setup/references/zig/README.md`](packages/shared-skills/skills/lsp-setup/references/zig/README.md) |
+| 286 | ✓ | [`packages/shared-skills/skills/lsp-setup/SKILL.md`](packages/shared-skills/skills/lsp-setup/SKILL.md) |
+| 287 | ✓ | [`packages/shared-skills/skills/programming/references/go/README.md`](packages/shared-skills/skills/programming/references/go/README.md) |
+| 288 | ✓ | [`packages/shared-skills/skills/programming/references/python/README.md`](packages/shared-skills/skills/programming/references/python/README.md) |
+| 289 | ✓ | [`packages/shared-skills/skills/programming/references/rust-ub/README.md`](packages/shared-skills/skills/programming/references/rust-ub/README.md) |
+| 290 | ✓ | [`packages/shared-skills/skills/programming/references/rust/README.md`](packages/shared-skills/skills/programming/references/rust/README.md) |
+| 291 | ✓ | [`packages/shared-skills/skills/programming/references/typescript/README.md`](packages/shared-skills/skills/programming/references/typescript/README.md) |
+| 292 | ✓ | [`packages/shared-skills/skills/programming/SKILL.md`](packages/shared-skills/skills/programming/SKILL.md) |
+| 293 | ✓ | [`packages/shared-skills/skills/refactor/SKILL.md`](packages/shared-skills/skills/refactor/SKILL.md) |
+| 294 | ✓ | [`packages/shared-skills/skills/remove-ai-slops/SKILL.md`](packages/shared-skills/skills/remove-ai-slops/SKILL.md) |
+| 295 | ✓ | [`packages/shared-skills/skills/review-work/SKILL.md`](packages/shared-skills/skills/review-work/SKILL.md) |
+| 296 | ✓ | [`packages/shared-skills/skills/start-work/SKILL.md`](packages/shared-skills/skills/start-work/SKILL.md) |
+| 297 | ✓ | [`packages/shared-skills/skills/ultraresearch/SKILL.md`](packages/shared-skills/skills/ultraresearch/SKILL.md) |
+| 298 | ✓ | [`packages/shared-skills/skills/visual-qa/SKILL.md`](packages/shared-skills/skills/visual-qa/SKILL.md) |
+| 299 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
+| 300 | ✓ | [`script/AGENTS.md`](script/AGENTS.md) |
+| 301 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 302 | → | [`docs/guide/installation.md`](docs/guide/installation.md) |
+| 303 | → | [`docs/guide/orchestration.md`](docs/guide/orchestration.md) |
+| 304 | → | [`docs/guide/overview.md`](docs/guide/overview.md) |
+| 305 | → | [`docs/guide/team-mode.md`](docs/guide/team-mode.md) |
+| 306 | → | [`docs/legal/privacy-policy.md`](docs/legal/privacy-policy.md) |
+| 307 | → | [`docs/legal/terms-of-service.md`](docs/legal/terms-of-service.md) |
+| 308 | → | [`docs/manifesto.md`](docs/manifesto.md) |
+| 309 | → | [`docs/reference/configuration.md`](docs/reference/configuration.md) |
+| 310 | → | [`docs/reference/features.md`](docs/reference/features.md) |
+| 311 | → | [`docs/reference/lazycodex-npm-reservation.md`](docs/reference/lazycodex-npm-reservation.md) |
+| 312 | → | [`docs/reference/prompt-async-gate-rfc.md`](docs/reference/prompt-async-gate-rfc.md) |
+| 313 | → | [`docs/reference/release-process.md`](docs/reference/release-process.md) |
+| 314 | → | [`README.ja.md`](README.ja.md) |
+| 315 | → | [`README.ko.md`](README.ko.md) |
+| 316 | → | [`README.md`](README.md) |
+| 317 | → | [`README.ru.md`](README.ru.md) |
+| 318 | → | [`README.zh-cn.md`](README.zh-cn.md) |
+| 319 | → | [`ROADMAP.md`](ROADMAP.md) |
 
 ---
 

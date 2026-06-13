@@ -50,7 +50,7 @@ This template applies to businesses that don't fit neatly into SaaS, local servi
 | About | Organization, AboutPage |
 | Contact | ContactPage |
 | Blog | Article, BlogPosting |
-| FAQ | (FAQPage only for gov/health) |
+| FAQ | QAPage for genuine Q&A; FAQPage no longer yields rich results (retired May 2026) but still aids AI citation |
 | Product/Service | Product or Service |
 
 ## Content Quality Standards

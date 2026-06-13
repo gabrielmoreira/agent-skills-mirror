@@ -2089,6 +2089,34 @@ def test_prefilter_score_capped_at_100():
     assert score <= 100
 
 
+def test_prefilter_stable_quote_volume_fallback():
+    """Regression: /stable quote has no `avgVolume`; fall back to `volume`.
+
+    Without the fallback the < 200k liquidity check rejected the entire
+    universe (every avg_volume read as 0).
+    """
+    # /stable shape: no avgVolume, liquid `volume` -> must pass.
+    stable_liquid = {"price": 300.0, "yearLow": 100.0, "yearHigh": 310.0, "volume": 5_000_000}
+    passed, _ = pre_filter_stock(stable_liquid)
+    assert passed is True
+
+    # /stable shape with illiquid session volume -> correctly rejected.
+    stable_illiquid = {"price": 300.0, "yearLow": 100.0, "yearHigh": 310.0, "volume": 50_000}
+    passed, _ = pre_filter_stock(stable_illiquid)
+    assert passed is False
+
+    # v3 `avgVolume` still takes priority when present.
+    v3_quote = {
+        "price": 300.0,
+        "yearLow": 100.0,
+        "yearHigh": 310.0,
+        "avgVolume": 500_000,
+        "volume": 10,
+    }
+    passed, _ = pre_filter_stock(v3_quote)
+    assert passed is True
+
+
 def test_below_stop_report_shows_stop_violated():
     """BELOW STOP LEVEL should show 'STOP VIOLATED' in report, not buy guidance."""
     stock = {

@@ -1882,7 +1882,7 @@
       "has_demo": true,
       "demo_command": "python skills/nfcore-rnaseq-wrapper/pipeline_source.py --demo",
       "dependencies": [
-        "python>=3.11"
+        "python>=3.10"
       ],
       "tags": [
         "rnaseq",

@@ -2,7 +2,7 @@ import path from "node:path";
 import process from "node:process";
 import { homedir } from "node:os";
 import { fileURLToPath } from "node:url";
-import { access, mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, rename, stat, writeFile } from "node:fs/promises";
 import type {
   BatchFile,
   BatchTaskInput,
@@ -563,11 +563,25 @@ async function exists(filePath: string): Promise<boolean> {
   }
 }
 
+export async function ensureDir(dir: string): Promise<void> {
+  try {
+    await mkdir(dir, { recursive: true });
+  } catch (err) {
+    // Bun on Windows incorrectly throws EEXIST for mkdir(dir, { recursive: true })
+    // when the directory already exists, contradicting Node's documented contract
+    // (mkdir with recursive: true resolves silently for an existing directory).
+    // Tolerate EEXIST only when the path really is a directory; rethrow otherwise
+    // (e.g. EEXIST raised because the path points at an existing file).
+    if ((err as { code?: string }).code !== "EEXIST") throw err;
+    if (!(await stat(dir)).isDirectory()) throw err;
+  }
+}
+
 async function migrateLegacyExtendConfig(cwd: string, home: string): Promise<void> {
   for (const { current, legacy } of getExtendConfigPathPairs(cwd, home)) {
     const [hasCurrent, hasLegacy] = await Promise.all([exists(current), exists(legacy)]);
     if (hasCurrent || !hasLegacy) continue;
-    await mkdir(path.dirname(current), { recursive: true });
+    await ensureDir(path.dirname(current));
     await rename(legacy, current);
   }
 }
@@ -1049,7 +1063,7 @@ async function prepareBatchTasks(
 }
 
 async function writeImage(outputPath: string, imageData: Uint8Array): Promise<void> {
-  await mkdir(path.dirname(outputPath), { recursive: true });
+  await ensureDir(path.dirname(outputPath));
   await writeFile(outputPath, imageData);
 }
 

@@ -4,7 +4,7 @@ disable-model-invocation: false
 effort: high
 name: yeet
 user-invocable: true
-description: This skill should be used when the user asks to create or update a GitHub PR, file or update an issue, post a comment, or start a discussion. Trigger phrases include "create PR", "open PR", "file an issue", "update issue", "yeet a PR/issue/discussion", "comment on an issue".
+description: 'Use for GitHub PR/issue/discussion workflows: create/update PRs or issues, post comments, start discussions; triggers include create/open PR, file/update issue, yeet.'
 ---
 
 # GitHub Contribution Workflows

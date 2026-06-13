@@ -34,7 +34,7 @@ Color hooks require the most judgment (context-dependent selection). Non-color h
 # Workflow
 
 ```
-1. Run SLDS linter with auto-fix -> Handles simple violations automatically
+1. **REQUIRED — ALWAYS run first:** npx @salesforce-ux/slds-linter@latest lint --fix . — NEVER skip this step. This handles simple violations automatically.
 2. Review linter output -> Identify remaining manual fixes needed
 3. Fix by violation type -> Use per-rule reference guides
 4. Choose the right hook -> Context-first, inspect HTML before deciding
@@ -42,6 +42,7 @@ Color hooks require the most judgment (context-dependent selection). Non-color h
 ```
 
 ## Step 1: Run SLDS Linter
+MANDATORY: This step is NOT optional.
 
 ```bash
 npx @salesforce-ux/slds-linter@latest lint --fix .
@@ -114,7 +115,7 @@ See [rule-no-slds-class-overrides.md](references/rule-no-slds-class-overrides.md
 
 ## Step 4: Choose the Right Hook
 
-**Color hooks** require context-based selection — inspect the HTML to determine the element's role before choosing a hook family. See **[color-hooks-decision-guide.md](references/color-hooks-decision-guide.md)** for decision trees, all 5 hook families, and background-foreground pairing rules.
+**Color hooks** require context-based selection. **REQUIRED: When any violation involves a color property (`color`, `background-color`, `background`, `fill`, `border-color`), you MUST read [color-hooks-decision-guide.md](references/color-hooks-decision-guide.md) BEFORE choosing a hook.** The linter lists possible hooks in no particular order — do NOT pick the first suggestion. The guide contains property-based rules that determine the correct hook.
 
 **Non-color hooks** are simpler — match the CSS value to the numbered scale. See **[non-color-hooks-decision-guide.md](references/non-color-hooks-decision-guide.md)** for value-to-hook lookup tables covering spacing, sizing, typography, borders, radius, and shadows.
 

@@ -98,6 +98,24 @@ get_node({nodeType: "nodes-base.slack", mode: "docs"})
 
 **Common pattern**: iterative updates (56s average between edits)
 
+### Critical: Node JSON Hygiene When Creating Workflows
+
+Three structural mistakes in generated node JSON break the n8n UI even when the workflow validates:
+
+1. **Never emit a `credentials` block with a placeholder ID.** A fake ID like `"id": "REPLACE_ME"` renders the credential selector permanently disabled and non-clickable in the n8n UI ("No credentials yet") — the user has to recreate the node from scratch. If you don't know the real credential ID, **omit the `credentials` block entirely**; an absent block shows a normal empty dropdown the user can click. Use `n8n_manage_credentials({action: "list"})` to discover real credential IDs first.
+
+```javascript
+// ❌ Breaks the credential selector
+"credentials": {"httpHeaderAuth": {"id": "REPLACE_ME", "name": "My API Key"}}
+
+// ✅ Unknown ID → omit credentials block; user picks in UI
+// ✅ Known ID (from n8n_manage_credentials list) → use the real ID
+```
+
+2. **Generate UUID v4 values for node `id`** — not human-readable strings like `"http-list-node"`. n8n's frontend uses node IDs for form binding and credential component initialization; non-UUID IDs cause subtle UI breakage.
+
+3. **Use the current `typeVersion`** for each node — check `get_node` rather than hardcoding remembered versions (e.g. httpRequest is at 4.4+, not 4.2).
+
 ---
 
 ## Critical: nodeType Formats
@@ -568,6 +586,12 @@ n8n_generate_workflow({
 
 ## Data Table Management
 
+> **Two surfaces, don't confuse them:**
+> - **`n8n_manage_datatable` (below)** — MCP tool for managing tables and rows from *outside* a workflow (e.g. creating tables during workflow scaffolding, seeding data, or inspecting state from Claude). Covered here.
+> - **`nodes-base.dataTable` node** — the in-workflow node you drop into a workflow to read/write rows *during execution*. For its parameter shapes, operation values, filter syntax, and gotchas (e.g. the `deleteRows` reserved-word workaround, the `id isNotEmpty` trick for "all rows"), see [n8n-node-configuration → OPERATION_PATTERNS.md → Storage Nodes → Data Table](../n8n-node-configuration/OPERATION_PATTERNS.md#data-table-nodes-basedatatable).
+>
+> Rule of thumb: use the MCP tool to set up a table once and the workflow node to read/write rows on every execution.
+
 ### n8n_manage_datatable
 
 Unified tool for managing n8n data tables and rows. Supports CRUD operations on tables and rows with filtering, pagination, and dry-run support.
@@ -780,12 +804,10 @@ tools_documentation({topic: "python_code_node_guide", depth: "full"})
 ### AI Agent Guide
 
 ```javascript
-// Comprehensive AI workflow guide
-ai_agents_guide()
-// Returns: Architecture, connections, tools, validation, best practices
-
-// Or via tools_documentation
+// Comprehensive AI workflow guide — accessed via tools_documentation
+// (there is no standalone ai_agents_guide tool)
 tools_documentation({topic: "ai_agents_guide", depth: "full"})
+// Returns: Architecture, connections, tools, validation, best practices
 ```
 
 ### Health Check
@@ -807,7 +829,7 @@ n8n_health_check({mode: "diagnostic"})
 - search_nodes, get_node
 - validate_node, validate_workflow
 - search_templates, get_template
-- tools_documentation, ai_agents_guide
+- tools_documentation (includes the ai_agents_guide topic)
 
 **Requires n8n API** (N8N_API_URL + N8N_API_KEY):
 - n8n_create_workflow
@@ -939,7 +961,7 @@ validate_node({nodeType: "nodes-base.webhook", config: {}, mode: "minimal"})
 9. **Data tables** managed with `n8n_manage_datatable` (CRUD + filtering)
 10. **Credentials** managed with `n8n_manage_credentials` (CRUD + schema discovery)
 11. **Security audits** via `n8n_audit_instance` (built-in + custom deep scan)
-12. **AI agent guide** available via `ai_agents_guide()` tool
+12. **AI agent guide** available via `tools_documentation({topic: "ai_agents_guide", depth: "full"})`
 
 **Common Workflow**:
 1. search_nodes → find node

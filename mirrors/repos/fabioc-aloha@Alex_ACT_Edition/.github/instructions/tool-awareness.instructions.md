@@ -25,13 +25,17 @@ For common deferred tool categories and search-query patterns, see [tool-awarene
 
 In remote or virtual-filesystem workspaces (GitHub.dev, VS Code Remote, Codespaces), the editor provides codebase context automatically. `semantic_search` and file operations work transparently — no agent action needed.
 
-## VS Code 1.122 conveniences
+## VS Code 1.122–1.124 conveniences
 
-| Capability | What it changes for me |
-|---|---|
-| `/models` slash command | Opens the model picker from chat input. Useful when the user asks to switch models mid-task without leaving chat. |
-| BYOK air-gapped | Bring Your Own Key models work without GitHub authentication. Heirs in regulated/enterprise contexts can run Copilot Chat fully offline; the BYOK token counter (introduced 1.120) keeps working. |
-| Local agent host default-on (Insiders only) | Watchpoint: when this reaches Stable, deferred-tool resolution may shift. No action until first observed behavior change. |
+| Release | Capability | What it changes for me |
+|---|---|---|
+| 1.122 | `/models` slash command | Opens the model picker from chat input. Useful when the user asks to switch models mid-task without leaving chat. |
+| 1.122 | BYOK air-gapped | Bring Your Own Key models work without GitHub authentication. Heirs in regulated/enterprise contexts can run Copilot Chat fully offline; the BYOK token counter (introduced 1.120) keeps working. |
+| 1.122 | Local agent host default-on (Insiders only) | Watchpoint: when this reaches Stable, deferred-tool resolution may shift. No action until first observed behavior change. |
+| 1.123 | Session sync + `/chronicle` | Chat sessions auto-sync to the GitHub account (gated by `chat.sessionSync.enabled`, org-managed). The `/chronicle` slash command queries that history. The brain's own `chronicle` skill is local-only; the platform feature is an adjacent capability, not a replacement. |
+| 1.123 | Sandbox network-retry | When a local-agent terminal command needs an unallowed domain, VS Code auto-retries inside the sandbox with unrestricted network before falling back to unsandboxed (`chat.agent.sandbox.retryWithAllowNetworkRequests`). Reduces spurious failures on `git fetch` / `npm install`. |
+| 1.124 | Autopilot enabled by default | Autopilot Preview is now on by default; `chat.permissions.default` controls the per-workspace level. ACT's heir-workspace baseline pins `default` as the deliberate opt-out — see `heir-workspace-settings-baseline.json`. |
+| 1.124 | Advanced Autopilot (opt-in) | `chat.autopilot.advanced.enabled` uses a utility model to judge when a task is truly done. Capped at 3 iterations. Off by default; opt-in only. |
 
 ## Skill Picker Surfacing (VS Code 1.118+)
 

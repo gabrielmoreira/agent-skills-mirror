@@ -4,12 +4,12 @@ description: >
   Detect, validate, and generate Schema.org structured data. JSON-LD format
   preferred. Use when user says "schema", "structured data", "rich results",
   "JSON-LD", or "markup".
-user-invokable: true
+user-invocable: true
 argument-hint: "[url]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "2.0.0"
+  version: "2.2.0"
   category: seo
 ---
 
@@ -35,7 +35,7 @@ metadata:
   - Invalid date formats
 - Flag deprecated types (see below)
 
-## Schema Type Status (as of Feb 2026)
+## Schema Type Status (as of May 2026)
 
 Read `references/schema-types.md` for the full list. Key rules:
 
@@ -49,8 +49,8 @@ See `schema/templates.json` for ready-to-use JSON-LD templates for these types.
 
 > **JSON-LD and JavaScript rendering:** Per Google's December 2025 JS SEO guidance, structured data injected via JavaScript may face delayed processing. For time-sensitive markup (especially Product, Offer), include JSON-LD in the initial server-rendered HTML.
 
-### RESTRICTED (only for specific sites):
-- **FAQ**: ONLY for government and healthcare authority sites (restricted Aug 2023)
+### NO RICH RESULTS — KEEP FOR AI:
+- **FAQPage**: Google retired FAQ rich results for ALL sites on May 7, 2026 (supersedes the Aug 2023 gov/health restriction). No SERP feature anymore — but flag existing FAQPage at Info (not Critical), since the markup still aids AI Mode / AI Overviews entity resolution. For genuine user Q&A pages, use **QAPage**.
 
 ### DEPRECATED (never recommend):
 - **HowTo**: Rich results removed September 2023

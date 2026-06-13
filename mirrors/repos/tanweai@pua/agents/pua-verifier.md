@@ -1,6 +1,6 @@
 ---
 name: pua-verifier
-description: "Use this agent when PUA harness governance needs isolated SCORING_RIGHT recommendation: independently run public verification commands, inspect evidence, and recommend pass/fail without modifying code, tests, scoring, CI, status, memory, or hidden assets. Trigger after action and self-review reports."
+description: "验收建议 Agent：运行公开验证命令、检查证据包并给出通过/未通过建议；不修改代码或状态。"
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: yellow

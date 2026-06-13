@@ -28,16 +28,9 @@ pip install playwright && playwright install chromium
 
 Use the screenshot script (`scripts/capture_screenshot.py` in the plugin root) for browser automation:
 
-```python
-from playwright.sync_api import sync_playwright
-
-def capture(url, output_path, viewport_width=1920, viewport_height=1080):
-    with sync_playwright() as p:
-        browser = p.chromium.launch()
-        page = browser.new_page(viewport={'width': viewport_width, 'height': viewport_height})
-        page.goto(url, wait_until='networkidle')
-        page.screenshot(path=output_path, full_page=False)
-        browser.close()
+```bash
+python3 scripts/capture_screenshot.py URL --all --output screenshots/
+python3 scripts/render_page.py URL --mode auto --a11y-tree --json
 ```
 
 ## Viewports to Test
@@ -77,3 +70,11 @@ Provide:
 - Mobile responsiveness assessment
 - Above-the-fold content evaluation
 - Specific issues with element locations
+
+## Persistence Contract
+
+If `output_dir` is provided by the audit orchestrator, write:
+
+- `output_dir/screenshots/desktop.png` and `output_dir/screenshots/mobile.png` when capture succeeds
+- `output_dir/findings/visual.md`: above-the-fold, mobile, layout, and accessibility-tree findings
+- Structured JSON-compatible findings for `audit-data.json` under the Visual category

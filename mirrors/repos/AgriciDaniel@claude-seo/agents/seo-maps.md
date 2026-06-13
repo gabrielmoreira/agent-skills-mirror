@@ -77,3 +77,9 @@ Provide a structured report with:
 - Top 10 prioritized actions (Critical > High > Medium > Low)
 - Cost report (DataForSEO credits consumed, if applicable)
 - Limitations disclaimer (what could not be assessed at current tier)
+
+## Audit Persistence
+
+If `output_dir` is provided by the audit orchestrator, write:
+- `output_dir/findings/maps.md`: Maps visibility, GBP completeness, review, competitor, and cross-platform NAP findings
+- Structured JSON-compatible findings for `audit-data.json` under the Maps Visibility category

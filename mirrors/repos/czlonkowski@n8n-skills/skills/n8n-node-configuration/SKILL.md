@@ -412,6 +412,11 @@ get_node({
 - sendBody=true → body required
 - authentication != "none" → credentials required
 
+**Critical: credentials block, node id, typeVersion**
+- **Never set a placeholder credential ID** (e.g. `"id": "REPLACE_ME"`) — n8n's UI renders a permanently disabled credential selector for unknown IDs. Omit the `credentials` block when the real ID is unknown; the user then gets a normal clickable dropdown.
+- **Node `id` must be a UUID v4**, not a readable slug — the frontend binds forms and the credential component to it.
+- **Don't hardcode old `typeVersion` values** — verify the current version with `get_node` (httpRequest is 4.4+).
+
 ### Pattern 3: Database Nodes
 
 **Examples**: Postgres, MySQL, MongoDB
@@ -428,6 +433,11 @@ get_node({
 - operation="executeQuery" → query required
 - operation="insert" → table + values required
 - operation="update" → table + values + where required
+
+**Critical: Write operations may return 0 items**
+- INSERT, UPDATE, DELETE can produce 0 n8n output items, depending on the node and operation (raw query execution reliably returns 0 result rows; some database nodes return the affected rows)
+- Set `alwaysOutputData: true` on write-operation nodes to keep downstream chains alive
+- Downstream nodes should use `$('UpstreamNode').all()` instead of `$input` if they need data
 
 ### Pattern 4: Conditional Logic Nodes
 

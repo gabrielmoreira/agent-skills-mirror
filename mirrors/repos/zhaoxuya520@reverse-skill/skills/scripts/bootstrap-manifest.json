@@ -157,13 +157,11 @@
     },
     {
       "name": "seclists",
-      "bootstrapKind": "github-release-zip",
-      "repo": "danielmiessler/SecLists",
-      "assetRegex": "^SecLists-.*\\.zip$",
+      "bootstrapKind": "git-clone",
+      "repo": "https://github.com/danielmiessler/SecLists.git",
       "installDir": "%USERPROFILE%\\Tools\\SecLists",
       "docsUrl": "https://github.com/danielmiessler/SecLists",
-      "canAutoInstall": true,
-      "verifyCommand": ""
+      "canAutoInstall": true
     },
     {
       "name": "proxycat",

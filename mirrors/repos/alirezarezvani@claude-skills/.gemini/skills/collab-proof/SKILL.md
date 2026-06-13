@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/collab-proof/../../../engineering/collab-proof/skills/collab-proof/SKILL.md

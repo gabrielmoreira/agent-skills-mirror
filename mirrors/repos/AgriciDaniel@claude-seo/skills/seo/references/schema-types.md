@@ -1,5 +1,5 @@
-<!-- Updated: 2026-02-07 -->
-# Schema.org Types: Status & Recommendations (February 2026)
+<!-- Updated: 2026-05-25 -->
+# Schema.org Types: Status & Recommendations (May 2026)
 
 **Schema.org Version:** 29.4 (December 8, 2025)
 
@@ -40,20 +40,26 @@ Google's documentation explicitly recommends JSON-LD over Microdata and RDFa.
 | DiscussionForumPosting | Forum threads | headline, author, datePublished, text, url |
 | ProductGroup | Variant products | name, productGroupID, variesBy, hasVariant |
 | ProfilePage | Author/creator profiles | mainEntity (Person), name, url, description, sameAs |
+| QAPage | Genuine user Q&A pages (one question, community answers) | mainEntity (Question), acceptedAnswer, suggestedAnswer |
 
 ---
 
-## Restricted: Only for specific site types
+## No rich results, but keep for AI: FAQPage
 
-| Type | Restriction | Since |
+| Type | SERP status | Since |
 |------|------------|-------|
-| FAQPage | Government and healthcare authority sites ONLY | August 2023 |
+| FAQPage | Rich results fully retired — no SERP feature for any site | May 7, 2026 |
 
-> Google severely limited FAQ rich results in August 2023. Only authoritative sources (government, health organizations) receive FAQ rich results.
+> Google retired FAQ rich results entirely on **May 7, 2026**. This **supersedes** the
+> Aug 2023 gov/health restriction — even authoritative sites no longer get the rich result.
+> Rich Results Test + report support drops June 2026; Search Console API support is removed August 2026.
 >
-> **GEO nuance**: FAQPage schema still benefits AI/LLM citation visibility (ChatGPT, Perplexity, Google AI Overviews), even without Google rich results.
-> - **Existing FAQPage on commercial site**: Flag at Info priority, not Critical. Removal removes GEO citation upside.
-> - **Adding new FAQPage**: Not recommended for Google benefit; acceptable if AI search visibility is a priority.
+> **Still worth keeping**: FAQPage markup remains a useful **AI / entity-verification signal**.
+> AI Mode and AI Overviews use structured data for entity resolution and claim verification
+> during answer synthesis, so accurate FAQPage can lift AI-citation probability independent of rich results.
+> - **Existing FAQPage**: Flag at Info priority, not Critical. Do **not** recommend removal — it carries AI-citation upside.
+> - **Adding new FAQPage**: No Google SERP benefit; acceptable if AI search visibility is the goal.
+> - **Genuine single-question pages** where users submit answers: use **QAPage** (Google's recommended type), not FAQPage.
 
 ---
 

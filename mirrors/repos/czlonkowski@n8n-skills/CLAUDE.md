@@ -8,7 +8,7 @@ This is the **n8n-skills** repository - a collection of Claude Code skills desig
 
 **Repository**: https://github.com/czlonkowski/n8n-skills
 
-**Purpose**: 7 complementary skills that provide expert guidance on using n8n-mcp MCP tools effectively for building n8n workflows.
+**Purpose**: 8 complementary skills that provide expert guidance on using n8n-mcp MCP tools effectively for building n8n workflows.
 
 **Architecture**:
 - **n8n-mcp MCP Server**: Provides data access (800+ nodes, validation, templates, workflow management)
@@ -28,14 +28,15 @@ n8n-skills/
 │   ├── n8n-validation-expert/
 │   ├── n8n-node-configuration/
 │   ├── n8n-code-javascript/
-│   └── n8n-code-python/
+│   ├── n8n-code-python/
+│   └── n8n-code-tool/
 ├── evaluations/           # Test scenarios for each skill
 ├── docs/                  # Documentation
 ├── dist/                  # Distribution packages
 └── .claude-plugin/        # Claude Code plugin configuration
 ```
 
-## The 7 Skills
+## The 8 Skills
 
 ### 1. n8n Expression Syntax
 - Teaches correct n8n expression syntax ({{}} patterns)
@@ -68,6 +69,11 @@ n8n-skills/
 ### 7. n8n Code Python
 - Write Python in n8n Code nodes
 - Limitations awareness (no external libraries)
+
+### 8. n8n Code Tool
+- Write code for the AI-agent-callable Custom Code Tool (`@n8n/n8n-nodes-langchain.toolCode`)
+- Critical distinction from Code node: return a string (not `[{json:{...}}]`), `$fromAI()` not available, different sandbox
+- Unstructured (`query` string) vs structured (`specifyInputSchema`) input modes
 
 ## Key MCP Tools
 
@@ -111,8 +117,7 @@ The n8n-mcp server provides these unified tools:
 - `n8n_update_full_workflow` - Full workflow replacement
 
 ### Guides
-- `tools_documentation` - Meta-documentation for all tools
-- `ai_agents_guide` - AI agent workflow guidance
+- `tools_documentation` - Meta-documentation for all tools; the AI agent workflow guide is accessed via `tools_documentation({topic: "ai_agents_guide", depth: "full"})` (not a standalone tool)
 
 ## Important Patterns
 

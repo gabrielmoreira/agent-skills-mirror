@@ -1,6 +1,6 @@
 ---
 name: pua-loop
-description: "PUA Loop — autonomous iterative development with autoresearch-style gate protocol. Runs FOREVER until verified done. Oracle Isolation: hook independently verifies completion, Claude cannot lie. Triggers on: '/pua:pua-loop', '自动循环', 'loop mode', '一直跑', '自动迭代'."
+description: "PUA Loop — guided iterative development with recurring checks, completion evidence, and pause/abort markers. Use only when the user explicitly asks for loop/自动迭代 mode."
 license: MIT
 ---
 

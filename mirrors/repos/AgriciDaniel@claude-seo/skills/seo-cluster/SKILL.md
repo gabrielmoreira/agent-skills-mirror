@@ -8,13 +8,13 @@ description: >
   Use when user says "topic cluster", "content cluster", "semantic clustering",
   "pillar page", "hub and spoke", "content architecture", "keyword grouping",
   or "cluster plan".
-user-invokable: true
+user-invocable: true
 argument-hint: "<seed-keyword or url>"
 license: MIT
 metadata:
   author: AgriciDaniel
   original_author: "Lutfiya Miller (Pro Hub Challenge Winner)"
-  version: "2.0.0"
+  version: "2.2.0"
   category: seo
 ---
 
@@ -80,7 +80,7 @@ the full algorithm.
 - Skip pairs where both are long-tail variants of the same head term (assume same cluster)
 
 **DataForSEO integration:** If DataForSEO MCP is available, use `serp_organic_live_advanced`
-instead of WebSearch for SERP data. Run `python scripts/dataforseo_costs.py check serp_organic_live_advanced --count N`
+instead of WebSearch for SERP data. Run `python3 scripts/dataforseo_costs.py check serp_organic_live_advanced --count N`
 before each batch. If `"status": "needs_approval"`, show cost estimate and ask user.
 If `"status": "blocked"`, fall back to WebSearch.
 
@@ -312,7 +312,7 @@ After cluster planning or execution completes, offer:
 
 ## Security
 
-- All URLs fetched via `python scripts/fetch_page.py` (SSRF protection via `validate_url()`)
+- All URLs fetched via `python3 scripts/render_page.py --mode auto` (SPA-aware SSRF protection via `url_safety`)
 - No credentials stored or transmitted
 - Output files contain no PII or API keys
 - DataForSEO cost checks run before every API call

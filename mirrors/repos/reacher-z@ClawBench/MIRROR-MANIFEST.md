@@ -52,7 +52,7 @@ Mirror of `reacher-z/ClawBench` — 26 default patterns, 8 followed patterns, 10
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `README.md`
-- `src/clawbench/runtime/extension-server/README.md`
+- `src/clawbench/runtime/runtime-server/README.md`
 - `CONTRIBUTING.md`
 - `eval/README.md`
 - `eval/agentic_eval.md`
@@ -75,7 +75,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | → | [`eval/scoring.md`](eval/scoring.md) |
 | 8 | → | [`README.md`](README.md) |
 | 9 | → | [`src/clawbench/runtime/chrome-extension/README.md`](src/clawbench/runtime/chrome-extension/README.md) |
-| 10 | → | [`src/clawbench/runtime/extension-server/README.md`](src/clawbench/runtime/extension-server/README.md) |
+| 10 | → | [`src/clawbench/runtime/runtime-server/README.md`](src/clawbench/runtime/runtime-server/README.md) |
 
 ---
 

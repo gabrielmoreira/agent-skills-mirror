@@ -1,13 +1,13 @@
 ---
 name: seo-backlinks
 description: "Backlink profile analysis: referring domains, anchor text distribution, toxic link detection, competitor gap analysis. Works with free APIs (Moz, Bing Webmaster, Common Crawl) and DataForSEO extension. Use when user says backlinks, link profile, referring domains, anchor text, toxic links, link gap, link building, disavow, or backlink audit."
-user-invokable: true
+user-invocable: true
 argument-hint: "<url>"
 license: MIT
 compatibility: "Free: Common Crawl + verify always available. Optional: Moz API, Bing Webmaster (free signup). Premium: DataForSEO extension."
 metadata:
   author: AgriciDaniel
-  version: "2.0.0"
+  version: "2.2.0"
   category: seo
 ---
 
@@ -18,12 +18,12 @@ metadata:
 Before analysis, detect available data sources:
 
 1. **DataForSEO MCP** (premium): Check if `dataforseo_backlinks_summary` tool is available
-2. **Moz API** (free signup): `python scripts/backlinks_auth.py --check moz --json`
-3. **Bing Webmaster** (free signup): `python scripts/backlinks_auth.py --check bing --json`
+2. **Moz API** (free signup): `python3 scripts/backlinks_auth.py --check moz --json`
+3. **Bing Webmaster** (free signup): `python3 scripts/backlinks_auth.py --check bing --json`
 4. **Common Crawl** (always available): Domain-level graph with PageRank
 5. **Verification Crawler** (always available): Checks if known backlinks still exist
 
-Run `python scripts/backlinks_auth.py --check --json` to detect all sources at once.
+Run `python3 scripts/backlinks_auth.py --check --json` to detect all sources at once.
 
 If no sources are configured beyond the always-available tier:
 - Still produce a report using Common Crawl domain metrics
@@ -48,9 +48,9 @@ Produce all 7 sections below. Each section lists data sources in preference orde
 
 **DataForSEO:** `dataforseo_backlinks_summary` → total backlinks, referring domains, domain rank, follow ratio, trend.
 
-**Moz API:** `python scripts/moz_api.py metrics <url> --json` → Domain Authority, Page Authority, Spam Score, linking root domains, external links.
+**Moz API:** `python3 scripts/moz_api.py metrics <url> --json` → Domain Authority, Page Authority, Spam Score, linking root domains, external links.
 
-**Common Crawl:** `python scripts/commoncrawl_graph.py <domain> --json` → in-degree (referring domain count), PageRank, harmonic centrality.
+**Common Crawl:** `python3 scripts/commoncrawl_graph.py <domain> --json` → in-degree (referring domain count), PageRank, harmonic centrality.
 
 **Scoring:**
 
@@ -65,9 +65,9 @@ Produce all 7 sections below. Each section lists data sources in preference orde
 
 **DataForSEO:** `dataforseo_backlinks_anchors`
 
-**Moz API:** `python scripts/moz_api.py anchors <url> --json`
+**Moz API:** `python3 scripts/moz_api.py anchors <url> --json`
 
-**Bing Webmaster:** `python scripts/bing_webmaster.py links <url> --json` (extract anchor text from link details)
+**Bing Webmaster:** `python3 scripts/bing_webmaster.py links <url> --json` (extract anchor text from link details)
 
 **Healthy distribution benchmarks:**
 
@@ -86,9 +86,9 @@ Flag if exact-match anchors exceed 15% -- this is a Google Penguin risk signal.
 
 **DataForSEO:** `dataforseo_backlinks_referring_domains`
 
-**Moz API:** `python scripts/moz_api.py domains <url> --json` → domains with DA scores
+**Moz API:** `python3 scripts/moz_api.py domains <url> --json` → domains with DA scores
 
-**Common Crawl:** `python scripts/commoncrawl_graph.py <domain> --json` → top referring domains (domain-level, no authority scores)
+**Common Crawl:** `python3 scripts/commoncrawl_graph.py <domain> --json` → top referring domains (domain-level, no authority scores)
 
 Analyze:
 - **TLD distribution**: .edu, .gov, .org = high authority. Excessive .xyz, .info = low quality
@@ -100,9 +100,9 @@ Analyze:
 
 **DataForSEO:** `dataforseo_backlinks_bulk_spam_score` + toxic patterns from reference
 
-**Moz API:** Spam Score from `python scripts/moz_api.py metrics <url> --json` (1-17% scale, >11% = high risk)
+**Moz API:** Spam Score from `python3 scripts/moz_api.py metrics <url> --json` (1-17% scale, >11% = high risk)
 
-**Verification Crawler:** `python scripts/verify_backlinks.py --target <url> --links <file> --json` (verify suspicious links still exist)
+**Verification Crawler:** `python3 scripts/verify_backlinks.py --target <url> --links <file> --json` (verify suspicious links still exist)
 
 **High-risk indicators (flag immediately):**
 - Links from known PBN (Private Blog Network) domains
@@ -124,7 +124,7 @@ Load `references/backlink-quality.md` for the full 30 toxic patterns and disavow
 
 **DataForSEO:** `dataforseo_backlinks_backlinks` with target type "page"
 
-**Moz API:** `python scripts/moz_api.py pages <domain> --json`
+**Moz API:** `python3 scripts/moz_api.py pages <domain> --json`
 
 Find:
 - Which pages attract the most backlinks
@@ -136,9 +136,9 @@ Find:
 
 **DataForSEO:** `dataforseo_backlinks_referring_domains` for both domains, then compare
 
-**Bing Webmaster (unique!):** `python scripts/bing_webmaster.py compare <url1> <url2> --json` — the only free tool with built-in competitor comparison
+**Bing Webmaster (unique!):** `python3 scripts/bing_webmaster.py compare <url1> <url2> --json` — the only free tool with built-in competitor comparison
 
-**Moz API:** Compare DA/PA between domains via `python scripts/moz_api.py metrics <url> --json` for each
+**Moz API:** Compare DA/PA between domains via `python3 scripts/moz_api.py metrics <url> --json` for each
 
 Output:
 - Domains linking to competitor but NOT to target = link building opportunities
@@ -150,7 +150,7 @@ Output:
 
 **DataForSEO only:** `dataforseo_backlinks_backlinks` with date filters for 30/60/90 day changes
 
-**Verification Crawler:** For known links, verify current status with `python scripts/verify_backlinks.py`
+**Verification Crawler:** For known links, verify current status with `python3 scripts/verify_backlinks.py`
 
 **Note:** Free sources cannot track new/lost links over time. If this section is requested without DataForSEO, inform the user: "Link velocity tracking requires the DataForSEO extension. Free sources provide point-in-time snapshots only."
 

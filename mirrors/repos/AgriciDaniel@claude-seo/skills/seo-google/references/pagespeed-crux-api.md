@@ -70,7 +70,9 @@ Google is migrating CrUX field data out of PSI. For field data, prefer the CrUX 
 
 ## CrUX API (Daily)
 
-**Endpoint:** `POST https://chromeuxreport.googleapis.com/v1/records:queryRecord?key={API_KEY}`
+**Endpoint:** `POST https://chromeuxreport.googleapis.com/v1/records:queryRecord`
+
+Send the API key in the `X-Goog-Api-Key` header, not in the URL.
 
 ### Request
 
@@ -144,7 +146,9 @@ Google is migrating CrUX field data out of PSI. For field data, prefer the CrUX 
 
 ## CrUX History API (Weekly)
 
-**Endpoint:** `POST https://chromeuxreport.googleapis.com/v1/records:queryHistoryRecord?key={API_KEY}`
+**Endpoint:** `POST https://chromeuxreport.googleapis.com/v1/records:queryHistoryRecord`
+
+Send the API key in the `X-Goog-Api-Key` header, not in the URL.
 
 Same request format as CrUX API. Returns up to **25 weekly collection periods**.
 

@@ -60,7 +60,7 @@ python3 skills/market-breadth-analyzer/scripts/market_breadth_analyzer.py \
   --output-dir reports/<routine-or-date>
 ```
 
-For a simple ad-hoc run, omit `--output-dir` or use an existing directory.
+For a simple ad-hoc run, omit `--output-dir` or use an existing directory. In scheduled cron runs from the repository root, prefer a repo-relative output directory such as `reports/after-close-YYYY-MM-DD` rather than an absolute path. If an absolute nested `--output-dir` unexpectedly fails at the history-writing step despite the directory existing, rerun once with the equivalent repo-relative path before treating the breadth analysis as unavailable.
 
 The script will:
 1. Fetch detail CSV (~2,500 rows, 2016-present) and summary CSV (8 metrics)

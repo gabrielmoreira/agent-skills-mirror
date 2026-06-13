@@ -37,7 +37,7 @@ Teaches architectural patterns for building n8n workflows. Provides structure, b
 - search_nodes (find nodes for patterns)
 - get_node (understand node operations)
 - search_templates (find example workflows)
-- ai_agents_guide (AI pattern guidance)
+- tools_documentation with topic "ai_agents_guide" (AI pattern guidance)
 
 **Related skills**:
 - n8n MCP Tools Expert (find and configure nodes)

@@ -46,6 +46,10 @@ Your primary output is a `cluster-plan.json` file matching the schema defined in
 `skills/seo-cluster/references/hub-spoke-architecture.md`. Also produce a
 human-readable `cluster-plan.md` summary.
 
+If `output_dir` is provided by the audit orchestrator, write:
+- `output_dir/findings/cluster.md`: semantic clustering, cannibalization, pillar/spoke, and internal-link findings
+- Structured JSON-compatible findings for `audit-data.json` under the Content Architecture category
+
 ## Reference Files
 
 Load on demand when you need detailed methodology:

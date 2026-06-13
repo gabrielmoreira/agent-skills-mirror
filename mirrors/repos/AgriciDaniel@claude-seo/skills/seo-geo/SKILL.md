@@ -8,12 +8,12 @@ description: >
   platform-specific optimization. Use when user says "AI Overviews", "SGE",
   "GEO", "AI search", "LLM optimization", "Perplexity", "AI citations",
   "ChatGPT search", or "AI visibility".
-user-invokable: true
+user-invocable: true
 argument-hint: "[url]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "2.0.0"
+  version: "2.2.0"
   category: seo
 ---
 
@@ -42,6 +42,8 @@ the contradiction in the report.
 |--------|-------|--------|
 | AI Overviews reach | 1.5 billion users/month across 200+ countries | Google |
 | AI Overviews query coverage | 50%+ of all queries | Industry data |
+| AI Mode monthly users | 1B+ (surpassed May 2026) | Google |
+| AI Mode model | Gemini 3.5 Flash (default, global, since I/O 2026) | Google |
 | AI-referred sessions growth | 527% (Jan-May 2025) | SparkToro |
 | ChatGPT weekly active users | 900 million | OpenAI |
 | Perplexity monthly queries | 500+ million | Perplexity |
@@ -67,7 +69,9 @@ the contradiction in the report.
 
 ### 1. Citability Score (25%)
 
-**Optimal passage length: 134-167 words** for AI citation.
+**Optimal passage length: 134-167 words** for AI citation. And **~44% of AI
+citations come from the first 30% of a page** (SE Ranking study) — front-load
+your most citable, self-contained answer rather than burying it below the fold.
 
 **Strong signals:**
 - Clear, quotable sentences with specific facts/statistics
@@ -117,6 +121,7 @@ Content with multi-modal elements sees **156% higher selection rates**.
 **Strong signals:**
 - Author byline with credentials
 - Publication date and last-updated date
+- **Recency** — content under 3 months old is ~3x more likely to be cited in AI answers; pages left stale 6+ months lose citation eligibility (SE Ranking, 1.3M-citation study). A scheduled refresh program is one of the highest-leverage GEO plays.
 - Citations to primary sources (studies, official docs, data)
 - Organization credentials and affiliations
 - Expert quotes with attribution
@@ -205,10 +210,17 @@ New standard (December 2025) for machine-readable AI licensing terms.
 
 | Platform | Key Citation Sources | Optimization Focus |
 |----------|---------------------|-------------------|
-| **Google AI Overviews** | Top-10 ranking pages (92%) | Traditional SEO + passage optimization |
+| **Google AI Overviews** | Strongly ranking-correlated — cites pages that already rank well | Traditional SEO + passage optimization |
+| **Google AI Mode** (Gemini 3.5 Flash) | Weakly ranking-correlated; broader pool (~9 domains cited/query, Ahrefs) | Distinct surface: freshness, entity authority, citable passages beyond position 5 |
 | **ChatGPT** | Wikipedia (47.9%), Reddit (11.3%) | Entity presence, authoritative sources |
 | **Perplexity** | Reddit (46.7%), Wikipedia | Community validation, discussions |
 | **Bing Copilot** | Bing index, authoritative sites | Bing SEO, IndexNow |
+
+> **Two Google citation engines, not one.** AI Mode and AI Overviews reach the
+> same conclusion ~86% of the time but cite the same URLs only **13.7%** of the
+> time (Ahrefs study, 540K query pairs). Treat them as separate surfaces: ranking
+> well in classic Search feeds AI Overviews, but AI Mode draws from a broader pool
+> where freshness and entity authority outweigh raw position. Score both.
 
 ---
 

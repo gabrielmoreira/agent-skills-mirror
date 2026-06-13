@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `chopratejas/headroom` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `chopratejas/headroom` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `chopratejas/headroom` — 26 default patterns, 0 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`docs/app/llms.txt/route.ts`](docs/app/llms.txt/route.ts) |
-| 2 | ✓ | [`llms.txt`](llms.txt) |
+| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 2 | ✓ | [`docs/app/llms.txt/route.ts`](docs/app/llms.txt/route.ts) |
+| 3 | ✓ | [`llms.txt`](llms.txt) |
 
 ---
 

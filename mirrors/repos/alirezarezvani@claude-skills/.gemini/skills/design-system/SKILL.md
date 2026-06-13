@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/design-system/../../../markdown-html/skills/design-system/SKILL.md

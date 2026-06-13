@@ -65,6 +65,13 @@ Provide:
 
 ## Fetching pages (v2.0.0)
 
-Use `python scripts/render_page.py <URL> --mode auto --json` for page HTML. `auto` does a raw fetch and only spins up Playwright when an SPA shell is detected; use `--mode always` to force a render or `--mode never` to skip Playwright entirely. The JSON exposes `raw_content` (pre-JS), `content` (post-JS), `is_spa`, `extracted_text` (boilerplate-stripped via trafilatura), and `publication_date` (htmldate). SSRF and DNS-rebinding protection live in `scripts/url_safety.py` — never call `requests.get` directly on user-supplied URLs.
+Use `python3 scripts/render_page.py <URL> --mode auto --json` for page HTML. `auto` does a raw fetch and only spins up Playwright when an SPA shell is detected; use `--mode always` to force a render or `--mode never` to skip Playwright entirely. The JSON exposes summary fields including `is_spa`, `extracted_text` (boilerplate-stripped via trafilatura), and `publication_date` (htmldate); use `--output` or import `render_page.render_page()` when full raw/rendered HTML is required. SSRF and DNS-rebinding protection live in `scripts/url_safety.py` — never call `requests.get` directly on user-supplied URLs.
+
+## Persistence Contract
+
+If `output_dir` is provided by the audit orchestrator, write:
+
+- `output_dir/findings/content.md`: E-E-A-T, readability, thin content, duplication, topical coverage, and AI citation findings
+- Structured JSON-compatible findings for `audit-data.json` under the Content Quality category
 
 E-E-A-T scoring should run against `extracted_text` rather than `content` — trafilatura strips navigation chrome, footers, and cookie banners, so author bios and main-content trust signals score correctly without dilution.

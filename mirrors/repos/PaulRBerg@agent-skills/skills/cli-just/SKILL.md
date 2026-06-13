@@ -2,7 +2,7 @@
 disable-model-invocation: false
 name: cli-just
 user-invocable: false
-description: This skill should be used when the user asks to "create a justfile", "write just recipes", "configure just settings", "add just modules", "use just attributes", "set up task automation", mentions justfile, just command runner, or task automation with just.
+description: 'Use for just/justfile task automation: create justfiles, write recipes, configure settings, add modules/attributes, or set up command-runner workflows.'
 ---
 
 # Just Command Runner

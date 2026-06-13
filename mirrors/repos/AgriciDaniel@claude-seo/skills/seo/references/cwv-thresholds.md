@@ -92,7 +92,8 @@ Use this breakdown to identify which phase is causing LCP issues.
 
 ```bash
 # PageSpeed Insights API
-curl "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=URL&key=API_KEY"
+curl -H "X-Goog-Api-Key: $GOOGLE_API_KEY" \
+  "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=URL"
 
 # Lighthouse CLI
 npx lighthouse URL --output json --output-path report.json

@@ -18,6 +18,24 @@
                 "--project",
                 "/workspaces/projects/repo"
             ]
+        },
+        "jbang-jdbc": {
+            "command": "jbang",
+            "args": [
+                "jdbc@quarkiverse/quarkus-mcp-servers",
+                "jdbc:postgresql://localhost:5432/sakila"
+            ]
+        },
+        "mongodb": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "mongodb-mcp-server@latest",
+                "--readOnly"
+            ],
+            "env": {
+                "MDB_MCP_CONNECTION_STRING": "mongodb://localhost:27017/myDatabase"
+            }
         }
     }
 }

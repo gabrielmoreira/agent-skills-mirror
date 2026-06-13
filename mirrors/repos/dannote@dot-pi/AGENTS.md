@@ -26,6 +26,18 @@ When adding new extensions, skills, or rules:
 3. Include Origin column with link to source if adapted from another project
 4. Commit both the component and README update together
 
+## Quality Gates
+
+Before committing changes, run:
+
+```bash
+bun run check
+bun run test
+bun run format:check
+```
+
+`bun run check` includes oxlint with warnings denied, TypeScript checking, jscpd duplicate detection, and `deps:check` dependency hygiene. Keep shared helpers in `extensions/shared/` when logic appears in more than one extension.
+
 ## Native pi Tool Rendering Rules
 
 When adding or changing model-facing tool renderers, follow native pi TUI conventions systematically:

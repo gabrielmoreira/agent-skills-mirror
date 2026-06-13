@@ -1,6 +1,6 @@
 ---
 name: pua-self-reviewer
-description: "Use this agent when PUA harness governance needs isolated SELF_EVALUATION_RIGHT: blue-team review of executor output, intent drift, confidence-gate claims, edge cases, and trace honesty. Trigger after pua-action-executor or before delivery. Read-only reviewer; never use for implementation or final scoring."
+description: "自检 Agent：复核执行结果、边界情况、失败路径和证据完整性；不修改代码。"
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: cyan

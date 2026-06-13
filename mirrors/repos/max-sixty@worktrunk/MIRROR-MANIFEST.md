@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `max-sixty/worktrunk` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `max-sixty/worktrunk` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `max-sixty/worktrunk` — 26 default patterns, 0 followed patterns, 32
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,10 +87,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`skills/worktrunk/reference/troubleshooting.md`](skills/worktrunk/reference/troubleshooting.md) |
 | 27 | ✓ | [`skills/worktrunk/reference/worktrunk.md`](skills/worktrunk/reference/worktrunk.md) |
 | 28 | ✓ | [`skills/worktrunk/SKILL.md`](skills/worktrunk/SKILL.md) |
-| 29 | ✓ | [`skills/wt-switch-create/SKILL.md`](skills/wt-switch-create/SKILL.md) |
-| 30 | ✓ | [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
-| 31 | ✓ | [`src/commands/list/CLAUDE.md`](src/commands/list/CLAUDE.md) |
-| 32 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
+| 29 | ✓ | [`skills/wt-switch-create/rationale.md`](skills/wt-switch-create/rationale.md) |
+| 30 | ✓ | [`skills/wt-switch-create/SKILL.md`](skills/wt-switch-create/SKILL.md) |
+| 31 | ✓ | [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
+| 32 | ✓ | [`src/commands/list/CLAUDE.md`](src/commands/list/CLAUDE.md) |
+| 33 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
 
 ---
 

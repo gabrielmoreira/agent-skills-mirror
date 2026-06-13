@@ -7,13 +7,13 @@ description: >
   to rank by analyzing what Google rewards for each keyword. Use when user says
   "SXO", "search experience", "page type mismatch", "SERP analysis", "user story",
   "persona scoring", "why isn't my page ranking", "intent mismatch", or "wireframe".
-user-invokable: true
+user-invocable: true
 argument-hint: "<url> [keyword]"
 license: MIT
 metadata:
   author: AgriciDaniel
   original_author: "Florian Schmitz (Pro Hub Challenge)"
-  version: "2.0.0"
+  version: "2.2.0"
   category: seo
 ---
 
@@ -43,7 +43,7 @@ well-optimized it is.
 
 ### Step 1: Target Acquisition
 
-1. Fetch the target URL via `scripts/fetch_page.py` (SSRF-safe)
+1. Fetch the target URL via `scripts/render_page.py --mode auto` (SPA-aware and SSRF-safe)
 2. Parse with `scripts/parse_html.py` to extract: title, H1, meta description,
    headings hierarchy, word count, schema markup, CTAs, media elements
 3. If no keyword provided, extract primary keyword from title tag + H1 overlap
@@ -244,7 +244,7 @@ The SXO score is **separate** from the main SEO Health Score.
 ## Quality Checklist
 
 Before delivering results, verify:
-- [ ] Target URL was fetched via `scripts/fetch_page.py` (not raw curl/fetch)
+- [ ] Target URL was fetched via `scripts/render_page.py --mode auto` (not raw curl/fetch)
 - [ ] Page type classification uses taxonomy from references
 - [ ] At least 5 SERP results were analyzed
 - [ ] User stories cite specific SERP signals as evidence

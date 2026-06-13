@@ -9,13 +9,13 @@ description: >
   installed. Use when user says "dataforseo", "live SERP", "keyword volume",
   "backlink data", "competitor data", "AI visibility check", "LLM mentions",
   "image SERP", "google images", "image rankings", or "real search data".
-user-invokable: true
+user-invocable: true
 argument-hint: "[command] [query]"
 license: MIT
 compatibility: "Requires DataForSEO MCP server"
 metadata:
   author: AgriciDaniel
-  version: "2.0.0"
+  version: "2.2.0"
   category: seo
 ---
 
@@ -50,7 +50,7 @@ DataForSEO charges per API call. Be efficient:
 
 **Before every DataForSEO MCP call**, run cost estimation:
 ```
-python scripts/dataforseo_costs.py check <endpoint> [--count N]
+python3 scripts/dataforseo_costs.py check <endpoint> [--count N]
 ```
 
 - If `"status": "approved"` → proceed with the API call
@@ -59,7 +59,7 @@ python scripts/dataforseo_costs.py check <endpoint> [--count N]
 
 **After each API call completes**, log the cost:
 ```
-python scripts/dataforseo_costs.py log <endpoint> <actual_cost>
+python3 scripts/dataforseo_costs.py log <endpoint> <actual_cost>
 ```
 
 **User commands for cost management:**

@@ -7,7 +7,7 @@
 - define orchestrator and specialist agents,
 - load layered plugin configuration and per-agent permissions,
 - expose additional tools and MCP integrations,
-- manage delegated/resumable session orchestration and terminal multiplexer visualization,
+- manage background job-board orchestration and terminal multiplexer visualization,
 - inject workflow-enforcement hooks plus runtime command handlers,
 - ship install-time skills and a bootstrap CLI.
 
@@ -18,7 +18,7 @@ This codemap intentionally covers the plugin repository itself and excludes the 
 | Path | Role |
 |---|---|
 | `package.json` | Package manifest, dependency graph, release scripts, published file list. |
-| `src/index.ts` | Main plugin bootstrap: wires agents, tools, MCPs, hooks, council/session managers, multiplexer session mirroring, interview/preset managers, task-session tracking, and config merge behavior. |
+| `src/index.ts` | Main plugin bootstrap: wires agents, tools, MCPs, hooks, council managers, shared background job board, multiplexer session mirroring, interview/preset managers, task-session tracking, and config merge behavior. |
 | `src/cli/index.ts` | CLI entrypoint for installation/bootstrap workflows. |
 | `src/config/schema.ts` | Source-of-truth runtime config schema used by validation and schema generation. |
 | `scripts/generate-schema.ts` | Generates `oh-my-opencode-slim.schema.json` from the Zod config schema. |
@@ -42,7 +42,6 @@ This codemap intentionally covers the plugin repository itself and excludes the 
 | `src/hooks/phase-reminder/` | Message-transform reminder enforcing orchestrator workflow phases. | [View Map](src/hooks/phase-reminder/codemap.md) |
 | `src/hooks/post-file-tool-nudge/` | Post-read/write reminder path that nudges delegation-aware next steps. | [View Map](src/hooks/post-file-tool-nudge/codemap.md) |
 | `src/hooks/task-session-manager/` | Resumable `task` session tracking, short alias resolution, prompt injection, and stale-session cleanup. | [View Map](src/hooks/task-session-manager/codemap.md) |
-| `src/hooks/todo-continuation/` | Auto-continue behavior for outstanding todo execution. | [View Map](src/hooks/todo-continuation/codemap.md) |
 | `src/interview/` | `/interview` feature: per-session and dashboard prompt/state orchestration, persistence, local UI, and cross-process coordination. | [View Map](src/interview/codemap.md) |
 | `src/mcp/` | Built-in MCP registry and per-provider MCP definitions. | [View Map](src/mcp/codemap.md) |
 | `src/multiplexer/` | Terminal multiplexer abstraction layer with backend selection, session mirroring, polling fallback, and shutdown lifecycle orchestration. | [View Map](src/multiplexer/codemap.md) |
@@ -74,8 +73,8 @@ This codemap intentionally covers the plugin repository itself and excludes the 
    - Hooks can transform prompts/messages, normalize system message arrays, repair tool failures, or intercept runtime commands before/after execution.
 
 3. **Delegated execution**
-   - OpenCode child sessions are created by delegation/council flows and tracked by plugin utilities.
-   - `src/hooks/task-session-manager/` remembers reusable child sessions and injects short aliases into the orchestrator prompt.
+   - Native OpenCode background tasks are parsed from `task` output and injected completion messages and tracked in the shared background job board.
+   - `src/hooks/task-session-manager/` updates job-board state, resolves short aliases, and injects background/reusable job context into the orchestrator prompt.
    - `src/multiplexer/` optionally mirrors those sessions into tmux/zellij panes.
    - Results flow back into the parent session through notifications/output polling.
 
@@ -92,7 +91,7 @@ This codemap intentionally covers the plugin repository itself and excludes the 
 - Session/delegation utilities depend on `src/multiplexer/` and cooperate with helpers in `src/utils/` for depth tracking, result extraction, task output parsing, and alias state.
 - `src/tools/council.ts` delegates into `src/council/`.
 - `src/tools/preset-manager.ts` hooks command execution and updates runtime agent models from configured presets.
-- `src/hooks/task-session-manager/` depends on `src/utils/session-manager.ts` and `src/utils/task.ts` to support child-session reuse.
+- `src/hooks/task-session-manager/` depends on `src/utils/background-job-board.ts` and `src/utils/task.ts` to support background task tracking, task output parsing, and safe alias reuse.
 - `src/hooks/filter-available-skills/` and agent permission logic rely on shared skill names from the CLI/config layer.
 - `src/interview/` hooks into plugin command/event surfaces exposed by `src/index.ts`.
 

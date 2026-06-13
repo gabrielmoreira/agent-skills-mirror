@@ -9,12 +9,12 @@ description: >
   "indexing API", "GA4 organic", "URL inspection", "google api setup",
   "real CWV data", "impressions", "clicks", "CTR", "position data",
   "LCP", "INP", "CLS", "FCP", "TTFB", or "Lighthouse scores".
-user-invokable: true
+user-invocable: true
 argument-hint: "[command] [url|property]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "2.0.0"
+  version: "2.2.0"
   category: seo
 ---
 
@@ -31,14 +31,14 @@ service account -- run `/seo google setup` for step-by-step instructions.
 
 Before executing any command, check credentials:
 ```bash
-python scripts/google_auth.py --check --json
+python3 scripts/google_auth.py --check --json
 ```
 
 Config file: `~/.config/claude-seo/google-api.json`
 ```json
 {
   "service_account_path": "/path/to/service_account.json",
-  "api_key": "AIzaSy...",
+  "api_key": "<GOOGLE_API_KEY>",
   "default_property": "sc-domain:example.com",
   "ga4_property_id": "properties/123456789"
 }
@@ -91,7 +91,7 @@ Always communicate the detected tier before running commands.
 
 Combined Lighthouse lab data + CrUX field data.
 
-**Script:** `python scripts/pagespeed_check.py <url> --json`
+**Script:** `python3 scripts/pagespeed_check.py <url> --json`
 **Reference:** `references/pagespeed-crux-api.md`
 **Default:** Both mobile + desktop strategies, all Lighthouse categories.
 
@@ -102,13 +102,13 @@ Chrome user metrics). CrUX tries URL-level first, falls back to origin-level.
 
 CrUX field data only (no Lighthouse run). Faster.
 
-**Script:** `python scripts/pagespeed_check.py <url> --crux-only --json`
+**Script:** `python3 scripts/pagespeed_check.py <url> --crux-only --json`
 
 ### `/seo google crux-history <url>`
 
 25-week CrUX History trends. Shows whether CWV metrics are improving, stable, or degrading.
 
-**Script:** `python scripts/crux_history.py <url> --json`
+**Script:** `python3 scripts/crux_history.py <url> --json`
 **Reference:** `references/pagespeed-crux-api.md`
 
 Output includes per-metric trend direction, percentage change, and weekly p75 values.
@@ -121,7 +121,7 @@ Output includes per-metric trend direction, percentage change, and weekly p75 va
 
 Search Analytics: clicks, impressions, CTR, position for last 28 days.
 
-**Script:** `python scripts/gsc_query.py --property <property> --json`
+**Script:** `python3 scripts/gsc_query.py --property <property> --json`
 **Reference:** `references/search-console-api.md`
 **Default:** 28 days, dimensions=query,page, type=web, limit=1000.
 
@@ -131,7 +131,7 @@ Includes quick-win detection: queries at position 4-10 with high impressions.
 
 URL Inspection: real indexation status from Google.
 
-**Script:** `python scripts/gsc_inspect.py <url> --json`
+**Script:** `python3 scripts/gsc_inspect.py <url> --json`
 
 Returns: verdict (PASS/FAIL), coverage state, robots.txt status, indexing state,
 page fetch state, canonical selection, mobile usability, rich results.
@@ -140,13 +140,15 @@ page fetch state, canonical selection, mobile usability, rich results.
 
 Batch inspection from a file (one URL per line). Rate limited to 2,000/day per site.
 
-**Script:** `python scripts/gsc_inspect.py --batch <file> --json`
+**Script:** `python3 scripts/gsc_inspect.py --batch <file> --json`
 
 ### `/seo google sitemaps <property>`
 
-List submitted sitemaps with status, errors, warnings.
+List submitted sitemaps with status, errors, warnings. Sitemap contents report
+submitted counts only; URL Inspection API is the indexation truth for whether
+specific URLs are indexed.
 
-**Script:** `python scripts/gsc_query.py sitemaps --property <property> --json`
+**Script:** `python3 scripts/gsc_query.py sitemaps --property <property> --json`
 
 ---
 
@@ -156,7 +158,7 @@ List submitted sitemaps with status, errors, warnings.
 
 Notify Google of a URL update.
 
-**Script:** `python scripts/indexing_notify.py <url> --json`
+**Script:** `python3 scripts/indexing_notify.py <url> --json`
 **Reference:** `references/indexing-api.md`
 
 The Indexing API is officially for JobPosting and BroadcastEvent/VideoObject pages.
@@ -166,7 +168,7 @@ Always inform the user of this restriction. Daily quota: 200 publish requests.
 
 Batch submit URLs from a file. Tracks quota usage.
 
-**Script:** `python scripts/indexing_notify.py --batch <file> --json`
+**Script:** `python3 scripts/indexing_notify.py --batch <file> --json`
 
 ---
 
@@ -176,7 +178,7 @@ Batch submit URLs from a file. Tracks quota usage.
 
 Organic traffic report: daily sessions, users, pageviews, bounce rate, engagement.
 
-**Script:** `python scripts/ga4_report.py --property <id> --json`
+**Script:** `python3 scripts/ga4_report.py --property <id> --json`
 **Reference:** `references/ga4-data-api.md`
 **Default:** 28 days, filtered to Organic Search channel group.
 
@@ -184,7 +186,7 @@ Organic traffic report: daily sessions, users, pageviews, bounce rate, engagemen
 
 Top organic landing pages ranked by sessions.
 
-**Script:** `python scripts/ga4_report.py --property <id> --report top-pages --json`
+**Script:** `python3 scripts/ga4_report.py --property <id> --report top-pages --json`
 
 ---
 
@@ -196,7 +198,7 @@ YouTube mentions have the strongest AI visibility correlation (0.737). Free, API
 
 Search YouTube for videos. Returns title, channel, views, likes, duration.
 
-**Script:** `python scripts/youtube_search.py search "<query>" --json`
+**Script:** `python3 scripts/youtube_search.py search "<query>" --json`
 **Reference:** `references/youtube-api.md`
 **Quota:** 100 units per search (10,000 units/day free).
 
@@ -204,7 +206,7 @@ Search YouTube for videos. Returns title, channel, views, likes, duration.
 
 Detailed video info + tags + top 10 comments.
 
-**Script:** `python scripts/youtube_search.py video <video_id> --json`
+**Script:** `python3 scripts/youtube_search.py video <video_id> --json`
 **Quota:** 2 units (video details + comments).
 
 ---
@@ -217,7 +219,7 @@ Google's own entity/sentiment analysis. Enhances E-E-A-T scoring.
 
 Full NLP analysis: entities, sentiment, content classification.
 
-**Script:** `python scripts/nlp_analyze.py --url <url> --json` or `--text "..."`
+**Script:** `python3 scripts/nlp_analyze.py --url <url> --json` or `--text "..."`
 **Reference:** `references/nlp-api.md`
 **Free tier:** 5,000 units/month. Requires billing enabled on GCP project.
 
@@ -225,7 +227,7 @@ Full NLP analysis: entities, sentiment, content classification.
 
 Entity extraction only (faster, less quota).
 
-**Script:** `python scripts/nlp_analyze.py --url <url> --features entities --json`
+**Script:** `python3 scripts/nlp_analyze.py --url <url> --features entities --json`
 
 ---
 
@@ -237,7 +239,7 @@ Gold-standard keyword volume data. Requires Google Ads account.
 
 Generate keyword ideas from seed terms.
 
-**Script:** `python scripts/keyword_planner.py ideas "<seed>" --json`
+**Script:** `python3 scripts/keyword_planner.py ideas "<seed>" --json`
 **Reference:** `references/keyword-planner-api.md`
 **Requires:** Ads developer token + customer ID in config (Tier 3).
 
@@ -245,7 +247,7 @@ Generate keyword ideas from seed terms.
 
 Search volume for specific keywords (comma-separated).
 
-**Script:** `python scripts/keyword_planner.py volume "<kw1>,<kw2>" --json`
+**Script:** `python3 scripts/keyword_planner.py volume "<kw1>,<kw2>" --json`
 
 ---
 
@@ -278,7 +280,7 @@ After any analysis command, offer to generate a PDF/HTML report.
 
 Generate a professional PDF report with charts and analytics.
 
-**Script:** `python scripts/google_report.py --type <type> --data <json> --domain <domain> --format pdf`
+**Script:** `python3 scripts/google_report.py --type <type> --data <json> --domain <domain> --format pdf`
 
 | Type | Input | Output |
 |------|-------|--------|
@@ -289,8 +291,8 @@ Generate a professional PDF report with charts and analytics.
 
 **Workflow:**
 1. Run data collection commands (pagespeed, gsc, inspect-batch, etc.)
-2. Save JSON output to file: `python scripts/pagespeed_check.py <url> --json > data.json`
-3. Generate report: `python scripts/google_report.py --type cwv-audit --data data.json --domain <domain>`
+2. Save JSON output to file: `python3 scripts/pagespeed_check.py <url> --json > data.json`
+3. Generate report: `python3 scripts/google_report.py --type cwv-audit --data data.json --domain <domain>`
 
 **Convention:** After completing analysis, suggest: "Generate a report? Use `/seo google report <type>`"
 
@@ -312,7 +314,7 @@ Generate a professional PDF report with charts and analytics.
 - **seo-audit**: Spawns `seo-google` agent for live CWV + indexation data (conditional)
 - **seo-technical**: Uses pagespeed_check.py for real CWV field data
 - **seo-performance**: CrUX field data supplements Lighthouse lab data
-- **seo-sitemap**: GSC sitemap status shows real crawl/index coverage
+- **seo-sitemap**: GSC sitemap status shows submitted counts, errors, and warnings; use URL Inspection for indexation truth
 - **seo-content**: GSC query data informs keyword targeting
 - **seo-geo**: GSC search appearance data includes AI Overview references
 

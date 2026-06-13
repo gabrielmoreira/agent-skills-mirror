@@ -45,6 +45,7 @@ for _p in (str(ADAPTERS_DIR), str(SCRIPTS_DIR)):
         sys.path.insert(0, _p)
 
 
+FMP_STABLE = "https://financialmodelingprep.com/stable"
 FMP_STABLE_HIST = "https://financialmodelingprep.com/stable/historical-price-eod/full"
 FMP_V3 = "https://financialmodelingprep.com/api/v3"
 ALPACA_PAPER = "https://paper-api.alpaca.markets"
@@ -119,61 +120,77 @@ def check_fmp_historical(api_key: str) -> bool:
 
 
 def check_fmp_profile(api_key: str) -> bool:
-    """Gate 2 — verify profile/AAPL returns a non-empty list with mktCap."""
+    """Gate 2 — verify profile returns a non-empty list with a market-cap field.
+
+    Tries /stable/profile?symbol=AAPL first, then the v3 /profile/AAPL fallback
+    (matching the client). /stable renamed mktCap -> marketCap, so either is OK.
+    """
     name = "fmp.profile"
-    url = f"{FMP_V3}/profile/AAPL"
-    try:
-        r = requests.get(url, params={"apikey": api_key}, timeout=15)
-    except requests.RequestException as e:
-        _print_fail(name, f"network error: {e}")
-        return False
+    attempts = [
+        (f"{FMP_STABLE}/profile", {"symbol": "AAPL", "apikey": api_key}),
+        (f"{FMP_V3}/profile/AAPL", {"apikey": api_key}),
+    ]
+    last_detail = "no response"
+    for url, params in attempts:
+        try:
+            r = requests.get(url, params=params, timeout=15)
+        except requests.RequestException as e:
+            last_detail = f"network error: {e}"
+            continue
+        if r.status_code != 200:
+            last_detail = f"HTTP {r.status_code} — {_truncate(r.text)}"
+            continue
+        try:
+            data = r.json()
+        except ValueError:
+            last_detail = f"non-JSON body: {_truncate(r.text)}"
+            continue
+        if isinstance(data, list) and data:
+            cap = data[0].get("mktCap", data[0].get("marketCap"))
+            if cap is not None:
+                _print_pass(name, f"marketCap={cap}")
+                return True
+        last_detail = f"expected list with market cap on first item, got {data!r:.200}"
 
-    if r.status_code != 200:
-        _print_fail(name, f"HTTP {r.status_code} — {_truncate(r.text)}")
-        return False
-
-    try:
-        data = r.json()
-    except ValueError:
-        _print_fail(name, f"non-JSON body: {_truncate(r.text)}")
-        return False
-
-    if not isinstance(data, list) or not data or "mktCap" not in data[0]:
-        _print_fail(name, f"expected list with mktCap on first item, got {data!r:.200}")
-        return False
-
-    _print_pass(name, f"mktCap={data[0].get('mktCap')}")
-    return True
+    _print_fail(name, last_detail)
+    return False
 
 
 def check_fmp_sp500(api_key: str) -> bool:
-    """Optional warning — sp500_constituent entitlement varies by FMP tier."""
+    """Optional warning — sp500 constituent entitlement varies by FMP tier.
+
+    Tries /stable/sp500-constituent first, then the v3 /sp500_constituent
+    fallback.
+    """
     name = "fmp.sp500_constituent"
-    url = f"{FMP_V3}/sp500_constituent"
-    try:
-        r = requests.get(url, params={"apikey": api_key}, timeout=15)
-    except requests.RequestException as e:
-        _print_warn(name, f"network error (optional gate): {e}")
-        return True
+    attempts = [
+        (f"{FMP_STABLE}/sp500-constituent", {"apikey": api_key}),
+        (f"{FMP_V3}/sp500_constituent", {"apikey": api_key}),
+    ]
+    last_detail = "no response"
+    for url, params in attempts:
+        try:
+            r = requests.get(url, params=params, timeout=15)
+        except requests.RequestException as e:
+            last_detail = f"network error (optional gate): {e}"
+            continue
+        if r.status_code != 200:
+            last_detail = (
+                f"HTTP {r.status_code} — likely entitlement (skip on Free); "
+                f"body: {_truncate(r.text)}"
+            )
+            continue
+        try:
+            data = r.json()
+        except ValueError:
+            last_detail = f"non-JSON body: {_truncate(r.text)}"
+            continue
+        if isinstance(data, list) and data:
+            _print_pass(name, f"{len(data)} constituents")
+            return True
+        last_detail = "empty list (skip on Free)"
 
-    if r.status_code != 200:
-        _print_warn(
-            name,
-            f"HTTP {r.status_code} — likely entitlement (skip on Free); body: {_truncate(r.text)}",
-        )
-        return True
-
-    try:
-        data = r.json()
-    except ValueError:
-        _print_warn(name, f"non-JSON body: {_truncate(r.text)}")
-        return True
-
-    if not isinstance(data, list) or not data:
-        _print_warn(name, "empty list (skip on Free)")
-        return True
-
-    _print_pass(name, f"{len(data)} constituents")
+    _print_warn(name, last_detail)
     return True
 
 

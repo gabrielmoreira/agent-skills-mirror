@@ -1,6 +1,6 @@
 ---
 name: generating-custom-lightning-type
-description: "Use this skill when users need to create Custom Lightning Types (CLTs) for Einstein Agent actions or structured input/output schemas. Trigger when users mention CLT, Custom Lightning Types, JSON schemas for agents, type definitions, lightning__objectType, or editor/renderer configurations. This is complex - always use this skill for CLT work."
+description: "Use this skill when users need to create Custom Lightning Types (CLTs) for Einstein Agent actions or structured input/output schemas. Trigger when users mention CLT, Custom Lightning Types, Custom Lightning Types (CLTs) with widget/mosaic/fragment rendition/renderer, JSON schemas for agents, type definitions, lightning__objectType, or editor/renderer configurations. When widget renditions are requested, you MUST first read the widget-rendition.md reference file in this skill's references/ directory and follow its complete workflow. This is complex - always use this skill for CLT work."
 metadata:
   version: "1.0"
 ---
@@ -12,6 +12,7 @@ Use this skill when you need to:
 - Generate JSON Schema-based type definitions for Lightning Platform
 - Configure CLTs for Einstein Agent actions
 - Set up editor and renderer configurations for custom UI
+- Create CLTs with widget/mosaic/fragment rendition
 - Troubleshoot deployment errors related to Custom Lightning Types
 
 ## Specification
@@ -28,6 +29,8 @@ Custom Lightning Types (CLTs) are JSON Schema-based type definitions used by the
 - **Include editor/renderer config** only when you need custom UI behavior (custom LWC input/output components). Otherwise, omit.
 
 ## Critical Rules (Read First)
+- **CRITICAL: NEVER include the `"$schema"` field in schema.json**
+  - Salesforce CLT validator WILL REJECT schemas with this field, even if it's a valid JSON Schema `$schema` declaration.
 - **Root object schemas MUST include**:
   - `"type": "object"`
   - `"title"`
@@ -58,45 +61,15 @@ Custom Lightning Types (CLTs) are JSON Schema-based type definitions used by the
 - **Object type validation**: the CLT root is validated to ensure `lightning:type` is exactly `lightning__objectType`.
 
 ## Primitive Types & Constraints
-- `lightning__textType`
-  - Max length 255
-- `lightning__multilineTextType`
-  - Max length 2000
-- `lightning__richTextType`
-  - Max length 100000
-- `lightning__urlType`
-  - Max length 2000
-  - Optional `lightning:allowedUrlSchemes` enum values: `https`, `http`, `relative`, `mailto`, `tel`
-- `lightning__dateType`
-  - Data pattern: YYYY-MM-DD
-- `lightning__timeType`
-  - Data pattern: HH:MM:SS.sssZ
-- `lightning__dateTimeType`
-  - Data shape is an object with required `dateTime` and optional `timeZone`
-- `lightning__numberType`
-  - Decimal numbers; optional `maximum`, `minimum`, `multipleOf`
-- `lightning__integerType`
-  - Whole numbers only; optional `maximum`, `minimum`
-- `lightning__booleanType`
-  - true/false
 
-## Allowed Property-Level Keywords
-When strict validation is enabled (`unevaluatedProperties: false`), keep each property minimal and prefer only keywords known to be allowed:
-- `title`, `description`, `einstein:description`
-- `type` (when used, ensure it matches the chosen `lightning:type`)
-- `lightning:type`
-- `maximum`, `minimum`, `multipleOf` (numeric)
-- `maxLength`, `minLength` (string)
-- `const`, `enum`
-- `lightning:textIndexed`, `lightning:supportsPersonalization`, `lightning:localizable`
-- `lightning:uiOptions`, `lightning:allowedUrlSchemes`
-- `lightning:tags` (metaschema restricts values; currently `flow` is the only known allowed tag)
+When you need the full list of supported primitive `lightning:type` identifiers, their constraints, and the allowed property-level keywords, read `assets/primitive-types-and-constraints.md` in this skill's directory.
 
 ## Generation Workflow
 1. **Confirm the CLT approach**
    - If referencing Apex: capture the exact class reference (`@apexClassType/namespace__ClassName$InnerClass`).
    - If using standard primitives: list the fields, their Lightning primitive types, and which fields are required.
 2. **Draft `schema.json`**
+   - **DO NOT include `"$schema"` at the top**
    - Start with the root object structure (required root fields).
    - Add `properties` using valid primitive `lightning:type` identifiers.
    - For nested-object properties, use **CLT Reference pattern**:
@@ -127,7 +100,7 @@ When strict validation is enabled (`unevaluatedProperties: false`), keep each pr
    - **Avoid known-invalid patterns**:
      - Do not use `es_property_editors/inputList`.
      - Do not use `itemSchema` attributes.
-4. **(Optional) Draft `renderer.json`** (only if custom UI is required)
+4. **(Optional) Draft `renderer.json`** (only if custom UI or mosaic rendition is required)
    - **Supported shape:** Top-level `renderer` object with `renderer.componentOverrides` and `renderer.layout`.
      - Top-level `renderer` object.
      - Use `renderer.componentOverrides` for component overrides.
@@ -138,6 +111,15 @@ When strict validation is enabled (`unevaluatedProperties: false`), keep each pr
      - Use `{!$attrs.<name>}` in attribute mappings when binding schema data to custom renderer component attributes.
      - **CRITICAL**: Attribute mappings like `{!$attrs.propertyName}` must reference properties that **actually exist** in your type schema. Referencing non-existent properties will fail validation.
      - **Type matching**: Attribute values must match the expected type for the component. For example, if a component expects a string attribute, passing an integer will fail validation.
+   - **Widget renderer pattern** (for widget rendition):
+       - **When to use:** Use this when users request "mosaic", "widget", "fragment", or "cross-platform rendering" for their CLT.
+       - **Structure:** `renderer.componentOverrides["$"] = { "type": "mosaic", "definition": "tile/mosaic", "children": [ /* UEM tree of blocks and regions */ ] }`
+       - **REQUIRED workflow:**
+           - **STOP**: Do NOT attempt to create the widget renderer yourself.
+           - **MANDATORY FIRST STEP**: You MUST fetch the reference file `references/widget-rendition.md` located in this skill's directory before proceeding.
+           - Follow the complete workflow documented in `widget-rendition.md` using the generated CLT schema as the grounding schema.
+           - The `widget-rendition.md` reference contains the full widget generation workflow: discovering UEM blocks via discoverUiComponents, calling getUiComponentSchemas, building the UEM tree, and writing renderer.json.
+           - **Do not** attempt to generate widget rendition without first fetching the `widget-rendition.md` reference file.
    - **Property-level override pattern**:
      - `renderer.componentOverrides["<propertyName>"] = { "definition": "es_property_editors/outputText" | "es_property_editors/outputNumber" | "es_property_editors/outputImage" | ... }`. **Valid renderer components** (examples): `es_property_editors/outputText`, `es_property_editors/outputNumber`, `es_property_editors/outputImage`. Avoid input-style components in the renderer.
    - **Layout pattern for renderer**:
@@ -166,11 +148,6 @@ When strict validation is enabled (`unevaluatedProperties: false`), keep each pr
          </targets>
      </LightningComponentBundle>
      ```
-7. **Deploy and validate**
-   - Run a final schema sanity check before deploy: valid `lightning:type` names, required fields present, and no disallowed keywords.
-   - Deploy the bundle using your org's standard metadata deployment flow (e.g. Salesforce CLI or IDE). The MCP client or tooling in use should provide or integrate with the appropriate deploy/retrieve commands for Lightning Type bundles.
-   - Validate incrementally: if deployment fails, remove disallowed keywords first (especially `examples`, `items`, nested `lightning:type`).
-
 ## Common Deployment Errors
 | Error / Symptom | Likely Cause | Fix |
 |---|---|---|
@@ -200,3 +177,4 @@ When strict validation is enabled (`unevaluatedProperties: false`), keep each pr
 - [ ] Layout configurations use `lightning/propertyLayout` with ONLY the `property` attribute (no `label`, `title`, or other attributes)
 - [ ] All attribute mappings (`{!$attrs.propertyName}`) reference properties that exist in the type schema
 - [ ] Custom LWC components have correct targets in `-meta.xml`: `lightning__AgentforceInput` for editors, `lightning__AgentforceOutput` for renderers
+- [ ] Root schema does NOT include `"$schema"` field

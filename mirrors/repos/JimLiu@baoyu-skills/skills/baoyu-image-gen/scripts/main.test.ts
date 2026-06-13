@@ -8,6 +8,7 @@ import type { CliArgs, ExtendConfig } from "./types.ts";
 import {
   createTaskArgs,
   detectProvider,
+  ensureDir,
   getConfiguredMaxWorkers,
   getConfiguredProviderRateLimits,
   getWorkerCount,
@@ -199,6 +200,26 @@ batch:
     concurrency: 1,
     start_interval_ms: 1500,
   });
+});
+
+test("ensureDir creates nested dirs, is idempotent on an existing dir, and rethrows for a non-directory", async (t: TestContext) => {
+  const root = await makeTempDir("ensure-dir-");
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+
+  const nested = path.join(root, "a", "b", "c");
+  await ensureDir(nested);
+  assert.equal((await fs.stat(nested)).isDirectory(), true);
+
+  // Idempotent: a second call on an existing directory must not throw. This is the
+  // Bun-on-Windows regression the helper guards against (Bun wrongly throws EEXIST
+  // for mkdir(existingDir, { recursive: true })).
+  await ensureDir(nested);
+
+  // Rethrows when the path exists but is a file rather than a directory, so a real
+  // EEXIST against a non-directory is not silently swallowed.
+  const filePath = path.join(root, "not-a-dir");
+  await fs.writeFile(filePath, "x");
+  await assert.rejects(() => ensureDir(filePath));
 });
 
 test("loadExtendConfig renames legacy EXTEND.md when the new path is missing", async () => {

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `coder/coder` — 26 default patterns, 12 followed patterns, 44 file(s) materialized.
+Mirror of `coder/coder` — 26 default patterns, 13 followed patterns, 45 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `coder/coder` — 26 default patterns, 12 followed patterns, 44 file(s
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 12 |
-| Files         | 44 |
+| Followed pats | 13 |
+| Files         | 45 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,6 +63,7 @@ Mirror of `coder/coder` — 26 default patterns, 12 followed patterns, 44 file(s
 - `.claude/docs/TROUBLESHOOTING.md`
 - `.claude/docs/DOCS_STYLE_GUIDE.md`
 - `.claude/docs/PR_STYLE_GUIDE.md`
+- `docs/.style/content-guidelines.md`
 
 ## File Index
 
@@ -114,6 +115,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | → | [`.claude/docs/TESTING.md`](.claude/docs/TESTING.md) |
 | 43 | → | [`.claude/docs/TROUBLESHOOTING.md`](.claude/docs/TROUBLESHOOTING.md) |
 | 44 | → | [`.claude/docs/WORKFLOWS.md`](.claude/docs/WORKFLOWS.md) |
+| 45 | → | [`docs/.style/content-guidelines.md`](docs/.style/content-guidelines.md) |
 
 ---
 

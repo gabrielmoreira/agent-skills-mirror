@@ -70,3 +70,9 @@ Provide:
 - Extra pages (in sitemap but 404 or redirected)
 - Quality gate warnings if applicable
 - Generated sitemap XML if creating new
+
+## Audit Persistence
+
+If `output_dir` is provided by the audit orchestrator, write:
+- `output_dir/findings/sitemap.md`: sitemap coverage, XML validity, URL status, and quality gate findings
+- Structured JSON-compatible findings for `audit-data.json` under the Sitemap category

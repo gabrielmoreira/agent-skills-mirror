@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `strands-agents/harness-sdk` — 26 default patterns, 5 followed patterns, 26 file(s) materialized.
+Mirror of `strands-agents/harness-sdk` — 26 default patterns, 4 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `strands-agents/harness-sdk` — 26 default patterns, 5 followed patte
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 26 |
+| Followed pats | 4 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,7 +52,6 @@ Mirror of `strands-agents/harness-sdk` — 26 default patterns, 5 followed patte
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `CONTRIBUTING.md`
-- `strands-py/docs/PR.md`
 - `dev-docs/PR.md`
 - `strands-py/docs/STYLE_GUIDE.md`
 - `site/CONTRIBUTING.md`
@@ -87,8 +86,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 23 | → | [`dev-docs/PR.md`](dev-docs/PR.md) |
 | 24 | → | [`site/CONTRIBUTING.md`](site/CONTRIBUTING.md) |
-| 25 | → | [`strands-py/docs/PR.md`](strands-py/docs/PR.md) |
-| 26 | → | [`strands-py/docs/STYLE_GUIDE.md`](strands-py/docs/STYLE_GUIDE.md) |
+| 25 | → | [`strands-py/docs/STYLE_GUIDE.md`](strands-py/docs/STYLE_GUIDE.md) |
 
 ---
 

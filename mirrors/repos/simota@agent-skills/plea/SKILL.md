@@ -151,11 +151,18 @@ Each persona generates requests with these sections:
 - **Post-fulfillment emotion:** [Relief / Joy / Surprise / Obvious]
 - **User-felt urgency:** [Daily pain / Weekly inconvenience / Occasional thought]
 
+### Confidence & Calibration
+- **synthetic:** true
+- **calibration:** `[validated]` / `[supported]` / `[hypothesis]` / `[synthetic-only]` — default `[hypothesis]` when the demand is plausible but no real Voice/Trace/Field data was consulted; `[synthetic-only]` when it may be an AI artifact (review for removal). Promote to `[supported]`/`[validated]` only with a cited real-data match per `reference/calibration.md`. **Every request carries a tag — not just `multi`.**
+- **Don't-build check:** [Is this need already met elsewhere, better solved without a feature, or a YAGNI risk? If so, say so — the honest user voice sometimes says "don't build this."]
+
 ### LLM Instruction Prompt
-[Per-request prompt — full template in `reference/llm-prompt-generation.md`]
+[Per-request prompt — full template in `reference/llm-prompt-generation.md`. The prompt MUST embed the calibration tag so a downstream agent never acts on a `[synthetic-only]` demand as if validated.]
 ````
 
 Request Generation Modes (EXPLORE / CHALLENGE / DEEP / COMPETE / EDGE) and their bias on persona framing: `reference/persona-embodiment.md`. Each Recipe declares its default Mode in the Recipes table.
+
+**Self-rejection gate (all Recipes, not just `multi`):** before emitting, drop or revise any request that is voice-mismatched (reads as PM/dev, not user), criteria-vague (no testable acceptance condition), persona-fabricated (no grounded `last_frustration`/`unspoken_assumption`), or feasibility-filtered (silently dropped because it seemed hard — forbidden; users don't price implementation). Record dropped counts by category in the report. Full ledger format: `reference/patterns.md`.
 
 ---
 
@@ -179,10 +186,14 @@ Generate user-perspective counterarguments to common team assumptions.
 ```yaml
 ASSUMPTION_CHALLENGE:
   team_assumption: "[What the team believes]"
+  steelman: "[The assumption in its STRONGEST form — why a smart team holds it. State this before countering; a challenge that beats only a strawman is worthless.]"
   user_reality: "[What users actually experience]"
-  evidence_type: "[Behavioral observation / Churn data / Support tickets / Competitor comparison]"
-  impact: "[Impact if this assumption is wrong]"
   user_voice: "[User's own words as counterargument]"
+  evidence_type: "[Behavioral observation / Churn data / Support tickets / Competitor comparison]"
+  falsifiable_test: "[The concrete observation that would CONFIRM or REFUTE this challenge — e.g. 'funnel drop-off at step 3 > 20%', 'A/B variant lifts activation'. A challenge with no resolving test is synthetic FUD; drop it.]"
+  impact: "[Impact if this assumption is wrong]"
+  verdict: "SURVIVES | WEAKENED | KILLED-pending-test  # synthetic verdict — the falsifiable_test settles it, not Plea"
+  calibration: "[hypothesis]  # ceiling until the test runs; a synthetic challenge is never user fact"
 ```
 
 ---
@@ -206,7 +217,7 @@ In `multi` Recipe: per-request prompts MUST embed the demand's `engine_concurren
 | Recipe | Subcommand | Default? | Mode | When to Use | Next Agent | Read First |
 |--------|-----------|---------|------|-------------|-----------|------------|
 | Feature Request | `request` | ✓ | EXPLORE | Authentic feature request generation — first-person demand from diverse personas | Spark, Rank | `reference/patterns.md` |
-| Unmet Needs | `need` | | DEEP | Surface unmet needs and uncover team blind spots | Spark, Accord | `reference/patterns.md` |
+| Unmet Needs | `need` | | DEEP | Surface **latent** unmet needs (inferred from friction proxies) and uncover team blind spots | Field/Trace (validate), then Spark, Accord | `reference/patterns.md` |
 | Challenge Assumptions | `challenge` | | CHALLENGE | Counter team assumptions, validate the roadmap | Accord, Rank | `reference/mode-playbooks.md` |
 | User Roleplay | `roleplay` | | DEEP | End-user role-play and deep-dive on a persona | Scribe, Saga | `reference/persona-embodiment.md` |
 | Jobs-to-be-Done | `jtbd` | | DEEP | Switch interview, four-forces, Job Map for the progress users hire the product to make | Field, Spark | `reference/jtbd-switch-interview.md` |
@@ -231,13 +242,13 @@ Parse the first token of user input.
 
 Behavior notes per Recipe:
 - `request`: EXPLORE. 3-7 personas (beginner + power user + edge case required). First-person voice.
-- `need`: DEEP on unmet needs. Use the curse-of-knowledge table to surface team blind spots.
-- `challenge`: CHALLENGE. Counter assumptions in the existing roadmap; hand off to Accord.
-- `roleplay`: DEEP, single-persona embodiment (worst-day, competitor comparison, silent-majority lens). Playbook: `reference/persona-embodiment.md`.
-- `jtbd`: Christensen / Moesta Switch interview producing **synthetic** JTBD (4 forces × 8-stage Job Map × functional/emotional/social). Real-user JTBD is Field's domain — tag `synthetic: true` and hand off. Protocol: `reference/jtbd-switch-interview.md`.
-- `5whys`: Toyota / Ohno 5 Whys on a user demand. ≥5 vertical levels, lateral Ishikawa fishbone, causal vs sequential discipline; rewrite output as root unmet need. Protocol: `reference/5whys-root-cause.md`.
-- `opportunity`: Torres OST — Outcome (behavioral metric) → Opportunity (user-voice unmet need) → Solution (2-4) → Experiment (smallest test + kill rule). Weekly cadence; hand off to Field / Spark / Experiment. Protocol: `reference/opportunity-solution-tree.md`.
-- `multi`: Multi-engine demand generation (dual-engine baseline Claude + Codex; tri-engine when agy AVAILABLE). All engines channel the **same** persona set; divergence reveals engine-specific persona-channeling angles. Per-cluster scoring (`UNIVERSAL-DEMAND` 3/3, `LIKELY-DEMAND` 2/3, `VERIFIED-DIVERGENT-VOICE` 1/3) + cross-persona axis (`CROSS-PERSONA-UNIVERSAL`). Compatible with `COMPETE` / `EDGE` / `CHALLENGE`. Critical: divergent voice often surfaces silent-majority insight — NOT auto-low-value. Full flow + JSON schema + degraded modes: `reference/tri-engine-demand.md`.
+- `need`: DEEP on **latent** unmet needs the user cannot articulate. Apply the Unmet-Need Elicitation method (`reference/patterns.md` Pattern 7) — infer needs from observable proxies (workaround / abandonment / non-consumption / over-service / tolerated-pain / adjacent-tool-leakage), report the underlying need not the workaround, and name the team blind spot via the curse-of-knowledge table. Calibration ceiling is `[hypothesis]` until Trace/Field behavioral evidence confirms the proxy — default handoff is Field/Trace for validation, then Spark/Accord. Disambiguation: `need` = breadth-first discovery; escalate one need to `5whys` (root cause) / `jtbd` (the job) / `opportunity` (structure toward an outcome).
+- `challenge`: CHALLENGE. Counter assumptions in the existing roadmap. **Discipline: steelman → counter → falsifiable test → verdict.** State each assumption in its strongest form before countering (no strawman); give every challenge a concrete test that would confirm/refute it (no test ⇒ synthetic FUD, drop it); close with a verdict (`SURVIVES`/`WEAKENED`/`KILLED-pending-test`) where the test, not Plea, settles it. Calibration ceiling `[hypothesis]` — a synthetic challenge is never user fact. Lane: `challenge` = user-voice objection (a persona disagreeing); not architectural arbitration (`magi`), failure-mode enumeration (`omen`), or scope subtraction (`void`). Hand off to Accord (roadmap integration) / Rank (re-prioritize survivors).
+- `roleplay`: DEEP, **single-persona depth** — a sustained first-person embodiment, not a demand list. Apply the Single-Persona Depth method (`reference/persona-embodiment.md`): stack **≥ 3** of the 5 tactics on the one persona, span a full Day-in-the-Life / journey arc with an emotional trajectory, and hold **character coherence** (consistent vocabulary/assumption/frustration; zero PM-voice leakage — break-character ⇒ restart the scene). Shape output as a `ROLEPLAY_ARC` (setup → inciting friction → escalation → turning point → demands) for the Scribe (user stories) / Saga (narrative) handoff. Representativeness ceiling `[hypothesis]` — one vivid persona is the highest projection-bias risk; state "one persona, not the market" and recommend a breadth (`request`/`multi`) or Field pass before generalizing.
+- `jtbd`: Christensen / Moesta Switch interview producing **synthetic** JTBD (4 forces × 8-stage Job Map × functional/emotional/social). Emit a `SWITCH_PREDICTION` — per-force calibration tags, a `SWITCHES`/`STAYS`/`TOO-CLOSE-TO-CALL` verdict, the **riskiest force** (verdict-flipper), and a `falsifiable_test`; ceiling `[hypothesis]` until Field validates with real switchers. Bridge Job-Map per-stage frictions into Plea's standard **tagged demands** (don't stop at the abstract map) and run the `request` self-rejection gate. Real-user JTBD is Field's domain — tag `synthetic: true` and hand off (riskiest_force first). Protocol: `reference/jtbd-switch-interview.md`.
+- `5whys`: Toyota / Ohno 5 Whys on a user demand. ≥5 vertical levels, lateral Ishikawa fishbone, causal vs sequential discipline; rewrite output as root unmet need. **Calibrate the synthetic chain**: per-link `confidence` (monotonically decaying with depth), a `speculation_cliff` marker, a named `weakest_link` (Field validates first — it invalidates its descendants), and a `root_falsifiable_test`; root ceilings at `[hypothesis]` until Field/Voice confirms with real-user language. Protocol: `reference/5whys-root-cause.md`.
+- `opportunity`: Torres OST — Outcome (behavioral metric) → Opportunity (user-voice unmet need) → Solution (2-4) → Experiment (smallest test + kill rule). Each node carries a `calibration` tag (default `[hypothesis]`; only `[validated]`/`[supported]` are growth-acceptance Insight-Ledger-citable). **Synthetic-tree prune caveat**: every node is self-generated, so don't cut high-impact branches for "low evidence" (circular) — cut only `[synthetic-only]` implausible nodes; high-impact `[hypothesis]` nodes go to Field. Name the **load-bearing opportunity** (highest impact × uncertainty) — Field validates it first. Weekly cadence; hand off to Field / Spark / Experiment. Protocol: `reference/opportunity-solution-tree.md`.
+- `multi`: Multi-engine demand generation (dual-engine baseline Claude + Codex; tri-engine when agy AVAILABLE). All engines channel the **same** persona set; divergence reveals engine-specific persona-channeling angles. Per-cluster scoring (`UNIVERSAL-DEMAND` 3/3, `LIKELY-DEMAND` 2/3, `VERIFIED-DIVERGENT-VOICE` 1/3) + cross-persona axis (`CROSS-PERSONA-UNIVERSAL`) + **negative concurrence** (`NO-DEMAND-CONSENSUS` — all engines silent ⇒ don't-build/non-need signal, the subtraction signal single-engine can't produce; distinguish "agree it's fine" from shared-bias blind spot). Name the **load-bearing demand** for Field to validate first (riskiest-first family). Compatible with `COMPETE` / `EDGE` / `CHALLENGE`. Critical: divergent voice often surfaces silent-majority insight — NOT auto-low-value. Full flow + JSON schema + degraded modes: `reference/tri-engine-demand.md`.
 
 ---
 
@@ -247,13 +258,16 @@ Every deliverable must include:
 
 - Persona list (name, archetype, emotional state)
 - Feature requests in first-person user voice with acceptance criteria
+- **Calibration tag per request** (`[validated]` / `[supported]` / `[hypothesis]` / `[synthetic-only]`) — default `[hypothesis]` when uncalibrated; never present a synthetic demand as validated user voice
 - Cross-persona analysis (shared demands and persona-specific demands)
 - Assumption challenges (at least 3 team assumptions surfaced)
 - Emotional impact rating per request (current emotion, post-fulfillment emotion, urgency)
-- **LLM Instruction Prompt — per-request** (paste-ready prompt for downstream agent under each request)
+- **Don't-build candidates** — requests where the honest user voice is "this need is already met / not worth a feature" (omit the section only if none apply)
+- **Self-rejection ledger** — dropped-request counts by category (voice-mismatch / criteria-vague / persona-fabricated / feasibility-filtered)
+- **LLM Instruction Prompt — per-request** (paste-ready prompt for downstream agent under each request; embeds the calibration tag)
 - **LLM Instruction Prompt — per-report** (orchestration prompt at end of report; see `LLM Instruction Prompt Generation`)
 
-**Multi-Engine Recipe (`multi`) additional requirements:** engine-status line in header · per-demand `engine_concurrence` tag · per-demand calibration tag (`[validated]`/`[supported]`/`[hypothesis]`/`[synthetic-only]`) · mandatory Cross-Persona Analysis section · top-priority section listing `CROSS-PERSONA-UNIVERSAL` demands · condensed rejection ledger by category (voice-mismatch / criteria-vague / persona-fabricated) · per-request LLM prompts embed `engine_concurrence` + calibration tags. Full schema: `reference/tri-engine-demand.md`.
+**Multi-Engine Recipe (`multi`) additional requirements:** engine-status line in header · per-demand `engine_concurrence` tag · per-demand calibration tag (`[validated]`/`[supported]`/`[hypothesis]`/`[synthetic-only]`) · mandatory Cross-Persona Analysis section · top-priority section listing `CROSS-PERSONA-UNIVERSAL` demands · **Don't-build candidates section listing `NO-DEMAND-CONSENSUS` areas** (don't-build vs shared-bias-suspect) · **named load-bearing demand for validate-first** · condensed rejection ledger by category (voice-mismatch / criteria-vague / persona-fabricated / feasibility-filtered=0) · per-request LLM prompts embed `engine_concurrence` + calibration tags. Full schema: `reference/tri-engine-demand.md`.
 
 ---
 
@@ -278,12 +292,25 @@ Every deliverable must include:
 ## Cross-Persona Analysis
 
 ### Shared Demands (mentioned by multiple personas)
-| Request | Mentioned by | User-felt urgency |
-|---------|-------------|-------------------|
+| Request | Mentioned by | User-felt urgency | Calibration |
+|---------|-------------|-------------------|-------------|
 
 ### Persona-Specific Demands
-| Request | Persona | Why only this persona notices |
-|---------|---------|-------------------------------|
+| Request | Persona | Why only this persona notices | Calibration |
+|---------|---------|-------------------------------|-------------|
+
+## Don't-Build Candidates
+| Request | Why the honest user voice says don't build | Already-met-by |
+|---------|--------------------------------------------|----------------|
+[Omit this section only when no request qualifies.]
+
+## Self-Rejection Ledger
+| Category | Dropped | Example |
+|----------|---------|---------|
+| voice-mismatch | [N] | [brief] |
+| criteria-vague | [N] | [brief] |
+| persona-fabricated | [N] | [brief] |
+| feasibility-filtered | [N — should be 0; users don't price implementation] | [brief] |
 
 ## Questions for the Team
 1. [Assumption challenge 1-3]
@@ -298,7 +325,7 @@ Every deliverable must include:
 
 | File | Read this when |
 |------|----------------|
-| `reference/patterns.md` | You need demand generation patterns (Persona Spectrum, Devil's Advocate, etc.) |
+| `reference/patterns.md` | You need demand generation patterns (Persona Spectrum, Devil's Advocate, Day-in-the-Life, etc.), the `request` default-calibration + self-rejection gate, or the `need` Recipe's Unmet-Need Elicitation method (Pattern 7 — latent-need taxonomy, proxy probes, sibling-DEEP disambiguation) |
 | `reference/examples.md` | You need output quality benchmarks and session examples |
 | `reference/handoffs.md` | You need inbound/outbound handoff templates |
 | `reference/calibration.md` | You are calibrating synthetic demands against real user data from Voice / Trace / Field — assigning confidence tags (`[validated]` / `[supported]` / `[hypothesis]` / `[synthetic-only]`) and detecting recalibration triggers |
@@ -425,6 +452,9 @@ _STEP_COMPLETE:
     feature_requests: List[Request]
     personas_used: List[Persona]
     blind_spots_discovered: List[String]
+    calibration_distribution: {validated|supported|hypothesis|synthetic-only: count}  # every request tagged
+    dont_build_candidates: List[{request, reason}]
+    rejection_ledger: {voice-mismatch|criteria-vague|persona-fabricated|feasibility-filtered: count}
     llm_prompts:
       per_request_count: [N — must equal feature_requests count]
       per_report: included

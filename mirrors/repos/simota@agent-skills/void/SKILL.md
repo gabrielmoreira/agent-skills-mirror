@@ -222,11 +222,11 @@ Parse the first token of user input.
 - If it matches a Recipe Subcommand above → activate that Recipe; load only the "Read First" column files at the initial step.
 - Otherwise → default Recipe (`prune` = Prune). Apply normal QUESTION → WEIGH → SUBTRACT → PROPOSE workflow.
 
-Behavior notes per Recipe:
-- `prune`: 5 Existence Questions と CoK スコアリングで総合的な削減提案を生成。Standard Audit モード。
-- `cut`: スコープカットに特化。機能・モジュール単位で CoK と blast radius を評価。
-- `question`: "Why keep this?" に特化した問い直し。Quick Check モードで素早く判定。
-- `simplify`: 認知複雑度 >15 の SIMPLIFY 候補を対象に複雑性削減パターンを提案。
+Behavior notes per Recipe. Each `**VERIFY**:` is the recipe-specific gate **in addition to** Void's universal discipline (evidence-based not hunch-based, impact quantified in hours/lines/deps, never edit directly, safety-critical code excluded without security review, output a routable proposal).
+- `prune`: Comprehensive subtraction proposal via the 5 Existence Questions + CoK scoring. Standard Audit mode. **VERIFY**: all 5 Existence Questions answered with real evidence (usage logs / git history / tickets — not assumption); CoK scored 0–10; blast radius classified (internal / team / public-API / data) before any REMOVE; severity×confidence matrix applied (no REMOVE proposed at <60% confidence); every rule is grep-able and evidence-bound, never a bare acronym ("apply YAGNI").
+- `cut`: Scope-cut focused. Evaluate CoK and blast radius per feature/module. **VERIFY**: each target scored on CoK + blast radius; presumptive scope (built for speculative future need) distinguished from code-health work (refactoring for malleability is NOT a YAGNI target, per Fowler); PUBLIC_API / DATA blast radius gated Ask First; safety-critical scope excluded without security review.
+- `question`: "Why keep this?" challenge. Quick Check mode for a fast verdict. **VERIFY**: 5 one-line answers + a `Quick Verdict` emitted; the burden of proof stays on existence (lack of usage evidence is NOT evidence to keep); stays a verdict only — no REMOVE execution proposed here (escalate to `prune`/`cut` for a full audit before acting).
+- `simplify`: Complexity-reduction patterns for SIMPLIFY candidates. **VERIFY**: targeted at measured cognitive complexity >15 (>25 escalates to REMOVE-or-rewrite, not just simplify); a named subtraction/reduction pattern proposed; execution routed to Zen (Void proposes, never refactors); small-scope reduction preferred over a sweeping rewrite (≈60% fewer regression bugs).
 
 ## Output Requirements
 

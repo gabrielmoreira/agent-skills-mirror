@@ -9,7 +9,7 @@ AI DevKit solves common problems with AI-assisted development: context loss betw
 - **Structured Development Workflows**: Phase-based guidance through requirements, design, planning, implementation, testing, and code review
 - **Long-Term Memory**: 100% local SQLite-based knowledge storage for coding standards, patterns, and decisions across sessions
 - **Skills System**: Community-driven plugins that teach AI new capabilities and domain-specific patterns
-- **Multi-Agent Support**: Works with 11+ AI coding environments including Cursor, Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, Windsurf, and more
+- **Multi-Agent Support**: Works with 11+ AI coding environments including Cursor, Claude Code, GitHub Copilot, Gemini CLI, OpenAI Codex, and more
 
 ## Quick Start
 
@@ -25,17 +25,13 @@ Initialize in your project:
 ai-devkit init
 ```
 
-## Key Commands
+## Key Skills
 
-- `/new-requirement` - Start a new feature with structured documentation
-- `/review-requirements` - Validate requirements completeness
-- `/review-design` - Check architecture and generate mermaid diagrams
-- `/execute-plan` - Work through implementation step-by-step
-- `/code-review` - Pre-commit structured code reviews
-- `/writing-test` - Generate comprehensive tests targeting 100% coverage
-- `/debug` - Systematic 7-step debugging process
-- `/remember` - Store important guidelines and patterns in memory
-- `/capture-knowledge` - Analyze and document existing code
+- `dev-lifecycle` - Start a new feature, validate requirements and design, execute plans, and run pre-commit reviews
+- `tdd` - Add test coverage with a test-first workflow
+- `structured-debug` - Debug systematically with reproduction, hypotheses, fixes, and verification
+- `memory` - Store important guidelines and patterns in memory
+- `document-code` - Analyze and document existing code
 
 ## Documentation
 

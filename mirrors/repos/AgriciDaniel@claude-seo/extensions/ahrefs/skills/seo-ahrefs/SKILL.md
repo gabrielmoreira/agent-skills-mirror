@@ -1,14 +1,14 @@
 ---
 name: seo-ahrefs
-description: Ahrefs API analyst (extension). Reads referring domains, backlinks, organic keywords, and content explorer data via the official @ahrefs/mcp server. Pairs with seo-backlinks for multi-source confidence weighting.
+description: Ahrefs API analyst (extension). Reads referring domains, backlinks, organic keywords, and content explorer data via the official @ahrefs/mcp@0.0.11 server. Pairs with seo-backlinks for multi-source confidence weighting.
 metadata:
-  version: "2.0.0"
-compatibility: "Requires the official @ahrefs/mcp server (installed by extensions/ahrefs/install.sh)."
+  version: "2.2.0"
+compatibility: "Requires the official @ahrefs/mcp@0.0.11 server (installed by extensions/ahrefs/install.sh)."
 ---
 
 # seo-ahrefs
 
-Live Ahrefs data via the official `@ahrefs/mcp` server.
+Live Ahrefs data via the official `@ahrefs/mcp@0.0.11` server.
 
 ## Prerequisites
 
@@ -45,7 +45,7 @@ provide the install command above.
 
 Ahrefs API usage is metered per unit. Before running a batch (>= 50 URLs):
 
-1. Estimate cost with `python scripts/dataforseo_costs.py` (the cost-tracker module is generic and supports Ahrefs unit accounting).
+1. Estimate cost with `python3 scripts/dataforseo_costs.py` (the cost-tracker module is generic and supports Ahrefs unit accounting).
 2. Surface the estimate to the orchestrator.
 3. Log actual cost after each call.
 

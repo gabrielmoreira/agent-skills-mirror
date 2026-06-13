@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vllm-project/vllm` — 26 default patterns, 1 followed patterns, 5 file(s) materialized.
+Mirror of `vllm-project/vllm` — 26 default patterns, 2 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `vllm-project/vllm` — 26 default patterns, 1 followed patterns, 5 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 5 |
+| Followed pats | 2 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `vllm-project/vllm` — 26 default patterns, 1 followed patterns, 5 fi
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/contributing/ci/failures.md`
 - `docs/contributing/editing-agent-instructions.md`
 
 ## File Index
@@ -63,7 +64,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`rust/AGENTS.md`](rust/AGENTS.md) |
 | 4 | ✓ | [`rust/CLAUDE.md`](rust/CLAUDE.md) |
-| 5 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
+| 5 | → | [`docs/contributing/ci/failures.md`](docs/contributing/ci/failures.md) |
+| 6 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
 
 ---
 

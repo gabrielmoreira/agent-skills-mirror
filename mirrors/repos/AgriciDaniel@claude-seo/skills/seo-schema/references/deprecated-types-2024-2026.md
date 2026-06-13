@@ -32,7 +32,7 @@ These are listed for completeness so the LLM doesn't suggest them.
 | Type | Retired | Notes |
 |---|---|---|
 | **HowTo** (`@type: HowTo`) | September 2023 | Rich result removed from desktop and mobile. The vocabulary remains but produces no SERP feature. Some sites still use HowTo for AI citation legibility — that's a defensible reason to keep it, but flag it as "no SERP effect". |
-| **FAQ** (`@type: FAQPage`) | August 2023 | Restricted to government and healthcare sites. For commercial sites: flag existing FAQPage as Info (not Critical) because it still helps AI/LLM citations; do **not** recommend adding new FAQPage for SERP benefit. |
+| **FAQ** (`@type: FAQPage`) | Aug 2023 (restricted); **May 7, 2026 (fully retired)** | Rich results fully retired for **all** sites on May 7, 2026 — this supersedes the 2023 gov/health restriction. Rich Results Test/report support drops Jun 2026; Search Console API Aug 2026. Flag existing FAQPage as Info (not Critical) because it still helps AI/LLM citation as an entity signal; do **not** recommend removal or new FAQPage for SERP benefit. For genuine single-question pages, use `QAPage`. |
 
 ## Replacement decision table
 
@@ -47,6 +47,7 @@ When generating schema, prefer these alternatives:
 | `SpecialAnnouncement` | `Event` if time-bounded; otherwise `Article` or `WebPage`. |
 | `VehicleListing` | `Product` with vehicle-specific properties. |
 | `HowTo` (for SERP) | None — explain the rich result is dead. Suggest article structure with clear `<h2>` step headings if the goal is comprehension; ranking benefit is no longer schema-driven. |
+| `FAQPage` (for SERP) | None — rich results retired May 2026. Keep the markup for AI citation; use `QAPage` for genuine user-submitted Q&A pages. |
 
 ## Primary sources
 
@@ -54,5 +55,6 @@ When generating schema, prefer these alternatives:
 - Special Announcement deprecation (July 2025): https://developers.google.com/search/blog
 - HowTo retirement (September 2023): https://developers.google.com/search/blog/2023/09/structured-data-changes
 - FAQ restriction (August 2023): https://developers.google.com/search/blog/2023/08/howto-faq-changes
+- FAQ rich result retirement (May 7, 2026): https://developers.google.com/search/docs/appearance/structured-data/faqpage
 
-Last verified against developers.google.com: 2026-05-17.
+Last verified against developers.google.com: 2026-05-25.

@@ -5,7 +5,7 @@ effort: high
 model: opus
 name: commit
 user-invocable: true
-description: 'This skill should be used when the user asks to commit changes, craft a commit message, or run a commit workflow. Creates atomic git commits with conventional-commit formatting and optional deep analysis or push. Flags: --all, --deep, --close, --push.'
+description: 'Use for commit workflows: commit changes, craft commit messages, create atomic conventional commits, optionally --all, --deep, --close, or --push.'
 ---
 
 # Git Commit

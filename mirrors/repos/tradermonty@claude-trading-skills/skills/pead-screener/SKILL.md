@@ -53,6 +53,8 @@ python3 skills/pead-screener/scripts/screen_pead.py \
   --output-dir reports/
 ```
 
+**Scheduled US-equity routine pitfall:** Prefer Mode B for pre-market / US-equity cron briefs after running `earnings-trade-analyzer`. Mode A can pull the global FMP earnings calendar, spend the API budget on non-US symbols, and return weak/non-actionable foreign listings before reaching the intended US watchlist. If Mode A is used anyway and the script reports budget trimming or non-US symbols, mark PEAD output as degraded and treat it as manual-review only rather than a clean candidate source.
+
 ### Step 2: Review Results
 
 1. Read the generated JSON and Markdown reports

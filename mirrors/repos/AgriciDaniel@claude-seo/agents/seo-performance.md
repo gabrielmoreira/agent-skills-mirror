@@ -25,7 +25,7 @@ Google evaluates the **75th percentile** of page visits, 75% of visits must meet
 ## When Analyzing Performance
 
 1. Use PageSpeed Insights API if available
-2. Otherwise, analyze HTML source for common issues
+2. Use `python3 scripts/render_page.py <URL> --mode auto --json` before HTML/source inspection so SPA content is visible when needed
 3. Provide specific, actionable optimization recommendations
 4. Prioritize by expected impact
 
@@ -64,8 +64,11 @@ Google evaluates the **75th percentile** of page visits, 75% of visits must meet
 ## Tools
 
 ```bash
-# PageSpeed Insights API
-curl "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=URL&key=API_KEY"
+# PageSpeed Insights API (uses header-based API key handling)
+python3 scripts/pagespeed_check.py URL --json
+
+# SPA-aware HTML/render inspection
+python3 scripts/render_page.py URL --mode auto --json
 
 # Lighthouse CLI
 npx lighthouse URL --output json
@@ -75,8 +78,8 @@ npx lighthouse URL --output json
 
 If Google API credentials are configured, prefer CrUX field data over Lighthouse lab data for CWV assessment:
 ```bash
-python scripts/pagespeed_check.py URL --json
-python scripts/crux_history.py URL --json
+python3 scripts/pagespeed_check.py URL --json
+python3 scripts/crux_history.py URL --json
 ```
 Field data (28-day Chrome user average) is more representative than lab data (single Lighthouse run). Use lab data as fallback when CrUX returns 404 (insufficient traffic).
 
@@ -87,3 +90,10 @@ Provide:
 - Core Web Vitals status (pass/fail per metric)
 - Specific bottlenecks identified
 - Prioritized recommendations with expected impact
+
+## Persistence Contract
+
+If `output_dir` is provided by the audit orchestrator, write:
+
+- `output_dir/findings/performance.md`: evidence, scores, bottlenecks, and recommendations
+- Structured JSON-compatible findings for `audit-data.json` under the Performance category

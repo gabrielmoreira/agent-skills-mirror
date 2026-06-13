@@ -7,7 +7,10 @@ param(
 
     [switch]$SkipRefresh,
 
-    [switch]$StartServices
+    [switch]$StartServices,
+
+    [ValidateSet('Claude', 'Codex', 'Both')]
+    [string]$McpHostTarget = 'Both'
 )
 
 Set-StrictMode -Version Latest
@@ -18,11 +21,35 @@ $OutputEncoding = [System.Text.UTF8Encoding]::new($false)
 
 . (Join-Path $PSScriptRoot 'lib\ToolDiscovery.ps1')
 
+$Capability = @(
+    foreach ($item in @($Capability)) {
+        if ([string]::IsNullOrWhiteSpace($item)) {
+            continue
+        }
+        foreach ($name in ($item -split ',')) {
+            $trimmed = $name.Trim()
+            if (-not [string]::IsNullOrWhiteSpace($trimmed)) {
+                $trimmed
+            }
+        }
+    }
+) | Select-Object -Unique
+
 function Get-FirstCommandPath {
-    param([string[]]$Names)
+    param(
+        [string[]]$Names,
+        [switch]$PreferApplication
+    )
 
     foreach ($name in $Names) {
-        $cmd = Get-Command $name -ErrorAction SilentlyContinue
+        $commands = @(Get-Command $name -All -ErrorAction SilentlyContinue)
+        if ($PreferApplication) {
+            $preferred = $commands | Where-Object { $_.CommandType -eq 'Application' } | Select-Object -First 1
+            if ($preferred) {
+                return $preferred.Source
+            }
+        }
+        $cmd = $commands | Select-Object -First 1
         if ($cmd) {
             return $cmd.Source
         }
@@ -30,10 +57,53 @@ function Get-FirstCommandPath {
     return ''
 }
 
+function Get-PreferredPowerShellPath {
+    $pwsh = Get-FirstCommandPath -Names @('pwsh.exe', 'pwsh') -PreferApplication
+    if (-not [string]::IsNullOrWhiteSpace($pwsh)) {
+        return $pwsh
+    }
+    return Get-FirstCommandPath -Names @('powershell.exe', 'powershell') -PreferApplication
+}
+
+function Get-NodeCommandPath {
+    param([Parameter(Mandatory = $true)][string]$Name)
+
+    return Get-FirstCommandPath -Names @("$Name.cmd", "$Name.exe", $Name) -PreferApplication
+}
+
+function Test-SuccessExitCode {
+    param([int]$ExitCode)
+
+    return $ExitCode -in @(0, 3010, 1641)
+}
+
+function Get-McpHostTargets {
+    switch ($McpHostTarget) {
+        'Claude' { return @('Claude') }
+        'Codex' { return @('Codex') }
+        default { return @('Claude', 'Codex') }
+    }
+}
+
+function Test-ReverseIsWindows {
+    return $env:OS -eq 'Windows_NT'
+}
+
+function Test-ReverseIsElevated {
+    if (-not (Test-ReverseIsWindows)) {
+        return $true
+    }
+
+    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object Security.Principal.WindowsPrincipal($identity)
+    return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
 function Ensure-WingetPackage {
     param(
         [Parameter(Mandatory = $true)][string]$Id,
-        [Parameter(Mandatory = $true)][string]$Label
+        [Parameter(Mandatory = $true)][string]$Label,
+        [string]$Override
     )
 
     $winget = Get-FirstCommandPath -Names @('winget')
@@ -41,8 +111,20 @@ function Ensure-WingetPackage {
         throw "Cannot auto-install $Label because winget is not available."
     }
 
-    & $winget install --id $Id --source winget --accept-package-agreements --accept-source-agreements --disable-interactivity
-    if ($LASTEXITCODE -ne 0) {
+    $arguments = @(
+        'install',
+        '--id', $Id,
+        '--source', 'winget',
+        '--accept-package-agreements',
+        '--accept-source-agreements',
+        '--disable-interactivity'
+    )
+    if (-not [string]::IsNullOrWhiteSpace($Override)) {
+        $arguments += @('--override', $Override)
+    }
+
+    & $winget @arguments
+    if (-not (Test-SuccessExitCode -ExitCode $LASTEXITCODE)) {
         throw "winget install failed for $Label ($Id)."
     }
 }
@@ -51,7 +133,7 @@ function Ensure-NodeRuntime {
     if (-not (Get-FirstCommandPath -Names @('node'))) {
         Ensure-WingetPackage -Id 'OpenJS.NodeJS.22' -Label 'Node.js 22'
     }
-    if (-not (Get-FirstCommandPath -Names @('npx'))) {
+    if (-not (Get-NodeCommandPath -Name 'npx')) {
         Ensure-WingetPackage -Id 'OpenJS.NodeJS.22' -Label 'Node.js 22'
     }
 }
@@ -70,8 +152,8 @@ function Ensure-JavaRuntime {
 
 function Ensure-Pnpm {
     Ensure-NodeRuntime
-    if (-not (Get-FirstCommandPath -Names @('pnpm'))) {
-        $npm = Get-FirstCommandPath -Names @('npm')
+    if (-not (Get-NodeCommandPath -Name 'pnpm')) {
+        $npm = Get-NodeCommandPath -Name 'npm'
         if ([string]::IsNullOrWhiteSpace($npm)) {
             throw 'npm is not available after Node.js installation.'
         }
@@ -80,6 +162,180 @@ function Ensure-Pnpm {
             throw 'Failed to install pnpm globally.'
         }
     }
+}
+
+function Get-AnythingAnalyzerUserDataPaths {
+    $candidates = @(
+        (Join-Path $env:APPDATA 'anything-analyzer'),
+        (Join-Path $env:APPDATA 'Anything Analyzer')
+    )
+
+    $existing = @($candidates | Where-Object { Test-Path -LiteralPath $_ -PathType Container })
+    if ($existing.Count -gt 0) {
+        return @($existing | Sort-Object -Unique)
+    }
+
+    return @($candidates | Sort-Object -Unique)
+}
+
+function Ensure-AnythingAnalyzerMcpConfig {
+    param([int]$Port = 23816)
+
+    $payload = [ordered]@{
+        enabled = $true
+        port = $Port
+        authEnabled = $false
+        authToken = ''
+    }
+
+    foreach ($userDataPath in Get-AnythingAnalyzerUserDataPaths) {
+        if (-not (Test-Path -LiteralPath $userDataPath)) {
+            New-Item -ItemType Directory -Path $userDataPath -Force | Out-Null
+        }
+        $configPath = Join-Path $userDataPath 'mcp-server-config.json'
+        $payload | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $configPath -Encoding utf8
+    }
+}
+
+function Test-VsBuildToolsInstalled {
+    $roots = @(
+        (Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\2022\BuildTools'),
+        (Join-Path $env:ProgramFiles 'Microsoft Visual Studio\2022\BuildTools')
+    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+
+    foreach ($root in $roots) {
+        $vcToolsPath = Join-Path $root 'VC\Tools\MSVC'
+        if (Test-Path -LiteralPath $vcToolsPath -PathType Container) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Ensure-VsBuildTools {
+    if (Test-VsBuildToolsInstalled) {
+        return
+    }
+
+    $override = '--wait --quiet --norestart --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended'
+    try {
+        Ensure-WingetPackage -Id 'Microsoft.VisualStudio.2022.BuildTools' -Label 'Visual Studio Build Tools 2022' -Override $override
+    }
+    catch {
+        if (-not (Test-ReverseIsElevated)) {
+            throw "$($_.Exception.Message) Current PowerShell process is not elevated; Visual Studio Build Tools may require an administrator/UAC install."
+        }
+        throw
+    }
+
+    if (-not (Test-VsBuildToolsInstalled)) {
+        throw 'Visual Studio Build Tools installed command completed, but the C++ workload was not detected.'
+    }
+}
+
+function Test-AnythingAnalyzerElectronHealthy {
+    param(
+        [Parameter(Mandatory = $true)][string]$RepoDir,
+        [Parameter(Mandatory = $true)][string]$PnpmPath
+    )
+
+    Push-Location $RepoDir
+    try {
+        & $PnpmPath exec electron --version *> $null
+        return $LASTEXITCODE -eq 0
+    }
+    catch {
+        return $false
+    }
+    finally {
+        Pop-Location
+    }
+}
+
+function Set-AnythingAnalyzerPnpmBuildApprovals {
+    param(
+        [Parameter(Mandatory = $true)][string]$RepoDir,
+        [Parameter(Mandatory = $true)][string[]]$Packages
+    )
+
+    $workspacePath = Join-Path $RepoDir 'pnpm-workspace.yaml'
+    $lines = @()
+    if (Test-Path -LiteralPath $workspacePath) {
+        $lines = @(Get-Content -LiteralPath $workspacePath)
+    }
+
+    $existingPackages = New-Object System.Collections.Generic.List[string]
+    $preserved = New-Object System.Collections.Generic.List[string]
+    $skipOnlyBuilt = $false
+
+    foreach ($line in $lines) {
+        if ($line -match '^\s*onlyBuiltDependencies\s*:') {
+            $skipOnlyBuilt = $true
+            continue
+        }
+
+        if ($skipOnlyBuilt) {
+            if ($line -match '^\s*-\s*(.+?)\s*$') {
+                $existingPackages.Add($matches[1].Trim("'`""))
+                continue
+            }
+            if ($line -match '^\s+' -or [string]::IsNullOrWhiteSpace($line)) {
+                continue
+            }
+            $skipOnlyBuilt = $false
+        }
+
+        $preserved.Add($line)
+    }
+
+    while ($preserved.Count -gt 0 -and [string]::IsNullOrWhiteSpace($preserved[$preserved.Count - 1])) {
+        $preserved.RemoveAt($preserved.Count - 1)
+    }
+
+    $approvedPackages = @($existingPackages + @($Packages)) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object -Unique
+    if ($preserved.Count -gt 0) {
+        $preserved.Add('')
+    }
+    $preserved.Add('onlyBuiltDependencies:')
+    foreach ($package in $approvedPackages) {
+        $preserved.Add("  - $package")
+    }
+
+    Set-Content -LiteralPath $workspacePath -Value @($preserved) -Encoding utf8
+}
+
+function Approve-AnythingAnalyzerBuildScripts {
+    param(
+        [Parameter(Mandatory = $true)][string]$RepoDir,
+        [Parameter(Mandatory = $true)][string]$PnpmPath
+    )
+
+    $buildPackages = @('electron', 'esbuild', 'better-sqlite3')
+
+    Push-Location $RepoDir
+    try {
+        $approveExitCode = 1
+        try {
+            $approveOutput = & $PnpmPath approve-builds --all 2>&1
+            $approveExitCode = $LASTEXITCODE
+        }
+        catch {
+            $approveOutput = $_.Exception.Message
+            $approveExitCode = 1
+        }
+
+        if ($approveExitCode -eq 0) {
+            return
+        }
+
+        Write-Warning 'pnpm approve-builds --all is unavailable or failed; writing pnpm-workspace.yaml build approvals directly.'
+    }
+    finally {
+        Pop-Location
+    }
+
+    Set-AnythingAnalyzerPnpmBuildApprovals -RepoDir $RepoDir -Packages $buildPackages
 }
 
 function Get-GitHubLatestReleaseAsset {
@@ -219,20 +475,23 @@ function Ensure-PipPackageInstall {
     }
 }
 
-function Get-McpConfig {
+function Get-ClaudeMcpConfig {
     $path = Get-ClaudeMcpConfigPath
     if (-not (Test-Path -LiteralPath $path)) {
         return @{ path = $path; json = @{ mcpServers = @{} } }
     }
 
-    $json = Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json -AsHashtable
-    if (-not $json.ContainsKey('mcpServers')) {
+    $json = Read-ReverseJsonAsHashtable -Path $path
+    if ($null -eq $json) {
+        $json = @{ mcpServers = @{} }
+    }
+    if (-not $json.Contains('mcpServers')) {
         $json['mcpServers'] = @{}
     }
     return @{ path = $path; json = $json }
 }
 
-function Save-McpConfig {
+function Save-ClaudeMcpConfig {
     param([Parameter(Mandatory = $true)]$Config)
 
     $parent = Split-Path -Path $Config.path -Parent
@@ -243,15 +502,155 @@ function Save-McpConfig {
     $Config.json | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $Config.path -Encoding utf8
 }
 
+function ConvertTo-TomlLiteral {
+    param([Parameter(Mandatory = $true)]$Value)
+
+    if ($Value -is [bool]) {
+        return $Value.ToString().ToLowerInvariant()
+    }
+    if ($Value -is [int] -or $Value -is [long] -or $Value -is [double] -or $Value -is [decimal]) {
+        return [string]$Value
+    }
+    if ($Value -is [System.Collections.IEnumerable] -and -not ($Value -is [string])) {
+        $items = foreach ($item in $Value) {
+            ConvertTo-TomlLiteral -Value $item
+        }
+        return "[{0}]" -f ($items -join ', ')
+    }
+
+    $escaped = ([string]$Value).Replace('\', '\\').Replace('"', '\"')
+    return '"' + $escaped + '"'
+}
+
+function Remove-CodexMcpServerBlocks {
+    param(
+        [AllowEmptyCollection()]
+        [string[]]$Lines,
+        [Parameter(Mandatory = $true)][string]$ServerName
+    )
+
+    $targetPattern = '^\[mcp_servers\.{0}(?:\.env)?\]\s*$' -f [regex]::Escape($ServerName)
+    $result = New-Object System.Collections.Generic.List[string]
+    $skipBlock = $false
+
+    if ($null -eq $Lines) {
+        return @()
+    }
+
+    foreach ($line in $Lines) {
+        if ($line -match '^\[') {
+            if ($line -match $targetPattern) {
+                $skipBlock = $true
+                continue
+            }
+
+            if ($skipBlock) {
+                $skipBlock = $false
+            }
+        }
+
+        if (-not $skipBlock) {
+            $result.Add($line)
+        }
+    }
+
+    return @($result)
+}
+
+function Set-CodexMcpServer {
+    param(
+        [Parameter(Mandatory = $true)][string]$ServerName,
+        [Parameter(Mandatory = $true)][hashtable]$ServerDefinition
+    )
+
+    $path = Get-CodexConfigPath
+    $parent = Split-Path -Path $path -Parent
+    if (-not (Test-Path -LiteralPath $parent)) {
+        New-Item -ItemType Directory -Path $parent -Force | Out-Null
+    }
+
+    $lines = @()
+    if (Test-Path -LiteralPath $path) {
+        $rawLines = @(Get-Content -LiteralPath $path)
+        if ($rawLines.Count -eq 1 -and [string]::IsNullOrEmpty($rawLines[0])) {
+            $lines = @()
+        }
+        else {
+            $lines = $rawLines
+        }
+    }
+    $lines = @(Remove-CodexMcpServerBlocks -Lines $lines -ServerName $ServerName)
+
+    while ($lines.Count -gt 0 -and [string]::IsNullOrWhiteSpace($lines[-1])) {
+        $lines = if ($lines.Count -gt 1) { $lines[0..($lines.Count - 2)] } else { @() }
+    }
+    if ($lines.Count -gt 0) {
+        $lines += ''
+    }
+
+    $lines += "[mcp_servers.$ServerName]"
+    foreach ($key in @('type', 'url', 'command', 'args', 'bearer_token_env_var')) {
+        if ($ServerDefinition.Contains($key)) {
+            $lines += "$key = $(ConvertTo-TomlLiteral -Value $ServerDefinition[$key])"
+        }
+    }
+    foreach ($key in ($ServerDefinition.Keys | Where-Object { $_ -notin @('type', 'url', 'command', 'args', 'bearer_token_env_var', 'env') } | Sort-Object)) {
+        $lines += "$key = $(ConvertTo-TomlLiteral -Value $ServerDefinition[$key])"
+    }
+
+    if ($ServerDefinition.Contains('env') -and $ServerDefinition['env'] -is [System.Collections.IDictionary] -and $ServerDefinition['env'].Count -gt 0) {
+        $lines += ''
+        $lines += "[mcp_servers.$ServerName.env]"
+        foreach ($envKey in ($ServerDefinition['env'].Keys | Sort-Object)) {
+            $lines += "$envKey = $(ConvertTo-TomlLiteral -Value $ServerDefinition['env'][$envKey])"
+        }
+    }
+
+    Set-Content -LiteralPath $path -Value $lines -Encoding utf8
+}
+
 function Ensure-McpServer {
     param(
         [Parameter(Mandatory = $true)][string]$ServerName,
         [Parameter(Mandatory = $true)][hashtable]$ServerDefinition
     )
 
-    $config = Get-McpConfig
-    $config.json.mcpServers[$ServerName] = $ServerDefinition
-    Save-McpConfig -Config $config
+    foreach ($target in Get-McpHostTargets) {
+        switch ($target) {
+            'Claude' {
+                $config = Get-ClaudeMcpConfig
+                $config.json.mcpServers[$ServerName] = $ServerDefinition
+                Save-ClaudeMcpConfig -Config $config
+            }
+            'Codex' {
+                Set-CodexMcpServer -ServerName $ServerName -ServerDefinition $ServerDefinition
+            }
+        }
+    }
+}
+
+function Get-McpCommandServerDefinition {
+    param(
+        [Parameter(Mandatory = $true)][string]$Command,
+        [Parameter(Mandatory = $true)][string[]]$Arguments,
+        [hashtable]$Env = @{}
+    )
+
+    if ((Test-ReverseIsWindows) -and $Command -in @('npx', 'pnpm', 'npm')) {
+        return @{
+            type = 'stdio'
+            command = 'cmd'
+            args = @('/c', $Command) + @($Arguments)
+            env = $Env
+        }
+    }
+
+    return @{
+        type = 'stdio'
+        command = $Command
+        args = @($Arguments)
+        env = $Env
+    }
 }
 
 function Wait-ForPort {
@@ -277,7 +676,17 @@ function Start-AnythingAnalyzerService {
         return
     }
 
-    Ensure-Pnpm
+Ensure-Pnpm
+$vsBuildToolsError = ''
+if (Test-ReverseIsWindows) {
+    try {
+        Ensure-VsBuildTools
+    }
+    catch {
+        $vsBuildToolsError = $_.Exception.Message
+        Write-Warning "Visual Studio Build Tools auto-install failed; continuing with pnpm prebuilt/native rebuild path. $vsBuildToolsError"
+    }
+}
 
     $repoDir = @($Definition.startupDirCandidates) | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
     if ([string]::IsNullOrWhiteSpace($repoDir)) {
@@ -299,15 +708,55 @@ function Start-AnythingAnalyzerService {
         $repoDir = $installDir
     }
 
-    $pnpm = Get-FirstCommandPath -Names @('pnpm', 'pnpm.cmd')
-    & $pnpm install --dir $repoDir
-    if ($LASTEXITCODE -ne 0) {
-        throw 'pnpm install failed for anything-analyzer.'
+    Ensure-AnythingAnalyzerMcpConfig -Port ([int]$Definition.servicePort)
+
+    $pnpm = Get-NodeCommandPath -Name 'pnpm'
+    if ([string]::IsNullOrWhiteSpace($pnpm)) {
+        throw 'pnpm is not available after installation.'
     }
 
-    Start-Process -FilePath $pnpm -ArgumentList @('dev') -WorkingDirectory $repoDir -WindowStyle Hidden | Out-Null
+    Push-Location $repoDir
+    try {
+        Approve-AnythingAnalyzerBuildScripts -RepoDir $repoDir -PnpmPath $pnpm
+
+        if (-not (Test-AnythingAnalyzerElectronHealthy -RepoDir $repoDir -PnpmPath $pnpm)) {
+            $nodeModules = Join-Path $repoDir 'node_modules'
+            if (Test-Path -LiteralPath $nodeModules) {
+                Remove-Item -LiteralPath $nodeModules -Recurse -Force
+            }
+        }
+
+        & $pnpm install
+        if ($LASTEXITCODE -ne 0) {
+            if (-not [string]::IsNullOrWhiteSpace($vsBuildToolsError)) {
+                throw "pnpm install failed for anything-analyzer. Visual Studio Build Tools auto-install also failed earlier: $vsBuildToolsError"
+            }
+            throw 'pnpm install failed for anything-analyzer.'
+        }
+
+        & $pnpm rebuild electron esbuild better-sqlite3
+        if ($LASTEXITCODE -ne 0) {
+            if (-not [string]::IsNullOrWhiteSpace($vsBuildToolsError)) {
+                throw "pnpm rebuild failed for anything-analyzer. Visual Studio Build Tools auto-install also failed earlier: $vsBuildToolsError"
+            }
+            throw 'pnpm rebuild failed for anything-analyzer.'
+        }
+
+        if (-not (Test-AnythingAnalyzerElectronHealthy -RepoDir $repoDir -PnpmPath $pnpm)) {
+            throw 'Electron is still not healthy after reinstall/rebuild.'
+        }
+    }
+    finally {
+        Pop-Location
+    }
+
+    $stdoutLog = Join-Path $repoDir 'anything-analyzer-dev.log'
+    $stderrLog = Join-Path $repoDir 'anything-analyzer-dev.err.log'
+    Remove-Item -LiteralPath $stdoutLog, $stderrLog -Force -ErrorAction SilentlyContinue
+
+    Start-Process -FilePath $pnpm -ArgumentList @('dev') -WorkingDirectory $repoDir -WindowStyle Hidden -RedirectStandardOutput $stdoutLog -RedirectStandardError $stderrLog | Out-Null
     if (-not (Wait-ForPort -Port ([int]$Definition.servicePort) -TimeoutSeconds 120)) {
-        throw 'anything-analyzer did not open port 23816 in time.'
+        throw "anything-analyzer did not open port 23816 in time. Logs: $stdoutLog ; $stderrLog"
     }
 }
 
@@ -319,7 +768,8 @@ function Start-IdaProService {
     }
 
     $startScript = $Definition.startScript
-    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $startScript
+    $shell = Get-PreferredPowerShellPath
+    & $shell -NoProfile -ExecutionPolicy Bypass -File $startScript
     if ($LASTEXITCODE -ne 0 -and -not (Test-ReverseTcpPort -Port ([int]$Definition.servicePort))) {
         throw 'Failed to start idapro service.'
     }
@@ -337,6 +787,36 @@ function Ensure-AndroidPlatformTools {
 
     Ensure-WingetPackage -Id 'Google.PlatformTools' -Label 'Android SDK Platform-Tools'
     return (Resolve-ReverseToolSpec -Name 'adb')
+}
+
+function Ensure-GitCloneInstall {
+    param(
+        [Parameter(Mandatory = $true)]$Definition,
+        [Parameter(Mandatory = $true)][string]$TargetPath
+    )
+
+    if ((Test-Path -LiteralPath $TargetPath -PathType Container) -and (Test-Path -LiteralPath (Join-Path $TargetPath '.git'))) {
+        return $true
+    }
+
+    if (Test-Path -LiteralPath $TargetPath) {
+        $backupPath = "$TargetPath.bak-$([DateTime]::UtcNow.ToString('yyyyMMddHHmmss'))"
+        Move-Item -LiteralPath $TargetPath -Destination $backupPath -Force
+    }
+
+    Ensure-DownloadDirectory -Path (Split-Path -Path $TargetPath -Parent)
+
+    $git = Get-FirstCommandPath -Names @('git')
+    if ([string]::IsNullOrWhiteSpace($git)) {
+        throw "Cannot clone $($Definition.repo) because git is not available."
+    }
+
+    & $git clone --depth 1 $Definition.repo $TargetPath
+    if ($LASTEXITCODE -ne 0) {
+        throw "git clone failed for $($Definition.repo)"
+    }
+
+    return $true
 }
 
 function Ensure-Capability {
@@ -358,6 +838,21 @@ function Ensure-Capability {
         return $false
     }
 
+    $existingState = Get-ReverseCapabilityState -Name $Name
+    if ($existingState -and -not $definition.PSObject.Properties['mcpNames']) {
+        $toolSpec = $null
+        try {
+            $toolSpec = Resolve-ReverseToolSpec -Name $Name
+        }
+        catch {
+            $toolSpec = $null
+        }
+
+        if ($toolSpec -and $toolSpec.Available) {
+            return $toolSpec
+        }
+    }
+
     switch ($definition.bootstrapKind) {
         'github-release-zip' {
             # Generic handler for all github-release-zip capabilities
@@ -365,6 +860,9 @@ function Ensure-Capability {
                 $definition.verifyCommand
             } else { $Name }
             return Ensure-GitHubZipInstall -Definition $definition -TargetPath $definition.installDir -VerifyName $verifyName
+        }
+        'git-clone' {
+            return Ensure-GitCloneInstall -Definition $definition -TargetPath $definition.installDir
         }
         'github-release-jar-wrapper' {
             return Ensure-ApktoolInstall -Definition $definition
@@ -376,25 +874,25 @@ function Ensure-Capability {
         'winget-package' {
             $wingetId = $definition.wingetId
             Ensure-WingetPackage -Id $wingetId -Label $Name
-            return $true
+            $toolSpec = Resolve-ReverseToolSpec -Name $Name
+            if (-not $toolSpec.Available) {
+                throw "$Name was installed, but bootstrap could not resolve the executable in this process."
+            }
+            return $toolSpec
         }
         'npm-mcp' {
             Ensure-NodeRuntime
-            Ensure-McpServer -ServerName $definition.mcpNames[0] -ServerDefinition @{
-                command = $definition.mcpCommand
-                args = @($definition.mcpArgs)
-                env = @{}
-            }
+            $envMap = @{}
             foreach ($property in $definition.mcpEnv.PSObject.Properties) {
-                $config = Get-McpConfig
-                $config.json.mcpServers[$definition.mcpNames[0]].env[$property.Name] = $property.Value
-                Save-McpConfig -Config $config
+                $envMap[$property.Name] = $property.Value
             }
+            $serverDefinition = Get-McpCommandServerDefinition -Command $definition.mcpCommand -Arguments @($definition.mcpArgs) -Env $envMap
+            Ensure-McpServer -ServerName $definition.mcpNames[0] -ServerDefinition $serverDefinition
             return $true
         }
         'npm-global' {
             Ensure-NodeRuntime
-            $npm = Get-FirstCommandPath -Names @('npm')
+            $npm = Get-NodeCommandPath -Name 'npm'
             if ([string]::IsNullOrWhiteSpace($npm)) {
                 throw 'npm is not available after Node.js installation.'
             }
@@ -416,7 +914,7 @@ function Ensure-Capability {
                 }
                 else {
                     # Try via npx
-                    $npx = Get-FirstCommandPath -Names @('npx')
+                    $npx = Get-NodeCommandPath -Name 'npx'
                     if ($npx) {
                         & $npx $definition.postInstall.Split(' ')
                     }
@@ -426,7 +924,8 @@ function Ensure-Capability {
             if ($definition.PSObject.Properties['setupScript'] -and -not [string]::IsNullOrWhiteSpace($definition.setupScript)) {
                 $setupPath = $definition.setupScript
                 if (Test-Path -LiteralPath $setupPath) {
-                    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $setupPath -SkipBrowserInstall
+                    $shell = Get-PreferredPowerShellPath
+                    & $shell -NoProfile -ExecutionPolicy Bypass -File $setupPath -SkipBrowserInstall
                 }
             }
             return $true
@@ -522,6 +1021,7 @@ foreach ($name in $expandedCapabilities) {
         $results += [pscustomobject]@{
             name = $name
             status = 'ready'
+            ready = if ($state) { $state.Ready } else { $null }
             registered = if ($state) { $state.Registered } else { $null }
             service_online = if ($state) { $state.ServiceOnline } else { $null }
         }
@@ -536,7 +1036,8 @@ foreach ($name in $expandedCapabilities) {
 }
 
 if (-not $SkipRefresh) {
-    & powershell.exe -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'refresh-tool-index.ps1') | Out-Null
+    $shell = Get-PreferredPowerShellPath
+    & $shell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'refresh-tool-index.ps1') | Out-Null
 }
 
 $results | ConvertTo-Json -Depth 5

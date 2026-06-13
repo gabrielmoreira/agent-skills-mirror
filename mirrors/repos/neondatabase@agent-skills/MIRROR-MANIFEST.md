@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `neondatabase/agent-skills` — 26 default patterns, 1 followed patterns, 10 file(s) materialized.
+Mirror of `neondatabase/agent-skills` — 26 default patterns, 1 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `neondatabase/agent-skills` — 26 default patterns, 1 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 10 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,11 +64,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`evals/neon-postgres-egress-optimizer/.claude/skills/score-eval/SKILL.md`](evals/neon-postgres-egress-optimizer/.claude/skills/score-eval/SKILL.md) |
 | 4 | ✓ | [`evals/neon-postgres-egress-optimizer/AGENTS.md`](evals/neon-postgres-egress-optimizer/AGENTS.md) |
 | 5 | ✓ | [`skills/claimable-postgres/SKILL.md`](skills/claimable-postgres/SKILL.md) |
-| 6 | ✓ | [`skills/neon-postgres-branches/SKILL.md`](skills/neon-postgres-branches/SKILL.md) |
-| 7 | ✓ | [`skills/neon-postgres-egress-optimizer/SKILL.md`](skills/neon-postgres-egress-optimizer/SKILL.md) |
-| 8 | ✓ | [`skills/neon-postgres/SKILL.md`](skills/neon-postgres/SKILL.md) |
-| 9 | ✓ | [`skills/neon/SKILL.md`](skills/neon/SKILL.md) |
-| 10 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 6 | ✓ | [`skills/neon-ai-gateway/SKILL.md`](skills/neon-ai-gateway/SKILL.md) |
+| 7 | ✓ | [`skills/neon-functions/references/integrations.md`](skills/neon-functions/references/integrations.md) |
+| 8 | ✓ | [`skills/neon-functions/references/mastra-studio.md`](skills/neon-functions/references/mastra-studio.md) |
+| 9 | ✓ | [`skills/neon-functions/SKILL.md`](skills/neon-functions/SKILL.md) |
+| 10 | ✓ | [`skills/neon-object-storage/SKILL.md`](skills/neon-object-storage/SKILL.md) |
+| 11 | ✓ | [`skills/neon-postgres-branches/SKILL.md`](skills/neon-postgres-branches/SKILL.md) |
+| 12 | ✓ | [`skills/neon-postgres-egress-optimizer/SKILL.md`](skills/neon-postgres-egress-optimizer/SKILL.md) |
+| 13 | ✓ | [`skills/neon-postgres/SKILL.md`](skills/neon-postgres/SKILL.md) |
+| 14 | ✓ | [`skills/neon/SKILL.md`](skills/neon/SKILL.md) |
+| 15 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

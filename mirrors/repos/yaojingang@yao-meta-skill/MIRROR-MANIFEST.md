@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `yaojingang/yao-meta-skill` — 26 default patterns, 9 followed patterns, 29 file(s) materialized.
+Mirror of `yaojingang/yao-meta-skill` — 26 default patterns, 11 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `yaojingang/yao-meta-skill` — 26 default patterns, 9 followed patter
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 9 |
-| Files         | 29 |
+| Followed pats | 11 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,8 @@ Mirror of `yaojingang/yao-meta-skill` — 26 default patterns, 9 followed patter
 - `references/resource-boundaries.md`
 - `references/intent-dialogue.md`
 - `references/reference-scan.md`
+- `references/skill-ir-method.md`
+- `references/output-eval-method.md`
 - `references/artifact-design-doctrine.md`
 - `references/prompt-engineering-doctrine.md`
 - `references/systems-thinking-doctrine.md`
@@ -83,19 +85,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`references/output-visual-quality.md`](references/output-visual-quality.md) |
 | 15 | ✓ | [`references/pattern-extraction-doctrine.md`](references/pattern-extraction-doctrine.md) |
 | 16 | ✓ | [`references/skill-archetypes.md`](references/skill-archetypes.md) |
-| 17 | ✓ | [`SKILL.md`](SKILL.md) |
-| 18 | ✓ | [`tests/fixtures/governance_invalid_manifest/SKILL.md`](tests/fixtures/governance_invalid_manifest/SKILL.md) |
-| 19 | ✓ | [`tests/fixtures/package_invalid_yaml/SKILL.md`](tests/fixtures/package_invalid_yaml/SKILL.md) |
-| 20 | ✓ | [`tests/fixtures/package_missing_interface_field/SKILL.md`](tests/fixtures/package_missing_interface_field/SKILL.md) |
-| 21 | → | [`references/artifact-design-doctrine.md`](references/artifact-design-doctrine.md) |
-| 22 | → | [`references/governance.md`](references/governance.md) |
-| 23 | → | [`references/intent-dialogue.md`](references/intent-dialogue.md) |
-| 24 | → | [`references/operating-modes.md`](references/operating-modes.md) |
-| 25 | → | [`references/prompt-engineering-doctrine.md`](references/prompt-engineering-doctrine.md) |
-| 26 | → | [`references/reference-scan.md`](references/reference-scan.md) |
-| 27 | → | [`references/resource-boundaries.md`](references/resource-boundaries.md) |
-| 28 | → | [`references/skill-engineering-method.md`](references/skill-engineering-method.md) |
-| 29 | → | [`references/systems-thinking-doctrine.md`](references/systems-thinking-doctrine.md) |
+| 17 | ✓ | [`reports/intent-dialogue.md`](reports/intent-dialogue.md) |
+| 18 | ✓ | [`reports/reference-scan.md`](reports/reference-scan.md) |
+| 19 | ✓ | [`SKILL.md`](SKILL.md) |
+| 20 | ✓ | [`tests/fixtures/governance_invalid_manifest/SKILL.md`](tests/fixtures/governance_invalid_manifest/SKILL.md) |
+| 21 | ✓ | [`tests/fixtures/package_invalid_yaml/SKILL.md`](tests/fixtures/package_invalid_yaml/SKILL.md) |
+| 22 | ✓ | [`tests/fixtures/package_missing_interface_field/SKILL.md`](tests/fixtures/package_missing_interface_field/SKILL.md) |
+| 23 | → | [`references/artifact-design-doctrine.md`](references/artifact-design-doctrine.md) |
+| 24 | → | [`references/governance.md`](references/governance.md) |
+| 25 | → | [`references/intent-dialogue.md`](references/intent-dialogue.md) |
+| 26 | → | [`references/operating-modes.md`](references/operating-modes.md) |
+| 27 | → | [`references/output-eval-method.md`](references/output-eval-method.md) |
+| 28 | → | [`references/prompt-engineering-doctrine.md`](references/prompt-engineering-doctrine.md) |
+| 29 | → | [`references/reference-scan.md`](references/reference-scan.md) |
+| 30 | → | [`references/resource-boundaries.md`](references/resource-boundaries.md) |
+| 31 | → | [`references/skill-engineering-method.md`](references/skill-engineering-method.md) |
+| 32 | → | [`references/skill-ir-method.md`](references/skill-ir-method.md) |
+| 33 | → | [`references/systems-thinking-doctrine.md`](references/systems-thinking-doctrine.md) |
 
 ---
 

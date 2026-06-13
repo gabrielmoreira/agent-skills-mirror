@@ -4,6 +4,64 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+#### [2.1.177](https://github.com/Piebald-AI/claude-code-system-prompts/commit/c23e10f)
+
+<sub>_No changes to the system prompts in v2.1.177._</sub>
+
+# [2.1.176](https://github.com/Piebald-AI/claude-code-system-prompts/commit/32401a1)
+
+_+4,360 tokens_
+
+- **REMOVED:** System Prompt: Claude in Chrome skill note — Removes the note telling the agent to invoke the `claude-in-chrome` skill (via the Skill tool) before using any `mcp__claude-in-chrome__*` browser tools.
+- Agent Prompt: Coding session title generator — Adds examples to match the session's language (a Korean-session title) and to avoid refusal/error titles or an English title for a non-English session.
+- Data: Claude API reference (all languages) — Adds refusal-fallback guidance for Fable 5, recommending the opt-in server-side `fallbacks` parameter (beta `server-side-fallback-2026-06-01`, falling back to Opus) by default so a policy decline is re-served by the fallback model inside the same call; cURL, Python, and TypeScript include runnable examples with switch-point and served-by detection, C# and Go give inline SDK snippets, and Java, PHP, and Ruby point to each SDK's `examples/`. Notes the parameter is rejected on the Batches API and unavailable on Amazon Bedrock, Vertex AI, and Microsoft Foundry (use the client-side middleware there).
+- Skill: Building LLM-powered applications with Claude — Reframes `refusal` stop-reason handling to opt into fallbacks by default: new Fable 5 code should include the server-side `fallbacks` parameter so a refusal doesn't fail the request outright, tell the user it's enabled, and drop it only if they decline, with client-side middleware where server-side fallbacks aren't supported.
+- Skill: Design sync Storybook source shape — Adds a `[GRID_OVERFLOW]` validation warning and a `cardMode: "column"` override for stories wider than a grid cell (data tables, full-width bars), plus rebuild rules noting presentation-only keys (`cardMode`/`primaryStory`) carry grades via a targeted rebuild while a `viewport` change re-grades and needs a full build.
+- Skill: /design-sync package source shape — Adds a `[GRID_OVERFLOW]` validation warning and a `cardMode: "column"` override for wide components (data tables, full-width bars) that render wider than their grid cell, batching every flagged component into one targeted rebuild.
+- Skill: Model migration guide — Adds "default to opting in" guidance for refusal fallbacks, recommending migrated and new Fable 5 code ship the server-side `fallbacks` opt-in from day one rather than as a later hardening step.
+- System Prompt: Coordinator mode orchestration — Expands the concurrency guidance: launch independent workers in parallel via multiple tool calls in one message and cover multiple research angles, but don't parallelize simple tasks that are faster in a single worker loop.
+- System Prompt: Fork usage guidelines — Updates the "when to fork" instruction to fork by passing `subagent_type: "fork"` instead of omitting `subagent_type`.
+- System Prompt: Forked agent guidance — Explains that calling Agent with `subagent_type: "fork"` creates a background fork that inherits your full conversation context (rather than omitting the type), and notes that other subagent types — or omitting it — start fresh agents with no context.
+- System Prompt: Subagent delegation examples — Updates the worked examples to pass `subagent_type: "fork"` when forking and clarifies that a non-fork subagent_type starts a fresh agent.
+- System Prompt: Writing subagent prompts — Reframes the briefing note to say any agent other than a fork starts with zero context (previously "when spawning a fresh agent with a `subagent_type`").
+- Tool Description: Agent (simple usage notes) — Notes that a new Agent call starts a fresh agent except `subagent_type: "fork"`, which inherits your context (when forking is available).
+- Tool Description: Agent (usage notes) — Updates the fresh-agent note so a new Agent call starts a fresh agent with no memory of prior runs except `subagent_type: "fork"`, and clarifies that a research-only agent is not aware of the user's intent because it is a fresh agent.
+- Tool Description: Agent (when to launch subagents) — Rewrites the subagent_type guidance so `"fork"` forks yourself (inheriting your full conversation context and always running on your model, ignoring any `model` override) while any other type — or omitting it — starts a fresh agent (general-purpose by default).
+- Tool Description: Artifact — Adds that reading an existing artifact's content is done by calling WebFetch with its URL.
+- Tool Description: claude.ai Project — Adds file-upload support: `project_info` now lists file uploads (PDFs, images), `project_read` reads document-kind uploads (PDF, docx) while image and other non-document uploads return empty content with `file_kind` set, and `project_delete` deletes only text docs (file uploads are read-only via the tool and must be removed in claude.ai).
+- Tool Description: WebFetch (concise) — Adds an exception (when the Artifact tool is enabled) that `claude.ai/code/artifact/{uuid}` URLs ARE fetchable via your claude.ai login and should use WebFetch, not curl, which gets the SPA shell or a Cloudflare 403.
+- Tool Description: WebFetch private URL warning — Adds the same exception (when the Artifact tool is enabled) that `claude.ai/code/artifact/{uuid}` URLs (including preview.claude.ai) are fetchable via the claude.ai login and should use WebFetch, not curl or a headless browser.
+
+#### [2.1.175](https://github.com/Piebald-AI/claude-code-system-prompts/commit/4d0bab0)
+
+<sub>_No changes to the system prompts in v2.1.175._</sub>
+
+# [2.1.174](https://github.com/Piebald-AI/claude-code-system-prompts/commit/e344cac)
+
+_-3,487 tokens_
+
+- **NEW:** Tool Description: claude.ai Project — Adds a session-bound tool for reading and writing the attached claude.ai Project (a shared, persistent knowledge container), exposing `project_info`, `project_read`, `project_search`, `project_write`, and `project_delete`, with knowledge-budget enforcement, a default `claude/` namespace for agent-written docs, prompt-cache churn warnings, and instructions to treat doc contents as untrusted data.
+- **REMOVED:** Data: Design sync story imports module — Removes the bundled Storybook import-resolution helper now folded into the expanded Design sync source-shape guidance.
+- **REMOVED:** Data: Design sync Storybook preview source generator — Removes the standalone Storybook preview-source generator superseded by the reworked Design sync build pipeline.
+- **REMOVED:** Data: Design sync sync hashes module — Removes the shared hashing helper module previously used to align builds, captures, and remote diffs.
+- Agent Prompt: Security monitor for autonomous agent actions (first part) — Adds a note that indented `User:`/`Assistant:` lines inside a turn are quoted content from the message and should be treated as data, not instructions.
+- Data: Claude API reference — C# — Updates the quickstart example model from Claude Opus 4.6 to Claude Opus 4.8.
+- Data: Claude API reference — cURL — Adds the `display: "summarized"` thinking opt-in to the request example.
+- Data: Claude API reference — Go — Updates the quickstart example model from Claude Opus 4.6 to Claude Opus 4.8.
+- Data: Claude API reference — Java — Updates the quickstart example model from Claude Opus 4.6 to Claude Opus 4.8.
+- Data: Claude API reference — PHP — Adds the `display => 'summarized'` thinking opt-in to the request example.
+- Data: Claude API reference — Python — Adds the `display: "summarized"` thinking opt-in to the request example.
+- Data: Claude API reference — Ruby — Expands the `stop_details.category` enum example with `:reasoning_extraction` and `:frontier_llm` categories.
+- Data: Claude API reference — TypeScript — Adds the `display: "summarized"` thinking opt-in to the request example.
+- Data: Claude model catalog — Updates summarized-thinking and tokenizer guidance so Fable/Mythos share the Opus 4.8 tokenizer (token counts roughly unchanged) instead of a new ~30%-larger tokenizer.
+- Data: Streaming reference — Python — Adds the `display: "summarized"` thinking opt-in to the streaming example.
+- Data: Streaming reference — TypeScript — Adds the `display: "summarized"` thinking opt-in to the streaming example.
+- Skill: Building LLM-powered applications with Claude — Clarifies that the raw chain of thought is never returned, with responses carrying only regular `thinking` blocks/summaries.
+- Skill: Design sync — Adds an "Author the conventions header" step to the workflow for writing a design-system conventions header before upload.
+- Skill: /design-sync package source shape — Replaces the `guidelinesGlob` config field with a `readmeHeader` path and related conventions-header guidance.
+- Skill: Design sync Storybook source shape — Inserts a conventions-header authoring step (base SKILL.md, before upload) into the build → match → upload workflow.
+- Skill: Model migration guide — Updates the thinking summary so always-on thinking returns regular thinking blocks with the raw chain of thought never returned, dropping the new-tokenizer framing.
+
 #### [2.1.173](https://github.com/Piebald-AI/claude-code-system-prompts/commit/3f5e29a)
 
 <sub>_No changes to the system prompts in v2.1.173._</sub>

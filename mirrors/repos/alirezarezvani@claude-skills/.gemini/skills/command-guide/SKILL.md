@@ -1,1 +1,0 @@
-cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/command-guide/../../../engineering/skills/command-guide/SKILL.md

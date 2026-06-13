@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns, 111 file(s) materialized.
+Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns, 112 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aristoteleo/PantheonOS` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 111 |
+| Files         | 112 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -170,6 +170,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 109 | ✓ | [`pantheon/factory/templates/skills/rare_disease/rd_ontology_first.md`](pantheon/factory/templates/skills/rare_disease/rd_ontology_first.md) |
 | 110 | ✓ | [`pantheon/factory/templates/skills/rare_disease/SKILL.md`](pantheon/factory/templates/skills/rare_disease/SKILL.md) |
 | 111 | ✓ | [`pantheon/factory/templates/skills/structural_biology/SKILL.md`](pantheon/factory/templates/skills/structural_biology/SKILL.md) |
+| 112 | ✓ | [`pantheon/factory/templates/skills/virtualembryo/SKILL.md`](pantheon/factory/templates/skills/virtualembryo/SKILL.md) |
 
 ---
 

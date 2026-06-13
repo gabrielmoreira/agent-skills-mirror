@@ -4,7 +4,11 @@ NLP analysis enhances E-E-A-T scoring by measuring entity coverage, content sent
 
 ## Endpoint
 
-`POST https://language.googleapis.com/v2/documents:annotateText?key={API_KEY}`
+Entities use `POST https://language.googleapis.com/v1/documents:analyzeEntities`.
+Sentiment, classification, and moderation use
+`POST https://language.googleapis.com/v2/documents:annotateText`.
+
+Send the API key in the `X-Goog-Api-Key` header, not in the URL.
 
 ## Features
 

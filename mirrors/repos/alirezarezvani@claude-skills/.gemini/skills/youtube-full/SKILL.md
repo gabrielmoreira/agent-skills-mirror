@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/youtube-full/../../../marketing-skill/skills/youtube-full/SKILL.md

@@ -5,10 +5,10 @@
 [![简体中文](https://img.shields.io/badge/README-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-1677ff)](./README.md)
 [![English](https://img.shields.io/badge/README-English-111111)](./README.en.md)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-Compatible-00b894)](./openclaw-skills/README.md)
-[![Skills](https://img.shields.io/badge/Skills-303-7c3aed)](./skills/)
+[![Skills](https://img.shields.io/badge/Skills-304-7c3aed)](./skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-面向全球 AI 开发者与 Agent 工作流构建者的高价值 Skills 仓库，覆盖开发工程、DevOps、产品设计、运营、办公自动化、金融投资、AI 平台与安全治理等高频任务场景。当前共 **16 个分类 / 303 个技能**。
+面向全球 AI 开发者与 Agent 工作流构建者的高价值 Skills 仓库，覆盖开发工程、DevOps、产品设计、运营、办公自动化、金融投资、AI 平台与安全治理等高频任务场景。当前共 **16 个分类 / 304 个技能**。
 
 ## 为什么值得收藏
 
@@ -114,6 +114,7 @@ python3 scripts/export_openclaw_skills.py
 如果你希望按客户端直接看安装示例，可继续阅读：
 
 - [按客户端安装示例](./docs/client-install-guides.md)
+- [nlpm-audit 使用指南](./docs/nlpm-audit-usage.md)：说明安装到 `Codex` / `Claude Code` / `OpenClaw` 后如何自动触发、显式调用、生成 Markdown 审计报告和配置持续升级。
 
 ### 常见维护命令
 
@@ -331,7 +332,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 2. 打开对应技能的 `SKILL.md` 查看触发条件、操作流程和脚本说明。
 3. 若技能下含 `scripts/`、`references/`、`assets/`，优先复用现成内容。
 
-## 技能总览（按分类，16 类 / 303 技能）
+## 技能总览（按分类，16 类 / 304 技能）
 
 <a id="cat-developer-engineering"></a>
 ### 1. 开发工程（developer-engineering，50）
@@ -388,7 +389,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `webapp-testing`：用于测试本地网页应用，验证交互、页面状态和回归问题。
 
 <a id="cat-ai-workflow"></a>
-### 2. AI 工作流（ai-workflow，44）
+### 2. AI 工作流（ai-workflow，45）
 
 - `agent-workflow-designer`：用于设计智能体协作流程、角色分工和执行顺序。
 - `andrej-karpathy-skills`：用于约束 AI 编码行为，强调先思考、少假设、保持改动简单、手术式编辑并用可验证标准收尾。
@@ -412,6 +413,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `idea-refine`：用于把初步想法打磨成清晰目标、约束和可执行方案。
 - `incremental-implementation`：用于把大任务拆成小步交付，逐步验证并降低风险。
 - `nexus`：多智能体任务分解、链路编排、执行协调和结果整合。
+- `nlpm-audit`：审计 SKILL.md、AGENTS.md、CLAUDE.md、插件清单、hooks、commands 和提示词，检查安装一致性、质量评分、安全风险与版本漂移。
 - `performance-optimization`：用于分析性能瓶颈、制定优化方案并验证改善效果。
 - `planning-and-task-breakdown`：用于把目标拆解为任务、依赖、里程碑和验收标准。
 - `prompt-optimizer`：用于优化提示词结构、上下文、约束和输出稳定性。

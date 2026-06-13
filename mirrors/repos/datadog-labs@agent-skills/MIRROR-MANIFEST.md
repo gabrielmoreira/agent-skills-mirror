@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
+Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 34 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,16 +83,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`dd-llmo/llm-obs-eval-bootstrap/SKILL.md`](dd-llmo/llm-obs-eval-bootstrap/SKILL.md) |
 | 23 | ✓ | [`dd-llmo/llm-obs-eval-pipeline/SKILL.md`](dd-llmo/llm-obs-eval-pipeline/SKILL.md) |
 | 24 | ✓ | [`dd-llmo/llm-obs-experiment-analyzer/SKILL.md`](dd-llmo/llm-obs-experiment-analyzer/SKILL.md) |
-| 25 | ✓ | [`dd-llmo/llm-obs-experiment-py-bootstrap/SKILL.md`](dd-llmo/llm-obs-experiment-py-bootstrap/SKILL.md) |
-| 26 | ✓ | [`dd-llmo/llm-obs-session-classify/SKILL.md`](dd-llmo/llm-obs-session-classify/SKILL.md) |
-| 27 | ✓ | [`dd-llmo/llm-obs-trace-rca/SKILL.md`](dd-llmo/llm-obs-trace-rca/SKILL.md) |
-| 28 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
-| 29 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
-| 30 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
-| 31 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
-| 32 | ✓ | [`dd-software-delivery/triage-flaky-test/SKILL.md`](dd-software-delivery/triage-flaky-test/SKILL.md) |
-| 33 | ✓ | [`dd-software-delivery/unblock-pr/SKILL.md`](dd-software-delivery/unblock-pr/SKILL.md) |
-| 34 | ✓ | [`SKILL.md`](SKILL.md) |
+| 25 | ✓ | [`dd-llmo/llm-obs-experiment-py-bootstrap/references/providers/gemini.md`](dd-llmo/llm-obs-experiment-py-bootstrap/references/providers/gemini.md) |
+| 26 | ✓ | [`dd-llmo/llm-obs-experiment-py-bootstrap/SKILL.md`](dd-llmo/llm-obs-experiment-py-bootstrap/SKILL.md) |
+| 27 | ✓ | [`dd-llmo/llm-obs-session-classify/SKILL.md`](dd-llmo/llm-obs-session-classify/SKILL.md) |
+| 28 | ✓ | [`dd-llmo/llm-obs-trace-rca/SKILL.md`](dd-llmo/llm-obs-trace-rca/SKILL.md) |
+| 29 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
+| 30 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
+| 31 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
+| 32 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
+| 33 | ✓ | [`dd-software-delivery/triage-flaky-test/SKILL.md`](dd-software-delivery/triage-flaky-test/SKILL.md) |
+| 34 | ✓ | [`dd-software-delivery/unblock-pr/SKILL.md`](dd-software-delivery/unblock-pr/SKILL.md) |
+| 35 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

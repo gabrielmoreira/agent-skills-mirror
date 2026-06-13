@@ -42,6 +42,10 @@ Always create `WARN` or `REVIEW` evidence for human confirmation first.
 
 Use `references/trigger-matrix.md` for trigger thresholds and actions.
 
+### Flat-dividend cadence caveat
+
+When T6 is driven only by `freeze_flag` / latest regular dividend equal to prior regular dividend, treat it as a `WARN` for cadence confirmation, not as proof of dividend deterioration. Many quarterly dividend payers repeat the same dividend for several quarters between annual raise cycles. In reports, phrase this as “confirm next dividend-growth cadence / pause optional adds until checked” and avoid implying a cut or broken thesis unless T1/T2/T3/T4/T5 evidence also supports escalation.
+
 ## Monitoring Cadence
 
 - Daily:

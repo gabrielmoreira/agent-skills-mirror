@@ -4,12 +4,12 @@ description: >
   Content quality and E-E-A-T analysis with AI citation readiness assessment.
   Use when user says "content quality", "E-E-A-T", "content analysis",
   "readability check", "thin content", or "content audit".
-user-invokable: true
+user-invocable: true
 argument-hint: "[url]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "2.0.0"
+  version: "2.2.0"
   category: seo
 ---
 
@@ -145,12 +145,12 @@ Optimize for AI search engines (ChatGPT, Perplexity, Google AI Overviews):
 
 ### AI Search Visibility & GEO (2025-2026)
 
-**Google AI Mode** launched publicly in May 2025 as a separate tab in Google Search, available in 180+ countries. Unlike AI Overviews (which appear above organic results), AI Mode provides a fully conversational search experience with **zero organic blue links**, making AI citation the only visibility mechanism.
+**Google AI Mode** is Google's conversational AI search surface — powered by **Gemini 3.5 Flash** since I/O 2026 (May 2026) and now past **1 billion monthly users** globally. Unlike AI Overviews (which appear above organic results), AI Mode is a fully conversational experience with **zero organic blue links**, making AI citation the only visibility mechanism. It is a *distinct citation engine* from AI Overviews — the two share only ~14% of cited URLs — so optimize for both surfaces, not one (see the `seo-geo` skill).
 
 **Key optimization strategies for AI citation:**
 - **Structured answers:** Clear question-answer formats, definition patterns, and step-by-step instructions that AI systems can extract and cite
 - **First-party data:** Original research, statistics, case studies, and unique datasets are highly cited by AI systems
-- **Schema markup:** Article, FAQ (for non-Google AI platforms), and structured content schemas help AI systems parse and attribute content
+- **Schema markup:** Article, FAQPage (Google retired FAQ *rich results* in May 2026, but the markup still aids AI parsing/entity resolution) or QAPage for genuine user Q&A, and structured content schemas help AI systems parse and attribute content
 - **Topical authority:** AI systems preferentially cite sources that demonstrate deep expertise. Build content clusters, not isolated pages
 - **Entity clarity:** Ensure brand, authors, and key concepts are clearly defined with structured data (Organization, Person schema)
 - **Multi-platform tracking:** Monitor visibility across Google AI Overviews, AI Mode, ChatGPT, Perplexity, and Bing Copilot, not just traditional rankings. Treat AI citation as a standalone KPI alongside organic rankings and traffic.

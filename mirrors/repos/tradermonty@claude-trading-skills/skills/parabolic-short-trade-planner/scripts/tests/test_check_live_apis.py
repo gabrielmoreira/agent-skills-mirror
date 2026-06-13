@@ -57,9 +57,9 @@ def _route_get(url: str, **_kwargs):
     """Dispatch mocked GET responses by URL substring."""
     if "historical-price-eod/full" in url:
         return _fmp_historical_response()
-    if "/profile/" in url:
+    if "/stable/profile" in url or "/profile/" in url:
         return _fmp_profile_response()
-    if "/sp500_constituent" in url:
+    if "sp500-constituent" in url or "/sp500_constituent" in url:
         return _fmp_sp500_response()
     raise AssertionError(f"Unexpected GET to {url!r} in --fmp-only mode")
 

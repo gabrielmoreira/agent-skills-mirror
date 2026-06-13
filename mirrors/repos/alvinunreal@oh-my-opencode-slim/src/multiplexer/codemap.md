@@ -36,8 +36,12 @@
   - First child uses default pane in that tab; additional children create panes.
   - Falls back to first available pane ID heuristics and restores original tab
     context around cross-tab operations.
-  - Layout configuration is accepted but effectively no-op (tool semantics differ
-    from tmux).
+  - `current-tab` pane mode targets the tab containing the parent OpenCode pane
+    via `ZELLIJ_PANE_ID` + `list-panes --json --tab --all`, not whichever tab
+    is focused when a child session starts.
+  - Layout configuration maps `main-vertical` to right and `main-horizontal` to
+    down; `tiled`/`even-horizontal`/`even-vertical` use Zellij native placement
+    and `main_pane_size` remains a no-op.
 
 - `session-manager.ts` (`MultiplexerSessionManager`)
   - Initialized once from plugin context and config.

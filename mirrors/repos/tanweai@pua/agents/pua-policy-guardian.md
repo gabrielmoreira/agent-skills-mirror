@@ -1,6 +1,6 @@
 ---
 name: pua-policy-guardian
-description: "Use this agent when PUA harness governance needs isolated ENVIRONMENT_MODIFICATION_RIGHT review: assess requests touching tests, evals, scoring, verifier, CI, secrets, memory, progress/status, deployment, or permissions. Trigger before high-risk tool use or when PUA Integrity Guard asks/denies. Read-only policy reviewer, not implementer."
+description: "只读边界检查 Agent：在改动测试、CI、状态、发布或权限配置前，提醒需要用户确认和证据说明；不执行实现。"
 tools: Read, Grep, Glob, Bash
 model: inherit
 color: red

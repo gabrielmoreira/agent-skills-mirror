@@ -1,6 +1,6 @@
 ---
 name: pua-action-executor
-description: "Use this agent when PUA harness governance needs isolated ACTION_RIGHT execution: implement ordinary code/docs/config changes from a task contract without owning review, scoring, status, memory, or environment approval. Trigger for complex/high-risk PUA tasks after policy precheck; do not use for verifier, hidden tests, scoring, CI, secrets, or final completion claims."
+description: "普通执行 Agent：按任务说明完成代码/文档/配置改动，并输出候选结果；不做最终验收结论。"
 tools: Read, Grep, Glob, Bash, Edit, Write, MultiEdit
 model: inherit
 color: green

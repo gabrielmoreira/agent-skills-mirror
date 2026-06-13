@@ -23,10 +23,11 @@ When analyzing pages:
 - **SpecialAnnouncement**: Deprecated July 31, 2025
 - **CourseInfo, EstimatedSalary, LearningVideo**: Retired June 2025
 
-### Restricted Schema:
-- **FAQ**: Google rich results restricted to government and healthcare sites (August 2023).
-  - **Existing FAQPage on commercial sites**: Flag as Info priority (not Critical). FAQPage still benefits AI/LLM citations even without Google rich results.
-  - **Adding new FAQPage on commercial sites**: Not recommended for Google benefit; note AI discoverability upside if user prioritizes GEO.
+### No Rich Results (keep for AI):
+- **FAQPage**: Google retired FAQ rich results for ALL sites on May 7, 2026 (supersedes the Aug 2023 gov/health restriction). No SERP feature anymore.
+  - **Existing FAQPage**: Flag as Info priority (not Critical). The markup still aids AI/LLM citation and entity resolution — do not recommend removal.
+  - **Adding new FAQPage**: No Google SERP benefit; acceptable if GEO/AI visibility is the goal.
+  - **Genuine user Q&A pages**: use **QAPage**, not FAQPage.
 
 ### Always Prefer:
 - JSON-LD format over Microdata or RDFa
@@ -67,6 +68,13 @@ Provide:
 
 ## Fetching pages (v2.0.0)
 
-Use `python scripts/render_page.py <URL> --mode auto --json` for page HTML. `auto` does a raw fetch and only spins up Playwright when an SPA shell is detected; use `--mode always` to force a render or `--mode never` to skip Playwright entirely. The JSON exposes `raw_content` (pre-JS), `content` (post-JS), `is_spa`, `extracted_text` (boilerplate-stripped via trafilatura), and `publication_date` (htmldate). SSRF and DNS-rebinding protection live in `scripts/url_safety.py` — never call `requests.get` directly on user-supplied URLs.
+Use `python3 scripts/render_page.py <URL> --mode auto --json` for page HTML. `auto` does a raw fetch and only spins up Playwright when an SPA shell is detected; use `--mode always` to force a render or `--mode never` to skip Playwright entirely. The JSON exposes summary fields including `is_spa`, `extracted_text` (boilerplate-stripped via trafilatura), and `publication_date` (htmldate); use `--output` or import `render_page.render_page()` when full raw/rendered HTML is required. SSRF and DNS-rebinding protection live in `scripts/url_safety.py` — never call `requests.get` directly on user-supplied URLs.
+
+## Persistence Contract
+
+If `output_dir` is provided by the audit orchestrator, write:
+
+- `output_dir/findings/schema.md`: detected schema, validation errors, missing opportunities, and generated recommendations
+- Structured JSON-compatible findings for `audit-data.json` under the Schema / Structured Data category
 
 For schema audits on SPA sites prefer `--mode always`: many sites inject JSON-LD client-side via React Helmet, Next/Head, or vue-meta, so the raw HTML will be empty of structured data even when the rendered DOM has the full graph. Compare `raw_content` vs `content` to confirm whether schema is server-rendered.
