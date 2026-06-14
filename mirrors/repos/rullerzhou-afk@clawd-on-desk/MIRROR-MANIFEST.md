@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,8 +80,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`agents/pi.js`](agents/pi.js) |
 | 20 | ✓ | [`agents/qoder.js`](agents/qoder.js) |
 | 21 | ✓ | [`agents/qwen-code.js`](agents/qwen-code.js) |
-| 22 | ✓ | [`agents/registry.js`](agents/registry.js) |
-| 23 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 22 | ✓ | [`agents/reasonix.js`](agents/reasonix.js) |
+| 23 | ✓ | [`agents/registry.js`](agents/registry.js) |
+| 24 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

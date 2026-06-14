@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: "Write a path-free, clipboard-ready handoff prompt that lets another agent investigate, discuss, or pick up a specific task."
+description: "Clipboard-ready handoff prompt for another agent to investigate or continue a task."
 ---
 
 # Handoff

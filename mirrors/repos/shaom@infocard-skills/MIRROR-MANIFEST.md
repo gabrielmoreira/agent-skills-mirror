@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shaom/infocard-skills` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `shaom/infocard-skills` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shaom/infocard-skills` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,11 +61,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`skills/editorial-card-screenshot/agents/openai.yaml`](skills/editorial-card-screenshot/agents/openai.yaml) |
 | 2 | ✓ | [`skills/editorial-card-screenshot/assets/card-template.html`](skills/editorial-card-screenshot/assets/card-template.html) |
-| 3 | ✓ | [`skills/editorial-card-screenshot/references/editorial-card-prompt.md`](skills/editorial-card-screenshot/references/editorial-card-prompt.md) |
-| 4 | ✓ | [`skills/editorial-card-screenshot/references/ratios.md`](skills/editorial-card-screenshot/references/ratios.md) |
-| 5 | ✓ | [`skills/editorial-card-screenshot/references/recommended-skeletons.md`](skills/editorial-card-screenshot/references/recommended-skeletons.md) |
-| 6 | ✓ | [`skills/editorial-card-screenshot/scripts/capture_card.sh`](skills/editorial-card-screenshot/scripts/capture_card.sh) |
-| 7 | ✓ | [`skills/editorial-card-screenshot/SKILL.md`](skills/editorial-card-screenshot/SKILL.md) |
+| 3 | ✓ | [`skills/editorial-card-screenshot/references/content-fit.md`](skills/editorial-card-screenshot/references/content-fit.md) |
+| 4 | ✓ | [`skills/editorial-card-screenshot/references/editorial-card-prompt.md`](skills/editorial-card-screenshot/references/editorial-card-prompt.md) |
+| 5 | ✓ | [`skills/editorial-card-screenshot/references/ratios.md`](skills/editorial-card-screenshot/references/ratios.md) |
+| 6 | ✓ | [`skills/editorial-card-screenshot/references/recommended-skeletons.md`](skills/editorial-card-screenshot/references/recommended-skeletons.md) |
+| 7 | ✓ | [`skills/editorial-card-screenshot/scripts/capture_card.sh`](skills/editorial-card-screenshot/scripts/capture_card.sh) |
+| 8 | ✓ | [`skills/editorial-card-screenshot/SKILL.md`](skills/editorial-card-screenshot/SKILL.md) |
 
 ---
 

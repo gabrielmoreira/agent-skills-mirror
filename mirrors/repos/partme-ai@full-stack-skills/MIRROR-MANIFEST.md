@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `partme-ai/full-stack-skills` — 26 default patterns, 3 followed patterns, 12 file(s) materialized.
+Mirror of `partme-ai/full-stack-skills` — 26 default patterns, 5 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `partme-ai/full-stack-skills` — 26 default patterns, 3 followed patt
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 12 |
+| Followed pats | 5 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,8 @@ Mirror of `partme-ai/full-stack-skills` — 26 default patterns, 3 followed patt
 - `docs/pipeline-stage-to-skills.md`
 - `docs/skills-ecosystem.md`
 - `docs/speckit-agent-skills.md`
+- `README.md`
+- `README.en.md`
 
 ## File Index
 
@@ -73,6 +75,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | → | [`docs/pipeline-stage-to-skills.md`](docs/pipeline-stage-to-skills.md) |
 | 11 | → | [`docs/skills-ecosystem.md`](docs/skills-ecosystem.md) |
 | 12 | → | [`docs/speckit-agent-skills.md`](docs/speckit-agent-skills.md) |
+| 13 | → | [`README.en.md`](README.en.md) |
+| 14 | → | [`README.md`](README.md) |
 
 ---
 

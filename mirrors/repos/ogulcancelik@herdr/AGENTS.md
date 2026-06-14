@@ -49,6 +49,15 @@ Run `just check` before committing unless Can explicitly accepts narrower valida
 
 Unit tests live next to the code (`#[cfg(test)] mod tests`). New `AppState` or `Workspace` behavior should be testable with `AppState::test_new()` and `Workspace::test_new()` without PTYs.
 
+When testing a new Herdr build from inside an existing Herdr session, use
+`cargo run -- ...` and clear inherited Herdr socket overrides so the debug
+binary talks to the debug `herdr-dev` server instead of the installed stable
+server:
+
+```bash
+env -u HERDR_SOCKET_PATH -u HERDR_CLIENT_SOCKET_PATH cargo run -- <command>
+```
+
 ## Agent Detection Updates
 
 Agent detection changes should use the manifest hot-reload loop. Can drives the real agent UI into the target state, then you read the pane with `herdr agent read <pane> --source detection --format text` and inspect matching with `herdr agent explain <pane> --json`. Update the bundled manifest in `src/detect/manifests/<agent>.toml`, copy that manifest to the local override path at `~/.config/herdr/agent-detection/<agent>.toml`, then run `herdr server reload-agent-manifests`. Can verifies the live pane state, and once the rule is correct, remove the local override so the committed bundled manifest remains the source of truth.

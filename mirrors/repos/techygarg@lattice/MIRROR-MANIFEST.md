@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `techygarg/lattice` — 26 default patterns, 1 followed patterns, 53 file(s) materialized.
+Mirror of `techygarg/lattice` — 26 default patterns, 1 followed patterns, 80 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `techygarg/lattice` — 26 default patterns, 1 followed patterns, 53 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 53 |
+| Files         | 80 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,59 +59,86 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`dev-skills/skill-align/SKILL.md`](dev-skills/skill-align/SKILL.md) |
-| 4 | ✓ | [`dev-skills/skill-forge/SKILL.md`](dev-skills/skill-forge/SKILL.md) |
-| 5 | ✓ | [`dev-skills/skill-review/SKILL.md`](dev-skills/skill-review/SKILL.md) |
-| 6 | ✓ | [`dev-skills/skill-validate/SKILL.md`](dev-skills/skill-validate/SKILL.md) |
-| 7 | ✓ | [`skills/atoms/architecture/references/clean-architecture-defaults.md`](skills/atoms/architecture/references/clean-architecture-defaults.md) |
-| 8 | ✓ | [`skills/atoms/architecture/references/clean-architecture.md`](skills/atoms/architecture/references/clean-architecture.md) |
-| 9 | ✓ | [`skills/atoms/architecture/references/custom-architecture.md`](skills/atoms/architecture/references/custom-architecture.md) |
-| 10 | ✓ | [`skills/atoms/architecture/SKILL.md`](skills/atoms/architecture/SKILL.md) |
-| 11 | ✓ | [`skills/atoms/clean-code/references/defaults.md`](skills/atoms/clean-code/references/defaults.md) |
-| 12 | ✓ | [`skills/atoms/clean-code/SKILL.md`](skills/atoms/clean-code/SKILL.md) |
-| 13 | ✓ | [`skills/atoms/collaborative-judgment/SKILL.md`](skills/atoms/collaborative-judgment/SKILL.md) |
-| 14 | ✓ | [`skills/atoms/context-anchoring/assets/feature-doc-template.md`](skills/atoms/context-anchoring/assets/feature-doc-template.md) |
-| 15 | ✓ | [`skills/atoms/context-anchoring/SKILL.md`](skills/atoms/context-anchoring/SKILL.md) |
-| 16 | ✓ | [`skills/atoms/design-first/references/methodology-detail.md`](skills/atoms/design-first/references/methodology-detail.md) |
-| 17 | ✓ | [`skills/atoms/design-first/SKILL.md`](skills/atoms/design-first/SKILL.md) |
-| 18 | ✓ | [`skills/atoms/domain-driven-design/references/defaults.md`](skills/atoms/domain-driven-design/references/defaults.md) |
-| 19 | ✓ | [`skills/atoms/domain-driven-design/SKILL.md`](skills/atoms/domain-driven-design/SKILL.md) |
-| 20 | ✓ | [`skills/atoms/knowledge-priming/SKILL.md`](skills/atoms/knowledge-priming/SKILL.md) |
-| 21 | ✓ | [`skills/atoms/learning-harvest/SKILL.md`](skills/atoms/learning-harvest/SKILL.md) |
-| 22 | ✓ | [`skills/atoms/requirement-quality/references/defaults.md`](skills/atoms/requirement-quality/references/defaults.md) |
-| 23 | ✓ | [`skills/atoms/requirement-quality/SKILL.md`](skills/atoms/requirement-quality/SKILL.md) |
-| 24 | ✓ | [`skills/atoms/secure-coding/references/defaults.md`](skills/atoms/secure-coding/references/defaults.md) |
-| 25 | ✓ | [`skills/atoms/secure-coding/SKILL.md`](skills/atoms/secure-coding/SKILL.md) |
-| 26 | ✓ | [`skills/atoms/test-quality/references/defaults.md`](skills/atoms/test-quality/references/defaults.md) |
-| 27 | ✓ | [`skills/atoms/test-quality/SKILL.md`](skills/atoms/test-quality/SKILL.md) |
-| 28 | ✓ | [`skills/molecules/architecture-compass/references/interview-guide.md`](skills/molecules/architecture-compass/references/interview-guide.md) |
-| 29 | ✓ | [`skills/molecules/architecture-compass/SKILL.md`](skills/molecules/architecture-compass/SKILL.md) |
-| 30 | ✓ | [`skills/molecules/bug-fix/SKILL.md`](skills/molecules/bug-fix/SKILL.md) |
-| 31 | ✓ | [`skills/molecules/code-forge/SKILL.md`](skills/molecules/code-forge/SKILL.md) |
-| 32 | ✓ | [`skills/molecules/design-blueprint/SKILL.md`](skills/molecules/design-blueprint/SKILL.md) |
-| 33 | ✓ | [`skills/molecules/lattice-init/SKILL.md`](skills/molecules/lattice-init/SKILL.md) |
-| 34 | ✓ | [`skills/molecules/refactor-safely/SKILL.md`](skills/molecules/refactor-safely/SKILL.md) |
-| 35 | ✓ | [`skills/molecules/requirement-forge/references/output-templates.md`](skills/molecules/requirement-forge/references/output-templates.md) |
-| 36 | ✓ | [`skills/molecules/requirement-forge/SKILL.md`](skills/molecules/requirement-forge/SKILL.md) |
-| 37 | ✓ | [`skills/molecules/review/SKILL.md`](skills/molecules/review/SKILL.md) |
-| 38 | ✓ | [`skills/refiners/architecture-refiner/assets/template-clean-arch.md`](skills/refiners/architecture-refiner/assets/template-clean-arch.md) |
-| 39 | ✓ | [`skills/refiners/architecture-refiner/assets/template-generic.md`](skills/refiners/architecture-refiner/assets/template-generic.md) |
-| 40 | ✓ | [`skills/refiners/architecture-refiner/SKILL.md`](skills/refiners/architecture-refiner/SKILL.md) |
-| 41 | ✓ | [`skills/refiners/clean-code-refiner/assets/template.md`](skills/refiners/clean-code-refiner/assets/template.md) |
-| 42 | ✓ | [`skills/refiners/clean-code-refiner/SKILL.md`](skills/refiners/clean-code-refiner/SKILL.md) |
-| 43 | ✓ | [`skills/refiners/ddd-refiner/assets/template.md`](skills/refiners/ddd-refiner/assets/template.md) |
-| 44 | ✓ | [`skills/refiners/ddd-refiner/SKILL.md`](skills/refiners/ddd-refiner/SKILL.md) |
-| 45 | ✓ | [`skills/refiners/knowledge-priming-refiner/assets/template.md`](skills/refiners/knowledge-priming-refiner/assets/template.md) |
-| 46 | ✓ | [`skills/refiners/knowledge-priming-refiner/SKILL.md`](skills/refiners/knowledge-priming-refiner/SKILL.md) |
-| 47 | ✓ | [`skills/refiners/language-idioms-refiner/assets/template.md`](skills/refiners/language-idioms-refiner/assets/template.md) |
-| 48 | ✓ | [`skills/refiners/language-idioms-refiner/SKILL.md`](skills/refiners/language-idioms-refiner/SKILL.md) |
-| 49 | ✓ | [`skills/refiners/requirement-forge-refiner/assets/template.md`](skills/refiners/requirement-forge-refiner/assets/template.md) |
-| 50 | ✓ | [`skills/refiners/requirement-forge-refiner/SKILL.md`](skills/refiners/requirement-forge-refiner/SKILL.md) |
-| 51 | ✓ | [`skills/refiners/review-refiner/assets/template.md`](skills/refiners/review-refiner/assets/template.md) |
-| 52 | ✓ | [`skills/refiners/review-refiner/SKILL.md`](skills/refiners/review-refiner/SKILL.md) |
-| 53 | → | [`PROJECT.md`](PROJECT.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`dev-skills/skill-align/SKILL.md`](dev-skills/skill-align/SKILL.md) |
+| 5 | ✓ | [`dev-skills/skill-forge/SKILL.md`](dev-skills/skill-forge/SKILL.md) |
+| 6 | ✓ | [`dev-skills/skill-review/SKILL.md`](dev-skills/skill-review/SKILL.md) |
+| 7 | ✓ | [`dev-skills/skill-validate/SKILL.md`](dev-skills/skill-validate/SKILL.md) |
+| 8 | ✓ | [`plugins/lattice/skills/architecture-compass/SKILL.md`](plugins/lattice/skills/architecture-compass/SKILL.md) |
+| 9 | ✓ | [`plugins/lattice/skills/architecture-refiner/SKILL.md`](plugins/lattice/skills/architecture-refiner/SKILL.md) |
+| 10 | ✓ | [`plugins/lattice/skills/architecture/SKILL.md`](plugins/lattice/skills/architecture/SKILL.md) |
+| 11 | ✓ | [`plugins/lattice/skills/bug-fix/SKILL.md`](plugins/lattice/skills/bug-fix/SKILL.md) |
+| 12 | ✓ | [`plugins/lattice/skills/clean-code-refiner/SKILL.md`](plugins/lattice/skills/clean-code-refiner/SKILL.md) |
+| 13 | ✓ | [`plugins/lattice/skills/clean-code/SKILL.md`](plugins/lattice/skills/clean-code/SKILL.md) |
+| 14 | ✓ | [`plugins/lattice/skills/code-forge/SKILL.md`](plugins/lattice/skills/code-forge/SKILL.md) |
+| 15 | ✓ | [`plugins/lattice/skills/collaborative-judgment/SKILL.md`](plugins/lattice/skills/collaborative-judgment/SKILL.md) |
+| 16 | ✓ | [`plugins/lattice/skills/context-anchoring/SKILL.md`](plugins/lattice/skills/context-anchoring/SKILL.md) |
+| 17 | ✓ | [`plugins/lattice/skills/ddd-refiner/SKILL.md`](plugins/lattice/skills/ddd-refiner/SKILL.md) |
+| 18 | ✓ | [`plugins/lattice/skills/design-blueprint/SKILL.md`](plugins/lattice/skills/design-blueprint/SKILL.md) |
+| 19 | ✓ | [`plugins/lattice/skills/design-first/SKILL.md`](plugins/lattice/skills/design-first/SKILL.md) |
+| 20 | ✓ | [`plugins/lattice/skills/domain-driven-design/SKILL.md`](plugins/lattice/skills/domain-driven-design/SKILL.md) |
+| 21 | ✓ | [`plugins/lattice/skills/knowledge-priming-refiner/SKILL.md`](plugins/lattice/skills/knowledge-priming-refiner/SKILL.md) |
+| 22 | ✓ | [`plugins/lattice/skills/knowledge-priming/SKILL.md`](plugins/lattice/skills/knowledge-priming/SKILL.md) |
+| 23 | ✓ | [`plugins/lattice/skills/language-idioms-refiner/SKILL.md`](plugins/lattice/skills/language-idioms-refiner/SKILL.md) |
+| 24 | ✓ | [`plugins/lattice/skills/lattice-init/SKILL.md`](plugins/lattice/skills/lattice-init/SKILL.md) |
+| 25 | ✓ | [`plugins/lattice/skills/learning-harvest/SKILL.md`](plugins/lattice/skills/learning-harvest/SKILL.md) |
+| 26 | ✓ | [`plugins/lattice/skills/refactor-safely/SKILL.md`](plugins/lattice/skills/refactor-safely/SKILL.md) |
+| 27 | ✓ | [`plugins/lattice/skills/requirement-forge-refiner/SKILL.md`](plugins/lattice/skills/requirement-forge-refiner/SKILL.md) |
+| 28 | ✓ | [`plugins/lattice/skills/requirement-forge/SKILL.md`](plugins/lattice/skills/requirement-forge/SKILL.md) |
+| 29 | ✓ | [`plugins/lattice/skills/requirement-quality/SKILL.md`](plugins/lattice/skills/requirement-quality/SKILL.md) |
+| 30 | ✓ | [`plugins/lattice/skills/review-refiner/SKILL.md`](plugins/lattice/skills/review-refiner/SKILL.md) |
+| 31 | ✓ | [`plugins/lattice/skills/review/SKILL.md`](plugins/lattice/skills/review/SKILL.md) |
+| 32 | ✓ | [`plugins/lattice/skills/secure-coding/SKILL.md`](plugins/lattice/skills/secure-coding/SKILL.md) |
+| 33 | ✓ | [`plugins/lattice/skills/test-quality/SKILL.md`](plugins/lattice/skills/test-quality/SKILL.md) |
+| 34 | ✓ | [`skills/atoms/architecture/references/clean-architecture-defaults.md`](skills/atoms/architecture/references/clean-architecture-defaults.md) |
+| 35 | ✓ | [`skills/atoms/architecture/references/clean-architecture.md`](skills/atoms/architecture/references/clean-architecture.md) |
+| 36 | ✓ | [`skills/atoms/architecture/references/custom-architecture.md`](skills/atoms/architecture/references/custom-architecture.md) |
+| 37 | ✓ | [`skills/atoms/architecture/SKILL.md`](skills/atoms/architecture/SKILL.md) |
+| 38 | ✓ | [`skills/atoms/clean-code/references/defaults.md`](skills/atoms/clean-code/references/defaults.md) |
+| 39 | ✓ | [`skills/atoms/clean-code/SKILL.md`](skills/atoms/clean-code/SKILL.md) |
+| 40 | ✓ | [`skills/atoms/collaborative-judgment/SKILL.md`](skills/atoms/collaborative-judgment/SKILL.md) |
+| 41 | ✓ | [`skills/atoms/context-anchoring/assets/feature-doc-template.md`](skills/atoms/context-anchoring/assets/feature-doc-template.md) |
+| 42 | ✓ | [`skills/atoms/context-anchoring/SKILL.md`](skills/atoms/context-anchoring/SKILL.md) |
+| 43 | ✓ | [`skills/atoms/design-first/references/methodology-detail.md`](skills/atoms/design-first/references/methodology-detail.md) |
+| 44 | ✓ | [`skills/atoms/design-first/SKILL.md`](skills/atoms/design-first/SKILL.md) |
+| 45 | ✓ | [`skills/atoms/domain-driven-design/references/defaults.md`](skills/atoms/domain-driven-design/references/defaults.md) |
+| 46 | ✓ | [`skills/atoms/domain-driven-design/SKILL.md`](skills/atoms/domain-driven-design/SKILL.md) |
+| 47 | ✓ | [`skills/atoms/knowledge-priming/SKILL.md`](skills/atoms/knowledge-priming/SKILL.md) |
+| 48 | ✓ | [`skills/atoms/learning-harvest/SKILL.md`](skills/atoms/learning-harvest/SKILL.md) |
+| 49 | ✓ | [`skills/atoms/requirement-quality/references/defaults.md`](skills/atoms/requirement-quality/references/defaults.md) |
+| 50 | ✓ | [`skills/atoms/requirement-quality/SKILL.md`](skills/atoms/requirement-quality/SKILL.md) |
+| 51 | ✓ | [`skills/atoms/secure-coding/references/defaults.md`](skills/atoms/secure-coding/references/defaults.md) |
+| 52 | ✓ | [`skills/atoms/secure-coding/SKILL.md`](skills/atoms/secure-coding/SKILL.md) |
+| 53 | ✓ | [`skills/atoms/test-quality/references/defaults.md`](skills/atoms/test-quality/references/defaults.md) |
+| 54 | ✓ | [`skills/atoms/test-quality/SKILL.md`](skills/atoms/test-quality/SKILL.md) |
+| 55 | ✓ | [`skills/molecules/architecture-compass/references/interview-guide.md`](skills/molecules/architecture-compass/references/interview-guide.md) |
+| 56 | ✓ | [`skills/molecules/architecture-compass/SKILL.md`](skills/molecules/architecture-compass/SKILL.md) |
+| 57 | ✓ | [`skills/molecules/bug-fix/SKILL.md`](skills/molecules/bug-fix/SKILL.md) |
+| 58 | ✓ | [`skills/molecules/code-forge/SKILL.md`](skills/molecules/code-forge/SKILL.md) |
+| 59 | ✓ | [`skills/molecules/design-blueprint/SKILL.md`](skills/molecules/design-blueprint/SKILL.md) |
+| 60 | ✓ | [`skills/molecules/lattice-init/SKILL.md`](skills/molecules/lattice-init/SKILL.md) |
+| 61 | ✓ | [`skills/molecules/refactor-safely/SKILL.md`](skills/molecules/refactor-safely/SKILL.md) |
+| 62 | ✓ | [`skills/molecules/requirement-forge/references/output-templates.md`](skills/molecules/requirement-forge/references/output-templates.md) |
+| 63 | ✓ | [`skills/molecules/requirement-forge/SKILL.md`](skills/molecules/requirement-forge/SKILL.md) |
+| 64 | ✓ | [`skills/molecules/review/SKILL.md`](skills/molecules/review/SKILL.md) |
+| 65 | ✓ | [`skills/refiners/architecture-refiner/assets/template-clean-arch.md`](skills/refiners/architecture-refiner/assets/template-clean-arch.md) |
+| 66 | ✓ | [`skills/refiners/architecture-refiner/assets/template-generic.md`](skills/refiners/architecture-refiner/assets/template-generic.md) |
+| 67 | ✓ | [`skills/refiners/architecture-refiner/SKILL.md`](skills/refiners/architecture-refiner/SKILL.md) |
+| 68 | ✓ | [`skills/refiners/clean-code-refiner/assets/template.md`](skills/refiners/clean-code-refiner/assets/template.md) |
+| 69 | ✓ | [`skills/refiners/clean-code-refiner/SKILL.md`](skills/refiners/clean-code-refiner/SKILL.md) |
+| 70 | ✓ | [`skills/refiners/ddd-refiner/assets/template.md`](skills/refiners/ddd-refiner/assets/template.md) |
+| 71 | ✓ | [`skills/refiners/ddd-refiner/SKILL.md`](skills/refiners/ddd-refiner/SKILL.md) |
+| 72 | ✓ | [`skills/refiners/knowledge-priming-refiner/assets/template.md`](skills/refiners/knowledge-priming-refiner/assets/template.md) |
+| 73 | ✓ | [`skills/refiners/knowledge-priming-refiner/SKILL.md`](skills/refiners/knowledge-priming-refiner/SKILL.md) |
+| 74 | ✓ | [`skills/refiners/language-idioms-refiner/assets/template.md`](skills/refiners/language-idioms-refiner/assets/template.md) |
+| 75 | ✓ | [`skills/refiners/language-idioms-refiner/SKILL.md`](skills/refiners/language-idioms-refiner/SKILL.md) |
+| 76 | ✓ | [`skills/refiners/requirement-forge-refiner/assets/template.md`](skills/refiners/requirement-forge-refiner/assets/template.md) |
+| 77 | ✓ | [`skills/refiners/requirement-forge-refiner/SKILL.md`](skills/refiners/requirement-forge-refiner/SKILL.md) |
+| 78 | ✓ | [`skills/refiners/review-refiner/assets/template.md`](skills/refiners/review-refiner/assets/template.md) |
+| 79 | ✓ | [`skills/refiners/review-refiner/SKILL.md`](skills/refiners/review-refiner/SKILL.md) |
+| 80 | → | [`PROJECT.md`](PROJECT.md) |
 
 ---
 

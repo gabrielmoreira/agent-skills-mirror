@@ -31,12 +31,12 @@ When adding new extensions, skills, or rules:
 Before committing changes, run:
 
 ```bash
-bun run check
-bun run test
-bun run format:check
+npm run check
+npm run test
+npm run format:check
 ```
 
-`bun run check` includes oxlint with warnings denied, TypeScript checking, jscpd duplicate detection, and `deps:check` dependency hygiene. Keep shared helpers in `extensions/shared/` when logic appears in more than one extension.
+`npm run check` includes oxlint, TypeScript checking, Vitest, jscpd duplicate detection, and `deps:check` dependency hygiene. Keep shared helpers in `extensions/shared/` when logic appears in more than one extension.
 
 ## Native pi Tool Rendering Rules
 
@@ -57,4 +57,4 @@ When adding or changing model-facing tool renderers, follow native pi TUI conven
 9. Search results should be parsed into semantic rows (`count`, `path:line`, source preview), not dumped as raw command stdout.
 10. AST edit dry-run diffs must render like pi's built-in edit diff style; do not expose ast-grep's pseudo-diff format (`1 1│`, etc.).
 11. Absolute paths should be muted and avoided in compact primary text when a shorter name is sufficient.
-12. After renderer changes, run `bun run check`, `bun run test`, `bun run format:check`, and verify representative cases in tmux/asciinema before claiming the UI is fixed.
+12. After renderer changes, run `npm run check`, `npm run test`, `npm run format:check`, and verify representative cases in tmux/asciinema before claiming the UI is fixed.

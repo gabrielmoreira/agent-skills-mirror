@@ -2,105 +2,87 @@
 
 Open-source video rendering framework: write HTML, render video.
 
-```
-packages/
-  cli/       → hyperframes CLI (create, preview, lint, render)
-  core/      → Types, parsers, generators, linter, runtime, frame adapters
-  engine/    → Seekable page-to-video capture engine (Puppeteer + FFmpeg)
-  player/    → Embeddable <hyperframes-player> web component
-  producer/  → Full rendering pipeline (capture + encode + audio mix)
-  studio/    → Browser-based composition editor UI
-```
+## Skills
 
-## Development
+This repo ships AI agent skills via [vercel-labs/skills](https://github.com/vercel-labs/skills). Install them before writing compositions — they encode framework-specific patterns that generic docs don't cover.
 
 ```bash
-bun install     # Install dependencies
-bun run build   # Build all packages
-bun run test    # Run tests
+npx skills add heygen-com/hyperframes
 ```
 
-**This repo uses bun**, not pnpm. Do NOT run `pnpm install` — it creates a `pnpm-lock.yaml` that should not exist. Workspace linking relies on bun's resolution from `"workspaces"` in root `package.json`.
+**Video-creation workflows** route through one entry skill — `/hyperframes-read-first` orients you to the whole surface and maps "make me a video" intent to a concrete workflow. Consult it before invoking a specific workflow:
+
+- `/product-launch-video` — a **product** URL (or a pre-written script / text brief in no-capture mode) → product launch / promo video, up to ~3 min (sweet spot ~30-90s).
+- `/website-to-video` — a **general** website / URL → a video _of_ the site (tour / showcase / social clip from captured screenshots + assets); for a product **launch / promo**, use `/product-launch-video`.
+- `/faceless-explainer` — arbitrary text, **no URL and no website capture** → faceless explainer, up to ~3 min (sweet spot ~30-90s); every visual is LLM-invented (typography / abstract graphics / diagram / data-viz).
+- `/embedded-captions` — an existing talking-head video (MP4) → the same footage with captions / subtitles added (verbatim rail + embedded climax, or pure-cinematic embed); the footage itself is untouched (no NLE-style editing).
+- `/graphic-overlays` — an existing talking-head / interview / podcast video (MP4) → the same footage packaged with designed **graphic overlays** (kinetic titles, lower-thirds, data callouts, pull-quotes, side panels, pip) synced to the transcript; the clip plays unchanged underneath, footage untouched. Replaces the removed `/footage-recut`. For plain captions/subtitles → `/embedded-captions`.
+- `/pr-to-video` — a GitHub PR (URL / `owner/repo#N` / "this PR") → code-change explainer, up to ~3 min (changelog / feature reveal / fix / refactor). A PR link, not a product website.
+- `/motion-graphics` — a short (typically under 10s) design-led **motion graphic**, motion-is-the-message, no narration: kinetic type, a stat / number count-up, a chart, a logo sting, a lower-third / overlay, or an animated tweet / headline / captured-page highlight; rendered to MP4 or a transparent overlay. Longer / narrated / custom → `/general-video`.
+- `/general-video` — fallback for any other video creation (title card, longer brand / sizzle reel, multi-scene montage, static loop, custom composition); the original hyperframes flow — design → plan → layout → build → validate, any length.
+
+**Porting an existing composition?** `/remotion-to-hyperframes` translates a Remotion (React) video composition into HyperFrames HTML — a source migration, separate from the creation workflows above.
+
+## Build & Test
+
+```bash
+bun install     # Install dependencies (NOT pnpm — do not create pnpm-lock.yaml)
+bun run build   # Build all packages
+bun run test    # Run all tests
+```
 
 ### Linting & Formatting
 
-This project uses **oxlint** and **oxfmt** (not biome, not eslint, not prettier).
+Uses **oxlint** and **oxfmt** (not eslint, not prettier, not biome).
 
 ```bash
 bunx oxlint <files>        # Lint
-bunx oxfmt <files>         # Format (write)
-bunx oxfmt --check <files> # Format (check only, used by pre-commit hook)
+bunx oxfmt <files>         # Format
+bunx oxfmt --check <files> # Check formatting (CI / pre-commit)
 ```
 
-Always run both on changed files before committing. The lefthook pre-commit hook runs `bunx oxlint` and `bunx oxfmt --check` automatically.
+Always lint and format changed files before committing. Lefthook pre-commit hooks enforce this automatically.
 
-### Adding CLI Commands
+### Composition Validation
 
-When adding a new CLI command:
-
-1. Define the command in `packages/cli/src/commands/<name>.ts` using `defineCommand` from citty
-2. **Export `examples`** in the same file — `export const examples: Example[] = [...]` (import `Example` from `./_examples.js`). These are displayed by `--help`.
-3. Register it in `packages/cli/src/cli.ts` under `subCommands` (lazy-loaded)
-4. **Add to help groups** in `packages/cli/src/help.ts` — add the command name and description to the appropriate `GROUPS` entry. Without this, the command won't appear in `hyperframes --help` even though it works.
-5. **Document it** in `docs/packages/cli.mdx` — add a section with usage examples and flags.
-6. Validate by running `npx tsx packages/cli/src/cli.ts --help` (command appears in the list) and `npx tsx packages/cli/src/cli.ts <name> --help` (examples appear).
-
-### Regression Test Golden Baselines (producer)
-
-`packages/producer/tests/<name>/output/output.mp4` baselines MUST be generated
-inside `Dockerfile.test`, not on your host. CI renders inside that Docker image
-with a specific Chrome + ffmpeg build; pixel-level output drifts across
-different host Chrome/ffmpeg versions and will fail PSNR at dozens of
-checkpoints even when the code is correct.
+After creating or editing any `.html` composition:
 
 ```bash
-# Build the test image once:
-docker build -t hyperframes-producer:test -f Dockerfile.test .
-
-# Generate or update a baseline (runs the harness with --update inside Docker):
-bun run --cwd packages/producer docker:test:update <test-name>
+npx hyperframes lint       # Static HTML structure check
+npx hyperframes validate   # Runtime check (headless Chrome — catches JS errors, missing assets)
 ```
 
-Never run `bun run --cwd packages/producer test:update` directly from the
-host to capture a baseline that will be committed — the resulting output.mp4
-will not match CI. Use it only for local-only experimentation.
+Both must pass before previewing or considering work complete.
 
-## Releasing
+## Project Structure
 
-All eight packages share one version. `.github/workflows/publish.yml` publishes
-them when a `v*` tag is pushed (it also accepts a manual `workflow_dispatch` with
-a version input). The CLI publishes as the unscoped `hyperframes` package; the
-other seven as `@hyperframes/*`.
-
-Cut a release from `main`:
-
-```bash
-bun run release:prepare <version>   # e.g. 0.6.72
+```
+packages/
+  cli/                  → hyperframes CLI (create, preview, lint, render)
+  core/                 → Types, parsers, generators, linter, runtime, frame adapters
+  engine/               → Seekable page-to-video capture engine (Puppeteer + FFmpeg)
+  player/               → Embeddable <hyperframes-player> web component
+  producer/             → Full rendering pipeline (capture + encode + audio mix)
+  shader-transitions/   → WebGL shader transitions for compositions
+  studio/               → Browser-based composition editor UI
+registry/
+  blocks/               → Installable sub-composition scenes (50+)
+  components/           → Installable effects and snippets
+  examples/             → Starter project templates
+docs/                   → Mintlify documentation site (hyperframes.heygen.com)
+skills/                 → AI agent skill definitions
 ```
 
-Run it twice:
+## Key Conventions
 
-1. **First run** writes `releases/v<version>.md` and prepends an entry to
-   `docs/changelog.mdx`, then stops with a non-zero exit. Edit both files: write
-   the 1–2 sentence summary and remove the `<!-- TODO -->` marker.
-2. **Second run** (after the TODO is gone) bumps every package and plugin
-   manifest, creates the `chore: release v<version>` commit, and tags
-   `v<version>` (lightweight).
+- **Package manager**: bun (not pnpm, not npm for workspace operations)
+- **Commit format**: Conventional commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`)
+- **TypeScript**: Avoid `any` and `as T` assertions. Prefer type guards and narrowing.
+- **Compositions**: HTML files with `data-*` attributes. Clips need `class="clip"`. GSAP timelines must be paused and registered on `window.__timelines`.
+- **Frame Adapters**: Animation runtimes plug in via the seek-by-frame adapter pattern. GSAP is the primary adapter.
+- **Deterministic rendering**: No `Date.now()`, no unseeded `Math.random()`, no render-time network fetches.
 
-Then push to trigger the publish:
+## Documentation
 
-```bash
-git push origin main --tags
-```
-
-Notes:
-
-- Pre-release versions (`0.6.72-alpha.1`) publish to the matching npm dist-tag
-  (`alpha`) instead of `latest`.
-- `--skip-changelog-check` skips the changelog gate for emergency releases.
-- The publish step skips any version already on npm, so re-running a failed
-  workflow run is safe.
-
-## Skills
-
-Composition authoring (not repo development) is guided by skills installed via `npx skills add heygen-com/hyperframes`. See `skills/` for source. Invoke `/hyperframes`, `/hyperframes-cli`, `/hyperframes-registry`, `/tailwind`, or `/gsap` when authoring compositions. Use `/tailwind` for projects created with `hyperframes init --tailwind` so agents follow the pinned Tailwind v4 browser-runtime contract instead of Studio's Tailwind v3 setup. Use `/animejs`, `/css-animations`, `/lottie`, `/three`, or `/waapi` when a composition uses those first-party runtime adapters. Invoke `/hyperframes-media` for asset preprocessing (TTS narration, audio/video transcription, background removal for transparent overlays) — these commands have their own skill so the CLI skill stays focused on the dev loop. When a user provides a website URL and wants a video, invoke `/website-to-hyperframes` — it runs the full 7-step capture-to-video pipeline.
+- Docs: https://hyperframes.heygen.com/introduction
+- Catalog (50+ blocks): https://hyperframes.heygen.com/catalog/blocks/data-chart

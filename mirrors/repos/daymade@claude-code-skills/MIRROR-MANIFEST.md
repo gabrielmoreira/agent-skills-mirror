@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `daymade/claude-code-skills` — 26 default patterns, 6 followed patterns, 71 file(s) materialized.
+Mirror of `daymade/claude-code-skills` — 26 default patterns, 6 followed patterns, 72 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 6 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 71 |
+| Files         | 72 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -113,28 +113,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 47 | ✓ | [`llm-icon-finder/SKILL.md`](llm-icon-finder/SKILL.md) |
 | 48 | ✓ | [`llm-wiki-setup/SKILL.md`](llm-wiki-setup/SKILL.md) |
 | 49 | ✓ | [`macos-cleaner/SKILL.md`](macos-cleaner/SKILL.md) |
-| 50 | ✓ | [`product-analysis/SKILL.md`](product-analysis/SKILL.md) |
-| 51 | ✓ | [`prompt-optimizer/SKILL.md`](prompt-optimizer/SKILL.md) |
-| 52 | ✓ | [`promptfoo-evaluation/SKILL.md`](promptfoo-evaluation/SKILL.md) |
-| 53 | ✓ | [`qa-expert/SKILL.md`](qa-expert/SKILL.md) |
-| 54 | ✓ | [`repomix-safe-mixer/SKILL.md`](repomix-safe-mixer/SKILL.md) |
-| 55 | ✓ | [`repomix-unmixer/SKILL.md`](repomix-unmixer/SKILL.md) |
-| 56 | ✓ | [`scrapling-skill/SKILL.md`](scrapling-skill/SKILL.md) |
-| 57 | ✓ | [`slides-creator/SKILL.md`](slides-creator/SKILL.md) |
-| 58 | ✓ | [`teams-channel-post-writer/SKILL.md`](teams-channel-post-writer/SKILL.md) |
-| 59 | ✓ | [`terraform-skill/SKILL.md`](terraform-skill/SKILL.md) |
-| 60 | ✓ | [`tunnel-doctor/SKILL.md`](tunnel-doctor/SKILL.md) |
-| 61 | ✓ | [`twitter-reader/SKILL.md`](twitter-reader/SKILL.md) |
-| 62 | ✓ | [`ui-designer/SKILL.md`](ui-designer/SKILL.md) |
-| 63 | ✓ | [`video-comparer/SKILL.md`](video-comparer/SKILL.md) |
-| 64 | ✓ | [`windows-remote-desktop-connection-doctor/SKILL.md`](windows-remote-desktop-connection-doctor/SKILL.md) |
-| 65 | ✓ | [`youtube-downloader/SKILL.md`](youtube-downloader/SKILL.md) |
-| 66 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
-| 67 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
-| 68 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
-| 69 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
-| 70 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
-| 71 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
+| 50 | ✓ | [`marketplace-health-check/SKILL.md`](marketplace-health-check/SKILL.md) |
+| 51 | ✓ | [`product-analysis/SKILL.md`](product-analysis/SKILL.md) |
+| 52 | ✓ | [`prompt-optimizer/SKILL.md`](prompt-optimizer/SKILL.md) |
+| 53 | ✓ | [`promptfoo-evaluation/SKILL.md`](promptfoo-evaluation/SKILL.md) |
+| 54 | ✓ | [`qa-expert/SKILL.md`](qa-expert/SKILL.md) |
+| 55 | ✓ | [`repomix-safe-mixer/SKILL.md`](repomix-safe-mixer/SKILL.md) |
+| 56 | ✓ | [`repomix-unmixer/SKILL.md`](repomix-unmixer/SKILL.md) |
+| 57 | ✓ | [`scrapling-skill/SKILL.md`](scrapling-skill/SKILL.md) |
+| 58 | ✓ | [`slides-creator/SKILL.md`](slides-creator/SKILL.md) |
+| 59 | ✓ | [`teams-channel-post-writer/SKILL.md`](teams-channel-post-writer/SKILL.md) |
+| 60 | ✓ | [`terraform-skill/SKILL.md`](terraform-skill/SKILL.md) |
+| 61 | ✓ | [`tunnel-doctor/SKILL.md`](tunnel-doctor/SKILL.md) |
+| 62 | ✓ | [`twitter-reader/SKILL.md`](twitter-reader/SKILL.md) |
+| 63 | ✓ | [`ui-designer/SKILL.md`](ui-designer/SKILL.md) |
+| 64 | ✓ | [`video-comparer/SKILL.md`](video-comparer/SKILL.md) |
+| 65 | ✓ | [`windows-remote-desktop-connection-doctor/SKILL.md`](windows-remote-desktop-connection-doctor/SKILL.md) |
+| 66 | ✓ | [`youtube-downloader/SKILL.md`](youtube-downloader/SKILL.md) |
+| 67 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
+| 68 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
+| 69 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
+| 70 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
+| 71 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
+| 72 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
 
 ---
 

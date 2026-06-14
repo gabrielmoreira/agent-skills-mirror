@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bfly123/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `bfly123/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bfly123/claude_codex_bridge` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,13 +70,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`inherit_skills/codex_skills/ask/SKILL.md`](inherit_skills/codex_skills/ask/SKILL.md) |
 | 10 | ✓ | [`inherit_skills/codex_skills/ccb-clear/SKILL.md`](inherit_skills/codex_skills/ccb-clear/SKILL.md) |
 | 11 | ✓ | [`inherit_skills/droid_skills/ask/SKILL.md`](inherit_skills/droid_skills/ask/SKILL.md) |
-| 12 | ✓ | [`mcp/ccb-delegation/server_runtime_io.py`](mcp/ccb-delegation/server_runtime_io.py) |
-| 13 | ✓ | [`mcp/ccb-delegation/server_runtime_protocol.py`](mcp/ccb-delegation/server_runtime_protocol.py) |
-| 14 | ✓ | [`mcp/ccb-delegation/server_runtime_schema.py`](mcp/ccb-delegation/server_runtime_schema.py) |
-| 15 | ✓ | [`mcp/ccb-delegation/server_runtime_tools.py`](mcp/ccb-delegation/server_runtime_tools.py) |
-| 16 | ✓ | [`mcp/ccb-delegation/server.py`](mcp/ccb-delegation/server.py) |
-| 17 | ✓ | [`useful_tools/claude_skills/plan-tree/SKILL.md`](useful_tools/claude_skills/plan-tree/SKILL.md) |
-| 18 | ✓ | [`useful_tools/codex_skills/plan-tree/SKILL.md`](useful_tools/codex_skills/plan-tree/SKILL.md) |
+| 12 | ✓ | [`inherit_skills/kimi_skills/ask/SKILL.md`](inherit_skills/kimi_skills/ask/SKILL.md) |
+| 13 | ✓ | [`mcp/ccb-delegation/server_runtime_io.py`](mcp/ccb-delegation/server_runtime_io.py) |
+| 14 | ✓ | [`mcp/ccb-delegation/server_runtime_protocol.py`](mcp/ccb-delegation/server_runtime_protocol.py) |
+| 15 | ✓ | [`mcp/ccb-delegation/server_runtime_schema.py`](mcp/ccb-delegation/server_runtime_schema.py) |
+| 16 | ✓ | [`mcp/ccb-delegation/server_runtime_tools.py`](mcp/ccb-delegation/server_runtime_tools.py) |
+| 17 | ✓ | [`mcp/ccb-delegation/server.py`](mcp/ccb-delegation/server.py) |
+| 18 | ✓ | [`useful_tools/claude_skills/plan-tree/SKILL.md`](useful_tools/claude_skills/plan-tree/SKILL.md) |
+| 19 | ✓ | [`useful_tools/codex_skills/plan-tree/SKILL.md`](useful_tools/codex_skills/plan-tree/SKILL.md) |
 
 ---
 

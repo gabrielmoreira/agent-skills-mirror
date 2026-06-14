@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `olaxbt/ai-market-maker` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `olaxbt/ai-market-maker` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `olaxbt/ai-market-maker` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`openclaw/SKILL.md`](openclaw/SKILL.md) |
+| 2 | ✓ | [`src/agents/governance/policy_orchestrator/SKILL.md`](src/agents/governance/policy_orchestrator/SKILL.md) |
+| 3 | ✓ | [`src/agents/governance/portfolio_management/SKILL.md`](src/agents/governance/portfolio_management/SKILL.md) |
+| 4 | ✓ | [`src/agents/governance/risk_guard/SKILL.md`](src/agents/governance/risk_guard/SKILL.md) |
+| 5 | ✓ | [`src/agents/operator/1.1_monetary_sentinel/SKILL.md`](src/agents/operator/1.1_monetary_sentinel/SKILL.md) |
+| 6 | ✓ | [`src/agents/operator/1.2_news_narrative_miner/SKILL.md`](src/agents/operator/1.2_news_narrative_miner/SKILL.md) |
+| 7 | ✓ | [`src/agents/operator/2.1_pattern_recognition_bot/SKILL.md`](src/agents/operator/2.1_pattern_recognition_bot/SKILL.md) |
+| 8 | ✓ | [`src/agents/operator/2.2_statistical_alpha_engine/SKILL.md`](src/agents/operator/2.2_statistical_alpha_engine/SKILL.md) |
+| 9 | ✓ | [`src/agents/operator/2.3_technical_ta_engine/SKILL.md`](src/agents/operator/2.3_technical_ta_engine/SKILL.md) |
+| 10 | ✓ | [`src/agents/operator/3.1_retail_hype_tracker/SKILL.md`](src/agents/operator/3.1_retail_hype_tracker/SKILL.md) |
+| 11 | ✓ | [`src/agents/operator/3.2_pro_bias_analyst/SKILL.md`](src/agents/operator/3.2_pro_bias_analyst/SKILL.md) |
+| 12 | ✓ | [`src/agents/operator/4.1_whale_behavior_analyst/SKILL.md`](src/agents/operator/4.1_whale_behavior_analyst/SKILL.md) |
+| 13 | ✓ | [`src/agents/operator/4.2_liquidity_order_flow/SKILL.md`](src/agents/operator/4.2_liquidity_order_flow/SKILL.md) |
+| 14 | ✓ | [`src/agents/profile_agent/SKILL.md`](src/agents/profile_agent/SKILL.md) |
 
 ---
 

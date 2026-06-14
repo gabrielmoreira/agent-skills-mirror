@@ -4,7 +4,7 @@ description: >
   Research and evaluate affiliate programs to find the best ones to promote.
   Use this skill when the user asks anything about finding affiliate programs,
   comparing commission rates, evaluating affiliate opportunities, searching for
-  products to promote, picking a niche, or mentions list.affitor.com.
+  products to promote, picking a niche, or mentions openaffiliate.dev.
   Also trigger for: "which SaaS should I promote", "best affiliate programs for X",
   "high commission programs", "recurring commission affiliate", "compare these
   affiliate programs", "is X affiliate program worth it", "find me something to promote",
@@ -22,7 +22,7 @@ metadata:
 # Affiliate Program Search
 
 Help affiliate marketers research, evaluate, and pick winning programs to promote.
-Data source: [list.affitor.com](https://list.affitor.com) — Affitor's community-driven affiliate program directory.
+Data source: [openaffiliate.dev](https://openaffiliate.dev) — open affiliate program directory. Public API, no key required.
 
 ## Stage
 
@@ -33,7 +33,7 @@ This skill belongs to Stage S1: Research
 - User wants to find affiliate programs to promote
 - User wants to compare two or more affiliate programs
 - User asks about commission rates, cookie duration, or earning potential
-- User mentions list.affitor.com
+- User mentions openaffiliate.dev
 - User is new to affiliate marketing and needs a starting point
 
 ## Input Schema
@@ -60,13 +60,13 @@ Ask (if not clear from context):
 
 If user says "just find me something good" → default to: AI/SaaS tools, recurring commission, 20%+, content creator audience.
 
-### Step 2: Search list.affitor.com
+### Step 2: Search openaffiliate.dev
 
-See `references/list-affitor-api.md` for integration methods.
+See `references/openaffiliate-api.md` for integration methods.
 
 Two methods available:
-- **API (preferred):** `GET /api/v1/programs` with API key auth — structured data, filterable
-- **Web fetch (fallback):** `web_search "site:list.affitor.com [category]"` then `web_fetch` the page
+- **API (preferred):** `GET https://openaffiliate.dev/api/programs?q=<term>` — public, no auth needed, structured data
+- **Web fetch (fallback):** `web_search "site:openaffiliate.dev [category]"` then `web_fetch` the page
 
 Extract for each program: `name`, `reward_value`, `reward_type`, `cookie_days`, `stars_count`, `tags`, `description`.
 
@@ -79,7 +79,7 @@ Score each program on 5 dimensions (1-10 scale):
 2. **Content Potential** (25%) — visual demo, free tier, content angles
 3. **Market Demand** (20%) — search volume, trend direction, market size
 4. **Competition Level** (15%) — fewer affiliates promoting = higher score
-5. **Trust Factor** (10%) — product quality, reputation, stars on list.affitor.com
+5. **Trust Factor** (10%) — product quality, reputation, stars on openaffiliate.dev
 
 Overall = weighted average. Verdict: 7.5+ "Strong Pick" / 5.5-7.4 "Worth Testing" / <5.5 "Skip".
 
@@ -147,7 +147,7 @@ Other skills (viral-post-writer, affiliate-blog-builder, etc.) consume these fie
 | Content Potential | 9/10 | Visual AI video, easy to demo |
 | Market Demand | 8/10 | AI video trending, high search volume |
 | Competition | 6/10 | Growing number of affiliates |
-| Trust Factor | 8/10 | Strong brand, 42 stars on list.affitor.com |
+| Trust Factor | 8/10 | Strong brand, 42 stars on openaffiliate.dev |
 | **Overall** | **8.2/10** | **Strong Pick** |
 
 ## Runner-up: [Program Name]
@@ -163,24 +163,24 @@ Other skills (viral-post-writer, affiliate-blog-builder, etc.) consume these fie
 
 ## Error Handling
 
-- **API unavailable:** Fall back to web_fetch method (see `references/list-affitor-api.md` Method 2)
+- **API unavailable:** Fall back to web_fetch method (see `references/openaffiliate-api.md` Method 2)
 - **No programs match criteria:** Broaden search (remove strictest filter first), explain to user what was relaxed
 - **Stale data (program updated_at > 6 months):** Flag with "Data may be outdated, verify on product website"
 - **User gives no criteria:** Use defaults (AI/SaaS, recurring, 20%+, content creator audience)
-- **Program not on list.affitor.com:** Use `web_search` to find program details directly, still apply scoring framework
+- **Program not on openaffiliate.dev:** Use `web_search` to find program details directly, still apply scoring framework
 
 ## Examples
 
 **Example 1:**
 User: "I want to promote AI video tools, commission recurring, at least 20%"
-→ Search list.affitor.com for programs tagged "ai" or "video"
+→ Search openaffiliate.dev for programs tagged "ai" or "video": `GET /api/programs?q=ai+video`
 → Filter: reward_type = cps_recurring, reward_value ≥ 20%
 → Score and rank: HeyGen, Synthesia, ElevenLabs, InVideo AI...
 → Recommend top pick with full scorecard
 
 **Example 2:**
 User: "Compare HeyGen vs Synthesia for my LinkedIn audience"
-→ Fetch both from list.affitor.com
+→ Fetch both from openaffiliate.dev: `GET /api/programs/heygen` and `GET /api/programs/synthesia`
 → Score both, emphasize Content Potential for LinkedIn
 → Side-by-side comparison table + recommendation
 → Note: LinkedIn audience = B2B, weight higher-price products
@@ -194,7 +194,7 @@ User: "I'm a beginner, what should I promote first?"
 ## References
 
 - `references/scoring-criteria.md` — the 5-dimension scoring framework with rubrics
-- `references/list-affitor-api.md` — how to fetch data from list.affitor.com (API + fallback)
+- `references/openaffiliate-api.md` — how to fetch data from openaffiliate.dev (API + fallback)
 - `references/platform-rules.md` — platform-specific considerations when recommending programs
 - `shared/references/flywheel-connections.md` — master flywheel connection map
 

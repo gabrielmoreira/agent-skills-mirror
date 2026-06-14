@@ -26,11 +26,11 @@ Sentry.init({
   dsn: process.env.SENTRY_DSN,
   enabled: Boolean(process.env.SENTRY_DSN),
   tracesSampleRate: 1.0,
-  // NEON_BRANCH (the branch id) is injected on EVERY branch, including the default — so it
+  // NEON_BRANCH (the branch name) is injected on EVERY branch, including the default — so it
   // can't be used as a truthy "is this a branch?" flag. Treat the project's default branch as
-  // "production" (its id passed in via neon.ts env) and tag every other branch by its id.
+  // "production" (its name passed in via neon.ts env) and tag every other branch by its name.
   environment:
-    process.env.NEON_BRANCH && process.env.NEON_BRANCH !== process.env.PRODUCTION_BRANCH_ID
+    process.env.NEON_BRANCH && process.env.NEON_BRANCH !== process.env.PRODUCTION_BRANCH
       ? process.env.NEON_BRANCH
       : "production",
 });
@@ -47,7 +47,7 @@ import { Hono } from "hono";
 ```
 
 - **Gate `enabled` on the DSN.** Local dev (`neonctl dev`) and any branch where you haven't configured the secret then become a no-op — no init, no noise — without changing code.
-- **Tag the environment off the injected branch id.** Each Neon branch runs its own copy of the function and the runtime injects `NEON_BRANCH` (the branch **id**, e.g. `br-rough-smoke-w2hoayam`) into every one of them — including the default branch. Because it's always present, don't use it as a boolean flag (that tags every branch the same). Instead compare it against your default branch id (pass it in as e.g. `PRODUCTION_BRANCH_ID` via `neon.ts` `env`) so the default branch reads as `production` and feature/preview branches are tagged by id — keeping them separable in the Sentry dashboard.
+- **Tag the environment off the injected branch name.** Each Neon branch runs its own copy of the function and the runtime injects `NEON_BRANCH` (the branch **name**, e.g. `main` or `preview/add-auth`) into every one of them — including the default branch. The same value is written into local dev by `neonctl env pull` / `neon-env run` / `neonctl dev`, so local and deployed runs agree. Because it's always present, don't use it as a boolean flag (that tags every branch the same). Instead compare it against your default branch name (pass it in as e.g. `PRODUCTION_BRANCH` via `neon.ts` `env`) so the default branch reads as `production` and feature/preview branches are tagged by name — keeping them separable in the Sentry dashboard.
 
 ### 2. Provide the DSN as a deploy-time secret
 

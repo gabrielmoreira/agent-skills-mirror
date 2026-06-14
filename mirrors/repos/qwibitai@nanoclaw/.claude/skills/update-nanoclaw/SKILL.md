@@ -33,7 +33,7 @@ Run `/update-nanoclaw` in Claude Code.
 
 **Validation**: runs `pnpm run build` and `pnpm test`. If container files changed, also runs the container typecheck and `./container/build.sh`.
 
-**Breaking changes check**: after validation, reads CHANGELOG.md for any `[BREAKING]` entries introduced by the update. If found, shows each breaking change and offers to run the recommended skill to migrate.
+**Breaking changes check**: after validation, reads CHANGELOG.md for any `[BREAKING]` entries introduced by the update and diffs `versions.json` for moved component pins. Each entry carries its migration path — a skill to run or a `docs/` page to follow (per CONTRIBUTING.md, "Breaking Changes") — and the skill walks you through them.
 
 ## Rollback
 
@@ -221,24 +221,31 @@ After validation succeeds, check if the update introduced any breaking changes.
 Determine which CHANGELOG entries are new by diffing against the backup tag:
 - `git diff <backup-tag-from-step-1>..HEAD -- CHANGELOG.md`
 
-Parse the diff output for lines that contain `[BREAKING]` anywhere in the line. Each such line is one breaking change entry. The format is:
+Parse the diff output for lines that contain `[BREAKING]` anywhere in the line. Each such line is one breaking change entry, and per CONTRIBUTING.md ("Breaking Changes") it references its migration path in one of two forms:
 ```
 [BREAKING] <description>. Run `/<skill-name>` to <action>.
+[BREAKING] <description>. **Migration:** follow [docs/<page>.md](docs/<page>.md) ...
 ```
 
-If no `[BREAKING]` lines are found:
+Also diff the component version pins:
+- `git diff <backup-tag-from-step-1>..HEAD -- versions.json`
+
+Each changed pin is a breaking component update (e.g. `onecli-gateway` moving means the OneCLI gateway must be upgraded). Its migration path is the `[BREAKING]` CHANGELOG entry covering it; if no new entry mentions it, search `docs/` for the pin name (convention: `docs/<component>-upgrades.md`) and treat that doc as the migration path.
+
+If no `[BREAKING]` lines are found and `versions.json` did not change:
 - Skip this step silently. Proceed to Step 7 (skill updates check).
 
-If one or more `[BREAKING]` lines are found:
+Otherwise:
 - Display a warning header to the user: "This update includes breaking changes that may require action:"
-- For each breaking change, display the full description.
-- Collect all skill names referenced in the breaking change entries (the `/<skill-name>` part).
-- Use AskUserQuestion to ask the user which migration skills they want to run now. Options:
+- For each breaking change, display the full description (for a moved pin without its own entry: the component name, old → new version, and the doc that covers it).
+- Use AskUserQuestion to ask the user which migrations to run now. Options:
   - One option per referenced skill (e.g., "Run /add-whatsapp to re-add WhatsApp channel")
+  - One option per referenced doc (e.g., "Upgrade the OneCLI gateway (docs/onecli-upgrades.md)")
   - "Skip — I'll handle these manually"
-- Set `multiSelect: true` so the user can pick multiple skills if there are several breaking changes.
+- Set `multiSelect: true` so the user can pick multiple migrations if there are several breaking changes.
 - For each skill the user selects, invoke it using the Skill tool.
-- After all selected skills complete (or if user chose Skip), proceed to Step 7 (skill updates check).
+- For each doc the user selects, read the doc and execute it top to bottom — these docs are written to be executed verbatim by a coding agent (detect → fix → verify → rollback). Stop and report if a verify step fails.
+- After all selected migrations complete (or if user chose Skip), proceed to Step 7 (skill updates check).
 
 # Step 7: Check for skill and channel/provider updates
 

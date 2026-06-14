@@ -6,9 +6,6 @@
   "dependencies": {
     "convert-layout": "^0.11.1"
   },
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
   "peerDependencies": {
     "typescript": "^5"
   }

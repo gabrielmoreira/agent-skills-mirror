@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `OthmanAdi/planning-with-files` — 26 default patterns, 3 followed patterns, 130 file(s) materialized.
+Mirror of `OthmanAdi/planning-with-files` — 26 default patterns, 3 followed patterns, 131 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `OthmanAdi/planning-with-files` — 26 default patterns, 3 followed pa
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 130 |
+| Files         | 131 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -117,80 +117,81 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 54 | ✓ | [`.pi/skills/planning-with-files/SKILL.md`](.pi/skills/planning-with-files/SKILL.md) |
 | 55 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 56 | ✓ | [`docs/gemini.md`](docs/gemini.md) |
-| 57 | ✓ | [`skills/planning-with-files-ar/scripts/check-complete.ps1`](skills/planning-with-files-ar/scripts/check-complete.ps1) |
-| 58 | ✓ | [`skills/planning-with-files-ar/scripts/check-complete.sh`](skills/planning-with-files-ar/scripts/check-complete.sh) |
-| 59 | ✓ | [`skills/planning-with-files-ar/scripts/init-session.ps1`](skills/planning-with-files-ar/scripts/init-session.ps1) |
-| 60 | ✓ | [`skills/planning-with-files-ar/scripts/init-session.sh`](skills/planning-with-files-ar/scripts/init-session.sh) |
-| 61 | ✓ | [`skills/planning-with-files-ar/scripts/session-catchup.py`](skills/planning-with-files-ar/scripts/session-catchup.py) |
-| 62 | ✓ | [`skills/planning-with-files-ar/SKILL.md`](skills/planning-with-files-ar/SKILL.md) |
-| 63 | ✓ | [`skills/planning-with-files-ar/templates/findings.md`](skills/planning-with-files-ar/templates/findings.md) |
-| 64 | ✓ | [`skills/planning-with-files-ar/templates/progress.md`](skills/planning-with-files-ar/templates/progress.md) |
-| 65 | ✓ | [`skills/planning-with-files-ar/templates/task_plan.md`](skills/planning-with-files-ar/templates/task_plan.md) |
-| 66 | ✓ | [`skills/planning-with-files-de/scripts/check-complete.ps1`](skills/planning-with-files-de/scripts/check-complete.ps1) |
-| 67 | ✓ | [`skills/planning-with-files-de/scripts/check-complete.sh`](skills/planning-with-files-de/scripts/check-complete.sh) |
-| 68 | ✓ | [`skills/planning-with-files-de/scripts/init-session.ps1`](skills/planning-with-files-de/scripts/init-session.ps1) |
-| 69 | ✓ | [`skills/planning-with-files-de/scripts/init-session.sh`](skills/planning-with-files-de/scripts/init-session.sh) |
-| 70 | ✓ | [`skills/planning-with-files-de/scripts/session-catchup.py`](skills/planning-with-files-de/scripts/session-catchup.py) |
-| 71 | ✓ | [`skills/planning-with-files-de/SKILL.md`](skills/planning-with-files-de/SKILL.md) |
-| 72 | ✓ | [`skills/planning-with-files-de/templates/findings.md`](skills/planning-with-files-de/templates/findings.md) |
-| 73 | ✓ | [`skills/planning-with-files-de/templates/progress.md`](skills/planning-with-files-de/templates/progress.md) |
-| 74 | ✓ | [`skills/planning-with-files-de/templates/task_plan.md`](skills/planning-with-files-de/templates/task_plan.md) |
-| 75 | ✓ | [`skills/planning-with-files-es/scripts/check-complete.ps1`](skills/planning-with-files-es/scripts/check-complete.ps1) |
-| 76 | ✓ | [`skills/planning-with-files-es/scripts/check-complete.sh`](skills/planning-with-files-es/scripts/check-complete.sh) |
-| 77 | ✓ | [`skills/planning-with-files-es/scripts/init-session.ps1`](skills/planning-with-files-es/scripts/init-session.ps1) |
-| 78 | ✓ | [`skills/planning-with-files-es/scripts/init-session.sh`](skills/planning-with-files-es/scripts/init-session.sh) |
-| 79 | ✓ | [`skills/planning-with-files-es/scripts/session-catchup.py`](skills/planning-with-files-es/scripts/session-catchup.py) |
-| 80 | ✓ | [`skills/planning-with-files-es/SKILL.md`](skills/planning-with-files-es/SKILL.md) |
-| 81 | ✓ | [`skills/planning-with-files-es/templates/findings.md`](skills/planning-with-files-es/templates/findings.md) |
-| 82 | ✓ | [`skills/planning-with-files-es/templates/progress.md`](skills/planning-with-files-es/templates/progress.md) |
-| 83 | ✓ | [`skills/planning-with-files-es/templates/task_plan.md`](skills/planning-with-files-es/templates/task_plan.md) |
-| 84 | ✓ | [`skills/planning-with-files-zh/scripts/check-complete.ps1`](skills/planning-with-files-zh/scripts/check-complete.ps1) |
-| 85 | ✓ | [`skills/planning-with-files-zh/scripts/check-complete.sh`](skills/planning-with-files-zh/scripts/check-complete.sh) |
-| 86 | ✓ | [`skills/planning-with-files-zh/scripts/init-session.ps1`](skills/planning-with-files-zh/scripts/init-session.ps1) |
-| 87 | ✓ | [`skills/planning-with-files-zh/scripts/init-session.sh`](skills/planning-with-files-zh/scripts/init-session.sh) |
-| 88 | ✓ | [`skills/planning-with-files-zh/scripts/session-catchup.py`](skills/planning-with-files-zh/scripts/session-catchup.py) |
-| 89 | ✓ | [`skills/planning-with-files-zh/SKILL.md`](skills/planning-with-files-zh/SKILL.md) |
-| 90 | ✓ | [`skills/planning-with-files-zh/templates/findings.md`](skills/planning-with-files-zh/templates/findings.md) |
-| 91 | ✓ | [`skills/planning-with-files-zh/templates/progress.md`](skills/planning-with-files-zh/templates/progress.md) |
-| 92 | ✓ | [`skills/planning-with-files-zh/templates/task_plan.md`](skills/planning-with-files-zh/templates/task_plan.md) |
-| 93 | ✓ | [`skills/planning-with-files-zht/scripts/check-complete.ps1`](skills/planning-with-files-zht/scripts/check-complete.ps1) |
-| 94 | ✓ | [`skills/planning-with-files-zht/scripts/check-complete.sh`](skills/planning-with-files-zht/scripts/check-complete.sh) |
-| 95 | ✓ | [`skills/planning-with-files-zht/scripts/init-session.ps1`](skills/planning-with-files-zht/scripts/init-session.ps1) |
-| 96 | ✓ | [`skills/planning-with-files-zht/scripts/init-session.sh`](skills/planning-with-files-zht/scripts/init-session.sh) |
-| 97 | ✓ | [`skills/planning-with-files-zht/scripts/session-catchup.py`](skills/planning-with-files-zht/scripts/session-catchup.py) |
-| 98 | ✓ | [`skills/planning-with-files-zht/SKILL.md`](skills/planning-with-files-zht/SKILL.md) |
-| 99 | ✓ | [`skills/planning-with-files-zht/templates/findings.md`](skills/planning-with-files-zht/templates/findings.md) |
-| 100 | ✓ | [`skills/planning-with-files-zht/templates/progress.md`](skills/planning-with-files-zht/templates/progress.md) |
-| 101 | ✓ | [`skills/planning-with-files-zht/templates/task_plan.md`](skills/planning-with-files-zht/templates/task_plan.md) |
-| 102 | ✓ | [`skills/planning-with-files/examples.md`](skills/planning-with-files/examples.md) |
-| 103 | ✓ | [`skills/planning-with-files/reference.md`](skills/planning-with-files/reference.md) |
-| 104 | ✓ | [`skills/planning-with-files/scripts/attest-plan.ps1`](skills/planning-with-files/scripts/attest-plan.ps1) |
-| 105 | ✓ | [`skills/planning-with-files/scripts/attest-plan.sh`](skills/planning-with-files/scripts/attest-plan.sh) |
-| 106 | ✓ | [`skills/planning-with-files/scripts/check-complete.ps1`](skills/planning-with-files/scripts/check-complete.ps1) |
-| 107 | ✓ | [`skills/planning-with-files/scripts/check-complete.sh`](skills/planning-with-files/scripts/check-complete.sh) |
-| 108 | ✓ | [`skills/planning-with-files/scripts/gate-stop.sh`](skills/planning-with-files/scripts/gate-stop.sh) |
-| 109 | ✓ | [`skills/planning-with-files/scripts/init-session.ps1`](skills/planning-with-files/scripts/init-session.ps1) |
-| 110 | ✓ | [`skills/planning-with-files/scripts/init-session.sh`](skills/planning-with-files/scripts/init-session.sh) |
-| 111 | ✓ | [`skills/planning-with-files/scripts/inject-plan.sh`](skills/planning-with-files/scripts/inject-plan.sh) |
-| 112 | ✓ | [`skills/planning-with-files/scripts/ledger-append.ps1`](skills/planning-with-files/scripts/ledger-append.ps1) |
-| 113 | ✓ | [`skills/planning-with-files/scripts/ledger-append.sh`](skills/planning-with-files/scripts/ledger-append.sh) |
-| 114 | ✓ | [`skills/planning-with-files/scripts/ledger-summary.ps1`](skills/planning-with-files/scripts/ledger-summary.ps1) |
-| 115 | ✓ | [`skills/planning-with-files/scripts/ledger-summary.sh`](skills/planning-with-files/scripts/ledger-summary.sh) |
-| 116 | ✓ | [`skills/planning-with-files/scripts/phase-status.ps1`](skills/planning-with-files/scripts/phase-status.ps1) |
-| 117 | ✓ | [`skills/planning-with-files/scripts/phase-status.sh`](skills/planning-with-files/scripts/phase-status.sh) |
-| 118 | ✓ | [`skills/planning-with-files/scripts/resolve-plan-dir.ps1`](skills/planning-with-files/scripts/resolve-plan-dir.ps1) |
-| 119 | ✓ | [`skills/planning-with-files/scripts/resolve-plan-dir.sh`](skills/planning-with-files/scripts/resolve-plan-dir.sh) |
-| 120 | ✓ | [`skills/planning-with-files/scripts/session-catchup.py`](skills/planning-with-files/scripts/session-catchup.py) |
-| 121 | ✓ | [`skills/planning-with-files/scripts/set-active-plan.ps1`](skills/planning-with-files/scripts/set-active-plan.ps1) |
-| 122 | ✓ | [`skills/planning-with-files/scripts/set-active-plan.sh`](skills/planning-with-files/scripts/set-active-plan.sh) |
-| 123 | ✓ | [`skills/planning-with-files/SKILL.md`](skills/planning-with-files/SKILL.md) |
-| 124 | ✓ | [`skills/planning-with-files/templates/findings.md`](skills/planning-with-files/templates/findings.md) |
-| 125 | ✓ | [`skills/planning-with-files/templates/progress.md`](skills/planning-with-files/templates/progress.md) |
-| 126 | ✓ | [`skills/planning-with-files/templates/task_plan_autonomous.md`](skills/planning-with-files/templates/task_plan_autonomous.md) |
-| 127 | ✓ | [`skills/planning-with-files/templates/task_plan.md`](skills/planning-with-files/templates/task_plan.md) |
-| 128 | → | [`templates/findings.md`](templates/findings.md) |
-| 129 | → | [`templates/progress.md`](templates/progress.md) |
-| 130 | → | [`templates/task_plan.md`](templates/task_plan.md) |
+| 57 | ✓ | [`llms.txt`](llms.txt) |
+| 58 | ✓ | [`skills/planning-with-files-ar/scripts/check-complete.ps1`](skills/planning-with-files-ar/scripts/check-complete.ps1) |
+| 59 | ✓ | [`skills/planning-with-files-ar/scripts/check-complete.sh`](skills/planning-with-files-ar/scripts/check-complete.sh) |
+| 60 | ✓ | [`skills/planning-with-files-ar/scripts/init-session.ps1`](skills/planning-with-files-ar/scripts/init-session.ps1) |
+| 61 | ✓ | [`skills/planning-with-files-ar/scripts/init-session.sh`](skills/planning-with-files-ar/scripts/init-session.sh) |
+| 62 | ✓ | [`skills/planning-with-files-ar/scripts/session-catchup.py`](skills/planning-with-files-ar/scripts/session-catchup.py) |
+| 63 | ✓ | [`skills/planning-with-files-ar/SKILL.md`](skills/planning-with-files-ar/SKILL.md) |
+| 64 | ✓ | [`skills/planning-with-files-ar/templates/findings.md`](skills/planning-with-files-ar/templates/findings.md) |
+| 65 | ✓ | [`skills/planning-with-files-ar/templates/progress.md`](skills/planning-with-files-ar/templates/progress.md) |
+| 66 | ✓ | [`skills/planning-with-files-ar/templates/task_plan.md`](skills/planning-with-files-ar/templates/task_plan.md) |
+| 67 | ✓ | [`skills/planning-with-files-de/scripts/check-complete.ps1`](skills/planning-with-files-de/scripts/check-complete.ps1) |
+| 68 | ✓ | [`skills/planning-with-files-de/scripts/check-complete.sh`](skills/planning-with-files-de/scripts/check-complete.sh) |
+| 69 | ✓ | [`skills/planning-with-files-de/scripts/init-session.ps1`](skills/planning-with-files-de/scripts/init-session.ps1) |
+| 70 | ✓ | [`skills/planning-with-files-de/scripts/init-session.sh`](skills/planning-with-files-de/scripts/init-session.sh) |
+| 71 | ✓ | [`skills/planning-with-files-de/scripts/session-catchup.py`](skills/planning-with-files-de/scripts/session-catchup.py) |
+| 72 | ✓ | [`skills/planning-with-files-de/SKILL.md`](skills/planning-with-files-de/SKILL.md) |
+| 73 | ✓ | [`skills/planning-with-files-de/templates/findings.md`](skills/planning-with-files-de/templates/findings.md) |
+| 74 | ✓ | [`skills/planning-with-files-de/templates/progress.md`](skills/planning-with-files-de/templates/progress.md) |
+| 75 | ✓ | [`skills/planning-with-files-de/templates/task_plan.md`](skills/planning-with-files-de/templates/task_plan.md) |
+| 76 | ✓ | [`skills/planning-with-files-es/scripts/check-complete.ps1`](skills/planning-with-files-es/scripts/check-complete.ps1) |
+| 77 | ✓ | [`skills/planning-with-files-es/scripts/check-complete.sh`](skills/planning-with-files-es/scripts/check-complete.sh) |
+| 78 | ✓ | [`skills/planning-with-files-es/scripts/init-session.ps1`](skills/planning-with-files-es/scripts/init-session.ps1) |
+| 79 | ✓ | [`skills/planning-with-files-es/scripts/init-session.sh`](skills/planning-with-files-es/scripts/init-session.sh) |
+| 80 | ✓ | [`skills/planning-with-files-es/scripts/session-catchup.py`](skills/planning-with-files-es/scripts/session-catchup.py) |
+| 81 | ✓ | [`skills/planning-with-files-es/SKILL.md`](skills/planning-with-files-es/SKILL.md) |
+| 82 | ✓ | [`skills/planning-with-files-es/templates/findings.md`](skills/planning-with-files-es/templates/findings.md) |
+| 83 | ✓ | [`skills/planning-with-files-es/templates/progress.md`](skills/planning-with-files-es/templates/progress.md) |
+| 84 | ✓ | [`skills/planning-with-files-es/templates/task_plan.md`](skills/planning-with-files-es/templates/task_plan.md) |
+| 85 | ✓ | [`skills/planning-with-files-zh/scripts/check-complete.ps1`](skills/planning-with-files-zh/scripts/check-complete.ps1) |
+| 86 | ✓ | [`skills/planning-with-files-zh/scripts/check-complete.sh`](skills/planning-with-files-zh/scripts/check-complete.sh) |
+| 87 | ✓ | [`skills/planning-with-files-zh/scripts/init-session.ps1`](skills/planning-with-files-zh/scripts/init-session.ps1) |
+| 88 | ✓ | [`skills/planning-with-files-zh/scripts/init-session.sh`](skills/planning-with-files-zh/scripts/init-session.sh) |
+| 89 | ✓ | [`skills/planning-with-files-zh/scripts/session-catchup.py`](skills/planning-with-files-zh/scripts/session-catchup.py) |
+| 90 | ✓ | [`skills/planning-with-files-zh/SKILL.md`](skills/planning-with-files-zh/SKILL.md) |
+| 91 | ✓ | [`skills/planning-with-files-zh/templates/findings.md`](skills/planning-with-files-zh/templates/findings.md) |
+| 92 | ✓ | [`skills/planning-with-files-zh/templates/progress.md`](skills/planning-with-files-zh/templates/progress.md) |
+| 93 | ✓ | [`skills/planning-with-files-zh/templates/task_plan.md`](skills/planning-with-files-zh/templates/task_plan.md) |
+| 94 | ✓ | [`skills/planning-with-files-zht/scripts/check-complete.ps1`](skills/planning-with-files-zht/scripts/check-complete.ps1) |
+| 95 | ✓ | [`skills/planning-with-files-zht/scripts/check-complete.sh`](skills/planning-with-files-zht/scripts/check-complete.sh) |
+| 96 | ✓ | [`skills/planning-with-files-zht/scripts/init-session.ps1`](skills/planning-with-files-zht/scripts/init-session.ps1) |
+| 97 | ✓ | [`skills/planning-with-files-zht/scripts/init-session.sh`](skills/planning-with-files-zht/scripts/init-session.sh) |
+| 98 | ✓ | [`skills/planning-with-files-zht/scripts/session-catchup.py`](skills/planning-with-files-zht/scripts/session-catchup.py) |
+| 99 | ✓ | [`skills/planning-with-files-zht/SKILL.md`](skills/planning-with-files-zht/SKILL.md) |
+| 100 | ✓ | [`skills/planning-with-files-zht/templates/findings.md`](skills/planning-with-files-zht/templates/findings.md) |
+| 101 | ✓ | [`skills/planning-with-files-zht/templates/progress.md`](skills/planning-with-files-zht/templates/progress.md) |
+| 102 | ✓ | [`skills/planning-with-files-zht/templates/task_plan.md`](skills/planning-with-files-zht/templates/task_plan.md) |
+| 103 | ✓ | [`skills/planning-with-files/examples.md`](skills/planning-with-files/examples.md) |
+| 104 | ✓ | [`skills/planning-with-files/reference.md`](skills/planning-with-files/reference.md) |
+| 105 | ✓ | [`skills/planning-with-files/scripts/attest-plan.ps1`](skills/planning-with-files/scripts/attest-plan.ps1) |
+| 106 | ✓ | [`skills/planning-with-files/scripts/attest-plan.sh`](skills/planning-with-files/scripts/attest-plan.sh) |
+| 107 | ✓ | [`skills/planning-with-files/scripts/check-complete.ps1`](skills/planning-with-files/scripts/check-complete.ps1) |
+| 108 | ✓ | [`skills/planning-with-files/scripts/check-complete.sh`](skills/planning-with-files/scripts/check-complete.sh) |
+| 109 | ✓ | [`skills/planning-with-files/scripts/gate-stop.sh`](skills/planning-with-files/scripts/gate-stop.sh) |
+| 110 | ✓ | [`skills/planning-with-files/scripts/init-session.ps1`](skills/planning-with-files/scripts/init-session.ps1) |
+| 111 | ✓ | [`skills/planning-with-files/scripts/init-session.sh`](skills/planning-with-files/scripts/init-session.sh) |
+| 112 | ✓ | [`skills/planning-with-files/scripts/inject-plan.sh`](skills/planning-with-files/scripts/inject-plan.sh) |
+| 113 | ✓ | [`skills/planning-with-files/scripts/ledger-append.ps1`](skills/planning-with-files/scripts/ledger-append.ps1) |
+| 114 | ✓ | [`skills/planning-with-files/scripts/ledger-append.sh`](skills/planning-with-files/scripts/ledger-append.sh) |
+| 115 | ✓ | [`skills/planning-with-files/scripts/ledger-summary.ps1`](skills/planning-with-files/scripts/ledger-summary.ps1) |
+| 116 | ✓ | [`skills/planning-with-files/scripts/ledger-summary.sh`](skills/planning-with-files/scripts/ledger-summary.sh) |
+| 117 | ✓ | [`skills/planning-with-files/scripts/phase-status.ps1`](skills/planning-with-files/scripts/phase-status.ps1) |
+| 118 | ✓ | [`skills/planning-with-files/scripts/phase-status.sh`](skills/planning-with-files/scripts/phase-status.sh) |
+| 119 | ✓ | [`skills/planning-with-files/scripts/resolve-plan-dir.ps1`](skills/planning-with-files/scripts/resolve-plan-dir.ps1) |
+| 120 | ✓ | [`skills/planning-with-files/scripts/resolve-plan-dir.sh`](skills/planning-with-files/scripts/resolve-plan-dir.sh) |
+| 121 | ✓ | [`skills/planning-with-files/scripts/session-catchup.py`](skills/planning-with-files/scripts/session-catchup.py) |
+| 122 | ✓ | [`skills/planning-with-files/scripts/set-active-plan.ps1`](skills/planning-with-files/scripts/set-active-plan.ps1) |
+| 123 | ✓ | [`skills/planning-with-files/scripts/set-active-plan.sh`](skills/planning-with-files/scripts/set-active-plan.sh) |
+| 124 | ✓ | [`skills/planning-with-files/SKILL.md`](skills/planning-with-files/SKILL.md) |
+| 125 | ✓ | [`skills/planning-with-files/templates/findings.md`](skills/planning-with-files/templates/findings.md) |
+| 126 | ✓ | [`skills/planning-with-files/templates/progress.md`](skills/planning-with-files/templates/progress.md) |
+| 127 | ✓ | [`skills/planning-with-files/templates/task_plan_autonomous.md`](skills/planning-with-files/templates/task_plan_autonomous.md) |
+| 128 | ✓ | [`skills/planning-with-files/templates/task_plan.md`](skills/planning-with-files/templates/task_plan.md) |
+| 129 | → | [`templates/findings.md`](templates/findings.md) |
+| 130 | → | [`templates/progress.md`](templates/progress.md) |
+| 131 | → | [`templates/task_plan.md`](templates/task_plan.md) |
 
 ---
 

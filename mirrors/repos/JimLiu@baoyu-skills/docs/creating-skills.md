@@ -165,11 +165,11 @@ Standard snippet (copy verbatim):
 
 When this skill needs to render an image:
 
-- **Use whatever image-generation tool or skill is available** in the current runtime — e.g., Codex `imagegen`, Hermes `image_generate`, `baoyu-image-gen`, or any equivalent the user has installed.
+- **Use whatever image-generation tool or skill is available** in the current runtime — e.g., Codex `imagegen`, Cursor `GenerateImage`, Hermes `image_generate`, `baoyu-image-gen`, or any equivalent the user has installed.
 - **If multiple are available**, ask the user **once** at the start which to use (batch with any other initial questions).
 - **If none are available**, tell the user and ask how to proceed.
 
 **Prompt file requirement (hard)**: write each image's full, final prompt to a standalone file under `prompts/` (naming: `NN-{type}-[slug].md`) BEFORE invoking any backend. The backend receives the prompt file (or its content); the file is the reproducibility record and lets you switch backends without regenerating prompts.
 
-Concrete tool names (`imagegen`, `image_generate`, `baoyu-image-gen`) above are examples — substitute the local equivalents under the same rule.
+Concrete tool names (`imagegen`, `GenerateImage`, `image_generate`, `baoyu-image-gen`) above are examples — substitute the local equivalents under the same rule.
 ```

@@ -103,6 +103,19 @@ docs:
 #       codex: 500000
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Memory garbage collection (`oma memory:gc` defaults)
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Tunes the project-local memory sweep. CLI flags (--keep / --max-age-days)
+# override these; these override the built-in defaults. Schema source:
+# cli/commands/memory/memory/gc.ts (loadMemoryGcConfig).
+#
+# memory:
+#   gc:
+#     keep_sessions: 100   # L1 .agents/state/sessions retained, most-recent (default 100)
+#     max_age_days: 50     # Serena run artifacts older than N days pruned; 0 disables (default 50)
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Model selection
 # ─────────────────────────────────────────────────────────────────────────────
 

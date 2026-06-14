@@ -38,9 +38,62 @@ The first v0 scorecard reports:
 - with-skill pass rate
 - absolute delta
 - failed assertions and failure taxonomy
+- execution mode, timing, and token evidence when `reports/output_execution_runs.md` is generated
+- blind A/B review pack count
 - recommended next fixes
 
 Production promotion should require the with-skill pass rate to beat baseline and should explain every failed assertion.
+
+## Execution Evidence
+
+Run execution evidence after the scorecard:
+
+```bash
+python3 scripts/yao.py output-exec
+```
+
+By default, this records the current case outputs as `recorded_fixture`. That is useful for reproducibility, but it is not model-executed evidence. To collect real run evidence, pass `--runner-command` with a command or JSON string list. The runner receives a JSON request on stdin and should return JSON with:
+
+- `output`
+- optional `execution_kind`: `command` or `model`
+- optional `provider` and `model`
+- optional `usage.input_tokens`, `usage.output_tokens`, and `usage.total_tokens`
+
+Only runs that return provider/model metadata or `execution_kind: "model"` should count as model-executed. If token usage is absent, the report may estimate tokens, but the estimate must be labeled as estimated.
+
+For local release-gate smoke evidence without external model credentials, use the deterministic runner:
+
+```bash
+python3 scripts/yao.py output-exec --runner-command '["python3","scripts/local_output_eval_runner.py"]'
+```
+
+This verifies the command-runner contract, timing capture, grading path, and failure handling. It must not be described as provider-backed model evidence.
+
+## Blind A/B Review
+
+Every output eval run should also generate:
+
+- `reports/output_blind_review_pack.md`
+- `reports/output_blind_review_pack.json`
+- `reports/output_blind_answer_key.json`
+
+The review pack must hide whether Variant A or Variant B came from the baseline or the skill-guided output. The answer key is separate audit evidence and should only be opened after a reviewer has made a judgment.
+
+## Reviewer Adjudication
+
+After blind review, record reviewer choices in `reports/output_review_decisions.json` and run:
+
+```bash
+python3 scripts/adjudicate_output_review.py --write-template
+python3 scripts/yao.py output-review
+```
+
+The adjudication report writes:
+
+- `reports/output_review_adjudication.json`
+- `reports/output_review_adjudication.md`
+
+When no reviewer decisions exist, the report should say the cases are pending. Do not count pending cases as human agreement. Only a real `winner_variant` of `A` or `B` should contribute to agreement rate, disagreement count, and reviewer judgment count.
 
 ## Anti-Overfitting
 

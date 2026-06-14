@@ -21,11 +21,13 @@ Use this template to compress repository context before running Waza `/check`. T
 - Generated or bundled artifacts that must stay in sync with source changes.
 - Packaging source of truth: whether archives are built from `git ls-files`, explicit allowlists, generated manifests, or source directories.
 - Delivery surfaces: whether generated outputs are tracked, ignored, external release assets, registry uploads, appcasts, installer metadata, checksums, or site/download copy; how they are regenerated, inspected, staged, or uploaded.
+- Distribution lanes: preview, beta, nightly, stable, App Store, or registry channels, and which generated artifacts belong to each lane.
 - CLI command surfaces: entrypoints, subcommands, flags, help/version behavior, exit codes, stdout/stderr contract, TTY and non-interactive paths, config/env precedence, and installed-runtime checks.
 - Runtime dependencies introduced by the diff: Python packages, CLIs, network services, package managers, or platform tools that are not already declared in CI/docs.
 - Domain-specific safety rules.
 - Release artifacts that must exist.
 - GitHub release reactions or other public release follow-through expected by the project.
+- Release-asset verification method: download, archive entry comparison, checksum manifest, package metadata readback, appcast readback, or registry query.
 - Public issue or PR reply conventions.
 - Known CI or test flakes documented by the project and how to distinguish them from real failures.
 - Release, publish, push, or issue-closure prerequisites documented by the project.
@@ -78,7 +80,9 @@ See `public-reply.md` for the full reply template (language match, `@user` + tha
 
 - Version fields to check: `<manifest>`, `<app config>`, `<lockfile>`.
 - Generated artifacts to check: `<artifact>` from `<source>`.
+- Distribution lane: `<preview/beta/nightly/stable/etc.>` and which public surfaces it is allowed to touch.
 - Dry-run command before publishing: `<command>`.
+- Remote asset proof: `<download/readback command>` that checks content, manifest, digest, appcast, or registry state.
 - GitHub release reactions to add after asset verification: `<+1/laugh/heart/hooray/rocket/eyes or none>`.
 - Public state to re-read after publishing or closing: `<registry/release/issue URL or command>`.
 ```
@@ -95,10 +99,11 @@ Fill this before claiming a change is release-ready. Use "n/a" only when the pro
 | Worktree state | Dirty, staged, and untracked files accounted for |
 | Remote state | `origin/main` or release branch sync checked |
 | Version fields | Manifest, app config, changelog, appcast, and lockfile versions aligned |
+| Distribution lane | Preview, beta, nightly, stable, registry, or app-store lane named, with unrelated lanes left untouched |
 | Runtime dependencies | Newly introduced Python packages, CLIs, package managers, and network tools declared and available in CI |
 | Generated artifacts | Tracked archives, ignored dist outputs, bundled/minified files, appcasts, installer metadata, checksums, and site/download copy regenerated or proven not needed |
 | Package/archive contents | Built package inspected for required files, newly introduced helpers/references, and missing extras |
-| Release assets | GitHub release, appcast, download archive, checksum, or installer assets verified |
+| Release assets | GitHub release, appcast, download archive, checksum, or installer assets downloaded or read back and verified beyond page text or file size |
 | Registry/appcast | npm/crates/Homebrew/appcast/App Store or equivalent state re-read after publish |
 | CI status | Latest required checks passed or blocker named |
 | Issue/PR state | Target issue or PR re-read before commenting, closing, merging, or saying shipped |

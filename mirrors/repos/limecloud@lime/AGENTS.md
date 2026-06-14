@@ -33,7 +33,7 @@
 8. **未验证的平台假设要显式说明** - 涉及文件系统、进程、终端、快捷键、窗口、托盘、权限时尤其如此
 9. **新增命名禁止品牌前缀** - 新程序、目录、crate/package、Electron IPC channel、App Server 方法、API 网关、类型、模块和脚本默认不得添加 `Lime` / `lime_` / `lime-` 品牌前缀；直接使用领域名，如 `app_server_*`、`app-server`。只有对外发布品牌标识、历史兼容或第三方生态已固定命名时才允许保留，并在执行计划说明原因
 10. **`scripts/` 根目录冻结** - `scripts/` 根目录是历史入口区，不再作为新增脚本默认落点；新增可执行脚本默认放到 `scripts/<domain>/`、`scripts/lib/` 或所属 package，并通过 `npm run governance:scripts` 守住根目录基线。只有公开稳定入口且无法归入领域子目录时才允许例外，必须同步 `scripts/README.md`、`scripts/script-root-governance-baseline.json` 和执行计划退出条件
-11. **新增 Agent 逻辑默认走 App Server** - 新 AI Agent、runtime、host integration、跨 App 复用能力默认落到 `app-server` crates、JSON-RPC 协议、client 与 RuntimeCore；Electron 只作为 Desktop Host bridge，负责 IPC、窗口、托盘、Dock、updater 和 sidecar 生命周期，不是第二套后端或业务 adapter；`agent_runtime_*` / Aster 旧命令只作为 Desktop 兼容 facade，不再直接承接新业务逻辑，除非执行计划明确说明过渡原因和退出条件
+11. **新增 Agent 逻辑默认走 App Server** - 新 AI Agent、runtime、host integration、跨 App 复用能力默认落到 `app-server` crates、JSON-RPC 协议、client 与 RuntimeCore；Electron 只作为 Desktop Host bridge，负责 IPC、窗口、托盘、Dock、updater 和 sidecar 生命周期，不是第二套后端或业务 adapter；旧 `agent_runtime_*` / Aster 命令只允许作为 retired guard、历史 evidence、test-only fixture 或受控迁移残留，不再作为生产 truth 或新增能力入口
 12. **`lime-rs/src/**` 已物理删除** - 该目录是脱离 cargo 构建图的孤儿目录，2026-06-10 整目录删除（约 18.7 万行旧 Tauri command 宏标注代码）。新 Rust 后端能力一律进入 `lime-rs/crates/**`：App Server、RuntimeCore、services、core、agent、协议/client crate；桌面壳能力进入 Electron Desktop Host
 13. **旧 Tauri wrapper 删除清理已收口** - `lime-rs/src/commands/**` 旧 Tauri wrapper 清理区已随 `lime-rs/src/**` 一并删除，不得恢复任何文件；不再承接业务逻辑、API adapter、runtime 分支、领域服务、compat wrapper、退场 stub 或 thin facade。新增 Rust 后端能力落到 App Server crates / RuntimeCore / services 等 current 事实源；桌面壳能力落到 Electron Desktop Host。守卫见 `src/lib/governance/rustCommandsCurrentBoundary.test.ts`
 14. **前端 DevBridge 按职责治理** - `src/lib/dev-bridge/**` 不是整体删除对象：`safeInvoke`、HTTP client、`app_server_handle_json_lines`、bridge availability / event listener capability 是 current renderer bridge；`commandPolicy` 中旧命令 truth / no-mock fallback 是迁移期 `compat / deprecated`；已迁旧命令名只能进入 `dead` / `test-only` guard。后续治理优先收缩 policy、mock、fallback、负向测试和 contract guard，不得为清旧命令误删 current App Server 传输链；删不动且会跨命令组长期存在的 residual 必须回挂 `internal/exec-plans/tech-debt-tracker.md` 的 `CCD-012`
@@ -60,7 +60,7 @@
 11. **配置与依赖改动要成组更新** - schema、校验器、消费者、文档、锁文件保持同步
 12. **Rust 变更先小测后全量** - 先跑受影响 crate / 模块 / 定向测试；新增模块尽量控制在 `500 LoC` 内，文件接近 `800 LoC` 时优先拆新模块；Rust 文件超过 `1000` 行时同样遵守基础约束中的代码体量边界
 13. **Rust 构建必须走 workspace manifest** - 在仓库根运行 Rust 校验必须带 `--manifest-path "lime-rs/Cargo.toml"`，或先 `cd lime-rs`；禁止直接 `rustc lime-rs/src/*.rs` 编译 Lime 主 crate，避免绕过 workspace 依赖导致 `can't find crate for lime_*` 误报
-14. **Harness Engine 只认单一事实源** - handoff / evidence / replay / analysis / review / GUI 统一消费 `agent_runtime_export_evidence_pack`；`requestTelemetry` 需要按 `session/thread/turn` 真实关联导出，无匹配请求时输出空摘要，不再保留伪 `unlinked`
+14. **Harness Engine 只认单一事实源** - handoff / evidence / replay / analysis / review / GUI 统一消费 App Server `evidence/export` 与 `agentSession/*/export` current 导出链；旧 `agent_runtime_export_*` 只允许作为 retired guard / 历史 evidence / 迁移残留出现；`requestTelemetry` 需要按 `session/thread/turn` 真实关联导出，无匹配请求时输出空摘要，不再保留伪 `unlinked`
 
 ## 执行与路线图
 

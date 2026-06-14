@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 10 followed patterns, 48 file(s) materialized.
+Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 10 followed patterns, 52 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 10 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 48 |
+| Files         | 52 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,48 +74,52 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.claude/skills/gitnexus/gitnexus-exploring/SKILL.md`](.claude/skills/gitnexus/gitnexus-exploring/SKILL.md) |
 | 5 | ✓ | [`.claude/skills/gitnexus/gitnexus-guide/SKILL.md`](.claude/skills/gitnexus/gitnexus-guide/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md`](.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/gitnexus/gitnexus-pr-review/SKILL.md`](.claude/skills/gitnexus/gitnexus-pr-review/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md`](.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md) |
-| 9 | ✓ | [`.cursor/.gitignore`](.cursor/.gitignore) |
-| 10 | ✓ | [`.cursor/commands/gitnexus-pr-swarm-review.md`](.cursor/commands/gitnexus-pr-swarm-review.md) |
-| 11 | ✓ | [`.cursor/index.mdc`](.cursor/index.mdc) |
-| 12 | ✓ | [`.cursor/rules/100-monorepo.mdc`](.cursor/rules/100-monorepo.mdc) |
-| 13 | ✓ | [`.cursor/rules/200-eval.mdc`](.cursor/rules/200-eval.mdc) |
-| 14 | ✓ | [`.cursorrules`](.cursorrules) |
-| 15 | ✓ | [`.github/prompts/gitnexus-pr-swarm-review.prompt.md`](.github/prompts/gitnexus-pr-swarm-review.prompt.md) |
-| 16 | ✓ | [`.windsurfrules`](.windsurfrules) |
-| 17 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 18 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 19 | ✓ | [`eval/README.md`](eval/README.md) |
-| 20 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-cli/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-cli/SKILL.md) |
-| 21 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-debugging/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-debugging/SKILL.md) |
-| 22 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-exploring/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-exploring/SKILL.md) |
-| 23 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-guide/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-guide/SKILL.md) |
-| 24 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-impact-analysis/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-impact-analysis/SKILL.md) |
-| 25 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-pr-review/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-pr-review/SKILL.md) |
-| 26 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-refactoring/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-refactoring/SKILL.md) |
-| 27 | ✓ | [`gitnexus-cursor-integration/README.md`](gitnexus-cursor-integration/README.md) |
-| 28 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-debugging/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-debugging/SKILL.md) |
-| 29 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-exploring/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-exploring/SKILL.md) |
-| 30 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-impact-analysis/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-impact-analysis/SKILL.md) |
-| 31 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-pr-review/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-pr-review/SKILL.md) |
-| 32 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-refactoring/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-refactoring/SKILL.md) |
-| 33 | ✓ | [`gitnexus/README.md`](gitnexus/README.md) |
-| 34 | ✓ | [`gitnexus/vendor/tree-sitter-c/README.md`](gitnexus/vendor/tree-sitter-c/README.md) |
-| 35 | ✓ | [`gitnexus/vendor/tree-sitter-dart/README.md`](gitnexus/vendor/tree-sitter-dart/README.md) |
-| 36 | ✓ | [`gitnexus/vendor/tree-sitter-kotlin/README.md`](gitnexus/vendor/tree-sitter-kotlin/README.md) |
-| 37 | ✓ | [`gitnexus/vendor/tree-sitter-swift/README.md`](gitnexus/vendor/tree-sitter-swift/README.md) |
-| 38 | ✓ | [`llms.txt`](llms.txt) |
-| 39 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
-| 40 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 41 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 42 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
-| 43 | → | [`MIGRATION.md`](MIGRATION.md) |
-| 44 | → | [`pr-swarm-review/orchestration.md`](pr-swarm-review/orchestration.md) |
-| 45 | → | [`pr-swarm-review/README.md`](pr-swarm-review/README.md) |
-| 46 | → | [`README.md`](README.md) |
-| 47 | → | [`RUNBOOK.md`](RUNBOOK.md) |
-| 48 | → | [`TESTING.md`](TESTING.md) |
+| 7 | ✓ | [`.claude/skills/gitnexus/gitnexus-pdg-query/SKILL.md`](.claude/skills/gitnexus/gitnexus-pdg-query/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/gitnexus/gitnexus-pr-review/SKILL.md`](.claude/skills/gitnexus/gitnexus-pr-review/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md`](.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/gitnexus/gitnexus-taint-analysis/SKILL.md`](.claude/skills/gitnexus/gitnexus-taint-analysis/SKILL.md) |
+| 11 | ✓ | [`.cursor/.gitignore`](.cursor/.gitignore) |
+| 12 | ✓ | [`.cursor/commands/gitnexus-pr-swarm-review.md`](.cursor/commands/gitnexus-pr-swarm-review.md) |
+| 13 | ✓ | [`.cursor/index.mdc`](.cursor/index.mdc) |
+| 14 | ✓ | [`.cursor/rules/100-monorepo.mdc`](.cursor/rules/100-monorepo.mdc) |
+| 15 | ✓ | [`.cursor/rules/200-eval.mdc`](.cursor/rules/200-eval.mdc) |
+| 16 | ✓ | [`.cursorrules`](.cursorrules) |
+| 17 | ✓ | [`.github/prompts/gitnexus-pr-swarm-review.prompt.md`](.github/prompts/gitnexus-pr-swarm-review.prompt.md) |
+| 18 | ✓ | [`.windsurfrules`](.windsurfrules) |
+| 19 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 21 | ✓ | [`eval/README.md`](eval/README.md) |
+| 22 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-cli/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-cli/SKILL.md) |
+| 23 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-debugging/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-debugging/SKILL.md) |
+| 24 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-exploring/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-exploring/SKILL.md) |
+| 25 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-guide/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-guide/SKILL.md) |
+| 26 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-impact-analysis/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-impact-analysis/SKILL.md) |
+| 27 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-pdg-query/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-pdg-query/SKILL.md) |
+| 28 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-pr-review/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-pr-review/SKILL.md) |
+| 29 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-refactoring/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-refactoring/SKILL.md) |
+| 30 | ✓ | [`gitnexus-claude-plugin/skills/gitnexus-taint-analysis/SKILL.md`](gitnexus-claude-plugin/skills/gitnexus-taint-analysis/SKILL.md) |
+| 31 | ✓ | [`gitnexus-cursor-integration/README.md`](gitnexus-cursor-integration/README.md) |
+| 32 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-debugging/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-debugging/SKILL.md) |
+| 33 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-exploring/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-exploring/SKILL.md) |
+| 34 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-impact-analysis/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-impact-analysis/SKILL.md) |
+| 35 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-pr-review/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-pr-review/SKILL.md) |
+| 36 | ✓ | [`gitnexus-cursor-integration/skills/gitnexus-refactoring/SKILL.md`](gitnexus-cursor-integration/skills/gitnexus-refactoring/SKILL.md) |
+| 37 | ✓ | [`gitnexus/README.md`](gitnexus/README.md) |
+| 38 | ✓ | [`gitnexus/vendor/tree-sitter-c/README.md`](gitnexus/vendor/tree-sitter-c/README.md) |
+| 39 | ✓ | [`gitnexus/vendor/tree-sitter-dart/README.md`](gitnexus/vendor/tree-sitter-dart/README.md) |
+| 40 | ✓ | [`gitnexus/vendor/tree-sitter-kotlin/README.md`](gitnexus/vendor/tree-sitter-kotlin/README.md) |
+| 41 | ✓ | [`gitnexus/vendor/tree-sitter-swift/README.md`](gitnexus/vendor/tree-sitter-swift/README.md) |
+| 42 | ✓ | [`llms.txt`](llms.txt) |
+| 43 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
+| 44 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 45 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 46 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
+| 47 | → | [`MIGRATION.md`](MIGRATION.md) |
+| 48 | → | [`pr-swarm-review/orchestration.md`](pr-swarm-review/orchestration.md) |
+| 49 | → | [`pr-swarm-review/README.md`](pr-swarm-review/README.md) |
+| 50 | → | [`README.md`](README.md) |
+| 51 | → | [`RUNBOOK.md`](RUNBOOK.md) |
+| 52 | → | [`TESTING.md`](TESTING.md) |
 
 ---
 

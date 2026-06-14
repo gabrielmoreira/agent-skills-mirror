@@ -44,13 +44,60 @@ This is usually what you want — the user ran a few new sessions and wants to c
 >
 > The helper is optional — if it's unavailable, do the same expansion inline before every manifest lookup and write.
 
+### Pre-extraction (recommended — run before ingest)
+
+Raw JSONL files are 80-90% noise: `tool_use` blocks, `thinking` blocks, `progress` events, and
+`file-history-snapshot` entries dominate by byte count.  The `scripts/extract-jsonl.py` helper
+strips all of that and writes compact signal-only JSON to `~/.claude/extracted/`, achieving
+**50–200× file-size reduction** (e.g. 12 MB JSONL → 64 KB extracted).  This lets the skill read
+5–10× more conversations per run within the same token budget.
+
+Run it as a pre-step before invoking this skill:
+
+```bash
+# First run — extract everything (skip excluded projects)
+python3 "$OBSIDIAN_WIKI_REPO/scripts/extract-jsonl.py" --skip tsg,autom8
+
+# Incremental — only sessions modified in the last day
+python3 "$OBSIDIAN_WIKI_REPO/scripts/extract-jsonl.py" \
+    --since "$(date -v-1d +%Y-%m-%d)" --skip tsg,autom8
+```
+
+Extracted files live at `~/.claude/extracted/<project-dir>/<session-id>.json` and contain:
+
+```json
+{
+  "session_id": "uuid",
+  "project": "-Users-name-myapp",
+  "cwd": "/Users/name/myapp",
+  "start_ts": "...",
+  "end_ts": "...",
+  "n_turns": 18,
+  "n_user_words": 620,
+  "turns": [
+    {"role": "user",      "text": "..."},
+    {"role": "assistant", "text": "..."}
+  ]
+}
+```
+
+**When Step 3 reads conversations, always prefer the extracted file over the raw JSONL.** (See Step 3.)
+
+If `extract-jsonl.py` was not run first, fall back to raw JSONL — but note the coverage will be
+shallower because each raw file costs far more tokens to read.
+
 ### Conversation Sampling Heuristic
 
 A history path can hold hundreds of conversation JSONLs — do not try to read them all. Per project:
 
-- **If the project already has memory files** (`memory/*.md`), those are the pre-distilled signal. Ingest them and **skip the project's raw conversations** in append mode unless the user asks for a deeper pass.
-- **If the project has no memory files**, read only the **3 most recent** conversation JSONLs (by mtime) to characterize it.
-- Always report what you sampled vs skipped (e.g. "agenttower: 7 memory files ingested, 18 conversations skipped"), so the coverage gap is visible rather than silent.
+- **If the project already has memory files** (`memory/*.md`), ingest those first (they are
+  pre-distilled signal), then **also process conversations not yet in the manifest** — new
+  conversations should still be captured even for memory-rich projects.
+- **If the project has no memory files**, read only the **3 most recent** conversations (by mtime)
+  to characterize it. Prefer pre-extracted files (see above) — they are cheap enough that you can
+  read 5–10 in the same token budget as 1 raw JSONL.
+- Always report what you sampled vs skipped (e.g. "agenttower: 7 memory files + 4 new conversations
+  ingested, 14 unchanged conversations skipped"), so the coverage gap is visible rather than silent.
 
 ### Full Mode
 
@@ -194,7 +241,22 @@ The `MEMORY.md` index file in each project is a quick summary — read it first 
 
 ## Step 3: Parse Conversation JSONL
 
-Each JSONL file is one conversation session. Each line is a JSON object:
+**Always check for a pre-extracted file first** (see Pre-extraction section above).  For each
+conversation `~/.claude/projects/<proj>/<uuid>.jsonl`, look for its counterpart at
+`~/.claude/extracted/<proj>/<uuid>.json`.  If found, read that instead — it is already filtered to
+user + assistant text turns and costs 50–200× fewer tokens than the raw JSONL.
+
+```
+# Resolution order for each session:
+1. ~/.claude/extracted/<project>/<session-id>.json   ← prefer (compact, signal-only)
+2. ~/.claude/projects/<project>/<session-id>.jsonl   ← fallback (raw, noisy)
+```
+
+**Reading a pre-extracted file:** it already contains only the turns you need.  Iterate
+`turns[].{role, text}` directly.  The top-level fields (`cwd`, `start_ts`, `n_user_words`, etc.)
+give you project context without any further parsing.
+
+**Reading raw JSONL (fallback):** Each line is a JSON object:
 
 ```json
 {
@@ -223,18 +285,12 @@ For assistant messages, `content` may be an array of content blocks:
 }
 ```
 
-**What to extract from conversations:**
-
 - Filter to `type: "user"` and `type: "assistant"` entries only
 - For assistant entries, extract `text` blocks (skip `thinking` and `tool_use` — those are noise)
 - The `cwd` field tells you which project this conversation belongs to
-- The project directory name (e.g., `-Users-name-Documents-projects-my-app`) tells you the project path
-
-**Skip these:**
-
-- `type: "progress"` — internal agent progress updates
-- `type: "file-history-snapshot"` — file state tracking
-- Subagent conversations (under `subagents/` subdirectories) — unless the user specifically asks
+- Skip `type: "progress"` — internal agent progress updates
+- Skip `type: "file-history-snapshot"` — file state tracking
+- Skip subagent conversations (under `subagents/` subdirectories) — unless the user asks
 
 ## Step 3b: Parse Audit Logs (desktop sessions only)
 

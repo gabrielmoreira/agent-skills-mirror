@@ -41,7 +41,7 @@ These are dimensions to inspect, not hardcoded categories. For high-signal redir
 - Agent-control preferences: when the user wants autonomy vs discussion before action.
 - Evidence expectations: tests, diffs, screenshots, citations, measurements, runtime proof.
 - Friction points: premature implementation, over-packaging, wrong abstraction level, weak evidence.
-- Tooling preferences: local-first, minimal architecture, JS/Bun, database/search helpers, useful libraries.
+- Tooling preferences: local-first, minimal architecture, JS/Node, database/search helpers, useful libraries.
 
 Use these dimensions as lenses while reading evidence. Do not force every session into them.
 

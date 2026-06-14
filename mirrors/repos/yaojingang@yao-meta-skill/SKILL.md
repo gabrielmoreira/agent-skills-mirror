@@ -32,17 +32,19 @@ Mode rules: [Method](references/skill-engineering-method.md), [Operating Modes](
 6. Add only folders and gates that earn their keep.
 7. Surface the top three next iteration directions.
 
-Core playbooks: [Method](references/skill-engineering-method.md), [Intent Dialogue](references/intent-dialogue.md), [Reference Scan](references/reference-scan.md), [Skill IR](references/skill-ir-method.md), [Output Eval](references/output-eval-method.md), [Artifact Design](references/artifact-design-doctrine.md), [Prompt Engineering](references/prompt-engineering-doctrine.md), [Systems Thinking](references/systems-thinking-doctrine.md).
+Core playbooks: [Method](references/skill-engineering-method.md), [Intent](references/intent-dialogue.md), [Reference Scan](references/reference-scan.md), [Skill IR](references/skill-ir-method.md), [Output Eval](references/output-eval-method.md), [Registry](references/distribution-registry-method.md), [Telemetry](references/telemetry-drift-method.md), [Waivers](references/review-waiver-method.md), [Review Studio](references/review-studio-method.md).
+
+## Skill OS 2.0 Gates
+
+For production, library, governed, or team-distributed work, use Skill IR, target compiler contracts, trigger + output eval, Skill Atlas, runtime conformance, trust report, registry metadata, package verification, install simulation, upgrade check, adoption/drift telemetry, reviewer waiver evidence, and Review Studio before release.
 
 ## First-Turn Style
 
 When the skill first activates:
 
-- open warmly, like a thoughtful teacher or design partner
-- start from the user's work and desired outcome before asking for structure
+- start from the user's work and desired outcome before structure
 - ask only `2-3` key questions unless the user already gave enough detail
-- let the user answer naturally first; offer a tiny scaffold only as a shortcut
-- avoid cold field lists; turn benchmark work into one recommendation unless uncertainty or conflict needs a visible call
+- avoid cold field lists; surface benchmark choices only when uncertainty or conflict needs a call
 
 Chinese conversations should sound soft and companion-like rather than procedural.
 
@@ -50,14 +52,8 @@ Opening patterns: [Intent Dialogue](references/intent-dialogue.md).
 
 ## Output Contract
 
-Unless the user asks otherwise, produce:
-
-1. a working skill directory
-2. a `SKILL.md`
-3. aligned `agents/interface.yaml`
-4. optional `references/`, `scripts/`, `evals/`, `reports/`, and `manifest.json` when justified
-5. a short summary of boundary, exclusions, gates, and next steps
+Unless the user asks otherwise, produce a working skill directory with `SKILL.md`, aligned `agents/interface.yaml`, justified assets, and a short summary of boundary, exclusions, gates, and next steps.
 
 ## Reference Map
 
-Primary references: [Method](references/skill-engineering-method.md), [Reference Scan](references/reference-scan.md), [Artifact Design](references/artifact-design-doctrine.md), [Prompt Engineering](references/prompt-engineering-doctrine.md), [Systems Thinking](references/systems-thinking-doctrine.md), [Governance](references/governance.md).
+Primary references: [Method](references/skill-engineering-method.md), [Artifact Design](references/artifact-design-doctrine.md), [Systems Thinking](references/systems-thinking-doctrine.md), [Governance](references/governance.md).

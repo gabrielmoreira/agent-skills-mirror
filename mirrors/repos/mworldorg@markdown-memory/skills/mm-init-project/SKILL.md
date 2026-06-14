@@ -155,6 +155,8 @@ description: Инициализирует или обновляет проект
 - React + TypeScript + Tailwind + shadcn → пометить «modern react stack»
 - FastAPI + Pydantic + sqlmodel + pytest → пометить «modern python web»
 - aiogram + sqlmodel + loguru → пометить «default bot stack» (из bot_defaults конфига)
+- Наличие `telethon` в зависимостях → установить внутренний флаг `telethon_project: true`
+- Наличие фреймворков категории `tg-bot` (`aiogram`, `python-telegram-bot`, `telegraf`, `grammy` и др.) в зависимостях → установить внутренний флаг `tg_bot_project: true`
 
 **Приоритет определения типа** (когда несколько матчей):
 1. tg-bot / discord-bot (если есть бот-фреймворк) — `bot`
@@ -366,7 +368,15 @@ Continue? (y / n / edit)
 - **Секции 1-7, 9** — из discovery (стек, архитектура, команды, конвенции из README, ENV из .env.example).
 - **Секция 8 «Контекст для промптов»**:
   - Если миграция из PROJECT_PASSPORT.md и там есть аналогичный раздел — перенеси.
-  - Иначе оставь шаблон + `<!-- TODO: заполни секцию 8 — критично, читается каждым промптом -->`.
+  - Иначе:
+    - Если `telethon_project == true`, добавь следующие жесткие правила:
+      * `При написании кода для Telethon-аккаунтов строго следуй правилам из [[telethon-sessions|инструкции по сессиям Telethon]].`
+      * `Запрещены параллельные запуски сессий с одним файлом .session (риск AuthKeyDuplicatedError).`
+      * `Все параметры устройства (fingerprint) бери строго из соответствующего .json файла.`
+      * `Используй SOCKS5-прокси с rdns=True для всех подключений.`
+    - Если `tg_bot_project == true`, добавь следующие жесткие правила:
+      * `При проектировании интерфейса бота (текст, кнопки, эмодзи) строго следуй правилам из [[tg-bot-ui-ux|руководства по UI/UX ботов Telegram]].`
+    - Иначе оставь шаблон + `<!-- TODO: заполни секцию 8 — критично, читается каждым промптом -->`.
 - **Секция 10 «Текущее состояние»**:
   - Init: пустой шаблон.
   - Update (есть passport.md): сохрани существующий текст 1:1.
@@ -376,19 +386,25 @@ Continue? (y / n / edit)
   - Update: добавь строку «<date> Refresh: <что обновилось>».
   - Migration: «<date> Migrated from PROJECT_PASSPORT.md».
 
-Frontmatter: `created` из существующего файла или сегодня; `updated` = сегодня; `mm_version` = `config.version` из mm-config.json (подставь значение, не оставляй плейсхолдер `<MM_VERSION>`).
+Frontmatter: `created` из существующего файла или сегодня; `updated` = сегодня; `mm_version` = `config.version` из mm-config.json (подставь значение, не оставляй плейсхолдер `<MM_VERSION>`); `telegram_ui_ux` = `true` (если `tg_bot_project == true`), иначе `false`.
 
 ### 4.2. Сгенерируй файлы Obsidian Vault в памяти
 
 **Сгенерируй структуру и контент для файлов базы знаний:**
-1. **`00-home/index.md`**: Карта всех файлов в Vault. На старте содержит ссылки на `[[текущие приоритеты]]`, `[[project-instructions]]`, `[[handoff]]`, `[[atlas/passport|паспорт проекта]]`, `[[atlas/архитектура проекта]]`, `[[atlas/база данных]]`, `[[atlas/деплой.md]]` и заглушки для подразделов в `knowledge/` и `sessions/`.
+1. **`00-home/index.md`**: Карта всех файлов в Vault. На старте содержит ссылки на `[[текущие приоритеты]]`, `[[project-instructions]]`, `[[handoff]]`, `[[atlas/passport|паспорт проекта]]`, `[[atlas/архитектура проекта]]`, `[[atlas/база данных]]`, `[[atlas/деплой.md]]` и заглушки для подразделов в `knowledge/` и `sessions/`. Если `telethon_project == true`, добавь также ссылку на `[[knowledge/integrations/telethon-sessions|инструкцию по сессиям Telethon]]`. Если `tg_bot_project == true`, добавь также ссылку на `[[knowledge/patterns/tg-bot-ui-ux|инструкцию по UI/UX ботов Telegram]]`.
 2. **`00-home/текущие приоритеты.md`**: Содержит текущий milestone и приоритетные задачи, извлеченные из GSD или Discovery (на старте).
 3. **`00-home/project-instructions.md`**: Возьми `<skills_repo>/templates/project-instructions.md`, подставь `<PROJECT_NAME>`, замени пути к файлам на новые пути в структуре базы (например, `00-home/index.md` вместо `dashboard.md`), добавь топ-3 пункта из секции 8 паспорта.
+   - Если `telethon_project == true`, добавь в инструкции для ИИ блок:
+     * `Этот проект использует Telethon. При написании кода по работе с сессиями/аккаунтами руководствуйся правилами из [[knowledge/integrations/telethon-sessions.md]].`
+   - Если `tg_bot_project == true`, добавь в инструкции для ИИ блок:
+     * `При создании диалогов, кнопок, FSM-сценариев и форматировании сообщений следуй правилам из [[knowledge/patterns/tg-bot-ui-ux.md]].`
 4. **`handoff.md` (в корне Vault)**: Скелет handoff (шаблон см. в Appendix). В режиме **update** не трогай, если файл уже существует.
 5. **`atlas/passport.md`**: Копия сгенерированного `passport.md`.
 6. **`atlas/архитектура проекта.md`**: Содержит описание архитектуры из секции 3 паспорта.
 7. **`atlas/база данных.md`**: Содержит модели данных из секции 6 паспорта.
 8. **`atlas/деплой.md`**: Содержит инструкции и команды деплоя из секции 5/2 паспорта.
+9. **`knowledge/integrations/telethon-sessions.md`** (только если `telethon_project == true`): скопируй содержимое из `<skills_repo>/templates/telethon-sessions.md`.
+10. **`knowledge/patterns/tg-bot-ui-ux.md`** (только если `tg_bot_project == true`): скопируй содержимое из `<skills_repo>/templates/tg-bot-ui-ux.md`.
 
 ### 4.3. Сгенерируй патч для CLAUDE.md (если нужен)
 
@@ -448,6 +464,8 @@ Frontmatter: `created` из существующего файла или сег�
    - `<vault>/atlas/архитектура проекта.md`
    - `<vault>/atlas/база данных.md`
    - `<vault>/atlas/деплой.md`
+   - `<vault>/knowledge/integrations/telethon-sessions.md` (только если `telethon_project == true`)
+   - `<vault>/knowledge/patterns/tg-bot-ui-ux.md` (только если `tg_bot_project == true`)
 4. Если выбран локальный режим, открой `<project>/.gitignore`, и если в нём нет строки `.vault/.obsidian/` — добавь в конец:
    ```
    # Local Obsidian UI state
@@ -504,6 +522,8 @@ Frontmatter: `created` из существующего файла или сег�
   ✓ <vault>/atlas/архитектура проекта.md
   ✓ <vault>/atlas/база данных.md
   ✓ <vault>/atlas/деплой.md
+  ✓ <vault>/knowledge/integrations/telethon-sessions.md (только если `telethon_project == true`)
+  ✓ <vault>/knowledge/patterns/tg-bot-ui-ux.md (только если `tg_bot_project == true`)
   ✓ <project>/CLAUDE.md (добавлены правила Obsidian Knowledge Vault)
   <если локальный режим:>
   ✓ <project>/.gitignore (добавлен игнор .vault/.obsidian/)

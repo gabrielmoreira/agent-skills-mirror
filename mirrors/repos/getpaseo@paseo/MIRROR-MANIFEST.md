@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 22 followed patterns, 36 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 23 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 22 followed patterns, 36 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 22 |
-| Files         | 36 |
+| Followed pats | 23 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,6 +67,7 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 22 followed patterns, 36 fil
 - `docs/service-proxy.md`
 - `docs/development.md`
 - `docs/rpc-namespacing.md`
+- `docs/terminal-performance.md`
 - `docs/testing.md`
 - `docs/mobile-testing.md`
 - `docs/ad-hoc-daemon-testing.md`
@@ -113,9 +114,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 31 | → | [`docs/release.md`](docs/release.md) |
 | 32 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
 | 33 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
-| 34 | → | [`docs/testing.md`](docs/testing.md) |
-| 35 | → | [`docs/unistyles.md`](docs/unistyles.md) |
-| 36 | → | [`SECURITY.md`](SECURITY.md) |
+| 34 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
+| 35 | → | [`docs/testing.md`](docs/testing.md) |
+| 36 | → | [`docs/unistyles.md`](docs/unistyles.md) |
+| 37 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

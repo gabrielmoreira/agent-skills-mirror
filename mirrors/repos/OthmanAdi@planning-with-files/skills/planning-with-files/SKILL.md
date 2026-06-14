@@ -28,7 +28,7 @@ hooks:
         - type: command
           command: "SH=\"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --context=precompact; exit 0"
 metadata:
-  version: "3.0.0"
+  version: "3.1.0"
 ---
 
 # Planning with Files
@@ -419,7 +419,7 @@ This skill uses PreToolUse and UserPromptSubmit hooks to inject plan context. Ho
 
 The attestation is written to `.planning/<active-plan>/.attestation` (parallel-plan mode) or `./.plan-attestation` (legacy mode). When set, the injected context also carries a `Plan-SHA256:` line so the model can log the attested hash for audit.
 
-For the `attest-plan.sh` write path, optional `flock` guard, macOS and Windows Git Bash fallback, and why slug-mode is preferred for parallel sessions, see [attestation locking and fallback](../../docs/attestation-locking.md).
+For the `attest-plan.sh` write path, optional `flock` guard, macOS and Windows Git Bash fallback, and why slug-mode is preferred for parallel sessions, see [attestation locking and fallback](../../docs/attestation-locking.md). For the transient SHA cache (location, keying, container behavior, and how to clear it), see [performance notes](../../docs/perf-notes.md).
 
 ### v3 hardening
 

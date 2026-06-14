@@ -50,11 +50,18 @@ It's **model-agnostic** (Claude, GPT, Gemini, Llama, Kimi, Ollama, &hellip;), **
 
 ---
 
-## New in v1.5.0
+## New in v1.5.2 &mdash; reliability, honest verification, transparency
+
+- **Cheap perception works for any agent again.** `read_screen` returns a real accessibility tree over MCP for every app (it now scopes to the active window), and a missed lookup returns in milliseconds instead of stalling. Launched apps come to the foreground so the next action hits the right window.
+- **A task can't claim success it can't back.** Completion evidence that was already true before the agent acted (an ambient clock, an already-open window) is rejected; the new `file_changed_since_start` proof confirms a file was actually written. `open_file` verifies the folder really opened; `open_uri` now opens `ms-settings:`-style pages.
+- **You always see &mdash; and can stop &mdash; automation.** A topmost *"desktop control in progress"* banner with a blinking red dot appears whenever an agent drives the desktop; **double-click it to stop** (`--no-banner` to disable).
+- **Safety, re-tuned.** Genuinely dangerous key combos stay blocked; consequential-but-legitimate ones (show desktop, close tab) are now confirm-able instead of dead-ended. Minimizing a window no longer needs confirmation.
+
+## The engine &mdash; UI State Compiler (since v1.5.0)
 
 - **UI State Compiler.** `compile_ui` fuses the accessibility tree and OCR into one confidence-scored map of the screen, every element tagged with a stable `el_NN` id. Act on an element by `{element_id, snapshot_id}` instead of pixels &mdash; it's near-free in tokens and survives DPI, resize, and layout shifts. `find_button` / `find_field` locate a target by meaning and hand you the id.
 - **Reactive verification.** Pass `expect` on a consequential action and clawdcursor confirms the outcome (with a short settle window for async UIs), reporting a **DEVIATION** when the UI didn't obey instead of a hollow success.
-- **Honest cross-platform parity.** The compiler, secure-field redaction, and coordinate handling were brought to full parity on macOS; the external-agent (MCP) surface now resolves `el_NN` refs through the safety gate and discloses when it attached to your existing browser. No tools were renamed &mdash; existing permission allowlists keep working.
+- **Honest cross-platform parity.** The compiler, secure-field redaction, and coordinate handling run on Windows, macOS, and Linux; the external-agent (MCP) surface resolves `el_NN` refs through the safety gate and discloses when it attached to your existing browser. No tools were renamed &mdash; existing permission allowlists keep working.
 
 See the [changelog](CHANGELOG.md) for the full list.
 
@@ -71,9 +78,9 @@ Compound is the default surface. Catalog footprint is ~1,500 tokens (about 12&ti
 | `computer` | `screenshot`, `click`, `double_click`, `right_click`, `triple_click`, `hover`, `move`, `scroll`, `scroll_horizontal`, `drag`, `drag_path`, `type`, `key`, `wait` |
 | `accessibility` | `read_tree`, `find`, `get_element`, `focused`, `invoke`, `focus`, `set_value`, `get_value`, `expand`, `collapse`, `toggle`, `select`, `state`, `list_children`, `wait_for`, `compile_ui`, `find_button`, `find_field`, `smart_click`, `smart_type`, `smart_read` |
 | `window` | `list`, `active`, `focus`, `maximize`, `minimize`, `restore`, `close`, `resize`, `list_displays`, `screen_size`, `open_app`, `open_file`, `open_url`, `switch_tab`, `navigate` |
-| `system` | `clipboard_read`, `clipboard_write`, `system_time`, `ocr`, `undo`, `shortcuts_list`, `shortcuts_run`, `delegate`, `detect_webview`, `relaunch_with_cdp`, `system_prompt` |
+| `system` | `clipboard_read`, `clipboard_write`, `system_time`, `ocr`, `undo`, `shortcuts_list`, `shortcuts_run`, `delegate`, `detect_webview`, `relaunch_with_cdp`, `system_prompt`, `build_uri`, `open_uri`, `open_app`, `open_file`, `open_url`, `detect_app`, `app_guide`, `learn_app` |
 | `browser` | `connect`, `page_context`, `read_text`, `click`, `type`, `select_option`, `evaluate`, `wait_for`, `list_tabs`, `switch_tab`, `scroll` |
-| `task` | `{instruction: string}` &mdash; delegate the whole task to the built-in thin agent loop (the configured model takes the wheel: perceive → act → iterate until done). No `action` enum. **Requires `clawdcursor agent` with an LLM configured (`clawdcursor doctor`) &mdash; unavailable under `--no-llm` or stdio `clawdcursor mcp`.** If your agent has its own brain, drive the other five toolboxes directly instead. |
+| `task` | `run` (default) &mdash; delegate the whole task to the built-in thin agent loop (perceive → act → iterate). **Bounded-sync:** waits up to `timeout`s (default 45); a longer task returns `{status:"running"}` with progress and keeps going &mdash; re-call with the same `instruction` to keep waiting. `status` polls it; `abort` stops it. **Requires `clawdcursor agent` with an LLM configured (`clawdcursor doctor`) &mdash; unavailable under `--no-llm` or stdio `clawdcursor mcp`.** If your agent has its own brain, drive the other toolboxes directly instead. |
 | `batch` | `{steps: [...]}` &mdash; collapse N tool calls into one round-trip. Each step is `{name, arguments, expect?}`. The executor re-perceives before each `expect` guard, routes every step through the same safety gate, and halts with a per-step trace on any guard miss, safety stop, or error. Use `dryRun:true` to pre-scan tiers. The efficiency lever for a driving agent: N calls → 1. |
 
 A typical turn:

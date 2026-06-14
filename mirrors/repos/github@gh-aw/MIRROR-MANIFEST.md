@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `github/gh-aw` — 26 default patterns, 3 followed patterns, 49 file(s) materialized.
+Mirror of `github/gh-aw` — 26 default patterns, 3 followed patterns, 50 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `github/gh-aw` — 26 default patterns, 3 followed patterns, 49 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 49 |
+| Files         | 50 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -92,24 +92,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`.github/skills/javascript-refactoring/SKILL.md`](.github/skills/javascript-refactoring/SKILL.md) |
 | 30 | ✓ | [`.github/skills/jqschema/SKILL.md`](.github/skills/jqschema/SKILL.md) |
 | 31 | ✓ | [`.github/skills/messages/SKILL.md`](.github/skills/messages/SKILL.md) |
-| 32 | ✓ | [`.github/skills/otel-queries/SKILL.md`](.github/skills/otel-queries/SKILL.md) |
-| 33 | ✓ | [`.github/skills/pr-finisher/SKILL.md`](.github/skills/pr-finisher/SKILL.md) |
-| 34 | ✓ | [`.github/skills/pr-to-go-linter/SKILL.md`](.github/skills/pr-to-go-linter/SKILL.md) |
-| 35 | ✓ | [`.github/skills/prompt-token-efficiency/SKILL.md`](.github/skills/prompt-token-efficiency/SKILL.md) |
-| 36 | ✓ | [`.github/skills/reporting/SKILL.md`](.github/skills/reporting/SKILL.md) |
-| 37 | ✓ | [`.github/skills/sergo-examples/SKILL.md`](.github/skills/sergo-examples/SKILL.md) |
-| 38 | ✓ | [`.github/skills/skillz-integration/SKILL.md`](.github/skills/skillz-integration/SKILL.md) |
-| 39 | ✓ | [`.github/skills/ssl/SKILL.md`](.github/skills/ssl/SKILL.md) |
-| 40 | ✓ | [`.github/skills/temporary-id-safe-output/SKILL.md`](.github/skills/temporary-id-safe-output/SKILL.md) |
-| 41 | ✓ | [`.github/skills/workflow-step-summaries/SKILL.md`](.github/skills/workflow-step-summaries/SKILL.md) |
-| 42 | ✓ | [`.github/workflows/go-fan.md`](.github/workflows/go-fan.md) |
-| 43 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 44 | ✓ | [`pkg/workflow/data/engines/claude.md`](pkg/workflow/data/engines/claude.md) |
-| 45 | ✓ | [`pkg/workflow/data/engines/gemini.md`](pkg/workflow/data/engines/gemini.md) |
-| 46 | ✓ | [`SKILL.md`](SKILL.md) |
-| 47 | → | [`actions/setup/md/safe_outputs_push_to_pr_branch.md`](actions/setup/md/safe_outputs_push_to_pr_branch.md) |
-| 48 | → | [`docs/sparseness.md`](docs/sparseness.md) |
-| 49 | → | [`docs/src/content/docs/reference/checkout.md`](docs/src/content/docs/reference/checkout.md) |
+| 32 | ✓ | [`.github/skills/optimize-agentic-workflow/SKILL.md`](.github/skills/optimize-agentic-workflow/SKILL.md) |
+| 33 | ✓ | [`.github/skills/otel-queries/SKILL.md`](.github/skills/otel-queries/SKILL.md) |
+| 34 | ✓ | [`.github/skills/pr-finisher/SKILL.md`](.github/skills/pr-finisher/SKILL.md) |
+| 35 | ✓ | [`.github/skills/pr-to-go-linter/SKILL.md`](.github/skills/pr-to-go-linter/SKILL.md) |
+| 36 | ✓ | [`.github/skills/prompt-token-efficiency/SKILL.md`](.github/skills/prompt-token-efficiency/SKILL.md) |
+| 37 | ✓ | [`.github/skills/reporting/SKILL.md`](.github/skills/reporting/SKILL.md) |
+| 38 | ✓ | [`.github/skills/sergo-examples/SKILL.md`](.github/skills/sergo-examples/SKILL.md) |
+| 39 | ✓ | [`.github/skills/skillz-integration/SKILL.md`](.github/skills/skillz-integration/SKILL.md) |
+| 40 | ✓ | [`.github/skills/ssl/SKILL.md`](.github/skills/ssl/SKILL.md) |
+| 41 | ✓ | [`.github/skills/temporary-id-safe-output/SKILL.md`](.github/skills/temporary-id-safe-output/SKILL.md) |
+| 42 | ✓ | [`.github/skills/workflow-step-summaries/SKILL.md`](.github/skills/workflow-step-summaries/SKILL.md) |
+| 43 | ✓ | [`.github/workflows/go-fan.md`](.github/workflows/go-fan.md) |
+| 44 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 45 | ✓ | [`pkg/workflow/data/engines/claude.md`](pkg/workflow/data/engines/claude.md) |
+| 46 | ✓ | [`pkg/workflow/data/engines/gemini.md`](pkg/workflow/data/engines/gemini.md) |
+| 47 | ✓ | [`SKILL.md`](SKILL.md) |
+| 48 | → | [`actions/setup/md/safe_outputs_push_to_pr_branch.md`](actions/setup/md/safe_outputs_push_to_pr_branch.md) |
+| 49 | → | [`docs/sparseness.md`](docs/sparseness.md) |
+| 50 | → | [`docs/src/content/docs/reference/checkout.md`](docs/src/content/docs/reference/checkout.md) |
 
 ---
 

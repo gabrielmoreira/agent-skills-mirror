@@ -1,5 +1,6 @@
-import { afterEach, beforeEach, describe, expect, test } from 'bun:test'
-import { mkdtemp, rm, utimes, writeFile } from 'node:fs/promises'
+import { afterEach, beforeEach, describe, expect, test } from 'vitest'
+import { spawnSync } from 'node:child_process'
+import { mkdir, mkdtemp, rm, utimes, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 
@@ -50,7 +51,7 @@ describe('session-db CLI', () => {
 
 async function writeSession(project: string, filename: string, index: number): Promise<void> {
   const sessionDir = join(agentDir, 'sessions', project)
-  await Bun.$`mkdir -p ${sessionDir}`.quiet()
+  await mkdir(sessionDir, { recursive: true })
   const timestamp = new Date(Date.UTC(2026, 0, 1, 0, 0, index)).toISOString()
   const sessionId = `session-${index}`
   const content = [
@@ -80,8 +81,7 @@ async function writeSession(project: string, filename: string, index: number): P
 }
 
 function run(args: string[]): { stdout: Buffer; stderr: Buffer } {
-  const result = Bun.spawnSync({
-    cmd: ['bun', 'scripts/session-db.ts', ...args],
+  const result = spawnSync('tsx', ['scripts/session-db.ts', ...args], {
     cwd,
     env: {
       ...process.env,
@@ -91,9 +91,9 @@ function run(args: string[]): { stdout: Buffer; stderr: Buffer } {
     stderr: 'pipe'
   })
 
-  if (result.exitCode !== 0) {
+  if (result.status !== 0) {
     throw new Error(
-      `session-db failed (${result.exitCode})\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}`
+      `session-db failed (${result.status ?? 'signal'})\nstdout:\n${result.stdout}\nstderr:\n${result.stderr}`
     )
   }
 

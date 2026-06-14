@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `dannote/dot-pi` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
+Mirror of `dannote/dot-pi` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dannote/dot-pi` — 26 default patterns, 0 followed patterns, 39 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 39 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,27 +77,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`skills/chat-to-skill/SKILL.md`](skills/chat-to-skill/SKILL.md) |
 | 17 | ✓ | [`skills/extra/dont-anger-mario/SKILL.md`](skills/extra/dont-anger-mario/SKILL.md) |
 | 18 | ✓ | [`skills/github-issues/SKILL.md`](skills/github-issues/SKILL.md) |
-| 19 | ✓ | [`skills/keyboard-layout-decoder/bun.lock`](skills/keyboard-layout-decoder/bun.lock) |
-| 20 | ✓ | [`skills/keyboard-layout-decoder/convert-layout.d.ts`](skills/keyboard-layout-decoder/convert-layout.d.ts) |
-| 21 | ✓ | [`skills/keyboard-layout-decoder/decoder.ts`](skills/keyboard-layout-decoder/decoder.ts) |
-| 22 | ✓ | [`skills/keyboard-layout-decoder/package.json`](skills/keyboard-layout-decoder/package.json) |
-| 23 | ✓ | [`skills/keyboard-layout-decoder/SKILL.md`](skills/keyboard-layout-decoder/SKILL.md) |
-| 24 | ✓ | [`skills/session-reflect/bun.lock`](skills/session-reflect/bun.lock) |
-| 25 | ✓ | [`skills/session-reflect/package.json`](skills/session-reflect/package.json) |
-| 26 | ✓ | [`skills/session-reflect/references/intervention-events.md`](skills/session-reflect/references/intervention-events.md) |
-| 27 | ✓ | [`skills/session-reflect/references/query-cookbook.md`](skills/session-reflect/references/query-cookbook.md) |
-| 28 | ✓ | [`skills/session-reflect/references/reflection-protocol.md`](skills/session-reflect/references/reflection-protocol.md) |
-| 29 | ✓ | [`skills/session-reflect/scripts/output.ts`](skills/session-reflect/scripts/output.ts) |
-| 30 | ✓ | [`skills/session-reflect/scripts/session-db.ts`](skills/session-reflect/scripts/session-db.ts) |
-| 31 | ✓ | [`skills/session-reflect/scripts/sql.ts`](skills/session-reflect/scripts/sql.ts) |
-| 32 | ✓ | [`skills/session-reflect/SKILL.md`](skills/session-reflect/SKILL.md) |
-| 33 | ✓ | [`skills/session-reflect/tests/output.test.ts`](skills/session-reflect/tests/output.test.ts) |
-| 34 | ✓ | [`skills/session-reflect/tests/session-db.integration.ts`](skills/session-reflect/tests/session-db.integration.ts) |
-| 35 | ✓ | [`skills/session-reflect/tests/sql.test.ts`](skills/session-reflect/tests/sql.test.ts) |
-| 36 | ✓ | [`skills/session-reflect/tsconfig.json`](skills/session-reflect/tsconfig.json) |
-| 37 | ✓ | [`skills/session-reflect/types/session-reflect-deps.d.ts`](skills/session-reflect/types/session-reflect-deps.d.ts) |
-| 38 | ✓ | [`skills/skill-discovery/SKILL.md`](skills/skill-discovery/SKILL.md) |
-| 39 | ✓ | [`skills/vibe-merge/SKILL.md`](skills/vibe-merge/SKILL.md) |
+| 19 | ✓ | [`skills/keyboard-layout-decoder/convert-layout.d.ts`](skills/keyboard-layout-decoder/convert-layout.d.ts) |
+| 20 | ✓ | [`skills/keyboard-layout-decoder/decoder.ts`](skills/keyboard-layout-decoder/decoder.ts) |
+| 21 | ✓ | [`skills/keyboard-layout-decoder/package.json`](skills/keyboard-layout-decoder/package.json) |
+| 22 | ✓ | [`skills/keyboard-layout-decoder/SKILL.md`](skills/keyboard-layout-decoder/SKILL.md) |
+| 23 | ✓ | [`skills/session-reflect/package.json`](skills/session-reflect/package.json) |
+| 24 | ✓ | [`skills/session-reflect/references/intervention-events.md`](skills/session-reflect/references/intervention-events.md) |
+| 25 | ✓ | [`skills/session-reflect/references/query-cookbook.md`](skills/session-reflect/references/query-cookbook.md) |
+| 26 | ✓ | [`skills/session-reflect/references/reflection-protocol.md`](skills/session-reflect/references/reflection-protocol.md) |
+| 27 | ✓ | [`skills/session-reflect/scripts/output.ts`](skills/session-reflect/scripts/output.ts) |
+| 28 | ✓ | [`skills/session-reflect/scripts/session-db.ts`](skills/session-reflect/scripts/session-db.ts) |
+| 29 | ✓ | [`skills/session-reflect/scripts/sql.ts`](skills/session-reflect/scripts/sql.ts) |
+| 30 | ✓ | [`skills/session-reflect/SKILL.md`](skills/session-reflect/SKILL.md) |
+| 31 | ✓ | [`skills/session-reflect/tests/output.test.ts`](skills/session-reflect/tests/output.test.ts) |
+| 32 | ✓ | [`skills/session-reflect/tests/session-db.integration.ts`](skills/session-reflect/tests/session-db.integration.ts) |
+| 33 | ✓ | [`skills/session-reflect/tests/sql.test.ts`](skills/session-reflect/tests/sql.test.ts) |
+| 34 | ✓ | [`skills/session-reflect/tsconfig.json`](skills/session-reflect/tsconfig.json) |
+| 35 | ✓ | [`skills/session-reflect/types/session-reflect-deps.d.ts`](skills/session-reflect/types/session-reflect-deps.d.ts) |
+| 36 | ✓ | [`skills/skill-discovery/SKILL.md`](skills/skill-discovery/SKILL.md) |
+| 37 | ✓ | [`skills/vibe-merge/SKILL.md`](skills/vibe-merge/SKILL.md) |
 
 ---
 

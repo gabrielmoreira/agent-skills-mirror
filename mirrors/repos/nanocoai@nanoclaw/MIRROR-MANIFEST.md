@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nanocoai/nanoclaw` — 26 default patterns, 21 followed patterns, 111 file(s) materialized.
+Mirror of `nanocoai/nanoclaw` — 26 default patterns, 22 followed patterns, 112 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `nanocoai/nanoclaw` — 26 default patterns, 21 followed patterns, 111
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 21 |
-| Files         | 111 |
+| Followed pats | 22 |
+| Files         | 112 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,6 +70,7 @@ Mirror of `nanocoai/nanoclaw` — 26 default patterns, 21 followed patterns, 111
 - `docs/skill-guidelines.md`
 - `docs/docker-sandboxes.md`
 - `CHANGELOG.md`
+- `docs/onecli-upgrades.md`
 - `docs/upgrade-recovery.md`
 - `RELEASING.md`
 
@@ -183,13 +184,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 102 | → | [`docs/docker-sandboxes.md`](docs/docker-sandboxes.md) |
 | 103 | → | [`docs/isolation-model.md`](docs/isolation-model.md) |
 | 104 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
-| 105 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
-| 106 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
-| 107 | → | [`docs/skills-model.md`](docs/skills-model.md) |
-| 108 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
-| 109 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
-| 110 | → | [`README.md`](README.md) |
-| 111 | → | [`RELEASING.md`](RELEASING.md) |
+| 105 | → | [`docs/onecli-upgrades.md`](docs/onecli-upgrades.md) |
+| 106 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
+| 107 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
+| 108 | → | [`docs/skills-model.md`](docs/skills-model.md) |
+| 109 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
+| 110 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
+| 111 | → | [`README.md`](README.md) |
+| 112 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

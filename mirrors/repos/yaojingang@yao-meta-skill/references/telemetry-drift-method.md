@@ -1,0 +1,60 @@
+# Telemetry And Drift Method
+
+Telemetry turns real use into the next iteration queue. It must stay local-first and metadata-only by default.
+
+## When To Use
+
+Use the telemetry drift loop when a skill is production, library, governed, team-distributed, or repeatedly invoked by more than one workflow.
+
+Do not collect raw prompts, model outputs, transcripts, notes, messages, or private files. If a reviewer needs examples, store anonymized fixtures separately and cite them as eval evidence, not telemetry.
+
+## Event Contract
+
+The local event stream is `reports/telemetry_events.jsonl`. It is intentionally narrow:
+
+```json
+{
+  "event": "skill_activation",
+  "skill": "example-skill",
+  "version": "2.0.0",
+  "activation_type": "implicit",
+  "outcome": "accepted",
+  "failure_type": "none",
+  "timestamp": "2026-06-13T10:00:00Z"
+}
+```
+
+Allowed events: `skill_activation`, `skill_output`, `script_run`, `review_event`.
+
+Allowed outcomes: `accepted`, `edited`, `rejected`, `missed`, `failed`, `reviewed`, `unknown`.
+
+Allowed failure types: `wrong_trigger`, `under_trigger`, `bad_output`, `missing_resource`, `script_error`, `review_overdue`, `none`.
+
+## Privacy Rule
+
+The raw JSONL event log is local evidence and should not be distributed in skill packages. The distributable artifact is the aggregate report:
+
+- `reports/adoption_drift_report.json`
+- `reports/adoption_drift_report.md`
+
+Package builders should exclude `reports/telemetry_events.jsonl`. The root repository also ignores this raw event stream so local usage evidence does not become ordinary source history by accident.
+
+## Release Interpretation
+
+- `no-data`: acceptable for a first scaffold, but a warning for governed release review.
+- `low`: events exist and no drift failure signal is present.
+- `medium`: at least one missed trigger, wrong trigger, bad output, script error, or overdue review signal exists.
+- `high`: several drift signals are present; convert them into eval cases or governance actions before calling the skill release-ready.
+
+## Iteration Loop
+
+1. Capture metadata-only events locally.
+2. Render `reports/adoption_drift_report.md`.
+3. Convert missed triggers into trigger eval cases.
+4. Convert bad outputs into Output Eval assertions and failure taxonomy entries.
+5. Convert script errors into non-interactive smoke tests.
+6. Feed review-overdue signals back into Skill Atlas and owner review.
+
+## Review Studio Role
+
+Review Studio should show the aggregate telemetry gate as an operating loop, not as raw logs. A blocker means the telemetry contract was violated. A warning means the evidence is absent or the drift signal needs a follow-up case.

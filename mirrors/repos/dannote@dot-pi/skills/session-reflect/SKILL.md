@@ -38,54 +38,54 @@ Install helper dependencies from the skill directory if they are missing:
 
 ```bash
 cd <dot-pi>/skills/session-reflect
-bun install
+npm install
 ```
 
 Typical first step:
 
 ```bash
-bun scripts/session-db.ts build
+npx tsx scripts/session-db.ts build
 ```
 
 If the user points to another session root:
 
 ```bash
-bun scripts/session-db.ts build --root <session-root>
+npx tsx scripts/session-db.ts build --root <session-root>
 ```
 
 Useful evidence commands:
 
 ```bash
-bun scripts/session-db.ts doctor
-bun scripts/session-db.ts preset --list
-bun scripts/session-db.ts preset overview
-bun scripts/session-db.ts preset exact-short-repeats
-bun scripts/session-db.ts preset long-sessions
-bun scripts/session-db.ts turns --role user --limit 80
-bun scripts/session-db.ts turns --role user --short --limit 100
-bun scripts/session-db.ts ngrams --n 2 --min-count 3 --limit 50
-bun scripts/session-db.ts ngrams --n 3 --min-count 3 --limit 50
-bun scripts/session-db.ts search "literal or fuzzy lead" --role user --limit 25
-bun scripts/session-db.ts context <message_key> --before 4 --after 8
-bun scripts/session-db.ts context <message_key> --before 4 --after 8 --compact --hide-tools
-bun scripts/session-db.ts examples --text "Go ahead." --limit 5 --before 3 --after 5
-bun scripts/session-db.ts sample --turns 5 --examples 2 --before 3 --after 5
-bun scripts/session-db.ts interventions --limit 30 --min-score 2 --sort score
-bun scripts/session-db.ts interventions --limit 30 --min-score 2 --sort recent
-bun scripts/session-db.ts interventions --signal autonomy_boundary,evidence_challenge --limit 20
-bun scripts/session-db.ts interventions --project quackdb --since 2026-06-01 --limit 20
-bun scripts/session-db.ts interventions --sample --limit 10 --min-score 2
-bun scripts/session-db.ts interventions --pasted include --limit 20 --min-score 2
-bun scripts/session-db.ts interventions --pasted only --limit 20 --min-score 2
-bun scripts/session-db.ts interventions --context --limit 10 --min-score 2 --sort recent --before 4 --after 6
-bun scripts/session-db.ts sql "select ..."
+npx tsx scripts/session-db.ts doctor
+npx tsx scripts/session-db.ts preset --list
+npx tsx scripts/session-db.ts preset overview
+npx tsx scripts/session-db.ts preset exact-short-repeats
+npx tsx scripts/session-db.ts preset long-sessions
+npx tsx scripts/session-db.ts turns --role user --limit 80
+npx tsx scripts/session-db.ts turns --role user --short --limit 100
+npx tsx scripts/session-db.ts ngrams --n 2 --min-count 3 --limit 50
+npx tsx scripts/session-db.ts ngrams --n 3 --min-count 3 --limit 50
+npx tsx scripts/session-db.ts search "literal or fuzzy lead" --role user --limit 25
+npx tsx scripts/session-db.ts context <message_key> --before 4 --after 8
+npx tsx scripts/session-db.ts context <message_key> --before 4 --after 8 --compact --hide-tools
+npx tsx scripts/session-db.ts examples --text "Go ahead." --limit 5 --before 3 --after 5
+npx tsx scripts/session-db.ts sample --turns 5 --examples 2 --before 3 --after 5
+npx tsx scripts/session-db.ts interventions --limit 30 --min-score 2 --sort score
+npx tsx scripts/session-db.ts interventions --limit 30 --min-score 2 --sort recent
+npx tsx scripts/session-db.ts interventions --signal autonomy_boundary,evidence_challenge --limit 20
+npx tsx scripts/session-db.ts interventions --project quackdb --since 2026-06-01 --limit 20
+npx tsx scripts/session-db.ts interventions --sample --limit 10 --min-score 2
+npx tsx scripts/session-db.ts interventions --pasted include --limit 20 --min-score 2
+npx tsx scripts/session-db.ts interventions --pasted only --limit 20 --min-score 2
+npx tsx scripts/session-db.ts interventions --context --limit 10 --min-score 2 --sort recent --before 4 --after 6
+npx tsx scripts/session-db.ts sql "select ..."
 ```
 
 Use `--format table|json|markdown` before the subcommand when output will be read by the agent or quoted in a report:
 
 ```bash
-bun scripts/session-db.ts --format markdown preset exact-short-repeats
-bun scripts/session-db.ts --format json context <message_key>
+npx tsx scripts/session-db.ts --format markdown preset exact-short-repeats
+npx tsx scripts/session-db.ts --format json context <message_key>
 ```
 
 Read [references/query-cookbook.md](references/query-cookbook.md) when selecting SQL queries. Read [references/reflection-protocol.md](references/reflection-protocol.md) before producing a user-facing reflection. Read [references/intervention-events.md](references/intervention-events.md) when analyzing shouting, profanity, corrections, frustration, stop/pause requests, evidence challenges, or any high-signal user redirect.

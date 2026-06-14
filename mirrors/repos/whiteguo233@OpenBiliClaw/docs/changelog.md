@@ -4,6 +4,16 @@
 
 ---
 
+## v0.3.123: 统一各来源 profile prompt 输入（移除人格素描总结）（2026-06-14）
+
+把此前散落在发现 / 推荐 / 探测器各处、字段各异的画像 prompt 输入收敛成**同一份**结构化画像，并从所有 LLM 输入里移除 `personality_portrait` 那段总结性叙事——人格素描仍照常生成并在画像页展示，只是不再喂任何 prompt。后端源码改动，浏览器插件与桌面安装包未改动。
+
+- **发现与推荐共用同一份画像输入**：`build_profile_summary()`（discovery）成为唯一的结构化画像序列化器，`_recommendation_profile_summary()` 改为直接委托它——推荐喂给 LLM 的画像因此与发现完全一致，并补齐了之前缺的 `values` / `cognitive_style` / `motivational_drivers` / `current_phase` / `life_stage` / `source_platform_mix` / `recent_awareness` / `mbti` / `interest_domains` 等字段。`include_active_insights` 形参移除（统一输入恒含 active_insights）；embedding 选出的内容相关兴趣经新增 `interests=` 形参透传。
+- **移除人格素描总结进 prompt**：`build_profile_summary()` 不再输出 `personality_portrait`；`OnionProfile.to_llm_context()` / `SoulProfile.to_llm_context()` 新增 `include_portrait` 开关，兴趣探测（speculator）与规避探测（avoidance_speculator）传 `include_portrait=False`。理由：结构化字段已承载同样信号，而 prose 里的比喻 / 例子还会带偏 query 与文案生成。人格素描照常生成、在画像页 / 桌面端展示、参与 overrides，仅不进任何 LLM prompt；eval / persona 渲染保留默认（画像总结是 persona 真值）。
+- **配套 prompt 指令清理**：explore domains prompt 第 12 条改为「只依赖 `interests` / `interest_domains` 判断兴趣方向、不要从人格描述反推」（不再点名 `personality_portrait`）；speculation 生成 prompt 的信号权重从「portrait + deep_needs + motivational_drivers」改为「deep_needs + motivational_drivers」。系统 prompt 仍保持 100% 静态，prompt-cache 约定不破。
+- **画像字段上限统一抬到 30**：`build_profile_summary` 里 `cognitive_style` / `values` / `motivational_drivers` / `deep_needs` 原 `[:5]` → `[:30]`（与 `core_traits` 对齐）；`recent_awareness` / `active_insights` 窗口取最新 `[-5:]` → `[-30:]`；`mbti.inferred_from`、`active_insights[].evidence`、`speculative_interests`、每域 specifics（`_SPECIFICS_PER_DOMAIN`）一并 `5` → `30`。注：`_SPECIFICS_PER_DOMAIN` 抬高对重度画像 token 影响最大（128 域 × 每域至多 30），扁平 `interests`（256）已全局承载最强 specifics。
+- **X / 小红书 / 抖音关键词生成并入统一画像**：此前 X / 小红书的搜索关键词生成只喂 top-15 兴趣的 `name｜category｜weight` 元组（各自精简 prompt），现改为吃完整 `build_profile_summary`（与 B站 / YouTube 关键词生成一致），取消 top-15 截断、带上 `disliked_topics` 避雷。抖音原本是确定性逻辑（直接取兴趣名、不调 LLM，即设计里一直 deferred 的 `dy_explore`），现也补上 LLM 关键词生成：同样吃 `build_profile_summary`、带 Douyin-风格静态 system prompt，并在**无 `llm_service` / 调用失败 / 返回为空**时回退到确定性兴趣名（`seed_keywords` 仍最高优先）。至此**生成阶段用画像调 LLM 的子任务**：B站 search/trending/explore、YouTube yt_search、X x-search、小红书 xhs-search、抖音 search。五平台的**内容评估**环节本就共用 `build_profile_summary`。各平台仍保留各自平台风格的静态 system prompt（prompt-cache 不破）。全量非集成测试通过。
+
 ## v0.3.122: 画像 prompt 截断治理 + 自动更新守卫落地（2026-06-13）
 
 对真实画像（千级兴趣标签、95 条避雷项）做了一次截断审计后的三项修复：整理任务覆盖整个有意义的标签存量、避雷项进 prompt 零截断、近期觉察/洞察改取最新。另外把 v0.3.121 changelog 已宣称但代码未随 tag 落地的自动更新守卫补强真正合入（`backend-v0.3.121` 不含该实现，git 安装需升到本版才生效）。后端源码更新走 `backend-v0.3.122`，桌面安装包走 `desktop-v0.3.122`（冻结包不能自动更新，v0.3.121/122 的改进需换包获得）；浏览器插件未改动（仍为 `0.3.78`）。

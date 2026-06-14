@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bytedance/deer-flow` — 26 default patterns, 0 followed patterns, 98 file(s) materialized.
+Mirror of `bytedance/deer-flow` — 26 default patterns, 0 followed patterns, 99 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 0 followed patterns, 98
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 98 |
+| Files         | 99 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,103 +60,104 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agent/skills/blocking-io-guard/SKILL.md`](.agent/skills/blocking-io-guard/SKILL.md) |
-| 2 | ✓ | [`.agent/skills/smoke-test/SKILL.md`](.agent/skills/smoke-test/SKILL.md) |
-| 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 4 | ✓ | [`backend/AGENTS.md`](backend/AGENTS.md) |
-| 5 | ✓ | [`backend/CLAUDE.md`](backend/CLAUDE.md) |
-| 6 | ✓ | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
-| 7 | ✓ | [`frontend/CLAUDE.md`](frontend/CLAUDE.md) |
-| 8 | ✓ | [`skills/public/academic-paper-review/SKILL.md`](skills/public/academic-paper-review/SKILL.md) |
-| 9 | ✓ | [`skills/public/bootstrap/references/conversation-guide.md`](skills/public/bootstrap/references/conversation-guide.md) |
-| 10 | ✓ | [`skills/public/bootstrap/SKILL.md`](skills/public/bootstrap/SKILL.md) |
-| 11 | ✓ | [`skills/public/bootstrap/templates/SOUL.template.md`](skills/public/bootstrap/templates/SOUL.template.md) |
-| 12 | ✓ | [`skills/public/chart-visualization/references/generate_area_chart.md`](skills/public/chart-visualization/references/generate_area_chart.md) |
-| 13 | ✓ | [`skills/public/chart-visualization/references/generate_bar_chart.md`](skills/public/chart-visualization/references/generate_bar_chart.md) |
-| 14 | ✓ | [`skills/public/chart-visualization/references/generate_boxplot_chart.md`](skills/public/chart-visualization/references/generate_boxplot_chart.md) |
-| 15 | ✓ | [`skills/public/chart-visualization/references/generate_column_chart.md`](skills/public/chart-visualization/references/generate_column_chart.md) |
-| 16 | ✓ | [`skills/public/chart-visualization/references/generate_district_map.md`](skills/public/chart-visualization/references/generate_district_map.md) |
-| 17 | ✓ | [`skills/public/chart-visualization/references/generate_dual_axes_chart.md`](skills/public/chart-visualization/references/generate_dual_axes_chart.md) |
-| 18 | ✓ | [`skills/public/chart-visualization/references/generate_fishbone_diagram.md`](skills/public/chart-visualization/references/generate_fishbone_diagram.md) |
-| 19 | ✓ | [`skills/public/chart-visualization/references/generate_flow_diagram.md`](skills/public/chart-visualization/references/generate_flow_diagram.md) |
-| 20 | ✓ | [`skills/public/chart-visualization/references/generate_funnel_chart.md`](skills/public/chart-visualization/references/generate_funnel_chart.md) |
-| 21 | ✓ | [`skills/public/chart-visualization/references/generate_histogram_chart.md`](skills/public/chart-visualization/references/generate_histogram_chart.md) |
-| 22 | ✓ | [`skills/public/chart-visualization/references/generate_line_chart.md`](skills/public/chart-visualization/references/generate_line_chart.md) |
-| 23 | ✓ | [`skills/public/chart-visualization/references/generate_liquid_chart.md`](skills/public/chart-visualization/references/generate_liquid_chart.md) |
-| 24 | ✓ | [`skills/public/chart-visualization/references/generate_mind_map.md`](skills/public/chart-visualization/references/generate_mind_map.md) |
-| 25 | ✓ | [`skills/public/chart-visualization/references/generate_network_graph.md`](skills/public/chart-visualization/references/generate_network_graph.md) |
-| 26 | ✓ | [`skills/public/chart-visualization/references/generate_organization_chart.md`](skills/public/chart-visualization/references/generate_organization_chart.md) |
-| 27 | ✓ | [`skills/public/chart-visualization/references/generate_path_map.md`](skills/public/chart-visualization/references/generate_path_map.md) |
-| 28 | ✓ | [`skills/public/chart-visualization/references/generate_pie_chart.md`](skills/public/chart-visualization/references/generate_pie_chart.md) |
-| 29 | ✓ | [`skills/public/chart-visualization/references/generate_pin_map.md`](skills/public/chart-visualization/references/generate_pin_map.md) |
-| 30 | ✓ | [`skills/public/chart-visualization/references/generate_radar_chart.md`](skills/public/chart-visualization/references/generate_radar_chart.md) |
-| 31 | ✓ | [`skills/public/chart-visualization/references/generate_sankey_chart.md`](skills/public/chart-visualization/references/generate_sankey_chart.md) |
-| 32 | ✓ | [`skills/public/chart-visualization/references/generate_scatter_chart.md`](skills/public/chart-visualization/references/generate_scatter_chart.md) |
-| 33 | ✓ | [`skills/public/chart-visualization/references/generate_spreadsheet.md`](skills/public/chart-visualization/references/generate_spreadsheet.md) |
-| 34 | ✓ | [`skills/public/chart-visualization/references/generate_treemap_chart.md`](skills/public/chart-visualization/references/generate_treemap_chart.md) |
-| 35 | ✓ | [`skills/public/chart-visualization/references/generate_venn_chart.md`](skills/public/chart-visualization/references/generate_venn_chart.md) |
-| 36 | ✓ | [`skills/public/chart-visualization/references/generate_violin_chart.md`](skills/public/chart-visualization/references/generate_violin_chart.md) |
-| 37 | ✓ | [`skills/public/chart-visualization/references/generate_word_cloud_chart.md`](skills/public/chart-visualization/references/generate_word_cloud_chart.md) |
-| 38 | ✓ | [`skills/public/chart-visualization/scripts/generate.js`](skills/public/chart-visualization/scripts/generate.js) |
-| 39 | ✓ | [`skills/public/chart-visualization/SKILL.md`](skills/public/chart-visualization/SKILL.md) |
-| 40 | ✓ | [`skills/public/claude-to-deerflow/scripts/chat.sh`](skills/public/claude-to-deerflow/scripts/chat.sh) |
-| 41 | ✓ | [`skills/public/claude-to-deerflow/scripts/status.sh`](skills/public/claude-to-deerflow/scripts/status.sh) |
-| 42 | ✓ | [`skills/public/claude-to-deerflow/SKILL.md`](skills/public/claude-to-deerflow/SKILL.md) |
-| 43 | ✓ | [`skills/public/code-documentation/SKILL.md`](skills/public/code-documentation/SKILL.md) |
-| 44 | ✓ | [`skills/public/consulting-analysis/SKILL.md`](skills/public/consulting-analysis/SKILL.md) |
-| 45 | ✓ | [`skills/public/data-analysis/scripts/analyze.py`](skills/public/data-analysis/scripts/analyze.py) |
-| 46 | ✓ | [`skills/public/data-analysis/SKILL.md`](skills/public/data-analysis/SKILL.md) |
-| 47 | ✓ | [`skills/public/deep-research/SKILL.md`](skills/public/deep-research/SKILL.md) |
-| 48 | ✓ | [`skills/public/find-skills/scripts/install-skill.sh`](skills/public/find-skills/scripts/install-skill.sh) |
-| 49 | ✓ | [`skills/public/find-skills/SKILL.md`](skills/public/find-skills/SKILL.md) |
-| 50 | ✓ | [`skills/public/frontend-design/LICENSE.txt`](skills/public/frontend-design/LICENSE.txt) |
-| 51 | ✓ | [`skills/public/frontend-design/SKILL.md`](skills/public/frontend-design/SKILL.md) |
-| 52 | ✓ | [`skills/public/github-deep-research/assets/report_template.md`](skills/public/github-deep-research/assets/report_template.md) |
-| 53 | ✓ | [`skills/public/github-deep-research/scripts/github_api.py`](skills/public/github-deep-research/scripts/github_api.py) |
-| 54 | ✓ | [`skills/public/github-deep-research/SKILL.md`](skills/public/github-deep-research/SKILL.md) |
-| 55 | ✓ | [`skills/public/image-generation/scripts/generate.py`](skills/public/image-generation/scripts/generate.py) |
-| 56 | ✓ | [`skills/public/image-generation/SKILL.md`](skills/public/image-generation/SKILL.md) |
-| 57 | ✓ | [`skills/public/image-generation/templates/doraemon.md`](skills/public/image-generation/templates/doraemon.md) |
-| 58 | ✓ | [`skills/public/music-generation/scripts/generate.py`](skills/public/music-generation/scripts/generate.py) |
-| 59 | ✓ | [`skills/public/music-generation/SKILL.md`](skills/public/music-generation/SKILL.md) |
-| 60 | ✓ | [`skills/public/newsletter-generation/SKILL.md`](skills/public/newsletter-generation/SKILL.md) |
-| 61 | ✓ | [`skills/public/podcast-generation/scripts/generate.py`](skills/public/podcast-generation/scripts/generate.py) |
-| 62 | ✓ | [`skills/public/podcast-generation/SKILL.md`](skills/public/podcast-generation/SKILL.md) |
-| 63 | ✓ | [`skills/public/podcast-generation/templates/tech-explainer.md`](skills/public/podcast-generation/templates/tech-explainer.md) |
-| 64 | ✓ | [`skills/public/ppt-generation/scripts/generate.py`](skills/public/ppt-generation/scripts/generate.py) |
-| 65 | ✓ | [`skills/public/ppt-generation/SKILL.md`](skills/public/ppt-generation/SKILL.md) |
-| 66 | ✓ | [`skills/public/skill-creator/agents/analyzer.md`](skills/public/skill-creator/agents/analyzer.md) |
-| 67 | ✓ | [`skills/public/skill-creator/agents/comparator.md`](skills/public/skill-creator/agents/comparator.md) |
-| 68 | ✓ | [`skills/public/skill-creator/agents/grader.md`](skills/public/skill-creator/agents/grader.md) |
-| 69 | ✓ | [`skills/public/skill-creator/assets/eval_review.html`](skills/public/skill-creator/assets/eval_review.html) |
-| 70 | ✓ | [`skills/public/skill-creator/eval-viewer/generate_review.py`](skills/public/skill-creator/eval-viewer/generate_review.py) |
-| 71 | ✓ | [`skills/public/skill-creator/eval-viewer/viewer.html`](skills/public/skill-creator/eval-viewer/viewer.html) |
-| 72 | ✓ | [`skills/public/skill-creator/LICENSE.txt`](skills/public/skill-creator/LICENSE.txt) |
-| 73 | ✓ | [`skills/public/skill-creator/references/output-patterns.md`](skills/public/skill-creator/references/output-patterns.md) |
-| 74 | ✓ | [`skills/public/skill-creator/references/schemas.md`](skills/public/skill-creator/references/schemas.md) |
-| 75 | ✓ | [`skills/public/skill-creator/references/workflows.md`](skills/public/skill-creator/references/workflows.md) |
-| 76 | ✓ | [`skills/public/skill-creator/scripts/aggregate_benchmark.py`](skills/public/skill-creator/scripts/aggregate_benchmark.py) |
-| 77 | ✓ | [`skills/public/skill-creator/scripts/generate_report.py`](skills/public/skill-creator/scripts/generate_report.py) |
-| 78 | ✓ | [`skills/public/skill-creator/scripts/improve_description.py`](skills/public/skill-creator/scripts/improve_description.py) |
-| 79 | ✓ | [`skills/public/skill-creator/scripts/init_skill.py`](skills/public/skill-creator/scripts/init_skill.py) |
-| 80 | ✓ | [`skills/public/skill-creator/scripts/package_skill.py`](skills/public/skill-creator/scripts/package_skill.py) |
-| 81 | ✓ | [`skills/public/skill-creator/scripts/quick_validate.py`](skills/public/skill-creator/scripts/quick_validate.py) |
-| 82 | ✓ | [`skills/public/skill-creator/scripts/run_eval.py`](skills/public/skill-creator/scripts/run_eval.py) |
-| 83 | ✓ | [`skills/public/skill-creator/scripts/run_loop.py`](skills/public/skill-creator/scripts/run_loop.py) |
-| 84 | ✓ | [`skills/public/skill-creator/scripts/utils.py`](skills/public/skill-creator/scripts/utils.py) |
-| 85 | ✓ | [`skills/public/skill-creator/SKILL.md`](skills/public/skill-creator/SKILL.md) |
-| 86 | ✓ | [`skills/public/surprise-me/SKILL.md`](skills/public/surprise-me/SKILL.md) |
-| 87 | ✓ | [`skills/public/systematic-literature-review/evals/evals.json`](skills/public/systematic-literature-review/evals/evals.json) |
-| 88 | ✓ | [`skills/public/systematic-literature-review/evals/trigger_eval_set.json`](skills/public/systematic-literature-review/evals/trigger_eval_set.json) |
-| 89 | ✓ | [`skills/public/systematic-literature-review/scripts/arxiv_search.py`](skills/public/systematic-literature-review/scripts/arxiv_search.py) |
-| 90 | ✓ | [`skills/public/systematic-literature-review/SKILL.md`](skills/public/systematic-literature-review/SKILL.md) |
-| 91 | ✓ | [`skills/public/systematic-literature-review/templates/apa.md`](skills/public/systematic-literature-review/templates/apa.md) |
-| 92 | ✓ | [`skills/public/systematic-literature-review/templates/bibtex.md`](skills/public/systematic-literature-review/templates/bibtex.md) |
-| 93 | ✓ | [`skills/public/systematic-literature-review/templates/ieee.md`](skills/public/systematic-literature-review/templates/ieee.md) |
-| 94 | ✓ | [`skills/public/vercel-deploy-claimable/scripts/deploy.sh`](skills/public/vercel-deploy-claimable/scripts/deploy.sh) |
-| 95 | ✓ | [`skills/public/vercel-deploy-claimable/SKILL.md`](skills/public/vercel-deploy-claimable/SKILL.md) |
-| 96 | ✓ | [`skills/public/video-generation/scripts/generate.py`](skills/public/video-generation/scripts/generate.py) |
-| 97 | ✓ | [`skills/public/video-generation/SKILL.md`](skills/public/video-generation/SKILL.md) |
-| 98 | ✓ | [`skills/public/web-design-guidelines/SKILL.md`](skills/public/web-design-guidelines/SKILL.md) |
+| 2 | ✓ | [`.agent/skills/deerflow-maintainer-orchestrator/SKILL.md`](.agent/skills/deerflow-maintainer-orchestrator/SKILL.md) |
+| 3 | ✓ | [`.agent/skills/smoke-test/SKILL.md`](.agent/skills/smoke-test/SKILL.md) |
+| 4 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 5 | ✓ | [`backend/AGENTS.md`](backend/AGENTS.md) |
+| 6 | ✓ | [`backend/CLAUDE.md`](backend/CLAUDE.md) |
+| 7 | ✓ | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
+| 8 | ✓ | [`frontend/CLAUDE.md`](frontend/CLAUDE.md) |
+| 9 | ✓ | [`skills/public/academic-paper-review/SKILL.md`](skills/public/academic-paper-review/SKILL.md) |
+| 10 | ✓ | [`skills/public/bootstrap/references/conversation-guide.md`](skills/public/bootstrap/references/conversation-guide.md) |
+| 11 | ✓ | [`skills/public/bootstrap/SKILL.md`](skills/public/bootstrap/SKILL.md) |
+| 12 | ✓ | [`skills/public/bootstrap/templates/SOUL.template.md`](skills/public/bootstrap/templates/SOUL.template.md) |
+| 13 | ✓ | [`skills/public/chart-visualization/references/generate_area_chart.md`](skills/public/chart-visualization/references/generate_area_chart.md) |
+| 14 | ✓ | [`skills/public/chart-visualization/references/generate_bar_chart.md`](skills/public/chart-visualization/references/generate_bar_chart.md) |
+| 15 | ✓ | [`skills/public/chart-visualization/references/generate_boxplot_chart.md`](skills/public/chart-visualization/references/generate_boxplot_chart.md) |
+| 16 | ✓ | [`skills/public/chart-visualization/references/generate_column_chart.md`](skills/public/chart-visualization/references/generate_column_chart.md) |
+| 17 | ✓ | [`skills/public/chart-visualization/references/generate_district_map.md`](skills/public/chart-visualization/references/generate_district_map.md) |
+| 18 | ✓ | [`skills/public/chart-visualization/references/generate_dual_axes_chart.md`](skills/public/chart-visualization/references/generate_dual_axes_chart.md) |
+| 19 | ✓ | [`skills/public/chart-visualization/references/generate_fishbone_diagram.md`](skills/public/chart-visualization/references/generate_fishbone_diagram.md) |
+| 20 | ✓ | [`skills/public/chart-visualization/references/generate_flow_diagram.md`](skills/public/chart-visualization/references/generate_flow_diagram.md) |
+| 21 | ✓ | [`skills/public/chart-visualization/references/generate_funnel_chart.md`](skills/public/chart-visualization/references/generate_funnel_chart.md) |
+| 22 | ✓ | [`skills/public/chart-visualization/references/generate_histogram_chart.md`](skills/public/chart-visualization/references/generate_histogram_chart.md) |
+| 23 | ✓ | [`skills/public/chart-visualization/references/generate_line_chart.md`](skills/public/chart-visualization/references/generate_line_chart.md) |
+| 24 | ✓ | [`skills/public/chart-visualization/references/generate_liquid_chart.md`](skills/public/chart-visualization/references/generate_liquid_chart.md) |
+| 25 | ✓ | [`skills/public/chart-visualization/references/generate_mind_map.md`](skills/public/chart-visualization/references/generate_mind_map.md) |
+| 26 | ✓ | [`skills/public/chart-visualization/references/generate_network_graph.md`](skills/public/chart-visualization/references/generate_network_graph.md) |
+| 27 | ✓ | [`skills/public/chart-visualization/references/generate_organization_chart.md`](skills/public/chart-visualization/references/generate_organization_chart.md) |
+| 28 | ✓ | [`skills/public/chart-visualization/references/generate_path_map.md`](skills/public/chart-visualization/references/generate_path_map.md) |
+| 29 | ✓ | [`skills/public/chart-visualization/references/generate_pie_chart.md`](skills/public/chart-visualization/references/generate_pie_chart.md) |
+| 30 | ✓ | [`skills/public/chart-visualization/references/generate_pin_map.md`](skills/public/chart-visualization/references/generate_pin_map.md) |
+| 31 | ✓ | [`skills/public/chart-visualization/references/generate_radar_chart.md`](skills/public/chart-visualization/references/generate_radar_chart.md) |
+| 32 | ✓ | [`skills/public/chart-visualization/references/generate_sankey_chart.md`](skills/public/chart-visualization/references/generate_sankey_chart.md) |
+| 33 | ✓ | [`skills/public/chart-visualization/references/generate_scatter_chart.md`](skills/public/chart-visualization/references/generate_scatter_chart.md) |
+| 34 | ✓ | [`skills/public/chart-visualization/references/generate_spreadsheet.md`](skills/public/chart-visualization/references/generate_spreadsheet.md) |
+| 35 | ✓ | [`skills/public/chart-visualization/references/generate_treemap_chart.md`](skills/public/chart-visualization/references/generate_treemap_chart.md) |
+| 36 | ✓ | [`skills/public/chart-visualization/references/generate_venn_chart.md`](skills/public/chart-visualization/references/generate_venn_chart.md) |
+| 37 | ✓ | [`skills/public/chart-visualization/references/generate_violin_chart.md`](skills/public/chart-visualization/references/generate_violin_chart.md) |
+| 38 | ✓ | [`skills/public/chart-visualization/references/generate_word_cloud_chart.md`](skills/public/chart-visualization/references/generate_word_cloud_chart.md) |
+| 39 | ✓ | [`skills/public/chart-visualization/scripts/generate.js`](skills/public/chart-visualization/scripts/generate.js) |
+| 40 | ✓ | [`skills/public/chart-visualization/SKILL.md`](skills/public/chart-visualization/SKILL.md) |
+| 41 | ✓ | [`skills/public/claude-to-deerflow/scripts/chat.sh`](skills/public/claude-to-deerflow/scripts/chat.sh) |
+| 42 | ✓ | [`skills/public/claude-to-deerflow/scripts/status.sh`](skills/public/claude-to-deerflow/scripts/status.sh) |
+| 43 | ✓ | [`skills/public/claude-to-deerflow/SKILL.md`](skills/public/claude-to-deerflow/SKILL.md) |
+| 44 | ✓ | [`skills/public/code-documentation/SKILL.md`](skills/public/code-documentation/SKILL.md) |
+| 45 | ✓ | [`skills/public/consulting-analysis/SKILL.md`](skills/public/consulting-analysis/SKILL.md) |
+| 46 | ✓ | [`skills/public/data-analysis/scripts/analyze.py`](skills/public/data-analysis/scripts/analyze.py) |
+| 47 | ✓ | [`skills/public/data-analysis/SKILL.md`](skills/public/data-analysis/SKILL.md) |
+| 48 | ✓ | [`skills/public/deep-research/SKILL.md`](skills/public/deep-research/SKILL.md) |
+| 49 | ✓ | [`skills/public/find-skills/scripts/install-skill.sh`](skills/public/find-skills/scripts/install-skill.sh) |
+| 50 | ✓ | [`skills/public/find-skills/SKILL.md`](skills/public/find-skills/SKILL.md) |
+| 51 | ✓ | [`skills/public/frontend-design/LICENSE.txt`](skills/public/frontend-design/LICENSE.txt) |
+| 52 | ✓ | [`skills/public/frontend-design/SKILL.md`](skills/public/frontend-design/SKILL.md) |
+| 53 | ✓ | [`skills/public/github-deep-research/assets/report_template.md`](skills/public/github-deep-research/assets/report_template.md) |
+| 54 | ✓ | [`skills/public/github-deep-research/scripts/github_api.py`](skills/public/github-deep-research/scripts/github_api.py) |
+| 55 | ✓ | [`skills/public/github-deep-research/SKILL.md`](skills/public/github-deep-research/SKILL.md) |
+| 56 | ✓ | [`skills/public/image-generation/scripts/generate.py`](skills/public/image-generation/scripts/generate.py) |
+| 57 | ✓ | [`skills/public/image-generation/SKILL.md`](skills/public/image-generation/SKILL.md) |
+| 58 | ✓ | [`skills/public/image-generation/templates/doraemon.md`](skills/public/image-generation/templates/doraemon.md) |
+| 59 | ✓ | [`skills/public/music-generation/scripts/generate.py`](skills/public/music-generation/scripts/generate.py) |
+| 60 | ✓ | [`skills/public/music-generation/SKILL.md`](skills/public/music-generation/SKILL.md) |
+| 61 | ✓ | [`skills/public/newsletter-generation/SKILL.md`](skills/public/newsletter-generation/SKILL.md) |
+| 62 | ✓ | [`skills/public/podcast-generation/scripts/generate.py`](skills/public/podcast-generation/scripts/generate.py) |
+| 63 | ✓ | [`skills/public/podcast-generation/SKILL.md`](skills/public/podcast-generation/SKILL.md) |
+| 64 | ✓ | [`skills/public/podcast-generation/templates/tech-explainer.md`](skills/public/podcast-generation/templates/tech-explainer.md) |
+| 65 | ✓ | [`skills/public/ppt-generation/scripts/generate.py`](skills/public/ppt-generation/scripts/generate.py) |
+| 66 | ✓ | [`skills/public/ppt-generation/SKILL.md`](skills/public/ppt-generation/SKILL.md) |
+| 67 | ✓ | [`skills/public/skill-creator/agents/analyzer.md`](skills/public/skill-creator/agents/analyzer.md) |
+| 68 | ✓ | [`skills/public/skill-creator/agents/comparator.md`](skills/public/skill-creator/agents/comparator.md) |
+| 69 | ✓ | [`skills/public/skill-creator/agents/grader.md`](skills/public/skill-creator/agents/grader.md) |
+| 70 | ✓ | [`skills/public/skill-creator/assets/eval_review.html`](skills/public/skill-creator/assets/eval_review.html) |
+| 71 | ✓ | [`skills/public/skill-creator/eval-viewer/generate_review.py`](skills/public/skill-creator/eval-viewer/generate_review.py) |
+| 72 | ✓ | [`skills/public/skill-creator/eval-viewer/viewer.html`](skills/public/skill-creator/eval-viewer/viewer.html) |
+| 73 | ✓ | [`skills/public/skill-creator/LICENSE.txt`](skills/public/skill-creator/LICENSE.txt) |
+| 74 | ✓ | [`skills/public/skill-creator/references/output-patterns.md`](skills/public/skill-creator/references/output-patterns.md) |
+| 75 | ✓ | [`skills/public/skill-creator/references/schemas.md`](skills/public/skill-creator/references/schemas.md) |
+| 76 | ✓ | [`skills/public/skill-creator/references/workflows.md`](skills/public/skill-creator/references/workflows.md) |
+| 77 | ✓ | [`skills/public/skill-creator/scripts/aggregate_benchmark.py`](skills/public/skill-creator/scripts/aggregate_benchmark.py) |
+| 78 | ✓ | [`skills/public/skill-creator/scripts/generate_report.py`](skills/public/skill-creator/scripts/generate_report.py) |
+| 79 | ✓ | [`skills/public/skill-creator/scripts/improve_description.py`](skills/public/skill-creator/scripts/improve_description.py) |
+| 80 | ✓ | [`skills/public/skill-creator/scripts/init_skill.py`](skills/public/skill-creator/scripts/init_skill.py) |
+| 81 | ✓ | [`skills/public/skill-creator/scripts/package_skill.py`](skills/public/skill-creator/scripts/package_skill.py) |
+| 82 | ✓ | [`skills/public/skill-creator/scripts/quick_validate.py`](skills/public/skill-creator/scripts/quick_validate.py) |
+| 83 | ✓ | [`skills/public/skill-creator/scripts/run_eval.py`](skills/public/skill-creator/scripts/run_eval.py) |
+| 84 | ✓ | [`skills/public/skill-creator/scripts/run_loop.py`](skills/public/skill-creator/scripts/run_loop.py) |
+| 85 | ✓ | [`skills/public/skill-creator/scripts/utils.py`](skills/public/skill-creator/scripts/utils.py) |
+| 86 | ✓ | [`skills/public/skill-creator/SKILL.md`](skills/public/skill-creator/SKILL.md) |
+| 87 | ✓ | [`skills/public/surprise-me/SKILL.md`](skills/public/surprise-me/SKILL.md) |
+| 88 | ✓ | [`skills/public/systematic-literature-review/evals/evals.json`](skills/public/systematic-literature-review/evals/evals.json) |
+| 89 | ✓ | [`skills/public/systematic-literature-review/evals/trigger_eval_set.json`](skills/public/systematic-literature-review/evals/trigger_eval_set.json) |
+| 90 | ✓ | [`skills/public/systematic-literature-review/scripts/arxiv_search.py`](skills/public/systematic-literature-review/scripts/arxiv_search.py) |
+| 91 | ✓ | [`skills/public/systematic-literature-review/SKILL.md`](skills/public/systematic-literature-review/SKILL.md) |
+| 92 | ✓ | [`skills/public/systematic-literature-review/templates/apa.md`](skills/public/systematic-literature-review/templates/apa.md) |
+| 93 | ✓ | [`skills/public/systematic-literature-review/templates/bibtex.md`](skills/public/systematic-literature-review/templates/bibtex.md) |
+| 94 | ✓ | [`skills/public/systematic-literature-review/templates/ieee.md`](skills/public/systematic-literature-review/templates/ieee.md) |
+| 95 | ✓ | [`skills/public/vercel-deploy-claimable/scripts/deploy.sh`](skills/public/vercel-deploy-claimable/scripts/deploy.sh) |
+| 96 | ✓ | [`skills/public/vercel-deploy-claimable/SKILL.md`](skills/public/vercel-deploy-claimable/SKILL.md) |
+| 97 | ✓ | [`skills/public/video-generation/scripts/generate.py`](skills/public/video-generation/scripts/generate.py) |
+| 98 | ✓ | [`skills/public/video-generation/SKILL.md`](skills/public/video-generation/SKILL.md) |
+| 99 | ✓ | [`skills/public/web-design-guidelines/SKILL.md`](skills/public/web-design-guidelines/SKILL.md) |
 
 ---
 

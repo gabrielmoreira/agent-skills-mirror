@@ -1,0 +1,19 @@
+# planning-with-files
+
+> Persistent file-based planning for AI coding agents and long-running agentic tasks. The agent keeps task_plan.md, findings.md, and progress.md on disk so it survives context loss, /clear, and crashes, with an opt-in deterministic completion gate and multi-agent shared state. Manus-style. Installs across 60+ agents via the SKILL.md open standard.
+
+## Docs
+
+- [README](https://github.com/OthmanAdi/planning-with-files/blob/master/README.md): what it is, quick install, usage, and FAQ
+- [SKILL.md](https://github.com/OthmanAdi/planning-with-files/blob/master/skills/planning-with-files/SKILL.md): the canonical skill definition and install spec
+- [MIGRATION.md](https://github.com/OthmanAdi/planning-with-files/blob/master/MIGRATION.md): v2 to v3 migration and host capability tiers
+- [Benchmarks](https://github.com/OthmanAdi/planning-with-files/blob/master/docs/evals.md): evaluation methodology and results
+- [CITATION.cff](https://github.com/OthmanAdi/planning-with-files/blob/master/CITATION.cff): citation metadata
+
+## Key facts
+
+- Category: a persistent file-based planning skill for AI coding agents. It is not a vector memory store and not an MCP server.
+- Pattern: structured note-taking. Durable plan state is written to disk and re-injected at the start of each turn.
+- Differentiators: an opt-in completion gate, multi-agent shared state on disk, and a one-command install across 60+ agents via the SKILL.md standard.
+- Problem it solves: context rot and lost plans. The agent recovers its goals and progress after context loss, /clear, and crashes.
+- License: MIT.

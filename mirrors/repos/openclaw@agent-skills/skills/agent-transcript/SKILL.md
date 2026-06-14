@@ -1,6 +1,6 @@
 ---
 name: agent-transcript
-description: "Add a redacted agent session transcript to a GitHub PR or issue body as local-only provenance for OpenClaw workflows."
+description: "GitHub PR/issue agent transcripts: redact, preview, and insert safely."
 ---
 
 # Agent Transcript

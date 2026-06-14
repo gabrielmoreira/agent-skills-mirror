@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "session-db": "bun run scripts/session-db.ts",
-    "test": "bun test ./tests/session-db.integration.ts"
+    "session-db": "tsx scripts/session-db.ts",
+    "test": "vitest run ./tests/session-db.integration.ts"
   },
   "dependencies": {
     "@duckdb/node-api": "^1.5.3-r.3",
@@ -12,7 +12,8 @@
     "fast-glob": "^3.3.3"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "tsx": "^4.21.0",
+    "vitest": "^4.1.8"
   },
   "peerDependencies": {
     "typescript": "^5"

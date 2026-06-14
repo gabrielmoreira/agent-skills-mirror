@@ -1,9 +1,3 @@
----
-name: idea-research
-description: Research, score, and plan content ideas through the Idea Research plugin.
-risk_class: network_out
----
-
 # SKILL: idea-research 选题研析室
 
 > 给后续 AI agent 提供修改 skill — 10 节，每节是一个独立"为什么/怎么改"小问答。
@@ -26,7 +20,7 @@ risk_class: network_out
 **不适用的场景**（应改用其他插件）：
 
 - 视频 ASR + 字幕生成 → `subtitle-craft`
-- 视频剪辑 / 转码 / 拼接 → `clip-sense`
+- 视频剪辑 / 转码 / 拼接 → 专用剪辑插件（非本插件）
 - 数字人配音 → `avatar-studio`
 - 静态图片设计 → `tongyi-image` / `seedance-video`
 
@@ -144,7 +138,6 @@ target 平台是 B站 / YouTube？
 
 ```
 idea-research.script_remix
-  ├── handoff_payload.to == "clip-sense"      → 自动剪辑（用脚本 b_roll 提示）
   ├── handoff_payload.to == "avatar-studio"   → 数字人配音版
   └── handoff_payload.to == "channel"         → IM 早 9 点推送
 

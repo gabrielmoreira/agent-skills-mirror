@@ -27,6 +27,12 @@ Unlike the Market Top Detector (API-based risk scorer), this skill uses free CSV
 - ブレドス分析に基づくエクスポージャーガイダンスが欲しい
 - Montyのアップトレンドダッシュボードについて質問
 
+## Prerequisites
+
+- **Python 3.9+** with the `requests` library (CSV parsing uses the stdlib `csv`/`io` modules)
+- **Internet connection** to fetch CSV data from GitHub (no API key required)
+- No paid API subscriptions needed
+
 ## Difference from Market Top Detector
 
 | Aspect | Uptrend Analyzer | Market Top Detector |

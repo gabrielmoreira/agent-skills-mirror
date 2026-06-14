@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MervinPraison/PraisonAI` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `MervinPraison/PraisonAI` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MervinPraison/PraisonAI` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,14 +59,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`examples/skills/pdf-processing/SKILL.md`](examples/skills/pdf-processing/SKILL.md) |
-| 2 | ✓ | [`src/praisonai-agents/.cursorrules`](src/praisonai-agents/.cursorrules) |
-| 3 | ✓ | [`src/praisonai-agents/AGENTS.md`](src/praisonai-agents/AGENTS.md) |
-| 4 | ✓ | [`src/praisonai-agents/tests/.windsurfrules`](src/praisonai-agents/tests/.windsurfrules) |
-| 5 | ✓ | [`src/praisonai-rust/AGENTS.md`](src/praisonai-rust/AGENTS.md) |
-| 6 | ✓ | [`src/praisonai-ts/.cursorrules`](src/praisonai-ts/.cursorrules) |
-| 7 | ✓ | [`src/praisonai-ts/.windsurfrules`](src/praisonai-ts/.windsurfrules) |
-| 8 | ✓ | [`src/praisonai-ts/AGENTS.md`](src/praisonai-ts/AGENTS.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`examples/skills/pdf-processing/SKILL.md`](examples/skills/pdf-processing/SKILL.md) |
+| 3 | ✓ | [`src/praisonai-agents/.cursorrules`](src/praisonai-agents/.cursorrules) |
+| 4 | ✓ | [`src/praisonai-agents/AGENTS.md`](src/praisonai-agents/AGENTS.md) |
+| 5 | ✓ | [`src/praisonai-agents/tests/.windsurfrules`](src/praisonai-agents/tests/.windsurfrules) |
+| 6 | ✓ | [`src/praisonai-rust/AGENTS.md`](src/praisonai-rust/AGENTS.md) |
+| 7 | ✓ | [`src/praisonai-ts/.cursorrules`](src/praisonai-ts/.cursorrules) |
+| 8 | ✓ | [`src/praisonai-ts/.windsurfrules`](src/praisonai-ts/.windsurfrules) |
+| 9 | ✓ | [`src/praisonai-ts/AGENTS.md`](src/praisonai-ts/AGENTS.md) |
 
 ---
 
