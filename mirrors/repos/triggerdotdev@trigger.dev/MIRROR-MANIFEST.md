@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -88,6 +88,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 27 | ✓ | [`packages/core/CLAUDE.md`](packages/core/CLAUDE.md) |
 | 28 | ✓ | [`packages/redis-worker/CLAUDE.md`](packages/redis-worker/CLAUDE.md) |
 | 29 | ✓ | [`packages/trigger-sdk/CLAUDE.md`](packages/trigger-sdk/CLAUDE.md) |
+| 30 | ✓ | [`packages/trigger-sdk/skills/authoring-chat-agent/SKILL.md`](packages/trigger-sdk/skills/authoring-chat-agent/SKILL.md) |
+| 31 | ✓ | [`packages/trigger-sdk/skills/authoring-tasks/SKILL.md`](packages/trigger-sdk/skills/authoring-tasks/SKILL.md) |
+| 32 | ✓ | [`packages/trigger-sdk/skills/chat-agent-advanced/SKILL.md`](packages/trigger-sdk/skills/chat-agent-advanced/SKILL.md) |
+| 33 | ✓ | [`packages/trigger-sdk/skills/realtime-and-frontend/SKILL.md`](packages/trigger-sdk/skills/realtime-and-frontend/SKILL.md) |
 
 ---
 

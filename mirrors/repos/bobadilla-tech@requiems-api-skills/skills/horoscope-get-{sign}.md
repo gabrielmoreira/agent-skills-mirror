@@ -17,9 +17,9 @@ Returns a daily horoscope reading for the specified zodiac sign.
 
 ## Parameters
 
-| Name   | Type   | Required | Location | Description                                                                                                                                           |
-| ------ | ------ | -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sign` | string | yes      | path     | Zodiac sign (case-insensitive). Supported values: aries, taurus, gemini, cancer, leo, virgo, libra, scorpio, sagittarius, capricorn, aquarius, pisces |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `sign` | string | yes | path | Zodiac sign (case-insensitive). Supported values: aries, taurus, gemini, cancer, leo, virgo, libra, scorpio, sagittarius, capricorn, aquarius, pisces |
 
 ## Response Example
 
@@ -40,10 +40,10 @@ Returns a daily horoscope reading for the specified zodiac sign.
 
 ## Response Fields
 
-| Field          | Type    | Description                             |
-| -------------- | ------- | --------------------------------------- |
-| `sign`         | string  | Normalized zodiac sign (lowercase)      |
-| `date`         | string  | Today's date in YYYY-MM-DD format (UTC) |
-| `horoscope`    | string  | Daily horoscope reading                 |
-| `lucky_number` | integer | Lucky number for the day (1-99)         |
-| `mood`         | string  | Suggested mood for the day              |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `sign` | string | Normalized zodiac sign (lowercase) |
+| `date` | string | Today's date in YYYY-MM-DD format (UTC) |
+| `horoscope` | string | Daily horoscope reading |
+| `lucky_number` | integer | Lucky number for the day (1-99) |
+| `mood` | string | Suggested mood for the day |

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Hmbown/CodeWhale` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `Hmbown/CodeWhale` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Hmbown/CodeWhale` — 26 default patterns, 0 followed patterns, 12 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,17 +60,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`crates/tui/assets/skills/delegate/SKILL.md`](crates/tui/assets/skills/delegate/SKILL.md) |
-| 3 | ✓ | [`crates/tui/assets/skills/documents/SKILL.md`](crates/tui/assets/skills/documents/SKILL.md) |
-| 4 | ✓ | [`crates/tui/assets/skills/feishu/SKILL.md`](crates/tui/assets/skills/feishu/SKILL.md) |
-| 5 | ✓ | [`crates/tui/assets/skills/mcp-builder/SKILL.md`](crates/tui/assets/skills/mcp-builder/SKILL.md) |
-| 6 | ✓ | [`crates/tui/assets/skills/pdf/SKILL.md`](crates/tui/assets/skills/pdf/SKILL.md) |
-| 7 | ✓ | [`crates/tui/assets/skills/plugin-creator/SKILL.md`](crates/tui/assets/skills/plugin-creator/SKILL.md) |
-| 8 | ✓ | [`crates/tui/assets/skills/presentations/SKILL.md`](crates/tui/assets/skills/presentations/SKILL.md) |
-| 9 | ✓ | [`crates/tui/assets/skills/skill-creator/SKILL.md`](crates/tui/assets/skills/skill-creator/SKILL.md) |
-| 10 | ✓ | [`crates/tui/assets/skills/skill-installer/SKILL.md`](crates/tui/assets/skills/skill-installer/SKILL.md) |
-| 11 | ✓ | [`crates/tui/assets/skills/spreadsheets/SKILL.md`](crates/tui/assets/skills/spreadsheets/SKILL.md) |
-| 12 | ✓ | [`crates/tui/assets/skills/v4-best-practices/SKILL.md`](crates/tui/assets/skills/v4-best-practices/SKILL.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`crates/tui/assets/skills/delegate/SKILL.md`](crates/tui/assets/skills/delegate/SKILL.md) |
+| 4 | ✓ | [`crates/tui/assets/skills/documents/SKILL.md`](crates/tui/assets/skills/documents/SKILL.md) |
+| 5 | ✓ | [`crates/tui/assets/skills/feishu/SKILL.md`](crates/tui/assets/skills/feishu/SKILL.md) |
+| 6 | ✓ | [`crates/tui/assets/skills/fleet-manager/SKILL.md`](crates/tui/assets/skills/fleet-manager/SKILL.md) |
+| 7 | ✓ | [`crates/tui/assets/skills/mcp-builder/SKILL.md`](crates/tui/assets/skills/mcp-builder/SKILL.md) |
+| 8 | ✓ | [`crates/tui/assets/skills/pdf/SKILL.md`](crates/tui/assets/skills/pdf/SKILL.md) |
+| 9 | ✓ | [`crates/tui/assets/skills/plugin-creator/SKILL.md`](crates/tui/assets/skills/plugin-creator/SKILL.md) |
+| 10 | ✓ | [`crates/tui/assets/skills/presentations/SKILL.md`](crates/tui/assets/skills/presentations/SKILL.md) |
+| 11 | ✓ | [`crates/tui/assets/skills/skill-creator/SKILL.md`](crates/tui/assets/skills/skill-creator/SKILL.md) |
+| 12 | ✓ | [`crates/tui/assets/skills/skill-installer/SKILL.md`](crates/tui/assets/skills/skill-installer/SKILL.md) |
+| 13 | ✓ | [`crates/tui/assets/skills/spreadsheets/SKILL.md`](crates/tui/assets/skills/spreadsheets/SKILL.md) |
+| 14 | ✓ | [`crates/tui/assets/skills/v4-best-practices/SKILL.md`](crates/tui/assets/skills/v4-best-practices/SKILL.md) |
+| 15 | ✓ | [`docs/skills/codew-release-qa-sweep/SKILL.md`](docs/skills/codew-release-qa-sweep/SKILL.md) |
+| 16 | ✓ | [`docs/skills/gh-assign-issues/SKILL.md`](docs/skills/gh-assign-issues/SKILL.md) |
+| 17 | ✓ | [`docs/skills/gh-close-issues/SKILL.md`](docs/skills/gh-close-issues/SKILL.md) |
+| 18 | ✓ | [`docs/skills/gh-compile-issues/SKILL.md`](docs/skills/gh-compile-issues/SKILL.md) |
+| 19 | ✓ | [`docs/skills/gh-credit-harvest/SKILL.md`](docs/skills/gh-credit-harvest/SKILL.md) |
+| 20 | ✓ | [`docs/skills/gh-file-issue/SKILL.md`](docs/skills/gh-file-issue/SKILL.md) |
+| 21 | ✓ | [`docs/skills/gh-find-prs/SKILL.md`](docs/skills/gh-find-prs/SKILL.md) |
+| 22 | ✓ | [`docs/skills/gh-plan-issues/SKILL.md`](docs/skills/gh-plan-issues/SKILL.md) |
+| 23 | ✓ | [`docs/skills/gh-treasure-hunt/SKILL.md`](docs/skills/gh-treasure-hunt/SKILL.md) |
 
 ---
 

@@ -13,14 +13,13 @@ description: Resolve multiple words in a single request. Returns dictionary entr
 
 ## Batch Define Words
 
-Resolve multiple words in a single request. Returns dictionary entries when
-found, or error information when a word is not in the dataset.
+Resolve multiple words in a single request. Returns dictionary entries when found, or error information when a word is not in the dataset.
 
 ## Parameters
 
-| Name    | Type  | Required | Location | Description                                      |
-| ------- | ----- | -------- | -------- | ------------------------------------------------ |
-| `items` | array | yes      | body     | List of words to look up in batch (max 50 items) |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `items` | array | yes | body | List of words to look up in batch (max 50 items) |
 
 ## Request Example
 
@@ -44,7 +43,7 @@ found, or error information when a word is not in the dataset.
           "phonetic": "/ˌserənˈdipədē/",
           "definitions": [
             {
-              "partOfSpeech": "noun",
+              "part_of_speech": "noun",
               "definition": "the occurrence of events by chance in a happy way"
             }
           ],
@@ -67,10 +66,10 @@ found, or error information when a word is not in the dataset.
 
 ## Response Fields
 
-| Field     | Type    | Description                     |
-| --------- | ------- | ------------------------------- |
-| `results` | array   | List of batch lookup results    |
-| `total`   | integer | Total number of items processed |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `results` | array | List of batch lookup results |
+| `total` | integer | Total number of items processed |
 
 ## Errors
 

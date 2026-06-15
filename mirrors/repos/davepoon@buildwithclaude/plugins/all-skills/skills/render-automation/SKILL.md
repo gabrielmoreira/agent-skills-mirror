@@ -3,7 +3,7 @@ name: render-automation
 description: "Automate Render tasks via Rube MCP (Composio): services, deployments, projects. Always search tools first for current schemas."
 requires:
   mcp: [rube]
-category: devops
+category: infrastructure-cloud
 ---
 
 # Render Automation via Rube MCP

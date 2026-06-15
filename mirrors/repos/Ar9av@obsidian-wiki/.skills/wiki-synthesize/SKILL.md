@@ -104,6 +104,10 @@ lifecycle_changed: TIMESTAMP_DATE
 
 *Where the two concepts pull in opposite directions. Unresolved contradictions. Cases where applying one undermines the other.*
 
+## Strongest Objection
+
+*The best skeptical reading of THIS page's cross-cutting insight — the case a sharp critic would make that the connection is spurious, overstated, or an artifact of how the sources were written. Follow it with a testable search query (e.g. `> test: does X actually hold when Y is controlled for?`), never an invented citation. A synthesis that can't name its own strongest objection hasn't earned its conclusion.*
+
 ## Open Questions
 
 *What this synthesis surfaces that the wiki doesn't yet have an answer for. Good candidates for future research.*
@@ -158,6 +162,7 @@ Skipped (consider next time):
 - [ ] Every synthesis page links back to its source concepts
 - [ ] Source concept pages link forward to the synthesis page
 - [ ] No synthesis page just restates what's already on the source pages — it must add a cross-cutting insight
+- [ ] Every synthesis page names its Strongest Objection with a testable search query (not an invented source)
 - [ ] `index.md` and `log.md` updated
 - [ ] `hot.md` updated
 

@@ -17,9 +17,9 @@ Returns a single exercise by its numeric ID.
 
 ## Parameters
 
-| Name | Type    | Required | Location | Description         |
-| ---- | ------- | -------- | -------- | ------------------- |
-| `id` | integer | yes      | path     | Numeric exercise ID |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `id` | integer | yes | path | Numeric exercise ID |
 
 ## Response Example
 
@@ -47,15 +47,15 @@ Returns a single exercise by its numeric ID.
 
 ## Response Fields
 
-| Field               | Type    | Description                       |
-| ------------------- | ------- | --------------------------------- |
-| `id`                | integer | Unique exercise identifier        |
-| `name`              | string  | Exercise name                     |
-| `body_parts`        | array   | Body part categories involved     |
-| `equipment`         | array   | Equipment required                |
-| `target_muscles`    | array   | Primary muscles targeted          |
-| `secondary_muscles` | array   | Secondary muscles engaged         |
-| `instructions`      | array   | Ordered step-by-step instructions |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `id` | integer | Unique exercise identifier |
+| `name` | string | Exercise name |
+| `body_parts` | array | Body part categories involved |
+| `equipment` | array | Equipment required |
+| `target_muscles` | array | Primary muscles targeted |
+| `secondary_muscles` | array | Secondary muscles engaged |
+| `instructions` | array | Ordered step-by-step instructions |
 
 ## Errors
 

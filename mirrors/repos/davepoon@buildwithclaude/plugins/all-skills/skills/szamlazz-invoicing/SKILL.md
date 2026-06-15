@@ -1,7 +1,7 @@
 ---
 name: szamlazz-invoicing
 description: "Issue, cancel, and fetch Hungarian invoices via the szamlazz.hu Agent API. Handles VAT calculation, NAV taxpayer lookup, partner caching, and PDF generation. Use when the user mentions számla, számlázás, invoice, sztornó, díjbekérő, proforma, or wants to bill a customer."
-category: automation
+category: finance
 ---
 
 # Szamlazz.hu Hungarian Invoicing

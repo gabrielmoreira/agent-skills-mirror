@@ -13,14 +13,13 @@ description: Search for emojis whose name or category contains the given query s
 
 ## Search Emoji
 
-Search for emojis whose name or category contains the given query string
-(case-insensitive). Returns a list of all matches.
+Search for emojis whose name or category contains the given query string (case-insensitive). Returns a list of all matches.
 
 ## Parameters
 
-| Name | Type   | Required | Location | Description                                                                       |
-| ---- | ------ | -------- | -------- | --------------------------------------------------------------------------------- |
-| `q`  | string | yes      | query    | Search term to match against emoji names and categories (e.g. happy, heart, food) |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `q` | string | yes | query | Search term to match against emoji names and categories (e.g. happy, heart, food) |
 
 ## Response Example
 
@@ -45,10 +44,10 @@ Search for emojis whose name or category contains the given query string
 
 ## Response Fields
 
-| Field   | Type    | Description                    |
-| ------- | ------- | ------------------------------ |
-| `items` | array   | List of matching emoji objects |
-| `total` | integer | Total number of matches        |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `items` | array | List of matching emoji objects |
+| `total` | integer | Total number of matches |
 
 ## Errors
 

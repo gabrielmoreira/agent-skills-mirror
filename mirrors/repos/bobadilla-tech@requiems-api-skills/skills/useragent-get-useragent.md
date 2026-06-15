@@ -13,14 +13,13 @@ description: Parses a user agent string and returns structured information about
 
 ## Parse User Agent
 
-Parses a user agent string and returns structured information about the browser,
-OS, device, and bot status.
+Parses a user agent string and returns structured information about the browser, OS, device, and bot status.
 
 ## Parameters
 
-| Name | Type   | Required | Location | Description                     |
-| ---- | ------ | -------- | -------- | ------------------------------- |
-| `ua` | string | yes      | query    | The user agent string to parse. |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `ua` | string | yes | query | The user agent string to parse. |
 
 ## Response Example
 
@@ -42,14 +41,14 @@ OS, device, and bot status.
 
 ## Response Fields
 
-| Field             | Type    | Description                                                                                 |
-| ----------------- | ------- | ------------------------------------------------------------------------------------------- |
-| `browser`         | string  | Detected browser name (e.g. Chrome, Firefox, Safari, Edge, Opera, Internet Explorer, Other) |
-| `browser_version` | string  | Detected browser version (major.minor)                                                      |
-| `os`              | string  | Detected operating system (e.g. Windows, macOS, Linux, Android, iOS, ChromeOS, Other)       |
-| `os_version`      | string  | Detected OS version (format varies by platform)                                             |
-| `device`          | string  | Device type — one of desktop, mobile, tablet, bot, or unknown                               |
-| `is_bot`          | boolean | True when the user agent matches a known bot or crawler pattern                             |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `browser` | string | Detected browser name (e.g. Chrome, Firefox, Safari, Edge, Opera, Internet Explorer, Other) |
+| `browser_version` | string | Detected browser version (major.minor) |
+| `os` | string | Detected operating system (e.g. Windows, macOS, Linux, Android, iOS, ChromeOS, Other) |
+| `os_version` | string | Detected OS version (format varies by platform) |
+| `device` | string | Device type — one of desktop, mobile, tablet, bot, or unknown |
+| `is_bot` | boolean | True when the user agent matches a known bot or crawler pattern |
 
 ## Errors
 

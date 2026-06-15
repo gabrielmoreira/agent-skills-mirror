@@ -17,13 +17,13 @@ List SWIFT records with optional filters and pagination.
 
 ## Parameters
 
-| Name           | Type    | Required | Location | Description                                                 |
-| -------------- | ------- | -------- | -------- | ----------------------------------------------------------- |
-| `country_code` | string  | no       | query    | Optional 2-letter country code filter (e.g. DE, US)         |
-| `bank_code`    | string  | no       | query    | Optional 4-letter bank code filter (e.g. DEUT)              |
-| `q`            | string  | no       | query    | Optional text search across swift_code, bank_name, and city |
-| `limit`        | integer | no       | query    | Max rows to return (default 50, max 200)                    |
-| `offset`       | integer | no       | query    | Number of rows to skip (default 0)                          |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `country_code` | string | no | query | Optional 2-letter country code filter (e.g. DE, US) |
+| `bank_code` | string | no | query | Optional 4-letter bank code filter (e.g. DEUT) |
+| `q` | string | no | query | Optional text search across swift_code, bank_name, and city |
+| `limit` | integer | no | query | Max rows to return (default 50, max 200) |
+| `offset` | integer | no | query | Number of rows to skip (default 0) |
 
 ## Response Example
 

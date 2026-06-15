@@ -17,10 +17,10 @@ Decode a Base64-encoded string back to plain text
 
 ## Parameters
 
-| Name      | Type   | Required | Location | Description                                                      |
-| --------- | ------ | -------- | -------- | ---------------------------------------------------------------- |
-| `value`   | string | yes      | body     | The Base64-encoded string to decode                              |
-| `variant` | string | no       | body     | Encoding variant: standard (default) or url (URL-safe base64url) |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `value` | string | yes | body | The Base64-encoded string to decode |
+| `variant` | string | no | body | Encoding variant: standard (default) or url (URL-safe base64url) |
 
 ## Response Example
 
@@ -37,8 +37,8 @@ Decode a Base64-encoded string back to plain text
 
 ## Response Fields
 
-| Field    | Type   | Description                   |
-| -------- | ------ | ----------------------------- |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
 | `result` | string | The decoded plain-text output |
 
 ## Errors

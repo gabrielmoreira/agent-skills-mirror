@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `RunMaestro/Maestro` — 26 default patterns, 3 followed patterns, 6 file(s) materialized.
+Mirror of `RunMaestro/Maestro` — 26 default patterns, 19 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `RunMaestro/Maestro` — 26 default patterns, 3 followed patterns, 6 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 6 |
+| Followed pats | 19 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,22 @@ Mirror of `RunMaestro/Maestro` — 26 default patterns, 3 followed patterns, 6 f
 - `ARCHITECTURE.md`
 - `CONTRIBUTING.md`
 - `AGENT_SUPPORT.md`
+- `docs/agent-guides/SHARED-UTILS.md`
+- `docs/agent-guides/IPC-PATTERNS.md`
+- `docs/agent-guides/STATE-PATTERNS.md`
+- `docs/agent-guides/AGENT-INFRA.md`
+- `docs/agent-guides/UI-PATTERNS.md`
+- `docs/agent-guides/TEST-PATTERNS.md`
+- `docs/agent-guides/RENDERER-SERVICES.md`
+- `docs/agent-guides/PROCESS-SYSTEM.md`
+- `docs/agent-guides/WEB-MOBILE.md`
+- `docs/agent-guides/CLI-PLAYBOOKS.md`
+- `docs/agent-guides/GROUP-CHAT.md`
+- `docs/agent-guides/STATS-ANALYTICS.md`
+- `docs/agent-guides/PROMPTS-SPECS.md`
+- `docs/agent-guides/CUE-PIPELINE.md`
+- `docs/agent-guides/MAIN-LIFECYCLE.md`
+- `docs/agent-guides/DEDUP-TRACKER.md`
 
 ## File Index
 
@@ -67,6 +83,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | → | [`AGENT_SUPPORT.md`](AGENT_SUPPORT.md) |
 | 5 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | 6 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 7 | → | [`docs/agent-guides/AGENT-INFRA.md`](docs/agent-guides/AGENT-INFRA.md) |
+| 8 | → | [`docs/agent-guides/CLI-PLAYBOOKS.md`](docs/agent-guides/CLI-PLAYBOOKS.md) |
+| 9 | → | [`docs/agent-guides/CUE-PIPELINE.md`](docs/agent-guides/CUE-PIPELINE.md) |
+| 10 | → | [`docs/agent-guides/DEDUP-TRACKER.md`](docs/agent-guides/DEDUP-TRACKER.md) |
+| 11 | → | [`docs/agent-guides/GROUP-CHAT.md`](docs/agent-guides/GROUP-CHAT.md) |
+| 12 | → | [`docs/agent-guides/IPC-PATTERNS.md`](docs/agent-guides/IPC-PATTERNS.md) |
+| 13 | → | [`docs/agent-guides/MAIN-LIFECYCLE.md`](docs/agent-guides/MAIN-LIFECYCLE.md) |
+| 14 | → | [`docs/agent-guides/PROCESS-SYSTEM.md`](docs/agent-guides/PROCESS-SYSTEM.md) |
+| 15 | → | [`docs/agent-guides/PROMPTS-SPECS.md`](docs/agent-guides/PROMPTS-SPECS.md) |
+| 16 | → | [`docs/agent-guides/RENDERER-SERVICES.md`](docs/agent-guides/RENDERER-SERVICES.md) |
+| 17 | → | [`docs/agent-guides/SHARED-UTILS.md`](docs/agent-guides/SHARED-UTILS.md) |
+| 18 | → | [`docs/agent-guides/STATE-PATTERNS.md`](docs/agent-guides/STATE-PATTERNS.md) |
+| 19 | → | [`docs/agent-guides/STATS-ANALYTICS.md`](docs/agent-guides/STATS-ANALYTICS.md) |
+| 20 | → | [`docs/agent-guides/TEST-PATTERNS.md`](docs/agent-guides/TEST-PATTERNS.md) |
+| 21 | → | [`docs/agent-guides/UI-PATTERNS.md`](docs/agent-guides/UI-PATTERNS.md) |
+| 22 | → | [`docs/agent-guides/WEB-MOBILE.md`](docs/agent-guides/WEB-MOBILE.md) |
 
 ---
 

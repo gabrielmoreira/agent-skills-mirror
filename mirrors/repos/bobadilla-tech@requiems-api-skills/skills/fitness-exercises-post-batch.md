@@ -13,15 +13,13 @@ description: Fetches up to 50 exercises by their numeric IDs in a single request
 
 ## Batch Get Exercises
 
-Fetches up to 50 exercises by their numeric IDs in a single request. IDs that do
-not exist are silently skipped. Results are returned in the same order as the
-input array.
+Fetches up to 50 exercises by their numeric IDs in a single request. IDs that do not exist are silently skipped. Results are returned in the same order as the input array.
 
 ## Parameters
 
-| Name  | Type  | Required | Location | Description                                                                                                      |
-| ----- | ----- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
-| `ids` | array | yes      | body     | Array of numeric exercise IDs to fetch. Must contain between 1 and 50 items. Each ID must be a positive integer. |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `ids` | array | yes | body | Array of numeric exercise IDs to fetch. Must contain between 1 and 50 items. Each ID must be a positive integer. |
 
 ## Request Example
 
@@ -76,20 +74,19 @@ input array.
 
 ## Response Fields
 
-| Field                         | Type    | Description                                                                   |
-| ----------------------------- | ------- | ----------------------------------------------------------------------------- |
-| `results`                     | array   | Exercises found for the given IDs, in input order. IDs not found are omitted. |
-| `results[].id`                | integer | Unique exercise identifier                                                    |
-| `results[].name`              | string  | Exercise name                                                                 |
-| `results[].body_parts`        | array   | Body part categories involved                                                 |
-| `results[].equipment`         | array   | Equipment required                                                            |
-| `results[].target_muscles`    | array   | Primary muscles targeted                                                      |
-| `results[].secondary_muscles` | array   | Secondary muscles engaged                                                     |
-| `results[].instructions`      | array   | Ordered step-by-step instructions                                             |
-| `total`                       | integer | Number of exercises returned                                                  |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `results` | array | Exercises found for the given IDs, in input order. IDs not found are omitted. |
+| `results[].id` | integer | Unique exercise identifier |
+| `results[].name` | string | Exercise name |
+| `results[].body_parts` | array | Body part categories involved |
+| `results[].equipment` | array | Equipment required |
+| `results[].target_muscles` | array | Primary muscles targeted |
+| `results[].secondary_muscles` | array | Secondary muscles engaged |
+| `results[].instructions` | array | Ordered step-by-step instructions |
+| `total` | integer | Number of exercises returned |
 
 ## Errors
 
 - `400` **bad_request** — The request body is missing or not valid JSON.
-- `422` **validation_failed** — The ids array is empty, exceeds 50 items, or
-  contains a non-positive integer.
+- `422` **validation_failed** — The ids array is empty, exceeds 50 items, or contains a non-positive integer.

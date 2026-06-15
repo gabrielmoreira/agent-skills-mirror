@@ -17,11 +17,11 @@ Convert a value from one unit to another
 
 ## Parameters
 
-| Name    | Type   | Required | Location | Description                         |
-| ------- | ------ | -------- | -------- | ----------------------------------- |
-| `from`  | string | yes      | query    | Source unit key (e.g. miles, kg, c) |
-| `to`    | string | yes      | query    | Target unit key (e.g. km, lb, f)    |
-| `value` | number | yes      | query    | Numeric value to convert            |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `from` | string | yes | query | Source unit key (e.g. miles, kg, c) |
+| `to` | string | yes | query | Target unit key (e.g. km, lb, f) |
+| `value` | number | yes | query | Numeric value to convert |
 
 ## Response Example
 
@@ -42,10 +42,10 @@ Convert a value from one unit to another
 
 ## Response Fields
 
-| Field     | Type   | Description                                       |
-| --------- | ------ | ------------------------------------------------- |
-| `from`    | string | Source unit key                                   |
-| `to`      | string | Target unit key                                   |
-| `input`   | number | The original input value                          |
-| `result`  | number | The converted value (rounded to 6 decimal places) |
-| `formula` | string | Human-readable conversion formula                 |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `from` | string | Source unit key |
+| `to` | string | Target unit key |
+| `input` | number | The original input value |
+| `result` | number | The converted value (rounded to 6 decimal places) |
+| `formula` | string | Human-readable conversion formula |

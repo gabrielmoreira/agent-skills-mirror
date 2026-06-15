@@ -17,10 +17,10 @@ Returns city, state, country, and coordinates for the given postal code.
 
 ## Parameters
 
-| Name      | Type   | Required | Location | Description                                                               |
-| --------- | ------ | -------- | -------- | ------------------------------------------------------------------------- |
-| `code`    | string | yes      | path     | The postal code to look up (e.g. 10001 for New York, SW1A 1AA for London) |
-| `country` | string | no       | query    | ISO 3166-1 alpha-2 country code (default: US)                             |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `code` | string | yes | path | The postal code to look up (e.g. 10001 for New York, SW1A 1AA for London) |
+| `country` | string | no | query | ISO 3166-1 alpha-2 country code (default: US) |
 
 ## Response Example
 
@@ -42,14 +42,14 @@ Returns city, state, country, and coordinates for the given postal code.
 
 ## Response Fields
 
-| Field         | Type   | Description                                    |
-| ------------- | ------ | ---------------------------------------------- |
-| `postal_code` | string | The postal code as stored in the dataset       |
-| `city`        | string | Primary city or place name for the postal code |
-| `state`       | string | State, province, or administrative region name |
-| `country`     | string | ISO 3166-1 alpha-2 country code (uppercase)    |
-| `lat`         | number | Latitude of the postal code centroid           |
-| `lon`         | number | Longitude of the postal code centroid          |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `postal_code` | string | The postal code as stored in the dataset |
+| `city` | string | Primary city or place name for the postal code |
+| `state` | string | State, province, or administrative region name |
+| `country` | string | ISO 3166-1 alpha-2 country code (uppercase) |
+| `lat` | number | Latitude of the postal code centroid |
+| `lon` | number | Longitude of the postal code centroid |
 
 ## Errors
 

@@ -30,6 +30,6 @@ Get statistics about the disposable email blocklist
 
 ## Response Fields
 
-| Field           | Type    | Description                                         |
-| --------------- | ------- | --------------------------------------------------- |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
 | `total_domains` | integer | Total number of disposable domains in the blocklist |

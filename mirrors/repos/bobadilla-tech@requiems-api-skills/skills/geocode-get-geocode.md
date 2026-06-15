@@ -17,9 +17,9 @@ Converts a free-text address into latitude and longitude coordinates.
 
 ## Parameters
 
-| Name      | Type   | Required | Location | Description                                                        |
-| --------- | ------ | -------- | -------- | ------------------------------------------------------------------ |
-| `address` | string | yes      | query    | The address to geocode (street, city, country, or any combination) |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `address` | string | yes | query | The address to geocode (street, city, country, or any combination) |
 
 ## Response Example
 
@@ -40,13 +40,13 @@ Converts a free-text address into latitude and longitude coordinates.
 
 ## Response Fields
 
-| Field     | Type   | Description                                 |
-| --------- | ------ | ------------------------------------------- |
-| `address` | string | Full display name of the matched location   |
-| `city`    | string | City or town of the matched location        |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `address` | string | Full display name of the matched location |
+| `city` | string | City or town of the matched location |
 | `country` | string | ISO 3166-1 alpha-2 country code (uppercase) |
-| `lat`     | number | Latitude of the matched location            |
-| `lon`     | number | Longitude of the matched location           |
+| `lat` | number | Latitude of the matched location |
+| `lon` | number | Longitude of the matched location |
 
 ## Errors
 

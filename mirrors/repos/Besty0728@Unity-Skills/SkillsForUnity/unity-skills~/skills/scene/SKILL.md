@@ -21,7 +21,7 @@ Control Unity scenes - the containers that hold all your GameObjects.
 **Routing**:
 - For detailed hierarchy tree → use `perception` module's `hierarchy_describe`
 - For scene statistics → use `perception` module's `scene_summarize`
-- For screenshot → `scene_screenshot` (this module) or `camera_screenshot` (camera module, SkillMode.FullAuto)
+- For screenshot → `scene_screenshot` (this module) captures the **Game View** final composited image (all cameras + UI; in Play mode this is the live runtime frame); `camera_screenshot` (camera module, SkillMode.FullAuto) renders a single Game Camera off-screen
 
 ## Skills Overview
 
@@ -81,13 +81,17 @@ Get full scene hierarchy tree.
 **Returns**: `{success, hierarchy: [{name, instanceId, children: [...]}]}`
 
 ### scene_screenshot
-Capture a screenshot.
+Capture a screenshot of the **Game View** — the final composited frame of all cameras + UI. In Play mode this is the live runtime image, **not** the Scene/editor view. For a single Game Camera's render use `camera_screenshot` instead.
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `filename` | string | No | "screenshot.png" | Output filename |
+| `filename` | string | No | "screenshot.png" | Bare filename only (no path separators); saved under `Assets/Screenshots/` |
 | `width` | int | No | 1920 | Image width |
 | `height` | int | No | 1080 | Image height |
+
+**Returns**: `{success, path, width, height, isPlaying, note}`. `isPlaying` indicates whether the frame is a live runtime image (Play mode) or a static Edit-mode frame.
+
+**Async**: `ScreenCapture.CaptureScreenshot` writes the PNG ~1 frame later. If reading `path` immediately fails, wait ~200ms and retry.
 
 ### scene_get_loaded
 Get list of all currently loaded scenes.
@@ -158,7 +162,7 @@ unity_skills.call_skill("scene_screenshot", filename="preview.png", width=1920, 
 2. Use additive loading for UI overlays
 3. Keep scene hierarchy organized with empty parent objects
 4. Use `scene_get_info` to verify scene state
-5. Screenshots are saved to project root by default
+5. Screenshots are saved under `Assets/Screenshots/` (filename is a bare name; any path separators are stripped)
 
 ## Exact Signatures
 

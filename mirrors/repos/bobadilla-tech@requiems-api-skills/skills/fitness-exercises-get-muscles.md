@@ -13,26 +13,14 @@ description: Returns a sorted list of all distinct muscle names (combining targe
 
 ## List Muscles
 
-Returns a sorted list of all distinct muscle names (combining target and
-secondary muscles). Use these as valid values for the muscle filter.
+Returns a sorted list of all distinct muscle names (combining target and secondary muscles). Use these as valid values for the muscle filter.
 
 ## Response Example
 
 ```json
 {
   "data": {
-    "items": [
-      "biceps",
-      "calves",
-      "deltoids",
-      "glutes",
-      "hamstrings",
-      "lats",
-      "pectorals",
-      "quadriceps",
-      "traps",
-      "triceps"
-    ],
+    "items": ["biceps", "calves", "deltoids", "glutes", "hamstrings", "lats", "pectorals", "quadriceps", "traps", "triceps"],
     "total": 51
   },
   "metadata": {
@@ -43,10 +31,10 @@ secondary muscles). Use these as valid values for the muscle filter.
 
 ## Response Fields
 
-| Field   | Type    | Description                              |
-| ------- | ------- | ---------------------------------------- |
-| `items` | array   | Sorted list of all distinct muscle names |
-| `total` | integer | Total number of distinct muscles         |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `items` | array | Sorted list of all distinct muscle names |
+| `total` | integer | Total number of distinct muscles |
 
 ## Errors
 

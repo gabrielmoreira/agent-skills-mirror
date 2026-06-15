@@ -17,10 +17,10 @@ Encode a plain-text string to Base64
 
 ## Parameters
 
-| Name      | Type   | Required | Location | Description                                                      |
-| --------- | ------ | -------- | -------- | ---------------------------------------------------------------- |
-| `value`   | string | yes      | body     | The string to encode                                             |
-| `variant` | string | no       | body     | Encoding variant: standard (default) or url (URL-safe base64url) |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `value` | string | yes | body | The string to encode |
+| `variant` | string | no | body | Encoding variant: standard (default) or url (URL-safe base64url) |
 
 ## Response Example
 
@@ -37,12 +37,11 @@ Encode a plain-text string to Base64
 
 ## Response Fields
 
-| Field    | Type   | Description               |
-| -------- | ------ | ------------------------- |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
 | `result` | string | The Base64-encoded output |
 
 ## Errors
 
 - `undefined` **400** — Missing or empty value field
-- `undefined` **422** — Validation constraint on the variant field (must be
-  standard or url)
+- `undefined` **422** — Validation constraint on the variant field (must be standard or url)

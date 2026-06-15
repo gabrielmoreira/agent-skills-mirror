@@ -31,7 +31,7 @@ sqlite3 -readonly -cmd ".headers on" -cmd ".mode column" ~/.hope-agent/sessions.
     LIMIT 80;"
 ```
 
-7. Map symptoms to source files using the **Subsystem Reference**, `references/source-map.md`, and `docs/architecture/`.
+7. Map symptoms to source files using the **Subsystem Reference** and `docs/architecture/`.
 8. Check whether a newer release may already fix it with `app_update(action="check")` when appropriate.
 9. For issue reporting, include only relevant, redacted evidence.
 
@@ -127,7 +127,7 @@ gotcha that most often explains a failure. Open every DB read-only.
 
 ## Self-Study
 
-1. Start with the architecture doc for the subsystem (see the Subsystem Reference and `source-map.md`).
+1. Start with the architecture doc for the subsystem (see the Subsystem Reference).
 2. Read the source that implements the documented contract.
 3. Prefer public interfaces, command/route adapters, config structs, and tool schemas over isolated helper details.
 4. Explain what happens in desktop and server modes when the behavior crosses transport boundaries.

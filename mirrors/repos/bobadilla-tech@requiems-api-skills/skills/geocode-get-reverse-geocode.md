@@ -17,10 +17,10 @@ Converts geographic coordinates into a human-readable address.
 
 ## Parameters
 
-| Name  | Type   | Required | Location | Description                             |
-| ----- | ------ | -------- | -------- | --------------------------------------- |
-| `lat` | number | yes      | query    | Latitude of the location (-90 to 90)    |
-| `lon` | number | yes      | query    | Longitude of the location (-180 to 180) |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `lat` | number | yes | query | Latitude of the location (-90 to 90) |
+| `lon` | number | yes | query | Longitude of the location (-180 to 180) |
 
 ## Response Example
 
@@ -41,17 +41,16 @@ Converts geographic coordinates into a human-readable address.
 
 ## Response Fields
 
-| Field     | Type   | Description                                                |
-| --------- | ------ | ---------------------------------------------------------- |
-| `lat`     | number | Latitude as provided in the request                        |
-| `lon`     | number | Longitude as provided in the request                       |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `lat` | number | Latitude as provided in the request |
+| `lon` | number | Longitude as provided in the request |
 | `address` | string | Full display name of the location at the given coordinates |
-| `city`    | string | City or town at the given coordinates                      |
-| `country` | string | ISO 3166-1 alpha-2 country code (uppercase)                |
+| `city` | string | City or town at the given coordinates |
+| `country` | string | ISO 3166-1 alpha-2 country code (uppercase) |
 
 ## Errors
 
 - `404` **not_found** — No address found for the given coordinates.
 - `503` **upstream_error** — The geocoding service is temporarily unavailable.
-- `400` **bad_request** — lat or lon is missing or out of range (lat: -90..90,
-  lon: -180..180).
+- `400` **bad_request** — lat or lon is missing or out of range (lat: -90..90, lon: -180..180).

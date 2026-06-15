@@ -1,7 +1,7 @@
 ---
 name: infra-setup
 description: Non-user-invocable provider/setup reference for evo backend switching, prerequisite checks, and auth/install guidance.
-evo_version: 0.5.2
+evo_version: 0.5.3
 ---
 
 # Infra Setup

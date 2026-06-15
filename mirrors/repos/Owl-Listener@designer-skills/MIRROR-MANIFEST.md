@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Owl-Listener/designer-skills` — 26 default patterns, 0 followed patterns, 102 file(s) materialized.
+Mirror of `Owl-Listener/designer-skills` — 26 default patterns, 0 followed patterns, 105 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Owl-Listener/designer-skills` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 102 |
+| Files         | 105 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -157,10 +157,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 96 | ✓ | [`ux-strategy/skills/opportunity-framework/SKILL.md`](ux-strategy/skills/opportunity-framework/SKILL.md) |
 | 97 | ✓ | [`ux-strategy/skills/service-blueprint/SKILL.md`](ux-strategy/skills/service-blueprint/SKILL.md) |
 | 98 | ✓ | [`ux-strategy/skills/stakeholder-alignment/SKILL.md`](ux-strategy/skills/stakeholder-alignment/SKILL.md) |
-| 99 | ✓ | [`visual-critique/skills/critique-brand-consistency/SKILL.md`](visual-critique/skills/critique-brand-consistency/SKILL.md) |
-| 100 | ✓ | [`visual-critique/skills/critique-composition/SKILL.md`](visual-critique/skills/critique-composition/SKILL.md) |
-| 101 | ✓ | [`visual-critique/skills/critique-typography/SKILL.md`](visual-critique/skills/critique-typography/SKILL.md) |
-| 102 | ✓ | [`visual-critique/skills/critique-visual-hierarchy/SKILL.md`](visual-critique/skills/critique-visual-hierarchy/SKILL.md) |
+| 99 | ✓ | [`visual-critique/skills/critique-affordance/SKILL.md`](visual-critique/skills/critique-affordance/SKILL.md) |
+| 100 | ✓ | [`visual-critique/skills/critique-brand-consistency/SKILL.md`](visual-critique/skills/critique-brand-consistency/SKILL.md) |
+| 101 | ✓ | [`visual-critique/skills/critique-color/SKILL.md`](visual-critique/skills/critique-color/SKILL.md) |
+| 102 | ✓ | [`visual-critique/skills/critique-composition/SKILL.md`](visual-critique/skills/critique-composition/SKILL.md) |
+| 103 | ✓ | [`visual-critique/skills/critique-information-density/SKILL.md`](visual-critique/skills/critique-information-density/SKILL.md) |
+| 104 | ✓ | [`visual-critique/skills/critique-typography/SKILL.md`](visual-critique/skills/critique-typography/SKILL.md) |
+| 105 | ✓ | [`visual-critique/skills/critique-visual-hierarchy/SKILL.md`](visual-critique/skills/critique-visual-hierarchy/SKILL.md) |
 
 ---
 

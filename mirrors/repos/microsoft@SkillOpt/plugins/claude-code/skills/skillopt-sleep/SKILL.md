@@ -41,7 +41,7 @@ Trigger when the user wants any of:
 
 ## How to drive it
 
-Prefer the `/sleep` command. Under the hood it calls the bundled runner:
+Prefer the `/skillopt-sleep` command. Under the hood it calls the bundled runner:
 
 ```bash
 "${CLAUDE_PLUGIN_ROOT}/scripts/sleep.sh" status                       # what's happened

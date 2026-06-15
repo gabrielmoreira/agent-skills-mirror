@@ -13,15 +13,13 @@ description: Checks multiple texts for spelling mistakes in a single request. Re
 
 ## Check Spelling (Batch)
 
-Checks multiple texts for spelling mistakes in a single request. Returns a
-corrected version and per-word corrections for each input text. Results are
-returned in the same order as the input array.
+Checks multiple texts for spelling mistakes in a single request. Returns a corrected version and per-word corrections for each input text. Results are returned in the same order as the input array.
 
 ## Parameters
 
-| Name    | Type  | Required | Location | Description                                               |
-| ------- | ----- | -------- | -------- | --------------------------------------------------------- |
-| `texts` | array | yes      | body     | The list of texts to spell-check. Between 1 and 50 items. |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `texts` | array | yes | body | The list of texts to spell-check. Between 1 and 50 items. |
 
 ## Request Example
 
@@ -76,14 +74,13 @@ returned in the same order as the input array.
 
 ## Response Fields
 
-| Field     | Type             | Description                                                                                                                                                                                                         |
-| --------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
 | `results` | array of objects | One entry per input text, in the same order as the input array. Each item contains corrected (the fixed text) and corrections (list of individual corrections with original, suggested, suggestions, and position). |
-| `total`   | integer          | Number of texts processed. Equals the length of the input array.                                                                                                                                                    |
+| `total` | integer | Number of texts processed. Equals the length of the input array. |
 
 ## Errors
 
-- `422` **validation_failed** — The texts field is missing, empty, or exceeds 50
-  items.
+- `422` **validation_failed** — The texts field is missing, empty, or exceeds 50 items.
 - `400` **bad_request** — The request body is missing or malformed.
 - `500` **internal_error** — Unexpected server error.

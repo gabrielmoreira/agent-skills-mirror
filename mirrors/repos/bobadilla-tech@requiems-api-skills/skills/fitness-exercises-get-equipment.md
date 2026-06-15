@@ -13,26 +13,14 @@ description: Returns a sorted list of all distinct equipment types. Use these as
 
 ## List Equipment
 
-Returns a sorted list of all distinct equipment types. Use these as valid values
-for the equipment filter.
+Returns a sorted list of all distinct equipment types. Use these as valid values for the equipment filter.
 
 ## Response Example
 
 ```json
 {
   "data": {
-    "items": [
-      "band",
-      "barbell",
-      "body weight",
-      "cable",
-      "dumbbell",
-      "ez barbell",
-      "kettlebell",
-      "medicine ball",
-      "stability ball",
-      "tire"
-    ],
+    "items": ["band", "barbell", "body weight", "cable", "dumbbell", "ez barbell", "kettlebell", "medicine ball", "stability ball", "tire"],
     "total": 28
   },
   "metadata": {
@@ -43,10 +31,10 @@ for the equipment filter.
 
 ## Response Fields
 
-| Field   | Type    | Description                                 |
-| ------- | ------- | ------------------------------------------- |
-| `items` | array   | Sorted list of all distinct equipment names |
-| `total` | integer | Total number of distinct equipment types    |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `items` | array | Sorted list of all distinct equipment names |
+| `total` | integer | Total number of distinct equipment types |
 
 ## Errors
 

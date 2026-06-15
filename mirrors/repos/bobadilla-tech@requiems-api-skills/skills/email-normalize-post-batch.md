@@ -13,16 +13,13 @@ description: Normalizes up to 100 email addresses in one request. Results are in
 
 ## Normalize Email Batch
 
-Normalizes up to 100 email addresses in one request. Results are in the same
-order as the input. Each item includes valid (boolean); when false, only
-original and message are set. Usage is billed per email processed (see gateway
-usage headers).
+Normalizes up to 100 email addresses in one request. Results are in the same order as the input. Each item includes valid (boolean); when false, only original and message are set. Usage is billed per email processed (see gateway usage headers).
 
 ## Parameters
 
-| Name     | Type  | Required | Location | Description                                                            |
-| -------- | ----- | -------- | -------- | ---------------------------------------------------------------------- |
-| `emails` | array | yes      | body     | Array of addresses to normalize (min 1, max 100; each entry non-empty) |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `emails` | array | yes | body | Array of addresses to normalize (min 1, max 100; each entry non-empty) |
 
 ## Request Example
 
@@ -74,13 +71,12 @@ usage headers).
 
 ## Response Fields
 
-| Field     | Type    | Description                                            |
-| --------- | ------- | ------------------------------------------------------ |
-| `results` | array   | One normalization result per input email, in order     |
-| `total`   | integer | Number of emails in the batch (same as results length) |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `results` | array | One normalization result per input email, in order |
+| `total` | integer | Number of emails in the batch (same as results length) |
 
 ## Errors
 
-- `422` **validation_failed** — Missing emails, empty array, too many items, or
-  empty string in the array
+- `422` **validation_failed** — Missing emails, empty array, too many items, or empty string in the array
 - `400` **bad_request** — Invalid JSON or unknown fields in the body

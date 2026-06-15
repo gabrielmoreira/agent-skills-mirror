@@ -24,6 +24,17 @@ Agent skill install: `npx skills add HKUDS/CLI-Anything --skill cli-hub-meta-ski
 - Use `cli-hub install <name>` to install a selected CLI.
 - Use `cli-hub launch <name> [args...]` or the CLI entry point directly to run installed tools.
 - Prefer each harness CLI's `--json` output for reliable agent parsing.
+- For multi-tool workflows, use **matrices** (capability-based bundles): `cli-hub can "<task>"` to find a capability, `cli-hub matrix preflight <name> --json` to check availability, then `cli-hub matrix install <name> --capability <id>` to install only what the task needs.
+
+## Workflow Matrices
+
+Matrices package a whole workflow as capabilities × providers (harness CLIs, public CLIs, Python libs, native binaries, and cloud APIs). Browse them at https://clianything.cc/matrix.html.
+
+- Matrix registry (machine-readable): https://clianything.cc/matrix_registry.json — capabilities, providers, preflight `requires` contracts, recipes, and known gaps.
+- Discover a capability across all matrices: `cli-hub can "<task>"`.
+- Preflight before installing (exit 3 = capability gaps): `cli-hub matrix preflight <name> --json`.
+- Scope installs to a capability, recipe, or subset: `cli-hub matrix install <name> --capability <id>` (also `--recipe`, `--only`, `--dry-run`, `--resume`).
+- Every matrix subcommand supports `--json`. After install, each matrix renders a local SKILL.md with provider-selection rules.
 
 ## Constraints
 
@@ -39,6 +50,7 @@ Agent skill install: `npx skills add HKUDS/CLI-Anything --skill cli-hub-meta-ski
 - Pricing: https://clianything.cc/pricing.md
 - Registry: https://clianything.cc/registry.json
 - Public registry: https://clianything.cc/public_registry.json
+- Matrix registry: https://clianything.cc/matrix_registry.json
 - OpenAPI description for read-only registry resources: https://clianything.cc/openapi.json
 - Agent discovery: https://clianything.cc/.well-known/agent.json
 - A2A agent card: https://clianything.cc/.well-known/agent-card.json

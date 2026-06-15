@@ -9,7 +9,7 @@ Control the Scene View camera and Game Cameras (creation, transform, properties,
 
 ## Operating Mode
 
-- **Approval** (default): mutating skills (`camera_set_transform`, `camera_create`, `camera_set_properties`, `camera_set_culling_mask`, `camera_screenshot`, `camera_set_orthographic`, `camera_align_view_to_object`, `camera_look_at`) need user grant; grant triggers a single server-side execution that returns the result.
+- **Approval** (default): mutating skills (`camera_set_transform`, `camera_create`, `camera_set_properties`, `camera_set_culling_mask`, `camera_screenshot`, `camera_sceneview_screenshot`, `camera_set_orthographic`, `camera_align_view_to_object`, `camera_look_at`) need user grant; grant triggers a single server-side execution that returns the result.
 - **Auto / Bypass**: those skills execute directly.
 - Query skills (`camera_get_info`, `camera_get_properties`, `camera_list`) are `SkillMode.SemiAuto` — they run in all three modes without grant.
 - This module contains **no** Delete / PlayMode / Reload / high-risk skills (no NeverInSemi).
@@ -25,7 +25,7 @@ Control the Scene View camera and Game Cameras (creation, transform, properties,
 **Routing**:
 - For Cinemachine virtual cameras → use `cinemachine` module
 - For Game Camera component properties → `camera_set_properties` / `camera_get_properties` (this module)
-- For scene screenshots → `scene_screenshot` (scene module) uses the Scene View; `camera_screenshot` uses a Game Camera
+- For screenshots → three options: `scene_screenshot` (scene module) = the **Game View** final composite (all cameras + UI; Play mode = live runtime frame); `camera_screenshot` (this module) = a **single Game Camera** off-screen render; `camera_sceneview_screenshot` (this module) = the **editor Scene View** (developer viewport, incl. grid/gizmos)
 
 ## Skills
 
@@ -122,6 +122,16 @@ Capture a screenshot from a Game Camera to file.
 | path | string | No | null | Hierarchy path of the camera GameObject |
 
 **Returns:** `{ success, path, width, height }`
+
+### `camera_sceneview_screenshot`
+Capture the **editor Scene View** (the developer's editing viewport — can overlook the whole scene incl. off-camera objects). Distinct from `scene_screenshot` (Game View / player camera) and `camera_screenshot` (one Game Camera). By default captures the full Scene View incl. grid/gizmos/selection (on-screen read); auto-falls back to a clean offscreen render if the editor build lacks the internal API. The Scene View window must be open and visible for the overlay capture.
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| filename | string | No | "sceneview.png" | Bare filename only (no path separators); saved under `Assets/Screenshots/` |
+| includeOverlays | bool | No | true | True = full Scene View with grid/gizmos/selection (falls back to a clean render if unsupported); false = clean offscreen scene render only |
+
+**Returns:** `{ success, path, width, height, mode, note }` — `mode` is `"screen_with_overlays"` or `"offscreen_clean"`.
 
 ### `camera_set_orthographic`
 Switch Game Camera between orthographic and perspective mode.

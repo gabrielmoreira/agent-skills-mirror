@@ -13,15 +13,14 @@ description: Converts a Markdown string to HTML. Pass sanitize true to strip pot
 
 ## Convert Markdown to HTML
 
-Converts a Markdown string to HTML. Pass sanitize true to strip potentially
-unsafe tags like script and iframe from the output.
+Converts a Markdown string to HTML. Pass sanitize true to strip potentially unsafe tags like script and iframe from the output.
 
 ## Parameters
 
-| Name       | Type    | Required | Location | Description                                                                |
-| ---------- | ------- | -------- | -------- | -------------------------------------------------------------------------- |
-| `markdown` | string  | yes      | body     | The Markdown text to convert.                                              |
-| `sanitize` | boolean | no       | body     | When true, sanitizes the HTML output to remove unsafe tags and attributes. |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `markdown` | string | yes | body | The Markdown text to convert. |
+| `sanitize` | boolean | no | body | When true, sanitizes the HTML output to remove unsafe tags and attributes. |
 
 ## Request Example
 
@@ -47,8 +46,8 @@ unsafe tags like script and iframe from the output.
 
 ## Response Fields
 
-| Field  | Type   | Description              |
-| ------ | ------ | ------------------------ |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
 | `html` | string | The rendered HTML output |
 
 ## Errors

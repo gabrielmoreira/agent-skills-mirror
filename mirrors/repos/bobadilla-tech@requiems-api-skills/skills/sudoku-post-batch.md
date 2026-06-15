@@ -13,15 +13,13 @@ description: Generate up to 20 Sudoku puzzles in a single request. Results are r
 
 ## Batch Generate Sudoku Puzzles
 
-Generate up to 20 Sudoku puzzles in a single request. Results are returned in
-the same order as the input array. Each puzzle in the batch counts as one unit
-of API usage.
+Generate up to 20 Sudoku puzzles in a single request. Results are returned in the same order as the input array. Each puzzle in the batch counts as one unit of API usage.
 
 ## Parameters
 
-| Name      | Type  | Required | Location | Description                                                                                        |
-| --------- | ----- | -------- | -------- | -------------------------------------------------------------------------------------------------- |
-| `puzzles` | array | yes      | body     | Array of difficulty levels to generate (min: 1, max: 20). Each must be one of: easy, medium, hard. |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `puzzles` | array | yes | body | Array of difficulty levels to generate (min: 1, max: 20). Each must be one of: easy, medium, hard. |
 
 ## Request Example
 
@@ -73,19 +71,17 @@ of API usage.
 
 ## Response Fields
 
-| Field                  | Type                  | Description                                                                                                          |
-| ---------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `results`              | array                 | Generated puzzles in the same order as the input array. Each item has the same fields as the single-puzzle endpoint. |
-| `results[].difficulty` | string                | The difficulty level of the puzzle (easy, medium, or hard)                                                           |
-| `results[].puzzle`     | array[array[integer]] | 9×9 grid representing the puzzle — 0 means an empty cell to be filled in                                             |
-| `results[].solution`   | array[array[integer]] | 9×9 grid containing the complete, valid solution                                                                     |
-| `total`                | integer               | Number of puzzles returned. Matches the length of the input array.                                                   |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `results` | array | Generated puzzles in the same order as the input array. Each item has the same fields as the single-puzzle endpoint. |
+| `results[].difficulty` | string | The difficulty level of the puzzle (easy, medium, or hard) |
+| `results[].puzzle` | array[array[integer]] | 9×9 grid representing the puzzle — 0 means an empty cell to be filled in |
+| `results[].solution` | array[array[integer]] | 9×9 grid containing the complete, valid solution |
+| `total` | integer | Number of puzzles returned. Matches the length of the input array. |
 
 ## Errors
 
-- `400` **bad_request** — The request body is missing or contains malformed
-  JSON.
-- `422` **validation_failed** — The puzzles array is missing, empty, exceeds 20
-  items, or contains a value other than easy, medium, or hard.
+- `400` **bad_request** — The request body is missing or contains malformed JSON.
+- `422` **validation_failed** — The puzzles array is missing, empty, exceeds 20 items, or contains a value other than easy, medium, or hard.
 - `401` **unauthorized** — Missing API key
 - `403` **forbidden** — Invalid or revoked API key

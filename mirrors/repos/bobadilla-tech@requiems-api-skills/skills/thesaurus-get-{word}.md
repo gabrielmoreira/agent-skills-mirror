@@ -17,9 +17,9 @@ Returns synonyms and antonyms for the given word.
 
 ## Parameters
 
-| Name   | Type   | Required | Location | Description                          |
-| ------ | ------ | -------- | -------- | ------------------------------------ |
-| `word` | string | yes      | path     | The word to look up in the thesaurus |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `word` | string | yes | path | The word to look up in the thesaurus |
 
 ## Response Example
 
@@ -27,25 +27,8 @@ Returns synonyms and antonyms for the given word.
 {
   "data": {
     "word": "happy",
-    "synonyms": [
-      "joyful",
-      "cheerful",
-      "content",
-      "pleased",
-      "delighted",
-      "glad",
-      "elated",
-      "blissful"
-    ],
-    "antonyms": [
-      "sad",
-      "unhappy",
-      "miserable",
-      "sorrowful",
-      "dejected",
-      "gloomy",
-      "melancholy"
-    ]
+    "synonyms": ["joyful", "cheerful", "content", "pleased", "delighted", "glad", "elated", "blissful"],
+    "antonyms": ["sad", "unhappy", "miserable", "sorrowful", "dejected", "gloomy", "melancholy"]
   },
   "metadata": {
     "timestamp": "2026-01-01T00:00:00Z"
@@ -55,11 +38,11 @@ Returns synonyms and antonyms for the given word.
 
 ## Response Fields
 
-| Field      | Type             | Description                                         |
-| ---------- | ---------------- | --------------------------------------------------- |
-| `word`     | string           | The normalized (lowercased) word that was looked up |
-| `synonyms` | array of strings | List of words with similar meaning                  |
-| `antonyms` | array of strings | List of words with opposite meaning                 |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `word` | string | The normalized (lowercased) word that was looked up |
+| `synonyms` | array of strings | List of words with similar meaning |
+| `antonyms` | array of strings | List of words with opposite meaning |
 
 ## Errors
 

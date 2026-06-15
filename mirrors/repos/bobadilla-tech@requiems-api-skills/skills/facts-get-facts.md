@@ -17,9 +17,9 @@ Returns a randomly selected fact, optionally filtered by category.
 
 ## Parameters
 
-| Name       | Type   | Required | Location | Description                                                                         |
-| ---------- | ------ | -------- | -------- | ----------------------------------------------------------------------------------- |
-| `category` | string | no       | query    | Filter by category. Valid values: science, history, technology, nature, space, food |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `category` | string | no | query | Filter by category. Valid values: science, history, technology, nature, space, food |
 
 ## Response Example
 
@@ -38,11 +38,11 @@ Returns a randomly selected fact, optionally filtered by category.
 
 ## Response Fields
 
-| Field      | Type   | Description                                         |
-| ---------- | ------ | --------------------------------------------------- |
-| `fact`     | string | The fact text                                       |
-| `category` | string | The category the fact belongs to                    |
-| `source`   | string | The source or publication the fact is attributed to |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `fact` | string | The fact text |
+| `category` | string | The category the fact belongs to |
+| `source` | string | The source or publication the fact is attributed to |
 
 ## Errors
 

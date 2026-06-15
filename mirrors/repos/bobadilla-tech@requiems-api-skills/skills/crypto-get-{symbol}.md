@@ -17,9 +17,9 @@ Returns current price data for the given cryptocurrency symbol.
 
 ## Parameters
 
-| Name     | Type   | Required | Location | Description                                  |
-| -------- | ------ | -------- | -------- | -------------------------------------------- |
-| `symbol` | string | yes      | path     | Uppercase ticker symbol (e.g. BTC, ETH, SOL) |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `symbol` | string | yes | path | Uppercase ticker symbol (e.g. BTC, ETH, SOL) |
 
 ## Response Example
 
@@ -41,17 +41,16 @@ Returns current price data for the given cryptocurrency symbol.
 
 ## Response Fields
 
-| Field        | Type   | Description                                         |
-| ------------ | ------ | --------------------------------------------------- |
-| `symbol`     | string | Uppercase ticker symbol                             |
-| `name`       | string | Full coin name                                      |
-| `price_usd`  | number | Current price in USD                                |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `symbol` | string | Uppercase ticker symbol |
+| `name` | string | Full coin name |
+| `price_usd` | number | Current price in USD |
 | `change_24h` | number | Price change over the last 24 hours as a percentage |
-| `market_cap` | number | Total market capitalisation in USD                  |
-| `volume_24h` | number | Total trading volume over the last 24 hours in USD  |
+| `market_cap` | number | Total market capitalisation in USD |
+| `volume_24h` | number | Total trading volume over the last 24 hours in USD |
 
 ## Errors
 
 - `422` **unknown_symbol** — The symbol is not in the supported coin list.
-- `503` **upstream_error** — CoinGecko is unavailable or returned an unexpected
-  response.
+- `503` **upstream_error** — CoinGecko is unavailable or returned an unexpected response.

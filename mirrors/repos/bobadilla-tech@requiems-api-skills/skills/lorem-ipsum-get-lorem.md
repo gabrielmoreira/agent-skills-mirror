@@ -17,10 +17,10 @@ Generate Lorem Ipsum placeholder text with customizable length and format
 
 ## Parameters
 
-| Name         | Type    | Required | Location | Description                              |
-| ------------ | ------- | -------- | -------- | ---------------------------------------- |
-| `paragraphs` | integer | no       | query    | Number of paragraphs to generate (1-20)  |
-| `sentences`  | integer | no       | query    | Number of sentences per paragraph (1-20) |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `paragraphs` | integer | no | query | Number of paragraphs to generate (1-20) |
+| `sentences` | integer | no | query | Number of sentences per paragraph (1-20) |
 
 ## Response Example
 
@@ -29,7 +29,7 @@ Generate Lorem Ipsum placeholder text with customizable length and format
   "data": {
     "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
     "paragraphs": 1,
-    "wordCount": 45
+    "word_count": 45
   },
   "metadata": {
     "timestamp": "2026-01-01T00:00:00Z"
@@ -39,11 +39,11 @@ Generate Lorem Ipsum placeholder text with customizable length and format
 
 ## Response Fields
 
-| Field        | Type    | Description                             |
-| ------------ | ------- | --------------------------------------- |
-| `text`       | string  | Generated Lorem Ipsum text              |
-| `paragraphs` | integer | Number of paragraphs generated          |
-| `wordCount`  | integer | Total number of words in generated text |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `text` | string | Generated Lorem Ipsum text |
+| `paragraphs` | integer | Number of paragraphs generated |
+| `word_count` | integer | Total number of words in generated text |
 
 ## Errors
 

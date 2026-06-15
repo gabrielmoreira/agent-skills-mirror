@@ -1,6 +1,6 @@
 ---
 name: invoice-organizer
-category: business-productivity
+category: finance
 description: Automatically organizes invoices and receipts for tax preparation by reading messy files, extracting key information, renaming them consistently, and sorting them into logical folders. Turns hours of manual bookkeeping into minutes of automated organization.
 ---
 

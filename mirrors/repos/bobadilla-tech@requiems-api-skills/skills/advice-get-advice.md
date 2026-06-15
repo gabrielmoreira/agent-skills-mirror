@@ -31,7 +31,7 @@ Returns a random piece of advice
 
 ## Response Fields
 
-| Field    | Type    | Description                      |
-| -------- | ------- | -------------------------------- |
-| `id`     | integer | Unique identifier for the advice |
-| `advice` | string  | A random piece of advice         |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `id` | integer | Unique identifier for the advice |
+| `advice` | string | A random piece of advice |

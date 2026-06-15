@@ -3,7 +3,7 @@ name: vercel-automation
 description: "Automate Vercel tasks via Rube MCP (Composio): manage deployments, domains, DNS, env vars, projects, and teams. Always search tools first for current schemas."
 requires:
   mcp: [rube]
-category: devops
+category: infrastructure-cloud
 ---
 
 # Vercel Automation via Rube MCP

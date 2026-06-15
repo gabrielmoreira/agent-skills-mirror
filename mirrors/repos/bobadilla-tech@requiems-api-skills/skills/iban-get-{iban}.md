@@ -13,15 +13,13 @@ description: Validates an IBAN and returns the country, bank code, and account n
 
 ## Validate IBAN
 
-Validates an IBAN and returns the country, bank code, and account number. Spaces
-in the input are stripped automatically. Always returns HTTP 200 — check the
-valid field to determine whether the IBAN is valid.
+Validates an IBAN and returns the country, bank code, and account number. Spaces in the input are stripped automatically. Always returns HTTP 200 — check the valid field to determine whether the IBAN is valid.
 
 ## Parameters
 
-| Name   | Type   | Required | Location | Description                                                  |
-| ------ | ------ | -------- | -------- | ------------------------------------------------------------ |
-| `iban` | string | yes      | path     | The IBAN to validate. Spaces are stripped. Case-insensitive. |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `iban` | string | yes | path | The IBAN to validate. Spaces are stripped. Case-insensitive. |
 
 ## Response Example
 
@@ -42,15 +40,14 @@ valid field to determine whether the IBAN is valid.
 
 ## Response Fields
 
-| Field       | Type    | Description                                                                                         |
-| ----------- | ------- | --------------------------------------------------------------------------------------------------- |
-| `iban`      | string  | The normalised IBAN (spaces stripped, uppercased)                                                   |
-| `valid`     | boolean | true if the IBAN passed length and ISO 13616 checksum validation                                    |
-| `country`   | string  | Full country name (empty if the country code is not in the registry)                                |
-| `bank_code` | string  | Bank identifier extracted from the BBAN (empty if country not in registry or positions not defined) |
-| `account`   | string  | Account number extracted from the BBAN (empty if country not in registry or positions not defined)  |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `iban` | string | The normalised IBAN (spaces stripped, uppercased) |
+| `valid` | boolean | true if the IBAN passed length and ISO 13616 checksum validation |
+| `country` | string | Full country name (empty if the country code is not in the registry) |
+| `bank_code` | string | Bank identifier extracted from the BBAN (empty if country not in registry or positions not defined) |
+| `account` | string | Account number extracted from the BBAN (empty if country not in registry or positions not defined) |
 
 ## Errors
 
-- `500` **internal_error** — Unexpected server error (e.g. database
-  unreachable).
+- `500` **internal_error** — Unexpected server error (e.g. database unreachable).

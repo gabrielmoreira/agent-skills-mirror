@@ -5,6 +5,12 @@ All notable changes to NanoClaw will be documented in this file.
 ## [Unreleased]
 
 - [BREAKING] **`@onecli-sh/sdk` 0.5.0 -> 2.2.1 — requires a OneCLI server with the `/v1` API** (older servers 404 every SDK call). The sanctioned gateway and CLI versions are pinned in `versions.json`; the `onecli` setup step enforces them. **Migration:** [docs/onecli-upgrades.md](docs/onecli-upgrades.md).
+- **New agent provider: Codex (OpenAI) — run `/add-codex`.** Full runtime via `codex app-server` (planning, MCP tools, server-side history, resume). Trunk ships the seams and the skill; the payload installs from the `providers` branch (the skill, the setup picker, or `--step provider-auth codex`). Auth is vault-only — no credential ever enters a container.
+- **Setup can now select, install, and authenticate a non-default agent provider.** A provider registry feeds the setup picker, an installer pulls the provider's payload from its branch, a vault auth walkthrough runs (`--step provider-auth`), and the picked provider is set on the first agent (a DB property) before its first spawn. Default (Claude) installs are unaffected — picking Claude changes nothing.
+- **Provider choice is explicit per group — no install-wide default.** Provider is a DB property set via `ncl groups config update --provider` + restart; creation is provider-agnostic.
+- **Memory migrates via `/migrate-memory`, never at runtime.** Each provider keeps its own store; fresh groups on a surfaces-owning provider see no stale `CLAUDE.*` files. See [docs/provider-migration.md](docs/provider-migration.md).
+- **Per-exchange archiving is provider-owned** — the `onExchangeComplete` hook; the markdown writer ships with the codex payload.
+- **Container boot failures now say why** — the last stderr lines are logged at `warn` on a non-zero exit instead of a silent crash loop.
 - **Slash commands now interrupt an in-flight turn.** A runner-handled command (`/clear`, `/compact`, `/cost`, …) arriving mid-turn aborts the active stream and runs immediately instead of waiting out the turn.
 
 ## [2.1.0] - 2026-06-07

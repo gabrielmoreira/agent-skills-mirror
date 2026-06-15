@@ -34,7 +34,7 @@ for real improvement on the user's own Codex budget (default `mock` = no spend).
 2. For `run`/`dry-run`: read the staged `report.md` it prints and show the user
    the held-out baseline → candidate score and the exact proposed edits.
 3. `run` only **stages** a proposal under `<project>/.skillopt-sleep/staging/`;
-   nothing live changes until `adopt`. Offer `/sleep adopt`.
+   nothing live changes until `adopt`. Offer `/skillopt-sleep adopt`.
 4. Never hand-edit the user's `AGENTS.md` / skills yourself — only `adopt` does,
    and it backs up first.
 

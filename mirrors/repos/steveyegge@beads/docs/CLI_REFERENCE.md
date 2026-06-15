@@ -337,7 +337,13 @@ Examples:
   bd children hq-abc123 --pretty # Show children in tree format
 
 ```
-bd children <parent-id>
+bd children <parent-id> [flags]
+```
+
+**Flags:**
+
+```
+      --pretty   Show children in tree format
 ```
 
 ### bd close
@@ -5504,6 +5510,7 @@ Deferred issues don't show in 'bd ready' but remain visible in 'bd list'.
 Examples:
   bd defer bd-abc                  # Defer a single issue (status-based)
   bd defer bd-abc --until=tomorrow # Defer until specific time
+  bd defer bd-abc --reason="waiting on API access"
   bd defer bd-abc bd-def           # Defer multiple issues
 
 ```
@@ -5513,7 +5520,8 @@ bd defer [id...] [flags]
 **Flags:**
 
 ```
-      --until string   Defer until specific time (e.g., +1h, tomorrow, next monday)
+      --reason string   Record why this issue is being deferred (appended to notes)
+      --until string    Defer until specific time (e.g., +1h, tomorrow, next monday)
 ```
 
 ### bd formula

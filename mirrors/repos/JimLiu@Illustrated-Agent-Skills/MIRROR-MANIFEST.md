@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JimLiu/Illustrated-Agent-Skills` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `JimLiu/Illustrated-Agent-Skills` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JimLiu/Illustrated-Agent-Skills` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,11 +78,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`skills/book-illustrator/references/layouts/winding-roadmap.md`](skills/book-illustrator/references/layouts/winding-roadmap.md) |
 | 18 | ✓ | [`skills/book-illustrator/SKILL.md`](skills/book-illustrator/SKILL.md) |
 | 19 | ✓ | [`skills/content-analyzer/SKILL.md`](skills/content-analyzer/SKILL.md) |
-| 20 | ✓ | [`skills/interview-analysis/SKILL.md`](skills/interview-analysis/SKILL.md) |
-| 21 | ✓ | [`skills/interview-writing/SKILL.md`](skills/interview-writing/SKILL.md) |
-| 22 | ✓ | [`skills/outliner/SKILL.md`](skills/outliner/SKILL.md) |
-| 23 | ✓ | [`skills/weekly-report/evals/evals.json`](skills/weekly-report/evals/evals.json) |
-| 24 | ✓ | [`skills/weekly-report/SKILL.md`](skills/weekly-report/SKILL.md) |
+| 20 | ✓ | [`skills/info-digest/SKILL.md`](skills/info-digest/SKILL.md) |
+| 21 | ✓ | [`skills/interview-analysis/SKILL.md`](skills/interview-analysis/SKILL.md) |
+| 22 | ✓ | [`skills/interview-writing/SKILL.md`](skills/interview-writing/SKILL.md) |
+| 23 | ✓ | [`skills/outliner/SKILL.md`](skills/outliner/SKILL.md) |
+| 24 | ✓ | [`skills/weekly-report/evals/evals.json`](skills/weekly-report/evals/evals.json) |
+| 25 | ✓ | [`skills/weekly-report/SKILL.md`](skills/weekly-report/SKILL.md) |
 
 ---
 

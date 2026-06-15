@@ -13,15 +13,13 @@ description: Returns WHOIS information for up to 50 domains in a single request.
 
 ## Batch WHOIS Lookup
 
-Returns WHOIS information for up to 50 domains in a single request. Results are
-returned in the same order as the input array. Domains without WHOIS data return
-found: false instead of failing the entire request.
+Returns WHOIS information for up to 50 domains in a single request. Results are returned in the same order as the input array. Domains without WHOIS data return found: false instead of failing the entire request.
 
 ## Parameters
 
-| Name      | Type  | Required | Location | Description                             |
-| --------- | ----- | -------- | -------- | --------------------------------------- |
-| `domains` | array | yes      | body     | Array of domain names. Min: 1, Max: 50. |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `domains` | array | yes | body | Array of domain names. Min: 1, Max: 50. |
 
 ## Response Example
 
@@ -64,17 +62,16 @@ found: false instead of failing the entire request.
 
 ## Response Fields
 
-| Field              | Type    | Description                                          |
-| ------------------ | ------- | ---------------------------------------------------- |
-| `results`          | array   | One entry per domain, in the same order as the input |
-| `results[].domain` | string  | Domain name requested in the batch                   |
-| `results[].found`  | boolean | False when WHOIS data could not be found             |
-| `results[].error`  | string  | Error message when found is false                    |
-| `results[].data`   | object  | WHOIS information for the domain when found is true  |
-| `total`            | integer | Total number of results returned                     |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `results` | array | One entry per domain, in the same order as the input |
+| `results[].domain` | string | Domain name requested in the batch |
+| `results[].found` | boolean | False when WHOIS data could not be found |
+| `results[].error` | string | Error message when found is false |
+| `results[].data` | object | WHOIS information for the domain when found is true |
+| `total` | integer | Total number of results returned |
 
 ## Errors
 
-- `422` **validation_failed** — Invalid request body. This includes empty
-  arrays, more than 50 domains, invalid domain names, or malformed payloads.
+- `422` **validation_failed** — Invalid request body. This includes empty arrays, more than 50 domains, invalid domain names, or malformed payloads.
 - `500` **internal_error** — Unexpected server error during batch WHOIS lookup.

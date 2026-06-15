@@ -1960,7 +1960,7 @@
     {
       "name": "nfcore-scrnaseq-wrapper",
       "cli_alias": "scrnaseq-pipeline",
-      "description": "Wrapper skill for running nf-core/scrnaseq upstream single-cell RNA-seq preprocessing from FASTQ with strict preflight, reproducibility outputs, and downstream handoff to ClawBio scRNA skills.",
+      "description": "Wrapper skill for running nf-core/scrnaseq 4.1.0 upstream single-cell RNA-seq preprocessing from FASTQ with strict preflight, reproducibility outputs, and downstream handoff to ClawBio scRNA skills.",
       "version": "0.1.0",
       "status": "mvp",
       "has_script": true,
@@ -2004,45 +2004,7 @@
       ]
     },
     {
-      "name": "nutrigx-advisor",
-      "cli_alias": null,
-      "description": "Personalised nutrition report from consumer genetic data (23andMe, AncestryDNA, VCF) — interrogates nutritionally-relevant SNPs and generates actionable dietary guidance, all computed locally.",
-      "version": "0.1.0",
-      "status": "planned",
-      "has_script": true,
-      "has_tests": true,
-      "has_demo": true,
-      "demo_command": "python skills/nutrigx-advisor/parse_input.py --demo",
-      "dependencies": [],
-      "tags": [
-        "nutrigenomics",
-        "nutrition",
-        "diet",
-        "genetics",
-        "23andme",
-        "ancestrydna",
-        "vcf"
-      ],
-      "trigger_keywords": [
-        "personalised nutrition",
-        "nutrigenomics",
-        "diet genetics",
-        "MTHFR",
-        "APOE",
-        "FTO",
-        "vitamin D",
-        "caffeine metabolism",
-        "lactose",
-        "omega-3",
-        "folate",
-        "what should I eat based on my DNA",
-        "vitamin absorption genetics",
-        "gluten"
-      ],
-      "chaining_partners": []
-    },
-    {
-      "name": "nutrigx_advisor",
+      "name": "nutrigx",
       "cli_alias": "nutrigx",
       "description": "Personalised nutrition report from consumer genetic data (23andMe, AncestryDNA, VCF) — interrogates nutritionally-relevant SNPs and generates actionable dietary guidance, all computed locally.",
       "version": "0.1.0",
@@ -2050,7 +2012,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/nutrigx_advisor/parse_input.py --demo",
+      "demo_command": "python clawbio.py run nutrigx --demo",
       "dependencies": [],
       "tags": [
         "nutrigenomics",
@@ -2210,7 +2172,7 @@
       ],
       "chaining_partners": [
         "pharmgx-reporter",
-        "nutrigx_advisor",
+        "nutrigx",
         "gwas-prs",
         "genome-compare"
       ]

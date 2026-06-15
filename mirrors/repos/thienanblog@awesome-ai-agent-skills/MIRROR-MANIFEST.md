@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `thienanblog/awesome-ai-agent-skills` — 26 default patterns, 0 followed patterns, 112 file(s) materialized.
+Mirror of `thienanblog/awesome-ai-agent-skills` — 26 default patterns, 0 followed patterns, 113 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `thienanblog/awesome-ai-agent-skills` — 26 default patterns, 0 follo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 112 |
+| Files         | 113 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -148,29 +148,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 87 | ✓ | [`skills/docker-local-dev/scripts/detect-stack.sh`](skills/docker-local-dev/scripts/detect-stack.sh) |
 | 88 | ✓ | [`skills/docker-local-dev/scripts/health-check.sh`](skills/docker-local-dev/scripts/health-check.sh) |
 | 89 | ✓ | [`skills/docker-local-dev/scripts/port-check.sh`](skills/docker-local-dev/scripts/port-check.sh) |
-| 90 | ✓ | [`skills/docker-local-dev/scripts/wait-for-it.sh`](skills/docker-local-dev/scripts/wait-for-it.sh) |
-| 91 | ✓ | [`skills/docker-local-dev/scripts/wp-setup.sh`](skills/docker-local-dev/scripts/wp-setup.sh) |
-| 92 | ✓ | [`skills/docker-local-dev/SKILL.md`](skills/docker-local-dev/SKILL.md) |
-| 93 | ✓ | [`skills/documentation-guidelines/references/documentation-guidelines.md`](skills/documentation-guidelines/references/documentation-guidelines.md) |
-| 94 | ✓ | [`skills/documentation-guidelines/SKILL.md`](skills/documentation-guidelines/SKILL.md) |
-| 95 | ✓ | [`skills/laravel-11-12-app-guidelines/references/boost-tools.md`](skills/laravel-11-12-app-guidelines/references/boost-tools.md) |
-| 96 | ✓ | [`skills/laravel-11-12-app-guidelines/SKILL.md`](skills/laravel-11-12-app-guidelines/SKILL.md) |
-| 97 | ✓ | [`skills/office-web-ui-system/agents/openai.yaml`](skills/office-web-ui-system/agents/openai.yaml) |
-| 98 | ✓ | [`skills/office-web-ui-system/references/component-recipes.md`](skills/office-web-ui-system/references/component-recipes.md) |
-| 99 | ✓ | [`skills/office-web-ui-system/references/framework-adaptation.md`](skills/office-web-ui-system/references/framework-adaptation.md) |
-| 100 | ✓ | [`skills/office-web-ui-system/references/locator-class-contract.md`](skills/office-web-ui-system/references/locator-class-contract.md) |
-| 101 | ✓ | [`skills/office-web-ui-system/references/navigation-and-panels.md`](skills/office-web-ui-system/references/navigation-and-panels.md) |
-| 102 | ✓ | [`skills/office-web-ui-system/references/page-type-playbook.md`](skills/office-web-ui-system/references/page-type-playbook.md) |
-| 103 | ✓ | [`skills/office-web-ui-system/references/visual-language.md`](skills/office-web-ui-system/references/visual-language.md) |
-| 104 | ✓ | [`skills/office-web-ui-system/scripts/scan_ui_locators.py`](skills/office-web-ui-system/scripts/scan_ui_locators.py) |
-| 105 | ✓ | [`skills/office-web-ui-system/SKILL.md`](skills/office-web-ui-system/SKILL.md) |
-| 106 | ✓ | [`skills/project-development-mindset/agents/openai.yaml`](skills/project-development-mindset/agents/openai.yaml) |
-| 107 | ✓ | [`skills/project-development-mindset/SKILL.md`](skills/project-development-mindset/SKILL.md) |
-| 108 | ✓ | [`skills/vps-docker-traefik-deploy/references/deploy-checklist.md`](skills/vps-docker-traefik-deploy/references/deploy-checklist.md) |
-| 109 | ✓ | [`skills/vps-docker-traefik-deploy/references/registry-storage-backup.md`](skills/vps-docker-traefik-deploy/references/registry-storage-backup.md) |
-| 110 | ✓ | [`skills/vps-docker-traefik-deploy/references/server-baseline.md`](skills/vps-docker-traefik-deploy/references/server-baseline.md) |
-| 111 | ✓ | [`skills/vps-docker-traefik-deploy/references/traefik-dns.md`](skills/vps-docker-traefik-deploy/references/traefik-dns.md) |
-| 112 | ✓ | [`skills/vps-docker-traefik-deploy/SKILL.md`](skills/vps-docker-traefik-deploy/SKILL.md) |
+| 90 | ✓ | [`skills/docker-local-dev/scripts/scan-host-ports.mjs`](skills/docker-local-dev/scripts/scan-host-ports.mjs) |
+| 91 | ✓ | [`skills/docker-local-dev/scripts/wait-for-it.sh`](skills/docker-local-dev/scripts/wait-for-it.sh) |
+| 92 | ✓ | [`skills/docker-local-dev/scripts/wp-setup.sh`](skills/docker-local-dev/scripts/wp-setup.sh) |
+| 93 | ✓ | [`skills/docker-local-dev/SKILL.md`](skills/docker-local-dev/SKILL.md) |
+| 94 | ✓ | [`skills/documentation-guidelines/references/documentation-guidelines.md`](skills/documentation-guidelines/references/documentation-guidelines.md) |
+| 95 | ✓ | [`skills/documentation-guidelines/SKILL.md`](skills/documentation-guidelines/SKILL.md) |
+| 96 | ✓ | [`skills/laravel-11-12-app-guidelines/references/boost-tools.md`](skills/laravel-11-12-app-guidelines/references/boost-tools.md) |
+| 97 | ✓ | [`skills/laravel-11-12-app-guidelines/SKILL.md`](skills/laravel-11-12-app-guidelines/SKILL.md) |
+| 98 | ✓ | [`skills/office-web-ui-system/agents/openai.yaml`](skills/office-web-ui-system/agents/openai.yaml) |
+| 99 | ✓ | [`skills/office-web-ui-system/references/component-recipes.md`](skills/office-web-ui-system/references/component-recipes.md) |
+| 100 | ✓ | [`skills/office-web-ui-system/references/framework-adaptation.md`](skills/office-web-ui-system/references/framework-adaptation.md) |
+| 101 | ✓ | [`skills/office-web-ui-system/references/locator-class-contract.md`](skills/office-web-ui-system/references/locator-class-contract.md) |
+| 102 | ✓ | [`skills/office-web-ui-system/references/navigation-and-panels.md`](skills/office-web-ui-system/references/navigation-and-panels.md) |
+| 103 | ✓ | [`skills/office-web-ui-system/references/page-type-playbook.md`](skills/office-web-ui-system/references/page-type-playbook.md) |
+| 104 | ✓ | [`skills/office-web-ui-system/references/visual-language.md`](skills/office-web-ui-system/references/visual-language.md) |
+| 105 | ✓ | [`skills/office-web-ui-system/scripts/scan_ui_locators.py`](skills/office-web-ui-system/scripts/scan_ui_locators.py) |
+| 106 | ✓ | [`skills/office-web-ui-system/SKILL.md`](skills/office-web-ui-system/SKILL.md) |
+| 107 | ✓ | [`skills/project-development-mindset/agents/openai.yaml`](skills/project-development-mindset/agents/openai.yaml) |
+| 108 | ✓ | [`skills/project-development-mindset/SKILL.md`](skills/project-development-mindset/SKILL.md) |
+| 109 | ✓ | [`skills/vps-docker-traefik-deploy/references/deploy-checklist.md`](skills/vps-docker-traefik-deploy/references/deploy-checklist.md) |
+| 110 | ✓ | [`skills/vps-docker-traefik-deploy/references/registry-storage-backup.md`](skills/vps-docker-traefik-deploy/references/registry-storage-backup.md) |
+| 111 | ✓ | [`skills/vps-docker-traefik-deploy/references/server-baseline.md`](skills/vps-docker-traefik-deploy/references/server-baseline.md) |
+| 112 | ✓ | [`skills/vps-docker-traefik-deploy/references/traefik-dns.md`](skills/vps-docker-traefik-deploy/references/traefik-dns.md) |
+| 113 | ✓ | [`skills/vps-docker-traefik-deploy/SKILL.md`](skills/vps-docker-traefik-deploy/SKILL.md) |
 
 ---
 

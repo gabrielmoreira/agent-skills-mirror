@@ -17,9 +17,9 @@ Returns DNS records and availability status for the given domain.
 
 ## Parameters
 
-| Name     | Type   | Required | Location | Description                              |
-| -------- | ------ | -------- | -------- | ---------------------------------------- |
-| `domain` | string | yes      | path     | The domain to look up (e.g. example.com) |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `domain` | string | yes | path | The domain to look up (e.g. example.com) |
 
 ## Response Example
 
@@ -45,18 +45,17 @@ Returns DNS records and availability status for the given domain.
 
 ## Response Fields
 
-| Field       | Type             | Description                                                                                                          |
-| ----------- | ---------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `domain`    | string           | The domain that was looked up                                                                                        |
-| `available` | boolean          | True when the domain appears to be unregistered (NS lookup returns NXDOMAIN). False when name servers are delegated. |
-| `dns.a`     | array of strings | IPv4 addresses (A records)                                                                                           |
-| `dns.aaaa`  | array of strings | IPv6 addresses (AAAA records)                                                                                        |
-| `dns.mx`    | array of objects | Mail exchange records, each with host and priority fields                                                            |
-| `dns.ns`    | array of strings | Authoritative name server hostnames                                                                                  |
-| `dns.txt`   | array of strings | TXT record values (SPF, DKIM, verification tokens, etc.)                                                             |
-| `dns.cname` | string           | CNAME alias target, if the domain is an alias. Empty string when no alias exists.                                    |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `domain` | string | The domain that was looked up |
+| `available` | boolean | True when the domain appears to be unregistered (NS lookup returns NXDOMAIN). False when name servers are delegated. |
+| `dns.a` | array of strings | IPv4 addresses (A records) |
+| `dns.aaaa` | array of strings | IPv6 addresses (AAAA records) |
+| `dns.mx` | array of objects | Mail exchange records, each with host and priority fields |
+| `dns.ns` | array of strings | Authoritative name server hostnames |
+| `dns.txt` | array of strings | TXT record values (SPF, DKIM, verification tokens, etc.) |
+| `dns.cname` | string | CNAME alias target, if the domain is an alias. Empty string when no alias exists. |
 
 ## Errors
 
-- `400` **bad_request** — The domain parameter is not a valid hostname (e.g.
-  missing TLD, invalid characters, or leading/trailing hyphens).
+- `400` **bad_request** — The domain parameter is not a valid hostname (e.g. missing TLD, invalid characters, or leading/trailing hyphens).

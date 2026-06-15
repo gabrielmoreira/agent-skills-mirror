@@ -126,8 +126,9 @@ A detached worker finishes the install in the background (the `sg` download is t
 | `omo-cli` absent | The top-level `omo` command is not linked. The marketplace payload intentionally ships without `dist/cli`, so bootstrap records an `omo-cli` degraded entry ("marketplace payload has no dist/cli"). Component CLIs still link normally. | Use `npx lazycodex-ai <command>` wherever you would run `omo`. Verify with `npx lazycodex-ai doctor`. |
 | `sg` pending / offline | `ast_grep` appears in the degraded list and the `ast_grep` MCP server cannot find `sg` yet — the first download is still running, or it failed while offline. | Start another session (bootstrap retries automatically), or install ast-grep yourself and/or set `OMO_AST_GREP_SG_PATH=/path/to/sg`. Verify with `npx lazycodex-ai doctor`. |
 | Proxy limitation | Binary downloads fail behind an HTTP(S) proxy. The logged error says it plainly: the bootstrap downloader "does not tunnel through HTTP(S) proxies in v1; the download was attempted directly." | Run one session on a direct connection, or provide `sg` via `OMO_AST_GREP_SG_PATH`/`PATH`. Verify with `npx lazycodex-ai doctor`. |
+| OpenCode Windows proxy preinstall | OpenCode starts before OMO loads, shows only default agents, or logs `fetch() proxy.url must be a non-empty string` while trying to install `oh-my-openagent@latest`. | Set `HTTP_PROXY`/`HTTPS_PROXY` for the shell that launches OpenCode, then preinstall into OpenCode's Windows config prefix: `npm install oh-my-openagent@latest --prefix "%APPDATA%\\opencode"`. Restart OpenCode and run `bunx oh-my-openagent doctor --json`. |
 
-**Windows status.** On native Windows the marketplace bootstrap runs through a PowerShell 5.1-compatible `bootstrap.ps1`: it provisions the pinned Node LTS zip when `node` is absent, prepares Git Bash the same way the npx installer does, and writes its transcript to `ps-bootstrap.log` in the plugin data dir (degraded lines look like `degraded component=node reason=... hint=npx lazycodex-ai doctor`). Windows provisioning is shipped with static test coverage; real-device validation is tracked in [code-yeongyu/lazycodex — Windows real-device bootstrap QA](https://github.com/code-yeongyu/lazycodex/issues?q=is%3Aissue+Windows+real-device+bootstrap+QA).
+**Windows status.** On native Windows the marketplace bootstrap runs through a PowerShell 5.1-compatible `bootstrap.ps1`: it provisions the pinned Node LTS zip when `node` is absent, prepares Git Bash the same way the npx installer does, and writes its transcript to `ps-bootstrap.log` in the plugin data dir (degraded lines look like `degraded component=node reason=... hint=npx lazycodex-ai doctor`). Windows provisioning is shipped with static test coverage; real-device validation is still tracked separately in [code-yeongyu/lazycodex#52](https://github.com/code-yeongyu/lazycodex/issues/52). Do not treat static coverage as proof that a physical Windows install was exercised.
 
 ### A note on direct install
 
@@ -139,6 +140,14 @@ bunx oh-my-openagent install
 
 The TUI walks you through it. **Do NOT use `npm install -g`, `bun add -g`, or `bun install -g`** — global installation is not officially supported. oh-my-openagent is a plugin that must resolve from where OpenCode/Codex loads plugins, and the `prepare` script requires Bun. Always invoke via `bunx`.
 
+If you already used Bun global install or update and Bun reports blocked lifecycle scripts, inspect them before trusting anything:
+
+```bash
+bun pm -g untrusted
+```
+
+Do not run a blanket trust command. Trust only packages you recognize from this install path, such as `oh-my-openagent`, legacy `oh-my-opencode`, `@ast-grep/cli`, or `@code-yeongyu/comment-checker`, then rerun the supported `bunx oh-my-openagent install` or `npx lazycodex-ai doctor` check.
+
 ## For LLM Agents
 
 > **IMPORTANT: Use `curl` to fetch this file, NOT WebFetch.** WebFetch summarizes content and loses critical flags like `--platform`, subscription questions, and Codex verification details. Always use:
@@ -147,7 +156,7 @@ The TUI walks you through it. **Do NOT use `npm install -g`, `bun add -g`, or `b
 > curl -fsSL https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/refs/heads/dev/docs/guide/installation.md
 > ```
 
-If you are an LLM Agent helping a user install oh-my-openagent, welcome. You will help your user install the harness, verify the setup, and configure model providers. Tell user this with greetings, with text `oMoMoMoMo...`.
+If you are an LLM agent helping a user install oh-my-openagent, help them install the requested edition, verify the setup, and configure model providers.
 
 Follow these steps in order.
 
@@ -435,6 +444,42 @@ opencode auth login
 
 The plugin supports up to 10 Google accounts. When one account hits rate limits, it automatically switches to the next available account.
 
+##### Amazon Bedrock
+
+OpenCode owns Bedrock authentication. Configure Bedrock in `opencode.json` or through AWS environment variables first, then use Bedrock model IDs in OMO agent or category routing.
+
+```json
+{
+  "provider": {
+    "amazon-bedrock": {
+      "options": {
+        "region": "us-east-1",
+        "profile": "my-aws-profile"
+      }
+    }
+  }
+}
+```
+
+For one-off launches, set the AWS credentials around OpenCode instead:
+
+```bash
+AWS_PROFILE=my-aws-profile AWS_REGION=us-east-1 opencode
+```
+
+After OpenCode sees the provider, reference models with the OpenCode provider prefix:
+
+```json
+{
+  "agents": {
+    "sisyphus": { "model": "amazon-bedrock/us.anthropic.claude-opus-4-7" },
+    "metis": { "model": "amazon-bedrock/us.anthropic.claude-sonnet-4-6" }
+  }
+}
+```
+
+Use OpenCode's [Amazon Bedrock provider guide](https://opencode.ai/docs/providers/#amazon-bedrock) for model access, bearer tokens, named profiles, VPC endpoints, and custom inference profile ARNs. OMO does not run a separate Bedrock login flow during install.
+
 ##### GitHub Copilot (Fallback Provider)
 
 GitHub Copilot is supported as a **fallback provider** when native providers are unavailable. Priority is agent-specific. Common install-time defaults when Copilot is the best available provider:
@@ -662,13 +707,6 @@ After verification, tell the user:
 3. **Need precision?** Press **Tab** to enter Prometheus (Planner) mode, then run `/start-work` to execute the verified plan.
 4. **Your own agent/category setup?** Read [`docs/guide/agent-model-matching.md`](agent-model-matching.md) — the assistant can interview the user and tune the config.
 
-Ask the user to star both repositories if the install helped:
-
-```bash
-gh api --silent --method PUT /user/starred/code-yeongyu/oh-my-openagent >/dev/null 2>&1 || true
-gh api --silent --method PUT /user/starred/code-yeongyu/lazycodex >/dev/null 2>&1 || true
-```
-
 Then say **Congratulations! 🎉 You have successfully set up oh-my-openagent! Type `opencode` (or `codex`) in your terminal to start using it.**
 
 ### Step 7: Light Edition deep dive (Codex CLI)
@@ -711,6 +749,7 @@ The Codex CLI Light edition is fully independent of the OpenCode plugin. You can
 | `Ignoring malformed agent role definition: agents.*.config_file must point to an existing file` | Re-run `npx lazycodex-ai install`. The installer repairs stale managed `[agents.*]` entries and recreates `~/.codex/agents/*.toml`. |
 | `agents.max_threads cannot be set when multi_agent_v2 is enabled` in one project | Re-run `npx lazycodex-ai install` from that project. The installer repairs project-local `.codex/config.toml` layers, creates `.backup-<timestamp>` files for changed configs, and leaves user-authored `.codex` artifacts in place. |
 | `SessionStart hook (failed)` / `UserPromptSubmit hook (failed)` with `MODULE_NOT_FOUND` for `components/*/dist/cli.js` | Re-run the installer so the cached plugin is rebuilt with component `dist/` files. If the cache was manually edited, remove `~/.codex/plugins/cache/sisyphuslabs` first. |
+| `SessionStart hook (failed)` / `UserPromptSubmit hook (failed)` with only `hook exited with code 1` after install | Re-run `npx lazycodex-ai install`, then start a fresh Codex session or restart the Codex app. If the same hook fails again in the fresh session, inspect the saved hook output to identify the component command before deleting cache state. |
 | Hook trust hash mismatch warnings | Re-run the installer; hashes are regenerated each install |
 
 ### Step 8: Team Mode (optional, opt-in)

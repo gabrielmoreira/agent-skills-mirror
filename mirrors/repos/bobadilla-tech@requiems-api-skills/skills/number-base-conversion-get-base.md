@@ -17,11 +17,11 @@ Convert an integer from one number base to another.
 
 ## Parameters
 
-| Name    | Type    | Required | Location | Description                                                                           |
-| ------- | ------- | -------- | -------- | ------------------------------------------------------------------------------------- |
-| `from`  | integer | yes      | query    | Source base (2, 8, 10, or 16)                                                         |
-| `to`    | integer | yes      | query    | Target base (2, 8, 10, or 16)                                                         |
-| `value` | string  | yes      | query    | The number as a string. Accepts optional prefixes: 0x (hex), 0b (binary), 0o (octal). |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `from` | integer | yes | query | Source base (2, 8, 10, or 16) |
+| `to` | integer | yes | query | Target base (2, 8, 10, or 16) |
+| `value` | string | yes | query | The number as a string. Accepts optional prefixes: 0x (hex), 0b (binary), 0o (octal). |
 
 ## Response Example
 
@@ -41,14 +41,13 @@ Convert an integer from one number base to another.
 
 ## Response Fields
 
-| Field    | Type    | Description                                   |
-| -------- | ------- | --------------------------------------------- |
-| `input`  | string  | The original value as provided in the request |
-| `from`   | integer | The source base                               |
-| `to`     | integer | The target base                               |
-| `result` | string  | The converted value in the target base        |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `input` | string | The original value as provided in the request |
+| `from` | integer | The source base |
+| `to` | integer | The target base |
+| `result` | string | The converted value in the target base |
 
 ## Errors
 
-- `400` **bad_request** — A required parameter is missing, the base is not one
-  of 2/8/10/16, or value is not valid for the given base.
+- `400` **bad_request** — A required parameter is missing, the base is not one of 2/8/10/16, or value is not valid for the given base.

@@ -17,9 +17,9 @@ Get geolocation and network information for a specific IP address.
 
 ## Parameters
 
-| Name | Type   | Required | Location | Description                                        |
-| ---- | ------ | -------- | -------- | -------------------------------------------------- |
-| `ip` | string | yes      | path     | The IP address to look up (supports IPv4 and IPv6) |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `ip` | string | yes | path | The IP address to look up (supports IPv4 and IPv6) |
 
 ## Response Example
 
@@ -41,14 +41,14 @@ Get geolocation and network information for a specific IP address.
 
 ## Response Fields
 
-| Field          | Type    | Description                                          |
-| -------------- | ------- | ---------------------------------------------------- |
-| `ip`           | string  | The IP address that was looked up                    |
-| `country`      | string  | Country name where the IP is located                 |
-| `country_code` | string  | Two-letter ISO country code (e.g., "US", "GB", "DE") |
-| `city`         | string  | City name where the IP is located                    |
-| `isp`          | string  | Internet Service Provider providing the IP           |
-| `is_vpn`       | boolean | True when the IP belongs to a known VPN              |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `ip` | string | The IP address that was looked up |
+| `country` | string | Country name where the IP is located |
+| `country_code` | string | Two-letter ISO country code (e.g., "US", "GB", "DE") |
+| `city` | string | City name where the IP is located |
+| `isp` | string | Internet Service Provider providing the IP |
+| `is_vpn` | boolean | True when the IP belongs to a known VPN |
 
 ## Errors
 

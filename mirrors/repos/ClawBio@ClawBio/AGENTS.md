@@ -50,7 +50,7 @@ Tests must pass on Python 3.10, 3.11, and 3.12. CI runs all three via GitHub Act
 
 - **Python**: 3.10+ (type hints encouraged, `X | None` syntax over `Optional[X]`)
 - **Paths**: Always use `pathlib.Path`. Derive from `Path(__file__).resolve().parent`. Never hardcode absolute paths.
-- **Naming**: Skill folders use lowercase-hyphens (`gwas-lookup`). Python files use lowercase_underscores (`gwas_lookup.py`). One exception: `nutrigx_advisor` (legacy).
+- **Naming**: Skill folders use lowercase-hyphens (`gwas-lookup`). Python files use lowercase_underscores (`gwas_lookup.py`).
 - **Imports**: Sibling modules loaded via `importlib.util.spec_from_file_location` — no package structure.
 - **CLI**: Every skill script accepts `--input`, `--output`, and `--demo`. Use `argparse`.
 - **Output**: Skills write to `<output_dir>/report.md` (primary), plus `figures/`, `tables/`, `reproducibility/` subdirectories as needed. Return a `result.json` with structured findings.

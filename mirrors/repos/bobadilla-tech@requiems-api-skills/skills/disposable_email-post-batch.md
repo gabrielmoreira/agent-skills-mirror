@@ -17,9 +17,9 @@ Validate multiple email addresses in a single request (max 100 emails)
 
 ## Parameters
 
-| Name     | Type  | Required | Location | Description                                 |
-| -------- | ----- | -------- | -------- | ------------------------------------------- |
-| `emails` | array | yes      | body     | Array of email addresses to check (max 100) |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `emails` | array | yes | body | Array of email addresses to check (max 100) |
 
 ## Request Example
 
@@ -65,10 +65,10 @@ Validate multiple email addresses in a single request (max 100 emails)
 
 ## Response Fields
 
-| Field     | Type    | Description                           |
-| --------- | ------- | ------------------------------------- |
-| `results` | array   | Array of check results for each email |
-| `total`   | integer | Total number of emails checked        |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `results` | array | Array of check results for each email |
+| `total` | integer | Total number of emails checked |
 
 ## Errors
 

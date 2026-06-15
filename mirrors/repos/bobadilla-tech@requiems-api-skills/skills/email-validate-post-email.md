@@ -13,15 +13,13 @@ description: Validates a single email address and returns a full breakdown of sy
 
 ## Validate Email
 
-Validates a single email address and returns a full breakdown of syntax
-validity, MX record status, disposable domain check, normalized form, and any
-typo suggestion.
+Validates a single email address and returns a full breakdown of syntax validity, MX record status, disposable domain check, normalized form, and any typo suggestion.
 
 ## Parameters
 
-| Name    | Type   | Required | Location | Description                    |
-| ------- | ------ | -------- | -------- | ------------------------------ |
-| `email` | string | yes      | body     | The email address to validate. |
+| Name | Type | Required | Location | Description |
+| ---- | ---- | -------- | -------- | ----------- |
+| `email` | string | yes | body | The email address to validate. |
 
 ## Request Example
 
@@ -53,21 +51,19 @@ typo suggestion.
 
 ## Response Fields
 
-| Field          | Type    | Description                                                                                                                                                                                  |
-| -------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `email`        | string  | null                                                                                                                                                                                         |
-| `valid`        | boolean | Overall validity. True only when the address passes syntax validation and the domain has at least one MX record                                                                              |
-| `syntax_valid` | boolean | Whether the address is syntactically valid according to RFC 5322                                                                                                                             |
-| `mx_valid`     | boolean | Whether the domain has at least one MX record, meaning it can receive email                                                                                                                  |
-| `disposable`   | boolean | Whether the address uses a known disposable or temporary email domain                                                                                                                        |
-| `normalized`   | string  | null                                                                                                                                                                                         |
-| `domain`       | string  | null                                                                                                                                                                                         |
-| `suggestion`   | string  | A corrected domain name when the supplied domain looks like a typo of a well-known provider (e.g. gmial.com → gmail.com). Null when no close match is found or the domain is already correct |
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `email` | string|null | The email address exactly as supplied in the request body; null when syntax is invalid |
+| `valid` | boolean | Overall validity. True only when the address passes syntax validation and the domain has at least one MX record |
+| `syntax_valid` | boolean | Whether the address is syntactically valid according to RFC 5322 |
+| `mx_valid` | boolean | Whether the domain has at least one MX record, meaning it can receive email |
+| `disposable` | boolean | Whether the address uses a known disposable or temporary email domain |
+| `normalized` | string|null | The canonical form of the address after normalization (lowercase, plus-tag removal, alias-domain resolution). Null when syntax is invalid |
+| `domain` | string|null | The domain part of the address (after @). Null when syntax is invalid |
+| `suggestion` | string | A corrected domain name when the supplied domain looks like a typo of a well-known provider (e.g. gmial.com → gmail.com). Null when no close match is found or the domain is already correct |
 
 ## Errors
 
-- `422` **validation_failed** — The email field is missing from the request
-  body.
-- `400` **bad_request** — The request body is missing, not valid JSON, or
-  contains unknown fields.
+- `422` **validation_failed** — The email field is missing from the request body.
+- `400` **bad_request** — The request body is missing, not valid JSON, or contains unknown fields.
 - `500` **internal_error** — Unexpected server error.

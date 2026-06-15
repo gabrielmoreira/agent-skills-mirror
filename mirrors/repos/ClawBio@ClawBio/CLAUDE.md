@@ -28,7 +28,7 @@ When the user asks a question, match it to a skill and act:
 | Drug interactions, pharmacogenomics, "what drugs should I worry about", 23andMe medications, CYP2D6, CYP2C19, warfarin, CPIC | `skills/pharmgx-reporter/` | Run `pharmgx_reporter.py` |
 | Medication photo, pill photo, drug package, tablet image, blister pack, "what medicine is this" | `skills/drug-photo/` | Read SKILL.md, apply methodology |
 | Genomic diversity, HEIM score, equity, population representation, FST, heterozygosity | `skills/equity-scorer/` | Run `equity_scorer.py` |
-| Nutrition, nutrigenomics, "what should I eat", diet genetics, MTHFR, folate, vitamin D, caffeine, lactose, omega-3 | `skills/nutrigx-advisor/` | Run `nutrigx_advisor.py` |
+| Nutrition, nutrigenomics, "what should I eat", diet genetics, MTHFR, folate, vitamin D, caffeine, lactose, omega-3 | `skills/nutrigx/` | Run `nutrigx.py` |
 | Ancestry, PCA, population structure, admixture, SGDP | `skills/claw-ancestry-pca/` | Read SKILL.md, apply methodology |
 | Semantic similarity, disease neglect, research gaps, NTDs, SII | `skills/claw-semantic-sim/` | Read SKILL.md, apply methodology |
 | Metagenomics, microbiome profiling, Kraken2, HUMAnN3, resistome, shotgun metagenomics | `skills/claw-metagenomics/` | Run `metagenomics_profiler.py` |
@@ -49,7 +49,7 @@ When the user asks a question, match it to a skill and act:
 | PubMed search, "summarise PubMed papers about X", "recent papers on gene/disease", research briefing, gene papers, disease papers | `skills/pubmed-summariser/` | Run `pubmed_summariser.py` |
 | Target evidence, omics evidence, translational evidence, target triage, gene evidence aggregation | `skills/omics-target-evidence-mapper/` | Run `omics_target_evidence_mapper.py` |
 | Target validation, GO/NO-GO, drug target scoring, target prioritisation, target assessment | `skills/target-validation-scorer/` | Run `target_validation_scorer.py` |
-| Upstream single-cell pipeline, run nf-core/scrnaseq, FASTQ to h5ad, 10x Chromium FASTQ preprocessing, generate h5ad from raw FASTQs, STARsolo from FASTQ, alevin-fry from FASTQ, run nextflow scrnaseq | `skills/nfcore-scrnaseq-wrapper/` | Run `nfcore_scrnaseq_wrapper.py` |
+| Upstream single-cell pipeline, run nf-core/scrnaseq, FASTQ to h5ad, 10x Chromium FASTQ preprocessing, generate h5ad from raw FASTQs, STARsolo from FASTQ, alevin-fry from FASTQ, run nextflow scrnaseq | `skills/nfcore-scrnaseq-wrapper/` | Run `nfcore_scrnaseq_wrapper.py` (alias `scrnaseq-pipeline`) |
 | Single-cell RNA-seq, Scanpy, clustering, marker genes, doublet removal, h5ad | `skills/scrna-orchestrator/` | Run `scrna_orchestrator.py` |
 | scVI, scANVI, single-cell embedding, latent embedding, batch integration, integrated h5ad | `skills/scrna-embedding/` | Run `scrna_embedding.py` |
 | Differential expression visualisation, volcano plot styling, marker heatmap, DE report plots, contrast visualisation | `skills/diff-visualizer/` | Run `diff_visualizer.py` |
@@ -92,11 +92,11 @@ When the user asks a question, match it to a skill and act:
 
 ## How to Use a Skill
 
-### Skills with Python scripts (pharmgx-reporter, equity-scorer, nutrigx_advisor, claw-metagenomics, genome-compare, bio-orchestrator, variant-annotation, bioconductor-bridge, clinical-trial-finder, data-extractor, illumina-bridge, pubmed-summariser, omics-target-evidence-mapper, target-validation-scorer, nfcore-scrnaseq-wrapper, nfcore-rnaseq-wrapper, nfcore-sarek-wrapper, scrna-orchestrator, scrna-embedding, diff-visualizer, proteomics-de, struct-predictor, clinical-variant-reporter, multiqc-reporter, labstep, clinpgx, gwas-prs, gwas-lookup, methylation-clock, profile-report, ukb-navigator, galaxy-bridge, flow-bio, rnaseq-de, protocols-io, soul2dna, genome-match, recombinator, fine-mapping, cell-detection, wes-clinical-report-en, wes-clinical-report-es, proteomics-clock, sample-qc-triage, crispr-screen-triage, marker-dominance-mapper, busco-assessor, fastreer)
+### Skills with Python scripts (pharmgx-reporter, equity-scorer, nutrigx, claw-metagenomics, genome-compare, bio-orchestrator, variant-annotation, bioconductor-bridge, clinical-trial-finder, data-extractor, illumina-bridge, pubmed-summariser, omics-target-evidence-mapper, target-validation-scorer, nfcore-scrnaseq-wrapper, nfcore-rnaseq-wrapper, nfcore-sarek-wrapper, scrna-orchestrator, scrna-embedding, diff-visualizer, proteomics-de, struct-predictor, clinical-variant-reporter, multiqc-reporter, labstep, clinpgx, gwas-prs, gwas-lookup, methylation-clock, profile-report, ukb-navigator, galaxy-bridge, flow-bio, rnaseq-de, protocols-io, soul2dna, genome-match, recombinator, fine-mapping, cell-detection, wes-clinical-report-en, wes-clinical-report-es, proteomics-clock, sample-qc-triage, crispr-screen-triage, marker-dominance-mapper, busco-assessor, fastreer)
 1. Read the skill's `SKILL.md` for domain context
 2. Run the Python script with correct CLI arguments (see below)
 3. Show the user the output — open any generated figures and explain results
-4. **DEMO FALLBACK (MANDATORY):** If the user has no input file, do NOT refuse or just ask for a file. Instead, immediately offer to run the skill with built-in demo/synthetic data (use the `--demo` flag or the demo files listed in the Demo Data table below). Say something like "I'll run a demo with synthetic data so you can see the report — here it is!" and then run it. Most skills support `--demo`. For pharmgx, use `--input skills/pharmgx-reporter/demo_patient.txt`. For nutrigx, use `--input skills/nutrigx-advisor/synthetic_patient.txt`. Every skill has demo data — never tell the user you can't run a skill because they don't have a file.
+4. **DEMO FALLBACK (MANDATORY):** If the user has no input file, do NOT refuse or just ask for a file. Instead, immediately offer to run the skill with built-in demo/synthetic data (use the `--demo` flag or the demo files listed in the Demo Data table below). Say something like "I'll run a demo with synthetic data so you can see the report — here it is!" and then run it. Most skills support `--demo`. For pharmgx, use `--input skills/pharmgx-reporter/demo_patient.txt`. For nutrigx, use `--input skills/nutrigx/synthetic_patient.txt`. Every skill has demo data — never tell the user you can't run a skill because they don't have a file.
 
 ### Skills with SKILL.md only (no Python yet)
 1. Read the skill's `SKILL.md` thoroughly
@@ -116,7 +116,7 @@ python skills/equity-scorer/equity_scorer.py \
   --input <vcf_or_csv> [--pop-map <csv>] [--output <dir>] [--weights 0.35,0.25,0.20,0.20]
 
 # Nutrigenomics advisor from genetic data
-python skills/nutrigx-advisor/nutrigx_advisor.py \
+python skills/nutrigx/nutrigx.py \
   --input <patient_file> --output <report_dir>
 
 # scRNA-seq pipeline from AnnData (.h5ad)
@@ -209,6 +209,13 @@ python clawbio.py run sarek-pipeline --check \
   --input samplesheet.csv --output /tmp/sarek_check --genome GATK.GRCh38 --tools haplotypecaller
 python clawbio.py run sarek-pipeline --demo --output /tmp/sarek_demo
 # Full 173-flag surface (154 Sarek passthrough + 19 wrapper controls): python skills/nfcore-sarek-wrapper/nfcore_sarek_wrapper.py --help
+
+# Upstream single-cell RNA-seq — nf-core/scrnaseq 4.1.0 (FASTQ → h5ad count matrix)
+python clawbio.py run scrnaseq-pipeline \
+  --input samplesheet.csv --output <report_dir> --preset standard --genome GRCh38
+python clawbio.py run scrnaseq-pipeline --check --demo --output /tmp/scrnaseq_check
+python clawbio.py run scrnaseq-pipeline --demo --output /tmp/scrnaseq_demo
+# Full flag surface: python skills/nfcore-scrnaseq-wrapper/nfcore_scrnaseq_wrapper.py --help
 
 python skills/rnaseq-de/rnaseq_de.py \
   --counts <counts_csv_or_tsv> --metadata <metadata_csv_or_tsv> \
@@ -339,7 +346,7 @@ For instant demos when the user has no data:
 | File | Location | Use With |
 |---|---|---|
 | Synthetic patient (PGx, 31 SNPs) | `skills/pharmgx-reporter/demo_patient.txt` | pharmgx-reporter |
-| Synthetic patient (NutriGx, 40 SNPs) | `skills/nutrigx-advisor/synthetic_patient.txt` | nutrigx_advisor |
+| Synthetic patient (NutriGx, 40 SNPs) | `skills/nutrigx/synthetic_patient.txt` | nutrigx |
 | PBMC3k raw demo (fallback synthetic) | `--demo` flag | scrna-orchestrator |
 | Demo VCF (50 samples, 5 populations) | `examples/demo_populations.vcf` | equity-scorer |
 | Population map | `examples/demo_population_map.csv` | equity-scorer |
@@ -375,13 +382,14 @@ For instant demos when the user has no data:
 | Corpas 30x SV calls (WGS) | `corpas-30x/subsets/sv_calls.vcf.gz` | variant-annotation |
 | Corpas 30x CNV calls (WGS) | `corpas-30x/subsets/cnv_calls.vcf.gz` | variant-annotation |
 | Corpas 30x PGx loci (WGS) | `corpas-30x/subsets/pgx_loci.vcf.gz` | pharmgx-reporter |
-| Corpas 30x NutriGx loci (WGS) | `corpas-30x/subsets/nutrigx_loci.vcf.gz` | nutrigx_advisor |
+| Corpas 30x NutriGx loci (WGS) | `corpas-30x/subsets/nutrigx_loci.vcf.gz` | nutrigx |
 | Corpas 30x QC baselines | `corpas-30x/baselines/qc_summary.json` | Benchmark tests |
 | Sample QC demo metrics (5 synthetic samples) | `skills/sample-qc-triage/demo_qc_metrics.csv` | sample-qc-triage |
 | CRISPR screen demo counts (12 synthetic guides, 6 genes) | `skills/crispr-screen-triage/demo_screen_counts.csv` | crispr-screen-triage |
 | Marker dominance demo counts (6 synthetic spots) | `skills/marker-dominance-mapper/demo_marker_counts.csv` | marker-dominance-mapper |
 | Flow.bio demo (live API + offline cache) | `--demo` flag / `skills/flow-bio/data/demo_cache.json` | flow-bio |
 | Sarek demo (upstream nf-core/sarek `-profile test` dataset, no local files) | `--demo` flag | nfcore-sarek-wrapper |
+| scRNA-seq demo (upstream nf-core/scrnaseq `-profile test` dataset, no local files) | `--demo` flag | nfcore-scrnaseq-wrapper |
 | Phylogenetics Builder demo FASTA (5 synthetic sequences, 50 bp) | `skills/phylogenetics-builder/demo_alignment.fasta` | phylogenetics-builder |
 
 ### Demo Commands
@@ -400,8 +408,8 @@ python skills/equity-scorer/equity_scorer.py \
   --input examples/sample_ancestry.csv --output /tmp/equity_csv_demo
 
 # NutriGx demo
-python skills/nutrigx-advisor/nutrigx_advisor.py \
-  --input skills/nutrigx-advisor/synthetic_patient.txt --output /tmp/nutrigx_demo
+python skills/nutrigx/nutrigx.py \
+  --input skills/nutrigx/synthetic_patient.txt --output /tmp/nutrigx_demo
 
 # MultiQC demo
 python skills/multiqc-reporter/multiqc_reporter.py --demo --output /tmp/multiqc_demo
@@ -490,6 +498,9 @@ python skills/flow-bio/flow_bio.py --search "RNA-seq" --output /tmp/flow_search
 
 # Sarek upstream variant calling demo (upstream -profile test dataset)
 python clawbio.py run sarek-pipeline --demo --output /tmp/sarek_demo
+
+# scRNA-seq upstream preprocessing demo (upstream -profile test dataset)
+python clawbio.py run scrnaseq-pipeline --demo --output /tmp/scrnaseq_demo
 
 # Sample QC triage demo
 python skills/sample-qc-triage/sample_qc_triage.py --demo --output /tmp/sample_qc_demo

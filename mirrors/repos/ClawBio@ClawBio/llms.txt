@@ -50,7 +50,7 @@
 - [profile-report](skills/profile-report/SKILL.md) — alias `profile`: Unified personal genomic profile report
 - [genome-compare](skills/genome-compare/SKILL.md) — alias `compare`: IBS comparison vs George Church plus ancestry estimation
 - [equity-scorer](skills/equity-scorer/SKILL.md) — alias `equity`: HEIM diversity metrics from VCF or ancestry CSV
-- [nutrigx_advisor](skills/nutrigx_advisor/SKILL.md) — alias `nutrigx`: Personalised nutrigenomics from consumer genetic data
+- [nutrigx](skills/nutrigx/SKILL.md) — alias `nutrigx`: Personalised nutrigenomics from consumer genetic data
 - [claw-metagenomics](skills/claw-metagenomics/SKILL.md) — alias `metagenomics`: Kraken2 / RGI / HUMAnN3 metagenomic profiling
 - [galaxy-bridge](skills/galaxy-bridge/SKILL.md) — alias `galaxy`: Search, run, and chain 8,000+ Galaxy tools
 - [scrna-orchestrator](skills/scrna-orchestrator/SKILL.md) — alias `scrna`: Scanpy single-cell RNA-seq automation

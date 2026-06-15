@@ -3,7 +3,7 @@ name: pagerduty-automation
 description: "Automate PagerDuty tasks via Rube MCP (Composio): manage incidents, services, schedules, escalation policies, and on-call rotations. Always search tools first for current schemas."
 requires:
   mcp: [rube]
-category: devops
+category: observability
 ---
 
 # PagerDuty Automation via Rube MCP
