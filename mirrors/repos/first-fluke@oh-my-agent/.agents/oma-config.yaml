@@ -65,6 +65,31 @@ telemetry: false
 #   auto_update: true               # upgrade serena-agent on every `oma update`
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Serena memory reaper
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Serena spawns a language-server stack (tsserver, pyright, …) per open project
+# and keeps it warm for the whole session. With several projects open this adds
+# up (~300 MB each). The reaper kills idle LSP children; Serena self-heals and
+# respawns them on the next tool call (no restart needed).
+#
+# On-demand:   `oma serena reap --dry-run`   (preview, never kills)
+#              `oma serena reap`              (interactive — always runs)
+# Periodic:    `oma serena reaper:enable`     (installs a 5-min scheduled task)
+#              `oma serena reaper:disable`
+# Diagnostics: shown in `oma doctor` (per-root KEEP/REAP + signal source)
+#
+# `enabled` gates ONLY the automatic/scheduled (`--quiet`) path — opt-in. An
+# interactive `oma serena reap` always runs regardless. Defaults shown below.
+#
+# serena_reaper:
+#   enabled: false        # opt-in: scheduled task no-ops until set true
+#   policy: lru           # lru | idle
+#   keepWarm: 2           # LRU: keep this many most-recently-active projects warm
+#   idleMinutes: 10       # idle policy threshold / LRU secondary floor
+#   graceSeconds: 90      # in-flight protection; SIGTERM→SIGKILL window
+
+# ─────────────────────────────────────────────────────────────────────────────
 # oma-docs documentation drift detection
 # ─────────────────────────────────────────────────────────────────────────────
 

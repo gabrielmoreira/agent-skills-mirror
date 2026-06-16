@@ -534,7 +534,7 @@ Example of comms_logger configuration for logging specific operations only:
 
 Note: Compression has seven different components, including layer reduction, weight quantization, activation quantization, sparse pruning, row pruning, head pruning, and channel pruning. We explain them one by one with simple json examples. Read more about how to use the DeepSpeed Compression library in our tutorial.
 
-Note: Layer reduction works much better when using knowledage distillation (learn more in our tutorial):
+Note: Layer reduction works much better when using knowledge distillation (learn more in our tutorial):
 
 layer_reduction: [dictionary]
 

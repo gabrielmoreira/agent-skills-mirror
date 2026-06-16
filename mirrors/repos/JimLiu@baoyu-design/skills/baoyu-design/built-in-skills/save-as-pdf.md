@@ -20,11 +20,21 @@ Export the current HTML design as a print-friendly HTML file optimized for PDF e
      - `break-inside: avoid` to prevent splitting elements across pages
      - `break-after: page` where appropriate
    - Convert scroll-based or interactive layouts to static paged layouts
-   - Remove hover states, animations, transitions, and `overflow: hidden` clipping
+   - Remove hover states and `overflow: hidden` clipping; freeze animations/transitions at their end state (recipe below)
    - Remove any JavaScript interactivity that doesn't make sense in print
    - Preserve all visual content — images, SVGs, colors, typography
 
-If using unmodified deck-stage.js, your deck should already be print-ready, so you can just copy the file and add the auto-print script!
+   **Jump animations to their end state.** Do NOT use `animation: none` (that reverts fade-ins to the hidden base). Instead add to `@media print`:
+   ```css
+   *, *::before, *::after {
+     animation-delay: -99s !important; animation-duration: .001s !important;
+     animation-iteration-count: 1 !important; animation-fill-mode: both !important;
+     animation-play-state: running !important; transition-duration: 0s !important;
+   }
+   ```
+   For `<deck-stage>` decks, also set `data-deck-active` on **every** direct-child slide (not just the current one) so `[data-deck-active]`-keyed entrance styles resolve on every page. deck-stage.js already lays out one slide per page at print, so with the CSS above and the attribute set, the copy is print-ready.
+
+   For `.dc.html` Design Component files, keep the `<script src="support.js">` reference and the `<x-dc>` template intact — do NOT flatten the rendered output into static HTML. The runtime mounts React at load time, so layer your `@media print` CSS on top of the existing document and let the component render itself in the print tab.
 
 3. **Test the file** by previewing it per your selected harness reference, then make sure there are no JS errors. No need to screenshot unless asked.
 

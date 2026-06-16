@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `OpenSenseNova/SenseNova-Skills` — 26 default patterns, 14 followed patterns, 378 file(s) materialized.
+Mirror of `OpenSenseNova/SenseNova-Skills` — 26 default patterns, 16 followed patterns, 380 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `OpenSenseNova/SenseNova-Skills` — 26 default patterns, 14 followed 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 14 |
-| Files         | 378 |
+| Followed pats | 16 |
+| Files         | 380 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,12 +59,14 @@ Mirror of `OpenSenseNova/SenseNova-Skills` — 26 default patterns, 14 followed 
 - `docs/sn-ppt-generate_cn.md`
 - `docs/sn-data-analysis_cn.md`
 - `docs/sn-deep-research_cn.md`
+- `docs/faq_CN.md`
 - `docs/sn-infographic-examples.md`
 - `INSTALL.md`
 - `docs/sn-image-generate_en.md`
 - `docs/sn-ppt-generate.md`
 - `docs/sn-data-analysis.md`
 - `docs/sn-deep-research.md`
+- `docs/faq.md`
 
 ## File Index
 
@@ -436,20 +438,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 362 | ✓ | [`skills/sn-search-social-en/scripts/youtube_search.py`](skills/sn-search-social-en/scripts/youtube_search.py) |
 | 363 | ✓ | [`skills/sn-search-social-en/SKILL.md`](skills/sn-search-social-en/SKILL.md) |
 | 364 | ✓ | [`skills/sn-update/SKILL.md`](skills/sn-update/SKILL.md) |
-| 365 | → | [`docs/sn-data-analysis_cn.md`](docs/sn-data-analysis_cn.md) |
-| 366 | → | [`docs/sn-data-analysis.md`](docs/sn-data-analysis.md) |
-| 367 | → | [`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md) |
-| 368 | → | [`docs/sn-deep-research.md`](docs/sn-deep-research.md) |
-| 369 | → | [`docs/sn-image-generate_en.md`](docs/sn-image-generate_en.md) |
-| 370 | → | [`docs/sn-image-generate.md`](docs/sn-image-generate.md) |
-| 371 | → | [`docs/sn-infographic-examples_CN.md`](docs/sn-infographic-examples_CN.md) |
-| 372 | → | [`docs/sn-infographic-examples.md`](docs/sn-infographic-examples.md) |
-| 373 | → | [`docs/sn-ppt-generate_cn.md`](docs/sn-ppt-generate_cn.md) |
-| 374 | → | [`docs/sn-ppt-generate.md`](docs/sn-ppt-generate.md) |
-| 375 | → | [`INSTALL_CN.md`](INSTALL_CN.md) |
-| 376 | → | [`INSTALL.md`](INSTALL.md) |
-| 377 | → | [`README_CN.md`](README_CN.md) |
-| 378 | → | [`README.md`](README.md) |
+| 365 | → | [`docs/faq_CN.md`](docs/faq_CN.md) |
+| 366 | → | [`docs/faq.md`](docs/faq.md) |
+| 367 | → | [`docs/sn-data-analysis_cn.md`](docs/sn-data-analysis_cn.md) |
+| 368 | → | [`docs/sn-data-analysis.md`](docs/sn-data-analysis.md) |
+| 369 | → | [`docs/sn-deep-research_cn.md`](docs/sn-deep-research_cn.md) |
+| 370 | → | [`docs/sn-deep-research.md`](docs/sn-deep-research.md) |
+| 371 | → | [`docs/sn-image-generate_en.md`](docs/sn-image-generate_en.md) |
+| 372 | → | [`docs/sn-image-generate.md`](docs/sn-image-generate.md) |
+| 373 | → | [`docs/sn-infographic-examples_CN.md`](docs/sn-infographic-examples_CN.md) |
+| 374 | → | [`docs/sn-infographic-examples.md`](docs/sn-infographic-examples.md) |
+| 375 | → | [`docs/sn-ppt-generate_cn.md`](docs/sn-ppt-generate_cn.md) |
+| 376 | → | [`docs/sn-ppt-generate.md`](docs/sn-ppt-generate.md) |
+| 377 | → | [`INSTALL_CN.md`](INSTALL_CN.md) |
+| 378 | → | [`INSTALL.md`](INSTALL.md) |
+| 379 | → | [`README_CN.md`](README_CN.md) |
+| 380 | → | [`README.md`](README.md) |
 
 ---
 

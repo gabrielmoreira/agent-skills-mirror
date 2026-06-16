@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 26 default patterns, 26 followed patterns, 3228 file(s) materialized.
+Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 26 default patterns, 26 followed patterns, 3241 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 26 |
-| Files         | 3228 |
+| Files         | 3241 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -3286,32 +3286,45 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3200 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata/agents/openai.yaml`](skills/64-tmonk-mcp-stata/skills/stata/agents/openai.yaml) |
 | 3201 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata/manifest.json`](skills/64-tmonk-mcp-stata/skills/stata/manifest.json) |
 | 3202 | ✓ | [`skills/64-tmonk-mcp-stata/skills/stata/SKILL.md`](skills/64-tmonk-mcp-stata/skills/stata/SKILL.md) |
-| 3203 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 3204 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 3205 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |
-| 3206 | → | [`docs/EMPIRICAL_TOOLS_2026-06.md`](docs/EMPIRICAL_TOOLS_2026-06.md) |
-| 3207 | → | [`docs/EVALS.md`](docs/EVALS.md) |
-| 3208 | → | [`docs/FAQ.md`](docs/FAQ.md) |
-| 3209 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
-| 3210 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
-| 3211 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
-| 3212 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
-| 3213 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
-| 3214 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| 3215 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
-| 3216 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
-| 3217 | → | [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
-| 3218 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
-| 3219 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
-| 3220 | → | [`docs/TRUST.md`](docs/TRUST.md) |
-| 3221 | → | [`README-ja.md`](README-ja.md) |
-| 3222 | → | [`README-ko.md`](README-ko.md) |
-| 3223 | → | [`README-zh-CN.md`](README-zh-CN.md) |
-| 3224 | → | [`README-zh-TW.md`](README-zh-TW.md) |
-| 3225 | → | [`README.md`](README.md) |
-| 3226 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
-| 3227 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
-| 3228 | → | [`tools/README.md`](tools/README.md) |
+| 3203 | ✓ | [`skills/65-game-theory-paper-writer/agents/openai.yaml`](skills/65-game-theory-paper-writer/agents/openai.yaml) |
+| 3204 | ✓ | [`skills/65-game-theory-paper-writer/references/model-toolkit.md`](skills/65-game-theory-paper-writer/references/model-toolkit.md) |
+| 3205 | ✓ | [`skills/65-game-theory-paper-writer/references/paper-writing.md`](skills/65-game-theory-paper-writer/references/paper-writing.md) |
+| 3206 | ✓ | [`skills/65-game-theory-paper-writer/references/revision-and-review.md`](skills/65-game-theory-paper-writer/references/revision-and-review.md) |
+| 3207 | ✓ | [`skills/65-game-theory-paper-writer/references/topic-and-modeling.md`](skills/65-game-theory-paper-writer/references/topic-and-modeling.md) |
+| 3208 | ✓ | [`skills/65-game-theory-paper-writer/SKILL.md`](skills/65-game-theory-paper-writer/SKILL.md) |
+| 3209 | ✓ | [`skills/66-zheng-siyao-empirical-research-skills/citation-fidelity/SKILL.md`](skills/66-zheng-siyao-empirical-research-skills/citation-fidelity/SKILL.md) |
+| 3210 | ✓ | [`skills/66-zheng-siyao-empirical-research-skills/codebook-pass/SKILL.md`](skills/66-zheng-siyao-empirical-research-skills/codebook-pass/SKILL.md) |
+| 3211 | ✓ | [`skills/66-zheng-siyao-empirical-research-skills/did-reviewer/SKILL.md`](skills/66-zheng-siyao-empirical-research-skills/did-reviewer/SKILL.md) |
+| 3212 | ✓ | [`skills/66-zheng-siyao-empirical-research-skills/econ-reviewer/SKILL.md`](skills/66-zheng-siyao-empirical-research-skills/econ-reviewer/SKILL.md) |
+| 3213 | ✓ | [`skills/66-zheng-siyao-empirical-research-skills/grillme/SKILL.md`](skills/66-zheng-siyao-empirical-research-skills/grillme/SKILL.md) |
+| 3214 | ✓ | [`skills/66-zheng-siyao-empirical-research-skills/latex-table/SKILL.md`](skills/66-zheng-siyao-empirical-research-skills/latex-table/SKILL.md) |
+| 3215 | ✓ | [`skills/66-zheng-siyao-empirical-research-skills/R-optimizer/SKILL.md`](skills/66-zheng-siyao-empirical-research-skills/R-optimizer/SKILL.md) |
+| 3216 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 3217 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 3218 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |
+| 3219 | → | [`docs/EMPIRICAL_TOOLS_2026-06.md`](docs/EMPIRICAL_TOOLS_2026-06.md) |
+| 3220 | → | [`docs/EVALS.md`](docs/EVALS.md) |
+| 3221 | → | [`docs/FAQ.md`](docs/FAQ.md) |
+| 3222 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
+| 3223 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
+| 3224 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
+| 3225 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
+| 3226 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
+| 3227 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| 3228 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
+| 3229 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
+| 3230 | → | [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
+| 3231 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
+| 3232 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
+| 3233 | → | [`docs/TRUST.md`](docs/TRUST.md) |
+| 3234 | → | [`README-ja.md`](README-ja.md) |
+| 3235 | → | [`README-ko.md`](README-ko.md) |
+| 3236 | → | [`README-zh-CN.md`](README-zh-CN.md) |
+| 3237 | → | [`README-zh-TW.md`](README-zh-TW.md) |
+| 3238 | → | [`README.md`](README.md) |
+| 3239 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
+| 3240 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
+| 3241 | → | [`tools/README.md`](tools/README.md) |
 
 ---
 

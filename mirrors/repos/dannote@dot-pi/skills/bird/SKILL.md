@@ -122,11 +122,11 @@ bird delete <tweet-id>
 
 ## Global Options
 
-| Flag               | Description            |
-| ------------------ | ---------------------- |
-| `--json`           | JSON output            |
-| `-n, --count <n>`  | Number of results      |
-| `--cursor <token>` | Resume from cursor     |
+| Flag               | Description        |
+| ------------------ | ------------------ |
+| `--json`           | JSON output        |
+| `-n, --count <n>`  | Number of results  |
+| `--cursor <token>` | Resume from cursor |
 
 ## JSON Output Schema
 

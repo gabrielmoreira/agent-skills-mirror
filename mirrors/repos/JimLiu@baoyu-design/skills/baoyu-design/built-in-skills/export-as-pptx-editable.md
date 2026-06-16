@@ -6,12 +6,16 @@ description: "Export as PPTX (editable)\nNative text & shapes — editable in Po
 
 Export an HTML slide deck to a `.pptx` with native PowerPoint objects (editable text, shapes, images). One `gen_pptx` tool call does everything: capture, font handling, generation, download.
 
+> **Precondition — decks only, not any HTML.** This exports a *slide-structured deck*: one fixed-size slide per `selector`, navigable — ideally the `deck-stage` component or the [make-a-deck](make-a-deck.md) format this skill produces. It is **not** a general HTML→PPTX converter. Pointed at an arbitrary page (a landing page, dashboard, report, or long scrolling document) it captures one oversized or broken "slide". If the target isn't a discrete-slide deck, rebuild it as one (see [make-a-deck](make-a-deck.md)) before exporting, or tell the user it isn't supported.
+
 ## What you do
 
 1. **Know the deck.** You probably wrote it. If not, read the HTML to find: the slide selector, how to navigate (function name? class toggle?), what fonts it uses, whether there's a scaling wrapper.
 2. **Surface/preview the deck** per your selected harness reference so it's visible in the user's preview surface.
 3. **Call `gen_pptx`** with the inputs below.
 4. **Read the validation flags** in the result and decide if you need to retry.
+
+> **Claude Code:** there is no `gen_pptx` tool — run it as a local CLI. Serve the deck over HTTP, write the inputs below to a JSON file, then `node <skill>/agents/gen-pptx/dist/cli.mjs --url <servedDeckUrl> --config <jsonPath> --out designs/<project>`, and read `flags` from the printed JSON. Full invocation + one-time setup: [`../references/claude.md`](../references/claude.md) → "Exporting to PPTX".
 
 ## gen_pptx inputs
 
@@ -61,6 +65,7 @@ The result lists flags. **These are warnings, not errors** — read each message
 - `notes_count_mismatch` — #speaker-notes length ≠ slides length. Notes attach by index so the tail will be wrong.
 - `no_speaker_notes` — deck has no #speaker-notes tag. Expected if there are no notes.
 - `fonts_timeout` — fonts.ready took >8s. Font URLs may be unreachable.
+- `font_swap_failed` — one or more `fontSwaps` targets never loaded (misspelled family, or Google Fonts doesn't serve it), so the deck was laid out with a fallback while the file names the swap font. Retry with a corrected or different family, or fall back to web-safe fonts. Whatever you do next, tell the user plainly which fonts couldn't be applied — e.g. "Heads up: Poppins couldn't be loaded during export, so the deck uses a stand-in font and text may wrap differently. Want me to try a different font?"
 - `images_failed` — images didn't decode before capture. Usually a 404 or CORS.
 - `reset_selector_miss` — your `resetTransformSelector` matched nothing.
 

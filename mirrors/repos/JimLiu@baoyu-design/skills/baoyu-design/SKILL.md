@@ -3,17 +3,15 @@ name: baoyu-design
 description: >-
   Create polished design artifacts as self-contained HTML: UI mockups, interactive
   prototypes, wireframes, landing pages, dashboards, app screens, mobile apps, slide
-  decks, and visual explorations. Use whenever the user asks to design, mock up,
-  prototype, wireframe, visualize, or explore an interface, product screen, user
-  flow, content layout, visual artifact, or pitch/deck concept, even if they do not
-  say "design". Also use for setting up, importing, or authoring reusable design
-  systems, UI kits, brand tokens, component libraries, or loadable design-system
-  bundles. The skill guides context gathering, clarifying questions, choosing
-  fidelity, selecting or binding design systems, creating project folders, building
-  one or more HTML deliverables, previewing them, and verifying they load cleanly.
-  It is harness-agnostic for Claude Code, Cursor, Codex Agent, and similar
-  file-capable agents; harness-specific ask, preview, screenshot, and verification
-  tools are resolved from references/.
+  decks (a.k.a. PPT / PowerPoint presentations), and visual explorations. Use whenever
+  the user asks to design, mock up, prototype, wireframe, visualize, explore, or make a
+  PPT/deck for an interface, product screen, user flow, content layout, visual artifact,
+  or pitch/deck concept, even if they do not say "design". Also use to export a deck
+  built with this skill to PowerPoint (PPT/PPTX) — but only decks authored here
+  (deck-stage / this skill's slide-structured HTML), NOT arbitrary HTML, so confirm the
+  target is such a deck first. Also use for setting up, importing, or authoring reusable
+  design systems, UI kits, brand tokens, or component libraries. Harness-agnostic for
+  Claude Code, Cursor, Codex Agent, and similar file-capable agents.
 ---
 
 # Design
@@ -37,8 +35,9 @@ You are an expert designer producing design artifacts as HTML on the user's beha
 - The user gives a **GitHub repo as a design source** (design-system data, a component library, or product code to reference) → read [`built-in-skills/import-from-github.md`](built-in-skills/import-from-github.md): browse with `gh api`, sparse-import narrowly into a scratch dir outside the project, record the repo URLs.
 - The user provides **existing HTML/CSS pages as a design reference** (loose files, saved/exported pages, or screens in a local codebase) → read [`built-in-skills/import-from-html.md`](built-in-skills/import-from-html.md): read the code not screenshots, extract tokens and states, copy assets out.
 - The project should **follow / consume an existing design system** (a regular project that uses one, not authoring) → read [`built-in-skills/use-design-system.md`](built-in-skills/use-design-system.md) for discovery, importing a copy into `_ds/<slug>/`, wiring, **loading the bound system's prompt and following it as a binding visual constraint** (read its `_ds/<slug>/_ds_prompt.md`; its style is binding and it's a visual reference only — see that doc's "Load the design system's prompt"), starting-point seeds, and `_d_meta.json`.
+- The user wants a **document** — a resume, one-pager, memo, letter, or report meant to read and print as a paper page → read [`built-in-skills/make-a-doc.md`](built-in-skills/make-a-doc.md).
 - **Otherwise (default)** → read both [`built-in-skills/hi-fi-design.md`](built-in-skills/hi-fi-design.md) **and** [`built-in-skills/interactive-prototype.md`](built-in-skills/interactive-prototype.md).
-- Other output types (deck, mobile app, animation, PDF/PPTX export, etc.) → read the matching file. The full list is at the bottom of `system-prompt.md`.
+- Other output types (deck, mobile app, animation, PDF/PPTX export, etc.) → read the matching file. The full list is at the bottom of `system-prompt.md`. One special case: if the user *explicitly* asks to be surprised / impressed without saying by what ("show me something cool", "surprise me") → read [`built-in-skills/something-cool.md`](built-in-skills/something-cool.md) and follow it (ask what they want first, then build). This is opt-in only — never the default.
 
 **4. Ask clarifying questions.** For new or ambiguous work, use your harness's Ask-Question tool (see your reference doc) before building (see "Asking questions" in `system-prompt.md`). Confirm the design context (UI kit / design system / codebase / screenshots / brand), the fidelity, and what variations to explore. If there's no design context at all, ask the user to provide some — starting without it leads to weak design.
 

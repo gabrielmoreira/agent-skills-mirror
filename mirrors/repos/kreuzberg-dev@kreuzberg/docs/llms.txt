@@ -1,12 +1,12 @@
 # Kreuzberg
 
-> High-performance document intelligence library with a Rust core and bindings for 12 languages. Extract text, metadata, and structured data from 90+ file formats including PDF, DOCX, PPTX, XLSX, HTML, images (with OCR), email, archives, and more.
+> High-performance document intelligence library with a Rust core and polyglot SDKs. Extract text, metadata, and structured data from 96 file formats including PDF, DOCX, PPTX, XLSX, HTML, images (with OCR), email, archives, and more.
 
 Kreuzberg provides async/sync APIs, text chunking, language detection, keyword extraction, and an extensible plugin system. It is 10-50x faster than pure-Python alternatives thanks to its Rust core.
 
 ## Getting Started
 
-- [Installation](https://docs.kreuzberg.dev/getting-started/installation/): Install Kreuzberg for Python, TypeScript, Ruby, Rust, Go, Java, C#, PHP, Elixir, or WebAssembly
+- [Installation](https://docs.kreuzberg.dev/getting-started/installation/): Install Kreuzberg for Python, TypeScript, Rust, Go, Java/Kotlin JVM, Kotlin Android, C#, Ruby, PHP, Elixir, R, Dart, Swift, Zig, C, or WebAssembly
 - [Quick Start](https://docs.kreuzberg.dev/getting-started/quickstart/): Get started with document extraction in minutes
 
 ## Concepts
@@ -56,6 +56,7 @@ Kreuzberg provides async/sync APIs, text chunking, language detection, keyword e
 - [C# API](https://docs.kreuzberg.dev/reference/api-csharp/): C# binding reference
 - [Go API](https://docs.kreuzberg.dev/reference/api-go/): Go binding reference
 - [Java API](https://docs.kreuzberg.dev/reference/api-java/): Java binding reference
+- [Kotlin Android API](https://docs.kreuzberg.dev/reference/api-kotlin-android/): Kotlin Android AAR binding reference
 - [Rust API](https://docs.kreuzberg.dev/reference/api-rust/): Rust core library reference
 - [Ruby API](https://docs.kreuzberg.dev/reference/api-ruby/): Ruby binding reference
 - [R API](https://docs.kreuzberg.dev/reference/api-r/): R binding reference
@@ -64,13 +65,22 @@ Kreuzberg provides async/sync APIs, text chunking, language detection, keyword e
 - [Configuration Reference](https://docs.kreuzberg.dev/reference/configuration/): Full configuration options
 - [Environment Variables](https://docs.kreuzberg.dev/reference/environment-variables/): KREUZBERG_* environment variable reference
 - [File Size Limits](https://docs.kreuzberg.dev/reference/file-size-limits/): Upload and processing size limits
-- [Format Support](https://docs.kreuzberg.dev/reference/formats/): Supported file formats (90+)
+- [Format Support](https://docs.kreuzberg.dev/reference/formats/): Supported file formats (96)
 - [Types](https://docs.kreuzberg.dev/reference/types/): Type definitions
 - [Errors](https://docs.kreuzberg.dev/reference/errors/): Error types and handling
+
+## Kreuzberg Ecosystem
+
+- [Kreuzberg Cloud](https://docs.kreuzberg.cloud): Managed extraction API with SDKs, dashboards, and observability
+- [kreuzcrawl](https://docs.kreuzcrawl.kreuzberg.dev): Web crawling and scraping with HTML to Markdown and headless-Chrome fallback
+- [html-to-markdown](https://docs.html-to-markdown.kreuzberg.dev): Fast, lossless HTML to Markdown engine
+- [liter-llm](https://docs.liter-llm.kreuzberg.dev): Universal LLM API client with native bindings for 14 languages and 143 providers
+- [tree-sitter-language-pack](https://docs.tree-sitter-language-pack.kreuzberg.dev): Tree-sitter grammars and code-intelligence primitives
 
 ## Migration
 
 - [From Unstructured](https://docs.kreuzberg.dev/migration/from-unstructured/): Migrate from the Unstructured library
+- [v5 Image Indices](https://docs.kreuzberg.dev/migration/v5.0-image-indices/): Update page and chunk image references to use `image_indices`
 
 ## Optional
 

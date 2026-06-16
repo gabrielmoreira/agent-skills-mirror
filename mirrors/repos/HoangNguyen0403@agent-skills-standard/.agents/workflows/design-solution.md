@@ -7,7 +7,6 @@ description: Turn an approved PRD or implementation goal into SRS/FRS technical 
 Goal: Produce a build-ready technical design with explicit boundaries, contracts, risks, and tests.
 
 ## Steps
-
 1. Load inputs:
    - Load baseline: `docs/requirements-standards-baseline.md` (SRS/FRS section).
    - Load `common-software-requirements`.
@@ -42,7 +41,6 @@ Goal: Produce a build-ready technical design with explicit boundaries, contracts
    - Route next step to `implement-feature` or `dev-fix`.
 
 ## Output Template
-
 ```md
 # Technical Design (SRS/FRS): [Name]
 ## Context
@@ -58,9 +56,7 @@ Goal: Produce a build-ready technical design with explicit boundaries, contracts
 ## Failure Mode Analysis (FMA)
 ## Verification Plan & Evidence Matrix
 ## ADR
-## Runtime Contract
-## Handoff Payload
-## Blocking Questions
+
 ## Next Workflow
 implement-feature | dev-fix
 ## Cost Report

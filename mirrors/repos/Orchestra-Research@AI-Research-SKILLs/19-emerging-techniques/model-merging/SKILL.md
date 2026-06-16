@@ -87,12 +87,7 @@ dtype: bfloat16
 **Linear (Model Soup)**
 - Simple weighted average of parameters
 - Fast, works well for similar models
-- Can merge 2+ models
-
-```python
-merged_weights = w1 * model1_weights + w2 * model2_weights + w3 * model3_weights
-# where w1 + w2 + w3 = 1
-```
+- Can merge 2+ models (`w1 + w2 + ... = 1`)
 
 **SLERP (Spherical Linear Interpolation)**
 - Interpolates along sphere in weight space
@@ -110,15 +105,7 @@ merged = (sin((1-t)*θ) / sin(θ)) * model1 + (sin(t*θ) / sin(θ)) * model2
 **Task Arithmetic**
 - Extract "task vectors" (fine-tuned - base)
 - Combine task vectors, add to base
-- Good for merging multiple specialized models
-
-```python
-# Task vector
-task_vector = finetuned_model - base_model
-
-# Merge multiple task vectors
-merged = base_model + α₁*task_vector₁ + α₂*task_vector₂
-```
+- Good for merging multiple specialized models (`merged = base + α₁·tv₁ + α₂·tv₂`)
 
 **TIES-Merging**
 - Task arithmetic + sparsification
@@ -375,6 +362,23 @@ models:
       weight: 0.8  # May boost performance
 ```
 
+**Unsupervised Coefficient Tuning (no labeled data needed)**
+
+Instead of manual search, use *generation consistency*: merge with several candidate coefficients, generate responses on a small unlabeled subset, and pick the coefficient whose outputs are most similar to those of its neighbors. Consistent outputs signal a stable, well-performing merge region (AdaMMS, arXiv:2503.23733).
+
+```python
+# Pseudocode — see references/coefficient-tuning.md for full implementation
+candidates = [0.3, 0.4, 0.5, 0.6, 0.7]
+for alpha in candidates:
+    merged_paths[alpha] = merge_with_coefficient(alpha, model_a, model_b)
+    responses[alpha]    = generate_responses(merged_paths[alpha], eval_prompts)
+
+# Score each alpha by similarity to its neighbors (alpha ± 0.1)
+best_alpha = max(candidates, key=lambda a: generation_consistency(a, responses))
+```
+
+See **[references/coefficient-tuning.md](references/coefficient-tuning.md)** for the full algorithm, similarity metrics, multi-coefficient search, and end-to-end pipeline.
+
 ### 3. Method Selection
 
 ```python
@@ -411,20 +415,7 @@ parameters:
 
 ### 5. Layer-specific Merging
 
-```yaml
-# Preserve base model's beginning and end
-merge_method: passthrough
-slices:
-  - sources:
-      - model: base_model
-        layer_range: [0, 2]     # Keep first layers
-  - sources:
-      - model: merged_middle    # Merge middle layers
-        layer_range: [2, 30]
-  - sources:
-      - model: base_model
-        layer_range: [30, 32]   # Keep last layers
-```
+Preserve the base model's first/last layers (often best left untouched) and merge only the middle via `merge_method: passthrough` with `slices` — see the [Layer-wise Merging](#layer-wise-merging) pattern above.
 
 ## Evaluation & Testing
 
@@ -486,41 +477,9 @@ python quantize_gptq.py ./merged-model --bits 4 --group_size 128
 
 ## Common Pitfalls
 
-### ❌ Pitfall 1: Merging Incompatible Models
-
-```yaml
-# Wrong: Different architectures
-models:
-  - model: meta-llama/Llama-2-7b  # Llama architecture
-  - model: mistralai/Mistral-7B   # Mistral architecture
-```
-
-**Fix**: Only merge models with same architecture
-
-### ❌ Pitfall 2: Over-weighting One Model
-
-```yaml
-# Suboptimal: One model dominates
-models:
-  - model: model_a
-    parameters:
-      weight: 0.95  # Too high
-  - model: model_b
-    parameters:
-      weight: 0.05  # Too low
-```
-
-**Fix**: Use more balanced weights (0.3-0.7 range)
-
-### ❌ Pitfall 3: Not Evaluating
-
-```bash
-# Wrong: Merge and deploy without testing
-mergekit-yaml config.yml ./merged-model
-# Deploy immediately (risky!)
-```
-
-**Fix**: Always benchmark before deploying
+- **Mismatched architectures** — only merge models that share the same architecture (e.g., don't mix Llama and Mistral).
+- **Over-weighting one model** (e.g., `0.95 / 0.05`) — keep weights balanced, typically in the 0.3–0.7 range.
+- **Skipping evaluation** — always benchmark a merged model before deploying (see the Evaluation & Testing section above).
 
 ## Resources
 
@@ -535,5 +494,4 @@ mergekit-yaml config.yml ./merged-model
 - `references/methods.md` - Deep dive into merge algorithms
 - `references/examples.md` - Real-world merge configurations
 - `references/evaluation.md` - Benchmarking and testing strategies
-
-
+- `references/coefficient-tuning.md` - Unsupervised coefficient search via generation consistency (AdaMMS, arXiv:2503.23733)

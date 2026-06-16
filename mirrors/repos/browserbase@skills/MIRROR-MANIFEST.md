@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `browserbase/skills` — 26 default patterns, 0 followed patterns, 125 file(s) materialized.
+Mirror of `browserbase/skills` — 26 default patterns, 0 followed patterns, 127 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `browserbase/skills` — 26 default patterns, 0 followed patterns, 125
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 125 |
+| Files         | 127 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,30 +65,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`skills/agent-experience/references/prompt-variants.md`](skills/agent-experience/references/prompt-variants.md) |
 | 5 | ✓ | [`skills/agent-experience/references/subagent-brief.md`](skills/agent-experience/references/subagent-brief.md) |
 | 6 | ✓ | [`skills/agent-experience/SKILL.md`](skills/agent-experience/SKILL.md) |
-| 7 | ✓ | [`skills/autobrowse/.env.example`](skills/autobrowse/.env.example) |
-| 8 | ✓ | [`skills/autobrowse/.gitignore`](skills/autobrowse/.gitignore) |
-| 9 | ✓ | [`skills/autobrowse/codegen/prompts/playwright.md`](skills/autobrowse/codegen/prompts/playwright.md) |
-| 10 | ✓ | [`skills/autobrowse/codegen/prompts/stagehand.md`](skills/autobrowse/codegen/prompts/stagehand.md) |
-| 11 | ✓ | [`skills/autobrowse/codegen/runners/lib/tsx-runner.mjs`](skills/autobrowse/codegen/runners/lib/tsx-runner.mjs) |
-| 12 | ✓ | [`skills/autobrowse/codegen/runners/playwright.mjs`](skills/autobrowse/codegen/runners/playwright.mjs) |
-| 13 | ✓ | [`skills/autobrowse/codegen/runners/stagehand.mjs`](skills/autobrowse/codegen/runners/stagehand.mjs) |
-| 14 | ✓ | [`skills/autobrowse/codegen/scaffolds/playwright/package.json`](skills/autobrowse/codegen/scaffolds/playwright/package.json) |
-| 15 | ✓ | [`skills/autobrowse/codegen/scaffolds/playwright/tsconfig.json`](skills/autobrowse/codegen/scaffolds/playwright/tsconfig.json) |
-| 16 | ✓ | [`skills/autobrowse/codegen/scaffolds/stagehand/package.json`](skills/autobrowse/codegen/scaffolds/stagehand/package.json) |
-| 17 | ✓ | [`skills/autobrowse/codegen/scaffolds/stagehand/tsconfig.json`](skills/autobrowse/codegen/scaffolds/stagehand/tsconfig.json) |
-| 18 | ✓ | [`skills/autobrowse/EXAMPLES.md`](skills/autobrowse/EXAMPLES.md) |
-| 19 | ✓ | [`skills/autobrowse/LICENSE.txt`](skills/autobrowse/LICENSE.txt) |
-| 20 | ✓ | [`skills/autobrowse/package-lock.json`](skills/autobrowse/package-lock.json) |
-| 21 | ✓ | [`skills/autobrowse/package.json`](skills/autobrowse/package.json) |
-| 22 | ✓ | [`skills/autobrowse/README.md`](skills/autobrowse/README.md) |
-| 23 | ✓ | [`skills/autobrowse/REFERENCE.md`](skills/autobrowse/REFERENCE.md) |
-| 24 | ✓ | [`skills/autobrowse/references/example-skill.md`](skills/autobrowse/references/example-skill.md) |
-| 25 | ✓ | [`skills/autobrowse/references/example-task.md`](skills/autobrowse/references/example-task.md) |
-| 26 | ✓ | [`skills/autobrowse/references/playwright-cdp-bridge.md`](skills/autobrowse/references/playwright-cdp-bridge.md) |
-| 27 | ✓ | [`skills/autobrowse/scripts/codegen.mjs`](skills/autobrowse/scripts/codegen.mjs) |
-| 28 | ✓ | [`skills/autobrowse/scripts/evaluate.mjs`](skills/autobrowse/scripts/evaluate.mjs) |
-| 29 | ✓ | [`skills/autobrowse/scripts/unify-trace.mjs`](skills/autobrowse/scripts/unify-trace.mjs) |
-| 30 | ✓ | [`skills/autobrowse/SKILL.md`](skills/autobrowse/SKILL.md) |
+| 7 | ✓ | [`skills/autobrowse/.gitignore`](skills/autobrowse/.gitignore) |
+| 8 | ✓ | [`skills/autobrowse/codegen/prompts/playwright.md`](skills/autobrowse/codegen/prompts/playwright.md) |
+| 9 | ✓ | [`skills/autobrowse/codegen/prompts/stagehand.md`](skills/autobrowse/codegen/prompts/stagehand.md) |
+| 10 | ✓ | [`skills/autobrowse/codegen/runners/lib/tsx-runner.mjs`](skills/autobrowse/codegen/runners/lib/tsx-runner.mjs) |
+| 11 | ✓ | [`skills/autobrowse/codegen/runners/playwright.mjs`](skills/autobrowse/codegen/runners/playwright.mjs) |
+| 12 | ✓ | [`skills/autobrowse/codegen/runners/stagehand.mjs`](skills/autobrowse/codegen/runners/stagehand.mjs) |
+| 13 | ✓ | [`skills/autobrowse/codegen/scaffolds/playwright/package.json`](skills/autobrowse/codegen/scaffolds/playwright/package.json) |
+| 14 | ✓ | [`skills/autobrowse/codegen/scaffolds/playwright/tsconfig.json`](skills/autobrowse/codegen/scaffolds/playwright/tsconfig.json) |
+| 15 | ✓ | [`skills/autobrowse/codegen/scaffolds/stagehand/package.json`](skills/autobrowse/codegen/scaffolds/stagehand/package.json) |
+| 16 | ✓ | [`skills/autobrowse/codegen/scaffolds/stagehand/tsconfig.json`](skills/autobrowse/codegen/scaffolds/stagehand/tsconfig.json) |
+| 17 | ✓ | [`skills/autobrowse/EXAMPLES.md`](skills/autobrowse/EXAMPLES.md) |
+| 18 | ✓ | [`skills/autobrowse/LICENSE.txt`](skills/autobrowse/LICENSE.txt) |
+| 19 | ✓ | [`skills/autobrowse/package-lock.json`](skills/autobrowse/package-lock.json) |
+| 20 | ✓ | [`skills/autobrowse/package.json`](skills/autobrowse/package.json) |
+| 21 | ✓ | [`skills/autobrowse/README.md`](skills/autobrowse/README.md) |
+| 22 | ✓ | [`skills/autobrowse/REFERENCE.md`](skills/autobrowse/REFERENCE.md) |
+| 23 | ✓ | [`skills/autobrowse/references/example-skill.md`](skills/autobrowse/references/example-skill.md) |
+| 24 | ✓ | [`skills/autobrowse/references/example-task.md`](skills/autobrowse/references/example-task.md) |
+| 25 | ✓ | [`skills/autobrowse/references/playwright-cdp-bridge.md`](skills/autobrowse/references/playwright-cdp-bridge.md) |
+| 26 | ✓ | [`skills/autobrowse/scripts/codegen.mjs`](skills/autobrowse/scripts/codegen.mjs) |
+| 27 | ✓ | [`skills/autobrowse/scripts/evaluate.mjs`](skills/autobrowse/scripts/evaluate.mjs) |
+| 28 | ✓ | [`skills/autobrowse/scripts/unify-trace.mjs`](skills/autobrowse/scripts/unify-trace.mjs) |
+| 29 | ✓ | [`skills/autobrowse/SKILL.md`](skills/autobrowse/SKILL.md) |
+| 30 | ✓ | [`skills/browser-to-api/LICENSE.txt`](skills/browser-to-api/LICENSE.txt) |
 | 31 | ✓ | [`skills/browser-to-api/package.json`](skills/browser-to-api/package.json) |
 | 32 | ✓ | [`skills/browser-to-api/REFERENCE.md`](skills/browser-to-api/REFERENCE.md) |
 | 33 | ✓ | [`skills/browser-to-api/scripts/discover.mjs`](skills/browser-to-api/scripts/discover.mjs) |
@@ -124,66 +124,68 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 63 | ✓ | [`skills/browserbase-cli/REFERENCE.md`](skills/browserbase-cli/REFERENCE.md) |
 | 64 | ✓ | [`skills/browserbase-cli/SKILL.md`](skills/browserbase-cli/SKILL.md) |
 | 65 | ✓ | [`skills/company-research/.gitignore`](skills/company-research/.gitignore) |
-| 66 | ✓ | [`skills/company-research/profiles/example.json`](skills/company-research/profiles/example.json) |
-| 67 | ✓ | [`skills/company-research/references/example-research.md`](skills/company-research/references/example-research.md) |
-| 68 | ✓ | [`skills/company-research/references/report-template.html`](skills/company-research/references/report-template.html) |
-| 69 | ✓ | [`skills/company-research/references/research-patterns.md`](skills/company-research/references/research-patterns.md) |
-| 70 | ✓ | [`skills/company-research/references/workflow.md`](skills/company-research/references/workflow.md) |
-| 71 | ✓ | [`skills/company-research/scripts/compile_report.mjs`](skills/company-research/scripts/compile_report.mjs) |
-| 72 | ✓ | [`skills/company-research/scripts/extract_page.mjs`](skills/company-research/scripts/extract_page.mjs) |
-| 73 | ✓ | [`skills/company-research/scripts/list_urls.mjs`](skills/company-research/scripts/list_urls.mjs) |
-| 74 | ✓ | [`skills/company-research/scripts/package.json`](skills/company-research/scripts/package.json) |
-| 75 | ✓ | [`skills/company-research/SKILL.md`](skills/company-research/SKILL.md) |
-| 76 | ✓ | [`skills/cookie-sync/EXAMPLES.md`](skills/cookie-sync/EXAMPLES.md) |
-| 77 | ✓ | [`skills/cookie-sync/LICENSE.txt`](skills/cookie-sync/LICENSE.txt) |
-| 78 | ✓ | [`skills/cookie-sync/package-lock.json`](skills/cookie-sync/package-lock.json) |
-| 79 | ✓ | [`skills/cookie-sync/package.json`](skills/cookie-sync/package.json) |
-| 80 | ✓ | [`skills/cookie-sync/REFERENCE.md`](skills/cookie-sync/REFERENCE.md) |
-| 81 | ✓ | [`skills/cookie-sync/scripts/cookie-sync.mjs`](skills/cookie-sync/scripts/cookie-sync.mjs) |
-| 82 | ✓ | [`skills/cookie-sync/SKILL.md`](skills/cookie-sync/SKILL.md) |
-| 83 | ✓ | [`skills/event-prospecting/.gitignore`](skills/event-prospecting/.gitignore) |
-| 84 | ✓ | [`skills/event-prospecting/profiles/example.json`](skills/event-prospecting/profiles/example.json) |
-| 85 | ✓ | [`skills/event-prospecting/references/event-platforms.md`](skills/event-prospecting/references/event-platforms.md) |
-| 86 | ✓ | [`skills/event-prospecting/references/example-research.md`](skills/event-prospecting/references/example-research.md) |
-| 87 | ✓ | [`skills/event-prospecting/references/report-template.html`](skills/event-prospecting/references/report-template.html) |
-| 88 | ✓ | [`skills/event-prospecting/references/research-patterns.md`](skills/event-prospecting/references/research-patterns.md) |
-| 89 | ✓ | [`skills/event-prospecting/references/workflow.md`](skills/event-prospecting/references/workflow.md) |
-| 90 | ✓ | [`skills/event-prospecting/scripts/__fixtures__/stripe-snapshot.json`](skills/event-prospecting/scripts/__fixtures__/stripe-snapshot.json) |
-| 91 | ✓ | [`skills/event-prospecting/scripts/compile_report.mjs`](skills/event-prospecting/scripts/compile_report.mjs) |
-| 92 | ✓ | [`skills/event-prospecting/scripts/extract_event.mjs`](skills/event-prospecting/scripts/extract_event.mjs) |
-| 93 | ✓ | [`skills/event-prospecting/scripts/extract_page.mjs`](skills/event-prospecting/scripts/extract_page.mjs) |
-| 94 | ✓ | [`skills/event-prospecting/scripts/package.json`](skills/event-prospecting/scripts/package.json) |
-| 95 | ✓ | [`skills/event-prospecting/scripts/recon.mjs`](skills/event-prospecting/scripts/recon.mjs) |
-| 96 | ✓ | [`skills/event-prospecting/SKILL.md`](skills/event-prospecting/SKILL.md) |
-| 97 | ✓ | [`skills/fetch/EXAMPLES.md`](skills/fetch/EXAMPLES.md) |
-| 98 | ✓ | [`skills/fetch/LICENSE.txt`](skills/fetch/LICENSE.txt) |
-| 99 | ✓ | [`skills/fetch/REFERENCE.md`](skills/fetch/REFERENCE.md) |
-| 100 | ✓ | [`skills/fetch/SKILL.md`](skills/fetch/SKILL.md) |
-| 101 | ✓ | [`skills/functions/LICENSE.txt`](skills/functions/LICENSE.txt) |
-| 102 | ✓ | [`skills/functions/REFERENCE.md`](skills/functions/REFERENCE.md) |
-| 103 | ✓ | [`skills/functions/SKILL.md`](skills/functions/SKILL.md) |
-| 104 | ✓ | [`skills/safe-browser/LICENSE.txt`](skills/safe-browser/LICENSE.txt) |
-| 105 | ✓ | [`skills/safe-browser/SKILL.md`](skills/safe-browser/SKILL.md) |
-| 106 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/.gitignore`](skills/safe-browser/templates/claude-agent-sdk/.gitignore) |
-| 107 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/hn-scraper-demo.mjs`](skills/safe-browser/templates/claude-agent-sdk/hn-scraper-demo.mjs) |
-| 108 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/package-lock.json`](skills/safe-browser/templates/claude-agent-sdk/package-lock.json) |
-| 109 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/package.json`](skills/safe-browser/templates/claude-agent-sdk/package.json) |
-| 110 | ✓ | [`skills/search/EXAMPLES.md`](skills/search/EXAMPLES.md) |
-| 111 | ✓ | [`skills/search/LICENSE.txt`](skills/search/LICENSE.txt) |
-| 112 | ✓ | [`skills/search/REFERENCE.md`](skills/search/REFERENCE.md) |
-| 113 | ✓ | [`skills/search/SKILL.md`](skills/search/SKILL.md) |
-| 114 | ✓ | [`skills/ui-test/EXAMPLES.md`](skills/ui-test/EXAMPLES.md) |
-| 115 | ✓ | [`skills/ui-test/LICENSE.txt`](skills/ui-test/LICENSE.txt) |
-| 116 | ✓ | [`skills/ui-test/README.md`](skills/ui-test/README.md) |
-| 117 | ✓ | [`skills/ui-test/references/adversarial-patterns.md`](skills/ui-test/references/adversarial-patterns.md) |
-| 118 | ✓ | [`skills/ui-test/references/browser-recipes.md`](skills/ui-test/references/browser-recipes.md) |
-| 119 | ✓ | [`skills/ui-test/references/design-consistency.md`](skills/ui-test/references/design-consistency.md) |
-| 120 | ✓ | [`skills/ui-test/references/design-system.example.md`](skills/ui-test/references/design-system.example.md) |
-| 121 | ✓ | [`skills/ui-test/references/exploratory-testing.md`](skills/ui-test/references/exploratory-testing.md) |
-| 122 | ✓ | [`skills/ui-test/references/parallel-testing.md`](skills/ui-test/references/parallel-testing.md) |
-| 123 | ✓ | [`skills/ui-test/references/report-template.html`](skills/ui-test/references/report-template.html) |
-| 124 | ✓ | [`skills/ui-test/references/ux-heuristics.md`](skills/ui-test/references/ux-heuristics.md) |
-| 125 | ✓ | [`skills/ui-test/SKILL.md`](skills/ui-test/SKILL.md) |
+| 66 | ✓ | [`skills/company-research/LICENSE.txt`](skills/company-research/LICENSE.txt) |
+| 67 | ✓ | [`skills/company-research/profiles/example.json`](skills/company-research/profiles/example.json) |
+| 68 | ✓ | [`skills/company-research/references/example-research.md`](skills/company-research/references/example-research.md) |
+| 69 | ✓ | [`skills/company-research/references/report-template.html`](skills/company-research/references/report-template.html) |
+| 70 | ✓ | [`skills/company-research/references/research-patterns.md`](skills/company-research/references/research-patterns.md) |
+| 71 | ✓ | [`skills/company-research/references/workflow.md`](skills/company-research/references/workflow.md) |
+| 72 | ✓ | [`skills/company-research/scripts/compile_report.mjs`](skills/company-research/scripts/compile_report.mjs) |
+| 73 | ✓ | [`skills/company-research/scripts/extract_page.mjs`](skills/company-research/scripts/extract_page.mjs) |
+| 74 | ✓ | [`skills/company-research/scripts/list_urls.mjs`](skills/company-research/scripts/list_urls.mjs) |
+| 75 | ✓ | [`skills/company-research/scripts/package.json`](skills/company-research/scripts/package.json) |
+| 76 | ✓ | [`skills/company-research/SKILL.md`](skills/company-research/SKILL.md) |
+| 77 | ✓ | [`skills/cookie-sync/EXAMPLES.md`](skills/cookie-sync/EXAMPLES.md) |
+| 78 | ✓ | [`skills/cookie-sync/LICENSE.txt`](skills/cookie-sync/LICENSE.txt) |
+| 79 | ✓ | [`skills/cookie-sync/package-lock.json`](skills/cookie-sync/package-lock.json) |
+| 80 | ✓ | [`skills/cookie-sync/package.json`](skills/cookie-sync/package.json) |
+| 81 | ✓ | [`skills/cookie-sync/REFERENCE.md`](skills/cookie-sync/REFERENCE.md) |
+| 82 | ✓ | [`skills/cookie-sync/scripts/cookie-sync.mjs`](skills/cookie-sync/scripts/cookie-sync.mjs) |
+| 83 | ✓ | [`skills/cookie-sync/SKILL.md`](skills/cookie-sync/SKILL.md) |
+| 84 | ✓ | [`skills/event-prospecting/.gitignore`](skills/event-prospecting/.gitignore) |
+| 85 | ✓ | [`skills/event-prospecting/LICENSE.txt`](skills/event-prospecting/LICENSE.txt) |
+| 86 | ✓ | [`skills/event-prospecting/profiles/example.json`](skills/event-prospecting/profiles/example.json) |
+| 87 | ✓ | [`skills/event-prospecting/references/event-platforms.md`](skills/event-prospecting/references/event-platforms.md) |
+| 88 | ✓ | [`skills/event-prospecting/references/example-research.md`](skills/event-prospecting/references/example-research.md) |
+| 89 | ✓ | [`skills/event-prospecting/references/report-template.html`](skills/event-prospecting/references/report-template.html) |
+| 90 | ✓ | [`skills/event-prospecting/references/research-patterns.md`](skills/event-prospecting/references/research-patterns.md) |
+| 91 | ✓ | [`skills/event-prospecting/references/workflow.md`](skills/event-prospecting/references/workflow.md) |
+| 92 | ✓ | [`skills/event-prospecting/scripts/__fixtures__/stripe-snapshot.json`](skills/event-prospecting/scripts/__fixtures__/stripe-snapshot.json) |
+| 93 | ✓ | [`skills/event-prospecting/scripts/compile_report.mjs`](skills/event-prospecting/scripts/compile_report.mjs) |
+| 94 | ✓ | [`skills/event-prospecting/scripts/extract_event.mjs`](skills/event-prospecting/scripts/extract_event.mjs) |
+| 95 | ✓ | [`skills/event-prospecting/scripts/extract_page.mjs`](skills/event-prospecting/scripts/extract_page.mjs) |
+| 96 | ✓ | [`skills/event-prospecting/scripts/package.json`](skills/event-prospecting/scripts/package.json) |
+| 97 | ✓ | [`skills/event-prospecting/scripts/recon.mjs`](skills/event-prospecting/scripts/recon.mjs) |
+| 98 | ✓ | [`skills/event-prospecting/SKILL.md`](skills/event-prospecting/SKILL.md) |
+| 99 | ✓ | [`skills/fetch/EXAMPLES.md`](skills/fetch/EXAMPLES.md) |
+| 100 | ✓ | [`skills/fetch/LICENSE.txt`](skills/fetch/LICENSE.txt) |
+| 101 | ✓ | [`skills/fetch/REFERENCE.md`](skills/fetch/REFERENCE.md) |
+| 102 | ✓ | [`skills/fetch/SKILL.md`](skills/fetch/SKILL.md) |
+| 103 | ✓ | [`skills/functions/LICENSE.txt`](skills/functions/LICENSE.txt) |
+| 104 | ✓ | [`skills/functions/REFERENCE.md`](skills/functions/REFERENCE.md) |
+| 105 | ✓ | [`skills/functions/SKILL.md`](skills/functions/SKILL.md) |
+| 106 | ✓ | [`skills/safe-browser/LICENSE.txt`](skills/safe-browser/LICENSE.txt) |
+| 107 | ✓ | [`skills/safe-browser/SKILL.md`](skills/safe-browser/SKILL.md) |
+| 108 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/.gitignore`](skills/safe-browser/templates/claude-agent-sdk/.gitignore) |
+| 109 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/hn-scraper-demo.mjs`](skills/safe-browser/templates/claude-agent-sdk/hn-scraper-demo.mjs) |
+| 110 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/package-lock.json`](skills/safe-browser/templates/claude-agent-sdk/package-lock.json) |
+| 111 | ✓ | [`skills/safe-browser/templates/claude-agent-sdk/package.json`](skills/safe-browser/templates/claude-agent-sdk/package.json) |
+| 112 | ✓ | [`skills/search/EXAMPLES.md`](skills/search/EXAMPLES.md) |
+| 113 | ✓ | [`skills/search/LICENSE.txt`](skills/search/LICENSE.txt) |
+| 114 | ✓ | [`skills/search/REFERENCE.md`](skills/search/REFERENCE.md) |
+| 115 | ✓ | [`skills/search/SKILL.md`](skills/search/SKILL.md) |
+| 116 | ✓ | [`skills/ui-test/EXAMPLES.md`](skills/ui-test/EXAMPLES.md) |
+| 117 | ✓ | [`skills/ui-test/LICENSE.txt`](skills/ui-test/LICENSE.txt) |
+| 118 | ✓ | [`skills/ui-test/README.md`](skills/ui-test/README.md) |
+| 119 | ✓ | [`skills/ui-test/references/adversarial-patterns.md`](skills/ui-test/references/adversarial-patterns.md) |
+| 120 | ✓ | [`skills/ui-test/references/browser-recipes.md`](skills/ui-test/references/browser-recipes.md) |
+| 121 | ✓ | [`skills/ui-test/references/design-consistency.md`](skills/ui-test/references/design-consistency.md) |
+| 122 | ✓ | [`skills/ui-test/references/design-system.example.md`](skills/ui-test/references/design-system.example.md) |
+| 123 | ✓ | [`skills/ui-test/references/exploratory-testing.md`](skills/ui-test/references/exploratory-testing.md) |
+| 124 | ✓ | [`skills/ui-test/references/parallel-testing.md`](skills/ui-test/references/parallel-testing.md) |
+| 125 | ✓ | [`skills/ui-test/references/report-template.html`](skills/ui-test/references/report-template.html) |
+| 126 | ✓ | [`skills/ui-test/references/ux-heuristics.md`](skills/ui-test/references/ux-heuristics.md) |
+| 127 | ✓ | [`skills/ui-test/SKILL.md`](skills/ui-test/SKILL.md) |
 
 ---
 

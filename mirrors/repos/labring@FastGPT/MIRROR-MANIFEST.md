@@ -90,7 +90,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`.agents/design/core/workflow/index.md`](.agents/design/core/workflow/index.md) |
 | 30 | ✓ | [`.agents/design/core/workflow/interactive.md`](.agents/design/core/workflow/interactive.md) |
 | 31 | ✓ | [`.agents/design/core/workflow/loop-run/development.md`](.agents/design/core/workflow/loop-run/development.md) |
-| 32 | ✓ | [`.agents/design/core/workflow/node-response-stream-persistence.md`](.agents/design/core/workflow/node-response-stream-persistence.md) |
+| 32 | ✓ | [`.agents/design/core/workflow/node-response-append-only-interactive-id.md`](.agents/design/core/workflow/node-response-append-only-interactive-id.md) |
 | 33 | ✓ | [`.agents/design/core/workflow/parallel-node/design.md`](.agents/design/core/workflow/parallel-node/design.md) |
 | 34 | ✓ | [`.agents/design/core/workflow/runtime.md`](.agents/design/core/workflow/runtime.md) |
 | 35 | ✓ | [`.agents/design/outlink/wechat-clawbot.md`](.agents/design/outlink/wechat-clawbot.md) |

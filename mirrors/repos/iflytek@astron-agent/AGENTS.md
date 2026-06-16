@@ -47,7 +47,7 @@ Astron Agent is an enterprise-grade Agentic Workflow development platform. It in
 
 - `docs`
   - Project documentation, deployment, configuration, and module descriptions
-  - For architectural understanding, refer first to `docs/PROJECT_MODULES_zh.md`
+  - For architectural understanding, refer first to `docs/zh/PROJECT_MODULES.md`
 - `docker`
   - Docker Compose and related infrastructure configuration
 - `helm`

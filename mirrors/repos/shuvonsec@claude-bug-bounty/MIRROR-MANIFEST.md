@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shuvonsec/claude-bug-bounty` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
+Mirror of `shuvonsec/claude-bug-bounty` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shuvonsec/claude-bug-bounty` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 34 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,14 +85,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`skills/bug-bounty/SKILL.md`](skills/bug-bounty/SKILL.md) |
 | 25 | ✓ | [`skills/credential-attack/SKILL.md`](skills/credential-attack/SKILL.md) |
 | 26 | ✓ | [`skills/meme-coin-audit/SKILL.md`](skills/meme-coin-audit/SKILL.md) |
-| 27 | ✓ | [`skills/report-writing/SKILL.md`](skills/report-writing/SKILL.md) |
-| 28 | ✓ | [`skills/security-arsenal/METHODOLOGY_CHEATSHEET.md`](skills/security-arsenal/METHODOLOGY_CHEATSHEET.md) |
-| 29 | ✓ | [`skills/security-arsenal/REFERENCES.md`](skills/security-arsenal/REFERENCES.md) |
-| 30 | ✓ | [`skills/security-arsenal/SKILL.md`](skills/security-arsenal/SKILL.md) |
-| 31 | ✓ | [`skills/triage-validation/SKILL.md`](skills/triage-validation/SKILL.md) |
-| 32 | ✓ | [`skills/web2-recon/SKILL.md`](skills/web2-recon/SKILL.md) |
-| 33 | ✓ | [`skills/web2-vuln-classes/SKILL.md`](skills/web2-vuln-classes/SKILL.md) |
-| 34 | ✓ | [`skills/web3-audit/SKILL.md`](skills/web3-audit/SKILL.md) |
+| 27 | ✓ | [`skills/mobile-pentest/SKILL.md`](skills/mobile-pentest/SKILL.md) |
+| 28 | ✓ | [`skills/report-writing/SKILL.md`](skills/report-writing/SKILL.md) |
+| 29 | ✓ | [`skills/security-arsenal/METHODOLOGY_CHEATSHEET.md`](skills/security-arsenal/METHODOLOGY_CHEATSHEET.md) |
+| 30 | ✓ | [`skills/security-arsenal/REFERENCES.md`](skills/security-arsenal/REFERENCES.md) |
+| 31 | ✓ | [`skills/security-arsenal/SKILL.md`](skills/security-arsenal/SKILL.md) |
+| 32 | ✓ | [`skills/triage-validation/SKILL.md`](skills/triage-validation/SKILL.md) |
+| 33 | ✓ | [`skills/web2-recon/SKILL.md`](skills/web2-recon/SKILL.md) |
+| 34 | ✓ | [`skills/web2-vuln-classes/SKILL.md`](skills/web2-vuln-classes/SKILL.md) |
+| 35 | ✓ | [`skills/web3-audit/SKILL.md`](skills/web3-audit/SKILL.md) |
 
 ---
 

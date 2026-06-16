@@ -121,6 +121,7 @@ Bucket the upstream changed files:
 - **Host source** (`src/`): may conflict if user modified the same files
 - **Container** (`container/`): triggers container rebuild (+ typecheck if `agent-runner/src/` changed)
 - **Build/config** (`package.json`, `pnpm-lock.yaml`, `tsconfig*.json`): lockfile changes trigger dep install
+- **Version pins** (`versions.json`): a changed `onecli-gateway` / `onecli-cli` value requires upgrading the OneCLI gateway/CLI to match — see Step 5.5
 - **Other**: docs, tests, setup scripts, misc
 
 **Large drift check:** If the upstream commit count and age suggest the user has a lot of catching up to do, mention that `/migrate-nanoclaw` might be a better fit — it extracts customizations and reapplies them on clean upstream instead of merging. Offer it as an option but don't push.
@@ -214,6 +215,11 @@ If build fails:
 - Only fix issues clearly caused by the merge (missing imports, type mismatches from merged code).
 - Do not refactor unrelated code.
 - If unclear, ask the user before making changes.
+
+# Step 5.5: OneCLI upgrade (if pins moved)
+The OneCLI gateway and CLI are external components pinned in `versions.json`; when a pin moves, the running version must be upgraded to match or the new code may fail against it.
+
+If `git diff <backup-tag-from-step-1>..HEAD -- versions.json` shows the `onecli-gateway` or `onecli-cli` value changed, follow `docs/onecli-upgrades.md` before the service restart (Step 8). Otherwise skip.
 
 # Step 6: Breaking changes check
 After validation succeeds, check if the update introduced any breaking changes.

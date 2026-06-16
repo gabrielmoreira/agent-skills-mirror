@@ -533,7 +533,8 @@ def _render_comparison_scaffold(topic: str) -> list[str]:
 
     Axes match the April 9 launch-video exemplar (9 axes suited to AI-tool
     comparisons). For non-AI-tool comparisons, the synthesizer writes N/A
-    or topic-appropriate substitutes in irrelevant rows.
+    or topic-appropriate substitutes in irrelevant rows. The "What it is" row
+    grounds in first-party positioning fetched during the run when available.
     """
     entities = _parse_comparison_entities(topic)
     if not entities:
@@ -558,10 +559,18 @@ def _render_comparison_scaffold(topic: str) -> list[str]:
     ]
     body = [f"| {axis} | " + " | ".join([" "] * len(entities)) + " |" for axis in axes]
 
+    fill_instructions = (
+        "Fill each cell based on the research above. Keep cells short (5-15 words). "
+        "Use ' - ' (hyphen with spaces) not em-dashes. Write N/A for axes that do not apply to this topic class. "
+        "Ground the \"What it is\" row in first-party positioning fetched during this run's research when "
+        "available - describe each entity as it pitches itself today, never from memory. "
+        "This scaffold matches the April 9 launch-video exemplar shape."
+    )
+
     return [
         "## Head-to-Head",
         "",
-        "Fill each cell based on the research above. Keep cells short (5-15 words). Use ' - ' (hyphen with spaces) not em-dashes. Write N/A for axes that do not apply to this topic class. This scaffold matches the April 9 launch-video exemplar shape.",
+        fill_instructions,
         "",
         header,
         separator,

@@ -38,6 +38,16 @@
             "if": "Bash(git commit*)"
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/guard-outline-before-prose.sh",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "PreCompact": [

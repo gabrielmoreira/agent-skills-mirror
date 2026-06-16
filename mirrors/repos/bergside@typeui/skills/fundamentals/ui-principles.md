@@ -6,11 +6,163 @@
 
 ## 0. How agents must use this file and the other standards files
 
-1. **Load the design system first.** The design-system files define fonts, colors, spacing tokens, and component specs. Those are the source of truth for concrete values.
-2. **Use this file as the reasoning layer.** When the design system says *what* token to use, this file and the other standards files explain *why* that pattern works and what principles must hold.
-3. **When the design system is silent, these principles decide.** Any design decision not covered by the system's tokens or component rules falls back to the principles here.
-4. **Never contradict the design system.** If a principle here and a design-system rule conflict, the design system wins for that product. Flag the conflict for human review.
-5. **Justify every deviation.** If a design intentionally breaks a principle, name it, explain why, and state the compensating control.
+1. **Load and apply the design system first — always.** The design-system files define fonts, colors, spacing tokens, radius, shadows, and component specs. Those are the source of truth for concrete values. Implement tokens and component rules before layering anything from this file or `typography-principles.md`.
+2. **Then apply UI/UX and typography principles to improve the result.** After the design-system spec is satisfied, use this file and the typography standards to refine hierarchy, contrast, spacing rhythm, interaction clarity, and polish. Principles **enhance** a compliant design — they do not replace the system.
+3. **Use this file as the reasoning layer.** When the design system says *what* token to use, this file and the other standards files explain *why* that pattern works and what principles must hold.
+4. **When the design system is silent, these principles decide.** Any design decision not covered by the system's tokens or component rules falls back to the principles here.
+5. **Never contradict the design system.** If a principle here and a design-system rule conflict, the design system wins for that product. Flag the conflict for human review.
+6. **Justify every deviation.** If a design intentionally breaks a principle, name it, explain why, and state the compensating control.
+
+### Application order (mandatory)
+
+```
+1. Design system tokens & component specs  →  ship these first
+2. UI principles (this file)               →  refine structure, contrast, depth, interaction
+3. Typography principles                   →  refine type hierarchy, leading, section headings
+```
+
+Never skip step 1. Never let step 2 or 3 override a design-system token unless a human explicitly documents the exception.
+
+## 0.1 Non-negotiable component & surface rules
+
+These rules override conflicting guidance elsewhere in this document. Apply them on every surface unless the user brief explicitly documents an exception.
+
+### Badges are never full width
+
+- **Badges must be inline, content-sized elements** — they hug their label and optional icon. A badge sizes to its text (plus padding), not to the width of its parent.
+- **Full-width badges are forbidden** — never set `width: 100%`, `display: block` spanning a row, or stretch a badge to fill a card, column, or section unless the brief explicitly redefines the component (and even then, prefer a banner or alert, not a badge).
+- Badges annotate status, category, or count. If the element spans a row like a bar or strip, it is **not** a badge — use an alert, banner, or list row instead.
+
+### Inputs on matching backgrounds need visible contrast
+
+- When an input's fill color matches (or nearly matches) its parent surface, **the field becomes invisible** — users cannot see where to type.
+- **Fix:** lighten (or darken, on dark surfaces) **both** the input background **and** its border relative to the parent — enough to read as a distinct control at a glance, while staying within the design system's palette (use the next step on `neutral-*`, `brand-*`, or border tokens — never raw hex unless the system has no token).
+- Apply the same rule to search fields, textareas, and selects sitting on tinted section backgrounds, cards, or nav bars.
+- Contrast must hold in default, hover, focus, and error states — focus rings alone are not a substitute for a visible field at rest.
+
+### Nested border radius must be calculated, not guessed
+
+When a rounded parent contains a rounded child with padding (or margin) between them, **do not reuse the same radius on both** — the inner curve will look wrong (too tight or visually "broken").
+
+Use the nested-radius formula:
+
+```
+innerRadius + distance = outerRadius
+```
+
+Where **distance** is the gap between the two curves — typically the parent's **padding** (or the margin between nested surfaces).
+
+**Examples:**
+
+| Parent corner radius | Padding / gap | Child corner radius |
+|---|---|---|
+| 24 | 8 | **16** (`24 − 8`) |
+| 36 | 12 | **24** (`36 − 12`) |
+| 16 | 4 | **12** (`16 − 4`) |
+
+Units follow the design system (px, rem, etc.) — the math is the same.
+
+**Derive values from tokens (preferred):**
+
+Define three related values and keep them in sync wherever your stack stores design tokens (theme file, component props, style dictionary, etc.):
+
+| Token / variable | Role |
+|---|---|
+| `outerRadius` | Corner radius of the parent container |
+| `padding` (or `gap`) | Inset between the parent edge and the inner element |
+| `innerRadius` | Corner radius of the nested child — **`outerRadius − padding`** |
+
+**Forward:** you know the parent radius and padding → set `innerRadius = outerRadius − padding`.
+
+**Reverse:** you know the child radius and padding → set `outerRadius = innerRadius + padding`.
+
+Map these names to your implementation layer (CSS custom properties, Tailwind theme extension, SwiftUI `CornerRadius`, Figma variables, etc.). The formula is fixed; only the syntax changes.
+
+When padding differs per side, use the **smallest inset** that separates the curves, or compute per-corner if asymmetry is intentional. Never copy the parent's radius onto the child without subtracting the gap.
+
+### Input + button rows must share height
+
+- When an input and a button sit **side by side in the same row** (search + submit, email + subscribe, filter + apply), **both controls must match height exactly** — same total box height including padding and border.
+- Align them on one baseline row; do not let the input appear shorter, taller, or visually “floating” next to the button.
+- Match vertical padding, font size, line-height, and border width so the outer edges line up. If the design system defines button height, **derive the input height from that token** — do not invent a second size.
+- This rule applies to text fields, search fields, selects, and textareas paired with a button in a horizontal group. Stacked layouts (input above button) are exempt.
+
+### Icon inset on inputs must balance both sides
+
+- When an input carries a **leading or trailing icon** (search magnifier, mail glyph, currency symbol, etc.), the placeholder and typed text sit **after** the icon — not centered in the full field.
+- **The gap from the icon to the input edge must equal the gap from the icon to the placeholder/text.** If the icon sits 12px from the start edge, leave 12px between the icon and where the text begins. Asymmetric spacing makes the field feel lopsided: text hugging the icon on one side while the icon floats too far from the border on the other.
+- Measure both gaps on the **same axis** — inline-start edge → icon → text start (LTR: left edge → icon → text). Trailing icons mirror the rule on the inline-end side.
+- Derive input text padding from the design system's icon inset token: `textPaddingStart = iconInset + iconWidth + iconInset` (or the equivalent in your stack). Do not pad text from the field edge alone and bolt the icon on with a separate, smaller inset.
+- Applies to search fields, text inputs, textareas, and selects with inline icons. Icon-only buttons attached to the field (clear, reveal password) follow the input + button row rule above for height; this rule governs **in-field** icon spacing only.
+
+### Button labels must not wrap — buttons must not shrink
+
+- **Button label text must stay on one line** — wrapping to a second line is forbidden. Multi-line buttons break height rhythm, misalign adjacent controls, and read as broken layout, not intentional design.
+- **Buttons must not shrink** in flex or grid rows. A button keeps its full intrinsic width (label + horizontal padding + icon gap). Neighboring elements (inputs, chips, copy) compress or truncate before the button does.
+- **Implementation:** `white-space: nowrap` on the label; `flex-shrink: 0` (or equivalent) on the button; `min-width: fit-content` / `width: max-content` when the layout would otherwise squeeze the control. Icon-only buttons are exempt from the nowrap rule but still must not shrink below their defined touch target.
+- If the label is too long for the available space, **shorten the copy** or **reflow the layout** (stack, wrap the row, move actions to a footer bar) — never wrap the button text and never let the button collapse to fit.
+
+### Adjacent buttons must share the same size
+
+- When two or more buttons sit **next to each other in the same row** (Cancel + Save, Login + Sign up, secondary + primary CTAs, toolbar actions), **every button in that group must match** — same height, same vertical padding, same horizontal padding token, same font size, and same border width.
+- Do not place a tall primary next to a short secondary, or mix padding scales because labels differ in length. Uneven neighbors read as broken alignment, not intentional hierarchy. Hierarchy comes from **variant** (primary vs secondary vs ghost), not from resizing the control box.
+- **Width may differ** by label length — that is expected. **Height and padding must not.** If the design system defines a button size token (`sm`, `md`, `lg`), every adjacent button in the group uses the **same** size token.
+- **Icon-only buttons** in the same row as labeled buttons must match the labeled buttons' **height** (same outer box height / touch target). Width follows the icon-only padding rule; height stays locked to the group.
+- **Implementation:** apply one shared size class or token set to the whole button group; avoid per-button inline padding overrides. In flex rows, align on `align-items: stretch` only when all buttons share identical padding — otherwise use `align-items: center` with enforced equal min-height from the design system.
+
+### Mockups and illustrations must feel premium
+
+- Where the layout calls for a **mockup, product shot, hero illustration, empty-state graphic, or decorative visual**, do not ship placeholders, broken-image icons, gray boxes, or clip-art.
+- **Prefer custom SVG** (or equivalent vector output) that matches the active design system — correct palette, radius, shadow, and typography rhythm. The result should feel **intentional, polished, and premium**, not generic or template-grade.
+- Avoid stock “SaaS blob” clichés, low-effort wireframe blocks, and emoji used as stand-ins for real product UI unless the brief explicitly calls for playful emoji branding.
+- Every illustration must serve composition: depth, hierarchy, or storytelling — never filler.
+
+### Icons must be real icons — not text substitutes
+
+- Where the design specifies an icon (nav, buttons, feature tiles, status, social, accordion chevrons, etc.), **render a proper icon** — SVG icon component or icon font — not a Unicode emoji, bare letter, or empty circle unless the brief explicitly requests emoji.
+- If the project has no icon set yet, **install a reputable library** (e.g. Lucide, Font Awesome, Heroicons, Phosphor) and use it consistently. One family per product; match stroke weight and size to the design system.
+- Icon size, color, and touch target must follow the design-system module for icons / controls. Pair icons with accessible labels (`aria-label` or visible text) where meaning is not obvious from context alone.
+
+### Images must be beautiful and on-brand
+
+- Wherever photographic media, hero imagery, or thumbnails appear, use **high-quality, art-directed visuals** — sharp, well-lit, relevant to the product story, and harmonious with the design-system color world.
+- Never use obvious placeholder services, low-resolution stock, stretched assets, or images that clash with the page palette unless loading state explicitly requires a skeleton.
+- Prefer curated photography or custom graphics over random stock. Crop and frame for the container; respect aspect ratio and nested-radius rules when images sit inside rounded cards.
+
+### Framed videos (not full-bleed backgrounds)
+
+- When a video sits **inside a section or hero as content** (not edge-to-edge background), wrap it in a **visible frame** — rounded container, border or surface treatment, and **elevation from the design-system shadow tokens** (`shadow-md`, `shadow-lg`, or the level mapped to prominent cards in the active design system).
+- The frame should match card radius tokens and nested-radius math when padding separates the frame from the video.
+- Background videos (full-bleed hero backdrops with overlay content) are exempt from framing — they fill the section. **Inline / inset videos** always get the frame + shadow treatment.
+- Apply the same light-source and shadow discipline as cards and modals; do not use ad-hoc drop shadows outside the token scale.
+
+### Contextual heading size caps (dashboard, store, marketing)
+
+Marketing landing pages may use the design system's **largest display/hero scale** — oversized headlines are expected there. **Dashboard and store application surfaces are not marketing pages.** They must stay denser and quieter: smaller headings, tighter hierarchy, less display type.
+
+Apply these **maximum font sizes** unless the user brief explicitly documents an exception:
+
+| Surface | Context | Max heading size |
+|---|---|---|
+| **Dashboard / app** | Page titles, section headings, nav context, billing, settings, empty states | **28px** |
+| **Dashboard / app** | Widget titles, widget section labels, in-card KPI headings, chart headers | **24px** |
+| **E-commerce / store** | Storefront **hero only** (home hero, collection hero, campaign hero) | Design-system hero/display scale allowed |
+| **E-commerce / store** | All other surfaces — PLP headers, PDP titles, cart, checkout, account, nav, cards, order confirmation | **28px** for primary **h1** and **h2** only |
+| **Marketing** | Landing pages, campaign pages, pricing marketing sections | Design-system display/hero scale allowed |
+
+**Rules:**
+
+- **Dashboard headings must be smaller than marketing landing-page headings.** Never reuse a marketing hero headline size on a dashboard page title, sidebar section, or app chrome.
+- **Widget headings are always capped at 24px** — even when the same component family on a marketing page would allow larger type. Widgets are dense data surfaces; oversized titles steal space from the metric or chart.
+- **Store hero exception is narrow.** Only true storefront hero bands (full-width hero with headline + CTA / imagery) may exceed 28px. Product grids, product detail pages, cart lines, checkout steps, and order summaries are **not** heroes — cap h1/h2 at **28px**.
+- **Semantic HTML still applies.** Use one h1 per view where appropriate; visual size comes from these caps, not from picking a larger marketing token because it exists in the type scale.
+- **When the design system defines tokens above these caps**, map dashboard and non-hero store headings to the **largest token that respects the cap** — do not copy marketing display tokens into app or store UI.
+
+**Quick check:**
+
+- Dashboard page title ≤ 28px, every widget title ≤ 24px?
+- Store page outside the hero: h1/h2 ≤ 28px?
+- Marketing-only display sizes appear **only** on marketing landing pages and store hero bands?
 
 ---
 
@@ -326,9 +478,11 @@ True black (#000) for text or backgrounds looks unnatural on screens. Use the da
 - **DO** use color to reinforce hierarchy: strongest for primary, muted for secondary/tertiary.
 - **DO** ensure every text/background pairing meets WCAG 2.2 AA.
 - **DO** pair color with a secondary signal for every semantic state (error, warning, success).
+- **DO** lighten or darken input fill **and** border when the field sits on a same-hue parent surface (§0.1).
 - **DO NOT** use grey text on colored backgrounds — match the hue.
 - **DO NOT** rely on color alone to communicate information.
 - **DO NOT** use true black for text or backgrounds unless the design system explicitly calls for it.
+- **DO NOT** leave inputs visually flush with their parent background — users must see the field boundary at rest (§0.1).
 
 ---
 
@@ -363,6 +517,16 @@ Shadows are the most common depth cue, but not the only one:
 
 Borders are not the only separator. Prefer spacing, box shadows, or different background colors. Too many borders make a design feel busy and cluttered.
 
+## 6.4a Nested border radius
+
+Rounded containers that hold rounded children are a common polish failure. When both layers share the same radius, the inner corner looks pinched or misaligned.
+
+**Rule:** compute the inner radius from the outer radius minus the gap between them (§0.1):
+
+`innerRadius = outerRadius − padding` (equivalently `outerRadius = innerRadius + padding`).
+
+Apply this to cards wrapping media, modals wrapping panels, nav bars wrapping search inputs, and any nested `border-radius` pair. Use design-system radius tokens for the computed values when they land on-scale; otherwise round to the nearest token and document the choice.
+
 ## 6.5 Accent borders
 
 A simple colored border on a card edge, alert side, or navigation item adds visual interest without graphic design skill.
@@ -384,10 +548,12 @@ For content whose shape is predictable (lists, cards, profiles), display skeleto
 - **DO** maintain a single consistent light source across the design.
 - **DO** use elevation to communicate attention-priority.
 - **DO** prefer spacing, shadows, and background color over borders for separation.
+- **DO** calculate nested inner `border-radius` as `outerRadius − padding` (§0.1).
 - **DO** design empty states as onboarding opportunities.
 - **DO** use skeleton screens for predictable content.
 - **DO NOT** use shadows as decoration — they must map to elevation meaning.
 - **DO NOT** add borders when proximity or background-color difference already creates separation.
+- **DO NOT** reuse the parent border-radius on a padded inner child without subtracting the gap.
 
 ---
 
@@ -407,6 +573,7 @@ For content whose shape is predictable (lists, cards, profiles), display skeleto
 
 ### Labels and fields
 - A label must be visually closer to the field it describes than to the previous field.
+- When an input shares its parent's background color, **lighten (or darken) the field fill and border** so the control remains visible at rest — not only on focus (§0.1).
 - Mark optional fields, not required ones — marking exceptions is clearer than scattering asterisks.
 - Show important constraints inline (e.g. password requirements as the user types), not hidden in tooltips or shown only after submission fails.
 - Highlight the focused field to prevent users from losing their place.
@@ -414,6 +581,8 @@ For content whose shape is predictable (lists, cards, profiles), display skeleto
 ### Buttons
 - Buttons must look like buttons: rectangles or rounded rectangles.
 - Only the primary button gets a strong fill color. Secondary buttons use outline or subdued styling.
+- In a **horizontal input + button row**, the input must match the button's **total height** (§0.1).
+- **Button labels stay on one line; buttons do not shrink** in shared rows (§0.1) — shorten copy or reflow the layout instead.
 - In left-to-right cultures, place the primary action on the right. In stacked layouts, at the bottom.
 - Each button needs its own safe-area — no overlapping tap/click zones.
 - Do not make buttons so large they look like banner ads — oversized buttons get skipped.
@@ -452,6 +621,8 @@ For content whose shape is predictable (lists, cards, profiles), display skeleto
 - **DO** provide immediate feedback for every user action.
 - **DO** ensure every flow has a clear entry, path, and exit — including error recovery.
 - **DO** use single-column forms with clear label-to-field proximity.
+- **DO** keep inputs visually distinct from same-color parent surfaces (§0.1).
+- **DO** match input height to adjacent buttons in the same row (§0.1).
 - **DO NOT** create interactions that lack feedback.
 - **DO NOT** break platform conventions without a documented reason.
 - **DO NOT** sacrifice accessibility for animation. Respect reduced-motion preferences.
@@ -526,7 +697,7 @@ When principles from different pillars pull in opposite directions:
 5. **Hierarchy** — the user must understand what is important.
 6. **Aesthetics / polish** — important, but never at the cost of function or access.
 
-When this file and the design system conflict, **the design system wins** for that product. Flag the conflict for human review.
+**Design system vs. principles:** For any product with an active design system, **always implement design-system tokens and component specs first**, then apply this file and `typography-principles.md` to refine the result (§0). When this file and the design system conflict on a concrete value, **the design system wins**. Flag the conflict for human review. Principles decide only where the system is silent.
 
 ---
 
@@ -609,6 +780,13 @@ Every UI is assembled from four element categories. Use them deliberately.
 
 - **Input controls** — let the user communicate with the product (buttons, checkboxes, radios, toggles, text fields, dropdowns, sliders).
 - **Informational components** — let the product communicate with the user (icons, notifications, progress bars, tooltips, badges, banners).
+
+**Badge rule (§0.1):** badges are **inline, content-sized** status/category chips. **Full-width badges are never allowed.** If it spans a row, use a banner, alert, or list item — not a badge.
+
+**Icon rule (§0.1):** use a real icon set (SVG library or icon font). Do not substitute emoji or bare glyphs where an icon is specified.
+
+**Media rule (§0.1):** photos must be beautiful and on-brand; mockups and illustrations must be custom, premium-quality SVG (or equivalent); inset videos get a framed card treatment with design-system shadows — background hero videos are exempt.
+
 - **Navigational components** — help the user find their way through the product (tabs, breadcrumbs, search fields, menus, pagination, sliders).
 - **Containers** — keep the UI organized, group related elements, and cap content width to the screen size (cards, panels, headers, accordions, modals, tabs).
 
@@ -616,12 +794,17 @@ Every UI is assembled from four element categories. Use them deliberately.
 
 - For every screen, **name which category each element belongs to.** A screen with no informational components is a screen with no feedback.
 - Keep input controls **predictable** — a checkbox always behaves like a checkbox, no matter where it lives.
+- Size badges to their content; **never** stretch a badge to full container width (§0.1).
+- Use a **consistent icon library** for all UI icons; install one if the project lacks icons (§0.1).
 - Use containers to **cap content width** so reading length stays comfortable on large monitors.
 
 **Agent rules — DO NOT**
 
 - Do not blur categories (a "button" that is actually a navigational link; a "card" that is actually a button).
 - Do not create custom container shapes that don't carry information — they add visual noise without serving the user.
+- Do not ship full-width badges (§0.1).
+- Do not use emoji or placeholder glyphs as icons in production UI (§0.1).
+- Do not leave mockups, illustrations, or image slots as gray boxes or broken placeholders (§0.1).
 
 ---
 
@@ -1031,5 +1214,3 @@ Take a video player: play, fast-forward, and rewind sit on the same row because 
 **Quick check** — Place a vertical guide on the left edge of the main content column. Do all major elements snap to it?
 
 ---
-
-For anti-pattern detection, see `anti-patterns.md`. For pre-ship checklists, see `preflight.md`.

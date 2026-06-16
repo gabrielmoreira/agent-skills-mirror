@@ -1,3 +1,8 @@
+---
+name: idea-research
+description: Trend research and viral content breakdown workspace for radar pulls, URL breakdowns, account comparison, subscriptions, and script remixing.
+---
+
 # SKILL: idea-research 选题研析室
 
 > 给后续 AI agent 提供修改 skill — 10 节，每节是一个独立"为什么/怎么改"小问答。

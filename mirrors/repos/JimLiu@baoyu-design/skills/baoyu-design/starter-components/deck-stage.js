@@ -21,15 +21,18 @@
  *  (g) thumbnail rail — resizable left-hand column of per-slide thumbnails
  *      (static clones). Click to navigate; ↑/↓ with a thumbnail focused to
  *      step between slides; drag to reorder; right-click for
- *      Skip / Move up / Move down / Delete (opens a Cancel/Delete confirm
- *      dialog). Drag the rail's right edge to resize; width persists to
+ *      Skip / Move up / Move down / Duplicate / Delete (Delete opens a
+ *      Cancel/Delete confirm dialog). Drag the rail's right edge to resize;
+ *      width persists to
  *      localStorage. Skipped slides carry `data-deck-skip`, are dimmed in
  *      the rail, omitted from prev/next navigation, and hidden at print.
  *      The rail is suppressed in presenting mode, in the host's Preview
  *      mode (ViewerMode='none'), on `noscale`, on narrow viewports
  *      (≤640px), and via the `no-rail` attribute. Rail mutations dispatch
- *      a `deckchange`
- *      CustomEvent on the element: detail = {action, from, to, slide}.
+ *      a `dc-op` CustomEvent on the element (see docs/dc-ops.md) and do
+ *      NOT touch the DOM: the host applies the op and re-renders;
+ *      structural rail input is locked until the host posts
+ *      {__dc_op_ack: true, applied}.
  *
  * Slides are HIDDEN, not unmounted. Non-active slides stay in the DOM with
  * `visibility: hidden` + `opacity: 0`, so their state (videos, iframes,
@@ -82,6 +85,11 @@
  *     content genuinely needs interactive behaviour static HTML can't express.
  *   - Do NOT set position/inset/width/height on the slide <section> elements —
  *     the component absolutely positions every slotted child for you.
+ *   - Entrance animations: make the visible end-state the base style and
+ *     animate *from* hidden, so print and reduced-motion show content.
+ *     Gate the animation on [data-deck-active] and the motion query, e.g.
+ *     `@media (prefers-reduced-motion:no-preference){ [data-deck-active] .x{animation:fade-in .5s both} }`.
+ *     Avoid infinite decorative loops on slide content.
  */
 /* END USAGE */
 
@@ -231,7 +239,7 @@
       gap: 6px;
       color: rgba(255,255,255,0.72);
     }
-    .btn.reset .kbd {
+    .btn .kbd {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -245,6 +253,10 @@
       background: rgba(255,255,255,0.12);
       border-radius: 4px;
     }
+    .btn.fs { padding: 0 8px; gap: 6px; }
+    .btn.fs .fs-exit { display: none; }
+    :host([data-fullscreen]) .btn.fs .fs-enter { display: none; }
+    :host([data-fullscreen]) .btn.fs .fs-exit { display: block; }
 
     .count {
       font-variant-numeric: tabular-nums;
@@ -604,6 +616,40 @@
       window.addEventListener('message', this._onMessage);
       window.addEventListener('click', this._onDocClick, true);
       this.addEventListener('click', this._onTap);
+      // Print lays every slide out as its own page, so [data-deck-active]-
+      // gated entrance styles need the attribute on every slide (not just
+      // the current one) or their content prints at the hidden base style.
+      // The transient freeze style lands BEFORE the attributes so any
+      // attribute-keyed transition fires at 0s (changing transition-
+      // duration after a transition has started doesn't affect it).
+      this._onBeforePrint = () => {
+        if (this._freezeStyle) this._freezeStyle.remove();
+        this._freezeStyle = document.createElement('style');
+        this._freezeStyle.textContent = '*,*::before,*::after{transition-duration:0s !important}';
+        document.head.appendChild(this._freezeStyle);
+        this._slides.forEach((s) => s.setAttribute('data-deck-active', ''));
+      };
+      this._onAfterPrint = () => {
+        this._applyIndex({ showOverlay: false, broadcast: false });
+        if (this._freezeStyle) { this._freezeStyle.remove(); this._freezeStyle = null; }
+      };
+      window.addEventListener('beforeprint', this._onBeforePrint);
+      window.addEventListener('afterprint', this._onAfterPrint);
+      // Native browser fullscreen (F11 / element.requestFullscreen) hides the
+      // rail the same way host-driven presenting does. Independent flag so it
+      // doesn't clobber _presenting when both paths are in play.
+      this._onFsChange = () => {
+        this._fullscreen = !!document.fullscreenElement;
+        this.toggleAttribute('data-fullscreen', this._fullscreen);
+        if (this._fsBtn) {
+          this._fsBtn.setAttribute('aria-label', this._fullscreen ? 'Exit fullscreen' : 'Enter fullscreen');
+          this._fsBtn.setAttribute('title', this._fullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)');
+        }
+        this._syncRailHidden();
+        this._fit();
+        this._scaleThumbs();
+      };
+      document.addEventListener('fullscreenchange', this._onFsChange);
       // Initial collection + layout happens via slotchange, which fires on mount.
       this._enableRail();
       // Hold the stage hidden until webfonts are ready so the first visible
@@ -639,16 +685,36 @@
       // Live thumbnail updates: watch the light-DOM slides for content
       // edits and re-clone just the affected thumb(s), debounced. Ignore
       // the data-deck-* / data-screen-label / data-om-validate attributes
-      // this component itself writes so nav and skip don't trigger
-      // spurious refreshes.
-      const OWN_ATTRS = /^data-(deck-|screen-label$|om-validate$)/;
+      // this component itself writes so nav doesn't trigger spurious
+      // refreshes — except data-deck-skip, which now arrives from the host
+      // re-render and is what updates the rail badge, print bookkeeping,
+      // and deckSkipped re-broadcast.
+      const OWN_ATTRS = /^data-(deck-(?!skip$)|screen-label$|om-validate$)/;
       this._liveDirty = new Set();
       this._liveObserver = new MutationObserver((records) => {
         for (const r of records) {
           if (r.type === 'attributes' && OWN_ATTRS.test(r.attributeName || '')) continue;
           let n = r.target;
           while (n && n.parentElement !== this) n = n.parentElement;
-          if (n && this._slideSet && this._slideSet.has(n)) this._liveDirty.add(n);
+          // Skip/unskip is handled below without re-cloning (the badge sits
+          // on the thumb wrapper, not the clone) — don't mark the slide
+          // dirty for an attr change whose only visible effect is the badge.
+          if (n && this._slideSet && this._slideSet.has(n)
+              && !(r.type === 'attributes' && r.attributeName === 'data-deck-skip')) {
+            this._liveDirty.add(n);
+          }
+          // Host-driven skip toggle: sync the rail badge + print + presenter
+          // skipped-list the way _toggleSkip used to do locally.
+          if (r.type === 'attributes' && r.attributeName === 'data-deck-skip'
+              && n && this._slideSet && this._slideSet.has(n)) {
+            const i = this._slides.indexOf(n);
+            if (this._thumbs && this._thumbs[i]) {
+              if (n.hasAttribute('data-deck-skip')) this._thumbs[i].thumb.setAttribute('data-skip', '');
+              else this._thumbs[i].thumb.removeAttribute('data-skip');
+            }
+            this._markLastVisible();
+            try { window.postMessage({ slideIndexChanged: this._index, deckTotal: this._slides.length, deckSkipped: this._skippedIndices() }, '*'); } catch (e) {}
+          }
         }
         if (this._liveDirty.size && !this._liveTimer) {
           this._liveTimer = setTimeout(() => {
@@ -791,6 +857,10 @@
       window.removeEventListener('mousemove', this._onMouseMove);
       window.removeEventListener('message', this._onMessage);
       window.removeEventListener('click', this._onDocClick, true);
+      window.removeEventListener('beforeprint', this._onBeforePrint);
+      window.removeEventListener('afterprint', this._onAfterPrint);
+      if (this._onFsChange) document.removeEventListener('fullscreenchange', this._onFsChange);
+      if (this._freezeStyle) { this._freezeStyle.remove(); this._freezeStyle = null; }
       this.removeEventListener('click', this._onTap);
       if (this._hideTimer) clearTimeout(this._hideTimer);
       if (this._mouseIdleTimer) clearTimeout(this._mouseIdleTimer);
@@ -853,17 +923,26 @@
         </button>
         <span class="divider"></span>
         <button class="btn reset" type="button" aria-label="Reset to first slide" title="Reset (R)">Reset<span class="kbd">R</span></button>
+        <button class="btn fs" type="button" aria-label="Enter fullscreen" title="Fullscreen (F)">
+          <svg class="fs-enter" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4"/></svg>
+          <svg class="fs-exit" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4"/></svg>
+          <span class="kbd">F</span>
+        </button>
       `;
 
       overlay.querySelector('.prev').addEventListener('click', () => this._advance(-1, 'click'));
       overlay.querySelector('.next').addEventListener('click', () => this._advance(1, 'click'));
       overlay.querySelector('.reset').addEventListener('click', () => this._go(0, 'click'));
+      overlay.querySelector('.fs').addEventListener('click', () => this._toggleFullscreen());
 
       // Thumbnail rail + context menu. Thumbnails are populated in
       // _renderRail() after _collectSlides().
       const rail = document.createElement('div');
       rail.className = 'rail export-hidden';
       rail.setAttribute('data-omelette-chrome', '');
+      // Edit mode hooks wheel to pan the canvas; this opts the rail's own
+      // scrollview out so thumbnails stay scrollable while editing.
+      rail.setAttribute('data-dc-wheel-passthru', '');
       rail.style.setProperty('--deck-aspect', this.designWidth + '/' + this.designHeight);
       // Edge auto-scroll while dragging a thumb near the rail's top/bottom
       // so off-screen drop targets are reachable. Native dragover fires
@@ -886,6 +965,7 @@
         <button type="button" data-act="skip">Skip slide</button>
         <button type="button" data-act="up">Move up</button>
         <button type="button" data-act="down">Move down</button>
+        <button type="button" data-act="duplicate">Duplicate slide</button>
         <hr>
         <button type="button" data-act="delete">Delete slide</button>
       `;
@@ -897,6 +977,7 @@
         if (act === 'skip') this._toggleSkip(i);
         else if (act === 'up') this._moveSlide(i, i - 1);
         else if (act === 'down') this._moveSlide(i, i + 1);
+        else if (act === 'duplicate') this._duplicateSlide(i);
         else if (act === 'delete') this._openConfirm(i);
       });
       menu.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -960,6 +1041,7 @@
       this._confirm = confirm;
       this._countEl = overlay.querySelector('.current');
       this._totalEl = overlay.querySelector('.total');
+      this._fsBtn = overlay.querySelector('.fs');
 
       // Restore persisted rail width.
       let rw = 188;
@@ -1002,14 +1084,22 @@
       tag.textContent =
         '@page { size: ' + this.designWidth + 'px ' + this.designHeight + 'px; margin: 0; } ' +
         '@media print { html, body { margin: 0 !important; padding: 0 !important; background: none !important; overflow: visible !important; height: auto !important; } ' +
-        '* { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }';
+        '* { -webkit-print-color-adjust: exact; print-color-adjust: exact; } ' +
+        // Jump authored animations/transitions to their end state so print
+        // never captures mid-entrance — pairs with the beforeprint handler
+        // in connectedCallback that sets data-deck-active on every slide.
+        '*, *::before, *::after { animation-delay: -99s !important; animation-duration: .001s !important; ' +
+        'animation-iteration-count: 1 !important; animation-fill-mode: both !important; ' +
+        'animation-play-state: running !important; transition-duration: 0s !important; } }';
     }
 
     _onSlotChange() {
-      // Rail mutations (delete/move) already reconcile synchronously and
-      // emit slidechange with reason 'api'; skip the async slotchange that
-      // would otherwise re-broadcast with reason 'init'.
+      // Self-mutate path already reconciled synchronously and emitted
+      // slidechange; skip the async slotchange it caused.
       if (this._squelchSlotChange) { this._squelchSlotChange = false; return; }
+      // Primary lock-clear is the host's __deck_rail_ack; this clears on a
+      // dropped ack so the rail can't stay dead.
+      this._railLock = false;
       this._collectSlides();
       this._restoreIndex();
       this._applyIndex({ showOverlay: false, broadcast: true, reason: 'init' });
@@ -1056,15 +1146,23 @@
     }
 
     _loadNotes() {
+      // Per-slide data-speaker-notes is authoritative when present (attrs
+      // travel with the element on reorder/dup/delete); a slide without
+      // the attr falls through to the legacy #speaker-notes JSON array
+      // PER SLIDE so a single attr on a JSON-authored deck doesn't blank
+      // the rest.
       const tag = document.getElementById('speaker-notes');
-      if (!tag) { this._notes = []; return; }
-      try {
-        const parsed = JSON.parse(tag.textContent || '[]');
-        if (Array.isArray(parsed)) this._notes = parsed;
+      let json = null;
+      if (tag) try {
+        const p = JSON.parse(tag.textContent || '[]');
+        if (Array.isArray(p)) json = p;
       } catch (e) {
         console.warn('[deck-stage] Failed to parse #speaker-notes JSON:', e);
-        this._notes = [];
       }
+      this._notes = this._slides.map((s, i) => {
+        const a = s.getAttribute('data-speaker-notes');
+        return a !== null ? a : (json && typeof json[i] === 'string' ? json[i] : '');
+      });
     }
 
     _restoreIndex() {
@@ -1145,7 +1243,7 @@
       // corrects it.
       if (!this._railEnabled || !this._railVisible || this.hasAttribute('no-rail')
           || this.hasAttribute('noscale') || this._presenting || this._previewMode
-          || NARROW_MQ.matches) return 0;
+          || this._fullscreen || NARROW_MQ.matches) return 0;
       return this._railPx || 0;
     }
 
@@ -1218,6 +1316,18 @@
         this._fit();
         this._scaleThumbs();
       }
+      // Host has processed a dc-op; rail input is safe again. Not tied to
+      // slotchange — setAttr and refusal don't fire one. On refusal,
+      // revert the optimistic _index/hash adjustment so the next nav
+      // starts from what's actually on screen.
+      if (d && d.__dc_op_ack) {
+        this._railLock = false;
+        if (d.applied === false && this._indexBeforeEmit != null) {
+          this._index = this._indexBeforeEmit;
+          try { history.replaceState(null, '', '#' + (this._index + 1)); } catch (e) {}
+        }
+        this._indexBeforeEmit = null;
+      }
       // Per-viewer show/hide, driven by the TweaksPanel's auto-injected
       // "Thumbnail rail" toggle (or any author script). Independent of
       // whether the Tweaks panel itself is open — closing the panel
@@ -1246,7 +1356,7 @@
       // transition. data-user-hidden is the soft hide (translateX(-100%))
       // for the viewer's rail toggle, so show/hide slides under
       // :host([data-rail-anim]).
-      const hard = !this._railEnabled || this._presenting || this._previewMode;
+      const hard = !this._railEnabled || this._presenting || this._previewMode || this._fullscreen;
       if (hard) this._rail.setAttribute('data-presenting', '');
       else this._rail.removeAttribute('data-presenting');
       if (!this._railVisible) this._rail.setAttribute('data-user-hidden', '');
@@ -1309,6 +1419,8 @@
         this._go(this._slides.length - 1, 'keyboard');
       } else if (key === 'r' || key === 'R') {
         this._go(0, 'keyboard');
+      } else if (key === 'f' || key === 'F') {
+        this._toggleFullscreen();
       } else if (/^[0-9]$/.test(key)) {
         // 1..9 jump to that slide; 0 jumps to 10.
         const n = key === '0' ? 9 : parseInt(key, 10) - 1;
@@ -1345,6 +1457,22 @@
       }
       if (i < 0 || i >= this._slides.length) { this._flashOverlay(); return; }
       this._go(i, reason);
+    }
+
+    /** Toggle native fullscreen on the whole document. Must be called from a
+     *  user gesture (button click or keydown) or requestFullscreen rejects.
+     *  The fullscreenchange handler hides the rail and swaps the button icon.
+     *  Standard API only — F11 / webkit-prefixed flows are out of scope,
+     *  matching the fullscreenchange listener in connectedCallback. */
+    _toggleFullscreen() {
+      try {
+        if (document.fullscreenElement) {
+          if (document.exitFullscreen) document.exitFullscreen();
+        } else if (document.documentElement.requestFullscreen) {
+          const p = document.documentElement.requestFullscreen();
+          if (p && p.catch) p.catch(() => {});
+        }
+      } catch (e) {}
     }
 
     // ── Thumbnail rail ────────────────────────────────────────────────────
@@ -1683,39 +1811,92 @@
       this._confirmIndex = -1;
     }
 
-    _emitDeckChange(detail) {
-      this.dispatchEvent(new CustomEvent('deckchange', {
-        detail, bubbles: true, composed: true,
+    /** Rail mutations. When a dc-runtime is present (`window.__dcUpdate`)
+     *  the host owns the light DOM — handlers emit a dc-op only and the
+     *  host applies it (to the editor's model or to the source file) and
+     *  re-renders via dc-runtime; slotchange catches the rail up.
+     *  Structural ops lock rail input until the host acks so a rapid second
+     *  click can't address a stale index; setAttr/removeAttr respect the
+     *  lock but don't set it (indices unchanged; the host serializes).
+     *  `newIndex` is written to location.hash so slotchange's
+     *  _restoreIndex lands on the right slide.
+     *
+     *  With NO dc-runtime (a raw .html deck), there's no re-render path,
+     *  so handlers self-mutate locally for an instant update and emit
+     *  `emitOnly: false`; the host persists to disk without
+     *  re-rendering over the already-mutated DOM.
+     *
+     *  See docs/dc-ops.md for the contract. */
+    _emitDcOp(op, slide, lock, newIndex) {
+      // Slide index (template/script/style filtered — same as
+      // _collectSlides). deck-stage is a filtered-index dc-op emitter;
+      // the host resolves against findDeckStage().slideTids. Callers
+      // already pass `to` as a slide index.
+      op.at = this._slides.indexOf(slide);
+      op.witness = { childCount: this._slides.length };
+      // dc-runtime wraps an <x-import>-mounted component in a
+      // <div class="sc-host-x" data-dc-tpl="N"> host — the stamp is on the
+      // WRAPPER, not this element. closest() finds it (or this element's
+      // own stamp when directly templated).
+      const host = this.closest('[data-dc-tpl]');
+      const tid = host && host.getAttribute('data-dc-tpl');
+      op.mount = { tid: tid !== null ? parseInt(tid, 10) : null, tag: 'deck-stage' };
+      op.emitOnly = !!window.__dcUpdate;
+      if (op.emitOnly) {
+        if (lock) this._railLock = true;
+        if (newIndex != null && newIndex !== this._index) {
+          this._indexBeforeEmit = this._index;
+          this._index = newIndex;
+          try { history.replaceState(null, '', '#' + (newIndex + 1)); } catch (e) {}
+        }
+      }
+      this.dispatchEvent(new CustomEvent('dc-op', {
+        detail: op, bubbles: true, composed: true,
       }));
+      return op.emitOnly;
     }
 
     _deleteSlide(i) {
+      if (this._railLock) return;
       const slide = this._slides[i];
       if (!slide || this._slides.length <= 1) return;
-      const wasCurrent = i === this._index;
-      if (i < this._index || (wasCurrent && i === this._slides.length - 1)) this._index--;
+      const cur = this._index;
+      const ni = (i < cur || (i === cur && i === this._slides.length - 1)) ? cur - 1 : cur;
+      if (this._emitDcOp({ op: 'remove' }, slide, true, ni)) return;
+      this._index = ni;
       this._squelchSlotChange = true;
       slide.remove();
-      this._emitDeckChange({ action: 'delete', from: i, slide });
+      this._collectSlides();
+      this._applyIndex({ showOverlay: true, broadcast: true, reason: 'mutation' });
+    }
+
+    _duplicateSlide(i) {
+      if (this._railLock) return;
+      const slide = this._slides[i];
+      if (!slide) return;
+      if (this._emitDcOp({ op: 'duplicate' }, slide, true, i + 1)) return;
+      const copy = slide.cloneNode(true);
+      copy.removeAttribute('id');
+      copy.querySelectorAll('[id]').forEach((el) => el.removeAttribute('id'));
+      this._index = i + 1;
+      this._squelchSlotChange = true;
+      this.insertBefore(copy, slide.nextSibling);
       this._collectSlides();
       this._applyIndex({ showOverlay: true, broadcast: true, reason: 'mutation' });
     }
 
     _toggleSkip(i) {
+      if (this._railLock) return;
       const slide = this._slides[i];
       if (!slide) return;
       const on = !slide.hasAttribute('data-deck-skip');
+      if (this._emitDcOp(
+        on ? { op: 'setAttr', attr: 'data-deck-skip', value: '' }
+           : { op: 'removeAttr', attr: 'data-deck-skip' },
+        slide, false
+      )) return;
       if (on) slide.setAttribute('data-deck-skip', '');
       else slide.removeAttribute('data-deck-skip');
-      if (this._thumbs && this._thumbs[i]) {
-        if (on) this._thumbs[i].thumb.setAttribute('data-skip', '');
-        else this._thumbs[i].thumb.removeAttribute('data-skip');
-      }
-      this._markLastVisible();
-      this._emitDeckChange({ action: on ? 'skip' : 'unskip', from: i, slide });
-      // Re-broadcast so the presenter popup's prev/next thumbnails re-pick
-      // the nearest non-skipped slide without waiting for a nav event.
-      try { window.postMessage({ slideIndexChanged: this._index, deckTotal: this._slides.length, deckSkipped: this._skippedIndices() }, '*'); } catch (e) {}
     }
 
     _skippedIndices() {
@@ -1727,18 +1908,18 @@
     }
 
     _moveSlide(i, j) {
-      if (j < 0 || j >= this._slides.length || j === i) return;
-      const slide = this._slides[i];
-      const ref = j < i ? this._slides[j] : this._slides[j].nextSibling;
-      // Track the active slide across the reorder so the same content
-      // stays on screen.
+      if (this._railLock || j < 0 || j >= this._slides.length || j === i) return;
       const cur = this._index;
-      if (cur === i) this._index = j;
-      else if (i < cur && j >= cur) this._index = cur - 1;
-      else if (i > cur && j <= cur) this._index = cur + 1;
+      const ni = cur === i ? j
+        : (i < cur && j >= cur) ? cur - 1
+        : (i > cur && j <= cur) ? cur + 1
+        : cur;
+      const slide = this._slides[i];
+      if (this._emitDcOp({ op: 'move', to: j }, slide, true, ni)) return;
+      const ref = j < i ? this._slides[j] : this._slides[j].nextSibling;
+      this._index = ni;
       this._squelchSlotChange = true;
       this.insertBefore(slide, ref);
-      this._emitDeckChange({ action: 'move', from: i, to: j, slide });
       this._collectSlides();
       this._applyIndex({ showOverlay: false, broadcast: true, reason: 'mutation' });
     }

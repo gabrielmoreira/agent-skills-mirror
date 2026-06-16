@@ -464,4 +464,3 @@ When accessibility rules conflict with other principles:
 
 ---
 
-For anti-pattern detection related to accessibility, see `anti-patterns.md`. For the five-dimension technical audit that includes accessibility scoring, see `inspect.md`. For the pre-ship go/no-go that requires zero accessibility P0s, see `preflight.md`.

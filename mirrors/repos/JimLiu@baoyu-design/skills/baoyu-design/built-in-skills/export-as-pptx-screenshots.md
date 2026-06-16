@@ -6,10 +6,14 @@ description: "Export as PPTX (screenshots)\nFlat images — pixel-perfect but no
 
 Export an HTML slide deck to a `.pptx` as full-bleed PNG images. Pixel-perfect, not editable. One `gen_pptx` tool call.
 
+> **Precondition — decks only, not any HTML.** Same as editable export: this targets a *slide-structured deck* (one fixed-size slide per `selector`, navigable — `deck-stage` or the [make-a-deck](make-a-deck.md) format), **not** arbitrary HTML. For a non-deck page, rebuild it as a deck first or tell the user it isn't supported.
+
 ## Steps
 
 1. Surface/preview the deck per your selected harness reference.
 2. Call `gen_pptx`:
+
+> **Claude Code:** there is no `gen_pptx` tool — run it as a local CLI. Serve the deck over HTTP, write the inputs below (with `"mode": "screenshots"`) to a JSON file, then `node <skill>/agents/gen-pptx/dist/cli.mjs --url <servedDeckUrl> --config <jsonPath> --out designs/<project>`, and read `flags` from the printed JSON. Full invocation + one-time setup: [`../references/claude.md`](../references/claude.md) → "Exporting to PPTX".
 
 ```jsonc
 {

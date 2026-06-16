@@ -109,23 +109,23 @@ end timeout
 
 ```javascript
 // Activate app
-Application("Safari").activate();
+Application('Safari').activate()
 
 // Get frontmost app
-Application("System Events").processes.whose({ frontmost: true })[0].name();
+Application('System Events').processes.whose({ frontmost: true })[0].name()
 
 // Display dialog
-const app = Application.currentApplication();
-app.includeStandardAdditions = true;
-app.displayDialog("Hello!", { buttons: ["OK"], defaultButton: "OK" });
+const app = Application.currentApplication()
+app.includeStandardAdditions = true
+app.displayDialog('Hello!', { buttons: ['OK'], defaultButton: 'OK' })
 
 // Run shell command
-app.doShellScript("ls -la");
+app.doShellScript('ls -la')
 
 // Work with files
-const finder = Application("Finder");
-const desktop = finder.desktop;
-finder.make({ new: "folder", at: desktop, withProperties: { name: "Test" } });
+const finder = Application('Finder')
+const desktop = finder.desktop
+finder.make({ new: 'folder', at: desktop, withProperties: { name: 'Test' } })
 ```
 
 ## Security Rules

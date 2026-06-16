@@ -4,6 +4,34 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.178](https://github.com/Piebald-AI/claude-code-system-prompts/commit/493d192)
+
+_-20,964 tokens_
+
+- **NEW:** Skill: Code Review (conventions dimension) — Adds a CLAUDE.md conventions finder angle that reads the applicable user-, repo-root-, and ancestor-directory CLAUDE.md/CLAUDE.local.md files and flags diff lines that break a stated rule, quoting the exact rule and offending line and emitting nothing when no CLAUDE.md governs the change.
+- **NEW:** Tool Description: Glob — Adds the Glob tool description: fast file-pattern matching that returns matching paths sorted by modification time, with a pointer to use the Agent tool for open-ended multi-round search.
+- **NEW:** Tool Description: Glob compact — Adds a condensed Glob description (served to newer models) covering pattern matching and modification-time-sorted results.
+- **NEW:** Tool Description: Grep compact — Adds a condensed Grep description (served to newer models) for the ripgrep-backed search, noting it should be preferred over raw `grep`/`rg`, plus regex/glob/type filters, `output_mode`, and `multiline` options.
+- **NEW:** Tool Description: ReadFile compact — Adds a condensed file-read description (served to newer models) covering the absolute-path requirement, default line cap, and image/PDF/notebook handling.
+- **REMOVED:** Agent Prompt: Quick git commit — Removes the streamlined prompt that staged changes and created a single git commit from pre-populated git context.
+- **REMOVED:** Skill: Code Review (cleanup and altitude output guidance) — Removes the note that cleanup and altitude candidates reuse the standard finding shape, state a concrete cost in `failure_scenario`, and always rank below correctness bugs when the output cap forces a cut.
+- **REMOVED:** Tool Description: TeamDelete — Removes the tool description for deleting a completed team's team and task directories.
+- **REMOVED:** Tool Description: TeammateTool — Removes the TeamCreate/team-coordination tool description (team creation, agent-type selection, task ownership, message delivery, idle state, and member discovery).
+- Agent Prompt: /code-review effort modes (medium, high, and extra-high/maximum) — Adds a new Conventions (CLAUDE.md) finder angle to Phase 1, raising the finder-angle count (to 8 for medium/high, 10 for extra-high/maximum) and updating the pipeline summary line accordingly.
+- Skill: Design sync — Adds guidance to handle tool authorization errors by relaying the tool's instructions to the user (typically `/design-login` for sessions without a claude.ai login, or `/login` with a Claude subscription) and retrying after they authenticate.
+- System Prompt: Scratchpad directory — Softens the permission note so the scratchpad directory "can generally be used without permission prompts" instead of "can be used freely without permission prompts."
+- System Reminder: Team Coordination — Replaces the interpolated team name in the teammate intro with the generic "this session's agent team."
+- Tool Description: Agent explicit-spawn restriction — Updates the spawn-restriction wording from naming "one of the agent types above" to "one of the available agent types."
+- Tool Description: Agent (usage notes) — Adds an `isolation: "remote"` option to run the agent in a remote CCR sandbox (always a background task, with completion notification) and drops `team_name` from the parameters listed as unavailable in subagent and teammate contexts.
+- Tool Description: Agent (when to launch subagents) — Notes that the available agent types are listed in `<system-reminder>` messages in the conversation.
+- Tool Description: Artifact — Adds that the file is wrapped in a `<!doctype html>…<head>…</head><body>` skeleton at publish time, so the page content should be written directly without its own `<!DOCTYPE>`/`<html>`/`<head>`/`<body>` tags, and that the file should go in the scratchpad directory unless the user names a location.
+- Tool Description: Bash (Git commit and PR creation instructions) — Serves a condensed "# Git" commit-guidance section (commit only when asked, prefer naming specific files over `git add -A`/`.`, never commit secrets) when a commit slash-command context is loaded, keeping the full git-commit protocol otherwise, and repositions the PR-instructions prefix ahead of the "Creating pull requests" section.
+- Tool Description: DesignSync — Notes that sessions without a claude.ai login can authenticate through a dedicated design authorization from `/design-login`.
+- Tool Description: SendMessageTool — Adds a `"main"` recipient option for messaging the main conversation (background subagents only).
+- Tool Description: Skill — Adds guidance on directory-scoped skills whose names are prefixed with their directory (e.g. `apps/web:deploy`): when both a scoped and unscoped variant exist, pick by the files being worked on (most specific directory wins), otherwise use the unscoped one.
+- Tool Description: ToolSearch (second part) — Removes the note that an unfetched tool exposes only its name with no parameter schema and therefore cannot be invoked.
+- Tool Description: Workflow — Adds an `effort` option to `agent()` spawns that overrides the reasoning effort ('low' | 'medium' | 'high' | 'xhigh' | 'max'); omit to inherit the session effort, use 'low' for cheap mechanical stages and higher tiers only for the hardest verify/judge stages.
+
 #### [2.1.177](https://github.com/Piebald-AI/claude-code-system-prompts/commit/c23e10f)
 
 <sub>_No changes to the system prompts in v2.1.177._</sub>

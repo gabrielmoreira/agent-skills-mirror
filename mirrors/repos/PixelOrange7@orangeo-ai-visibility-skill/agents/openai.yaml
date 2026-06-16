@@ -1,0 +1,4 @@
+interface:
+  display_name: "OranGEO AI Visibility"
+  short_description: "Audit GEO, AEO, and AI search visibility readiness."
+  default_prompt: "Use $orangeo-ai-visibility-skill to audit a brand's AI visibility readiness, buyer prompts, and competitor gaps."

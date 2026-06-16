@@ -11,4 +11,5 @@ category_name: 'Chatbots'
 price: 'Freemium'
 featured: false
 date: '2025-09-21'
+tags: [chatbot, text_generation, ai_assistant, api_available, enterprise]
 ---

@@ -2,7 +2,7 @@
 
 Generated at: 2026-02-08T00:00:00.000Z
 
-Total skills: 1550
+Total skills: 1555
 
 ## architecture (101)
 
@@ -743,7 +743,7 @@ Total skills: 1550
 | `seo-plan` | Strategic SEO planning for new or existing websites. Industry-specific templates, competitive analysis, content strategy, and implementation roadmap. Use whe... | seo, plan | seo, plan, strategic, planning, new, existing, websites, industry, specific, competitive, analysis, content |
 | `yann-lecun-filosofia` | Sub-skill filosófica e pedagógica de Yann LeCun. | persona, ai-philosophy, open-source, education | persona, ai-philosophy, open-source, education, yann, lecun, filosofia, sub, skill, filos, fica, pedag |
 
-## general (371)
+## general (374)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -818,6 +818,7 @@ Total skills: 1550
 | `code-review-excellence` | Transform code reviews from gatekeeping to knowledge sharing through constructive feedback, systematic analysis, and collaborative improvement. | code, excellence | code, excellence, review, transform, reviews, gatekeeping, knowledge, sharing, through, constructive, feedback, systematic |
 | `code-simplifier` | Simplifies and refines code for clarity, consistency, and maintainability while preserving all functionality. Use when asked to "simplify code", "clean up co... | code, simplifier | code, simplifier, simplifies, refines, clarity, consistency, maintainability, while, preserving, all, functionality, asked |
 | `codebase-cleanup-tech-debt` | You are a technical debt expert specializing in identifying, quantifying, and prioritizing technical debt in software projects. Analyze the codebase to uncov... | codebase, cleanup, tech, debt | codebase, cleanup, tech, debt, technical, specializing, identifying, quantifying, prioritizing, software, analyze, uncover |
+| `codex-fable5` | Apply Fable-inspired discipline to Codex work: inspect first, track goals and findings, ground conclusions in evidence, verify before completion, and adapt C... | codex, fable-style, agent-workflow, verification, prompt-adaptation | codex, fable-style, agent-workflow, verification, prompt-adaptation, fable5, apply, fable, inspired, discipline, work, inspect |
 | `cold-email` | Write B2B cold emails and follow-up sequences that earn replies. Use when creating outbound prospecting emails, SDR outreach, personalized opening lines, sub... | cold, email | cold, email, write, b2b, emails, follow, up, sequences, earn, replies, creating, outbound |
 | `commit` | ALWAYS use this skill when committing code changes — never commit directly without it. Creates commits following Sentry conventions with proper conventional ... | commit | commit, always, skill, committing, code, changes, never, directly, without, creates, commits, following |
 | `complexity-cuts` | Lower Big-O on existing code via a one-transformation-at-a-time playbook with verify-revert-stop. For new code use lemmaly; for math-level wins escalate to m... | algorithms, big-o, refactoring, optimization, performance, n-plus-one | algorithms, big-o, refactoring, optimization, performance, n-plus-one, complexity, cuts, lower, big, existing, code |
@@ -851,6 +852,7 @@ Total skills: 1550
 | `doc2math` | Convert narrative technical documents into grounded Mathematical Problem Specifications with variables, constraints, objectives, and uncertainty. | doc2math | doc2math, convert, narrative, technical, documents, grounded, mathematical, problem, specifications, variables, constraints, objectives |
 | `docx-official` | A user may ask you to create, edit, or analyze the contents of a .docx file. A .docx file is essentially a ZIP archive containing XML files and other resourc... | docx, official | docx, official, user, may, ask, edit, analyze, contents, file, essentially, zip, archive |
 | `dx-optimizer` | Developer Experience specialist. Improves tooling, setup, and workflows. Use PROACTIVELY when setting up new projects, after team feedback, or when developme... | dx, optimizer | dx, optimizer, developer, experience, improves, tooling, setup, proactively, setting, up, new, after |
+| `efficient-web-research` | Protocol for token-efficient web research. Use when accessing URLs, GitHub repos, or running search queries. Prevents full-page fetching waste. | efficient, web, research | efficient, web, research, protocol, token, accessing, urls, github, repos, running, search, queries |
 | `elon-musk` | Agente que simula Elon Musk com profundidade psicologica e comunicacional de alta fidelidade. Ativado para: "fale como Elon", "simule Elon Musk", "o que Elon... | persona, first-principles, innovation, strategy | persona, first-principles, innovation, strategy, elon, musk, agente, que, simula, com, profundidade, psicologica |
 | `emergency-card` | 生成紧急情况下快速访问的医疗信息摘要卡片。当用户需要旅行、就诊准备、紧急情况或询问"紧急信息"、"医疗卡片"、"急救信息"时使用此技能。提取关键信息（过敏、用药、急症、植入物），支持多格式输出（JSON、文本、二维码），用于急救或快速就医。 | emergency, card | emergency, card, json |
 | `emotional-arc-designer` | One sentence - what this skill does and when to invoke it | emotional, arc, designer | emotional, arc, designer, one, sentence, what, skill, does, invoke |
@@ -1043,6 +1045,7 @@ Total skills: 1550
 | `sequence-psychologist` | One sentence - what this skill does and when to invoke it | sequence, psychologist | sequence, psychologist, one, sentence, what, skill, does, invoke |
 | `sexual-health-analyzer` | Sexual Health Analyzer | sexual, health, analyzer | sexual, health, analyzer |
 | `shader-programming-glsl` | Expert guide for writing efficient GLSL shaders (Vertex/Fragment) for web and game engines, covering syntax, uniforms, and common effects. | shader, programming, glsl | shader, programming, glsl, writing, efficient, shaders, vertex, fragment, web, game, engines, covering |
+| `sharp-coder` | Two-layer performance skill combining disciplined THINK layer (surgical edits, simplicity) and terse SPEAK layer (caveman compression). Triggers on requests ... | sharp, coder | sharp, coder, two, layer, performance, skill, combining, disciplined, think, surgical, edits, simplicity |
 | `sharp-edges` | sharp-edges | sharp, edges | sharp, edges |
 | `shellcheck-configuration` | Master ShellCheck static analysis configuration and usage for shell script quality. Use when setting up linting infrastructure, fixing code issues, or ensuri... | shellcheck, configuration | shellcheck, configuration, static, analysis, usage, shell, script, quality, setting, up, linting, infrastructure |
 | `signup-flow-cro` | You are an expert in optimizing signup and registration flows. Your goal is to reduce friction, increase completion rates, and set users up for successful ac... | signup, flow, cro | signup, flow, cro, optimizing, registration, flows, goal, reduce, friction, increase, completion, rates |
@@ -1119,7 +1122,7 @@ Total skills: 1550
 | `youtube-summarizer` | Extract transcripts from YouTube videos and generate comprehensive, detailed summaries using intelligent analysis frameworks | video, summarization, transcription, youtube, content-analysis | video, summarization, transcription, youtube, content-analysis, summarizer, extract, transcripts, videos, generate, detailed, summaries |
 | `zipai-optimizer` | Ultra-dense token optimizer skill for prompt caching, log pruning, AST-based inspection, and minified JSON payloads. | zipai, optimizer | zipai, optimizer, ultra, dense, token, skill, prompt, caching, log, pruning, ast, inspection |
 
-## infrastructure (141)
+## infrastructure (142)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -1129,6 +1132,7 @@ Total skills: 1550
 | `agentflow` | Orchestrate autonomous AI development pipelines through your Kanban board (Asana, GitHub Projects, Linear). Manages multi-worker Claude Code dispatch, determ... | agentflow | agentflow, orchestrate, autonomous, ai, development, pipelines, through, kanban, board, asana, github, linear |
 | `agenttrace-session-audit` | Audit local AI coding-agent sessions with agenttrace for cost, tool failures, latency, anomalies, health, diffs, and CI gates. | ai-coding, observability, cost-tracking, session-analysis | ai-coding, observability, cost-tracking, session-analysis, agenttrace, session, audit, local, ai, coding, agent, sessions |
 | `airflow-dag-patterns` | Build production Apache Airflow DAGs with best practices for operators, sensors, testing, and deployment. Use when creating data pipelines, orchestrating wor... | airflow, dag | airflow, dag, apache, dags, operators, sensors, testing, deployment, creating, data, pipelines, orchestrating |
+| `android-cli` | Orchestrates Android development tasks including project creation, deployment, SDK management, and environment diagnostics using the `android` command-line t... | android, cli, adb, mobile, build, emulator | android, cli, adb, mobile, build, emulator, orchestrates, development, tasks, including, creation, deployment |
 | `api-testing-observability-api-mock` | You are an API mocking expert specializing in realistic mock services for development, testing, and demos. Design mocks that simulate real API behavior and e... | api, observability, mock | api, observability, mock, testing, mocking, specializing, realistic, development, demos, mocks, simulate, real |
 | `apify-brand-reputation-monitoring` | Scrape reviews, ratings, and brand mentions from multiple platforms using Apify Actors. | apify, brand, reputation, monitoring | apify, brand, reputation, monitoring, scrape, reviews, ratings, mentions, multiple, platforms, actors |
 | `application-performance-performance-optimization` | Optimize end-to-end application performance with profiling, observability, and backend/frontend tuning. Use when coordinating performance optimization across... | application, performance, optimization | application, performance, optimization, optimize, profiling, observability, backend, frontend, tuning, coordinating, stack |
@@ -1494,10 +1498,11 @@ Total skills: 1550
 | `wiki-qa` | Answer repository questions grounded entirely in source code evidence. Use when user asks a question about the codebase, user wants to understand a specific ... | wiki, qa | wiki, qa, answer, repository, questions, grounded, entirely, source, code, evidence, user, asks |
 | `windows-privilege-escalation` | Provide systematic methodologies for discovering and exploiting privilege escalation vulnerabilities on Windows systems during penetration testing engagements. | windows, privilege, escalation | windows, privilege, escalation, provide, systematic, methodologies, discovering, exploiting, vulnerabilities, during, penetration, testing |
 
-## workflow (105)
+## workflow (106)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
+| `accint-solve` | Route agent work through AccInt's MCP memory loop: retrieve prior outcomes, resolve frames, and close commitments with evidence. | mcp, memory, ai-agents, coding-agents, workflow | mcp, memory, ai-agents, coding-agents, workflow, accint, solve, route, agent, work, through, loop |
 | `activecampaign-automation` | Automate ActiveCampaign tasks via Rube MCP (Composio): manage contacts, tags, list subscriptions, automation enrollment, and tasks. Always search tools first... | activecampaign | activecampaign, automation, automate, tasks, via, rube, mcp, composio, contacts, tags, list, subscriptions |
 | `agent-orchestration-improve-agent` | Systematic improvement of existing agents through performance analysis, prompt engineering, and continuous iteration. | agent, improve | agent, improve, orchestration, systematic, improvement, existing, agents, through, performance, analysis, prompt, engineering |
 | `agent-orchestration-multi-agent-optimize` | Optimize multi-agent systems with coordinated profiling, workload distribution, and cost-aware orchestration. Use when improving agent performance, throughpu... | agent, multi, optimize | agent, multi, optimize, orchestration, coordinated, profiling, workload, distribution, cost, aware, improving, performance |

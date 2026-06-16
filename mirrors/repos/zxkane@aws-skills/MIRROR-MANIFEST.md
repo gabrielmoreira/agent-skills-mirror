@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zxkane/aws-skills` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `zxkane/aws-skills` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zxkane/aws-skills` — 26 default patterns, 0 followed patterns, 6 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,10 +61,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`plugins/aws-agentic-ai/skills/aws-agentic-ai/SKILL.md`](plugins/aws-agentic-ai/skills/aws-agentic-ai/SKILL.md) |
-| 3 | ✓ | [`plugins/aws-cdk/skills/aws-cdk-development/SKILL.md`](plugins/aws-cdk/skills/aws-cdk-development/SKILL.md) |
-| 4 | ✓ | [`plugins/aws-common/skills/aws-mcp-setup/SKILL.md`](plugins/aws-common/skills/aws-mcp-setup/SKILL.md) |
-| 5 | ✓ | [`plugins/aws-cost-ops/skills/aws-cost-operations/SKILL.md`](plugins/aws-cost-ops/skills/aws-cost-operations/SKILL.md) |
-| 6 | ✓ | [`plugins/serverless-eda/skills/aws-serverless-eda/SKILL.md`](plugins/serverless-eda/skills/aws-serverless-eda/SKILL.md) |
+| 3 | ✓ | [`plugins/aws-common/skills/aws-mcp-setup/SKILL.md`](plugins/aws-common/skills/aws-mcp-setup/SKILL.md) |
+| 4 | ✓ | [`plugins/aws-cost-ops/skills/aws-cost-operations/SKILL.md`](plugins/aws-cost-ops/skills/aws-cost-operations/SKILL.md) |
+| 5 | ✓ | [`plugins/aws-iac/skills/aws-cdk-development/SKILL.md`](plugins/aws-iac/skills/aws-cdk-development/SKILL.md) |
+| 6 | ✓ | [`plugins/aws-iac/skills/aws-sst-development/SKILL.md`](plugins/aws-iac/skills/aws-sst-development/SKILL.md) |
+| 7 | ✓ | [`plugins/serverless-eda/skills/aws-serverless-eda/SKILL.md`](plugins/serverless-eda/skills/aws-serverless-eda/SKILL.md) |
 
 ---
 

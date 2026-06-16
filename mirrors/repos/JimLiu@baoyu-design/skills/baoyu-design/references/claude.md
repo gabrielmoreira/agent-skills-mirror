@@ -18,6 +18,7 @@ The upstream prompt references Claude.ai web tools that do not exist in Claude C
 | `web_fetch`, `web_search` | `WebFetch`, `WebSearch` |
 | `copy_starter_component` | `Bash cp starter-components/<file> designs/<project>/` (or `Read` + adapt) |
 | `invoke_skill("X")` / `invoke the "X" skill` | `Read` the matching `built-in-skills/<file>.md` |
+| `gen_pptx` | `Bash`: serve the deck over HTTP, write the gen_pptx input object to a JSON file, then `node <skill>/agents/gen-pptx/dist/cli.mjs --url <servedDeckUrl> --config <jsonPath> --out <dir>` — see "Exporting to PPTX" below |
 | `/projects/<projectId>/<path>` | ordinary filesystem paths (relative to cwd, or absolute) |
 
 ## AskUserQuestion (clarifying questions)
@@ -65,3 +66,28 @@ For thorough or directed checks ("screenshot and check the spacing"), spawn an `
 Only when **authoring a design system** — the compiler (`compile-design-system.mjs`) and checker (`check-design-system.mjs`) commands and the full flow live in [`design-system-authoring-guide.md`](../built-in-skills/design-system-authoring-guide.md). Both are plain `Bash` `node <skill>/agents/…` calls and run inline. Harness-specific bit: to run the read-only checker as an **isolated subagent**, spawn an **`Agent`** (any read-capable type, e.g. `Explore` or `general-purpose`) with the prompt in [`../agents/design-system-checker.md`](../agents/design-system-checker.md), passing the project directory and this skill's `agents/` path — it only runs `check-design-system.mjs` and relays output; it must not edit files or compile.
 
 When **consuming a design system** in a regular project, the importer (`import-design-system.mjs`) is likewise a plain `Bash` `node <skill>/agents/import-design-system.mjs <dsDir> <projectDir> [--primary]` call that runs inline — full flow in [`use-design-system.md`](../built-in-skills/use-design-system.md). No subagent is needed.
+
+## Exporting to PPTX (gen_pptx)
+
+The web `gen_pptx` tool does not exist in Claude Code. Both export docs ([`export-as-pptx-editable.md`](../built-in-skills/export-as-pptx-editable.md), [`export-as-pptx-screenshots.md`](../built-in-skills/export-as-pptx-screenshots.md)) say "Call `gen_pptx`" — here that means a local CLI under this skill that drives a headless Chromium (Playwright) and writes the `.pptx` to disk. The input JSON is **exactly** the object those docs define (`mode`/`width`/`height`/`slides`/`hideSelectors`/`resetTransformSelector`/`googleFontImports`/`fontSwaps`/`filename`); this section only covers how to invoke it.
+
+**One-time setup** (skip if `agents/gen-pptx/node_modules` and `dist/` already exist):
+
+```bash
+cd <skill>/agents/gen-pptx && npm install && npx playwright install chromium && npm run build
+```
+
+**Each export:**
+
+1. **Serve the deck over HTTP** — the CLI needs an `http(s)` URL, not `file://` (deck-stage and multi-file decks require a served origin). Reuse the one `designs` server (`python3 -m http.server 4311 --directory designs`); the deck is then at `http://localhost:<port>/<project>/<file>.html`.
+2. **Write the gen_pptx input object to a JSON file** (e.g. `/tmp/<project>-pptx.json`) — same schema as the export docs.
+3. **Run the CLI:**
+
+   ```bash
+   node <skill>/agents/gen-pptx/dist/cli.mjs --url <servedDeckUrl> --config <jsonPath> --out designs/<project>
+   ```
+
+   `--config -` reads the JSON from stdin. `--out` defaults to the cwd; pass the project dir so the `.pptx` lands beside the deck. The final path is `<out>/<filename>.pptx`.
+4. **Read the printed JSON** (one line on stdout): `{ ok, file, slides, bytes, flags: [{code, message}], warnings, speakerNotes }`. The `flags[].code` values are the same diagnostics the export docs describe (`duplicate_adjacent`, `slide_size_mismatch`, `no_speaker_notes`, …) — interpret them per those docs and **do not relay the codes verbatim** to the user. `warnings` is a (usually empty) list of build-time strings — slides the editable converter couldn't fully represent, unreachable media, or notes that failed to attach; surface them in plain language only if non-empty. On failure the line is `{ ok: false, error }` instead. Exit code is `0` on success (even with warning flags), `64` for a usage/config error, `1` for a runtime failure (a friendly setup hint prints to stderr if Playwright/Chromium is missing).
+
+Then surface the `.pptx` with `SendUserFile`.

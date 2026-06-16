@@ -12,8 +12,63 @@ Universal typography principles covering foundations, hierarchy & scale, readabi
 4. **Validate readability before aesthetics.** A beautiful typeface that's unreadable at body size is a failure. Test at 16px, 14px, and zoomed-in 200%.
 5. **Bake accessibility in from the first line of CSS** — contrast ratios, focus order on text controls, dynamic type, and `prefers-reduced-motion` for animated copy.
 6. **Design for the smallest screen first.** Mobile is the majority of traffic. If type works at 360px wide it almost always works on desktop; the reverse is rarely true.
-7. **Justify every deviation.** If you break a rule (e.g. shipping a third typeface, dropping below 14px on a control), name the rule, explain why, and document the compensating control.
+7. **Justify every deviation.** If you break a rule (e.g. shipping a third typeface, using sub-14px type outside badges/micro components), name the rule, explain why, and document the compensating control.
 8. **Font choice is yours; the rules are universal.** This document never mandates a specific typeface. Where typefaces are named anywhere below, they appear only as **illustrations of a category** (humanist sans, transitional serif, monospace, etc.). Every rule applies to whichever typeface(s) you and your team have already chosen.
+
+## 0.1 Non-negotiable layout & control rules
+
+These rules override conflicting guidance elsewhere in this document. Apply them on every surface unless the user brief explicitly documents an exception.
+
+### Buttons never use underline
+
+- **Button labels must never be underlined** — not in default, hover, focus, active, disabled, loading, or visited states.
+- This applies to `<button>`, `<a>` styled as buttons, icon buttons with visible text, and button groups.
+- Use weight, color, background, border, and shadow to signal interactivity — **never** `text-decoration: underline` on button copy.
+- Links styled as inline text may still underline per link rules; once an element is a **button**, underline is forbidden.
+
+### Big headings use tight line-height
+
+- **Display-scale headings** (page hero `<h1>`, major section `<h2>` openers, and any heading ≥ ~28px) must use **`line-height: 1`** (equivalent to `100%`).
+- Multi-line hero and section titles must not inherit body leading (1.4–1.6) or loose heading ranges (1.15–1.25). Loose leading creates visible gaps between wrapped lines and makes large headings look broken.
+- Smaller headings (`<h3>`–`<h6>`), card titles, and UI labels may use tighter-but-not-display leading (typically 1.1–1.25) when they wrap to multiple lines — but **never** apply body paragraph line-height to display headings.
+
+### Section openers: `<h2>` everywhere except hero
+
+- **Every major page section must open with an `<h2>`** as its first heading — Features, Pricing, FAQ, Testimonials, Footer content bands, etc.
+- **Only the page hero uses `<h1>`.** One `<h1>` per page, reserved for the hero / first-impression block.
+- Do not open a section with `<h3>` when it is a top-level page section. Sub-sections inside an `<h2>` block may use `<h3>` and below.
+- Card titles, FAQ questions, footer column labels, and modal titles follow the role table in §2.6 — they are **not** section openers even when large.
+
+### Big headings need 32px bottom margin
+
+- **Every display-scale heading** (hero `<h1>` and major section `<h2>` openers) must have **`margin-bottom: 32px`** before the next element (lead paragraph, supporting copy, CTA row, or section content).
+- Do not rely on ad-hoc spacing (16px, 24px, 48px) for these headings unless a design-system token explicitly maps to 32px for this role.
+- If a heading is immediately followed by another heading (rare), only the **lower** heading in the pair keeps normal sub-heading spacing; the primary display heading still gets 32px before its first non-heading sibling.
+
+### Minimum font sizes
+
+These floors apply to every marketing section, landing page band, and product surface unless the user brief explicitly documents an exception.
+
+**16px minimum — primary copy**
+
+- **Body paragraphs**, **section headings** (every `<h1>`–`<h6>` that carries readable copy), and **button labels** must never ship below **16px**.
+- This includes hero subcopy, feature titles, pricing plan names, FAQ questions, testimonial quotes, footer link columns treated as readable text, and any `<p>` meant to be read — not glanced at.
+
+**14px minimum — section support text**
+
+- **Secondary / supporting text inside sections** — feature descriptions, pricing fine print, testimonial roles, FAQ answers, trust-band labels, social-proof captions, and similar supporting lines — must never ship below **14px**.
+- Applies to Features, Pricing, Testimonials, FAQ, Footer content bands, and comparable page sections. If it explains or supports a heading, treat it as support text and hold the **14px floor**.
+
+**Below 14px — micro components only**
+
+- Sizes under **14px** are allowed **only** for true micro UI: badges, pill labels, legal micro-lines inside badges, timestamp chips, and other non-reading affordances where space is genuinely constrained.
+- Do **not** use sub-14px type for paragraphs, section headings, feature copy, pricing details, or button labels to "fit more content." Reflow, shorten copy, or restructure the layout instead.
+
+**Agent checklist before shipping type**
+
+1. Scan generated CSS and components for `font-size` below `14px` — flag anything that is not a badge or documented micro component.
+2. Scan for `12px`, `13px`, and `0.75rem`/`0.8125rem` on section body copy, headings, or buttons — raise to **16px** (primary) or **14px** (support) as appropriate.
+3. When in doubt between 14px and 16px, default to **16px**.
 
 ---
 
@@ -127,9 +182,9 @@ Pick **one** ratio and derive every size from a single base.
 
 | Step | Size | Use |
 |---|---|---|
-| -2 | 10.24px → round to 11–12px | Captions, micro-labels (use sparingly) |
-| -1 | 12.8px → 13px | Small text, helper text |
-| 0  | 16px | **Body** |
+| -2 | 10.24px → **badges / micro only** | Pill labels, badge chips — **not** section copy (§0.1) |
+| -1 | 12.8px → **14px floor for support text** | Section support text minimum; badges may go smaller (§0.1) |
+| 0  | 16px | **Body**, headings, buttons — primary floor (§0.1) |
 | +1 | 20px | Lead paragraph, large body |
 | +2 | 25px | h4 |
 | +3 | 31.25px | h3 |
@@ -156,7 +211,8 @@ Size alone is brittle. Reinforce hierarchy with at least one of:
 
 ## 2.5 Heading semantics
 
-- **One `<h1>` per page.** Reserve it for the page's primary subject.
+- **One `<h1>` per page.** Reserve it for the page hero / first-impression block only.
+- **Every major page section opens with `<h2>`.** Features, pricing, testimonials, FAQ, and comparable bands start with `<h2>` — not `<h3>` or styled `<div>`s. See §0.1.
 - **Never skip levels** (`<h2>` → `<h4>`) — assistive tech relies on the heading outline. Restyle visually if you need a smaller-looking heading; preserve the level semantically.
 - **`<h1>`–`<h6>` should match the visual hierarchy.** A "section title" styled to look like an h2 should *be* an h2, not a styled `<div>`.
 
@@ -170,14 +226,14 @@ A common and damaging failure mode: agents and developers conflate **semantic le
 
 | Role | Typical level | Typical size (web) | Why this size |
 |---|---|---|---|
-| **Page hero / first impression** | `<h1>` | Largest in the scale (clamp ~36–72px) | One dominant element per page. |
-| **Major section opener** | `<h2>` | Second-largest (clamp ~28–44px) | Anchors a section so users can scan the page outline. |
+| **Page hero / first impression** | `<h1>` | Largest in the scale (clamp ~36–72px); **`line-height: 1`**; **`margin-bottom: 32px`** | One dominant element per page. |
+| **Major section opener** | `<h2>` | Second-largest (clamp ~28–44px); **`line-height: 1`**; **`margin-bottom: 32px`** | First heading inside every major section; anchors the page outline. |
 | **Sub-section opener** | `<h3>` | Third-largest (~22–32px) | Used only when an `<h2>` section has clearly distinct sub-topics. |
 | **Card / tile title** | `<h3>` or `<h4>` | **16–20px** (often body size or one step above) | A card is one of many siblings — its title competes inside the card, not with the page. |
 | **Modal / dialog title** | `<h2>` (within the dialog) | 18–24px | Anchors the dialog; never larger than the page hero behind it. |
 | **Accordion / FAQ question** | `<h3>` | **16–18px** | Repeats many times — must stay scannable, not shouty. |
-| **Footer column title** | `<h3>` or `<h4>` | **14–16px**, often uppercase with `letter-spacing: 0.06em+` | Functions as a list label, not a banner. |
-| **Sidebar / nav group label** | `<h3>` or `<h4>` | **14-16px**, uppercase with tracking | A navigation cue, not a content opener. |
+| **Footer column title** | `<h3>` or `<h4>` | **16px** (14px only for uppercase list-label treatment with tracking) | Functions as a list label, not a banner. |
+| **Sidebar / nav group label** | `<h3>` or `<h4>` | **16px** (14px minimum with tracking for compact nav) | A navigation cue, not a content opener. |
 | **List-group label inline in body** | `<h4>` or `<h5>` | Body size or one step below | Quietly groups related items. |
 
 ### The two questions to ask before sizing any heading
@@ -192,7 +248,7 @@ A footer "Product" column title might be `<h3>` semantically (it sits inside `<f
 - **Display-scale sizes (≥ 30px) belong only to the page hero `<h1>` and the *opening heading of a major page section* (`<h2>`).** Nothing else on the page should compete with them visually.
 - **Card / tile titles never exceed ~20px** unless the card *is* the hero of the page (e.g. a single featured card layout). A card is a sibling of other cards; if its title is the same size as a section heading, the grid loses its identity as a group.
 - **Card / tile titles and footer column titles must use `<h4>` or lower, never `<h2>` or `<h3>`.** Reserve `<h2>` exclusively for major page-section openers. Reserve `<h3>` for sub-sections of an `<h2>`. Using `<h2>` or `<h3>` inside a repeating component (card, list, footer column) inflates the heading size because base heading styles scale `<h2>` and `<h3>` to section-opener sizes. Cards and footer columns are containers of many siblings — their titles are list labels, not section openers. Use `<h4>` with explicit small sizing (14–20px via utility classes).
-- **Footer column titles, sidebar group labels, nav group labels, and any "list-label" heading must be small** (typically 13–16px, frequently uppercase with letter-spacing). Their job is to label a list, not to open a section. Always use `<h4>` or `<h5>`, never `<h2>` or `<h3>`.
+- **Footer column titles, sidebar group labels, nav group labels, and any "list-label" heading must stay at or above 14px** (prefer **16px** for readable labels; 14px only when uppercase + letter-spacing makes the role clearly a list label, not a section opener). Always use `<h4>` or `<h5>`, never `<h2>` or `<h3>`.
 - **FAQ / accordion questions stay close to body size** (16–18px). They appear many times in a row; size them like list items, not like headlines.
 - **Modal / dialog titles are larger than body but smaller than the page hero** (18–24px). The modal is a temporary surface, not the main story.
 - **Stat / metric numerals are not headings.** A "99.99%" uptime figure is a *display number*, not an `<h2>`. Use a `<p>` (or `<span>`) with display-scale size and pair it with a small `<p>` label. Save heading tags for actual headings.
@@ -201,10 +257,10 @@ A footer "Product" column title might be `<h3>` semantically (it sits inside `<f
 ### Quick decision tree (use this every time you write a heading)
 
 ```
-Is this heading the FIRST IMPRESSION of the page?
-├─ YES → <h1>, display-scale (36–72px clamp), unique on the page.
+Is this heading the FIRST IMPRESSION of the page (hero)?
+├─ YES → <h1>, display-scale (36–72px clamp), line-height: 1, margin-bottom: 32px, unique on the page.
 └─ NO  → Is it the OPENER of a major page section?
-        ├─ YES → <h2>, large (28–44px clamp), one per major section.
+        ├─ YES → <h2>, large (28–44px clamp), line-height: 1, margin-bottom: 32px, one per major section.
         └─ NO  → Is it a SUB-section of an <h2> (NOT inside a repeating component)?
                 ├─ YES → <h3>, medium (~22–32px).
                 └─ NO  → Is it INSIDE a repeating component (card, pricing tier, footer column, sidebar, FAQ)?
@@ -218,13 +274,17 @@ Is this heading the FIRST IMPRESSION of the page?
 - **DO** apply 3–4 levels per surface; collapse anything beyond that.
 - **DO** establish one dominant element per view via size + weight + color combined.
 - **DO** preserve heading semantics (`<h1>`–`<h6>`) regardless of visual restyling.
+- **DO** open every major page section with `<h2>`; reserve `<h1>` for the hero only (§0.1).
+- **DO** set display-scale headings (`<h1>`, major section `<h2>`) to **`line-height: 1`** and **`margin-bottom: 32px`**.
 - **DO** match heading visual size to its **role** (hero / section opener / sub-section / card / list label), **not** to its HTML tag.
 - **DO** restrict display-scale sizes (≥ 30px) to the page hero `<h1>` and major section `<h2>` openers.
-- **DO** keep card/tile titles ≤ 20px and footer/sidebar/nav-group list-labels ≤ 16px.
+- **DO** keep card/tile titles ≤ 20px and footer/sidebar/nav-group list-labels at **14px minimum** (prefer 16px).
 - **DO** define named role classes (`.heading-section`, `.heading-card`, `.heading-label`, etc.) and apply by role.
 - **DO NOT** create one-off type sizes. If you need 22px and the scale offers 20 or 25, pick one and refactor — don't add an off-scale value.
 - **DO NOT** rely on color alone for hierarchy (fails for color-vision-deficient users).
 - **DO NOT** use multiple `<h1>`s on a single page.
+- **DO NOT** open a major page section with `<h3>` or lower when that section is a top-level band on the page.
+- **DO NOT** apply underline to button labels in any state (§0.1).
 - **DO NOT** auto-size every `<h2>` as a "section heading" regardless of where it appears — an `<h2>` inside a modal or card needs its own role-appropriate size.
 - **DO NOT** use display-scale type for repeating elements (cards, FAQ items, footer column titles, sidebar groups). If everything is a banner, nothing is.
 - **DO NOT** wrap stat numerals or marketing slogans in `<h2>`/`<h3>` just because they're large — those are display *paragraphs*, not headings.
@@ -236,10 +296,13 @@ Is this heading the FIRST IMPRESSION of the page?
 - [ ] Maximum 3–4 visible hierarchy levels per view.
 - [ ] One dominant element per surface; squint test passes.
 - [ ] Heading semantics correct; no skipped levels.
+- [ ] Hero uses `<h1>`; every other major section opens with `<h2>`.
+- [ ] Display headings (`<h1>`, major `<h2>`) use `line-height: 1` and `margin-bottom: 32px`.
+- [ ] No underline on button labels in any state.
 - [ ] Hierarchy reinforced by at least two signals (size + weight, or size + color).
 - [ ] Display-scale sizes (≥ 30px) used **only** for the page hero `<h1>` and major section `<h2>` openers.
 - [ ] Card / tile titles ≤ 20px.
-- [ ] Footer column titles, sidebar/nav group labels ≤ 16px (typically 13–16px with tracking).
+- [ ] Footer column titles, sidebar/nav group labels at **14px minimum** (prefer 16px).
 - [ ] FAQ / accordion questions in the 16–18px range.
 - [ ] Modal titles smaller than the page hero behind them.
 - [ ] No `<h2>`/`<h3>` wrapping pure stat numerals or non-heading display text.
@@ -261,22 +324,26 @@ These three values are coupled — change one and you must reconsider the others
 
 | Context | Recommended | Floor |
 |---|---|---|
-| **Web body** | 16–18px (1rem–1.125rem) | 14px (only for legitimate microcopy) |
-| **Mobile native body** | iOS 17pt, Android 16sp | Don't go below |
-| **Form labels & UI controls** | 14–16px | 12px never on interactive labels |
-| **Headlines (h1)** | 32–72px depending on hero treatment | — |
-| **Captions, footnotes** | 12–13px | 11px is the absolute floor; below this is unreadable for many users |
+| **Web body / paragraphs** | 16–18px (1rem–1.125rem) | **16px** (§0.1) |
+| **Section headings (`<h1>`–`<h6>` readable copy)** | Per scale | **16px** (§0.1) |
+| **Button labels** | 16–18px | **16px** (§0.1) |
+| **Section support text** (feature descriptions, FAQ answers, pricing fine print, captions in sections) | 14–16px | **14px** (§0.1) |
+| **Mobile native body** | iOS 17pt, Android 16sp | Don't go below platform defaults |
+| **Form labels & UI controls** | 16px | **14px** never on interactive labels |
+| **Headlines (h1, major section h2)** | 32–72px depending on hero treatment | — |
+| **Badges & micro components** | 11–13px when space is constrained | Below 14px **only** here (§0.1) |
 
 ### Line-height (leading)
 
 | Context | Recommended |
 |---|---|
 | **Body copy** | 1.4–1.6 (sweet spot is 1.5–1.6 for long-form) |
-| **Headings** | 1.05–1.25 (tighter as size increases) |
-| **UI labels and buttons** | 1.0–1.2 |
+| **Display headings (hero `<h1>`, major section `<h2>`)** | **`1` / `100%`** — mandatory; never use body or loose heading leading (§0.1) |
+| **Smaller headings (`<h3>`–`<h6>`)** | 1.1–1.25 when they wrap to multiple lines |
+| **UI labels and buttons** | 1.0–1.2; **no underline on button text** (§0.1) |
 | **Multi-line captions** | 1.4 |
 
-Larger type wants tighter leading; smaller type wants looser leading. This is not a "looks nice" preference — it's how the eye tracks lines.
+Larger display headings use **`line-height: 1`**; body and captions stay looser. This is not a "looks nice" preference — loose leading on hero lines creates broken multi-line headlines.
 
 ### Measure (line length)
 
@@ -291,6 +358,7 @@ Larger type wants tighter leading; smaller type wants looser leading. This is no
 - **Tracking on display headlines**: tighten slightly (`-0.01em` to `-0.03em`) to compensate for visual looseness at large sizes.
 - **Tracking on ALL CAPS labels**: open it up (`0.05em` to `0.15em`) so caps don't crash into each other.
 - **Paragraph spacing**: prefer space *between* paragraphs (margin-bottom ≈ 1em) over indented first lines on screen.
+- **Display heading spacing**: hero `<h1>` and major section `<h2>` openers use **`margin-bottom: 32px`** before the next sibling (§0.1).
 - **No double spaces after a period.** Ever. Modern fonts handle this.
 
 ## 3.4 What hurts readability
@@ -303,7 +371,8 @@ Larger type wants tighter leading; smaller type wants looser leading. This is no
 | Centered multi-line paragraphs | Each line starts at a different position, forcing a "find" action. | Center only headlines and 1–2 line callouts. |
 | Pure black on pure white at full brightness | High contrast can cause eye strain. | Use near-black (#1A1A1A) on near-white (#FAFAFA) — still meets contrast. |
 | Decorative scripts at small size | Counters fill in, strokes blur. | Scripts only ≥24px and only for logos/hero. |
-| Underlining non-link text | Trains users that *anything* underlined is a link, then underlining a link doesn't help. | Use bold or color for emphasis; reserve underline for links. |
+| Underlining button text | Buttons are controls, not links; underline looks broken and conflicts with link affordance. | **Forbidden in all button states** (§0.1). Use weight, fill, border, shadow. |
+| Underlining non-link text | Trains users that *anything* underlined is a link, then underlining a link doesn't help. | Use bold or color for emphasis; reserve underline for inline links only — never buttons. |
 | Thin/Light weight on thin background contrast | Drops below 4.5:1. | Use Regular weight or darker color. |
 
 ## 3.5 Long-form vs. UI text
@@ -376,9 +445,11 @@ The "rag" is the uneven right edge of left-aligned text (or the left edge of rig
 - **DO** set body type at 16–18px on web, 17pt on iOS, 16sp on Android.
 - **DO** target a measure of 45–75 characters; enforce with `max-width: 65ch`.
 - **DO** set body line-height between 1.4 and 1.6.
-- **DO** tighten line-height as font-size grows (headings often 1.05–1.25).
-- **DO** use left-aligned, ragged-right text for paragraphs on screen.
+- **DO** set display headings (hero `<h1>`, major section `<h2>`) to **`line-height: 1`** and **`margin-bottom: 32px`** (§0.1).
+- **DO** use 1.1–1.25 line-height only for smaller headings (`<h3>`–`<h6>`) when they wrap — never body leading on display headings.
+- **DO** left-align, ragged-right text for paragraphs on screen.
 - **DO** default to sentence case for UI labels, buttons, and microcopy.
+- **DO NOT** underline button labels in any state (§0.1).
 - **DO** add `0.05em`–`0.15em` of tracking to any ALL CAPS run.
 - **DO** apply `text-wrap: balance` to headings to prevent danglies.
 - **DO** use `text-wrap: pretty` on long paragraphs where supported.
@@ -394,7 +465,9 @@ The "rag" is the uneven right edge of left-aligned text (or the left edge of rig
 - [ ] Body type is 16–18px on web (or platform-equivalent).
 - [ ] Body line-height is 1.4–1.6.
 - [ ] Measure is 45–75 characters (60–65 ideal).
-- [ ] Headings have tighter line-height than body.
+- [ ] Display headings (`<h1>`, major `<h2>`) use `line-height: 1` and `margin-bottom: 32px`.
+- [ ] Smaller headings (`<h3>`–`<h6>`) use tighter leading than body when multi-line.
+- [ ] No underline on button labels in any state.
 - [ ] No ALL CAPS, italic, or centered body paragraphs.
 - [ ] Paragraphs separated by space, not indent (on screen).
 - [ ] Justified text only with hyphenation enabled.
@@ -635,4 +708,3 @@ When typography rules pull against each other, resolve in this order:
 
 ---
 
-For typography anti-patterns, see `anti-patterns.md`. For pre-ship checklists, see `preflight.md`.

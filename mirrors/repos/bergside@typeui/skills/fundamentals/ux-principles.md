@@ -1420,4 +1420,3 @@ When two equally-weighted rules conflict, prefer the option that costs the user 
 
 ---
 
-For interaction anti-patterns, see `anti-patterns.md`. For pre-ship checklists, see `preflight.md`.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `strands-agents/sdk-python` — 26 default patterns, 4 followed patterns, 25 file(s) materialized.
+Mirror of `strands-agents/sdk-python` — 26 default patterns, 9 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `strands-agents/sdk-python` — 26 default patterns, 4 followed patter
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 25 |
+| Followed pats | 9 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,7 +52,12 @@ Mirror of `strands-agents/sdk-python` — 26 default patterns, 4 followed patter
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `CONTRIBUTING.md`
-- `dev-docs/PR.md`
+- `team/PR.md`
+- `team/TENETS.md`
+- `team/DECISIONS.md`
+- `team/API_BAR_RAISING.md`
+- `team/FEATURE_LIFECYCLE.md`
+- `team/designs/README.md`
 - `strands-py/docs/STYLE_GUIDE.md`
 - `site/CONTRIBUTING.md`
 
@@ -78,15 +83,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
 | 15 | ✓ | [`.agents/skills/strands-review/SKILL.md`](.agents/skills/strands-review/SKILL.md) |
 | 16 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 17 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 18 | ✓ | [`site/SITE-ARCHITECTURE.md`](site/SITE-ARCHITECTURE.md) |
-| 19 | ✓ | [`strands-py/AGENTS.md`](strands-py/AGENTS.md) |
-| 20 | ✓ | [`strands-ts/AGENTS.md`](strands-ts/AGENTS.md) |
-| 21 | ✓ | [`test-infra/AGENTS.md`](test-infra/AGENTS.md) |
-| 22 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 23 | → | [`dev-docs/PR.md`](dev-docs/PR.md) |
-| 24 | → | [`site/CONTRIBUTING.md`](site/CONTRIBUTING.md) |
-| 25 | → | [`strands-py/docs/STYLE_GUIDE.md`](strands-py/docs/STYLE_GUIDE.md) |
+| 17 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 18 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 19 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
+| 20 | ✓ | [`site/SITE-ARCHITECTURE.md`](site/SITE-ARCHITECTURE.md) |
+| 21 | ✓ | [`strands-py/AGENTS.md`](strands-py/AGENTS.md) |
+| 22 | ✓ | [`strands-py/CLAUDE.md`](strands-py/CLAUDE.md) |
+| 23 | ✓ | [`strands-ts/AGENTS.md`](strands-ts/AGENTS.md) |
+| 24 | ✓ | [`strands-ts/CLAUDE.md`](strands-ts/CLAUDE.md) |
+| 25 | ✓ | [`test-infra/AGENTS.md`](test-infra/AGENTS.md) |
+| 26 | ✓ | [`test-infra/CLAUDE.md`](test-infra/CLAUDE.md) |
+| 27 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 28 | → | [`site/CONTRIBUTING.md`](site/CONTRIBUTING.md) |
+| 29 | → | [`strands-py/docs/STYLE_GUIDE.md`](strands-py/docs/STYLE_GUIDE.md) |
+| 30 | → | [`team/API_BAR_RAISING.md`](team/API_BAR_RAISING.md) |
+| 31 | → | [`team/DECISIONS.md`](team/DECISIONS.md) |
+| 32 | → | [`team/designs/README.md`](team/designs/README.md) |
+| 33 | → | [`team/FEATURE_LIFECYCLE.md`](team/FEATURE_LIFECYCLE.md) |
+| 34 | → | [`team/PR.md`](team/PR.md) |
+| 35 | → | [`team/TENETS.md`](team/TENETS.md) |
 
 ---
 

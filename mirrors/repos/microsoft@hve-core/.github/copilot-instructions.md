@@ -83,10 +83,11 @@ Templates for agent and prompt outputs are stored in `docs/templates/`:
 * `docs/templates/full-review-output-format.md` - Code review full output format.
 * `docs/templates/standards-review-output-format.md` - Standards review output format.
 * `docs/templates/engineering-fundamentals.md` - Engineering fundamentals reference.
-* `docs/templates/brd-template.md` - Business requirements document template.
 * `docs/templates/user-journey-template.md` - User journey template.
 * `docs/templates/adr-template-solutions.md` - Architecture decision record template.
 * `docs/templates/rca-template.md` - Root cause analysis template.
+
+The canonical Business Requirements Document template lives in `.github/skills/project-planning/requirements-author/templates/brd/brd-full.md` as part of the `requirements-author` skill.
 
 ### Copilot Tracking
 
@@ -215,7 +216,7 @@ Agents should use npm scripts for all validation:
 * `npm run lint:py` - Python linting via ruff
 * `npm run lint:models` - Model reference validation against catalog
 * `npm run lint:models:refresh` - Refresh model catalog from upstream documentation
-* `npm run lint:all` - Run all linters (chains `format:tables`, `lint:md`, `lint:ps`, `lint:yaml`, `lint:links`, `lint:frontmatter`, `lint:collections-metadata`, `lint:marketplace`, `lint:version-consistency`, `lint:permissions`, `lint:dependency-pinning`, `lint:py`, `validate:skills`, `lint:ai-artifacts`, and `lint:models`)
+* `npm run lint:all` - Run all linters (chains `format:tables`, `lint:md`, `lint:ps`, `lint:yaml`, `lint:json`, `lint:links`, `lint:frontmatter`, `lint:adr-consistency`, `lint:collections-metadata`, `lint:marketplace`, `lint:version-consistency`, `lint:permissions`, `lint:dependency-pinning`, `lint:ps-module-pins`, `lint:py`, `validate:skills`, `lint:ai-artifacts`, `lint:models`, `eval:lint:vally`, `eval:lint:schema`, `eval:lint:text`, and `eval:lint:safety`)
 * `npm run validate:copyright` - Copyright header validation
 * `npm run validate:skills` - Skill structure validation
 * `npm run spell-check` - Spelling validation

@@ -8,7 +8,7 @@ description: |
 tools: [Read, Glob, Grep, Write, Edit]
 model: sonnet
 maxTurns: 30
-# maxTurns: 30 — 覆盖正文写作场景（场景展开、情绪弧线执行、去AI味 6 Gate）。
+# maxTurns: 30 — 覆盖正文写作场景（场景展开、情绪弧线执行、去AI味 7 Gate）。
 skills: [story-deslop]
 # 注：不加载 story-review。该 skill 会 spawn 4 个 reviewer agent，
 # 但 Claude Code subagent 不允许嵌套 spawn，注入后会静默降级。
@@ -37,7 +37,7 @@ memory: project
 | `story-setup/references/agent-references/emotional-arc-design.md` | 情绪弧线执行、题材情绪策略时 |
 | `story-setup/references/agent-references/style-genre-modules.md` | 题材风格模块（各题材独特写法）时 |
 | `story-setup/references/agent-references/opening-design.md` | 开篇创作（黄金一章、开头技巧）时 |
-| `story-setup/references/agent-references/anti-ai-writing.md` | 去AI味（6 Gate、三遍去AI法、Show Don't Tell）时 |
+| `story-setup/references/agent-references/anti-ai-writing.md` | 去AI味（7 Gate、三遍去AI法、Show Don't Tell）时 |
 | `story-setup/references/agent-references/banned-words.md` | 禁用词替换（Gate A）时 |
 | `story-setup/references/agent-references/quality-checklist.md` | 审查文字质量（五维评分、9项检查）时 |
 | `{对标书路径}/文风.md`（绝对路径由 prompt 传入） | prompt 含 `文风路径` 时**写作前必读** |
@@ -50,8 +50,10 @@ memory: project
 
 > 详细技法参考 `story-setup/references/agent-references/writing-craft.md` 第 8 节
 
+**叙述姿态（默认·深度限知）**：全程锁死主视角角色的此刻感知——只写她此刻看到/听到/闻到/身体感到/脑中闪过的；镜头不拉远、不俯瞰、不切他人内心；读者与她同步获知，不提前剧透、不补全背景；念头用"闪念+身体"呈现，不写完整理性独白；场景被她的情绪染色，不写中立摄像机式描述。这条是去说教/上帝感的根（详见 writing-craft.md「视角姿态：深度限知」、anti-ai-writing.md 模式 8）。
+
 1. **进入场景**：主角此刻在哪、在做什么（1-2 句切入）
-2. **展开子事件**：每个子事件将发生、感知、反应三维度织入同一段连续正文（合计 ≥100-150 字）
+2. **展开子事件**：每个子事件将发生、感知、反应三维度织入同一段连续正文（详写的子事件合计 ≥100-150 字；过场/连接类 1-2 句带过——不要每个子事件平均用力，见 writing-craft.md「疏密分配」）
    - 发生：这件事出现了（1-2 句叙事，含具体细节）
    - 感知：主角注意到的感官细节（至少 1 个不同感官，聚焦一个物件或身体部位）
    - 反应：身体如何回应（具体的身体动作，可含一句极短的心理定格）
@@ -66,6 +68,7 @@ memory: project
 - 身体细节替代情绪词（第 1 节）
 - 结构物件三现规则：每个物件出现 3 次，意义逐次翻转（第 3 节）
 - 一动一静节奏：动作段后接静止感知段（第 4 节）
+- 疏密分配 + 长短句交错：爽点 beat 写密、过场 beat 写疏；高潮压短句、沉淀放长句，忌通篇同长度（见 writing-craft.md「疏密分配」、format-and-structure.md「段落节奏」）
 - 小节密度诊断：5 项清单逐条检查（第 7 节）
 
 ### 情绪弧线执行
@@ -75,6 +78,7 @@ memory: project
 - 情弦理论：锁定目标读者的核心情感弦，每节至少拨一次（`story-setup/references/agent-references/emotional-arc-design.md` 情绪弧线）
 - 三机位法：近景（身体动作）/远景（环境氛围）/旁白（内心独白），交替切换
 - 拉扯节奏：情绪不能一直升，要有回落再升
+- 情绪烈度（反保守）：网文要强噱头、强爽、强情绪。冲突前置，开篇即冲突；爽点/打脸要狠要具体、当众、有代价反转，敢写极端反应（对方失态、围观哗然），绝不点到为止；台词带刺带钩带反差。GPT/Claude 默认偏"稳"，要刻意往烈了写——宁过火，不平淡（题材以克制为爽感的除外，如虐文/世情"来不及"类，按 genre-catalog 题材技法走克制路线）
 - 白描手法：用最少的字传递最多的信息+情绪，忌华丽堆砌
 - 五感描写法：每段调动 2-3 种感官，服务于情绪基调
 - 环境交互法：角色情绪投射到环境细节，环境变化暗示情绪转折
@@ -93,17 +97,18 @@ memory: project
 - 结构物件第 3 现（回扣暴击）
 - 章尾禁止升华式收束，用动作/对话/悬念让情节本身制造余韵
 
-### 去AI味（6 Gate）
+### 去AI味（7 Gate）
 
 > 完整方法见 `story-setup/references/agent-references/anti-ai-writing.md`
 > 禁用词表见 `story-setup/references/agent-references/banned-words.md`
 
 - **Gate A 禁用词替换**：命运齿轮/如潮水般/仿佛春风/心猛地一沉/眼眶泛红等全部替换（查 `story-setup/references/agent-references/banned-words.md`）
-- **Gate B 句式去套路**：连续排比/刻意对称/空洞抒情打散（`story-setup/references/agent-references/anti-ai-writing.md` 7种AI模式检测）
+- **Gate B 句式去套路**：连续排比/刻意对称/空洞抒情打散（`story-setup/references/agent-references/anti-ai-writing.md` 8种AI模式检测）
 - **Gate C 心理描写外化**：情绪词 -> 身体状态（`story-setup/references/agent-references/anti-ai-writing.md` Show Don't Tell 原则）
-- **Gate D 节奏打碎**：长句拆短、同构句打散（核心规则：按动作/信息变化断段，读起来卡时拆短，连续碎段像提纲时合并）
+- **Gate D 节奏打碎**：长句拆短、同构句打散（核心规则：按动作/信息变化断段，读起来卡时拆短，连续碎段像提纲时合并）。但**短≠通篇同长度**——必须长短交错、疏密有别：每 5-8 段至少一个明显长句（沉淀处）和一个极短句（冲突处），密度按 beat 起伏（见 writing-craft.md「疏密分配」、format-and-structure.md「段落节奏」）
 - **Gate E 对话去腔调**：所有角色同一语气 -> 差异化（需结合 character-designer 的语言风格档案）
 - **Gate F 结尾去升华**：大段抒情收尾 -> 安静细节收尾
+- **Gate G 去解释腔/上帝感/安排感**：删一切叙述者跳出角色当下的解释、剧透、总结、定性、升华——「之所以/原来/这意味着/她不知道的是/殊不知/多年以后/演得真好/这出戏她看过一遍」全删；因果与定性留给读者从动作对话里自己拼（`story-setup/references/agent-references/anti-ai-writing.md` 模式 8）。这是"说教感/上帝感/机械感/安排感"的根治 Gate，靠深度限知视角落地
 
 系统性去AI三遍法（`story-setup/references/agent-references/anti-ai-writing.md`）：
 - Pass 1：去泛化 -- 抽象词替换为具体细节
@@ -135,6 +140,9 @@ memory: project
 - AI 味检测和分级：轻度（少量套话）/中度（句式单一）/重度（通篇AI腔）
 - 格式合规：按动作/信息变化断段，控制单段密度；对话独立成行；对话标签避免高频公式化，普通“说”可保留
 - 节奏均匀度：是否有连续多节无情绪变化？
+- 解释腔/上帝感/安排感：是否有叙述者跳出角色当下解释、剧透、总结、定性、升华（模式 8）？这是"说教感/机械感/刻意感"的主因，逐句揪出
+- 情绪烈度：爽点/冲突是否够狠够具体能调动读者，还是温吞保守、点到为止、文风太"稳"？
+- 句式多样性：单章内是否存在 SVO 循环（主谓宾同构）连续 5 段以上？长短句是否交错、密度是否有疏密？通篇同长度/同结构即使每段都合规，整体仍是 AI 腔，标 low/medium/high
 - 身体部位重复：同一词全文 <= 5 次
 - 公式化比喻密度：高频“像潮水般/像刀子一样”等万能比喻需处理；生活化、角色化比喻可保留
 - 五维评分：代入感/节奏/信息密度/去AI度/情绪弧线（`story-setup/references/agent-references/quality-checklist.md`）
@@ -149,6 +157,8 @@ memory: project
 - **禁止直接写情绪词**：「悲伤」「愤怒」「恐惧」-- 用身体状态替代
 - **禁止万能比喻**：「像潮水般」「如闪电般」「仿佛春风」-- 要么不用比喻，要么用生活化比喻
 - **禁止章末预告**：「他不知道的是，更大的风暴即将来临」-- 让读者自己感受悬念
+- **禁止解释腔/上帝视角/安排感**：不跳出角色当下解释因果（之所以/原来/这意味着）、不剧透预告（她不知道的是/殊不知/多年以后）、不替读者总结定性（演得真好/这出戏她看过一遍）、不为后文硬塞铺垫 -- 证据摆出来，结论留给读者（Gate G / anti-ai 模式 8）
+- **禁止温吞保守**：爽点/冲突不许点到为止；该狠该爽该炸时往烈了写，不写"稳重克制"的寡淡反应
 - **避免信息过载**：三维度织入后不要一段到底；读起来卡、逗号串太长或多个完整动作挤在一段里时，按新动作/新物件/新信息/新对话拆分
 - **禁止空转**：每个句子必须推动情节/情绪/代入感至少一项，否则删除
 - **禁止角色千篇一律**：对话必须匹配 character-designer 的语言风格档案，不能互换

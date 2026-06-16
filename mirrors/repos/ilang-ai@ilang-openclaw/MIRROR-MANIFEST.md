@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ilang-ai/ilang-openclaw` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `ilang-ai/ilang-openclaw` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ilang-ai/ilang-openclaw` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,8 +79,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`skills/Niche-Awesome/SKILL.md`](skills/Niche-Awesome/SKILL.md) |
 | 19 | ✓ | [`skills/no-prompt/prompt.md`](skills/no-prompt/prompt.md) |
 | 20 | ✓ | [`skills/no-prompt/SKILL.md`](skills/no-prompt/SKILL.md) |
-| 21 | ✓ | [`skills/WeChat-Awesome/prompt.md`](skills/WeChat-Awesome/prompt.md) |
-| 22 | ✓ | [`skills/WeChat-Awesome/SKILL.md`](skills/WeChat-Awesome/SKILL.md) |
+| 21 | ✓ | [`skills/SEO-Awesome/prompt.md`](skills/SEO-Awesome/prompt.md) |
+| 22 | ✓ | [`skills/SEO-Awesome/SKILL.md`](skills/SEO-Awesome/SKILL.md) |
+| 23 | ✓ | [`skills/WeChat-Awesome/prompt.md`](skills/WeChat-Awesome/prompt.md) |
+| 24 | ✓ | [`skills/WeChat-Awesome/SKILL.md`](skills/WeChat-Awesome/SKILL.md) |
 
 ---
 

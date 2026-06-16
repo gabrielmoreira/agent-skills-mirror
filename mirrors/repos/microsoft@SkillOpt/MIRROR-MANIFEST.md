@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/SkillOpt` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `microsoft/SkillOpt` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/SkillOpt` — 26 default patterns, 0 followed patterns, 2 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,6 +61,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`plugins/claude-code/skills/skillopt-sleep/SKILL.md`](plugins/claude-code/skills/skillopt-sleep/SKILL.md) |
 | 2 | ✓ | [`plugins/codex/skills/skillopt-sleep/SKILL.md`](plugins/codex/skills/skillopt-sleep/SKILL.md) |
+| 3 | ✓ | [`plugins/openclaw/SKILL.md`](plugins/openclaw/SKILL.md) |
 
 ---
 

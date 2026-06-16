@@ -19,6 +19,7 @@ Read these files **after** loading the design system (`SKILL.md` / `DESIGN.md` +
 | File | Purpose |
 |---|---|
 | [ui-principles.md](ui-principles.md) | Universal visual design principles — hierarchy, layout rhythm, typography placement, color theory, depth & layering, interaction design, responsive adaptation, component behavior |
+| [spacing-principles.md](spacing-principles.md) | Spacing-specific principles — 4-point grid, proximity grouping, inner vs outer gaps, vertical and horizontal rhythm, heading→paragraph spacing, section and component spacing tiers |
 | [ux-principles.md](ux-principles.md) | Interaction & control principles — 30 UX laws, button/control state contracts (9 states), hover/active technique palettes, touch targets, cognitive load, feedback loops |
 | [typography-principles.md](typography-principles.md) | Typography-specific principles — type system foundations, scale & modular ratios, readability & measure, accessibility, responsive type, brand tone expression through type |
 | [accessibility.md](accessibility.md) | WCAG 2.1/2.2 compliance — contrast ratios, color-as-information rules, focus visibility, keyboard navigation, motion safety, target sizes, text spacing, semantic structure, ARIA |

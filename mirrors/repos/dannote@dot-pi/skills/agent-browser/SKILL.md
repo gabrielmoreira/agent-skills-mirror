@@ -1,6 +1,6 @@
 ---
 name: agent-browser
-description: "Use agent-browser CLI for website automation: navigate, click/fill, scrape, screenshot, test web apps, debug console/network."
+description: 'Use agent-browser CLI for website automation: navigate, click/fill, scrape, screenshot, test web apps, debug console/network.'
 ---
 
 # agent-browser

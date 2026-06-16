@@ -116,7 +116,7 @@ The registration tests import only the real barrels — they go red if a barrel 
 
 ## Authenticate
 
-> **Run this in a separate, real terminal — it is interactive.** It prompts for ChatGPT-subscription vs OpenAI-API-key and then drives a browser/device login, so it needs a TTY to answer prompts. Do **not** run it through Claude Code's `!` prefix or an agent's Bash tool (no interactive TTY there — the prompts stall and nothing completes).
+> **Run this in a separate, real terminal — it is interactive.** It prompts for ChatGPT-subscription vs OpenAI-API-key and then drives a browser/device login, so it needs a TTY to answer prompts.
 
 ```bash
 pnpm exec tsx setup/index.ts --step provider-auth codex

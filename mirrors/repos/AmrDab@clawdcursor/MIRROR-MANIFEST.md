@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AmrDab/clawdcursor` — 26 default patterns, 4 followed patterns, 9 file(s) materialized.
+Mirror of `AmrDab/clawdcursor` — 26 default patterns, 4 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AmrDab/clawdcursor` — 26 default patterns, 4 followed patterns, 9 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,14 +63,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`docs/internal/README.md`](docs/internal/README.md) |
-| 2 | ✓ | [`guides/README.md`](guides/README.md) |
-| 3 | ✓ | [`native/README.md`](native/README.md) |
-| 4 | ✓ | [`seed-registry/README.md`](seed-registry/README.md) |
-| 5 | ✓ | [`SKILL.md`](SKILL.md) |
-| 6 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 7 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 8 | → | [`README.md`](README.md) |
-| 9 | → | [`SECURITY.md`](SECURITY.md) |
+| 2 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
+| 3 | ✓ | [`guides/README.md`](guides/README.md) |
+| 4 | ✓ | [`native/README.md`](native/README.md) |
+| 5 | ✓ | [`seed-registry/README.md`](seed-registry/README.md) |
+| 6 | ✓ | [`SKILL.md`](SKILL.md) |
+| 7 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 9 | → | [`README.md`](README.md) |
+| 10 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

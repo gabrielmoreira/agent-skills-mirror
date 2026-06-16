@@ -231,7 +231,7 @@ Language-aware generate commands (`audio`, `video`, `cinematic-video`, `report`,
 | `mind-map` | - | `--kind [interactive\|note-backed]`, `--instructions TEXT` *(no `--wait` / `--timeout` / `--interval` / `--retry` / `--prompt-file`)* | `generate mind-map --kind interactive` |
 | `report [description]` | Instructions | `--format [briefing-doc\|study-guide\|blog-post\|custom]`, `--append TEXT` (no effect with `--format custom`) | `generate report --format study-guide` |
 
-> **Two kinds of mind map (issue #1256).** NotebookLM has two distinct mind-map objects. `generate mind-map --kind interactive` (the default) builds the **interactive** kind — a studio artifact (the one the web app now creates) that is polled to completion. `generate mind-map --kind note-backed` builds the **note-backed** kind — a JSON node tree stored as a note, generated synchronously. Both produce the same `{mind_map, note_id, kind}` output, appear in `artifact list --type mind-map`, and download via `download mind-map`. `--instructions` applies only to the note-backed kind (ignored with a warning for interactive).
+> **Two kinds of mind map (issue #1256).** NotebookLM has two distinct mind-map objects. `generate mind-map --kind interactive` (the default) builds the **interactive** kind — a studio artifact (the one the web app now creates) that is polled to completion. `generate mind-map --kind note-backed` builds the **note-backed** kind — a JSON node tree stored as a note, generated synchronously. Both produce the same `{mind_map, note_id, kind}` output, appear in `artifact list --type mind-map`, and download via `download mind-map`. `--instructions` is a free-text prompt that steers generation: the interactive kind applies it reliably (it travels in the `CREATE_ARTIFACT` prompt slot the server honors and that `artifact get-prompt` reads back); the note-backed kind passes it through to `GENERATE_MIND_MAP`, but the server may not always act on it.
 
 ### Artifact Commands (`notebooklm artifact <cmd>`)
 
@@ -239,6 +239,7 @@ Language-aware generate commands (`audio`, `video`, `cinematic-video`, `report`,
 |---------|-----------|---------|---------|
 | `list` | - | `--type [all\|audio\|video\|slide-deck\|quiz\|flashcard\|infographic\|data-table\|mind-map\|report]`, `--limit N`, `--no-truncate`, `--json` | `artifact list --type audio --limit 5` |
 | `get <id>` | Artifact ID | `--json` | `artifact get art123` |
+| `get-prompt <id>` | Artifact ID | `--json` | `artifact get-prompt art123` |
 | `rename <id> <title>` | Artifact ID, title | `--json` | `artifact rename art123 "Title"` |
 | `delete <id>` | Artifact ID | `-y/--yes`, `--json` | `artifact delete art123 -y` |
 | `export <id>` | Artifact ID | `--title TEXT` (required), `--type [docs\|sheets]`, `--json` | `artifact export art123 --title "My Doc" --type sheets` |
@@ -1132,14 +1133,14 @@ notebooklm generate report --format briefing-doc --append "Focus on AI trends, k
 notebooklm generate report --prompt-file custom_report.txt
 ```
 
-### Artifact: `list`, `get`, `rename`, `delete`, `export`, `poll`, `wait`, `retry`, `suggestions`
+### Artifact: `list`, `get`, `get-prompt`, `rename`, `delete`, `export`, `poll`, `wait`, `retry`, `suggestions`
 
 Manage existing artifacts (audio, video, slide decks, quizzes, reports, etc.). Every subcommand resolves the notebook via the standard precedence (`-n/--notebook` flag > `NOTEBOOKLM_NOTEBOOK` env > active context).
 
-> **Python equivalent:** [`client.artifacts.list/get/rename/delete/poll_status/wait_for_completion/retry_failed/suggest_reports(...)`](python-api.md#artifactsapi-clientartifacts) for management; [`export_report` / `export_data_table` / `export(...)`](python-api.md#export-methods) for export.
+> **Python equivalent:** [`client.artifacts.list/get/get_prompt/rename/delete/poll_status/wait_for_completion/retry_failed/suggest_reports(...)`](python-api.md#artifactsapi-clientartifacts) for management; [`export_report` / `export_data_table` / `export(...)`](python-api.md#export-methods) for export.
 
 ```bash
-notebooklm artifact <list|get|rename|delete|export|poll|wait|retry|suggestions> [OPTIONS]
+notebooklm artifact <list|get|get-prompt|rename|delete|export|poll|wait|retry|suggestions> [OPTIONS]
 ```
 
 **Common options (all subcommands):**
@@ -1151,6 +1152,7 @@ notebooklm artifact <list|get|rename|delete|export|poll|wait|retry|suggestions> 
 |---|---|---|
 | `list` | (none) | `--type [all\|audio\|video\|slide-deck\|quiz\|flashcard\|infographic\|data-table\|mind-map\|report]`, `--limit N` (default: unlimited), `--no-truncate`, `--json` |
 | `get` | `ARTIFACT_ID` | `--json` |
+| `get-prompt` | `ARTIFACT_ID` | `--json` |
 | `rename` | `ARTIFACT_ID NEW_TITLE` | `--json` |
 | `delete` | `ARTIFACT_ID` | `-y/--yes` (skip confirmation), `--json` |
 | `export` | `ARTIFACT_ID` | `--title TEXT` (**required**), `--type [docs\|sheets]` (default: docs), `--json` |
@@ -1166,6 +1168,9 @@ notebooklm artifact list --notebook nb_abc --type audio --json
 
 # Inspect a single artifact (partial ID OK)
 notebooklm artifact get art123 --json
+
+# Show the prompt an artifact was generated from
+notebooklm artifact get-prompt art123 --json
 
 # Rename an artifact
 notebooklm artifact rename art123 "Final cut"

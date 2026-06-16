@@ -24,7 +24,6 @@ When the user asks to perform this workflow, execute the following steps:
 Goal: Prove the delivered change works against explicit acceptance criteria before handoff.
 
 ## Steps
-
 1. Load scope:
    - BRD-lite, PRD, SRS/FRS, ticket, implementation plan, or release note.
    - Acceptance criteria and non-goals.
@@ -36,43 +35,57 @@ Goal: Prove the delivered change works against explicit acceptance criteria befo
    - Use Playwright/Appium only when user-facing behavior changed.
    - Use Zephyr/Jira/GitHub/GitLab/ADO MCPs only when configured; otherwise record local evidence.
    - If external MCP is unavailable, ask for exported ticket/PR/TC data or mark that lane BLOCKED.
-   - Capture logs, screenshots, traces, terminal summaries, and before/after proof for bug fixes.
+   - **Capture Evidence**: logs, screenshots, traces, or terminal output summaries.
+   - **Comparative Audit**: If it's a bug fix, prove the "Before" (failure) vs "After" (success).
 4. Judge:
    - PASS: all acceptance criteria proven.
    - FAIL: original bug or missed requirement still reproducible.
    - BLOCKED: environment, credentials, or approval prevents proof.
 5. Record evidence:
    - If verification reveals behavior drift, require PRD/SRS updates before PASS.
-   - Update traceability notes from BRD objective -> PRD requirement -> SRS/FRS contract -> verification evidence.
+   - Update traceability notes from BRD objective -> PRD requirement -> SRS/FRS contract -> **verification evidence**.
    - Update project-local `docs/srs/srs-walkthrough.md`.
-   - For autonomous/channel mode, continue only when lane prerequisites exist; return BLOCKED for missing environment, credentials, or authoritative ACs.
    - Route next step back to implementation or `dev-fix`.
 
-## Output Template
+## Output
+
+## Artifact Templates
+
+### Walkthrough Template
 
 ```md
-# Verification Report: [Name]
+# Walkthrough: [Name]
 
 ## Scope
 
-## Checks Run (Lanes)
+## Acceptance Criteria Trace
 
-## Acceptance Criteria Status
+| AC ID   | Status    | Proof / Evidence Link |
+| ------- | --------- | --------------------- |
+| [ac-id] | PASS/FAIL | [link/summary]        |
 
-## Requirement Trace Status (Business -> Test)
+## Comparative Evidence (Before vs After)
 
-## Observed Risks & Edge Cases
+## Negative Testing Proof (Fail Cases)
 
-## Runtime Contract
+## Evidence (Screenshots/Logs)
 
-## Handoff Payload
-
-## Blocking Questions
+## Risks Observed
 
 ## Next Workflow
+```
 
+## Output Template
+```md
+# Verification Report: [Name]
+## Scope
+## Checks Run (Lanes)
+## Acceptance Criteria Status
+## Requirement Trace Status (Business -> Test)
+## Observed Risks & Edge Cases
+
+## Next Workflow
 implement-feature | dev-fix
-
 ## Cost Report
 Call `get_session_cost(workflow="verify-work")` before final handoff.
 ```

@@ -2539,7 +2539,7 @@ ZeRO++ is a system of communication optimization strategies built on top of ZeRO
 
 We recommend that you read the tutorials on Getting Started, ZeRO and Megatron-DeepSpeed before stepping through this tutorial.
 
-ZeRO++ consists of three key designs, namely quantized weights (qwZ), hiearchical partitioning ZeRO (hpZ), and quantized gradients (qgZ):
+ZeRO++ consists of three key designs, namely quantized weights (qwZ), hierarchical partitioning ZeRO (hpZ), and quantized gradients (qgZ):
 
 Collectively, the three optimization reduces communication volume by 4x compared to ZeRO baseline. Each of the three components can be enabled independent of each other and collectively as a group as described in the next section.
 

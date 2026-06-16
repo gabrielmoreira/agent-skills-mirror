@@ -294,17 +294,71 @@ function DCViewport({ children, minScale = 0.1, maxScale = 8, style = {} }) {
       clearTimeout(saveT.current);
       try { localStorage.setItem(tfKey, JSON.stringify(tf.current)); } catch {}
     };
+    let restored = false;
     try {
       const s = JSON.parse(localStorage.getItem(tfKey) || 'null');
       if (s && Number.isFinite(s.x) && Number.isFinite(s.y) && Number.isFinite(s.scale)) {
         tf.current = { x: s.x, y: s.y, scale: Math.min(maxScale, Math.max(minScale, s.scale)) };
         apply();
+        restored = true;
       }
     } catch {}
+    // Visibility backstop (one-shot): a persisted pan is only meaningful
+    // relative to content that may have changed since it was saved. If the
+    // restored transform leaves every section/artboard off-screen, restoring
+    // it faithfully just strands the user — reset to origin instead.
+    // Content renders after the sidecar read settles, so poll briefly until
+    // real boxes exist; any user input cancels (they may be mid-pan).
+    let checks = 0;
+    let checkT = 0;
+    let sawInput = false;
+    let hiddenStreak = 0;
+    const onInput = () => { sawInput = true; };
+    const cleanupCheck = () => {
+      window.removeEventListener('wheel', onInput, true);
+      window.removeEventListener('pointerdown', onInput, true);
+    };
+    const checkVisible = () => {
+      const vp = vpRef.current, world = worldRef.current;
+      checks += 1;
+      if (!vp || !world || sawInput || checks > 10) { cleanupCheck(); return; }
+      const vr = vp.getBoundingClientRect();
+      let sized = 0, visible = false;
+      // Slots plus section-head titles: the [data-dc-section] wrapper (and
+      // .dc-sectionhead) are full-width blocks whose boxes can stay
+      // on-screen while everything real is stranded; the inline-block title
+      // is text-sized and covers sections whose artboards were all deleted.
+      world.querySelectorAll('[data-dc-slot], .dc-sectionhead .dc-editable').forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.width <= 0 || r.height <= 0) return;
+        sized += 1;
+        if (r.right > vr.left && r.left < vr.right && r.bottom > vr.top && r.top < vr.bottom) visible = true;
+      });
+      if (visible) { cleanupCheck(); return; }
+      if (sized === 0) { hiddenStreak = 0; checkT = setTimeout(checkVisible, 400); return; } // not rendered yet
+      // Two consecutive hidden reads before resetting — the sidecar read can
+      // reorder/hide sections after first paint, transiently moving every
+      // box; a single sample must not discard a healthy deliberate pan.
+      hiddenStreak += 1;
+      if (hiddenStreak < 2) { checkT = setTimeout(checkVisible, 400); return; }
+      tf.current = { x: 0, y: 0, scale: 1 };
+      apply();
+      cleanupCheck();
+    };
+    if (restored) {
+      window.addEventListener('wheel', onInput, true);
+      window.addEventListener('pointerdown', onInput, true);
+      checkT = setTimeout(checkVisible, 250);
+    }
     // Flush on pagehide and unmount so a reload within the 200ms debounce
     // window doesn't drop the last pan/zoom.
     window.addEventListener('pagehide', flush);
-    return () => { window.removeEventListener('pagehide', flush); flush(); };
+    return () => {
+      clearTimeout(checkT);
+      cleanupCheck();
+      window.removeEventListener('pagehide', flush);
+      flush();
+    };
   }, []);
 
   React.useEffect(() => {
@@ -353,6 +407,12 @@ function DCViewport({ children, minScale = 0.1, maxScale = 8, style = {} }) {
       (e.deltaX === 0 && Number.isInteger(e.deltaY) && Math.abs(e.deltaY) >= 40);
 
     const onWheel = (e) => {
+      // A deck-stage nested on the canvas owns plain scrolling — its
+      // thumbnail rail must stay natively scrollable, and panning a
+      // full-viewport fixed deck only strands it. The shadow DOM retargets
+      // rail events to the deck-stage host, so closest() sees it. ctrl/meta
+      // pinch stays ours: unprevented it would browser-zoom the page.
+      if (!(e.ctrlKey || e.metaKey) && e.target && e.target.closest && e.target.closest('deck-stage')) return;
       e.preventDefault();
       if (isGesturing) return; // Safari: gesture* owns the pinch — discard concurrent wheels
       if ((e.ctrlKey || e.metaKey) && !isMouseWheel(e)) {

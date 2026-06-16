@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `worldwonderer/oh-story-claudecode` — 26 default patterns, 0 followed patterns, 191 file(s) materialized.
+Mirror of `worldwonderer/oh-story-claudecode` — 26 default patterns, 0 followed patterns, 192 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `worldwonderer/oh-story-claudecode` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 191 |
+| Files         | 192 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -180,76 +180,77 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 119 | ✓ | [`skills/story-setup/references/templates/agents/story-researcher.md`](skills/story-setup/references/templates/agents/story-researcher.md) |
 | 120 | ✓ | [`skills/story-setup/references/templates/CLAUDE.md.tmpl`](skills/story-setup/references/templates/CLAUDE.md.tmpl) |
 | 121 | ✓ | [`skills/story-setup/references/templates/hooks/detect-story-gaps.sh`](skills/story-setup/references/templates/hooks/detect-story-gaps.sh) |
-| 122 | ✓ | [`skills/story-setup/references/templates/hooks/lib/common.sh`](skills/story-setup/references/templates/hooks/lib/common.sh) |
-| 123 | ✓ | [`skills/story-setup/references/templates/hooks/lib/sentinel.sh`](skills/story-setup/references/templates/hooks/lib/sentinel.sh) |
-| 124 | ✓ | [`skills/story-setup/references/templates/hooks/post-compact.sh`](skills/story-setup/references/templates/hooks/post-compact.sh) |
-| 125 | ✓ | [`skills/story-setup/references/templates/hooks/pre-compact.sh`](skills/story-setup/references/templates/hooks/pre-compact.sh) |
-| 126 | ✓ | [`skills/story-setup/references/templates/hooks/session-end.sh`](skills/story-setup/references/templates/hooks/session-end.sh) |
-| 127 | ✓ | [`skills/story-setup/references/templates/hooks/session-start.sh`](skills/story-setup/references/templates/hooks/session-start.sh) |
-| 128 | ✓ | [`skills/story-setup/references/templates/hooks/validate-story-commit.sh`](skills/story-setup/references/templates/hooks/validate-story-commit.sh) |
-| 129 | ✓ | [`skills/story-setup/references/templates/rules/story-consistency.md`](skills/story-setup/references/templates/rules/story-consistency.md) |
-| 130 | ✓ | [`skills/story-setup/references/templates/rules/story-format.md`](skills/story-setup/references/templates/rules/story-format.md) |
-| 131 | ✓ | [`skills/story-setup/references/templates/rules/story-narrative.md`](skills/story-setup/references/templates/rules/story-narrative.md) |
-| 132 | ✓ | [`skills/story-setup/references/templates/rules/story-outline.md`](skills/story-setup/references/templates/rules/story-outline.md) |
-| 133 | ✓ | [`skills/story-setup/references/templates/settings-hooks.json`](skills/story-setup/references/templates/settings-hooks.json) |
-| 134 | ✓ | [`skills/story-setup/SKILL.md`](skills/story-setup/SKILL.md) |
-| 135 | ✓ | [`skills/story-setup/UPGRADING.md`](skills/story-setup/UPGRADING.md) |
-| 136 | ✓ | [`skills/story-short-analyze/references/anti-ai-writing.md`](skills/story-short-analyze/references/anti-ai-writing.md) |
-| 137 | ✓ | [`skills/story-short-analyze/references/banned-words.md`](skills/story-short-analyze/references/banned-words.md) |
-| 138 | ✓ | [`skills/story-short-analyze/references/character-basics.md`](skills/story-short-analyze/references/character-basics.md) |
-| 139 | ✓ | [`skills/story-short-analyze/references/character-design-methods.md`](skills/story-short-analyze/references/character-design-methods.md) |
-| 140 | ✓ | [`skills/story-short-analyze/references/character-relations.md`](skills/story-short-analyze/references/character-relations.md) |
-| 141 | ✓ | [`skills/story-short-analyze/references/deconstruction-examples.md`](skills/story-short-analyze/references/deconstruction-examples.md) |
-| 142 | ✓ | [`skills/story-short-analyze/references/genre-catalog.md`](skills/story-short-analyze/references/genre-catalog.md) |
-| 143 | ✓ | [`skills/story-short-analyze/references/genre-core-mechanics.md`](skills/story-short-analyze/references/genre-core-mechanics.md) |
-| 144 | ✓ | [`skills/story-short-analyze/references/genre-readers.md`](skills/story-short-analyze/references/genre-readers.md) |
-| 145 | ✓ | [`skills/story-short-analyze/references/genre-writing-formulas.md`](skills/story-short-analyze/references/genre-writing-formulas.md) |
-| 146 | ✓ | [`skills/story-short-analyze/references/genre-writing-techniques.md`](skills/story-short-analyze/references/genre-writing-techniques.md) |
-| 147 | ✓ | [`skills/story-short-analyze/references/hooks-chapter.md`](skills/story-short-analyze/references/hooks-chapter.md) |
-| 148 | ✓ | [`skills/story-short-analyze/references/hooks-paragraph.md`](skills/story-short-analyze/references/hooks-paragraph.md) |
-| 149 | ✓ | [`skills/story-short-analyze/references/hooks-suspense.md`](skills/story-short-analyze/references/hooks-suspense.md) |
-| 150 | ✓ | [`skills/story-short-analyze/references/material-decomposition.md`](skills/story-short-analyze/references/material-decomposition.md) |
-| 151 | ✓ | [`skills/story-short-analyze/references/output-contract.md`](skills/story-short-analyze/references/output-contract.md) |
-| 152 | ✓ | [`skills/story-short-analyze/references/output-templates.md`](skills/story-short-analyze/references/output-templates.md) |
-| 153 | ✓ | [`skills/story-short-analyze/references/quality-checklist.md`](skills/story-short-analyze/references/quality-checklist.md) |
-| 154 | ✓ | [`skills/story-short-analyze/references/real-market-data.md`](skills/story-short-analyze/references/real-market-data.md) |
-| 155 | ✓ | [`skills/story-short-analyze/references/zhihu-style.md`](skills/story-short-analyze/references/zhihu-style.md) |
-| 156 | ✓ | [`skills/story-short-analyze/SKILL.md`](skills/story-short-analyze/SKILL.md) |
-| 157 | ✓ | [`skills/story-short-scan/references/real-market-data.md`](skills/story-short-scan/references/real-market-data.md) |
-| 158 | ✓ | [`skills/story-short-scan/scripts/cdp-utils.js`](skills/story-short-scan/scripts/cdp-utils.js) |
-| 159 | ✓ | [`skills/story-short-scan/scripts/dz-browse-scraper.js`](skills/story-short-scan/scripts/dz-browse-scraper.js) |
-| 160 | ✓ | [`skills/story-short-scan/scripts/heiyan-booklist-scraper.js`](skills/story-short-scan/scripts/heiyan-booklist-scraper.js) |
-| 161 | ✓ | [`skills/story-short-scan/SKILL.md`](skills/story-short-scan/SKILL.md) |
-| 162 | ✓ | [`skills/story-short-write/references/anti-ai-writing.md`](skills/story-short-write/references/anti-ai-writing.md) |
-| 163 | ✓ | [`skills/story-short-write/references/banned-words.md`](skills/story-short-write/references/banned-words.md) |
-| 164 | ✓ | [`skills/story-short-write/references/character-basics.md`](skills/story-short-write/references/character-basics.md) |
-| 165 | ✓ | [`skills/story-short-write/references/character-design-methods.md`](skills/story-short-write/references/character-design-methods.md) |
-| 166 | ✓ | [`skills/story-short-write/references/character-relations.md`](skills/story-short-write/references/character-relations.md) |
-| 167 | ✓ | [`skills/story-short-write/references/cross-book-recall.md`](skills/story-short-write/references/cross-book-recall.md) |
-| 168 | ✓ | [`skills/story-short-write/references/dialogue-mastery.md`](skills/story-short-write/references/dialogue-mastery.md) |
-| 169 | ✓ | [`skills/story-short-write/references/emotional-arc-design.md`](skills/story-short-write/references/emotional-arc-design.md) |
-| 170 | ✓ | [`skills/story-short-write/references/emotional-methods.md`](skills/story-short-write/references/emotional-methods.md) |
-| 171 | ✓ | [`skills/story-short-write/references/female-audience-writing.md`](skills/story-short-write/references/female-audience-writing.md) |
-| 172 | ✓ | [`skills/story-short-write/references/format-and-structure.md`](skills/story-short-write/references/format-and-structure.md) |
-| 173 | ✓ | [`skills/story-short-write/references/genre-catalog.md`](skills/story-short-write/references/genre-catalog.md) |
-| 174 | ✓ | [`skills/story-short-write/references/genre-core-mechanics.md`](skills/story-short-write/references/genre-core-mechanics.md) |
-| 175 | ✓ | [`skills/story-short-write/references/genre-readers.md`](skills/story-short-write/references/genre-readers.md) |
-| 176 | ✓ | [`skills/story-short-write/references/genre-writing-formulas.md`](skills/story-short-write/references/genre-writing-formulas.md) |
-| 177 | ✓ | [`skills/story-short-write/references/genre-writing-techniques.md`](skills/story-short-write/references/genre-writing-techniques.md) |
-| 178 | ✓ | [`skills/story-short-write/references/hooks-chapter.md`](skills/story-short-write/references/hooks-chapter.md) |
-| 179 | ✓ | [`skills/story-short-write/references/hooks-paragraph.md`](skills/story-short-write/references/hooks-paragraph.md) |
-| 180 | ✓ | [`skills/story-short-write/references/hooks-suspense.md`](skills/story-short-write/references/hooks-suspense.md) |
-| 181 | ✓ | [`skills/story-short-write/references/opening-design.md`](skills/story-short-write/references/opening-design.md) |
-| 182 | ✓ | [`skills/story-short-write/references/output-contract.md`](skills/story-short-write/references/output-contract.md) |
-| 183 | ✓ | [`skills/story-short-write/references/quality-checklist.md`](skills/story-short-write/references/quality-checklist.md) |
-| 184 | ✓ | [`skills/story-short-write/references/reversal-toolkit.md`](skills/story-short-write/references/reversal-toolkit.md) |
-| 185 | ✓ | [`skills/story-short-write/references/state-tracking.md`](skills/story-short-write/references/state-tracking.md) |
-| 186 | ✓ | [`skills/story-short-write/references/villain-and-reveal.md`](skills/story-short-write/references/villain-and-reveal.md) |
-| 187 | ✓ | [`skills/story-short-write/references/writing-craft.md`](skills/story-short-write/references/writing-craft.md) |
-| 188 | ✓ | [`skills/story-short-write/references/writing-workflow.md`](skills/story-short-write/references/writing-workflow.md) |
-| 189 | ✓ | [`skills/story-short-write/scripts/normalize-punctuation.js`](skills/story-short-write/scripts/normalize-punctuation.js) |
-| 190 | ✓ | [`skills/story-short-write/SKILL.md`](skills/story-short-write/SKILL.md) |
-| 191 | ✓ | [`skills/story/SKILL.md`](skills/story/SKILL.md) |
+| 122 | ✓ | [`skills/story-setup/references/templates/hooks/guard-outline-before-prose.sh`](skills/story-setup/references/templates/hooks/guard-outline-before-prose.sh) |
+| 123 | ✓ | [`skills/story-setup/references/templates/hooks/lib/common.sh`](skills/story-setup/references/templates/hooks/lib/common.sh) |
+| 124 | ✓ | [`skills/story-setup/references/templates/hooks/lib/sentinel.sh`](skills/story-setup/references/templates/hooks/lib/sentinel.sh) |
+| 125 | ✓ | [`skills/story-setup/references/templates/hooks/post-compact.sh`](skills/story-setup/references/templates/hooks/post-compact.sh) |
+| 126 | ✓ | [`skills/story-setup/references/templates/hooks/pre-compact.sh`](skills/story-setup/references/templates/hooks/pre-compact.sh) |
+| 127 | ✓ | [`skills/story-setup/references/templates/hooks/session-end.sh`](skills/story-setup/references/templates/hooks/session-end.sh) |
+| 128 | ✓ | [`skills/story-setup/references/templates/hooks/session-start.sh`](skills/story-setup/references/templates/hooks/session-start.sh) |
+| 129 | ✓ | [`skills/story-setup/references/templates/hooks/validate-story-commit.sh`](skills/story-setup/references/templates/hooks/validate-story-commit.sh) |
+| 130 | ✓ | [`skills/story-setup/references/templates/rules/story-consistency.md`](skills/story-setup/references/templates/rules/story-consistency.md) |
+| 131 | ✓ | [`skills/story-setup/references/templates/rules/story-format.md`](skills/story-setup/references/templates/rules/story-format.md) |
+| 132 | ✓ | [`skills/story-setup/references/templates/rules/story-narrative.md`](skills/story-setup/references/templates/rules/story-narrative.md) |
+| 133 | ✓ | [`skills/story-setup/references/templates/rules/story-outline.md`](skills/story-setup/references/templates/rules/story-outline.md) |
+| 134 | ✓ | [`skills/story-setup/references/templates/settings-hooks.json`](skills/story-setup/references/templates/settings-hooks.json) |
+| 135 | ✓ | [`skills/story-setup/SKILL.md`](skills/story-setup/SKILL.md) |
+| 136 | ✓ | [`skills/story-setup/UPGRADING.md`](skills/story-setup/UPGRADING.md) |
+| 137 | ✓ | [`skills/story-short-analyze/references/anti-ai-writing.md`](skills/story-short-analyze/references/anti-ai-writing.md) |
+| 138 | ✓ | [`skills/story-short-analyze/references/banned-words.md`](skills/story-short-analyze/references/banned-words.md) |
+| 139 | ✓ | [`skills/story-short-analyze/references/character-basics.md`](skills/story-short-analyze/references/character-basics.md) |
+| 140 | ✓ | [`skills/story-short-analyze/references/character-design-methods.md`](skills/story-short-analyze/references/character-design-methods.md) |
+| 141 | ✓ | [`skills/story-short-analyze/references/character-relations.md`](skills/story-short-analyze/references/character-relations.md) |
+| 142 | ✓ | [`skills/story-short-analyze/references/deconstruction-examples.md`](skills/story-short-analyze/references/deconstruction-examples.md) |
+| 143 | ✓ | [`skills/story-short-analyze/references/genre-catalog.md`](skills/story-short-analyze/references/genre-catalog.md) |
+| 144 | ✓ | [`skills/story-short-analyze/references/genre-core-mechanics.md`](skills/story-short-analyze/references/genre-core-mechanics.md) |
+| 145 | ✓ | [`skills/story-short-analyze/references/genre-readers.md`](skills/story-short-analyze/references/genre-readers.md) |
+| 146 | ✓ | [`skills/story-short-analyze/references/genre-writing-formulas.md`](skills/story-short-analyze/references/genre-writing-formulas.md) |
+| 147 | ✓ | [`skills/story-short-analyze/references/genre-writing-techniques.md`](skills/story-short-analyze/references/genre-writing-techniques.md) |
+| 148 | ✓ | [`skills/story-short-analyze/references/hooks-chapter.md`](skills/story-short-analyze/references/hooks-chapter.md) |
+| 149 | ✓ | [`skills/story-short-analyze/references/hooks-paragraph.md`](skills/story-short-analyze/references/hooks-paragraph.md) |
+| 150 | ✓ | [`skills/story-short-analyze/references/hooks-suspense.md`](skills/story-short-analyze/references/hooks-suspense.md) |
+| 151 | ✓ | [`skills/story-short-analyze/references/material-decomposition.md`](skills/story-short-analyze/references/material-decomposition.md) |
+| 152 | ✓ | [`skills/story-short-analyze/references/output-contract.md`](skills/story-short-analyze/references/output-contract.md) |
+| 153 | ✓ | [`skills/story-short-analyze/references/output-templates.md`](skills/story-short-analyze/references/output-templates.md) |
+| 154 | ✓ | [`skills/story-short-analyze/references/quality-checklist.md`](skills/story-short-analyze/references/quality-checklist.md) |
+| 155 | ✓ | [`skills/story-short-analyze/references/real-market-data.md`](skills/story-short-analyze/references/real-market-data.md) |
+| 156 | ✓ | [`skills/story-short-analyze/references/zhihu-style.md`](skills/story-short-analyze/references/zhihu-style.md) |
+| 157 | ✓ | [`skills/story-short-analyze/SKILL.md`](skills/story-short-analyze/SKILL.md) |
+| 158 | ✓ | [`skills/story-short-scan/references/real-market-data.md`](skills/story-short-scan/references/real-market-data.md) |
+| 159 | ✓ | [`skills/story-short-scan/scripts/cdp-utils.js`](skills/story-short-scan/scripts/cdp-utils.js) |
+| 160 | ✓ | [`skills/story-short-scan/scripts/dz-browse-scraper.js`](skills/story-short-scan/scripts/dz-browse-scraper.js) |
+| 161 | ✓ | [`skills/story-short-scan/scripts/heiyan-booklist-scraper.js`](skills/story-short-scan/scripts/heiyan-booklist-scraper.js) |
+| 162 | ✓ | [`skills/story-short-scan/SKILL.md`](skills/story-short-scan/SKILL.md) |
+| 163 | ✓ | [`skills/story-short-write/references/anti-ai-writing.md`](skills/story-short-write/references/anti-ai-writing.md) |
+| 164 | ✓ | [`skills/story-short-write/references/banned-words.md`](skills/story-short-write/references/banned-words.md) |
+| 165 | ✓ | [`skills/story-short-write/references/character-basics.md`](skills/story-short-write/references/character-basics.md) |
+| 166 | ✓ | [`skills/story-short-write/references/character-design-methods.md`](skills/story-short-write/references/character-design-methods.md) |
+| 167 | ✓ | [`skills/story-short-write/references/character-relations.md`](skills/story-short-write/references/character-relations.md) |
+| 168 | ✓ | [`skills/story-short-write/references/cross-book-recall.md`](skills/story-short-write/references/cross-book-recall.md) |
+| 169 | ✓ | [`skills/story-short-write/references/dialogue-mastery.md`](skills/story-short-write/references/dialogue-mastery.md) |
+| 170 | ✓ | [`skills/story-short-write/references/emotional-arc-design.md`](skills/story-short-write/references/emotional-arc-design.md) |
+| 171 | ✓ | [`skills/story-short-write/references/emotional-methods.md`](skills/story-short-write/references/emotional-methods.md) |
+| 172 | ✓ | [`skills/story-short-write/references/female-audience-writing.md`](skills/story-short-write/references/female-audience-writing.md) |
+| 173 | ✓ | [`skills/story-short-write/references/format-and-structure.md`](skills/story-short-write/references/format-and-structure.md) |
+| 174 | ✓ | [`skills/story-short-write/references/genre-catalog.md`](skills/story-short-write/references/genre-catalog.md) |
+| 175 | ✓ | [`skills/story-short-write/references/genre-core-mechanics.md`](skills/story-short-write/references/genre-core-mechanics.md) |
+| 176 | ✓ | [`skills/story-short-write/references/genre-readers.md`](skills/story-short-write/references/genre-readers.md) |
+| 177 | ✓ | [`skills/story-short-write/references/genre-writing-formulas.md`](skills/story-short-write/references/genre-writing-formulas.md) |
+| 178 | ✓ | [`skills/story-short-write/references/genre-writing-techniques.md`](skills/story-short-write/references/genre-writing-techniques.md) |
+| 179 | ✓ | [`skills/story-short-write/references/hooks-chapter.md`](skills/story-short-write/references/hooks-chapter.md) |
+| 180 | ✓ | [`skills/story-short-write/references/hooks-paragraph.md`](skills/story-short-write/references/hooks-paragraph.md) |
+| 181 | ✓ | [`skills/story-short-write/references/hooks-suspense.md`](skills/story-short-write/references/hooks-suspense.md) |
+| 182 | ✓ | [`skills/story-short-write/references/opening-design.md`](skills/story-short-write/references/opening-design.md) |
+| 183 | ✓ | [`skills/story-short-write/references/output-contract.md`](skills/story-short-write/references/output-contract.md) |
+| 184 | ✓ | [`skills/story-short-write/references/quality-checklist.md`](skills/story-short-write/references/quality-checklist.md) |
+| 185 | ✓ | [`skills/story-short-write/references/reversal-toolkit.md`](skills/story-short-write/references/reversal-toolkit.md) |
+| 186 | ✓ | [`skills/story-short-write/references/state-tracking.md`](skills/story-short-write/references/state-tracking.md) |
+| 187 | ✓ | [`skills/story-short-write/references/villain-and-reveal.md`](skills/story-short-write/references/villain-and-reveal.md) |
+| 188 | ✓ | [`skills/story-short-write/references/writing-craft.md`](skills/story-short-write/references/writing-craft.md) |
+| 189 | ✓ | [`skills/story-short-write/references/writing-workflow.md`](skills/story-short-write/references/writing-workflow.md) |
+| 190 | ✓ | [`skills/story-short-write/scripts/normalize-punctuation.js`](skills/story-short-write/scripts/normalize-punctuation.js) |
+| 191 | ✓ | [`skills/story-short-write/SKILL.md`](skills/story-short-write/SKILL.md) |
+| 192 | ✓ | [`skills/story/SKILL.md`](skills/story/SKILL.md) |
 
 ---
 

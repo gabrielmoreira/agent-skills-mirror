@@ -246,7 +246,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 
 **Agent 3: narrative-writer**（subagent_type: narrative-writer）
 - full 模式调用。
-- 审查视角：AI味检测、格式合规、节奏均匀度、文字自然度。
+- 审查视角：AI味检测（含解释腔/上帝感/安排感=模式 8）、情绪烈度（够不够爽/会不会太保守）、格式合规、节奏均匀度、文字自然度。
 - 提示指令：
   ```
   你是 narrative-writer，从文字质量层面审查以下内容。
@@ -259,7 +259,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   可选补充参考：如项目已部署 story-setup reference bundle，可读取 `story-setup/references/agent-references/anti-ai-writing.md`、`story-setup/references/agent-references/banned-words.md`、`story-setup/references/agent-references/quality-checklist.md`；若不可读，不影响审查。
   检查项：
   1. 是否存在禁用词/套话/陈词滥调？
-  2. 是否出现 AI 写作指纹、7 种 AI 写作模式或章末总结体？
+  2. 是否出现 AI 写作指纹、8 种 AI 写作模式（含模式 8 解释腔/上帝视角/安排感）或章末总结体？
   3. 格式是否合规（一段一句、≤60字、无空行、对话独立成行）？
   4. 节奏是否均匀（有无连续多节无情绪变化）？
   5. 身体部位同一词是否超 5 次？
@@ -389,7 +389,7 @@ Rubric Source: file | embedded fallback
 ## 基础检查结果
 
 ### 格式合规性
-- [{x| }] 段落 ≤60 字：通过/不通过；证据：...
+- [{x| }] 段落以短为主，且有长短交错 / 疏密变化（非通篇同长度；偶发的稍长沉淀句段不算违规，通篇均匀同长度才算）：通过/不通过；证据：...
 - [{x| }] 无段间空行：通过/不通过；证据：...
 - [{x| }] 对话独立成行：通过/不通过；证据：...
 - 违规位置：{列出}

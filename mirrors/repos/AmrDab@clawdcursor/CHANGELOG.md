@@ -2,6 +2,72 @@
 
 All notable changes to Clawd Cursor will be documented in this file.
 
+## [1.5.4] - 2026-06-15 — install & distribution hardening
+
+### Changed
+
+- **Installer is now `npm i -g`, not a git-clone-and-build.** The
+  `curl … | bash` / `irm … | iex` one-liners previously cloned the repo and ran
+  `npm install` + `npm run build` on the user's machine — requiring git and a
+  full build toolchain, and diverging from the `npm i -g clawdcursor` the README
+  advertises. They now install the published package globally. macOS still gets
+  a working native helper because the package's `postinstall` builds and
+  ad-hoc-signs it (ad-hoc is `build.sh`'s default). `VERSION=vX.Y.Z` still pins,
+  now via `clawdcursor@X.Y.Z`.
+- **New Claude Code plugin** (`.claude-plugin/plugin.json`) registers the MCP
+  server in compact mode — launched via `npx -y clawdcursor` so there's **no
+  global install to do first** (npx fetches on demand, or uses a global install
+  if present), while still resolving the package `bin` so it survives entry-path
+  refactors — and bundles the root `SKILL.md`. A one-step, config-free install
+  for Claude Code. Manifest version auto-syncs via `scripts/sync-version.ts`
+  (and is guarded by the version-drift test).
+
+### Fixed
+
+- **Back-compat entry point at `dist/index.js`.** v0.x shipped the CLI there;
+  v1.0 moved it to `dist/surface/cli.js`. Hosts that had hard-pinned
+  `node <pkg>/dist/index.js …` (e.g. a hand-written MCP entry in Claude Code's
+  `.claude.json`) silently broke on a routine `npm i -g clawdcursor` upgrade —
+  the MCP server just failed to start with no clear cause. A thin re-export
+  shim (`src/index.ts` → `dist/index.js`) now forwards to the real CLI, so those
+  pinned paths keep working across the move. New configs should still launch the
+  `clawdcursor` bin directly or use the Claude Code plugin, neither of which
+  pins a deep dist path.
+- **`uninstall` no longer dead-ends.** It removes the global `clawdcursor`
+  command, so `clawdcursor install` can't follow it — and the old success
+  message only said how to delete *more*. Uninstall now prints the reinstall
+  one-liner (`npm i -g clawdcursor`, plus the OS turnkey installer), so there's
+  always an obvious way back.
+
+## [1.5.3] - 2026-06-14 — edge-glow indicator + security hardening
+
+### Added
+
+- **Screen-edge "task in progress" glow.** A full-screen, click-through amber
+  glow pulses (dim ↔ bright) on all four screen edges whenever an agent is
+  driving the desktop — ambient, at-a-glance awareness that automation is live.
+  It rides the same lifecycle as the control-banner pill (shown together,
+  hidden together) and never steals focus or intercepts input: a per-pixel-alpha
+  layered window with `WS_EX_NOACTIVATE | WS_EX_TRANSPARENT`. Opt out of just the
+  glow with `CLAWD_NO_GLOW=1` — the pill (and its double-click-to-stop) stays.
+  Windows-only today, like the banner; the API is platform-neutral so
+  macOS/Linux overlays can land later. (`scripts/edge-glow.ps1`)
+
+### Security / hardening
+
+- **Insecure temp files (CWE-377).** The `agent console` terminal scripts were
+  written to a predictable `tmpdir/clawdcursor-task-<time>.{ps1,sh}` path and
+  then executed; they now use a private `fs.mkdtemp()` directory. The macOS
+  screenshot temp moved from `Date.now()` to `crypto.randomUUID()`. A
+  source-invariant guard test keeps predictable temp-file names from returning.
+- **Browser user-data dir** used a `/tmp` fallback that is wrong on Windows —
+  now `os.tmpdir()`. The unreachable pre-adapter launch fallback gained a
+  metacharacter guard so a crafted app name can't escape the PowerShell command.
+- **Code-scanning sweep.** Closed the real CodeQL alerts and documented the
+  false positives (the snapshot fingerprint SHA-1 is a non-credential checksum;
+  an assertion `fs.open` is read-only). The transitive `file-type` advisory was
+  assessed unreachable (the vulnerable ASF path never runs) and dismissed.
+
 ## [1.5.2] - 2026-06-13 — reliability, honest verification, transparency
 
 The theme of this patch is **trust**: the cheap perception path works for
