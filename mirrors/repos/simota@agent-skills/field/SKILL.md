@@ -21,7 +21,7 @@ CAPABILITIES_SUMMARY:
 
 COLLABORATION_PATTERNS:
 - Vision -> Field: Research direction from design strategy
-- Compete -> Field: COMPETE_TO_RESEARCHER — 競合 win/loss 分析からのインタビュー設計示唆
+- Compete -> Field: COMPETE_TO_RESEARCHER — interview-design suggestions from competitive win/loss analysis
 - Spark -> Field: Feature hypotheses needing validation
 - Voice -> Field: Feedback data for qualitative synthesis
 - Trace -> Field: Behavioral evidence for persona enrichment
@@ -33,7 +33,7 @@ COLLABORATION_PATTERNS:
 - Field -> Canvas: Findings for journey/systems visualization
 - Field -> Lore: Reusable patterns for institutional memory
 - Flux -> Field: Research design assumption challenge and reframing
-- Field -> Plea: RESEARCHER_TO_PLEA — 研究で発見された未充足セグメントの需要探索を委任
+- Field -> Plea: RESEARCHER_TO_PLEA — delegate demand exploration for unmet segments found in research
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: Vision (research direction), Spark (feature hypotheses), Voice (feedback data), Trace (behavioral evidence), Flux (assumption challenge), Compete (win/loss interview design)
@@ -257,14 +257,14 @@ Field receives research direction and data from upstream agents, conducts studie
 | Spark → Field | Hypothesis validation | Feature hypotheses need user research validation |
 | Voice → Field | Feedback synthesis | Feedback data needs qualitative synthesis |
 | Trace → Field | Behavioral enrichment | Behavioral evidence should enrich personas or questions |
-| Compete → Field | `COMPETE_TO_RESEARCHER` | 競合の win/loss 分析結果をインタビュー設計に反映 |
+| Compete → Field | `COMPETE_TO_RESEARCHER` | Reflect competitive win/loss findings into interview design |
 | Field → Cast | Persona data | Research findings generate or update personas |
 | Field → Echo | Testing package | Persona or journey is ready for UI validation |
 | Field → Spark | Validated needs | Validated user needs should drive feature ideation |
 | Field → Vision | Research insights | Research insights inform design direction |
 | Field → Palette | Usability findings | Usability findings drive UX improvement |
 | Field → Voice | Survey input | Qualitative findings should inform surveys or feedback loops |
-| Field → Plea | `RESEARCHER_TO_PLEA` | 未充足セグメントの合成需要探索 |
+| Field → Plea | `RESEARCHER_TO_PLEA` | Synthetic demand exploration for unmet segments |
 | Field → Canvas | Visualization | Findings need journey or systems visualization |
 | Field → Lore | Pattern archive | Reusable patterns should enter institutional memory |
 

@@ -252,6 +252,8 @@ Growth receives data and insights from upstream agents. Growth sends hypotheses,
 | `reference/cro-patterns.md` | You need CRO patterns (CTA/forms/exit-intent/social proof) + 2026 benchmarks (Baymard cart abandonment, form-field cliffs, Statsig/OpenAI tooling note). |
 | `reference/keyword-research.md` | You are running the `keyword` recipe — search intent classification, query clustering, SERP overlap, AI prompt mining. |
 | `reference/seo-audit.md` | You are running the `audit` recipe — full-site crawlability, indexability, content gap, internal linking topology, log-file analysis. |
+| `reference/content-architecture.md` | You need pillar-cluster / topic-cluster content structure, internal-linking topology, or to fix keyword cannibalization / orphan pages. |
+| `reference/channel-lifecycle-planning.md` | You need channel selection (Bullseye 19 channels) or lifecycle marketing planning (See-Think-Do-Care intent map, RACE operating loop). |
 | `reference/geo-optimization.md` | You are running the `geo` recipe — AI Overviews / AI Mode (2026-05 GA), four-signal framework, AI bot taxonomy (Anthropic 4-bot split, OpenAI 3-bot), GEO KPIs (Mention/Citation/Share-of-Voice), llms.txt 2026 status. |
 | `reference/code-standards.md` | You need good/bad code examples. |
 | `_common/OPUS_48_AUTHORING.md` | You are sizing the SEO/GEO/CRO spec, deciding adaptive thinking depth at AUDIT, or front-loading scope/channel/metric at INTAKE. Critical for Growth: P3, P5. |

@@ -1,7 +1,6 @@
 ---
 name: building-omnistudio-callable-apex
 description: "Salesforce Industries Common Core (OmniStudio/Vlocity) Apex callable generation and review skill with 120-point scoring. Use when creating, reviewing, or migrating Industries callable Apex implementations. TRIGGER when: user creates or reviews System.Callable classes, migrates VlocityOpenInterface or VlocityOpenInterface2, or builds Industries callable extensions used by OmniStudio, Integration Procedures, or DataRaptors. DO NOT TRIGGER when: generic Apex classes or triggers (use generating-apex), building Integration Procedures (use building-omnistudio-integration-procedure), authoring OmniScripts (use building-omnistudio-omniscript), configuring Data Mappers (use building-omnistudio-datamapper), or analyzing namespace/dependency issues (use analyzing-omnistudio-dependencies)."
-license: MIT
 metadata:
   version: "1.0"
 ---

@@ -11,10 +11,14 @@ import {
   lineSpacingMultiple,
   letterSpacingPoints,
   noWrap,
+  normalizeText,
+  isPreserveWhitespace,
+  trimBlockNewlines,
 } from "../core/css.ts";
 import { type RenderContext, rectToPptx } from "./context.ts";
 import { imageKey } from "./media-cache.ts";
 import {
+  type TextRun,
   textFormat,
   extractTextRuns,
   textTransformFn,
@@ -34,7 +38,7 @@ export function renderNodeToPptx(node: SlideNode, ctx: RenderContext): void {
   // ---- text leaf ----
   if (node.tag === "#text") {
     const style = node.style;
-    const text = node.text ? normalize(node.text, style.whiteSpace) : "";
+    const text = node.text ? trimBlockNewlines(normalizeText(node.text, style.whiteSpace)) : "";
     if (!text || node.rect.w < 0.5 || node.rect.h < 0.5 || style.visibility === "hidden") return;
     const coords = rectToPptx(node.rect, ctx);
     const fmt = textFormat(style, ctx.fontMap);
@@ -397,27 +401,62 @@ export function renderNodeToPptx(node: SlideNode, ctx: RenderContext): void {
         ctx.warnings.push(`addText failed for <${node.tag}>: ${errMsg(err)}`);
       }
     } else {
-      const textObjs = runs.map((run, i) => {
+      const preserveWs = isPreserveWhitespace(style.whiteSpace);
+      const runOpts = (run: TextRun): Opts => {
         const alpha = (1 - run.fmt.transparency / 100) * opacity;
-        const next = runs[i + 1];
-        const sep = next && !runsAdjacent(run, next) ? " " : "";
         return {
-          text: transform(run.text) + sep,
-          options: {
-            fontFace: run.fmt.fontFace,
-            fontSize: run.fmt.fontSize,
-            bold: run.fmt.bold,
-            italic: run.fmt.italic,
-            underline: run.fmt.underline,
-            strike: run.fmt.strike,
-            subscript: run.fmt.subscript,
-            superscript: run.fmt.superscript,
-            highlight: run.fmt.highlight,
-            color: run.fmt.color,
-            transparency: opacityToTransparency(alpha),
-            hyperlink: !nodeHref && run.href ? { url: run.href } : undefined,
-          },
+          fontFace: run.fmt.fontFace,
+          fontSize: run.fmt.fontSize,
+          bold: run.fmt.bold,
+          italic: run.fmt.italic,
+          underline: run.fmt.underline,
+          strike: run.fmt.strike,
+          subscript: run.fmt.subscript,
+          superscript: run.fmt.superscript,
+          highlight: run.fmt.highlight,
+          color: run.fmt.color,
+          transparency: opacityToTransparency(alpha),
+          hyperlink: !nodeHref && run.href ? { url: run.href } : undefined,
         };
+      };
+      // Split runs on "\n" into visual lines, then emit each line break as an
+      // explicit breakLine. (PptxGenJS renders "\n" embedded in a run that is
+      // followed by another run on the same line incorrectly.)
+      const lines: { text: string; options: Opts }[][] = [[]];
+      runs.forEach((run, i) => {
+        const segs = transform(run.text).split("\n");
+        segs.forEach((seg, j) => {
+          if (j > 0) lines.push([]);
+          if (seg !== "") lines[lines.length - 1].push({ text: seg, options: runOpts(run) });
+        });
+        const next = runs[i + 1];
+        const sep =
+          !preserveWs &&
+          next &&
+          !runsAdjacent(run, next) &&
+          !/\n$/.test(run.text) &&
+          !/^\n/.test(next.text)
+            ? " "
+            : "";
+        if (sep) {
+          const cur = lines[lines.length - 1];
+          if (cur.length) cur[cur.length - 1].text += sep;
+        }
+      });
+      const lastLine = lines.length - 1;
+      const textObjs: { text: string; options: Opts }[] = [];
+      lines.forEach((line, li) => {
+        const breakAfter = li < lastLine;
+        if (line.length === 0) {
+          textObjs.push({ text: "", options: { breakLine: breakAfter } });
+          return;
+        }
+        line.forEach((piece, pi) => {
+          textObjs.push({
+            text: piece.text,
+            options: { ...piece.options, breakLine: pi === line.length - 1 ? breakAfter : false },
+          });
+        });
       });
       try {
         ctx.slide.addText(textObjs, opts);
@@ -428,19 +467,6 @@ export function renderNodeToPptx(node: SlideNode, ctx: RenderContext): void {
   }
 
   for (const child of node.children) if (!consumed.has(child)) renderNodeToPptx(child, ctx);
-}
-
-function normalize(text: string, whiteSpace: string | null | undefined): string {
-  // local alias to keep the #text branch readable (delegates to core css)
-  return text && (whiteSpace === "pre" || whiteSpace === "pre-wrap")
-    ? text.replace(/^\n+|\n+$/g, "")
-    : whiteSpace === "pre-line"
-      ? text
-          .split("\n")
-          .map((l) => l.replace(/[ \t]+/g, " ").trim())
-          .join("\n")
-          .replace(/^\n+|\n+$/g, "")
-      : text.replace(/\s+/g, " ").trim();
 }
 
 function errMsg(err: unknown): string {

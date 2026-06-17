@@ -1,7 +1,6 @@
 ---
 name: activating-datacloud
 description: "Salesforce Data Cloud Act phase. Use this skill when the user manages activations, activation targets, data actions, or downstream delivery of Data Cloud audiences and data. TRIGGER when: user manages activations, activation targets, data actions, or downstream delivery of Data Cloud audiences and data. DO NOT TRIGGER when: the task is segment creation (use segmenting-datacloud), data retrieval/search work (use retrieving-datacloud), or STDM/session tracing (use observing-agentforce)."
-license: MIT
 compatibility: "Requires an external community sf data360 CLI plugin and a Data Cloud-enabled org"
 metadata:
   version: "1.0"

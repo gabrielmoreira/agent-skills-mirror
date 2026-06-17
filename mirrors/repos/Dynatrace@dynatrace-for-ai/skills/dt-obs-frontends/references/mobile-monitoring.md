@@ -2,6 +2,12 @@
 
 Track mobile app performance, startup times, crash analytics, and mobile-specific metrics.
 
+## Contents
+
+- [Mobile App Start Performance](#mobile-app-start-performance)
+- [Mobile App Crashes & ANR Analysis](#mobile-app-crashes--anr-analysis)
+- [Mobile View Summaries](#mobile-view-summaries)
+
 ## Mobile App Start Performance
 
 Analyze mobile application startup performance across cold, warm, and hot starts.

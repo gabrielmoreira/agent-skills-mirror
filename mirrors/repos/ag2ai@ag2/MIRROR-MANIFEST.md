@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ag2ai/ag2` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `ag2ai/ag2` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ag2ai/ag2` — 26 default patterns, 0 followed patterns, 6 file(s) ma
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,11 +60,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`test/beta/AGENTS.md`](test/beta/AGENTS.md) |
-| 4 | ✓ | [`test/beta/CLAUDE.md`](test/beta/CLAUDE.md) |
-| 5 | ✓ | [`website/AGENTS.md`](website/AGENTS.md) |
-| 6 | ✓ | [`website/CLAUDE.md`](website/CLAUDE.md) |
+| 2 | ✓ | [`test/beta/AGENTS.md`](test/beta/AGENTS.md) |
+| 3 | ✓ | [`test/beta/CLAUDE.md`](test/beta/CLAUDE.md) |
+| 4 | ✓ | [`website/AGENTS.md`](website/AGENTS.md) |
+| 5 | ✓ | [`website/CLAUDE.md`](website/CLAUDE.md) |
 
 ---
 

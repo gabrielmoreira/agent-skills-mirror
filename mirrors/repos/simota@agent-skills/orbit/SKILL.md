@@ -22,6 +22,7 @@ CAPABILITIES_SUMMARY:
 COLLABORATION_PATTERNS:
 - Nexus -> Orbit: Loop execution context and delegation
 - User -> Orbit: Direct loop generation or audit requests
+- PDM -> Orbit: Loop-sized work packages (WBS leaves / gaps) as goal-contract seeds — one plan item maps 1:1 to one loop goal
 - Scout -> Orbit: Bug investigation context for loop issues
 - Lore -> Orbit: Reusable loop pattern updates
 - Judge -> Orbit: Quality feedback for loop improvement
@@ -39,7 +40,7 @@ COLLABORATION_PATTERNS:
 - Nexus[enact] -> Orbit: enact build-loop delegation — Charter §4/§5/§7/§10 slice; §10 per-package DoD as DONE gate; append PKG_* to §9 run-log
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Nexus (loop context), User (goals), Scout (bug context), Lore (loop patterns), Judge (quality feedback), Beacon (observability alerts), Triage (incident context)
+- INPUT: Nexus (loop context), User (goals), PDM (loop-sized work packages as goal seeds), Scout (bug context), Lore (loop patterns), Judge (quality feedback), Beacon (observability alerts), Triage (incident context)
 - OUTPUT: Nexus (completion reports), Builder (implementation handoffs), Guardian (commit policy), Radar (test specs), Lore (reusable patterns), Beacon (SLO/metric definitions), Triage (failure escalation)
 
 PROJECT_AFFINITY: Game(M) SaaS(H) E-commerce(M) Dashboard(M) Marketing(L)
@@ -53,6 +54,7 @@ Generate reliable `nexus-autoloop` runners, audit live loops, and keep completio
 
 Use Orbit when the user needs:
 - a new `nexus-autoloop` script set generated from a goal
+- a pdm plan item (WBS leaf / gap) hardened into a loop `goal.md` — consume the objective + reconciled gap evidence and author the 3-6 measurable ACs (one plan item = one loop goal)
 - an audit of a live or completed loop
 - recovery from state drift, corrupted `state.env`, or inconsistent loop artifacts
 - pre-failure health review of running loops
@@ -83,6 +85,7 @@ Route elsewhere when the task is primarily:
 - Provide actionable, specific outputs rather than abstract guidance.
 - Stay within Orbit's domain; route unrelated requests to the correct agent.
 - Track **cost-per-completed-task** (LLM calls + tool executions + human escalations), not cost-per-token, as the primary efficiency metric.
+- A pdm plan item (WBS leaf / gap) maps **1:1 to one loop goal**: consume it via `PDM_TO_ORBIT_CONTEXT` and harden the supplied objective + gap evidence into a `goal.md` with 3-6 measurable ACs (orbit owns AC authoring; pdm is read-only and never writes the contract). If a pdm item is too large for one loop, split it into loop-sized goals at CONTRACT rather than overloading a single loop. See `reference/operation-contract.md`.
 - Implement **bounded autonomy**: every loop declares operational limits, escalation paths, and an audit trail.
 - Treat retry + timeout + circuit breaker as a **single resilience unit**; never retry without circuit-breaker protection.
 - Require **idempotency keys** for every effectful tool invocation; separate **task state** from **system state** in checkpoint design.
@@ -93,7 +96,7 @@ Route elsewhere when the task is primarily:
 - When the goal invokes Ralph Loop semantics (`PROMPT.md`, `<promise>COMPLETE</promise>`, `cat PROMPT.md \| claude`, ghuntley-style scripts), follow `reference/ralph-loop-pattern.md`.
 - When driving nexus **apex Phase 6**: engine is fixed to **Codex CLI** (5 subagent tools). Run the engine availability check (`agents.max_depth >= 2`, tools permitted) before consuming the loop contract; no silent fallback to Claude Agent. See `reference/resilience-patterns.md §Codex CLI engine check`.
 - When driving nexus **summit Phase 5**: tri-engine improvement loop (Claude / Codex / agy) up to `max_loops = 3`, arbiter = magi. See `reference/resilience-patterns.md §Tri-engine improvement loop`.
-- When driving a nexus **enact build loop**: consume the Charter §4/§5/§7/§10 slice read-only (sha256-pinned, never mutate); the external DONE gate is the §10 per-package DoD checklist; append `PKG_START`/`PKG_RECOVER`/`PKG_DONE` to the enact §9 run-log (default `docs/CHARTER.run.log.md`); engine per §5 (Codex CLI `gpt-5.5` default, run the availability check before consuming). Orbit drives one package and reports terminal status back to `enact` — it does not construct the team or sequence other packages. See `reference/charter-loop-driver.md`.
+- When driving a nexus **enact build loop**: consume the Charter §4/§5/§7/§10 slice read-only (sha256-pinned, never mutate); the external DONE gate is the §10 per-package DoD checklist; append `PKG_START`/`PKG_RECOVER`/`PKG_DONE` to the enact §9 run-log (default `docs/CHARTER.run.log.md`); engine per §5 (Codex CLI always uses the latest model — currently `gpt-5.5`, no cheaper tier, per the latest-model mandate `_common/CODEX_ORCHESTRATION.md` C3.0; run the availability check before consuming). Orbit drives one package and reports terminal status back to `enact` — it does not construct the team or sequence other packages. See `reference/charter-loop-driver.md`.
 - Lay out runner prompts with `PROMPT_CACHE_BREAKPOINTS=4` `cache_control` breakpoints (system / tools / goal / context tail). Run each iteration in a dedicated `git worktree`. Gate DONE through an **independent critic model** (`CRITIC_MODEL=haiku` default).
 - Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3** (eagerly Read goal, operation contracts, prior loop telemetry, checkpoint state at DESIGN) and **P5** (think step-by-step at durable-execution checkpoint/replay, atomic write, OTel adoption, RECOVER-mode triage) as critical. P1/P2 recommended.
 
@@ -375,7 +378,7 @@ Anti-pattern (`AP-*`) catalogue, evidence shapes, and recovery commands → `ref
 
 ```yaml
 INPUT_FORMAT:
-  source: Nexus or User
+  source: Nexus, User, or PDM
   type: LOOP_CONTEXT
 ```
 
@@ -402,6 +405,7 @@ Required report fields:
 | Direction | Token |
 |-----------|-------|
 | Nexus -> Orbit | `NEXUS_TO_ORBIT_CONTEXT` |
+| PDM -> Orbit | `PDM_TO_ORBIT_CONTEXT` |
 | Orbit -> Nexus | `ORBIT_TO_NEXUS_HANDOFF` |
 | Orbit -> Builder | `ORBIT_TO_BUILDER_HANDOFF` |
 | Orbit -> Guardian | `ORBIT_TO_GUARDIAN_HANDOFF` |
@@ -412,7 +416,7 @@ Required report fields:
 
 ## Collaboration
 
-**Receives:** `Nexus`, `User`, `Scout`, `Lore`, `Judge`, `Beacon` (loop observability alerts), `Triage` (incident context for loop failures)
+**Receives:** `Nexus`, `User`, `PDM` (loop-sized work packages as goal seeds), `Scout`, `Lore`, `Judge`, `Beacon` (loop observability alerts), `Triage` (incident context for loop failures)
 **Sends:** `Nexus`, `Builder`, `Guardian`, `Radar`, `Lore`, `Beacon` (SLO/metric definitions for loop monitoring), `Triage` (failure escalation with loop context), `Cast[SPEAK]`
 
 Overlap boundaries:

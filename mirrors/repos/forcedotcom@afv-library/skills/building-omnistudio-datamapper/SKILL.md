@@ -1,7 +1,6 @@
 ---
 name: building-omnistudio-datamapper
 description: "OmniStudio Data Mapper (formerly DataRaptor) creation and validation with 100-point scoring. Use when building Extract, Transform, Load, or Turbo Extract Data Mappers, mapping Salesforce object fields, or reviewing existing Data Mapper configurations. TRIGGER when: user creates Data Mappers, configures field mappings, works with OmniDataTransform metadata, or asks about DataRaptor/Data Mapper patterns. DO NOT TRIGGER when: building Integration Procedures (use building-omnistudio-integration-procedure), authoring OmniScripts (use building-omnistudio-omniscript), or analyzing cross-component dependencies (use analyzing-omnistudio-dependencies)."
-license: MIT
 metadata:
   version: "1.0"
 ---

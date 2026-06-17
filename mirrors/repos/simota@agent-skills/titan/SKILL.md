@@ -243,10 +243,10 @@ Parse the first token of user input.
 - Otherwise → default Recipe (`deliver` = Deliver Minimum Chain). Apply normal SCOPE_DETECT → JUSTIFY → BUILD → VALIDATE → COMPLETE workflow.
 
 Behavior notes per Recipe:
-- `deliver`: SCOPE_DETECT を実行し、S/M/L/XL を自動判定。最小正当チェーンを発行。Agent Justification Gate 必須。
-- `small`: S スコープを強制 (1-5 files)。`Builder → Radar` のみ。Docs ゼロ。計画は TITAN_STATE インライン。
-- `medium`: M スコープを強制 (6-15 files)。`Lens → Sherpa → Builder → Sentinel → Radar`。Docs ゼロ。計画予算 ≤20%。
-- `epic`: L/XL スコープ。9 フェーズ全評価。Rally は独立タスクのみ。Anti-Stall 回復ラダー準備。
+- `deliver`: Run SCOPE_DETECT to auto-classify S/M/L/XL. Issue the minimum justified chain. Agent Justification Gate required.
+- `small`: Force S scope (1-5 files). `Builder → Radar` only. Zero docs. Plan stays inline in TITAN_STATE.
+- `medium`: Force M scope (6-15 files). `Lens → Sherpa → Builder → Sentinel → Radar`. Zero docs. Planning budget ≤20%.
+- `epic`: L/XL scope. Full 9-phase evaluation. Rally for independent tasks only. Prepare the Anti-Stall recovery ladder.
 
 ## Output Routing
 

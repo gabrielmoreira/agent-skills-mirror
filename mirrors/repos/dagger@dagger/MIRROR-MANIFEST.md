@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 29 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,34 +60,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`engine/ebpf/AGENTS.md`](engine/ebpf/AGENTS.md) |
-| 2 | ✓ | [`skills/cache-expert/references/cache_persistence.md`](skills/cache-expert/references/cache_persistence.md) |
-| 3 | ✓ | [`skills/cache-expert/references/cache_pruning.md`](skills/cache-expert/references/cache_pruning.md) |
-| 4 | ✓ | [`skills/cache-expert/references/cachebasics.md`](skills/cache-expert/references/cachebasics.md) |
-| 5 | ✓ | [`skills/cache-expert/references/dagqltypes.md`](skills/cache-expert/references/dagqltypes.md) |
-| 6 | ✓ | [`skills/cache-expert/references/debugging.md`](skills/cache-expert/references/debugging.md) |
-| 7 | ✓ | [`skills/cache-expert/references/dynamicinputs.md`](skills/cache-expert/references/dynamicinputs.md) |
-| 8 | ✓ | [`skills/cache-expert/references/egraph.md`](skills/cache-expert/references/egraph.md) |
-| 9 | ✓ | [`skills/cache-expert/references/filesync.md`](skills/cache-expert/references/filesync.md) |
-| 10 | ✓ | [`skills/cache-expert/references/lazy_evaluation.md`](skills/cache-expert/references/lazy_evaluation.md) |
-| 11 | ✓ | [`skills/cache-expert/references/mutablecache.md`](skills/cache-expert/references/mutablecache.md) |
-| 12 | ✓ | [`skills/cache-expert/references/session_resources.md`](skills/cache-expert/references/session_resources.md) |
-| 13 | ✓ | [`skills/cache-expert/references/typedefs.md`](skills/cache-expert/references/typedefs.md) |
-| 14 | ✓ | [`skills/cache-expert/references/writingcoreapis.md`](skills/cache-expert/references/writingcoreapis.md) |
-| 15 | ✓ | [`skills/cache-expert/scripts/dagql-cache-analyzer.go`](skills/cache-expert/scripts/dagql-cache-analyzer.go) |
-| 16 | ✓ | [`skills/cache-expert/SKILL.md`](skills/cache-expert/SKILL.md) |
-| 17 | ✓ | [`skills/dagger-chores/SKILL.md`](skills/dagger-chores/SKILL.md) |
-| 18 | ✓ | [`skills/dagger-codegen/references/codegen-types.md`](skills/dagger-codegen/references/codegen-types.md) |
-| 19 | ✓ | [`skills/dagger-codegen/references/generated-clients.md`](skills/dagger-codegen/references/generated-clients.md) |
-| 20 | ✓ | [`skills/dagger-codegen/references/go-templates.md`](skills/dagger-codegen/references/go-templates.md) |
-| 21 | ✓ | [`skills/dagger-codegen/references/sdk-architecture.md`](skills/dagger-codegen/references/sdk-architecture.md) |
-| 22 | ✓ | [`skills/dagger-codegen/SKILL.md`](skills/dagger-codegen/SKILL.md) |
-| 23 | ✓ | [`skills/dagger-design-proposals/SKILL.md`](skills/dagger-design-proposals/SKILL.md) |
-| 24 | ✓ | [`skills/engine-dev-testing/SKILL.md`](skills/engine-dev-testing/SKILL.md) |
-| 25 | ✓ | [`skills/engine-dev-testing/with-playground.sh`](skills/engine-dev-testing/with-playground.sh) |
-| 26 | ✓ | [`skills/telemetry-capture/SKILL.md`](skills/telemetry-capture/SKILL.md) |
-| 27 | ✓ | [`skills/tui-qa/agents/openai.yaml`](skills/tui-qa/agents/openai.yaml) |
-| 28 | ✓ | [`skills/tui-qa/scripts/tui_qa.py`](skills/tui-qa/scripts/tui_qa.py) |
-| 29 | ✓ | [`skills/tui-qa/SKILL.md`](skills/tui-qa/SKILL.md) |
+| 2 | ✓ | [`skills/dagger-chores/SKILL.md`](skills/dagger-chores/SKILL.md) |
+| 3 | ✓ | [`skills/dagger-design-proposals/SKILL.md`](skills/dagger-design-proposals/SKILL.md) |
+| 4 | ✓ | [`skills/engine-debugging/scripts/dagql-cache-analyzer.go`](skills/engine-debugging/scripts/dagql-cache-analyzer.go) |
+| 5 | ✓ | [`skills/engine-debugging/SKILL.md`](skills/engine-debugging/SKILL.md) |
+| 6 | ✓ | [`skills/telemetry-capture/SKILL.md`](skills/telemetry-capture/SKILL.md) |
+| 7 | ✓ | [`skills/tui-qa/agents/openai.yaml`](skills/tui-qa/agents/openai.yaml) |
+| 8 | ✓ | [`skills/tui-qa/scripts/tui_qa.py`](skills/tui-qa/scripts/tui_qa.py) |
+| 9 | ✓ | [`skills/tui-qa/SKILL.md`](skills/tui-qa/SKILL.md) |
 
 ---
 

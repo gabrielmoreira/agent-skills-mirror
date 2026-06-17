@@ -1,7 +1,6 @@
 ---
 name: deploying-omnistudio-datapacks
 description: "Salesforce Industries DataPack deployment automation using Vlocity Build. TRIGGER when: user deploys or validates OmniStudio/Vlocity DataPacks with vlocity commands (packDeploy/packRetry/packExport/packGetDiffs), sets up DataPack CI/CD pipelines, or troubleshoots DataPack migration errors. DO NOT TRIGGER when: deploying Salesforce metadata with sf project deploy (use deploying-metadata), authoring OmniStudio artifacts (use building-omnistudio-*), or writing Apex/LWC business logic (use generating-apex/generating-lwc-components)."
-license: MIT
 metadata:
   version: "1.0"
 ---

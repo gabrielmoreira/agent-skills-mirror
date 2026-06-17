@@ -21,6 +21,8 @@ The upstream prompt references Claude.ai web tools that do not exist in Claude C
 | `gen_pptx` | `Bash`: serve the deck over HTTP, write the gen_pptx input object to a JSON file, then `node <skill>/agents/gen-pptx/dist/cli.mjs --url <servedDeckUrl> --config <jsonPath> --out <dir>` — see "Exporting to PPTX" below |
 | `/projects/<projectId>/<path>` | ordinary filesystem paths (relative to cwd, or absolute) |
 
+_Video export has no web-tool equivalent — see "Exporting to video" below._
+
 ## AskUserQuestion (clarifying questions)
 
 Replaces `questions_v2`. `AskUserQuestion` **returns the user's answers inline** — ask, then continue once they respond. It shows up to 4 questions per call; for a large new project, ask a focused round and make a follow-up call if you need more.
@@ -91,3 +93,30 @@ cd <skill>/agents/gen-pptx && npm install && npx playwright install chromium && 
 4. **Read the printed JSON** (one line on stdout): `{ ok, file, slides, bytes, flags: [{code, message}], warnings, speakerNotes }`. The `flags[].code` values are the same diagnostics the export docs describe (`duplicate_adjacent`, `slide_size_mismatch`, `no_speaker_notes`, …) — interpret them per those docs and **do not relay the codes verbatim** to the user. `warnings` is a (usually empty) list of build-time strings — slides the editable converter couldn't fully represent, unreachable media, or notes that failed to attach; surface them in plain language only if non-empty. On failure the line is `{ ok: false, error }` instead. Exit code is `0` on success (even with warning flags), `64` for a usage/config error, `1` for a runtime failure (a friendly setup hint prints to stderr if Playwright/Chromium is missing).
 
 Then surface the `.pptx` with `SendUserFile`.
+
+## Exporting to video
+
+There is no web `gen_video` tool — in Claude Code, [`export-as-video.md`](../built-in-skills/export-as-video.md) means a local CLI under this skill that drives a headless Chromium (Playwright), seeks the animation's timeline bridge frame-by-frame, and pipes PNG frames to **ffmpeg** to write the file. The input JSON is **exactly** the object that doc defines (`width`/`height`/`duration`/`fps`/`format`/`bridgeGlobal`/…); this section only covers how to invoke it.
+
+**One-time setup** (skip if `agents/gen-video/node_modules` and `dist/` already exist):
+
+```bash
+cd <skill>/agents/gen-video && npm install && npx playwright install chromium && npm run build
+```
+
+ffmpeg must also be on `PATH` (`brew install ffmpeg` on macOS, `apt install ffmpeg` on Debian/Ubuntu). The CLI preflights for it and prints a one-time-setup hint if it's missing.
+
+**Each export:**
+
+1. **Serve the animation over HTTP** — the CLI needs an `http(s)` URL, not `file://` (multi-file `<script src>` animations require a served origin). Reuse the one `designs` server (`python3 -m http.server 4311 --directory designs`); the page is then at `http://localhost:<port>/<project>/<file>.html`. The CLI appends the capture-mode query param itself.
+2. **Write the gen_video input object to a JSON file** (e.g. `/tmp/<project>-video.json`) — same schema as the export doc. For a current `animations.jsx` Stage, `{ "width": 1920, "height": 1080, "filename": "…" }` is enough; for an older/hand-rolled timeline set `bridgeGlobal` (e.g. `"__ahe"`) and pass `hideSelectors` + `resetTransformSelector`.
+3. **Run the CLI:**
+
+   ```bash
+   node <skill>/agents/gen-video/dist/cli.mjs --url <servedUrl> --config <jsonPath> --out designs/<project>
+   ```
+
+   `--config -` reads the JSON from stdin. `--out` defaults to the cwd; pass the project dir so the video lands beside the animation. The final path is `<out>/<filename>.<mp4|webm|gif>`. Long high-fps exports take minutes (every frame is a real screenshot) — run a `startMs`/`endMs` sub-range to iterate, then the full range.
+4. **Read the printed JSON** (one line on stdout): `{ ok, file, frames, fps, duration, width, height, bytes, flags: [{code, message}], warnings }`. The `flags[].code` values (`capture_mode_off`, `duplicate_frames`, `fonts_timeout`, `zero_duration`) are diagnostics — interpret them per [`export-as-video.md`](../built-in-skills/export-as-video.md) and **do not relay the codes verbatim**. On failure the line is `{ ok: false, error }` (e.g. no timeline bridge found, or ffmpeg errored). Exit code is `0` on success (even with warning flags), `64` for a usage/config error, `1` for a runtime failure.
+
+Then surface the video with `SendUserFile`.

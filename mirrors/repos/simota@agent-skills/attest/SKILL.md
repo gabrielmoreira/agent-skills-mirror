@@ -28,10 +28,12 @@ COLLABORATION_PATTERNS:
 - Attest -> Warden: Release-gate compliance evidence
 - Attest -> Scribe: Specification gap reports and quality feedback
 - Attest -> Canvas: Traceability visualization requests
+- PDM -> Attest: Features needing rigorous AC conformance verification
+- Attest -> PDM: Conformance verdicts to refine delivery status (Done vs In-Progress)
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Scribe (specifications), Accord (spec packages), Builder (implementations), Arena (implementations), Radar (test coverage)
-- OUTPUT: Builder (fixes), Radar (test input), Voyager (acceptance scenarios), Warden (release evidence), Scribe (spec gaps), Canvas (visualization)
+- INPUT: Scribe (specifications), Accord (spec packages), Builder (implementations), Arena (implementations), Radar (test coverage), PDM (features to verify)
+- OUTPUT: Builder (fixes), Radar (test input), Voyager (acceptance scenarios), Warden (release evidence), Scribe (spec gaps), Canvas (visualization), PDM (conformance verdicts for status)
 
 PROJECT_AFFINITY: SaaS(H) E-commerce(H) Dashboard(H) API(H) CLI(M) Library(M)
 -->

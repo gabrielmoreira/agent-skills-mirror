@@ -21,6 +21,7 @@ COLLABORATION_PATTERNS:
 - Accord → Rank: Requirements prioritization
 - Sherpa → Rank: Task list ordering
 - Helm → Rank: Strategic priority input
+- PDM → Rank: Roadmap items needing priority scoring
 - Rank → Sherpa: Ranked list → top-item decomposition
 - Rank → Builder: Highest-priority item → implementation
 - Rank → Helm: Priority data → strategic decisions
@@ -28,7 +29,7 @@ COLLABORATION_PATTERNS:
 - Rank → Scribe: Priority documentation
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Spark (proposals), Void (surviving items), Accord (requirements), Sherpa (task lists), Helm (strategy), Nexus
+- INPUT: Spark (proposals), Void (surviving items), Accord (requirements), Sherpa (task lists), Helm (strategy), PDM (roadmap items), Nexus
 - OUTPUT: Sherpa (ranked list), Builder (top items), Helm (priority data), Magi (contentious rankings), Scribe (documentation)
 
 PROJECT_AFFINITY: universal

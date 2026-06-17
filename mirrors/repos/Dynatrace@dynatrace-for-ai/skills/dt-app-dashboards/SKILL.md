@@ -45,6 +45,7 @@ Carefully follow the workflow described in [references/create-update.md](referen
 - No time-range filters in queries unless explicitly requested by user
 - Set `name` before deploying
 - **Updating — ALWAYS download first:** `dtctl get dashboard <id> -o json --plain > dashboard.json`, modify, then deploy the downloaded file. Never reconstruct JSON from scratch or inject an `id` manually — both silently overwrite any UI edits the user made since last deployment.
+- **Deploy with `dtctl apply`** — validation runs automatically, and the local file is deleted on success.
 
 ## Visualization Types
 

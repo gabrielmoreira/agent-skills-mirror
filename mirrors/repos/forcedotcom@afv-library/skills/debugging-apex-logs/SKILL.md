@@ -1,7 +1,6 @@
 ---
 name: debugging-apex-logs
 description: "Salesforce debug log analysis and troubleshooting with 100-point scoring. TRIGGER when: user analyzes debug logs, hits governor limits, reads stack traces, or touches .log files from Salesforce orgs. DO NOT TRIGGER when: running Apex tests (use running-apex-tests), generating or fixing Apex code (use generating-apex), or Agentforce session tracing (use observing-agentforce)."
-license: MIT
 metadata:
   version: "1.1"
 ---

@@ -4,6 +4,15 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.179](https://github.com/Piebald-AI/claude-code-system-prompts/commit/df3f147)
+
+_+5,328 tokens_
+
+- Agent Prompt: Security monitor for autonomous agent actions (first part) — Clarifies that read-only access a user authorized to a particular target counts as standing authorization for read-only on that target, while other rules still apply per command.
+- Agent Prompt: Security monitor for autonomous agent actions (first part) — Strengthens rule 9 so a post-block reaffirmation ("yes", "go ahead", "do it", "run it", or a re-statement) inherits the specificity of the blocked action — since the block already surfaced the exact action and reason — without requiring the user to re-name the target, except where a rule's own target-naming bar applies (Rule 8's irreversible/mass-destruction tier).
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Updates the Production Reads rule so that once the user names a prod target, further read-only commands against it are cleared for the session without per-command re-approval.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Adds a Live-Shared Artifact Sensitive Delta block that fires when an `Artifact` action carrying a `[shared-live:` marker adds a new kind of sensitive information (secrets or highly personal data) the owner would regret exposing to the page's viewers, allowing only when the user's own messages show awareness that the page is shared; routine code/infra detail within the owner's org passes, and it never applies to artifacts without the shared-live marker.
+
 # [2.1.178](https://github.com/Piebald-AI/claude-code-system-prompts/commit/493d192)
 
 _-20,964 tokens_

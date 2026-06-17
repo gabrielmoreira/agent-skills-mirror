@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google/adk-go` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `google/adk-go` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google/adk-go` — 26 default patterns, 0 followed patterns, 2 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`examples/skills/skills/grocery-prices/SKILL.md`](examples/skills/skills/grocery-prices/SKILL.md) |
-| 2 | ✓ | [`examples/skills/skills/weather/SKILL.md`](examples/skills/skills/weather/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`examples/skills/skills/grocery-prices/SKILL.md`](examples/skills/skills/grocery-prices/SKILL.md) |
+| 4 | ✓ | [`examples/skills/skills/weather/SKILL.md`](examples/skills/skills/weather/SKILL.md) |
+| 5 | ✓ | [`GEMINI.md`](GEMINI.md) |
 
 ---
 

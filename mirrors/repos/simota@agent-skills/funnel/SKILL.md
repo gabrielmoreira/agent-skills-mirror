@@ -35,9 +35,10 @@ COLLABORATION_PATTERNS:
 - Pattern H: Muse → Funnel: design tokens
 - Pattern I: Pixel → Funnel: mockup reproduction base
 - Pattern J: Funnel → Flow: animation specs
+- Pattern K: PMM → Funnel: positioning and message for landing-page construction
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Vision (design direction), Prose (copy drafts), Cast (persona data), Muse (design tokens), Pixel (mockup reproduction), Forge (prototype base)
+- INPUT: Vision (design direction), Prose (copy drafts), Cast (persona data), Muse (design tokens), Pixel (mockup reproduction), Forge (prototype base), PMM (positioning/message for LP)
 - OUTPUT: Artisan (production implementation), Growth (SEO/CRO optimization), Echo (persona validation), Experiment (A/B variants), Flow (animation specs), Builder (backend integration)
 
 PROJECT_AFFINITY: SaaS(H) E-commerce(H) Marketing(H) Static(H) Mobile(M) Dashboard(L)

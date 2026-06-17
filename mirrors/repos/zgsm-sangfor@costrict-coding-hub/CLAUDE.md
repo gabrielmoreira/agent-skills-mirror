@@ -178,7 +178,7 @@ Plugins 是 Claude Code 的 marketplace 打包格式（一个 plugin 通常捆�
 - **[obra/superpowers-marketplace](https://github.com/obra/superpowers-marketplace)** — Jesse Vincent 的社区 marketplace，同样解析 `marketplace.json`；`source_priority` 为 `950`，`scripts/sync_plugins_superpowers.py`；与官方源同名 plugin（如 `superpowers`）走精确黑名单收敛
 - **[claude-plugins.dev](https://claude-plugins.dev)** — 公共 registry API（约 32k plugins），脚本 `scripts/sync_plugins_registry.py` 拉取后按 `stars ≥ 5` 过滤；`source_priority` 为 `700`
 
-**任务配置**（`ai-resource-eval` 包内 4 个新增 plugin task）：`plugin_marketplace_official` / `plugin_marketplace_community` / `plugin_registry_curated` / `plugin_registry_general`，根据来源 + stars 自动路由。所有 plugin task **关闭 LLM 评分（health-only）**，仅跑 4 个健康度信号 — `freshness` / `popularity` / `source_trust` / `manifest_completeness`，`enrichment: true` 仍生效（summary / tags / tech_stack）。
+**任务配置**（`ai-resource-eval` 包内 `plugin` task，配置见 `ai-resource-eval/ai_resource_eval/tasks/plugin.yaml`）：**v2 起已激活 5 维 LLM 评分**（`coding_relevance` / `doc_completeness` / `desc_accuracy` / `writing_quality` / `specificity`，剔除了 skill 的 `install_clarity`，其 0.10 权重并入 `doc_completeness`），由 `PluginContentFetcher` 抓全 plugin 内容（plugin.json + 全部 SKILL.md / agents / commands）作为 LLM 输入。`health_blend_alpha: 0.85`（与 skill 对齐），accept/review 阈值 65/50，`rubric_major_version: 2`。健康度信号 4 个 — `freshness` / `popularity` / `source_trust` / `manifest_completeness`，`enrichment: true` 仍生效（summary / tags / tech_stack）。（旧文档曾写"plugin task 关闭 LLM 评分（health-only）"，v2 已不再如此。）
 
 **Marketplace 字段**（`fix-plugin-marketplace-fields` change 引入）：plugin entry 的 `install` 对象在 `plugin_name` / `marketplace`（display-only）之外新增 3 个必填字段：
 - `install.marketplace_repo` — 规范的 GitHub `owner/repo` 字符串。official 源直接取自 `repo_slug`；dev 源从 `gitUrl` / `source_url` 反推
@@ -196,6 +196,21 @@ sync 时通过 `scripts/marketplace_verifier.py` 统一 fetch + cache，每次 s
 - **前端兜底**：`Detail.tsx` 增加 search-index fallback，即便 entry 在 split 后的单条 JSON 缺失也能从 search-index 还原最小卡片，修了 bundled skill 直链 404 的 bug
 
 **平台兼容性**：主要面向 **Claude Code**；**opencode** 部分兼容（npm 包形式）；**cursor / windsurf / costrict 暂无等价 plugin 机制**，安装命令侧仅 Claude Code 路径生效。
+
+### 主动发现源（GitHub Search）
+
+`scripts/sync_github_trending.py` —— 唯一**主动发现**源（其余源都是被动等上游 curated 白名单/registry 收录）。补"发现盲区"：~190 个高星热门 skill 仓不在任何现有源里。
+
+- **发现**：`utils.github_api` 跑一组 repo search 查询（topic/keyword + `created:>` trending 切片），`sort=stars`，主动 2s 节流避开 search 桶（authed 30/min、1000 条/查询上限）。**不引入 gh CLI**（标准库原则）。
+- **结构验证定 type**：对候选仓**一次 Tree API** 调用，含 `.claude-plugin/marketplace.json` → plugin（优先，bundled skill 交下游合成）；含 `SKILL.md` → skill；都没有 → 丢弃（天然剔除 cherry-studio/cliproxyapi 这类越界工具，比描述正则准）。
+- **去重主防线 = repo 级 `known_repos` 预过滤**（`build_known_repos`）：扫描/LLM **之前**就挡掉"已存在于任意 type/source 的仓"。关键——`deduplicate()` 按 `type` 分命名空间，**跨类型抓不住**（一个仓已作 plugin 在库，再被当 skill 发现会重复）；实测 301 候选中 60 已在库、含 37 个跨类型地雷。known_repos **双路提取** owner/repo：`source_url` 反解 + `install.marketplace_repo`（覆盖 marketplace 容器仓无自指 source_url 的盲区）+ 镜像归一。merge 阶段 `deduplicate()` 仅兜底。
+- **复用**：skill 走 `skill_registry.scan_repo_via_api` + `hard_filter`；plugin 走 `sync_plugins_official.sync_one_source`（`_entry_from_plugin`），避免重写 plugin schema。**merge-preserve** 写 `catalog/{skills,plugins}/index.json`（plugin 侧 id-only dedup，同 monorepo 多 plugin 合法共享 URL）。
+- **增量友好 + 失败可见**：`.github_trending_cache/verify_cache.json` 按 `pushed_at` 缓存结构验证结果（含 `total_files`/`skill_count`/`kind`）、**不缓存空结果**；末尾 WARN 汇总发现健康度（skill/plugin 仓数、丢弃越界、丢弃巨型 app、预过滤命中）。`source_priority=600`（低于 official/dev，碰撞时既有源胜出）。
+- **两层质量闸门（防"恰好捆了 SKILL.md 的巨型 app/agent"污染收录，仅作用于本源）**：
+  - **Part 1 — 廉价预过滤（`sync_github_trending.is_megaapp`，stdlib-only、无 LLM）**：结构验证时整棵树已 fetch，`total_files` + SKILL.md 数 → 密度(‰)免费。**仅丢明确的巨型 app**：`total_files > 2000 且 密度 < 10‰ 且 topics 无 skill/plugin 标签`（强 skill/plugin topic 正信号 override 不丢）。实测 openclaw(20116 文件/5.6‰) 被丢、graphify/gstack/anthropics-skills/taste/hermes-agent/deer-flow 全保留。模糊样本放行交 Part 2。
+  - **Part 2 — LLM `is_primary_skill` 判断（`eval_bridge.authenticity_scan_and_map`，镜像 security_scan）**：仅对 `source=='github-trending'` 的 entry 跑一次独立 LLM 调用（其他源零成本、不碰主 6 维 cache），问"这个仓**主体**是可复用 skill/plugin，还是恰好捆了 skill 的 app/framework/CLI？"，输出 `{is_primary_skill, reason}` 写入 `entry.resource_authenticity`。**独立 cache namespace `authenticity`**（与质量/security cache 互不失效）；失败兜底=不写字段、下周期重试。管线插入点：`enrichment_orchestrator` 质量评分 + security 之后；开关 `AUTHENTICITY_SCAN_ENABLED`（默认 true）。
+  - **Part 2b — governor reject 闸门（`scoring_governor._apply_resource_authenticity_to_decision`）**：对 `source=='github-trending'` 且 `resource_authenticity.is_primary_skill == False` 的 entry → `decision='reject'`（镜像进 `evaluation.decision`，与 `_apply_security_to_decision` 并行）。缺字段=未判定，保守放行。
+- **覆盖**：skill + plugin（MVP）。star velocity / trending 时间序列信号留待后续。
 
 ### 多平台适配
 
@@ -225,7 +240,7 @@ merge_index.py
 
 `.github/workflows/sync.yml` — 每周一 UTC 3:23 自动触发，也支持 `workflow_dispatch` 手动触发。
 
-**流程**：crawl_mcp_so → sync_mcp → sync_mcp_registry → sync_rules → sync_windsurfrules → sync_skills → sync_skills_sh → sync_prompts → verify_sync → merge_index → update_readme → audit_popular_coverage → auto commit+push
+**流程**：crawl_mcp_so → sync_mcp → sync_mcp_registry → sync_rules → sync_windsurfrules → sync_skills → sync_skills_sh → sync_prompts → sync_plugins(official→dev→csc) → **sync_github_trending** → backfill_plugin_subdirs → verify_sync → merge_index → update_readme → audit_popular_coverage → auto commit+push
 
 **缓存**：CI 通过 `actions/cache` 持久化 `.llm_cache.json`、`.eval_cache/`（SQLite）、`incremental_recrawl_state.json`、`fallback_skill_repos.json` 等文件避免重复计算；`.skills_sh_cache/` / `.mcp_registry_cache/` / `.windsurfrules_cache/` 各自使用独立 weekly cache block，`restore-keys` 仅锚定本周 stamp，不跨周回退。
 

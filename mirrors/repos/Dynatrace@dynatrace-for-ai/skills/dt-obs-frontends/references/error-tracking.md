@@ -7,6 +7,19 @@ Comprehensive error analysis using both event-based queries (detailed diagnostic
 - **Metric**: `dt.frontend.error.count` - Aggregated error counts for trends and alerting
 - **Event**: `fetch user.events` with `error.type` - Detailed error diagnostics with messages
 
+## Contents
+
+- [Metric-Based: Error Rate Monitoring](#metric-based-error-rate-monitoring)
+- [Event-Based: JavaScript Exceptions](#event-based-javascript-exceptions)
+- [Event-Based: Request Errors](#event-based-request-errors)
+- [Metric-Based: Error Spike Detection](#metric-based-error-spike-detection)
+- [Metric-Based: Browser-Specific Errors](#metric-based-browser-specific-errors)
+- [Event-Based: Errors by Device Type](#event-based-errors-by-device-type)
+- [Metric-Based: Geographic Error Patterns](#metric-based-geographic-error-patterns)
+- [Pages with Errors](#pages-with-errors)
+- [Users with Errors](#users-with-errors)
+- [Frontend-Backend Trace Correlation](#frontend-backend-trace-correlation)
+
 ## Metric-Based: Error Rate Monitoring
 
 Track error rates across applications:
@@ -18,7 +31,6 @@ timeseries error_count = sum(dt.frontend.error.count, scalar: true),
           from: now() - 2h
 
 | fieldsAdd
-    app_name = frontend.name,
     error_rate_percent = (error_count / request_count) * 100
 | filter error_rate_percent > 1
 | sort error_rate_percent desc
@@ -93,7 +105,6 @@ timeseries {
 ], on: { frontend.name }, fields: { prev_error_rate }
 
 | fieldsAdd
-    app_name = frontend.name,
     error_rate_change = coalesce((error_rate_percent[] - prev_error_rate[]) / (prev_error_rate[]) * 100, 0)
 | filter arrayAvg(error_rate_change) > 50
 | sort error_rate_change desc
@@ -113,7 +124,6 @@ timeseries error_count = sum(dt.frontend.error.count, scalar: true),
           from: now() - 4h
 
 | fieldsAdd
-    app_name = frontend.name,
     error_rate_percent = (error_count / request_count) * 100
 | filter request_count > 100
 | sort error_rate_percent desc
@@ -150,7 +160,6 @@ timeseries error_count = sum(dt.frontend.error.count, scalar: true),
           from: now() - 6h
 
 | fieldsAdd
-    app_name = frontend.name,
     error_rate_percent = (error_count / request_count) * 100
 | filter request_count > 50 and error_rate_percent > 2
 | sort error_rate_percent desc

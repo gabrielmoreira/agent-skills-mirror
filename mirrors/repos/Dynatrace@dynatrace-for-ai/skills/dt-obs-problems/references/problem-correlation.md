@@ -282,6 +282,28 @@ fetch logs, from:now() - 1h
 
 ## Best Practices
 
+### Absolute Timeframes Require Double Quotes
+
+When using absolute ISO 8601 timestamps for `from` and `to` in any DQL query, **always wrap them in double quotes**. This applies to all data sources including `fetch logs` and `fetch dt.davis.problems`.
+
+```dql
+// ✅ CORRECT - absolute timestamps quoted
+fetch logs, from: "2026-05-18T22:50:00Z", to: "2026-05-18T23:35:00Z"
+| filter dt.smartscape_source.id in [
+    fetch dt.davis.problems, from: "2026-05-18T22:00:00Z", to: "2026-05-18T23:35:00Z"
+    | filter display_id == "P-12345678"
+    | fields smartscape.affected_entity.ids
+  ] or dt.source_entity in [
+    fetch dt.davis.problems, from: "2026-05-18T22:00:00Z", to: "2026-05-18T23:35:00Z"
+    | filter display_id == "P-12345678"
+    | fields affected_entity_ids
+  ]
+| filter loglevel == "ERROR"
+| fields timestamp, dt.source_entity, loglevel, content
+| sort timestamp desc
+| limit 100
+```
+
 ### Query Optimization
 
 1. **Match time ranges**: Use same time window for problems and logs

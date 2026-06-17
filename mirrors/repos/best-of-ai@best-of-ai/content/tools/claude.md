@@ -10,6 +10,13 @@ category: 'chatbots'
 category_name: 'Chatbots'
 price: 'Freemium'
 featured: false
+rank: 10
 date: '2025-09-21'
-tags: [chatbot, text_generation, ai_assistant, api_available, enterprise]
+tags: [chatbot, anthropic, long_context, text_generation, writing, analysis, coding, safety, constitutional_ai, api_available, enterprise, privacy, reasoning, document_processing, llm]
 ---
+
+Claude is built by Anthropic, a safety-focused AI company co-founded by former OpenAI researchers. Where many AI assistants optimise for engagement, Claude is designed to be genuinely helpful without being agreeable to the point of dishonesty — it pushes back, admits uncertainty, and declines requests it considers harmful. That combination of directness and reliability has made it a favourite among people who use AI for serious work rather than casual queries.
+
+The practical capabilities are substantial. Claude handles unusually long documents — its 200,000-token context window can fit entire codebases, legal filings, or book-length manuscripts in a single conversation. It excels at tasks requiring careful reasoning: multi-step analysis, structured writing, code review, and identifying logical inconsistencies. Claude Projects let you give it persistent memory and reference documents, so it learns your style and conventions over time rather than starting fresh each session.
+
+Claude.ai offers a free tier with usage limits and a Pro plan at $20/month for higher capacity and early feature access. Teams can access it via the Anthropic API, which is also the backbone of many third-party applications. Enterprise contracts add security controls, admin dashboards, and guaranteed data privacy. Claude is notably strong for writing-heavy workflows — long-form content, contract drafting, technical documentation — where the extra context window and nuanced tone control make a concrete difference.

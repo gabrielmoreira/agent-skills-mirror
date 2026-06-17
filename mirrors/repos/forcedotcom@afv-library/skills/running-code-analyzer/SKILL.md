@@ -2,7 +2,6 @@
 name: running-code-analyzer
 description: "Run Salesforce Code Analyzer to scan code for security, performance, best practice, and code style violations. Supports all engines (PMD, ESLint, CPD, RetireJS, Flow, SFGE, ApexGuru), targets (files, folders, git diff), categories, and severities. TRIGGER when: user says 'scan my code', 'check for security issues', 'run PMD/ESLint', 'find duplicates', 'analyze Flows', 'check vulnerable libraries', 'AppExchange review', 'lint my LWC', 'static analysis', 'code quality', or mentions engines/file types (.cls, .trigger, .js, .flow-meta.xml). DO NOT TRIGGER when: user wants to fix code without scanning, or asks about installation/configuration."
 allowed-tools: Read, Bash(sf code-analyzer), Bash(node), Bash(git diff), Bash(date), Write, Edit
-license: LICENSE.txt has complete terms
 metadata:
   version: "1.0"
   argument-hint: "[target-path] [--engine pmd|eslint|cpd|retire-js|regex|flow|sfge|apexguru] [--category Security|Performance|BestPractices|...] [--severity 1-5] [--diff]"

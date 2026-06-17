@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
+Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 56 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 43 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 43 |
+| Files         | 56 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -100,8 +100,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 39 | ✓ | [`.agents/skills/convex-setup-auth/SKILL.md`](.agents/skills/convex-setup-auth/SKILL.md) |
 | 40 | ✓ | [`.agents/skills/convex/SKILL.md`](.agents/skills/convex/SKILL.md) |
 | 41 | ✓ | [`.agents/skills/create-and-cleanup-migration/SKILL.md`](.agents/skills/create-and-cleanup-migration/SKILL.md) |
-| 42 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 43 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 42 | ✓ | [`.agents/skills/technical-documentation/agents/docs-framework-agent.md`](.agents/skills/technical-documentation/agents/docs-framework-agent.md) |
+| 43 | ✓ | [`.agents/skills/technical-documentation/agents/governance-agent.md`](.agents/skills/technical-documentation/agents/governance-agent.md) |
+| 44 | ✓ | [`.agents/skills/technical-documentation/agents/inventory-agent.md`](.agents/skills/technical-documentation/agents/inventory-agent.md) |
+| 45 | ✓ | [`.agents/skills/technical-documentation/agents/openai.yaml`](.agents/skills/technical-documentation/agents/openai.yaml) |
+| 46 | ✓ | [`.agents/skills/technical-documentation/agents/synthesis-agent.md`](.agents/skills/technical-documentation/agents/synthesis-agent.md) |
+| 47 | ✓ | [`.agents/skills/technical-documentation/assets/icon.jpg`](.agents/skills/technical-documentation/assets/icon.jpg) |
+| 48 | ✓ | [`.agents/skills/technical-documentation/references/agent-and-contributing.md`](.agents/skills/technical-documentation/references/agent-and-contributing.md) |
+| 49 | ✓ | [`.agents/skills/technical-documentation/references/build.md`](.agents/skills/technical-documentation/references/build.md) |
+| 50 | ✓ | [`.agents/skills/technical-documentation/references/openclaw.md`](.agents/skills/technical-documentation/references/openclaw.md) |
+| 51 | ✓ | [`.agents/skills/technical-documentation/references/principles.md`](.agents/skills/technical-documentation/references/principles.md) |
+| 52 | ✓ | [`.agents/skills/technical-documentation/references/review.md`](.agents/skills/technical-documentation/references/review.md) |
+| 53 | ✓ | [`.agents/skills/technical-documentation/references/tooling.md`](.agents/skills/technical-documentation/references/tooling.md) |
+| 54 | ✓ | [`.agents/skills/technical-documentation/SKILL.md`](.agents/skills/technical-documentation/SKILL.md) |
+| 55 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 56 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

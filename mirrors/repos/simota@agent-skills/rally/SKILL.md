@@ -265,8 +265,8 @@ When running on Codex CLI, Rally uses `spawn_agent` / `wait_agent` / `send_input
 
 ```
 # SPAWN phase - spawn all workers
-worker_a = spawn_agent(prompt: "AGENTS.md の builder 指示に従い、メールバリデーションを実装...")
-worker_b = spawn_agent(prompt: "AGENTS.md の builder 指示に従い、電話番号バリデーションを実装...")
+worker_a = spawn_agent(prompt: "Following the builder instructions in AGENTS.md, implement email validation...")
+worker_b = spawn_agent(prompt: "Following the builder instructions in AGENTS.md, implement phone-number validation...")
 
 # MONITOR phase - wait for all
 result_a = wait_agent(worker_a)

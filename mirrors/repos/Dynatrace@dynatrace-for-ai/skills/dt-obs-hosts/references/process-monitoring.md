@@ -45,14 +45,13 @@ Detect processes with continuously growing memory:
 ```dql
 timeseries memory_bytes = avg(dt.process.memory.working_set_size),
     by: {dt.smartscape.process}, interval: 15m
-| fieldsAdd process_name = getNodeName(dt.smartscape.process)
-| summarize
-    first_value = takeFirst(memory_bytes),
-    last_value = takeLast(memory_bytes),
-    by: {dt.smartscape.process, process_name}
+| fieldsAdd
+    process_name = getNodeName(dt.smartscape.process),
+    first_value = arrayFirst(memory_bytes),
+    last_value = arrayLast(memory_bytes)
 | fieldsAdd
     growth_bytes = last_value - first_value,
-    growth_pct = ((last_value - first_value) / first_value) * 100
+    growth_pct = toDouble(last_value - first_value) * 100 / first_value
 | filter growth_pct > 30
 | sort growth_pct desc
 ```
@@ -221,11 +220,10 @@ Detect sudden I/O spikes:
 ```dql
 timeseries io_total = avg(dt.process.io.bytes_total),
     by: {dt.smartscape.process}, interval: 1m
-| fieldsAdd process_name = getNodeName(dt.smartscape.process)
-| summarize
-    avg_io = avg(io_total),
-    max_io = max(io_total),
-    by: {dt.smartscape.process, process_name}
+| fieldsAdd
+    process_name = getNodeName(dt.smartscape.process),
+    avg_io = arrayAvg(io_total),
+    max_io = arrayMax(io_total)
 | fieldsAdd spike_ratio = max_io / avg_io
 | filter spike_ratio > 10
 | sort spike_ratio desc
@@ -357,12 +355,11 @@ Rank processes by bandwidth consumption:
 ```dql
 timeseries throughput = avg(dt.process.network.throughput),
     by: {dt.smartscape.process}
-| fieldsAdd process_name = getNodeName(dt.smartscape.process)
-| summarize
-    avg_throughput = avg(throughput),
-    max_throughput = max(throughput),
-    total_data = sum(throughput),
-    by: {dt.smartscape.process, process_name}
+| fieldsAdd
+    process_name = getNodeName(dt.smartscape.process),
+    avg_throughput = arrayAvg(throughput),
+    max_throughput = arrayMax(throughput),
+    total_data = arraySum(throughput)
 | fieldsAdd
     avg_mbps = avg_throughput / 125000,  // Convert to Mbps
     total_gb = total_data / 1024 / 1024 / 1024

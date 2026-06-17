@@ -8,7 +8,7 @@
 4. Design and validate all DQL with `dtctl query '<DQL>' --plain`
 5. **(Update only)** Download existing dashboard JSON from the server
 6. Construct new dashboard JSON (create) or modify the downloaded JSON (update)
-7. Deploy with `scripts/deploy_dashboard.sh` — when updating, deploy the file downloaded in step 5
+7. Deploy with `dtctl apply` — when updating, deploy the file downloaded in step 5
 
 ---
 
@@ -63,7 +63,7 @@ Each tile in `tiles` must have a matching entry in `layouts` with `x`, `y`, `w`,
 
 ### Step 4: Design and Validate Queries
 
-```bash
+```dtctl
 dtctl query '<your DQL query>' --plain
 ```
 
@@ -77,7 +77,7 @@ queries from loaded skills.
 
 **Skip when creating.** Download the current server state **before **making any modifications:
 
-```bash
+```dtctl
 dtctl get dashboard <id> -o json --plain > dashboard.json
 ```
 
@@ -118,15 +118,17 @@ See [variables.md](./variables.md) for variable definitions and usage patterns.
 
 ### Step 7: Deploy
 
-```bash
-bash <dt-app-dashboards-skill-dir>/scripts/deploy_dashboard.sh dashboard.json
+```dtctl
+dtctl apply -f dashboard.json -o yaml
+# preview without persisting:
+dtctl apply -f dashboard.json -o yaml --dry-run
 ```
+
+Validation runs automatically before deployment. If validation fails, fix **all** reported errors before re-running — do not fix one error and re-deploy in a loop.
 
 **When updating:** ensure `dashboard.json` is the file downloaded in Step 5. A missing `id` field means a fresh JSON is being deployed — a new dashboard will be created instead of updating.
 
-The deploy script validates and deploys in one step. If validation fails, fix **all** reported errors before re-running — do not fix one error and re-deploy in a loop.
-
-On success, the script outputs the deployment result (action, id, name, url) and deletes the local JSON file. Present the URL to the user.
+On success, `dtctl apply` outputs the deployment result (action, id, name, url) and the local file is deleted automatically. Present the URL to the user.
 
 ---
 
@@ -142,4 +144,3 @@ On success, the script outputs the deployment result (action, id, name, url) and
 - **Skipping the download when updating** — building JSON from scratch loses user UI edits made since last deployment
 - **Injecting an `id` into freshly-constructed JSON** — same as above; overwrites server state with stale content
 - **Downloading but not using the file** — deploying a freshly-constructed JSON instead of the downloaded one defeats the download step
-- Installing extra validation tools (the deploy script handles everything)

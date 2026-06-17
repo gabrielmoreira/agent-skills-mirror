@@ -11,26 +11,15 @@
 
 ### Global Context
 
-```bash
-# Metadata overview
-jq '{version: .content.version, tiles: (.content.tiles | length),
-  variables: (.content.variables | length)}' dashboard.json
+Read `.content.version` for the schema version, count entries in `.content.tiles` for total tile count, and count entries in `.content.variables` for total variable count.
 
-# Variables (filters available to user)
-jq '.content.variables[] | {key, type, input, defaultValue}' dashboard.json
-```
+For each variable in `.content.variables[]`, note its `key`, `type`, `input`, and `defaultValue` — these are the filters available to the user.
 
 ### Tiles Top-to-Bottom
 
-```bash
-# Sorted by position
-jq '. as $r | .content.layouts | to_entries | sort_by(.value.y, .value.x) |
-  map({id: .key, y: .value.y, tile: $r.content.tiles[.key]})' dashboard.json
+To read tiles in display order, iterate `.content.layouts` entries sorted by `.value.y` then `.value.x`. For each entry, look up the corresponding tile in `.content.tiles[id]`.
 
-# Specific tile details
-jq --arg id "4" '.content.tiles[$id] | {title, query, visualization,
-  visualizationSettings}' dashboard.json
-```
+For a specific tile, look it up by ID in `.content.tiles["<id>"]` and read: `title`, `query`, `visualization`, and `visualizationSettings`.
 
 Per tile, extract: **title** (what it shows), **query** (DQL), **visualization**
 (chart type), **thresholds** (color interpretation), **content** (markdown text).
@@ -39,15 +28,9 @@ Per tile, extract: **title** (what it shows), **query** (DQL), **visualization**
 
 ## Workflow 2: Search
 
-```bash
-# Search tile titles
-jq --arg k "error" '.content.tiles | to_entries |
-  map(select(.value.title // "" | ascii_downcase | contains($k)))' dashboard.json
+To search by title: iterate `.content.tiles` and find entries where `.value.title` (case-insensitive) contains the keyword.
 
-# Search queries
-jq --arg p "fetch logs" '.content.tiles | to_entries |
-  map(select(.value.query // "" | contains($p)))' dashboard.json
-```
+To search by query content: iterate `.content.tiles` and find entries where `.value.query` contains the search pattern.
 
 ---
 
@@ -70,8 +53,4 @@ Analyze tile titles and data sources to infer dashboard purpose:
 - "SLI", "Error Budget" → SLO Tracking
 - Single values with thresholds → Executive / KPI dashboard
 
-```bash
-# Data sources used
-jq -r '.content.tiles[].query | select(. != null)' dashboard.json |
-  grep -oE 'fetch \w+' | sort | uniq -c
-```
+To identify data sources, scan `.content.tiles[].query` for `fetch <entity>` patterns to see which Dynatrace entity types are queried.

@@ -426,6 +426,18 @@ fetch dt.davis.problems, from:now() - 4h
 fetch dt.davis.problems
 ```
 
+### Absolute Timeframes Require Double Quotes
+
+When using absolute ISO 8601 timestamps for `from` and `to` in DQL queries, **always wrap them in double quotes**. Unquoted timestamps are a syntax error.
+
+```dql
+// ✅ CORRECT - absolute timestamps quoted
+fetch dt.davis.problems, from: "2026-05-18T22:50:00Z", to: "2026-05-18T23:35:00Z"
+| filter not(dt.davis.is_duplicate)
+| fields event.start, display_id, event.name, event.category, event.status
+| sort event.start desc
+```
+
 ## Troubleshooting
 
 | Problem | Cause | Solution |

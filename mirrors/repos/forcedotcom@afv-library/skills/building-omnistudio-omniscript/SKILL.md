@@ -1,7 +1,6 @@
 ---
 name: building-omnistudio-omniscript
 description: "OmniStudio OmniScript creation and validation with 120-point scoring. Use when building guided digital experiences, multi-step forms, or interactive processes that orchestrate Integration Procedures and Data Mappers. TRIGGER when: user creates OmniScripts, designs step flows, configures element types, or reviews existing OmniScript configurations. DO NOT TRIGGER when: building FlexCards (use building-omnistudio-flexcard), creating Integration Procedures directly (use building-omnistudio-integration-procedure), or analyzing dependencies (use analyzing-omnistudio-dependencies)."
-license: MIT
 metadata:
   version: "1.0"
 ---

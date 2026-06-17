@@ -8,7 +8,7 @@ Detailed host resource monitoring including CPU, memory, disk, and network metri
 
 ### CPU Usage Overview
 
-Track overall CPU utilization across hosts:
+Average CPU utilization by host:
 
 ```dql
 timeseries cpu_usage = avg(dt.host.cpu.usage), by: {dt.smartscape.host}
@@ -17,12 +17,17 @@ timeseries cpu_usage = avg(dt.host.cpu.usage), by: {dt.smartscape.host}
 | sort arrayAvg(cpu_usage) desc
 ```
 
-**Key Metrics:**
+**Interpretation:**
+Hosts with CPU usage below 70% are excluded from results, focusing investigation on higher utilization scenarios.
+
+**Key CPU metrics:**
 - `dt.host.cpu.usage`: Total CPU utilization (0-100%)
 - `dt.host.cpu.user`: CPU time in user mode
 - `dt.host.cpu.system`: CPU time in kernel mode
 - `dt.host.cpu.idle`: CPU idle time
 - `dt.host.cpu.iowait`: CPU waiting for I/O (Linux only)
+
+**Best Practice:** Alert on CPU usage at 90% with warning, critical at 95. Flag recurring offenders as right-sizing or load-redistribution candidates.
 
 ### CPU Component Breakdown
 
@@ -34,7 +39,7 @@ timeseries {
   system = avg(dt.host.cpu.system),
   iowait = avg(dt.host.cpu.iowait),
   idle = avg(dt.host.cpu.idle)
-}, by: {dt.smartscape.host}
+}, by: {dt.smartscape.host}, union: true
 | fieldsAdd host_name = getNodeName(dt.smartscape.host)
 | filter arrayAvg(user) + arrayAvg(system) > 70
 ```
@@ -44,6 +49,8 @@ timeseries {
 - High `system`: Kernel operations (context switching, syscalls)
 - High `iowait`: Disk bottleneck causing CPU idle time
 
+**Best Practice:** If `iowait` dominates, stop tuning CPU and pivot immediately to disk latency queries — the bottleneck is storage, not compute.
+
 ### CPU Steal Time Detection
 
 Monitor CPU steal time in virtualized environments:
@@ -52,7 +59,7 @@ Monitor CPU steal time in virtualized environments:
 timeseries {
   cpu_steal = avg(dt.host.cpu.steal),
   cpu_usage = avg(dt.host.cpu.usage)
-}, by: {dt.smartscape.host}
+}, by: {dt.smartscape.host}, union:true
 | fieldsAdd host_name = getNodeName(dt.smartscape.host)
 | filter arrayAvg(cpu_steal) > 5
 | sort arrayAvg(cpu_steal) desc
@@ -62,6 +69,8 @@ timeseries {
 - **< 5%**: Normal virtualization overhead
 - **5-10%**: Monitor for contention
 - **> 10%**: Hypervisor overload - migrate or scale
+
+**Best Practice:** Steal > 10% means the physical host is overcommitted — escalate to the hypervisor team to migrate the VM rather than tuning the application.
 
 ### System Load Analysis
 
@@ -84,7 +93,7 @@ timeseries {
 | filter load_per_core_1m > 1.0
 ```
 
-**Best Practice:** Load per core > 1.0 indicates CPU saturation.
+**Best Practice:** Load per core > 1.0 indicates CPU saturation. Use load_1m vs load_15m divergence to distinguish a worsening trend from a transient spike before deciding whether to scale.
 
 ### CPU Spike Detection
 
@@ -92,12 +101,11 @@ Detect sudden CPU spikes:
 
 ```dql
 timeseries cpu_usage = avg(dt.host.cpu.usage), by: {dt.smartscape.host}, interval: 1m
-| fieldsAdd host_name = getNodeName(dt.smartscape.host)
-| summarize
-    min_cpu = min(cpu_usage),
-    max_cpu = max(cpu_usage),
-    avg_cpu = avg(cpu_usage),
-    by: {dt.smartscape.host, host_name}
+| fieldsAdd
+    host_name = getNodeName(dt.smartscape.host),
+    min_cpu = arrayMin(cpu_usage),
+    max_cpu = arrayMax(cpu_usage),
+    avg_cpu = arrayAvg(cpu_usage)
 | fieldsAdd spike_magnitude = max_cpu - min_cpu
 | filter spike_magnitude > 50  // 50% CPU spike
 | sort spike_magnitude desc
@@ -128,7 +136,7 @@ Track memory utilization across hosts:
 ```dql
 timeseries {
   memory_used_pct = avg(dt.host.memory.usage),
-  memory_avail_pct = avg(dt.host.memory.avail.percent),
+  memory_available_pct = avg(dt.host.memory.avail.percent),
   memory_used_bytes = avg(dt.host.memory.used),
   memory_avail_bytes = avg(dt.host.memory.avail.bytes)
 }, by: {dt.smartscape.host}
@@ -153,7 +161,7 @@ timeseries {
   memory_avail = avg(dt.host.memory.avail.bytes),
   memory_recl = avg(dt.host.memory.recl),
   kernel_memory = avg(dt.host.memory.kernel)
-}, by: {dt.smartscape.host}
+}, by: {dt.smartscape.host}, union:true
 | fieldsAdd host_name = getNodeName(dt.smartscape.host)
 | lookup [
     smartscapeNodes HOST
@@ -199,7 +207,7 @@ timeseries page_faults = avg(dt.host.memory.avail.pfps), by: {dt.smartscape.host
 | sort arrayAvg(page_faults) desc
 ```
 
-High page faults indicate memory paging activity affecting performance.
+High page faults (>1000) indicate memory paging activity affecting performance.
 
 ### Memory Pressure Identification
 
@@ -215,6 +223,7 @@ timeseries {
 | fieldsAdd host_name = getNodeName(dt.smartscape.host)
 | fieldsAdd memory_usage_avg = arrayAvg(memory_usage)
 | fieldsAdd swap_used_pct = (arrayAvg(swap_used) / arrayAvg(swap_total)) * 100
+// Heuristic score for ranking memory pressure severity; not an industry-standard metric.
 | fieldsAdd memory_pressure_score = if(memory_usage_avg > 90, 3,
         else: if(memory_usage_avg > 80, 2, else: 1)) +
         if(swap_used_pct > 50, 3,
@@ -229,14 +238,13 @@ Detect continuously increasing memory usage:
 
 ```dql
 timeseries memory_used = avg(dt.host.memory.used), by: {dt.smartscape.host}, interval: 15m
-| fieldsAdd host_name = getNodeName(dt.smartscape.host)
-| summarize
-    first_value = takeFirst(memory_used),
-    last_value = takeLast(memory_used),
-    by: {dt.smartscape.host, host_name}
+| fieldsAdd
+    host_name = getNodeName(dt.smartscape.host),
+    first_value = arrayFirst(memory_used),
+    last_value = arrayLast(memory_used)
 | fieldsAdd
     memory_increase = last_value - first_value,
-    increase_pct = ((last_value - first_value) / first_value) * 100
+    increase_pct = toDouble(last_value - first_value) * 100 / first_value
 | filter increase_pct > 20  // 20% increase over time window
 | sort increase_pct desc
 ```
@@ -264,6 +272,7 @@ timeseries {
 - **< 80%**: Normal usage
 - **80-90%**: Warning - plan cleanup
 - **> 90%**: Critical - immediate action required
+- Very large or auto-scaling cloud disks can keep percentages low despite high absolute usage; pair this with `disk_avail_bytes` for capacity decisions.
 
 ### Disk I/O Performance
 
@@ -332,13 +341,13 @@ timeseries {
   disk_used = avg(dt.host.disk.used),
   disk_avail = avg(dt.host.disk.avail)
 }, by: {dt.smartscape.host, dt.smartscape.disk}, interval: 1h
-| fieldsAdd host_name = getNodeName(dt.smartscape.host)
-| summarize
-    current_used = takeLast(disk_used),
-    current_avail = takeLast(disk_avail),
-    first_used = takeFirst(disk_used),
-    by: {dt.smartscape.host, dt.smartscape.disk, host_name}
+| fieldsAdd
+    host_name = getNodeName(dt.smartscape.host),
+    current_used = arrayLast(disk_used),
+    current_avail = arrayLast(disk_avail),
+    first_used = arrayFirst(disk_used)
 | fieldsAdd growth_rate_per_hour = (current_used - first_used) / 24  // Assuming 24h window
+// Negative growth indicates cleanup or transient data effects and is excluded from "time to full" prediction.
 | fieldsAdd hours_until_full = if(growth_rate_per_hour > 0, current_avail / growth_rate_per_hour, else: -1)
 | filter hours_until_full > 0 and hours_until_full < 48
 | sort hours_until_full asc
@@ -441,11 +450,9 @@ timeseries bytes_rx = avg(dt.host.net.nic.bytes_rx),
           bytes_tx = avg(dt.host.net.nic.bytes_tx),
     by: {dt.smartscape.host}, interval: 1m
 | fieldsAdd total_throughput = bytes_rx[] + bytes_tx[]
-| summarize
-    avg_throughput = avg(total_throughput),
-    max_throughput = max(total_throughput),
-    by: {dt.smartscape.host}
 | fieldsAdd
+    avg_throughput = arrayAvg(total_throughput),
+    max_throughput = arrayMax(total_throughput),
     host_name = getNodeName(dt.smartscape.host)
 | fieldsAdd
     spike_ratio = max_throughput / avg_throughput
@@ -494,14 +501,13 @@ timeseries {
   memory = avg(dt.host.memory.usage),
   disk = avg(dt.host.disk.used.percent)
 }, by: {dt.smartscape.host}, interval: 1h
-| fieldsAdd host_name = getNodeName(dt.smartscape.host)
-| summarize
-    cpu_avg = avg(cpu),
-    cpu_p95 = percentile(cpu, 95),
-    memory_avg = avg(memory),
-    memory_p95 = percentile(memory, 95),
-    disk_avg = avg(disk),
-    by: {dt.smartscape.host, host_name}
+| fieldsAdd
+    host_name = getNodeName(dt.smartscape.host),
+    cpu_avg = arrayAvg(cpu),
+    cpu_p95 = arrayPercentile(cpu, 95),
+    memory_avg = arrayAvg(memory),
+    memory_p95 = arrayPercentile(memory, 95),
+    disk_avg = arrayAvg(disk)
 | fieldsAdd
     cpu_capacity_remaining = 100 - cpu_p95,
     memory_capacity_remaining = 100 - memory_p95

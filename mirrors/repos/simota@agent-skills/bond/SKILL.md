@@ -151,7 +151,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Re-engagement | `reengagement` | ✓ | Re-engagement strategy and dormant user recovery | `reference/engagement-triggers.md` |
 | Churn Prevention | `churn` | | Churn prevention and subscription save flows | `reference/retention-analysis.md` |
 | Gamification | `gamification` | | Gamification design: points, badges, and streaks | `reference/gamification.md` |
-| Habit Formation | `habit` | | Habit formation design, Hook Model, and streak design | `reference/habit-formation.md` |
+| Habit Formation | `habit` | | Habit formation design — Fogg Behavior Model (B=MAP), Hook Model, and streak design | `reference/habit-formation.md` |
 | Loyalty Program | `loyalty` | | Loyalty program design and reward system construction | `reference/gamification.md` |
 | Win-Back Campaign | `winback` | | Dormant / cancelled-user recovery campaign with recency-weighted offers, multi-touch cadence, and reactivation metric | `reference/winback-campaign.md` |
 | Lifecycle Email Drip | `lifecycle-email` | | 30/60/90 onboarding + lifecycle email drip design: trigger-based, behavior-branched, deliverability and suppression rules | `reference/lifecycle-email-drip.md` |
@@ -208,7 +208,7 @@ Use the template that matches the task focus:
 - Health scoring → `reference/health-score.md`
 - Subscription save flow → `reference/subscription-retention.md`
 - Onboarding/activation → `reference/onboarding.md`
-- Habit loops → `reference/habit-formation.md`
+- Habit loops / behavior design (Fogg B=MAP) → `reference/habit-formation.md`
 - Gamification → `reference/gamification.md`
 
 ## Collaboration

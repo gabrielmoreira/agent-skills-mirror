@@ -16,7 +16,7 @@ Covers **Situations 1 and 2** from the Query Purpose Classification in SKILL.md:
 
 Fetch the tagging rule config:
 
-```bash
+```dtctl
 dtctl get settings --schema builtin:tags.auto-tagging -o json --plain
 ```
 
@@ -58,11 +58,11 @@ The conditions are already explicit in the selector string. Parse each predicate
 
 Run `fieldsSnapshot` on the data source from the original query to discover enriched dimensions:
 
-```bash
+```dtctl
 dtctl query 'fieldsSnapshot metrics, by:{metric.key} | filter metric.key == "<the_metric>" | fields field' --plain
 ```
 
-```bash
+```dtctl
 dtctl query 'fieldsSnapshot logs, by:{dt.system.bucket} | filter matchesValue(dt.system.bucket, "<the_bucket>") | fields field' --plain
 ```
 
@@ -76,7 +76,7 @@ dtctl query 'fieldsSnapshot logs, by:{dt.system.bucket} | filter matchesValue(dt
 
 Run `fieldsSnapshot` on the smartscape node type that matches the entity type from Step 1:
 
-```bash
+```dtctl
 dtctl query 'fieldsSnapshot smartscape.nodes, by:{node.type} | filter node.type == "<TYPE>" | fields field' --plain
 ```
 
@@ -136,11 +136,11 @@ Compare the columns/fields between the original and migrated query. They must ma
 
 Validate syntax, then run the migrated query with a short timeframe:
 
-```bash
+```dtctl
 dtctl verify query '<migrated_query>' --plain
 ```
 
-```bash
+```dtctl
 dtctl query '<migrated_query>' --plain
 ```
 

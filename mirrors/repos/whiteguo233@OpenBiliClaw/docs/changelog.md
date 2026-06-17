@@ -4,6 +4,25 @@
 
 ---
 
+## v0.3.126 / extension v0.3.81: X 文字推荐卡与画像学习修复（2026-06-17）
+
+后端源码走 `backend-v0.3.126`，浏览器插件走 `extension-v0.3.81`。桌面安装包未改动；如冻结包用户需要同步本次 Web / 后端修复，可后续单独打 `desktop-v0.3.126`。
+
+- **GitHub Releases 增加聚合 Latest 入口**：新增 `openbiliclaw-v*` 用户发布页，由 `backend-v*` / `extension-v*` / `desktop-v*` 三条 workflow 共同同步；页面会同时展示后端源码 tag、最新插件 zip 与桌面安装包，避免 Releases 首页被单一通道 release 占住。
+- **X / Twitter 推荐卡三端归一**：插件 side panel、移动 Web 与桌面 Web 会把 `x` / `twitter` / `x.com` / `twitter.com` 统一归一为 `source_platform="twitter"`，标签显示为 `X (Twitter)`；候选池 source family、点击上报 URL 推断和 fallback URL 也同步映射 X，不再退成 Web 或 B 站。
+- **X 文字卡真实 append 链路修复**：`/web`、`/m/` 与插件对 X tweet / thread 或无有效封面的候选渲染文本卡正文；真实后端 + 真实浏览器 E2E 复现到 `/api/recommendations/append` 会把 X tweet 从 pool row 还原成默认 `video` 且丢 `body_text`，现已在 `RecommendationEngine._rows_to_discovered()` 同步映射 `content_type/body_text`。
+- **PC Web 平台过滤 tab 从配置驱动**：桌面 Web `/web` 推荐页的 `全部 / B站 / YouTube / ...` tab 现在先读取 `config.sources` 与 `scheduler.pool_source_shares` 中启用的平台，再合并当前推荐列表里实际出现的平台；点击某个平台只过滤当前已加载推荐，没有命中时允许展示空列表。
+- **推荐评论反馈改为中性直接反馈**：`feedback_type=comment` 不再默认当正向偏好；事件满意度分类改为 `neutral/direct_feedback`，PreferenceAnalyzer prompt 明确要求根据 `feedback_note` / 备注 / `context` 判断喜欢、不喜欢或仅补充说明。
+- **聊天候选进入偏好层的门槛从 AND 改为 OR**：`learn_from_dialogue()` 仍先落 `dialogue` 事件并累计 `insight_candidates.json`，但现在候选满足 `confidence >= 0.8` 或 `occurrences >= 2` 任一条件即可转成 `dialogue_insight` 进入 `PreferenceAnalyzer`。
+- **Soul 架构图与更新流程图重绘**：`docs/diagrams/soul-architecture.html` 和 `docs/diagrams/soul-update-flow.html` 对齐当前真实写回路径、pipeline 输入矩阵和场景示例；`docs/index.md` 同步刷新图表入口。新增 `docs/technical-debt.md`，把画像写入并发风险、Soul 重建 prompt 增长风险迁出 v0.1 todolist。
+- **热重载补货重启测试稳定性**：`BackgroundTaskRegistry.stats()` 只统计尚未完成的任务，CI 测试改为捕获 `track()` 调度的 task 并等待其完成，不再依赖任务是否仍处于 live 状态。
+
+## extension v0.3.80: 对话历史自动滚到底部（2026-06-16）
+
+浏览器插件小版本发布；后端源码和桌面安装包未改动。
+
+- **对话 tab 历史恢复自动定位最新消息**：popup 启动时即使 Chat view 处于 hidden 状态先 hydrate 历史，用户切到「对话」后也会在下一帧滚到最新消息；追加消息、pending 占位替换、历史恢复共用 `scrollChatMessagesToBottom()`。已用真实临时后端 + unpacked extension 浏览器 E2E 验证 40 turns / 80 bubbles，`bottomDelta=0.5px`、最后一条完全可见。
+
 ## v0.3.125 / extension v0.3.79: 画像分类词表 + B 站扩展搜索兜底发版（2026-06-16）
 
 把 `backend-v0.3.124` 之后已合入 main 的跨模块改动打成正式发布：后端源码走 `backend-v0.3.125`，桌面安装包走 `desktop-v0.3.125`，浏览器插件版本提升到 `0.3.79` 并发布 `extension-v0.3.79`。

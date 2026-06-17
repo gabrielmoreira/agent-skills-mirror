@@ -4,6 +4,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod';
 import { scan } from './scan.js';
 import { loadPatterns } from './patterns.js';
+import { runHealth, type CheckStatus } from './health.js';
 
 const patterns = loadPatterns();
 
@@ -39,6 +40,31 @@ server.registerTool(
 
     return {
       content: [{ type: 'text', text: summary }],
+      structuredContent: result as unknown as Record<string, unknown>,
+    };
+  },
+);
+
+server.registerTool(
+  'mm_health',
+  {
+    title: 'mm system health',
+    description:
+      'Детерминированный read-only движок проверок здоровья mm-системы: config + junction-ссылки всегда; ' +
+      'vault-git + passport/gsd — если передан projectRoot. ' +
+      'Ничего не чинит и не пишет — возвращает только факты. Суждение и авто-фиксы — в скилле mm-doctor.',
+    inputSchema: { projectRoot: z.string().optional() }, // для групп vault-git и passport/gsd
+  },
+  async ({ projectRoot }) => {
+    const result = runHealth(projectRoot);
+    const icon = (s: CheckStatus): string =>
+      s === 'ok' ? '✅' : s === 'warn' ? '⚠️' : s === 'na' ? '➖' : '❌';
+    const lines = result.checks.map((c) => `${icon(c.status)} ${c.id}: ${c.detail}`);
+    lines.push(
+      `— итог: ✅ ${result.summary.ok} · ⚠️ ${result.summary.warn} · ❌ ${result.summary.fail} · ➖ ${result.summary.na}`,
+    );
+    return {
+      content: [{ type: 'text', text: lines.join('\n') }],
       structuredContent: result as unknown as Record<string, unknown>,
     };
   },

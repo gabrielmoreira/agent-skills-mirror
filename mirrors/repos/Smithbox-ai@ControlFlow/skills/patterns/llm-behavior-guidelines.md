@@ -30,6 +30,7 @@ Behavioral guardrails to prevent systematic agent anti-patterns in multi-agent w
 
 **Minimum code that solves the problem. Nothing speculative.**
 
+- Apply the Minimum Viable Change Ladder from `skills/patterns/code-simplification.md`: does this need to exist, can existing project behavior cover it, can the standard library or native platform cover it, can an already-installed dependency cover it, can one localized line cover it, and only then write new code.
 - No features beyond what was explicitly asked; no abstractions for single-use paths.
 - No "flexibility"/"configurability" that was not requested.
 - No error handling for scenarios that cannot happen given system constraints.
@@ -84,6 +85,7 @@ Shared contract for recurring rationalizations in ControlFlow skills. Skill-loca
 | ------- | --------------- |
 | Assume the missing requirement because the likely answer is obvious | Surface the assumption or return `NEEDS_INPUT` when it changes scope, behavior, or file set. |
 | Add an abstraction because future tasks might need it | Build only the requested behavior; record future options outside the implementation. |
+| Add a dependency or custom helper before checking existing options | Check existing project behavior, standard library, native platform, and already-installed dependency options first. |
 | Clean up adjacent code while editing nearby lines | Limit changes to delegated scope and report unrelated observations. |
 | Skip verification because the edit seems low-risk | Run the smallest relevant gate plus any suite required for the phase. |
 

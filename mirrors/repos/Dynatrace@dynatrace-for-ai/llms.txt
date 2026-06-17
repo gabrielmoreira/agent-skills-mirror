@@ -49,9 +49,12 @@ Observability:
 - dt-obs-logs: Log queries, filtering, pattern analysis, correlation.
 - dt-obs-problems: Problem entities, root cause, impact assessment.
 - dt-obs-predictive-analytics: Time series forecasting, capacity saturation, trend and anomaly detection.
+- dt-alerting: Alerting lifecycle — anomaly detectors, alert events in Grail, problem grouping, workflow notifications.
+
 Dynatrace Apps:
 - dt-app-dashboards: Dashboard JSON, tiles, layouts, DQL queries, variables.
 - dt-app-notebooks: Notebook JSON, sections, analytics workflows.
+- dt-js-runtime: Server-side JavaScript runtime — function contract, runtime limits, Web APIs, Node.js modules, @dynatrace-sdk/* catalog.
 
 Migration:
 - dt-migration: Migrate classic entities to Smartscape.

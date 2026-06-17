@@ -44,6 +44,18 @@ check('git SHA-40 → Класс B, не A', () => {
   );
 });
 
+// 2b. Дедуп: telegram-токен (Класс A) + git SHA-40 (Класс B) → Класс B считает ТОЛЬКО SHA.
+// Хвост токена (35-символьный хэш) сам попадает под широкий Класс B, но перекрыт A-спаном → не учитывается.
+check('дедуп: telegram + git SHA → classBCount=1 (только SHA)', () => {
+  const r = scan(`${TG_TOKEN} ${GIT_SHA}`, patterns);
+  assert.equal(r.hasSecretA, true, 'ожидался hasSecretA=true (telegram-token)');
+  assert.equal(
+    r.classBCount,
+    1,
+    `Класс B должен считать только SHA (хвост токена перекрыт A), получено ${r.classBCount}`,
+  );
+});
+
 // 3. Чистый текст → findings пусто, hasSecretA false.
 check('чистый текст → пусто', () => {
   const r = scan(CLEAN, patterns);
@@ -63,4 +75,4 @@ if (failed > 0) {
   console.error(`\n✗ smoke: ${failed} провал(ов)`);
   process.exit(1);
 }
-console.log('\n✓ smoke: 4/4 ассерта пройдены');
+console.log('\n✓ smoke: 5/5 ассертов пройдены');

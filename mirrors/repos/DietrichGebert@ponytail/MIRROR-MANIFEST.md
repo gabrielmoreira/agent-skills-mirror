@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `DietrichGebert/ponytail` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `DietrichGebert/ponytail` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `DietrichGebert/ponytail` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,12 +62,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`.cursor/rules/ponytail.mdc`](.cursor/rules/ponytail.mdc) |
 | 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`skills/ponytail-audit/SKILL.md`](skills/ponytail-audit/SKILL.md) |
-| 6 | ✓ | [`skills/ponytail-debt/SKILL.md`](skills/ponytail-debt/SKILL.md) |
-| 7 | ✓ | [`skills/ponytail-help/SKILL.md`](skills/ponytail-help/SKILL.md) |
-| 8 | ✓ | [`skills/ponytail-review/SKILL.md`](skills/ponytail-review/SKILL.md) |
-| 9 | ✓ | [`skills/ponytail/SKILL.md`](skills/ponytail/SKILL.md) |
+| 4 | ✓ | [`.openclaw/skills/ponytail-audit/SKILL.md`](.openclaw/skills/ponytail-audit/SKILL.md) |
+| 5 | ✓ | [`.openclaw/skills/ponytail-debt/SKILL.md`](.openclaw/skills/ponytail-debt/SKILL.md) |
+| 6 | ✓ | [`.openclaw/skills/ponytail-help/SKILL.md`](.openclaw/skills/ponytail-help/SKILL.md) |
+| 7 | ✓ | [`.openclaw/skills/ponytail-review/SKILL.md`](.openclaw/skills/ponytail-review/SKILL.md) |
+| 8 | ✓ | [`.openclaw/skills/ponytail/SKILL.md`](.openclaw/skills/ponytail/SKILL.md) |
+| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 10 | ✓ | [`skills/ponytail-audit/SKILL.md`](skills/ponytail-audit/SKILL.md) |
+| 11 | ✓ | [`skills/ponytail-debt/SKILL.md`](skills/ponytail-debt/SKILL.md) |
+| 12 | ✓ | [`skills/ponytail-help/SKILL.md`](skills/ponytail-help/SKILL.md) |
+| 13 | ✓ | [`skills/ponytail-review/SKILL.md`](skills/ponytail-review/SKILL.md) |
+| 14 | ✓ | [`skills/ponytail/SKILL.md`](skills/ponytail/SKILL.md) |
 
 ---
 

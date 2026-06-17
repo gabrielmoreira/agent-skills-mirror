@@ -28,6 +28,7 @@ Kreuzberg provides async/sync APIs, text chunking, language detection, keyword e
 - [PDF Hierarchy](https://docs.kreuzberg.dev/guides/output-formats/#pdf-hierarchy-detection): PDF hierarchy detection using K-means clustering
 - [Keyword Extraction](https://docs.kreuzberg.dev/guides/keywords/): YAKE and RAKE keyword extraction
 - [Advanced Features](https://docs.kreuzberg.dev/guides/advanced/): Advanced usage patterns
+- [Audio and Video Transcription](https://docs.kreuzberg.dev/guides/transcription/): Whisper ONNX transcription for MP3, M4A, WAV, WebM, and MP4 audio tracks
 - [Named-Entity Recognition](https://docs.kreuzberg.dev/guides/ner/): Detect people, organisations, locations, and caller-supplied zero-shot labels via gline-rs or LLM
 - [Reranking](https://docs.kreuzberg.dev/guides/reranking/): Cross-encoder document reranking for RAG retrieval
 - [Redaction & Anonymisation](https://docs.kreuzberg.dev/guides/redaction/): Strip PII from extracted text with the pattern engine plus optional NER backend

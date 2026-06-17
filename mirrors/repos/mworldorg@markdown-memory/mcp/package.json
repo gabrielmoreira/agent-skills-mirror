@@ -1,9 +1,9 @@
 {
   "name": "mm-mcp",
-  "version": "0.1.0",
+  "version": "0.3.1",
   "private": true,
   "type": "module",
-  "description": "mm-система MCP-сервер (stdio): инструмент mm_secret_scan — детерминированный скан текста на секреты по config/secret-patterns.json.",
+  "description": "mm-система MCP-сервер (stdio): инструменты mm_secret_scan (скан текста на секреты по config/secret-patterns.json) и mm_health (детерминированный read-only движок проверок здоровья mm-системы).",
   "bin": {
     "mm-mcp": "dist/index.js"
   },
@@ -13,10 +13,12 @@
   "scripts": {
     "build": "tsc",
     "smoke": "node scripts/smoke.mjs",
+    "health-smoke": "node scripts/health-smoke.mjs",
     "inspect": "npm run build && npx @modelcontextprotocol/inspector@0.22.0 node dist/index.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.29.0",
+    "gray-matter": "^4.0.3",
     "zod": "^4"
   },
   "devDependencies": {

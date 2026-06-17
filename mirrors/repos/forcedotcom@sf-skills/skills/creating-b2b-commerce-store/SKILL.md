@@ -2,7 +2,6 @@
 name: creating-b2b-commerce-store
 description: "Interactive workflow to create Commerce B2B Stores and retrieve storefront metadata. Use when users want to: create B2B Commerce stores, build Commerce storefronts, set up B2B stores from Vibes, retrieve Commerce metadata, deploy Commerce experiences, work with DigitalExperienceBundle for Commerce."
 Critical: "Agents must follow the interactive flow and NEVER create storefront metadata from scratch."
-license: Apache-2.0
 compatibility: "Requires Commerce licenses, Experience Cloud, Salesforce CLI"
 metadata:
   version: "1.0"

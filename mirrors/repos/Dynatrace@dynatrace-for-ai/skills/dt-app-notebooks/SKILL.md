@@ -1,27 +1,16 @@
 ---
 name: dt-app-notebooks
-description: Work with Dynatrace notebooks - create, modify, query, and analyze notebook JSON. Derives from the dt-app-dashboards skill with notebook-specific differences documented here.
+description: Work with Dynatrace notebooks - create, modify, query, and analyze notebook JSON including sections, DQL queries, and visualizations.
 license: Apache-2.0
 ---
 
 # Dynatrace Notebook Skill
 
-## How to Use This Skill
+## Overview
 
-Notebooks and dashboards are structurally similar. **Follow the `dt-app-dashboards` skill for all workflows** (creating, modifying, querying, analyzing), applying the differences documented below.
+Dynatrace notebooks are JSON documents stored in the Document Store containing an ordered array of **sections** — markdown blocks for narrative and `dql` blocks for DQL queries with visualizations. Sections render top-to-bottom in array order.
 
-### Mandatory Create/Update Workflow
-
-1. Load domain skills BEFORE generating queries — do not invent DQL
-2. Validate ALL queries via `dtctl query '<DQL>' --plain` before adding to the notebook
-3. **Always set `"autoSelectVisualization": true`** in `visualizationSettings` unless the user explicitly requests a specific visualization type
-4. **ALWAYS deploy via `deploy_notebook.sh`** — never use `dtctl apply` directly:
-   ```
-   bash scripts/deploy_notebook.sh notebook.json
-   ```
-   The script validates the notebook first and blocks deployment on errors. Skipping it risks deploying broken notebooks.
-   On successful deployment, the local file is deleted.
-5. When updating an existing notebook: **download first** with `dtctl get notebook <id> -o json --plain > notebook.json`, modify, then deploy. Never reconstruct from scratch or inject an `id` manually.
+**When to use:** Creating, modifying, querying, or analyzing notebooks.
 
 ## Notebook JSON Structure
 
@@ -33,9 +22,9 @@ Notebooks and dashboards are structurally similar. **Follow the `dt-app-dashboar
     "version": "7",
     "defaultTimeframe": { "from": "now()-2h", "to": "now()" },
     "sections": [
-      { "id": "uuid-1", "type": "markdown", "markdown": "# Title\nContext" },
+      { "id": "1", "type": "markdown", "markdown": "# Title" },
       {
-        "id": "uuid-2", "type": "dql", "title": "Query Section", "showInput": true,
+        "id": "2", "type": "dql", "title": "Query Section", "showInput": true,
         "state": {
           "input": { "value": "fetch logs | summarize count()" },
           "visualization": "table",
@@ -51,75 +40,43 @@ Notebooks and dashboards are structurally similar. **Follow the `dt-app-dashboar
 }
 ```
 
-## Key Differences from Dashboards
+- Sections render in array order.
+- Section types: `markdown`, `dql`. (`function` exists but is rare.)
+- Use string-int IDs (`"1"`, `"2"`, …); UUIDs are also accepted.
+- `content.defaultTimeframe` sets the default timeframe; each section can override via `section.state.input.timeframe`. Hardcoded time filters in DQL are allowed.
 
-### Document Structure
+**Optional content properties:** `defaultSegments`.
 
-| Aspect | Dashboard | Notebook |
-|--------|-----------|----------|
-| `type` | `"dashboard"` | `"notebook"` |
-| `content.version` | `21` (number) | `"7"` (string) |
-| Content blocks | `tiles` (object map) + `layouts` (object map) | `sections` (ordered array) |
-| Variables | `content.variables[]` with query, csv, text types | **None** |
-| Layout/grid | 24-unit grid via `layouts` with x, y, w, h | **None** — sections render top-to-bottom in array order |
-| Default timeframe | Controlled by UI time picker | `content.defaultTimeframe` object with `from`/`to` |
+## Create/Update Workflow (Mandatory Order)
 
-### Section Types vs Tile Types
+Carefully follow the workflow described in [references/create-update.md](references/create-update.md).
 
-Dashboards have two tile types (`markdown`, `data`). Notebooks have three section types:
+**Key rules:**
+- Load domain skills BEFORE generating queries — do not invent DQL.
+- Validate ALL section queries before adding to the notebook.
+- Set `name` before deploying.
+- **Prefer `autoSelectVisualization: true`** in `visualizationSettings` unless the user requested a specific visualization type — when `false`, `state.visualization` must be set explicitly.
+- **Updating — ALWAYS download first:** `dtctl get notebook <id> -o json --plain > notebook.json`, modify, then deploy the downloaded file. Never reconstruct JSON from scratch or inject an `id` manually — both silently overwrite UI edits the user made since last deployment.
+- **Deploy with `dtctl apply`** — validation runs automatically, and the local file is deleted on success.
 
-- **`markdown`** — Same concept. Fields: `id`, `type`, `markdown`
-- **`dql`** — Equivalent to dashboard `data` tiles, but query and visualization are nested inside `state` (see table below)
+## Visualization Types
 
-### Query & Visualization Path Mapping
+Notebooks support a subset of Dynatrace visualizations:
 
-| Field | Dashboard tile | Notebook DQL section |
-|-------|---------------|---------------------|
-| Query string | `tile.query` | `section.state.input.value` |
-| Visualization type | `tile.visualization` | `section.state.visualization` |
-| Visualization settings | `tile.visualizationSettings` | `section.state.visualizationSettings` |
-| Query settings | `tile.querySettings` | `section.state.querySettings` |
-| Section-specific timeframe | N/A (UI picker controls all tiles) | `section.state.input.timeframe` |
+- **Time-series** (require `timeseries`/`makeTimeseries`): `lineChart`, `areaChart`, `barChart`, `bandChart`
+- **Categorical** (`summarize ... by:{field}`): `categoricalBarChart`, `pieChart`, `donutChart`
+- **Single value / gauge / meter**: `singleValue`, `meterBar`, `gauge`
+- **Tabular** (any data shape): `table`, `raw`, `recordView`
+- **Distribution/status**: `histogram`, `honeycomb`
+- **Geographic maps**: `choropleth`, `dotMap`, `connectionMap`, `bubbleMap`
+- **Matrix/correlation**: `heatmap`, `scatterplot`
 
-### Notebook-Only Section Properties
+Required field types per visualization: [references/sections.md](references/sections.md).
 
-- `autoSelectVisualization` (boolean, in `visualizationSettings`) — when `true`, Dynatrace automatically selects the best visualization type for the query result. **Prefer `true` when the user has no specific visualization preference.** When set to `false`, you must explicitly set `state.visualization` to the desired type.
-- `showTitle` (boolean) — show/hide section title
-- `showInput` (boolean, default `true`) — show/hide query editor. Always set to `true` unless explicitly requested otherwise.
-- `height` (number, px) — section height (default ~400)
-- `drilldownPath` — navigation path for drilldown interactions
-- `filterSegments` — section-level filter segments
-- `davis` — Davis AI copilot configuration
+## References
 
-### Available Visualizations
-
-Notebooks support: `table`, `lineChart`, `areaChart`, `barChart`, `categoricalBarChart`, `pieChart`, `donutChart`, `singleValue`, `bandChart`, `histogram`, `honeycomb`, `raw`, `recordView`
-
-### What Does NOT Apply from the Dashboard Skill
-
-- **Variables** — Notebooks have no variables. Ignore all variable sections: types, substitution patterns (`$Var`, `array($Var)`), dependency resolution, variable validation.
-- **Layouts/grid** — No positioning system. Section order in the array = display order. No `x`, `y`, `w`, `h`.
-- **Tile ID / Layout ID matching** — Not applicable (no layouts object).
-- **UI timeframe picker warnings** — Notebooks don't have a dashboard-style time picker that controls all queries. Instead, `content.defaultTimeframe` sets the default, and each section can override via `section.state.input.timeframe`. Hardcoded time filters in queries are acceptable in notebooks.
-- **Variable substitution in queries** — Not applicable.
-
-## Validation & Deployment
-
-Use the scripts in `scripts/`:
-
-- **`notebook-validator.js`** — Validates notebook structure and executes all DQL queries. Run via:
-  ```
-  cat notebook.json | jq '{notebook: .}' | dtctl exec function -f scripts/notebook-validator.js --data - --plain | jq -r .result
-  ```
-  Or by notebook ID: `echo '{"notebookId":"<id>"}' | dtctl exec function -f scripts/notebook-validator.js --data - --plain | jq -r .result`
-
-- **`deploy_notebook.sh`** — Validates then deploys:
-  ```
-  bash scripts/deploy_notebook.sh notebook.json
-  bash scripts/deploy_notebook.sh --dry-run notebook.json
-  ```
-
-## Related Skills
-
-- **dt-app-dashboards** — Base skill for all workflows; this skill documents only the differences
-- **dt-dql-essentials** — DQL query syntax, functions, and optimization
+| File | When to Load |
+|------|-------------|
+| [create-update.md](references/create-update.md) | Creating/updating notebooks |
+| [sections.md](references/sections.md) | Section types, visualization field requirements, settings |
+| [analyzing.md](references/analyzing.md) | Reading notebooks, extracting queries, purpose identification |

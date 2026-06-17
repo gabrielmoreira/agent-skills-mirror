@@ -13,6 +13,7 @@ import {
   letterSpacingPoints,
   underlineStyle,
   normalizeText,
+  trimBlockNewlines,
   noWrap,
 } from "../src/core/css.ts";
 import { resolveFontFamily } from "../src/core/fonts.ts";
@@ -153,8 +154,20 @@ test("underlineStyle", () => {
 
 test("normalizeText", () => {
   assert.equal(normalizeText("  a   b  ", "normal"), "a b");
-  assert.equal(normalizeText("\n\nkeep\nlines\n\n", "pre"), "keep\nlines");
+  // pre/pre-wrap preserve spaces and newlines verbatim — including a leading
+  // newline that separates an inline sibling from the line that follows it.
+  // Block-end trimming is the caller's job (trimBlockNewlines).
+  assert.equal(normalizeText("\n\nkeep\nlines\n\n", "pre"), "\n\nkeep\nlines\n\n");
+  assert.equal(normalizeText("\n├─ a.md   ", "pre"), "\n├─ a.md   ");
+  // pre-line collapses runs of spaces/tabs but keeps newlines (no block trim).
   assert.equal(normalizeText("a  \n  b", "pre-line"), "a\nb");
+});
+
+test("trimBlockNewlines", () => {
+  assert.equal(trimBlockNewlines("\n\nkeep\nlines\n\n"), "keep\nlines");
+  assert.equal(trimBlockNewlines("no edges"), "no edges");
+  // only newlines are trimmed — leading/trailing spaces survive.
+  assert.equal(trimBlockNewlines("\n  x  \n"), "  x  ");
 });
 
 test("noWrap", () => {

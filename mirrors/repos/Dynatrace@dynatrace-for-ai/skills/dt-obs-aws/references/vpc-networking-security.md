@@ -35,8 +35,9 @@ Find all instances and their security groups:
 
 ```dql
 smartscapeNodes "AWS_EC2_INSTANCE"
-| fields name, aws.resource.id, aws.vpc.id, aws.security_group.id
-| expand aws.security_group.id
+| parse aws.security_group.id, "JSON_ARRAY:security_groups"
+| expand security_group.id = security_groups
+| fields name, aws.resource.id, aws.vpc.id, security_group.id
 ```
 
 Locate all resources using a specific security group:

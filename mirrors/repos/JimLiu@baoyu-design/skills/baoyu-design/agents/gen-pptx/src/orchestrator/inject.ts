@@ -36,8 +36,31 @@ export async function injectCaptureBundle(page: Page): Promise<void> {
 
 type Win = { __genpptx: import("../browser/entry.ts").GenPptxApi };
 
+// Bound each in-page call so a never-settling slide (runaway showJs/animation)
+// can't hang the export. (←the original wraps every executeJavaScript in a
+// per-call timeout: setup 15000ms, editable/screenshots 15000 + (delay ?? 600).)
+// The message must contain "timed out" so errors.ts timeoutHint() fires the
+// retry guidance.
+function evaluateWithTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout>;
+  const guard = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+  });
+  return Promise.race([p, guard]).finally(() => clearTimeout(timer)) as Promise<T>;
+}
+
+// Mirrors the original's `delay ?? 600` added on top of the 15s base budget.
+function captureBudget(spec: SlideSpec): number {
+  const d = Number((spec as { delay?: unknown }).delay);
+  return 15000 + (Number.isFinite(d) ? d : 600);
+}
+
 export function callSetup(page: Page, input: SetupInput): Promise<SetupResult> {
-  return page.evaluate((arg) => (window as unknown as Win).__genpptx.setup(arg), input);
+  return evaluateWithTimeout(
+    page.evaluate((arg) => (window as unknown as Win).__genpptx.setup(arg), input),
+    15000,
+    "setup",
+  );
 }
 
 export function callCaptureEditable(
@@ -45,14 +68,22 @@ export function callCaptureEditable(
   spec: SlideSpec,
   fontSwaps: FontSwap[],
 ): Promise<EditableCapture> {
-  return page.evaluate(
-    ([s, f]) => (window as unknown as Win).__genpptx.captureEditable(s, f),
-    [spec, fontSwaps] as [SlideSpec, FontSwap[]],
+  return evaluateWithTimeout(
+    page.evaluate(
+      ([s, f]) => (window as unknown as Win).__genpptx.captureEditable(s, f),
+      [spec, fontSwaps] as [SlideSpec, FontSwap[]],
+    ),
+    captureBudget(spec),
+    "editable capture",
   );
 }
 
 export function callCaptureScreenshot(page: Page, spec: SlideSpec): Promise<void> {
-  return page.evaluate((s) => (window as unknown as Win).__genpptx.captureScreenshot(s), spec);
+  return evaluateWithTimeout(
+    page.evaluate((s) => (window as unknown as Win).__genpptx.captureScreenshot(s), spec),
+    captureBudget(spec),
+    "screenshot capture",
+  );
 }
 
 export function callResolveMedia(page: Page, refs: MediaRef[]): Promise<ResolvedMedia[]> {

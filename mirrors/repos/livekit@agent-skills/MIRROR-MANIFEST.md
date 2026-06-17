@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `livekit/agent-skills` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `livekit/agent-skills` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `livekit/agent-skills` — 26 default patterns, 0 followed patterns, 4
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,6 +63,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`skills/livekit-agents/references/freshness-rules.md`](skills/livekit-agents/references/freshness-rules.md) |
 | 4 | ✓ | [`skills/livekit-agents/SKILL.md`](skills/livekit-agents/SKILL.md) |
+| 5 | ✓ | [`skills/livekit-simulations/references/analyzing-the-agent.md`](skills/livekit-simulations/references/analyzing-the-agent.md) |
+| 6 | ✓ | [`skills/livekit-simulations/references/user-guidance.md`](skills/livekit-simulations/references/user-guidance.md) |
+| 7 | ✓ | [`skills/livekit-simulations/references/writing-scenarios.md`](skills/livekit-simulations/references/writing-scenarios.md) |
+| 8 | ✓ | [`skills/livekit-simulations/scripts/build_scenarios.py`](skills/livekit-simulations/scripts/build_scenarios.py) |
+| 9 | ✓ | [`skills/livekit-simulations/SKILL.md`](skills/livekit-simulations/SKILL.md) |
 
 ---
 

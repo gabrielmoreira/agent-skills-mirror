@@ -1,7 +1,6 @@
 ---
 name: building-omnistudio-flexcard
 description: "OmniStudio FlexCard creation and validation with 130-point scoring. Use when building at-a-glance UI cards, configuring data source bindings to Integration Procedures, or reviewing existing FlexCard definitions for accessibility and performance. TRIGGER when: user creates FlexCards, configures data sources, designs card layouts, or asks about OmniUiCard metadata. DO NOT TRIGGER when: building OmniScripts (use building-omnistudio-omniscript), creating Integration Procedures (use building-omnistudio-integration-procedure), or analyzing dependencies (use analyzing-omnistudio-dependencies)."
-license: MIT
 metadata:
   version: "1.0"
 ---

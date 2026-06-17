@@ -4,6 +4,19 @@
 
 Use this skill when working code needs to become easier to understand, review, or maintain without changing observable behavior. Simplification is not a license to rewrite; it is a disciplined refactor with a narrow boundary and proof that behavior stayed the same.
 
+## Minimum Viable Change Ladder
+
+Before adding code, layers, dependencies, or configuration, stop at the first rung that satisfies the current acceptance criteria:
+
+1. **Does this need to exist?** If no current requirement, test, or operational constraint needs it, skip it and record the future option outside the implementation.
+2. **Can existing project behavior cover it?** Prefer current helpers, schemas, templates, documentation, or process over a new surface.
+3. **Can the standard library or native platform cover it?** Prefer language/runtime APIs, browser features, database constraints, shell built-ins, or CI primitives over custom code.
+4. **Can an already-installed dependency cover it?** Reuse a dependency already present in the repo before adding another package.
+5. **Can one localized line or existing helper cover it?** Prefer the smallest scoped edit that remains readable and testable.
+6. **Only then write the minimum new code that works.**
+
+Do not use the ladder to remove safety. Input validation at trust boundaries, error handling that prevents data loss, security controls, accessibility requirements, rollback guidance, and explicitly requested behavior stay in scope. If a deliberate shortcut has a known ceiling, record the ceiling and the upgrade trigger in the execution report or a short code comment when future maintainers need it.
+
 ## Chesterton's Fence
 
 Do not remove or rewrite code you cannot explain. Before touching a suspicious branch, helper, abstraction, or guard, establish why it exists and whether that reason still applies.
@@ -54,6 +67,7 @@ Apply the canonical Anti-Rationalization Table in `skills/patterns/llm-behavior-
 | "It's just dead code" | Prove it is unreachable with search, tests, or ownership evidence before removal. |
 | "A quick rewrite is faster than understanding" | Explain the current contract, then make the smallest behavior-preserving change. |
 | "Fewer lines means simpler" | Optimize for comprehension and reviewability, not line count. |
+| "A new abstraction or dependency is cleaner" | Walk the Minimum Viable Change Ladder first; use existing behavior, standard library, native platform, or already-installed dependency when it satisfies the acceptance criteria. |
 
 ## Stop Conditions
 

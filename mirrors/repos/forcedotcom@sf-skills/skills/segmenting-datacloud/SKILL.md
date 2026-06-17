@@ -1,7 +1,6 @@
 ---
 name: segmenting-datacloud
 description: "Salesforce Data Cloud Segment phase. Use this skill when the user creates or publishes segments, manages calculated insights, or troubleshoots audience SQL in Data Cloud. TRIGGER when: user creates or publishes segments, manages calculated insights, inspects segment counts or membership, or troubleshoots audience SQL in Data Cloud. DO NOT TRIGGER when: the task is DMO/mapping/identity-resolution work (use harmonizing-datacloud), activation work (use activating-datacloud), query/search-index work (use retrieving-datacloud), or Standard Data Model (STDM)/session tracing (use observing-agentforce)."
-license: MIT
 compatibility: "Requires an external community sf data360 CLI plugin and a Data Cloud-enabled org"
 metadata:
   version: "1.0"

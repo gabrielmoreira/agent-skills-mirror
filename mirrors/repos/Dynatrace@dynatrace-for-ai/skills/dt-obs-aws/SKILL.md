@@ -450,17 +450,6 @@ This skill uses **progressive disclosure**. Start here for 80% of use cases. Loa
 - Following a resolution path that depends on the workload pattern
 - Understanding the blast radius of an instance failure
 
-### Check health alerts when:
-- Verifying whether Dynatrace health alerts are configured for an AWS resource type
-- Confirming alert coverage before or after a problem
-
-Use `dtctl` to query the `builtin:health-experience.cloud-alert` settings schema. Replace `CpuUtilization` with the metric name relevant to the resource type being investigated:
-
-```bash
-dtctl get settings --schema builtin:health-experience.cloud-alert -o json --plain \
-  | jq '[.[] | select(.value.alertKey | test("CpuUtilization"))]'
-```
-
 ---
 
 ## References

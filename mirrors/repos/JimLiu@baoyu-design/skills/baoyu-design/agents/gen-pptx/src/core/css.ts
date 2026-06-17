@@ -171,17 +171,29 @@ export function underlineStyle(value: string | null | undefined): string {
   }
 }
 
-// Normalize text per white-space, preserving newlines for pre/pre-line. (←he)
+// White-space modes that preserve both spaces and newlines verbatim. (←keepWs)
+export function isPreserveWhitespace(whiteSpace: string | null | undefined): boolean {
+  return whiteSpace === "pre" || whiteSpace === "pre-wrap" || whiteSpace === "break-spaces";
+}
+
+// Drop newlines that only lead/trail a whole assembled block — the
+// `<pre>\n …\n</pre>` idiom — without touching interior line breaks.
+export function trimBlockNewlines(text: string): string {
+  return text.replace(/^\n+|\n+$/g, "");
+}
+
+// Normalize text per white-space. Newlines (and, for pre/pre-wrap, spaces) are
+// preserved verbatim; trimming of block-leading/trailing newlines is left to the
+// caller so interior line breaks between sibling runs survive. (←he)
 export function normalizeText(text: string, whiteSpace: string | null | undefined): string {
-  if (whiteSpace === "pre" || whiteSpace === "pre-wrap") {
-    return text.replace(/^\n+|\n+$/g, "");
+  if (isPreserveWhitespace(whiteSpace)) {
+    return text;
   }
   if (whiteSpace === "pre-line") {
     return text
       .split("\n")
       .map((line) => line.replace(/[ \t]+/g, " ").trim())
-      .join("\n")
-      .replace(/^\n+|\n+$/g, "");
+      .join("\n");
   }
   return text.replace(/\s+/g, " ").trim();
 }

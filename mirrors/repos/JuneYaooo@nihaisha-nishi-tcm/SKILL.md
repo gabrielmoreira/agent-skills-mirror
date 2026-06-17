@@ -46,7 +46,7 @@ This skill is educational. Do not present content as diagnosis, prescription, or
    - Ebooks / 电子书合集 / 原著 / 秘方手法 / 大合集 questions: `references/ebooks.md`; use as a broad inventory and extracted-text supplement, not as the primary authority over course references.
    - Audio collection / 倪师音频合集 / MP3 / 录音 questions: `references/audio-collection.md`; use to map local audio files to already-distilled course modules.
    - Course overview or older all-in-one lookup: `references/shanghanlun.md`.
-   - Board/PPT/source evidence: prefer `python scripts/search_screenshots.py <terms...>` for ranked results; use `rg` on `references/screenshot-evidence.md` only for quick manual lookup.
+   - Board/PPT/source evidence: use `python scripts/search_screenshots.py <query or terms...>` for ranked results across all screenshot evidence files. The script normalizes natural-language queries and compound terms; use `--show-terms` when checking how a query was split.
 3. Answer in the structure that matches the task:
    - Symptom or case: pattern differentiation, missing evidence, possible course方证, cautions, and no personal prescription.
    - Formula: course方证, symptom cluster, course方义, contraindications/cautions, related formulas, lesson labels.

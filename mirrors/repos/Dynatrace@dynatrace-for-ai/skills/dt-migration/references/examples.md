@@ -369,7 +369,7 @@ Two conditions extracted from the `classicEntitySelector`:
 
 Mass data discovery:
 
-```bash
+```dtctl
 dtctl query 'fieldsSnapshot metrics, by:{metric.key} | filter metric.key == "dt.host.cpu.idle" | fields field' --plain
 ```
 
@@ -377,7 +377,7 @@ Output includes: `dt.entity.host`, `dt.smartscape.host`, `dt.host_group.id`, `ho
 
 Node discovery:
 
-```bash
+```dtctl
 dtctl query 'fieldsSnapshot smartscape.nodes, by:{node.type} | filter node.type == "HOST" | fields field' --plain
 ```
 

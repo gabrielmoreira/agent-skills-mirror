@@ -1,7 +1,6 @@
 ---
 name: retrieving-datacloud
 description: "Salesforce Data Cloud Retrieve phase. Use this skill when the user runs Data Cloud SQL, async queries, vector search, search-index workflows, or metadata introspection for Data Cloud objects. TRIGGER when: user runs Data Cloud SQL, describe, async queries, vector search, search-index workflows, or metadata introspection for Data Cloud objects. DO NOT TRIGGER when: the task is standard CRM SOQL (use querying-soql), segment creation or calculated insight design (use segmenting-datacloud), or STDM/session tracing/parquet analysis (use observing-agentforce)."
-license: MIT
 compatibility: "Requires an external community sf data360 CLI plugin and a Data Cloud-enabled org"
 metadata:
   version: "1.0"

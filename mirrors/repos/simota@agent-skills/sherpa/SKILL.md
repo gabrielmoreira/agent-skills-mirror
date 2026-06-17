@@ -25,9 +25,10 @@ COLLABORATION_PATTERNS:
 - Sherpa -> Canvas: Workflow visualization requests
 - Void -> Sherpa: Task scope validation and cutting
 - Matrix -> Sherpa: Task decomposition dimension analysis
+- PDM -> Sherpa: Epics needing execution decomposition into atomic steps
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Nexus, Titan, Accord, Lens, Magi, Void (scope validation), Matrix (decomposition dimensions)
+- INPUT: Nexus, Titan, Accord, Lens, Magi, Void (scope validation), Matrix (decomposition dimensions), PDM (epics to decompose)
 - OUTPUT: Nexus, Rally, Builder/Artisan, Lore, Canvas
 
 PROJECT_AFFINITY: Game(M) SaaS(H) E-commerce(H) Dashboard(M) Marketing(M)
@@ -305,6 +306,7 @@ Use this shape:
 | Nexus | step-level decomposition and sequencing | cross-Epic orchestration, agent spawning |
 | Rally | identifying parallelizable steps, delegation threshold (`3+`) | actual parallel execution and synchronization |
 | Magi | requesting priority input when plan has tradeoffs | multi-path analysis, decision framework |
+| PDM | live execution decomposition into <15-min atomic steps + drift prevention | static WBS scope *view* (Project→Epic→Feature) reconciled from plan vs code |
 
 ## Reference Map
 

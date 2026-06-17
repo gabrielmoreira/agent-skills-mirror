@@ -122,9 +122,9 @@ Behavior notes per Recipe:
 - `restructure`: Full AUDIT → DESIGN → APPLY → VERIFY. Execute git mv in batches. Build-path preservation check required.
 - `progressive`: Three-tier design L1 (always-loaded) / L2 (on-demand) / L3 (deep reference) and CLAUDE.md hierarchy plan.
 - `cache`: Group files by change frequency → static content first → stabilize cache prefixes.
-- `naming`: AUDIT 命名のみ。glob/grep ヒット率を測定し、ジェネリック名 (utils.ts / helpers.ts / common.ts) を ドメイン由来名 (string-helpers.ts / date-formatters.ts) に置換する rename plan を提示。kebab-case ディレクトリ + ドメイングループ化 + サフィックス規約 (.config / .test / .spec) を適用。`git mv` バッチで実行、import path 影響を事前列挙。
-- `sharding`: 単一 CLAUDE.md / reference が 300 行超 / 1200 token 超の場合、`@import` で分割。分割軸を 3 種から選定 (by domain / by lifecycle phase / by change frequency)。cache prefix を破壊しない順序で並べ替え、include manifest を生成、循環参照チェック必須。Hone と協調 (Hone = density audit, Nest = split topology)。
-- `monorepo`: turborepo / nx / pnpm-workspace を検出し、apps/ packages/ libs/ の境界に CLAUDE.md cascade を設計。ルートに共通ルール、各ワークスペースに override のみ配置。重複ルールは root に巻き上げ。tsconfig path alias と CLAUDE.md の整合性も検証。
+- `naming`: AUDIT naming only. Measure glob/grep hit rates and present a rename plan replacing generic names (utils.ts / helpers.ts / common.ts) with domain-derived names (string-helpers.ts / date-formatters.ts). Apply kebab-case directories + domain grouping + suffix conventions (.config / .test / .spec). Execute as a `git mv` batch and enumerate import-path impact in advance.
+- `sharding`: When a single CLAUDE.md / reference exceeds 300 lines / 1200 tokens, split via `@import`. Choose the split axis from 3 (by domain / by lifecycle phase / by change frequency). Reorder in a sequence that does not break cache prefixes, generate an include manifest, and run a mandatory circular-reference check. Coordinate with Hone (Hone = density audit, Nest = split topology).
+- `monorepo`: Detect turborepo / nx / pnpm-workspace and design a CLAUDE.md cascade at the apps/ packages/ libs/ boundaries. Put shared rules at the root and only overrides in each workspace. Hoist duplicate rules up to the root. Also verify consistency between tsconfig path aliases and CLAUDE.md.
 
 ## Output Routing
 

@@ -44,11 +44,11 @@ PROJECT_AFFINITY: universal
 
 Thinking refraction engine that transforms how you see problems, not just what you see. Flux operates on the thinking process itself — challenging assumptions, combining distant concepts, and shifting perspectives — to produce genuinely new problem framings. **Domain-agnostic. Code-free. Process-focused.**
 
-| Pillar | Japanese | Action | Primary Frameworks |
-|--------|----------|--------|--------------------|
-| **CHALLENGE** | 前提を疑う | Surface and reverse hidden assumptions | First Principles, Assumption Reversal, Devil's Advocate |
-| **COMBINE** | 組み合わせる | Merge knowledge across distant domains | Bisociation, SCAMPER, TRIZ, Cross-Domain Analogy |
-| **SHIFT** | 視点をずらす | Rotate the frame of observation itself | Lateral Thinking (de Bono), Reframing, Oblique Strategies |
+| Pillar | Gist | Action | Primary Frameworks |
+|--------|------|--------|--------------------|
+| **CHALLENGE** | Question premises | Surface and reverse hidden assumptions | First Principles, Assumption Reversal, Devil's Advocate |
+| **COMBINE** | Combine across domains | Merge knowledge across distant domains | Bisociation, SCAMPER, TRIZ, Cross-Domain Analogy |
+| **SHIFT** | Shift the viewpoint | Rotate the frame of observation itself | Lateral Thinking (de Bono), Reframing, Oblique Strategies |
 
 **Principles**: Every problem carries hidden assumptions · Distant connections breed innovation · The frame shapes the solution · Process over templates · Surprise is a feature, not a bug
 

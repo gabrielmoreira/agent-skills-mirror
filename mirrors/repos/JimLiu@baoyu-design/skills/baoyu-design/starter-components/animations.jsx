@@ -19,6 +19,12 @@
 // `progress` via the useSprite() hook. Use Easing + interpolate()/animate()
 // for tweens; TextSprite / ImageSprite / RectSprite have built-in entry/exit.
 // Build YOUR scenes by composing Sprites inside a Stage.
+//
+// Export: a Stage is recordable to a real .mp4 by gen-video (see the
+// export-as-video built-in skill). Loading the page with ?capture (or passing
+// <Stage capture>) strips the scrubber/letterboxing and renders one exact frame
+// per seek, and the Stage registers a stable window.__animStage bridge
+// (setTime/setPlaying/duration/...) that the exporter drives frame-by-frame.
 /* END USAGE */
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -328,6 +334,19 @@ function RectSprite({
 }
 
 
+// Detect capture mode: a `capture` prop, or a `?capture` URL param (the value
+// must not be "0"/"false"). In capture mode the Stage renders one exact,
+// chrome-free frame per seek so gen-video can record it.
+function detectCapture(prop) {
+  if (prop) return true;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('capture')) return false;
+    const v = params.get('capture');
+    return v !== '0' && v !== 'false';
+  } catch { return false; }
+}
+
 function Stage({
   width = 1280,
   height = 720,
@@ -337,15 +356,19 @@ function Stage({
   loop = true,
   autoplay = true,
   persistKey = 'animstage',
+  capture = false,
   children,
 }) {
+  const captureMode = detectCapture(capture);
+
   const [time, setTime] = React.useState(() => {
+    if (captureMode) return 0; // deterministic: ignore persisted playhead
     try {
       const v = parseFloat(localStorage.getItem(persistKey + ':t') || '0');
       return isFinite(v) ? clamp(v, 0, duration) : 0;
     } catch { return 0; }
   });
-  const [playing, setPlaying] = React.useState(autoplay);
+  const [playing, setPlaying] = React.useState(captureMode ? false : autoplay);
   const [hoverTime, setHoverTime] = React.useState(null);
   const [scale, setScale] = React.useState(1);
 
@@ -354,13 +377,15 @@ function Stage({
   const rafRef = React.useRef(null);
   const lastTsRef = React.useRef(null);
 
-  // Persist playhead
+  // Persist playhead (skipped in capture mode)
   React.useEffect(() => {
+    if (captureMode) return;
     try { localStorage.setItem(persistKey + ':t', String(time)); } catch {}
-  }, [time, persistKey]);
+  }, [time, persistKey, captureMode]);
 
-  // Auto-scale to fit viewport
+  // Auto-scale to fit viewport (forced to 1:1 in capture mode)
   React.useEffect(() => {
+    if (captureMode) { setScale(1); return; }
     if (!stageRef.current) return;
     const el = stageRef.current;
     const measure = () => {
@@ -379,7 +404,32 @@ function Stage({
       ro.disconnect();
       window.removeEventListener('resize', measure);
     };
-  }, [width, height]);
+  }, [width, height, captureMode]);
+
+  // ── Capture bridge ──────────────────────────────────────────────────────
+  // Expose a stable-identity window.__animStage so the gen-video exporter can
+  // seek/pause/measure. Dynamic values are read through a ref so the object
+  // never has to be re-created. Backward-compatible with any setTime/duration
+  // bridge (the exporter needs only setTime/setPlaying/duration).
+  const bridgeStateRef = React.useRef(null);
+  bridgeStateRef.current = { time, duration, fps, width, height, captureMode, setTime, setPlaying };
+  React.useEffect(() => {
+    const s = bridgeStateRef;
+    const bridge = {
+      version: 1,
+      ready: true,
+      get captureActive() { return s.current.captureMode; },
+      setTime: (t) => s.current.setTime(clamp(t, 0, s.current.duration)),
+      setPlaying: (p) => s.current.setPlaying(!!p),
+      getTime: () => s.current.time,
+      get duration() { return s.current.duration; },
+      get fps() { return s.current.fps; },
+      get width() { return s.current.width; },
+      get height() { return s.current.height; },
+    };
+    window.__animStage = bridge;
+    return () => { if (window.__animStage === bridge) delete window.__animStage; };
+  }, []);
 
   // Animation loop
   React.useEffect(() => {
@@ -441,28 +491,34 @@ function Stage({
         position: 'absolute', inset: 0,
         display: 'flex', flexDirection: 'column',
         alignItems: 'center',
-        background: '#0a0a0a',
+        background: captureMode ? 'transparent' : '#0a0a0a',
         fontFamily: 'Inter, system-ui, sans-serif',
       }}
     >
+      {/* Kill transitions in capture mode so each seeked frame is exact */}
+      {captureMode && <style>{'*{transition:none !important;}'}</style>}
+
       {/* Canvas area — vertically centered in remaining space */}
       <div style={{
         flex: 1,
         width: '100%',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        overflow: 'hidden',
+        display: 'flex',
+        alignItems: captureMode ? 'flex-start' : 'center',
+        justifyContent: captureMode ? 'flex-start' : 'center',
+        overflow: captureMode ? 'visible' : 'hidden',
         minHeight: 0,
       }}>
         <div
           ref={canvasRef}
+          data-stage-canvas
           style={{
             width, height,
             background,
             position: 'relative',
-            transform: `scale(${scale})`,
+            transform: captureMode ? 'none' : `scale(${scale})`,
             transformOrigin: 'center',
             flexShrink: 0,
-            boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+            boxShadow: captureMode ? 'none' : '0 20px 60px rgba(0,0,0,0.4)',
             overflow: 'hidden',
           }}
         >
@@ -472,17 +528,21 @@ function Stage({
         </div>
       </div>
 
-      {/* Playback bar — stacked below canvas, never overlapping */}
-      <PlaybackBar
-        time={displayTime}
-        actualTime={time}
-        duration={duration}
-        playing={playing}
-        onPlayPause={() => setPlaying(p => !p)}
-        onReset={() => { setTime(0); }}
-        onSeek={(t) => setTime(t)}
-        onHover={(t) => setHoverTime(t)}
-      />
+      {/* Playback bar — stacked below canvas, never overlapping. Hidden in
+          capture mode; data-stage-chrome lets gen-video's CSS fallback hide it
+          on copies loaded without ?capture. */}
+      {!captureMode && (
+        <PlaybackBar
+          time={displayTime}
+          actualTime={time}
+          duration={duration}
+          playing={playing}
+          onPlayPause={() => setPlaying(p => !p)}
+          onReset={() => { setTime(0); }}
+          onSeek={(t) => setTime(t)}
+          onHover={(t) => setHoverTime(t)}
+        />
+      )}
     </div>
   );
 }
@@ -550,7 +610,7 @@ function PlaybackBar({ time, duration, playing, onPlayPause, onReset, onSeek, on
   const mono = 'JetBrains Mono, ui-monospace, SFMono-Regular, monospace';
 
   return (
-    <div style={{
+    <div data-stage-chrome style={{
       display: 'flex', alignItems: 'center', gap: 12,
       padding: '8px 16px',
       background: 'rgba(20,20,20,0.92)',

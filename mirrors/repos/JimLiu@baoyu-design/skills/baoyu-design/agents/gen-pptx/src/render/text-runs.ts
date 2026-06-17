@@ -7,6 +7,7 @@ import {
   parseShadow,
   underlineStyle,
   normalizeText,
+  isPreserveWhitespace,
 } from "../core/css.ts";
 import { resolveFontFamily } from "../core/fonts.ts";
 import { imageKey } from "./media-cache.ts";
@@ -201,6 +202,10 @@ export function extractTextRuns(
   const absorb = (n: SlideNode, inherited?: InheritedRunCtx): void => {
     consumed.add(n);
     if (n.tag !== "#text" && (n.style.visibility === "hidden" || n.style.opacity === "0")) return;
+    if (n.tag === "br") {
+      collected.push({ text: "\n", fmt: textFormat(n.style, swapMap), rect: n.rect });
+      return;
+    }
     const href = httpHref(n.href) || inherited?.href;
     const fmt = textFormat(n.style, swapMap);
     const valign = n.style.verticalAlign;
@@ -239,16 +244,31 @@ export function extractTextRuns(
     }
   }
 
-  // Coalesce adjacent runs with identical formatting + href.
+  // Coalesce adjacent runs with identical formatting + href. A separating space
+  // is never inserted across a line break or when whitespace is preserved.
+  const preserveWs = isPreserveWhitespace(node.style.whiteSpace);
   const merged: TextRun[] = [];
   for (const run of collected) {
     const last = merged.at(-1);
     if (last && last.href === run.href && formatsEqual(last.fmt, run.fmt)) {
-      last.text += (runsAdjacent(last, run) ? "" : " ") + run.text;
+      const sep =
+        preserveWs ||
+        runsAdjacent(last, run) ||
+        last.text.endsWith("\n") ||
+        run.text.startsWith("\n")
+          ? ""
+          : " ";
+      last.text += sep + run.text;
       last.rect = run.rect;
     } else {
       merged.push({ ...run });
     }
   }
-  return { runs: merged, consumed };
+  // Block-level trim: newlines that only lead/trail the whole block are noise
+  // (the `<pre>\n …\n</pre>` idiom); interior breaks between runs are kept.
+  if (merged.length > 0) {
+    merged[0].text = merged[0].text.replace(/^\n+/, "");
+    merged[merged.length - 1].text = merged[merged.length - 1].text.replace(/\n+$/, "");
+  }
+  return { runs: merged.filter((r) => r.text !== ""), consumed };
 }

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mworldorg/markdown-memory` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `mworldorg/markdown-memory` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mworldorg/markdown-memory` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,25 +62,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`claude-ai-skills/mm-web-bridge/SKILL.md`](claude-ai-skills/mm-web-bridge/SKILL.md) |
 | 2 | ✓ | [`mcp/package-lock.json`](mcp/package-lock.json) |
 | 3 | ✓ | [`mcp/package.json`](mcp/package.json) |
-| 4 | ✓ | [`mcp/scripts/smoke.mjs`](mcp/scripts/smoke.mjs) |
-| 5 | ✓ | [`mcp/src/index.ts`](mcp/src/index.ts) |
-| 6 | ✓ | [`mcp/src/patterns.ts`](mcp/src/patterns.ts) |
-| 7 | ✓ | [`mcp/src/scan.ts`](mcp/src/scan.ts) |
-| 8 | ✓ | [`mcp/tsconfig.json`](mcp/tsconfig.json) |
-| 9 | ✓ | [`skills/mm-bridge/SKILL.md`](skills/mm-bridge/SKILL.md) |
-| 10 | ✓ | [`skills/mm-doctor/SKILL.md`](skills/mm-doctor/SKILL.md) |
-| 11 | ✓ | [`skills/mm-handoff/SKILL.md`](skills/mm-handoff/SKILL.md) |
-| 12 | ✓ | [`skills/mm-init-project/SKILL.md`](skills/mm-init-project/SKILL.md) |
-| 13 | ✓ | [`skills/mm-instructions/SKILL.md`](skills/mm-instructions/SKILL.md) |
-| 14 | ✓ | [`skills/mm-projects/SKILL.md`](skills/mm-projects/SKILL.md) |
-| 15 | ✓ | [`skills/mm-resume/SKILL.md`](skills/mm-resume/SKILL.md) |
-| 16 | ✓ | [`skills/mm-save-session/SKILL.md`](skills/mm-save-session/SKILL.md) |
-| 17 | ✓ | [`skills/mm-setup/SKILL.md`](skills/mm-setup/SKILL.md) |
-| 18 | ✓ | [`skills/mm-update/SKILL.md`](skills/mm-update/SKILL.md) |
-| 19 | ✓ | [`skills/mm-vault/SKILL.md`](skills/mm-vault/SKILL.md) |
-| 20 | ✓ | [`skills/mm/SKILL.md`](skills/mm/SKILL.md) |
-| 21 | ✓ | [`vendor/ecc-search-first/SKILL.md`](vendor/ecc-search-first/SKILL.md) |
-| 22 | ✓ | [`vendor/ecc-security-review/SKILL.md`](vendor/ecc-security-review/SKILL.md) |
+| 4 | ✓ | [`mcp/README.md`](mcp/README.md) |
+| 5 | ✓ | [`mcp/scripts/health-smoke.mjs`](mcp/scripts/health-smoke.mjs) |
+| 6 | ✓ | [`mcp/scripts/smoke.mjs`](mcp/scripts/smoke.mjs) |
+| 7 | ✓ | [`mcp/src/config-loader.ts`](mcp/src/config-loader.ts) |
+| 8 | ✓ | [`mcp/src/health.ts`](mcp/src/health.ts) |
+| 9 | ✓ | [`mcp/src/index.ts`](mcp/src/index.ts) |
+| 10 | ✓ | [`mcp/src/patterns.ts`](mcp/src/patterns.ts) |
+| 11 | ✓ | [`mcp/src/scan.ts`](mcp/src/scan.ts) |
+| 12 | ✓ | [`mcp/tsconfig.json`](mcp/tsconfig.json) |
+| 13 | ✓ | [`skills/mm-bridge/SKILL.md`](skills/mm-bridge/SKILL.md) |
+| 14 | ✓ | [`skills/mm-doctor/SKILL.md`](skills/mm-doctor/SKILL.md) |
+| 15 | ✓ | [`skills/mm-focus/SKILL.md`](skills/mm-focus/SKILL.md) |
+| 16 | ✓ | [`skills/mm-handoff/SKILL.md`](skills/mm-handoff/SKILL.md) |
+| 17 | ✓ | [`skills/mm-init-project/SKILL.md`](skills/mm-init-project/SKILL.md) |
+| 18 | ✓ | [`skills/mm-instructions/SKILL.md`](skills/mm-instructions/SKILL.md) |
+| 19 | ✓ | [`skills/mm-projects/SKILL.md`](skills/mm-projects/SKILL.md) |
+| 20 | ✓ | [`skills/mm-resume/SKILL.md`](skills/mm-resume/SKILL.md) |
+| 21 | ✓ | [`skills/mm-save-session/SKILL.md`](skills/mm-save-session/SKILL.md) |
+| 22 | ✓ | [`skills/mm-setup/SKILL.md`](skills/mm-setup/SKILL.md) |
+| 23 | ✓ | [`skills/mm-update/SKILL.md`](skills/mm-update/SKILL.md) |
+| 24 | ✓ | [`skills/mm-vault/SKILL.md`](skills/mm-vault/SKILL.md) |
+| 25 | ✓ | [`skills/mm/SKILL.md`](skills/mm/SKILL.md) |
+| 26 | ✓ | [`vendor/ecc-search-first/SKILL.md`](vendor/ecc-search-first/SKILL.md) |
+| 27 | ✓ | [`vendor/ecc-security-review/SKILL.md`](vendor/ecc-security-review/SKILL.md) |
 
 ---
 

@@ -137,7 +137,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 76 | ✓ | [`optional-skills/productivity/canvas/SKILL.md`](optional-skills/productivity/canvas/SKILL.md) |
 | 77 | ✓ | [`optional-skills/productivity/here-now/SKILL.md`](optional-skills/productivity/here-now/SKILL.md) |
 | 78 | ✓ | [`optional-skills/productivity/memento-flashcards/SKILL.md`](optional-skills/productivity/memento-flashcards/SKILL.md) |
-| 79 | ✓ | [`optional-skills/productivity/shop-app/SKILL.md`](optional-skills/productivity/shop-app/SKILL.md) |
+| 79 | ✓ | [`optional-skills/productivity/shop/SKILL.md`](optional-skills/productivity/shop/SKILL.md) |
 | 80 | ✓ | [`optional-skills/productivity/shopify/SKILL.md`](optional-skills/productivity/shopify/SKILL.md) |
 | 81 | ✓ | [`optional-skills/productivity/siyuan/SKILL.md`](optional-skills/productivity/siyuan/SKILL.md) |
 | 82 | ✓ | [`optional-skills/productivity/telephony/SKILL.md`](optional-skills/productivity/telephony/SKILL.md) |

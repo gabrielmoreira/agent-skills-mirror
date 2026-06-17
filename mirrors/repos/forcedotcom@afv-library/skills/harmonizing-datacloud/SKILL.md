@@ -1,7 +1,6 @@
 ---
 name: harmonizing-datacloud
 description: "Salesforce Data Cloud Harmonize phase. Use this skill when the user works with DMOs, mappings, relationships, identity resolution, unified profiles, data graphs, or universal IDs. TRIGGER when: user works with DMOs, mappings, relationships, identity resolution, unified profiles, data graphs, or universal IDs. DO NOT TRIGGER when: the task is only about streams/DLOs (use preparing-datacloud), segments/insights (use segmenting-datacloud), retrieval/search (use retrieving-datacloud), or STDM/session tracing (use observing-agentforce)."
-license: MIT
 compatibility: "Requires an external community sf data360 CLI plugin and a Data Cloud-enabled org"
 metadata:
   version: "1.0"

@@ -54,6 +54,29 @@ agent-browser screenshot result.png
 The browser stays running across commands so these feel like a single
 session. Use `agent-browser close` (or `close --all`) when you're done.
 
+## MCP integration
+
+For tools that support Model Context Protocol servers, start the stdio server:
+
+```bash
+agent-browser mcp
+agent-browser mcp --tools all
+agent-browser mcp --tools core,network,react
+```
+
+Configure the MCP client to launch `agent-browser` with `["mcp"]`. The server
+defaults to MCP protocol 2025-11-25 and accepts older supported client protocol
+versions during initialization. The default tools profile is `core`, which
+keeps MCP context small for everyday browser automation. Use `--tools all` for
+the full typed CLI parity surface, or combine profiles with commas, such as
+`--tools core,network,react`. Profiles are `core`, `network`, `state`, `debug`,
+`tabs`, `react`, `mobile`, and `all`; the `debug` profile includes plugin
+registry and command.run tools. Each tool accepts typed arguments plus
+`extraArgs` for advanced CLI flags and exact CLI parity. Tool discovery is
+paginated and includes read-only/open-world annotations so modern MCP clients
+can load the large typed surface incrementally. Use the tool `session` argument
+or `AGENT_BROWSER_SESSION` to isolate browser sessions.
+
 ## Reading a page
 
 ```bash
@@ -191,6 +214,27 @@ agent-browser auth save my-app --url https://app.example.com/login \
 
 agent-browser auth login my-app    # fills + clicks, waits for form
 ```
+
+If credentials live in an external vault, use a configured credential provider
+plugin instead of putting secrets in the command line:
+
+```bash
+agent-browser plugin add agent-browser-plugin-vault --name vault
+agent-browser plugin list
+agent-browser auth login my-app --credential-provider vault --item "My App"
+agent-browser auth login my-app --credential-provider vault --item "My App" --url https://app.example.com/login --username-selector "#email" --password-selector "#password"
+```
+
+Plugins can also provide browser providers, launch mutators such as stealth
+setup, and arbitrary namespaced commands:
+
+```bash
+agent-browser --provider cloud-browser open https://example.com
+agent-browser plugin run captcha captcha.solve --payload '{"siteKey":"...","url":"https://example.com"}'
+```
+
+`plugin run` is for `command.run` and custom capabilities. Core capabilities
+and protocol request types use their dedicated command paths.
 
 ### Persist session across runs
 
@@ -470,7 +514,7 @@ That pulls in:
 
 - `references/commands.md` — every command, flag, alias
 - `references/snapshot-refs.md` — deep dive on the snapshot + ref model
-- `references/authentication.md` — auth vault, credential handling
+- `references/authentication.md` — auth vault, credential plugins, credential handling
 - `references/trust-boundaries.md` — safety rules for driving a real browser
 - `references/session-management.md` — persistence, multi-session workflows
 - `references/profiling.md` — Chrome DevTools tracing and profiling

@@ -29,7 +29,9 @@ Create a durable, execution-ready Codex plan. Keep the contract local: the saved
 9. Add research or spike phases before implementation when a `HIGH`-impact risk is unresolved.
 10. Keep phases incremental, testable, and explicit about files, dependencies, quality gates, and failure expectations.
 11. Route non-trivial plans through strict review: `SMALL` -> `controlflow-plan-audit`; `MEDIUM`/`LARGE` -> add `controlflow-assumption-verifier`; unresolved `HIGH` risk -> include `controlflow-assumption-verifier` regardless of size.
-12. Check [references/controlflow-portability.md](references/controlflow-portability.md) before handoff.
+12. Record lightweight revision lineage, iteration state, and verified-item regression evidence without copying the core Planner schema.
+13. When a context packet exists, name its artifact path and require wave-boundary refresh instead of repeating discovery.
+14. Check [references/controlflow-portability.md](references/controlflow-portability.md) before handoff.
 
 ## Spec Capture Handoff
 

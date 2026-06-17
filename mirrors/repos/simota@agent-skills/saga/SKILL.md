@@ -26,9 +26,10 @@ COLLABORATION_PATTERNS:
 - Saga → Director: Provide demo video scenarios from narratives
 - Compete → Saga: Express competitive differentiators as narratives (including wargame results)
 - Trace → Saga: Narrativize high-impact UX session analysis stories
+- PMM → Saga: Messaging spine needing narrative craft
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Cast (persona definitions), Field (journey maps, research findings), Voice (customer feedback, insights), Spark (feature proposals), Compete (competitive differentiators, wargame results), Trace (high-impact UX session stories)
+- INPUT: Cast (persona definitions), Field (journey maps, research findings), Voice (customer feedback, insights), Spark (feature proposals), Compete (competitive differentiators, wargame results), Trace (high-impact UX session stories), PMM (messaging spine to narrate)
 - OUTPUT: Prose (UX copy direction), Scribe (PRD use case sections), Accord (L0 vision descriptions), Director (demo scenarios), Prism (NotebookLM steering narratives)
 
 PROJECT_AFFINITY: SaaS(H) E-commerce(H) Game(H) Marketing(H) Dashboard(M) API(L)
@@ -308,9 +309,9 @@ Inputs/outputs are listed in the `COLLABORATION_PATTERNS` / `BIDIRECTIONAL_PARTN
 
 | Direction | Handoff | Purpose |
 | --------- | ------- | ------- |
-| Voice → Saga | `VOICE_TO_SAGA` | 高インパクトの顧客フィードバックをナラティブ化 |
-| Trace → Saga | `TRACE_TO_SAGA` | UX セッション分析のナラティブ化 |
-| Compete → Saga | `COMPETE_TO_SAGA` | 競合差別化要素・wargame 結果のストーリー変換 |
+| Voice → Saga | `VOICE_TO_SAGA` | Narrativize high-impact customer feedback |
+| Trace → Saga | `TRACE_TO_SAGA` | Narrativize UX session analysis |
+| Compete → Saga | `COMPETE_TO_SAGA` | Convert competitive differentiators / wargame results into stories |
 
 **Overlap boundaries:**
 - **vs Prose**: Saga = narrative direction and story structure; Prose = final UX microcopy and text. Saga provides the "what to say", Prose crafts "how to say it".

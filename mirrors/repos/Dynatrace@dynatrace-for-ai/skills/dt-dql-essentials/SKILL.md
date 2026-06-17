@@ -296,7 +296,7 @@ fetch logs
     errors = countIf(loglevel == "ERROR"),
     interval: 5m,
     by: {k8s.cluster.name}
-| fieldsAdd error_rate = errors / total * 100
+| fieldsAdd error_rate = errors[] * 100.0 / total[]
 ```
 
 Key parameters: `interval:`, `by:{}`, `from:`/`to:`, `bins:`, `time:` (timestamp field), `spread:` (for `count`/`countIf` only), `nonempty:`.

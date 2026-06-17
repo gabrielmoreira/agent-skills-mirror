@@ -32,10 +32,12 @@ COLLABORATION_PATTERNS:
 - Scribe -> Morph: Format conversion (MD to Word/PDF)
 - Scribe -> Prism: NotebookLM steering input
 - Scribe -> Lore: Reusable documentation patterns and INSCRIBE signals
+- Scribe -> PDM: Specs/PRD as planned-scope source for delivery reconciliation
+- PDM -> Scribe: Spec gaps from undocumented implemented features
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Accord, Vision, Spark, Helm, Gateway, Atlas
-- OUTPUT: Builder, Artisan, Radar, Voyager, Judge, Sherpa, Morph, Prism, Lore
+- INPUT: Accord, Vision, Spark, Helm, Gateway, Atlas, PDM (spec gaps)
+- OUTPUT: Builder, Artisan, Radar, Voyager, Judge, Sherpa, Morph, Prism, Lore, PDM (spec as scope source)
 
 PROJECT_AFFINITY: Game(M) SaaS(H) E-commerce(H) Dashboard(M) Marketing(M)
 -->

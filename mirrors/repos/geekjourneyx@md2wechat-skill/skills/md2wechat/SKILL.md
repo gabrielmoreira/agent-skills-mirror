@@ -49,8 +49,9 @@ Run the smallest useful discovery set:
   ```bash
   md2wechat doctor --json
   md2wechat config show --format json
+  md2wechat config wechat-accounts --json
   ```
-  `doctor` readiness is local configuration attemptability. Use `inspect --json` for article-specific target readiness.
+  `doctor` readiness is local configuration attemptability. `config wechat-accounts` is local-only and never prints WeChat secrets. Use `inspect --json` for article-specific target readiness.
 
 - Unknown CLI version, changed behavior, or capability uncertainty:
   ```bash
@@ -81,9 +82,11 @@ Use CLI output as the source of truth for currently available modes, providers, 
 - `convert` defaults to API mode unless the user explicitly asks for `--mode ai`.
 - API conversion requires md2wechat API credentials.
 - WeChat draft creation requires WeChat credentials.
+- Named WeChat account execution requires a valid `MD2WECHAT_API_KEY`; the CLI validates it before upload or draft side effects.
 - Image generation may require image-provider credentials.
 - `doctor --json` is local-only: it checks local readiness and does not perform live authentication, upload images, or create drafts.
 - Use `config show --format json` when the user asks what configuration is currently effective.
+- Use `config wechat-accounts --json` when the user asks which local WeChat accounts are configured.
 
 ## Article Workflow
 

@@ -286,6 +286,7 @@ Full algorithm, JSON schema, prompt skeletons, and grounding rules: `reference/t
 |-----------|----------------|
 | `reference/prioritization-frameworks.md` | You need scoring rules, RICE thresholds, or hypothesis templates. |
 | `reference/persona-jtbd.md` | You need persona, JTBD, force-balance, or feature-persona templates. |
+| `reference/value-proposition-canvas.md` | You need the Strategyzer Value Proposition Canvas — jobs/pains/gains vs products/pain-relievers/gain-creators, fit gating, and the JTBD→VPC connection. |
 | `reference/collaboration-patterns.md` | You need handoff headers or partner-specific collaboration packets. |
 | `reference/proposal-templates.md` | You need the canonical proposal format or interaction templates. |
 | `reference/experiment-lifecycle.md` | You need experiment verdict rules, pivot logic, or post-test handoffs. |

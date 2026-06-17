@@ -2,7 +2,6 @@
 
 > Source: Anthropic "Prompting best practices" — *Prompting Claude Opus 4.8* (platform.claude.com, 2026)
 > Owner: Architect (canonical doc); referenced by orchestrators, reviewers, investigators
-> Supersedes the former Opus 4.7 Authoring Protocol. Opus 4.8 performs well out of the box on existing 4.7 prompts, so P1–P7 still hold; P8–P11 capture 4.8-specific behavior shifts.
 
 Shared protocol that aligns generated and existing skills with Opus 4.8 default behaviors. Reference this file from any SKILL.md that needs Opus 4.8 alignment instead of duplicating the rules.
 
@@ -10,20 +9,20 @@ Shared protocol that aligns generated and existing skills with Opus 4.8 default 
 
 ## Why This Exists
 
-Opus 4.8 keeps the 4.7 defaults but sharpens several behaviors. Skills tuned only for 4.6/4.7 will mis-trigger on these:
+Opus 4.8 has sharp default behaviors that skills must author for explicitly:
 
-| Default | Opus 4.7 | Opus 4.8 |
-|---------|----------|----------|
-| Response length | Calibrated to complexity | Calibrated to complexity (sharper: shorter on lookups, longer on open-ended) |
-| Effort | `xhigh` default | `xhigh` default, **respected strictly** — at `low`/`medium` it scopes to exactly what was asked |
-| Tool calls | Reasons more, calls less | Favors reasoning even more; **raise effort** (not just prompt) to increase tool use |
-| Instruction following | Mostly literal | **Strongly literal** — no silent generalization across items, no inferring unrequested work |
-| Subagent spawning | Sparse | Sparse — still must be explicit |
-| Thinking | Adaptive (per-step) | Adaptive, **off unless `thinking:{type:"adaptive"}`**; triggering is steerable |
-| Progress updates | Manual scaffolding common | Native high-quality interim updates — remove forced "summarize every N calls" scaffolding |
-| Prose voice | Neutral | Direct, opinionated, minimal validation-forward phrasing, sparing emoji |
-| Frontend/visual | Generic-prone | Persistent "house style" (cream/serif/terracotta); needs concrete alternative, not negation |
-| Code-review recall | Reports per stated bar | Follows "only high-severity / don't nitpick" **more faithfully** → measured recall can drop |
+| Behavior | Opus 4.8 default |
+|----------|------------------|
+| Response length | Calibrated to complexity (shorter on lookups, longer on open-ended) |
+| Effort | `xhigh` default, **respected strictly** — at `low`/`medium` it scopes to exactly what was asked |
+| Tool calls | Favors reasoning over calling; **raise effort** (not just prompt) to increase tool use |
+| Instruction following | **Strongly literal** — no silent generalization across items, no inferring unrequested work |
+| Subagent spawning | Sparse — must be explicit |
+| Thinking | Adaptive, **off unless `thinking:{type:"adaptive"}`**; triggering is steerable |
+| Progress updates | Native high-quality interim updates — remove forced "summarize every N calls" scaffolding |
+| Prose voice | Direct, opinionated, minimal validation-forward phrasing, sparing emoji |
+| Frontend/visual | Persistent "house style" (cream/serif/terracotta); needs concrete alternative, not negation |
+| Code-review recall | Follows "only high-severity / don't nitpick" faithfully → measured recall can drop |
 
 Apply the eleven principles below.
 

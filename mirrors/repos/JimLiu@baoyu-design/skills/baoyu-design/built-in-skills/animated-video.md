@@ -19,3 +19,7 @@ Animation tips:
 If cursor or pointer movement is depicted (eg in a product walkthrough or prototype), you should zoom in on it and follow it with a damped viewport animation, like Screen Studio would. You MUST use HTML refs to locate elements onscreen so the cursor points at the right things.
 
 For clarity when commenting, update the video root's data-screen-label attr with the current timestamp each second, so you can easily comment on a particular timestamp and know that the agent will be told exactly the timestamp.
+
+## Export to a video file
+
+When the animation looks right, render it to a real `.mp4` (or `.webm`/`.gif`) with the [export-as-video](export-as-video.md) skill — it drives the Stage frame-by-frame and encodes with ffmpeg. A Stage from this starter is export-ready with no extra work: it registers a `window.__animStage` bridge and strips its scrubber/letterboxing under `?capture`, so the export usually needs only the Stage's `width`/`height`.

@@ -1,8 +1,8 @@
 ---
 name: planning-with-files
-description: Implements Manus-style file-based planning to organize and track progress on complex tasks. Creates task_plan.md, findings.md, and progress.md. Use when asked to plan out, break down, or organize a multi-step project, research task, or any work requiring 5+ tool calls. Hermes adaptation with minimal notes.
+description: "Manus-style persistent file-based planning for AI coding agents: keeps task_plan.md, findings.md, and progress.md on disk so work survives context loss and /clear. Use when asked to plan out, break down, or organize a multi-step project, research task, or any work requiring 5+ tool calls. Hermes adaptation with minimal notes."
 metadata:
-  version: "3.1.1"
+  version: "3.1.3"
 ---
 
 > Hermes note: lifecycle automation for this skill is provided by the Hermes adapter plugin in `.hermes/plugins/planning-with-files/`.
@@ -19,13 +19,15 @@ Work like Manus: Use persistent markdown files as your "working memory on disk."
 2. Then check for unsynced context from a previous session:
 
 ```bash
-# Linux/macOS
-$(command -v python3 || command -v python) "$HERMES_HOME/skills/planning-with-files/scripts/session-catchup.py" "$(pwd)"
+# Linux/macOS — auto-detects skill directory (Hermes env or default install path)
+SKILL_DIR="${HERMES_HOME:-$HOME/.hermes}/skills/planning-with-files"
+$(command -v python3 || command -v python) "${SKILL_DIR}/scripts/session-catchup.py" "$(pwd)"
 ```
 
 ```powershell
 # Windows PowerShell
-& (Get-Command python -ErrorAction SilentlyContinue).Source "$env:HERMES_HOME\skills\planning-with-files\scripts\session-catchup.py" (Get-Location)
+$HermesDir = if ($env:HERMES_HOME) { $env:HERMES_HOME } else { "$env:USERPROFILE\.hermes" }
+& (Get-Command python -ErrorAction SilentlyContinue).Source "$HermesDir\skills\planning-with-files\scripts\session-catchup.py" (Get-Location)
 ```
 
 If catchup report shows unsynced context:

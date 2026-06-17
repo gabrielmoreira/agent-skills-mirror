@@ -1,7 +1,6 @@
 ---
 name: generating-mermaid-diagrams
 description: "Salesforce architecture diagrams using Mermaid with ASCII fallback. Use this skill when generating text-based diagrams for Salesforce architecture, OAuth flows, ERDs, integration sequences, or Agentforce structure. TRIGGER when: user says \"diagram\", \"visualize\", \"ERD\", or asks for sequence diagrams, flowcharts, class diagrams, or architecture visualizations in Mermaid. DO NOT TRIGGER when: user wants PNG/SVG image output (use generating-visual-diagrams), or asks about non-Salesforce systems."
-license: MIT
 compatibility: "Requires Mermaid-capable renderer for diagram previews"
 metadata:
   version: "1.0"

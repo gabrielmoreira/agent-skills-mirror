@@ -10,6 +10,13 @@ category: 'chatbots'
 category_name: 'Chatbots'
 price: 'Freemium'
 featured: false
+rank: 10
 date: '2025-09-21'
-tags: [chatbot, text_generation, ai_assistant, mobile_app, real_time]
+tags: [chatbot, google, multimodal, real_time_search, google_workspace, android, image_understanding, voice_mode, api_available, mobile_app, llm, general_ai, deep_research, document_processing]
 ---
+
+Gemini is Google's answer to ChatGPT, and what sets it apart is how deeply it's woven into products people already use every day. It sits inside Gmail to help draft and summarise emails, inside Google Docs to rewrite and restructure text, inside Google Meet to take notes, and inside Android to respond to voice queries. For anyone already living in the Google ecosystem, Gemini often shows up exactly where the work is happening rather than requiring a separate tab.
+
+The standalone Gemini app and web interface go well beyond Google-specific tasks. It can analyse uploaded images and documents, answer questions with real-time search results, write and debug code, and handle multi-step research prompts. Deep Research — a feature in Gemini Advanced — breaks a complex question into a research plan, searches dozens of sources, and produces a structured report with citations, working in a way that feels closer to a research assistant than a search engine.
+
+The free version runs on Gemini 1.5 Flash and covers most everyday tasks. Gemini Advanced, available as part of a Google One AI Premium subscription at $19.99/month, unlocks the full Gemini 1.5 Pro model with a two-million-token context window and priority access to new features. Developers can access Gemini models directly through Google AI Studio or the Gemini API. For organisations on Google Workspace, Gemini is available as an add-on across the whole suite.
