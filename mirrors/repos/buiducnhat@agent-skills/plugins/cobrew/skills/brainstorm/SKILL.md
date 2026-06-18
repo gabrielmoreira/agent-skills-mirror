@@ -34,7 +34,7 @@ Keep this pass focused. Only gather what is needed for the current idea.
 
 ### Step 2: Clarify Requirements
 
-Ask targeted questions sequentially to remove ambiguity with input/question tool:
+Ask targeted questions sequentially only when ambiguity cannot be resolved from the request, project docs, or code. Use the input/question tool when available; otherwise ask a concise direct question.
 
 - Focus on:
   - Objective and user value
@@ -59,7 +59,7 @@ For each approach, include:
 
 Lead with your recommended option and explain why it best fits the project context and constraints.
 
-After presenting all approaches, use input/question tool to let the user pick their preferred approach. List the summary options. Example:
+After presenting all approaches, ask the user to pick a preferred approach only when the choice materially changes the design or delivery path. List the summary options. Example:
 
 1. Approach A, short summary
 2. Approach B, short summary
@@ -70,13 +70,13 @@ with the tag added for the recommended approach to guide the user.
 
 ### Step 4: Present the Design Incrementally
 
-Once requirements are clear, present the design incrementally in logical phases (about 200-300 words per phase) to avoid overwhelming the user.
+Once requirements are clear, present the design incrementally in logical phases. For small topics, combine phases when separate checkpoints would add friction.
 
 - **Phase 1: Foundation** - Problem framing, goals, and proposed architecture/flow.
 - **Phase 2: Technical Details** - Data model, interfaces, error handling, and edge cases.
 - **Phase 3: Delivery** - Testing/verification strategy and rollout considerations (if applicable).
 
-After presenting **each phase**, use input/question tool immediately to ask whether to:
+After presenting a phase, ask for confirmation only when user input would materially change the next phase. Use these options when a checkpoint is needed:
 
 1. Proceed to the next phase
 2. Adjust the current phase
@@ -86,7 +86,16 @@ After presenting **each phase**, use input/question tool immediately to ask whet
 
 After you and the user have worked through requirements and the design is validated, determine the next actions.
 
-1. Use input/question tool to present the user with three high-level next actions:
+Before asking for next actions, summarize the current design brief in chat. Keep it compact unless the user asks for artifacts:
+
+- Goal and user-visible outcome
+- Chosen or recommended approach
+- Scope and non-goals
+- Key decisions and trade-offs
+- Main risks, assumptions, or unresolved questions
+- Recommended next step
+
+1. Present the user with four high-level next actions:
    - "Write plan immediately (in current context)" - skip the artifact step and move straight to a `write-plan` handoff.
    - "Write artifacts" - continue by authoring the brainstorm documents described in Step 6.
    - "Implement immediately (skip design artifacts and planning)" - if the design is very clear and low-risk, the user may choose to skip both artifacts and planning and move straight to implementation.

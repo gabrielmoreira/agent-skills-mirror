@@ -1,0 +1,1 @@
+cache/repos/github.com/mohitagw15856@pm-claude-skills/templates/pm-discovery-agent/skills/assumption-mapper/../../../../skills/assumption-mapper/SKILL.md

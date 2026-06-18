@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,29 +71,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`dd-apm/linux-ssi/verify-ssi/SKILL.md`](dd-apm/linux-ssi/verify-ssi/SKILL.md) |
 | 11 | ✓ | [`dd-apm/service-remapping/SKILL.md`](dd-apm/service-remapping/SKILL.md) |
 | 12 | ✓ | [`dd-apm/SKILL.md`](dd-apm/SKILL.md) |
-| 13 | ✓ | [`dd-audit/ai-activity-audit/SKILL.md`](dd-audit/ai-activity-audit/SKILL.md) |
-| 14 | ✓ | [`dd-audit/compliance-report/SKILL.md`](dd-audit/compliance-report/SKILL.md) |
-| 15 | ✓ | [`dd-audit/cost-spike-investigation/SKILL.md`](dd-audit/cost-spike-investigation/SKILL.md) |
-| 16 | ✓ | [`dd-audit/key-compromise/SKILL.md`](dd-audit/key-compromise/SKILL.md) |
-| 17 | ✓ | [`dd-audit/security-investigation/SKILL.md`](dd-audit/security-investigation/SKILL.md) |
-| 18 | ✓ | [`dd-audit/SKILL.md`](dd-audit/SKILL.md) |
-| 19 | ✓ | [`dd-browser-sdk/SKILL.md`](dd-browser-sdk/SKILL.md) |
-| 20 | ✓ | [`dd-browser-sdk/upgrade-v7/SKILL.md`](dd-browser-sdk/upgrade-v7/SKILL.md) |
-| 21 | ✓ | [`dd-docs/SKILL.md`](dd-docs/SKILL.md) |
-| 22 | ✓ | [`dd-llmo/llm-obs-eval-bootstrap/SKILL.md`](dd-llmo/llm-obs-eval-bootstrap/SKILL.md) |
-| 23 | ✓ | [`dd-llmo/llm-obs-eval-pipeline/SKILL.md`](dd-llmo/llm-obs-eval-pipeline/SKILL.md) |
-| 24 | ✓ | [`dd-llmo/llm-obs-experiment-analyzer/SKILL.md`](dd-llmo/llm-obs-experiment-analyzer/SKILL.md) |
-| 25 | ✓ | [`dd-llmo/llm-obs-experiment-py-bootstrap/references/providers/gemini.md`](dd-llmo/llm-obs-experiment-py-bootstrap/references/providers/gemini.md) |
-| 26 | ✓ | [`dd-llmo/llm-obs-experiment-py-bootstrap/SKILL.md`](dd-llmo/llm-obs-experiment-py-bootstrap/SKILL.md) |
-| 27 | ✓ | [`dd-llmo/llm-obs-session-classify/SKILL.md`](dd-llmo/llm-obs-session-classify/SKILL.md) |
-| 28 | ✓ | [`dd-llmo/llm-obs-trace-rca/SKILL.md`](dd-llmo/llm-obs-trace-rca/SKILL.md) |
-| 29 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
-| 30 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
-| 31 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
-| 32 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
-| 33 | ✓ | [`dd-software-delivery/triage-flaky-test/SKILL.md`](dd-software-delivery/triage-flaky-test/SKILL.md) |
-| 34 | ✓ | [`dd-software-delivery/unblock-pr/SKILL.md`](dd-software-delivery/unblock-pr/SKILL.md) |
-| 35 | ✓ | [`SKILL.md`](SKILL.md) |
+| 13 | ✓ | [`dd-apps/datadog-app/SKILL.md`](dd-apps/datadog-app/SKILL.md) |
+| 14 | ✓ | [`dd-audit/ai-activity-audit/SKILL.md`](dd-audit/ai-activity-audit/SKILL.md) |
+| 15 | ✓ | [`dd-audit/compliance-report/SKILL.md`](dd-audit/compliance-report/SKILL.md) |
+| 16 | ✓ | [`dd-audit/cost-spike-investigation/SKILL.md`](dd-audit/cost-spike-investigation/SKILL.md) |
+| 17 | ✓ | [`dd-audit/key-compromise/SKILL.md`](dd-audit/key-compromise/SKILL.md) |
+| 18 | ✓ | [`dd-audit/security-investigation/SKILL.md`](dd-audit/security-investigation/SKILL.md) |
+| 19 | ✓ | [`dd-audit/SKILL.md`](dd-audit/SKILL.md) |
+| 20 | ✓ | [`dd-browser-sdk/SKILL.md`](dd-browser-sdk/SKILL.md) |
+| 21 | ✓ | [`dd-browser-sdk/upgrade-v7/SKILL.md`](dd-browser-sdk/upgrade-v7/SKILL.md) |
+| 22 | ✓ | [`dd-docs/SKILL.md`](dd-docs/SKILL.md) |
+| 23 | ✓ | [`dd-llmo/llm-obs-eval-bootstrap/SKILL.md`](dd-llmo/llm-obs-eval-bootstrap/SKILL.md) |
+| 24 | ✓ | [`dd-llmo/llm-obs-eval-pipeline/SKILL.md`](dd-llmo/llm-obs-eval-pipeline/SKILL.md) |
+| 25 | ✓ | [`dd-llmo/llm-obs-experiment-analyzer/SKILL.md`](dd-llmo/llm-obs-experiment-analyzer/SKILL.md) |
+| 26 | ✓ | [`dd-llmo/llm-obs-experiment-py-bootstrap/references/providers/gemini.md`](dd-llmo/llm-obs-experiment-py-bootstrap/references/providers/gemini.md) |
+| 27 | ✓ | [`dd-llmo/llm-obs-experiment-py-bootstrap/SKILL.md`](dd-llmo/llm-obs-experiment-py-bootstrap/SKILL.md) |
+| 28 | ✓ | [`dd-llmo/llm-obs-session-classify/SKILL.md`](dd-llmo/llm-obs-session-classify/SKILL.md) |
+| 29 | ✓ | [`dd-llmo/llm-obs-trace-rca/SKILL.md`](dd-llmo/llm-obs-trace-rca/SKILL.md) |
+| 30 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
+| 31 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
+| 32 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
+| 33 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
+| 34 | ✓ | [`dd-software-delivery/triage-flaky-test/SKILL.md`](dd-software-delivery/triage-flaky-test/SKILL.md) |
+| 35 | ✓ | [`dd-software-delivery/unblock-pr/SKILL.md`](dd-software-delivery/unblock-pr/SKILL.md) |
+| 36 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

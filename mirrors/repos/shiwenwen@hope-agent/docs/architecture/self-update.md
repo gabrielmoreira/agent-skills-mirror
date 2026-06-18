@@ -116,6 +116,14 @@ Manifest 结构（[`updater::manifest::Manifest`](../../crates/ha-core/src/updat
 
 不允许 `fs::write` 直接覆盖正在运行的 binary——即使 Unix 上能 work，崩溃中途会留下半截文件。
 
+### macOS 桌面 updater 的 EXDEV 守卫
+
+上面的 `atomic_replace_binary` 只覆盖 **headless `SelfContained`** 路径。**桌面 `Tauri`** 路径的 swap 由 `tauri-plugin-updater` 自己做：它用 `tempfile::Builder` 把新 `.app` 解压进默认临时目录，再用 `std::fs::rename` 把旧 bundle 移到备份、把新 bundle 移到安装位置（`updater.rs::install_inner`）。当应用运行在与临时目录不同的卷（外置 / 独立数据卷等）时，**第一步 rename 就返回 `EXDEV`**（"Cross-device link (os error 18)"）导致更新中断——插件把任何非 `PermissionDenied` 的 rename 错误都当致命错误（`EXDEV` **不会**触发 AppleScript / copy 兜底），且 macOS 路径不像 Linux AppImage 路径那样有「多候选目录 + 同 `dev()` 校验」兜底。
+
+防御在启动早期 `src-tauri/src/lib.rs::run()` 顶部调用 [`platform::redirect_updater_tmpdir_if_cross_volume`](../../crates/ha-core/src/platform/mod.rs)：macOS 上若 `.app` 所在卷（比 `dev()`）≠ 默认临时目录卷，则在 `.app` 父目录下建 `.hope-agent-updater-tmp`、**复核该目录 `dev()` 确实落在 bundle 卷**后，用 [`tempfile::env::override_temp_dir`](https://docs.rs/tempfile) 把 **`tempfile` 库的进程内默认临时目录**改到那里，使插件两次 rename 都留在同卷内。返回三态 `UpdaterTmpdir`：`Redirected`（已改）/ `Unchanged`（同卷 / 非 bundle / 非 macOS）/ `CrossVolumeUnfixable`（跨卷但无法在同卷建临时目录——只读挂载如 DMG、或父目录不可写；此时无能为力，`run()` 落一条 warn 面包屑提示用户装到 `/Applications`）。
+
+**为何用 `tempfile` 覆盖而非改 `$TMPDIR` 环境变量**：`override_temp_dir` 只改 `tempfile` 库在**本进程**内的默认目录（插件正是用 `tempfile::Builder` 暂存，故生效），**不动 `$TMPDIR` 环境变量**——因此 `exec` / hooks / MCP 等**子进程**（会继承、甚至显式 whitelist `$TMPDIR`）仍用每用户系统临时目录，不会把临时文件写到应用旁边。`override_temp_dir` set-once + 线程安全，故 `run()` panic-restart 重入无害。**为何 startup 设而非包在某次更新外**：桌面更新两个入口都独立驱动插件 Rust install——GUI「检查更新」菜单走 JS（[`desktopUpdater.ts`](../../src/lib/desktopUpdater.ts)）、`app_update` 工具走 `update_bridge`；只包一个 call site 覆盖不到另一个。普通装在引导卷（= 临时目录同卷）一律 no-op，进程内 temp 改道的代价只由罕见跨卷用户承担。
+
 ## Service restart 契约
 
 binary 换好后 [`service_control::restart_service`](../../crates/ha-core/src/updater/service_control.rs) 跑：

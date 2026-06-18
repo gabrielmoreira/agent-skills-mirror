@@ -1073,3 +1073,194 @@ Time-based workflows - 28% have schedule triggers
 **Related Files**:
 - **[SKILL.md](SKILL.md)** - Configuration workflow and philosophy
 - **[DEPENDENCIES.md](DEPENDENCIES.md)** - Property dependency rules
+
+---
+
+## Worked Example: Configuring HTTP Request Step by Step
+
+A full validate-driven walkthrough of building a `POST` JSON request from minimal config, letting validation surface each required field.
+
+**Step 1**: Identify what you need
+```javascript
+// Goal: POST JSON to API
+```
+
+**Step 2**: Get node info
+```javascript
+const info = get_node({
+  nodeType: "nodes-base.httpRequest"
+});
+
+// Returns: method, url, sendBody, body, authentication required/optional
+```
+
+**Step 3**: Minimal config
+```javascript
+{
+  "method": "POST",
+  "url": "https://api.example.com/create",
+  "authentication": "none"
+}
+```
+
+**Step 4**: Validate
+```javascript
+validate_node({
+  nodeType: "nodes-base.httpRequest",
+  config,
+  profile: "runtime"
+});
+// → Error: "sendBody required for POST"
+```
+
+**Step 5**: Add required field
+```javascript
+{
+  "method": "POST",
+  "url": "https://api.example.com/create",
+  "authentication": "none",
+  "sendBody": true
+}
+```
+
+**Step 6**: Validate again
+```javascript
+validate_node({...});
+// → Error: "body required when sendBody=true"
+```
+
+**Step 7**: Complete configuration
+```javascript
+{
+  "method": "POST",
+  "url": "https://api.example.com/create",
+  "authentication": "none",
+  "sendBody": true,
+  "body": {
+    "contentType": "json",
+    "content": {
+      "name": "={{$json.name}}",
+      "email": "={{$json.email}}"
+    }
+  }
+}
+```
+
+**Step 8**: Final validation
+```javascript
+validate_node({...});
+// → Valid! ✅
+```
+
+---
+
+## Operation-Specific Configuration Examples
+
+Concrete minimal configs showing how required fields differ by resource + operation.
+
+### Slack Node Examples
+
+#### Post Message
+```javascript
+{
+  "resource": "message",
+  "operation": "post",
+  "channel": "#general",      // Required
+  "text": "Hello!",           // Required
+  "attachments": [],          // Optional
+  "blocks": []                // Optional
+}
+```
+
+#### Update Message
+```javascript
+{
+  "resource": "message",
+  "operation": "update",
+  "messageId": "1234567890",  // Required (different from post!)
+  "text": "Updated!",         // Required
+  "channel": "#general"       // Optional (can be inferred)
+}
+```
+
+#### Create Channel
+```javascript
+{
+  "resource": "channel",
+  "operation": "create",
+  "name": "new-channel",      // Required
+  "isPrivate": false          // Optional
+  // Note: text NOT required for this operation
+}
+```
+
+### HTTP Request Node Examples
+
+#### GET Request
+```javascript
+{
+  "method": "GET",
+  "url": "https://api.example.com/users",
+  "authentication": "predefinedCredentialType",
+  "nodeCredentialType": "httpHeaderAuth",
+  "sendQuery": true,                    // Optional
+  "queryParameters": {                  // Shows when sendQuery=true
+    "parameters": [
+      {
+        "name": "limit",
+        "value": "100"
+      }
+    ]
+  }
+}
+```
+
+#### POST with JSON
+```javascript
+{
+  "method": "POST",
+  "url": "https://api.example.com/users",
+  "authentication": "none",
+  "sendBody": true,                     // Required for POST
+  "body": {                             // Required when sendBody=true
+    "contentType": "json",
+    "content": {
+      "name": "John Doe",
+      "email": "john@example.com"
+    }
+  }
+}
+```
+
+### IF Node Examples
+
+#### String Comparison (Binary)
+```javascript
+{
+  "conditions": {
+    "string": [
+      {
+        "value1": "={{$json.status}}",
+        "operation": "equals",
+        "value2": "active"              // Binary: needs value2
+      }
+    ]
+  }
+}
+```
+
+#### Empty Check (Unary)
+```javascript
+{
+  "conditions": {
+    "string": [
+      {
+        "value1": "={{$json.email}}",
+        "operation": "isEmpty",
+        // No value2 - unary operator
+        "singleValue": true             // Auto-added by sanitization
+      }
+    ]
+  }
+}
+```

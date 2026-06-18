@@ -112,15 +112,22 @@ def available_sources(config: dict[str, Any], requested_sources: list[str] | Non
     if which("yt-dlp") or env.is_youtube_sc_available(config):
         available.append("youtube")
     available.extend(["hackernews", "polymarket"])
-    if config.get("GITHUB_TOKEN") or which("gh"):
-        available.append("github")
+    # GitHub is reachable via the unauthenticated REST tier too, so it is
+    # available even without a token/gh CLI (a token only raises rate limits).
+    available.append("github")
     if which("digg-pp-cli"):
         available.append("digg")
     if env.is_bluesky_available(config):
         available.append("bluesky")
     if env.is_truthsocial_available(config):
         available.append("truthsocial")
-    if config.get("BRAVE_API_KEY") or config.get("EXA_API_KEY") or config.get("SERPER_API_KEY") or config.get("PARALLEL_API_KEY"):
+    # Grounding (general web) is available when a paid backend is configured OR
+    # the keyless floor is permitted (i.e. the host has no native search). On a
+    # native-search host with no paid key, keyless_web_allowed is False and the
+    # engine leaves general web to the model's own search.
+    if (config.get("BRAVE_API_KEY") or config.get("EXA_API_KEY")
+            or config.get("SERPER_API_KEY") or config.get("PARALLEL_API_KEY")
+            or env.keyless_web_allowed(config)):
         available.append("grounding")
     if requested_sources and "jobs" in requested_sources:
         available.append("jobs")
@@ -147,7 +154,7 @@ def available_sources(config: dict[str, Any], requested_sources: list[str] | Non
 def diagnose(config: dict[str, Any], requested_sources: list[str] | None = None) -> dict[str, Any]:
     requested_sources = normalize_requested_sources(requested_sources)
     google_key = _google_key(config)
-    x_status = env.get_x_source_status(config)
+    x_status = env.get_x_source_status(config, probe=True)
     native_web_backend = None
     if config.get("BRAVE_API_KEY"):
         native_web_backend = "brave"
@@ -172,10 +179,23 @@ def diagnose(config: dict[str, Any], requested_sources: list[str] | None = None)
         "bird_authenticated": x_status["bird_authenticated"],
         "bird_username": x_status["bird_username"],
         "native_web_backend": native_web_backend,
+        "native_search": env.is_native_search(config),
         "has_scrapecreators": bool(config.get("SCRAPECREATORS_API_KEY")),
         "has_github": bool(config.get("GITHUB_TOKEN") or which("gh")),
         "available_sources": available_sources(config, requested_sources),
     }
+
+
+def _inner_max_workers(stream_count: int, *, internal_subrun: bool) -> int:
+    """Worker-pool size for the per-stream fanout inside a single pipeline run.
+
+    Top-level runs use up to 16 workers. Subruns of ``run_competitor_fanout``
+    cap the inner pool to 4 so a six-way competitor fan-out stays below
+    roughly 30 worker threads in aggregate instead of ~96.
+    """
+    if internal_subrun:
+        return max(2, min(4, stream_count or 1))
+    return max(4, min(16, stream_count or 1))
 
 
 def run(
@@ -194,6 +214,7 @@ def run(
     tiktok_creators: list[str] | None = None,
     ig_creators: list[str] | None = None,
     lookback_days: int = 30,
+    as_of_date: str | None = None,
     github_user: str | None = None,
     github_repos: list[str] | None = None,
     hiring_signals_mode: bool = False,
@@ -201,7 +222,7 @@ def run(
 ) -> schema.Report:
     settings = DEPTH_SETTINGS[depth]
     requested_sources = normalize_requested_sources(requested_sources)
-    from_date, to_date = dates.get_date_range(lookback_days)
+    from_date, to_date = dates.get_date_range(lookback_days, as_of_date=as_of_date)
 
     if mock:
         runtime = providers.mock_runtime(config, depth)
@@ -216,7 +237,7 @@ def run(
             available = [source for source in available if source in requested_sources]
     if web_backend == "none":
         available = [s for s in available if s != "grounding"]
-    elif web_backend in ("brave", "exa", "serper", "parallel") and "grounding" not in available:
+    elif web_backend in ("brave", "exa", "serper", "parallel", "keyless") and "grounding" not in available:
         available.append("grounding")
     if (hiring_signals_mode or _company_topic_likely(topic)) and "jobs" not in available:
         available.append("jobs")
@@ -356,7 +377,7 @@ def run(
         for source in subquery.sources
         if source in available
     )
-    max_workers = max(4, min(16, stream_count or 1))
+    max_workers = _inner_max_workers(stream_count, internal_subrun=internal_subrun)
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         for subquery in plan.subqueries:
             for source in subquery.sources:
@@ -478,10 +499,16 @@ def run(
         skip_sources=_github_skip_retry,
     )
 
-    # Clear errors for sources that returned items despite partial failures.
-    # A source that 429'd on one subquery but succeeded on another is not "errored".
+    # Reclassify partial failures as DEGRADED instead of silently dropping them.
+    # A source that 429'd on one subquery but succeeded on another is not a hard
+    # failure, but it is not healthy either: it likely returned fewer results
+    # than it should have. Move it out of errors_by_source (so it isn't reported
+    # as "failed") and into degraded_by_source (so it survives into warnings),
+    # rather than deleting the signal outright as the engine used to.
+    degraded_by_source: dict[str, str] = {}
     for source in list(bundle.errors_by_source):
         if bundle.items_by_source.get(source):
+            degraded_by_source[source] = bundle.errors_by_source[source]
             del bundle.errors_by_source[source]
 
     hiring_summary = _apply_hiring_signal_gate(
@@ -492,7 +519,9 @@ def run(
     if hiring_summary:
         bundle.artifacts["hiring_signals"] = hiring_summary
 
-    items_by_source = _finalize_items_by_source(bundle.items_by_source, topic=topic, config=config)
+    items_by_source = _finalize_items_by_source(
+        bundle.items_by_source, topic=topic, config=config, depth=depth, mock=mock,
+    )
     candidates = weighted_rrf(bundle.items_by_source_and_query, plan, pool_limit=settings["pool_limit"])
     ranked_candidates = rerank.rerank_candidates(
         topic=topic,
@@ -518,7 +547,7 @@ def run(
         )
 
     clusters = cluster_candidates(ranked_candidates, plan)
-    warnings = _warnings(items_by_source, ranked_candidates, bundle.errors_by_source)
+    warnings = _warnings(items_by_source, ranked_candidates, bundle.errors_by_source, degraded_by_source)
 
     return schema.Report(
         topic=topic,
@@ -550,7 +579,17 @@ def _normalize_score_dedupe(
         freshness_mode=freshness_mode,
     )
     prepared_query = relevance.PreparedQuery(ranking_query)
-    normalized = signals.annotate_stream(normalized, prepared_query, freshness_mode)
+    lookback_window_days = (
+        datetime.strptime(to_date, "%Y-%m-%d").date()
+        - datetime.strptime(from_date, "%Y-%m-%d").date()
+    ).days
+    normalized = signals.annotate_stream(
+        normalized,
+        prepared_query,
+        freshness_mode,
+        reference_date=to_date,
+        max_days=lookback_window_days,
+    )
     if source != "jobs":
         normalized = signals.prune_low_relevance(normalized)
     normalized = dedupe.dedupe_items(normalized)
@@ -563,11 +602,21 @@ def _finalize_items_by_source(
     items_by_source_raw: dict[str, list[schema.SourceItem]],
     topic: str = "",
     config: dict | None = None,
+    depth: str = "default",
+    mock: bool = False,
 ) -> dict[str, list[schema.SourceItem]]:
     finalized = {}
     for source, items in items_by_source_raw.items():
         items = sorted(items, key=lambda item: item.local_rank_score or 0.0, reverse=True)
         items = dedupe.dedupe_items(items)
+        if source == "youtube" and items and not mock:
+            # Same budget-at-the-survivors principle as the digg branch
+            # below: retrieval-time transcripts go to each search's
+            # top-by-views candidates, while final selection ranks by
+            # relevance. Backfill survivors that arrived without one so the
+            # transcript budget lands on videos the brief actually shows
+            # (#542).
+            youtube_yt.backfill_transcripts(items, topic=topic, depth=depth)
         # Post-merge topic-relevance filter for Polymarket: comparison queries
         # fan out into per-entity subqueries ("Hermes", "OpenClaw") whose topic
         # is too narrow for Gamma API to filter meaningfully. Re-validating the
@@ -676,6 +725,7 @@ def _warnings(
     items_by_source: dict[str, list[schema.SourceItem]],
     candidates: list[schema.Candidate],
     errors_by_source: dict[str, str],
+    degraded_by_source: dict[str, str] | None = None,
 ) -> list[str]:
     warnings: list[str] = []
     if not candidates:
@@ -691,6 +741,13 @@ def _warnings(
         warnings.append("Top evidence is highly concentrated in one source.")
     if errors_by_source:
         warnings.append(f"Some sources failed: {', '.join(sorted(errors_by_source))}")
+    if degraded_by_source:
+        # Partial failures: the source returned some items but errored/timed out
+        # on at least one subquery, so its coverage is likely incomplete. Kept
+        # distinct from hard failures so the signal is not silently dropped.
+        warnings.append(
+            f"Some sources returned partial results (degraded): {', '.join(sorted(degraded_by_source))}"
+        )
     if not items_by_source:
         warnings.append("No source returned usable items.")
     return warnings
@@ -798,17 +855,25 @@ def _run_supplemental_searches(
     ranking_query = plan.subqueries[0].ranking_query if plan.subqueries else topic
     primary_label = plan.subqueries[0].label if plan.subqueries else "primary"
 
-    # Search primary handles (full weight)
+    # Search primary handles (full weight): FROM lane (their own tweets) +
+    # ABOUT lane (tweets mentioning them). Both engagement-weighted and deduped
+    # by URL at normalize time.
     if handles:
+        # Independent try/except per lane so a failure in one does not discard
+        # the other's already-computed results.
+        from_items: list = []
+        about_items: list = []
         try:
-            raw_items = bird_x.search_handles(
-                handles, topic, from_date, count_per=3,
-            )
+            from_items = bird_x.search_handles(handles, topic, from_date, count_per=3)
         except Exception as exc:
-            print(f"[Pipeline] Phase 2 handle search failed: {exc}", file=sys.stderr)
+            print(f"[Pipeline] Phase 2 FROM-lane search failed: {exc}", file=sys.stderr)
             if not bundle.items_by_source.get("x"):
-                bundle.errors_by_source["x"] = f"Phase 2 handle search: {exc}"
-            raw_items = []
+                bundle.errors_by_source["x"] = f"Phase 2 FROM-lane: {exc}"
+        try:
+            about_items = bird_x.search_mentions(handles, from_date, count_per=3)
+        except Exception as exc:
+            print(f"[Pipeline] Phase 2 ABOUT-lane search failed: {exc}", file=sys.stderr)
+        raw_items = from_items + about_items
 
         if raw_items:
             normalized = _normalize_score_dedupe(
@@ -1144,6 +1209,10 @@ def _retrieve_stream(
         token = github.resolve_token(config.get("GITHUB_TOKEN"))
         response = github.search_github(subquery.search_query, from_date, to_date, depth=depth, token=token)
         items = github.parse_github_response(response)
+        # Note: an unauth rate-limit (response["error"]) is expected on the
+        # tokenless anon tier and returns empty here rather than raising — github
+        # is now always eligible, so raising would spam "github failed" on every
+        # tokenless run. The condition is logged in github.search_github.
         items = github.enrich_with_comments(items, depth=depth, token=token)
         return items, {}
     if source == "pinterest":

@@ -6,8 +6,8 @@ opts into API mode, or when explicit transparent output requires the
 `gpt-image-1.5` fallback path.
 
 Defaults to gpt-image-2 and a structured prompt augmentation workflow.
-Reads OPENAI_API_KEY, and optionally OPENAI_BASE_URL for OpenAI-compatible
-proxy providers.
+Reads OPENAI_API_KEY, and optionally OPENAI_BASE_URL for provider adapters or
+OpenAI-compatible proxy providers.
 """
 
 from __future__ import annotations
@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import base64
+from io import BytesIO
 import json
 import os
 from pathlib import Path
@@ -22,8 +23,10 @@ import re
 import sys
 import time
 from typing import Any, Dict, Iterable, List, Optional, Tuple
+from urllib.parse import urlparse
 
-from io import BytesIO
+from image_providers import create_image_provider
+from image_providers.atlascloud import atlascloud_model_for_operation
 
 DEFAULT_MODEL = "gpt-image-2"
 DEFAULT_SIZE = "2560x1440"
@@ -95,8 +98,32 @@ def _api_base_url() -> Optional[str]:
 def _api_target_label() -> str:
     base_url = _api_base_url()
     if base_url:
-        return f"OpenAI-compatible proxy (OPENAI_BASE_URL={base_url})"
+        if _is_atlascloud_base_url(base_url):
+            return f"AtlasCloud provider adapter (OPENAI_BASE_URL={base_url})"
+        return f"third-party image API or OpenAI-compatible proxy (OPENAI_BASE_URL={base_url})"
     return "official OpenAI API (OPENAI_BASE_URL unset)"
+
+
+def _is_atlascloud_base_url(base_url: str) -> bool:
+    hostname = urlparse(base_url).hostname or ""
+    return "atlascloud.ai" in hostname.lower()
+
+
+def _preview_endpoint(kind: str) -> str:
+    base_url = _api_base_url()
+    if base_url and _is_atlascloud_base_url(base_url):
+        return "/api/v1/model/generateImage"
+    if kind == "edit":
+        return "/v1/images/edits"
+    return "/v1/images/generations"
+
+
+def _preview_model(model: str, kind: str) -> str:
+    base_url = _api_base_url()
+    if base_url and _is_atlascloud_base_url(base_url):
+        operation = "edit" if kind == "edit" else "text-to-image"
+        return atlascloud_model_for_operation(model, operation)
+    return model
 
 
 def _runtime_python_path() -> str:
@@ -478,37 +505,6 @@ def _decode_write_and_downscale(
         print(f"Wrote {derived}")
 
 
-def _create_client():
-    try:
-        from openai import OpenAI
-    except ImportError:
-        _die(f"openai SDK not installed in the active environment. {_dependency_hint('openai')}")
-    return OpenAI(
-        api_key=os.getenv("OPENAI_API_KEY"),
-        base_url=os.getenv("OPENAI_BASE_URL") or None,
-    )
-
-
-def _create_async_client():
-    try:
-        from openai import AsyncOpenAI
-    except ImportError:
-        try:
-            import openai as _openai  # noqa: F401
-        except ImportError:
-            _die(
-                f"openai SDK not installed in the active environment. {_dependency_hint('openai')}"
-            )
-        _die(
-            "AsyncOpenAI not available in this openai SDK version. "
-            f"{_dependency_hint('openai', upgrade=True)}"
-        )
-    return AsyncOpenAI(
-        api_key=os.getenv("OPENAI_API_KEY"),
-        base_url=os.getenv("OPENAI_BASE_URL") or None,
-    )
-
-
 def _slugify(value: str) -> str:
     value = value.strip().lower()
     value = re.sub(r"[^a-z0-9]+", "-", value)
@@ -596,68 +592,6 @@ def _job_output_paths(
     ]
 
 
-def _extract_retry_after_seconds(exc: Exception) -> Optional[float]:
-    # Best-effort: openai SDK errors vary by version. Prefer a conservative fallback.
-    for attr in ("retry_after", "retry_after_seconds"):
-        val = getattr(exc, attr, None)
-        if isinstance(val, (int, float)) and val >= 0:
-            return float(val)
-    msg = str(exc)
-    m = re.search(r"retry[- ]after[:= ]+([0-9]+(?:\\.[0-9]+)?)", msg, re.IGNORECASE)
-    if m:
-        try:
-            return float(m.group(1))
-        except Exception:
-            return None
-    return None
-
-
-def _is_rate_limit_error(exc: Exception) -> bool:
-    name = exc.__class__.__name__.lower()
-    if "ratelimit" in name or "rate_limit" in name:
-        return True
-    msg = str(exc).lower()
-    return "429" in msg or "rate limit" in msg or "too many requests" in msg
-
-
-def _is_transient_error(exc: Exception) -> bool:
-    if _is_rate_limit_error(exc):
-        return True
-    name = exc.__class__.__name__.lower()
-    if "timeout" in name or "timedout" in name or "tempor" in name:
-        return True
-    msg = str(exc).lower()
-    return "timeout" in msg or "timed out" in msg or "connection reset" in msg
-
-
-async def _generate_one_with_retries(
-    client: Any,
-    payload: Dict[str, Any],
-    *,
-    attempts: int,
-    job_label: str,
-) -> Any:
-    last_exc: Optional[Exception] = None
-    for attempt in range(1, attempts + 1):
-        try:
-            return await client.images.generate(**payload)
-        except Exception as exc:
-            last_exc = exc
-            if not _is_transient_error(exc):
-                raise
-            if attempt == attempts:
-                raise
-            sleep_s = _extract_retry_after_seconds(exc)
-            if sleep_s is None:
-                sleep_s = min(60.0, 2.0**attempt)
-            print(
-                f"{job_label} attempt {attempt}/{attempts} failed ({exc.__class__.__name__}); retrying in {sleep_s:.1f}s",
-                file=sys.stderr,
-            )
-            await asyncio.sleep(sleep_s)
-    raise last_exc or RuntimeError("unknown error")
-
-
 async def _run_generate_batch(args: argparse.Namespace) -> int:
     jobs = _read_jobs_jsonl(args.input)
     out_dir = Path(args.out_dir)
@@ -708,16 +642,19 @@ async def _run_generate_batch(args: argparse.Namespace) -> int:
                 ]
             _print_request(
                 {
-                    "endpoint": "/v1/images/generations",
+                    "endpoint": _preview_endpoint("generate"),
                     "job": i,
                     "outputs": [str(p) for p in outputs],
                     "outputs_downscaled": downscaled,
-                    **job_payload,
+                    **{
+                        **job_payload,
+                        "model": _preview_model(str(job_payload["model"]), "generate"),
+                    },
                 }
             )
         return 0
 
-    client = _create_async_client()
+    provider = create_image_provider(api_key=os.getenv("OPENAI_API_KEY"), base_url=_api_base_url())
     sem = asyncio.Semaphore(args.concurrency)
 
     any_failed = False
@@ -753,15 +690,13 @@ async def _run_generate_batch(args: argparse.Namespace) -> int:
             async with sem:
                 print(f"{job_label} starting", file=sys.stderr)
                 started = time.time()
-                result = await _generate_one_with_retries(
-                    client,
+                images = await provider.generate_batch(
                     payload,
                     attempts=args.max_attempts,
                     job_label=job_label,
                 )
                 elapsed = time.time() - started
                 print(f"{job_label} completed in {elapsed:.1f}s", file=sys.stderr)
-            images = [item.b64_json for item in result.data]
             _decode_write_and_downscale(
                 images,
                 outputs,
@@ -825,10 +760,13 @@ def _generate(args: argparse.Namespace) -> None:
     if args.dry_run:
         _print_request(
             {
-                "endpoint": "/v1/images/generations",
+                "endpoint": _preview_endpoint("generate"),
                 "outputs": [str(p) for p in output_paths],
                 "outputs_downscaled": downscaled,
-                **payload,
+                **{
+                    **payload,
+                    "model": _preview_model(str(payload["model"]), "generate"),
+                },
             }
         )
         return
@@ -838,12 +776,11 @@ def _generate(args: argparse.Namespace) -> None:
         file=sys.stderr,
     )
     started = time.time()
-    client = _create_client()
-    result = client.images.generate(**payload)
+    provider = create_image_provider(api_key=os.getenv("OPENAI_API_KEY"), base_url=_api_base_url())
+    images = provider.generate(payload)
     elapsed = time.time() - started
     print(f"Generation completed in {elapsed:.1f}s.", file=sys.stderr)
 
-    images = [item.b64_json for item in result.data]
     _decode_write_and_downscale(
         images,
         output_paths,
@@ -898,10 +835,13 @@ def _edit(args: argparse.Namespace) -> None:
             payload_preview["mask"] = str(mask_path)
         _print_request(
             {
-                "endpoint": "/v1/images/edits",
+                "endpoint": _preview_endpoint("edit"),
                 "outputs": [str(p) for p in output_paths],
                 "outputs_downscaled": downscaled,
-                **payload_preview,
+                **{
+                    **payload_preview,
+                    "model": _preview_model(str(payload_preview["model"]), "edit"),
+                },
             }
         )
         return
@@ -911,18 +851,11 @@ def _edit(args: argparse.Namespace) -> None:
         file=sys.stderr,
     )
     started = time.time()
-    client = _create_client()
-
-    with _open_files(image_paths) as image_files, _open_mask(mask_path) as mask_file:
-        request = dict(payload)
-        request["image"] = image_files if len(image_files) > 1 else image_files[0]
-        if mask_file is not None:
-            request["mask"] = mask_file
-        result = client.images.edit(**request)
+    provider = create_image_provider(api_key=os.getenv("OPENAI_API_KEY"), base_url=_api_base_url())
+    images = provider.edit(payload, image_paths, mask_path)
 
     elapsed = time.time() - started
     print(f"Edit completed in {elapsed:.1f}s.", file=sys.stderr)
-    images = [item.b64_json for item in result.data]
     _decode_write_and_downscale(
         images,
         output_paths,
@@ -931,60 +864,6 @@ def _edit(args: argparse.Namespace) -> None:
         downscale_suffix=args.downscale_suffix,
         output_format=output_format,
     )
-
-
-def _open_files(paths: List[Path]):
-    return _FileBundle(paths)
-
-
-def _open_mask(mask_path: Optional[Path]):
-    if mask_path is None:
-        return _NullContext()
-    return _SingleFile(mask_path)
-
-
-class _NullContext:
-    def __enter__(self):
-        return None
-
-    def __exit__(self, exc_type, exc, tb):
-        return False
-
-
-class _SingleFile:
-    def __init__(self, path: Path):
-        self._path = path
-        self._handle = None
-
-    def __enter__(self):
-        self._handle = self._path.open("rb")
-        return self._handle
-
-    def __exit__(self, exc_type, exc, tb):
-        if self._handle:
-            try:
-                self._handle.close()
-            except Exception:
-                pass
-        return False
-
-
-class _FileBundle:
-    def __init__(self, paths: List[Path]):
-        self._paths = paths
-        self._handles: List[object] = []
-
-    def __enter__(self):
-        self._handles = [p.open("rb") for p in self._paths]
-        return self._handles
-
-    def __exit__(self, exc_type, exc, tb):
-        for handle in self._handles:
-            try:
-                handle.close()
-            except Exception:
-                pass
-        return False
 
 
 def _add_shared_args(parser: argparse.ArgumentParser) -> None:

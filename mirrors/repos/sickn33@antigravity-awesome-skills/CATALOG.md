@@ -2,7 +2,7 @@
 
 Generated at: 2026-02-08T00:00:00.000Z
 
-Total skills: 1569
+Total skills: 1595
 
 ## architecture (101)
 
@@ -202,7 +202,7 @@ Total skills: 1569
 | `xiaohongshu-content-strategist` | Create viral Xiaohongshu (小红书) content with platform-native strategy, save-rate optimization, trending formats, and search SEO for China's #1 lifestyle platf... | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书 | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书, content, strategist, viral, platform, native |
 | `youtube-seo-optimizer` | Generate complete YouTube & podcast SEO packages with live-researched keywords — titles, descriptions, tags, hashtags, chapters, and audit fixes. Use for new... | youtube, seo, optimizer | youtube, seo, optimizer, generate, complete, podcast, packages, live, researched, keywords, titles, descriptions |
 
-## data-ai (296)
+## data-ai (297)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -394,6 +394,7 @@ Total skills: 1569
 | `llm-ops` | LLM Operations -- RAG, embeddings, vector databases, fine-tuning, prompt engineering avancado, custos de LLM, evals de qualidade e arquiteturas de IA para pr... | llm, rag, embeddings, vector-db, fine-tuning | llm, rag, embeddings, vector-db, fine-tuning, ops, operations, vector, databases, fine, tuning, prompt |
 | `llm-prompt-optimizer` | Use when improving prompts for any LLM. Applies proven prompt engineering techniques to boost output quality, reduce hallucinations, and cut token usage. | llm, prompt, optimizer | llm, prompt, optimizer, improving, prompts, any, applies, proven, engineering, techniques, boost, output |
 | `llm-structured-output` | Get reliable JSON, enums, and typed objects from LLMs using response_format, tool_use, and schema-constrained decoding across OpenAI, Anthropic, and Google A... | llm, structured, output | llm, structured, output, get, reliable, json, enums, typed, objects, llms, response, format |
+| `lookdev` | Human-in-the-loop web studio to tune AI-generated output by eye. Stand up a local interactive studio (sliders, pickers, drag handles) or an inline edit/highl... | lookdev, design, ui, tuning, studio, visual-eval, annotation | lookdev, design, ui, tuning, studio, visual-eval, annotation, human, loop, web, tune, ai |
 | `magic-animator` | AI-powered animation tool for creating motion in logos, UI, icons, and social media assets. | magic, animator | magic, animator, ai, powered, animation, creating, motion, logos, ui, icons, social, media |
 | `mailchimp-automation` | Automate Mailchimp email marketing including campaigns, audiences, subscribers, segments, and analytics via Rube MCP (Composio). Always search tools first fo... | mailchimp | mailchimp, automation, automate, email, marketing, including, campaigns, audiences, subscribers, segments, analytics, via |
 | `makepad-splash` | CRITICAL: Use for Makepad Splash scripting language. Triggers on: splash language, makepad script, makepad scripting, script!, cx.eval, makepad dynamic, make... | makepad, splash | makepad, splash, critical, scripting, language, triggers, script, cx, eval, dynamic, ai |
@@ -503,7 +504,7 @@ Total skills: 1569
 | `yes-md` | 6-layer AI governance: safety gates, evidence-based debugging, anti-slack detection, and machine-enforced hooks. Makes AI safe, thorough, and honest. | yes, md | yes, md, layer, ai, governance, safety, gates, evidence, debugging, anti, slack, detection |
 | `youtube-automation` | Automate YouTube tasks via Rube MCP (Composio): upload videos, manage playlists, search content, get analytics, and handle comments. Always search tools firs... | youtube | youtube, automation, automate, tasks, via, rube, mcp, composio, upload, videos, playlists, search |
 
-## development (219)
+## development (228)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -570,6 +571,7 @@ Total skills: 1569
 | `bun-development` | Fast, modern JavaScript/TypeScript development with the Bun runtime, inspired by [oven-sh/bun](https://github.com/oven-sh/bun). | bun | bun, development, fast, javascript, typescript, runtime, inspired, oven, sh, https, github, com |
 | `cc-skill-coding-standards` | Universal coding standards, best practices, and patterns for TypeScript, JavaScript, React, and Node.js development. | cc, skill, coding, standards | cc, skill, coding, standards, universal, typescript, javascript, react, node, js, development |
 | `cc-skill-frontend-patterns` | Frontend development patterns for React, Next.js, state management, performance optimization, and UI best practices. | cc, skill, frontend | cc, skill, frontend, development, react, next, js, state, performance, optimization, ui |
+| `ckw-design` | Frontend design entry point: direction, design system, visual philosophy. Use whenever building or touching the look of any web UI (components, pages, dashbo... | design, frontend, ui, css, typography, responsive | design, frontend, ui, css, typography, responsive, ckw, entry, point, direction, visual, philosophy |
 | `clarvia-aeo-check` | Score any MCP server, API, or CLI for agent-readiness using Clarvia AEO (Agent Experience Optimization). Search 15,400+ indexed tools before adding them to y... | mcp, aeo, tool-quality, agent-readiness, api-scoring, clarvia | mcp, aeo, tool-quality, agent-readiness, api-scoring, clarvia, check, score, any, server, api, cli |
 | `codebase-to-wordpress-converter` | Expert skill for converting any codebase (React/HTML/Next.js) into a pixel-perfect, SEO-optimized, and dynamic WordPress theme. | codebase, to, wordpress, converter | codebase, to, wordpress, converter, skill, converting, any, react, html, next, js, pixel |
 | `context7-auto-research` | Automatically fetch latest library/framework documentation for Claude Code via Context7 API. Use when you need up-to-date documentation for libraries and fra... | context7, auto, research | context7, auto, research, automatically, fetch, latest, library, framework, documentation, claude, code, via |
@@ -696,6 +698,14 @@ Total skills: 1569
 | `sred-work-summary` | Go back through the previous year of work and create a Notion doc that groups relevant links into projects that can then be documented as SRED projects. | sred, work, summary | sred, work, summary, go, back, through, previous, year, notion, doc, groups, relevant |
 | `statsmodels` | Statsmodels is Python's premier library for statistical modeling, providing tools for estimation, inference, and diagnostics across a wide range of statistic... | statsmodels | statsmodels, python, premier, library, statistical, modeling, providing, estimation, inference, diagnostics, wide, range |
 | `stitch-design-taste` | Use when generating Google Stitch DESIGN.md systems for premium typography, color, layout, motion intent, and anti-generic UI rules. | stitch, design-system, frontend, ui | stitch, design-system, frontend, ui, taste, generating, google, md, premium, typography, color, layout |
+| `super-code/csharp` | Language-specific super-code guidelines for csharp. | super, code/csharp | super, code/csharp, csharp, language, specific, code, guidelines |
+| `super-code/go` | Language-specific super-code guidelines for go. | super, code/go | super, code/go, go, language, specific, code, guidelines |
+| `super-code/java` | Language-specific super-code guidelines for java. | super, code/java | super, code/java, java, language, specific, code, guidelines |
+| `super-code/php` | Language-specific super-code guidelines for php. | super, code/php | super, code/php, php, language, specific, code, guidelines |
+| `super-code/python` | Language-specific super-code guidelines for python. | super, code/python | super, code/python, python, language, specific, code, guidelines |
+| `super-code/ruby` | Language-specific super-code guidelines for ruby. | super, code/ruby | super, code/ruby, ruby, language, specific, code, guidelines |
+| `super-code/rust` | Language-specific super-code guidelines for rust. | super, code/rust | super, code/rust, rust, language, specific, code, guidelines |
+| `super-code/typescript` | Language-specific super-code guidelines for typescript. | super, code/typescript | super, code/typescript, typescript, language, specific, code, guidelines |
 | `sveltekit` | Build full-stack web applications with SvelteKit — file-based routing, SSR, SSG, API routes, and form actions in one framework. | svelte, sveltekit, fullstack, ssr, ssg, typescript | svelte, sveltekit, fullstack, ssr, ssg, typescript, full, stack, web, applications, file, routing |
 | `swiftui-expert-skill` | Write, review, or improve SwiftUI code following best practices for state management, view composition, performance, and iOS 26+ Liquid Glass adoption. Use w... | swiftui, skill | swiftui, skill, write, review, improve, code, following, state, view, composition, performance, ios |
 | `sympy` | SymPy is a Python library for symbolic mathematics that enables exact computation using mathematical symbols rather than numerical approximations. | sympy | sympy, python, library, symbolic, mathematics, enables, exact, computation, mathematical, symbols, rather, than |
@@ -744,7 +754,7 @@ Total skills: 1569
 | `seo-plan` | Strategic SEO planning for new or existing websites. Industry-specific templates, competitive analysis, content strategy, and implementation roadmap. Use whe... | seo, plan | seo, plan, strategic, planning, new, existing, websites, industry, specific, competitive, analysis, content |
 | `yann-lecun-filosofia` | Sub-skill filosófica e pedagógica de Yann LeCun. | persona, ai-philosophy, open-source, education | persona, ai-philosophy, open-source, education, yann, lecun, filosofia, sub, skill, filos, fica, pedag |
 
-## general (384)
+## general (398)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -773,6 +783,7 @@ Total skills: 1569
 | `app-builder` | Main application building orchestrator. Creates full-stack applications from natural language requests. Determines project type, selects tech stack, coordina... | app, builder | app, builder, main, application, building, orchestrator, creates, full, stack, applications, natural, language |
 | `app-builder/templates` | Project scaffolding templates for new applications. Use when creating new projects from scratch. Contains 12 templates for various tech stacks. | app, builder/templates | app, builder/templates, scaffolding, new, applications, creating, scratch, contains, 12, various, tech, stacks |
 | `app-store-changelog` | Generate user-facing App Store release notes from git history since the last tag. | app, store, changelog | app, store, changelog, generate, user, facing, release, notes, git, history, since, last |
+| `apple-notes-search` | Semantic + keyword search and connection-discovery across the user's own Apple Notes via the apple-notes MCP server. Use when the user wants to find, recall,... | apple-notes, search, mcp, macos, semantic-search, knowledge | apple-notes, search, mcp, macos, semantic-search, knowledge, apple, notes, semantic, keyword, connection, discovery |
 | `arm-cortex-expert` | Senior embedded software engineer specializing in firmware and driver development for ARM Cortex-M microcontrollers (Teensy, STM32, nRF52, SAMD). | arm, cortex | arm, cortex, senior, embedded, software, engineer, specializing, firmware, driver, development, microcontrollers, teensy |
 | `article-illustrations` | Generate hand-drawn 16:9 article illustrations with the Grav character IP, sparse annotations, and absurd but clear visual metaphors. | illustration, article-graphics, visual-metaphors, image-generation, whiteboard-sketch | illustration, article-graphics, visual-metaphors, image-generation, whiteboard-sketch, article, illustrations, generate, hand, drawn, 16, grav |
 | `ask-questions-if-underspecified` | Clarify requirements before implementing. Use when serious doubts arise. | ask, questions, if, underspecified | ask, questions, if, underspecified, clarify, requirements, before, implementing, serious, doubts, arise |
@@ -858,6 +869,7 @@ Total skills: 1569
 | `defuddle` | Extract clean markdown content from web pages using Defuddle CLI, removing clutter and navigation to save tokens. Use instead of WebFetch when the user provi... | defuddle | defuddle, extract, clean, markdown, content, web, pages, cli, removing, clutter, navigation, save |
 | `design-md` | Analyze Stitch projects and synthesize a semantic design system into DESIGN.md files | md | md, analyze, stitch, synthesize, semantic, files |
 | `design-spells` | Curated micro-interactions and design details that add "magic" and personality to websites and apps. | spells | spells, curated, micro, interactions, details, add, magic, personality, websites, apps |
+| `deterministic-design` | Render the UI and prove it's balanced + usable: a deterministic layout audit (centroid / optical-center / pixel-oracle balance via explicit math + annotated ... | design, layout, usability, audit, verification, vision | design, layout, usability, audit, verification, vision, deterministic, render, ui, prove, balanced, usable |
 | `diary` | Unified Diary System: A context-preserving automated logger for multi-project development. | diary | diary, unified, context, preserving, automated, logger, multi, development |
 | `dispatching-parallel-agents` | Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies | dispatching, parallel, agents | dispatching, parallel, agents, facing, independent, tasks, worked, without, shared, state, sequential, dependencies |
 | `doc2math` | Convert narrative technical documents into grounded Mathematical Problem Specifications with variables, constraints, objectives, and uncertainty. | doc2math | doc2math, convert, narrative, technical, documents, grounded, mathematical, problem, specifications, variables, constraints, objectives |
@@ -962,6 +974,7 @@ Total skills: 1569
 | `logistics-exception-management` | Codified expertise for handling freight exceptions, shipment delays, damages, losses, and carrier disputes. Informed by logistics professionals with 15+ year... | logistics, exception | logistics, exception, codified, expertise, handling, freight, exceptions, shipment, delays, damages, losses, carrier |
 | `loss-aversion-designer` | One sentence - what this skill does and when to invoke it | loss, aversion, designer | loss, aversion, designer, one, sentence, what, skill, does, invoke |
 | `macos-menubar-tuist-app` | Build, refactor, or review SwiftUI macOS menubar apps that use Tuist. | macos, menubar, tuist, app | macos, menubar, tuist, app, refactor, review, swiftui, apps |
+| `macos-screen-recorder` | macOS screen recorder that captures the main display PLUS system audio via ScreenCaptureKit — no BlackHole/loopback driver, no sudo, just the standard Screen... | macos, screen-recording, system-audio, screencapturekit, cli, swift | macos, screen-recording, system-audio, screencapturekit, cli, swift, screen, recorder, captures, main, display, plus |
 | `macos-spm-app-packaging` | Scaffold, build, sign, and package SwiftPM macOS apps without Xcode projects. | macos, spm, app, packaging | macos, spm, app, packaging, scaffold, sign, package, swiftpm, apps, without, xcode |
 | `magic-ui-generator` | Utilizes Magic by 21st.dev to generate, compare, and integrate multiple production-ready UI component variations. | magic, ui, generator | magic, ui, generator, utilizes, 21st, dev, generate, compare, integrate, multiple, component, variations |
 | `makepad-animation` | CRITICAL: Use for Makepad animation system. Triggers on: makepad animation, makepad animator, makepad hover, makepad state, makepad transition, "from: { all:... | makepad, animation | makepad, animation, critical, triggers, animator, hover, state, transition, all, forward, pressed |
@@ -1050,6 +1063,7 @@ Total skills: 1569
 | `sam-altman` | Agente que simula Sam Altman — CEO da OpenAI, ex-presidente da Y Combinator, arquiteto da era AGI. | persona, startups, agi, yc, fundraising | persona, startups, agi, yc, fundraising, sam, altman, agente, que, simula, ceo, da |
 | `satori` | Clinically informed wisdom companion blending psychology and philosophy into a structured thinking partner | mental-health, psychology, wisdom, philosophy, ifs, stoicism, jungian, conversation | mental-health, psychology, wisdom, philosophy, ifs, stoicism, jungian, conversation, satori, clinically, informed, companion |
 | `scarcity-urgency-psychologist` | One sentence - what this skill does and when to invoke it | scarcity, urgency, psychologist | scarcity, urgency, psychologist, one, sentence, what, skill, does, invoke |
+| `screenstudio-alt` | Open-source headless Screen Studio alternative: auto speed-up of idle, auto-zoom on click clusters, keystroke overlay chips, smoothed synthetic cursor, and 9... | screen-recording, video, post-production, auto-zoom, vertical-video, ffmpeg | screen-recording, video, post-production, auto-zoom, vertical-video, ffmpeg, screenstudio, alt, open, source, headless, screen |
 | `search-specialist` | Expert web researcher using advanced search techniques and | search | search, web, researcher, techniques |
 | `senior-architect` | Complete toolkit for senior architect with modern tools and best practices. | senior | senior, architect, complete, toolkit |
 | `senior-fullstack` | Complete toolkit for senior fullstack with modern tools and best practices. | senior, fullstack | senior, fullstack, complete, toolkit |
@@ -1077,6 +1091,15 @@ Total skills: 1569
 | `stitch-loop` | Teaches agents to iteratively build websites using Stitch with an autonomous baton-passing loop pattern | stitch, loop | stitch, loop, teaches, agents, iteratively, websites, autonomous, baton, passing |
 | `subagent-driven-development` | Use when executing implementation plans with independent tasks in the current session | subagent, driven | subagent, driven, development, executing, plans, independent, tasks, current, session |
 | `subject-line-psychologist` | One sentence - what this skill does and when to invoke it | subject, line, psychologist | subject, line, psychologist, one, sentence, what, skill, does, invoke |
+| `super-code` | Standing house style to enforce dense, correct, and idiomatic code on all coding tasks. Minimizes code bloat and agent operation overhead. | super, code | super, code, standing, house, style, enforce, dense, correct, idiomatic, all, coding, tasks |
+| `super-code/bash` | Language-specific super-code guidelines for bash. | super, code/bash | super, code/bash, bash, language, specific, code, guidelines |
+| `super-code/c` | Language-specific super-code guidelines for c. | super, code/c | super, code/c, language, specific, code, guidelines |
+| `super-code/cpp` | Language-specific super-code guidelines for cpp. | super, code/cpp | super, code/cpp, cpp, language, specific, code, guidelines |
+| `super-code/dart` | Language-specific super-code guidelines for dart. | super, code/dart | super, code/dart, dart, language, specific, code, guidelines |
+| `super-code/elixir` | Language-specific super-code guidelines for elixir. | super, code/elixir | super, code/elixir, elixir, language, specific, code, guidelines |
+| `super-code/kotlin` | Language-specific super-code guidelines for kotlin. | super, code/kotlin | super, code/kotlin, kotlin, language, specific, code, guidelines |
+| `super-code/scala` | Language-specific super-code guidelines for scala. | super, code/scala | super, code/scala, scala, language, specific, code, guidelines |
+| `super-code/swift` | Language-specific super-code guidelines for swift. | super, code/swift | super, code/swift, swift, language, specific, code, guidelines |
 | `superpowers-lab` | Lab environment for Claude superpowers | superpowers, lab | superpowers, lab, environment, claude |
 | `swift-concurrency-expert` | Review and fix Swift concurrency issues such as actor isolation and Sendable violations. | swift, concurrency | swift, concurrency, review, fix, issues, such, actor, isolation, sendable, violations |
 | `swiftui-liquid-glass` | Implement or review SwiftUI Liquid Glass APIs with correct fallbacks and modifier order. | swiftui, liquid, glass | swiftui, liquid, glass, review, apis, correct, fallbacks, modifier, order |
@@ -1115,6 +1138,7 @@ Total skills: 1569
 | `video-content-extractor` | Extract key frames from MP4 videos at configurable intervals, run Tesseract OCR, and generate structured Markdown reports with video metadata and timestamped... | video, ocr, ffmpeg, tesseract, frame-extraction, media | video, ocr, ffmpeg, tesseract, frame-extraction, media, content, extractor, extract, key, frames, mp4 |
 | `videodb` | Video and audio perception, indexing, and editing. Ingest files/URLs/live streams, build visual/spoken indexes, search with timestamps, edit timelines, add o... | video, editing, transcription, subtitles, search, streaming, ai-generation, media, live-streams, desktop-capture | video, editing, transcription, subtitles, search, streaming, ai-generation, media, live-streams, desktop-capture, videodb, audio |
 | `visual-emotion-engineer` | One sentence - what this skill does and when to invoke it | visual, emotion | visual, emotion, engineer, one, sentence, what, skill, does, invoke |
+| `web-media-getter` | One query across free image / video / GIF APIs (stock + historical/archival + GIF engines), returning normalized, license-tagged results with optional top-K ... | media, images, video, gif, stock, archival, attribution | media, images, video, gif, stock, archival, attribution, web, getter, one, query, free |
 | `web-performance-optimization` | Optimize website and web application performance including loading speed, Core Web Vitals, bundle size, caching strategies, and runtime performance | web, performance, optimization | web, performance, optimization, optimize, website, application, including, loading, speed, core, vitals, bundle |
 | `weightloss-analyzer` | 分析减肥数据、计算代谢率、追踪能量缺口、管理减肥阶段 | weightloss, analyzer | weightloss, analyzer |
 | `wiki-architect` | You are a documentation architect that produces structured wiki catalogues and onboarding guides from codebases. | wiki | wiki, architect, documentation, produces, structured, catalogues, onboarding, guides, codebases |
@@ -1511,7 +1535,7 @@ Total skills: 1569
 | `wiki-qa` | Answer repository questions grounded entirely in source code evidence. Use when user asks a question about the codebase, user wants to understand a specific ... | wiki, qa | wiki, qa, answer, repository, questions, grounded, entirely, source, code, evidence, user, asks |
 | `windows-privilege-escalation` | Provide systematic methodologies for discovering and exploiting privilege escalation vulnerabilities on Windows systems during penetration testing engagements. | windows, privilege, escalation | windows, privilege, escalation, provide, systematic, methodologies, discovering, exploiting, vulnerabilities, during, penetration, testing |
 
-## workflow (107)
+## workflow (109)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -1574,6 +1598,7 @@ Total skills: 1569
 | `libreoffice/writer` | Document creation, format conversion (ODT/DOCX/PDF), mail merge, and automation with LibreOffice Writer. | libreoffice/writer | libreoffice/writer, writer, document, creation, format, conversion, odt, docx, pdf, mail, merge, automation |
 | `linear-automation` | Automate Linear tasks via Rube MCP (Composio): issues, projects, cycles, teams, labels. Always search tools first for current schemas. | linear | linear, automation, automate, tasks, via, rube, mcp, composio, issues, cycles, teams, labels |
 | `linkedin-automation` | Automate LinkedIn tasks via Rube MCP (Composio): create posts, manage profile, company info, comments, and image uploads. Always search tools first for curre... | linkedin | linkedin, automation, automate, tasks, via, rube, mcp, composio, posts, profile, company, info |
+| `lookdev-auto` | Automated visual tuning: a vision or video model rates rendered variants in a loop. Render several labeled variants into one artifact, ask the model to rate ... | visual-eval, vision-model, tuning, automation, render-loop | visual-eval, vision-model, tuning, automation, render-loop, lookdev, auto, automated, visual, vision, video, model |
 | `make-automation` | Automate Make (Integromat) tasks via Rube MCP (Composio): operations, enums, language and timezone lookups. Always search tools first for current schemas. | make | make, automation, automate, integromat, tasks, via, rube, mcp, composio, operations, enums, language |
 | `microsoft-teams-automation` | Automate Microsoft Teams tasks via Rube MCP (Composio): send messages, manage channels, create meetings, handle chats, and search messages. Always search too... | microsoft, teams | microsoft, teams, automation, automate, tasks, via, rube, mcp, composio, send, messages, channels |
 | `miro-automation` | Automate Miro tasks via Rube MCP (Composio): boards, items, sticky notes, frames, sharing, connectors. Always search tools first for current schemas. | miro | miro, automation, automate, tasks, via, rube, mcp, composio, boards, items, sticky, notes |
@@ -1591,6 +1616,7 @@ Total skills: 1569
 | `pagerduty-automation` | Automate PagerDuty tasks via Rube MCP (Composio): manage incidents, services, schedules, escalation policies, and on-call rotations. Always search tools firs... | pagerduty | pagerduty, automation, automate, tasks, via, rube, mcp, composio, incidents, schedules, escalation, policies |
 | `posthog-automation` | Automate PostHog tasks via Rube MCP (Composio): events, feature flags, projects, user profiles, annotations. Always search tools first for current schemas. | posthog | posthog, automation, automate, tasks, via, rube, mcp, composio, events, feature, flags, user |
 | `postmark-automation` | Automate Postmark email delivery tasks via Rube MCP (Composio): send templated emails, manage templates, monitor delivery stats and bounces. Always search to... | postmark | postmark, automation, automate, email, delivery, tasks, via, rube, mcp, composio, send, templated |
+| `pr-merge-champion` | Optimize pull requests for quick approval and merging by ensuring clean diffs, comprehensive self-reviews, and structured documentation. | git, github, pull-request, code-review, workflow | git, github, pull-request, code-review, workflow, pr, merge, champion, optimize, pull, requests, quick |
 | `reddit-automation` | Automate Reddit tasks via Rube MCP (Composio): search subreddits, create posts, manage comments, and browse top content. Always search tools first for curren... | reddit | reddit, automation, automate, tasks, via, rube, mcp, composio, search, subreddits, posts, comments |
 | `render-automation` | Automate Render tasks via Rube MCP (Composio): services, deployments, projects. Always search tools first for current schemas. | render | render, automation, automate, tasks, via, rube, mcp, composio, deployments, always, search, first |
 | `salesforce-automation` | Automate Salesforce tasks via Rube MCP (Composio): leads, contacts, accounts, opportunities, SOQL queries. Always search tools first for current schemas. | salesforce | salesforce, automation, automate, tasks, via, rube, mcp, composio, leads, contacts, accounts, opportunities |

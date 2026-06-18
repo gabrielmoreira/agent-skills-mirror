@@ -22,7 +22,9 @@ The contract: the synthesis still appears in chat as the primary output. The HTM
 #    summarize, do not reorder. The HTML must read identically to the chat
 #    response in voice and citations.
 SYNTHESIS_FILE="/tmp/last30days-synthesis-${CLAUDE_SESSION_ID}.md"
-cat > "$SYNTHESIS_FILE" <<'SYNTHESIS_EOF'
+# >| not >: fixed path may already exist on a same-session re-run; a plain >
+# is refused under `set -o noclobber`.
+cat >| "$SYNTHESIS_FILE" <<'SYNTHESIS_EOF'
 What I learned:
 
 **{First headline}** - {body with [name](url) inline citations}
@@ -58,7 +60,7 @@ fi
   --emit=html \
   --synthesis-file "$SYNTHESIS_FILE" \
   "${SCOPE_FLAGS[@]}" \
-  > "$HTML_PATH"
+  >| "$HTML_PATH"   # >| not >: noclobber-safe write to the collision-guarded path
 #    where SCOPE_FLAGS is the same array you passed the first time, e.g.
 #    SCOPE_FLAGS=(--hiring-signals --plan "$QUERY_PLAN_FILE" --x-handle=acme).
 #    For a scoped --hiring-signals brief, --hiring-signals MUST be here too so
@@ -96,7 +98,8 @@ If the user runs `/last30days OpenClaw` normally, sees the synthesis in chat, an
 - Do NOT save HTML if the user didn't ask. The sparse mode (no synthesis) produces a thin file; not useful as a shareable.
 - Do NOT add content to the temp file beyond your synthesis prose. The badge / footer / colophon come from the engine.
 - Do NOT change the file path convention. `${LAST30DAYS_MEMORY_DIR}/${SLUG}-brief.html` is the canonical location.
-- Do NOT silently overwrite an existing file. The `--emit=html` output is written via a shell redirect (`> "$HTML_PATH"`), which OVERWRITES - the engine does NOT auto-date the brief (its date-suffix logic only applies to `--save-dir` raw files). The collision guard in step 2 handles this: if `{slug}-brief.html` already exists it date-suffixes to `{slug}-brief-YYYY-MM-DD.html`. Always print whichever path the redirect actually used. First save = clean `{slug}-brief.html` (no datestamp - that is expected); a datestamp appears only on a same-name collision.
+- Do NOT silently overwrite an existing file. The `--emit=html` output is written via a shell redirect (`>| "$HTML_PATH"`), which OVERWRITES the collision-guarded path — use `>|` not `>` because `set -o noclobber` refuses plain `>` when the file already exists. The collision guard in step 2 handles same-topic re-runs: if `{slug}-brief.html` already exists it date-suffixes to `{slug}-brief-YYYY-MM-DD.html`. Always print whichever path the redirect actually used.
+
 - Do NOT include the data quality warning text in the temp file or in your final chat line. Warnings are an engine-stderr concern, not an artifact concern.
 
 ## Edge cases

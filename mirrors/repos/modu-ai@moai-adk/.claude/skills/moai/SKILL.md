@@ -115,14 +115,14 @@ For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/plan.md (team mod
 ### run - DDD/TDD Implementation
 
 Purpose: Implement SPEC requirements through configured development methodology.
-Agents: manager-strategy, manager-develop (cycle_type=ddd|tdd per quality.yaml), manager-quality, manager-git
+Agents: manager-develop (cycle_type=ddd|tdd per quality.yaml, primary), manager-git
 Flags: --resume SPEC-XXX, --team
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/run.md (team mode: ${CLAUDE_SKILL_DIR}/team/run.md)
 
 ### sync - Documentation Sync and PR
 
 Purpose: Synchronize documentation with code changes and prepare pull requests.
-Agents: manager-docs (primary), manager-quality, manager-git
+Agents: manager-docs (primary), sync-auditor (quality gate), manager-git
 Modes: auto, force, status, project. Flags: --merge, --skip-mx
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/sync.md (team mode: ${CLAUDE_SKILL_DIR}/team/sync.md)
 
@@ -137,42 +137,42 @@ For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/gate.md
 ### security - OWASP Security Audit
 
 Purpose: Dedicated security audit with OWASP Top 10 analysis, dependency scanning, secrets detection, and data isolation checks.
-Agents: expert-security (primary)
+Agents: Agent(general-purpose) with security scope (per archived-agent-rejection §C)
 Flags: --full, --deps, --secrets, --file PATH, --branch BRANCH
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/security.md
 
 ### fix - Auto-Fix Errors
 
 Purpose: Autonomously detect and fix LSP errors, linting issues, and type errors.
-Agents: manager-quality (diagnostic-mode), expert-backend/expert-frontend (fixes)
+Agents: manager-develop (cycle_type=autofix), Agent(general-purpose) with domain whitelist (fixes)
 Flags: --dry, --sequential, --level N, --resume, --team
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/fix.md
 
 ### loop - Iterative Auto-Fix
 
 Purpose: Repeatedly fix issues until completion conditions are satisfied or max iterations reached.
-Agents: manager-quality (diagnostic-mode), expert-backend, expert-frontend, manager-develop
+Agents: manager-develop (cycle_type=autofix), Agent(general-purpose) with domain whitelist
 Flags: --max N, --auto-fix, --seq
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/loop.md
 
 ### mx - MX Tag Scan and Annotation
 
 Purpose: Scan codebase and add @MX code-level annotations for AI agent context.
-Agents: Explore (scan), expert-backend (annotation)
+Agents: Explore (scan), Agent(general-purpose) with backend scope (annotation)
 Flags: --all, --dry, --priority P1-P4, --force, --team
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/mx.md
 
 ### review - Code Review
 
 Purpose: Multi-perspective code review with security, performance, quality, and UX analysis.
-Agents: manager-quality (primary), expert-security
+Agents: sync-auditor (review), Agent(general-purpose) with security scope
 Flags: --staged, --branch, --security, --team
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/review.md (team mode: ${CLAUDE_SKILL_DIR}/team/review.md)
 
 ### clean - Dead Code Removal
 
 Purpose: Identify and safely remove unused code with test verification.
-Agents: expert-refactoring, manager-develop
+Agents: manager-develop, Agent(general-purpose) with refactoring scope
 Flags: --dry, --safe-only, --file PATH
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/clean.md
 
@@ -193,14 +193,14 @@ For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/coverage.md
 ### e2e - End-to-End Testing
 
 Purpose: Create and run E2E tests using Chrome, Playwright, or Agent Browser.
-Agents: manager-develop (cycle_type=tdd), expert-frontend
+Agents: manager-develop (cycle_type=tdd), Agent(general-purpose) with frontend scope
 Flags: --record, --url URL, --journey NAME
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/e2e.md
 
 ### design - Hybrid Design Workflow
 
 Purpose: Produce web/brand design artifacts via Claude Design import (path A) or code-based skill pipeline (path B). Integrates brand context from `.moai/project/brand/` and design briefs from `.moai/design/`.
-Agents: manager-spec (BRIEF), expert-frontend (implementation), sync-auditor (GAN loop scoring)
+Agents: manager-spec (BRIEF), Agent(general-purpose) with frontend scope (implementation), sync-auditor (GAN loop scoring)
 Skills: moai-domain-copywriting, moai-domain-brand-design, moai-workflow-design, moai-workflow-gan-loop
 Flags: --path A|B, --harness thorough|standard, --brief BRIEF-XXX
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/design.md
@@ -209,21 +209,21 @@ For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/design.md
 
 Purpose: Full autonomous research -> plan -> annotate -> run -> sync pipeline.
 Phases: Parallel Exploration (research.md) -> SPEC Generation -> Annotation Cycle -> Implementation -> Sync
-Agents: Explore, manager-spec, manager-develop, manager-quality, manager-docs, manager-git
+Agents: Explore, manager-spec, manager-develop, manager-docs, manager-git, sync-auditor (quality gate)
 Flags: --loop, --max N, --branch, --pr, --resume SPEC-XXX, --team, --solo, --issue (opt-in; default skips GitHub Issue creation per SPEC-V3R5-LATE-BRANCH-001 REQ-LB-009)
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/moai.md
 
 ### project - Project Documentation
 
 Purpose: Generate project documentation by analyzing the existing codebase.
-Agents: Explore, manager-docs, expert-devops (optional)
+Agents: Explore, manager-docs, Agent(general-purpose) with devops scope (optional)
 Output: product.md, structure.md, tech.md in .moai/project/
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/project.md
 
 ### feedback - GitHub Issue Creation
 
 Purpose: Collect user feedback and create GitHub issues.
-Agents: manager-quality
+Agents: orchestrator-direct (records feedback via gh CLI)
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/feedback.md
 
 ### harness - V3R4 Self-Evolving Harness Lifecycle
@@ -329,53 +329,3 @@ Use AskUserQuestion to present the user with logical next actions based on the c
 
 Version: 2.6.0
 Last Updated: 2026-02-25
-
-<!-- moai:evolvable-start id="rationalizations" -->
-## Common Rationalizations
-
-| Rationalization | Reality |
-|---|---|
-| "I will just implement this directly, delegation is overhead" | MoAI is an orchestrator. Direct implementation bypasses the quality gates agents enforce. |
-| "The user's intent is obvious, no need for a Socratic interview" | Ambiguous verbs (clean, fix, improve) almost always produce wrong scope. Rule 5 exists because obvious is often wrong. |
-| "This is a small change, Approach-First is unnecessary" | Small changes still touch files the user cares about. One sentence of approach costs nothing and prevents rework. |
-| "I can run /moai run without a SPEC, it is just a tweak" | Without a SPEC, there is no acceptance criterion to check. Every run without a SPEC silently degrades quality tracking. |
-| "Parallel agents will just race, sequential is safer" | Independent tool calls are explicitly required to run in parallel. Sequentializing them wastes user time. |
-| "I will respond in English since it is technical" | Conversation language is a HARD rule. User-facing output must match the configured language, always. |
-| "Schema 로드가 귀찮으니 이번엔 산문으로 질문하자" | AskUserQuestion/Task* 는 deferred tool. ToolSearch 한 번으로 session 전체 사용 가능. 산문 질문은 HARD 위반 (CLAUDE.md §1, §8 Deferred Tool Preload Protocol). |
-| "짧은 확인 질문은 산문으로 처리해도 된다" | 모든 user-facing 질문은 AskUserQuestion 경유 강제. "짧은 질문"은 예외 아님. Self-check: 응답에 "?" 있으면 AskUserQuestion 호출 동반 필수. |
-
-<!-- moai:evolvable-end -->
-
-<!-- moai:evolvable-start id="red-flags" -->
-## Red Flags
-
-- MoAI writes code directly instead of delegating to a specialized agent
-- Response in English when conversation_language is not English
-- Multiple independent tool calls executed sequentially in separate messages
-- AskUserQuestion with more than 4 options or containing emoji
-- Agent invocation prompt contains absolute paths to the main project when isolation is worktree
-- /moai run executed without a corresponding SPEC-XXX document
-- Response ends with "?" but no AskUserQuestion tool call accompanies it
-- Options listed as markdown (`- A:`, `- B:`, `Option X:`) without structured AskUserQuestion
-- Prose decision requests ("진행할까요?", "어느 것 선호?", "A or B?") instead of AskUserQuestion
-- First AskUserQuestion call in session without prior ToolSearch preload (produces InputValidationError)
-- Waiting for user's next message after prose question without AskUserQuestion tool call
-
-<!-- moai:evolvable-end -->
-
-<!-- moai:evolvable-start id="verification" -->
-## Verification
-
-- [ ] User-facing response language matches conversation_language from language.yaml
-- [ ] Every independent tool call was launched in parallel (one message, multiple tool blocks)
-- [ ] Agent selection trace documents why this agent, not another, was chosen
-- [ ] No XML tags visible in user-facing output
-- [ ] For non-trivial tasks, approach was explained and approved before code changes
-- [ ] SPEC-ID is referenced when /moai run, /moai sync, or /moai fix is invoked
-- [ ] TodoList used to decompose multi-file changes (3+ files)
-- [ ] Session opened with ToolSearch preload of deferred tools (AskUserQuestion, TaskCreate/Update/List/Get)
-- [ ] Every response containing "?" is accompanied by a structured AskUserQuestion tool call
-- [ ] Option lists (`- A:`, `- B:`) are routed through AskUserQuestion, not markdown-only
-- [ ] No silent "wait for user input" state after prose question (§8 Deferred Tool Preload Protocol)
-
-<!-- moai:evolvable-end -->

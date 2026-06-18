@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `open-metadata/OpenMetadata` — 26 default patterns, 2 followed patterns, 88 file(s) materialized.
+Mirror of `open-metadata/OpenMetadata` — 26 default patterns, 3 followed patterns, 89 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `open-metadata/OpenMetadata` — 26 default patterns, 2 followed patte
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 88 |
+| Followed pats | 3 |
+| Files         | 89 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `open-metadata/OpenMetadata` — 26 default patterns, 2 followed patte
 
 - `DEVELOPER.md`
 - `openmetadata-ui/src/main/resources/ui/docs/formutils.md`
+- `openmetadata-ui/src/main/resources/ui/docs/colors.md`
 
 ## File Index
 
@@ -147,7 +148,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 85 | ✓ | [`skills/test-locally/SKILL.md`](skills/test-locally/SKILL.md) |
 | 86 | ✓ | [`skills/verification/SKILL.md`](skills/verification/SKILL.md) |
 | 87 | → | [`DEVELOPER.md`](DEVELOPER.md) |
-| 88 | → | [`openmetadata-ui/src/main/resources/ui/docs/formutils.md`](openmetadata-ui/src/main/resources/ui/docs/formutils.md) |
+| 88 | → | [`openmetadata-ui/src/main/resources/ui/docs/colors.md`](openmetadata-ui/src/main/resources/ui/docs/colors.md) |
+| 89 | → | [`openmetadata-ui/src/main/resources/ui/docs/formutils.md`](openmetadata-ui/src/main/resources/ui/docs/formutils.md) |
 
 ---
 

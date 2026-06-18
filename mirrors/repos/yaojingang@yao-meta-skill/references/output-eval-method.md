@@ -69,6 +69,16 @@ python3 scripts/yao.py output-exec --runner-command '["python3","scripts/local_o
 
 This verifies the command-runner contract, timing capture, grading path, and failure handling. It must not be described as provider-backed model evidence.
 
+For provider-backed evidence, use the bundled provider runner with real credentials:
+
+```bash
+YAO_OUTPUT_EVAL_MODEL=gpt-4.1-mini \
+OPENAI_API_KEY=... \
+python3 scripts/yao.py output-exec --provider-runner openai
+```
+
+The provider runner calls an OpenAI Responses API compatible endpoint, reads input files relative to `evals/output/`, returns `execution_kind: "model"`, and records observed token usage when the provider returns usage fields. If the API key or model is missing, the runner must fail instead of falling back to fixtures or pretending model evidence exists. Use `--provider-base-url` only for reviewed compatible endpoints; non-default HTTPS hosts require `--allow-custom-base-url`, and plain HTTP is allowed only with `--allow-insecure-localhost` for local test servers.
+
 ## Blind A/B Review
 
 Every output eval run should also generate:
@@ -81,7 +91,7 @@ The review pack must hide whether Variant A or Variant B came from the baseline 
 
 ## Reviewer Adjudication
 
-After blind review, record reviewer choices in `reports/output_review_decisions.json` and run:
+After blind review, record reviewer choices in `reports/output_review_decisions.json` with `reviewer`, `reviewed_at`, `winner_variant`, optional `confidence`, and a required rubric-based `reason`, then run:
 
 ```bash
 python3 scripts/adjudicate_output_review.py --write-template
@@ -90,10 +100,13 @@ python3 scripts/yao.py output-review
 
 The adjudication report writes:
 
+- `reports/output_review_decisions.json`
 - `reports/output_review_adjudication.json`
 - `reports/output_review_adjudication.md`
 
-When no reviewer decisions exist, the report should say the cases are pending. Do not count pending cases as human agreement. Only a real `winner_variant` of `A` or `B` should contribute to agreement rate, disagreement count, and reviewer judgment count.
+When no reviewer decisions exist, the report should say the cases are pending and Review Studio should link to the decisions template. Do not count pending cases as human agreement. Only a real `winner_variant` of `A` or `B` with reviewer metadata and a non-empty `reason` should contribute to agreement rate, disagreement count, and reviewer judgment count.
+
+The adjudication report must preserve blind-review integrity: pending and invalid decisions should show the expected winner as hidden. Only reveal `expected_winner_variant` after a valid reviewer decision with rationale exists for that case.
 
 ## Anti-Overfitting
 

@@ -40,7 +40,7 @@ Production, library, and governed reviews should also show a blind A/B review pa
 
 When `reports/output_execution_runs.json` exists, Review Studio should show the number of variant runs, command-executed runs, model-executed runs, recorded fixtures, timing-observed runs, and token-estimated runs. Recorded fixtures are valid reproducibility evidence, but they must not be described as model-executed output evidence.
 
-When `reports/output_review_adjudication.json` exists, Review Studio should show reviewed pairs and pending pairs. Pending reviewer decisions are acceptable as an explicit state, but they must not be counted as agreement or human review evidence. Invalid adjudication records should block release because they make the blind review audit untrustworthy.
+When `reports/output_review_adjudication.json` exists, Review Studio should show reviewed pairs and pending pairs. Pending reviewer decisions are acceptable as an explicit state, but they must not be counted as agreement or human review evidence. For production, library, and governed packages, pending reviewer decisions should keep the Output Lab in `warn` until reviewer decisions are recorded or the warning is explicitly accepted in the waiver ledger. Invalid adjudication records should block release because they make the blind review audit untrustworthy.
 
 The Operations Loop must never display raw telemetry logs. It should link only to `reports/adoption_drift_report.md`; privacy or schema violations are blockers.
 
@@ -65,9 +65,11 @@ Each action must include:
 - `evidence`
 - `verification_command`
 
-`source_refs` must be structured entries with relative `path`, human label, kind, existence flag, best-effort line number, and relative link when the file exists. They should point to the smallest useful report or source file, not just a broad directory.
+`source_refs` must be structured entries with relative `path`, human label, kind, existence flag, best-effort line number, matched pattern, short source excerpt, and relative link when the file exists. They should point to the smallest useful report or source file, not just a broad directory. The HTML page should render the excerpt next to the link so reviewers can understand why a line anchor matters before opening the full artifact.
 
 The HTML page should render these actions before the detailed supporting sections so a reviewer can move directly from warning to fix. Action entries do not change gate count or score; they make the current decision more operational.
+
+For `world-class-evidence`, the action should also expose an evidence-step card for every pending evidence key. Each card should show the submission path, template path, blocked source checks, command handoff, first runbook steps, provenance requirements, success checks, evidence artifacts, and privacy boundary. These cards are collection guidance only; they must not count as accepted evidence or change world-class readiness.
 
 ## Review Annotations
 

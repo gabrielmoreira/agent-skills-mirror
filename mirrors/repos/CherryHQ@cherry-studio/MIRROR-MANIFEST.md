@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 17 followed patterns, 140 file(s) materialized.
+Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 17 followed patterns, 141 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 17 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 17 |
-| Files         | 140 |
+| Files         | 141 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -175,46 +175,47 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 98 | ✓ | [`docs/references/data/data-api-in-main.md`](docs/references/data/data-api-in-main.md) |
 | 99 | ✓ | [`docs/references/data/data-api-in-renderer.md`](docs/references/data/data-api-in-renderer.md) |
 | 100 | ✓ | [`docs/references/data/data-ordering-guide.md`](docs/references/data/data-ordering-guide.md) |
-| 101 | ✓ | [`docs/references/data/database-patterns.md`](docs/references/data/database-patterns.md) |
-| 102 | ✓ | [`docs/references/data/database-seeding-guide.md`](docs/references/data/database-seeding-guide.md) |
-| 103 | ✓ | [`docs/references/data/preference-schema-guide.md`](docs/references/data/preference-schema-guide.md) |
-| 104 | ✓ | [`docs/references/data/preference-usage.md`](docs/references/data/preference-usage.md) |
-| 105 | ✓ | [`docs/references/data/v2-migration-guide.md`](docs/references/data/v2-migration-guide.md) |
-| 106 | ✓ | [`docs/references/ipc/ipc-migration-guide.md`](docs/references/ipc/ipc-migration-guide.md) |
-| 107 | ✓ | [`docs/references/ipc/ipc-overview.md`](docs/references/ipc/ipc-overview.md) |
-| 108 | ✓ | [`docs/references/ipc/ipc-schema-guide.md`](docs/references/ipc/ipc-schema-guide.md) |
-| 109 | ✓ | [`docs/references/ipc/ipc-usage.md`](docs/references/ipc/ipc-usage.md) |
-| 110 | ✓ | [`docs/references/lifecycle/application-overview.md`](docs/references/lifecycle/application-overview.md) |
-| 111 | ✓ | [`docs/references/lifecycle/lifecycle-overview.md`](docs/references/lifecycle/lifecycle-overview.md) |
-| 112 | ✓ | [`docs/references/window-manager/window-manager-api-reference.md`](docs/references/window-manager/window-manager-api-reference.md) |
-| 113 | ✓ | [`docs/references/window-manager/window-manager-migration-guide.md`](docs/references/window-manager/window-manager-migration-guide.md) |
-| 114 | ✓ | [`docs/references/window-manager/window-manager-overview.md`](docs/references/window-manager/window-manager-overview.md) |
-| 115 | ✓ | [`docs/references/window-manager/window-manager-platform.md`](docs/references/window-manager/window-manager-platform.md) |
-| 116 | ✓ | [`docs/references/window-manager/window-manager-usage.md`](docs/references/window-manager/window-manager-usage.md) |
-| 117 | ✓ | [`docs/references/window-manager/window-manager-warmup-mechanics.md`](docs/references/window-manager/window-manager-warmup-mechanics.md) |
-| 118 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/cherry-assistant-guide/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/cherry-assistant-guide/SKILL.md) |
-| 119 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/faq-collector/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/faq-collector/SKILL.md) |
-| 120 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/issue-reporter/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/issue-reporter/SKILL.md) |
-| 121 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/skills-manager/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/skills-manager/SKILL.md) |
-| 122 | ✓ | [`resources/skills/find-skills/SKILL.md`](resources/skills/find-skills/SKILL.md) |
-| 123 | ✓ | [`resources/skills/skill-creator/SKILL.md`](resources/skills/skill-creator/SKILL.md) |
-| 124 | → | [`DESIGN.md`](DESIGN.md) |
-| 125 | → | [`docs/references/data/boot-config-overview.md`](docs/references/data/boot-config-overview.md) |
-| 126 | → | [`docs/references/data/cache-overview.md`](docs/references/data/cache-overview.md) |
-| 127 | → | [`docs/references/data/data-api-overview.md`](docs/references/data/data-api-overview.md) |
-| 128 | → | [`docs/references/data/preference-overview.md`](docs/references/data/preference-overview.md) |
-| 129 | → | [`docs/references/data/README.md`](docs/references/data/README.md) |
-| 130 | → | [`docs/references/ipc/README.md`](docs/references/ipc/README.md) |
-| 131 | → | [`docs/references/lifecycle/lifecycle-decision-guide.md`](docs/references/lifecycle/lifecycle-decision-guide.md) |
-| 132 | → | [`docs/references/lifecycle/lifecycle-migration-guide.md`](docs/references/lifecycle/lifecycle-migration-guide.md) |
-| 133 | → | [`docs/references/lifecycle/lifecycle-usage.md`](docs/references/lifecycle/lifecycle-usage.md) |
-| 134 | → | [`docs/references/lifecycle/README.md`](docs/references/lifecycle/README.md) |
-| 135 | → | [`docs/references/naming-conventions.md`](docs/references/naming-conventions.md) |
-| 136 | → | [`docs/references/testing/database-testing.md`](docs/references/testing/database-testing.md) |
-| 137 | → | [`docs/references/window-manager/README.md`](docs/references/window-manager/README.md) |
-| 138 | → | [`src/main/core/paths/README.md`](src/main/core/paths/README.md) |
-| 139 | → | [`tests/__mocks__/README.md`](tests/__mocks__/README.md) |
-| 140 | → | [`v2-refactor-temp/docs/breaking-changes/README.md`](v2-refactor-temp/docs/breaking-changes/README.md) |
+| 101 | ✓ | [`docs/references/data/database-construction.md`](docs/references/data/database-construction.md) |
+| 102 | ✓ | [`docs/references/data/database-patterns.md`](docs/references/data/database-patterns.md) |
+| 103 | ✓ | [`docs/references/data/database-seeding-guide.md`](docs/references/data/database-seeding-guide.md) |
+| 104 | ✓ | [`docs/references/data/preference-schema-guide.md`](docs/references/data/preference-schema-guide.md) |
+| 105 | ✓ | [`docs/references/data/preference-usage.md`](docs/references/data/preference-usage.md) |
+| 106 | ✓ | [`docs/references/data/v2-migration-guide.md`](docs/references/data/v2-migration-guide.md) |
+| 107 | ✓ | [`docs/references/ipc/ipc-migration-guide.md`](docs/references/ipc/ipc-migration-guide.md) |
+| 108 | ✓ | [`docs/references/ipc/ipc-overview.md`](docs/references/ipc/ipc-overview.md) |
+| 109 | ✓ | [`docs/references/ipc/ipc-schema-guide.md`](docs/references/ipc/ipc-schema-guide.md) |
+| 110 | ✓ | [`docs/references/ipc/ipc-usage.md`](docs/references/ipc/ipc-usage.md) |
+| 111 | ✓ | [`docs/references/lifecycle/application-overview.md`](docs/references/lifecycle/application-overview.md) |
+| 112 | ✓ | [`docs/references/lifecycle/lifecycle-overview.md`](docs/references/lifecycle/lifecycle-overview.md) |
+| 113 | ✓ | [`docs/references/window-manager/window-manager-api-reference.md`](docs/references/window-manager/window-manager-api-reference.md) |
+| 114 | ✓ | [`docs/references/window-manager/window-manager-migration-guide.md`](docs/references/window-manager/window-manager-migration-guide.md) |
+| 115 | ✓ | [`docs/references/window-manager/window-manager-overview.md`](docs/references/window-manager/window-manager-overview.md) |
+| 116 | ✓ | [`docs/references/window-manager/window-manager-platform.md`](docs/references/window-manager/window-manager-platform.md) |
+| 117 | ✓ | [`docs/references/window-manager/window-manager-usage.md`](docs/references/window-manager/window-manager-usage.md) |
+| 118 | ✓ | [`docs/references/window-manager/window-manager-warmup-mechanics.md`](docs/references/window-manager/window-manager-warmup-mechanics.md) |
+| 119 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/cherry-assistant-guide/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/cherry-assistant-guide/SKILL.md) |
+| 120 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/faq-collector/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/faq-collector/SKILL.md) |
+| 121 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/issue-reporter/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/issue-reporter/SKILL.md) |
+| 122 | ✓ | [`resources/builtin-agents/cherry-assistant/.claude/skills/skills-manager/SKILL.md`](resources/builtin-agents/cherry-assistant/.claude/skills/skills-manager/SKILL.md) |
+| 123 | ✓ | [`resources/skills/find-skills/SKILL.md`](resources/skills/find-skills/SKILL.md) |
+| 124 | ✓ | [`resources/skills/skill-creator/SKILL.md`](resources/skills/skill-creator/SKILL.md) |
+| 125 | → | [`DESIGN.md`](DESIGN.md) |
+| 126 | → | [`docs/references/data/boot-config-overview.md`](docs/references/data/boot-config-overview.md) |
+| 127 | → | [`docs/references/data/cache-overview.md`](docs/references/data/cache-overview.md) |
+| 128 | → | [`docs/references/data/data-api-overview.md`](docs/references/data/data-api-overview.md) |
+| 129 | → | [`docs/references/data/preference-overview.md`](docs/references/data/preference-overview.md) |
+| 130 | → | [`docs/references/data/README.md`](docs/references/data/README.md) |
+| 131 | → | [`docs/references/ipc/README.md`](docs/references/ipc/README.md) |
+| 132 | → | [`docs/references/lifecycle/lifecycle-decision-guide.md`](docs/references/lifecycle/lifecycle-decision-guide.md) |
+| 133 | → | [`docs/references/lifecycle/lifecycle-migration-guide.md`](docs/references/lifecycle/lifecycle-migration-guide.md) |
+| 134 | → | [`docs/references/lifecycle/lifecycle-usage.md`](docs/references/lifecycle/lifecycle-usage.md) |
+| 135 | → | [`docs/references/lifecycle/README.md`](docs/references/lifecycle/README.md) |
+| 136 | → | [`docs/references/naming-conventions.md`](docs/references/naming-conventions.md) |
+| 137 | → | [`docs/references/testing/database-testing.md`](docs/references/testing/database-testing.md) |
+| 138 | → | [`docs/references/window-manager/README.md`](docs/references/window-manager/README.md) |
+| 139 | → | [`src/main/core/paths/README.md`](src/main/core/paths/README.md) |
+| 140 | → | [`tests/__mocks__/README.md`](tests/__mocks__/README.md) |
+| 141 | → | [`v2-refactor-temp/docs/breaking-changes/README.md`](v2-refactor-temp/docs/breaking-changes/README.md) |
 
 ---
 

@@ -1,8 +1,8 @@
 ---
 name: stitch::upload-to-stitch
 description: >-
-  Upload local assets (images, mockups, extracted HTML) to a Stitch project.
-  ALWAYS use this skill when you need to upload visual assets or full HTML pages
+  Upload local assets (images, mockups, extracted HTML, design markdown) to a Stitch project.
+  ALWAYS use this skill when you need to upload visual assets, HTML pages, or design docs
   to Stitch, particularly when direct MCP tool calls fail or truncate due to
   base64 token limits.
 allowed-tools:
@@ -15,7 +15,7 @@ allowed-tools:
 
 # Upload-to-Stitch
 
-Upload local assets (images, mockups, HTML files) to a Stitch project using the
+Upload local assets (images, mockups, HTML, and markdown files) to a Stitch project using the
 provided upload script, which bypasses the MCP tool's base64 output token limits.
 
 > [!NOTE]
@@ -60,18 +60,23 @@ python3 <SKILL_DIR>/scripts/upload_to_stitch.py \
   --file-path <PATH_TO_FILE> \
   --api-key <API_KEY> \
   [--api-url <STITCH_API_URL>] \
-  [--title <SCREEN_TITLE>]
+  [--title <SCREEN_TITLE>] \
+  [--generated-by <GENERATED_BY>]
 ```
 
 > [!TIP]
 > **macOS / SSL Certificate Troubleshooting:**
 > If the upload fails with `ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] unable to get local issuer certificate`, this means your Python installation does not have root certificate authorities configured.
-> Fix it by prepending `SSL_CERT_FILE` using the `certifi` bundle:
+> 
+> The script automatically attempts to use the `certifi` package to load the CA bundle if it is installed in your python environment. If `certifi` is not installed, you can either install it (`pip install certifi`) or manually supply the `SSL_CERT_FILE` environment variable when running the script:
 > ```bash
 > SSL_CERT_FILE=$(python3 -c "import certifi; print(certifi.where())") python3 <SKILL_DIR>/scripts/upload_to_stitch.py \
 >   --project-id <PROJECT_ID> \
 >   --file-path <PATH_TO_FILE> \
->   --api-key <API_KEY>
+>   --api-key <API_KEY> \
+>   [--api-url <STITCH_API_URL>] \
+>   [--title <SCREEN_TITLE>] \
+>   [--generated-by <GENERATED_BY>]
 > ```
 
 ### Supported File Types
@@ -82,12 +87,15 @@ python3 <SKILL_DIR>/scripts/upload_to_stitch.py \
 | `.jpg`, `.jpeg` | `image/jpeg` |
 | `.webp` | `image/webp` |
 | `.html`, `.htm` | `text/html` |
+| `.md` | `text/markdown` |
 
 The script auto-detects MIME type from the file extension.
 
-### Script Defaults
+### Script Options
 
-- `--api-url` defaults to `https://stitch.googleapis.com`
-- `--api-key` is **required**
-- Screen instances are automatically created for display
-- For HTML files, `screenType` is set to `DOCUMENT`; for images, `IMAGE`
+- `--project-id`: **Required**. The Stitch project ID.
+- `--file-path`: **Required**. Path to the local file to upload.
+- `--api-key`: **Required**. API key for Stitch authorization.
+- `--api-url`: Optional. Base URL of the Stitch API. Defaults to `https://stitch.googleapis.com`.
+- `--title`: Optional. Title for the uploaded screen.
+- `--generated-by`: Optional. Specify how the uploaded file was generated (e.g., 'stitch::extract-static-html' skill, 'Claude Code', 'Codex', 'Gemini' etc.).

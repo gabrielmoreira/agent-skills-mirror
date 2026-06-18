@@ -93,11 +93,14 @@ Use this path for any new skill or meaningful behavior change:
 - Self-governing files must be collapsed, not just appended to. When a file's own header forbids monotonic growth (for example `rules/anti-patterns.md` and `skills/write/references/write-zh.md`), enforce it: fold new specifics back into existing principles and delete re-indexes, rather than treating the header as decoration.
 - Local-only instruction overlays are not durable source of truth. If a rule must guide future contributors or packaged agents, put it in tracked public docs or shipped skill/rule files.
 - Local review and health checks must account for modified, staged, and untracked files. New helpers, tests, references, and packaging allowlists are part of the review surface before they are committed.
+- Runtime install contracts are part of the source of truth for agent surfaces. Marketplace metadata, plugin manifests, generated mirrors, and package archives are not done until the installed path works in a clean environment.
 
 ## Distribution Rules
 
 - `.claude-plugin/marketplace.json`, `.agents/plugins/marketplace.json`, `plugins/waza/.codex-plugin/plugin.json`, `skills/RESOLVER.md`, and every `skills/*/SKILL.md` must agree on skill names, descriptions, versions, and source paths.
 - `npx skills add tw93/Waza` should install the eight direct coding skills by default. Do not add a source-root `SKILL.md`; it prevents nested skill discovery.
+- Codex marketplace entries must resolve to `plugins/waza`, not the repository root. After Codex marketplace, plugin manifest, or plugin mirror changes, verify an isolated install flow rather than only checking JSON shape.
+- Plugin mirror generation must filter local cache and noise files in both generator and verifier paths, including `__pycache__`, `*.pyc`, `.pytest_cache`, `.ruff_cache`, `.mypy_cache`, and `.DS_Store`.
 - Claude Desktop uses the release ZIP built by `scripts/package-skill.sh`.
 - `scripts/package-skill.sh` builds a public archive with exactly one generated root `SKILL.md`; nested `skills/*/SKILL.md` files are inlined for packaged installs.
 - Do not make packaged skills resolve scripts or references through personal home-directory caches or machine paths. Resolve relative to the installed Waza directory.
@@ -107,7 +110,7 @@ Use this path for any new skill or meaningful behavior change:
 
 - Skill behavior changes: run `python3 scripts/verify_skills.py` and the relevant smoke target.
 - Packaging changes: run `make package` and inspect the generated archive.
-- Marketplace, resolver, or root dispatcher changes: run `python3 scripts/verify_skills.py` and confirm every marketplace source points at an existing skill directory.
+- Marketplace, resolver, or root dispatcher changes: run `python3 scripts/verify_skills.py` and confirm every marketplace source points at an existing skill directory. For Codex plugin changes, also run a clean install smoke such as `CODEX_HOME=$(mktemp -d) codex plugin marketplace add <repo>` followed by `codex plugin add waza@waza` and `codex plugin list`.
 - Non-trivial diffs: run the review workflow before release handoff.
 - Documentation-only changes: check internal links and command names.
 
@@ -117,6 +120,7 @@ Use this path for any new skill or meaningful behavior change:
 - Keep commits atomic. A commit touching more than ~20 files should split into packaging / docs / scripts / per-skill units, unless every file is the same codegen output from `make regenerate`.
 - Release tags use lowercase `v{version}`.
 - Rebuild packaged artifacts before publishing release assets. Run `make package` before publishing; CI should upload the ZIP on published releases.
+- Before saying a Waza release is ready or done, separate the evidence layers: source diff, CI, generated metadata, package contents, GitHub release assets, npm registry/dist-tag state, and installed-runtime smoke. Missing layers are explicit gaps, not implied passes.
 - After a GitHub release is published and assets are verified, add every positive release reaction with `gh api`: `+1`, `laugh`, `heart`, `hooray`, `rocket`, and `eyes`. Resolve the release id from the tag, POST each reaction to `repos/<owner>/<repo>/releases/<id>/reactions`, then re-read reactions to confirm them.
 - **Never add the `-1` or `confused` reactions**. Those are negative signals; adding them to one's own release reads as self-deprecation. Only the six positive reactions above.
 

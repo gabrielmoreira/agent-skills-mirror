@@ -30,6 +30,7 @@ Low assertion diversity signals shallow testing. Tests may pass while bugs hide 
 - User wants to know if test assertions are too shallow or trivial
 - User asks for assertion coverage metrics or diversity analysis
 - User suspects tests give false confidence despite passing
+- The `code-testing-generator` agent (or any test-generation workflow) calls this skill as a pre-completion self-review step on freshly generated tests, before declaring the run finished
 
 ## When Not to Use
 

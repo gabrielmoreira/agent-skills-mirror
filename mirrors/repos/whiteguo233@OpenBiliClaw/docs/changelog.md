@@ -4,9 +4,17 @@
 
 ---
 
-## v0.3.126 / extension v0.3.81: X 文字推荐卡与画像学习修复（2026-06-17）
+## v0.3.128 / extension v0.3.83: 抖音 DOM-first discovery（2026-06-18）
 
-后端源码走 `backend-v0.3.126`，浏览器插件走 `extension-v0.3.81`。桌面安装包未改动；如冻结包用户需要同步本次 Web / 后端修复，可后续单独打 `desktop-v0.3.126`。
+后端源码走 `backend-v0.3.128`，浏览器插件走 `extension-v0.3.83`。桌面安装包未改动；如冻结包用户需要同步本次 Web / 后端修复，可后续单独打 `desktop-v0.3.128`。
+
+- **抖音 search / hot / feed discovery 改为 DOM-first**：三类插件任务后台 tab 统一先打开抖音首页，再模拟真实 DOM 操作触发搜索、热点或推荐流加载；content script 不再主动跳 `/search/...`、`/hot/...` 快捷 URL，也不再主动调用 search / related / feed API bridge，只被动收集页面自己发出的响应和已渲染 DOM。插件任务为空 / 超时 / 失败时默认返回空结果，direct-cookie fallback 仅保留给显式 `allow_direct_fallback=True` 的诊断路径。
+- **抖音 discovery 真实浏览器联调修复**：feed 真实页面当前通过 XHR 发 `/aweme/v2/web/module/feed/`，MAIN-world passive tap 已覆盖 fetch / XHR 两种路径；search / hot / feed 回传前按目标 scope 过滤，避免首页 feed 响应被误计入 search / hot。真实干净会话里 feed 可从首页推荐流回传 `dy_feed` 候选；search / hot 在未登录或入口不可见时保持 DOM-first 但返回空结果。
+- **沉淀 agentic 开发过程文档**：新增 `docs/superpowers/` 下的本次设计说明与实施计划，记录抖音 DOM-first discovery 的目标行为、组件边界、测试路径和真实联调约束。
+
+## v0.3.127 / extension v0.3.82: LLM 探针与 Soul 更新链路文档（2026-06-17）
+
+后端源码走 `backend-v0.3.127`，浏览器插件走 `extension-v0.3.82`。桌面安装包未改动；如冻结包用户需要同步本次 Web / 后端修复，可后续单独打 `desktop-v0.3.127`。
 
 - **GitHub Releases 增加聚合 Latest 入口**：新增 `openbiliclaw-v*` 用户发布页，由 `backend-v*` / `extension-v*` / `desktop-v*` 三条 workflow 共同同步；页面会同时展示后端源码 tag、最新插件 zip 与桌面安装包，避免 Releases 首页被单一通道 release 占住。
 - **X / Twitter 推荐卡三端归一**：插件 side panel、移动 Web 与桌面 Web 会把 `x` / `twitter` / `x.com` / `twitter.com` 统一归一为 `source_platform="twitter"`，标签显示为 `X (Twitter)`；候选池 source family、点击上报 URL 推断和 fallback URL 也同步映射 X，不再退成 Web 或 B 站。
@@ -14,7 +22,12 @@
 - **PC Web 平台过滤 tab 从配置驱动**：桌面 Web `/web` 推荐页的 `全部 / B站 / YouTube / ...` tab 现在先读取 `config.sources` 与 `scheduler.pool_source_shares` 中启用的平台，再合并当前推荐列表里实际出现的平台；点击某个平台只过滤当前已加载推荐，没有命中时允许展示空列表。
 - **推荐评论反馈改为中性直接反馈**：`feedback_type=comment` 不再默认当正向偏好；事件满意度分类改为 `neutral/direct_feedback`，PreferenceAnalyzer prompt 明确要求根据 `feedback_note` / 备注 / `context` 判断喜欢、不喜欢或仅补充说明。
 - **聊天候选进入偏好层的门槛从 AND 改为 OR**：`learn_from_dialogue()` 仍先落 `dialogue` 事件并累计 `insight_candidates.json`，但现在候选满足 `confidence >= 0.8` 或 `occurrences >= 2` 任一条件即可转成 `dialogue_insight` 进入 `PreferenceAnalyzer`。
+- **LLM 测试连接输出预算调大**：`LLMProvider.health_check()` 与配置页 `/api/config/probe-service` 的 LLM 探针统一传 `max_tokens=1024`，减少 reasoning-first / OpenAI-compatible provider 在测试连接时被截断成空响应的误报。
 - **Soul 架构图与更新流程图重绘**：`docs/diagrams/soul-architecture.html` 和 `docs/diagrams/soul-update-flow.html` 对齐当前真实写回路径、pipeline 输入矩阵和场景示例；`docs/index.md` 同步刷新图表入口。新增 `docs/technical-debt.md`，把画像写入并发风险、Soul 重建 prompt 增长风险迁出 v0.1 todolist。
+- **Soul HTML 架构图补齐后台触发器**：`docs/diagrams/soul-architecture.html` 与 `docs/diagrams/soul-update-flow.html` 补充账户同步、runtime soul pipeline tick、speculator / cognition / consolidation 定时节流、探针响应、手动覆盖层和 `discovery_cron` 非消费边界。
+- **新增跨平台行为事件技术债记录**：`docs/technical-debt.md` 新增 TD-003，记录当前只有 B 站具备账号侧行为拉取入口，外站 bootstrap / discovery / 插件实时事件尚未统一形成 Soul 维护闭环。
+- **补齐 Soul 内部技术债清单**：`docs/technical-debt.md` 新增 TD-004 至 TD-008，记录 ProfileUpdatePipeline 未成为真实单入口、B 站 account sync 已有画像后只更新 preference、聊天学习后台任务未接入 registry、聊天 insight 候选合并依赖精确字符串，以及旧 awareness / insight 公开入口仍保留固定窗口语义。
+- **推荐 dislike 批处理补齐候选池清理**：`process_feedback_batch_if_needed()` 现在会 diff 本批新增的 `disliked_topics`，并复用 `purge_pool_for_new_dislikes()` 以后台任务清理 fresh 候选池；普通推荐卡片多次 `dislike` 学到长期避雷项后，不再只更新画像而漏清已有同类候选。
 - **热重载补货重启测试稳定性**：`BackgroundTaskRegistry.stats()` 只统计尚未完成的任务，CI 测试改为捕获 `track()` 调度的 task 并等待其完成，不再依赖任务是否仍处于 live 状态。
 
 ## extension v0.3.80: 对话历史自动滚到底部（2026-06-16）

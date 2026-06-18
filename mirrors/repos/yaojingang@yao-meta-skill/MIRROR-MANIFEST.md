@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `yaojingang/yao-meta-skill` — 26 default patterns, 14 followed patterns, 38 file(s) materialized.
+Mirror of `yaojingang/yao-meta-skill` — 26 default patterns, 11 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `yaojingang/yao-meta-skill` — 26 default patterns, 14 followed patte
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 14 |
-| Files         | 38 |
+| Followed pats | 11 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,16 +55,13 @@ Mirror of `yaojingang/yao-meta-skill` — 26 default patterns, 14 followed patte
 - `references/operating-modes.md`
 - `references/resource-boundaries.md`
 - `references/intent-dialogue.md`
-- `references/reference-scan.md`
 - `references/skill-ir-method.md`
 - `references/output-eval-method.md`
-- `references/distribution-registry-method.md`
-- `references/telemetry-drift-method.md`
-- `references/review-waiver-method.md`
 - `references/review-studio-method.md`
 - `references/artifact-design-doctrine.md`
 - `references/systems-thinking-doctrine.md`
 - `references/governance.md`
+- `references/skillops-decision-policy.md`
 
 ## File Index
 
@@ -72,44 +69,45 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`agents/interface.yaml`](agents/interface.yaml) |
-| 3 | ✓ | [`examples/complex-release-orchestrator/generated-skill/SKILL.md`](examples/complex-release-orchestrator/generated-skill/SKILL.md) |
-| 4 | ✓ | [`examples/evolution-frontend-review/final/SKILL.md`](examples/evolution-frontend-review/final/SKILL.md) |
-| 5 | ✓ | [`examples/evolution-frontend-review/v0/SKILL.md`](examples/evolution-frontend-review/v0/SKILL.md) |
-| 6 | ✓ | [`examples/evolution-frontend-review/v1/SKILL.md`](examples/evolution-frontend-review/v1/SKILL.md) |
-| 7 | ✓ | [`examples/governed-incident-command/generated-skill/SKILL.md`](examples/governed-incident-command/generated-skill/SKILL.md) |
-| 8 | ✓ | [`examples/simple-note-cleanup/generated-skill/SKILL.md`](examples/simple-note-cleanup/generated-skill/SKILL.md) |
-| 9 | ✓ | [`examples/team-frontend-review/generated-skill/SKILL.md`](examples/team-frontend-review/generated-skill/SKILL.md) |
-| 10 | ✓ | [`references/authoring-discipline.md`](references/authoring-discipline.md) |
-| 11 | ✓ | [`references/gate-selection.md`](references/gate-selection.md) |
-| 12 | ✓ | [`references/iteration-philosophy.md`](references/iteration-philosophy.md) |
-| 13 | ✓ | [`references/non-skill-decision-tree.md`](references/non-skill-decision-tree.md) |
-| 14 | ✓ | [`references/output-quality-risk.md`](references/output-quality-risk.md) |
-| 15 | ✓ | [`references/output-visual-quality.md`](references/output-visual-quality.md) |
-| 16 | ✓ | [`references/pattern-extraction-doctrine.md`](references/pattern-extraction-doctrine.md) |
-| 17 | ✓ | [`references/prompt-engineering-doctrine.md`](references/prompt-engineering-doctrine.md) |
-| 18 | ✓ | [`references/skill-archetypes.md`](references/skill-archetypes.md) |
-| 19 | ✓ | [`reports/intent-dialogue.md`](reports/intent-dialogue.md) |
-| 20 | ✓ | [`reports/reference-scan.md`](reports/reference-scan.md) |
-| 21 | ✓ | [`SKILL.md`](SKILL.md) |
-| 22 | ✓ | [`tests/fixtures/governance_invalid_manifest/SKILL.md`](tests/fixtures/governance_invalid_manifest/SKILL.md) |
-| 23 | ✓ | [`tests/fixtures/package_invalid_yaml/SKILL.md`](tests/fixtures/package_invalid_yaml/SKILL.md) |
-| 24 | ✓ | [`tests/fixtures/package_missing_interface_field/SKILL.md`](tests/fixtures/package_missing_interface_field/SKILL.md) |
-| 25 | → | [`references/artifact-design-doctrine.md`](references/artifact-design-doctrine.md) |
-| 26 | → | [`references/distribution-registry-method.md`](references/distribution-registry-method.md) |
-| 27 | → | [`references/governance.md`](references/governance.md) |
-| 28 | → | [`references/intent-dialogue.md`](references/intent-dialogue.md) |
-| 29 | → | [`references/operating-modes.md`](references/operating-modes.md) |
-| 30 | → | [`references/output-eval-method.md`](references/output-eval-method.md) |
-| 31 | → | [`references/reference-scan.md`](references/reference-scan.md) |
-| 32 | → | [`references/resource-boundaries.md`](references/resource-boundaries.md) |
-| 33 | → | [`references/review-studio-method.md`](references/review-studio-method.md) |
-| 34 | → | [`references/review-waiver-method.md`](references/review-waiver-method.md) |
-| 35 | → | [`references/skill-engineering-method.md`](references/skill-engineering-method.md) |
-| 36 | → | [`references/skill-ir-method.md`](references/skill-ir-method.md) |
-| 37 | → | [`references/systems-thinking-doctrine.md`](references/systems-thinking-doctrine.md) |
-| 38 | → | [`references/telemetry-drift-method.md`](references/telemetry-drift-method.md) |
+| 1 | ✓ | [`.previews/yao-meta-skill-v2-report-demo/geo-content-brief-skill/reports/intent-dialogue.md`](.previews/yao-meta-skill-v2-report-demo/geo-content-brief-skill/reports/intent-dialogue.md) |
+| 2 | ✓ | [`.previews/yao-meta-skill-v2-report-demo/geo-content-brief-skill/reports/reference-scan.md`](.previews/yao-meta-skill-v2-report-demo/geo-content-brief-skill/reports/reference-scan.md) |
+| 3 | ✓ | [`.previews/yao-meta-skill-v2-report-demo/geo-content-brief-skill/SKILL.md`](.previews/yao-meta-skill-v2-report-demo/geo-content-brief-skill/SKILL.md) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`agents/interface.yaml`](agents/interface.yaml) |
+| 6 | ✓ | [`examples/complex-release-orchestrator/generated-skill/SKILL.md`](examples/complex-release-orchestrator/generated-skill/SKILL.md) |
+| 7 | ✓ | [`examples/evolution-frontend-review/final/SKILL.md`](examples/evolution-frontend-review/final/SKILL.md) |
+| 8 | ✓ | [`examples/evolution-frontend-review/v0/SKILL.md`](examples/evolution-frontend-review/v0/SKILL.md) |
+| 9 | ✓ | [`examples/evolution-frontend-review/v1/SKILL.md`](examples/evolution-frontend-review/v1/SKILL.md) |
+| 10 | ✓ | [`examples/governed-incident-command/generated-skill/SKILL.md`](examples/governed-incident-command/generated-skill/SKILL.md) |
+| 11 | ✓ | [`examples/simple-note-cleanup/generated-skill/SKILL.md`](examples/simple-note-cleanup/generated-skill/SKILL.md) |
+| 12 | ✓ | [`examples/team-frontend-review/generated-skill/SKILL.md`](examples/team-frontend-review/generated-skill/SKILL.md) |
+| 13 | ✓ | [`references/authoring-discipline.md`](references/authoring-discipline.md) |
+| 14 | ✓ | [`references/gate-selection.md`](references/gate-selection.md) |
+| 15 | ✓ | [`references/iteration-philosophy.md`](references/iteration-philosophy.md) |
+| 16 | ✓ | [`references/non-skill-decision-tree.md`](references/non-skill-decision-tree.md) |
+| 17 | ✓ | [`references/output-quality-risk.md`](references/output-quality-risk.md) |
+| 18 | ✓ | [`references/output-visual-quality.md`](references/output-visual-quality.md) |
+| 19 | ✓ | [`references/pattern-extraction-doctrine.md`](references/pattern-extraction-doctrine.md) |
+| 20 | ✓ | [`references/prompt-engineering-doctrine.md`](references/prompt-engineering-doctrine.md) |
+| 21 | ✓ | [`references/reference-scan.md`](references/reference-scan.md) |
+| 22 | ✓ | [`references/skill-archetypes.md`](references/skill-archetypes.md) |
+| 23 | ✓ | [`reports/intent-dialogue.md`](reports/intent-dialogue.md) |
+| 24 | ✓ | [`reports/reference-scan.md`](reports/reference-scan.md) |
+| 25 | ✓ | [`SKILL.md`](SKILL.md) |
+| 26 | ✓ | [`tests/fixtures/governance_invalid_manifest/SKILL.md`](tests/fixtures/governance_invalid_manifest/SKILL.md) |
+| 27 | ✓ | [`tests/fixtures/package_invalid_yaml/SKILL.md`](tests/fixtures/package_invalid_yaml/SKILL.md) |
+| 28 | ✓ | [`tests/fixtures/package_missing_interface_field/SKILL.md`](tests/fixtures/package_missing_interface_field/SKILL.md) |
+| 29 | → | [`references/artifact-design-doctrine.md`](references/artifact-design-doctrine.md) |
+| 30 | → | [`references/governance.md`](references/governance.md) |
+| 31 | → | [`references/intent-dialogue.md`](references/intent-dialogue.md) |
+| 32 | → | [`references/operating-modes.md`](references/operating-modes.md) |
+| 33 | → | [`references/output-eval-method.md`](references/output-eval-method.md) |
+| 34 | → | [`references/resource-boundaries.md`](references/resource-boundaries.md) |
+| 35 | → | [`references/review-studio-method.md`](references/review-studio-method.md) |
+| 36 | → | [`references/skill-engineering-method.md`](references/skill-engineering-method.md) |
+| 37 | → | [`references/skill-ir-method.md`](references/skill-ir-method.md) |
+| 38 | → | [`references/skillops-decision-policy.md`](references/skillops-decision-policy.md) |
+| 39 | → | [`references/systems-thinking-doctrine.md`](references/systems-thinking-doctrine.md) |
 
 ---
 

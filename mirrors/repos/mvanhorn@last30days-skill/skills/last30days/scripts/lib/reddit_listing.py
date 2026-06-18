@@ -128,8 +128,8 @@ def _listing_url(subreddit: str, sort: str) -> str:
 
 def _fetch_one(subreddit: str, sort: str, query: str) -> List[Dict[str, Any]]:
     try:
-        text = http.get_text(_listing_url(subreddit, sort), timeout=LISTING_TIMEOUT,
-                             accept="text/html")
+        text = http.reddit_keyless_get_text(_listing_url(subreddit, sort), timeout=LISTING_TIMEOUT,
+                                            accept="text/html")
         return parse_cards(text, query) if text else []
     except Exception as e:
         _log(f"listing fetch failed r/{subreddit} {sort}: {e}")

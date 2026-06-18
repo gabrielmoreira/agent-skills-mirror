@@ -1,0 +1,31 @@
+---
+description: Megingjord governance harness — Cursor adapter (always-on governance baseline)
+alwaysApply: true
+---
+
+# Megingjord — Global Governance Harness
+
+Cross-team contract entry point: `governance/README.md` (4 invariants:
+Team&Model signing, baton order, ticket-first workflow, dedicated worktree per
+concurrent agent). This file is the Cursor adapter.
+
+## Invariants
+
+1. **Team&Model signing** — all governed artifacts carry `Signed-by` + `Team&Model` provenance.
+2. **Baton order** — Manager → Collaborator → Admin → Consultant; one role active per ticket.
+3. **Ticket-first** — no code or config work without a linked GitHub issue; every commit refs `#N`.
+4. **Dedicated worktree** — each concurrent agent session uses an isolated worktree + branch.
+
+## Harness goals (priority order)
+
+Governance, then Quality, then Zero Cost, then Privacy, then Portability, then Resilience,
+then Throughput, then Observability, then Interoperability, then Maintainability.
+
+## Adapter notes
+
+- Use `governance/README.md` as the canonical contract source.
+- Repo-local governance files may extend or tighten this baseline.
+- Runtime home for Cursor assets (`~/.cursor/`): deploy through the governed `deploy:cursor`
+  workflow only; the project `.cursor/rules/megingjord.mdc` is the committed source.
+- Phase 0 (#3084) is registration + this static adapter; runtime hook/HAMR enforcement
+  lands in Phase 1 (#3085).

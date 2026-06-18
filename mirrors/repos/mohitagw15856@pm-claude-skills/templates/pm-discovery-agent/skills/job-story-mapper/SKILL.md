@@ -1,0 +1,1 @@
+cache/repos/github.com/mohitagw15856@pm-claude-skills/templates/pm-discovery-agent/skills/job-story-mapper/../../../../skills/job-story-mapper/SKILL.md

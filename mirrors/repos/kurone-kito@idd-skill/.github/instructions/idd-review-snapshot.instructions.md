@@ -61,6 +61,17 @@ Additionally, fetch the **current CI state** for `{head-SHA}`:
 treated-as-passed) CI run as `{latest-ci-completed-at}`, or `none` if no
 CI pass exists yet for this HEAD.
 
+**Non-Copilot advisory safety net.** The advisory-wait protocol
+(`idd-advisory-wait.instructions.md`) gives a settle/wait window to
+**Copilot only**. In a repository that configures non-Copilot
+`advisoryBotLogins` (for example CodeRabbit or a Codex connector), this
+E1 activity-universe snapshot plus the `review-watermark` delta is the
+**load-bearing safety net** for their late-arriving findings: a finding
+that lands after CI goes green is caught here and by the F2/F3 currency
+re-check, not by the Copilot advisory-wait window. This is why Step 1
+fetches the entire activity universe and Step 2 records a watermark over
+all of it.
+
 **Step 2 — Record the watermark.** Using the `{head-SHA}` stored at the
 start of Step 1, compute `{max-activity-updatedAt}` as the highest
 `updatedAt` server timestamp across the **entire snapshot** (not just
@@ -68,7 +79,9 @@ the items that will appear in ReviewItems_snapshot). Write `none` if
 the snapshot is
 empty. Compute `{total-item-count}` as the total number of items in the
 snapshot (0 if empty). Persist all six values immediately by posting a
-PR comment with this format:
+PR comment with this format (when helper runtime is enabled, render the
+body with the profile-selected emit-marker command — `--type
+review-watermark`, emit-only; see `docs/idd-helper-scripts.md`):
 
 ```markdown
 <!-- review-watermark: {agent-id} {claim-id} {head-SHA} {max-activity-updatedAt|none} {total-item-count} {latest-ci-completed-at|none} -->
@@ -198,7 +211,9 @@ critique findings unless they were persisted as reviewer-visible
 comments.
 
 After the critique pass completes, post a new `review-baseline` comment
-with the current HEAD SHA using this format:
+with the current HEAD SHA using this format (when helper runtime is
+enabled, render the body with the profile-selected emit-marker command —
+`--type review-baseline`, emit-only; see `docs/idd-helper-scripts.md`):
 
 ```markdown
 <!-- review-baseline: {agent-id} {claim-id} {SHA} -->

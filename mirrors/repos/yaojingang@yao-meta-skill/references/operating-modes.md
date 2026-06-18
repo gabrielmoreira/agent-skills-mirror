@@ -68,11 +68,37 @@ Minimum gates:
 - `trigger_eval.py`
 - `cross_packager.py` for requested targets
 
+## Governed
+
+Use when:
+
+- the skill affects incident, release, compliance, security, or organizational standards
+- external distribution, public claims, or high-permission scripts require reviewable evidence
+- wrong output or wrong activation can cause operational, legal, trust, or reputational harm
+
+Default deliverables:
+
+- everything required for Library
+- explicit owner, lifecycle, review cadence, and expiry-aware approvals
+- trust/security reports for scripts, dependencies, permissions, secrets, and package hash
+- output eval evidence with blind review status and reviewer-visible boundaries
+- world-class or public-claim evidence ledger when public readiness is claimed
+
+Minimum gates:
+
+- Library gates
+- `trust_check.py`
+- runtime permission probes for packaged adapters
+- review waiver ledger for accepted warning-level risk
+- Review Studio before release
+- claim guard before public world-class language
+
 ## Escalation Rules
 
 - stay in Scaffold unless reuse is clearly real
 - move to Production when team reuse or route confusion matters
-- move to Library when the skill becomes shared infrastructure or a governed asset
+- move to Library when the skill becomes shared infrastructure
+- move to Governed when the skill needs explicit risk ownership, high-permission review, or public-claim evidence
 
 ## Context Discipline
 

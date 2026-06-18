@@ -62,7 +62,8 @@ Delegate to the `manage-design-system` skill to upload the `DESIGN.md` and
 create the design system in Stitch. Read
 [skills/manage-design-system/SKILL.md](../manage-design-system/SKILL.md) for
 the full workflow (upload script usage, `create_design_system_from_design_md`
-call, and required schemas).
+call, and required schemas). Pass
+`--generated-by 'stitch::code-to-design'` when uploading.
 
 #### 5. Upload HTML to Stitch
 
@@ -73,3 +74,4 @@ You will need:
 - The path to the standalone HTML file generated in Step 1.
 - Your Stitch API Key (same key used in Step 4).
 - The target `projectId`.
+- The `--generated-by` argument set to `'stitch::extract-static-html'`.

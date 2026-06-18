@@ -100,97 +100,18 @@ Configuration best practices:
 
 ### Standard Process
 
-```
-1. Identify node type and operation
-   ↓
-2. Use get_node (standard detail is default)
-   ↓
-3. Configure required fields
-   ↓
-4. Validate configuration
-   ↓
-5. If field unclear → get_node({mode: "search_properties"})
-   ↓
-6. Add optional fields as needed
-   ↓
-7. Validate again
-   ↓
-8. Deploy
-```
+1. Identify node type and operation.
+2. Use `get_node` (standard detail is default).
+3. Configure required fields.
+4. Validate configuration.
+5. If a field is unclear → `get_node({mode: "search_properties"})`.
+6. Add optional fields as needed.
+7. Validate again.
+8. Deploy.
 
 ### Example: Configuring HTTP Request
 
-**Step 1**: Identify what you need
-```javascript
-// Goal: POST JSON to API
-```
-
-**Step 2**: Get node info
-```javascript
-const info = get_node({
-  nodeType: "nodes-base.httpRequest"
-});
-
-// Returns: method, url, sendBody, body, authentication required/optional
-```
-
-**Step 3**: Minimal config
-```javascript
-{
-  "method": "POST",
-  "url": "https://api.example.com/create",
-  "authentication": "none"
-}
-```
-
-**Step 4**: Validate
-```javascript
-validate_node({
-  nodeType: "nodes-base.httpRequest",
-  config,
-  profile: "runtime"
-});
-// → Error: "sendBody required for POST"
-```
-
-**Step 5**: Add required field
-```javascript
-{
-  "method": "POST",
-  "url": "https://api.example.com/create",
-  "authentication": "none",
-  "sendBody": true
-}
-```
-
-**Step 6**: Validate again
-```javascript
-validate_node({...});
-// → Error: "body required when sendBody=true"
-```
-
-**Step 7**: Complete configuration
-```javascript
-{
-  "method": "POST",
-  "url": "https://api.example.com/create",
-  "authentication": "none",
-  "sendBody": true,
-  "body": {
-    "contentType": "json",
-    "content": {
-      "name": "={{$json.name}}",
-      "email": "={{$json.email}}"
-    }
-  }
-}
-```
-
-**Step 8**: Final validation
-```javascript
-validate_node({...});
-// → Valid! ✅
-```
+The validate-driven loop in practice: start minimal (`method`, `url`, `authentication`), then let each `validate_node` error surface the next required field (`sendBody` for POST → `body` when `sendBody=true`) until valid. Full step-by-step walkthrough in **[OPERATION_PATTERNS.md](OPERATION_PATTERNS.md#worked-example-configuring-http-request-step-by-step)**.
 
 ---
 
@@ -246,129 +167,18 @@ get_node({
 
 ### Decision Tree
 
-```
-┌─────────────────────────────────┐
-│ Starting new node config?       │
-├─────────────────────────────────┤
-│ YES → get_node (standard)       │
-└─────────────────────────────────┘
-         ↓
-┌─────────────────────────────────┐
-│ Standard has what you need?     │
-├─────────────────────────────────┤
-│ YES → Configure with it         │
-│ NO  → Continue                  │
-└─────────────────────────────────┘
-         ↓
-┌─────────────────────────────────┐
-│ Looking for specific field?     │
-├─────────────────────────────────┤
-│ YES → search_properties mode    │
-│ NO  → Continue                  │
-└─────────────────────────────────┘
-         ↓
-┌─────────────────────────────────┐
-│ Still need more details?        │
-├─────────────────────────────────┤
-│ YES → get_node({detail: "full"})│
-└─────────────────────────────────┘
-```
+1. Starting a new node config → `get_node` (standard).
+2. Standard has what you need → configure with it. Otherwise continue.
+3. Looking for a specific field → `search_properties` mode. Otherwise continue.
+4. Still need more → `get_node({detail: "full"})`.
 
 ---
 
 ## Property Dependencies Deep Dive
 
-### displayOptions Mechanism
+Fields have `displayOptions` visibility rules: `show`/`hide` blocks where multiple conditions are AND'd and multiple values are OR'd (e.g. `body` shows when `sendBody=true` AND `method IN (POST, PUT, PATCH)`). The three recurring patterns are the boolean toggle (sendBody → body), the operation switch (post vs update show different fields), and type selection (string vs boolean conditions). To find what controls a field, use `get_node({mode: "search_properties", propertyQuery: "..."})` or `get_node({detail: "full"})` — especially when validation flags a field you don't see.
 
-**Fields have visibility rules**:
-
-```javascript
-{
-  "name": "body",
-  "displayOptions": {
-    "show": {
-      "sendBody": [true],
-      "method": ["POST", "PUT", "PATCH"]
-    }
-  }
-}
-```
-
-**Translation**: "body" field shows when:
-- sendBody = true AND
-- method = POST, PUT, or PATCH
-
-### Common Dependency Patterns
-
-#### Pattern 1: Boolean Toggle
-
-**Example**: HTTP Request sendBody
-```javascript
-// sendBody controls body visibility
-{
-  "sendBody": true   // → body field appears
-}
-```
-
-#### Pattern 2: Operation Switch
-
-**Example**: Slack resource/operation
-```javascript
-// Different operations → different fields
-{
-  "resource": "message",
-  "operation": "post"
-  // → Shows: channel, text, attachments, etc.
-}
-
-{
-  "resource": "message",
-  "operation": "update"
-  // → Shows: messageId, text (different fields!)
-}
-```
-
-#### Pattern 3: Type Selection
-
-**Example**: IF node conditions
-```javascript
-{
-  "type": "string",
-  "operation": "contains"
-  // → Shows: value1, value2
-}
-
-{
-  "type": "boolean",
-  "operation": "equals"
-  // → Shows: value1, value2, different operators
-}
-```
-
-### Finding Property Dependencies
-
-**Use get_node with search_properties mode**:
-```javascript
-get_node({
-  nodeType: "nodes-base.httpRequest",
-  mode: "search_properties",
-  propertyQuery: "body"
-});
-
-// Returns property paths matching "body" with descriptions
-```
-
-**Or use full detail for complete schema**:
-```javascript
-get_node({
-  nodeType: "nodes-base.httpRequest",
-  detail: "full"
-});
-
-// Returns complete schema with displayOptions rules
-```
-
-**Use this when**: Validation fails and you don't understand why field is missing/required
+Mechanism details, all four dependency patterns, complex flows, nested dependencies, and troubleshooting are in **[DEPENDENCIES.md](DEPENDENCIES.md)** (quick-reference recap under [Quick Reference: displayOptions and Common Dependency Patterns](DEPENDENCIES.md#quick-reference-displayoptions-and-common-dependency-patterns)).
 
 ---
 
@@ -466,166 +276,13 @@ get_node({
 
 ## Operation-Specific Configuration
 
-### Slack Node Examples
-
-#### Post Message
-```javascript
-{
-  "resource": "message",
-  "operation": "post",
-  "channel": "#general",      // Required
-  "text": "Hello!",           // Required
-  "attachments": [],          // Optional
-  "blocks": []                // Optional
-}
-```
-
-#### Update Message
-```javascript
-{
-  "resource": "message",
-  "operation": "update",
-  "messageId": "1234567890",  // Required (different from post!)
-  "text": "Updated!",         // Required
-  "channel": "#general"       // Optional (can be inferred)
-}
-```
-
-#### Create Channel
-```javascript
-{
-  "resource": "channel",
-  "operation": "create",
-  "name": "new-channel",      // Required
-  "isPrivate": false          // Optional
-  // Note: text NOT required for this operation
-}
-```
-
-### HTTP Request Node Examples
-
-#### GET Request
-```javascript
-{
-  "method": "GET",
-  "url": "https://api.example.com/users",
-  "authentication": "predefinedCredentialType",
-  "nodeCredentialType": "httpHeaderAuth",
-  "sendQuery": true,                    // Optional
-  "queryParameters": {                  // Shows when sendQuery=true
-    "parameters": [
-      {
-        "name": "limit",
-        "value": "100"
-      }
-    ]
-  }
-}
-```
-
-#### POST with JSON
-```javascript
-{
-  "method": "POST",
-  "url": "https://api.example.com/users",
-  "authentication": "none",
-  "sendBody": true,                     // Required for POST
-  "body": {                             // Required when sendBody=true
-    "contentType": "json",
-    "content": {
-      "name": "John Doe",
-      "email": "john@example.com"
-    }
-  }
-}
-```
-
-### IF Node Examples
-
-#### String Comparison (Binary)
-```javascript
-{
-  "conditions": {
-    "string": [
-      {
-        "value1": "={{$json.status}}",
-        "operation": "equals",
-        "value2": "active"              // Binary: needs value2
-      }
-    ]
-  }
-}
-```
-
-#### Empty Check (Unary)
-```javascript
-{
-  "conditions": {
-    "string": [
-      {
-        "value1": "={{$json.email}}",
-        "operation": "isEmpty",
-        // No value2 - unary operator
-        "singleValue": true             // Auto-added by sanitization
-      }
-    ]
-  }
-}
-```
+Required fields shift with resource + operation: Slack `post` needs `channel`+`text`, but `update` needs `messageId`+`text` (channel optional) and `channel/create` needs `name`. HTTP `GET` uses `sendQuery`+`queryParameters`; `POST` needs `sendBody`+`body`. IF binary operators (`equals`) need `value1`+`value2`; unary (`isEmpty`) need only `value1` plus auto-added `singleValue: true`. Concrete minimal configs for each in **[OPERATION_PATTERNS.md](OPERATION_PATTERNS.md#operation-specific-configuration-examples)**.
 
 ---
 
 ## Handling Conditional Requirements
 
-### Example: HTTP Request Body
-
-**Scenario**: body field required, but only sometimes
-
-**Rule**:
-```
-body is required when:
-  - sendBody = true AND
-  - method IN (POST, PUT, PATCH, DELETE)
-```
-
-**How to discover**:
-```javascript
-// Option 1: Read validation error
-validate_node({...});
-// Error: "body required when sendBody=true"
-
-// Option 2: Search for the property
-get_node({
-  nodeType: "nodes-base.httpRequest",
-  mode: "search_properties",
-  propertyQuery: "body"
-});
-// Shows: body property with displayOptions rules
-
-// Option 3: Try minimal config and iterate
-// Start without body, validation will tell you if needed
-```
-
-### Example: IF Node singleValue
-
-**Scenario**: singleValue property appears for unary operators
-
-**Rule**:
-```
-singleValue should be true when:
-  - operation IN (isEmpty, isNotEmpty, true, false)
-```
-
-**Good news**: Auto-sanitization fixes this!
-
-**Manual check**:
-```javascript
-get_node({
-  nodeType: "nodes-base.if",
-  detail: "full"
-});
-// Shows complete schema with operator-specific rules
-```
+Some fields are required only under certain conditions: HTTP `body` is required when `sendBody=true` AND `method IN (POST, PUT, PATCH, DELETE)`; IF `singleValue` should be `true` when the operator is unary (`isEmpty`, `isNotEmpty`, `true`, `false`) — and auto-sanitization sets it for you. Discover conditional requirements by reading the validation error, searching the property (`get_node({mode: "search_properties"})`), or iterating from a minimal config. Worked discovery examples in **[DEPENDENCIES.md](DEPENDENCIES.md#handling-conditional-requirements)**.
 
 ---
 
@@ -813,12 +470,28 @@ n8n_update_partial_workflow({
 
 ---
 
+## Silent-Failure Gotchas by Node Family
+
+Some misconfigurations pass `validate_node` and `validate_workflow` clean, run without error, and quietly do the wrong thing — `get_node` shows the fields exist but not what happens when you omit them. The high-frequency ones:
+
+- **Switch** — no `options.fallbackOutput` ⇒ unmatched items silently dropped.
+- **Merge** — `numberOfInputs` defaults to 2 (extra sources drop); `useDataOfInput` is 1-indexed vs the 0-indexed `connections.<src>.main[idx]` slot (`useDataOfInput: "N"` → `main[N-1]`).
+- **Database** — `{{ }}` interpolation into `parameters.query` is SQL injection; use `$1/$2` placeholders + `options.queryReplacement`.
+- **Slack** — Block Kit must be wrapped `={{ { "blocks": ... } }}` or it posts as plain text.
+- **Webhook / Respond** — `responseCode` defaults to 200 even on error branches.
+- **Schedule Trigger** — timezone is workflow-level (Workflow Settings), not per-rule.
+
+Full symptom/cause/fix detail (in JSON + `n8n_update_partial_workflow` terms) in **[NODE_FAMILY_GOTCHAS.md](NODE_FAMILY_GOTCHAS.md)**.
+
+---
+
 ## Detailed References
 
 For comprehensive guides on specific topics:
 
 - **[DEPENDENCIES.md](DEPENDENCIES.md)** - Deep dive into property dependencies and displayOptions
 - **[OPERATION_PATTERNS.md](OPERATION_PATTERNS.md)** - Common configuration patterns by node type
+- **[NODE_FAMILY_GOTCHAS.md](NODE_FAMILY_GOTCHAS.md)** - Silent runtime traps by family (Switch, Merge, Database, Slack, Webhook, Schedule)
 
 ---
 

@@ -29,6 +29,14 @@ In the idd-skill source repository, the following optional helpers were adopted:
   verification; A5(d) open-PR conflict checks remain manual by design
   (referenced in
   [kurone-kito/idd-skill#393](https://github.com/kurone-kito/idd-skill/issues/393))
+- `scripts/branch-name.mjs` for the A5(e) canonical
+  `issue/<number>-<slug>` branch-name slug computation; deterministic and
+  network-free (referenced in
+  [kurone-kito/idd-skill#901](https://github.com/kurone-kito/idd-skill/issues/901))
+- `scripts/emit-marker.mjs` for emitting the per-cycle `claimed-by` /
+  `review-watermark` / `review-baseline` marker bodies (emit-only, no
+  network write; referenced in
+  [kurone-kito/idd-skill#900](https://github.com/kurone-kito/idd-skill/issues/900))
 - `scripts/resume-claim-routing.mjs` for Resume Step 1 claim-state
   evaluation and takeover routing (referenced in
   [kurone-kito/idd-skill#394](https://github.com/kurone-kito/idd-skill/issues/394))
@@ -97,9 +105,10 @@ In the idd-skill source repository, the following optional helpers were adopted:
 
 **Post-Merge Audit Helpers:**
 
-- `scripts/cleanup-hygiene-report.mjs` for post-merge cleanup hygiene
-  metrics aggregation and trend reporting (referenced in
-  [kurone-kito/idd-skill#438](https://github.com/kurone-kito/idd-skill/issues/438))
+- `scripts/merged-pr-feedback-sweep.mjs` for read-only detection of
+  unresolved / unaddressed advisory feedback on merged PRs, fed manually to
+  the issue-authoring skill (referenced in
+  [kurone-kito/idd-skill#931](https://github.com/kurone-kito/idd-skill/issues/931))
 
 **Utility and Diagnostic Commands:**
 
@@ -116,73 +125,6 @@ future inventory reviews do not need to re-infer their role from code.
 - `scripts/phase-id-resolver.mjs` (`idd-phase-id-resolver`) — phase ID
   normalization utility; resolves canonical phase IDs from aliases and
   validates token format.
-
-### Cleanup Hygiene Report Metrics
-
-The cleanup-hygiene-report.mjs helper generates an auditable snapshot of
-PR cleanup status across merged pull requests. It tracks cleanup success
-metrics and trends over time using a versioned schema.
-
-**Metric Schema (version 1.0):**
-
-- **Summary metrics** — overall cleanup status:
-  - `totalMergedPRs`: Total number of merged pull requests in the
-    measurement window (integer)
-  - `clean`: Count of PRs with zero minimization candidates (integer)
-  - `needsApply`: Count of PRs with one or more unaddressed candidates
-    (integer)
-  - `cleanPercentage`: Ratio of clean PRs relative to total merged
-    (formula: `clean / totalMergedPRs * 100`, range: 0.0–100.0)
-
-- **Candidates breakdown** (`candidatesByClassifier`) — classification of
-  minimization candidates:
-  - `thresholdMissing`: Candidates below the automation threshold (integer)
-  - `skippedWithReason`: Candidates with a documented skip reason
-    (integer; reasons: review-thread-unresolved, operational-marker-present,
-    held-by-maintainer)
-  - `applied`: Successfully minimized comments (integer)
-  - `failed`: Minimization attempts that failed (integer)
-
-- **Top skip reasons** — most common reasons for deferring cleanup:
-  - Array of objects with `reason` (string) and `count` (integer) fields
-  - Tracked reasons: "review-thread-unresolved", "operational-marker-present",
-    "held-by-maintainer"
-  - Interpretation: helps identify process blockers and coordination needs
-
-- **Trends** — time-sliced metrics for pattern detection:
-  - **Recent** (7-day rolling window):
-    - `days`: 7 (fixed window width)
-    - `startDate`: timestamp of 7 days ago (ISO 8601)
-    - `endDate`: current timestamp (ISO 8601)
-    - `metrics`: summary counts (totalMergedPRs, clean, needsApply)
-    - Use case: detect acute changes or spike patterns in cleanup health
-  - **Historical** (before the 7-day window):
-    - `beforeDate`: timestamp matching recent window start (ISO 8601)
-    - `metrics`: aggregated summary counts
-    - Use case: establish baseline trends for longer-term analysis
-
-**Interpretation guidance:**
-
-- A `cleanPercentage` of 100% indicates no PR comments require cleanup
-  attention (either all comments were addressed or no comment minimization
-  candidates were detected).
-- `topSkipReasons` with high counts may indicate system-level issues
-  (e.g., unresolved review threads prevent cleanup even when comments
-  could be minimized).
-- Recent vs historical comparison shows whether cleanup discipline is
-  improving or declining over time.
-- `candidatesByClassifier` breakdown helps distinguish between items that
-  were below automation threshold, intentionally deferred, successfully
-  cleaned, or failed during cleanup.
-
-The canonical workflow remains the portable shell / `gh` / `jq`
-instructions embedded in `.github/instructions/*.instructions.md`. The
-helpers are convenience layers only; written decision tables and phase
-rules remain authoritative when outputs diverge.
-
-For discover and suitability, use the adopted helpers first when helper
-support is enabled, then fall back to the portable instructions if a
-helper is unavailable or its output does not match the written rules.
 
 ### Discover Roadmap Graph Contract
 
@@ -331,7 +273,7 @@ Node.js helper path.
   wrapper scripts out of the target repository entirely.
 
 **Authoritative invocation surface per profile.** Under `vendored-node`, the
-canonical invocation is `node scripts/<name>.mjs`; the package-manager / `npx`
+canonical invocation is `node scripts/<name>.mjs`; the `package-manager` / `npx`
 `bin/` facade (the `idd-*` bin wrappers) is **redundant** in this profile and
 may be skipped — keeping it only adds a second surface to align with the
 instruction files for no portability gain. Under `package-manager` and
@@ -604,6 +546,40 @@ Interpretation rules:
   and linked-issue exceptions do not yet have a supported helper
   contract
 
+### Canonical branch name
+
+- Source repo / vendored-node command:
+  `node scripts/branch-name.mjs --number <issue-number> --title <issue-title>`
+- Package-manager / ephemeral-npx command: use the profile-selected
+  `idd:branch-name` command from the helper runtime manifest wiring above
+- Prints a single plain line `issue/<number>-<slug>`, implementing the
+  `idd-claim.instructions.md` pre-check (e) slug algorithm exactly
+  (lowercase, replace `[^a-z0-9]` with `-`, drop empty tokens and the
+  whole-token stop-words, rejoin with `-`, apply the 40-character
+  mid-token-aware cut, then fall back to `task` when empty)
+- Deterministic and network-free; the agent keeps branch-naming authority
+  and the written algorithm stays the canonical fallback
+- The `tests/branch-name.test.mts` drift test re-derives the pre-check (e)
+  "Worked examples" table, so the prose and the helper cannot diverge
+
+### Per-cycle marker bodies
+
+- Source repo / vendored-node command:
+  `node scripts/emit-marker.mjs --type <type> <fields...>` where `<type>` is
+  `claimed-by`, `review-watermark`, or `review-baseline`
+- Package-manager / ephemeral-npx command: use the profile-selected
+  `idd:emit-marker` command from the helper runtime manifest wiring above
+- Prints the exact ready-to-post marker body (HTML token + visible "Do not
+  edit" note) to stdout; **emit-only, no network write** — the agent posts
+  it via the documented HTTP path
+- Fields per type: `claimed-by` takes `--agent-id --claim-id --supersedes
+  --timestamp --branch`; `review-watermark` takes `--agent-id --claim-id
+  --head-sha --max-activity-at --total-item-count --ci-completed-at`;
+  `review-baseline` takes `--agent-id --claim-id --sha`
+- The written marker formats in `idd-overview-core` (claim) and
+  `idd-review-snapshot` (watermark/baseline) stay canonical; the render
+  functions live in `protocol-helpers` with byte-shape tests
+
 ### Resume claim and route evidence
 
 - Claim routing command:
@@ -811,7 +787,7 @@ Interpretation rules:
   `latest_activity_type`, `reason`, and `evidence`
   (`activity_count_in_window`, `blocking_activities`,
   `has_heartbeat_in_window`, `has_ci_running`,
-  `has_pr_head_movement`, `has_branch_tip_movement`)
+  `has_branch_tip_movement`)
 - `ci-running` activities always break the quiet window regardless
   of their timestamp; all other types are checked against
   `window_start = now - quiet_window_ms`
@@ -819,6 +795,53 @@ Interpretation rules:
   it with the written Resume/S2-S4 checks for the same active claim,
   stale-threshold gating, closed/merged guards, and A5 race-safe claim
   verification. `quiet_window_met = true` alone is never sufficient.
+
+### Merged-PR feedback sweep
+
+- Source repo / vendored-node command:
+  `node scripts/merged-pr-feedback-sweep.mjs`
+- Package-manager / ephemeral-npx command: use the profile-selected
+  `idd-merged-pr-feedback-sweep` command
+- A **manually-invoked**, read-only detector (no schedule, no mutation). It
+  scans MERGED PRs and surfaces feedback that was left unattended at merge:
+  - **Window selector**: `--since <ISO8601>` and/or `--days <N>`, or
+    `--pr <n>` (repeatable) / `--prs <n1,n2,...>`; `--limit <N>` caps the
+    `--since`/`--days` enumeration. When both `--since` and `--days` are
+    given, the later (more recent) cutoff wins, narrowing the window to the
+    intersection; `--pr`/`--prs` bypass the date window entirely, so the
+    reported `sweepWindow.since` and `days` are then `null`. Optional
+    `--owner`, `--repo`,
+    `--trusted-marker-logins`, and `--advisory-bot-logins` (same convention
+    as `review-activity-snapshot`). `--idd-agent-logins` (or
+    `IDD_AGENT_LOGINS`) names the agent accounts whose comments are
+    dispositions / are not feedback — distinct from trusted-marker actors so a
+    human maintainer who is a trusted-marker actor still has their review
+    feedback surfaced; it defaults to the trusted-marker actors. Numeric flags
+    reject non-integer values, and the PR connections are paged to completion
+    so large PRs do not silently truncate.
+  - **Surfaces**: review threads with `isResolved == false` (excluding
+    threads the IDD agent itself opened; each carries a `dispositioned` flag
+    from the in-thread disposition check), and regular comments /
+    `CHANGES_REQUESTED` review bodies from non-IDD-agent authors that have
+    **no later IDD-agent disposition** (`**Accepted**` / `**Rejected**` /
+    `**Awaiting maintainer decision**`). Trusted IDD operational markers, IDD
+    disposition comments, and any HTML comment beginning with `<!-- idd-` (for
+    example cleanup-evidence, excluded regardless of author — including CI
+    automation such as `github-actions[bot]`) are excluded from the feedback
+    set. Each finding carries an `advisoryBot` flag (`isKnownReviewBot` or a
+    configured `advisoryBotLogins` author) so the operator can prioritize human
+    feedback over capricious advisory-bot noise.
+- JSON output keys: `sweepWindow`, `trustedMarkerActors`,
+  `advisoryBotLogins`, `iddAgentLogins`, `prs` (each entry has `number`,
+  `mergedAt`, `mergeCommit`, `unresolvedThreads`, and `unaddressedComments`),
+  and `summary` (`prCount`, `flaggedPrCount`, `unresolvedThreadCount`,
+  `unaddressedCommentCount`).
+- Read-only boundary: the helper performs no minimization, no posting, and no
+  issue creation. **Handoff**: the JSON is the input an operator hands to the
+  issue-authoring skill, which re-verifies each candidate against current
+  `main` (reuse-first / not-already-fixed) and drafts follow-up issues
+  bucketed by readiness. The helper does deterministic detection; the
+  judgment-heavy re-verification, drafting, and publish stay operator-gated.
 
 ## Friction Inventory
 

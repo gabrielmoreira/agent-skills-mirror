@@ -1,0 +1,1 @@
+cache/repos/github.com/mohitagw15856@pm-claude-skills/templates/pm-stakeholder-comms-agent/skills/board-deck-narrative/../../../../skills/board-deck-narrative/SKILL.md

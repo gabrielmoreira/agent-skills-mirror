@@ -1,0 +1,1 @@
+cache/repos/github.com/mohitagw15856@pm-claude-skills/templates/pm-discovery-agent/skills/user-interview-synthesis/../../../../skills/user-interview-synthesis/SKILL.md

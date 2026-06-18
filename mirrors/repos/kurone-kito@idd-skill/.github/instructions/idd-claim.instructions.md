@@ -131,7 +131,25 @@ Check both linked issues and closing keywords in PR bodies.
 **(e) Branch collision** — Compute the branch name using the IDD naming
 convention: `issue/<number>-<slug>`. Generate `<slug>` deterministically
 from the issue title so parallel sessions converge on the same branch
-name:
+name.
+
+When helper runtime is enabled, compute the slug with the branch-name
+helper instead of hand-tracing it:
+
+```sh
+# source repo / vendored-node
+node scripts/branch-name.mjs --number <issue-number> --title <issue-title>
+
+# package-manager / ephemeral-npx
+<profile-selected-branch-name-command> --number <issue-number> --title <issue-title>
+```
+
+Resolve `<profile-selected-branch-name-command>` from
+`docs/idd-helper-scripts.md`; do not hardcode `node scripts/...` for
+non-vendored profiles. It prints `issue/<number>-<slug>` and implements
+the algorithm below exactly. The written algorithm remains the canonical
+spec and fallback; use it when the helper is unavailable or its output is
+malformed:
 
 1. Convert the issue title to lowercase.
 2. Replace every character outside ASCII `a-z` and `0-9` with `-`.
@@ -144,6 +162,15 @@ name:
    character 40, trim back to the last such `-`; if there is no `-`,
    keep the hard 40-character cut. Then strip any trailing `-`.
 6. If the result is empty, use `task`.
+
+**Worked examples** (shared verbatim with the helper's drift test in
+`tests/branch-name.test.mts`):
+
+- `Add the OAuth login flow` → `issue/42-add-oauth-login-flow`
+- `Add a helper that computes the canonical issue/<number>-<slug> branch name`
+  → `issue/901-add-helper-that-computes-canonical-issue`
+- `!!!` → `issue/7-task`
+- `日本語 calendar 機能` → `issue/99-calendar`
 
 No remote branch with that name may exist, unless it matches the
 `branch` field in an inheritable claim comment or trusted
@@ -167,8 +194,15 @@ catches parallel-session concurrency before a new claim comment is posted.
 
    ```sh
    gh api "repos/{owner}/{repo}/git/matching-refs/heads/issue/<number>-" \
-     --jq '.[].ref'
+     --jq '.[].ref | sub("^refs/heads/"; "")'
    ```
+
+   The Refs API returns fully-qualified `refs/heads/issue/<number>-…`
+   refs; `sub("^refs/heads/"; "")` strips that prefix so each result
+   compares directly against the short `issue/<number>-…` form stored in a
+   claim `branch` field. Without normalizing it, an inheritable or
+   active-claim branch reads as a non-corresponding ref and trips a false
+   concurrent-session reroute or a false orphan-branch hold below.
 
 3. **Collision action tree**:
 
@@ -200,10 +234,12 @@ catches parallel-session concurrency before a new claim comment is posted.
 
 ## Claim execution
 
-Skip this section if pre-check (c) classified the issue as already
-claimed by this current session. Keep the previously recorded `{claim-id}` and
-branch, then proceed directly to Claim verification without posting a new
-claim.
+Skip the claim-posting steps in this section if pre-check (c) classified
+the issue as already claimed by this current session: keep the previously
+recorded `{claim-id}` and branch and post no new claim. The
+`## Heartbeat posting` rules below are a separate top-level section and
+still apply whenever you extend the active claim's stale clock; then
+proceed to Claim verification.
 
 Determine `{branch-name}`:
 
@@ -230,7 +266,10 @@ Generate a fresh `{claim-id}`. Determine `{prior-claim-id}`:
 - **Fresh claim** or claim after a released / unclaimed state → `none`
 
 Post the claim comment to the issue. Keep the HTML token at the start
-of the body, followed by the visible note:
+of the body, followed by the visible note. When helper runtime is enabled,
+render this body with the profile-selected emit-marker command
+(`--type claimed-by`, emit-only; see `docs/idd-helper-scripts.md`); the
+written format below stays the canonical fallback:
 
 ```markdown
 <!-- claimed-by: {agent-id} {claim-id} supersedes: {prior-claim-id|none} {ISO8601-timestamp} branch: {branch-name} -->
@@ -238,7 +277,7 @@ of the body, followed by the visible note:
 _{agent-id}: issue claim — IDD automation marker. Do not edit._
 ```
 
-### Heartbeat posting
+## Heartbeat posting
 
 When posting a heartbeat (i.e., when the issue is already claimed by this current
 session and you are extending the active claim's stale clock), copy the
@@ -257,13 +296,15 @@ the full issue comment stream and parse the active claim in
 chronological order using the shared claim-state rules. Apply all
 race-safe checks below:
 
-1. Build the same-second contender set from trusted `claimed-by` markers
-   that share your claim event's `created_at` second and have different
-   `{claim-id}` values.
+1. Build the same-second contender set from **all** trusted `claimed-by`
+   markers (including your own) that share your claim event's `created_at`
+   second.
 2. If that set has two or more contenders, the winner is the
-   lexicographically earlier `{claim-id}` (case-sensitive ASCII compare).
-   This race-safe tie-break extends the shared parsing rules for this
-   verification step.
+   lexicographically earliest `{claim-id}` (case-sensitive ASCII compare)
+   among them. This race-safe tie-break extends the shared parsing rules
+   for this verification step, and a two-way same-second collision (your
+   marker plus one competitor) is resolved here rather than slipping past
+   as a single-element set.
 3. Verify that the active claim now uses **your** `{claim-id}` after the
    same-second tie-break is applied.
 4. Verify no trusted competing `claimed-by` with a different

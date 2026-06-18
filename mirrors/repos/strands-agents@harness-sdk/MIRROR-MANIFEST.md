@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `strands-agents/harness-sdk` — 26 default patterns, 9 followed patterns, 35 file(s) materialized.
+Mirror of `strands-agents/harness-sdk` — 26 default patterns, 9 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `strands-agents/harness-sdk` — 26 default patterns, 9 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 9 |
-| Files         | 35 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,28 +80,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`.agents/skills/pr-feedback/SKILL.md`](.agents/skills/pr-feedback/SKILL.md) |
 | 12 | ✓ | [`.agents/skills/pr-writer/get-diff.sh`](.agents/skills/pr-writer/get-diff.sh) |
 | 13 | ✓ | [`.agents/skills/pr-writer/SKILL.md`](.agents/skills/pr-writer/SKILL.md) |
-| 14 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
-| 15 | ✓ | [`.agents/skills/strands-review/SKILL.md`](.agents/skills/strands-review/SKILL.md) |
-| 16 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 17 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 18 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 19 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
-| 20 | ✓ | [`site/SITE-ARCHITECTURE.md`](site/SITE-ARCHITECTURE.md) |
-| 21 | ✓ | [`strands-py/AGENTS.md`](strands-py/AGENTS.md) |
-| 22 | ✓ | [`strands-py/CLAUDE.md`](strands-py/CLAUDE.md) |
-| 23 | ✓ | [`strands-ts/AGENTS.md`](strands-ts/AGENTS.md) |
-| 24 | ✓ | [`strands-ts/CLAUDE.md`](strands-ts/CLAUDE.md) |
-| 25 | ✓ | [`test-infra/AGENTS.md`](test-infra/AGENTS.md) |
-| 26 | ✓ | [`test-infra/CLAUDE.md`](test-infra/CLAUDE.md) |
-| 27 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 28 | → | [`site/CONTRIBUTING.md`](site/CONTRIBUTING.md) |
-| 29 | → | [`strands-py/docs/STYLE_GUIDE.md`](strands-py/docs/STYLE_GUIDE.md) |
-| 30 | → | [`team/API_BAR_RAISING.md`](team/API_BAR_RAISING.md) |
-| 31 | → | [`team/DECISIONS.md`](team/DECISIONS.md) |
-| 32 | → | [`team/designs/README.md`](team/designs/README.md) |
-| 33 | → | [`team/FEATURE_LIFECYCLE.md`](team/FEATURE_LIFECYCLE.md) |
-| 34 | → | [`team/PR.md`](team/PR.md) |
-| 35 | → | [`team/TENETS.md`](team/TENETS.md) |
+| 14 | ✓ | [`.agents/skills/pre-push/run-checks.sh`](.agents/skills/pre-push/run-checks.sh) |
+| 15 | ✓ | [`.agents/skills/pre-push/SKILL.md`](.agents/skills/pre-push/SKILL.md) |
+| 16 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
+| 17 | ✓ | [`.agents/skills/strands-review/SKILL.md`](.agents/skills/strands-review/SKILL.md) |
+| 18 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 19 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 20 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 21 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
+| 22 | ✓ | [`site/SITE-ARCHITECTURE.md`](site/SITE-ARCHITECTURE.md) |
+| 23 | ✓ | [`strands-py/AGENTS.md`](strands-py/AGENTS.md) |
+| 24 | ✓ | [`strands-py/CLAUDE.md`](strands-py/CLAUDE.md) |
+| 25 | ✓ | [`strands-ts/AGENTS.md`](strands-ts/AGENTS.md) |
+| 26 | ✓ | [`strands-ts/CLAUDE.md`](strands-ts/CLAUDE.md) |
+| 27 | ✓ | [`test-infra/AGENTS.md`](test-infra/AGENTS.md) |
+| 28 | ✓ | [`test-infra/CLAUDE.md`](test-infra/CLAUDE.md) |
+| 29 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 30 | → | [`site/CONTRIBUTING.md`](site/CONTRIBUTING.md) |
+| 31 | → | [`strands-py/docs/STYLE_GUIDE.md`](strands-py/docs/STYLE_GUIDE.md) |
+| 32 | → | [`team/API_BAR_RAISING.md`](team/API_BAR_RAISING.md) |
+| 33 | → | [`team/DECISIONS.md`](team/DECISIONS.md) |
+| 34 | → | [`team/designs/README.md`](team/designs/README.md) |
+| 35 | → | [`team/FEATURE_LIFECYCLE.md`](team/FEATURE_LIFECYCLE.md) |
+| 36 | → | [`team/PR.md`](team/PR.md) |
+| 37 | → | [`team/TENETS.md`](team/TENETS.md) |
 
 ---
 

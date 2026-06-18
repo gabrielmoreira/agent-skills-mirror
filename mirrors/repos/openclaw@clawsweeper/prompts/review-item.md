@@ -445,11 +445,15 @@ Classify the current item and each evidence-backed related member as
 supports exactly one canonical item; otherwise use null. Do not include the
 current item in `members`, do not repeat refs, and do not infer shared root
 cause from title similarity, labels, product area, or gitcrawl membership
-alone. Use the independent default with low confidence and no members when no
-cluster is established. This assessment is proposal-only: it does not dispatch
-repair, suppress issue implementation, mutate siblings, close, or merge
-anything. Keep `workClusterRefs` separate; those remain work-lane context, not a
-typed root-cause contract.
+alone. Use `fixed_by_candidate` only when one side of that relationship is a
+pull request: an issue may be fixed by a canonical PR, or a PR may be the
+candidate fix for a canonical issue. Do not label issue-to-issue overlaps as
+`fixed_by_candidate`; use `duplicate`, `same_root_cause`, `partial_overlap`,
+`superseded`, or `needs_human` instead. Use the independent default with low
+confidence and no members when no cluster is established. This assessment is
+proposal-only: it does not dispatch repair, suppress issue implementation,
+mutate siblings, close, or merge anything. Keep `workClusterRefs` separate;
+those remain work-lane context, not a typed root-cause contract.
 
 Close as implemented when current `main` solves the observable user problem well enough, even if it did not use the exact workflow, file split, or field names proposed in the item. For broad umbrella requests, weigh the title and central user problem first. If current `main` solves the central problem and any leftovers are already tracked by a narrower related item, close as `duplicate_or_superseded` or `implemented_on_main` as appropriate and link the canonical follow-up. For older PRs where current `main` covers most of the branch but not every line, use `mostly_implemented_on_main` instead of stretching `implemented_on_main`. Keep open when a meaningful requested capability remains missing and no narrower canonical follow-up exists.
 

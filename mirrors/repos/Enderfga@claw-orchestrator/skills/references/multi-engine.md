@@ -15,9 +15,9 @@ SessionManager
 ├── engine: 'gemini'    → PersistentGeminiSession
 │   └── Wraps: gemini -p --output-format stream-json (per-message spawning)
 ├── engine: 'cursor'    → PersistentCursorSession
-│   └── Wraps: agent -p --force --output-format stream-json (per-message spawning)
+│   └── Wraps: agent -p --force --trust --output-format stream-json (per-message spawning)
 ├── engine: 'opencode'  → PersistentOpencodeSession
-│   └── Wraps: opencode run --format json --dangerously-skip-permissions (per-message spawning)
+│   └── Wraps: opencode run --format json (per-message spawning)
 └── engine: 'custom'    → PersistentCustomSession
     └── Wraps: any CLI via user-provided CustomEngineConfig
 ```

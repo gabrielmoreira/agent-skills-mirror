@@ -6,8 +6,8 @@
 
 ## 0. How agents must use this file and the other standards files
 
-1. **Load and apply the design system first — always.** The design-system files define fonts, colors, spacing tokens, radius, shadows, and component specs. Those are the source of truth for concrete values. Implement tokens and component rules before layering anything from this file or `typography-principles.md`.
-2. **Then apply UI/UX and typography principles to improve the result.** After the design-system spec is satisfied, use this file and the typography standards to refine hierarchy, contrast, spacing rhythm, interaction clarity, and polish. Principles **enhance** a compliant design — they do not replace the system.
+1. **Load and apply the design system first — always.** The design-system files define fonts, colors, spacing tokens, radius, shadows, and component specs. Those are the source of truth for concrete values. Implement tokens and component rules before layering anything from this file, `spacing-principles.md`, or `typography-principles.md`.
+2. **Then apply UI/UX and typography principles to improve the result.** After the design-system spec is satisfied, use this file, `spacing-principles.md`, and the typography standards to refine hierarchy, contrast, spacing rhythm, interaction clarity, and polish. Principles **enhance** a compliant design — they do not replace the system.
 3. **Use this file as the reasoning layer.** When the design system says *what* token to use, this file and the other standards files explain *why* that pattern works and what principles must hold.
 4. **When the design system is silent, these principles decide.** Any design decision not covered by the system's tokens or component rules falls back to the principles here.
 5. **Never contradict the design system.** If a principle here and a design-system rule conflict, the design system wins for that product. Flag the conflict for human review.
@@ -17,8 +17,9 @@
 
 ```
 1. Design system tokens & component specs  →  ship these first
-2. UI principles (this file)               →  refine structure, contrast, depth, interaction
-3. Typography principles                   →  refine type hierarchy, leading, section headings
+2. Spacing principles (spacing-principles.md) →  tier, grouping, inner vs outer gaps
+3. UI principles (this file)               →  refine structure, contrast, depth, interaction
+4. Typography principles                   →  refine type hierarchy, leading, section headings
 ```
 
 Never skip step 1. Never let step 2 or 3 override a design-system token unless a human explicitly documents the exception.
@@ -110,6 +111,14 @@ When padding differs per side, use the **smallest inset** that separates the cur
 - **Icon-only buttons** in the same row as labeled buttons must match the labeled buttons' **height** (same outer box height / touch target). Width follows the icon-only padding rule; height stays locked to the group.
 - **Implementation:** apply one shared size class or token set to the whole button group; avoid per-button inline padding overrides. In flex rows, align on `align-items: stretch` only when all buttons share identical padding — otherwise use `align-items: center` with enforced equal min-height from the design system.
 
+### Buttons use the design-system base size — not arbitrary scales
+
+- **Buttons default to the design system's base size token** (`md`, `default`, or whatever the system names its standard control size). Primary, secondary, ghost, and icon buttons all share that base height and padding unless the brief explicitly assigns a different tier.
+- **Do not invent one-off button sizes** per screen, per label length, or per layout squeeze. If a button looks too large or too small, fix the layout or copy — do not create a custom padding override on the button itself.
+- **Only these control types may use non-base size tokens:** **dropdown triggers**, **widgets** (date pickers, comboboxes, segmented controls, filter chips with menus), and **inputs** (text fields, search fields, textareas, selects). Those components follow their own size modules (`sm`, `xs`, compact search, dense table row, etc.) because they serve data entry and selection — not primary action.
+- When a button sits beside an input, dropdown, or widget, **the button stays on the base size**; match the row by aligning the **input/dropdown/widget** to the button's outer height (see *Input + button rows must share height* above) — never shrink the button to a smaller token to fit a compact field.
+- **Exception:** icon-only buttons use the design system's icon-button padding rule on the base size track — they are not a separate "small button" tier unless the system defines `icon-sm` / `icon-md` explicitly.
+
 ### Mockups and illustrations must feel premium
 
 - Where the layout calls for a **mockup, product shot, hero illustration, empty-state graphic, or decorative visual**, do not ship placeholders, broken-image icons, gray boxes, or clip-art.
@@ -163,6 +172,64 @@ Apply these **maximum font sizes** unless the user brief explicitly documents an
 - Dashboard page title ≤ 28px, every widget title ≤ 24px?
 - Store page outside the hero: h1/h2 ≤ 28px?
 - Marketing-only display sizes appear **only** on marketing landing pages and store hero bands?
+
+### Sticky navbars reserve hero top space — navbar height + 96px
+
+When the primary navigation is **sticky** or **fixed** (`position: sticky`, `position: fixed`, or equivalent app chrome that stays on screen while scrolling), the **first hero band** on the page must not start flush with the viewport top. The nav occupies that layer; hero content that ignores it will sit **under** the bar, clip on load, and feel cramped when the user scrolls back to the top.
+
+**The rule (mandatory):**
+
+```
+heroPaddingTop = navbarOuterHeight + 96px
+```
+
+| Term | Meaning |
+|---|---|
+| **`navbarOuterHeight`** | Total block size of the nav as rendered — content box **plus** vertical padding, borders, and any bottom shadow or hairline that visually belongs to the bar. Measure the **actual painted height**, not a guessed token. |
+| **`96px`** | Fixed breathing room **between the bottom edge of the navbar and the start of hero content** (headline, eyebrow, primary CTA row, or hero media). This is **in addition to** clearing the nav — not a substitute for it. |
+
+**What “hero content start” means:** the first meaningful block inside the hero — headline, subcopy, CTA cluster, or inset hero media — not decorative full-bleed background that intentionally runs behind the nav (see exceptions below).
+
+**Implementation (preferred order):**
+
+1. **Apply `padding-top` on the hero section** (or the hero’s inner content wrapper), not `margin-top` on the nav alone. Padding keeps background fills and full-bleed treatments predictable; margin on the nav does not reserve space inside the hero’s box model.
+2. **Compute from measured nav height** — use a CSS variable, layout token, or runtime measurement (`ResizeObserver`, `--header-height`) so the value updates when the nav wraps, gains a promo strip, or changes at breakpoints. Do not hard-code `64px` if the bar is actually `72px` on mobile.
+3. **Set `scroll-padding-top`** on `html` or the scroll container to at least `navbarOuterHeight` (often the same variable) so in-page anchor links and “scroll to section” CTAs land with headings visible, not hidden under the sticky bar.
+4. **Separate concerns:** `navbarOuterHeight` clears overlap; the **`96px`** gap is typographic/section rhythm — do not fold it into the nav height variable or shrink it to “save space” unless the brief documents an exception.
+
+**Formula in tokens (when the design system uses rem):**
+
+```
+heroPaddingTop = navbarOuterHeight + spacing-24   /* 96px at 16px root = 6rem */
+```
+
+Map `spacing-24` (or the system’s **96px / 6rem** section-gap token) to the fixed **96px** requirement when no token exists — do not substitute a smaller step (e.g. 64px) without documented exception.
+
+**Responsive behavior:**
+
+- Recompute **`heroPaddingTop` at every breakpoint** where the navbar changes height (stacked mobile nav, collapsed logo row, added utility strip). A desktop nav of `80px` and a mobile nav of `112px` each get their own `+ 96px`.
+- If the nav **shrinks on scroll** (compact sticky state), use the **taller initial height** for hero padding so above-the-fold layout does not jump when the bar compacts. Optionally animate inner hero spacing on scroll — never reduce below **`navbarOuterHeight + 96px`** at rest.
+- **Safe areas:** on notched devices, `navbarOuterHeight` includes `env(safe-area-inset-top)` when the nav extends into the status bar — the hero formula still adds **96px below** the nav’s bottom edge.
+
+**Exceptions (narrow):**
+
+- **Intentional overlap:** marketing heroes that deliberately place a headline **behind** a transparent nav must still offset **readable content** (copy, CTAs) by **`navbarOuterHeight + 96px`** from the viewport top, even if a background image or video bleeds to `0`. Overlap is for atmosphere, not for text under the bar.
+- **Non-hero pages:** dashboard, settings, and app shells use page title spacing from the design system — this rule targets **landing, marketing, and storefront hero bands** (see §0.1 contextual heading caps). Sticky app chrome still requires **`scroll-padding-top ≥ navbarOuterHeight`** on those surfaces.
+- **No sticky nav:** if the nav scrolls away with the page, default section spacing applies — do not add the **`+ 96px`** offset.
+
+**Failure modes (forbidden):**
+
+- Hero h1 or primary CTA partially hidden under the sticky bar on first paint.
+- Using only `padding-top: 96px` without adding **`navbarOuterHeight`** — content still slides under the nav.
+- Using only `padding-top: navbarOuterHeight` with **no 96px gap** — legal clearance but visually crushed against the bar.
+- Pushing the hero down with **`margin-top` on the nav** or **`top` offset hacks** instead of hero padding — breaks full-bleed backgrounds and sibling sections.
+
+**Quick check:**
+
+- Sticky/fixed nav present → hero **`padding-top === navbarOuterHeight + 96px`** (± rounding to system grid)?
+- Anchor / hash navigation → **`scroll-padding-top ≥ navbarOuterHeight`**?
+- Nav height remeasured after breakpoint or promo-strip change?
+- Readable hero copy starts **below** the bar with visible **96px** air, not touching the nav shadow?
 
 ---
 
@@ -393,6 +460,7 @@ Do not add a divider between elements already grouped by proximity — it double
 - **DO** choose a grid type per template and justify the choice.
 - **DO** use proximity as the primary grouping mechanism.
 - **DO** keep heading-to-body tighter than section-to-section spacing.
+- **DO** reserve hero top space when the nav is sticky/fixed: **`padding-top = navbarOuterHeight + 96px`** on the hero section; set **`scroll-padding-top ≥ navbarOuterHeight`** for anchors (§0.1).
 - **DO NOT** rely on a grid as the only layout tool — combine with fixed/max-widths.
 - **DO NOT** use equal spacing everywhere — differentiate inner-group from between-group.
 - **DO NOT** add borders or dividers when proximity alone communicates the grouping.

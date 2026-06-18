@@ -24,6 +24,7 @@ Use this template to compress repository context before running Waza `/check`. T
 - Distribution lanes: preview, beta, nightly, stable, App Store, or registry channels, and which generated artifacts belong to each lane.
 - CLI command surfaces: entrypoints, subcommands, flags, help/version behavior, exit codes, stdout/stderr contract, TTY and non-interactive paths, config/env precedence, and installed-runtime checks.
 - Runtime dependencies introduced by the diff: Python packages, CLIs, network services, package managers, or platform tools that are not already declared in CI/docs.
+- Skill, plugin, marketplace, or package install surfaces: installer default ref, marketplace source path, generated mirror, package allowlist, archive root, executable bits, and the installed-runtime smoke command.
 - Domain-specific safety rules.
 - Release artifacts that must exist.
 - GitHub release reactions or other public release follow-through expected by the project.
@@ -57,6 +58,14 @@ Use this template to compress repository context before running Waza `/check`. T
 - Runtime shape: TTY vs non-interactive behavior, env/config precedence, completion/manpage or shell integration.
 - Install/run proof: built package, temp prefix, PATH shim, shebang/executable bit, or package-manager path checked with `<command>`.
 - Mutating commands: dry-run/confirmation, operation log, rollback/retry behavior, signal/partial-failure handling.
+
+## Skill Or Plugin Install Surface
+
+- User install path: `<package manager / release archive / marketplace entry / plugin id / installer script>`.
+- Source path and generated mirror: `<source dir>` -> `<installed dir>`.
+- Package/archive inclusion: new scripts, references, templates, rules, manifests, and executable bits checked with `<command>`.
+- Isolated install smoke: fresh temp home/config/cache plus `<install command>` and `<list or invoke command>`.
+- Noise filtering: cache files, local logs, screenshots, and temp outputs excluded or intentionally shipped.
 
 ## Project Hard Stops
 
@@ -103,6 +112,7 @@ Fill this before claiming a change is release-ready. Use "n/a" only when the pro
 | Runtime dependencies | Newly introduced Python packages, CLIs, package managers, and network tools declared and available in CI |
 | Generated artifacts | Tracked archives, ignored dist outputs, bundled/minified files, appcasts, installer metadata, checksums, and site/download copy regenerated or proven not needed |
 | Package/archive contents | Built package inspected for required files, newly introduced helpers/references, and missing extras |
+| Installed runtime | Package, skill, plugin, CLI, or marketplace install exercised from a clean environment when the diff changes installable surfaces |
 | Release assets | GitHub release, appcast, download archive, checksum, or installer assets downloaded or read back and verified beyond page text or file size |
 | Registry/appcast | npm/crates/Homebrew/appcast/App Store or equivalent state re-read after publish |
 | CI status | Latest required checks passed or blocker named |

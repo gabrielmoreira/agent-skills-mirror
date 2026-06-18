@@ -68,8 +68,15 @@ design system in Stitch.
      python3 stitch-skills/plugins/stitch-design/skills/upload-to-stitch/scripts/upload_to_stitch.py \
        --project-id <PROJECT_ID> \
        --file-path /path/to/DESIGN.md \
-       --api-key <API_KEY>
+       --api-key <API_KEY> \
+       --generated-by <GENERATED_BY>
      ```
+     Set `<GENERATED_BY>` to identify the skill or tool that produced the
+     `DESIGN.md`. Use the calling skill name when invoked from another skill
+     (e.g. `stitch::code-to-design`), or the agent/tool name for standalone
+     use (e.g. `Gemini`, `Claude Code`). If omitted, the script defaults to
+     `UserUploadedDesignMd`.
+
      This returns the `sourceScreen` ID and the `screenInstance` ID.
    - **Option B (Direct MCP Tool)**: If the `DESIGN.md` is small (under ~5KB), you can call the `upload_design_md` MCP tool directly, passing the base64-encoded design markdown content as `designMdBase64`.
 2. **Create Design System**: Call the `create_design_system_from_design_md` tool immediately after the upload, passing the `projectId` and the `selectedScreenInstance` (containing the `id` and `sourceScreen` returned from the upload step).

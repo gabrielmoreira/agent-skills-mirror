@@ -95,8 +95,10 @@ Read the **issue-scope** value from the Project commands table in
   normal. When the
   roadmap path yields **zero candidates reaching A3.5** — i.e. A2
   enumerated no open execution leaves, or A3 filtered them all out as
-  blocked — fall back to **A0-O** before entering the A3 decision tree
-  (mirror of `orphan-first`). If candidates do reach A3.5 but it holds
+  blocked — fall back to **A0-O** before entering the A3 decision tree.
+  This reuses the A0-O orphan search **only** as a post-roadmap fallback;
+  the roadmap path stays primary (unlike `orphan-first`, where A0-O is the
+  first path). If candidates do reach A3.5 but it holds
   them all as
   approval-needed, do **not** fall back: A3.5's stop/ask behavior
   governs, so the fallback never re-scopes around the approval gate.
@@ -150,10 +152,15 @@ Apply the configured policy before passing A0-O candidates to A3.5:
 If at least one orphan issue remains after the configured policy is
 applied: pass the remaining set directly to **A3.5**. Skip A1–A3.
 
-If no orphan issues remain after the configured policy is applied: fall
-back to the roadmap path. Proceed to **A1** and continue with the normal
-A1 → A1.5 → A2 → A3 → A3.5 → A4 sequence. (For the `roadmap-first`
-fallback, the guard above redirects this exit to A3.)
+If no orphan issues remain after the configured policy is applied, the
+next step depends on which path invoked A0-O:
+
+- **`orphan-first` primary path**: fall back to the roadmap path. Proceed
+  to **A1** and continue with the normal
+  A1 → A1.5 → A2 → A3 → A3.5 → A4 sequence.
+- **`roadmap-first` fallback**: the roadmap path already ran, so do **not**
+  re-enter A1. Per the guard at the top of A0-O, this exit goes straight to
+  the **A3 decision tree**.
 
 The A3 decision tree (abort / ask operator in unattended mode) is
 reached when the active discovery path(s) produce zero results: for
@@ -464,7 +471,29 @@ Among the surviving viable and unclaimed issues (after Step 1.5), pick the
 `autopilotSuitability.floor` (default `3`) as human-oriented; a missing or
 out-of-range score is treated as no score — ranked at the floor and never
 skipped, so the unscored backlog flows as before. Advisory only: the pick
-still passes A4.5/A5 unchanged and the score never bypasses a gate.
+still passes A4.5/A5 unchanged and the score never bypasses a gate. When
+`autopilotSuitability.enabled` is `false`, ignore the score entirely —
+neither skip below-floor candidates nor reorder by score — and select by
+**lowest issue number**.
+
+**Concurrent-selection desync (opt-in, off by default).** When
+`.github/idd/config.json` `discover.selectionDesync` is `session-offset`
+(default `off`) and the chosen highest-score tie band has more than one
+eligible candidate, pick the band entry at index
+`selectDesyncedIndex(session-token, band-size)` instead of index 0 —
+`scripts/policy-helpers.mjs` exports it as a pure, deterministic
+`hash(session-token) mod band-size` over the band ordered by ascending
+issue number, where `session-token` is this session's `{agent-id}` (use
+the recommended unique per-session agent-id suffix; it is available at
+selection time, unlike `{claim-id}`, which A5 only generates after
+selection). This
+proactively spreads concurrent autopilot sessions across **different**
+eligible issues to cut the claim races that A4 Step 1.5 and A5(e) only
+resolve reactively. It reorders **only within** a single score tie band —
+never across score bands — and never bypasses A4.5/A5. Same-issue branch
+convergence is preserved because the branch name derives from the issue,
+not selection order. With `off`, a single-entry band, or no applicable
+score, keep the deterministic **lowest issue number** pick.
 
 After picking, proceed to **A4.5** (`idd-suitability.instructions.md`).
 

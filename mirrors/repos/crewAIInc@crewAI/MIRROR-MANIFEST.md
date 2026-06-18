@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `crewAIInc/crewAI` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `crewAIInc/crewAI` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `crewAIInc/crewAI` — 26 default patterns, 0 followed patterns, 4 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,10 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`lib/cli/src/crewai_cli/templates/AGENTS.md`](lib/cli/src/crewai_cli/templates/AGENTS.md) |
-| 2 | ✓ | [`lib/crewai/tests/skills/fixtures/invalid-name/SKILL.md`](lib/crewai/tests/skills/fixtures/invalid-name/SKILL.md) |
-| 3 | ✓ | [`lib/crewai/tests/skills/fixtures/minimal-skill/SKILL.md`](lib/crewai/tests/skills/fixtures/minimal-skill/SKILL.md) |
-| 4 | ✓ | [`lib/crewai/tests/skills/fixtures/valid-skill/SKILL.md`](lib/crewai/tests/skills/fixtures/valid-skill/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`lib/cli/src/crewai_cli/templates/AGENTS.md`](lib/cli/src/crewai_cli/templates/AGENTS.md) |
+| 3 | ✓ | [`lib/crewai/tests/skills/fixtures/invalid-name/SKILL.md`](lib/crewai/tests/skills/fixtures/invalid-name/SKILL.md) |
+| 4 | ✓ | [`lib/crewai/tests/skills/fixtures/minimal-skill/SKILL.md`](lib/crewai/tests/skills/fixtures/minimal-skill/SKILL.md) |
+| 5 | ✓ | [`lib/crewai/tests/skills/fixtures/valid-skill/SKILL.md`](lib/crewai/tests/skills/fixtures/valid-skill/SKILL.md) |
 
 ---
 

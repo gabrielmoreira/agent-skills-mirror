@@ -24,10 +24,10 @@ If Codex is being used through a GPT subscription and the built-in image tool is
 ## Required And Optional Values
 
 - `OPENAI_API_KEY` is required for real API/CLI fallback calls.
-- `OPENAI_BASE_URL` is optional. When it is unset, the CLI uses the official OpenAI API. When it is set, the CLI treats the request as a third-party OpenAI-compatible proxy request.
-- `CODEX_PPT_IMAGE_MODEL` is optional. The default is `gpt-image-2`. Use a custom value only when the proxy provider requires one.
+- `OPENAI_BASE_URL` is optional. When it is unset, the CLI uses the official OpenAI API. When it is set, the CLI uses the configured third-party provider base URL.
+- `CODEX_PPT_IMAGE_MODEL` is optional. The default is `gpt-image-2`. Use a custom value only when the provider requires one.
 
-Configure provided API settings with `scripts/codex_ppt_runtime.py config --api-key`.
+Configure provided API settings with `scripts/codex_ppt_runtime.py config --api-key`. The config command writes `~/.codex-ppt-skill/.env`.
 
 ## Official OpenAI Example
 
@@ -37,16 +37,39 @@ python3 {skill_root}/scripts/codex_ppt_runtime.py config \
   --model gpt-image-2
 ```
 
-## Third-Party Proxy Example
+## OpenAI-Compatible Provider Example
+
+Use this shape for providers that implement the OpenAI Images API paths used by the fallback CLI.
 
 ```bash
 python3 {skill_root}/scripts/codex_ppt_runtime.py config \
-  --api-key "your-api-key" \
-  --base-url "https://your-openai-compatible-endpoint/v1" \
-  --model openai/gpt-image-2
+  --api-key "your-provider-api-key" \
+  --base-url "https://xxxx.example.com/v1" \
+  --model gpt-image-2
 ```
 
-Replace `--base-url` and `--model` with the values from the proxy provider.
+This produces the same effective runtime config as:
+
+```env
+OPENAI_API_KEY=your-provider-api-key
+OPENAI_BASE_URL=https://xxxx.example.com/v1
+CODEX_PPT_IMAGE_MODEL=gpt-image-2
+```
+
+For OpenAI-compatible providers, `OPENAI_BASE_URL` should normally end at the provider's `/v1` root. Do not set it to `/images/generations`, `/images/edits`, or another terminal endpoint. The fallback CLI appends the image-generation or image-edit path through the OpenAI SDK.
+
+Use the provider's model name only when the provider documents a custom name. Otherwise prefer `gpt-image-2`.
+
+## AtlasCloud Example
+
+For AtlasCloud, set `--model` to the base model name. The CLI chooses the matching generation or editing model route internally.
+
+```bash
+python3 {skill_root}/scripts/codex_ppt_runtime.py config \
+  --api-key "your-atlascloud-api-key" \
+  --base-url "https://api.atlascloud.ai/api/v1/model" \
+  --model openai/gpt-image-2
+```
 
 ## Runtime Config
 

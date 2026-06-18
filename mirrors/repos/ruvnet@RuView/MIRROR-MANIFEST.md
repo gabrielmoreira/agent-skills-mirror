@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ruvnet/RuView` — 26 default patterns, 1 followed patterns, 43 file(s) materialized.
+Mirror of `ruvnet/RuView` — 26 default patterns, 1 followed patterns, 49 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ruvnet/RuView` — 26 default patterns, 1 followed patterns, 43 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 43 |
+| Files         | 49 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,18 +90,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`.claude/skills/v3-swarm-coordination/SKILL.md`](.claude/skills/v3-swarm-coordination/SKILL.md) |
 | 30 | ✓ | [`.claude/skills/verification-quality/SKILL.md`](.claude/skills/verification-quality/SKILL.md) |
 | 31 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 32 | ✓ | [`plugins/ruview/codex/AGENTS.md`](plugins/ruview/codex/AGENTS.md) |
-| 33 | ✓ | [`plugins/ruview/skills/ruview-advanced-sensing/SKILL.md`](plugins/ruview/skills/ruview-advanced-sensing/SKILL.md) |
-| 34 | ✓ | [`plugins/ruview/skills/ruview-applications/SKILL.md`](plugins/ruview/skills/ruview-applications/SKILL.md) |
-| 35 | ✓ | [`plugins/ruview/skills/ruview-cli-api/SKILL.md`](plugins/ruview/skills/ruview-cli-api/SKILL.md) |
-| 36 | ✓ | [`plugins/ruview/skills/ruview-configure/SKILL.md`](plugins/ruview/skills/ruview-configure/SKILL.md) |
-| 37 | ✓ | [`plugins/ruview/skills/ruview-hardware-setup/SKILL.md`](plugins/ruview/skills/ruview-hardware-setup/SKILL.md) |
-| 38 | ✓ | [`plugins/ruview/skills/ruview-mmwave/SKILL.md`](plugins/ruview/skills/ruview-mmwave/SKILL.md) |
-| 39 | ✓ | [`plugins/ruview/skills/ruview-model-training/SKILL.md`](plugins/ruview/skills/ruview-model-training/SKILL.md) |
-| 40 | ✓ | [`plugins/ruview/skills/ruview-quickstart/SKILL.md`](plugins/ruview/skills/ruview-quickstart/SKILL.md) |
-| 41 | ✓ | [`plugins/ruview/skills/ruview-rvagent/SKILL.md`](plugins/ruview/skills/ruview-rvagent/SKILL.md) |
-| 42 | ✓ | [`plugins/ruview/skills/ruview-verify/SKILL.md`](plugins/ruview/skills/ruview-verify/SKILL.md) |
-| 43 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
+| 32 | ✓ | [`harness/ruview/.claude/skills/calibrate-room/SKILL.md`](harness/ruview/.claude/skills/calibrate-room/SKILL.md) |
+| 33 | ✓ | [`harness/ruview/.claude/skills/onboard/SKILL.md`](harness/ruview/.claude/skills/onboard/SKILL.md) |
+| 34 | ✓ | [`harness/ruview/.claude/skills/provision-node/SKILL.md`](harness/ruview/.claude/skills/provision-node/SKILL.md) |
+| 35 | ✓ | [`harness/ruview/.claude/skills/train-pose/SKILL.md`](harness/ruview/.claude/skills/train-pose/SKILL.md) |
+| 36 | ✓ | [`harness/ruview/.claude/skills/verify/SKILL.md`](harness/ruview/.claude/skills/verify/SKILL.md) |
+| 37 | ✓ | [`harness/ruview/CLAUDE.md`](harness/ruview/CLAUDE.md) |
+| 38 | ✓ | [`plugins/ruview/codex/AGENTS.md`](plugins/ruview/codex/AGENTS.md) |
+| 39 | ✓ | [`plugins/ruview/skills/ruview-advanced-sensing/SKILL.md`](plugins/ruview/skills/ruview-advanced-sensing/SKILL.md) |
+| 40 | ✓ | [`plugins/ruview/skills/ruview-applications/SKILL.md`](plugins/ruview/skills/ruview-applications/SKILL.md) |
+| 41 | ✓ | [`plugins/ruview/skills/ruview-cli-api/SKILL.md`](plugins/ruview/skills/ruview-cli-api/SKILL.md) |
+| 42 | ✓ | [`plugins/ruview/skills/ruview-configure/SKILL.md`](plugins/ruview/skills/ruview-configure/SKILL.md) |
+| 43 | ✓ | [`plugins/ruview/skills/ruview-hardware-setup/SKILL.md`](plugins/ruview/skills/ruview-hardware-setup/SKILL.md) |
+| 44 | ✓ | [`plugins/ruview/skills/ruview-mmwave/SKILL.md`](plugins/ruview/skills/ruview-mmwave/SKILL.md) |
+| 45 | ✓ | [`plugins/ruview/skills/ruview-model-training/SKILL.md`](plugins/ruview/skills/ruview-model-training/SKILL.md) |
+| 46 | ✓ | [`plugins/ruview/skills/ruview-quickstart/SKILL.md`](plugins/ruview/skills/ruview-quickstart/SKILL.md) |
+| 47 | ✓ | [`plugins/ruview/skills/ruview-rvagent/SKILL.md`](plugins/ruview/skills/ruview-rvagent/SKILL.md) |
+| 48 | ✓ | [`plugins/ruview/skills/ruview-verify/SKILL.md`](plugins/ruview/skills/ruview-verify/SKILL.md) |
+| 49 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
 
 ---
 

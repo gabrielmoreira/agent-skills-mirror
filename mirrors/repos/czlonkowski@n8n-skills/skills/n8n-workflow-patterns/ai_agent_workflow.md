@@ -2,6 +2,8 @@
 
 **Use Case**: Build AI agents with tool access, memory, and reasoning capabilities.
 
+> **For agent design depth, use the `n8n-agents` skill.** This file covers where an AI agent sits in a workflow's architecture (trigger → agent → output, the `ai_*` sub-node connection types). The `n8n-agents` skill owns the design rules: tool selection and `$fromAI` parameters, the system-prompt vs tool-description split, structured output with autoFix, memory and sessionId, human-in-the-loop review, RAG, and chat shell/core/sub-agent topologies. Start there when building or debugging an agent.
+
 ---
 
 ## Pattern Structure

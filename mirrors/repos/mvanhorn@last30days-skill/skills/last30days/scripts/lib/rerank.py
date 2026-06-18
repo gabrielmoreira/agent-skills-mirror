@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import re
 
-from . import http, providers, query, schema
+from . import http, providers, query, schema, signals
 
 
 # Penalty applied when a candidate does not mention the primary entity
@@ -374,7 +374,7 @@ def _build_fun_prompt(topic: str, candidates: list[schema.Candidate]) -> str:
             f"  source: {schema.candidate_source_label(c)}",
             f"  title: {c.title[:220]}",
             f"  snippet: {c.snippet[:420]}",
-            f"  comments: {_extract_comment_text(c)[:300]}",
+            f"  comments: {_extract_comment_text_scored(c)[:340]}",
         ])
         for c in candidates
     )
@@ -386,7 +386,12 @@ def _build_fun_prompt(topic: str, candidates: list[schema.Candidate]) -> str:
         '{\n  \"scores\": [{\"candidate_id\": \"id\", \"fun\": 0-100, \"reason\": \"short reason\"}]\n}\n\n'
         "Scoring: 90-100=genuinely hilarious, 70-89=witty/clever, "
         "40-69=has personality, 20-39=straight news, 0-19=dry/official.\n"
-        "Prefer SHORT PUNCHY content. A 15-word tweet > a 500-word analysis.\n\n"
+        "Prefer SHORT PUNCHY content. A 15-word tweet > a 500-word analysis.\n"
+        "Comments are prefixed with their crowd score, e.g. [+14200]. A high score "
+        "means the line resonated -- prefer a high-scored witty line over an "
+        "equally-witty unscored one. But scores measure TRACTION, not funniness: "
+        "an earnest, angry, or wholesome comment is NOT funny no matter how high "
+        "its score. Judge funniness from the text; let the score break ties.\n\n"
         f"{_fenced_untrusted_content(candidate_block)}"
     )
 
@@ -398,6 +403,35 @@ def _extract_comment_text(candidate: schema.Candidate) -> str:
             body = comment.get("body", "") if isinstance(comment, dict) else str(comment)
             if body:
                 parts.append(body[:150])
+        for insight in item.metadata.get("comment_insights", [])[:2]:
+            if insight:
+                parts.append(str(insight)[:150])
+    return " | ".join(parts) if parts else ""
+
+
+def _extract_comment_text_scored(candidate: schema.Candidate) -> str:
+    """Like ``_extract_comment_text`` but prefixes each top comment with its
+    crowd score, e.g. ``[+14200] body``, so the fun judge can weigh traction.
+
+    Comment insights carry no score and are appended unprefixed.
+    """
+    parts = []
+    for item in candidate.source_items:
+        for comment in item.metadata.get("top_comments", [])[:3]:
+            if isinstance(comment, dict):
+                body = comment.get("body", "")
+                if not body:
+                    continue
+                score = comment.get("score")
+                # Only prefix POSITIVE scores: `and score` is truthy for
+                # negatives too, which would emit a misleading `[+-3]` and
+                # invert the traction signal to the judge.
+                prefix = f"[+{int(score)}] " if isinstance(score, (int, float)) and score > 0 else ""
+                parts.append(f"{prefix}{body[:150]}")
+            else:
+                body = str(comment)
+                if body:
+                    parts.append(body[:150])
         for insight in item.metadata.get("comment_insights", [])[:2]:
             if insight:
                 parts.append(str(insight)[:150])
@@ -431,12 +465,14 @@ def _apply_fun_fallback(candidates: list[schema.Candidate]) -> None:
 def _apply_single_fun_fallback(candidate: schema.Candidate) -> None:
     text = candidate.title + " " + (candidate.snippet or "") + " " + _extract_comment_text(candidate)
     text_len = len(text.strip())
-    eng = candidate.engagement if candidate.engagement is not None else 0.0
     shortness = max(0, (200 - text_len) / 200) * 30
-    eng_bonus = min(eng * 2.0, 40)
+    # Reward a highly-upvoted TOP COMMENT (the crowd-certified line), normalized
+    # per platform, rather than the post's overall engagement. Mirrors the LLM
+    # path's new emphasis so behavior is consistent when the LLM is unavailable.
+    vote_bonus = signals.top_comment_vote_signal(candidate) * 40.0
     markers = ["lol", "lmao", "dead", "hilarious", "funny", "bruh", "ratio", "nah", "bro", "ain't no way", "i'm crying", "rent free"]
     marker_bonus = 10 if any(m in text.lower() for m in markers) else 0
-    candidate.fun_score = max(0.0, min(100.0, shortness + eng_bonus + marker_bonus))
+    candidate.fun_score = max(0.0, min(100.0, shortness + vote_bonus + marker_bonus))
     candidate.fun_explanation = "heuristic-fallback"
 
 

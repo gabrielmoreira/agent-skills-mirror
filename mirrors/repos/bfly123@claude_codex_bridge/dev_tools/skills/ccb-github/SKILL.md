@@ -100,7 +100,7 @@ Default to the smallest verification set that gives meaningful signal for the fi
 Update these files together:
 
 - `VERSION`
-- `ccb` `VERSION = "..."`
+- `ccb.py` `VERSION = "..."` (or legacy Python-in-`ccb` layouts)
 - `package.json` `"version": "..."`
 - npm wrapper scripts under `bin/` when package behavior changes or the package is being introduced.
 - `.github/workflows/npm-publish.yml`

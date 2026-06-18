@@ -8,7 +8,7 @@ This is the **n8n-skills** repository - a collection of Claude Code skills desig
 
 **Repository**: https://github.com/czlonkowski/n8n-skills
 
-**Purpose**: 8 complementary skills that provide expert guidance on using n8n-mcp MCP tools effectively for building n8n workflows.
+**Purpose**: 12 complementary skills that provide expert guidance on using n8n-mcp MCP tools effectively for building n8n workflows.
 
 **Architecture**:
 - **n8n-mcp MCP Server**: Provides data access (800+ nodes, validation, templates, workflow management)
@@ -29,14 +29,23 @@ n8n-skills/
 │   ├── n8n-node-configuration/
 │   ├── n8n-code-javascript/
 │   ├── n8n-code-python/
-│   └── n8n-code-tool/
+│   ├── n8n-code-tool/
+│   ├── n8n-error-handling/
+│   ├── n8n-binary-and-data/
+│   ├── n8n-subworkflows/
+│   ├── n8n-agents/
+│   └── using-n8n-mcp-skills/  # Always-on router skill (loaded by SessionStart hook)
+├── hooks/                 # Enforcement layer: hooks.json + SessionStart/PreToolUse/PostToolUse scripts
 ├── evaluations/           # Test scenarios for each skill
 ├── docs/                  # Documentation
 ├── dist/                  # Distribution packages
+├── NOTICES                # Attribution for Apache-2.0 material adapted from n8n-io/skills
 └── .claude-plugin/        # Claude Code plugin configuration
 ```
 
-## The 8 Skills
+**Enforcement layer (hooks/):** the plugin ships hooks that surface the right skill at the moment of decision. `session-start.sh` injects the `using-n8n-mcp-skills` router every session; PreToolUse hooks fire node-specific reminders on `get_node` and one-shot reminders on create/update/validate/test; the PostToolUse hook parses `validate_workflow`'s node JSON and routes to the relevant skills. Hooks run only in the Claude Code / Codex plugin install (not Claude.ai zip uploads), fail open, and never block a tool call. Attribution for the adapted scripts lives in `NOTICES` and the script headers — never inside agent-facing SKILL.md content.
+
+## The 12 Skills
 
 ### 1. n8n Expression Syntax
 - Teaches correct n8n expression syntax ({{}} patterns)
@@ -74,6 +83,22 @@ n8n-skills/
 - Write code for the AI-agent-callable Custom Code Tool (`@n8n/n8n-nodes-langchain.toolCode`)
 - Critical distinction from Code node: return a string (not `[{json:{...}}]`), `$fromAI()` not available, different sandbox
 - Unstructured (`query` string) vs structured (`specifyInputSchema`) input modes
+
+### 9. n8n Error Handling
+- Per-node error outputs (`onError: continueErrorOutput` + wiring `main[1]`), `retryOnFail` self-healing
+- 4xx/5xx response shapes; `responseCode` defaults to 200 even on error; Error Trigger workflows for unattended runs
+
+### 10. n8n Binary & Data
+- `$binary` vs `$json`; reading/writing binary; Merge to preserve binary across transforms
+- Agent-tool binary boundary (pre-stage to storage, pass keys/URLs); CDN requirement for chat images
+
+### 11. n8n Sub-workflows
+- Execute Workflow Trigger Define-Below typed inputs; `mode: all` vs `each` + `waitForSubWorkflow`
+- Verb-first prefix naming for discovery; stateless vs stateful; N+1 split-by-input-shape
+
+### 12. n8n AI Agents
+- Agent vs LLM Chain vs Text Classifier; model/memory/tools/outputParser slots; `$fromAI` tool params
+- Tool names/descriptions as prompt; structured output + autoFix; memory/sessionId; human review; chat topologies
 
 ## Key MCP Tools
 

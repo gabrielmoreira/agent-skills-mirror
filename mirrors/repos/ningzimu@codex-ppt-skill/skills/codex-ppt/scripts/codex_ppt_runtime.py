@@ -17,6 +17,7 @@ import subprocess
 import sys
 from typing import Dict, Iterable, Optional
 import urllib.error
+import urllib.parse
 import urllib.request
 import venv
 
@@ -208,6 +209,11 @@ def _models_request(base_url: str, api_key: str, timeout: int) -> bool:
         return False
 
 
+def _is_atlascloud_base_url(base_url: str) -> bool:
+    hostname = urllib.parse.urlparse(base_url).hostname or ""
+    return "atlascloud.ai" in hostname.lower()
+
+
 def _doctor(args: argparse.Namespace) -> int:
     home = _runtime_home()
     env_file = _env_path(home)
@@ -237,6 +243,8 @@ def _doctor(args: argparse.Namespace) -> int:
         if not api_key:
             print("api check: skipped, OPENAI_API_KEY is unset")
             ok = False
+        elif _is_atlascloud_base_url(base_url):
+            print("api check: AtlasCloud provider detected; skipping /models probe")
         else:
             ok = _models_request(base_url, api_key, args.timeout) and ok
 

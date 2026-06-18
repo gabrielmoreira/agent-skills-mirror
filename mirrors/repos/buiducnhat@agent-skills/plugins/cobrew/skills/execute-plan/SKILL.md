@@ -121,34 +121,11 @@ After all phases are complete:
    - File: `docs/.plans/YYMMDD-HHmm-<plan-slug>/EXECUTION-REPORT.md`
    - Include all required sections below.
 
-3. **Prepare Final Gate**
-   - Do not archive before final user confirmation. The user may choose `Need verify`, and execution must continue against the same plan path.
-
-### Step 5: Final Confirmation Gate
-
-After completion artifacts are done, ask the user for a final confirmation using the input/question with exactly these options:
-
-- `Confirm: End session`
-- `Confirm and Auto commit git`
-- `Need verify`
-
-Handle the selected option as follows:
-
-1. **`Confirm: End session`**
-   - Archive the plan folder to `docs/.plans/archived/`.
-   - Announce: `Execution complete. Report archived at docs/.plans/archived/YYMMDD-HHmm-<plan-slug>/EXECUTION-REPORT.md.`
-   - End the execution session.
-
-2. **`Confirm and Auto commit git`**
-   - Archive the plan folder to `docs/.plans/archived/`.
-   - Announce: `Execution complete. Report archived at docs/.plans/archived/YYMMDD-HHmm-<plan-slug>/EXECUTION-REPORT.md.`
-   - Trigger the `git-commit` skill and complete an automatic commit flow.
-   - After commit succeeds, end the execution session.
-
-3. **`Need verify`**
-   - Allow the user to provide verification feedback/details.
-   - Do not archive.
-   - Continue the execution loop to address feedback, then re-run verification and completion steps as needed.
+3. **Completion Handoff**
+   - Announce the execution result and the report path.
+   - Leave the plan folder in place unless the user explicitly asks to archive it.
+   - Do not trigger commit, archive, or other follow-up workflows automatically.
+   - If the user provides verification feedback after completion, continue against the same plan path, then re-run verification and update the report.
 
 ## Execution Report Standard
 

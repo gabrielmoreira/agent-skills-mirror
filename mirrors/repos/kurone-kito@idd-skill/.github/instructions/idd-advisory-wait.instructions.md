@@ -10,6 +10,26 @@ Policy constants (cap and windows) are named in
 [`docs/policy-constants.md`](../../docs/policy-constants.md). This file
 owns behavior.
 
+## Scope — Copilot-only settle/wait window
+
+This protocol's settle/wait window covers **Copilot only**. Other
+advisory reviewers configured through `.github/idd/config.json`
+`advisoryBotLogins` (for example CodeRabbit or a Codex connector) are
+**not** given a wait window by this protocol. That Copilot-only scope is
+deliberate: see the `external-bot` profile in
+[`docs/idd-review-policy-profiles.md`](../../docs/idd-review-policy-profiles.md),
+which swaps the single advisory bot by manual customization instead of
+gating on every configured bot.
+
+In a repository that configures non-Copilot `advisoryBotLogins`, the
+load-bearing safety net for their late-arriving findings is the **E1
+activity-universe snapshot + `review-watermark` delta**
+(`idd-review-snapshot.instructions.md`), re-checked by the F2/F3
+merge-readiness gate — not this advisory-wait window. See
+[`idd-pre-merge.instructions.md`](idd-pre-merge.instructions.md) for the
+merge-gate requirement that forbids a bare CI-green merge without a fresh
+covering snapshot.
+
 ## 1. Canonical path (helper-first)
 
 When helper support is installed, use the profile-selected
@@ -89,6 +109,16 @@ to the distributed defaults named in `docs/policy-constants.md`:
 | `HOLD`            | post hold and stop              | post hold and stop               | post hold and stop                    |
 
 ### F3-specific interpretation
+
+**Precedence**: when valid helper output is available, **F3 uses
+`f3Outcome` exclusively**, so the **F3** column in the Caller-mapping table
+above is read from `f3Outcome`. The `Outcome` column governs the **E14**,
+**F2**, and shell-fallback rows (the shell-fallback path has no
+`f3Outcome`); on `REQUEST_NEEDED`, F2 returns to E14 while E14 itself
+requests Copilot and polls. This is why the helper can legitimately emit
+`outcome: REQUEST_NEEDED` together with `f3Outcome: SATISFIED` (when
+`copilotPending` is `false`) and F3 still merges on `f3Outcome` rather than
+taking the `Outcome`-driven F2 route back to E14.
 
 - F3 must use `f3Outcome` when helper output is available.
 - If `copilotPending` is `false`, F3 treats advisory wait as satisfied.

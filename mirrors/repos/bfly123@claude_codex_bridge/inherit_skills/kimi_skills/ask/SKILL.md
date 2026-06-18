@@ -49,6 +49,30 @@ Before every ask, decide:
   explicit debugging requests, not normal ask workflow tools.
 - Do not manually append output-policy text; `ask` injects reply guidance.
 
+## Kimi Receipt Contract
+
+For implementation, review, inventory, or verification work, return one final
+receipt in this exact shape:
+
+```text
+status:
+inspected:
+exact_files:
+findings:
+reject_cases:
+required_tests:
+no_open:
+blockers:
+```
+
+Use `status: complete`, `status: partial`, or `status: blocked`.
+Process updates are invalid receipts: do not answer with "I am reading",
+"I will test", or "completed" without the evidence fields above. If you cannot
+finish within the current turn, use `status: partial` or `status: blocked` and
+name the exact files inspected, remaining command, and blocker. Keep the reply
+short. Your output is candidate evidence; the caller owns diff review,
+verification, final lifecycle judgment, and commits.
+
 Always send `MESSAGE` through the `<<'EOF' ... EOF` heredoc below. No other form
 is allowed. Use no flags or insert selected flags before `"$TARGET"`:
 

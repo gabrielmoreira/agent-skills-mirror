@@ -9,7 +9,7 @@ license: MIT
 
 ## Overview
 
-Produce a complete, self-contained implementation plan that can be executed by `execute-plan` with minimal ambiguity, even after `/clear` or by another agent.
+Produce a complete, self-contained implementation plan that can be executed by `execute-plan` with minimal ambiguity, even in a fresh context or by another agent.
 
 This skill is for planning only:
 
@@ -37,19 +37,7 @@ Capture:
 - Files, modules, commands, and docs that orient the executor
 - Risks, assumptions, and unknowns
 
-### Step 2: Initialize Plan Artifacts
-
-1. Create: `docs/.plans/YYMMDD-HHmm-<plan-slug>/`
-2. Create:
-   - `SUMMARY.md`
-   - one phase file per implementation phase with naming convention `phase-XX-<name>.md`
-3. Add `research/` only if needed.
-
-#### Rules:
-
-- Use timestamp commands from the shared General Principles for folder and document timestamps.
-
-### Step 3: Clarify Requirements
+### Step 2: Clarify Requirements
 
 Ask clarifying questions to resolve any ambiguity in the request. Focus on:
 
@@ -62,7 +50,20 @@ Ask clarifying questions to resolve any ambiguity in the request. Focus on:
 
 - If requirements are already clear or come from the brainstorm context, no need the confirmation step.
 - Use input/question tool for gathering answers, context.
-- State assumptions explicitly in `SUMMARY.md`. If multiple interpretations of the request exist, list them and ask — never pick silently.
+- If multiple interpretations of the request exist, list them and ask — never pick silently.
+- Record assumptions later in `SUMMARY.md` once plan artifacts exist.
+
+### Step 3: Initialize Plan Artifacts
+
+1. Create: `docs/.plans/YYMMDD-HHmm-<plan-slug>/`
+2. Create:
+   - `SUMMARY.md`
+   - one phase file per implementation phase with naming convention `phase-XX-<name>.md`
+3. Add `research/` only if needed.
+
+#### Rules:
+
+- Use timestamp commands from the shared General Principles for folder and document timestamps.
 
 ### Step 4: Define Strategy and Phases
 
@@ -78,7 +79,7 @@ Each phase should have:
 
 Granularity rule:
 
-- Tasks should be small, concrete, and typically 2-10 minutes each.
+- Tasks should be small, concrete, independently verifiable, and large enough to avoid noisy micro-steps.
 - Prefer phases that can be resumed safely. Document idempotency, recovery notes, or rollback constraints for risky work.
 
 ### Step 5: Research (Only if Needed)
@@ -158,4 +159,4 @@ Visualization `<relative_path_to_plan>/visualize.html` is ready.
 - Align with project standards and existing architecture
 - Keep plans self-contained, deterministic, and resumable. A fresh agent should be able to continue from the plan folder alone.
 - **Plan the minimum viable change:** No speculative phases, no "just in case" abstractions, no flexibility that wasn't requested. If a plan can be 3 phases instead of 6, make it 3. Every task should trace directly to a stated requirement.
-- If the write-plan request comes from a brainstorm session, we can skip many steps like gathering documents, clarifying requirements, and researching, because those should have been covered in the brainstorm session. In that case, we can directly start from Step 4: Define Strategy and Phases, using the information from the brainstorm session as context.
+- If the write-plan request comes from a brainstorm session, we can skip many steps like gathering documents, clarifying requirements, and researching, because those should have been covered in the brainstorm session. In that case, confirm the brainstorm context is sufficient, initialize plan artifacts, then continue from Step 4: Define Strategy and Phases.
