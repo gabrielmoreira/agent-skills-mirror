@@ -1135,7 +1135,7 @@ if (!items[0].json) {
 
 ```javascript
 try {
-  const response = await $helpers.httpRequest({
+  const response = await this.helpers.httpRequest({
     url: 'https://api.example.com/data'
   });
 

@@ -147,16 +147,20 @@ def render_inline(text: str) -> str:
 
     text = _RE_CODE_INLINE.sub(_code_sub, text)
 
+    # HTML-escape <, >, & inside math bodies: a bare "<t" (e.g. y_{<t}) is
+    # otherwise parsed as an HTML start tag and eats the rest of the formula
+    # before MathJax runs. MathJax v3 reads the decoded DOM text, so the escape
+    # is transparent to the TeX it sees (and & for cases/align stays intact).
     # 1b. Display math (passthrough; MathJax will render).
     def _md_sub(m: re.Match[str]) -> str:
-        body = m.group(1)
+        body = html_lib.escape(m.group(1), quote=False)
         return store(f"$${body}$$")
 
     text = _RE_MATH_DISPLAY.sub(_md_sub, text)
 
     # 1c. Inline math (passthrough).
     def _mi_sub(m: re.Match[str]) -> str:
-        body = m.group(1)
+        body = html_lib.escape(m.group(1), quote=False)
         return store(f"${body}$")
 
     text = _RE_MATH_INLINE.sub(_mi_sub, text)

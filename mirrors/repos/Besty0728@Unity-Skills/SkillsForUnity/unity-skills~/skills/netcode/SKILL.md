@@ -1,6 +1,6 @@
 ---
 name: unity-netcode
-description: "Netcode for GameObjects (NGO 2.x) multiplayer — NetworkManager/UnityTransport, NetworkConfig, NetworkObject/Transform/Rigidbody/Animator, prefab list, Host/Server/Client lifecycle. Exact signatures via GET /skills/schema."
+description: Netcode for GameObjects (NGO 2.x) multiplayer
 ---
 
 # Unity Netcode for GameObjects Skills

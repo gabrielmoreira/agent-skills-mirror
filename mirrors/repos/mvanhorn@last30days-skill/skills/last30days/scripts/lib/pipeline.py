@@ -68,6 +68,14 @@ SEARCH_ALIAS = {
 
 MAX_SOURCE_FETCHES: dict[str, int] = {"x": 2, "jobs": 1}
 
+# Per-handle result caps for the X handle-search lanes. The FROM lane (the
+# subject's own timeline) is the single best source for a person topic, so it
+# gets the highest cap; the ABOUT (mention) and related-handle lanes stay
+# modest so total volume and request budget don't balloon.
+FROM_LANE_COUNT_PER = 8
+MENTION_LANE_COUNT_PER = 5
+RELATED_HANDLE_COUNT_PER = 3
+
 MOCK_AVAILABLE_SOURCES = [
     "reddit",
     "x",
@@ -523,6 +531,16 @@ def run(
         bundle.items_by_source, topic=topic, config=config, depth=depth, mock=mock,
     )
     candidates = weighted_rrf(bundle.items_by_source_and_query, plan, pool_limit=settings["pool_limit"])
+    # Normalized set of handles this run resolved for the topic. A candidate
+    # authored by one of these is first-party and is exempted from the
+    # entity-miss demotion in rerank (a post never repeats its own author's
+    # name, so the body-text grounding check would otherwise zero out the
+    # subject's own highest-signal posts).
+    resolved_handles = {
+        h.lstrip("@").strip().lower()
+        for h in ([x_handle, github_user, *(x_related or [])])
+        if h and h.strip()
+    }
     ranked_candidates = rerank.rerank_candidates(
         topic=topic,
         plan=plan,
@@ -530,6 +548,7 @@ def run(
         provider=None if mock else reasoning_provider,
         model=None if mock else runtime.rerank_model,
         shortlist_size=settings["rerank_limit"],
+        resolved_handles=resolved_handles,
     )
     rerank.score_fun(
         topic=topic,
@@ -864,13 +883,13 @@ def _run_supplemental_searches(
         from_items: list = []
         about_items: list = []
         try:
-            from_items = bird_x.search_handles(handles, topic, from_date, count_per=3)
+            from_items = bird_x.search_handles(handles, topic, from_date, count_per=FROM_LANE_COUNT_PER)
         except Exception as exc:
             print(f"[Pipeline] Phase 2 FROM-lane search failed: {exc}", file=sys.stderr)
             if not bundle.items_by_source.get("x"):
                 bundle.errors_by_source["x"] = f"Phase 2 FROM-lane: {exc}"
         try:
-            about_items = bird_x.search_mentions(handles, from_date, count_per=3)
+            about_items = bird_x.search_mentions(handles, from_date, count_per=MENTION_LANE_COUNT_PER)
         except Exception as exc:
             print(f"[Pipeline] Phase 2 ABOUT-lane search failed: {exc}", file=sys.stderr)
         raw_items = from_items + about_items
@@ -894,7 +913,7 @@ def _run_supplemental_searches(
     if related_handles:
         try:
             raw_items = bird_x.search_handles(
-                related_handles, topic, from_date, count_per=3,
+                related_handles, topic, from_date, count_per=RELATED_HANDLE_COUNT_PER,
             )
         except Exception as exc:
             print(f"[Pipeline] Phase 2 related handle search failed: {exc}", file=sys.stderr)

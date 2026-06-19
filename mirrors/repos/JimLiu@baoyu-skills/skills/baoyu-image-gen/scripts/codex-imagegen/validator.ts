@@ -3,6 +3,7 @@ import { homedir } from "node:os";
 import path from "node:path";
 import { GenError } from "./types.ts";
 import type { ToolCall } from "./types.ts";
+import { hasImageGenInvocation } from "./parser.ts";
 
 const PNG_MAGIC = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
@@ -23,15 +24,15 @@ export async function verifyImageGenWasInvoked(threadId: string | null): Promise
   }
 }
 
-export function findCpToTarget(toolCalls: ToolCall[], target: string): boolean {
-  return toolCalls.some(
-    (tc) =>
-      tc.tool === "shell" &&
-      typeof tc.command === "string" &&
-      (tc.command.includes(target) || tc.command.includes(path.basename(target))) &&
-      /\b(cp|mv|cat)\b/.test(tc.command) &&
-      tc.command.includes("generated_images"),
-  );
+// Real evidence that image_gen ran in THIS thread. Codex's image_gen tool does
+// not surface as a stream item, so a successful run shows only reasoning/shell/
+// agent_message — `dirHasImage` (a PNG in this thread's generated_images dir) is
+// what proves it. The stream check is kept as a forward-compatible signal in
+// case a future Codex version emits the item. The #185 shortcut (copying an
+// unrelated history image, which lives under a different thread id) yields
+// neither, so it is correctly rejected.
+export function hasImageGenEvidence(toolCalls: ToolCall[], dirHasImage: boolean): boolean {
+  return dirHasImage || hasImageGenInvocation(toolCalls);
 }
 
 export async function verifyOutput(outputPath: string): Promise<{ bytes: number }> {

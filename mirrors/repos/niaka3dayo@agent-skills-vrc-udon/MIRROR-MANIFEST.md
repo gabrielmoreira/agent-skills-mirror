@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `niaka3dayo/agent-skills-vrc-udon` — 26 default patterns, 3 followed patterns, 69 file(s) materialized.
+Mirror of `niaka3dayo/agent-skills-vrc-udon` — 26 default patterns, 3 followed patterns, 70 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `niaka3dayo/agent-skills-vrc-udon` — 26 default patterns, 3 followed
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 69 |
+| Files         | 70 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -106,30 +106,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 43 | ✓ | [`skills/unity-vrc-udon-sharp/references/sync-examples.md`](skills/unity-vrc-udon-sharp/references/sync-examples.md) |
 | 44 | ✓ | [`skills/unity-vrc-udon-sharp/references/testing.md`](skills/unity-vrc-udon-sharp/references/testing.md) |
 | 45 | ✓ | [`skills/unity-vrc-udon-sharp/references/troubleshooting.md`](skills/unity-vrc-udon-sharp/references/troubleshooting.md) |
-| 46 | ✓ | [`skills/unity-vrc-udon-sharp/references/web-loading-advanced.md`](skills/unity-vrc-udon-sharp/references/web-loading-advanced.md) |
-| 47 | ✓ | [`skills/unity-vrc-udon-sharp/references/web-loading.md`](skills/unity-vrc-udon-sharp/references/web-loading.md) |
-| 48 | ✓ | [`skills/unity-vrc-udon-sharp/rules/udonsharp-constraints.md`](skills/unity-vrc-udon-sharp/rules/udonsharp-constraints.md) |
-| 49 | ✓ | [`skills/unity-vrc-udon-sharp/rules/udonsharp-networking.md`](skills/unity-vrc-udon-sharp/rules/udonsharp-networking.md) |
-| 50 | ✓ | [`skills/unity-vrc-udon-sharp/rules/udonsharp-sync-selection.md`](skills/unity-vrc-udon-sharp/rules/udonsharp-sync-selection.md) |
-| 51 | ✓ | [`skills/unity-vrc-udon-sharp/SKILL.md`](skills/unity-vrc-udon-sharp/SKILL.md) |
-| 52 | ✓ | [`skills/unity-vrc-world-sdk-3/assets/templates/VRC_Pickup_Rigidbody.cs`](skills/unity-vrc-world-sdk-3/assets/templates/VRC_Pickup_Rigidbody.cs) |
-| 53 | ✓ | [`skills/unity-vrc-world-sdk-3/assets/templates/VRC_Station_Basic.cs`](skills/unity-vrc-world-sdk-3/assets/templates/VRC_Station_Basic.cs) |
-| 54 | ✓ | [`skills/unity-vrc-world-sdk-3/CHEATSHEET.md`](skills/unity-vrc-world-sdk-3/CHEATSHEET.md) |
-| 55 | ✓ | [`skills/unity-vrc-world-sdk-3/LICENSE.txt`](skills/unity-vrc-world-sdk-3/LICENSE.txt) |
-| 56 | ✓ | [`skills/unity-vrc-world-sdk-3/references/audio-video.md`](skills/unity-vrc-world-sdk-3/references/audio-video.md) |
-| 57 | ✓ | [`skills/unity-vrc-world-sdk-3/references/components.md`](skills/unity-vrc-world-sdk-3/references/components.md) |
-| 58 | ✓ | [`skills/unity-vrc-world-sdk-3/references/layers.md`](skills/unity-vrc-world-sdk-3/references/layers.md) |
-| 59 | ✓ | [`skills/unity-vrc-world-sdk-3/references/lighting.md`](skills/unity-vrc-world-sdk-3/references/lighting.md) |
-| 60 | ✓ | [`skills/unity-vrc-world-sdk-3/references/performance.md`](skills/unity-vrc-world-sdk-3/references/performance.md) |
-| 61 | ✓ | [`skills/unity-vrc-world-sdk-3/references/troubleshooting.md`](skills/unity-vrc-world-sdk-3/references/troubleshooting.md) |
-| 62 | ✓ | [`skills/unity-vrc-world-sdk-3/references/upload.md`](skills/unity-vrc-world-sdk-3/references/upload.md) |
-| 63 | ✓ | [`skills/unity-vrc-world-sdk-3/SKILL.md`](skills/unity-vrc-world-sdk-3/SKILL.md) |
-| 64 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
-| 65 | ✓ | [`templates/CLAUDE.md`](templates/CLAUDE.md) |
-| 66 | ✓ | [`templates/GEMINI.md`](templates/GEMINI.md) |
-| 67 | → | [`.claude/audit/README.md`](.claude/audit/README.md) |
-| 68 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 69 | → | [`unity-project-for-sdk-search/README.md`](unity-project-for-sdk-search/README.md) |
+| 46 | ✓ | [`skills/unity-vrc-udon-sharp/references/vrctween.md`](skills/unity-vrc-udon-sharp/references/vrctween.md) |
+| 47 | ✓ | [`skills/unity-vrc-udon-sharp/references/web-loading-advanced.md`](skills/unity-vrc-udon-sharp/references/web-loading-advanced.md) |
+| 48 | ✓ | [`skills/unity-vrc-udon-sharp/references/web-loading.md`](skills/unity-vrc-udon-sharp/references/web-loading.md) |
+| 49 | ✓ | [`skills/unity-vrc-udon-sharp/rules/udonsharp-constraints.md`](skills/unity-vrc-udon-sharp/rules/udonsharp-constraints.md) |
+| 50 | ✓ | [`skills/unity-vrc-udon-sharp/rules/udonsharp-networking.md`](skills/unity-vrc-udon-sharp/rules/udonsharp-networking.md) |
+| 51 | ✓ | [`skills/unity-vrc-udon-sharp/rules/udonsharp-sync-selection.md`](skills/unity-vrc-udon-sharp/rules/udonsharp-sync-selection.md) |
+| 52 | ✓ | [`skills/unity-vrc-udon-sharp/SKILL.md`](skills/unity-vrc-udon-sharp/SKILL.md) |
+| 53 | ✓ | [`skills/unity-vrc-world-sdk-3/assets/templates/VRC_Pickup_Rigidbody.cs`](skills/unity-vrc-world-sdk-3/assets/templates/VRC_Pickup_Rigidbody.cs) |
+| 54 | ✓ | [`skills/unity-vrc-world-sdk-3/assets/templates/VRC_Station_Basic.cs`](skills/unity-vrc-world-sdk-3/assets/templates/VRC_Station_Basic.cs) |
+| 55 | ✓ | [`skills/unity-vrc-world-sdk-3/CHEATSHEET.md`](skills/unity-vrc-world-sdk-3/CHEATSHEET.md) |
+| 56 | ✓ | [`skills/unity-vrc-world-sdk-3/LICENSE.txt`](skills/unity-vrc-world-sdk-3/LICENSE.txt) |
+| 57 | ✓ | [`skills/unity-vrc-world-sdk-3/references/audio-video.md`](skills/unity-vrc-world-sdk-3/references/audio-video.md) |
+| 58 | ✓ | [`skills/unity-vrc-world-sdk-3/references/components.md`](skills/unity-vrc-world-sdk-3/references/components.md) |
+| 59 | ✓ | [`skills/unity-vrc-world-sdk-3/references/layers.md`](skills/unity-vrc-world-sdk-3/references/layers.md) |
+| 60 | ✓ | [`skills/unity-vrc-world-sdk-3/references/lighting.md`](skills/unity-vrc-world-sdk-3/references/lighting.md) |
+| 61 | ✓ | [`skills/unity-vrc-world-sdk-3/references/performance.md`](skills/unity-vrc-world-sdk-3/references/performance.md) |
+| 62 | ✓ | [`skills/unity-vrc-world-sdk-3/references/troubleshooting.md`](skills/unity-vrc-world-sdk-3/references/troubleshooting.md) |
+| 63 | ✓ | [`skills/unity-vrc-world-sdk-3/references/upload.md`](skills/unity-vrc-world-sdk-3/references/upload.md) |
+| 64 | ✓ | [`skills/unity-vrc-world-sdk-3/SKILL.md`](skills/unity-vrc-world-sdk-3/SKILL.md) |
+| 65 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
+| 66 | ✓ | [`templates/CLAUDE.md`](templates/CLAUDE.md) |
+| 67 | ✓ | [`templates/GEMINI.md`](templates/GEMINI.md) |
+| 68 | → | [`.claude/audit/README.md`](.claude/audit/README.md) |
+| 69 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 70 | → | [`unity-project-for-sdk-search/README.md`](unity-project-for-sdk-search/README.md) |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: unity-xr
-description: "XR Interaction Toolkit (XRI) for VR/AR — set up XR rigs, grab/socket/ray interactors, interactables, teleport/locomotion, turn, XR Canvas/EventSystem, haptics. Requires com.unity.xr.interaction.toolkit. Exact signatures via GET /skills/schema."
+description: XR Interaction Toolkit (XRI) for VR/AR — set up XR rigs, grab/socket/ray interactors
 ---
 
 # Unity XR Interaction Toolkit Skills

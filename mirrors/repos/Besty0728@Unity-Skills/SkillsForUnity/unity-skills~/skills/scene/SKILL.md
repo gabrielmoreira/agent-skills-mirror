@@ -1,6 +1,6 @@
 ---
 name: unity-scene
-description: "Unity scene management — create, load (single/additive), save, unload, switch active scene, get scene info/hierarchy, screenshot, search objects. Exact signatures via GET /skills/schema."
+description: Unity scene management — create, load (single/additive), save, unload, switch active scene, get
 ---
 
 # Unity Scene Skills

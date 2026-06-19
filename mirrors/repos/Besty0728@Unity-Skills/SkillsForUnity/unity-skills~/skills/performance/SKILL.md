@@ -1,6 +1,6 @@
 ---
 name: unity-performance
-description: "Unity performance red-flag advisor. Use when users want performance review, code runs slow, frame drops, or need optimization guidance for Update, allocations, pooling, physics. Triggers: performance, optimize, slow, lag, frame drop, hot path, Update, allocation, pool, GC, profiler, 性能, 太慢了, 卡顿, 掉帧, 优化性能, 热路径, 内存分配, 对象池."
+description: Unity performance red-flag advisor. 性能, 太慢了, 卡顿, 掉帧, 优化性能, 热路径, 内存分配, 对象池.
 ---
 
 # Unity Performance Red Flags

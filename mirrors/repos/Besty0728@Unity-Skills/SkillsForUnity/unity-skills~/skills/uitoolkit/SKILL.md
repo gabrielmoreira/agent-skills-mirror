@@ -1,6 +1,6 @@
 ---
 name: unity-uitoolkit
-description: "UI Toolkit (UITK) — create/edit USS stylesheets and UXML layouts, configure UIDocument + PanelSettings, generate EditorWindow/runtime UI scaffolds. For Canvas UGUI use ui. Exact signatures via GET /skills/schema."
+description: UI Toolkit (UITK) — create/edit USS stylesheets and UXML layouts, configure UIDocument +
 ---
 
 # Unity UI Toolkit Skills

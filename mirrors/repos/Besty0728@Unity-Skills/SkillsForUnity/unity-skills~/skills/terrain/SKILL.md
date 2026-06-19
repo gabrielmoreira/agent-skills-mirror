@@ -1,6 +1,6 @@
 ---
 name: unity-terrain
-description: "Unity Terrain operations — create TerrainData, sculpt heights, paint texture layers, smooth/flatten regions, generate Perlin landscapes, add hills. Exact signatures via GET /skills/schema."
+description: Unity Terrain operations — create TerrainData, sculpt heights, paint texture layers, smooth/flatten
 ---
 
 # Unity Terrain Skills

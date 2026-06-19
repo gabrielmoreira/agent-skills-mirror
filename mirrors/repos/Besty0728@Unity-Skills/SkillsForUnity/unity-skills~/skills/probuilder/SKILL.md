@@ -1,6 +1,6 @@
 ---
 name: unity-probuilder
-description: "ProBuilder editable mesh modeling for blockout — create shapes, extrude/bevel/subdivide, weld/move vertices, paint per-face materials. Requires com.unity.probuilder. Exact signatures via GET /skills/schema."
+description: ProBuilder editable mesh modeling for blockout
 ---
 
 # Unity ProBuilder Skills

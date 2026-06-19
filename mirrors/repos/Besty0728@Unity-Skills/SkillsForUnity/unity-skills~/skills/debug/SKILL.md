@@ -1,6 +1,6 @@
 ---
 name: unity-debug
-description: "Debug, diagnostics and compile state — read console errors, force recompile, stack traces, list assemblies, manage scripting defines, sample memory, triage editor health. Exact signatures via GET /skills/schema."
+description: Debug, diagnostics and compile state — read console errors, force recompile, stack traces, list
 ---
 
 # Debug Skills

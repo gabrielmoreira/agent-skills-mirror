@@ -2,7 +2,7 @@
 name: discover
 description: Initialize evo for the current repository by exploring the codebase, proposing unexplored optimization dimensions, constructing the benchmark inside a baseline worktree, and running the first experiment. Use when the user invokes /evo:discover, mentions setting up evo, wants to instrument a codebase for autonomous optimization, or asks to start a new evo run on a project.
 argument-hint: <optional context about what to optimize>
-evo_version: 0.5.3
+evo_version: 0.6.1
 ---
 
 # Discover
@@ -25,6 +25,9 @@ evo plugin
 │   │   ├── evo:optimize       after discover commits the baseline -- drives the loop.
 │   │   │                      Args: subagents=N (read sizing-the-round FIRST),
 │   │   │                            autonomous, subagents-only, budget=N, stall=N
+│   │   ├── evo:ship           after the loop stops -- distills the best valid
+│   │   │                      experiment into a mergeable change (PR if remote,
+│   │   │                      else merge) + a mergeability report
 │   │   ├── evo:finetuning     task is finetuning / post-training / training a model
 │   │   └── evo:infra-setup    need a remote backend, pooled workspaces, lease/slot
 │   │                          management, or specific provider auth/setup
@@ -116,20 +119,20 @@ evo --version
 The output must be exactly:
 
 ```
-evo-hq-cli 0.5.3
+evo-hq-cli 0.6.1
 ```
 
 Three outcomes:
 
 1. **Matches exactly** — continue to step 1.
 2. **Reports a different version** (`evo-hq-cli 0.4.2`, etc.) — the host refetched a newer/older skill bundle than the CLI on PATH. Drift breaks skills silently. Stop and tell the user:
-   > Your installed evo CLI is on a different version than this skill (`0.5.3`). Run:
+   > Your installed evo CLI is on a different version than this skill (`0.6.1`). Run:
    > ```
-   > uv tool install --force evo-hq-cli==0.5.3
+   > uv tool install --force evo-hq-cli==0.6.1
    > ```
    > Then re-invoke this skill.
 3. **`command not found`, or reports a different package** (commonly `evo 1.x` — the unrelated SLAM tool) — the CLI isn't installed. Tell the user:
-   > `evo-hq-cli` isn't on your PATH. Install it: `uv tool install evo-hq-cli==0.5.3` (or `pipx install evo-hq-cli==0.5.3`). Then re-invoke this skill.
+   > `evo-hq-cli` isn't on your PATH. Install it: `uv tool install evo-hq-cli==0.6.1` (or `pipx install evo-hq-cli==0.6.1`). Then re-invoke this skill.
 
 Do not try to auto-install. Host sandbox + network policy may block it; leaving the install as a user action keeps failure modes clear.
 
@@ -519,7 +522,39 @@ Document:
 - Benchmark gaming risks identified during the Goodhart check
 - Future experiment candidates (the non-picked dimensions from step 3)
 
-## 13. Report to the user
+## 13. Report public-safe use case telemetry
+
+Call the telemetry helper with a concrete but sanitized use-case summary. This
+command is globally disabled when the user runs `evo telemetry off`; do not
+branch on that yourself.
+
+Write one short sentence that captures: workload/system shape, optimization
+lever, and measured signal or failure mode. Add 3-6 lower-kebab-case tags for
+the workload, lever, metric/failure mode, runtime category, or benchmark source.
+Avoid filler-only tags like `optimization`, `benchmark`, or `codebase`.
+
+```bash
+evo telemetry usecase \
+  --description "<public-safe, concrete use case summary>" \
+  --tag <tag> --tag <tag> --tag <tag>
+```
+
+Privacy rule: do not include repo names, company names, customer names, file
+paths, benchmark commands, prompt text, task examples, secrets, URLs, internal
+system names, environment names, raw error logs, or exact dataset/item names.
+Generalize private nouns instead of deleting useful signal: "internal billing
+agent" becomes "workflow agent"; "Acme support router" becomes "support-style
+routing agent".
+
+Good example:
+
+```bash
+evo telemetry usecase \
+  --description "Optimizing a tool-calling coding agent for higher task pass rate by tuning planner/retry behavior against an existing per-task eval." \
+  --tag coding-agent --tag tool-calling --tag retry-policy --tag pass-rate --tag existing-eval
+```
+
+## 14. Report to the user
 
 End the skill by reporting in chat:
 

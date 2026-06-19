@@ -2,7 +2,7 @@
 
 > [根目录](../CLAUDE.md) > **skills-v2**
 
-**Last Updated**: 2026-06-10 (v3.1.5)
+**Last Updated**: 2026-06-18 (v3.1.6)
 
 > ⚠ 本文档主体仍停留在 v2.1.16 架构描述（v3.0 引擎重构后未全量同步）。下方变更记录保留 v3.x 修复轨迹，完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
@@ -12,8 +12,13 @@
 
 > 完整变更历史请查看 [CHANGELOG.md](./CHANGELOG.md)
 
+### 2026-06-18 (v3.1.6)
+- 🐛 **Antigravity 后端 Windows 静默无输出（#146）**：Windows 上 wrapper 把 antigravity 的 prompt 走 stdin pipe（与 gemini 相同，为避免 cmd.exe 多行截断）。但 `agy` 不读 stdin、只认 `-p` 参数，收到 `-p ""` 后直接 exit 0 无输出。修复：antigravity 在所有平台统一走 `-p` 传参；仅 gemini 在 Windows 保留 stdin pipe。
+
 ### 2026-06-10 (v3.1.5)
 - 🐛 **完成的任务被误判为活跃 → 无限注入面包屑**：hooks 只认 `completed`/`archived` 为终态，但任务 `status` 是模型自由文本写入，常漂移成 `done`/`finished` 等近义词。以 `status: "done"` 收尾的任务被判为未完成，`workflow-state.js`（及 Codex 模式 `ccg-workflow.py`）持续注入面包屑。修复：判定端容错——`task-utils.js` 新增 `isTerminalStatus()`、`ccg-workflow.py` 新增 `_is_terminal_status()`，匹配一组近义终态词（completed/complete/done/finished/archived/cancelled/closed/resolved/... 大小写+空格归一）。写入端规范仍用 `completed`，读端宽容。已验证：`done` → 无活跃任务；`in_progress` → 面包屑正常。
+- 🐛 **Claude 审核后端可能卡在工具权限上（#143）**：`codeagent-wrapper` 的 claude 后端只在 `cfg.SkipPermissions` 时才加 `--dangerously-skip-permissions`，但无任何调用方传它（死代码）。gemini 后端永远带 `-y` 自主运行，claude 是唯一异类。鉴于 wrapper 只用于自主编排（审核/分析/实施），claude 后端现改为像 gemini 一样恒定绕过权限，headless 审核读 diff/文件时不再卡在权限门。binary `5.11.0` → `5.11.1`。
+- 🐛 **live output 浏览器抢占前台焦点（#139）**：macOS 用 `open <url>` 打开 SSE Web UI 会把浏览器拉到最前、打断用户当前操作。改用 `open -g` 后台打开、不抢焦点。Linux/Windows 行为不变（无可移植的后台标志）。
 
 ### 2026-06-07 (v3.1.4)
 - ✨ **SubAgent 直接上下文注入**：`subagent-context.js` 的 Agent/Team spawn 分支改用 PreToolUse `updatedInput` 改写子 agent 的 `prompt`，将 `<ccg-injected-context>`（spec + task + research）直接注入子 agent。之前用 `additionalContext` 仅注入主控上下文，子 agent 读不到。好处：子 agent 出生即带 spec；角色过滤真正到达正确 agent；主控上下文更干净（减少编排幻觉）。Bash/codeagent-wrapper 分支保留 `additionalContext`（主控构造 HEREDOC，路径本就正确）。

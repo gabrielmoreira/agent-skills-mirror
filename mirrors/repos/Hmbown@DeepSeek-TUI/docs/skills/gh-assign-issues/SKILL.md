@@ -7,7 +7,7 @@ description: "Use to assign GitHub issues to a milestone and/or owners in bulk, 
 
 Retarget or assign a set of CodeWhale issues to a milestone and/or owners in
 bulk, verifying every one. The milestone (or assignee) change is the signal;
-do not narrate it with comments. Use `/opt/homebrew/bin/gh` for all GitHub
+do not narrate it with comments. Use `gh` for all GitHub
 calls.
 
 ## When to use
@@ -28,7 +28,7 @@ merge, or release. Those stay with the maintainer.
    note the starting open-count:
 
    ```bash
-   /opt/homebrew/bin/gh api repos/Hmbown/CodeWhale/milestones \
+   gh api repos/Hmbown/CodeWhale/milestones \
      --jq '.[] | "\(.number)\t\(.title)\topen=\(.open_issues)\tstate=\(.state)"'
    ```
 
@@ -41,7 +41,7 @@ merge, or release. Those stay with the maintainer.
 
    ```bash
    for N in 3101 3102 3103; do
-     /opt/homebrew/bin/gh issue view "$N" --repo Hmbown/CodeWhale \
+     gh issue view "$N" --repo Hmbown/CodeWhale \
        --json number,state,url,milestone \
        --jq '"\(.number)\t\(.state)\t\(.url)\tmilestone=\(.milestone.title // "none")"'
    done
@@ -55,7 +55,7 @@ merge, or release. Those stay with the maintainer.
 
    ```bash
    for N in 3101 3102 3103; do
-     if /opt/homebrew/bin/gh issue edit "$N" --repo Hmbown/CodeWhale \
+     if gh issue edit "$N" --repo Hmbown/CodeWhale \
           --milestone "v0.8.61" >/dev/null 2>&1; then
        echo "ok   #$N -> v0.8.61"
      else

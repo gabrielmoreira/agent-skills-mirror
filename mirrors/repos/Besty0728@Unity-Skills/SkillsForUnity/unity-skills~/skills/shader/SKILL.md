@@ -1,6 +1,6 @@
 ---
 name: unity-shader
-description: "HLSL/ShaderLab .shader file management — create/read/list/find/delete, inspect properties/keywords, check compile errors, count variants, toggle global keywords, URP template. Exact signatures via GET /skills/schema."
+description: HLSL/ShaderLab .shader file management — create/read/list/find/delete, inspect properties/keywords
 ---
 
 # Unity Shader Skills

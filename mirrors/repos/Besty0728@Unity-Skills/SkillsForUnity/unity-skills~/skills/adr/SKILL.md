@@ -1,6 +1,6 @@
 ---
 name: unity-adr
-description: "Architecture decision record helper for Unity projects. Use when users compare options, choose between approaches, or need to lock in a design choice. Triggers: ADR, architecture decision, tradeoff, which approach, compare options, choose pattern, pros and cons, 技术选型, 方案对比, 选哪个, 设计决策, 架构决策, 优缺点对比."
+description: Architecture decision record helper for Unity projects. 技术选型, 方案对比, 选哪个, 设计决策, 架构决策, 优缺点对比.
 ---
 
 # Unity ADR

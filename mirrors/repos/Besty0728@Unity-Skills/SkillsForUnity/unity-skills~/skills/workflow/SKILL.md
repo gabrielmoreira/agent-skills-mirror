@@ -1,6 +1,6 @@
 ---
 name: unity-workflow
-description: "Persistent operation history, snapshots, task/session undo, bookmarks, and batch planning/retry — record tasks, snapshot before changes, undo/redo by task or conversation session. Exact signatures via GET /skills/schema."
+description: Persistent operation history, snapshots, task/session undo, bookmarks, and batch planning/retry
 ---
 
 # Workflow Skills

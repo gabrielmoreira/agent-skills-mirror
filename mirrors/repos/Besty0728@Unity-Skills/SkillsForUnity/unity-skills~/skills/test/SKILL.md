@@ -1,6 +1,6 @@
 ---
 name: unity-test
-description: "Unity Test Runner async operations — run/discover/list/cancel tests, poll job results, create EditMode/PlayMode templates, list categories, skills smoke regression. Poll by jobId. Exact signatures via GET /skills/schema."
+description: Unity Test Runner async operations — run/discover/list/cancel tests, poll job results, create
 ---
 
 # Test Skills

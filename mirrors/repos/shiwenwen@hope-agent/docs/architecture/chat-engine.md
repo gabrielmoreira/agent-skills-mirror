@@ -179,8 +179,10 @@ sequenceDiagram
                 Engine->>Engine: schedule_memory_extraction_after_turn()
                 Engine-->>Caller: Ok(ChatEngineResult)
             else ContextOverflow（首次）
+                Engine->>Sink: emit context_compaction_progress(preparing, emergency)
                 Engine->>Engine: emergency_compact()
                 Engine->>DB: save_agent_context()
+                Engine->>Sink: emit context_compaction_progress(finalizing, emergency)
                 Engine->>Sink: emit context_compacted
                 Note over Engine: retry_count++ → 继续重试
             else Terminal 错误
@@ -220,7 +222,8 @@ sequenceDiagram
 | `tool_call` | `call_id, name, arguments` | 工具调用发起 |
 | `tool_result` | `call_id, result, duration_ms, is_error` | 工具执行结果 |
 | `model_fallback` | `model, from_model, provider_id, model_id, reason, attempt, total, error` | 模型降级通知 |
-| `context_compacted` | `data` | 上下文压缩完成 |
+| `context_compaction_progress` | `data.phase, data.kind` | live-only 上下文压缩进度；不持久化，GUI 用同一条 banner 原地更新 |
+| `context_compacted` | `data` | 上下文压缩完成；final 事件是完成态唯一真相源，Tier ≥ 2 持久化 |
 | `codex_auth_expired` | `error` | Codex OAuth Token 过期 |
 | `event` | （通用） | 其他系统事件 |
 
@@ -419,7 +422,7 @@ Chat Engine 内置完整的模型降级和重试逻辑：
 flowchart TD
     A[agent.chat() 失败] --> B{classify_error}
     B -->|ContextOverflow| C{首次?}
-    C -->|是| D[emergency_compact + 重试]
+    C -->|是| D["emit progress<br/>emergency_compact<br/>emit final + 重试"]
     C -->|否| E[Terminal: 返回错误]
     B -->|Terminal<br/>Auth/Billing/ModelNotFound| E
     B -->|Retryable<br/>RateLimit/Overloaded/Timeout| F{retry < MAX_RETRIES?}
@@ -435,6 +438,8 @@ flowchart TD
 退避基数 / 上限 / 单模型重试次数已统一外移到 `failover::FailoverPolicy::chat_engine_default()`（见 [failover.md](./failover.md)），engine 内不再自管这三个常量。引擎本地仅保留一个常量 `MAX_COMPACTION_RETRIES = 1`（每模型最多紧急压缩重试 1 次），其它分类、退避、profile 轮换、Codex 强制不轮换等行为全部交给 `failover::executor::execute_with_failover` 配合 `chat_engine_default` policy 决定。
 
 **Codex 特殊处理：** Auth 错误时，如果当前 Provider 是 Codex 类型，额外发送 `codex_auth_expired` 事件通知前端触发重新授权流程。
+
+**ContextOverflow 特殊处理：** Chat Engine 重新构造同 profile 的临时 Agent，恢复会话 history 后执行 Tier 4 `emergency_compact()`，保存压缩后的 `context_json`，写回 `PROFILE_STICKY`，并用同一 profile 重试一次。非 incognito 会话会把 runtime ledger snapshot 交给 emergency compaction；incognito 或会话行已焚毁时跳过 ledger，避免 job/subagent id 被注入或持久化。
 
 ## Post-turn Effects
 

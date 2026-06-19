@@ -27,9 +27,9 @@ alone, and never merge/close/tag without Hunter's approval.
 
 1. Pull the queue (read everything, decide nothing yet):
    ```bash
-   /opt/homebrew/bin/gh pr list --repo Hmbown/CodeWhale --state open --limit 200 \
+   gh pr list --repo Hmbown/CodeWhale --state open --limit 200 \
      --json number,title,author,headRefName,baseRefName,isDraft,mergeable,mergeStateStatus,additions,deletions,changedFiles,reviewDecision,labels,url
-   /opt/homebrew/bin/gh issue list --repo Hmbown/CodeWhale --state open --limit 300 \
+   gh issue list --repo Hmbown/CodeWhale --state open --limit 300 \
      --json number,title,author,labels,milestone,url
    ```
 2. Shortlist PRs that look CLEAN + small (`mergeable=MERGEABLE`, low
@@ -37,21 +37,21 @@ alone, and never merge/close/tag without Hunter's approval.
    sandbox, install, publish, branding). Flag any NEW contributor for credit.
 3. Confirm each shortlisted PR from code, tests, comments, and checks:
    ```bash
-   /opt/homebrew/bin/gh pr view N --repo Hmbown/CodeWhale \
+   gh pr view N --repo Hmbown/CodeWhale \
      --json files,commits,reviews,comments,statusCheckRollup,closingIssuesReferences
-   /opt/homebrew/bin/gh pr checks N --repo Hmbown/CodeWhale
+   gh pr checks N --repo Hmbown/CodeWhale
    ```
 4. Test mergeability against the REAL landing branch (release branches are often
    local-only; the main-based `mergeable` flag lies):
    ```bash
    git fetch origin pull/N/head:refs/tmp/pr-N
-   base=$(git merge-base codex/v0.8.61 refs/tmp/pr-N)
-   git merge-tree "$base" codex/v0.8.61 refs/tmp/pr-N   # empty/no conflict markers == clean
+   base=$(git merge-base <release-branch> refs/tmp/pr-N)
+   git merge-tree "$base" <release-branch> refs/tmp/pr-N   # empty/no conflict markers == clean
    ```
 5. Find already-implemented issues: grep the landing branch for the behavior the
    issue asks for, then confirm the exact lines.
    ```bash
-   git grep -n "DEEPSEEK_BASE_URL" codex/v0.8.61
+   git grep -n "DEEPSEEK_BASE_URL" <release-branch>
    ```
    If the branch already covers it, draft a close-with-evidence note linking the
    commit/lines and crediting the reporter. Hold the close for approval.
@@ -60,7 +60,7 @@ alone, and never merge/close/tag without Hunter's approval.
 7. Build the credit plan per win. Cherry-pick preserves the author. Otherwise
    add trailers, using `.github/AUTHOR_MAP` first (else derive the noreply id):
    ```bash
-   /opt/homebrew/bin/gh api users/HANDLE --jq '"\(.id)+\(.login)@users.noreply.github.com"'
+   gh api users/HANDLE --jq '"\(.id)+\(.login)@users.noreply.github.com"'
    ```
    ```text
    Co-authored-by: Name <ID+handle@users.noreply.github.com>

@@ -65,10 +65,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 5 | ✓ | [`shelved/diagram-monochrome/SKILL.md`](shelved/diagram-monochrome/SKILL.md) |
 | 6 | ✓ | [`shelved/oracle-codex/SKILL.md`](shelved/oracle-codex/SKILL.md) |
-| 7 | ✓ | [`skills/agents-context/agents/openai.yaml`](skills/agents-context/agents/openai.yaml) |
-| 8 | ✓ | [`skills/agents-context/references/brain-polish.md`](skills/agents-context/references/brain-polish.md) |
-| 9 | ✓ | [`skills/agents-context/references/create-docs.md`](skills/agents-context/references/create-docs.md) |
-| 10 | ✓ | [`skills/agents-context/SKILL.md`](skills/agents-context/SKILL.md) |
+| 7 | ✓ | [`skills/agents-context-management/agents/openai.yaml`](skills/agents-context-management/agents/openai.yaml) |
+| 8 | ✓ | [`skills/agents-context-management/references/brain-polish.md`](skills/agents-context-management/references/brain-polish.md) |
+| 9 | ✓ | [`skills/agents-context-management/references/create-docs.md`](skills/agents-context-management/references/create-docs.md) |
+| 10 | ✓ | [`skills/agents-context-management/SKILL.md`](skills/agents-context-management/SKILL.md) |
 | 11 | ✓ | [`skills/agents-introspection/agents/openai.yaml`](skills/agents-introspection/agents/openai.yaml) |
 | 12 | ✓ | [`skills/agents-introspection/references/transcript-sources.md`](skills/agents-introspection/references/transcript-sources.md) |
 | 13 | ✓ | [`skills/agents-introspection/SKILL.md`](skills/agents-introspection/SKILL.md) |

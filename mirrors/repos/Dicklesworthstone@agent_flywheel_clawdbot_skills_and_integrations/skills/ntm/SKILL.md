@@ -33,8 +33,8 @@ ntm tutorial
 # Check dependencies
 ntm deps -v
 
-# Create multi-agent session
-ntm spawn myproject --cc=2 --cod=1 --gmi=1
+# Create multi-agent session (agy = Antigravity CLI, NTM-pinned to "Gemini 3.1 Pro (High)")
+ntm spawn myproject --cc=2 --cod=1 --agy=1
 
 # Send prompt to all Claude agents
 ntm send myproject --cc "Explore this codebase and summarize its architecture."
@@ -48,7 +48,7 @@ ntm palette myproject
 ### Spawn Agents
 
 ```bash
-ntm spawn myproject --cc=3 --cod=2 --gmi=1   # 3 Claude + 2 Codex + 1 Gemini
+ntm spawn myproject --cc=3 --cod=2 --agy=1   # 3 Claude + 2 Codex + 1 Gemini (via agy)
 ntm quick myproject --template=go             # Full project scaffold + agents
 ntm create myproject --panes=10               # Empty panes only
 ntm spawn myproject --profiles=architect,implementer,tester
@@ -60,13 +60,14 @@ ntm spawn myproject --profiles=architect,implementer,tester
 |------|-------|-------------|
 | `--cc=N` | Claude Code | `claude` |
 | `--cod=N` | Codex CLI | `codex` |
-| `--gmi=N` | Gemini CLI | `gemini` |
+| `--agy=N` | Antigravity CLI (pinned to "Gemini 3.1 Pro (High)") | `agy` |
+| `--gmi=N` | Gemini CLI (legacy, retiring — prefer `--agy=N`) | `gemini` |
 
 ### Add More Agents
 
 ```bash
 ntm add myproject --cc=2              # Add 2 more Claude agents
-ntm add myproject --cod=1 --gmi=1     # Add mixed agents
+ntm add myproject --cod=1 --agy=1     # Add mixed agents
 ```
 
 ## Sending Prompts
@@ -74,7 +75,7 @@ ntm add myproject --cod=1 --gmi=1     # Add mixed agents
 ```bash
 ntm send myproject --cc "Implement user auth"     # To all Claude
 ntm send myproject --cod "Write unit tests"       # To all Codex
-ntm send myproject --gmi "Review and document"    # To all Gemini
+ntm send myproject --agy "Review and document"    # To all Antigravity (Gemini 3.1 Pro)
 ntm send myproject --all "Review current state"   # To ALL agents
 ntm interrupt myproject                           # Ctrl+C to all
 ```
@@ -421,7 +422,7 @@ ntm safety uninstall
 ```bash
 ntm send myproject --cc "design the database schema"
 ntm send myproject --cod "implement the models"
-ntm send myproject --gmi "write tests"
+ntm send myproject --agy "write tests"
 ```
 
 ### Competitive Comparison
@@ -436,7 +437,7 @@ ntm view myproject  # Compare side-by-side
 ```bash
 ntm send myproject --cc "implement feature X"
 ntm send myproject --cod "review Claude's code"
-ntm send myproject --gmi "write tests for edge cases"
+ntm send myproject --agy "write tests for edge cases"
 ```
 
 ## Configuration
@@ -523,7 +524,7 @@ After `eval "$(ntm init zsh)"`:
 
 | Category | Aliases |
 |----------|---------|
-| Agent Launch | `cc`, `cod`, `gmi` |
+| Agent Launch | `cc`, `cod`, `agy` (`gmi` legacy) |
 | Session | `cnt`, `sat`, `qps` |
 | Agent Mgmt | `ant`, `bp`, `int` |
 | Navigation | `rnt`, `lnt`, `snt`, `vnt`, `znt` |

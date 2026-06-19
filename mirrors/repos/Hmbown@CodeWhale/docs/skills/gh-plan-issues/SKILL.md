@@ -12,7 +12,7 @@ skill. Decide from code+tests+comments+checks, never from title alone.
 
 ## When to use
 
-- A milestone (e.g. `v0.8.61`) has a triaged but unsequenced issue list and you
+- A milestone (e.g. `v0.8.62`) has a triaged but unsequenced issue list and you
   need workstreams, ownership boundaries, and a build order.
 - You must separate epics from landable-now and expose hidden coupling before
   contributors start parallel work.
@@ -20,14 +20,15 @@ skill. Decide from code+tests+comments+checks, never from title alone.
 
 ## Inputs
 
-- Repo root: `/Volumes/VIXinSSD/codewhale` · GitHub repo: `Hmbown/CodeWhale`
-- GitHub CLI: `/opt/homebrew/bin/gh`
+- Repo root: the local CodeWhale checkout (run `git rev-parse --show-toplevel`).
+- GitHub repo: `Hmbown/CodeWhale`
+- GitHub CLI: `gh`
 - Target milestone name from Hunter (do not invent one).
 
 ## 1. Pull the milestone as evidence
 
 ```bash
-/opt/homebrew/bin/gh issue list --repo Hmbown/CodeWhale --milestone v0.8.61 \
+gh issue list --repo Hmbown/CodeWhale --milestone v0.8.62 \
   --state open --limit 200 \
   --json number,title,labels,body,comments,milestone,updatedAt,url
 ```
@@ -36,7 +37,7 @@ For each candidate, read the real signal — body, comments, linked PRs/issues �
 never the title alone:
 
 ```bash
-/opt/homebrew/bin/gh issue view N --repo Hmbown/CodeWhale \
+gh issue view N --repo Hmbown/CodeWhale \
   --json number,title,labels,body,comments,closedByPullRequestsReferences
 ```
 
@@ -47,7 +48,7 @@ the real subsystem labels as the first cut, then confirm by grepping the code
 the issue actually names:
 
 ```bash
-/opt/homebrew/bin/gh issue list --repo Hmbown/CodeWhale --milestone v0.8.61 \
+gh issue list --repo Hmbown/CodeWhale --milestone v0.8.62 \
   --state open --label workflow-runtime --json number,title --jq '.[].number'
 rg -n "ProviderRoute|session_model|route" crates/ --type rust -l
 ```
@@ -92,8 +93,8 @@ Probe the real landing branch, not the main-based mergeable flag:
 
 ```bash
 git fetch origin pull/N/head:refs/tmp/pr-N
-base=$(git merge-base codex/v0.8.61 refs/tmp/pr-N)
-git merge-tree --write-tree codex/v0.8.61 refs/tmp/pr-N   # nonzero/CONFLICT = reorder
+base=$(git merge-base <release-branch> refs/tmp/pr-N)
+git merge-tree --write-tree <release-branch> refs/tmp/pr-N   # nonzero/CONFLICT = reorder
 ```
 
 If an early cluster conflicts with a later one, reorder or note the coupling.

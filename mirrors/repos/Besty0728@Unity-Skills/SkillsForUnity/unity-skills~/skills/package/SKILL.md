@@ -1,6 +1,6 @@
 ---
 name: unity-package
-description: "Unity Package Manager (UPM) operations — install, remove, refresh, search, inspect packages, list dependencies, query versions, plus Cinemachine/Splines bootstrap. Exact signatures via GET /skills/schema."
+description: Unity Package Manager (UPM) operations — install, remove, refresh, search, inspect packages, list
 ---
 
 # Package Skills

@@ -21,7 +21,7 @@ The Custom Code Tool looks like a Code node in the editor — same JavaScript ed
 | **Input** | `$input.all()` — item stream | `query` — string or object from LLM |
 | **Return** | `[{json: {...}}]` (items array) | **A string** |
 | **`$fromAI()`** | N/A | **Not available** (see Errors) |
-| **`$helpers`** | Full helpers incl. httpRequest | Not exposed to the tool sandbox |
+| **HTTP helper** | `this.helpers.httpRequest` (auth helpers blocked) | Not exposed to the tool sandbox |
 | **State** | Per-run execution data | No `getContext`, no `$getWorkflowStaticData` |
 
 **If you treat it like a Code node, it fails.** The rest of this skill covers the Code Tool's actual contract.
@@ -239,7 +239,7 @@ The Code Tool sandbox is **narrower** than the Code node sandbox. Don't assume h
 | `$node["NodeName"]` | ✅ | ❌ |
 | `$json`, `$binary` | ✅ | ❌ |
 | `$fromAI()` | ❌ | ❌ (despite sitting next to an AI agent) |
-| `$helpers.httpRequest()` | ✅ | ❌ |
+| `this.helpers.httpRequest()` | ✅ | ❌ |
 | `DateTime` (Luxon) | ✅ | ✅ (standard in JS sandbox) |
 | `$jmespath()` | ✅ | ❌ |
 | `this.getContext(...)` | ✅ | ❌ |
@@ -261,7 +261,7 @@ Use **Code Tool** when:
 
 Use **`toolWorkflow`** (Call Sub-workflow Tool) when:
 - ✅ You need multiple parameters with clean `$fromAI()` typing
-- ✅ You need access to `$helpers`, credentials, or other nodes
+- ✅ You need access to `this.helpers`, credentials, or other nodes
 - ✅ Logic is reusable across agents
 - ✅ You want structured typed inputs WITHOUT writing a JSON Schema
 

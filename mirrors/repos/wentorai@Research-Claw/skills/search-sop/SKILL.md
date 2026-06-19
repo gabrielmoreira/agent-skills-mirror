@@ -131,6 +131,14 @@ When Layer 1 tools cannot reach the required database, use the `browser` tool.
 **Target databases**: Google Scholar, CNKI / 万方 / 维普, Web of Science / Scopus,
 IEEE Xplore, ACM DL, SpringerLink, any user-specified database.
 
+**CNKI (中国知网) — delegate to the dedicated skills.** For any CNKI task, do NOT
+hand-write browser steps here. Use the purpose-built `cnki-*` skills instead, which
+carry verified selectors, captcha/login detection, and single-call extraction:
+`cnki-search` / `cnki-advanced-search` (search), `cnki-parse-results`,
+`cnki-paper-detail`, `cnki-journal-search` / `cnki-journal-index` / `cnki-journal-toc`,
+`cnki-navigate-pages`, `cnki-download` (login required), `cnki-export` (Zotero). They
+are the primary path for Chinese-journal retrieval.
+
 **IMPORTANT:** Never pass `profile` parameter — omit it to use the default managed browser.
 
 **Workflow:** `open url` → `snapshot mode=efficient` (note targetId) → `act kind=type`
@@ -185,7 +193,7 @@ tools return insufficient results, expand to other tools (see §15 Search Iterat
 | **Earth Sciences** | `search_osf_preprints(eartharxiv)` + `search_crossref` | — | |
 | **French/European** | `search_hal` + `search_openaire` | — | HAL for French; OpenAIRE for EU-funded |
 | **Datasets / Software** | `search_zenodo` + `search_datacite` | — | |
-| **Chinese Literature** | **Layer 2 Browser → CNKI** | All L1 tools | No free API covers Chinese journals |
+| **Chinese Literature** | **`cnki-*` skills** (Layer 2 Browser) | All L1 tools | No free API covers Chinese journals; cnki-skills carry verified selectors |
 | **HEP / Astrophysics** | `search_inspire` + `search_arxiv` | — | INSPIRE is authoritative for HEP |
 
 ---

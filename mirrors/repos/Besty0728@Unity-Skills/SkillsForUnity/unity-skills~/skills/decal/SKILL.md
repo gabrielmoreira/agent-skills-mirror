@@ -1,6 +1,6 @@
 ---
 name: unity-decal
-description: "URP Decal Projector creation and configuration plus DecalRendererFeature setup — create/inspect/configure/batch-edit/delete/validate projectors. HDRP decals out of scope. Exact signatures via GET /skills/schema."
+description: URP Decal Projector creation and configuration plus DecalRendererFeature setup
 ---
 
 # Decal Skills

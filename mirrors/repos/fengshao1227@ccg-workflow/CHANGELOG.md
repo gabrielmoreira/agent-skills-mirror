@@ -7,11 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.6] - 2026-06-18
+
+### 🐛 Fixes
+
+- **Antigravity backend silent no-op on Windows (#146)** — On Windows the wrapper routed antigravity prompts through stdin pipe (like gemini, to avoid cmd.exe multi-line truncation). But `agy` does not read stdin — it requires `-p`. So it received `-p ""`, did nothing, exited 0, and the wrapper reported "completed without agent_message output". Fix: antigravity now always uses `-p` with the full prompt text on all platforms; only gemini uses stdin pipe on Windows.
+
+---
+
 ## [3.1.5] - 2026-06-10
 
 ### 🐛 Fixes
 
 - **Finished tasks misjudged as active → endless breadcrumb injection** — The hooks only treated `completed`/`archived` as terminal statuses, but task `status` is free-text written by the model and often drifts to synonyms like `done`/`finished`. A task closed with `status: "done"` was therefore seen as still in-progress, so `workflow-state.js` (and the Codex `ccg-workflow.py` hook) kept injecting its breadcrumb forever. Read-side detection is now tolerant: `task-utils.js` gains `isTerminalStatus()` and `ccg-workflow.py` gains `_is_terminal_status()`, both matching a set of synonyms (`completed`/`complete`/`done`/`finished`/`archived`/`cancelled`/`closed`/`resolved`/...) case-insensitively. Canonical write value remains `completed`; the read side is just forgiving. Verified: `status:"done"` → no active task; `status:"in_progress"` → breadcrumb still injected.
+- **Claude review backend could block on tool permissions (#143)** — `codeagent-wrapper`'s claude backend only added `--dangerously-skip-permissions` when `cfg.SkipPermissions` was set, but no caller ever passed it (dead code). The gemini backend always runs autonomously with `-y`; claude was the inconsistent outlier. Since the wrapper is only ever invoked for autonomous orchestration (review/analysis/implementation), the claude backend now always bypasses permissions like gemini, so headless reviews that read diffs/files don't stall on permission gates. Binary `5.11.0` → `5.11.1`.
+- **Live-output browser opened in foreground, stealing focus (#139)** — On macOS the SSE web UI was launched with `open <url>`, which pulls the browser to the front and interrupts whatever the user is doing. Changed to `open -g` so the page opens in the background without stealing focus. Linux/Windows behavior unchanged (no portable background flag).
 
 ---
 

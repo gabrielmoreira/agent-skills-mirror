@@ -1,6 +1,6 @@
 ---
 name: unity-batch
-description: "Unified batch query, preview-confirm-execute mutation, async job orchestration, and bulk scene cleanup. Use confirmToken to commit and poll jobs by jobId. Exact signatures via GET /skills/schema."
+description: Unified batch query, preview-confirm-execute mutation, async job orchestration, and bulk scene
 ---
 
 # Unity Batch Skills

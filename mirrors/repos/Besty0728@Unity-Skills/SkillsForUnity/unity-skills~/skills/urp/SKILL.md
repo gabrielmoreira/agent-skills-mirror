@@ -1,6 +1,6 @@
 ---
 name: unity-urp
-description: "Universal Render Pipeline (URP) asset and renderer feature management — inspect/modify the active URP asset, list renderer data, add/remove/toggle renderer features (SSAO, RenderObjects, Decal...). Exact signatures via GET /skills/schema."
+description: Universal Render Pipeline (URP) asset and renderer feature management
 ---
 
 # URP Skills

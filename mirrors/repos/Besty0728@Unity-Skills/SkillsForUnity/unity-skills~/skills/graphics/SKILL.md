@@ -1,6 +1,6 @@
 ---
 name: unity-graphics
-description: "Project-wide GraphicsSettings/QualitySettings for SRP — quality overview/level, default and per-quality SRP asset, Always Included Shaders, shader stripping. Exact signatures via GET /skills/schema."
+description: Project-wide GraphicsSettings/QualitySettings for SRP
 ---
 
 # Graphics Skills

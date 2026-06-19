@@ -6,7 +6,7 @@ import process from "node:process";
 import { setTimeout as delay } from "node:timers/promises";
 import { GenError, type CliOptions, type GenerateResult } from "./types.ts";
 import { runCodexExec } from "./spawn.ts";
-import { findCpToTarget, verifyImageGenWasInvoked, verifyOutput } from "./validator.ts";
+import { hasImageGenEvidence, verifyImageGenWasInvoked, verifyOutput } from "./validator.ts";
 import { cacheKey, lookupCache, storeCache, FileLock } from "./cache.ts";
 import { JsonLogger } from "./logger.ts";
 
@@ -125,7 +125,7 @@ function buildInstruction(prompt: string, opts: CliOptions): string {
   const refHint = opts.refImages.length > 0
     ? `\nREFERENCE IMAGES (attached above): ${opts.refImages.length} image(s) provided for style/composition guidance.\n`
     : "";
-  return `You have an internal tool called image_gen for image generation. Use it.
+  return `You have an internal tool called image_gen for image generation. You MUST call it before doing anything else.
 
 TASK: Generate an image with the spec below, then save to disk.
 
@@ -137,12 +137,15 @@ OUTPUT PATH: ${opts.outputPath}
 ${refHint}
 STEPS:
 1. Call image_gen with the prompt and aspect ratio above${opts.refImages.length > 0 ? " (using the attached reference images for guidance)" : ""}.
-2. Move or copy the resulting image from Codex default location ($CODEX_HOME/generated_images/...) to: ${opts.outputPath}
+2. Move or copy ONLY the image produced by that image_gen call from Codex default location ($CODEX_HOME/generated_images/...) to: ${opts.outputPath}
 3. Verify with: ls -la ${opts.outputPath}
 4. Reply with ONLY this JSON line (no markdown fences, no other text):
    {"status":"ok","path":"${opts.outputPath}","bytes":<file_size_in_bytes>}
 
 HARD CONSTRAINTS:
+- Do NOT search for, find, inspect, reuse, or copy any pre-existing files from $CODEX_HOME/generated_images/ or any other directory.
+- Do NOT run ls/find/rg/grep/glob over $CODEX_HOME/generated_images/ before image_gen has been called.
+- You MUST call image_gen first. Only after image_gen completes may you copy the newly created file from this turn.
 - Do NOT use curl, wget, Python, or any external API.
 - Do NOT use bash to fabricate an image; only image_gen produces real pixels.
 - Use ONLY the image_gen internal tool.`;
@@ -175,13 +178,16 @@ async function attemptGenerate(
     throw new GenError("agent_refused", "No thread id in event stream");
   }
 
-  // verify: image_gen was actually invoked (check $CODEX_HOME/generated_images/{threadId}/)
+  // verify image_gen ran in THIS thread. A PNG in this thread's
+  // generated_images dir is the real signal (image_gen does not surface as a
+  // stream item); the stream check is a forward-compatible fallback. The #185
+  // shortcut (copying an unrelated history image) yields neither.
   const ver = await verifyImageGenWasInvoked(run.threadId);
-  if (!ver.ok) {
-    // secondary verify: did tool_calls include cp/mv from generated_images to our target
-    if (!findCpToTarget(run.toolCalls, opts.outputPath)) {
-      throw new GenError("no_image_gen_tool_use", `image_gen was not invoked: ${ver.reason}`);
-    }
+  if (!hasImageGenEvidence(run.toolCalls, ver.ok)) {
+    throw new GenError(
+      "no_image_gen_tool_use",
+      `image_gen was not invoked (no image_gen event in stream; ${ver.reason})`,
+    );
   }
 
   // verify output

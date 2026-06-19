@@ -1,6 +1,6 @@
 ---
 name: unity-importer
-description: "Asset import settings — texture/audio/model importers, sprite settings, per-platform overrides, and reimport. Exact signatures via GET /skills/schema."
+description: Asset import settings — texture/audio/model importers, sprite settings, per-platform overrides,
 ---
 
 # Unity Importer Skills

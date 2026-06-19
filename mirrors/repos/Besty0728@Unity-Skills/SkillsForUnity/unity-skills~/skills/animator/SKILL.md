@@ -1,6 +1,6 @@
 ---
 name: unity-animator
-description: "Unity Animator Controller editing and runtime parameter control — create controllers, add states/transitions/parameters, play states, drive triggers/floats/bools. Exact signatures via GET /skills/schema."
+description: Unity Animator Controller editing and runtime parameter control
 ---
 
 # Unity Animator Skills

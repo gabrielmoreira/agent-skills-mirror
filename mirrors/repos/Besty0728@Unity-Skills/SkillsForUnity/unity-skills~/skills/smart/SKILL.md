@@ -1,6 +1,6 @@
 ---
 name: unity-smart
-description: "AI-powered scene operations — SQL-like and spatial object queries, automatic layout (grid/circle/line), align/distribute/snap/randomize, replace prefabs, reference auto-binding. Exact signatures via GET /skills/schema."
+description: AI-powered scene operations — SQL-like and spatial object queries, automatic layout
 ---
 
 # Unity Smart Skills

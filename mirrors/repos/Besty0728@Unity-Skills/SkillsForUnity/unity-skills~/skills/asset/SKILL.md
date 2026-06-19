@@ -1,6 +1,6 @@
 ---
 name: unity-asset
-description: "Unity AssetDatabase management — import, delete, move/rename, duplicate, find, get info, create folders, refresh, reimport (single/batch), read/set labels. Exact signatures via GET /skills/schema."
+description: Unity AssetDatabase management — import, delete, move/rename, duplicate, find, get info, create
 ---
 
 # Unity Asset Skills

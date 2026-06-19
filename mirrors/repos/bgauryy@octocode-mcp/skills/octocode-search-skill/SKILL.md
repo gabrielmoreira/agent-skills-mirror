@@ -1,6 +1,6 @@
 ---
 name: octocode-search-skill
-description: Use this skill when the user asks to find, evaluate, preview, install, rate, review, score, improve, refactor, or synthesize Agent Skills (the `SKILL.md` folder format) across GitHub, local skill folders, and skill marketplaces. Covers searching for a skill for a task, deep-diving a candidate, installing one or more skills into one or more agents at user or project scope, rating or reviewing an existing SKILL.md, refactoring a skill, or creating a new local skill from researched patterns. Do NOT activate for general package search (npm, PyPI, cargo), general (non-skill) web search, or code research not involving SKILL.md files.
+description: Use this skill when the user asks to find, evaluate, preview, install, rate, review, score, improve, refactor, or synthesize Agent Skills (the `SKILL.md` folder format) across GitHub, local skill folders, and skill marketplaces. Covers searching for a skill for a task, deep-diving a candidate, installing one or more skills into one or more agents at user or project scope, rating or reviewing an existing SKILL.md, refactoring a skill, or creating a new local skill from researched patterns. Do NOT activate for general package search (npm, cargo), general (non-skill) web search, or code research not involving SKILL.md files.
 ---
 
 # Octocode Search Skill
@@ -50,9 +50,9 @@ Use Octocode MCP for all research — locally and externally — and let user in
 
 - Lead local when the question is about the user's workspace: existing skills, custom paths, draft skills, repo conventions.
 - Lead GitHub when the user is shopping for a skill, comparing options, or asking about something not present locally.
-- Read code or files: `localGetFileContent` or `githubGetFileContent`.
-- Download a remote skill folder before writing it locally: `githubGetFileContent(type="directory")` or `githubCloneRepo`.
-- Web search: for every PUBLIC skill query, MUST also run the runtime's web search tool (e.g. `WebSearch`) in parallel with Octocode/GitHub and the skills.sh API. It catches skills surfaced in articles, awesome-lists, release notes, and registries outside the known set. Treat web-only mentions as LEADS, not recommendations — always resolve the real `(owner/repo, path-to-SKILL.md)` and confirm the actual `SKILL.md` via Octocode (`githubGetFileContent`) before recommending. Skip only for local-only or org/private scopes (Octocode tools only there).
+- Read code or files: `localGetFileContent` or `ghGetFileContent`.
+- Download a remote skill folder before writing it locally: `ghGetFileContent(type="directory")` or `ghCloneRepo`.
+- Web search: for every PUBLIC skill query, MUST also run the runtime's web search tool (e.g. `WebSearch`) in parallel with Octocode/GitHub and the skills.sh API. It catches skills surfaced in articles, awesome-lists, release notes, and registries outside the known set. Treat web-only mentions as LEADS, not recommendations — always resolve the real `(owner/repo, path-to-SKILL.md)` and confirm the actual `SKILL.md` via Octocode (`ghGetFileContent`) before recommending. Skip only for local-only or org/private scopes (Octocode tools only there).
 
 Fallbacks:
 
@@ -133,7 +133,7 @@ Popularity workflow — MUST follow this order:
 
 1. Sort results by `installs` descending — highest install count = most battle-tested signal.
 2. Take the top 5 candidates by installs as priority inspection targets.
-3. In parallel with other searches, fetch each top candidate's `SKILL.md` via Octocode (`githubGetFileContent` using `source` as `owner/repo`; try paths `skills/<skillId>/SKILL.md`, `<skillId>/SKILL.md`, `.claude/skills/<skillId>/SKILL.md`).
+3. In parallel with other searches, fetch each top candidate's `SKILL.md` via Octocode (`ghGetFileContent` using `source` as `owner/repo`; try paths `skills/<skillId>/SKILL.md`, `<skillId>/SKILL.md`, `.claude/skills/<skillId>/SKILL.md`).
 4. Include install count in every result card as a quality signal.
 5. MUST NOT blindly recommend the highest-install skill — inspect content and task fit first; use `installs` as a tiebreaker only when two candidates are otherwise equal.
 

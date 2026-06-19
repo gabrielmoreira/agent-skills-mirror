@@ -1,6 +1,6 @@
 ---
 name: unity-project
-description: "Project information — read metadata (Unity version, render pipeline), list shaders/UPM packages, read layers/tags, add a tag, read build and player settings. Exact signatures via GET /skills/schema."
+description: Project information — read metadata (Unity version, render pipeline), list shaders/UPM packages
 ---
 
 # Project Skills

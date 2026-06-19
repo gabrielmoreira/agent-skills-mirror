@@ -30,7 +30,7 @@ Pull the workflow first, then walk the list top to bottom. For each item, inspec
 
 ## Cross-cutting first
 
-- [ ] **Pull the workflow.** `n8n_get_workflow({ id })` so every check runs on real JSON, not assumptions. Use the `structure` mode for a fast graph read, `full` when you need parameters.
+- [ ] **Pull the workflow.** `n8n_get_workflow({ id })` so every check runs on real JSON, not assumptions. Use `structure` mode for a fast graph read, `full` when you need parameters, and `filtered` + `nodeNames` to read a single heavy node (e.g. a long Code node) on a large workflow that would otherwise truncate client-side when fetched whole.
 - [ ] **Logic smell test.** Trace the happy path once, top to bottom. Does the structure match the workflow's stated purpose? Anything dead, contradictory, or out of place (a write node in a "read-only" flow, a fan-out branch wired nowhere, an HTTP call to an unrelated domain)? → **n8n-workflow-patterns**
 - [ ] **Note the trigger type and whether it's active.** Severity shifts with both: a webhook/API or unattended schedule needs error paths a manual run doesn't, and an active workflow with broken connections is higher severity.
 

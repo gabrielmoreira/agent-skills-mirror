@@ -1,6 +1,6 @@
 ---
 name: unity-addressables-design
-description: "Source-anchored design rules for Unity Addressables 1.22.3 (Unity 2022) and 2.9.1 (Unity 6). Load before writing any InitializeAsync / LoadAssetAsync / LoadSceneAsync / UpdateCatalogs / AssetReference code to avoid removed APIs, handle leaks, SceneReleaseMode bugs, and catalog update ordering errors. Triggers: Addressables, AddressableAssets, AddressableAssetSettings, AsyncOperationHandle, LoadAssetAsync, LoadAssetsAsync, LoadSceneAsync, UnloadSceneAsync, InstantiateAsync, GetDownloadSizeAsync, DownloadDependenciesAsync, CheckForCatalogUpdates, UpdateCatalogs, CleanBundleCache, AssetReference, AssetReferenceT, SceneReleaseMode, MergeMode, WaitForCompletion, IResourceLocator, ResourceLocatorInfo, 可寻址资源, 资源加载, 异步操作句柄, 场景加载, 资源更新, 目录更新, 资源引用, 热更新, 资源管理, addressable asset, asset loading, scene management, catalog update, asset reference, handle release, bundle cache."
+description: Source-anchored design rules for Unity Addressables 1.22.3 (Unity 2022). 可寻址资源, 资源加载, 异步操作句柄, 场景加载, 资源更新, 目录更新, 资源引用, 热更新, 资源管理, addressable asset, asset loading
 ---
 
 # Addressables - Design Rules

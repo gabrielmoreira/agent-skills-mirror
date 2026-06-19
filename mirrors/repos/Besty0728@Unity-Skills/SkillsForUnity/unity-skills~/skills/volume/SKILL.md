@@ -1,6 +1,6 @@
 ---
 name: unity-volume
-description: "SRP Volume framework — create/load VolumeProfile assets, create global/local Volume GameObjects, add/remove/inspect VolumeComponent overrides, set parameters. For effect helpers use postprocess. Exact signatures via GET /skills/schema."
+description: SRP Volume framework — create/load VolumeProfile assets, create global/local Volume GameObjects
 ---
 
 # Volume Skills

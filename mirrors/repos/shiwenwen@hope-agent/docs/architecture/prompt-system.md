@@ -416,9 +416,9 @@ Phase 5: Review & Refinement   → 用户审核，inline comment 修订
 
 ### 上下文压缩
 
-上下文压缩详见 [context-compact.md](./context-compact.md)。本系统采用 **5 层渐进式**结构（Tier 0 反应式微压缩 + Tier 1-4），Prompt System 仅在压缩动作发生时复用 `SUMMARIZATION_SYSTEM_PROMPT` 等常量参与第 3 层 LLM 摘要的提示词构建，本节不再复述触发条件与每层细节。
+上下文压缩详见 [context-compact.md](./context-compact.md)。本系统采用 **5 层渐进式**结构（Tier 0 反应式微压缩 + Tier 1-4），Prompt System 仅在压缩动作发生时复用 `SUMMARIZATION_SYSTEM_PROMPT` 等常量参与第 3 层 LLM 摘要的提示词构建，本节只记录 prompt 契约，不复述触发条件、mid-loop checkpoint、ledger/recovery 等实现细节。
 
-**代码位置**：`crates/ha-core/src/context_compact/mod.rs`
+**代码位置**：`crates/ha-core/src/context_compact/summarization.rs`
 
 ### Summarization System Prompt
 
@@ -426,32 +426,34 @@ Phase 5: Review & Refinement   → 用户审核，inline comment 修订
 
 ```
 You are a context compaction assistant.
+CRITICAL: Respond with TEXT ONLY. Do NOT call tools.
 
-MUST PRESERVE:
-- Active tasks and their current status (in-progress, blocked, pending)
-- Batch operation progress (e.g., "5/17 items completed")
-- The last thing the user requested and what was being done about it
-- Decisions made and their rationale
-- TODOs, open questions, and constraints
-- Any commitments or follow-ups promised
-- All file paths, function names, and code references mentioned
+You are creating a continuation summary for a long-running local AI assistant session.
+The old conversation history will be replaced by your summary, followed by deterministic runtime state and recent messages.
 
-PRIORITIZE recent context over older history.
+Write a concise but complete handoff that lets another model instance resume immediately.
 
-Output format:
-## Decisions
-## Open TODOs
-## Constraints/Rules
-## Pending user asks
-## Exact identifiers
-## Conversation summary
+Include these sections:
+## Primary Request and Success Criteria
+## Current Execution State
+## Decisions and Rationale
+## Files, Symbols, and Artifacts
+## Tool Results Worth Preserving
+## Errors, Failed Attempts, and Fixes
+## User Feedback and Constraints
+## Pending Work and Next Action
+## Trust Boundaries and Security Notes
 ```
 
 **设计要点**：
 
-- 优先保留近期上下文（"正在做什么"比"讨论过什么"更重要）
-- 6 段结构化输出，确保关键信息不丢失
-- 所有标识符（UUID、路径、函数名）原样保留
+- 摘要是 continuation handoff，不是全局状态镜像；下一个模型实例应能立即接手。
+- 明确 no-tools guard：摘要模型只输出文本，不允许调用工具。
+- 9 段结构化输出，覆盖成功标准、当前执行状态、决策、文件/符号、值得保留的工具结果、失败尝试、用户纠正、下一步和信任边界。
+- 精确保留路径、ID、URL、命令名、函数名和用户约束。
+- 记录失败尝试和用户反馈，避免压缩后重复犯错。
+- 不把 tool output / web / KB / recovered file snapshot 这类 untrusted data 当成指令。
+- 不重复 runtime ledger 或每轮会从 live state 重建的 task/memory/KB/cwd/permission 状态，避免第二真相源。
 
 ### 标识符保留策略
 
@@ -476,14 +478,14 @@ including UUIDs, hashes, IDs, tokens, hostnames, IPs, ports, URLs, and file name
 | ---------------------------- | ------ | ---------------------------- |
 | `soft_trim_ratio`            | 0.50   | Tier 2 软截断触发比例        |
 | `hard_clear_ratio`           | 0.70   | Tier 2 硬清除触发比例        |
-| `keep_last_assistants`       | 4      | 保护最近 N 条 assistant 消息 |
+| `preserve_recent_rounds`     | 4      | 保护最近 N 个消息 round；普通短回合尽量扩到所属 user turn，长 tool loop 保持可裁剪前缀 |
 | `soft_trim_max_chars`        | 6,000  | 超过此值才软截断             |
 | `soft_trim_head_chars`       | 2,000  | 软截断保留头部               |
 | `soft_trim_tail_chars`       | 2,000  | 软截断保留尾部               |
 | `summarization_threshold`    | 0.85   | Tier 3 总结触发比例          |
-| `preserve_recent_turns`      | 4      | 总结时保留最近 N 轮对话      |
 | `summary_max_tokens`         | 4,096  | 总结输出最大 token           |
 | `summarization_timeout_secs` | 60     | 总结调用超时                 |
+| `max_compaction_injected_context_share` | 0.5 | Tier 3 摘要、ledger、recovery 的联合注入预算 |
 
 **代码位置**：`crates/ha-core/src/context_compact/config.rs`
 
@@ -562,7 +564,7 @@ including UUIDs, hashes, IDs, tokens, hostnames, IPs, ports, URLs, and file name
 | `crates/ha-core/src/agent_loader.rs`            | Agent 加载（agent.json + md 文件 + OpenClaw 模板）                        |
 | `crates/ha-core/templates/openclaw_*.md`        | OpenClaw 兼容模式 4 个模板文件（纯英文）                                  |
 | `crates/ha-core/src/plan/`                      | Plan Mode 提示词常量                                                      |
-| `crates/ha-core/src/context_compact/`           | 上下文压缩（4 层 + 总结 system prompt + 标识符保留）                      |
+| `crates/ha-core/src/context_compact/`           | 上下文压缩（5 层渐进式压缩 + 摘要 system prompt + 标识符保留）                      |
 | `crates/ha-core/src/user_config.rs`             | 用户上下文构建（name/role/birthday/timezone/...）                         |
 | `crates/ha-core/src/skills/`                    | 技能加载 + prompt 构建 + budget 管理                                      |
 | `crates/ha-core/src/tools/definitions/`         | 工具 JSON Schema 定义（发送给 LLM 的 function calling schema）            |

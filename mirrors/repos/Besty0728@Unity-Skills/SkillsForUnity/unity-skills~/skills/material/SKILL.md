@@ -1,6 +1,6 @@
 ---
 name: unity-material
-description: "Unity material and shader property editing (Built-in/URP/HDRP) — create/duplicate/assign materials, set color/emission/textures, change shader, set properties, toggle keywords, render queue. Exact signatures via GET /skills/schema."
+description: Unity material and shader property editing (Built-in/URP/HDRP)
 ---
 
 # Unity Material Skills

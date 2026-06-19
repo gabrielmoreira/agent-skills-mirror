@@ -27,6 +27,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import signal
 import socket
 import subprocess
@@ -103,6 +104,40 @@ class ClawVaultOps:
     def _python_executable(self) -> str:
         venv_python = Path.home() / ".clawvault-env" / "bin" / "python3"
         return str(venv_python) if venv_python.exists() else sys.executable
+
+    def _sanitize_python_executable(self) -> str:
+        """Find a ClawVault CLI environment that supports stdin skill input."""
+        repo_root = Path(__file__).resolve().parents[2]
+        candidates = [
+            repo_root / ".venv" / "bin" / "python",
+            repo_root / ".venv" / "bin" / "python3",
+            Path(sys.executable),
+            Path(self._python_executable()),
+        ]
+        seen = set()
+        for candidate in candidates:
+            candidate_str = str(candidate)
+            if candidate_str in seen or not candidate.exists():
+                continue
+            seen.add(candidate_str)
+            if self._clawvault_cli_supports_stdin(candidate_str):
+                return candidate_str
+        return self._python_executable()
+
+    @staticmethod
+    def _clawvault_cli_supports_stdin(python_executable: str) -> bool:
+        try:
+            result = subprocess.run(
+                [python_executable, "-m", "claw_vault", "skill", "invoke", "--help"],
+                shell=False,
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return False
+        help_text = f"{result.stdout}\n{result.stderr}"
+        return result.returncode == 0 and "--stdin" in help_text
 
     # ── Group A: Service Lifecycle ─────────────────────────────────
 
@@ -525,6 +560,92 @@ class ClawVaultOps:
         except Exception as e:
             return {"success": False, "error": str(e)}
 
+    _SANITIZE_PATTERNS = (
+        re.compile(r"^(?:\u8bf7)?(?:\u5e2e\u6211)?(?:\u8131\u654f\u4fe1\u606f|\u654f\u611f\u4fe1\u606f\u8131\u654f|\u4fe1\u606f\u8131\u654f|\u8131\u654f)[\uff1a:\s]+(?P<text>.+)$", re.DOTALL),
+        re.compile(r"^(?:sanitize|redact|mask)[\uff1a:\s]+(?P<text>.+)$", re.IGNORECASE | re.DOTALL),
+    )
+    _SANITIZE_USAGE_TERMS = {"\u8131\u654f", "\u8131\u654f\u4fe1\u606f", "\u654f\u611f\u4fe1\u606f\u8131\u654f", "\u4fe1\u606f\u8131\u654f", "sanitize", "redact", "mask"}
+    _SANITIZE_QUESTION_RE = re.compile(r"(?:\u4ec0\u4e48\u662f|\u662f\u4ec0\u4e48\u610f\u601d|what is|explain|\u4ecb\u7ecd).*(?:\u8131\u654f|sanitize|redact|mask)", re.IGNORECASE)
+
+    def parse_sanitize_intent(self, message: str) -> dict:
+        """Parse local sanitize intent without exposing the payload to a model."""
+        text = message.strip()
+        if not text:
+            return {"action": "none"}
+        normalized = text[len("@clawvault") :].strip() if text.startswith("@clawvault") else text
+        if self._SANITIZE_QUESTION_RE.search(normalized):
+            return {"action": "none"}
+        if normalized.lower() in self._SANITIZE_USAGE_TERMS:
+            return {"action": "usage"}
+        for pattern in self._SANITIZE_PATTERNS:
+            match = pattern.match(normalized)
+            if not match:
+                continue
+            payload = match.group("text").strip()
+            return {"action": "sanitize", "text": payload} if payload else {"action": "usage"}
+        return {"action": "none"}
+
+    def sanitize_text(self, text: str) -> dict:
+        """Run ClawVault sanitize through stdin so sensitive text is never in argv."""
+        try:
+            result = subprocess.run(
+                [
+                    self._sanitize_python_executable(),
+                    "-m",
+                    "claw_vault",
+                    "skill",
+                    "invoke",
+                    "sanitize-restore",
+                    "sanitize_message",
+                    "--stdin",
+                    "--json",
+                ],
+                input=text,
+                shell=False,
+                capture_output=True,
+                text=True,
+                timeout=20,
+            )
+        except subprocess.TimeoutExpired:
+            return {"success": False, "error": "sanitize_timeout"}
+        except OSError:
+            return {"success": False, "error": "sanitize_unavailable"}
+
+        if result.returncode != 0:
+            return {"success": False, "error": "sanitize_failed"}
+        sanitized = self._extract_sanitized_output(result.stdout)
+        if not sanitized:
+            return {"success": False, "error": "sanitize_empty_output"}
+        return {"success": True, "sanitized": sanitized}
+
+    def handle_sanitize_message(self, message: str) -> dict | None:
+        intent = self.parse_sanitize_intent(message)
+        if intent["action"] == "none":
+            return None
+        if intent["action"] == "usage":
+            return {
+                "success": False,
+                "usage": "@clawvault sanitize <text>",
+                "error": "sanitize_text_required",
+            }
+        return self.sanitize_text(intent["text"])
+
+    @staticmethod
+    def _extract_sanitized_output(output: str) -> str:
+        try:
+            start = output.index("{")
+            end = output.rindex("}") + 1
+            payload = json.loads(output[start:end])
+        except (ValueError, json.JSONDecodeError):
+            return output.strip()
+        sanitized = payload.get("sanitized")
+        if isinstance(sanitized, str):
+            return sanitized
+        data = payload.get("data")
+        if isinstance(data, dict) and isinstance(data.get("sanitized"), str):
+            return data["sanitized"]
+        return output.strip()
+
     def scan_file(self, file_path: str) -> dict:
         """Scan a file for sensitive data."""
         path = Path(file_path)
@@ -684,6 +805,11 @@ def main():
     scan_file_p.add_argument("file_path", help="File to scan")
     scan_file_p.add_argument("--json", action="store_true", help="Output JSON")
 
+    # sanitize
+    sanitize_p = subparsers.add_parser("sanitize", help="Sanitize stdin text locally")
+    sanitize_p.add_argument("--stdin", action="store_true", help="Read sensitive text from stdin")
+    sanitize_p.add_argument("--json", action="store_true", help="Output JSON")
+
     # config-show
     cfg_show_p = subparsers.add_parser("config-show", help="Show configuration")
     cfg_show_p.add_argument("--config", help="Config file path")
@@ -797,6 +923,21 @@ def main():
                         print(f"  [{f['type']}] {f.get('description', f.get('reason', '?'))} (risk: {f['risk_score']:.1f})")
                 else:
                     print("No threats detected.")
+            else:
+                print(f"Error: {result.get('error')}")
+
+    elif args.command == "sanitize":
+        if not args.stdin:
+            result = {
+                "success": False,
+                "error": "sanitize_requires_stdin",
+                "usage": "printf '%s' '<text>' | clawvault_ops.py sanitize --stdin",
+            }
+        else:
+            result = ops.sanitize_text(sys.stdin.read())
+        if not args.json:
+            if result.get("success"):
+                print(result.get("sanitized", ""))
             else:
                 print(f"Error: {result.get('error')}")
 

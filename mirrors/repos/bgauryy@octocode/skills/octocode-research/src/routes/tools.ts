@@ -8,30 +8,28 @@ import {
   GitHubViewRepoStructureQuerySchema,
   GitHubReposSearchSingleQuerySchema,
   GitHubPullRequestSearchQuerySchema,
+  CloneRepoQuerySchema,
   FileContentQuerySchema,
   RipgrepQuerySchema,
   FetchContentQuerySchema,
   FindFilesQuerySchema,
   ViewStructureQuerySchema,
-  LSPGotoDefinitionQuerySchema,
-  LSPFindReferencesQuerySchema,
-  LSPCallHierarchyQuerySchema,
-  PackageSearchQuerySchema,
+  LspGetSemanticsQuerySchema,
+  NpmSearchQuerySchema,
 } from 'octocode-mcp/public';
 import {
-  githubSearchCode,
-  githubGetFileContent,
-  githubViewRepoStructure,
-  githubSearchRepositories,
-  githubSearchPullRequests,
-  packageSearch,
+  ghSearchCode,
+  ghGetFileContent,
+  ghViewRepoStructure,
+  ghSearchRepos,
+  ghSearchPRs,
+  ghCloneRepo,
+  npmSearch,
   localSearchCode,
   localGetFileContent,
   localFindFiles,
   localViewStructure,
-  lspGotoDefinition,
-  lspFindReferences,
-  lspCallHierarchy,
+  lspGetSemantics,
   logToolCall,
 } from '../index.js';
 import {
@@ -59,19 +57,18 @@ interface ToolsInfoQuery {
 
 
 const TOOL_ZOD_SCHEMAS: Record<string, z.ZodType> = {
-  githubSearchCode: GitHubCodeSearchQuerySchema,
-  githubGetFileContent: FileContentQuerySchema,
-  githubViewRepoStructure: GitHubViewRepoStructureQuerySchema,
-  githubSearchRepositories: GitHubReposSearchSingleQuerySchema,
-  githubSearchPullRequests: GitHubPullRequestSearchQuerySchema,
+  ghSearchCode: GitHubCodeSearchQuerySchema,
+  ghGetFileContent: FileContentQuerySchema,
+  ghViewRepoStructure: GitHubViewRepoStructureQuerySchema,
+  ghSearchRepos: GitHubReposSearchSingleQuerySchema,
+  ghSearchPRs: GitHubPullRequestSearchQuerySchema,
+  ghCloneRepo: CloneRepoQuerySchema,
   localSearchCode: RipgrepQuerySchema,
   localGetFileContent: FetchContentQuerySchema,
   localFindFiles: FindFilesQuerySchema,
   localViewStructure: ViewStructureQuerySchema,
-  lspGotoDefinition: LSPGotoDefinitionQuerySchema,
-  lspFindReferences: LSPFindReferencesQuerySchema,
-  lspCallHierarchy: LSPCallHierarchyQuerySchema,
-  packageSearch: PackageSearchQuerySchema,
+  lspGetSemantics: LspGetSemanticsQuerySchema,
+  npmSearch: NpmSearchQuerySchema,
 };
 
 function toJsonSchema(schema: z.ZodType): Record<string, unknown> | null {
@@ -93,19 +90,18 @@ toolsRoutes.get('/list', (_req: Request, res: Response) => {
     success: true,
     data: {
       tools: [
-        { name: 'githubSearchCode', description: 'Search code in GitHub repos' },
-        { name: 'githubGetFileContent', description: 'Read file from GitHub repo' },
-        { name: 'githubViewRepoStructure', description: 'View GitHub repo tree' },
-        { name: 'githubSearchRepositories', description: 'Search GitHub repositories' },
-        { name: 'githubSearchPullRequests', description: 'Search pull requests' },
-        { name: 'packageSearch', description: 'Search npm/PyPI packages' },
+        { name: 'ghSearchCode', description: 'Search code in GitHub repos' },
+        { name: 'ghGetFileContent', description: 'Read file from GitHub repo' },
+        { name: 'ghViewRepoStructure', description: 'View GitHub repo tree' },
+        { name: 'ghSearchRepos', description: 'Search GitHub repositories' },
+        { name: 'ghSearchPRs', description: 'Search pull requests' },
+        { name: 'ghCloneRepo', description: 'Clone GitHub repos or subtrees for local analysis' },
+        { name: 'npmSearch', description: 'Search npm packages' },
         { name: 'localSearchCode', description: 'Search local code with ripgrep' },
         { name: 'localGetFileContent', description: 'Read local file content' },
         { name: 'localFindFiles', description: 'Find files by pattern/metadata' },
         { name: 'localViewStructure', description: 'View local directory tree' },
-        { name: 'lspGotoDefinition', description: 'Go to symbol definition' },
-        { name: 'lspFindReferences', description: 'Find all symbol references' },
-        { name: 'lspCallHierarchy', description: 'Get call hierarchy' },
+        { name: 'lspGetSemantics', description: 'Go to definition, find references, call hierarchy, hover, document symbols' },
       ],
     },
     hints: ['GET /tools/info/{name} for full schema before calling'],
@@ -346,22 +342,21 @@ interface ToolEntry {
 }
 
 const TOOL_REGISTRY: Record<string, ToolEntry> = {
-  githubSearchCode: { fn: githubSearchCode, resilience: withGitHubResilience, category: 'github' },
-  githubGetFileContent: { fn: githubGetFileContent, resilience: withGitHubResilience, category: 'github' },
-  githubViewRepoStructure: { fn: githubViewRepoStructure, resilience: withGitHubResilience, category: 'github' },
-  githubSearchRepositories: { fn: githubSearchRepositories, resilience: withGitHubResilience, category: 'github' },
-  githubSearchPullRequests: { fn: githubSearchPullRequests, resilience: withGitHubResilience, category: 'github' },
+  ghSearchCode: { fn: ghSearchCode, resilience: withGitHubResilience, category: 'github' },
+  ghGetFileContent: { fn: ghGetFileContent, resilience: withGitHubResilience, category: 'github' },
+  ghViewRepoStructure: { fn: ghViewRepoStructure, resilience: withGitHubResilience, category: 'github' },
+  ghSearchRepos: { fn: ghSearchRepos, resilience: withGitHubResilience, category: 'github' },
+  ghSearchPRs: { fn: ghSearchPRs, resilience: withGitHubResilience, category: 'github' },
+  ghCloneRepo: { fn: ghCloneRepo, resilience: withGitHubResilience, category: 'github' },
 
   localSearchCode: { fn: localSearchCode, resilience: withLocalResilience, category: 'local' },
   localGetFileContent: { fn: localGetFileContent, resilience: withLocalResilience, category: 'local' },
   localFindFiles: { fn: localFindFiles, resilience: withLocalResilience, category: 'local' },
   localViewStructure: { fn: localViewStructure, resilience: withLocalResilience, category: 'local' },
 
-  lspGotoDefinition: { fn: lspGotoDefinition, resilience: withLspResilience, category: 'lsp' },
-  lspFindReferences: { fn: lspFindReferences, resilience: withLspResilience, category: 'lsp' },
-  lspCallHierarchy: { fn: lspCallHierarchy, resilience: withLspResilience, category: 'lsp' },
+  lspGetSemantics: { fn: lspGetSemantics, resilience: withLspResilience, category: 'lsp' },
 
-  packageSearch: { fn: packageSearch, resilience: withPackageResilience, category: 'package' },
+  npmSearch: { fn: npmSearch, resilience: withPackageResilience, category: 'package' },
 };
 
 

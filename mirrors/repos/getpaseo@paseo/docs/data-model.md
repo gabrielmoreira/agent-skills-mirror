@@ -410,6 +410,11 @@ Array of workspace records. A workspace is a specific working directory within a
 
 > **Opaque-ID invariant:** `workspaceId` is opaque identity, never a filesystem path. Filesystem and git operations take `cwd`/`workspaceDirectory` only — never the id. Path-derived grouping keys (e.g. `deriveWorkspaceDirectoryKey`, used at bootstrap to group agents into a workspace) are directory keys, not workspace identity, and must not be persisted or compared as ids.
 
+`projectId` is still a real FK: workspace records should have a matching project record. Read-only
+history surfaces tolerate transient orphaned workspaces by omitting those rows so one bad FK cannot
+blank the whole History screen, but mutation paths should repair or remove the orphaned state rather
+than treating it as valid.
+
 ---
 
 ## 8. Push Token Store

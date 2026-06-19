@@ -1,6 +1,6 @@
 ---
 name: unity-inspector
-description: "Unity Inspector design advisor. Use when users want better SerializeField usage, Tooltip/Header organization, validation, or cleaner Inspector UX. Triggers: Inspector, SerializeField, Tooltip, Header, Range, OnValidate, RequireComponent, CreateAssetMenu, Inspector design, show in Inspector, 检视面板, Inspector怎么设计, 序列化字段, 编辑器显示, 显示在Inspector."
+description: Unity Inspector design advisor. 检视面板, Inspector怎么设计, 序列化字段, 编辑器显示, 显示在Inspector.
 ---
 
 # Unity Inspector Design

@@ -1,6 +1,6 @@
 ---
 name: unity-navmesh
-description: "Unity NavMesh baking and pathfinding — bake/rebake, query paths, configure NavMeshAgent/NavMeshObstacle, areas, avoidance, carving, sample positions. Exact signatures via GET /skills/schema."
+description: Unity NavMesh baking and pathfinding — bake/rebake, query paths, configure
 ---
 
 # NavMesh Skills

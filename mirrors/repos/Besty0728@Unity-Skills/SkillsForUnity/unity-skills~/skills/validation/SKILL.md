@@ -1,6 +1,6 @@
 ---
 name: unity-validation
-description: "Project and scene health validation plus cleanup — find missing scripts, null references, non-convex MeshColliders, shader errors, oversized textures, unused assets; remove placeholders; delete empty folders. Exact signatures via GET /skills/schema."
+description: Project and scene health validation plus cleanup
 ---
 
 # Unity Validation Skills

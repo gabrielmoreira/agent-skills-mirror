@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `anthropics/claude-plugins-official` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `anthropics/claude-plugins-official` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anthropics/claude-plugins-official` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,8 +85,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`plugins/plugin-dev/skills/plugin-settings/SKILL.md`](plugins/plugin-dev/skills/plugin-settings/SKILL.md) |
 | 25 | ✓ | [`plugins/plugin-dev/skills/plugin-structure/SKILL.md`](plugins/plugin-dev/skills/plugin-structure/SKILL.md) |
 | 26 | ✓ | [`plugins/plugin-dev/skills/skill-development/SKILL.md`](plugins/plugin-dev/skills/skill-development/SKILL.md) |
-| 27 | ✓ | [`plugins/session-report/skills/session-report/SKILL.md`](plugins/session-report/skills/session-report/SKILL.md) |
-| 28 | ✓ | [`plugins/skill-creator/skills/skill-creator/SKILL.md`](plugins/skill-creator/skills/skill-creator/SKILL.md) |
+| 27 | ✓ | [`plugins/project-artifact/skills/project-artifact/SKILL.md`](plugins/project-artifact/skills/project-artifact/SKILL.md) |
+| 28 | ✓ | [`plugins/session-report/skills/session-report/SKILL.md`](plugins/session-report/skills/session-report/SKILL.md) |
+| 29 | ✓ | [`plugins/skill-creator/skills/skill-creator/SKILL.md`](plugins/skill-creator/skills/skill-creator/SKILL.md) |
 
 ---
 

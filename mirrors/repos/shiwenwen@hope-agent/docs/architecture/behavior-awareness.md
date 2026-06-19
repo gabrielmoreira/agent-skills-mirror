@@ -60,7 +60,7 @@ AssistantAgent::chat_*(message)
    │           └─ 写入 self.awareness_suffix
    │
    ├─ ② build_full_system_prompt()                    ← 静态前缀
-   ├─ ③ run_compaction(merged_budget)                  ← 预算含 suffix
+   ├─ ③ run_compaction_with_options(merged_budget)     ← 预算含 suffix
    ├─ ④ 构造 API 请求
    │     ├─ Anthropic: system=[prefix block, suffix block] 双 cache_control
    │     ├─ OpenAI Chat: [system msg prefix, system msg suffix, ...msgs]

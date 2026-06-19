@@ -1,6 +1,6 @@
 ---
 name: unity-console
-description: "Unity Editor console log capture, query, write, and settings — read history, start/stop capture, log/clear, error-pause/collapse/clear-on-play, export, count by type. Exact signatures via GET /skills/schema."
+description: Unity Editor console log capture, query, write, and settings
 ---
 
 # Unity Console Skills

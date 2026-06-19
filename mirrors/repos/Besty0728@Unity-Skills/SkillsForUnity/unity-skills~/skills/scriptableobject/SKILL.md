@@ -1,6 +1,6 @@
 ---
 name: unity-scriptableobject
-description: "ScriptableObject management — create, read, modify, delete, duplicate, find SO assets, list available types, import/export JSON. Exact signatures via GET /skills/schema."
+description: ScriptableObject management — create, read, modify, delete, duplicate, find SO assets, list
 ---
 
 # ScriptableObject Skills

@@ -5,7 +5,7 @@ description: Create designed, editable PowerPoint .pptx presentations with PptxG
 
 # PowerPoint
 
-Use this skill whenever a PowerPoint deck is involved. For new decks, pass a trusted PptxGenJS build script directly to the `pptx_write` tool.
+Use this skill whenever a PowerPoint deck is involved. For new decks, pass a trusted PptxGenJS build script directly to the `pptx_write` tool. For filling or editing an existing template, call `pptx_template_analyze` first and then `pptx_template_fill` with the exact IDs returned by analysis.
 
 ## Workflow
 
@@ -14,6 +14,12 @@ Use this skill whenever a PowerPoint deck is involved. For new decks, pass a tru
 3. In the script, add slides directly with PptxGenJS. Do not generate HTML for this workflow.
 4. Call `pptx_write` with `path`, `script`, optional `assets_dir`, and optional `data`.
 5. Verify the result with `pptx_read`; for visual QA, convert the PPTX to images if the environment has LibreOffice and Poppler.
+
+## Template Workflow
+
+- Use `pptx_template_analyze` when the user provides a `.pptx` template or wants to preserve existing layouts, charts, images, tables, or SmartArt.
+- Build a `template_fill_pptx_plan.v1` plan from the returned slide IDs and object IDs, then call `pptx_template_fill`.
+- For SmartArt, use `smartarts[*].smartart_id` and `smartarts[*].nodes[*].node_id` in `smartart_edits`. This edits existing node text only; it does not create, delete, or relayout SmartArt nodes.
 
 ## Script Creation
 

@@ -48,7 +48,9 @@
 - `agents_version: 8` → 旧版，需重新部署以获取 hook lib、reference bundle、root-aware hook 与短篇无副作用修复
 - `agents_version: 9` → 旧版，需重新部署以获取新版写作 Agent
 - `agents_version: 10` → 旧版，需重新部署以获取写正文前细纲守卫 hook、长短交错/疏密写作规则与部署后重启提示
-- `agents_version: 11` → 当前版本
+- `agents_version: 11` → 旧版，需重新部署以获取拆文「关键信息与扩写技法」「情绪模块/节奏」产物及日更消费链 + 推理型一致性检查 + 自然分段与主语节奏规则
+- `agents_version: 12` → 旧版，需重新部署以获取章节蓝图细纲与语气标点谱系
+- `agents_version: 13` → 当前版本
 
 ## 版本变更
 
@@ -72,7 +74,7 @@
 
 ### v5
 
-- 更新 narrative-writer 场景写法：使用“三维度织入”并按镜头断段控制段落密度
+- 更新 narrative-writer 场景写法：使用”三维度揉进”并按画面分段控制段落密度
 - 字数统计改为 Python 字符统计优先，`wc -m` 仅作 macOS/Linux 备选，提升 Windows + DeepSeek/Claude Code 兼容性
 - 已部署项目重新运行 `/story-setup` 后获取新版 agent 定义
 
@@ -114,10 +116,28 @@
 
 已部署项目请重新运行 `/story-setup`，刷新写作 Agent；主要影响是日更续写更稳定地沿用对标文风。
 
-### v11 (当前)
+### v11
 
 - `setup_skill_version` 升级到 `1.2.0`，`.story-deployed` 的 `agents_version` 升级到 `11`。
 - **新增写正文前流程守卫 hook** `guard-outline-before-prose.sh`（PreToolUse Write/Edit/MultiEdit）：首次创建 `正文/第N章_*.md` 时若缺 `大纲/细纲_第N章.md`、首次创建短篇 `正文.md` 时若缺 `小节大纲.md`，直接阻断（exit 2），强制先搭大纲再写正文。正文已存在（续写/去AI味/改稿）或非正文文件一律放行。
 - **部署后必须新开会话**：custom agents 只在会话启动时注册成 `subagent_type`。`/story-setup` 部署完会留下一次性标记 `.claude/.agents-pending-restart`，session-start.sh 在下个会话确认 agents 已注册并清除标记。部署当前会话内 spawn agent 仍会降级 solo——必须新开 Claude Code 会话。
-- **写作规则补「长短交错 + 疏密分配」**：`format-and-structure.md` 段落节奏不再是「绝不超 60 字」的一刀切，改为短为主、长为点缀 + 疏密有别；`writing-craft.md` 新增「疏密分配（详略不均）」；`anti-ai-writing.md` 长短句交错改为可执行的生成目标；narrative-writer 模板补 Gate D 长短变化与「句式多样性」审查；story-review 段落 gate 由「≤60 字」改为查长短/疏密变化。针对生成内容文学味过重、句式单一、节奏平坦的反馈。
+- **写作规则补「长短交错 + 疏密分配」**：`format-and-structure.md` 段落节奏不再使用固定字数上限的一刀切，改为按戏剧单元、情绪 beat 和疏密分配自然断段；`writing-craft.md` 新增「疏密分配（详略不均）」；`anti-ai-writing.md` 长短句交错改为可执行的自然节奏目标；narrative-writer 模板补 Gate D 长短变化与「句式多样性」审查；story-review 段落 gate 由旧字数上限改为查长短/疏密变化。针对生成内容文学味过重、句式单一、节奏平坦的反馈。
 - 已部署项目重新运行 `/story-setup` 刷新 hooks/agents/references；**部署后新开会话**。
+
+### v12
+
+- `setup_skill_version` 升级到 `1.2.1`，`.story-deployed` 的 `agents_version` 升级到 `12`。
+- **拆文→写作模块链（issue #149）**：`story-long-analyze` Stage 2 摘要新增「关键信息与扩写技法」表，Stage 3 产出权威产物 `剧情/节奏.md`（关键信息推进 / 情绪触动点 / 爆发节奏）与 `剧情/情绪模块.md`（读者需求·情绪引擎 / 可复现模块）；`story-import` 同步到 `对标/{书名}/剧情/`；`story-long-write` 日更按权威优先级读取并复现。
+- **agent 模板更新**：`chapter-extractor` 增加「关键信息与扩写技法」提取，`story-explorer` 的 `benchmark_style_load` 增加 `selected_emotion_module`/`rhythm_reference` 等返回字段。**已部署项目须重新运行 `/story-setup` 才能拿到新 agent 行为**；否则日更回退到主会话手动加载（功能不丢，仅失去 agent 快捷路径）。
+- `consistency-checker` 从纯 grep-first 字面矛盾扩展为「grep-first + 推理型一致性审查」：补查规则边界悖论、设定层级冲突、跨章因果链、规则可滥用漏洞、代价一致性。
+- **自然分段 + 主语节奏**：`format-and-structure.md` 与 `writing-craft.md` 不再把 `60/45` 字数当成硬切分规则，改为按戏剧单元/镜头/一件事结束分段；完整推理链、氛围铺陈、情绪变化可保留稍长段。
+- **主语过密修复**：narrative-writer 模板和 story-review 检查项新增“段首点名建立主语、段中代词/省略、关键转折再点名”的节奏规则，不按全章名字次数一刀切。
+- 已部署项目重新运行 `/story-setup` 刷新 agents/references；**部署后新开会话**。
+
+### v13 (当前)
+
+- `setup_skill_version` 升级到 `1.2.2`，`.story-deployed` 的 `agents_version` 升级到 `13`。
+- **细纲升级为章节蓝图（issues #162）**：新建/补建长篇 `大纲/细纲_第XXX章.md` 时，除旧字段外新增内容概括（起因/发展/转折/高潮/结尾）、情节安排（主线/辅线/事件线/感情线/逻辑线）、人物关系和出场顺序、情节细化、结尾设定和钩子；旧版细纲仍可续写，缺失字段不阻塞，回填未知项写 `[待补充]`。
+- **语气标点谱系（issue #161）**：writer references、narrative-writer、review/deslop 增加“标点跟着语气/人物声线走”的规则，避免通篇句号化，也禁止随机堆砌问号/感叹号；犹豫/未尽/打断/拖长改用动作停顿、短句或换行处理，正文产物不用 `……`、不用 `——`，知乎盐言 `「」` 引号风格继续有效。
+- `story-architect` 会产出新版章节蓝图；`consistency-checker` 会消费细纲里的逻辑线、人物关系变化、出场顺序和代价/收益兑现；`narrative-writer` 会按语气标点谱系执行正文标点节奏。
+- 已部署项目请重新运行 `/story-setup` 刷新 hooks/agents/references；**部署后新开会话**，否则旧会话仍使用 v12 agent 定义。

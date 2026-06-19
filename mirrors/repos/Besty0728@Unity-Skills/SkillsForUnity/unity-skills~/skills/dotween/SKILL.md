@@ -1,6 +1,6 @@
 ---
 name: unity-dotween
-description: "DOTween Free/Pro automation — probe/validate/configure settings, list modules/shortcuts, generate tween/Sequence scripts, and add/configure DOTweenAnimation (Pro) on objects. Exact signatures via GET /skills/schema."
+description: DOTween Free/Pro automation — probe/validate/configure settings, list modules/shortcuts, generate
 ---
 
 # DOTween Skills

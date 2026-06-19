@@ -1,6 +1,6 @@
 ---
 name: unity-shadergraph
-description: "Shader Graph asset creation, structure inspection, constrained blackboard editing, and constrained node-subset editing for .shadergraph/.shadersubgraph. Exact signatures via GET /skills/schema."
+description: Shader Graph asset creation, structure inspection, constrained blackboard editing, and constrained
 ---
 
 # ShaderGraph Skills

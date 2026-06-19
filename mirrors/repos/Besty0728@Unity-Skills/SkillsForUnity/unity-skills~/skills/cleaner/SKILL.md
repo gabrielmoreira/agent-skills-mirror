@@ -1,6 +1,6 @@
 ---
 name: unity-cleaner
-description: "Project cleanup and audit — find unused assets, content-hash duplicates, missing references, empty folders, large assets, dependency trees; two-step confirm-token delete. Exact signatures via GET /skills/schema."
+description: Project cleanup and audit — find unused assets, content-hash duplicates, missing references, empty
 ---
 
 # Unity Cleaner Skills

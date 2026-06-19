@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `iOfficeAI/AionUi` — 26 default patterns, 5 followed patterns, 20 file(s) materialized.
+Mirror of `iOfficeAI/AionUi` — 26 default patterns, 4 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `iOfficeAI/AionUi` — 26 default patterns, 5 followed patterns, 20 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 20 |
+| Followed pats | 4 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,7 +55,6 @@ Mirror of `iOfficeAI/AionUi` — 26 default patterns, 5 followed patterns, 20 fi
 - `CONTRIBUTING.zh.md`
 - `docs/contributing/file-structure.md`
 - `docs/contributing/development.md`
-- `docs/contributing/pr-automation.md`
 
 ## File Index
 
@@ -65,24 +64,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/architecture/SKILL.md`](.claude/skills/architecture/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/bump-version/SKILL.md`](.claude/skills/bump-version/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/fix-issues/SKILL.md`](.claude/skills/fix-issues/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/fix-sentry/SKILL.md`](.claude/skills/fix-sentry/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/i18n/SKILL.md`](.claude/skills/i18n/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/oss-pr/SKILL.md`](.claude/skills/oss-pr/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/pr-automation/SKILL.md`](.claude/skills/pr-automation/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/pr-fix/SKILL.md`](.claude/skills/pr-fix/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/pr-review/SKILL.md`](.claude/skills/pr-review/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/pr-ship/SKILL.md`](.claude/skills/pr-ship/SKILL.md) |
-| 11 | ✓ | [`.claude/skills/pr-verify/SKILL.md`](.claude/skills/pr-verify/SKILL.md) |
-| 12 | ✓ | [`.claude/skills/testing/SKILL.md`](.claude/skills/testing/SKILL.md) |
-| 13 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 14 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 15 | ✓ | [`docs/prds/conversations/acp/skills.md`](docs/prds/conversations/acp/skills.md) |
-| 16 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 17 | → | [`CONTRIBUTING.zh.md`](CONTRIBUTING.zh.md) |
-| 18 | → | [`docs/contributing/development.md`](docs/contributing/development.md) |
-| 19 | → | [`docs/contributing/file-structure.md`](docs/contributing/file-structure.md) |
-| 20 | → | [`docs/contributing/pr-automation.md`](docs/contributing/pr-automation.md) |
+| 3 | ✓ | [`.claude/skills/i18n/SKILL.md`](.claude/skills/i18n/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/testing/SKILL.md`](.claude/skills/testing/SKILL.md) |
+| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 7 | ✓ | [`docs/prds/conversations/acp/skills.md`](docs/prds/conversations/acp/skills.md) |
+| 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 9 | → | [`CONTRIBUTING.zh.md`](CONTRIBUTING.zh.md) |
+| 10 | → | [`docs/contributing/development.md`](docs/contributing/development.md) |
+| 11 | → | [`docs/contributing/file-structure.md`](docs/contributing/file-structure.md) |
 
 ---
 

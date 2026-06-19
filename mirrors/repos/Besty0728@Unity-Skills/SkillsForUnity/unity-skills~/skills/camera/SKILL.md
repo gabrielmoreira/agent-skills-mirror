@@ -1,6 +1,6 @@
 ---
 name: unity-camera
-description: "Unity Scene View and Game Camera control — move/rotate the view, create/configure cameras, FOV/clip planes/culling mask, ortho vs perspective, screenshot. Exact signatures via GET /skills/schema."
+description: Unity Scene View and Game Camera control — move/rotate the view, create/configure cameras, FOV/clip
 ---
 
 # Camera Skills

@@ -15,20 +15,20 @@ this skill lands a credited commit and posts thanks; the workflow closes the PR.
 
 - You have approval to land ONE specific community PR into a release branch.
 - The PR is not yet on the landing branch (if it is, close-with-credit instead — see `gh-close-issues`).
-- The landing branch may be local-only (e.g. `codex/v0.8.61`); a main-based "mergeable" flag does not prove it lands cleanly.
+- The landing branch may be local-only (e.g. `<release-branch>`); a main-based "mergeable" flag does not prove it lands cleanly.
 
 ## Workflow
 
 1. Find the real landing branch (the one Hunter named, not always `main`) and fetch the PR head:
    ```bash
-   git switch codex/v0.8.61
+   git switch <release-branch>
    git fetch origin pull/<N>/head
    git log -1 --format='%H %an <%ae>' FETCH_HEAD   # author to preserve
    ```
 2. Review from evidence, not the title. Read the diff, tests, linked issue, comments, and CI:
    ```bash
-   /opt/homebrew/bin/gh pr view <N> --repo Hmbown/CodeWhale --json title,author,files,statusCheckRollup
-   /opt/homebrew/bin/gh pr diff <N> --repo Hmbown/CodeWhale
+   gh pr view <N> --repo Hmbown/CodeWhale --json title,author,files,statusCheckRollup
+   gh pr diff <N> --repo Hmbown/CodeWhale
    ```
 3. Test mergeability against the REAL landing branch (local-only branches lie via the main flag):
    ```bash
@@ -40,7 +40,7 @@ this skill lands a credited commit and posts thanks; the workflow closes the PR.
    ```
 5. If it conflicts, spans noise, or needs squashing, re-apply the narrow slice and commit with explicit author + credit trailers. Resolve `--author` and the co-author from `.github/AUTHOR_MAP` (fall back to numeric noreply):
    ```bash
-   /opt/homebrew/bin/gh api users/<handle> --jq '"\(.id)+\(.login)@users.noreply.github.com"'
+   gh api users/<handle> --jq '"\(.id)+\(.login)@users.noreply.github.com"'
    git commit --author="Name <ID+handle@users.noreply.github.com>" -m "fix(scope): what changed (#<N>)" \
      -m "Harvested from PR #<N> by @<handle>" \
      -m "Co-authored-by: Name <ID+handle@users.noreply.github.com>"
@@ -54,7 +54,7 @@ this skill lands a credited commit and posts thanks; the workflow closes the PR.
    ```
 7. Post a brief, warm, specific thank-you on the PR — name what the change fixed, no drama. Leave the PR open; the workflow closes it with credit when the commit lands on `main`:
    ```bash
-   /opt/homebrew/bin/gh pr comment <N> --repo Hmbown/CodeWhale \
+   gh pr comment <N> --repo Hmbown/CodeWhale \
      --body "Thank you @<handle> — clean fix for <the specific bug>. Harvested into the v0.8.61 lane with your authorship preserved; it'll auto-close with credit once it reaches main."
    ```
 

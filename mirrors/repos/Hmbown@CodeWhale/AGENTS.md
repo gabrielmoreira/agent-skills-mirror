@@ -1,5 +1,54 @@
 # Repository Agent Guidance
 
+## Where to work right now (read this first)
+
+- **Repo:** `Hmbown/CodeWhale`. This repo lives on multiple devices, so do
+  **not** hard-code a device-specific checkout path here — work in whichever
+  local checkout you have and always **confirm with
+  `git branch --show-current` before editing.**
+- **Active branch:** `hunter/0.8.62-glm-subagents` (also at
+  `origin/hunter/0.8.62-glm-subagents`). 0.8.61 has shipped; all new work lands
+  here.
+- **Workspace version is intentionally still `0.8.61`** in `Cargo.toml` — the
+  bump to `0.8.62` is deferred until the GLM-5.2 routing is smoke-tested end to
+  end against live Z.ai + OpenRouter (see CHANGELOG `## [Unreleased]`). Do not
+  bump it opportunistically.
+- **Milestone guidepost:** GitHub milestone `v0.8.62` (id 47). Check live state
+  with `gh issue list --repo Hmbown/CodeWhale --milestone "v0.8.62" --state open`.
+- **Default branch is `main`.** Never commit directly to `main`; always work on
+  `hunter/0.8.62-glm-subagents` (or a fresh branch off it for an isolated
+  change). Open a PR into `main` only when a unit of work is reviewable.
+- **Always run before pushing a change:** `cargo fmt`, then the targeted tests
+  for the area (`cargo test -p codewhale-tui --bins <filter>`,
+  `cargo test -p codewhale-config`, `cargo test -p codewhale-protocol`, …). Full
+  gate: `cargo test --workspace`. Release build:
+  `cargo build --release -p codewhale-cli -p codewhale-tui`.
+- **Known suite papercuts (pre-existing, not regressions):**
+  `config_command_allow_shell_*` fail on machines whose `~/.codewhale/settings.toml`
+  sets `default_mode = "yolo"` (the tests aren't hermetic); `run_verifiers_background_*`
+  is flaky under full-suite parallelism but passes in isolation. Don't treat
+  these as caused by your change.
+
+## Continuous agent work conventions
+
+- One concern per commit; write a real commit body. Don't squash unrelated
+  changes.
+- Commit as **WIP** unless you have actually verified the behavior (built the
+  binary, ran the test, reproduced the fix). Stating "fixed" without evidence is
+  worse than an honest WIP.
+- Don't reintroduce removed machinery: the model-facing sub-agent surface is
+  **`agent` only** (no `agent_open`/`agent_eval`/`agent_close`/`delegate_to_agent`
+  /etc.); no capacity/coherence/runtime-tag systems; no lifecycle tools; no
+  runtime prompt/tag injection. `constitution.md` is the sole base prompt.
+- Configurable sub-agent depth stays. No arbitrary new limits unless clearly
+  needed and explained.
+- The sub-agent **TUI freeze reported in older handoffs is resolved** by the
+  v0.8.61 cutover (cap-20, persist-debounce, AgentProgress redraw throttle,
+  ListSubAgents coalescing, input-pump-off-render-thread). The leading
+  "blocking I/O starves the worker pool" theory was measured and **disproven**
+  (`git rev-parse` ~10ms, 18-core machine). Do not commit a speculative
+  `spawn_blocking` fix for the freeze.
+
 ## CodeWhale Stewardship
 
 - Treat community contributors as partners. Good-faith PRs, issue reports,
@@ -47,5 +96,7 @@
 - Close or update issues and PRs only after verifying the landed commit on the
   relevant branch. If the release branch already contains equivalent behavior,
   leave a clear note linking the commit and describing any remaining delta.
-- For the current v0.8.59 queue, use `docs/V0_8_59_RELEASE_TRIAGE.md` as the
-  starting triage packet, then refresh GitHub state before acting.
+- For the active release queue, start from the GitHub `v0.8.62` milestone
+  (`gh issue list --repo Hmbown/CodeWhale --milestone "v0.8.62"`) and refresh
+  state before acting. Older per-version triage docs under `docs/` are
+  historical reference only.

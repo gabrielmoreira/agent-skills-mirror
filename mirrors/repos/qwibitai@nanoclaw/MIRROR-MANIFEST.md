@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `qwibitai/nanoclaw` — 26 default patterns, 23 followed patterns, 114 file(s) materialized.
+Mirror of `qwibitai/nanoclaw` — 26 default patterns, 23 followed patterns, 115 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `qwibitai/nanoclaw` — 26 default patterns, 23 followed patterns, 114
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 23 |
-| Files         | 114 |
+| Files         | 115 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -158,43 +158,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 75 | ✓ | [`.claude/skills/update-skills/SKILL.md`](.claude/skills/update-skills/SKILL.md) |
 | 76 | ✓ | [`.claude/skills/use-native-credential-proxy/REMOVE.md`](.claude/skills/use-native-credential-proxy/REMOVE.md) |
 | 77 | ✓ | [`.claude/skills/use-native-credential-proxy/SKILL.md`](.claude/skills/use-native-credential-proxy/SKILL.md) |
-| 78 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 79 | ✓ | [`container/CLAUDE.md`](container/CLAUDE.md) |
-| 80 | ✓ | [`container/skills/agent-browser/SKILL.md`](container/skills/agent-browser/SKILL.md) |
-| 81 | ✓ | [`container/skills/frontend-engineer/SKILL.md`](container/skills/frontend-engineer/SKILL.md) |
-| 82 | ✓ | [`container/skills/onecli-gateway/SKILL.md`](container/skills/onecli-gateway/SKILL.md) |
-| 83 | ✓ | [`container/skills/self-customize/SKILL.md`](container/skills/self-customize/SKILL.md) |
-| 84 | ✓ | [`container/skills/slack-formatting/SKILL.md`](container/skills/slack-formatting/SKILL.md) |
-| 85 | ✓ | [`container/skills/vercel-cli/SKILL.md`](container/skills/vercel-cli/SKILL.md) |
-| 86 | ✓ | [`container/skills/welcome/SKILL.md`](container/skills/welcome/SKILL.md) |
-| 87 | ✓ | [`container/skills/whatsapp-formatting/SKILL.md`](container/skills/whatsapp-formatting/SKILL.md) |
-| 88 | ✓ | [`docs/README.md`](docs/README.md) |
-| 89 | ✓ | [`groups/global/CLAUDE.md`](groups/global/CLAUDE.md) |
-| 90 | ✓ | [`groups/main/CLAUDE.md`](groups/main/CLAUDE.md) |
-| 91 | ✓ | [`repo-tokens/README.md`](repo-tokens/README.md) |
-| 92 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 93 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 94 | → | [`docs/agent-runner-details.md`](docs/agent-runner-details.md) |
-| 95 | → | [`docs/api-details.md`](docs/api-details.md) |
-| 96 | → | [`docs/architecture-diagram.md`](docs/architecture-diagram.md) |
-| 97 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 98 | → | [`docs/build-and-runtime.md`](docs/build-and-runtime.md) |
-| 99 | → | [`docs/customizing.md`](docs/customizing.md) |
-| 100 | → | [`docs/db-central.md`](docs/db-central.md) |
-| 101 | → | [`docs/db-session.md`](docs/db-session.md) |
-| 102 | → | [`docs/db.md`](docs/db.md) |
-| 103 | → | [`docs/docker-sandboxes.md`](docs/docker-sandboxes.md) |
-| 104 | → | [`docs/isolation-model.md`](docs/isolation-model.md) |
-| 105 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
-| 106 | → | [`docs/onecli-upgrades.md`](docs/onecli-upgrades.md) |
-| 107 | → | [`docs/provider-migration.md`](docs/provider-migration.md) |
-| 108 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
-| 109 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
-| 110 | → | [`docs/skills-model.md`](docs/skills-model.md) |
-| 111 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
-| 112 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
-| 113 | → | [`README.md`](README.md) |
-| 114 | → | [`RELEASING.md`](RELEASING.md) |
+| 78 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 79 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 80 | ✓ | [`container/CLAUDE.md`](container/CLAUDE.md) |
+| 81 | ✓ | [`container/skills/agent-browser/SKILL.md`](container/skills/agent-browser/SKILL.md) |
+| 82 | ✓ | [`container/skills/frontend-engineer/SKILL.md`](container/skills/frontend-engineer/SKILL.md) |
+| 83 | ✓ | [`container/skills/onecli-gateway/SKILL.md`](container/skills/onecli-gateway/SKILL.md) |
+| 84 | ✓ | [`container/skills/self-customize/SKILL.md`](container/skills/self-customize/SKILL.md) |
+| 85 | ✓ | [`container/skills/slack-formatting/SKILL.md`](container/skills/slack-formatting/SKILL.md) |
+| 86 | ✓ | [`container/skills/vercel-cli/SKILL.md`](container/skills/vercel-cli/SKILL.md) |
+| 87 | ✓ | [`container/skills/welcome/SKILL.md`](container/skills/welcome/SKILL.md) |
+| 88 | ✓ | [`container/skills/whatsapp-formatting/SKILL.md`](container/skills/whatsapp-formatting/SKILL.md) |
+| 89 | ✓ | [`docs/README.md`](docs/README.md) |
+| 90 | ✓ | [`groups/global/CLAUDE.md`](groups/global/CLAUDE.md) |
+| 91 | ✓ | [`groups/main/CLAUDE.md`](groups/main/CLAUDE.md) |
+| 92 | ✓ | [`repo-tokens/README.md`](repo-tokens/README.md) |
+| 93 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 94 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 95 | → | [`docs/agent-runner-details.md`](docs/agent-runner-details.md) |
+| 96 | → | [`docs/api-details.md`](docs/api-details.md) |
+| 97 | → | [`docs/architecture-diagram.md`](docs/architecture-diagram.md) |
+| 98 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 99 | → | [`docs/build-and-runtime.md`](docs/build-and-runtime.md) |
+| 100 | → | [`docs/customizing.md`](docs/customizing.md) |
+| 101 | → | [`docs/db-central.md`](docs/db-central.md) |
+| 102 | → | [`docs/db-session.md`](docs/db-session.md) |
+| 103 | → | [`docs/db.md`](docs/db.md) |
+| 104 | → | [`docs/docker-sandboxes.md`](docs/docker-sandboxes.md) |
+| 105 | → | [`docs/isolation-model.md`](docs/isolation-model.md) |
+| 106 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
+| 107 | → | [`docs/onecli-upgrades.md`](docs/onecli-upgrades.md) |
+| 108 | → | [`docs/provider-migration.md`](docs/provider-migration.md) |
+| 109 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
+| 110 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
+| 111 | → | [`docs/skills-model.md`](docs/skills-model.md) |
+| 112 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
+| 113 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
+| 114 | → | [`README.md`](README.md) |
+| 115 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

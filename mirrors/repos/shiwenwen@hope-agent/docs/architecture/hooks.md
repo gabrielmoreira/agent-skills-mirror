@@ -30,7 +30,7 @@
 |------|-------------|---------|------|
 | `UserPromptSubmit` | 无（始终触发） | `agent::preflight::user_prompt_preflight` → `hooks::fire_user_prompt_submit`（`mod.rs`）| `block`/`deny`/`continue:false` 拦住 prompt；可注入 `additionalContext` |
 | `PreToolUse` | `tool_name` | `tools::execution::fire_pre_tool_use_hook`（`execution.rs`，可见性闸后、权限引擎前）| `deny`/`ask`/`defer`/`allow` 决策 + `updatedInput` 改写入参 |
-| `PreCompact` | `trigger` ∈ {manual, auto} | `agent::context`（`run_compaction` 入口，使用率 ≥ `reactiveTriggerRatio` 时）| `block` 跳过本次压缩；使用率 ≥ `CACHE_TTL_EMERGENCY_RATIO` 强制覆盖 |
+| `PreCompact` | `trigger` ∈ {auto, tool_loop} | `agent::context`（turn-start / tool-loop checkpoint 的 `run_compaction_with_options` 入口，使用率 ≥ `reactiveTriggerRatio` 时）| `block` 跳过本次压缩；使用率 ≥ `CACHE_TTL_EMERGENCY_RATIO` 强制覆盖；连续 block 超过上限后强制执行 |
 
 > **async exec 的审批时序**：`PreToolUse` 一律在可见性闸后、引擎/审批前早早触发（与是否后台化无关，下述两档都不变）。`exec` 的命令级审批历来在 `tool_exec` 内部跑;R8 起按两条后台路径分开（详见 [tool-system.md「exec 命令审批：两条后台路径」](tool-system.md#exec-命令审批两条后台路径r8)）:**Auto-Background 档（Tier 3）审批前移**——`execute_tool_with_context` 在 detach 前跑完命令审批,审批/拒绝因果上恒在「后台化」之前;**显式后台 exec（`run_in_background` / `always-background`）R8 起不前移**——命令门下放后台 job 线程,命中审批时 job park 为 `AwaitingApproval`(模型先拿 job id,弹窗可在 synthetic `{status:"started"}` 之后出现,但此时 job 是 parked 非 running,刻意 supersede 旧 HOOKS-2 修复)。异步 job 的**终局** hook（PostToolUse/Failure + `job_id` 关联）见 §2.2「异步 job 终局可见性」。
 
@@ -50,7 +50,7 @@
 | `PermissionDenied` | `tool_name` | `hooks::fire_permission_denied`（`mod.rs`）|
 | `Stop` | 无 | `hooks::fire_stop`（`mod.rs`，自然结束）|
 | `StopFailure` | error type | `chat_engine::finalize`（最终分类错误）|
-| `PostCompact` | `trigger` | `agent::context`（压缩完成后）|
+| `PostCompact` | `trigger` ∈ {auto, tool_loop} | `agent::context`（Tier ≥ 2 压缩完成后；同一 compaction dedup key 去重）|
 | `Notification` | `notification_type` | `hooks::fire_notification`（`mod.rs`）|
 | `SubagentStart` | agent type | `subagent::spawn::fire_subagent_start` |
 | `SubagentStop` | agent type | `subagent::spawn::fire_subagent_stop` |
@@ -62,6 +62,7 @@
 
 > `Stop` / `StopFailure` 当前 fire-and-forget（未实现 block-to-continue）；落地该语义时移出 `is_observation_only`。
 > `Elicitation` / `ElicitationResult` 已重新用于原生 `ask_user_question`（payload 用 `request_id` / `question_count`，**非**官方 MCP elicitation schema）；MCP 落地后对齐官方 schema（见 Roadmap）。
+> `CompactTrigger::Manual` 是序列化协议的保留枚举；当前桌面 / IM 的 `/compact` owner-plane 手动压缩路径直接调用 `compact_if_needed()`，不触发 hooks。
 
 #### 异步 job 终局可见性
 

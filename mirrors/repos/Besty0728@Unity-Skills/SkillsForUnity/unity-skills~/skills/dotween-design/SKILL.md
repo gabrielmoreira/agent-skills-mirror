@@ -1,6 +1,6 @@
 ---
 name: unity-dotween-design
-description: "Source-anchored design rules for DOTween 1.3.015 (Unity 2018+). Load before writing any DOTween.Init / DOMove / Sequence.Append / SetLoops / SetLink / AsyncWaitForCompletion / ToUniTask code to avoid missing-target NRE, tween leaks, Safe Mode false positives, autoKill confusion, module compile errors. Triggers: DOTween, DOMove, DORotate, DOScale, DOColor, DOFade, DOShakePosition, DOShakeRotation, DOPath, DOPunchScale, DOJump, DOLocalMove, DOAnchorPos, DOSizeDelta, Sequence, Tweener, TweenerCore, SetEase, SetDelay, SetLoops, SetAutoKill, SetLink, SetUpdate, SetId, SetTarget, SetRelative, SetSnapping, SetRecyclable, OnComplete, OnKill, OnStart, OnUpdate, OnStepComplete, AsyncWaitForCompletion, AsyncWaitForKill, AsyncWaitForRewind, ToUniTask, DOVirtual, PathType, PathMode, LoopType, UpdateType, DOTweenComponent, DOTweenSettings, 补间动画, 序列动画, 缓动曲线, 生命周期绑定, 动画回调, DOTween init, tween lifecycle, safe mode, tween capacity, kill target."
+description: Source-anchored design rules for DOTween 1.3.015 (Unity 2018+). 补间动画, 序列动画, 缓动曲线, 生命周期绑定, 动画回调, DOTween init, tween lifecycle, safe mode, tween capacity
 ---
 
 # DOTween - Design Rules

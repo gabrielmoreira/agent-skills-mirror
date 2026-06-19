@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `Smithbox-ai/ControlFlow` — 26 default patterns, 0 followed patterns, 126 file(s) materialized.
+Mirror of `Smithbox-ai/ControlFlow` — 26 default patterns, 0 followed patterns, 107 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Smithbox-ai/ControlFlow` — 26 default patterns, 0 followed patterns
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 126 |
+| Files         | 107 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -109,82 +109,63 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 48 | ✓ | [`.cursor/skills/controlflow-strict-workflow/SKILL.md`](.cursor/skills/controlflow-strict-workflow/SKILL.md) |
 | 49 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 50 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 51 | ✓ | [`plugins/controlflow-claude-code/skills/controlflow-assumption-verifier/SKILL.md`](plugins/controlflow-claude-code/skills/controlflow-assumption-verifier/SKILL.md) |
-| 52 | ✓ | [`plugins/controlflow-claude-code/skills/controlflow-executability-verifier/SKILL.md`](plugins/controlflow-claude-code/skills/controlflow-executability-verifier/SKILL.md) |
-| 53 | ✓ | [`plugins/controlflow-claude-code/skills/controlflow-memory-hygiene/SKILL.md`](plugins/controlflow-claude-code/skills/controlflow-memory-hygiene/SKILL.md) |
-| 54 | ✓ | [`plugins/controlflow-claude-code/skills/controlflow-orchestration/SKILL.md`](plugins/controlflow-claude-code/skills/controlflow-orchestration/SKILL.md) |
-| 55 | ✓ | [`plugins/controlflow-claude-code/skills/controlflow-plan-audit/SKILL.md`](plugins/controlflow-claude-code/skills/controlflow-plan-audit/SKILL.md) |
-| 56 | ✓ | [`plugins/controlflow-claude-code/skills/controlflow-planning/SKILL.md`](plugins/controlflow-claude-code/skills/controlflow-planning/SKILL.md) |
-| 57 | ✓ | [`plugins/controlflow-claude-code/skills/controlflow-review/SKILL.md`](plugins/controlflow-claude-code/skills/controlflow-review/SKILL.md) |
-| 58 | ✓ | [`plugins/controlflow-claude-code/skills/controlflow-router/SKILL.md`](plugins/controlflow-claude-code/skills/controlflow-router/SKILL.md) |
-| 59 | ✓ | [`plugins/controlflow-claude-code/skills/controlflow-spec/SKILL.md`](plugins/controlflow-claude-code/skills/controlflow-spec/SKILL.md) |
-| 60 | ✓ | [`plugins/controlflow-claude-code/skills/controlflow-strict-workflow/SKILL.md`](plugins/controlflow-claude-code/skills/controlflow-strict-workflow/SKILL.md) |
-| 61 | ✓ | [`plugins/controlflow-claude-code/tests/fixtures/plugin-structure-invalid/.claude-plugin/skills/controlflow-router/SKILL.md`](plugins/controlflow-claude-code/tests/fixtures/plugin-structure-invalid/.claude-plugin/skills/controlflow-router/SKILL.md) |
-| 62 | ✓ | [`plugins/controlflow-claude-code/tests/fixtures/plugin-structure-valid/skills/controlflow-router/SKILL.md`](plugins/controlflow-claude-code/tests/fixtures/plugin-structure-valid/skills/controlflow-router/SKILL.md) |
-| 63 | ✓ | [`plugins/controlflow-codex/skills/controlflow-assumption-verifier/SKILL.md`](plugins/controlflow-codex/skills/controlflow-assumption-verifier/SKILL.md) |
-| 64 | ✓ | [`plugins/controlflow-codex/skills/controlflow-executability-verifier/SKILL.md`](plugins/controlflow-codex/skills/controlflow-executability-verifier/SKILL.md) |
-| 65 | ✓ | [`plugins/controlflow-codex/skills/controlflow-memory-hygiene/SKILL.md`](plugins/controlflow-codex/skills/controlflow-memory-hygiene/SKILL.md) |
-| 66 | ✓ | [`plugins/controlflow-codex/skills/controlflow-orchestration/SKILL.md`](plugins/controlflow-codex/skills/controlflow-orchestration/SKILL.md) |
-| 67 | ✓ | [`plugins/controlflow-codex/skills/controlflow-plan-audit/SKILL.md`](plugins/controlflow-codex/skills/controlflow-plan-audit/SKILL.md) |
-| 68 | ✓ | [`plugins/controlflow-codex/skills/controlflow-planning/SKILL.md`](plugins/controlflow-codex/skills/controlflow-planning/SKILL.md) |
-| 69 | ✓ | [`plugins/controlflow-codex/skills/controlflow-review/SKILL.md`](plugins/controlflow-codex/skills/controlflow-review/SKILL.md) |
-| 70 | ✓ | [`plugins/controlflow-codex/skills/controlflow-router/SKILL.md`](plugins/controlflow-codex/skills/controlflow-router/SKILL.md) |
-| 71 | ✓ | [`plugins/controlflow-codex/skills/controlflow-spec/SKILL.md`](plugins/controlflow-codex/skills/controlflow-spec/SKILL.md) |
-| 72 | ✓ | [`plugins/controlflow-codex/skills/controlflow-strict-workflow/SKILL.md`](plugins/controlflow-codex/skills/controlflow-strict-workflow/SKILL.md) |
-| 73 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-assumption-verifier/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-assumption-verifier/SKILL.md) |
-| 74 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-executability-verifier/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-executability-verifier/SKILL.md) |
-| 75 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-memory-hygiene/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-memory-hygiene/SKILL.md) |
-| 76 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-orchestration/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-orchestration/SKILL.md) |
-| 77 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-plan-audit/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-plan-audit/SKILL.md) |
-| 78 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-planning/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-planning/SKILL.md) |
-| 79 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-review/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-review/SKILL.md) |
-| 80 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-router/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-router/SKILL.md) |
-| 81 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-spec/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-spec/SKILL.md) |
-| 82 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-strict-workflow/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-strict-workflow/SKILL.md) |
-| 83 | ✓ | [`plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-assumption-verifier/SKILL.md`](plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-assumption-verifier/SKILL.md) |
-| 84 | ✓ | [`plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-executability-verifier/SKILL.md`](plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-executability-verifier/SKILL.md) |
-| 85 | ✓ | [`plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-memory-hygiene/SKILL.md`](plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-memory-hygiene/SKILL.md) |
-| 86 | ✓ | [`plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-orchestration/SKILL.md`](plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-orchestration/SKILL.md) |
-| 87 | ✓ | [`plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-plan-audit/SKILL.md`](plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-plan-audit/SKILL.md) |
-| 88 | ✓ | [`plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-planning/SKILL.md`](plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-planning/SKILL.md) |
-| 89 | ✓ | [`plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-review/SKILL.md`](plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-review/SKILL.md) |
-| 90 | ✓ | [`plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-router/SKILL.md`](plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-router/SKILL.md) |
-| 91 | ✓ | [`plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-spec/SKILL.md`](plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-spec/SKILL.md) |
-| 92 | ✓ | [`plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-strict-workflow/SKILL.md`](plugins/controlflow-shared-source/host-overrides/claude-code/skills/controlflow-strict-workflow/SKILL.md) |
-| 93 | ✓ | [`plugins/controlflow-shared-source/host-overrides/cursor/skills/controlflow-orchestration/SKILL.md`](plugins/controlflow-shared-source/host-overrides/cursor/skills/controlflow-orchestration/SKILL.md) |
-| 94 | ✓ | [`plugins/controlflow-shared-source/host-overrides/cursor/skills/controlflow-strict-workflow/SKILL.md`](plugins/controlflow-shared-source/host-overrides/cursor/skills/controlflow-strict-workflow/SKILL.md) |
-| 95 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-assumption-verifier/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-assumption-verifier/SKILL.md) |
-| 96 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-executability-verifier/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-executability-verifier/SKILL.md) |
-| 97 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-memory-hygiene/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-memory-hygiene/SKILL.md) |
-| 98 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-orchestration/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-orchestration/SKILL.md) |
-| 99 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-plan-audit/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-plan-audit/SKILL.md) |
-| 100 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-planning/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-planning/SKILL.md) |
-| 101 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-review/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-review/SKILL.md) |
-| 102 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-router/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-router/SKILL.md) |
-| 103 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-spec/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-spec/SKILL.md) |
-| 104 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-strict-workflow/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-strict-workflow/SKILL.md) |
-| 105 | ✓ | [`skills/index.md`](skills/index.md) |
-| 106 | ✓ | [`skills/patterns/budget-tracking.md`](skills/patterns/budget-tracking.md) |
-| 107 | ✓ | [`skills/patterns/code-simplification.md`](skills/patterns/code-simplification.md) |
-| 108 | ✓ | [`skills/patterns/completeness-traceability.md`](skills/patterns/completeness-traceability.md) |
-| 109 | ✓ | [`skills/patterns/debugging-discipline.md`](skills/patterns/debugging-discipline.md) |
-| 110 | ✓ | [`skills/patterns/decision-challenge.md`](skills/patterns/decision-challenge.md) |
-| 111 | ✓ | [`skills/patterns/error-handling-patterns.md`](skills/patterns/error-handling-patterns.md) |
-| 112 | ✓ | [`skills/patterns/idea-to-prompt.md`](skills/patterns/idea-to-prompt.md) |
-| 113 | ✓ | [`skills/patterns/integration-validator.md`](skills/patterns/integration-validator.md) |
-| 114 | ✓ | [`skills/patterns/llm-behavior-guidelines.md`](skills/patterns/llm-behavior-guidelines.md) |
-| 115 | ✓ | [`skills/patterns/memory-promotion-candidates.md`](skills/patterns/memory-promotion-candidates.md) |
-| 116 | ✓ | [`skills/patterns/orchestration-audit-playbook.md`](skills/patterns/orchestration-audit-playbook.md) |
-| 117 | ✓ | [`skills/patterns/performance-patterns.md`](skills/patterns/performance-patterns.md) |
-| 118 | ✓ | [`skills/patterns/preflect-core.md`](skills/patterns/preflect-core.md) |
-| 119 | ✓ | [`skills/patterns/reflection-loop.md`](skills/patterns/reflection-loop.md) |
-| 120 | ✓ | [`skills/patterns/repo-memory-hygiene.md`](skills/patterns/repo-memory-hygiene.md) |
-| 121 | ✓ | [`skills/patterns/security-patterns.md`](skills/patterns/security-patterns.md) |
-| 122 | ✓ | [`skills/patterns/security-review-discipline.md`](skills/patterns/security-review-discipline.md) |
-| 123 | ✓ | [`skills/patterns/source-grounding.md`](skills/patterns/source-grounding.md) |
-| 124 | ✓ | [`skills/patterns/spec-driven-development.md`](skills/patterns/spec-driven-development.md) |
-| 125 | ✓ | [`skills/patterns/tdd-patterns.md`](skills/patterns/tdd-patterns.md) |
-| 126 | ✓ | [`skills/README.md`](skills/README.md) |
+| 51 | ✓ | [`plugins/controlflow-claude-code/skills/controlflow-plan/SKILL.md`](plugins/controlflow-claude-code/skills/controlflow-plan/SKILL.md) |
+| 52 | ✓ | [`plugins/controlflow-claude-code/skills/controlflow-review/SKILL.md`](plugins/controlflow-claude-code/skills/controlflow-review/SKILL.md) |
+| 53 | ✓ | [`plugins/controlflow-claude-code/skills/controlflow-verify/SKILL.md`](plugins/controlflow-claude-code/skills/controlflow-verify/SKILL.md) |
+| 54 | ✓ | [`plugins/controlflow-codex/skills/controlflow-assumption-verifier/SKILL.md`](plugins/controlflow-codex/skills/controlflow-assumption-verifier/SKILL.md) |
+| 55 | ✓ | [`plugins/controlflow-codex/skills/controlflow-executability-verifier/SKILL.md`](plugins/controlflow-codex/skills/controlflow-executability-verifier/SKILL.md) |
+| 56 | ✓ | [`plugins/controlflow-codex/skills/controlflow-memory-hygiene/SKILL.md`](plugins/controlflow-codex/skills/controlflow-memory-hygiene/SKILL.md) |
+| 57 | ✓ | [`plugins/controlflow-codex/skills/controlflow-orchestration/SKILL.md`](plugins/controlflow-codex/skills/controlflow-orchestration/SKILL.md) |
+| 58 | ✓ | [`plugins/controlflow-codex/skills/controlflow-plan-audit/SKILL.md`](plugins/controlflow-codex/skills/controlflow-plan-audit/SKILL.md) |
+| 59 | ✓ | [`plugins/controlflow-codex/skills/controlflow-planning/SKILL.md`](plugins/controlflow-codex/skills/controlflow-planning/SKILL.md) |
+| 60 | ✓ | [`plugins/controlflow-codex/skills/controlflow-review/SKILL.md`](plugins/controlflow-codex/skills/controlflow-review/SKILL.md) |
+| 61 | ✓ | [`plugins/controlflow-codex/skills/controlflow-router/SKILL.md`](plugins/controlflow-codex/skills/controlflow-router/SKILL.md) |
+| 62 | ✓ | [`plugins/controlflow-codex/skills/controlflow-spec/SKILL.md`](plugins/controlflow-codex/skills/controlflow-spec/SKILL.md) |
+| 63 | ✓ | [`plugins/controlflow-codex/skills/controlflow-strict-workflow/SKILL.md`](plugins/controlflow-codex/skills/controlflow-strict-workflow/SKILL.md) |
+| 64 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-assumption-verifier/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-assumption-verifier/SKILL.md) |
+| 65 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-executability-verifier/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-executability-verifier/SKILL.md) |
+| 66 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-memory-hygiene/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-memory-hygiene/SKILL.md) |
+| 67 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-orchestration/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-orchestration/SKILL.md) |
+| 68 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-plan-audit/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-plan-audit/SKILL.md) |
+| 69 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-planning/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-planning/SKILL.md) |
+| 70 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-review/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-review/SKILL.md) |
+| 71 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-router/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-router/SKILL.md) |
+| 72 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-spec/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-spec/SKILL.md) |
+| 73 | ✓ | [`plugins/controlflow-cursor/skills/controlflow-strict-workflow/SKILL.md`](plugins/controlflow-cursor/skills/controlflow-strict-workflow/SKILL.md) |
+| 74 | ✓ | [`plugins/controlflow-shared-source/host-overrides/cursor/skills/controlflow-orchestration/SKILL.md`](plugins/controlflow-shared-source/host-overrides/cursor/skills/controlflow-orchestration/SKILL.md) |
+| 75 | ✓ | [`plugins/controlflow-shared-source/host-overrides/cursor/skills/controlflow-strict-workflow/SKILL.md`](plugins/controlflow-shared-source/host-overrides/cursor/skills/controlflow-strict-workflow/SKILL.md) |
+| 76 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-assumption-verifier/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-assumption-verifier/SKILL.md) |
+| 77 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-executability-verifier/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-executability-verifier/SKILL.md) |
+| 78 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-memory-hygiene/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-memory-hygiene/SKILL.md) |
+| 79 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-orchestration/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-orchestration/SKILL.md) |
+| 80 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-plan-audit/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-plan-audit/SKILL.md) |
+| 81 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-planning/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-planning/SKILL.md) |
+| 82 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-review/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-review/SKILL.md) |
+| 83 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-router/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-router/SKILL.md) |
+| 84 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-spec/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-spec/SKILL.md) |
+| 85 | ✓ | [`plugins/controlflow-shared-source/skills/controlflow-strict-workflow/SKILL.md`](plugins/controlflow-shared-source/skills/controlflow-strict-workflow/SKILL.md) |
+| 86 | ✓ | [`skills/index.md`](skills/index.md) |
+| 87 | ✓ | [`skills/patterns/budget-tracking.md`](skills/patterns/budget-tracking.md) |
+| 88 | ✓ | [`skills/patterns/code-simplification.md`](skills/patterns/code-simplification.md) |
+| 89 | ✓ | [`skills/patterns/completeness-traceability.md`](skills/patterns/completeness-traceability.md) |
+| 90 | ✓ | [`skills/patterns/debugging-discipline.md`](skills/patterns/debugging-discipline.md) |
+| 91 | ✓ | [`skills/patterns/decision-challenge.md`](skills/patterns/decision-challenge.md) |
+| 92 | ✓ | [`skills/patterns/error-handling-patterns.md`](skills/patterns/error-handling-patterns.md) |
+| 93 | ✓ | [`skills/patterns/idea-to-prompt.md`](skills/patterns/idea-to-prompt.md) |
+| 94 | ✓ | [`skills/patterns/integration-validator.md`](skills/patterns/integration-validator.md) |
+| 95 | ✓ | [`skills/patterns/llm-behavior-guidelines.md`](skills/patterns/llm-behavior-guidelines.md) |
+| 96 | ✓ | [`skills/patterns/memory-promotion-candidates.md`](skills/patterns/memory-promotion-candidates.md) |
+| 97 | ✓ | [`skills/patterns/orchestration-audit-playbook.md`](skills/patterns/orchestration-audit-playbook.md) |
+| 98 | ✓ | [`skills/patterns/performance-patterns.md`](skills/patterns/performance-patterns.md) |
+| 99 | ✓ | [`skills/patterns/preflect-core.md`](skills/patterns/preflect-core.md) |
+| 100 | ✓ | [`skills/patterns/reflection-loop.md`](skills/patterns/reflection-loop.md) |
+| 101 | ✓ | [`skills/patterns/repo-memory-hygiene.md`](skills/patterns/repo-memory-hygiene.md) |
+| 102 | ✓ | [`skills/patterns/security-patterns.md`](skills/patterns/security-patterns.md) |
+| 103 | ✓ | [`skills/patterns/security-review-discipline.md`](skills/patterns/security-review-discipline.md) |
+| 104 | ✓ | [`skills/patterns/source-grounding.md`](skills/patterns/source-grounding.md) |
+| 105 | ✓ | [`skills/patterns/spec-driven-development.md`](skills/patterns/spec-driven-development.md) |
+| 106 | ✓ | [`skills/patterns/tdd-patterns.md`](skills/patterns/tdd-patterns.md) |
+| 107 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

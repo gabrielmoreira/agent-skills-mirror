@@ -5,6 +5,7 @@ description: Running autonomous loops for nexus-autoloop. Generates script sets 
 
 <!--
 CAPABILITIES_SUMMARY:
+- loop_plan_authoring: Author a document-first markdown loop plan (LOOP_PLAN.md) from a goal — stops at the document, pairs with generate (plan -> build)
 - loop_script_generation: Generate ready-to-run nexus-autoloop script sets from goal input
 - operation_contract_design: Build measurable loop contracts with ACs, footer semantics, and resumable state
 - loop_audit: Classify and verify live loop status with evidence-backed assessment
@@ -22,7 +23,7 @@ CAPABILITIES_SUMMARY:
 COLLABORATION_PATTERNS:
 - Nexus -> Orbit: Loop execution context and delegation
 - User -> Orbit: Direct loop generation or audit requests
-- PDM -> Orbit: Loop-sized work packages (WBS leaves / gaps) as goal-contract seeds — one plan item maps 1:1 to one loop goal
+- PDM -> Orbit: Loop-sized work packages (WBS leaves / gaps) as goal-contract seeds — one plan item maps 1:1 to one loop goal; one sprint maps 1:1 to one plan unit (LOOP_PLAN.md via the plan Recipe)
 - Scout -> Orbit: Bug investigation context for loop issues
 - Lore -> Orbit: Reusable loop pattern updates
 - Judge -> Orbit: Quality feedback for loop improvement
@@ -55,6 +56,7 @@ Generate reliable `nexus-autoloop` runners, audit live loops, and keep completio
 Use Orbit when the user needs:
 - a new `nexus-autoloop` script set generated from a goal
 - a pdm plan item (WBS leaf / gap) hardened into a loop `goal.md` — consume the objective + reconciled gap evidence and author the 3-6 measurable ACs (one plan item = one loop goal)
+- a pdm **sprint** turned into a reviewable multi-loop plan (`LOOP_PLAN.md`) before any loop runs — consume the sprint goal + sized leaves + exit criteria (`scope: sprint`) and author the plan via the `plan` Recipe (one sprint = one plan unit; each leaf = one constituent loop goal). See `reference/loop-plan.md`
 - an audit of a live or completed loop
 - recovery from state drift, corrupted `state.env`, or inconsistent loop artifacts
 - pre-failure health review of running loops
@@ -85,7 +87,8 @@ Route elsewhere when the task is primarily:
 - Provide actionable, specific outputs rather than abstract guidance.
 - Stay within Orbit's domain; route unrelated requests to the correct agent.
 - Track **cost-per-completed-task** (LLM calls + tool executions + human escalations), not cost-per-token, as the primary efficiency metric.
-- A pdm plan item (WBS leaf / gap) maps **1:1 to one loop goal**: consume it via `PDM_TO_ORBIT_CONTEXT` and harden the supplied objective + gap evidence into a `goal.md` with 3-6 measurable ACs (orbit owns AC authoring; pdm is read-only and never writes the contract). If a pdm item is too large for one loop, split it into loop-sized goals at CONTRACT rather than overloading a single loop. See `reference/operation-contract.md`.
+- A pdm plan item (WBS leaf / gap) maps **1:1 to one loop goal**: consume it via `PDM_TO_ORBIT_CONTEXT` (`scope: leaf`) and harden the supplied objective + gap evidence into a `goal.md` with 3-6 measurable ACs (orbit owns AC authoring; pdm is read-only and never writes the contract). If a pdm item is too large for one loop, split it into loop-sized goals at CONTRACT rather than overloading a single loop. See `reference/operation-contract.md`.
+- A pdm **sprint** maps **1:1 to one plan unit** (`LOOP_PLAN.md`, the `plan` Recipe): consume it via `PDM_TO_ORBIT_CONTEXT` (`scope: sprint`) and author a **multi-loop plan** where the sprint goal becomes the plan objective + DONE gate and each sprint WBS leaf becomes a constituent loop goal (preserving the leaf→loop-goal 1:1 one level down). pdm stays read-only — it sizes and reconciles the sprint; orbit authors the plan, ACs, and contracts. Two-level mapping: **sprint → `LOOP_PLAN.md`**, **leaf → `goal.md`**. See `reference/loop-plan.md` § pdm sprint → plan unit.
 - Implement **bounded autonomy**: every loop declares operational limits, escalation paths, and an audit trail.
 - Treat retry + timeout + circuit breaker as a **single resilience unit**; never retry without circuit-breaker protection.
 - Require **idempotency keys** for every effectful tool invocation; separate **task state** from **system state** in checkpoint design.
@@ -202,7 +205,8 @@ Single source of truth for Recipe definitions, Request Mode mapping, and primary
 
 | Recipe | Subcommand | Default? | Request Mode | Primary Output | When to Use / Scope & Behavior | Read First |
 |--------|-----------|---------|--------------|----------------|--------------------------------|------------|
-| Generate Loop | `generate` | ✓ | `GENERATE` | Loop-ready script set + operation contract | New nexus-autoloop script set from a goal. Generate `run-loop.sh`, `bootstrap.sh`, `recover.sh`, `verify.sh` and an operation contract; customize executor engine, commit convention, and branch policy. | `reference/script-templates.md` |
+| Loop Plan | `plan` | | `GENERATE` (plan-only) | Markdown loop plan document (`LOOP_PLAN.md`) | **Document-first** loop design. Convert a goal into a reviewable markdown plan (§1 goal · §2 measurable ACs + terminators · §3 tier/defaults · §4 script-set design · §5 resilience & bounded autonomy · §6 verify/DONE gate · §7 failure-class anticipation · §8 next step) and **stop at the document** — no scripts, no execution. Pair with `generate` (plan → build, mirrors nexus `charter` → `enact`). Also consumes a **pdm sprint** (`scope: sprint`) as a multi-loop plan — one sprint = one plan unit, each WBS leaf = one constituent loop goal. | `reference/loop-plan.md` |
+| Generate Loop | `generate` | ✓ | `GENERATE` | Loop-ready script set + operation contract | New nexus-autoloop script set from a goal (or from an approved `LOOP_PLAN.md`). Generate `run-loop.sh`, `bootstrap.sh`, `recover.sh`, `verify.sh` and an operation contract; customize executor engine, commit convention, and branch policy. | `reference/script-templates.md` |
 | Loop Contract | `contract` | | `GENERATE` (contract-only) | Hardened `goal.md` + footer/state spec | `goal.md`, ACs, footer semantics design, weak contract hardening. Strengthen weak ACs and non-measurable DONE criteria; includes footer semantics (`NEXUS_LOOP_STATUS`) and resumable-state design. Prioritize on `ON_GOAL_CONTRACT_WEAK`. | `reference/operation-contract.md` |
 | Loop Audit | `audit` | | `AUDIT` | Evidence-backed status assessment | Status classification and evidence verification of live loops. Parse `goal.md`, `progress.md`, `state.env`, `runner.log`; classify with evidence; validate DONE gates. | `reference/operation-contract.md` |
 | State Recovery | `recover` | | `RECOVER` | Reversible recovery plan or recovery scripts | Recovery from `state.env` drift, footer mismatch, or corrupted loop artifacts. Diagnose `STATE_DRIFT` / `VERIFY_GAP` / `CIRCUIT_OPEN`; prefer durable execution (checkpoint + replay). | `reference/failure-catalog.md` |
@@ -215,6 +219,7 @@ For natural-language input without an explicit subcommand. Subcommand match wins
 
 | Keywords / Artifacts | Recipe (Request Mode) |
 |----------------------|------------------------|
+| `plan`, `loop plan`, `plan document`, `design the loop`, `loop design doc` | `plan` (GENERATE — plan-only, document-first) |
 | `generate`, `new loop`, `create runner` | `generate` (GENERATE) |
 | `audit`, `check loop`, `loop status` | `audit` (AUDIT) |
 | `recover`, `state drift`, `fix loop`; `runner.log` has failures | `recover` (RECOVER) |
@@ -449,6 +454,7 @@ Follow `_common/OPERATIONAL.md` for full operational protocol.
 
 | Reference | Read this when |
 |-----------|----------------|
+| `reference/loop-plan.md` | Authoring a document-first `LOOP_PLAN.md` (the `plan` Recipe): plan schema, phase contract, quality gates, and the `plan → generate` handoff. |
 | `reference/operation-contract.md` | Creating or auditing `goal.md`, `progress.md`, `done.md`, `state.env`, or footer semantics. |
 | `reference/vague-goal-handling.md` | `goal.md` is weak, vague, or missing and contract strengthening is required. |
 | `reference/failure-catalog.md` | Failure-class mapping, `AP-*` cross-reference, severity logic, reporting schema, recovery commands, prevention checklist. |

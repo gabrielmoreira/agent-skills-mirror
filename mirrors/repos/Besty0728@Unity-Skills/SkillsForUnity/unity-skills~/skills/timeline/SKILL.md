@@ -1,6 +1,6 @@
 ---
 name: unity-timeline
-description: "Unity Timeline editing — create Timeline assets, add typed tracks (animation/audio/activation/control/signal), add clips, set bindings, play/pause/stop via PlayableDirector. Exact signatures via GET /skills/schema."
+description: Unity Timeline editing — create Timeline assets, add typed tracks
 ---
 
 # Timeline Skills

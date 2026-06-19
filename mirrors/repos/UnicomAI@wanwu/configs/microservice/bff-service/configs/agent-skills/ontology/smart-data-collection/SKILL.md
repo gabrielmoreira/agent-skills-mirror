@@ -48,12 +48,12 @@ ontology --user-id <accountId> <command> [options]
 - **默认 KN**：`e0e2ed66-8eff-4f14-8e15-9fd6171f8e53`；用户指定时优先。参数名统一 `kn_id`。
 - **Phase 0 子步骤**：
   - **0a. 文件 → Markdown**
-    - 图片：通过 Skill 工具显式调用 `yj-ocr` skill（契约见 `skills/yj-ocr/SKILL.md`），输出 Markdown（含表头、表格行）。
+    - 图片：通过 Skill 工具显式调用 `yj-ocr-parser` skill（契约见 `skills/yj-ocr-parser/SKILL.md`），输出 Markdown（含表头、表格行）。
     - 文档（PDF / Word / Excel）：调用文档解析工具（具体工具**待集成**），输出统一 Markdown 表 + 字段样值。
     - 完整契约见 [references/parse-input.md](references/parse-input.md)。
   - **0b. 字段语义映射 + 用户逐条确认**
     - 委托 ontology-core 调 `bkn object-type query/get` 拿 `data_properties[]`（字段名 / 类型 / required / enum），作为映射目标的**唯一字段定义来源**。
-    - 名称不一致 / 类型不一致 / 必填缺失 / 歧义 任一触发 → **必须停下来给用户出对照表逐条确认**，未确认前禁止写出 CSV。
+    - 名称不一致 / 类型不一致 / 必填缺失 / 歧义 任一触发 → **必须停下来给用户出对照表，再一次只就一条差异项单独确认**，拿到该条决策才问下一条；**严禁把多条揉成一个 `是否确认以上映射？` 的总确认**。未确认前禁止写出 CSV。
     - 完整契约见 [references/map-fields.md](references/map-fields.md)。
   - **0c. 写出 CSV**
     - 按用户确认后的映射结果落成 **UTF-8 + RFC 4180** 的 CSV；列名 = **映射后字段名**（与 `dataview.fields[].name` 对齐，便于第 4 步无歧义消费）。
@@ -66,7 +66,7 @@ ontology --user-id <accountId> <command> [options]
 
 | 步骤 | 说明 | Reference |
 |------|------|-----------|
-| 0a | 非 CSV 输入 → Markdown（图片走 yj-ocr；文档走解析工具） | [references/parse-input.md](references/parse-input.md) |
+| 0a | 非 CSV 输入 → Markdown（图片和pdf文档走 yj-ocr-parser；其他文档走解析工具） | [references/parse-input.md](references/parse-input.md) |
 | 0b | object-type 字段语义映射 + 用户逐条确认 → CSV | [references/map-fields.md](references/map-fields.md) |
 | 1 | 从对象类解出 dataview-id | [references/resolve-target.md](references/resolve-target.md) |
 | 2 | 从 dataview 解出 datasource-id 与物理表名 | [references/resolve-target.md](references/resolve-target.md) |
@@ -79,7 +79,7 @@ ontology --user-id <accountId> <command> [options]
 
 ```text
 数据采集进度：
-- [ ] 0a. （仅非 CSV 输入）解析输入文件 → Markdown：图片走 yj-ocr；文档（PDF/Word/Excel）走解析工具
+- [ ] 0a. （仅非 CSV 输入）解析输入文件 → Markdown：图片和pdf文档走 yj-ocr-parser；其他文档（Word/Excel等）走解析工具
 - [ ] 0b. （仅非 CSV 输入）取 object-type data_properties → 与解析字段做语义映射 → 出对照表给用户逐条确认
 - [ ] 0c. （仅非 CSV 输入）按确认后的映射写出 CSV（UTF-8、RFC 4180、列名 = 映射后字段名）
 - [ ] 1. 解析写入目标对象类：bkn object-type get <kn-id> <ot-id>
@@ -120,7 +120,7 @@ ontology --user-id <accountId> <command> [options]
 5. 写入前必须复述计划并由用户确认；不得"看起来差不多"就直接落库。
 6. 回执必须忠实展示 `summary` 与 `failed[]`，不得粉饰失败。
 7. 出现 401/403 等认证类错误，直接报错；不要尝试登录或刷新 token。
-8. Phase 0（图片 / PDF / Word / Excel 输入）出现字段名 / 类型 / 必填 / 歧义任一不一致时，必须停下来给用户出对照表逐条确认；未确认前**禁止**写出 CSV、**禁止**进入第 1 步。Phase 0 不允许生成 INSERT SQL 或直连 mysql。
+8. Phase 0（图片 / PDF / Word / Excel 输入）出现字段名 / 类型 / 必填 / 歧义任一不一致时，必须停下来给用户出对照表，并**一次只就一条差异项单独确认**（严禁把多条揉成一个「是否确认以上映射？」的总确认）；未确认前**禁止**写出 CSV、**禁止**进入第 1 步。Phase 0 不允许生成 INSERT SQL 或直连 mysql。
 
 
 ## 调用示例

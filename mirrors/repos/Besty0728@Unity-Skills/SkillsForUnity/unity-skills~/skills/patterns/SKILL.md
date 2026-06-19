@@ -1,6 +1,6 @@
 ---
 name: unity-patterns
-description: "Unity design pattern selector. Use when users want advice on ScriptableObject, events, state machines, object pools, observer, or other patterns. Triggers: design pattern, which pattern, ScriptableObject, event channel, observer, state machine, object pool, singleton, service locator, 设计模式, 用什么模式, 事件系统, 状态机, 对象池, 观察者模式, 该用什么模式."
+description: Unity design pattern selector. 设计模式, 用什么模式, 事件系统, 状态机, 对象池, 观察者模式, 该用什么模式.
 ---
 
 # Unity Pattern Selector

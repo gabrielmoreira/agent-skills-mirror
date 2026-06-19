@@ -1,6 +1,6 @@
 ---
 name: unity-project-scout
-description: "Unity project reconnaissance advisor. Load this FIRST in existing projects before proposing architecture changes — inspects Unity version, packages, asmdefs, folders, coding patterns. Triggers: inspect project, scout project, project baseline, analyze project, what does this project use, existing codebase, 项目分析, 项目结构, 看看项目, 分析项目, 现有架构, 项目用了什么."
+description: Unity project reconnaissance advisor. 项目分析, 项目结构, 看看项目, 分析项目, 现有架构, 项目用了什么.
 ---
 
 # Unity Project Scout

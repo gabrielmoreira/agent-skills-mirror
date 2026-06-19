@@ -76,7 +76,7 @@ Once requirements are clear, present the design incrementally in logical phases.
 - **Phase 2: Technical Details** - Data model, interfaces, error handling, and edge cases.
 - **Phase 3: Delivery** - Testing/verification strategy and rollout considerations (if applicable).
 
-After presenting a phase, ask for confirmation only when user input would materially change the next phase. Use these options when a checkpoint is needed:
+After presenting a phase, use input/question tool to ask for confirmation only when user input would materially change the next phase. Use these options when a checkpoint is needed:
 
 1. Proceed to the next phase
 2. Adjust the current phase
@@ -95,7 +95,7 @@ Before asking for next actions, summarize the current design brief in chat. Keep
 - Main risks, assumptions, or unresolved questions
 - Recommended next step
 
-1. Present the user with four high-level next actions:
+1. Use input/question tool to present the user with four high-level next actions:
    - "Write plan immediately (in current context)" - skip the artifact step and move straight to a `write-plan` handoff.
    - "Write artifacts" - continue by authoring the brainstorm documents described in Step 6.
    - "Implement immediately (skip design artifacts and planning)" - if the design is very clear and low-risk, the user may choose to skip both artifacts and planning and move straight to implementation.

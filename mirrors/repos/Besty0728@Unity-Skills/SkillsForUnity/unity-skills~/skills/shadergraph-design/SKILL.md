@@ -1,6 +1,6 @@
 ---
 name: unity-shadergraph-design
-description: "Source-anchored Shader Graph design rules for Unity 2022.3 / ShaderGraph 14 and Unity 6 Graphics. Load before proposing graph structure, node chains, SubGraph boundaries, keyword strategy, property/blackboard layout, or any ShaderGraph editing plan, and before reviewing a proposed graph. Advisory only (no REST skills). Triggers: ShaderGraph, Shader Graph, shadergraph design/architecture/recipe/pitfalls/review, SubGraph, Master Stack, Blackboard, Keyword (Boolean/Enum/Material/Shader), PropertyNode, Custom Function Node, Sample Texture 2D, Lerp/Step/Smoothstep/Remap/Saturate, Fresnel, Normal/World/Object/Screen position, Vertex/Fragment stage, Lit/Unlit/Sprite/Fullscreen target, URP/HDRP/Built-in shader, nodeId, slotId; 着色器图, 着色器节点, 子图, 节点连线, 主节点堆栈, 黑板属性, 关键字, 自定义节点, 顶点/片元着色器, URP/HDRP 着色器, 着色器属性, shadergraph 设计/方案/审查."
+description: Source-anchored Shader Graph design rules for Unity 2022.3 / ShaderGraph. 着色器图, 着色器节点, 子图, 节点连线, 主节点堆栈, 黑板属性, 关键字, 自定义节点, 顶点/片元着色器, URP/HDRP 着色器, 着色器属性
 ---
 
 # ShaderGraph - Design Rules

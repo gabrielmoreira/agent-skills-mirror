@@ -13,7 +13,7 @@
 - [Key References](#key-references)
 
 **Packages**
-- [`octocode-mcp`](#package-octocode-mcp) — MCP server (14 tools)
+- [`octocode-mcp`](#package-octocode-mcp) — MCP server (12 tools)
 - [`octocode-cli`](#package-octocode-cli) — CLI installer + tool runner
 - [`octocode-shared`](#package-octocode-shared) — Credentials, sessions, platform
 - [`octocode-vscode`](#package-octocode-vscode) — VS Code extension
@@ -82,14 +82,14 @@ Canonical command list lives in the [Development Guide](https://github.com/bgaur
 - **Developer Docs**: [docs/dev/](https://github.com/bgauryy/octocode-mcp/tree/main/docs/dev) — tool/API references, workflows, architecture, contributing, skills
 - **Specs**: [docs/specs/](https://github.com/bgauryy/octocode-mcp/tree/main/docs/specs) — design specs and RFCs
 - **Development Guide**: [docs/dev/DEVELOPMENT_GUIDE.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/DEVELOPMENT_GUIDE.md)
+- **Release Guide**: [docs/dev/RELEASE_GUIDE.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/RELEASE_GUIDE.md)
 - **Configuration**: [docs/configuration/CONFIGURATION_REFERENCE.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/CONFIGURATION_REFERENCE.md)
-- **Troubleshooting**: [docs/configuration/TROUBLESHOOTING.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/TROUBLESHOOTING.md)
 
 ### Octocode MCP
 - **GitHub Tools**: [docs/dev/reference/GITHUB_TOOLS_REFERENCE.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/reference/GITHUB_TOOLS_REFERENCE.md)
 - **Local + LSP Tools**: [docs/dev/reference/LOCAL_TOOLS_REFERENCE.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/reference/LOCAL_TOOLS_REFERENCE.md)
 - **Clone & Local Workflow**: [docs/dev/workflows/CLONE_AND_LOCAL_TOOLS_WORKFLOW.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/workflows/CLONE_AND_LOCAL_TOOLS_WORKFLOW.md)
-- **Authentication**: [docs/configuration/providers/AUTHENTICATION_SETUP.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/providers/AUTHENTICATION_SETUP.md) · [GitHub](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/providers/GITHUB_SETUP_GUIDE.md)
+- **Authentication**: [docs/configuration/providers/AUTHENTICATION_SETUP.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/providers/AUTHENTICATION_SETUP.md)
 - **Using with Pi**: [docs/configuration/clients/PI_SETUP_GUIDE.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/clients/PI_SETUP_GUIDE.md)
 
 ### Octocode CLI
@@ -98,7 +98,6 @@ Canonical command list lives in the [Development Guide](https://github.com/bgaur
 - **CLI vs MCP Benchmark**: [docs/dev/workflows/BENCHMARK.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/workflows/BENCHMARK.md)
 
 ### Octocode Shared
-- **API Reference**: [docs/dev/reference/SHARED_API_REFERENCE.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/reference/SHARED_API_REFERENCE.md)
 - **Credentials**: [docs/dev/architecture/CREDENTIALS_ARCHITECTURE.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/architecture/CREDENTIALS_ARCHITECTURE.md)
 - **Session Persistence**: [docs/dev/architecture/SESSION_PERSISTENCE.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/architecture/SESSION_PERSISTENCE.md)
 
@@ -136,7 +135,7 @@ src/
 ├── index.ts, serverConfig.ts, session.ts, responses.ts, errorCodes.ts, types.ts, public.ts
 ├── hints/        # Dynamic + static hint generation
 ├── scheme/       # Shared schema utilities (baseSchema.ts)
-├── tools/        # 14 tool modules, each: execution.ts, scheme.ts, types.ts, register.ts, index.ts
+├── tools/        # 12 tool modules + toolMetadata/, each: execution.ts, scheme.ts, types.ts, register.ts, index.ts
 │                 # toolsManager.ts, toolRegistry.ts, toolConfig.ts, toolMetadata.ts, toolNames.ts
 ├── github/       # Octokit client, code/repo/PR/file search, query builders, errors
 ├── providers/    # Provider abstraction (github) via factory
@@ -154,26 +153,24 @@ tests/  ←  index.*, serverConfig.*, session.*, errorCodes,
           scheme/, hints/, tools/ (54), utils/ (37), integration/, helpers/, fixtures/
 ```
 
-### Tools (14)
+### Tools (12)
 
 | Tool | Type | Local | Description |
 |------|------|-------|-------------|
-| `githubSearchCode` | search | ❌ | Search code across GitHub |
-| `githubGetFileContent` | content | ❌ | Fetch file or directory (`type:"directory"` needs `ENABLE_CLONE`) |
-| `githubViewRepoStructure` | content | ❌ | Browse repo tree |
-| `githubCloneRepo` | content | ✅ | Clone GitHub repos/subtrees for local + LSP analysis (`ENABLE_CLONE`) |
-| `githubSearchRepositories` | search | ❌ | Search repositories |
-| `githubSearchPullRequests` | history | ❌ | Search PRs and view diffs |
-| `packageSearch` | search | ❌ | NPM/PyPI package + repo URL lookup |
+| `ghSearchCode` | search | ❌ | Search code across GitHub |
+| `ghGetFileContent` | content | ❌ | Fetch file or directory (`type:"directory"` needs `ENABLE_CLONE`) |
+| `ghViewRepoStructure` | content | ❌ | Browse repo tree |
+| `ghCloneRepo` | content | ✅ | Clone GitHub repos/subtrees for local + LSP analysis (`ENABLE_CLONE`) |
+| `ghSearchRepos` | search | ❌ | Search repositories |
+| `ghSearchPRs` | history | ❌ | Search PRs and view diffs |
+| `npmSearch` | search | ❌ | NPM package + repo URL lookup |
 | `localSearchCode` | search | ✅ | ripgrep search |
 | `localViewStructure` | content | ✅ | Browse local directories |
 | `localFindFiles` | search | ✅ | Find files by metadata |
 | `localGetFileContent` | content | ✅ | Read local file content |
-| `lspGotoDefinition` | LSP | ✅ | Jump to symbol definition |
-| `lspFindReferences` | LSP | ✅ | Find all usages of a symbol |
-| `lspCallHierarchy` | LSP | ✅ | Trace function call relationships |
+| `lspGetSemantics` | LSP | ✅ | Unified semantic navigation: definition, references, callers, callees, callHierarchy, hover, documentSymbols, typeDefinition, implementation (8 types via `type` param) |
 
-LSP tools are standalone (no IDE required); TS/JS bundled, 30+ other langs via installed servers; cross-platform.
+The LSP tool is standalone (no IDE required); TS/JS bundled, 30+ other langs via installed servers; cross-platform.
 
 ### Tool registration flow
 
@@ -181,7 +178,7 @@ LSP tools are standalone (no IDE required); TS/JS bundled, 30+ other langs via i
 Schema (Zod) → registerTool() → Security wrapper → Bulk handler → Implementation → Sanitizer → Response
 ```
 
-Tools return `structuredContent` validated against `outputSchema`. Handles tracked in `toolRegistry.ts` (runtime `enable()`/`disable()`/`remove()`). Server advertises `listChanged: true`; background init deferred to `oninitialized`.
+Tools return `structuredContent` validated against `outputSchema`. Server advertises `listChanged: false`; background init deferred to `oninitialized`.
 
 ### Design rules
 
@@ -189,7 +186,7 @@ Tools return `structuredContent` validated against `outputSchema`. Handles track
 - **Bulk queries** — every tool accepts 1–5 queries per request
 - **Research context required** — every query needs `mainResearchGoal`, `researchGoal`, `reasoning`
 - **Security first** — all I/O sanitized, secrets redacted, paths validated, command whitelist (`rg`, `find`, `ls`)
-- **Single-engine search** — `localSearchCode` uses bundled `@vscode/ripgrep` only; no grep fallback
+- **Ripgrep-first search** — `localSearchCode` uses the resolved ripgrep binary (`resolveRipgrepBinary()`: sibling → `@vscode/ripgrep` → `PATH`), and falls back to `grep` when ripgrep is unavailable
 - **Pooled LSP clients** — acquire through `LspClientPool`; callers MUST NOT call `client.stop()`
 - **Token efficiency** — minification, YAML default, response prioritization
 
@@ -200,7 +197,7 @@ Tools return `structuredContent` validated against `outputSchema`. Handles track
 | `GITHUB_TOKEN` / `OCTOCODE_TOKEN` / `GH_TOKEN` | GitHub auth (priority: OCTOCODE > GH > GITHUB) | – |
 | `GITHUB_API_URL` | GitHub API base URL | `https://api.github.com` |
 | `ENABLE_LOCAL` | Enable local FS tools | `true` |
-| `ENABLE_CLONE` | Enable `githubCloneRepo` + directory mode (requires `ENABLE_LOCAL`) | `false` |
+| `ENABLE_CLONE` | Enable `ghCloneRepo` + directory mode (requires `ENABLE_LOCAL`) | `false` |
 | `WORKSPACE_ROOT` | Root directory for resolving relative paths in local tools. Also configurable via `local.workspaceRoot` in `~/.octocode/.octocoderc` (env var takes priority) | `process.cwd()` |
 | `ALLOWED_PATHS` | Restrict local tools to these paths (comma-separated; empty = all) | `[]` |
 | `OCTOCODE_CACHE_TTL_MS` | Clone cache TTL (ms) | `86400000` |
@@ -210,7 +207,8 @@ Tools return `structuredContent` validated against `outputSchema`. Handles track
 | `TOOLS_TO_RUN` / `ENABLE_TOOLS` / `DISABLE_TOOLS` | Comma-separated tool filters | – |
 | `OCTOCODE_LSP_CONFIG` | Custom LSP config file path | auto-detect |
 | `OCTOCODE_OUTPUT_FORMAT` | `yaml` (default) or `json` | `yaml` |
-| `OCTOCODE_OUTPUT_DEFAULT_CHAR_LENGTH` | Default output page budget (chars) | `8000` |
+| `OCTOCODE_OUTPUT_DEFAULT_CHAR_LENGTH` | Default output page budget (chars) | `2000` |
+| `OCTOCODE_DEFAULT_MINIFY` | Default minify mode for file reads: `none` (exact text), `standard` (strip comments/blanks, 20–50% smaller), `symbols` (skeleton+line gutter, 55–97% smaller) | `standard` |
 
 ### Key files
 
@@ -228,7 +226,7 @@ Tools return `structuredContent` validated against `outputSchema`. Handles track
 | Provider factory | `src/providers/factory.ts` |
 | LSP client + config | `src/lsp/client.ts`, `src/lsp/config.ts`, `src/lsp/manager.ts` |
 | Bulk operations | `src/utils/response/bulk.ts` |
-| Package search | `src/utils/package/npm.ts`, `src/utils/package/python.ts` |
+| Package search | `src/utils/package/npm.ts` |
 
 ### Safety (package)
 
@@ -251,7 +249,7 @@ Run commands from `packages/octocode-cli/`.
 ### Using the CLI
 
 ```
-octocode-cli --help                          # all commands + all 14 tools
+octocode-cli --help                          # all commands + all 12 tools
 octocode-cli --tool <name> --help            # input/output schema for one tool
 octocode-cli --tools-context                 # full MCP instructions + all schemas (~2200 lines)
 octocode-cli --tool <name> --queries '<json>' [--json]
@@ -261,7 +259,7 @@ octocode-cli --tool <name> --queries '<json>' [--json]
 
 ```bash
 octocode-cli --tool localSearchCode --queries '{"path":".","pattern":"runCLI"}'
-octocode-cli --tool githubSearchCode --queries '{"keywordsToSearch":["useReducer"],"owner":"facebook","repo":"react"}'
+octocode-cli --tool ghSearchCode --queries '{"keywordsToSearch":["useReducer"],"owner":"facebook","repo":"react"}'
 ```
 
 Output shape: `{ "content": [{ "type": "text", "text": "..." }], "structuredContent": {}, "isError": false }`
@@ -383,7 +381,7 @@ import { ... } from 'octocode-shared/platform';
 import { ... } from 'octocode-shared/session';
 ```
 
-Full export tables: see [`docs/SHARED_API_REFERENCE.md`](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/reference/SHARED_API_REFERENCE.md).
+Shared package behavior is documented in [Credentials Architecture](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/architecture/CREDENTIALS_ARCHITECTURE.md) and [Session Persistence](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/architecture/SESSION_PERSISTENCE.md).
 
 ### Credential storage
 

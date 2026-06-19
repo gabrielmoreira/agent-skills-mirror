@@ -1,6 +1,6 @@
 ---
 name: unity-history
-description: "Undo/redo history management over the Unity Editor native undo stack — undo/redo one or many steps, get current undo group name. Exact signatures via GET /skills/schema."
+description: Undo/redo history management over the Unity Editor native undo stack
 ---
 
 # History Skills

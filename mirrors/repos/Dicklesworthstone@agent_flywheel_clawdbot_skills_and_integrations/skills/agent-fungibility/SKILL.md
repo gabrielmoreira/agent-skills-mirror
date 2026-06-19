@@ -42,7 +42,7 @@ You're better off just having a bunch of **fungible agents** that are all simply
 They can be any kind of agent:
 - Claude Code
 - Codex
-- Gemini CLI
+- Antigravity CLI (`agy`, pinned to "Gemini 3.1 Pro (High)"; successor to the retiring Gemini CLI)
 - Amp
 - Cursor
 - etc.
@@ -151,7 +151,7 @@ It all ultimately works because:
 
 ```bash
 # Spawn agents (any mix of types)
-ntm spawn myproject --cc=3 --cod=2 --gmi=1
+ntm spawn myproject --cc=3 --cod=2 --agy=1
 
 # Give them all the SAME initial prompt
 ntm send myproject --all "$(cat initial_prompt.txt)"

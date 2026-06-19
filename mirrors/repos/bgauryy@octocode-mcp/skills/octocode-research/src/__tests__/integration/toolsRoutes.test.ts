@@ -14,8 +14,8 @@ vi.mock('../../mcpCache.js', () => ({
         schema: { type: 'object', properties: { pattern: { type: 'string' } } },
         hints: { hasResults: ['Use lineHint'], empty: ['Try broader search'] },
       },
-      githubSearchCode: {
-        name: 'githubSearchCode',
+      ghSearchCode: {
+        name: 'ghSearchCode',
         description: 'Search GitHub code',
         schema: { type: 'object', properties: { keywordsToSearch: { type: 'string' } } },
         hints: { hasResults: ['Check results'], empty: ['Try other keywords'] },
@@ -47,31 +47,28 @@ vi.mock('../../index.js', () => ({
   localViewStructure: vi.fn().mockResolvedValue({
     content: [{ type: 'text', text: 'results:\n  - status: hasResults\n    data:\n      structuredOutput: ""' }],
   }),
-  githubSearchCode: vi.fn().mockResolvedValue({
+  ghSearchCode: vi.fn().mockResolvedValue({
     content: [{ type: 'text', text: 'results:\n  - status: hasResults\n    data:\n      files: []' }],
   }),
-  githubGetFileContent: vi.fn().mockResolvedValue({
+  ghGetFileContent: vi.fn().mockResolvedValue({
     content: [{ type: 'text', text: 'results:\n  - status: hasResults\n    data:\n      content: "test"' }],
   }),
-  githubSearchRepositories: vi.fn().mockResolvedValue({
+  ghSearchRepos: vi.fn().mockResolvedValue({
     content: [{ type: 'text', text: 'results:\n  - status: hasResults\n    data:\n      repositories: []' }],
   }),
-  githubViewRepoStructure: vi.fn().mockResolvedValue({
+  ghViewRepoStructure: vi.fn().mockResolvedValue({
     content: [{ type: 'text', text: 'results:\n  - status: hasResults\n    data:\n      structure: {}' }],
   }),
-  githubSearchPullRequests: vi.fn().mockResolvedValue({
+  ghSearchPRs: vi.fn().mockResolvedValue({
     content: [{ type: 'text', text: 'results:\n  - status: hasResults\n    data:\n      pull_requests: []' }],
   }),
-  lspGotoDefinition: vi.fn().mockResolvedValue({
+  ghCloneRepo: vi.fn().mockResolvedValue({
+    content: [{ type: 'text', text: 'results:\n  - status: hasResults\n    data:\n      clonePath: /tmp/repo' }],
+  }),
+  lspGetSemantics: vi.fn().mockResolvedValue({
     content: [{ type: 'text', text: 'results:\n  - status: hasResults\n    data:\n      definition: null' }],
   }),
-  lspFindReferences: vi.fn().mockResolvedValue({
-    content: [{ type: 'text', text: 'results:\n  - status: hasResults\n    data:\n      references: []' }],
-  }),
-  lspCallHierarchy: vi.fn().mockResolvedValue({
-    content: [{ type: 'text', text: 'results:\n  - status: hasResults\n    data:\n      calls: []' }],
-  }),
-  packageSearch: vi.fn().mockResolvedValue({
+  npmSearch: vi.fn().mockResolvedValue({
     content: [{ type: 'text', text: 'results:\n  - status: hasResults\n    data:\n      packages: []' }],
   }),
   logToolCall: vi.fn().mockResolvedValue(undefined),
@@ -115,9 +112,9 @@ describe('Tools Routes', () => {
       expect(res.body.success).toBe(true);
     });
 
-    it('returns all 13 tools', async () => {
+    it('returns all 12 tools', async () => {
       const res = await request(app).get('/tools/list');
-      expect(res.body.data.tools).toHaveLength(13);
+      expect(res.body.data.tools).toHaveLength(12);
     });
 
     it('each tool has name and description', async () => {
@@ -134,9 +131,9 @@ describe('Tools Routes', () => {
       const res = await request(app).get('/tools/list');
       const names = res.body.data.tools.map((t: any) => t.name);
       expect(names).toContain('localSearchCode');
-      expect(names).toContain('githubSearchCode');
-      expect(names).toContain('lspGotoDefinition');
-      expect(names).toContain('packageSearch');
+      expect(names).toContain('ghSearchCode');
+      expect(names).toContain('lspGetSemantics');
+      expect(names).toContain('npmSearch');
     });
 
     it('includes hints', async () => {
@@ -256,9 +253,9 @@ describe('Tools Routes', () => {
       expect(res.body.data).toHaveProperty('schemas');
     });
 
-    it('has 13 schemas (one per tool)', async () => {
+    it('has 12 schemas (one per tool)', async () => {
       const res = await request(app).get('/tools/schemas');
-      expect(res.body.data.totalTools).toBe(13);
+      expect(res.body.data.totalTools).toBe(12);
     });
 
     it('each schema is a valid JSON Schema (has properties or anyOf)', async () => {
@@ -307,13 +304,13 @@ describe('Tools Routes', () => {
     it('tools_schema has all tool schemas', async () => {
       const res = await request(app).get('/tools/initContext');
       const schemaNames = Object.keys(res.body.tools_schema);
-      expect(schemaNames.length).toBe(13);
+      expect(schemaNames.length).toBe(12);
     });
 
     it('_meta includes prompt char count and tools count', async () => {
       const res = await request(app).get('/tools/initContext');
       expect(res.body._meta.promptCharCount).toBeGreaterThan(0);
-      expect(res.body._meta.toolsCount).toBe(13);
+      expect(res.body._meta.toolsCount).toBe(12);
       expect(res.body._meta).toHaveProperty('version');
     });
   });

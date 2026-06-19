@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 56 file(s) materialized.
+Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 57 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 56 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 56 |
+| Files         | 57 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -91,30 +91,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`.agents/skills/convex-quickstart/agents/openai.yaml`](.agents/skills/convex-quickstart/agents/openai.yaml) |
 | 31 | ✓ | [`.agents/skills/convex-quickstart/assets/icon.svg`](.agents/skills/convex-quickstart/assets/icon.svg) |
 | 32 | ✓ | [`.agents/skills/convex-quickstart/SKILL.md`](.agents/skills/convex-quickstart/SKILL.md) |
-| 33 | ✓ | [`.agents/skills/convex-setup-auth/agents/openai.yaml`](.agents/skills/convex-setup-auth/agents/openai.yaml) |
-| 34 | ✓ | [`.agents/skills/convex-setup-auth/assets/icon.svg`](.agents/skills/convex-setup-auth/assets/icon.svg) |
-| 35 | ✓ | [`.agents/skills/convex-setup-auth/references/auth0.md`](.agents/skills/convex-setup-auth/references/auth0.md) |
-| 36 | ✓ | [`.agents/skills/convex-setup-auth/references/clerk.md`](.agents/skills/convex-setup-auth/references/clerk.md) |
-| 37 | ✓ | [`.agents/skills/convex-setup-auth/references/convex-auth.md`](.agents/skills/convex-setup-auth/references/convex-auth.md) |
-| 38 | ✓ | [`.agents/skills/convex-setup-auth/references/workos-authkit.md`](.agents/skills/convex-setup-auth/references/workos-authkit.md) |
-| 39 | ✓ | [`.agents/skills/convex-setup-auth/SKILL.md`](.agents/skills/convex-setup-auth/SKILL.md) |
-| 40 | ✓ | [`.agents/skills/convex/SKILL.md`](.agents/skills/convex/SKILL.md) |
-| 41 | ✓ | [`.agents/skills/create-and-cleanup-migration/SKILL.md`](.agents/skills/create-and-cleanup-migration/SKILL.md) |
-| 42 | ✓ | [`.agents/skills/technical-documentation/agents/docs-framework-agent.md`](.agents/skills/technical-documentation/agents/docs-framework-agent.md) |
-| 43 | ✓ | [`.agents/skills/technical-documentation/agents/governance-agent.md`](.agents/skills/technical-documentation/agents/governance-agent.md) |
-| 44 | ✓ | [`.agents/skills/technical-documentation/agents/inventory-agent.md`](.agents/skills/technical-documentation/agents/inventory-agent.md) |
-| 45 | ✓ | [`.agents/skills/technical-documentation/agents/openai.yaml`](.agents/skills/technical-documentation/agents/openai.yaml) |
-| 46 | ✓ | [`.agents/skills/technical-documentation/agents/synthesis-agent.md`](.agents/skills/technical-documentation/agents/synthesis-agent.md) |
-| 47 | ✓ | [`.agents/skills/technical-documentation/assets/icon.jpg`](.agents/skills/technical-documentation/assets/icon.jpg) |
-| 48 | ✓ | [`.agents/skills/technical-documentation/references/agent-and-contributing.md`](.agents/skills/technical-documentation/references/agent-and-contributing.md) |
-| 49 | ✓ | [`.agents/skills/technical-documentation/references/build.md`](.agents/skills/technical-documentation/references/build.md) |
-| 50 | ✓ | [`.agents/skills/technical-documentation/references/openclaw.md`](.agents/skills/technical-documentation/references/openclaw.md) |
-| 51 | ✓ | [`.agents/skills/technical-documentation/references/principles.md`](.agents/skills/technical-documentation/references/principles.md) |
-| 52 | ✓ | [`.agents/skills/technical-documentation/references/review.md`](.agents/skills/technical-documentation/references/review.md) |
-| 53 | ✓ | [`.agents/skills/technical-documentation/references/tooling.md`](.agents/skills/technical-documentation/references/tooling.md) |
-| 54 | ✓ | [`.agents/skills/technical-documentation/SKILL.md`](.agents/skills/technical-documentation/SKILL.md) |
-| 55 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 56 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 33 | ✓ | [`.agents/skills/convex-retention/SKILL.md`](.agents/skills/convex-retention/SKILL.md) |
+| 34 | ✓ | [`.agents/skills/convex-setup-auth/agents/openai.yaml`](.agents/skills/convex-setup-auth/agents/openai.yaml) |
+| 35 | ✓ | [`.agents/skills/convex-setup-auth/assets/icon.svg`](.agents/skills/convex-setup-auth/assets/icon.svg) |
+| 36 | ✓ | [`.agents/skills/convex-setup-auth/references/auth0.md`](.agents/skills/convex-setup-auth/references/auth0.md) |
+| 37 | ✓ | [`.agents/skills/convex-setup-auth/references/clerk.md`](.agents/skills/convex-setup-auth/references/clerk.md) |
+| 38 | ✓ | [`.agents/skills/convex-setup-auth/references/convex-auth.md`](.agents/skills/convex-setup-auth/references/convex-auth.md) |
+| 39 | ✓ | [`.agents/skills/convex-setup-auth/references/workos-authkit.md`](.agents/skills/convex-setup-auth/references/workos-authkit.md) |
+| 40 | ✓ | [`.agents/skills/convex-setup-auth/SKILL.md`](.agents/skills/convex-setup-auth/SKILL.md) |
+| 41 | ✓ | [`.agents/skills/convex/SKILL.md`](.agents/skills/convex/SKILL.md) |
+| 42 | ✓ | [`.agents/skills/create-and-cleanup-migration/SKILL.md`](.agents/skills/create-and-cleanup-migration/SKILL.md) |
+| 43 | ✓ | [`.agents/skills/technical-documentation/agents/docs-framework-agent.md`](.agents/skills/technical-documentation/agents/docs-framework-agent.md) |
+| 44 | ✓ | [`.agents/skills/technical-documentation/agents/governance-agent.md`](.agents/skills/technical-documentation/agents/governance-agent.md) |
+| 45 | ✓ | [`.agents/skills/technical-documentation/agents/inventory-agent.md`](.agents/skills/technical-documentation/agents/inventory-agent.md) |
+| 46 | ✓ | [`.agents/skills/technical-documentation/agents/openai.yaml`](.agents/skills/technical-documentation/agents/openai.yaml) |
+| 47 | ✓ | [`.agents/skills/technical-documentation/agents/synthesis-agent.md`](.agents/skills/technical-documentation/agents/synthesis-agent.md) |
+| 48 | ✓ | [`.agents/skills/technical-documentation/assets/icon.jpg`](.agents/skills/technical-documentation/assets/icon.jpg) |
+| 49 | ✓ | [`.agents/skills/technical-documentation/references/agent-and-contributing.md`](.agents/skills/technical-documentation/references/agent-and-contributing.md) |
+| 50 | ✓ | [`.agents/skills/technical-documentation/references/build.md`](.agents/skills/technical-documentation/references/build.md) |
+| 51 | ✓ | [`.agents/skills/technical-documentation/references/openclaw.md`](.agents/skills/technical-documentation/references/openclaw.md) |
+| 52 | ✓ | [`.agents/skills/technical-documentation/references/principles.md`](.agents/skills/technical-documentation/references/principles.md) |
+| 53 | ✓ | [`.agents/skills/technical-documentation/references/review.md`](.agents/skills/technical-documentation/references/review.md) |
+| 54 | ✓ | [`.agents/skills/technical-documentation/references/tooling.md`](.agents/skills/technical-documentation/references/tooling.md) |
+| 55 | ✓ | [`.agents/skills/technical-documentation/SKILL.md`](.agents/skills/technical-documentation/SKILL.md) |
+| 56 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 57 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

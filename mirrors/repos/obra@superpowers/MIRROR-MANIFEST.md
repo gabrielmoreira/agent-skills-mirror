@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `obra/superpowers` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
+Mirror of `obra/superpowers` — 26 default patterns, 0 followed patterns, 54 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `obra/superpowers` — 26 default patterns, 0 followed patterns, 53 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 53 |
+| Files         | 54 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,40 +78,41 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`skills/requesting-code-review/SKILL.md`](skills/requesting-code-review/SKILL.md) |
 | 18 | ✓ | [`skills/subagent-driven-development/implementer-prompt.md`](skills/subagent-driven-development/implementer-prompt.md) |
 | 19 | ✓ | [`skills/subagent-driven-development/scripts/review-package`](skills/subagent-driven-development/scripts/review-package) |
-| 20 | ✓ | [`skills/subagent-driven-development/scripts/task-brief`](skills/subagent-driven-development/scripts/task-brief) |
-| 21 | ✓ | [`skills/subagent-driven-development/SKILL.md`](skills/subagent-driven-development/SKILL.md) |
-| 22 | ✓ | [`skills/subagent-driven-development/task-reviewer-prompt.md`](skills/subagent-driven-development/task-reviewer-prompt.md) |
-| 23 | ✓ | [`skills/systematic-debugging/condition-based-waiting-example.ts`](skills/systematic-debugging/condition-based-waiting-example.ts) |
-| 24 | ✓ | [`skills/systematic-debugging/condition-based-waiting.md`](skills/systematic-debugging/condition-based-waiting.md) |
-| 25 | ✓ | [`skills/systematic-debugging/CREATION-LOG.md`](skills/systematic-debugging/CREATION-LOG.md) |
-| 26 | ✓ | [`skills/systematic-debugging/defense-in-depth.md`](skills/systematic-debugging/defense-in-depth.md) |
-| 27 | ✓ | [`skills/systematic-debugging/find-polluter.sh`](skills/systematic-debugging/find-polluter.sh) |
-| 28 | ✓ | [`skills/systematic-debugging/root-cause-tracing.md`](skills/systematic-debugging/root-cause-tracing.md) |
-| 29 | ✓ | [`skills/systematic-debugging/SKILL.md`](skills/systematic-debugging/SKILL.md) |
-| 30 | ✓ | [`skills/systematic-debugging/test-academic.md`](skills/systematic-debugging/test-academic.md) |
-| 31 | ✓ | [`skills/systematic-debugging/test-pressure-1.md`](skills/systematic-debugging/test-pressure-1.md) |
-| 32 | ✓ | [`skills/systematic-debugging/test-pressure-2.md`](skills/systematic-debugging/test-pressure-2.md) |
-| 33 | ✓ | [`skills/systematic-debugging/test-pressure-3.md`](skills/systematic-debugging/test-pressure-3.md) |
-| 34 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
-| 35 | ✓ | [`skills/test-driven-development/testing-anti-patterns.md`](skills/test-driven-development/testing-anti-patterns.md) |
-| 36 | ✓ | [`skills/using-git-worktrees/SKILL.md`](skills/using-git-worktrees/SKILL.md) |
-| 37 | ✓ | [`skills/using-superpowers/references/antigravity-tools.md`](skills/using-superpowers/references/antigravity-tools.md) |
-| 38 | ✓ | [`skills/using-superpowers/references/claude-code-tools.md`](skills/using-superpowers/references/claude-code-tools.md) |
-| 39 | ✓ | [`skills/using-superpowers/references/codex-tools.md`](skills/using-superpowers/references/codex-tools.md) |
-| 40 | ✓ | [`skills/using-superpowers/references/copilot-tools.md`](skills/using-superpowers/references/copilot-tools.md) |
-| 41 | ✓ | [`skills/using-superpowers/references/gemini-tools.md`](skills/using-superpowers/references/gemini-tools.md) |
-| 42 | ✓ | [`skills/using-superpowers/references/pi-tools.md`](skills/using-superpowers/references/pi-tools.md) |
-| 43 | ✓ | [`skills/using-superpowers/SKILL.md`](skills/using-superpowers/SKILL.md) |
-| 44 | ✓ | [`skills/verification-before-completion/SKILL.md`](skills/verification-before-completion/SKILL.md) |
-| 45 | ✓ | [`skills/writing-plans/plan-document-reviewer-prompt.md`](skills/writing-plans/plan-document-reviewer-prompt.md) |
-| 46 | ✓ | [`skills/writing-plans/SKILL.md`](skills/writing-plans/SKILL.md) |
-| 47 | ✓ | [`skills/writing-skills/anthropic-best-practices.md`](skills/writing-skills/anthropic-best-practices.md) |
-| 48 | ✓ | [`skills/writing-skills/examples/CLAUDE_MD_TESTING.md`](skills/writing-skills/examples/CLAUDE_MD_TESTING.md) |
-| 49 | ✓ | [`skills/writing-skills/graphviz-conventions.dot`](skills/writing-skills/graphviz-conventions.dot) |
-| 50 | ✓ | [`skills/writing-skills/persuasion-principles.md`](skills/writing-skills/persuasion-principles.md) |
-| 51 | ✓ | [`skills/writing-skills/render-graphs.js`](skills/writing-skills/render-graphs.js) |
-| 52 | ✓ | [`skills/writing-skills/SKILL.md`](skills/writing-skills/SKILL.md) |
-| 53 | ✓ | [`skills/writing-skills/testing-skills-with-subagents.md`](skills/writing-skills/testing-skills-with-subagents.md) |
+| 20 | ✓ | [`skills/subagent-driven-development/scripts/sdd-workspace`](skills/subagent-driven-development/scripts/sdd-workspace) |
+| 21 | ✓ | [`skills/subagent-driven-development/scripts/task-brief`](skills/subagent-driven-development/scripts/task-brief) |
+| 22 | ✓ | [`skills/subagent-driven-development/SKILL.md`](skills/subagent-driven-development/SKILL.md) |
+| 23 | ✓ | [`skills/subagent-driven-development/task-reviewer-prompt.md`](skills/subagent-driven-development/task-reviewer-prompt.md) |
+| 24 | ✓ | [`skills/systematic-debugging/condition-based-waiting-example.ts`](skills/systematic-debugging/condition-based-waiting-example.ts) |
+| 25 | ✓ | [`skills/systematic-debugging/condition-based-waiting.md`](skills/systematic-debugging/condition-based-waiting.md) |
+| 26 | ✓ | [`skills/systematic-debugging/CREATION-LOG.md`](skills/systematic-debugging/CREATION-LOG.md) |
+| 27 | ✓ | [`skills/systematic-debugging/defense-in-depth.md`](skills/systematic-debugging/defense-in-depth.md) |
+| 28 | ✓ | [`skills/systematic-debugging/find-polluter.sh`](skills/systematic-debugging/find-polluter.sh) |
+| 29 | ✓ | [`skills/systematic-debugging/root-cause-tracing.md`](skills/systematic-debugging/root-cause-tracing.md) |
+| 30 | ✓ | [`skills/systematic-debugging/SKILL.md`](skills/systematic-debugging/SKILL.md) |
+| 31 | ✓ | [`skills/systematic-debugging/test-academic.md`](skills/systematic-debugging/test-academic.md) |
+| 32 | ✓ | [`skills/systematic-debugging/test-pressure-1.md`](skills/systematic-debugging/test-pressure-1.md) |
+| 33 | ✓ | [`skills/systematic-debugging/test-pressure-2.md`](skills/systematic-debugging/test-pressure-2.md) |
+| 34 | ✓ | [`skills/systematic-debugging/test-pressure-3.md`](skills/systematic-debugging/test-pressure-3.md) |
+| 35 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
+| 36 | ✓ | [`skills/test-driven-development/testing-anti-patterns.md`](skills/test-driven-development/testing-anti-patterns.md) |
+| 37 | ✓ | [`skills/using-git-worktrees/SKILL.md`](skills/using-git-worktrees/SKILL.md) |
+| 38 | ✓ | [`skills/using-superpowers/references/antigravity-tools.md`](skills/using-superpowers/references/antigravity-tools.md) |
+| 39 | ✓ | [`skills/using-superpowers/references/claude-code-tools.md`](skills/using-superpowers/references/claude-code-tools.md) |
+| 40 | ✓ | [`skills/using-superpowers/references/codex-tools.md`](skills/using-superpowers/references/codex-tools.md) |
+| 41 | ✓ | [`skills/using-superpowers/references/copilot-tools.md`](skills/using-superpowers/references/copilot-tools.md) |
+| 42 | ✓ | [`skills/using-superpowers/references/gemini-tools.md`](skills/using-superpowers/references/gemini-tools.md) |
+| 43 | ✓ | [`skills/using-superpowers/references/pi-tools.md`](skills/using-superpowers/references/pi-tools.md) |
+| 44 | ✓ | [`skills/using-superpowers/SKILL.md`](skills/using-superpowers/SKILL.md) |
+| 45 | ✓ | [`skills/verification-before-completion/SKILL.md`](skills/verification-before-completion/SKILL.md) |
+| 46 | ✓ | [`skills/writing-plans/plan-document-reviewer-prompt.md`](skills/writing-plans/plan-document-reviewer-prompt.md) |
+| 47 | ✓ | [`skills/writing-plans/SKILL.md`](skills/writing-plans/SKILL.md) |
+| 48 | ✓ | [`skills/writing-skills/anthropic-best-practices.md`](skills/writing-skills/anthropic-best-practices.md) |
+| 49 | ✓ | [`skills/writing-skills/examples/CLAUDE_MD_TESTING.md`](skills/writing-skills/examples/CLAUDE_MD_TESTING.md) |
+| 50 | ✓ | [`skills/writing-skills/graphviz-conventions.dot`](skills/writing-skills/graphviz-conventions.dot) |
+| 51 | ✓ | [`skills/writing-skills/persuasion-principles.md`](skills/writing-skills/persuasion-principles.md) |
+| 52 | ✓ | [`skills/writing-skills/render-graphs.js`](skills/writing-skills/render-graphs.js) |
+| 53 | ✓ | [`skills/writing-skills/SKILL.md`](skills/writing-skills/SKILL.md) |
+| 54 | ✓ | [`skills/writing-skills/testing-skills-with-subagents.md`](skills/writing-skills/testing-skills-with-subagents.md) |
 
 ---
 

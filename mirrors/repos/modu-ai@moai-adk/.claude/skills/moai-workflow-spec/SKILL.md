@@ -260,7 +260,9 @@ SPEC Characteristics: forward-looking (what WILL be built), actionable, testable
 | Meeting Notes | Records decisions made | `.moai/reports/meeting-{DATE}/` |
 | Retrospective | Analyzes past work | `.moai/reports/retro-{DATE}/` |
 
-### Exclusion Rules
+### Out of Scope Classification Rules
+
+These routing rules decide what is out of scope for a SPEC document (and where it belongs instead). When authoring a SPEC's own exclusions section, express each excluded item as a `### Out of Scope — <topic>` H3 sub-heading with `-` bullets so the section satisfies the `OutOfScopeRule` lint.
 
 [HARD] Reports analyze what EXISTS → `.moai/reports/`. SPECs define what will be BUILT → `.moai/specs/`.
 
@@ -310,6 +312,8 @@ Integration Status: Complete - Plan-Run-Sync workflow with SDD 2025 features
 - Requirements use "should" where they mean "shall" (optional vs mandatory ambiguity)
 - SPEC-ID not registered in `.moai/specs/` directory
 
+Provenance (SPEC-ID / grouping-naming drift): AP-SRN-004 (legacy "Wave" naming retired for SPEC-grouping clarity) — recurred on 2026-05-25 in Epic 10 paste-ready chore (commit 64310df3f; the historical pre-redesign label was the now-retired Sprint term, not the Epic taxonomy).
+
 <!-- moai:evolvable-end -->
 
 <!-- moai:evolvable-start id="verification" -->
@@ -321,6 +325,18 @@ Integration Status: Complete - Plan-Run-Sync workflow with SDD 2025 features
 - [ ] research.md exists when the SPEC touches existing code
 - [ ] Annotation cycle completed with explicit user approval marker
 - [ ] SPEC references existing SPEC-IDs it depends on or supersedes
-- [ ] Non-goals section present to prevent scope creep
+- [ ] Out of Scope section present to prevent scope creep — at least one `### Out of Scope — <topic>` H3 sub-heading with a `-` bullet entry (satisfies the `OutOfScopeRule` lint)
 
 <!-- moai:evolvable-end -->
+
+---
+
+## Decision Heuristics
+
+Fast defaults — always confirm against the cited body section for non-trivial decisions.
+
+- If authoring a NEW requirement, default to GEARS notation, not legacy EARS (<- §GEARS Format).
+- If a report analyzes what EXISTS, default to `.moai/reports/`, not `.moai/specs/` (<- §SPEC Scope and Classification).
+- If the SPEC is production-critical, default to `lifecycle: spec-anchored` over spec-first (<- §SPEC Lifecycle Management).
+- If excluding work, default to a `### Out of Scope — <topic>` H3 with `-` bullets (<- §Out of Scope Classification Rules).
+- If a residual `IF/THEN` modality appears, default to rewriting it as `When <event-detected>` (<- §GEARS Format).

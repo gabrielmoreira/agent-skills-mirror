@@ -17,7 +17,7 @@ Expert guidance for writing Python code in n8n Code nodes.
 - You're doing data transformations better suited to Python
 
 **Why JavaScript is preferred:**
-- Full n8n helper functions ($helpers.httpRequest, etc.)
+- Full n8n helper functions (`this.helpers.httpRequest`, etc.)
 - Luxon DateTime library for advanced date/time operations
 - No external library limitations
 - Better n8n documentation and community support
@@ -278,7 +278,7 @@ return [{"data": value}]  # Should be {"json": value}
 
 **Need HTTP requests?**
 - ✅ Use **HTTP Request node** before Code node
-- ✅ Or switch to **JavaScript** and use `$helpers.httpRequest()`
+- ✅ Or switch to **JavaScript** and use `this.helpers.httpRequest()` (the bare `$helpers` global is undefined in the task-runner sandbox)
 
 **Need data analysis (pandas/numpy)?**
 - ✅ Use Python **statistics** module for basic stats
@@ -419,7 +419,7 @@ data = _node['HTTP Request'].first()['json']
 - ✅ You need specific standard library functions
 
 ### Use JavaScript When:
-- ✅ You need HTTP requests ($helpers.httpRequest())
+- ✅ You need HTTP requests (`this.helpers.httpRequest()`)
 - ✅ You need advanced date/time (DateTime/Luxon)
 - ✅ You want better n8n integration
 - ✅ **For 95% of use cases** (recommended)

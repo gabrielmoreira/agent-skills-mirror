@@ -50,7 +50,7 @@ The `octocode-research` skill is an HTTP API server that provides code research 
 │  │  • exploreMultipleRepositoryStructures (GitHub repo tree)    │ │
 │  │  • searchMultipleGitHubRepos (GitHub repo search)            │ │
 │  │  • searchMultipleGitHubPullRequests (GitHub PR search)       │ │
-│  │  • searchPackages (npm/PyPI search)                          │ │
+│  │  • searchPackages (npm search)                               │ │
 │  └─────────────────────────────────────────────────────────────┘ │
 │  ┌─────────────────────────────────────────────────────────────┐ │
 │  │              Bulk Operation Processing                       │ │
@@ -66,7 +66,6 @@ The `octocode-research` skill is an HTTP API server that provides code research 
 │  • Local filesystem (bundled ripgrep, fs)                       │
 │  • GitHub API (via Octokit)                                     │
 │  • NPM Registry API                                             │
-│  • PyPI API                                                     │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -168,8 +167,8 @@ The `routes/tools.ts` file contains a `TOOL_REGISTRY` that maps tool names to th
 ```typescript
 const TOOL_REGISTRY: Record<string, ToolEntry> = {
   // GitHub tools
-  githubSearchCode: { fn: githubSearchCode, resilience: withGitHubResilience, category: 'github' },
-  githubGetFileContent: { fn: githubGetFileContent, resilience: withGitHubResilience, category: 'github' },
+  ghSearchCode: { fn: ghSearchCode, resilience: withGitHubResilience, category: 'github' },
+  ghGetFileContent: { fn: ghGetFileContent, resilience: withGitHubResilience, category: 'github' },
   // ... more github tools
 
   // Local tools
@@ -183,7 +182,7 @@ const TOOL_REGISTRY: Record<string, ToolEntry> = {
   lspCallHierarchy: { fn: lspCallHierarchy, resilience: withLspResilience, category: 'lsp' },
 
   // Package tools
-  packageSearch: { fn: packageSearch, resilience: withPackageResilience, category: 'package' },
+  npmSearch: { fn: npmSearch, resilience: withPackageResilience, category: 'package' },
 };
 ```
 
@@ -252,12 +251,12 @@ createRouteHandler({
 | `lspGotoDefinition` | LSP | Go to symbol definition |
 | `lspFindReferences` | LSP | Find all references |
 | `lspCallHierarchy` | LSP | Call hierarchy |
-| `githubSearchCode` | GitHub | Search code |
-| `githubGetFileContent` | GitHub | Read file |
-| `githubViewRepoStructure` | GitHub | Repo tree |
-| `githubSearchRepositories` | GitHub | Search repos |
-| `githubSearchPullRequests` | GitHub | Search PRs |
-| `packageSearch` | Package | Search npm/PyPI |
+| `ghSearchCode` | GitHub | Search code |
+| `ghGetFileContent` | GitHub | Read file |
+| `ghViewRepoStructure` | GitHub | Repo tree |
+| `ghSearchRepos` | GitHub | Search repos |
+| `ghSearchPRs` | GitHub | Search PRs |
+| `npmSearch` | Package | Search npm |
 
 ## Research Context Parameters
 
@@ -280,7 +279,7 @@ Four pre-configured resilience wrappers combine circuit breaker + retry:
 withGitHubResilience(operation, toolName)  // GitHub API calls
 withLspResilience(operation, toolName)     // Language server protocol
 withLocalResilience(operation, toolName)   // Local filesystem ops
-withPackageResilience(operation, toolName) // npm/PyPI queries
+withPackageResilience(operation, toolName) // npm queries
 ```
 
 ### 2. Retry Logic (`src/utils/retry.ts`)

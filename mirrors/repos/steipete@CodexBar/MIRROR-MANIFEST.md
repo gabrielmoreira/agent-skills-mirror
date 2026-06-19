@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `steipete/CodexBar` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `steipete/CodexBar` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `steipete/CodexBar` — 26 default patterns, 0 followed patterns, 9 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,15 +59,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/qa-test/agents/openai.yaml`](.agents/skills/qa-test/agents/openai.yaml) |
-| 2 | ✓ | [`.agents/skills/qa-test/references/api-specs.md`](.agents/skills/qa-test/references/api-specs.md) |
-| 3 | ✓ | [`.agents/skills/qa-test/scripts/live_provider_matrix.sh`](.agents/skills/qa-test/scripts/live_provider_matrix.sh) |
-| 4 | ✓ | [`.agents/skills/qa-test/SKILL.md`](.agents/skills/qa-test/SKILL.md) |
-| 5 | ✓ | [`.agents/skills/release-codexbar/SKILL.md`](.agents/skills/release-codexbar/SKILL.md) |
-| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 7 | ✓ | [`docs/claude.md`](docs/claude.md) |
-| 8 | ✓ | [`docs/gemini.md`](docs/gemini.md) |
-| 9 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
+| 1 | ✓ | [`.agents/skills/codexbar/scripts/codexbar`](.agents/skills/codexbar/scripts/codexbar) |
+| 2 | ✓ | [`.agents/skills/codexbar/scripts/test_codexbar.py`](.agents/skills/codexbar/scripts/test_codexbar.py) |
+| 3 | ✓ | [`.agents/skills/codexbar/SKILL.md`](.agents/skills/codexbar/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/qa-test/agents/openai.yaml`](.agents/skills/qa-test/agents/openai.yaml) |
+| 5 | ✓ | [`.agents/skills/qa-test/references/api-specs.md`](.agents/skills/qa-test/references/api-specs.md) |
+| 6 | ✓ | [`.agents/skills/qa-test/scripts/live_provider_matrix.sh`](.agents/skills/qa-test/scripts/live_provider_matrix.sh) |
+| 7 | ✓ | [`.agents/skills/qa-test/SKILL.md`](.agents/skills/qa-test/SKILL.md) |
+| 8 | ✓ | [`.agents/skills/release-codexbar/SKILL.md`](.agents/skills/release-codexbar/SKILL.md) |
+| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 10 | ✓ | [`docs/claude.md`](docs/claude.md) |
+| 11 | ✓ | [`docs/gemini.md`](docs/gemini.md) |
+| 12 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
 
 ---
 

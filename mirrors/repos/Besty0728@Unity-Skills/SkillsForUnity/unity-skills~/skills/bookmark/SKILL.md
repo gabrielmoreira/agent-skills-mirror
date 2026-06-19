@@ -1,6 +1,6 @@
 ---
 name: unity-bookmark
-description: "Scene View bookmarks — save the current selection plus camera pivot/rotation/size under a name, jump back, list, delete. Exact signatures via GET /skills/schema."
+description: Scene View bookmarks — save the current selection plus camera pivot/rotation/size under a name
 ---
 
 # Bookmark Skills

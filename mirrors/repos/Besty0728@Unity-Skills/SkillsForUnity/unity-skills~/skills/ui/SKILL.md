@@ -1,6 +1,6 @@
 ---
 name: unity-ui
-description: "Unity UGUI (Canvas-based) creation and layout — Canvas/Panel/Button/Text(TMP)/Image/InputField/Slider/Toggle/Dropdown/ScrollView, RectTransform anchors, layout groups. For UXML/USS use uitoolkit. Exact signatures via GET /skills/schema."
+description: Unity UGUI (Canvas-based) creation and layout
 ---
 
 # Unity UI Skills

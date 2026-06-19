@@ -76,7 +76,7 @@ In **edit** mode, your job is to:
 
 ### Sentence structure
 - **"It's not X — it's Y" / "This isn't about X, it's about Y"**: Rewrite as a direct positive statement. Max one per piece, and only if it serves the argument.
-- **Hollow intensifiers**: Cut `genuine`, `real` (as in "a real improvement"), `truly`, `quite frankly`, `to be honest`, `let's be clear`, `it's worth noting that`. Just state the fact.
+- **Hollow intensifiers**: Cut `genuine` / `genuinely`, `real` (as in "a real improvement"), `truly`, `quite frankly`, `to be honest`, `let's be clear`, `it's worth noting that`. Just state the fact.
 - **Vague endorsement ("worth [verb]ing")**: Cut or replace `worth reading`, `worth paying attention to`, `worth a look`, `worth exploring`, `worth checking out`, `worth your time`. These substitute a generic thumbs-up for a specific reason. Say *why* something matters instead.
 - **Hedging**: Cut `perhaps`, `could potentially`, `it's important to note that`, `to be clear`. Make the point directly.
 - **Missing bridge sentences**: Each paragraph should connect to the last. If paragraphs could be rearranged without the reader noticing, add connective tissue.
@@ -89,6 +89,8 @@ Words are organized into three tiers based on how reliably they signal AI-genera
 - **Tier 1 — Always flag.** These words appear 5–20x more often in AI text than human text. Replace on sight.
 - **Tier 2 — Flag in clusters.** Individually fine, but two or more in the same paragraph is a strong AI signal. Flag when they appear together.
 - **Tier 3 — Flag by density.** Common words that AI simply overuses. Only flag when they make up a noticeable fraction of the text (roughly 3%+ of total words).
+
+**Match inflected forms.** Each entry below covers the listed word *and its morphological variants* — adverb (`-ly`), gerund/participle (`-ing`), plural, comparative/superlative, and verb conjugations — unless a variant carries a distinct, legitimate meaning. So `genuine` also flags `genuinely`, `leverage` also flags `leveraging` / `leveraged`, `delve` covers `delving`, and `meticulous` covers `meticulously`. When a variant has a separate honest sense (e.g. `real` meaning factual, not the intensifier in "a real improvement"), judge by context rather than matching blindly.
 
 #### Tier 1 — Always replace
 
@@ -149,6 +151,7 @@ Words are organized into three tiers based on how reliably they signal AI-genera
 | ascertain | find out, determine, learn |
 | endeavor | effort, attempt, try |
 | keen (as intensifier) | interested, eager, enthusiastic (or cut — just state the interest) |
+| genuinely / genuine (as intensifier) | (cut — just state the fact) |
 | symphony (metaphor) | (describe the actual coordination or combination) |
 | embrace (metaphor) | adopt, accept, use, switch to |
 
@@ -389,13 +392,13 @@ These slot-fill constructions signal that a sentence was generated, not written.
 - "While X is impressive, Y remains a challenge" or "Although X has made strides, Y is still an open question." AI uses this to sound balanced without actually weighing anything. Both halves are vague. Either make the concession specific (name what's impressive, name the actual challenge) or pick a side and argue it.
 
 ### Rhetorical question openers
-- "But what does this mean for developers?" / "So why should you care?" / "What's next?" � AI uses rhetorical questions to stall before the actual point. If you know the answer, just say it. Rhetorical questions are earned by strong setup, not dropped as section transitions.
+- "But what does this mean for developers?" / "So why should you care?" / "What's next?" — AI uses rhetorical questions to stall before the actual point. If you know the answer, just say it. Rhetorical questions are earned by strong setup, not dropped as section transitions.
 
 ### Parenthetical hedging
-- "(and, increasingly, Z)" / "(or, more precisely, Y)" / "(and perhaps more importantly, W)" � AI inserts parenthetical asides to sound nuanced without committing. If the aside matters, give it its own sentence. If it doesn't, cut it.
+- "(and, increasingly, Z)" / "(or, more precisely, Y)" / "(and perhaps more importantly, W)" — AI inserts parenthetical asides to sound nuanced without committing. If the aside matters, give it its own sentence. If it doesn't, cut it.
 
 ### Numbered list inflation
-- "Three key takeaways" / "Five things to know" / "Here are the top seven" � AI defaults to numbered lists because they're structurally safe. Only use numbered lists when the content genuinely has that many discrete, parallel items. If you're padding to hit a number, the list shouldn't exist.
+- "Three key takeaways" / "Five things to know" / "Here are the top seven" — AI defaults to numbered lists because they're structurally safe. Only use numbered lists when the content genuinely has that many discrete, parallel items. If you're padding to hit a number, the list shouldn't exist.
 
 ### Reasoning chain artifacts
 - "Let me think step by step," "Breaking this down," "To approach this systematically," "Step 1:," "Here's my thought process," "First, let's consider," "Working through this logically" — these are artifacts of chain-of-thought reasoning leaking into published prose. The reader doesn't need to see the scaffolding. State the conclusion, then the evidence.
@@ -514,12 +517,12 @@ Pass an optional context hint to adjust rule strictness. If no context is specif
 
 ### Profile definitions
 
-**`linkedin`** � Short-form social. Punchy fragments, visual formatting matter.
-**`blog`** � Default. Standard long-form prose. All rules apply at full strength.
-**`technical-blog`** � Long-form with code, architecture, APIs. Technical terms get a pass.
-**`investor-email`** � High-trust audience. Tighten everything; promotional language is the biggest risk.
-**`docs`** � Documentation, READMEs, guides. Clarity over voice.
-**`casual`** � Slack messages, internal notes, quick replies. Only catch the worst offenders.
+**`linkedin`** — Short-form social. Punchy fragments, visual formatting matter.
+**`blog`** — Default. Standard long-form prose. All rules apply at full strength.
+**`technical-blog`** — Long-form with code, architecture, APIs. Technical terms get a pass.
+**`investor-email`** — High-trust audience. Tighten everything; promotional language is the biggest risk.
+**`docs`** — Documentation, READMEs, guides. Clarity over voice.
+**`casual`** — Slack messages, internal notes, quick replies. Only catch the worst offenders.
 
 ### Tolerance matrix
 
@@ -565,7 +568,7 @@ When no context is specified, infer from these signals:
 | Code blocks, API references, or technical architecture | `technical-blog` |
 | Salutation ("Hi [name]", "Dear") + investor/fundraising language | `investor-email` |
 | Step-by-step instructions, parameter docs, README structure | `docs` |
-| No strong signals | `blog` (safest default � all rules apply) |
+| No strong signals | `blog` (safest default — all rules apply) |
 
 If auto-detection feels wrong, say which profile you're using and why. The user can override.
 

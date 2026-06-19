@@ -104,7 +104,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 43 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/ontology/smart-data-analysis/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/ontology/smart-data-analysis/SKILL.md) |
 | 44 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/ontology/smart-data-collection/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/ontology/smart-data-collection/SKILL.md) |
 | 45 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/ontology/smart-search-tables/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/ontology/smart-search-tables/SKILL.md) |
-| 46 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/ontology/yj-ocr/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/ontology/yj-ocr/SKILL.md) |
+| 46 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/ontology/yj-ocr-parser/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/ontology/yj-ocr-parser/SKILL.md) |
 | 47 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/security/skill-vetter/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/security/skill-vetter/SKILL.md) |
 | 48 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/wanwu/mcp2skill/SKILL.md`](configs/microservice/bff-service/configs/agent-skills/wanwu/mcp2skill/SKILL.md) |
 | 49 | ✓ | [`configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/BEST_PRACTICES.md`](configs/microservice/bff-service/configs/agent-skills/wanwu/pdf/BEST_PRACTICES.md) |

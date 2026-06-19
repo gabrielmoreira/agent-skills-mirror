@@ -1,6 +1,6 @@
 ---
 name: ai-image-creator
-description: Generate PNG images using AI (multiple models via OpenRouter including Gemini, FLUX.2, Riverflow, SeedDream, GPT-5 Image, GPT-5.4 Image 2, proxied through Cloudflare AI Gateway BYOK). Also analyze/describe existing images using multimodal AI vision. Use when user asks to "generate an image", "create a PNG", "make an icon", "make it transparent", "describe this image", "analyze this image", "what's in this image", "explain this image", or needs AI-generated visual assets for the project. Supports model selection via keywords (gemini, riverflow, flux2, seedream, gpt5, gpt5.4), configurable aspect ratios/resolutions, transparent backgrounds (-t), reference image editing (-r), image analysis (--analyze), and per-project cost tracking (--costs).
+description: Generate PNG images using AI (multiple models via OpenRouter including Gemini, FLUX.2, Riverflow, SeedDream, GPT-5 Image, GPT-5.4 Image 2, proxied through Cloudflare AI Gateway BYOK). Also analyze/describe existing images using multimodal AI vision. Use when user asks to "generate an image", "create a PNG", "make an icon", "make it transparent", "describe this image", "analyze this image", "what's in this image", "explain this image", or needs AI-generated visual assets for the project. Supports model selection via keywords (gemini, geminipro, riverflow, flux2, seedream, gpt5, gpt5.4), configurable aspect ratios/resolutions, transparent backgrounds (-t), reference image editing (-r), image analysis (--analyze), and per-project cost tracking (--costs).
 allowed-tools: Bash, Read, Write
 compatibility: Requires uv (Python runner) and network access. Environment variables for CF AI Gateway or direct API keys must be configured in shell profile (~/.zshrc on macOS, ~/.bashrc on Linux, or System Environment Variables on Windows).
 metadata:
@@ -17,7 +17,8 @@ When the user mentions a model keyword in their image request, use the correspon
 
 | Keyword | Model | Use When User Says |
 |---------|-------|--------------------|
-| `gemini` | [Google Gemini 3.1 Flash](https://openrouter.ai/google/gemini-3.1-flash-image-preview) (default) | "gemini", "generate an image" (no model specified) |
+| `gemini` | [Google Gemini 3.1 Flash](https://openrouter.ai/google/gemini-3.1-flash-image) (default) | "gemini", "generate an image" (no model specified) |
+| `geminipro` | [Google Gemini 3 Pro](https://openrouter.ai/google/gemini-3-pro-image) | "geminipro", "gemini pro", "use gemini pro" |
 | `riverflow` | [Sourceful Riverflow v2 Pro](https://openrouter.ai/sourceful/riverflow-v2-pro) | "riverflow", "use riverflow" |
 | `flux2` | [FLUX.2 Max](https://openrouter.ai/black-forest-labs/flux.2-max) | "flux2", "flux", "use flux" |
 | `seedream` | [ByteDance SeedDream 4.5](https://openrouter.ai/bytedance-seed/seedream-4.5) | "seedream", "use seedream" |
@@ -66,6 +67,7 @@ Professional prompt patterns are available in 3 reference files. These are **not
 | "building", "interior", "room", "architecture" | `architecture` | `prompt-core.md` + `prompt-categories.md` § architecture |
 | "chart", "infographic", "data", "diagram" | `infographic` | `prompt-core.md` + `prompt-categories.md` § infographic |
 | "t-shirt", "mug design", "poster", "POD", "print-on-demand" | `pod_design` | `prompt-core.md` + `prompt-platforms.md` + `prompt-categories.md` § pod_design |
+| "consistent character", "same character/product across frames", "comic strip", "storyboard", "frame set", "start and last frame", "panels", "before/after" | `frame_consistency` | Read `references/consistency-presets.md` — keep people/objects/scenes consistent across a SET of frames (for video first/last frames or stitched comic strips) |
 | "describe", "analyze", "what's in this image", "explain image" | `analyze` | Skip prompt enhancement — use `--analyze` mode directly. Read `references/analyze-reference.md` for advanced analysis patterns |
 | No match / simple request | — | Skip patterns, generate directly |
 
@@ -156,8 +158,8 @@ If the user needs resizing, format conversion, or other manipulation, first dete
 | `--provider` | -- | No | `openrouter` | `openrouter` or `google` |
 | `--aspect-ratio` | `-a` | No | model default | OpenRouter only: `1:1`, `16:9`, `9:16`, `3:2`, `2:3`, `4:3`, `3:4`, `4:5`, `5:4`, `21:9` |
 | `--image-size` | `-s` | No | model default | OpenRouter only: `0.5K`, `1K`, `2K`, `4K` |
-| `--model` | `-m` | No | `gemini` | Model keyword (`gemini`, `riverflow`, `flux2`, `seedream`, `gpt5`) or full model ID |
-| `--ref` | `-r` | No | -- | Reference image file (repeatable). For editing/style transfer. Multimodal models only (gemini, gpt5) |
+| `--model` | `-m` | No | `gemini` | Model keyword (`gemini`, `geminipro`, `riverflow`, `flux2`, `seedream`, `gpt5`, `gpt5.4`) or full model ID |
+| `--ref` | `-r` | No | -- | Reference image file (repeatable). For editing/style transfer. Multimodal models only (gemini, geminipro, gpt5, gpt5.4) |
 | `--analyze` | -- | No | -- | Analyze/describe a reference image (text-only output, no image generated). Requires `-r`. Multimodal models only |
 | `--transparent` | `-t` | No | -- | Generate with transparent background. Requires ffmpeg + imagemagick |
 | `--costs` | -- | No | -- | Display generation/cost history for this project and exit |
@@ -196,7 +198,7 @@ uv run python ${CLAUDE_SKILL_DIR}/scripts/generate-image.py \
 
 ## Reference Images (`-r`)
 
-Send existing images alongside text prompts for editing, style transfer, or guided generation. Supports multiple references. **Multimodal models only** (gemini, gpt5) — image-only models (riverflow, flux2, seedream) will error.
+Send existing images alongside text prompts for editing, style transfer, or guided generation. Supports multiple references. **Multimodal models only** (gemini, geminipro, gpt5, gpt5.4) — image-only models (riverflow, flux2, seedream) will error.
 
 ```bash
 # Edit an existing image
@@ -212,7 +214,7 @@ Supported formats: PNG, JPEG, WebP, GIF.
 
 ## Image Analysis (`--analyze`)
 
-Describe, analyze, or explain existing images using multimodal AI vision. Returns text-only output (no image generated). **Multimodal models only** (gemini, gpt5).
+Describe, analyze, or explain existing images using multimodal AI vision. Returns text-only output (no image generated). **Multimodal models only** (gemini, geminipro, gpt5, gpt5.4).
 
 No `-o` output path needed. No prompt enhancement needed. The script outputs JSON to stdout with the model's analysis in the `analysis` field.
 
@@ -240,7 +242,7 @@ uv run python ${CLAUDE_SKILL_DIR}/scripts/generate-image.py \
 {"ok": true, "analyze": true, "analysis": "<model text>", "provider": "openrouter", "model": "...", "mode": "gateway", "elapsed_seconds": 3.2, "ref_images": 1}
 ```
 
-**Incompatible flags:** `--analyze` cannot be combined with `-o`, `-t`, `-a`, or `-s`.
+**Incompatible flags:** `--analyze` cannot be combined with `-t`, `-a`, or `-s`. (`-o` is accepted but ignored in analyze mode, which returns text only.)
 
 For advanced analysis prompt patterns (structured output, comparison, targeted analysis), read `references/analyze-reference.md`.
 

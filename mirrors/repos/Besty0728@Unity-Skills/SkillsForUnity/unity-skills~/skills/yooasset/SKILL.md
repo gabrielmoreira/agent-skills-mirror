@@ -1,6 +1,6 @@
 ---
 name: unity-yooasset
-description: "YooAsset hot-update/asset bundle automation — build bundles, Editor simulate builds, AssetBundleCollector settings, analyze BuildReport, PlayMode validation, Reporter/Debugger tools. Requires com.tuyoogame.yooasset 2.3.15+. Exact signatures via GET /skills/schema."
+description: YooAsset hot-update/asset bundle automation — build bundles, Editor simulate builds
 ---
 
 # Unity YooAsset Skills

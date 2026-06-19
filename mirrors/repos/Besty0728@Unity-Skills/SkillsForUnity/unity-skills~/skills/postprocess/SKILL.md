@@ -1,6 +1,6 @@
 ---
 name: unity-postprocess
-description: "Modern SRP post-processing on URP/HDRP VolumeProfiles — add/remove/inspect/tune Bloom, Depth Of Field, Tonemapping, Vignette, Color Adjustments. Not for legacy PPv2. Exact signatures via GET /skills/schema."
+description: Modern SRP post-processing on URP/HDRP VolumeProfiles
 ---
 
 # PostProcess Skills

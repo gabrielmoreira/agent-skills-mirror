@@ -36,7 +36,7 @@ The **octocode-research** skill is a lightweight HTTP API server that wraps `oct
 │                                            ├─→ Local Tools (ripgrep, fs)    │
 │                                            ├─→ LSP Tools (semantic analysis)│
 │                                            ├─→ GitHub Tools (API)           │
-│                                            └─→ Package Tools (npm/PyPI)     │
+│                                            └─→ Package Tools (npm)          │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -101,8 +101,8 @@ The **octocode-research** skill is a lightweight HTTP API server that wraps `oct
 │  ┌────────────────────────────────────────────────────────────────────────┐  │
 │  │ localSearchCode, localGetFileContent, localFindFiles, localViewStructure│  │
 │  │ lspGotoDefinition, lspFindReferences, lspCallHierarchy                 │  │
-│  │ githubSearchCode, githubGetFileContent, githubViewRepoStructure, etc.  │  │
-│  │ packageSearch                                                          │  │
+│  │ ghSearchCode, ghGetFileContent, ghViewRepoStructure, etc.  │  │
+│  │ npmSearch                                                          │  │
 │  └────────────────────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────────────────────┘
                                  │
@@ -110,7 +110,7 @@ The **octocode-research** skill is a lightweight HTTP API server that wraps `oct
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │                           EXTERNAL SYSTEMS                                    │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │ Filesystem  │  │ GitHub API  │  │ NPM/PyPI    │  │ LSP Server  │         │
+│  │ Filesystem  │  │ GitHub API  │  │ NPM         │  │ LSP Server  │         │
 │  │  (ripgrep)  │  │  (Octokit)  │  │   APIs      │  │             │         │
 │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘         │
 └──────────────────────────────────────────────────────────────────────────────┘
@@ -151,7 +151,7 @@ Re-exports layer that:
 | \`local.ts\` | *(Not mounted - used in tests only)* | Filesystem operations handlers |
 | \`lsp.ts\` | *(Not mounted - used in tests only)* | Semantic analysis handlers |
 | \`github.ts\` | *(Not mounted - used in tests only)* | GitHub API handlers |
-| \`package.ts\` | *(Not mounted - used in tests only)* | npm/PyPI search handlers |
+| \`package.ts\` | *(Not mounted - used in tests only)* | npm search handlers |
 
 > **Note**: Only \`/tools/*\` and \`/prompts/*\` are mounted in production. The individual route files contain handler logic used by the unified \`/tools/call/:toolName\` endpoint.
 
@@ -519,12 +519,12 @@ curl -X POST http://localhost:1987/tools/call/lspGotoDefinition \
 | \`lspGotoDefinition\` | LSP | Go to symbol definition |
 | \`lspFindReferences\` | LSP | Find all symbol references |
 | \`lspCallHierarchy\` | LSP | Get call hierarchy |
-| \`githubSearchCode\` | GitHub | Search code in GitHub repos |
-| \`githubGetFileContent\` | GitHub | Read file from GitHub repo |
-| \`githubViewRepoStructure\` | GitHub | View GitHub repo tree |
-| \`githubSearchRepositories\` | GitHub | Search GitHub repositories |
-| \`githubSearchPullRequests\` | GitHub | Search pull requests |
-| \`packageSearch\` | Package | Search npm/PyPI packages |
+| \`ghSearchCode\` | GitHub | Search code in GitHub repos |
+| \`ghGetFileContent\` | GitHub | Read file from GitHub repo |
+| \`ghViewRepoStructure\` | GitHub | View GitHub repo tree |
+| \`ghSearchRepos\` | GitHub | Search GitHub repositories |
+| \`ghSearchPRs\` | GitHub | Search pull requests |
+| \`npmSearch\` | Package | Search npm packages |
 
 ### Resilience Configuration
 

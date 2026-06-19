@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 12 followed patterns, 17 file(s) materialized.
+Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 8 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 12 follow
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 12 |
-| Files         | 17 |
+| Followed pats | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 12 follow
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `README.md`
+- `packages/core/README.md`
 - `.github/CONTRIBUTING.md`
 - `docs/tool-configuration.md`
 - `docs/context-management.md`
@@ -59,10 +59,6 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 12 follow
 - `docs/shared-memory.md`
 - `docs/observability.md`
 - `docs/cli.md`
-- `docs/consensus.md`
-- `examples/integrations/README.md`
-- `examples/README.md`
-- `examples/production/README.md`
 
 ## File Index
 
@@ -71,22 +67,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`examples/fixtures/paper-replication-triage/README.md`](examples/fixtures/paper-replication-triage/README.md) |
-| 3 | ✓ | [`examples/integrations/express-customer-support/README.md`](examples/integrations/express-customer-support/README.md) |
-| 4 | ✓ | [`examples/integrations/with-tencentdb-memory/README.md`](examples/integrations/with-tencentdb-memory/README.md) |
-| 5 | ✓ | [`examples/integrations/with-vercel-ai-sdk/README.md`](examples/integrations/with-vercel-ai-sdk/README.md) |
-| 6 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
-| 7 | → | [`docs/cli.md`](docs/cli.md) |
-| 8 | → | [`docs/consensus.md`](docs/consensus.md) |
-| 9 | → | [`docs/context-management.md`](docs/context-management.md) |
-| 10 | → | [`docs/observability.md`](docs/observability.md) |
-| 11 | → | [`docs/providers.md`](docs/providers.md) |
-| 12 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
-| 13 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
-| 14 | → | [`examples/integrations/README.md`](examples/integrations/README.md) |
-| 15 | → | [`examples/production/README.md`](examples/production/README.md) |
-| 16 | → | [`examples/README.md`](examples/README.md) |
-| 17 | → | [`README.md`](README.md) |
+| 2 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
+| 3 | → | [`docs/cli.md`](docs/cli.md) |
+| 4 | → | [`docs/context-management.md`](docs/context-management.md) |
+| 5 | → | [`docs/observability.md`](docs/observability.md) |
+| 6 | → | [`docs/providers.md`](docs/providers.md) |
+| 7 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
+| 8 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
+| 9 | → | [`packages/core/README.md`](packages/core/README.md) |
 
 ---
 

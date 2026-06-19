@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patterns, 52 file(s) materialized.
+Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 52 |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -111,6 +111,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 50 | ✓ | [`skills/session-stripper/tests/test_persist_range.py`](skills/session-stripper/tests/test_persist_range.py) |
 | 51 | ✓ | [`skills/session-stripper/tests/test_persist_text.py`](skills/session-stripper/tests/test_persist_text.py) |
 | 52 | ✓ | [`skills/session-stripper/tests/test_replace_images_marker.py`](skills/session-stripper/tests/test_replace_images_marker.py) |
+| 53 | ✓ | [`skills/session-stripper/tests/test_reset_usage.py`](skills/session-stripper/tests/test_reset_usage.py) |
 
 ---
 

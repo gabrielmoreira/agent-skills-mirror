@@ -1,5 +1,76 @@
 # Release Guide
 
+## Published: v2.5.0 (2026-06-15)
+
+GitHub release: [v2.5.0](https://github.com/777genius/agent-teams-ai/releases/tag/v2.5.0).
+
+Release body source for GitHub release:
+
+<!-- RELEASE_BODY_START v2.5.0 -->
+Built-in terminal for command and graph screens.
+
+<img width="762" height="338" alt="image" src="https://github.com/user-attachments/assets/c8aa4e93-1223-4caa-b3be-cf22852f1c10" />
+
+### What's New
+
+- Bottom-sheet terminal in command and graph views.
+- Multi-tab shells: rename, reorder, close, switch, restore history, and prewarmed new tabs.
+- Command history blocks show cwd, git branch, duration, stdout/stderr, and error state.
+- Settings tab controls theme, font size, opacity, background color/image, image fit, blur, and line wrapping.
+- Right-click command block actions copy the whole block, command, or output.
+
+### Improvements
+
+- Fresh clones auto-download the Terminal Platform runtime; `CLAUDE_TERMINAL_PLATFORM_ROOT` remains available for local runtime development.
+- Run is shown only with non-empty input; Ctrl+C is shown only after terminal history exists.
+
+### Bug Fixes
+
+- Prevented shell-startup input from becoming stray text or duplicate pending command entries.
+- Restored visible command input in blank/initial terminal states and fixed history context menus.
+- Fixed tab click, close, reorder, hover close, and left-tab fallback after close.
+
+### Downloads
+
+<table>
+<tr>
+<td align="center">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.5.0/Agent.Teams.AI-2.5.0-arm64.dmg">
+    <img src="https://img.shields.io/badge/macOS_Apple_Silicon-.dmg-000000?style=for-the-badge&logo=apple&logoColor=white" alt="macOS Apple Silicon" />
+  </a>
+  <br />
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.5.0/Agent.Teams.AI-2.5.0-x64.dmg">
+    <img src="https://img.shields.io/badge/macOS_Intel-.dmg-434343?style=for-the-badge&logo=apple&logoColor=white" alt="macOS Intel" />
+  </a>
+</td>
+<td align="center">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.5.0/Agent.Teams.AI.Setup.2.5.0.exe">
+    <img src="https://img.shields.io/badge/Windows-Download_.exe-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows" />
+  </a>
+  <br />
+  <sub>May trigger SmartScreen - click "More info" then "Run anyway"</sub>
+  <br />
+  <sub><strong>Windows required:</strong> launch Agent Teams AI as Administrator, especially when using OpenCode runtimes.</sub>
+</td>
+<td align="center">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.5.0/Agent.Teams.AI-2.5.0.AppImage">
+    <img src="https://img.shields.io/badge/Linux-Download_.AppImage-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Linux AppImage" />
+  </a>
+  <br />
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.5.0/agent-teams-ai_2.5.0_amd64.deb">
+    <img src="https://img.shields.io/badge/.deb-E95420?style=flat-square&logo=ubuntu&logoColor=white" alt=".deb" />
+  </a>&nbsp;
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.5.0/agent-teams-ai-2.5.0.x86_64.rpm">
+    <img src="https://img.shields.io/badge/.rpm-294172?style=flat-square&logo=redhat&logoColor=white" alt=".rpm" />
+  </a>&nbsp;
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.5.0/agent-teams-ai-2.5.0.pacman">
+    <img src="https://img.shields.io/badge/.pacman-1793D1?style=flat-square&logo=archlinux&logoColor=white" alt=".pacman" />
+  </a>
+</td>
+</tr>
+</table>
+<!-- RELEASE_BODY_END v2.5.0 -->
+
 ## Draft: v2.4.0 (2026-06-09)
 
 Target commit: `ad5a2dc5808eeddde30ab17eecf3afbb32b24214` (`origin/dev`).

@@ -1,6 +1,6 @@
 ---
 name: unity-netcode-design
-description: "Source-anchored design rules for Netcode for GameObjects 2.x. Load this before writing any NetworkBehaviour / RPC / NetworkVariable / Spawn code to avoid hallucinated APIs and lifecycle-ordering bugs. Triggers: netcode, NGO, NetworkManager, NetworkObject, NetworkBehaviour, NetworkVariable, NetworkList, NetworkSceneManager, NetworkPrefabsList, NetworkConfig, ServerRpc, ClientRpc, Rpc, SendTo, RpcTarget, RpcInvokePermission, INetworkSerializable, OnNetworkSpawn, OnNetworkDespawn, OnNetworkObjectParentChanged, Spawn, Despawn, SpawnAsPlayerObject, SpawnWithOwnership, ChangeOwnership, RemoveOwnership, TrySetParent, IsOwner, IsServer, IsHost, IsClient, IsLocalPlayer, GlobalObjectIdHash, UnityTransport, SetRelayServerData, SetConnectionData, DebugSimulator, DistributedAuthority, multiplayer, host, client, server, transport, relay, 网络同步, 多人游戏, 联机, 服务器权威, 分布式权威, 主机, 客户端, 服务端, 网络对象, 网络变量, 网络列表, 网络场景管理, 远程过程调用, RPC 调用, 所有权, 生成对象, 销毁对象, 网络游戏, netcode 设计, 网络架构, NGO 2.x."
+description: Source-anchored design rules for Netcode for GameObjects 2.x. 网络同步, 多人游戏, 联机, 服务器权威, 分布式权威, 主机, 客户端, 服务端, 网络对象, 网络变量, 网络列表, 网络场景管理, 远程过程调用, RPC 调用, 所有权
 ---
 
 # Netcode for GameObjects - Design Rules

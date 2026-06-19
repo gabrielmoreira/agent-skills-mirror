@@ -1,6 +1,6 @@
 ---
 name: unity-event
-description: "UnityEvent persistent-listener wiring at editor time — inspect, add, remove, batch-add, copy, clear, set call-state, list events on a component. Exact signatures via GET /skills/schema."
+description: UnityEvent persistent-listener wiring at editor time
 ---
 
 # Event Skills

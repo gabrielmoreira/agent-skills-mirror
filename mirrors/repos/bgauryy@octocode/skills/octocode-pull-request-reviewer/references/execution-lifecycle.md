@@ -19,8 +19,8 @@
   - `.octocode/context/context.md`
   - `CONTRIBUTING.md`
   - `AGENTS.md`
-- **IF** PR Mode AND workspace is NOT the PR repo → Call `githubSearchCode` with `match="path"` and `keywordsToSearch=["pr-guidelines", "CONTRIBUTING", "AGENTS"]` scoped to the PR's `owner/repo`
-- **IF** any files found → Read them using the appropriate tool (`localGetFileContent` or `githubGetFileContent`) and inform user: "I found the following context files: [list]. I'll use these as review guidelines."
+- **IF** PR Mode AND workspace is NOT the PR repo → Call `ghSearchCode` with `match="path"` and `keywordsToSearch=["pr-guidelines", "CONTRIBUTING", "AGENTS"]` scoped to the PR's `owner/repo`
+- **IF** any files found → Read them using the appropriate tool (`localGetFileContent` or `ghGetFileContent`) and inform user: "I found the following context files: [list]. I'll use these as review guidelines."
 
 **Step 2: Ask user (MANDATORY).**
 Ask user:
@@ -34,7 +34,7 @@ Ask user:
 **STOP. Wait for user response.**
 
 **Step 3: Process user-provided guidelines.**
-- **IF** user provides file path(s) → Read each file using `localGetFileContent` (local repo) or `githubGetFileContent` (remote repo)
+- **IF** user provides file path(s) → Read each file using `localGetFileContent` (local repo) or `ghGetFileContent` (remote repo)
 - **IF** user provides inline text → Store as review context
 - **IF** user says "skip" or "no" → Proceed with default review domains only
 - **IF** existing context files were found (Step 1) AND user says "skip" → Still use the auto-discovered files
@@ -92,21 +92,27 @@ The guidelines context MUST be referenced in Phase 4 (Analysis), Phase 5 (Finali
 - [ ] Phase 1 (Guidelines) completed
 - [ ] Guidelines context built (or confirmed empty)
 
-### Actions — PR Mode (REQUIRED — all via Octocode MCP tools)
-1. **Fetch PR metadata**: Call `githubSearchPullRequests` with `type="metadata"` to get title, description, files, author
-2. **Fetch PR diff**: Call `githubSearchPullRequests` with `type="fullContent"` or `type="partialContent"` for specific files
-3. **Fetch existing PR comments**: Call `githubSearchPullRequests` with `withComments=true`
-   - MUST check if previous comments were fixed (verify resolution)
-   - MUST note all existing comments to avoid duplicate suggestions
-4. **Classify risk**: HIGH (Logic/Auth/API/Data changes) vs LOW (Docs/CSS/Config)
+### Actions — PR Mode (REQUIRED — all via `ghHistoryResearch`)
+1. **Orientation (always first — cheapest)**: `ghHistoryResearch(type:"prs", prNumber:N, content:{metadata:true, changedFiles:true, reviews:true})`
+   → title, author, file list, additions/deletions, review state, CI checks
+2. **Existing comments (dedup guard)**: `ghHistoryResearch(type:"prs", prNumber:N, content:{comments:{discussion:true, reviewInline:true, includeBots:false}})`
+   - MUST note ALL existing comments — never repeat them in findings
+   - If `contentPagination.commentBody.hasMore` → fetch next page via `commentBodyOffset` from hints[]
+3. **Targeted diffs (high-risk files first)**: `ghHistoryResearch(type:"prs", prNumber:N, content:{patches:{mode:"selected", files:[HIGH_RISK_FILES]}})`
+   - Use `mode:"all"` only when total files ≤15; `mode:"selected"` otherwise
+   - If `contentPagination.patches.hasMore` → advance `charOffset` from hints[] — do NOT compute manually
+4. **Classify risk**: HIGH (Auth/API/Data/Logic) vs LOW (Docs/CSS/Config)
 5. **PR Health Check**:
    - Flag large PRs (>500 lines) → suggest splitting
    - Missing description → flag
    - Can PR be split into independent sub-PRs?
-6. **Group changed files by functional area**: List each area with its files (e.g., "Auth: src/auth/login.ts, src/auth/middleware.ts")
-7. **Fetch commit history**: Call `githubSearchPullRequests` with `withCommits=true` to understand development progression
+6. **Group changed files by functional area**: List each area with its files
+7. **Commit progression (optional)**: `ghHistoryResearch(type:"prs", prNumber:N, content:{commits:{list:true}})`
+   → Understand development arc; extract `#N` refs from `messageHeadline` → re-call with that `prNumber` for cross-reference
 8. **Check for ticket/issue reference** → verify requirements alignment
 9. **Select review mode**: Apply Review Mode Selector from Global Rules (Quick or Full)
+
+**One-shot full fetch (≤30 files):** `ghHistoryResearch(type:"prs", prNumber:N, reviewMode:"full")` → all surfaces in one call
 
 ### Actions — Local Mode (REQUIRED — Octocode local tools + shell git)
 
@@ -136,8 +142,8 @@ The guidelines context MUST be referenced in Phase 4 (Analysis), Phase 5 (Finali
 2. **Read the target file**: Call `localGetFileContent` on the requested file
 3. **Map immediate dependencies**:
    - Call `localSearchCode` on the file to identify imports and exports
-   - Call `lspFindReferences` on exported symbols to find direct consumers (1 hop only)
-   - Call `lspCallHierarchy(direction="incoming")` on public functions to find direct callers
+   - Call `lspGetSemantics(type="references", groupByFile:true)` on exported symbols to find direct consumers (1 hop only)
+   - Call `lspGetSemantics(type="callers")` on public functions to find direct callers
 4. **Classify risk**: Based on the file's role (auth/data/config = HIGH, utils/docs = LOW)
 5. **Select review mode**: Typically Quick unless the file is high-risk or complex
 
@@ -176,7 +182,7 @@ The guidelines context MUST be referenced in Phase 4 (Analysis), Phase 5 (Finali
 
 ### On Failure
 - **PR Mode**: **IF** PR not found → **THEN** ask user for correct PR number/URL
-- **PR Mode**: **IF** diff too large (>2000 lines) → **THEN** use `type="partialContent"`, focus on high-risk files first
+- **PR Mode**: **IF** diff too large (>2000 lines) → **THEN** use `patches:{mode:"selected", files:[HIGH_RISK]}`, focus on high-risk files first; paginate via `charOffset` from hints[]
 - **Local Mode**: **IF** no changes detected → **THEN** inform user, suggest checking the correct branch
 - **Local Mode**: **IF** diff too large → **THEN** ask user to scope (e.g., "staged only" or specific files)
 </context_gate>

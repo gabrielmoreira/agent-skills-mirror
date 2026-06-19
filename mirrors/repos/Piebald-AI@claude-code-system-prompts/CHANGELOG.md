@@ -4,6 +4,42 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.182](https://github.com/Piebald-AI/claude-code-system-prompts/commit/57ef1db)
+
+_+94,532 tokens_
+
+- **NEW:** Data: Tool use reference (C#, Go, Java, PHP) — New per-language tool-use reference docs, splitting the tool-use examples out of the per-language Claude API references.
+- **NEW:** Data: Streaming reference (C#, PHP) — New per-language streaming reference docs.
+- **NEW:** Data: Files API reference — Go — New Go Files API reference doc.
+- **NEW:** Data: Managed Agents reference (Go, Java, PHP, Ruby) — New per-language Managed Agents reference docs.
+- **NEW:** Data: Platform availability — New feature-availability matrix across first-party Claude API, Claude Platform on AWS, Bedrock, Vertex, and Foundry, designated the single source of truth that other docs point to instead of restating availability inline.
+- **NEW:** Skill: Artifact design — New design-guidance skill, loaded by the Artifact tool, for producing distinctive, production-grade frontend interfaces (deliberate token-system process, taste guidance, render-verified mechanics, and copywriting).
+- **NEW:** Skill: Migrate to Claude Code — New generated skill that walks the user through finishing migration of leftover foreign-agent (OpenAI Codex / Gemini CLI) config that `claude migrate` couldn't map automatically.
+- Data: Claude API reference (C#, Go, Java, PHP, Ruby) — Moved the Streaming and Tool Use sections out into the dedicated Streaming reference and Tool use reference docs; C#, Go, and Java also moved their Server-Side Tools and Files API sections out.
+- Data: Claude API reference (C#, Java) — Added a Namespace/Package Reference table mapping SDK types to their namespaces/packages plus per-feature key-type tables, so code can be written without fetching SDK source.
+- Data: Claude API reference — C# — Also added Fast Mode (Beta), Models API, and Long Output (128k) + Prefill sections, plus a "Common C# compile errors" guide.
+- Data: Claude API reference (Go, PHP, Ruby) — Added an Extended Thinking section documenting adaptive thinking and that `budget_tokens` is rejected (400) on Fable 5 / Opus 4.8 / 4.7 and deprecated on Opus 4.6 / Sonnet 4.6.
+- Data: Claude API reference — PHP — Switched the Bedrock example to `Anthropic\Bedrock\MantleClient` (from the old `Bedrock\Client::fromEnvironment` factory) and updated the Foundry base URL.
+- Data: Claude API reference — Ruby — Added a Beta Features section covering task budgets.
+- Data: Claude API reference — TypeScript — Added a beta `userProfiles` namespace-table entry and an ESM note that `__dirname`/`__filename` are undefined in ES modules (derive script-relative paths from `import.meta.url`).
+- Data: Claude API reference (Python, TypeScript) — Mid-conversation `role: "system"` messages no longer require the `mid-conversation-system-2026-04-07` beta header (now gated to {{OPUS_NAME}}); placement rules tightened (must be the last `messages` entry or followed by an assistant turn, and may follow an assistant message ending in server-tool use).
+- Data: Prompt Caching — Design & Optimization, Skill: Agent Design Patterns, and Skill: Model migration guide — Mid-conversation system messages are now documented as available on {{OPUS_NAME}} with no beta header (dropping `mid-conversation-system-2026-04-07`); the Model migration guide also redirects Bedrock-unsupported features to `shared/platform-availability.md`.
+- Data: Claude Platform on AWS reference — Replaced the inline feature-exception list (self-hosted sandboxes) with a pointer to `shared/platform-availability.md` as the single source of truth.
+- Data: HTTP error codes reference — Added a per-language exception-class-name table (Python, TypeScript, Ruby, Java, C#, PHP) and "catch the most specific exception first" guidance with code examples.
+- Data: Tool use concepts — Added "Agent Skills (Messages API)" and "MCP Connector (Beta)" sections covering the `container.skills` + code-execution flow and the server-side MCP connector.
+- Data: Tool use reference — TypeScript — Added an Agent Skills section, renamed "Server-Side Tools" to "Anthropic-Defined Tools," and clarified which built-in tools are server- vs client-executed.
+- Data: Managed Agents (onboarding flow, client patterns, overview) — Updated the syntax-reference pointers to per-language `{lang}/managed-agents/README.md`, with cURL and C# pointing to `curl/managed-agents.md`, reflecting the new Go/Java/PHP/Ruby Managed Agents reference docs.
+- Agent Prompt: CLAUDE.md creation — Added a step to offer migration when an OpenAI Codex (`~/.codex/config.toml` or `./.codex/`) or Gemini CLI (`~/.gemini/settings.json`, `./.gemini/`, or a `GEMINI.md`) config is detected.
+- Skill: /init CLAUDE.md and skill setup (new version) — Added a cheap subagent presence check for Codex/Gemini CLI config and, when found, surfaces a migration offer first (so the user doesn't re-enter config they already have).
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Expanded the blocking rules: flags `git commit --amend` that rewrites a pre-session HEAD; treats infrastructure destruction (`terraform`/`pulumi`/`cdk`/`terragrunt destroy`) as a shared-resource modification; broadens the destructive-command list (`git stash drop`/`clear`, `git restore`, `git clean -fd[x]`, `git checkout -- .`); and adds detailed "presume the working tree is dirty" clearing conditions for git working-tree commands.
+- Skill: Build with Claude API (reference guide) — Added a note that all SDK languages share the same `{lang}/claude-api/` layout (cURL uses `curl/examples.md`) and that a missing file means the feature isn't yet documented for that language — fall back to the cURL shape or WebFetch the SDK repo.
+- Skill: Building LLM-powered applications with Claude — Major expansion: added an "API Drift — Your Training Prior May Be Stale" table, many new Quick Reference sections (Fast Mode, Task Budgets, Provider Clients, Context Editing, Mid-Conversation System Messages, Server Tools, Document & File Input, Tool Use Patterns, Other API Surfaces, Workload Identity Federation), network-failure fallback guidance, and pointers to `shared/platform-availability.md` as the single source of truth.
+- System Prompt: Coordinator mode orchestration — Added guidance that when the user has approved a specific action, the coordinator must quote the user's exact words in the worker's prompt, since the worker's auto-mode check sees only its own transcript.
+- System Prompt: Coordinator worker instructions — Reworked the denied-tool guidance: on an auto-mode denial, report just the exact action, the denial reason, and "needs user approval for X," then retry once the coordinator relays approval, without narrating the earlier denial.
+- Tool Description: Artifact — Replaced the inline Content/Design guidance with an instruction to load and apply the new `artifact-design` skill, noted the published file now includes a minimal CSS reset, and trimmed the CSP/responsive detail.
+- Tool Description: SendUserFile — Added a usage example.
+- Tool Description: SendUserMessage (verbatim) — Removed the `status` parameter guidance (normal vs proactive).
+
 # [2.1.181](https://github.com/Piebald-AI/claude-code-system-prompts/commit/ed36cc1)
 
 _-3,839 tokens_

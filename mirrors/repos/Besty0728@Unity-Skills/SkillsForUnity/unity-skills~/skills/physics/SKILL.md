@@ -1,6 +1,6 @@
 ---
 name: unity-physics
-description: "Unity physics queries and editor-time configuration — raycast/spherecast/boxcast, overlap checks, gravity, PhysicMaterial assets, layer collision matrix. Exact signatures via GET /skills/schema."
+description: Unity physics queries and editor-time configuration
 ---
 
 # Physics Skills

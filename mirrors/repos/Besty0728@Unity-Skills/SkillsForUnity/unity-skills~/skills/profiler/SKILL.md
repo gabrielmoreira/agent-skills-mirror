@@ -1,6 +1,6 @@
 ---
 name: unity-profiler
-description: "Read-only Unity runtime performance snapshots — FPS, frame time, batches/draw calls, triangles/vertices, memory (total/mono/per-asset), object counts, AssetBundle stats. Exact signatures via GET /skills/schema."
+description: Read-only Unity runtime performance snapshots
 ---
 
 # Profiler Skills

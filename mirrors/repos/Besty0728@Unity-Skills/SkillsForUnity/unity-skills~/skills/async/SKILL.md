@@ -1,6 +1,6 @@
 ---
 name: unity-async
-description: "Unity async and lifecycle strategy advisor. Use when users want to choose between Update, coroutine, UniTask, timers, or handle cleanup/cancellation. Triggers: async, coroutine, UniTask, await, Update vs coroutine, timer, lifecycle, IDisposable, cancellation, 异步, 协程, 生命周期, 用协程还是UniTask, 异步怎么写, 定时器, 取消操作."
+description: Unity async and lifecycle strategy advisor. 异步, 协程, 生命周期, 用协程还是UniTask, 异步怎么写, 定时器, 取消操作.
 ---
 
 # Unity Async Strategy

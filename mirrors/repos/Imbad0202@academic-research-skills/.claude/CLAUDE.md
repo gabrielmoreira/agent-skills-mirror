@@ -6,10 +6,19 @@ A suite of Claude Code skills for rigorous academic research, paper writing, pee
 
 | Skill | Purpose | Key Modes |
 |-------|---------|-----------|
-| `deep-research` v2.10.0 | 13-agent research team | full, quick, socratic, review, lit-review, three-way-scan, fact-check, systematic-review |
+| `deep-research` v2.11.0 | 13-agent research team | full, quick, socratic, review, lit-review, three-way-scan, fact-check, systematic-review |
 | `academic-paper` v3.2.0 | 12-agent paper writing | full, plan, outline-only, revision, revision-coach, abstract-only, lit-review, format-convert, citation-check, disclosure, rebuttal-audit |
 | `academic-paper-reviewer` v1.10.0 | Multi-perspective paper review (5 reviewers + optional cross-model DA critique) | full, re-review, quick, methodology-focus, guided, calibration |
-| `academic-pipeline` v3.12.1 | Full pipeline orchestrator | (coordinates all above) |
+| `academic-pipeline` v3.13.0 | Full pipeline orchestrator | (coordinates all above) |
+
+## v3.13 Key Additions (portability + verifier reach + guard correctness)
+
+- **Write-scope guard: `CLAUDE.md` dropped from infra-protected globs (#459).** Closes the residual half of #448/#449. Under the git-clone + symlink install layout `plugin_root` collapses onto `workspace_root`, so the bare `CLAUDE.md` / `.claude/CLAUDE.md` infra globs re-denied the user's own `CLAUDE.md`. `CLAUDE.md` is documentation, not a load-bearing enforcement file, so it is removed from the infra list; every load-bearing file (guard script, manifest, hooks, plugin metadata, agent frontmatter, lint) stays protected.
+- **Windows Python hook portability + graceful no-Python degradation (#454).** The PreToolUse write-scope guard is now launched via a cross-platform `hooks/run_guard.sh` that finds a real interpreter (rejecting the 0-byte Microsoft Store `python3` stub) and runs the guard as a time-bounded supervised subprocess; if no interpreter is found or the guard misbehaves, the launcher emits a valid pass-through and never spams the hook log.
+- **Provider-agnostic cross-model verification (#455).** The cross-model verification layer accepts OpenAI-compatible endpoints (MiMo, DeepSeek, self-hosted) alongside first-party OpenAI, with the grounded first-party path preserved and never silently downgraded.
+- **Opt-in Socratic adjacent-framing probe (#461; `deep-research` 2.10.0 → 2.11.0).** When `ARS_SOCRATIC_ADJACENT_PROBE=1`, the Socratic Mentor may surface ONE adjacent research framing as a pure question during exploratory Layer-1 framing (STORM-borrowed perspective expansion). Default OFF, prose-layer only, Kong L2 verb-test bounded.
+
+Spec: `docs/design/2026-06-16-448-infra-protection-plugin-root-scope-spec.md` (+ the #454/#453/adjacent-probe design docs).
 
 ## v3.12 Key Additions (Kong auto-research feature track + partial-evidence decomposition)
 
@@ -272,7 +281,7 @@ Materials: Complete paper text. field_analyst_agent auto-detects domain and conf
 Materials: Editorial Decision Letter, Revision Roadmap, Per-reviewer detailed comments
 
 ## Version Info
-- **Suite version**: 3.12.1 (per CHANGELOG.md)
-- **Last Updated**: 2026-06-15
+- **Suite version**: 3.13.0 (per CHANGELOG.md)
+- **Last Updated**: 2026-06-18
 - **Author**: Cheng-I Wu
 - **License**: CC-BY-NC 4.0

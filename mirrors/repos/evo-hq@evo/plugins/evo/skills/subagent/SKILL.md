@@ -1,7 +1,7 @@
 ---
 name: subagent
 description: Protocol that evo optimization subagents follow when dispatched from /optimize. Auto-loaded by spawned subagents via their host's skill loader. The orchestrator may also invoke this skill to understand the brief shape its dispatched subagents expect + what they're required to emit -- useful when writing briefs or debugging a subagent's behavior.
-evo_version: 0.5.3
+evo_version: 0.6.1
 ---
 
 # Evo Subagent Protocol
@@ -234,6 +234,13 @@ evo run <exp_id>
 
 This runs benchmark + gate and prints the result.
 
+For noisy or replicated benchmarks, one `evo run` must represent the user's
+decision statistic for the idea. If the brief, user, or `.evo/project.md` says
+`n=3`, `n=10`, median, mean, held-out, or cross-dataset evaluation is required,
+use the configured grouped benchmark path so the experiment records that
+aggregate score. Do not create separate evo experiments for replicates, and do
+not report or promote an idea by its best single replicate.
+
 In remote-backend workspaces, if a prior `evo run <exp_id>` was interrupted
 or the experiment is still `active`, run `evo run <exp_id>` again first. That
 is the recovery path: evo will try to attach to the existing remote process and
@@ -335,6 +342,30 @@ Continue if budget remains AND (last outcome was committed, OR you have a meanin
 
 Stop if budget exhausted, infra failure, or you've exhausted variations with no improvement.
 
+### 9. Report evo-side feedback when evo itself blocked you
+
+Use feedback for evo product/orchestration issues, not for ordinary bad
+experiments. Good triggers: confusing `evo run` behavior, remote workspace
+commands that were hard to recover from, verifier handoff problems, missing
+state that prevented you from following the brief, or a policy/gate that blocked
+the wrong thing. The command is anonymous and no-ops when telemetry is off.
+
+Keep it public-safe and reproducible. Do not include repo names, company names,
+file paths, commands, prompt text, raw logs, URLs, secrets, dataset names, or
+exact task examples.
+
+```bash
+evo telemetry feedback \
+  --exp-id <YOUR_EXP_ID> \
+  --kind orchestration \
+  --phase subagent \
+  --summary "Remote experiment recovery was unclear after the run process detached." \
+  --expected "Re-running evo run should clearly say whether it resumed or needs a fresh experiment." \
+  --actual "The subagent could not tell whether the active attempt was recoverable." \
+  --repro "Use a remote backend, interrupt a long-running experiment, then ask a subagent to continue the same exp_id." \
+  --tag remote-backend --tag recovery --tag subagent
+```
+
 ## Enriching traces
 
 Check `.evo/meta.json` for `"instrumentation_mode"` (`"sdk"` or `"inline"`) to see which style the benchmark uses -- **stay consistent with that choice across iterations; do not flip styles mid-run.**
@@ -357,7 +388,8 @@ If your experiment needs an artifact that is slow to produce and stable across s
 
 - Do NOT run `evo init` or `evo reset`
 - `evo discard <your_exp_id> --reason "..."` is your explicit "abandon" action — use it for any *non-committed* node you've decided not to pursue further (pre-run realization, evaluated with a bad hypothesis, or unfixable infra failure). Discard deletes the worktree and branch; the node and its per-attempt artifacts stay in `.evo/` as a record of what was tried.
-- If `evo discard` errors with **"cannot discard committed node ... use prune"** — the experiment cleared the gate and improved the score. You shouldn't be discarding it. Don't fight the error; the orchestrator owns committed-lineage decisions via `evo prune`.
+- If `evo discard` errors with **"cannot discard committed node ... use prune"** — the experiment cleared the gate and improved the score. You shouldn't be discarding it. Don't fight the error; the orchestrator owns committed-lineage decisions via `evo prune --exhausted` or `evo prune --invalid`.
+- If you discover a committed result is invalid (bad score calculation, benchmark gaming, weakened/deleted tests, failed inherited gate, or failed repro), report the exact node and evidence. Do not discard it; the orchestrator should mark it with `evo prune <id> --invalid --reason "..."` and add `--yes` only if evo says the node is on the current best spine.
 - If `evo discard` errors with **"cannot discard active node ... pass --force"** — the run is still in flight. Wait for it to finish; don't `--force` unless you know what you're doing (the running process can still write a final outcome that contradicts the discard).
 - If `evo discard` errors with **"cannot discard ... has non-discarded children"** — sibling/child experiments depend on this node's parent reference. Discard or commit-and-prune those first.
 - Do NOT copy `.env` files, bake secrets into source, or hard-code local runtime paths. Runtime setup/env is configured by the orchestrator (`evo config runtime ...`, `evo env ...`) and injected into benchmark/gate processes. If a missing dependency, setup step, or key blocks evaluation, report setup failure.

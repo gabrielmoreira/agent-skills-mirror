@@ -34,7 +34,7 @@ metadata:
    - full 必需：`.claude/agents/story-architect.md`、`.claude/agents/character-designer.md`、`.claude/agents/narrative-writer.md`、`.claude/agents/consistency-checker.md`
    - lean 必需：`.claude/agents/story-architect.md`、`.claude/agents/consistency-checker.md`
    - 对每个必需 Agent 文件，读取 frontmatter，确认 `name:` 与 subagent_type 完全一致；frontmatter 缺失、不可解析或 name 不匹配时视为 malformed agent。
-   - 如果 `.story-deployed` 存在且 `agents_version` 缺失或小于 `10`，视为 stale deployment；不要 spawn，降级 `solo`，建议用户重新运行 `/story-setup`。
+   - 如果 `.story-deployed` 存在且 `agents_version` 缺失或小于 `13`，视为 stale deployment；不要 spawn，降级 `solo`，建议用户重新运行 `/story-setup`。
    - 如果目标模式所需任一文件缺失或 malformed，**不要尝试 spawn 缺失/异常 Agent**；自动降级为 `solo`，并在报告开头写明：`Fallback: missing agents -> solo` 或 `Fallback: malformed agents -> solo`，列出问题文件，建议用户运行 `/story-setup`。
 4. **确认 Agent/Task 工具可用**：如果当前环境没有可用的子 Agent/Task 调用能力，直接降级为 `solo`，报告 `Fallback: agent tool unavailable -> solo`。
 5. **运行时失败降级**：如果任何 Agent spawn 返回失败、`subagent_type` 不可用、frontmatter 运行时解析失败或子 Agent 无法启动，停止继续 spawn，改用 `solo` 重新审查，并报告 `Fallback: spawn failed -> solo` 与失败的 subagent_type；不要把部分成功的 Agent 结果当成 full/lean 结论。
@@ -93,6 +93,7 @@ Rubric Source: file | embedded fallback
 - 对话质量：是否有潜台词、信息控制、角色差异；说明书式对话至少 S2。
 - 设定一致性：不违背已写规则、时间线、角色属性；明确事实冲突通常 S1。
 - 文字自然度：具体、可感、动作承载信息；AI 腔、陈词滥调、总结体按影响定 S2/S3。
+- 标点节奏：标点是否服务语气/人物声线；通篇句号化、随机堆砌问号/感叹号，或残留 `……`/`——` 硬造停顿，按影响定 S3/S2。
 - 格式可读性：段落短、对话独立、无多余空行；格式阻碍阅读按 S3，严重混乱按 S2。
 - 最小剧情循环：目标 → 阻碍 → 行动 → 代价/反馈 → 新期待；缺少目标/阻碍/反馈通常至少 S2。
 - 高潮构建：蓄能 → 假胜 → 崩解 → 反转/兑现；高潮直接平铺、无代价或无兑现通常 S2/S3。
@@ -140,7 +141,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
    ```bash
    node scripts/normalize-punctuation.js --check <正文文件...>
    ```
-   - 将 `em-dash`、`double-hyphen`、`markdown-divider` 结果作为 `format` 或 `prose` findings 合并进报告。
+   - 将 `ellipsis`、`em-dash`、`double-hyphen`、`markdown-divider` 结果作为 `format` 或 `prose` findings 合并进报告；另外人工检查标点节奏是否通篇句号化或随机堆砌，脚本不替代语气判断。
    - `story-review` 不修改文件；需要自动修复时建议转 `/story-deslop`。
    - 默认 `--quote-mode keep`，不把知乎盐言短篇的 `「」` 当作问题；只有项目明确指定引号风格时才检查对应转换建议。
    - 该脚本是 `story-review` 的本地副本，不引用其他 skill 的文件。
@@ -161,11 +162,11 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 
 所有 reviewer（包括 solo）输出问题时必须使用统一结构，方便综合排序。`location` 必须使用工具读取结果显示的原始文件行号；不要删除空行后重新编号。
 
-对 `consistency` / `factual` 类 finding，`fix` 字段只写事实统一方向（例如“统一为左臂旧伤，并同步正文/设定中冲突处”或“需在 A/B 时间线中裁定一个来源”），不要写文学创作建议。
+对 `consistency` / `factual` / `causal` / `rule_boundary` 类 finding，`fix` 字段只写事实统一方向（例如“统一为左臂旧伤，并同步正文/设定中冲突处”或“需在 A/B 时间线中裁定一个来源”），不要写文学创作建议。
 
 ```yaml
 - severity: S1 | S2 | S3 | S4
-  category: structure | character | prose | consistency | platform | factual | format
+  category: structure | character | prose | consistency | platform | factual | format | causal | rule_boundary
   location: 文件路径:行号 或 章节/段落描述
   evidence: "引用原文或具体证据"
   issue: "问题描述"
@@ -260,10 +261,11 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   检查项：
   1. 是否存在禁用词/套话/陈词滥调？
   2. 是否出现 AI 写作指纹、8 种 AI 写作模式（含模式 8 解释腔/上帝视角/安排感）或章末总结体？
-  3. 格式是否合规（一段一句、≤60字、无空行、对话独立成行）？
-  4. 节奏是否均匀（有无连续多节无情绪变化）？
-  5. 身体部位同一词是否超 5 次？
-  6. AI味分级（轻度/中度/重度）及证据。
+  3. 格式是否合规（按戏剧单元/镜头自然断段、无机械字数切分、无空行、对话独立成行、主语节奏自然）？
+  4. 标点节奏是否匹配语气/人物声线：是否通篇句号化、随机堆砌问号/感叹号，或残留 `……`/`——` 硬造停顿？正文（含对话）里的破折号是否已清理？
+  5. 节奏是否均匀（有无连续多节无情绪变化）？
+  6. 身体部位同一词是否超 5 次？
+  7. AI味分级（轻度/中度/重度）及证据。
 
   输出格式：
   VERDICT: APPROVE / CONCERNS / REJECT
@@ -273,11 +275,11 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 
 **Agent 4: consistency-checker**（subagent_type: consistency-checker）
 - full/lean 均调用。
-- 审查视角：grep-first 事实冲突检测，输出 S1-S4 报告。
+- 审查视角：grep-first + 推理型一致性检测，输出 S1-S4 报告。
 - 提示指令：
   ```
-  你是 consistency-checker，使用 grep-first 方式检测事实矛盾。
-  你的任务是【找事实矛盾和状态断线】，不做创作评判，不评价文学质量，不输出创作修改建议。
+  你是 consistency-checker，使用 grep-first + 推理型一致性审查检测事实矛盾。
+  你的任务是【找事实矛盾、状态断线和需要推理才能发现的设定逻辑冲突】，不做创作评判，不评价文学质量，不输出创作修改建议。
   项目路径：{项目根}
   审查范围：{文件路径/章节/必要摘录}
   已知角色：{从设定文件提取角色列表}
@@ -293,8 +295,9 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 
   输出格式：
   VERDICT: APPROVE / CONCERNS / REJECT
-  FINDINGS: 必须使用统一 Findings Schema，severity 必须是 S1/S2/S3/S4；category 只能使用 consistency / factual / format。
+  FINDINGS: 必须使用统一 Findings Schema，severity 必须是 S1/S2/S3/S4；category 只能使用 consistency / factual / format / causal / rule_boundary。
   FACTUAL_RECONCILIATION: [仅列需统一的事实来源或需人工裁决项，不写文学创作建议]
+  REASONING_CHAINS: [仅列推理型 finding 的前提/规则 -> 触发事件 -> 矛盾点 -> 需裁决问题]
   ```
 
 ---
@@ -367,8 +370,8 @@ lean 模式只 spawn `story-architect` + `consistency-checker`。如果任一缺
 不 spawn Agent。先按 Phase 1 第 4 步识别目标平台并加载对应 rubric；即使是 solo，也必须用平台 rubric、`story-review/references/quality-rubric.md` 或内置审查基准包校准判断。
 
 solo 必须执行基础检查：
-1. 格式合规性检查（一段一句、无空行、对话格式、段落过长）。
-2. 简单的设定一致性 grep（角色名、属性、关键设定、伏笔关键词）。
+1. 格式合规性检查（戏剧单元/画面分段、无机械字数切分、无空行、对话格式、主语/角色名节奏）。
+2. 简单的设定一致性 grep（角色名、属性、关键设定、伏笔关键词）+ 推理型一致性检查（规则边界、设定层级、跨章因果链、可滥用漏洞、代价一致性）。
 3. AI 味与禁用词检查（优先读取 `story-review/references/banned-words.md` 与 `story-review/references/anti-ai-writing.md`，不可读时使用内置 AI 味 / 禁用词 fallback 速查）。
 4. 通用网文内容评分（优先读取 `story-review/references/quality-rubric.md`，不可读时使用内置通用网文内容 rubric）。
 5. 按统一 Findings Schema 输出简化版报告。
@@ -389,15 +392,17 @@ Rubric Source: file | embedded fallback
 ## 基础检查结果
 
 ### 格式合规性
-- [{x| }] 段落以短为主，且有长短交错 / 疏密变化（非通篇同长度；偶发的稍长沉淀句段不算违规，通篇均匀同长度才算）：通过/不通过；证据：...
+- [{x| }] 段落按戏剧单元/镜头/一件事结束自然断开，非机械按字数切分；偶发稍长的完整推理/氛围/情绪链不算违规，通篇同阈值切段或碎成提纲才算：通过/不通过；证据：...
+- [{x| }] 主语/角色名节奏自然：段首能建立主语，段中有代词/省略，关键转折再点名；连续句/段无必要重复同一主角名才算主语过密：通过/不通过；证据：...
 - [{x| }] 无段间空行：通过/不通过；证据：...
 - [{x| }] 对话独立成行：通过/不通过；证据：...
 - 违规位置：{列出}
 
 > checklist 约定：`[x]` 只表示通过，`[ ]` 表示未通过；不得出现“`[x] ... 不通过`”这种矛盾写法。
 
-### 设定一致性（grep 扫描）
-- {列出发现的矛盾或证据不足}
+### 设定一致性（grep + 推理扫描）
+- 字面事实冲突：{列出发现的矛盾或证据不足}
+- 推理型一致性：{规则边界/设定层级/跨章因果/可滥用漏洞/代价一致性的发现；无则写“未发现”}
 
 ### AI 味 / 禁用词
 - {列出问题，必须附 evidence}

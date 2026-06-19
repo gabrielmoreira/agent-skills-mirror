@@ -5,7 +5,7 @@ description: "Survey open CodeWhale PRs and triage each for mergeability and dis
 
 # gh-find-prs
 
-Survey the open PR queue and assign each PR a disposition — backed by code, tests, and checks, never by title — testing real mergeability against the actual release branch (often local-only, e.g. `codex/v0.8.61`), not the main-based GitHub flag.
+Survey the open PR queue and assign each PR a disposition — backed by code, tests, and checks, never by title — testing real mergeability against the actual release branch (often local-only, e.g. `<release-branch>`), not the main-based GitHub flag.
 
 ## When to use
 
@@ -27,7 +27,7 @@ This is read-and-recommend. You do NOT merge, close, tag, or publish. You surfac
 2. **Identify the real landing branch.** The release head is frequently local-only:
    ```
    git branch --list 'codex/v0.8*' 'codex/v0.9*'
-   git log --oneline -1 codex/v0.8.61
+   git log --oneline -1 <release-branch>
    ```
    Use that ref, not `main`, for every mergeability test below.
 
@@ -49,8 +49,8 @@ This is read-and-recommend. You do NOT merge, close, tag, or publish. You surfac
 
 5. **Test-merge against the real release head.** The `mergeStateStatus` flag lies for local branches. Probe the actual merge:
    ```
-   git merge-tree --write-tree --messages codex/v0.8.61 origin/pr/<N>   # if PR ref is fetched
-   git merge-tree --write-tree --messages codex/v0.8.61 <pr-head-sha>
+   git merge-tree --write-tree --messages <release-branch> origin/pr/<N>   # if PR ref is fetched
+   git merge-tree --write-tree --messages <release-branch> <pr-head-sha>
    ```
    Exit 0 and no `CONFLICT` lines → clean against the release branch (DIRECT-MERGE candidate even when GitHub shows BLOCKED/DIRTY). Conflicts printed → HARVEST or DEFER. This is read-only; it writes objects to the object store, not to any branch or working tree.
 

@@ -1,6 +1,6 @@
 ---
 name: unity-light
-description: "Unity lighting — create/configure Directional/Point/Spot/Area lights, batch-toggle scene lights, place reflection probes and light probe groups, inspect lightmap baking. Exact signatures via GET /skills/schema."
+description: Unity lighting — create/configure Directional/Point/Spot/Area lights, batch-toggle scene lights
 ---
 
 # Unity Light Skills

@@ -1,6 +1,6 @@
 ---
 name: unity-optimization
-description: "Project asset and scene optimization — batch texture/mesh/audio compression, analyze poly/material count, find large/duplicate assets, static flags, LOD groups, overdraw. Exact signatures via GET /skills/schema."
+description: Project asset and scene optimization — batch texture/mesh/audio compression, analyze poly/material
 ---
 
 # Optimization Skills

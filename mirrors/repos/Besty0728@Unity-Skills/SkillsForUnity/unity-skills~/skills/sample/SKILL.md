@@ -1,6 +1,6 @@
 ---
 name: unity-sample
-description: "Sample/demo skills for API connectivity testing — create primitives, move/rotate/scale/delete by name, simple scene info. For smoke tests and demos, not production. Exact signatures via GET /skills/schema."
+description: Sample/demo skills for API connectivity testing
 ---
 
 # Sample Skills

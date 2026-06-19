@@ -1,6 +1,6 @@
 ---
 name: unity-asmdef
-description: "Assembly definition advisor for Unity projects. Use when users want module boundaries, faster compilation, cleaner dependencies, or editor/runtime/test separation. Triggers: asmdef, assembly definition, module boundary, compile time, slow compilation, dependency graph, 程序集, 模块边界, 编译慢, 依赖管理, asmdef怎么配."
+description: Assembly definition advisor for Unity projects. 程序集, 模块边界, 编译慢, 依赖管理, asmdef怎么配.
 ---
 
 # Unity asmdef Advisor

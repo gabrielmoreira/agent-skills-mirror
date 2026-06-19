@@ -15,22 +15,20 @@ const TIMEOUT_CONFIGS = {
 
 
 const TOOL_CIRCUIT_MAP: Record<string, string> = {
-  githubSearchCode: 'github:search',
-  githubSearchRepositories: 'github:search',
-  githubSearchPullRequests: 'github:pulls',
-  githubGetFileContent: 'github:content',
-  githubViewRepoStructure: 'github:content',
+  ghSearchCode: 'github:search',
+  ghSearchRepos: 'github:search',
+  ghSearchPRs: 'github:pulls',
+  ghGetFileContent: 'github:content',
+  ghViewRepoStructure: 'github:content',
 
-  lspGotoDefinition: 'lsp:navigation',
-  lspFindReferences: 'lsp:navigation',
-  lspCallHierarchy: 'lsp:hierarchy',
+  lspGetSemantics: 'lsp:navigation',
 
   localSearchCode: 'local',
   localGetFileContent: 'local',
   localFindFiles: 'local',
   localViewStructure: 'local',
 
-  packageSearch: 'package',
+  npmSearch: 'package',
 };
 
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tophant-ai/ClawVault` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `tophant-ai/ClawVault` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tophant-ai/ClawVault` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,16 +65,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`skills/tophant-clawvault-installer/SECURITY.md`](skills/tophant-clawvault-installer/SECURITY.md) |
 | 5 | ✓ | [`skills/tophant-clawvault-installer/skill.json`](skills/tophant-clawvault-installer/skill.json) |
 | 6 | ✓ | [`skills/tophant-clawvault-installer/SKILL.md`](skills/tophant-clawvault-installer/SKILL.md) |
-| 7 | ✓ | [`skills/tophant-clawvault-openclaw-alerts/clawvault_openclaw_alerts.py`](skills/tophant-clawvault-openclaw-alerts/clawvault_openclaw_alerts.py) |
-| 8 | ✓ | [`skills/tophant-clawvault-openclaw-alerts/README.md`](skills/tophant-clawvault-openclaw-alerts/README.md) |
-| 9 | ✓ | [`skills/tophant-clawvault-openclaw-alerts/SECURITY.md`](skills/tophant-clawvault-openclaw-alerts/SECURITY.md) |
-| 10 | ✓ | [`skills/tophant-clawvault-openclaw-alerts/skill.json`](skills/tophant-clawvault-openclaw-alerts/skill.json) |
-| 11 | ✓ | [`skills/tophant-clawvault-openclaw-alerts/SKILL.md`](skills/tophant-clawvault-openclaw-alerts/SKILL.md) |
-| 12 | ✓ | [`skills/tophant-clawvault-operator/clawvault_ops.py`](skills/tophant-clawvault-operator/clawvault_ops.py) |
-| 13 | ✓ | [`skills/tophant-clawvault-operator/README.md`](skills/tophant-clawvault-operator/README.md) |
-| 14 | ✓ | [`skills/tophant-clawvault-operator/SECURITY.md`](skills/tophant-clawvault-operator/SECURITY.md) |
-| 15 | ✓ | [`skills/tophant-clawvault-operator/skill.json`](skills/tophant-clawvault-operator/skill.json) |
-| 16 | ✓ | [`skills/tophant-clawvault-operator/SKILL.md`](skills/tophant-clawvault-operator/SKILL.md) |
+| 7 | ✓ | [`skills/tophant-clawvault-mask-project/mask_project.py`](skills/tophant-clawvault-mask-project/mask_project.py) |
+| 8 | ✓ | [`skills/tophant-clawvault-mask-project/SECURITY.md`](skills/tophant-clawvault-mask-project/SECURITY.md) |
+| 9 | ✓ | [`skills/tophant-clawvault-mask-project/skill.json`](skills/tophant-clawvault-mask-project/skill.json) |
+| 10 | ✓ | [`skills/tophant-clawvault-mask-project/SKILL.md`](skills/tophant-clawvault-mask-project/SKILL.md) |
+| 11 | ✓ | [`skills/tophant-clawvault-openclaw-alerts/clawvault_openclaw_alerts.py`](skills/tophant-clawvault-openclaw-alerts/clawvault_openclaw_alerts.py) |
+| 12 | ✓ | [`skills/tophant-clawvault-openclaw-alerts/README.md`](skills/tophant-clawvault-openclaw-alerts/README.md) |
+| 13 | ✓ | [`skills/tophant-clawvault-openclaw-alerts/SECURITY.md`](skills/tophant-clawvault-openclaw-alerts/SECURITY.md) |
+| 14 | ✓ | [`skills/tophant-clawvault-openclaw-alerts/skill.json`](skills/tophant-clawvault-openclaw-alerts/skill.json) |
+| 15 | ✓ | [`skills/tophant-clawvault-openclaw-alerts/SKILL.md`](skills/tophant-clawvault-openclaw-alerts/SKILL.md) |
+| 16 | ✓ | [`skills/tophant-clawvault-operator/clawvault_ops.py`](skills/tophant-clawvault-operator/clawvault_ops.py) |
+| 17 | ✓ | [`skills/tophant-clawvault-operator/README.md`](skills/tophant-clawvault-operator/README.md) |
+| 18 | ✓ | [`skills/tophant-clawvault-operator/SECURITY.md`](skills/tophant-clawvault-operator/SECURITY.md) |
+| 19 | ✓ | [`skills/tophant-clawvault-operator/skill.json`](skills/tophant-clawvault-operator/skill.json) |
+| 20 | ✓ | [`skills/tophant-clawvault-operator/SKILL.md`](skills/tophant-clawvault-operator/SKILL.md) |
 
 ---
 

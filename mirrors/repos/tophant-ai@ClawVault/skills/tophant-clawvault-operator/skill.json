@@ -1,7 +1,7 @@
 {
   "name": "tophant-clawvault-operator",
-  "version": "0.2.6",
-  "description": "Operate ClawVault services, config, presets, and scans from OpenClaw agents.",
+  "version": "0.2.7",
+  "description": "Operate ClawVault services, config, presets, scans, and local sanitization from OpenClaw agents.",
   "author": "Tophant SPAI Lab",
   "homepage": "https://github.com/tophant-ai/ClawVault",
   "repository": "https://github.com/tophant-ai/ClawVault",
@@ -13,7 +13,7 @@
     "read_files": "Reads configuration, vault presets, scan history from ~/.ClawVault/",
     "network": "Probes service ports, communicates with dashboard API, and verifies plugin-reported events"
   },
-  "tags": ["security", "operations", "proxy", "scanning", "vault", "config", "openclaw", "plugin"],
+  "tags": ["security", "operations", "proxy", "scanning", "sanitization", "vault", "config", "openclaw", "plugin"],
   "requirements": ["pyyaml", "requests"],
   "python_version": ">=3.10",
   "commands": {
@@ -32,6 +32,10 @@
     "scan": {
       "description": "Scan text for threats.",
       "usage": "scan <text>"
+    },
+    "sanitize": {
+      "description": "Sanitize stdin text locally without placing sensitive input in argv.",
+      "usage": "sanitize --stdin"
     },
     "scan-file": {
       "description": "Scan a file for sensitive data.",

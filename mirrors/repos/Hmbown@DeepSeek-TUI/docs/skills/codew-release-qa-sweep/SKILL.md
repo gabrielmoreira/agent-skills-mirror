@@ -15,7 +15,7 @@ gate sweep plus the three manual QA targets is the evidence bar. No sweep, no
   merge-ready.
 - After harvesting/landing PRs into the release branch, before the publish boundary.
 - When verifying a release candidate on the **real** landing branch
-  (e.g. `codex/v0.8.61`), which is often local-only.
+  (e.g. `<release-branch>`), which is often local-only.
 
 ## Automated gate sweep
 
@@ -23,7 +23,7 @@ Run from the repo root, in order. Stop on the first failure and report it.
 
 ```bash
 # 0. Confirm you are on the real release head, not a main-based assumption.
-git branch --show-current          # expect e.g. codex/v0.8.61
+git branch --show-current          # expect e.g. <release-branch>
 git status --short                 # working tree should be clean
 
 # 1. Formatting + stray whitespace/conflict markers
@@ -54,7 +54,7 @@ If you are validating a PR for landing, also test mergeability against the
 **actual** release head, never the main-based clean flag:
 
 ```bash
-git merge-tree $(git merge-base codex/v0.8.61 <pr-head>) codex/v0.8.61 <pr-head>
+git merge-tree $(git merge-base <release-branch> <pr-head>) <release-branch> <pr-head>
 ```
 
 A PR that is clean against `main` can still conflict with the release branch.

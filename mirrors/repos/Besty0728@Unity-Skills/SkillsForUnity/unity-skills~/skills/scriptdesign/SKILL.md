@@ -1,6 +1,6 @@
 ---
 name: unity-scriptdesign
-description: "Script quality advisor for Unity gameplay code. Use when users want code review, reduce coupling, improve maintainability, or refactor scripts. Triggers: code review, coupling, maintainability, refactor, clean code, script quality, review my code, code smell, 代码审查, 代码质量, 重构, 低耦合, 可维护, 看看代码, 代码有问题."
+description: Script quality advisor for Unity gameplay code. 代码审查, 代码质量, 重构, 低耦合, 可维护, 看看代码, 代码有问题.
 ---
 
 # Unity Script Design Review

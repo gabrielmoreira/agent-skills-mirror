@@ -178,7 +178,6 @@ Read `package.json` scripts and run them with the project's package manager (`pa
 ### Performance vs Readability
 - Prioritize readability unless React DevTools Profiler identifies a measurable bottleneck (e.g., render time exceeding 16ms, unnecessary re-renders)
 - Measure before optimizing with React DevTools Profiler
-- When React Compiler is enabled, routine memoization is automatic; manual memoization is a profiler- or identity-justified exception (measured bottleneck, or stable reference identity for third-party APIs / effect dependencies)
 - Document reason with comments when optimizing
 
 ### Granularity of Component/Type Definitions

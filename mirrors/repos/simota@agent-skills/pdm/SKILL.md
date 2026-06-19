@@ -27,7 +27,7 @@ COLLABORATION_PATTERNS:
 - Trail -> PDM: History of when features landed
 - PDM -> Rank: Roadmap items needing priority scoring
 - PDM -> Sherpa: Epics needing execution decomposition
-- PDM -> Orbit: Loop-sized work packages (WBS leaves / gaps) as goal-contract seeds for implementation loops
+- PDM -> Orbit: Loop-sized work packages (WBS leaves / gaps) as goal-contract seeds for implementation loops; sprints as plan-unit seeds (sprint -> LOOP_PLAN.md via Orbit plan Recipe)
 - PDM -> Scribe: Spec gaps needing authoring
 - PDM -> Spark: Unmet gaps as new-feature ideation seeds
 - PDM -> Canvas: Roadmap/status for visualization
@@ -87,6 +87,7 @@ Route elsewhere when the task is primarily:
 - Assign each feature a status (`Done` / `In-Progress` / `Not-Started` / `Undocumented`) and a confidence (High/Medium/Low).
 - Delegate by contract: priority scoring → Rank; execution decomposition → Sherpa; spec authoring → Scribe; AC conformance → Attest; deep code comprehension → Lens.
 - **Loop-sized planning unit.** When a plan feeds an implementation loop, size each WBS leaf / gap item to **one Orbit loop goal** — a single objective drivable to DONE by one loop, verifiable by 3-6 acceptance criteria. Emit the objective + reconciled gap evidence (planning ref + code search coverage) and hand AC hardening to Orbit via `PDM_TO_ORBIT_HANDOFF`; never author the ACs or the `goal.md` (read-only). This keeps pdm's plan items and Orbit's loop units 1:1.
+- **Sprint = Orbit plan unit.** One level up, a pdm **sprint** maps **1:1 to one Orbit plan unit** (`LOOP_PLAN.md`, the document-first `plan` Recipe). Hand the sprint goal + its loop-sized WBS leaves + sprint exit criteria via `PDM_TO_ORBIT_HANDOFF` (`scope: sprint`); Orbit's `plan` Recipe turns it into a multi-loop plan where each leaf becomes a constituent loop goal (preserving the leaf→loop-goal 1:1 one level down) and the sprint goal becomes the plan-level objective and DONE gate. pdm stays read-only — it sizes and reconciles the sprint, never authors the plan, ACs, or `goal.md`. Two-level mapping: **sprint → `LOOP_PLAN.md`** (plan), **WBS leaf → `goal.md`** (loop).
 - Produce read-only deliverables only; propose follow-ups via handoffs, never by writing code/specs.
 - Check `.agents/PROJECT.md` for shared project context before starting.
 - Author for Opus 4.8 defaults. Apply `_common/OPUS_48_AUTHORING.md` principles **P3 (eagerly Read planning artifacts AND code evidence at LOCATE/INVENTORY — reconciliation is worthless if either side is assumed), P5 (think step-by-step at RECONCILE — status assignment and drift detection are the high-stakes judgments)** as critical for PDM. P1 recommended: front-load the scope sources and the status question at LOCATE.
@@ -240,7 +241,7 @@ Templates in `reference/handoffs.md`.
 | Attest → PDM | `ATTEST_TO_PDM_HANDOFF` | AC conformance results for status refinement |
 | PDM → Rank | `PDM_TO_RANK_HANDOFF` | Roadmap items needing priority scoring |
 | PDM → Sherpa | `PDM_TO_SHERPA_HANDOFF` | Epics needing execution decomposition |
-| PDM → Orbit | `PDM_TO_ORBIT_HANDOFF` | Loop-sized work packages (objective + gap evidence) as goal-contract seeds |
+| PDM → Orbit | `PDM_TO_ORBIT_HANDOFF` | `scope: leaf` → one loop-sized work package (objective + gap evidence) as a goal-contract seed; `scope: sprint` → a sprint (goal + leaves + exit criteria) as a `LOOP_PLAN.md` plan seed |
 | PDM → Scribe | `PDM_TO_SCRIBE_HANDOFF` | Spec gaps needing authoring |
 | PDM → Canvas | `PDM_TO_CANVAS_HANDOFF` | Roadmap/status for visualization |
 

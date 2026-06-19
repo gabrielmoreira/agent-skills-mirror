@@ -1,6 +1,6 @@
 ---
 name: n8n-code-javascript
-description: Write JavaScript code in n8n Code nodes. Use when writing JavaScript in n8n, using $input/$json/$node syntax, making HTTP requests with $helpers, working with dates using DateTime, troubleshooting Code node errors, choosing between Code node modes, or doing any custom data transformation in n8n. Always use this skill when a workflow needs a Code node — whether for data aggregation, filtering, API calls, format conversion, batch processing logic, or any custom JavaScript. Covers SplitInBatches loop patterns, cross-iteration data, pairedItem, and real-world production patterns. Also use when asked why a Code node or workflow is slow, which execution mode is faster, or how to cut per-item overhead on large datasets. EXCEPTION — for the AI-agent-callable Custom Code Tool (@n8n/n8n-nodes-langchain.toolCode, a tool attached to an AI Agent), use the n8n-code-tool skill instead; it has a different runtime contract.
+description: Write JavaScript code in n8n Code nodes. Use when writing JavaScript in n8n, using $input/$json/$node syntax, making HTTP requests with this.helpers / the $helpers global, working with dates using DateTime, troubleshooting Code node errors, choosing between Code node modes, or doing any custom data transformation in n8n. Always use this skill when a workflow needs a Code node — whether for data aggregation, filtering, API calls, format conversion, batch processing logic, or any custom JavaScript. Covers SplitInBatches loop patterns, cross-iteration data, pairedItem, and real-world production patterns. Also use when asked why a Code node or workflow is slow, which execution mode is faster, or how to cut per-item overhead on large datasets. EXCEPTION — for the AI-agent-callable Custom Code Tool (@n8n/n8n-nodes-langchain.toolCode, a tool attached to an AI Agent), use the n8n-code-tool skill instead; it has a different runtime contract.
 ---
 
 # JavaScript Code Node
@@ -33,7 +33,7 @@ return processed;
 2. **Access data**: `$input.all()`, `$input.first()`, or `$input.item`
 3. **CRITICAL**: Must return `[{json: {...}}]` format
 4. **CRITICAL**: Webhook data is under `$json.body` (not `$json` directly)
-5. **Built-ins available**: $helpers.httpRequest() (no auth), DateTime (Luxon), $jmespath(). **Not available**: $helpers.httpRequestWithAuthentication, $env (when N8N_BLOCK_ENV_ACCESS_IN_NODE=true), require() (unless allowlisted)
+5. **Built-ins available**: `this.helpers.httpRequest()` (no auth — the bare `$helpers` global is **undefined** in the task-runner sandbox, so `$helpers.httpRequest()` throws `ReferenceError: $helpers is not defined`; ignore the validator if it suggests `$helpers`), DateTime (Luxon), $jmespath(). **Not available**: `this.helpers.httpRequestWithAuthentication` (deny-listed), $env (when N8N_BLOCK_ENV_ACCESS_IN_NODE=true), require() (unless allowlisted). For anything beyond a trivial unauthenticated GET (auth, pagination, retries), prefer the **HTTP Request node** and keep Code nodes for pure logic.
 6. **Instance-allowlisted libraries**: Self-hosted instances can allowlist modules via `N8N_RUNNERS_ALLOWED_BUILT_IN_MODULES` and `N8N_RUNNERS_ALLOWED_EXTERNAL_MODULES` (legacy: `NODE_FUNCTION_ALLOW_BUILTIN` / `NODE_FUNCTION_ALLOW_EXTERNAL`). If the user says their instance allows specific modules (e.g. `axios`, `lodash`, `crypto`), use them via `require()` — don't refuse. If unsure, ask or default to built-ins only.
 7. **Wrong skill?** If you're writing code for a **Custom Code Tool** attached to an AI Agent (`@n8n/n8n-nodes-langchain.toolCode`), stop — that node has a different contract (input via `query`, must return a string, no `$input`/`$helpers`). Use the **n8n-code-tool** skill.
 
@@ -269,7 +269,7 @@ The recurring Code node failures, in rough frequency order:
 
 ```javascript
 // HTTP requests (no auth — see sandbox note below)
-const res = await $helpers.httpRequest({ method: 'GET', url: 'https://api.example.com/data' });
+const res = await this.helpers.httpRequest({ method: 'GET', url: 'https://api.example.com/data' });
 
 // DateTime (Luxon): now, formatting, arithmetic
 const now = DateTime.now();
@@ -282,7 +282,7 @@ const adults = $jmespath($input.first().json, 'users[?age >= `18`]');
 // $getWorkflowStaticData() — data that persists across executions
 ```
 
-**Sandbox (since n8n v2.0):** `$helpers.httpRequestWithAuthentication` is blocked; `$env` is blocked when `N8N_BLOCK_ENV_ACCESS_IN_NODE=true`; `require()` works only for allowlisted modules. `Buffer`, `URL`, and standard JS globals (Math, JSON, Object, Array) always work.
+**Sandbox (since n8n v2.0, JsTaskRunnerSandbox):** the accessor is `this.helpers.httpRequest()` — the bare `$helpers` global is **undefined** here (`$helpers.httpRequest()` throws `ReferenceError`). Inside a nested async function where `this` is lost, call it as `await fn.call(this, ...)`. `this.helpers.httpRequestWithAuthentication` and `this.helpers.requestWithAuthenticationPaginated` are deny-listed (→ `UnsupportedFunctionError`); for authenticated calls use an **HTTP Request node** with the credential (preferred), a sub-workflow, or a manual `Authorization: Bearer ${token}` header on `this.helpers.httpRequest()` only when the token already flows through the workflow as data. `$env` is blocked when `N8N_BLOCK_ENV_ACCESS_IN_NODE=true`; `require()` works only for allowlisted modules. `Buffer`, `URL`, and standard JS globals (Math, JSON, Object, Array) always work.
 
 **See**: [BUILTIN_FUNCTIONS.md](BUILTIN_FUNCTIONS.md) for the complete reference — full httpRequest options, all DateTime/Luxon operations, JMESPath patterns, static-data use cases, and the sandbox-restriction details.
 

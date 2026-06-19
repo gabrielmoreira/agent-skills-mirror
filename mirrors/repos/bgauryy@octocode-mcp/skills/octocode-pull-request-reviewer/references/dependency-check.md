@@ -7,7 +7,7 @@
 - [ ] Review target determined (PR Mode or Local Mode — see Review Target Detection)
 
 ### Actions — PR Mode (REQUIRED when reviewing a remote PR)
-1. **Test MCP availability**: Call `githubSearchPullRequests` with a minimal query
+1. **Test MCP availability**: Call `ghHistoryResearch(type:"prs", keywordsToSearch:["test"], limit:1)` with a minimal query
    - **IF** tool responds successfully → **THEN** proceed
    - **IF** tool fails or is not found → **THEN** STOP and inform user:
      ```
@@ -28,11 +28,11 @@
 
 | Tool | Fallback |
 |------|----------|
-| `githubSearchPullRequests` | NONE — review cannot proceed |
-| `githubGetFileContent` | NONE — review cannot proceed |
-| `githubSearchCode` | NONE — review cannot proceed |
-| `githubViewRepoStructure` | NONE — review cannot proceed |
-| `packageSearch` | Skip external package analysis |
+| `ghHistoryResearch` | NONE — review cannot proceed |
+| `ghGetFileContent` | NONE — review cannot proceed |
+| `ghSearchCode` | NONE — review cannot proceed |
+| `ghViewRepoStructure` | NONE — review cannot proceed |
+| `npmSearch` | Skip external package analysis |
 
 ### Required Tools — Local Mode
 
@@ -42,13 +42,13 @@
 | `localGetFileContent` | NONE — review cannot proceed |
 | `localViewStructure` | NONE — review cannot proceed |
 | `localFindFiles` | NONE — review cannot proceed |
-| `lspGotoDefinition` | Fall back to `localSearchCode` |
-| `lspFindReferences` | Fall back to `localSearchCode` |
-| `lspCallHierarchy` | Fall back to `localSearchCode` |
+| `lspGetSemantics(type="definition")` | Fall back to `localSearchCode` |
+| `lspGetSemantics(type="references")` | Fall back to `localSearchCode` |
+| `lspGetSemantics(type="callers"/"callees"/"callHierarchy")` | Fall back to `localSearchCode` |
 | Shell: `git status`, `git diff` | NONE — review cannot proceed |
 
 ### Gate Check — PR Mode
-- [ ] `githubSearchPullRequests` responded successfully
+- [ ] `ghHistoryResearch` responded successfully
 - [ ] PR number/URL is valid and accessible
 
 ### Gate Check — Local Mode
@@ -57,7 +57,7 @@
 - [ ] At least one of: staged changes, unstaged changes, or untracked files exist
 
 ### FORBIDDEN
-- **PR Mode**: Proceeding if `githubSearchPullRequests` is unavailable
+- **PR Mode**: Proceeding if `ghHistoryResearch` is unavailable
 - **Local Mode**: Proceeding if local tools are disabled (`ENABLE_LOCAL=false`)
 - Using shell commands for code reading/search when Octocode MCP tools are available
 

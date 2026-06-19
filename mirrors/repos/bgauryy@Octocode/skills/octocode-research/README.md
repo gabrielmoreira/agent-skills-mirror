@@ -120,12 +120,12 @@ The server picks a prompt based on what the agent asks:
 | `lspGotoDefinition` | LSP | Jump to definition |
 | `lspFindReferences` | LSP | All usages of a symbol |
 | `lspCallHierarchy` | LSP | Incoming/outgoing calls |
-| `githubSearchCode` | GitHub | Search code across repos |
-| `githubGetFileContent` | GitHub | Read file from repo |
-| `githubViewRepoStructure` | GitHub | Repo directory tree |
-| `githubSearchRepositories` | GitHub | Search repos |
-| `githubSearchPullRequests` | GitHub | Search PRs |
-| `packageSearch` | Package | npm / PyPI lookup |
+| `ghSearchCode` | GitHub | Search code across repos |
+| `ghGetFileContent` | GitHub | Read file from repo |
+| `ghViewRepoStructure` | GitHub | Repo directory tree |
+| `ghSearchRepos` | GitHub | Search repos |
+| `ghSearchPRs` | GitHub | Search PRs |
+| `npmSearch` | Package | npm lookup |
 
 ---
 
@@ -134,7 +134,7 @@ The server picks a prompt based on what the agent asks:
 Find where React defines `useState`, then read it:
 
 ```bash
-curl -X POST http://localhost:1987/tools/call/githubSearchCode \
+curl -X POST http://localhost:1987/tools/call/ghSearchCode \
   -H "Content-Type: application/json" \
   -d '{
     "queries": [{
@@ -151,7 +151,7 @@ curl -X POST http://localhost:1987/tools/call/githubSearchCode \
 ```
 
 ```bash
-curl -X POST http://localhost:1987/tools/call/githubGetFileContent \
+curl -X POST http://localhost:1987/tools/call/ghGetFileContent \
   -H "Content-Type: application/json" \
   -d '{
     "queries": [{
@@ -201,7 +201,6 @@ Collects de-identified telemetry (usage counts, error rates). Never collects sou
 | [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | Architecture |
 | [docs/API_REFERENCE.md](./docs/API_REFERENCE.md) | Full API reference |
 | [docs/FLOWS.md](./docs/FLOWS.md) | Request flow diagrams |
-| [Troubleshooting](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/TROUBLESHOOTING.md) | Common issues |
 
 ---
 

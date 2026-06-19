@@ -1,6 +1,6 @@
 ---
 name: unity-script
-description: "C# script CRUD and analysis — create, read, replace, append, search, rename, move, delete scripts and surface compile feedback / Domain Reload state. Exact signatures via GET /skills/schema."
+description: C# script CRUD and analysis — create, read, replace, append, search, rename, move, delete scripts
 ---
 
 # Unity Script Skills

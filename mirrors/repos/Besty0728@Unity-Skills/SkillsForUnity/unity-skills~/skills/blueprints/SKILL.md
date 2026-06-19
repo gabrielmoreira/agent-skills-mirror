@@ -1,6 +1,6 @@
 ---
 name: unity-blueprints
-description: "Mini-game architecture blueprint advisor. Use when users want a starting structure for a small Unity game — platformer, shooter, runner, puzzle, tower defense, clicker, card game. Triggers: blueprint, game template, game structure, prototype, gameplay loop, how to start a game, platformer, tower defense, 游戏模板, 小游戏架构, 做个游戏, 从零开始, 平台跳跃, 塔防, 卡牌, 游戏框架."
+description: Mini-game architecture blueprint advisor. 游戏模板, 小游戏架构, 做个游戏, 从零开始, 平台跳跃, 塔防, 卡牌, 游戏框架.
 ---
 
 # Unity Gameplay Blueprints

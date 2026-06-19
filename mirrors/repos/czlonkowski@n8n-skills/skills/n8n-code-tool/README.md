@@ -15,7 +15,7 @@ Same editor UI, completely different contract:
 | Input | `$input.all()` | `query` variable |
 | Return | `[{json: {...}}]` | **A string** |
 | `$fromAI()` | N/A | **Not available** |
-| `$helpers` | Full | Not exposed |
+| `$helpers` | Via `this.helpers` (bare `$helpers` global is undefined) | Not exposed |
 
 If you carry over Code-node habits, it fails with cryptic errors. This skill teaches the Code Tool's actual contract.
 
@@ -147,7 +147,7 @@ const { price, months, residual_percent } = query;
 | Pure computation (math, parsing, formatting) | **Code Tool** |
 | Multiple typed params with `$fromAI()` | **`toolWorkflow`** (sub-workflow tool) |
 | Single API call | **HTTP Request Tool** |
-| Access to `$helpers`, credentials, other nodes | **`toolWorkflow`** |
+| Access to `this.helpers`, credentials, other nodes | **`toolWorkflow`** |
 | Persistent state across calls | **`toolWorkflow`** with Data Table / Redis |
 | Reusable logic across multiple agents | **`toolWorkflow`** |
 

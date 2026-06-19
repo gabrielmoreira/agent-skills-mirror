@@ -1,6 +1,6 @@
 ---
 name: unity-architecture
-description: "Gameplay and system architecture advisor for Unity. Use when users want module boundaries, scene design, SOLID structure, decoupling, or refactoring direction before writing code. Triggers: architecture, system design, how to structure, how to organize, module boundary, decouple, refactor, SOLID, 架构设计, 怎么组织代码, 模块划分, 代码结构, 解耦, 重构方向, 系统设计."
+description: Gameplay and system architecture advisor for Unity. 架构设计, 怎么组织代码, 模块划分, 代码结构, 解耦, 重构方向, 系统设计.
 ---
 
 # Unity Architecture Advisor

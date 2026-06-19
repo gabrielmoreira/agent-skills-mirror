@@ -32,7 +32,7 @@
 | [文件操作统一](architecture/file-operations.md)     | 三处文件（Markdown 链接 / 下挂文件 / 工作台产物）统一操作策略、本机 vs 远端行为矩阵、右侧内置预览面板、preview-by-path 双壳后端与会话鉴权 | `lib/fileActions.ts`, `lib/fileKind.ts`, `components/chat/files/`, `filesystem/ops.rs` |
 | [浏览器自动化](architecture/browser.md)            | 8-action 表面、CDP / chrome-devtools-mcp 双 backend、stale-ref 自恢复、BrowserPanel 实时镜像、SSRF 守卫 | `browser/`, `tools/browser/`, `browser_state.rs`, `components/chat/BrowserPanel.tsx` |
 | [macOS 控制](architecture/macos-control.md)        | 原生 macOS GUI 控制子系统：权限 readiness、AX snapshot、display/window 截图、App/窗口/元素/菜单/dialog 操作与审批分类 | `mac_control/`, `tools/mac_control.rs`, `src-tauri/src/macos_control.rs` |
-| [上下文压缩](architecture/context-compact.md)       | 5 层渐进式压缩、API-Round 分组保护、后压缩文件恢复                     | `context_compact/`                             |
+| [上下文压缩](architecture/context-compact.md)       | 5 层渐进式压缩、API-Round 分组保护、mid-loop checkpoint、runtime ledger 与文件恢复 | `context_compact/` / `agent/context.rs`        |
 | [Session 系统](architecture/session.md)          | 会话 + 消息持久化、FTS5 搜索、无痕会话关闭即焚、会话级工作目录、自动会话标题、Subagent/ACP 运行记录 | `session/`, `session_title.rs`                 |
 | [Project 系统](architecture/project.md)          | 会话分组容器、项目记忆/工作目录/指令、7 级 Agent 解析、`/project` 命令、侧边栏树状渲染 | `project/`                                     |
 | [记忆系统](architecture/memory.md)                 | SQLite + FTS5 + vec0 混合检索、多模型 Embedding 配置、自动提取、Active Memory、Dreaming、Recall Summary、向量重建 | `memory/`                                      |

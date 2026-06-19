@@ -238,7 +238,8 @@ Use `automate-whatsapp` function scripts to find function IDs and update code.
     "system_prompt": "You are a helpful assistant...",
     "provider_model_id": "uuid",
     "max_iterations": 10,
-    "temperature": 0.7
+    "temperature": 0.7,
+    "message_delivery_mode": "auto_send_assistant_text"
   }
 }
 ```
@@ -246,10 +247,17 @@ Use `automate-whatsapp` function scripts to find function IDs and update code.
 Notes:
 - `provider_model_id` is required. Use `scripts/list-provider-models.js` to find it.
 - Agent tool arrays live inside `data.config` (not at the `data` root).
+- `message_delivery_mode` controls user-visible text:
+  - `auto_send_assistant_text` sends normal assistant text automatically.
+  - `tool_only` keeps normal assistant text internal; the agent must call `send_notification_to_user` for every user-visible message.
+- With `tool_only`, include `send_notification_to_user` and `enter_waiting` in `enabled_default_tools`. Use `enter_waiting` after questions that need a reply.
+
+<!-- TODO: Add a full tool-only agent workflow asset after the API behavior is generally available. -->
 
 Default tools (toggle on/off only):
 - complete_task (required)
 - handoff_to_human (required)
+- enter_waiting
 - send_notification_to_user
 - send_media
 - get_execution_metadata
@@ -279,6 +287,14 @@ All tool arrays go under `data.config` of the agent node:
       "provider_model_id": "uuid",
       "max_iterations": 10,
       "temperature": 0.7,
+      "message_delivery_mode": "tool_only",
+      "enabled_default_tools": [
+        "complete_task",
+        "handoff_to_human",
+        "enter_waiting",
+        "send_notification_to_user",
+        "get_whatsapp_context"
+      ],
       "flow_agent_webhooks": [],
       "flow_agent_mcp_servers": []
     }

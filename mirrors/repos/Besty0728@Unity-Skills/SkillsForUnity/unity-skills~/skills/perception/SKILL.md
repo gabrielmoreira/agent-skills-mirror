@@ -1,6 +1,6 @@
 ---
 name: unity-perception
-description: "Read-only scene/project/script analysis for AI coding context — scene health/summary/hotspots, hierarchy describe, stats, dependency & impact graph, project stack, scene context export. Exact signatures via GET /skills/schema."
+description: Read-only scene/project/script analysis for AI coding context
 ---
 
 # Unity Perception Skills

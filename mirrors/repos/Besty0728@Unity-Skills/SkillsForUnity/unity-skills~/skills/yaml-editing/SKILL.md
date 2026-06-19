@@ -1,6 +1,6 @@
 ---
 name: unity-yaml-editing
-description: "Last-resort guidance for safely hand-editing Unity serialized YAML (.unity/.prefab/.asset/.meta/ProjectSettings) while keeping GUID/fileID integrity intact. Load before directly editing .unity/.prefab/.asset/.meta/ProjectSettings YAML when REST skills cannot reach: script compile failure breaks Editor deserialization, .meta has no REST skill, ProjectSettings exposes hidden fields, or you must resolve a merge conflict. Advisory only (no REST skills, no C#). Triggers: YAML editing, fileID, GUID, m_Script, missing component, missing script, .meta, ProjectSettings, merge conflict, serialized reference repair, anchor, classID, importer field, hand-edit scene, hand-edit prefab; 序列化引用修复, 场景文件直编, prefab 直编, GUID 修复, fileID 失配, m_Script 修复, meta 文件, ProjectSettings 隐藏字段, 合并冲突, 缺失脚本, 缺失组件, 锚点, 类ID, 手改 YAML."
+description: Last-resort guidance for safely hand-editing Unity serialized YAML. 序列化引用修复, 场景文件直编, prefab 直编, GUID 修复, fileID 失配, m_Script 修复, meta 文件
 ---
 
 # YAML Editing - Safe Hand-Edit Rules

@@ -1,6 +1,6 @@
 ---
 name: unity-component
-description: "GameObject component management — add, remove, list, copy, enable/disable components, read/set component properties. Exact signatures via GET /skills/schema."
+description: GameObject component management — add, remove, list, copy, enable/disable components, read/set
 ---
 
 # Unity Component Skills

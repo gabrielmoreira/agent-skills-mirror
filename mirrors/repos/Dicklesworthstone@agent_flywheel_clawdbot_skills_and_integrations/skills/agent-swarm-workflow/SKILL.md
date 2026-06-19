@@ -56,7 +56,7 @@ Before starting a swarm:
 
 ```bash
 # Spawn a swarm with multiple agents
-ntm spawn myproject --cc=3 --cod=2 --gmi=1
+ntm spawn myproject --cc=3 --cod=2 --agy=1
 
 # Send initial prompt to all Claude Code agents
 ntm send myproject --cc "$(cat initial_prompt.txt)"

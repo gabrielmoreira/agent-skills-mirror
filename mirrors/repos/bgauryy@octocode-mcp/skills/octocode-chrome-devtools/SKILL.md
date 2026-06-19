@@ -1,6 +1,6 @@
 ---
 name: octocode-chrome-devtools
-description: Use Chrome DevTools Protocol (CDP) for browser debugging, inspection, and automation when DevTools-grade evidence is needed: network, console, performance, DOM/CSS, screenshots/PDF, security, storage, auth-gated, live-page, and source-traced findings. Opens or attaches to Chrome, runs sandboxed CDP scripts, and keeps sessions reusable. Prefer lighter browser tools for simply opening a page.
+description: "Use Chrome DevTools Protocol (CDP) for browser debugging, inspection, and automation when DevTools-grade evidence is needed: network, console, performance, DOM/CSS, screenshots/PDF, security, storage, auth-gated, live-page, and source-traced findings. Opens or attaches to Chrome, runs sandboxed CDP scripts, and keeps sessions reusable. Prefer lighter browser tools for simply opening a page."
 ---
 
 # Octocode Chrome DevTools
@@ -184,7 +184,7 @@ If the same class fails twice, read `references/RECOVERY.md`.
 
 ## Source Trace
 
-If Octocode MCP tools are installed, use them after browser evidence points to source. Local app route: `localSearchCode` -> `lspGotoDefinition` / `lspFindReferences` -> `localGetFileContent`. External package route: `githubSearchCode` -> `githubGetFileContent`. Without Octocode tools, stop at browser evidence and use ordinary local search.
+If Octocode MCP tools are installed, use them after browser evidence points to source. Local app route: `localSearchCode` -> `lspGetSemantics(type=definition)` / `lspGetSemantics(type=references)` -> `localGetFileContent`. External package route: `ghSearchCode` -> `ghGetFileContent`. Without Octocode tools, stop at browser evidence and use ordinary local search.
 
 ## CDP Constraints
 

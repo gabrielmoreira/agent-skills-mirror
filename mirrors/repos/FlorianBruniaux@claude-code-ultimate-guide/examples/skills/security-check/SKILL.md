@@ -63,6 +63,43 @@ grep -r "^tools:" ~/.claude/agents/ 2>/dev/null
 - [ ] Any agent with `tools: Bash` only? → HIGH
 - [ ] Any agent with overly broad tool access + vague description? → MEDIUM
 
+**Deep skill content analysis (SkillSpector-inspired patterns):**
+
+```bash
+# Hidden instructions: HTML comments, zero-width chars, large base64 blobs
+grep -rn '<!--' .claude/skills/ ~/.claude/skills/ 2>/dev/null | grep -iv 'example\|comment\|html'
+grep -rPn '[\x{200B}-\x{200D}\x{FEFF}\x{00AD}]' .claude/skills/ ~/.claude/skills/ 2>/dev/null
+grep -rn -E '[A-Za-z0-9+/]{40,}={0,2}' .claude/skills/ ~/.claude/skills/ 2>/dev/null | grep -v 'sha\|hash\|checksum' | head -10
+
+# Unicode deception: RTL override characters
+grep -rPn '[\x{202E}\x{202D}\x{200F}]' .claude/skills/ ~/.claude/skills/ 2>/dev/null
+
+# Trigger abuse: generic keywords that shadow built-in commands
+grep -rn "trigger\|keyword\|when.*user" .claude/skills/ ~/.claude/skills/ 2>/dev/null | \
+  grep -iE '\b(help|run|go|do|yes|ok|the|a |an |it)\b' | head -10
+
+# Supply chain: remote execution patterns in skill scripts
+find .claude/skills/ ~/.claude/skills/ \( -name "*.sh" -o -name "*.py" \) 2>/dev/null | \
+  xargs grep -l "curl.*|\|wget.*|\|bash.*http\|eval.*curl" 2>/dev/null
+
+# Rogue agent: cron/startup persistence written by skill scripts
+find .claude/skills/ ~/.claude/skills/ -type f 2>/dev/null | \
+  xargs grep -l "crontab\|launchctl\|systemctl\|~/.bashrc\|~/.zshrc\|autostart" 2>/dev/null
+
+# Data exfiltration: env harvesting combined with network calls
+find .claude/skills/ ~/.claude/skills/ -type f 2>/dev/null | \
+  xargs grep -l "os.environ\|process.env\|getenv\|printenv" 2>/dev/null | \
+  xargs grep -l "curl\|requests\|fetch\|http" 2>/dev/null
+```
+
+- [ ] Hidden HTML comments or zero-width characters in skill files? → HIGH
+- [ ] Base64 blobs over 40 chars in skill content? → HIGH (verify: may be a legitimate hash)
+- [ ] RTL unicode override characters? → HIGH
+- [ ] Skill trigger keyword shadows a built-in (help, run, clear…)? → HIGH
+- [ ] Executable scripts with `curl | bash` or remote eval? → CRITICAL
+- [ ] Skill writes to crontab, launchctl, or shell rc files? → CRITICAL
+- [ ] Skill reads env vars AND makes outbound network calls? → CRITICAL
+
 ### Phase 4: Hook Security
 
 ```bash

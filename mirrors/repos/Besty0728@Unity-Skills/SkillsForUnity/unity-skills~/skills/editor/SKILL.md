@@ -1,6 +1,6 @@
 ---
 name: unity-editor
-description: "Unity Editor control — enter/exit/pause play mode, select objects, undo/redo, execute menu commands, read editor state/context, list tags/layers. Exact signatures via GET /skills/schema."
+description: Unity Editor control — enter/exit/pause play mode, select objects, undo/redo, execute menu
 ---
 
 # Unity Editor Skills

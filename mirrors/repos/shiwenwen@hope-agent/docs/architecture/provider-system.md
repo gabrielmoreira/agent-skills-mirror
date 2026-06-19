@@ -241,7 +241,7 @@ flowchart TD
   RESTORE --> CHAT["agent.chat()"]
 
   CHAT --> NORM["normalize_history<br/>跨 Provider 格式转换"]
-  NORM --> COMPACT["run_compaction<br/>上下文压缩 Tier 1-3"]
+  NORM --> COMPACT["run_compaction_with_options<br/>上下文压缩 Tier 0-3"]
   COMPACT --> API["HTTP POST SSE 流式请求"]
   API --> PARSE["parse SSE → 发射事件到前端"]
   PARSE --> TOOL{"有 tool_call?"}
@@ -268,7 +268,8 @@ Provider 通过 `on_delta` 回调实时推送 JSON 事件：
 | `tool_call` | `call_id`, `name`, `arguments` | 工具调用开始 |
 | `tool_result` | `call_id`, `result`, `duration_ms`, `is_error` | 工具执行结果 |
 | `usage` | `input_tokens`, `output_tokens`, `model`, `ttft_ms` | Token 用量 |
-| `context_compacted` | `tier_applied`, `tokens_before`, `tokens_after` | 上下文压缩通知 |
+| `context_compaction_progress` | `phase`, `kind` | live-only 压缩进度通知（GUI banner） |
+| `context_compacted` | `tier_applied`, `tokens_before`, `tokens_after`, `manifest` | 上下文压缩完成通知 |
 | `model_fallback` | `model`, `from_model`, `reason` | 模型降级通知 |
 
 ### 3.3 前端事件处理
@@ -865,7 +866,7 @@ sequenceDiagram
 
 ### 9.1 上下文压缩
 
-上下文压缩详见 [context-compact.md](./context-compact.md)。本系统采用 **5 层渐进式**结构：Tier 0 反应式微压缩（每轮工具结束后清理 `tool_policies=eager` 的旧工具结果，cache-safe）+ Tier 1 工具结果截断 + Tier 2 上下文裁剪（软/硬）+ Tier 3 LLM 摘要 + Tier 4 ContextOverflow 应急恢复。Provider 系统作为消费方，只需保证消息格式标准化与 Token 计量准确，触发条件、cache-TTL 节流、压缩策略全部由 `context_compact` 模块负责。
+上下文压缩详见 [context-compact.md](./context-compact.md)。本系统采用 **5 层渐进式**结构：Tier 0 反应式微压缩（turn-start + tool-loop checkpoint 清理 `toolPolicies=eager` 的旧工具结果，cache-safe）+ Tier 1 工具结果截断 + Tier 2 上下文裁剪（软/硬）+ Tier 3 LLM 摘要 + Tier 4 ContextOverflow 应急恢复。Provider 系统作为消费方，只需保证消息格式标准化与 Token 计量准确；触发条件、cache-TTL 节流、mid-loop 频率地板、runtime ledger / recovery 注入和压缩策略全部由 `agent/context.rs` + `context_compact` 模块负责。
 
 ### 9.2 Summarization 消息格式处理
 
@@ -929,7 +930,7 @@ flowchart TD
     RESTORE --> AGENT["agent.chat()"]
 
     AGENT --> NORMALIZE["normalize_history_for_*()"]
-    NORMALIZE --> COMPACTION["run_compaction() Tier 1-3"]
+    NORMALIZE --> COMPACTION["run_compaction_with_options() Tier 0-3"]
     COMPACTION --> PROVIDER{"match provider"}
 
     PROVIDER -->|Anthropic| P1["POST /v1/messages"]
@@ -971,7 +972,7 @@ flowchart TD
 | 内容构建 | `crates/ha-core/src/agent/content.rs` | 各 Provider 的用户消息格式构建 |
 | 事件发射 | `crates/ha-core/src/agent/events.rs` | text_delta、thinking_delta、tool_call 等 |
 | 上下文管理 | `crates/ha-core/src/agent/context.rs` | history 标准化、push_user_message、run_compaction |
-| 上下文压缩 | `crates/ha-core/src/context_compact/` | 5 层渐进式压缩 + 摘要构建 |
+| 上下文压缩 | `crates/ha-core/src/context_compact/` + `crates/ha-core/src/agent/context.rs` | 5 层渐进式压缩 + mid-loop checkpoint + 摘要/ledger/recovery 编排 |
 | Failover | `crates/ha-core/src/failover/{mod,executor}.rs` | 错误分类、统一执行器（policy + provider 选择 + 退避 + Codex 不轮换） |
 | Session DB | `crates/ha-core/src/session/` | SQLite 持久化、消息 FTS 搜索 |
 | Chat 命令（桌面） | `src-tauri/src/commands/chat.rs` | Tauri 命令层：主流程编排、模型链迭代、上下文保存恢复 |
