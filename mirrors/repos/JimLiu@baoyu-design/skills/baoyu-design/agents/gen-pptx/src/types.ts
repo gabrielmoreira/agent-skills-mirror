@@ -49,6 +49,10 @@ export interface SlideNode {
   href?: string;
   imageUrl?: string;
   svg?: string;
+  /** CSS background gradient (linear/radial), rasterized to a transparent PNG. */
+  gradient?: string;
+  /** Uniform border-radius in px for the gradient box, when any. */
+  gradientRadius?: number;
   /** Pre-transform AABB for rotated elements. */
   untransformedRect?: Rect;
   /** 1-based ordinal for <li> with a non-trivial list-style. */
@@ -104,7 +108,8 @@ export type MediaCache = Map<string, MediaEntry | null>;
 /** A media reference collected from the captured tree, sent to the page to resolve. */
 export type MediaRef =
   | { kind: "url"; key: string; url: string }
-  | { kind: "svg"; key: string; svg: string; w: number; h: number };
+  | { kind: "svg"; key: string; svg: string; w: number; h: number }
+  | { kind: "gradient"; key: string; css: string; w: number; h: number; radius: number };
 
 /** Page's reply per ref: the resolved entry (or null) plus any warning to surface. */
 export interface ResolvedMedia {

@@ -27,10 +27,11 @@ pnpm test && pnpm typecheck
 pnpm lint
 pnpm run verify                   # Full pipeline — what CI's `verify` job runs
 
-# Validator (schema 3.6.0 — see 000-docs/SCHEMA_CHANGELOG.md)
+# Validator (schema 3.11.0 — see 000-docs/SCHEMA_CHANGELOG.md)
 python3 scripts/validate-skills-schema.py --verbose
 python3 scripts/validate-skills-schema.py --marketplace --verbose
 python3 scripts/validate-skills-schema.py --marketplace --populate-db freshie/inventory.sqlite
+python3 scripts/validate-skills-schema.py --agents-only --verbose   # agents only (kernel-strict gate)
 
 # Unicode hygiene gate — Trapdoor / Trojan Source defense for SKILL.md /
 # plugin.json / agent / command files. Default mode blocks on tag chars
@@ -121,6 +122,8 @@ Beyond the 8 required fields, schema 3.5.0+ adds optional visibility-gating fiel
 
 **Agents use `disallowedTools` (camelCase denylist).** Skills use `allowed-tools` (allowlist) AND optionally `disallowed-tools` (kebab-case denylist, schema 3.7.0+). The two field names are intentionally different — do NOT use camelCase on skills or kebab-case on agents; the validator rejects either mismatch. Agent-only fields: `effort`, `maxTurns`.
 
+**Agent gate is kernel-strict (schema 3.10.0, NOT tier-gated).** Every authored agent must carry the kernel-floor 8 (`name, description, tools, model, color, version, author, tags`) plus the enterprise live set (`disallowedTools`, `skills`, `background`; + `hooks`, `mcpServers`, `permissionMode` on standalone agents) — all **errors** at every tier. Banned fields (`capabilities`, `expertise_level`, `activation_priority`, `type`, `category`, `compatible-with`, `when_to_use`) are errors; `fable` is an accepted model. All 317 in-repo agents are at **A-grade** (least-privilege `tools`, Trigger-bearing descriptions, real tags). **Schema 3.11.0** added a body-vs-allowlist check: an agent whose body invokes `mcp__server__tool` not in its `tools` allowlist is an error (it would runtime-block). Validate with `--agents-only`.
+
 ### Optional frontmatter (schema 3.5.0 / 3.6.0 / 3.7.0 — all default to off)
 
 - **Visibility gating (3.5.0):** `requires_env` / `requires_tools` / `fallback_for_env` / `fallback_for_tools` — list-of-strings. Skill hidden unless deps met; fallback form is the inverse. Cross-field overlap (`requires_X` + `fallback_for_X` of same value) is an ERROR.
@@ -143,7 +146,7 @@ Two things grade frontmatter in this repo today, and the relationship between th
 Both are `continue-on-error: true`, neither is in the required-status set, and neither mutates anything:
 
 - **kernel-shadow soak** — `.github/workflows/kernel-shadow-validation.yml` + `scripts/kernel-shadow-validation.mjs`. Runs the kernel-pinned `skill-frontmatter` schema (from `@intentsolutions/core@0.4.1`) over the same SKILL.md corpus the prose-spec validator grades and logs per-file AGREE / DISAGREE deviation to `scripts/.kernel-shadow/report.json`. This is the DR-049 shadow soak (the "zero-on-corpus shadow signal"). The cutover-relevant number is the **frontmatter-scoped** deviation — a file that fails the prose-spec on missing `[body]` sections but has valid frontmatter is a scope difference, not a kernel gap, and is excluded.
-- **kernel-vendor-hash gate** — `.github/workflows/kernel-vendor-hash.yml` + `scripts/kernel-vendor-hash.mjs`. Enforces the version-coupling invariant **V ≤ C ≤ K** (vendored ≤ CCP-declared ≤ kernel-latest) plus a ≤7-day staleness bound. Soak-aware: it reads the `0.4.1` pin, polices ordering/staleness only, and must never pressure a pin bump or change validator authority.
+- **kernel-vendor-hash gate** — `.github/workflows/kernel-vendor-hash.yml` + `scripts/kernel-vendor-hash.mjs`. Enforces the version-coupling invariant **V ≤ C ≤ K** (vendored ≤ CCPI-declared ≤ kernel-latest) plus a ≤7-day staleness bound. Soak-aware: it reads the `0.4.1` pin, polices ordering/staleness only, and must never pressure a pin bump or change validator authority.
 
 The validator itself does a kernel-loaded **shadow read** of `ALWAYS_REQUIRED` (`load_kernel_required()` / `--kernel-shadow`) — it compares the kernel's effective required set against the hand-authored one and reports drift. The hand-authored `ALWAYS_REQUIRED` stays authoritative; the shadow read is observational only.
 

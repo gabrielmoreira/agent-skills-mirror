@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `deanpeters/Product-Manager-Skills` — 26 default patterns, 0 followed patterns, 119 file(s) materialized.
+Mirror of `deanpeters/Product-Manager-Skills` — 26 default patterns, 0 followed patterns, 122 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `deanpeters/Product-Manager-Skills` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 119 |
+| Files         | 122 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -156,28 +156,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 95 | ✓ | [`skills/saas-revenue-growth-metrics/SKILL.md`](skills/saas-revenue-growth-metrics/SKILL.md) |
 | 96 | ✓ | [`skills/saas-revenue-growth-metrics/template.md`](skills/saas-revenue-growth-metrics/template.md) |
 | 97 | ✓ | [`skills/skill-authoring-workflow/SKILL.md`](skills/skill-authoring-workflow/SKILL.md) |
-| 98 | ✓ | [`skills/storyboard/examples/sample.md`](skills/storyboard/examples/sample.md) |
-| 99 | ✓ | [`skills/storyboard/SKILL.md`](skills/storyboard/SKILL.md) |
-| 100 | ✓ | [`skills/storyboard/template.md`](skills/storyboard/template.md) |
-| 101 | ✓ | [`skills/tam-sam-som-calculator/examples/sample.md`](skills/tam-sam-som-calculator/examples/sample.md) |
-| 102 | ✓ | [`skills/tam-sam-som-calculator/scripts/market-sizing.py`](skills/tam-sam-som-calculator/scripts/market-sizing.py) |
-| 103 | ✓ | [`skills/tam-sam-som-calculator/SKILL.md`](skills/tam-sam-som-calculator/SKILL.md) |
-| 104 | ✓ | [`skills/tam-sam-som-calculator/template.md`](skills/tam-sam-som-calculator/template.md) |
-| 105 | ✓ | [`skills/user-story-mapping-workshop/SKILL.md`](skills/user-story-mapping-workshop/SKILL.md) |
-| 106 | ✓ | [`skills/user-story-mapping-workshop/template.md`](skills/user-story-mapping-workshop/template.md) |
-| 107 | ✓ | [`skills/user-story-mapping/examples/sample.md`](skills/user-story-mapping/examples/sample.md) |
-| 108 | ✓ | [`skills/user-story-mapping/SKILL.md`](skills/user-story-mapping/SKILL.md) |
-| 109 | ✓ | [`skills/user-story-mapping/template.md`](skills/user-story-mapping/template.md) |
-| 110 | ✓ | [`skills/user-story-splitting/examples/sample.md`](skills/user-story-splitting/examples/sample.md) |
-| 111 | ✓ | [`skills/user-story-splitting/SKILL.md`](skills/user-story-splitting/SKILL.md) |
-| 112 | ✓ | [`skills/user-story-splitting/template.md`](skills/user-story-splitting/template.md) |
-| 113 | ✓ | [`skills/user-story/examples/sample.md`](skills/user-story/examples/sample.md) |
-| 114 | ✓ | [`skills/user-story/scripts/user-story-template.py`](skills/user-story/scripts/user-story-template.py) |
-| 115 | ✓ | [`skills/user-story/SKILL.md`](skills/user-story/SKILL.md) |
-| 116 | ✓ | [`skills/user-story/template.md`](skills/user-story/template.md) |
-| 117 | ✓ | [`skills/vp-cpo-readiness-advisor/examples/conversation-flow.md`](skills/vp-cpo-readiness-advisor/examples/conversation-flow.md) |
-| 118 | ✓ | [`skills/vp-cpo-readiness-advisor/SKILL.md`](skills/vp-cpo-readiness-advisor/SKILL.md) |
-| 119 | ✓ | [`skills/workshop-facilitation/SKILL.md`](skills/workshop-facilitation/SKILL.md) |
+| 98 | ✓ | [`skills/stakeholder-engagement-advisor/SKILL.md`](skills/stakeholder-engagement-advisor/SKILL.md) |
+| 99 | ✓ | [`skills/stakeholder-identification/SKILL.md`](skills/stakeholder-identification/SKILL.md) |
+| 100 | ✓ | [`skills/stakeholder-mapping/SKILL.md`](skills/stakeholder-mapping/SKILL.md) |
+| 101 | ✓ | [`skills/storyboard/examples/sample.md`](skills/storyboard/examples/sample.md) |
+| 102 | ✓ | [`skills/storyboard/SKILL.md`](skills/storyboard/SKILL.md) |
+| 103 | ✓ | [`skills/storyboard/template.md`](skills/storyboard/template.md) |
+| 104 | ✓ | [`skills/tam-sam-som-calculator/examples/sample.md`](skills/tam-sam-som-calculator/examples/sample.md) |
+| 105 | ✓ | [`skills/tam-sam-som-calculator/scripts/market-sizing.py`](skills/tam-sam-som-calculator/scripts/market-sizing.py) |
+| 106 | ✓ | [`skills/tam-sam-som-calculator/SKILL.md`](skills/tam-sam-som-calculator/SKILL.md) |
+| 107 | ✓ | [`skills/tam-sam-som-calculator/template.md`](skills/tam-sam-som-calculator/template.md) |
+| 108 | ✓ | [`skills/user-story-mapping-workshop/SKILL.md`](skills/user-story-mapping-workshop/SKILL.md) |
+| 109 | ✓ | [`skills/user-story-mapping-workshop/template.md`](skills/user-story-mapping-workshop/template.md) |
+| 110 | ✓ | [`skills/user-story-mapping/examples/sample.md`](skills/user-story-mapping/examples/sample.md) |
+| 111 | ✓ | [`skills/user-story-mapping/SKILL.md`](skills/user-story-mapping/SKILL.md) |
+| 112 | ✓ | [`skills/user-story-mapping/template.md`](skills/user-story-mapping/template.md) |
+| 113 | ✓ | [`skills/user-story-splitting/examples/sample.md`](skills/user-story-splitting/examples/sample.md) |
+| 114 | ✓ | [`skills/user-story-splitting/SKILL.md`](skills/user-story-splitting/SKILL.md) |
+| 115 | ✓ | [`skills/user-story-splitting/template.md`](skills/user-story-splitting/template.md) |
+| 116 | ✓ | [`skills/user-story/examples/sample.md`](skills/user-story/examples/sample.md) |
+| 117 | ✓ | [`skills/user-story/scripts/user-story-template.py`](skills/user-story/scripts/user-story-template.py) |
+| 118 | ✓ | [`skills/user-story/SKILL.md`](skills/user-story/SKILL.md) |
+| 119 | ✓ | [`skills/user-story/template.md`](skills/user-story/template.md) |
+| 120 | ✓ | [`skills/vp-cpo-readiness-advisor/examples/conversation-flow.md`](skills/vp-cpo-readiness-advisor/examples/conversation-flow.md) |
+| 121 | ✓ | [`skills/vp-cpo-readiness-advisor/SKILL.md`](skills/vp-cpo-readiness-advisor/SKILL.md) |
+| 122 | ✓ | [`skills/workshop-facilitation/SKILL.md`](skills/workshop-facilitation/SKILL.md) |
 
 ---
 

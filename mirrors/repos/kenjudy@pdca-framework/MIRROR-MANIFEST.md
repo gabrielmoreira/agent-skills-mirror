@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kenjudy/pdca-framework` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `kenjudy/pdca-framework` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kenjudy/pdca-framework` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,21 +61,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`claude-skill/pdca-framework/SKILL.md`](claude-skill/pdca-framework/SKILL.md) |
-| 3 | ✓ | [`claude-skill/pdca-scaffold-workspace/iteration-1/eval-churn-analysis/with_skill/outputs/churn-analysis-pdca/SKILL.md`](claude-skill/pdca-scaffold-workspace/iteration-1/eval-churn-analysis/with_skill/outputs/churn-analysis-pdca/SKILL.md) |
-| 4 | ✓ | [`claude-skill/pdca-scaffold-workspace/iteration-1/eval-churn-analysis/with_skill/outputs/SKILL.md`](claude-skill/pdca-scaffold-workspace/iteration-1/eval-churn-analysis/with_skill/outputs/SKILL.md) |
-| 5 | ✓ | [`claude-skill/pdca-scaffold-workspace/iteration-1/eval-client-reporting/with_skill/outputs/client-reporting-pdca/SKILL.md`](claude-skill/pdca-scaffold-workspace/iteration-1/eval-client-reporting/with_skill/outputs/client-reporting-pdca/SKILL.md) |
-| 6 | ✓ | [`claude-skill/pdca-scaffold-workspace/iteration-1/eval-client-reporting/with_skill/outputs/SKILL.md`](claude-skill/pdca-scaffold-workspace/iteration-1/eval-client-reporting/with_skill/outputs/SKILL.md) |
-| 7 | ✓ | [`claude-skill/pdca-scaffold-workspace/iteration-1/eval-podcast-production/with_skill/outputs/podcast-production-pdca/SKILL.md`](claude-skill/pdca-scaffold-workspace/iteration-1/eval-podcast-production/with_skill/outputs/podcast-production-pdca/SKILL.md) |
-| 8 | ✓ | [`claude-skill/pdca-scaffold-workspace/iteration-1/eval-podcast-production/with_skill/outputs/SKILL.md`](claude-skill/pdca-scaffold-workspace/iteration-1/eval-podcast-production/with_skill/outputs/SKILL.md) |
-| 9 | ✓ | [`claude-skill/pdca-scaffold-workspace/iteration-2/eval-churn-analysis/with_skill/outputs/churn-analysis-pdca/SKILL.md`](claude-skill/pdca-scaffold-workspace/iteration-2/eval-churn-analysis/with_skill/outputs/churn-analysis-pdca/SKILL.md) |
-| 10 | ✓ | [`claude-skill/pdca-scaffold-workspace/iteration-2/eval-churn-analysis/with_skill/outputs/SKILL.md`](claude-skill/pdca-scaffold-workspace/iteration-2/eval-churn-analysis/with_skill/outputs/SKILL.md) |
-| 11 | ✓ | [`claude-skill/pdca-scaffold-workspace/iteration-2/eval-client-reporting/with_skill/outputs/client-reporting-pdca/SKILL.md`](claude-skill/pdca-scaffold-workspace/iteration-2/eval-client-reporting/with_skill/outputs/client-reporting-pdca/SKILL.md) |
-| 12 | ✓ | [`claude-skill/pdca-scaffold-workspace/iteration-2/eval-client-reporting/with_skill/outputs/SKILL.md`](claude-skill/pdca-scaffold-workspace/iteration-2/eval-client-reporting/with_skill/outputs/SKILL.md) |
-| 13 | ✓ | [`claude-skill/pdca-scaffold-workspace/iteration-2/eval-podcast-production/with_skill/outputs/podcast-production-pdca/SKILL.md`](claude-skill/pdca-scaffold-workspace/iteration-2/eval-podcast-production/with_skill/outputs/podcast-production-pdca/SKILL.md) |
-| 14 | ✓ | [`claude-skill/pdca-scaffold-workspace/iteration-2/eval-podcast-production/with_skill/outputs/SKILL.md`](claude-skill/pdca-scaffold-workspace/iteration-2/eval-podcast-production/with_skill/outputs/SKILL.md) |
-| 15 | ✓ | [`claude-skill/pdca-scaffold/SKILL.md`](claude-skill/pdca-scaffold/SKILL.md) |
-| 16 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 17 | ✓ | [`scaffolded-skills/daily-retro-pdca/SKILL.md`](scaffolded-skills/daily-retro-pdca/SKILL.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

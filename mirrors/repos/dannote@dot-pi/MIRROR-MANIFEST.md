@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `dannote/dot-pi` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
+Mirror of `dannote/dot-pi` — 26 default patterns, 0 followed patterns, 45 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dannote/dot-pi` — 26 default patterns, 0 followed patterns, 37 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 37 |
+| Files         | 45 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,40 +62,48 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`prompts/all.md`](prompts/all.md) |
 | 3 | ✓ | [`prompts/ar.md`](prompts/ar.md) |
-| 4 | ✓ | [`prompts/ga.md`](prompts/ga.md) |
-| 5 | ✓ | [`prompts/gaa.md`](prompts/gaa.md) |
-| 6 | ✓ | [`prompts/lgtm.md`](prompts/lgtm.md) |
-| 7 | ✓ | [`prompts/nobc.md`](prompts/nobc.md) |
-| 8 | ✓ | [`prompts/push.md`](prompts/push.md) |
-| 9 | ✓ | [`prompts/release.md`](prompts/release.md) |
-| 10 | ✓ | [`prompts/retry.md`](prompts/retry.md) |
-| 11 | ✓ | [`prompts/verify.md`](prompts/verify.md) |
-| 12 | ✓ | [`skills/agent-browser/SKILL.md`](skills/agent-browser/SKILL.md) |
-| 13 | ✓ | [`skills/ai-news/SKILL.md`](skills/ai-news/SKILL.md) |
-| 14 | ✓ | [`skills/applescript/SKILL.md`](skills/applescript/SKILL.md) |
-| 15 | ✓ | [`skills/bird/SKILL.md`](skills/bird/SKILL.md) |
-| 16 | ✓ | [`skills/chat-to-skill/SKILL.md`](skills/chat-to-skill/SKILL.md) |
-| 17 | ✓ | [`skills/extra/dont-anger-mario/SKILL.md`](skills/extra/dont-anger-mario/SKILL.md) |
-| 18 | ✓ | [`skills/github-issues/SKILL.md`](skills/github-issues/SKILL.md) |
-| 19 | ✓ | [`skills/keyboard-layout-decoder/convert-layout.d.ts`](skills/keyboard-layout-decoder/convert-layout.d.ts) |
-| 20 | ✓ | [`skills/keyboard-layout-decoder/decoder.ts`](skills/keyboard-layout-decoder/decoder.ts) |
-| 21 | ✓ | [`skills/keyboard-layout-decoder/package.json`](skills/keyboard-layout-decoder/package.json) |
-| 22 | ✓ | [`skills/keyboard-layout-decoder/SKILL.md`](skills/keyboard-layout-decoder/SKILL.md) |
-| 23 | ✓ | [`skills/session-reflect/package.json`](skills/session-reflect/package.json) |
-| 24 | ✓ | [`skills/session-reflect/references/intervention-events.md`](skills/session-reflect/references/intervention-events.md) |
-| 25 | ✓ | [`skills/session-reflect/references/query-cookbook.md`](skills/session-reflect/references/query-cookbook.md) |
-| 26 | ✓ | [`skills/session-reflect/references/reflection-protocol.md`](skills/session-reflect/references/reflection-protocol.md) |
-| 27 | ✓ | [`skills/session-reflect/scripts/output.ts`](skills/session-reflect/scripts/output.ts) |
-| 28 | ✓ | [`skills/session-reflect/scripts/session-db.ts`](skills/session-reflect/scripts/session-db.ts) |
-| 29 | ✓ | [`skills/session-reflect/scripts/sql.ts`](skills/session-reflect/scripts/sql.ts) |
-| 30 | ✓ | [`skills/session-reflect/SKILL.md`](skills/session-reflect/SKILL.md) |
-| 31 | ✓ | [`skills/session-reflect/tests/output.test.ts`](skills/session-reflect/tests/output.test.ts) |
-| 32 | ✓ | [`skills/session-reflect/tests/session-db.integration.ts`](skills/session-reflect/tests/session-db.integration.ts) |
-| 33 | ✓ | [`skills/session-reflect/tests/sql.test.ts`](skills/session-reflect/tests/sql.test.ts) |
-| 34 | ✓ | [`skills/session-reflect/tsconfig.json`](skills/session-reflect/tsconfig.json) |
-| 35 | ✓ | [`skills/session-reflect/types/session-reflect-deps.d.ts`](skills/session-reflect/types/session-reflect-deps.d.ts) |
-| 36 | ✓ | [`skills/skill-discovery/SKILL.md`](skills/skill-discovery/SKILL.md) |
-| 37 | ✓ | [`skills/vibe-merge/SKILL.md`](skills/vibe-merge/SKILL.md) |
+| 4 | ✓ | [`prompts/big.md`](prompts/big.md) |
+| 5 | ✓ | [`prompts/ga.md`](prompts/ga.md) |
+| 6 | ✓ | [`prompts/gaa.md`](prompts/gaa.md) |
+| 7 | ✓ | [`prompts/ground.md`](prompts/ground.md) |
+| 8 | ✓ | [`prompts/lgtm.md`](prompts/lgtm.md) |
+| 9 | ✓ | [`prompts/minimal.md`](prompts/minimal.md) |
+| 10 | ✓ | [`prompts/nobc.md`](prompts/nobc.md) |
+| 11 | ✓ | [`prompts/proper.md`](prompts/proper.md) |
+| 12 | ✓ | [`prompts/push.md`](prompts/push.md) |
+| 13 | ✓ | [`prompts/release.md`](prompts/release.md) |
+| 14 | ✓ | [`prompts/retry.md`](prompts/retry.md) |
+| 15 | ✓ | [`prompts/rtfm.md`](prompts/rtfm.md) |
+| 16 | ✓ | [`prompts/steps.md`](prompts/steps.md) |
+| 17 | ✓ | [`prompts/stop.md`](prompts/stop.md) |
+| 18 | ✓ | [`prompts/verify.md`](prompts/verify.md) |
+| 19 | ✓ | [`prompts/wn.md`](prompts/wn.md) |
+| 20 | ✓ | [`skills/agent-browser/SKILL.md`](skills/agent-browser/SKILL.md) |
+| 21 | ✓ | [`skills/ai-news/SKILL.md`](skills/ai-news/SKILL.md) |
+| 22 | ✓ | [`skills/applescript/SKILL.md`](skills/applescript/SKILL.md) |
+| 23 | ✓ | [`skills/bird/SKILL.md`](skills/bird/SKILL.md) |
+| 24 | ✓ | [`skills/chat-to-skill/SKILL.md`](skills/chat-to-skill/SKILL.md) |
+| 25 | ✓ | [`skills/extra/dont-anger-mario/SKILL.md`](skills/extra/dont-anger-mario/SKILL.md) |
+| 26 | ✓ | [`skills/github-issues/SKILL.md`](skills/github-issues/SKILL.md) |
+| 27 | ✓ | [`skills/keyboard-layout-decoder/convert-layout.d.ts`](skills/keyboard-layout-decoder/convert-layout.d.ts) |
+| 28 | ✓ | [`skills/keyboard-layout-decoder/decoder.ts`](skills/keyboard-layout-decoder/decoder.ts) |
+| 29 | ✓ | [`skills/keyboard-layout-decoder/package.json`](skills/keyboard-layout-decoder/package.json) |
+| 30 | ✓ | [`skills/keyboard-layout-decoder/SKILL.md`](skills/keyboard-layout-decoder/SKILL.md) |
+| 31 | ✓ | [`skills/session-reflect/package.json`](skills/session-reflect/package.json) |
+| 32 | ✓ | [`skills/session-reflect/references/intervention-events.md`](skills/session-reflect/references/intervention-events.md) |
+| 33 | ✓ | [`skills/session-reflect/references/query-cookbook.md`](skills/session-reflect/references/query-cookbook.md) |
+| 34 | ✓ | [`skills/session-reflect/references/reflection-protocol.md`](skills/session-reflect/references/reflection-protocol.md) |
+| 35 | ✓ | [`skills/session-reflect/scripts/output.ts`](skills/session-reflect/scripts/output.ts) |
+| 36 | ✓ | [`skills/session-reflect/scripts/session-db.ts`](skills/session-reflect/scripts/session-db.ts) |
+| 37 | ✓ | [`skills/session-reflect/scripts/sql.ts`](skills/session-reflect/scripts/sql.ts) |
+| 38 | ✓ | [`skills/session-reflect/SKILL.md`](skills/session-reflect/SKILL.md) |
+| 39 | ✓ | [`skills/session-reflect/tests/output.test.ts`](skills/session-reflect/tests/output.test.ts) |
+| 40 | ✓ | [`skills/session-reflect/tests/session-db.integration.ts`](skills/session-reflect/tests/session-db.integration.ts) |
+| 41 | ✓ | [`skills/session-reflect/tests/sql.test.ts`](skills/session-reflect/tests/sql.test.ts) |
+| 42 | ✓ | [`skills/session-reflect/tsconfig.json`](skills/session-reflect/tsconfig.json) |
+| 43 | ✓ | [`skills/session-reflect/types/session-reflect-deps.d.ts`](skills/session-reflect/types/session-reflect-deps.d.ts) |
+| 44 | ✓ | [`skills/skill-discovery/SKILL.md`](skills/skill-discovery/SKILL.md) |
+| 45 | ✓ | [`skills/vibe-merge/SKILL.md`](skills/vibe-merge/SKILL.md) |
 
 ---
 

@@ -1,6 +1,14 @@
 # MCP Server
 
-A zero-dependency [Model Context Protocol](https://modelcontextprotocol.io) server that exposes this skill library to any MCP client (Claude Desktop, Cline, etc.). Instead of installing 172 files, your assistant can **search and pull skills on demand**.
+A zero-dependency [Model Context Protocol](https://modelcontextprotocol.io) server that exposes this skill library to **any MCP client** (Claude Code, Claude Desktop, Cursor, Windsurf, Cline…). Instead of installing 174 files, your assistant can **search and pull skills — and run workflow recipes — on demand**.
+
+## One-line install (Claude Code)
+
+```bash
+claude mcp add pm-skills -- npx -y pm-claude-skills-mcp
+```
+
+That's it — all 174 skills and 5 workflow recipes are now available in every Claude Code session, on any project.
 
 ## Tools
 
@@ -9,6 +17,8 @@ A zero-dependency [Model Context Protocol](https://modelcontextprotocol.io) serv
 | `list_skills` | List every skill (name, tier, one-line description). Optional `tier` filter. |
 | `search_skills` | Keyword search across name, description, and body — returns the best matches. |
 | `get_skill` | Return the full instructions for one skill by name, ready to apply. |
+| `list_workflows` | List workflow recipes — named chains of skills (e.g. ship-a-feature). |
+| `get_workflow` | Return one recipe: the ordered skills to run and what each produces. |
 
 ## Configure it
 
@@ -25,6 +35,8 @@ A zero-dependency [Model Context Protocol](https://modelcontextprotocol.io) serv
 }
 ```
 
+**Cursor / Windsurf / Cline** — add the same `mcpServers` block to the client's MCP config (`~/.cursor/mcp.json`, Windsurf settings, etc.).
+
 **From a local clone** (no npm install):
 
 ```json
@@ -38,7 +50,7 @@ A zero-dependency [Model Context Protocol](https://modelcontextprotocol.io) serv
 }
 ```
 
-Restart the client. Then ask it to *"search the skills for customer churn"* or *"get the rice-prioritisation skill and apply it to my backlog"* — it calls the tools automatically.
+Restart the client. Then ask it to *"search the skills for customer churn"*, *"get the rice-prioritisation skill and apply it to my backlog"*, or *"run the ship-a-feature workflow for a referral program"* — it calls the tools automatically.
 
 ## How it works
 

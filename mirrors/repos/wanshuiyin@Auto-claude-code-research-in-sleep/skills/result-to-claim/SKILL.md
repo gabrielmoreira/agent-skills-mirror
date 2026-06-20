@@ -222,9 +222,11 @@ See `shared-references/experiment-integrity.md` for the full integrity protocol.
 If `research-wiki/` exists, resolve `$WIKI_SCRIPT` per the canonical
 chain documented in
 [`shared-references/wiki-helper-resolution.md`](../shared-references/wiki-helper-resolution.md)
-(Variant B — warn-and-skip for caller skills). The verdict / claim
-status / idea-outcome page edits below run on raw markdown and don't
-need the helper, but edges, query-pack rebuild, and the log line do.
+(Variant B — warn-and-skip for caller skills). The verdict / idea-outcome
+page edits below run on raw markdown and don't need the helper, but edges,
+query-pack rebuild, and the log line do. **This skill never edits a claim's
+`status` field and never creates a claim node** — claims are born (and their
+proof `status` set) by `/proof-checker`; here we only attach experiment edges.
 
 ```bash
 cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)" || exit 1
@@ -240,24 +242,38 @@ WIKI_SCRIPT=".aris/tools/research_wiki.py"
 
 ```
 if research-wiki/ exists:
-    # 1. Create experiment page
-    Create research-wiki/experiments/<exp_id>.md with:
-      - node_id: exp:<id>
-      - idea_id: idea:<active_idea>
-      - date, hardware, duration, metrics
-      - verdict, confidence, reasoning summary
+    # 1. Create/refresh the experiment node FIRST (verdict OWNER → --update-on-exist so
+    #    a re-judge overwrites the stale verdict). The supports/invalidates edges in #2
+    #    point FROM exp:<id>, and add_edge does NOT verify node existence — so GATE those
+    #    edges on the experiment node having been born (EXP_NODE_OK), else they'd dangle
+    #    (the exact bug this closes). On failure: warn, skip the wiki edges, still report.
+    EXP_NODE_OK=0
+    if [ -n "$WIKI_SCRIPT" ]; then
+      if python3 "$WIKI_SCRIPT" add_experiment research-wiki/ \
+           --slug "<exp_id>" --idea "idea:<active_idea>" \
+           --verdict "<yes|partial|no>" --confidence "<high|medium|low>" \
+           --date "<date>" --hardware "<hw>" --duration "<dur>" \
+           --metrics "<key metrics>" --reasoning "<one-line why this verdict>" \
+           --provenance "<EXPERIMENT_AUDIT.md / run dir>" --update-on-exist; then
+        EXP_NODE_OK=1   # page written + idea--tested_by-->exp edge + index/query_pack rebuilt
+      else
+        echo "WARN: add_experiment failed for <exp_id>; skipping wiki edges (verdict still reported)." >&2
+      fi
+    fi
 
-    # 2. Update claim status (page edits run unconditionally; edges only if $WIKI_SCRIPT resolved)
-    for each claim resolved by this verdict:
+    # 2. Record empirical support as EDGES ONLY — and ONLY when the exp node was born
+    #    ([ "$EXP_NODE_OK" = 1 ]), so no edge dangles off a missing node. Never edit the
+    #    claim page's `status`: that is the PROOF axis (verified / refuted / unproven /
+    #    sound-modulo-imports / drafted / retracted), owned by /proof-checker (the claim
+    #    birth point) — "supported"/"invalidated" are NOT valid claim statuses. The claim
+    #    target should ALREADY be born by /proof-checker; add_edge does not verify it.
+    for each claim resolved by this verdict (only if [ "$EXP_NODE_OK" = 1 ]):
         if verdict == "yes":
-            Update claim page: status → supported
-            [ -n "$WIKI_SCRIPT" ] && python3 "$WIKI_SCRIPT" add_edge research-wiki/ --from "exp:<id>" --to "claim:<cid>" --type supports --evidence "<metric>"
+            python3 "$WIKI_SCRIPT" add_edge research-wiki/ --from "exp:<id>" --to "claim:<cid>" --type supports --evidence "<metric>"
         elif verdict == "partial":
-            Update claim page: status → partial
-            [ -n "$WIKI_SCRIPT" ] && python3 "$WIKI_SCRIPT" add_edge research-wiki/ --from "exp:<id>" --to "claim:<cid>" --type supports --evidence "partial"
+            python3 "$WIKI_SCRIPT" add_edge research-wiki/ --from "exp:<id>" --to "claim:<cid>" --type supports --evidence "partial: <metric>"
         else:
-            Update claim page: status → invalidated
-            [ -n "$WIKI_SCRIPT" ] && python3 "$WIKI_SCRIPT" add_edge research-wiki/ --from "exp:<id>" --to "claim:<cid>" --type invalidates --evidence "<why>"
+            python3 "$WIKI_SCRIPT" add_edge research-wiki/ --from "exp:<id>" --to "claim:<cid>" --type invalidates --evidence "<why>"
 
     # 3. Update idea outcome (raw markdown, helper-free)
     Update research-wiki/ideas/<idea_id>.md:

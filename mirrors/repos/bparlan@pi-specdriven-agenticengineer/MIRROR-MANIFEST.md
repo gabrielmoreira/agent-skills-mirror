@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bparlan/pi-specdriven-agenticengineer` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `bparlan/pi-specdriven-agenticengineer` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bparlan/pi-specdriven-agenticengineer` — 26 default patterns, 0 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,17 +59,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`agents/implementer.md`](agents/implementer.md) |
-| 2 | ✓ | [`agents/planner.md`](agents/planner.md) |
-| 3 | ✓ | [`agents/spec-engineer.md`](agents/spec-engineer.md) |
-| 4 | ✓ | [`agents/test-engineer.md`](agents/test-engineer.md) |
-| 5 | ✓ | [`agents/verifier.md`](agents/verifier.md) |
-| 6 | ✓ | [`memory/AGENTS.md`](memory/AGENTS.md) |
-| 7 | ✓ | [`prompts/spec-and-plan.md`](prompts/spec-and-plan.md) |
-| 8 | ✓ | [`prompts/test-and-implement.md`](prompts/test-and-implement.md) |
-| 9 | ✓ | [`prompts/verify-and-commit.md`](prompts/verify-and-commit.md) |
-| 10 | ✓ | [`skills/spec-engineer/README.md`](skills/spec-engineer/README.md) |
-| 11 | ✓ | [`skills/spec-engineer/SKILL.md`](skills/spec-engineer/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`extensions/code-search/SKILL.md`](extensions/code-search/SKILL.md) |
+| 3 | ✓ | [`node_modules/pi-planning-with-files/examples.md`](node_modules/pi-planning-with-files/examples.md) |
+| 4 | ✓ | [`node_modules/pi-planning-with-files/reference.md`](node_modules/pi-planning-with-files/reference.md) |
+| 5 | ✓ | [`node_modules/pi-planning-with-files/SKILL.md`](node_modules/pi-planning-with-files/SKILL.md) |
+| 6 | ✓ | [`skills/.DS_Store`](skills/.DS_Store) |
+| 7 | ✓ | [`skills/archive/SKILL.md`](skills/archive/SKILL.md) |
+| 8 | ✓ | [`skills/careful/SKILL.md`](skills/careful/SKILL.md) |
+| 9 | ✓ | [`skills/debug/SKILL.md`](skills/debug/SKILL.md) |
+| 10 | ✓ | [`skills/last30days/README.md`](skills/last30days/README.md) |
+| 11 | ✓ | [`skills/last30days/scripts/check-health.sh`](skills/last30days/scripts/check-health.sh) |
+| 12 | ✓ | [`skills/last30days/scripts/last30days.py`](skills/last30days/scripts/last30days.py) |
+| 13 | ✓ | [`skills/last30days/scripts/last30days.sh`](skills/last30days/scripts/last30days.sh) |
+| 14 | ✓ | [`skills/last30days/SKILL.md`](skills/last30days/SKILL.md) |
+| 15 | ✓ | [`skills/safe-update/SKILL.md`](skills/safe-update/SKILL.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/hve-core` — 26 default patterns, 3 followed patterns, 237 file(s) materialized.
+Mirror of `microsoft/hve-core` — 26 default patterns, 3 followed patterns, 233 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/hve-core` — 26 default patterns, 3 followed patterns, 237
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 237 |
+| Files         | 233 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -207,97 +207,93 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 144 | ✓ | [`.github/prompts/security/sssc-from-brd.prompt.md`](.github/prompts/security/sssc-from-brd.prompt.md) |
 | 145 | ✓ | [`.github/prompts/security/sssc-from-prd.prompt.md`](.github/prompts/security/sssc-from-prd.prompt.md) |
 | 146 | ✓ | [`.github/prompts/security/sssc-from-security-plan.prompt.md`](.github/prompts/security/sssc-from-security-plan.prompt.md) |
-| 147 | ✓ | [`.github/skills/accessibility/aria-apg/SKILL.md`](.github/skills/accessibility/aria-apg/SKILL.md) |
-| 148 | ✓ | [`.github/skills/accessibility/coga/SKILL.md`](.github/skills/accessibility/coga/SKILL.md) |
-| 149 | ✓ | [`.github/skills/accessibility/en-301-549/SKILL.md`](.github/skills/accessibility/en-301-549/SKILL.md) |
-| 150 | ✓ | [`.github/skills/accessibility/section-508/SKILL.md`](.github/skills/accessibility/section-508/SKILL.md) |
-| 151 | ✓ | [`.github/skills/accessibility/wcag-22/SKILL.md`](.github/skills/accessibility/wcag-22/SKILL.md) |
-| 152 | ✓ | [`.github/skills/coding-standards/python-foundational/SKILL.md`](.github/skills/coding-standards/python-foundational/SKILL.md) |
-| 153 | ✓ | [`.github/skills/design-thinking/dt-coaching-foundation/SKILL.md`](.github/skills/design-thinking/dt-coaching-foundation/SKILL.md) |
-| 154 | ✓ | [`.github/skills/design-thinking/dt-curriculum/SKILL.md`](.github/skills/design-thinking/dt-curriculum/SKILL.md) |
-| 155 | ✓ | [`.github/skills/design-thinking/dt-methods/SKILL.md`](.github/skills/design-thinking/dt-methods/SKILL.md) |
-| 156 | ✓ | [`.github/skills/design-thinking/dt-rpi-integration/SKILL.md`](.github/skills/design-thinking/dt-rpi-integration/SKILL.md) |
-| 157 | ✓ | [`.github/skills/experimental/customer-card-render/SKILL.md`](.github/skills/experimental/customer-card-render/SKILL.md) |
-| 158 | ✓ | [`.github/skills/experimental/mural/SECURITY.md`](.github/skills/experimental/mural/SECURITY.md) |
-| 159 | ✓ | [`.github/skills/experimental/mural/SKILL.md`](.github/skills/experimental/mural/SKILL.md) |
-| 160 | ✓ | [`.github/skills/experimental/powerpoint/content-extra-py-template.md`](.github/skills/experimental/powerpoint/content-extra-py-template.md) |
-| 161 | ✓ | [`.github/skills/experimental/powerpoint/content-yaml-template.md`](.github/skills/experimental/powerpoint/content-yaml-template.md) |
-| 162 | ✓ | [`.github/skills/experimental/powerpoint/SKILL.md`](.github/skills/experimental/powerpoint/SKILL.md) |
-| 163 | ✓ | [`.github/skills/experimental/powerpoint/style-yaml-template.md`](.github/skills/experimental/powerpoint/style-yaml-template.md) |
-| 164 | ✓ | [`.github/skills/experimental/tts-voiceover/SKILL.md`](.github/skills/experimental/tts-voiceover/SKILL.md) |
-| 165 | ✓ | [`.github/skills/experimental/video-to-gif/SKILL.md`](.github/skills/experimental/video-to-gif/SKILL.md) |
-| 166 | ✓ | [`.github/skills/experimental/vscode-playwright/SKILL.md`](.github/skills/experimental/vscode-playwright/SKILL.md) |
-| 167 | ✓ | [`.github/skills/github/gh-code-scanning/SKILL.md`](.github/skills/github/gh-code-scanning/SKILL.md) |
-| 168 | ✓ | [`.github/skills/gitlab/gitlab/SKILL.md`](.github/skills/gitlab/gitlab/SKILL.md) |
-| 169 | ✓ | [`.github/skills/hve-core/vally-tests/references/eval-suite-routing.md`](.github/skills/hve-core/vally-tests/references/eval-suite-routing.md) |
-| 170 | ✓ | [`.github/skills/hve-core/vally-tests/references/grader-catalog.md`](.github/skills/hve-core/vally-tests/references/grader-catalog.md) |
-| 171 | ✓ | [`.github/skills/hve-core/vally-tests/references/instructions.md`](.github/skills/hve-core/vally-tests/references/instructions.md) |
-| 172 | ✓ | [`.github/skills/hve-core/vally-tests/references/prompts.md`](.github/skills/hve-core/vally-tests/references/prompts.md) |
-| 173 | ✓ | [`.github/skills/hve-core/vally-tests/references/refusal-taxonomy.md`](.github/skills/hve-core/vally-tests/references/refusal-taxonomy.md) |
-| 174 | ✓ | [`.github/skills/hve-core/vally-tests/references/skills.md`](.github/skills/hve-core/vally-tests/references/skills.md) |
-| 175 | ✓ | [`.github/skills/hve-core/vally-tests/SKILL.md`](.github/skills/hve-core/vally-tests/SKILL.md) |
-| 176 | ✓ | [`.github/skills/installer/hve-core-installer/SKILL.md`](.github/skills/installer/hve-core-installer/SKILL.md) |
-| 177 | ✓ | [`.github/skills/jira/jira/SKILL.md`](.github/skills/jira/jira/SKILL.md) |
-| 178 | ✓ | [`.github/skills/project-planning/accessibility-planner-playbook/SKILL.md`](.github/skills/project-planning/accessibility-planner-playbook/SKILL.md) |
-| 179 | ✓ | [`.github/skills/project-planning/adr-author/SKILL.md`](.github/skills/project-planning/adr-author/SKILL.md) |
-| 180 | ✓ | [`.github/skills/project-planning/rai-planner/references/security-model.md`](.github/skills/project-planning/rai-planner/references/security-model.md) |
-| 181 | ✓ | [`.github/skills/project-planning/rai-planner/SKILL.md`](.github/skills/project-planning/rai-planner/SKILL.md) |
-| 182 | ✓ | [`.github/skills/project-planning/requirements-author/SKILL.md`](.github/skills/project-planning/requirements-author/SKILL.md) |
-| 183 | ✓ | [`.github/skills/project-planning/security-planning/SKILL.md`](.github/skills/project-planning/security-planning/SKILL.md) |
-| 184 | ✓ | [`.github/skills/rai/rai-standards/SKILL.md`](.github/skills/rai/rai-standards/SKILL.md) |
-| 185 | ✓ | [`.github/skills/security/owasp-agentic/SKILL.md`](.github/skills/security/owasp-agentic/SKILL.md) |
-| 186 | ✓ | [`.github/skills/security/owasp-cicd/SKILL.md`](.github/skills/security/owasp-cicd/SKILL.md) |
-| 187 | ✓ | [`.github/skills/security/owasp-docker/SKILL.md`](.github/skills/security/owasp-docker/SKILL.md) |
-| 188 | ✓ | [`.github/skills/security/owasp-infrastructure/SKILL.md`](.github/skills/security/owasp-infrastructure/SKILL.md) |
-| 189 | ✓ | [`.github/skills/security/owasp-llm/SKILL.md`](.github/skills/security/owasp-llm/SKILL.md) |
-| 190 | ✓ | [`.github/skills/security/owasp-mcp/SKILL.md`](.github/skills/security/owasp-mcp/SKILL.md) |
-| 191 | ✓ | [`.github/skills/security/owasp-top-10/SKILL.md`](.github/skills/security/owasp-top-10/SKILL.md) |
-| 192 | ✓ | [`.github/skills/security/secure-by-design/SKILL.md`](.github/skills/security/secure-by-design/SKILL.md) |
-| 193 | ✓ | [`.github/skills/security/security-reviewer-formats/SKILL.md`](.github/skills/security/security-reviewer-formats/SKILL.md) |
-| 194 | ✓ | [`.github/skills/security/supply-chain-security/SKILL.md`](.github/skills/security/supply-chain-security/SKILL.md) |
-| 195 | ✓ | [`.github/skills/shared/backlog-templates/SKILL.md`](.github/skills/shared/backlog-templates/SKILL.md) |
-| 196 | ✓ | [`.github/skills/shared/pr-reference/SKILL.md`](.github/skills/shared/pr-reference/SKILL.md) |
-| 197 | ✓ | [`.github/skills/shared/telemetry-foundations/SKILL.md`](.github/skills/shared/telemetry-foundations/SKILL.md) |
-| 198 | ✓ | [`docs/contributing/ai-artifacts-common.md`](docs/contributing/ai-artifacts-common.md) |
-| 199 | ✓ | [`docs/contributing/custom-agents.md`](docs/contributing/custom-agents.md) |
-| 200 | ✓ | [`docs/contributing/instructions.md`](docs/contributing/instructions.md) |
-| 201 | ✓ | [`docs/contributing/prompts.md`](docs/contributing/prompts.md) |
-| 202 | ✓ | [`docs/contributing/skills.md`](docs/contributing/skills.md) |
-| 203 | ✓ | [`docs/customization/custom-agents.md`](docs/customization/custom-agents.md) |
-| 204 | ✓ | [`docs/customization/instructions.md`](docs/customization/instructions.md) |
-| 205 | ✓ | [`docs/customization/prompts.md`](docs/customization/prompts.md) |
-| 206 | ✓ | [`docs/customization/skills.md`](docs/customization/skills.md) |
-| 207 | ✓ | [`docs/security/dependency-pinning.md`](docs/security/dependency-pinning.md) |
-| 208 | ✓ | [`docs/security/fuzzing.md`](docs/security/fuzzing.md) |
-| 209 | ✓ | [`docs/security/security-model.md`](docs/security/security-model.md) |
-| 210 | ✓ | [`plugins/coding-standards/instructions/coding-standards/csharp/csharp.instructions.md`](plugins/coding-standards/instructions/coding-standards/csharp/csharp.instructions.md) |
-| 211 | ✓ | [`plugins/coding-standards/instructions/coding-standards/python-script.instructions.md`](plugins/coding-standards/instructions/coding-standards/python-script.instructions.md) |
-| 212 | ✓ | [`plugins/coding-standards/instructions/coding-standards/rust/rust.instructions.md`](plugins/coding-standards/instructions/coding-standards/rust/rust.instructions.md) |
-| 213 | ✓ | [`plugins/data-science/instructions/coding-standards/python-script.instructions.md`](plugins/data-science/instructions/coding-standards/python-script.instructions.md) |
-| 214 | ✓ | [`plugins/experimental/instructions/experimental/mural/mural-destinations.instructions.md`](plugins/experimental/instructions/experimental/mural/mural-destinations.instructions.md) |
-| 215 | ✓ | [`plugins/experimental/instructions/experimental/mural/mural-human-record.instructions.md`](plugins/experimental/instructions/experimental/mural/mural-human-record.instructions.md) |
-| 216 | ✓ | [`plugins/experimental/instructions/experimental/mural/mural-writeback-hygiene.instructions.md`](plugins/experimental/instructions/experimental/mural/mural-writeback-hygiene.instructions.md) |
-| 217 | ✓ | [`plugins/experimental/instructions/experimental/mural/mural-writing-style.instructions.md`](plugins/experimental/instructions/experimental/mural/mural-writing-style.instructions.md) |
-| 218 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/csharp/csharp.instructions.md`](plugins/hve-core-all/instructions/coding-standards/csharp/csharp.instructions.md) |
-| 219 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/python-script.instructions.md`](plugins/hve-core-all/instructions/coding-standards/python-script.instructions.md) |
-| 220 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/rust/rust.instructions.md`](plugins/hve-core-all/instructions/coding-standards/rust/rust.instructions.md) |
-| 221 | ✓ | [`plugins/hve-core-all/instructions/experimental/mural/mural-destinations.instructions.md`](plugins/hve-core-all/instructions/experimental/mural/mural-destinations.instructions.md) |
-| 222 | ✓ | [`plugins/hve-core-all/instructions/experimental/mural/mural-human-record.instructions.md`](plugins/hve-core-all/instructions/experimental/mural/mural-human-record.instructions.md) |
-| 223 | ✓ | [`plugins/hve-core-all/instructions/experimental/mural/mural-writeback-hygiene.instructions.md`](plugins/hve-core-all/instructions/experimental/mural/mural-writeback-hygiene.instructions.md) |
-| 224 | ✓ | [`plugins/hve-core-all/instructions/experimental/mural/mural-writing-style.instructions.md`](plugins/hve-core-all/instructions/experimental/mural/mural-writing-style.instructions.md) |
-| 225 | ✓ | [`plugins/hve-core-all/instructions/hve-core/pull-request.instructions.md`](plugins/hve-core-all/instructions/hve-core/pull-request.instructions.md) |
-| 226 | ✓ | [`plugins/hve-core/instructions/experimental/mural/mural-destinations.instructions.md`](plugins/hve-core/instructions/experimental/mural/mural-destinations.instructions.md) |
-| 227 | ✓ | [`plugins/hve-core/instructions/experimental/mural/mural-human-record.instructions.md`](plugins/hve-core/instructions/experimental/mural/mural-human-record.instructions.md) |
-| 228 | ✓ | [`plugins/hve-core/instructions/experimental/mural/mural-writeback-hygiene.instructions.md`](plugins/hve-core/instructions/experimental/mural/mural-writeback-hygiene.instructions.md) |
-| 229 | ✓ | [`plugins/hve-core/instructions/experimental/mural/mural-writing-style.instructions.md`](plugins/hve-core/instructions/experimental/mural/mural-writing-style.instructions.md) |
-| 230 | ✓ | [`plugins/hve-core/instructions/hve-core/pull-request.instructions.md`](plugins/hve-core/instructions/hve-core/pull-request.instructions.md) |
-| 231 | ✓ | [`plugins/project-planning/instructions/experimental/mural/mural-destinations.instructions.md`](plugins/project-planning/instructions/experimental/mural/mural-destinations.instructions.md) |
-| 232 | ✓ | [`plugins/project-planning/instructions/experimental/mural/mural-human-record.instructions.md`](plugins/project-planning/instructions/experimental/mural/mural-human-record.instructions.md) |
-| 233 | ✓ | [`plugins/project-planning/instructions/experimental/mural/mural-writeback-hygiene.instructions.md`](plugins/project-planning/instructions/experimental/mural/mural-writeback-hygiene.instructions.md) |
-| 234 | ✓ | [`plugins/project-planning/instructions/experimental/mural/mural-writing-style.instructions.md`](plugins/project-planning/instructions/experimental/mural/mural-writing-style.instructions.md) |
-| 235 | → | [`docs/security/README.md`](docs/security/README.md) |
-| 236 | → | [`docs/security/sbom-verification.md`](docs/security/sbom-verification.md) |
-| 237 | → | [`SECURITY.md`](SECURITY.md) |
+| 147 | ✓ | [`.github/skills/accessibility/accessibility/SKILL.md`](.github/skills/accessibility/accessibility/SKILL.md) |
+| 148 | ✓ | [`.github/skills/coding-standards/python-foundational/SKILL.md`](.github/skills/coding-standards/python-foundational/SKILL.md) |
+| 149 | ✓ | [`.github/skills/design-thinking/dt-coaching-foundation/SKILL.md`](.github/skills/design-thinking/dt-coaching-foundation/SKILL.md) |
+| 150 | ✓ | [`.github/skills/design-thinking/dt-curriculum/SKILL.md`](.github/skills/design-thinking/dt-curriculum/SKILL.md) |
+| 151 | ✓ | [`.github/skills/design-thinking/dt-methods/SKILL.md`](.github/skills/design-thinking/dt-methods/SKILL.md) |
+| 152 | ✓ | [`.github/skills/design-thinking/dt-rpi-integration/SKILL.md`](.github/skills/design-thinking/dt-rpi-integration/SKILL.md) |
+| 153 | ✓ | [`.github/skills/experimental/customer-card-render/SKILL.md`](.github/skills/experimental/customer-card-render/SKILL.md) |
+| 154 | ✓ | [`.github/skills/experimental/mural/SECURITY.md`](.github/skills/experimental/mural/SECURITY.md) |
+| 155 | ✓ | [`.github/skills/experimental/mural/SKILL.md`](.github/skills/experimental/mural/SKILL.md) |
+| 156 | ✓ | [`.github/skills/experimental/powerpoint/content-extra-py-template.md`](.github/skills/experimental/powerpoint/content-extra-py-template.md) |
+| 157 | ✓ | [`.github/skills/experimental/powerpoint/content-yaml-template.md`](.github/skills/experimental/powerpoint/content-yaml-template.md) |
+| 158 | ✓ | [`.github/skills/experimental/powerpoint/SKILL.md`](.github/skills/experimental/powerpoint/SKILL.md) |
+| 159 | ✓ | [`.github/skills/experimental/powerpoint/style-yaml-template.md`](.github/skills/experimental/powerpoint/style-yaml-template.md) |
+| 160 | ✓ | [`.github/skills/experimental/tts-voiceover/SKILL.md`](.github/skills/experimental/tts-voiceover/SKILL.md) |
+| 161 | ✓ | [`.github/skills/experimental/video-to-gif/SKILL.md`](.github/skills/experimental/video-to-gif/SKILL.md) |
+| 162 | ✓ | [`.github/skills/experimental/vscode-playwright/SKILL.md`](.github/skills/experimental/vscode-playwright/SKILL.md) |
+| 163 | ✓ | [`.github/skills/github/gh-code-scanning/SKILL.md`](.github/skills/github/gh-code-scanning/SKILL.md) |
+| 164 | ✓ | [`.github/skills/gitlab/gitlab/SKILL.md`](.github/skills/gitlab/gitlab/SKILL.md) |
+| 165 | ✓ | [`.github/skills/hve-core/architecture-diagrams/SKILL.md`](.github/skills/hve-core/architecture-diagrams/SKILL.md) |
+| 166 | ✓ | [`.github/skills/hve-core/vally-tests/references/eval-suite-routing.md`](.github/skills/hve-core/vally-tests/references/eval-suite-routing.md) |
+| 167 | ✓ | [`.github/skills/hve-core/vally-tests/references/grader-catalog.md`](.github/skills/hve-core/vally-tests/references/grader-catalog.md) |
+| 168 | ✓ | [`.github/skills/hve-core/vally-tests/references/instructions.md`](.github/skills/hve-core/vally-tests/references/instructions.md) |
+| 169 | ✓ | [`.github/skills/hve-core/vally-tests/references/prompts.md`](.github/skills/hve-core/vally-tests/references/prompts.md) |
+| 170 | ✓ | [`.github/skills/hve-core/vally-tests/references/refusal-taxonomy.md`](.github/skills/hve-core/vally-tests/references/refusal-taxonomy.md) |
+| 171 | ✓ | [`.github/skills/hve-core/vally-tests/references/skills.md`](.github/skills/hve-core/vally-tests/references/skills.md) |
+| 172 | ✓ | [`.github/skills/hve-core/vally-tests/SKILL.md`](.github/skills/hve-core/vally-tests/SKILL.md) |
+| 173 | ✓ | [`.github/skills/installer/hve-core-installer/SKILL.md`](.github/skills/installer/hve-core-installer/SKILL.md) |
+| 174 | ✓ | [`.github/skills/jira/jira/SKILL.md`](.github/skills/jira/jira/SKILL.md) |
+| 175 | ✓ | [`.github/skills/project-planning/adr-author/SKILL.md`](.github/skills/project-planning/adr-author/SKILL.md) |
+| 176 | ✓ | [`.github/skills/project-planning/rai-planner/references/security-model.md`](.github/skills/project-planning/rai-planner/references/security-model.md) |
+| 177 | ✓ | [`.github/skills/project-planning/rai-planner/SKILL.md`](.github/skills/project-planning/rai-planner/SKILL.md) |
+| 178 | ✓ | [`.github/skills/project-planning/requirements-author/SKILL.md`](.github/skills/project-planning/requirements-author/SKILL.md) |
+| 179 | ✓ | [`.github/skills/project-planning/security-planning/SKILL.md`](.github/skills/project-planning/security-planning/SKILL.md) |
+| 180 | ✓ | [`.github/skills/rai/rai-standards/SKILL.md`](.github/skills/rai/rai-standards/SKILL.md) |
+| 181 | ✓ | [`.github/skills/security/owasp-agentic/SKILL.md`](.github/skills/security/owasp-agentic/SKILL.md) |
+| 182 | ✓ | [`.github/skills/security/owasp-cicd/SKILL.md`](.github/skills/security/owasp-cicd/SKILL.md) |
+| 183 | ✓ | [`.github/skills/security/owasp-docker/SKILL.md`](.github/skills/security/owasp-docker/SKILL.md) |
+| 184 | ✓ | [`.github/skills/security/owasp-infrastructure/SKILL.md`](.github/skills/security/owasp-infrastructure/SKILL.md) |
+| 185 | ✓ | [`.github/skills/security/owasp-llm/SKILL.md`](.github/skills/security/owasp-llm/SKILL.md) |
+| 186 | ✓ | [`.github/skills/security/owasp-mcp/SKILL.md`](.github/skills/security/owasp-mcp/SKILL.md) |
+| 187 | ✓ | [`.github/skills/security/owasp-top-10/SKILL.md`](.github/skills/security/owasp-top-10/SKILL.md) |
+| 188 | ✓ | [`.github/skills/security/secure-by-design/SKILL.md`](.github/skills/security/secure-by-design/SKILL.md) |
+| 189 | ✓ | [`.github/skills/security/security-reviewer-formats/SKILL.md`](.github/skills/security/security-reviewer-formats/SKILL.md) |
+| 190 | ✓ | [`.github/skills/security/supply-chain-security/SKILL.md`](.github/skills/security/supply-chain-security/SKILL.md) |
+| 191 | ✓ | [`.github/skills/shared/backlog-templates/SKILL.md`](.github/skills/shared/backlog-templates/SKILL.md) |
+| 192 | ✓ | [`.github/skills/shared/pr-reference/SKILL.md`](.github/skills/shared/pr-reference/SKILL.md) |
+| 193 | ✓ | [`.github/skills/shared/telemetry-foundations/SKILL.md`](.github/skills/shared/telemetry-foundations/SKILL.md) |
+| 194 | ✓ | [`docs/contributing/ai-artifacts-common.md`](docs/contributing/ai-artifacts-common.md) |
+| 195 | ✓ | [`docs/contributing/custom-agents.md`](docs/contributing/custom-agents.md) |
+| 196 | ✓ | [`docs/contributing/instructions.md`](docs/contributing/instructions.md) |
+| 197 | ✓ | [`docs/contributing/prompts.md`](docs/contributing/prompts.md) |
+| 198 | ✓ | [`docs/contributing/skills.md`](docs/contributing/skills.md) |
+| 199 | ✓ | [`docs/customization/custom-agents.md`](docs/customization/custom-agents.md) |
+| 200 | ✓ | [`docs/customization/instructions.md`](docs/customization/instructions.md) |
+| 201 | ✓ | [`docs/customization/prompts.md`](docs/customization/prompts.md) |
+| 202 | ✓ | [`docs/customization/skills.md`](docs/customization/skills.md) |
+| 203 | ✓ | [`docs/security/dependency-pinning.md`](docs/security/dependency-pinning.md) |
+| 204 | ✓ | [`docs/security/fuzzing.md`](docs/security/fuzzing.md) |
+| 205 | ✓ | [`docs/security/security-model.md`](docs/security/security-model.md) |
+| 206 | ✓ | [`plugins/coding-standards/instructions/coding-standards/csharp/csharp.instructions.md`](plugins/coding-standards/instructions/coding-standards/csharp/csharp.instructions.md) |
+| 207 | ✓ | [`plugins/coding-standards/instructions/coding-standards/python-script.instructions.md`](plugins/coding-standards/instructions/coding-standards/python-script.instructions.md) |
+| 208 | ✓ | [`plugins/coding-standards/instructions/coding-standards/rust/rust.instructions.md`](plugins/coding-standards/instructions/coding-standards/rust/rust.instructions.md) |
+| 209 | ✓ | [`plugins/data-science/instructions/coding-standards/python-script.instructions.md`](plugins/data-science/instructions/coding-standards/python-script.instructions.md) |
+| 210 | ✓ | [`plugins/experimental/instructions/experimental/mural/mural-destinations.instructions.md`](plugins/experimental/instructions/experimental/mural/mural-destinations.instructions.md) |
+| 211 | ✓ | [`plugins/experimental/instructions/experimental/mural/mural-human-record.instructions.md`](plugins/experimental/instructions/experimental/mural/mural-human-record.instructions.md) |
+| 212 | ✓ | [`plugins/experimental/instructions/experimental/mural/mural-writeback-hygiene.instructions.md`](plugins/experimental/instructions/experimental/mural/mural-writeback-hygiene.instructions.md) |
+| 213 | ✓ | [`plugins/experimental/instructions/experimental/mural/mural-writing-style.instructions.md`](plugins/experimental/instructions/experimental/mural/mural-writing-style.instructions.md) |
+| 214 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/csharp/csharp.instructions.md`](plugins/hve-core-all/instructions/coding-standards/csharp/csharp.instructions.md) |
+| 215 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/python-script.instructions.md`](plugins/hve-core-all/instructions/coding-standards/python-script.instructions.md) |
+| 216 | ✓ | [`plugins/hve-core-all/instructions/coding-standards/rust/rust.instructions.md`](plugins/hve-core-all/instructions/coding-standards/rust/rust.instructions.md) |
+| 217 | ✓ | [`plugins/hve-core-all/instructions/experimental/mural/mural-destinations.instructions.md`](plugins/hve-core-all/instructions/experimental/mural/mural-destinations.instructions.md) |
+| 218 | ✓ | [`plugins/hve-core-all/instructions/experimental/mural/mural-human-record.instructions.md`](plugins/hve-core-all/instructions/experimental/mural/mural-human-record.instructions.md) |
+| 219 | ✓ | [`plugins/hve-core-all/instructions/experimental/mural/mural-writeback-hygiene.instructions.md`](plugins/hve-core-all/instructions/experimental/mural/mural-writeback-hygiene.instructions.md) |
+| 220 | ✓ | [`plugins/hve-core-all/instructions/experimental/mural/mural-writing-style.instructions.md`](plugins/hve-core-all/instructions/experimental/mural/mural-writing-style.instructions.md) |
+| 221 | ✓ | [`plugins/hve-core-all/instructions/hve-core/pull-request.instructions.md`](plugins/hve-core-all/instructions/hve-core/pull-request.instructions.md) |
+| 222 | ✓ | [`plugins/hve-core/instructions/experimental/mural/mural-destinations.instructions.md`](plugins/hve-core/instructions/experimental/mural/mural-destinations.instructions.md) |
+| 223 | ✓ | [`plugins/hve-core/instructions/experimental/mural/mural-human-record.instructions.md`](plugins/hve-core/instructions/experimental/mural/mural-human-record.instructions.md) |
+| 224 | ✓ | [`plugins/hve-core/instructions/experimental/mural/mural-writeback-hygiene.instructions.md`](plugins/hve-core/instructions/experimental/mural/mural-writeback-hygiene.instructions.md) |
+| 225 | ✓ | [`plugins/hve-core/instructions/experimental/mural/mural-writing-style.instructions.md`](plugins/hve-core/instructions/experimental/mural/mural-writing-style.instructions.md) |
+| 226 | ✓ | [`plugins/hve-core/instructions/hve-core/pull-request.instructions.md`](plugins/hve-core/instructions/hve-core/pull-request.instructions.md) |
+| 227 | ✓ | [`plugins/project-planning/instructions/experimental/mural/mural-destinations.instructions.md`](plugins/project-planning/instructions/experimental/mural/mural-destinations.instructions.md) |
+| 228 | ✓ | [`plugins/project-planning/instructions/experimental/mural/mural-human-record.instructions.md`](plugins/project-planning/instructions/experimental/mural/mural-human-record.instructions.md) |
+| 229 | ✓ | [`plugins/project-planning/instructions/experimental/mural/mural-writeback-hygiene.instructions.md`](plugins/project-planning/instructions/experimental/mural/mural-writeback-hygiene.instructions.md) |
+| 230 | ✓ | [`plugins/project-planning/instructions/experimental/mural/mural-writing-style.instructions.md`](plugins/project-planning/instructions/experimental/mural/mural-writing-style.instructions.md) |
+| 231 | → | [`docs/security/README.md`](docs/security/README.md) |
+| 232 | → | [`docs/security/sbom-verification.md`](docs/security/sbom-verification.md) |
+| 233 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

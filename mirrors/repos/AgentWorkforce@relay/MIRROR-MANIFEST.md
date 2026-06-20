@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AgentWorkforce/relay` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `AgentWorkforce/relay` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AgentWorkforce/relay` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,36 +61,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/choosing-swarm-patterns/SKILL.md`](.agents/skills/choosing-swarm-patterns/SKILL.md) |
 | 2 | ✓ | [`.agents/skills/creating-agent-skills-skill/SKILL.md`](.agents/skills/creating-agent-skills-skill/SKILL.md) |
-| 3 | ✓ | [`.agents/skills/relay-80-100-workflow/SKILL.md`](.agents/skills/relay-80-100-workflow/SKILL.md) |
-| 4 | ✓ | [`.agents/skills/review-fix-signoff-loop/SKILL.md`](.agents/skills/review-fix-signoff-loop/SKILL.md) |
-| 5 | ✓ | [`.agents/skills/setting-up-relayfile/SKILL.md`](.agents/skills/setting-up-relayfile/SKILL.md) |
-| 6 | ✓ | [`.agents/skills/using-agent-relay/SKILL.md`](.agents/skills/using-agent-relay/SKILL.md) |
-| 7 | ✓ | [`.agents/skills/writing-agent-relay-workflows/SKILL.md`](.agents/skills/writing-agent-relay-workflows/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/browser-testing-with-screenshots/SKILL.md`](.claude/skills/browser-testing-with-screenshots/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/choosing-swarm-patterns/SKILL.md`](.claude/skills/choosing-swarm-patterns/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/creating-claude-agents-skill/SKILL.md`](.claude/skills/creating-claude-agents-skill/SKILL.md) |
-| 11 | ✓ | [`.claude/skills/creating-claude-hooks-skill/SKILL.md`](.claude/skills/creating-claude-hooks-skill/SKILL.md) |
-| 12 | ✓ | [`.claude/skills/creating-claude-rules-skill/SKILL.md`](.claude/skills/creating-claude-rules-skill/SKILL.md) |
-| 13 | ✓ | [`.claude/skills/creating-skills-skill/SKILL.md`](.claude/skills/creating-skills-skill/SKILL.md) |
-| 14 | ✓ | [`.claude/skills/debugging-websocket-issues/SKILL.md`](.claude/skills/debugging-websocket-issues/SKILL.md) |
-| 15 | ✓ | [`.claude/skills/deploying-to-staging-environment/SKILL.md`](.claude/skills/deploying-to-staging-environment/SKILL.md) |
-| 16 | ✓ | [`.claude/skills/frontend-design/SKILL.md`](.claude/skills/frontend-design/SKILL.md) |
-| 17 | ✓ | [`.claude/skills/github-oauth-nango-integration/SKILL.md`](.claude/skills/github-oauth-nango-integration/SKILL.md) |
-| 18 | ✓ | [`.claude/skills/implementing-command-palettes/SKILL.md`](.claude/skills/implementing-command-palettes/SKILL.md) |
-| 19 | ✓ | [`.claude/skills/prpm-json-best-practices-skill/SKILL.md`](.claude/skills/prpm-json-best-practices-skill/SKILL.md) |
-| 20 | ✓ | [`.claude/skills/relay-80-100-workflow/SKILL.md`](.claude/skills/relay-80-100-workflow/SKILL.md) |
-| 21 | ✓ | [`.claude/skills/review-fix-signoff-loop/SKILL.md`](.claude/skills/review-fix-signoff-loop/SKILL.md) |
-| 22 | ✓ | [`.claude/skills/setting-up-relayfile/SKILL.md`](.claude/skills/setting-up-relayfile/SKILL.md) |
-| 23 | ✓ | [`.claude/skills/using-agent-relay/SKILL.md`](.claude/skills/using-agent-relay/SKILL.md) |
-| 24 | ✓ | [`.claude/skills/writing-agent-relay-workflows/SKILL.md`](.claude/skills/writing-agent-relay-workflows/SKILL.md) |
-| 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 26 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 27 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 28 | ✓ | [`plugins/codex-relay-skill/SKILL.md`](plugins/codex-relay-skill/SKILL.md) |
-| 29 | ✓ | [`plugins/gemini-relay-extension/GEMINI.md`](plugins/gemini-relay-extension/GEMINI.md) |
-| 30 | ✓ | [`web/app/llms.txt/route.ts`](web/app/llms.txt/route.ts) |
-| 31 | ✓ | [`web/content/agent-relay/SKILL.md`](web/content/agent-relay/SKILL.md) |
-| 32 | ✓ | [`web/content/openclaw/SKILL.md`](web/content/openclaw/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/emil-design-eng/SKILL.md`](.agents/skills/emil-design-eng/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/relay-80-100-workflow/SKILL.md`](.agents/skills/relay-80-100-workflow/SKILL.md) |
+| 5 | ✓ | [`.agents/skills/review-animations/SKILL.md`](.agents/skills/review-animations/SKILL.md) |
+| 6 | ✓ | [`.agents/skills/review-animations/STANDARDS.md`](.agents/skills/review-animations/STANDARDS.md) |
+| 7 | ✓ | [`.agents/skills/review-fix-signoff-loop/SKILL.md`](.agents/skills/review-fix-signoff-loop/SKILL.md) |
+| 8 | ✓ | [`.agents/skills/setting-up-relayfile/SKILL.md`](.agents/skills/setting-up-relayfile/SKILL.md) |
+| 9 | ✓ | [`.agents/skills/using-agent-relay/SKILL.md`](.agents/skills/using-agent-relay/SKILL.md) |
+| 10 | ✓ | [`.agents/skills/writing-agent-relay-workflows/SKILL.md`](.agents/skills/writing-agent-relay-workflows/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/browser-testing-with-screenshots/SKILL.md`](.claude/skills/browser-testing-with-screenshots/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/choosing-swarm-patterns/SKILL.md`](.claude/skills/choosing-swarm-patterns/SKILL.md) |
+| 13 | ✓ | [`.claude/skills/creating-claude-agents-skill/SKILL.md`](.claude/skills/creating-claude-agents-skill/SKILL.md) |
+| 14 | ✓ | [`.claude/skills/creating-claude-hooks-skill/SKILL.md`](.claude/skills/creating-claude-hooks-skill/SKILL.md) |
+| 15 | ✓ | [`.claude/skills/creating-claude-rules-skill/SKILL.md`](.claude/skills/creating-claude-rules-skill/SKILL.md) |
+| 16 | ✓ | [`.claude/skills/creating-skills-skill/SKILL.md`](.claude/skills/creating-skills-skill/SKILL.md) |
+| 17 | ✓ | [`.claude/skills/debugging-websocket-issues/SKILL.md`](.claude/skills/debugging-websocket-issues/SKILL.md) |
+| 18 | ✓ | [`.claude/skills/deploying-to-staging-environment/SKILL.md`](.claude/skills/deploying-to-staging-environment/SKILL.md) |
+| 19 | ✓ | [`.claude/skills/frontend-design/SKILL.md`](.claude/skills/frontend-design/SKILL.md) |
+| 20 | ✓ | [`.claude/skills/github-oauth-nango-integration/SKILL.md`](.claude/skills/github-oauth-nango-integration/SKILL.md) |
+| 21 | ✓ | [`.claude/skills/implementing-command-palettes/SKILL.md`](.claude/skills/implementing-command-palettes/SKILL.md) |
+| 22 | ✓ | [`.claude/skills/prpm-json-best-practices-skill/SKILL.md`](.claude/skills/prpm-json-best-practices-skill/SKILL.md) |
+| 23 | ✓ | [`.claude/skills/relay-80-100-workflow/SKILL.md`](.claude/skills/relay-80-100-workflow/SKILL.md) |
+| 24 | ✓ | [`.claude/skills/review-fix-signoff-loop/SKILL.md`](.claude/skills/review-fix-signoff-loop/SKILL.md) |
+| 25 | ✓ | [`.claude/skills/setting-up-relayfile/SKILL.md`](.claude/skills/setting-up-relayfile/SKILL.md) |
+| 26 | ✓ | [`.claude/skills/using-agent-relay/SKILL.md`](.claude/skills/using-agent-relay/SKILL.md) |
+| 27 | ✓ | [`.claude/skills/writing-agent-relay-workflows/SKILL.md`](.claude/skills/writing-agent-relay-workflows/SKILL.md) |
+| 28 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 29 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 30 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 31 | ✓ | [`plugins/codex-relay-skill/SKILL.md`](plugins/codex-relay-skill/SKILL.md) |
+| 32 | ✓ | [`plugins/gemini-relay-extension/GEMINI.md`](plugins/gemini-relay-extension/GEMINI.md) |
+| 33 | ✓ | [`web/app/llms.txt/route.ts`](web/app/llms.txt/route.ts) |
+| 34 | ✓ | [`web/content/agent-relay/SKILL.md`](web/content/agent-relay/SKILL.md) |
+| 35 | ✓ | [`web/content/openclaw/SKILL.md`](web/content/openclaw/SKILL.md) |
 
 ---
 

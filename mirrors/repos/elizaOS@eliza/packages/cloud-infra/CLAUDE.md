@@ -7,7 +7,7 @@ Infrastructure-as-code and local-dev tooling for the elizaOS Cloud stack: Kubern
 `cloud-infra` owns two classes of artifacts:
 
 1. **Local dev cluster** — everything needed to spin up a `kind` Kubernetes cluster that mirrors the cloud services on a developer workstation (`cloud/local/`).
-2. **Production Terraform** — Hetzner Cloud control-plane VMs (`cloud/terraform/hetzner/control-plane/`) and experimental GCP roots (`cloud/terraform/gcp/`).
+2. **Production Terraform** — Hetzner Cloud control-plane VMs (`cloud/terraform/hetzner/control-plane/`), Hetzner apps-data-plane and apps-shared roots, and experimental GCP roots (`cloud/terraform/gcp/`).
 
 Nothing in this package is imported by TypeScript code. The YAML/Terraform/shell files are consumed directly by `kubectl`, `helm`, `terraform`, `docker compose`, and the chainsaw integration-test runner.
 
@@ -20,6 +20,7 @@ packages/cloud-infra/
     docker-compose.yml             # Self-hosted Supabase Storage (Postgres + storage-api)
     AWS_RETIREMENT.md              # AWS → Hetzner/Railway migration status (agent-launch headscale moved off Railway onto the CP VMs)
     RAILWAY.md                     # Canonical map of where each service runs
+    bitrouter/                     # RETIRED — only CLOUDFLARE_MIGRATION_PLAN.md remains (the Worker is the model gateway now)
     charts/
       README.md                    # Charts overview (gateway-discord chart is service-local)
     local/                         # kind cluster setup for local development
@@ -48,6 +49,7 @@ packages/cloud-infra/
           outputs.tf               # VM IPs, DNS names
           providers.tf             # hcloud + cloudflare providers
           versions.tf              # Terraform + provider version constraints
+          import.tf                # Terraform import blocks for existing resources
           backend-staging.hcl      # Cloudflare R2 remote state (staging)
           backend-production.hcl   # Cloudflare R2 remote state (production)
           tfvars/
@@ -55,6 +57,18 @@ packages/cloud-infra/
             production.tfvars.example
           cloud-init/
             bootstrap.yaml.tftpl   # cloud-init template: installs Docker, sets up systemd units
+        apps-data-plane/           # Hetzner data-plane app servers Terraform root
+          main.tf
+          outputs.tf
+          backend-staging.hcl
+          backend-production.hcl
+          cloud-init/
+        apps-shared/               # Hetzner shared-apps Terraform root
+          main.tf
+          outputs.tf
+          providers.tf
+          backend.hcl
+          cloud-init/
       gcp/
         01-foundation/             # GCP foundation (VPC, IAM, GKE module) — experimental, not CI-wired
         02-k8s/                    # GKE cluster resources — experimental, not CI-wired
@@ -66,6 +80,9 @@ packages/cloud-infra/
     local-values.test.ts           # Validates CNPG + Redis Helm values YAML structure
     local-manifests.test.ts        # Validates K8s manifests (apiVersion/kind/metadata)
     chainsaw-config.test.ts        # Validates cloud/tests/.chainsaw.yaml shape (kind/timeouts/parallelism)
+    chainsaw-suites.test.ts        # Static checks for Chainsaw suites (YAML well-formed, local file refs valid)
+    docker-compose.test.ts         # Static coverage for local docker-compose.yml (env placeholders, service shape)
+    terraform-static.test.ts       # Lightweight Terraform file invariants (no provider init required)
 ```
 
 ## Key subsystems
@@ -80,9 +97,18 @@ The `shared-eliza.yaml` manifest is a `eliza.ai/v1alpha1` Server custom resource
 
 Self-hosted Supabase Storage (postgres:18-alpine + supabase/storage-api:v1.58.4) providing an S3-compatible API at `localhost:54321/storage/v1/s3`. Use this to run object-storage paths offline without a real Cloudflare R2 bucket. Requires secrets from `.env` (copy from `.env.example`).
 
-### Hetzner Terraform (`cloud/terraform/hetzner/control-plane/`)
+### BitRouter Railway service — RETIRED
 
-Manages the **control-plane** VMs only — one per env (`eliza-staging-1`, `eliza-production-1`). The **data plane** is not in this Terraform: dedicated robot nodes (`eliza-core-{env}-N`, e.g. `eliza-core-staging-1`, `eliza-core-prod-2..6`) are registered in the `docker_nodes` table — the authoritative source of truth, with `CONTAINERS_DOCKER_NODES` env only seeding it when empty — and extra burst capacity (`eliza-core-<hex>`) is minted at runtime by `packages/cloud-shared/src/lib/services/containers/node-autoscaler.ts` via the Hetzner Cloud API.
+The Railway BitRouter model-router was removed. The Cloudflare Worker (`cloud-api`) is now the model gateway: it calls native providers directly (Cerebras/OpenAI/Anthropic/Groq/Vast) and uses OpenRouter (BYOK, `OPENROUTER_API_KEY`) as the backup for models with no native key. Only `cloud/bitrouter/CLOUDFLARE_MIGRATION_PLAN.md` remains as the record. Operator: stop/delete the Railway `bitrouter` service.
+
+### Hetzner Terraform (`cloud/terraform/hetzner/`)
+
+Three Terraform roots:
+- **`control-plane/`** — manages the control-plane VMs only (one per env: `eliza-staging-1`, `eliza-production-1`).
+- **`apps-data-plane/`** — manages Hetzner data-plane app server resources.
+- **`apps-shared/`** — manages shared Hetzner infrastructure.
+
+The **data plane** is not in Terraform: dedicated robot nodes (`eliza-core-{env}-N`) are registered in the `docker_nodes` table (authoritative; `CONTAINERS_DOCKER_NODES` env only seeds when empty) and extra burst capacity (`eliza-core-<hex>`) is minted at runtime by `packages/cloud-shared/src/lib/services/containers/node-autoscaler.ts` via the Hetzner Cloud API.
 
 Each control-plane VM runs:
 - `eliza-provisioning-worker` — job queue consumer (systemd unit, deployed by CI)
@@ -149,7 +175,7 @@ Local cluster service env vars (copy from `.env.*.example`):
 
 - **GCP Terraform is not active.** `cloud/terraform/gcp/` is experimental and not wired to any CI workflow. Do not assume it represents the live deployment.
 - **AWS resources are being retired.** See `cloud/AWS_RETIREMENT.md`. Do not add new AWS dependencies.
-- **Data-plane cores are not in Terraform.** Dedicated robot nodes (`eliza-core-{env}-N`, OS host `eliza-{env}-robot-N`) live in the `docker_nodes` table (authoritative; `CONTAINERS_DOCKER_NODES` env only seeds when empty); autoscaled burst nodes (`eliza-core-<hex>`) are runtime-provisioned by `node-autoscaler.ts`. The old `milady-core-*` names are retired. Only the control-plane VM is managed here.
+- **Data-plane cores are not in Terraform.** Dedicated robot nodes (`eliza-core-{env}-N`, OS host `eliza-{env}-robot-N`) live in the `docker_nodes` table (authoritative; `CONTAINERS_DOCKER_NODES` env only seeds when empty); autoscaled burst nodes (`eliza-core-<hex>`) are runtime-provisioned by `node-autoscaler.ts`. Only the control-plane VM is managed here.
 - **Remote state uses Cloudflare R2**, not an S3 bucket — export the R2 token as `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` before `terraform init`.
 - **Production secrets are not in docker-compose.** The compose file only serves local dev. Production K8s workloads receive secrets from external-secrets-operator (ESO).
 - **`cloud/local/setup.sh` installs the `vector` and `uuid-ossp` Postgres extensions** via `postInitApplicationSQL` in `values-pg-local.yaml` — these are required by `packages/app-core`.

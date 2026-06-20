@@ -14,7 +14,7 @@
 
 <p align="center">
   <strong>From a goal to a task DAG, automatically.</strong><br/>
-  TypeScript-native multi-agent orchestration. Three runtime dependencies.
+  TypeScript-native multi-agent orchestration.
 </p>
 
 <p align="center">
@@ -23,7 +23,6 @@
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License"></a>
   <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.6-blue" alt="TypeScript"></a>
   <a href="https://codecov.io/gh/open-multi-agent/open-multi-agent"><img src="https://codecov.io/gh/open-multi-agent/open-multi-agent/graph/badge.svg" alt="codecov"></a>
-  <a href="https://github.com/open-multi-agent/open-multi-agent/blob/main/packages/core/package.json"><img src="https://img.shields.io/badge/runtime_deps-3-brightgreen" alt="runtime deps"></a>
   <a href="https://github.com/open-multi-agent/open-multi-agent/stargazers"><img src="https://img.shields.io/github/stars/open-multi-agent/open-multi-agent" alt="GitHub stars"></a>
   <a href="https://github.com/open-multi-agent/open-multi-agent/network/members"><img src="https://img.shields.io/github/forks/open-multi-agent/open-multi-agent" alt="GitHub forks"></a>
 </p>
@@ -40,7 +39,7 @@
 
 <br />
 
-`open-multi-agent` is a multi-agent orchestration framework for TypeScript backends. Give it a goal; a coordinator agent decomposes it into a task DAG, parallelizes independents, and synthesizes the result. Three runtime dependencies, drops into any Node.js backend.
+`open-multi-agent` is a multi-agent orchestration framework for TypeScript backends. Give it a goal; a coordinator agent decomposes it into a task DAG, parallelizes independents, and synthesizes the result. Drops into any Node.js backend.
 
 > **Your engineers describe the goal, not the graph.**
 
@@ -107,7 +106,7 @@ console.log(result.success, result.totalTokenUsage.output_tokens)
 git clone https://github.com/open-multi-agent/open-multi-agent && cd open-multi-agent
 npm install
 export OPENAI_API_KEY=sk-...
-npx tsx examples/basics/team-collaboration.ts
+npx tsx packages/core/examples/basics/team-collaboration.ts
 ```
 
 Three agents collaborate on a REST API while `onProgress` streams the coordinator's task DAG:
@@ -159,7 +158,7 @@ Route orchestration phases to different models with an opt-in `modelRouting` pol
 | Capability | What you get |
 |------------|--------------|
 | **Goal-driven coordinator** | One `runTeam(team, goal)` call decomposes the goal into a task DAG, parallelizes independents, and synthesizes the result. Unassigned tasks are auto-scheduled — `dependency-first` (default), `round-robin`, `least-busy`, or `capability-match`. |
-| **Mix providers in one team** | 12 built-in providers plus any OpenAI-compatible endpoint (Ollama, vLLM, LM Studio, OpenRouter, Groq), mixed freely in one team. Local servers that emit tool calls as plain text are recovered by a fallback parser. ([full list](#supported-providers) · [setup](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/providers.md)) |
+| **Mix providers in one team** | 13 built-in providers plus any OpenAI-compatible endpoint (Ollama, vLLM, LM Studio, OpenRouter, Groq), mixed freely in one team. Local servers that emit tool calls as plain text are recovered by a fallback parser. ([full list](#supported-providers) · [setup](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/providers.md)) |
 | **Extended thinking / reasoning** | One `thinking` config maps to Anthropic thinking, Gemini `thinkingConfig`, and OpenAI `reasoning_effort`; reasoning is streamed as events, with opt-in preservation across a provider switch. ([`cross-provider-reasoning`](examples/patterns/cross-provider-reasoning.ts)) |
 | **Tools + MCP** | 6 built-in (`bash`, `file_*`, `grep`, `glob`), all **opt-in** (default-deny — grant via `tools` / `toolPreset`), plus `delegate_to_agent` handoff (cycle + depth guards), custom tools via `defineTool()` + Zod, stdio MCP servers via `connectMCPTools()`. ([tool config](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md)) |
 | **Streaming + structured output** | Token-by-token streaming on every adapter (per-agent during team runs via `onAgentStream`); Zod-validated final answer with auto-retry on parse failure. ([`structured-output`](examples/patterns/structured-output.ts)) |
@@ -169,6 +168,7 @@ Route orchestration phases to different models with an opt-in `modelRouting` pol
 | **Configurable coordinator** | Override the coordinator's model, provider, adapter, system prompt, or tools via `runTeam(team, goal, { coordinator })`. |
 | **Observability** | `onProgress` events, `onTrace` spans, post-run HTML dashboard rendering the executed task DAG. API keys and tokens are redacted from traces, bash output, and the dashboard. ([observability guide](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability.md)) |
 | **Pluggable shared memory** | Default in-process KV; swap in Redis / Postgres / your own backend by implementing `MemoryStore`. ([shared memory](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/shared-memory.md)) |
+| **Checkpoint & resume** | Opt-in per-run checkpointing over any `MemoryStore`: snapshot on each completed task, then `restore()` skips finished tasks to continue after a crash or restart. Best-effort saves never take the run down. ([checkpoint & resume](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/checkpoint.md)) |
 | **Sandboxed filesystem workspace** | Built-in filesystem tools are sandboxed to `<cwd>/.agent-workspace` by default; agents sharing the default configuration share this root. For per-agent isolation, set `AgentConfig.cwd`; for a different shared root, set `OrchestratorConfig.defaultCwd`; pass `null` to disable. ([sandbox config](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md)) |
 
 Production controls ([context strategies](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/context-management.md), task retry with backoff, loop detection, tool output truncation/compression) are covered in the [Production Checklist](#production-checklist).
@@ -267,10 +267,16 @@ End-to-end scenarios you can run today. Each one is a complete, opinionated work
 - [`patterns/plan-replay`](examples/patterns/plan-replay.ts): decompose a goal once with `planOnly`, serialize it with `createPlanArtifact`, then replay the same DAG via `runFromPlan` without re-running the coordinator.
 - [`integrations/trace-observability`](examples/integrations/trace-observability.ts): `onTrace` spans for LLM calls, tools, and tasks.
 - [`integrations/mcp-github`](examples/integrations/mcp-github.ts): expose an MCP server's tools to an agent via `connectMCPTools()`.
-- [`integrations/with-vercel-ai-sdk`](examples/integrations/with-vercel-ai-sdk/): Next.js app combining OMA `runTeam()` with AI SDK `useChat` streaming.
 - **Provider examples**: scripts under [`examples/providers/`](examples/providers/) covering hosted providers, OpenAI-compatible endpoints, and local models.
 
-Run any script with `npx tsx examples/<path>.ts`.
+### Full applications
+
+Clone-and-run apps with their own `package.json`, not `npx tsx` scripts. Each embeds OMA in a real backend.
+
+- [`integrations/express-customer-support`](examples/integrations/express-customer-support/): Express REST API. `runTasks()` behind `POST /tickets` with per-agent Zod schemas, swappable provider env vars, and HTTP error mapping. Runs on one DeepSeek key (`npm install && npm start`).
+- [`integrations/with-vercel-ai-sdk`](examples/integrations/with-vercel-ai-sdk/): Next.js app. OMA `runTeam()` plus AI SDK `useChat` streaming (`npm install && npm run dev`).
+
+Run any script with `npx tsx packages/core/examples/<path>.ts`; the full applications above use their own `npm` scripts.
 
 ## How is this different from X?
 
@@ -279,14 +285,14 @@ A quick router. Mechanism breakdown follows.
 | If you need | Pick |
 |-------------|------|
 | Fixed production topology with mature checkpointing | LangGraph JS |
-| Explicit Supervisor + hand-wired workflows | Mastra |
+| Full-stack platform, workflows wired by hand | Mastra |
 | Python stack with mature multi-agent ecosystem | CrewAI |
 | AI app toolkit with broad model-provider support | Vercel AI SDK |
 | **TypeScript, goal to result with auto task decomposition** | **open-multi-agent** |
 
 **vs. LangGraph JS.** LangGraph compiles a declarative graph (nodes, edges, conditional routing) into an invokable. `open-multi-agent` runs a Coordinator that decomposes the goal into a task DAG at runtime, then auto-parallelizes independents. Same end (orchestrated execution), opposite directions: LangGraph is graph-first, OMA is goal-first.
 
-**vs. Mastra.** Both are TypeScript-native. Mastra's Supervisor pattern requires you to wire agents and workflows by hand; OMA's Coordinator does the wiring at runtime from the goal string. If the workflow is known up front, Mastra's explicitness pays off. If you'd rather not enumerate every step, OMA's `runTeam(team, goal)` is one call.
+**vs. Mastra.** Both are TypeScript-native; the difference is who drives the orchestration. With Mastra you wire the workflow by hand. OMA is goal-driven: give its Coordinator a goal and it builds the task DAG at runtime, adapting the plan to the goal instead of running a graph you wired step by step. `runTeam(team, goal)` in one call.
 
 **vs. CrewAI.** CrewAI is the mature multi-agent option in Python. OMA targets TypeScript backends with three runtime dependencies and direct Node.js embedding. Roughly comparable orchestration surface; the choice is the language stack.
 
@@ -321,7 +327,7 @@ A quick router. Mechanism breakdown follows.
 │  Agent            │
 │  - run()          │    ┌────────────────────────┐
 │  - prompt()       │───►│  LLMAdapter            │
-│  - stream()       │    │  - 12 built-in         │
+│  - stream()       │    │  - 13 built-in         │
 └────────┬──────────┘    │    providers           │
          │               │  - OpenAI-compatible   │
          │               │  - AI SDK bridge       │
@@ -389,6 +395,7 @@ Before going live, wire up the controls that protect token spend, recover from f
 | Bound wall-clock time | `timeoutMs` per agent (aborts a run that hangs, common with local models) | `AgentConfig` |
 | Cap tool output | `maxToolOutputChars` (or per-tool `maxOutputChars`) + `compressToolResults: true` | `AgentConfig` and `defineTool()` |
 | Recover from failure | Per-task `maxRetries`, `retryDelayMs`, `retryBackoff` (exponential multiplier) | Task config used via `runTasks()` |
+| Survive a crash or restart | `checkpoint` (pass a `runId` or a durable `MemoryStore`) + `restore()` to resume, skipping completed tasks | `OrchestratorConfig` / run options |
 | Hard-cap spend | `maxTokenBudget` on the orchestrator | `OrchestratorConfig` |
 | Catch stuck agents | `loopDetection` with `onLoopDetected: 'terminate'` (or a custom handler) | `AgentConfig` |
 | Trace and audit | `onTrace` to your tracing backend; persist `renderTeamRunDashboard(result)` | `OrchestratorConfig` |
@@ -402,6 +409,7 @@ Before going live, wire up the controls that protect token spend, recover from f
 - [Tool configuration](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/tool-configuration.md) — tool presets, custom tools, the filesystem sandbox, and MCP.
 - [Observability](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/observability.md) — `onProgress` events, `onTrace` spans, and the post-run dashboard.
 - [Shared memory](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/shared-memory.md) — the default store and custom `MemoryStore` backends.
+- [Checkpoint & resume](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/checkpoint.md) — opt-in per-run snapshot/resume over any `MemoryStore`; survive crashes and restarts.
 - [Context management](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/context-management.md) — sliding window, summarization, compaction, and custom compressors.
 - [CLI](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/cli.md) — the JSON-first `oma` binary for shell and CI.
 - [Consensus](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/consensus.md) — the `runConsensus` proposer→judge primitive, the per-task `verify` hook, and the budget invariant.
@@ -418,7 +426,7 @@ Issues, feature requests, and PRs are welcome. Some areas where contributions wo
 ## Contributors
 
 <a href="https://github.com/open-multi-agent/open-multi-agent/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=open-multi-agent/open-multi-agent&max=100&v=20260529" />
+  <img src="https://contrib.rocks/image?repo=open-multi-agent/open-multi-agent&max=100" />
 </a>
 
 <details>
@@ -433,12 +441,14 @@ Issues, feature requests, and PRs are welcome. Some areas where contributions wo
 - [@Xin-Mai](https://github.com/Xin-Mai) (output schema validation)
 - [@JasonOA888](https://github.com/JasonOA888) (AbortSignal support)
 - [@EchoOfZion](https://github.com/EchoOfZion) (coordinator skip for simple goals)
-- [@voidborne-d](https://github.com/voidborne-d) (OpenAI mixed content fix)
+- voidborne-d (OpenAI mixed-content fix, text-tool-extractor depth fix)
 - [@NamelessNATM](https://github.com/NamelessNATM) (agent delegation base implementation)
 - [@MyPrototypeWhat](https://github.com/MyPrototypeWhat) (reasoning blocks, reasoning_effort, sampling parity, trace input/output)
 - [@SiMinus](https://github.com/SiMinus) (streaming reasoning events)
 - [@matthewYang08](https://github.com/matthewYang08) (OpenAI reasoning-to-text fallback)
 - [@dvirarad](https://github.com/dvirarad) (OpenAI-family adapter hardening)
+- [@cat0825](https://github.com/cat0825) (model routing policy, plan replay, structured shared-memory handoff)
+- [@mvanhorn](https://github.com/mvanhorn) (checkpoint & resume)
 
 **Provider integrations**
 
@@ -450,6 +460,8 @@ Issues, feature requests, and PRs are welcome. Some areas where contributions wo
 - [@JackChiang233](https://github.com/JackChiang233) (Qiniu)
 - [@CodingBangboo](https://github.com/CodingBangboo) (AWS Bedrock)
 - [@kidoom](https://github.com/kidoom) (MiMo, Doubao)
+- [@KaitlynFeng](https://github.com/KaitlynFeng) (Hunyuan)
+- [@octo-patch](https://github.com/octo-patch) (MiniMax-M3 model upgrade)
 
 **Examples & cookbook**
 
@@ -478,6 +490,8 @@ Issues, feature requests, and PRs are welcome. Some areas where contributions wo
 - [@jadegold55](https://github.com/jadegold55) (LLM adapter test coverage)
 - [@btroops](https://github.com/btroops) (DeepSeek tool-calling tests)
 - [@nuthalapativarun](https://github.com/nuthalapativarun) (context-management docs)
+- [@Oxygen56](https://github.com/Oxygen56) (errors.ts tests, provider docs for Grok/DeepSeek/Doubao)
+- [@RheagalFire](https://github.com/RheagalFire) (LiteLLM gateway docs)
 
 </details>
 

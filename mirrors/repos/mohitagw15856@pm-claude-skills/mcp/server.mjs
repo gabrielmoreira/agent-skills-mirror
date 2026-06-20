@@ -71,6 +71,15 @@ function loadSkills() {
 const SKILLS = loadSkills();
 const byName = new Map(SKILLS.map((s) => [s.name, s]));
 
+// Workflow recipes (chains of skills). Optional — absent in older installs.
+function loadWorkflows() {
+  const f = join(PKG_ROOT, 'workflows.json');
+  if (!existsSync(f)) return [];
+  try { return JSON.parse(readFileSync(f, 'utf8')).workflows || []; } catch { return []; }
+}
+const WORKFLOWS = loadWorkflows();
+const wfById = new Map(WORKFLOWS.map((w) => [w.id, w]));
+
 // ── Tools ───────────────────────────────────────────────────────────────────
 const TOOLS = [
   {
@@ -94,6 +103,16 @@ const TOOLS = [
     name: 'get_skill',
     description: 'Get the full instructions (the SKILL.md body) for one skill by name. Apply these instructions to the user\'s task.',
     inputSchema: { type: 'object', properties: { name: { type: 'string', description: 'The exact skill name, e.g. "rice-prioritisation".' } }, required: ['name'] },
+  },
+  {
+    name: 'list_workflows',
+    description: 'List workflow recipes — named chains that run several skills in sequence, passing each output forward (e.g. ship-a-feature, close-the-quarter). Use when a task spans multiple steps end to end.',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'get_workflow',
+    description: 'Get one workflow recipe by id: the ordered list of skills to run and what each produces. Run each step in order with get_skill, carrying every output forward as context for the next.',
+    inputSchema: { type: 'object', properties: { id: { type: 'string', description: 'The workflow id, e.g. "ship-a-feature".' } }, required: ['id'] },
   },
 ];
 
@@ -124,6 +143,20 @@ function runTool(name, args = {}) {
     const s = byName.get(String(args.name || '').trim());
     if (!s) throw new Error(`Unknown skill "${args.name}". Use search_skills or list_skills to find one.`);
     return s.body;
+  }
+  if (name === 'list_workflows') {
+    if (!WORKFLOWS.length) return 'No workflow recipes are available in this install.';
+    return WORKFLOWS.map((w) =>
+      `- ${w.id} (${w.lifecycle}) — ${w.summary}\n    chain: ${w.steps.map((s) => s.skill).join(' → ')}`
+    ).join('\n');
+  }
+  if (name === 'get_workflow') {
+    const w = wfById.get(String(args.id || '').trim());
+    if (!w) throw new Error(`Unknown workflow "${args.id}". Use list_workflows to see available recipes.`);
+    const steps = w.steps.map((s, i) =>
+      `${i + 1}. get_skill("${s.skill}") → produces ${s.produces}.${s.passes ? ` Pass forward: ${s.passes}.` : ''}`
+    ).join('\n');
+    return `Workflow: ${w.name} (${w.lifecycle})\n${w.summary}\n\nRun these in order, carrying each output forward as context for the next:\n${steps}`;
   }
   throw new Error(`Unknown tool: ${name}`);
 }
@@ -165,7 +198,7 @@ function handle(msg) {
   }
 }
 
-process.stderr.write(`[${SERVER_NAME}] MCP server ready — ${SKILLS.length} skills, ${TOOLS.length} tools.\n`);
+process.stderr.write(`[${SERVER_NAME}] MCP server ready — ${SKILLS.length} skills, ${WORKFLOWS.length} workflow recipes, ${TOOLS.length} tools.\n`);
 process.stderr.write(`[${SERVER_NAME}] ⭐ Star the repo: https://github.com/mohitagw15856/pm-claude-skills\n`);
 const rl = createInterface({ input: process.stdin });
 rl.on('line', (line) => {

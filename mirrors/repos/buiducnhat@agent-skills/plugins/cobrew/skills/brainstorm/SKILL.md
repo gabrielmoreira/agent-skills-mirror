@@ -59,7 +59,7 @@ For each approach, include:
 
 Lead with your recommended option and explain why it best fits the project context and constraints.
 
-After presenting all approaches, ask the user to pick a preferred approach only when the choice materially changes the design or delivery path. List the summary options. Example:
+After presenting all approaches, use input/question tool to ask the user to pick a preferred approach only when the choice materially changes the design or delivery path. List the summary options. Example:
 
 1. Approach A, short summary
 2. Approach B, short summary

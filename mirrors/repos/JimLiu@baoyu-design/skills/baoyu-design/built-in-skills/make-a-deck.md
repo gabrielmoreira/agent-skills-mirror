@@ -19,7 +19,7 @@ Two details keep static slides directly editable: each piece of text lives in it
 
 Use large type sizes (at least 48px for titles). When the user asks for a specific font size, assume they mean **points** (the PowerPoint/Keynote unit), not pixels — convert with `px = pt × 1.333`. So "make titles 36pt" → set ~48px in your CSS.
 
-Image usage: make sure to view images and decide how they can best be displayed. Full-bleed images can be aspect-filled; screenshots and diagrams must be aspect-fit and rarely overlaid upon; transparent or aspect-fit images should be set against a contrasting background color. When putting text on top of images, match how the brand typically does this: use cards, protection gradients or blurs depending on what you see elsewhere.
+Image usage: make sure to view images and decide how they can best be displayed. Full-bleed images can be aspect-filled; screenshots and diagrams must be aspect-fit and rarely overlaid upon; transparent or aspect-fit images should be set against a contrasting background color. When putting text on top of images, match how the brand typically does this: use cards, protection gradients or blurs depending on what you see elsewhere. A full-bleed image set `position: absolute; inset: 0` sizes against its nearest positioned ancestor, so its container must truly fill the slide (see the wrapper-fill rule below) — otherwise the image collapses to nothing or covers only the top band of the slide.
 
 Use smooth transitions between slides. Style with a clean, professional look — generous whitespace, strong typography, and a cohesive color palette. Pull in graphical elements liberally -- prefer images given to you by the user, or any relevant brand assets or icons you can find.
 
@@ -31,7 +31,31 @@ Critical: AVOID PUTTING TOO MUCH TEXT ON SLIDES! This is a common failure mode. 
 
 Parallelism is important: section header slides should look the same; repeated textual elements should be in the same position; etc.
 
-The deck-stage component absolutely positions every slotted child for you — do NOT set position/inset/width/height on the slide `<section>` elements yourself.
+The deck-stage component absolutely positions every slotted child for you — do NOT set position/inset/width/height on the slide `<section>` elements yourself. But it sizes only the `<section>`: deck-stage's `::slotted(*)` rule reaches the section and **nothing inside it**, so the wrapper element you put inside each section (`<section><div>…</div></section>`) is an ordinary block at `height: auto` and does **not** inherit the slide's height. If that wrapper's children are all `position: absolute` (a full-bleed `inset:0` image, a scrim) it collapses to **zero height** and the image vanishes entirely; if they're in-flow it stops at content height, so a full-bleed background or color panel covers only the top of the slide with blank space below. Both survive casual editing but break in screenshots and reproduce identically in PPTX/PDF export. Force every slide's wrapper to fill its section by adding this once to your base `<style>`:
+
+```css
+/* deck-stage stretches each slide <section> to fill the stage but not the
+   wrapper inside it — give that wrapper real height so full-bleed art and
+   vertically-centered content fill the slide. Replaced media sizes itself via
+   object-fit, so it's excluded. Targets [data-label] (every slide section has
+   it) so it fires on slides only, in both the live deck and the navigator
+   thumbnails that clone each <section>. */
+section[data-label] > *:not(img):not(picture):not(video):not(svg):not(canvas) {
+  height: 100%;
+  box-sizing: border-box;
+}
+```
+
+Keep one in-flow wrapper per slide. A second top-level element (page number, corner mark) should be `position: absolute` with its own size, so the rule doesn't stretch it to fill the stage.
+
+## Illustrations & infographics (generate them when they'll help)
+
+Decks are visual. Beyond user-provided images and design-system assets, you can **generate** original illustrations and infographics — and often should when content would land better as a picture. For backend detection, invocation, the prompt-file rule, and the no-SVG hard rule, follow [`generate-images.md`](generate-images.md) (read it once).
+
+Deck specifics:
+- **Offer a style in your opening round** — only when the deck would benefit (conceptual metaphors, hero/section art, a mascot to thread through, data better as an infographic). Recommend a direction from the source material + chosen aesthetic; always offer "none / minimal". Skip the question for dense data decks or terse internal reviews.
+- **Divide the labor:** tables, quadrants, flows, labeled diagrams, exact numbers → clean HTML/CSS; reserve generation for conceptual scenes, mascots/characters, hero/section art, and genuine infographics. Keep one shared style block so the look stays consistent across slides.
+- **Output:** save into the deck's own `imgs/` folder; place on white/contrasting areas; verify each one loaded.
 
 # Slide writing guidelines
 
@@ -50,10 +74,10 @@ Avoid these common Claude-isms that gives away that the deck was AI-generated:
 
 In addition to your normal planning, make sure to do these things:
 
-1. Ask questions if you don't know audience, desired brand, and duration.
+1. Ask questions if you don't know audience, desired brand, and duration — and, when imagery would help and a backend is available, whether/what-style of illustrations to add (see *Illustrations & infographics*).
 2. Write out the full title sequence. Choose ONE grammatical style (for example, short topic noun-phrases or brief declarative sentences) that is appropriate for the content, and write every title in that style. Read them back to yourself and determine if a person reading ONLY the titles could follow the flow of the presentation. The titles should be like chapters in a book - they orient the reader on what to expect with straightforward language. Review the titles and revise as needed. Put these in an scratchpad.md file.
-3. Define your type scale and spacing as CSS custom properties in a `<style>` block in `<head>` before writing any slide — these commit you to projection-appropriate sizing and stop you defaulting to web density. At 1920×1080 a reasonable starting scale is `:root { --type-title: 64px; --type-subtitle: 44px; --type-body: 34px; --type-small: 28px; --pad-top: 100px; --pad-bottom: 80px; --pad-x: 100px; --gap-title: 52px; --gap-item: 28px; }`. At 1280×720, scale by ~0.67. Reference these everywhere — every font-size uses a `--type-*` variable, every padding/gap uses a `--pad-*` or `--gap-*` variable, via `var(…)` in inline styles or class rules. Keeping these as CSS (not JS constants) means the user can change one number — in the style block directly, or via a Tweaks slider bound to the same variable — to re-size the whole deck, and the slide markup stays static HTML with no script needed to compute sizes. The explicit `--pad-bottom` reserves breathing room at the base of every slide; that space is structural, not empty. Web defaults (14-16px body, 48-72px padding) are too small for slides; if the values don't feel generous, they aren't. Your validator will throw an error if you use a size smaller than 24px.
+3. Define your type scale and spacing as CSS custom properties in a `<style>` block in `<head>` before writing any slide — these commit you to projection-appropriate sizing and stop you defaulting to web density. At 1920×1080 a reasonable starting scale is `:root { --type-title: 64px; --type-subtitle: 44px; --type-body: 34px; --type-small: 28px; --pad-top: 100px; --pad-bottom: 80px; --pad-x: 100px; --gap-title: 52px; --gap-item: 28px; }`. At 1280×720, scale by ~0.67. Reference these everywhere — every font-size uses a `--type-*` variable, every padding/gap uses a `--pad-*` or `--gap-*` variable, via `var(…)` in inline styles or class rules. Keeping these as CSS (not JS constants) means the user can change one number — in the style block directly, or via a Tweaks slider bound to the same variable — to re-size the whole deck, and the slide markup stays static HTML with no script needed to compute sizes. The explicit `--pad-bottom` reserves breathing room at the base of every slide; that space is structural, not empty. Web defaults (14-16px body, 48-72px padding) are too small for slides; if the values don't feel generous, they aren't. Your validator will throw an error if you use a size smaller than 24px. Include the slide-wrapper fill rule (see the deck-stage note above) in this same base block, so every slide's content fills the 1080px stage instead of collapsing to content height.
 4. Build the slides, remembering that each slide is an exercise in both design and copywriting. Give each slide the attention it deserves in terms of the layout, the text content, and the tone. Follow the principles below and ensure that each slide can stand alone; a person looking at that slide should be able to understand its high-level meaning without other context.
 
 # Verification tips for slide decks
-During review, check your screenshots against slide composition rules — not web-layout instincts. `align-items: flex-start` with open space in the bottom third is correct slide composition, not a defect. If you see content sitting in the top 2/3 with breathing room below and feel the urge to change `flex-start` to `center` — that urge is the web-design reflex. Resist it. The open space is intentional. Also verify: font sizes match your `--type-*` scale (not web density), slide frame padding matches your `--pad-*` values (not web-tight), title parallelism across slides, no accent-border cards or takeaway boxes
+During review, check your screenshots against slide composition rules — not web-layout instincts. `align-items: flex-start` with open space in the bottom third is correct slide composition, not a defect. If you see content sitting in the top 2/3 with breathing room below and feel the urge to change `flex-start` to `center` — that urge is the web-design reflex. Resist it. The open space is intentional. Also verify: font sizes match your `--type-*` scale (not web density), slide frame padding matches your `--pad-*` values (not web-tight), title parallelism across slides, no accent-border cards or takeaway boxes, and full-bleed backgrounds / hero images / color panels reach all four edges — a blank strip below a cover image or a panel that stops mid-slide means a slide wrapper collapsed (add the wrapper-fill rule)

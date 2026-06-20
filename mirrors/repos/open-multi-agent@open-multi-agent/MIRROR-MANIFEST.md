@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 8 followed patterns, 9 file(s) materialized.
+Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 9 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 8 followe
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 8 |
-| Files         | 9 |
+| Followed pats | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -57,6 +57,7 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 8 followe
 - `docs/context-management.md`
 - `docs/providers.md`
 - `docs/shared-memory.md`
+- `docs/checkpoint.md`
 - `docs/observability.md`
 - `docs/cli.md`
 
@@ -68,13 +69,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
-| 3 | → | [`docs/cli.md`](docs/cli.md) |
-| 4 | → | [`docs/context-management.md`](docs/context-management.md) |
-| 5 | → | [`docs/observability.md`](docs/observability.md) |
-| 6 | → | [`docs/providers.md`](docs/providers.md) |
-| 7 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
-| 8 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
-| 9 | → | [`packages/core/README.md`](packages/core/README.md) |
+| 3 | → | [`docs/checkpoint.md`](docs/checkpoint.md) |
+| 4 | → | [`docs/cli.md`](docs/cli.md) |
+| 5 | → | [`docs/context-management.md`](docs/context-management.md) |
+| 6 | → | [`docs/observability.md`](docs/observability.md) |
+| 7 | → | [`docs/providers.md`](docs/providers.md) |
+| 8 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
+| 9 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
+| 10 | → | [`packages/core/README.md`](packages/core/README.md) |
 
 ---
 

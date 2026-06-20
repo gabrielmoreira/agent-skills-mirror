@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 26 default patterns, 26 followed patterns, 3617 file(s) materialized.
+Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 26 default patterns, 26 followed patterns, 3624 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 26 |
-| Files         | 3617 |
+| Files         | 3624 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -3675,32 +3675,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3589 | ✓ | [`skills/68-research-productivity-skills/web-access/scripts/match-site.mjs`](skills/68-research-productivity-skills/web-access/scripts/match-site.mjs) |
 | 3590 | ✓ | [`skills/68-research-productivity-skills/web-access/SKILL.md`](skills/68-research-productivity-skills/web-access/SKILL.md) |
 | 3591 | ✓ | [`skills/68-research-productivity-skills/web-research/SKILL.md`](skills/68-research-productivity-skills/web-research/SKILL.md) |
-| 3592 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 3593 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 3594 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |
-| 3595 | → | [`docs/EMPIRICAL_TOOLS_2026-06.md`](docs/EMPIRICAL_TOOLS_2026-06.md) |
-| 3596 | → | [`docs/EVALS.md`](docs/EVALS.md) |
-| 3597 | → | [`docs/FAQ.md`](docs/FAQ.md) |
-| 3598 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
-| 3599 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
-| 3600 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
-| 3601 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
-| 3602 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
-| 3603 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| 3604 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
-| 3605 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
-| 3606 | → | [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
-| 3607 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
-| 3608 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
-| 3609 | → | [`docs/TRUST.md`](docs/TRUST.md) |
-| 3610 | → | [`README-ja.md`](README-ja.md) |
-| 3611 | → | [`README-ko.md`](README-ko.md) |
-| 3612 | → | [`README-zh-CN.md`](README-zh-CN.md) |
-| 3613 | → | [`README-zh-TW.md`](README-zh-TW.md) |
-| 3614 | → | [`README.md`](README.md) |
-| 3615 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
-| 3616 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
-| 3617 | → | [`tools/README.md`](tools/README.md) |
+| 3592 | ✓ | [`skills/69-Paper-WorkFlow/assets/init_workspace.sh`](skills/69-Paper-WorkFlow/assets/init_workspace.sh) |
+| 3593 | ✓ | [`skills/69-Paper-WorkFlow/assets/workflow_state.template.json`](skills/69-Paper-WorkFlow/assets/workflow_state.template.json) |
+| 3594 | ✓ | [`skills/69-Paper-WorkFlow/README.md`](skills/69-Paper-WorkFlow/README.md) |
+| 3595 | ✓ | [`skills/69-Paper-WorkFlow/references/skill-map.md`](skills/69-Paper-WorkFlow/references/skill-map.md) |
+| 3596 | ✓ | [`skills/69-Paper-WorkFlow/references/stage-playbook.md`](skills/69-Paper-WorkFlow/references/stage-playbook.md) |
+| 3597 | ✓ | [`skills/69-Paper-WorkFlow/references/workspace-and-state.md`](skills/69-Paper-WorkFlow/references/workspace-and-state.md) |
+| 3598 | ✓ | [`skills/69-Paper-WorkFlow/SKILL.md`](skills/69-Paper-WorkFlow/SKILL.md) |
+| 3599 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 3600 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 3601 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |
+| 3602 | → | [`docs/EMPIRICAL_TOOLS_2026-06.md`](docs/EMPIRICAL_TOOLS_2026-06.md) |
+| 3603 | → | [`docs/EVALS.md`](docs/EVALS.md) |
+| 3604 | → | [`docs/FAQ.md`](docs/FAQ.md) |
+| 3605 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
+| 3606 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
+| 3607 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
+| 3608 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
+| 3609 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
+| 3610 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| 3611 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
+| 3612 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
+| 3613 | → | [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
+| 3614 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
+| 3615 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
+| 3616 | → | [`docs/TRUST.md`](docs/TRUST.md) |
+| 3617 | → | [`README-ja.md`](README-ja.md) |
+| 3618 | → | [`README-ko.md`](README-ko.md) |
+| 3619 | → | [`README-zh-CN.md`](README-zh-CN.md) |
+| 3620 | → | [`README-zh-TW.md`](README-zh-TW.md) |
+| 3621 | → | [`README.md`](README.md) |
+| 3622 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
+| 3623 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
+| 3624 | → | [`tools/README.md`](tools/README.md) |
 
 ---
 

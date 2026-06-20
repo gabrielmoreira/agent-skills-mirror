@@ -73,8 +73,6 @@ When no flag is provided, the system evaluates task complexity and automatically
 - **gate** (aliases: check, pre-commit): Lightweight pre-commit quality gate (lint+format+type-check+test)
 - **security** (aliases: audit, sec): Dedicated OWASP security audit with dependency scanning
 - **harness** (aliases: hrn, learn): V3R4 self-evolving harness lifecycle (status / apply / rollback &lt;date&gt; / disable) — slash-command-only surface; CLI verb path retired per SPEC-V3R4-HARNESS-001 (BC-V3R4-HARNESS-001-CLI-RETIREMENT)
-- **release-update** (aliases: cc-update, release-track) *(dev-only)*: CC upstream change tracker → update plan + docs-site 4-locale sync
-
 
 ### Priority 2: SPEC-ID Detection
 
@@ -231,6 +229,7 @@ For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/feedback.md
 This single `harness` subcommand dispatches to ONE of two workflows based on the FIRST token of `$ARGUMENTS` (argument-based routing — no second command is introduced). Apply the routing rule before any workflow-specific logic:
 
 - **Reserved verb** (`status` / `apply` / `rollback` / `disable`) → route to the existing **harness learning lifecycle** workflow (Branch A below). This path is unchanged.
+- **Reserved verb** (`list` / `edit` / `remove`) → route to the **harness-v4 lifecycle** handler (Branch A.1 below). These enumerate / edit / atomically-remove harness-v4 entries via the `moai harness <verb>` Go binary subcommand.
 - **Anything else** (a natural-language harness-creation request, e.g. "build a harness for CLI template development") → route to the **harness build entry** workflow (Branch B below).
 
 #### Branch A — harness learning lifecycle (reserved verbs: status / apply / rollback / disable)
@@ -242,21 +241,20 @@ Artifacts: `.moai/harness/usage-log.jsonl`, `.moai/harness/proposals/`, `.moai/h
 Authoritative SPEC: SPEC-V3R4-HARNESS-001 (supersedes V3R3-HARNESS-001, V3R3-HARNESS-LEARNING-001, V3R3-PROJECT-HARNESS-001)
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/harness.md
 
+#### Branch A.1 — harness-v4 lifecycle (reserved verbs: list / edit / remove)
+
+Purpose: Manage harness-v4 entries — enumerate built harnesses, locate their manifest + specialist files for editing, or atomically remove a harness with all its artifacts. The three verbs dispatch to the `moai harness <verb>` Go binary subcommand which performs the filesystem work (scan `.claude/commands/harness/*.md` joined with `manifest.json`; atomic remove with fail-closed orphan prevention).
+Verbs: list (enumerate all harnesses: name + domain + entry command) | edit &lt;name&gt; (show manifest + specialist + skill paths for editing — manifest is the SSOT) | remove &lt;name&gt; (atomic removal of command + workflow + specialists + skills + manifest; fail-closed if any artifact is missing)
+CLI: `moai harness list [--json]`, `moai harness edit <name> [--json]`, `moai harness remove <name>` (all support `--project-root`)
+Artifacts: `.claude/commands/harness/<name>.md` (thin-wrapper command), `.claude/commands/harness/<name>/manifest.json` (SSOT), `.claude/workflows/harness-<name>-run.js` (Runner), `.claude/agents/harness/harness-<name>*-specialist.md` (specialists), `.claude/skills/harness-<name>*/` (companion skills)
+Namespace: `.claude/commands/harness/`, `.claude/workflows/harness-*.js`, `.claude/agents/harness/`, and `.claude/skills/harness-*/` are USER-OWNED — `moai update` preserves them (backup if needed, never overwrites).
+
 #### Branch B — harness build entry (natural-language request)
 
-Purpose: Turn a natural-language harness-creation request into a concrete harness via Context-First Discovery (extract domain / goal / constraints / scope), harness `<name>` derivation (the name is derived from the request — NOT statically supplied by the user), explicit orchestrator-issued approval, then delegation to the Builder Workflow. The orchestrator MUST conduct AskUserQuestion Socratic rounds (max 4 questions per round) when intent clarity is below 100%.
+Purpose: Turn a natural-language harness-creation request into a concrete harness via Context-First Discovery (extract domain / goal / constraints / scope), harness `<name>` derivation (the name is derived from the request — NOT statically supplied by the user), explicit orchestrator-issued approval, then transition into the orchestrator-direct Builder (4 signal-driven phases: ANALYZE / PLAN / GENERATE / ACTIVATE). The orchestrator MUST conduct AskUserQuestion Socratic rounds (max 4 questions per round) when intent clarity is below 100%.
 Skills: moai-meta-harness (project-specific harness generation, indirect)
-Forward-link: delegates to the Builder Workflow (`.claude/workflows/harness-build.js`, not yet implemented — the entry's job is NL analysis + name derivation + approval gate; the Builder itself is a follow-up milestone).
+Builder: orchestrator-direct processing (NOT a dynamic-workflow script) — the entry's Phases 0-3 hand off to `${CLAUDE_SKILL_DIR}/workflows/harness-builder.md` for the 4-phase creation logic. The orchestrator holds the PLAN→GENERATE AskUserQuestion approval gate directly.
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/harness-build-entry.md
-
-### release-update - CC Upstream Change Tracker *(dev-only)*
-
-Purpose: Track Claude Code release notes since last analyzed version, classify by impact tier, generate update plan, sync docs-site 4-locale + README, open PR.
-Agents: manager-docs (Phase 6 docs sync), manager-git (Phase 7 PR)
-Flags: --since vX.Y.Z, --dry, --report-only, --docs-only, --master-spec
-State: .moai/state/last-cc-version.json
-For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/release-update.md
-NOT distributed to user projects (dev-only; entry: .claude/commands/97-release-update.md)
 
 ---
 
@@ -341,5 +339,5 @@ Use AskUserQuestion to present the user with logical next actions based on the c
 
 ---
 
-Version: 2.6.0
-Last Updated: 2026-02-25
+Version: 2.7.0
+Last Updated: 2026-06-20

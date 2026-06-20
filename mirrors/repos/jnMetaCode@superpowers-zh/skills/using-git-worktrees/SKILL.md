@@ -35,7 +35,7 @@ BRANCH=$(git branch --show-current)
 git rev-parse --show-superproject-working-tree 2>/dev/null
 ```
 
-**如果 `GIT_DIR != GIT_COMMON`（且不是 submodule）：** 你已经在一个 linked worktree 内。跳到步骤 3（项目设置）。**不要**再创建一个 worktree。
+**如果 `GIT_DIR != GIT_COMMON`（且不是 submodule）：** 你已经在一个 linked worktree 内。跳到步骤 2（项目设置）。**不要**再创建一个 worktree。
 
 按分支状态报告：
 
@@ -48,7 +48,7 @@ git rev-parse --show-superproject-working-tree 2>/dev/null
 
 > "你希望我搭一个隔离的 worktree 吗？它能保护你当前分支不被改动。"
 
-如果用户已声明过偏好，直接遵循，不再询问。如果用户拒绝同意，原地工作并跳到步骤 3。
+如果用户已声明过偏好，直接遵循，不再询问。如果用户拒绝同意，原地工作并跳到步骤 2。
 
 ## 步骤 1：创建隔离工作区
 
@@ -56,7 +56,7 @@ git rev-parse --show-superproject-working-tree 2>/dev/null
 
 ### 1a. 原生 Worktree 工具（首选）
 
-用户已经请求隔离工作区（步骤 0 已获同意）。你是否已经有创建 worktree 的方法？可能是名为 `EnterWorktree`、`WorktreeCreate` 的工具、`/worktree` 命令，或 `--worktree` 标志。如果有，用它，然后跳到步骤 3。
+用户已经请求隔离工作区（步骤 0 已获同意）。你是否已经有创建 worktree 的方法？可能是名为 `EnterWorktree`、`WorktreeCreate` 的工具、`/worktree` 命令，或 `--worktree` 标志。如果有，用它，然后跳到步骤 2。
 
 原生工具自动处理目录放置、分支创建和清理。在你已经有原生工具的情况下使用 `git worktree add`，会创建你的 harness 看不到也无法管理的"幻影状态"。
 
@@ -81,16 +81,7 @@ git rev-parse --show-superproject-working-tree 2>/dev/null
 
    找到就用。如果两者都存在，`.worktrees` 优先。
 
-3. **检查是否存在全局目录：**
-
-   ```bash
-   project=$(basename "$(git rev-parse --show-toplevel)")
-   ls -d ~/.config/superpowers/worktrees/$project 2>/dev/null
-   ```
-
-   找到就用（兼容老的全局路径）。
-
-4. **如果没有其他可参考的信息**，默认用项目根目录下的 `.worktrees/`。
+3. **如果没有其他可参考的信息**，默认用项目根目录下的 `.worktrees/`。
 
 #### 安全验证（仅项目本地目录）
 
@@ -104,16 +95,11 @@ git check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/d
 
 **为什么关键：** 防止 worktree 内容被意外提交到仓库。
 
-全局目录（`~/.config/superpowers/worktrees/`）无需验证。
-
 #### 创建工作树
 
 ```bash
-project=$(basename "$(git rev-parse --show-toplevel)")
-
 # 根据选定位置确定路径
-# 项目本地：path="$LOCATION/$BRANCH_NAME"
-# 全局：path="~/.config/superpowers/worktrees/$project/$BRANCH_NAME"
+path="$LOCATION/$BRANCH_NAME"
 
 git worktree add "$path" -b "$BRANCH_NAME"
 cd "$path"
@@ -121,7 +107,7 @@ cd "$path"
 
 **沙盒回退：** 如果 `git worktree add` 因权限错误（沙盒拒绝）失败，告诉用户沙盒阻止了 worktree 创建，你将在当前目录原地工作。然后原地运行 setup 和基线测试。
 
-## 步骤 3：项目设置
+## 步骤 2：项目设置
 
 自动检测并运行相应的设置命令：
 
@@ -140,7 +126,7 @@ if [ -f pyproject.toml ]; then poetry install; fi
 if [ -f go.mod ]; then go mod download; fi
 ```
 
-## 步骤 4：验证基线干净
+## 步骤 3：验证基线干净
 
 运行测试确保工作区初始状态干净：
 
@@ -173,7 +159,6 @@ npm test / cargo test / pytest / go test ./...
 | `worktrees/` 存在 | 用它（验证已忽略） |
 | 两者都存在 | 用 `.worktrees/` |
 | 都不存在 | 检查 instructions 文件，再默认 `.worktrees/` |
-| 全局路径存在 | 用它（向后兼容） |
 | 目录未被忽略 | 添加到 .gitignore + 提交 |
 | 创建时权限错误 | 沙盒回退，原地工作 |
 | 基线测试失败 | 报告失败 + 询问 |
@@ -199,7 +184,7 @@ npm test / cargo test / pytest / go test ./...
 ### 假设目录位置
 
 - **问题：** 造成不一致、违反项目约定
-- **修复：** 遵循优先级：现有目录 > 全局历史路径 > instructions 文件 > 默认
+- **修复：** 遵循优先级：明确 instructions > 现有项目本地目录 > 默认
 
 ### 带着失败的测试继续
 
@@ -221,7 +206,7 @@ npm test / cargo test / pytest / go test ./...
 
 - 先跑步骤 0 检测
 - 优先原生工具，其次 git 回退
-- 遵循目录优先级：现有目录 > 全局历史路径 > instructions 文件 > 默认
+- 遵循目录优先级：明确 instructions > 现有项目本地目录 > 默认
 - 项目本地目录验证已忽略
 - 自动检测并运行项目设置
 - 验证测试基线干净

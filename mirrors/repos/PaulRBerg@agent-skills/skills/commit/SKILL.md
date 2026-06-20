@@ -1,13 +1,13 @@
 ---
-argument-hint: '[--all] [--deep] [--push] [--close <issue_numbers>]'
+argument-hint: '[--all] [--deep] [--natural] [--push] [--close <issue_numbers>]'
 name: commit
 user-invocable: true
-description: 'Use only when explicitly invoked for Git commit workflows: stage intended changes, craft conventional commit messages, commit, and optionally --all, --deep, --close, or --push.'
+description: 'Use only when explicitly invoked for Git commit workflows: stage intended changes, craft Conventional Prefix Format messages by default, Natural Language messages with --natural or configured repos, commit, and optionally --all, --deep, --close, or --push.'
 ---
 
 # Git Commit
 
-Create atomic commits by staging the right files, analyzing the staged diff, composing a conventional commit message, and optionally pushing.
+Create atomic commits by staging the right files, analyzing the staged diff, composing a commit message, and optionally pushing.
 
 ## Workflow
 
@@ -18,11 +18,15 @@ Arguments: `$ARGUMENTS`
 - Flags:
   - `--all` commit all changes
   - `--deep` deep analysis with the active session model, breaking changes, concise body
+  - `--natural` force Natural Language Format
   - `--push` push after commit
   - `--close <issue_numbers>` append `Closes #N` trailers for listed issues (comma/space-separated)
 - Value arguments:
-  - Type keyword (any conventional type) overrides inferred type
-  - Quoted text overrides inferred description
+  - Conventional Prefix Format: type keyword overrides inferred type
+  - Natural Language Format: leading verb/category keyword overrides inferred verb
+  - Quoted text overrides inferred description or subject
+
+Pass `--natural` through to the prepare helper when requested. The helper resolves the message format from the target repository cwd. Never `cd` into the skill directory.
 
 ### 2) Prepare staged diff
 
@@ -31,18 +35,18 @@ Run the portable helper from the target repository cwd. Never `cd` into the skil
 For Claude Code:
 
 ```bash
-bash "${CLAUDE_SKILL_DIR}/scripts/prepare-commit.sh" [--all] [--diff summary|full] -- [session_modified_paths...]
+bash "${CLAUDE_SKILL_DIR}/scripts/prepare-commit.sh" [--all] [--natural] [--diff summary|full] -- [session_modified_paths...]
 ```
 
 For Codex CLI, resolve `<skill-dir>` from the loaded `SKILL.md` path:
 
 ```bash
-bash "<skill-dir>/scripts/prepare-commit.sh" [--all] [--diff summary|full] -- [session_modified_paths...]
+bash "<skill-dir>/scripts/prepare-commit.sh" [--all] [--natural] [--diff summary|full] -- [session_modified_paths...]
 ```
 
-Use `--diff summary` when the user supplied a clear subject or description. Use `--diff full` when the intent is ambiguous or `--deep` was requested.
+Use `--diff summary` by default. Use `--diff full` only when the intent is ambiguous or `--deep` was requested.
 
-The helper performs Git preflight checks, stages `--all` or the session-modified paths, unstages unrelated pre-staged paths, rejects empty staged diffs, and prints the branch, staged name-status, shortstat, and optional full diff. If it fails, stop with its error and a concise suggested fix.
+The helper performs Git preflight checks, stages `--all` or the session-modified paths, unstages unrelated pre-staged paths, rejects empty staged diffs, and prints the message format, branch, staged name-status, shortstat, and optional full diff. If it fails, stop with its error and a concise suggested fix.
 
 - If `--all`:
   - Include all tracked, untracked, modified, deleted, and already staged changes
@@ -56,56 +60,22 @@ The helper performs Git preflight checks, stages `--all` or the session-modified
 
 Read the helper output and produce the commit message in a single pass.
 
-**Type inference** — infer the type from the dominant user-visible intent, not the largest file diff or the presence of
-dependency/config churn.
+**Message format** — use the `## message format` value from the helper output.
 
-Choose the highest-signal behavior that explains why the commit exists:
+- If `conventional`: read [references/conventional-prefix-format.md](references/conventional-prefix-format.md).
+- If `natural`: read [references/natural-language-format.md](references/natural-language-format.md).
 
-- If a dependency bump is only the enabler for a migration/refactor/fix, use the migration/refactor/fix type instead of
-  `chore(deps)`.
-- If changed tooling/scripts/config are required to keep existing behavior working after a code migration, include them in
-  the same type as the migration.
-- Use `chore` only for maintenance that does not fit a more specific behavioral category.
-- Use `chore(deps)` only for dependency-only updates or dependency updates whose main purpose is routine maintenance.
-
-| Behavior                                            | Type          |
-| --------------------------------------------------- | ------------- |
-| New functionality                                   | `feat`        |
-| Bug fix / error handling                            | `fix`         |
-| Code migration or API adaptation without new UX/API | `refactor`    |
-| Code reorganization, no behavior change             | `refactor`    |
-| Documentation                                       | `docs`        |
-| Tests                                               | `test`        |
-| Build system (webpack, vite, esbuild)               | `build`       |
-| CI/CD pipelines                                     | `ci`          |
-| Dependency-only maintenance                         | `chore(deps)` |
-| Formatting / whitespace only                        | `style`       |
-| Performance                                         | `perf`        |
-| Reverting previous commit                           | `revert`      |
-| AI config (CLAUDE.md, .claude/, .gemini/, .codex/)  | `ai`          |
-| Other maintenance                                   | `chore`       |
-
-Explicit type keyword in arguments takes precedence over inference.
-
-**Scope** — infer only when path makes it obvious (lowercase).
+Read only the selected format reference before composing the message.
 
 **Unrelated hunks** — ignore pre-existing changes when determining type/scope/description. If unrelated changes are in the same file as session changes, they are included in the commit scope but should not influence the message.
-
-**Message format:**
-
-- Subject line (\<= 50 chars): `type(scope): description` or `type: description`
-- Imperative mood ("add" not "added"), lowercase, no period
-- Describe what the change does, not which files changed
-- Body: hyphenated lines for distinct changes; skip for trivial changes
 
 **Issue linking** — scan the chat transcript for GitHub issue references (e.g. `#123`, `owner/repo#123`, issue URLs) that the current changes resolve. For each match, append a `Closes #N` trailer. Skip issues merely mentioned in passing; include only ones the commit actually closes.
 
 **If `--deep`:**
 
 - Deep semantic analysis; detect breaking changes
-- Infer scope from code structure even when path isn't clear
-- Body: 2-3 hyphenated lines max, focus on WHY
-- Breaking change: `BREAKING CHANGE:` + one-line migration note
+- Infer Conventional Prefix Format scope or Natural Language context from code structure even when path isn't clear
+- Follow the selected reference's body and breaking-change rules
 
 **If `--close`:**
 

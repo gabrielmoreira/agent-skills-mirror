@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `heygen-com/hyperframes` — 26 default patterns, 0 followed patterns, 1071 file(s) materialized.
+Mirror of `heygen-com/hyperframes` — 26 default patterns, 0 followed patterns, 1073 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `heygen-com/hyperframes` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1071 |
+| Files         | 1073 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -1098,38 +1098,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1037 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/fixtures/clean.tsx`](skills/remotion-to-hyperframes/scripts/tests/fixtures/clean.tsx) |
 | 1038 | ✓ | [`skills/remotion-to-hyperframes/scripts/tests/smoke.sh`](skills/remotion-to-hyperframes/scripts/tests/smoke.sh) |
 | 1039 | ✓ | [`skills/remotion-to-hyperframes/SKILL.md`](skills/remotion-to-hyperframes/SKILL.md) |
-| 1040 | ✓ | [`skills/website-to-video/assets/sfx/chime.mp3`](skills/website-to-video/assets/sfx/chime.mp3) |
-| 1041 | ✓ | [`skills/website-to-video/assets/sfx/click-soft.mp3`](skills/website-to-video/assets/sfx/click-soft.mp3) |
-| 1042 | ✓ | [`skills/website-to-video/assets/sfx/click.mp3`](skills/website-to-video/assets/sfx/click.mp3) |
-| 1043 | ✓ | [`skills/website-to-video/assets/sfx/CREDITS.md`](skills/website-to-video/assets/sfx/CREDITS.md) |
-| 1044 | ✓ | [`skills/website-to-video/assets/sfx/error.mp3`](skills/website-to-video/assets/sfx/error.mp3) |
-| 1045 | ✓ | [`skills/website-to-video/assets/sfx/glitch-1.mp3`](skills/website-to-video/assets/sfx/glitch-1.mp3) |
-| 1046 | ✓ | [`skills/website-to-video/assets/sfx/glitch-2.mp3`](skills/website-to-video/assets/sfx/glitch-2.mp3) |
-| 1047 | ✓ | [`skills/website-to-video/assets/sfx/glitch-3.mp3`](skills/website-to-video/assets/sfx/glitch-3.mp3) |
-| 1048 | ✓ | [`skills/website-to-video/assets/sfx/impact-bass-1.mp3`](skills/website-to-video/assets/sfx/impact-bass-1.mp3) |
-| 1049 | ✓ | [`skills/website-to-video/assets/sfx/impact-bass-2.mp3`](skills/website-to-video/assets/sfx/impact-bass-2.mp3) |
-| 1050 | ✓ | [`skills/website-to-video/assets/sfx/key-press.mp3`](skills/website-to-video/assets/sfx/key-press.mp3) |
-| 1051 | ✓ | [`skills/website-to-video/assets/sfx/manifest.json`](skills/website-to-video/assets/sfx/manifest.json) |
-| 1052 | ✓ | [`skills/website-to-video/assets/sfx/notification.mp3`](skills/website-to-video/assets/sfx/notification.mp3) |
-| 1053 | ✓ | [`skills/website-to-video/assets/sfx/ping.mp3`](skills/website-to-video/assets/sfx/ping.mp3) |
-| 1054 | ✓ | [`skills/website-to-video/assets/sfx/pop.mp3`](skills/website-to-video/assets/sfx/pop.mp3) |
-| 1055 | ✓ | [`skills/website-to-video/assets/sfx/riser.mp3`](skills/website-to-video/assets/sfx/riser.mp3) |
-| 1056 | ✓ | [`skills/website-to-video/assets/sfx/sparkle.mp3`](skills/website-to-video/assets/sfx/sparkle.mp3) |
-| 1057 | ✓ | [`skills/website-to-video/assets/sfx/typing.mp3`](skills/website-to-video/assets/sfx/typing.mp3) |
-| 1058 | ✓ | [`skills/website-to-video/assets/sfx/whoosh-cinematic.mp3`](skills/website-to-video/assets/sfx/whoosh-cinematic.mp3) |
-| 1059 | ✓ | [`skills/website-to-video/assets/sfx/whoosh-short.mp3`](skills/website-to-video/assets/sfx/whoosh-short.mp3) |
-| 1060 | ✓ | [`skills/website-to-video/assets/sfx/whoosh.mp3`](skills/website-to-video/assets/sfx/whoosh.mp3) |
-| 1061 | ✓ | [`skills/website-to-video/references/beat-builder-guide.md`](skills/website-to-video/references/beat-builder-guide.md) |
-| 1062 | ✓ | [`skills/website-to-video/references/capabilities.md`](skills/website-to-video/references/capabilities.md) |
-| 1063 | ✓ | [`skills/website-to-video/references/step-0-capture.md`](skills/website-to-video/references/step-0-capture.md) |
-| 1064 | ✓ | [`skills/website-to-video/references/step-1-design.md`](skills/website-to-video/references/step-1-design.md) |
-| 1065 | ✓ | [`skills/website-to-video/references/step-2-brief.md`](skills/website-to-video/references/step-2-brief.md) |
-| 1066 | ✓ | [`skills/website-to-video/references/step-3-storyboard.md`](skills/website-to-video/references/step-3-storyboard.md) |
-| 1067 | ✓ | [`skills/website-to-video/references/step-4-vo.md`](skills/website-to-video/references/step-4-vo.md) |
-| 1068 | ✓ | [`skills/website-to-video/references/step-5-build.md`](skills/website-to-video/references/step-5-build.md) |
-| 1069 | ✓ | [`skills/website-to-video/references/step-6-validate.md`](skills/website-to-video/references/step-6-validate.md) |
-| 1070 | ✓ | [`skills/website-to-video/scripts/w2h-verify.mjs`](skills/website-to-video/scripts/w2h-verify.mjs) |
-| 1071 | ✓ | [`skills/website-to-video/SKILL.md`](skills/website-to-video/SKILL.md) |
+| 1040 | ✓ | [`skills/slideshow/references/standalone-harness.md`](skills/slideshow/references/standalone-harness.md) |
+| 1041 | ✓ | [`skills/slideshow/SKILL.md`](skills/slideshow/SKILL.md) |
+| 1042 | ✓ | [`skills/website-to-video/assets/sfx/chime.mp3`](skills/website-to-video/assets/sfx/chime.mp3) |
+| 1043 | ✓ | [`skills/website-to-video/assets/sfx/click-soft.mp3`](skills/website-to-video/assets/sfx/click-soft.mp3) |
+| 1044 | ✓ | [`skills/website-to-video/assets/sfx/click.mp3`](skills/website-to-video/assets/sfx/click.mp3) |
+| 1045 | ✓ | [`skills/website-to-video/assets/sfx/CREDITS.md`](skills/website-to-video/assets/sfx/CREDITS.md) |
+| 1046 | ✓ | [`skills/website-to-video/assets/sfx/error.mp3`](skills/website-to-video/assets/sfx/error.mp3) |
+| 1047 | ✓ | [`skills/website-to-video/assets/sfx/glitch-1.mp3`](skills/website-to-video/assets/sfx/glitch-1.mp3) |
+| 1048 | ✓ | [`skills/website-to-video/assets/sfx/glitch-2.mp3`](skills/website-to-video/assets/sfx/glitch-2.mp3) |
+| 1049 | ✓ | [`skills/website-to-video/assets/sfx/glitch-3.mp3`](skills/website-to-video/assets/sfx/glitch-3.mp3) |
+| 1050 | ✓ | [`skills/website-to-video/assets/sfx/impact-bass-1.mp3`](skills/website-to-video/assets/sfx/impact-bass-1.mp3) |
+| 1051 | ✓ | [`skills/website-to-video/assets/sfx/impact-bass-2.mp3`](skills/website-to-video/assets/sfx/impact-bass-2.mp3) |
+| 1052 | ✓ | [`skills/website-to-video/assets/sfx/key-press.mp3`](skills/website-to-video/assets/sfx/key-press.mp3) |
+| 1053 | ✓ | [`skills/website-to-video/assets/sfx/manifest.json`](skills/website-to-video/assets/sfx/manifest.json) |
+| 1054 | ✓ | [`skills/website-to-video/assets/sfx/notification.mp3`](skills/website-to-video/assets/sfx/notification.mp3) |
+| 1055 | ✓ | [`skills/website-to-video/assets/sfx/ping.mp3`](skills/website-to-video/assets/sfx/ping.mp3) |
+| 1056 | ✓ | [`skills/website-to-video/assets/sfx/pop.mp3`](skills/website-to-video/assets/sfx/pop.mp3) |
+| 1057 | ✓ | [`skills/website-to-video/assets/sfx/riser.mp3`](skills/website-to-video/assets/sfx/riser.mp3) |
+| 1058 | ✓ | [`skills/website-to-video/assets/sfx/sparkle.mp3`](skills/website-to-video/assets/sfx/sparkle.mp3) |
+| 1059 | ✓ | [`skills/website-to-video/assets/sfx/typing.mp3`](skills/website-to-video/assets/sfx/typing.mp3) |
+| 1060 | ✓ | [`skills/website-to-video/assets/sfx/whoosh-cinematic.mp3`](skills/website-to-video/assets/sfx/whoosh-cinematic.mp3) |
+| 1061 | ✓ | [`skills/website-to-video/assets/sfx/whoosh-short.mp3`](skills/website-to-video/assets/sfx/whoosh-short.mp3) |
+| 1062 | ✓ | [`skills/website-to-video/assets/sfx/whoosh.mp3`](skills/website-to-video/assets/sfx/whoosh.mp3) |
+| 1063 | ✓ | [`skills/website-to-video/references/beat-builder-guide.md`](skills/website-to-video/references/beat-builder-guide.md) |
+| 1064 | ✓ | [`skills/website-to-video/references/capabilities.md`](skills/website-to-video/references/capabilities.md) |
+| 1065 | ✓ | [`skills/website-to-video/references/step-0-capture.md`](skills/website-to-video/references/step-0-capture.md) |
+| 1066 | ✓ | [`skills/website-to-video/references/step-1-design.md`](skills/website-to-video/references/step-1-design.md) |
+| 1067 | ✓ | [`skills/website-to-video/references/step-2-brief.md`](skills/website-to-video/references/step-2-brief.md) |
+| 1068 | ✓ | [`skills/website-to-video/references/step-3-storyboard.md`](skills/website-to-video/references/step-3-storyboard.md) |
+| 1069 | ✓ | [`skills/website-to-video/references/step-4-vo.md`](skills/website-to-video/references/step-4-vo.md) |
+| 1070 | ✓ | [`skills/website-to-video/references/step-5-build.md`](skills/website-to-video/references/step-5-build.md) |
+| 1071 | ✓ | [`skills/website-to-video/references/step-6-validate.md`](skills/website-to-video/references/step-6-validate.md) |
+| 1072 | ✓ | [`skills/website-to-video/scripts/w2h-verify.mjs`](skills/website-to-video/scripts/w2h-verify.mjs) |
+| 1073 | ✓ | [`skills/website-to-video/SKILL.md`](skills/website-to-video/SKILL.md) |
 
 ---
 

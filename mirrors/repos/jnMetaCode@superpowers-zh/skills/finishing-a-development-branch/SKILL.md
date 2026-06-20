@@ -189,7 +189,7 @@ WORKTREE_PATH=$(git rev-parse --show-toplevel)
 
 **如果 `GIT_DIR == GIT_COMMON`：** 普通仓库，无 worktree 可清理。结束。
 
-**如果 worktree 路径在 `.worktrees/`、`worktrees/` 或 `~/.config/superpowers/worktrees/` 之下：** 这是 Superpowers 创建的 worktree —— 我们负责清理。
+**如果 worktree 路径在 `.worktrees/` 或 `worktrees/` 之下：** 这是 Superpowers 创建的 worktree —— 我们负责清理。
 
 ```bash
 MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
@@ -239,7 +239,7 @@ git worktree prune  # 自愈：清理任何过期的注册记录
 **清理 harness 拥有的 worktree**
 
 - **问题：** 移除 harness 创建的 worktree 会造成幻影状态
-- **修复：** 只清理 `.worktrees/`、`worktrees/` 或 `~/.config/superpowers/worktrees/` 下的 worktree
+- **修复：** 只清理 `.worktrees/` 或 `worktrees/` 下的 worktree
 
 **丢弃时不确认**
 

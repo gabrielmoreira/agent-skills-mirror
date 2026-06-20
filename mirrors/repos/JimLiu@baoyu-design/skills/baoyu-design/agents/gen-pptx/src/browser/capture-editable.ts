@@ -246,6 +246,15 @@ export async function captureEditable(
           } catch {
             /* leave unset */
           }
+        } else if (bg.indexOf("gradient(") >= 0) {
+          // Rasterized later so alpha-fading overlays keep their fade. (←gradient)
+          node.gradient = bg;
+          const minSide = Math.min(r.w, r.h);
+          const corner = (cs.borderTopLeftRadius || "").split(" ")[0] || "";
+          let rad = 0;
+          if (corner.endsWith("%")) rad = (parseFloat(corner) / 100) * minSide;
+          else if (corner.endsWith("px")) rad = parseFloat(corner) || 0;
+          if (isFinite(rad) && rad > 0) node.gradientRadius = Math.min(rad, minSide / 2);
         }
       }
     }

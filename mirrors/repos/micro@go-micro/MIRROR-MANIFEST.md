@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `micro/go-micro` — 26 default patterns, 13 followed patterns, 15 file(s) materialized.
+Mirror of `micro/go-micro` — 26 default patterns, 7 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `micro/go-micro` — 26 default patterns, 13 followed patterns, 15 fil
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 13 |
-| Files         | 15 |
+| Followed pats | 7 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,16 +52,10 @@ Mirror of `micro/go-micro` — 26 default patterns, 13 followed patterns, 15 fil
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `ROADMAP.md`
-- `internal/docs/ROADMAP_2026.md`
-- `internal/docs/CURRENT_STATUS_SUMMARY.md`
-- `internal/docs/PROJECT_STATUS_2026.md`
-- `internal/docs/IMPLEMENTATION_SUMMARY.md`
 - `CHANGELOG.md`
+- `internal/docs/IMPLEMENTATION_SUMMARY.md`
 - `CONTRIBUTING.md`
-- `.github/ISSUE_TEMPLATE/feature_request.md`
-- `gateway/mcp/DOCUMENTATION.md`
-- `examples/mcp/README.md`
-- `ai/README.md`
+- `internal/website/docs/roadmap.md`
 - `internal/website/docs/guides/migration/v5-to-v6.md`
 - `.github/ISSUE_TEMPLATE/question.md`
 
@@ -73,19 +67,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`contrib/langchain-go-micro/CONTRIBUTING.md`](contrib/langchain-go-micro/CONTRIBUTING.md) |
-| 3 | → | [`.github/ISSUE_TEMPLATE/feature_request.md`](.github/ISSUE_TEMPLATE/feature_request.md) |
-| 4 | → | [`.github/ISSUE_TEMPLATE/question.md`](.github/ISSUE_TEMPLATE/question.md) |
-| 5 | → | [`ai/README.md`](ai/README.md) |
-| 6 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 7 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 8 | → | [`examples/mcp/README.md`](examples/mcp/README.md) |
-| 9 | → | [`gateway/mcp/DOCUMENTATION.md`](gateway/mcp/DOCUMENTATION.md) |
-| 10 | → | [`internal/docs/CURRENT_STATUS_SUMMARY.md`](internal/docs/CURRENT_STATUS_SUMMARY.md) |
-| 11 | → | [`internal/docs/IMPLEMENTATION_SUMMARY.md`](internal/docs/IMPLEMENTATION_SUMMARY.md) |
-| 12 | → | [`internal/docs/PROJECT_STATUS_2026.md`](internal/docs/PROJECT_STATUS_2026.md) |
-| 13 | → | [`internal/docs/ROADMAP_2026.md`](internal/docs/ROADMAP_2026.md) |
-| 14 | → | [`internal/website/docs/guides/migration/v5-to-v6.md`](internal/website/docs/guides/migration/v5-to-v6.md) |
-| 15 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 3 | → | [`.github/ISSUE_TEMPLATE/question.md`](.github/ISSUE_TEMPLATE/question.md) |
+| 4 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 5 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 6 | → | [`internal/docs/IMPLEMENTATION_SUMMARY.md`](internal/docs/IMPLEMENTATION_SUMMARY.md) |
+| 7 | → | [`internal/website/docs/guides/migration/v5-to-v6.md`](internal/website/docs/guides/migration/v5-to-v6.md) |
+| 8 | → | [`internal/website/docs/roadmap.md`](internal/website/docs/roadmap.md) |
+| 9 | → | [`ROADMAP.md`](ROADMAP.md) |
 
 ---
 

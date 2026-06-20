@@ -2,4 +2,4 @@
 description: Retry last failure
 ---
 
-Find why it failed, retry tighter, verify.
+Find why it failed, retry tighter.

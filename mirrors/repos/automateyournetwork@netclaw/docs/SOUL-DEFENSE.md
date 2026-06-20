@@ -294,8 +294,52 @@ Create dashboards for:
 
 ---
 
+## MCP-Specific Security Considerations
+
+### IP Fabric Integration
+
+IP Fabric provides network assurance capabilities through a remote MCP server built into IP Fabric appliances. Security considerations:
+
+**API Token Security:**
+- API tokens grant read access to network topology, configuration, and state data
+- Tokens are never exposed to the AI model — only query results are processed
+- Use RBAC to scope token permissions to only required data
+- Rotate tokens periodically per organizational policy
+
+**Data Sensitivity:**
+- Network topology and device inventory are sensitive intelligence
+- Path analysis may reveal internal network architecture
+- Intent violations may expose compliance gaps
+- Treat all IP Fabric data with appropriate classification
+
+**RBAC Recommendations:**
+- **SOC Analysts**: Read-only health and path analysis
+- **Network Engineers**: Full read access, path analysis with diagrams
+- **Security/Compliance**: Intent validation and compliance views
+- **Administrators**: Full access including intent rule configuration
+
+**Credential Storage:**
+```bash
+# Store in .env file (not committed to git)
+IPFABRIC_HOST=https://ipfabric.example.com
+IPFABRIC_API_TOKEN=your-api-token-here
+```
+
+**Network Connectivity:**
+- IP Fabric MCP uses HTTPS (port 443)
+- Requires network path from NetClaw host to IP Fabric appliance
+- Consider firewall rules for access control
+- No VPN required if appliance is network-accessible
+
+### Check Point Integration
+
+Check Point MCPs provide access to security policies, threat intelligence, and gateway diagnostics. See checkpoint-security skill for credential requirements.
+
+---
+
 ## Related Documentation
 
 - [SOUL.md](../SOUL.md) - Core NetClaw principles (P18-P25 are security)
 - [DEFENSECLAW.md](DEFENSECLAW.md) - Technical configuration guide
 - [UPGRADE-TO-DEFENSECLAW.md](UPGRADE-TO-DEFENSECLAW.md) - Migration guide
+- [IPFABRIC.md](IPFABRIC.md) - IP Fabric integration guide

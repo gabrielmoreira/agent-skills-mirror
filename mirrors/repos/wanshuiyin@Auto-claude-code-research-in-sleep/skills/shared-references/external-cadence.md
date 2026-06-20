@@ -194,6 +194,56 @@ acquit the work the pipeline produces.
 
 One-liner: **a heartbeat may say "keep going," never "good enough."**
 
+## Loop self-heartbeat + watchdog liveness (catch a silent death)
+
+A `/loop` or `CronCreate` heartbeat is parasitic on a living session; if it dies
+(context compaction, session close) nothing notices. Two-part convention:
+
+1. **Write a heartbeat first.** As the FIRST action of every iteration, rewrite
+   (or `touch`) the loop's state file (`*_STATE.json` / `run_state.json` / a tiny
+   `last_seen` file) so its mtime advances each tick *before* any work that might hang.
+2. **Register it with the watchdog** at startup, and **unregister on completion**:
+   ```bash
+   python3 tools/watchdog.py --register      '{"name":"<run_id>","type":"loop","state_file":"<the heartbeat file>","stale_after_seconds":21600}'
+   # on completion: python3 tools/watchdog.py --unregister "<run_id>"
+   ```
+   `stale_after_seconds` is the loop's OWN tolerance — set it to **comfortably exceed
+   the longest single iteration/operation** (≈ a few × the tick interval), **never** the
+   watchdog poll interval. The watchdog writes **STALE** to `summary.txt` + `alerts.log`
+   (which your poll already reads) when the file's mtime is older than that; a finished
+   loop shows **COMPLETED** (if its state carries a terminal `status`) or should be
+   unregistered. **It only DETECTS** — it never restarts the loop or re-runs a
+   verdict-bearing skill; recovery stays a human/cron decision, per the fence above.
+
+## Stall detection & forced structural pivot
+
+An overnight loop can spin: each iteration tries a near-variant of the last and gets
+diminishing returns. Detect it mechanically and force a *structural* change — not harder
+tuning of the same frame.
+
+- **Count, don't vibe.** Each iteration, record the number of NEW findings (concrete
+  added entries — new evidence, a falsified hypothesis, a candidate direction — *not* a
+  subjective "valuable result"). Resolve the helper via the canonical chain
+  (integration-contract §2): `.aris/tools/iteration_log.py` → `tools/iteration_log.py` →
+  `$ARIS_REPO/tools/iteration_log.py` (warn-and-skip if unresolved), then
+  `python3 "$ITER_LOG" note <root> <run_id> <phase> <new_findings> [--direction "..."]`.
+  Consecutive zero-finding iterations accumulate a `stale_count` in
+  `.aris/runs/<run_id>.iterations.jsonl` — a sidecar that does **not** touch run_state's
+  done/accepted state.
+- **Forced pivot ladder** (the heartbeat reads the returned `pivot`):
+  - `stale_count >= 2` → **pivot structure, not tactics**: change a structural constraint
+    (frame / objective / data / representation), not a tactical parameter, and pick a
+    direction that differs from every one already tried.
+  - `stale_count >= 4` → **escalate to a human** (flag for attention; stop nudging blindly).
+- **Direction diversity.** Before a re-generation, read the tried directions (research-wiki
+  Failed Ideas + the iteration ledger) and reject a candidate too close to one already tried.
+
+This is a Type-A signal — it counts findings and changes *direction*, it never *judges
+quality* ("keep going / change direction," never "good enough"; quality stays with the
+cross-model jury, acceptance-gate.md). Why structure over tactics: when a task stalls
+repeatedly inside one frame, the decisive gain comes from correcting the frame itself, not
+from tuning parameters harder within it.
+
 ## Required components (when you add external cadence to a skill)
 
 1. **Waits on an external fact, not a self-verdict.** State the fact in
@@ -218,6 +268,20 @@ One-liner: **a heartbeat may say "keep going," never "good enough."**
    `/loop` / `CronCreate`, the same work still terminates correctly via
    a blocking poll or a manual re-invocation; the cross-model jury at
    the end is identical either way (`fan-out-pattern.md`).
+
+## Autonomous-mode discipline (when the human checkpoint is off)
+
+When a skill runs with its human-checkpoint toggle OFF (e.g. `AUTO_PROCEED=true`) or under
+an external heartbeat, it must not stall by ending on a question. Resolve a routine
+ambiguity yourself, act, and log the decision and its reasoning (a `level=decision` log
+line) so the choice is auditable — "ready means execute": finishing preparation and then
+asking "should I proceed?" is the stall this rule forbids.
+
+This does **not** override an *explicit* human gate. A checkpoint the skill declares as
+load-bearing — a missing venue/target, a patent/submission step, anything marked as
+requiring sign-off — still stops and waits. If you are unsure whether a gate is explicit, treat it as explicit and stop. Autonomy removes *needless* pauses, not
+deliberate ones; and it never lets the loop self-acquit a quality verdict (that stays with
+the cross-model jury, see [`acceptance-gate.md`](acceptance-gate.md)).
 
 ## Cross-references
 

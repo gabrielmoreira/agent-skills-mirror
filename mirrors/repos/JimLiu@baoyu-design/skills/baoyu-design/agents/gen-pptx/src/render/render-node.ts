@@ -92,7 +92,12 @@ export function renderNodeToPptx(node: SlideNode, ctx: RenderContext): void {
   const radiusRatio = minSide > 0 ? radiusPx / minSide : 0;
   const opacity = clamp(parseFloat(style.opacity ?? "1") || 1, 0, 1);
 
-  const bgColor = parseColor(style.backgroundColor) || (node.imageUrl ? null : parseGradient(style.backgroundImage));
+  // A rasterized gradient (drawn as an image below) replaces the flat first-stop
+  // fill; fall back to that flat fill only when rasterization was unavailable.
+  const hasRasterGradient = !!node.gradient && !!ctx.mediaCache.get(imageKey(node) ?? "");
+  const bgColor =
+    parseColor(style.backgroundColor) ||
+    (node.imageUrl || hasRasterGradient ? null : parseGradient(style.backgroundImage));
   const bgFill = bgColor ? { hex: bgColor.hex, alpha: bgColor.alpha * opacity } : null;
 
   const topW = extractPx(style.borderTopWidth || style.borderWidth);
@@ -244,7 +249,8 @@ export function renderNodeToPptx(node: SlideNode, ctx: RenderContext): void {
           opts.h = pxToInches(entry.h);
         }
       }
-      if (radiusRatio >= 0.4) opts.rounding = true;
+      // Gradient PNGs are already clipped to their corner radius in canvas.
+      if (radiusRatio >= 0.4 && !node.gradient) opts.rounding = true;
       if (opacity < 1) opts.transparency = clamp(Math.round((1 - opacity) * 100), 0, 100);
       if (rotation !== undefined) opts.rotate = rotation;
       try {

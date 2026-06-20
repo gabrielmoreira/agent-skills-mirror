@@ -2,4 +2,6 @@
 description: Verify and fix
 ---
 
-Run relevant checks. Fix failures. Rerun focused checks.
+Verify this properly.
+
+Use the relevant checks. Report exact evidence.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jnMetaCode/ai-shortfilm-prompts` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `jnMetaCode/ai-shortfilm-prompts` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jnMetaCode/ai-shortfilm-prompts` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,10 +73,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`skills/shortfilm-prompt/examples/03-multi-shot-cat-encounter.md`](skills/shortfilm-prompt/examples/03-multi-shot-cat-encounter.md) |
 | 13 | ✓ | [`skills/shortfilm-prompt/examples/04-weapon-charge-combat.md`](skills/shortfilm-prompt/examples/04-weapon-charge-combat.md) |
 | 14 | ✓ | [`skills/shortfilm-prompt/examples/05-ip-name-forced.md`](skills/shortfilm-prompt/examples/05-ip-name-forced.md) |
-| 15 | ✓ | [`skills/shortfilm-prompt/examples/README.md`](skills/shortfilm-prompt/examples/README.md) |
-| 16 | ✓ | [`skills/shortfilm-prompt/SKILL.md`](skills/shortfilm-prompt/SKILL.md) |
-| 17 | ✓ | [`skills/shortfilm-prompt/SKILL.zh.md`](skills/shortfilm-prompt/SKILL.zh.md) |
-| 18 | ✓ | [`skills/shortfilm-prompt/TESTING.md`](skills/shortfilm-prompt/TESTING.md) |
+| 15 | ✓ | [`skills/shortfilm-prompt/examples/06-emotional-pet-farewell.md`](skills/shortfilm-prompt/examples/06-emotional-pet-farewell.md) |
+| 16 | ✓ | [`skills/shortfilm-prompt/examples/README.md`](skills/shortfilm-prompt/examples/README.md) |
+| 17 | ✓ | [`skills/shortfilm-prompt/SKILL.md`](skills/shortfilm-prompt/SKILL.md) |
+| 18 | ✓ | [`skills/shortfilm-prompt/SKILL.zh.md`](skills/shortfilm-prompt/SKILL.zh.md) |
+| 19 | ✓ | [`skills/shortfilm-prompt/TESTING.md`](skills/shortfilm-prompt/TESTING.md) |
 
 ---
 

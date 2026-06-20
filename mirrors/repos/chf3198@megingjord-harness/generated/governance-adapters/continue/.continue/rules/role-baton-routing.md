@@ -11,17 +11,18 @@ targets:
   - "cline"
   - "claude-code"
   - "continue"
+  - "antigravity"
 ---
 ---
 applyTo: "**"
 paths:
   - "**"
 priority: P1
-targets: "copilot,cline,claude-code,continue"
+targets: "copilot,cline,claude-code,continue,antigravity"
 ---
 # Role Baton Routing
 
 Source: instructions/role-baton-routing.instructions.md
-Targets: copilot, cline, claude-code, continue
+Targets: copilot, cline, claude-code, continue, antigravity
 
 This is a generated adapter preview for continue.

@@ -32,6 +32,15 @@ function endpointUrl(): string | null {
 
 let reachable: boolean | null = null;
 
+/**
+ * Test-only: clear the memoized reachability probe so cases that point
+ * `AGENTMEMORY_URL` at different endpoints don't leak a cached verdict into each
+ * other (the probe is intentionally memoized once per process at runtime).
+ */
+export function _resetReachableCache(): void {
+  reachable = null;
+}
+
 function requestAgentMemory(
   baseUrl: string,
   path: string,
@@ -254,11 +263,14 @@ export async function recallFacts(
   k = 5,
 ): Promise<RecalledFact[]> {
   if (!query.trim()) return [];
-  if (!(await isAgentMemoryReachable())) return [];
-  const url = endpointUrl();
-  if (!url) return [];
-
+  // The whole body is guarded so this honors its "never throws" contract: the
+  // reachability probe and endpoint resolution can throw under load (e.g. a
+  // socket error from the shared daemon), and an unguarded throw here blanks the
+  // boundary snapshot the hook would otherwise emit. Degrade to local-only.
   try {
+    if (!(await isAgentMemoryReachable())) return [];
+    const url = endpointUrl();
+    if (!url) return [];
     const response = await requestAgentMemory(url, "/agentmemory/search", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -278,11 +290,13 @@ export async function observeWithTimeout(payload: {
   source: string;
   projectDir?: string;
 }): Promise<boolean> {
-  if (!(await isAgentMemoryReachable())) return false;
-  const url = endpointUrl();
-  if (!url) return false;
-
+  // Fully guarded (best-effort, never throws): the reachability probe and
+  // endpoint resolution can throw under load, and a throw here must not abort
+  // the hook that fired the observe.
   try {
+    if (!(await isAgentMemoryReachable())) return false;
+    const url = endpointUrl();
+    if (!url) return false;
     // AgentMemory's /observe expects a hook-event envelope
     // (hookType, sessionId, project, cwd, timestamp) carrying the content.
     const cwd = payload.projectDir ?? process.cwd();

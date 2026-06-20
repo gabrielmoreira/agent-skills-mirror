@@ -262,10 +262,13 @@ Default tools (toggle on/off only):
 - send_media
 - get_execution_metadata
 - get_whatsapp_context
+- contact_conversations
 - get_current_datetime
 - save_variable
 - get_variable
 - ask_about_file
+
+Use `contact_conversations` when an agent should list and read older WhatsApp conversations for the same current contact. Call it with `action: "list"` first, then call `action: "read"` with a returned `conversation_id`.
 
 Custom tools:
 - `flow_agent_webhooks[]` (webhook tools)

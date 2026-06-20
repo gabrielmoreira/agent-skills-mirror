@@ -4,6 +4,8 @@ description: "Export as PPTX (editable)\nNative text & shapes — editable in Po
 ---
 # Editable PPTX Export
 
+> **Default PPTX export.** Unless the user explicitly asks for pixel-perfect / non-editable output, use this editable export.
+
 Export an HTML slide deck to a `.pptx` with native PowerPoint objects (editable text, shapes, images). One `gen_pptx` tool call does everything: capture, font handling, generation, download.
 
 > **Precondition — decks only, not any HTML.** This exports a *slide-structured deck*: one fixed-size slide per `selector`, navigable — ideally the `deck-stage` component or the [make-a-deck](make-a-deck.md) format this skill produces. It is **not** a general HTML→PPTX converter. Pointed at an arbitrary page (a landing page, dashboard, report, or long scrolling document) it captures one oversized or broken "slide". If the target isn't a discrete-slide deck, rebuild it as one (see [make-a-deck](make-a-deck.md)) before exporting, or tell the user it isn't supported.
