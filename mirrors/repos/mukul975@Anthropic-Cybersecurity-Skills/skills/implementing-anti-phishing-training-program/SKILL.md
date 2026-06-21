@@ -26,6 +26,33 @@ mitre_attack:
 - T1598
 - T1534
 - T1036
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - reconnaissance
+  - initial-access
+  - stealth
+  techniques:
+  - id: T1660
+    name: Phishing
+    tactic: initial-access
+    source: attack
+  - id: T1598
+    name: Phishing for Information
+    tactic: reconnaissance
+    source: attack
+  - id: T1672
+    name: Email Spoofing
+    tactic: stealth
+    source: attack
+  - id: F1032
+    name: Impersonate Official
+    tactic: initial-access
+    source: f3
+  - id: F1031
+    name: Impersonate Account Holder
+    tactic: initial-access
+    source: f3
 ---
 # Implementing Anti-Phishing Training Program
 

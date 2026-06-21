@@ -26,6 +26,37 @@ mitre_attack:
 - T1598
 - T1534
 - T1036
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - resource-development
+  - initial-access
+  - reconnaissance
+  techniques:
+  - id: T1660
+    name: Phishing
+    tactic: initial-access
+    source: attack
+  - id: T1598
+    name: Phishing for Information
+    tactic: reconnaissance
+    source: attack
+  - id: F1020.002
+    name: 'Create Fake Materials: Fake Website'
+    tactic: resource-development
+    source: f3
+  - id: T1583.001
+    name: 'Acquire Infrastructure: Domains'
+    tactic: resource-development
+    source: attack
+  - id: T1557
+    name: Adversary-in-the-Middle
+    tactic: initial-access
+    source: attack
+  - id: F1031
+    name: Impersonate Account Holder
+    tactic: initial-access
+    source: f3
 ---
 # Performing Phishing Simulation with GoPhish
 

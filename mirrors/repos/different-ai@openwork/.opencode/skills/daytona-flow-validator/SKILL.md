@@ -1,6 +1,6 @@
 ---
 name: daytona-flow-validator
-description: Daytona UI flow validation loop. Use when validating real app behavior, checking a Daytona flow, proving a bug is fixed, or deciding pass/fail from CDP snapshots, screenshots, and assertions.
+description: do e2e tests, validate feature, prove it works, pass/fail, frame proof, screenshots, CDP assertions. Daytona validation loop for real app behavior with repair before declaring success.
 ---
 
 # Daytona Flow Validator
@@ -22,6 +22,10 @@ action must follow this loop:
 5. Capture a screenshot checkpoint when the visible state matters.
 
 If any assertion is missing, the flow is not validated yet.
+
+When a coded eval exists, prefer `pnpm evals --flow <flow-id>` because the runner
+binds assertions, screenshots, and validation metadata into one HTML proof. Use
+manual CDP only to debug or to create a new coded flow.
 
 Use `browser_eval`, direct API calls, localStorage writes, filesystem edits, or
 database changes only when a human-visible path is impossible, unavailable in the
@@ -179,6 +183,20 @@ If any check fails, mark the evidence as failed, fix the visible state, capture 
 new screenshot, inspect the new image, and only then share it. If bad evidence
 was already posted, post a superseding correction that clearly says the earlier
 screenshot was invalid.
+
+## Repair Loop
+
+If a frame does not support the claim, repair before reporting a verdict:
+
+1. Diagnose why the frame is invalid: wrong route, hidden target, duplicate
+   screenshot, error state, native dialog, stale modal, or unreadable content.
+2. Repair the visible state: close blockers, activate the intended window, wait
+   for text/route stability, scroll the target into view, or rerun the visible
+   action.
+3. Reassert the expected state with CDP.
+4. Capture a new frame with a new name.
+5. Include repair attempts in the final report. If repair fails, report
+   `Incomplete` or `Failed`, not `Passed`.
 
 Before every Daytona display screenshot, run a native-window check and fail fast
 if a picker is present:

@@ -1,6 +1,6 @@
----
+﻿---
 name: improve
-version: 3.9.2
+version: 3.10.0
 description: 'The improvement skill. Understand the ask, examine the target, challenge the first read, decide on one change (or argue for redesign, or declare silence), act, reflect on the target, and record. Combines incremental refinement, structural rethinking, and reflection on the target itself. USE WHEN: improve, audit, review, fix, refactor, redesign, evaluate, what would make this better, am I missing something.'
 argument-hint: 'The target to improve, and optionally the concern (correctness, simplicity, performance, etc.)'
 ---
@@ -11,34 +11,34 @@ argument-hint: 'The target to improve, and optionally the concern (correctness, 
 
 *Memory Model role: Reads the full memory layer before every run; extends it with each iteration's findings.*
 
-This is the only skill you need for most autonomous work. It combines what v2 split into Kaizen (incremental), Kaikaku (radical), and Hansei (reflection) — because in practice the agent should pick which mode the situation calls for, not be told.
+This is the only skill you need for most autonomous work. It combines what v2 split into Kaizen (incremental), Kaikaku (radical), and Hansei (reflection) â€” because in practice the agent should pick which mode the situation calls for, not be told.
 
 ## Governing principles
 
 This skill exists to enact three principles:
 
-1. **Commander's Intent** — *what + why, not how.* You are given a destination, not a route. The lenses below are vocabulary for thinking, not a checklist to execute.
-2. **Observable Autonomy** — *every reasoning step is recorded as it happens.* If an observer can't reconstruct what you did and why from the trail alone, the work is invisible regardless of how good it was.
-3. **Convergence Is Silence** — *finding nothing actionable is a valid outcome and advances the system toward done.* Do not manufacture findings to justify the run.
+1. **Commander's Intent** â€” *what + why, not how.* You are given a destination, not a route. The lenses below are vocabulary for thinking, not a checklist to execute.
+2. **Observable Autonomy** â€” *every reasoning step is recorded as it happens.* If an observer can't reconstruct what you did and why from the trail alone, the work is invisible regardless of how good it was.
+3. **Convergence Is Silence** â€” *finding nothing actionable is a valid outcome and advances the system toward done.* Do not manufacture findings to justify the run.
 
-Full statement of the principles: [PRINCIPLES.md](../PRINCIPLES.md) — read it if available, but this skill operates fully without it.
+Full statement of the principles: [PRINCIPLES.md](../PRINCIPLES.md) â€” read it if available, but this skill operates fully without it.
 
 ## The work
 
 ### 1. Understand the target and the ask
 
-*If [Intent](../intent/SKILL.md) is installed, apply it now — it handles this step in full. Continue to step 2 when done.*
+*If [Intent](../intent/SKILL.md) is installed, apply it now â€” it handles this step in full. Continue to step 2 when done.*
 
 If Intent is not installed: before examining anything, narrate your interpretation of what you've been asked to do, in your own words. State what you believe the destination is and what would count as success. If your interpretation diverges from a literal reading of the request, say so explicitly so the operator can correct course before you act.
 
 If the ask is about convergence or publication readiness, read the repo's convergence-scope protocol before proceeding if it has one, then declare which layer (problem, principles, skills, cross-layer coherence) this run is evaluating.
 
-Before examining the target, check the **target repo's** `.trail/` folder for two orientation files and read whichever exist, in this order. The `.trail/` folder is always in the root of the repo being worked on — never in the skills install directory.
+Before examining the target, check the **target repo's** `.acm/` folder for two orientation files and read whichever exist, in this order. The `.acm/` folder is always in the root of the repo being worked on â€” never in the skills install directory.
 
-1. `.trail/destination.md` (with `.trail/vision.md` as legacy fallback) — the **operator-held destination**. What the target is for, the constraints that hold across all runs, the hard problem the work is trying to chip away at. Stable: not written by any skill, only by the operator/team. If present, it is the highest-priority context — it tells you what success means before you decide what to change. If only the legacy `vision.md` exists, read it and surface the migration hint (`git mv .trail/vision.md .trail/destination.md`) but do not block on the rename.
-2. `.trail/retrospect.md` — the **current Retrospect-derived orientation and operational rules**. What the arc currently shows is true of the target, and critically, the **Active operational rules** you must obey. Rewritten each Retrospect run. You must actively anchor your runtime behavior to any lessons learned recorded here (e.g., if it says "Always use pure functions here", you must comply).
-3. `.trail/learning.md` — the **compact learning surface** if present. A derived chronological extract of every `[!REALIZATION]` and `[!REVERSAL]` marker across the full trail, with date+slug context. Read this before `audit-trail.md` — it is what the loop has actually concluded across runs, and it surfaces learning that predates the most recent Retrospect run. Generated by `record.py learning --write`; if it looks stale relative to `audit-trail.md`'s most recent entries, regenerate it.
-4. `.trail/audit-trail.md` — the full history. Read for the evidence behind anything in `learning.md` that needs its surrounding context, and for any specific prior decision the current run might contradict. With `learning.md` available, you should rarely need to read `audit-trail.md` end-to-end.
+1. `.acm/destination.md` (with `.acm/vision.md` as legacy fallback) â€” the **operator-held destination**. What the target is for, the constraints that hold across all runs, the hard problem the work is trying to chip away at. Stable: not written by any skill, only by the operator/team. If present, it is the highest-priority context â€” it tells you what success means before you decide what to change. If only the legacy `vision.md` exists, read it and surface the migration hint (`git mv .acm/vision.md .acm/destination.md`) but do not block on the rename.
+2. `.acm/retrospect.md` â€” the **current Retrospect-derived orientation and operational rules**. What the arc currently shows is true of the target, and critically, the **Active operational rules** you must obey. Rewritten each Retrospect run. You must actively anchor your runtime behavior to any lessons learned recorded here (e.g., if it says "Always use pure functions here", you must comply).
+3. `.acm/learning.md` â€” the **compact learning surface** if present. A derived chronological extract of every `[!REALIZATION]` and `[!REVERSAL]` marker across the full trail, with date+slug context. Read this before `audit-trail.md` â€” it is what the loop has actually concluded across runs, and it surfaces learning that predates the most recent Retrospect run. Generated by `record.py learning --write`; if it looks stale relative to `audit-trail.md`'s most recent entries, regenerate it.
+4. `.acm/audit-trail.md` â€” the full history. Read for the evidence behind anything in `learning.md` that needs its surrounding context, and for any specific prior decision the current run might contradict. With `learning.md` available, you should rarely need to read `audit-trail.md` end-to-end.
 
 The destination is where you are going, retrospect.md is the current location, the trail is the path. If destination and retrospect.md disagree, destination wins (the operator holds the destination); if retrospect.md and trail disagree, the trail wins (the trail is the evidence).
 
@@ -56,14 +56,14 @@ This is not ceremony. The most common failure mode in autonomous improvement is 
 
 Look at the target. Read what is there. Run what can be run. Form a mental model of how it works and what it is for.
 
-Three lenses are available as thinking tools — not a procedure, not a checklist. Apply the ones the target invites:
+Three lenses are available as thinking tools â€” not a procedure, not a checklist. Apply the ones the target invites:
 
-- **Purpose.** Does the target achieve what it is for? Read `.trail/destination.md` (or legacy `.trail/vision.md`) and the target's own README. Is there a gap between the stated goal and what the artifact actually does? Is the design the right one for the job? This lens runs first.
+- **Purpose.** Does the target achieve what it is for? Read `.acm/destination.md` (or legacy `.acm/vision.md`) and the target's own README. Is there a gap between the stated goal and what the artifact actually does? Is the design the right one for the job? This lens runs first.
 - **Inconsistency.** Where does the target contradict itself? Mixed conventions, asymmetric handling of similar cases, naming patterns that diverge for no reason. Inconsistency is often a root cause whose symptoms surface elsewhere.
 - **Overburden.** Where is some component asked to do too much? Functions, modules, files, or processes that concentrate too many responsibilities. Overburden concentrates risk: the overburdened component is the one most likely to break and hardest to change.
 - **Waste.** Where does the target carry things that don't earn their existence? Dead code, abstractions with one consumer, validation that can never fire, documentation that restates the obvious. Waste creates cognitive load without contributing value.
 
-If the target's problems don't fit these lenses, describe what you actually see. Add lenses as the target warrants (security posture, performance, type safety, accessibility, whatever applies). Name every lens you apply and what it revealed — including "nothing actionable."
+If the target's problems don't fit these lenses, describe what you actually see. Add lenses as the target warrants (security posture, performance, type safety, accessibility, whatever applies). Name every lens you apply and what it revealed â€” including "nothing actionable."
 
 ### 3. Challenge the first read
 
@@ -86,13 +86,13 @@ Pick one of:
 
 - **One incremental change.** The single highest-leverage finding. State why it ranks above the alternatives in one sentence each. **Crucially, make a pre-commit prediction:** formulate a falsifiable prediction of what this change will achieve and what will *not* happen, before taking action ("I will change X. I expect Y. I expect Z not to happen.").
 - **Argument for redesign.** A statement of why incremental work won't pay off here, and a sketch of what redesign would look like. Stop and surface the argument; do not redesign without confirmation.
-- **Silence.** Nothing actionable was found. State what was examined and why nothing warranted change. This advances the convergence chain (Principle 3) and is a legitimate outcome.
+- **Silence.** Nothing actionable was found. State what was examined and why nothing warranted change. **Silence claims must be bounded.** Name the quality bar this iteration was testing against (e.g. internal text-layer consistency, comparative defensibility under hostile external review, comparator coverage, empirical replication, operational deployability), the surfaces in scope, and the bars *not* tested by this iteration. Unbounded silence ("nothing actionable found" without naming the bar) is the form most likely to be overturned by the next operator-initiated probe testing a different bar. This advances the convergence chain (Principle 3) and is a legitimate outcome. *Origin:* this requirement mirrors the named-boundary rule in `retrospect/SKILL.md` step 5a; both originate in the manifesto target's retro-v201 â†’ retro-v202 transition (2026-06-04). Full provenance in this repo's `.acm/audit-trail.md` under entry slug `retro-named-boundary-rule-from-manifesto-arc` and follow-up slug `improve-destination-named-boundary-symmetric`.
 
 #### 4b. Offer Next Moves
 
 After deciding on this iteration's work but before acting, surface a short ranked list of candidate next moves with one-sentence reasoning each. Two or three options is the typical shape; one is fine if only one stands out; zero is fine if convergence was declared.
 
-The candidates should come from this iteration's own examination — blind spots named in step 6a, follow-ups implied by what was changed, structural questions surfaced but deferred. They are not a research project; they are what was already visible while doing this iteration's work.
+The candidates should come from this iteration's own examination â€” blind spots named in step 6a, follow-ups implied by what was changed, structural questions surfaced but deferred. They are not a research project; they are what was already visible while doing this iteration's work.
 
 This is not a step the operator must engage with. The next session may pick from the ranking, redirect entirely, or run another improve loop without picking. Silence from the operator is a valid response. The ranking exists so that:
 
@@ -100,7 +100,7 @@ This is not a step the operator must engage with. The next session may pick from
 - A fresh-session agent reading the trail has a candidate next move ready, not just an arc-claim, in case the operator's intent is "continue from where you left off."
 - The strategic dialogue that has been operating informally as "what should we do next?" exchanges is now visible in the trail as a structural property of every iteration, without becoming a mandatory checklist for the operator.
 
-Write the ranking under a `### Candidate Next Moves` subsection inside the trail entry (recorded in step 7). Format: a numbered list, top-ranked first, each item a single sentence stating what the move is and why it ranks where it does. Keep it short — if it grows past a paragraph per item, the candidates are not yet sharp enough to offer.
+Write the ranking under a `### Candidate Next Moves` subsection inside the trail entry (recorded in step 7). Format: a numbered list, top-ranked first, each item a single sentence stating what the move is and why it ranks where it does. Keep it short â€” if it grows past a paragraph per item, the candidates are not yet sharp enough to offer.
 
 ### 5. Act (if a change was decided)
 
@@ -112,17 +112,17 @@ If the change introduces a problem, surface it immediately. Half-done work that 
 
 ### 6. Reflect
 
-Two operations live in this step. The first runs every iteration. The second runs only when the first surfaces a reason for it. Reflection in this skill is always *about the target* — the codebase, the system, the artefact you are working on — not about the loop that examines it. The loop is only interesting insofar as it reveals or obscures something about the target. For arc-level questions about whether the loop is examining the right parts of the target — questions this step does not answer — use [Retrospect](../retrospect/SKILL.md) as a standalone skill.
+Two operations live in this step. The first runs every iteration. The second runs only when the first surfaces a reason for it. Reflection in this skill is always *about the target* â€” the codebase, the system, the artefact you are working on â€” not about the loop that examines it. The loop is only interesting insofar as it reveals or obscures something about the target. For arc-level questions about whether the loop is examining the right parts of the target â€” questions this step does not answer â€” use [Retrospect](../retrospect/SKILL.md) as a standalone skill.
 
 #### 6a. Per-iteration reflection
 
 After the change is made (or silence is declared), but before recording, sit with three things. They are prompts for honest reflection inside the trail entry, not slots to fill.
 
-- **State your current model of the target as a claim a future run could disagree with.** Not a summary of what you did this run — a falsifiable assertion about *what the target is, what it is becoming, or where its real weight sits.* Examples of the right shape: "This codebase is converging on X." "The hardest part of this target is Y, and prior runs have consistently misread it as Z." "The real risk in this system lives in W, even though most attention has gone to V." A future iteration examining the same target should be able to read the sentence and say either "still true" or "no, here is what changed my mind."
-- **Name a blind spot in this run.** Something specific you suspect this iteration did not see clearly — an area you did not examine, a kind of evidence you did not gather, an assumption you took on faith. Generic hedging ("I might have missed something") is not a blind spot. If you genuinely cannot name one, say so, and say why ("this run touched only documentation; runtime behaviour was not exercised").
+- **State your current model of the target as a claim a future run could disagree with.** Not a summary of what you did this run â€” a falsifiable assertion about *what the target is, what it is becoming, or where its real weight sits.* Examples of the right shape: "This codebase is converging on X." "The hardest part of this target is Y, and prior runs have consistently misread it as Z." "The real risk in this system lives in W, even though most attention has gone to V." A future iteration examining the same target should be able to read the sentence and say either "still true" or "no, here is what changed my mind."
+- **Name a blind spot in this run.** Something specific you suspect this iteration did not see clearly â€” an area you did not examine, a kind of evidence you did not gather, an assumption you took on faith. Generic hedging ("I might have missed something") is not a blind spot. If you genuinely cannot name one, say so, and say why ("this run touched only documentation; runtime behaviour was not exercised").
 - **Imagine a reader who knows this target better than you do.** What would they push back on in this run's findings or model? If nothing comes to mind, the run probably did not engage the target deeply enough.
 
-When something material surfaces — an updated model, a contradiction with a prior run, a blind spot worth carrying forward — write it as `[!REALIZATION]` in the entry. That is the storage mechanism. No new markers are introduced for reflection.
+When something material surfaces â€” an updated model, a contradiction with a prior run, a blind spot worth carrying forward â€” write it as `[!REALIZATION]` in the entry. That is the storage mechanism. No new markers are introduced for reflection.
 
 #### 6b. Across-trail reflection
 
@@ -130,20 +130,20 @@ Most iterations do not perform the macro reflection. But every iteration must *e
 
 **Evaluate each of the four triggers explicitly, with brief evidence drawn from the trail.** Bare "N/A" is not allowed. The format for the entry is one short line per trigger, e.g.:
 
-- *Recurring finding-class:* FIRED — last 4 entries were paragraph-add, encoding-fix, label-add, section-removal (all mechanical inconsistency cleanups).
-- *About to declare silence:* not fired — this run made a change.
-- *Contradicts prior `[!REALIZATION]`:* not fired — checked last 10 realisations, none contradicted.
+- *Recurring finding-class:* FIRED â€” last 4 entries were paragraph-add, encoding-fix, label-add, section-removal (all mechanical inconsistency cleanups).
+- *About to declare silence:* not fired â€” this run made a change.
+- *Contradicts prior `[!REALIZATION]`:* not fired â€” checked last 10 realisations, none contradicted.
 - *Operator explicitly asked:* not fired.
 
-If any trigger fired, perform the macro reflection. If none fired, the entry still records the evaluation — that is the audit trail showing the check was made, not skipped.
+If any trigger fired, perform the macro reflection. If none fired, the entry still records the evaluation â€” that is the audit trail showing the check was made, not skipped.
 
 *Why this is structural, not ceremonial:* the recurring-class trigger has historically been the one most often quietly waived. Recording the evaluation makes "I didn't notice the pattern" distinguishable from "I noticed and judged it didn't fire," and makes both visible to the next iteration.
 
-When the macro reflection runs, read `.trail/audit-trail.md` as a *single document about the target*, not as a list of past runs. Then sit with this:
+When the macro reflection runs, read `.acm/audit-trail.md` as a *single document about the target*, not as a list of past runs. Then sit with this:
 
 - Which prior realisations aged well, and which were wrong in retrospect? If the trail is long enough, name at least one of each.
-- Where has attention been spent, and is that where the target's real weight lies? A long tail of small fixes in one corner can mean either "that corner is the bottleneck" or "this is the corner the loop has grown comfortable looking at." The trail itself is the evidence — re-read it.
-- What does the target need next that *no individual iteration would have surfaced* — only the arc reveals?
+- Where has attention been spent, and is that where the target's real weight lies? A long tail of small fixes in one corner can mean either "that corner is the bottleneck" or "this is the corner the loop has grown comfortable looking at." The trail itself is the evidence â€” re-read it.
+- What does the target need next that *no individual iteration would have surfaced* â€” only the arc reveals?
 
 Write the result as `[!REALIZATION]` in this entry, framed as a claim about the target. If it changes the priority for the next iteration, say so plainly.
 
@@ -151,19 +151,19 @@ For an arc-read that runs outside an improve iteration, use [Retrospect](../retr
 
 ### 7. Record
 
-*If [Trail](../trail/SKILL.md) is installed, apply it now — it handles this step in full.*
+*If [Trail](../trail/SKILL.md) is installed, apply it now â€” it handles this step in full.*
 
 **High-Fidelity Mode (Writer Splitting):** If the highest level of anti-rationalization security is required, the agent running `Improve` DOES NOT write the trail. Instead, it halts here, outputting its diff, prediction, and internal reasoning. A *second, independent agent* must then be invoked to execute the `Trail` skill. This prevents a single agent from post-hoc rationalizing its own decisions.
 
-**In multi-iteration runs, this step executes after every iteration — not once at the end of all iterations.** The trail entry is the commit point for that iteration. Append it, regenerate `history.md`, and commit before starting the next iteration. A user who stops a 10-iteration run after iteration 4 must have 4 committed trail entries, not 0.
+**In multi-iteration runs, this step executes after every iteration â€” not once at the end of all iterations.** The trail entry is the commit point for that iteration. Append it, regenerate `history.md`, and commit before starting the next iteration. A user who stops a 10-iteration run after iteration 4 must have 4 committed trail entries, not 0.
 
-If Trail is not installed: create the `.trail/` directory in the target repo root if it does not already exist, then append a single entry to `.trail/audit-trail.md` **in the target repo root** (not the skills install directory). The entry must include:
+If Trail is not installed: create the `.acm/` directory in the target repo root if it does not already exist, then append a single entry to `.acm/audit-trail.md` **in the target repo root** (not the skills install directory). The entry must include:
 
 - Date, target, operator (if known), model identity (provider + tool-call ID prefix if observable).
 - Your interpretation of the ask.
 - Lenses applied and what each revealed.
 - The decision (incremental, redesign argument, or silence) and the pre-commit prediction.
-- The change made and verification evidence — including a comparison of the actual outcome versus the prediction — or, if silence, a statement of what was examined.
+- The change made and verification evidence â€” including a comparison of the actual outcome versus the prediction â€” or, if silence, a statement of what was examined.
 - Reflection about the target (per step 6): a falsifiable model-claim, a named blind spot, and an imagined-reader pushback. Across-trail reflection if its triggers fired.
 - Marked moments: `[!DECISION]`, `[!REVERSAL]`, `[!REALIZATION]`.
 
@@ -175,6 +175,6 @@ This skill must be runnable on itself. If running Improve on `improve/SKILL.md` 
 
 ## What this skill does not do
 
-- It does not score the target on a numerical rubric. v2 did this and the question "who made up these metrics?" never went away. Convergence — diverse independent evaluators finding nothing to change — is the only honest measure of done.
+- It does not score the target on a numerical rubric. v2 did this and the question "who made up these metrics?" never went away. Convergence â€” diverse independent evaluators finding nothing to change â€” is the only honest measure of done.
 - It does not orchestrate other skills. The other skills (Intent, Trail, Probe) run independently. Improve delegates to Intent (step 1) and Trail (step 7) when they are installed, but does not require them.
 - It does not tell you when to stop. The convergence protocol in PRINCIPLES.md does.

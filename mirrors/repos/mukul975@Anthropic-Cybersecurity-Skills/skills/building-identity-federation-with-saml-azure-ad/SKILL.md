@@ -28,6 +28,32 @@ mitre_attack:
 - T1484.002
 - T1078.004
 - T1110.003
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - positioning
+  techniques:
+  - id: F1006
+    name: Account Takeover
+    tactic: initial-access
+    source: f3
+  - id: F1006.002
+    name: 'Account Takeover: Exposed Login Credential'
+    tactic: initial-access
+    source: f3
+  - id: T1110.003
+    name: 'Brute Force: Password Spraying'
+    tactic: initial-access
+    source: attack
+  - id: T1550
+    name: Use Alternate Authentication Material
+    tactic: initial-access
+    source: attack
+  - id: F1004
+    name: Access with Stolen Session Cookie
+    tactic: initial-access
+    source: f3
 ---
 
 # Building Identity Federation with SAML Azure AD

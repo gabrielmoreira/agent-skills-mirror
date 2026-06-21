@@ -22,6 +22,33 @@ mitre_attack:
 - T1070
 - T1078
 - T1489
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - monetization
+  - stealth
+  - initial-access
+  techniques:
+  - id: F1018
+    name: Convert to Cryptocurrency
+    tactic: monetization
+    source: f3
+  - id: F1017
+    name: Conversion to Physical Monetary Instruments
+    tactic: monetization
+    source: f3
+  - id: F1025.003
+    name: 'Electronic Funds Transfer: Wire Transfer'
+    tactic: monetization
+    source: f3
+  - id: T1070
+    name: Indicator Removal
+    tactic: stealth
+    source: attack
+  - id: F1006
+    name: Account Takeover
+    tactic: initial-access
+    source: f3
 version: 1.0.0
 author: mahipal
 license: Apache-2.0

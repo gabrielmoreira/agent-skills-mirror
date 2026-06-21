@@ -25,6 +25,33 @@ mitre_attack:
 - T1119
 - T1070
 - T1486
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - stealth
+  - monetization
+  techniques:
+  - id: T1110
+    name: Brute Force
+    tactic: initial-access
+    source: attack
+  - id: T1660
+    name: Phishing
+    tactic: initial-access
+    source: attack
+  - id: T1070
+    name: Indicator Removal
+    tactic: stealth
+    source: attack
+  - id: F1018
+    name: Convert to Cryptocurrency
+    tactic: monetization
+    source: f3
+  - id: F1017.001
+    name: 'Conversion to Physical Monetary Instruments: Cash'
+    tactic: monetization
+    source: f3
 ---
 
 # Investigating Ransomware Attack Artifacts

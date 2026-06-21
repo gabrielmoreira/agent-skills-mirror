@@ -1,6 +1,6 @@
 ---
 name: daytona-secrets-volume
-description: Daytona secrets volume setup. Use when the user says Daytona secrets, add provider key, OpenAI key, Anthropic key, eval secrets, /daytona-secrets, or openwork-eval-secrets.
+description: Daytona secrets, provider key, OpenAI key, Anthropic key, real model e2e, voice e2e, eval secrets, /daytona-secrets, openwork-eval-secrets. Use for real provider tests in Daytona.
 ---
 
 # Daytona Secrets Volume

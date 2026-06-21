@@ -26,6 +26,33 @@ mitre_attack:
 - T1556
 - T1098
 - T1003
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - positioning
+  - resource-development
+  techniques:
+  - id: T1586
+    name: Compromise Accounts
+    tactic: resource-development
+    source: attack
+  - id: T1110
+    name: Brute Force
+    tactic: initial-access
+    source: attack
+  - id: F1033
+    name: Insider Access Abuse
+    tactic: initial-access
+    source: f3
+  - id: F1005.002
+    name: 'Account Manipulation: Add Authorized User'
+    tactic: positioning
+    source: f3
+  - id: F1006.002
+    name: 'Account Takeover: Exposed Login Credential'
+    tactic: initial-access
+    source: f3
 ---
 # Implementing Privileged Access Management with CyberArk
 

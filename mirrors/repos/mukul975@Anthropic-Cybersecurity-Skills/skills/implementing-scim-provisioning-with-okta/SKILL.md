@@ -25,6 +25,33 @@ mitre_attack:
 - T1110
 - T1556
 - T1098
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - positioning
+  - resource-development
+  techniques:
+  - id: T1586
+    name: Compromise Accounts
+    tactic: resource-development
+    source: attack
+  - id: F1005.002
+    name: 'Account Manipulation: Add Authorized User'
+    tactic: positioning
+    source: f3
+  - id: F1005.004
+    name: 'Account Manipulation: Change Account Details'
+    tactic: positioning
+    source: f3
+  - id: F1042
+    name: Reactivate Account
+    tactic: positioning
+    source: f3
+  - id: F1006.002
+    name: 'Account Takeover: Exposed Login Credential'
+    tactic: initial-access
+    source: f3
 ---
 
 # Implementing SCIM Provisioning with Okta

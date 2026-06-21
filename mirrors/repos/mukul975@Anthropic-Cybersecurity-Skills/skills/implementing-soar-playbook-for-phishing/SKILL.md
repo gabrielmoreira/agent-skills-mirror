@@ -23,6 +23,34 @@ mitre_attack:
 - T1059
 - T1566
 - T1598
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - reconnaissance
+  - resource-development
+  - initial-access
+  - stealth
+  techniques:
+  - id: T1598
+    name: Phishing for Information
+    tactic: reconnaissance
+    source: attack
+  - id: T1660
+    name: Phishing
+    tactic: initial-access
+    source: attack
+  - id: T1672
+    name: Email Spoofing
+    tactic: stealth
+    source: attack
+  - id: F1020.002
+    name: 'Create Fake Materials: Fake Website'
+    tactic: resource-development
+    source: f3
+  - id: F1032
+    name: Impersonate Official
+    tactic: initial-access
+    source: f3
 ---
 
 

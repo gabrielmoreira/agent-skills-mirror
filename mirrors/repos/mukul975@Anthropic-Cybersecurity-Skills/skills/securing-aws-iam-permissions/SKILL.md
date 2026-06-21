@@ -28,6 +28,32 @@ mitre_attack:
 - T1537
 - T1580
 - T1003
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - positioning
+  techniques:
+  - id: F1006.001
+    name: 'Account Takeover: Exposed API Key'
+    tactic: initial-access
+    source: f3
+  - id: F1006.002
+    name: 'Account Takeover: Exposed Login Credential'
+    tactic: initial-access
+    source: f3
+  - id: T1550.001
+    name: 'Use Alternate Authentication Material: Application Access Token'
+    tactic: initial-access
+    source: attack
+  - id: T1110.003
+    name: 'Brute Force: Password Spraying'
+    tactic: initial-access
+    source: attack
+  - id: F1005.004
+    name: 'Account Manipulation: Change Account Details'
+    tactic: positioning
+    source: f3
 ---
 
 # Securing AWS IAM Permissions

@@ -28,6 +28,36 @@ mitre_attack:
 - T1534
 - T1036
 - T1003
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - positioning
+  techniques:
+  - id: T1557
+    name: Adversary-in-the-Middle
+    tactic: initial-access
+    source: attack
+  - id: T1660
+    name: Phishing
+    tactic: initial-access
+    source: attack
+  - id: F1004
+    name: Access with Stolen Session Cookie
+    tactic: initial-access
+    source: f3
+  - id: T1539
+    name: Steal Web Session Cookie
+    tactic: positioning
+    source: attack
+  - id: T1185
+    name: Browser Session Hijacking
+    tactic: positioning
+    source: attack
+  - id: F1006
+    name: Account Takeover
+    tactic: initial-access
+    source: f3
 ---
 # Performing Adversary-in-the-Middle Phishing Detection
 

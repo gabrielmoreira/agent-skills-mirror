@@ -31,6 +31,29 @@ mitre_attack:
 - T1059
 - T1486
 - T1490
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - positioning
+  - monetization
+  techniques:
+  - id: T1660
+    name: Phishing
+    tactic: initial-access
+    source: attack
+  - id: T1219
+    name: Remote Access Tools
+    tactic: positioning
+    source: attack
+  - id: T1531
+    name: Account Access Removal
+    tactic: positioning
+    source: attack
+  - id: F1018
+    name: Convert to Cryptocurrency
+    tactic: monetization
+    source: f3
 ---
 
 # Implementing Anti-Ransomware Group Policy

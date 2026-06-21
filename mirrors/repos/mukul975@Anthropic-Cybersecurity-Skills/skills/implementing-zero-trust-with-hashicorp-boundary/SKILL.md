@@ -28,6 +28,33 @@ mitre_attack:
 - T1059
 - T1003
 - T1110
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - positioning
+  - resource-development
+  techniques:
+  - id: T1586
+    name: Compromise Accounts
+    tactic: resource-development
+    source: attack
+  - id: T1110
+    name: Brute Force
+    tactic: initial-access
+    source: attack
+  - id: T1110.004
+    name: 'Brute Force:  Credential Stuffing'
+    tactic: initial-access
+    source: attack
+  - id: T1219
+    name: Remote Access Tools
+    tactic: positioning
+    source: attack
+  - id: F1033
+    name: Insider Access Abuse
+    tactic: initial-access
+    source: f3
 ---
 
 # Implementing Zero Trust with HashiCorp Boundary

@@ -1,6 +1,6 @@
 ---
 name: daytona-electron-den
-description: Validate Electron against a Daytona Den server. Use for two-sandbox cloud auth, marketplace, org policy, worker proxy, provider sync, or desktop handoff flows.
+description: Electron and Den, desktop plus cloud, two-sandbox e2e, cloud auth, marketplace, org policy, worker proxy, provider sync, desktop handoff. Validate Electron against a Daytona Den server with unified proof.
 ---
 
 # Daytona Electron Against Den

@@ -23,6 +23,38 @@ mitre_attack:
 - T1204.001
 - T1114
 - T1056.003
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - reconnaissance
+  - resource-development
+  - positioning
+  techniques:
+  - id: T1660
+    name: Phishing
+    tactic: initial-access
+    source: attack
+  - id: T1598
+    name: Phishing for Information
+    tactic: reconnaissance
+    source: attack
+  - id: F1020.002
+    name: 'Create Fake Materials: Fake Website'
+    tactic: resource-development
+    source: f3
+  - id: T1557
+    name: Adversary-in-the-Middle
+    tactic: positioning
+    source: attack
+  - id: F1004
+    name: Access with Stolen Session Cookie
+    tactic: initial-access
+    source: f3
+  - id: F1006.002
+    name: 'Account Takeover: Exposed Login Credential'
+    tactic: initial-access
+    source: f3
 version: 1.0.0
 author: mahipal
 license: Apache-2.0

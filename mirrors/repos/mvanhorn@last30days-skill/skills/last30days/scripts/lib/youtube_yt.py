@@ -69,6 +69,9 @@ from .relevance import token_overlap_relevance as _compute_relevance
 # backoff.
 _TRANSCRIPT_MAX_RETRIES = 2
 _TRANSCRIPT_BACKOFF_BASE = 2.0  # seconds; multiplied by (attempt + 1)
+_TRANSCRIPT_TIMEOUT = 30  # seconds per yt-dlp attempt (keyless: no fallback to fail over to)
+_TRANSCRIPT_FAST_TIMEOUT = 12  # seconds per attempt when a ScrapeCreators fallback exists
+_SC_LOW_CREDIT_THRESHOLD = 50  # warn once ScrapeCreators credits drop below this
 # Transient = worth retrying (and definitely not "no captions").
 _TRANSIENT_RE = re.compile(
     r"429|too many requests|sign in to confirm|not a bot|rate.?limit"
@@ -612,6 +615,7 @@ def _fetch_transcript_ytdlp(
     video_id: str,
     temp_dir: str,
     status: Optional[Dict[str, Any]] = None,
+    fast_fail: bool = False,
 ) -> Optional[str]:
     """Fetch transcript using yt-dlp (original implementation).
 
@@ -623,6 +627,12 @@ def _fetch_transcript_ytdlp(
             error (rate-limit / bot-check / network / timeout) apart from a
             video that genuinely has no captions, and skip the misleading
             "no captions found" log + the YouTube-blocked HTTP fallback.
+        fast_fail: When True, a ScrapeCreators fallback is available, so a
+            transient failure (429 / bot-gate) should fail over fast rather
+            than retry into the same rate limit. Collapses to a single attempt
+            with a shorter per-attempt timeout. The slow thing in a run is
+            yt-dlp retrying, not the fast SC fetch, so this is what keeps
+            "yt-dlp first" from reintroducing the multi-minute hang.
 
     Returns:
         Raw VTT text, or None if no captions are available or the fetch failed.
@@ -641,14 +651,15 @@ def _fetch_transcript_ytdlp(
         f"https://www.youtube.com/watch?v={video_id}",
     ]
 
-    attempts = _TRANSCRIPT_MAX_RETRIES + 1
+    timeout = _TRANSCRIPT_FAST_TIMEOUT if fast_fail else _TRANSCRIPT_TIMEOUT
+    attempts = 1 if fast_fail else _TRANSCRIPT_MAX_RETRIES + 1
     last_reason: Optional[str] = None
     for attempt in range(attempts):
         try:
-            result = subproc.run_with_timeout(cmd, timeout=30)
+            result = subproc.run_with_timeout(cmd, timeout=timeout)
         except subproc.SubprocTimeout:
-            last_reason = "timed out after 30s"
-            _log(f"yt-dlp transcript timed out after 30s for {video_id} "
+            last_reason = f"timed out after {timeout}s"
+            _log(f"yt-dlp transcript timed out after {timeout}s for {video_id} "
                  f"(attempt {attempt + 1}/{attempts})")
             if attempt < attempts - 1:
                 time.sleep(_transcript_backoff(video_id, attempt))
@@ -667,6 +678,18 @@ def _fetch_transcript_ytdlp(
             # Exit 0 with no file == the uploader has no matching captions.
             # Genuine no-captions: return quietly (caller may still try direct).
             return None
+
+        # Non-zero exit, but yt-dlp may have written a usable VTT before the
+        # failing language errored. With the default `--sub-lang en,es,pt`, an
+        # English video fetches `en` fine, then `es`/`pt` hit a 429 and yt-dlp
+        # exits non-zero — yet the `en` track is already on disk. A partial
+        # success is still a real transcript, so salvage any VTT before
+        # classifying this as an error (and, worse, retrying straight back into
+        # the same rate limit). This is the root cause of the 0/N transcript
+        # runs reported when every video had captions.
+        partial_vtt = _read_vtt(video_id, temp_dir)
+        if partial_vtt is not None:
+            return partial_vtt
 
         # Non-zero exit == a real error worth classifying & surfacing.
         stderr = (result.stderr or "").strip()
@@ -692,15 +715,30 @@ def _fetch_transcript_ytdlp(
     return None
 
 
+def _should_try_sc_transcript(status: Optional[Dict[str, Any]]) -> bool:
+    """Whether to spend a ScrapeCreators credit after the keyless cascade failed.
+
+    Skip when the keyless path *proved* the uploader has no caption track
+    (``no_caption_tracks``): SC would also return nothing, so a credit would be
+    wasted. A transient hard failure (``ytdlp_error``: 429 / bot-gate / timeout)
+    is a false negative, so SC is worth trying.
+    """
+    st = status or {}
+    return not st.get("no_caption_tracks")
+
+
 def fetch_transcript(
     video_id: str,
     temp_dir: str,
     status: Optional[Dict[str, Any]] = None,
+    token: Optional[str] = None,
 ) -> Optional[str]:
     """Fetch auto-generated transcript for a YouTube video.
 
     Uses yt-dlp when available (preferred, more robust). Falls back to
-    direct HTTP transcript fetching when yt-dlp is not installed.
+    direct HTTP transcript fetching when yt-dlp is not installed, and finally
+    to the ScrapeCreators transcript endpoint when a key is present and the
+    keyless cascade comes back empty.
 
     Args:
         video_id: YouTube video ID
@@ -709,6 +747,11 @@ def fetch_transcript(
             per-video signals like ``no_caption_tracks``. Used to surface a
             captions-disabled count so the quality nudge avoids false-positive
             "stale yt-dlp" flags.
+        token: Optional ScrapeCreators API key. When present, yt-dlp fails over
+            fast (see ``_fetch_transcript_ytdlp`` ``fast_fail``) and a true hard
+            failure falls back to the SC transcript endpoint. A credit is only
+            spent on a genuine yt-dlp failure, never on success and never on a
+            video proven to have no captions. None preserves keyless behavior.
 
     Returns:
         Plaintext transcript string, or None if no captions available.
@@ -721,36 +764,49 @@ def fetch_transcript(
             _log(f"SSH yt-dlp transcript failed for {video_id}, trying direct HTTP fallback")
             raw_vtt = _fetch_transcript_direct(video_id, status=status)
     elif is_ytdlp_installed():
-        raw_vtt = _fetch_transcript_ytdlp(video_id, temp_dir, status=status)
+        raw_vtt = _fetch_transcript_ytdlp(
+            video_id, temp_dir, status=status, fast_fail=bool(token),
+        )
         if not raw_vtt:
             ytdlp_error = (status or {}).get("ytdlp_error")
             if ytdlp_error:
+                # Hard failure (429 / bot-gate / timeout). The direct-HTTP
+                # fallback is also YouTube-blocked, so skip it and let the
+                # ScrapeCreators fallback below handle it when a key is present.
                 _log(f"Transcript fetch failed for {video_id}: {ytdlp_error}")
-                return None
-            _log(f"yt-dlp found no captions for {video_id}, trying direct HTTP fallback")
-            raw_vtt = _fetch_transcript_direct(video_id, status=status)
+            else:
+                _log(f"yt-dlp found no captions for {video_id}, trying direct HTTP fallback")
+                raw_vtt = _fetch_transcript_direct(video_id, status=status)
     else:
         _log("yt-dlp not installed, using direct HTTP transcript fetch")
         raw_vtt = _fetch_transcript_direct(video_id, status=status)
 
-    if not raw_vtt:
-        _log(f"No transcript available for {video_id} (no captions found)")
-        return None
+    if raw_vtt:
+        transcript = _clean_vtt(raw_vtt)
+        # Truncate to max words
+        words = transcript.split()
+        if len(words) > TRANSCRIPT_MAX_WORDS:
+            transcript = ' '.join(words[:TRANSCRIPT_MAX_WORDS]) + '...'
+        return transcript if transcript else None
 
-    transcript = _clean_vtt(raw_vtt)
+    # Keyless cascade produced nothing. When a ScrapeCreators key is present and
+    # the video was not proven caption-less, fall back to the SC transcript
+    # endpoint (fetched server-side: no 429, cookies, or PO tokens). Returns
+    # already-cleaned, word-capped plaintext.
+    if token and _should_try_sc_transcript(status):
+        sc_transcript = _sc_fetch_transcript(video_id, token)
+        if sc_transcript:
+            return sc_transcript
 
-    # Truncate to max words
-    words = transcript.split()
-    if len(words) > TRANSCRIPT_MAX_WORDS:
-        transcript = ' '.join(words[:TRANSCRIPT_MAX_WORDS]) + '...'
-
-    return transcript if transcript else None
+    _log(f"No transcript available for {video_id}")
+    return None
 
 
 def fetch_transcripts_parallel(
     video_ids: List[str],
     max_workers: int = 5,
     out_captions_disabled: Optional[Set[str]] = None,
+    token: Optional[str] = None,
 ) -> Dict[str, Optional[str]]:
     """Fetch transcripts for multiple videos in parallel.
 
@@ -760,6 +816,9 @@ def fetch_transcripts_parallel(
         out_captions_disabled: Optional set mutated to record video_ids whose
             uploader confirmed no caption tracks (vs. transient fetch failures).
             Backward-compatible: callers that don't care can omit.
+        token: Optional ScrapeCreators API key, threaded to each
+            ``fetch_transcript`` so the per-video SC fallback activates on
+            yt-dlp failure. None preserves keyless behavior.
 
     Returns:
         Dict mapping video_id to transcript text (or None).
@@ -774,7 +833,9 @@ def fetch_transcripts_parallel(
     with tempfile.TemporaryDirectory() as temp_dir:
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = {
-                executor.submit(fetch_transcript, vid, temp_dir, statuses[vid]): vid
+                executor.submit(
+                    fetch_transcript, vid, temp_dir, statuses[vid], token,
+                ): vid
                 for vid in video_ids
             }
             for future in as_completed(futures):
@@ -799,8 +860,16 @@ def fetch_transcripts_parallel(
     return results
 
 
-def backfill_transcripts(items: List[Any], topic: str = "", depth: str = "default") -> None:
-    """Second-pass transcript fetch for finalized items that lack one (#542)."""
+def backfill_transcripts(
+    items: List[Any], topic: str = "", depth: str = "default",
+    token: Optional[str] = None,
+) -> None:
+    """Second-pass transcript fetch for finalized items that lack one (#542).
+
+    ``token`` is the optional ScrapeCreators key, threaded to
+    ``fetch_transcripts_parallel`` so the SC fallback covers backfill survivors
+    that yt-dlp can't fetch. None preserves keyless behavior.
+    """
     limit = TRANSCRIPT_LIMITS.get(depth, TRANSCRIPT_LIMITS["default"])
     if limit <= 0 or not items or not is_ytdlp_installed():
         return
@@ -826,6 +895,7 @@ def backfill_transcripts(items: List[Any], topic: str = "", depth: str = "defaul
     transcripts = fetch_transcripts_parallel(
         [it.item_id for it in attempts],
         out_captions_disabled=captions_disabled,
+        token=token,
     )
     for it in attempts:
         if it.item_id in captions_disabled:
@@ -859,6 +929,7 @@ def search_and_transcribe(
     from_date: str,
     to_date: str,
     depth: str = "default",
+    token: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Full YouTube search: find videos, then fetch transcripts for top results.
 
@@ -870,6 +941,8 @@ def search_and_transcribe(
         from_date: Start date (YYYY-MM-DD)
         to_date: End date (YYYY-MM-DD)
         depth: 'quick', 'default', or 'deep'
+        token: Optional ScrapeCreators key for the per-video transcript
+            fallback (threaded to fetch_transcripts_parallel).
 
     Returns:
         Dict with 'items' list. Each item has a 'transcript_snippet' field.
@@ -911,6 +984,7 @@ def search_and_transcribe(
         _log(f"Fetching transcripts for up to {attempt_count} videos (target: {transcript_limit}): {candidate_ids}")
         transcripts = fetch_transcripts_parallel(
             candidate_ids, out_captions_disabled=captions_disabled_ids,
+            token=token,
         )
         # Record fetch outcomes (captions-disabled videos can never succeed,
         # so they don't count as failures) for the stale-yt-dlp nudge.
@@ -1224,6 +1298,30 @@ def _sc_youtube_search(keyword: str, token: str) -> List[Dict[str, Any]]:
         return []
 
 
+def _sc_segment_text(seg: Any) -> str:
+    """Extract caption text from a ScrapeCreators transcript segment.
+
+    The transcript endpoint returns a list of segment dicts
+    (``{text, startMs, endMs}``); older/simpler shapes return plain strings.
+    Pull the ``text`` field for dicts so segment metadata is not stringified
+    into the output (``{'text': ...}`` garbage).
+    """
+    if isinstance(seg, dict):
+        # `or ""` (not a get default): a present-but-null `text` returns None,
+        # which would stringify to the literal "None" for silent/music segments.
+        return str(seg.get("text") or "")
+    return str(seg)
+
+
+def _warn_low_sc_credits(data: Dict[str, Any]) -> None:
+    """Surface a low-credit warning from a ScrapeCreators response, if present."""
+    credits = data.get("credits_remaining")
+    if isinstance(credits, (int, float)) and not isinstance(credits, bool):
+        if credits < _SC_LOW_CREDIT_THRESHOLD:
+            _log(f"ScrapeCreators credits low: {int(credits)} remaining "
+                 f"(below {_SC_LOW_CREDIT_THRESHOLD})")
+
+
 def _sc_fetch_transcript(video_id: str, token: str) -> Optional[str]:
     """Fetch transcript for a YouTube video via ScrapeCreators.
 
@@ -1247,12 +1345,14 @@ def _sc_fetch_transcript(video_id: str, token: str) -> Optional[str]:
         _log(f"SC transcript error for {video_id}: {exc}")
         return None
 
+    _warn_low_sc_credits(data)
+
     transcript = data.get("transcript")
     if not transcript:
         return None
 
     if isinstance(transcript, list):
-        transcript = " ".join(str(s) for s in transcript)
+        transcript = " ".join(_sc_segment_text(seg) for seg in transcript).strip()
 
     # Clean VTT formatting if present
     transcript = _clean_vtt(transcript)

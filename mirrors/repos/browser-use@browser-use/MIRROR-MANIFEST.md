@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `browser-use/browser-use` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `browser-use/browser-use` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `browser-use/browser-use` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,8 +85,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`skills/open-source/references/quickstart.md`](skills/open-source/references/quickstart.md) |
 | 25 | ✓ | [`skills/open-source/references/tools.md`](skills/open-source/references/tools.md) |
 | 26 | ✓ | [`skills/open-source/SKILL.md`](skills/open-source/SKILL.md) |
-| 27 | ✓ | [`skills/remote-browser/SKILL.md`](skills/remote-browser/SKILL.md) |
-| 28 | ✓ | [`skills/x402/SKILL.md`](skills/x402/SKILL.md) |
+| 27 | ✓ | [`skills/qa/references/browser-use-v2.md`](skills/qa/references/browser-use-v2.md) |
+| 28 | ✓ | [`skills/qa/references/methodology.md`](skills/qa/references/methodology.md) |
+| 29 | ✓ | [`skills/qa/SKILL.md`](skills/qa/SKILL.md) |
+| 30 | ✓ | [`skills/remote-browser/SKILL.md`](skills/remote-browser/SKILL.md) |
+| 31 | ✓ | [`skills/x402/SKILL.md`](skills/x402/SKILL.md) |
 
 ---
 

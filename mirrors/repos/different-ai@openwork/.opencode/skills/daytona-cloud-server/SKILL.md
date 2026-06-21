@@ -1,6 +1,6 @@
 ---
 name: daytona-cloud-server
-description: Daytona cloud server and Den sandbox setup. Use when the user says Daytona server, cloud server, Den server, marketplace server, worker proxy, cloud auth, org policies, or connect Electron to a Daytona server.
+description: Daytona cloud server, Den sandbox, desktop plus cloud e2e, marketplace server, worker proxy, cloud auth, org policies, connect Electron to Den. Use for server-side setup in validated flows.
 ---
 
 # Daytona Cloud Server

@@ -28,6 +28,28 @@ mitre_attack:
 - T1078.004
 - T1133
 - T1021.007
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - positioning
+  techniques:
+  - id: F1006
+    name: Account Takeover
+    tactic: initial-access
+    source: f3
+  - id: F1004
+    name: Access with Stolen Session Cookie
+    tactic: initial-access
+    source: f3
+  - id: T1550.001
+    name: 'Use Alternate Authentication Material: Application Access Token'
+    tactic: initial-access
+    source: attack
+  - id: T1539
+    name: Steal Web Session Cookie
+    tactic: positioning
+    source: attack
 ---
 
 # Configuring Identity-Aware Proxy with Google IAP

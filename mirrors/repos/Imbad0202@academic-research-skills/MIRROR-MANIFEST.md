@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Imbad0202/academic-research-skills` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `Imbad0202/academic-research-skills` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Imbad0202/academic-research-skills` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,13 +60,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/CLAUDE.md`](.claude/CLAUDE.md) |
-| 2 | ✓ | [`academic-paper-reviewer/SKILL.md`](academic-paper-reviewer/SKILL.md) |
-| 3 | ✓ | [`academic-paper/SKILL.md`](academic-paper/SKILL.md) |
-| 4 | ✓ | [`academic-pipeline/SKILL.md`](academic-pipeline/SKILL.md) |
-| 5 | ✓ | [`agents/report_compiler_agent.md`](agents/report_compiler_agent.md) |
-| 6 | ✓ | [`agents/research_architect_agent.md`](agents/research_architect_agent.md) |
-| 7 | ✓ | [`agents/synthesis_agent.md`](agents/synthesis_agent.md) |
-| 8 | ✓ | [`deep-research/SKILL.md`](deep-research/SKILL.md) |
+| 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 3 | ✓ | [`academic-paper-reviewer/SKILL.md`](academic-paper-reviewer/SKILL.md) |
+| 4 | ✓ | [`academic-paper/SKILL.md`](academic-paper/SKILL.md) |
+| 5 | ✓ | [`academic-pipeline/SKILL.md`](academic-pipeline/SKILL.md) |
+| 6 | ✓ | [`agents/report_compiler_agent.md`](agents/report_compiler_agent.md) |
+| 7 | ✓ | [`agents/research_architect_agent.md`](agents/research_architect_agent.md) |
+| 8 | ✓ | [`agents/synthesis_agent.md`](agents/synthesis_agent.md) |
+| 9 | ✓ | [`deep-research/SKILL.md`](deep-research/SKILL.md) |
 
 ---
 

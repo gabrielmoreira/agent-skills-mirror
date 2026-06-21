@@ -29,6 +29,36 @@ mitre_attack:
 - T1537
 - T1580
 - T1566
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - positioning
+  techniques:
+  - id: F1006
+    name: Account Takeover
+    tactic: initial-access
+    source: f3
+  - id: F1006.002
+    name: 'Account Takeover: Exposed Login Credential'
+    tactic: initial-access
+    source: f3
+  - id: T1110.004
+    name: 'Brute Force:  Credential Stuffing'
+    tactic: initial-access
+    source: attack
+  - id: T1110.003
+    name: 'Brute Force: Password Spraying'
+    tactic: initial-access
+    source: attack
+  - id: T1539
+    name: Steal Web Session Cookie
+    tactic: positioning
+    source: attack
+  - id: T1550.001
+    name: 'Use Alternate Authentication Material: Application Access Token'
+    tactic: initial-access
+    source: attack
 ---
 
 # Managing Cloud Identity with Okta

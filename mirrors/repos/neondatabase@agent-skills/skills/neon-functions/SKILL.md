@@ -377,6 +377,20 @@ export default {
 
 The same rules as WebSockets apply. **Heartbeat:** a stream stays open only while bytes flow — Neon's window is 15 minutes ([Timeouts and runtime limits](#timeouts-and-runtime-limits)) but proxies are usually far stricter, so emit a `: ping\n\n` comment every ~25–30s (shown above) to keep idle streams from being dropped. Keep state in Postgres, and fan out across isolates with [`LISTEN`/`NOTIFY`](#fan-out-across-isolates-do-not-skip-this) (hold a `Set` of stream controllers and `enqueue` to each). `EventSource` is GET-only and can't set headers, so authenticate with a `?token=` query param or cookie, exactly like the WebSocket case. [references/sse.md](references/sse.md) has the full pattern — Hono variant, cross-isolate fan-out, wire format, client, and caveats — and a verified end-to-end build is the `with-realtime-sse` example in [`neondatabase/examples`](https://github.com/neondatabase/examples/tree/main/with-realtime-sse).
 
+## MCP servers
+
+An [MCP](https://modelcontextprotocol.io) server is a natural Functions workload: a long-running HTTP handler that exposes tools to AI clients (Cursor, Claude, ChatGPT, agents), with those tools reading and writing the branch's Postgres right next to the compute. MCP's **streamable HTTP transport** is a plain `POST`/`GET` on a single endpoint (conventionally `/mcp`), so it maps onto a function's `fetch` handler with no `upgrade` method or extra protocol — a Hono app using the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk) plus [`@hono/mcp`](https://github.com/honojs/middleware/tree/main/packages/mcp) (which bridges the transport to a route) is the simplest host. Build the server, register its tools, and create the transport once at module scope, then hand every `/mcp` request to it:
+
+```typescript
+const transport = new StreamableHTTPTransport();
+app.all("/mcp", async (c) => {
+  if (!mcpServer.isConnected()) await mcpServer.connect(transport);
+  return transport.handleRequest(c);
+});
+```
+
+Because the function's URL is public, **authenticate before connecting the transport** — [Better Auth](https://better-auth.com) covers both OAuth (its MCP plugin makes your app the authorization server so third-party clients self-authorize per the MCP spec) and a simpler API-key / session-JWT check for your own callers. [references/mcp.md](references/mcp.md) has the full pattern — server with Postgres-backed tools via Drizzle, both Better Auth auth options, and testing with `mcporter` / `add-mcp`.
+
 ## Integrations and observability
 
 A function is a long-lived Node.js process running a web-standard request/response handler, so standard Node integration SDKs work unchanged — initialize them once at module load, gated on an env var so local dev and unconfigured branches stay a no-op, and pass secrets via `--env` or `neon.ts` `env`. For wiring up **Sentry** error monitoring across the HTTP framework, the function runtime, and an agent's own caught/fallback failures (the long-running case Functions target), see [references/sentry.md](references/sentry.md). For running a **Mastra** agent on a function and shipping its traces to a **Mastra Studio (Mastra Cloud)** project for observability, see [references/mastra-studio.md](references/mastra-studio.md).

@@ -1,9 +1,43 @@
 ---
-name: methylation-cycle
-version: 0.1.3
-author: Samuel Carmona Aguirre <samuel@unimed-consulting.es>
+name: claw-methylation-cycle
 license: MIT
-trigger_keywords:
+metadata:
+  openclaw:
+    requires:
+      bins:
+      - python3
+      env: null
+      config: null
+    always: false
+    emoji: 🧬
+    homepage: https://github.com/ClawBio/ClawBio
+    os:
+    - darwin
+    - linux
+    install: 'pip install -e .
+
+      '
+    trigger_keywords:
+    - methylation
+    - MTHFR
+    - folate cycle
+    - BH4
+    - homocysteine
+    - methylation cycle
+    - metilación
+    - neurotransmitter synthesis
+  author: Samuel Carmona Aguirre <samuel@unimed-consulting.es>
+  demo_data_path: demo_input.txt
+  dependencies_python: '>=3.9'
+  guideline_doi: 10.3390/nu13030768
+  input_format: 23andme, adntro, ancestry
+  output_format: markdown, json
+  tags:
+  - genomics
+  - methylation
+  - MTHFR
+  - neurodevelopment
+  trigger_keywords:
   - methylation
   - MTHFR
   - folate cycle
@@ -12,39 +46,9 @@ trigger_keywords:
   - methylation cycle
   - metilación
   - neurotransmitter synthesis
-input_format: 23andme, adntro, ancestry
-output_format: markdown, json
-dependencies_python: ">=3.9"
-tags:
-  - genomics
-  - methylation
-  - MTHFR
-  - neurodevelopment
-demo_data_path: demo_input.txt
-guideline_doi: "10.3390/nu13030768"
-validation_tier: community
-metadata:
-  openclaw:
-    requires:
-      bins:
-        - python3
-      env: []
-      config: []
-    always: false
-    emoji: "🧬"
-    homepage: https://github.com/ClawBio/ClawBio
-    os: [darwin, linux]
-    install: |
-      pip install -e .
-    trigger_keywords:
-      - methylation
-      - MTHFR
-      - folate cycle
-      - BH4
-      - homocysteine
-      - methylation cycle
-      - metilación
-      - neurotransmitter synthesis
+  validation_tier: community
+  version: 0.1.3
+description: Methylation cycle analysis — enzymatic activity profiles, Net Methylation Capacity, BH4 axis estimates, compound heterozygosity detection from SNP genotype data.
 ---
 
 # claw-methylation-cycle

@@ -52,6 +52,16 @@ That's it — all 174 skills and 5 workflow recipes are now available in every C
 
 Restart the client. Then ask it to *"search the skills for customer churn"*, *"get the rice-prioritisation skill and apply it to my backlog"*, or *"run the ship-a-feature workflow for a referral program"* — it calls the tools automatically.
 
+## Ground skills in your real data
+
+Skills are far more useful on *your* data than on pasted summaries. Because this server speaks standard MCP, run it **alongside other MCP servers** in the same client — then a skill can act on what those servers expose:
+
+- `filesystem` MCP → "get the `churn-analysis` skill and run it on `exports/q2.csv`"
+- a Linear/Jira/GitHub MCP → "get `prd-template` and base it on issue ABC-123"
+- a database/Drive MCP → "pull last quarter's numbers, then run `metrics-framework`"
+
+The skill supplies the *structure*; the other server supplies the *facts*. In the browser playground, the **📎 Ground in a file** button does the lightweight version — loading a local file into your context.
+
 ## How it works
 
 Pure Node standard library, MCP stdio transport (newline-delimited JSON-RPC 2.0). It reads the bundled `skills/` at startup and serves them in-memory; all logging goes to stderr so it never corrupts the protocol stream. No network, no data leaves your machine.

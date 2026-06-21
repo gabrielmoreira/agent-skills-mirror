@@ -1,12 +1,14 @@
 ---
 name: daytona-recording-artifacts
-description: Daytona recording volume, screenshots, artifacts, and validation evidence. Use when the user says record Daytona, recording volume, artifacts volume, screenshots, proof, PR evidence, before/after video, or validate behavior visually.
+description: frame proof, HTML frames, screenshots, recording, PR proof, e2e evidence, validate visually. Daytona artifacts workflow for validated screenshots and optional videos.
 ---
 
 # Daytona Recording Artifacts
 
 Use this skill to collect proof that a Daytona UI flow works.
-Use `daytona-flow-validator` before declaring the flow passed.
+Use `daytona-flow-validator` before declaring the flow passed. If the user asks
+to do e2e tests for a feature, frame proof is required unless they explicitly
+ask for non-UI or mock-only validation.
 
 ## Default: Frame-by-Frame HTML Proof
 
@@ -25,8 +27,9 @@ When a coded eval exists, prefer the eval runner frame output first:
 pnpm evals --flow <flow-id> --cdp-url <printed-electron-cdp-url>
 ```
 
-The runner writes `evals/results/<run-id>/index.html` plus PNG screenshots from
-`ctx.screenshot(...)`. Serve or copy that result directory for PR evidence.
+The runner writes `evals/results/<run-id>/index.html` plus validated PNG evidence
+from `ctx.prove(...)` and `ctx.screenshot(...)`. Serve or copy that result
+directory for PR evidence.
 
 ### How to produce frame proof
 

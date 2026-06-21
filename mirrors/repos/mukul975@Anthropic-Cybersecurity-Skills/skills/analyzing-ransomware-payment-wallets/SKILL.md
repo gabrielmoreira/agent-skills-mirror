@@ -28,6 +28,32 @@ nist_csf:
 mitre_attack:
 - T1657
 - T1486
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - monetization
+  - stealth
+  techniques:
+  - id: F1018
+    name: Convert to Cryptocurrency
+    tactic: monetization
+    source: f3
+  - id: F1017
+    name: Conversion to Physical Monetary Instruments
+    tactic: monetization
+    source: f3
+  - id: F1017.001
+    name: 'Conversion to Physical Monetary Instruments: Cash'
+    tactic: monetization
+    source: f3
+  - id: F1047
+    name: Transfer of funds
+    tactic: monetization
+    source: f3
+  - id: F1045
+    name: Structuring
+    tactic: stealth
+    source: f3
 ---
 
 # Analyzing Ransomware Payment Wallets

@@ -1,6 +1,6 @@
 ---
 name: daytona-cloud-instance
-description: Daytona cloud instance, Den server, OpenWork Cloud, Marketplace onboarding. Use when the user asks to run, launch, start, validate, or record a Daytona cloud/Den instance for OpenWork Cloud flows.
+description: Daytona cloud instance, Den server, OpenWork Cloud, Marketplace onboarding, desktop plus cloud e2e, frame proof. Use when launching, validating, or recording Daytona cloud/Den flows.
 ---
 
 # Daytona Cloud Instance

@@ -34,6 +34,33 @@ mitre_attack:
 - T1078
 - T1531
 - T1087
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - positioning
+  - defense-impairment
+  - initial-access
+  techniques:
+  - id: F1005
+    name: Account Manipulation
+    tactic: positioning
+    source: f3
+  - id: F1005.002
+    name: 'Account Manipulation: Add Authorized User'
+    tactic: positioning
+    source: f3
+  - id: F1033
+    name: Insider Access Abuse
+    tactic: initial-access
+    source: f3
+  - id: F1042
+    name: Reactivate Account
+    tactic: positioning
+    source: f3
+  - id: F1006
+    name: Account Takeover
+    tactic: initial-access
+    source: f3
 ---
 
 # Building Identity Governance Lifecycle Process

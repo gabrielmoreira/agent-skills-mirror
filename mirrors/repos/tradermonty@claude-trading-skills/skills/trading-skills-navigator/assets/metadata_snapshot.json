@@ -721,6 +721,32 @@
       "timeframe": "weekly"
     },
     {
+      "category": "swing-opportunity",
+      "difficulty": "intermediate",
+      "display_name": "Stockbee Momentum Burst Screener",
+      "id": "stockbee-momentum-burst-screener",
+      "integrations": [
+        {
+          "id": "fmp",
+          "requirement": "required",
+          "type": "market_data"
+        },
+        {
+          "id": "prices_json",
+          "requirement": "optional",
+          "type": "local_file"
+        },
+        {
+          "id": "local_calculation",
+          "requirement": "not_required",
+          "type": "calculation"
+        }
+      ],
+      "status": "beta",
+      "summary": "Screen US stocks for Stockbee-style 3-5 day momentum burst candidates using 4% breakout, dollar breakout, range expansion, volume expansion, setup quality, and risk-distance filters.",
+      "timeframe": "daily"
+    },
+    {
       "category": "strategy-research",
       "difficulty": "advanced",
       "display_name": "Strategy Pivot Designer",
@@ -921,6 +947,22 @@
       "status": "production",
       "summary": "Screen S&P 500 stocks for Mark Minervini's Volatility Contraction Pattern (VCP).",
       "timeframe": "daily"
+    },
+    {
+      "category": "trade-memory",
+      "difficulty": "beginner",
+      "display_name": "Weekly Performance Digest",
+      "id": "weekly-performance-digest",
+      "integrations": [
+        {
+          "id": "local_calculation",
+          "requirement": "not_required",
+          "type": "calculation"
+        }
+      ],
+      "status": "production",
+      "summary": "Generate a weekly performance summary from closed trades with win rate, expectancy, and pattern analysis.",
+      "timeframe": "weekly"
     }
   ],
   "skillsets": [
@@ -991,6 +1033,7 @@
       "display_name": "Swing Opportunity",
       "id": "swing-opportunity",
       "optional_skills": [
+        "stockbee-momentum-burst-screener",
         "finviz-screener"
       ],
       "recommended_skills": [
@@ -1144,9 +1187,10 @@
       "cadence": "daily",
       "difficulty": "intermediate",
       "display_name": "Swing Opportunity Daily",
-      "estimated_minutes": 30,
+      "estimated_minutes": 35,
       "id": "swing-opportunity-daily",
       "optional_skills": [
+        "stockbee-momentum-burst-screener",
         "canslim-screener",
         "breakout-trade-planner",
         "theme-detector"

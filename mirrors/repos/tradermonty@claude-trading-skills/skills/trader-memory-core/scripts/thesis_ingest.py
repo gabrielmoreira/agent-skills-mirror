@@ -6,6 +6,8 @@ suitable for thesis_store.register().
 
 from __future__ import annotations
 
+import argparse
+import csv
 import json
 import logging
 import sys
@@ -380,6 +382,66 @@ def ingest_edge(record: dict, input_file: str) -> dict | None:
     return thesis_data
 
 
+_MANUAL_CSV_REQUIRED_COLUMNS = {"ticker", "thesis_statement", "thesis_type"}
+_MANUAL_CSV_FLOAT_COLUMNS = {
+    "entry_price",
+    "shares",
+    "stop_price",
+    "stop_loss",
+    "target_price",
+    "take_profit",
+}
+
+
+def _coerce_manual_csv_record(record: dict, row_num: int) -> dict:
+    coerced = dict(record)
+    for key in _MANUAL_CSV_FLOAT_COLUMNS:
+        if key not in coerced:
+            continue
+        try:
+            coerced[key] = float(coerced[key])
+        except ValueError as e:
+            raise ValueError(f"Bulk CSV row {row_num}: column {key} must be numeric") from e
+    return coerced
+
+
+def _read_manual_csv_records(csv_file: str) -> list[tuple[int, dict]]:
+    """Read manual bulk CSV records with row numbers for useful errors."""
+    csv_path = Path(csv_file)
+    if not csv_path.exists():
+        raise FileNotFoundError(f"Bulk CSV file not found: {csv_file}")
+
+    try:
+        with open(csv_path, newline="") as f:
+            reader = csv.DictReader(f)
+            if not reader.fieldnames:
+                raise ValueError("Bulk CSV is missing a header row")
+            fieldnames = {name.strip() for name in reader.fieldnames if name}
+            missing = sorted(_MANUAL_CSV_REQUIRED_COLUMNS - fieldnames)
+            if missing:
+                raise ValueError(
+                    "Bulk CSV missing required column(s): "
+                    f"{', '.join(missing)}. Required: "
+                    f"{', '.join(sorted(_MANUAL_CSV_REQUIRED_COLUMNS))}"
+                )
+
+            records = []
+            for row_num, row in enumerate(reader, start=2):
+                record = {
+                    (key.strip() if key else key): value
+                    for key, value in row.items()
+                    if key and value not in (None, "")
+                }
+                record = _coerce_manual_csv_record(record, row_num)
+                records.append((row_num, record))
+    except csv.Error as e:
+        raise ValueError(f"Failed to parse bulk CSV {csv_file}: {e}") from e
+
+    if not records:
+        raise ValueError("Bulk CSV contains no data rows")
+    return records
+
+
 # -- Public API ---------------------------------------------------------------
 
 
@@ -442,6 +504,34 @@ def ingest(
     return thesis_ids
 
 
+def ingest_bulk_csv(
+    source: str,
+    csv_file: str,
+    state_dir: str = "state/theses",
+) -> list[str]:
+    """All-or-nothing bulk ingest for manual CSV records."""
+    if source != "manual":
+        raise ValueError("--bulk-csv is only supported with --source manual")
+
+    adapter = _ADAPTERS["manual"]
+    state_path = Path(state_dir)
+    prepared = []
+    for row_num, record in _read_manual_csv_records(csv_file):
+        try:
+            thesis_data = adapter(record, csv_file)
+            # Validate the completed thesis without writing. register() will
+            # rebuild and validate again before persistence.
+            thesis_store._build_thesis_for_registration(thesis_data)
+        except ValueError as e:
+            raise ValueError(f"Bulk CSV row {row_num}: {e}") from e
+        prepared.append(thesis_data)
+
+    thesis_ids = []
+    for thesis_data in prepared:
+        thesis_ids.append(thesis_store.register(state_path, thesis_data))
+    return thesis_ids
+
+
 def _extract_source_date(data: dict | list) -> str | None:
     """Extract report date from top-level metadata.
 
@@ -489,20 +579,33 @@ def _extract_records(data: dict | list, source: str) -> list[dict]:
 
 # -- CLI entry point ----------------------------------------------------------
 
-if __name__ == "__main__":
-    import argparse
 
+def main(argv: list[str] | None = None) -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
     parser = argparse.ArgumentParser(description="Ingest skill output into Trader Memory Core")
     parser.add_argument("--source", required=True, help="Source skill name")
-    parser.add_argument("--input", required=True, help="Path to JSON input file")
+    input_group = parser.add_mutually_exclusive_group(required=True)
+    input_group.add_argument("--input", help="Path to JSON input file")
+    input_group.add_argument("--bulk-csv", help="Path to manual bulk CSV input file")
     parser.add_argument("--state-dir", default="state/theses", help="Thesis state directory")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
-    ids = ingest(args.source, args.input, args.state_dir)
+    if args.bulk_csv:
+        ids = ingest_bulk_csv(args.source, args.bulk_csv, args.state_dir)
+    else:
+        ids = ingest(args.source, args.input, args.state_dir)
     if ids:
         print(f"Registered {len(ids)} thesis(es): {', '.join(ids)}")
     else:
         print("No theses registered.")
-        sys.exit(1)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as e:
+        print(f"ERROR: {e}", file=sys.stderr)
+        raise SystemExit(1)

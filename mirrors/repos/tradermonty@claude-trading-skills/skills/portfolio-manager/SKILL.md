@@ -95,6 +95,8 @@ Fallback REST endpoint:
 - Clearly label the source as `Alpaca REST fallback` rather than MCP.
 - Use `ALPACA_PAPER=true` to choose paper endpoint; otherwise use live endpoint.
 - Still validate that long market value plus cash approximately reconciles to equity, and highlight margin/leverage if `long_market_value > equity`.
+- For weekly core portfolio cron jobs, compute exposure using equity as the denominator as well as gross market value: `gross_long_exposure = long_market_value / equity`, `cash_pct = cash / equity`, and explicitly flag margin-funded portfolios when gross exposure is materially above 100% or cash is negative. Do not let sector weights look benign by using only gross-long denominator when the account is levered.
+- When the request emphasizes dividend holdings or forced-review triggers, build normalized monitor input from the live holdings and hand it to `kanchi-dividend-review-monitor` rather than treating dividend review as a narrative-only section. Also build tax-planning input for `kanchi-dividend-us-tax-accounting` when account-location notes are requested; label it degraded if account type or holding-period windows are unavailable.
 
 **Data Validation:**
 - Verify all positions have valid ticker symbols

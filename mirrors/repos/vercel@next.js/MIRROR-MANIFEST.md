@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
+Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 36 file
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 36 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,21 +80,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`.agents/skills/v8-jit/SKILL.md`](.agents/skills/v8-jit/SKILL.md) |
 | 20 | ✓ | [`.agents/skills/write-api-reference/SKILL.md`](.agents/skills/write-api-reference/SKILL.md) |
 | 21 | ✓ | [`.agents/skills/write-guide/SKILL.md`](.agents/skills/write-guide/SKILL.md) |
-| 22 | ✓ | [`.claude-plugin/plugins/cache-components/skills/cache-components/PATTERNS.md`](.claude-plugin/plugins/cache-components/skills/cache-components/PATTERNS.md) |
-| 23 | ✓ | [`.claude-plugin/plugins/cache-components/skills/cache-components/REFERENCE.md`](.claude-plugin/plugins/cache-components/skills/cache-components/REFERENCE.md) |
-| 24 | ✓ | [`.claude-plugin/plugins/cache-components/skills/cache-components/SKILL.md`](.claude-plugin/plugins/cache-components/skills/cache-components/SKILL.md) |
-| 25 | ✓ | [`.claude-plugin/plugins/cache-components/skills/cache-components/TROUBLESHOOTING.md`](.claude-plugin/plugins/cache-components/skills/cache-components/TROUBLESHOOTING.md) |
-| 26 | ✓ | [`.cursor/commands/gt-workflow.md`](.cursor/commands/gt-workflow.md) |
-| 27 | ✓ | [`.cursor/worktrees.json`](.cursor/worktrees.json) |
-| 28 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
-| 29 | ✓ | [`.github/CLAUDE.md`](.github/CLAUDE.md) |
-| 30 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 31 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 32 | ✓ | [`packages/next/AGENTS.md`](packages/next/AGENTS.md) |
-| 33 | ✓ | [`skills/next-cache-components-optimizer/instant-nav-loop.md`](skills/next-cache-components-optimizer/instant-nav-loop.md) |
-| 34 | ✓ | [`skills/next-cache-components-optimizer/ppr-loop.md`](skills/next-cache-components-optimizer/ppr-loop.md) |
-| 35 | ✓ | [`skills/next-cache-components-optimizer/SKILL.md`](skills/next-cache-components-optimizer/SKILL.md) |
-| 36 | ✓ | [`skills/next-dev-loop/SKILL.md`](skills/next-dev-loop/SKILL.md) |
+| 22 | ✓ | [`.cursor/commands/gt-workflow.md`](.cursor/commands/gt-workflow.md) |
+| 23 | ✓ | [`.cursor/worktrees.json`](.cursor/worktrees.json) |
+| 24 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
+| 25 | ✓ | [`.github/CLAUDE.md`](.github/CLAUDE.md) |
+| 26 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 27 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 28 | ✓ | [`packages/next/AGENTS.md`](packages/next/AGENTS.md) |
+| 29 | ✓ | [`skills/next-cache-components-optimizer/instant-nav-loop.md`](skills/next-cache-components-optimizer/instant-nav-loop.md) |
+| 30 | ✓ | [`skills/next-cache-components-optimizer/ppr-loop.md`](skills/next-cache-components-optimizer/ppr-loop.md) |
+| 31 | ✓ | [`skills/next-cache-components-optimizer/SKILL.md`](skills/next-cache-components-optimizer/SKILL.md) |
+| 32 | ✓ | [`skills/next-dev-loop/SKILL.md`](skills/next-dev-loop/SKILL.md) |
 
 ---
 

@@ -32,6 +32,36 @@ mitre_attack:
 - T1530
 - T1537
 - T1580
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - positioning
+  techniques:
+  - id: F1004
+    name: Access with Stolen Session Cookie
+    tactic: initial-access
+    source: f3
+  - id: T1539
+    name: Steal Web Session Cookie
+    tactic: positioning
+    source: attack
+  - id: T1557
+    name: Adversary-in-the-Middle
+    tactic: initial-access
+    source: attack
+  - id: T1550.001
+    name: 'Use Alternate Authentication Material: Application Access Token'
+    tactic: initial-access
+    source: attack
+  - id: F1006
+    name: Account Takeover
+    tactic: initial-access
+    source: f3
+  - id: T1185
+    name: Browser Session Hijacking
+    tactic: positioning
+    source: attack
 ---
 
 # Detecting OAuth Token Theft

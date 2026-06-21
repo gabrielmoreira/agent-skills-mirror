@@ -105,6 +105,7 @@ When implementing live SEC fetchers:
 - Include a compliant `User-Agent` string (name + email).
 - Use caching and throttling.
 - Respect SEC fair-access guidance.
+- In scheduled portfolio reviews where upstream filing snippets are empty, use SEC `company_tickers.json` plus `https://data.sec.gov/submissions/CIK##########.json` to enumerate recent 8-K / 8-K/A filings for each holding, then scan primary filing documents for the T4 keyword family (`Item 4.02`, non-reliance, restatement, material weakness, SEC investigation, subpoena, going concern, auditor resignation, internal control). Record the scan window, recent 8-K count, and whether hits were found. Treat "no keyword hits" as a narrow T4 scan result, not a full governance clearance.
 
 ## Output Contract
 

@@ -7,9 +7,9 @@ Scan date: 2026-05-31.
 ## Summary
 
 - Collections audited: 69
-- License buckets: AGPL-3.0=1, Apache-2.0=1, CC-BY-NC-4.0 (non-commercial)=1, CC-BY-SA-4.0 (repository default)=4, MIT=34, MIT Non-Commercial=1, Mixed (per-skill; see folder)=2, UNKNOWN - check upstream=25
-- Commercial-use buckets: allowed=35, restricted=2, share-alike=5, unknown=27
-- Source-confidence buckets: high=38, low=8, medium=19, unresolved=4
+- License buckets: AGPL-3.0=1, Apache-2.0=1, CC-BY-NC-4.0 (non-commercial)=1, CC-BY-SA-4.0 (repository default)=4, MIT=35, MIT Non-Commercial=1, Mixed (per-skill; see folder)=2, UNKNOWN - check upstream=24
+- Commercial-use buckets: allowed=36, restricted=2, share-alike=5, unknown=26
+- Source-confidence buckets: high=38, low=7, medium=20, unresolved=4
 
 ## Interpretation
 
@@ -90,4 +90,4 @@ Scan date: 2026-05-31.
 | [`66-zheng-siyao-empirical-research-skills`](../skills/66-zheng-siyao-empirical-research-skills/) | [source](https://github.com/zheng-siyao/ai4socialscience-skills) | high | UNKNOWN - check upstream | unknown | manual vendor snapshot |
 | [`67-econfin-workflow-toolkit`](../skills/67-econfin-workflow-toolkit/) | [source](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/22) | medium | Mixed (per-skill; see folder) | unknown | manual vendor snapshot |
 | [`68-research-productivity-skills`](../skills/68-research-productivity-skills/) | [source](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/21) | medium | Mixed (per-skill; see folder) | unknown | manual vendor snapshot |
-| [`69-Paper-WorkFlow`](../skills/69-Paper-WorkFlow/) | [source](https://github.com/Paper/WorkFlow) | low | UNKNOWN - check upstream | unknown | manual vendor snapshot |
+| [`69-Paper-WorkFlow`](../skills/69-Paper-WorkFlow/) | [source](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) | medium | MIT | allowed | manual vendor snapshot |

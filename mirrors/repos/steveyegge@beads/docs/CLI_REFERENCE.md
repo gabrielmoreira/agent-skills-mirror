@@ -104,7 +104,7 @@ Reference for bd Latest. Generated from `bd help --all`.
 - [bd export](#bd-export) — Export issues to JSONL format
 - [bd federation](#bd-federation) — Manage peer-to-peer federation (requires CGO)
 - [bd import](#bd-import) — Import issues from a JSONL file or stdin into the database
-- [bd restore](#bd-restore) — Restore full history of a compacted issue from Dolt history
+- [bd restore](#bd-restore) — Restore the pre-compaction content of a compacted issue
 - [bd vc](#bd-vc) — Version control operations
   - [bd vc commit](#bd-vc-commit) — Create a commit with all staged changes
   - [bd vc merge](#bd-vc-merge) — Merge a branch into the current branch
@@ -180,6 +180,7 @@ Reference for bd Latest. Generated from `bd help --all`.
 - [bd preflight](#bd-preflight) — Show PR readiness checklist
 - [bd prune](#bd-prune) — Delete old closed beads to reclaim space and shrink exports
 - [bd purge](#bd-purge) — Delete closed ephemeral beads to reclaim space
+- [bd recompute-blocked](#bd-recompute-blocked) — Recompute is_blocked for all issues (repairs stale flags after a pull)
 - [bd rename-prefix](#bd-rename-prefix) — Rename the issue prefix for all issues in the database
 - [bd rules](#bd-rules) — Audit and compact Claude rules
   - [bd rules audit](#bd-rules-audit) — Scan rules for contradictions and merge opportunities
@@ -2475,13 +2476,19 @@ bd import [file|-] [flags]
 
 ### bd restore
 
-Restore full history of a compacted issue from Dolt version history.
+Restore the pre-compaction content of a compacted issue.
 
-When an issue is compacted, its description and notes are truncated.
-This command queries Dolt's history tables to find the pre-compaction
-version and displays the full issue content.
+When an issue is compacted, its description/design/notes/acceptance criteria
+are summarized and the originals are archived to a compaction snapshot. This
+command recovers that original content.
 
-This is read-only and does not modify the database.
+By default it is read-only: it displays the archived content without modifying
+the database. Pass --apply to write the original content back into the issue
+and step its compaction level back down.
+
+If no archived snapshot exists (e.g. the issue was compacted by an older bd
+before snapshot archiving), restore falls back to a best-effort reconstruction
+from Dolt version history, which can only be displayed, not applied.
 
 ```
 bd restore <issue-id> [flags]
@@ -2490,7 +2497,8 @@ bd restore <issue-id> [flags]
 **Flags:**
 
 ```
-      --json   Output restore results in JSON format
+      --apply   Write the restored content back into the issue (default: display only)
+      --json    Output restore results in JSON format
 ```
 
 ### bd vc
@@ -4267,6 +4275,30 @@ bd purge [flags]
       --pattern string      Only purge beads matching ID glob pattern (e.g., *-wisp-*)
 ```
 
+### bd recompute-blocked
+
+Recompute the denormalized is_blocked flag for every issue and wisp.
+
+is_blocked is derived from the dependency graph and maintained automatically by
+local writes and by a post-pull recompute scoped to what the merge changed. If
+that scoped recompute is skipped — a recompute that failed after its merge
+committed, or a conflicted pull resolved by hand — the flag can go stale, and a
+later pull that merges nothing will not refresh it (bd-6dnrw.37). 'bd ready'
+trusts the flag, so stale values silently hide ready work or surface blocked
+work.
+
+This command runs the full recompute unconditionally and commits the result.
+It is idempotent: on a consistent database it changes nothing. Works in both
+embedded and server mode (unlike 'bd doctor', which is server-mode only).
+
+Examples:
+  bd recompute-blocked          # Repair stale is_blocked flags
+  bd recompute-blocked --json   # Machine-parseable &#123;"rows_corrected": N&#125;
+
+```
+bd recompute-blocked
+```
+
 ### bd rename-prefix
 
 Rename the issue prefix for all issues in the database.
@@ -4626,7 +4658,7 @@ Modes:
 
 Tiers:
   - Tier 1: Semantic compression (30 days closed, 70% reduction)
-  - Tier 2: Ultra compression (90 days closed, 95% reduction)
+  - Tier 2: Ultra compression (90 days closed) - planned, not yet implemented
 
 Dolt Garbage Collection:
   With auto-commit per mutation, Dolt commit history grows over time. Use
@@ -4675,7 +4707,7 @@ bd admin compact [flags]
       --limit int        Limit number of candidates (0 = no limit)
       --stats            Show compaction statistics
       --summary string   Path to summary file (use '-' for stdin)
-      --tier int         Compaction tier (1 or 2) (default 1)
+      --tier int         Compaction tier (only tier 1 is implemented) (default 1)
       --workers int      Parallel workers (default 5)
 ```
 

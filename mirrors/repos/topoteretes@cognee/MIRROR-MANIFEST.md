@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `topoteretes/cognee` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `topoteretes/cognee` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `topoteretes/cognee` — 26 default patterns, 0 followed patterns, 5 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`examples/demos/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md`](examples/demos/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md) |
-| 4 | ✓ | [`examples/demos/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md`](examples/demos/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md) |
-| 5 | ✓ | [`examples/demos/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md`](examples/demos/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md) |
+| 1 | ✓ | [`.github/prompts/docs_edit.md`](.github/prompts/docs_edit.md) |
+| 2 | ✓ | [`.github/prompts/docs_scope_plan.md`](.github/prompts/docs_scope_plan.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`examples/demos/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md`](examples/demos/skill_feedback_loop/skills/diff-risk-explainer/SKILL.md) |
+| 6 | ✓ | [`examples/demos/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md`](examples/demos/skill_feedback_loop/skills/pr-comment-evaluator/SKILL.md) |
+| 7 | ✓ | [`examples/demos/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md`](examples/demos/skill_feedback_loop/skills/skill-feedback-writer/SKILL.md) |
 
 ---
 

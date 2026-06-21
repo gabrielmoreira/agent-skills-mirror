@@ -505,7 +505,7 @@ Beyond the client-owned runtime graph, several feature APIs are implemented via 
 | `ArtifactGenerationService` | [`_artifact/generation.py`](../src/notebooklm/_artifact/generation.py) | Generation kickoff service (`generate_*`, `revise_slide`, `retry_failed`) extracted from `ArtifactsAPI`. |
 | `_artifact_formatters` | [`_artifact/formatters.py`](../src/notebooklm/_artifact/formatters.py) | Markdown, HTML, and plain text formatters for artifacts. |
 | `_artifact/listing` | [`_artifact/listing.py`](../src/notebooklm/_artifact/listing.py) | Listing and filtering operations for notebook artifacts. |
-| `_row_adapters*` | [`_row_adapters/artifacts.py`](../src/notebooklm/_row_adapters/artifacts.py), [`_row_adapters/chat.py`](../src/notebooklm/_row_adapters/chat.py), [`_row_adapters/labels.py`](../src/notebooklm/_row_adapters/labels.py), [`_row_adapters/notes.py`](../src/notebooklm/_row_adapters/notes.py), [`_row_adapters/research.py`](../src/notebooklm/_row_adapters/research.py), [`_row_adapters/sources.py`](../src/notebooklm/_row_adapters/sources.py) | Wire-shape adapters that wrap raw batchexecute rows (`ArtifactRow`, `LabelRow`, `NoteRow`, `SourceRow`, the `POLL_RESEARCH` rows) and the streamed-chat rows (`AnswerRow`/`CitationRow`/…) behind named accessors so downloads, polling, listing, labels, research, and the chat parser don't open-code positional indices. Strict decode behavior is pinned in `tests/unit/test_row_adapters.py`, `tests/unit/test_chat_row_adapter.py`, and `tests/unit/test_research_row_adapter.py`. |
+| `_row_adapters*` | [`_row_adapters/artifacts.py`](../src/notebooklm/_row_adapters/artifacts.py), [`_row_adapters/chat.py`](../src/notebooklm/_row_adapters/chat.py), [`_row_adapters/labels.py`](../src/notebooklm/_row_adapters/labels.py), [`_row_adapters/notebooks.py`](../src/notebooklm/_row_adapters/notebooks.py), [`_row_adapters/notes.py`](../src/notebooklm/_row_adapters/notes.py), [`_row_adapters/research.py`](../src/notebooklm/_row_adapters/research.py), [`_row_adapters/sources.py`](../src/notebooklm/_row_adapters/sources.py) | Wire-shape adapters that wrap raw batchexecute rows (`ArtifactRow`, `LabelRow`, `NoteRow`, `SourceRow`, the `POLL_RESEARCH` rows, the `SUGGEST_PROMPTS` suggestion rows) and the streamed-chat rows (`AnswerRow`/`CitationRow`/…) behind named accessors so downloads, polling, listing, labels, research, and the chat parser don't open-code positional indices. Strict decode behavior is pinned in `tests/unit/test_row_adapters.py`, `tests/unit/test_chat_row_adapter.py`, `tests/unit/test_notebooks_row_adapter.py`, and `tests/unit/test_research_row_adapter.py`. |
 | `_research_task_parser` | [`_research_task_parser.py`](../src/notebooklm/_research_task_parser.py) | Parses deep-research task results from raw rows. Returns dict-shaped output today; a typed-model migration is not yet complete. |
 | `_types/` | [`_types/`](../src/notebooklm/_types) | Private package holding the dataclass and `Protocol` implementations behind the public `types.py` / per-feature public schemas. Split per domain (`artifacts.py`, `chat.py`, `labels.py`, `mind_maps.py`, `notebooks.py`, `notes.py`, `research.py`, `sharing.py`, `sources.py`, plus `common.py` for shared shapes like `ConnectionLimits`). |
 
@@ -923,12 +923,14 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_row_adapters/artifacts.py` | `ArtifactRow` typed view over raw positional artifact RPC rows, plus `ReportSuggestionRow` over `GET_SUGGESTED_REPORTS` rows |
 | `_row_adapters/chat.py` | Streamed-chat row adapters (`AnswerRow` / `CitationRow` / `CitationDetail` / `PassageRow` / `StreamFrameRow` / `ErrorPayloadRow` / `TextLeafRow`) that centralise the chat wire positions `_chat/wire.py` used to open-code (#1491) |
 | `_row_adapters/labels.py` | `LabelRow` strict typed view over the raw positional label tuple `[name, sources, id, emoji]` (fails loud on schema drift) |
+| `_row_adapters/notebooks.py` | `SUGGEST_PROMPTS` (`otmP3b`) suggestion-row view (`PromptSuggestionRow` / `unwrap_prompt_suggestions`) backing `NotebooksAPI.suggest_prompts` |
 | `_row_adapters/notes.py` | `NoteRow` typed view over raw positional note and mind-map RPC rows |
 | `_row_adapters/research.py` | `ResearchTaskRow` / `ResearchTaskInfoRow` / `ResearchResultRow` typed views over raw positional `POLL_RESEARCH` rows that centralise the single-level positions `_research_task_parser.py` used to open-code (#1501) |
 | `_row_adapters/sources.py` | `SourceRow` / `SourceRowShape` typed views over raw positional source RPC rows |
 | `artifacts.py`, `research.py`, `utils.py` | Public helper modules for artifact retry, research citation/report utilities, and common async helpers |
 | `_research_task_parser.py` | Internal parser for research task result-type selection |
 | `_notebooks.py` | `client.notebooks` API + source-id resolver |
+| `_notebook_payloads.py` | Stable `batchexecute` notebook RPC request payload builders (currently `SUGGEST_PROMPTS`) |
 | `_sources.py` | `client.sources` API |
 | `_artifacts.py` | `client.artifacts` API — owns artifact generation orchestration directly (see ADR-0012) |
 | `_chat/api.py` | `client.chat` API |
@@ -1111,6 +1113,7 @@ src/notebooklm/
 │   ├── artifacts.py             # Artifact + GET_SUGGESTED_REPORTS row adapters (ArtifactRow / ReportSuggestionRow)
 │   ├── chat.py                  # Streamed-chat row adapters (AnswerRow / CitationRow / CitationDetail / PassageRow / StreamFrameRow / ErrorPayloadRow / TextLeafRow) — closes the chat positional-decode perimeter (#1491)
 │   ├── labels.py                # Source-label row adapter
+│   ├── notebooks.py             # SUGGEST_PROMPTS suggestion-row adapter (PromptSuggestionRow / unwrap_prompt_suggestions)
 │   ├── notes.py                 # Note and mind-map row adapter
 │   ├── research.py              # POLL_RESEARCH row adapters (ResearchTaskRow / ResearchTaskInfoRow / ResearchResultRow) — drains the research parser's single-level positional reads (#1501)
 │   └── sources.py               # Source row adapter
@@ -1149,6 +1152,7 @@ src/notebooklm/
 │   ├── sharing.py
 │   └── sources.py
 ├── _notebooks.py                # NotebooksAPI
+├── _notebook_payloads.py        # batchexecute notebook RPC payload builders (SUGGEST_PROMPTS)
 ├── _sources.py                  # SourcesAPI
 ├── _artifacts.py                # ArtifactsAPI
 ├── _research.py                 # ResearchAPI
@@ -1268,8 +1272,10 @@ src/notebooklm/
         ├── _passthrough.py      # Pass-through resolvers handed to the _app cores (REST works in full ids)
         ├── notebooks.py         # /v1/notebooks list/get/create/delete
         ├── sources.py           # /v1/notebooks/{id}/sources list/get/add(url·text·file)/delete + poll-the-resource status
+        ├── notes.py             # /v1/notebooks/{id}/notes list/get/create/update(PUT)/delete — thin adapter over client.notes
         ├── chat.py              # POST /v1/notebooks/{id}/chat — blocking ask (no SSE)
-        └── artifacts.py         # /v1/notebooks/{id}/artifacts list/generate/poll/download (registry-projected poll; server-generated temp download path)
+        ├── artifacts.py         # /v1/notebooks/{id}/artifacts list/generate/poll/download (registry-projected poll; server-generated temp download path)
+        └── share.py             # /v1/notebooks/{id}/share status/public/users/view-level over _app.sharing
 ```
 
 ## ADR cross-references

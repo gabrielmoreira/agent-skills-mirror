@@ -31,6 +31,33 @@ mitre_attack:
 - T1556
 - T1098
 - T1566
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - stealth
+  - positioning
+  techniques:
+  - id: T1660
+    name: Phishing
+    tactic: initial-access
+    source: attack
+  - id: F1006
+    name: Account Takeover
+    tactic: initial-access
+    source: f3
+  - id: T1672
+    name: Email Spoofing
+    tactic: stealth
+    source: attack
+  - id: T1550.001
+    name: 'Use Alternate Authentication Material: Application Access Token'
+    tactic: initial-access
+    source: attack
+  - id: F1005
+    name: Account Manipulation
+    tactic: positioning
+    source: f3
 ---
 
 # Implementing Google Workspace Admin Security

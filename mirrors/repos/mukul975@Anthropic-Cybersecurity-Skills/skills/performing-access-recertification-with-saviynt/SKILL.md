@@ -26,6 +26,34 @@ mitre_attack:
 - T1556
 - T1098
 - T1071
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - positioning
+  - defense-impairment
+  - resource-development
+  techniques:
+  - id: T1586
+    name: Compromise Accounts
+    tactic: resource-development
+    source: attack
+  - id: F1033
+    name: Insider Access Abuse
+    tactic: initial-access
+    source: f3
+  - id: F1005
+    name: Account Manipulation
+    tactic: positioning
+    source: f3
+  - id: F1005.002
+    name: 'Account Manipulation: Add Authorized User'
+    tactic: positioning
+    source: f3
+  - id: F1005.007
+    name: 'Account Manipulation: Enable Account Features'
+    tactic: defense-impairment
+    source: f3
 ---
 
 # Performing Access Recertification with Saviynt

@@ -32,6 +32,23 @@ mitre_attack:
 - T1083
 - T1490
 - T1485
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - monetization
+  techniques:
+  - id: F1018
+    name: Convert to Cryptocurrency
+    tactic: monetization
+    source: f3
+  - id: F1017
+    name: Conversion to Physical Monetary Instruments
+    tactic: monetization
+    source: f3
+  - id: F1025.003
+    name: 'Electronic Funds Transfer: Wire Transfer'
+    tactic: monetization
+    source: f3
 ---
 # Deploying Ransomware Canary Files
 

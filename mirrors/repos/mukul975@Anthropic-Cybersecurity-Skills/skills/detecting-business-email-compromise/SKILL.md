@@ -39,6 +39,38 @@ mitre_attack:
 - T1114.002
 - T1657
 - T1078.004
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - positioning
+  - monetization
+  - stealth
+  techniques:
+  - id: T1672
+    name: Email Spoofing
+    tactic: stealth
+    source: attack
+  - id: F1032
+    name: Impersonate Official
+    tactic: initial-access
+    source: f3
+  - id: F1036
+    name: New Vendor Setup
+    tactic: positioning
+    source: f3
+  - id: F1005.006
+    name: 'Account Manipulation: Change of Payment Details'
+    tactic: positioning
+    source: f3
+  - id: F1025.003
+    name: 'Electronic Funds Transfer: Wire Transfer'
+    tactic: monetization
+    source: f3
+  - id: F1022
+    name: Delete Relevant Emails
+    tactic: stealth
+    source: f3
 ---
 # Detecting Business Email Compromise
 

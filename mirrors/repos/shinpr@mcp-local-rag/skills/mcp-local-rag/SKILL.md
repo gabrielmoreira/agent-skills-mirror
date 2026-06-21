@@ -11,7 +11,7 @@ description: Search, ingest, expand chunk context, or manage local documents via
 |----------|---------------|----------|
 | `ingest_file` | `npx mcp-local-rag ingest <path> [--visual]` | Local files (PDF, DOCX, TXT, MD). CLI for bulk/directory. PDF visual mode: see [Visual content (PDFs)](#visual-content-pdfs). |
 | `ingest_data` | — | Raw content (HTML, text) with source URL |
-| `query_documents` | `npx mcp-local-rag query <text>` | Semantic + keyword hybrid search |
+| `query_documents` | `npx mcp-local-rag query <text>` | Semantic + keyword hybrid search; optional `scope` to limit to a path prefix |
 | `delete_file` | `npx mcp-local-rag delete <path>` | Remove ingested content |
 | `list_files` | `npx mcp-local-rag list` | File ingestion status |
 | `status` | `npx mcp-local-rag status` | Database stats |
@@ -19,7 +19,7 @@ description: Search, ingest, expand chunk context, or manage local documents via
 
 ## Workflow
 
-1. For search requests, formulate a focused hybrid query, choose `limit` by intent, then filter results by score AND topical relevance.
+1. For search requests, formulate a focused hybrid query, choose `limit` by intent, optionally narrow to a corpus/path with `scope`, then filter results by score AND topical relevance.
 2. When a retrieved hit lacks enough surrounding context for a grounded answer, expand only that chunk via `read_chunk_neighbors`.
 3. For ingestion, choose `ingest_file` for local files and `ingest_data` for raw/web content.
 4. For PDFs, ask once about ingest mode unless the current request already specifies one (text-only, visual fast, or visual quality). See decision protocol in Ingestion.
@@ -46,6 +46,18 @@ Lower = better match. Use this to filter noise.
 | Specific answer (function, error) | 5 |
 | General understanding | 10 |
 | Comprehensive survey | 20 |
+
+### Scope (Optional)
+
+Use `scope` when one database mixes multiple corpora and you want results from only one. Pass an absolute path prefix, or a list (results are unioned); it matches a `filePath` equal to or under the prefix.
+
+| Intent | scope |
+|--------|-------|
+| Search everything | omit |
+| One corpus/folder | absolute prefix, e.g. `/Users/me/docs/api` |
+| Several corpora | list of absolute prefixes |
+
+Prefixes must be absolute, in the server's OS path style — relative prefixes match nothing. If the user gives a relative path, derive an absolute prefix from a `filePath` in an earlier `query_documents`/`list_files` result, or omit `scope` when no absolute prefix is known.
 
 ### Query Formulation
 

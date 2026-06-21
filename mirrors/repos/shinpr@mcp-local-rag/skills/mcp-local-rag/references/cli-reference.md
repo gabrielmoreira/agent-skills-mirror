@@ -60,12 +60,13 @@ The CLI accepts only `fast` or `quality` for `--visual-quality`. The MCP `ingest
 ### query
 
 ```bash
-npx mcp-local-rag [global-options] query [--limit <n>] <text>
+npx mcp-local-rag [global-options] query [--limit <n>] [--scope <prefix>]... <text>
 ```
 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--limit <n>` | `10` | Max results (1–20) |
+| `--scope <prefix>` | — | Restrict to an absolute path prefix (matches a filePath equal to or under it). Repeat for multiple prefixes (unioned). Relative prefixes match nothing. |
 
 Output: JSON array to stdout.
 

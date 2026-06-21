@@ -11,6 +11,7 @@ import json
 import logging
 import os
 import re
+import sys
 import tempfile
 import uuid
 from datetime import date, datetime, timedelta, timezone
@@ -418,20 +419,8 @@ def _update_index_entry(index: dict, thesis: dict) -> None:
 # -- Public API ---------------------------------------------------------------
 
 
-def register(state_dir: Path, thesis_data: dict) -> str:
-    """Register a new thesis from provided data.
-
-    Args:
-        state_dir: Path to state/theses/ directory.
-        thesis_data: Partial thesis dict with at least ticker, thesis_type,
-                     thesis_statement, and origin fields.
-
-    Returns:
-        The generated thesis_id.
-
-    Raises:
-        ValueError: If required fields are missing or thesis_type is invalid.
-    """
+def _build_thesis_for_registration(thesis_data: dict) -> dict:
+    """Build and validate the full thesis object without writing it."""
     required = ["ticker", "thesis_type", "thesis_statement"]
     for field in required:
         if not thesis_data.get(field):
@@ -451,7 +440,6 @@ def register(state_dir: Path, thesis_data: dict) -> str:
         raise ValueError("Missing required field: origin.output_file")
 
     # Build thesis from template + provided data
-    state_dir.mkdir(parents=True, exist_ok=True)
     fingerprint = _compute_origin_fingerprint(thesis_data)
 
     thesis = _default_thesis()
@@ -519,6 +507,27 @@ def register(state_dir: Path, thesis_data: dict) -> str:
     # Validate complete thesis BEFORE idempotency check —
     # invalid input must fail even if fingerprint matches an existing thesis.
     _validate_thesis(thesis)
+    return thesis
+
+
+def register(state_dir: Path, thesis_data: dict) -> str:
+    """Register a new thesis from provided data.
+
+    Args:
+        state_dir: Path to state/theses/ directory.
+        thesis_data: Partial thesis dict with at least ticker, thesis_type,
+                     thesis_statement, and origin fields.
+
+    Returns:
+        The generated thesis_id.
+
+    Raises:
+        ValueError: If required fields are missing or thesis_type is invalid.
+    """
+    # Build and validate before any idempotency or persistence checks.
+    thesis = _build_thesis_for_registration(thesis_data)
+    fingerprint = thesis["origin_fingerprint"]
+    state_dir.mkdir(parents=True, exist_ok=True)
 
     # Idempotency: check fingerprint after validation passes
     existing_tid = _find_by_fingerprint(state_dir, fingerprint)
@@ -537,8 +546,8 @@ def register(state_dir: Path, thesis_data: dict) -> str:
     _update_index_entry(index, thesis)
     _save_index(state_dir, index)
 
-    logger.info("Registered thesis %s for %s", thesis_id, thesis["ticker"])
-    return thesis_id
+    logger.info("Registered thesis %s for %s", thesis["thesis_id"], thesis["ticker"])
+    return thesis["thesis_id"]
 
 
 def get(state_dir: Path, thesis_id: str) -> dict:
@@ -1660,4 +1669,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except (FileNotFoundError, json.JSONDecodeError, ValueError) as e:
+        print(f"ERROR: {e}", file=sys.stderr)
+        raise SystemExit(1)

@@ -52,6 +52,39 @@ python3 run_sleep.py --dry-run
 python3 run_sleep.py --tasks tests/research-cron-tasks.json
 ```
 
+## Scheduling
+
+```bash
+python3 slash_sleep.py schedule --hour 3 --minute 17
+python3 slash_sleep.py unschedule
+python3 slash_sleep.py unschedule --all
+```
+
+Installs a nightly cron entry using the shared SkillOpt-Sleep scheduler. This is an alternative to the external `run_sleep_cron.sh` script.
+
+## Alternative backends
+
+While OpenClaw defaults to `openclaw-deepseek` (DeepSeek V4 Pro + Ollama), the shared engine also supports:
+- `--backend mock` — deterministic, no API spend (for testing)
+- `--backend claude` — uses the Claude CLI
+- `--backend codex` — uses the Codex CLI
+- `--backend copilot` — uses the GitHub Copilot CLI
+
+These can be used via the engine directly (`python -m skillopt_sleep`).
+
+## Shared-engine flags
+
+When invoking the engine directly, all standard flags are available:
+- `--source codex` / `--source auto` — harvest from Codex Desktop sessions
+- `--tasks-file PATH` — use a pre-built task set
+- `--target-skill-path PATH` — explicit SKILL.md target
+- `--max-tasks N` / `--max-sessions N` — cap workload
+- `--progress` — print phase progress
+- `--json` — machine-readable output
+- `--auto-adopt` — auto-adopt if gate passes
+
+Config keys: `preferences`, `gate_mode`, `gate_metric`, `dream_rollouts`, `recall_k`, `evolve_memory`, `evolve_skill`.
+
 ## Config (config.json)
 
 Key knobs:

@@ -47,6 +47,7 @@
 | `hPTbtc` | GET_LAST_CONVERSATION_ID | Get most recent conversation ID | `_chat/api.py` |
 | `khqZz` | GET_CONVERSATION_TURNS | Get Q&A turns for a conversation | `_chat/api.py` |
 | `J7Gthc` | DELETE_CONVERSATION | Delete a conversation (web UI's "Delete history") | `_chat/api.py` |
+| `otmP3b` | SUGGEST_PROMPTS | Get AI-suggested prompts for a notebook | `_notebooks.py` |
 | `CYK0Xb` | CREATE_NOTE | Create a note (placeholder) | `_notes.py` |
 | `cYAfTb` | UPDATE_NOTE | Update note content/title | `_notes.py` |
 | `AH0mwd` | DELETE_NOTE | Delete a note | `_notes.py` |
@@ -59,6 +60,7 @@
 | `QA9ei` | START_DEEP_RESEARCH | Start deep research | `_research.py` |
 | `e3bVqc` | POLL_RESEARCH | Poll research status | `_research.py` |
 | `LBwxtb` | IMPORT_RESEARCH | Import research results | `_research.py` |
+| `Zbrupe` | CANCEL_RESEARCH | Cancel in-flight research run | `_research.py` |
 | `rc3d8d` | RENAME_ARTIFACT | Rename artifact | `_artifacts.py` |
 | `Krh3pd` | EXPORT_ARTIFACT | Export to Docs/Sheets | `_artifacts.py` |
 | `RGP97b` | SHARE_ARTIFACT | Legacy notebook/artifact share-link toggle | `_sharing_manager.py` |
@@ -947,6 +949,38 @@ params = [
 
 **Response:** empty `[]` body inside the standard `wrb.fr` envelope. Success
 is signaled by the absence of an error — there is no return payload.
+
+---
+
+### RPC: SUGGEST_PROMPTS (otmP3b)
+
+**Source:** `_notebooks.py::NotebooksAPI.suggest_prompts()`
+
+Returns AI-suggested prompts for a notebook (the live
+`GeneratePromptSuggestions` method) — a general notebook-prompt endpoint whose
+`mode` selects the product surface (default `4` suggests chat questions). Each
+suggestion pairs a short title with a ready-to-send multi-line instruction
+string. Shape live-verified on the consumer/labs cohort (issue #1612) — the
+backend serves it regardless of the web UI's experiment flag.
+
+```python
+params = [
+    # 0: client context (capability envelope; same family as artifact RPCs)
+    [2, None, None, [1, None, None, None, None, None, None, None, None, None, [1]]],
+    notebook_id,                  # 1: Notebook to suggest prompts for
+    [[source_id], ...],           # 2: Source-id wrappers (one [id] per source)
+    mode,                         # 3: REQUIRED int "mode/surface" enum (1..9;
+                                  #    0/omitted -> server INTERNAL). Default 4.
+    None,                         # 4: Reserved (always null)
+    query,                        # 5: Optional free-text steer (or null)
+]
+# source_path = f"/notebook/{notebook_id}"
+```
+
+**Response:** a single-element envelope wrapping the suggestion rows —
+`[[ [title, prompt], [title, prompt], ... ]]`. Each row is decoded to a
+`PromptSuggestion(title, prompt)`. An empty / degenerate payload yields `[]`
+(suggestions are best-effort, so an absent payload does not raise).
 
 ---
 
@@ -2207,6 +2241,45 @@ await rpc_call(
 #   not just the URL sources.
 # - The browser/client flow uses the later polled deep-research task ID here rather
 #   than blindly reusing the original task ID returned by START_DEEP_RESEARCH.
+```
+
+### RPC: CANCEL_RESEARCH (Zbrupe)
+
+**Source:** `_research.py::ResearchAPI.cancel()`
+
+Cancel an in-flight research (DiscoverSources) run. An IN_PROGRESS run
+transitions to a terminal `FAILED` state shortly after this call; cancelling an
+already-terminal run is a silent no-op.
+
+```python
+params = [
+    None,    # 0: optional client context — omitted (matches start/poll)
+    None,    # 1
+    run_id,  # 2: the poll-level run id (== ResearchTask.task_id from poll())
+]
+
+await rpc_call(
+    RPCMethod.CANCEL_RESEARCH,
+    params,
+    source_path=f"/notebook/{notebook_id}",
+)
+
+# Response: [] unconditionally.
+#
+# Notes (all LIVE-VERIFIED end-to-end against a scratch notebook):
+# - Fire-and-forget. The server returns an empty payload and does NOT validate
+#   the run id (a garbage all-zeros id also returns []), so the response carries
+#   no success signal. ``cancel()`` returns None and never raises on an unknown
+#   id. Confirm by polling afterward — a cancelled IN_PROGRESS run reads FAILED
+#   within a few seconds; re-cancelling an already-terminal run is a silent no-op.
+# - run_id is the poll-level id. For DEEP research that is the report_id from
+#   START_DEEP_RESEARCH: deep's task_id is a sessionId that POLL_RESEARCH reports
+#   as NOT_FOUND, and cancelling with it is a SILENT NO-OP (run keeps running) —
+#   only the report_id stops a deep run. For FAST research it is the task_id
+#   (fast returns no report_id). poll().task_id is the safe value for both modes.
+# - notebook_id (source-path) is ROUTING ONLY, not a scoping/authorization
+#   boundary: a valid run_id is cancelled even when source-path names a different
+#   / non-existent / empty notebook. The run id alone identifies the run server-side.
 ```
 
 ---

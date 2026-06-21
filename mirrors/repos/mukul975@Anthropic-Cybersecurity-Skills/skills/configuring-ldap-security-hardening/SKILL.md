@@ -26,6 +26,28 @@ mitre_attack:
 - T1557.001
 - T1040
 - T1078.002
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - positioning
+  techniques:
+  - id: T1110.003
+    name: 'Brute Force: Password Spraying'
+    tactic: initial-access
+    source: attack
+  - id: T1110
+    name: Brute Force
+    tactic: initial-access
+    source: attack
+  - id: F1006
+    name: Account Takeover
+    tactic: initial-access
+    source: f3
+  - id: T1557
+    name: Adversary-in-the-Middle
+    tactic: positioning
+    source: attack
 ---
 # Configuring LDAP Security Hardening
 

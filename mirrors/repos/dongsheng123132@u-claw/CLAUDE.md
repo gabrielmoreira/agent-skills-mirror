@@ -16,11 +16,14 @@ U 盘 = 插上就能用
 
 The repo is NOT a "build tool" or "generator" — it IS the USB structure. `setup.sh` only fills in large deps that can't go in git. After `setup.sh`, the `portable/` folder is directly copyable to a USB drive.
 
-Four distribution forms:
-1. **Portable USB** (`portable/`): Run from USB on existing Mac/Windows, zero install.
-2. **Electron desktop app** (`u-claw-app/`): Install-to-computer version, packaged as DMG/EXE.
-3. **Bootable Linux USB** (`bootable/`): Ventoy + Ubuntu 24.04 — boots any x86_64 PC from USB, no OS needed.
-4. **One-line install** (`install/`): `curl | bash` or `irm | iex` — download and install from network, no USB needed.
+Distribution forms:
+1. **Portable USB** (`portable/`): Run from USB on existing Mac/Windows, zero install. **This is the only form CI publishes** (Windows full zip; Mac runs `setup.sh` on first launch).
+2. **Bootable Linux USB** (`bootable/`): Ventoy + Ubuntu 24.04 — boots any x86_64 PC from USB, no OS needed. Independent module, user-run scripts (not in CI).
+3. **One-line install** (`install/`): `curl | bash` or `irm | iex` — download and install from network, no USB needed. User-run scripts (not in CI).
+
+> **Deprecated (2026-06-19): Electron desktop app** (`u-claw-app/`, DMG/EXE) is **no longer built or published** — it was a weaker duplicate of the commercial ClawX desktop and had cold-start gateway-timeout bugs. Code is kept for archive only; see `u-claw-app/DEPRECATED.md`. The `desktop-windows`/`desktop-mac` CI jobs were removed from `release.yml`.
+>
+> **Removed: `usb-release/`** — an abandoned older predecessor of `portable/` (last touched 2026-04, `core/`+`skills/` layout, referenced nowhere). Deleted 2026-06-19.
 
 ## Development Commands
 
@@ -59,6 +62,14 @@ discovery. They read repo files as strings; they do **not** spawn OpenClaw. Ther
 `package.json` — tests are not run by the release CI (`.github/workflows/release.yml` only
 builds and publishes). Run them locally before pushing launcher changes.
 
+**CI workflows** (`.github/workflows/`): `release.yml` builds Win/Mac portable + desktop and
+publishes a GitHub Release on tag push. `track-upstream.yml` runs daily (cron) — checks
+`npm view openclaw version` against the pinned `OPENCLAW_VERSION`; if upstream is newer it bumps
+both `OPENCLAW_VERSION` files + the desktop shell version (`u-claw-app/package.json` patch),
+commits, and pushes a new `v<shell-version>` tag, which in turn triggers `release.yml`. Supports
+`workflow_dispatch` with `force_version` / `dry_run` inputs. `OPENCLAW_VERSION` is the upstream
+pin; `u-claw-app/package.json` is the shell version (the two are separate).
+
 Testing of the actual runtime should be done in a separate folder or directly on USB. This repo
 stays clean (no node_modules, no app/ runtime).
 
@@ -79,13 +90,13 @@ portable/           THE USB content (= repo + setup.sh downloads)
                     default-config.json    — seed config copied to data/.openclaw/ on first run
                     app/core/ (OpenClaw) + app/runtime/ (Node.js) — downloaded by setup.sh
                     data/.openclaw/openclaw.json — user config (on USB, portable)
-                    skills-cn/             — 13 个中国本地化技能（小红书/微博/B站/抖音/知乎/
-                                             微信公众号/Word/Excel/PPT/天气/搜索/翻译/DeepSeek）
+                    skills-cn/             — 17 个中国本地化技能（小红书/微博/B站/抖音/知乎/
+                                             微信公众号/Word/Excel/PPT/天气/搜索/翻译/DeepSeek/
+                                             图片压缩/PDF工具/二维码/网页转Markdown）
 
-u-claw-app/         Electron desktop app (main.js ~400 lines)
-                    setup.sh / setup.bat for one-click dev environment
+u-claw-app/         [DEPRECATED 2026-06-19, archived — not built/published] Electron desktop app
+                    (main.js ~400 lines). Kept for archive only; see u-claw-app/DEPRECATED.md.
                     Bundles Node.js in resources/runtime/node-{platform}-{arch}
-                    Config stored in app.getPath('userData')/.openclaw/
 
 bootable/           Linux 可启动 U 盘模块（完全独立，不依赖其他模块）
                     4 步 PowerShell 脚本 (Windows 上制作)
@@ -109,7 +120,7 @@ Both portable and desktop versions auto-find a free port in range 18789–18799 
 
 - **Node.js discovery**: Portable looks at `app/runtime/node-mac-arm64/bin/node`; Electron looks at `resources/runtime/node-{platform}-{arch}` then falls back to system `node`
 - **China mirrors**: All downloads use `npmmirror.com` — Node.js binaries from `npmmirror.com/mirrors/node`, npm packages from `registry.npmmirror.com`
-- **`OPENCLAW_VERSION` file**: single source of truth for the bundled OpenClaw runtime version (e.g. `2026.6.6`). CI reads it to pin the npm install; it's copied into `portable/` so USB users / `check-update.mjs` can compare installed vs latest. Bump this file to upgrade.
+- **`OPENCLAW_VERSION` file**: single source of truth for the bundled OpenClaw runtime version (e.g. `2026.6.8`). CI reads it to pin the npm install; it's copied into `portable/` so USB users / `check-update.mjs` can compare installed vs latest. Bump this file to upgrade.
 - **Environment variables**: `OPENCLAW_HOME`, `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH` control where OpenClaw reads config
 - **macOS quarantine**: Mac scripts run `xattr -rd com.apple.quarantine` to remove Gatekeeper blocks
 - **Config format**: `{"gateway":{"mode":"local","auth":{"token":"uclaw"}},"models":{"mode":"merge","providers":{"xxx":{...}}},"agents":{"defaults":{"model":{"primary":"provider/model"}}}}`

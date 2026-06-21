@@ -1,6 +1,6 @@
 ---
 name: daytona-electron-test
-description: "Daytona Electron sandbox testing with CDP/noVNC. Use when the user says test on Daytona, run Electron on Daytona, Daytona dry run, test Electron remotely, reproduce on Daytona, or validate a real desktop flow."
+description: "do e2e tests, run e2e, test on Daytona, run Electron on Daytona, validate feature, real desktop flow, CDP/noVNC, PR proof. Launch and drive OpenWork Electron in Daytona with validated frame evidence."
 ---
 
 # Skill: Daytona Electron Test

@@ -51,5 +51,6 @@ Single chunks may lack context ("as described above").
 
 1. Rephrase query (alternative terms)
 2. Broaden scope
-3. Check ingestion (`list_files`)
-4. Inform user: no matching content
+3. If `scope` was passed, confirm it is an absolute path prefix — a relative prefix silently matches nothing
+4. Check ingestion (`list_files`)
+5. Inform user: no matching content

@@ -1,6 +1,6 @@
 ---
 name: run-evals
-description: Run OpenWork UI evals on a Daytona sandbox or local Electron instance. Handles sandbox creation, service startup, and eval execution via CDP browser tools.
+description: do e2e tests, run e2e, validate feature, prove it works, PR proof, frame proof, pnpm evals. Runs OpenWork UI evals on Daytona or local Electron with CDP and validated HTML frame evidence.
 ---
 
 # Skill: Run Evals
@@ -9,9 +9,9 @@ Run the OpenWork UI evaluation flows against a real Electron app. Prefer a fresh
 
 ## When to use
 
-- User says "run evals on Daytona" or "run this flow on Daytona"
-- User wants to verify a UI change end-to-end
-- User wants to test the onboarding, session, or settings flows
+- User says "do e2e tests for <feature>", "run e2e", "validate feature", "prove it works", "PR proof", "frame proof", or "run evals on Daytona".
+- User wants to verify a UI change end-to-end against the real Electron app.
+- User wants to test onboarding, session, settings, cloud, Marketplace, provider, or voice flows.
 
 ## Prerequisites
 
@@ -108,9 +108,9 @@ pnpm evals --list
 pnpm evals --flow <flow-id> --cdp-url <printed-electron-cdp-url>
 ```
 
-The runner uses CDP directly, produces machine-checkable assertions, and writes
-`report.json`, `report.md`, screenshots, and a browseable `index.html` frame
-proof under `evals/results/<run-id>/`.
+The runner uses CDP directly, produces machine-checkable assertions, validates
+proof screenshots, and writes `report.json`, `report.md`, screenshots, and a
+browseable `index.html` frame proof under `evals/results/<run-id>/`.
 
 If no coded flow exists yet for the UI behavior under test, add or adapt a
 `evals/flows/*.flow.mjs` file and use the runner helpers:
@@ -118,9 +118,16 @@ If no coded flow exists yet for the UI behavior under test, add or adapt a
 - `ctx.clickText("Button label")`
 - `ctx.fill("input-or-textarea-selector", "value")`
 - `ctx.waitFor("JavaScript condition")`
-- `ctx.waitForText("Visible text")`
+- `ctx.expectText("Visible text")`
+- `ctx.expectNoText("Error text")`
+- `ctx.expectHashIncludes("/route")`
 - `ctx.control("action.id", args)`
-- `ctx.screenshot("checkpoint-name")`
+- `ctx.prove("claim", { action, assert, screenshot })`
+- `ctx.screenshot("checkpoint-name", { claim, requireText, rejectText, hashIncludes })`
+
+For PR evidence, do not leave screenshots as a loose gallery. Each important
+frame should have a claim and validation checks. If screenshot validation fails,
+repair the visible state and recapture before reporting `Passed`.
 
 Use manual browser tools only to debug/prototype a flow or when product UI
 cannot expose the needed state yet. Do not report ad hoc browser calls as the
@@ -138,7 +145,8 @@ For each step:
 5. Capture screenshot/recording evidence when the visible state matters.
 
 Use the `daytona-flow-validator` skill for pass/fail decisions. If there is no
-post-action assertion, report `Incomplete`, not `Passed`.
+post-action assertion or the frame evidence does not visibly support the claim,
+report `Incomplete`, not `Passed`.
 
 ### Manual browser-tool fallback techniques
 

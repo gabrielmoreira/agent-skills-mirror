@@ -26,6 +26,29 @@ mitre_attack:
 - T1110
 - T1556
 - T1098
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  - positioning
+  - defense-impairment
+  techniques:
+  - id: F1006
+    name: Account Takeover
+    tactic: initial-access
+    source: f3
+  - id: T1110.003
+    name: 'Brute Force: Password Spraying'
+    tactic: initial-access
+    source: attack
+  - id: F1005
+    name: Account Manipulation
+    tactic: positioning
+    source: f3
+  - id: F1005.002
+    name: 'Account Manipulation: Add Authorized User'
+    tactic: defense-impairment
+    source: f3
 ---
 
 # Implementing Azure AD Privileged Identity Management

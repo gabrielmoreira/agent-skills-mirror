@@ -127,6 +127,11 @@ See [Configuration](configuration.md) for full env-var precedence and CI/CD setu
 | `ask --request-timeout N` | Per-invocation HTTP request/read timeout in seconds for chat. Defaults to the library chat timeout. `--timeout` is a back-compat alias for the same flag. | `notebooklm ask "long prompt" --request-timeout 120` |
 | `ask --save-as-note` | Save response as a note. When the answer contains `[N]` citations, the saved note preserves interactive hover-anchored citation links matching the NotebookLM web UI's "Save to note" behavior ([issue #660](https://github.com/teng-lin/notebooklm-py/issues/660)). Answers without citations fall back to a plain-text note. | `notebooklm ask "Explain X" --save-as-note` |
 | `ask --save-as-note --note-title` | Save response with custom note title. The NotebookLM server may apply smart-title generation for citation-rich saves and override the requested title; the success message reflects what the server actually stored. | `notebooklm ask "Explain X" --save-as-note --note-title "Title"` |
+| `suggest-prompts` | Get AI-suggested prompts for the notebook (each a title plus a ready-to-send instruction for `ask`) | `notebooklm suggest-prompts` |
+| `suggest-prompts --mode N` | Select the suggestion surface (1-9, default 4): 4=chat questions, 5=critique, 6=audio/debate, 8=quiz, 9=flashcards. Out-of-range exits 1. | `notebooklm suggest-prompts --mode 8` |
+| `suggest-prompts --query TEXT` | Free-text steer for the kind of prompts to suggest | `notebooklm suggest-prompts --query "key risks"` |
+| `suggest-prompts -s <id>` | Limit to specific source IDs (repeatable; defaults to all sources) | `notebooklm suggest-prompts -s src1 -s src2` |
+| `suggest-prompts --json` | Machine-readable output (`{notebook_id, suggestions, count}`) | `notebooklm suggest-prompts --json` |
 | `configure --mode` | Set predefined chat mode (`default`, `learning-guide`, `concise`, `detailed`) | `notebooklm configure --mode learning-guide` |
 | `configure --persona` | Set custom persona prompt (up to 10,000 chars) | `notebooklm configure --persona "Act as a tutor"` |
 | `configure --response-length` | Response verbosity (`default`, `longer`, `shorter`) | `notebooklm configure --response-length longer` |
@@ -199,6 +204,7 @@ All `label` subcommands accept `-n/--notebook ID` (resolves via flag > `NOTEBOOK
 |---------|-----------|---------|---------|
 | `status` | - | `-n/--notebook`, `--json` | `research status` |
 | `wait` | - | `-n/--notebook`, `--timeout`, `--interval`, `--import-all`, `--cited-only`, `--json` | `research wait --import-all --cited-only` |
+| `cancel` | `RUN_ID` | `-n/--notebook`, `--json` | `research cancel <run_id>` |
 
 ### Generate Commands (`notebooklm generate <type>`)
 
@@ -962,6 +968,34 @@ notebooklm research wait --json --import-all
 ```
 
 **Use case:** Primarily for LLM agents that need to wait for non-blocking deep research started with `source add-research --no-wait`.
+
+### Research: `cancel`
+
+Cancel an in-flight research run.
+
+> **Python equivalent:** [`client.research.cancel(nb_id, run_id)`](python-api.md#researchapi-clientresearch).
+
+```bash
+notebooklm research cancel RUN_ID [OPTIONS]
+```
+
+**Arguments:**
+- `RUN_ID` - The run's poll-level id — the `task_id` shown by `research status`. For **deep** research this is the `report_id` returned by `source add-research`, **not** the deep start `task_id` (which is a sessionId and will not cancel anything).
+
+**Options:**
+- `-n, --notebook ID` - Notebook ID (uses current if not set)
+- `--json` - Output as JSON
+
+**Examples:**
+```bash
+# Cancel a run (find the run id with `research status`)
+notebooklm research cancel <run_id>
+
+# JSON output for agent workflows
+notebooklm research cancel <run_id> --json
+```
+
+> **Fire-and-forget:** the server reports neither success nor failure for a cancel and does not validate the run id, so this command cannot confirm the cancel took effect. Run `research status` afterward — a cancelled in-progress run shows as `failed`.
 
 ### Generate: `audio`
 

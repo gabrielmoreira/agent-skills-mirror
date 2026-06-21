@@ -52,7 +52,7 @@ bash "$SKILLOPT_SLEEP_REPO/plugins/run-sleep.sh" run --project "$(pwd)" --source
 bash "$SKILLOPT_SLEEP_REPO/plugins/run-sleep.sh" adopt --project "$(pwd)"
 ```
 
-Actions are `status`, `harvest`, `dry-run`, `run`, and `adopt`.
+Actions are `status`, `harvest`, `dry-run`, `run`, `adopt`, `schedule`, and `unschedule`.
 
 - Default backend is `mock`, which is deterministic and spends no API budget.
 - `--backend codex` uses the user's Codex budget for real improvement.
@@ -60,6 +60,43 @@ Actions are `status`, `harvest`, `dry-run`, `run`, and `adopt`.
   use `--codex-home /path/to/.codex` if the archive lives elsewhere.
 - Keep `dry-run --backend mock` as the first smoke check unless the user
   explicitly asked for a real optimization run.
+
+### Scheduling
+
+```bash
+bash "$SKILLOPT_SLEEP_REPO/plugins/run-sleep.sh" schedule --project "$(pwd)" --hour 3 --minute 17
+bash "$SKILLOPT_SLEEP_REPO/plugins/run-sleep.sh" unschedule --project "$(pwd)"
+```
+
+Installs a nightly cron entry. `unschedule --all` removes every managed entry.
+
+### All backends
+
+- `--backend mock` — deterministic, no API spend (default)
+- `--backend claude` — uses the Claude CLI
+- `--backend codex` — uses the Codex CLI
+- `--backend copilot` — uses the GitHub Copilot CLI
+
+### Additional flags
+
+| Flag | Description |
+|------|-------------|
+| `--auto-adopt` | Auto-adopt if the gate passes (default: stage only) |
+| `--edit-budget N` | Max bounded edits per night (default: 4) |
+| `--lookback-hours N` | Harvest window in hours (default: 72) |
+| `--json` | Machine-readable JSON output |
+
+### Config keys (`~/.skillopt-sleep/config.json`)
+
+- **`preferences`** — free-text house rules for the optimizer
+- **`gate_mode`** — `on` (validation-gated, default) or `off` (greedy)
+- **`gate_metric`** — `hard` | `soft` | `mixed` (default)
+- **`dream_rollouts`** — >1 for multi-rollout contrastive reflection
+- **`recall_k`** — >0 recalls similar past tasks from the archive
+
+### Memory consolidation
+
+The sleep cycle consolidates both **memory** (AGENTS.md / CLAUDE.md) and **skills** (SKILL.md) by default. Each is independently toggleable via `evolve_memory` / `evolve_skill` config keys. Both are gated by the same held-out validation score.
 
 ## Steps
 

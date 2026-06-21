@@ -30,6 +30,35 @@ mitre_attack:
 - T1556
 - T1098
 - T1566
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - initial-access
+  techniques:
+  - id: T1660
+    name: Phishing
+    tactic: initial-access
+    source: attack
+  - id: T1557
+    name: Adversary-in-the-Middle
+    tactic: initial-access
+    source: attack
+  - id: T1110.004
+    name: 'Brute Force:  Credential Stuffing'
+    tactic: initial-access
+    source: attack
+  - id: T1111
+    name: Multi-Factor Authentication Interception
+    tactic: initial-access
+    source: attack
+  - id: F1006
+    name: Account Takeover
+    tactic: initial-access
+    source: f3
+  - id: F1004
+    name: Access with Stolen Session Cookie
+    tactic: initial-access
+    source: f3
 ---
 
 # Implementing Passwordless Auth with Microsoft Entra

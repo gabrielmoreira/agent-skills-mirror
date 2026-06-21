@@ -30,6 +30,33 @@ mitre_attack:
 - T1556
 - T1098
 - T1003
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - reconnaissance
+  - initial-access
+  - positioning
+  techniques:
+  - id: T1555.005
+    name: 'Credentials from Password Stores: Password Managers'
+    tactic: reconnaissance
+    source: attack
+  - id: T1110
+    name: Brute Force
+    tactic: initial-access
+    source: attack
+  - id: F1006
+    name: Account Takeover
+    tactic: initial-access
+    source: f3
+  - id: F1006.002
+    name: 'Account Takeover: Exposed Login Credential'
+    tactic: initial-access
+    source: f3
+  - id: F1005
+    name: Account Manipulation
+    tactic: positioning
+    source: f3
 ---
 
 # Implementing Delinea Secret Server for PAM

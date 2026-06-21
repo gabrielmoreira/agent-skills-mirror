@@ -4,6 +4,53 @@
 
 ---
 
+## v0.3.132 / extension v0.3.86: 初始化向导与推荐语气修复（2026-06-21）
+
+后端源码走 `backend-v0.3.132`，浏览器插件走 `extension-v0.3.86`。桌面安装包未改动；如冻结包用户需要同步本次 Web / 后端修复，可后续单独打 `desktop-v0.3.132`。
+
+- **图形化初始化来源勾选即生效**：`/setup/`、桌面 Web 和插件推荐 tab 不再把“小红书 / 抖音 / YouTube / X 已勾选但未在设置开启”当作启动前错误；显式 `sources` 现在是本轮 guided init 的 opt-in，并 best-effort 写回 `sources.<platform>.enabled=true`。前置清单同步显示“本次初始化来源”，避免首启默认勾选后仍报未开启。
+- **`/setup/` 保存模型配置不再提前启动画像 / 探针**：安装包首启向导第一页把“模型名”移出高级折叠并自动填入推荐默认模型；点击“保存并继续”只保存 LLM/provider/model 并热重载组件，同时用 `suppress_background_llm_work=true` 暂停 post-reload speculator、画像/探针和补池后台工作。只有第二页选择来源并点击“开始初始化”后才真正进入四阶段 guided init，初始化终态后再恢复后台循环。
+- **PC setup / Web 初始化完成态等首批内容池**：安装包 `/setup/` 和桌面 Web `/web` 不再只凭 `init-status.initialized=true` 就进入完成态；收到 `init_completed` 后会继续读取 `/api/runtime-status`，只有 `pool_available_count>0` 或已有推荐数时才算首轮初始化完成。画像已生成但首批内容还没入池时，PC 侧会停在“整理首轮内容池”进度态，和浏览器插件“有内容可刷后再进入推荐体验”的语义对齐。
+- **首轮 discovery 冷启动多样性保护**：guided init 的空池首轮补货和统一 keyword planner 的空池首批跨平台关键词都会构造 `cold_start` pool snapshot，把画像里最高权重兴趣当作“软避让”而不是厌恶项，同时把次级兴趣 / 兴趣域作为 `prefer_axes` 注入搜索词 prompt；首批 query / keywords 保留少量强兴趣入口，但至少一半预算覆盖其它画像相关方向，降低各策略 / 各平台同时涌向单一高权重 topic 的概率。
+- **Discovery batch evaluator 结构化输出更稳**：批量内容评估 prompt 改为顶层 JSON object + `results` 数组，和 OpenAI-compatible 的 `json_object` 模式一致；解析器同时兼容 `{"BVxxx": {"score": ...}}` 这类按内容 ID 映射的返回，并在降级逐条评估时记录异常类型与原因，便于定位 provider 偶发结构漂移。
+- **推荐池 admission 取消 observed 特权**：新增 `[discovery].admission_min_score=0.65` 作为统一入池最低分；B 站扩展搜索、小红书 observed 和其它插件 / 来源候选都必须先过 evaluator 分数门。数据库读取、suppressed 复活、delight 候选和 `/api/recommendations` 历史输出同步加低分过滤，并在初始化时压制旧低分 `content_cache` / `recommendations` 脏数据。
+- **B 站搜索插件兜底不再只等全局冷却**：单个 `v_voucher` 关键词耗尽仍不会触发 API 全局 cooldown、也不会让 explore 一起停摆，但会打开短期 DOM fallback 信号；扩展在线且 B 站池子低于配额时，runtime producer 可以立即入队浏览器真实搜索页任务补货。
+- **推荐表达语气固定跟随用户画像**：推荐文案不再因为内容 `style_key` 是日常、轻聊或审美浏览就把语气自动调轻；`style_key` 只影响推荐理由切入角度。缺省推荐 tone 调整为 `balanced / warm / low / direct`，避免冷启动时过冷或过油。
+- **PC Web 空推荐不再显示演示卡片**：桌面 Web `/web` 初始推荐列表改为空数组，且 `/api/recommendations` 返回空列表时会显式清空当前卡片，避免候选池为 0 时露出前端内置 demo 内容；插件 side panel 原本已使用空数组初始化，不受影响。
+
+## v0.3.131 / extension v0.3.85: 多源评估指标与封面图评估（2026-06-20）
+
+后端源码走 `backend-v0.3.131`，浏览器插件走 `extension-v0.3.85`。桌面安装包未改动；如冻结包用户需要同步本次 Web / 后端修复，可后续单独打 `desktop-v0.3.131`。
+
+- **各来源候选补齐互动指标**：`DiscoveredContent`、`discovery_candidates`、`content_cache` 与来源归一化链路新增观看、点赞、收藏、评论、分享、弹幕、转推、书签等字段；B 站 / 小红书 / 抖音 / YouTube / X 能取到的指标会随候选进入统一 evaluator。batch prompt 同时带 `tags/body_text`，并明确互动指标只作辅助，不能用热度覆盖内容与画像的真实匹配。
+- **可选多模态 discovery evaluator**：新增 `[discovery].multimodal_evaluation_enabled` 及 batch/图片压缩参数；设置页可开关。开启且当前 evaluation 路由支持图像输入时，候选封面优先从 `data/image-cache/` 读取，未命中才经白名单抓取、缩放和 JPEG 压缩后作为 image input 进入同一 batch evaluator；小红书已缓存头图不再依赖评估时原 CDN token 仍有效。模型不支持或图片准备失败时自动退回纯文本 + 指标评估。
+- **多模态 evaluator 明确图片绑定规则**：batch prompt 现在要求模型把 `content_batch[].cover_image_ref = "cover:<content_id>"` 与同一 user message 里对应的图片锚点匹配；有图条目必须结合封面图判断主题、风格、视觉质感和点击诱因，没有 `cover_image_ref` 的条目只按文本字段评估，避免把第 N 张图和候选顺序隐式绑定。
+- **浏览器扩展 DOM 采集补齐指标**：小红书被动卡片和抖音 DOM / passive fetch 路径会解析可见的浏览、点赞、收藏、评论、分享数字并回传后端，补齐插件来源候选的评估上下文。
+- **抖音 hot discovery 恢复真实召回**：hot board 的 `group_id` 会作为 `seed_aweme_id` 透传到插件任务；扩展后台优先执行带 seed 的热词，并在 DOM 点击 / 被动监听不足时用已登录页面的 related API bridge 拉取 `dy_hot` 候选。MAIN-world fetch tap 同时兼容抖音新搜索页的 `/general/search/stream/` chunked JSON 响应；真实环境中 search 若仍返回 `search_nil_info.search_nil_item="hit_shark"`，会继续按抖音反爬空结果处理。
+- **抖音 search 任务补齐真实导航校验**：content script 在首页搜索框输入关键词并点击搜索后，会等待 URL 进入 `/jingxuan/search/<keyword>` 等真实搜索结果路由；任务 debug 新增 `search_navigation_ok` / `search_submit_method`，避免把“只弹出搜索建议或登录弹窗”误报成搜索页已打开。
+- **`style_key` 收敛为观看模式词表**：发现 / 推荐链路的 `style_key` 从题材式风格名收敛为 13 个封闭观看状态（如 `deep_focus`、`quick_scan`、`ambient_companion`、`curiosity_spark`）；LLM evaluator prompt、搜索 / 关键词 prompt hints、推荐表达 prompt、规则兜底、推荐兜底文案和轻入口补位同步更新。历史安装的本地数据库会在启动时把已知旧 `style_key` 物理迁移到新 key，运行时也会兼容旧缓存 key。
+- **README / 首页同步 release 结构**：用户下载说明明确 `openbiliclaw-v*` 是聚合 Latest Release，`backend-v*` / `extension-v*` / `desktop-v*` 是自动化频道；桌面安装包可能落后于后端源码版本，以聚合页 `Current Channels` 和附带 `.dmg` / `.exe` 为准。
+- **插件设置补齐封面图评估开关**：浏览器插件 side panel 的调度 tab 现在也能开关 `[discovery].multimodal_evaluation_enabled`，并编辑图文 batch、封面最大边、JPEG 质量和图片准备超时；保存时保留既有 discovery 配置，避免插件与桌面 Web 设置面脱节。
+- **移动 Web 添加到主屏幕补强**：`/m/` manifest 增加 `id` / `scope` / maskable 图标声明，HTML head 增加 `mobile-web-app-capable`、iOS Web Clip 标题与 touch icon；新增后端静态资源契约测试，并修复 degraded 模式下 `/favicon.ico` 被 503 拦截的问题，确保手机保存桌面图标时使用稳定名称、图标和启动路径（不引入 service worker / 离线缓存）。README / README_EN 和官网首页同步补充 iOS「添加到主屏幕」与 Android「安装应用 / 添加到主屏幕」使用说明。
+- **补充机会系统统一规格草案**：新增 `docs/plans/2026-06-18-opportunity-system-spec.md`，沉淀画像准确性、OpenCloud / HMA / WorkValue 客户端边界与后续机会系统路线。
+
+## v0.3.130: DeepSeek reasoning_effort 配置保存修复（2026-06-20）
+
+后端源码改动，浏览器插件与桌面安装包未改动。
+
+- **插件 / PC Web 设置页关闭 DeepSeek thinking 立即生效**：`PUT /api/config` 现在允许 `llm.deepseek.reasoning_effort=""` 覆盖已有 `"max"` / `"high"`，并且 `save_config()` 会显式写出 `reasoning_effort = ""`，避免重启后因缺省值回落到 `"max"`。新增 API 与配置 round-trip 回归测试覆盖该路径。
+
+## v0.3.129 / extension v0.3.84: 跨平台行为捕捉统一（2026-06-19）
+
+后端源码走 `backend-v0.3.129`，浏览器插件走 `extension-v0.3.84`。桌面安装包未改动；如冻结包用户需要同步本次捕捉链路修复，可后续单独打 `desktop-v0.3.129`。
+
+- **事件入口批处理不再被单条坏事件打崩**：`POST /api/events` 继续返回 `accepted`，并新增 `rejected` 明细；raw `dislike` 会统一规范为 `feedback` + `feedback_type=dislike`，未知事件只拒绝该条，不再让整批 500 后被插件重试造成重复写入。
+- **浏览器插件跨平台行为采集补齐统一 adapter**：B 站、小红书、抖音、YouTube 和 X 都走同一 `PlatformAdapter` / generic collector 事件形态；抖音和 YouTube 除原有 bootstrap / task executor 外，也开始上报普通页面行为事件。
+- **统一动作语义和 flush 策略**：B 站补 `follow/share`，小红书补 `share`，抖音 / YouTube 覆盖 `like/favorite/comment/share/follow/dislike`；所有平台 `dislike` 只发送 `feedback`。`follow/share/view` 和带视频停留 metadata 的 `click` 现在会即时 flush，高频 `scroll/hover/snapshot` 仍缓冲去重。
+- **真实站点嵌套按钮命中修复**：generic collector 的 click action 识别不再只看原始 `event.target`，会从内部 `span/svg` 向上解析动作元素，并优先选择最近的 `button/[role=button]`，再回退到 `a/[aria-label]/[title]`，避免 X 这类“整张推文卡片也是链接”的 DOM 把 Share 误判成 Reply；X 的 DOM fallback 同时补齐 `aria-label="Share"` 到 `share` 事件的映射。真实 B 站、YouTube、X 视频 / 推文页点击分享按钮已验证会同时写入普通 `click` 和强信号动作事件。
+- **新增本机扩展驱动 E2E 捕捉自检**：后端新增 local-only `POST /api/extension/e2e/run` 与 `POST /api/extension/e2e/result`，通过 `/api/runtime-stream` 投递 `extension_e2e_run` 给已安装插件；service worker 打开或复用抖音 / 小红书 / X 标签页，content executor 只执行白名单 DOM 操作（snapshot / scroll / click / share 等），不直接伪造 `BEHAVIOR_EVENT`。后端按运行窗口校验真实 `/api/events` 入库结果；会改变平台状态的 like / favorite / follow / comment / repost 需显式 `allow_state_changing=true`，普通 share 不再被 X 转推 mutation 误匹配。
+- **真实三平台捕捉 E2E 续修并通过**：content collector 的 click 监听切到 capture 阶段，避免 X / React 控件在冒泡阶段 `stopPropagation` 后漏掉 Share；scroll 同时覆盖页面和内部滚动容器，解决抖音 / 小红书 feed 容器滚动不进事件的问题。E2E runner 复用同域 tab 时会先归位到平台稳定入口，避免小红书 404 / 风控页或 X 图片预览页污染测试；执行结束后先等待并 flush buffer，再回传 result。真实已登录 Chrome 插件环境下，抖音 / 小红书 / X 的 `snapshot/scroll/click/share` 共 12 个动作全部 extension 执行成功且后端 `/api/events` 匹配成功。
+
 ## v0.3.128 / extension v0.3.83: 抖音 DOM-first discovery（2026-06-18）
 
 后端源码走 `backend-v0.3.128`，浏览器插件走 `extension-v0.3.83`。桌面安装包未改动；如冻结包用户需要同步本次 Web / 后端修复，可后续单独打 `desktop-v0.3.128`。

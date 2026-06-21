@@ -26,6 +26,38 @@ mitre_attack:
 - T1566.001
 - T1566.002
 - T1598.003
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - reconnaissance
+  - initial-access
+  - stealth
+  - resource-development
+  techniques:
+  - id: T1598
+    name: Phishing for Information
+    tactic: reconnaissance
+    source: attack
+  - id: T1660
+    name: Phishing
+    tactic: initial-access
+    source: attack
+  - id: T1672
+    name: Email Spoofing
+    tactic: stealth
+    source: attack
+  - id: F1032
+    name: Impersonate Official
+    tactic: initial-access
+    source: f3
+  - id: T1583.001
+    name: 'Acquire Infrastructure: Domains'
+    tactic: resource-development
+    source: attack
+  - id: F1020.002
+    name: 'Create Fake Materials: Fake Website'
+    tactic: resource-development
+    source: f3
 ---
 
 # Analyzing Email Headers for Phishing Investigation

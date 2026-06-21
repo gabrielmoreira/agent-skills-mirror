@@ -33,6 +33,33 @@ mitre_attack:
 - T1534
 - T1036
 - T1027
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - reconnaissance
+  - resource-development
+  - initial-access
+  techniques:
+  - id: T1598
+    name: Phishing for Information
+    tactic: reconnaissance
+    source: attack
+  - id: T1660
+    name: Phishing
+    tactic: initial-access
+    source: attack
+  - id: F1020.002
+    name: 'Create Fake Materials: Fake Website'
+    tactic: resource-development
+    source: f3
+  - id: T1583.001
+    name: 'Acquire Infrastructure: Domains'
+    tactic: resource-development
+    source: attack
+  - id: F1006.002
+    name: 'Account Takeover: Exposed Login Credential'
+    tactic: initial-access
+    source: f3
 ---
 # Detecting QR Code Phishing with Email Security
 

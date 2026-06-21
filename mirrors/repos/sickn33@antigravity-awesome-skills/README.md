@@ -1,4 +1,4 @@
-<!-- registry-sync: version=12.10.0; skills=1678; stars=41141; updated_at=2026-06-19T20:04:11+00:00 -->
+<!-- registry-sync: version=13.0.0; skills=1678; stars=41173; updated_at=2026-06-20T08:17:54+00:00 -->
 [![Antigravity Awesome Skills hero](assets/aas-readme-hero.jpeg)](https://github.com/sickn33/antigravity-awesome-skills)
 
 # 🌌 Antigravity Awesome Skills: 1,678+ Agentic Skills for Claude Code, Gemini CLI, Cursor, Copilot & More
@@ -27,7 +27,7 @@ The canonical project page is the GitHub repository at <https://github.com/sickn
 [![OpenCode](https://img.shields.io/badge/OpenCode-CLI-gray?style=for-the-badge)](https://github.com/opencode-ai/opencode)
 [![Antigravity](https://img.shields.io/badge/Antigravity-AI%20IDE-red?style=for-the-badge)](https://github.com/sickn33/antigravity-awesome-skills)
 
-**Current release: V12.10.0.** Trusted by 41k+ GitHub stargazers, this repository combines official and community skill collections with bundles, workflows, installation paths, and docs that help you go from first install to daily use quickly.
+**Current release: V13.0.0.** Trusted by 41k+ GitHub stargazers, this repository combines official and community skill collections with bundles, workflows, installation paths, and docs that help you go from first install to daily use quickly.
 
 ## Why This Repo
 
@@ -102,18 +102,22 @@ All specialized plugins are generated as Claude Code and Codex plugin bundles. F
 
 | Plugin | Skills | Best for |
 | --- | ---: | --- |
-| AAS Web App Builder | 9 | Frontend and full-stack developers shipping modern web apps. |
-| AAS Product Design Studio | 8 | Product UI, brand, portfolio, and richer visual work. |
-| AAS Security Engineer | 9 | Authorized security testing, audit, and hardening. |
-| AAS Secure App Builder | 8 | Developers who want security embedded while building features. |
-| AAS Documents & Presentations | 8 | Office files, document conversion, decks, and slide workflows. |
-| AAS Data Analytics | 8 | Product analytics, SQL, dashboards, and experiments. |
-| AAS Agent & MCP Builder | 9 | Agentic apps, MCP tools, RAG systems, and evaluation loops. |
+| AAS Web App Builder | 10 | Frontend and full-stack developers shipping modern web apps. |
+| AAS Product Design Studio | 10 | Product UI, brand, portfolio, accessibility, and richer visual work. |
+| AAS Security Engineer | 10 | Authorized security testing, audit, and hardening. |
+| AAS Secure App Builder | 10 | Developers who want security embedded while building features. |
+| AAS Documents & Presentations | 9 | Office files, document conversion, decks, and slide workflows. |
+| AAS Data Analytics | 10 | Product analytics, SQL, dashboards, and experiments. |
+| AAS Agent & MCP Builder | 10 | Agentic apps, MCP tools, RAG systems, and evaluation loops. |
 | AAS OSS Maintainer | 10 | PRs, releases, reviews, and contributor handoffs. |
-| AAS QA & Test Automation | 9 | Test suites, browser automation, and QA stabilization. |
-| AAS DevOps & Cloud | 9 | Infrastructure, deployments, and operational workflows. |
+| AAS QA & Test Automation | 10 | Test suites, browser automation, and QA stabilization. |
+| AAS DevOps & Cloud | 10 | Infrastructure, deployments, and operational workflows. |
+| AAS Accessibility & Inclusive UX | 8 | WCAG audits, automated scans, screen-reader checks, and accessible QA. |
+| AAS API Platform Builder | 10 | API design, OpenAPI contracts, auth, security, load tests, and observability. |
+| AAS SaaS Launch & Revenue | 10 | SaaS MVPs, pricing, payments, analytics, lifecycle, referrals, and SEO. |
+| AAS AI Product & Evaluation Ops | 10 | AI product metrics, evals, tracing, experiments, and model-quality loops. |
 
-Next-wave plugins cover marketing/SEO/growth, automation, observability/incident response, Python APIs, and mobile apps.
+Next-wave plugins cover marketing/SEO/growth, automation, observability/incident response, Python APIs, mobile apps, data engineering, privacy/compliance, and localization/international growth.
 
 - Read the [specialized plugin roadmap](docs/users/specialized-plugin-roadmap.md).
 - Read the [plugin guide for Claude Code and Codex](docs/users/plugins.md).
@@ -151,7 +155,7 @@ Use the table above for install targets. Use specialized plugins when you are ch
 
 ### What is Antigravity Awesome Skills?
 
-**Antigravity Awesome Skills** (Release 12.10.0) is a large, installable skill library for AI coding assistants. It packages 1,678+ reusable `SKILL.md` playbooks, specialized plugins, bundles, workflows, generated catalogs, and a CLI installer so Claude Code, Codex CLI, Cursor, Gemini CLI, Antigravity, and similar tools can reuse proven operating instructions instead of one-off prompts.
+**Antigravity Awesome Skills** (Release 13.0.0) is a large, installable skill library for AI coding assistants. It packages 1,678+ reusable `SKILL.md` playbooks, specialized plugins, bundles, workflows, generated catalogs, and a CLI installer so Claude Code, Codex CLI, Cursor, Gemini CLI, Antigravity, and similar tools can reuse proven operating instructions instead of one-off prompts.
 
 ### How do I install it?
 
@@ -510,14 +514,14 @@ We officially thank the following contributors for their help in making this rep
 ## Star History
 
 <a href="https://www.star-history.com/#sickn33/antigravity-awesome-skills&type=date&legend=top-left">
- <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=sickn33/antigravity-awesome-skills&type=date&legend=top-left&cache_bust=202606190754" />
+ <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=sickn33/antigravity-awesome-skills&type=date&legend=top-left&cache_bust=202606200722" />
 </a>
 
 <a href="https://www.star-history.com/sickn33/antigravity-awesome-skills">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=sickn33/antigravity-awesome-skills&style=landscape1&theme=dark&cache_bust=202606190754" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=sickn33/antigravity-awesome-skills&style=landscape1&cache_bust=202606190754" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=sickn33/antigravity-awesome-skills&style=landscape1&cache_bust=202606190754" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=sickn33/antigravity-awesome-skills&style=landscape1&theme=dark&cache_bust=202606200722" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=sickn33/antigravity-awesome-skills&style=landscape1&cache_bust=202606200722" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=sickn33/antigravity-awesome-skills&style=landscape1&cache_bust=202606200722" />
  </picture>
 </a>
 

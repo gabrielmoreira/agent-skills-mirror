@@ -1,6 +1,6 @@
 ---
 name: last30days
-version: "3.6.0"
+version: "3.7.0"
 description: "Research what people actually say about any topic in the last 30 days. Pulls posts and engagement from Reddit, X, YouTube, TikTok, Hacker News, Polymarket, GitHub, and the web."
 argument-hint: 'last30days nvidia earnings reaction | last30days AI video tools | last30days what users want in react'
 allowed-tools: Bash, Read, Write, AskUserQuestion, WebSearch
@@ -19,6 +19,7 @@ metadata:
         - OPENAI_API_KEY
         - XAI_API_KEY
         - OPENROUTER_API_KEY
+        - PERPLEXITY_API_KEY
         - PARALLEL_API_KEY
         - BRAVE_API_KEY
         - APIFY_API_TOKEN
@@ -250,7 +251,7 @@ If your Bash call to `last30days.py` does NOT include the FULL pre-flight checkl
 
 ---
 
-# last30days v3.6.0: Research Any Topic from the Last 30 Days
+# last30days v3.7.0: Research Any Topic from the Last 30 Days
 
 > **Permissions overview:** Reads public web/platform data and optionally saves research briefings to `LAST30DAYS_MEMORY_DIR` (defaults to `~/Documents/Last30Days`). X/Twitter search uses optional user-provided tokens (AUTH_TOKEN/CT0 env vars). Bluesky search uses optional app password (BSKY_HANDLE/BSKY_APP_PASSWORD env vars - create at bsky.app/settings/app-passwords). All credential usage and data writes are documented in the [Security & Permissions](#security--permissions) section.
 
@@ -395,6 +396,8 @@ SKILL_DIR="<absolute path of the directory containing the SKILL.md you just Read
 `--diagnose` prints JSON. `ACTIVE_SOURCES_LIST` is its `available_sources` array — the engine's authoritative source set, computed after credential resolution. Map the tokens to display names: `reddit`→Reddit, `hackernews`→Hacker News, `polymarket`→Polymarket, `github`→GitHub, `digg`→Digg, `x`→X, `youtube`→YouTube, `tiktok`→TikTok, `instagram`→Instagram, `threads`→Threads, `pinterest`→Pinterest, `bluesky`→Bluesky, `perplexity`→Perplexity, `grounding`→Web, `jobs`→Jobs.
 
 - If EXCLUDE_SOURCES is set (comma-separated, case-insensitive): drop any matching source from ACTIVE_SOURCES_LIST before displaying
+
+**Perplexity source:** use it only when the user asks for Perplexity, Deep Research, or paid grounded synthesis, or when `perplexity` is already enabled in `INCLUDE_SOURCES` / `--search`. Direct `PERPLEXITY_API_KEY` supports Sonar synthesis, Search API rows, and async Deep Research. `OPENROUTER_API_KEY` is only a Sonar fallback. Normal runs default to `LAST30DAYS_PERPLEXITY_MODE=sonar`; use `search` for raw ranked web rows, `both` for synthesis plus rows, and `--deep-research` for `sonar-deep-research` with a 600s default wall timeout. A local Deep Research timeout is not a failed API key; inspect the raw artifact's async request id/status and resume by id if needed.
 
 
 Then display (use "and more" if 5+ sources, otherwise list all with Oxford comma):
@@ -668,8 +671,8 @@ When the user asks "X vs Y" (or "X vs Y vs Z"), the engine fans out N full `pipe
 # the Read tool result. Examples:
 #   Read ~/.claude/skills/last30days/SKILL.md      → SKILL_DIR=$HOME/.claude/skills/last30days
 #   Read ~/.codex/skills/last30days/SKILL.md       → SKILL_DIR=$HOME/.codex/skills/last30days
-#   Read ~/.claude/plugins/cache/last30days-skill/last30days/3.6.0/skills/last30days/SKILL.md
-#     → SKILL_DIR=$HOME/.claude/plugins/cache/last30days-skill/last30days/3.6.0/skills/last30days
+#   Read ~/.claude/plugins/cache/last30days-skill/last30days/3.7.0/skills/last30days/SKILL.md
+#     → SKILL_DIR=$HOME/.claude/plugins/cache/last30days-skill/last30days/3.7.0/skills/last30days
 # scripts/last30days.py is always a direct child of SKILL_DIR (every install layout
 # packages SKILL.md and scripts/ as siblings).
 SKILL_DIR="<absolute path of the directory containing the SKILL.md you Read>"
@@ -741,7 +744,7 @@ Topic A (the main topic, first in the vs-string) uses outer `--x-handle`, `--x-r
 
 **Why --competitors-plan over --competitors-list:** without per-entity handles/subs, peer sub-runs run with deterministic single-word planner queries and produce visibly thinner evidence than the main topic. The Resolved Entities block in stdout makes the gap visible — dashes for a peer = you skipped its Step 0.55.
 
-**Engine-internal auto-resolve (headless fallback):** if the engine detects BRAVE_API_KEY / EXA_API_KEY / SERPER_API_KEY / PARALLEL_API_KEY / OPENROUTER_API_KEY, it runs its own per-entity `resolve.auto_resolve()` before each sub-run. The hosting-model path does NOT need those keys — you are the WebSearch. The engine's auto-resolve is the cron/CI fallback for when no reasoning model is driving.
+**Engine-internal auto-resolve (headless fallback):** if the engine detects BRAVE_API_KEY / EXA_API_KEY / SERPER_API_KEY / PARALLEL_API_KEY / PERPLEXITY_API_KEY / OPENROUTER_API_KEY, it runs its own per-entity `resolve.auto_resolve()` before each sub-run. The hosting-model path does NOT need those keys — you are the WebSearch. The engine's auto-resolve is the cron/CI fallback for when no reasoning model is driving.
 
 **Output:** one `{slug}-raw.md` per entity in `--save-dir` plus the merged comparison on stdout. Synthesis contract identical to the vs-mode protocol above.
 
@@ -1008,8 +1011,8 @@ Store your plan as `QUERY_PLAN_JSON` - you'll pass it to the script in the next 
 # the Read tool result. Examples:
 #   Read ~/.claude/skills/last30days/SKILL.md      → SKILL_DIR=$HOME/.claude/skills/last30days
 #   Read ~/.codex/skills/last30days/SKILL.md       → SKILL_DIR=$HOME/.codex/skills/last30days
-#   Read ~/.claude/plugins/cache/last30days-skill/last30days/3.6.0/skills/last30days/SKILL.md
-#     → SKILL_DIR=$HOME/.claude/plugins/cache/last30days-skill/last30days/3.6.0/skills/last30days
+#   Read ~/.claude/plugins/cache/last30days-skill/last30days/3.7.0/skills/last30days/SKILL.md
+#     → SKILL_DIR=$HOME/.claude/plugins/cache/last30days-skill/last30days/3.7.0/skills/last30days
 # scripts/last30days.py is always a direct child of SKILL_DIR (every install layout
 # packages SKILL.md and scripts/ as siblings).
 SKILL_DIR="<absolute path of the directory containing the SKILL.md you Read>"
@@ -1067,7 +1070,7 @@ The script will automatically:
 
 **Read the ENTIRE output.** It contains EIGHT data sections in this order: Reddit items, X items, YouTube items, TikTok items, Instagram Reels items, Hacker News items, Polymarket items, and WebSearch items. If you miss sections, you will produce incomplete stats.
 
-**YouTube items in the output look like:** `**{video_id}** (score:N) {channel_name} [N views, N likes]` followed by a title, URL, **transcript highlights** (pre-extracted quotable excerpts from the video), and an optional full transcript in a collapsible section. **Quote the highlights directly in your synthesis.** When YouTube items also include top comments (enabled via `youtube_comments`), quote those too with their like counts - they capture how viewers reacted to the video. Transcript highlights and top comments are complementary signals; use both when present. Attribute transcript quotes to the channel name, comment quotes to the commenter. Count them and include them in your synthesis and stats block.
+**YouTube items in the output look like:** `**{video_id}** (score:N) {channel_name} [N views, N likes]` followed by a title, URL, **transcript highlights** (pre-extracted quotable excerpts from the video), and an optional full transcript in a collapsible section. **Quote the highlights directly in your synthesis.** When YouTube items also include top comments (default-on once a ScrapeCreators key is set; suppress via `EXCLUDE_SOURCES=youtube_comments`), quote those too with their like counts - they capture how viewers reacted to the video. Transcript highlights and top comments are complementary signals; use both when present. Attribute transcript quotes to the channel name, comment quotes to the commenter. Count them and include them in your synthesis and stats block.
 
 **TikTok items in the output look like:** `**{TK_id}** (score:N) @{creator} [N views, N likes]` followed by a caption, URL, hashtags, and optional caption snippet. Count them and include them in your synthesis and stats block.
 
@@ -1791,7 +1794,7 @@ Want another prompt? Just tell me what you're creating next.
 - Sends search queries to Polymarket Gamma API (`gamma-api.polymarket.com`) for prediction market discovery (free, no auth)
 - Runs `yt-dlp` locally for YouTube search and transcript extraction (no API key, public data)
 - Sends search queries to ScrapeCreators API (`api.scrapecreators.com`) for TikTok and Instagram search, transcript/caption extraction (PAYG after 100 free credits)
-- Optionally sends search queries to Brave Search API, Parallel AI API, or OpenRouter API for web search
+- Optionally sends search queries to Brave Search API, Parallel AI API, Perplexity API (`api.perplexity.ai`), or OpenRouter API for web search / synthesis
 - Fetches public Reddit thread data from `reddit.com` for engagement metrics
 - Stores research findings in local SQLite database (watchlist mode only)
 - Saves research briefings as .md files to `LAST30DAYS_MEMORY_DIR` (defaults to `~/Documents/Last30Days`)

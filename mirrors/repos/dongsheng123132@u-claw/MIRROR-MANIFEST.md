@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dongsheng123132/u-claw` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `dongsheng123132/u-claw` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dongsheng123132/u-claw` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,16 +77,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`portable/skills-cn/word-writer/SKILL.md`](portable/skills-cn/word-writer/SKILL.md) |
 | 17 | ✓ | [`portable/skills-cn/xiaohongshu-writer/SKILL.md`](portable/skills-cn/xiaohongshu-writer/SKILL.md) |
 | 18 | ✓ | [`portable/skills-cn/zhihu-writer/SKILL.md`](portable/skills-cn/zhihu-writer/SKILL.md) |
-| 19 | ✓ | [`usb-release/skills/bilibili-helper/SKILL.md`](usb-release/skills/bilibili-helper/SKILL.md) |
-| 20 | ✓ | [`usb-release/skills/china-search/SKILL.md`](usb-release/skills/china-search/SKILL.md) |
-| 21 | ✓ | [`usb-release/skills/china-translate/SKILL.md`](usb-release/skills/china-translate/SKILL.md) |
-| 22 | ✓ | [`usb-release/skills/china-weather/SKILL.md`](usb-release/skills/china-weather/SKILL.md) |
-| 23 | ✓ | [`usb-release/skills/deepseek-helper/SKILL.md`](usb-release/skills/deepseek-helper/SKILL.md) |
-| 24 | ✓ | [`usb-release/skills/douyin-script/SKILL.md`](usb-release/skills/douyin-script/SKILL.md) |
-| 25 | ✓ | [`usb-release/skills/wechat-article/SKILL.md`](usb-release/skills/wechat-article/SKILL.md) |
-| 26 | ✓ | [`usb-release/skills/weibo-poster/SKILL.md`](usb-release/skills/weibo-poster/SKILL.md) |
-| 27 | ✓ | [`usb-release/skills/xiaohongshu-writer/SKILL.md`](usb-release/skills/xiaohongshu-writer/SKILL.md) |
-| 28 | ✓ | [`usb-release/skills/zhihu-writer/SKILL.md`](usb-release/skills/zhihu-writer/SKILL.md) |
 
 ---
 

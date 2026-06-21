@@ -31,6 +31,29 @@ mitre_attack:
 - T1059
 - T1003
 - T1110
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - positioning
+  - monetization
+  - defense-impairment
+  techniques:
+  - id: T1531
+    name: Account Access Removal
+    tactic: positioning
+    source: attack
+  - id: F1005
+    name: Account Manipulation
+    tactic: defense-impairment
+    source: f3
+  - id: F1018
+    name: Convert to Cryptocurrency
+    tactic: monetization
+    source: f3
+  - id: T1219
+    name: Remote Access Tools
+    tactic: positioning
+    source: attack
 ---
 # Recovering from Ransomware Attack
 

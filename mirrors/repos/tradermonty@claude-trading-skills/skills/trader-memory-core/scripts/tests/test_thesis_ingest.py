@@ -16,6 +16,12 @@ def _write_json(tmp_path: Path, data, filename="input.json"):
     return str(path)
 
 
+def _write_text(tmp_path: Path, text: str, filename="input.csv"):
+    path = tmp_path / filename
+    path.write_text(text)
+    return str(path)
+
+
 # -- Tests: kanchi adapter -----------------------------------------------------
 
 
@@ -359,6 +365,72 @@ def test_ingest_manual_array(tmp_path: Path):
     assert len(ids) == 2
     tickers = {thesis_store.get(state_dir, i)["ticker"] for i in ids}
     assert tickers == {"TSLA", "OIH"}
+
+
+def test_ingest_manual_bulk_csv_success(tmp_path: Path):
+    """Manual bulk CSV registers all rows and preserves provenance-only fields."""
+    state_dir = tmp_path / "theses"
+    csv_file = _write_text(
+        tmp_path,
+        "\n".join(
+            [
+                "ticker,thesis_statement,thesis_type,entry_price,entry_date,shares,stop_price,stop_loss,target_price,take_profit,notes",
+                "TSLA,TSLA swing,growth_momentum,180.5,2026-05-02,1.5,160,155,220,230,watch volume",
+                "OIH,OIH energy services,mean_reversion,280,2026-05-03,2,,,,,sector rebound",
+            ]
+        ),
+    )
+
+    ids = thesis_ingest.ingest_bulk_csv("manual", csv_file, str(state_dir))
+    assert len(ids) == 2
+
+    tsla = thesis_store.get(state_dir, ids[0])
+    assert tsla["ticker"] == "TSLA"
+    # Existing manual alias precedence: stop_loss/take_profit win when both are supplied.
+    assert tsla["exit"]["stop_loss"] == 155.0
+    assert tsla["exit"]["take_profit"] == 230.0
+    assert tsla["origin"]["raw_provenance"]["entry_price"] == 180.5
+    assert tsla["origin"]["raw_provenance"]["shares"] == 1.5
+    assert tsla["origin"]["raw_provenance"]["notes"] == "watch volume"
+    assert tsla["position"] is None
+
+
+def test_ingest_manual_bulk_csv_missing_required_column(tmp_path: Path):
+    """Bulk CSV should fail clearly when required columns are absent."""
+    csv_file = _write_text(tmp_path, "ticker,thesis_statement\nAMD,AMD thesis\n")
+
+    with pytest.raises(ValueError, match="missing required column"):
+        thesis_ingest.ingest_bulk_csv("manual", csv_file, str(tmp_path / "theses"))
+
+
+def test_ingest_manual_bulk_csv_invalid_row_registers_zero(tmp_path: Path):
+    """Bulk CSV is all-or-nothing: no rows are persisted after validation failure."""
+    state_dir = tmp_path / "theses"
+    csv_file = _write_text(
+        tmp_path,
+        "\n".join(
+            [
+                "ticker,thesis_statement,thesis_type,entry_date",
+                "AMD,AMD thesis,growth_momentum,2026-05-02",
+                "NVDA,NVDA thesis,not_a_type,2026-05-03",
+            ]
+        ),
+    )
+
+    with pytest.raises(ValueError, match="row 3"):
+        thesis_ingest.ingest_bulk_csv("manual", csv_file, str(state_dir))
+
+    assert not list(state_dir.glob("th_*.yaml"))
+
+
+def test_ingest_manual_bulk_csv_source_must_be_manual(tmp_path: Path):
+    csv_file = _write_text(
+        tmp_path,
+        "ticker,thesis_statement,thesis_type\nAMD,AMD thesis,growth_momentum\n",
+    )
+
+    with pytest.raises(ValueError, match="only supported with --source manual"):
+        thesis_ingest.ingest_bulk_csv("earnings-trade-analyzer", csv_file, str(tmp_path))
 
 
 def test_ingest_manual_missing_ticker_reaches_adapter(tmp_path: Path):

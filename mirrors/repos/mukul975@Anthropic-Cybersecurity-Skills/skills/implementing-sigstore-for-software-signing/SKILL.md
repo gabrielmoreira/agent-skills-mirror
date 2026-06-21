@@ -36,6 +36,33 @@ mitre_attack:
 - T1059
 - T1610
 - T1611
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - resource-development
+  - initial-access
+  - stealth
+  techniques:
+  - id: T1195
+    name: Supply Chain Compromise
+    tactic: initial-access
+    source: attack
+  - id: T1608
+    name: Stage Capabilities
+    tactic: resource-development
+    source: attack
+  - id: T1608.006
+    name: 'Stage Capabilities: SEO Poisoning'
+    tactic: resource-development
+    source: attack
+  - id: T1586
+    name: Compromise Accounts
+    tactic: resource-development
+    source: attack
+  - id: T1070
+    name: Indicator Removal
+    tactic: stealth
+    source: attack
 ---
 # Implementing Sigstore for Software Signing
 

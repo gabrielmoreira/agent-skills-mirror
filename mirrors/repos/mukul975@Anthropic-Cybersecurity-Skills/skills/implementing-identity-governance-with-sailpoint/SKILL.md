@@ -26,6 +26,33 @@ mitre_attack:
 - T1110
 - T1556
 - T1098
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - positioning
+  - initial-access
+  - defense-impairment
+  techniques:
+  - id: F1005
+    name: Account Manipulation
+    tactic: positioning
+    source: f3
+  - id: F1005.002
+    name: 'Account Manipulation: Add Authorized User'
+    tactic: positioning
+    source: f3
+  - id: F1033
+    name: Insider Access Abuse
+    tactic: initial-access
+    source: f3
+  - id: F1042
+    name: Reactivate Account
+    tactic: positioning
+    source: f3
+  - id: F1006
+    name: Account Takeover
+    tactic: initial-access
+    source: f3
 ---
 # Implementing Identity Governance with SailPoint
 

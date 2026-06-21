@@ -47,6 +47,34 @@ mitre_attack:
 - T1059
 - T1566
 - T1598
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - reconnaissance
+  - initial-access
+  - stealth
+  - monetization
+  techniques:
+  - id: F1032
+    name: Impersonate Official
+    tactic: initial-access
+    source: f3
+  - id: F1031
+    name: Impersonate Account Holder
+    tactic: initial-access
+    source: f3
+  - id: F1040
+    name: Phone Number Spoofing
+    tactic: stealth
+    source: f3
+  - id: F1034
+    name: Interactive Voice Response Mapping
+    tactic: reconnaissance
+    source: f3
+  - id: F1025.003
+    name: 'Electronic Funds Transfer: Wire Transfer'
+    tactic: monetization
+    source: f3
 ---
 
 # Detecting Deepfake Audio in Vishing Attacks

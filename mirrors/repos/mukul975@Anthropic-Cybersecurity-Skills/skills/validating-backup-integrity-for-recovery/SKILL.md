@@ -26,6 +26,28 @@ mitre_attack:
 - T1070
 - T1078
 - T1489
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - positioning
+  - monetization
+  techniques:
+  - id: T1531
+    name: Account Access Removal
+    tactic: positioning
+    source: attack
+  - id: F1018
+    name: Convert to Cryptocurrency
+    tactic: monetization
+    source: f3
+  - id: F1047
+    name: Transfer of funds
+    tactic: monetization
+    source: f3
+  - id: F1017.001
+    name: 'Conversion to Physical Monetary Instruments: Cash'
+    tactic: monetization
+    source: f3
 ---
 # Validating Backup Integrity for Recovery
 

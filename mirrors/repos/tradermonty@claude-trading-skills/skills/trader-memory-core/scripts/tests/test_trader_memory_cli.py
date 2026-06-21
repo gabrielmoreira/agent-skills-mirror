@@ -7,6 +7,7 @@ invoke it. No third-party deps; safe to run anywhere `python3` exists.
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
@@ -78,6 +79,220 @@ def test_repo_env_var_pointing_at_missing_repo_fails_clearly(tmp_path):
     )
     assert rc == 2
     assert "target script not found" in err.lower()
+
+
+def test_ingest_unknown_source_exits_cleanly(tmp_path):
+    input_file = tmp_path / "manual.json"
+    input_file.write_text(
+        json.dumps(
+            {
+                "ticker": "AMD",
+                "thesis_statement": "AMD thesis",
+                "thesis_type": "growth_momentum",
+            }
+        )
+    )
+
+    rc, _, err = _run(
+        [
+            "ingest",
+            "--source",
+            "not-a-source",
+            "--input",
+            str(input_file),
+            "--state-dir",
+            str(tmp_path / "state"),
+        ]
+    )
+
+    assert rc == 1
+    assert "ERROR:" in err
+    assert "Unknown source" in err
+    assert "Traceback" not in err
+
+
+def test_ingest_bulk_csv_via_launcher(tmp_path):
+    csv_file = tmp_path / "manual.csv"
+    csv_file.write_text(
+        "\n".join(
+            [
+                "ticker,thesis_statement,thesis_type,entry_date",
+                "AMD,AMD thesis,growth_momentum,2026-05-02",
+                "OIH,OIH thesis,mean_reversion,2026-05-03",
+            ]
+        )
+    )
+
+    rc, out, err = _run(
+        [
+            "ingest",
+            "--source",
+            "manual",
+            "--bulk-csv",
+            str(csv_file),
+            "--state-dir",
+            str(tmp_path / "state"),
+        ]
+    )
+
+    assert rc == 0, err
+    assert "Registered 2 thesis(es)" in out
+    assert "Traceback" not in err
+
+
+def test_store_attach_position_invalid_report_exits_cleanly(tmp_path):
+    state_dir = tmp_path / "state"
+    manual = tmp_path / "manual.json"
+    manual.write_text(
+        json.dumps(
+            {
+                "ticker": "AMD",
+                "thesis_statement": "AMD thesis",
+                "thesis_type": "growth_momentum",
+            }
+        )
+    )
+
+    rc, out, err = _run(
+        [
+            "ingest",
+            "--source",
+            "manual",
+            "--input",
+            str(manual),
+            "--state-dir",
+            str(state_dir),
+        ]
+    )
+    assert rc == 0, err
+    thesis_id = out.split(":", 1)[1].strip()
+
+    bad_report = tmp_path / "position.json"
+    bad_report.write_text(json.dumps({"mode": "budget"}))
+
+    rc, _, err = _run(
+        [
+            "store",
+            "--state-dir",
+            str(state_dir),
+            "attach-position",
+            thesis_id,
+            "--report",
+            str(bad_report),
+        ]
+    )
+
+    assert rc == 1
+    assert "ERROR:" in err
+    assert "expected 'shares'" in err
+    assert "Traceback" not in err
+
+
+def test_review_summary_and_monthly_report_via_launcher(tmp_path):
+    state_dir = tmp_path / "state"
+    manual = tmp_path / "manual.json"
+    manual.write_text(
+        json.dumps(
+            {
+                "ticker": "AAPL",
+                "thesis_statement": "AAPL thesis",
+                "thesis_type": "growth_momentum",
+                "entry_date": "2026-04-01",
+            }
+        )
+    )
+
+    rc, out, err = _run(
+        [
+            "ingest",
+            "--source",
+            "manual",
+            "--input",
+            str(manual),
+            "--state-dir",
+            str(state_dir),
+        ]
+    )
+    assert rc == 0, err
+    thesis_id = out.split(":", 1)[1].strip()
+
+    steps = [
+        [
+            "store",
+            "--state-dir",
+            str(state_dir),
+            "transition",
+            thesis_id,
+            "ENTRY_READY",
+            "--reason",
+            "ready",
+            "--event-date",
+            "2026-04-01",
+        ],
+        [
+            "store",
+            "--state-dir",
+            str(state_dir),
+            "open-position",
+            thesis_id,
+            "--actual-price",
+            "100",
+            "--actual-date",
+            "2026-04-01",
+            "--shares",
+            "1",
+            "--event-date",
+            "2026-04-01",
+        ],
+        [
+            "store",
+            "--state-dir",
+            str(state_dir),
+            "close",
+            thesis_id,
+            "--exit-reason",
+            "target_hit",
+            "--actual-price",
+            "110",
+            "--actual-date",
+            "2026-04-15",
+        ],
+    ]
+    for step in steps:
+        rc, _, err = _run(step)
+        assert rc == 0, err
+
+    rc, out, err = _run(
+        [
+            "review",
+            "--state-dir",
+            str(state_dir),
+            "summary",
+            "--status",
+            "CLOSED",
+            "--compact",
+        ]
+    )
+    assert rc == 0, err
+    assert "AAPL" in out
+    assert "CLOSED" in out
+
+    report = tmp_path / "monthly.md"
+    rc, out, err = _run(
+        [
+            "review",
+            "--state-dir",
+            str(state_dir),
+            "monthly-report",
+            "--month",
+            "2026-04",
+            "--output",
+            str(report),
+        ]
+    )
+    assert rc == 0, err
+    assert "Monthly report generated" in out
+    assert "# Monthly Review: 2026-04" in report.read_text()
 
 
 def test_recursion_guard_blocks_inner_uv_reentry(tmp_path, monkeypatch):

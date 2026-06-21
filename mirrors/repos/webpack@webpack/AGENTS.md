@@ -84,6 +84,7 @@ webpack is a JavaScript module bundler. Package manager: **yarn**.
 - `tsconfig*.json` — TypeScript configs (one per surface: `lib`, `hot`, types tests, validation, benchmarks).
 - `eslint.config.mjs`, `cspell.json`, `jest.config.js`, `generate-types-config.js` — Lint/spell/test/type-gen configs.
 - `.github/workflows/`, `.github/scripts/` — CI.
+- `test/patches/` — test-only dependency patches (e.g. jest-worker) applied via `git apply` in the CI Bun test job.
 
 ## Coding Standards
 
@@ -142,6 +143,8 @@ Skipping any layer silently breaks the option. After editing schemas, run `yarn 
 ### 2. Writing and Running Tests
 
 **For bug fixes, always write the test case first.** Run the test to confirm it fails, then make the code change and re-run. For new features, tests can be written alongside or after.
+
+**Prefer integration tests over unit tests.** Cover behavior with an integration case (`configCases/`, `watchCases/`, `hotCases/`, `statsCases/`, …) that drives a real `webpack()` build whenever the behavior can be exercised that way — they catch real-world regressions a mocked unit test misses. Reach for a `*.unittest.js` only for pure helpers/utilities that a build can't naturally reach.
 
 Run targeted tests — `yarn jest test/<area>` or `yarn jest -t "<name>"`. Don't run `yarn test` unless asked. When updating snapshots (`yarn jest -u`), eyeball the diff first. See [TESTING_DOCS.md](TESTING_DOCS.md) for details.
 

@@ -43,15 +43,30 @@ python3 skills/earnings-trade-analyzer/scripts/analyze_earnings_trades.py \
   --output-dir reports/
 ```
 
-#### Degraded endpoint fallback for scheduled reviews
+#### Degraded endpoint / budget fallback for scheduled reviews
 
-If the analyzer reports a 404 or an implausible empty earnings calendar during a scheduled after-close/pre-market run, do not report "no earnings reactions" immediately. Verify the same range through the stable endpoint used by the compatibility shim and clearly label the result as an ungraded fallback:
+If the analyzer reports a 404, an implausible empty earnings calendar, or exhausts its API-call budget before producing scored candidates during a scheduled after-close/pre-market run, do not report "no earnings reactions" immediately.
+
+1. First retry once with a narrower liquid-universe configuration so the full 5-factor scorer has a chance to complete, for example:
+
+```bash
+python3 skills/earnings-trade-analyzer/scripts/analyze_earnings_trades.py \
+  --lookback-days 2 \
+  --min-market-cap 5000000000 \
+  --top 20 \
+  --max-api-calls 600 \
+  --output-dir reports/<routine-date>
+```
+
+2. If the scored run still returns no candidates or cannot complete, verify the same range through the stable endpoint used by the compatibility shim and clearly label the result as an ungraded fallback:
 
 ```bash
 curl "https://financialmodelingprep.com/stable/earnings-calendar?from=YYYY-MM-DD&to=YYYY-MM-DD&apikey=$FMP_API_KEY"
 ```
 
 Then optionally enrich returned US tickers through the analyzer's stable-first FMP client or per-symbol `/stable/quote?symbol=<ticker>` calls to rank by same-day `changesPercentage`, market cap, and liquidity. Use legacy `/api/v3` quote calls only as a legacy-key fallback after stable has failed. Present these as **preliminary / ungraded reactions** because the 5-factor scorer did not run; do not assign A/B/C/D grades from the fallback alone.
+
+**No-candidate output pitfall:** The analyzer may print `Candidates after filtering: 0` / `No candidates found matching criteria.` and exit successfully without writing an `earnings_trade_analyzer_*.json` file. In that case, do not try to run PEAD Mode B from a nonexistent candidate file. Say explicitly that no scored analyzer JSON was produced, run the endpoint/quote enrichment fallback above if the routine needs an earnings section, and label any names as manual-review only.
 
 ### Step 2: Review Results
 

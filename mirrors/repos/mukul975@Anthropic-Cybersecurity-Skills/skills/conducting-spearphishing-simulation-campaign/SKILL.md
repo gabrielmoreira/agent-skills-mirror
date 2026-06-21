@@ -33,6 +33,37 @@ mitre_attack:
 - T1598.002
 - T1204.002
 - T1204.001
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - reconnaissance
+  - resource-development
+  - initial-access
+  techniques:
+  - id: T1598
+    name: Phishing for Information
+    tactic: reconnaissance
+    source: attack
+  - id: T1660
+    name: Phishing
+    tactic: initial-access
+    source: attack
+  - id: T1583.001
+    name: 'Acquire Infrastructure: Domains'
+    tactic: resource-development
+    source: attack
+  - id: F1020.002
+    name: 'Create Fake Materials: Fake Website'
+    tactic: resource-development
+    source: f3
+  - id: T1585
+    name: Establish Accounts
+    tactic: resource-development
+    source: attack
+  - id: F1006.002
+    name: 'Account Takeover: Exposed Login Credential'
+    tactic: initial-access
+    source: f3
 ---
 # Conducting Spearphishing Simulation Campaign
 

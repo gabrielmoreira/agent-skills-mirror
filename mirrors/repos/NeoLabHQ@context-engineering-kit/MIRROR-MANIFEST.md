@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `NeoLabHQ/context-engineering-kit` — 26 default patterns, 1 followed patterns, 71 file(s) materialized.
+Mirror of `NeoLabHQ/context-engineering-kit` — 26 default patterns, 1 followed patterns, 73 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NeoLabHQ/context-engineering-kit` — 26 default patterns, 1 followed
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 71 |
+| Files         | 73 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -92,44 +92,46 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 31 | ✓ | [`plugins/git/skills/git-notes/SKILL.md`](plugins/git/skills/git-notes/SKILL.md) |
 | 32 | ✓ | [`plugins/git/skills/git-worktrees/SKILL.md`](plugins/git/skills/git-worktrees/SKILL.md) |
 | 33 | ✓ | [`plugins/git/skills/load-issues/SKILL.md`](plugins/git/skills/load-issues/SKILL.md) |
-| 34 | ✓ | [`plugins/kaizen/skills/analyse-problem/SKILL.md`](plugins/kaizen/skills/analyse-problem/SKILL.md) |
-| 35 | ✓ | [`plugins/kaizen/skills/analyse/SKILL.md`](plugins/kaizen/skills/analyse/SKILL.md) |
-| 36 | ✓ | [`plugins/kaizen/skills/cause-and-effect/SKILL.md`](plugins/kaizen/skills/cause-and-effect/SKILL.md) |
-| 37 | ✓ | [`plugins/kaizen/skills/kaizen/SKILL.md`](plugins/kaizen/skills/kaizen/SKILL.md) |
-| 38 | ✓ | [`plugins/kaizen/skills/plan-do-check-act/SKILL.md`](plugins/kaizen/skills/plan-do-check-act/SKILL.md) |
-| 39 | ✓ | [`plugins/kaizen/skills/root-cause-tracing/SKILL.md`](plugins/kaizen/skills/root-cause-tracing/SKILL.md) |
-| 40 | ✓ | [`plugins/kaizen/skills/why/SKILL.md`](plugins/kaizen/skills/why/SKILL.md) |
-| 41 | ✓ | [`plugins/mcp/skills/build-mcp/SKILL.md`](plugins/mcp/skills/build-mcp/SKILL.md) |
-| 42 | ✓ | [`plugins/mcp/skills/setup-arxiv-mcp/SKILL.md`](plugins/mcp/skills/setup-arxiv-mcp/SKILL.md) |
-| 43 | ✓ | [`plugins/mcp/skills/setup-codemap-cli/SKILL.md`](plugins/mcp/skills/setup-codemap-cli/SKILL.md) |
-| 44 | ✓ | [`plugins/mcp/skills/setup-context7-mcp/SKILL.md`](plugins/mcp/skills/setup-context7-mcp/SKILL.md) |
-| 45 | ✓ | [`plugins/mcp/skills/setup-serena-mcp/SKILL.md`](plugins/mcp/skills/setup-serena-mcp/SKILL.md) |
-| 46 | ✓ | [`plugins/reflexion/skills/critique/SKILL.md`](plugins/reflexion/skills/critique/SKILL.md) |
-| 47 | ✓ | [`plugins/reflexion/skills/memorize/SKILL.md`](plugins/reflexion/skills/memorize/SKILL.md) |
-| 48 | ✓ | [`plugins/reflexion/skills/reflect/SKILL.md`](plugins/reflexion/skills/reflect/SKILL.md) |
-| 49 | ✓ | [`plugins/review/skills/review-local-changes/SKILL.md`](plugins/review/skills/review-local-changes/SKILL.md) |
-| 50 | ✓ | [`plugins/review/skills/review-pr/SKILL.md`](plugins/review/skills/review-pr/SKILL.md) |
-| 51 | ✓ | [`plugins/sadd/skills/do-and-judge/SKILL.md`](plugins/sadd/skills/do-and-judge/SKILL.md) |
-| 52 | ✓ | [`plugins/sadd/skills/do-competitively/SKILL.md`](plugins/sadd/skills/do-competitively/SKILL.md) |
-| 53 | ✓ | [`plugins/sadd/skills/do-in-parallel/SKILL.md`](plugins/sadd/skills/do-in-parallel/SKILL.md) |
-| 54 | ✓ | [`plugins/sadd/skills/do-in-steps/SKILL.md`](plugins/sadd/skills/do-in-steps/SKILL.md) |
-| 55 | ✓ | [`plugins/sadd/skills/judge-with-debate/SKILL.md`](plugins/sadd/skills/judge-with-debate/SKILL.md) |
-| 56 | ✓ | [`plugins/sadd/skills/judge/SKILL.md`](plugins/sadd/skills/judge/SKILL.md) |
-| 57 | ✓ | [`plugins/sadd/skills/launch-sub-agent/SKILL.md`](plugins/sadd/skills/launch-sub-agent/SKILL.md) |
-| 58 | ✓ | [`plugins/sadd/skills/multi-agent-patterns/SKILL.md`](plugins/sadd/skills/multi-agent-patterns/SKILL.md) |
-| 59 | ✓ | [`plugins/sadd/skills/subagent-driven-development/SKILL.md`](plugins/sadd/skills/subagent-driven-development/SKILL.md) |
-| 60 | ✓ | [`plugins/sadd/skills/tree-of-thoughts/SKILL.md`](plugins/sadd/skills/tree-of-thoughts/SKILL.md) |
-| 61 | ✓ | [`plugins/sdd/skills/add-task/SKILL.md`](plugins/sdd/skills/add-task/SKILL.md) |
-| 62 | ✓ | [`plugins/sdd/skills/brainstorm/SKILL.md`](plugins/sdd/skills/brainstorm/SKILL.md) |
-| 63 | ✓ | [`plugins/sdd/skills/create-ideas/SKILL.md`](plugins/sdd/skills/create-ideas/SKILL.md) |
-| 64 | ✓ | [`plugins/sdd/skills/implement-task/SKILL.md`](plugins/sdd/skills/implement-task/SKILL.md) |
-| 65 | ✓ | [`plugins/sdd/skills/plan-task/SKILL.md`](plugins/sdd/skills/plan-task/SKILL.md) |
-| 66 | ✓ | [`plugins/tdd/skills/design-testing-strategy/SKILL.md`](plugins/tdd/skills/design-testing-strategy/SKILL.md) |
-| 67 | ✓ | [`plugins/tdd/skills/fix-tests/SKILL.md`](plugins/tdd/skills/fix-tests/SKILL.md) |
-| 68 | ✓ | [`plugins/tdd/skills/test-coverage/SKILL.md`](plugins/tdd/skills/test-coverage/SKILL.md) |
-| 69 | ✓ | [`plugins/tdd/skills/test-driven-development/SKILL.md`](plugins/tdd/skills/test-driven-development/SKILL.md) |
-| 70 | ✓ | [`plugins/tdd/skills/write-tests/SKILL.md`](plugins/tdd/skills/write-tests/SKILL.md) |
-| 71 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 34 | ✓ | [`plugins/git/skills/load-pr-comments/SKILL.md`](plugins/git/skills/load-pr-comments/SKILL.md) |
+| 35 | ✓ | [`plugins/git/skills/resolve-fixed-pr-comments/SKILL.md`](plugins/git/skills/resolve-fixed-pr-comments/SKILL.md) |
+| 36 | ✓ | [`plugins/kaizen/skills/analyse-problem/SKILL.md`](plugins/kaizen/skills/analyse-problem/SKILL.md) |
+| 37 | ✓ | [`plugins/kaizen/skills/analyse/SKILL.md`](plugins/kaizen/skills/analyse/SKILL.md) |
+| 38 | ✓ | [`plugins/kaizen/skills/cause-and-effect/SKILL.md`](plugins/kaizen/skills/cause-and-effect/SKILL.md) |
+| 39 | ✓ | [`plugins/kaizen/skills/kaizen/SKILL.md`](plugins/kaizen/skills/kaizen/SKILL.md) |
+| 40 | ✓ | [`plugins/kaizen/skills/plan-do-check-act/SKILL.md`](plugins/kaizen/skills/plan-do-check-act/SKILL.md) |
+| 41 | ✓ | [`plugins/kaizen/skills/root-cause-tracing/SKILL.md`](plugins/kaizen/skills/root-cause-tracing/SKILL.md) |
+| 42 | ✓ | [`plugins/kaizen/skills/why/SKILL.md`](plugins/kaizen/skills/why/SKILL.md) |
+| 43 | ✓ | [`plugins/mcp/skills/build-mcp/SKILL.md`](plugins/mcp/skills/build-mcp/SKILL.md) |
+| 44 | ✓ | [`plugins/mcp/skills/setup-arxiv-mcp/SKILL.md`](plugins/mcp/skills/setup-arxiv-mcp/SKILL.md) |
+| 45 | ✓ | [`plugins/mcp/skills/setup-codemap-cli/SKILL.md`](plugins/mcp/skills/setup-codemap-cli/SKILL.md) |
+| 46 | ✓ | [`plugins/mcp/skills/setup-context7-mcp/SKILL.md`](plugins/mcp/skills/setup-context7-mcp/SKILL.md) |
+| 47 | ✓ | [`plugins/mcp/skills/setup-serena-mcp/SKILL.md`](plugins/mcp/skills/setup-serena-mcp/SKILL.md) |
+| 48 | ✓ | [`plugins/reflexion/skills/critique/SKILL.md`](plugins/reflexion/skills/critique/SKILL.md) |
+| 49 | ✓ | [`plugins/reflexion/skills/memorize/SKILL.md`](plugins/reflexion/skills/memorize/SKILL.md) |
+| 50 | ✓ | [`plugins/reflexion/skills/reflect/SKILL.md`](plugins/reflexion/skills/reflect/SKILL.md) |
+| 51 | ✓ | [`plugins/review/skills/review-local-changes/SKILL.md`](plugins/review/skills/review-local-changes/SKILL.md) |
+| 52 | ✓ | [`plugins/review/skills/review-pr/SKILL.md`](plugins/review/skills/review-pr/SKILL.md) |
+| 53 | ✓ | [`plugins/sadd/skills/do-and-judge/SKILL.md`](plugins/sadd/skills/do-and-judge/SKILL.md) |
+| 54 | ✓ | [`plugins/sadd/skills/do-competitively/SKILL.md`](plugins/sadd/skills/do-competitively/SKILL.md) |
+| 55 | ✓ | [`plugins/sadd/skills/do-in-parallel/SKILL.md`](plugins/sadd/skills/do-in-parallel/SKILL.md) |
+| 56 | ✓ | [`plugins/sadd/skills/do-in-steps/SKILL.md`](plugins/sadd/skills/do-in-steps/SKILL.md) |
+| 57 | ✓ | [`plugins/sadd/skills/judge-with-debate/SKILL.md`](plugins/sadd/skills/judge-with-debate/SKILL.md) |
+| 58 | ✓ | [`plugins/sadd/skills/judge/SKILL.md`](plugins/sadd/skills/judge/SKILL.md) |
+| 59 | ✓ | [`plugins/sadd/skills/launch-sub-agent/SKILL.md`](plugins/sadd/skills/launch-sub-agent/SKILL.md) |
+| 60 | ✓ | [`plugins/sadd/skills/multi-agent-patterns/SKILL.md`](plugins/sadd/skills/multi-agent-patterns/SKILL.md) |
+| 61 | ✓ | [`plugins/sadd/skills/subagent-driven-development/SKILL.md`](plugins/sadd/skills/subagent-driven-development/SKILL.md) |
+| 62 | ✓ | [`plugins/sadd/skills/tree-of-thoughts/SKILL.md`](plugins/sadd/skills/tree-of-thoughts/SKILL.md) |
+| 63 | ✓ | [`plugins/sdd/skills/add-task/SKILL.md`](plugins/sdd/skills/add-task/SKILL.md) |
+| 64 | ✓ | [`plugins/sdd/skills/brainstorm/SKILL.md`](plugins/sdd/skills/brainstorm/SKILL.md) |
+| 65 | ✓ | [`plugins/sdd/skills/create-ideas/SKILL.md`](plugins/sdd/skills/create-ideas/SKILL.md) |
+| 66 | ✓ | [`plugins/sdd/skills/implement-task/SKILL.md`](plugins/sdd/skills/implement-task/SKILL.md) |
+| 67 | ✓ | [`plugins/sdd/skills/plan-task/SKILL.md`](plugins/sdd/skills/plan-task/SKILL.md) |
+| 68 | ✓ | [`plugins/tdd/skills/design-testing-strategy/SKILL.md`](plugins/tdd/skills/design-testing-strategy/SKILL.md) |
+| 69 | ✓ | [`plugins/tdd/skills/fix-tests/SKILL.md`](plugins/tdd/skills/fix-tests/SKILL.md) |
+| 70 | ✓ | [`plugins/tdd/skills/test-coverage/SKILL.md`](plugins/tdd/skills/test-coverage/SKILL.md) |
+| 71 | ✓ | [`plugins/tdd/skills/test-driven-development/SKILL.md`](plugins/tdd/skills/test-driven-development/SKILL.md) |
+| 72 | ✓ | [`plugins/tdd/skills/write-tests/SKILL.md`](plugins/tdd/skills/write-tests/SKILL.md) |
+| 73 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

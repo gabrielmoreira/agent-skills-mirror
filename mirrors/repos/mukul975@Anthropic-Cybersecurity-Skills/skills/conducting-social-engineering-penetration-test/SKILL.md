@@ -35,6 +35,37 @@ mitre_attack:
 - T1566.004
 - T1204.001
 - T1589
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - reconnaissance
+  - initial-access
+  - resource-development
+  techniques:
+  - id: T1598
+    name: Phishing for Information
+    tactic: reconnaissance
+    source: attack
+  - id: T1660
+    name: Phishing
+    tactic: initial-access
+    source: attack
+  - id: F1029
+    name: Gather Customer Information
+    tactic: reconnaissance
+    source: f3
+  - id: F1032
+    name: Impersonate Official
+    tactic: initial-access
+    source: f3
+  - id: T1557
+    name: Adversary-in-the-Middle
+    tactic: initial-access
+    source: attack
+  - id: F1020.002
+    name: 'Create Fake Materials: Fake Website'
+    tactic: resource-development
+    source: f3
 ---
 
 # Conducting Social Engineering Penetration Test

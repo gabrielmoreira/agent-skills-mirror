@@ -1,0 +1,114 @@
+# Testing Plan — T3+ Verification Log
+
+> Updated 2026-05-13. Verification is **done**; this doc is now a historical log.
+> The branch `t3-stage-4-6-7-unverified` referenced in earlier versions has been
+> fully merged into `main` and deleted.
+
+## ✅ Final state (everything on `main`)
+
+| Batch | What | How verified | Bugs fixed |
+|---|---|---|---|
+| Phase 3 — Stage 1 + 3 folder renames (6 folders) | `starter.py` (Ollama) / `starter_anthropic.py` / both test suites | `python test.py` + `python test_anthropic.py` per folder | 0 |
+| Phase A — `stages/03-tool-use-and-hello-agent.md` inline `<details>` (練習 2-6) | 5 simplified inline blocks + zh-Hans drift | `wc -l` parity, `grep` no residual Trad chars | 0 |
+| Phase B — `examples/stage-5/tool-calling-tutor/` skill | SKILL.md + 3 references + evals + trilingual READMEs | YAML frontmatter parses; evals.json valid JSON | 0 (live skill-install test still pending) |
+| Phase C — cross-references | stages/03 + stages/05 + CLAUDE.md links | `grep -c` confirms 10 references across 7 files | 0 |
+| **Stage 4 (5 ex)** | LangGraph + CrewAI + LangGraph workflow + Smolagents + Pydantic AI | 8/8 test suites verified green; ex2 CrewAI install-blocked on Python 3.14 (tiktoken/regex wheels) — code shipped unmodified | 3 (i18n key mismatch in ex3 + Smolagents docstring `Args:` requirement in ex4 + Pydantic AI version fallback in ex5 test) |
+| **Stage 6 (5 ex)** | embeddings + ChromaDB + chunking + full RAG + long-term memory | 10/10 test suites verified green | 2 (ChromaDB `kb` collection name too short for Chroma 1.0+; `EphemeralClient` state leak across test fixtures) |
+| **Stage 7 (5 ex)** | multi-agent debate + eval + observability + streaming/caching + FastAPI deploy | 10/10 test suites verified green | 1 (operator precedence: `and` binds tighter than `or` in fake_agent dispatcher) |
+
+**Total: 28/30 test files run green** + 1 install caveat (CrewAI on Python 3.14) + 1 pending live test (skill auto-load).
+
+**Total bugs fixed**: 6 — all in commit [`50c3bf8`](https://github.com/WenyuChiou/awesome-agentic-ai-zh/commit/50c3bf8).
+
+## 🟢 Pedagogy v1 also shipped (2026-05-13)
+
+Recognized late in the session: every `starter.py` is a **complete solution**, not a TODO skeleton. A learner who clones and runs `python test.py` passes without writing any code.
+
+v1 fix (doc-only, no code rename):
+- `docs/HOW_TO_USE.md` — full active-vs-passive learning method (~200 lines, zh-TW)
+- 22 exercise READMEs — 🎓 callout pointing to `mv starter.py starter_reference.py` shortcut + link to HOW_TO_USE
+- Main README × 3 langs — surface the meta-instruction at the top-level
+
+Shipped in commits [`d598e37`](https://github.com/WenyuChiou/awesome-agentic-ai-zh/commit/d598e37) + [`2cf99fe`](https://github.com/WenyuChiou/awesome-agentic-ai-zh/commit/2cf99fe).
+
+## ⚠ Known caveats still on `main`
+
+1. **CrewAI exercise (Stage 4 ex2)** not tested on Python 3.14 — tiktoken + regex don't have wheels yet. Code shipped unchanged; users on Python 3.11/3.12/3.13 should be fine. Document at top of `examples/stage-4/02-multi-agent-roles/README.md` if needed for future learners.
+
+2. **tool-calling-tutor skill** not live-tested in Claude Code — only structural validation (YAML frontmatter parse + JSON evals validate). Manual install test: `cp -r examples/stage-5/tool-calling-tutor/{SKILL.md,references,evals} ~/.claude/skills/tool-calling-tutor/`, restart Claude Code, prompt 「為什麼 LLM 不呼叫我的 tool」.
+
+3. **starter.py = complete solution pedagogy gap** — flagged in `docs/HOW_TO_USE.md`. v2 would split into `starter_template.py` (TODO) + `starter_reference.py` (solution); v1 is doc-only meta-instruction.
+
+4. **Trilingual mirror of 🎓 callout incomplete** — v1 only added the 學習模式 callout to zh-TW READMEs. en + zh-Hans exercise READMEs still need the same callout. Low priority since most learners use zh-TW.
+
+5. **Pilot exercise drift** (pre-session, still open) — `examples/stage-3/03-react-from-scratch/README.en.md` + `.zh-Hans.md` are pre-dual-path; the zh-TW canonical is current. Stage 3 polish pass should fix.
+
+## 🔵 Stage 5 + Track A — current coverage
+
+### Track A1-A3 CLI track — **outline complete, no `examples/` folder by design**
+
+12 hands-on exercises documented across `tracks/cli/A{1,2,3}-*.md` × 3 langs (zh-TW canonical ~367 lines):
+
+| File | Lines (zh-TW) | Exercises |
+|---|---|---|
+| `tracks/cli/A1-cli-intro.md` | 107 | CLI-1 安裝 + 第一次跑 / CLI-2 CLAUDE.md / CLI-3 第二個 CLI 並用 / CLI-4 認證細節 |
+| `tracks/cli/A2-cli-workflow.md` | 126 | CLI-5 production CLAUDE.md / CLI-6 slash command / CLI-7 多步驟拆解 / CLI-8 portable prompt |
+| `tracks/cli/A3-cli-production.md` | 134 | CLI-9 MCP server 接 CLI / CLI-10 GitHub Actions / CLI-11 cost tracking / CLI-12 plugin 跨 team 分享 |
+
+**No `examples/track-a/` folder built — and this is intentional**. CLI exercises are:
+- Bash commands (`ollama pull`, `claude` install, MCP-server install)
+- Markdown authoring (CLAUDE.md, slash command `.md` files, SKILL.md)
+- YAML / JSON config (GitHub Actions `.yml`, `plugin.json`, `marketplace.json`)
+- **Not Python SDK code**, so the dual-path Ollama/Anthropic `starter.py` + `test.py` pattern doesn't apply.
+
+What learners do for Track A: follow each numbered exercise in the outline doc, on their own real repo (their work codebase, not a sample). The `tracks/cli/A*.md` files contain success criteria for self-check.
+
+**Core reference**: [`resources/cli-agents-guide.md`](../resources/cli-agents-guide.md) (148 lines) — 7-CLI comparison + decision rubric + common pitfalls.
+
+**Potential v2** (not committed): could ship `examples/track-a/` containing sample CLAUDE.md / `.claude/commands/review.md` / sample GHA workflow yml. Low priority — current outline is self-contained.
+
+### Stage 5 — partial coverage
+
+Stage 5 (`stages/05-claude-code-ecosystem.md`) has 4 sub-stages with hands-on exercises:
+
+| Sub-stage | Status |
+|---|---|
+| 5.1 Claude Code 基礎 | Outline only (in `stages/05-...md` 動手練習) |
+| 5.2 MCP (Model Context Protocol) | Outline only; cookbook 2 covers building first MCP server |
+| 5.3 Skills | Outline + **1 shipped meta-example**: [`examples/stage-5/tool-calling-tutor/`](../examples/stage-5/tool-calling-tutor/) (full SKILL.md + 3 references + evals.json, used as the Stage 5.3 authoring exemplar) |
+| 5.4 Plugins & Marketplaces | Outline only |
+
+For v2, sub-stages 5.1 / 5.2 / 5.4 could ship sample artifacts (sample `CLAUDE.md`, MCP server skeleton, plugin.json). Similar to Track A v2 — low priority.
+
+## v2 path (deferred)
+
+Per `docs/HOW_TO_USE.md` "給維護者：v2 path":
+- Split each `starter.py` → `starter_template.py` (TODO skeleton) + `starter_reference.py` (solution)
+- Make `test.py` behavioral (input → output contract) instead of implementation-bound
+- ~20 folders × 3 file changes = ~60 file changes
+- Probably needs its own session
+
+## Historical: what was on the unverified branch
+
+Before verification, Stage 4 + 6 + 7 commits sat on branch `t3-stage-4-6-7-unverified` (rationale: framework deps not pip-installed at write time, API drift risk). After actual verification on 2026-05-13:
+
+```
+50c3bf8 fix(examples): 6 bugs found while verifying Stage 4/6/7 tests
+9f60759 Stage 7 練習 5 (FastAPI deploy)
+1a8ba16 Stage 7 練習 4 (streaming + caching)
+128ca7a Stage 7 練習 3 (observability)
+8119de0 Stage 7 練習 2 (eval)
+5ff3ce3 Stage 7 練習 1 (multi-agent debate)
+8150881 Stage 6 練習 5 (long-term memory)
+7633874 Stage 6 練習 4 (full RAG pipeline)
+7a8af9b Stage 6 練習 3 (chunking comparison)
+b83a5e5 Stage 6 練習 2 (vector DB)
+7d2c1b7 Stage 6 練習 1 (embeddings)
+ab6d358 Stage 4 練習 5 (Pydantic AI)
+6316d83 Stage 4 練習 4 (Smolagents CodeAct)
+ea9c14a Stage 4 練習 3 (LangGraph branching)
+dbe7c91 Stage 4 練習 2 (CrewAI multi-agent)
+8051861 Stage 4 練習 1 (LangGraph + CrewAI)
+```
+
+All merged into `main` via [`cdb0ae3`](https://github.com/WenyuChiou/awesome-agentic-ai-zh/commit/cdb0ae3). Branch deleted from origin after merge.

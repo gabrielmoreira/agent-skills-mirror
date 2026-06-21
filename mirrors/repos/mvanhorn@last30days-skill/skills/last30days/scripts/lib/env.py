@@ -42,7 +42,7 @@ KEYCHAIN_KEYS = (
     "GOOGLE_GENAI_API_KEY", "SCRAPECREATORS_API_KEY", "APIFY_API_TOKEN",
     "AUTH_TOKEN", "CT0", "BSKY_HANDLE", "BSKY_APP_PASSWORD",
     "TRUTHSOCIAL_TOKEN", "BRAVE_API_KEY", "EXA_API_KEY", "SERPER_API_KEY",
-    "OPENROUTER_API_KEY", "PARALLEL_API_KEY", "XQUIK_API_KEY",
+    "OPENROUTER_API_KEY", "PERPLEXITY_API_KEY", "PARALLEL_API_KEY", "XQUIK_API_KEY",
     "XIAOHONGSHU_API_BASE",
 )
 
@@ -408,6 +408,18 @@ def get_config() -> dict[str, Any]:
         ('EXA_API_KEY', None),
         ('SERPER_API_KEY', None),
         ('OPENROUTER_API_KEY', None),
+        ('PERPLEXITY_API_KEY', None),
+        ('LAST30DAYS_PERPLEXITY_MODE', 'sonar'),
+        ('LAST30DAYS_PERPLEXITY_MODEL', None),
+        ('LAST30DAYS_PERPLEXITY_MAX_RESULTS', None),
+        ('LAST30DAYS_PERPLEXITY_SEARCH_CONTEXT_SIZE', None),
+        ('LAST30DAYS_PERPLEXITY_SEARCH_MODE', None),
+        ('LAST30DAYS_PERPLEXITY_DOMAIN_FILTER', None),
+        ('LAST30DAYS_PERPLEXITY_LANGUAGE_FILTER', None),
+        ('LAST30DAYS_PERPLEXITY_COUNTRY', None),
+        ('LAST30DAYS_PERPLEXITY_RECENCY_FILTER', None),
+        ('LAST30DAYS_PERPLEXITY_REASONING_EFFORT', None),
+        ('LAST30DAYS_PERPLEXITY_DEEP_TIMEOUT_SECONDS', '600'),
         ('PARALLEL_API_KEY', None),
         ('XQUIK_API_KEY', None),
         # Host-native search signal: set by the SKILL.md agent-host path when the
@@ -644,12 +656,17 @@ def is_ytdlp_available() -> bool:
 def is_youtube_comments_available(config: dict[str, Any]) -> bool:
     """Check if YouTube comment enrichment is available.
 
-    Requires SCRAPECREATORS_API_KEY AND youtube_comments in INCLUDE_SOURCES.
+    Default-on when SCRAPECREATORS_API_KEY is set — the same key-only backup
+    tier as the YouTube transcript fallback (``is_youtube_sc_available``). Cost
+    is bounded by ``enrich_with_comments(max_videos=3)`` (~3 credits per run).
+    Suppress via ``EXCLUDE_SOURCES=youtube_comments``.
+
+    Note: TikTok/Instagram comments remain explicit ``INCLUDE_SOURCES`` opt-ins
+    (see ``is_tiktok_comments_available``); only YouTube comments are default-on.
     """
     if not config.get('SCRAPECREATORS_API_KEY'):
         return False
-    include = _parse_include_sources(config)
-    return 'youtube_comments' in include
+    return 'youtube_comments' not in _parse_exclude_sources(config)
 
 
 def is_tiktok_comments_available(config: dict[str, Any]) -> bool:
@@ -760,6 +777,12 @@ def get_tiktok_token(config: dict[str, Any]) -> str:
 def _parse_include_sources(config: dict[str, Any]) -> set[str]:
     """Parse INCLUDE_SOURCES config value into a set of lowercase source names."""
     raw = config.get('INCLUDE_SOURCES') or ''
+    return {s.strip().lower() for s in raw.split(',') if s.strip()}
+
+
+def _parse_exclude_sources(config: dict[str, Any]) -> set[str]:
+    """Parse EXCLUDE_SOURCES config value into a set of lowercase source names."""
+    raw = config.get('EXCLUDE_SOURCES') or ''
     return {s.strip().lower() for s in raw.split(',') if s.strip()}
 
 

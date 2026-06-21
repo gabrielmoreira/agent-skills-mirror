@@ -1,6 +1,6 @@
 # netclaw Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-06-14
+Auto-generated from all feature plans. Last updated: 2026-06-20
 
 ## Active Technologies
 - N/A (stateless server; subscription state held in-memory during runtime) (003-gnmi-mcp-server)
@@ -40,6 +40,10 @@ Auto-generated from all feature plans. Last updated: 2026-06-14
 - SQLite (DefenseClaw audit logs), optional SIEM (Splunk HEC, OTLP) (027-netshell-security)
 - Node.js 18+ (Check Point MCPs are NPM packages), Bash (install scripts) + @chkp/* NPM packages (15 total), npx (MCP execution) (031-checkpoint-mcp-integration)
 - N/A (stateless proxy to Check Point APIs) (031-checkpoint-mcp-integration)
+- Python 3.11+ + FastMCP, sqlite3 (stdlib), chromadb, sentence-transformers, torch (CPU) (033-memory-mcp)
+- SQLite (facts, decisions, links) + ChromaDB (embedded sessions) in ~/.openclaw/memory/ (033-memory-mcp)
+- Markdown (SOUL.md), Python 3.10+ (Memory MCP already implemented) + Memory MCP Server (Feature 033), GAIT, OpenClaw workspace (034-layered-memory-integration)
+- SQLite (facts, decisions, links), ChromaDB (session embeddings), MEMORY.md (long-term) (034-layered-memory-integration)
 
 - Python 3.10+ + FastMCP (MCP framework), grpcio + grpcio-tools (gRPC transport), pygnmi (gNMI client library), protobuf, cryptography (TLS handling) (003-gnmi-mcp-server)
 
@@ -59,9 +63,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.10+: Follow standard conventions
 
 ## Recent Changes
+- 034-layered-memory-integration: Added Markdown (SOUL.md), Python 3.10+ (Memory MCP already implemented) + Memory MCP Server (Feature 033), GAIT, OpenClaw workspace
+- 033-memory-mcp: Added Python 3.11+ + FastMCP, sqlite3 (stdlib), chromadb, sentence-transformers, torch (CPU)
 - 031-checkpoint-mcp-integration: Added Node.js 18+ (Check Point MCPs are NPM packages), Bash (install scripts) + @chkp/* NPM packages (15 total), npx (MCP execution)
-- 027-netshell-security: Added Bash (installation scripts), Python 3.10+ (DefenseClaw requires), Go 1.25+, Node.js 20+ + DefenseClaw (Cisco), Docker (container runtime)
-- 027-netshell-security: Added Python 3.10+ (MCP servers, policy scripts), Bash (installation) + NVIDIA OpenShell CLI (uv tool), Docker (container runtime), existing FastMCP servers
 
 
 <!-- MANUAL ADDITIONS START -->

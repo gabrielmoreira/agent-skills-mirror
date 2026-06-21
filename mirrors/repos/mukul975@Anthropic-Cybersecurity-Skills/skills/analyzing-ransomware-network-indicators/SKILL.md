@@ -33,6 +33,24 @@ mitre_attack:
 - T1048
 - T1567.002
 - T1486
+mitre_f3:
+  version: '1.1'
+  tactics:
+  - positioning
+  - monetization
+  techniques:
+  - id: T1219
+    name: Remote Access Tools
+    tactic: positioning
+    source: attack
+  - id: F1018
+    name: Convert to Cryptocurrency
+    tactic: monetization
+    source: f3
+  - id: F1047
+    name: Transfer of funds
+    tactic: monetization
+    source: f3
 ---
 
 # Analyzing Ransomware Network Indicators

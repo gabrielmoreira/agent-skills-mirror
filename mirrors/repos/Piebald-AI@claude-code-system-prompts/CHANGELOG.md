@@ -4,6 +4,14 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.185](https://github.com/Piebald-AI/claude-code-system-prompts/commit/98e4fe2)
+
+_-660 tokens_
+
+- **REMOVED:** Skill: Migrate to Claude Code — Removes the generated skill that guided users through manually migrating leftover OpenAI Codex/Gemini CLI config items that `claude migrate` could not map automatically.
+- Agent Prompt: CLAUDE.md creation — Removes the instruction to offer Claude Code migration when OpenAI Codex or Gemini CLI config is found while creating CLAUDE.md.
+- Skill: /init CLAUDE.md and skill setup (new version) — Removes the Codex/Gemini config presence check and the Phase 8 migration-offer item, so `/init` no longer prioritizes migration of existing foreign-agent config.
+
 # [2.1.182](https://github.com/Piebald-AI/claude-code-system-prompts/commit/57ef1db)
 
 _+94,532 tokens_
