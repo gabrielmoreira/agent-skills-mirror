@@ -9,9 +9,7 @@ type: skill
 
 # Fleet Portable Configuration
 
-The harness ships with `inventory/devices.json` describing Curtis's specific
-4-node fleet. New operators with different hardware should NOT edit that file
-directly. Use this skill to discover their own tailnet and produce an overlay.
+The harness ships **generic** `inventory/*.example.json` templates. Operator-specific topology lives in `~/.megingjord/` overlays merged by `scripts/global/resolve-inventory.js`.
 
 ## Workflow
 
@@ -19,44 +17,32 @@ directly. Use this skill to discover their own tailnet and produce an overlay.
 1. Install Tailscale + authenticate:
      tailscale up
 
-2. Run discovery:
+2. Run discovery (IT-allowed):
      bash scripts/global/fleet-discover.sh
-   → writes ~/.megingjord/devices.json (operator overlay)
+   → writes ~/.megingjord/devices.json
 
-3. Verify:
+3. Verify merged inventory:
      node scripts/global/fleet-config.js fleet
-   → fleet-config reads operator overlay first, repo file second
+   → resolveInventory: example → overlay → FLEET_IP_* env
 
-4. (Optional) Register Cloudflare AI free tier:
-     export CLOUDFLARE_API_TOKEN=...
-     export CLOUDFLARE_ACCOUNT_ID=...
-   → substrate-health.js will probe CF AI on next run
+4. Bootstrap + doctor:
+     npm run harness:setup
+     npm run harness:doctor
 
-5. (Optional) Activate IDE proxy:
-     bash scripts/global/ide-proxy-control.sh start
-   → see instructions/ide-proxy.instructions.md
+5. Dashboard Fleet Setup wizard (Fleet view):
+     /api/fleet/setup/* — credentials to keychain or .env (never localStorage)
+
+6. (Optional) Cloud + probe:
+     npm run capability:probe
 ```
-
-## Inputs the harness needs
-
-- Tailscale tailnet membership (free plan works).
-- One node running Ollama for fleet routing (any host with ≥4GB RAM).
-- Optional: Cloudflare account for free 10K Neurons/day AI catalog.
-
-## Inputs the harness does NOT require
-
-- Specific hostnames (`36gbwinresource`, `windows-laptop`, etc.).
-- Specific GPU class.
-- Specific OS (Linux/macOS/Windows all supported via Tailscale).
 
 ## Reference files
 
-- `inventory/devices.example.json` — generic 2-node example.
-- `inventory/devices.json` — Curtis's specific topology (DO NOT edit).
-- `~/.megingjord/devices.json` — operator-specific overlay (auto-generated).
+- `inventory/devices.example.json` — generic 2-node template (committed)
+- `~/.megingjord/devices.json` — operator overlay (never committed)
+- `docs/howto/fleet-it-setup.md` — IT runbook (#3175)
 
 ## Related skills
 
-- `network-platform-resources` — full inventory of compute platforms.
-- `openclaw-availability-utilization` — OpenClaw gateway operations.
-- `openrouter-free-failover` — OpenRouter cloud fallback.
+- `network-platform-resources` — compute platform inventory; local overlay at `~/.megingjord/`
+- `openrouter-free-failover` — OpenRouter cloud fallback

@@ -118,7 +118,7 @@ swiftlint analyze --compiler-log-path xcodebuild.log
 Or via the command plugin:
 
 ```sh
-swift package plugin swiftlint -- analyze --compile-commands .build/debug.yaml
+swift package plugin swiftlint -- analyze --compiler-log-path swift-build.log
 ```
 
 1. Configure which analyzer rules to enable:

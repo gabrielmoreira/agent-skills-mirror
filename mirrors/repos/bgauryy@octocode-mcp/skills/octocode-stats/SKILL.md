@@ -67,7 +67,7 @@ If the browser did not open, include a manual `open <dashboard-path>` command on
 
 ## References
 
-- Schema: [packages/octocode-shared/src/session/schemas.ts](https://github.com/bgauryy/octocode-mcp/blob/main/packages/octocode-shared/src/session/schemas.ts)
-- Stats path: [packages/octocode-shared/src/paths.ts](https://github.com/bgauryy/octocode-mcp/blob/main/packages/octocode-shared/src/paths.ts)
-- Session docs: [docs/SESSION_PERSISTENCE.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/dev/architecture/SESSION_PERSISTENCE.md)
-- Config: [docs/CONFIGURATION_REFERENCE.md](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/CONFIGURATION_REFERENCE.md)
+- Schema: [packages/octocode-tools-core/src/shared/session/schemas.ts](https://github.com/bgauryy/octocode/blob/main/packages/octocode-tools-core/src/shared/session/schemas.ts)
+- Stats path: [packages/octocode-tools-core/src/shared/paths.ts](https://github.com/bgauryy/octocode/blob/main/packages/octocode-tools-core/src/shared/paths.ts)
+- Session docs: [docs/mcp/SESSION.md](https://github.com/bgauryy/octocode/blob/main/docs/mcp/SESSION.md)
+- Config: [docs/mcp/CONFIGURATION.md](https://github.com/bgauryy/octocode/blob/main/docs/mcp/CONFIGURATION.md)

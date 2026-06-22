@@ -151,26 +151,29 @@ func createBiometricAccessControl() throws -> SecAccessControl {
 func storeSecretWithBiometric(secret: Data, account: String, service: String) throws {
     let accessControl = try createBiometricAccessControl()
 
-    // Delete any existing item first (add-or-update pattern)
-    let deleteQuery: [String: Any] = [
-        kSecClass as String: kSecClassGenericPassword,
-        kSecAttrAccount as String: account,
-        kSecAttrService as String: service
-    ]
-    SecItemDelete(deleteQuery as CFDictionary)
-
-    let addQuery: [String: Any] = [
+    let baseQuery: [String: Any] = [
         kSecClass as String: kSecClassGenericPassword,
         kSecAttrAccount as String: account,
         kSecAttrService as String: service,
-        kSecValueData as String: secret,
-        kSecAttrAccessControl as String: accessControl,
         kSecAttrSynchronizable as String: kCFBooleanFalse  // Never sync biometric-gated secrets
-        // NOTE: Do NOT set kSecAttrAccessible — it conflicts with kSecAttrAccessControl
     ]
 
+    var addQuery = baseQuery
+    addQuery[kSecValueData as String] = secret
+    addQuery[kSecAttrAccessControl as String] = accessControl
+    // NOTE: Do NOT set kSecAttrAccessible — it conflicts with kSecAttrAccessControl
+
     let status = SecItemAdd(addQuery as CFDictionary, nil)
-    guard status == errSecSuccess else {
+    switch status {
+    case errSecSuccess:
+        return
+    case errSecDuplicateItem:
+        let updateAttrs: [String: Any] = [kSecValueData as String: secret]
+        let updateStatus = SecItemUpdate(baseQuery as CFDictionary, updateAttrs as CFDictionary)
+        guard updateStatus == errSecSuccess else {
+            throw BiometricKeychainError.keychainOperationFailed(status: updateStatus)
+        }
+    default:
         throw BiometricKeychainError.keychainOperationFailed(status: status)
     }
 }
@@ -179,6 +182,8 @@ func storeSecretWithBiometric(secret: Data, account: String, service: String) th
 **Critical detail:** Do NOT set both `kSecAttrAccessible` and `kSecAttrAccessControl` in the same query. They conflict — `SecAccessControl` already encodes the accessibility level. Setting both causes `errSecParam`.
 
 **Critical detail:** Always use `ThisDeviceOnly` accessibility for biometric-gated secrets. The `ThisDeviceOnly` suffix ensures the secret is hardware-bound and excluded from iCloud backups. Syncing biometric-gated secrets across devices expands the attack surface.
+
+**Migration note:** Updating the secret data preserves the existing access control. If you intentionally need to change the `SecAccessControl` policy, use an explicit migration path from `keychain-access-control.md`; do not hide delete/re-add inside the normal save path.
 
 ### Step 3 — Retrieve the Secret (Biometric Prompt Appears Automatically)
 

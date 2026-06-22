@@ -100,9 +100,12 @@ keys, and trust evaluation. Route adjacent work deliberately:
 
 - Use `authentication` for Sign in with Apple, passkeys, OAuth UI flows,
   `ASAuthorizationController`, credential state, and account sign-in UX.
-- Use `cryptokit` for general CryptoKit API usage when storage, keychain,
-  Secure Enclave policy, certificate trust, or compliance review is not part of
-  the task.
+- Use `cryptokit` for primitive CryptoKit API syntax and examples when storage,
+  key lifecycle, protocol/trust design, Secure Enclave policy, certificate
+  trust, misuse review, or compliance is not part of the task.
+- Keep application-level E2E encryption security reviews here when the work
+  involves key ownership, derivation, storage, rotation/recovery, Secure Enclave,
+  HPKE/PQC migration, protocol trust boundaries, or misuse analysis.
 - Use `device-integrity` for DeviceCheck and App Attest attestation/assertion
   flows.
 - Use `ios-networking` for URLSession, request pipelines, ATS configuration,
@@ -128,6 +131,8 @@ fail, or not applicable; for each failure, cite the reference file and severity.
 - The selected `kSecClass` matches the item type and primary-key attributes.
 - CryptoKit code avoids nonce reuse, raw shared-secret use, weak hashes, and
   hardcoded keys.
+- Custom encryption designs identify key ownership, derivation, storage,
+  rotation/recovery, availability gates, and protocol/trust boundaries.
 - Secure Enclave code checks availability, handles simulator/device differences,
   persists only `dataRepresentation`, and designs for device-bound keys.
 - App/extension sharing uses full Team ID access groups and matching

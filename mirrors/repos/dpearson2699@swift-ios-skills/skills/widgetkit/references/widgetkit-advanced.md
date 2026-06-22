@@ -1,9 +1,15 @@
 # WidgetKit Advanced Reference
 
+This reference is WidgetKit-first. ActivityKit and App Intents details appear
+only where they affect widget bundles, Live Activity registration, controls, or
+Smart Stack visibility; use sibling `activitykit` and `app-intents` skills for
+full lifecycle, APNs content-state, Siri/Shortcuts/Spotlight, and entity-query
+design.
+
 ## Contents
 
 - [Timeline Strategies](#timeline-strategies)
-- [Push-Based Timeline Reloads (iOS 26+)](#push-based-timeline-reloads-ios-26)
+- [Push-Based Widget and Control Reloads](#push-based-widget-and-control-reloads)
 - [Widget URL Handling and Deep Links](#widget-url-handling-and-deep-links)
 - [Intent-Driven Widget Configuration](#intent-driven-widget-configuration)
 - [Multiple Widget Support in WidgetBundle](#multiple-widget-support-in-widgetbundle)
@@ -79,11 +85,14 @@ Each configured widget has a daily refresh limit. Exemptions apply for:
 
 WidgetKit does not impose refresh limits when debugging in Xcode.
 
-## Push-Based Timeline Reloads (iOS 26+)
+## Push-Based Widget and Control Reloads
 
 ### WidgetPushHandler
 
-Use push notifications to trigger timeline reloads without scheduled polling.
+Use WidgetKit push notifications as a budgeted, opportunistic reload signal in
+addition to normal timelines. Add the Push Notifications capability to the
+widget extension, implement `WidgetPushHandler`, and register the handler on the
+widget configuration with `.pushHandler(...)`.
 
 ```swift
 struct MyWidgetPushHandler: WidgetPushHandler {
@@ -94,27 +103,77 @@ struct MyWidgetPushHandler: WidgetPushHandler {
         }
     }
 }
+
+struct CaffeineTrackerWidget: Widget {
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: "CaffeineTracker", provider: Provider()) { entry in
+            CaffeineTrackerView(entry: entry)
+        }
+        .configurationDisplayName("Caffeine Tracker")
+        .pushHandler(MyWidgetPushHandler.self)
+    }
+}
 ```
 
 ### Server-Side Integration
 
 Send an APNs push with the widget's push token. The system calls your
 `TimelineProvider.getTimeline` or `AppIntentTimelineProvider.timeline(for:in:)`
-when the push arrives.
+when the push arrives. Use `apns-push-type: widgets`, an `apns-topic` of
+`<bundleID>.push-type.widgets`, and an `aps` payload with
+`"content-changed": true`. WidgetKit push notifications cannot use broadcast
+channels. Treat this as a reload signal; keep durable state in shared storage
+or refetch it when the provider runs.
 
 ### ControlPushHandler
 
-Equivalent handler for Control Center controls:
+Controls use their own push handler and APNs push type. Register the handler on
+the `ControlWidgetConfiguration` with `.pushHandler(...)`.
 
 ```swift
+struct GarageDoorControl: ControlWidget {
+    var body: some ControlWidgetConfiguration {
+        StaticControlConfiguration(kind: "GarageDoor") {
+            ControlWidgetButton(action: OpenGarageDoorIntent()) {
+                Label("Garage", systemImage: "door.garage.open")
+            }
+        }
+        .pushHandler(MyControlPushHandler.self)
+    }
+}
+
 struct MyControlPushHandler: ControlPushHandler {
-    func pushTokensDidChange(controls: [ControlPushInfo]) {
+    func pushTokensDidChange(controls: [ControlInfo]) {
         for control in controls {
-            let tokenString = control.token.map { String(format: "%02x", $0) }.joined()
+            guard let token = control.pushInfo?.token else { continue }
+            let tokenString = token.map { String(format: "%02x", $0) }.joined()
             Task {
                 try await ServerAPI.shared.register(controlPushToken: tokenString)
             }
         }
+    }
+}
+```
+
+For remote control reloads, use `apns-push-type: controls`, an `apns-topic` of
+`<bundleID>.push-type.controls`, and an `aps` payload with
+`"content-changed": true`. Do not encode the control's new state as a custom
+payload key and expect WidgetKit to apply it; update shared state through the
+app, server, or control action, then let the value provider read it.
+
+For `ControlWidgetToggle`, the action must conform to `SetValueIntent` with a
+Boolean value. The system fills `value` with the new toggle state.
+
+```swift
+struct ToggleFlashlightIntent: SetValueIntent {
+    static var title: LocalizedStringResource = "Toggle Flashlight"
+
+    @Parameter(title: "On")
+    var value: Bool
+
+    func perform() async throws -> some IntentResult {
+        try await FlashlightController.shared.setEnabled(value)
+        return .result()
     }
 }
 ```
@@ -139,9 +198,11 @@ struct SmallWidgetView: View {
 }
 ```
 
-### Link (Medium and Larger Widgets)
+### Link (Multiple Targets)
 
-Use `Link` for multiple tap targets in `.systemMedium` and larger widgets.
+Use `Link` for multiple tap targets in `.accessoryRectangular`, `.systemSmall`,
+and larger system widgets. You can combine one `widgetURL(_:)` for the general
+surface with `Link` controls for specific subregions.
 
 ```swift
 struct MediumWidgetView: View {
@@ -179,74 +240,25 @@ struct MyApp: App {
 }
 ```
 
-**Important:** `.systemSmall` widgets support only `widgetURL`, not `Link`.
+**Important:** If the view hierarchy includes more than one `widgetURL(_:)`,
+the behavior is undefined. Use `Link` for additional targets.
 
 ## Intent-Driven Widget Configuration
 
-### Defining a WidgetConfigurationIntent
+WidgetKit uses `WidgetConfigurationIntent` as the configuration type for
+`AppIntentConfiguration` and `AppIntentTimelineProvider`. Keep the intent type
+available to the widget extension or a shared framework linked into it. Design
+of `AppEntity`, `EntityQuery`, Siri, Shortcuts, Spotlight, and parameter
+resolution belongs in the sibling `app-intents` skill.
 
-```swift
-struct SelectCategoryIntent: WidgetConfigurationIntent {
-    static var title: LocalizedStringResource = "Select Category"
-    static var description: IntentDescription = "Choose a category to display."
+WidgetKit integration points to review here:
+- `AppIntentConfiguration(kind:intent:provider:content:)` uses the intent type.
+- `AppIntentTimelineProvider` receives that intent in `snapshot` and `timeline`.
+- `recommendations()` may return `AppIntentRecommendation` values for the
+  widget gallery.
 
-    @Parameter(title: "Category")
-    var category: CategoryEntity
-
-    init() {}
-
-    init(category: CategoryEntity) {
-        self.category = category
-    }
-}
-```
-
-### Entity Query for Dynamic Options
-
-```swift
-struct CategoryEntity: AppEntity {
-    static var typeDisplayRepresentation = TypeDisplayRepresentation(name: "Category")
-    static var defaultQuery = CategoryQuery()
-
-    var id: String
-    var name: String
-
-    var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(name)")
-    }
-}
-
-struct CategoryQuery: EntityQuery {
-    func entities(for identifiers: [String]) async throws -> [CategoryEntity] {
-        await DataStore.shared.categories(for: identifiers)
-    }
-
-    func suggestedEntities() async throws -> [CategoryEntity] {
-        await DataStore.shared.allCategories()
-    }
-
-    func defaultResult() async -> CategoryEntity? {
-        await DataStore.shared.defaultCategory()
-    }
-}
-```
-
-### Recommendations
-
-Provide pre-configured suggestions for the widget gallery:
-
-```swift
-func recommendations() -> [AppIntentRecommendation<SelectCategoryIntent>] {
-    let categories: [(String, CategoryEntity)] = [
-        ("Groceries", .groceries),
-        ("Work Tasks", .work),
-    ]
-    return categories.map { name, entity in
-        let intent = SelectCategoryIntent(category: entity)
-        return AppIntentRecommendation(intent: intent, description: name)
-    }
-}
-```
+Do not expand this section into full intent/entity examples; route that work to
+`app-intents`.
 
 ## Multiple Widget Support in WidgetBundle
 
@@ -390,6 +402,16 @@ var body: some View {
 Use `.widgetAccentable()` to mark views that should receive the accent tint in
 `.accented` rendering mode.
 
+For images that need special treatment in accented mode, use
+`Image.widgetAccentedRenderingMode(_:)`. Reserve `.fullColor` for content such
+as album art or book covers where preserving the original image matters.
+
+```swift
+Image("album-art")
+    .resizable()
+    .widgetAccentedRenderingMode(.fullColor)
+```
+
 ## Dynamic Island Expanded Layout Patterns
 
 ### Full Layout Example
@@ -525,13 +547,18 @@ Task {
 }
 ```
 
-### Channel-Based Push (iOS 26+)
+### Channel-Based ActivityKit Push (iOS 18+)
+
+ActivityKit broadcast channels are for Live Activity updates, not WidgetKit
+timeline push notifications. Pass a valid base64-encoded channel ID that your
+server created through APNs channel management.
 
 ```swift
+let channelID = "ZGVsaXZlcnktdXBkYXRlcw=="
 let activity = try Activity.request(
     attributes: attributes,
     content: content,
-    pushType: .channel("delivery-updates")
+    pushType: .channel(channelID)
 )
 ```
 
@@ -747,13 +774,13 @@ how long the relevance lasts.
 
 ### WidgetRelevance (AppIntentTimelineProvider)
 
-```swift
-func relevance() async -> WidgetRelevance<SelectCategoryIntent> {
-    let topCategory = await DataStore.shared.mostActiveCategory()
-    let intent = SelectCategoryIntent(category: topCategory)
-    return WidgetRelevance(intent, score: 80)
-}
-```
+On iPhone and iPad, prefer `TimelineEntryRelevance` on timeline entries and
+donate App Intents that match configurable widget parameters. Smart Stacks on
+iPhone and iPad don't use the timeline provider's `relevance()` callback.
+
+On watchOS, use `relevance()` only when providing RelevanceKit contextual clues.
+Return `WidgetRelevance([WidgetRelevanceAttribute(...)])`; there is no
+`WidgetRelevance(intent, score:)` initializer.
 
 ## ActivityState Lifecycle
 
@@ -798,7 +825,8 @@ let activity = try Activity.request(
     style: .standard
 )
 
-// Transient: automatically dismissed after a period
+// Transient: appears in Dynamic Island's extended presentation and ends
+// automatically when the user leaves that interaction context.
 let activity = try Activity.request(
     attributes: attributes,
     content: content,
@@ -807,8 +835,9 @@ let activity = try Activity.request(
 )
 ```
 
-Use `.transient` for short-lived notifications like sports scores or transit
-arrivals that do not need persistent display.
+Use `.transient` for short interactions that should not persist as a standard
+Live Activity after the user locks the device, collapses the Dynamic Island,
+leaves the app, or performs other tasks outside the Dynamic Island.
 
 ## Dismissal Policies
 
@@ -966,5 +995,9 @@ reload cadence to how often the underlying data actually changes.
 - [ControlWidgetButton](https://sosumi.ai/documentation/widgetkit/controlwidgetbutton)
 - [ControlWidgetToggle](https://sosumi.ai/documentation/widgetkit/controlwidgettoggle)
 - [Keeping a widget up to date](https://sosumi.ai/documentation/widgetkit/keeping-a-widget-up-to-date)
+- [Updating widgets with WidgetKit push notifications](https://sosumi.ai/documentation/widgetkit/updating-widgets-with-widgetkit-push-notifications)
+- [Updating controls locally and remotely](https://sosumi.ai/documentation/widgetkit/updating-controls-locally-and-remotely)
+- [Linking to specific app scenes](https://sosumi.ai/documentation/widgetkit/linking-to-specific-app-scenes-from-your-widget-or-live-activity)
 - [Adding StandBy and CarPlay support](https://sosumi.ai/documentation/widgetkit/adding-standby-and-carplay-support-to-your-widget)
 - [Optimizing for accented rendering and Liquid Glass](https://sosumi.ai/documentation/widgetkit/optimizing-your-widget-for-accented-rendering-mode-and-liquid-glass)
+- [Increasing widget visibility in Smart Stacks](https://sosumi.ai/documentation/widgetkit/widget-suggestions-in-smart-stacks)

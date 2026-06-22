@@ -8,7 +8,11 @@ Use `List` for feed-style content and settings-style rows where built-in row reu
 
 - Prefer `List` for long, vertically scrolling content with repeated rows.
 - Use `Section` headers to group related rows.
-- Use `ScrollPosition` with `.scrollPosition($scrollPosition)` for scroll-to-top or jump-to-id.
+- **Edge scrolls:** use `List` + `ScrollPosition` with
+  `.scrollPosition($scrollPosition)` for top/bottom scroll actions on iOS 18+.
+- **Item or section jumps:** use `ScrollView` + `LazyVStack` with
+  `.scrollTargetLayout()` and stable explicit IDs for reliable jump-to-id
+  behavior; do not assume `List` section headers are scroll targets.
 - Use `.listStyle(.plain)` for modern feed layouts.
 - Use `.listStyle(.grouped)` for multi-section discovery/search pages where section grouping helps.
 - Apply `.scrollContentBackground(.hidden)` + a custom background when you need a themed surface.
@@ -67,9 +71,16 @@ struct SettingsView: View {
 ## Design choices to keep
 
 - Use `List` for dynamic feeds, settings, and any UI where row semantics help.
-- Use stable IDs for rows to keep animations and scroll positioning reliable.
+- Use stable IDs for rows to keep diffing and scroll positioning reliable.
 - Prefer `.contentShape(Rectangle())` on rows that should be tappable end-to-end.
 - Use `.refreshable` for pull-to-refresh feeds when the data source supports it.
+- Treat dynamically changing row heights as a practical `List` gotcha:
+  expanding or collapsing row content may snap instead of smoothly
+  interpolating. Keep `List` rows structurally simple, or move complex
+  expanding content to `ScrollView` + `LazyVStack`. Frame this as a
+  container/layout decision, not as a full animation recipe. Do not prescribe
+  spring parameters, transition styles, or animation timing here; defer those
+  choices to `swiftui-animation`.
 
 ## iOS 26 Scroll Edge Effects
 

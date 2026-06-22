@@ -75,8 +75,9 @@ private var tripsByEndDate: [Trip]
 
 ```swift
 static var recentDescriptor: FetchDescriptor<Trip> {
+    let now = Date()
     var d = FetchDescriptor<Trip>(
-        predicate: #Predicate { $0.startDate > Date.now },
+        predicate: #Predicate { $0.startDate > now },
         sortBy: [SortDescriptor(\.startDate)]
     )
     d.fetchLimit = 10
@@ -302,8 +303,12 @@ struct SortedTripList: View {
 
 ## Sectioned Queries Pattern
 
-SwiftData does not provide a built-in sectioned query like Core Data's
-`NSFetchedResultsController`. Build sectioned views manually:
+Current Apple docs include `sectionBy:` `Query` initializers for sectioned
+queries in iOS 27 / Xcode 27 beta. Use them only when the deployment target and
+SDK support those beta APIs.
+
+For iOS 26-compatible guidance, custom grouping, or section keys derived from
+formatters/business logic, build sectioned views manually:
 
 ### Using Dictionary Grouping
 
@@ -347,7 +352,7 @@ struct StatusSectionedView: View {
     @Query(sort: \.startDate) private var trips: [Trip]
 
     private func trips(for status: TripStatus) -> [Trip] {
-        let now = Date.now
+        let now = Date()
         return trips.filter { trip in
             switch status {
             case .upcoming: trip.startDate > now
@@ -471,8 +476,9 @@ struct AdvancedTripList: View {
 @ModelActor
 actor TripDataHandler {
     func fetchUpcomingTrips() throws -> [PersistentIdentifier] {
+        let now = Date()
         let descriptor = FetchDescriptor<Trip>(
-            predicate: #Predicate { $0.startDate > Date.now },
+            predicate: #Predicate { $0.startDate > now },
             sortBy: [SortDescriptor(\.startDate)]
         )
         return try modelContext.fetchIdentifiers(descriptor)
@@ -672,4 +678,3 @@ Parameters:
 - `batchSize`: Objects per batch (default 5000). Lower values use less memory.
 - `allowEscapingMutations`: When `false`, objects are autoreleased after the
   block. Set to `true` only if mutations must persist beyond the block.
-

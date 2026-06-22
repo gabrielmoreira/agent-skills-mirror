@@ -109,13 +109,11 @@ import Security
 /// iOS 8.0+ (SecAccessControlCreateWithFlags), iOS 11.3+ (.biometryCurrentSet)
 func storeCredential(account: String, secret: Data, service: String) throws {
     // ✅ CORRECT — secrets are persisted in Keychain with explicit access control
-    // Delete existing item first to avoid errSecDuplicateItem
-    let deleteQuery: [String: Any] = [
+    let baseQuery: [String: Any] = [
         kSecClass as String: kSecClassGenericPassword,
         kSecAttrAccount as String: account,
         kSecAttrService as String: service
     ]
-    SecItemDelete(deleteQuery as CFDictionary)
 
     var error: Unmanaged<CFError>?
     guard let accessControl = SecAccessControlCreateWithFlags(
@@ -127,20 +125,24 @@ func storeCredential(account: String, secret: Data, service: String) throws {
         throw error!.takeRetainedValue() as Error
     }
 
-    let query: [String: Any] = [
-        kSecClass as String: kSecClassGenericPassword,
-        kSecAttrAccount as String: account,
-        kSecAttrService as String: service,
-        kSecAttrAccessControl as String: accessControl,
-        kSecValueData as String: secret
-    ]
+    var addQuery = baseQuery
+    addQuery[kSecAttrAccessControl as String] = accessControl
+    addQuery[kSecValueData as String] = secret
 
-    let status = SecItemAdd(query as CFDictionary, nil)
-    guard status == errSecSuccess else {
+    let status = SecItemAdd(addQuery as CFDictionary, nil)
+    if status == errSecDuplicateItem {
+        let updateAttrs: [String: Any] = [kSecValueData as String: secret]
+        let updateStatus = SecItemUpdate(baseQuery as CFDictionary, updateAttrs as CFDictionary)
+        guard updateStatus == errSecSuccess else {
+            throw NSError(domain: NSOSStatusErrorDomain, code: Int(updateStatus))
+        }
+    } else if status != errSecSuccess {
         throw NSError(domain: NSOSStatusErrorDomain, code: Int(status))
     }
 }
 ```
+
+Use a deliberate migration path, not a normal write, when changing immutable keychain attributes such as `SecAccessControl`.
 
 ### Anti-pattern: common AI-generated credential storage
 

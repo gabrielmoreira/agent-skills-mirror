@@ -22,7 +22,10 @@ Add the camera usage description to Info.plist before using any scanner:
 <string>Camera access is needed to scan text and barcodes.</string>
 ```
 
-Request permission before presenting the scanner:
+Request permission before presenting the scanner. The canonical order is:
+Info.plist usage string, explicit camera access request, `isSupported` and
+`isAvailable` checks, then present the scanner and call `startScanning()` after
+presentation on the main actor.
 
 ```swift
 import AVFoundation
@@ -46,13 +49,15 @@ func requestCameraAccess() async -> Bool {
 
 `DataScannerViewController` provides a full-screen live camera scanner for text
 and barcodes with built-in highlighting and interaction. Available on devices
-with an A12 chip or later (iOS 16+).
+with an A12 Bionic chip or later (iOS 16+), but unsupported for apps running in
+visionOS.
 
 ### Availability Checking
 
 Always check both hardware support and runtime availability before presenting.
 
 ```swift
+import Vision
 import VisionKit
 
 func canUseDataScanner() -> Bool {
@@ -68,8 +73,13 @@ func canUseDataScanner() -> Bool {
 }
 ```
 
-`isSupported` checks hardware capability (A12+). `isAvailable` checks that the
-camera is authorized and not restricted by device management. Both must be true.
+`isSupported` checks hardware and platform capability (A12+ and not visionOS).
+`isAvailable` checks that the camera is authorized and not restricted by Screen
+Time or device management. Both must be true.
+
+For barcode scanner configuration, VisionKit uses `VNBarcodeSymbology` values in
+`DataScannerViewController.RecognizedDataType.barcode(symbologies:)`. Do not
+substitute modern Vision's `BarcodeSymbology` there.
 
 ### Configuration and Initialization
 
@@ -91,9 +101,11 @@ func createTextScanner() -> DataScannerViewController {
 }
 
 func createBarcodeScanner() -> DataScannerViewController {
+    let barcodeSymbologies: [VNBarcodeSymbology] = [.qr, .ean13, .code128]
+
     DataScannerViewController(
         recognizedDataTypes: [
-            .barcode(symbologies: [.qr, .ean13, .code128]),
+            .barcode(symbologies: barcodeSymbologies),
         ],
         qualityLevel: .fast,
         recognizesMultipleItems: false,
@@ -105,10 +117,12 @@ func createBarcodeScanner() -> DataScannerViewController {
 }
 
 func createMixedScanner() -> DataScannerViewController {
+    let barcodeSymbologies: [VNBarcodeSymbology] = [.qr, .ean13]
+
     DataScannerViewController(
         recognizedDataTypes: [
             .text(languages: ["en"]),
-            .barcode(symbologies: [.qr, .ean13]),
+            .barcode(symbologies: barcodeSymbologies),
         ],
         qualityLevel: .balanced,
         recognizesMultipleItems: true,
@@ -183,6 +197,7 @@ import VisionKit
 
 final class ScannerCoordinator: NSObject, DataScannerViewControllerDelegate {
 
+    var hasStartedScanning = false
     var onTextRecognized: ((String) -> Void)?
     var onBarcodeRecognized: ((String, VNBarcodeSymbology) -> Void)?
 
@@ -290,6 +305,8 @@ in SwiftUI views.
 
 ```swift
 import SwiftUI
+import AVFoundation
+import Vision
 import VisionKit
 
 struct DataScannerRepresentable: UIViewControllerRepresentable {
@@ -317,7 +334,12 @@ struct DataScannerRepresentable: UIViewControllerRepresentable {
         _ controller: DataScannerViewController,
         context: Context
     ) {
-        // No dynamic updates needed
+        guard !context.coordinator.hasStartedScanning else { return }
+        context.coordinator.hasStartedScanning = true
+        Task { @MainActor in
+            // SwiftUI has inserted the controller by the time update runs.
+            try? controller.startScanning()
+        }
     }
 
     func makeCoordinator() -> Coordinator {
@@ -334,6 +356,7 @@ struct DataScannerRepresentable: UIViewControllerRepresentable {
     @MainActor
     final class Coordinator: NSObject, DataScannerViewControllerDelegate {
         let parent: DataScannerRepresentable
+        var hasStartedScanning = false
 
         init(parent: DataScannerRepresentable) {
             self.parent = parent
@@ -386,25 +409,38 @@ struct DataScannerRepresentable: UIViewControllerRepresentable {
 
 ```swift
 import SwiftUI
+import AVFoundation
 import VisionKit
 
 struct ScannerView: View {
     @State private var recognizedText: [String] = []
     @State private var recognizedBarcodes: [String] = []
     @State private var isShowingScanner = false
+    @State private var scannerUnavailable = false
 
     var body: some View {
         VStack {
             if DataScannerViewController.isSupported {
                 Button("Scan") {
-                    isShowingScanner = true
+                    Task { @MainActor in
+                        guard await requestCameraAccess(),
+                              DataScannerViewController.isAvailable else {
+                            scannerUnavailable = true
+                            return
+                        }
+
+                        scannerUnavailable = false
+                        isShowingScanner = true
+                    }
                 }
                 .fullScreenCover(isPresented: $isShowingScanner) {
+                    let barcodeSymbologies: [VNBarcodeSymbology] = [.qr]
+
                     NavigationStack {
                         DataScannerRepresentable(
                             recognizedDataTypes: [
                                 .text(languages: ["en"]),
-                                .barcode(symbologies: [.qr]),
+                                .barcode(symbologies: barcodeSymbologies),
                             ],
                             qualityLevel: .balanced,
                             recognizesMultipleItems: true,
@@ -426,6 +462,14 @@ struct ScannerView: View {
                     "Scanner Not Available",
                     systemImage: "camera.fill",
                     description: Text("This device does not support scanning.")
+                )
+            }
+
+            if scannerUnavailable {
+                ContentUnavailableView(
+                    "Scanner Not Available",
+                    systemImage: "camera.fill",
+                    description: Text("Camera access is required to scan.")
                 )
             }
 
@@ -462,17 +506,20 @@ struct AutoStartScannerRepresentable: UIViewControllerRepresentable {
             isHighlightingEnabled: true
         )
         scanner.delegate = context.coordinator
-        // Start scanning after a brief delay to ensure presentation is complete
-        Task { @MainActor in
-            try? scanner.startScanning()
-        }
         return scanner
     }
 
     func updateUIViewController(
         _ controller: DataScannerViewController,
         context: Context
-    ) {}
+    ) {
+        guard !context.coordinator.hasStartedScanning else { return }
+        context.coordinator.hasStartedScanning = true
+        Task { @MainActor in
+            // updateUIViewController runs after SwiftUI has inserted the controller.
+            try? controller.startScanning()
+        }
+    }
 
     func makeCoordinator() -> ScannerCoordinator {
         ScannerCoordinator()

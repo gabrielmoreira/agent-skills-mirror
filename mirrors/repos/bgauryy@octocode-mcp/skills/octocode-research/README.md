@@ -1,12 +1,12 @@
 <div align="center">
-  <img src="https://github.com/bgauryy/octocode-mcp/raw/main/packages/octocode-mcp/assets/logo_white.png" width="400px" alt="Octocode Logo">
+  <img src="https://github.com/bgauryy/octocode/raw/main/packages/octocode-mcp/assets/logo_white.png" width="400px" alt="Octocode Logo">
 
   <h1>Octocode Research Skill</h1>
 
   <p>HTTP server wrapping 13 Octocode MCP tools with intent-based prompt selection</p>
 
   [![Skill](https://img.shields.io/badge/skill-agentskills.io-purple)](https://agentskills.io/what-are-skills)
-  [![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/bgauryy/octocode-mcp/blob/main/LICENSE)
+  [![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/bgauryy/octocode/blob/main/LICENSE)
   [![Port](https://img.shields.io/badge/port-1987-green)](http://localhost:1987)
 
 </div>
@@ -39,10 +39,10 @@ The server is not just a pass-through — it provides a persistent runtime layer
 ## Quick Start
 
 ```bash
-npx add-skill https://github.com/bgauryy/octocode-mcp/tree/main/skills/octocode-research
+npx add-skill https://github.com/bgauryy/octocode/tree/main/skills/octocode-research
 ```
 
-> Requires GitHub auth. See [Authentication Setup](https://github.com/bgauryy/octocode-mcp/blob/main/docs/configuration/providers/AUTHENTICATION_SETUP.md).
+> Requires GitHub auth. See [Authentication Setup](https://github.com/bgauryy/octocode/blob/main/docs/mcp/AUTHENTICATION.md).
 
 Or manually:
 
@@ -189,7 +189,7 @@ Per-service circuit breakers with retry and backoff:
 
 Collects de-identified telemetry (usage counts, error rates). Never collects source code, env vars, or PII. Opt out: `export LOG=false`. Local logs at `~/.octocode/logs/` are not uploaded.
 
-[Privacy Policy](https://github.com/bgauryy/octocode-mcp/blob/main/PRIVACY.md) &middot; [Terms](https://github.com/bgauryy/octocode-mcp/blob/main/TERMS.md)
+[Privacy Policy](https://github.com/bgauryy/octocode/blob/main/PRIVACY.md) &middot; [Terms](https://github.com/bgauryy/octocode/blob/main/TERMS.md)
 
 ---
 
@@ -204,4 +204,4 @@ Collects de-identified telemetry (usage counts, error rates). Never collects sou
 
 ---
 
-MIT &copy; 2026 Octocode &mdash; [LICENSE](https://github.com/bgauryy/octocode-mcp/blob/main/LICENSE)
+MIT &copy; 2026 Octocode &mdash; [LICENSE](https://github.com/bgauryy/octocode/blob/main/LICENSE)

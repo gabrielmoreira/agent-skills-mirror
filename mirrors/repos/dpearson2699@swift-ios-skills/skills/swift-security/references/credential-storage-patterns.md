@@ -94,7 +94,7 @@ When you add a Keychain item without specifying `kSecAttrAccessible`, the system
 
 ### Anti-Pattern 5 — Non-Atomic Token Refresh
 
-When an access token expires, the app must delete the old token and store the new one. If the app crashes between these operations, the Keychain enters an inconsistent state. Concurrent refresh attempts compound the problem: two threads can both detect expiry, both call the refresh endpoint, and one writes a stale or already-rotated refresh token. With Refresh Token Rotation (RTR), this race can invalidate the entire token family.
+When an access token expires, the app must replace it atomically with add-or-update semantics. If the app deletes the old token and stores the new one as separate operations, a crash between those operations leaves the Keychain in an inconsistent state. Concurrent refresh attempts compound the problem: two threads can both detect expiry, both call the refresh endpoint, and one writes a stale or already-rotated refresh token. With Refresh Token Rotation (RTR), this race can invalidate the entire token family.
 
 ### Anti-Pattern 6 — Incomplete Credential Clearing on Logout
 

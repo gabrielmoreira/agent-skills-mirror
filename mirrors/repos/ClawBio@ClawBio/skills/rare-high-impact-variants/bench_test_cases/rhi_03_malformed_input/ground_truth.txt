@@ -1,0 +1,9 @@
+# BENCHMARK: rare-high-impact-variants v0.1.0
+# PAYLOAD: input.txt
+# GROUND_TRUTH_RARE_HIGH_IMPACT_COUNT: 0
+# RARE_HIGH_IMPACT_COUNT_TOLERANCE: 0
+# FINDING_CATEGORY: correct_with_warnings
+# FINDING: RHI-03 malformed input handled gracefully (no valid VCF data lines)
+# HAZARD_METRIC: malformed input does not crash; non-VCF lines are skipped
+# DERIVATION: no line has >=8 tab-delimited columns -> 0 parsed variants -> 0
+# CITATION: Synthetic test data

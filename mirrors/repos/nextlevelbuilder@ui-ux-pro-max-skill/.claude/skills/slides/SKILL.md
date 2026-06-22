@@ -11,8 +11,6 @@ metadata:
 
 Strategic HTML presentation design with data visualization.
 
-<args>$ARGUMENTS</args>
-
 ## When to Use
 
 - Marketing presentations and pitch decks

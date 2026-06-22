@@ -70,6 +70,7 @@ Use this for external links, legal pages, or routes that should leave the embedd
 ## Calling JavaScript
 
 `callJavaScript` executes an async JavaScript function and returns an optional `Any`.
+Pass only the function body. Do not wrap the script in `function foo() { ... }` or append a call expression.
 
 ```swift
 let script = """
@@ -85,10 +86,12 @@ let headings = result as? [[String: Any]] ?? []
 ```
 
 Cast immediately into the specific structure the app expects.
+If the function body has no explicit return, the result is `nil`; if JavaScript explicitly returns `null`, handle `NSNull`.
 
 ## Passing arguments into JavaScript
 
 Arguments become local variables inside the JavaScript function.
+Use them for Swift-provided values instead of interpolating values into the script string. Supported values include numbers, strings, dates, and arrays, dictionaries, and optionals of those value types.
 
 ```swift
 let topOffset = try await page.callJavaScript(
@@ -108,4 +111,4 @@ For coarse event handoff, a custom navigation pattern can work:
 - `NavigationDeciding` intercepts the URL
 - the decider extracts data and returns `.cancel`
 
-Use this for simple completion or routing signals. Do not present it as a full structured messaging replacement for legacy `WKUserContentController` script handlers.
+Use this for simple completion or routing signals. Do not present it as a full structured messaging replacement for legacy `WKUserContentController` script handlers, and keep richer native/web messaging on a `WKWebView` fallback until the SwiftUI-facing API covers the need.

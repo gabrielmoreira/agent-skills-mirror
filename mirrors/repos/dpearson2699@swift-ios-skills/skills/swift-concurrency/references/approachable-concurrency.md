@@ -55,6 +55,8 @@ conformance outside the matching isolation context.
 ## Offloading Work
 
 - Use `@concurrent` on async functions that must run on the concurrent pool.
+- Do not present `nonisolated` alone as a CPU-offloading mechanism; it opts out
+  of actor isolation, while `@concurrent` requests the concurrent pool.
 - Make types or members `nonisolated` only when they are truly thread-safe and
   used off the main actor.
 - Continue to respect `Sendable` boundaries when values cross actors or tasks.
@@ -67,6 +69,7 @@ conformance outside the matching isolation context.
 | `Task.detached` breaking isolation | Ignores inherited actor context | Use `Task { }` unless you truly need detachment |
 | Redundant `@MainActor` everywhere | Default isolation already provides it | Remove explicit annotations |
 | `nonisolated` on mutable state | Breaks the safety guarantee | Keep mutable state isolated |
+| Explicit-capture closure issue in Xcode 26.5 | Swift 6.3.2 release-note bug with `nonisolated(nonsending)` closure parameters | See [diagnostics.md](diagnostics.md) for the documented workarounds |
 
 ## Concurrency Keywords
 

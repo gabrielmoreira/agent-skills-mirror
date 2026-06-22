@@ -2,7 +2,8 @@
 
 Complete implementation patterns for TipKit including custom styles, event-based
 rules, tip groups, testing strategies, onboarding flows, and SwiftUI previews.
-All examples target iOS 17+ with Swift 6.3 conventions.
+Examples target iOS 17+ with Swift 6.3 conventions unless a section explicitly
+calls out a newer availability requirement.
 
 ## Contents
 
@@ -10,11 +11,20 @@ All examples target iOS 17+ with Swift 6.3 conventions.
 - [TipView and popoverTip Placement](#tipview-and-popovertip-placement)
 - [Event-Based Rule with Donation Counting](#event-based-rule-with-donation-counting)
 - [Custom TipViewStyle](#custom-tipviewstyle)
-- [TipGroup Sequencing](#tipgroup-sequencing)
+- [TipGroup Sequencing (iOS 18+)](#tipgroup-sequencing-ios-18)
 - [Testing Strategies](#testing-strategies)
 - [Tip with Action Buttons](#tip-with-action-buttons)
 - [Integration with Onboarding Flow](#integration-with-onboarding-flow)
+- [Reusable Tip Identifiers](#reusable-tip-identifiers)
+- [CloudKit Sync (iOS 18+)](#cloudkit-sync-ios-18)
 - [Full App Integration Example](#full-app-integration-example)
+
+## Availability Notes
+
+- TipKit core APIs are iOS 17+.
+- `TipGroup`, `.cloudKitContainer(...)`, and `MaxDisplayDuration` are iOS 18+.
+- `resetEligibility()` is iOS 26+.
+- `Tips.resetDatastore()` must run before `Tips.configure(_:)`.
 
 ## Complete Tip with Rules and Events
 
@@ -52,7 +62,7 @@ struct AdvancedSearchTip: Tip {
         #Rule(Self.searchPerformed) { $0.donations.count >= 3 }
     }
 
-    var options: [TipOption] {
+    var options: [any TipOption] {
         MaxDisplayCount(5)
     }
 }
@@ -71,7 +81,7 @@ struct SearchView: View {
         SearchBar(text: $query, onSubmit: {
             performSearch(query)
             // Donate each time the user searches
-            AdvancedSearchTip.searchPerformed.donate()
+            AdvancedSearchTip.searchPerformed.sendDonation()
         })
     }
 }
@@ -213,7 +223,7 @@ struct DocumentView: View {
             ToolbarItem {
                 Button("Save") {
                     saveDocument()
-                    KeyboardShortcutTip.manualSaveEvent.donate()
+                    KeyboardShortcutTip.manualSaveEvent.sendDonation()
                 }
             }
         }
@@ -247,7 +257,7 @@ struct DetailedTip: Tip {
 }
 
 // Donate with associated value
-DetailedTip.itemViewed.donate(
+DetailedTip.itemViewed.sendDonation(
     DetailedTip.DonationInfo(category: "premium", timestamp: .now)
 )
 ```
@@ -269,7 +279,7 @@ struct BrandedTipStyle: TipViewStyle {
                 .background(.blue.gradient, in: RoundedRectangle(cornerRadius: 10))
 
             VStack(alignment: .leading) {
-                configuration.title
+                configuration.title?
                     .font(.headline)
 
                 configuration.message?
@@ -280,7 +290,7 @@ struct BrandedTipStyle: TipViewStyle {
                     HStack {
                         ForEach(configuration.actions) { action in
                             Button(action: action.handler) {
-                                action.label
+                                action.label()
                                     .font(.subheadline.bold())
                             }
                             .buttonStyle(.bordered)
@@ -324,7 +334,7 @@ struct CompactTipStyle: TipViewStyle {
             configuration.image?
                 .foregroundStyle(.tint)
 
-            configuration.title
+            configuration.title?
                 .font(.caption.bold())
         }
         .padding(.horizontal)
@@ -334,11 +344,16 @@ struct CompactTipStyle: TipViewStyle {
 }
 ```
 
-## TipGroup Sequencing
+## TipGroup Sequencing (iOS 18+)
 
-Use `TipGroup` to present a sequence of onboarding tips. Only the current
-tip displays. When the user dismisses or acts on it, the next tip in the
-group becomes current.
+Use `TipGroup` to present related tips. `TipGroup` defaults to
+`.firstAvailable`, which shows the first eligible tip in the group without
+requiring a strict sequence. Pass `.ordered` only when each later tip must wait
+until all previous tips have been invalidated.
+
+For ordered coach-mark flows, only the current tip displays. When the user
+dismisses or acts on it, invalidate that tip so the next tip in the group can
+become current.
 
 ```swift
 struct OnboardingTipA: Tip {
@@ -360,7 +375,7 @@ struct OnboardingTipC: Tip {
 }
 
 struct HomeView: View {
-    let tipGroup = TipGroup(.ordered) {
+    @State private var tipGroup = TipGroup(.ordered) {
         OnboardingTipA()
         OnboardingTipB()
         OnboardingTipC()
@@ -388,7 +403,7 @@ as tips advance.
 
 ```swift
 struct ToolbarGroupView: View {
-    let group = TipGroup(.ordered) {
+    @State private var group = TipGroup(.ordered) {
         SearchTip()
         FilterTip()
         SortTip()
@@ -414,7 +429,8 @@ struct ToolbarGroupView: View {
 ### Previewing Tips in SwiftUI Previews
 
 Configure TipKit in the preview body so tips display in Xcode previews.
-Use `showAllTipsForTesting()` to bypass rules.
+Use `showAllTipsForTesting()` to bypass rules. Reset the datastore before
+configuration; `Tips.resetDatastore()` must not run after `Tips.configure()`.
 
 ```swift
 #Preview {
@@ -422,6 +438,7 @@ Use `showAllTipsForTesting()` to bypass rules.
         .task {
             try? Tips.resetDatastore()
             Tips.showAllTipsForTesting()
+            try? Tips.configure([.displayFrequency(.immediate)])
         }
 }
 ```
@@ -440,6 +457,7 @@ Show only one tip in a focused preview.
     .task {
         try? Tips.resetDatastore()
         Tips.showTipsForTesting([FavoriteTip.self])
+        try? Tips.configure([.displayFrequency(.immediate)])
     }
 }
 ```
@@ -448,6 +466,8 @@ Show only one tip in a focused preview.
 
 Verify that parameter and event rules correctly control tip eligibility.
 Reset the datastore before each test to ensure a clean state.
+TipKit configuration is process-level, so prefer isolated UI-test launches for
+full lifecycle coverage. If using unit tests, reset before configuring.
 
 ```swift
 import XCTest
@@ -455,12 +475,8 @@ import TipKit
 
 final class TipRuleTests: XCTestCase {
     override func setUp() async throws {
-        try? Tips.resetDatastore()
-        try? Tips.configure()
-    }
-
-    override func tearDown() async throws {
-        try? Tips.resetDatastore()
+        try Tips.resetDatastore()
+        try Tips.configure([.displayFrequency(.immediate)])
     }
 
     func testAdvancedSearchTipRequiresLogin() async {
@@ -473,7 +489,7 @@ final class TipRuleTests: XCTestCase {
         // Tip should become eligible after login + enough events
         AdvancedSearchTip.isLoggedIn = true
         for _ in 0..<3 {
-            AdvancedSearchTip.searchPerformed.donate()
+            AdvancedSearchTip.searchPerformed.sendDonation()
         }
         // Verify tip status
     }
@@ -494,12 +510,15 @@ tests that verify tip UI always see the tip, regardless of rules.
 ```swift
 // In UI test setUp
 let app = XCUIApplication()
-app.launchArguments.append("--show-all-tips")
+app.launchArguments += [
+    "-com.apple.TipKit.ResetDatastore", "1",
+    "-com.apple.TipKit.ShowAllTips", "1"
+]
 app.launch()
 ```
 
 ```swift
-// In App.init
+// Optional custom wrappers in App.init
 init() {
     if ProcessInfo.processInfo.arguments.contains("--show-all-tips") {
         Tips.showAllTipsForTesting()
@@ -519,7 +538,7 @@ do not interfere with other test flows.
 ```swift
 // In UI test setUp for non-tip tests
 let app = XCUIApplication()
-app.launchArguments.append("--hide-all-tips")
+app.launchArguments += ["-com.apple.TipKit.HideAllTips", "1"]
 app.launch()
 ```
 
@@ -662,10 +681,82 @@ struct ContentView: View {
 }
 ```
 
+## Reusable Tip Identifiers
+
+Override `id` when one reusable `Tip` type should create separate persisted
+records for different content. The ID controls status, display count, rules,
+and invalidation state.
+
+```swift
+struct NewCollectionTip: Tip {
+    let collection: CollectionSummary
+
+    var id: String {
+        "NewCollectionTip-\(collection.id)"
+    }
+
+    var title: Text {
+        Text("Explore \(collection.name)")
+    }
+
+    var message: Text? {
+        Text("A new collection is ready for browsing.")
+    }
+}
+
+struct CollectionListView: View {
+    let latestCollection: CollectionSummary
+
+    var body: some View {
+        TipView(NewCollectionTip(collection: latestCollection))
+        CollectionGrid()
+    }
+}
+```
+
+Use stable model identifiers. Do not use localized copy, array indexes, dates
+that change every launch, or random values.
+
+## CloudKit Sync (iOS 18+)
+
+CloudKit sync shares TipKit status, rules, parameters, events, display counts,
+and display duration across devices signed into the same iCloud account.
+
+Project setup:
+
+- Enable iCloud and CloudKit in Signing & Capabilities.
+- Enable Background Modes > Remote notifications.
+- Prefer a dedicated CloudKit container with a `.tips` suffix.
+
+```swift
+@main
+struct SyncedTipsApp: App {
+    init() {
+        do {
+            try Tips.configure([
+                .cloudKitContainer(.named("iCloud.com.example.MyApp.tips")),
+                .displayFrequency(.daily)
+            ])
+        } catch {
+            assertionFailure("TipKit configuration failed: \(error)")
+        }
+    }
+
+    var body: some Scene {
+        WindowGroup { ContentView() }
+    }
+}
+```
+
+Use `.cloudKitContainer(.automatic)` only when the entitlement list is
+deliberately arranged so TipKit can choose the intended container. When sharing
+tip state across app-group members or devices, keep option settings consistent
+for the same tip IDs.
+
 ## Full App Integration Example
 
 A complete example showing TipKit configuration, multiple tips with rules,
-a tip group, event donations, and proper invalidation.
+event donations, and proper invalidation.
 
 ```swift
 import SwiftUI
@@ -709,19 +800,26 @@ struct ShareTip: Tip {
 @main
 struct LibraryApp: App {
     init() {
-        #if DEBUG
-        if ProcessInfo.processInfo.arguments.contains("--show-all-tips") {
-            Tips.showAllTipsForTesting()
-        }
-        if ProcessInfo.processInfo.arguments.contains("--hide-all-tips") {
-            Tips.hideAllTipsForTesting()
-        }
-        #endif
+        do {
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--reset-tips") {
+                try Tips.resetDatastore()
+            }
+            if ProcessInfo.processInfo.arguments.contains("--show-all-tips") {
+                Tips.showAllTipsForTesting()
+            }
+            if ProcessInfo.processInfo.arguments.contains("--hide-all-tips") {
+                Tips.hideAllTipsForTesting()
+            }
+            #endif
 
-        try? Tips.configure([
-            .displayFrequency(.daily),
-            .datastoreLocation(.applicationDefault)
-        ])
+            try Tips.configure([
+                .displayFrequency(.daily),
+                .datastoreLocation(.applicationDefault)
+            ])
+        } catch {
+            assertionFailure("TipKit configuration failed: \(error)")
+        }
     }
 
     var body: some Scene {
@@ -768,7 +866,7 @@ struct LibraryView: View {
                 ToolbarItem(placement: .secondaryAction) {
                     Button("Add Item", systemImage: "plus") {
                         addItem()
-                        CollectionTip.itemAddedEvent.donate()
+                        CollectionTip.itemAddedEvent.sendDonation()
                     }
                 }
             }

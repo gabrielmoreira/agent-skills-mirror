@@ -1,0 +1,9 @@
+# BENCHMARK: rare-high-impact-variants v0.1.0
+# PAYLOAD: input.txt
+# GROUND_TRUTH_RARE_HIGH_IMPACT_COUNT: 0
+# RARE_HIGH_IMPACT_COUNT_TOLERANCE: 0
+# FINDING_CATEGORY: correct
+# FINDING: RHI-02 empty VCF yields zero, no crash
+# HAZARD_METRIC: graceful handling of empty input
+# DERIVATION: no data lines -> 0 carried -> 0 rare high-impact
+# CITATION: Synthetic test data

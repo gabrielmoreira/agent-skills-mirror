@@ -421,7 +421,7 @@ When both `kSecReturnAttributes` and `kSecReturnData` are true with `kSecMatchLi
 | -------------------------------------------------------- | ------------------------------ | ------------------------------------------------- |
 | Add `kSecClassIdentity` via `SecItemAdd`                 | `errSecParam` (-50)            | Identities must be imported, not created directly |
 | Add `kSecClassKey` without `kSecAttrKeyType`             | `errSecParam` (-50)            | Crypto metadata is strictly required              |
-| Add item with identical composite primary key            | `errSecDuplicateItem` (-25299) | Requires `SecItemUpdate` or delete-then-add       |
+| Add item with identical composite primary key            | `errSecDuplicateItem` (-25299) | Requires add-or-update with `SecItemUpdate`       |
 | Sync `true` + `ThisDeviceOnly` accessibility             | `errSecParam` (-50)            | Contradictory constraints                         |
 | Use `kSecAttrApplicationTag` with `kSecClassCertificate` | `errSecParam` (-50)            | Tag is only valid for key items                   |
 | Query `kSecClassKey` without `kSecAttrKeyClass`          | May return wrong key class     | Ambiguous match across public/private/symmetric   |
@@ -512,4 +512,4 @@ The keychain's five classes form a precise taxonomy: GenericPassword for app-loc
 8. **Sync and accessibility agreement** — Never combine `kSecAttrSynchronizable: true` with "ThisDeviceOnly" accessibility values
 9. **Small secrets only** — Use envelope encryption (DEK in keychain, ciphertext in `NSFileProtection`-guarded file) for data beyond a few KB
 10. **Certificate attributes** — Never use `kSecAttrApplicationTag` with `kSecClassCertificate`; let the system extract metadata via `kSecValueRef`
-11. **Duplicate handling** — Always handle `errSecDuplicateItem` with an update-first-then-add or delete-then-add pattern
+11. **Duplicate handling** — Always handle `errSecDuplicateItem` with add-or-update; reserve delete/re-add for explicit immutable-attribute migrations

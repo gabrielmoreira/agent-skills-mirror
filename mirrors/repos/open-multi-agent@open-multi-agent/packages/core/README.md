@@ -43,7 +43,9 @@
 
 > **Your engineers describe the goal, not the graph.**
 
-Graph-first frameworks make you enumerate every node and edge up front. `open-multi-agent` is goal-first: you describe the outcome and the coordinator builds the task DAG at runtime, so the orchestration adapts to the goal instead of being hand-wired for one.
+Graph-first frameworks make you enumerate every node and edge up front. Here the task DAG is built at runtime, so it adapts to the goal instead of being hand-wired for one.
+
+`@open-multi-agent/core` keeps a lightweight core. The orchestration engine plus the mainstream model providers (Anthropic, OpenAI, and any OpenAI-compatible endpoint) work out of the box; additional providers (Gemini, Bedrock), MCP, and the Vercel AI SDK bridge are opt-in peer dependencies you install only when you use them.
 
 ## Contents
 
@@ -220,6 +222,7 @@ await orchestrator.runTeam(team, goal, {
 
 - **[temodar-agent](https://github.com/xeloxa/temodar-agent)** (~60 stars). WordPress security analysis platform by [Ali Sünbül](https://github.com/xeloxa). Uses our built-in tools (`bash`, `file_*`, `grep`) directly inside a Docker runtime. Confirmed production use.
 - **[PR-Copilot](https://github.com/kidoom/PR-Copilot)**. AI pull-request review assistant by [kidoom](https://github.com/kidoom). Runs an OMA review team (coordinator + scoped reviewer agents), defines repo-context tools with `defineTool`, and adds a custom `ContextStrategy` for token-aware PR-diff compression. Public code on `@open-multi-agent/core`.
+- **[StuFlow](https://github.com/znc15/StuFlow)** by [znc15](https://github.com/znc15). Terminal AI coding assistant on OMA's orchestration core: builds a team and drives it through `runAgent` / `runTasks` / `runTeam` with a custom `RunTeamOptions` coordinator, paired with DeepSeek. Public code on `@open-multi-agent/core`.
 
 Using `open-multi-agent` in production or a side project? [Open a discussion](https://github.com/open-multi-agent/open-multi-agent/discussions) and we will list it here.
 
@@ -227,6 +230,7 @@ Using `open-multi-agent` in production or a side project? [Open a discussion](ht
 
 - **[Engram](https://www.engram-memory.com)** — "Git for AI memory." Syncs knowledge across agents instantly and flags conflicts. ([repo](https://github.com/Agentscreator/engram-memory))
 - **[@agentsonar/oma](https://github.com/agentsonar/agentsonar-oma)** — Sidecar detecting cross-run delegation cycles, repetition, and rate bursts.
+- **[CodingScaffold](https://github.com/JRS1986/CodingScaffold)** — Agentic-coding scaffold that lists OMA as an optional orchestration backend, with a `runTeam` workflow template.
 
 Built an integration? See the [integration guide](examples/integrations/README.md) for how to submit a reference or vendor example and get your product listed.
 
@@ -280,23 +284,15 @@ Run any script with `npx tsx packages/core/examples/<path>.ts`; the full applica
 
 ## How is this different from X?
 
-A quick router. Mechanism breakdown follows.
+Most TypeScript teams picking a multi-agent layer are really choosing between OMA, LangGraph JS, and Mastra. The mechanism is what differs.
 
-| If you need | Pick |
-|-------------|------|
-| Fixed production topology with a mature persistence + time-travel ecosystem | LangGraph JS |
-| Full-stack platform, workflows wired by hand | Mastra |
-| Python stack with mature multi-agent ecosystem | CrewAI |
-| AI app toolkit with broad model-provider support | Vercel AI SDK |
-| **TypeScript, goal to result with auto task decomposition** | **open-multi-agent** |
+**vs. LangGraph JS.** LangGraph has you design a declarative graph (nodes, edges, conditional routing) up front, then compiles it into an invokable; OMA's Coordinator decomposes the goal into a task DAG at runtime and auto-parallelizes independents. Both checkpoint and resume, though LangGraph's persistence ecosystem runs deeper. Reach for OMA when the plan should adapt to the goal instead of being wired ahead of time.
 
-**vs. LangGraph JS.** LangGraph compiles a declarative graph (nodes, edges, conditional routing) into an invokable. `open-multi-agent` runs a Coordinator that decomposes the goal into a task DAG at runtime, then auto-parallelizes independents. Same end (orchestrated execution), opposite directions: LangGraph is graph-first, OMA is goal-first. Both checkpoint and resume: OMA snapshots each completed task over any `MemoryStore` and resumes with `restore()` after a crash; LangGraph's persistence ecosystem just runs deeper, with time-travel over durable state history.
+**vs. Mastra.** Both are TypeScript-native; the difference is who drives orchestration. Mastra has you wire the workflow by hand. OMA is goal-driven: hand its Coordinator a goal and it builds the task DAG at runtime. `runTeam(team, goal)` in one call.
 
-**vs. Mastra.** Both are TypeScript-native; the difference is who drives the orchestration. With Mastra you wire the workflow by hand. OMA is goal-driven: give its Coordinator a goal and it builds the task DAG at runtime, adapting the plan to the goal instead of running a graph you wired step by step. `runTeam(team, goal)` in one call.
+**vs. CrewAI.** CrewAI is the established multi-agent option in Python. OMA brings goal-driven decomposition to TypeScript backends with a lean runtime (three core dependencies, plus opt-in peers you install only when you use them) and direct Node.js embedding, with no separate Python service to stand up alongside your stack.
 
-**vs. CrewAI.** CrewAI is the mature multi-agent option in Python. OMA targets TypeScript backends with three runtime dependencies and direct Node.js embedding. Roughly comparable orchestration surface; the choice is the language stack.
-
-**vs. Vercel AI SDK.** AI SDK provides the LLM-call layer — provider abstraction, streaming, tool calls, and structured outputs. It does not orchestrate goal-driven multi-agent teams. The two are complementary: AI SDK for app surfaces and single-agent calls, OMA when you need a team.
+**vs. Vercel AI SDK.** AI SDK is the LLM-call layer (provider abstraction, streaming, tool calls, and structured outputs), not a multi-agent orchestrator. Use it alone for single-agent calls; reach for OMA the moment you need a coordinated team. OMA even ships an optional AI SDK bridge.
 
 ## Architecture
 
@@ -356,15 +352,29 @@ const agent: AgentConfig = {
 
 | Kind | How to configure | Services |
 |------|------------------|----------|
-| Built-in shortcuts | Set `provider` to `anthropic`, `gemini`, `openai`, `azure-openai`, `copilot`, `grok`, `deepseek`, `doubao`, `hunyuan`, `minimax`, `mimo`, `qiniu`, or `bedrock`; the framework supplies the endpoint. | Anthropic, Gemini, OpenAI, Azure OpenAI, GitHub Copilot, xAI Grok, DeepSeek, Doubao (Volcengine), Hunyuan (Tencent MaaS), MiniMax, MiMo, Qiniu, AWS Bedrock |
-| OpenAI-compatible endpoints | Set `provider: 'openai'` plus `baseURL` and, when needed, `apiKey`. | Ollama, vLLM, LM Studio, llama.cpp server, OpenRouter, Groq, Mistral, Moonshot (Kimi), Qwen, Zhipu |
+| Built-in, no extra install | Set `provider` to `anthropic`, `openai`, `azure-openai`, `copilot`, `grok`, `deepseek`, `doubao`, `hunyuan`, `minimax`, `mimo`, or `qiniu`; the bundled `@anthropic-ai/sdk` / `openai` SDK supplies the endpoint. | Anthropic, OpenAI, Azure OpenAI, GitHub Copilot, xAI Grok, DeepSeek, Doubao (Volcengine), Hunyuan (Tencent MaaS), MiniMax, MiMo, Qiniu |
+| Built-in, needs a peer install | Set `provider: 'gemini'` after `npm i @google/genai`, or `provider: 'bedrock'` after `npm i @aws-sdk/client-bedrock-runtime`. | Google Gemini, AWS Bedrock |
+| OpenAI-compatible endpoints | Set `provider: 'openai'` plus `baseURL` and, when needed, `apiKey`. No extra install. | Ollama, vLLM, LM Studio, llama.cpp server, OpenRouter, Groq, Mistral, Moonshot (Kimi), Qwen, Zhipu |
 | Vercel AI SDK | Import `AISdkAdapter` from `@open-multi-agent/core/ai-sdk`; install optional peer `ai` plus an `@ai-sdk/*` provider. | [Any AI SDK provider](https://ai-sdk.dev/providers) (60+ models and hosts) |
 
 See [docs/providers.md](https://github.com/open-multi-agent/open-multi-agent/blob/main/docs/providers.md) for env vars, model examples, local tool-calling, timeouts, and troubleshooting.
 
+### Dependencies
+
+Installing `@open-multi-agent/core` pulls in three runtime dependencies: `@anthropic-ai/sdk`, `openai`, and `zod`. That is the entire core: Anthropic, OpenAI, and every OpenAI-compatible endpoint run on these three alone.
+
+Everything else is an opt-in peer dependency you install only when you reach for it. Each loads lazily, so a project that never uses one never installs it.
+
+| Capability | Install | Trigger |
+|------------|---------|---------|
+| Gemini provider | `npm i @google/genai` | `provider: 'gemini'` |
+| Bedrock provider | `npm i @aws-sdk/client-bedrock-runtime` | `provider: 'bedrock'` |
+| MCP tools | `npm i @modelcontextprotocol/sdk` | `connectMCPTools()` |
+| Vercel AI SDK bridge | `npm i ai @ai-sdk/<provider>` | `new AISdkAdapter(...)` |
+
 ### Vercel AI SDK (optional)
 
-Install the optional peer [`ai`](https://www.npmjs.com/package/ai) plus any [`@ai-sdk` provider](https://ai-sdk.dev/providers) you need (for example [`@ai-sdk/openai`](https://www.npmjs.com/package/@ai-sdk/openai)). Pass `adapter: new AISdkAdapter(model)` on `AgentConfig` to route that agent through the AI SDK instead of the built-in `provider` factory. `provider`, `apiKey`, `baseURL`, and `region` are ignored when `adapter` is set. Mixed teams work as usual: only agents with `adapter` use the AI SDK.
+With the bridge peers installed (see the table above), pass `adapter: new AISdkAdapter(model)` on `AgentConfig` to route that agent through the AI SDK instead of the built-in `provider` factory. `provider`, `apiKey`, `baseURL`, and `region` are ignored when `adapter` is set. Mixed teams work as usual: only agents with `adapter` use the AI SDK.
 
 ```typescript
 import { openai } from '@ai-sdk/openai'

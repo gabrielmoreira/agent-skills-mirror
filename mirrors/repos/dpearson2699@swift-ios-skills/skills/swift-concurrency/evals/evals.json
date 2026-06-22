@@ -39,6 +39,19 @@
         "Rejects locks inside actors and rejects holding any lock across await suspension points.",
         "Corrects the claim that NSLock is not Sendable while still preferring modern state-protecting primitives for new Swift concurrency code."
       ]
+    },
+    {
+      "id": 3,
+      "prompt": "A team on Swift 6.3 / Xcode 26.5 wants to add async defer cleanup, wrap every cancellation path in withTaskCancellationShield, and fix a diagnostic from a closure with an explicit capture list passed to a nonisolated(nonsending) async parameter. Review the plan and give the smallest source-grounded correction.",
+      "expected_output": "A version-gated concurrency review that says async defer and withTaskCancellationShield are Swift 6.4 / Xcode 27 beta-era APIs, explains that async defer does not suppress cancellation, uses cancellation shields only for short cleanup or rollback when available, and gives the two documented Xcode 26.5 explicit-capture closure workarounds.",
+      "files": [],
+      "assertions": [
+        "Says async defer is a Swift 6.4 / Xcode 27 beta-era feature and should not be presented as available to Swift 6.3 / Xcode 26.5 projects.",
+        "Says withTaskCancellationShield is Swift 6.4 / iOS 27+ beta-era API and should be used only for short cleanup or rollback, not ordinary cancelable work.",
+        "Explains that async defer cleanup still observes task cancellation unless a cancellation shield is deliberately used.",
+        "For the Xcode 26.5 explicit-capture closure issue, recommends only the documented workarounds: remove explicit captures when safe, or use a local @Sendable nonisolated(nonsending) async function.",
+        "Avoids retargeting the whole project or skill guidance to Swift 6.4 / Xcode 27."
+      ]
     }
   ]
 }

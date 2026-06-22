@@ -1287,6 +1287,9 @@ def _shorten_polymarket_title(title: str) -> str:
         words = t.split()
         t = " ".join(words[:6])
 
+    # Drop a leading article so the descriptor doesn't read "an Anthropic Claude..."
+    t = re.sub(r"^(?:a|an|the)\s+", "", t, flags=re.I)
+
     return t
 
 
@@ -1318,12 +1321,21 @@ def _polymarket_top_markets(items: list[schema.SourceItem], limit: int = 3) -> l
         if not descriptor:
             continue
 
-        # For binary Yes/No markets (lead_name == "Yes"), the "Yes" is implicit - omit it.
-        # For named outcomes (e.g. "Kanye" in a multi-way market), keep the outcome name.
-        if lead_name.lower() == "yes":
+        # Append the outcome name only when it adds information. It's redundant when
+        # empty, a binary Yes/No proxy, a bare article ("an"/"the"), or already the
+        # leading token of the descriptor — appending it then yields noise like
+        # "...score at: an 19%" or a doubled token.
+        label = (lead_name or "").strip()
+        descriptor_lead = descriptor.split()[0].lower() if descriptor.split() else ""
+        redundant = (
+            not label
+            or label.lower() in ("yes", "no", "a", "an", "the")
+            or label.lower() == descriptor_lead
+        )
+        if redundant:
             summaries.append(f"{descriptor} {pct}")
         else:
-            summaries.append(f"{descriptor}: {lead_name} {pct}")
+            summaries.append(f"{descriptor}: {label} {pct}")
 
     return summaries
 
@@ -1473,7 +1485,7 @@ _FOOTER_SOURCES: list[tuple[str, str, str, str, list[tuple[str, str]]]] = [
     ("hackernews",  "🟡", "HN",           "story",    [("points", "points"), ("comments", "comments")]),
     ("bluesky",     "🦋", "Bluesky",      "post",     [("likes", "likes"), ("reposts", "reposts")]),
     ("truthsocial", "🇺🇸", "Truth Social", "post",     [("likes", "likes"), ("reposts", "reposts")]),
-    ("github",      "🐙", "GitHub",       "item",     [("reactions", "reactions"), ("comments", "comments")]),
+    ("github",      "🐙", "GitHub",       "item",     [("stars", "stars"), ("merged_prs", "merged"), ("reactions", "reactions"), ("comments", "comments")]),
     ("digg",        "⛏️", "Digg",         "cluster",  [("postCount", "posts"), ("uniqueAuthors", "authors")]),
     # Jobs must appear so a scoped --hiring-signals run (jobs-only) still emits
     # the LAW 5 footer; without it the footer was dropped entirely.
@@ -1740,7 +1752,7 @@ ENGAGEMENT_DISPLAY: dict[str, list[tuple[str, str]]] = {
     "bluesky":      [("likes", "likes"), ("reposts", "rt"), ("replies", "re")],
     "truthsocial":  [("likes", "likes"), ("reposts", "rt"), ("replies", "re")],
     "polymarket":   [],
-    "github":       [("reactions", "react"), ("comments", "cmt")],
+    "github":       [("stars", "stars"), ("merged_prs", "merged"), ("reactions", "react"), ("comments", "cmt")],
     "perplexity":   [("citations", "cite")],
     "digg":         [("postCount", "posts"), ("uniqueAuthors", "auth")],
 }

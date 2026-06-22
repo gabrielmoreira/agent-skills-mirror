@@ -15,7 +15,7 @@ patterns.
 - [Core Data Coexistence and Migration](#core-data-coexistence-and-migration)
 - [Batch Operations and Performance](#batch-operations-and-performance)
 - [Complex #Predicate Patterns](#complex-predicate-patterns)
-- [Composite Attributes (iOS 18+)](#composite-attributes-ios-18)
+- [Composite Attributes and Codable Values](#composite-attributes-and-codable-values)
 - [Model Inheritance (iOS 26+)](#model-inheritance-ios-26)
 - [Multiple ModelContainer Configurations](#multiple-modelcontainer-configurations)
 - [Undo/Redo Support](#undoredo-support)
@@ -353,62 +353,10 @@ let container = try ModelContainer(
 
 ## Core Data Coexistence and Migration
 
-### Three Strategies
-
-| Strategy | When to Use |
-|----------|-------------|
-| Pure Core Data | No migration needed; maintain existing stack |
-| Full SwiftData | Greenfield app or complete rewrite |
-| Coexistence | Gradual migration; both stacks share the same store |
-
-### Coexistence Setup
-
-Both stacks read/write the same SQLite file. Critical requirements:
-
-1. **Enable persistent history tracking** on the Core Data side:
-   ```swift
-   let description = NSPersistentStoreDescription()
-   description.setOption(
-       true as NSNumber,
-       forKey: NSPersistentHistoryTrackingKey
-   )
-   ```
-
-2. **Match entity names** between Core Data `.xcdatamodeld` and SwiftData
-   `@Model` classes.
-
-3. **Use different class names** to avoid conflicts:
-   ```swift
-   // Core Data side
-   class CDTrip: NSManagedObject { /* ... */ }
-
-   // SwiftData side
-   @Model
-   class Trip { /* entity name "Trip" matches Core Data entity */ }
-   ```
-
-4. **Point both stacks at the same store URL**.
-
-### Store File Locations
-
-| Scenario | Location |
-|----------|----------|
-| Default | Application Support directory |
-| App group entitlement | Root of app group container |
-| Explicit URL | `ModelConfiguration(url: customURL)` |
-
-### Migration from Core Data to SwiftData
-
-Step-by-step:
-
-1. Define `VersionedSchema` matching the current Core Data model.
-2. Create `@Model` classes with matching entity/attribute names.
-3. Set up `SchemaMigrationPlan` for future changes.
-4. Enable persistent history tracking on Core Data side.
-5. Point both stacks at the same store file.
-6. Gradually move reads to `@Query` / `FetchDescriptor`.
-7. Move writes to `ModelContext` operations.
-8. Remove Core Data stack when migration is complete.
+Read `references/core-data-coexistence.md` when the task involves sharing an
+existing Core Data store, adding SwiftData screens to a Core Data app, or
+planning migration from Core Data to SwiftData. Keep standalone Core Data stack
+guidance in the sibling `core-data` skill.
 
 ---
 
@@ -593,9 +541,12 @@ func buildPredicate(
 
 ---
 
-## Composite Attributes (iOS 18+)
+## Composite Attributes and Codable Values
 
-Codable structs stored as composite (nested) attributes in the database.
+Compatible `Codable` structs can be represented as composite attributes in the
+SwiftData schema. Current Apple docs expose `Schema.CompositeAttribute` on
+iOS 17+, while the explicit `@Attribute(.codable)` option is iOS 27 beta.
+Do not describe `Codable` value storage as an iOS 18-only feature.
 
 ```swift
 struct Address: Codable {

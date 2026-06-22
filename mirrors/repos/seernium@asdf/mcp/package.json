@@ -1,0 +1,22 @@
+{
+  "name": "devtools-server",
+  "version": "1.0.0",
+  "description": "Secure MCP server providing development tools, debugging, DOM inspection, screenshots, and more",
+  "type": "module",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "tsc && node -e \"import('fs').then(fs => fs.chmodSync('build/index.js', '755'))\"",
+    "start": "node build/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "puppeteer": "^24.0.0",
+    "fs-extra": "^11.2.0",
+    "glob": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/fs-extra": "^11.0.0",
+    "typescript": "^5.7.0"
+  }
+}

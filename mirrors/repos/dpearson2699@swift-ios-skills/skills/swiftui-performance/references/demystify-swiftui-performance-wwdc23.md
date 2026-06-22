@@ -130,6 +130,8 @@ ForEach(visibleItems) { item in
 }
 ```
 
+Use `-LogForEachSlowPath YES` while debugging when you suspect a list or table is taking the non-constant row-count path.
+
 ### Avoid `AnyView` in hot list rows
 
 Type erasure can hide useful structural information and increase work in large

@@ -20,21 +20,29 @@ Navigation patterns for SwiftUI apps targeting iOS 26+ with Swift 6.3. Covers pu
 
 ## NavigationStack (Push Navigation)
 
-Use `NavigationStack` with a `NavigationPath` binding for programmatic, type-safe push navigation. Define routes as a `Hashable` enum and map them with `.navigationDestination(for:)`.
+Use `NavigationStack` with a typed `[Route]` binding for programmatic push navigation. Define routes as a `Hashable` enum and map them with `.navigationDestination(for:)`; this keeps the path compile-time checked. Use `NavigationPath` only when one stack must hold heterogeneous route value types.
 
 ```swift
+enum Route: Hashable {
+    case item(id: Item.ID)
+}
+
 struct ContentView: View {
-    @State private var path = NavigationPath()
+    @State private var path: [Route] = []
+    let items: [Item]
 
     var body: some View {
         NavigationStack(path: $path) {
             List(items) { item in
-                NavigationLink(value: item) {
+                NavigationLink(value: Route.item(id: item.id)) {
                     ItemRow(item: item)
                 }
             }
-            .navigationDestination(for: Item.self) { item in
-                DetailView(item: item)
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case .item(let id):
+                    DetailView(itemID: id)
+                }
             }
             .navigationTitle("Items")
         }
@@ -45,9 +53,9 @@ struct ContentView: View {
 **Programmatic navigation:**
 
 ```swift
-path.append(item)        // Push
-path.removeLast()        // Pop one
-path = NavigationPath()  // Pop to root
+path.append(.item(id: item.id))  // Push
+path.removeLast()                // Pop one
+path = []                        // Pop to root
 ```
 
 **Router pattern:** For apps with complex navigation, use a router object that owns the path and sheet state. Each tab gets its own router instance injected via `.environment()`. Centralize destination mapping with a single `.navigationDestination(for:)` block or a shared `withAppRouter()` modifier.
@@ -147,7 +155,7 @@ Prefer `.sheet(item:)` over `.sheet(isPresented:)` when state represents a selec
 
 Fine-tuning: `.fitted(horizontal:vertical:)` constrains fitting axes; `.sticky(horizontal:vertical:)` grows but does not shrink in specified dimensions.
 
-**Dismissal confirmation (macOS 15+ / iOS 26+):** Use `.dismissalConfirmationDialog("Discard?", shouldPresent: hasUnsavedChanges)` to prevent accidental dismissal of sheets with unsaved changes.
+**Dismissal protection:** On iOS/iPadOS, use `.interactiveDismissDisabled(hasUnsavedChanges)` and provide explicit Save/Discard actions inside the sheet. On macOS 15+, use `.dismissalConfirmationDialog("Discard?", shouldPresent: hasUnsavedChanges)` for window dismissal confirmation.
 
 **Enum-driven sheet routing:** Define a `SheetDestination` enum that is `Identifiable`, store it on the router, and map it with a shared view modifier. This lets any child view present sheets without prop-drilling. See [references/sheets.md](references/sheets.md) for the full centralized sheet routing pattern.
 
@@ -179,7 +187,8 @@ struct MainTabView: View {
 
 ### iOS 26 Tab Additions
 
-- **`Tab(role: .search)`** -- replaces the tab bar with a search field when active
+- **`Tab(value:role:)` with `.search`** -- marks a dedicated search tab with system default search title, icon, and pinning behavior
+- **`.tabViewSearchActivation(_:)`** -- controls search tab activation and deactivation behavior
 - **`.tabBarMinimizeBehavior(_:)`** -- `.onScrollDown`, `.onScrollUp`, `.never` (iPhone only)
 - **`.tabViewSidebarHeader/Footer`** -- customize sidebar sections on iPadOS/macOS
 - **`.tabViewBottomAccessory { }`** -- attach content below the tab bar (e.g., Now Playing bar)
@@ -195,7 +204,7 @@ Universal links let iOS open your app for standard HTTPS URLs. They require:
 1. An Apple App Site Association (AASA) file at `/.well-known/apple-app-site-association`
 2. An Associated Domains entitlement (`applinks:example.com`)
 
-Handle in SwiftUI with `.onOpenURL` and `.onContinueUserActivity`:
+Handle Universal Links and custom URL schemes in SwiftUI with `.onOpenURL`:
 
 ```swift
 @main
@@ -207,10 +216,6 @@ struct MyApp: App {
             ContentView()
                 .environment(router)
                 .onOpenURL { url in router.handle(url: url) }
-                .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
-                    guard let url = activity.webpageURL else { return }
-                    router.handle(url: url)
-                }
         }
     }
 }
@@ -222,16 +227,16 @@ Register schemes in `Info.plist` under `CFBundleURLTypes`. Handle with `.onOpenU
 
 ### Handoff (NSUserActivity)
 
-Advertise activities with `.userActivity()` and receive them with `.onContinueUserActivity()`. Declare activity types in `Info.plist` under `NSUserActivityTypes`. Set `isEligibleForHandoff = true` and provide a `webpageURL` as fallback.
+Advertise activities with `.userActivity()` and receive Handoff or other user activities with `.onContinueUserActivity()`. Declare activity types in `Info.plist` under `NSUserActivityTypes`. Set `isEligibleForHandoff = true` and provide a `webpageURL` as fallback.
 
 See [references/deeplinks.md](references/deeplinks.md) for full examples of AASA configuration, router URL handling, custom URL schemes, and NSUserActivity continuation.
 
 ## Common Mistakes
 
 1. Using deprecated `NavigationView` -- use `NavigationStack` or `NavigationSplitView`
-2. Sharing one `NavigationPath` across all tabs -- each tab needs its own path
+2. Sharing one navigation path or router across all tabs -- each tab needs its own path
 3. Using `.sheet(isPresented:)` when state represents a model -- use `.sheet(item:)` instead
-4. Storing view instances in `NavigationPath` -- store lightweight `Hashable` route data
+4. Storing view instances in navigation paths -- store lightweight `Hashable` route data
 5. Nesting `@Observable` router objects inside other `@Observable` objects
 6. Prefer `Tab(value:)` with `TabView(selection:)` over the older `.tabItem { }` API
 7. Assuming `tabBarMinimizeBehavior` works on iPad -- it is iPhone only

@@ -14,14 +14,14 @@ Provide every AI agent session with an always-current inventory of reachable com
 
 ## Fleet Discovery
 
-Fleet topology is **auto-detected** at runtime via `fleet-config.js`:
-- IPs resolved from `.env` overrides or `tailscale status --json`
-- Device metadata from `inventory/devices.json`
+Fleet topology is **auto-detected** at runtime via `fleet-config.js` + `resolve-inventory.js`:
+- IPs resolved from `.env` `FLEET_IP_*`, `~/.megingjord/devices.json` overlay, or example baseline
+- Device metadata merged: `inventory/*.example.json` → operator overlay → env
 - Run `node scripts/global/fleet-config.js profile` for current state
 
 ## Platform Inventory
 
-Devices are defined in `inventory/devices.json`. Key roles:
+Devices come from the merged inventory (not tracked `inventory/devices.json`). Key roles:
 
 ### Primary Dev Machine (local)
 - Role: IDE host, agent execution, dashboard
@@ -44,7 +44,7 @@ All cross-machine networking uses **Tailscale VPN mesh**:
 - WireGuard encrypted, bypasses NAT/firewall
 - SSH via ProxyCommand: `sudo tailscale nc %h %p`
 - Auth: Ed25519 key pair (passwordless)
-- SSH config references device alias from `inventory/devices.json`
+- SSH config references device alias from merged fleet inventory (`fleet-config.js`)
 
 ### Quick Connect
 ```bash
@@ -89,6 +89,6 @@ scp -o ProxyCommand="sudo tailscale nc %h %p" file.txt $FLEET_SSH_USER@<ip>:<pat
 2. Install OpenSSH server
 3. Copy SSH pubkey to new machine's authorized_keys
 4. Add `Host` entry in `~/.ssh/config`
-5. Add device to `inventory/devices.json`
+5. Run `bash scripts/global/fleet-discover.sh` → writes `~/.megingjord/devices.json`
 6. Optionally set `FLEET_IP_<DEVICE_ID>` in `.env`
 7. Test: `ssh <new-alias> echo "OK"`

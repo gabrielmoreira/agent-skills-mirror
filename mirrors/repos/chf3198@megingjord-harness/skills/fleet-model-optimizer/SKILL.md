@@ -1,6 +1,6 @@
 ---
 name: fleet-model-optimizer
-description: Analyze any fleet's inventory/devices.json and recommend optimal Ollama models per device based on hardware constraints, inference tier, and current LLM landscape. Generates pull/delete commands and a safe transition plan.
+description: Analyze fleet overlay inventory and recommend optimal Ollama models per device based on hardware constraints, inference tier, and current LLM landscape. Generates pull/delete commands and a safe transition plan.
 argument-hint: "[focus: analyze|recommend|commands|all] [tier: slm|mid|high|all]"
 user-invocable: true
 disable-model-invocation: false
@@ -26,7 +26,7 @@ Invoke when models feel stale, performance is low, or after a major LLM release 
 
 ## Tier Classification
 
-Classify each device from `inventory/devices.json` by available RAM:
+Classify each device from merged fleet inventory (`node scripts/global/fleet-config.js fleet`) by available RAM:
 
 | Available RAM | Tier | Max model size | Examples |
 |---|---|---|---|
@@ -41,7 +41,7 @@ Classify each device from `inventory/devices.json` by available RAM:
 ## Step-by-Step Execution
 
 ### 1. Inventory Read
-Read `inventory/devices.json`. For each device extract:
+Run `node scripts/global/fleet-config.js fleet` (or read `~/.megingjord/devices.json` overlay). For each device extract:
 `id`, `ram.available`, `gpu` (if present), `ollamaModels`, `ollamaWarmTokPerSec`.
 
 ### 2. Tier Classification
@@ -73,7 +73,7 @@ Confirm at least one fallback model remains at all times.
 ### 7. Inventory Update Guidance
 Provide the updated `ollamaModels` array and estimated `ollamaWarmTokPerSec`
 (use tier baselines: slm≈5, mid≈15, mid+≈20, high≈25+) for the operator to
-apply to `inventory/devices.json`.
+apply to `~/.megingjord/devices.json` overlay (never commit operator topology to git).
 
 ## Verification
 
@@ -81,4 +81,4 @@ apply to `inventory/devices.json`.
 - [ ] No device left with zero models after transition.
 - [ ] RAM budget respected: model size ≤ 80% of `ram.available`.
 - [ ] Pull/delete commands syntactically valid (`ollama pull <name>` format).
-- [ ] `inventory/devices.json` update values provided with source rationale.
+- [ ] `~/.megingjord/devices.json` overlay update values provided with source rationale.

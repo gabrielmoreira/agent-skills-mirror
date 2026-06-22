@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `volcengine/OpenViking` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `volcengine/OpenViking` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `volcengine/OpenViking` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,12 +69,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`bot/workspace/skills/weather/SKILL.md`](bot/workspace/skills/weather/SKILL.md) |
 | 9 | ✓ | [`examples/openclaw-plugin/skills/install-openviking-memory/SKILL.md`](examples/openclaw-plugin/skills/install-openviking-memory/SKILL.md) |
 | 10 | ✓ | [`examples/openclaw-plugin/skills/openviking-context-database/SKILL.md`](examples/openclaw-plugin/skills/openviking-context-database/SKILL.md) |
-| 11 | ✓ | [`examples/opencode/plugin/skills/openviking/SKILL.md`](examples/opencode/plugin/skills/openviking/SKILL.md) |
-| 12 | ✓ | [`examples/skills/ov_dream/SKILL.md`](examples/skills/ov_dream/SKILL.md) |
-| 13 | ✓ | [`examples/skills/ov-add-paper/SKILL.md`](examples/skills/ov-add-paper/SKILL.md) |
-| 14 | ✓ | [`examples/skills/ov-resources/SKILL.md`](examples/skills/ov-resources/SKILL.md) |
-| 15 | ✓ | [`examples/skills/ov-server-operate/SKILL.md`](examples/skills/ov-server-operate/SKILL.md) |
-| 16 | ✓ | [`examples/skills/ov-skills/SKILL.md`](examples/skills/ov-skills/SKILL.md) |
+| 11 | ✓ | [`examples/skills/ov_dream/SKILL.md`](examples/skills/ov_dream/SKILL.md) |
+| 12 | ✓ | [`examples/skills/ov-add-paper/SKILL.md`](examples/skills/ov-add-paper/SKILL.md) |
+| 13 | ✓ | [`examples/skills/ov-resources/SKILL.md`](examples/skills/ov-resources/SKILL.md) |
+| 14 | ✓ | [`examples/skills/ov-server-operate/SKILL.md`](examples/skills/ov-server-operate/SKILL.md) |
+| 15 | ✓ | [`examples/skills/ov-skills/SKILL.md`](examples/skills/ov-skills/SKILL.md) |
 
 ---
 

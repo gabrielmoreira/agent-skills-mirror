@@ -11,7 +11,7 @@ Attributes and interoperability features for Swift. Covers C-calling-convention 
 
 ## C Interoperability — `@c` Attribute
 
-The `@c` attribute (SE-0495) marks a Swift function for direct C-calling-convention export. The function becomes callable from C, C++, and Objective-C without bridging headers or `@_cdecl`.
+For functions, the `@c` attribute (SE-0495) marks a Swift declaration for direct C-calling-convention export. The function becomes callable from C, C++, and Objective-C without bridging headers or `@_cdecl`.
 
 ```swift
 @c(MyLib_processBuffer)
@@ -26,6 +26,7 @@ public func processBuffer(_ buffer: UnsafePointer<UInt8>?, _ count: Int32) -> In
 - No Swift-only types (`String`, `Array`, `UnsafeBufferPointer`, closures, generic placeholders, etc.) in the signature
 - The function must be a module-level free function (not a method)
 - Use `@c(CustomName)` when the C symbol should differ from the Swift function name
+- SE-0495 also supports `@c` enums with C-compatible integer raw types; this section focuses on function export
 
 ## Module Selectors
 
@@ -61,14 +62,17 @@ func sum<T: Numeric>(_ values: [T]) -> T {
 
 ### `@inline(always)` Guarantee
 
-SE-0496 guarantees `@inline(always)` will inline the function at every call site. Previously it was a hint the compiler could ignore. A compilation error is now emitted if inlining is impossible (e.g., recursive calls).
+SE-0496 makes `@inline(always)` a guaranteed inlining request for direct function references. Previously it was a hint the compiler could ignore. A compilation error is now emitted when the compiler can prove direct-call inlining is impossible (e.g., recursive calls).
 
 ```swift
 @inline(always)
 func fastPath(_ x: Int) -> Int {
-    x &+ 1  // Guaranteed to be inlined at every call site
+    x &+ 1  // Guaranteed for direct calls that can be inlined
 }
 ```
+
+The guarantee does not apply to dynamic calls through first-class function
+values, protocol values, generic constraints, or non-final class dispatch.
 
 ## Symbol Visibility and Layout
 
@@ -89,9 +93,12 @@ public func stableAPI() -> Int {
 
 ### `@section` and `@used`
 
-SE-0492 places global variables into named binary sections and prevents dead-stripping. Primarily for Embedded Swift and systems programming.
+SE-0492 places global or static variables into named binary sections and prevents dead-stripping. Primarily for Embedded Swift and systems programming.
 
 ```swift
 @section(".mydata") @used
 var configFlag: Int32 = 1
 ```
+
+Use it only on stored variables in non-generic contexts with compile-time-known
+or static initialization.

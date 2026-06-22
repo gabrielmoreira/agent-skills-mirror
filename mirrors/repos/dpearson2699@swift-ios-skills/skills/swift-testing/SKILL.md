@@ -1,11 +1,11 @@
 ---
 name: swift-testing
-description: "Writes and migrates Swift Testing framework tests with @Test, @Suite, #expect, #require, confirmation, traits, withKnownIssue, Attachment.record, processExitsWith exit tests and capture lists, Test.cancel, Issue.record warnings/manual failures, XCTest-to-Swift Testing migration, XCUITest UI-test boundaries, performance/snapshot boundaries, mocking, async patterns, and test organization. Use when writing tests, converting XCTest assertions such as XCTUnwrap or XCTFail, reviewing advanced Swift Testing API availability, or deciding when to keep XCTest/XCUITest."
+description: "Writes and migrates Swift Testing framework tests with @Test, @Suite, #expect, #require, confirmation, traits, withKnownIssue, Attachment.record, processExitsWith exit tests and capture lists, Test.cancel, Issue.record warnings/manual failures, XCTest-to-Swift Testing migration, Xcode 27 interoperability modes, XCUITest UI-test boundaries, performance/snapshot boundaries, mocking, async patterns, and test organization. Use when writing tests, converting XCTest assertions such as XCTUnwrap or XCTFail, reviewing advanced Swift Testing API availability, or deciding when to keep XCTest/XCUITest."
 ---
 
 # Swift Testing
 
-Swift Testing is the modern testing framework for Swift (Xcode 16+, Swift 6+). Prefer it over XCTest for all new unit tests. Use XCTest only for UI tests, performance benchmarks, and snapshot tests.
+Swift Testing is the modern testing framework for Swift (Xcode 16+, Swift 6+). Prefer it for new unit tests. Keep XCTest where migration is still in progress, and use XCTest for UI automation, performance APIs, Objective-C exception tests, and common snapshot-test tooling.
 
 ## Contents
 
@@ -115,6 +115,8 @@ Swift Testing unit tests do not inherit from `XCTestCase`. Declare `@Test` on fr
 When reviewing migration code or plans, do not collapse every XCTest construct into `#expect`. Include a compact assertion-mapping note or table in the answer so required unwraps and unconditional manual failures are not lost, even when the user only says "replace every XCTAssert with #expect."
 
 State coexistence explicitly: XCTest and Swift Testing can coexist during migration. Keep UI automation, performance benchmarks, and common snapshot-test flows on XCTest/XCUITest or snapshot tooling, and separate files or targets when that makes runner expectations clearer.
+
+For Xcode 27-era migrations, mention test framework interoperability when reviewing mixed helpers. Frame what changed: test plans created before Xcode 27 inherit `limited` mode, where cross-framework XCTest issues are warnings; new Xcode 27 projects use `complete` mode, where those issues remain errors. Xcode and SwiftPM can surface XCTest failures from Swift Testing tests and Swift Testing issues from XCTest tests depending on the configured interop mode (`limited`, `complete`, `strict`, or `none`). Prefer `complete` or `strict` while migrating helpers, use `SWIFT_TESTING_XCTEST_INTEROP_MODE` for SwiftPM when needed, and do not claim cross-framework APIs are categorically forbidden. Still prefer native Swift Testing APIs in new Swift Testing tests and convert helper failures to `Issue.record`, `#expect`, `#require`, or `Test.cancel` over time.
 
 Migration defaults:
 - `XCTAssert*` -> `#expect(...)`

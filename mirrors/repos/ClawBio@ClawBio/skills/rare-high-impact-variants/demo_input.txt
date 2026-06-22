@@ -1,0 +1,21 @@
+##fileformat=VCFv4.2
+## Synthetic demo data for rare-high-impact-variants. NOT real patient data.
+## Annotated with molecular consequence (MC) and population frequency (AF_TGP/AF_EXAC/AF_ESP).
+## Expected: 3 rare high-impact variants carried (documented AF: 1 ultra-rare, 2 rare);
+## 1 high-impact with no frequency data (reported separately, NOT called rare);
+## 1 high-impact but common; 5 high-impact carried total;
+## 6 carried variants (one frameshift is hom-ref, not carried).
+##INFO=<ID=MC,Number=.,Type=String,Description="molecular consequence (SO term)">
+##INFO=<ID=AF_TGP,Number=1,Type=Float,Description="1000 Genomes allele frequency">
+##INFO=<ID=AF_EXAC,Number=1,Type=Float,Description="ExAC allele frequency">
+##INFO=<ID=AF_ESP,Number=1,Type=Float,Description="GO-ESP allele frequency">
+##INFO=<ID=GENEINFO,Number=1,Type=String,Description="gene symbol:id">
+##INFO=<ID=CLNSIG,Number=.,Type=String,Description="ClinVar significance">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	SAMPLE
+1	100000	rs1	C	T	.	PASS	MC=SO:0001587|nonsense;AF_TGP=0.0002;GENEINFO=GENE1:1;CLNSIG=Pathogenic	GT	0/1
+2	200000	.	GA	G	.	PASS	MC=SO:0001589|frameshift_variant;GENEINFO=GENE2:2;CLNSIG=Likely_pathogenic	GT	1/1
+3	300000	rs3	G	A	.	PASS	MC=SO:0001575|splice_donor_variant;AF_TGP=0.25;GENEINFO=GENE3:3	GT	0/1
+4	400000	rs4	A	G	.	PASS	MC=SO:0001583|missense_variant;AF_TGP=0.0001;GENEINFO=GENE4:4	GT	0/1
+5	500000	rs5	C	G	.	PASS	MC=SO:0001587|nonsense;AF_EXAC=0.004;GENEINFO=GENE5:5	GT	0/1
+6	600000	rs6	T	TA	.	PASS	MC=SO:0001589|frameshift_variant;AF_TGP=0.0005;GENEINFO=GENE6:6	GT	0/0
+7	700000	rs7	C	T	.	PASS	MC=SO:0001574|splice_acceptor_variant;AF_ESP=0.002;GENEINFO=GENE7:7	GT	0/1

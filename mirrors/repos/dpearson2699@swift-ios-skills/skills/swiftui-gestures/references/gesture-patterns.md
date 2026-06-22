@@ -192,8 +192,9 @@ struct ItemRow: View {
 
 ## Gesture Velocity Calculations
 
-Use `DragGesture.Value.velocity` (iOS 17+) or compute from
-`predictedEndTranslation` for flick gestures:
+Use `DragGesture.Value.velocity` for the current drag velocity. Use
+`predictedEndTranslation` when you need a projection of where the drag would
+end if the user stopped now.
 
 ```swift
 struct FlickDismissView: View {
@@ -242,7 +243,7 @@ struct FlickDismissView: View {
 }
 ```
 
-Velocity from predicted end translation (pre-iOS 17 fallback):
+Projection heuristic from predicted end translation:
 
 ```swift
 DragGesture()

@@ -31,6 +31,8 @@ This is the lowest-friction path for embedded content.
 
 Create a `WebPage` when the app needs to drive loading itself.
 
+Keep page ownership one-to-one with presentation: a `WebPage` can be bound to only one visible `WebView` at a time.
+
 ```swift
 @Observable
 @MainActor
@@ -67,6 +69,8 @@ You can also load:
 - `for try await _ in page.load(url) { }`
 - `for try await _ in page.load(html: htmlString, baseURL: baseURL) { }`
 - `for try await _ in page.load(data, mimeType: "text/html", characterEncoding: "utf-8", baseURL: baseURL) { }`
+
+Use the async sequence returned by a `load` call when you need to track that specific programmatic navigation. Use `page.navigations` for a broader stream covering both user and programmatic navigations.
 
 ## Observing progress and title
 
@@ -114,21 +118,29 @@ Use `currentNavigationEvent` for a lightweight current-state view. Use `navigati
 @MainActor
 func observeNavigations(for page: WebPage) {
     Task {
-        for await event in page.navigations {
-            switch event {
-            case .finished:
-                print("Navigation finished")
-            case .failed(let error), .failedProvisionalNavigation(let error):
-                print("Navigation failed: \(error)")
-            default:
-                break
+        do {
+            for try await event in page.navigations {
+                switch event {
+                case .startedProvisionalNavigation:
+                    print("Navigation started")
+                case .receivedServerRedirect:
+                    print("Navigation redirected")
+                case .committed:
+                    print("Navigation committed")
+                case .finished:
+                    print("Navigation finished")
+                @unknown default:
+                    break
+                }
             }
+        } catch {
+            print("Navigation failed: \(error)")
         }
     }
 }
 ```
 
-This is the right place to trigger follow-up work like parsing headings after a finished navigation.
+This is the right place to trigger follow-up work like parsing headings after a finished navigation. Treat thrown errors as normal navigation failures such as invalid URLs, provisional navigation failures, page closure, or web content process termination.
 
 ## Ephemeral pages and custom user agents
 

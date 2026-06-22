@@ -24,6 +24,19 @@ With `UpcomingFeature.InferSendableFromCaptures` (Swift 6.2):
 - `nonisolated(nonsending)` is the new default for async functions (SE-0461)
 - `@concurrent` marks functions that intentionally run off-actor
 
+### Xcode 26.5 Explicit-Capture Closure Issue
+
+Xcode 26.5 release notes document a Swift 6.3.2 issue under
+`NonisolatedNonsendingByDefault` / Approachable Concurrency: a closure with an
+explicit capture list passed to a `nonisolated(nonsending)` parameter, or
+converted to that function type, can infer isolation from the parent context
+instead of the closure type.
+
+Use only the documented workarounds:
+- Remove explicit captures when implicit capture is safe and equivalent.
+- Convert the closure into a local `@Sendable nonisolated(nonsending)` async
+  function.
+
 ## Strict Concurrency Adoption Strategy
 
 1. **Know the language mode.** In Swift 6 / 6.3 language mode, strict

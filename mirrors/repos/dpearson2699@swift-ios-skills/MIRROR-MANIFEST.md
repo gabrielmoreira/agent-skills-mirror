@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dpearson2699/swift-ios-skills` — 26 default patterns, 0 followed patterns, 307 file(s) materialized.
+Mirror of `dpearson2699/swift-ios-skills` — 26 default patterns, 0 followed patterns, 323 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dpearson2699/swift-ios-skills` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 307 |
+| Files         | 323 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -281,91 +281,107 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 220 | ✓ | [`skills/swift-concurrency/references/swiftui-concurrency.md`](skills/swift-concurrency/references/swiftui-concurrency.md) |
 | 221 | ✓ | [`skills/swift-concurrency/references/synchronization-primitives.md`](skills/swift-concurrency/references/synchronization-primitives.md) |
 | 222 | ✓ | [`skills/swift-concurrency/SKILL.md`](skills/swift-concurrency/SKILL.md) |
-| 223 | ✓ | [`skills/swift-formatstyle/SKILL.md`](skills/swift-formatstyle/SKILL.md) |
-| 224 | ✓ | [`skills/swift-language/evals/evals.json`](skills/swift-language/evals/evals.json) |
-| 225 | ✓ | [`skills/swift-language/references/swift-attributes-interop.md`](skills/swift-language/references/swift-attributes-interop.md) |
-| 226 | ✓ | [`skills/swift-language/references/swift-patterns-extended.md`](skills/swift-language/references/swift-patterns-extended.md) |
-| 227 | ✓ | [`skills/swift-language/SKILL.md`](skills/swift-language/SKILL.md) |
-| 228 | ✓ | [`skills/swift-security/evals/evals.json`](skills/swift-security/evals/evals.json) |
-| 229 | ✓ | [`skills/swift-security/references/biometric-authentication.md`](skills/swift-security/references/biometric-authentication.md) |
-| 230 | ✓ | [`skills/swift-security/references/certificate-trust.md`](skills/swift-security/references/certificate-trust.md) |
-| 231 | ✓ | [`skills/swift-security/references/common-anti-patterns.md`](skills/swift-security/references/common-anti-patterns.md) |
-| 232 | ✓ | [`skills/swift-security/references/compliance-owasp-mapping.md`](skills/swift-security/references/compliance-owasp-mapping.md) |
-| 233 | ✓ | [`skills/swift-security/references/credential-storage-patterns.md`](skills/swift-security/references/credential-storage-patterns.md) |
-| 234 | ✓ | [`skills/swift-security/references/cryptokit-public-key.md`](skills/swift-security/references/cryptokit-public-key.md) |
-| 235 | ✓ | [`skills/swift-security/references/cryptokit-symmetric.md`](skills/swift-security/references/cryptokit-symmetric.md) |
-| 236 | ✓ | [`skills/swift-security/references/keychain-access-control.md`](skills/swift-security/references/keychain-access-control.md) |
-| 237 | ✓ | [`skills/swift-security/references/keychain-fundamentals.md`](skills/swift-security/references/keychain-fundamentals.md) |
-| 238 | ✓ | [`skills/swift-security/references/keychain-item-classes.md`](skills/swift-security/references/keychain-item-classes.md) |
-| 239 | ✓ | [`skills/swift-security/references/keychain-sharing.md`](skills/swift-security/references/keychain-sharing.md) |
-| 240 | ✓ | [`skills/swift-security/references/migration-legacy-stores.md`](skills/swift-security/references/migration-legacy-stores.md) |
-| 241 | ✓ | [`skills/swift-security/references/secure-enclave.md`](skills/swift-security/references/secure-enclave.md) |
-| 242 | ✓ | [`skills/swift-security/references/testing-security-code.md`](skills/swift-security/references/testing-security-code.md) |
-| 243 | ✓ | [`skills/swift-security/SKILL.md`](skills/swift-security/SKILL.md) |
-| 244 | ✓ | [`skills/swift-testing/evals/evals.json`](skills/swift-testing/evals/evals.json) |
-| 245 | ✓ | [`skills/swift-testing/references/testing-advanced.md`](skills/swift-testing/references/testing-advanced.md) |
-| 246 | ✓ | [`skills/swift-testing/references/testing-patterns.md`](skills/swift-testing/references/testing-patterns.md) |
-| 247 | ✓ | [`skills/swift-testing/SKILL.md`](skills/swift-testing/SKILL.md) |
-| 248 | ✓ | [`skills/swiftdata/evals/evals.json`](skills/swiftdata/evals/evals.json) |
-| 249 | ✓ | [`skills/swiftdata/references/core-data-coexistence.md`](skills/swiftdata/references/core-data-coexistence.md) |
-| 250 | ✓ | [`skills/swiftdata/references/indexing.md`](skills/swiftdata/references/indexing.md) |
-| 251 | ✓ | [`skills/swiftdata/references/predicate-pitfalls.md`](skills/swiftdata/references/predicate-pitfalls.md) |
-| 252 | ✓ | [`skills/swiftdata/references/swiftdata-advanced.md`](skills/swiftdata/references/swiftdata-advanced.md) |
-| 253 | ✓ | [`skills/swiftdata/references/swiftdata-queries.md`](skills/swiftdata/references/swiftdata-queries.md) |
-| 254 | ✓ | [`skills/swiftdata/SKILL.md`](skills/swiftdata/SKILL.md) |
-| 255 | ✓ | [`skills/swiftlint/references/adoption-and-configuration.md`](skills/swiftlint/references/adoption-and-configuration.md) |
-| 256 | ✓ | [`skills/swiftlint/references/custom-rules-and-analyze.md`](skills/swiftlint/references/custom-rules-and-analyze.md) |
-| 257 | ✓ | [`skills/swiftlint/references/plugins-run-scripts-and-integrations.md`](skills/swiftlint/references/plugins-run-scripts-and-integrations.md) |
-| 258 | ✓ | [`skills/swiftlint/references/rule-reference.md`](skills/swiftlint/references/rule-reference.md) |
-| 259 | ✓ | [`skills/swiftlint/references/rules-suppressions-and-baselines.md`](skills/swiftlint/references/rules-suppressions-and-baselines.md) |
-| 260 | ✓ | [`skills/swiftlint/SKILL.md`](skills/swiftlint/SKILL.md) |
-| 261 | ✓ | [`skills/swiftui-animation/references/animation-advanced.md`](skills/swiftui-animation/references/animation-advanced.md) |
-| 262 | ✓ | [`skills/swiftui-animation/references/core-animation-bridge.md`](skills/swiftui-animation/references/core-animation-bridge.md) |
-| 263 | ✓ | [`skills/swiftui-animation/SKILL.md`](skills/swiftui-animation/SKILL.md) |
-| 264 | ✓ | [`skills/swiftui-gestures/references/gesture-patterns.md`](skills/swiftui-gestures/references/gesture-patterns.md) |
-| 265 | ✓ | [`skills/swiftui-gestures/SKILL.md`](skills/swiftui-gestures/SKILL.md) |
-| 266 | ✓ | [`skills/swiftui-layout-components/references/form.md`](skills/swiftui-layout-components/references/form.md) |
-| 267 | ✓ | [`skills/swiftui-layout-components/references/grids.md`](skills/swiftui-layout-components/references/grids.md) |
-| 268 | ✓ | [`skills/swiftui-layout-components/references/list.md`](skills/swiftui-layout-components/references/list.md) |
-| 269 | ✓ | [`skills/swiftui-layout-components/references/scrollview.md`](skills/swiftui-layout-components/references/scrollview.md) |
-| 270 | ✓ | [`skills/swiftui-layout-components/SKILL.md`](skills/swiftui-layout-components/SKILL.md) |
-| 271 | ✓ | [`skills/swiftui-liquid-glass/references/liquid-glass.md`](skills/swiftui-liquid-glass/references/liquid-glass.md) |
-| 272 | ✓ | [`skills/swiftui-liquid-glass/SKILL.md`](skills/swiftui-liquid-glass/SKILL.md) |
-| 273 | ✓ | [`skills/swiftui-navigation/references/deeplinks.md`](skills/swiftui-navigation/references/deeplinks.md) |
-| 274 | ✓ | [`skills/swiftui-navigation/references/navigationstack.md`](skills/swiftui-navigation/references/navigationstack.md) |
-| 275 | ✓ | [`skills/swiftui-navigation/references/sheets.md`](skills/swiftui-navigation/references/sheets.md) |
-| 276 | ✓ | [`skills/swiftui-navigation/references/tabview.md`](skills/swiftui-navigation/references/tabview.md) |
-| 277 | ✓ | [`skills/swiftui-navigation/SKILL.md`](skills/swiftui-navigation/SKILL.md) |
-| 278 | ✓ | [`skills/swiftui-patterns/references/architecture-patterns.md`](skills/swiftui-patterns/references/architecture-patterns.md) |
-| 279 | ✓ | [`skills/swiftui-patterns/references/deprecated-migration.md`](skills/swiftui-patterns/references/deprecated-migration.md) |
-| 280 | ✓ | [`skills/swiftui-patterns/references/design-polish.md`](skills/swiftui-patterns/references/design-polish.md) |
-| 281 | ✓ | [`skills/swiftui-patterns/references/platform-and-sharing.md`](skills/swiftui-patterns/references/platform-and-sharing.md) |
-| 282 | ✓ | [`skills/swiftui-patterns/SKILL.md`](skills/swiftui-patterns/SKILL.md) |
-| 283 | ✓ | [`skills/swiftui-performance/references/demystify-swiftui-performance-wwdc23.md`](skills/swiftui-performance/references/demystify-swiftui-performance-wwdc23.md) |
-| 284 | ✓ | [`skills/swiftui-performance/references/optimizing-swiftui-performance-instruments.md`](skills/swiftui-performance/references/optimizing-swiftui-performance-instruments.md) |
-| 285 | ✓ | [`skills/swiftui-performance/references/understanding-hangs-in-your-app.md`](skills/swiftui-performance/references/understanding-hangs-in-your-app.md) |
-| 286 | ✓ | [`skills/swiftui-performance/references/understanding-improving-swiftui-performance.md`](skills/swiftui-performance/references/understanding-improving-swiftui-performance.md) |
-| 287 | ✓ | [`skills/swiftui-performance/references/wwdc-session-sources.md`](skills/swiftui-performance/references/wwdc-session-sources.md) |
-| 288 | ✓ | [`skills/swiftui-performance/SKILL.md`](skills/swiftui-performance/SKILL.md) |
-| 289 | ✓ | [`skills/swiftui-uikit-interop/references/hosting-migration.md`](skills/swiftui-uikit-interop/references/hosting-migration.md) |
-| 290 | ✓ | [`skills/swiftui-uikit-interop/references/representable-recipes.md`](skills/swiftui-uikit-interop/references/representable-recipes.md) |
-| 291 | ✓ | [`skills/swiftui-uikit-interop/SKILL.md`](skills/swiftui-uikit-interop/SKILL.md) |
-| 292 | ✓ | [`skills/swiftui-webkit/references/loading-and-observation.md`](skills/swiftui-webkit/references/loading-and-observation.md) |
-| 293 | ✓ | [`skills/swiftui-webkit/references/local-content-and-custom-schemes.md`](skills/swiftui-webkit/references/local-content-and-custom-schemes.md) |
-| 294 | ✓ | [`skills/swiftui-webkit/references/migration-and-fallbacks.md`](skills/swiftui-webkit/references/migration-and-fallbacks.md) |
-| 295 | ✓ | [`skills/swiftui-webkit/references/navigation-and-javascript.md`](skills/swiftui-webkit/references/navigation-and-javascript.md) |
-| 296 | ✓ | [`skills/swiftui-webkit/SKILL.md`](skills/swiftui-webkit/SKILL.md) |
-| 297 | ✓ | [`skills/tabletopkit/references/tabletopkit-patterns.md`](skills/tabletopkit/references/tabletopkit-patterns.md) |
-| 298 | ✓ | [`skills/tabletopkit/SKILL.md`](skills/tabletopkit/SKILL.md) |
-| 299 | ✓ | [`skills/tipkit/references/tipkit-patterns.md`](skills/tipkit/references/tipkit-patterns.md) |
-| 300 | ✓ | [`skills/tipkit/SKILL.md`](skills/tipkit/SKILL.md) |
-| 301 | ✓ | [`skills/vision-framework/references/vision-requests.md`](skills/vision-framework/references/vision-requests.md) |
-| 302 | ✓ | [`skills/vision-framework/references/visionkit-scanner.md`](skills/vision-framework/references/visionkit-scanner.md) |
-| 303 | ✓ | [`skills/vision-framework/SKILL.md`](skills/vision-framework/SKILL.md) |
-| 304 | ✓ | [`skills/weatherkit/references/weatherkit-patterns.md`](skills/weatherkit/references/weatherkit-patterns.md) |
-| 305 | ✓ | [`skills/weatherkit/SKILL.md`](skills/weatherkit/SKILL.md) |
-| 306 | ✓ | [`skills/widgetkit/references/widgetkit-advanced.md`](skills/widgetkit/references/widgetkit-advanced.md) |
-| 307 | ✓ | [`skills/widgetkit/SKILL.md`](skills/widgetkit/SKILL.md) |
+| 223 | ✓ | [`skills/swift-formatstyle/evals/evals.json`](skills/swift-formatstyle/evals/evals.json) |
+| 224 | ✓ | [`skills/swift-formatstyle/SKILL.md`](skills/swift-formatstyle/SKILL.md) |
+| 225 | ✓ | [`skills/swift-language/evals/evals.json`](skills/swift-language/evals/evals.json) |
+| 226 | ✓ | [`skills/swift-language/references/swift-attributes-interop.md`](skills/swift-language/references/swift-attributes-interop.md) |
+| 227 | ✓ | [`skills/swift-language/references/swift-patterns-extended.md`](skills/swift-language/references/swift-patterns-extended.md) |
+| 228 | ✓ | [`skills/swift-language/SKILL.md`](skills/swift-language/SKILL.md) |
+| 229 | ✓ | [`skills/swift-security/evals/evals.json`](skills/swift-security/evals/evals.json) |
+| 230 | ✓ | [`skills/swift-security/references/biometric-authentication.md`](skills/swift-security/references/biometric-authentication.md) |
+| 231 | ✓ | [`skills/swift-security/references/certificate-trust.md`](skills/swift-security/references/certificate-trust.md) |
+| 232 | ✓ | [`skills/swift-security/references/common-anti-patterns.md`](skills/swift-security/references/common-anti-patterns.md) |
+| 233 | ✓ | [`skills/swift-security/references/compliance-owasp-mapping.md`](skills/swift-security/references/compliance-owasp-mapping.md) |
+| 234 | ✓ | [`skills/swift-security/references/credential-storage-patterns.md`](skills/swift-security/references/credential-storage-patterns.md) |
+| 235 | ✓ | [`skills/swift-security/references/cryptokit-public-key.md`](skills/swift-security/references/cryptokit-public-key.md) |
+| 236 | ✓ | [`skills/swift-security/references/cryptokit-symmetric.md`](skills/swift-security/references/cryptokit-symmetric.md) |
+| 237 | ✓ | [`skills/swift-security/references/keychain-access-control.md`](skills/swift-security/references/keychain-access-control.md) |
+| 238 | ✓ | [`skills/swift-security/references/keychain-fundamentals.md`](skills/swift-security/references/keychain-fundamentals.md) |
+| 239 | ✓ | [`skills/swift-security/references/keychain-item-classes.md`](skills/swift-security/references/keychain-item-classes.md) |
+| 240 | ✓ | [`skills/swift-security/references/keychain-sharing.md`](skills/swift-security/references/keychain-sharing.md) |
+| 241 | ✓ | [`skills/swift-security/references/migration-legacy-stores.md`](skills/swift-security/references/migration-legacy-stores.md) |
+| 242 | ✓ | [`skills/swift-security/references/secure-enclave.md`](skills/swift-security/references/secure-enclave.md) |
+| 243 | ✓ | [`skills/swift-security/references/testing-security-code.md`](skills/swift-security/references/testing-security-code.md) |
+| 244 | ✓ | [`skills/swift-security/SKILL.md`](skills/swift-security/SKILL.md) |
+| 245 | ✓ | [`skills/swift-testing/evals/evals.json`](skills/swift-testing/evals/evals.json) |
+| 246 | ✓ | [`skills/swift-testing/references/testing-advanced.md`](skills/swift-testing/references/testing-advanced.md) |
+| 247 | ✓ | [`skills/swift-testing/references/testing-patterns.md`](skills/swift-testing/references/testing-patterns.md) |
+| 248 | ✓ | [`skills/swift-testing/SKILL.md`](skills/swift-testing/SKILL.md) |
+| 249 | ✓ | [`skills/swiftdata/evals/evals.json`](skills/swiftdata/evals/evals.json) |
+| 250 | ✓ | [`skills/swiftdata/references/core-data-coexistence.md`](skills/swiftdata/references/core-data-coexistence.md) |
+| 251 | ✓ | [`skills/swiftdata/references/indexing.md`](skills/swiftdata/references/indexing.md) |
+| 252 | ✓ | [`skills/swiftdata/references/predicate-pitfalls.md`](skills/swiftdata/references/predicate-pitfalls.md) |
+| 253 | ✓ | [`skills/swiftdata/references/swiftdata-advanced.md`](skills/swiftdata/references/swiftdata-advanced.md) |
+| 254 | ✓ | [`skills/swiftdata/references/swiftdata-queries.md`](skills/swiftdata/references/swiftdata-queries.md) |
+| 255 | ✓ | [`skills/swiftdata/SKILL.md`](skills/swiftdata/SKILL.md) |
+| 256 | ✓ | [`skills/swiftlint/evals/evals.json`](skills/swiftlint/evals/evals.json) |
+| 257 | ✓ | [`skills/swiftlint/references/adoption-and-configuration.md`](skills/swiftlint/references/adoption-and-configuration.md) |
+| 258 | ✓ | [`skills/swiftlint/references/custom-rules-and-analyze.md`](skills/swiftlint/references/custom-rules-and-analyze.md) |
+| 259 | ✓ | [`skills/swiftlint/references/plugins-run-scripts-and-integrations.md`](skills/swiftlint/references/plugins-run-scripts-and-integrations.md) |
+| 260 | ✓ | [`skills/swiftlint/references/rule-reference.md`](skills/swiftlint/references/rule-reference.md) |
+| 261 | ✓ | [`skills/swiftlint/references/rules-suppressions-and-baselines.md`](skills/swiftlint/references/rules-suppressions-and-baselines.md) |
+| 262 | ✓ | [`skills/swiftlint/SKILL.md`](skills/swiftlint/SKILL.md) |
+| 263 | ✓ | [`skills/swiftui-animation/evals/evals.json`](skills/swiftui-animation/evals/evals.json) |
+| 264 | ✓ | [`skills/swiftui-animation/references/animation-advanced.md`](skills/swiftui-animation/references/animation-advanced.md) |
+| 265 | ✓ | [`skills/swiftui-animation/references/core-animation-bridge.md`](skills/swiftui-animation/references/core-animation-bridge.md) |
+| 266 | ✓ | [`skills/swiftui-animation/SKILL.md`](skills/swiftui-animation/SKILL.md) |
+| 267 | ✓ | [`skills/swiftui-gestures/evals/evals.json`](skills/swiftui-gestures/evals/evals.json) |
+| 268 | ✓ | [`skills/swiftui-gestures/references/gesture-patterns.md`](skills/swiftui-gestures/references/gesture-patterns.md) |
+| 269 | ✓ | [`skills/swiftui-gestures/SKILL.md`](skills/swiftui-gestures/SKILL.md) |
+| 270 | ✓ | [`skills/swiftui-layout-components/evals/evals.json`](skills/swiftui-layout-components/evals/evals.json) |
+| 271 | ✓ | [`skills/swiftui-layout-components/references/form.md`](skills/swiftui-layout-components/references/form.md) |
+| 272 | ✓ | [`skills/swiftui-layout-components/references/grids.md`](skills/swiftui-layout-components/references/grids.md) |
+| 273 | ✓ | [`skills/swiftui-layout-components/references/list.md`](skills/swiftui-layout-components/references/list.md) |
+| 274 | ✓ | [`skills/swiftui-layout-components/references/scrollview.md`](skills/swiftui-layout-components/references/scrollview.md) |
+| 275 | ✓ | [`skills/swiftui-layout-components/SKILL.md`](skills/swiftui-layout-components/SKILL.md) |
+| 276 | ✓ | [`skills/swiftui-liquid-glass/evals/evals.json`](skills/swiftui-liquid-glass/evals/evals.json) |
+| 277 | ✓ | [`skills/swiftui-liquid-glass/references/liquid-glass.md`](skills/swiftui-liquid-glass/references/liquid-glass.md) |
+| 278 | ✓ | [`skills/swiftui-liquid-glass/SKILL.md`](skills/swiftui-liquid-glass/SKILL.md) |
+| 279 | ✓ | [`skills/swiftui-navigation/evals/evals.json`](skills/swiftui-navigation/evals/evals.json) |
+| 280 | ✓ | [`skills/swiftui-navigation/references/deeplinks.md`](skills/swiftui-navigation/references/deeplinks.md) |
+| 281 | ✓ | [`skills/swiftui-navigation/references/navigationstack.md`](skills/swiftui-navigation/references/navigationstack.md) |
+| 282 | ✓ | [`skills/swiftui-navigation/references/sheets.md`](skills/swiftui-navigation/references/sheets.md) |
+| 283 | ✓ | [`skills/swiftui-navigation/references/tabview.md`](skills/swiftui-navigation/references/tabview.md) |
+| 284 | ✓ | [`skills/swiftui-navigation/SKILL.md`](skills/swiftui-navigation/SKILL.md) |
+| 285 | ✓ | [`skills/swiftui-patterns/evals/evals.json`](skills/swiftui-patterns/evals/evals.json) |
+| 286 | ✓ | [`skills/swiftui-patterns/references/architecture-patterns.md`](skills/swiftui-patterns/references/architecture-patterns.md) |
+| 287 | ✓ | [`skills/swiftui-patterns/references/deprecated-migration.md`](skills/swiftui-patterns/references/deprecated-migration.md) |
+| 288 | ✓ | [`skills/swiftui-patterns/references/design-polish.md`](skills/swiftui-patterns/references/design-polish.md) |
+| 289 | ✓ | [`skills/swiftui-patterns/references/platform-and-sharing.md`](skills/swiftui-patterns/references/platform-and-sharing.md) |
+| 290 | ✓ | [`skills/swiftui-patterns/SKILL.md`](skills/swiftui-patterns/SKILL.md) |
+| 291 | ✓ | [`skills/swiftui-performance/evals/evals.json`](skills/swiftui-performance/evals/evals.json) |
+| 292 | ✓ | [`skills/swiftui-performance/references/demystify-swiftui-performance-wwdc23.md`](skills/swiftui-performance/references/demystify-swiftui-performance-wwdc23.md) |
+| 293 | ✓ | [`skills/swiftui-performance/references/optimizing-swiftui-performance-instruments.md`](skills/swiftui-performance/references/optimizing-swiftui-performance-instruments.md) |
+| 294 | ✓ | [`skills/swiftui-performance/references/understanding-hangs-in-your-app.md`](skills/swiftui-performance/references/understanding-hangs-in-your-app.md) |
+| 295 | ✓ | [`skills/swiftui-performance/references/understanding-improving-swiftui-performance.md`](skills/swiftui-performance/references/understanding-improving-swiftui-performance.md) |
+| 296 | ✓ | [`skills/swiftui-performance/references/wwdc-session-sources.md`](skills/swiftui-performance/references/wwdc-session-sources.md) |
+| 297 | ✓ | [`skills/swiftui-performance/SKILL.md`](skills/swiftui-performance/SKILL.md) |
+| 298 | ✓ | [`skills/swiftui-uikit-interop/evals/evals.json`](skills/swiftui-uikit-interop/evals/evals.json) |
+| 299 | ✓ | [`skills/swiftui-uikit-interop/references/hosting-migration.md`](skills/swiftui-uikit-interop/references/hosting-migration.md) |
+| 300 | ✓ | [`skills/swiftui-uikit-interop/references/representable-recipes.md`](skills/swiftui-uikit-interop/references/representable-recipes.md) |
+| 301 | ✓ | [`skills/swiftui-uikit-interop/SKILL.md`](skills/swiftui-uikit-interop/SKILL.md) |
+| 302 | ✓ | [`skills/swiftui-webkit/evals/evals.json`](skills/swiftui-webkit/evals/evals.json) |
+| 303 | ✓ | [`skills/swiftui-webkit/references/loading-and-observation.md`](skills/swiftui-webkit/references/loading-and-observation.md) |
+| 304 | ✓ | [`skills/swiftui-webkit/references/local-content-and-custom-schemes.md`](skills/swiftui-webkit/references/local-content-and-custom-schemes.md) |
+| 305 | ✓ | [`skills/swiftui-webkit/references/migration-and-fallbacks.md`](skills/swiftui-webkit/references/migration-and-fallbacks.md) |
+| 306 | ✓ | [`skills/swiftui-webkit/references/navigation-and-javascript.md`](skills/swiftui-webkit/references/navigation-and-javascript.md) |
+| 307 | ✓ | [`skills/swiftui-webkit/SKILL.md`](skills/swiftui-webkit/SKILL.md) |
+| 308 | ✓ | [`skills/tabletopkit/evals/evals.json`](skills/tabletopkit/evals/evals.json) |
+| 309 | ✓ | [`skills/tabletopkit/references/tabletopkit-patterns.md`](skills/tabletopkit/references/tabletopkit-patterns.md) |
+| 310 | ✓ | [`skills/tabletopkit/SKILL.md`](skills/tabletopkit/SKILL.md) |
+| 311 | ✓ | [`skills/tipkit/evals/evals.json`](skills/tipkit/evals/evals.json) |
+| 312 | ✓ | [`skills/tipkit/references/tipkit-patterns.md`](skills/tipkit/references/tipkit-patterns.md) |
+| 313 | ✓ | [`skills/tipkit/SKILL.md`](skills/tipkit/SKILL.md) |
+| 314 | ✓ | [`skills/vision-framework/evals/evals.json`](skills/vision-framework/evals/evals.json) |
+| 315 | ✓ | [`skills/vision-framework/references/vision-requests.md`](skills/vision-framework/references/vision-requests.md) |
+| 316 | ✓ | [`skills/vision-framework/references/visionkit-scanner.md`](skills/vision-framework/references/visionkit-scanner.md) |
+| 317 | ✓ | [`skills/vision-framework/SKILL.md`](skills/vision-framework/SKILL.md) |
+| 318 | ✓ | [`skills/weatherkit/evals/evals.json`](skills/weatherkit/evals/evals.json) |
+| 319 | ✓ | [`skills/weatherkit/references/weatherkit-patterns.md`](skills/weatherkit/references/weatherkit-patterns.md) |
+| 320 | ✓ | [`skills/weatherkit/SKILL.md`](skills/weatherkit/SKILL.md) |
+| 321 | ✓ | [`skills/widgetkit/evals/evals.json`](skills/widgetkit/evals/evals.json) |
+| 322 | ✓ | [`skills/widgetkit/references/widgetkit-advanced.md`](skills/widgetkit/references/widgetkit-advanced.md) |
+| 323 | ✓ | [`skills/widgetkit/SKILL.md`](skills/widgetkit/SKILL.md) |
 
 ---
 

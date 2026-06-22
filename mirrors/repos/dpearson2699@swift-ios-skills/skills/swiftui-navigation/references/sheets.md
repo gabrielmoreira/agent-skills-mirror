@@ -140,9 +140,18 @@ Modifier methods for fine-tuning:
 - `.fitted(horizontal:vertical:)` -- constrain fitting to specific axes
 - `.sticky(horizontal:vertical:)` -- grow but do not shrink in specified dimensions
 
-### Dismissal Confirmation (macOS 15+ / iOS 26+)
+### Dismissal Protection
 
-Show a confirmation dialog when the user tries to dismiss a sheet with unsaved changes:
+On iOS/iPadOS, prevent gesture dismissal while unsaved changes exist and expose explicit Save/Discard actions inside the sheet:
+
+```swift
+.sheet(item: $selectedItem) { item in
+    EditItemSheet(item: item)
+        .interactiveDismissDisabled(hasUnsavedChanges)
+}
+```
+
+On macOS 15+, show a confirmation dialog when the user tries to dismiss a sheet with unsaved changes:
 
 ```swift
 .sheet(item: $selectedItem) { item in
@@ -156,8 +165,8 @@ Show a confirmation dialog when the user tries to dismiss a sheet with unsaved c
 }
 ```
 
-- Cancel action is included automatically and prevents dismissal
-- All other action buttons allow dismissal to proceed
+- For `dismissalConfirmationDialog`, the Cancel action is included automatically and prevents dismissal.
+- All other action buttons allow dismissal to proceed.
 - Use `.keyboardShortcut(.defaultAction)` to set the default button
 
 ## Pitfalls
@@ -166,4 +175,5 @@ Show a confirmation dialog when the user tries to dismiss a sheet with unsaved c
 - Do not store heavy state inside `SheetDestination`; pass lightweight identifiers or models.
 - If multiple sheets can appear from the same screen, give them distinct `id` values.
 - Use `presentationSizing(.form)` for form sheets instead of hard-coding frame dimensions.
-- Always pair `dismissalConfirmationDialog` with a `shouldPresent` condition; showing it when there are no changes is confusing.
+- Use `interactiveDismissDisabled(_:)` for iOS/iPadOS dismissal prevention.
+- Always pair `dismissalConfirmationDialog` with a `shouldPresent` condition on macOS; showing it when there are no changes is confusing.

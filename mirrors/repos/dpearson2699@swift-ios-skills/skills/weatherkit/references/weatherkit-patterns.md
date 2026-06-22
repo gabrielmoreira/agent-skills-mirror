@@ -7,11 +7,18 @@ Overflow reference for the `weatherkit` skill. Contains advanced patterns that e
 - [WeatherKit SwiftUI Integration](#weatherkit-swiftui-integration)
 - [Charts Integration](#charts-integration)
 - [Historical Weather Statistics](#historical-weather-statistics)
+- [Weather Changes and Historical Comparisons](#weather-changes-and-historical-comparisons)
 - [Weather Condition Mapping](#weather-condition-mapping)
 - [Caching Strategy](#caching-strategy)
 - [Location-Based Weather](#location-based-weather)
+- [References](#references)
 
 ## WeatherKit SwiftUI Integration
+
+SwiftUI views may trigger loads from `.task` or `.refreshable`, but the
+`@Observable` model should decide whether a network request is needed. Use
+`loadWeatherIfNeeded` for automatic view lifecycle loads and a separate refresh
+path for explicit user refresh.
 
 ### Weather Manager with `@Observable`
 
@@ -32,7 +39,12 @@ final class WeatherManager {
     var isLoading = false
     var error: Error?
 
-    func fetchWeather(for location: CLLocation) async {
+    func loadWeatherIfNeeded(for location: CLLocation) async {
+        guard current == nil else { return }
+        await refreshWeather(for: location)
+    }
+
+    func refreshWeather(for location: CLLocation) async {
         isLoading = true
         error = nil
 
@@ -95,10 +107,10 @@ struct WeatherDashboardView: View {
             }
             .navigationTitle("Weather")
             .task {
-                await manager.fetchWeather(for: location)
+                await manager.loadWeatherIfNeeded(for: location)
             }
             .refreshable {
-                await manager.fetchWeather(for: location)
+                await manager.refreshWeather(for: location)
             }
         }
     }
@@ -213,9 +225,12 @@ struct WeatherDashboardView: View {
                     VStack(alignment: .leading) {
                         Text(alert.summary)
                             .font(.subheadline)
-                        Text(alert.region)
+                        Text(alert.region ?? "Affected area unavailable")
                             .font(.caption)
                             .foregroundStyle(.secondary)
+
+                        Link("Details", destination: alert.detailsURL)
+                            .font(.caption2)
                     }
                 }
                 .padding()
@@ -226,6 +241,10 @@ struct WeatherDashboardView: View {
     }
 }
 ```
+
+When alert or minute support is uncertain, fetch `WeatherAvailability` and use
+only `alertAvailability` or `minuteAvailability`; it is not a broad matrix for
+current, hourly, or daily forecast support.
 
 ### Attribution View
 
@@ -334,28 +353,32 @@ struct DailyPrecipitationChart: View {
 
 ## Historical Weather Statistics
 
-WeatherKit provides historical weather data through daily and monthly statistics.
+WeatherKit provides iOS 18+ historical statistics through variadic APIs. The
+tuple return order matches the `including:` query order.
+Use statistics properties such as `averagePrecipitationProbability`; do not use
+forecast-only `DayWeather.precipitationChance` in statistics examples.
 
 ### Daily Statistics
 
 ```swift
+@available(iOS 18.0, *)
 func fetchDailyStats(
     for location: CLLocation,
     dateRange: DateInterval
-) async throws {
-    let stats = try await WeatherService.shared.dailyStatistics(
+) async throws -> [(day: Int, averageHigh: Measurement<UnitTemperature>, averagePrecipitation: Measurement<UnitLength>)] {
+    let (dailyPrecipitation, dailyTemperature) = try await WeatherService.shared.dailyStatistics(
         for: location,
         forDaysIn: dateRange,
-        including: [.temperature, .precipitation]
+        including: .precipitation, .temperature
     )
+    // Tuple order follows the variadic query order above.
 
-    for dayStat in stats {
-        print("Date: \(dayStat.date)")
-        if let temp = dayStat.statistics(for: .temperature) {
-            print("  Avg temp: \(temp.mean?.formatted() ?? "N/A")")
-            print("  Min temp: \(temp.minimum?.formatted() ?? "N/A")")
-            print("  Max temp: \(temp.maximum?.formatted() ?? "N/A")")
-        }
+    return zip(dailyPrecipitation, dailyTemperature).map { precipitation, temperature in
+        (
+            day: temperature.day,
+            averageHigh: temperature.averageHighTemperature,
+            averagePrecipitation: precipitation.averagePrecipitationAmount
+        )
     }
 }
 ```
@@ -363,15 +386,75 @@ func fetchDailyStats(
 ### Monthly Statistics
 
 ```swift
-func fetchMonthlyStats(for location: CLLocation) async throws {
-    let stats = try await WeatherService.shared.monthlyStatistics(
+@available(iOS 18.0, *)
+func fetchMonthlyStats(
+    for location: CLLocation
+) async throws -> [(month: Int, averageLow: Measurement<UnitTemperature>, averagePrecipitation: Measurement<UnitLength>)] {
+    let (monthlyPrecipitation, monthlyTemperature) = try await WeatherService.shared.monthlyStatistics(
         for: location,
-        including: [.temperature, .precipitation]
+        including: .precipitation, .temperature
+    )
+    // Tuple order follows the variadic query order above.
+
+    return zip(monthlyPrecipitation, monthlyTemperature).map { precipitation, temperature in
+        (
+            month: temperature.month,
+            averageLow: temperature.averageLowTemperature,
+            averagePrecipitation: precipitation.averagePrecipitationAmount
+        )
+    }
+}
+```
+
+## Weather Changes and Historical Comparisons
+
+Use the optional iOS 18+ context queries to summarize why forecast data matters
+for a user. `.changes` reports upcoming significant changes; `.historicalComparisons`
+compares current conditions to historical averages and returns comparisons ordered
+by significance.
+
+For "unusual tomorrow" features, combine `.changes` with the tomorrow daily
+date-range forecast and `.historicalComparisons`.
+
+```swift
+@available(iOS 18.0, *)
+func contextHighlights(for location: CLLocation) async throws -> [String] {
+    let (changes, comparisons) = try await WeatherService.shared.weather(
+        for: location,
+        including: .changes, .historicalComparisons
     )
 
-    for monthStat in stats {
-        print("Month: \(monthStat.month)")
+    var highlights: [String] = []
+
+    for change in changes?.changes ?? [] {
+        switch change.highTemperature {
+        case .increase:
+            highlights.append("High temperature is expected to rise.")
+        case .decrease:
+            highlights.append("High temperature is expected to fall.")
+        case .steady:
+            break
+        @unknown default:
+            break
+        }
     }
+
+    for comparison in comparisons?.comparisons ?? [] {
+        switch comparison {
+        case .highTemperature(let trend):
+            highlights.append("High temperature is \(trend.deviation).")
+        case .lowTemperature(let trend):
+            highlights.append("Low temperature is \(trend.deviation).")
+        case .precipitationAmount(let trend):
+            highlights.append("Precipitation is \(trend.deviation).")
+        case .snowfallAmount(let trend):
+            highlights.append("Snowfall is \(trend.deviation).")
+        @unknown default:
+            break
+        }
+    }
+
+    return highlights
 }
 ```
 
@@ -442,19 +525,13 @@ actor WeatherCache {
         let weather: CurrentWeather
         let hourly: Forecast<HourWeather>
         let daily: Forecast<DayWeather>
-        let fetchDate: Date
+        let expiresAt: Date
     }
 
     private var cache: [String: CacheEntry] = [:]
-    private let staleness: TimeInterval
-
-    init(staleness: TimeInterval = 600) { // 10 minutes default
-        self.staleness = staleness
-    }
 
     func get(for key: String) -> CacheEntry? {
-        guard let entry = cache[key],
-              Date.now.timeIntervalSince(entry.fetchDate) < staleness else {
+        guard let entry = cache[key], Date.now < entry.expiresAt else {
             cache[key] = nil
             return nil
         }
@@ -502,7 +579,11 @@ final class CachedWeatherManager {
             weather: current,
             hourly: hourly,
             daily: daily,
-            fetchDate: .now
+            expiresAt: min(
+                current.metadata.expirationDate,
+                hourly.metadata.expirationDate,
+                daily.metadata.expirationDate
+            )
         )
         await cache.set(entry, for: key)
         self.current = current
@@ -565,3 +646,15 @@ final class LocationWeatherManager: NSObject, CLLocationManagerDelegate {
     }
 }
 ```
+
+## References
+
+- [WeatherKit](https://sosumi.ai/documentation/weatherkit)
+- [WeatherAlert.detailsURL](https://sosumi.ai/documentation/weatherkit/weatheralert/detailsurl)
+- [WeatherAlert.region](https://sosumi.ai/documentation/weatherkit/weatheralert/region)
+- [WeatherMetadata.expirationDate](https://sosumi.ai/documentation/weatherkit/weathermetadata/expirationdate)
+- [dailyStatistics(for:forDaysIn:including:)](https://sosumi.ai/documentation/weatherkit/weatherservice/dailystatistics(for:fordaysin:including:))
+- [monthlyStatistics(for:including:)](https://sosumi.ai/documentation/weatherkit/weatherservice/monthlystatistics(for:including:))
+- [WeatherQuery.changes](https://sosumi.ai/documentation/weatherkit/weatherquery/changes)
+- [WeatherQuery.historicalComparisons](https://sosumi.ai/documentation/weatherkit/weatherquery/historicalcomparisons)
+- [WeatherKit updates](https://sosumi.ai/documentation/updates/weatherkit)

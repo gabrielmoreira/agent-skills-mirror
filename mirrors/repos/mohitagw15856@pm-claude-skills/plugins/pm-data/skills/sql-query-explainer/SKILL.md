@@ -134,6 +134,14 @@ Known limitations:
 - [ ] Output shape is described (columns, row grain, ordering)
 - [ ] Dialect-specific syntax is flagged when non-standard
 
+## Anti-Patterns
+
+- Restating the SQL in pseudo-code instead of explaining what it *does* and *returns*
+- Optimisation advice with no before/after query, or no reason the new one is faster
+- Ignoring the dialect (writing Postgres-only syntax for a MySQL user)
+- "Looks fine" with no read on correctness, performance, or row grain
+- Rewriting the query from scratch instead of explaining/optimising the user's
+
 ## Example Trigger Phrases
 
 - "Explain this SQL query: [paste query]"

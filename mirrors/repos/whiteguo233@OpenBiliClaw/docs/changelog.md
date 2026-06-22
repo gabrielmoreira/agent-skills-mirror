@@ -4,19 +4,39 @@
 
 ---
 
+## v0.3.135 / extension v0.3.89 / desktop v0.3.135: 抖音 search discovery 真实召回修复（2026-06-21）
+
+后端源码走 `backend-v0.3.135`，浏览器插件走 `extension-v0.3.89`，桌面安装包走 `desktop-v0.3.135`。
+
+- **抖音 search discovery 恢复真实召回**：search 仍从抖音首页搜索框输入关键词并点击按钮提交，且继续用 `search_navigation_ok` 校验真实搜索结果路由；当页面自身 search fetch tap 与 DOM 解析都没有候选时，content script 会改用已登录页面的 MAIN-world search API bridge 兜底，避免当前抖音搜索页软空 / 响应时序变化导致 `dy_search=0`。真实环境 E2E 已重新验证 search / hot / feed 三个 discover 渠道均返回 3 条候选。
+
+## v0.3.134 / extension v0.3.88: 初始化前事件入口收口（2026-06-21）
+
+后端源码走 `backend-v0.3.134`，浏览器插件走 `extension-v0.3.88`，桌面安装包走 `desktop-v0.3.134`。
+
+- **未初始化 activity feed 不再抢显示待处理信号**：`/api/activity-feed` 现在和推荐空态使用同一初始化优先级；在 `initialized=false` 且还没有推荐 / 可换池 / 补货产物时，`pending_signal_events` 只保留为后台事实，不再把 popup / Web 首屏文案改成“已经记下 N 个信号”，避免保存 LLM provider 后误导用户以为初始化已经开始。
+- **初始化前普通行为事件不再入库**：`POST /api/events` 在 soul 画像明确未初始化时返回 `accepted=0` / `rejected.reason=not_initialized`，不写入 memory、不触发 `activity.added`、也不增加 `pending_signal_events`。首轮画像信号只由用户点击「开始初始化」后的 guided init 来源拉取；初始化任务自己的 `/api/sources/*/task-result` 仍按 init-owned 逻辑放行。
+- **B 站收藏夹初始化按页补齐**：`get_favorites()` 不再固定只取收藏夹第一页 20 条；分页停止优先遵守 B 站返回的 `has_more`，覆盖第一页不足 20 条但仍有后续页的真实账号形态。初始化会把 `--bilibili-favorite-limit` 作为跨收藏夹总预算传入，单个收藏夹按页补齐到剩余预算。
+- **B 站初始化默认信号上限调高**：首轮初始化默认导入的 B 站观看历史从 300 条提升到 500 条，收藏总预算从 300 条提升到 500 条；关注 UP 默认仍保持 100 人。
+
+## v0.3.133 / extension v0.3.87: 推荐池 admission 统一收口（2026-06-21）
+
+后端源码走 `backend-v0.3.133`，浏览器插件走 `extension-v0.3.87`，桌面安装包走 `desktop-v0.3.133`。
+
+- **推荐池 admission 取消 observed 特权**：新增 `[discovery].admission_min_score=0.60` 作为普通统一入池最低分；B 站扩展搜索、小红书 observed 和其它插件 / 来源候选都必须先过 evaluator 分数门，普通策略 / producer 默认阈值也统一为 0.60。探索类策略可使用略低阈值鼓励新方向，但不再有平台 / observed 特权；数据库读取、suppressed 复活、delight 候选和 `/api/recommendations` 历史输出同步加低分过滤，并在初始化时压制旧低分 `content_cache` / `recommendations` 脏数据。
+- **PC setup / Web 初始化完成态等首批内容池**：安装包 `/setup/` 和桌面 Web `/web` 不再只凭 `init-status.initialized=true` 就进入完成态；收到 `init_completed` 后会继续读取 `/api/runtime-status`，只有 `pool_available_count>0` 或已有推荐数时才算首轮初始化完成。画像已生成但首批内容还没入池时，PC 侧会停在“整理首轮内容池”进度态，和浏览器插件“有内容可刷后再进入推荐体验”的语义对齐。
+- **首轮 discovery 冷启动多样性保护**：guided init 的空池首轮补货和统一 keyword planner 的空池首批跨平台关键词都会构造 `cold_start` pool snapshot，把画像里最高权重兴趣当作“软避让”而不是厌恶项，同时把次级兴趣 / 兴趣域作为 `prefer_axes` 注入搜索词 prompt；首批 query / keywords 保留少量强兴趣入口，但至少一半预算覆盖其它画像相关方向，降低各策略 / 各平台同时涌向单一高权重 topic 的概率。
+- **Discovery batch evaluator 结构化输出更稳**：批量内容评估 prompt 改为顶层 JSON object + `results` 数组，和 OpenAI-compatible 的 `json_object` 模式一致；解析器同时兼容 `{"BVxxx": {"score": ...}}` 这类按内容 ID 映射的返回，并在降级逐条评估时记录异常类型与原因，便于定位 provider 偶发结构漂移。
+- **B 站搜索插件兜底不再只等全局冷却**：单个 `v_voucher` 关键词耗尽仍不会触发 API 全局 cooldown、也不会让 explore 一起停摆，但会打开短期 DOM fallback 信号；扩展在线且 B 站池子低于配额时，runtime producer 可以立即入队浏览器真实搜索页任务补货。
+- **PC Web 空推荐不再显示演示卡片**：桌面 Web `/web` 初始推荐列表改为空数组，且 `/api/recommendations` 返回空列表时会显式清空当前卡片，避免候选池为 0 时露出前端内置 demo 内容；插件 side panel 原本已使用空数组初始化，不受影响。
+
 ## v0.3.132 / extension v0.3.86: 初始化向导与推荐语气修复（2026-06-21）
 
 后端源码走 `backend-v0.3.132`，浏览器插件走 `extension-v0.3.86`。桌面安装包未改动；如冻结包用户需要同步本次 Web / 后端修复，可后续单独打 `desktop-v0.3.132`。
 
 - **图形化初始化来源勾选即生效**：`/setup/`、桌面 Web 和插件推荐 tab 不再把“小红书 / 抖音 / YouTube / X 已勾选但未在设置开启”当作启动前错误；显式 `sources` 现在是本轮 guided init 的 opt-in，并 best-effort 写回 `sources.<platform>.enabled=true`。前置清单同步显示“本次初始化来源”，避免首启默认勾选后仍报未开启。
 - **`/setup/` 保存模型配置不再提前启动画像 / 探针**：安装包首启向导第一页把“模型名”移出高级折叠并自动填入推荐默认模型；点击“保存并继续”只保存 LLM/provider/model 并热重载组件，同时用 `suppress_background_llm_work=true` 暂停 post-reload speculator、画像/探针和补池后台工作。只有第二页选择来源并点击“开始初始化”后才真正进入四阶段 guided init，初始化终态后再恢复后台循环。
-- **PC setup / Web 初始化完成态等首批内容池**：安装包 `/setup/` 和桌面 Web `/web` 不再只凭 `init-status.initialized=true` 就进入完成态；收到 `init_completed` 后会继续读取 `/api/runtime-status`，只有 `pool_available_count>0` 或已有推荐数时才算首轮初始化完成。画像已生成但首批内容还没入池时，PC 侧会停在“整理首轮内容池”进度态，和浏览器插件“有内容可刷后再进入推荐体验”的语义对齐。
-- **首轮 discovery 冷启动多样性保护**：guided init 的空池首轮补货和统一 keyword planner 的空池首批跨平台关键词都会构造 `cold_start` pool snapshot，把画像里最高权重兴趣当作“软避让”而不是厌恶项，同时把次级兴趣 / 兴趣域作为 `prefer_axes` 注入搜索词 prompt；首批 query / keywords 保留少量强兴趣入口，但至少一半预算覆盖其它画像相关方向，降低各策略 / 各平台同时涌向单一高权重 topic 的概率。
-- **Discovery batch evaluator 结构化输出更稳**：批量内容评估 prompt 改为顶层 JSON object + `results` 数组，和 OpenAI-compatible 的 `json_object` 模式一致；解析器同时兼容 `{"BVxxx": {"score": ...}}` 这类按内容 ID 映射的返回，并在降级逐条评估时记录异常类型与原因，便于定位 provider 偶发结构漂移。
-- **推荐池 admission 取消 observed 特权**：新增 `[discovery].admission_min_score=0.65` 作为统一入池最低分；B 站扩展搜索、小红书 observed 和其它插件 / 来源候选都必须先过 evaluator 分数门。数据库读取、suppressed 复活、delight 候选和 `/api/recommendations` 历史输出同步加低分过滤，并在初始化时压制旧低分 `content_cache` / `recommendations` 脏数据。
-- **B 站搜索插件兜底不再只等全局冷却**：单个 `v_voucher` 关键词耗尽仍不会触发 API 全局 cooldown、也不会让 explore 一起停摆，但会打开短期 DOM fallback 信号；扩展在线且 B 站池子低于配额时，runtime producer 可以立即入队浏览器真实搜索页任务补货。
 - **推荐表达语气固定跟随用户画像**：推荐文案不再因为内容 `style_key` 是日常、轻聊或审美浏览就把语气自动调轻；`style_key` 只影响推荐理由切入角度。缺省推荐 tone 调整为 `balanced / warm / low / direct`，避免冷启动时过冷或过油。
-- **PC Web 空推荐不再显示演示卡片**：桌面 Web `/web` 初始推荐列表改为空数组，且 `/api/recommendations` 返回空列表时会显式清空当前卡片，避免候选池为 0 时露出前端内置 demo 内容；插件 side panel 原本已使用空数组初始化，不受影响。
 
 ## v0.3.131 / extension v0.3.85: 多源评估指标与封面图评估（2026-06-20）
 

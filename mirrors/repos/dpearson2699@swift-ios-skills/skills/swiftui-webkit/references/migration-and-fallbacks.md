@@ -13,9 +13,9 @@
 
 ## Migration goal
 
-For SwiftUI apps targeting iOS 26+, the default should be native SwiftUI WebKit
-APIs (`WebView`, `WebPage`) instead of a custom `UIViewRepresentable` wrapper
-around `WKWebView`.
+For SwiftUI apps targeting iOS 26+, the default for routine embedded web
+content should be native SwiftUI WebKit APIs (`WebView`, `WebPage`) instead of
+a custom `UIViewRepresentable` wrapper around `WKWebView`.
 
 The goal is not "delete every `WKWebView` immediately." The goal is to move
 routine embedded web content to the new native surface and keep legacy fallback
@@ -27,13 +27,15 @@ paths only where they are still justified.
 |---|---|
 | Embedded app-owned web content in a SwiftUI screen | `WebView` + `WebPage` |
 | OAuth or third-party sign-in | `ASWebAuthenticationSession` |
-| External public site with Safari behavior | `SFSafariViewController` |
+| External public site with Safari behavior on iOS/iPadOS | `SFSafariViewController` |
+| External public site browse-out on macOS or visionOS | `openURL` / default browser |
 | Back-deploying below iOS 26 or missing required capability | `WKWebView` fallback |
 
 ## Migrating from `WKWebView` wrappers
 
-For SwiftUI apps targeting iOS 26+, start from `WebView` and `WebPage` instead
-of a `UIViewRepresentable` wrapper around `WKWebView`.
+For SwiftUI apps targeting iOS 26+, start from `WebView` and `WebPage` for
+routine embedded content instead of a `UIViewRepresentable` wrapper around
+`WKWebView`.
 
 Typical mapping:
 
@@ -101,8 +103,8 @@ sprinkling `if #available` checks through the screen's core logic.
 
 ## When `SFSafariViewController` is still the right choice
 
-Use `SFSafariViewController` when the app just needs to show an external site
-with Safari behavior and does not need page-level control.
+Use `SFSafariViewController` on iOS and iPadOS when the app just needs to show
+an external site with Safari behavior and does not need page-level control.
 
 Good fits:
 
@@ -116,6 +118,10 @@ Do not use `SFSafariViewController` when the app needs to:
 - run JavaScript
 - intercept navigation
 - coordinate in-app page history
+
+On macOS and visionOS, prefer platform default-browser behavior through
+`openURL` instead of treating `SFSafariViewController` as the browse-out
+surface.
 
 ## When `ASWebAuthenticationSession` is required
 

@@ -50,11 +50,9 @@ final class TextRecognizer {
 
         return observations.compactMap { observation in
             guard let candidate = observation.topCandidates(1).first else { return nil }
-            let boundingBox = observation.boundingBox
-            let imageRect = VNImageRectForNormalizedRect(
-                boundingBox,
-                Int(imageSize.width),
-                Int(imageSize.height)
+            let imageRect = observation.boundingBox.toImageCoordinates(
+                imageSize,
+                origin: .upperLeft
             )
             return RecognizedTextBlock(
                 text: candidate.string,
@@ -146,7 +144,7 @@ func recognizeTextLegacy(
 import Vision
 
 struct DetectedFace: Sendable {
-    let boundingBox: CGRect
+    let boundingBox: NormalizedRect
     let landmarks: FaceLandmarkPoints?
     let roll: Measurement<UnitAngle>
     let yaw: Measurement<UnitAngle>
@@ -154,11 +152,11 @@ struct DetectedFace: Sendable {
 }
 
 struct FaceLandmarkPoints: Sendable {
-    let leftEye: [CGPoint]
-    let rightEye: [CGPoint]
-    let nose: [CGPoint]
-    let outerLips: [CGPoint]
-    let faceContour: [CGPoint]
+    let leftEye: [NormalizedPoint]
+    let rightEye: [NormalizedPoint]
+    let nose: [NormalizedPoint]
+    let outerLips: [NormalizedPoint]
+    let faceContour: [NormalizedPoint]
 }
 
 func detectFaces(in cgImage: CGImage) async throws -> [DetectedFace] {
@@ -179,11 +177,11 @@ func detectFaces(in cgImage: CGImage) async throws -> [DetectedFace] {
         if index < landmarkFaces.count,
            let lm = landmarkFaces[index].landmarks {
             landmarks = FaceLandmarkPoints(
-                leftEye: lm.leftEye?.normalizedPoints ?? [],
-                rightEye: lm.rightEye?.normalizedPoints ?? [],
-                nose: lm.nose?.normalizedPoints ?? [],
-                outerLips: lm.outerLips?.normalizedPoints ?? [],
-                faceContour: lm.faceContour?.normalizedPoints ?? []
+                leftEye: lm.leftEye.points,
+                rightEye: lm.rightEye.points,
+                nose: lm.nose.points,
+                outerLips: lm.outerLips.points,
+                faceContour: lm.faceContour.points
             )
         } else {
             landmarks = nil
@@ -214,13 +212,13 @@ import Vision
 
 struct DetectedBarcode: Sendable {
     let payload: String?
-    let symbology: VNBarcodeSymbology
-    let boundingBox: CGRect
+    let symbology: BarcodeSymbology
+    let boundingBox: NormalizedRect
 }
 
 func detectBarcodes(
     in cgImage: CGImage,
-    symbologies: [VNBarcodeSymbology] = [.qr, .ean13, .code128]
+    symbologies: [BarcodeSymbology] = [.qr, .ean13, .code128]
 ) async throws -> [DetectedBarcode] {
     var request = DetectBarcodesRequest()
     request.symbologies = symbologies
@@ -252,7 +250,7 @@ func detectQRCodes(in cgImage: CGImage) async throws -> [URL] {
 
 ```swift
 // 1D barcodes
-let linearSymbologies: [VNBarcodeSymbology] = [
+let linearSymbologies: [BarcodeSymbology] = [
     .codabar, .code39, .code39Checksum, .code39FullASCII,
     .code39FullASCIIChecksum, .code93, .code93i, .code128,
     .ean8, .ean13, .gs1DataBar, .gs1DataBarExpanded,
@@ -261,7 +259,7 @@ let linearSymbologies: [VNBarcodeSymbology] = [
 ]
 
 // 2D barcodes
-let matrixSymbologies: [VNBarcodeSymbology] = [
+let matrixSymbologies: [BarcodeSymbology] = [
     .qr, .aztec, .dataMatrix, .pdf417, .microPDF417, .microQR,
 ]
 ```
@@ -353,7 +351,7 @@ func segmentIndividualPeople(in cgImage: CGImage) async throws -> [CVPixelBuffer
 
     let indices = observation.allInstances
     return try indices.map { index in
-        try observation.generateMask(forInstances: IndexSet(integer: index))
+        try observation.generateMask(for: IndexSet(integer: index))
     }
 }
 ```
@@ -395,18 +393,16 @@ Identify the most visually important or attention-grabbing regions.
 
 ```swift
 // Attention-based saliency (what humans would look at)
-func detectAttentionSaliency(in cgImage: CGImage) async throws -> [CGRect] {
+func detectAttentionSaliency(in cgImage: CGImage) async throws -> [NormalizedRect] {
     let request = GenerateAttentionBasedSaliencyImageRequest()
-    let results = try await request.perform(on: cgImage)
-    guard let saliency = results.first else { return [] }
+    let saliency: SaliencyImageObservation = try await request.perform(on: cgImage)
     return saliency.salientObjects?.map(\.boundingBox) ?? []
 }
 
 // Objectness-based saliency (distinct objects)
-func detectObjectSaliency(in cgImage: CGImage) async throws -> [CGRect] {
+func detectObjectSaliency(in cgImage: CGImage) async throws -> [NormalizedRect] {
     let request = GenerateObjectnessBasedSaliencyImageRequest()
-    let results = try await request.perform(on: cgImage)
-    guard let saliency = results.first else { return [] }
+    let saliency: SaliencyImageObservation = try await request.perform(on: cgImage)
     return saliency.salientObjects?.map(\.boundingBox) ?? []
 }
 ```
@@ -416,7 +412,7 @@ func detectObjectSaliency(in cgImage: CGImage) async throws -> [CGRect] {
 Detect rectangular shapes for document edges, business cards, etc.
 
 ```swift
-func detectRectangles(in cgImage: CGImage) async throws -> [CGRect] {
+func detectRectangles(in cgImage: CGImage) async throws -> [NormalizedRect] {
     var request = DetectRectanglesRequest()
     request.minimumAspectRatio = 0.3
     request.maximumAspectRatio = 1.0
@@ -433,10 +429,10 @@ func detectRectangles(in cgImage: CGImage) async throws -> [CGRect] {
 Detect the horizon angle for auto-straightening photos.
 
 ```swift
-func detectHorizon(in cgImage: CGImage) async throws -> CGFloat? {
+func detectHorizon(in cgImage: CGImage) async throws -> Measurement<UnitAngle> {
     let request = DetectHorizonRequest()
-    let results = try await request.perform(on: cgImage)
-    return results.first?.angle.map { CGFloat($0) }
+    let observation = try await request.perform(on: cgImage)
+    return observation.angle
 }
 ```
 
@@ -562,24 +558,21 @@ final class ObjectTracker {
     private var request: TrackObjectRequest?
 
     /// Initialize tracking with a bounding box in normalized coordinates
-    func startTracking(boundingBox: CGRect) {
+    func startTracking(boundingBox: NormalizedRect) {
         let observation = DetectedObjectObservation(boundingBox: boundingBox)
-        var req = TrackObjectRequest(observation: observation)
-        req.trackingLevel = .accurate
-        request = req
+        request = TrackObjectRequest(detectedObject: observation)
     }
 
     /// Track object in next video frame
-    func track(in pixelBuffer: CVPixelBuffer) async throws -> CGRect? {
-        guard var req = request else { return nil }
+    func track(in pixelBuffer: CVPixelBuffer) async throws -> NormalizedRect? {
+        guard let request else { return nil }
 
-        let results = try await req.perform(on: pixelBuffer)
-        guard let tracked = results.first, tracked.confidence > 0.3 else {
+        let results = try await request.perform(on: pixelBuffer)
+        guard let tracked = results.first else {
             request = nil
             return nil
         }
 
-        request = req  // preserve stateful tracking context
         return tracked.boundingBox
     }
 
@@ -634,7 +627,15 @@ import Vision
 import UIKit
 
 enum VisionCoordinateConverter {
-    /// Convert normalized Vision rect to image-pixel coordinates
+    /// Convert modern Vision NormalizedRect to image-pixel coordinates
+    static func toImageCoordinates(
+        _ normalizedRect: NormalizedRect,
+        imageSize: CGSize
+    ) -> CGRect {
+        normalizedRect.toImageCoordinates(imageSize, origin: .upperLeft)
+    }
+
+    /// Convert legacy normalized Vision rect to image-pixel coordinates
     static func toImageCoordinates(
         _ normalizedRect: CGRect,
         imageWidth: Int,
@@ -643,7 +644,7 @@ enum VisionCoordinateConverter {
         VNImageRectForNormalizedRect(normalizedRect, imageWidth, imageHeight)
     }
 
-    /// Convert normalized Vision point to image-pixel coordinates
+    /// Convert legacy normalized Vision point to image-pixel coordinates
     static func toImageCoordinates(
         _ normalizedPoint: CGPoint,
         imageWidth: Int,
@@ -652,26 +653,25 @@ enum VisionCoordinateConverter {
         VNImagePointForNormalizedPoint(normalizedPoint, imageWidth, imageHeight)
     }
 
-    /// Convert Vision rect (bottom-left origin) to UIKit rect (top-left origin)
+    /// Convert modern Vision rect directly to UIKit/image coordinates
     static func toUIKitCoordinates(
-        _ normalizedRect: CGRect,
+        _ normalizedRect: NormalizedRect,
         viewSize: CGSize
     ) -> CGRect {
-        let imageRect = VNImageRectForNormalizedRect(
-            normalizedRect,
-            Int(viewSize.width),
-            Int(viewSize.height)
-        )
-        // Flip Y axis: Vision origin is bottom-left, UIKit is top-left
-        return CGRect(
-            x: imageRect.origin.x,
-            y: viewSize.height - imageRect.origin.y - imageRect.height,
-            width: imageRect.width,
-            height: imageRect.height
-        )
+        normalizedRect.toImageCoordinates(viewSize, origin: .upperLeft)
     }
 
-    /// Convert an array of normalized points to UIKit points
+    /// Convert an array of modern normalized points to UIKit points
+    static func toUIKitPoints(
+        _ normalizedPoints: [NormalizedPoint],
+        viewSize: CGSize
+    ) -> [CGPoint] {
+        normalizedPoints.map {
+            $0.toImageCoordinates(viewSize, origin: .upperLeft)
+        }
+    }
+
+    /// Convert an array of legacy normalized points to UIKit points
     static func toUIKitPoints(
         _ normalizedPoints: [CGPoint],
         viewSize: CGSize
@@ -728,8 +728,9 @@ func batchProcess(images: [CGImage]) async throws -> [[String]] {
 
 ### Request Reuse
 
-Modern request structs are value types and cheap to create. Do not try to cache
-and reuse them across calls -- just create a fresh one each time.
+Most modern stateless request structs are cheap to create. Use a fresh request
+for independent still-image work, and keep stateful final-class requests such as
+`TrackObjectRequest` only for the frame sequence that needs their state.
 
 For the legacy API, `VNImageRequestHandler` is tied to a single image. Create a
 new handler for each image you process. `VNSequenceRequestHandler` can be reused

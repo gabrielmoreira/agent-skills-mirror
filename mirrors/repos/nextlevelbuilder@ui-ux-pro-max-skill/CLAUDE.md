@@ -88,6 +88,8 @@ When modifying files:
 
 Python 3.x (no external dependencies required)
 
+**Note:** On Windows, use `python` instead of `python3` to run the scripts.
+
 ## Git Workflow
 
 Never push directly to `main`. Always:

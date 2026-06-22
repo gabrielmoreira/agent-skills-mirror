@@ -140,10 +140,9 @@ struct TabsView: View {
     }
   }
 }
-```
 
-`@MainActor`
-`@Observable`
+@MainActor
+@Observable
 final class TabRouter {
   private var routers: [AppTab: RouterPath] = [:]
 
@@ -159,6 +158,7 @@ final class TabRouter {
     return Binding(get: { router.path }, set: { router.path = $0 })
   }
 }
+```
 
 ## Design choices to keep
 

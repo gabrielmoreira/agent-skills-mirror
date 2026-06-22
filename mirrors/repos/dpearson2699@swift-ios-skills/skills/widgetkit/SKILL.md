@@ -1,12 +1,17 @@
 ---
 name: widgetkit
-description: "Implement, review, or improve widgets, Live Activities, and controls using WidgetKit and ActivityKit. Use when building home screen, Lock Screen, or StandBy widgets with timeline providers; when creating interactive widgets with Button/Toggle and AppIntent actions; when adding Live Activities with Dynamic Island layouts (compact, minimal, expanded); when building Control Center widgets with ControlWidgetButton/ControlWidgetToggle; when configuring widget families, refresh budgets, deep links, push-based reloads, or Liquid Glass rendering; or when setting up widget extensions, App Groups, and entitlements."
+description: "Implement, review, or improve WidgetKit widgets and controls. Use when building Home Screen, Lock Screen, StandBy, or CarPlay widgets with timeline providers; configurable widgets with AppIntentTimelineProvider; interactive widgets or Control Center controls with Button/Toggle wiring; WidgetKit push reloads, refresh budgets, deep links, Smart Stack relevance, Liquid Glass/accented rendering, widget extension setup, WidgetBundle, App Groups, and entitlements."
 ---
 
-# WidgetKit and ActivityKit
+# WidgetKit
 
-Build home screen widgets, Lock Screen widgets, Live Activities, Dynamic Island
-presentations, Control Center controls, and StandBy surfaces for iOS 26+.
+Build home screen widgets, Lock Screen widgets, Control Center controls, and
+StandBy or CarPlay widget surfaces for iOS 26+.
+
+Keep adjacent-framework guidance scoped to WidgetKit integration. Include
+ActivityKit and App Intents only where they connect directly to WidgetKit
+surfaces; hand off full lifecycle, APNs content-state, Siri/Shortcuts/Spotlight,
+or entity-modeling work to sibling `activitykit` or `app-intents` skills.
 
 See [references/widgetkit-advanced.md](references/widgetkit-advanced.md) for timeline strategies, push-based
 updates, Xcode setup, and advanced patterns.
@@ -20,10 +25,12 @@ updates, Xcode setup, and advanced patterns.
 - [AppIntentTimelineProvider](#appintenttimelineprovider)
 - [Widget Families](#widget-families)
 - [Interactive Widgets (iOS 17+)](#interactive-widgets-ios-17)
-- [Live Activities and Dynamic Island](#live-activities-and-dynamic-island)
+- [ActivityConfiguration Handoff](#activityconfiguration-handoff)
 - [Control Center Widgets (iOS 18+)](#control-center-widgets-ios-18)
 - [Lock Screen Widgets](#lock-screen-widgets)
 - [StandBy Mode](#standby-mode)
+- [Widget URL Handling and Deep Links](#widget-url-handling-and-deep-links)
+- [Smart Stack Relevance](#smart-stack-relevance)
 - [Design Patterns](#design-patterns)
 - [iOS 26 Additions](#ios-26-additions)
 - [Common Mistakes](#common-mistakes)
@@ -42,18 +49,18 @@ updates, Xcode setup, and advanced patterns.
 6. Declare the `Widget` conforming struct with a configuration and supported families.
 7. Register all widgets in a `WidgetBundle` annotated with `@main`.
 
-### 2. Add a Live Activity
+### 2. Integrate adjacent surfaces
 
-1. Define an `ActivityAttributes` struct with a nested `ContentState`.
-2. Add `NSSupportsLiveActivities = YES` to the app's Info.plist.
-3. Create an `ActivityConfiguration` in the widget bundle with Lock Screen content
-   and Dynamic Island closures.
-4. Start the activity with `Activity.request(attributes:content:pushType:)`.
-5. Update with `activity.update(_:)` and end with `activity.end(_:dismissalPolicy:)`.
+1. Register an `ActivityConfiguration` in the widget bundle when the app has a
+   Live Activity, but keep `ActivityAttributes`, request/update/end, APNs
+   `content-state`, and Dynamic Island layout depth in `activitykit`.
+2. Place `Button`, `Toggle`, `ControlWidgetButton`, and `ControlWidgetToggle`
+   in WidgetKit views or controls, but keep intent modeling, entities, queries,
+   Siri, Shortcuts, and Spotlight in `app-intents`.
 
 ### 3. Add a Control Center control
 
-1. Define an `AppIntent` for the action.
+1. Reuse an `AppIntent`/`OpenIntent` for a button, or a `SetValueIntent` for a toggle.
 2. Create a `ControlWidgetButton` or `ControlWidgetToggle` in the widget bundle.
 3. Use `StaticControlConfiguration` or `AppIntentControlConfiguration`.
 
@@ -93,7 +100,7 @@ struct MyAppWidgets: WidgetBundle {
     var body: some Widget {
         OrderStatusWidget()
         FavoritesWidget()
-        DeliveryActivityWidget()   // Live Activity
+        DeliveryActivityWidget()   // ActivityConfiguration handoff
         QuickActionControl()       // Control Center
     }
 }
@@ -211,136 +218,47 @@ var body: some View {
 
 ## Interactive Widgets (iOS 17+)
 
-Use `Button` and `Toggle` with `AppIntent` conforming types to perform actions
-directly from a widget without launching the app.
+Use `Button` and `Toggle` with intent types available to the widget extension or
+shared code. WidgetKit owns the view placement; `app-intents` owns intent
+modeling and behavior.
 
 ```swift
-struct ToggleFavoriteIntent: AppIntent {
-    static var title: LocalizedStringResource = "Toggle Favorite"
-    @Parameter(title: "Item ID") var itemID: String
-
-    func perform() async throws -> some IntentResult {
-        await DataStore.shared.toggleFavorite(itemID)
-        return .result()
-    }
-}
-
 struct InteractiveWidgetView: View {
     let entry: FavoriteEntry
+
     var body: some View {
-        HStack {
-            Text(entry.itemName)
-            Spacer()
-            Button(intent: ToggleFavoriteIntent(itemID: entry.itemID)) {
-                Image(systemName: entry.isFavorite ? "star.fill" : "star")
-            }
+        Button(intent: ToggleFavoriteIntent(itemID: entry.itemID)) {
+            Image(systemName: entry.isFavorite ? "star.fill" : "star")
         }
-        .padding()
     }
 }
 ```
 
-## Live Activities and Dynamic Island
+## ActivityConfiguration Handoff
 
-### ActivityAttributes
-
-Define the static and dynamic data model.
-
-```swift
-struct DeliveryAttributes: ActivityAttributes {
-    struct ContentState: Codable, Hashable {
-        var driverName: String
-        var estimatedDeliveryTime: ClosedRange<Date>
-        var currentStep: DeliveryStep
-    }
-
-    var orderNumber: Int
-    var restaurantName: String
-}
-```
-
-### ActivityConfiguration
-
-Provide Lock Screen content and Dynamic Island closures in the widget bundle.
+WidgetKit registers Live Activity surfaces in the widget extension. Keep this
+section to registration and rendering handoff; use `activitykit` for
+`ActivityAttributes`, lifecycle, push updates, and full Dynamic Island patterns.
 
 ```swift
 struct DeliveryActivityWidget: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: DeliveryAttributes.self) { context in
-            VStack(alignment: .leading) {
-                Text(context.attributes.restaurantName).font(.headline)
-                HStack {
-                    Text("Driver: \(context.state.driverName)")
-                    Spacer()
-                    Text(timerInterval: context.state.estimatedDeliveryTime, countsDown: true)
-                }
-            }
-            .padding()
+            DeliveryLiveActivityView(context: context)
         } dynamicIsland: { context in
-            DynamicIsland {
-                DynamicIslandExpandedRegion(.leading) {
-                    Image(systemName: "box.truck.fill").font(.title2)
-                }
-                DynamicIslandExpandedRegion(.trailing) {
-                    Text(timerInterval: context.state.estimatedDeliveryTime, countsDown: true)
-                        .font(.caption)
-                }
-                DynamicIslandExpandedRegion(.center) {
-                    Text(context.attributes.restaurantName).font(.headline)
-                }
-                DynamicIslandExpandedRegion(.bottom) {
-                    HStack {
-                        ForEach(DeliveryStep.allCases, id: \.self) { step in
-                            Image(systemName: step.icon)
-                                .foregroundStyle(step <= context.state.currentStep ? .primary : .tertiary)
-                        }
-                    }
-                }
-            } compactLeading: {
-                Image(systemName: "box.truck.fill")
-            } compactTrailing: {
-                Text(timerInterval: context.state.estimatedDeliveryTime, countsDown: true)
-                    .frame(width: 40).monospacedDigit()
-            } minimal: {
-                Image(systemName: "box.truck.fill")
-            }
+            DeliveryDynamicIsland(context: context)
         }
     }
 }
 ```
 
-### Dynamic Island Regions
-
-| Region | Position |
-|---|---|
-| `.leading` | Left of the TrueDepth camera; wraps below |
-| `.trailing` | Right of the TrueDepth camera; wraps below |
-| `.center` | Directly below the camera |
-| `.bottom` | Below all other regions |
-
-### Starting, Updating, and Ending
-
-```swift
-let attributes = DeliveryAttributes(orderNumber: 123, restaurantName: "Pizza Place")
-let state = DeliveryAttributes.ContentState(
-    driverName: "Alex",
-    estimatedDeliveryTime: Date()...Date().addingTimeInterval(1800),
-    currentStep: .preparing
-)
-let content = ActivityContent(state: state, staleDate: nil, relevanceScore: 75)
-let activity = try Activity.request(attributes: attributes, content: content, pushType: .token)
-
-let updated = ActivityContent(state: newState, staleDate: nil, relevanceScore: 90)
-await activity.update(updated)
-
-let final = ActivityContent(state: finalState, staleDate: nil, relevanceScore: 0)
-await activity.end(final, dismissalPolicy: .after(.now.addingTimeInterval(3600)))
-```
-
 ## Control Center Widgets (iOS 18+)
 
+WidgetKit owns control configuration, placement, kind, display name, push
+handler, and extension registration. Control actions and value intents belong in
+`app-intents`.
+
 ```swift
-// Button control
 struct OpenCameraControl: ControlWidget {
     var body: some ControlWidgetConfiguration {
         StaticControlConfiguration(kind: "OpenCamera") {
@@ -352,7 +270,6 @@ struct OpenCameraControl: ControlWidget {
     }
 }
 
-// Toggle control with value provider
 struct FlashlightControl: ControlWidget {
     var body: some ControlWidgetConfiguration {
         StaticControlConfiguration(kind: "Flashlight", provider: FlashlightValueProvider()) { value in
@@ -389,13 +306,38 @@ struct StepsWidget: Widget {
 
 ## StandBy Mode
 
-`.systemSmall` widgets automatically appear in StandBy (iPhone on charger in
-landscape). Use `@Environment(\.widgetLocation)` for conditional rendering:
+Small system widgets can appear in StandBy and CarPlay. Use
+`@Environment(\.widgetLocation)` for conditional rendering:
 
 ```swift
 @Environment(\.widgetLocation) var location
 // location == .standBy, .homeScreen, .lockScreen, .carPlay, etc.
 ```
+
+## Widget URL Handling and Deep Links
+
+Use one `.widgetURL(_:)` as the whole-widget fallback route. Use `Link` for
+deliberate subtargets only where the family and layout support them, including
+`.accessoryRectangular`, `.systemSmall`, and larger system widgets. For small
+widgets, prefer one clear fallback; avoid multiple `Link` targets unless the
+visual affordance and hit areas remain unambiguous.
+
+Never attach multiple `widgetURL` modifiers in the hierarchy.
+
+## Smart Stack Relevance
+
+Use `TimelineEntryRelevance(score:duration:)` on timeline entries for timely
+iPhone and iPad Smart Stack relevance. Keep scores on a consistent positive
+scale; zero or lower means not relevant.
+
+For configurable widgets, donate App Intents that correspond to user actions or
+widget parameters from app-side code, such as with `intent.donate()` or
+`IntentDonationManager`. Keep `AppEntity` and `EntityQuery` design in
+`app-intents`.
+
+On watchOS, contextual relevance uses
+`WidgetRelevance([WidgetRelevanceAttribute(...)])` from the provider
+`relevance()` callback. That path is not used by iPhone or iPad Smart Stacks.
 
 ## Design Patterns
 
@@ -419,32 +361,39 @@ code examples and detailed guidance on each pattern.
 
 ### Liquid Glass Support
 
-Adapt widgets to the Liquid Glass visual style using `WidgetAccentedRenderingMode`.
+Adapt widgets to Liquid Glass with `@Environment(\.widgetRenderingMode)`,
+`.widgetAccentable()`, and `Image.widgetAccentedRenderingMode(_:)`. In
+`.vibrant`, the system maps content into the material style, so avoid relying on
+original colors alone.
 
-| Mode | Description |
-|---|---|
-| `.accented` | Accented rendering for Liquid Glass |
-| `.accentedDesaturated` | Accented with desaturation |
-| `.desaturated` | Fully desaturated |
-| `.fullColor` | Full-color rendering |
+### Push Reload Handlers
 
-### WidgetPushHandler
+Widget push reloads:
+- Add Push Notifications capability to the widget extension target.
+- Keep the `WidgetPushHandler` type in the widget extension target or shared
+  code linked into it, not only in the main app target.
+- Register the handler with `.pushHandler(...)` on the widget configuration.
+- Do not use User Notifications registration to obtain widget push tokens;
+  WidgetKit supplies tokens through `pushTokenDidChange(_:widgets:)`.
+- Use `apns-push-type: widgets`, topic suffix `.push-type.widgets`, and
+  `aps.content-changed`.
+- Treat push as a budgeted, opportunistic reload signal, not state delivery and
+  not the only freshness model. Timelines, reload policies, shared storage or
+  refetch, and app-triggered `WidgetCenter` reloads remain the fallback path.
 
-Enable push-based timeline reloads without scheduled polling.
-
-```swift
-struct MyWidgetPushHandler: WidgetPushHandler {
-    func pushTokenDidChange(_ pushInfo: WidgetPushInfo, widgets: [WidgetInfo]) {
-        let tokenString = pushInfo.token.map { String(format: "%02x", $0) }.joined()
-        // Send tokenString to your server
-    }
-}
-```
+Control push reloads:
+- Register a `ControlPushHandler` with `.pushHandler(...)` on the
+  `ControlWidgetConfiguration`.
+- `pushTokensDidChange(controls:)` receives `[ControlInfo]`; read tokens from
+  each control's `pushInfo`.
+- Use `apns-push-type: controls`, topic suffix `.push-type.controls`, and
+  `aps.content-changed`.
 
 ### CarPlay Widgets
 
-`.systemSmall` widgets render in CarPlay on iOS 26+. Ensure small widget layouts
-are legible at a glance for driver safety.
+Small system widgets can appear in CarPlay on iOS 26+. Ensure layouts are
+legible at a glance; taps and controls depend on vehicle touch support and, for
+opening the app, CarPlay integration.
 
 ## Common Mistakes
 
@@ -464,15 +413,14 @@ are legible at a glance for driver safety.
    synchronously with sample data. Use `getTimeline` or `timeline(for:in:)` for
    async work.
 
-5. **Missing NSSupportsLiveActivities Info.plist key.** Live Activities will not
-   start without `NSSupportsLiveActivities = YES` in the host app's Info.plist.
+5. **Letting WidgetKit absorb sibling-skill work.** Keep full Live Activity
+   lifecycle in `activitykit` and full App Intent modeling in `app-intents`.
 
-6. **Using the deprecated contentState API.** Use `ActivityContent` for all
-   `Activity.request`, `update`, and `end` calls. The `contentState`-based
-   methods are deprecated.
+6. **Treating WidgetKit push payloads as state.** Widget and control pushes are
+   reload signals. Persist state in shared storage or refetch it in the provider.
 
-7. **Not handling the stale state.** Check `context.isStale` in Live Activity
-   views and show a fallback (e.g., "Updating...") when content is outdated.
+7. **Registering widget pushes through User Notifications.** Widget push tokens
+   come from WidgetKit handlers, not `UNUserNotificationCenter`.
 
 8. **Putting heavy logic in the widget view.** Widget views are rendered in a
    size-limited process. Pre-compute data in the timeline provider and pass
@@ -482,7 +430,7 @@ are legible at a glance for driver safety.
    `.vibrant` or `.accented` mode, not `.fullColor`. Test with
    `@Environment(\.widgetRenderingMode)` and avoid relying on color alone.
 
-10. **Not testing on device.** Dynamic Island and StandBy behavior differ
+10. **Not testing on device.** StandBy, CarPlay, and accessory rendering differ
     significantly from Simulator. Always verify on physical hardware.
 
 ## Review Checklist
@@ -492,12 +440,16 @@ are legible at a glance for driver safety.
 - [ ] `placeholder(in:)` returns synchronously; `getSnapshot`/`snapshot(for:in:)` fast when `isPreview`
 - [ ] Timeline reload policy matches update frequency; `reloadTimelines(ofKind:)` only on data change
 - [ ] Layout adapts per `WidgetFamily`; accessory widgets tested in `.vibrant` mode
-- [ ] Interactive widgets use `AppIntent` with `Button`/`Toggle` only
-- [ ] Live Activity: `NSSupportsLiveActivities = YES`; `ActivityContent` used; Dynamic Island closures implemented
-- [ ] `activity.end(_:dismissalPolicy:)` called; controls use `StaticControlConfiguration`/`AppIntentControlConfiguration`
+- [ ] Interactive widgets use extension-available App Intents with `Button`/`Toggle` only
+- [ ] One `.widgetURL(_:)` fallback is used; `Link` subtargets are family-appropriate
+- [ ] Widget push handlers live in the widget extension/shared code and do not use User Notifications token registration
+- [ ] Widget/control pushes supplement timelines and shared-state/refetch fallbacks
+- [ ] Smart Stack relevance uses timeline relevance and app-side intent donations where useful
+- [ ] Live Activity lifecycle and App Intent modeling are handed off to sibling skills
+- [ ] Controls use `StaticControlConfiguration`/`AppIntentControlConfiguration`
 - [ ] Timeline entries and Intent types are Sendable; tested on device
 
 ## References
 
 - Advanced guide: [references/widgetkit-advanced.md](references/widgetkit-advanced.md)
-- Apple docs: [WidgetKit](https://sosumi.ai/documentation/widgetkit) | [ActivityKit](https://sosumi.ai/documentation/activitykit) | [Keeping a widget up to date](https://sosumi.ai/documentation/widgetkit/keeping-a-widget-up-to-date)
+- Apple docs: [WidgetKit](https://sosumi.ai/documentation/widgetkit) | [Keeping a widget up to date](https://sosumi.ai/documentation/widgetkit/keeping-a-widget-up-to-date) | [Smart Stack visibility](https://sosumi.ai/documentation/widgetkit/widget-suggestions-in-smart-stacks)

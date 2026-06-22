@@ -92,10 +92,10 @@ Report scope assessment to the user. Get confirmation before proceeding.
 // turbo
 If the plan involves cross-boundary work (frontend ↔ backend, service ↔ service):
 
-1. Design API contracts using `.agents/skills/_shared/core/api-contracts/template.md`. Per endpoint:
+1. Design API contracts using `.agents/skills/_shared/core/api-contracts/template.md` (definition/template only — SSOT). Per endpoint:
    - Method, path, request/response schemas
    - Auth requirements, error responses
-2. Save to `.agents/skills/_shared/core/api-contracts/{contract-name}.md`.
+2. Save the generated contract to `.agents/results/api-contracts/{contract-name}.md` (run artifact; gitignored). If the contract must be versioned as a durable spec, promote it to `docs/plans/contracts/{contract-name}.md` when committing the feature.
 3. Reference from the markdown tracker generated in Step 6.
 4. Emit and verify the required API contract decision:
    ```bash

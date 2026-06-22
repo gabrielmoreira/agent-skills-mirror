@@ -1,6 +1,6 @@
 ---
 name: octocode-research
-description: Use when the user asks to "research code", "how does X work", "where is Y defined", "who calls Z", "trace code flow", "find usages", "explore this library", "understand the codebase", or needs deep code exploration with HTTP-based tool orchestration. For direct MCP tool research without the HTTP server, use octocode-researcher instead.
+description: Use when the user asks to "research code", "how does X work", "where is Y defined", "who calls Z", "trace code flow", "find usages", "explore this library", "understand the codebase", or needs deep code exploration with HTTP-based tool orchestration. For direct MCP tool research without the HTTP server, use octocode-engineer instead.
 ---
 
 # Octocode Research Skill
@@ -15,7 +15,7 @@ Expert technical investigator for deep-dive code exploration, repository analysi
 
 ### When to Use / When NOT to Use
 
-| Use This Skill | Use `octocode-researcher` Instead |
+| Use This Skill | Use `octocode-engineer` Instead |
 |---|---|
 | Multi-step research requiring planning | Quick single-tool lookups |
 | Parallel domain exploration | Already have MCP tools and need one answer |

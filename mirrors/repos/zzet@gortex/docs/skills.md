@@ -17,6 +17,17 @@ After `gortex install` (once per machine) and `gortex init` (once per repo), Cla
 - **Stop hook:** post-task diagnostics — tests to run, guard violations, dead code, and contract issues on the changed symbols — injected as context before the agent hands off
 - **CLAUDE.md:** per-repo codebase overview (via `--analyze`) plus a marker-guarded community routing block written by `gortex init --skills`
 
+## The `gortex-cli` skill — a zero-schema consumption path
+
+Alongside the MCP transport, `gortex install` writes a single user-level skill to `~/.claude/skills/gortex-cli/SKILL.md` that drives the same Gortex workflow entirely through `gortex` **shell verbs** — with no MCP server mounted and no tool schemas loaded into the model's context. It is a first-class consumption pattern, not a fallback:
+
+- **One copy per user.** Like the other model-invoked skills it lives once at `~/.claude/skills/`, used across every repo.
+- **No transport, no baseline tax.** Because nothing is published over MCP on this path, the agent pays zero context for tool schemas until it actually runs a verb. `gortex tools receipt` is the auditable record of that — it reports `registered_tool_schemas: 0`.
+- **The full workflow in shell.** The skill routes the agent through `gortex` verbs that map 1:1 onto the MCP tools: `gortex call <tool>` (any tool by name), `gortex tools search` / `tools list` (discovery), `gortex edit context|verify|plan|preview|simulate|batch|apply|symbol|rename|guards|tests|contract|safe-delete` (the edit-safety surface), `gortex memory surface|store|recall|note|notes|distill` (session + durable memory), and `gortex analyze` / `flow` / `taint` / `clones` / `feedback`. The verb reference lives in [`cli.md`](cli.md#full-tool-surface-from-the-cli).
+- **Same handlers, same daemon.** Each verb is a thin shell over one MCP tool on the daemon that owns the repo; the daemon dispatches the call by name, so the CLI reaches the **full** surface (including tools that are otherwise deferred behind `tools_search`) even under the lean `core` preset.
+
+The trade-off versus an MCP install — push notifications and per-session overlay shadow graphs in exchange for a zero-schema baseline — is laid out in [`cli.md`](cli.md#choosing-a-consumption-path). The edit-safety and memory workflows are identical on both paths.
+
 ## Usage with other agents
 
 `gortex install` (user-level) and `gortex init` (repo-level) together auto-detect and configure 14 other AI coding assistants — Kiro, Cursor, VS Code / Copilot, Windsurf, Continue.dev, Cline, OpenCode, Antigravity, Codex CLI, Gemini CLI, Zed, Aider, Kilo Code, OpenClaw. Each adapter writes only when its host is present on the machine, and every re-run is idempotent.

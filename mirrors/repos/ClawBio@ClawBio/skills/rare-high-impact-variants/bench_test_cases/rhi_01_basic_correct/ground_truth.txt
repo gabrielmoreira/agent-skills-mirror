@@ -1,0 +1,9 @@
+# BENCHMARK: rare-high-impact-variants v0.1.0
+# PAYLOAD: input.txt
+# GROUND_TRUTH_RARE_HIGH_IMPACT_COUNT: 1
+# RARE_HIGH_IMPACT_COUNT_TOLERANCE: 0
+# FINDING_CATEGORY: correct
+# FINDING: RHI-01 isolates the one rare LoF among common and non-LoF distractors
+# HAZARD_METRIC: correctly distinguishes rare + high-impact from common and non-LoF
+# DERIVATION: 3 carried; nonsense AF 0.0003 < 0.01 qualifies; splice_donor AF 0.30 is high-impact but common (excluded); missense AF 0.0002 is rare but not LoF (excluded) -> 1
+# CITATION: Synthetic test data; consequence terms from Sequence Ontology / ClinVar MC

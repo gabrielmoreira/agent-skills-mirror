@@ -5,9 +5,10 @@ description: "Resolve Swift concurrency compiler errors, adopt approachable conc
 
 # Swift Concurrency
 
-Review, fix, and write concurrent Swift code targeting Swift 6.3+. Apply actor
-isolation, Sendable safety, and modern concurrency patterns with minimal
-behavior changes.
+Review, fix, and write concurrent Swift code targeting Swift 6.3+. Gate Swift
+6.4 / Xcode 27 beta cleanup APIs behind explicit toolchain and availability
+checks. Apply actor isolation, Sendable safety, and modern concurrency patterns
+with minimal behavior changes.
 
 ## Contents
 
@@ -34,6 +35,8 @@ When diagnosing a concurrency issue, follow this sequence:
 - Copy the exact compiler diagnostic(s) and the offending symbol(s).
 - Identify the project's concurrency settings:
   - Swift language version (must be 6.2+).
+  - Xcode/toolchain version for version-specific features and release-note
+    workarounds.
   - Whether Approachable Concurrency is enabled.
   - Whether Default Actor Isolation is set to `MainActor`.
   - Swift 6 strict concurrency status: complete/errors in Swift 6 language mode;
@@ -60,6 +63,9 @@ Prefer edits that preserve existing behavior while satisfying data-race safety.
 - Rebuild and confirm the diagnostic is resolved.
 - Check for new warnings introduced by the fix.
 - Ensure no unnecessary `@unchecked Sendable` or `nonisolated(unsafe)` was added.
+- For build-setting reviews, stop at settings plus the smallest code-level
+  remediation. Do not add Thread Sanitizer, broad migration ordering, or
+  architecture advice unless the prompt asks for diagnostics or migration.
 
 ## Swift 6.2 Language Changes
 
@@ -160,9 +166,11 @@ class PhotoProcessor {
 }
 ```
 
-To move a function to a background thread:
-1. Ensure the containing type is `nonisolated` (or the function itself is).
-2. Add `@concurrent` to the function.
+To move a function to a background thread, show both opt-outs together:
+1. Ensure the containing type is `nonisolated` or the function can be called
+   from a nonisolated context.
+2. Add `@concurrent` to the offloaded function. `nonisolated` alone does not
+   move CPU-heavy work off the caller's actor.
 3. Add `async` if not already asynchronous.
 4. Add `await` at call sites.
 
@@ -243,17 +251,22 @@ let elapsed = continuous.now - continuous.epoch  // Duration since system boot
 
 1. All mutable shared state MUST be protected by an actor or global actor.
 2. `@MainActor` for all UI-touching code. No exceptions.
+   Global actors are actor isolation; use `@MainActor` as the standard pattern
+   for UI-bound shared state.
 3. Use `nonisolated` only for methods that access immutable (`let`) properties
    or are pure computations.
 4. Use `@concurrent` to explicitly move work off the caller's actor.
 5. Never use `nonisolated(unsafe)` unless you have proven internal
-   synchronization and exhausted all other options.
+   synchronization and exhausted all other options. It is an unsafe audit
+   boundary, not a synchronization primitive.
 6. Never add manual locks (`NSLock`, `DispatchSemaphore`) inside actors.
 
 ## Sendable Rules
 
 1. Value types (structs, enums) are automatically `Sendable` when all stored
    properties are `Sendable`.
+   For diagnostics on mutable reference types, first extract an immutable
+   `Sendable` value snapshot or DTO instead of sharing the reference.
 2. Actors are implicitly `Sendable`.
 3. `@MainActor` classes are implicitly `Sendable`. Do NOT add redundant
    `Sendable` conformance.
@@ -267,9 +280,15 @@ let elapsed = continuous.now - continuous.epoch  // Duration since system boot
 
 ## Structured Concurrency Patterns
 
-### Async Defer
+### Async Defer (Swift 6.4+)
 
-`defer` blocks can now contain `await` (SE-0493). Use for async cleanup — closing connections, flushing buffers, or releasing resources that require an async call.
+`defer` blocks in async contexts can contain `await` in Swift 6.4+ (SE-0493).
+Use for async cleanup: closing connections, flushing buffers, or releasing
+resources that require an async call.
+
+The defer body inherits the surrounding isolation and is implicitly awaited at
+scope exit. It does not suppress cancellation; cleanup that checks
+`Task.isCancelled` or `Task.checkCancellation()` still observes cancellation.
 
 ```swift
 func fetchData() async throws -> Data {
@@ -316,6 +335,10 @@ try await withThrowingTaskGroup(of: Item.self) { group in
   `try Task.checkCancellation()` in loops.
 - Use `.task` modifier in SwiftUI -- it handles cancellation on view disappear.
 - Use `withTaskCancellationHandler` for cleanup.
+- Swift 6.4 / iOS 27+ beta: use `withTaskCancellationShield` only for short
+  cleanup or rollback that must complete after cancellation. Inside the shield,
+  `Task.isCancelled` is false and `Task.checkCancellation()` does not throw;
+  cancellation is observable again after the scope exits.
 - Cancel stored tasks in `deinit` or `onDisappear`.
 
 ## Actor Reentrancy
@@ -369,17 +392,34 @@ single-value callbacks. Resume exactly once.
 When actors are not the right fit — synchronous access, performance-critical
 paths, or bridging C/ObjC — use low-level synchronization primitives:
 
+- **Actors** remain the default for async shared state when callers can suspend;
+  they give compiler-enforced isolation and structured-concurrency integration,
+  but outside calls are async actor hops, require reentrancy care across
+  `await`, and do not fit synchronous C callbacks. Use global actors such as
+  `@MainActor` for UI-bound shared state; never use `nonisolated(unsafe)` as a
+  synchronization substitute.
 - **`Mutex<Value>`** (iOS 18+, `Synchronization` module): Preferred lock for
   new code. Stores protected state inside the lock. `withLock { }` pattern.
 - **`OSAllocatedUnfairLock`** (iOS 16+, `os` module): Use when targeting
   older iOS versions. Supports ownership assertions for debugging.
 - **`Atomic<Value>`** (iOS 18+, `Synchronization` module): Lock-free atomics
-  for simple counters and flags. Requires explicit memory ordering.
+  for independent counters and flags. `Atomic` is `Sendable` and can be stored
+  in `Sendable` holder types. Use `.relaxed` only for standalone metrics; use
+  acquire/release ordering or a lock when coordinating other data.
 
 **Key rule:** Never put locks inside actors (double synchronization), and never
-hold a lock across `await` (deadlock risk). See
+hold a lock across `await` (blocks a thread through suspension and can starve
+the cooperative pool or deadlock). See
 [references/synchronization-primitives.md](references/synchronization-primitives.md) for full API details, code examples,
 and a decision guide for choosing locks vs actors.
+`Mutex.withLock` and `OSAllocatedUnfairLock.withLock` use synchronous closures;
+that API shape is what keeps critical sections non-suspending.
+Gate `Mutex` and `Atomic` with runtime `if #available(iOS 18, *)`, never
+`#if swift(...)` or platform compile-time checks. For `NSLock`, correct only the
+false Sendable premise and avoid explaining conformance mechanics.
+If a legacy lock wrapper truly needs `@unchecked Sendable`, name the invariant:
+all mutable state is private, all access uses one lock, no mutable references
+escape, and no lock is held across `await`.
 
 ## Common Mistakes
 

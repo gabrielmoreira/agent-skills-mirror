@@ -1,0 +1,4 @@
+##fileformat=VCFv4.2
+not,a,valid,vcf,line
+some random prose that is not a variant
+1;200;C;T

@@ -1,0 +1,1 @@
+cache/repos/github.com/iOfficeAI@OfficeCLI/skills/officecli/../../SKILL.md

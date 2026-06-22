@@ -77,4 +77,8 @@ After opening a PR, drive it to merge:
 2. Address every review comment (especially `gemini-code-assist`): make the fix, push, then reply on the thread (`Addressed in <SHA>: …`). Unreplied threads block merge.
 3. Not done until all checks pass, all threads addressed, and `mergeStateStatus` is `CLEAN`.
 
-Claude review is **not** automatic — comment `@claude review` on the PR to trigger the `.github/workflows/claude.yml` workflow.
+Claude review is **not** automatic — comment `@claude review` on the PR to trigger the `.github/workflows/claude.yml` workflow. Treat `claude[bot]` as a first-class reviewer the merge gate **waits on**, alongside `gemini-code-assist` / `coderabbitai`:
+
+- It posts inline review-thread comments **plus** a sticky summary comment ("**Claude finished … task**"). The action does **not** submit a formal GitHub review, so `claude[bot]` never appears in `gh pr view --json reviews` / `reviewDecision` and is **not** a required check — do not infer "claude reviewed" from those.
+- `gh pr checks` may show a `claude` entry as **skipping**: every comment (incl. other bots') fires `claude.yml`, and runs not from a `teng-lin` `@claude` comment correctly skip via the job `if:` gate. That skip is **not** the review run — find the real one with `gh run list --workflow=claude.yml --json event,conclusion` (look for the `success` run) or just read the comment below.
+- Before merging, confirm the review landed and address it. The two halves live on different endpoints: the sticky summary is an **issue** comment (`gh api /repos/<owner>/<repo>/issues/<PR>/comments`), and the inline findings are **pull-request review** comments on the diff (`gh api /repos/<owner>/<repo>/pulls/<PR>/comments`) — filter either with `--jq '.[]|select(.user.login=="claude[bot]").body'`. Resolve any inline `claude[bot]` threads like any other bot's.

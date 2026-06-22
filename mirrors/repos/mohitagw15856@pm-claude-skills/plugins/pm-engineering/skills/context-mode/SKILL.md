@@ -236,6 +236,14 @@ Tell the user: "Add this to your CLAUDE.md and Context Mode will be active perma
 
 ---
 
+## Anti-Patterns
+
+- Logging verbatim command output instead of a filtered summary (defeats the context savings)
+- A resume announcement from a generic template that ignores what the log actually says
+- Appending to "Last User Prompt" / "Last Action Taken" instead of replacing them (the log bloats)
+- Activating silently without offering the CLAUDE.md install, so it doesn't persist across sessions
+- On resume, asking the user what to do instead of continuing the in-progress task
+
 ## Example Trigger Phrases
 
 - "Enable context mode"

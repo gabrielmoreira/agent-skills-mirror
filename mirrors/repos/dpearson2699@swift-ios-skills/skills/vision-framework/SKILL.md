@@ -1,6 +1,6 @@
 ---
 name: vision-framework
-description: "Implement computer vision features including text recognition (OCR), face detection, barcode scanning, image segmentation, object tracking, and document scanning in iOS apps. Covers both the modern Swift-native Vision API (iOS 16+) and legacy VNRequest patterns, VisionKit DataScannerViewController for live camera scanning, and VNCoreMLRequest for custom model inference. Use when adding OCR, barcode scanning, face detection, or custom Core ML model inference with Vision."
+description: "Implement computer vision features including text recognition (OCR), face detection, barcode scanning, image segmentation, object tracking, and document scanning in iOS apps. Covers both the modern Swift-native Vision API (iOS 18+) and legacy VNRequest patterns, VisionKit DataScannerViewController for live camera scanning, and CoreMLRequest/VNCoreMLRequest for custom model inference. Use when adding OCR, barcode scanning, face detection, or custom Core ML model inference with Vision."
 ---
 
 # Vision Framework
@@ -31,7 +31,10 @@ See [references/vision-requests.md](references/vision-requests.md) for complete 
 
 ## Two API Generations
 
-Vision has two distinct API layers. Prefer the modern API for new code.
+Vision has two distinct API layers. Prefer the modern API for new code:
+Swift-native request types plus `try await request.perform(on:)`. Keep `VN*`,
+`VNImageRequestHandler`, `VNSequenceRequestHandler`, completion handlers, and
+legacy `CGRect` helpers inside explicit legacy fallback sections or files.
 
 | Aspect | Modern (iOS 18+) | Legacy |
 |---|---|---|
@@ -44,13 +47,14 @@ Vision has two distinct API layers. Prefer the modern API for new code.
 The modern API uses the `ImageProcessingRequest` protocol. Each request type
 has a `perform(on:orientation:)` method that accepts `CGImage`, `CIImage`,
 `CVPixelBuffer`, `CMSampleBuffer`, `Data`, or `URL`. Most requests are
-structs; stateful requests for video tracking (e.g., `TrackObjectRequest`,
-`TrackRectangleRequest`, `DetectTrajectoriesRequest`) are final classes.
+structs; stateful requests such as `GeneratePersonSegmentationRequest`,
+`TrackObjectRequest`, `TrackRectangleRequest`, and `DetectTrajectoriesRequest`
+are final classes.
 
 ## Request Pattern (Modern API)
 
-All modern Vision requests follow the same pattern: create a request struct,
-call `perform(on:)`, and handle the typed result.
+All modern Vision requests follow the same pattern: create a request, call
+`perform(on:)`, and handle the typed result.
 
 ```swift
 import Vision
@@ -108,7 +112,7 @@ for observation in observations {
     guard let candidate = observation.topCandidates(1).first else { continue }
     let text = candidate.string
     let confidence = candidate.confidence  // 0.0 ... 1.0
-    let bounds = observation.boundingBox   // normalized coordinates
+    let bounds = observation.boundingBox   // NormalizedRect
 }
 ```
 
@@ -135,7 +139,7 @@ let faceRequest = DetectFaceRectanglesRequest()
 let faces = try await faceRequest.perform(on: cgImage)
 
 for face in faces {
-    let boundingBox = face.boundingBox   // normalized CGRect
+    let boundingBox = face.boundingBox   // NormalizedRect
     let roll = face.roll                 // Measurement<UnitAngle>
     let yaw = face.yaw                  // Measurement<UnitAngle>
 }
@@ -145,8 +149,8 @@ var landmarkRequest = DetectFaceLandmarksRequest()
 let landmarkFaces = try await landmarkRequest.perform(on: cgImage)
 for face in landmarkFaces {
     let landmarks = face.landmarks
-    let leftEye = landmarks?.leftEye?.normalizedPoints
-    let nose = landmarks?.nose?.normalizedPoints
+    let leftEye = landmarks?.leftEye.points
+    let nose = landmarks?.nose.points
 }
 ```
 
@@ -156,13 +160,10 @@ Vision uses a normalized coordinate system with origin at the bottom-left.
 Convert to UIKit (top-left origin) before display:
 
 ```swift
-func convertToUIKit(_ rect: CGRect, imageHeight: CGFloat) -> CGRect {
-    CGRect(
-        x: rect.origin.x,
-        y: imageHeight - rect.origin.y - rect.height,
-        width: rect.width,
-        height: rect.height
-    )
+import Vision
+
+func imageRectForDisplay(_ rect: NormalizedRect, imageSize: CGSize) -> CGRect {
+    rect.toImageCoordinates(imageSize, origin: .upperLeft)
 }
 ```
 
@@ -172,24 +173,24 @@ Detect 1D and 2D barcodes including QR codes.
 
 ```swift
 var request = DetectBarcodesRequest()
-request.symbologies = [.qr, .ean13, .code128, .pdf417]
+let symbologies: [BarcodeSymbology] = [.qr, .ean13, .code128, .pdf417]
+request.symbologies = symbologies
 
 let barcodes = try await request.perform(on: cgImage)
 for barcode in barcodes {
     let payload = barcode.payloadString          // decoded content
     let symbology = barcode.symbology            // .qr, .ean13, etc.
-    let bounds = barcode.boundingBox             // normalized rect
+    let bounds = barcode.boundingBox             // NormalizedRect
 }
 ```
-
-Common symbologies: `.qr`, `.aztec`, `.pdf417`, `.dataMatrix`, `.ean8`,
-`.ean13`, `.code39`, `.code128`, `.upce`, `.itf14`.
+Type annotate local values first, then assign request properties separately.
 
 ## Document Scanning (iOS 26+)
 
 `RecognizeDocumentsRequest` provides structured document reading with layout
 understanding beyond basic OCR. Returns `DocumentObservation` objects with a
 nested `Container` structure for paragraphs, tables, lists, and barcodes.
+Currently, Vision returns one document observation for each image.
 
 ```swift
 var request = RecognizeDocumentsRequest()
@@ -231,7 +232,7 @@ var request = GeneratePersonSegmentationRequest()
 request.qualityLevel = .accurate  // .balanced, .fast
 
 let mask = try await request.perform(on: cgImage)
-// mask is a PersonSegmentationObservation with a pixelBuffer property
+// mask is a PixelBufferObservation with a pixelBuffer property
 let maskBuffer = mask.pixelBuffer
 // Apply mask using Core Image: CIFilter.blendWithMask()
 ```
@@ -266,7 +267,7 @@ let observation = try await request.perform(on: cgImage)
 let indices = observation.allInstances
 
 for index in indices {
-    let mask = try observation.generateMask(forInstances: IndexSet(integer: index))
+    let mask = try observation.generateMask(for: IndexSet(integer: index))
     // mask is a CVPixelBuffer with only this person visible
 }
 ```
@@ -296,21 +297,22 @@ integration patterns.
 ### Modern: TrackObjectRequest (iOS 18+)
 
 `TrackObjectRequest` is a stateful request that maintains tracking context
-across frames. Conforms to both `ImageProcessingRequest` and `StatefulRequest`.
+across frames.
 
 ```swift
 // Initialize with a detected object's bounding box
-let initialObservation = DetectedObjectObservation(boundingBox: detectedRect)
-var request = TrackObjectRequest(observation: initialObservation)
-request.trackingLevel = .accurate
+let initialObservation = DetectedObjectObservation(boundingBox: detectedBox)
+let request = TrackObjectRequest(detectedObject: initialObservation)
 
-// For each video frame:
-let results = try await request.perform(on: pixelBuffer)
-if let tracked = results.first {
-    let updatedBounds = tracked.boundingBox
-    let confidence = tracked.confidence
+for pixelBuffer in framePixelBuffers {
+    let results = try await request.perform(on: pixelBuffer)
+    if let tracked = results.first {
+        let updatedBounds = tracked.boundingBox  // NormalizedRect
+    }
 }
 ```
+
+Modern `TrackObjectRequest` has no `trackingLevel` or `qualityLevel`.
 
 ### Legacy: VNTrackObjectRequest
 
@@ -334,8 +336,8 @@ Vision provides additional requests covered in [references/vision-requests.md](r
 | Request | Purpose |
 |---|---|
 | `ClassifyImageRequest` | Classify scene content (outdoor, food, animal, etc.) |
-| `GenerateAttentionBasedSaliencyImageRequest` | Heat map of where viewers focus attention |
-| `GenerateObjectnessBasedSaliencyImageRequest` | Heat map of object-like regions |
+| `GenerateAttentionBasedSaliencyImageRequest` | Single `SaliencyImageObservation` for where viewers focus attention |
+| `GenerateObjectnessBasedSaliencyImageRequest` | Single `SaliencyImageObservation` for object-like regions |
 | `GenerateForegroundInstanceMaskRequest` | Foreground object segmentation (not person-specific) |
 | `DetectRectanglesRequest` | Detect rectangular shapes (documents, cards, screens) |
 | `DetectHorizonRequest` | Detect horizon angle for auto-leveling photos |
@@ -352,13 +354,19 @@ All modern request types above are iOS 18+ / macOS 15+.
 
 ## Core ML Integration
 
-Run custom Core ML models through Vision for automatic image preprocessing
-(resizing, normalization, color space conversion).
+Run custom Core ML models through Vision for automatic image preprocessing.
+
+Vision runs already-prepared models with `CoreMLRequest` or `VNCoreMLRequest`;
+hand conversion, profiling, packaging, and lifecycle decisions to `coreml`.
 
 ```swift
-// Modern API (iOS 18+)
+import CoreML
+import Vision
+
+// Modern API (iOS 18+): CoreMLRequest takes a CoreMLModelContainer.
 let model = try MLModel(contentsOf: modelURL)
-let request = CoreMLRequest(model: .init(model))
+let container = try CoreMLModelContainer(model: model, featureProvider: nil)
+let request = CoreMLRequest(model: container)
 let results = try await request.perform(on: cgImage)
 
 // Classification model
@@ -367,6 +375,12 @@ if let classification = results.first as? ClassificationObservation {
     let confidence = classification.confidence
 }
 ```
+`CoreMLModelContainer` is the public iOS 18+ Vision container for
+`CoreMLRequest`: load an `MLModel`, wrap it with
+`CoreMLModelContainer(model:featureProvider:)`, then pass that container to
+`CoreMLRequest(model:)`. State result mapping when reviewing Core ML through
+Vision: classifiers produce `ClassificationObservation`, image outputs produce
+`PixelBufferObservation`, and general predictors produce `CoreMLFeatureValueObservation`.
 
 ```swift
 // Legacy API
@@ -379,51 +393,58 @@ let handler = VNImageRequestHandler(cgImage: cgImage)
 try handler.perform([request])
 ```
 
-For model conversion and optimization, see the `coreml` skill.
-
 ## VisionKit: DataScannerViewController
 
-`DataScannerViewController` provides a full-screen live camera scanner for text
-and barcodes. See [references/visionkit-scanner.md](references/visionkit-scanner.md) for complete patterns.
+`DataScannerViewController` provides a live camera scanner for text and
+barcodes; see [references/visionkit-scanner.md](references/visionkit-scanner.md). VisionKit uses
+`VNBarcodeSymbology`; modern `DetectBarcodesRequest` uses `BarcodeSymbology`.
 
 ### Quick Start
 
 ```swift
+import AVFoundation
+import Vision
 import VisionKit
 
-// Check availability (requires A12+ chip and camera)
-guard DataScannerViewController.isSupported,
-      DataScannerViewController.isAvailable else { return }
+@MainActor
+func presentScanner() async {
+    // Add NSCameraUsageDescription before requesting camera access.
+    guard await AVCaptureDevice.requestAccess(for: .video) else { return }
+    guard DataScannerViewController.isSupported,
+          DataScannerViewController.isAvailable else { return }
 
-let scanner = DataScannerViewController(
-    recognizedDataTypes: [
-        .text(languages: ["en"]),
-        .barcode(symbologies: [.qr, .ean13])
-    ],
-    qualityLevel: .balanced,
-    recognizesMultipleItems: true,
-    isHighFrameRateTrackingEnabled: true,
-    isHighlightingEnabled: true
-)
-scanner.delegate = self
-present(scanner, animated: true) {
-    try? scanner.startScanning()
+    let scannerSymbologies: [VNBarcodeSymbology] = [.qr, .ean13]
+    let scanner = DataScannerViewController(
+        recognizedDataTypes: [
+            .text(languages: ["en"]),
+            .barcode(symbologies: scannerSymbologies)
+        ],
+        qualityLevel: .balanced,
+        recognizesMultipleItems: true,
+        isHighFrameRateTrackingEnabled: true,
+        isHighlightingEnabled: true
+    )
+    scanner.delegate = self
+    present(scanner, animated: true) {
+        // Start scanning after presentation, on the main actor.
+        try? scanner.startScanning()
+    }
 }
 ```
 
 ### SwiftUI Integration
 
-Wrap `DataScannerViewController` in `UIViewControllerRepresentable`. See
-[references/visionkit-scanner.md](references/visionkit-scanner.md) for the full implementation.
+Wrap `DataScannerViewController` in `UIViewControllerRepresentable` and start in
+`updateUIViewController` with `Task { @MainActor in try? controller.startScanning() }`; see [references/visionkit-scanner.md](references/visionkit-scanner.md).
 
 ## Common Mistakes
 
 **DON'T:** Use the legacy `VNImageRequestHandler` API for new iOS 18+ projects.
-**DO:** Use modern struct-based requests with `perform(on:)` and async/await.
+**DO:** Use modern Swift-native requests with `perform(on:)` and async/await.
 **Why:** Modern API provides type safety, better Swift concurrency support, and cleaner error handling.
 
 **DON'T:** Forget to convert normalized coordinates before drawing bounding boxes.
-**DO:** Use `VNImageRectForNormalizedRect(_:_:_:)` or manual conversion from bottom-left origin to UIKit top-left origin.
+**DO:** Use `NormalizedRect.toImageCoordinates(_:origin:)` for modern observations, or `VNImageRectForNormalizedRect(_:_:_:)` for legacy `CGRect` observations.
 **Why:** Vision uses normalized coordinates (0...1) with bottom-left origin; UIKit uses points with top-left origin.
 
 **DON'T:** Run Vision requests on the main thread.
@@ -434,13 +455,13 @@ Wrap `DataScannerViewController` in `UIViewControllerRepresentable`. See
 **DO:** Use `.fast` for live video, `.accurate` for still images or offline processing.
 **Why:** Accurate recognition is too slow for 30fps video; fast recognition trades quality for speed.
 
-**DON'T:** Ignore the `confidence` score on observations.
-**DO:** Filter results by confidence threshold (e.g., > 0.5) appropriate for your use case.
-**Why:** Low-confidence results are often incorrect and degrade user experience.
+**DON'T:** Treat every Vision observation as having the same properties.
+**DO:** Check each observation type for its bounding box, confidence, payload, mask, or angle fields before writing shared helpers.
+**Why:** Modern Vision returns strongly typed observations, and result shapes vary by request.
 
-**DON'T:** Create a new `VNImageRequestHandler` for each frame when tracking objects.
-**DO:** Use `VNSequenceRequestHandler` for video frame sequences.
-**Why:** Sequence handler maintains temporal context for tracking; per-frame handlers lose state.
+**DON'T:** Recreate stateful tracking requests for each video frame.
+**DO:** Keep the same modern `TrackObjectRequest` instance, or use `VNSequenceRequestHandler` with legacy tracking requests.
+**Why:** Tracking relies on temporal context across frames.
 
 **DON'T:** Request all barcode symbologies when you only need QR codes.
 **DO:** Specify only the symbologies you need in the request.
@@ -461,8 +482,9 @@ Wrap `DataScannerViewController` in `UIViewControllerRepresentable`. See
 - [ ] Barcode symbologies limited to only those needed
 - [ ] `DataScannerViewController` availability checked before presentation
 - [ ] Camera usage description (`NSCameraUsageDescription`) in Info.plist for VisionKit
+- [ ] VisionKit camera access requested before presentation and scanning started after presentation
 - [ ] Person segmentation quality level appropriate for use case
-- [ ] `VNSequenceRequestHandler` used for video frame tracking (not per-frame handler)
+- [ ] Stateful tracking request or `VNSequenceRequestHandler` preserved across video frames
 - [ ] Error handling covers request failures and empty results
 
 ## References
@@ -472,4 +494,6 @@ Wrap `DataScannerViewController` in `UIViewControllerRepresentable`. See
 - Apple docs: [Vision](https://sosumi.ai/documentation/vision) |
   [VisionKit](https://sosumi.ai/documentation/visionkit) |
   [RecognizeTextRequest](https://sosumi.ai/documentation/vision/recognizetextrequest) |
-  [DataScannerViewController](https://sosumi.ai/documentation/visionkit/datascannerviewcontroller)
+  [DataScannerViewController](https://sosumi.ai/documentation/visionkit/datascannerviewcontroller) |
+  [CoreMLRequest](https://sosumi.ai/documentation/vision/coremlrequest) |
+  [CoreMLModelContainer](https://sosumi.ai/documentation/vision/coremlmodelcontainer)

@@ -4,7 +4,7 @@
 
 **Protocol-based abstraction is the single most important pattern for testable security code.** Wrapping Security framework calls behind a Swift protocol lets you inject an in-memory mock for unit tests while reserving real keychain integration tests for physical devices. The core challenge is that keychain behavior differs dramatically across three environments — Xcode simulator, CI runner, and physical device — and tests that ignore these differences produce flaky failures, crashes, or false confidence.
 
-This reference covers mock design, CryptoKit round-trip tests, Secure Enclave guards, biometric mocking, CI/CD keychain creation, simulator limitations, Swift Testing framework patterns, mutation testing, and OWASP MASTG validation. All code targets Swift 5.9+/6.0, iOS 17–18+, with iOS 26 post-quantum notes where applicable.
+This reference covers mock design, CryptoKit round-trip tests, Secure Enclave guards, biometric mocking, CI/CD keychain creation, simulator limitations, Swift Testing framework patterns, mutation testing, and OWASP MASTG validation. Examples target Swift 6-era code, iOS 17+ baselines, and iOS 26 post-quantum notes where applicable.
 
 Key sources: Apple TN3137 "On Mac keychain APIs and implementations," WWDC19-413 "Testing in Xcode," WWDC24-10179/10195 "Meet/Go further with Swift Testing," Apple Platform Security Guide, OWASP MASTG.
 

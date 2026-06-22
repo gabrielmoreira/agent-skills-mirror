@@ -4,6 +4,14 @@ Overflow reference for the `tabletopkit` skill. Contains advanced patterns for
 observer implementation, custom actions, dice physics, card layouts, network
 coordination, and full game architecture examples.
 
+Availability notes:
+- Core TabletopKit APIs are visionOS 2.0+.
+- `TabletopInteraction.Configuration` is visionOS 2.2+.
+- `CustomAction`, `CustomEquipmentState`, `TableSetup.register(action:)`, and
+  direct custom-action dispatch are visionOS 26.0+.
+- Apple's dice, card-overlap, and group-gameplay sample projects referenced by
+  these patterns use visionOS 26.0+ / Xcode 26.0+ APIs.
+
 ## Contents
 
 - [Observer Patterns](#observer-patterns)
@@ -22,8 +30,8 @@ coordination, and full game architecture examples.
 ### Implementing TabletopGame.Observer
 
 The observer receives callbacks when actions are validated, pending, confirmed,
-rolled back, or cancelled. Use `actionWasConfirmed` as the primary hook for
-updating game-specific state.
+rolled back, discarded, or cancelled. Use `actionWasConfirmed` as the primary
+hook for updating game-specific state.
 
 ```swift
 import TabletopKit
@@ -77,6 +85,11 @@ class GameObserver: TabletopGame.Observer {
         // Arbiter rejected the action. Revert optimistic UI.
     }
 
+    func actionWasDiscarded(_ action: some TabletopAction) {
+        // visionOS 26.0+: local action could not be enqueued.
+        // Reconcile UI that expected the action to become pending.
+    }
+
     func actionWasCancelled(_ action: some TabletopAction,
                             reason: TabletopGame.ActionCancellationReason) {
         switch reason {
@@ -128,10 +141,15 @@ game.removeObserver(observer)
 
 ## Custom Action Patterns
 
+`CustomAction` and `CustomEquipmentState` are visionOS 26.0+. Register each
+custom action type with `TableSetup.register(action:)` before dispatching it.
+Keep `validate(snapshot:)` and `apply(table:)` deterministic: they should use
+only the supplied snapshot/table state and the data stored in the action.
+
 ### Defining a Custom Action
 
-Custom actions modify `TableState` directly and support validation. They are
-serialized across the network automatically.
+Custom actions modify `TableState` directly and support validation. TabletopKit
+syncs the resulting actions across the network.
 
 ```swift
 struct FlipAllCards: CustomAction {
@@ -177,7 +195,7 @@ game.addAction(flipAction)
 
 ### Custom Action with Equipment State Mutation
 
-For actions that modify equipment with `CustomEquipmentState`:
+For actions that modify equipment with `CustomEquipmentState` (visionOS 26.0+):
 
 ```swift
 struct PlayerState: CustomEquipmentState {
@@ -211,6 +229,12 @@ struct DecrementHealth: CustomAction {
 ```
 
 ## Dice Simulation
+
+These dice patterns follow Apple's visionOS 26.0+ dice sample. The underlying
+`TossableRepresentation`, toss interaction, and `RawValueState` APIs are part of
+TabletopKit. `onTossStart(interaction:outcomes:)`,
+`TabletopInteraction.TossOutcome`, and `TossableRepresentation.face(for:)` are
+visionOS 26.0+; gate them before back-deploying.
 
 ### Tossable Representations and Face Mapping
 
@@ -358,6 +382,9 @@ func updateScore(for dice: [GameDie]) {
 
 ## Card and Tile Layouts
 
+The planar layout APIs are visionOS 2.0+. Apple's advanced physical card
+overlap sample uses visionOS 26.0+ / Xcode 26.0+ material.
+
 ### Stacked Card Layout
 
 Use `planarStacked` for neat card piles:
@@ -438,6 +465,11 @@ func layoutChildren(for snapshot: TableSnapshot,
 ```
 
 ## Interaction Delegate Patterns
+
+Use `interaction.value.gesture` for gesture-specific state. Avoid deprecated
+`gesturePhase`. Use `interaction.setConfiguration(_:)` with
+`TabletopInteraction.Configuration` on visionOS 2.2+ instead of deprecated
+`setAllowedDestinations(_:)` or `value.allowedDestinations`.
 
 ### Accepting and Rejecting Interactions
 
@@ -591,6 +623,10 @@ class Game {
 ```
 
 ## Network and Multiplayer Coordination
+
+Group Activities coordination is available through
+`TabletopGame.coordinateWithSession(_:)`; Apple's group-gameplay sample uses
+visionOS 26.0+ / Xcode 26.0+ APIs.
 
 ### Custom Network Coordinator
 

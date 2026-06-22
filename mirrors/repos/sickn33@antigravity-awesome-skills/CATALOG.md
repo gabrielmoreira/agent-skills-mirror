@@ -2,7 +2,7 @@
 
 Generated at: 2026-02-08T00:00:00.000Z
 
-Total skills: 1678
+Total skills: 1681
 
 ## architecture (104)
 
@@ -207,13 +207,14 @@ Total skills: 1678
 | `xiaohongshu-content-strategist` | Create viral Xiaohongshu (小红书) content with platform-native strategy, save-rate optimization, trending formats, and search SEO for China's #1 lifestyle platf... | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书 | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书, content, strategist, viral, platform, native |
 | `youtube-seo-optimizer` | Generate complete YouTube & podcast SEO packages with live-researched keywords — titles, descriptions, tags, hashtags, chapters, and audit fixes. Use for new... | youtube, seo, optimizer | youtube, seo, optimizer, generate, complete, podcast, packages, live, researched, keywords, titles, descriptions |
 
-## data-ai (307)
+## data-ai (308)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
 | `2slides-ppt-generator` | AI-powered presentation generation via the 2slides API — create slides from text, match a reference image style, summarize documents into decks, add AI voice... | presentations, slides, powerpoint, ai, api-integration, pdf, narration, document-summarization | presentations, slides, powerpoint, ai, api-integration, pdf, narration, document-summarization, 2slides, ppt, generator, powered |
 | `adhx` | Fetch any X/Twitter post as clean LLM-friendly JSON. Converts x.com, twitter.com, or adhx.com links into structured data with full article content, author in... | adhx | adhx, fetch, any, twitter, post, clean, llm, friendly, json, converts, com, links |
 | `advanced-evaluation` | This skill should be used when the user asks to "implement LLM-as-judge", "compare model outputs", "create evaluation rubrics", "mitigate evaluation bias", o... | advanced, evaluation | advanced, evaluation, skill, should, used, user, asks, llm, judge, compare, model, outputs |
+| `agent-creator` | Create custom AI subagents with proper plugin structure, persona generation, and companion routing skills. | agent, creator | agent, creator, custom, ai, subagents, proper, plugin, structure, persona, generation, companion, routing |
 | `agent-framework-azure-ai-py` | Build persistent agents on Azure AI Foundry using the Microsoft Agent Framework Python SDK. | agent, framework, azure, ai, py | agent, framework, azure, ai, py, persistent, agents, foundry, microsoft, python, sdk |
 | `agent-memory-mcp` | A hybrid memory system that provides persistent, searchable knowledge management for AI agents (Architecture, Patterns, Decisions). | agent, memory, mcp | agent, memory, mcp, hybrid, provides, persistent, searchable, knowledge, ai, agents, architecture, decisions |
 | `agent-squad/aria` | Designs the data model, API contracts, and structural foundation of the system. | agent, squad/aria | agent, squad/aria, aria, designs, data, model, api, contracts, structural, foundation |
@@ -1225,7 +1226,7 @@ Total skills: 1678
 | `youtube-summarizer` | Extract transcripts from YouTube videos and generate comprehensive, detailed summaries using intelligent analysis frameworks | video, summarization, transcription, youtube, content-analysis | video, summarization, transcription, youtube, content-analysis, summarizer, extract, transcripts, videos, generate, detailed, summaries |
 | `zipai-optimizer` | Ultra-dense token optimizer skill for prompt caching, log pruning, AST-based inspection, and minified JSON payloads. | zipai, optimizer | zipai, optimizer, ultra, dense, token, skill, prompt, caching, log, pruning, ast, inspection |
 
-## infrastructure (143)
+## infrastructure (145)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -1242,6 +1243,7 @@ Total skills: 1678
 | `aws-penetration-testing` | Provide comprehensive techniques for penetration testing AWS cloud environments. Covers IAM enumeration, privilege escalation, SSRF to metadata endpoint, S3 ... | aws, penetration | aws, penetration, testing, provide, techniques, cloud, environments, covers, iam, enumeration, privilege, escalation |
 | `aws-serverless` | Specialized skill for building production-ready serverless applications on AWS. Covers Lambda functions, API Gateway, DynamoDB, SQS/SNS event-driven patterns... | aws, serverless | aws, serverless, specialized, skill, building, applications, covers, lambda, functions, api, gateway, dynamodb |
 | `aws-skills` | AWS development with infrastructure automation and cloud architecture patterns | aws, skills | aws, skills, development, infrastructure, automation, cloud, architecture |
+| `ax-extract-workflow` | Reconstruct workflow behind a past coding-agent artifact using local ax sessions/commits/skills/tool traces. Use when asked how X was built. | ai-coding, workflow-reconstruction, session-analysis, observability | ai-coding, workflow-reconstruction, session-analysis, observability, ax, extract, reconstruct, behind, past, coding, agent, artifact |
 | `azd-deployment` | Deploy containerized frontend + backend applications to Azure Container Apps with remote builds, managed identity, and idempotent infrastructure. | azd, deployment | azd, deployment, deploy, containerized, frontend, backend, applications, azure, container, apps, remote, managed |
 | `azure-ai-anomalydetector-java` | Build anomaly detection applications with Azure AI Anomaly Detector SDK for Java. Use when implementing univariate/multivariate anomaly detection, time-serie... | azure, ai, anomalydetector, java | azure, ai, anomalydetector, java, anomaly, detection, applications, detector, sdk, implementing, univariate, multivariate |
 | `azure-identity-dotnet` | Azure Identity SDK for .NET. Authentication library for Azure SDK clients using Microsoft Entra ID. Use for DefaultAzureCredential, managed identity, service... | azure, identity, dotnet | azure, identity, dotnet, sdk, net, authentication, library, clients, microsoft, entra, id, defaultazurecredential |
@@ -1352,6 +1354,7 @@ Total skills: 1678
 | `prometheus-configuration` | Complete guide to Prometheus setup, metric collection, scrape configuration, and recording rules. | prometheus, configuration | prometheus, configuration, complete, setup, metric, collection, scrape, recording, rules |
 | `pubmed-database` | Direct REST API access to PubMed. Advanced Boolean/MeSH queries, E-utilities API, batch processing, citation management. For Python workflows, prefer biopyth... | pubmed, database | pubmed, database, direct, rest, api, access, boolean, mesh, queries, utilities, batch, processing |
 | `recsys-pipeline-architect` | Designs composable recommendation, ranking, and feed pipelines using the six-stage Source→Hydrator→Filter→Scorer→Selector→SideEffect framework | recommender-system, ranking, feed-algorithm, recsys, personalization, for-you-feed, rag-reranker, pipeline-architecture | recommender-system, ranking, feed-algorithm, recsys, personalization, for-you-feed, rag-reranker, pipeline-architecture, pipeline, architect, designs, composable |
+| `remote-gpu-trainer` | Deploy, monitor, and debug long GPU jobs on RENTED/remote instances (AutoDL, RunPod, vast.ai, Lambda, Slurm, K8s): teardown/billing safety, spot resilience, ... | remote, gpu, trainer | remote, gpu, trainer, deploy, monitor, debug, long, jobs, rented, instances, autodl, runpod |
 | `seo-aeo-landing-page-writer` | Writes complete, structured landing pages optimized for SEO ranking, AEO citation, and visitor conversion. Activate when the user wants to write or generate ... | seo, aeo, landing, page, writer | seo, aeo, landing, page, writer, writes, complete, structured, pages, optimized, ranking, citation |
 | `server-management` | Server management principles and decision-making. Process management, monitoring strategy, and scaling decisions. Teaches thinking, not commands. | server | server, principles, decision, making, process, monitoring, scaling, decisions, teaches, thinking, commands |
 | `service-mesh-observability` | Complete guide to observability patterns for Istio, Linkerd, and service mesh deployments. | service, mesh, observability | service, mesh, observability, complete, istio, linkerd, deployments |

@@ -476,7 +476,7 @@ struct FeedbackView: View {
 
 ### Gotchas
 
-- **Check `canSendMail()` before presenting.** The app crashes if `MFMailComposeViewController` is presented on a device with no mail account configured.
+- **Check `canSendMail()` before presenting.** If it returns `false`, do not display `MFMailComposeViewController`; show fallback UI or disable the mail action.
 - **Cannot update after presentation.** `updateUIViewController` is intentionally empty -- the mail compose API does not support changing fields after the controller is shown.
 - **The delegate protocol name is `MFMailComposeViewControllerDelegate`**, not `MFMailComposeDelegate`.
 
@@ -938,7 +938,7 @@ struct SharePhotoView: View {
 
 ### Gotchas
 
-- **Check `canSendText()` before presenting.** The app crashes if `MFMessageComposeViewController` is presented on a device that cannot send texts (e.g., iPod touch without iMessage).
+- **Check `canSendText()` before presenting.** If it returns `false`, do not display `MFMessageComposeViewController`; show fallback UI or disable the message action.
 - **Check `canSendAttachments()` before adding attachments.** Not all devices or carriers support MMS attachments.
 - **The delegate protocol is `MFMessageComposeViewControllerDelegate`**, not `MFMessageComposeDelegate`. It has a single required method.
 - **Cannot update after presentation.** Like `MFMailComposeViewController`, the message composer API does not support changing fields after the controller is shown.

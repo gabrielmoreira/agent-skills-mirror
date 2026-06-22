@@ -26,7 +26,7 @@ Load only the project context relevant to the current idea:
 - If `docs/SUMMARY.md` exists, read it first.
 - Load only task-relevant detail docs.
 - Prioritize `Code Standard` docs for implementation conventions.
-- If docs conflict with code or user intent, use the available input/question tool before broad changes.
+- If docs conflict with code or user intent, use the environment's interactive question/input tool before broad changes.
 
 Also check key implementation files relevant to the idea and note constraints from existing architecture, dependencies, and conventions.
 
@@ -34,7 +34,7 @@ Keep this pass focused. Only gather what is needed for the current idea.
 
 ### Step 2: Clarify Requirements
 
-Ask targeted questions sequentially only when ambiguity cannot be resolved from the request, project docs, or code. Use the input/question tool when available; otherwise ask a concise direct question.
+Ask targeted questions sequentially only when ambiguity cannot be resolved from the request, project docs, or code. Use the environment's interactive question/input tool when available; otherwise ask a concise direct question.
 
 - Focus on:
   - Objective and user value
@@ -59,14 +59,13 @@ For each approach, include:
 
 Lead with your recommended option and explain why it best fits the project context and constraints.
 
-After presenting all approaches, use input/question tool to ask the user to pick a preferred approach only when the choice materially changes the design or delivery path. List the summary options. Example:
+After presenting all approaches, ask the user to pick a preferred approach only when the choice materially changes the design or delivery path. Use the environment's interactive question/input tool in the same turn when available; do not replace this checkpoint with only a plain-text prompt or markdown option list.
 
-1. Approach A, short summary
+Prefer 2-3 selectable options. If the environment already provides a free-form or "Other" response, do not add a manual "Other" option. Example:
+
+1. Approach A, short summary (Recommended)
 2. Approach B, short summary
 3. Approach C, short summary
-4. Other (please specify)
-
-with the tag added for the recommended approach to guide the user.
 
 ### Step 4: Present the Design Incrementally
 
@@ -76,7 +75,9 @@ Once requirements are clear, present the design incrementally in logical phases.
 - **Phase 2: Technical Details** - Data model, interfaces, error handling, and edge cases.
 - **Phase 3: Delivery** - Testing/verification strategy and rollout considerations (if applicable).
 
-After presenting a phase, use input/question tool to ask for confirmation only when user input would materially change the next phase. Use these options when a checkpoint is needed:
+After presenting a phase, ask for confirmation only when user input would materially change the next phase. Use the environment's interactive question/input tool in the same turn when available; do not replace this checkpoint with only a plain-text prompt or markdown option list.
+
+Use these options when a checkpoint is needed:
 
 1. Proceed to the next phase
 2. Adjust the current phase
@@ -95,13 +96,13 @@ Before asking for next actions, summarize the current design brief in chat. Keep
 - Main risks, assumptions, or unresolved questions
 - Recommended next step
 
-1. Use input/question tool to present the user with four high-level next actions:
+1. Use the environment's interactive question/input tool to present the next-action checkpoint when available. Prefer the three most relevant actions for the current context; if the environment supports more selectable options, include all materially relevant actions:
    - "Write plan immediately (in current context)" - skip the artifact step and move straight to a `write-plan` handoff.
    - "Write artifacts" - continue by authoring the brainstorm documents described in Step 6.
    - "Implement immediately (skip design artifacts and planning)" - if the design is very clear and low-risk, the user may choose to skip both artifacts and planning and move straight to implementation.
    - "End session (already provided enough information for user)" - stop; the conversation has produced enough insight for now.
 
-2. If the user picks **Write artifacts**, proceed to Step 6. Once the draft artifacts exist, use input/question tool again to validate them with options:
+2. If the user picks **Write artifacts**, proceed to Step 6. Once the draft artifacts exist, use the environment's interactive question/input tool again to validate them with options:
    - "Write plan with current artifacts, context"
    - "End session - artifacts are sufficient for now"
    - "Need changes" (free-form text) - collect the feedback, revise the artifacts, and re-ask.
@@ -132,4 +133,7 @@ Persist results to the standardized location:
 - Prefer clarity over completeness when uncertain; ask a follow-up question.
 - Align all recommendations with project documentation and standards.
 - Keep assumptions explicit; do not guess silently.
+- At decision checkpoints (approach selection, phase validation, close-the-loop actions), always use the environment's interactive question/input tool with selectable options in the same turn when available.
+- Do not replace decision checkpoints with plain-text prompts or markdown-only option lists unless the runtime has no interactive question/input tool.
+- Prefer 2-3 explicit selectable options for broad runtime compatibility. If the environment provides a built-in free-form or "Other" response, do not add a manual "Other" option.
 - **Think before coding:** Surface assumptions explicitly. If multiple interpretations exist, present them — don't pick silently. If a simpler approach exists, say so and push back when warranted.

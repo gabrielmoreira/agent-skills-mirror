@@ -1,6 +1,6 @@
 # Deprecated API Migration Guide
 
-A comprehensive mapping of deprecated-to-modern SwiftUI and iOS APIs from iOS 15 through iOS 26. Each section shows the old pattern, the modern replacement, and migration notes. Target iOS 26 with Swift 6.3; backward-compatible to iOS 16 unless noted.
+A comprehensive mapping of deprecated, legacy, or fragile SwiftUI and iOS patterns to modern defaults from iOS 15 through iOS 26. Each section shows the old pattern, the modern replacement, and migration notes. Target iOS 26 with Swift 6.3; backward-compatible to iOS 16 unless noted.
 
 ## Contents
 - NavigationView to NavigationStack
@@ -18,9 +18,9 @@ A comprehensive mapping of deprecated-to-modern SwiftUI and iOS APIs from iOS 15
 - GeometryReader to Layout / containerRelativeFrame
 - PreviewProvider to #Preview
 - XCTest to Swift Testing
-- EditButton/.onDelete to .swipeActions
+- List row actions: EditButton/.onDelete/.swipeActions
 - UIApplication.shared.open to openURL
-- `@FetchRequest` to @Query (SwiftData)
+- `@FetchRequest` to `@Query` (SwiftData)
 - some vs any return types
 - .sheet(item:) for sheet presentation
 - Color.resolve(in:) usage
@@ -362,9 +362,9 @@ Text("Gradient")
 
 ---
 
-## .onChange(of:perform:) to Two-Value onChange
+## .onChange(of:perform:) to Modern onChange
 
-The single-value `onChange` closure was deprecated in iOS 17. The new signature provides both the old and new values.
+The single-value `onChange` closure was deprecated in iOS 17. Modern overloads can run a zero-argument closure or provide both old and new values.
 
 ### Before (Deprecated)
 
@@ -374,7 +374,15 @@ The single-value `onChange` closure was deprecated in iOS 17. The new signature 
 }
 ```
 
-### After (Modern)
+### After (Modern: new value only)
+
+```swift
+.onChange(of: searchText) {
+    performSearch(searchText)
+}
+```
+
+### After (Modern: compare old and new)
 
 ```swift
 .onChange(of: searchText) { oldValue, newValue in
@@ -484,7 +492,7 @@ The modern alert API accepts a `presenting` parameter to pass data directly into
 
 ## AnyView to `@ViewBuilder` and Concrete Types
 
-### Before (Deprecated Pattern)
+### Before (Type-Erased Pattern)
 
 ```swift
 func destination(for route: Route) -> AnyView {
@@ -511,13 +519,13 @@ func destination(for route: Route) -> some View {
 
 ### Migration Notes
 
-`AnyView` erases type information, preventing SwiftUI from efficiently diffing and transitioning views. `@ViewBuilder` preserves concrete types, enabling the framework to optimize identity and transitions. Avoid `AnyView` unless interfacing with APIs that genuinely require heterogeneous view storage. In iOS 26, `AnyView` continues to work but remains a performance anti-pattern.
+`AnyView` erases type information and hides useful view structure from SwiftUI. `@ViewBuilder` preserves concrete types, helping the framework reason about identity, updates, and transitions. Avoid `AnyView` unless interfacing with APIs that genuinely require heterogeneous view storage.
 
 ---
 
 ## .onAppear + Manual Task to .task
 
-### Before (Deprecated Pattern)
+### Before (Manual Lifecycle Pattern)
 
 ```swift
 struct FeedView: View {
@@ -609,7 +617,7 @@ struct DetailView: View {
 
 GeometryReader has performance costs and complicates layout. iOS 16 introduced the Layout protocol, and iOS 17 added `containerRelativeFrame` for proportional sizing.
 
-### Before (Deprecated Pattern)
+### Before (Fragile Layout Pattern)
 
 ```swift
 GeometryReader { proxy in
@@ -672,9 +680,9 @@ GeometryReader is still appropriate when you genuinely need to read the proposed
 
 ---
 
-## UIHostingController Previews to #Preview Macro
+## PreviewProvider to #Preview Macro
 
-### Before (Deprecated)
+### Before (Legacy)
 
 ```swift
 struct ContentView_Previews: PreviewProvider {
@@ -719,7 +727,7 @@ Widget and UIKit previews:
 
 ### Migration Notes
 
-The `#Preview` macro (iOS 17+) is less boilerplate and supports naming each preview directly. It works with SwiftUI views, UIKit view controllers, and WidgetKit timelines. Delete the entire `PreviewProvider` struct and replace with `#Preview` blocks.
+The `#Preview` macro (iOS 17+) is less boilerplate and supports naming each preview directly. It works with SwiftUI views, UIKit view controllers, and WidgetKit timelines. For modern targets, replace `PreviewProvider` structs with `#Preview` blocks.
 
 ---
 
@@ -805,9 +813,9 @@ struct CartTests {
 
 ---
 
-## List EditButton to .swipeActions, .onMove, .onDelete
+## List Row Actions with EditButton, .onDelete, .onMove, and .swipeActions
 
-### Before (Deprecated Pattern)
+### Basic Edit Mode Pattern
 
 ```swift
 struct ItemList: View {
@@ -829,7 +837,7 @@ struct ItemList: View {
 }
 ```
 
-### After (Modern)
+### Contextual Swipe Actions
 
 ```swift
 struct ItemList: View {
@@ -865,13 +873,13 @@ struct ItemList: View {
 
 ### Migration Notes
 
-`.swipeActions` (iOS 15+) gives you per-row, multi-action swipe menus with custom tints and roles. `EditButton` and `.onMove` still work fine for reorder mode. The main migration is replacing `.onDelete` with a `.swipeActions` destructive button for richer swipe UX.
+`.swipeActions` (iOS 15+) gives you per-row, multi-action swipe menus with custom tints and roles. `EditButton`, `.onDelete`, and `.onMove` remain valid for edit mode and reordering. Prefer `.swipeActions` when the desired interaction is a contextual row action, and keep edit mode when users need batch delete or reorder workflows.
 
 ---
 
 ## UIApplication.shared.open to `@Environment(\.openURL)`
 
-### Before (Deprecated Pattern)
+### Before (App-Coupled Pattern)
 
 ```swift
 Button("Open Website") {
@@ -911,7 +919,7 @@ openURL(url) { accepted in
 
 ---
 
-## `@FetchRequest` to #Query (SwiftData)
+## `@FetchRequest` to `@Query` (SwiftData)
 
 Core Data's `@FetchRequest` is superseded by SwiftData's `@Query` macro when you migrate to SwiftData models.
 
@@ -1039,18 +1047,18 @@ Using `.sheet(item:)` eliminates the dual-state problem where `showingSheet` and
 
 ---
 
-## UIColor / Color(UIColor:) to Color ShaderLibrary (iOS 17+)
+## Resolving SwiftUI Color for Interop (iOS 17+)
 
 ### Before
 
 ```swift
-let color = UIColor(red: 0.2, green: 0.5, blue: 0.8, alpha: 1.0)
+let color = UIColor.link
 let swiftUIColor = Color(uiColor: color)
 ```
 
 ### After (Modern)
 
-Color initialization from components is still fine, but for dynamic colors prefer:
+`Color(uiColor:)` is still valid when bridging an existing UIKit color. For concrete RGBA values from SwiftUI colors, resolve the color in the current environment:
 
 ```swift
 // Custom colors via asset catalogs (always preferred)
@@ -1065,7 +1073,7 @@ let resolved = Color.blue.resolve(in: environment)
 
 ### Migration Notes
 
-`Color.resolve(in:)` (iOS 17+) gives you concrete RGBA values in the current environment, replacing many UIColor interop needs. For custom runtime color manipulations, use resolved colors. For static brand colors, use asset catalogs.
+`Color.resolve(in:)` (iOS 17+) gives you concrete RGBA values in the current environment. Use it for custom runtime color manipulations or lower-level interop. For static brand colors, use asset catalogs; for UIKit colors you already have, keep `Color(uiColor:)`.
 
 ---
 
@@ -1104,7 +1112,7 @@ Constant-range `ForEach(0..<n)` is only safe when the range never changes. For d
 
 ---
 
-## .toolbar placement consolidation (iOS 26)
+## Toolbar Placement Names (iOS 16+)
 
 ### Before
 
@@ -1140,7 +1148,7 @@ Constant-range `ForEach(0..<n)` is only safe when the range never changes. For d
 
 ### Migration Notes
 
-`.navigationBarLeading` and `.navigationBarTrailing` were renamed to `.topBarLeading` and `.topBarTrailing` (iOS 16+). The new names work consistently across NavigationStack and NavigationSplitView contexts. Prefer the new names for cross-platform consistency.
+Prefer `.topBarLeading` and `.topBarTrailing` (iOS 16+) in modern `NavigationStack` and `NavigationSplitView` contexts. The names describe placement without tying the item to a specific navigation-bar implementation.
 
 ---
 

@@ -190,6 +190,7 @@ Treat telemetry and settings discoverability as related release-readiness checks
 - Do not implement the same new capability in both the preferred path and a legacy path unless the task explicitly requires a temporary compatibility bridge.
 - When keeping a legacy branch temporarily, add a short comment that states why it still exists, what new path replaces it, and what condition allows safe removal.
 - Before deleting an old path, verify inbound references, impacted site types or adapters, and the relevant validation coverage.
+- For scout-style cleanup in this repo, anchor the scope to the current task or current branch diff. Prefer small behavior-preserving improvements in touched files, such as extracting a tiny repeated helper, clarifying local naming, or replacing duplicated runtime literals with an existing or task-scoped constant. Validate the affected path with the same gate as the main change.
 
 ### Comments and User Feedback
 

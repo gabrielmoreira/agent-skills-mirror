@@ -1,6 +1,6 @@
 ---
 name: swiftui-uikit-interop
-description: "Bridges UIKit and SwiftUI by wrapping UIKit views and view controllers in SwiftUI with UIViewRepresentable and UIViewControllerRepresentable, embedding SwiftUI in UIKit with UIHostingController, and coordinating delegate callbacks. Use when integrating camera previews, map views, mail compose, document scanners, PDF renderers, text views with attributed text, or other UIKit-only or third-party UIKit SDK surfaces into a SwiftUI app, or when migrating a UIKit app to SwiftUI incrementally."
+description: "Bridges UIKit and SwiftUI with UIViewRepresentable, UIViewControllerRepresentable, UIHostingController, UIHostingConfiguration, coordinator delegates, and UIKit automatic observation tracking for shared @Observable state. Use when wrapping UIKit-only or third-party UIKit views/controllers in SwiftUI, embedding SwiftUI in UIKit, integrating mail/share/document/PDF/text-view surfaces, or migrating UIKit apps to SwiftUI incrementally."
 ---
 
 # SwiftUI-UIKit Interop
@@ -17,6 +17,7 @@ See [references/representable-recipes.md](references/representable-recipes.md) f
 - [UIHostingController](#uihostingcontroller)
 - [Sizing and Layout](#sizing-and-layout)
 - [State Synchronization Patterns](#state-synchronization-patterns)
+- [UIKit Automatic Observation Tracking](#uikit-automatic-observation-tracking)
 - [Sendable Considerations](#sendable-considerations)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
@@ -171,6 +172,8 @@ struct SearchBarView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UISearchBar, context: Context) {
+        context.coordinator.parent = self
+
         if uiView.text != text {
             uiView.text = text
         }
@@ -195,9 +198,9 @@ struct SearchBarView: UIViewRepresentable {
 
 ### Key Rules
 
-1. **Set the delegate in `makeUIView`/`makeUIViewController`, never in `updateUIView`.** The update method runs on every state change -- setting the delegate there causes redundant assignment and can trigger unexpected side effects.
+1. **Set the delegate in `makeUIView`/`makeUIViewController`, never in `updateUIView`.** The update method can run many times for state changes affecting the represented view -- setting the delegate there causes redundant assignment and can trigger unexpected side effects.
 
-2. **The coordinator's `parent` property is updated automatically.** SwiftUI updates the coordinator's reference to the latest representable struct value before each call to `updateUIView`. This means the coordinator always sees current `@Binding` values through `parent`.
+2. **Refresh copied parent state yourself.** If the coordinator stores the representable in a `var parent`, assign `context.coordinator.parent = self` at the start of `updateUIView` or `updateUIViewController`. Bindings still point at their source of truth, but closures and non-binding values are copied into the coordinator.
 
 3. **Use `[weak coordinator]` in closures** to avoid retain cycles between the coordinator and UIKit objects that capture it.
 
@@ -283,6 +286,10 @@ func collectionView(
 
 UIKit views wrapped in `UIViewRepresentable` communicate their natural size to SwiftUI through `intrinsicContentSize`. SwiftUI respects this during layout unless overridden by `frame()` or `fixedSize()`.
 
+### SwiftUI-Owned Geometry
+
+SwiftUI owns the represented view's `center`, `bounds`, `frame`, and `transform`. Do not set those properties directly on the `uiView` in `makeUIView` or `updateUIView`. Use `sizeThatFits`, intrinsic content size, SwiftUI layout modifiers, or layout code inside a custom UIKit subview for internal sublayers.
+
 ### fixedSize() and frame() Interactions
 
 | SwiftUI Modifier | Effect on Representable |
@@ -340,7 +347,7 @@ func updateUIView(_ uiView: UITextView, context: Context) {
 
 ### Avoiding Update Loops
 
-`updateUIView` is called whenever SwiftUI state changes -- including changes triggered by the coordinator writing to a `@Binding`. Guard against redundant updates to prevent infinite loops:
+`updateUIView` is called when SwiftUI has new state for the represented view -- including changes triggered by the coordinator writing to a `@Binding`. Guard against redundant updates to prevent infinite loops:
 
 ```swift
 func updateUIView(_ uiView: UITextView, context: Context) {
@@ -352,6 +359,17 @@ func updateUIView(_ uiView: UITextView, context: Context) {
 ```
 
 Without the guard, setting `uiView.text` may trigger the delegate's `textViewDidChange`, which writes to `parent.text`, which triggers `updateUIView` again.
+
+## UIKit Automatic Observation Tracking
+
+For UIKit screens that share an `@Observable` model with SwiftUI, keep the screen UIKit and read observed state from UIKit's tracked update hooks:
+
+- iOS 26+: use `updateProperties()` for labels, colors, visibility, enabled state, and other non-layout UI; use layout hooks for geometry; use cell configuration update handlers for cells.
+- iOS 18: automatic UIKit tracking requires `UIObservationTrackingEnabled` in `Info.plist`.
+- iOS 17: `@Observable` exists, but UIKit automatic observation tracking is not available. Manual `withObservationTracking` is one-shot; do not build polling loops around it.
+- iOS 15-16 or existing `ObservableObject`: use Combine `objectWillChange`, delegates, notifications, or explicit callbacks.
+
+See [references/hosting-migration.md](references/hosting-migration.md#automatic-observation-tracking-in-uikit) for migration patterns.
 
 ## Sendable Considerations
 
@@ -374,11 +392,15 @@ If passing closures across isolation boundaries, ensure they are `@Sendable` or 
 
 **DON'T:** Create the UIKit view in `updateUIView`.
 **DO:** Create the view once in `makeUIView`; only configure/update it in `updateUIView`.
-*Why:* `updateUIView` runs on every state change. Creating a new view each time destroys all UIKit state (selection, scroll position, first responder) and leaks memory.
+*Why:* `updateUIView` can run many times. Creating a new view each time destroys all UIKit state (selection, scroll position, first responder) and leaks memory.
 
 **DON'T:** Set delegates in `updateUIView`.
 **DO:** Set delegates in `makeUIView`/`makeUIViewController` only.
 *Why:* Redundant delegate assignment on every update can reset internal delegate state in UIKit views like `WKWebView` or `MKMapView`.
+
+**DON'T:** Mutate the represented view's `frame`, `bounds`, `center`, or `transform`.
+**DO:** Let SwiftUI size the represented view and use `sizeThatFits`, intrinsic size, SwiftUI modifiers, or internal subview layout.
+*Why:* SwiftUI controls those layout properties for the represented view; setting them directly conflicts with SwiftUI layout.
 
 **DON'T:** Hold strong references to the Coordinator from closures.
 **DO:** Use `[weak coordinator]` in closures.
@@ -400,6 +422,10 @@ If passing closures across isolation boundaries, ensure they are `@Sendable` or 
 **DO:** Use regular stored properties on the Coordinator and communicate to SwiftUI via `parent`'s `@Binding` properties.
 *Why:* `@State` only works inside `View` conformances. Using it on a class has no effect.
 
+**DON'T:** Poll `withObservationTracking` from a UIKit controller.
+**DO:** Use UIKit automatic observation tracking hooks on iOS 18+/26+, and explicit Combine/callback invalidation for older deployment targets.
+*Why:* Manual `withObservationTracking` is one-shot, and UIKit automatic tracking is not an iOS 17 feature.
+
 **DON'T:** Skip the `addChild`/`didMove(toParent:)` dance when embedding `UIHostingController`.
 **DO:** Always call `addChild(_:)`, add the view to the hierarchy, then call `didMove(toParent:)`.
 *Why:* Skipping containment causes viewWillAppear/viewDidAppear to never fire, breaks trait collection propagation, and causes visual glitches.
@@ -414,7 +440,9 @@ If passing closures across isolation boundaries, ensure they are `@Sendable` or 
 - [ ] No retain cycles between coordinator and closures (`[weak coordinator]`)
 - [ ] `UIHostingController` properly added as child (`addChild` + `didMove(toParent:)`)
 - [ ] Sizing strategy chosen (`intrinsicContentSize` vs fixed `frame` vs `sizeThatFits`)
+- [ ] Represented view geometry left to SwiftUI (`frame`, `bounds`, `center`, `transform` not mutated directly)
 - [ ] Environment values read in `updateUIView` via `context.environment` where needed
+- [ ] UIKit `@Observable` reads use automatic tracking hooks on iOS 18+/26+, not polling; iOS 17 is manual one-shot only
 - [ ] Coordinator marked `@MainActor` for strict concurrency
 - [ ] Modal controllers dismiss in all delegate exit paths (success, cancel, error)
 - [ ] `UIHostingConfiguration` used for collection/table view cells instead of manual hosting (iOS 16+)

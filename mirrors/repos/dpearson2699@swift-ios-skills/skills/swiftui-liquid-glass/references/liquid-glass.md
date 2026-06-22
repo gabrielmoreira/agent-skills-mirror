@@ -77,6 +77,10 @@ Text("Hello, World!")
     .glassEffect(.regular.tint(.orange).interactive())
 ```
 
+Use `.interactive()` only when the custom component is actually tappable,
+focusable, or otherwise interactive. For buttons, prefer the built-in glass button
+styles in the Button Styles section.
+
 ## Glass
 
 A structure that defines the configuration of the Liquid Glass material. Conforms to
@@ -87,7 +91,7 @@ A structure that defines the configuration of the Liquid Glass material. Conform
 | Property | Description |
 |---|---|
 | `.regular` | Standard Liquid Glass material |
-| `.clear` | Clear variant with minimal visual weight |
+| `.clear` | Clear variant with high translucency; add dimming or other contrast treatment when legibility needs it |
 | `.identity` | No-op; content appears as if no glass effect was applied |
 
 ### Instance Methods
@@ -101,6 +105,23 @@ Methods are chainable:
 
 ```swift
 .glassEffect(.regular.tint(.blue).interactive())
+```
+
+When using `.clear`, verify foreground legibility over the actual background. Add a
+dimming layer or another contrast treatment when bright or visually busy content sits
+behind the glass.
+
+```swift
+ZStack {
+    Capsule()
+        .fill(.black.opacity(0.28))
+
+    Label("Play", systemImage: "play.fill")
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .glassEffect(.clear)
+}
+.fixedSize()
 ```
 
 ## GlassEffectContainer
@@ -118,7 +139,7 @@ Conforms to `View`, `Sendable`, `SendableMetatype`.
 ### Initializer
 
 ```swift
-init(spacing: CGFloat, @ViewBuilder content: () -> Content)
+init(spacing: CGFloat? = nil, @ContentBuilder content: () -> Content)
 ```
 
 The `spacing` parameter controls how glass shapes interact:
@@ -183,6 +204,7 @@ var body: some View {
                     .font(.system(size: 36))
                     .glassEffect()
                     .glassEffectID("eraser", in: namespace)
+                    .glassEffectTransition(.matchedGeometry)
             }
         }
     }
@@ -239,6 +261,10 @@ Controls how a glass effect appears or disappears during view hierarchy changes.
 ) -> some View
 ```
 
+Attach this modifier to the view whose glass effect is inserted or removed. Keep
+`GlassEffectContainer` around the related group to define the blending/morphing
+scope, but do not put the transition only on the always-present container.
+
 ## GlassEffectTransition
 
 A structure describing changes when a glass effect is added to or removed from the
@@ -266,7 +292,8 @@ if isExpanded {
 
 ## Button Styles
 
-SwiftUI provides two built-in Liquid Glass button styles.
+SwiftUI provides built-in Liquid Glass button styles plus a configurable style that
+accepts a `Glass` value.
 
 ### GlassButtonStyle
 
@@ -285,6 +312,39 @@ A more prominent glass appearance for primary actions.
 Button("Confirm") { }
     .buttonStyle(.glassProminent)
 ```
+
+### Configurable Glass Button Style
+
+Use `.glass(_:)` when a button needs a specific `Glass` variant or tint:
+
+```swift
+Button("Media") { }
+    .buttonStyle(.glass(.clear))
+```
+
+When the button sits over a bright or visually busy background, include a contrast
+treatment underneath the clear glass or choose a more opaque style:
+
+```swift
+ZStack {
+    Capsule()
+        .fill(.black.opacity(0.28))
+
+    Button {
+        playRecap()
+    } label: {
+        Label("Play", systemImage: "play.fill")
+            .font(.headline)
+            .padding(.horizontal, 8)
+    }
+    .buttonStyle(.glass(.clear))
+}
+.fixedSize()
+```
+
+Use `.glass(.regular.tint(color))` for tinted tool controls. Reserve
+`.glassProminent` for high-emphasis primary actions rather than using it as the
+default answer whenever a button needs visual weight.
 
 These button styles automatically include interactivity (touch/pointer reactions).
 Prefer these over manually applying `.glassEffect(.regular.interactive())` to buttons.
@@ -359,7 +419,8 @@ if #available(iOS 26, *) {
 - Test with **Reduce Transparency** enabled (glass effects adapt automatically for
   standard components; verify custom implementations).
 - Test with **Reduce Motion** enabled (morphing and fluid animations are simplified).
-- Ensure sufficient contrast for text and icons rendered over glass.
+- Ensure sufficient contrast for text and icons rendered over glass; clear glass may
+  need a dimming layer or another contrast treatment.
 - Standard components from SwiftUI adapt to these settings automatically.
 
 ## Best Practices Summary
@@ -369,10 +430,11 @@ if #available(iOS 26, *) {
 3. Match container `spacing` to interior layout spacing.
 4. Use `.interactive()` only on tappable/focusable elements.
 5. Use `withAnimation` when toggling views with `glassEffectID` for morphing.
-6. Prefer `.buttonStyle(.glass)` / `.buttonStyle(.glassProminent)` for buttons.
+6. Prefer `.buttonStyle(.glass)`, `.buttonStyle(.glassProminent)`, or configurable styles such as `.buttonStyle(.glass(.clear))` for buttons.
 7. Avoid overusing Liquid Glass -- reserve it for key functional elements.
 8. Always gate with `if #available(iOS 26, *)` and provide fallback UI.
 9. Test with Reduce Transparency and Reduce Motion accessibility settings.
+10. Apply `glassEffectTransition(_:)` to the conditional glass view that appears or disappears.
 
 ## Apple Documentation Links
 

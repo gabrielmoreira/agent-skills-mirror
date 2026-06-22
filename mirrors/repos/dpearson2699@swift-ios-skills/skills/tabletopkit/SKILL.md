@@ -1,14 +1,15 @@
 ---
 name: tabletopkit
-description: "Create multiplayer spatial board games using TabletopKit on visionOS. Use when building tabletop game experiences with boards, pieces, cards, and dice, managing player seats and turns, synchronizing game state over FaceTime with Group Activities, rendering game elements with RealityKit, or implementing piece snapping and physics on a virtual table surface."
+description: "Builds multiplayer spatial board games using TabletopKit on visionOS. Use when creating tabletop game experiences with boards, pieces, cards, or dice; managing seats, turns, equipment state, TabletopAction flows, or TabletopInteraction delegates; synchronizing gameplay through FaceTime Group Activities; rendering with RealityKit; or implementing snapping, tosses, and physics on a virtual table surface."
 ---
 
 # TabletopKit
 
 Create multiplayer spatial board games on a virtual table surface using
 TabletopKit. Handles game layout, equipment interaction, player seating, turn
-management, state synchronization, and RealityKit rendering. **visionOS 2.0+
-only.** Targets Swift 6.3.
+management, state synchronization, and RealityKit rendering. TabletopKit is
+visionOS-only. Core APIs are visionOS 2.0+; availability-sensitive APIs are
+called out below. Targets Swift 6.3.
 
 ## Contents
 
@@ -29,9 +30,13 @@ only.** Targets Swift 6.3.
 
 ### Platform Requirement
 
-TabletopKit is exclusive to visionOS. It requires visionOS 2.0+. Multiplayer
-features using Group Activities require visionOS 2.0+ devices on a FaceTime
-call. The Simulator supports single-player layout testing but not multiplayer.
+TabletopKit is exclusive to visionOS. Core gameplay, equipment, seating,
+actions, interactions, rendering, and Group Activities coordination are
+visionOS 2.0+. `TabletopInteraction.Configuration` is visionOS 2.2+.
+`CustomAction`, `CustomEquipmentState`, `TableSetup.register(action:)`, and
+the direct `TabletopGame.addAction(_ action: some CustomAction)` overload are
+visionOS 26.0+. The Simulator supports single-player layout testing but not
+Group Activities multiplayer.
 
 ### Project Configuration
 
@@ -72,7 +77,6 @@ setup.add(seat: PlayerSeat(index: 0, pose: seatPose0))
 setup.add(seat: PlayerSeat(index: 1, pose: seatPose1))
 setup.add(equipment: GamePawn(id: .init(1)))
 setup.add(equipment: GameDie(id: .init(2)))
-setup.register(action: MyCustomAction.self)
 
 let game = TabletopGame(tableSetup: setup)
 game.claimAnySeat()
@@ -136,6 +140,7 @@ Choose the state type based on the equipment:
 | `CardState` | Playing cards (tracks `faceUp` / face-down) |
 | `DieState` | Dice with an integer `value` |
 | `RawValueState` | Custom data encoded as `UInt64` |
+| `CustomEquipmentState` | visionOS 26.0+ custom state with a `BaseEquipmentState` plus game data |
 
 ### Defining Equipment
 
@@ -194,6 +199,7 @@ struct GameDie: EntityEquipment {
 Restrict which players can interact with a piece via `seatControl`:
 - `.any` -- any player
 - `.restricted([seatID1, seatID2])` -- specific seats only
+- `.restrictedCurrent([seatID1, seatID2])` -- specific seats only while they are in turn
 - `.current` -- only the seat whose turn it is
 - `.inherited` -- inherits from parent equipment
 
@@ -256,33 +262,20 @@ game.addAction(.createBookmark(id: StateBookmarkIdentifier(1)))
 
 ### Custom Actions
 
-For game-specific logic, conform to `CustomAction`:
-
-```swift
-struct CollectCoin: CustomAction {
-    let coinID: EquipmentIdentifier
-    let playerID: EquipmentIdentifier
-
-    init?(from action: some TabletopAction) {
-        // Decode from generic action
-    }
-
-    func validate(snapshot: TableSnapshot) -> Bool {
-        // Return true if action is legal
-        true
-    }
-
-    func apply(table: inout TableState) {
-        // Mutate state directly
-    }
-}
-```
-
-Register custom actions during setup:
+For game-specific logic on visionOS 26.0+, conform to `CustomAction`.
+Custom action application and validation must depend only on the action data and
+the supplied `TableState` / `TableSnapshot` so every peer resolves the same
+result. Register custom action types during setup before dispatching them:
 
 ```swift
 setup.register(action: CollectCoin.self)
+game.addAction(CollectCoin(coinID: coinID, playerID: playerID))
 ```
+
+`CustomAction`, `CustomEquipmentState`, `setup.register(action:)`, and
+`.customAction(_:context:)` are visionOS 26.0+. Register each custom action type
+before dispatching it. See [references/tabletopkit-patterns.md](references/tabletopkit-patterns.md)
+for full custom action and custom state examples.
 
 ### Score Counters
 
@@ -317,7 +310,15 @@ player gestures on equipment:
 }
 ```
 
+Use `interaction.value.gesture` for gesture-specific state. Avoid deprecated
+`gesturePhase`. For destination control, prefer
+`interaction.setConfiguration(.init(allowedDestinations: ...))` on visionOS
+2.2+ rather than deprecated `setAllowedDestinations(_:)` or
+`value.allowedDestinations`.
+
 ### Handling Gestures and Tossing Dice
+
+Basic `toss(equipmentID:as:)` is core TabletopKit. `onTossStart`, `TabletopInteraction.TossOutcome`, and `TossableRepresentation.face(for:)` are visionOS 26.0+.
 
 ```swift
 class DieInteraction: TabletopInteraction.Delegate {
@@ -454,11 +455,13 @@ network coordinators and arbiter role management.
   `TabletopAction` or `CustomAction`. Directly modifying equipment properties
   bypasses synchronization.
 - **Missing custom action registration.** Custom actions must be registered with
-  `setup.register(action:)` before creating the `TabletopGame`. Unregistered
-  actions are silently dropped.
+  `setup.register(action:)` before use. Custom actions are visionOS 26.0+.
 - **Not handling action rollback.** Actions are optimistically applied and can be
   rolled back if validation fails on the arbiter. Implement
   `actionWasRolledBack(_:snapshot:)` to revert UI state.
+- **Ignoring discarded actions on visionOS 26.** Implement
+  `actionWasDiscarded(_:)` when local action queue pressure matters; it is
+  called for local actions that cannot be enqueued.
 - **Using wrong parent ID.** Equipment `parentID` in state must reference a
   valid equipment ID (typically the table or a container). An invalid parent
   causes the piece to disappear.
@@ -470,25 +473,27 @@ network coordinators and arbiter role management.
 
 ## Review Checklist
 
-- [ ] `import TabletopKit` present; target is visionOS 2.0+
+- [ ] `import TabletopKit` present; answer explicitly states TabletopKit is visionOS-only and target is visionOS 2.0+
+- [ ] Availability checked for visionOS 2.2+ `TabletopInteraction.Configuration` and visionOS 26.0+ custom action/custom state APIs
 - [ ] `TableSetup` created with a `Tabletop`/`EntityTabletop` conforming type
 - [ ] All equipment conforms to `Equipment` or `EntityEquipment` with correct state type
 - [ ] Seats added and `claimAnySeat()` / `claimSeat(_:)` called at game start
 - [ ] All custom actions registered with `setup.register(action:)`
 - [ ] `TabletopGame.Observer` implemented for reacting to confirmed actions
+      and, on visionOS 26.0+, discarded local actions when relevant
 - [ ] `EntityRenderDelegate` or `RenderDelegate` connected
 - [ ] `.tabletopGame(_:parent:automaticUpdate:)` modifier on `RealityView`
-- [ ] `GroupActivity` defined and `coordinateWithSession(_:)` called for multiplayer
+- [ ] `GroupActivity` defined and `coordinateWithSession(_:)` called; multiplayer described as Group Activities/SharePlay synchronization
 - [ ] Group Activities capability added in Xcode for multiplayer builds
 - [ ] Debug visualization (`debugDraw`) disabled before release
-- [ ] Tested on device; multiplayer tested with 2+ Apple Vision Pro units
+- [ ] Device notes state Simulator is single-player only; multiplayer requires 2+ Apple Vision Pro units on FaceTime
 
 ## References
 
 - [references/tabletopkit-patterns.md](references/tabletopkit-patterns.md) -- extended patterns for observer implementation, custom actions, dice simulation, card overlap, and network coordination
 - [Apple Documentation: TabletopKit](https://sosumi.ai/documentation/tabletopkit)
-- [Creating tabletop games (sample code)](https://sosumi.ai/documentation/tabletopkit/creating-tabletop-games)
-- [Synchronizing group gameplay with TabletopKit (sample code)](https://sosumi.ai/documentation/tabletopkit/synchronizing-group-gameplay-with-tabletopkit)
-- [Simulating dice rolls as a component for your game (sample code)](https://sosumi.ai/documentation/tabletopkit/simulating-dice-rolls-as-a-component-for-your-game)
-- [Implementing playing card overlap and physical characteristics (sample code)](https://sosumi.ai/documentation/tabletopkit/implementing-playing-card-overlap-and-physical-characteristics)
+- [Creating tabletop games (sample code; visionOS 2.2+, Xcode 16.2+)](https://sosumi.ai/documentation/tabletopkit/creating-tabletop-games)
+- [Synchronizing group gameplay with TabletopKit (sample code; visionOS 26.0+, Xcode 26.0+)](https://sosumi.ai/documentation/tabletopkit/synchronizing-group-gameplay-with-tabletopkit)
+- [Simulating dice rolls as a component for your game (sample code; visionOS 26.0+, Xcode 26.0+)](https://sosumi.ai/documentation/tabletopkit/simulating-dice-rolls-as-a-component-for-your-game)
+- [Implementing playing card overlap and physical characteristics (sample code; visionOS 26.0+, Xcode 26.0+)](https://sosumi.ai/documentation/tabletopkit/implementing-playing-card-overlap-and-physical-characteristics)
 - [WWDC24 session 10091: Build a spatial board game](https://sosumi.ai/videos/play/wwdc2024/10091/)

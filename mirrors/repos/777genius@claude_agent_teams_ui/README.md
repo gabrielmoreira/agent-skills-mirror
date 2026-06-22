@@ -1,20 +1,8 @@
 
 <p align="center">
-  <a href="docs/screenshots/1.jpg"><img src="docs/screenshots/1.jpg" width="75" alt="Kanban Board" /></a>&nbsp;
-  <a href="docs/screenshots/7.png"><img src="docs/screenshots/7.png" width="75" alt="Code Review" /></a>&nbsp;
-  <a href="docs/screenshots/2.jpg"><img src="docs/screenshots/2.jpg" width="75" alt="Team View" /></a>&nbsp;
-  <a href="docs/screenshots/8.png"><img src="docs/screenshots/8.png" width="75" alt="Task Detail" /></a>&nbsp;
-  <img src="resources/icons/png/1024x1024.png" alt="Agent Teams" width="80" />&nbsp;
-  <a href="docs/screenshots/9.png"><img src="docs/screenshots/9.png" width="75" alt="Execution Logs" /></a>&nbsp;
-  <a href="docs/screenshots/3.png"><img src="docs/screenshots/3.png" width="75" alt="Agent Comments" /></a>&nbsp;
-  <a href="docs/screenshots/4.png"><img src="docs/screenshots/4.png" width="75" alt="Create Team" /></a>&nbsp;
-  <a href="docs/screenshots/6.png"><img src="docs/screenshots/6.png" width="65" alt="Settings" /></a>
-</p>
-
-<h1 align="center"><a href="https://agentteams.live/">Agent Teams</a></h1>
-
-<p align="center">
-  <strong><code>You're the boss, agents are your team. They handle tasks themselves, message each other, review each other. You just look at the kanban board and drink coffee.</code></strong>
+  <a href="https://agentteams.live/">
+    <img src="docs/assets/github-header-agent-teams-ai.png" alt="Agent Teams AI - Get a lot done by doing very little" width="100%" />
+  </a>
 </p>
 
 <p align="center">

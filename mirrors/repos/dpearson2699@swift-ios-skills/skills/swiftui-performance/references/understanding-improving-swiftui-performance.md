@@ -57,9 +57,9 @@ screen keeps re-evaluating even when no single event stands out.
 Highlights expensive `body` work. These often point straight to code you can
 simplify or move out of render paths.
 
-### Long Platform View Updates
+### Long Representable Updates
 
-Useful when SwiftUI hosts UIKit/AppKit content. If this lane is hot, inspect:
+Useful when SwiftUI hosts UIKit/AppKit content. Instruments 26 surfaces this as representable work; some documentation and expanded views refer to Platform View Updates. If this lane is hot, inspect:
 
 - `UIViewRepresentable` / `UIViewControllerRepresentable`
 - `List` row content with embedded platform views

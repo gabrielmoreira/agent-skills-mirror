@@ -1,6 +1,6 @@
 # Certificate Trust Evaluation & Pinning
 
-> **Scope**: SecCertificate, SecTrust evaluation, SecIdentity, certificate pinning strategies (leaf / intermediate CA / SPKI hash / NSPinnedDomains), custom trust policies, client certificate authentication (mTLS), ATS interaction, and operational pin management. iOS 12+ through iOS 18, macOS 10.14+ through macOS 15.
+> **Scope**: SecCertificate, SecTrust evaluation, SecIdentity, certificate pinning strategies (leaf / intermediate CA / SPKI hash / NSPinnedDomains), custom trust policies, client certificate authentication (mTLS), ATS interaction, and operational pin management. iOS 12+ / macOS 10.14+ baseline, with current-platform notes where relevant.
 >
 > **Out of scope**: Network-layer encryption beyond TLS certificate handling, server-side certificate management, App Transport Security as a standalone topic (covered briefly where it intersects pinning).
 
@@ -78,7 +78,7 @@ func evaluateTrust(_ trust: SecTrust, completion: @escaping (Bool, Error?) -> Vo
 }
 ```
 
-Apple has **not** added native async/await wrappers to the Security framework through iOS 18. Wrap manually:
+Trust evaluation remains exposed through synchronous or callback-based Security APIs in current SDKs. Wrap manually when you need Swift concurrency:
 
 ```swift
 // ✅ CORRECT: Swift concurrency wrapper
@@ -552,7 +552,8 @@ Use `nscurl --ats-diagnostics https://your-server.com` on macOS to diagnose ATS 
 | iOS 14 / macOS 11    | 2020 | **`NSPinnedDomains`** introduced; `SecTrustCopyKey` replaces `SecTrustCopyPublicKey`   |
 | iOS 15 / macOS 12    | 2021 | **`SecTrustCopyCertificateChain`** replaces `SecTrustGetCertificateAtIndex`/`Count`    |
 | iOS 17 / macOS 14    | 2023 | ATS enforced for IP addresses; EAP-TLS 1.3 support                                     |
-| iOS 18 / macOS 15    | 2024 | Swift 6 strict concurrency affects callback-based Security code; no new SecTrust APIs  |
+| iOS 18 / macOS 15    | 2024 | Swift 6 strict concurrency affects callback-based Security code                        |
+| iOS 26 / macOS 26    | 2025 | Existing `SecTrustEvaluateWithError` / `SecTrustEvaluateAsyncWithError` patterns remain current |
 
 ---
 

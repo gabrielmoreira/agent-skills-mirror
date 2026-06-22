@@ -1,6 +1,6 @@
 ---
 name: swiftui-animation
-description: "Implement, review, or improve SwiftUI animations and transitions. Use when adding explicit animations with withAnimation, configuring implicit animations with .animation(_:body:) or .animation(_:value:), configuring spring animations (.smooth, .snappy, .bouncy), building phase or keyframe animations with PhaseAnimator/KeyframeAnimator, creating hero transitions with matchedGeometryEffect or matchedTransitionSource, adding SF Symbol effects (bounce, pulse, variableColor, breathe, rotate, wiggle), implementing custom Transition or CustomAnimation types, or ensuring animations respect accessibilityReduceMotion."
+description: "Implement, review, or improve SwiftUI animations and transitions. Use when adding explicit animations with withAnimation, configuring implicit animations with .animation(_:body:) or .animation(_:value:), configuring spring animations (.smooth, .snappy, .bouncy), building phase or keyframe animations with PhaseAnimator/KeyframeAnimator, creating hero transitions with matchedGeometryEffect or matchedTransitionSource, adding SF Symbol effects (iOS 17 bounce, pulse, variableColor, scale, appear, disappear, replace; iOS 18 breathe, rotate, wiggle), implementing custom Transition or CustomAnimation types, or ensuring animations respect accessibilityReduceMotion."
 ---
 
 # SwiftUI Animation (iOS 26+)
@@ -42,6 +42,7 @@ correct timing, transitions, and accessibility handling using Swift 6.3 patterns
 | Text content | `.contentTransition()` | In-place text/number changes |
 | Symbol | `.symbolEffect()` | SF Symbol animations |
 | Custom | `CustomAnimation` protocol | Novel timing curves |
+| Core Animation bridge | `CALayer`, `CAAnimation`, `CADisplayLink` | Read `references/core-animation-bridge.md` before advising |
 
 ### Step 2: Choose the animation curve
 
@@ -51,6 +52,7 @@ correct timing, transitions, and accessibility handling using Swift 6.3 patterns
 .easeIn(duration: 0.3)              // slow start
 .easeOut(duration: 0.3)             // slow end
 .easeInOut(duration: 0.3)           // slow start and end
+.timingCurve(.bezier(startControlPoint: .zero, endControlPoint: .init(x: 1, y: 1)), duration: 0.3)
 
 // Spring presets (preferred for natural motion)
 .smooth                              // no bounce, fluid
@@ -71,6 +73,7 @@ correct timing, transitions, and accessibility handling using Swift 6.3 patterns
 - Confirm animation triggers on the correct state change.
 - Test with Accessibility > Reduce Motion enabled.
 - Verify no expensive work runs inside animation content closures.
+- For CA bridges, use Coordinators for delegates, invalidate display links, treat frame-rate ranges as hints, and adapt work to the actual refresh rate.
 
 ## withAnimation (Explicit Animation)
 
@@ -85,9 +88,8 @@ withAnimation(.smooth(duration: 0.35), completionCriteria: .logicallyComplete) {
 
 ## Implicit Animation
 
-Prefer `.animation(_:body:)` when only specific modifiers should animate.
-Use `.animation(_:value:)` for simple value-bound changes that can animate the
-view's animatable modifiers together.
+Use `withAnimation` for state-mutation ownership, `.animation(_:body:)` for
+selected modifiers, and `.animation(_:value:)` for simple value-bound changes.
 
 ```swift
 Badge()
@@ -153,7 +155,7 @@ struct PulsingDot: View {
 }
 ```
 
-Trigger-based variant runs one cycle per trigger change:
+Trigger-based variant advances to the next phase on each trigger change:
 
 ```swift
 PhaseAnimator(PulsePhase.allCases, trigger: tapCount) { phase in
@@ -211,6 +213,7 @@ Keyframe types: `LinearKeyframe` (linear), `CubicKeyframe` (smooth curve),
 `SpringKeyframe` (spring physics), `MoveKeyframe` (instant jump).
 
 Use `repeating: true` for looping keyframe animations.
+Swift 6: keyframe closures are `@Sendable`; capture state/env values before the modifier.
 
 ## `@Animatable` Macro
 
@@ -218,7 +221,6 @@ Replaces manual `AnimatableData` boilerplate. Attach to any type with
 animatable stored properties.
 
 ```swift
-// Replaces manual AnimatableData boilerplate
 @Animatable
 struct WaveShape: Shape {
     var frequency: Double
@@ -273,7 +275,7 @@ struct HeroView: View {
 }
 ```
 
-Exactly one view per ID must be visible at a time for the interpolation to work.
+Exactly one source view per ID should be visible; otherwise results are undefined.
 
 ## Navigation Zoom Transition (iOS 18+)
 
@@ -355,20 +357,22 @@ Types: `.identity`, `.interpolate`, `.opacity`,
 
 ## Symbol Effects (iOS 17+)
 
-Animate SF Symbols with semantic effects.
+Animate SF Symbols with semantic effects. `.bounce`, `.pulse`, `.variableColor`,
+`.scale`, `.appear`, `.disappear`, and `.replace` are iOS 17+; `.breathe`,
+`.rotate`, and `.wiggle` require iOS 18+.
 
 ```swift
 // Discrete (triggers on value change)
-Image(systemName: "bell.fill")
-    .symbolEffect(.bounce, value: notificationCount)
+Image(systemName: "bell.fill").symbolEffect(.bounce, value: notificationCount)
 
+// iOS 18+
 Image(systemName: "arrow.clockwise")
     .symbolEffect(.wiggle.clockwise, value: refreshCount)
 
 // Indefinite (active while condition holds)
-Image(systemName: "wifi")
-    .symbolEffect(.pulse, isActive: isSearching)
+Image(systemName: "wifi").symbolEffect(.pulse, isActive: isSearching)
 
+// iOS 18+
 Image(systemName: "mic.fill")
     .symbolEffect(.breathe, isActive: isRecording)
 
@@ -381,8 +385,9 @@ Image(systemName: "speaker.wave.3.fill")
     )
 ```
 
-All effects: `.bounce`, `.pulse`, `.variableColor`, `.scale`, `.appear`,
-`.disappear`, `.replace`, `.breathe`, `.rotate`, `.wiggle`.
+Availability: iOS 17+ for `.bounce`, `.pulse`, `.variableColor`, `.scale`,
+`.appear`, `.disappear`, `.replace`; iOS 18+ for `.breathe`, `.rotate`,
+`.wiggle`.
 
 Scope: `.byLayer`, `.wholeSymbol`. Direction varies per effect.
 
@@ -413,14 +418,14 @@ Image(systemName: "cloud.sun.rain.fill")
     .symbolRenderingMode(.multicolor)
 ```
 
-**Variable color:** `.symbolVariableColor(value:)` for percentage-based fill (signal strength, volume):
+**Variable symbols:** use `Image(systemName:variableValue:)` (iOS 16+) for percentage fill. Use `.symbolVariableValueMode(_:)` (iOS 26+) to choose `.draw` or `.color`.
 
 ```swift
-Image(systemName: "wifi")
-    .symbolVariableColor(value: signalStrength) // 0.0–1.0
+Image(systemName: "wifi", variableValue: signalStrength) // 0.0...1.0
+    .symbolVariableValueMode(.draw) // iOS 26+
 ```
 
-> **Docs:** [SymbolRenderingMode](https://sosumi.ai/documentation/swiftui/symbolrenderingmode) · [symbolRenderingMode(_:)](https://sosumi.ai/documentation/swiftui/view/symbolrenderingmode(_:))
+> **Docs:** [SymbolRenderingMode](https://sosumi.ai/documentation/swiftui/symbolrenderingmode) · [symbolRenderingMode(_:)](https://sosumi.ai/documentation/swiftui/view/symbolrenderingmode(_:)) · [Image(systemName:variableValue:)](https://sosumi.ai/documentation/swiftui/image/init(systemname:variablevalue:)) · [symbolVariableValueMode(_:)](https://sosumi.ai/documentation/swiftui/view/symbolvariablevaluemode(_:))
 
 ## Common Mistakes
 
@@ -430,29 +435,31 @@ Image(systemName: "wifi")
 // TOO BROAD — applies when the view changes
 .animation(.easeIn)
 
-// CORRECT — bind animation to one value
-.animation(.easeIn, value: isVisible)
+.animation(.easeIn, value: isVisible) // CORRECT: value-bound
 
 // CORRECT — scope animation to selected modifiers
 .animation(.easeIn) { content in
     content.opacity(isVisible ? 1.0 : 0.0)
 }
+
+withAnimation(.easeIn) { isVisible.toggle() } // CORRECT: own mutation
 ```
 
-### 2. Expensive work inside animation closures
+### 2. Expensive work or actor-isolated reads inside animation closures
 
-Never run heavy computation in `keyframeAnimator` / `PhaseAnimator` content closures — they execute every frame. Precompute outside, animate only visual properties.
+`keyframeAnimator` / `PhaseAnimator` content closures run every frame. Precompute expensive values, animate only visual properties, and capture state/env values before `@Sendable` keyframe closures.
 
 ### 3. Missing reduce motion support
 
+For symbols, remove inherited effects; gate larger motion with `reduceMotion ? .none : animation`.
 ```swift
 @Environment(\.accessibilityReduceMotion) private var reduceMotion
-withAnimation(reduceMotion ? .none : .bouncy) { showDetail = true }
+Image(systemName: "wifi").symbolEffect(.pulse, isActive: isSearching).symbolEffectsRemoved(reduceMotion)
 ```
 
 ### 4. Multiple matchedGeometryEffect sources
 
-Only one view per ID should be visible at a time. Two visible views with the same ID causes undefined layout.
+Only one source view per ID should be visible at a time. Multiple visible sources with the same ID cause undefined layout.
 
 ### 5. Using DispatchQueue or UIView.animate
 
@@ -483,12 +490,11 @@ Apply `.navigationTransition(.zoom(sourceID:in:))` on the outermost destination 
 - [ ] Animation curve matches intent (spring for natural, ease for mechanical)
 - [ ] `withAnimation` wraps the state change; implicit animation uses `.animation(_:body:)` for selective modifier scope or `.animation(_:value:)` with an explicit value
 - [ ] `matchedGeometryEffect` has exactly one source per ID; zoom uses matching `id`/`namespace`
-- [ ] `@Animatable` macro used instead of manual `animatableData`
+- [ ] `@Animatable` macro used when synthesis fits; manual `animatableData` kept only when custom packing is clearer
 - [ ] `accessibilityReduceMotion` checked; no `DispatchQueue`/`UIView.animate`
 - [ ] Transitions use `.transition()`; `contentTransition` is paired with animation and uses the narrowest implicit animation scope that fits
 - [ ] Animated state changes on @MainActor; animation-driving types are Sendable
 
 ## References
 
-- See [references/animation-advanced.md](references/animation-advanced.md) for CustomAnimation protocol, full Spring variants, all Transition types, symbol effect details, Transaction system, UnitCurve types, and performance guidance.
-- Core Animation bridging patterns: [references/core-animation-bridge.md](references/core-animation-bridge.md)
+- See [references/animation-advanced.md](references/animation-advanced.md) for CustomAnimation protocol, Spring variants, Transition types, symbol effects, Transaction system, UnitCurve, and performance guidance; Core Animation bridging patterns: [references/core-animation-bridge.md](references/core-animation-bridge.md).

@@ -1,223 +1,212 @@
 ---
 name: octocode-rfc-generator
-description: Research-driven RFC and design document generator. Use when the user asks to "create an RFC", "write a design doc", "propose a migration", "how should we architect X", "evaluate options for X", "write a technical proposal", "compare approaches", or needs a technical decision document before coding. Outputs a validated RFC with research evidence, alternatives, recommendation, and implementation plan. For planning with implementation, use octocode-plan instead.
+description: "Use for RFCs, design docs, architecture proposals, migration plans, implementation plans, and research-backed technical decisions before coding. Leverages Octocode local/GitHub/npm/binary tools via MCP or CLI to gather evidence, compare alternatives, map blast radius, and produce a validated RFC with a practical implementation plan."
 ---
 
-# RFC Agent — Research, Reason, Plan
+# Octocode RFC Generator
 
-`UNDERSTAND` → `RESEARCH` → `DRAFT RFC` → `VALIDATE` → `DELIVER`
+Use this skill when a change needs **thinking before coding**: architecture choices, migrations, cross-package changes, risky refactors, implementation plans, or formal RFC/design docs. The output is evidence-backed and actionable, not a brainstorm.
 
-**Output**: `.octocode/rfc/RFC-{meaningful-name}.md`
+Core flow:
 
----
-
-## Identity & Principles
-
-<agent_identity>
-**Role**: RFC Agent — Technical Decision Maker.
-**Objective**: Research deeply, reason about alternatives, write a validated RFC, then produce an implementation plan anchored to it.
-**Core loop**: Understand → Research → Write evidence-based RFC → Validate → Deliver.
-
-**Principles**:
-- **Big picture first** — understand the full system flow before zooming into details. Every decision affects something upstream or downstream.
-- **Never hallucinate** — if you don't know, research. If research is empty, say "unknown" — never fabricate evidence, references, or claims.
-- **Architecture over patching** — solve the root cause, not the symptom. Ask "why does this problem exist?" before "how do I fix it?"
-- **Simple over clever** — the best solution is the simplest one that solves the problem. If the design needs a paragraph to explain a single decision, it's too complex.
-- **Research before writing** — no RFC content without evidence. Every claim traces to research.
-- **Alternatives are mandatory** — never just "do X" (npm: "even if it seems like a stretch").
-- **Motivation is king** — most important section (Rust, React, npm agree).
-- **Drawbacks build trust** — honest cost analysis makes proposals credible.
-- **Quality over speed** — a clean RFC prevents months of rework. But timely over perfect — a good RFC now beats a perfect one never.
-- **No time estimates** — never provide duration estimates.
-- **Ask when stuck** — if uncertain, research more or ask user.
-</agent_identity>
-
----
-
-## Setup
-
-<mcp_discovery>
-Before starting, detect available research tools.
-
-**Check**: Is `octocode-mcp` available as an MCP server?
-Look for Octocode MCP tools (e.g., `localSearchCode`, `lspGetSemantics`, `ghSearchCode`, `npmSearch`).
-
-**If Octocode MCP exists but local tools return no results**:
-> Suggest: "For local codebase research, add `ENABLE_LOCAL=true` to your Octocode MCP config."
-
-**If Octocode MCP is not installed**:
-> Suggest: "Install Octocode MCP for deeper research:
-> ```json
-> {
->   "mcpServers": {
->     "octocode": {
->       "command": "npx",
->       "args": ["-y", "octocode-mcp"],
->       "env": {"ENABLE_LOCAL": "true"}
->     }
->   }
-> }
-> ```
-> Then restart your editor."
-
-Proceed with whatever tools are available — do not block on setup.
-</mcp_discovery>
-
-<tools>
-**Local codebase** — use Octocode local search + LSP tools:
-`localSearchCode`, `localViewStructure`, `localFindFiles`, `localGetFileContent`, `lspGetSemantics(type=definition)`, `lspGetSemantics(type=references)`, `lspGetSemantics(type=callers/callees)`
-
-**External research** — use Octocode external search tools:
-`ghSearchCode`, `ghSearchRepos`, `ghGetFileContent`, `ghSearchPRs`, `npmSearch`
-
-The MCP server knows how to use these tools — just call them with your research goal.
-
-**Delegation via skills** (when available):
-
-| Need | Delegate to |
-|------|-------------|
-| Local codebase research | `octocode-researcher` skill (local track) |
-| External research (GitHub, packages, PRs) | `octocode-researcher` skill (external track) |
-</tools>
-
----
-
-## Execution
-
-### Phase 1: Understand
-
-Clarify the problem before doing anything.
-
-1. **What** is the problem? Define in 1-2 sentences.
-2. **Why** does it need an RFC? (multiple valid approaches, broad impact, architecture decision, new technology)
-3. **Who** is affected? (packages, services, teams)
-4. **What** are the constraints? (tech stack, compatibility, performance)
-5. Check `.octocode/context/context.md` for project context.
-
-Present to user:
-```
-Problem: {statement}
-Scope: {what's affected}
-Constraints: {key constraints}
-Proceed with research?
+```text
+UNDERSTAND → RESEARCH → COMPARE OPTIONS → WRITE RFC / PLAN → VALIDATE → DELIVER
 ```
 
-If problem is unclear → ask user. Do not proceed without clarity.
-If this is a trivial single-file change → suggest skipping RFC, switch to plan mode directly.
+Default output location when saving is approved: `.octocode/rfc/RFC-{meaningful-name}.md`.
 
----
+## 1. Pick mode
 
-### Phase 2: Research
+| User asks for | Mode | Output |
+|---|---|---|
+| “write RFC”, “design doc”, “proposal”, “architecture decision” | RFC | Full RFC with alternatives, rationale, risks, implementation plan |
+| “plan this work”, “research and build”, “implementation plan” | Plan | Evidence-backed implementation plan; RFC sections included only when useful |
+| “compare approaches”, “should we use X or Y” | Decision | Options matrix + recommendation + adoption/rollback notes |
+| “migration plan” | Migration | Current state, target state, compatibility, rollout, rollback, phases |
+| “validate this RFC/design” | Validation | Claim-by-claim verdict with evidence and gaps |
 
-Dual-track research using Octocode MCP tools.
+If the task is a trivial one-file edit with no design choice, say an RFC is unnecessary and suggest using `octocode-engineer` directly.
 
-**Track A — Local codebase**:
-- How does the codebase handle this today?
-- Which files, modules, packages are impacted?
-- What patterns and abstractions exist?
-- What dependencies are involved?
-- Where does the current approach break down?
+## 2. Research with Octocode
 
-**Track B — External best practices** (GitHub + npm + web):
-- How do major projects solve this? (GitHub repos, PRs)
-- What packages/libraries exist? (npm)
-- What are known trade-offs and pitfalls?
-- Any prior art or benchmarks?
+Pick MCP if available; otherwise use the CLI. Do not guess facts that tools can verify.
 
-**Which tracks to run**:
+### Local codebase evidence
 
-| Scenario | Tracks | Example |
-|----------|--------|---------|
-| Most RFCs | Both A + B in parallel | "Add caching layer" — need local API flow + external cache patterns |
-| Internal refactor | A only (skip B) | "Move auth logic from service X to shared module Y" |
-| Greenfield, no existing code | B only (skip A) | "Choose a database for the new service" |
-| Technology evaluation | B heavy, A light | "Should we use Redis or Memcached?" |
+Use when the current repo matters.
 
-When both tracks run, spawn them as parallel agents. When comparing multiple technologies, spawn separate agents per domain.
+| Need | MCP | CLI |
+|---|---|---|
+| Map structure | `localViewStructure` | `octocode ls` |
+| Find files | `localFindFiles` | `octocode find` |
+| Search code | `localSearchCode` | `octocode grep` |
+| Read exact code | `localGetFileContent` | `octocode cat` |
+| AST shape proof | `localSearchCode(mode:"structural")` | `octocode ast` |
+| Symbols / LSP | `lspGetSemantics` | `octocode symbols` / `octocode lsp` |
 
-**Quality bar**:
-- Every finding is a **code reference** (file + line) or a **URL** (docs, blog, benchmark)
-- Each reference explains **how it supports the RFC thesis** — not just "see this" but "proves X because Y"
-- Key claims verified with a second source
+Local flow:
 
-When local and external findings disagree: local conventions win → official external docs → community patterns. If conflict persists → present both in RFC with trade-offs.
-
----
-
-### Phase 3: Draft RFC
-
-Write the RFC using the template in `references/rfc-template.md`. Core sections:
-
-| # | Section | Purpose |
-|---|---------|----------|
-| 1 | **Summary** | One paragraph — reader understands the core idea |
-| 2 | **Motivation** | Problem, current state (file refs), evidence, impact. Most important section. |
-| 3 | **Guide-Level Explanation** | Teach it as if already implemented — examples, naming/terminology, adoption strategy, docs impact |
-| 4 | **Reference-Level Explanation** | Technical design, diagrams, API changes, corner cases, compatibility & adoption |
-| 5 | **Drawbacks** | Honest costs — simpler alternatives?, breaking changes, blast radius |
-| 6 | **Rationale & Alternatives** | Minimum 2 alternatives + comparison matrix + trade-offs |
-| 7 | **Prior Art** | What exists already — lessons from others |
-| 8 | **Unresolved Questions** | Open questions: before acceptance / during implementation / out of scope / bikeshedding |
-| 9 | **References** | Local (`file:line`) + External (full URLs) |
-| 10 | **Implementation Plan** | Phased steps, risk mitigations, testing strategy, rollout plan |
-
-Every claim traces to research. No unsubstantiated recommendations.
-
----
-
-### Phase 4: Validate
-
-Self-review the RFC. Check:
-
-- [ ] Problem statement is specific — a reader understands _why_ without prior context
-- [ ] Current state documented with actual file references from research
-- [ ] At least 2 alternatives with evidence-backed trade-offs
-- [ ] Recommendation follows logically from the comparison
-- [ ] Drawbacks are honest, not hand-waved
-- [ ] Risks have mitigations
-- [ ] All references are real (file:line or full URLs from research)
-- [ ] No claims without evidence — if you can't prove it, move it to Unresolved Questions
-- [ ] Implementation steps ordered by dependency, not preference
-
-**Evidence discipline**: Every claim needs a **code reference** (`file:line` with full URL) or a **URL** (docs, benchmark, blog). Each must explain **how it supports the RFC thesis** — not just "see this" but "proves X because Y".
-
-**Reasoning traps to watch for**:
-- **Anchoring** — Don't fall in love with your first idea. Research alternatives with equal rigor.
-- **Confirmation bias** — Actively search for evidence AGAINST your recommendation.
-- **Sunk cost** — If research reveals your initial approach is wrong, pivot.
-- **False dichotomy** — "X or Y" is rarely complete. Look for hybrids, phased rollouts, or "do nothing".
-- **Handwaving risks** — "Low risk" without evidence = unknown risk.
-- **Appeal to popularity** — "Everyone uses X" is not a reason. WHY do they use it, and does that reason apply here?
-
-If any check fails → fix before presenting.
-
----
-
-### Phase 5: Deliver
-
-Present the RFC summary to user:
-```
-RFC: {Title}
-Recommendation: {1-2 sentences}
-Alternatives: {count} considered
-Risk: {Low|Medium|High}
+```text
+ls → find/grep → symbols → matchString/line range → AST/LSP → cited current-state evidence
 ```
 
-Then ask: **"Do you want to start implementing this RFC?"**
+### External evidence
 
-- **Yes** → Save to `.octocode/rfc/RFC-{meaningful-name}.md`, then switch to the agent's default plan mode to execute the Implementation Plan.
-- **No** → Save to `.octocode/rfc/RFC-{meaningful-name}.md`.
+Use for prior art, package choices, cross-repo comparison, and history.
 
----
+| Need | MCP | CLI |
+|---|---|---|
+| Package → repo | `npmSearch` | `octocode pkg` |
+| Discover repos | `ghSearchRepos` | `octocode repo` |
+| Map repo | `ghViewRepoStructure` | `octocode ls owner/repo` |
+| Search GitHub | `ghSearchCode` | `octocode grep kw owner/repo` |
+| Read GitHub file | `ghGetFileContent` | `octocode cat owner/repo/path` |
+| PR/commit history | `ghHistoryResearch` | `octocode pr` / `octocode history` |
+| Clone for deep proof | `ghCloneRepo` | `octocode clone` |
 
-## Error Recovery
+External flow:
 
-| Situation | Action |
-|-----------|--------|
-| Research returns empty | Broaden scope, try semantic variants |
-| No external patterns | Ask user for known references |
-| Greenfield (no local code) | Focus external research, note "no existing implementation" |
-| Conflicting approaches | Present both as alternatives |
-| Blocked after 2 attempts | Summarize → ask user |
-| Scope too broad | Suggest splitting into multiple RFCs |
+```text
+pkg/repo → ghViewRepoStructure → ghSearchCode path/content discovery → ghGetFileContent proof → history/PR rationale
+```
 
+Clone and switch to local tools when analysis spans several files or needs AST/LSP.
+
+### Binary/archive evidence
+
+Use when the source is packaged or compiled.
+
+| Need | MCP | CLI |
+|---|---|---|
+| Identify file type | `localBinaryInspect(mode:"identify")` | `octocode binary --identify` |
+| List archive entries | `localBinaryInspect(mode:"list")` | `octocode binary --list` |
+| Extract one entry | `localBinaryInspect(mode:"extract")` | `octocode binary --extract` |
+| Decompress stream | `localBinaryInspect(mode:"decompress")` | `octocode binary --decompress` |
+| Inspect strings | `localBinaryInspect(mode:"strings")` | `octocode binary --strings` |
+| Unpack archive | `localBinaryInspect(mode:"unpack")` | `octocode unzip` |
+
+Flow: identify/list → extract one entry or unpack all → run local tools on the returned `localPath`.
+
+## 3. Understand
+
+Capture this before research gets broad:
+
+- Problem in one or two sentences.
+- Why this needs a decision/plan.
+- Affected users, packages, APIs, teams, or workflows.
+- Constraints: compatibility, performance, security, rollout, tech stack.
+- What “do nothing” costs.
+- What evidence is needed to decide.
+
+Ask if the problem or desired output mode is unclear.
+
+## 4. Research plan
+
+Run only the tracks that matter.
+
+| Scenario | Research tracks |
+|---|---|
+| Existing-system change | Local current state + local blast radius; external prior art if options are unclear |
+| Greenfield choice | External prior art + package/repo comparison; local constraints if repo exists |
+| Migration | Local current state + contracts/data flows + external migration examples |
+| Library/package adoption | npm/package metadata + repo source + local integration points |
+| Refactor plan | Local structure + LSP references/callers + AST duplication/smell checks |
+| RFC validation | Map each claim to local/external evidence; mark confirmed/likely/uncertain |
+
+Evidence rules:
+- Local claims need `file:line`.
+- External code claims need GitHub file path/line or PR/commit link.
+- Snippets are leads; use `matchString`, line ranges, AST, LSP, or history before citing.
+- Key recommendations need at least one supporting source and one counterpoint or rejected alternative.
+
+## 5. Compare options
+
+Always include at least two alternatives unless the user explicitly asks for a single implementation plan.
+
+Useful alternatives:
+- Do nothing / defer.
+- Minimal patch.
+- Incremental migration.
+- Full redesign.
+- Adopt package/library.
+- Build in-house.
+- Hybrid/phased rollout.
+
+Compare on:
+- Fit with current architecture.
+- Blast radius.
+- Compatibility and migration cost.
+- Operational risk.
+- Performance/security/data implications.
+- Maintenance and ownership.
+- Reversibility.
+
+## 6. Write the RFC or plan
+
+Use `references/rfc-template.md` for full RFCs; do not duplicate the whole template in the prompt. For implementation plans, include only the sections needed for the work:
+
+```markdown
+# Plan: <title>
+
+## Goal
+## Evidence Summary
+## Current State
+## Proposed Approach
+## Alternatives Considered
+## Step-by-Step Implementation
+## Files / APIs / Contracts Touched
+## Test and Verification Plan
+## Rollout / Migration / Rollback
+## Risks and Open Questions
+```
+
+Implementation steps should be ordered by dependency, not preference. Avoid time estimates.
+
+## 7. Validate
+
+Before delivering, check:
+
+- Problem and motivation are specific.
+- Current state has real evidence.
+- Alternatives are fairly compared.
+- Recommendation follows from evidence.
+- Drawbacks and migration costs are explicit.
+- Blast radius is mapped for shared symbols/contracts.
+- Risks have mitigations or open questions.
+- Implementation plan is actionable and verifiable.
+- No claim relies on “common practice” without explaining why it applies here.
+
+Reasoning traps:
+- First-option bias: search for evidence against the preferred approach.
+- False dichotomy: consider hybrids/phased plans.
+- Local-vs-external conflict: local constraints usually win; document the tradeoff.
+- Metrics claims: use external tools or mark as approximation.
+
+## 8. Deliver
+
+Start with a concise summary:
+
+```text
+Decision: <recommendation>
+Why: <1-2 evidence-backed reasons>
+Alternatives: <count and names>
+Risk: <low|medium|high + why>
+Next step: <one action>
+```
+
+Then ask whether to save the full RFC/plan.
+
+- If yes: save to `.octocode/rfc/RFC-{meaningful-name}.md`.
+- If no: keep it in chat.
+- If user wants implementation: hand off to the agent’s normal engineering/edit workflow using the implementation plan.
+
+## 9. Recovery
+
+| Situation | Move |
+|---|---|
+| Local search empty | broaden search, inspect structure, try symbols/AST variants |
+| GitHub search empty | use repo structure/path search, known files, or clone |
+| No external prior art | say so; rely on local constraints and unresolved questions |
+| Evidence conflicts | present conflict and decision rule |
+| Scope too broad | split into multiple RFCs or phases |
+| Two attempts fail | summarize what is known and ask for direction |

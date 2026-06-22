@@ -1,33 +1,50 @@
 ---
 name: tipkit
-description: "Implement, review, or improve in-app tips and onboarding using Apple's TipKit framework. Use when adding feature discovery tooltips, onboarding flows, contextual tips, first-run experiences, coach marks, or working with Tip protocol, TipView, popoverTip, tip rules, tip events, or feature education UI."
+description: "Implement and review Apple TipKit feature-discovery UI for iOS 17+ apps. Use when adding or auditing in-app tips, contextual help, coach marks, Tip, TipView, popoverTip, rules, events, actions, display frequency, testing overrides, reusable tip identifiers, or iOS 18+ TipGroup and CloudKit tip sync; avoid for generic SwiftUI navigation or layout outside tip presentation."
 ---
 
 # TipKit
 
-Add feature discovery tips, contextual hints, and onboarding coach marks to
-iOS 17+ apps using Apple's TipKit framework. TipKit manages display frequency,
-eligibility rules, and persistence so tips appear at the right time and
-disappear once the user has learned the feature.
+Use TipKit for small, contextual feature-discovery moments: inline tips,
+popover tips, rule-gated education, and lightweight coach marks. Keep generic
+SwiftUI architecture, navigation, layout, and long first-run onboarding flows in
+their sibling skills unless TipKit presentation is the core issue.
 
 ## Contents
 
-- [Setup](#setup)
-- [Defining Tips](#defining-tips)
-- [Displaying Tips](#displaying-tips)
-- [Tip Rules](#tip-rules)
-- [Tip Actions](#tip-actions)
+- [Availability](#availability)
+- [Configure TipKit](#configure-tipkit)
+- [Design Good Tips](#design-good-tips)
+- [Define Tips](#define-tips)
+- [Present Tips](#present-tips)
+- [Rules and Events](#rules-and-events)
+- [Options and Invalidation](#options-and-invalidation)
+- [Actions and Styles](#actions-and-styles)
 - [Tip Groups](#tip-groups)
-- [Programmatic Control](#programmatic-control)
+- [Testing](#testing)
 - [Common Mistakes](#common-mistakes)
 - [Review Checklist](#review-checklist)
 - [References](#references)
 
-## Setup
+## Availability
 
-Call `Tips.configure()` once in `App.init`, before any views render. This
-initializes the tips datastore and begins rule evaluation. Calling it later
-risks a race where tip views attempt to display before the datastore is ready.
+TipKit's core `Tip`, `TipView`, `popoverTip`, rules, events, options, and
+testing overrides are available on iOS 17+, iPadOS 17+, macOS 14+, tvOS 17+,
+watchOS 10+, and visionOS 1+.
+
+Gate newer APIs explicitly:
+
+| API | Availability | Use |
+| --- | --- | --- |
+| `TipGroup` | iOS 18+ | Defaults to `.firstAvailable`; use `.ordered` only for sequences where later tips wait for earlier invalidation. |
+| `.cloudKitContainer(...)` | iOS 18+ | Sync tip state, parameters, events, and display counts across devices. |
+| `MaxDisplayDuration` | iOS 18+ | Automatically invalidate after cumulative display time. |
+| `resetEligibility()` | iOS 26+ | Make a previously invalidated tip eligible again without resetting the datastore. |
+
+## Configure TipKit
+
+Call `Tips.configure(_:)` once during app initialization, before any tip can
+display. Do not configure TipKit from a view's `onAppear` or `.task`.
 
 ```swift
 import SwiftUI
@@ -36,9 +53,14 @@ import TipKit
 @main
 struct MyApp: App {
     init() {
-        try? Tips.configure([
-            .datastoreLocation(.applicationDefault)
-        ])
+        do {
+            try Tips.configure([
+                .datastoreLocation(.applicationDefault),
+                .displayFrequency(.daily)
+            ])
+        } catch {
+            assertionFailure("TipKit configuration failed: \(error)")
+        }
     }
 
     var body: some Scene {
@@ -47,448 +69,346 @@ struct MyApp: App {
 }
 ```
 
-### DatastoreLocation Options
-
-| Option | Use Case |
-|---|---|
-| `.applicationDefault` | Default location, app sandbox (most apps) |
-| `.groupContainer(identifier:)` | Share tips state across app and extensions |
-| `.url(_:)` | Custom file URL for full control over storage location |
+Use `.datastoreLocation(.groupContainer(identifier:))` only when an app and
+extension or app-group members intentionally share tip state. Keep option
+settings consistent across app-group members because TipKit persists option
+state with the tip record.
 
 ### CloudKit Sync
 
-Sync tip state across a user's devices so they do not see the same tip on
-every device. Add the CloudKit container option alongside the datastore
-location.
+Use CloudKit sync only on iOS 18+ and later. Enable iCloud + CloudKit and
+Background Modes > Remote notifications, then pass a container:
 
 ```swift
-try? Tips.configure([
-    .datastoreLocation(.applicationDefault),
-    .cloudKitContainer(.named("iCloud.com.example.app"))
+try Tips.configure([
+    .cloudKitContainer(.named("iCloud.com.example.app.tips"))
 ])
 ```
 
-## Defining Tips
+Prefer a dedicated container with a `.tips` suffix. `.automatic` uses the first
+entitled `.tips` container when present, then falls back to the primary
+container.
 
-Conform a struct to the `Tip` protocol. Provide a `title` at minimum.
-Add `message` for supporting detail and `image` for a leading icon. Keep
-titles short and action-oriented because the tip appears as a compact callout.
+## Design Good Tips
+
+Tips are small, transient help. Use them for features people can understand and
+try in a few simple steps. If the flow needs a long explanation, multiple
+screens, or critical safety/error information, use a tutorial, alert, inline
+warning, or onboarding flow instead.
+
+Follow HIG-aligned defaults:
+
+- Keep titles short, direct, and action-oriented.
+- Use one or two sentences; avoid promotional or unrelated copy.
+- Place tips near the feature they explain.
+- Prefer inline tips when hiding nearby UI would interrupt the task.
+- Prefer popover tips when preserving the current layout matters and the tip can
+  point to a specific control.
+- Use rules and display frequency so only the right audience sees each tip.
+- Avoid repeating an icon in the tip when the popover already points to that icon.
+
+## Define Tips
+
+`Tip` conforms to `Identifiable` and `Sendable`. Provide `title` at minimum;
+add `message`, `image`, `actions`, `rules`, `options`, and `id` only when they
+improve the feature-discovery moment.
 
 ```swift
 import TipKit
 
 struct FavoriteTip: Tip {
-    var title: Text { Text("Pin Your Favorites") }
-    var message: Text? { Text("Tap the heart icon to save items for quick access.") }
-    var image: Image? { Image(systemName: "heart") }
+    var title: Text { Text("Save to Favorites") }
+    var message: Text? { Text("Tap the heart to keep items for quick access.") }
+    var image: Image? { Image(systemName: "heart.fill") }
 }
 ```
 
-**Properties**: `title` (required), `message` (optional detail), `image` (optional leading icon), `actions` (optional buttons), `rules` (optional eligibility conditions), `options` (display frequency, max count).
+By default, TipKit uses the tip type name as `id`. Override `id` for reusable
+tips whose persisted state should vary by content:
 
-**Lifecycle**: Pending (rules unsatisfied) -> Eligible (all rules pass) -> Invalidated (dismissed, actioned, or programmatically removed). Once invalidated, a tip does not reappear unless the datastore is reset.
+```swift
+struct NewItemTip: Tip {
+    let itemID: Item.ID
 
-## Displaying Tips
+    var id: String { "NewItemTip-\(itemID)" }
+    var title: Text { Text("New Item Available") }
+}
+```
 
-### Inline Tips with TipView
+Use stable, concrete identifiers. Do not derive IDs from transient copy or
+unstable ordering.
 
-Embed a `TipView` directly in your layout. It renders as a rounded card that
-appears and disappears with animation. Use for tips within scrollable content.
+## Present Tips
+
+Use `TipView` for inline tips:
 
 ```swift
 let favoriteTip = FavoriteTip()
-var body: some View {
-    VStack {
-        TipView(favoriteTip)
-        ItemListView()
-    }
+
+VStack {
+    TipView(favoriteTip, arrowEdge: .bottom)
+    ItemListView()
 }
 ```
 
-### Popover Tips with .popoverTip()
-
-Attach a tip as a popover anchored to any view. The framework draws an arrow
-from the popover to the anchor. Use for tips pointing to a specific control.
+Use `.popoverTip` when the tip should point to a control:
 
 ```swift
-Button { toggleFavorite() } label: { Image(systemName: "heart") }
-    .popoverTip(favoriteTip)
-
-// Control arrow direction (omit to let system choose)
-.popoverTip(favoriteTip, arrowEdge: .bottom)
-```
-
-### Custom TipViewStyle
-
-Create a custom style to control tip appearance across the app. Conform
-to `TipViewStyle` and implement `makeBody(configuration:)`.
-
-```swift
-struct CustomTipStyle: TipViewStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        HStack {
-            configuration.image?
-                .font(.title2)
-                .foregroundStyle(.tint)
-
-            VStack(alignment: .leading) {
-                configuration.title
-                    .font(.headline)
-                configuration.message?
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .padding()
-    }
+Button {
+    toggleFavorite()
+    favoriteTip.invalidate(reason: .actionPerformed)
+} label: {
+    Image(systemName: "heart")
 }
-
-// Apply globally or per view
-TipView(favoriteTip)
-    .tipViewStyle(CustomTipStyle())
+.popoverTip(favoriteTip, arrowEdge: .top)
 ```
 
-## Tip Rules
+## Rules and Events
 
-Rules control when a tip becomes eligible. All rules in the `rules` array
-must pass before the tip displays. TipKit supports two rule types:
-parameter-based and event-based.
+Rules are ANDed together. A tip becomes eligible only when every rule passes.
 
-### Parameter-Based Rules
-
-Use `@Parameter` to track app state. The tip becomes eligible when the
-parameter value satisfies the rule condition.
+Use `@Parameter` for persisted app state:
 
 ```swift
 struct FavoriteTip: Tip {
-    @Parameter
-    static var hasSeenList: Bool = false
+    @Parameter static var hasSeenList = false
 
-    var title: Text { Text("Pin Your Favorites") }
+    var title: Text { Text("Save to Favorites") }
 
     var rules: [Rule] {
         #Rule(Self.$hasSeenList) { $0 == true }
     }
 }
-
-// Set the parameter when the user reaches the list
-FavoriteTip.hasSeenList = true
 ```
 
-### Event-Based Rules
-
-Use `Tips.Event` to track user actions. Donate to the event each time the
-action occurs. The rule fires when the donation count or timing condition
-is met. This is ideal for tips that should appear after the user has
-performed an action several times without discovering a related feature.
+Use `Tips.Event` for repeated user actions. TipKit queries the most recent 1000
+donations by default, so keep event rules bounded and intentional.
 
 ```swift
 struct ShortcutTip: Tip {
-    static let appOpenedEvent = Tips.Event(id: "appOpened")
+    static let manualSaveEvent = Tips.Event(id: "manualSave")
 
-    var title: Text { Text("Try the Quick Action") }
+    var title: Text { Text("Save Faster") }
 
     var rules: [Rule] {
-        #Rule(Self.appOpenedEvent) { $0.donations.count >= 3 }
+        #Rule(Self.manualSaveEvent) {
+            $0.donations.donatedWithin(.week).count >= 3
+        }
     }
 }
 
-// Donate each time the app opens
-ShortcutTip.appOpenedEvent.donate()
+ShortcutTip.manualSaveEvent.sendDonation()
 ```
 
-### Combining Multiple Rules
+For richer event rules, define `Tips.Event<DonationInfo>` where
+`DonationInfo: Codable, Sendable`. Keep donation payloads small.
 
-Place multiple rules in the array. All must pass (logical AND).
+Group related event definitions in a shared namespace when several tips use the
+same events; event IDs are the persistence boundary, so collisions can create
+confusing eligibility.
 
-```swift
-struct AdvancedTip: Tip {
-    @Parameter
-    static var isLoggedIn: Bool = false
+## Options and Invalidation
 
-    static let featureUsedEvent = Tips.Event(id: "featureUsed")
-
-    var title: Text { Text("Unlock Advanced Mode") }
-
-    var rules: [Rule] {
-        #Rule(Self.$isLoggedIn) { $0 == true }
-        #Rule(Self.featureUsedEvent) { $0.donations.count >= 5 }
-    }
-}
-```
-
-### Display Frequency Options
-
-Control how often tips appear using the `options` property.
+Use options sparingly; frequency and invalidation rules are part of the tip's
+persisted behavior.
 
 ```swift
 struct DailyTip: Tip {
-    var title: Text { Text("Daily Reminder") }
+    var title: Text { Text("Try Filters") }
 
-    var options: [TipOption] {
-        MaxDisplayCount(3)                   // Show at most 3 times total
-        IgnoresDisplayFrequency(true)        // Bypass global frequency limit
+    var options: [any TipOption] {
+        MaxDisplayCount(3)
+        IgnoresDisplayFrequency(false)
     }
 }
 ```
 
-Global display frequency is set at configuration time:
+`MaxDisplayDuration` is iOS 18+. It counts cumulative display time and has a
+minimum continuous display duration before automatic invalidation can occur.
+Do not use it as a replacement for explicit `invalidate(reason:)` when the app
+knows the taught action or ordered step is complete.
+
+Call `invalidate(reason:)` when the user performs the discovered action or the
+tip is no longer relevant. Invalidation is permanent until the datastore is
+reset or, on iOS 26+, the specific tip calls `await resetEligibility()`.
 
 ```swift
-try? Tips.configure([
-    .displayFrequency(.daily)  // .immediate, .hourly, .daily, .weekly, .monthly
-])
+favoriteTip.invalidate(reason: .actionPerformed)
 ```
 
-With `.daily`, the system shows at most one tip per day across the entire
-app, unless a specific tip sets `IgnoresDisplayFrequency(true)`.
+Use `.tipClosed` for explicit dismissal and `.displayCountExceeded` or
+`.displayDurationExceeded` only when describing automatic invalidation outcomes.
 
-## Tip Actions
+## Actions and Styles
 
-Add action buttons to a tip for direct interaction. Each action has an `id`
-and a label. Handle the action in the tip view's action handler.
+Add `Action` buttons when the user needs a direct route to settings, more
+information, or a setup flow.
 
 ```swift
 struct FeatureTip: Tip {
     var title: Text { Text("Try the New Editor") }
-    var message: Text? { Text("We added a powerful new editing mode.") }
 
     var actions: [Action] {
         Action(id: "open-editor", title: "Open Editor")
         Action(id: "learn-more", title: "Learn More")
     }
 }
-```
 
-Handle actions in the view:
-
-```swift
-TipView(featureTip) { action in
+TipView(FeatureTip()) { action in
     switch action.id {
     case "open-editor":
-        navigateToEditor()
-        featureTip.invalidate(reason: .actionPerformed)
+        openEditor()
     case "learn-more":
-        showHelpSheet = true
+        showHelp()
     default:
         break
     }
 }
 ```
 
+For custom appearance, prefer `TipViewStyle.Configuration` values over reading
+directly from a concrete tip instance. That preserves labels, handlers, and
+modifiers applied to the `TipView`.
+
+```swift
+struct CompactTipStyle: TipViewStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(alignment: .top) {
+            configuration.image?
+            VStack(alignment: .leading) {
+                configuration.title?
+                configuration.message?
+                ForEach(configuration.actions) { action in
+                    Button(action: action.handler) {
+                        action.label()
+                    }
+                }
+            }
+        }
+        .padding()
+    }
+}
+```
+
 ## Tip Groups
 
-Use `TipGroup` to coordinate multiple tips within a single view.
-`TipGroup` ensures only one tip from the group displays at a time,
-preventing tip overload. Tips display in priority order.
+`TipGroup` is iOS 18+. Store groups in SwiftUI state so the observable group
+object persists across view updates. In every review of a `TipGroup(.ordered)`
+plan, explicitly distinguish the default priority from ordered sequences:
+`TipGroup` defaults to `.firstAvailable`, and `TipGroup(.ordered)` is required
+when each later tip must wait for all previous tips to be invalidated.
 
 ```swift
 struct OnboardingView: View {
-    let tipGroup = TipGroup(.ordered) {
+    @State private var tips = TipGroup(.ordered) {
         WelcomeTip()
-        NavigationTip()
-        ProfileTip()
+        SearchTip()
+        FilterTip()
     }
 
     var body: some View {
         VStack {
-            if let currentTip = tipGroup.currentTip {
-                TipView(currentTip)
-            }
-
-            Button("Next") {
-                tipGroup.currentTip?.invalidate(reason: .actionPerformed)
-            }
+            TipView(tips.currentTip)
+            ContentView()
         }
     }
 }
 ```
 
-### Priority Options
-
-| Initializer | Behavior |
-|---|---|
-| `.ordered` | Tips display in the order they are listed |
-
-When the current tip is invalidated, the next eligible tip in the group
-becomes `currentTip`.
-
-## Programmatic Control
-
-### Invalidating Tips
-
-Call `invalidate(reason:)` when the user performs the discovered action or
-when the tip is no longer relevant.
+`TipGroup` defaults to `.firstAvailable`, which shows the first eligible tip in
+the group. Use `.ordered` only for true sequences, and invalidate each taught
+step when the user completes it so the next ordered tip can advance.
+`MaxDisplayDuration` can cap display time, but it is not the sequencing
+mechanism for an ordered group. Cast `currentTip` when the same group spans
+multiple controls:
 
 ```swift
-let tip = FavoriteTip()
-tip.invalidate(reason: .actionPerformed)
+Button("Search") { openSearch() }
+    .popoverTip(tips.currentTip as? SearchTip)
 ```
 
-| Reason | When to Use |
-|---|---|
-| `.actionPerformed` | User performed the action the tip describes |
-| `.displayCountExceeded` | Tip hit its maximum display count |
-| `.tipClosed` | User explicitly dismissed the tip |
+## Testing
 
-### Testing Utilities
-
-TipKit provides static methods to control tip visibility during development
-and testing. Gate these behind `#if DEBUG` or `ProcessInfo` checks so they
-never run in production builds.
+Use testing overrides only in debug/test code, and apply them before
+`Tips.configure(_:)`.
 
 ```swift
 #if DEBUG
-// Show all tips regardless of rules (useful during development)
-Tips.showAllTipsForTesting()
-
-// Show only specific tips
-Tips.showTipsForTesting([FavoriteTip.self, ShortcutTip.self])
-
-// Hide all tips (useful for UI tests that do not involve tips)
-Tips.hideAllTipsForTesting()
-
-// Reset the datastore (clears all tip state, invalidations, and events)
-try? Tips.resetDatastore()
-#endif
-```
-
-### Using ProcessInfo for Test Schemes
-
-```swift
+if ProcessInfo.processInfo.arguments.contains("--reset-tips") {
+    try? Tips.resetDatastore()
+}
 if ProcessInfo.processInfo.arguments.contains("--show-all-tips") {
     Tips.showAllTipsForTesting()
 }
+#endif
+
+try Tips.configure()
 ```
 
-Pass `--show-all-tips` as a launch argument in the Xcode scheme for
-development builds.
+Built-in launch arguments are also available:
+
+- `-com.apple.TipKit.ResetDatastore 1`
+- `-com.apple.TipKit.ShowAllTips 1`
+- `-com.apple.TipKit.ShowTips TipTypeA,TipTypeB`
+- `-com.apple.TipKit.HideAllTips 1`
+
+Testing override precedence is specific show, specific hide, show all, then hide
+all. `Tips.resetDatastore()` must run before `Tips.configure(_:)`.
 
 ## Common Mistakes
 
-### DON'T: Call Tips.configure() anywhere except App.init
+### DON'T: Configure TipKit from a view
 
-Calling `Tips.configure()` in a view's `onAppear` or `task` modifier
-creates a race condition where tip views try to render before the
-datastore is ready, causing missing or flickering tips.
+Configure during app initialization. View-level configuration can race with tip
+display and can also hit datastore-already-configured errors.
 
-```swift
-// WRONG
-struct ContentView: View {
-    var body: some View {
-        Text("Hello")
-            .task { try? Tips.configure() }  // Too late, views already rendered
-    }
-}
+### DON'T: Present iOS 18+ APIs as iOS 17 guidance
 
-// CORRECT
-@main struct MyApp: App {
-    init() { try? Tips.configure() }
-    var body: some Scene { WindowGroup { ContentView() } }
-}
-```
-
-### DON'T: Show too many tips at once
-
-Displaying multiple tips simultaneously overwhelms users and dilutes the
-impact of each tip. Users learn to ignore them.
-
-```swift
-// WRONG: Three tips visible at the same time
-VStack {
-    TipView(tipA)
-    TipView(tipB)
-    TipView(tipC)
-}
-
-// CORRECT: Use TipGroup to sequence them
-let group = TipGroup(.ordered) { TipA(); TipB(); TipC() }
-if let currentTip = group.currentTip {
-    TipView(currentTip)
-}
-```
-
-### DON'T: Forget to invalidate tips after the user performs the action
-
-If a tip says "Tap the star to favorite" and the user taps the star but
-the tip remains, it erodes trust in the UI.
-
-```swift
-// WRONG: Tip stays visible after user acts
-Button("Favorite") { toggleFavorite() }
-    .popoverTip(favoriteTip)
-
-// CORRECT: Invalidate on action
-Button("Favorite") {
-    toggleFavorite()
-    favoriteTip.invalidate(reason: .actionPerformed)
-}
-.popoverTip(favoriteTip)
-```
-
-### DON'T: Leave testing tips enabled in production
-
-`Tips.showAllTipsForTesting()` bypasses all rules and frequency limits.
-Shipping this in production means every user sees every tip immediately.
-
-```swift
-// WRONG: Always active
-Tips.showAllTipsForTesting()
-
-// CORRECT: Gated behind DEBUG
-#if DEBUG
-Tips.showAllTipsForTesting()
-#endif
-```
-
-### DON'T: Make tip titles too long
-
-Long titles get truncated or wrap awkwardly in the compact tip callout.
-Put the key action in the title and supporting context in the message.
-
-```swift
-// WRONG
-var title: Text { Text("You can tap the heart button to save this item to your favorites list") }
-
-// CORRECT
-var title: Text { Text("Save to Favorites") }
-var message: Text? { Text("Tap the heart icon to keep items for quick access.") }
-```
+Gate `TipGroup`, CloudKit sync, and `MaxDisplayDuration`. Provide iOS 17
+fallbacks with parameters/events only when the app still supports iOS 17.
+When the plan mentions `TipGroup(.ordered)`, also call out that plain
+`TipGroup` defaults to `.firstAvailable`. Use this explicit review wording:
+"Plain `TipGroup` defaults to `.firstAvailable`; `TipGroup(.ordered)` is the
+iOS 18+ sequence mode where later tips wait for earlier invalidation."
 
 ### DON'T: Use tips for critical information
 
-Users can dismiss tips at any time and they do not reappear. Never put
-essential instructions or safety information in a tip.
+Tips are dismissible and educational. Use alerts, confirmations, inline
+warnings, or blocking UI for safety, errors, data loss, and required steps.
 
-```swift
-// WRONG: Critical info in a dismissible tip
-struct DataLossTip: Tip {
-    var title: Text { Text("Unsaved changes will be lost") }
-}
+### DON'T: Ship testing overrides
 
-// CORRECT: Use an alert or inline warning for critical information
-// Reserve tips for feature discovery and progressive disclosure
-```
+`showAllTipsForTesting()` and related overrides bypass rules and frequency
+limits. Keep them behind `#if DEBUG`, test scheme arguments, or UI-test-only
+launch arguments.
+
+### DON'T: Use unstable reusable tip IDs
+
+Tip IDs own persistence. If a reusable tip's ID changes unexpectedly, users can
+see duplicate or stale education.
 
 ## Review Checklist
 
-- [ ] `Tips.configure()` called in `App.init`, before any views render
-- [ ] Each tip has a clear, concise title (action-oriented, under ~40 characters)
-- [ ] Tips invalidated when the user performs the discovered action
-- [ ] Rules set so tips appear at the right time (not immediately on first launch for all tips)
-- [ ] `TipGroup` used when multiple tips exist in one view
-- [ ] Testing utilities (`showAllTipsForTesting`, `resetDatastore`) gated behind `#if DEBUG`
-- [ ] CloudKit sync configured if the app supports multiple devices
-- [ ] Display frequency set appropriately (`.daily` or `.weekly` for most apps)
-- [ ] Tips used for feature discovery only, not for critical information
-- [ ] Custom `TipViewStyle` applied consistently if the default style does not match the app design
-- [ ] Tip actions handled and tip invalidated in the action handler
-- [ ] Event donations placed at the correct user action points
-- [ ] Ensure custom Tip types are Sendable; configure Tips on @MainActor
+- [ ] `Tips.configure(_:)` runs once during app initialization before tips display.
+- [ ] `Tips.resetDatastore()` runs only before configuration and only for tests/debug.
+- [ ] iOS 18+ and iOS 26+ TipKit APIs have availability gates or fallback guidance.
+- [ ] Tip copy is short, contextual, actionable, and not promotional.
+- [ ] Inline vs popover presentation matches the surrounding UI flow.
+- [ ] Rules target the intended audience and do not show every tip on first launch.
+- [ ] Event IDs are stable, namespaced when shared, and donation payloads are small.
+- [ ] Reusable tips override `id` with stable content-derived values.
+- [ ] Tips invalidate when the user performs the taught action.
+- [ ] `TipGroup` is stored in `@State`; reviews call out the default `.firstAvailable` priority and use `.ordered` only for true sequences with explicit invalidation, not `MaxDisplayDuration` as the sequencing mechanism.
+- [ ] CloudKit sync uses iCloud + CloudKit, Remote notifications, and a dedicated container when appropriate.
+- [ ] Custom styles use `configuration` values and call `action.label()`.
+- [ ] Testing overrides are debug/test-only and never ship active in production.
 
 ## References
 
-- See [references/tipkit-patterns.md](references/tipkit-patterns.md) for complete implementation patterns
-  including custom styles, event-based rules, tip groups, testing strategies,
-  onboarding flows, and SwiftUI preview configuration.
-
+- Read [references/tipkit-patterns.md](references/tipkit-patterns.md) for complete implementation patterns: custom styles, event rules with donation values, TipGroup sequencing, CloudKit/app-group persistence, reusable IDs, previews, and test launch strategies.
+- Apple TipKit docs: https://sosumi.ai/documentation/tipkit
+- Apple `Tips.configure(_:)`: https://sosumi.ai/documentation/tipkit/tips/configure(_:)
+- Apple `TipGroup`: https://sosumi.ai/documentation/tipkit/tipgroup
+- Apple HIG "Offering help": https://sosumi.ai/design/human-interface-guidelines/offering-help
+- WWDC24 "Customize feature discovery with TipKit": https://sosumi.ai/videos/play/wwdc2024/10070
+- WWDC23 "Make features discoverable with TipKit": https://sosumi.ai/videos/play/wwdc2023/10229

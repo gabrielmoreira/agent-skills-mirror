@@ -114,7 +114,7 @@ Spawn agents via **Agent tool** using `.claude/agents/{agent}.md` definitions.
 | tf-infra | `.claude/agents/tf-infra-engineer.md` |
 | docs | `.claude/agents/docs-curator.md` |
 
-- Include API contracts from `.agents/skills/_shared/core/api-contracts/` if they exist
+- Include API contracts from `.agents/results/api-contracts/` (run artifacts) or `docs/plans/contracts/` (durable specs) if they exist
 - Load only task-relevant context (check codebase structure around affected domains)
 
 ### If Codex CLI and target vendor is Codex

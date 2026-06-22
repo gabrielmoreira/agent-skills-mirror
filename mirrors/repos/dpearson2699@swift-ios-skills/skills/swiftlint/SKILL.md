@@ -5,7 +5,7 @@ description: "Configures and enforces SwiftLint in Swift projects using build to
 
 # SwiftLint
 
-SwiftLint enforces Swift style and conventions by linting source files against a configurable rule set. It is the most widely adopted Swift linter. This skill covers setup, configuration, rule selection, suppression, CI integration, and rollout strategy.
+SwiftLint enforces Swift style and conventions by linting source files against a configurable rule set. This skill covers setup, configuration, rule selection, suppression, CI integration, and rollout strategy.
 
 SwiftLint is a **style enforcement tool**, not a style guide. For underlying Swift naming and design conventions, see `swift-api-design-guidelines`. For architecture patterns, see `swift-architecture`.
 
@@ -58,7 +58,7 @@ For alternatives (run scripts, command plugin, Homebrew CLI), see [references/pl
 
 ## Configuration
 
-Create `.swiftlint.yml` at the project root. SwiftLint discovers this file by walking up from each source file's directory.
+Create `.swiftlint.yml` at the project root. SwiftLint loads the main configuration from the invocation or plugin working directory, then can merge the nearest nested `.swiftlint.yml` for each file when configs are discovered automatically. Passing `--config` overrides automatic discovery and disables nested-config lookup.
 
 ```yaml
 # .swiftlint.yml — conservative starter config

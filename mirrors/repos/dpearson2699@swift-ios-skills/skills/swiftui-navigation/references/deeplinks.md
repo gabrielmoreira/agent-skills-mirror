@@ -20,7 +20,8 @@ Route external URLs into in-app destinations while falling back to system handli
 
 - Centralize URL handling in the router (`handle(url:)`, `handleDeepLink(url:)`).
 - Inject an `OpenURLAction` handler that delegates to the router.
-- Use `.onOpenURL` for app scheme links and convert them to web URLs if needed.
+- Use `.onOpenURL` for Universal Links and custom URL schemes.
+- Use `.onContinueUserActivity` for Handoff and other declared user activity types.
 - Let the router decide whether to navigate or open externally.
 
 ## Example: router entry points
@@ -102,8 +103,8 @@ Host a JSON file at `https://example.com/.well-known/apple-app-site-association`
 ```
 
 Key rules:
-- AASA must be served over HTTPS with a valid certificate — no redirects.
-- Apple's CDN caches the file; updates can take 24-48 hours. Use `https://app-site-association.cdn-apple.com/a/v1/example.com` to verify the cached version.
+- AASA must be served over HTTPS with a valid certificate; do not redirect the AASA request.
+- On iOS 14+, Apple's CDN retrieves and caches AASA files. Devices download the file on install and normally check again about once per week; there is no direct CDN invalidation. Reinstall the app or use developer mode while testing changes.
 - Use `components` (modern) over the legacy `paths` array.
 
 ### Associated Domains entitlement
@@ -117,11 +118,11 @@ com.apple.developer.associated-domains = [
 ]
 ```
 
-For development/testing, prefix with `applinks:example.com?mode=developer` to bypass the CDN cache.
+For development/testing, prefix with `applinks:example.com?mode=developer` to bypass CDN-backed retrieval.
 
 ### Handling Universal Links in SwiftUI
 
-Use `.onOpenURL` for link-based launches and `onContinueUserActivity` for `NSUserActivity`-based handoff:
+SwiftUI receives Universal Links directly as URLs. Handle them with `.onOpenURL`:
 
 ```swift
 @main
@@ -133,10 +134,6 @@ struct MyApp: App {
             ContentView()
                 .environment(router)
                 .onOpenURL { url in
-                    router.handle(url: url)
-                }
-                .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
-                    guard let url = activity.webpageURL else { return }
                     router.handle(url: url)
                 }
         }
@@ -217,3 +214,4 @@ Key rules:
 - Activity types must be declared in `Info.plist` under `NSUserActivityTypes`.
 - Set `isEligibleForHandoff = true` and optionally `isEligibleForSearch` / `isEligibleForPrediction`.
 - Provide a `webpageURL` as fallback when the app is not installed on the receiving device.
+- Do not use the browsing-web user activity hook as the primary SwiftUI Universal Link handler; use `.onOpenURL` for Universal Links.

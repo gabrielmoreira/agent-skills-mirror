@@ -25,7 +25,7 @@ directive.
 
 ---
 
-> Run /diagnose for everything in parallel with an agent army. All 15
+> Run /diagnose for everything in parallel with an agent army. All 17
 > adapters and all 3 operating systems matter equally. We do not get
 > to pick favorites. I want you to coordinate this team as an
 > Engineering Manager. Each agent must run in parallel and delegate
@@ -61,7 +61,7 @@ directive.
 > a clear, readable table. Wear your PO hat. Wear your OSS hat. Wear
 > your Distribution hat. Wear your open-source hat. We must not let
 > users hit these problems on Windows, Linux, macOS, or any of the
-> 15 adapters. Instead of fixing these issues directly, first
+> 17 adapters. Instead of fixing these issues directly, first
 > investigate the git history of the issue. Why did we cause this?
 > When and why did we implement the original solution that is now
 > breaking? You must understand all of that. The Architects are our
@@ -101,7 +101,7 @@ They MUST be honored on every ops cycle, without exception:
      config") is CATEGORICALLY UNACCEPTABLE.
    - **OSS hat** — community contributors get credit, prompt review, and
      respectful merge messages. Their PRs are reviewed line-by-line.
-   - **Distribution hat** — Linux + macOS + Windows × 15 adapters, all
+   - **Distribution hat** — Linux + macOS + Windows × 17 adapters, all
      weighted equally. There are no second-class platforms and no
      second-class adapters. A user driven away by a first-impression bug
      on ANY platform or ANY adapter usually never returns. Any
@@ -173,9 +173,10 @@ Skeptics for adversarial probes, Domain Specialists per adapter / per
 OS. Lead-level coordination is your job; staff-level execution is
 their job.
 
-**MUST-3 — Respect all 15 adapters equally.** claude-code, codex,
+**MUST-3 — Respect all 17 adapters equally.** claude-code, codex,
 cursor, gemini-cli, opencode, openclaw, pi, omp, vscode-copilot,
-jetbrains-copilot, qwen-code, kilo, kiro, zed, antigravity. No
+jetbrains-copilot, qwen-code, kilo, kiro, zed, antigravity,
+copilot-cli, antigravity-cli. No
 favourites. A platform-specific bug is a ship-blocker regardless
 of which adapter it is in. We rewrote a contributor's Windows
 config once — that is the worst kind of failure and must not recur
@@ -217,7 +218,7 @@ git history, and platform claims without `refs/` citation.
 **MUST-8 — TDD is the law for implementation.** No production
 code change ships without a failing test first (RED → GREEN →
 REFACTOR). Vertical slices only. Architects REJECT untested PRs,
-no exceptions. The codebase has 15 adapters × 3 OS × hooks ×
+no exceptions. The codebase has 17 adapters × 3 OS × hooks ×
 FTS5 × sessions — it is fragile. One untested change breaks
 everything.
 
@@ -343,7 +344,7 @@ If you cannot verify the claim, ask the reporter for evidence BEFORE writing a s
 <tdd_enforcement>
 STOP. Before writing ANY implementation code, you MUST have a failing test.
 No exceptions. No "I'll add tests later." No "this change is too small for tests."
-This codebase has 15 adapters, 3 OS, hooks, FTS5, sessions — it is FRAGILE.
+This codebase has 17 adapters, 3 OS, hooks, FTS5, sessions — it is FRAGILE.
 One untested change breaks everything. TDD is not optional, it is the gate.
 </tdd_enforcement>
 

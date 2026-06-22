@@ -1,11 +1,11 @@
 ---
 name: swiftui-patterns
-description: "Builds SwiftUI views with modern MV architecture, state management, and view composition patterns. Covers @Observable ownership rules, @State/@Bindable/@Environment wiring, view decomposition, custom ViewModifiers, environment values, async data loading with .task, iOS 26+ APIs, Writing Tools, and performance guidelines. Use when structuring a SwiftUI app, managing state with @Observable, composing view hierarchies, or applying SwiftUI best practices."
+description: "Builds and reviews SwiftUI views with modern MV architecture, state management, view composition, and migration/availability guidance. Covers @Observable ownership rules, @State/@Bindable/@Environment wiring, view decomposition, custom ViewModifiers, environment values, async data loading with .task, iOS 26+ handoff reminders, Writing Tools, clipboard availability caveats, and performance guidelines. Use when structuring SwiftUI app state, managing @Observable, composing view hierarchies, or correcting SwiftUI pattern guidance."
 ---
 
 # SwiftUI Patterns
 
-Modern SwiftUI patterns targeting iOS 26+ with Swift 6.3. Covers architecture, state management, view composition, environment wiring, async loading, design polish, and platform/share integration. Navigation and layout patterns live in dedicated sibling skills. Patterns are backward-compatible to iOS 17 unless noted.
+Modern SwiftUI patterns targeting iOS 26+ with Swift 6.3. Covers architecture, state management, view composition, environment wiring, async loading, design polish, and platform/share integration. Navigation, layout, animation, and Liquid Glass patterns live in dedicated sibling skills. Patterns are backward-compatible to iOS 17 unless noted.
 
 ## Contents
 
@@ -23,7 +23,7 @@ Modern SwiftUI patterns targeting iOS 26+ with Swift 6.3. Covers architecture, s
 - [Review Checklist](#review-checklist)
 - [References](#references)
 
-**Scope boundary:** This skill covers architecture, state ownership, composition, environment wiring, async loading, and related SwiftUI app structure patterns. Detailed navigation patterns are covered in the `swiftui-navigation` skill, including `NavigationStack`, `NavigationSplitView`, sheets, tabs, and deep-linking patterns. Detailed layout, container, and component patterns are covered in the `swiftui-layout-components` skill, including stacks, grids, lists, scroll view patterns, forms, controls, search UI with `.searchable`, overlays, and related layout components.
+**Scope boundary:** This skill covers architecture, state ownership, composition, environment wiring, async loading, and related SwiftUI app structure patterns. Detailed navigation patterns are covered in the `swiftui-navigation` skill, including `NavigationStack`, `NavigationSplitView`, sheets, tabs, and deep-linking patterns. Detailed layout, container, and component patterns are covered in the `swiftui-layout-components` skill, including stacks, grids, lists, scroll view patterns, forms, controls, search UI with `.searchable`, overlays, and related layout components. Detailed animation choreography is covered in `swiftui-animation`. Liquid Glass adoption, custom glass controls, scroll edge effects, `.scrollEdgeEffectStyle`, and `.backgroundExtensionEffect` are covered in `swiftui-liquid-glass`.
 
 ## Architecture: Model-View (MV) Pattern
 
@@ -80,7 +80,7 @@ For MV pattern rationale, app wiring, and lightweight client examples, see [refe
 
 ### `@Observable` Ownership Rules
 
-**Important:** Always annotate `@Observable` view model classes with `@MainActor` to ensure UI-bound state is updated on the main thread. Required for Swift 6 concurrency safety.
+**Important:** Isolate UI-bound `@Observable` stores and view models on `@MainActor` when SwiftUI views own them, mutate them, or bind to their properties. Observation tracks changes; it does not make shared mutable state thread-safe. Domain models that do not touch UI state can use their own isolation strategy.
 
 | Wrapper | When to Use |
 |---------|-------------|
@@ -94,7 +94,7 @@ For MV pattern rationale, app wiring, and lightweight client examples, see [refe
 ### Ownership Pattern
 
 ```swift
-// @Observable view model -- always @MainActor
+// UI-bound @Observable store -- main-actor isolated
 @MainActor
 @Observable final class ItemStore {
     var title = ""
@@ -103,7 +103,7 @@ For MV pattern rationale, app wiring, and lightweight client examples, see [refe
 
 // View that OWNS the model
 struct ParentView: View {
-    @State var viewModel = ItemStore()
+    @State private var viewModel = ItemStore()
 
     var body: some View {
         ChildView(store: viewModel)
@@ -129,7 +129,7 @@ struct EditView: View {
 
 // View that reads from ENVIRONMENT
 struct DeepView: View {
-    @Environment(ItemStore.self) var store
+    @Environment(ItemStore.self) private var store
 
     var body: some View {
         @Bindable var s = store
@@ -288,7 +288,11 @@ Never create manual `Task` in `onAppear` unless you need to store a reference fo
 - **`.scrollEdgeEffectStyle(.soft, for: .top)`** -- fading edge effect on scroll edges
 - **`.backgroundExtensionEffect()`** -- mirror/blur at safe area edges
 - **`@Animatable`** macro -- synthesizes `AnimatableData` conformance automatically (see `swiftui-animation` skill)
-- **`TextEditor`** -- now accepts `AttributedString` for rich text
+- **`TextEditor(text: Binding<AttributedString>)`** -- rich text editing with attributed strings
+
+Keep these as routing reminders in this skill. For Liquid Glass visual treatment, scroll edge effects, glass controls, and availability gating, use `swiftui-liquid-glass`; for detailed animation APIs, use `swiftui-animation`.
+
+Clipboard command modifiers are not iOS 26 defaults: `.copyable`, `.cuttable`, and command-based `.pasteDestination(for:action:validator:)` are macOS 13+ and iOS/iPadOS/Mac Catalyst 27 beta in current Apple docs. For iOS 26 targets, use `UIPasteboard` for custom clipboard commands, or use drag/drop and `ShareLink` for `Transferable` flows. See [references/platform-and-sharing.md](references/platform-and-sharing.md).
 
 ## Performance Guidelines
 
@@ -345,7 +349,7 @@ TextField("Search…", text: $query)
 9. Reaching for `foregroundColor(_:)` when `foregroundStyle(_:)` better matches semantic styling
 10. Inline closures in body -- extract complex closures to methods
 11. `.sheet(isPresented:)` when state represents a model -- use `.sheet(item:)` instead
-12. **Using `AnyView` for type erasure** -- causes identity resets and disables diffing. Use `@ViewBuilder`, `Group`, or generics instead. See [references/deprecated-migration.md](references/deprecated-migration.md)
+12. **Using `AnyView` for routine branching** -- type erasure hides structure and can hurt performance or identity-sensitive transitions. Use `@ViewBuilder`, `Group`, or generics unless an API genuinely needs heterogeneous view storage. See [references/deprecated-migration.md](references/deprecated-migration.md)
 13. **Putting `@AppStorage` inside an `@Observable` class** -- `@AppStorage` is a SwiftUI `DynamicProperty`; it only triggers view updates when used directly in a `View`. Inside an `@Observable` class, observation tracking never sees the change. Keep `@AppStorage` in views, or read/write `UserDefaults` directly inside the `@Observable` class:
 
 ```swift
@@ -367,11 +371,14 @@ TextField("Search…", text: $query)
 ```
 
 14. Hard-coding `spacing:` on every stack -- omit it to get adaptive platform spacing; only specify when the value is intentional
+15. Treating `.copyable`, `.cuttable`, or command-based `.pasteDestination(for:action:validator:)` as iOS 16/iOS 26 APIs -- they are macOS 13+ and iOS/iPadOS/Mac Catalyst 27 beta in current Apple docs. Use `UIPasteboard`, drag/drop, or `ShareLink` for iOS 26 targets.
+16. Treating modern defaults as formal deprecations -- `#Preview` is the modern preview default, but `PreviewProvider` is legacy rather than compiler-deprecated. `EditButton`, `.onDelete`, and `.onMove` remain valid for edit-mode list workflows; use `.swipeActions` for contextual row actions.
 
 ## Review Checklist
 
 - [ ] `@Observable` used for shared state models (not `ObservableObject` on iOS 17+)
 - [ ] `@State` owns objects; `let`/`@Bindable` receives them
+- [ ] Migration and availability claims checked for current platform support, especially clipboard and sharing APIs
 - [ ] `NavigationStack` used (not `NavigationView`)
 - [ ] `.task` modifier for async data loading
 - [ ] `LazyVStack`/`LazyHStack` for large collections
@@ -384,7 +391,7 @@ TextField("Search…", text: $query)
 - [ ] `.sheet(item:)` preferred over `.sheet(isPresented:)`
 - [ ] Sheets own their actions and call `dismiss()` internally
 - [ ] MV pattern followed -- no unnecessary view models
-- [ ] `@Observable` view model classes are `@MainActor`-isolated
+- [ ] UI-bound `@Observable` stores and view models are `@MainActor`-isolated
 - [ ] Model types passed across concurrency boundaries are `Sendable`
 - [ ] Stack `spacing:` omitted unless a specific value is required (prefer adaptive default)
 
@@ -393,5 +400,4 @@ TextField("Search…", text: $query)
 - Architecture, app wiring, and lightweight clients: [references/architecture-patterns.md](references/architecture-patterns.md)
 - Design polish (HIG, theming, haptics, transitions, loading, focus): [references/design-polish.md](references/design-polish.md)
 - Deprecated API migration: [references/deprecated-migration.md](references/deprecated-migration.md)
-- Platform and sharing patterns (Transferable, media, menus, macOS settings): [references/platform-and-sharing.md](references/platform-and-sharing.md)
-
+- Platform and sharing patterns (Transferable, clipboard availability, media, menus, macOS settings): [references/platform-and-sharing.md](references/platform-and-sharing.md)

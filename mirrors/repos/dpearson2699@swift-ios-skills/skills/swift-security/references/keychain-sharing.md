@@ -2,7 +2,7 @@
 
 > Scope: Access-group design and entitlement correctness for sharing keychain items across app targets, extensions, and devices.
 
-Keychain access groups are the sole mechanism for sharing credentials between apps and extensions on Apple platforms. Correct configuration requires exact Team ID prefixes, per-target entitlements, and explicit `kSecAttrAccessGroup` usage in code — three requirements that most AI-generated code gets wrong. This reference covers access group mechanics, the two entitlement systems, correct and incorrect Swift patterns, macOS-specific requirements, iCloud sync, platform edge cases, and debugging strategies. All guidance reflects current behavior through iOS 18, macOS Sequoia 15, and the 2025–2026 developer landscape.
+Keychain access groups are the sole mechanism for sharing credentials between apps and extensions on Apple platforms. Correct configuration requires exact Team ID prefixes, per-target entitlements, and explicit `kSecAttrAccessGroup` usage in code — three requirements that most AI-generated code gets wrong. This reference covers access group mechanics, the two entitlement systems, correct and incorrect Swift patterns, macOS-specific requirements, iCloud sync, platform edge cases, and debugging strategies. All guidance reflects current Apple-platform behavior in the iOS 26 and macOS 26 SDK generation.
 
 **Authoritative sources:** Apple "Sharing Access to Keychain Items Among a Collection of Apps" documentation, TN3137 "On Mac Keychain APIs and Implementations," Apple Platform Security Guide (iCloud Keychain syncing), Quinn "The Eskimo!" DTS forum posts "SecItem: Fundamentals" and "SecItem: Pitfalls and Best Practices" (updated May 2025), Configuring Keychain Sharing documentation.
 

@@ -65,7 +65,7 @@ The single most important decision is choosing the right curve or algorithm. AI 
 
 **ML-DSA-65 / ML-DSA-87** — FIPS 204 lattice-based digital signatures. ML-DSA-65 targets ~AES-128 equivalent; ML-DSA-87 targets ~AES-192. Both support Secure Enclave on iOS 26+.
 
-**X-Wing (XWingMLKEM768X25519)** — Hybrid KEM combining ML-KEM-768 with X25519. Both algorithms must be broken to compromise the exchange. This is Apple's recommended migration path for custom protocols via HPKE.
+**X-Wing (`XWingMLKEM768X25519`)** — Software hybrid KEM combining ML-KEM-768 with X25519. Both algorithms must be broken to compromise the exchange. This is Apple's recommended migration path for custom protocols via HPKE.
 
 ### Selection Decision Matrix
 
@@ -90,7 +90,7 @@ The single most important decision is choosing the right curve or algorithm. AI 
 | ML-KEM-1024 | ~AES-192 | 26+ | ✅ Yes         | 1,568 bytes  | Higher-security KEM             |
 | ML-DSA-65   | ~AES-128 | 26+ | ✅ Yes         | 1,952 bytes  | Post-quantum signatures         |
 | ML-DSA-87   | ~AES-192 | 26+ | ✅ Yes         | 2,592 bytes  | Higher-security signatures      |
-| X-Wing      | Hybrid   | 26+ | ✅ Yes         | 1,216 bytes  | Hybrid PQC KEM                  |
+| X-Wing      | Hybrid   | 26+ | ❌ No          | 1,216 bytes  | Hybrid PQC HPKE                 |
 
 On Apple Silicon, both P256 and Curve25519 are heavily optimized in corecrypto with hand-tuned assembly. Performance differences are negligible for most applications — Apple's NISTZ256 optimization closes the gap that Curve25519 holds in non-Apple benchmarks.
 
@@ -256,15 +256,17 @@ let plaintext = try recipient.open(
 
 At WWDC 2025 (session 314, "Get ahead with quantum-secure cryptography"), Apple announced CryptoKit support for NIST's post-quantum standards. The threat model is "harvest now, decrypt later" — adversaries storing encrypted traffic today to decrypt once cryptographically relevant quantum computers exist. iOS 26 enables quantum-secure TLS by default for `URLSession` and `Network.framework`, advertising `X25519MLKEM768` in the TLS ClientHello.
 
-Five new types join CryptoKit, all backed by formally verified implementations proven functionally equivalent to their FIPS specifications:
+Five new types join CryptoKit. The NIST algorithms use formally verified implementations proven functionally equivalent to their FIPS specifications; X-Wing combines ML-KEM-768 and X25519 for hybrid HPKE:
 
 | Type                  | Algorithm     | Standard                      | Operation          | Secure Enclave | Key/Sig Size                     |
 | --------------------- | ------------- | ----------------------------- | ------------------ | -------------- | -------------------------------- |
 | `MLKEM768`            | ML-KEM-768    | FIPS 203                      | Key encapsulation  | ✅             | 1,184 B pub / 1,088 B ciphertext |
 | `MLKEM1024`           | ML-KEM-1024   | FIPS 203                      | Key encapsulation  | ✅             | 1,568 B pub                      |
-| `XWingMLKEM768X25519` | X-Wing hybrid | draft-connolly-cfrg-xwing-kem | Key encapsulation  | ✅             | 1,216 B pub / 1,120 B encap      |
+| `XWingMLKEM768X25519` | X-Wing hybrid | draft-connolly-cfrg-xwing-kem | Key encapsulation  | ❌             | 1,216 B pub / 1,120 B encap      |
 | `MLDSA65`             | ML-DSA-65     | FIPS 204                      | Digital signatures | ✅             | 1,952 B pub / 3,309 B sig        |
 | `MLDSA87`             | ML-DSA-87     | FIPS 204                      | Digital signatures | ✅             | 2,592 B pub / 4,627 B sig        |
+
+The software ML-KEM and ML-DSA types also have Secure Enclave counterparts under `SecureEnclave.MLKEM768/1024` and `SecureEnclave.MLDSA65/87`. `XWingMLKEM768X25519` is exposed as a software HPKE KEM; current SDKs do not provide a direct `SecureEnclave.XWing...` type.
 
 The size cost of quantum resistance is substantial — an ML-DSA-65 signature is 3,309 bytes versus 64 bytes for Ed25519; an ML-KEM-768 public key is 1,184 bytes versus 32 bytes for X25519. But computational performance is competitive with classical algorithms.
 

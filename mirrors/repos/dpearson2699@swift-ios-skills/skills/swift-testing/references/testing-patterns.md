@@ -314,6 +314,32 @@ Common XCTest mappings:
 
 Convert `setUp` into isolated suite `init()` state. Avoid moving fixtures into singletons or shared globals; Swift Testing runs tests in parallel by default. Use actors or per-test fixtures for mutable test doubles, and use `.serialized` only when an external shared resource cannot be isolated.
 
+### XCTest Interoperability During Migration
+
+XCTest and Swift Testing can coexist in the same target, bundle, and even source file during migration. Xcode 27 is the important dividing line for migration reviews: test plans created before Xcode 27 inherit the older `limited` behavior, while new Xcode 27 projects use `complete` behavior by default. Test framework interoperability controls how issues cross that boundary:
+
+- `limited`: preserves the older migration behavior. Cross-framework issues from XCTest are warnings, so a Swift Testing test that reuses a helper wrapping `XCTFail` may still pass while showing migration warnings. Test plans created before Xcode 27 inherit this mode.
+- `complete`: treats XCTest assertions and Swift Testing issues as test issues across both frameworks. New Xcode 27 projects use this mode by default, and it is the preferred migration default when available.
+- `strict`: like `complete`, but cross-framework issues from XCTest are fatal so teams catch stale helper usage quickly.
+- `none`: disables interop and should be reserved for projects that intentionally forbid mixed helpers.
+
+For SwiftPM, set `SWIFT_TESTING_XCTEST_INTEROP_MODE` when the package needs an explicit mode. A package still declaring `swift-tools-version: 6.3` can run under the Swift 6.4 toolchain with limited-mode behavior; updating the package to Swift tools version 6.4 or newer moves the default to complete-mode behavior.
+
+Do not tell teams that all cross-framework APIs are categorically disallowed. Instead, keep existing helper code working under `complete` or `strict` while migrating toward native Swift Testing issue-reporting:
+
+```swift
+// Transitional helper body
+func requireUser(_ user: User?) throws -> User {
+    try #require(user, "Expected a user")
+}
+
+func recordMissingUser() {
+    Issue.record("Expected a user")
+}
+```
+
+Use native Swift Testing APIs for new Swift Testing tests. Keep UI automation, performance measurement, and Objective-C exception tests in XCTest.
+
 ## Mocking and Test Doubles
 
 Define testable boundaries with protocols:

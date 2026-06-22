@@ -206,6 +206,8 @@ navigated away from.
 
 Pair this with cancellation inside the async work.
 
+Remember that a `.task` closure declared from a SwiftUI `body` inherits the view's main-actor context. Move heavy work into nonisolated async functions or dedicated actors; use `Task.detached` only when you intentionally break actor inheritance and can handle cancellation yourself.
+
 ## Verification checklist
 
 After a fix, confirm all of the following:

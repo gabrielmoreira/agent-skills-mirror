@@ -44,16 +44,13 @@ When the SwiftUI screen needs to pop itself or trigger navigation in the UIKit s
 ```swift
 struct ItemDetailView: View {
     let item: Item
-    var onDelete: (() -> Void)?
-
-    @Environment(\.dismiss) private var dismiss
+    var onDelete: () -> Void
 
     var body: some View {
         VStack {
             Text(item.title)
             Button("Delete", role: .destructive) {
-                onDelete?()
-                dismiss()
+                onDelete()
             }
         }
     }
@@ -72,6 +69,7 @@ let hostingVC = UIHostingController(rootView: detailView)
 - **Navigation bar.** `UIHostingController` inherits navigation bar visibility from its parent `UINavigationController`. Use `.navigationTitle()` and `.toolbar()` in the SwiftUI view -- they propagate to the UIKit navigation bar automatically.
 - **Large titles.** Set `hostingVC.navigationItem.largeTitleDisplayMode` in UIKit code if the SwiftUI `.navigationBarTitleDisplayMode()` modifier does not apply correctly.
 - **Tab bar insets.** `UIHostingController` respects `additionalSafeAreaInsets`. If the content overlaps the tab bar, verify safe area propagation.
+- **Dismissal.** A `UIHostingController` pushed by UIKit is not in a SwiftUI `NavigationStack`. Pass explicit callbacks for `popViewController`, dismissal, or parent navigation instead of relying on `@Environment(\.dismiss)`.
 
 ---
 
@@ -280,50 +278,46 @@ struct HeaderView: View {
 }
 ```
 
-### Reactive Updates in UIKit with Combine
+### Automatic Observation Tracking in UIKit
 
-If UIKit code needs to react to `@Observable` changes, bridge with a `withObservationTracking` loop or use `Combine`:
+For iOS 26+, use UIKit's automatic observation tracking hooks. UIKit tracks `@Observable` properties read inside supported update methods and reruns those methods when the properties change. On iOS 18, add `UIObservationTrackingEnabled` to Info.plist and set it to `YES`; on iOS 26 and later, this key is not required.
 
 ```swift
-import Combine
 import Observation
+
+@Observable
+@MainActor
+final class AppState {
+    var unreadCount: Int = 0
+}
 
 final class DashboardViewController: UIViewController {
     let state: AppState
-    private var observationTask: Task<Void, Never>?
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        startObserving()
+    private let badgeLabel = UILabel()
+
+    init(state: AppState) {
+        self.state = state
+        super.init(nibName: nil, bundle: nil)
     }
 
-    private func startObserving() {
-        observationTask = Task { @MainActor [weak self] in
-            while !Task.isCancelled {
-                guard let self else { return }
-                withObservationTracking {
-                    self.updateUI(unreadCount: self.state.unreadCount)
-                } onChange: {
-                    // Triggers next iteration
-                }
-                try? await Task.sleep(for: .zero) // Yield to allow onChange to fire
-            }
-        }
-    }
+    required init?(coder: NSCoder) { fatalError("Use init(state:)") }
 
-    private func updateUI(unreadCount: Int) {
-        badgeLabel.text = "\(unreadCount)"
+    override func updateProperties() {
+        super.updateProperties()
+        badgeLabel.text = "\(state.unreadCount)"
+        badgeLabel.isHidden = state.unreadCount == 0
     }
-
-    deinit { observationTask?.cancel() }
 }
 ```
 
-### Legacy: ObservableObject with Combine
+Use `updateProperties()` for labels, colors, visibility, and other non-layout properties. Use `layoutSubviews()` for geometry work, and use `configurationUpdateHandler` for table or collection view cells.
 
-For iOS 15-16 or existing `ObservableObject` models, subscribe to `objectWillChange`:
+For iOS 17 back-deployment with `@Observable`, do not describe this as UIKit automatic observation tracking. `@Observable` is available, but UIKit's automatic tracking hooks are not. Manual `withObservationTracking` registrations are one-shot; if you use them, re-register from an explicit invalidation point and avoid polling loops. For iOS 15-16 or existing `ObservableObject` models, subscribe to `objectWillChange`:
 
 ```swift
+import Combine
+
 final class SettingsViewController: UIViewController {
     let settings: SettingsModel  // ObservableObject
     private var cancellable: AnyCancellable?
@@ -341,7 +335,8 @@ final class SettingsViewController: UIViewController {
 
 ### Gotchas
 
-- **`@Observable` does not trigger UIKit updates automatically.** Unlike SwiftUI views, UIKit code must manually observe changes via `withObservationTracking` or `Combine`.
+- **Automatic tracking is scoped.** UIKit only tracks observable properties read inside supported update hooks such as `updateProperties()`, `layoutSubviews()`, or cell configuration update handlers. Arbitrary methods are not tracked automatically.
+- **Do not blur iOS 17 with UIKit automatic tracking.** iOS 17 can use Observation manually, but UIKit automatic observation tracking is an iOS 18+ UIKit feature with the iOS 18 `UIObservationTrackingEnabled` key and no key requirement on iOS 26+.
 - **Thread safety.** Mutate `@Observable` properties on `@MainActor` when they drive UI in both UIKit and SwiftUI.
 - **Retain cycles.** Use `[weak self]` in Combine sinks and task closures. Store cancellables and tasks, then cancel in `deinit`.
 
@@ -430,8 +425,8 @@ cell.contentConfiguration = UIHostingConfiguration {
 
 - **Performance.** Each `UIHostingConfiguration` creates a lightweight hosting controller. For very large lists (10,000+ items), profile with Instruments to ensure smooth scrolling.
 - **State management.** The SwiftUI content inside `UIHostingConfiguration` is recreated on each cell reuse. Do not store `@State` that needs to persist across reuse -- use the data model instead.
-- **Swipe actions.** Configure swipe actions in UIKit (`leadingSwipeActionsConfigurationForRowAt`), not inside the SwiftUI content.
-- **No `@Environment` propagation by default.** Environment values from the UIKit context are not automatically available. Inject them explicitly in the `UIHostingConfiguration` closure.
+- **Swipe actions.** In list layouts, SwiftUI `.swipeActions` can bridge through `UIHostingConfiguration`. Use UIKit swipe configuration only when the table or collection view integration needs UIKit to own those actions.
+- **Environment.** Inject app-specific environment values explicitly in the `UIHostingConfiguration` closure; content created from UIKit does not inherit a surrounding SwiftUI app environment by default.
 
 ---
 
@@ -529,6 +524,6 @@ state.currentRole = .admin
 
 ### Gotchas
 
-- **`@Environment(\.dismiss)` in hosted views.** This works when the `UIHostingController` is presented modally (via `present(_:animated:)`). It does NOT work when the hosting controller is pushed onto a `UINavigationController` -- use the navigation controller's `popViewController` instead.
+- **`@Environment(\.dismiss)` in hosted views.** This works for SwiftUI presentations and navigation contexts. For a `UIHostingController` pushed by UIKit, pass an explicit callback that calls `popViewController(animated:)`; the pushed controller is not inside a SwiftUI `NavigationStack`.
 - **Missing environment.** If a SwiftUI view expects an `@Environment` object and it is not provided, the app crashes at runtime. Always set required environment values before creating the hosting controller.
 - **Overriding traits.** Use `hostingVC.overrideUserInterfaceStyle` to force light/dark mode for a hosted SwiftUI view. This propagates to `\.colorScheme` automatically.

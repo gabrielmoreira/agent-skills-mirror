@@ -79,6 +79,14 @@ One or two concrete things that would prevent this class of error recurring:
 - [ ] Confidence level includes a stated reason (not just "High" or "Low" with no explanation)
 - [ ] Prevention is proactive (not just "add error handling")
 
+## Anti-Patterns
+
+- A vague root cause ("something's null somewhere") instead of the specific line/frame
+- A generic fix that could apply to any language, ignoring the actual stack trace
+- Restating the error message instead of explaining what it means
+- "Add error handling" as prevention, with no specific guardrail
+- High/Low confidence with no reason behind it
+
 ## Usage Examples
 - "Why is this crashing?" + [paste log]
 - "Can you analyse this stack trace?"

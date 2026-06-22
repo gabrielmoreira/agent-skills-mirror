@@ -42,18 +42,17 @@ extension UTType {
 
 Representation order matters — place the most specific first, with broader fallbacks after.
 
-### Built-in conformances
+### Common transferable values
 
-These types already conform to `Transferable` out of the box:
+Use existing transferable values as proxies or fallbacks when they describe your data accurately:
 
-| Type | Content type |
+| Value | Typical use |
 |------|-------------|
-| `String` | `.plainText`, `.utf8PlainText` |
-| `Data` | `.data` |
-| `URL` | `.url` |
-| `AttributedString` | `.rtf` |
-| `Image` (SwiftUI) | `.image` |
-| `Color` (SwiftUI) | `.color` |
+| `String` | Plain-text previews, titles, or body fallbacks |
+| `Data` | Binary payloads when you control serialization |
+| `URL` | Links and file references |
+| `Color` (SwiftUI) | Color transfer; semantic colors resolve against a default environment |
+| `Codable` models | Custom JSON representations via `CodableRepresentation` |
 
 ### TransferRepresentation types
 
@@ -195,7 +194,9 @@ let data = try await note.exported(as: .note)
 UIPasteboard.general.setData(data, forPasteboardType: UTType.note.identifier)
 ```
 
-Prefer SwiftUI's `.copyable`, `.cuttable`, and `.pasteDestination` modifiers (iOS 16+) over direct `UIPasteboard` usage when possible — they integrate with the Edit menu and keyboard shortcuts automatically.
+On macOS 13+, prefer SwiftUI's `.copyable`, `.cuttable`, and command-based `.pasteDestination(for:action:validator:)` modifiers over direct pasteboard usage when you are wiring Edit menu commands and keyboard shortcuts. Current Apple docs list those command modifiers as iOS/iPadOS/Mac Catalyst 27 beta, not iOS 26 defaults. On iOS 26 targets, use `UIPasteboard` directly for custom clipboard commands, or use SwiftUI drag/drop and `ShareLink` for Transferable-driven sharing flows.
+
+> **Docs:** [copyable(_:)](https://sosumi.ai/documentation/swiftui/view/copyable(_:)) · [cuttable(for:action:)](https://sosumi.ai/documentation/swiftui/view/cuttable(for:action:)) · [pasteDestination(for:action:validator:)](https://sosumi.ai/documentation/swiftui/view/pastedestination(for:action:validator:))
 
 ### Common patterns
 
@@ -236,7 +237,7 @@ extension Report: Transferable {
 - Always declare custom `UTType` identifiers in Info.plist under Exported/Imported Type Identifiers.
 - Representation order matters — the first matching representation wins. Put the richest format first.
 - `FileRepresentation` files are temporary; copy them if you need to persist.
-- `Transferable` conformance must be on the main type, not an extension in a different module, to avoid linker issues.
+- Keep custom `UTType` declarations and transfer code in modules that are visible to every app target or extension that imports, exports, drags, or shares the type.
 - Test drag and drop on device — Simulator haptics and drop targeting differ from hardware.
 
 ## Media Patterns
@@ -319,11 +320,11 @@ struct AppRoot: View {
 
 ### Intent
 
-Provide a custom top selector or pill row that sits above scroll content, using `safeAreaBar(.top)` on iOS 26 and a compatible fallback on earlier OS versions.
+Provide a custom top selector or pill row that sits above scroll content, using `safeAreaBar(edge: .top)` on iOS 26 and a compatible fallback on earlier OS versions.
 
 ### iOS 26+ approach
 
-Use `safeAreaBar(edge: .top)` to attach the view to the safe area bar.
+Use `safeAreaBar(edge: .top)` to attach the view to the safe area bar. It insets the modified view, adjusts the safe area, and extends affected scroll edge effects.
 
 ```swift
 if #available(iOS 26.0, *) {
@@ -585,7 +586,7 @@ WindowGroup {
 ### Example: focused menu state
 
 ```swift
-@Observable
+@MainActor @Observable
 final class DataModel {
   var items: [String] = []
 }

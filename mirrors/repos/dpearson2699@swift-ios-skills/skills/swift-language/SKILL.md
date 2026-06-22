@@ -5,8 +5,8 @@ description: "Apply modern Swift language patterns and idioms for non-concurrenc
 
 # Swift Language Patterns
 
-Core Swift language features and modern syntax patterns targeting Swift 6.3. Covers language constructs, type system features, basic Codable,
-string and collection APIs, basic formatting, C interop (`@c`), module disambiguation (`ModuleName::symbol`), and performance attributes (`@specialized`, `@inline(always)`). For `@c` corrections, enumerate invalid Swift-only signature types: `String`, `Array`, `UnsafeBufferPointer`, closures, and generic placeholders. Route deeper Codable/API decoding to `swift-codable`, detailed formatting/localization to `swift-formatstyle`, API naming to `swift-api-design-guidelines`, concurrency to `swift-concurrency`, and SwiftUI state/view work to `swiftui-patterns`.
+Core Swift language features and modern syntax patterns targeting Swift 6.3. For helper modernization, preserve behavior and evaluation order while preferring `guard` preconditions, typed throws for one local error enum, `count(where:)`, and direct if/switch expression returns. Covers language constructs, type system features, basic Codable,
+string and collection APIs, basic formatting, C interop (`@c`), module disambiguation (`ModuleName::symbol`), and performance attributes (`@specialized`, `@inline(always)`). For `@c` corrections, call `UnsafeBufferPointer` a Swift struct/value wrapper and enumerate invalid Swift-only signature types: `String`, `Array`, closures, generic placeholders. Route deeper Codable/API decoding to `swift-codable`, detailed formatting/localization to `swift-formatstyle`, API naming to `swift-api-design-guidelines`, concurrency to `swift-concurrency`, and SwiftUI state/view work to `swiftui-patterns`.
 
 ## Contents
 
@@ -43,11 +43,11 @@ case .archived: "Archived"
 }
 
 // Works in return position
-func color(for priority: Priority) -> Color {
+func badgeText(for priority: Priority) -> String {
     switch priority {
-    case .high: .red
-    case .medium: .orange
-    case .low: .green
+    case .high: "High"
+    case .medium: "Medium"
+    case .low: "Low"
     }
 }
 ```
@@ -88,6 +88,7 @@ do {
 **Rules:**
 - Use `throws(SomeError)` only when callers benefit from exhaustive error
   handling. For mixed error sources, use untyped `throws`.
+- When modernizing a helper with one local error enum, prefer `throws(ErrorEnum)` and note Swift 6+.
 - `throws(Never)` marks a function that syntactically throws but never actually
   does -- useful in generic contexts.
 - Typed throws propagate: a function calling `throws(A)` and `throws(B)` must
@@ -165,8 +166,8 @@ print(v.$level) // projected value: 0...100
 
 ### `some Protocol` (Opaque Type)
 
-The caller does not know the concrete type, but the compiler does. The
-underlying type is fixed for a given scope.
+The caller does not know the concrete type, but the compiler does. A `-> some P`
+return has one fixed underlying concrete type across all return branches.
 
 ```swift
 func makeCollection() -> some Collection<Int> {
@@ -239,11 +240,10 @@ func processOrder(_ order: Order?) throws -> Receipt {
 ## Never Type
 
 `Never` is an uninhabited type for code paths that never produce a value. It
-works as Swift's bottom type in expression contexts, but it does not implicitly
-conform to arbitrary protocols or satisfy a generic `T: SomeProtocol`
-constraint. When recommending `Result<T, Never>` or `throws(Never)`, explicitly
-state all three points: uninhabited, bottom-like, and no universal protocol
-conformance.
+behaves like Swift's bottom type only where a value expression can be used or
+inferred; it is not a universal type witness, does not implicitly conform to
+arbitrary protocols, and cannot satisfy generic constraints such as `T: P`
+unless the constraint is otherwise valid for `Never`.
 
 ```swift
 // Function that terminates the program
@@ -459,38 +459,39 @@ Extend `DefaultStringInterpolation` for domain-specific formatting. Use `"""` fo
 ## Common Mistakes
 
 1. **Using `any` when `some` works.** Default to `some` for return types and
-   parameters. `any` has runtime overhead and loses type information.
-2. **Manual loops instead of collection APIs.** Use `count(where:)`,
-   `contains(where:)`, `compactMap`, `flatMap` instead of manual iteration.
+   parameters, but every `-> some P` branch must return the same concrete type.
+2. **Manual loops or `.filter { }.count` instead of collection APIs.** Use
+   `count(where:)` for conditional counts, plus `contains(where:)`,
+   `compactMap`, and `flatMap` instead of extra iteration or arrays.
 3. **`DateFormatter` instead of FormatStyle.** `.formatted()` is simpler,
    type-safe, and handles localization automatically.
 4. **Force-unwrapping Codable decodes.** Use `decodeIfPresent` with defaults
    for optional or missing keys.
-5. **Nested if-let chains.** Use `guard let` for preconditions to keep the
-   happy path at the top level.
-6. **Invalid `@c` signatures.** Name valid C types and explicitly reject:
-   `String`, `Array`, `UnsafeBufferPointer`, closures, generic placeholders.
+5. **Reordering preconditions during modernization.** Use `guard` without moving
+   normalization or transformations before validation.
+6. **Invalid `@c` signatures.** Say `UnsafeBufferPointer` is a Swift struct/value
+   wrapper, then reject `String`, `Array`, closures, and generic placeholders.
 7. **Ignoring typed throws.** When a function has a single, clear error type,
    typed throws give callers exhaustive switch without casting.
 8. **Overusing property wrappers.** A computed property is simpler when there
    is no reuse or projected value needed.
-9. **Underspecifying `Never`.** For `Result<T, Never>` or `throws(Never)`, say:
-   uninhabited, bottom-like, and not arbitrary `T: P` protocol conformance.
-10. **Owning deep formatting/localization.** Use `swift-formatstyle` for detailed
-    formatting and `ios-localization` for market/localized-display QA.
+9. **Underspecifying `Never`.** For `Result<T, Never>` or `throws(Never)`, write the caveat explicitly: Never does not implicitly conform to arbitrary protocols, cannot satisfy arbitrary `T: P` constraints, and is bottom-like only in valid expression/inference contexts.
+10. **Owning sibling implementation.** Name the owner skill and stop. Avoid
+    snippets for `CodingKeys`, decoders, formatters, SwiftUI, or concurrency.
 
 ## Review Checklist
 
-- [ ] `some` used for opaque returns and Swift 5.7+ generic-parameter shorthand
-- [ ] `guard` for preconditions; collection APIs instead of manual loops
+- [ ] `some` used only when every opaque-return branch has one concrete type
+- [ ] `guard` for preconditions; `count(where:)` instead of manual counting or `.filter { }.count`
 - [ ] `.formatted()` used instead of `DateFormatter`/`NumberFormatter`
 - [ ] Codable types use `CodingKeys` for API mapping; `decodeIfPresent` with defaults for optional fields
 - [ ] if/switch expressions for conditional assignment; property wrappers have clear reuse justification
 - [ ] Regex builder used for complex patterns (literal OK for simple ones)
-- [ ] Typed throws used when callers benefit from exhaustive error handling
-- [ ] `@c` corrections enumerate rejected Swift-only types by name
-- [ ] `Never` guidance says uninhabited, bottom-like, and not arbitrary `T: P` protocol conformance
-- [ ] deep Codable, formatting/localization, naming, concurrency, and SwiftUI work routed to sibling skills
+- [ ] Typed throws used for single local error domains, with Swift 6+ compatibility noted
+- [ ] `@c` corrections call `UnsafeBufferPointer` a Swift struct/value wrapper and enumerate rejected Swift-only types by name
+- [ ] `Never` guidance uses uninhabited and bottom-like, and says no implicit arbitrary protocol/generic conformance
+- [ ] deep Codable to `swift-codable`; FormatStyle APIs to `swift-formatstyle`; market/localized-display QA to `ios-localization`; naming/concurrency/SwiftUI routed to sibling skills
+
 ## References
 
 - Extended patterns and Codable examples: [references/swift-patterns-extended.md](references/swift-patterns-extended.md)

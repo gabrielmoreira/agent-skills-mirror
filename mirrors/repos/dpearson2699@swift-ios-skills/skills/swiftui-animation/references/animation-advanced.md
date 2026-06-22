@@ -275,9 +275,11 @@ struct LoadingIndicator: View {
 }
 ```
 
-### Trigger-Based One-Shot
+### Trigger-Based Phase Advance
 
-Run through all phases once each time the trigger value changes.
+Each trigger change advances to the next phase. It does not run the full phase
+array as a one-shot sequence; use `KeyframeAnimator` or explicit phase state
+when each tap should play a complete timeline.
 
 ```swift
 struct FeedbackDot: View {
@@ -288,7 +290,7 @@ struct FeedbackDot: View {
             Circle()
                 .frame(width: 20, height: 20)
                 .phaseAnimator(
-                    [false, true, false],
+                    [false, true],
                     trigger: feedbackTrigger
                 ) { content, phase in
                     content.scaleEffect(phase ? 1.5 : 1.0)
@@ -398,6 +400,13 @@ KeyframeAnimator(
 | `CubicKeyframe(value, duration:)` | Cubic bezier curve | Smooth easing |
 | `SpringKeyframe(value, duration:, spring:)` | Spring physics | Natural settle |
 | `MoveKeyframe(value)` | Instant jump | Reset to value immediately |
+
+### Swift 6 Sendable Closure Captures
+
+`keyframeAnimator` content and keyframe closures are `@Sendable`. In Swift 6,
+avoid direct reads of `@State` or `@Environment` from nested helper closures
+inside the modifier; capture plain values in `body` before the modifier or pass
+them through the animated value model.
 
 ### KeyframeTimeline for Manual Evaluation
 
@@ -576,35 +585,41 @@ phase.isIdentity  // true when fully presented
 
 ## All Symbol Effect Types
 
+Availability: `.bounce`, `.pulse`, `.variableColor`, `.scale`, `.appear`,
+`.disappear`, and `.replace` are iOS 17+. `.wiggle`, `.breathe`, and `.rotate`
+are iOS 18+.
+
 ### Discrete Effects (trigger with `value:`)
 
-| Effect | Scope | Direction |
-|---|---|---|
-| `.bounce` | `.byLayer`, `.wholeSymbol` | -- |
-| `.wiggle` | `.byLayer`, `.wholeSymbol` | `.up`, `.down`, `.left`, `.right`, `.forward`, `.backward`, `.clockwise`, `.counterClockwise`, `.custom(angle:)` |
+| Effect | Availability | Scope | Direction |
+|---|---|---|---|
+| `.bounce` | iOS 17+ | `.byLayer`, `.wholeSymbol` | -- |
+| `.wiggle` | iOS 18+ | `.byLayer`, `.wholeSymbol` | `.up`, `.down`, `.left`, `.right`, `.forward`, `.backward`, `.clockwise`, `.counterClockwise`, `.custom(angle:)` |
 
 ```swift
 Image(systemName: "bell.fill")
     .symbolEffect(.bounce.byLayer, value: count)
 
+// iOS 18+
 Image(systemName: "arrow.left.arrow.right")
     .symbolEffect(.wiggle.left, value: swapCount)
 ```
 
 ### Indefinite Effects (toggle with `isActive:`)
 
-| Effect | Scope | Direction |
-|---|---|---|
-| `.pulse` | `.byLayer`, `.wholeSymbol` | -- |
-| `.variableColor` | `.byLayer`, `.wholeSymbol` | Chaining: `.cumulative`/`.iterative`, `.reversing`/`.nonReversing`, `.dimInactiveLayers`/`.hideInactiveLayers` |
-| `.scale` | `.byLayer`, `.wholeSymbol` | `.up`, `.down` |
-| `.breathe` | `.byLayer`, `.wholeSymbol` | -- |
-| `.rotate` | `.byLayer`, `.wholeSymbol` | `.clockwise`, `.counterClockwise` |
+| Effect | Availability | Scope | Direction |
+|---|---|---|---|
+| `.pulse` | iOS 17+ | `.byLayer`, `.wholeSymbol` | -- |
+| `.variableColor` | iOS 17+ | `.byLayer`, `.wholeSymbol` | Chaining: `.cumulative`/`.iterative`, `.reversing`/`.nonReversing`, `.dimInactiveLayers`/`.hideInactiveLayers` |
+| `.scale` | iOS 17+ | `.byLayer`, `.wholeSymbol` | `.up`, `.down` |
+| `.breathe` | iOS 18+ | `.byLayer`, `.wholeSymbol` | -- |
+| `.rotate` | iOS 18+ | `.byLayer`, `.wholeSymbol` | `.clockwise`, `.counterClockwise` |
 
 ```swift
 Image(systemName: "wifi")
     .symbolEffect(.pulse.byLayer, isActive: isConnecting)
 
+// iOS 18+
 Image(systemName: "gear")
     .symbolEffect(.rotate.clockwise, isActive: isProcessing)
 
@@ -618,6 +633,7 @@ Image(systemName: "speaker.wave.3.fill")
 Image(systemName: "magnifyingglass")
     .symbolEffect(.scale.up, isActive: isHighlighted)
 
+// iOS 18+
 Image(systemName: "heart.fill")
     .symbolEffect(.breathe, isActive: isFavorite)
 ```
@@ -638,7 +654,7 @@ Image(systemName: "xmark.circle")
 Image(systemName: isMuted ? "speaker.slash" : "speaker.wave.3")
     .contentTransition(.symbolEffect(.replace.downUp))
 
-// Magic replace (morphs between symbols)
+// Magic replace (iOS 18+, morphs between symbols)
 Image(systemName: isPlaying ? "pause.fill" : "play.fill")
     .contentTransition(.symbolEffect(.replace.magic(fallback: .downUp)))
 ```
@@ -807,6 +823,13 @@ ParentView()
     .geometryGroup()  // children see stable geometry
 ```
 
+### Layout-Driven Height Changes
+
+`transition` describes child insertion/removal, but a `List` row's changing
+height may still snap instead of interpolate. Keep this skill focused on the
+animation trigger, curve, and Reduce Motion behavior; route custom row-height,
+grid, or layout interpolation work to `swiftui-layout-components`.
+
 ### Transaction for Selective Animation Override
 
 Override animation for specific subtrees without affecting siblings.
@@ -820,6 +843,6 @@ ChildView()
 ### Profile with Instruments
 
 Use the Core Animation instrument in Xcode Instruments to verify:
-- Frame rate stays at 120 fps (ProMotion devices) or 60 fps.
+- The chosen sustainable target frame rate has no avoidable dropped frames; refresh rates are system-managed hints, not guarantees.
 - No offscreen rendering passes.
 - GPU utilization stays reasonable during animations.

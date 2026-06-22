@@ -1,6 +1,6 @@
 ---
 name: weatherkit
-description: "Fetch current, hourly, and daily weather forecasts and display required attribution using WeatherKit. Use when integrating weather data, showing forecasts, handling weather alerts, displaying Apple Weather attribution, or querying historical weather statistics in iOS apps."
+description: "Fetch WeatherKit current, minute, hourly, and daily forecasts; weather alerts; iOS 18+ changes, historical comparisons, summaries, and statistics; and required Apple Weather attribution. Use when integrating weather data, showing forecasts or alerts, caching WeatherKit responses, displaying attribution, or reviewing WeatherKit query limits in iOS apps."
 ---
 
 # WeatherKit
@@ -16,6 +16,7 @@ attribution. Targets Swift 6.3 / iOS 26+.
 - [Forecasts](#forecasts)
 - [Weather Alerts](#weather-alerts)
 - [Selective Queries](#selective-queries)
+- [Context Queries](#context-queries)
 - [Attribution](#attribution)
 - [Availability](#availability)
 - [Common Mistakes](#common-mistakes)
@@ -40,8 +41,8 @@ import CoreLocation
 
 ### Creating the Service
 
-Use the shared singleton or create an instance. The service is `Sendable` and
-thread-safe.
+Use the shared singleton or create an instance. `WeatherService` conforms to
+`Sendable`; keep app cache and UI state isolated separately.
 
 ```swift
 let weatherService = WeatherService.shared
@@ -53,6 +54,9 @@ let weatherService = WeatherService()
 
 Fetch current conditions for a location. Returns a `Weather` object with all
 available datasets.
+
+WeatherKit temperatures are `Measurement<UnitTemperature>` values; display them
+with `.formatted()` so units and number formatting follow the user's locale.
 
 ```swift
 func fetchCurrentWeather(for location: CLLocation) async throws -> CurrentWeather {
@@ -112,6 +116,11 @@ for day in dailyForecast {
 
 Request forecasts for specific date ranges using `WeatherQuery`.
 
+Daily and hourly date-range queries use an inclusive `startDate` and exclusive
+`endDate`. They can include historical data from August 1, 2021. Forecasts are
+available up to 10 days in the future; each request returns at most 10 daily
+forecast days or about 240 hourly forecast hours.
+
 ```swift
 func fetchExtendedForecast(for location: CLLocation) async throws -> Forecast<DayWeather> {
     let startDate = Date.now
@@ -122,6 +131,24 @@ func fetchExtendedForecast(for location: CLLocation) async throws -> Forecast<Da
         including: .daily(startDate: startDate, endDate: endDate)
     )
     return forecast
+}
+```
+
+For tomorrow-specific guidance, request the local tomorrow day interval rather
+than using minute forecasts:
+
+```swift
+func fetchTomorrowForecast(for location: CLLocation) async throws -> Forecast<DayWeather> {
+    let calendar = Calendar.current
+    let tomorrow = calendar.startOfDay(
+        for: calendar.date(byAdding: .day, value: 1, to: .now)!
+    )
+    let dayAfterTomorrow = calendar.date(byAdding: .day, value: 1, to: tomorrow)!
+
+    return try await weatherService.weather(
+        for: location,
+        including: .daily(startDate: tomorrow, endDate: dayAfterTomorrow)
+    )
 }
 ```
 
@@ -141,13 +168,15 @@ if let alerts = weatherAlerts {
     for alert in alerts {
         print("Alert: \(alert.summary)")
         print("Severity: \(alert.severity)")
-        print("Region: \(alert.region)")
-        if let detailsURL = alert.detailsURL {
-            // Link to full alert details
-        }
+        print("Region: \(alert.region ?? "Unknown region")")
+        print("Details: \(alert.detailsURL)") // Non-optional and required for attribution
     }
 }
 ```
+
+For alert dashboards, name `WeatherAvailability` explicitly when discussing
+support checks: it exposes `alertAvailability` and `minuteAvailability` only,
+not a broad availability matrix for current, hourly, or daily weather.
 
 ## Selective Queries
 
@@ -196,7 +225,47 @@ let minuteForecast = try await weatherService.weather(
 | `.daily` | `Forecast<DayWeather>` | 10 days from today |
 | `.minute` | `Forecast<MinuteWeather>?` | Next-hour precipitation (limited regions) |
 | `.alerts` | `[WeatherAlert]?` | Active weather alerts |
-| `.availability` | `WeatherAvailability` | Dataset availability for location |
+| `.availability` | `WeatherAvailability` | Alert and minute forecast availability only |
+| `.changes` | `WeatherChanges?` | Significant upcoming weather changes (iOS 18+) |
+| `.historicalComparisons` | `HistoricalComparisons?` | Current weather compared to historical averages (iOS 18+) |
+
+### Dashboard Review Checklist
+
+For a current-temperature and alert dashboard review, explicitly cover:
+- Selective `.current, .alerts` queries instead of `weather(for:)` for every dataset
+- No unconditional `onAppear`/`.task` network fetch; use model or cache `loadIfNeeded`
+- `WeatherMetadata.expirationDate` cache freshness
+- `WeatherService.shared.attribution`, mark URLs, and `legalPageURL` beside weather data
+- Optional `alert.region`, non-optional `alert.detailsURL`, and alert detail links
+- `WeatherAvailability` only for `alertAvailability` and `minuteAvailability`
+- `Measurement<UnitTemperature>.formatted()` for displayed temperatures
+- WeatherKit capability/App ID setup and location permission when using device location
+
+## Context Queries
+
+Use the iOS 18+ context queries when the app needs to explain why today's
+weather matters, not just display raw forecast values. Both query results are
+optional.
+
+For "unusual tomorrow" or "what is changing?" features, request both `.changes`
+and `.historicalComparisons`. Use `.changes` for significant upcoming changes,
+then use `.historicalComparisons` to explain how current or forecast conditions
+compare with historical averages.
+
+```swift
+let (changes, comparisons) = try await weatherService.weather(
+    for: location,
+    including: .changes, .historicalComparisons
+)
+```
+
+For historical statistics, use the `WeatherService` statistics and summary
+methods rather than `WeatherQuery`. In variadic `including:` calls, state that
+tuple result order matches the query argument order. Load
+`references/weatherkit-patterns.md` when implementing daily summaries, daily
+statistics, hourly statistics, or monthly statistics.
+Use statistics properties such as `averagePrecipitationProbability`, not
+forecast-only `DayWeather.precipitationChance`, in statistics examples.
 
 ## Attribution
 
@@ -261,8 +330,10 @@ struct WeatherAttributionView: View {
 
 ## Availability
 
-Check which weather datasets are available for a given location. Not all datasets
-are available in all countries.
+Check whether weather alerts or minute forecast data are available for a
+location. `WeatherAvailability` reports only alert and minute availability;
+other datasets, such as current weather, are expected to be supported for
+geographic locations.
 
 ```swift
 func checkAvailability(for location: CLLocation) async throws {
@@ -350,8 +421,11 @@ let weather = try await weatherService.weather(for: location) // Throws
 
 ### DON'T: Make repeated requests without caching
 
-Weather data updates every few minutes, not every second. Cache responses
-to stay within API quotas and improve performance.
+WeatherKit models include `metadata.expirationDate`. Cache responses until that
+expiration instead of inventing a fixed refresh interval. Avoid unconditional
+network calls from every `onAppear` or `.task`; let an `@Observable` model,
+view model, or cache own `loadIfNeeded`, and reserve explicit refresh for user
+refresh actions or location/query changes.
 
 ```swift
 // WRONG: Fetch on every view appearance
@@ -359,21 +433,20 @@ to stay within API quotas and improve performance.
     let weather = try? await fetchWeather()
 }
 
-// CORRECT: Cache with a staleness interval
+// CORRECT: let the model/cache decide whether a fetch is needed
 actor WeatherCache {
     private var cached: CurrentWeather?
-    private var lastFetch: Date?
+    private var expiresAt: Date?
 
     func current(for location: CLLocation) async throws -> CurrentWeather {
-        if let cached, let lastFetch,
-           Date.now.timeIntervalSince(lastFetch) < 600 {
+        if let cached, let expiresAt, Date.now < expiresAt {
             return cached
         }
         let fresh = try await WeatherService.shared.weather(
             for: location, including: .current
         )
         cached = fresh
-        lastFetch = .now
+        expiresAt = fresh.metadata.expirationDate
         return fresh
     }
 }
@@ -389,8 +462,9 @@ actor WeatherCache {
 - [ ] Only needed `WeatherQuery` datasets fetched (not full `weather(for:)` when unnecessary)
 - [ ] Minute forecast handled as optional (nil in unsupported regions)
 - [ ] Weather alerts checked for nil before iteration
-- [ ] Responses cached with a reasonable staleness interval (5-15 minutes)
-- [ ] `WeatherAvailability` checked before fetching region-limited datasets
+- [ ] Alert detail links use non-optional `detailsURL`; optional `region` is nil-safe
+- [ ] Responses cached until each model's `metadata.expirationDate`
+- [ ] `WeatherAvailability` used for alert/minute availability, not as a broad support matrix
 - [ ] Location permission requested before passing `CLLocation` to service
 - [ ] Temperature and measurements formatted with `Measurement.formatted()` for locale
 
@@ -401,10 +475,19 @@ actor WeatherCache {
 - [WeatherService](https://sosumi.ai/documentation/weatherkit/weatherservice)
 - [WeatherAttribution](https://sosumi.ai/documentation/weatherkit/weatherattribution)
 - [WeatherQuery](https://sosumi.ai/documentation/weatherkit/weatherquery)
+- [WeatherQuery.daily(startDate:endDate:)](https://sosumi.ai/documentation/weatherkit/weatherquery/daily(startdate:enddate:))
+- [WeatherQuery.hourly(startDate:endDate:)](https://sosumi.ai/documentation/weatherkit/weatherquery/hourly(startdate:enddate:))
 - [CurrentWeather](https://sosumi.ai/documentation/weatherkit/currentweather)
+- [CurrentWeather.temperature](https://sosumi.ai/documentation/weatherkit/currentweather/temperature)
+- [Measurement.formatted()](https://sosumi.ai/documentation/foundation/measurement/formatted())
 - [Forecast](https://sosumi.ai/documentation/weatherkit/forecast)
 - [HourWeather](https://sosumi.ai/documentation/weatherkit/hourweather)
 - [DayWeather](https://sosumi.ai/documentation/weatherkit/dayweather)
 - [WeatherAlert](https://sosumi.ai/documentation/weatherkit/weatheralert)
 - [WeatherAvailability](https://sosumi.ai/documentation/weatherkit/weatheravailability)
+- [WeatherMetadata.expirationDate](https://sosumi.ai/documentation/weatherkit/weathermetadata/expirationdate)
+- [WeatherQuery.changes](https://sosumi.ai/documentation/weatherkit/weatherquery/changes)
+- [WeatherQuery.historicalComparisons](https://sosumi.ai/documentation/weatherkit/weatherquery/historicalcomparisons)
+- [WeatherKit updates](https://sosumi.ai/documentation/updates/weatherkit)
+- [Bring context to today's weather](https://sosumi.ai/videos/play/wwdc2024/10067)
 - [Fetching weather forecasts with WeatherKit](https://sosumi.ai/documentation/weatherkit/fetching_weather_forecasts_with_weatherkit)

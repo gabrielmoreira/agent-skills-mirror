@@ -1,6 +1,6 @@
 ---
 name: swiftdata
-description: "Implement, review, or improve data persistence using SwiftData. Use when defining @Model classes with @Attribute, @Relationship, @Transient, @Unique, or @Index; when querying with @Query, #Predicate, FetchDescriptor, or SortDescriptor; when configuring ModelContainer and ModelContext for SwiftUI or background work with @ModelActor; when planning schema migrations with VersionedSchema and SchemaMigrationPlan; when setting up CloudKit sync with ModelConfiguration; or when coexisting with or migrating from Core Data."
+description: "Implement, review, or improve data persistence using SwiftData. Use when defining @Model classes with @Attribute, @Relationship, @Transient, #Unique, or #Index; when querying with @Query, #Predicate, FetchDescriptor, or SortDescriptor; when configuring ModelContainer and ModelContext for SwiftUI or background work with @ModelActor; when planning schema migrations with VersionedSchema and SchemaMigrationPlan; when setting up CloudKit sync with ModelConfiguration; or when coexisting with or migrating from Core Data."
 ---
 
 # SwiftData
@@ -18,6 +18,7 @@ with Swift 6.3.
 - [#Predicate](#predicate)
 - [FetchDescriptor](#fetchdescriptor)
 - [Schema Versioning and Migration](#schema-versioning-and-migration)
+- [Core Data Coexistence Boundary](#core-data-coexistence-boundary)
 - [Concurrency (`@ModelActor`)](#concurrency-modelactor)
 - [SwiftUI Integration](#swiftui-integration)
 - [Common Mistakes](#common-mistakes)
@@ -48,7 +49,7 @@ class Trip {
 }
 ```
 
-**`@Attribute` options**: `.externalStorage`, `.unique`, `.spotlight`, `.allowsCloudEncryption`, `.preserveValueOnDeletion` (iOS 18+), `.ephemeral`, `.transformable(by:)`. Rename: `@Attribute(originalName: "old_name")`.
+**`@Attribute` options**: `.externalStorage`, `.unique`, `.spotlight`, `.allowsCloudEncryption`, `.preserveValueOnDeletion`, `.ephemeral`, `.transformable(by:)`. Rename: `@Attribute(originalName: "old_name")`.
 
 **`@Relationship`**: `deleteRule:` `.cascade`/`.nullify`(default)/`.deny`/`.noAction`. Specify `inverse:` for reliable behavior. Unidirectional (iOS 18+): `inverse: nil`.
 
@@ -164,7 +165,8 @@ struct RecentView: View {
 
 ```swift
 #Predicate<Trip> { $0.destination.localizedStandardContains("paris") }  // String
-#Predicate<Trip> { $0.startDate > Date.now }                            // Date
+let now = Date()
+#Predicate<Trip> { $0.startDate > now }                                 // Date
 #Predicate<Trip> { $0.isFavorite && $0.destination != "Unknown" }       // Compound
 #Predicate<Trip> { $0.accommodation?.name != nil }                      // Optional
 #Predicate<Trip> { $0.tags.contains { $0.name == "adventure" } }        // Collection
@@ -223,6 +225,23 @@ static let migrateV2toV3 = MigrationStage.custom(
 ```
 
 Lightweight handles: adding optional/defaulted properties, renaming (`originalName`), removing properties, adding model types.
+
+## Core Data Coexistence Boundary
+
+Use this skill when the work is to run SwiftData alongside an existing Core
+Data store or migrate screens from Core Data to SwiftData over time. Keep pure
+Core Data stack setup, `NSManagedObjectContext`, `NSFetchRequest`, and batch
+Core Data operations in the sibling `core-data` skill.
+
+For coexistence, give boundary guidance before detailed migration advice:
+
+- Point SwiftData and Core Data at the same SQLite store URL.
+- Match Core Data entity names, property names, types, and relationship shapes
+  in the SwiftData `@Model` definitions.
+- Use `@Attribute(originalName:)` for SwiftData properties whose persisted Core
+  Data names differ from the Swift names.
+- Do not write the same entity from both stacks at the same time; assign one
+  stack as the writer for each entity during migration.
 
 ## Concurrency (`@ModelActor`)
 
@@ -350,6 +369,6 @@ struct DetailView: View {
 
 - [references/swiftdata-advanced.md](references/swiftdata-advanced.md) — custom data stores, history tracking, CloudKit, composite attributes, model inheritance, undo/redo, performance
 - [references/swiftdata-queries.md](references/swiftdata-queries.md) — `@Query` variants, FetchDescriptor deep dive, sectioned queries, dynamic queries, background fetch
-- [references/core-data-coexistence.md](references/core-data-coexistence.md) — standalone Core Data patterns and Core Data to SwiftData migration
+- [references/core-data-coexistence.md](references/core-data-coexistence.md) — Core Data + SwiftData coexistence and migration boundaries
 - [references/predicate-pitfalls.md](references/predicate-pitfalls.md) — #Predicate runtime crashes, unsupported expressions, safe patterns
 - [references/indexing.md](references/indexing.md) — #Index macro, compound indexes, when to index, migration

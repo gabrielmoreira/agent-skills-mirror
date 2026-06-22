@@ -10,6 +10,7 @@ code stays single-threaded by default until you choose to introduce concurrency.
 - [SE-0461: nonisolated(nonsending)](#se-0461-nonisolatednonsending)
 - [`@concurrent Attribute`](#concurrent-attribute)
 - [SE-0472: Task.immediate](#se-0472-taskimmediate)
+- [Swift 6.4 Cleanup APIs](#swift-64-cleanup-apis)
 - [Isolated Conformances](#isolated-conformances)
 - [SE-0481: weak let](#se-0481-weak-let)
 - [SE-0475: Transactional Observation (Observations)](#se-0475-transactional-observation-observations)
@@ -130,8 +131,10 @@ class PhotoProcessor {
 ```
 
 **Steps to offload a function to background:**
-1. Ensure the containing type is `nonisolated` (or the function itself).
-2. Add `@concurrent` to the function.
+1. Ensure the containing type is `nonisolated` or the function can be called
+   from a nonisolated context.
+2. Add `@concurrent` to the function. `nonisolated` alone does not move
+   CPU-heavy work off the caller's actor.
 3. Add `async` if not already asynchronous.
 4. Add `await` at call sites.
 
@@ -155,6 +158,19 @@ Task.immediate { await handleUserInput() }
 ```
 
 Use for latency-sensitive work where enqueue delay is unacceptable.
+
+## Swift 6.4 Cleanup APIs
+
+Swift 6.4 adds async `defer` (SE-0493) and cancellation shields (SE-0504).
+Gate both behind Swift 6.4 / Xcode 27 beta and the platform availability of
+`withTaskCancellationShield` (iOS 27+ beta).
+
+Use async `defer` when cleanup itself must call async APIs. The defer body
+inherits surrounding isolation and is implicitly awaited at scope exit, but it
+does not hide cancellation from cleanup code.
+
+Use `withTaskCancellationShield` only for short cleanup or rollback that must
+finish after cancellation. Do not wrap normal user-cancelable work in a shield.
 
 ## Isolated Conformances
 

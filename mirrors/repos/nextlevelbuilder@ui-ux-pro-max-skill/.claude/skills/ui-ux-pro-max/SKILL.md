@@ -330,6 +330,8 @@ sudo apt update && sudo apt install python3
 winget install Python.Python.3.12
 ```
 
+> **Note:** On Windows, use `python` instead of `python3` to run scripts (e.g., `python scripts/search.py` instead of `python3 scripts/search.py`).
+
 ---
 
 ## How to Use This Skill

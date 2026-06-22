@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 107 file(s) materialized.
+Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 115 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 107 |
+| Files         | 115 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -159,13 +159,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 98 | ✓ | [`.cursor/rules/mintlify`](.cursor/rules/mintlify) |
 | 99 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 100 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 101 | ✓ | [`packages/pieces/CLAUDE.md`](packages/pieces/CLAUDE.md) |
-| 102 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
-| 103 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
-| 104 | ✓ | [`packages/server/engine/CLAUDE.md`](packages/server/engine/CLAUDE.md) |
-| 105 | ✓ | [`packages/shared/CLAUDE.md`](packages/shared/CLAUDE.md) |
-| 106 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
-| 107 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
+| 101 | ✓ | [`packages/core/execution/AGENTS.md`](packages/core/execution/AGENTS.md) |
+| 102 | ✓ | [`packages/core/execution/CLAUDE.md`](packages/core/execution/CLAUDE.md) |
+| 103 | ✓ | [`packages/core/formula/AGENTS.md`](packages/core/formula/AGENTS.md) |
+| 104 | ✓ | [`packages/core/formula/CLAUDE.md`](packages/core/formula/CLAUDE.md) |
+| 105 | ✓ | [`packages/core/piece-types/AGENTS.md`](packages/core/piece-types/AGENTS.md) |
+| 106 | ✓ | [`packages/core/piece-types/CLAUDE.md`](packages/core/piece-types/CLAUDE.md) |
+| 107 | ✓ | [`packages/core/shared/CLAUDE.md`](packages/core/shared/CLAUDE.md) |
+| 108 | ✓ | [`packages/core/utils/AGENTS.md`](packages/core/utils/AGENTS.md) |
+| 109 | ✓ | [`packages/core/utils/CLAUDE.md`](packages/core/utils/CLAUDE.md) |
+| 110 | ✓ | [`packages/pieces/CLAUDE.md`](packages/pieces/CLAUDE.md) |
+| 111 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
+| 112 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
+| 113 | ✓ | [`packages/server/engine/CLAUDE.md`](packages/server/engine/CLAUDE.md) |
+| 114 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
+| 115 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
 
 ---
 

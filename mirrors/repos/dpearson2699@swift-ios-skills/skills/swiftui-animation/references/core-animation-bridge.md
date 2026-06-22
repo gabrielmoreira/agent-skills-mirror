@@ -1,6 +1,6 @@
 # Core Animation Bridge
 
-Patterns for bridging Core Animation (QuartzCore) with SwiftUI. Use when SwiftUI's built-in animation system is insufficient -- typically for performance-critical layer animations, unsupported animation curves, or direct CALayer manipulation. Overflow reference for the `swiftui-animation` skill.
+Patterns for bridging Core Animation (QuartzCore) with SwiftUI. Use when SwiftUI's built-in animation system is insufficient -- typically for performance-critical layer animations, layer-only properties, additive animations, or direct CALayer manipulation. Overflow reference for the `swiftui-animation` skill.
 
 ## Contents
 
@@ -20,14 +20,19 @@ SwiftUI's animation system covers most use cases. Drop to Core Animation only wh
 
 | Scenario | Why CA Is Needed |
 |----------|-----------------|
-| **Custom timing functions** beyond spring/ease | `CAMediaTimingFunction` supports arbitrary cubic Bezier curves |
+| **CALayer-specific timing** | `CAMediaTimingFunction` keeps timing attached to direct layer animations |
 | **Layer-specific properties** (shadowPath, borderWidth, etc.) | SwiftUI does not expose all CALayer animatable properties |
 | **Additive animations** | CA supports additive blending of multiple concurrent animations on the same property |
 | **Frame-synchronized drawing** | `CADisplayLink` provides precise frame timing for custom rendering |
 | **Performance-critical particle/effects** | Direct layer manipulation avoids SwiftUI's diffing overhead |
 | **Animation along a path** | `CAKeyframeAnimation` supports `CGPath`-based animation paths |
 
-If SwiftUI's `withAnimation`, `PhaseAnimator`, or `KeyframeAnimator` can achieve the effect, prefer them. Core Animation bridging adds complexity and requires explicit `UIViewRepresentable` wrappers.
+Do not drop to Core Animation just for a cubic Bezier timing curve: SwiftUI has
+`UnitCurve.bezier(startControlPoint:endControlPoint:)` and
+`Animation.timingCurve(_:duration:)`. If SwiftUI's `withAnimation`,
+`PhaseAnimator`, or `KeyframeAnimator` can achieve the effect, prefer them.
+Core Animation bridging adds complexity and requires explicit
+`UIViewRepresentable` wrappers.
 
 ## CABasicAnimation
 
@@ -51,8 +56,12 @@ layer.opacity = 1.0 // Set the final model value
 
 ### Custom Bezier Timing
 
+For SwiftUI view animations, prefer
+`Animation.timingCurve(.bezier(startControlPoint:endControlPoint:), duration:)`.
+Use `CAMediaTimingFunction` when you are already animating a `CALayer`
+property directly.
+
 ```swift
-// Custom cubic Bezier curve -- not available in SwiftUI
 let timingFunction = CAMediaTimingFunction(controlPoints: 0.2, 0.8, 0.2, 1.0)
 
 let animation = CABasicAnimation(keyPath: "position.y")
@@ -82,7 +91,7 @@ layer.add(animation, forKey: "shadowPath")
 
 **Important:** Always set the model value (the property on the layer itself) to the final state. Core Animation operates on a separate presentation layer -- without setting the model value, the layer snaps back when the animation completes.
 
-> **Docs:** [CABasicAnimation](https://sosumi.ai/documentation/quartzcore/cabasicanimation) | [CAMediaTimingFunction](https://sosumi.ai/documentation/quartzcore/camediatimingfunction)
+> **Docs:** [CABasicAnimation](https://sosumi.ai/documentation/quartzcore/cabasicanimation) | [CAMediaTimingFunction](https://sosumi.ai/documentation/quartzcore/camediatimingfunction) | [UnitCurve.bezier](https://sosumi.ai/documentation/swiftui/unitcurve/bezier(startcontrolpoint:endcontrolpoint:)) | [Animation.timingCurve(_:duration:)](https://sosumi.ai/documentation/swiftui/animation/timingcurve(_:duration:))
 
 ## CAKeyframeAnimation
 
@@ -253,9 +262,9 @@ final class FrameAnimator {
 }
 ```
 
-### ProMotion Frame Rate Control
+### ProMotion Frame Rate Hints
 
-On ProMotion displays (120 Hz), use `preferredFrameRateRange` to balance smoothness and power:
+On ProMotion displays, use `preferredFrameRateRange` to request a sustainable refresh-rate range that balances smoothness and power. Treat the values as hints: the system can choose different rates based on hardware, power, thermal state, and other onscreen animation.
 
 ```swift
 displayLink?.preferredFrameRateRange = CAFrameRateRange(
@@ -265,13 +274,13 @@ displayLink?.preferredFrameRateRange = CAFrameRateRange(
 )
 ```
 
-| Range | Use Case |
+| Hint | Use Case |
 |-------|----------|
-| `preferred: 120` | Smooth scrolling, gesture tracking |
-| `preferred: 60` | Standard animations |
+| `preferred: 120` | Short, high-impact motion when the app can sustain it |
+| `preferred: 60` | Standard interactive animations |
 | `preferred: 30` | Ambient/slow animations, power saving |
 
-**Important:** Always call `invalidate()` when done. A running `CADisplayLink` prevents the CPU from idling and drains battery.
+**Important:** Always call `invalidate()` when done. A running `CADisplayLink` prevents the CPU from idling and drains battery. Drive custom animation from `targetTimestamp`, and scale rendering detail or work per frame to the refresh rate the system actually selects.
 
 > **Docs:** [CADisplayLink](https://sosumi.ai/documentation/quartzcore/cadisplaylink) | [Optimizing ProMotion refresh rates](https://sosumi.ai/documentation/quartzcore/optimizing-promotion-refresh-rates-for-iphone-13-pro-and-ipad-pro)
 
@@ -490,6 +499,7 @@ Use `CAAnimationDelegate` on the Coordinator to report animation completion back
 
 ```swift
 struct AnimatedBadge: UIViewRepresentable {
+    @Binding var isPresented: Bool
     @Binding var isAnimationComplete: Bool
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
@@ -504,16 +514,25 @@ struct AnimatedBadge: UIViewRepresentable {
         return view
     }
 
-    func updateUIView(_ uiView: UIView, context: Context) {}
+    func updateUIView(_ uiView: UIView, context: Context) {
+        context.coordinator.parent = self
 
-    func animateIn(_ uiView: UIView) {
+        if isPresented && !context.coordinator.didAnimateIn {
+            context.coordinator.didAnimateIn = true
+            animateIn(uiView, delegate: context.coordinator)
+        } else if !isPresented {
+            context.coordinator.didAnimateIn = false
+        }
+    }
+
+    private func animateIn(_ uiView: UIView, delegate: CAAnimationDelegate) {
         guard let badge = uiView.layer.sublayers?.first(where: { $0.name == "badge" }) else { return }
 
         let spring = CASpringAnimation(perceptualDuration: 0.5, bounce: 0.3)
         spring.keyPath = "transform.scale"
         spring.fromValue = 0.0
         spring.toValue = 1.0
-        spring.delegate = uiView.next as? CAAnimationDelegate
+        spring.delegate = delegate
 
         badge.add(spring, forKey: "appear")
         badge.transform = CATransform3DIdentity
@@ -521,6 +540,7 @@ struct AnimatedBadge: UIViewRepresentable {
 
     final class Coordinator: NSObject, CAAnimationDelegate {
         var parent: AnimatedBadge
+        var didAnimateIn = false
 
         init(_ parent: AnimatedBadge) { self.parent = parent }
 

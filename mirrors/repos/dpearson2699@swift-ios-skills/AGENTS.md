@@ -165,7 +165,7 @@ This returns a clean JSON object with just the post content and comments.
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **swift-ios-skills** (8364 symbols, 8505 relationships, 0 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **swift-ios-skills** (8387 symbols, 8528 relationships, 0 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 

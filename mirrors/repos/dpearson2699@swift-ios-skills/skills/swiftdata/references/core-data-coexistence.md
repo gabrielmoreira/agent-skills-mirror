@@ -1,200 +1,28 @@
 # Core Data Coexistence
 
-Standalone Core Data patterns for projects not yet on SwiftData, strategies
-for running Core Data and SwiftData side by side against the same store, and
-migration guidance for transitioning from Core Data to SwiftData.
+Guidance for using SwiftData alongside an existing Core Data store and for
+planning a transition from Core Data to SwiftData. For apps that are staying on
+Core Data without SwiftData, use the sibling `core-data` skill instead.
+
+When a request says "Core Data" but the actual work is shared-store
+coexistence, gradual screen migration to `@Model`, or mapping a `.xcdatamodeld`
+to SwiftData types, route to this SwiftData skill. Answer only the high-level
+boundary first; do not turn the response into a full SwiftData migration plan
+unless the user asks for implementation detail.
 
 ## Contents
 
-- [Standalone Core Data Stack](#standalone-core-data-stack)
 - [Core Data + SwiftData Coexistence](#core-data--swiftdata-coexistence)
 - [Migration from Core Data to SwiftData](#migration-from-core-data-to-swiftdata)
 
-## Standalone Core Data Stack
-
-For teams that haven't adopted SwiftData, Core Data remains a fully supported
-persistence framework.
-
-Docs: [NSPersistentContainer](https://sosumi.ai/documentation/coredata/nspersistentcontainer),
-[Setting up a Core Data stack](https://sosumi.ai/documentation/coredata/setting-up-a-core-data-stack)
-
-### NSPersistentContainer Setup
-
-`NSPersistentContainer` encapsulates the Core Data stack: the managed object
-model, the persistent store coordinator, and the managed object context.
-
-```swift
-import CoreData
-
-final class CoreDataStack: @unchecked Sendable {
-    static let shared = CoreDataStack()
-
-    let container: NSPersistentContainer
-
-    private init() {
-        // Name must match the .xcdatamodeld file name
-        container = NSPersistentContainer(name: "MyAppModel")
-
-        container.loadPersistentStores { description, error in
-            if let error {
-                fatalError("Core Data store failed to load: \(error)")
-            }
-        }
-
-        // Automatically merge changes from background contexts
-        container.viewContext.automaticallyMergesChangesFromParent = true
-        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-    }
-
-    /// The main-thread context for UI reads
-    var viewContext: NSManagedObjectContext {
-        container.viewContext
-    }
-
-    /// A new background context for writes
-    func newBackgroundContext() -> NSManagedObjectContext {
-        container.newBackgroundContext()
-    }
-}
-```
-
-### NSManagedObjectContext Usage
-
-The `viewContext` is bound to the main queue; use it for reads and UI. Use
-background contexts for writes and batch operations.
-
-```swift
-// Reading on the main context
-func fetchTrips() throws -> [CDTrip] {
-    let context = CoreDataStack.shared.viewContext
-    let request = CDTrip.fetchRequest()
-    request.sortDescriptors = [NSSortDescriptor(keyPath: \CDTrip.startDate, ascending: true)]
-    return try context.fetch(request)
-}
-
-// Writing on a background context
-func createTrip(name: String, destination: String) async throws {
-    let context = CoreDataStack.shared.newBackgroundContext()
-    try await context.perform {
-        let trip = CDTrip(context: context)
-        trip.name = name
-        trip.destination = destination
-        trip.startDate = Date.now
-        trip.id = UUID()
-        try context.save()
-    }
-}
-```
-
-### NSFetchRequest with NSPredicate and NSSortDescriptor
-
-```swift
-import CoreData
-
-func fetchUpcomingTrips(destination: String) throws -> [CDTrip] {
-    let context = CoreDataStack.shared.viewContext
-    let request: NSFetchRequest<CDTrip> = CDTrip.fetchRequest()
-
-    // Predicate: filter by destination and future start date
-    request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-        NSPredicate(format: "destination ==[cd] %@", destination),
-        NSPredicate(format: "startDate > %@", Date.now as NSDate)
-    ])
-
-    // Sort: newest first
-    request.sortDescriptors = [
-        NSSortDescriptor(keyPath: \CDTrip.startDate, ascending: false)
-    ]
-
-    // Performance: limit results and prefetch relationships
-    request.fetchLimit = 20
-    request.relationshipKeyPathsForPrefetching = ["accommodation"]
-
-    return try context.fetch(request)
-}
-
-// Counting without loading objects
-func countFavoriteTrips() throws -> Int {
-    let request: NSFetchRequest<CDTrip> = CDTrip.fetchRequest()
-    request.predicate = NSPredicate(format: "isFavorite == YES")
-    return try CoreDataStack.shared.viewContext.count(for: request)
-}
-```
-
-### Saving Context and Error Handling
-
-```swift
-func saveContext(_ context: NSManagedObjectContext) throws {
-    guard context.hasChanges else { return }
-
-    do {
-        try context.save()
-    } catch {
-        // Roll back unsaved changes to prevent inconsistent state
-        context.rollback()
-
-        if let nsError = error as NSError? {
-            // Check for common Core Data errors
-            switch nsError.code {
-            case NSManagedObjectConstraintMergeError:
-                // Unique constraint violation -- handle merge conflict
-                throw PersistenceError.constraintViolation(nsError)
-            case NSValidationMissingMandatoryPropertyError:
-                // Required property is nil
-                throw PersistenceError.validationFailed(nsError)
-            default:
-                throw PersistenceError.saveFailed(nsError)
-            }
-        }
-        throw error
-    }
-}
-
-enum PersistenceError: Error {
-    case constraintViolation(NSError)
-    case validationFailed(NSError)
-    case saveFailed(NSError)
-}
-```
-
-### Background Processing Pattern
-
-```swift
-func importTrips(_ records: [TripRecord]) async throws {
-    let context = CoreDataStack.shared.newBackgroundContext()
-    try await context.perform {
-        // Batch insert for performance (iOS 13+)
-        let batchInsert = NSBatchInsertRequest(
-            entity: CDTrip.entity(),
-            objects: records.map { record in
-                [
-                    "id": record.id,
-                    "name": record.name,
-                    "destination": record.destination,
-                    "startDate": record.startDate
-                ] as [String: Any]
-            }
-        )
-        batchInsert.resultType = .count
-        let result = try context.execute(batchInsert) as? NSBatchInsertResult
-        print("Inserted \(result?.result as? Int ?? 0) trips")
-
-        // Merge changes into viewContext
-        NSManagedObjectContext.mergeChanges(
-            fromRemoteContextSave: [NSInsertedObjectsKey: []],
-            into: [CoreDataStack.shared.viewContext]
-        )
-    }
-}
-```
-
 ## Core Data + SwiftData Coexistence
 
-Core Data and SwiftData can share the same underlying SQLite store. This
-enables gradual migration: keep existing Core Data code running while
-introducing SwiftData for new features.
+Apple's current coexistence sample is documented as iOS 27 / Xcode 27 beta.
+Use it as source-grounded migration guidance, not as an unconditional iOS 26
+platform guarantee. For shipping work on earlier SDKs, verify the exact
+deployment target and test against copies of real stores.
 
-Docs: [Adopting SwiftData for a Core Data app](https://sosumi.ai/documentation/coredata/adopting_swiftdata_for_a_core_data_app)
+Docs: [Adopting SwiftData for a Core Data app](https://sosumi.ai/documentation/coredata/adopting-swiftdata-for-a-core-data-app)
 
 ### Using the Same Underlying Store
 
@@ -227,9 +55,13 @@ let container = try ModelContainer(
 Key rules for coexistence:
 
 1. The `@Model` class name must match the Core Data entity name.
-2. Property names and types must match exactly.
-3. Use `@Attribute(originalName:)` if you renamed properties.
+2. Property names, relationship shapes, and value types must match the existing
+   store schema.
+3. Use `@Attribute(originalName:)` when the SwiftData property name differs
+   from the persisted Core Data property name.
 4. Both stacks should use the same store file.
+5. Standalone Core Data remains the right scope for apps that are not adopting
+   SwiftData.
 
 ```swift
 // Core Data entity: CDTrip (entity name "Trip" in .xcdatamodeld)
@@ -260,7 +92,8 @@ class Trip {
 //          SwiftData reads the same store for new UI
 @main
 struct MyApp: App {
-    let coreDataStack = CoreDataStack.shared  // Existing Core Data
+    let existingCoreDataStoreURL = NSPersistentContainer.defaultDirectoryURL()
+        .appendingPathComponent("MyAppModel.sqlite")
 
     var body: some Scene {
         WindowGroup {
@@ -268,7 +101,7 @@ struct MyApp: App {
         }
         // SwiftData reads from the same store
         .modelContainer(for: Trip.self, configurations:
-            ModelConfiguration(url: coreDataStack.storeURL)
+            ModelConfiguration(url: existingCoreDataStoreURL)
         )
     }
 }
@@ -282,9 +115,8 @@ struct MyApp: App {
 
 - **Do not write to the same entity from both stacks simultaneously.** Pick
   one stack per entity for writes to avoid conflicts.
-- Core Data's `automaticallyMergesChangesFromParent` and
-  `NSPersistentStoreRemoteChangeNotification` help detect changes from the
-  other stack.
+- Enable persistent history tracking on the Core Data side when using Apple's
+  beta coexistence pattern; SwiftData history can then detect relevant changes.
 - Test thoroughly -- schema mismatches between the `.xcdatamodeld` and
   `@Model` cause crashes.
 
@@ -361,7 +193,7 @@ class Tag {
 | UUID | UUID |
 | URI | URL |
 | Decimal | Decimal |
-| Transformable | Codable struct (composite, iOS 18+) |
+| Transformable | Compatible `Codable` value type; `Schema.CompositeAttribute` is iOS 17+, while `@Attribute(.codable)` is iOS 27 beta |
 | To-one relationship | Optional reference to `@Model` |
 | To-many relationship | Array of `@Model` |
 

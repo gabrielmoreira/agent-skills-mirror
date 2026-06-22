@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `thedotmack/claude-mem` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `thedotmack/claude-mem` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `thedotmack/claude-mem` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,7 +80,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`plugin/skills/timeline-report/SKILL.md`](plugin/skills/timeline-report/SKILL.md) |
 | 20 | ✓ | [`plugin/skills/version-bump/SKILL.md`](plugin/skills/version-bump/SKILL.md) |
 | 21 | ✓ | [`plugin/skills/weekly-digests/SKILL.md`](plugin/skills/weekly-digests/SKILL.md) |
-| 22 | ✓ | [`plugin/skills/wowerpoint/SKILL.md`](plugin/skills/wowerpoint/SKILL.md) |
+| 22 | ✓ | [`plugin/skills/what-the/SKILL.md`](plugin/skills/what-the/SKILL.md) |
+| 23 | ✓ | [`plugin/skills/wowerpoint/SKILL.md`](plugin/skills/wowerpoint/SKILL.md) |
 
 ---
 

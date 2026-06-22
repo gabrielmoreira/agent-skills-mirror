@@ -138,12 +138,18 @@ TabView(selection: $selectedTab) {
 
 ### Tab Search Role
 
-Replace the tab bar with a search field when the search tab is active:
+Mark a dedicated search tab so the system can apply default search title, icon, and pinning behavior. Use `tabViewSearchActivation(_:)` when selecting the search tab should also activate search:
 
 ```swift
-Tab(role: .search) {
-    SearchView()
+TabView(selection: $selectedTab) {
+    Tab(value: AppTab.search, role: .search) {
+        NavigationStack {
+            SearchView()
+                .searchable(text: $query)
+        }
+    }
 }
+.tabViewSearchActivation(.searchTabSelection)
 ```
 
 ### Sidebar Customization

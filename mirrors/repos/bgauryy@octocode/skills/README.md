@@ -9,14 +9,13 @@ Specialized AI agent skills extending OctoCode. 19 skills live under `skills/`.
 | Skill | Directory | Use For |
 |-------|-----------|---------|
 | **Install** | `octocode-install/` | Set up OctoCode, auth, IDE MCP, and skills. |
-| **CLI** | `octocode-cli/` | Run Octocode tools from the shell. |
-| **Researcher** | `octocode-researcher/` | Fast code search, symbol lookup, and file discovery. |
+| **CLI** | `octocode/` | Run Octocode tools from the shell. |
+| **Researcher** | `octocode-engineer/` | Fast code search, symbol lookup, and file discovery. |
 | **Research** | `octocode-research/` | Multi-phase investigations with checkpoints. |
 | **Brainstorming** | `octocode-brainstorming/` | Validate ideas with prior art and market evidence. |
-| **Plan** | `octocode-plan/` | Build evidence-backed implementation plans. |
-| **RFC Generator** | `octocode-rfc-generator/` | Compare approaches and write technical proposals. |
+| **RFC Generator** | `octocode-rfc-generator/` | Compare approaches, write RFCs, and build evidence-backed implementation plans. |
 | **Engineer** | `octocode-engineer/` | Understand, implement, refactor, and audit code. |
-| **PR Reviewer** | `octocode-pull-request-reviewer/` | Review PRs or local diffs for defects and risk. |
+| **PR Reviewer** | `octocode-engineer/` | Review PRs or local diffs for defects and risk. |
 | **Roast** | `octocode-roast/` | Brutal but actionable code-quality critique. |
 | **Prompt Optimizer** | `octocode-prompt-optimizer/` | Harden prompts, skills, and agent instructions. |
 | **Design** | `octocode-design/` | Generate design-system and UI architecture guidance. |

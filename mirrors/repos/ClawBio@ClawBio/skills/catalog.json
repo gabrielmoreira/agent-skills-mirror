@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated_by": "scripts/generate_catalog.py",
-  "skill_count": 87,
+  "skill_count": 89,
   "galaxy_tool_count": 8182,
   "skills": [
     {
@@ -92,7 +92,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/archaic-introgression/archaic_introgression.py --demo",
+      "demo_command": "python skills/archaic-introgression/pipeline.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [
@@ -200,7 +200,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/bigquery-public/bigquery_backends.py --demo",
+      "demo_command": "python skills/bigquery-public/bigquery_support.py --demo",
       "dependencies": [],
       "tags": [
         "bigquery",
@@ -448,7 +448,7 @@
     {
       "name": "claw-methylation-cycle",
       "cli_alias": null,
-      "description": "",
+      "description": "Methylation cycle analysis — enzymatic activity profiles, Net Methylation Capacity, BH4 axis estimates, compound heterozygosity detection from SNP genotype data.",
       "version": "0.1.3",
       "status": "planned",
       "has_script": true,
@@ -505,7 +505,7 @@
       ]
     },
     {
-      "name": "clawpathy_autoresearch",
+      "name": "clawpathy-autoresearch",
       "cli_alias": null,
       "description": "Eval-driven skill tuning. Given a task and an LLM-judge rubric, iteratively rewrites a SKILL.md until a downstream executor agent performs well against the judge. Low-code: all evaluation is LLM-as-judge, not deterministic Python.",
       "version": "1.0.0",
@@ -513,7 +513,7 @@
       "has_script": true,
       "has_tests": false,
       "has_demo": true,
-      "demo_command": "python skills/clawpathy_autoresearch/dispatcher.py --demo",
+      "demo_command": "python skills/clawpathy-autoresearch/dispatcher.py --demo",
       "dependencies": [],
       "tags": [
         "meta",
@@ -544,7 +544,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-trial-finder/opentargets.py --demo",
+      "demo_command": "python skills/clinical-trial-finder/euctr.py --demo",
       "dependencies": [
         "python>=3.11"
       ],
@@ -570,6 +570,35 @@
       "chaining_partners": []
     },
     {
+      "name": "clinical-variant-prioritizer",
+      "cli_alias": null,
+      "description": "Screen a genotype set (array or WGS-derived) against OMIM-morbid, ACMG-SF and Hereditary-Cancer gene panels and prioritise carried variants by ClinVar significance, gnomAD frequency, inheritance model and zygosity, following the pathogenicity-screening method of Corpas et al. 2021 (Whole Genome Interpretation for a Family of Five).",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/clinical-variant-prioritizer/prioritize.py --demo",
+      "dependencies": [],
+      "tags": [
+        "clinical-genomics",
+        "variant-prioritisation",
+        "clinvar",
+        "acmg",
+        "pathogenicity",
+        "carrier-screening"
+      ],
+      "trigger_keywords": [
+        "variant prioritisation",
+        "clinical variants",
+        "pathogenic variant",
+        "ClinVar",
+        "carrier status",
+        "disease risk variants"
+      ],
+      "chaining_partners": []
+    },
+    {
       "name": "clinical-variant-reporter",
       "cli_alias": null,
       "description": "Classify germline variants from VCF/BCF files according to the ACMG/AMP 2015 28-criteria evidence framework and generate clinical-grade interpretation reports with per-variant evidence audit trails and ACMG SF v3.2 secondary findings screening.",
@@ -578,7 +607,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-variant-reporter/clinical_variant_reporter.py --demo",
+      "demo_command": "python skills/clinical-variant-reporter/acmg_engine.py --demo",
       "dependencies": [],
       "tags": [
         "acmg",
@@ -843,7 +872,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/drug-repurposing-screen/screen_engine.py --demo",
+      "demo_command": "python skills/drug-repurposing-screen/drug_repurposing_screen.py --demo",
       "dependencies": [
         "python>=3.10",
         "numpy>=1.24",
@@ -1056,7 +1085,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/galaxy-bridge/generate_galaxy_catalog.py --demo",
+      "demo_command": "python skills/galaxy-bridge/tool_recommender.py --demo",
       "dependencies": [],
       "tags": [
         "galaxy",
@@ -1526,7 +1555,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/illumina-bridge/illumina_providers.py --demo",
+      "demo_command": "python skills/illumina-bridge/illumina_bridge.py --demo",
       "dependencies": [],
       "tags": [
         "illumina",
@@ -1656,7 +1685,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/locuscompare-region-render/cli.py --demo",
+      "demo_command": "python skills/locuscompare-region-render/_wald_ratio_types.py --demo",
       "dependencies": [
         "python>=3.10",
         "numpy>=1.24",
@@ -1880,7 +1909,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/nfcore-rnaseq-wrapper/pipeline_source.py --demo",
+      "demo_command": "python skills/nfcore-rnaseq-wrapper/_isolated_imports.py --demo",
       "dependencies": [
         "python>=3.10"
       ],
@@ -1919,7 +1948,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/nfcore-sarek-wrapper/pipeline_source.py --demo",
+      "demo_command": "python skills/nfcore-sarek-wrapper/outputs_parser.py --demo",
       "dependencies": [
         "python>=3.11"
       ],
@@ -1966,7 +1995,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/nfcore-scrnaseq-wrapper/pipeline_source.py --demo",
+      "demo_command": "python skills/nfcore-scrnaseq-wrapper/outputs_parser.py --demo",
       "dependencies": [
         "python>=3.11",
         "pyyaml"
@@ -1984,18 +2013,9 @@
       "trigger_keywords": [
         "scrnaseq",
         "nf-core scrnaseq",
-        "run scrnaseq from fastq",
-        "preprocess 10x fastqs",
-        "generate h5ad from single-cell fastq",
         "single-cell preprocessing",
-        "nextflow scrna pipeline",
-        "10x chromium fastq pipeline",
-        "starsolo upstream processing",
-        "alevin-fry fastq to counts",
-        "run nextflow scrnaseq",
-        "upstream single-cell pipeline",
-        "fastq to h5ad single cell",
-        "10x genomics fastq pipeline"
+        "10x fastq",
+        "generate h5ad from fastq"
       ],
       "chaining_partners": [
         "scrna-orchestrator",
@@ -2012,7 +2032,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/nutrigx/parse_input.py --demo",
+      "demo_command": "python skills/nutrigx/nutrigx.py --demo",
       "dependencies": [],
       "tags": [
         "nutrigenomics",
@@ -2271,7 +2291,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/pubmed-summariser/pubmed_summariser.py --demo",
+      "demo_command": "python skills/pubmed-summariser/pubmed_api.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [
@@ -2308,15 +2328,34 @@
         "transcriptomics",
         "haploinsufficiency"
       ],
+      "trigger_keywords": [],
+      "chaining_partners": []
+    },
+    {
+      "name": "rare-high-impact-variants",
+      "cli_alias": null,
+      "description": "Count rare, high-impact loss-of-function variants carried in a VCF, annotated with molecular consequence and population allele frequency",
+      "version": "0.1.0",
+      "status": "planned",
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/rare-high-impact-variants/rare_high_impact_variants.py --demo",
+      "dependencies": [
+        "python>=3.11"
+      ],
+      "tags": [
+        "count",
+        "rare",
+        "high-impact",
+        "loss-of-function",
+        "variant-burden",
+        "lof"
+      ],
       "trigger_keywords": [
-        "rare disease rnaseq",
-        "expression outlier",
-        "OUTRIDER",
-        "FRASER",
-        "blood rna-seq diagnostic",
-        "NGRL",
-        "undiagnosed",
-        "candidate diagnosis"
+        "count",
+        "rare,",
+        "high-impact"
       ],
       "chaining_partners": []
     },

@@ -1,29 +1,24 @@
 ---
 name: ctx-insight
 description: |
-  Open the context-mode Insight analytics dashboard in the browser.
-  Shows personal metrics: session activity, tool usage, error rate,
-  parallel work patterns, project focus, and actionable insights.
-  First run installs dependencies (~30s). Subsequent runs open instantly.
+  Open the context-mode Insight dashboard in your default browser.
+  Insight is the hosted analytics layer for AI-assisted engineering teams —
+  per-engineer productive rate, retry waste, blocker detection, role-narrowed views.
   Trigger: /context-mode:ctx-insight
 user-invocable: true
 ---
 
 # Context Mode Insight
 
-Open the personal analytics dashboard in the browser.
+Open the hosted Insight dashboard in the user's default browser.
 
 ## Instructions
 
-1. Call the `ctx_insight` MCP tool (no parameters needed, or pass `port: 4747` to customize). Optional data-dir overrides: `sessionDir`/`insightSessionDir` for `INSIGHT_SESSION_DIR`, and `contentDir`/`insightContentDir` for `INSIGHT_CONTENT_DIR`.
-2. The tool will:
-   - Copy source files to cache (first run only)
-   - Install dependencies (first run only, ~30s)
-   - Build the dashboard (~1s)
-   - Start a local server
-   - Open the browser
-3. Display the tool's output to the user — it contains progress steps and the dashboard URL.
-4. Tell the user:
-   - "Dashboard is running at http://localhost:4747"
-   - "Refresh the page to see updated metrics"
-   - "Dashboard stops automatically when Claude exits. To stop sooner: kill the PID shown above."
+1. Call the `ctx_insight` MCP tool (no parameters). It opens
+   <https://context-mode.com/insight> in the default browser and returns a
+   confirmation line.
+2. Display the tool's output to the user.
+3. Tell the user:
+   - "Insight opened at https://context-mode.com/insight"
+   - The landing page at context-mode.com/insight is the single source of truth for sign-in and pricing details.
+   - If the browser did not open automatically, share the URL so they can open it manually.

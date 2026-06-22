@@ -104,9 +104,11 @@ List {
 - `.listStyle(.plain)` for feed layouts, `.insetGrouped` for settings
 - `.scrollContentBackground(.hidden)` + custom background for themed surfaces
 - `.listRowInsets(...)` and `.listRowSeparator(.hidden)` for spacing and separator control
-- Use `ScrollPosition` with `.scrollPosition($scrollPosition)` for scroll-to-top or jump-to-id
+- **Edge scrolling:** use `List` + `ScrollPosition` with `.scrollPosition($scrollPosition)` for top/bottom scroll actions
+- **Item or section jumps:** use `ScrollView` + lazy stacks with `.scrollTargetLayout()` and stable targets for reliable jump-to-id behavior
 - Use `.refreshable { }` for pull-to-refresh feeds
 - Use `.contentShape(Rectangle())` on rows that should be tappable end-to-end
+- For layout review or migration guidance, lead with container choice and constraints; keep code snippets tiny, and defer spring, transition, and timing choices to `swiftui-animation`
 
 **iOS 26:** Apply `.scrollEdgeEffectStyle(.soft, for: .top)` for modern scroll edge effects.
 
@@ -300,7 +302,7 @@ struct AppRootView: View {
 
 Prefer overlays for transient UI rather than embedding in layout stacks. Use transitions and short auto-dismiss timers. Keep overlays aligned to a clear edge (`.top` or `.bottom`). Avoid overlays that block all interaction unless explicitly needed. Don't stack many overlays; use a queue or replace the current toast.
 
-**fullScreenCover:** Use `.fullScreenCover(item:)` for immersive presentations that cover the entire screen (media viewers, onboarding flows).
+For modal routing, sheet detents, and full-screen presentation policy, hand off to the `swiftui-navigation` skill.
 
 ## Common Mistakes
 

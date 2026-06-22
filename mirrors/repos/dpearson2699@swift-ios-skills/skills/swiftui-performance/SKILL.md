@@ -58,7 +58,7 @@ Explain how to collect data with Instruments:
 - Use the SwiftUI template in Instruments.
 - Profile a **Release build** on a real device when possible.
 - Reproduce the exact interaction (scroll, navigation, animation).
-- Capture SwiftUI timeline and Time Profiler.
+- Capture SwiftUI lanes, Time Profiler, and Hangs/Hitches when relevant.
 - Export or screenshot the relevant lanes and the call tree.
 
 Ask for:
@@ -197,7 +197,7 @@ Provide:
 
 ## Instruments Profiling
 
-Use the **SwiftUI instrument template** in Xcode (Cmd+I to profile). Key instruments: SwiftUI View Body (body evaluation counts), SwiftUI View Properties (state change tracking), Time Profiler, and Hangs.
+Use the **SwiftUI template** in Instruments (Cmd+I to profile). Current SwiftUI lanes include Update Groups, Long View Body Updates, Long Representable Updates / Representable Updates, Other Long Updates / Other Updates, and the Cause & Effect Graph. Correlate those with Time Profiler and Hangs/Hitches.
 
 Add `Self._printChanges()` in debug builds to log which property triggered a view update:
 
@@ -240,12 +240,12 @@ When a view's identity changes, SwiftUI treats it as a **new view**:
 
 When identity stays the same, SwiftUI updates the **existing view** in place, preserving state and providing smooth transitions.
 
-### AnyView and Identity Reset
+### AnyView in Hot Paths
 
-`AnyView` erases type information, forcing SwiftUI to fall back to less efficient diffing:
+`AnyView` erases concrete view type information. In hot list or table rows, that can hide structural information SwiftUI uses for row shape and diffing:
 
 ```swift
-// DON'T: AnyView destroys type identity
+// DON'T: AnyView hides row structure in hot paths
 func makeView(for item: Item) -> AnyView {
     if item.isPremium {
         return AnyView(PremiumRow(item: item))
@@ -265,7 +265,7 @@ func makeView(for item: Item) -> some View {
 }
 ```
 
-`AnyView` also prevents SwiftUI from detecting which branch changed, causing full subtree replacement instead of targeted updates.
+Prefer `@ViewBuilder` or generic composition in repeated subtrees. Keep type erasure at API boundaries unless profiling proves it is harmless in that path.
 
 ### Ternary Modifiers Preserve Structural Identity
 
@@ -318,7 +318,7 @@ Intentional `.id()` change is useful for **resetting state** (e.g., `.id(selecte
 
 ### LazyVStack and LazyHStack
 
-Lazy stacks only create views for items currently visible on screen. Off-screen items are not evaluated until scrolled into view.
+Lazy stacks evaluate and render only the portion SwiftUI needs for the current scroll position and nearby prefetching, instead of eagerly materializing every child.
 
 ```swift
 ScrollView {
@@ -331,9 +331,10 @@ ScrollView {
 ```
 
 Key behaviors:
-- Views are created lazily but **not destroyed** when scrolled off screen (they remain in memory).
-- `onAppear` fires when the view first enters the visible area.
-- `onDisappear` fires when it leaves, but the view is still alive.
+- Off-screen views are removed from the lazy stack. SwiftUI may keep them briefly, then delete the views and their view-local state.
+- Persist important row state outside the row view if it must survive scrolling away.
+- Body and layout work can happen before `onAppear` because of prefetching. Do not make `onAppear` the only setup point for data a row needs to render.
+- Treat `onAppear` and `onDisappear` as visibility signals, not lifetime guarantees.
 
 ### LazyVGrid and LazyHGrid
 
@@ -359,17 +360,26 @@ let fixedColumns = [
 ]
 ```
 
+### Lazy Container Guardrails
+
+- Filter data before `ForEach`; avoid `if` branches that make each element produce zero or one row.
+- Keep each `ForEach` element to a constant number of top-level subviews. Wrap row contents in a stable container if needed. Use `-LogForEachSlowPath YES` while debugging list/table slow paths.
+- Avoid absolute content-size or content-offset assumptions; lazy stacks estimate off-screen sizes.
+- Avoid geometry feedback loops in lazy rows. Prefer stable sizing, layout primitives, or a custom `Layout` before feeding geometry changes back into row state.
+
 ### When to Use Lazy vs Eager Stacks
 
-| Scenario | Use |
-|----------|-----|
-| < 50 items | `VStack` / `HStack` (eager is fine) |
-| 50-100 items | Either works; prefer `Lazy` if items are complex |
-| > 100 items | `LazyVStack` / `LazyHStack` (required for performance) |
-| Always-visible content | `VStack` (no benefit to lazy) |
-| Scrollable lists | `LazyVStack` inside `ScrollView`, or `List` |
+No item-count threshold makes lazy containers automatically correct. Start with the simplest container that matches the UI, then switch when profiling shows eager construction, layout, or update work is material.
 
-**Important:** Do not nest `GeometryReader` inside lazy containers. It forces eager measurement and defeats lazy loading. Use `.onGeometryChange` (iOS 16+) instead.
+| Scenario | Default |
+|----------|---------|
+| Small, fixed, fully visible content | `VStack` / `HStack` |
+| Large or unbounded custom scroll content | `LazyVStack` / `LazyHStack`, then profile |
+| System-style rows, edit actions, swipe actions, or very large feeds | `List` is often the better starting point |
+| Always-visible content | Eager stack; lazy adds bookkeeping without benefit |
+| Custom scroll control with many rows | `LazyVStack` inside `ScrollView`, with stable identity and constant row shape |
+
+**Important:** Avoid unconstrained `GeometryReader` in lazy rows when it drives row size or shared state. Use stable sizing, layout APIs, or narrowly scoped `.onGeometryChange` (iOS 16+) that thresholds values and does not invalidate the whole list.
 
 ## State and Observation Optimization
 
@@ -447,12 +457,12 @@ Use computed properties on `@Observable` models to derive state without introduc
 
 1. **Profiling Debug builds.** Debug builds include extra runtime checks and disable optimizations, producing misleading perf data. Profile Release builds on a real device.
 2. **Observing an entire model when only one property is needed.** Break large `@Observable` models into focused ones, or use computed properties/closures to narrow observation scope.
-3. **Using `GeometryReader` inside ScrollView items.** GeometryReader forces eager sizing and defeats lazy loading. Prefer `.onGeometryChange` (iOS 16+) or measure outside the lazy container.
+3. **Using geometry feedback inside ScrollView items.** GeometryReader or noisy geometry state can force repeated layout. Prefer stable sizing, custom layout, or narrowly scoped `.onGeometryChange` (iOS 16+) with thresholds.
 4. **Calling `DateFormatter()` or `NumberFormatter()` inside `body`.** These are expensive to create. Make them static or move them outside the view.
 5. **Animating non-equatable state.** If SwiftUI cannot determine equality, it redraws every frame. Conform state to `Equatable`, then use `.animation(_:value:)` for simple value-bound changes or `.animation(_:body:)` for narrower modifier-scoped implicit animation.
 6. **Large flat `List` without identifiers.** Use `id:` or make items `Identifiable` so SwiftUI can diff efficiently instead of rebuilding the entire list.
 7. **Unnecessary `@State` wrapper objects.** Wrapping a simple value type in a class for `@State` defeats value semantics. Use plain `@State` with structs.
-8. **Blocking `MainActor` with synchronous I/O.** File reads, JSON parsing of large payloads, and image decoding should happen off the main actor. Use `Task.detached` or a custom actor.
+8. **Blocking `MainActor` with synchronous I/O.** File reads, JSON parsing of large payloads, and image decoding should happen off the main actor. Prefer nonisolated async helpers or dedicated actors; reserve `Task.detached` for cases where you intentionally break actor inheritance and handle cancellation yourself.
 
 ## Review Checklist
 
@@ -460,7 +470,9 @@ Use computed properties on `@Observable` models to derive state without introduc
 - [ ] Large lists use `Identifiable` items or explicit `id:`
 - [ ] `@Observable` models expose only the properties views actually read
 - [ ] Heavy computation is off `MainActor` (image processing, parsing)
-- [ ] `GeometryReader` is not inside a `LazyVStack`/`LazyHStack`/`List`
+- [ ] Lazy rows have stable identity, constant top-level row shape, and prefiltered data
+- [ ] Geometry changes in scroll rows are thresholded and do not feed broad state
+- [ ] Row rendering does not depend on `onAppear` as the only setup point
 - [ ] Implicit animations use `.animation(_:value:)` for value-bound changes or `.animation(_:body:)` for narrower modifier scope
 - [ ] No synchronous network/file I/O on the main thread
 - [ ] Profiling done on Release build, real device

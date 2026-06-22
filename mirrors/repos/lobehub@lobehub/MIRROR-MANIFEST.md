@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `lobehub/lobehub` — 26 default patterns, 0 followed patterns, 149 file(s) materialized.
+Mirror of `lobehub/lobehub` — 26 default patterns, 0 followed patterns, 152 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lobehub/lobehub` — 26 default patterns, 0 followed patterns, 149 fi
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 149 |
+| Files         | 152 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -207,7 +207,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 146 | ✓ | [`GEMINI.md`](GEMINI.md) |
 | 147 | ✓ | [`packages/agent-templates/src/templates/claw/AGENTS.md`](packages/agent-templates/src/templates/claw/AGENTS.md) |
 | 148 | ✓ | [`packages/builtin-skills/src/task/SKILL.md`](packages/builtin-skills/src/task/SKILL.md) |
-| 149 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
+| 149 | ✓ | [`packages/builtin-skills/src/verify/references/auth.md`](packages/builtin-skills/src/verify/references/auth.md) |
+| 150 | ✓ | [`packages/builtin-skills/src/verify/SKILL.md`](packages/builtin-skills/src/verify/SKILL.md) |
+| 151 | ✓ | [`packages/builtin-skills/src/verify/surfaces/electron.md`](packages/builtin-skills/src/verify/surfaces/electron.md) |
+| 152 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
 
 ---
 

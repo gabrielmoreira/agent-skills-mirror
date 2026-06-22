@@ -16,9 +16,11 @@ go test -race ./...                 # all test packages must pass
 - **Source:** 1,338 Go files (728 non-test) across the `cmd/` and `internal/` trees
 - **Graph size:** ~31k nodes, ~206k edges when the daemon indexes this repo
 
-## MANDATORY: Use Gortex MCP tools instead of Read/Grep/Glob
+## MANDATORY: Use Gortex's graph tools instead of Read/Grep/Glob
 
-Gortex is registered as an MCP server. You **MUST** prefer graph queries over file reads on every task in this repo — `search_symbols`, `find_usages`, `get_symbol_source`, `get_editing_context`, `smart_context`, `edit_symbol` / `edit_file` / `rename_symbol` / `batch_edit`. PreToolUse hooks deny `Read` / `Grep` / `Glob` against indexed source; the deny message names the right tool. The MCP server registers 180+ tools but by default publishes only a curated `core` preset (~34 dev-cycle workhorses) eagerly in `tools/list`, deferring the rest behind the `tools_search` discovery tool (the `core`/`defer` default — see `docs/mcp.md`). Opt into the full eager surface with `GORTEX_TOOLS=full`; `GORTEX_LAZY_TOOLS=1` is the older all-or-nothing defer switch. The cross-project rule tables live in `~/.claude/CLAUDE.md` — neither is restated here. This file carries only project-specific guidance.
+Gortex's workhorse tools are reachable two equivalent ways — over the registered **MCP server**, or via the equivalent **`gortex` CLI verbs** (`gortex edit verify`, `gortex memory surface`, `gortex analyze`, and `gortex call <tool>` for anything else; the verb reference is in `docs/cli.md`). Use whichever your harness has mounted — they are two front doors over the same handlers, and the daemon routes tool calls by name so the CLI reaches the full surface even under the `core` preset.
+
+Either way, you **MUST** prefer graph queries over file reads on every task in this repo — `search_symbols`, `find_usages`, `get_symbol_source`, `get_editing_context`, `smart_context`, `edit_symbol` / `edit_file` / `rename_symbol` / `batch_edit` (or the matching `gortex` verbs). PreToolUse hooks deny `Read` / `Grep` / `Glob` against indexed source; the deny message names the right tool. The MCP server registers 180+ tools but by default publishes only a curated `core` preset (~34 dev-cycle workhorses) eagerly in `tools/list`, deferring the rest behind the `tools_search` discovery tool (the `core`/`defer` default — see `docs/mcp.md`). Opt into the full eager surface with `GORTEX_TOOLS=full`; `GORTEX_LAZY_TOOLS=1` is the older all-or-nothing defer switch. The cross-project rule tables live in `~/.claude/CLAUDE.md` — neither is restated here. This file carries only project-specific guidance.
 
 ### Discovery (read once, then keep using)
 

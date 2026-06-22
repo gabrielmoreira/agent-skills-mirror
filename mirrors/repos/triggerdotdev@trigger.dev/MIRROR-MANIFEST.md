@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `triggerdotdev/trigger.dev` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,41 +59,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/span-timeline-events/SKILL.md`](.claude/skills/span-timeline-events/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/trigger-dev-tasks/SKILL.md`](.claude/skills/trigger-dev-tasks/SKILL.md) |
-| 3 | ✓ | [`.cursor/commands/deslop.md`](.cursor/commands/deslop.md) |
-| 4 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
-| 5 | ✓ | [`.cursor/rules/executing-commands.mdc`](.cursor/rules/executing-commands.mdc) |
-| 6 | ✓ | [`.cursor/rules/migrations.mdc`](.cursor/rules/migrations.mdc) |
-| 7 | ✓ | [`.cursor/rules/otel-metrics.mdc`](.cursor/rules/otel-metrics.mdc) |
-| 8 | ✓ | [`.cursor/rules/repo.mdc`](.cursor/rules/repo.mdc) |
-| 9 | ✓ | [`.cursor/rules/webapp.mdc`](.cursor/rules/webapp.mdc) |
-| 10 | ✓ | [`.cursor/rules/writing-tasks.mdc`](.cursor/rules/writing-tasks.mdc) |
-| 11 | ✓ | [`.cursor/rules/writing-tests.mdc`](.cursor/rules/writing-tests.mdc) |
-| 12 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 13 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 14 | ✓ | [`apps/supervisor/CLAUDE.md`](apps/supervisor/CLAUDE.md) |
-| 15 | ✓ | [`apps/webapp/CLAUDE.md`](apps/webapp/CLAUDE.md) |
-| 16 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 17 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 18 | ✓ | [`internal-packages/clickhouse/CLAUDE.md`](internal-packages/clickhouse/CLAUDE.md) |
-| 19 | ✓ | [`internal-packages/database/CLAUDE.md`](internal-packages/database/CLAUDE.md) |
-| 20 | ✓ | [`internal-packages/run-engine/CLAUDE.md`](internal-packages/run-engine/CLAUDE.md) |
-| 21 | ✓ | [`packages/cli-v3/CLAUDE.md`](packages/cli-v3/CLAUDE.md) |
-| 22 | ✓ | [`packages/cli-v3/skills/trigger-authoring-chat-agent/SKILL.md`](packages/cli-v3/skills/trigger-authoring-chat-agent/SKILL.md) |
-| 23 | ✓ | [`packages/cli-v3/skills/trigger-authoring-tasks/SKILL.md`](packages/cli-v3/skills/trigger-authoring-tasks/SKILL.md) |
-| 24 | ✓ | [`packages/cli-v3/skills/trigger-chat-agent-advanced/SKILL.md`](packages/cli-v3/skills/trigger-chat-agent-advanced/SKILL.md) |
-| 25 | ✓ | [`packages/cli-v3/skills/trigger-cost-savings/SKILL.md`](packages/cli-v3/skills/trigger-cost-savings/SKILL.md) |
-| 26 | ✓ | [`packages/cli-v3/skills/trigger-getting-started/SKILL.md`](packages/cli-v3/skills/trigger-getting-started/SKILL.md) |
-| 27 | ✓ | [`packages/cli-v3/skills/trigger-realtime-and-frontend/SKILL.md`](packages/cli-v3/skills/trigger-realtime-and-frontend/SKILL.md) |
-| 28 | ✓ | [`packages/core/CLAUDE.md`](packages/core/CLAUDE.md) |
-| 29 | ✓ | [`packages/redis-worker/CLAUDE.md`](packages/redis-worker/CLAUDE.md) |
-| 30 | ✓ | [`packages/trigger-sdk/CLAUDE.md`](packages/trigger-sdk/CLAUDE.md) |
-| 31 | ✓ | [`packages/trigger-sdk/skills/trigger-authoring-chat-agent/SKILL.md`](packages/trigger-sdk/skills/trigger-authoring-chat-agent/SKILL.md) |
-| 32 | ✓ | [`packages/trigger-sdk/skills/trigger-authoring-tasks/SKILL.md`](packages/trigger-sdk/skills/trigger-authoring-tasks/SKILL.md) |
-| 33 | ✓ | [`packages/trigger-sdk/skills/trigger-chat-agent-advanced/SKILL.md`](packages/trigger-sdk/skills/trigger-chat-agent-advanced/SKILL.md) |
-| 34 | ✓ | [`packages/trigger-sdk/skills/trigger-cost-savings/SKILL.md`](packages/trigger-sdk/skills/trigger-cost-savings/SKILL.md) |
-| 35 | ✓ | [`packages/trigger-sdk/skills/trigger-realtime-and-frontend/SKILL.md`](packages/trigger-sdk/skills/trigger-realtime-and-frontend/SKILL.md) |
+| 1 | ✓ | [`.claude/skills/errors-api-e2e/SKILL.md`](.claude/skills/errors-api-e2e/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/span-timeline-events/SKILL.md`](.claude/skills/span-timeline-events/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/trigger-dev-tasks/SKILL.md`](.claude/skills/trigger-dev-tasks/SKILL.md) |
+| 4 | ✓ | [`.cursor/commands/deslop.md`](.cursor/commands/deslop.md) |
+| 5 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
+| 6 | ✓ | [`.cursor/rules/executing-commands.mdc`](.cursor/rules/executing-commands.mdc) |
+| 7 | ✓ | [`.cursor/rules/migrations.mdc`](.cursor/rules/migrations.mdc) |
+| 8 | ✓ | [`.cursor/rules/otel-metrics.mdc`](.cursor/rules/otel-metrics.mdc) |
+| 9 | ✓ | [`.cursor/rules/repo.mdc`](.cursor/rules/repo.mdc) |
+| 10 | ✓ | [`.cursor/rules/webapp.mdc`](.cursor/rules/webapp.mdc) |
+| 11 | ✓ | [`.cursor/rules/writing-tasks.mdc`](.cursor/rules/writing-tasks.mdc) |
+| 12 | ✓ | [`.cursor/rules/writing-tests.mdc`](.cursor/rules/writing-tests.mdc) |
+| 13 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 15 | ✓ | [`apps/supervisor/CLAUDE.md`](apps/supervisor/CLAUDE.md) |
+| 16 | ✓ | [`apps/webapp/CLAUDE.md`](apps/webapp/CLAUDE.md) |
+| 17 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 18 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 19 | ✓ | [`internal-packages/clickhouse/CLAUDE.md`](internal-packages/clickhouse/CLAUDE.md) |
+| 20 | ✓ | [`internal-packages/database/CLAUDE.md`](internal-packages/database/CLAUDE.md) |
+| 21 | ✓ | [`internal-packages/run-engine/CLAUDE.md`](internal-packages/run-engine/CLAUDE.md) |
+| 22 | ✓ | [`packages/cli-v3/CLAUDE.md`](packages/cli-v3/CLAUDE.md) |
+| 23 | ✓ | [`packages/cli-v3/skills/trigger-authoring-chat-agent/SKILL.md`](packages/cli-v3/skills/trigger-authoring-chat-agent/SKILL.md) |
+| 24 | ✓ | [`packages/cli-v3/skills/trigger-authoring-tasks/SKILL.md`](packages/cli-v3/skills/trigger-authoring-tasks/SKILL.md) |
+| 25 | ✓ | [`packages/cli-v3/skills/trigger-chat-agent-advanced/SKILL.md`](packages/cli-v3/skills/trigger-chat-agent-advanced/SKILL.md) |
+| 26 | ✓ | [`packages/cli-v3/skills/trigger-cost-savings/SKILL.md`](packages/cli-v3/skills/trigger-cost-savings/SKILL.md) |
+| 27 | ✓ | [`packages/cli-v3/skills/trigger-getting-started/SKILL.md`](packages/cli-v3/skills/trigger-getting-started/SKILL.md) |
+| 28 | ✓ | [`packages/cli-v3/skills/trigger-realtime-and-frontend/SKILL.md`](packages/cli-v3/skills/trigger-realtime-and-frontend/SKILL.md) |
+| 29 | ✓ | [`packages/core/CLAUDE.md`](packages/core/CLAUDE.md) |
+| 30 | ✓ | [`packages/redis-worker/CLAUDE.md`](packages/redis-worker/CLAUDE.md) |
+| 31 | ✓ | [`packages/trigger-sdk/CLAUDE.md`](packages/trigger-sdk/CLAUDE.md) |
+| 32 | ✓ | [`packages/trigger-sdk/skills/trigger-authoring-chat-agent/SKILL.md`](packages/trigger-sdk/skills/trigger-authoring-chat-agent/SKILL.md) |
+| 33 | ✓ | [`packages/trigger-sdk/skills/trigger-authoring-tasks/SKILL.md`](packages/trigger-sdk/skills/trigger-authoring-tasks/SKILL.md) |
+| 34 | ✓ | [`packages/trigger-sdk/skills/trigger-chat-agent-advanced/SKILL.md`](packages/trigger-sdk/skills/trigger-chat-agent-advanced/SKILL.md) |
+| 35 | ✓ | [`packages/trigger-sdk/skills/trigger-cost-savings/SKILL.md`](packages/trigger-sdk/skills/trigger-cost-savings/SKILL.md) |
+| 36 | ✓ | [`packages/trigger-sdk/skills/trigger-realtime-and-frontend/SKILL.md`](packages/trigger-sdk/skills/trigger-realtime-and-frontend/SKILL.md) |
 
 ---
 

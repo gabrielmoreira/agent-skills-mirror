@@ -4,7 +4,7 @@ Eliza-1 local inference provider for elizaOS. Serves text generation, embeddings
 
 ## What it does
 
-- **Text generation** (`TEXT_SMALL`, `TEXT_LARGE`) via an in-process llama.cpp FFI binding (`node-llama-cpp`), with optional MTP speculative decoding, GPU offload, and KV-cache persistence across turns.
+- **Text generation** (`TEXT_SMALL`, `TEXT_LARGE`) via the in-process fused `libelizainference` llama.cpp FFI backend (the `node-llama-cpp` path has been retired), with optional MTP speculative decoding, GPU offload, and KV-cache persistence across turns.
 - **Text embeddings** (`TEXT_EMBEDDING`) via a dedicated embedding GGUF loaded separately from the chat model.
 - **Text-to-speech** (`TEXT_TO_SPEECH`) via the Kokoro TTS engine (ONNX-based, runs locally).
 - **Automatic speech recognition** (`TRANSCRIPTION`) via whisper.cpp (GGML-based).
@@ -28,7 +28,7 @@ Eliza-1 local inference provider for elizaOS. Serves text generation, embeddings
 ## Requirements
 
 - Node.js 20+ or Bun runtime.
-- `node-llama-cpp` (optional peer dependency) — required for the desktop/server llama.cpp path. Install it in the elizaOS agent package; it will not be automatically installed.
+- The fused `libelizainference` native library (built/staged for the desktop/server FFI path). The retired `node-llama-cpp` peer dependency is no longer used; an absent/unsupported FFI runtime yields a clean `LocalInferenceUnavailableError` rather than a crash.
 - Native binaries for optional capabilities: `sd.cpp` for image-gen on Linux/Windows, `mflux` for Apple Silicon image-gen, `whisper.cpp` built with the shared library flag for ASR.
 - An Eliza-1 GGUF bundle downloaded via the model catalog (dashboard → Models, or `POST /api/local-inference/downloads`).
 
@@ -62,7 +62,6 @@ Key environment variables (all optional unless noted):
 | `ELIZA_DISABLE_LOCAL_EMBEDDINGS` | Set `1` to disable local `TEXT_EMBEDDING` registration entirely |
 | `ELIZA_IMAGEGEN_ACCELERATOR` | Force image-gen backend: `coreml`, `mflux`, `sd-cpp`, `tensorrt` |
 | `ELIZA_DEVICE_BRIDGE_ENABLED` | Enable iOS/AOSP physical device bridge |
-| `HF_TOKEN` | HuggingFace token for gated model downloads |
 | `SD_CPP_BIN` | Absolute path to sd.cpp binary |
 | `MFLUX_BIN` | Absolute path to mflux binary |
 | `ELIZA_KOKORO_DEFAULT_VOICE_ID` | Default Kokoro TTS voice |

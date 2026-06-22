@@ -27,11 +27,12 @@ Use the narrowest tool that matches the job.
 | Need | Default choice |
 |---|---|
 | Embedded app-owned web content in SwiftUI | `WebView` + `WebPage` |
-| Simple external site presentation with Safari behavior | `SFSafariViewController` |
+| iOS/iPadOS modal browsing with Safari behavior | `SFSafariViewController` |
+| macOS or visionOS browse-out behavior | `openURL` / default browser |
 | OAuth or third-party sign-in | `ASWebAuthenticationSession` |
 | Back-deploy below iOS 26 or use missing legacy-only WebKit features | `WKWebView` fallback |
 
-Prefer `WebView` and `WebPage` for modern SwiftUI apps targeting iOS 26+. Apple’s WWDC25 guidance explicitly recommends migrating SwiftUI apps away from UIKit/AppKit WebKit wrappers when possible.
+Prefer `WebView` and `WebPage` for modern SwiftUI apps targeting iOS 26+ when the new API surface covers the feature. Apple’s WWDC25 guidance frames existing UIKit/AppKit WebKit wrappers in SwiftUI apps as good candidates to try migrating, not as a blanket mandate to delete every fallback.
 
 Do not use embedded web views for OAuth. That stays an `ASWebAuthenticationSession` flow.
 
@@ -53,6 +54,8 @@ struct ArticleView: View {
 ```
 
 Create a `WebPage` when the app needs to load requests directly, observe state, call JavaScript, or customize navigation behavior.
+
+A `WebPage` can be associated with only one `WebView` at a time. Create separate `WebPage` instances for multiple visible web views.
 
 ```swift
 @Observable
@@ -127,8 +130,12 @@ When you need to react to every navigation, observe the navigation sequence rath
 
 ```swift
 Task {
-    for await event in page.navigations {
-        // Handle finish, redirect, or failure events.
+    do {
+        for try await event in page.navigations {
+            // Handle started, redirect, committed, or finished events.
+        }
+    } catch {
+        // Handle WebPage.NavigationError or cancellation.
     }
 }
 ```
@@ -174,6 +181,8 @@ See [references/navigation-and-javascript.md](references/navigation-and-javascri
 
 Use `callJavaScript(_:arguments:in:contentWorld:)` to evaluate JavaScript functions against the page.
 
+Pass a JavaScript function body, not a wrapped function declaration or call expression. Prefer `arguments` for Swift-provided values instead of interpolating untrusted strings into the script.
+
 ```swift
 let script = """
 const headings = [...document.querySelectorAll('h1, h2')];
@@ -195,6 +204,8 @@ let result = try await page.callJavaScript(
     arguments: ["sectionID": selectedSectionID]
 )
 ```
+
+Handle empty and JavaScript `null` results deliberately: no explicit return produces `nil`, while an explicit JavaScript `null` returns `NSNull`.
 
 Important boundary: the native SwiftUI WebKit API clearly supports Swift-to-JavaScript calls, but it does not expose an obvious direct replacement for `WKScriptMessageHandler`. If you need coarse JS-to-native signaling, a custom navigation or callback-URL pattern can work, but document it as a workaround pattern, not a guaranteed one-to-one replacement.
 
@@ -247,7 +258,11 @@ Apple’s HIG also applies here: support back/forward navigation when appropriat
 - Using embedded web views for OAuth instead of `ASWebAuthenticationSession`
 - Reaching for `WebPage` only after building a plain `WebView(url:)` path that now needs state, JS, or navigation control
 - Treating `callJavaScript` as a direct replacement for `WKScriptMessageHandler`
+- Passing a callable JavaScript wrapper to `callJavaScript` instead of only the function body
+- Iterating `page.navigations` without `try`/`catch` even though navigation failure terminates the sequence by throwing
+- Binding the same `WebPage` to multiple visible `WebView` values
 - Keeping all links inside the app when external domains should open outside the embedded surface
+- Treating `SFSafariViewController` as the cross-platform browse-out answer on macOS or visionOS instead of using default-browser/openURL behavior
 - Building a browser-style app shell around WebView instead of a focused embedded experience
 - Using custom URL schemes for content that should just load over HTTPS
 - Forgetting that `WebPage` is main-actor-isolated
@@ -260,8 +275,12 @@ Apple’s HIG also applies here: support back/forward navigation when appropriat
 - [ ] Navigation policies only intercept the URLs the app actually owns or needs to reroute
 - [ ] External domains open externally when appropriate
 - [ ] JavaScript return values are cast defensively to concrete Swift types
+- [ ] `callJavaScript` uses a function body and passes Swift values through `arguments`
+- [ ] `page.navigations` loops use `for try await` and handle thrown navigation errors
+- [ ] Each visible `WebView(page)` owns a distinct `WebPage`
 - [ ] Custom URL schemes are used only for real app-owned resources
 - [ ] Back/forward gestures or controls are enabled when multi-page browsing is expected
+- [ ] `SFSafariViewController` is limited to iOS/iPadOS Safari-style modal browsing; macOS and visionOS browse-out flows use platform default browser behavior
 - [ ] The web experience adds focused native value instead of behaving like a thin browser shell
 - [ ] Fallback to `WKWebView` is justified by deployment target or missing API needs
 

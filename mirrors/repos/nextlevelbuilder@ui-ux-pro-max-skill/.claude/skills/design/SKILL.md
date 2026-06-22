@@ -289,12 +289,23 @@ Load `references/social-photos-design.md` for sizes, templates, best practices.
 | `scripts/cip/core.py` | BM25 search engine for CIP data |
 | `scripts/icon/generate.py` | Generate SVG icons with Gemini 3.1 Pro |
 
+## Prerequisites
+
+**Python:** This skill uses Python scripts. On Windows, use `python` instead of `python3` (e.g., `python scripts/logo/search.py` instead of `python3 scripts/logo/search.py`).
+
+Check if Python is installed:
+```bash
+python3 --version || python --version
+```
+
 ## Setup
 
 ```bash
 export GEMINI_API_KEY="your-key"  # https://aistudio.google.com/apikey
 pip install google-genai pillow
 ```
+
+> **Note for Windows:** Use `python` instead of `pip` where needed (e.g., `python -m pip install ...`).
 
 ## Integration
 

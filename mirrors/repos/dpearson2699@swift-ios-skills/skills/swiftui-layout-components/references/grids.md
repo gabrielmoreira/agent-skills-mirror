@@ -227,4 +227,5 @@ badges and borders.
 - **Never place `GeometryReader` inside lazy containers** (`LazyVGrid`,
   `LazyHGrid`, `LazyVStack`, `LazyHStack`). It forces eager measurement and
   defeats lazy loading. Use `.aspectRatio` for sizing, or `.onGeometryChange`
-  (iOS 18+) if you need to read dimensions.
+  if you need to read dimensions. The single-new-value overload is iOS 16+;
+  the old/new-value action overload is iOS 18+.

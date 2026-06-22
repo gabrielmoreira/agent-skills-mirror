@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 24 followed patterns, 366 file(s) materialized.
+Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 25 followed patterns, 367 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 24 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 24 |
-| Files         | 366 |
+| Followed pats | 25 |
+| Files         | 367 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,6 +75,7 @@ Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 24 followed patterns
 - `docs/guides/ELECTRON_GUIDE.md`
 - `docs/ops/RELEASE_CHECKLIST.md`
 - `docs/architecture/QUALITY_GATES.md`
+- `docs/architecture/cluster-decisions.md`
 
 ## File Index
 
@@ -426,28 +427,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 342 | ✓ | [`src/lib/db/AGENTS.md`](src/lib/db/AGENTS.md) |
 | 343 | → | [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) |
 | 344 | → | [`docs/architecture/AUTHZ_GUIDE.md`](docs/architecture/AUTHZ_GUIDE.md) |
-| 345 | → | [`docs/architecture/CODEBASE_DOCUMENTATION.md`](docs/architecture/CODEBASE_DOCUMENTATION.md) |
-| 346 | → | [`docs/architecture/QUALITY_GATES.md`](docs/architecture/QUALITY_GATES.md) |
-| 347 | → | [`docs/architecture/REPOSITORY_MAP.md`](docs/architecture/REPOSITORY_MAP.md) |
-| 348 | → | [`docs/architecture/RESILIENCE_GUIDE.md`](docs/architecture/RESILIENCE_GUIDE.md) |
-| 349 | → | [`docs/frameworks/A2A-SERVER.md`](docs/frameworks/A2A-SERVER.md) |
-| 350 | → | [`docs/frameworks/AGENT_PROTOCOLS_GUIDE.md`](docs/frameworks/AGENT_PROTOCOLS_GUIDE.md) |
-| 351 | → | [`docs/frameworks/CLOUD_AGENT.md`](docs/frameworks/CLOUD_AGENT.md) |
-| 352 | → | [`docs/frameworks/EVALS.md`](docs/frameworks/EVALS.md) |
-| 353 | → | [`docs/frameworks/MCP-SERVER.md`](docs/frameworks/MCP-SERVER.md) |
-| 354 | → | [`docs/frameworks/MEMORY.md`](docs/frameworks/MEMORY.md) |
-| 355 | → | [`docs/frameworks/SKILLS.md`](docs/frameworks/SKILLS.md) |
-| 356 | → | [`docs/frameworks/WEBHOOKS.md`](docs/frameworks/WEBHOOKS.md) |
-| 357 | → | [`docs/guides/ELECTRON_GUIDE.md`](docs/guides/ELECTRON_GUIDE.md) |
-| 358 | → | [`docs/ops/RELEASE_CHECKLIST.md`](docs/ops/RELEASE_CHECKLIST.md) |
-| 359 | → | [`docs/ops/TUNNELS_GUIDE.md`](docs/ops/TUNNELS_GUIDE.md) |
-| 360 | → | [`docs/reference/API_REFERENCE.md`](docs/reference/API_REFERENCE.md) |
-| 361 | → | [`docs/reference/PROVIDER_REFERENCE.md`](docs/reference/PROVIDER_REFERENCE.md) |
-| 362 | → | [`docs/routing/AUTO-COMBO.md`](docs/routing/AUTO-COMBO.md) |
-| 363 | → | [`docs/routing/REASONING_REPLAY.md`](docs/routing/REASONING_REPLAY.md) |
-| 364 | → | [`docs/security/COMPLIANCE.md`](docs/security/COMPLIANCE.md) |
-| 365 | → | [`docs/security/GUARDRAILS.md`](docs/security/GUARDRAILS.md) |
-| 366 | → | [`docs/security/STEALTH_GUIDE.md`](docs/security/STEALTH_GUIDE.md) |
+| 345 | → | [`docs/architecture/cluster-decisions.md`](docs/architecture/cluster-decisions.md) |
+| 346 | → | [`docs/architecture/CODEBASE_DOCUMENTATION.md`](docs/architecture/CODEBASE_DOCUMENTATION.md) |
+| 347 | → | [`docs/architecture/QUALITY_GATES.md`](docs/architecture/QUALITY_GATES.md) |
+| 348 | → | [`docs/architecture/REPOSITORY_MAP.md`](docs/architecture/REPOSITORY_MAP.md) |
+| 349 | → | [`docs/architecture/RESILIENCE_GUIDE.md`](docs/architecture/RESILIENCE_GUIDE.md) |
+| 350 | → | [`docs/frameworks/A2A-SERVER.md`](docs/frameworks/A2A-SERVER.md) |
+| 351 | → | [`docs/frameworks/AGENT_PROTOCOLS_GUIDE.md`](docs/frameworks/AGENT_PROTOCOLS_GUIDE.md) |
+| 352 | → | [`docs/frameworks/CLOUD_AGENT.md`](docs/frameworks/CLOUD_AGENT.md) |
+| 353 | → | [`docs/frameworks/EVALS.md`](docs/frameworks/EVALS.md) |
+| 354 | → | [`docs/frameworks/MCP-SERVER.md`](docs/frameworks/MCP-SERVER.md) |
+| 355 | → | [`docs/frameworks/MEMORY.md`](docs/frameworks/MEMORY.md) |
+| 356 | → | [`docs/frameworks/SKILLS.md`](docs/frameworks/SKILLS.md) |
+| 357 | → | [`docs/frameworks/WEBHOOKS.md`](docs/frameworks/WEBHOOKS.md) |
+| 358 | → | [`docs/guides/ELECTRON_GUIDE.md`](docs/guides/ELECTRON_GUIDE.md) |
+| 359 | → | [`docs/ops/RELEASE_CHECKLIST.md`](docs/ops/RELEASE_CHECKLIST.md) |
+| 360 | → | [`docs/ops/TUNNELS_GUIDE.md`](docs/ops/TUNNELS_GUIDE.md) |
+| 361 | → | [`docs/reference/API_REFERENCE.md`](docs/reference/API_REFERENCE.md) |
+| 362 | → | [`docs/reference/PROVIDER_REFERENCE.md`](docs/reference/PROVIDER_REFERENCE.md) |
+| 363 | → | [`docs/routing/AUTO-COMBO.md`](docs/routing/AUTO-COMBO.md) |
+| 364 | → | [`docs/routing/REASONING_REPLAY.md`](docs/routing/REASONING_REPLAY.md) |
+| 365 | → | [`docs/security/COMPLIANCE.md`](docs/security/COMPLIANCE.md) |
+| 366 | → | [`docs/security/GUARDRAILS.md`](docs/security/GUARDRAILS.md) |
+| 367 | → | [`docs/security/STEALTH_GUIDE.md`](docs/security/STEALTH_GUIDE.md) |
 
 ---
 

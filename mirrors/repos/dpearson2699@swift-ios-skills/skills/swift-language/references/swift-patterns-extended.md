@@ -8,7 +8,7 @@ Additional patterns and examples that extend the core SKILL.md. Refer to this fi
 - [Codable: Date Decoding Strategies](#codable-date-decoding-strategies)
 - [Codable: Unkeyed Containers (Arrays)](#codable-unkeyed-containers-arrays)
 - [Codable: Wrapper for Lossy Array Decoding](#codable-wrapper-for-lossy-array-decoding)
-- [Codable: `@dynamicMemberLookup` Wrapper](#codable-dynamicmemberlookup-wrapper)
+- [Codable Boundary Routing](#codable-boundary-routing)
 - [Result Builder: HTML Builder](#result-builder-html-builder)
 - [Result Builder: buildFinalResult](#result-builder-buildfinalresult)
 - [Property Wrapper: UserDefaults-Backed](#property-wrapper-userdefaults-backed)
@@ -147,41 +147,11 @@ struct LossyArray<Element: Decodable>: Decodable {
 private struct AnyCodable: Decodable {}
 ```
 
-## Codable: `@dynamicMemberLookup` Wrapper
+## Codable Boundary Routing
 
-Type-safe access to arbitrary JSON:
-
-```swift
-@dynamicMemberLookup
-struct JSONValue: Decodable {
-    private let storage: [String: Any]
-
-    subscript(dynamicMember key: String) -> JSONValue? {
-        guard let value = storage[key] as? [String: Any] else { return nil }
-        return JSONValue(storage: value)
-    }
-
-    func string(for key: String) -> String? {
-        storage[key] as? String
-    }
-
-    func int(for key: String) -> Int? {
-        storage[key] as? Int
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        guard let dict = try container.decode([String: AnyCodableValue].self)
-            .mapValues({ $0.value }) as? [String: Any] else {
-            throw DecodingError.typeMismatch(
-                [String: Any].self,
-                .init(codingPath: decoder.codingPath,
-                      debugDescription: "Expected dictionary"))
-        }
-        storage = dict
-    }
-}
-```
+Keep this skill to small, typed Codable shaping examples. Route type-erased JSON
+values, lossy dynamic payload wrappers, `@dynamicMemberLookup` JSON access, and
+production decoding architecture to `swift-codable`.
 
 ## Result Builder: HTML Builder
 
@@ -384,8 +354,11 @@ extension FormatStyle where Self == FileSizeFormatStyle {
 
 // Usage
 let size = FileSize(bytes: 1_500_000)
-size.formatted(.fileSize) // "1.5 MB"
+FileSizeFormatStyle().format(size) // "1.5 MB"
 ```
+
+Use `swift-formatstyle` for richer reusable style design, parsing, and
+locale-sensitive formatting review.
 
 ## Collection Patterns: Chunking and Windows
 

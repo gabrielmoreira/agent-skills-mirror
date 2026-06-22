@@ -21,6 +21,10 @@ Design banners across social, ads, web, and print formats. Generates multiple ar
 - Event/print banner design
 - Creative asset generation for campaigns
 
+## Prerequisites
+
+**Python:** This skill uses Python scripts. On Windows, use `python` instead of `python3` (e.g., `python scripts/search.py` instead of `python3 scripts/search.py`).
+
 ## Workflow
 
 ### Step 1: Gather Requirements (AskUserQuestion)

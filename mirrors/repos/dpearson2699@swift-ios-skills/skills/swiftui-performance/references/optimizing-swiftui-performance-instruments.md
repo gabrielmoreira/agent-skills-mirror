@@ -63,9 +63,9 @@ Interpretation:
 - orange indicates notable cost
 - red indicates clearly too-slow view updates
 
-### Long Platform View Updates
+### Long Representable Updates
 
-This usually points to UIKit/AppKit work hosted inside SwiftUI, including:
+This usually points to UIKit/AppKit work hosted inside SwiftUI. Instruments 26 labels this as representable work; related documentation may call the expanded lane Platform View Updates. Inspect:
 
 - `UIViewRepresentable`
 - `UIViewControllerRepresentable`
@@ -227,7 +227,7 @@ After every change:
 - record the same flow again
 - compare update count, not just total runtime
 - verify hitch frequency went down
-- verify no new Long Platform View Updates appeared
+- verify no new Long Representable / Platform View Updates appeared
 - verify behavior in Release on device
 
 If a change makes one screen faster but causes more updates elsewhere, keep

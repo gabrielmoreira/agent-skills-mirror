@@ -57,10 +57,13 @@ On first build, Xcode shows a trust dialog. Select **Trust & Enable All** for th
 xcodebuild -skipPackagePluginValidation -skipMacroValidation ...
 ```
 
+These unattended flags bypass Xcode's validation dialogs and implicitly trust package plugins and macros. Use them only for reviewed dependencies in controlled CI.
+
 ### Limitations
 
 - The build tool plugin cannot run `--fix` (it has read-only access to sources).
 - It cannot pass `--baseline` or other CLI flags — build tool plugins do not accept arguments. Use config keys like `baseline:` / `write_baseline:` where available, or switch to the command plugin / direct CLI for advanced flag-based workflows.
+- It may fail when Swift files or the config live outside the package/project directory because it cannot pass `--config`. Add a local `.swiftlint.yml` with `parent_config:` pointing to the shared config, or use a run script.
 - It runs on every build, which is desirable for local development but may slow clean builds in large projects.
 
 ## Command Plugin
@@ -71,10 +74,10 @@ The command plugin provides broad SwiftPM-based CLI access to SwiftLint, includi
 swift package plugin swiftlint
 swift package plugin swiftlint --fix
 swift package plugin swiftlint -- --strict --baseline .swiftlint.baseline
-swift package plugin swiftlint -- analyze --compile-commands .build/debug.yaml
+swift package plugin swiftlint -- analyze --compiler-log-path swift-build.log
 ```
 
-The command plugin requires the same `SwiftLintPlugins` dependency. It has read-write access to sources (for `--fix`) and accepts all CLI flags after `--`.
+The command plugin requires the same `SwiftLintPlugins` dependency. It accepts SwiftLint CLI flags after `--`; when using `--fix`, expect SwiftPM's package-directory write-permission handling because fixes can modify source files.
 
 ## Xcode Run Script Build Phase
 
