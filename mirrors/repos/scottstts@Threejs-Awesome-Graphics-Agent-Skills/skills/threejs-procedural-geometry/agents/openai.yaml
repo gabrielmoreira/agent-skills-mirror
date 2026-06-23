@@ -1,0 +1,4 @@
+interface:
+  display_name: "Three.js Procedural Geometry"
+  short_description: "Build sculpted profiles and semantic mesh writers"
+  default_prompt: "Use $threejs-procedural-geometry to build a sculpted-rail, branch-ring, or semantic mesh-writer pattern with deliberate skins, UVs, material groups, and topology diagnostics."

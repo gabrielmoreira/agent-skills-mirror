@@ -1,0 +1,4 @@
+interface:
+  display_name: "Three.js Screen-Space Ambient Occlusion"
+  short_description: "Build half-resolution GTAO and bent normals"
+  default_prompt: "Use $threejs-screen-space-ambient-occlusion to implement half-resolution horizon gather, bent-normal encoding, bilateral reconstruction, and an indirect-light composite with explicit halo diagnostics."

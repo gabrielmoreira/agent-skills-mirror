@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `generalaction/emdash` — 26 default patterns, 3 followed patterns, 27 file(s) materialized.
+Mirror of `generalaction/emdash` — 26 default patterns, 3 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `generalaction/emdash` — 26 default patterns, 3 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 27 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,14 +80,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`agents/risky-areas/pty.md`](agents/risky-areas/pty.md) |
 | 18 | ✓ | [`agents/risky-areas/ssh.md`](agents/risky-areas/ssh.md) |
 | 19 | ✓ | [`agents/risky-areas/updater.md`](agents/risky-areas/updater.md) |
-| 20 | ✓ | [`agents/workflows/remote-development.md`](agents/workflows/remote-development.md) |
-| 21 | ✓ | [`agents/workflows/testing.md`](agents/workflows/testing.md) |
-| 22 | ✓ | [`agents/workflows/worktrees.md`](agents/workflows/worktrees.md) |
-| 23 | ✓ | [`apps/emdash-desktop/tooling/byoi/README.md`](apps/emdash-desktop/tooling/byoi/README.md) |
-| 24 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 25 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 26 | → | [`LICENSE.md`](LICENSE.md) |
-| 27 | → | [`README.md`](README.md) |
+| 20 | ✓ | [`agents/workflows/nx.md`](agents/workflows/nx.md) |
+| 21 | ✓ | [`agents/workflows/remote-development.md`](agents/workflows/remote-development.md) |
+| 22 | ✓ | [`agents/workflows/testing.md`](agents/workflows/testing.md) |
+| 23 | ✓ | [`agents/workflows/worktrees.md`](agents/workflows/worktrees.md) |
+| 24 | ✓ | [`apps/emdash-desktop/tooling/byoi/README.md`](apps/emdash-desktop/tooling/byoi/README.md) |
+| 25 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 26 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 27 | → | [`LICENSE.md`](LICENSE.md) |
+| 28 | → | [`README.md`](README.md) |
 
 ---
 

@@ -9,15 +9,15 @@ argument-hint: 'The agent or skill to probe, and what claim about its reasoning 
 
 *Build a situation the checklist couldn't anticipate. See whether reasoning emerges or pattern-matching is exposed.*
 
-*Memory Model role: Produces external ARF evidence â€” probe verdicts recorded in the trail are the primary signal that the loop is reasoning rather than pattern-matching.*
+*Memory Model role: Produces external ARF evidence — probe verdicts recorded in the trail are the primary signal that the loop is reasoning rather than pattern-matching.*
 
 This is the only skill in the suite that genuinely tests something external. Improve makes the agent better; Probe finds out whether it is reasoning at all.
 
 ## Governing principles
 
-Probe operationalizes **Autonomous Reasoning Fidelity (ARF)** â€” the external signal that an agent is genuinely reasoning rather than pattern-matching. In routine cases, the two produce identical-looking trails. The distinguishing evidence emerges only under structured novelty.
+Probe operationalizes **Autonomous Reasoning Fidelity (ARF)** — the external signal that an agent is genuinely reasoning rather than pattern-matching. In routine cases, the two produce identical-looking trails. The distinguishing evidence emerges only under structured novelty.
 
-Full statement of the principles: [PRINCIPLES.md](../PRINCIPLES.md) â€” read it if available, but this skill operates fully without it.
+Full statement of the principles: [PRINCIPLES.md](../PRINCIPLES.md) — read it if available, but this skill operates fully without it.
 
 ## The work
 
@@ -56,7 +56,7 @@ The probe outcome is one of:
 
 ### 5. Record
 
-*If [Trail](../trail/SKILL.md) is installed, apply it now â€” it handles this step in full. Include the probe-specific fields below in the "Examination" section of the log entry.*
+*If [Trail](../trail/SKILL.md) is installed, apply it now — it handles this step in full. Include the probe-specific fields below in the "Examination" section of the log entry.*
 
 If Trail is not installed: create the `.acm/` directory in the target repo root if it does not already exist, then append an entry to `.acm/audit-trail.md` **in the target repo root** (not the skills install directory) containing:
 
@@ -67,7 +67,7 @@ If Trail is not installed: create the `.acm/` directory in the target repo root 
 - The comparison and the verdict (PASS / FAIL / AMBIGUOUS).
 - What the result implies about the target.
 
-A FAIL is not an embarrassment; it is signal. A PASS is not a victory; it is one piece of evidence. Probes are not statistically pooled â€” convergence (Principle 3) is the meta-measurement.
+A FAIL is not an embarrassment; it is signal. A PASS is not a victory; it is one piece of evidence. Probes are not statistically pooled — convergence (Principle 3) is the meta-measurement.
 
 ## What this skill does not do
 

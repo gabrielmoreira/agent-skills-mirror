@@ -27,5 +27,5 @@ then Throughput, then Observability, then Interoperability, then Maintainability
 - Repo-local governance files may extend or tighten this baseline.
 - Runtime home for Cursor assets (`~/.cursor/`): deploy through the governed `deploy:cursor`
   workflow only; the project `.cursor/rules/megingjord.mdc` is the committed source.
-- Phase 0 (#3084) is registration + this static adapter; runtime hook/HAMR enforcement
-  lands in Phase 1 (#3085).
+- Phase 0 (#3084) is registration + this static adapter; runtime hook/HAMR enforcement ships via `deploy:cursor:apply` (Phase 1 #3085, Phase 2 #3086 — see `docs/howto/cursor-parity-matrix.md`).
+- **Baton before code**: post `MANAGER_HANDOFF` with `worktree_branch:` matching your feat/fix branch before any file edit; hooks enforce authoritative handoff (#3204).

@@ -273,7 +273,7 @@ Since `neon.ts` is TypeScript, invalid combinations fail to compile with an acti
 Read the resulting env back, typed and validated against the policy, with `parseEnv` from `@neondatabase/env`:
 
 ```typescript
-import { parseEnv } from "@neondatabase/env/v1";
+import { parseEnv } from "@neondatabase/env";
 import config from "./neon";
 
 const env = parseEnv(config);

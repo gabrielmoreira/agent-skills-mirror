@@ -165,7 +165,7 @@ type ClientOptions struct {
 	// If non-zero, defines an interval for regular "ping" requests.
 	// If the peer fails to respond to pings originating from the keepalive check,
 	// the session is automatically closed.
-	// NOTE: The keepalive feature is only available for protocol versions < 2026-06-30
+	// NOTE: The keepalive feature is only available for protocol versions < 2026-07-28
 	KeepAlive time.Duration
 	// KeepAliveFailureThreshold is the number of consecutive keepalive ping
 	// failures tolerated before the session is closed. A value of 0 or 1
@@ -285,7 +285,7 @@ func (c *Client) Connect(ctx context.Context, t Transport, opts *ClientSessionOp
 		protocolVersion = opts.protocolVersion
 	}
 
-	if protocolVersion >= protocolVersion20260630 {
+	if protocolVersion >= protocolVersion20260728 {
 		// Per SEP-2575, try the stateless server/discover RPC first. If the server
 		// signals it doesn't support it, fall back to the legacy initialize
 		// handshake.
@@ -300,16 +300,37 @@ func (c *Client) Connect(ctx context.Context, t Transport, opts *ClientSessionOp
 				if hc, ok := cs.mcpConn.(clientConnection); ok {
 					hc.sessionUpdated(cs.state)
 				}
+				subscribeParams := &SubscriptionsListenParams{}
+				if c.opts.ToolListChangedHandler != nil {
+					subscribeParams.Notifications.ToolsListChanged = true
+				}
+				if c.opts.PromptListChangedHandler != nil {
+					subscribeParams.Notifications.PromptsListChanged = true
+				}
+				if c.opts.ResourceListChangedHandler != nil {
+					subscribeParams.Notifications.ResourcesListChanged = true
+				}
+				if subscribeParams.Notifications.ToolsListChanged ||
+					subscribeParams.Notifications.PromptsListChanged ||
+					subscribeParams.Notifications.ResourcesListChanged {
+					// ClientSession.Close cancels the listenCtx context to send notifications/cancelled.
+					listenCtx, cancelListen := context.WithCancel(context.Background())
+					cs.listenCancel = cancelListen
+					if err := cs.subscriptionsListen(listenCtx, subscribeParams); err != nil {
+						cancelListen()
+						return nil, fmt.Errorf("opening subscriptions/listen: %w", err)
+					}
+				}
 				return cs, nil
 			}
 
 			// Try to negotiate a mutually supported version if the server
 			// reports an UnsupportedProtocolVersionError with a supported version.
 			var werr *jsonrpc.Error
-			if errors.As(err, &werr) && werr.Code == CodeUnsupportedProtocolVersion && werr.Data != nil {
+			if errors.As(err, &werr) && werr.Code == CodeUnsupportedProtocolVersion && len(werr.Data) > 0 {
 				var data UnsupportedProtocolVersionData
 				if err := json.Unmarshal(werr.Data, &data); err == nil {
-					if negotiatedVersion := negotiateMutuallySupportedVersion(data.Supported); negotiatedVersion != "" && negotiatedVersion >= protocolVersion20260630 {
+					if negotiatedVersion := negotiateMutuallySupportedVersion(data.Supported); negotiatedVersion != "" && negotiatedVersion >= protocolVersion20260728 {
 						discoverCtx = context.WithValue(ctx, protocolVersionContextKey{}, negotiatedVersion)
 						continue
 					}
@@ -381,10 +402,13 @@ func (c *Client) discover(ctx context.Context, cs *ClientSession) (*InitializeRe
 	} else {
 		negotiated = negotiateMutuallySupportedVersion(res.SupportedVersions)
 	}
-	if negotiated == "" || negotiated < protocolVersion20260630 {
+	if negotiated == "" || negotiated < protocolVersion20260728 {
 		// If there is no overlap, fall back to initialize so version
 		// negotiation can happen via the legacy path.
-		return nil, jsonrpc2.ErrUnsupportedProtocolVersion
+		return nil, &jsonrpc2.WireError{
+			Code:    CodeUnsupportedProtocolVersion,
+			Message: "unsupported protocol version",
+		}
 	}
 
 	return &InitializeResult{
@@ -411,6 +435,7 @@ type ClientSession struct {
 	conn            *jsonrpc2.Connection
 	client          *Client
 	keepaliveCancel context.CancelFunc
+	listenCancel    context.CancelFunc
 	mcpConn         Connection
 
 	// No mutex is (currently) required to guard the session state, because it is
@@ -427,6 +452,15 @@ type ClientSession struct {
 	// Pending URL elicitations waiting for completion notifications.
 	pendingElicitationsMu sync.Mutex
 	pendingElicitations   map[string]chan struct{}
+
+	// resourceSubsMu guards resourceSubs.
+	resourceSubsMu sync.Mutex
+	// resourceSubs maps a subscribed resource URI to the cancel func of the
+	// goroutine running its dedicated subscriptions/listen stream. Populated
+	// only under SEP-2575; the legacy protocol routes Subscribe and
+	// Unsubscribe straight to the resources/subscribe and resources/unsubscribe
+	// RPCs and leaves this map untouched.
+	resourceSubs map[string]context.CancelFunc
 }
 
 type clientSessionState struct {
@@ -436,11 +470,11 @@ type clientSessionState struct {
 func (cs *ClientSession) InitializeResult() *InitializeResult { return cs.state.InitializeResult }
 
 // usesNewProtocol reports whether this session has negotiated a protocol
-// version >= 2026-06-30, which requires the SEP-2575 per-request `_meta`
+// version >= 2026-07-28, which requires the SEP-2575 per-request `_meta`
 // triple on every outgoing request.
 func (cs *ClientSession) usesNewProtocol() bool {
 	res := cs.state.InitializeResult
-	return res != nil && res.ProtocolVersion >= protocolVersion20260630
+	return res != nil && res.ProtocolVersion >= protocolVersion20260728
 }
 
 // injectRequestMeta populates the SEP-2575 per-request `_meta` triple
@@ -493,6 +527,10 @@ func (cs *ClientSession) Close() error {
 	if cs.keepaliveCancel != nil {
 		cs.keepaliveCancel()
 	}
+	if cs.listenCancel != nil {
+		cs.listenCancel()
+	}
+	cs.cancelAllResourceSubscriptions()
 	err := cs.conn.Close()
 
 	if cs.onClose != nil && cs.calledOnClose.CompareAndSwap(false, true) {
@@ -1080,6 +1118,7 @@ var clientMethodInfos = map[string]methodInfo{
 	notificationLoggingMessage:      newClientMethodInfo(clientMethod((*Client).callLoggingHandler), notification),
 	notificationProgress:            newClientMethodInfo(clientSessionMethod((*ClientSession).callProgressNotificationHandler), notification),
 	notificationElicitationComplete: newClientMethodInfo(clientMethod((*Client).callElicitationCompleteHandler), notification|missingParamsOK),
+	notificationSubscriptionsAck:    newClientMethodInfo(clientMethod((*Client).callSubscriptionsAckHandler), notification|missingParamsOK),
 }
 
 func (cs *ClientSession) sendingMethodInfos() map[string]methodInfo {
@@ -1276,15 +1315,89 @@ func (cs *ClientSession) Complete(ctx context.Context, params *CompleteParams) (
 // Subscribe sends a "resources/subscribe" request to the server, asking for
 // notifications when the specified resource changes.
 func (cs *ClientSession) Subscribe(ctx context.Context, params *SubscribeParams) error {
-	_, err := handleSend[*emptyResult](ctx, methodSubscribe, newClientRequest(cs, orZero[Params](params)))
+	if !cs.usesNewProtocol() {
+		_, err := handleSend[*emptyResult](ctx, methodSubscribe, newClientRequest(cs, orZero[Params](params)))
+		return err
+	}
+	if params == nil || params.URI == "" {
+		return fmt.Errorf("Subscribe: missing URI")
+	}
+	uri := params.URI
+
+	var listenCtx context.Context
+	cs.resourceSubsMu.Lock()
+	if _, exists := cs.resourceSubs[uri]; !exists {
+		var cancel context.CancelFunc
+		listenCtx, cancel = context.WithCancel(context.Background())
+		if cs.resourceSubs == nil {
+			cs.resourceSubs = make(map[string]context.CancelFunc)
+		}
+		cs.resourceSubs[uri] = cancel
+	}
+	cs.resourceSubsMu.Unlock()
+	if listenCtx == nil {
+		// Already subscribed to this URI
+		return nil
+	}
+
+	return cs.subscriptionsListen(listenCtx, &SubscriptionsListenParams{
+		Notifications: NotificationSubscriptions{
+			ResourceSubscriptions: []string{uri},
+		},
+	})
+}
+
+// Unsubscribe cancels a previous [ClientSession.Subscribe] for params.URI.
+//
+// Under the legacy protocol it sends a "resources/unsubscribe" request.
+//
+// Under SEP-2575 it cancels the background "subscriptions/listen" stream
+// opened by Subscribe for the URI. Unsubscribe is idempotent: calling it for
+// a URI that is not currently subscribed is a no-op.
+func (cs *ClientSession) Unsubscribe(ctx context.Context, params *UnsubscribeParams) error {
+	if !cs.usesNewProtocol() {
+		_, err := handleSend[*emptyResult](ctx, methodUnsubscribe, newClientRequest(cs, orZero[Params](params)))
+		return err
+	}
+	if params == nil || params.URI == "" {
+		return fmt.Errorf("Unsubscribe: missing URI")
+	}
+	cs.resourceSubsMu.Lock()
+	cancel, ok := cs.resourceSubs[params.URI]
+	delete(cs.resourceSubs, params.URI)
+	cs.resourceSubsMu.Unlock()
+	if ok {
+		cancel()
+	}
+	return nil
+}
+
+// cancelAllResourceSubscriptions cancels every active SEP-2575 resource
+// subscription opened via Subscribe. The listen goroutines exit
+// asynchronously as their contexts unwind. Called from Close.
+func (cs *ClientSession) cancelAllResourceSubscriptions() {
+	cs.resourceSubsMu.Lock()
+	subs := cs.resourceSubs
+	cs.resourceSubs = nil
+	cs.resourceSubsMu.Unlock()
+	for _, cancel := range subs {
+		cancel()
+	}
+}
+
+// SubscriptionsListen opens a SEP-2575 "subscriptions/listen" stream.
+//
+// The server's first message on the stream is "notifications/subscriptions/acknowledged";
+// subsequent opted-in notifications (e.g. tools/list_changed) are delivered through the
+// usual handlers registered in [ClientOptions].
+func (cs *ClientSession) subscriptionsListen(ctx context.Context, params *SubscriptionsListenParams) error {
+	params = injectRequestMeta(cs, params)
+	_, err := handleSend[*emptyResult](ctx, methodSubscriptionsListen, newClientRequest(cs, orZero[Params](params)))
 	return err
 }
 
-// Unsubscribe sends a "resources/unsubscribe" request to the server, cancelling
-// a previous subscription.
-func (cs *ClientSession) Unsubscribe(ctx context.Context, params *UnsubscribeParams) error {
-	_, err := handleSend[*emptyResult](ctx, methodUnsubscribe, newClientRequest(cs, orZero[Params](params)))
-	return err
+func (c *Client) callSubscriptionsAckHandler(context.Context, *ClientRequest[*SubscriptionsAcknowledgedParams]) (Result, error) {
+	return nil, nil
 }
 
 func (c *Client) callToolChangedHandler(ctx context.Context, req *ToolListChangedRequest) (Result, error) {

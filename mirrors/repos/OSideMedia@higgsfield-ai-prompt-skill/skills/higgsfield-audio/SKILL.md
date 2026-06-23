@@ -338,6 +338,21 @@ Specific sound descriptions directly influence the generated audio output. The m
 
 ---
 
+## Standalone Audio tab — voice models (TTS / voice tools)
+
+Separate from in-video native audio above, the **Audio tab** offers dedicated voice tools — **Voiceover** (text → speech), **Change Voice** (swap a voice in any video), and **Translation** (translate speech in any video) — driven by these models:
+
+| Model | Provider | Best for |
+|-------|----------|----------|
+| Eleven v3 | ElevenLabs | Expressive AI voice with emotion control |
+| MiniMax Speech 2.8 HD | MiniMax | Studio-quality text-to-speech |
+| **Seed Speech** *(NEW)* | ByteDance | **Multilingual** text-to-speech |
+| VibeVoice | Higgsfield | Long-form expressive voice synthesis |
+
+Use **Seed Speech** when the deliverable is multilingual voiceover/narration; Eleven v3 when fine emotional/tone control matters; VibeVoice for long-form narration. These are standalone voice generators — distinct from the native joint audio baked into Kling 3.0 / Seedance 2.0 / Veo during video generation. (Hand-maintained UI list — no audio specs snapshot yet; verify live before quoting pricing.)
+
+---
+
 ## Related skills
 - `higgsfield-models` — Which models support native audio
 - `higgsfield-troubleshoot` — Audio failure diagnosis

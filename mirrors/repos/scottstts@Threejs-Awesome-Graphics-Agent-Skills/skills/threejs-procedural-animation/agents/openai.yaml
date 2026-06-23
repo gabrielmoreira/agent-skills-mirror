@@ -1,0 +1,4 @@
+interface:
+  display_name: "Three.js Procedural Animation"
+  short_description: "Build phase-based procedural motion systems"
+  default_prompt: "Use $threejs-procedural-animation to build launch, spin-docking, staging, spring, rotating-frame, detachment, and debris motion systems with explicit phases and frames."

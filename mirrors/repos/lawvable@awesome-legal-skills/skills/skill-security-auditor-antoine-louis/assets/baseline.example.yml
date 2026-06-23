@@ -1,0 +1,89 @@
+# Example baseline file for the Skill Security Auditor.
+#
+# A baseline tells the auditor: "these findings have been manually
+# reviewed, accepted, and should be hidden from future runs." It is
+# the right tool for legacy code that has known issues a team has
+# decided to accept, OR for vendored dependencies you trust but
+# can't modify, OR for any case where adding `# noqa: SEC-AUDITOR`
+# to the source isn't possible.
+#
+# For ad-hoc, single-line exceptions, prefer the inline marker:
+#     dangerous_call()  # noqa: SEC-AUDITOR — reason here
+# Baseline files are for situations where you can't (or shouldn't)
+# touch the source.
+#
+# Usage:
+#     python3 scripts/audit.py ./skill --baseline baseline.yml
+#
+# Finding fingerprints come from a JSON run:
+#     python3 scripts/audit.py ./skill --json | jq '.findings[] | {fingerprint, category, file, line, snippet}'
+#
+# Each fingerprint is a 16-character hex string derived from
+# sha256(file + snippet + pattern + category)[:16]. It does NOT
+# include the line number, so the suppression survives renumbering
+# when the file is reformatted or has lines added above the finding.
+
+suppressions:
+  # Example 1 — accepting a legitimate use of `pickle` in a vendored
+  # library we can't modify. Note the reviewed_by / reviewed_at fields
+  # which the audit tooling itself ignores, but humans reading the
+  # baseline need to track who said "this is fine" and when.
+  - fingerprint: a1b2c3d4e5f60718
+    reason: |
+      Vendored dependency uses pickle for an internal cache. The cache
+      data never crosses a trust boundary — it's pickled and unpickled
+      by the same process. Verified during 2025-04 supply-chain review.
+    reviewed_by: alice@example.com
+    reviewed_at: 2025-04-15
+    expires: 2026-04-15  # optional — tooling can warn when past this date
+
+  # Example 2 — a documented-attack reference in SKILL.md that the
+  # prompt-injection scanner picks up at MEDIUM severity. Inline
+  # suppression would work too; baseline is used here because the
+  # team prefers not to mix `<!--` tags into reference prose.
+  - fingerprint: 0123456789abcdef
+    reason: |
+      SKILL.md documents the "ignore previous instructions" attack
+      pattern as an example. The string is in a code fence and the
+      auditor already downgrades it; we accept the remaining MEDIUM.
+    reviewed_by: bob@example.com
+    reviewed_at: 2025-04-20
+
+  # Example 3 — accepting one of many findings from a single file.
+  # Always prefer minimal-scope suppression (one fingerprint, not
+  # whole-file ignores) so new issues in the same file still surface.
+  - fingerprint: deadbeefcafe1234
+    reason: |
+      `subprocess.run(["git", ...], check=True)` is flagged as
+      CODE-EXEC by the regex pass. The call has no shell=True and
+      no user-controlled argv — git is the explicit binary, the
+      args are literals. Acceptable.
+    reviewed_by: carol@example.com
+    reviewed_at: 2025-04-22
+
+
+# Alternative shorter format (JSON-compatible) for tooling that
+# prefers JSON. The auditor accepts a top-level `fingerprints:`
+# array as well as the verbose `suppressions:` block above.
+#
+# fingerprints:
+#   - a1b2c3d4e5f60718
+#   - 0123456789abcdef
+#   - deadbeefcafe1234
+
+
+# Tips for maintaining a baseline file:
+#
+# - Treat it like code: it goes in the same repo as the skill, gets
+#   reviewed in PRs, has commit history.
+# - Re-review entries periodically. A reason that was valid a year
+#   ago may not be valid today. The optional `expires:` field is for
+#   exactly this — set a calendar reminder.
+# - Never use baseline files to silence CRITICAL findings without an
+#   explanation. CRITICAL means "no legitimate use case exists"; if
+#   one exists for your skill, write down what it is.
+# - When a finding's fingerprint changes (because the surrounding
+#   code was edited), the suppression stops applying. That's by
+#   design — code changes warrant re-review.
+# - If you find yourself adding 20+ entries here, that's a smell.
+#   The skill probably has architectural issues. Refactor.

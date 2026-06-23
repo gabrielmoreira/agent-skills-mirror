@@ -1785,7 +1785,7 @@ Output-side surface in 3.5:
 | Control | Options |
 |---------|---------|
 | Aspect Ratio | Auto, 16:9, 9:16, 4:3, 3:4, 1:1, 21:9 (7 options including 21:9 ultrawide) |
-| Quality | 480p / 720p / 1080p (three tiers) |
+| Quality | 480p / 720p / 1080p (three tiers — **1080p is the Cinema Studio ceiling**) |
 | Sound | On / Off (when On, audio is generated alongside video as part of the same output) |
 | Batch Size | Configurable — exploration multiplier for testing multiple variations in a single run |
 | Duration | 4s ↔ 15s (preserved across Cinema Studio versions) |
@@ -1793,6 +1793,8 @@ Output-side surface in 3.5:
 **Quality tiers — practical guidance:**
 - **480p** — draft / exploration tier. Use for prompt iteration before committing to higher-resolution finals. Know its limits: see § Drafts validate the prompt, not the take, directly below.
 - **720p / 1080p** — final-quality tiers. Choice between them depends on what's physical in the scene; see § Physics Rendering — Resolution Decision Matrix below.
+
+> **Seedance 2.0 4K does not reach Cinema Studio yet.** Standalone (Create Video / the API `seedance_2_0`), Seedance 2.0 in `mode=std` outputs up to **4K** — but inside Cinema Studio 3.5 the Quality control tops out at **1080p**. If a client needs a genuine 4K Seedance master, generate it from the standalone Create Video surface (mode=std, resolution=4k), not from Cinema Studio. For a 4K *finish* of a Cinema Studio shot, master at 1080p and upscale (see `higgsfield-pipeline`).
 
 #### Drafts validate the prompt, not the take
 

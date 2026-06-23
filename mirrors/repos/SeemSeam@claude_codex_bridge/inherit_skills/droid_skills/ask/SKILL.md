@@ -45,6 +45,10 @@ Before every ask, decide:
 - Plain nested `ask` from an active CCB task is rejected; use `--callback` or `--silence`.
 - In `A --silence -> B`, B still runs an active job. B-to-C depends on whether B needs C's result.
 - In callback chains, each waiting hop uses callback; CCB then propagates continuations.
+- If the current task is a CCB callback continuation, answer the current task
+  directly with the final result. Do not use `ask`, `--callback`, or
+  `--silence` to send that final result to the original caller; CCB routes the
+  continuation completion upstream.
 - `ask get`, `pend`, `watch`, and `ping` are diagnostics-only commands for
   explicit debugging requests, not normal ask workflow tools.
 - Do not manually append output-policy text; `ask` injects reply guidance.

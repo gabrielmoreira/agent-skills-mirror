@@ -90,6 +90,20 @@ question — not a system prompt or pasted conversation) plus optional
 - **MCP error / server down.** Surface the error and suggest the user
   run `mempalace status` or re-run `/mempalace-init`. Never fall back to
   guessing.
+- **Palace index corrupt / compactor error.** If the server reports an
+  HNSW segment-writer error, a ChromaDB compaction failure, or stays
+  "Not connected" after a write, the vector index is out of sync with
+  `chroma.sqlite3` while the drawer rows remain intact. Tell the user to
+  stop the server and rebuild from SQLite — do not re-mine, which drops
+  MCP-added drawers and diary entries (#1843):
+
+  ```bash
+  mempalace repair --mode from-sqlite --archive-existing --yes
+  mempalace repair-status
+  ```
+
+  Do not attempt an in-process repair from the agent. Full steps are in
+  the shared protocol's "Recovering a corrupt index" section.
 - **Conflicting facts.** Trust the knowledge graph's time-valid answer;
   invalidate-then-add rather than overwriting silently.
 

@@ -12,8 +12,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, video, image, prompt, cinematic, AI, filmmaking, motion, camera]
-  version: 3.10.0
-  updated: 2026-06-11
+  version: 3.15.2
+  updated: 2026-06-22
   author: O-Side Media
   license: MIT
 ---
@@ -127,6 +127,7 @@ budget constraints, client work), **confirm before generating:**
 |------------|----------|
 | User unsure which workspace/tool fits, or asks "what should I use for X" | `higgsfield-workspaces` |
 | Write or improve a prompt | `higgsfield-prompt` + relevant sub-skills |
+| Develop a character / world / story / premise before prompting, build a character sheet / story bible, lock a visual style ("visual DNA"), keep a character consistent across many shots, or "I keep getting generic AI characters" | `higgsfield-character-design` |
 | Cinematic still image prompt (shot framing, angles) | `higgsfield-image-shots` |
 | GPT Image 2.0 / gpt-image-2 prompt, UI mockup, infographic, character/reference sheet, layout-dense image, or static-ad recreation | `higgsfield-gpt-image-2` |
 | Choose the right model | `higgsfield-models` |
@@ -158,8 +159,9 @@ budget constraints, client work), **confirm before generating:**
 | User mentions Higgsfield Canvas, a node-based / node-graph workspace, an infinite board, chaining prompts→images→videos into a pipeline, Shared Canvas, or a ComfyUI-style node workflow | `higgsfield-canvas` |
 | Multi-shot workflow, chaining tools, full production pipeline | `higgsfield-pipeline` |
 | Short film, branded content, Popcorn → video → assembly | `higgsfield-pipeline` |
-| Vibe Motion, motion graphics, kinetic typography, brand animation | `higgsfield-vibe-motion` |
-| Animated text, logo animation, Remotion-based output | `higgsfield-vibe-motion` |
+| Vibe Motion, kinetic typography, animated text, infographic/data/presentation animation, logo/brand animation as **code** (Remotion — crisp text, exact brand colors, deployable, real-time edits) | `higgsfield-vibe-motion` |
+| Animated AD / brand promo as an **AI-generated video** built brief → storyboard sheet → Seedance ("make a motion", "motion design ad", "animate my logo into a video", "promo/ad video", classicMD/highMD) | `higgsfield-motion-design` |
+| **Vibe Motion vs Motion Design** (both say "motion graphics / brand / logo animation"): want **crisp text, exact colors, deployable code, editable canvas** → `higgsfield-vibe-motion` (Remotion code); want a **cinematic/kinetic AI video clip** (pixel render, native audio, no guaranteed-crisp text) → `higgsfield-motion-design` (Seedance). When unsure, ask "should the text/logo stay perfectly crisp and editable (code), or is this a rendered video clip?" | — |
 | Pre-generation memory check, apply past failure fixes | `higgsfield-recall` |
 | User reports a generation result (kept/rejected/flagged) — log it to the ledger | `higgsfield-recall` |
 | Takes-per-kept ratios, credit budgeting from logged data | `higgsfield-assist` |
@@ -312,6 +314,7 @@ Result. Ratios and budgeting: `skills/higgsfield-assist/SKILL.md`.
 | `higgsfield-motion` | Named preset requests (Explosion, Werewolf, VFX, etc.) |
 | `higgsfield-style` | Visual style / aesthetic questions |
 | `higgsfield-soul` | Character consistency / Soul ID |
+| `higgsfield-character-design` | Pre-production story bible — premise / world / 9-question character / story spine / visual DNA (before prompting) |
 | `higgsfield-apps` | One-click app recommendations |
 | `higgsfield-recipes` | Genre scene templates |
 | `higgsfield-troubleshoot` | Failed generations / quality issues |
@@ -323,7 +326,8 @@ Result. Ratios and budgeting: `skills/higgsfield-assist/SKILL.md`.
 | `higgsfield-content-factory` | Campaign pipeline (research → plan → generate → publish → report) / UGC-first 5-format mix / batch generation gate / Meta Ads scheduling / cost-savings report |
 | `higgsfield-canvas` | Node-based Canvas workspace / infinite board / chain prompts→images→videos / named canvas patterns / build-free generate-paid cost model / Shared Canvas live collaboration |
 | `higgsfield-pipeline` | Multi-shot workflow / tool chaining / full production pipeline |
-| `higgsfield-vibe-motion` | Vibe Motion / motion graphics / kinetic typography / brand animation |
+| `higgsfield-vibe-motion` | Vibe Motion — motion graphics / kinetic typography / brand + logo animation as **Remotion code** (crisp text, exact colors, deployable) |
+| `higgsfield-motion-design` | Animated-ad flow brief → storyboard → Seedance video (**AI pixel render**, not code; classicMD/highMD) |
 | `higgsfield-recall` | Pre-generation memory check / apply past failure fixes |
 | `higgsfield-audio` | Audio design, dialogue, SFX, ambient sound for audio-capable models |
 | `higgsfield-seedance` | Seedance 2.0 / Pro prompt director + content-filter preflight linter |

@@ -1,7 +1,7 @@
 ---
 name: write-plan
 description: Create detailed, execution-ready implementation plans for complex or high-risk changes without coding. Use for ExecPlan-style work, multi-hour changes, significant refactors, migrations, resumable phase checklists, and work that should be handed off to execute-plan with clear validation.
-argument-hint: "[brief description of the change to plan]"
+argument-hint: "[--visualize] [brief description of the change to plan]"
 license: MIT
 ---
 
@@ -9,7 +9,7 @@ license: MIT
 
 ## Overview
 
-Produce a complete, self-contained implementation plan that can be executed by `execute-plan` with minimal ambiguity, even in a fresh context or by another agent.
+Produce a complete, self-contained implementation plan that can be executed by `execute-plan` with minimal ambiguity, even after `/clear` or by another agent.
 
 This skill is for planning only:
 
@@ -37,7 +37,19 @@ Capture:
 - Files, modules, commands, and docs that orient the executor
 - Risks, assumptions, and unknowns
 
-### Step 2: Clarify Requirements
+### Step 2: Initialize Plan Artifacts
+
+1. Create: `docs/.plans/YYMMDD-HHmm-<plan-slug>/`
+2. Create:
+   - `SUMMARY.md`
+   - one phase file per implementation phase with naming convention `phase-XX-<name>.md`
+3. Add `research/` only if needed.
+
+#### Rules:
+
+- Use timestamp commands from the shared General Principles for folder and document timestamps.
+
+### Step 3: Clarify Requirements
 
 Ask clarifying questions to resolve any ambiguity in the request. Focus on:
 
@@ -50,20 +62,7 @@ Ask clarifying questions to resolve any ambiguity in the request. Focus on:
 
 - If requirements are already clear or come from the brainstorm context, no need the confirmation step.
 - Use input/question tool for gathering answers, context.
-- If multiple interpretations of the request exist, list them and ask — never pick silently.
-- Record assumptions later in `SUMMARY.md` once plan artifacts exist.
-
-### Step 3: Initialize Plan Artifacts
-
-1. Create: `docs/.plans/YYMMDD-HHmm-<plan-slug>/`
-2. Create:
-   - `SUMMARY.md`
-   - one phase file per implementation phase with naming convention `phase-XX-<name>.md`
-3. Add `research/` only if needed.
-
-#### Rules:
-
-- Use timestamp commands from the shared General Principles for folder and document timestamps.
+- State assumptions explicitly in `SUMMARY.md`. If multiple interpretations of the request exist, list them and ask — never pick silently.
 
 ### Step 4: Define Strategy and Phases
 
@@ -79,7 +78,7 @@ Each phase should have:
 
 Granularity rule:
 
-- Tasks should be small, concrete, independently verifiable, and large enough to avoid noisy micro-steps.
+- Tasks should be small, concrete each.
 - Prefer phases that can be resumed safely. Document idempotency, recovery notes, or rollback constraints for risky work.
 
 ### Step 5: Research (Only if Needed)
@@ -98,17 +97,15 @@ Document findings in:
 
 - `docs/.plans/YYMMDD-HHmm-<plan-slug>/research/<topic>.md`
 
-### Step 6: Write Plan Content
+### Step 6: Write Plan artifacts
 
-## `SUMMARY.md` format
+- `SUMMARY.md` format
+  Follow the template inside `references/summary-template.md`
 
-Follow the template inside `references/summary-template.md`
+- `phase-XX-<name>.md` format
+  Follow the template inside `references/phase-template.md`
 
-The summary must be a living plan, not a static proposal. Include empty sections for execution-time updates: progress, surprises/discoveries, decision log, and outcomes/retrospective. These sections give `execute-plan` a stable place to record what changed and why.
-
-## `phase-XX-<name>.md` format
-
-Follow the template inside `references/phase-template.md`
+If the parameter `--visualize` is present, also create a source-adjacent visualization in the same session
 
 ### Step 7: Review and Refine
 
@@ -127,30 +124,21 @@ Then present for user review.
 If multiple viable approaches exist, present options and ask for one of: (use input/question tool for selection)
 
 - **Confirm**: approve current plan for execution
-- **Confirm and Visualize**: approve current plan and create a source-adjacent visualization in the same session
 - **Validate**: refine via additional clarifying questions
-
-If the user chooses **Confirm and Visualize**:
-
-1. Use the current `write-plan` session context and the plan artifacts just created.
-2. Do not restart project context loading or rediscover background that is already available in the session.
-3. Follow the `visualize` skill output convention for plan folders:
-   - `docs/.plans/YYMMDD-HHmm-<plan-slug>/visualize.html`
-   - `docs/.plans/YYMMDD-HHmm-<plan-slug>/visualize-assets/`
-4. Copy the fixed visualization theme into the adjacent assets folder.
-5. Verify the visualization enough to confirm the HTML, local CSS link, Mermaid import, source metadata, and primary content blocks are present.
-6. Then continue to the normal handoff.
 
 ### Step 8: Handoff
 
 End with:
 
-Plan `<relative_path_to_plan>/SUMMARY.md` is ready.  
-Make new session and use `execute-plan` `<relative_path_to_plan>/SUMMARY.md` to execute it.
+```md
+Plan `<relative_path_to_plan>/SUMMARY.md` is ready.
+```
 
 If visualization was created, also include:
 
+```md
 Visualization `<relative_path_to_plan>/visualize.html` is ready.
+```
 
 ## Rules
 
@@ -159,4 +147,4 @@ Visualization `<relative_path_to_plan>/visualize.html` is ready.
 - Align with project standards and existing architecture
 - Keep plans self-contained, deterministic, and resumable. A fresh agent should be able to continue from the plan folder alone.
 - **Plan the minimum viable change:** No speculative phases, no "just in case" abstractions, no flexibility that wasn't requested. If a plan can be 3 phases instead of 6, make it 3. Every task should trace directly to a stated requirement.
-- If the write-plan request comes from a brainstorm session, we can skip many steps like gathering documents, clarifying requirements, and researching, because those should have been covered in the brainstorm session. In that case, confirm the brainstorm context is sufficient, initialize plan artifacts, then continue from Step 4: Define Strategy and Phases.
+- Write artifacts in language same with the current session.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Zafer-Liu/Data-Analysis-Agent` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `Zafer-Liu/Data-Analysis-Agent` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Zafer-Liu/Data-Analysis-Agent` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,7 +59,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/funnel-analysis/SKILL.md`](skills/funnel-analysis/SKILL.md) |
+| 1 | ✓ | [`commands/skills.md`](commands/skills.md) |
+| 2 | ✓ | [`skills/arima/SKILL.md`](skills/arima/SKILL.md) |
+| 3 | ✓ | [`skills/chart/SKILL.md`](skills/chart/SKILL.md) |
+| 4 | ✓ | [`skills/dashboard/SKILL.md`](skills/dashboard/SKILL.md) |
+| 5 | ✓ | [`skills/data/SKILL.md`](skills/data/SKILL.md) |
+| 6 | ✓ | [`skills/decile/SKILL.md`](skills/decile/SKILL.md) |
+| 7 | ✓ | [`skills/export/SKILL.md`](skills/export/SKILL.md) |
+| 8 | ✓ | [`skills/funnel-analysis/SKILL.md`](skills/funnel-analysis/SKILL.md) |
+| 9 | ✓ | [`skills/gru/SKILL.md`](skills/gru/SKILL.md) |
+| 10 | ✓ | [`skills/inset/SKILL.md`](skills/inset/SKILL.md) |
+| 11 | ✓ | [`skills/kmeans/SKILL.md`](skills/kmeans/SKILL.md) |
+| 12 | ✓ | [`skills/logistic/SKILL.md`](skills/logistic/SKILL.md) |
+| 13 | ✓ | [`skills/ppt/SKILL.md`](skills/ppt/SKILL.md) |
+| 14 | ✓ | [`skills/prophet/SKILL.md`](skills/prophet/SKILL.md) |
+| 15 | ✓ | [`skills/regression/SKILL.md`](skills/regression/SKILL.md) |
+| 16 | ✓ | [`skills/report/SKILL.md`](skills/report/SKILL.md) |
+| 17 | ✓ | [`skills/sarima/SKILL.md`](skills/sarima/SKILL.md) |
+| 18 | ✓ | [`skills/screening/SKILL.md`](skills/screening/SKILL.md) |
+| 19 | ✓ | [`skills/sql/SKILL.md`](skills/sql/SKILL.md) |
+| 20 | ✓ | [`skills/tree/SKILL.md`](skills/tree/SKILL.md) |
+| 21 | ✓ | [`skills/trimming/SKILL.md`](skills/trimming/SKILL.md) |
+| 22 | ✓ | [`skills/var/SKILL.md`](skills/var/SKILL.md) |
+| 23 | ✓ | [`skills/winsorize/SKILL.md`](skills/winsorize/SKILL.md) |
 
 ---
 

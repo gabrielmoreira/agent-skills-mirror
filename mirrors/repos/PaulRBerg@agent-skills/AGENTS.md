@@ -34,7 +34,7 @@ If `mdformat-check` fails, analyze the errors and fix only files you changed.
 - `just pre-commit` - run staged-file checks through `nlx lint-staged`.
 - `just hooks-install` - install Husky hooks for this checkout through `nlx husky`.
 - `just shelve <skill>` - require a clean worktree, move `skills/<skill>` to `shelved/<skill>`, and commit the move.
-- `just sync` - commit this repo, install skills into `~/.agents`, then commit installed changes there.
+- `just sync` - commit your staged changes via `ccc --staged` and push, install skills into `~/.agents`, sync `~/.claude`, then commit and push there.
 - `just unshelve <skill>` - require a clean worktree, move `shelved/<skill>` to `skills/<skill>`, and commit the move.
 
 `package.json` exists only for hook and lint-staged wiring; there is no build step. Treat Markdown formatting, invocation metadata checks, and skill-specific helper scripts as the verification surface unless a task introduces a narrower check.
@@ -42,6 +42,7 @@ If `mdformat-check` fails, analyze the errors and fix only files you changed.
 ## Rules
 
 - When asked to create, edit, or remove an installable catalog skill while the current working directory is this repo, modify the skill under `skills/` here only, not the installed copy under `~/.agents`.
+- Changes here are not live for the agents until installed into `~/.agents` and symlinked into `~/.claude`. After committing or pushing in this repo, recommend `just sync` (it does that propagation) and offer to run it on the user's behalf; do not run it unprompted.
 - When an installable catalog skill is added or removed, update the skills table in `README.md`.
 - Shelved skills under `shelved/` are not installable catalog skills. Do not list them in `README.md` or sync them to `~/.agents`; keep `agents/openai.yaml` present so restoring a skill is a pure move plus modernization.
 - To restore a shelved skill, move it from `shelved/<name>/` to `skills/<name>/`, bring it up to current repo rules, and update `README.md`.

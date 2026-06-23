@@ -42,6 +42,38 @@ MyPlugin/
 
 Each component has a `.yaml` (metadata) and `.py` (implementation).
 
+## README & i18n convention (enforced on the marketplace)
+
+A plugin published to LangBot Space serves a localized README on its detail page.
+The resolver (`langbot-space` `PluginService.GetPluginREADME`) works like this:
+
+- **Root `README.md` MUST be in English.** It is the default and the fallback —
+  when no per-language README matches the viewer's locale, the page serves the
+  root `README.md`. A non-English root README makes the English/default view show
+  the wrong language.
+- **All other languages live under `readme/README_{lang}.md`** — e.g.
+  `readme/README_zh_Hans.md`, `readme/README_ja_JP.md`. The 8 supported locales:
+  `en_US, zh_Hans, zh_Hant, ja_JP, th_TH, vi_VN, es_ES, ru_RU`.
+- `manifest.yaml` `metadata.label` / `metadata.description` should carry the same
+  8-locale i18n set (`repository` must be a real, alive URL).
+
+```
+MyPlugin/
+├── manifest.yaml
+├── README.md                   # English (default + fallback) — REQUIRED, must be English
+└── readme/
+    ├── README_zh_Hans.md
+    ├── README_zh_Hant.md
+    ├── README_ja_JP.md
+    ├── README_th_TH.md
+    ├── README_vi_VN.md
+    ├── README_es_ES.md
+    └── README_ru_RU.md
+```
+
+`manifest.yaml` (incl. `repository`) is the source of truth — the marketplace
+syncs from it, so edit the package and re-publish rather than patching live data.
+
 ## Critical SDK Pitfalls
 
 ### 1. MessageChain is a RootModel — iterate directly

@@ -54,7 +54,7 @@ Decks are visual. Beyond user-provided images and design-system assets, you can 
 
 Deck specifics:
 - **Offer a style in your opening round** — only when the deck would benefit (conceptual metaphors, hero/section art, a mascot to thread through, data better as an infographic). Recommend a direction from the source material + chosen aesthetic; always offer "none / minimal". Skip the question for dense data decks or terse internal reviews.
-- **Divide the labor:** tables, quadrants, flows, labeled diagrams, exact numbers → clean HTML/CSS; reserve generation for conceptual scenes, mascots/characters, hero/section art, and genuine infographics. Keep one shared style block so the look stays consistent across slides.
+- **Divide the labor:** tables, quadrants, flows, labeled diagrams, exact numbers → clean HTML/CSS — for editability and exactness, not because text can't be drawn (backends render text fine now, including Chinese). Generated imagery stays a supplement: reserve it for conceptual scenes, mascots/characters, hero/section art, and genuine infographics — and when an infographic is the call, don't avoid Chinese labels or copy. Keep one shared style block so the look stays consistent across slides.
 - **Output:** save into the deck's own `imgs/` folder; place on white/contrasting areas; verify each one loaded.
 
 # Slide writing guidelines

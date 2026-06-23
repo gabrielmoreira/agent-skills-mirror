@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `modelcontextprotocol/csharp-sdk` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `modelcontextprotocol/csharp-sdk` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `modelcontextprotocol/csharp-sdk` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,6 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.github/skills/issue-triage/SKILL.md`](.github/skills/issue-triage/SKILL.md) |
 | 5 | ✓ | [`.github/skills/prepare-release/SKILL.md`](.github/skills/prepare-release/SKILL.md) |
 | 6 | ✓ | [`.github/skills/publish-release/SKILL.md`](.github/skills/publish-release/SKILL.md) |
+| 7 | ✓ | [`.github/skills/run-conformance-from-branch/SKILL.md`](.github/skills/run-conformance-from-branch/SKILL.md) |
 
 ---
 

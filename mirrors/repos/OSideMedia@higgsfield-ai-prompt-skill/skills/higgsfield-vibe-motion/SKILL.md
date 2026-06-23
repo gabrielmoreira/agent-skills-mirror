@@ -6,11 +6,14 @@ description: >
   presentation animation, data-driven video, or prompt-to-motion-graphic workflows.
   Vibe Motion is fundamentally different from video generation — it creates
   deterministic code-based motion graphics, not AI-predicted pixel sequences.
+  Use this when the text/logo must stay perfectly crisp and editable (code). For
+  a cinematic/kinetic AI-generated video ad built from a storyboard (pixel
+  render, native audio), use higgsfield-motion-design instead.
 user-invocable: true
 metadata:
   tags: [higgsfield, vibe-motion, motion-graphics, typography, brand, animation, code, Remotion]
-  version: 3.0.0
-  updated: 2026-04-06
+  version: 3.0.1
+  updated: 2026-06-22
   parent: higgsfield
 ---
 

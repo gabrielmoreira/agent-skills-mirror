@@ -1,0 +1,4 @@
+interface:
+  display_name: "Three.js Temporal Surfaces"
+  short_description: "Build touch-history frost and refraction"
+  default_prompt: "Use $threejs-temporal-surfaces to build a full-resolution touch-history, reduced blur, frost composite, and two-scale refraction pipeline with reset and resize ownership."

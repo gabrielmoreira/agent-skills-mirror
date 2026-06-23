@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `agent37-platform/agent37-skills-collection` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `agent37-platform/agent37-skills-collection` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `agent37-platform/agent37-skills-collection` — 26 default patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`plugins/yc-advisor/skills/yc-advisor/CLAUDE.md`](plugins/yc-advisor/skills/yc-advisor/CLAUDE.md) |
-| 2 | ✓ | [`plugins/yc-advisor/skills/yc-advisor/SKILL.md`](plugins/yc-advisor/skills/yc-advisor/SKILL.md) |
+| 1 | ✓ | [`plugins/generate-prompt-request/skills/generate-prompt-request/SKILL.md`](plugins/generate-prompt-request/skills/generate-prompt-request/SKILL.md) |
+| 2 | ✓ | [`plugins/yc-advisor/skills/yc-advisor/CLAUDE.md`](plugins/yc-advisor/skills/yc-advisor/CLAUDE.md) |
+| 3 | ✓ | [`plugins/yc-advisor/skills/yc-advisor/SKILL.md`](plugins/yc-advisor/skills/yc-advisor/SKILL.md) |
 
 ---
 

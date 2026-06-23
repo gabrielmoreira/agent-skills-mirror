@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `buiducnhat/agent-skills` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `buiducnhat/agent-skills` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `buiducnhat/agent-skills` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,11 +65,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`plugins/cobrew/skills/docs/SKILL.md`](plugins/cobrew/skills/docs/SKILL.md) |
 | 5 | ✓ | [`plugins/cobrew/skills/execute-plan/SKILL.md`](plugins/cobrew/skills/execute-plan/SKILL.md) |
 | 6 | ✓ | [`plugins/cobrew/skills/fix/SKILL.md`](plugins/cobrew/skills/fix/SKILL.md) |
-| 7 | ✓ | [`plugins/cobrew/skills/git-commit/SKILL.md`](plugins/cobrew/skills/git-commit/SKILL.md) |
-| 8 | ✓ | [`plugins/cobrew/skills/quick-implement/SKILL.md`](plugins/cobrew/skills/quick-implement/SKILL.md) |
-| 9 | ✓ | [`plugins/cobrew/skills/review/SKILL.md`](plugins/cobrew/skills/review/SKILL.md) |
-| 10 | ✓ | [`plugins/cobrew/skills/visualize/SKILL.md`](plugins/cobrew/skills/visualize/SKILL.md) |
-| 11 | ✓ | [`plugins/cobrew/skills/write-plan/SKILL.md`](plugins/cobrew/skills/write-plan/SKILL.md) |
+| 7 | ✓ | [`plugins/cobrew/skills/quick-implement/SKILL.md`](plugins/cobrew/skills/quick-implement/SKILL.md) |
+| 8 | ✓ | [`plugins/cobrew/skills/review/SKILL.md`](plugins/cobrew/skills/review/SKILL.md) |
+| 9 | ✓ | [`plugins/cobrew/skills/visualize/SKILL.md`](plugins/cobrew/skills/visualize/SKILL.md) |
+| 10 | ✓ | [`plugins/cobrew/skills/write-plan/SKILL.md`](plugins/cobrew/skills/write-plan/SKILL.md) |
 
 ---
 

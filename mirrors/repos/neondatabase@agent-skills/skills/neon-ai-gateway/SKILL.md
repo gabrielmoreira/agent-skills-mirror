@@ -93,9 +93,11 @@ So `${NEON_AI_GATEWAY_BASE_URL}/ai-gateway/mlflow/v1` is the chat-completions en
 
 For typed access, `parseEnv` (from `@neondatabase/env`) returns `env.aiGateway` (`apiKey`, `baseUrl`) derived from your `neon.ts`.
 
-## Use with the Vercel AI SDK
+## Build agents with the Vercel AI SDK (recommended)
 
-The `with-ai-sdk` example deploys an agent as a Neon Function that streams text and generates images. The `@ai-sdk/openai` provider reads `OPENAI_API_KEY` and `OPENAI_BASE_URL` from the injected env automatically — no client config needed; just pick a catalog model:
+The [Vercel AI SDK](https://ai-sdk.dev) is the recommended way to call the gateway and build agents from TypeScript: one set of primitives (`generateText`, `streamText`, tool calling, structured output) over every catalog model, with first-class streaming for the long agent responses Neon Functions are built to host.
+
+On a Neon Function that streams text and generates images, the `@ai-sdk/openai` provider reads `OPENAI_API_KEY` and `OPENAI_BASE_URL` from the injected env automatically — no client config needed; just pick a catalog model:
 
 ```typescript
 import { openai } from "@ai-sdk/openai";
@@ -117,7 +119,7 @@ return result.toUIMessageStreamResponse();
 For multi-provider routing from a single call, the dedicated `@neondatabase/ai-sdk-provider` reads `NEON_AI_GATEWAY_BASE_URL` + `NEON_AI_GATEWAY_TOKEN` and routes each model to the best endpoint (Anthropic → Messages, OpenAI/Codex → Responses, everything else → MLflow):
 
 ```typescript
-import { neon } from "@neondatabase/ai-sdk-provider/v1";
+import { neon } from "@neondatabase/ai-sdk-provider";
 import { generateText } from "ai";
 
 const { text } = await generateText({
@@ -126,13 +128,36 @@ const { text } = await generateText({
 });
 ```
 
-## Use with Mastra
+To build an **agent** — a model that calls tools in a loop and then answers — add `tools` and a `stopWhen` budget. The loop runs in-process, so on a Neon Function it isn't cut off by lambda-style timeouts:
 
-The `with-mastra` example runs a memory-backed agent (threads/messages in Postgres via `@mastra/pg`) as a Neon Function, with its model pointed at the gateway. It reads `env.aiGateway` from `parseEnv` and uses the **chat-completions** (MLflow) dialect:
+```typescript
+import { neon } from "@neondatabase/ai-sdk-provider";
+import { generateText, tool, stepCountIs } from "ai";
+import { z } from "zod";
+
+const { text } = await generateText({
+  model: neon("claude-sonnet-4-6"),
+  prompt: "How many open todos do I have, and what's the oldest one?",
+  tools: {
+    listTodos: tool({
+      description: "List the user's open todos.",
+      inputSchema: z.object({}), // AI SDK v5+: `inputSchema`, not `parameters`
+      execute: async () => db.select().from(todos),
+    }),
+  },
+  stopWhen: stepCountIs(5), // let the model call tools, then summarize
+});
+```
+
+For a full AI SDK agent deployed as a Neon Function (streaming, tool calling, image generation, persistence), see the `neon-functions` skill's `references/ai-sdk.md`.
+
+## Build agents with Mastra (recommended)
+
+[Mastra](https://mastra.ai) is the recommended framework when you want batteries-included agents — built-in memory, tools, workflows, and tracing — with the model still pointed at the gateway. A memory-backed agent (threads/messages in Postgres via `@mastra/pg`) running as a Neon Function reads `env.aiGateway` from `parseEnv` and uses the **chat-completions** (MLflow) dialect:
 
 ```typescript
 import { Agent } from "@mastra/core/agent";
-import { parseEnv } from "@neondatabase/env/v1";
+import { parseEnv } from "@neondatabase/env";
 import config from "../neon";
 
 const env = parseEnv(config);
@@ -152,9 +177,9 @@ export const personalAssistant = new Agent({
 });
 ```
 
-## Use with plain SDKs
+## Use with plain SDKs (lower-level)
 
-The injected `OPENAI_API_KEY` and `OPENAI_BASE_URL` are OpenAI-standard, so `new OpenAI()` picks them up with **zero config**. Since `OPENAI_BASE_URL` is the OpenAI **Responses** dialect (`/openai/v1`), call the Responses API:
+When you don't need an agent framework — a single completion, an existing provider-SDK integration, or native provider features — call the gateway with the plain SDKs. The injected `OPENAI_API_KEY` and `OPENAI_BASE_URL` are OpenAI-standard, so `new OpenAI()` picks them up with **zero config**. Since `OPENAI_BASE_URL` is the OpenAI **Responses** dialect (`/openai/v1`), call the Responses API:
 
 ```typescript
 import OpenAI from "openai";

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Forward-Future/loop-library` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `Forward-Future/loop-library` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Forward-Future/loop-library` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,7 +62,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`skills/loop-library/agents/openai.yaml`](skills/loop-library/agents/openai.yaml) |
 | 3 | ✓ | [`skills/loop-library/references/audit.md`](skills/loop-library/references/audit.md) |
-| 4 | ✓ | [`skills/loop-library/SKILL.md`](skills/loop-library/SKILL.md) |
+| 4 | ✓ | [`skills/loop-library/references/discover.md`](skills/loop-library/references/discover.md) |
+| 5 | ✓ | [`skills/loop-library/SKILL.md`](skills/loop-library/SKILL.md) |
 
 ---
 

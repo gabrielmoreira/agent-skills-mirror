@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hiyouga/LlamaFactory` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `hiyouga/LlamaFactory` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hiyouga/LlamaFactory` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.ai/CLAUDE.md`](.ai/CLAUDE.md) |
-| 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`.claude/skills/llamafactory-sft/SKILL.md`](.claude/skills/llamafactory-sft/SKILL.md) |
+| 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -117,7 +117,7 @@ Adil's source corpus — `marketing-studio-director.md` (262 lines, 9 video pres
 
 The `ms_image` coverage in §§ 3.b.i–3.b.iv is sourced entirely from [Phase 0: Probe 0.3-a] (v3.7.13 live-MCP introspection of the `models_explore` endpoint) plus this doc's prior brief at L51–59. Per v3.7.16 § 1C source-evidence discipline: content stays within the parameter schema + naming rule + capability summary derived from the schema; no worked examples (we have none — no source corpus, no demo evidence), no sample UUIDs (no observed instances), no pricing claims for `ms_image` specifically (no separate pricing signal), no specific ad-format style names (no style enumeration in Probe 0.3-a evidence — `style_id` is required but the enumeration is platform-managed; see § 3.b.iv live-enumeration discipline).
 
-Verification trail: [.planning/v3.7.16/PHASE-0-VERIFICATION.md](../../.planning/v3.7.16/PHASE-0-VERIFICATION.md) § VERIFY 0.3 (ms_image source-corpus survey + architectural option β rationale) and [.planning/v3.7.16/PHASE-1-INVENTORY.md](../../.planning/v3.7.16/PHASE-1-INVENTORY.md) § 1C (source-evidence boundary + DO-NOT-WRITE list).
+Verification trail: the v3.7.16 Phase 0 verification notes (internal build notes) § VERIFY 0.3 (ms_image source-corpus survey + architectural option β rationale) and the v3.7.16 Phase 1 inventory notes (internal build notes) § 1C (source-evidence boundary + DO-NOT-WRITE list).
 
 ### Worked examples from PDF items 1–5 (Adil's recipe — Path A)
 
@@ -485,4 +485,4 @@ The full deferral list with reasoning is in the v3.7.13 CHANGELOG's Scope acknow
 
 Adil's documented production recipe is the substrate for this workflow doc; full attribution and source corpus citation in `SKILL.md` §13.
 
-One addition specific to this doc: the `ms_image` ("DTC Ads") surface (correction #12) was surfaced by [Phase 0: Probe 0.3-a] as net-new intel beyond what Adil's source corpus documents. Verification trail in `../../.planning/v3.7.13/PHASE-0-PROBES.md`.
+One addition specific to this doc: the `ms_image` ("DTC Ads") surface (correction #12) was surfaced by [Phase 0: Probe 0.3-a] as net-new intel beyond what Adil's source corpus documents. Verification trail in the v3.7.13 Phase 0 probes notes (internal build notes).

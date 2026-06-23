@@ -33,6 +33,14 @@ Never create adventure files manually. The correct flow is:
 > The sections below capture things that are easy to miss on top of that guide.
 
 
+### Story structure
+
+The adventure overview should follow this arc: a world (how things worked before),
+a fall (what broke), a mystery (why it matters / what's hidden), and a role for the
+player. Stay in the story world — don't name tools or technologies in the overview.
+Technical terms can bleed in at the level story layer, but the overview should read
+as narrative, not a feature list. Use Lex Imperfecta as the reference example.
+
 ### Theme consistency
 
 Every technical element should have a thematic counterpart — label keys, error messages,

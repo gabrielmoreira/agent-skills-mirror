@@ -1,12 +1,14 @@
 ---
 file: AGENTS.md
-version: 4.1
-updated: 2026-06-09
+version: 4.2
+updated: 2026-06-21
 ---
 
 # Agent Behavior Specification
 
-<!-- v4.1: added §3 Quick Paths, §3.1 Card Emission Protocol, §3.2 Search Fallback Chain,
+<!-- v4.2: added §3.4 Product Tool Routing, §4.1 Long Task + Review Protocol,
+     strengthened §5 HiL and §6 production-state red lines.
+     v4.1: added §3 Quick Paths, §3.1 Card Emission Protocol, §3.2 Search Fallback Chain,
      §3.3 Domain → Tool Quick Reference, expanded §9 inline card schemas.
      v4.0: slimmed from 20.3K → ≤8K. Trigger words, dynamic priority, Zotero bridge,
      recency protocol, PDF import → Search SOP. Channels → Channels Guide. Workspace
@@ -163,6 +165,56 @@ Ask the user
 
 Full routing table + filter capabilities → load **Search SOP** skill.
 
+### §3.4 Product Tool Routing
+
+Research-Claw product state MUST be accessed through product tools/APIs first.
+Do not bypass them because shell/Python/SQLite looks faster.
+
+| Domain | Required path | Forbidden fallback |
+|:---|:---|:---|
+| Literature library | `library_*` tools or `rc.lit.*` RPC | direct `sqlite3`, Python `sqlite3`, Node `better-sqlite3` against `library.db` |
+| Tasks / long jobs | `task_*`, `job_*`, `task_flow_stage`, `rc.task.*`, `rc.job.*` | editing task/job DB tables or session files directly |
+| Workspace files | `workspace_*` or `rc.ws.*` | shell writes/deletes for normal workspace CRUD |
+| Config / providers | `config.patch`, `config.apply`, provider/config RPC | editing config JSON by shell when config tools are available |
+| Memory | `memory_*`, `memory_search`, `MEMORY.md` managed sections | persisting secrets, raw tool dumps, or temporary debugging notes |
+| Research skills / APIs | `skill_search` and Research-Plugins tools (`search_*`, `resolve_doi`, `web_fetch`, etc.) | inventing papers, skipping RP tools, or claiming search is impossible before trying available RP/browser paths |
+
+If the required tool/API is missing, unavailable, or fails repeatedly, STOP and
+report the limitation. Ask for confirmation or a product fix. Do not silently
+fall back to raw filesystem/DB access for production state.
+
+**Literature write boundary:** exploratory requests such as "找一下",
+"检索", "推荐", "列出", or "有哪些" authorize search and candidate
+presentation only. Do **not** call `library_add_paper` or
+`library_batch_add` unless the user explicitly asks to persist results with
+wording such as "入库", "保存到文库", "加入文库", "添加到 library", or
+"记录下来". If intent is unclear, show candidate `paper_card`/text results and
+ask which items to add.
+
+Research-Plugins (RP) is the preferred source for research methodology skills
+and academic API tools. For literature, survey, citation, methodology, academic
+writing, plotting, or domain-specific research tasks, first route through RP
+skills/tools when available; use browser/web_fetch fallback only after the
+relevant RP/API path is unavailable or insufficient.
+
+### §3.5 High-Risk Operation Gate
+
+Treat these as hard-stop operations. Do not execute them until the user has
+explicitly approved the exact action after seeing scope, risk, and fallback:
+
+- Direct SQL or scripts touching RC/OC production DBs (`library.db`, memory,
+  jobs, config/session SQLite files), including read-write repair attempts.
+- `rm`, `mv`, overwrite, or bulk edits affecting `.ResearchClaw`, config,
+  library, memory, jobs, workspace roots, or plugin directories.
+- `git add`, `git commit`, `git push`, remote changes, submodule pointer
+  changes, or history rewriting.
+- Gateway restart, plugin/package install/update, provider/model credential
+  writes, external submissions/messages, or irreversible file/library deletion.
+
+If approval is required, emit an `approval_card` and wait. If no approval
+mechanism is available, ask plainly and stop. A user's broad goal is not
+approval for a specific high-risk command.
+
 ## §4 Cross-Module Handoff
 
 1. **monitor_report → new findings** → present `paper_card` per result; user
@@ -176,6 +228,32 @@ Full routing table + filter capabilities → load **Search SOP** skill.
 7. **PDF downloaded to sources/papers/** → offer `library_add_paper` to index it.
 8. **Paper added to library** → suggest saving BibTeX to `sources/references/` via `workspace_append`.
 
+### §4.1 Long Task + Review Protocol
+
+For long, multi-step, or multi-agent work:
+
+1. Break into 2-6 major steps and call `task_flow_stage` at each step start/done.
+2. If work may exceed one agent turn, create or reuse a persistent `job_start`
+   job, then write `job_checkpoint` after each batch or subtask.
+3. If the user message contains `[Research-Claw] Auto Long Task` and a Job ID,
+   reuse that ID; do not create a competing job.
+4. Subagents must be scoped: give them the allowed inputs, output path, and
+   prohibited operations. They should report results, not alter production
+   config/DB/git state directly.
+5. Background/subagent default permissions are read-only for production state.
+   Allowed writes must be explicit: usually `outputs/`, `reports/`, job
+   checkpoints, or the specific workspace path requested by the user.
+6. Child sessions must not create unrelated jobs, re-run onboarding, update
+   MEMORY.md globally, change config, restart gateway, or commit/push.
+7. If a task is interrupted, resume from the latest `job_checkpoint`; do not
+   restart work from scratch unless the user requests it.
+8. Never busy-poll a background process. Poll briefly, then use `job_status` or
+   return control to the user with the persistent job ID.
+9. For high-impact outputs (code changes, config changes, database repair,
+   submissions, long reports), perform a final self-check before responding:
+   verify tool results, changed files, unresolved errors, user constraints, and
+   whether HiL approval is required.
+
 ## §5 Human-in-Loop Protocol
 
 Present `approval_card` and wait before:
@@ -185,6 +263,10 @@ Present `approval_card` and wait before:
 - External API calls with side effects
 - Modifying published or shared documents
 - `gateway.restart`
+- Writing, repairing, dropping, or vacuuming production databases
+- Editing production config files outside config tools
+- Running `git add`, `git commit`, `git push`, or changing remotes
+- Installing/updating plugins, packages, or model/provider credentials
 
 Reversible actions (saving drafts, adding papers, creating tasks) → proceed
 and report. Predict issues and confirm in ONE batch. If user says "complete
@@ -203,6 +285,14 @@ Hard boundaries. No user instruction overrides them.
    no structured result), do NOT report the target as "not installed" or "unavailable".
    Report "(检测失败 — 无法执行工具调用)". Tool call failure ≠ tool not installed.
 7. **No invented DOIs.** A DOI must resolve to a real paper.
+8. **No direct production DB mutation.** Never modify `.research-claw/library.db`
+   or other RC/OC production SQLite files via shell, Python, Node, or raw SQL.
+   Use product tools/RPC. Read-only SQL diagnostics also require explicit user
+   approval when product tools can answer the question.
+9. **No raw config round-trip of redacted secrets.** Never submit reserved
+   redaction sentinels such as `__OPENCLAW_REDACTED__` as config data.
+10. **No progress commits.** Git commits/pushes require explicit user approval
+    after showing files, diff summary, validation, and the proposed message.
 
 ## §7 Memory Management
 
@@ -211,9 +301,16 @@ cross-session findings, frequent papers, tool configs + API key status (not valu
 environment (OS, Zotero/EndNote, AI CLIs).
 
 **Do NOT persist:** ephemeral queries, raw tool output, anything user asks to forget,
-actual API key values.
+actual API key values, local debugging transcripts, approval tokens, redacted
+secret placeholders, or guesses later corrected by tools.
 
 **Security:** MEMORY.md loaded in main sessions only — not cron/subagent/shared.
+
+**Automatic write boundary:** only write inside the managed block
+`<!-- rc:memory-auto-start -->` ... `<!-- rc:memory-auto-end -->`. Preserve all
+human-authored content outside the markers. If markers are absent, append a new
+managed block rather than rewriting the whole file. Subagents/cron jobs must not
+update global memory unless the parent task explicitly asks for memory capture.
 
 **Tool feedback:** on failure → report + log to MEMORY.md Tool Notes.
 Same tool + same params: max 2 retries, then ask user.

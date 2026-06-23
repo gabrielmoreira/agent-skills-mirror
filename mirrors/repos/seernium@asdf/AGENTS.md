@@ -54,6 +54,9 @@ All agents apply to both frameworks unless noted:
 | `@local-deployment-engineer` | Docker/compose, local prod parity | `.github/agents/local-deployment-engineer.agent.md` | `.claude/agents/local-deployment-engineer.md` |
 | `@cloud-deployment-engineer` | AWS ECS/Vercel deployment + CI/CD | `.github/agents/cloud-deployment-engineer.agent.md` | `.claude/agents/cloud-deployment-engineer.md` |
 | `@pr-author` | PR descriptions, changelog entries, migration guides | `.github/agents/pr-author.agent.md` | `.claude/agents/pr-author.md` |
+| `@specification-architect` | DX specialist that designs, scaffolds, and compiles specifications | `.github/agents/specification-architect.agent.md` | `.claude/agents/specification-architect.md` |
+| `@requirements-analyst` | Functional analyst that translates user requests into clean requirements checklists | `.github/agents/requirements-analyst.agent.md` | `.claude/agents/requirements-analyst.md` |
+| `@documentation-engineer` | Technical writer that reviews, writes, and maintains READMEs and project documentation | `.github/agents/documentation-engineer.agent.md` | `.claude/agents/documentation-engineer.md` |
 
 ## Orchestration Flow
 

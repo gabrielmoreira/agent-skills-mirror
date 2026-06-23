@@ -1,7 +1,7 @@
 ﻿---
 name: destination
 version: 2.1.0
-description: 'Surface the agent''s in-progress guesses about where the operator is heading â€” what they care about, what they are circling, what the implicit destination might be â€” and turn those guesses into questions the operator can confirm, correct, or reject. Closes the gap between the destination the operator has explicitly stated and what the agent has picked up from their conversation, reactions, and emphasis. USE WHEN: the destination feels thin or stale, the operator is exploring rather than executing, the agent suspects it is missing implicit direction, or before a long autonomous run that will drift if the destination is unclear.'
+description: 'Surface the agent''s in-progress guesses about where the operator is heading — what they care about, what they are circling, what the implicit destination might be — and turn those guesses into questions the operator can confirm, correct, or reject. Closes the gap between the destination the operator has explicitly stated and what the agent has picked up from their conversation, reactions, and emphasis. USE WHEN: the destination feels thin or stale, the operator is exploring rather than executing, the agent suspects it is missing implicit direction, or before a long autonomous run that will drift if the destination is unclear.'
 argument-hint: 'Optionally: the area you want hunches about (a specific concern, a recent decision, the project as a whole)'
 ---
 
@@ -9,11 +9,11 @@ argument-hint: 'Optionally: the area you want hunches about (a specific concern,
 
 *Say what you are starting to think the human means, before they have to say it again.*
 
-*Memory Model role: Maintains `.acm/destination.md` â€” the operator-held destination that anchors all other memory.*
+*Memory Model role: Maintains `.acm/destination.md` — the operator-held destination that anchors all other memory.*
 
-*Renamed from Vision in v2.0.0. The artifact filename is now `.acm/destination.md`; `.acm/vision.md` is read as a fallback if only the old name exists â€” see "Artifact name and fallback" below.*
+*Renamed from Vision in v2.0.0. The artifact filename is now `.acm/destination.md`; `.acm/vision.md` is read as a fallback if only the old name exists — see "Artifact name and fallback" below.*
 
-This skill exists for one bottleneck the rest of the suite cannot touch: **the operator's articulation cost**. The destination is whatever the human has so far managed to write down. But the human is operating from a much richer interior model â€” interests, focus, ethics, hunches of their own â€” most of it implicit. Even they cannot extract it on demand.
+This skill exists for one bottleneck the rest of the suite cannot touch: **the operator's articulation cost**. The destination is whatever the human has so far managed to write down. But the human is operating from a much richer interior model — interests, focus, ethics, hunches of their own — most of it implicit. Even they cannot extract it on demand.
 
 Meanwhile the agent has signal the operator never deliberately gave it: what gets emphasised in conversation, what gets pushed back on, what gets re-routed, what makes the operator say "no, more like this." Today that signal evaporates between sessions. Destination keeps it.
 
@@ -23,11 +23,11 @@ The mechanism is not autonomous; it is conversational. The agent forms guesses, 
 
 Destination enacts the same three principles as the rest of the suite, with one specific emphasis:
 
-1. **Commander's Intent** â€” Destination's job is *only* to make the destination clearer, never to commit to a route. A destination-hunch must be stated as a guess to be confirmed, not as an assumption to act on.
-2. **Observable Autonomy** â€” every destination-hunch surfaced and every operator response is recorded, so a future run can see what was guessed, what was confirmed, what was rejected, and what is still open.
-3. **Convergence Is Silence** â€” when the agent has no genuine destination-hunch to offer, it must say so. A skill that manufactures hunches to justify itself is worse than a skill that stays quiet.
+1. **Commander's Intent** — Destination's job is *only* to make the destination clearer, never to commit to a route. A destination-hunch must be stated as a guess to be confirmed, not as an assumption to act on.
+2. **Observable Autonomy** — every destination-hunch surfaced and every operator response is recorded, so a future run can see what was guessed, what was confirmed, what was rejected, and what is still open.
+3. **Convergence Is Silence** — when the agent has no genuine destination-hunch to offer, it must say so. A skill that manufactures hunches to justify itself is worse than a skill that stays quiet.
 
-Full statement of the principles: [PRINCIPLES.md](../PRINCIPLES.md) â€” read it if available, but this skill operates fully without it.
+Full statement of the principles: [PRINCIPLES.md](../PRINCIPLES.md) — read it if available, but this skill operates fully without it.
 
 ## Artifact name and fallback
 
@@ -35,7 +35,7 @@ The canonical operator-held destination artifact is `.acm/destination.md`. In v1
 
 1. If `.acm/destination.md` exists, read it. This is the canonical name going forward.
 2. Else if `.acm/vision.md` exists, read it as a fallback and surface a one-line migration hint to the operator: *"Found legacy `.acm/vision.md`. The current canonical name is `.acm/destination.md`. Consider `git mv .acm/vision.md .acm/destination.md` to migrate."*
-3. Else: the repo has no operator-held destination yet. Run this skill to produce one â€” and write `.acm/destination.md` (never `vision.md`) for any new artifact.
+3. Else: the repo has no operator-held destination yet. Run this skill to produce one — and write `.acm/destination.md` (never `vision.md`) for any new artifact.
 
 This fallback exists for the transition period. It may be removed in a future major version.
 
@@ -54,19 +54,19 @@ Destination is fast, conversational, and stops as soon as the operator says "yes
 
 ### 1. Gather signal
 
-Before forming any hunches, look at what is available in the **target repo's `.acm/` folder** (in the root of the repo being worked on â€” not the skills install directory):
+Before forming any hunches, look at what is available in the **target repo's `.acm/` folder** (in the root of the repo being worked on — not the skills install directory):
 
-- `.acm/destination.md` (or legacy `.acm/vision.md`) â€” what the operator has explicitly said (if it exists). Apply the fallback rule above.
-- `.acm/retrospect.md` â€” what the agent's last arc-read concluded about the target.
-- `.acm/audit-trail.md` â€” recent decisions, reversals, realisations.
-- `.acm/sessions/` â€” recent conversation transcripts, if present.
-- The current conversation â€” what the operator has been emphasising, dismissing, returning to.
+- `.acm/destination.md` (or legacy `.acm/vision.md`) — what the operator has explicitly said (if it exists). Apply the fallback rule above.
+- `.acm/retrospect.md` — what the agent's last arc-read concluded about the target.
+- `.acm/audit-trail.md` — recent decisions, reversals, realisations.
+- `.acm/sessions/` — recent conversation transcripts, if present.
+- The current conversation — what the operator has been emphasising, dismissing, returning to.
 
 The point is not to summarise these. The point is to notice what the operator has *not* said directly but that the signal points to.
 
 ### 2. Form sourced inferences
 
-This step asks the agent to do something that superficially resembles the failure mode the framework prevents: narrating the operator's intent. The safeguard is evidence-tracing. Every inference must be citable to a specific source â€” a quoted phrase, a trail entry by date+slug, a concrete exchange. The operator adjudicates the evidence-reading and the conclusion independently. An inference the agent cannot cite is not a destination-hunch; it is noise.
+This step asks the agent to do something that superficially resembles the failure mode the framework prevents: narrating the operator's intent. The safeguard is evidence-tracing. Every inference must be citable to a specific source — a quoted phrase, a trail entry by date+slug, a concrete exchange. The operator adjudicates the evidence-reading and the conclusion independently. An inference the agent cannot cite is not a destination-hunch; it is noise.
 
 Write down two to five sourced inferences. Each is a claim the evidence supports, in one of these shapes:
 
@@ -74,15 +74,15 @@ Write down two to five sourced inferences. Each is a claim the evidence supports
 - **Priority.** "I think Y matters more to you than the trail's attention split would imply."
 - **Constraint.** "I think you would reject Z even though nothing currently rules it out."
 - **Question being asked.** "I think the question you are actually trying to answer is W, even though you have been phrasing it as V."
-- **Quality bar.** "I think the bar you are actually holding the target to is Q (e.g. comparative defensibility under hostile external review, comparator coverage, empirical replication, operational deployability), not just internal consistency." Surfacing the operator-held quality bars early is what lets a later Retrospect declare silence against a named bar rather than infer one. *Origin:* the manifesto target's retro-v201 â†’ retro-v202 transition (2026-06-04) showed that retrospects which silence-claim against bars they have never been challenged on are structurally fragile; the upstream fix is for the destination to name the bars in the first place. Full provenance: this repo's `.acm/audit-trail.md`, entry slug `improve-destination-named-boundary-symmetric`.
+- **Quality bar.** "I think the bar you are actually holding the target to is Q (e.g. comparative defensibility under hostile external review, comparator coverage, empirical replication, operational deployability), not just internal consistency." Surfacing the operator-held quality bars early is what lets a later Retrospect declare silence against a named bar rather than infer one. *Origin:* the manifesto target's retro-v201 → retro-v202 transition (2026-06-04) showed that retrospects which silence-claim against bars they have never been challenged on are structurally fragile; the upstream fix is for the destination to name the bars in the first place. Full provenance: this repo's `.acm/audit-trail.md`, entry slug `improve-destination-named-boundary-symmetric`.
 
 Each inference must be:
 
 - **Specific enough to be wrong.** "You care about quality" is not an inference. "You would rather ship one tested skill than three untested ones" is.
 - **Cited to specific evidence.** Name the exact source: a quoted phrase from the conversation, a trail entry by date+slug, a concrete exchange the operator pushed back on. "The operator seems to care about X" is not a citation. "The operator redirected away from Y in the 2026-05-11 trail entry" is. A specific citation makes the inference falsifiable at two levels: the operator can reject the evidence-reading, or accept the evidence but reject the conclusion.
-- **Stated as a reasoned inference, not a finding.** "I thinkâ€¦" or "The trail suggestsâ€¦" â€” never "It is clear thatâ€¦"
+- **Stated as a reasoned inference, not a finding.** "I think…" or "The trail suggests…" — never "It is clear that…"
 
-If you cannot honestly form any sourced inferences â€” the signal is too thin, or you have nothing the operator has not already made explicit â€” say so and stop. Do not manufacture inferences to justify the run.
+If you cannot honestly form any sourced inferences — the signal is too thin, or you have nothing the operator has not already made explicit — say so and stop. Do not manufacture inferences to justify the run.
 
 ### 3. Turn each destination-hunch into a question
 
@@ -102,7 +102,7 @@ A good question is short, falsifiable, and answerable without the operator havin
 
 Show the operator the question first. Show the hunch behind it (one or two sentences) so they can correct the source-reading, not just the conclusion. Then wait.
 
-Order matters. Lead with the question whose answer would most change what the agent does next. If the operator confirms or corrects on the first or second question, you may not need to ask the rest â€” that is success, not failure.
+Order matters. Lead with the question whose answer would most change what the agent does next. If the operator confirms or corrects on the first or second question, you may not need to ask the rest — that is success, not failure.
 
 Do not batch all questions at once. The operator's answer to question 1 often makes questions 3 through 5 obsolete or differently-shaped.
 
@@ -111,38 +111,38 @@ Do not batch all questions at once. The operator's answer to question 1 often ma
 After the conversation, capture three things:
 
 - **What the agent now believes.** A short statement of the destination as the agent currently understands it, post-conversation. This is what would feed into `.acm/destination.md` (with operator approval) or into the agent's working context for the next run.
-- **What was rejected.** Any inferences the operator explicitly rejected â€” these are valuable, because they prevent the agent from converging on the same wrong reading again.
+- **What was rejected.** Any inferences the operator explicitly rejected — these are valuable, because they prevent the agent from converging on the same wrong reading again.
 - **What is still open.** Any question the operator did not answer, or any uncertainty that remained. Destination does not have to resolve everything; it has to make what is uncertain visible.
 
-**Before writing: create the `.acm/` directory in the target repo root if it does not already exist.** Then write `.acm/destination.md` with the agent's current understanding of the destination. Do not ask the operator to do this â€” write it as part of completing the run. The destination is operator-held in the sense that the *operator commits it to git* when it reads right, and revises it before committing if anything is off. The agent's job is to produce the file; the operator's job is to decide whether it is ready to commit.
+**Before writing: create the `.acm/` directory in the target repo root if it does not already exist.** Then write `.acm/destination.md` with the agent's current understanding of the destination. Do not ask the operator to do this — write it as part of completing the run. The destination is operator-held in the sense that the *operator commits it to git* when it reads right, and revises it before committing if anything is off. The agent's job is to produce the file; the operator's job is to decide whether it is ready to commit.
 
-If `.acm/destination.md` already exists, update it in place rather than replacing it wholesale â€” preserve anything the operator has written that the current inferences do not change.
+If `.acm/destination.md` already exists, update it in place rather than replacing it wholesale — preserve anything the operator has written that the current inferences do not change.
 
 If only the legacy `.acm/vision.md` exists, do **not** silently rewrite it as `.acm/destination.md`. Either (a) update the legacy file in place and surface the migration hint, or (b) ask the operator to run `git mv .acm/vision.md .acm/destination.md` first so the rename is its own visible commit.
 
-If the conversation produced arc-claims about the target's current state rather than destination claims, those belong in retrospect.md â€” but retrospect.md is Retrospect's to write. Destination surfaces them; Retrospect (or the next Improve run) decides what to do with them.
+If the conversation produced arc-claims about the target's current state rather than destination claims, those belong in retrospect.md — but retrospect.md is Retrospect's to write. Destination surfaces them; Retrospect (or the next Improve run) decides what to do with them.
 
 ### 6. Record the run in the trail
 
-*If [Trail](../trail/SKILL.md) is installed, apply it now â€” it handles this step in full.*
+*If [Trail](../trail/SKILL.md) is installed, apply it now — it handles this step in full.*
 
 The trail entry for a Destination run is shorter than an Improve entry. It must include:
 
 - The sourced inferences the agent formed and their citations.
 - The questions actually asked.
-- The operator's responses (verbatim where possible â€” this is high-fidelity signal).
+- The operator's responses (verbatim where possible — this is high-fidelity signal).
 - What the agent believes now, what was rejected, what is still open.
 - Any proposed updates to `.acm/destination.md` and whether the operator accepted them.
 
-A Destination run that produced no inferences is still recorded â€” silence is signal too.
+A Destination run that produced no inferences is still recorded — silence is signal too.
 
 ## What this skill does not do
 
 - **It does not act on unconfirmed inferences.** A confirmed destination becomes input to the next run; it does not become the next run. The separation matters: an agent that acts on its own inferences without confirmation has stopped being autonomous-with-oversight and started being autonomous-without-it.
 - **It does not replace Intent.** Intent surfaces interpretation of *one specific request*. Destination surfaces interpretation of *the broader direction* across requests. Run Intent at the start of a request; run Destination when the broader direction itself is unclear.
 - **It does not replace Retrospect.** Retrospect reads the trail and forms claims about what the target *is becoming*. Destination reads conversation and forms claims about what the operator *wants the target to become*. The two converge when the loop is working; the gap between them is where Destination is most useful.
-- **It does not score the operator's clarity.** No rubric for "destination quality." If the operator is exploring, that is a legitimate state â€” the skill helps them externalise the exploration, not grade it.
+- **It does not score the operator's clarity.** No rubric for "destination quality." If the operator is exploring, that is a legitimate state — the skill helps them externalise the exploration, not grade it.
 
 ## Self-targeting
 
-Destination should be runnable on the operator of *this* repository â€” the one writing the skills. If the agent cannot form a destination-hunch about where this skill suite is being taken next, either the signal in this repo's trail is too thin (a finding) or the agent is not actually reading it (a different finding). Either is useful.
+Destination should be runnable on the operator of *this* repository — the one writing the skills. If the agent cannot form a destination-hunch about where this skill suite is being taken next, either the signal in this repo's trail is too thin (a finding) or the agent is not actually reading it (a different finding). Either is useful.

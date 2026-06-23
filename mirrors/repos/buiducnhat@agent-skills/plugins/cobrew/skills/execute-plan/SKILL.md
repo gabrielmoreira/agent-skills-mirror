@@ -121,11 +121,27 @@ After all phases are complete:
    - File: `docs/.plans/YYMMDD-HHmm-<plan-slug>/EXECUTION-REPORT.md`
    - Include all required sections below.
 
-3. **Completion Handoff**
-   - Announce the execution result and the report path.
-   - Leave the plan folder in place unless the user explicitly asks to archive it.
-   - Do not trigger commit, archive, or other follow-up workflows automatically.
-   - If the user provides verification feedback after completion, continue against the same plan path, then re-run verification and update the report.
+3. **Prepare Final Gate**
+   - Do not archive before final user confirmation. The user may choose `Need verify`, and execution must continue against the same plan path.
+
+### Step 5: Final Confirmation Gate
+
+After completion artifacts are done, ask the user for a final confirmation using the input/question with exactly these options:
+
+- `Confirm: End session`
+- `Need verify`
+
+Handle the selected option as follows:
+
+1. **`Confirm: End session`**
+   - Archive the plan folder to `docs/.plans/archived/`.
+   - Announce: `Execution complete. Report archived at docs/.plans/archived/YYMMDD-HHmm-<plan-slug>/EXECUTION-REPORT.md.`
+   - End the execution session.
+
+2. **`Need verify`**
+   - Allow the user to provide verification feedback/details.
+   - Do not archive.
+   - Continue the execution loop to address feedback, then re-run verification and completion steps as needed.
 
 ## Execution Report Standard
 
@@ -142,4 +158,4 @@ After all phases are complete:
 - **Idempotency**: prefer safe/re-runnable operations.
 - **Simplicity first**: Implement the minimum code that satisfies the phase's exit criteria. No features beyond what the plan asks for. No abstractions for single-use code. No configurability that wasn't requested. If you write 200 lines and it could be 50, rewrite it.
 - **Surgical changes**: Touch only what the phase requires. Don't "improve" adjacent code, comments, or formatting. Don't refactor things that aren't broken. Match existing style even if you'd do it differently. Only remove imports/variables/functions that _your_ changes orphaned — don't delete pre-existing dead code unless the plan asks for it. Every changed line should trace to a phase task.
-- **Do not skip workflow steps**: initialization, per-phase verification, final verification, and reporting are all mandatory.
+- Write artifacts in language same with the current session.

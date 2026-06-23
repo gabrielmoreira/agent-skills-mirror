@@ -43,8 +43,7 @@ Immediately stop and switch to planning if any of these occur:
 Escalation action:
 
 1. Stop all implementation activities.
-2. Output the exact message: "This fix exceeds safe single-pass debugging limits. Recommend `brainstorm` or `write-plan` first to define phased diagnosis, implementation, and risk controls."
-3. Use input/question to ask the user if they want to initiate a handoff to `brainstorm` or `write-plan`.
+2. Output the exact message: "This fix exceeds safe single-pass debugging limits. Ask, Recommend `brainstorm` or `write-plan` first to define phased diagnosis, implementation, and risk controls."
 
 ## Workflow
 

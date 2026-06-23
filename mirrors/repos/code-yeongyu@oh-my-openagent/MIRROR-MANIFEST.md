@@ -375,8 +375,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 294 | ✓ | [`packages/shared-skills/skills/ultimate-browsing/references/agent-reach/README.md`](packages/shared-skills/skills/ultimate-browsing/references/agent-reach/README.md) |
 | 295 | ✓ | [`packages/shared-skills/skills/ultimate-browsing/references/insane-search/README.md`](packages/shared-skills/skills/ultimate-browsing/references/insane-search/README.md) |
 | 296 | ✓ | [`packages/shared-skills/skills/ultimate-browsing/SKILL.md`](packages/shared-skills/skills/ultimate-browsing/SKILL.md) |
-| 297 | ✓ | [`packages/shared-skills/skills/ultraresearch/SKILL.md`](packages/shared-skills/skills/ultraresearch/SKILL.md) |
-| 298 | ✓ | [`packages/shared-skills/skills/ulw-plan/SKILL.md`](packages/shared-skills/skills/ulw-plan/SKILL.md) |
+| 297 | ✓ | [`packages/shared-skills/skills/ulw-plan/SKILL.md`](packages/shared-skills/skills/ulw-plan/SKILL.md) |
+| 298 | ✓ | [`packages/shared-skills/skills/ulw-research/SKILL.md`](packages/shared-skills/skills/ulw-research/SKILL.md) |
 | 299 | ✓ | [`packages/shared-skills/skills/visual-qa/SKILL.md`](packages/shared-skills/skills/visual-qa/SKILL.md) |
 | 300 | ✓ | [`packages/skills-loader-core/AGENTS.md`](packages/skills-loader-core/AGENTS.md) |
 | 301 | ✓ | [`packages/skills-loader-core/src/features/builtin-skills/agent-browser/SKILL.md`](packages/skills-loader-core/src/features/builtin-skills/agent-browser/SKILL.md) |

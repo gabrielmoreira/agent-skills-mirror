@@ -1,6 +1,6 @@
 ---
 name: last30days
-version: "3.8.0"
+version: "3.8.1"
 description: "Research what people actually say about any topic in the last 30 days. Pulls posts and engagement from Reddit, X, YouTube, TikTok, Hacker News, Polymarket, GitHub, and the web."
 argument-hint: 'last30days nvidia earnings reaction | last30days AI video tools | last30days what users want in react'
 allowed-tools: Bash, Read, Write, AskUserQuestion, WebSearch
@@ -230,7 +230,20 @@ ToolSearch select:WebSearch
 
 WebSearch is a **deferred tool** in Claude Code v2.1.114. The frontmatter of this file authorizes it (`allowed-tools: ... WebSearch`) but the runtime lists it as "schemas are NOT loaded." Calling WebSearch without `ToolSearch select:WebSearch` first will fail or do nothing. That friction is the documented cause of the second-most-common failure mode of this skill: the model sees "WebSearch is there but deferred," takes the low-friction path, skips Step 0.5 and 0.55, and runs the engine bare with only keyword search. The output looks fine but misses founder X timelines, GitHub repo activity, and subreddit-specific threads.
 
-Load WebSearch first. No exceptions. Then proceed to the branching rule below.
+Load WebSearch first. No exceptions. Then run the first-run gate below before anything else.
+
+**FIRST-RUN GATE — run this Bash command immediately after loading WebSearch, before reading the topic or doing any research:**
+
+```bash
+grep -q "SETUP_COMPLETE=true" ~/.config/last30days/.env 2>/dev/null && echo "1" || echo "FIRST_RUN_DETECTED"
+```
+
+This emits exactly one token: `1` or `FIRST_RUN_DETECTED`, never both.
+
+- Output is `1` → setup is complete. Continue to the branching rule below.
+- Output is `FIRST_RUN_DETECTED` → this is a first run. Jump immediately to `## Step 0: First-Run Setup Wizard` and complete it **before doing any topic research**. Do NOT proceed to Step 0.5, do NOT load WebSearch supplements, do NOT synthesize anything. The wizard installs yt-dlp (YouTube), the Digg CLI (via `npx`), and extracts browser cookies for X/Twitter and other sources. Skipping it produces a degraded WebSearch-only result that misrepresents the skill's capability to the user.
+
+**Named failure mode (2026-06-22, first-run setup skip - Fredy Montero run):** Model read "proceed to Step 0.5" in the branching rule and jumped there directly, bypassing `## Step 0: First-Run Setup Wizard` at line ~339. Result: no browser cookie extraction, no yt-dlp, no Digg CLI install, WebSearch-only synthesis with no X/YouTube/TikTok data. Root cause: the branching rule named Step 0.5 as the next step without mentioning the wizard. Fix: this gate and the updated branching rule below.
 
 **STEP 1 - RUN THE ENGINE. You MUST run `scripts/last30days.py` via Bash. Do not produce output from WebSearch alone.**
 
@@ -238,7 +251,7 @@ The single most common failure mode of this skill is the model reading this file
 
 Branching rule:
 
-- **If the user provided a topic** (e.g. `/last30days Kanye West`, `/last30days nvidia earnings`): proceed to Step 0.5 / Step 0.55 / Step 0.75 / Research Execution below. Do not skip straight to WebSearch. WebSearch is a **supplement after** the Python engine runs (see Step 2). It is **not a substitute**.
+- **If the user provided a topic** (e.g. `/last30days Kanye West`, `/last30days nvidia earnings`): confirm the first-run gate above passed (output `1`), then proceed to `## Step 0: First-Run Setup Wizard` (or skip it if already confirmed complete), then continue to Step 0.45 / Step 0.5 / Step 0.55 / Step 0.75 / Research Execution below. Do not skip straight to WebSearch. WebSearch is a **supplement after** the Python engine runs (see Step 2). It is **not a substitute**.
 - **If the user provided no topic**: ask the user for a topic with a single short question. Do not run research. Do not run WebSearch. Wait.
 
 If you are about to write a response without having run `scripts/last30days.py` at least once, stop. Return to Research Execution and run the engine. Every valid output from this skill includes the emoji-tree footer (`✅ All agents reported back!`) that the engine produces data for. No footer means you did not run the skill.
@@ -251,7 +264,7 @@ If your Bash call to `last30days.py` does NOT include the FULL pre-flight checkl
 
 ---
 
-# last30days v3.8.0: Research Any Topic from the Last 30 Days
+# last30days v3.8.1: Research Any Topic from the Last 30 Days
 
 > **Permissions overview:** Reads public web/platform data and optionally saves research briefings to `LAST30DAYS_MEMORY_DIR` (defaults to `~/Documents/Last30Days`). X/Twitter search uses optional user-provided tokens (AUTH_TOKEN/CT0 env vars). Bluesky search uses optional app password (BSKY_HANDLE/BSKY_APP_PASSWORD env vars - create at bsky.app/settings/app-passwords). All credential usage and data writes are documented in the [Security & Permissions](#security--permissions) section.
 
@@ -322,6 +335,21 @@ fi
 LAST30DAYS_MEMORY_DIR="${LAST30DAYS_MEMORY_DIR:-$HOME/Documents/Last30Days}"
 ```
 
+**PYTHON VERSION GATE — when the Runtime Preflight Bash block above exits with a Python version error:**
+
+If the preflight script emits `ERROR: last30days v3 requires Python 3.12+` (or `LAST30DAYS_PYTHON must point to Python 3.12+`) and exits, you MUST:
+
+1. Display this message to the user:
+   > "The last30days engine needs Python 3.12+. Your system has an older version. Install it with one command:
+   > - **Mac:** `brew install python@3.12`
+   > - **Windows:** `winget install Python.Python.3.12`
+   > - **Linux:** `sudo apt install python3.12` (or `pyenv install 3.12`)
+   >
+   > Then re-run `/last30days <your topic>` and the setup wizard will configure everything automatically."
+2. **Stop.** Do not attempt research. Do not fall back to WebSearch-only synthesis.
+
+WebSearch-only synthesis is not equivalent to running the engine — it misses Reddit community data, X/Twitter timelines, YouTube transcripts, TikTok, and Polymarket. Presenting it without disclosure misleads the user about what was actually searched. This is the same category of failure as a WebSearch-only run with no engine footer.
+
 **Native-search signal (web coverage).** If you (the hosting model) have your own web-search tool available — e.g. Claude Code's `WebSearch`, which STEP 0 loads — export `LAST30DAYS_NATIVE_SEARCH=1` in the same shell before invoking the engine:
 
 ```bash
@@ -338,18 +366,175 @@ The engine reads `LAST30DAYS_MEMORY_DIR` from either the process env or `~/.conf
 
 ## Step 0: First-Run Setup Wizard
 
-Before proceeding to Step 1, handle first-run setup.
+**CRITICAL: ALWAYS execute Step 0 BEFORE Step 1, even when the user provided a topic.** If the user typed `/last30days Mercer Island`, you MUST run the wizard BEFORE any research. The topic is preserved - research runs immediately after the wizard completes. Do NOT skip the wizard because a topic was provided. It takes about 30 seconds and only runs once, ever.
+
+**You are the conversational driver.** The Python setup script does only mechanical work (cookie reads, tool installs, the GitHub device-auth flow) - it CANNOT prompt the user, because it runs as a non-interactive subprocess. So consent happens HERE, in chat: you ask, the user answers, and you gate each subprocess call on the answer. Do NOT just run `setup` and report the result - that is the silent-onboarding regression this section exists to prevent.
 
 **First-run detection (silent, no commands, no output to user):**
 - If `~/.config/last30days/.env` does NOT exist, this is a first run.
 - If the file exists and contains `SETUP_COMPLETE=true`, skip Step 0 entirely and go to Step 1 (CRITICAL: Parse User Intent below). Do NOT announce that setup is complete. The user does not need a status message on every run.
 
-**If this IS a first run:**
-- Run `python3 skills/last30days/scripts/last30days.py setup` (relative to the skill root) to launch the setup wizard.
-- Follow the wizard's prompts end-to-end. The wizard handles platform detection (OpenClaw vs Claude Code), auto vs manual setup, browser cookie extraction, ScrapeCreators opt-in, a best-effort auto-install of the free, keyless Digg CLI (`digg-pp-cli` via `@mvanhorn/printing-press-library install digg --cli-only` — Digg activates only when the binary is on the **agent subprocess PATH**, typically `$HOME/.local/bin`; setup reports honestly if the CLI is installed off-PATH; recommend-only if `npx` is unavailable), and the initial topic picker.
-- After the wizard writes `SETUP_COMPLETE=true` to `~/.config/last30days/.env`, proceed to research.
+**Named onboarding contracts:**
+- *(2026-06-22, silent-wizard regression - Fredy Montero run):* a prior version said "Run `setup` ... follow the wizard's prompts end-to-end." But `run_auto_setup()` has NO prompts - it extracts cookies, installs yt-dlp + Digg, and writes `SETUP_COMPLETE` with zero interaction. The model ran the silent path, never asked cookie consent, never surfaced the macOS Full Disk Access fix, and never offered the ScrapeCreators signup. Consent must be conversational.
+- *(2026-06-22, NUX restoration):* the original v3.0.0 Claude Code wizard was a guided, modal-driven flow (welcome → Auto/Manual/Skip → cookie consent → ScrapeCreators offer → source opt-in → first-topic picker) that eroded over time. It is restored below as the **Claude Code Modal Flow**. Do NOT collapse it back into a bare prose call - the guided modals are the feature. Reference capture: `docs/reference/old-nux-wizard-v3.0.0.md`.
 
-The setup wizard lives as a Python module so it works across all hosts (Claude Code, Codex, Cursor, etc.) and the common-case (already set up) path through this file stays short.
+**Platform split - run exactly ONE branch:**
+- **If you HAVE WebSearch and AskUserQuestion (Claude Code):** run the **Claude Code Modal Flow** immediately below.
+- **If you do NOT (OpenClaw, Codex, Cursor, Gemini CLI, raw CLI):** run the **Non-Modal Prose Flow** further down. It does the same work conversationally, without modals.
+
+---
+
+### Claude Code Modal Flow
+
+**Follow these steps IN ORDER. Do NOT skip ahead to research. The sequence is: (1) welcome text → (2) setup modal → (3) run setup if chosen → (4) ScrapeCreators offer modal → (5) source opt-in modal → (6) first-topic picker. Start at step 1.**
+
+**Step 1 - Welcome.** Display this welcome text ONCE as a normal message (not blockquoted).
+
+Welcome to /last30days!
+
+I research any topic across Reddit, X, YouTube, and more - synthesizing what people are actually saying right now.
+
+Auto setup gives you the core sources free in about 30 seconds:
+- X/Twitter - reads your browser cookies to authenticate (read live each run, never saved to disk).
+- Reddit with comments - public JSON, no API key needed.
+- YouTube search + transcripts - installs yt-dlp (open source, 190K+ GitHub stars).
+- Digg - trending news, GitHub stars, and pipeline feeds - installs the free, keyless Digg CLI.
+- Hacker News + Polymarket + GitHub (auto-on if the `gh` CLI is installed) - always on, zero config.
+
+Want TikTok and Instagram too? ScrapeCreators adds those (10,000 free calls, scrapecreators.com). No kickbacks, no affiliation.
+
+**Step 2 - Setup choice.** Then IMMEDIATELY call AskUserQuestion with ONLY this question and these options (do not repeat the welcome text inside the modal):
+
+Question: "How would you like to set up?"
+Options:
+- "Auto setup (~30 seconds) - scans browser cookies for X + installs yt-dlp (YouTube) and the Digg CLI"
+- "Manual setup - show me what to configure"
+- "Skip for now - Reddit (with comments), HN, Polymarket, GitHub (if `gh` installed), Web"
+
+**Step 3 - Run setup based on the choice.**
+
+**If the user picks Skip for now:** write `SETUP_COMPLETE=true` to `~/.config/last30days/.env` (append-only; run `mkdir -p ~/.config/last30days && touch ~/.config/last30days/.env` first if the file does not exist) so the wizard does NOT re-fire on every subsequent run, then skip straight to Step 6 (the topic picker). Do not run any `setup` command - the always-on sources (Reddit, HN, Polymarket, GitHub, Web) need no setup.
+
+**If the user picks Auto setup:**
+
+Get cookie consent first. Check if `BROWSER_CONSENT=true` already exists in `~/.config/last30days/.env`; if so, skip the consent prompt and run setup directly. Otherwise **call AskUserQuestion:**
+Question: "Auto setup will scan your browser (Firefox/Safari) for x.com cookies to authenticate X search. Cookies are read live, not saved to disk. OK to proceed?"
+Options:
+- "Yes, scan my cookies for X" - run `python3 skills/last30days/scripts/last30days.py setup` (relative to the skill root). Append `BROWSER_CONSENT=true` to `.env` after setup completes.
+- "Skip X, just set up YouTube + Digg" - run `FROM_BROWSER=off python3 skills/last30days/scripts/last30days.py setup`. Skips all cookie reads; still installs yt-dlp and Digg.
+- "I have an xAI API key instead" - ask them to paste it, write `XAI_API_KEY` to `.env`, then run `FROM_BROWSER=off python3 skills/last30days/scripts/last30days.py setup` (installs yt-dlp + Digg, no cookie read).
+
+The `setup` run extracts cookies (Firefox/Safari by default - never Chrome, to avoid a macOS Keychain prompt) and best-effort installs yt-dlp (YouTube) and the free, keyless Digg CLI (`digg-pp-cli` via `@mvanhorn/printing-press-library install digg --cli-only`; Digg activates only when the binary is on the **agent subprocess PATH**, typically `$HOME/.local/bin`; setup reports honestly if installed off-PATH; recommend-only if `npx` is unavailable). Show the user what was found and installed - including whether Digg landed on PATH (active) or off-PATH (installed but not yet active).
+
+**macOS Full Disk Access remediation.** After the `setup` run, inspect its stderr. If it contains `Permission denied reading Cookies.binarycookies` and the platform is macOS, the OS blocked the read - surface the fix instead of swallowing it: `macOS blocked the cookie read. To enable X/Twitter: System Settings > Privacy & Security > Full Disk Access > enable your terminal (or the Claude app), then I can retry.` Offer ONE retry of the `setup` command. If the user skips, continue.
+
+**Step 4: ScrapeCreators offer (every first run).** Show this as plain text, then a modal:
+
+ScrapeCreators adds TikTok and Instagram - 10,000 free calls, no credit card. Your key also powers YouTube comments, a YouTube transcript fallback (used only when yt-dlp gets rate-limited), and a Reddit backup (if public Reddit gets rate-limited). (We don't get a cut.)
+
+Before the modal, run `which gh` via Bash silently; store as gh_available.
+
+**Call AskUserQuestion:**
+Question: "Want to add TikTok, Instagram, and the ScrapeCreators backups? (We don't get a cut.)"
+Options:
+- "ScrapeCreators via GitHub (fastest, recommended)" - If gh_available, description: "Registers via GitHub CLI in ~2 seconds - no browser." If NOT gh_available, description: "Copies a one-time code to your clipboard and opens GitHub to authorize." After selection: if gh_available, display "Registering via GitHub CLI..."; if not, display "I'll copy a one-time code to your clipboard and open GitHub. When prompted for a device code, just paste (Cmd+V / Ctrl+V)." Then run `python3 skills/last30days/scripts/last30days.py setup --github` with a 5-minute timeout. Parse the JSON. On `status == "success"` the engine persists the key automatically and returns `"persisted": true` with a MASKED `api_key` (the raw key never appears - do not ask for or echo it); confirm "You're in! 10,000 free calls. TikTok, Instagram, YouTube comments, and the Reddit/YouTube backups are now active." On `status == "success"` but `"persisted": false` (key write failed, e.g. a permissions error), do NOT claim sources are active - tell the user the signup worked but saving the key failed, and have them add `SCRAPECREATORS_API_KEY=<key>` to `~/.config/last30days/.env` manually (the raw key is masked in output, so re-run `setup --github` or retrieve it from scrapecreators.com to get the value). On `status` `timeout`/`error`, show "GitHub auth didn't complete - no worries, sign up at scrapecreators.com or try again later," then offer the web option.
+- "Open scrapecreators.com (Google sign-in)" - run `open https://scrapecreators.com` via Bash, then ask them to paste the API key. Write `SCRAPECREATORS_API_KEY={key}` to `~/.config/last30days/.env`.
+- "I have a key" - accept the key, write to `.env`.
+- "Skip for now" - proceed without ScrapeCreators.
+
+**Step 5: Source opt-in (only if a ScrapeCreators key was saved, not if skipped).** Plain text then modal:
+
+Your ScrapeCreators key powers TikTok, Instagram, and YouTube comments. Want TikTok and Instagram on for every run? (Each adds one ScrapeCreators call per search.)
+
+**Call AskUserQuestion:**
+Question: "Which ScrapeCreators sources do you want on?"
+Options:
+- "TikTok + Instagram (recommended)" - append `INCLUDE_SOURCES=tiktok,instagram` to `~/.config/last30days/.env`. Confirm: "TikTok and Instagram are on, plus the Reddit/YouTube backups if the free sources get rate-limited."
+- "Just the basics - let's run my first search" - don't write the flag. Confirm: "Got it. ScrapeCreators will still serve as the Reddit and YouTube backups. You can add sources to `INCLUDE_SOURCES` in your `.env` anytime."
+
+**Step 6: First-topic picker.** Once `SETUP_COMPLETE=true` is written, **call AskUserQuestion:**
+Question: "What do you want to research first?"
+Options:
+- "Claude Code vs Codex" - tech comparison
+- "Sam Altman" - person in the news
+- "Warriors Basketball" - sports
+- "AI Legal Prompting Techniques" - niche/professional
+- "Type my own topic"
+
+If the user picks an example, run research with it. If "Type my own", ask what they want. **If the user already supplied a topic with the command (e.g. `/last30days Mercer Island`), SKIP this picker and use their topic directly.**
+
+**END OF FIRST-RUN WIZARD.** Everything in the Modal Flow ONLY runs on first run. If `SETUP_COMPLETE=true` exists, skip ALL of it - no welcome, no modals, no topic picker - and go straight to research (Parse User Intent).
+
+**If the user picked Manual setup** at Step 2, follow the **Manual Setup Guide** below instead of the Auto branch (the guide writes `SETUP_COMPLETE=true` itself), then continue to Step 6.
+
+---
+
+### Non-Modal Prose Flow
+
+For hosts without interactive modal prompts (OpenClaw, Codex, Cursor, Gemini CLI, raw CLI). Same work, done conversationally. Run in order; wait where it says to wait.
+
+**1. Welcome.** One short branded line, e.g.: `Welcome to /last30days - let me get you set up (about 30 seconds).`
+
+**2. Cookie consent (ask BEFORE reading anything).** First check if `BROWSER_CONSENT=true` already exists in `~/.config/last30days/.env` (e.g. granted in a prior Claude Code session); if so, skip this prompt and run `setup` directly. Otherwise ask. Example: `I can read your browser cookies (Firefox/Safari) to unlock X/Twitter and other logged-in sources. Want me to? (yes / no)` **Wait for the answer.**
+   - On **yes** → run `python3 skills/last30days/scripts/last30days.py setup` (and append `BROWSER_CONSENT=true` to `.env` after it completes). Extracts cookies (Firefox/Safari, never Chrome) and best-effort installs yt-dlp (YouTube) and the free, keyless Digg CLI (`digg-pp-cli` via `@mvanhorn/printing-press-library install digg --cli-only`; activates only when on the agent subprocess PATH, typically `$HOME/.local/bin`; reports honestly if off-PATH; recommend-only if `npx` is unavailable).
+   - On **no** → run `FROM_BROWSER=off python3 skills/last30days/scripts/last30days.py setup`. Skips all cookie reads; still installs yt-dlp and Digg, still writes `SETUP_COMPLETE`.
+
+**3. Full Disk Access remediation (macOS only).** After `setup`, inspect stderr. If it contains `Permission denied reading Cookies.binarycookies` on macOS, surface: `macOS blocked the cookie read. To enable X/Twitter: System Settings > Privacy & Security > Full Disk Access > enable your terminal (or the Claude app), then I can retry.` Offer ONE retry. If skipped, continue.
+
+**4. ScrapeCreators signup offer (every first run, consent BEFORE launching the browser).** Explain it grants 10,000 free calls that unlock TikTok, Instagram, YouTube comments, plus a Reddit backup and a YouTube transcript fallback, and that it opens a GitHub authorization page. Ask, e.g.: `Want to unlock TikTok, Instagram, and more? I can sign you up for ScrapeCreators with GitHub (10,000 free calls) - it opens a browser to authorize. (yes / no)` **Wait for the answer.**
+   - On **yes** → run `python3 skills/last30days/scripts/last30days.py setup --github`. A browser window opens; the user authorizes with the code shown. On success the engine persists the key automatically and returns `"persisted": true` with a MASKED `api_key` (never ask for or echo the raw key). Confirm the paid sources are active.
+   - On **success but `"persisted": false`** (auth completed yet the key write failed) → do NOT claim sources are active. Tell the user signup worked but saving failed, and have them add `SCRAPECREATORS_API_KEY=<key>` to `~/.config/last30days/.env` manually (the raw key is masked in output, so re-run `setup --github` or retrieve it from scrapecreators.com to get the value).
+   - On **timeout / denied** → tell the user it didn't complete and offer to retry or skip.
+   - On **no** → note they can run it later by asking to set up ScrapeCreators, then continue.
+
+**5. Complete.** Once `SETUP_COMPLETE=true` is written, briefly confirm which sources are now active (read the `setup --github` JSON `persisted` field, or re-run `--diagnose`) and proceed to research.
+
+---
+
+### Manual Setup Guide
+
+Shown when a Claude Code user picks "Manual setup", or for anyone who wants to configure by hand. Present as plain text (not blockquoted).
+
+The magic of /last30days is Reddit comments + X posts together - and both are free. Add these to `~/.config/last30days/.env`:
+
+**X/Twitter (pick one - the most important source):**
+- `FROM_BROWSER=auto` - free. Reads your x.com login cookies live at search time (Firefox/Safari, never saved to disk).
+- `XAI_API_KEY=xxx` - no browser access needed. Get a key at api.x.ai. Best for servers.
+- `XQUIK_API_KEY=xxx` - keyless-style X via Xquik.
+- `AUTH_TOKEN=xxx` + `CT0=xxx` - paste your X cookies manually (x.com → F12 → Application → Cookies).
+
+**Reddit (free, works out of the box):**
+- Public JSON gives threads + top comments with upvote counts. No setup required.
+- `SCRAPECREATORS_API_KEY=xxx` - optional backup if public Reddit gets rate-limited.
+
+**YouTube (free, open source):**
+- Run `brew install yt-dlp` (or `pip install yt-dlp`) - enables YouTube search + transcripts.
+- `SCRAPECREATORS_API_KEY=xxx` - optional server-side transcript fallback, used only when yt-dlp is rate-limited/bot-gated.
+
+**Digg (free, keyless):**
+- Run `npx @mvanhorn/printing-press-library install digg --cli-only` - installs the Digg CLI for trending news, GitHub stars, and pipeline feeds. Activates when `digg-pp-cli` is on your PATH (typically `$HOME/.local/bin`).
+
+**GitHub Issues/PRs (free, no key needed):**
+- If the `gh` CLI is installed and authed (`brew install gh && gh auth login`), GitHub search is automatic. No API key required.
+
+**Bonus: TikTok, Instagram, YouTube comments (ScrapeCreators):**
+- `SCRAPECREATORS_API_KEY=xxx` - 10,000 free calls at scrapecreators.com.
+- After adding your key, set `INCLUDE_SOURCES=tiktok,instagram` to turn on the popular ones. (Threads and Pinterest are also available via `INCLUDE_SOURCES=threads,pinterest` for power users.)
+
+**Other optional sources (add anytime):**
+- `PERPLEXITY_API_KEY=xxx` (or `OPENROUTER_API_KEY=xxx`) - AI-synthesized research with citations; set `INCLUDE_SOURCES=perplexity`.
+- `BSKY_HANDLE=you.bsky.social` + `BSKY_APP_PASSWORD=xxx` - Bluesky (free app password).
+- `BRAVE_API_KEY=xxx` or `EXA_API_KEY=xxx` - web search backends.
+
+**CRITICAL: NEVER overwrite an existing `.env`.** Before writing ANY key:
+1. Check if the file exists: `test -f ~/.config/last30days/.env`
+2. If it exists, READ it, then APPEND only missing keys with `>>` (double redirect).
+3. NEVER use `>` (single redirect) - it destroys existing content.
+4. If it doesn't exist: `mkdir -p ~/.config/last30days && touch ~/.config/last30days/.env`
+
+Always add this last line: `SETUP_COMPLETE=true`. Then proceed to research.
+
+The setup wizard's mechanical work lives in a Python module so it runs across all hosts (Claude Code, Codex, Cursor, etc.) while you drive the consent conversation above. The common-case (already set up) path through this file stays short.
 
 ---
 
@@ -671,8 +856,8 @@ When the user asks "X vs Y" (or "X vs Y vs Z"), the engine fans out N full `pipe
 # the Read tool result. Examples:
 #   Read ~/.claude/skills/last30days/SKILL.md      → SKILL_DIR=$HOME/.claude/skills/last30days
 #   Read ~/.codex/skills/last30days/SKILL.md       → SKILL_DIR=$HOME/.codex/skills/last30days
-#   Read ~/.claude/plugins/cache/last30days-skill/last30days/3.8.0/skills/last30days/SKILL.md
-#     → SKILL_DIR=$HOME/.claude/plugins/cache/last30days-skill/last30days/3.8.0/skills/last30days
+#   Read ~/.claude/plugins/cache/last30days-skill/last30days/3.8.1/skills/last30days/SKILL.md
+#     → SKILL_DIR=$HOME/.claude/plugins/cache/last30days-skill/last30days/3.8.1/skills/last30days
 # scripts/last30days.py is always a direct child of SKILL_DIR (every install layout
 # packages SKILL.md and scripts/ as siblings).
 SKILL_DIR="<absolute path of the directory containing the SKILL.md you Read>"
@@ -1011,8 +1196,8 @@ Store your plan as `QUERY_PLAN_JSON` - you'll pass it to the script in the next 
 # the Read tool result. Examples:
 #   Read ~/.claude/skills/last30days/SKILL.md      → SKILL_DIR=$HOME/.claude/skills/last30days
 #   Read ~/.codex/skills/last30days/SKILL.md       → SKILL_DIR=$HOME/.codex/skills/last30days
-#   Read ~/.claude/plugins/cache/last30days-skill/last30days/3.8.0/skills/last30days/SKILL.md
-#     → SKILL_DIR=$HOME/.claude/plugins/cache/last30days-skill/last30days/3.8.0/skills/last30days
+#   Read ~/.claude/plugins/cache/last30days-skill/last30days/3.8.1/skills/last30days/SKILL.md
+#     → SKILL_DIR=$HOME/.claude/plugins/cache/last30days-skill/last30days/3.8.1/skills/last30days
 # scripts/last30days.py is always a direct child of SKILL_DIR (every install layout
 # packages SKILL.md and scripts/ as siblings).
 SKILL_DIR="<absolute path of the directory containing the SKILL.md you Read>"

@@ -259,8 +259,8 @@ Per the v3.7.13 author-signature calibration carried through v3.7.15: **format-r
 
 ### Verification trail
 
-Per-source disposition: [.planning/v3.7.16/PHASE-0-VERIFICATION.md](../../.planning/v3.7.16/PHASE-0-VERIFICATION.md) § VERIFY 0.1 (gpt-image-2-director source read + disposition class TRANSLATE-WITH-VERIFICATION LOWER-FRICTION SUB-CLASS).
+Per-source disposition: the v3.7.16 Phase 0 verification notes (internal build notes) § VERIFY 0.1 (gpt-image-2-director source read + disposition class TRANSLATE-WITH-VERIFICATION LOWER-FRICTION SUB-CLASS).
 
-Per-element translation rules: [.planning/v3.7.16/PHASE-1-INVENTORY.md](../../.planning/v3.7.16/PHASE-1-INVENTORY.md) § 1B-A (per-element ADOPT / DOWNGRADE table).
+Per-element translation rules: the v3.7.16 Phase 1 inventory notes (internal build notes) § 1B-A (per-element ADOPT / DOWNGRADE table).
 
 Companion satellite: [`static-ads-workflow.md`](static-ads-workflow.md) covers the static-ads.md source corpus translation per § 1B-B.

@@ -60,7 +60,7 @@ GEARS Five Patterns (current notation):
 
 Unified compound clause: `**Where** <precondition> **While** <state> **When** <event> the <subject> shall <behavior>` — any subset of the three modifiers may chain.
 
-See [GEARS notation reference](https://adk.mo.ai.kr/en/workflow-commands/moai-plan/#gears-notation) — 4-locale (en / ko / ja / zh).
+See [GEARS notation reference](https://adk.mo.ai.kr/en/workflow-commands/moai-plan/#gears-notation).
 
 > **IF/THEN deprecated callout**: Authoring guidance previously used `IF <condition> THEN <action>` to describe state-conditioned behavior. In GEARS that intent is expressed as `When <condition-detected>` (event-detected form). The lint engine emits a `LegacyEARSKeyword` warning (non-strict) or error (`moai spec lint --strict`) on residual `IF/THEN` in new SPECs. The 6-month backward-compatibility window remains active for legacy SPECs.
 
@@ -141,7 +141,7 @@ WHY: Constitution prevents architectural drift and ensures maintainability.
 
 GEARS (Generalized EARS) is the canonical SPEC notation as of v3.0.0. It preserves Ubiquitous / `When` (event-driven) / `While` (state-driven) and reframes `Where` as a capability gate. The legacy `IF/THEN` modality is replaced by `When <event-detected>`.
 
-GEARS notation is exhaustively described in [docs-site GEARS notation reference](https://adk.mo.ai.kr/en/workflow-commands/moai-plan/#gears-notation) (4-locale: en / ko / ja / zh) and the canonical GEARS migration policy record.
+GEARS notation is exhaustively described in [docs-site GEARS notation reference](https://adk.mo.ai.kr/en/workflow-commands/moai-plan/#gears-notation) and the canonical GEARS migration policy record.
 
 Compound clause example (with non-"the system" subject):
 
@@ -200,7 +200,7 @@ State files: `.moai/state/last-session-state.json`. Generated docs: `.moai/docs/
 
 ### SPEC Metadata Schema
 
-Canonical 12 required fields (enforced by `internal/spec/lint.go` `FrontmatterSchemaRule`): id, title, version, status, created, updated, author, priority, phase, module, lifecycle, tags.
+Canonical 12 required fields (enforced by the SPEC frontmatter lint rule): id, title, version, status, created, updated, author, priority, phase, module, lifecycle, tags.
 
 Status enum (8 values): draft → planned → in-progress → implemented → completed | superseded | archived | rejected.
 
@@ -312,8 +312,6 @@ Integration Status: Complete - Plan-Run-Sync workflow with SDD 2025 features
 - Requirements use "should" where they mean "shall" (optional vs mandatory ambiguity)
 - SPEC-ID not registered in `.moai/specs/` directory
 
-Provenance (SPEC-ID / grouping-naming drift): AP-SRN-004 (legacy "Wave" naming retired for SPEC-grouping clarity) — recurred on 2026-05-25 in Epic 10 paste-ready chore (commit 64310df3f; the historical pre-redesign label was the now-retired Sprint term, not the Epic taxonomy).
-
 <!-- moai:evolvable-end -->
 
 <!-- moai:evolvable-start id="verification" -->
@@ -328,15 +326,3 @@ Provenance (SPEC-ID / grouping-naming drift): AP-SRN-004 (legacy "Wave" naming r
 - [ ] Out of Scope section present to prevent scope creep — at least one `### Out of Scope — <topic>` H3 sub-heading with a `-` bullet entry (satisfies the `OutOfScopeRule` lint)
 
 <!-- moai:evolvable-end -->
-
----
-
-## Decision Heuristics
-
-Fast defaults — always confirm against the cited body section for non-trivial decisions.
-
-- If authoring a NEW requirement, default to GEARS notation, not legacy EARS (<- §GEARS Format).
-- If a report analyzes what EXISTS, default to `.moai/reports/`, not `.moai/specs/` (<- §SPEC Scope and Classification).
-- If the SPEC is production-critical, default to `lifecycle: spec-anchored` over spec-first (<- §SPEC Lifecycle Management).
-- If excluding work, default to a `### Out of Scope — <topic>` H3 with `-` bullets (<- §Out of Scope Classification Rules).
-- If a residual `IF/THEN` modality appears, default to rewriting it as `When <event-detected>` (<- §GEARS Format).

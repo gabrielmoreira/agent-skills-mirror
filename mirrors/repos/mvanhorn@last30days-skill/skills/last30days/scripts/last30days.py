@@ -24,10 +24,15 @@ def ensure_supported_python(version_info: tuple[int, int, int] | object | None =
     major, minor, micro = tuple(version_info[:3])
     if (major, minor) >= MIN_PYTHON:
         return
+    req = f"{MIN_PYTHON[0]}.{MIN_PYTHON[1]}"
     sys.stderr.write(
-        "last30days v3 requires Python 3.12+.\n"
+        f"last30days v3 requires Python {req}+.\n"
         f"Detected Python {major}.{minor}.{micro}.\n"
-        "Install and use python3.12 or python3.13, then rerun this command.\n"
+        f"Install with:\n"
+        f"  Mac:     brew install python@{req}\n"
+        f"  Windows: winget install Python.Python.{req}\n"
+        f"  Linux:   sudo apt install python{req}  (or pyenv install {req})\n"
+        f"Then rerun: python{req} <path-to-script> setup\n"
     )
     raise SystemExit(1)
 
@@ -668,12 +673,20 @@ def main() -> int:
             results = setup_wizard.run_openclaw_setup(config)
             print(json.dumps(results))
             return 0
-        if "--github" in extra_argv:
-            results = setup_wizard.run_github_auth()
-            print(json.dumps(results))
-            return 0
-        if "--device-auth" in extra_argv:
-            results = setup_wizard.run_full_device_auth()
+        if "--github" in extra_argv or "--device-auth" in extra_argv:
+            if "--github" in extra_argv:
+                results = setup_wizard.run_github_auth()
+            else:
+                results = setup_wizard.run_full_device_auth()
+            # Persist the returned key so the paid sources activate on the next
+            # run, and mask it in stdout so the secret never lands in the host
+            # model's captured Bash output.
+            api_key = results.get("api_key")
+            if results.get("status") == "success" and api_key:
+                results["persisted"] = setup_wizard.write_api_key(env.CONFIG_FILE, api_key)
+                results["api_key"] = setup_wizard.mask_api_key(api_key)
+            else:
+                results["persisted"] = False
             print(json.dumps(results))
             return 0
         sys.stderr.write("Running auto-setup...\n")

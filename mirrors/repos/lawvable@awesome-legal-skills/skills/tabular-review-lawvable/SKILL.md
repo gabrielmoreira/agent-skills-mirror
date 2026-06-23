@@ -2,9 +2,9 @@
 name: tabular-review-lawvable
 description: "Guide to analyze multiple documents (PDF, DOCX) against user-defined columns and produce a structured Excel output with citations. Use when the user wants to: (1) Extract specific information from multiple documents into a table, (2) Compare clauses or provisions across contracts, (3) Create a document review matrix with source citations. Triggers on: 'tabular review', 'document matrix', 'extract from documents', 'compare across documents', 'review multiple contracts'."
 metadata:
-  author: Antoine Louis (Lawvable)
-  license: AGPL-3.0
-  version: 2026.01.14
+  author: "Dr. Antoine Louis"
+  license: "agpl-3.0"
+  version: "2026-04-10"
 ---
 
 # Tabular Review

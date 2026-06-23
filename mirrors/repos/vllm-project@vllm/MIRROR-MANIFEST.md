@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vllm-project/vllm` — 26 default patterns, 1 followed patterns, 6 file(s) materialized.
+Mirror of `vllm-project/vllm` — 26 default patterns, 4 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `vllm-project/vllm` — 26 default patterns, 1 followed patterns, 6 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 6 |
+| Followed pats | 4 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,9 @@ Mirror of `vllm-project/vllm` — 26 default patterns, 1 followed patterns, 6 fi
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `SECURITY.md`
+- `docs/usage/security.md`
+- `docs/contributing/vulnerability_management.md`
 - `docs/contributing/editing-agent-instructions.md`
 
 ## File Index
@@ -65,6 +68,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`rust/AGENTS.md`](rust/AGENTS.md) |
 | 5 | ✓ | [`rust/CLAUDE.md`](rust/CLAUDE.md) |
 | 6 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
+| 7 | → | [`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md) |
+| 8 | → | [`docs/usage/security.md`](docs/usage/security.md) |
+| 9 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

@@ -247,7 +247,7 @@ Start wide, then narrow. `outline` first, `view text` / `get` / `query` once you
 ```bash
 officecli view "$FILE" outline          # slide count + titles
 officecli view "$FILE" annotated        # complete per-slide breakdown with fonts, sizes, tables, charts
-officecli view "$FILE" text --start 1 --end 5   # text dump (does NOT extract table cells — use get)
+officecli view "$FILE" text --start 1 --end 5   # text dump (includes table cell text)
 officecli view "$FILE" issues           # empty slides, overflow hints
 officecli view "$FILE" stats            # counts + totals (incl. pictures missing alt)
 ```
@@ -363,7 +363,7 @@ officecli set "$FILE" "/slide[2]/shape[@name=HeroCard]" --prop animation=none   
 
 ### Hyperlinks, tooltips, slide-jump
 
-`--prop link=slide:N` for slide-jump, `link=https://...` for URL, `--prop tooltip="..."` for hover text. (Help only documents the URL form — `slide:N` is skill-only knowledge.)
+`--prop link=slide[N]` for an in-deck jump (1-based; target slide must exist), `link=nextslide` / `firstslide` / `lastslide` / `previousslide` / `endshow` for named navigation, `link=https://...` for a URL, `--prop tooltip="..."` for hover text.
 
 ### Tables, placeholders, groups, zoom — one-liners
 
@@ -455,7 +455,7 @@ for pair in "Step1 Step2" "Step2 Step3" "Step3 Step4"; do
 done
 ```
 
-`shape=elbow` is canonical (`bentConnector3` also works; `bentConnector2` is rejected).
+`shape=elbow` is canonical (`bentConnector2` / `bentConnector3` also accepted).
 
 #### (d) Multi-slide deck skeletons
 

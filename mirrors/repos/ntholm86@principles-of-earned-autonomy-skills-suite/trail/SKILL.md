@@ -1,36 +1,36 @@
 ﻿---
 name: trail
 version: 1.19.0
-description: 'Evidence trail management. Append a structured entry to .acm/audit-trail.md IN THE TARGET REPO ROOT at the end of every substantive session â€” recording the interpretation of the ask, examination, decisions, actions, and reflection. The implementation of Observable Autonomy â€” autonomy without evidence is not delegation, it is abdication. USE WHEN: any session that produces a decision, realization, or finding â€” including conversations. There is no such thing as "just conversation" if a decision was made in it.'
-argument-hint: 'The target being worked on (repo, file, system) â€” used to populate the log entry header'
+description: 'Evidence trail management. Append a structured entry to .acm/audit-trail.md IN THE TARGET REPO ROOT at the end of every substantive session — recording the interpretation of the ask, examination, decisions, actions, and reflection. The implementation of Observable Autonomy — autonomy without evidence is not delegation, it is abdication. USE WHEN: any session that produces a decision, realization, or finding — including conversations. There is no such thing as "just conversation" if a decision was made in it.'
+argument-hint: 'The target being worked on (repo, file, system) — used to populate the log entry header'
 ---
 
 # Trail
 
 *The record of what actually happened.*
 
-*Memory Model role: Writes the core of the memory layer â€” `.acm/audit-trail.md`, the append-only record every other skill reads.*
+*Memory Model role: Writes the core of the memory layer — `.acm/audit-trail.md`, the append-only record every other skill reads.*
 
-> **Governing principle:** [Observable Autonomy](../PRINCIPLES.md#principle-2-observable-autonomy) â€” *The degree of autonomy a system deserves is bounded by the degree of transparency it provides.* This skill is how that transparency is produced.
+> **Governing principle:** [Observable Autonomy](../PRINCIPLES.md#principle-2-observable-autonomy) — *The degree of autonomy a system deserves is bounded by the degree of transparency it provides.* This skill is how that transparency is produced.
 
 Autonomy without evidence is abdication. When an agent does work autonomously, the question is never "did it do something?" but "can someone who wasn't there reconstruct what happened, why, and whether to trust it?"
 
-A trail that answers this earns the right to more autonomy. A trail that doesn't â€” or doesn't exist â€” means autonomy must be constrained regardless of how competent the work was.
+A trail that answers this earns the right to more autonomy. A trail that doesn't — or doesn't exist — means autonomy must be constrained regardless of how competent the work was.
 
 ```
-Evidence â†’ Trust â†’ Autonomy
+Evidence → Trust → Autonomy
 ```
 
 ---
 
 ## The Structure
 
-The trail lives in the **root of the target repo being worked on** â€” not in the skills install directory.
+The trail lives in the **root of the target repo being worked on** — not in the skills install directory.
 
 If you are improving `c:\git\clikit`, the trail is `c:\git\clikit\.acm\audit-trail.md`.
 If you are improving `~/projects/myapp`, the trail is `~/projects/myapp/.acm/audit-trail.md`.
 
-Every repo gets its own trail. The trail is local evidence for that project â€” it belongs with the project.
+Every repo gets its own trail. The trail is local evidence for that project — it belongs with the project.
 
 One file: `.acm/audit-trail.md` in the target repo root. Append-only. One `##` entry per session, newest at the bottom.
 
@@ -48,7 +48,7 @@ Append-only ledger of autonomous operations on this repo. Newest entries at the 
 ---
 ```
 
-That's it. Nothing else gets installed into the target repo. `record.py` lives in the skills install (`tools/record.py` next to this SKILL.md) and is invoked from there â€” it writes into the current working directory by default, or whatever `$TRAIL_ROOT` points to.
+That's it. Nothing else gets installed into the target repo. `record.py` lives in the skills install (`tools/record.py` next to this SKILL.md) and is invoked from there — it writes into the current working directory by default, or whatever `$TRAIL_ROOT` points to.
 
 After appending to `audit-trail.md`, regenerate the derived artifacts and commit them together:
 
@@ -59,9 +59,9 @@ git add .acm/audit-trail.md .acm/history.md .acm/learning.md
 git commit -m "trail: <slug>"
 ```
 
-If Retrospect ran this session and updated `.acm/retrospect.md`, include it in the same commit. `.acm/destination.md` (or legacy `.acm/vision.md`) is operator-managed and is committed only when the operator changes it â€” never as a side effect of an agent run.
+If Retrospect ran this session and updated `.acm/retrospect.md`, include it in the same commit. `.acm/destination.md` (or legacy `.acm/vision.md`) is operator-managed and is committed only when the operator changes it — never as a side effect of an agent run.
 
-`history.md` and `learning.md` are derived from `audit-trail.md` and are **regenerated as part of every Trail commit** â€” they must not lag behind the source. `record.py` exposes both as standalone subcommands too:
+`history.md` and `learning.md` are derived from `audit-trail.md` and are **regenerated as part of every Trail commit** — they must not lag behind the source. `record.py` exposes both as standalone subcommands too:
 
 ```
 python <skills>/tools/record.py history           # timeline to stdout (no write)
@@ -71,34 +71,34 @@ python <skills>/tools/record.py summary           # digest of the most recent ru
 
 ```
 .acm/
-  audit-trail.md  â€” append-only ledger, one entry per session (the source of truth)
-  history.md      â€” derived run timeline (regenerated by Trail at every commit)
-  learning.md     â€” derived [!REALIZATION] / [!REVERSAL] surface (regenerated by Trail at every commit)
-  destination.md  â€” operator-held destination (optional; written by Destination, read by Improve, never written by any other skill; legacy filename: vision.md)
-  retrospect.md   â€” Retrospect-derived current orientation (written by Retrospect, read by Improve)
-  sessions/       â€” per-session summary file (mandatory); one per run, linked from audit-trail.md
-  transcripts/    â€” verbatim transcript exports (optional but strongly recommended for high-fidelity runs)
+  audit-trail.md  — append-only ledger, one entry per session (the source of truth)
+  history.md      — derived run timeline (regenerated by Trail at every commit)
+  learning.md     — derived [!REALIZATION] / [!REVERSAL] surface (regenerated by Trail at every commit)
+  destination.md  — operator-held destination (optional; written by Destination, read by Improve, never written by any other skill; legacy filename: vision.md)
+  retrospect.md   — Retrospect-derived current orientation (written by Retrospect, read by Improve)
+  sessions/       — per-session summary file (mandatory); one per run, linked from audit-trail.md
+  transcripts/    — verbatim transcript exports (optional but strongly recommended for high-fidelity runs)
 ```
 
-`learning.md` is the compact learning surface â€” every `[!REALIZATION]` and `[!REVERSAL]` from the full trail, in chronological order with date+slug context. Improve reads it before `audit-trail.md` to act on prior conclusions without re-reading the full history. It is regenerated by Trail at every commit so it never lags behind `audit-trail.md`.
+`learning.md` is the compact learning surface — every `[!REALIZATION]` and `[!REVERSAL]` from the full trail, in chronological order with date+slug context. Improve reads it before `audit-trail.md` to act on prior conclusions without re-reading the full history. It is regenerated by Trail at every commit so it never lags behind `audit-trail.md`.
 
 Structural distinction is mandatory: summary files live in `.acm/sessions/`; verbatim transcript exports live in `.acm/transcripts/`. Do not use one file to play both roles.
 
 Destination and retrospect.md are distinct: the destination is the goal the operator holds and rarely changes; retrospect.md is the agent's current synthesis of where the target is, rewritten each Retrospect run. The destination is input to the loop; retrospect.md is output.
 
-Both files are committed. `record.py` is **not** committed to the target repo â€” it stays in the skills install.
+Both files are committed. `record.py` is **not** committed to the target repo — it stays in the skills install.
 
 Each entry in `audit-trail.md` follows this shape:
 
 ```markdown
-## YYYY-MM-DD â€” <slug>
+## YYYY-MM-DD — <slug>
 
 - target: <what was worked on>
 - operator: <who initiated>
 - agent: <model / provider>
 - skill: <which skill was applied>
 - outcome: <what resulted>
-- delta: <version before â†’ after, or a one-line summary of change>
+- delta: <version before → after, or a one-line summary of change>
 
 ### Interpretation of the ask
 
@@ -107,7 +107,7 @@ If Intent was applied, paste its narration here.>
 
 ### Examination
 
-<What was looked at. What each lens revealed â€” including "nothing actionable.">
+<What was looked at. What each lens revealed — including "nothing actionable.">
 
 ### Decision
 
@@ -128,7 +128,7 @@ model of the target as a falsifiable claim a future run could disagree with, a
 named blind spot in this iteration, and what someone who knows the target
 better would push back on.
 
-Then, **every entry must record an across-trail trigger evaluation** â€” one
+Then, **every entry must record an across-trail trigger evaluation** — one
 short evidence-bearing line per trigger, drawn from the trail. Bare "N/A" is
 not allowed; the audit value is showing the check was made, not skipped. The
 four triggers are: recurring finding-class, about to declare silence, prior
@@ -141,7 +141,7 @@ about the target read from the trail as a whole. Mark material insights with
 ### Candidate Next Moves
 
 <Optional. A short ranked list of candidate next moves visible from this
-iteration's own examination â€” blind spots named, follow-ups implied, structural
+iteration's own examination — blind spots named, follow-ups implied, structural
 questions surfaced but deferred. Top-ranked first, one sentence each. Omit if
 convergence was declared. The operator may pick, redirect, or ignore; the
 ranking exists as arc-level evidence of how the operator-gate steers the work,
@@ -152,20 +152,20 @@ not as a step the operator must engage with.>
 
 ## Three markers
 
-Insert these inline wherever they occur â€” inside any section, not only Decision:
+Insert these inline wherever they occur — inside any section, not only Decision:
 
-**`[!DECISION]`** â€” A choice that could have gone differently. Always include rationale and at least one rejected alternative.
+**`[!DECISION]`** — A choice that could have gone differently. Always include rationale and at least one rejected alternative.
 
-**`[!REALIZATION]`** â€” Something discovered during the work that changed understanding.
+**`[!REALIZATION]`** — Something discovered during the work that changed understanding.
 
-**`[!REVERSAL]`** â€” A decision made and then undone. **Both kinds count:** reversing a prior run's decision, *and* backing out of a step planned earlier in the same iteration ("attempted X, then removed it after Y"). Reversals are more valuable than decisions â€” they show the reasoning evolved. A healthy trail demonstrates consistent reversal density: a long run of entries lacking `[!REVERSAL]`, `[!REALIZATION]`, or outcome-mismatches should be treated as suspect (likely post-hoc rationalization) rather than celebrated as perfection. If your Action and Outcome section narrates "I tried X then removed it," mark it.
+**`[!REVERSAL]`** — A decision made and then undone. **Both kinds count:** reversing a prior run's decision, *and* backing out of a step planned earlier in the same iteration ("attempted X, then removed it after Y"). Reversals are more valuable than decisions — they show the reasoning evolved. A healthy trail demonstrates consistent reversal density: a long run of entries lacking `[!REVERSAL]`, `[!REALIZATION]`, or outcome-mismatches should be treated as suspect (likely post-hoc rationalization) rather than celebrated as perfection. If your Action and Outcome section narrates "I tried X then removed it," mark it.
 
 ```markdown
 [!DECISION] Collapsed six skills to two.
 Rationale: the framework's mechanism contradicted its own first principle.
-Alternative: keep all six, add cross-references â€” rejected, complexity without payoff.
+Alternative: keep all six, add cross-references — rejected, complexity without payoff.
 
-[!REALIZATION] The debug log captures zero conversation content â€” only session_start metadata.
+[!REALIZATION] The debug log captures zero conversation content — only session_start metadata.
 
 [!REVERSAL] Initially planned to keep the PowerShell scripts. Reversed after confirming
 they bind the suite to one OS for no reason a few hundred lines of Python won't satisfy.
@@ -185,7 +185,7 @@ grep -rn '\[!DECISION\]\|\[!REALIZATION\]\|\[!REVERSAL\]' .acm/
 
 ## Three resolutions
 
-The trail must be readable at three levels simultaneously â€” because different observers have different time budgets:
+The trail must be readable at three levels simultaneously — because different observers have different time budgets:
 
 | Resolution | Where | Time budget | Answers |
 |---|---|---|---|
@@ -202,7 +202,7 @@ A trail at only one resolution is observable to one class of observer and invisi
 The most critical principle of the trail is that it must be **structural telemetry, not reported telemetry**. An agent writing a summary of its own actions at the end of a session introduces a post-hoc rationalization threat.
 
 **Reasoning capture is required. Verbatim harness extraction is optional.**
-The agent must capture its reasoning â€” what was considered, what was rejected, why a path was chosen â€” alongside the work. Until execution harnesses expose stable, portable transcript surfaces, agent-authored reasoning is the practical substrate. Treat it as evidence, not as ground truth: it is one step removed from the underlying inference and is vulnerable to post-hoc rationalization.
+The agent must capture its reasoning — what was considered, what was rejected, why a path was chosen — alongside the work. Until execution harnesses expose stable, portable transcript surfaces, agent-authored reasoning is the practical substrate. Treat it as evidence, not as ground truth: it is one step removed from the underlying inference and is vulnerable to post-hoc rationalization.
 
 **Anti-rationalization discipline (mandatory whenever the agent authors its own reasoning):**
 1. Write reasoning *before* the action, not after. Pre-commit predictions (Improve step 4a) precede execution.
@@ -238,7 +238,7 @@ Use literal quotes for prompts, tool outputs, and diffs. Use the agent's own nar
 After the session concludes, when writing the final aggregate `audit-trail.md` entry, you must link it to this verbatim transcript file:
 
 ```markdown
-## YYYY-MM-DD â€” <slug>
+## YYYY-MM-DD — <slug>
 
 - target: ...
 - session-file: .acm/sessions/<date>-<slug>.md
@@ -258,11 +258,11 @@ The summary session file is mandatory. Verbatim transcript capture is optional a
 
 Mark fidelity explicitly in every summary file and transcript file:
 
-- **verbatim** â€” exported directly from the platform into `.acm/transcripts/`. Exact dialogue preserved. Highest trust.
-- **verbatim-structural** â€” transcript exported from platform logs with structural capture workflow and linked from the summary entry.
-- **reconstructed** â€” summary in `.acm/sessions/` recreated from memory. Decisions and outcomes reliable; exact wording approximate.
-- **mixed** â€” summary in `.acm/sessions/` combines verbatim tool output with reconstructed narrative.
-- **split-writer** â€” summary in `.acm/sessions/` written by an independent writer agent after a separate decider agent run. Highest anti-rationalization trust for summaries.
+- **verbatim** — exported directly from the platform into `.acm/transcripts/`. Exact dialogue preserved. Highest trust.
+- **verbatim-structural** — transcript exported from platform logs with structural capture workflow and linked from the summary entry.
+- **reconstructed** — summary in `.acm/sessions/` recreated from memory. Decisions and outcomes reliable; exact wording approximate.
+- **mixed** — summary in `.acm/sessions/` combines verbatim tool output with reconstructed narrative.
+- **split-writer** — summary in `.acm/sessions/` written by an independent writer agent after a separate decider agent run. Highest anti-rationalization trust for summaries.
 
 A summary written by the audited party is evidence, but it is not independent evidence. Mark it as such.
 
@@ -280,7 +280,7 @@ If you are unsure whether this session warrants an entry: if a decision was made
 
 ### Multi-iteration runs
 
-**Each iteration is a separate trail entry. Append it immediately after that iteration completes â€” before beginning the next iteration.**
+**Each iteration is a separate trail entry. Append it immediately after that iteration completes — before beginning the next iteration.**
 
 Do not buffer entries to write at the end of all iterations. The trail is the checkpoint: if the agent crashes, times out, or the user stops the run after iteration 3 of 10, the first 3 entries must already be committed to `audit-trail.md`.
 
@@ -292,24 +292,24 @@ iteration 1:
   2. python <skills>/tools/record.py history --write    â† updates .acm/history.md
   3. python <skills>/tools/record.py learning --write   â† updates .acm/learning.md
   4. git add .acm/audit-trail.md .acm/history.md .acm/learning.md && git commit -m "trail: <slug>-1"
-  â†“ only now begin iteration 2
+  ↓ only now begin iteration 2
 
 iteration 2:
   1. append entry to .acm/audit-trail.md
   2. python <skills>/tools/record.py history --write
   3. python <skills>/tools/record.py learning --write
   4. git add .acm/audit-trail.md .acm/history.md .acm/learning.md && git commit -m "trail: <slug>-2"
-  â†“ only now begin iteration 3
+  ↓ only now begin iteration 3
 ...
 ```
 
-Do not begin the next iteration until steps 1â€“4 are complete. Each commit is a checkpoint â€” if the agent crashes or the user stops after iteration 3 of 10, the first 3 entries are already committed in all three files. Batching at the end defeats this.
+Do not begin the next iteration until steps 1–4 are complete. Each commit is a checkpoint — if the agent crashes or the user stops after iteration 3 of 10, the first 3 entries are already committed in all three files. Batching at the end defeats this.
 
 ---
 
 ## What this skill is not
 
-**Not a log of events.** A log records what happened. A trail records why â€” the reasoning that made the action the right choice. Without the why, an observer can see the diff but cannot judge whether it was correct.
+**Not a log of events.** A log records what happened. A trail records why — the reasoning that made the action the right choice. Without the why, an observer can see the diff but cannot judge whether it was correct.
 
 **Not a post-hoc summary.** Better than nothing. Not the same as a trail written in real time.
 
@@ -319,7 +319,7 @@ Do not begin the next iteration until steps 1â€“4 are complete. Each commit
 
 ## The test
 
-Can someone who was not present reconstruct what was done, why each significant decision was made, and whether the work achieved what was asked for â€” using only `.acm/audit-trail.md` and the linked sessions?
+Can someone who was not present reconstruct what was done, why each significant decision was made, and whether the work achieved what was asked for — using only `.acm/audit-trail.md` and the linked sessions?
 
 If yes, the trail is sufficient. If no, something is missing.
 
@@ -327,7 +327,7 @@ If yes, the trail is sufficient. If no, something is missing.
 
 ## Composing with other skills
 
-Trail works standalone. When Intent is also active, paste its narration verbatim into the "Interpretation of the ask" section of the log entry â€” this is how context carries across sessions. When Improve or Probe is also active, the log entry records what that skill examined and decided.
+Trail works standalone. When Intent is also active, paste its narration verbatim into the "Interpretation of the ask" section of the log entry — this is how context carries across sessions. When Improve or Probe is also active, the log entry records what that skill examined and decided.
 
 The `<skills>/tools/record.py` script can stub a new entry for you:
 

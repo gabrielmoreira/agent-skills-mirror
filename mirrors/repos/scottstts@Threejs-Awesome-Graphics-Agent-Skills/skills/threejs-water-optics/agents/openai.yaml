@@ -1,0 +1,4 @@
+interface:
+  display_name: "Three.js Water Optics"
+  short_description: "Build coherent analytic wave water"
+  default_prompt: "Use $threejs-water-optics to build shared wave/normal, derivative filtering, analytic reflection, heuristic refraction, fallback absorption, and crest-foam mechanisms."

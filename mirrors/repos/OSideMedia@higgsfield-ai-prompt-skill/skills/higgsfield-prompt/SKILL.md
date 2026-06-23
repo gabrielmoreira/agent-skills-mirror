@@ -355,6 +355,60 @@ When the resolution is non-obvious, surface it. Tell the user which sub-skill no
 
 ---
 
+## Before You Iterate — Is the Miss Systematic or Stochastic?
+
+At a ~1.5% video / ~1% image acceptance bar, **most misses are variance, not a
+broken prompt.** Serial single-variable iteration is the right tool for a
+*systematic* miss — the prompt is genuinely wrong. Run it on a *stochastic*
+miss and you're "fixing" a prompt that was already right, burning credits to
+re-roll the same dice one at a time. So decide the fork **before** you touch the
+prompt:
+
+- **Are the misses all failing the same way?** (identity drifts every time,
+  wardrobe contaminates every time, the cut count is always wrong) →
+  **systematic.** The prompt is wrong. Iterate it, one variable at a time (next
+  section).
+- **Are they failing in varied ways, with the occasional near-hit?**
+  (performance flat on one roll, camera off on another, physics odd on a third)
+  → **stochastic.** The prompt is right; the roll wasn't. **Stop touching the
+  prompt. Lock it, fire a batch, and cull.**
+
+You don't have to eyeball this. The ledger already classifies every reject as
+structural or stochastic, and `ratio <project>` prints a **verdict** per shot
+tag: `iterate` (structural-dominant), `batch+sel` (stochastic-dominant),
+`mixed`, or `low-n`. Below five logged rows (`LOW_N_THRESHOLD`) the split is
+noise — the ledger stays silent and you call it by eye. Read the verdict at the
+decision point; don't iterate against a `batch+sel` tag.
+
+### Batch-and-Select (Variance-Harvesting) — Not the Same as Stylistic Fan-Out
+
+When the verdict is stochastic, the move is **variance-harvesting**: hold the
+**same locked prompt** constant, roll N at once (grid generation / Batch Size in
+Cinema Studio, DoP Lite for cheap rolls), and cull to the keeper. This is the
+opposite of the stylistic-fan-out exception in the next section — that varies N
+*different looks*; this rolls N *identical* attempts because the prompt is right
+and only the dice are the problem. They read alike and are economically
+distinct: fan-out explores, harvest exploits.
+
+**The cull rubric — how to pick the keeper from a batch.** Batching is worthless
+without a disciplined select. Don't pick "the prettiest"; select against the
+**falsifiable success criteria** you locked before generating:
+
+1. **Hard-gate on the invariants first.** Identity, wardrobe, cut count, text
+   legibility, named physics anchors — any roll that fails one is *out*, however
+   nice it looks. (These are your structural failure modes; a batch can't fix a
+   structural miss, only dodge a stochastic one.)
+2. **Among survivors, score the stochastic axis that was failing** — the
+   performance, camera, or composition you were re-rolling for. Best one wins.
+3. **One keeper, log the rest.** Mark the winner `kept`; log the culled rolls
+   `rejected` with their real `reject_reason` so the denominator stays honest
+   and the verdict keeps sharpening. A harvested batch is correctly logged as
+   one `prompt_hash`, N rows, one keep + N−1 **stochastic** rejects.
+4. **If the whole batch fails the hard gate**, the miss was systematic after
+   all — stop harvesting and go iterate the prompt.
+
+---
+
 ## The Iteration Rule — Change One Variable at a Time
 
 When a prompt is close-but-not-right and you're about to regenerate, change
@@ -372,7 +426,9 @@ doesn't, and converge on the right prompt fast.
 **The exception:** once the prompt is locked and you're varying purely for
 stylistic exploration (e.g., five lighting variants of an already-approved
 scene), batching changes is fine. The rule applies during *refinement*, not
-during fan-out.
+during fan-out. (Don't confuse this stylistic fan-out — N *different* looks —
+with variance-harvesting above, which rolls N *identical* locked prompts to beat
+a stochastic miss. Both batch; only one changes the prompt.)
 
 **Workflow:**
 

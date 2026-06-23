@@ -140,10 +140,39 @@ Optional settings in `.claude/omc.jsonc` (project) or `~/.config/claude-omc/conf
     "pauseAfterExpansion": false,
     "pauseAfterPlanning": false,
     "skipQa": false,
-    "skipValidation": false
+    "skipValidation": false,
+    "execution": "solo"
   }
 }
 ```
+
+To run autopilot implementation through the tmux CLI team runtime and prefer Cursor executor workers:
+
+```jsonc
+{
+  "autopilot": {
+    "execution": "team",
+    "team": { "agentTypes": ["cursor"] }
+  }
+}
+```
+
+With that config, the execution stage must launch executor-style work through:
+
+```sh
+omc team 1:cursor "<implementation task>"
+```
+
+or the Claude Code slash compatibility surface:
+
+```text
+/omc-teams 1:cursor "<implementation task>"
+```
+
+Limitations:
+- Cursor workers are executor-style only: implementation, file edits, build/test fixes, and other plan execution tasks.
+- Keep reviewer, critic, security-review, validation verdict, and final approval roles on native Claude/OMC reviewer agents unless explicit safe support is added later.
+- Cursor requires the `cursor-agent` CLI to be installed and authenticated. If `cursor-agent` is unavailable, report that setup requirement instead of silently falling back to Claude-only execution.
 
 ## Resume
 

@@ -303,8 +303,8 @@ The safe-zone top/bottom-10% rule is adopted at full HARD-RULE volume — the on
 
 ### Verification trail
 
-Per-source disposition: [.planning/v3.7.16/PHASE-0-VERIFICATION.md](../../.planning/v3.7.16/PHASE-0-VERIFICATION.md) § VERIFY 0.2 (static-ads.md source read + disposition class TRANSLATE-WITH-VERIFICATION LOWEST-FRICTION SUB-CLASS).
+Per-source disposition: the v3.7.16 Phase 0 verification notes (internal build notes) § VERIFY 0.2 (static-ads.md source read + disposition class TRANSLATE-WITH-VERIFICATION LOWEST-FRICTION SUB-CLASS).
 
-Per-element translation rules: [.planning/v3.7.16/PHASE-1-INVENTORY.md](../../.planning/v3.7.16/PHASE-1-INVENTORY.md) § 1B-B (per-element ADOPT / DOWNGRADE table).
+Per-element translation rules: the v3.7.16 Phase 1 inventory notes (internal build notes) § 1B-B (per-element ADOPT / DOWNGRADE table).
 
 Parent sub-skill: [SKILL.md](SKILL.md) covers `gpt-image-2-director` source corpus translation per § 1B-A — read that for the general-purpose three-format prompt taxonomy that this satellite specializes for ad recreation.

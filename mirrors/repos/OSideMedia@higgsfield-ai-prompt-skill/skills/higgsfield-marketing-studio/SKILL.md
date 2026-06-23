@@ -128,7 +128,7 @@ Hooks and settings are open-ended picklists you select by UUID. They're availabl
 
 > **Key rule** [from `generate_video` MCP tool description — Phase 0 pre-probe finding]: hook + setting picklists are supported only for `UGC`, `Tutorial`, `Unboxing`, `Product Review`, and `UGC Virtual Try On`. Pro Virtual Try On is NOT in the family — contradicts content-factory L193–L194 which included it. Source-corpus reconciliation #10.
 
-> Picklist contents drift over time. The Phase 0 snapshot at `../../.planning/v3.7.13/PHASE-0-PROBES.md` is correct as of 2026-05-18; for canonical current data, run the live enumeration calls below.
+> Picklist contents drift over time. The Phase 0 snapshot at the v3.7.13 Phase 0 probes notes (internal build notes) is correct as of 2026-05-18; for canonical current data, run the live enumeration calls below.
 
 ### Hooks (9 entries as of 2026-05-18) — visual scene templates, not verbal copy
 
@@ -689,6 +689,6 @@ Marketing Studio coverage in this sub-skill is translated from source material b
 
 ### Verification pass
 
-Per the v3.7.11 plausibility-over-verification discipline applied recursively to source material — every API claim in this sub-skill cites a Phase 0 live MCP probe verdict; every behavioral claim cites an SRT timestamp or PDF item number. Full verification trail at `../../.planning/v3.7.13/PHASE-0-PROBES.md`.
+Per the v3.7.11 plausibility-over-verification discipline applied recursively to source material — every API claim in this sub-skill cites a Phase 0 live MCP probe verdict; every behavioral claim cites an SRT timestamp or PDF item number. Full verification trail at the v3.7.13 Phase 0 probes notes (internal build notes).
 
 Twelve source-corpus reconciliations applied during translation (5 API-architecture / 4 capability / 2 calibration / 1 cross-surface), grouped and explained in the v3.7.13 CHANGELOG entry. Adil is credited as source throughout; the reconciliations are documentation of source-material truth at translation time, not critique of the source.

@@ -15,7 +15,7 @@ Imagery is opt-in, not reflexive.
 
 ## Divide the labor
 
-Precise, text-exact content — tables, quadrants, flows, labeled diagrams, exact numbers, charts — belongs in clean HTML/CSS; raster models mangle small text. Reserve generation for what raster is good at: conceptual scenes, characters/mascots, hero and section art, textures, and genuine infographics. Keep one shared style/identity block across all generated images in a project so look and character stay consistent.
+Modern image backends render text reliably now — including Chinese / CJK. Don't avoid text or shrink labels out of fear: text-rich genuine infographics — headings, labels, callouts, Chinese copy — are a good use of generation. Route to clean HTML/CSS by editability and exactness, not because raster "can't do text": anything that must stay live-editable, selectable, pixel-exact, or data-bound — tables a user will edit, exact financial figures, charts bound to numbers, dense small print — belongs in HTML/CSS. An infographic's narrative text and labels don't need that kind of exactness — generate them. Otherwise reserve generation for what raster is good at: conceptual scenes, characters/mascots, hero and section art, textures, and genuine infographics. Keep one shared style/identity block across all generated images in a project so look and character stay consistent.
 
 ## Detect a backend
 
@@ -42,7 +42,7 @@ Concrete tool names (`imagegen`, `GenerateImage`, `image_generate`, `baoyu-image
 
 - **Prompt file first.** Before invoking any backend, write each image's full, final prompt to `prompts/NN-{type}-[slug].md`. The file is the reproducibility record and lets you switch backends without rewriting the prompt.
 - **Never substitute SVG, HTML, or canvas** for a raster image you decided to generate. If you can't resolve a backend, fall through to step 4 and ask — do not emit `<svg>` or CSS/HTML art as a stand-in. This holds even for "diagram-like" content; the caller already decided it wants a raster.
-- **Don't paint over bad text.** If a generated image has garbled text, regenerate from a corrected prompt — don't patch the bitmap.
+- **Get text right, don't paint over it.** Text usually renders fine — including Chinese; to nail it, put the exact strings (the exact characters) in the prompt so the backend has them verbatim. Only if a label still comes out wrong, regenerate from a corrected, more-explicit prompt — don't patch the bitmap.
 
 ## Output & placement
 

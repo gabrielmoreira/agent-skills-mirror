@@ -314,7 +314,7 @@ func (h *StreamableHTTPHandler) ServeHTTP(w http.ResponseWriter, req *http.Reque
 	//
 	// [§2.7]: https://modelcontextprotocol.io/specification/2025-06-18/basic/transports#protocol-version-header
 	protocolVersion := req.Header.Get(protocolVersionHeader)
-	if protocolVersion != "" && !slices.Contains(supportedProtocolVersions, protocolVersion) && protocolVersion < protocolVersion20260630 {
+	if protocolVersion != "" && !slices.Contains(supportedProtocolVersions, protocolVersion) && protocolVersion < protocolVersion20260728 {
 		http.Error(w, fmt.Sprintf("Bad Request: Unsupported protocol version (supported versions: %s)", strings.Join(supportedProtocolVersions, ",")), http.StatusBadRequest)
 		return
 	}
@@ -366,14 +366,14 @@ func (h *StreamableHTTPHandler) serveStateless(w http.ResponseWriter, req *http.
 		return
 	}
 
-	connectOpts, usesNewProtocol, err := h.ephemeralConnectOpts(req)
+	info, err := h.ephemeralConnectOpts(req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	var sessionID string
-	if legacySessions && !usesNewProtocol {
+	if legacySessions && !info.usesNewProtocol {
 		sessionID = req.Header.Get(sessionIDHeader)
 		if sessionID == "" {
 			sessionID = server.opts.GetSessionID()
@@ -381,14 +381,15 @@ func (h *StreamableHTTPHandler) serveStateless(w http.ResponseWriter, req *http.
 	}
 
 	transport := &StreamableServerTransport{
-		SessionID:    sessionID,
-		Stateless:    true,
-		EventStore:   h.opts.EventStore,
-		jsonResponse: h.opts.JSONResponse,
-		logger:       h.opts.Logger,
+		SessionID:                   sessionID,
+		Stateless:                   true,
+		EventStore:                  h.opts.EventStore,
+		jsonResponse:                h.opts.JSONResponse,
+		logger:                      h.opts.Logger,
+		shouldPropagateCancellation: info.isSubscriptionsListen && info.usesNewProtocol,
 	}
 
-	session, err := connectStreamable(req.Context(), server, transport, connectOpts)
+	session, err := connectStreamable(req.Context(), server, transport, info.opts)
 	if err != nil {
 		h.opts.Logger.Error(fmt.Sprintf("failed to connect: %v", err))
 		http.Error(w, "failed connection", http.StatusInternalServerError)
@@ -412,27 +413,29 @@ func (h *StreamableHTTPHandler) serveStatelessLegacyDELETE(w http.ResponseWriter
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// ephemeralConnectOpts peeks at the request body to determine whether it
-// contains an initialize or initialized message or whether the protocol version
-// header indicates a protocol version >= 2026-06-30 (SEP-2575).
+type ephemeralConnectInfo struct {
+	opts                  *ServerSessionOptions
+	usesNewProtocol       bool
+	isSubscriptionsListen bool
+}
+
+// ephemeralConnectOpts peeks at the request body to determine connection
+// parameters and whether protocol version >= 2026-06-30 (SEP-2575).
 //
 // For old-protocol requests, default session state is synthesized so that
 // the session's init gate doesn't reject the request.
 //
 // It is used for both stateless servers and stateful servers with no session ID.
-//
-// The returned usesNewProtocol bool reports whether the protocol version
-// header indicates a protocol version >= 2026-06-30 (SEP-2575).
-func (h *StreamableHTTPHandler) ephemeralConnectOpts(req *http.Request) (opts *ServerSessionOptions, usesNewProtocol bool, err error) {
+func (h *StreamableHTTPHandler) ephemeralConnectOpts(req *http.Request) (*ephemeralConnectInfo, error) {
 	protocolVersion := protocolVersionFromContext(req.Context())
 	if protocolVersion == "" {
 		protocolVersion = protocolVersion20250326
 	}
 
-	var hasInitialize, hasInitialized bool
+	var hasInitialize, hasInitialized, usesNewProtocol, isSubscriptionsListen bool
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
-		return nil, false, fmt.Errorf("failed to read body")
+		return nil, fmt.Errorf("failed to read body")
 	}
 	req.Body.Close()
 	req.Body = io.NopCloser(bytes.NewBuffer(body))
@@ -445,8 +448,10 @@ func (h *StreamableHTTPHandler) ephemeralConnectOpts(req *http.Request) (opts *S
 					hasInitialize = true
 				case notificationInitialized:
 					hasInitialized = true
+				case methodSubscriptionsListen:
+					isSubscriptionsListen = true
 				}
-				if protocolVersion >= protocolVersion20260630 {
+				if protocolVersion >= protocolVersion20260728 {
 					usesNewProtocol = true
 				}
 			}
@@ -467,9 +472,13 @@ func (h *StreamableHTTPHandler) ephemeralConnectOpts(req *http.Request) (opts *S
 	if !usesNewProtocol {
 		state.LogLevel = "info"
 	}
-	return &ServerSessionOptions{
-		State: state,
-	}, usesNewProtocol, nil
+	return &ephemeralConnectInfo{
+		opts: &ServerSessionOptions{
+			State: state,
+		},
+		usesNewProtocol:       usesNewProtocol,
+		isSubscriptionsListen: isSubscriptionsListen,
+	}, nil
 }
 
 func connectStreamable(ctx context.Context, server *Server, transport *StreamableServerTransport, opts *ServerSessionOptions) (*ServerSession, error) {
@@ -614,12 +623,12 @@ func (h *StreamableHTTPHandler) serveStatefulPOST(w http.ResponseWriter, req *ht
 	// that arrives before a session exists (e.g. initialize or ping) on a
 	// server configured this way.
 	if sessionID == "" {
-		connectOpts, _, err := h.ephemeralConnectOpts(req)
+		info, err := h.ephemeralConnectOpts(req)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		session, err := connectStreamable(req.Context(), server, transport, connectOpts)
+		session, err := connectStreamable(req.Context(), server, transport, info.opts)
 		if err != nil {
 			h.opts.Logger.Error(fmt.Sprintf("failed to connect: %v", err))
 			http.Error(w, "failed connection", http.StatusInternalServerError)
@@ -775,6 +784,10 @@ type StreamableServerTransport struct {
 	// to write their own streamable HTTP handler.
 	logger *slog.Logger
 
+	// shouldPropagateCancellation is forwarded to the underlying
+	// [streamableServerConn]. See its docstring.
+	shouldPropagateCancellation bool
+
 	// connection is non-nil if and only if the transport has been connected.
 	connection *streamableServerConn
 }
@@ -785,15 +798,16 @@ func (t *StreamableServerTransport) Connect(ctx context.Context) (Connection, er
 		return nil, fmt.Errorf("transport already connected")
 	}
 	t.connection = &streamableServerConn{
-		sessionID:      t.SessionID,
-		stateless:      t.Stateless,
-		eventStore:     t.EventStore,
-		jsonResponse:   t.jsonResponse,
-		logger:         ensureLogger(t.logger), // see #556: must be non-nil
-		incoming:       make(chan jsonrpc.Message, 10),
-		done:           make(chan struct{}),
-		streams:        make(map[string]*stream),
-		requestStreams: make(map[jsonrpc.ID]string),
+		sessionID:                   t.SessionID,
+		stateless:                   t.Stateless,
+		eventStore:                  t.EventStore,
+		jsonResponse:                t.jsonResponse,
+		logger:                      ensureLogger(t.logger), // see #556: must be non-nil
+		shouldPropagateCancellation: t.shouldPropagateCancellation,
+		incoming:                    make(chan jsonrpc.Message, 10),
+		done:                        make(chan struct{}),
+		streams:                     make(map[string]*stream),
+		requestStreams:              make(map[jsonrpc.ID]string),
 	}
 	// Stream 0 corresponds to the standalone SSE stream.
 	//
@@ -808,10 +822,10 @@ func (t *StreamableServerTransport) Connect(ctx context.Context) (Connection, er
 }
 
 // The streamable HTTP transport supports every legacy SDK protocol version,
-// but the SEP-2575 >= 2026-06-30 protocol is only supported when the
+// but the SEP-2575 >= 2026-07-28 protocol is only supported when the
 // transport is configured as stateless.
 func (t *StreamableServerTransport) SupportsProtocolVersion(version string) bool {
-	if version >= protocolVersion20260630 {
+	if version >= protocolVersion20260728 {
 		return t.Stateless && slices.Contains(supportedProtocolVersions, version)
 	}
 	return slices.Contains(supportedProtocolVersions, version)
@@ -822,6 +836,13 @@ type streamableServerConn struct {
 	stateless    bool
 	jsonResponse bool
 	eventStore   EventStore
+
+	// shouldPropagateCancellation is true when the underlying HTTP request's
+	// lifetime IS the connection's cancellation signal (e.g., a stateless
+	// POST that owns a long-lived subscriptions/listen stream). It is read
+	// by the [cancellationPropagator] interface so the jsonrpc2 layer wires
+	// handler contexts to observe the carrier's cancellation.
+	shouldPropagateCancellation bool
 
 	logger *slog.Logger
 
@@ -858,6 +879,15 @@ type streamableServerConn struct {
 
 func (c *streamableServerConn) SessionID() string {
 	return c.sessionID
+}
+
+// propagateCancellation implements [cancellationPropagator]. It returns true
+// when this connection is bound to a single HTTP request whose lifetime
+// should drive request-handler cancellation — for example, a stateless POST
+// carrying a long-lived subscriptions/listen stream that must unwind when
+// the client TCP-disconnects.
+func (c *streamableServerConn) propagateCancellation() bool {
+	return c.shouldPropagateCancellation
 }
 
 // A stream is a single logical stream of SSE events within a server session.
@@ -914,6 +944,12 @@ type stream struct {
 	// the spec and earlier there was a concept of batching, in which POST
 	// payloads could hold multiple requests or responses.
 	requests map[jsonrpc.ID]struct{}
+
+	// isListen reports whether this stream was opened by a
+	// subscriptions/listen request. Listen streams are always SSE, live for
+	// the duration of the subscription, and act as the target for
+	// out-of-band notifications routed through this connection.
+	isListen bool
 }
 
 // close sends a 'close' event to the client (if protocolVersion >= 2025-11-25
@@ -951,14 +987,15 @@ func (s *stream) release() {
 
 // extractErrorStatus reports the HTTP status to send when the given
 // outgoing message is a JSON-RPC error response under the SEP-2575 protocol
-// (>= 2026-06-30).
+// (>= 2026-07-28).
 //
 // Per SEP-2575:
 //   - MethodNotFound (-32601) MUST return HTTP 404.
-//   - InvalidParams (-32602) and UnsupportedProtocolVersion (-32004) MUST
+//   - InvalidParams (-32602), UnsupportedProtocolVersion (-32022) and
+//     CodeMissingRequiredClientCapabilities (-32021) MUST
 //     return HTTP 400.
 func extractErrorStatus(ctx context.Context, msg jsonrpc.Message) int {
-	if protocolVersionFromContext(ctx) < protocolVersion20260630 {
+	if protocolVersionFromContext(ctx) < protocolVersion20260728 {
 		return 0
 	}
 	resp, ok := msg.(*jsonrpc.Response)
@@ -986,7 +1023,7 @@ func extractErrorStatus(ctx context.Context, msg jsonrpc.Message) int {
 // requests have been responded to, the done channel is closed and set to nil.
 //
 // If overrideStatus is non-zero, data is treated as a SEP-2575 protocol-level
-// error response (>= 2026-06-30): it is written as a single raw JSON-RPC
+// error response (>= 2026-07-28): it is written as a single raw JSON-RPC
 // response body with Content-Type: application/json and HTTP status
 // overrideStatus.
 //
@@ -1065,7 +1102,7 @@ func (s *stream) doneLocked() bool {
 }
 
 func (c *streamableServerConn) newStream(ctx context.Context, requests map[jsonrpc.ID]struct{}, id string) (*stream, error) {
-	if c.eventStore != nil && protocolVersionFromContext(ctx) < protocolVersion20260630 {
+	if c.eventStore != nil && protocolVersionFromContext(ctx) < protocolVersion20260728 {
 		if err := c.eventStore.Open(ctx, c.sessionID, id); err != nil {
 			return nil, err
 		}
@@ -1371,6 +1408,7 @@ func (c *streamableServerConn) servePOST(w http.ResponseWriter, req *http.Reques
 	calls := make(map[jsonrpc.ID]struct{})
 	tokenInfo := auth.TokenInfoFromContext(req.Context())
 	isInitialize := false
+	isSubscriptionsListen := false
 	var initializeProtocolVersion string
 	for _, msg := range incoming {
 		if jreq, ok := msg.(*jsonrpc.Request); ok {
@@ -1378,7 +1416,7 @@ func (c *streamableServerConn) servePOST(w http.ResponseWriter, req *http.Reques
 			// the HTTP request. If we didn't do this, a request with a bad method or
 			// missing ID could be silently swallowed.
 			if _, err := checkRequest(jreq, serverMethodInfos); err != nil {
-				if protocolVersion >= protocolVersion20260630 && errors.Is(err, jsonrpc2.ErrNotHandled) && jreq.IsCall() {
+				if protocolVersion >= protocolVersion20260728 && errors.Is(err, jsonrpc2.ErrNotHandled) && jreq.IsCall() {
 					writeJSONRPCError(w, http.StatusNotFound, jreq.ID, &jsonrpc.Error{
 						Code:    jsonrpc.CodeMethodNotFound,
 						Message: err.Error(),
@@ -1396,10 +1434,13 @@ func (c *streamableServerConn) servePOST(w http.ResponseWriter, req *http.Reques
 					initializeProtocolVersion = params.ProtocolVersion
 				}
 			}
+			if jreq.Method == methodSubscriptionsListen {
+				isSubscriptionsListen = true
+			}
 			// SEP-2575: requests carrying `_meta.protocolVersion` require the
 			// Mcp-Protocol-Version HTTP header to be present and to match the
 			// per-request `_meta.protocolVersion` value.
-			// The new (>= 2026-06-30) protocol is supported on the HTTP transport
+			// The new (>= 2026-07-28) protocol is supported on the HTTP transport
 			// only when [StreamableHTTPOptions.Stateless] is true.
 			//
 			// TODO: this validation can be moved within validateMcpHeaders.
@@ -1407,7 +1448,7 @@ func (c *streamableServerConn) servePOST(w http.ResponseWriter, req *http.Reques
 			if meta := extractRequestMeta(jreq.Params); meta != nil {
 				metaVersion, _ = meta[MetaKeyProtocolVersion].(string)
 			}
-			if protocolVersion >= protocolVersion20260630 || metaVersion != "" {
+			if protocolVersion >= protocolVersion20260728 || metaVersion != "" {
 				// Extract again the protcol version from the context to see what the client
 				// is advertising in the Mcp-Protocol-Version HTTP header.
 				headerVersion := protocolVersionFromContext(req.Context())
@@ -1462,8 +1503,8 @@ func (c *streamableServerConn) servePOST(w http.ResponseWriter, req *http.Reques
 				jreq.Extra.(*RequestExtra).CloseSSEStream = func(args CloseSSEStreamArgs) {
 					// This mechanism was designed to trigger client reconnection with
 					// Last-Event-ID for server-initiated disconnect scenarios. It is
-					// deprecated in protocol version 2026-06-30.
-					if protocolVersion >= protocolVersion20260630 {
+					// deprecated in protocol version 2026-07-28.
+					if protocolVersion >= protocolVersion20260728 {
 						return
 					}
 					c.mu.Lock()
@@ -1541,14 +1582,22 @@ func (c *streamableServerConn) servePOST(w http.ResponseWriter, req *http.Reques
 		http.Error(w, fmt.Sprintf("storing stream: %v", err), http.StatusInternalServerError)
 		return
 	}
+	stream.isListen = isSubscriptionsListen
+
+	// subscriptions/listen is inherently a long-lived SSE endpoint (SEP-2575):
+	// it has no synchronous result, the response stream stays open until the
+	// client cancels, and the server pushes notifications on it as they occur.
+	// Force SSE mode (bypassing JSONResponse) so the buffered application/json
+	// path doesn't deadlock waiting for a completion that won't come.
+	useSSE := !c.jsonResponse || isSubscriptionsListen
 
 	// Set response headers. Accept was checked in [StreamableHTTPHandler].
 	w.Header().Set("Cache-Control", "no-cache, no-transform")
-	if c.jsonResponse {
-		w.Header().Set("Content-Type", "application/json")
-	} else {
+	if useSSE {
 		w.Header().Set("Content-Type", "text/event-stream")
 		w.Header().Set("Connection", "keep-alive")
+	} else {
+		w.Header().Set("Content-Type", "application/json")
 	}
 	if c.sessionID != "" && isInitialize {
 		w.Header().Set(sessionIDHeader, c.sessionID)
@@ -1583,7 +1632,7 @@ func (c *streamableServerConn) servePOST(w http.ResponseWriter, req *http.Reques
 	// remaining requests here, since the client will never get the results.
 	defer stream.release()
 
-	if c.jsonResponse {
+	if !useSSE {
 		// JSON mode: collect messages in pendingJSONMessages until done.
 		// Set pendingJSONMessages to a non-nil value to signal that this is an
 		// application/json stream.
@@ -1592,8 +1641,8 @@ func (c *streamableServerConn) servePOST(w http.ResponseWriter, req *http.Reques
 		// SSE mode: write a priming event if supported.
 		//
 		// SEP-2575 removes Last-Event-ID-based resumable streams for protocol
-		// version >= 2026-06-30.
-		if c.eventStore != nil && effectiveVersion >= protocolVersion20251125 && effectiveVersion < protocolVersion20260630 {
+		// version >= 2026-07-28.
+		if c.eventStore != nil && effectiveVersion >= protocolVersion20251125 && effectiveVersion < protocolVersion20260728 {
 			// Write a priming event, as defined by [§2.1.6] of the spec.
 			//
 			// [§2.1.6]: https://modelcontextprotocol.io/specification/2025-11-25/basic/transports#sending-messages-to-the-server
@@ -1723,7 +1772,18 @@ func (c *streamableServerConn) Write(ctx context.Context, msg jsonrpc.Message) e
 			s = c.streams[streamID]
 		}
 	} else {
-		s = c.streams[""] // standalone SSE stream
+		// In stateless mode there will always be only one stream per connection.
+		// If that stream was open to listen for subscription notifications,
+		// automatically select as the one to write the notification to.
+		for _, stream := range c.streams {
+			if stream.isListen {
+				s = stream
+				break
+			}
+		}
+		if s == nil {
+			s = c.streams[""] // standalone SSE stream
+		}
 	}
 	if responseTo.IsValid() {
 		// Once we've responded to a request, disallow related messages by removing
@@ -1754,7 +1814,7 @@ func (c *streamableServerConn) Write(ctx context.Context, msg jsonrpc.Message) e
 	delivered := false
 	var errs []error
 	protocolVersion := protocolVersionFromContext(ctx)
-	if c.eventStore != nil && protocolVersion < protocolVersion20260630 {
+	if c.eventStore != nil && protocolVersion < protocolVersion20260728 {
 		if err := c.eventStore.Append(ctx, c.sessionID, s.id, data); err != nil {
 			errs = append(errs, err)
 		} else {
@@ -1765,12 +1825,12 @@ func (c *streamableServerConn) Write(ctx context.Context, msg jsonrpc.Message) e
 	// Compute eventID for SSE streams with event store.
 	// Use s.lastIdx + 1 because deliverLocked increments before writing.
 	var eventID string
-	if c.eventStore != nil && protocolVersion < protocolVersion20260630 {
+	if c.eventStore != nil && protocolVersion < protocolVersion20260728 {
 		eventID = formatEventID(s.id, s.lastIdx+1)
 	}
 
 	// SEP-2575: map protocol-level JSON-RPC error codes to HTTP status codes
-	// on the new protocol (>= 2026-06-30). When non-zero, deliverLocked will
+	// on the new protocol (>= 2026-07-28). When non-zero, deliverLocked will
 	// write the body as raw application/json with the override status.
 	overrideStatus := extractErrorStatus(ctx, msg)
 
@@ -1974,10 +2034,10 @@ func (c *streamableClientConn) sessionUpdated(state clientSessionState) {
 	c.initializedResult = state.InitializeResult
 	c.mu.Unlock()
 
-	// Under SEP-2575 (protocol version >= 2026-06-30) the standalone HTTP GET
+	// Under SEP-2575 (protocol version >= 2026-07-28) the standalone HTTP GET
 	// SSE stream is removed.
 	if state.InitializeResult == nil ||
-		state.InitializeResult.ProtocolVersion >= protocolVersion20260630 {
+		state.InitializeResult.ProtocolVersion >= protocolVersion20260728 {
 		return
 	}
 

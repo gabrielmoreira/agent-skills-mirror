@@ -33,8 +33,15 @@ type Opts = Record<string, unknown>;
 
 const PT_PER_INCH = 72;
 
-// Render a captured node (and its subtree) into the slide. (←ce)
-export function renderNodeToPptx(node: SlideNode, ctx: RenderContext): void {
+// Render a captured node (and its subtree) into the slide. `inheritedOpacity` is
+// the multiplied opacity of all ancestors — CSS `opacity` forms a group that
+// fades the whole subtree, but a flattened .pptx has no groups, so we propagate
+// it down and multiply each element's own opacity by it. (←ce)
+export function renderNodeToPptx(
+  node: SlideNode,
+  ctx: RenderContext,
+  inheritedOpacity = 1,
+): void {
   // ---- text leaf ----
   if (node.tag === "#text") {
     const style = node.style;
@@ -43,7 +50,7 @@ export function renderNodeToPptx(node: SlideNode, ctx: RenderContext): void {
     const coords = rectToPptx(node.rect, ctx);
     const fmt = textFormat(style, ctx.fontMap);
     const fontSize = fmt.fontSize ?? clamp(pxToPoints(extractPx(style.fontSize) || 16), 1, 400);
-    const opacity = clamp(parseFloat(style.opacity ?? "1") || 1, 0, 1);
+    const opacity = inheritedOpacity * clamp(parseFloat(style.opacity ?? "1") || 1, 0, 1);
     const widthPad = pxToInches(Math.max(8, node.rect.w * 0.03));
     try {
       ctx.slide.addText(textTransformFn(style.textTransform)(text), {
@@ -74,13 +81,14 @@ export function renderNodeToPptx(node: SlideNode, ctx: RenderContext): void {
   }
 
   const style = node.style;
+  const opacity = inheritedOpacity * clamp(parseFloat(style.opacity ?? "1") || 1, 0, 1);
   if (node.rect.w < 0.5 || node.rect.h < 0.5) {
-    for (const child of node.children) renderNodeToPptx(child, ctx);
+    for (const child of node.children) renderNodeToPptx(child, ctx, opacity);
     return;
   }
   if (style.display === "none" || style.opacity === "0") return;
   if (style.visibility === "hidden") {
-    for (const child of node.children) renderNodeToPptx(child, ctx);
+    for (const child of node.children) renderNodeToPptx(child, ctx, opacity);
     return;
   }
 
@@ -90,7 +98,6 @@ export function renderNodeToPptx(node: SlideNode, ctx: RenderContext): void {
   const minSide = Math.min(box.w, box.h);
   const radiusPx = parseBorderRadius(style.borderTopLeftRadius || style.borderRadius, minSide);
   const radiusRatio = minSide > 0 ? radiusPx / minSide : 0;
-  const opacity = clamp(parseFloat(style.opacity ?? "1") || 1, 0, 1);
 
   // A rasterized gradient (drawn as an image below) replaces the flat first-stop
   // fill; fall back to that flat fill only when rasterization was unavailable.
@@ -472,7 +479,26 @@ export function renderNodeToPptx(node: SlideNode, ctx: RenderContext): void {
     }
   }
 
-  for (const child of node.children) if (!consumed.has(child)) renderNodeToPptx(child, ctx);
+  for (const child of orderByZIndex(node.children))
+    if (!consumed.has(child)) renderNodeToPptx(child, ctx, opacity);
+}
+
+// Paint children in CSS stacking order: positioned siblings with a numeric
+// z-index layer by that value (higher = painted later = on top); everything
+// else keeps DOM order. Returns the original array untouched when no positioned
+// child carries a non-zero z-index, so the common case is unaffected.
+function orderByZIndex(children: SlideNode[]): SlideNode[] {
+  const zOf = (n: SlideNode): number => {
+    const pos = n.style.position;
+    if (pos !== "relative" && pos !== "absolute" && pos !== "fixed" && pos !== "sticky") return 0;
+    const v = parseInt(n.style.zIndex ?? "", 10);
+    return Number.isNaN(v) ? 0 : v;
+  };
+  if (children.every((c) => zOf(c) === 0)) return children;
+  return children
+    .map((c, i) => ({ c, z: zOf(c), i }))
+    .sort((a, b) => a.z - b.z || a.i - b.i)
+    .map((x) => x.c);
 }
 
 function errMsg(err: unknown): string {

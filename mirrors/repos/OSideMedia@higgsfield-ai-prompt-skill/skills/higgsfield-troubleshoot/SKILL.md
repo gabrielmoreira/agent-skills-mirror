@@ -234,6 +234,64 @@ does it automatically.
 
 ---
 
+## Vision-Grounded Diagnosis — Classify the Rejected Still, Don't Guess
+
+The `reject_reason` you log feeds the iterate-vs-batch fork (`higgsfield-recall`
+§ Read the verdict). Logged from memory it's hearsay — "I think the face
+drifted." When you can actually **see** the rejected output, classify it from the
+frame instead of from recall. **This is an opt-in assist** ("diagnose this
+rejected shot"), and it is **advisory**: vision *proposes*, the human *confirms*.
+
+**Scope (v1): stills only** — an image, or a single representative frame the user
+picks from a video. Full-clip motion failures (FPS drift, temporal de-dup,
+multi-motion) are out of scope here; they need frame-by-frame review
+(`../higgsfield-seedance/FAILURE-MODES.md`), not a single-frame classify.
+
+**The chain:**
+
+1. **Capture.** Get the still in hand. Local image → read it directly. Web URL →
+   `media_import_url` (never pass a raw URL). Cowork local file → the upload
+   widget. Outputs are not auto-saved, so capture is an explicit step.
+2. **Classify against the `reject_reason` enum** (the table below). Note what you
+   see in one line (the `vision_evidence`).
+3. **No clean home → `other` + note.** Some visible failures (warped hand, FPS
+   drift) have no exact enum value. Route to `other` with the evidence note;
+   **never force-fit** a near-miss. If the `other` pile grows, that's the data
+   that justifies a future enum-extension PR.
+4. **Confirm, then log.** Surface the proposal — *"vision says `physics` (warped
+   left hand, center frame); confirm or correct?"* — then:
+   ```bash
+   python3 ../../higgsfield_memory.py log-gen <project> --model <id> \
+     --tags <shot_tags> --outcome rejected --reason <confirmed> \
+     --vision-reason <proposed> --vision-evidence "<one line>"
+   ```
+   `--reason` is the human verdict (drives the fork); `--vision-reason` is the
+   proposal (feeds the agreement gate). Logging both is what lets the tool learn.
+
+**Mapping table — what vision sees → `reject_reason`:**
+
+| Vision observes | reject_reason |
+|---|---|
+| face / identity changed vs reference | `identity-drift` |
+| wardrobe or colour shifted vs reference | `wardrobe-contamination` |
+| extra cuts / unwanted scene breaks | `extra-cuts` |
+| staging or blocking broken | `blocking-broken` |
+| flat / wrong performance | `performance` |
+| wrong camera move | `camera-wrong` |
+| physics or anatomy violation (incl. warped hand) | `physics` |
+| garbled on-screen text | `text-render` |
+| provider content-filter block | `filter-flagged` |
+| bad framing / composition | `composition` |
+| FPS drift, temporal de-dup, or **no clean home** | `other` + evidence note |
+
+**Measure before trusting.** Vision is the fork's accuracy backstop only once
+proven. `python3 ../../higgsfield_memory.py agreement <project>` reports, per
+`reject_reason` class, how often the proposal matched the confirmed verdict. A
+class is `trusted` (vision may be logged without confirmation) only above the
+agreement gate over enough confirmed diagnoses; until then, confirm every one.
+
+---
+
 ## Related skills
 - `higgsfield-prompt` — MCSLA formula, prompt structure, Identity/Motion separation
 - `higgsfield-recall` — Pre-generation memory check for past failures

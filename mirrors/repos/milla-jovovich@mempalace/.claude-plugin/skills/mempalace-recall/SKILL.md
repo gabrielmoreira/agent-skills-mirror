@@ -53,6 +53,13 @@ a variable, fixing a typo). Recall is question-driven, not reflexive.
   an answer. Offer to widen the search or file the new information.
 - **MCP error / server down** — surface the error, suggest `mempalace
   status` or re-running `/init`; never fall back to guessing.
+- **Palace index corrupt / compactor error** — if the server reports an
+  HNSW segment-writer error, a ChromaDB compaction failure, or stays
+  "Not connected" after a write, the index is out of sync with
+  `chroma.sqlite3` but the rows are intact. Tell the user to stop the
+  server and rebuild from SQLite (`mempalace repair --mode from-sqlite
+  --archive-existing --yes`), not re-mine, which drops MCP-added drawers
+  and diary entries (#1843). Do not repair in-process.
 - **Conflicting facts** — trust the knowledge graph's time-valid answer;
   invalidate-then-add rather than overwriting silently.
 
