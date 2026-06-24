@@ -6,50 +6,39 @@ author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
-# Journal Recommender
 
-## When to Use
+## Output Format
 
-- Use this skill when the request matches its documented task boundary.
-- Use it when the user can provide the required inputs and expects a structured deliverable.
-- Prefer this skill for repeatable, checklist-driven execution rather than open-ended brainstorming.
+All recommendations must follow the three-tier table format below. Each tier must recommend at least **5 journals**.
 
-## Key Features
+```
+## Journal Recommendation Report
 
-- Scope-focused workflow aligned to: Recommend academic journals based on manuscript topic, abstract, and impact factor expectations. Use when the user wants to find suitable journals for their research manuscript, especially when they provide a topic, abstract, and target Impact Factor.
-- Packaged executable path(s): `scripts/journal_ranker.py`.
-- Structured execution path designed to keep outputs consistent and reviewable.
+### Recommendation Overview
+| Tier | Count | Strategy |
+|---------|:------:|---------|
+| Sprint | N | Impact factor higher than target, requires some luck |
+| Robust | N | Impact factor matches target, higher hit rate |
+| Safe | N | Impact factor lower than target, near-certain acceptance |
 
-## Dependencies
+### Sprint Journals
+| Journal | Impact Factor | Review Period | Acceptance Rate | Match Reason | Warning Risk |
+|-------|:-------:|:--------:|:-----:|---------|:--------:|
+| Nature | 64.8 | 3-6 months | ~8% | High topic match | Safe |
 
-- `Python`: `3.10+`. Repository baseline for current packaged skills.
-- `Third-party packages`: `not explicitly version-pinned in this skill package`. Add pinned versions if this skill needs stricter environment control.
+### Robust Journals
+| Journal | Impact Factor | Review Period | Acceptance Rate | Match Reason | Warning Risk |
+|-------|:-------:|:--------:|:-----:|---------|:--------:|
 
-## Example Usage
+### Safe Journals
+| Journal | Impact Factor | Review Period | Acceptance Rate | Match Reason | Warning Risk |
+|-------|:-------:|:--------:|:-----:|---------|:--------:|
 
-See `## Usage` above for related details.
-
-```bash
-cd "20260316/scientific-skills/Others/journal-recommender"
-python -m py_compile scripts/journal_ranker.py
-python scripts/journal_ranker.py --help
+### Warning Notes
+List any journals on the warning list to avoid submitting to.
 ```
 
-Example run plan:
-1. Confirm the user input, output path, and any required config values.
-2. Edit the in-file `CONFIG` block or documented parameters if the script uses fixed settings.
-3. Run `python scripts/journal_ranker.py` with the validated inputs.
-4. Review the generated output and return the final artifact with any assumptions called out.
-
-## Implementation Details
-
-See `## Overview` above for related details.
-
-- Execution model: validate the request, choose the packaged workflow, and produce a bounded deliverable.
-- Input controls: confirm the source files, scope limits, output format, and acceptance criteria before running any script.
-- Primary implementation surface: `scripts/journal_ranker.py`.
-- Parameters to clarify first: input path, output path, scope filters, thresholds, and any domain-specific constraints.
-- Output discipline: keep results reproducible, identify assumptions explicitly, and avoid undocumented side effects.
+# Journal Recommender
 
 ## Overview
 This skill analyzes a research manuscript (topic, abstract, and optional full text) to extract key information (keywords, field, workload, innovation) and recommends journals in three categories: Sprint (High), Robust (Match), and Safe (Low).
@@ -87,6 +76,12 @@ This skill analyzes a research manuscript (topic, abstract, and optional full te
 *   **IF Sorting**: Journals must be strictly sorted by IF.
 *   **Safety**: No CAS warning journals are allowed.
 *   **Quantity**: Minimum 5 journals per category.
+
+## When to Use
+
+- Use this skill when the request matches its documented task boundary.
+- Use it when the user can provide the required inputs and expects a structured deliverable.
+- Prefer this skill for repeatable, checklist-driven execution rather than open-ended brainstorming.
 
 ## When Not to Use
 
@@ -134,3 +129,8 @@ Result file: journal_recommender_result.md
 Validation summary: PASS/FAIL with brief notes
 Assumptions: explicit list if any
 ```
+
+## User Checkpoints
+
+- Before executing batch processing, overwriting files, long-running searches, or multi-stage generation, confirm scope and output format with the user.
+- Before proceeding when a key judgment is ambiguous, evidence is insufficient, or the workflow is entering the next stage, confirm with the user.

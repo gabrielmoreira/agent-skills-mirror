@@ -1,55 +1,12 @@
 ---
 name: adverse-event-narrative
-description: 1. Confirm the user objective, required inputs, and non-negotiable constraints before doing detailed work. 2. Validate that the request matches the documented scope and stop early if the task would require unsupported as.
+description: Generates CIOMS I-compliant ICSR narratives from adverse event case data for FDA and EMA regulatory submission. Includes temporal analysis, MedDRA coding, causality assessment using WHO-UMC or Naranjo criteria, and multi-format output.
 license: MIT
 author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Adverse Event Narrative Generator
-
-## When to Use
-
-- Use this skill when the task needs 1. Confirm the user objective, required inputs, and non-negotiable constraints before doing detailed work. 2. Validate that the request matches the documented scope and stop early if the task would require unsupported as.
-- Use this skill for academic writing tasks that require explicit assumptions, bounded scope, and a reproducible output format.
-- Use this skill when you need a documented fallback path for missing inputs, execution errors, or partial evidence.
-
-## Key Features
-
-- Scope-focused workflow aligned to: 1. Confirm the user objective, required inputs, and non-negotiable constraints before doing detailed work. 2. Validate that the request matches the documented scope and stop early if the task would require unsupported as.
-- Packaged executable path(s): `scripts/main.py`.
-- Reference material available in `references/` for task-specific guidance.
-- Structured execution path designed to keep outputs consistent and reviewable.
-
-## Dependencies
-
-- `Python`: `3.10+`. Repository baseline for current packaged skills.
-- `Third-party packages`: `not explicitly version-pinned in this skill package`. Add pinned versions if this skill needs stricter environment control.
-
-## Example Usage
-
-```bash
-cd "20260318/scientific-skills/Academic Writing/adverse-event-narrative"
-python -m py_compile scripts/main.py
-python scripts/main.py --help
-```
-
-Example run plan:
-1. Confirm the user input, output path, and any required config values.
-2. Edit the in-file `CONFIG` block or documented parameters if the script uses fixed settings.
-3. Run `python scripts/main.py` with the validated inputs.
-4. Review the generated output and return the final artifact with any assumptions called out.
-
-## Implementation Details
-
-See `## Workflow` above for related details.
-
-- Execution model: validate the request, choose the packaged workflow, and produce a bounded deliverable.
-- Input controls: confirm the source files, scope limits, output format, and acceptance criteria before running any script.
-- Primary implementation surface: `scripts/main.py`.
-- Reference guidance: `references/` contains supporting rules, prompts, or checklists.
-- Parameters to clarify first: input path, output path, scope filters, thresholds, and any domain-specific constraints.
-- Output discipline: keep results reproducible, identify assumptions explicitly, and avoid undocumented side effects.
 
 ## Quick Check
 
@@ -72,11 +29,14 @@ python scripts/main.py --validate-only --help
 
 ## Workflow
 
-1. Confirm the user objective, required inputs, and non-negotiable constraints before doing detailed work.
-2. Validate that the request matches the documented scope and stop early if the task would require unsupported assumptions.
-3. Use the packaged script path or the documented reasoning path with only the inputs that are actually available.
-4. Return a structured result that separates assumptions, deliverables, risks, and unresolved items.
-5. If execution fails or inputs are incomplete, switch to the fallback path and state exactly what blocked full completion.
+1. **Collect case data**: Receive adverse event case data including: patient demographics, medical history, concomitant medications, suspect drug(s) with dosing, adverse event description, diagnostic results, treatment, dechallenge/rechallenge dates, outcome, and causality assessment.
+2. **Validate completeness**: Check that required CIOMS I fields are present (case ID, patient age/sex, suspect drug, AE with MedDRA PT, dates). Flag missing fields.
+3. **Checkpoint**: Display case summary and list of missing fields to user. Confirm whether to proceed with partial data or wait for complete information.
+4. **Reconstruct timeline**: Analyze temporal relationships: time to onset, dechallenge response, rechallenge response, temporal plausibility with known drug profile.
+5. **Generate narrative**: Compose CIOMS I-compliant narrative in all 10 standard sections (demographics → causality assessment). Use objective, factual language; reserve opinion for causality section only.
+6. **Checkpoint**: User reviews draft narrative for clinical accuracy and verifies that no patient identifiers remain.
+7. **Format output**: Generate in requested format (CIOMS I, ICH E2B R3, FDA MedWatch 3500A). Apply MedDRA coding.
+8. **Fallback**: If case data is too incomplete for narrative generation, output a structured checklist of required fields with example entries and a partial narrative for completed sections only.
 
 ## Overview
 
@@ -89,6 +49,12 @@ Regulatory-grade narrative generation tool that transforms adverse event case da
 - **Medical Accuracy**: Clinical terminology and MedDRA coding
 - **Multi-Case Processing**: Batch narrative generation for periodic reporting
 - **Quality Validation**: Automated checks for completeness and consistency
+
+## When to Use
+
+- Use this skill when writing adverse event narratives for regulatory submission (FDA, EMA, CIOMS I).
+- Use this skill when preparing ICSR reports or generating safety narratives with MedDRA coding and causality assessment.
+- Use this skill when the user says "AE narrative", "ICSR", "CIOMS narrative", "safety report", or "MedWatch narrative".
 
 ## Core Capabilities
 
@@ -128,7 +94,6 @@ narrative.save("ICSR_2024_001_narrative.txt")
 Reconstruct timeline and assess temporal plausibility:
 
 ```python
-
 # Analyze temporal relationships
 timeline = generator.analyze_timeline(
     drug_start="2024-01-15",
@@ -139,7 +104,6 @@ timeline = generator.analyze_timeline(
 )
 
 # Output shows temporal assessment
-
 # "AE onset 13 days after drug initiation, positive dechallenge within 24h"
 ```
 
@@ -154,7 +118,6 @@ timeline = generator.analyze_timeline(
 Structure causality assessment per WHO-UMC criteria:
 
 ```python
-
 # Generate causality section
 causality = generator.assess_causality(
     case_data=case,
@@ -178,7 +141,6 @@ causality = generator.assess_causality(
 Generate narratives for different regulatory contexts:
 
 ```python
-
 # FDA MedWatch Form 3500A
 fda_narrative = generator.generate(
     case_data=case,

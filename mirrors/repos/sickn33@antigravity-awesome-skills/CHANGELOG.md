@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Added
+
+- Added **infinity**, a community defensive input-boundary skill for detecting, classifying, filtering, and verifying untrusted data entry points (PR #733).
+
+## Changed
+
+- Updated runtime and example dependencies from the Snyk maintenance batch: `yaml`, Loki example `better-sqlite3`, `cors`, and `express-rate-limit`.
+- Reverted **surgical-fix** after maintainer review found it overlapped existing debugging protocol skills; the useful ideas should land as focused improvements to existing skills instead of a duplicate standalone skill (PR #732).
+
+## [13.1.1] - 2026-06-23 - "Security Scan Hardening"
+
+> Patch release for the June 23 Snyk and GitHub code-scanning cleanup.
+
+This release packages the security-maintenance pass after the 13.1.0 maintainer batch.
+
+## Security
+
+- Hardened Snyk-reported command and path-handling examples across security tooling documentation.
+- Updated vulnerable Python example dependencies for Slack GIF, Shopify, and WhatsApp Cloud API skills, including mirrored plugin bundles.
+- Added a persistent Snyk Code exclusion for generated plugin mirrors so canonical `skills/**` sources remain the direct scan target.
+
+## Validation
+
+- Re-ran repository validation, script tests, documentation security checks, catalog build, web app tests, and web app production build after the security fixes.
+
 ## [13.1.0] - 2026-06-21 - "Remote GPU, Agent Creation, and Workflow Reconstruction"
 
 > Community skill intake and maintainer-sync release for the 1,681+ skill catalog.

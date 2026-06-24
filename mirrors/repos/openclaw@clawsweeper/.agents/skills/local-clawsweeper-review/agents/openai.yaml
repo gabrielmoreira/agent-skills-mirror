@@ -1,0 +1,4 @@
+interface:
+  display_name: "Local ClawSweeper Review"
+  short_description: "Run local ClawSweeper before PRs"
+  default_prompt: "Use $local-clawsweeper-review to run a local ClawSweeper review before I submit a PR."

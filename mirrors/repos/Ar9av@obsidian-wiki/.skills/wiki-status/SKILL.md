@@ -213,7 +213,7 @@ Replace the old single-line Recommendation with a ranked **What to Do Next** sec
 
 0. **Staged writes pending** (only when `WIKI_STAGED_WRITES=true`) — Glob `$OBSIDIAN_VAULT_PATH/_staging/**/*.md` and `**/*.patch.md`. Count new pages and patches separately. Report the oldest file's age (mtime). This is always listed first if any staged files exist — it has the highest intent signal (the LLM already did the work; the human just needs to review).
 
-1. **`_raw/` files** — list every file in `$OBSIDIAN_VAULT_PATH/_raw/` that isn't a `.gitkeep`. Count and name them.
+1. **`_raw/` files** — list every file at the top level of `$OBSIDIAN_VAULT_PATH/_raw/` that isn't a `.gitkeep`, excluding the `_archived/` subdirectory (already-promoted drafts kept for provenance, not pending work). Count and name them.
 
 2. **Stale core pages** — scan all vault `.md` files. A page is "stale" when its `updated` frontmatter field is ≥90 days before today's date AND it has ≥5 incoming wikilinks (i.e., it's "core" — other pages depend on it). List them by name + last-updated date.
 

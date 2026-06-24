@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `redis/agent-skills` — 26 default patterns, 0 followed patterns, 62 file(s) materialized.
+Mirror of `redis/agent-skills` — 26 default patterns, 0 followed patterns, 72 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `redis/agent-skills` — 26 default patterns, 0 followed patterns, 62 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 62 |
+| Files         | 72 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -98,29 +98,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`skills/redis-observability/references/commands.md`](skills/redis-observability/references/commands.md) |
 | 38 | ✓ | [`skills/redis-observability/references/metrics.md`](skills/redis-observability/references/metrics.md) |
 | 39 | ✓ | [`skills/redis-observability/SKILL.md`](skills/redis-observability/SKILL.md) |
-| 40 | ✓ | [`skills/redis-query-engine/.cursor-plugin/plugin.json`](skills/redis-query-engine/.cursor-plugin/plugin.json) |
-| 41 | ✓ | [`skills/redis-query-engine/references/dialect.md`](skills/redis-query-engine/references/dialect.md) |
-| 42 | ✓ | [`skills/redis-query-engine/references/field-types.md`](skills/redis-query-engine/references/field-types.md) |
-| 43 | ✓ | [`skills/redis-query-engine/references/index-creation.md`](skills/redis-query-engine/references/index-creation.md) |
-| 44 | ✓ | [`skills/redis-query-engine/references/index-management.md`](skills/redis-query-engine/references/index-management.md) |
-| 45 | ✓ | [`skills/redis-query-engine/references/query-optimization.md`](skills/redis-query-engine/references/query-optimization.md) |
-| 46 | ✓ | [`skills/redis-query-engine/references/skip-initial-scan.md`](skills/redis-query-engine/references/skip-initial-scan.md) |
-| 47 | ✓ | [`skills/redis-query-engine/SKILL.md`](skills/redis-query-engine/SKILL.md) |
-| 48 | ✓ | [`skills/redis-security/.cursor-plugin/plugin.json`](skills/redis-security/.cursor-plugin/plugin.json) |
-| 49 | ✓ | [`skills/redis-security/references/acls.md`](skills/redis-security/references/acls.md) |
-| 50 | ✓ | [`skills/redis-security/references/auth.md`](skills/redis-security/references/auth.md) |
-| 51 | ✓ | [`skills/redis-security/references/network.md`](skills/redis-security/references/network.md) |
-| 52 | ✓ | [`skills/redis-security/SKILL.md`](skills/redis-security/SKILL.md) |
-| 53 | ✓ | [`skills/redis-semantic-cache/.cursor-plugin/plugin.json`](skills/redis-semantic-cache/.cursor-plugin/plugin.json) |
-| 54 | ✓ | [`skills/redis-semantic-cache/references/best-practices.md`](skills/redis-semantic-cache/references/best-practices.md) |
-| 55 | ✓ | [`skills/redis-semantic-cache/references/langcache-usage.md`](skills/redis-semantic-cache/references/langcache-usage.md) |
-| 56 | ✓ | [`skills/redis-semantic-cache/SKILL.md`](skills/redis-semantic-cache/SKILL.md) |
-| 57 | ✓ | [`skills/redis-vector-search/.cursor-plugin/plugin.json`](skills/redis-vector-search/.cursor-plugin/plugin.json) |
-| 58 | ✓ | [`skills/redis-vector-search/references/algorithm-choice.md`](skills/redis-vector-search/references/algorithm-choice.md) |
-| 59 | ✓ | [`skills/redis-vector-search/references/hybrid-search.md`](skills/redis-vector-search/references/hybrid-search.md) |
-| 60 | ✓ | [`skills/redis-vector-search/references/index-creation.md`](skills/redis-vector-search/references/index-creation.md) |
-| 61 | ✓ | [`skills/redis-vector-search/references/rag-pattern.md`](skills/redis-vector-search/references/rag-pattern.md) |
-| 62 | ✓ | [`skills/redis-vector-search/SKILL.md`](skills/redis-vector-search/SKILL.md) |
+| 40 | ✓ | [`skills/redis-search/.cursor-plugin/plugin.json`](skills/redis-search/.cursor-plugin/plugin.json) |
+| 41 | ✓ | [`skills/redis-search/references/aggregate-cursors.md`](skills/redis-search/references/aggregate-cursors.md) |
+| 42 | ✓ | [`skills/redis-search/references/aggregate-pipeline.md`](skills/redis-search/references/aggregate-pipeline.md) |
+| 43 | ✓ | [`skills/redis-search/references/algorithm-choice.md`](skills/redis-search/references/algorithm-choice.md) |
+| 44 | ✓ | [`skills/redis-search/references/clients/java-jedis.md`](skills/redis-search/references/clients/java-jedis.md) |
+| 45 | ✓ | [`skills/redis-search/references/clients/python-redis-py.md`](skills/redis-search/references/clients/python-redis-py.md) |
+| 46 | ✓ | [`skills/redis-search/references/clients/python-redisvl.md`](skills/redis-search/references/clients/python-redisvl.md) |
+| 47 | ✓ | [`skills/redis-search/references/command-selection.md`](skills/redis-search/references/command-selection.md) |
+| 48 | ✓ | [`skills/redis-search/references/debugging.md`](skills/redis-search/references/debugging.md) |
+| 49 | ✓ | [`skills/redis-search/references/dialect.md`](skills/redis-search/references/dialect.md) |
+| 50 | ✓ | [`skills/redis-search/references/field-types.md`](skills/redis-search/references/field-types.md) |
+| 51 | ✓ | [`skills/redis-search/references/ft-create-options.md`](skills/redis-search/references/ft-create-options.md) |
+| 52 | ✓ | [`skills/redis-search/references/hybrid-search.md`](skills/redis-search/references/hybrid-search.md) |
+| 53 | ✓ | [`skills/redis-search/references/index-creation.md`](skills/redis-search/references/index-creation.md) |
+| 54 | ✓ | [`skills/redis-search/references/index-management.md`](skills/redis-search/references/index-management.md) |
+| 55 | ✓ | [`skills/redis-search/references/json-indexing.md`](skills/redis-search/references/json-indexing.md) |
+| 56 | ✓ | [`skills/redis-search/references/query-optimization.md`](skills/redis-search/references/query-optimization.md) |
+| 57 | ✓ | [`skills/redis-search/references/query-syntax.md`](skills/redis-search/references/query-syntax.md) |
+| 58 | ✓ | [`skills/redis-search/references/rag-pattern.md`](skills/redis-search/references/rag-pattern.md) |
+| 59 | ✓ | [`skills/redis-search/references/result-shaping.md`](skills/redis-search/references/result-shaping.md) |
+| 60 | ✓ | [`skills/redis-search/references/search-syntax-primitives.md`](skills/redis-search/references/search-syntax-primitives.md) |
+| 61 | ✓ | [`skills/redis-search/references/text-tokenization.md`](skills/redis-search/references/text-tokenization.md) |
+| 62 | ✓ | [`skills/redis-search/references/vector-query.md`](skills/redis-search/references/vector-query.md) |
+| 63 | ✓ | [`skills/redis-search/SKILL.md`](skills/redis-search/SKILL.md) |
+| 64 | ✓ | [`skills/redis-security/.cursor-plugin/plugin.json`](skills/redis-security/.cursor-plugin/plugin.json) |
+| 65 | ✓ | [`skills/redis-security/references/acls.md`](skills/redis-security/references/acls.md) |
+| 66 | ✓ | [`skills/redis-security/references/auth.md`](skills/redis-security/references/auth.md) |
+| 67 | ✓ | [`skills/redis-security/references/network.md`](skills/redis-security/references/network.md) |
+| 68 | ✓ | [`skills/redis-security/SKILL.md`](skills/redis-security/SKILL.md) |
+| 69 | ✓ | [`skills/redis-semantic-cache/.cursor-plugin/plugin.json`](skills/redis-semantic-cache/.cursor-plugin/plugin.json) |
+| 70 | ✓ | [`skills/redis-semantic-cache/references/best-practices.md`](skills/redis-semantic-cache/references/best-practices.md) |
+| 71 | ✓ | [`skills/redis-semantic-cache/references/langcache-usage.md`](skills/redis-semantic-cache/references/langcache-usage.md) |
+| 72 | ✓ | [`skills/redis-semantic-cache/SKILL.md`](skills/redis-semantic-cache/SKILL.md) |
 
 ---
 

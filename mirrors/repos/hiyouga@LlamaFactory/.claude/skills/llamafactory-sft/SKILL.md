@@ -17,11 +17,11 @@ The working directory defaults to the current directory (`./`, the repo root). R
 
 ---
 
-## Progress board (show on every turn)
+## Progress board (show only when progress changes)
 
 This workflow has many stages, so the user must always be able to see **where we are**: which steps are done, which is in progress, and which remain.
 
-**Rule:** At the **start of every assistant turn** in this workflow — before asking a question with `AskUserQuestion`, before/after running a stage, and whenever you report status — render a **progress board** that lists ALL steps with a status marker for each.
+**Rule:** Render the **progress board** only when the board state changes, or when the user explicitly asks for status/progress. A board state changes when any step marker changes (`[ ]` / `[~]` / `[x]` / `[-]`) or when Stage 0 changes the branch shape (e.g. skipped validation/export for "SFT only"). Do **not** repeat the board on routine status updates, repeated confirmations, log polling, or consecutive messages within the same stage if the markers are unchanged.
 
 Use these markers:
 - `[x]` done
@@ -29,7 +29,7 @@ Use these markers:
 - `[ ]` not started
 - `[-]` skipped (e.g. validation/export when the user chose "SFT only", or download when the model is already local)
 
-Render it as a compact checklist. **The board's language must follow the active conversation language / the user's request — it is NOT required to be Chinese.** The example below is in Chinese only for illustration; render the title and step labels in whatever language the user is using (e.g. English: a "Progress" board with "0. Confirm overall flow", "1. Data preparation", ...):
+Render it as a compact checklist inside a fenced code block. **Always wrap the entire progress board in triple backticks** (use `text` as the info string, or no info string) so Markdown preserves every line break and marker exactly. **The board's language must follow the active conversation language / the user's request — it is NOT required to be Chinese.** The example below is in Chinese only for illustration; render the title and step labels in whatever language the user is using (e.g. English: a "Progress" board with "0. Confirm overall flow", "1. Data preparation", ...):
 
 ```
 进度看板
@@ -46,8 +46,9 @@ Guidelines:
 - The step list above is the canonical set. Loss visualization is part of **SFT 训练** (it happens automatically once training finishes) — you know to handle it, but do NOT show it as a separate line on the board.
 - Mark steps `[-]` instead of dropping them when they don't apply to the chosen flow (e.g. "SFT only" skips 5 & 6; WebUI route collapses 3–6 into the UI).
 - After Stage 0, adapt the board to the chosen branch (mark skipped steps `[-]`) and keep that shape for the rest of the run.
-- Keep it terse — one line per step. Put the board at the **top** of your message, then continue with the actual content / question below it.
-- Update markers as soon as a step's status changes; never show a stale board.
+- Do **not** render the board as plain paragraph text or as Markdown task-list checkboxes (`- [x] ...`); both can change the intended layout or marker semantics.
+- Keep it terse — one line per step. When the board is shown, put it at the **top** of your message, then continue with the actual content / question below it.
+- Update markers as soon as a step's status changes; show the updated board once at that transition, and never show a stale board.
 
 ---
 
@@ -152,11 +153,11 @@ Once the model is decided:
    ```bash
    timeout 10 amd-smi monitor 2>/dev/null || rocm-smi 2>/dev/null || nvidia-smi
    ```
-   Read each GPU's **VRAM usage** and **utilization**. Treat a GPU as **free** when its VRAM usage is near-empty (e.g. ≲ 1 GB) and utilization is low (e.g. ≲ a few %). Also list any running training/inference processes if helpful (e.g. `pgrep -af "llamafactory-cli"`). Note whether the GPUs are **AMD Radeon** (e.g. detected via `amd-smi`/`rocm-smi`) — this affects the single-vs-multi recommendation below.
+   Read each GPU's **VRAM usage** and **utilization**. Treat a GPU as **free** when its VRAM usage is near-empty (e.g. ≲ 1 GB) and utilization is low (e.g. ≲ a few %). Also list any running training/inference processes if helpful (e.g. `pgrep -af "llamafactory-cli"`).
 2. **Decide which device(s) to use:**
    - **No free GPU:** do NOT silently queue onto a busy card — tell the user which GPUs are busy (and roughly by how much VRAM / what is running) and use `AskUserQuestion` to let them choose: wait for one to free up, share a partially-used GPU anyway, or specify a particular index.
    - **Exactly one free GPU:** use it (single-card).
-   - **Multiple free GPUs:** use `AskUserQuestion` to ask the user whether to run **single-card** or **multi-card** (list the free indices). **For AMD Radeon GPUs, recommend single-card** (mark it as recommended) — multi-card on Radeon is often unreliable for this workflow. If the user picks multi-card, use the selected free indices together.
+   - **Multiple free GPUs:** use `AskUserQuestion` to ask the user whether to run **single-card** or **multi-card** (list the free indices). If the user picks multi-card, use the selected free indices together.
 3. **Record the chosen index/indices and reuse them for every GPU command** (training, validation, export) by exporting the platform's visibility env var:
    - **AMD/ROCm:** `HIP_VISIBLE_DEVICES=<idx>` (multi-card: comma-separated, e.g. `HIP_VISIBLE_DEVICES=0,1`)
    - **NVIDIA/CUDA:** `CUDA_VISIBLE_DEVICES=<idx>` (multi-card: comma-separated)
@@ -357,7 +358,7 @@ When all chosen stages are finished, give a concise closing summary and then **s
 - Ask first with `AskUserQuestion` at every irreversible or ambiguous decision; do not assume.
 - **Confirm before every yaml write — no exceptions.** Before writing ANY yaml config to disk (train / inference / export), you MUST first print its key parameters as a table AND call `AskUserQuestion` to get the user's explicit confirmation. Only write the file after the user confirms. This applies to every config in every stage, not just training — do not "save time" by writing infer.yaml or export.yaml directly. If the user requests changes, update the table and re-confirm before writing.
 - Run **long-running** commands (model download, training) **in the background + report periodically** (interval ≤ 100 seconds). Inference validation and export are usually quick and do NOT need background — run them in the foreground.
-- **Detect GPU status once before running and pin the free device(s)** (see Stage 2.5). Detect a single time at the start, pick the device(s) — if multiple are free, ask single-vs-multi (recommend single-card for AMD Radeon) — then reuse the same index/indices for SFT / validation / export via the platform's visibility env var (`HIP_VISIBLE_DEVICES` for AMD, `CUDA_VISIBLE_DEVICES` for NVIDIA). Do NOT re-detect before each run. Never silently launch onto a busy card — if none are free, ask the user. For export to actually use the GPU, also set `export_device: auto` (not `cpu`).
+- **Detect GPU status once before running and pin the free device(s)** (see Stage 2.5). Detect a single time at the start, pick the device(s) — if multiple are free, ask single-vs-multi — then reuse the same index/indices for SFT / validation / export via the platform's visibility env var (`HIP_VISIBLE_DEVICES` for AMD, `CUDA_VISIBLE_DEVICES` for NVIDIA). Do NOT re-detect before each run. Never silently launch onto a busy card — if none are free, ask the user. For export to actually use the GPU, also set `export_device: auto` (not `cpu`).
 - **Keep generated yaml configs and logs in the artifacts directory** (`./llamafactory_runs/<run_id>/`); do not write them into `./models/` (downloaded weights) or the training `output_dir` (saved checkpoints).
 - **Prefer official-example defaults; track every deviation.** When generating the training yaml, start from the official example and change as little as possible. List any changed field in a "diff vs. default" table with a concrete reason (user-specified, model/dataset adaptation, etc.).
 - **Keep `template` consistent across train / inference / export.** Use the template from the official example unless there's a tracked reason to change it; a train/infer mismatch produces garbled output.

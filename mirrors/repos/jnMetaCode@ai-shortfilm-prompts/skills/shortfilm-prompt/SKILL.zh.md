@@ -69,6 +69,18 @@ description: 生成 AI 短片提示词（Seedance 2.0 / 小云雀 / Sora / 可�
 | **电影预告片**（递进式多分镜） | `templates/movie-trailer.md`（范例） |
 | **赛博城市 / 氛围环境片** | `templates/cyberpunk-city.md`（范例） |
 | **定格 / 黏土动画**（风格化；故意打破呼吸感规则） | `templates/claymation.md`（范例） |
+| **自然 / 风景延时**（时间压缩、锁一档调色） | `templates/nature-timelapse.md`（范例） |
+| **CCTV / 伪纪录恐怖**（劣质监控画质；打破呼吸感规则） | `templates/found-footage-horror.md`（范例） |
+| **动漫 / 2D → 真人写实**（媒介转换；重点防 IP） | `templates/anime-to-real.md`（范例） |
+| **音乐 MV / 表演**（卡点剪辑；该用音乐的题材） | `templates/music-video.md`（范例） |
+| **运动高速慢镜**（Phantom/高帧率；决定性瞬间） | `templates/sports-slowmo.md`（范例） |
+| **时尚大片 / 编辑式**（运动即主角；无剧情） | `templates/fashion-film.md`（范例） |
+| **旅拍 Vlog / 地点感**（手持蒙太奇） | `templates/travel-vlog.md`（范例） |
+| **无人机 / FPV 航拍**（一镜连贯；运镜即内容） | `templates/drone-fpv.md`（范例） |
+| **竖屏短剧**（2 秒钩子 + 正反打 + 悬念切） | `templates/micro-drama.md`（范例） |
+| **科幻太空 / 失重**（失重物理；真空静音） | `templates/sci-fi-space.md`（范例） |
+| **汽车广告**（反光车身；汽车摄影机位） | `templates/car-commercial.md`（范例） |
+| **舞蹈编舞**（全身连续运动；身体卡拍） | `templates/dance.md`（范例） |
 | 按类型片决定怎么运镜 | `templates/genre-camera-sop.md` |
 | 按技法查运镜话术（50 式） | `templates/camera-move-library.md` |
 | 按类型查氛围/画质段落 | `templates/atmosphere-prefabs.md` |

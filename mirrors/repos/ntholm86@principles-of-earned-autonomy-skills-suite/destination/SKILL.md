@@ -46,7 +46,7 @@ Destination is **not** part of the autonomous loop. It is invoked deliberately b
 - **The destination feels thin or stale.** The operator-held `.acm/destination.md` (or legacy `.acm/vision.md`) is missing, terse, or no longer matches what the operator has been talking about.
 - **The operator is exploring, not executing.** Recent sessions show the operator turning ideas over rather than narrowing toward a decision.
 - **A long autonomous run is about to start.** The destination is the input that determines whether the run will produce useful work or precisely-executed wrong work.
-- **The agent suspects it is missing something.** During Improve, Retrospect, or any other skill, an agent that finds itself uncertain about *what the operator actually wants* should be able to pause and run Destination rather than guess silently.
+- **The agent suspects it is missing something.** During Improve, Orient, or any other skill, an agent that finds itself uncertain about *what the operator actually wants* should be able to pause and run Destination rather than guess silently.
 
 Destination is fast, conversational, and stops as soon as the operator says "yes, that's right" or "no, I don't want to do this now."
 
@@ -57,7 +57,7 @@ Destination is fast, conversational, and stops as soon as the operator says "yes
 Before forming any hunches, look at what is available in the **target repo's `.acm/` folder** (in the root of the repo being worked on — not the skills install directory):
 
 - `.acm/destination.md` (or legacy `.acm/vision.md`) — what the operator has explicitly said (if it exists). Apply the fallback rule above.
-- `.acm/retrospect.md` — what the agent's last arc-read concluded about the target.
+- `.acm/orientation.md` — what the agent's last arc-read concluded about the target.
 - `.acm/audit-trail.md` — recent decisions, reversals, realisations.
 - `.acm/sessions/` — recent conversation transcripts, if present.
 - The current conversation — what the operator has been emphasising, dismissing, returning to.
@@ -74,7 +74,7 @@ Write down two to five sourced inferences. Each is a claim the evidence supports
 - **Priority.** "I think Y matters more to you than the trail's attention split would imply."
 - **Constraint.** "I think you would reject Z even though nothing currently rules it out."
 - **Question being asked.** "I think the question you are actually trying to answer is W, even though you have been phrasing it as V."
-- **Quality bar.** "I think the bar you are actually holding the target to is Q (e.g. comparative defensibility under hostile external review, comparator coverage, empirical replication, operational deployability), not just internal consistency." Surfacing the operator-held quality bars early is what lets a later Retrospect declare silence against a named bar rather than infer one. *Origin:* the manifesto target's retro-v201 → retro-v202 transition (2026-06-04) showed that retrospects which silence-claim against bars they have never been challenged on are structurally fragile; the upstream fix is for the destination to name the bars in the first place. Full provenance: this repo's `.acm/audit-trail.md`, entry slug `improve-destination-named-boundary-symmetric`.
+- **Quality bar.** "I think the bar you are actually holding the target to is Q (e.g. comparative defensibility under hostile external review, comparator coverage, empirical replication, operational deployability), not just internal consistency." Surfacing the operator-held quality bars early is what lets a later Orient run declare silence against a named bar rather than infer one. *Origin:* the manifesto target's retro-v201 → retro-v202 transition (2026-06-04) showed that orient runs which silence-claim against bars they have never been challenged on are structurally fragile; the upstream fix is for the destination to name the bars in the first place. Full provenance: this repo's `.acm/audit-trail.md`, entry slug `improve-destination-named-boundary-symmetric`.
 
 Each inference must be:
 
@@ -120,7 +120,7 @@ If `.acm/destination.md` already exists, update it in place rather than replacin
 
 If only the legacy `.acm/vision.md` exists, do **not** silently rewrite it as `.acm/destination.md`. Either (a) update the legacy file in place and surface the migration hint, or (b) ask the operator to run `git mv .acm/vision.md .acm/destination.md` first so the rename is its own visible commit.
 
-If the conversation produced arc-claims about the target's current state rather than destination claims, those belong in retrospect.md — but retrospect.md is Retrospect's to write. Destination surfaces them; Retrospect (or the next Improve run) decides what to do with them.
+If the conversation produced arc-claims about the target's current state rather than destination claims, those belong in orientation.md — but orientation.md is Orient's to write. Destination surfaces them; Orient (or the next Improve run) decides what to do with them.
 
 ### 6. Record the run in the trail
 
@@ -140,7 +140,7 @@ A Destination run that produced no inferences is still recorded — silence is s
 
 - **It does not act on unconfirmed inferences.** A confirmed destination becomes input to the next run; it does not become the next run. The separation matters: an agent that acts on its own inferences without confirmation has stopped being autonomous-with-oversight and started being autonomous-without-it.
 - **It does not replace Intent.** Intent surfaces interpretation of *one specific request*. Destination surfaces interpretation of *the broader direction* across requests. Run Intent at the start of a request; run Destination when the broader direction itself is unclear.
-- **It does not replace Retrospect.** Retrospect reads the trail and forms claims about what the target *is becoming*. Destination reads conversation and forms claims about what the operator *wants the target to become*. The two converge when the loop is working; the gap between them is where Destination is most useful.
+- **It does not replace Orient.** Orient reads the trail and forms claims about what the target *is becoming*. Destination reads conversation and forms claims about what the operator *wants the target to become*. The two converge when the loop is working; the gap between them is where Destination is most useful.
 - **It does not score the operator's clarity.** No rubric for "destination quality." If the operator is exploring, that is a legitimate state — the skill helps them externalise the exploration, not grade it.
 
 ## Self-targeting

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ifiokjr/oh-pi` — 26 default patterns, 3 followed patterns, 24 file(s) materialized.
+Mirror of `ifiokjr/oh-pi` — 26 default patterns, 3 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ifiokjr/oh-pi` — 26 default patterns, 3 followed patterns, 24 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 24 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,29 +62,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`packages/skills/skills/btw/SKILL.md`](packages/skills/skills/btw/SKILL.md) |
-| 3 | ✓ | [`packages/skills/skills/claymorphism/SKILL.md`](packages/skills/skills/claymorphism/SKILL.md) |
-| 4 | ✓ | [`packages/skills/skills/context7/SKILL.md`](packages/skills/skills/context7/SKILL.md) |
-| 5 | ✓ | [`packages/skills/skills/debug-helper/SKILL.md`](packages/skills/skills/debug-helper/SKILL.md) |
-| 6 | ✓ | [`packages/skills/skills/fish/SKILL.md`](packages/skills/skills/fish/SKILL.md) |
-| 7 | ✓ | [`packages/skills/skills/flutter-serverpod-mvp/SKILL.md`](packages/skills/skills/flutter-serverpod-mvp/SKILL.md) |
-| 8 | ✓ | [`packages/skills/skills/glassmorphism/SKILL.md`](packages/skills/skills/glassmorphism/SKILL.md) |
-| 9 | ✓ | [`packages/skills/skills/grill-me/SKILL.md`](packages/skills/skills/grill-me/SKILL.md) |
-| 10 | ✓ | [`packages/skills/skills/improve-codebase-architecture/REFERENCE.md`](packages/skills/skills/improve-codebase-architecture/REFERENCE.md) |
-| 11 | ✓ | [`packages/skills/skills/improve-codebase-architecture/SKILL.md`](packages/skills/skills/improve-codebase-architecture/SKILL.md) |
-| 12 | ✓ | [`packages/skills/skills/liquid-glass/SKILL.md`](packages/skills/skills/liquid-glass/SKILL.md) |
-| 13 | ✓ | [`packages/skills/skills/neubrutalism/SKILL.md`](packages/skills/skills/neubrutalism/SKILL.md) |
-| 14 | ✓ | [`packages/skills/skills/nushell/SKILL.md`](packages/skills/skills/nushell/SKILL.md) |
-| 15 | ✓ | [`packages/skills/skills/pwsh/SKILL.md`](packages/skills/skills/pwsh/SKILL.md) |
-| 16 | ✓ | [`packages/skills/skills/quick-setup/SKILL.md`](packages/skills/skills/quick-setup/SKILL.md) |
-| 17 | ✓ | [`packages/skills/skills/request-refactor-plan/SKILL.md`](packages/skills/skills/request-refactor-plan/SKILL.md) |
-| 18 | ✓ | [`packages/skills/skills/rust-workspace-bootstrap/SKILL.md`](packages/skills/skills/rust-workspace-bootstrap/SKILL.md) |
-| 19 | ✓ | [`packages/skills/skills/web-fetch/SKILL.md`](packages/skills/skills/web-fetch/SKILL.md) |
-| 20 | ✓ | [`packages/skills/skills/web-search/SKILL.md`](packages/skills/skills/web-search/SKILL.md) |
-| 21 | ✓ | [`packages/skills/skills/write-a-skill/SKILL.md`](packages/skills/skills/write-a-skill/SKILL.md) |
-| 22 | → | [`docs/agent-rules/engineering.md`](docs/agent-rules/engineering.md) |
-| 23 | → | [`docs/agent-rules/git-and-pr-workflow.md`](docs/agent-rules/git-and-pr-workflow.md) |
-| 24 | → | [`docs/agent-rules/packaging-and-release.md`](docs/agent-rules/packaging-and-release.md) |
+| 2 | ✓ | [`packages/monopi__skills/skills/btw/SKILL.md`](packages/monopi__skills/skills/btw/SKILL.md) |
+| 3 | ✓ | [`packages/monopi__skills/skills/debug-helper/SKILL.md`](packages/monopi__skills/skills/debug-helper/SKILL.md) |
+| 4 | ✓ | [`packages/monopi__skills/skills/nushell/SKILL.md`](packages/monopi__skills/skills/nushell/SKILL.md) |
+| 5 | → | [`docs/agent-rules/engineering.md`](docs/agent-rules/engineering.md) |
+| 6 | → | [`docs/agent-rules/git-and-pr-workflow.md`](docs/agent-rules/git-and-pr-workflow.md) |
+| 7 | → | [`docs/agent-rules/packaging-and-release.md`](docs/agent-rules/packaging-and-release.md) |
 
 ---
 

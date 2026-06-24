@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.12] - 2026-06-23
+
+### Changed
+
+- Re-released skill metadata to run through the corrected normal tag publish pipeline without runtime changes.
+
+## [0.1.11] - 2026-06-22
+
+### Changed
+
+- Re-released skill metadata to publish through the updated ClawHub pipeline without runtime changes.
+
 ## [0.1.10] - 2026-06-10
 
 ### Changed

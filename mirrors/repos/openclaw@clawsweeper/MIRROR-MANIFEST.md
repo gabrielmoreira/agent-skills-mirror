@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/clawsweeper` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `openclaw/clawsweeper` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/clawsweeper` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,15 +60,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/crabbox/SKILL.md`](.agents/skills/crabbox/SKILL.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`prompts/pr-close-coverage-proof.md`](prompts/pr-close-coverage-proof.md) |
-| 4 | ✓ | [`prompts/repair/autonomous.md`](prompts/repair/autonomous.md) |
-| 5 | ✓ | [`prompts/repair/execute.md`](prompts/repair/execute.md) |
-| 6 | ✓ | [`prompts/repair/plan-only.md`](prompts/repair/plan-only.md) |
-| 7 | ✓ | [`prompts/repair/review-result.md`](prompts/repair/review-result.md) |
-| 8 | ✓ | [`prompts/repair/worker-system.md`](prompts/repair/worker-system.md) |
-| 9 | ✓ | [`prompts/review-commit.md`](prompts/review-commit.md) |
-| 10 | ✓ | [`prompts/review-item.md`](prompts/review-item.md) |
+| 2 | ✓ | [`.agents/skills/local-clawsweeper-review/agents/openai.yaml`](.agents/skills/local-clawsweeper-review/agents/openai.yaml) |
+| 3 | ✓ | [`.agents/skills/local-clawsweeper-review/SKILL.md`](.agents/skills/local-clawsweeper-review/SKILL.md) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`prompts/pr-close-coverage-proof.md`](prompts/pr-close-coverage-proof.md) |
+| 6 | ✓ | [`prompts/repair/autonomous.md`](prompts/repair/autonomous.md) |
+| 7 | ✓ | [`prompts/repair/execute.md`](prompts/repair/execute.md) |
+| 8 | ✓ | [`prompts/repair/plan-only.md`](prompts/repair/plan-only.md) |
+| 9 | ✓ | [`prompts/repair/review-result.md`](prompts/repair/review-result.md) |
+| 10 | ✓ | [`prompts/repair/worker-system.md`](prompts/repair/worker-system.md) |
+| 11 | ✓ | [`prompts/review-commit.md`](prompts/review-commit.md) |
+| 12 | ✓ | [`prompts/review-item.md`](prompts/review-item.md) |
 
 ---
 

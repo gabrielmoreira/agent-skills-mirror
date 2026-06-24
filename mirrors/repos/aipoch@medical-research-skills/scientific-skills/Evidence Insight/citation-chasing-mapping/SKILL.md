@@ -1,6 +1,6 @@
 ---
 name: citation-chasing-mapping
-description: Use when identifying seminal papers in a research field, mapping research lineage and intellectual heritage, discovering related work through reference tracking, or finding potential collaborators through co-citation analysis. Maps citation networks to trace research evolution, identify influential papers, and discover hidden connections in scientific literature. Supports systematic reviews, bibliometric analysis, and research planning through comprehensive citation tracking.
+description: Use when identifying seminal papers in a research field, mapping research lineage and intellectual heritage, discovering related work through reference tracking, or finding potential collaborators through co-citation analysis. Maps citation networks to trace research evolution...
 license: MIT
 author: AIPOCH
 ---

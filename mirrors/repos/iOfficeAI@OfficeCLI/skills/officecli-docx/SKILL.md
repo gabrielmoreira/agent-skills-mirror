@@ -43,13 +43,13 @@ If in doubt, `view text` after writing and compare character-for-character.
 
 **Incremental execution.** `officecli` mutates the file on every call. Run commands one at a time and check each exit code — a 50-command script that fails at command 3 cascades silently. After any structural op (new style, table, TOC, section break) run `get` on it before stacking more.
 
-**Resident mode is the default**, not an optimization: `officecli open <file>` at the start, `officecli close <file>` at the end — it avoids re-parsing the XML every call. For many paragraphs of one style, use `batch` (≤ 12 ops per block for reliability).
+**Resident mode is the default**, not an optimization: `officecli open <file>` at the start, `officecli close <file>` at the end — it avoids re-parsing the XML every call. For many paragraphs of one style, use `batch` (one open/save cycle for the whole array).
 
 **`$FILE` convention.** All commands use `"$FILE"` — set it once (`FILE="your-doc.docx"`). Never copy a literal `doc.docx` / `review.docx` into output — always substitute your actual target.
 
 ## Requirements for Outputs
 
-Before reaching for a command, know what a good docx looks like. These are the deliverable standards every document MUST meet.
+Deliverable standards every document MUST meet — know these before reaching for a command.
 
 **Clear hierarchy.** Every non-trivial document has Title → Heading 1 → Heading 2 → body, not a wall of unstyled `Normal` paragraphs. If `view outline` shows one flat list, the hierarchy is missing.
 
@@ -71,7 +71,6 @@ Before declaring done, run `officecli view "$FILE" html` and Read the returned H
 
 - **No placeholder tokens rendered as data.** `$xxx$`, `{var}`, `{{name}}`, `<TODO>`, `lorem`, `xxxx` must never appear in a heading, body, cover, TOC, caption, header, or footer. A literal `{name}` meant for a human to fill belongs inside a visible instruction paragraph ("Replace `{name}` before sending"), never as finished content.
 - **No truncated titles or overflowing cells.** Widen the column or set `wrapText` rather than trimming content.
-- **Page numbers render as real fields.** `get /footer[N] --depth 3` shows `<w:fldChar>` children, not a run with literal text `"Page"`.
 - **TOC present when the document has 3+ headings** (`--type toc`).
 - **Cover page ≥ 60% filled, last page ≥ 40% filled.** Pad a thin cover with subtitle / author / date / scope / key highlights; pad a "Thank you" last page with conclusion / next steps / contact / legal.
 - **No `\$`, `\t`, `\n` literals in document text.** If `view text` shows these, a shell-escape layer leaked — delete the paragraph and re-enter it.
@@ -107,7 +106,7 @@ officecli close "$FILE"
 officecli validate "$FILE"
 ```
 
-Verified: `validate` returns `no errors found`; `get /footer[1] --depth 3` shows the 5-run PAGE field chain (begin / instrText / separate / cached value / end). Shape of every build: open → structure → content → format → footer/fields → close → validate.
+Verified: `validate` returns `no errors found`; `get /footer[1] --depth 3` shows the 5-run PAGE field chain (begin / instrText / separate / cached value / end).
 
 ## Reading & Analysis
 
@@ -178,6 +177,12 @@ officecli set "$FILE" "/body/tbl[1]/tr[1]/tc[1]/p[1]/r[1]" --prop bold=true
 
 Row-level `set` supports `height`, `header`, and `c1 / c2 / … / cN` text shortcuts (`cN` generalises to any column count). Cell formatting (bold, fill, color) goes on the cell's paragraph / run — **not** row-level. For per-cell borders, set cell-level `border.*` on the `tc` (`--prop border.bottom="single;6;000000;0"`), or paragraph-level `pbdr.*` on the inner paragraph.
 
+**Horizontal rule = a paragraph bottom border, never a 1-row table.** A table-as-divider renders as an empty min-height box (worst in headers/footers). Use `pbdr.bottom` (`STYLE;SIZE;COLOR`) on the paragraph instead:
+
+```bash
+officecli set "$FILE" "/body/p[3]" --prop pbdr.bottom="single;6;2E75B6"
+```
+
 ### Lists (bullets, numbered, multi-level)
 
 For single-level bullets/numbers, set `listStyle` on the paragraph (`listStyle` is a paragraph prop, NOT a run prop — common mistake):
@@ -245,7 +250,7 @@ officecli add "$FILE" / --type footer --prop type=first --prop text=""
 officecli add "$FILE" / --type footer --prop type=default --prop align=center --prop size=9pt --prop text="Page " --prop field=page
 ```
 
-When both exist, the default footer is `/footer[2]`; alone it is `/footer[1]`. **Verify**: `get --depth 3` must show `fldChar` children, not just a run with literal `"Page"` (`view outline` prints "Footer: Page" for both live fields AND static text — don't rely on it). Do NOT `set --prop differentFirstPage=true` — that prop is UNSUPPORTED and silently fails; adding a first-type footer flips the bit. For composite **Page X of Y**, see recipe (b).
+When both exist, the default footer is `/footer[2]`; alone it is `/footer[1]`. **Verify**: `get --depth 3` must show `fldChar` children, not just a run with literal `"Page"` (`view outline` prints "Footer: Page" for both live fields AND static text — don't rely on it). Do NOT `set --prop differentFirstPage=true` — that prop is unsupported (rejected with exit 2, not silently); adding a first-type footer flips the bit. For composite **Page X of Y**, see recipe (b).
 
 ### Table of Contents
 
@@ -260,7 +265,7 @@ Page numbers render automatically (`--prop pageNumbers=true` toggles them explic
 **TOC delivery step (mandatory before handoff).** The live TOC field is a placeholder until recalculated. Some viewers populate it on first open; others show the literal `Update field to see table of contents` until the reader recalculates. Pick by recipient:
 
 - **Will recalculate (or press F9):** run `officecli set "$FILE" /settings --prop updateFields=true` so Word recomputes the TOC (and all fields) on open, and/or add a visible "Press F9 to refresh the TOC and page numbers" instruction. Done.
-- **Cannot / will not recalculate:** use the **static TOC fallback — recipe (f)**. No CLI-only pipeline populates `<w:sdtContent>` with cached heading rows the way Word does on save, and headless converters can't pre-render it safely — hand-write the static fallback.
+- **Cannot / will not recalculate:** use the **static TOC fallback — recipe (f)** (the live field renders a placeholder until recalculated; no headless pipeline can pre-populate it).
 
 Ship-check: `officecli query "$FILE" 'p:contains("Update field to see")'` must return empty whenever the reader won't recalculate. A match means switch to recipe (f).
 
@@ -269,10 +274,20 @@ Ship-check: `officecli query "$FILE" 'p:contains("Update field to see")'` must r
 Pictures go inside a run. Alt text is mandatory for accessibility — pass `alt` directly at create time:
 
 ```bash
-officecli add "$FILE" "/body/p[5]" --type picture --prop src=chart.png --prop width=4in --prop alt="Q4 revenue by region, bar chart"
+officecli add "$FILE" "/body/p[5]" --type picture --prop src=logo.png --prop width=1.5in --prop alt="Acme logo"
 ```
 
 Confirm `officecli query "$FILE" 'image:no-alt'` is empty before delivery.
+
+### Charts
+
+For data, add a **native chart** — editable, themeable, accessible, re-renders in Word — never a flat PNG screenshot of a chart. `data="Label:v1,v2,…"` per series; one `data=` per series (or `series1=`/`series2=`).
+
+```bash
+officecli add "$FILE" /body --type chart --prop chartType=bar --prop title="Revenue by Region" --prop categories="EMEA,APAC,Americas" --prop data="2026:120,150,180"
+```
+
+`chartType` ∈ bar / column / line / pie / area / scatter (`help docx chart` for axis/legend/series styling). A PNG via `--type picture` is only a fallback for an exotic chart officecli can't build.
 
 ### Hyperlinks and bookmarks
 
@@ -296,6 +311,8 @@ Document root `/` carries page setup (`pageWidth`, `pageHeight`, margins, in twi
 
 ```bash
 officecli set "$FILE" / --prop pageWidth=12240 --prop pageHeight=15840 --prop marginTop=1440 --prop marginLeft=1440
+# Newspaper-style multi-column flow (columnSpace in twips; 720 = 0.5in):
+officecli set "$FILE" / --prop columns=2 --prop columnSpace=720
 ```
 
 ### Forcing page breaks — belt-and-suspenders
@@ -420,15 +437,15 @@ Borders use the format `style;size;color;space`: `single;4;FF0000;1`. Hex colors
 
 ## QA (Required)
 
-**Assume there are problems. Your job is to find them.** Your first document is almost never correct — treat QA as a bug hunt, not a confirmation step. If you found zero issues on first inspection, you weren't looking hard enough. Headings look fine until `view outline` shows an H3 directly under an H1; the footer shows "Page 1" until `get --depth 3` reveals a static run, not a field.
+**Assume there are problems — QA is a bug hunt, not a confirmation step.** Your first document is almost never correct; zero issues on first inspection means you weren't looking hard enough. Headings look fine until `view outline` shows an H3 directly under an H1; the footer shows "Page 1" until `get --depth 3` reveals a static run, not a field.
 
 ### Minimum cycle before "done"
 
 1. `officecli view "$FILE" issues` — empty paras, missing alt text, formatting anomalies.
 2. `officecli view "$FILE" outline` — heading hierarchy (no H1 → H3 skips), TOC presence, section count.
 3. `officecli view "$FILE" text --max-lines 400` — typos, stray `\$`/`\t`/`\n` literals, placeholder tokens.
-4. `officecli validate "$FILE"` — schema check (`close` any resident first — `validate` + open resident conflict and report spurious `drawing`/`tableParts` errors).
-5. **Visual pass — walk every page via `view html`** and Read the returned path. "validate pass" is not delivery; "the preview looks like a real document" is.
+4. `officecli validate "$FILE"` — schema check (the Delivery Gate re-runs this on the closed, on-disk file).
+5. **Visual pass — whole document as a contact sheet** (vision-capable agents only — if you cannot interpret images, skip this step: steps 1–4 are your ceiling, and flag the document "not visually verified" at handoff). `officecli view "$FILE" screenshot --grid auto -o /tmp/sheet.png`, then Read it. `--grid auto` tiles **every page** into one image (auto column count; `--grid 4` to force) — you *see* pagination, blank pages, heading rhythm, lopsided margins, and TOC/cover placement, not just the DOM. Windows+Word renders each page through real Word; elsewhere HTML. No headless browser (needs Chrome/Edge/Chromium/Firefox or `playwright`)? Fall back to `view html` and flag cross-page breaks / alignment / rhythm as "not visually verified". Thumbnails only **locate**: confirm any fine call (column alignment, line spacing, indents, dark-on-dark, caption placement) on the suspect page at full resolution with `screenshot --page N` (no `--grid`; real Word on Windows). "validate pass" is not delivery; "looks like a real document" is.
 6. If anything failed, fix, then **rerun the full cycle** — one fix commonly creates another problem.
 
 ### Delivery Gate (run before handing off — any failure = REJECT, do NOT deliver)
@@ -463,7 +480,7 @@ Fields carry cached values that may be stale or empty at write time — confirm 
 
 ### Honest limit
 
-`validate` catches schema errors, not design errors — a document can pass it with wrong heading hierarchy, fake-Heading-1 sizes, placeholder tokens as body text, or an empty first-page footer on a coverless document. The HTML-preview visual pass and the field-structure check are how you catch what validation can't.
+`validate` catches schema errors, not design errors — a document can pass it with wrong heading hierarchy, fake-Heading-1 sizes, placeholder tokens as body text, or an empty first-page footer on a coverless document. The contact-sheet visual pass (`screenshot --grid`) and the field-structure check are how you catch what validation can't.
 
 ### QA display notes (don't chase these)
 
@@ -502,7 +519,6 @@ Before calling a color/field/chart broken, open the file in the user's target vi
 | `raw-set` when dotted-attr would work | Prefer L2 dotted-attr over L3 raw-set |
 | Next paragraph inherits the previous Heading style | Set explicit `--prop style=Normal` on the following paragraph |
 | Modifying a file open in Word | Close it in Word first |
-| Batch + resident "Failed to send to resident" (1-in-10) | Retry, or close/reopen; split batches into ≤ 12-op chunks |
 | Echo into batch breaks on `$`/`'` | Heredoc with single-quoted delimiter: `cat <<'EOF' \| officecli batch …` |
 
 ## Raw-set XML appendix (L3 patterns)

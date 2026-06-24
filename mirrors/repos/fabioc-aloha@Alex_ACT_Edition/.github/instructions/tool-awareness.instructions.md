@@ -1,7 +1,7 @@
 ---
 description: "Platform awareness for VS Code tool system: deferred tools require tool_search, external ingest provides context in remote workspaces, skill SKILL.md descriptions surface in the slash picker"
 applyTo: "**"
-lastReviewed: 2026-05-29
+lastReviewed: 2026-06-23
 ---
 
 # Tool Awareness
@@ -25,7 +25,7 @@ For common deferred tool categories and search-query patterns, see [tool-awarene
 
 In remote or virtual-filesystem workspaces (GitHub.dev, VS Code Remote, Codespaces), the editor provides codebase context automatically. `semantic_search` and file operations work transparently — no agent action needed.
 
-## VS Code 1.122–1.124 conveniences
+## VS Code 1.122–1.125 conveniences
 
 | Release | Capability | What it changes for me |
 |---|---|---|
@@ -36,6 +36,11 @@ In remote or virtual-filesystem workspaces (GitHub.dev, VS Code Remote, Codespac
 | 1.123 | Sandbox network-retry | When a local-agent terminal command needs an unallowed domain, VS Code auto-retries inside the sandbox with unrestricted network before falling back to unsandboxed (`chat.agent.sandbox.retryWithAllowNetworkRequests`). Reduces spurious failures on `git fetch` / `npm install`. |
 | 1.124 | Autopilot enabled by default | Autopilot Preview is now on by default; `chat.permissions.default` controls the per-workspace level. ACT's heir-workspace baseline pins `default` as the deliberate opt-out — see `heir-workspace-settings-baseline.json`. |
 | 1.124 | Advanced Autopilot (opt-in) | `chat.autopilot.advanced.enabled` uses a utility model to judge when a task is truly done. Capped at 3 iterations. Off by default; opt-in only. |
+| 1.124 | Enterprise Copilot plugin policies | `chat.plugins.enabledPlugins` / `chat.plugins.extraMarketplaces` / `chat.plugins.strictMarketplaces` let org admins allowlist plugin IDs and marketplaces. Heirs in regulated orgs may see Mall installs silently blocked or marketplaces tagged as policy-managed; surface a clear message rather than retrying when an install refuses. |
+| 1.125 | `extensions.autoUpdate` simplified to `on` / `off` | Old values (`true` / `false` / `onlyEnabledExtensions` / `delayed`) migrate automatically. Edition `welcome-baseline.json` pins the canonical `on` shape from this release forward; pre-1.125 heirs that have the old value still work via migration. |
+| 1.125 | `extensions.autoUpdateDelay` configurable | The 2-hour supply-chain delay introduced in 1.123 is now a configurable hour count. Edition does not pin a value — heirs ride the platform default — but the setting exists if a heir or org wants tighter / looser update windows. |
+| 1.125 | Forwarded-port URL rewriting for agents | When an agent in a remote workspace requests a port that has been forwarded, VS Code rewrites the URL and notifies the agent of the change. Reduces spurious browser-tool failures in Codespaces / Remote-SSH heir setups. No action needed; surface in fetch/browser diagnostics if a heir reports a port mismatch. |
+| 1.125 | Native MDM delivery for managed Copilot settings | On Windows/macOS, org admins can deliver Copilot settings via MDM channels in addition to the account-based enterprise file. Settings delivered via MDM appear as policy-enforced and cannot be overridden locally — heirs in MDM-managed orgs may see baseline `welcome-baseline.json` keys ignored if the MDM policy disagrees. |
 
 ## Skill Picker Surfacing (VS Code 1.118+)
 

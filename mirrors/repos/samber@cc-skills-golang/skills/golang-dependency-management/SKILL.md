@@ -6,7 +6,7 @@ license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.2.3"
+  version: "1.2.4"
   openclaw:
     emoji: "📦"
     homepage: https://github.com/samber/cc-skills-golang
@@ -77,6 +77,8 @@ go get github.com/google/uuid@v1.6.0   # Specific version
 go get github.com/google/uuid@latest   # Explicitly latest
 go get github.com/google/uuid@<commit> # Specific commit (pseudo-version)
 ```
+
+Before pinning a version, inspect the module's available versions, importers, and known vulnerabilities on pkg.go.dev → See `samber/cc-skills-golang@golang-pkg-go-dev` skill.
 
 ### Upgrading
 

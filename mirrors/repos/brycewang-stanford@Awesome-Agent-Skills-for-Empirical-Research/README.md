@@ -6,18 +6,14 @@
 
 <br/>
 
-  <img src="images/aers-readme-cover-en.png" alt="Auto-Empirical Research Skills cover" width="100%" />
-
-  <br/>
-
   <table>
     <tr>
       <td align="center">
-        <a href="https://copaper.ai"><img src="images/copaper-logo.png" alt="CoPaper.AI" width="260" /></a>
+        <a href="https://copaper.ai"><img src="images/copaper-logo.png" alt="CoPaper.AI" width="300" /></a>
       </td>
-      <td width="60"></td>
+      <td width="72"></td>
       <td align="center">
-        <img src="images/stanford-reap-logo.png" alt="Stanford REAP - Center on China's Economy & Institutions" width="380" />
+        <img src="images/stanford-reap-logo.png" alt="Stanford REAP - Center on China's Economy & Institutions" width="440" />
       </td>
     </tr>
   </table>
@@ -26,6 +22,11 @@
 
   <strong>Stanford REAP × CoPaper.AI</strong> · An academic–industrial AI toolkit for empirical research<br/>
   <sub>Built by Stanford's empirical-methodology team — the full pipeline from data cleaning to top-journal submission</sub>
+
+  <br/>
+  <br/>
+
+  <img src="images/aers-readme-cover-en.png" alt="Auto-Empirical Research Skills cover" width="100%" />
 
   <br/>
 </div>
@@ -346,13 +347,14 @@ Four parallel implementations of the **same 8-step empirical loop** — *data cl
 - **Copy-paste a full workflow** → [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md)
 - **Install into a runtime / use without installing** → [`docs/INSTALL.md`](docs/INSTALL.md)
 - **Machine-readable index** → [`catalog/skills.json`](catalog/skills.json) · taxonomy: [`docs/TAXONOMY.md`](docs/TAXONOMY.md) · full catalog: [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md)
+- **How AERS fits the wider research-automation ecosystem & composes with other tools** → [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) · pipeline recipes: [`docs/INTEROP.md`](docs/INTEROP.md)
 - **FAQ** → [`docs/FAQ.md`](docs/FAQ.md)
 
 ---
 
 ## What makes this more than a 23K-skill dump
 
-Public-skill counts are easy to inflate, and recent studies show large skill indexes are often redundant and occasionally unsafe. AERS competes on **verifiable quality**, not raw count. Every layer below runs locally via `make check` and in CI.
+Public-skill counts are easy to inflate, and recent studies show large skill indexes are often redundant and occasionally unsafe. AERS competes on **verifiable quality**, not raw count. Every layer below runs locally via `make check` and in CI. For a per-method-family view of exactly which pitfalls and numeric recoveries are tested — and which method families are still open gaps — see [`docs/RIGOR_COVERAGE.md`](docs/RIGOR_COVERAGE.md).
 
 | Layer | What it catches | Where |
 |---|---|---|
@@ -394,6 +396,8 @@ Replication → Submission → Peer Review Response → Defense
       ▼           ▼              ▼                   ▼
      09          10             10                  10
 ```
+
+🗺️ **[Workflow map — 10 stages → the skills this repo vendors](docs/WORKFLOW_MAP.md)** · from topic to submission, on one screen.
 
 Per-stage skill notes (bilingual): [01 Topic & design](docs/01-选题与研究设计.md) · [02 Lit review](docs/02-文献检索与综述.md) · [03 Paper reading](docs/03-论文阅读与拆解.md) · [04 Data & cleaning](docs/04-数据获取与清洗.md) · [05 Causal inference](docs/05-统计分析与因果推断.md) · [06 Writing](docs/06-论文写作.md) · [07 Revision](docs/07-论文修改与润色.md) · [08 Citation & typesetting](docs/08-引用管理与排版.md) · [09 Replication](docs/09-论文复现与可复现研究.md) · [10 Review response](docs/10-审稿回复与学术答辩.md)
 

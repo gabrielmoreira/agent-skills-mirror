@@ -1,61 +1,15 @@
 ---
 name: protocol-deviation-classifier
-description: "Determine whether an incident in a clinical trial is a \"major deviation."
+description: Classify clinical trial protocol deviations as major or minor based on ICH E6/GCP guidelines. Three-impact-dimension assessment (safety, data integrity, scientific validity), confidence scoring, and regulatory compliance reporting with recommended actions.
 license: MIT
 author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
+
 # Protocol Deviation Classifier
 
 Clinical trial protocol deviation classification tool, based on GCP and ICH E6 guidelines, automatically determines whether deviations belong to "major deviations" or "minor deviations".
-
-## When to Use
-
-- Use this skill when the task needs Determine whether an incident in a clinical trial is a "major deviation.
-- Use this skill for data analysis tasks that require explicit assumptions, bounded scope, and a reproducible output format.
-- Use this skill when you need a documented fallback path for missing inputs, execution errors, or partial evidence.
-
-## Key Features
-
-See `## Features` above for related details.
-
-- Scope-focused workflow aligned to: Determine whether an incident in a clinical trial is a "major deviation.
-- Packaged executable path(s): `scripts/main.py`.
-- Reference material available in `references/` for task-specific guidance.
-- Structured execution path designed to keep outputs consistent and reviewable.
-
-## Dependencies
-
-- Python 3.8+
-- No third-party dependencies (pure Python standard library implementation)
-
-## Example Usage
-
-See `## Usage` above for related details.
-
-```bash
-cd "20260318/scientific-skills/Data Analytics/protocol-deviation-classifier"
-python -m py_compile scripts/main.py
-python scripts/main.py --help
-```
-
-Example run plan:
-1. Confirm the user input, output path, and any required config values.
-2. Edit the in-file `CONFIG` block or documented parameters if the script uses fixed settings.
-3. Run `python scripts/main.py` with the validated inputs.
-4. Review the generated output and return the final artifact with any assumptions called out.
-
-## Implementation Details
-
-See `## Workflow` above for related details.
-
-- Execution model: validate the request, choose the packaged workflow, and produce a bounded deliverable.
-- Input controls: confirm the source files, scope limits, output format, and acceptance criteria before running any script.
-- Primary implementation surface: `scripts/main.py`.
-- Reference guidance: `references/` contains supporting rules, prompts, or checklists.
-- Parameters to clarify first: input path, output path, scope filters, thresholds, and any domain-specific constraints.
-- Output discipline: keep results reproducible, identify assumptions explicitly, and avoid undocumented side effects.
 
 ## Quick Check
 
@@ -75,13 +29,26 @@ python scripts/main.py --help
 python scripts/main.py --input "Audit validation sample with explicit symptoms, history, assessment, and next-step plan." --format json
 ```
 
+## When to Use
+
+- Use this skill when the task needs Determine whether an incident in a clinical trial is a "major deviation.
+- Use this skill for data analysis tasks that require explicit assumptions, bounded scope, and a reproducible output format.
+- Use this skill when you need a documented fallback path for missing inputs, execution errors, or partial evidence.
+
+## When NOT to Use
+
+- Do not use for classifying adverse events (use a MedDRA coding tool).
+- Do not use as the final authority on deviation severity — classification must be confirmed by clinical QA personnel.
+- Do not use for non-clinical-trial compliance issues (e.g., manufacturing, lab QC).
+- Do not use when the deviation description is too vague to assess impact on safety, data integrity, or scientific validity — request clarification first.
+
 ## Workflow
 
-1. Confirm the user objective, required inputs, and non-negotiable constraints before doing detailed work.
-2. Validate that the request matches the documented scope and stop early if the task would require unsupported assumptions.
-3. Use the packaged script path or the documented reasoning path with only the inputs that are actually available.
-4. Return a structured result that separates assumptions, deliverables, risks, and unresolved items.
-5. If execution fails or inputs are incomplete, switch to the fallback path and state exactly what blocked full completion.
+1. **Receive deviation**: Collect the deviation description, type category, and optional severity factors (safety_impact, data_impact, scientific_impact). If the description is vague, request clarification before proceeding.
+2. **Assess impact dimensions**: Evaluate the deviation against three dimensions — Subject Safety (none/low/medium/high), Data Integrity (none/low/medium/high), and Scientific Validity (none/low/medium/high). Use the classification standards tables above as reference.
+3. **Apply classification rules**: Any dimension = High → Major Deviation. Safety = Medium AND (Data OR Science) = Medium+ → Major Deviation. Otherwise → Minor Deviation.
+4. **Generate output**: Return classification with confidence score, rationale, regulatory basis (ICH E6 section references), and recommended actions. Use the JSON output format for batch processing.
+5. **Fallback**: If the deviation type is not in the classification standards table, classify based on the three impact dimensions alone and flag for manual QA review.
 
 ## Features
 
@@ -153,7 +120,6 @@ report = classifier.generate_report(batch_results)
 ### CLI Usage
 
 ```text
-
 # Classify single deviation
 python scripts/main.py classify --description "Subject visit delayed by 2 days" --type "Visit Window"
 
@@ -264,6 +230,11 @@ Classification based on the following assessment dimensions:
 - EMA Reflection Paper on Risk Based Quality Management
 - NMPA Good Clinical Practice for Drug Clinical Trials
 
+## Dependencies
+
+- Python 3.8+
+- No third-party dependencies (pure Python standard library implementation)
+
 ## Notes
 
 1. This tool provides classification recommendations, final determination must be confirmed by clinical quality assurance personnel
@@ -296,7 +267,6 @@ Classification based on the following assessment dimensions:
 ## Prerequisites
 
 ```text
-
 # Python dependencies
 pip install -r requirements.txt
 ```
@@ -319,7 +289,7 @@ pip install -r requirements.txt
 - **Current Stage**: Draft
 - **Next Review Date**: 2026-03-06
 - **Known Issues**: None
-- **Planned Improvements**:
+- **Planned Improvements**: 
   - Performance optimization
   - Additional feature support
 
@@ -363,11 +333,13 @@ Use the following fixed structure for non-trivial requests:
 
 If the request is simple, you may compress the structure, but still keep assumptions and limits explicit when they affect correctness.
 
+
 ## Inputs to Collect
 
 - Required inputs: the user goal, the primary data or source file, and the requested output format.
 - Optional inputs: output directory, formatting preferences, and validation constraints.
 - If a required input is unavailable, return a short clarification request before continuing.
+
 
 ## Output Contract
 
@@ -375,10 +347,10 @@ If the request is simple, you may compress the structure, but still keep assumpt
 - If execution is partial, label what succeeded, what failed, and the next safe recovery step.
 - Keep the final answer within the documented scope of the skill.
 
+
 ## Validation and Safety Rules
 
 - Validate identifiers, file paths, and user-provided parameters before execution.
 - Do not fabricate results, metrics, citations, or downstream conclusions.
 - Use safe fallback behavior when dependencies, credentials, or required inputs are missing.
 - Surface any execution failure with a concise diagnosis and recovery path.
-

@@ -8,8 +8,7 @@ A collection of agentskills.io-compliant skills for AI coding agents working wit
 
 - [redis-core](skills/redis-core/) — data structures, key naming, memory/TTL, atomic primitives, JSON vs Hash, Streams vs Pub/Sub
 - [redis-connections](skills/redis-connections/) — pooling, multiplexing, pipelining, client-side caching, timeouts
-- [redis-query-engine](skills/redis-query-engine/) — FT.CREATE / FT.SEARCH / FT.AGGREGATE, schema design
-- [redis-vector-search](skills/redis-vector-search/) — HNSW vs FLAT, vector index config, hybrid search, RAG
+- [redis-search](skills/redis-search/) — FT.CREATE / FT.SEARCH / FT.AGGREGATE / FT.HYBRID, schema design, HNSW vs FLAT, hybrid retrieval, RAG
 - [redis-semantic-cache](skills/redis-semantic-cache/) — LangCache for LLM response caching
 - [redis-clustering](skills/redis-clustering/) — hash tags, multi-key ops, read replicas
 - [redis-security](skills/redis-security/) — AUTH, TLS, ACLs, network exposure, command renaming

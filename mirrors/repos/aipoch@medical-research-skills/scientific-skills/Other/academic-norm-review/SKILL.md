@@ -197,6 +197,15 @@ Use `assets/academic_compliance_checklist.md` as the preferred structured output
 - Confirm the final deliverable matches the documented format exactly.
 - Confirm assumptions, limitations, and warnings are surfaced explicitly.
 
+
+## Input Validation
+
+This skill accepts requests that match the documented purpose of `academic-norm-review` and include enough context to complete the workflow safely.
+
+Do not continue the workflow when the request is out of scope, missing a critical input, or would require unsupported assumptions. Instead respond:
+
+> `academic-norm-review` only handles its documented workflow. Please provide the missing required inputs or switch to a more suitable skill.
+
 ## Quick Validation
 
 Run this minimal verification path before full execution when possible:

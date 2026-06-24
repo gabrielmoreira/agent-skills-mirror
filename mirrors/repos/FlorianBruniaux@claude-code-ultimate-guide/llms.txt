@@ -13,6 +13,7 @@
 - Context engineering: managing what the model sees, when, and in what shape
 - Security and permission model: .claude/settings.json, allowed commands, audit
 - Production templates: ready-to-use CLAUDE.md, rules, hooks, agents, quizzes
+- Team knowledge infrastructure: 3-tier framework (Markdown vault, MCP connectors, RAG at scale), Code+Cowork bridge, Atlassian/Notion/GitBook MCP, Onyx/LlamaCloud/Ragie
 
 ## Key URLs
 

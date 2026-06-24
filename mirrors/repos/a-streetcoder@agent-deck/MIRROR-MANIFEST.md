@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `a-streetcoder/agent-deck` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `a-streetcoder/agent-deck` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `a-streetcoder/agent-deck` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,9 +60,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`agent-deck/bundled-skills/agent-authoring/SKILL.md`](agent-deck/bundled-skills/agent-authoring/SKILL.md) |
-| 2 | ✓ | [`agent-deck/bundled-skills/prompt-authoring/SKILL.md`](agent-deck/bundled-skills/prompt-authoring/SKILL.md) |
-| 3 | ✓ | [`agent-deck/bundled-skills/skill-authoring/SKILL.md`](agent-deck/bundled-skills/skill-authoring/SKILL.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`agent-deck/bundled-skills/loop-authoring/SKILL.md`](agent-deck/bundled-skills/loop-authoring/SKILL.md) |
+| 3 | ✓ | [`agent-deck/bundled-skills/prompt-authoring/SKILL.md`](agent-deck/bundled-skills/prompt-authoring/SKILL.md) |
+| 4 | ✓ | [`agent-deck/bundled-skills/skill-authoring/SKILL.md`](agent-deck/bundled-skills/skill-authoring/SKILL.md) |
+| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

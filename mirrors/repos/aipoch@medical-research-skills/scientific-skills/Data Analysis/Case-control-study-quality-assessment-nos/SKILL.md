@@ -83,6 +83,15 @@ Run the formatting script with the aggregated JSON data:
 python scripts/format_nos_table.py '<json_string>'
 ```
 
+
+## Input Validation
+
+This skill accepts requests that match the documented purpose of `case-control-study-quality-assessment-nos` and include enough context to complete the workflow safely.
+
+Do not continue the workflow when the request is out of scope, missing a critical input, or would require unsupported assumptions. Instead respond:
+
+> `case-control-study-quality-assessment-nos` only handles its documented workflow. Please provide the missing required inputs or switch to a more suitable skill.
+
 ## References
 
 *   [NOS Criteria Prompts](references/nos_criteria_prompts.md)

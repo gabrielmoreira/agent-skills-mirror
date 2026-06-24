@@ -33,7 +33,7 @@ commands accept `--agents=<csv>` to constrain setup and
 | `kilocode`      | `mcp_settings.json` + `.kilocode/mcp.json`, `.kilocoderules` communities block                  | both       | https://kilo.ai/docs/features/mcp/using-mcp-in-kilo-code            |
 | `kiro`          | `.kiro/settings/mcp.json` + steering/hooks or user-level                                        | both       | https://kiro.dev/docs/mcp/configuration                             |
 | `oh-my-pi`      | `.omp/mcp.json`                                                                                 | project    | https://github.com/can1357/oh-my-pi/blob/main/docs/mcp-config.md   |
-| `opencode`      | `.opencode/config.json`, `AGENTS.md` communities block                                          | project    | https://opencode.ai/docs/mcp                                        |
+| `opencode`      | `opencode.json` (or existing `opencode.jsonc`), `AGENTS.md` communities block                   | project    | https://opencode.ai/docs/mcp                                        |
 | `openclaw`      | `~/.openclaw/openclaw.json` (`mcp.servers.gortex`)                                              | user       | https://docs.openclaw.ai/cli/mcp                                    |
 | `vscode`        | `.vscode/mcp.json` (`servers` key, 1.102+), `.github/copilot-instructions.md` communities block | project    | https://code.visualstudio.com/docs/copilot/chat/mcp-servers         |
 | `windsurf`      | `~/.codeium/mcp_config.json`, `.windsurfrules` communities block                                | both       | https://docs.windsurf.com/plugins/cascade/mcp                       |
@@ -236,9 +236,12 @@ keys Kiro's UI expects.
 
 ### opencode
 
-OpenCode's schema differs from the canonical form: top-level
-`mcp.<name>` (not `mcpServers`), `command` is an array, env key
-is `environment`, plus a `$schema` pointer at
+The MCP config is written to a root `opencode.json` (or merged into an
+existing `opencode.json` / `opencode.jsonc`) — the files OpenCode
+actually reads. It does **not** read `.opencode/config.json`, which
+Gortex wrote historically. OpenCode's schema also differs from the
+canonical form: top-level `mcp.<name>` (not `mcpServers`), `command` is
+an array, env key is `environment`, plus a `$schema` pointer at
 `https://opencode.ai/config.json`.
 
 ### openclaw

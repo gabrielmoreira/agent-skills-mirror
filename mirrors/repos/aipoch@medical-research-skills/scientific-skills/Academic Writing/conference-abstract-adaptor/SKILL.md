@@ -1,6 +1,6 @@
 ---
 name: conference-abstract-adaptor
-description: Adapt abstracts to meet specific conference word limits and formats.
+description: Adapt scientific abstracts to conference-specific word limits, section rules, and formatting constraints; use when reshaping an existing abstract for submission.
 license: MIT
 author: AIPOCH
 ---
@@ -9,53 +9,6 @@ author: AIPOCH
 # Conference Abstract Adaptor
 
 Conference-specific abstract formatting.
-
-## When to Use
-
-- Use this skill when the task needs Adapt abstracts to meet specific conference word limits and formats.
-- Use this skill for academic writing tasks that require explicit assumptions, bounded scope, and a reproducible output format.
-- Use this skill when you need a documented fallback path for missing inputs, execution errors, or partial evidence.
-
-## Key Features
-
-- Scope-focused workflow aligned to: Adapt abstracts to meet specific conference word limits and formats.
-- Packaged executable path(s): `scripts/main.py`.
-- Reference material available in `references/` for task-specific guidance.
-- Structured execution path designed to keep outputs consistent and reviewable.
-
-## Dependencies
-
-See `## Prerequisites` above for related details.
-
-- `Python`: `3.10+`. Repository baseline for current packaged skills.
-- `Third-party packages`: `not explicitly version-pinned in this skill package`. Add pinned versions if this skill needs stricter environment control.
-
-## Example Usage
-
-See `## Usage` above for related details.
-
-```bash
-cd "20260318/scientific-skills/Academic Writing/conference-abstract-adaptor"
-python -m py_compile scripts/main.py
-python scripts/main.py --help
-```
-
-Example run plan:
-1. Confirm the user input, output path, and any required config values.
-2. Edit the in-file `CONFIG` block or documented parameters if the script uses fixed settings.
-3. Run `python scripts/main.py` with the validated inputs.
-4. Review the generated output and return the final artifact with any assumptions called out.
-
-## Implementation Details
-
-See `## Workflow` above for related details.
-
-- Execution model: validate the request, choose the packaged workflow, and produce a bounded deliverable.
-- Input controls: confirm the source files, scope limits, output format, and acceptance criteria before running any script.
-- Primary implementation surface: `scripts/main.py`.
-- Reference guidance: `references/` contains supporting rules, prompts, or checklists.
-- Parameters to clarify first: input path, output path, scope filters, thresholds, and any domain-specific constraints.
-- Output discipline: keep results reproducible, identify assumptions explicitly, and avoid undocumented side effects.
 
 ## Quick Check
 
@@ -73,6 +26,12 @@ Use these concrete commands for validation. They are intentionally self-containe
 python -m py_compile scripts/main.py
 python scripts/main.py --help
 ```
+
+## When to Use
+
+- Use this skill when the task needs Adapt abstracts to meet specific conference word limits and formats.
+- Use this skill for academic writing tasks that require explicit assumptions, bounded scope, and a reproducible output format.
+- Use this skill when you need a documented fallback path for missing inputs, execution errors, or partial evidence.
 
 ## Workflow
 
@@ -100,7 +59,6 @@ python scripts/main.py --help
 ## Usage
 
 ```text
-
 # Adapt abstract for ASCO
 python scripts/main.py --abstract my_abstract.txt --conference ASCO
 
@@ -201,6 +159,7 @@ Do not continue the workflow when the request is out of scope, missing a critica
 
 > `conference-abstract-adaptor` only handles its documented workflow. Please provide the missing required inputs or switch to a more suitable skill.
 
+
 ## References
 
 - [references/audit-reference.md](references/audit-reference.md) - Supported scope, audit commands, and fallback boundaries
@@ -218,3 +177,41 @@ Use the following fixed structure for non-trivial requests:
 7. Next Checks
 
 If the request is simple, you may compress the structure, but still keep assumptions and limits explicit when they affect correctness.
+
+## When Not to Use
+
+- Do not proceed when required input files, identifiers, parameters, or context are missing — ask the user to provide them first.
+- Do not assume capabilities beyond this skill's declared scope when the user requests external operations or inferences.
+- Do not proceed without user confirmation when overwriting existing results, executing high-cost batch operations, or expanding task scope.
+
+## Required Inputs
+
+| Field | Required | Format/Source | Example | If Missing |
+|---|---|---|---|---|
+| User task description | Yes | Text | Research question, writing goal, analysis objective | Stop and ask user to provide |
+| Primary input material | Depends on task | Text, file path, ID, table, or literature | PMID, PDF, CSV, DOCX, keywords, etc. | Specify which material type is missing |
+| Output preference | No | Text | Language, format, target journal, template | Use skill default format |
+
+## Output Contract
+
+- Primary output: Structured result or target file aligned with this skill's objective.
+- Optional output: Intermediate check notes, issue list, supplementary suggestions, or generated file paths.
+- Format requirement: Unless the user specifies otherwise, prefer stable, reviewable Markdown or JSON; if the skill's bundled script requires a fixed format, use that format.
+- If partially complete: Must explicitly mark as PARTIAL and state which steps are completed and which remain.
+
+## Failure Handling
+
+- Missing critical input: Explicitly state which fields, files, or identifiers are missing and pause.
+- Script, template, or resource execution failure: Report the failing step, likely cause, and recovery suggestions — do not silently degrade.
+- Partial completion only: Return the verified portion first, then list remaining blockers and suggested next steps.
+
+## User Checkpoints
+
+- Before executing batch processing, overwriting files, long-running searches, or multi-stage generation, confirm scope and output format with the user.
+- Before proceeding when a key judgment is ambiguous, evidence is insufficient, or the workflow is entering the next stage, confirm with the user.
+
+## Quick Validation
+
+- Check that key scripts, templates, or reference file paths this skill depends on exist.
+- Check that the final output contains the core fields, sections, or files specified for this task.
+- Check that results clearly mark assumptions, limitations, and incomplete items.

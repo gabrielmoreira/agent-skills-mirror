@@ -6,6 +6,7 @@ author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
+
 ## When to Use
 
 - You have a citation relationship table (who cites whom) and want to quickly turn it into a directed network for analysis.
@@ -142,3 +143,50 @@ id,title,authors,year,doi
 - Data cleaning checklist: `references/data-cleaning-checklist.md`
 - Network metrics notes: `references/network-metrics-notes.md`
 - Additional documentation: `references/README.md`
+
+## When Not to Use
+
+- Do not proceed when required input files, identifiers, parameters, or context are missing — ask the user to provide them first.
+- Do not assume capabilities beyond this skill's declared scope when the user requests external operations or inferences.
+- Do not proceed without user confirmation when overwriting existing results, executing high-cost batch operations, or expanding task scope.
+
+## Required Inputs
+
+| Field | Required | Format/Source | Example | If Missing |
+|---|---|---|---|---|
+| User task description | Yes | Text | Research question, writing goal, analysis objective | Stop and ask user to provide |
+| Primary input material | Depends on task | Text, file path, ID, table, or literature | PMID, PDF, CSV, DOCX, keywords, etc. | Specify which material type is missing |
+| Output preference | No | Text | Language, format, target journal, template | Use skill default format |
+
+## Output Contract
+
+- Primary output: Structured result or target file aligned with this skill's objective.
+- Optional output: Intermediate check notes, issue list, supplementary suggestions, or generated file paths.
+- Format requirement: Unless the user specifies otherwise, prefer stable, reviewable Markdown or JSON; if the skill's bundled script requires a fixed format, use that format.
+- If partially complete: Must explicitly mark as PARTIAL and state which steps are completed and which remain.
+
+## Failure Handling
+
+- Missing critical input: Explicitly state which fields, files, or identifiers are missing and pause.
+- Script, template, or resource execution failure: Report the failing step, likely cause, and recovery suggestions — do not silently degrade.
+- Partial completion only: Return the verified portion first, then list remaining blockers and suggested next steps.
+
+## User Checkpoints
+
+- Before executing batch processing, overwriting files, long-running searches, or multi-stage generation, confirm scope and output format with the user.
+- Before proceeding when a key judgment is ambiguous, evidence is insufficient, or the workflow is entering the next stage, confirm with the user.
+
+
+## Input Validation
+
+This skill accepts requests that match the documented purpose of `citation-network` and include enough context to complete the workflow safely.
+
+Do not continue the workflow when the request is out of scope, missing a critical input, or would require unsupported assumptions. Instead respond:
+
+> `citation-network` only handles its documented workflow. Please provide the missing required inputs or switch to a more suitable skill.
+
+## Quick Validation
+
+- Check that key scripts, templates, or reference file paths this skill depends on exist.
+- Check that the final output contains the core fields, sections, or files specified for this task.
+- Check that results clearly mark assumptions, limitations, and incomplete items.

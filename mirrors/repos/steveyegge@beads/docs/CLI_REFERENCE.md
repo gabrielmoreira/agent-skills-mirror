@@ -257,6 +257,10 @@ Reference for bd Latest. Generated from `bd help --all`.
 - [bd help](#bd-help) — Help about any command
 - [bd init-safety](#bd-init-safety) — Explain bd init flag semantics and the destroy-token format
 - [bd mail](#bd-mail) — Delegate to mail provider (e.g., gt mail)
+- [bd metrics](#bd-metrics) — Show or change anonymous usage-metrics settings
+  - [bd metrics example](#bd-metrics-example) — Show real examples of the anonymous metrics bd sends
+  - [bd metrics off](#bd-metrics-off) — Turn anonymous usage metrics off
+  - [bd metrics on](#bd-metrics-on) — Turn anonymous usage metrics on
 - [bd mol](#bd-mol) — Molecule commands (work templates)
   - [bd mol bond](#bd-mol-bond) — Bond two protos or molecules together
   - [bd mol burn](#bd-mol-burn) — Delete a molecule without creating a digest
@@ -5967,6 +5971,49 @@ Examples:
 
 ```
 bd mail [subcommand] [args...]
+```
+
+### bd metrics
+
+Show whether anonymous usage metrics are on, see exactly what is sent, and
+turn them on or off.
+
+bd shares anonymous usage metrics to learn how people actually use it — just
+which commands get run, plus the bd version and OS platform. That's how we decide
+what to polish next. We never collect your issues, paths, remotes, identity, or
+any user-supplied text.
+
+  bd metrics            show the current status and what is collected
+  bd metrics on         turn metrics on
+  bd metrics off        turn metrics off
+  bd metrics example    show real examples of the events bd sends
+
+```
+bd metrics
+```
+
+#### bd metrics example
+
+Show real examples of the anonymous metrics bd sends
+
+```
+bd metrics example
+```
+
+#### bd metrics off
+
+Turn anonymous usage metrics off
+
+```
+bd metrics off
+```
+
+#### bd metrics on
+
+Turn anonymous usage metrics on
+
+```
+bd metrics on
 ```
 
 ### bd mol

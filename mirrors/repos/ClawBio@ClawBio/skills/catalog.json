@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated_by": "scripts/generate_catalog.py",
-  "skill_count": 89,
+  "skill_count": 88,
   "galaxy_tool_count": 8182,
   "skills": [
     {
@@ -92,7 +92,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/archaic-introgression/pipeline.py --demo",
+      "demo_command": "python skills/archaic-introgression/archaic_introgression.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [
@@ -200,7 +200,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/bigquery-public/bigquery_support.py --demo",
+      "demo_command": "python skills/bigquery-public/bigquery_backends.py --demo",
       "dependencies": [],
       "tags": [
         "bigquery",
@@ -544,7 +544,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-trial-finder/euctr.py --demo",
+      "demo_command": "python skills/clinical-trial-finder/opentargets.py --demo",
       "dependencies": [
         "python>=3.11"
       ],
@@ -570,35 +570,6 @@
       "chaining_partners": []
     },
     {
-      "name": "clinical-variant-prioritizer",
-      "cli_alias": null,
-      "description": "Screen a genotype set (array or WGS-derived) against OMIM-morbid, ACMG-SF and Hereditary-Cancer gene panels and prioritise carried variants by ClinVar significance, gnomAD frequency, inheritance model and zygosity, following the pathogenicity-screening method of Corpas et al. 2021 (Whole Genome Interpretation for a Family of Five).",
-      "version": "0.1.0",
-      "status": "planned",
-      "has_script": true,
-      "has_tests": true,
-      "has_demo": true,
-      "demo_command": "python skills/clinical-variant-prioritizer/prioritize.py --demo",
-      "dependencies": [],
-      "tags": [
-        "clinical-genomics",
-        "variant-prioritisation",
-        "clinvar",
-        "acmg",
-        "pathogenicity",
-        "carrier-screening"
-      ],
-      "trigger_keywords": [
-        "variant prioritisation",
-        "clinical variants",
-        "pathogenic variant",
-        "ClinVar",
-        "carrier status",
-        "disease risk variants"
-      ],
-      "chaining_partners": []
-    },
-    {
       "name": "clinical-variant-reporter",
       "cli_alias": null,
       "description": "Classify germline variants from VCF/BCF files according to the ACMG/AMP 2015 28-criteria evidence framework and generate clinical-grade interpretation reports with per-variant evidence audit trails and ACMG SF v3.2 secondary findings screening.",
@@ -607,7 +578,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/clinical-variant-reporter/acmg_engine.py --demo",
+      "demo_command": "python skills/clinical-variant-reporter/clinical_variant_reporter.py --demo",
       "dependencies": [],
       "tags": [
         "acmg",
@@ -872,7 +843,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/drug-repurposing-screen/drug_repurposing_screen.py --demo",
+      "demo_command": "python skills/drug-repurposing-screen/screen_engine.py --demo",
       "dependencies": [
         "python>=3.10",
         "numpy>=1.24",
@@ -1085,7 +1056,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/galaxy-bridge/tool_recommender.py --demo",
+      "demo_command": "python skills/galaxy-bridge/generate_galaxy_catalog.py --demo",
       "dependencies": [],
       "tags": [
         "galaxy",
@@ -1555,7 +1526,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/illumina-bridge/illumina_bridge.py --demo",
+      "demo_command": "python skills/illumina-bridge/illumina_providers.py --demo",
       "dependencies": [],
       "tags": [
         "illumina",
@@ -1685,7 +1656,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/locuscompare-region-render/_wald_ratio_types.py --demo",
+      "demo_command": "python skills/locuscompare-region-render/cli.py --demo",
       "dependencies": [
         "python>=3.10",
         "numpy>=1.24",
@@ -1909,7 +1880,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/nfcore-rnaseq-wrapper/_isolated_imports.py --demo",
+      "demo_command": "python skills/nfcore-rnaseq-wrapper/pipeline_source.py --demo",
       "dependencies": [
         "python>=3.10"
       ],
@@ -1948,7 +1919,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/nfcore-sarek-wrapper/outputs_parser.py --demo",
+      "demo_command": "python skills/nfcore-sarek-wrapper/pipeline_source.py --demo",
       "dependencies": [
         "python>=3.11"
       ],
@@ -1995,7 +1966,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/nfcore-scrnaseq-wrapper/outputs_parser.py --demo",
+      "demo_command": "python skills/nfcore-scrnaseq-wrapper/pipeline_source.py --demo",
       "dependencies": [
         "python>=3.11",
         "pyyaml"
@@ -2032,7 +2003,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/nutrigx/nutrigx.py --demo",
+      "demo_command": "python skills/nutrigx/parse_input.py --demo",
       "dependencies": [],
       "tags": [
         "nutrigenomics",
@@ -2141,8 +2112,8 @@
     {
       "name": "phylogenetics-builder",
       "cli_alias": "phylo",
-      "description": "Build maximum-likelihood phylogenetic trees from aligned FASTA data using IQ-TREE 2.",
-      "version": "0.1.0",
+      "description": "End-to-end maximum-likelihood phylogenetic tree inference from raw or pre-aligned FASTA. Six MSA algorithms (MAFFT, MUSCLE, ClustalW, KAlign, T-Coffee, PRANK), trimAl trimming, ModelFinder model selection, IQ-TREE 2 and RAxML-NG engines, UFBoot/standard/triple bootstrap, midpoint and outgroup rooting.",
+      "version": "0.2.0",
       "status": "mvp",
       "has_script": true,
       "has_tests": true,
@@ -2152,18 +2123,52 @@
         "python>=3.10",
         "pandas>=2.0",
         "biopython>=1.80",
-        "matplotlib>=3.5"
+        "matplotlib>=3.5",
+        "ete3>=3.1"
       ],
-      "tags": [],
+      "tags": [
+        "phylogenetics",
+        "maximum-likelihood",
+        "iqtree2",
+        "raxml-ng",
+        "msa",
+        "mafft",
+        "modelfinder",
+        "bootstrap",
+        "molecular-evolution"
+      ],
       "trigger_keywords": [
         "phylogeny",
         "phylogenetic tree",
         "iqtree",
+        "iqtree2",
+        "IQ-TREE",
         "maximum likelihood tree",
         "fasta alignment",
-        "build tree"
+        "build tree",
+        "ModelFinder",
+        "model selection tree",
+        "bootstrap support",
+        "molecular phylogeny",
+        "UFBoot",
+        "RAxML",
+        "raxml-ng",
+        "mafft alignment",
+        "muscle alignment",
+        "clustalw",
+        "prank",
+        "kalign",
+        "tcoffee",
+        "t_coffee",
+        "multiple sequence alignment phylogeny",
+        "trimAl",
+        "midpoint root",
+        "outgroup rooting"
       ],
       "chaining_partners": [
+        "analyze-fasta",
+        "fastreer",
+        "dnasp",
         "profile-report"
       ]
     },
@@ -2291,7 +2296,7 @@
       "has_script": true,
       "has_tests": true,
       "has_demo": true,
-      "demo_command": "python skills/pubmed-summariser/pubmed_api.py --demo",
+      "demo_command": "python skills/pubmed-summariser/pubmed_summariser.py --demo",
       "dependencies": [],
       "tags": [],
       "trigger_keywords": [

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `brycewang-stanford/Auto-Empirical-Research-Skills` — 26 default patterns, 26 followed patterns, 3668 file(s) materialized.
+Mirror of `brycewang-stanford/Auto-Empirical-Research-Skills` — 26 default patterns, 30 followed patterns, 3672 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `brycewang-stanford/Auto-Empirical-Research-Skills` — 26 default pat
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 26 |
-| Files         | 3668 |
+| Followed pats | 30 |
+| Files         | 3672 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,8 +73,12 @@ Mirror of `brycewang-stanford/Auto-Empirical-Research-Skills` — 26 default pat
 - `docs/GOLDEN_WORKFLOWS.md`
 - `docs/INSTALL.md`
 - `docs/TAXONOMY.md`
+- `docs/ECOSYSTEM.md`
+- `docs/INTEROP.md`
 - `docs/FAQ.md`
+- `docs/RIGOR_COVERAGE.md`
 - `docs/SKILL_QUALITY.md`
+- `docs/WORKFLOW_MAP.md`
 - `tools/README.md`
 - `docs/SKILL_SUBMISSION_GUIDE.md`
 
@@ -3729,29 +3733,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3643 | → | [`CHANGELOG.md`](CHANGELOG.md) |
 | 3644 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 3645 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |
-| 3646 | → | [`docs/EMPIRICAL_TOOLS_2026-06.md`](docs/EMPIRICAL_TOOLS_2026-06.md) |
-| 3647 | → | [`docs/EVALS.md`](docs/EVALS.md) |
-| 3648 | → | [`docs/FAQ.md`](docs/FAQ.md) |
-| 3649 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
-| 3650 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
-| 3651 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
-| 3652 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
-| 3653 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
-| 3654 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| 3655 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
-| 3656 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
-| 3657 | → | [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
-| 3658 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
-| 3659 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
-| 3660 | → | [`docs/TRUST.md`](docs/TRUST.md) |
-| 3661 | → | [`README-ja.md`](README-ja.md) |
-| 3662 | → | [`README-ko.md`](README-ko.md) |
-| 3663 | → | [`README-zh-CN.md`](README-zh-CN.md) |
-| 3664 | → | [`README-zh-TW.md`](README-zh-TW.md) |
-| 3665 | → | [`README.md`](README.md) |
-| 3666 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
-| 3667 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
-| 3668 | → | [`tools/README.md`](tools/README.md) |
+| 3646 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
+| 3647 | → | [`docs/EMPIRICAL_TOOLS_2026-06.md`](docs/EMPIRICAL_TOOLS_2026-06.md) |
+| 3648 | → | [`docs/EVALS.md`](docs/EVALS.md) |
+| 3649 | → | [`docs/FAQ.md`](docs/FAQ.md) |
+| 3650 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
+| 3651 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
+| 3652 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
+| 3653 | → | [`docs/INTEROP.md`](docs/INTEROP.md) |
+| 3654 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
+| 3655 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
+| 3656 | → | [`docs/RIGOR_COVERAGE.md`](docs/RIGOR_COVERAGE.md) |
+| 3657 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| 3658 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
+| 3659 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
+| 3660 | → | [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
+| 3661 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
+| 3662 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
+| 3663 | → | [`docs/TRUST.md`](docs/TRUST.md) |
+| 3664 | → | [`docs/WORKFLOW_MAP.md`](docs/WORKFLOW_MAP.md) |
+| 3665 | → | [`README-ja.md`](README-ja.md) |
+| 3666 | → | [`README-ko.md`](README-ko.md) |
+| 3667 | → | [`README-zh-CN.md`](README-zh-CN.md) |
+| 3668 | → | [`README-zh-TW.md`](README-zh-TW.md) |
+| 3669 | → | [`README.md`](README.md) |
+| 3670 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
+| 3671 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
+| 3672 | → | [`tools/README.md`](tools/README.md) |
 
 ---
 

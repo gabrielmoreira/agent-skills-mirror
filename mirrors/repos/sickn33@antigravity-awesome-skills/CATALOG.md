@@ -2,7 +2,7 @@
 
 Generated at: 2026-02-08T00:00:00.000Z
 
-Total skills: 1681
+Total skills: 1682
 
 ## architecture (104)
 
@@ -207,7 +207,7 @@ Total skills: 1681
 | `xiaohongshu-content-strategist` | Create viral Xiaohongshu (小红书) content with platform-native strategy, save-rate optimization, trending formats, and search SEO for China's #1 lifestyle platf... | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书 | xiaohongshu, chinese-market, content-strategy, social-media, marketing, 红书, 小红书, content, strategist, viral, platform, native |
 | `youtube-seo-optimizer` | Generate complete YouTube & podcast SEO packages with live-researched keywords — titles, descriptions, tags, hashtags, chapters, and audit fixes. Use for new... | youtube, seo, optimizer | youtube, seo, optimizer, generate, complete, podcast, packages, live, researched, keywords, titles, descriptions |
 
-## data-ai (308)
+## data-ai (309)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -386,6 +386,7 @@ Total skills: 1681
 | `image-studio` | Studio de geracao de imagens inteligente — roteamento automatico entre ai-studio-image (fotos humanizadas/influencer) e stability-ai (arte/ ilustracao/edicao... | image-generation, routing, ai-art, photography | image-generation, routing, ai-art, photography, image, studio, de, geracao, imagens, inteligente, roteamento, automatico |
 | `imagen` | AI image generation skill powered by Google Gemini, enabling seamless visual content creation for UI placeholders, documentation, and design assets. | imagen | imagen, ai, image, generation, skill, powered, google, gemini, enabling, seamless, visual, content |
 | `industrial-brutalist-ui` | Use when creating raw industrial or tactical telemetry UIs with rigid grids, stark typography, CRT effects, and high-density data. | frontend, design, brutalism, ui | frontend, design, brutalism, ui, industrial, brutalist, creating, raw, tactical, telemetry, uis, rigid |
+| `infinity` | Enforces a strict input boundary protocol (detect, classify, filter, verify) to ensure untrusted data never reaches business logic raw. | infinity | infinity, enforces, strict, input, boundary, protocol, detect, classify, filter, verify, untrusted, data |
 | `instagram` | Integracao completa com Instagram via Graph API. Publicacao, analytics, comentarios, DMs, hashtags, agendamento, templates e gestao de contas Business/Creator. | social-media, instagram, graph-api, content | social-media, instagram, graph-api, content, integracao, completa, com, via, graph, api, publicacao, analytics |
 | `ios-developer` | Develop native iOS applications with Swift/SwiftUI. Masters iOS 18, SwiftUI, UIKit integration, Core Data, networking, and App Store optimization. | ios | ios, developer, develop, native, applications, swift, swiftui, masters, 18, uikit, integration, core |
 | `it-manager-pro` | Elite IT Management Advisor specializing in data-driven strategy, executive communication, and human-centric leadership for the 2026 digital era. | it, manager | it, manager, pro, elite, advisor, specializing, data, driven, executive, communication, human, centric |

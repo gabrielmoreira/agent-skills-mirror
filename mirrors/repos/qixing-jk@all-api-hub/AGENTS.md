@@ -193,6 +193,11 @@ Treat telemetry and settings discoverability as related release-readiness checks
 - Before deleting an old path, verify inbound references, impacted site types or adapters, and the relevant validation coverage.
 - For scout-style cleanup in this repo, anchor the scope to the current task or current branch diff. Prefer small behavior-preserving improvements in touched files, such as extracting a tiny repeated helper, clarifying local naming, or replacing duplicated runtime literals with an existing or task-scoped constant. Validate the affected path with the same gate as the main change.
 
+### Maintainability Gate
+
+- Before handoff for non-trivial code changes, inspect the task-scoped diff for repeated logic, duplicated runtime literals, weak fallback propagation, oversized components or functions, and missed reuse of existing helpers or components. Fix low-risk issues inside the touched scope; if cleanup would broaden scope or change behavior, report it as follow-up instead of silently leaving it.
+- For non-trivial implementation work, include a maintainability decision in the final handoff: what was reused, what was extracted or centralized, and what was intentionally left because it would exceed task scope.
+
 ### Comments and User Feedback
 
 - Add brief inline comments or short code-block comments when non-obvious intent, invariants, edge cases, or protocol/browser constraints need clarification; do not narrate obvious code.
@@ -222,8 +227,18 @@ Use validation as progressive gates:
 
 - For `src/**` TS/TSX changes that add or modify executable logic, treat tests as part of the same task by default instead of waiting for CI to expose a coverage drop. Pure types, constants, copy, styles, and no-behavior refactors are the main exceptions.
 - New executable files, functions, branches, listeners/controllers, or error fallback paths should usually ship with at least one targeted test covering the added behavior.
+- Coverage-driven tests must still prove a meaningful behavior, regression, edge case, protocol contract, or integration boundary. Do not add tests that only execute lines, restate implementation shape, or assert mock choreography unrelated to externally observable behavior.
+- When coverage tooling reports misses, identify the exact changed lines or branches first. Add the smallest behavior-level coverage for those paths, and treat unrelated whole-file historical misses as diagnostic context rather than automatic scope.
 - Do not stop at `happy path` coverage. For added or changed executable logic, identify and cover the most relevant `edge cases`, especially empty or partial inputs, invalid values, boundary conditions, backend error or empty responses, browser API unavailability, permission or environment limits, site-type compatibility branches, cache or persistence failures, and repeated or concurrent triggers.
 - If an important `edge case` is not practical to automate in this change, call out the uncovered scenario, why it remains uncovered, and the residual risk before handoff.
+
+### Test Quality Anti-Patterns
+
+- Do not freeze whole arrays, object graphs, menu/layout configs, or rendered structures with exact equality unless the full shape is the product contract. Prefer asserting the specific invariant that matters, such as required membership, relative order, fallback behavior, or a compatibility rule.
+- Avoid tests that pass mainly by mocking most collaborators and asserting that mocks were called in a particular internal sequence. Mock-call assertions are appropriate for browser APIs, runtime messages, analytics payloads, storage boundaries, and adapter contracts; otherwise prefer observable state, persisted output, rendered result, or returned value.
+- Do not assert Tailwind classes, inline styles, wrapper elements, or third-party library transform details in business component tests unless styling is the explicit contract under test. Class/style assertions are acceptable for UI primitives and style helper modules whose public contract is class composition.
+- Avoid locating elements by DOM shape, CSS class scans, `nth(...)`, or unlabeled inputs when a semantic role, accessible name, exported test id, or feature-local selector can express the behavior. Positional selectors are only acceptable when the order itself is the contract being tested.
+- Do not use E2E to cover logic that can be tested faster and more precisely in Vitest, such as pure filtering, formatting, mapping, validation, or adapter normalization. Reserve E2E for browser-extension runtime behavior, cross-entrypoint workflows, persistence/navigation integration, and regressions lower-level tests cannot catch.
 
 ### E2E and Broad Validation
 

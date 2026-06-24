@@ -4,6 +4,17 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.187](https://github.com/Piebald-AI/claude-code-system-prompts/commit/f5a21b2)
+
+_+9,726 tokens_
+
+- **REMOVED:** System Reminder: Verify plan reminder — Removes the post-plan reminder that told agents to call a direct verification tool after completing a plan.
+- Agent Prompt: Explore; System Prompt: Plan vs memory guidance — Add the Artifact tool to the disallowed tool lists for read-only exploration and planning agents, keeping those agents from publishing artifacts.
+- Skill: Artifact design — Reworks the Artifact design skill from frontend-interface guidance into broader artifact guidance that calibrates treatment for documents, memos, demos, landing pages, games, apps, and tools; adds fundamentals for typography, neutral palettes, layout, copy, UI information design, and avoiding templated AI-generated design defaults.
+- Skill: Design sync — Updates authorization-error guidance to relay the DesignSync tool's environment-aware message verbatim, including headless-session paths, before retrying after the user acts on it.
+- System Prompt: Agent thread notes — Clarifies that agents should return reports, summaries, findings, and analysis directly in their final response, while files written as input to another tool are still allowed.
+- Tool Description: Artifact — Strengthens the Artifact flow so agents must load the artifact-design skill before writing the page, using it to calibrate how much design investment the request warrants.
+
 # [2.1.186](https://github.com/Piebald-AI/claude-code-system-prompts/commit/67e026b)
 
 _+4,485 tokens_

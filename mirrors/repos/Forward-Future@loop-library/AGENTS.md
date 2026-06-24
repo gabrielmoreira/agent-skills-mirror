@@ -91,6 +91,47 @@ npm run deploy
 `TURNSTILE_HOSTNAMES` is a comma-separated exact allowlist containing
 `signals.forwardfuture.ai` and the current backing `*.here.now` hostname.
 
+## Authenticated voting
+
+- Public vote totals live in the `VOTE_STORE` SQLite Durable Object. A GitHub
+  account may hold at most one vote per loop and can switch or remove it.
+- The here.now proxy strips browser cookies and mutation `Origin` headers, and
+  it follows upstream redirects. Do not build voting auth around proxied
+  cookies, HTTP redirect responses, or forwarded authorization headers.
+- Start OAuth with a browser-generated nonce held in `sessionStorage`. Bind the
+  nonce and safe return path into a short-lived HMAC-signed OAuth state value.
+  The callback must return a no-store HTML bridge that verifies the stored
+  nonce before saving the signed session token and returning to the canonical
+  Loop Library path.
+- Keep the signed session token in tab-scoped `sessionStorage` and send it only
+  in JSON bodies to the session and vote endpoints. Vote writes must derive the
+  provider ID, username, and voter key exclusively from that verified token.
+  Reject explicit untrusted Origins; missing Origins are expected through the
+  here.now proxy and remain protected by the required bearer token.
+- Do not expose OAuth client secrets or `SESSION_SECRET` in Worker variables,
+  browser code, logs, or committed development files. Configure them with:
+
+  ```bash
+  cd worker
+  npm exec -- wrangler secret put SESSION_SECRET
+  npm exec -- wrangler secret put GITHUB_OAUTH_CLIENT_ID
+  npm exec -- wrangler secret put GITHUB_OAUTH_CLIENT_SECRET
+  ```
+
+- Register this exact provider callback:
+  `https://signals.forwardfuture.ai/loop-library/auth/callback/github`.
+- For auth or proxy changes, set `VOTING_UI_ENABLED` to the exact string
+  `false` for the staged production release. Vote controls render hidden and
+  disabled, then appear only when `/api/votes` returns `uiEnabled: true`;
+  missing or malformed values must remain fail-closed.
+- With the staged flag off, verify the canonical GitHub start, nonce-bound
+  callback bridge, session, vote persistence, reload, and local logout flow.
+  Commit the flag as the exact string `true` and redeploy the Worker from newest
+  integrated `main` only after that smoke test passes. No site republish is
+  required to reveal the controls.
+- Deploy and verify the Worker before publishing a shell or proxy manifest that
+  exposes voting or auth routes.
+
 For local development, copy `worker/.dev.vars.example` to `worker/.dev.vars`,
 replace the here.now development credentials, then run:
 

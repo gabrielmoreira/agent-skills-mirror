@@ -12,6 +12,23 @@ Terminal based agent runtime for coding agents.
 - **Screen detection is evidence-based.** When changing `src/detect/manifests/`, first capture the relevant bottom-buffer state with `herdr agent read <pane> --source detection --format text` and, when styling or alternate screen behavior matters, `--format ansi`. Decide which visible controls are invariant, which are alternatives, and encode them as explicit AND/OR gates. Do not match whole-pane incidental text, and do not use the user-visible viewport for agent status because users can scroll it.
 - **UI patterns should be reused.** Herdr is a mouse-first TUI. New dialogs, onboarding, settings, and post-update flows should follow the existing UI/UX language and interaction patterns instead of inventing one-off screens. Prefer reusing existing modal/screen structure, affordances, and close actions so the app feels consistent.
 
+## Runtime/client boundary guardrail
+
+Herdr is migrating toward a server-owned runtime protocol with the TUI as one client. New work should not deepen the current server/TUI coupling.
+
+Before adding state, API fields, events, commands, or socket messages, classify the feature:
+
+- Shared runtime/session fact: belongs in server state and should be exposed through the JSON API/event path when practical.
+- TUI presentation state: belongs only in the TUI/client layer.
+
+Do not add new shared behavior that only works through the private TUI client socket. Use neutral server/API names, not UI-surface names like sidebar, row, card, or widget.
+
+Examples:
+
+- Pane/agent metadata, process state, terminal state, events: server/runtime.
+- Sidebar layout, token placement, colors, selection, modals, mouse/viewport state: TUI/client.
+- Workspace/tab/pane remain shared session organization for now, but avoid making them mandatory identity for unrelated runtime features.
+
 ## Multi-agent isolation
 
 Read-only investigation can happen in the shared checkout.

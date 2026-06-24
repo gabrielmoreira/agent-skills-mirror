@@ -1,6 +1,6 @@
 ---
 name: meta-results-forest-plot-analyzer
-description: Analyzes forest plots for meta-analysis, generating detailed descriptions and formatting figure legends in Chinese or English. Use when the user wants to interpret a forest plot image, describe its statistical significance (heterogeneity, p-value), and format the output with specific figure legends.
+description: Analyzes forest plots for meta-analysis, generating detailed descriptions and formatting figure legends in Chinese or English. Use when the user wants to interpret a forest plot image, describe its statistical significance (heterogeneity, p-value), and format the output with s...
 license: MIT
 author: AIPOCH
 ---
@@ -131,6 +131,15 @@ Run `scripts/format_result.py` to finalize the text.
 - If validation fails, explain the exact missing field, file, or parameter and show the minimum fix required.
 - If an external dependency or script fails, surface the command path, likely cause, and the next recovery step.
 - If partial output is returned, label it clearly and identify which checks could not be completed.
+
+
+## Input Validation
+
+This skill accepts requests that match the documented purpose of `meta-results-forest-plot-analyzer` and include enough context to complete the workflow safely.
+
+Do not continue the workflow when the request is out of scope, missing a critical input, or would require unsupported assumptions. Instead respond:
+
+> `meta-results-forest-plot-analyzer` only handles its documented workflow. Please provide the missing required inputs or switch to a more suitable skill.
 
 ## Quick Validation
 

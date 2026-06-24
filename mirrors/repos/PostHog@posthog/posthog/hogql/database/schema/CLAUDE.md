@@ -1,0 +1,1 @@
+cache/repos/github.com/PostHog@posthog/posthog/hogql/database/schema/AGENTS.md

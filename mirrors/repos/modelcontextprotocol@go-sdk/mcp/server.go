@@ -73,6 +73,12 @@ type ServerOptions struct {
 	// If zero, defaults to [DefaultPageSize].
 	PageSize int
 	// If non-nil, called when "notifications/roots/list_changed" is received.
+	//
+	// Deprecated: the roots feature is deprecated as of protocol version
+	// 2026-07-28 (SEP-2577). It remains functional during the deprecation
+	// window (at least twelve months). Migrate to passing paths via tool
+	// parameters, resource URIs, or configuration. See
+	// https://modelcontextprotocol.io/seps/2577-deprecate-roots-sampling-and-logging.
 	RootsListChangedHandler func(context.Context, *RootsListChangedRequest)
 	// If non-nil, called when "notifications/progress" is received.
 	ProgressNotificationHandler func(context.Context, *ProgressNotificationServerRequest)
@@ -720,18 +726,31 @@ func (s *Server) notifySessions(n string) {
 	}
 	s.mu.Unlock() // Don't hold the lock during notification: it causes deadlock.
 
+	// Notify legacy sessions on the shared session channel regardless of
+	// their subscription status.
 	notifySessions(legacySessions, n, changeNotificationParams[n](), s.opts.Logger)
 
-	// Sessions receive the notification only if they opened a
-	// subscriptions/listen stream that opted in to this notification type.
+	// Notify modern sessions only if they have an active subscription for
+	// this notification type.
+	s.notifySubscribedSessions(subscribers, n, changeNotificationParams[n])
+}
+
+// notifySubscribedSessions delivers a list-changed or resource-updated
+// notification to each session in subscribers, stamping the session's
+// listen-request ID into the params' _meta so the receiving client can demultiplex
+// notifications belonging to different concurrent listens.
+func (s *Server) notifySubscribedSessions(subscribers map[*ServerSession]jsonrpc.ID, method string, makeParams func() Params) {
+	if len(subscribers) == 0 {
+		return
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	for sess, reqID := range subscribers {
-		params := changeNotificationParams[n]()
+		params := makeParams()
 		injectMetaSubscriptionID(params, reqID)
 		req := newRequest(sess, params)
-		if err := handleNotify(ctx, n, req); err != nil {
-			s.opts.Logger.Warn(fmt.Sprintf("calling %s: %v", n, err))
+		if err := handleNotify(ctx, method, req); err != nil {
+			s.opts.Logger.Warn(fmt.Sprintf("calling %s: %v", method, err))
 		}
 	}
 }
@@ -1061,32 +1080,28 @@ func fileResourceHandler(dir string) ResourceHandler {
 func (s *Server) ResourceUpdated(ctx context.Context, params *ResourceUpdatedNotificationParams) error {
 	s.mu.Lock()
 	subscribedSessions := s.resourceSubscriptions[params.URI]
-	sessions := slices.Collect(maps.Keys(subscribedSessions))
-	s.mu.Unlock()
 	// Only add legacy sessions for the notification, new ones use the new notification mechanism.
 	var legacySessions []*ServerSession
-	var newSessions []*ServerSession
-	for _, sess := range sessions {
+	newSessions := make(map[*ServerSession]jsonrpc.ID)
+	for sess, reqID := range subscribedSessions {
 		if sess.InitializeParams().isNil() || sess.InitializeParams().ProtocolVersion < protocolVersion20260728 {
 			legacySessions = append(legacySessions, sess)
 		} else {
-			newSessions = append(newSessions, sess)
+			newSessions[sess] = reqID
 		}
 	}
-	notifySessions(legacySessions, notificationResourceUpdated, params, s.opts.Logger)
-	s.opts.Logger.Info("resource updated notification sent", "uri", params.URI, "subscriber_count", len(sessions))
+	s.mu.Unlock()
 
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
-	for _, sess := range newSessions {
-		reqID := subscribedSessions[sess]
+	notifySessions(legacySessions, notificationResourceUpdated, params, s.opts.Logger)
+
+	// Notify modern sessions, injecting the per-session subscription ID into the notification's metadata.
+	s.notifySubscribedSessions(newSessions, notificationResourceUpdated, func() Params {
 		p := *params
-		injectMetaSubscriptionID(&p, reqID)
-		req := newRequest(sess, &p)
-		if err := handleNotify(ctx, notificationResourceUpdated, req); err != nil {
-			s.opts.Logger.Warn(fmt.Sprintf("calling %s: %v", notificationResourceUpdated, err))
-		}
-	}
+		return &p
+	})
+	s.opts.Logger.Info("resource updated notification sent",
+		"uri", params.URI,
+		"subscriber_count", len(legacySessions)+len(newSessions))
 	return nil
 }
 
@@ -1474,6 +1489,12 @@ func (ss *ServerSession) Ping(ctx context.Context, params *PingParams) error {
 }
 
 // ListRoots lists the client roots.
+//
+// Deprecated: the roots feature is deprecated as of protocol version
+// 2026-07-28 (SEP-2577). It remains functional during the deprecation window
+// (at least twelve months). Migrate to passing paths via tool parameters,
+// resource URIs, or configuration. See
+// https://modelcontextprotocol.io/seps/2577-deprecate-roots-sampling-and-logging.
 func (ss *ServerSession) ListRoots(ctx context.Context, params *ListRootsParams) (*ListRootsResult, error) {
 	if err := ss.checkInitialized(methodListRoots); err != nil {
 		return nil, err
@@ -1486,6 +1507,12 @@ func (ss *ServerSession) ListRoots(ctx context.Context, params *ListRootsParams)
 // If the client returns multiple content blocks (e.g. parallel tool calls),
 // CreateMessage returns an error. Use [ServerSession.CreateMessageWithTools]
 // for tool-enabled sampling.
+//
+// Deprecated: the sampling feature is deprecated as of protocol version
+// 2026-07-28 (SEP-2577). It remains functional during the deprecation window
+// (at least twelve months). Migrate to calling LLM provider APIs directly
+// from your server. See
+// https://modelcontextprotocol.io/seps/2577-deprecate-roots-sampling-and-logging.
 func (ss *ServerSession) CreateMessage(ctx context.Context, params *CreateMessageParams) (*CreateMessageResult, error) {
 	if err := ss.checkInitialized(methodCreateMessage); err != nil {
 		return nil, err
@@ -1523,6 +1550,12 @@ func (ss *ServerSession) CreateMessage(ctx context.Context, params *CreateMessag
 // returning a [CreateMessageWithToolsResult] that supports array content
 // (for parallel tool calls). Use this instead of [ServerSession.CreateMessage]
 // when the request includes tools.
+//
+// Deprecated: the sampling feature is deprecated as of protocol version
+// 2026-07-28 (SEP-2577). It remains functional during the deprecation window
+// (at least twelve months). Migrate to calling LLM provider APIs directly
+// from your server. See
+// https://modelcontextprotocol.io/seps/2577-deprecate-roots-sampling-and-logging.
 func (ss *ServerSession) CreateMessageWithTools(ctx context.Context, params *CreateMessageWithToolsParams) (*CreateMessageWithToolsResult, error) {
 	if err := ss.checkInitialized(methodCreateMessage); err != nil {
 		return nil, err
@@ -1609,28 +1642,21 @@ func (ss *ServerSession) Elicit(ctx context.Context, params *ElicitParams) (*Eli
 	return res, nil
 }
 
-// logLevelContextKey carries the per-request log level from
-// [ServerSession.handle] to [ServerSession.Log] for new-protocol
-// (>= 2026-07-28) requests. The level is scoped to a single in-flight request
-// — including handler goroutines that call [ServerSession.Log] concurrently —
-// rather than to the session, which avoids races between concurrent requests
-// and aligns with SEP-2575's per-request opt-in model. The value type is
-// [LoggingLevel]; an empty string means the request opted out of log messages.
-type logLevelContextKey struct{}
-
 // Log sends a log message to the client.
 //
 // For new-protocol (>= 2026-07-28) requests, the level is taken from the
 // originating request's `_meta` field (SEP-2575); an absent or empty value
 // suppresses the message per spec. For old-protocol requests, the level is
 // taken from the session state set via `logging/setLevel`.
+//
+// Deprecated: the logging feature is deprecated as of protocol version
+// 2026-07-28 (SEP-2577). It remains functional during the deprecation window
+// (at least twelve months). See
+// https://modelcontextprotocol.io/seps/2577-deprecate-roots-sampling-and-logging.
 func (ss *ServerSession) Log(ctx context.Context, params *LoggingMessageParams) error {
-	logLevel, ok := ctx.Value(logLevelContextKey{}).(LoggingLevel)
-	if !ok {
-		ss.mu.Lock()
-		logLevel = ss.state.LogLevel
-		ss.mu.Unlock()
-	}
+	ss.mu.Lock()
+	logLevel := ss.state.LogLevel
+	ss.mu.Unlock()
 	if logLevel == "" {
 		// The spec is unclear, but seems to imply that no log messages are sent until the client
 		// sets the level.
@@ -1806,7 +1832,7 @@ func (ss *ServerSession) handle(ctx context.Context, req *jsonrpc.Request) (any,
 	ctx = context.WithValue(ctx, idContextKey{}, req.ID)
 	// For new-protocol requests, propagate the per-request log level.
 	if validatedMeta.usesNewProtocol {
-		ctx = context.WithValue(ctx, logLevelContextKey{}, validatedMeta.logLevel)
+		ss.setLevel(ctx, &SetLoggingLevelParams{Level: validatedMeta.logLevel})
 	}
 	return handleReceive(ctx, ss, req)
 }

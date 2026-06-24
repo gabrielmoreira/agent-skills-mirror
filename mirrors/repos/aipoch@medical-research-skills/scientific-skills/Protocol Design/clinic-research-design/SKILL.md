@@ -129,6 +129,15 @@ The output is a Markdown file containing:
 - If an external dependency or script fails, surface the command path, likely cause, and the next recovery step.
 - If partial output is returned, label it clearly and identify which checks could not be completed.
 
+
+## Input Validation
+
+This skill accepts requests that match the documented purpose of `clinic-research-design` and include enough context to complete the workflow safely.
+
+Do not continue the workflow when the request is out of scope, missing a critical input, or would require unsupported assumptions. Instead respond:
+
+> `clinic-research-design` only handles its documented workflow. Please provide the missing required inputs or switch to a more suitable skill.
+
 ## Quick Validation
 
 Run this minimal verification path before full execution when possible:

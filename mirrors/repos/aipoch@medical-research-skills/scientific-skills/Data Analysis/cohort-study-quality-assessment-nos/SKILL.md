@@ -222,6 +222,15 @@ python scripts/extract_pdf.py "path/to/file.pdf"
 3. **Uncertain criteria**: When in doubt, be conservative and assign "-"
 4. **Missing information**: Note in report that certain items could not be assessed
 
+
+## Input Validation
+
+This skill accepts requests that match the documented purpose of `cohort-study-quality-assessment-nos` and include enough context to complete the workflow safely.
+
+Do not continue the workflow when the request is out of scope, missing a critical input, or would require unsupported assumptions. Instead respond:
+
+> `cohort-study-quality-assessment-nos` only handles its documented workflow. Please provide the missing required inputs or switch to a more suitable skill.
+
 ## References
 
 - Detailed criteria: `references/nos_criteria.md`

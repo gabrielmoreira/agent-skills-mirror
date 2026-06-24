@@ -489,7 +489,7 @@ This repository contains **147 scientific and research skills** organized across
 
 #### 🧪 **Laboratory Automation** (6 skills)
 - Liquid handling: PyLabRobot and Opentrons
-- Cloud lab: Ginkgo Cloud Lab (cell-free protein expression, fluorescent pixel art via autonomous RAC infrastructure)
+- Cloud lab: Ginkgo Cloud Lab (protein expression & purification across cell-free/E. coli/Pichia, IVT RNA synthesis, thermal shift and Echo-MS assays, SPR onboarding, fluorescent pixel art via autonomous RAC infrastructure)
 - Protocol management: Protocols.io
 - LIMS integration: Benchling, LabArchives
 

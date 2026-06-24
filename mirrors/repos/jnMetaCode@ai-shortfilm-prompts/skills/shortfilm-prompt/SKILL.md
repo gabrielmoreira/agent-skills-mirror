@@ -90,6 +90,18 @@ the plugin/repo root.
 | **Cinematic teaser trailer** (escalating multi-shot) | `templates/movie-trailer.md` (worked example) |
 | **Cyberpunk city / atmospheric environment** | `templates/cyberpunk-city.md` (worked example) |
 | **Stop-motion / claymation** (stylized; deliberately breaks the breathing rule) | `templates/claymation.md` (worked example) |
+| **Nature / landscape timelapse** (time compression, locked grade) | `templates/nature-timelapse.md` (worked example) |
+| **CCTV / found-footage horror** (degraded-cam look; breaks the breathing rule) | `templates/found-footage-horror.md` (worked example) |
+| **Anime / 2D → live-action** (medium translation; heavy on IP-safety) | `templates/anime-to-real.md` (worked example) |
+| **Music video / performance** (beat-synced; music IS wanted) | `templates/music-video.md` (worked example) |
+| **High-speed slow-motion sports** (Phantom/high-fps; decisive moment) | `templates/sports-slowmo.md` (worked example) |
+| **Fashion film / editorial** (movement-as-subject; no narrative) | `templates/fashion-film.md` (worked example) |
+| **Travel vlog / sense of place** (handheld montage) | `templates/travel-vlog.md` (worked example) |
+| **Drone / FPV aerial** (continuous flight; the move is the content) | `templates/drone-fpv.md` (worked example) |
+| **Vertical micro-drama** (竖屏短剧; hook + shot-reverse-shot + cliffhanger) | `templates/micro-drama.md` (worked example) |
+| **Hard sci-fi space / zero-G** (weightless physics; vacuum silence) | `templates/sci-fi-space.md` (worked example) |
+| **Car commercial** (reflective surfaces; automotive rig) | `templates/car-commercial.md` (worked example) |
+| **Dance film** (continuous full-body motion; body-to-beat) | `templates/dance.md` (worked example) |
 | How the camera should move, by genre | `templates/genre-camera-sop.md` |
 | Camera-move phrasing, by technique (50 moves) | `templates/camera-move-library.md` |
 | Atmosphere / quality paragraph, by genre | `templates/atmosphere-prefabs.md` |

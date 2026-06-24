@@ -66,6 +66,10 @@ Automated gates do not cover the live TUI. Exercise all three and record what yo
 1. **Six-worker fanout liveness (#3216/#2211).** Spawn 6 sub-agents. Confirm
    typing, render, cancel, and the sidebar stay live throughout, and that **Esc
    cancels mid-fanout** (prompt interrupt, not a wedged ~24s burst or freeze).
+   For the Windows Terminal retest path from #3289, start in plan mode, add
+   follow-up input to the plan, press Esc, switch to yolo/accept flow, trigger
+   at least two auto/Fleet worker spawns, and keep typing/cancel/mode-switch
+   checks live for several minutes. Attach logs if the freeze reproduces.
 2. **Multi-terminal route isolation (#3227).** Open multiple terminals on
    distinct provider/model routes. Confirm zero cross-terminal contamination and
    no provider+model mismatch — each terminal honors its own route.

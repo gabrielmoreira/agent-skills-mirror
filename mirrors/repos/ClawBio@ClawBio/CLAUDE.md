@@ -208,7 +208,7 @@ python clawbio.py run sarek-pipeline \
 python clawbio.py run sarek-pipeline --check \
   --input samplesheet.csv --output /tmp/sarek_check --genome GATK.GRCh38 --tools haplotypecaller
 python clawbio.py run sarek-pipeline --demo --output /tmp/sarek_demo
-# Full 173-flag surface (154 Sarek passthrough + 19 wrapper controls): python skills/nfcore-sarek-wrapper/nfcore_sarek_wrapper.py --help
+# Full 177-flag surface (154 Sarek passthrough + 23 wrapper controls): python skills/nfcore-sarek-wrapper/nfcore_sarek_wrapper.py --help
 
 # Upstream single-cell RNA-seq — nf-core/scrnaseq 4.1.0 (FASTQ → h5ad count matrix)
 python clawbio.py run scrnaseq-pipeline \

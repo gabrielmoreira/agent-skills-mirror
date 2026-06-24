@@ -1,6 +1,6 @@
 ---
 name: molecular-review-workflow
-description: "Generates academic reviews for molecules in diseases using PubMed research. Invoke when user needs biomedical literature review with Vancouver citation format."
+description: Generates academic reviews for molecules in diseases using PubMed research. Invoke when user needs biomedical literature review with Vancouver citation format.
 license: MIT
 author: AIPOCH
 ---
@@ -126,6 +126,15 @@ Then invoke the skill with disease and molecule parameters.
 - If validation fails, explain the exact missing field, file, or parameter and show the minimum fix required.
 - If an external dependency or script fails, surface the command path, likely cause, and the next recovery step.
 - If partial output is returned, label it clearly and identify which checks could not be completed.
+
+
+## Input Validation
+
+This skill accepts requests that match the documented purpose of `molecular-review-workflow` and include enough context to complete the workflow safely.
+
+Do not continue the workflow when the request is out of scope, missing a critical input, or would require unsupported assumptions. Instead respond:
+
+> `molecular-review-workflow` only handles its documented workflow. Please provide the missing required inputs or switch to a more suitable skill.
 
 ## Quick Validation
 

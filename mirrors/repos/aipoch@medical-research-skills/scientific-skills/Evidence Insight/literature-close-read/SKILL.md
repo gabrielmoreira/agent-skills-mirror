@@ -6,6 +6,7 @@ author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
+
 # Literature Close Reading
 
 ## When to Use
@@ -96,12 +97,46 @@ Minimal expected I/O contract:
 - All required files, identifiers, parameters, or environment variables before execution.
 - Any domain constraints, formatting requirements, and expected output destination if applicable.
 
-## Recommended Workflow
+## Agent Execution Workflow
 
-1. Validate the request against the skill boundary and confirm all required inputs are present.
-2. Select the documented execution path and prefer the simplest supported command or procedure.
-3. Produce the expected output using the documented file format, schema, or narrative structure.
-4. Run a final validation pass for completeness, consistency, and safety before returning the result.
+Follow these steps in order when the user provides a paper for close reading.
+
+### Step 1: Validate Input
+- Confirm the user has provided the paper content (paste, file path, or PDF path).
+- If PDF, inform the user it must be converted to Markdown first.
+- Required: The paper text as Markdown. Optional: specific focus areas.
+
+### Step 2: Read and Parse the Full Text
+- Read the entire Markdown content. Use `## Page XX` markers for navigation.
+- Identify major sections: Introduction, Methods, Results, Discussion, Limitations.
+- Prioritize **Methods** and **Results** for detailed extraction.
+
+### Step 3: Extract Methods Details
+- Capture: datasets, splits, baselines, ablations, hyperparameters, settings, metrics, tests.
+- If any field is not explicitly stated, write **"Not specified"** — do NOT infer.
+- Record exact values as stated.
+
+### Step 4: Extract Results and Evidence
+- Capture key quantitative results (metrics, scores, p-values, confidence intervals).
+- Note which figures/tables contain the supporting data.
+- Report only what is explicitly stated or clearly visible.
+
+### Step 5: Identify Limitations
+- Extract each stated limitation from the Limitations section.
+- Note obvious unstated limitations (small sample, single-center, etc.).
+- Distinguish author-stated from critically-identified.
+
+### Step 6: Fill the Report Template
+- Use `assets/deep_reading_template.md` as your output structure.
+- Fill each section with extracted information.
+- For missing info, write **"Not specified"** — never fabricate.
+- Default output language: Chinese. Override if user specifies another.
+
+### Step 7: Quality Check
+- Verify every claim traces back to explicit paper content.
+- Ensure no speculative content was added.
+- Confirm valid Markdown, UTF-8 encoded.
+- Save to `outputs/literature_close_read_result.md`.
 
 ## Output Contract
 
@@ -122,6 +157,15 @@ Minimal expected I/O contract:
 - If an external dependency or script fails, surface the command path, likely cause, and the next recovery step.
 - If partial output is returned, label it clearly and identify which checks could not be completed.
 
+
+## Input Validation
+
+This skill accepts requests that match the documented purpose of `literature-close-read` and include enough context to complete the workflow safely.
+
+Do not continue the workflow when the request is out of scope, missing a critical input, or would require unsupported assumptions. Instead respond:
+
+> `literature-close-read` only handles its documented workflow. Please provide the missing required inputs or switch to a more suitable skill.
+
 ## Quick Validation
 
 Run this minimal verification path before full execution when possible:
@@ -137,3 +181,8 @@ Result file: literature_close_read_result.md
 Validation summary: PASS/FAIL with brief notes
 Assumptions: explicit list if any
 ```
+
+## User Checkpoints
+
+- Before executing batch processing, overwriting files, long-running searches, or multi-stage generation, confirm scope and output format with the user.
+- Before proceeding when a key judgment is ambiguous, evidence is insufficient, or the workflow is entering the next stage, confirm with the user.

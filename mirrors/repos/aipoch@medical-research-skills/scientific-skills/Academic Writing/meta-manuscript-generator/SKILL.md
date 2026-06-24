@@ -1,6 +1,6 @@
 ---
 name: meta-manuscript-generator
-description: Generates a first draft of a clinical meta-analysis paper. Input the research report (including Methods and Results sections), language, and title to automatically generate a complete paper draft including Abstract, Introduction, Discussion, and other sections, with automatic PubMed retrieval of relevant references. Suitable for assisting in the writing of systematic reviews and meta-analyses.
+description: Generates a first draft of a clinical meta-analysis paper. Input the research report (including Methods and Results sections), language, and title to automatically generate a complete paper draft including Abstract, Introduction, Discussion, and other sections, with automatic ...
 license: MIT
 author: AIPOCH
 ---
@@ -257,6 +257,15 @@ Integrate the generated content with the user-provided Methods and Results secti
 ## Conclusion
 [Conclusion]
 
+
+## Input Validation
+
+This skill accepts requests that match the documented purpose of `meta-manuscript-generator` and include enough context to complete the workflow safely.
+
+Do not continue the workflow when the request is out of scope, missing a critical input, or would require unsupported assumptions. Instead respond:
+
+> `meta-manuscript-generator` only handles its documented workflow. Please provide the missing required inputs or switch to a more suitable skill.
+
 ## References
 [1] Author et al. Title. Journal. Year;Vol(Issue):Pages. [https://pubmed.ncbi.nlm.nih.gov/PMID/]
 [2] ...
@@ -284,3 +293,10 @@ Verify after generation：
 - [ ] References are relevant to the content
 - [ ] Logical flow without redundancy
 - [ ] Reference list is complete
+
+## Error Handling
+
+- If required inputs are missing, state exactly which fields are missing and request only the minimum additional information.
+- If the task goes outside the documented scope, stop instead of guessing or silently widening the assignment.
+- If execution fails, report the failure point, summarize what can still be completed safely, and provide a manual fallback.
+- Do not fabricate files, citations, data, search results, or execution outcomes.

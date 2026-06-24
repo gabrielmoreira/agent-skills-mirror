@@ -1,6 +1,6 @@
 ---
 name: hipaa-compliance-auditor
-description: A clinical-grade PII/PHI detection and de-identification tool for healthcare text data.
+description: Clinical-grade PII/PHI detection and de-identification for healthcare text data. Scans all 18 HIPAA identifier categories with confidence scoring, generates audit logs, supports custom regex patterns, and produces de-identified output while preserving document structure.
 license: MIT
 author: AIPOCH
 ---
@@ -9,57 +9,6 @@ author: AIPOCH
 # HIPAA Compliance Auditor
 
 A clinical-grade PII/PHI detection and de-identification tool for healthcare text data.
-
-## When to Use
-
-- Use this skill when the task needs A clinical-grade PII/PHI detection and de-identification tool for healthcare text data.
-- Use this skill for academic writing tasks that require explicit assumptions, bounded scope, and a reproducible output format.
-- Use this skill when you need a documented fallback path for missing inputs, execution errors, or partial evidence.
-
-## Key Features
-
-See `## Features` above for related details.
-
-- Scope-focused workflow aligned to: A clinical-grade PII/PHI detection and de-identification tool for healthcare text data.
-- Packaged executable path(s): `scripts/main.py`.
-- Reference material available in `references/` for task-specific guidance.
-- Structured execution path designed to keep outputs consistent and reviewable.
-
-## Dependencies
-
-- Python 3.9+
-- spaCy (en_core_web_trf or en_core_web_lg)
-- regex (for advanced pattern matching)
-- Presidio (optional, for enhanced PII detection)
-
-See `references/requirements.txt` for full dependency list.
-
-## Example Usage
-
-See `## Usage` above for related details.
-
-```bash
-cd "20260318/scientific-skills/Academic Writing/hipaa-compliance-auditor"
-python -m py_compile scripts/main.py
-python scripts/main.py --help
-```
-
-Example run plan:
-1. Confirm the user input, output path, and any required config values.
-2. Edit the in-file `CONFIG` block or documented parameters if the script uses fixed settings.
-3. Run `python scripts/main.py` with the validated inputs.
-4. Review the generated output and return the final artifact with any assumptions called out.
-
-## Implementation Details
-
-See `## Workflow` above for related details.
-
-- Execution model: validate the request, choose the packaged workflow, and produce a bounded deliverable.
-- Input controls: confirm the source files, scope limits, output format, and acceptance criteria before running any script.
-- Primary implementation surface: `scripts/main.py`.
-- Reference guidance: `references/` contains supporting rules, prompts, or checklists.
-- Parameters to clarify first: input path, output path, scope filters, thresholds, and any domain-specific constraints.
-- Output discipline: keep results reproducible, identify assumptions explicitly, and avoid undocumented side effects.
 
 ## Quick Check
 
@@ -79,13 +28,63 @@ python scripts/main.py --help
 python scripts/main.py --text "Audit validation sample with explicit methods, findings, and conclusion."
 ```
 
+## When to Use
+
+- Use this skill when the task needs A clinical-grade PII/PHI detection and de-identification tool for healthcare text data.
+- Use this skill for academic writing tasks that require explicit assumptions, bounded scope, and a reproducible output format.
+- Use this skill when you need a documented fallback path for missing inputs, execution errors, or partial evidence.
+
+## When NOT to Use
+
+- Do NOT use for DICOM image de-identification (use dicom-anonymizer skill)
+- Do NOT use for general data anonymization of structured databases (use dedicated tools)
+- Do NOT use as a legal compliance certification — this tool assists but does NOT replace human HIPAA review
+
 ## Workflow
 
-1. Confirm the user objective, required inputs, and non-negotiable constraints before doing detailed work.
-2. Validate that the request matches the documented scope and stop early if the task would require unsupported assumptions.
-3. Use the packaged script path or the documented reasoning path with only the inputs that are actually available.
-4. Return a structured result that separates assumptions, deliverables, risks, and unresolved items.
-5. If execution fails or inputs are incomplete, switch to the fallback path and state exactly what blocked full completion.
+### Step 1: Provide Input Text
+
+Provide clinical text in one of two ways:
+- **File input:** `python scripts/main.py --input patient_text.txt --output deidentified.txt`
+- **Direct text:** `python scripts/main.py --text "Patient John Doe, SSN 123-45-6789..." --audit-log audit.json`
+
+**If neither input provided:** Request the text or file path from the user. Do not proceed without input.
+
+### Step 2: Configure Detection Parameters
+
+- `--confidence 0.7` (default): Minimum confidence threshold (0.0-1.0). Lower = more detections but more false positives.
+- `--preserve-structure true` (default): Maintain document formatting after redaction
+- `--custom-patterns <path>`: Optional custom regex patterns JSON for institution-specific identifiers
+
+> **🔍 Checkpoint 1:** If confidence threshold is changed from default, inform the user about the trade-off (lower threshold catches more PII but may produce more false positives).
+
+### Step 3: Run De-identification
+
+```python
+from scripts.main import HIPAAAuditor
+
+auditor = HIPAAAuditor()
+result = auditor.deidentify("Patient John Doe was admitted on 2024-01-15...")
+# result.cleaned_text → De-identified output
+# result.detected_pii → List of found PII entities with types and confidence scores
+```
+
+**If de-identification fails (missing spaCy model):** Install with `python -m spacy download en_core_web_trf`, then retry.
+
+### Step 4: Review Detection Results
+
+Check the audit log for:
+- **High-confidence detections** (≥0.9): Verify replacements are correct
+- **Medium-confidence detections** (0.7-0.9): Manual review recommended
+- **Categories detected**: Confirm all 18 HIPAA identifier categories were scanned
+
+**If unexpected PII remains:** Increase custom patterns or lower confidence threshold.
+
+### Step 5: Output and QA Reminder
+
+- Output de-identified text to file or stdout
+- Generate audit log JSON with all detection details
+- **⚠️ CRITICAL REMINDER:** This tool is a helper, NOT a replacement for human review. Always perform manual QA before HIPAA-compliant release.
 
 ## Overview
 
@@ -192,6 +191,15 @@ Original identifiers replaced with semantic tags:
 5. **Replacement Engine**: Sequential replacement with semantic tokens
 6. **Validation**: Ensure no original PII remains in output
 
+## Dependencies
+
+- Python 3.9+
+- spaCy (en_core_web_trf or en_core_web_lg)
+- regex (for advanced pattern matching)
+- Presidio (optional, for enhanced PII detection)
+
+See `references/requirements.txt` for full dependency list.
+
 ## Limitations & Warnings
 
 ⚠️ **CRITICAL**: This tool is designed as a helper, not a replacement for human review.
@@ -200,7 +208,6 @@ Original identifiers replaced with semantic tags:
 - Unstructured narrative text may contain identifying information not caught by patterns
 - Always perform manual QA on output before HIPAA-compliant release
 - **AI Autonomous Acceptance Status**: Requires Manual Review (Requires Manual Review)
-
 ## References
 
 - `references/hipaa_safe_harbor_guide.pdf` - HIPAA Safe Harbor de-identification standards
@@ -237,7 +244,6 @@ Complex NLP pipelines, contextual disambiguation, regulatory compliance requirem
 ## Prerequisites
 
 ```text
-
 # Python dependencies
 pip install -r requirements.txt
 ```

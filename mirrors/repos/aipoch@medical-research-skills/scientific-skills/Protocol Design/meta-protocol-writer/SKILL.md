@@ -112,3 +112,18 @@ Structure:
 3.  **Methods**
 
 Ensure all headings match the PROSPERO requirements.
+
+## Error Handling
+
+- If required inputs are missing, state exactly which fields are missing and request only the minimum additional information.
+- If the task goes outside the documented scope, stop instead of guessing or silently widening the assignment.
+- If execution fails, report the failure point, summarize what can still be completed safely, and provide a manual fallback.
+- Do not fabricate files, citations, data, search results, or execution outcomes.
+
+## Input Validation
+
+This skill accepts requests that match the documented purpose of `meta-protocol-writer` and include enough context to complete the workflow safely.
+
+Do not continue the workflow when the request is out of scope, missing a critical input, or would require unsupported assumptions. Instead respond:
+
+> `meta-protocol-writer` only handles its documented workflow. Please provide the missing required inputs or switch to a more suitable skill.

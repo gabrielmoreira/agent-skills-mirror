@@ -58,10 +58,10 @@ Mirror of `fabioc-aloha/Alex_Skill_Mall` — 26 default patterns, 14 followed pa
 - `catalog/stores/agent-skills-context-engineering.md`
 - `catalog/stores/ai-research-skills.md`
 - `catalog/stores/alirezarezvani-claude-skills.md`
+- `catalog/stores/antfu-skills.md`
 - `catalog/stores/antigravity-awesome-skills.md`
 - `catalog/stores/awesome-copilot.md`
 - `catalog/stores/awesome-mcp-servers.md`
-- `catalog/stores/buildwithclaude.md`
 - `catalog/INDEX.md`
 - `scoring/TRUST-AUDIT.md`
 - `sources/SOURCES.md`
@@ -779,10 +779,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 705 | → | [`catalog/stores/agent-skills-context-engineering.md`](catalog/stores/agent-skills-context-engineering.md) |
 | 706 | → | [`catalog/stores/ai-research-skills.md`](catalog/stores/ai-research-skills.md) |
 | 707 | → | [`catalog/stores/alirezarezvani-claude-skills.md`](catalog/stores/alirezarezvani-claude-skills.md) |
-| 708 | → | [`catalog/stores/antigravity-awesome-skills.md`](catalog/stores/antigravity-awesome-skills.md) |
-| 709 | → | [`catalog/stores/awesome-copilot.md`](catalog/stores/awesome-copilot.md) |
-| 710 | → | [`catalog/stores/awesome-mcp-servers.md`](catalog/stores/awesome-mcp-servers.md) |
-| 711 | → | [`catalog/stores/buildwithclaude.md`](catalog/stores/buildwithclaude.md) |
+| 708 | → | [`catalog/stores/antfu-skills.md`](catalog/stores/antfu-skills.md) |
+| 709 | → | [`catalog/stores/antigravity-awesome-skills.md`](catalog/stores/antigravity-awesome-skills.md) |
+| 710 | → | [`catalog/stores/awesome-copilot.md`](catalog/stores/awesome-copilot.md) |
+| 711 | → | [`catalog/stores/awesome-mcp-servers.md`](catalog/stores/awesome-mcp-servers.md) |
 | 712 | → | [`catalog/stores/plugin-mall.md`](catalog/stores/plugin-mall.md) |
 | 713 | → | [`README.md`](README.md) |
 | 714 | → | [`scoring/TRUST-AUDIT.md`](scoring/TRUST-AUDIT.md) |

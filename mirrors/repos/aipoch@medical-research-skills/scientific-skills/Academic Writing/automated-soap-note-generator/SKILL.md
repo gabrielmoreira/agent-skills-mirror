@@ -1,58 +1,12 @@
 ---
 name: automated-soap-note-generator
-description: 1. Confirm the user objective, required inputs, and non-negotiable constraints before doing detailed work. 2. Validate that the request matches the documented scope and stop early if the task would require unsupported as.
+description: Generate structured SOAP notes from clinical narratives, transcripts, or existing notes; use when the user needs de-identified clinical documentation organized into Subjective, Objective, Assessment, and Plan sections, with clear assumptions and review points.
 license: MIT
 author: AIPOCH
 ---
 > **Source**: [https://github.com/aipoch/medical-research-skills](https://github.com/aipoch/medical-research-skills)
 
 # Automated SOAP Note Generator
-
-## When to Use
-
-- Use this skill when the task needs 1. Confirm the user objective, required inputs, and non-negotiable constraints before doing detailed work. 2. Validate that the request matches the documented scope and stop early if the task would require unsupported as.
-- Use this skill for academic writing tasks that require explicit assumptions, bounded scope, and a reproducible output format.
-- Use this skill when you need a documented fallback path for missing inputs, execution errors, or partial evidence.
-
-## Key Features
-
-- Scope-focused workflow aligned to: 1. Confirm the user objective, required inputs, and non-negotiable constraints before doing detailed work. 2. Validate that the request matches the documented scope and stop early if the task would require unsupported as.
-- Packaged executable path(s): `scripts/main.py`.
-- Reference material available in `references/` for task-specific guidance.
-- Structured execution path designed to keep outputs consistent and reviewable.
-
-## Dependencies
-
-- `Python`: `3.10+`. Repository baseline for current packaged skills.
-- `dataclasses`: `unspecified`. Declared in `requirements.txt`.
-- `enum`: `unspecified`. Declared in `requirements.txt`.
-
-## Example Usage
-
-See `## Usage` above for related details.
-
-```bash
-cd "20260318/scientific-skills/Academic Writing/automated-soap-note-generator"
-python -m py_compile scripts/main.py
-python scripts/main.py --help
-```
-
-Example run plan:
-1. Confirm the user input, output path, and any required config values.
-2. Edit the in-file `CONFIG` block or documented parameters if the script uses fixed settings.
-3. Run `python scripts/main.py` with the validated inputs.
-4. Review the generated output and return the final artifact with any assumptions called out.
-
-## Implementation Details
-
-See `## Workflow` above for related details.
-
-- Execution model: validate the request, choose the packaged workflow, and produce a bounded deliverable.
-- Input controls: confirm the source files, scope limits, output format, and acceptance criteria before running any script.
-- Primary implementation surface: `scripts/main.py`.
-- Reference guidance: `references/` contains supporting rules, prompts, or checklists.
-- Parameters to clarify first: input path, output path, scope filters, thresholds, and any domain-specific constraints.
-- Output discipline: keep results reproducible, identify assumptions explicitly, and avoid undocumented side effects.
 
 ## Quick Check
 
@@ -91,6 +45,12 @@ AI-powered clinical documentation tool that converts unstructured clinical input
 - **Temporal Analysis**: Extracts timeline information (onset, duration, progression)
 - **Template Generation**: Produces standardized SOAP format suitable for EHR integration
 - **Multi-modal Input**: Accepts text dictation, transcripts, or clinical notes
+
+## When to Use
+
+- Use this skill when the user provides de-identified clinical narratives, dictation, or transcripts and needs a structured SOAP note.
+- Use this skill when the output must clearly separate Subjective, Objective, Assessment, and Plan sections for clinical review.
+- Use this skill when you need a reproducible script-backed workflow with explicit assumptions, unresolved items, and fallback handling.
 
 ## Core Capabilities
 
@@ -148,7 +108,6 @@ soap_note = generator.generate_from_transcript(
 Identify and extract medical concepts from unstructured text:
 
 ```python
-
 # Extract entities with context
 entities = generator.extract_medical_entities(
     "Patient has history of hypertension and diabetes, 
@@ -156,19 +115,12 @@ entities = generator.extract_medical_entities(
 )
 
 # Returns structured entities:
-
 # {
-
 #   "diagnoses": ["hypertension", "diabetes mellitus"],
-
 #   "medications": [
-
 #     {"name": "lisinopril", "dose": "10mg", "frequency": "daily"},
-
 #     {"name": "metformin", "dose": "500mg", "frequency": "BID"}
-
 #   ]
-
 # }
 ```
 
@@ -202,7 +154,6 @@ entities = generator.extract_medical_entities(
 Automatically categorize sentences into appropriate SOAP sections:
 
 ```python
-
 # Classify content into SOAP sections
 classified = generator.classify_soap_sections(
     "Patient reports chest pain for 2 days. Physical exam shows BP 140/90. 
@@ -210,17 +161,11 @@ classified = generator.classify_soap_sections(
 )
 
 # Output structure:
-
 # {
-
 #   "Subjective": ["Patient reports chest pain for 2 days"],
-
 #   "Objective": ["Physical exam shows BP 140/90"],
-
 #   "Assessment": ["Likely angina"],
-
 #   "Plan": ["Schedule stress test", "start aspirin 81mg daily"]
-
 # }
 ```
 
@@ -247,7 +192,6 @@ Some sentences span multiple sections (e.g., "Patient reports chest pain [S], wh
 Parse and normalize timeline information:
 
 ```python
-
 # Extract temporal relationships
 timeline = generator.extract_temporal_info(
     "Patient had chest pain starting 3 days ago, worsening since yesterday. 
@@ -255,19 +199,12 @@ timeline = generator.extract_temporal_info(
 )
 
 # Returns:
-
 # {
-
 #   "onset": "3 days ago",
-
 #   "progression": "worsening",
-
 #   "previous_episodes": [
-
 #     {"time": "2 months ago", "resolution": "with rest"}
-
 #   ]
-
 # }
 ```
 
@@ -290,7 +227,6 @@ Converts relative dates to standardized format:
 Critical for accurate medical documentation:
 
 ```python
-
 # Detect negations and uncertainties
 analysis = generator.analyze_certainty(
     "Patient denies chest pain. No shortness of breath. 
@@ -298,11 +234,8 @@ analysis = generator.analyze_certainty(
 )
 
 # Identifies:
-
 # - "denies chest pain" → Negative finding (important!)
-
 # - "No shortness of breath" → Negative finding
-
 # - "Possibly had fever" → Uncertain finding (flag for verification)
 ```
 
@@ -324,7 +257,6 @@ Negation errors are high-risk (e.g., missing "denies" → documenting symptom th
 Produce final formatted output:
 
 ```python
-
 # Generate complete SOAP note
 soap_output = generator.generate_soap_document(
     structured_data=classified,
@@ -335,7 +267,6 @@ soap_output = generator.generate_soap_document(
 
 **Output Format:**
 ```markdown
-
 # SOAP Note
 
 **Patient ID:** P12345  
@@ -399,7 +330,6 @@ Currently taking [medications]. Patient denies [negative findings].
 ### Basic Usage
 
 ```text
-
 # Generate SOAP from text
 python scripts/main.py --input "Patient reports chest pain..." --output note.md
 
@@ -449,3 +379,41 @@ Use the following fixed structure for non-trivial requests:
 7. Next Checks
 
 If the request is simple, you may compress the structure, but still keep assumptions and limits explicit when they affect correctness.
+
+## When Not to Use
+
+- Do not proceed when required input files, identifiers, parameters, or context are missing — ask the user to provide them first.
+- Do not assume capabilities beyond this skill's declared scope when the user requests external operations or inferences.
+- Do not proceed without user confirmation when overwriting existing results, executing high-cost batch operations, or expanding task scope.
+
+## Required Inputs
+
+| Field | Required | Format/Source | Example | If Missing |
+|---|---|---|---|---|
+| User task description | Yes | Text | Research question, writing goal, analysis objective | Stop and ask user to provide |
+| Primary input material | Depends on task | Text, file path, ID, table, or literature | PMID, PDF, CSV, DOCX, keywords, etc. | Specify which material type is missing |
+| Output preference | No | Text | Language, format, target journal, template | Use skill default format |
+
+## Output Contract
+
+- Primary output: Structured result or target file aligned with this skill's objective.
+- Optional output: Intermediate check notes, issue list, supplementary suggestions, or generated file paths.
+- Format requirement: Unless the user specifies otherwise, prefer stable, reviewable Markdown or JSON; if the skill's bundled script requires a fixed format, use that format.
+- If partially complete: Must explicitly mark as PARTIAL and state which steps are completed and which remain.
+
+## Failure Handling
+
+- Missing critical input: Explicitly state which fields, files, or identifiers are missing and pause.
+- Script, template, or resource execution failure: Report the failing step, likely cause, and recovery suggestions — do not silently degrade.
+- Partial completion only: Return the verified portion first, then list remaining blockers and suggested next steps.
+
+## User Checkpoints
+
+- Before executing batch processing, overwriting files, long-running searches, or multi-stage generation, confirm scope and output format with the user.
+- Before proceeding when a key judgment is ambiguous, evidence is insufficient, or the workflow is entering the next stage, confirm with the user.
+
+## Quick Validation
+
+- Check that key scripts, templates, or reference file paths this skill depends on exist.
+- Check that the final output contains the core fields, sections, or files specified for this task.
+- Check that results clearly mark assumptions, limitations, and incomplete items.

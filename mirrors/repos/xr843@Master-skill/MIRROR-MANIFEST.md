@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xr843/Master-skill` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `xr843/Master-skill` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `xr843/Master-skill` — 26 default patterns, 0 followed patterns, 29 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,23 +71,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`prebuilt/master-kumarajiva/SKILL.md`](prebuilt/master-kumarajiva/SKILL.md) |
 | 11 | ✓ | [`prebuilt/master-mahasi-sayadaw/SKILL.md`](prebuilt/master-mahasi-sayadaw/SKILL.md) |
 | 12 | ✓ | [`prebuilt/master-milarepa/SKILL.md`](prebuilt/master-milarepa/SKILL.md) |
-| 13 | ✓ | [`prebuilt/master-ouyi/SKILL.md`](prebuilt/master-ouyi/SKILL.md) |
-| 14 | ✓ | [`prebuilt/master-tsongkhapa/SKILL.md`](prebuilt/master-tsongkhapa/SKILL.md) |
-| 15 | ✓ | [`prebuilt/master-xuanzang/SKILL.md`](prebuilt/master-xuanzang/SKILL.md) |
-| 16 | ✓ | [`prebuilt/master-xuyun/SKILL.md`](prebuilt/master-xuyun/SKILL.md) |
-| 17 | ✓ | [`prebuilt/master-yinguang/SKILL.md`](prebuilt/master-yinguang/SKILL.md) |
-| 18 | ✓ | [`prebuilt/master-zhiyi/SKILL.md`](prebuilt/master-zhiyi/SKILL.md) |
-| 19 | ✓ | [`prompts/correction_handler.md`](prompts/correction_handler.md) |
-| 20 | ✓ | [`prompts/doctrine_reviewer.md`](prompts/doctrine_reviewer.md) |
-| 21 | ✓ | [`prompts/intake.md`](prompts/intake.md) |
-| 22 | ✓ | [`prompts/merger.md`](prompts/merger.md) |
-| 23 | ✓ | [`prompts/rag_instructions.md`](prompts/rag_instructions.md) |
-| 24 | ✓ | [`prompts/sutra_analyzer.md`](prompts/sutra_analyzer.md) |
-| 25 | ✓ | [`prompts/teaching_builder.md`](prompts/teaching_builder.md) |
-| 26 | ✓ | [`prompts/voice_analyzer.md`](prompts/voice_analyzer.md) |
-| 27 | ✓ | [`prompts/voice_builder.md`](prompts/voice_builder.md) |
-| 28 | ✓ | [`prompts/voice_reviewer.md`](prompts/voice_reviewer.md) |
-| 29 | ✓ | [`SKILL.md`](SKILL.md) |
+| 13 | ✓ | [`prebuilt/master-nagarjuna/SKILL.md`](prebuilt/master-nagarjuna/SKILL.md) |
+| 14 | ✓ | [`prebuilt/master-ouyi/SKILL.md`](prebuilt/master-ouyi/SKILL.md) |
+| 15 | ✓ | [`prebuilt/master-tsongkhapa/SKILL.md`](prebuilt/master-tsongkhapa/SKILL.md) |
+| 16 | ✓ | [`prebuilt/master-xuanzang/SKILL.md`](prebuilt/master-xuanzang/SKILL.md) |
+| 17 | ✓ | [`prebuilt/master-xuyun/SKILL.md`](prebuilt/master-xuyun/SKILL.md) |
+| 18 | ✓ | [`prebuilt/master-yinguang/SKILL.md`](prebuilt/master-yinguang/SKILL.md) |
+| 19 | ✓ | [`prebuilt/master-zhiyi/SKILL.md`](prebuilt/master-zhiyi/SKILL.md) |
+| 20 | ✓ | [`prompts/correction_handler.md`](prompts/correction_handler.md) |
+| 21 | ✓ | [`prompts/doctrine_reviewer.md`](prompts/doctrine_reviewer.md) |
+| 22 | ✓ | [`prompts/intake.md`](prompts/intake.md) |
+| 23 | ✓ | [`prompts/merger.md`](prompts/merger.md) |
+| 24 | ✓ | [`prompts/rag_instructions.md`](prompts/rag_instructions.md) |
+| 25 | ✓ | [`prompts/sutra_analyzer.md`](prompts/sutra_analyzer.md) |
+| 26 | ✓ | [`prompts/teaching_builder.md`](prompts/teaching_builder.md) |
+| 27 | ✓ | [`prompts/voice_analyzer.md`](prompts/voice_analyzer.md) |
+| 28 | ✓ | [`prompts/voice_builder.md`](prompts/voice_builder.md) |
+| 29 | ✓ | [`prompts/voice_reviewer.md`](prompts/voice_reviewer.md) |
+| 30 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

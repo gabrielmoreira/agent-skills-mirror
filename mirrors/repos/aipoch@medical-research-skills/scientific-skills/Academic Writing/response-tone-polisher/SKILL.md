@@ -1,6 +1,6 @@
 ---
 name: response-tone-polisher
-description: Polishes response letters by transforming defensive or harsh language.
+description: Polish reviewer-response letters by softening defensive language, preserving factual meaning, and keeping responses professional, concise, and publication-appropriate.
 license: MIT
 author: AIPOCH
 ---
@@ -9,53 +9,6 @@ author: AIPOCH
 # Response Tone Polisher
 
 Polishes response letters to peer reviewers by softening harsh or defensive language while preserving the author's position and scientific integrity.
-
-## When to Use
-
-- Use this skill when the task needs Polishes response letters by transforming defensive or harsh language.
-- Use this skill for academic writing tasks that require explicit assumptions, bounded scope, and a reproducible output format.
-- Use this skill when you need a documented fallback path for missing inputs, execution errors, or partial evidence.
-
-## Key Features
-
-- **Tone Analysis**: Identifies defensive, confrontational, or overly direct language
-- **Polite Transformation**: Converts harsh statements into courteous academic prose
-- **Position Preservation**: Maintains the author's scientific stance while improving delivery
-- **Context Awareness**: Adapts based on response type (acceptance, partial acceptance, respectful decline)
-- **Academic Expression Library**: Built-in collection of polished academic phrasings
-
-## Dependencies
-
-See `## Prerequisites` above for related details.
-
-- `Python`: `3.10+`. Repository baseline for current packaged skills.
-- `dataclasses`: `unspecified`. Declared in `requirements.txt`.
-- `enum`: `unspecified`. Declared in `requirements.txt`.
-
-## Example Usage
-
-```bash
-cd "20260318/scientific-skills/Academic Writing/response-tone-polisher"
-python -m py_compile scripts/main.py
-python scripts/main.py --help
-```
-
-Example run plan:
-1. Confirm the user input, output path, and any required config values.
-2. Edit the in-file `CONFIG` block or documented parameters if the script uses fixed settings.
-3. Run `python scripts/main.py` with the validated inputs.
-4. Review the generated output and return the final artifact with any assumptions called out.
-
-## Implementation Details
-
-See `## Overview` above for related details.
-
-- Execution model: validate the request, choose the packaged workflow, and produce a bounded deliverable.
-- Input controls: confirm the source files, scope limits, output format, and acceptance criteria before running any script.
-- Primary implementation surface: `scripts/main.py`.
-- Reference guidance: `references/` contains supporting rules, prompts, or checklists.
-- Parameters to clarify first: input path, output path, scope filters, thresholds, and any domain-specific constraints.
-- Output discipline: keep results reproducible, identify assumptions explicitly, and avoid undocumented side effects.
 
 ## Quick Check
 
@@ -77,6 +30,20 @@ python scripts/main.py --help
 ## Overview
 
 This skill analyzes author draft responses to reviewer comments and transforms confrontational or defensive phrasing into professional, diplomatic academic language. It helps researchers maintain positive relationships with reviewers while standing firm on scientifically justified positions.
+
+## Key Features
+
+- **Tone Analysis**: Identifies defensive, confrontational, or overly direct language
+- **Polite Transformation**: Converts harsh statements into courteous academic prose
+- **Position Preservation**: Maintains the author's scientific stance while improving delivery
+- **Context Awareness**: Adapts based on response type (acceptance, partial acceptance, respectful decline)
+- **Academic Expression Library**: Built-in collection of polished academic phrasings
+
+## When to Use
+
+- Use this skill when the task needs Polishes response letters by transforming defensive or harsh language.
+- Use this skill for academic writing tasks that require explicit assumptions, bounded scope, and a reproducible output format.
+- Use this skill when you need a documented fallback path for missing inputs, execution errors, or partial evidence.
 
 ## Usage Examples
 
@@ -188,7 +155,6 @@ The skill identifies and transforms:
 ## Command Line Usage
 
 ```text
-
 # Interactive mode
 python scripts/main.py --interactive
 
@@ -269,7 +235,6 @@ After polishing, verify:
 ## Prerequisites
 
 ```text
-
 # Python dependencies
 pip install -r requirements.txt
 ```
@@ -335,3 +300,41 @@ Use the following fixed structure for non-trivial requests:
 7. Next Checks
 
 If the request is simple, you may compress the structure, but still keep assumptions and limits explicit when they affect correctness.
+
+## When Not to Use
+
+- Do not proceed when required input files, identifiers, parameters, or context are missing — ask the user to provide them first.
+- Do not assume capabilities beyond this skill's declared scope when the user requests external operations or inferences.
+- Do not proceed without user confirmation when overwriting existing results, executing high-cost batch operations, or expanding task scope.
+
+## Required Inputs
+
+| Field | Required | Format/Source | Example | If Missing |
+|---|---|---|---|---|
+| User task description | Yes | Text | Research question, writing goal, analysis objective | Stop and ask user to provide |
+| Primary input material | Depends on task | Text, file path, ID, table, or literature | PMID, PDF, CSV, DOCX, keywords, etc. | Specify which material type is missing |
+| Output preference | No | Text | Language, format, target journal, template | Use skill default format |
+
+## Output Contract
+
+- Primary output: Structured result or target file aligned with this skill's objective.
+- Optional output: Intermediate check notes, issue list, supplementary suggestions, or generated file paths.
+- Format requirement: Unless the user specifies otherwise, prefer stable, reviewable Markdown or JSON; if the skill's bundled script requires a fixed format, use that format.
+- If partially complete: Must explicitly mark as PARTIAL and state which steps are completed and which remain.
+
+## Failure Handling
+
+- Missing critical input: Explicitly state which fields, files, or identifiers are missing and pause.
+- Script, template, or resource execution failure: Report the failing step, likely cause, and recovery suggestions — do not silently degrade.
+- Partial completion only: Return the verified portion first, then list remaining blockers and suggested next steps.
+
+## User Checkpoints
+
+- Before executing batch processing, overwriting files, long-running searches, or multi-stage generation, confirm scope and output format with the user.
+- Before proceeding when a key judgment is ambiguous, evidence is insufficient, or the workflow is entering the next stage, confirm with the user.
+
+## Quick Validation
+
+- Check that key scripts, templates, or reference file paths this skill depends on exist.
+- Check that the final output contains the core fields, sections, or files specified for this task.
+- Check that results clearly mark assumptions, limitations, and incomplete items.

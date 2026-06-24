@@ -6,7 +6,7 @@ license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents. Requires git.
 metadata:
   author: samber
-  version: "1.0.0"
+  version: "1.0.1"
   openclaw:
     emoji: "🧭"
     homepage: https://github.com/samber/cc-skills-golang
@@ -54,6 +54,7 @@ For each task, load the **primary skill** and all applicable **secondary skills*
 | Set up a new project structure | `golang-project-layout` | `golang-design-patterns`, `golang-dependency-injection`, `golang-lint` |
 | Set up CI/CD pipeline | `golang-continuous-integration` | `golang-lint`, `golang-security` |
 | Choose a library | `golang-popular-libraries` | relevant library-specific skill |
+| Look up a package's docs, versions, importers, or CVEs | `golang-pkg-go-dev` | `golang-dependency-management` |
 | Adopt new Go language features | `golang-modernize` | `golang-lint` |
 | Use samber/lo (slice/map helpers) | `golang-samber-lo` | `golang-data-structures`, `golang-performance` |
 | Use samber/oops (structured errors) | `golang-samber-oops` | `golang-error-handling` |
@@ -71,7 +72,7 @@ Full catalog with "use when" hooks: [by-category.md](references/by-category.md)
 | Code Quality | `golang-code-style` `golang-documentation` `golang-error-handling` `golang-lint` `golang-naming` `golang-safety` `golang-security` `golang-structs-interfaces` |
 | Architecture & Design | `golang-concurrency` `golang-context` `golang-data-structures` `golang-database` `golang-dependency-injection` `golang-design-patterns` `golang-modernize` |
 | QA & Performance | `golang-benchmark` `golang-observability` `golang-performance` `golang-testing` `golang-troubleshooting` |
-| Project Setup | `golang-cli` `golang-continuous-integration` `golang-dependency-management` `golang-popular-libraries` `golang-project-layout` `golang-stay-updated` |
+| Project Setup | `golang-cli` `golang-continuous-integration` `golang-dependency-management` `golang-pkg-go-dev` `golang-popular-libraries` `golang-project-layout` `golang-stay-updated` |
 | APIs | `golang-graphql` `golang-grpc` `golang-swagger` |
 | Dependency Injection | `golang-dependency-injection` `golang-google-wire` `golang-uber-dig` `golang-uber-fx` `golang-samber-do` |
 | Frameworks | `golang-spf13-cobra` `golang-spf13-viper` |
@@ -90,6 +91,7 @@ Key clusters and their owners:
 - **Errors**: `golang-error-handling` (idioms) · `golang-samber-oops` (structured errors) · `golang-safety` (prevent panics)
 - **Style**: `golang-code-style` · `golang-naming` · `golang-lint` · `golang-documentation`
 - **CLI**: `golang-cli` (architecture) · `golang-spf13-cobra` (command tree) · `golang-spf13-viper` (config layering)
+- **Package lookup**: `golang-pkg-go-dev` (query pkg.go.dev for an existing path: versions/docs/symbols/importers/CVEs) · `golang-popular-libraries` (which library to adopt) · `golang-dependency-management` (manage go.mod) · `golang-security` (whole-tree CVE scan)
 - **Gap — type vs arch**: `golang-structs-interfaces` (type design) vs `golang-design-patterns` (architectural patterns)
 - **Gap — goroutine vs cancel**: `golang-concurrency` + `golang-context` — load both when cancelling goroutines via context
 - **Gap — correctness vs threat**: `golang-safety` (internal bugs) vs `golang-security` (external threats)

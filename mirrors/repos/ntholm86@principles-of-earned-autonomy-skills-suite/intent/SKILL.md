@@ -36,7 +36,7 @@ These are probes, not a checklist. Use different probes if the situation calls f
 A single prompt is a thin signal. Before extracting intent, read what already exists in the **target repo's `.acm/` folder** (in the root of the repo being worked on — never in the skills install directory) — in this order:
 
 - **Destination** (`.acm/destination.md`, with `.acm/vision.md` as legacy fallback) — the operator-held destination. If present, this is the most important context. The prompt is a single instruction; the destination is the overarching goal it serves. Read it first. Interpret the prompt in light of where the operator has said they are trying to go.
-- **retrospect.md** (`.acm/retrospect.md`) — the Retrospect-derived current orientation. Where the work actually is right now, what the loop has been attending to, what findings have accumulated. The prompt means something different depending on whether the target is early-stage, mid-refactor, or nearly converged.
+- **orientation.md** (`.acm/orientation.md`) — the Orient-derived current orientation. Where the work actually is right now, what the loop has been attending to, what findings have accumulated. The prompt means something different depending on whether the target is early-stage, mid-refactor, or nearly converged.
 - **The trail** (`.acm/audit-trail.md`) — past decisions, reversals, and realisations reveal what the user has consistently cared about, what they rejected, and where things went wrong before. A pattern of `[!REVERSAL]` entries around a particular approach is stronger evidence of intent than any single prompt.
 - **The conversation** — corrections, approvals, and the moments the user stepped in all carry intent signal. A user who keeps redirecting toward simplicity is telling you something that no single prompt states explicitly.
 - **Past sessions** (`.acm/sessions/`) — if earlier sessions exist, read their intent sections. Accumulated learnings about how this user frames problems, what they consider done, and what they care about carry over.
@@ -85,7 +85,7 @@ Proceed with the interpreted task. If during the work the interpretation turns o
 
 This skill runs first. When Improve or Probe is also active, Intent operates on the prompt that identifies the target before those skills examine the target itself. If Intent changes what the target is, the downstream skill works on the corrected target.
 
-When Destination or Retrospect is also active, their output files (`destination.md` — with `vision.md` as legacy fallback — and `retrospect.md`) are already read as part of Intent's own 'Read the accumulated context' step — no additional ordering is needed. Intent reads these files; it never writes them.
+When Destination or Orient is also active, their output files (`destination.md` — with `vision.md` as legacy fallback — and `orientation.md`) are already read as part of Intent's own 'Read the accumulated context' step — no additional ordering is needed. Intent reads these files; it never writes them.
 
 When Trail is also active, paste the Intent narration verbatim into the "Interpretation of the ask" section of the log entry. A session with Intent but no Trail means the next session starts cold — the interpretation was visible once and is now gone.
 

@@ -21,6 +21,8 @@ The user's original documents — articles, papers, notes, PDFs, conversation lo
 
 Think of raw sources as the "source code" — authoritative but hard to query directly.
 
+Don't confuse this with the in-vault `_raw/` staging folder, which is a different thing: a scratch inbox for quick captures and drafts awaiting promotion (see `wiki-capture` and `wiki-ingest`). Files there aren't Layer 1 sources, but `wiki-ingest` still moves rather than deletes them on promotion, since some have no other copy.
+
 ### Layer 2: The Wiki (LLM-maintained)
 
 A collection of interconnected Obsidian-compatible markdown files organized by category. This is the compiled knowledge — synthesized, cross-referenced, and navigable. Each page has:
