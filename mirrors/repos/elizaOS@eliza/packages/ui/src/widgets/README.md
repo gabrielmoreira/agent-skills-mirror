@@ -3,8 +3,7 @@
 Plugin-contributed UI fragments rendered into named **slots** across the app
 (`packages/ui/src/widgets/types.ts` → `WidgetSlot`):
 
-`chat-sidebar` · `chat-inline` · `wallet` · `browser` · `heartbeats` ·
-`character` · `settings` · `nav-page` · `automations` · **`home`**
+`chat-sidebar` · `character` · `nav-page` · **`home`**
 
 A `<WidgetHost slot="…">` (`WidgetHost.tsx`) resolves every enabled declaration
 for a slot, wraps each in an error boundary, and renders the bundled React
@@ -47,15 +46,33 @@ loadable plugin, e.g. `notifications`/`messages`).
 
 ## The `home` / frontpage surface (#9143)
 
-The Springboard home mounts `<WidgetHost slot="home" layout="grid" …>` above the
-launcher grid (`components/pages/ViewCatalog.tsx`). Ships with shared **default
-widgets** any install gets out of the box — **Notifications**, **Messages**, and
-the orchestrator **Activity** + **Apps** — so the frontpage shows real activity,
-not just app icons.
+The Home/Springboard surface mounts `<WidgetHost slot="home" layout="grid" …>`
+on the home page next to the launcher. Ships with shared **default widgets** any
+install gets out of the box — **Notifications**, **Messages**, and the
+orchestrator **Activity** + **Apps** — so the frontpage shows real activity, not
+just app icons.
 
 **To put a plugin on the frontpage:** declare a widget with `slot: "home"` (as
 above). Read your own store/API in the component; it receives `WidgetProps`
 (`pluginId`, `events?`, …). Keep it compact — the home is a summary surface.
+
+If a plugin has live state but no bundled React card, opt into a shared default
+sink instead of shipping a component:
+
+```ts
+{
+  id: "my-plugin.default-home",
+  pluginId: "my-plugin",
+  slot: "home",
+  label: "My Plugin",
+  defaultWidget: "activity", // "notifications" | "messages" | "activity"
+  signalKinds: ["workflow", "activity"],
+}
+```
+
+Default-sink declarations are participation records: the shared
+Notifications/Messages/Activity cards render once and aggregate the sink data,
+while the declaration lets coverage prove the plugin is frontpage-aware.
 
 The home is **priority-ranked**, not all-or-nothing: `home-priority.ts`
 (`rankHomeWidgets`) scores each home widget by base `order` plus decayed

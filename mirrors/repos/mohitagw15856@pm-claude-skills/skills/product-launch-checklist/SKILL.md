@@ -20,6 +20,13 @@ Ask the user for these if not provided:
 - **Feature description** (what is being launched)
 - **Rollback capability** (can this be feature-flagged or reverted quickly?)
 
+## Reads from / Writes to the Brain
+
+If a [`professional-brain`](../professional-brain/SKILL.md) (`brain/`) exists, use it before asking:
+
+- **Read first:** the `entities/` feature being launched and related `decisions/` (scope, dates, owners).
+- **Write after:** log launch decisions and owners to `decisions/`. This skill can also hand the checklist to [`action-runner`](../action-runner/SKILL.md) to file the tickets — which records what was actually done back to the brain, closing the loop.
+
 ## How to Use This Skill
 
 Provide:

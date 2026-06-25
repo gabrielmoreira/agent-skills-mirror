@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 20 followed patterns, 146 file(s) materialized.
+Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 21 followed patterns, 147 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 20 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 20 |
-| Files         | 146 |
+| Followed pats | 21 |
+| Files         | 147 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,6 +70,7 @@ Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 20 followed patterns
 - `docs/references/lifecycle/lifecycle-usage.md`
 - `docs/references/lifecycle/lifecycle-migration-guide.md`
 - `docs/references/lifecycle/lifecycle-decision-guide.md`
+- `docs/references/binary-manager/README.md`
 - `v2-refactor-temp/docs/breaking-changes/README.md`
 
 ## File Index
@@ -205,25 +206,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 125 | ✓ | [`resources/skills/find-skills/SKILL.md`](resources/skills/find-skills/SKILL.md) |
 | 126 | ✓ | [`resources/skills/skill-creator/SKILL.md`](resources/skills/skill-creator/SKILL.md) |
 | 127 | → | [`DESIGN.md`](DESIGN.md) |
-| 128 | → | [`docs/references/data/boot-config-overview.md`](docs/references/data/boot-config-overview.md) |
-| 129 | → | [`docs/references/data/cache-overview.md`](docs/references/data/cache-overview.md) |
-| 130 | → | [`docs/references/data/data-api-overview.md`](docs/references/data/data-api-overview.md) |
-| 131 | → | [`docs/references/data/preference-overview.md`](docs/references/data/preference-overview.md) |
-| 132 | → | [`docs/references/data/README.md`](docs/references/data/README.md) |
-| 133 | → | [`docs/references/ipc/README.md`](docs/references/ipc/README.md) |
-| 134 | → | [`docs/references/lifecycle/lifecycle-decision-guide.md`](docs/references/lifecycle/lifecycle-decision-guide.md) |
-| 135 | → | [`docs/references/lifecycle/lifecycle-migration-guide.md`](docs/references/lifecycle/lifecycle-migration-guide.md) |
-| 136 | → | [`docs/references/lifecycle/lifecycle-usage.md`](docs/references/lifecycle/lifecycle-usage.md) |
-| 137 | → | [`docs/references/lifecycle/README.md`](docs/references/lifecycle/README.md) |
-| 138 | → | [`docs/references/main-process-architecture.md`](docs/references/main-process-architecture.md) |
-| 139 | → | [`docs/references/naming-conventions.md`](docs/references/naming-conventions.md) |
-| 140 | → | [`docs/references/renderer-architecture.md`](docs/references/renderer-architecture.md) |
-| 141 | → | [`docs/references/shared-layer-architecture.md`](docs/references/shared-layer-architecture.md) |
-| 142 | → | [`docs/references/testing/database-testing.md`](docs/references/testing/database-testing.md) |
-| 143 | → | [`docs/references/window-manager/README.md`](docs/references/window-manager/README.md) |
-| 144 | → | [`src/main/core/paths/README.md`](src/main/core/paths/README.md) |
-| 145 | → | [`tests/__mocks__/README.md`](tests/__mocks__/README.md) |
-| 146 | → | [`v2-refactor-temp/docs/breaking-changes/README.md`](v2-refactor-temp/docs/breaking-changes/README.md) |
+| 128 | → | [`docs/references/binary-manager/README.md`](docs/references/binary-manager/README.md) |
+| 129 | → | [`docs/references/data/boot-config-overview.md`](docs/references/data/boot-config-overview.md) |
+| 130 | → | [`docs/references/data/cache-overview.md`](docs/references/data/cache-overview.md) |
+| 131 | → | [`docs/references/data/data-api-overview.md`](docs/references/data/data-api-overview.md) |
+| 132 | → | [`docs/references/data/preference-overview.md`](docs/references/data/preference-overview.md) |
+| 133 | → | [`docs/references/data/README.md`](docs/references/data/README.md) |
+| 134 | → | [`docs/references/ipc/README.md`](docs/references/ipc/README.md) |
+| 135 | → | [`docs/references/lifecycle/lifecycle-decision-guide.md`](docs/references/lifecycle/lifecycle-decision-guide.md) |
+| 136 | → | [`docs/references/lifecycle/lifecycle-migration-guide.md`](docs/references/lifecycle/lifecycle-migration-guide.md) |
+| 137 | → | [`docs/references/lifecycle/lifecycle-usage.md`](docs/references/lifecycle/lifecycle-usage.md) |
+| 138 | → | [`docs/references/lifecycle/README.md`](docs/references/lifecycle/README.md) |
+| 139 | → | [`docs/references/main-process-architecture.md`](docs/references/main-process-architecture.md) |
+| 140 | → | [`docs/references/naming-conventions.md`](docs/references/naming-conventions.md) |
+| 141 | → | [`docs/references/renderer-architecture.md`](docs/references/renderer-architecture.md) |
+| 142 | → | [`docs/references/shared-layer-architecture.md`](docs/references/shared-layer-architecture.md) |
+| 143 | → | [`docs/references/testing/database-testing.md`](docs/references/testing/database-testing.md) |
+| 144 | → | [`docs/references/window-manager/README.md`](docs/references/window-manager/README.md) |
+| 145 | → | [`src/main/core/paths/README.md`](src/main/core/paths/README.md) |
+| 146 | → | [`tests/__mocks__/README.md`](tests/__mocks__/README.md) |
+| 147 | → | [`v2-refactor-temp/docs/breaking-changes/README.md`](v2-refactor-temp/docs/breaking-changes/README.md) |
 
 ---
 

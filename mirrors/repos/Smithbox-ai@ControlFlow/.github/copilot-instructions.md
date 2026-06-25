@@ -1,35 +1,72 @@
-# ControlFlow Agent System — Shared Policies
+# ControlFlow — Copilot Routing Stub
 
-## Continuity
-Use `plans/project-context.md` as the stable reference for agent roster, complexity tiers, semantic risk taxonomy, and shared conventions.
+ControlFlow is a thin layer over native Copilot capabilities: three skills (`controlflow-plan`, `controlflow-verify`, `controlflow-review`) and one planner agent (`@controlflow-planner`). It produces high-quality plans in the shared ControlFlow plan format, verifies them inline with adversarial framing, and reviews code as a layer over native Copilot code review — without duplicating or shadowing native capabilities.
 
-## Build and Test
+This file is the always-on routing stub. The full plan-format detail lives in the skills (loaded lazily on invoke), not here.
+
+## When to Plan
+
+Generate a structured plan before implementation when the task is SMALL or larger (3+ files, multiple concerns, public-API change, architecture change, new dependency, or ambiguous requirements). TRIVIAL (1–2 files, single concern, low blast radius) needs no plan artifact.
+
+## Workflow (tier-gated)
+
+| Tier | Plan | Verify (inline phases) | Review |
+|------|------|------------------------|--------|
+| TRIVIAL | skip | skip | skip |
+| SMALL | `/controlflow-plan` | phase 1 (structural audit) | `/controlflow-review` |
+| MEDIUM | `/controlflow-plan` | phases 1–2 (audit + assumption/mirage) | `/controlflow-review` |
+| LARGE | `/controlflow-plan` | phases 1–3 (audit + mirage + executability cold-start) | `/controlflow-review` |
+
+Any unresolved HIGH-impact semantic risk forces LARGE regardless of file count.
+
+- **Plan** — `/controlflow-plan` (or invoke the `@controlflow-planner` agent from the agents dropdown): single-sources the format from `schemas/planner.plan.schema.json` and `plans/templates/plan-document-template.md`; writes the artifact to `plans/<task-slug>-plan.md` and never inlines the plan in chat.
+- **Verify** — `/controlflow-verify`: runs inline in the main context (zero subagents) with adversarial framing; emits a verdict of APPROVED / NEEDS_REVISION / REJECTED and the findings that justify it.
+- **Review** — `/controlflow-review`: after implementation; layers evidence discipline, proactive vulnerability/error search, and plan-vs-implementation scope-drift comparison over native Copilot code review.
+
+Do not begin implementation on SMALL+ work until the plan is APPROVED.
+
+## Semantic Risk Review
+
+Every non-TRIVIAL plan MUST include all 7 categories exactly once: `data_volume`, `performance`, `concurrency`, `access_control`, `migration_rollback`, `dependency`, `operability`. If a category is not applicable, set it `not_applicable` with justification — never skip a row.
+
+## Native Toolset Coexistence
+
+ControlFlow does not override native Copilot capabilities. Use native Copilot code review, security review, and exploration tools directly when they fit. ControlFlow skills add plan-format discipline, adversarial verification, and evidence-backed review; they do not duplicate native capabilities. When a fresh-context review is wanted, delegate the mechanical pass to native Copilot code review — ControlFlow keeps no agents of its own beyond the planner.
+
+## Plan Format
+
+The full plan format — YAML header, the 10 sections in order, the 5 lifecycle sections (Progress, Discoveries, Decision Log, Outcomes, Idempotence & Recovery), the 7-category semantic risk table, and the Mermaid diagram rules (`flowchart TD` DAG for MEDIUM+; `sequenceDiagram` added for LARGE, and for MEDIUM with non-trivial orchestration; each ≤30 lines) — is defined once in the `controlflow-plan` skill, which reads `schemas/planner.plan.schema.json` and `plans/templates/plan-document-template.md` as the single source of truth. Refer there rather than restating it.
+
+## Shared Policies
+
+### Continuity
+
+Use `plans/project-context.md` as the stable reference for complexity tiers, semantic risk taxonomy, and shared conventions.
+
+### Build and Test
+
 ```sh
-cd evals && npm test              # full offline suite: schema + behavior + orchestration + drift
-npm run test:structural           # schema/P.A.R.T structure only (faster)
-npm run test:behavior             # prompt-behavior + orchestration-handoff regressions only
+cd evals && npm test              # full offline suite: structural + behavior + drift + parity + contract-drift
+npm run test:structural           # structural validation only (faster)
+npm run test:behavior             # prompt-behavior + drift regressions only
 ```
+
 Scenarios are in `evals/scenarios/`. Validate against matching schemas in `schemas/`.
 
-## Path Resolution
-Agent resource paths are workspace-relative by default. When a file listed in any agent's `## Resources` section is not found in the active workspace root:
-1. Retry the read using the absolute prefix `{{VSCODE_USER_PROMPTS_FOLDER}}/` (for example, `{{VSCODE_USER_PROMPTS_FOLDER}}/governance/model-routing.json`).
-2. If still not found, log the missing path in the gate event and continue with `confidence` reduced by 0.1 per missing critical file.
-3. Never fabricate file contents. Never silently proceed as if a missing governance file contained default values.
-4. Applies to `governance/`, `schemas/`, `plans/project-context.md`, `docs/agent-engineering/`, and `skills/` paths referenced in agent `## Resources` sections.
+### Failure Classification
 
-This boot-time rule intentionally duplicates `docs/agent-engineering/TOOL-ROUTING.md` Rule 8 so global user-level agents can recover before `TOOL-ROUTING.md` itself is loaded.
-
-## Failure Classification
 When status is `FAILED`, `NEEDS_INPUT`, `NEEDS_REVISION`, or `REJECTED`, include `failure_classification`:
+
 - `transient` — Flaky test, network timeout, or temporary tool unavailability; retry with identical scope.
 - `fixable` — Small correctable issue (typo, missing import, config value); retry with fix hint.
-- `needs_replan` — Architecture mismatch or missing dependency; delegate to Planner for targeted replan.
+- `needs_replan` — Architecture mismatch or missing dependency; delegate to the planner for a targeted replan.
 - `escalate` — Security vulnerability, data integrity risk, or unresolvable blocker; stop and await human approval.
-- `model_unavailable` — the routed/primary model is unavailable or unreachable; substitute per model-routing fallback and retry up to `model_unavailable_max` (see runtime-policy.json), then escalate. Distinct from `transient`; the PlanAuditor/AssumptionVerifier `transient`-exclusion does NOT exclude `model_unavailable`.
+- `model_unavailable` — the routed/primary model is unavailable or unreachable; retry with a native Copilot model substitution, then escalate on exhaustion.
 
-## NOTES.md
+### Memory Hygiene
+
 Maintain/update `NOTES.md` for persistent state across context resets:
+
 - Active objective and current phase.
 - Blockers and unresolved risks.
 - Remove stale entries when superseded.
@@ -41,48 +78,6 @@ Before writing to `/memories/repo/` or updating `NOTES.md` at a phase boundary, 
 
 To identify plans ready for archival: `cd evals && npm run archive:dry`. To execute: `npm run archive:apply`.
 
-## Governance Docs
-Agent engineering policies are in `docs/agent-engineering/`:
-- `PART-SPEC.md` — P.A.R.T. specification (mandatory section order: **Prompt → Archive → Resources → Tools**).
-- `RELIABILITY-GATES.md` — Verification gate requirements (build/tests/lint).
-- `CLARIFICATION-POLICY.md` — When to invoke `vscode/askQuestions` vs. return `NEEDS_INPUT`.
-- `TOOL-ROUTING.md` — Routing rules for external tools (fetch, githubRepo, MCP).
-- `SCORING-SPEC.md` — Quantitative scoring reference.
-- `MIGRATION-CORE-FIRST.md` — Shared implementation backbone pattern and consolidation exit criteria.
-- `PROMPT-BEHAVIOR-CONTRACT.md` — Behavioral invariants complementing P.A.R.T structural rules.
+## Knowledge Graph (graphify-out/)
 
-## Conventions
-- Agent files live at repo root: `<Name>.agent.md` or `<Name>-subagent.agent.md`.
-- Artifacts: plans → `plans/`, schemas → `schemas/`, skill patterns → `skills/patterns/`.
-- All agent outputs use **structured text**. Do NOT output raw JSON to chat — it wastes context tokens.
-- Skill library is at `skills/index.md`. Planner selects ≤3 skills per plan phase.
-- `skills/patterns/llm-behavior-guidelines.md` is a meta-skill for preventing systematic agent anti-patterns (scope drift, over-abstraction, silent assumptions, weak success criteria). CoreImplementer, UIImplementer, CodeReviewer, and Planner load it on non-trivial tasks.
-- Failure taxonomy applies to all agents; PlanAuditor and AssumptionVerifier exclude `transient`.
-- P.A.R.T. section order in every agent file: **Prompt → Archive → Resources → Tools** (see `PART-SPEC.md`).
-- Orchestrator and Planner must delegate only to project-internal agents documented in `plans/project-context.md`; external/third-party agents are strictly prohibited.
-- Adding/editing agents or skills: follow the agent-contribution process in `CONTRIBUTING.md` (create agent file, schema, eval scenarios, register in `plans/project-context.md`).
-- Tool and agent permission grants are in `governance/` (`agent-grants.json`, `tool-grants.json`, `runtime-policy.json`, `rename-allowlist.json`). Update these when changing an agent's tool profile.
-
-## Agent System
-13 agents in the ControlFlow system:
-- **Orchestration:** Orchestrator
-- **Planning:** Planner
-- **Adversarial Review:** PlanAuditor-subagent, AssumptionVerifier-subagent
-- **Executability Verification:** ExecutabilityVerifier-subagent
-- **Implementation:** CoreImplementer-subagent, UIImplementer-subagent, PlatformEngineer-subagent
-- **Review:** CodeReviewer-subagent
-- **Research:** Researcher-subagent, CodeMapper-subagent
-- **Documentation:** TechnicalWriter-subagent
-- **Testing:** BrowserTester-subagent
-
-Complexity tiers: TRIVIAL / SMALL / MEDIUM / LARGE — see `plans/project-context.md`.
-
-**Agent entry points:**
-| Scenario | Agent |
-|----------|-------|
-| Vague goal or idea | `@Planner` — runs idea interview, produces phased plan |
-| Detailed task with clear requirements | `@Orchestrator` — dispatches subagents, manages gates |
-| Deep research question | `@Researcher` — evidence-based investigation |
-| Quick codebase exploration | `@CodeMapper` — read-only discovery |
-
-> After `@Planner` produces a plan artifact, reviewed execution (PLAN_REVIEW, approvals, todo lifecycle, execution gating) continues through `@Orchestrator`. Planner authors plans; Orchestrator governs their review and execution.
+A graphify knowledge graph of this repo lives in `graphify-out/` (gitignored — generated analysis artifact, not shipped). Rebuild with `/graphify`. If `graphify-out/graph.json` already exists, query it with `/graphify query "<question>"` instead of rebuilding. Use it to navigate cross-file relationships before planning work that spans the plugin.

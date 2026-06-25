@@ -63,22 +63,23 @@ flowchart TB
 
 [`src-tauri/src/main.rs`](../../src-tauri/src/main.rs) 按 argv 分派——Release 桌面无参数启动时进入 `run_guardian()`：父进程 fork 一份自己加 `--child-mode` 作为 child 跑 Tauri GUI，自己只做监工。`HOPE_AGENT_CHILD=1` 环境变量是历史兼容入口，与 `--child-mode` 等价。
 
-```
-hope-agent (无参数, Release)
-   │
-   ▼
-run_guardian()                              ← 父进程，仅监工
-   │  std::env::current_exe()
-   │  loop {
-   │      Command::spawn(self, ["--child-mode"])
-   │      child.wait() → exit_code
-   │      match exit_code { ... }
-   │  }
-   │
-   ├─ exit_code = 0  ─────▶ 用户主动退出，父也退
-   ├─ exit_code = 42 ─────▶ 立即重启（无冷却，crash_count 不累加）
-   ├─ SIGINT/SIGTERM ─────▶ 信号 handler 设 should_exit，父子一起退
-   └─ 其它 ────────────────▶ crash_count += 1，记录 + 退避 + 重启
+```mermaid
+flowchart TD
+    START["hope-agent（无参数, Release）"]
+    GUARD["run_guardian() 父进程，仅监工<br/>loop: Command::spawn(self, --child-mode)<br/>child.wait() → exit_code → match"]
+    D{"exit_code / 信号"}
+    E0["= 0：用户主动退出，父也退"]
+    E42["= 42：立即重启（无冷却，crash_count 不累加）"]
+    ESIG["SIGINT / SIGTERM：信号 handler 设 should_exit，父子一起退"]
+    EOTHER["其它：crash_count += 1，记录 + 退避 + 重启"]
+
+    START --> GUARD --> D
+    D --> E0
+    D --> E42
+    D --> ESIG
+    D --> EOTHER
+    E42 -->|"重启"| GUARD
+    EOTHER -->|"退避后重启"| GUARD
 ```
 
 **跳过 Guardian 的三种情形**（[`main.rs:36-47`](../../src-tauri/src/main.rs#L36-L47)）：
@@ -330,27 +331,21 @@ Unix 上 `wait()` 拿到的 exit code 是 `128 + signal_number`（如 `139 = 128
 
 ### 6.1 调用链
 
-```
-Guardian::run_recovery (guardian.rs:275)
-   │
-   ├─ backup::create_backup()                       ← §7 备份集成
-   │     ↓ 落 ~/.hope-agent/backups/{timestamp}/
-   │     ↓ journal.set_last_backup()
-   │
-   ├─ self_diagnosis::diagnose(&journal)
-   │     │
-   │     ├─ read_recent_logs()                       ← 拿最近 200 行日志
-   │     ├─ build_diagnosis_prompt(crash_summary, logs)
-   │     ├─ load_candidate_providers()              ← 按 cost 排序
-   │     ├─ for provider in candidates:
-   │     │     call_llm() → parse_diagnosis_response()
-   │     │     成功就 return；失败 try 下一个
-   │     └─ 全部失败 → basic_analysis()             ← rule-based fallback
-   │
-   ├─ self_diagnosis::auto_fix(&result)
-   │     ↓ §7 描述
-   │
-   └─ journal.set_last_diagnosis()                  ← 写回到刚加的那条 crash
+```mermaid
+flowchart TD
+    RR["Guardian::run_recovery（guardian.rs:275）"]
+    BK["1. backup::create_backup()（§7 备份集成）<br/>落 ~/.hope-agent/backups/timestamp/ → journal.set_last_backup()"]
+    DIAG["2. self_diagnosis::diagnose(&journal)"]
+    D1["read_recent_logs() 拿最近 200 行日志"]
+    D2["build_diagnosis_prompt(crash_summary, logs)"]
+    D3["load_candidate_providers() 按 cost 排序"]
+    D4["for provider in candidates:<br/>call_llm() → parse_diagnosis_response()<br/>成功 return；失败 try 下一个"]
+    D5["全部失败 → basic_analysis()（rule-based fallback）"]
+    FIX["3. self_diagnosis::auto_fix(&result)（§7 描述）"]
+    SET["4. journal.set_last_diagnosis() 写回到刚加的那条 crash"]
+
+    RR --> BK --> DIAG --> FIX --> SET
+    DIAG --> D1 --> D2 --> D3 --> D4 --> D5
 ```
 
 整个流程**同步阻塞**——Guardian 在 `run_recovery` 里 block 30 秒（每个 provider 30s timeout，逐个尝试）。这段时间 child 不重启，等诊断给出结果。

@@ -1,6 +1,6 @@
 # Complete Plugin Reference
 
-Browse all **84 marketplace plugins** organized by category: 82 local plugins plus 2 externally hosted `git-subdir` entries (`pensyve`, `qa-orchestra`).
+Browse all **88 marketplace plugins** organized by category: 85 local plugins plus 3 externally hosted `git-subdir` entries (`pensyve`, `qa-orchestra`, `storymap-skill`).
 
 ## Quick Start - Essential Plugins
 
@@ -128,7 +128,7 @@ Next.js, React + Vite, and Node.js project setup with pnpm and TypeScript best p
 | **documentation-generation** | OpenAPI specs, Mermaid diagrams, tutorials                                                                                                      | `/plugin install documentation-generation` |
 | **c4-architecture**          | Comprehensive C4 architecture documentation workflow with bottom-up code analysis, component synthesis, container mapping, and context diagrams | `/plugin install c4-architecture`          |
 
-### 🔄 Workflows (6 plugins)
+### 🔄 Workflows (7 plugins)
 
 | Plugin                       | Description                                                                    | Install                                    |
 | ---------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------ |
@@ -138,6 +138,7 @@ Next.js, React + Vite, and Node.js project setup with pnpm and TypeScript best p
 | **tdd-workflows**            | Test-driven development methodology                                            | `/plugin install tdd-workflows`            |
 | **agent-teams**              | Parallel code review, debugging, feature, and research teams                   | `/plugin install agent-teams`              |
 | **ship-mate**                | Story-file to reviewed, tested PR workflow orchestration                       | `/plugin install ship-mate`                |
+| **storymap-skill**           | User story mapping (Jeff Patton) with WSJF/RICE/MoSCoW prioritization — external plugin | `/plugin install storymap-skill`           |
 
 ### ✅ Testing (2 plugins)
 
@@ -154,16 +155,17 @@ Next.js, React + Vite, and Node.js project setup with pnpm and TypeScript best p
 | **performance-testing-review** | Performance analysis and test coverage review | `/plugin install performance-testing-review` |
 | **plugin-eval**                | Three-layer quality evaluation framework for Claude Code plugins | `/plugin install plugin-eval`                |
 
-### 🛠️ Utilities (4 plugins)
+### 🛠️ Utilities (5 plugins)
 
 | Plugin                    | Description                                | Install                                 |
 | ------------------------- | ------------------------------------------ | --------------------------------------- |
 | **code-refactoring**      | Code cleanup and technical debt management | `/plugin install code-refactoring`      |
 | **dependency-management** | Dependency auditing and version management | `/plugin install dependency-management` |
 | **error-debugging**       | Error analysis and trace debugging         | `/plugin install error-debugging`       |
+| **file-conversion**       | Convert files across 1,000+ format pairs   | `/plugin install file-conversion`       |
 | **team-collaboration**    | Team workflows and standup automation      | `/plugin install team-collaboration`    |
 
-### 🤖 AI & ML (4 plugins)
+### 🤖 AI & ML (5 plugins)
 
 | Plugin                   | Description                         | Install                                |
 | ------------------------ | ----------------------------------- | -------------------------------------- |
@@ -171,6 +173,7 @@ Next.js, React + Vite, and Node.js project setup with pnpm and TypeScript best p
 | **agent-orchestration**  | Multi-agent system optimization     | `/plugin install agent-orchestration`  |
 | **context-management**   | Context persistence and restoration | `/plugin install context-management`   |
 | **machine-learning-ops** | ML training pipelines and MLOps     | `/plugin install machine-learning-ops` |
+| **runapi-mcp**           | Media generation MCP (image, video, music, audio, LLM) across 130+ models | `/plugin install runapi-mcp`           |
 
 ### 🧠 Memory (1 external plugin)
 
@@ -261,12 +264,13 @@ Next.js, React + Vite, and Node.js project setup with pnpm and TypeScript best p
 | **content-marketing**          | Content strategy and web research       | `/plugin install content-marketing`          |
 | **social-publishing**          | Multi-platform social media publishing  | `/plugin install social-publishing`          |
 
-### 💼 Business (4 plugins)
+### 💼 Business (5 plugins)
 
 | Plugin                        | Description                          | Install                                     |
 | ----------------------------- | ------------------------------------ | ------------------------------------------- |
 | **business-analytics**        | KPI tracking and financial reporting | `/plugin install business-analytics`        |
 | **startup-business-analyst**  | Market sizing, financial modeling, team planning, and strategic research for startups | `/plugin install startup-business-analyst`  |
+| **before-you-build**          | Pre-build product risk review for founders, product teams, and AI-assisted builders | `/plugin install before-you-build`          |
 | **hr-legal-compliance**       | HR policies and legal templates      | `/plugin install hr-legal-compliance`       |
 | **customer-sales-automation** | Support and sales automation         | `/plugin install customer-sales-automation` |
 
@@ -356,7 +360,7 @@ plugins/python-development/
 /plugin marketplace add wshobson/agents
 ```
 
-This makes all 84 marketplace plugins available for installation, but **does not load any agents or tools** into your context.
+This makes all 88 marketplace plugins available for installation, but **does not load any agents or tools** into your context.
 
 ### Step 2: Install Specific Plugins
 
@@ -399,7 +403,7 @@ Each installed plugin loads **only its specific agents and commands** into Claud
 
 ## See Also
 
-- [Agent Skills](./agent-skills.md) - 156 specialized skills across plugins
+- [Agent Skills](./agent-skills.md) - 158 specialized skills across plugins
 - [Agent Reference](./agents.md) - Complete agent catalog
 - [Usage Guide](./usage.md) - Commands and workflows
 - [Architecture](./architecture.md) - Design principles

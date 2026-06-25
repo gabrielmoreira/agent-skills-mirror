@@ -1,5 +1,5 @@
 ---
-name: microsoft-365-agents-toolkit
+name: teams-app-developer
 description: "Builds, tests, and deploys Microsoft 365 apps and agents for Teams and Copilot. Includes sub-skills for project creation, local testing, cloud deployment, troubleshooting, and Slack-to-Teams migration. USE FOR: Teams agent, bot, tab, message extension, Declarative Agents, Custom Engine Agents, local testing, Agents Playground, Azure resource provision, remote deployment, Slack to Teams migration, cross-platform bot development, Block Kit to Adaptive Cards conversion. DO NOT USE FOR: general web development, non-bot/non-Teams projects."
 ---
 
@@ -45,28 +45,29 @@ atk --version  # Must be > 1.1.5-beta
 ```
 
 If ATK is not found or version is too old:
+
 ```bash
 npm i -g @microsoft/m365agentstoolkit-cli@beta
 ```
 
 ## CLI Global Options
 
-| Option | Meaning | Recommendation |
-| --- | --- | --- |
-| `-i` | Interactive mode | Always use `-i false` in automation to avoid hanging |
-| `-f` | Project folder | Default to be current directory, used when specifying a custom folder. When scaffolding a new project, this is the parent folder where the project folder will be created under. |
-| `-h` | Command help | Use `atk <command> -h` for quick syntax checks |
+| Option | Meaning          | Recommendation                                                                                                                                                                   |
+| ------ | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-i`   | Interactive mode | Always use `-i false` in automation to avoid hanging                                                                                                                             |
+| `-f`   | Project folder   | Default to be current directory, used when specifying a custom folder. When scaffolding a new project, this is the parent folder where the project folder will be created under. |
+| `-h`   | Command help     | Use `atk <command> -h` for quick syntax checks                                                                                                                                   |
 
 ## Sub-Skills
 
-| Sub-Skill | When to Use | Reference |
-|-----------|-------------|-----------|
-| **create-project** | Scaffold new project from template, choose template, `atk new` | [create-project/create-project.md](create-project/create-project.md) |
-| **test-playground** | Test locally with Agents Playground, `agentsplayground`, quick testing | [test-playground/test-playground.md](test-playground/test-playground.md) |
-| **test-teams** | Run on Teams, devtunnel, sideload, Teams testing, test in Copilot | [test-teams/test-teams.md](test-teams/test-teams.md) |
-| **provision-deploy** | Provision Azure resources, deploy to cloud, `atk provision`, `atk deploy` | [provision-deploy/provision-deploy.md](provision-deploy/provision-deploy.md) |
-| **troubleshoot** | Fix errors, 401, port conflicts, YAML errors, stale bots | [troubleshoot/troubleshoot.md](troubleshoot/troubleshoot.md) |
-| **slack-to-teams** | Migrate Slack bot to Teams, cross-platform bridging, Block Kit to Adaptive Cards | [slack-to-teams/SKILL.md](slack-to-teams/SKILL.md) |
+| Sub-Skill            | When to Use                                                                      | Reference                                                                    |
+| -------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **create-project**   | Scaffold new project from template, choose template, `atk new`                   | [create-project/create-project.md](create-project/create-project.md)         |
+| **test-playground**  | Test locally with Agents Playground, `agentsplayground`, quick testing           | [test-playground/test-playground.md](test-playground/test-playground.md)     |
+| **test-teams**       | Run on Teams, devtunnel, sideload, Teams testing, test in Copilot                | [test-teams/test-teams.md](test-teams/test-teams.md)                         |
+| **provision-deploy** | Provision Azure resources, deploy to cloud, `atk provision`, `atk deploy`        | [provision-deploy/provision-deploy.md](provision-deploy/provision-deploy.md) |
+| **troubleshoot**     | Fix errors, 401, port conflicts, YAML errors, stale bots                         | [troubleshoot/troubleshoot.md](troubleshoot/troubleshoot.md)                 |
+| **slack-to-teams**   | Migrate Slack bot to Teams, cross-platform bridging, Block Kit to Adaptive Cards | [slack-to-teams/SKILL.md](slack-to-teams/SKILL.md)                           |
 
 > **MANDATORY:** Before executing any workflow, read the corresponding sub-skill document.
 
@@ -82,13 +83,13 @@ npm i -g @microsoft/m365agentstoolkit-cli@beta
 
 Match user intent to the smallest valid workflow.
 
-| User Intent | Workflow (read in order) |
-|---|---|
-| Build new app from scratch | create-project → test-playground |
+| User Intent                   | Workflow (read in order)                    |
+| ----------------------------- | ------------------------------------------- |
+| Build new app from scratch    | create-project → test-playground            |
 | Test existing project locally | test-playground (recommended) or test-teams |
-| Deploy to Azure | provision-deploy |
-| Fix broken bot | troubleshoot → re-test |
-| Migrate Slack bot to Teams | slack-to-teams |
+| Deploy to Azure               | provision-deploy                            |
+| Fix broken bot                | troubleshoot → re-test                      |
+| Migrate Slack bot to Teams    | slack-to-teams                              |
 
 > **MANDATORY:** Before executing any slack-to-teams workflow, read [slack-to-teams/SKILL.md](slack-to-teams/SKILL.md) first. The sub-skill contains a routed expert system with 100+ micro-expert files for cross-platform bot development.
 

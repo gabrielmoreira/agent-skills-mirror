@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ag-ui-protocol/ag-ui` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `ag-ui-protocol/ag-ui` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ag-ui-protocol/ag-ui` — 26 default patterns, 0 followed patterns, 5
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`integrations/adk-middleware/python/CLAUDE.md`](integrations/adk-middleware/python/CLAUDE.md) |
-| 4 | ✓ | [`sdks/community/java/CLAUDE.md`](sdks/community/java/CLAUDE.md) |
-| 5 | ✓ | [`sdks/typescript/.cursor/rules/project-rules.mdc`](sdks/typescript/.cursor/rules/project-rules.mdc) |
+| 1 | ✓ | [`.github/skills/agui-cross-sdk-parity/SKILL.md`](.github/skills/agui-cross-sdk-parity/SKILL.md) |
+| 2 | ✓ | [`.github/skills/agui-dojo/SKILL.md`](.github/skills/agui-dojo/SKILL.md) |
+| 3 | ✓ | [`.github/skills/agui-dotnet-agents-sync/SKILL.md`](.github/skills/agui-dotnet-agents-sync/SKILL.md) |
+| 4 | ✓ | [`.github/skills/agui-dotnet-code-review/SKILL.md`](.github/skills/agui-dotnet-code-review/SKILL.md) |
+| 5 | ✓ | [`.github/skills/agui-dotnet-cross-language-tests/SKILL.md`](.github/skills/agui-dotnet-cross-language-tests/SKILL.md) |
+| 6 | ✓ | [`.github/skills/agui-dotnet-feature-workflow/SKILL.md`](.github/skills/agui-dotnet-feature-workflow/SKILL.md) |
+| 7 | ✓ | [`.github/skills/agui-dotnet-integration-tests/SKILL.md`](.github/skills/agui-dotnet-integration-tests/SKILL.md) |
+| 8 | ✓ | [`.github/skills/agui-dotnet-sample-step/SKILL.md`](.github/skills/agui-dotnet-sample-step/SKILL.md) |
+| 9 | ✓ | [`.github/skills/agui-dotnet-sdk-docs/SKILL.md`](.github/skills/agui-dotnet-sdk-docs/SKILL.md) |
+| 10 | ✓ | [`.github/skills/agui-dotnet-transport/SKILL.md`](.github/skills/agui-dotnet-transport/SKILL.md) |
+| 11 | ✓ | [`.github/skills/agui-dotnet-unit-tests/SKILL.md`](.github/skills/agui-dotnet-unit-tests/SKILL.md) |
+| 12 | ✓ | [`.github/skills/agui-dotnet-wire-types/SKILL.md`](.github/skills/agui-dotnet-wire-types/SKILL.md) |
+| 13 | ✓ | [`.github/skills/agui-playwright-validate/SKILL.md`](.github/skills/agui-playwright-validate/SKILL.md) |
+| 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 15 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 16 | ✓ | [`integrations/adk-middleware/python/CLAUDE.md`](integrations/adk-middleware/python/CLAUDE.md) |
+| 17 | ✓ | [`sdks/community/java/CLAUDE.md`](sdks/community/java/CLAUDE.md) |
+| 18 | ✓ | [`sdks/dotnet/AGENTS.md`](sdks/dotnet/AGENTS.md) |
+| 19 | ✓ | [`sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-client-tools/SKILL.md`](sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-client-tools/SKILL.md) |
+| 20 | ✓ | [`sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-human-in-the-loop/SKILL.md`](sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-human-in-the-loop/SKILL.md) |
+| 21 | ✓ | [`sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-multimodal/SKILL.md`](sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-multimodal/SKILL.md) |
+| 22 | ✓ | [`sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-protobuf/SKILL.md`](sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-protobuf/SKILL.md) |
+| 23 | ✓ | [`sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-reasoning/SKILL.md`](sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-reasoning/SKILL.md) |
+| 24 | ✓ | [`sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-server-tools/SKILL.md`](sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-server-tools/SKILL.md) |
+| 25 | ✓ | [`sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-shared-state/SKILL.md`](sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-shared-state/SKILL.md) |
+| 26 | ✓ | [`sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-streaming-chat/SKILL.md`](sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-streaming-chat/SKILL.md) |
+| 27 | ✓ | [`sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-troubleshoot/SKILL.md`](sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-troubleshoot/SKILL.md) |
+| 28 | ✓ | [`sdks/typescript/.cursor/rules/project-rules.mdc`](sdks/typescript/.cursor/rules/project-rules.mdc) |
 
 ---
 

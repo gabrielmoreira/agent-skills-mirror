@@ -62,4 +62,36 @@
 
 ## Child DOX Index
 
-No child DOX files.
+Direct child DOX files:
+
+| Child | Scope |
+| --- | --- |
+| [_a0_connector/AGENTS.md](_a0_connector/AGENTS.md) | HTTP and WebSocket connector integration with remote tools and runtime bridges. |
+| [_browser/AGENTS.md](_browser/AGENTS.md) | Playwright browser tool, helpers, viewer, and browser panel UI. |
+| [_chat_branching/AGENTS.md](_chat_branching/AGENTS.md) | Chat branching from an existing message. |
+| [_chat_compaction/AGENTS.md](_chat_compaction/AGENTS.md) | Full-chat compaction into a summary message. |
+| [_code_execution/AGENTS.md](_code_execution/AGENTS.md) | Terminal, Python, and Node.js execution tools and shell runtimes. |
+| [_desktop/AGENTS.md](_desktop/AGENTS.md) | Linux desktop runtime, sessions, and desktop surface. |
+| [_discovery/AGENTS.md](_discovery/AGENTS.md) | Welcome-screen plugin discovery cards and promotions. |
+| [_document_query/AGENTS.md](_document_query/AGENTS.md) | Document parsing, indexing, and Q&A tools. |
+| [_editor/AGENTS.md](_editor/AGENTS.md) | Native Markdown editor surface and sessions. |
+| [_email_integration/AGENTS.md](_email_integration/AGENTS.md) | IMAP/Exchange polling and SMTP reply integration. |
+| [_error_retry/AGENTS.md](_error_retry/AGENTS.md) | Critical exception retry lifecycle hooks. |
+| [_infection_check/AGENTS.md](_infection_check/AGENTS.md) | Prompt-injection safety analysis before tool execution. |
+| [_kokoro_tts/AGENTS.md](_kokoro_tts/AGENTS.md) | Kokoro text-to-speech integration. |
+| [_memory/AGENTS.md](_memory/AGENTS.md) | Persistent vector memory, knowledge import, tools, and dashboard. |
+| [_model_config/AGENTS.md](_model_config/AGENTS.md) | Model selection, presets, API-key checks, and scoped overrides. |
+| [_oauth/AGENTS.md](_oauth/AGENTS.md) | OAuth-backed model-provider connections and local proxy routes. |
+| [_office/AGENTS.md](_office/AGENTS.md) | LibreOffice office artifacts and office canvas sessions. |
+| [_onboarding/AGENTS.md](_onboarding/AGENTS.md) | First-time model onboarding wizard. |
+| [_plugin_installer/AGENTS.md](_plugin_installer/AGENTS.md) | Plugin install and update flows from ZIP, Git, and Plugin Index. |
+| [_plugin_scan/AGENTS.md](_plugin_scan/AGENTS.md) | LLM-guided security scanner for third-party plugins. |
+| [_plugin_validator/AGENTS.md](_plugin_validator/AGENTS.md) | Plugin manifest, structure, convention, and security validator. |
+| [_promptinclude/AGENTS.md](_promptinclude/AGENTS.md) | Promptinclude scanning and prompt injection. |
+| [_skills/AGENTS.md](_skills/AGENTS.md) | Active and hidden skill configuration and prompt injection. |
+| [_telegram_integration/AGENTS.md](_telegram_integration/AGENTS.md) | Telegram bot integration and per-user chat sessions. |
+| [_text_editor/AGENTS.md](_text_editor/AGENTS.md) | Native text read, write, and patch tool. |
+| [_time_travel/AGENTS.md](_time_travel/AGENTS.md) | Workspace history, diff, travel, snapshot, and revert flows. |
+| [_whatsapp_integration/AGENTS.md](_whatsapp_integration/AGENTS.md) | WhatsApp Baileys bridge integration. |
+| [_whats_new/AGENTS.md](_whats_new/AGENTS.md) | Version-gated What's New showcase modal and startup trigger. |
+| [_whisper_stt/AGENTS.md](_whisper_stt/AGENTS.md) | Whisper speech-to-text integration. |

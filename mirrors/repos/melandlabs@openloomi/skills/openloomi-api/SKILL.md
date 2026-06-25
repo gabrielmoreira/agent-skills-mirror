@@ -52,7 +52,7 @@ metadata:
 #### Login Example
 
 ```bash
-curl -X POST https://app.openloomi.ai/api/remote-auth/login \
+curl -X POST https://app.alloomi.ai/api/remote-auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"user@example.com","password":"password123"}'
 ```
@@ -186,7 +186,7 @@ Response:
 #### Chat Example
 
 ```bash
-curl -X POST https://app.openloomi.ai/api/ai/chat \
+curl -X POST https://app.alloomi.ai/api/ai/chat \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -329,7 +329,7 @@ curl -X POST http://localhost:3414/api/remote-feedback \
 ```bash
 # Using production API
 export TOKEN="your_production_token"
-curl https://app.openloomi.ai/api/remote-auth/user \
+curl https://app.alloomi.ai/api/remote-auth/user \
   -H "Authorization: Bearer $TOKEN"
 ```
 

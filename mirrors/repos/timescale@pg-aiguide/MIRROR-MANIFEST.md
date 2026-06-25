@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `timescale/pg-aiguide` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `timescale/pg-aiguide` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `timescale/pg-aiguide` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,18 +63,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`skills/design-postgis-tables/SKILL.md`](skills/design-postgis-tables/SKILL.md) |
 | 3 | ✓ | [`skills/design-postgres-tables/SKILL.md`](skills/design-postgres-tables/SKILL.md) |
 | 4 | ✓ | [`skills/find-hypertable-candidates/SKILL.md`](skills/find-hypertable-candidates/SKILL.md) |
-| 5 | ✓ | [`skills/migrate-postgres-tables-to-hypertables/SKILL.md`](skills/migrate-postgres-tables-to-hypertables/SKILL.md) |
-| 6 | ✓ | [`skills/pgvector-semantic-search/SKILL.md`](skills/pgvector-semantic-search/SKILL.md) |
-| 7 | ✓ | [`skills/postgres-hybrid-text-search/SKILL.md`](skills/postgres-hybrid-text-search/SKILL.md) |
-| 8 | ✓ | [`skills/postgres/references/design-postgis-tables.md`](skills/postgres/references/design-postgis-tables.md) |
-| 9 | ✓ | [`skills/postgres/references/design-postgres-tables.md`](skills/postgres/references/design-postgres-tables.md) |
-| 10 | ✓ | [`skills/postgres/references/find-hypertable-candidates.md`](skills/postgres/references/find-hypertable-candidates.md) |
-| 11 | ✓ | [`skills/postgres/references/migrate-postgres-tables-to-hypertables.md`](skills/postgres/references/migrate-postgres-tables-to-hypertables.md) |
-| 12 | ✓ | [`skills/postgres/references/pgvector-semantic-search.md`](skills/postgres/references/pgvector-semantic-search.md) |
-| 13 | ✓ | [`skills/postgres/references/postgres-hybrid-text-search.md`](skills/postgres/references/postgres-hybrid-text-search.md) |
-| 14 | ✓ | [`skills/postgres/references/setup-timescaledb-hypertables.md`](skills/postgres/references/setup-timescaledb-hypertables.md) |
-| 15 | ✓ | [`skills/postgres/SKILL.md`](skills/postgres/SKILL.md) |
-| 16 | ✓ | [`skills/setup-timescaledb-hypertables/SKILL.md`](skills/setup-timescaledb-hypertables/SKILL.md) |
+| 5 | ✓ | [`skills/ghost-database/SKILL.md`](skills/ghost-database/SKILL.md) |
+| 6 | ✓ | [`skills/migrate-postgres-tables-to-hypertables/SKILL.md`](skills/migrate-postgres-tables-to-hypertables/SKILL.md) |
+| 7 | ✓ | [`skills/pgvector-semantic-search/SKILL.md`](skills/pgvector-semantic-search/SKILL.md) |
+| 8 | ✓ | [`skills/postgres-database-migration/references/backfill-strategies.md`](skills/postgres-database-migration/references/backfill-strategies.md) |
+| 9 | ✓ | [`skills/postgres-database-migration/references/complete-example.md`](skills/postgres-database-migration/references/complete-example.md) |
+| 10 | ✓ | [`skills/postgres-database-migration/references/validation-queries.md`](skills/postgres-database-migration/references/validation-queries.md) |
+| 11 | ✓ | [`skills/postgres-database-migration/SKILL.md`](skills/postgres-database-migration/SKILL.md) |
+| 12 | ✓ | [`skills/postgres-hybrid-text-search/SKILL.md`](skills/postgres-hybrid-text-search/SKILL.md) |
+| 13 | ✓ | [`skills/postgres/references/backfill-strategies.md`](skills/postgres/references/backfill-strategies.md) |
+| 14 | ✓ | [`skills/postgres/references/complete-example.md`](skills/postgres/references/complete-example.md) |
+| 15 | ✓ | [`skills/postgres/references/design-postgis-tables.md`](skills/postgres/references/design-postgis-tables.md) |
+| 16 | ✓ | [`skills/postgres/references/design-postgres-tables.md`](skills/postgres/references/design-postgres-tables.md) |
+| 17 | ✓ | [`skills/postgres/references/find-hypertable-candidates.md`](skills/postgres/references/find-hypertable-candidates.md) |
+| 18 | ✓ | [`skills/postgres/references/ghost-database.md`](skills/postgres/references/ghost-database.md) |
+| 19 | ✓ | [`skills/postgres/references/migrate-postgres-tables-to-hypertables.md`](skills/postgres/references/migrate-postgres-tables-to-hypertables.md) |
+| 20 | ✓ | [`skills/postgres/references/pgvector-semantic-search.md`](skills/postgres/references/pgvector-semantic-search.md) |
+| 21 | ✓ | [`skills/postgres/references/postgres-database-migration.md`](skills/postgres/references/postgres-database-migration.md) |
+| 22 | ✓ | [`skills/postgres/references/postgres-hybrid-text-search.md`](skills/postgres/references/postgres-hybrid-text-search.md) |
+| 23 | ✓ | [`skills/postgres/references/setup-timescaledb-hypertables.md`](skills/postgres/references/setup-timescaledb-hypertables.md) |
+| 24 | ✓ | [`skills/postgres/references/validation-queries.md`](skills/postgres/references/validation-queries.md) |
+| 25 | ✓ | [`skills/postgres/SKILL.md`](skills/postgres/SKILL.md) |
+| 26 | ✓ | [`skills/setup-timescaledb-hypertables/SKILL.md`](skills/setup-timescaledb-hypertables/SKILL.md) |
 
 ---
 

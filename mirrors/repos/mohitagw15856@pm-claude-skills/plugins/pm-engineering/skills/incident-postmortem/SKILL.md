@@ -1,6 +1,6 @@
 ---
 name: incident-postmortem
-description: "Write a structured incident postmortem or post-incident review. Use when asked to write a postmortem, incident report, P1/P2 review, outage report, or RCA (root cause analysis). Generates a blameless postmortem with timeline, root cause, contributing factors, impact summary, and action items."
+description: "Write a structured incident postmortem or post-incident review. Use when asked to write a postmortem, incident report, P1/P2 review, outage report, or RCA (root cause analysis). Produces a blameless postmortem with timeline, root cause, contributing factors, impact summary, and action items."
 ---
 
 # Incident Postmortem Skill
@@ -26,6 +26,13 @@ Ask the user for these if not provided:
 - **Action items already identified** (optional)
 - **Responders** (who was on-call or responded — names or roles; used for the timeline, not for blame)
 - **Customer or external communications sent** (optional — any status page updates, emails, or support messages with timestamps)
+
+## Reads from / Writes to the Brain
+
+If a [`professional-brain`](../professional-brain/SKILL.md) (`brain/`) exists, use it before asking:
+
+- **Read first:** the affected system's `entities/` file and any related prior `decisions/` or past incidents (recurring root causes are the most important thing to surface).
+- **Write after:** log the action items and decisions to `decisions/`, and the root-cause learning to `knowledge/` — tag a measured cause `[data]` and a suspected one `[hunch]`, never the reverse.
 
 ## Output Format
 

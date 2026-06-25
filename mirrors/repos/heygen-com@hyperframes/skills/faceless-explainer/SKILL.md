@@ -3,6 +3,8 @@ name: faceless-explainer
 description: "turn arbitrary text — an article, notes, a topic, a brief — into a faceless explainer video, up to ~3 min (sweet spot 30-90s), where every visual is invented (typography, abstract graphics, diagrams, data-viz) rather than captured. There is no URL, no website capture, and no real assets. Use this skill for topic explainers, concept breakdowns, how-tos, listicles, and narrative explainers. Do not use it for a product launch/promo (use /product-launch-video), a tour of a real website (use /website-to-video), a GitHub PR (use /pr-to-video), captions on existing footage (use /embedded-captions), or a short unnarrated motion graphic (use /motion-graphics). If the intent is unclear, route through /hyperframes first."
 ---
 
+> **media-use**: Before sourcing audio/images, call `/media-use` to resolve BGM/SFX/images from the HeyGen catalog. Run `--adopt` first to register existing assets. See `/media-use` skill.
+
 # Faceless Explainer to HyperFrames
 
 Use this skill to turn a body of text into an explainer video: pick a design system, plan a teaching story, and build it frame by frame in HyperFrames. **Faceless** means every visual is invented downstream — there is no capture step and no real asset inventory.
@@ -23,7 +25,9 @@ Initialize only if `hyperframes.json` is missing. Name `<project>` from the topi
 
 `npx hyperframes init "videos/<project>" --non-interactive --skip-skills --example=blank`
 
-**Gate:** `hyperframes.json` exists, and angle, length, aspect ratio, and language are locked.
+**Show sign-in status before the brief** — run `npx hyperframes auth status` and **relay its output verbatim (don't paraphrase or rewrite it).** It reports whether voice/BGM will use HeyGen or local engines and, when not signed in, how to sign in. **If not signed in, STOP and wait for the user to choose — sign in, or say "go"/"offline" to continue with local engines — before asking the brief or anything else.** Treat it as a real decision point, not a passing note; don't fold the choice into the brief question, and don't write keys into a per-repo `.env`. (In autonomous mode, note the status and continue offline.) See `../hyperframes-media` → Preflight for the canonical guidance.
+
+**Gate:** `hyperframes.json` exists, and angle, length, aspect ratio, and language are locked; sign-in status was shown (signed in, or continuing offline).
 
 ---
 
@@ -52,11 +56,11 @@ You make the one judgment call — **which preset**. Read `../hyperframes-creati
 node <SKILL_DIR>/scripts/build-frame.mjs --preset <name> --hyperframes .
 ```
 
-The script does the rest deterministically: copies the preset's `FRAME.md` → `frame.md` and **remixes** it onto any brand tokens in `capture/extracted/tokens.json` (brand colors mapped onto the preset's color keys by role; the preset's display + body fonts swapped for the brand's), copies the preset's `caption-skin.html` verbatim, and self-validates (exits 1 on a broken mapping). Proceed as soon as it exits 0 — no hand-editing of the spec.
+The script does the rest deterministically: copies the preset's `FRAME.md` → `frame.md` and **remixes** it onto any brand tokens in `capture/extracted/tokens.json` (brand colors mapped onto the preset's color keys by role; the preset's display + body fonts swapped for the brand's), copies the preset's caption skin to `.hyperframes/caption-skin.html`, and self-validates (exits 1 on a broken mapping). Proceed as soon as it exits 0 — no hand-editing of the spec.
 
 A faceless explainer usually has **no brand colors/fonts** (`tokens.json` colors/fonts empty) → the script keeps the preset's own palette, a complete shippable design. Only when the user named brand colors/fonts add them to `tokens.json` before running, and only adjust `frame.md` by hand afterward if a mapping truly needs it.
 
-**Gate:** `build-frame.mjs` exited 0 — `frame.md` exists from a named preset, and (when the preset ships one) `caption-skin.html` is at the project root.
+**Gate:** `build-frame.mjs` exited 0 — `frame.md` exists from a named preset, and (when the preset ships one) `.hyperframes/caption-skin.html` exists as the caption skin source.
 
 ---
 
@@ -78,7 +82,7 @@ After drafting, show a frame-by-frame summary. In that same message ask the user
 
 Goal: Generate narration, word timings, music, and audio metadata from the approved script.
 
-Start audio after Step 3 approval. Run it in the background, then continue to Step 4.
+Start audio after Step 3 approval. Run it in the background, then continue to Step 4. (Sign-in status was already shown in Step 0; the engine falls back automatically.)
 
 `node <SKILL_DIR>/scripts/audio.mjs --script ./SCRIPT.md --storyboard ./STORYBOARD.md --hyperframes . --out ./audio_meta.json &`
 
@@ -130,7 +134,7 @@ After audio timings exist, build captions in the background and assemble the ind
 
 `node <SKILL_DIR>/scripts/assemble-index.mjs --storyboard ./STORYBOARD.md --hyperframes .`
 
-`captions.mjs` uses the project's `caption-skin.html` (copied in Step 2) as the caption look, injecting brand tokens from `frame.md`; with no skin present it renders the built-in default pill. `captions: skipped (<reason>)` is valid. Continue without captions when explicitly skipped.
+`captions.mjs` uses the project's `.hyperframes/caption-skin.html` (copied in Step 2) as the caption look, injecting brand tokens from `frame.md`; with no skin present it renders the built-in default pill. `captions: skipped (<reason>)` is valid. Continue without captions when explicitly skipped.
 
 **Gate:** every frame is marked `animated`, `index.html` exists, and captions are built or explicitly skipped.
 
@@ -150,11 +154,15 @@ Inject transitions, run checks, pause for review, then render.
 
 `npx hyperframes validate`
 
-`npx hyperframes inspect --strict-layout`
+`npx hyperframes inspect`
 
 `npx hyperframes snapshot --at <frame-midpoints>`
 
-If a command fails, surface stderr and stop. Do not pile on recovery commands. If a gate names a frame, fix `compositions/frames/NN-*.html` with the cheapest safe fix: edit the frame HTML for a local issue; re-dispatch the frame worker only when the whole shot must be rebuilt.
+`snapshot` stitches the captured frames into one contact sheet (`snapshots/contact-sheet.jpg`). Glance at it; if nothing is obviously broken, move on — don't linger here.
+
+If a command fails, surface stderr and stop — don't pile on recovery commands. Fix it yourself: the cheapest safe edit to `compositions/frames/NN-*.html`, then rerun the failed check.
+
+**Known false-positive — do not chase it.** `inspect` may report a handful of `text_box_overflow` errors of ~1–4px on the **caption** highlight words (selector `#caption-word-*` / `.caption-line`). The caption pill uses a deliberately snug `line-height` (set once in `scripts/captions.mjs`) and has **no `overflow:hidden`**, so a heavy display glyph's ink spills a few px into the pill's own padding — nothing is actually clipped. Treat these as expected and proceed. Do **not** inflate the caption `line-height` (it balloons the pill, which is worse). Only act on a `text_box_overflow` when it names a **frame** element (`#el-NN-*`), not a caption word.
 
 After checks pass, pause for user review. The video is assembled, viewable, and editable in Studio. Manage preview only once across Step 3 and Step 6: open it if the user asked earlier, offer it if they declined earlier, and do not ask again if they are already reviewing in Studio.
 
@@ -162,7 +170,7 @@ Preview: `npx hyperframes preview`
 
 Render only after user approval:
 
-`npx hyperframes render --quality high --output renders/video.mp4`
+`npx hyperframes render --skill=faceless-explainer --quality high --output renders/video.mp4`
 
 Do not rerun `lint`, `validate`, `inspect`, or `snapshot` after rendering unless the user asks.
 

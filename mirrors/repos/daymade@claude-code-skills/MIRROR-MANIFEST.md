@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `daymade/claude-code-skills` — 26 default patterns, 6 followed patterns, 73 file(s) materialized.
+Mirror of `daymade/claude-code-skills` — 26 default patterns, 6 followed patterns, 76 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 6 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 73 |
+| Files         | 76 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -111,32 +111,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | ✓ | [`i18n-expert/SKILL.md`](i18n-expert/SKILL.md) |
 | 46 | ✓ | [`ima-copilot/SKILL.md`](ima-copilot/SKILL.md) |
 | 47 | ✓ | [`iOS-APP-developer/SKILL.md`](iOS-APP-developer/SKILL.md) |
-| 48 | ✓ | [`llm-icon-finder/SKILL.md`](llm-icon-finder/SKILL.md) |
-| 49 | ✓ | [`llm-wiki-setup/SKILL.md`](llm-wiki-setup/SKILL.md) |
-| 50 | ✓ | [`macos-cleaner/SKILL.md`](macos-cleaner/SKILL.md) |
-| 51 | ✓ | [`marketplace-health-check/SKILL.md`](marketplace-health-check/SKILL.md) |
-| 52 | ✓ | [`product-analysis/SKILL.md`](product-analysis/SKILL.md) |
-| 53 | ✓ | [`prompt-optimizer/SKILL.md`](prompt-optimizer/SKILL.md) |
-| 54 | ✓ | [`promptfoo-evaluation/SKILL.md`](promptfoo-evaluation/SKILL.md) |
-| 55 | ✓ | [`qa-expert/SKILL.md`](qa-expert/SKILL.md) |
-| 56 | ✓ | [`repomix-safe-mixer/SKILL.md`](repomix-safe-mixer/SKILL.md) |
-| 57 | ✓ | [`repomix-unmixer/SKILL.md`](repomix-unmixer/SKILL.md) |
-| 58 | ✓ | [`scrapling-skill/SKILL.md`](scrapling-skill/SKILL.md) |
-| 59 | ✓ | [`slides-creator/SKILL.md`](slides-creator/SKILL.md) |
-| 60 | ✓ | [`teams-channel-post-writer/SKILL.md`](teams-channel-post-writer/SKILL.md) |
-| 61 | ✓ | [`terraform-skill/SKILL.md`](terraform-skill/SKILL.md) |
-| 62 | ✓ | [`tunnel-doctor/SKILL.md`](tunnel-doctor/SKILL.md) |
-| 63 | ✓ | [`twitter-reader/SKILL.md`](twitter-reader/SKILL.md) |
-| 64 | ✓ | [`ui-designer/SKILL.md`](ui-designer/SKILL.md) |
-| 65 | ✓ | [`video-comparer/SKILL.md`](video-comparer/SKILL.md) |
-| 66 | ✓ | [`windows-remote-desktop-connection-doctor/SKILL.md`](windows-remote-desktop-connection-doctor/SKILL.md) |
-| 67 | ✓ | [`youtube-downloader/SKILL.md`](youtube-downloader/SKILL.md) |
-| 68 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
-| 69 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
-| 70 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
-| 71 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
-| 72 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
-| 73 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
+| 48 | ✓ | [`llm-eval-harness/SKILL.md`](llm-eval-harness/SKILL.md) |
+| 49 | ✓ | [`llm-icon-finder/SKILL.md`](llm-icon-finder/SKILL.md) |
+| 50 | ✓ | [`llm-wiki-setup/SKILL.md`](llm-wiki-setup/SKILL.md) |
+| 51 | ✓ | [`macos-cleaner/SKILL.md`](macos-cleaner/SKILL.md) |
+| 52 | ✓ | [`marketplace-health-check/SKILL.md`](marketplace-health-check/SKILL.md) |
+| 53 | ✓ | [`notify-wecom/SKILL.md`](notify-wecom/SKILL.md) |
+| 54 | ✓ | [`product-analysis/SKILL.md`](product-analysis/SKILL.md) |
+| 55 | ✓ | [`prompt-optimizer/SKILL.md`](prompt-optimizer/SKILL.md) |
+| 56 | ✓ | [`promptfoo-evaluation/SKILL.md`](promptfoo-evaluation/SKILL.md) |
+| 57 | ✓ | [`qa-expert/SKILL.md`](qa-expert/SKILL.md) |
+| 58 | ✓ | [`repomix-safe-mixer/SKILL.md`](repomix-safe-mixer/SKILL.md) |
+| 59 | ✓ | [`repomix-unmixer/SKILL.md`](repomix-unmixer/SKILL.md) |
+| 60 | ✓ | [`scrapling-skill/SKILL.md`](scrapling-skill/SKILL.md) |
+| 61 | ✓ | [`setup-notifications-via-wecom/SKILL.md`](setup-notifications-via-wecom/SKILL.md) |
+| 62 | ✓ | [`slides-creator/SKILL.md`](slides-creator/SKILL.md) |
+| 63 | ✓ | [`teams-channel-post-writer/SKILL.md`](teams-channel-post-writer/SKILL.md) |
+| 64 | ✓ | [`terraform-skill/SKILL.md`](terraform-skill/SKILL.md) |
+| 65 | ✓ | [`tunnel-doctor/SKILL.md`](tunnel-doctor/SKILL.md) |
+| 66 | ✓ | [`twitter-reader/SKILL.md`](twitter-reader/SKILL.md) |
+| 67 | ✓ | [`ui-designer/SKILL.md`](ui-designer/SKILL.md) |
+| 68 | ✓ | [`video-comparer/SKILL.md`](video-comparer/SKILL.md) |
+| 69 | ✓ | [`windows-remote-desktop-connection-doctor/SKILL.md`](windows-remote-desktop-connection-doctor/SKILL.md) |
+| 70 | ✓ | [`youtube-downloader/SKILL.md`](youtube-downloader/SKILL.md) |
+| 71 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
+| 72 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
+| 73 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
+| 74 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
+| 75 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
+| 76 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
 
 ---
 

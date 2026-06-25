@@ -38,35 +38,23 @@ crates/ha-core/src/awareness/
 
 ### 数据流
 
-```
-AssistantAgent::chat_*(message)
-   │
-   ├─ ① refresh_awareness_suffix(message).await
-   │     ├─ on_other_session_activity(self.session_id)
-   │     │     ├─ registry::touch(self.session_id)    ← 标记自己为 active
-   │     │     └─ dirty::mark_all_except(self.id)     ← 给所有 peer 置脏位
-   │     │
-   │     ├─ [可选] run_extraction_inline()             ← LLM Digest 模式
-   │     │     ├─ collect_entries → candidates
-   │     │     ├─ build_extraction_prompt(candidates + user_text)
-   │     │     ├─ side_query(prompt, 5s timeout)
-   │     │     └─ awareness.set_last_digest(result)
-   │     │
-   │     └─ awareness.prepare_dynamic_suffix(user_text)
-   │           ├─ decide_refresh: L1 脏位 / L2 节流 / L3 语义 hint
-   │           ├─ collect_entries → snapshot
-   │           ├─ render_markdown(snapshot) + 拼接 AI Digest
-   │           ├─ hash 比对 → byte-identical 则复用旧 Arc
-   │           └─ 写入 self.awareness_suffix
-   │
-   ├─ ② build_full_system_prompt()                    ← 静态前缀
-   ├─ ③ run_compaction_with_options(merged_budget)     ← 预算含 suffix
-   ├─ ④ 构造 API 请求
-   │     ├─ Anthropic: system=[prefix block, suffix block] 双 cache_control
-   │     ├─ OpenAI Chat: [system msg prefix, system msg suffix, ...msgs]
-   │     └─ Responses/Codex: instructions=prefix, input[0]=system(suffix)
-   │
-   └─ ⑤ tool loop（每轮 touch_active_session 保持 active）
+```mermaid
+flowchart TD
+    CHAT["AssistantAgent::chat_*(message)"]
+    subgraph "① refresh_awareness_suffix(message)"
+        direction TB
+        ACT["on_other_session_activity(self.session_id)<br/>registry::touch 标记自己 active<br/>dirty::mark_all_except 给所有 peer 置脏位"]
+        EXT["（可选）run_extraction_inline（LLM Digest 模式）<br/>collect_entries → build_extraction_prompt<br/>side_query(prompt, 5s) → set_last_digest"]
+        PREP["prepare_dynamic_suffix(user_text)<br/>decide_refresh: L1 脏位 / L2 节流 / L3 语义 hint<br/>collect_entries → render_markdown + 拼 AI Digest<br/>hash 比对：byte-identical 则复用旧 Arc<br/>写入 self.awareness_suffix"]
+        ACT --> EXT --> PREP
+    end
+    STEP2["② build_full_system_prompt() 静态前缀"]
+    STEP3["③ run_compaction_with_options(merged_budget) 预算含 suffix"]
+    STEP4["④ 构造 API 请求<br/>Anthropic: system = prefix block + suffix block（双 cache_control）<br/>OpenAI Chat: system prefix + system suffix + msgs<br/>Responses / Codex: instructions=prefix, input 首项=system(suffix)"]
+    STEP5["⑤ tool loop（每轮 touch_active_session 保持 active）"]
+
+    CHAT --> ACT
+    PREP --> STEP2 --> STEP3 --> STEP4 --> STEP5
 ```
 
 ---

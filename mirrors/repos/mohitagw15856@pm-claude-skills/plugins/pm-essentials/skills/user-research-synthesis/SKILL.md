@@ -15,6 +15,13 @@ Ask the user for these if not provided:
 - **Number of participants** and their profiles (role, context)
 - **Research questions** the study aimed to answer
 
+## Reads from / Writes to the Brain
+
+If a [`professional-brain`](../professional-brain/SKILL.md) (`brain/`) exists, use it before asking:
+
+- **Read first:** open `hypotheses/` (which assumptions this research can validate or invalidate) and `context.md` (who the users are).
+- **Write after:** update each touched hypothesis's status, add durable insights to `knowledge/users.md`, and keep the raw notes in `source/`. Tag interview-derived claims `[interview]` — never launder them into `[data]`.
+
 ## Synthesis Framework
 
 ### 1. Data Collection Overview

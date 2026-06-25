@@ -18,17 +18,23 @@
 - Project metadata defaults must remain backwards-compatible; missing `include_agents_md` is treated as enabled and project instruction file content is injected with an explicit source path.
 - Do not hardcode secrets, provider keys, local absolute paths, or environment-specific values.
 - Use `RepairableException` for errors an agent may be able to fix.
+- This directory is a file-documented DOX profile: every direct `*.py` helper module must have a same-directory `*.py.dox.md` file named by appending `.dox.md` to the full Python filename.
+- The `*.py.dox.md` file owns helper purpose, public classes/functions, cross-module contracts, persistence or side effects, path/security assumptions, important dependencies, and verification guidance.
+- When a helper module is added, removed, renamed, or behaviorally changed, update its matching `*.py.dox.md` in the same change.
+- Do not leave stale file-level DOX after helper deletion or rename.
 
 ## Work Guidance
 
 - Prefer cohesive helper modules over adding unrelated utilities to large files.
 - Keep imports acyclic where possible; defer imports inside functions only when needed to avoid startup cycles.
 - For changes touching auth, CSRF, files, plugins, tunnels, WebSockets, or model calls, read the caller and tests before editing.
+- During the DOX pass, verify that every direct `*.py` file has a matching `*.py.dox.md` and that changed helper behavior is described there.
 
 ## Verification
 
 - Run targeted tests for changed helper modules.
 - Run security regression tests for auth, CSRF, filesystem, WebSocket, tunnel, upload, or image-serving changes.
+- Check file-level documentation coverage with a script or shell loop that verifies each `helpers/*.py` has a matching `helpers/*.py.dox.md`.
 
 ## Child DOX Index
 

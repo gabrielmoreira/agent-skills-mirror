@@ -6,6 +6,4 @@ path: {{project_path}}
 rules:
 - work inside {{project_path}}
 - do not rename project dir or change `.a0proj` unless asked
-- must always follow project instructions below
-
-{{project_instructions}}
+- follow active project instructions when provided

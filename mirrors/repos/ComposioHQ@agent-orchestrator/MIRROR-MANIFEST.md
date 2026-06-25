@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 1 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 0 followed pa
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 12 |
+| Followed pats | 1 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 0 followed pa
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `DESIGN.md`
 
 ## File Index
 
@@ -59,18 +59,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.cursor/BUGBOT.md`](.cursor/BUGBOT.md) |
-| 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 5 | ✓ | [`skills/agent-orchestrator/references/config.md`](skills/agent-orchestrator/references/config.md) |
-| 6 | ✓ | [`skills/agent-orchestrator/SKILL.md`](skills/agent-orchestrator/SKILL.md) |
-| 7 | ✓ | [`skills/bug-triage/scripts/push_fix_to_github.py`](skills/bug-triage/scripts/push_fix_to_github.py) |
-| 8 | ✓ | [`skills/bug-triage/SKILL.md`](skills/bug-triage/SKILL.md) |
-| 9 | ✓ | [`skills/README.md`](skills/README.md) |
-| 10 | ✓ | [`skills/release-notes/ao-weekly-release/run.py`](skills/release-notes/ao-weekly-release/run.py) |
-| 11 | ✓ | [`skills/release-notes/ao-weekly-release/SKILL.md`](skills/release-notes/ao-weekly-release/SKILL.md) |
-| 12 | ✓ | [`skills/social-media/SKILL.md`](skills/social-media/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`skills/bug-triage/SKILL.md`](skills/bug-triage/SKILL.md) |
+| 4 | → | [`DESIGN.md`](DESIGN.md) |
 
 ---
 

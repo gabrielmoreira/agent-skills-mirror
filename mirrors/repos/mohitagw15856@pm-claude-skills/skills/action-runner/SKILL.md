@@ -48,6 +48,24 @@ recommend → build an actions plan (JSON) → preview + risk-gate → approve �
      --tag external --body "Opened 7 issues in acme/app from the launch checklist" --commit
    ```
 
+## Supported action targets
+
+Any action MCP can be wired in; these are the common targets, with example operations and the
+**default risk** the gate applies. Reads are 🟢; anything outbound, destructive, or that spends is 🔴.
+
+| Target | Example operations | Default risk |
+|---|---|---|
+| **GitHub** | `create_issue`, `comment`, `open_pr` · (`merge_pr`, `close` 🔴) | 🟡 (🔴 for merge/close) |
+| **Linear / Jira** | `create_issue`, `update_status`, `comment` | 🟡 |
+| **Slack** | `post_message`, `reply_in_thread` (outbound → always confirm) | 🔴 |
+| **Notion** | `append_block`, `create_page`, `update_property` | 🟡 (🔴 if it overwrites) |
+| **Email / Gmail** | `send_email` (outbound) | 🔴 |
+| **Calendar** | `create_event`, `invite` (outbound) | 🟡 (🔴 if it emails invitees) |
+
+Pick the narrowest target and op that does the job, scope to exactly what the user named, and let the
+risk gate decide what needs explicit approval. Outbound messages (Slack/email) are 🔴 by default —
+the model never posts on someone's behalf without a per-action yes.
+
 ## Safety rules (non-negotiable)
 
 - **Dry-run by default.** The plan is shown before anything runs.

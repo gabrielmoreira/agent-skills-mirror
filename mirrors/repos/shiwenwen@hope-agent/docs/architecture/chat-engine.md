@@ -420,16 +420,16 @@ Chat Engine 内置完整的模型降级和重试逻辑：
 
 ```mermaid
 flowchart TD
-    A[agent.chat() 失败] --> B{classify_error}
-    B -->|ContextOverflow| C{首次?}
-    C -->|是| D["emit progress<br/>emergency_compact<br/>emit final + 重试"]
-    C -->|否| E[Terminal: 返回错误]
-    B -->|Terminal<br/>Auth/Billing/ModelNotFound| E
-    B -->|Retryable<br/>RateLimit/Overloaded/Timeout| F{retry < MAX_RETRIES?}
-    F -->|是| G["指数退避等待<br/>delay = min(base * 2^retry, 10s)"]
-    G --> H[重试同一模型]
-    F -->|否| I[尝试 model_chain 下一模型]
-    B -->|Auth + Codex| J[emit codex_auth_expired]
+    A["agent.chat() 失败"] --> B{"classify_error"}
+    B -->|"ContextOverflow"| C{"首次?"}
+    C -->|"是"| D["emit progress<br/>emergency_compact<br/>emit final + 重试"]
+    C -->|"否"| E["Terminal: 返回错误"]
+    B -->|"Terminal<br/>Auth/Billing/ModelNotFound"| E
+    B -->|"Retryable<br/>RateLimit/Overloaded/Timeout"| F{"retry &lt; MAX_RETRIES?"}
+    F -->|"是"| G["指数退避等待<br/>delay = min(base * 2^retry, 10s)"]
+    G --> H["重试同一模型"]
+    F -->|"否"| I["尝试 model_chain 下一模型"]
+    B -->|"Auth + Codex"| J["emit codex_auth_expired"]
     J --> I
 
 ```

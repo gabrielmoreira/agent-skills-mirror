@@ -18,6 +18,13 @@ Ask the user for these if not provided:
 
 If no framework preference is given, recommend the best fit based on stage and business model.
 
+## Reads from / Writes to the Brain
+
+If a [`professional-brain`](../professional-brain/SKILL.md) (`brain/`) exists, use it before asking:
+
+- **Read first:** `context.md` for the metric *definitions* the org already agreed on (reuse them — don't silently redefine a metric) and `knowledge/strategy.md` for what the business is optimising for.
+- **Write after:** save the metric tree and definitions to `knowledge/`, and any target-setting decision to `decisions/`, each provenance-tagged so a `[hunch]` target isn't treated as a committed goal.
+
 ## Output Structure
 
 ### 1. Framework Recommendation (if not specified)

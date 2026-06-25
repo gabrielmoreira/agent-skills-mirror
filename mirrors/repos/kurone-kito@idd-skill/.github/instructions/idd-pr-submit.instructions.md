@@ -4,13 +4,27 @@ Read this file after the self-review loop passes. It covers
 pre-publication main sync, claim verification, tests, pushing, PR
 creation, and waiting for CI.
 
-Before the D1 rebase and D2 push, apply the
+Before the D1 sync and D2 push, apply the
 [shared claim revalidation gate](idd-overview-core.instructions.md#claim-revalidation-gate).
 
 ## D1 — Sync main before first push
 
-If the branch has not been pushed yet, rebase it onto `main`. This is
-the routine pre-publication history cleanup step.
+If the branch has not been pushed yet, sync it onto `main` before the
+first push — the routine pre-publication history cleanup step. First run
+`git fetch origin main`, then check whether the branch is **already
+current** with `origin/main`: if `git merge-base HEAD origin/main` equals
+`origin/main` (behind-count 0), the branch already contains every commit
+on `main`, so the rebase would be a pure no-op. **Skip the rebase entirely
+and proceed to D2** — D1's pre-publication synchronization goal is already
+met. In a sibling-worktree setup a no-op `git rebase origin/main` can still
+detach HEAD at the upstream tip without replaying the local commit, and
+re-running that no-op rebase re-detaches every time, so the bounded
+recovery below cannot converge for the no-op case; skipping it is the clean
+exit.
+
+Otherwise the branch **is** behind `origin/main`: rebase it onto `main`
+(`git rebase origin/main`), then apply the post-rebase verification and
+bounded recovery below.
 
 After the first D-phase push, do not reuse D1 as the normal
 synchronization path. Later branch updates should return through the
@@ -26,6 +40,31 @@ If D1 itself reveals content conflicts before the first push, resolve
 them and continue the rebase. After completing the rebase, if any files
 were manually edited during conflict resolution, run **fix-validate**
 before proceeding.
+
+### Post-rebase verification
+
+In a sibling-worktree setup, a rebase can leave HEAD **detached at the
+upstream tip without replaying the local commit**: the branch ref is
+preserved, but HEAD is moved off it. After the rebase completes and before
+D2, verify both:
+
+1. `git branch --show-current` is **non-empty** — HEAD is on the claimed
+   branch, not detached.
+2. The expected local commit is present in `main..HEAD` (for example,
+   `git log --oneline main..HEAD` lists it).
+
+If HEAD is detached (current branch empty), **auto-recover once**: re-attach
+to the claimed branch with `git checkout {branch-name}` (the local commit is
+preserved on the branch ref), re-run the D1 rebase, then re-verify both
+checks. The re-rebase re-signs through the configured commit-signing path —
+do not pin a key. If recovery still fails (HEAD still detached or the
+expected commit absent), post a hold note documenting the branch state and
+stop; do not push.
+
+This is the same divergence the shared
+[claim revalidation gate](idd-overview-core.instructions.md#claim-revalidation-gate)
+catches at the next mutation (current branch ≠ claimed branch); detecting it
+here turns a confusing later failure into an immediate, recoverable signal.
 
 ## D2 — Verify claim, lint, test, push
 

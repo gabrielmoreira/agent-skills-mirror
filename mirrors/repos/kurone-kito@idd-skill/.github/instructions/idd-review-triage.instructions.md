@@ -345,11 +345,30 @@ Route based on `branchState` from the helper (or `mergeable` /
 
 - **`clean`** or **`behind-no-conflict`** when branch protection does not
   require an up-to-date head: proceed to
-  `idd-pre-merge.instructions.md` (F1).
+  `idd-pre-merge.instructions.md` (F1). **First, only if E6 posted
+  disposition replies** (any `**Accepted**` / `**Rejected**` reply on
+  reviewer feedback, advisory items, or bot non-review notices), refresh
+  the `review-watermark` so it covers them: re-post it for the same
+  `{head-SHA}`, recomputing `{max-activity-updatedAt}` /
+  `{total-item-count}` / `{latest-ci-completed-at}` over the current
+  snapshot, following the E1 Step 2 rules (CI-completion precondition;
+  hide superseded same-claim watermarks). Those replies are the
+  current-claim agent absorbing its own deterministic dispositions, not
+  new reviewer activity; without the refresh F2's review-currency treats
+  them as newer activity and returns to E1 for an avoidable cycle. Do
+  **not** refresh on the sync path (it re-snapshots at E1 after merging
+  `main`) or on a hold (it stops without proceeding to F-phase).
 - **`behind-no-conflict`** when branch protection or recorded repository
   policy requires an up-to-date head: → **sync path** below.
 - **`content-conflict`** (`mergeable` is `CONFLICTING`): → **sync path**
   below.
+- **`computing`** (`syncRecommendation` is `recheck`): `mergeable` is
+  `UNKNOWN` / null because GitHub computes mergeability asynchronously and
+  has not settled — a **transient** state. Do **not** hold. Re-poll after a
+  short wait, up to a small fixed attempt budget (distributed default: 3
+  attempts, a few seconds apart), then route by the first settled result.
+  Only a state that is **still** `computing` / `unknown` after the budget
+  falls through to the hold below.
 - **`dirty`** (`mergeStateStatus` is `DIRTY`) or **`unknown`**: hold; post
   a PR comment documenting the state and stop. Do not proceed to F-phase
   without confirmed branch-state evidence.

@@ -32,6 +32,21 @@ All three capabilities degrade on **ONE switch** — whether a HeyGen credential
 
 Full flag list + the `audio_meta.json` schema live in the header of `scripts/audio.mjs`. The references below cover the provider details and edge cases behind each capability.
 
+## Preflight — show sign-in status before any audio
+
+**Always run this before generating voice or BGM — inside a full workflow _or_ a one-off "generate me a BGM/voiceover" request.** No HeyGen credential is **not** a reason to silently fall back to local engines: first recommend signing in and let the user decide. Run the shared preflight and **relay its output verbatim** — don't improvise your own "missing key" prompt, and don't offer to write keys into a per-repo `.env`:
+
+```bash
+npx hyperframes auth status
+```
+
+- **Signed in** → it prints the account; proceed.
+- **Not signed in** (`exit 1` is expected here — "not signed in" is a normal state, not a failure) → it prints registration-first guidance. Recommend signing in: `npx hyperframes auth login` is browser OAuth — it **signs in and creates an account** (always available through this repo's CLI). To use an existing HeyGen API key (from app.heygen.com/settings/api), run `npx hyperframes auth login --api-key` — it saves to the shared `~/.heygen` (no per-repo `.env`). The output also lists the local engines voice/BGM will fall back to and a `pip` hint when deps are missing. **Relay this output as-is — don't paraphrase it into your own wording.** Then **STOP and wait** for the user to choose — sign in, or say "go" / "local" to continue offline — **before generating anything.** This is a real decision point, not a passing note: don't fold it into another question, and don't proceed past it on your own. (Exception: in autonomous / non-interactive mode, note the status and continue offline.)
+- `npx hyperframes auth status --json` returns `{ configured, recommended_action, offline_engines }` for deterministic branching.
+- **If the CLI can't run** (not on PATH and `npx` can't fetch it) → still **recommend signing in** (`npx hyperframes auth login`) and **STOP for the user's choice** — don't treat "no credential" as a silent green light for local generation.
+
+Credential resolution, full key priority, and the local-dependency list are in `references/requirements.md`.
+
 ## Provider chains (the detail behind the engine)
 
 **TTS** — first available provider wins (the engine, or `npx hyperframes tts "..."`):
@@ -79,3 +94,4 @@ See `references/bgm.md` and `references/sfx.md`.
 - **Captions consume the flat word-array format** with `{ id, text, start, end }`. See `references/transcribe.md` → "Output Shape".
 - **`remove-background --background-output` is hole-cut, not inpainted.** For "scene without the person", a different tool is needed. See `references/remove-background.md` → "When NOT the right tool".
 - **BGM/SFX default to HeyGen retrieval; the no-credential fallback is generation (BGM) or the bundled library (SFX).** `/audio/sounds` ranks by a text query — name effects concretely (`glass shatter`, not `dramatic sound`); a no-match **skips**, never blocks the render. SFX sit at volume ~0.35 under voice + BGM. See `references/sfx.md` / `references/bgm.md`.
+- **Treat workflow caption HTML as generated output.** For preset-backed videos, the reusable skin source lives at `.hyperframes/caption-skin.html` and the workflow script writes `compositions/captions.html`; do not edit generated `compositions/captions.html` to fix the skin. Rebuild via the workflow's `captions.mjs`, or use that workflow's explicit overrides mechanism when present.

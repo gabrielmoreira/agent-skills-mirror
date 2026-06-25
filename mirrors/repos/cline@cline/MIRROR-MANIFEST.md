@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cline/cline` — 26 default patterns, 2 followed patterns, 55 file(s) materialized.
+Mirror of `cline/cline` — 26 default patterns, 2 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cline/cline` — 26 default patterns, 2 followed patterns, 55 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 55 |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -106,15 +106,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 44 | ✓ | [`.cline/skills/publish-cli/SKILL.md`](.cline/skills/publish-cli/SKILL.md) |
 | 45 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 46 | ✓ | [`apps/examples/desktop-app/sidecar/ARCHITECTURE.md`](apps/examples/desktop-app/sidecar/ARCHITECTURE.md) |
-| 47 | ✓ | [`apps/vscode/src/core/prompts/system-prompt/CONTRIBUTING.md`](apps/vscode/src/core/prompts/system-prompt/CONTRIBUTING.md) |
-| 48 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 49 | ✓ | [`evals/ARCHITECTURE.md`](evals/ARCHITECTURE.md) |
-| 50 | ✓ | [`sdk/AGENTS.md`](sdk/AGENTS.md) |
-| 51 | ✓ | [`sdk/ARCHITECTURE.md`](sdk/ARCHITECTURE.md) |
-| 52 | ✓ | [`sdk/CONTRIBUTING.md`](sdk/CONTRIBUTING.md) |
-| 53 | ✓ | [`sdk/packages/llms/AGENTS.md`](sdk/packages/llms/AGENTS.md) |
-| 54 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 55 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 47 | ✓ | [`evals/ARCHITECTURE.md`](evals/ARCHITECTURE.md) |
+| 48 | ✓ | [`sdk/AGENTS.md`](sdk/AGENTS.md) |
+| 49 | ✓ | [`sdk/ARCHITECTURE.md`](sdk/ARCHITECTURE.md) |
+| 50 | ✓ | [`sdk/CONTRIBUTING.md`](sdk/CONTRIBUTING.md) |
+| 51 | ✓ | [`sdk/packages/llms/AGENTS.md`](sdk/packages/llms/AGENTS.md) |
+| 52 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 53 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

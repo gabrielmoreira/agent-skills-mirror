@@ -7,6 +7,8 @@ description: "MUST USE for ANY frontend, web UI, UX, or visual work — building
 
 This file is a router, not a rulebook. The rules live in four rulesets under `references/`; your first job is to load the smallest set of files that covers the request, state which you loaded in one sentence, then execute under their guidance. Loading nothing and freestyling produces the generic AI-slop output this skill exists to prevent; loading everything wastes context and creates contradictory instructions.
 
+**The bar is not clean-and-correct — it is work a senior designer at Linear, Stripe, or Supabase would ship.** Correct-but-flat is a failure, not a finish. Protect the surface as hard as you protect the build: design is a first-class deliverable, not a one-shot decision you lock and walk away from.
+
 ## Phase 0 — Route (before any UI work)
 
 | Request involves… | Read |
@@ -18,16 +20,15 @@ This file is a router, not a rulebook. The rules live in four rulesets under `re
 
 **For implementation work, design + perfection load together.** A page that hits Lighthouse 100 but looks like AI slop has failed; a page that looks beautiful but ships a 2 MB bundle has failed. Both win or neither does.
 
-## Design System Workflow
+## Design System and Component Workflow
 
-When `references/designpowers/README.md` is loaded for implementation, redesign, or design-system work, it feeds the project design-system step first. Do not treat designpowers as another loose inspiration folder.
+Every implementation must choose one of these branches before UI code changes:
 
-1. Before writing UI components, synthesize or update the project `DESIGN.md` from the user brief, designpowers references, brand/taste direction, accessibility and persona constraints, accepted design debt, and existing UI context.
-2. Make `DESIGN.md` the implementation contract. It must name the tokens, typography, spacing, component primitives, motion rules, responsive behavior, accessibility constraints, and accepted design debt that downstream UI work will follow.
-3. Implement against that `DESIGN.md`, using `references/design/README.md` for the design-system gate and `references/perfection/README.md` for performance, SEO, accessibility, and real-browser verification.
-4. Verify the actual surface with visual QA evidence, then pass the design-system decisions, implementation evidence, and unresolved debt into `/review-work` for significant implementation work.
+1. **Greenfield or fresh setup:** if the user gave no concrete visual reference, use `references/design/_INDEX.md` to shortlist 2-3 plausible Layer B references, then deeply load exactly one Layer A style skill and one Layer B brand/design-system reference; use `open-design` only when the curated set has no fit. Treat those references as source material, not mood labels: extract tokens, layout grammar, component anatomy, interaction states, motion, and taste decisions into `DESIGN.md`, then recombine them into project-specific primitives. Customize for the user's product and content, but do not freestyle past the selected references; never copy logos, trademarked assets, or brand-specific copy. Define Section 5 primitives with variants, default/hover/active/focus/disabled/loading/empty/error states, accessibility, and motion before code. Build them first in a component showcase or state harness; each primitive and required state must pass mobile/tablet/desktop visual QA before product screens.
+2. **Existing project with `DESIGN.md` or a component system:** read it, follow it, and update it before implementation only when the requested work needs a new token, primitive, state, motion rule, accessibility constraint, or accepted debt.
+3. **Existing project with UI but no `DESIGN.md` and no reusable component layer:** STOP and ask the user one focused question: should you preserve the current look with copy-nearby styling, or extract a real `DESIGN.md` plus reusable components before continuing? Do not silently choose.
 
-If designpowers guidance is relevant but the project has no `DESIGN.md`, create it before components. If `DESIGN.md` exists, update it before components whenever designpowers inputs change tokens, typography, spacing, primitives, motion, responsive behavior, accessibility constraints, or accepted debt.
+When `references/designpowers/README.md` is loaded for implementation, redesign, or design-system work, feed its personas, accessibility, critique, debt, handoff, and role-reference guidance into the branch above. The resulting `DESIGN.md` is the implementation contract: tokens, typography, spacing, primitives, motion, responsive behavior, accessibility constraints, and accepted debt must be named there before code uses them. Verify component primitives, states, and final screens with real visual QA evidence; pass design-system decisions, implementation evidence, and unresolved debt into `/review-work` for significant implementation work.
 
 ## Ruleset 1 — design (`references/design/`)
 
@@ -43,11 +44,11 @@ The reference library has one architecture file, 12 taste skills (Layer A — *h
 
 | File | Read when the user says… |
 |---|---|
-| `taste-skill.md` | Nothing style-specific — "make a good UI". The default all-rounder. |
-| `gpt-tasteskill.md` | "Awwwards-tier", "wow factor", "cinematic", "scroll-triggered", or `taste-skill` results felt too safe. |
+| `taste-skill.md` | Neutral or operational UI with no surface ambition — internal tools, dashboards, "just make it usable". The safe default; do NOT settle here when the brief signals glossy / premium / startup-grade craft. |
+| `gpt-tasteskill.md` | "Awwwards-tier", "wow factor", "cinematic", "scroll-triggered" marketing/landing experiences. |
 | `minimalist-skill.md` | "minimal", "clean", "Notion-like", "Linear-like", "editorial". |
 | `brutalist-skill.md` | "brutalist", "raw", "Swiss", "experimental", "anti-design". |
-| `soft-skill.md` | "premium", "luxury", "calm", "expensive", "spa", "boutique", "elegant". |
+| `soft-skill.md` | "premium", "luxury", "calm", "expensive", "elegant", AND glossy / glassy / liquid-glass / startup-grade product surfaces — pair with a high-craft Layer B (`supabase`, `linear.app`, `vercel`, `stripe`). |
 | `redesign-skill.md` | Improving EXISTING UI — "this looks bad", "fix the design". Audit-first workflow; never use on greenfield. |
 | `image-to-code-skill.md` | "Generate the design first, then code it." Pair with one imagegen file below. |
 | `output-skill.md` | Stacks on any style skill when output is incomplete — placeholders, `// TODO`, half-done components. |
@@ -99,7 +100,7 @@ Domains: `product` `style` `typography` `color` `landing` `chart` `ux` `react` `
 
 | Request | Load |
 |---|---|
-| "Build a landing page" (no direction given) | `design/README.md` + `design/taste-skill.md` + `perfection/README.md` |
+| "Build a landing page" (no direction given) | `design/README.md` + `design/_INDEX.md` shortlist → exactly one Layer B reference + `design/taste-skill.md` + `perfection/README.md` |
 | "Linear-style landing page" | `design/README.md` + `design/linear.app.md` + `design/taste-skill.md` + `perfection/README.md` |
 | "Premium SaaS hero like Stripe" | `design/README.md` + `design/stripe.md` + `design/soft-skill.md` + `perfection/README.md` |
 | "Improve this existing dashboard" | `design/README.md` + `design/redesign-skill.md` + `perfection/README.md` |
@@ -112,7 +113,7 @@ Domains: `product` `style` `typography` `color` `landing` `chart` `ux` `react` `
 ## Shared axioms (all four rulesets agree — apply always)
 
 - **No design system = no UI work.** `DESIGN.md` exists before components do; every color, font size, and spacing value traces back to a token in it.
-- **Never weaken UX to buy points.** No dropping animations, hiding content, or simplifying interactions for a score or a deadline.
+- **Never weaken UX OR flatten the surface to buy points.** No dropping animations, hiding content, simplifying interactions, or replacing rendered/lit material with flat fills and flat geometric primitives for a Lighthouse score or a deadline. Hit 100 AND keep the surface dimensional — both, or neither.
 - **No emojis as icons.** SVG icon sets only (Lucide, Heroicons, Radix, Phosphor).
 - **GPU-composited animation only** — `transform`, `opacity`, `filter`; never animate layout properties.
 - **Verify in a real browser before declaring done.** Screenshots at 375 / 768 / 1280px; hover, focus, loading, empty, and error states all exercised.

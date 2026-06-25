@@ -28,12 +28,12 @@ def is_first_run(config: Dict[str, Any]) -> bool:
     return not config.get("SETUP_COMPLETE")
 
 
-def run_auto_setup(config: Dict[str, Any]) -> Dict[str, Any]:
+def run_auto_setup(config: Dict[str, Any], *, allow_browser_cookies: bool = False) -> Dict[str, Any]:
     """Perform the auto-setup actions.
 
-    - Runs cookie extraction for all registered domains, trying the browsers
-      from ``env.cookie_extraction_browsers()`` (honors ``FROM_BROWSER``;
-      defaults to Firefox/Safari, so no Chrome Keychain prompt)
+    - Optionally runs cookie extraction for all registered domains, trying the
+      browsers from ``env.cookie_extraction_browsers()``. Browser reads are off
+      unless ``allow_browser_cookies`` is true.
     - Checks if yt-dlp is installed
     - Best-effort install of digg-pp-cli (Printing Press library)
 
@@ -49,31 +49,31 @@ def run_auto_setup(config: Dict[str, Any]) -> Dict[str, Any]:
           digg_stderr: present when digg_action is install_failed
           digg_path: present when digg_action is installed_off_path (binary on disk, not on PATH)
     """
-    from . import cookie_extract
     from .env import COOKIE_DOMAINS, cookie_extraction_browsers
 
     cookies_found: Dict[str, str] = {}
 
-    # Honor FROM_BROWSER and default to the silent browsers (Firefox/Safari).
-    # Using "auto" here used to probe Chrome unconditionally, triggering a
-    # "Chrome Safe Storage" Keychain prompt on first run that the steady-state
-    # path deliberately avoids. Chrome is now opt-in via FROM_BROWSER=chrome|auto.
-    # An empty list (FROM_BROWSER=off) makes the inner loop a no-op.
-    browsers = cookie_extraction_browsers(config)
+    if allow_browser_cookies:
+        from . import cookie_extract
 
-    for source_name, spec in COOKIE_DOMAINS.items():
-        domain = spec["domain"]
-        cookie_names = spec["cookies"]
+        cookie_config = dict(config)
+        if not (cookie_config.get("FROM_BROWSER") or "").strip():
+            cookie_config["FROM_BROWSER"] = "firefox,safari"
+        browsers = cookie_extraction_browsers(cookie_config)
 
-        for browser in browsers:
-            try:
-                result = cookie_extract.extract_cookies_with_source(browser, domain, cookie_names)
-            except Exception as exc:
-                logger.debug("Cookie extraction failed for %s via %s: %s", source_name, browser, exc)
-                continue
-            if result is not None and result[0]:
-                cookies_found[source_name] = result[1]
-                break  # Found cookies for this service, stop trying browsers
+        for source_name, spec in COOKIE_DOMAINS.items():
+            domain = spec["domain"]
+            cookie_names = spec["cookies"]
+
+            for browser in browsers:
+                try:
+                    result = cookie_extract.extract_cookies_with_source(browser, domain, cookie_names)
+                except Exception as exc:
+                    logger.debug("Cookie extraction failed for %s via %s: %s", source_name, browser, exc)
+                    continue
+                if result is not None and result[0]:
+                    cookies_found[source_name] = result[1]
+                    break  # Found cookies for this service, stop trying browsers
 
     # Check yt-dlp availability and install via Homebrew if missing
     ytdlp_action: str

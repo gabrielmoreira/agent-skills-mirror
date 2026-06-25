@@ -59,10 +59,11 @@ within `SHUTDOWN_TIMEOUT_MS` (5s) before exiting.
   `describe()` hook. Default `openWorldHint: true`.
 
 Each `src/tools/<tool>/` file is a few lines: name + title + core schema + core
-`execute*` runner. The 13 tools: **GitHub** (search code, fetch content, view
-repo structure, search repos, search PRs, clone repo), **package** (npm search),
-**local** (ripgrep, view structure, find files, fetch content, binary inspect),
-**LSP** (semantic content).
+`execute*` runner. The tool families are: **GitHub** (search code, fetch
+content, view repo structure, search repos, search PRs, clone repo),
+**package** (npm search), **local** (ripgrep, view structure, find files, fetch
+content, binary inspect), **LSP** (semantic content), and **OQL** (`oqlSearch`
+through the shared OQL runner).
 
 ## Output Safety (`src/utils/secureServer.ts`)
 
@@ -70,8 +71,8 @@ repo structure, search repos, search PRs, clone repo), **package** (npm search),
 `registerTool`/`registerResource`. Every tool callback is wrapped so its result
 is passed through `sanitizeCallToolResult` (secret masking via
 `ContentSanitizer` + `maskSensitiveData`), and thrown errors are normalized,
-sanitized, logged (`logSessionError`), and converted to a safe tool error result
-instead of crashing the server.
+sanitized, and converted to a safe tool error result instead of crashing the
+server.
 
 ## Schema Bridging (`src/types/toolTypes.ts`)
 
@@ -81,9 +82,22 @@ inference from the SDK's Zod v3/v4 compat layer.
 
 ## Dependencies
 
-Runtime deps are intentionally minimal:
+There are two different dependency views:
 
-- `@modelcontextprotocol/sdk` — MCP server + stdio transport.
-- `@octocodeai/octocode-tools-core` (`workspace:*`) — all logic, schemas,
-  metadata, security primitives, `execute*` runners.
-- `zod` — schema types.
+- **Source/build**: `@octocodeai/octocode-tools-core` is a workspace
+  `devDependency`. The MCP source imports its runners, schemas, metadata, and
+  shared utilities, then esbuild inlines that first-party code into
+  `dist/index.js` and `dist/public.js`.
+- **Published runtime**: npm users do **not** install
+  `@octocodeai/octocode-tools-core`. The published package depends directly on
+  `@modelcontextprotocol/sdk`, `@octocodeai/octocode-core`,
+  `@octocodeai/octocode-engine`, Octokit packages, `node-cache`, and `zod`.
+- **Native engine**: `@octocodeai/octocode-engine` must remain a direct runtime
+  dependency because its Rust `.node` binary is distributed through the engine
+  root package plus one matching platform `optionalDependency`.
+- **Types**: `dist/public.d.ts` is bundled so public declarations do not leak a
+  dependency on the unpublished tools-core package.
+
+Publish order follows the runtime graph: publish
+`@octocodeai/octocode-engine` platform packages, then the engine root, then
+`octocode-mcp`.

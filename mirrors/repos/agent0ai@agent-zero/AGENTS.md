@@ -3,8 +3,8 @@
 [Generated using reconnaissance on 2026-02-22]
 
 ## Quick Reference
-Tech Stack: Python 3.12+ | Flask | Alpine.js | LiteLLM | WebSocket (Socket.io)
-Dev Server: python run_ui.py (runs on http://localhost:50001 by default)
+Tech Stack: Framework Python 3.12+ | Agent execution Python 3.13 in Docker | Flask | Alpine.js | LiteLLM | WebSocket (Socket.io)
+Dev Server: python run_ui.py (discover host/port from startup output or runtime configuration; do not assume a default port)
 Run Tests: pytest (standard) or pytest tests/test_name.py (file-scoped)
 Documentation: README.md | docs/
 Frontend & Plugin DOX: [WebUI](webui/AGENTS.md) | [Components](webui/components/AGENTS.md) | [Frontend JS](webui/js/AGENTS.md) | [Plugins](plugins/AGENTS.md)
@@ -41,25 +41,26 @@ Primary Language(s): Python, JavaScript (ES Modules)
 Do not combine these commands; run them individually:
 ```bash
 pip install -r requirements.txt
-pip install -r requirements2.txt
 ```
 - Start WebUI: python run_ui.py
+- Discover the WebUI URL from startup output, launcher/Docker port mappings, or explicit `--host`/`--port`/`WEB_UI_PORT` configuration; do not hardcode a default port.
 
 ---
 
 ## Docker Environment
 
-When running in Docker, Agent Zero uses two distinct Python runtimes to isolate the framework from the code being executed:
+When running in Docker, Agent Zero uses two distinct Python runtimes to isolate the framework itself from code executed on behalf of the agent:
 
 ### 1. Framework Runtime (/opt/venv-a0)
 - Version: Python 3.12.4
-- Purpose: Runs the Agent Zero backend, API, and core logic.
-- Packages: Contains all dependencies from requirements.txt.
+- Purpose: Runs the Agent Zero framework itself: WebUI backend, API, core loop, scheduler, framework imports, and plugin hooks/tools that execute inside the framework process.
+- Packages: Contains framework dependencies from requirements.txt.
+- Verification: Use this runtime for framework/backend import checks, WebUI startup checks, and plugin hook behavior unless the code explicitly switches environments.
 
-### 2. Execution Runtime (/opt/venv)
+### 2. Agent Execution Runtime (/opt/venv)
 - Version: Python 3.13
-- Purpose: Default environment for the interactive terminal and the agent's code execution tool.
-- Behavior: This is the environment active when you docker exec into the container. Packages installed by the agent via pip install during a task are stored here.
+- Purpose: Default Python environment for the agent's terminal/code-execution tasks and user code run by the agent.
+- Behavior: Packages installed by the agent during a task belong here so task dependencies do not pollute or prove the framework runtime. Do not use this runtime as evidence that framework imports, WebUI startup, or plugin hooks work.
 
 ---
 
@@ -97,10 +98,11 @@ When running in Docker, Agent Zero uses two distinct Python runtimes to isolate 
 ```
 
 Key Files:
-- agent.py: Defines AgentContext and the main Agent class.
+- agent.py: Defines AgentContext, LoopData virtual prompt areas (Protocol before history and Extras after history), and the main Agent class.
 - helpers/plugins.py: Plugin discovery and configuration logic.
 - webui/js/AlpineStore.js: Store factory for reactive frontend state.
 - helpers/api.py: Base class for all API endpoints.
+- models.py: LLM provider configuration and LiteLLM wrappers; framework LiteLLM defaults such as `drop_params=True` are merged with `litellm_global_kwargs`, configured values override framework defaults, documented module-level switches such as `drop_params` are applied to LiteLLM, and merged kwargs are passed per call.
 - scripts/openrouter_release_notes_system_prompt.md: Editable system prompt used to generate GitHub release notes during Docker publishing.
 - knowledge/main/about/: Agent self-knowledge files, indexed into the vector DB for runtime recall. Not user-facing docs - written for the agent's internal reference.
 - webui/components/AGENTS.md: DOX contract for Alpine component architecture.
@@ -240,7 +242,6 @@ If pip install fails, try running in a clean virtual environment:
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-pip install -r requirements2.txt
 ```
 
 ### WebSocket Connection Failures

@@ -38,16 +38,17 @@ for Claude-based agents working in this repository.
 
 ## Current Release Work
 
-- The active branch for this release lane is `codex/v0.8.63-integration`
-  (also at `origin/codex/v0.8.63-integration`). This repo lives on multiple
-  devices, so do not hard-code a checkout path; work in whichever local
-  checkout you have and confirm with `git branch --show-current` before
-  editing. Never commit directly to `main`.
-- The workspace version is `0.8.63`. Do not tag, publish, create a GitHub
-  Release, push release artifacts, or merge to `main` without Hunter's
-  explicit approval.
-- Base release triage on the GitHub `v0.8.63` milestone
-  (`gh issue list --repo Hmbown/CodeWhale --milestone "v0.8.63" --state open`)
+- Confirm the active branch for the current release lane from the latest handoff
+  and `git branch --show-current`; recent work has landed on `main` through small
+  PRs rather than a long-lived `codex/...` integration branch. This repo lives on
+  multiple devices, so do not hard-code a checkout path; work in whichever local
+  checkout you have and confirm the branch before editing. Never commit directly
+  to `main`.
+- Read the workspace version from `Cargo.toml`; it advances per release lane. Do
+  not tag, publish, create a GitHub Release, push release artifacts, or merge to
+  `main` without Hunter's explicit approval.
+- Base release triage on the current GitHub release milestone named in the active
+  handoff (`gh issue list --repo Hmbown/CodeWhale --milestone "<current>" --state open`)
   unless Hunter gives a newer branch/milestone.
 - Work the queue in this order: release blockers, recently approved PRs, clean
   PRs with small scope, blocked PRs with obvious fixes, dirty PRs that can be

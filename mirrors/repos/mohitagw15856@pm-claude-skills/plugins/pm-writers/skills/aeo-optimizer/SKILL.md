@@ -1,6 +1,6 @@
 ---
 name: aeo-optimizer
-description: "Optimize an article for Answer Engine Optimization (AEO) — restructuring content so AI engines like ChatGPT, Perplexity, and Claude can extract, quote, and cite it. Rewrites headings as questions, drops 50-80 word answer capsules, audits paragraph length, and flags trust signals. Use when asked to AEO-optimize, make content AI-readable, improve AI citation chances, or adapt an article for answer engines."
+description: "Optimize an article for Answer Engine Optimization (AEO) so AI engines like ChatGPT, Perplexity, and Claude can extract, quote, and cite it. Use when asked to AEO-optimize, make content AI-readable, improve AI citation chances, or adapt an article for answer engines. Produces an AEO-optimised rewrite with question headings, 50–80 word answer capsules, a paragraph-length audit, and flagged trust signals."
 ---
 
 # AEO Optimizer Skill

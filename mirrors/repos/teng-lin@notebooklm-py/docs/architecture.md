@@ -1189,6 +1189,7 @@ src/notebooklm/
 ├── cli/                         # CLI implementation
     ├── __init__.py              # Re-exports click groups under historical names from *_cmd modules
     ├── _chromium_profiles.py    # Multi-user-data-profile cookie extraction for Chromium browsers
+    ├── _cookie_import.py        # `auth import-cookies` helpers: parse/normalize/validate cookie JSON + backup-then-atomic-write storage_state
     ├── _download_specs.py       # Registry data for `download <type>` leaf commands
     ├── _encoding.py             # Encoding-safe CLI output helpers
     ├── _firefox_containers.py   # Container-aware Firefox cookie extraction

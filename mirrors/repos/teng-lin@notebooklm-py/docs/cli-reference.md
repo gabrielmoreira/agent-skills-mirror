@@ -61,6 +61,7 @@ See [Configuration](configuration.md) for full env-var precedence and CI/CD setu
 | `auth check --test` | Validate with network test | `notebooklm auth check --test` |
 | `auth check --json` | Output as JSON | `notebooklm auth check --json` |
 | `auth inspect` | List Google accounts visible to a browser cookie store (read-only) | `notebooklm auth inspect --browser chrome` |
+| `auth import-cookies` | Import auth cookies from a JSON file (or stdin) into the active profile | `notebooklm auth import-cookies cookies.json` |
 | `auth logout` | Clear saved cookies and cached browser profile | `notebooklm auth logout` |
 | `auth refresh` | One-shot SIDTS rotation poke (for OS schedulers) | `notebooklm auth refresh` |
 | `auth refresh --quiet` | Refresh; suppress success output | `notebooklm auth refresh --quiet` |
@@ -446,6 +447,40 @@ notebooklm login --fresh
 - Without `--account` or `--all-accounts`, imports the selected browser/profile's default Google account into the target profile.
 - For Chromium-family browsers, unscoped `chrome`, `brave`, `edge`, etc. fan out across populated user profiles when account selection is needed. Use `chrome::<profile-name-or-directory>` to read exactly one profile; directory names such as `Default` and `Profile 1` are stable across UI renames.
 - Use `notebooklm auth inspect --browser <browser>` to see available account emails before a targeted import; pass `-v` to show the Chromium profile directory each account came from.
+
+### Authentication: `auth import-cookies`
+
+Import authentication cookies from a JSON file (or stdin) and persist them to the active profile's `storage_state.json` — a file-backed, persistent alternative to the env-var-based `NOTEBOOKLM_AUTH_JSON` for users who can obtain cookies as JSON but find the browser/Playwright login flow difficult.
+
+> **⚠️ These are full-account credentials.** A JSON cookie export grants the same access as being logged in. Only import a file you exported yourself, keep it private, and delete it after import. Be especially cautious with third-party browser cookie-export extensions.
+
+```bash
+notebooklm auth import-cookies JSON_PATH [OPTIONS]
+```
+
+Accepts either a Playwright `storage_state` object (`{"cookies": [...]}`) or a bare JSON list of cookie objects (the shape most browser cookie-export tools produce). Use `-` to read JSON from stdin. Common export fields are normalized (e.g. `expirationDate` → `expires`), `__Secure-`/`__Host-` cookies are forced `Secure`, and any `storage_state` `origins` (localStorage/sessionStorage) are dropped.
+
+Imported cookies are filtered through the **same domain allowlist** used by browser login, validated locally for the NotebookLM-required cookies (and a usable secondary binding — `OSID`, or `APISID`+`SAPISID`), and written atomically with private (`0o600`) permissions. Invalid input never overwrites an existing session, and an existing `storage_state.json` is first copied to `storage_state.json.bak` so a stale import can be rolled back (one step — each run overwrites the previous `.bak`).
+
+Incompatible with `NOTEBOOKLM_AUTH_JSON`: unset that env var first, or the command exits with an error (it does not silently fall back to the env auth).
+
+**Options:**
+- `--include-domains LABEL` (repeatable) - Opt in to persisting sibling-product cookies (default: required Google auth/Drive/NotebookLM domains only). Pass labels comma-separated or repeat the flag (e.g. `--include-domains youtube,docs` or `--include-domains youtube --include-domains docs`). Same labels as `login`: `youtube`, `docs`, `myaccount`, `mail`, `all`.
+- `--include-optional` - Persist all optional sibling-product cookie domains.
+- `--json` - Emit a JSON result (`storage_path`, `cookie_count`, `backup_path`).
+- `--quiet` - Suppress success output.
+
+**Examples:**
+```bash
+# Import a bare cookie list exported by a browser tool
+notebooklm auth import-cookies cookies.json
+
+# Import a Playwright storage_state into a named profile
+notebooklm -p work auth import-cookies playwright-storage-state.json
+
+# Pipe JSON from stdin
+cat cookies.json | notebooklm auth import-cookies -
+```
 
 ### Session: `use`
 

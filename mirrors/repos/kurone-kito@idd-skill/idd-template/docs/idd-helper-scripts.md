@@ -61,6 +61,9 @@ In the idd-skill source repository, the following optional helpers were adopted:
   and rerun-budget decisions
 - `scripts/pre-merge-readiness.mjs` for read-only F2/F3 readiness
   evidence collection
+- `scripts/idd-merge-execute.mjs` for the F3 merge gate: a dry-run
+  verdict by default and, with `--apply`, the bound merge execution; it
+  wraps `pre-merge-readiness` and adds no new decision authority
 - `scripts/live-status-digest.mjs` for issue or PR live status digest
   discovery, rendering, dry-run, and claim-checked upsert
 - `scripts/audit-pr-cleanup.mjs` for post-merge comment cleanup auditing
@@ -129,10 +132,15 @@ future inventory reviews do not need to re-infer their role from code.
 ### Discover Roadmap Graph Contract
 
 `scripts/discover-roadmap-graph.mjs` evaluates the recursive A1.5/A2
-roadmap graph for one selected roadmap issue.
+roadmap graph for one selected roadmap issue. It also offers an additive
+cross-roadmap autopilot discovery mode (`--all-roadmaps`) that unions the
+open execution leaves across every open roadmap root; the single-root
+default below is unchanged.
 
 - **Inputs**: `--issue <number>`, with optional `--owner <owner>`,
-  `--repo <repo>`, and `--policy <path>`.
+  `--repo <repo>`, and `--policy <path>`. `--issue` and `--all-roadmaps`
+  are mutually exclusive; exactly one mode must be selected. Passing both,
+  or neither, is an error.
 - **JSON output**:
   - `root`: `{ number: number, title: string, state: string,`
     `classification: "roadmap" | "execution", roadmapMarkerId: string }`
@@ -152,7 +160,37 @@ roadmap graph for one selected roadmap issue.
     `duplicateReferenceCount: number, cycleCount: number,`
     `inaccessibleReferenceCount: number, unresolvedReferenceCount: number,`
     `maxDepth: number }`
-- **Error conditions**: missing `--issue`, unknown flags, an unreadable
+- **Cross-roadmap autopilot mode (`--all-roadmaps`)**: discovers every
+  **open** roadmap root (an open issue carrying the `roadmap` label **or**
+  an `<!-- {{PROJECT_MARKER_PREFIX}}-roadmap-id: ... -->` marker), runs the
+  single-root enumeration above from each root, and returns a **union** of
+  open execution leaves. The output shape differs from single-root mode:
+  - `mode`: `"all-roadmaps"`
+  - `roots`: `[{ number: number, title: string, state: string,`
+    `roadmapMarkerId: string }]` — every open roadmap root enumerated
+  - `leaves`: `[{ number: number, title: string, state: string,`
+    `labels: string[], classification: "execution",`
+    `roadmapMarkerId: string, autopilotSuitability: number | null,`
+    `sourceRoots: number[] }]` — the union of open execution leaves. Each
+    leaf records every roadmap root it is reachable from in `sourceRoots`
+    (provenance); a leaf shared by sibling epics appears **once** and is
+    never double-counted.
+  - `diagnostics`: same four buckets as single-root mode, deduped across
+    every per-root enumeration.
+  - `summary`: `{ rootCount: number, leafCount: number,`
+    `scoredLeafCount: number, sharedLeafCount: number,`
+    `duplicateReferenceCount: number, cycleCount: number,`
+    `inaccessibleReferenceCount: number, unresolvedReferenceCount: number }`
+  - **Ranking** (global-by-score): `leaves` is sorted by
+    `autopilotSuitability` **descending**, tie-broken by issue number
+    **ascending** (stable). A missing or out-of-range score is treated as
+    the configured suitability floor for ordering so unscored work is not
+    buried, but a coherently scored leaf never ranks below an unscored leaf
+    at the same effective value — scored work always sorts first at a tie.
+    The score is an advisory ranking hint only; it never replaces the
+    A4.5 suitability gate or the A5 claim safety checks.
+- **Error conditions**: missing `--issue` (and no `--all-roadmaps`),
+  combining `--issue` with `--all-roadmaps`, unknown flags, an unreadable
   root roadmap, or incomplete `subIssues` GraphQL data throw. Missing or
   inaccessible descendants are reported in `diagnostics` instead of
   crashing.
@@ -160,6 +198,13 @@ roadmap graph for one selected roadmap issue.
   bodies and GitHub sub-issue relationships, but it must not claim
   issues, edit roadmap bodies, close roadmap nodes, or decide readiness
   by itself.
+- **Runtime / read timing**: the helper is **long-running** on large
+  roadmaps — it issues many sequential API calls and emits the whole graph
+  in a single final stdout write, with no progress line or completion
+  sentinel. Redirect stdout to a file and wait for process exit before
+  parsing; a zero-byte or partial read from a still-running (or
+  just-finished) helper means **"still running," not** an A2 enumeration
+  failure.
 
 ### Discover Viability Gate Contract
 
@@ -352,6 +397,18 @@ The adopted helper boundaries are intentionally narrow:
 - it does not replace the pre-merge or merge decision tables; it only
   reduces command-copy variance when collecting canonical merge-gate
   evidence
+
+- `idd-merge-execute.mjs` defaults to dry-run and stays read-only in
+  that mode: it reuses `pre-merge-readiness` to evaluate the F3 gates and
+  prints `{ ready, blockers, mergeCommand }` without merging
+- apply mode (`--apply`) is the only mutating path: when `ready` it
+  re-fetches the head SHA and re-validates the claim immediately before
+  merging, fails closed (no merge) on head drift or lost claim, and runs
+  a merge commit bound to the validated head — never squash or rebase
+- it adds no new decision authority (`decisionAuthority: instructions`):
+  it does not replace the written F3 gate checklist or decision table,
+  and on any helper failure or evidence conflict the agent falls back to
+  the manual F3 steps
 
 - `live-status-digest.mjs` defaults to dry-run, supports issue and PR
   targets, and mutates only with explicit `--apply`
@@ -693,6 +750,44 @@ Interpretation rules:
   live GitHub state, discard helper output and use the portable manual
   fetch path.
 
+### Merge execution (F3)
+
+- Preferred F3 path when helper runtime is enabled: dry-run first to
+  inspect the verdict, then `--apply` to execute the bound merge.
+- Command: `node scripts/idd-merge-execute.mjs --pr <pr-number>
+  --claim-issue <issue-number> --claim-id <claim-id>` plus the same
+  optional flags as `pre-merge-readiness` (`--agent-id`, `--owner`,
+  `--repo`, `--trusted-marker-logins`, `--advisory-bot-logins`); add
+  `--apply` to merge.
+- Stable contract:
+  [`idd-merge-execute.schema.json`][idd-merge-execute-schema]
+- It WRAPS the read-only `pre-merge-readiness` collector and adds no new
+  decision authority (`decisionAuthority: instructions`). `ready` is
+  `true` only when every F3 gate holds: review-currency
+  `comparisonRoute == "proceed"`, `threads.actionableCount == 0`,
+  advisory `f3Outcome == "SATISFIED"`, CI all-passing (the F2/F3
+  no-required-checks fallback included), required/CODEOWNER reviews
+  satisfied, claim ownership matches, and disposition evidence both
+  routes proceed and is unblocked (`dispositionEvidence.route ==
+  "proceed"` **and** `dispositionEvidence.blockingCount == 0`; `route`
+  alone is not sufficient). Each failing gate is listed in `blockers[]`
+  as `{ gate, detail }`.
+- Dry-run (default) is read-only: it prints `ready`, `blockers`, and
+  `mergeCommand` (a `gh pr merge <pr> --merge --match-head-commit
+  <validated-head>` bound to the freshly fetched head) and never merges.
+  It exits non-zero when not ready.
+- `--apply` is the only mutating path. If not `ready` it exits non-zero
+  without merging. If `ready` it re-fetches the head SHA and re-validates
+  the claim immediately before merging and **fails closed** (exit
+  non-zero, no merge, clear message) on any head drift or lost claim.
+  Otherwise it runs the merge commit bound to the validated head and
+  reports the result. It never squash- or rebase-merges.
+- Fail closed: if helper execution fails, output is invalid JSON,
+  required fields are missing, or helper evidence conflicts with live
+  GitHub state, discard helper output and run the manual F3 gate +
+  merge steps in `idd-merge.instructions.md`. The written F3 decision
+  table and gate checklist remain canonical.
+
 ### E7 disposition verification
 
 - Preferred command when helper runtime is enabled:
@@ -764,9 +859,12 @@ Interpretation rules:
   ```
 
 - `branchState` values: `clean`, `behind-no-conflict`, `content-conflict`,
-  `dirty`, `force-push-exception`, `unknown`
+  `dirty`, `force-push-exception`, `computing`, `unknown` (`computing` is the
+  transient still-computing mergeability that callers re-poll; `unknown` stays
+  terminal)
 - `syncRecommendation` values: `none`, `merge-main`, `policy-required-update`,
-  `force-push-exception`, `hold-unknown`
+  `force-push-exception`, `recheck`, `hold-unknown` (`recheck` pairs with
+  `computing`)
 - Stable fields consumed by D/E/F routing: `branchState`,
   `syncRecommendation`, `published`, `readOnly`, `worktreeUnchanged`
 - Read-only boundary: the helper never runs `git merge`, `git rebase`, or
@@ -954,4 +1052,5 @@ pre-merge readiness or later claim-state inspection. They should not
 replace the written decision tables.
 
 [advisory-wait-state-schema]: https://kurone-kito.github.io/idd-skill/schemas/advisory-wait-state.schema.json
+[idd-merge-execute-schema]: https://kurone-kito.github.io/idd-skill/schemas/idd-merge-execute.schema.json
 [pre-merge-readiness-schema]: https://kurone-kito.github.io/idd-skill/schemas/pre-merge-readiness.schema.json

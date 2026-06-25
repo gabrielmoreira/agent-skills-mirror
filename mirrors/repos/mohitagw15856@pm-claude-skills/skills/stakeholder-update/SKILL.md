@@ -16,6 +16,13 @@ Ask the user for these if not provided:
 - **Current status** (on track / at risk / blocked)
 - **Key metrics** and their current values vs. targets
 
+## Reads from / Writes to the Brain
+
+If a [`professional-brain`](../professional-brain/SKILL.md) (`brain/`) exists, use it before asking:
+
+- **Read first:** the relevant `stakeholders/` files (what each person cares about and their prior asks), `context.md` (voice/tone), and recent `decisions/` for what's changed since the last update.
+- **Write after:** append any new ask, concern, or commitment surfaced to the relevant `stakeholders/` file, provenance-tagged (`[verbal]` for something said in a meeting, not yet documented).
+
 ## Update Structure
 
 ### 1. BLUF (Bottom Line Up Front)

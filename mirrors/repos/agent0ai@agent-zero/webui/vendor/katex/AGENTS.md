@@ -1,0 +1,28 @@
+# KaTeX Vendor DOX
+
+## Purpose
+
+- Own vendored KaTeX assets used for math rendering.
+
+## Ownership
+
+- `katex.min.js` owns core rendering behavior.
+- `katex.auto-render.min.js` owns auto-render support.
+- `katex.min.css` owns KaTeX styling.
+
+## Local Contracts
+
+- Do not hand-edit minified vendor files.
+- Keep markdown/message rendering imports synchronized with asset paths.
+
+## Work Guidance
+
+- Replace from a clean upstream release when updating KaTeX.
+
+## Verification
+
+- Smoke-test markdown or message content containing math after changes.
+
+## Child DOX Index
+
+No child DOX files.

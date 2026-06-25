@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `specstoryai/getspecstory` — 26 default patterns, 5 followed patterns, 10 file(s) materialized.
+Mirror of `specstoryai/getspecstory` — 26 default patterns, 5 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `specstoryai/getspecstory` — 26 default patterns, 5 followed pattern
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,11 +68,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`lore/CLAUDE.md`](lore/CLAUDE.md) |
 | 4 | ✓ | [`lore/SKILL.md`](lore/SKILL.md) |
 | 5 | ✓ | [`specstory-cli/CLAUDE.md`](specstory-cli/CLAUDE.md) |
-| 6 | → | [`CODE-OF-CONDUCT.md`](CODE-OF-CONDUCT.md) |
-| 7 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 8 | → | [`lore/CONTRIBUTING.md`](lore/CONTRIBUTING.md) |
-| 9 | → | [`specstory-cli/.claude/commands/code-review.md`](specstory-cli/.claude/commands/code-review.md) |
-| 10 | → | [`specstory-cli/.claude/commands/pr-review.md`](specstory-cli/.claude/commands/pr-review.md) |
+| 6 | ✓ | [`workthreads/SKILL.md`](workthreads/SKILL.md) |
+| 7 | → | [`CODE-OF-CONDUCT.md`](CODE-OF-CONDUCT.md) |
+| 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 9 | → | [`lore/CONTRIBUTING.md`](lore/CONTRIBUTING.md) |
+| 10 | → | [`specstory-cli/.claude/commands/code-review.md`](specstory-cli/.claude/commands/code-review.md) |
+| 11 | → | [`specstory-cli/.claude/commands/pr-review.md`](specstory-cli/.claude/commands/pr-review.md) |
 
 ---
 

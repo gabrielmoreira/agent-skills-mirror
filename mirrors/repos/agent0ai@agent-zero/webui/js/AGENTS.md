@@ -13,6 +13,7 @@
 - `extensions.js` owns frontend extension loading.
 - `components.js` owns `<x-component>` loading, component caching, module injection, nested component processing, and `globalThis.xAttrs`.
 - `modals.js` owns the stacked modal shell, `openModal`, `closeModal`, `scrollModal`, footer relocation, backdrop, and modal z-index behavior.
+- `surfaces.js` owns shared surface registration, right-canvas/modal mode routing, surface modal action rails, and reusable draggable/focus modal chrome.
 - `initFw.js` owns Alpine bootstrap and custom lifecycle directives such as `x-create`, `x-destroy`, and periodic `x-every-*` hooks.
 - Other modules own focused UI utilities such as modals, messages, safe markdown, shortcuts, TTS/STT, surfaces, and initialization.
 
@@ -28,6 +29,7 @@
 - Opening the same modal path multiple times must continue creating multiple stack entries; no dedupe is assumed.
 - `closeModal()` with no path closes the top modal; `closeModal(path)` closes that path wherever it is in the stack; missing paths are no-ops.
 - Modal stack semantics are top-modal-first for Escape, close buttons, z-index, and backdrop placement.
+- Restorable modal state is session-scoped and opt-in; surface modals may set `data-modal-restore="surface"` and `modals.js` restores only those path-based surface windows after reload navigation. Browser hard-refresh is still reported to app code as reload, so do not treat this as durable cross-session UI state.
 - The modal shell structure is `.modal` > `.modal-inner` > `.modal-header`, `.modal-scroll` containing `.modal-bd`, and `.modal-footer-slot`.
 - `data-modal-footer` content is relocated from modal body into `.modal-footer-slot`.
 - Click-outside close requires both `mousedown` and `mouseup` on the outer `.modal` container.
@@ -46,6 +48,7 @@
 - Check plugin extension callers before changing shared extension behavior.
 - Preserve the single shared modal shell and backdrop model; do not add a parallel overlay implementation.
 - Preserve modal z-index spacing with a stable base stack and a shared backdrop below the active modal.
+- Keep the shared modal stack above the mobile right-canvas rail so blocking modals remain authoritative on small screens.
 - If opening a new modal from a close handler, schedule it with `requestAnimationFrame` to avoid stack removal races.
 - Keep modal state cleanup explicit because stores can outlive their DOM.
 - Device-specific styling may rely on the `device-touch` or `device-mouse` body class set during initialization.

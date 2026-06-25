@@ -175,6 +175,19 @@ Use GH CLI or GH MCP to find the roadmap among open issues. Identify it
 by the `roadmap` label (project field) or by recognizing it as an
 umbrella issue. If no roadmap issue exists, report and abort.
 
+**Autopilot cross-roadmap mode (optional, additive).** When several
+roadmaps run in parallel and the active autopilot-suitable work may live
+under **sibling** epics, do not commit to a single umbrella here. Instead,
+enumerate the open execution leaves across **all** open roadmap roots and
+rank them by autopilot-suitability (see A2), then carry the top-ranked
+candidate through the normal A3/A4/A4.5/A5 gates. This is additive: the
+single-root selection above stays the default, and orphan-first filtering
+still applies only to true orphans (cross-roadmap leaves are reached via a
+parent roadmap's task list, and per A2 do **not** carry an
+`idd-skill-roadmap-id` marker themselves — that would make them roadmap
+nodes — so orphan-first, which targets issues with no roadmap linkage,
+does not exclude them).
+
 **Note**: Repo-wide or label-based issue queries are permitted only in
 **A0-T** (the scoped `idd-skill-roadmap-id` lookup needed to resolve the
 explicit target's `idd-skill-blocked-by` markers),
@@ -273,9 +286,30 @@ authorizes an alternate scope for the current run:
   unresolvable with the reason, skip that branch, and continue with the
   rest of the traversal. This is not an enumeration failure.
 
+**Helper read timing.** The `discover-roadmap-graph` helper (see
+[IDD helper script evaluation](../../docs/idd-helper-scripts.md)) is
+long-running on large graphs — it emits the whole graph in one final stdout
+write after many API calls. Redirect stdout to a file and wait for process
+exit before parsing; a zero-byte or mid-run read is **"still running," not** an
+A2 enumeration failure (only the genuine infrastructure/tool failures above
+abort).
+
 Report every A2 execution candidate with its provenance path (e.g.,
 `#222 → #228 → #257`), open roadmap nodes encountered, and any
 unresolvable references before passing to A3.
+
+**Autopilot cross-roadmap union (optional, additive).** When A1 elected
+the cross-roadmap mode, enumerate from **each** open roadmap root and take
+the **union** of open execution leaves. De-duplicate a leaf reached from
+several roots (record every source root as provenance; never double-count
+it). Rank the union by autopilot-suitability **descending**, tie-broken by
+issue number **ascending**; treat a missing or out-of-range score as the
+configured floor, but never rank an unscored leaf above genuinely scored
+work at the same effective value. The `discover-roadmap-graph` helper's
+`--all-roadmaps` mode produces exactly this ranked union (see
+[IDD helper script evaluation](../../docs/idd-helper-scripts.md)). The
+score is an advisory ranking hint only — A3/A4/A4.5/A5 still run on the
+selected candidate.
 
 ## A3 — Filter to ready-to-start
 

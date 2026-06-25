@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 84 file(s) materialized.
+Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 86 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 84 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 84 |
+| Files         | 86 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,77 +72,79 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`.agents/design/bug/stream-resume-history-title.md`](.agents/design/bug/stream-resume-history-title.md) |
 | 12 | ✓ | [`.agents/design/bug/stream-resume-stale-reset.md`](.agents/design/bug/stream-resume-stale-reset.md) |
 | 13 | ✓ | [`.agents/design/bug/stream-resume-stop-state.md`](.agents/design/bug/stream-resume-stop-state.md) |
-| 14 | ✓ | [`.agents/design/code-sandbox/queue-id-concurrency.md`](.agents/design/code-sandbox/queue-id-concurrency.md) |
-| 15 | ✓ | [`.agents/design/common/logger/index.md`](.agents/design/common/logger/index.md) |
-| 16 | ✓ | [`.agents/design/core/ai/agent-loop/requirements.md`](.agents/design/core/ai/agent-loop/requirements.md) |
-| 17 | ✓ | [`.agents/design/core/ai/agent-loop/technical-design.md`](.agents/design/core/ai/agent-loop/technical-design.md) |
-| 18 | ✓ | [`.agents/design/core/ai/agent-user-context-reminder.md`](.agents/design/core/ai/agent-user-context-reminder.md) |
-| 19 | ✓ | [`.agents/design/core/ai/agentCall-declarative-tools.md`](.agents/design/core/ai/agentCall-declarative-tools.md) |
-| 20 | ✓ | [`.agents/design/core/ai/compress/history-context-checkpoint-compression.md`](.agents/design/core/ai/compress/history-context-checkpoint-compression.md) |
-| 21 | ✓ | [`.agents/design/core/ai/gradient-pricing-fix.md`](.agents/design/core/ai/gradient-pricing-fix.md) |
-| 22 | ✓ | [`.agents/design/core/ai/sandbox/get-file-url.md`](.agents/design/core/ai/sandbox/get-file-url.md) |
-| 23 | ✓ | [`.agents/design/core/ai/sandbox/prd.md`](.agents/design/core/ai/sandbox/prd.md) |
-| 24 | ✓ | [`.agents/design/core/ai/sandbox/skill-entrypoint.md`](.agents/design/core/ai/sandbox/skill-entrypoint.md) |
-| 25 | ✓ | [`.agents/design/core/ai/sandbox/technical-design.md`](.agents/design/core/ai/sandbox/technical-design.md) |
-| 26 | ✓ | [`.agents/design/core/chat/chatbox-refactor.md`](.agents/design/core/chat/chatbox-refactor.md) |
-| 27 | ✓ | [`.agents/design/core/chat/stop.md`](.agents/design/core/chat/stop.md) |
-| 28 | ✓ | [`.agents/design/core/dataset/index.md`](.agents/design/core/dataset/index.md) |
-| 29 | ✓ | [`.agents/design/core/workflow/cpu-blocking-optimization.md`](.agents/design/core/workflow/cpu-blocking-optimization.md) |
-| 30 | ✓ | [`.agents/design/core/workflow/file-variable-runtime-store-split.md`](.agents/design/core/workflow/file-variable-runtime-store-split.md) |
-| 31 | ✓ | [`.agents/design/core/workflow/index.md`](.agents/design/core/workflow/index.md) |
-| 32 | ✓ | [`.agents/design/core/workflow/interactive.md`](.agents/design/core/workflow/interactive.md) |
-| 33 | ✓ | [`.agents/design/core/workflow/loop-run/development.md`](.agents/design/core/workflow/loop-run/development.md) |
-| 34 | ✓ | [`.agents/design/core/workflow/node-response-append-only-interactive-id.md`](.agents/design/core/workflow/node-response-append-only-interactive-id.md) |
-| 35 | ✓ | [`.agents/design/core/workflow/parallel-node/design.md`](.agents/design/core/workflow/parallel-node/design.md) |
-| 36 | ✓ | [`.agents/design/core/workflow/runtime.md`](.agents/design/core/workflow/runtime.md) |
-| 37 | ✓ | [`.agents/design/outlink/wechat-clawbot.md`](.agents/design/outlink/wechat-clawbot.md) |
-| 38 | ✓ | [`.agents/design/outlink/wechat-file-support.md`](.agents/design/outlink/wechat-file-support.md) |
-| 39 | ✓ | [`.agents/design/outlink/wechat-polling-refactor.md`](.agents/design/outlink/wechat-polling-refactor.md) |
-| 40 | ✓ | [`.agents/design/variable-update-type-ops/design.md`](.agents/design/variable-update-type-ops/design.md) |
-| 41 | ✓ | [`.agents/issue/dataset-search-query-extension-latency-analysis.md`](.agents/issue/dataset-search-query-extension-latency-analysis.md) |
-| 42 | ✓ | [`.agents/issue/implement-sealos-provider.md`](.agents/issue/implement-sealos-provider.md) |
-| 43 | ✓ | [`.agents/issue/openai-agent-sdk-integration/report.md`](.agents/issue/openai-agent-sdk-integration/report.md) |
-| 44 | ✓ | [`.agents/issue/sandbox/code-sandbox-queue-id-analysis.md`](.agents/issue/sandbox/code-sandbox-queue-id-analysis.md) |
-| 45 | ✓ | [`.agents/issue/sandbox/opensandbox-docker-security-review.md`](.agents/issue/sandbox/opensandbox-docker-security-review.md) |
-| 46 | ✓ | [`.agents/issue/ssrf-vulnerability-fix.md`](.agents/issue/ssrf-vulnerability-fix.md) |
-| 47 | ✓ | [`.agents/issue/workflow-and-chat-bug-fixes-analysis.md`](.agents/issue/workflow-and-chat-bug-fixes-analysis.md) |
-| 48 | ✓ | [`.agents/issue/workflow-deep-analysis.md`](.agents/issue/workflow-deep-analysis.md) |
-| 49 | ✓ | [`.agents/issue/workflow-form-input-restore-bug.md`](.agents/issue/workflow-form-input-restore-bug.md) |
-| 50 | ✓ | [`.agents/issue/workflow-judge-loop-interactive-render-analysis.md`](.agents/issue/workflow-judge-loop-interactive-render-analysis.md) |
-| 51 | ✓ | [`.agents/issue/workflow-thread-blocking-analysis.md`](.agents/issue/workflow-thread-blocking-analysis.md) |
-| 52 | ✓ | [`.agents/issue/workflow-variable-replace-cpu-blocking-analysis.md`](.agents/issue/workflow-variable-replace-cpu-blocking-analysis.md) |
-| 53 | ✓ | [`.agents/skills/core/ai/prompt_optimize/SKILL.md`](.agents/skills/core/ai/prompt_optimize/SKILL.md) |
-| 54 | ✓ | [`.agents/skills/core/workflow/deprecate_workflow_node/SKILL.md`](.agents/skills/core/workflow/deprecate_workflow_node/SKILL.md) |
-| 55 | ✓ | [`.agents/skills/doc/i18n/SKILL.md`](.agents/skills/doc/i18n/SKILL.md) |
-| 56 | ✓ | [`.agents/skills/support/permission/add-permission/checklist.md`](.agents/skills/support/permission/add-permission/checklist.md) |
-| 57 | ✓ | [`.agents/skills/support/permission/add-permission/guides/full-integration.md`](.agents/skills/support/permission/add-permission/guides/full-integration.md) |
-| 58 | ✓ | [`.agents/skills/support/permission/add-permission/guides/quick-start.md`](.agents/skills/support/permission/add-permission/guides/quick-start.md) |
-| 59 | ✓ | [`.agents/skills/support/permission/add-permission/reference/auth-function.md`](.agents/skills/support/permission/add-permission/reference/auth-function.md) |
-| 60 | ✓ | [`.agents/skills/support/permission/add-permission/reference/core-concepts.md`](.agents/skills/support/permission/add-permission/reference/core-concepts.md) |
-| 61 | ✓ | [`.agents/skills/support/permission/add-permission/reference/inheritance.md`](.agents/skills/support/permission/add-permission/reference/inheritance.md) |
-| 62 | ✓ | [`.agents/skills/support/permission/add-permission/reference/permission-class.md`](.agents/skills/support/permission/add-permission/reference/permission-class.md) |
-| 63 | ✓ | [`.agents/skills/support/permission/add-permission/reference/pro-collaborator.md`](.agents/skills/support/permission/add-permission/reference/pro-collaborator.md) |
-| 64 | ✓ | [`.agents/skills/support/permission/add-permission/reference/pro-owner-transfer.md`](.agents/skills/support/permission/add-permission/reference/pro-owner-transfer.md) |
-| 65 | ✓ | [`.agents/skills/support/permission/add-permission/reference/README.md`](.agents/skills/support/permission/add-permission/reference/README.md) |
-| 66 | ✓ | [`.agents/skills/support/permission/add-permission/SKILL.md`](.agents/skills/support/permission/add-permission/SKILL.md) |
-| 67 | ✓ | [`.agents/skills/system/api-development/SKILL.md`](.agents/skills/system/api-development/SKILL.md) |
-| 68 | ✓ | [`.agents/skills/system/pr-change-analysis/agents/openai.yaml`](.agents/skills/system/pr-change-analysis/agents/openai.yaml) |
-| 69 | ✓ | [`.agents/skills/system/pr-change-analysis/SKILL.md`](.agents/skills/system/pr-change-analysis/SKILL.md) |
-| 70 | ✓ | [`.agents/skills/system/pr-review/backend-quality/error-handling.md`](.agents/skills/system/pr-review/backend-quality/error-handling.md) |
-| 71 | ✓ | [`.agents/skills/system/pr-review/backend-quality/performance.md`](.agents/skills/system/pr-review/backend-quality/performance.md) |
-| 72 | ✓ | [`.agents/skills/system/pr-review/backend-quality/security.md`](.agents/skills/system/pr-review/backend-quality/security.md) |
-| 73 | ✓ | [`.agents/skills/system/pr-review/frontend-quality/react-performance.md`](.agents/skills/system/pr-review/frontend-quality/react-performance.md) |
-| 74 | ✓ | [`.agents/skills/system/pr-review/frontend-quality/security.md`](.agents/skills/system/pr-review/frontend-quality/security.md) |
-| 75 | ✓ | [`.agents/skills/system/pr-review/frontend-quality/typescript.md`](.agents/skills/system/pr-review/frontend-quality/typescript.md) |
-| 76 | ✓ | [`.agents/skills/system/pr-review/SKILL.md`](.agents/skills/system/pr-review/SKILL.md) |
-| 77 | ✓ | [`.agents/skills/system/pr-review/style/db.md`](.agents/skills/system/pr-review/style/db.md) |
-| 78 | ✓ | [`.agents/skills/system/pr-review/style/front.md`](.agents/skills/system/pr-review/style/front.md) |
-| 79 | ✓ | [`.agents/skills/system/pr-review/style/logger.md`](.agents/skills/system/pr-review/style/logger.md) |
-| 80 | ✓ | [`.agents/skills/system/pr-review/style/package.md`](.agents/skills/system/pr-review/style/package.md) |
-| 81 | ✓ | [`.agents/skills/system/pr-review/style/service-decoupling.md`](.agents/skills/system/pr-review/style/service-decoupling.md) |
-| 82 | ✓ | [`.agents/skills/system/test-case/SKILL.md`](.agents/skills/system/test-case/SKILL.md) |
-| 83 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 84 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
+| 14 | ✓ | [`.agents/design/code-sandbox/python-isolated-runner.md`](.agents/design/code-sandbox/python-isolated-runner.md) |
+| 15 | ✓ | [`.agents/design/code-sandbox/queue-id-concurrency.md`](.agents/design/code-sandbox/queue-id-concurrency.md) |
+| 16 | ✓ | [`.agents/design/common/logger/index.md`](.agents/design/common/logger/index.md) |
+| 17 | ✓ | [`.agents/design/core/ai/agent-loop/requirements.md`](.agents/design/core/ai/agent-loop/requirements.md) |
+| 18 | ✓ | [`.agents/design/core/ai/agent-loop/technical-design.md`](.agents/design/core/ai/agent-loop/technical-design.md) |
+| 19 | ✓ | [`.agents/design/core/ai/agent-user-context-reminder.md`](.agents/design/core/ai/agent-user-context-reminder.md) |
+| 20 | ✓ | [`.agents/design/core/ai/agentCall-declarative-tools.md`](.agents/design/core/ai/agentCall-declarative-tools.md) |
+| 21 | ✓ | [`.agents/design/core/ai/compress/history-context-checkpoint-compression.md`](.agents/design/core/ai/compress/history-context-checkpoint-compression.md) |
+| 22 | ✓ | [`.agents/design/core/ai/gradient-pricing-fix.md`](.agents/design/core/ai/gradient-pricing-fix.md) |
+| 23 | ✓ | [`.agents/design/core/ai/sandbox/get-file-url.md`](.agents/design/core/ai/sandbox/get-file-url.md) |
+| 24 | ✓ | [`.agents/design/core/ai/sandbox/prd.md`](.agents/design/core/ai/sandbox/prd.md) |
+| 25 | ✓ | [`.agents/design/core/ai/sandbox/skill-entrypoint.md`](.agents/design/core/ai/sandbox/skill-entrypoint.md) |
+| 26 | ✓ | [`.agents/design/core/ai/sandbox/technical-design.md`](.agents/design/core/ai/sandbox/technical-design.md) |
+| 27 | ✓ | [`.agents/design/core/chat/chatbox-refactor.md`](.agents/design/core/chat/chatbox-refactor.md) |
+| 28 | ✓ | [`.agents/design/core/chat/stop.md`](.agents/design/core/chat/stop.md) |
+| 29 | ✓ | [`.agents/design/core/dataset/index.md`](.agents/design/core/dataset/index.md) |
+| 30 | ✓ | [`.agents/design/core/workflow/cpu-blocking-optimization.md`](.agents/design/core/workflow/cpu-blocking-optimization.md) |
+| 31 | ✓ | [`.agents/design/core/workflow/file-variable-runtime-store-split.md`](.agents/design/core/workflow/file-variable-runtime-store-split.md) |
+| 32 | ✓ | [`.agents/design/core/workflow/index.md`](.agents/design/core/workflow/index.md) |
+| 33 | ✓ | [`.agents/design/core/workflow/interactive.md`](.agents/design/core/workflow/interactive.md) |
+| 34 | ✓ | [`.agents/design/core/workflow/loop-run/development.md`](.agents/design/core/workflow/loop-run/development.md) |
+| 35 | ✓ | [`.agents/design/core/workflow/node-response-append-only-interactive-id.md`](.agents/design/core/workflow/node-response-append-only-interactive-id.md) |
+| 36 | ✓ | [`.agents/design/core/workflow/parallel-node/design.md`](.agents/design/core/workflow/parallel-node/design.md) |
+| 37 | ✓ | [`.agents/design/core/workflow/runtime.md`](.agents/design/core/workflow/runtime.md) |
+| 38 | ✓ | [`.agents/design/outlink/wechat-clawbot.md`](.agents/design/outlink/wechat-clawbot.md) |
+| 39 | ✓ | [`.agents/design/outlink/wechat-file-support.md`](.agents/design/outlink/wechat-file-support.md) |
+| 40 | ✓ | [`.agents/design/outlink/wechat-polling-refactor.md`](.agents/design/outlink/wechat-polling-refactor.md) |
+| 41 | ✓ | [`.agents/design/variable-update-type-ops/design.md`](.agents/design/variable-update-type-ops/design.md) |
+| 42 | ✓ | [`.agents/issue/agent-context-tool-compression-analysis.md`](.agents/issue/agent-context-tool-compression-analysis.md) |
+| 43 | ✓ | [`.agents/issue/dataset-search-query-extension-latency-analysis.md`](.agents/issue/dataset-search-query-extension-latency-analysis.md) |
+| 44 | ✓ | [`.agents/issue/implement-sealos-provider.md`](.agents/issue/implement-sealos-provider.md) |
+| 45 | ✓ | [`.agents/issue/openai-agent-sdk-integration/report.md`](.agents/issue/openai-agent-sdk-integration/report.md) |
+| 46 | ✓ | [`.agents/issue/sandbox/code-sandbox-queue-id-analysis.md`](.agents/issue/sandbox/code-sandbox-queue-id-analysis.md) |
+| 47 | ✓ | [`.agents/issue/sandbox/opensandbox-docker-security-review.md`](.agents/issue/sandbox/opensandbox-docker-security-review.md) |
+| 48 | ✓ | [`.agents/issue/ssrf-vulnerability-fix.md`](.agents/issue/ssrf-vulnerability-fix.md) |
+| 49 | ✓ | [`.agents/issue/workflow-and-chat-bug-fixes-analysis.md`](.agents/issue/workflow-and-chat-bug-fixes-analysis.md) |
+| 50 | ✓ | [`.agents/issue/workflow-deep-analysis.md`](.agents/issue/workflow-deep-analysis.md) |
+| 51 | ✓ | [`.agents/issue/workflow-form-input-restore-bug.md`](.agents/issue/workflow-form-input-restore-bug.md) |
+| 52 | ✓ | [`.agents/issue/workflow-judge-loop-interactive-render-analysis.md`](.agents/issue/workflow-judge-loop-interactive-render-analysis.md) |
+| 53 | ✓ | [`.agents/issue/workflow-thread-blocking-analysis.md`](.agents/issue/workflow-thread-blocking-analysis.md) |
+| 54 | ✓ | [`.agents/issue/workflow-variable-replace-cpu-blocking-analysis.md`](.agents/issue/workflow-variable-replace-cpu-blocking-analysis.md) |
+| 55 | ✓ | [`.agents/skills/core/ai/prompt_optimize/SKILL.md`](.agents/skills/core/ai/prompt_optimize/SKILL.md) |
+| 56 | ✓ | [`.agents/skills/core/workflow/deprecate_workflow_node/SKILL.md`](.agents/skills/core/workflow/deprecate_workflow_node/SKILL.md) |
+| 57 | ✓ | [`.agents/skills/doc/i18n/SKILL.md`](.agents/skills/doc/i18n/SKILL.md) |
+| 58 | ✓ | [`.agents/skills/support/permission/add-permission/checklist.md`](.agents/skills/support/permission/add-permission/checklist.md) |
+| 59 | ✓ | [`.agents/skills/support/permission/add-permission/guides/full-integration.md`](.agents/skills/support/permission/add-permission/guides/full-integration.md) |
+| 60 | ✓ | [`.agents/skills/support/permission/add-permission/guides/quick-start.md`](.agents/skills/support/permission/add-permission/guides/quick-start.md) |
+| 61 | ✓ | [`.agents/skills/support/permission/add-permission/reference/auth-function.md`](.agents/skills/support/permission/add-permission/reference/auth-function.md) |
+| 62 | ✓ | [`.agents/skills/support/permission/add-permission/reference/core-concepts.md`](.agents/skills/support/permission/add-permission/reference/core-concepts.md) |
+| 63 | ✓ | [`.agents/skills/support/permission/add-permission/reference/inheritance.md`](.agents/skills/support/permission/add-permission/reference/inheritance.md) |
+| 64 | ✓ | [`.agents/skills/support/permission/add-permission/reference/permission-class.md`](.agents/skills/support/permission/add-permission/reference/permission-class.md) |
+| 65 | ✓ | [`.agents/skills/support/permission/add-permission/reference/pro-collaborator.md`](.agents/skills/support/permission/add-permission/reference/pro-collaborator.md) |
+| 66 | ✓ | [`.agents/skills/support/permission/add-permission/reference/pro-owner-transfer.md`](.agents/skills/support/permission/add-permission/reference/pro-owner-transfer.md) |
+| 67 | ✓ | [`.agents/skills/support/permission/add-permission/reference/README.md`](.agents/skills/support/permission/add-permission/reference/README.md) |
+| 68 | ✓ | [`.agents/skills/support/permission/add-permission/SKILL.md`](.agents/skills/support/permission/add-permission/SKILL.md) |
+| 69 | ✓ | [`.agents/skills/system/api-development/SKILL.md`](.agents/skills/system/api-development/SKILL.md) |
+| 70 | ✓ | [`.agents/skills/system/pr-change-analysis/agents/openai.yaml`](.agents/skills/system/pr-change-analysis/agents/openai.yaml) |
+| 71 | ✓ | [`.agents/skills/system/pr-change-analysis/SKILL.md`](.agents/skills/system/pr-change-analysis/SKILL.md) |
+| 72 | ✓ | [`.agents/skills/system/pr-review/backend-quality/error-handling.md`](.agents/skills/system/pr-review/backend-quality/error-handling.md) |
+| 73 | ✓ | [`.agents/skills/system/pr-review/backend-quality/performance.md`](.agents/skills/system/pr-review/backend-quality/performance.md) |
+| 74 | ✓ | [`.agents/skills/system/pr-review/backend-quality/security.md`](.agents/skills/system/pr-review/backend-quality/security.md) |
+| 75 | ✓ | [`.agents/skills/system/pr-review/frontend-quality/react-performance.md`](.agents/skills/system/pr-review/frontend-quality/react-performance.md) |
+| 76 | ✓ | [`.agents/skills/system/pr-review/frontend-quality/security.md`](.agents/skills/system/pr-review/frontend-quality/security.md) |
+| 77 | ✓ | [`.agents/skills/system/pr-review/frontend-quality/typescript.md`](.agents/skills/system/pr-review/frontend-quality/typescript.md) |
+| 78 | ✓ | [`.agents/skills/system/pr-review/SKILL.md`](.agents/skills/system/pr-review/SKILL.md) |
+| 79 | ✓ | [`.agents/skills/system/pr-review/style/db.md`](.agents/skills/system/pr-review/style/db.md) |
+| 80 | ✓ | [`.agents/skills/system/pr-review/style/front.md`](.agents/skills/system/pr-review/style/front.md) |
+| 81 | ✓ | [`.agents/skills/system/pr-review/style/logger.md`](.agents/skills/system/pr-review/style/logger.md) |
+| 82 | ✓ | [`.agents/skills/system/pr-review/style/package.md`](.agents/skills/system/pr-review/style/package.md) |
+| 83 | ✓ | [`.agents/skills/system/pr-review/style/service-decoupling.md`](.agents/skills/system/pr-review/style/service-decoupling.md) |
+| 84 | ✓ | [`.agents/skills/system/test-case/SKILL.md`](.agents/skills/system/test-case/SKILL.md) |
+| 85 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 86 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xerrors/Yuxi` — 26 default patterns, 7 followed patterns, 13 file(s) materialized.
+Mirror of `xerrors/Yuxi` — 26 default patterns, 6 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 7 followed patterns, 13 file(s
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 13 |
+| Followed pats | 6 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,9 +55,8 @@ Mirror of `xerrors/Yuxi` — 26 default patterns, 7 followed patterns, 13 file(s
 - `docs/develop-guides/testing-guidelines.md`
 - `docs/develop-guides/design.md`
 - `docs/develop-guides/changelog.md`
-- `CONTRIBUTING.md`
-- `.github/PULL_REQUEST_TEMPLATE.md`
 - `docs/develop-guides/contributing.md`
+- `.github/PULL_REQUEST_TEMPLATE.md`
 
 ## File Index
 
@@ -73,11 +72,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`docs/develop-guides/roadmap.md`](docs/develop-guides/roadmap.md) |
 | 7 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
 | 8 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 10 | → | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
-| 11 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
-| 12 | → | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
-| 13 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
+| 9 | → | [`docs/develop-guides/changelog.md`](docs/develop-guides/changelog.md) |
+| 10 | → | [`docs/develop-guides/contributing.md`](docs/develop-guides/contributing.md) |
+| 11 | → | [`docs/develop-guides/design.md`](docs/develop-guides/design.md) |
+| 12 | → | [`docs/develop-guides/testing-guidelines.md`](docs/develop-guides/testing-guidelines.md) |
 
 ---
 

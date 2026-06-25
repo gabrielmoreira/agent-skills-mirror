@@ -146,7 +146,7 @@ Every Python Azure SDK skill MUST open its `## Authentication & Lifecycle` secti
 **Code sample enforcement.** Every client construction in the skill body must demonstrate both rules:
 
 - Show `with` / `async with` on every client instantiation in usage examples (not just the auth section).
-- Show `DefaultAzureCredential` in the primary auth example. **Do not delete API-key examples for SDKs where keys are still officially supported** — many existing users (especially in regulated environments still completing their Entra rollout) need a copy-pastable working sample. Demote the keyed snippet into a clearly-labeled `### Legacy: API Key (existing keyed deployments)` subsection placed *after* the primary `DefaultAzureCredential` block in the same `## Authentication & Lifecycle` section. Include a one-line note that new code should use `DefaultAzureCredential` and that the keyed path is for existing deployments. Also add the `<SERVICE>_KEY` env var back to the Environment Variables block with a `# Only required for the legacy API-key auth path below` comment.
+- Show `DefaultAzureCredential` in the primary auth example. **Do not delete API-key examples for SDKs where keys are still officially supported** — many existing users (especially in regulated environments still completing their Entra rollout) need a copy-pastable working sample. Demote the keyed snippet into a clearly-labeled `### Legacy: API Key (existing keyed deployments)` subsection placed _after_ the primary `DefaultAzureCredential` block in the same `## Authentication & Lifecycle` section. Include a one-line note that new code should use `DefaultAzureCredential` and that the keyed path is for existing deployments. Also add the `<SERVICE>_KEY` env var back to the Environment Variables block with a `# Only required for the legacy API-key auth path below` comment.
 - A handful of services have key-specific quirks worth calling out in the Legacy subsection (e.g. `azure-ai-translation-text` requires a `region=` parameter when using a key against the global endpoint, because token-credential auth requires a custom subdomain endpoint). Surface these in the demoted block rather than dropping the example.
 - For async examples, wrap `DefaultAzureCredential` from `azure.identity.aio` in `async with credential:` alongside the client.
 
@@ -218,6 +218,35 @@ const credential = new DefaultAzureCredential({
 const client = new ServiceClient(endpoint, credential);
 ```
 
+```go
+// Go
+import (
+  "context"
+
+  "github.com/Azure/azure-sdk-for-go/sdk/azidentity"
+  "github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
+)
+
+ctx := context.Background()
+
+// Local dev: DefaultAzureCredential. Production: set AZURE_TOKEN_CREDENTIALS=prod or AZURE_TOKEN_CREDENTIALS=<specific_credential>
+cred, err := azidentity.NewDefaultAzureCredential(nil)
+if err != nil {
+  panic(err)
+}
+
+// Or use a specific credential directly in production:
+// cred, err := azidentity.NewManagedIdentityCredential(nil)
+
+client, err := azblob.NewClient("https://<account>.blob.core.windows.net/", cred, nil)
+if err != nil {
+  panic(err)
+}
+
+_ = client
+_ = ctx
+```
+
 ```rust
 // Rust
 use azure_identity::DeveloperToolsCredential;
@@ -254,11 +283,12 @@ See `references/azure-sdk-patterns.md` for detailed patterns including:
 - **.NET**: `Response<T>`, `Pageable<T>`, `Operation<T>`, mocking support
 - **Java**: Builder pattern, `PagedIterable`/`PagedFlux`, Reactor types
 - **TypeScript**: `PagedAsyncIterableIterator`, `AbortSignal`, browser considerations
-- **Rust**: `Response<T>`, `Pager<T>`, `RequestContent::from()`, `.into_model()`, explicit credential types, RBAC roles for Entra ID authentication.
+- **Go**: `context.Context` as first arg, `runtime.Pager[T]` via `New*Pager()` + `More()/NextPage(ctx)`, `runtime.Poller[T]` via `Begin*` + `PollUntilDone(ctx, nil)`, `to.Ptr(...)` helpers, and typed `*azcore.ResponseError`
+- **Rust**: Installation via `cargo add`, dependency rule for `azure_core`, `Response<T>`, `Pager<T>`, `RequestContent::from()`, `.into_model()`, explicit credential types, RBAC roles for Entra ID authentication
 
 ### Required Best Practices in Every Skill (User-Facing)
 
-#### Python, .Net, Java, and Typescript languages
+#### Python, .NET, Java, TypeScript, and Go languages
 
 **These two rules are not just authoring conventions for the skill itself — they MUST be explicitly written into every generated skill's `## Best Practices` section so end users who follow the skill apply them in their own code.**
 
@@ -292,13 +322,19 @@ Add both items verbatim (adapted only for language/SDK specifics) as the **first
 
 #### Rust Language
 
-1. **Use `DeveloperToolsCredential` for local development and `ManagedIdentityCredential` for production.** The Rust SDK does not support `DefaultAzureCredential`, so explicitly use the appropriate credential in each environment.
+**These rules MUST be explicitly written into every Rust skill's `## Best Practices` section as the first items:**
 
-2. **Use `RequestContent::from()` to wrap upload data.** When uploading data (e.g., blobs), wrap the content in `RequestContent::from(your_data)` to ensure proper handling by the SDK.
+1. **Use `cargo add` to manage dependencies, never edit `Cargo.toml` directly.** Always use `cargo add <crate>` or `cargo remove <crate>` instead of manually modifying the manifest file. Official crates are published on crates.io and should be added via cargo.
 
-3. **Assign appropriate RBAC roles for Entra ID auth.** For production authentication using Entra ID, ensure the identity has the necessary RBAC role assigned (e.g., "Storage Blob Data Contributor" for blob write access).
+2. **Add `azure_core` to `Cargo.toml` only when you import `azure_core` types directly.** If your code imports types like `azure_core::http::Url`, `azure_core::http::RequestContent`, or `azure_core::error::ErrorKind`, explicitly add `azure_core` to your dependencies. If you only use types re-exported by service crates (e.g., via `use azure_storage_blob::BlobClient`), a direct `azure_core` dependency is optional.
 
-4. **Always verify package versions using crates.io.** Before using a package, check its version on [crates.io](https://crates.io/) to ensure you are using a stable and supported release.
+3. **Use `DeveloperToolsCredential` for local development and `ManagedIdentityCredential` for production.** The Rust SDK does not support `DefaultAzureCredential`, so explicitly use the appropriate credential in each environment.
+
+4. **Use `RequestContent::from()` to wrap upload data.** When uploading data (e.g., blobs), wrap the content in `RequestContent::from(your_data)` to ensure proper handling by the SDK.
+
+5. **Assign appropriate RBAC roles for Entra ID auth.** For production authentication using Entra ID, ensure the identity has the necessary RBAC role assigned (e.g., "Storage Blob Data Contributor" for blob write access).
+
+6. **Always verify package versions using crates.io.** Before using a package, check its version on [crates.io](https://crates.io/) to ensure you are using a stable and supported release.
 
 ### Handling Deprecated or Rebranded SDKs
 
@@ -406,19 +442,19 @@ credential = DefaultAzureCredential(require_envvar=True)
 # See https://learn.microsoft.com/python/api/overview/azure/identity-readme?view=azure-python#credential-classes
 
 # credential = ManagedIdentityCredential()
+
 with ExampleClient(
-    endpoint=os.environ["AZURE_EXAMPLE_ENDPOINT"],
-    credential=credential,
+endpoint=os.environ["AZURE_EXAMPLE_ENDPOINT"],
+credential=credential,
 ) as client:
-    item = client.get_item("example")
+item = client.get_item("example")
 \`\`\`
 
 ## Core Workflow
 
 \`\`\`python
-with ExampleClient(endpoint=endpoint, credential=credential) as client:
-    # Create
-    item = client.create_item(name="example", data={...})
+with ExampleClient(endpoint=endpoint, credential=credential) as client: # Create
+item = client.create_item(name="example", data={...})
 
     # List (pagination handled automatically)
     for item in client.list_items():
@@ -430,6 +466,7 @@ with ExampleClient(endpoint=endpoint, credential=credential) as client:
 
     # Cleanup
     client.delete_item(item.id)
+
 \`\`\`
 
 ## Reference Files
@@ -459,9 +496,9 @@ with ExampleClient(endpoint=endpoint, credential=credential) as client:
 
 | Required                  | Example                                                   | Purpose                  |
 | ------------------------- | --------------------------------------------------------- | ------------------------ |
-| **SDK Package**           | `azure-ai-agents`, `Azure.AI.OpenAI`                      | Identifies the exact SDK |
+| **SDK Package**           | `azure-ai-agents`, `Azure.AI.OpenAI`, `azblob`            | Identifies the exact SDK |
 | **Documentation URL**     | `https://learn.microsoft.com/en-us/azure/ai-services/...` | Primary source of truth  |
-| **Repository** (optional) | `Azure/azure-sdk-for-python`                              | For code patterns        |
+| **Repository** (optional) | `Azure/azure-sdk-for-python`, `Azure/azure-sdk-for-go`    | For code patterns        |
 
 **Prompt the user if not provided:**
 
@@ -469,7 +506,7 @@ with ExampleClient(endpoint=endpoint, credential=credential) as client:
 To create this skill, I need:
 1. The SDK package name (e.g., azure-ai-projects)
 2. The Microsoft Learn documentation URL or GitHub repo
-3. The target language (py/dotnet/ts/java)
+3. The target language (py/dotnet/ts/java/go)
 ```
 
 **Search official docs first:**
@@ -526,7 +563,9 @@ Skills are organized by **language** and **product area** in the `skills/` direc
 **Naming convention:**
 
 - `azure-<service>-<subservice>-<language>`
-- Examples: `azure-ai-agents-py`, `azure-cosmos-java`, `azure-storage-blob-ts`
+- Examples: `azure-ai-agents-py`, `azure-cosmos-java`, `azure-storage-blob-ts`, `azure-storage-blob-go`
+- For Go skills in documentation prose, use the short package name (for example `azblob`).
+- Use the full module import path only in code/import examples (for example `github.com/Azure/azure-sdk-for-go/sdk/storage/azblob`).
 
 **For Azure SDK skills:**
 
@@ -563,6 +602,10 @@ ln -s ../../../.github/skills/azure-ai-agents-py agents
 # Example for azure-cosmos-db-py in python/data:
 cd skills/python/data
 ln -s ../../../.github/skills/azure-cosmos-db-py cosmos-db
+
+# Example for azure-storage-blob-go in go/data:
+cd skills/go/data
+ln -s ../../../.github/skills/azure-storage-blob-go blob
 ```
 
 **Symlink naming:**
@@ -627,25 +670,25 @@ from azure.ai.mymodule.models import MyClient # Wrong - Client is not in models
 \`\`\`python
 credential = DefaultAzureCredential()
 with MyClient(endpoint, credential) as client:
-    client.do_thing()
+client.do_thing()
 \`\`\`
 
 #### ❌ INCORRECT: Hardcoded Credentials
 
 \`\`\`python
-client = MyClient(endpoint, api_key="hardcoded")  # Security risk
+client = MyClient(endpoint, api_key="hardcoded") # Security risk
 \`\`\`
 
 #### ❌ INCORRECT: Connection string / account key when Entra is supported
 
 \`\`\`python
-client = MyClient.from_connection_string(os.environ["CONNECTION_STRING"])  # Bypasses Entra audit/rotation
+client = MyClient.from_connection_string(os.environ["CONNECTION_STRING"]) # Bypasses Entra audit/rotation
 \`\`\`
 
 #### ❌ INCORRECT: Bare client without context manager
 
 \`\`\`python
-client = MyClient(endpoint, credential)  # Leaks HTTP transport on exception / interpreter exit
+client = MyClient(endpoint, credential) # Leaks HTTP transport on exception / interpreter exit
 client.do_thing()
 \`\`\`
 ```
@@ -676,11 +719,11 @@ scenarios:
     expected_patterns:
       - "DefaultAzureCredential"
       - "MyClient"
-      - "with MyClient"  # enforce context manager
+      - "with MyClient" # enforce context manager
     forbidden_patterns:
       - "api_key="
       - "hardcoded"
-      - "from_connection_string"  # prefer Entra over connection strings
+      - "from_connection_string" # prefer Entra over connection strings
     tags:
       - basic
       - authentication
@@ -761,6 +804,70 @@ After creating the skill:
 
 ---
 
+### Step 8: Regenerate Existing Skills from Latest SDK Sources
+
+Use this workflow when an existing skill has stale examples, outdated API signatures,
+or changed package guidance.
+
+1. **Identify canonical source files first**
+
+For Azure SDK language skills, use official upstream source docs and examples as the source of truth:
+
+- Go: `https://github.com/Azure/azure-sdk-for-go/tree/main/sdk/<service>/<module>/README.md`
+- Go examples: `https://github.com/Azure/azure-sdk-for-go/tree/main/sdk/<service>/<module>/`
+- Rust: `https://github.com/Azure/azure-sdk-for-rust/tree/main/sdk/<service>/<crate>/README.md`
+- Rust examples: `https://github.com/Azure/azure-sdk-for-rust/tree/main/sdk/<service>/<crate>/examples/`
+- .NET/Java/Python/TS/Go: use current Microsoft Learn package docs + official SDK repos
+
+2. **Refresh skill content surgically**
+
+- Update code snippets to match current constructor/method signatures
+- Keep crate/package names aligned with official publisher guidance
+- Preserve skill structure/frontmatter unless intentionally changing behavior
+- Update "Best Practices" and "Reference Links" when upstream recommendations change
+- For Rust, if code uses `azure_core` types/imports directly, ensure `azure_core` is present in `Cargo.toml`; if only service-crate re-exports are used, direct `azure_core` dependency is optional
+
+3. **Validate regenerated skill behavior**
+
+```bash
+cd tests
+pnpm harness <skill-name> --mock --verbose
+```
+
+If the skill has a Vally scenario, run that eval as well (locally or in CI) before finalizing.
+
+**Rust regeneration gate (required for Rust skills):**
+
+When regenerating any Rust skill, verify the generated `## Best Practices` section contains these exact first two rules:
+
+1. `Use cargo add to manage dependencies, never edit Cargo.toml directly`
+2. `Add azure_core only when importing azure_core types directly`
+
+Use a content check before finalizing:
+
+```bash
+rg -n "Use `cargo add` to manage dependencies, never edit `Cargo.toml` directly|Add `azure_core` only when importing `azure_core` types directly" .github/plugins/azure-sdk-rust/skills/**/SKILL.md
+```
+
+The regeneration is not complete unless both lines are present in each affected Rust skill.
+
+4. **Regenerate docs artifacts after refresh**
+
+```bash
+cd docs-site && npx tsx scripts/extract-skills.ts
+cd docs-site && npm run build
+```
+
+5. **Record what changed**
+
+In the PR/commit notes, include:
+
+- Which upstream docs/examples were used
+- Which snippets/signatures were corrected
+- Which tests/evals were run and their outcomes
+
+---
+
 ## Progressive Disclosure Patterns
 
 ### Pattern 1: High-Level Guide with References
@@ -786,6 +893,7 @@ azure-service-skill/
 └── references/
     ├── python.md
     ├── dotnet.md
+    ├── go.md
     ├── java.md
     └── typescript.md
 ```
@@ -816,20 +924,20 @@ azure-ai-agents/
 
 ## Anti-Patterns
 
-| Don't                            | Why                                        |
-| -------------------------------- | ------------------------------------------ |
-| Create skill without SDK context | Users must provide package name/docs URL   |
-| Put "when to use" in body        | Body loads AFTER triggering                |
-| Hardcode credentials             | Security risk                              |
-| Skip authentication section      | Agents will improvise poorly               |
-| Use outdated SDK patterns        | APIs change; search docs first             |
-| Include README.md                | Agents don't need meta-docs                |
-| Deeply nest references           | Keep one level deep                        |
-| Skip acceptance criteria         | Skills without tests can't be validated    |
-| Skip symlink categorization      | Skills won't be discoverable by category   |
-| Use wrong import paths           | Azure SDKs have specific module structures |
+| Don't                                                                          | Why                                                                                 |
+| ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| Create skill without SDK context                                               | Users must provide package name/docs URL                                            |
+| Put "when to use" in body                                                      | Body loads AFTER triggering                                                         |
+| Hardcode credentials                                                           | Security risk                                                                       |
+| Skip authentication section                                                    | Agents will improvise poorly                                                        |
+| Use outdated SDK patterns                                                      | APIs change; search docs first                                                      |
+| Include README.md                                                              | Agents don't need meta-docs                                                         |
+| Deeply nest references                                                         | Keep one level deep                                                                 |
+| Skip acceptance criteria                                                       | Skills without tests can't be validated                                             |
+| Skip symlink categorization                                                    | Skills won't be discoverable by category                                            |
+| Use wrong import paths                                                         | Azure SDKs have specific module structures                                          |
 | Omit sync/async + context-manager bullets from Best Practices in Python skills | End users won't follow rules that aren't written down; examples alone aren't enough |
-| Mix sync and async in the same Python example | Demonstrates the anti-pattern the skill is supposed to prevent |
+| Mix sync and async in the same Python example                                  | Demonstrates the anti-pattern the skill is supposed to prevent                      |
 
 ---
 
@@ -846,11 +954,11 @@ Before completing a skill:
 
 - [ ] Description includes what AND when (trigger phrases)
 - [ ] SKILL.md under 500 lines
-- [ ] Authentication guidance matches language-specific recommendations (including Rust credential guidance)
+- [ ] Authentication follows language rules (`DefaultAzureCredential` for Python/.NET/Java/TS/Go local dev; `DeveloperToolsCredential` local dev + `ManagedIdentityCredential` production for Rust)
 - [ ] Includes cleanup/delete in examples
 - [ ] References organized by feature
 - [ ] **(Python skills only) Best Practices section contains the two user-facing rules** (sync-or-async consistency + context managers for clients and async credentials), using the variant matched to the skill type
-- [ ] **(Python skills only)** Every code example obeys both rules (no mixed sync/async; every client wrapped in `with` / `async with`)
+- [ ] For Rust skills: `## Best Practices` starts with cargo dependency rule + `azure_core` direct-import rule
 
 **Categorization:**
 

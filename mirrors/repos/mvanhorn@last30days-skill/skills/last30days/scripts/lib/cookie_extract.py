@@ -69,7 +69,16 @@ def _get_firefox_profiles_dir() -> Optional[Path]:
     if system == "Darwin":
         path = Path.home() / "Library" / "Application Support" / "Firefox"
     elif system == "Linux":
+        # Default location for most distros
         path = Path.home() / ".mozilla" / "firefox"
+        if path.is_dir():
+            return path
+        # Some distros (e.g. Fedora) honour $XDG_CONFIG_HOME
+        xdg_config = os.environ.get("XDG_CONFIG_HOME")
+        if xdg_config and os.path.isabs(xdg_config):
+            path = Path(xdg_config) / "mozilla" / "firefox"
+        else:
+            path = Path.home() / ".config" / "mozilla" / "firefox"
     else:
         # Windows: %APPDATA%\Mozilla\Firefox — best-effort
         appdata = Path.home() / "AppData" / "Roaming" / "Mozilla" / "Firefox"

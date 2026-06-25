@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `worldwonderer/oh-story-claudecode` — 26 default patterns, 0 followed patterns, 220 file(s) materialized.
+Mirror of `worldwonderer/oh-story-claudecode` — 26 default patterns, 0 followed patterns, 221 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `worldwonderer/oh-story-claudecode` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 220 |
+| Files         | 221 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -279,6 +279,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 218 | ✓ | [`skills/story-short-write/scripts/normalize-punctuation.js`](skills/story-short-write/scripts/normalize-punctuation.js) |
 | 219 | ✓ | [`skills/story-short-write/SKILL.md`](skills/story-short-write/SKILL.md) |
 | 220 | ✓ | [`skills/story/SKILL.md`](skills/story/SKILL.md) |
+| 221 | ✓ | [`skills/story/VERSION`](skills/story/VERSION) |
 
 ---
 

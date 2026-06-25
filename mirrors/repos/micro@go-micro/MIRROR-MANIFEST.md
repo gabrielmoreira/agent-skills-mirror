@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `micro/go-micro` — 26 default patterns, 7 followed patterns, 9 file(s) materialized.
+Mirror of `micro/go-micro` — 26 default patterns, 8 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `micro/go-micro` — 26 default patterns, 7 followed patterns, 9 file(
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 9 |
+| Followed pats | 8 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,7 @@ Mirror of `micro/go-micro` — 26 default patterns, 7 followed patterns, 9 file(
 - `ROADMAP.md`
 - `CHANGELOG.md`
 - `internal/docs/IMPLEMENTATION_SUMMARY.md`
+- `CODEX.md`
 - `CONTRIBUTING.md`
 - `internal/website/docs/roadmap.md`
 - `internal/website/docs/guides/migration/v5-to-v6.md`
@@ -69,11 +70,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`contrib/langchain-go-micro/CONTRIBUTING.md`](contrib/langchain-go-micro/CONTRIBUTING.md) |
 | 3 | → | [`.github/ISSUE_TEMPLATE/question.md`](.github/ISSUE_TEMPLATE/question.md) |
 | 4 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 5 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 6 | → | [`internal/docs/IMPLEMENTATION_SUMMARY.md`](internal/docs/IMPLEMENTATION_SUMMARY.md) |
-| 7 | → | [`internal/website/docs/guides/migration/v5-to-v6.md`](internal/website/docs/guides/migration/v5-to-v6.md) |
-| 8 | → | [`internal/website/docs/roadmap.md`](internal/website/docs/roadmap.md) |
-| 9 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 5 | → | [`CODEX.md`](CODEX.md) |
+| 6 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 7 | → | [`internal/docs/IMPLEMENTATION_SUMMARY.md`](internal/docs/IMPLEMENTATION_SUMMARY.md) |
+| 8 | → | [`internal/website/docs/guides/migration/v5-to-v6.md`](internal/website/docs/guides/migration/v5-to-v6.md) |
+| 9 | → | [`internal/website/docs/roadmap.md`](internal/website/docs/roadmap.md) |
+| 10 | → | [`ROADMAP.md`](ROADMAP.md) |
 
 ---
 

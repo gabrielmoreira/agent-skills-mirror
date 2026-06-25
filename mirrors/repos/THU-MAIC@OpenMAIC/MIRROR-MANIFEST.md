@@ -59,7 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`packages/@maic/importer/SKILL.md`](packages/@maic/importer/SKILL.md) |
+| 1 | ✓ | [`packages/@openmaic/importer/SKILL.md`](packages/@openmaic/importer/SKILL.md) |
 | 2 | ✓ | [`skills/openmaic/references/clone.md`](skills/openmaic/references/clone.md) |
 | 3 | ✓ | [`skills/openmaic/references/generate-flow.md`](skills/openmaic/references/generate-flow.md) |
 | 4 | ✓ | [`skills/openmaic/references/hosted-mode.md`](skills/openmaic/references/hosted-mode.md) |

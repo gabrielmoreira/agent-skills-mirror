@@ -18,11 +18,13 @@
 - Keep placeholder names, include aliases, and template assumptions synchronized with prompt-loading code and extensions.
 - Prompt changes can alter agent behavior; keep edits narrow and intentional.
 - Maintain clear separation between core behavior prompts and profile/plugin-specific customization.
+- Summary prompts that compress history should preserve loaded skill names from `skill_instructions` metadata without copying full skill bodies.
 
 ## Work Guidance
 
 - Read the rendering path before changing placeholders or filenames.
 - Prefer small prompt additions over broad rewrites when fixing a specific behavior.
+- Keep document/OCR routing explicit: image files, screenshots, scans, charts, photos, and diagrams should prefer vision tools when available, while `document_query` is for documents, large text-heavy files, and fallback OCR.
 - Update tests or snapshots when prompt budget, required sections, or generated system content changes.
 
 ## Verification

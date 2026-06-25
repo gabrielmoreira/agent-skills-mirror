@@ -1984,9 +1984,18 @@
       "trigger_keywords": [
         "scrnaseq",
         "nf-core scrnaseq",
+        "run scrnaseq from fastq",
+        "preprocess 10x fastqs",
+        "generate h5ad from single-cell fastq",
         "single-cell preprocessing",
-        "10x fastq",
-        "generate h5ad from fastq"
+        "nextflow scrna pipeline",
+        "10x chromium fastq pipeline",
+        "starsolo upstream processing",
+        "alevin-fry fastq to counts",
+        "run nextflow scrnaseq",
+        "upstream single-cell pipeline",
+        "fastq to h5ad single cell",
+        "10x genomics fastq pipeline"
       ],
       "chaining_partners": [
         "scrna-orchestrator",
@@ -2112,7 +2121,7 @@
     {
       "name": "phylogenetics-builder",
       "cli_alias": "phylo",
-      "description": "End-to-end maximum-likelihood phylogenetic tree inference from raw or pre-aligned FASTA. Six MSA algorithms (MAFFT, MUSCLE, ClustalW, KAlign, T-Coffee, PRANK), trimAl trimming, ModelFinder model selection, IQ-TREE 2 and RAxML-NG engines, UFBoot/standard/triple bootstrap, midpoint and outgroup rooting.",
+      "description": "End-to-end ML phylogenetic tree inference — MSA, trimming, ModelFinder, IQ-TREE2/RAxML-NG.",
       "version": "0.2.0",
       "status": "mvp",
       "has_script": true,
@@ -2123,52 +2132,24 @@
         "python>=3.10",
         "pandas>=2.0",
         "biopython>=1.80",
-        "matplotlib>=3.5",
-        "ete3>=3.1"
+        "matplotlib>=3.5"
       ],
-      "tags": [
-        "phylogenetics",
-        "maximum-likelihood",
-        "iqtree2",
-        "raxml-ng",
-        "msa",
-        "mafft",
-        "modelfinder",
-        "bootstrap",
-        "molecular-evolution"
-      ],
+      "tags": [],
       "trigger_keywords": [
         "phylogeny",
         "phylogenetic tree",
         "iqtree",
-        "iqtree2",
-        "IQ-TREE",
+        "raxml",
         "maximum likelihood tree",
-        "fasta alignment",
-        "build tree",
-        "ModelFinder",
-        "model selection tree",
-        "bootstrap support",
-        "molecular phylogeny",
-        "UFBoot",
-        "RAxML",
-        "raxml-ng",
         "mafft alignment",
-        "muscle alignment",
-        "clustalw",
-        "prank",
-        "kalign",
-        "tcoffee",
-        "t_coffee",
-        "multiple sequence alignment phylogeny",
-        "trimAl",
-        "midpoint root",
-        "outgroup rooting"
+        "build tree from sequences",
+        "model selection",
+        "ModelFinder",
+        "bootstrap support",
+        "evolutionary tree",
+        "molecular phylogeny"
       ],
       "chaining_partners": [
-        "analyze-fasta",
-        "fastreer",
-        "dnasp",
         "profile-report"
       ]
     },

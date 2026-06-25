@@ -65,17 +65,24 @@ crates/ha-core/src/team/
 
 ### TeamStatus（三态）
 
-```
-Active ←→ Paused → Dissolved
+```mermaid
+stateDiagram-v2
+    Active --> Paused
+    Paused --> Active
+    Paused --> Dissolved
 ```
 
 ### MemberStatus（六态）
 
-```
-Idle → Working → Completed
-                → Error
-                → Killed
-Paused ←→ Working（通过 resume 恢复）
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> Working
+    Working --> Completed
+    Working --> Error
+    Working --> Killed
+    Working --> Paused
+    Paused --> Working: resume 恢复
 ```
 
 活跃判定：`Idle | Working` → `is_active() = true`
@@ -156,86 +163,88 @@ Paused ←→ Working（通过 resume 恢复）
 
 ### 1. 创建团队
 
-```
-用户: "帮我组个团队做认证功能"
-  ↓
-LLM 调用 team(action="create", name="Auth Team", members=[...])
-  ↓
-coordinator::create_team()
-  ├─ 检查活跃团队限制（MAX_ACTIVE_TEAMS=3）
-  ├─ 检查成员数限制（DEFAULT_MAX_MEMBERS=8）
-  ├─ 插入 teams 行
-  ├─ emit("team_event", type="created")
-  └─ for each member:
-       coordinator::spawn_member()
-         ├─ 插入 team_members 行
-         ├─ emit("team_event", type="member_joined")
-         ├─ build_member_context() → 构建团队协作系统上下文
-         └─ subagent::spawn_subagent(SpawnParams {
-              label: "team:Auth Team/Frontend",
-              extra_system_context: 团队协作上下文,
-              skip_parent_injection: true,  ← 关键：不走默认注入
-            })
+```mermaid
+flowchart TD
+    U["用户：帮我组个团队做认证功能"]
+    LLM["LLM 调用 team(action=create, name, members)"]
+    CT["coordinator::create_team()"]
+    C1["检查活跃团队限制（MAX_ACTIVE_TEAMS=3）"]
+    C2["检查成员数限制（DEFAULT_MAX_MEMBERS=8）"]
+    C3["插入 teams 行"]
+    C4["emit team_event（type=created）"]
+    SM["for each member → coordinator::spawn_member()"]
+    M1["插入 team_members 行"]
+    M2["emit team_event（type=member_joined）"]
+    M3["build_member_context() 构建团队协作系统上下文"]
+    M4["subagent::spawn_subagent(SpawnParams)<br/>label=team:Auth Team/Frontend<br/>extra_system_context=团队协作上下文<br/>skip_parent_injection=true（关键：不走默认注入）"]
+
+    U --> LLM --> CT
+    CT --> C1 --> C2 --> C3 --> C4 --> SM
+    SM --> M1 --> M2 --> M3 --> M4
 ```
 
 ### 2. 成员间通信
 
-```
-Frontend 成员调用 team(action="send_message", to="Backend", content="API 定义好了")
-  ↓
-messaging::send_message()
-  ├─ 持久化到 team_messages 表
-  ├─ 查找 Backend 成员的 run_id
-  ├─ SUBAGENT_MAILBOX.push(run_id, formatted_msg)  ← 复用子 Agent 邮箱
-  └─ emit("team_event", type="message")
-       ↓
-  前端 useTeam hook 接收事件 → 内存追加消息 → TeamMessageFeed 更新
+```mermaid
+flowchart TD
+    A["Frontend 成员调用 team(action=send_message, to=Backend, content=API 定义好了)"]
+    B["messaging::send_message()"]
+    B1["持久化到 team_messages 表"]
+    B2["查找 Backend 成员的 run_id"]
+    B3["SUBAGENT_MAILBOX.push(run_id, formatted_msg)<br/>复用子 Agent 邮箱"]
+    B4["emit team_event（type=message）"]
+    FE["前端 useTeam hook 接收事件<br/>内存追加消息 → TeamMessageFeed 更新"]
+
+    A --> B --> B1 --> B2 --> B3 --> B4 --> FE
 ```
 
 ### 3. 任务看板
 
-```
-LLM 调用 team(action="create_task", content="实现登录 API", owner="Backend")
-  ↓
-tasks::create_task()
-  ├─ 插入 team_tasks 行
-  ├─ 更新 owner 成员的 current_task_id
-  ├─ emit("team_event", type="task_updated")
-  └─ messaging::post_system_message("Task #1 created and assigned to Backend")
+```mermaid
+flowchart TD
+    CA["LLM 调用 team(action=create_task, content=实现登录 API, owner=Backend)"]
+    CT["tasks::create_task()"]
+    CT1["插入 team_tasks 行"]
+    CT2["更新 owner 成员的 current_task_id"]
+    CT3["emit team_event（type=task_updated）"]
+    CT4["messaging::post_system_message（Task 1 created and assigned to Backend）"]
+    CA --> CT --> CT1 --> CT2 --> CT3 --> CT4
 
-Backend 成员完成后调用 team(action="update_task", task_id=1, status="completed")
-  ↓
-tasks::update_task()
-  ├─ 更新 team_tasks 行
-  ├─ emit("team_event", type="task_updated")
-  └─ messaging::post_system_message("Task #1 completed by Backend")
+    UA["Backend 完成后调用 team(action=update_task, task_id=1, status=completed)"]
+    UT["tasks::update_task()"]
+    UT1["更新 team_tasks 行"]
+    UT2["emit team_event（type=task_updated）"]
+    UT3["messaging::post_system_message（Task 1 completed by Backend）"]
+    UA --> UT --> UT1 --> UT2 --> UT3
 ```
 
 ### 4. 暂停/恢复
 
-```
-pause_team()
-  ├─ 遍历活跃成员 → cancel 对应 subagent run
-  ├─ 更新成员状态为 Paused
-  └─ 更新团队状态为 Paused
+```mermaid
+flowchart TD
+    P["pause_team()"]
+    P1["遍历活跃成员 → cancel 对应 subagent run"]
+    P2["更新成员状态为 Paused"]
+    P3["更新团队状态为 Paused"]
+    P --> P1 --> P2 --> P3
 
-resume_team()
-  ├─ 更新团队状态为 Active
-  └─ 遍历 Paused 成员 → 重新 spawn_member（同一任务 + 历史上下文）
+    R["resume_team()"]
+    R1["更新团队状态为 Active"]
+    R2["遍历 Paused 成员 → 重新 spawn_member<br/>同一任务 + 历史上下文"]
+    R --> R1 --> R2
 ```
 
 ### 5. 成员完成 → 团队级感知
 
 成员设置了 `skip_parent_injection: true`，因此完成后不走默认的 injection 路径。团队级的感知通过 EventBus 实现：
 
-```
-subagent 完成 → emit("subagent_event", status="completed")
-  ↓
-coordinator 监听 → 更新 team_members.status
-  ↓
-emit("team_event", type="member_completed")
-  ↓
-前端 useTeam hook → debounced reload → UI 更新
+```mermaid
+flowchart TD
+    A["subagent 完成 → emit subagent_event（status=completed）"]
+    B["coordinator 监听 → 更新 team_members.status"]
+    C["emit team_event（type=member_completed）"]
+    D["前端 useTeam hook → debounced reload → UI 更新"]
+    A --> B --> C --> D
 ```
 
 ## 成员系统上下文
@@ -308,16 +317,14 @@ emit("team_event", type="member_completed")
 
 ### 数据流
 
-```
-Settings → Teams 面板编辑
-  ↓
-save_team_template / delete_team_template
-  ↓
-team_templates 表 INSERT/DELETE
-  ↓
-emit_team_event("template_saved" / "template_deleted")
-  ↓
-前端 useTeam hook 刷新模板列表
+```mermaid
+flowchart TD
+    A["Settings → Teams 面板编辑"]
+    B["save_team_template / delete_team_template"]
+    C["team_templates 表 INSERT / DELETE"]
+    D["emit_team_event（template_saved / template_deleted）"]
+    E["前端 useTeam hook 刷新模板列表"]
+    A --> B --> C --> D --> E
 ```
 
 > 既往 release notes 的"4 个内置模板"为已废弃描述，本节为单一真相源。

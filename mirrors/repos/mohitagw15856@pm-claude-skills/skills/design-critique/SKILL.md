@@ -1,6 +1,6 @@
 ---
 name: design-critique
-description: "Gives structured, constructive feedback on any design using UX frameworks. Use when asked to critique a design, review a UI, give feedback on a Figma file or wireframe, assess a user flow, or evaluate a design against UX principles. Applies Jobs-to-be-Done, Gestalt principles, and usability heuristics to give actionable feedback with prioritised issues and specific recommendations."
+description: "Give structured, constructive feedback on any design using UX frameworks. Use when asked to critique a design, review a UI, give feedback on a Figma file or wireframe, assess a user flow, or evaluate a design against UX principles. Produces actionable critique applying Jobs-to-be-Done, Gestalt principles, and usability heuristics, with prioritised issues and specific recommendations."
 ---
 
 # Design Critique Skill

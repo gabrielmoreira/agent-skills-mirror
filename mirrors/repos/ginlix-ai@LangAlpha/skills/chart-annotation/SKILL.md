@@ -64,6 +64,27 @@ midnight UTC of that day is safest. A time that doesn't land on a bar still
 renders but may look offset. Applies to `trendline`, `marker`, `vertical_line`,
 `text`, `event`, and `fib_retracement`.
 
+## Reacting to a user's chart selection
+
+A `<chart-selection>` block in the user's turn means they selected something on
+the chart and sent it to you. Its `selection_type` is one of:
+
+- `region` — a time×price box. Bounds come as a time range + price range, with
+  the OHLCV `bars` inside it.
+- `price_level` — a single horizontal price they tapped.
+
+The user may send **several** blocks in one turn — treat each independently.
+A block may carry a `User note:` line: that is the user's own comment about
+*that* selection (separate from their message text) — let it steer what you
+look for there.
+
+Analyze each bounded area (lean on the supplied `bars` and/or your market-data
+path), then, when it helps, draw your read back onto the **same** `symbol` +
+`timeframe` with `draw_chart_annotation` — a `rectangle` over a `region`, or a
+`price_line` at a `price_level`. Each block already spells out the matching
+`draw_chart_annotation(...)` call; adjust it to the level or zone your analysis
+actually lands on.
+
 ---
 
 ## Picking the right variant

@@ -1,6 +1,6 @@
 ---
 name: document-query
-description: Use when reading, extracting, summarizing, comparing, OCRing, or answering questions over local or remote documents, code files, PDFs, Office files, HTML/text files, and text-heavy document images or scans with the document_query tool.
+description: Use when reading, extracting, summarizing, comparing, or answering questions over local or remote documents, code files, PDFs, Office files, HTML/text files, large text-heavy files, and fallback OCR for document images or scans when vision tools are unavailable or insufficient.
 version: 1.0.0
 author: Agent Zero Team
 tags: ["documents", "ocr", "qa", "pdf", "code", "analysis"]
@@ -10,8 +10,8 @@ trigger_patterns:
   - ask questions about a document
   - summarize document
   - compare documents
-  - extract text from image
-  - OCR document
+  - fallback image OCR
+  - OCR document fallback
   - analyze code file
 ---
 
@@ -24,13 +24,15 @@ Use the `document_query` tool to read, extract, summarize, compare, or answer qu
 Use `document_query` for:
 
 - Local files and URLs containing document text: PDF, HTML, Office files, plain text, Markdown, CSV/TSV, XML/JSON, logs, code files, and similar content.
+- Large text-heavy files where ordinary reading/search would be too broad and the user needs Q&A, summarization, comparison, or extraction.
 - Q&A over one or more documents.
 - Summaries, comparisons, entity extraction, key-point extraction, and table/text extraction.
 - Code-file Q&A when the user points to specific files or URLs and wants answers from their contents.
-- Text-heavy images, scans, screenshots, and document images when the task is OCR/text extraction or Q&A over visible text.
-- Image OCR when vision tools are unavailable, when the main chat model is not multimodal, or when the user wants document text rather than visual scene understanding.
+- Fallback OCR over text-heavy document images, scans, or screenshots only when vision tools are unavailable, insufficient, or unable to read the needed text.
 
-Do not use `document_query` for purely visual questions that require spatial/visual reasoning beyond document text; use vision tools when available for those cases.
+Use vision tools first for image files, screenshots, scans, charts, photos, diagrams, and other visual inputs when available. Do not route images to `document_query` as a first-pass reader.
+
+Do not use `document_query` for purely visual questions, first-pass screenshot inspection, or tasks that require spatial/visual reasoning beyond document text; use vision tools when available for those cases.
 
 ## Inputs
 
@@ -111,14 +113,14 @@ For directories or codebases, first identify the relevant files with file/search
 }
 ```
 
-### OCR Or Q&A Over A Document Image
+### Fallback OCR After Vision Cannot Read A Document Image
 
 ```json
 {
     "thoughts": [
-        "The user wants text from a scanned document image."
+        "Vision tools are unavailable or could not read the scanned document text, so document_query is the fallback OCR path."
     ],
-    "headline": "Reading text from the scanned document",
+    "headline": "Reading document text with fallback OCR",
     "tool_name": "document_query",
     "tool_args": {
         "document": "/a0/usr/workdir/scan.png",

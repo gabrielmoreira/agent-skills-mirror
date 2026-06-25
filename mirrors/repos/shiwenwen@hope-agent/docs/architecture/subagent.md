@@ -27,11 +27,15 @@
 
 ### SubagentStatus（七态枚举）
 
-```
-Queued → Spawning → Running → Completed
-                            → Error
-                            → Timeout
-                            → Killed
+```mermaid
+stateDiagram-v2
+    [*] --> Queued
+    Queued --> Spawning
+    Spawning --> Running
+    Running --> Completed
+    Running --> Error
+    Running --> Timeout
+    Running --> Killed
 ```
 
 `Queued`（R7.2）：命中单会话并发上限时入队等待，**非终态、不持槽位**（被 `count_active_subagent_runs` 的 `IN ('spawning','running')` 排除——否则排队项会撑高自己的活跃计数、永不提升，死锁）；调度器在槽位空出时把它提升为 `Spawning` 并真正发射。

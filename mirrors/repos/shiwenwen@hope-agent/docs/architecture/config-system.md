@@ -61,26 +61,14 @@ mutate_config(("hooks", "settings-ui"), |cfg| {
 
 ## 并发模型
 
-```
-                     读                    写
-                   ┌──┐                 ┌──────┐
-┌─────────────┐    │  ▼                 ▼      │
-│  Frontend   │    │  Arc<AppConfig>    │      │
-│  / IM /     │    │  （ArcSwap）       │      │
-│  ha-core    │◄───┘                    │      │
-└─────────────┘                         │      │
-                                        ▼      │
-                                ┌──────────────┴─┐
-                                │ mutate_config  │
-                                │ (全局 Mutex<()>) │
-                                │ ┌────────────┐ │
-                                │ │ 1. 克隆快照 │ │
-                                │ │ 2. FnOnce  │ │
-                                │ │ 3. 写磁盘   │ │
-                                │ │ 4. swap    │ │
-                                │ │ 5. emit    │ │
-                                │ └────────────┘ │
-                                └────────────────┘
+```mermaid
+flowchart LR
+    Readers["Frontend / IM / ha-core"]
+    Snapshot["Arc&lt;AppConfig&gt;<br/>ArcSwap 快照"]
+    Mutate["mutate_config（全局 Mutex&lt;()&gt;）<br/>1. 克隆快照<br/>2. FnOnce 改<br/>3. 写磁盘<br/>4. swap<br/>5. emit"]
+
+    Snapshot -->|"读：无锁，无限并发 reader"| Readers
+    Mutate -->|"swap 新 Arc"| Snapshot
 ```
 
 - 读路径**从不阻塞**：ArcSwap 允许无限个并发 reader。

@@ -212,6 +212,43 @@ stale-claim takeover, or ordinary clean continuation. This keeps crash
 and stall handling separate without requiring the stalled session to
 publish a final self-report.
 
+## Autopilot operating model
+
+The execution loop is **one issue = one short-lived session**: drive a
+single Discover → Claim → Work → PR → Review → Merge → F4 cleanup cycle to
+completion, then let the session end. All durable loop state — claims, PRs,
+and issue/PR status — lives in the forge (GitHub), not in the agent's
+context, so the loop does not need to be carried in one long-lived process:
+a thin external runner or scheduler (or a dynamic-paced loop primitive)
+re-enters Discover for the next unclaimed issue in a fresh session. This
+composes with IDD's existing model — it ships no daemon and relies on an
+external scheduler to drive the loop.
+
+Treat the **context window as a first-class, exhaustible resource**,
+alongside wall-clock time and token budget. A single session that runs
+F5 → Discover → … → F5 in-process accumulates every issue's tool output,
+diffs, CI logs, and review threads, so each later issue pays a steadily
+larger context-re-read cost — a direct cause of mid-run context exhaustion.
+The monolithic single-session loop is therefore the **anti-pattern**;
+prefer short sessions that exit at the F4/F5 boundary and let the runner
+start the next one.
+
+F4-complete / F5 is therefore the recommended **safe session-exit boundary**.
+When context pressure hits mid-issue, a session can die mid-flight and leave a
+partially-progressed issue (claimed, branch pushed, PR open, or mid-review) for
+a later session to untangle. Finishing the current issue to the F4/F5 boundary
+and exiting there converts that uncontrolled failure into a controlled handoff —
+durable claim and PR state plus the existing resume phase let a fresh session
+pick up cleanly at Discover, rather than starting another issue and risking a
+mid-loop death.
+
+Short sessions need cheap ramp-up, which the "facts live in docs and
+helpers, not in session memory" design already supports: a fresh session
+reconstructs what it needs from the instruction files, `.github/idd/`
+config, and forge state. This guidance is **advisory** — a recommended
+practice with its rationale, not a hard requirement — and
+**runner-agnostic**, since this repository ships no runner.
+
 ## Live Status Digests
 
 Use the live status digest contract in

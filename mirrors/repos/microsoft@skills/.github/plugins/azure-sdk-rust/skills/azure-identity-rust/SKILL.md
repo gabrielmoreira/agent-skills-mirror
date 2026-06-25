@@ -27,10 +27,10 @@ Use this skill when:
 ## Installation
 
 ```sh
-cargo add azure_identity tokio
+cargo add azure_identity azure_core tokio
 ```
 
-> **Do not** add `azure_core` directly to `Cargo.toml`. It is re-exported by service crates.
+> If your code uses `azure_core` types directly, add `azure_core` to `Cargo.toml`. If you only use service-crate re-exports, direct `azure_core` dependency is optional.
 
 ## Environment Variables
 
@@ -87,13 +87,6 @@ use azure_identity::ManagedIdentityCredential;
 
 // System-assigned managed identity
 let credential = ManagedIdentityCredential::new(None)?;
-
-// User-assigned managed identity
-let options = ManagedIdentityCredentialOptions {
-    client_id: Some("<managed-identity-client-id>".into()),
-    ..Default::default()
-};
-let credential = ManagedIdentityCredential::new(Some(options))?;
 ```
 
 ### ClientSecretCredential (Service Principal)
@@ -127,15 +120,18 @@ let credential = ClientSecretCredential::new(
 
 ## Best Practices
 
-1. **Use `DeveloperToolsCredential`** for local dev, **`ManagedIdentityCredential`** for production — the Rust SDK does not have `DefaultAzureCredential`
-2. **Never hardcode credentials** — use environment variables for service principals
-3. **Clone credentials** — pass `credential.clone()` when constructing multiple clients; credentials are `Arc`-wrapped
-4. **Reuse clients** — clients are thread-safe; create once, share across tasks
-5. **Assign RBAC roles** — ensure the identity has appropriate roles for the target service (e.g., "Key Vault Secrets User" for secret reads)
+1. **Use `cargo add` to manage dependencies, never edit `Cargo.toml` directly.** Add and remove Rust SDK dependencies with cargo commands instead of manual manifest edits.
+2. **Add `azure_core` only when importing `azure_core` types directly.** If your code imports `azure_core::http::Url`, `azure_core::http::RequestContent`, or `azure_core::error::ErrorKind`, include `azure_core`; otherwise a direct dependency is optional.
+3. **Use `DeveloperToolsCredential`** for local dev, **`ManagedIdentityCredential`** for production — Rust does not provide a single `DefaultAzureCredential` type
+4. **Never hardcode credentials** — use environment variables for service principals
+5. **Clone credentials** — pass `credential.clone()` when constructing multiple clients; credentials are `Arc`-wrapped
+6. **Reuse clients** — clients are thread-safe; create once, share across tasks
+7. **Assign RBAC roles** — ensure the identity has appropriate roles for the target service (e.g., "Key Vault Secrets User" for secret reads)
 
 ## Reference Links
 
-| Resource      | Link                                    |
-| ------------- | --------------------------------------- |
-| API Reference | https://docs.rs/azure_identity          |
-| crates.io     | https://crates.io/crates/azure_identity |
+| Resource      | Link                                                                              |
+| ------------- | --------------------------------------------------------------------------------- |
+| API Reference | https://docs.rs/azure_identity/latest/azure_identity                              |
+| crates.io     | https://crates.io/crates/azure_identity                                           |
+| Source Code   | https://github.com/Azure/azure-sdk-for-rust/tree/main/sdk/identity/azure_identity |

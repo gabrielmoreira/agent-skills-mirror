@@ -1363,8 +1363,10 @@ SkillsPanel 列表中每个技能显示状态标签：
 
 每次 chat 收尾后，auto-review 管线按下面五道闸串行处理；任意一道判 skip 都会写入 `learning_events.kind='skill_review_skipped'`，UI 的 "最近的拒绝原因" 卡片就靠这条流。
 
-```
-[闸 1 触发器] → [闸 2 启发式 gate] → [闸 3 LLM 审核 + dedup] → [闸 4 自评分硬阈值] → [闸 5 后置 lint] → 落盘 draft / patch existing
+```mermaid
+flowchart LR
+    G1["闸 1 触发器"] --> G2["闸 2 启发式 gate"] --> G3["闸 3 LLM 审核 + dedup"]
+    G3 --> G4["闸 4 自评分硬阈值"] --> G5["闸 5 后置 lint"] --> OUT["落盘 draft / patch existing"]
 ```
 
 - **闸 1（[`triggers.rs`](../../crates/ha-core/src/skills/auto_review/triggers.rs)）**：[`TriggerSignals { turn_tokens, new_messages, tool_use_count, user_correction }`](../../crates/ha-core/src/skills/auto_review/triggers.rs)。默认 `requireToolUse=true` —— 纯聊天对话 `tool_use_count=0` 永远不触发；`tool_use_count ≥ toolUseThreshold` 是主入口；`correctionSignalEnabled=true` 时连发两条用户消息（< 30s）也独立触发。

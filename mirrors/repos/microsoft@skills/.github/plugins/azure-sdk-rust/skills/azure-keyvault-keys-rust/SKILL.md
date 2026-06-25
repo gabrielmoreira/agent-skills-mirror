@@ -28,7 +28,7 @@ Use this skill when:
 cargo add azure_security_keyvault_keys azure_identity tokio futures
 ```
 
-> **Do not** add `azure_core` directly to `Cargo.toml`. It is re-exported by `azure_security_keyvault_keys`.
+> If your code uses `azure_core` types directly, add `azure_core` to `Cargo.toml`. If you only use `azure_security_keyvault_keys` re-exports, direct `azure_core` dependency is optional.
 
 ## Environment Variables
 
@@ -135,7 +135,7 @@ use azure_security_keyvault_keys::{
     models::{
         CreateKeyParameters, EncryptionAlgorithm, KeyOperationParameters, KeyType,
     },
-    ResourceExt,
+    ResourceExt, ResourceId,
 };
 use rand::random;
 
@@ -150,7 +150,6 @@ let key = client
     .create_key("kek-name", body.try_into()?, None)
     .await?
     .into_model()?;
-let key_version = key.resource_id()?.version.expect("key version required");
 
 // Generate a symmetric data encryption key (DEK)
 let dek = random::<u32>().to_le_bytes().to_vec();
@@ -162,18 +161,22 @@ let mut params = KeyOperationParameters {
     ..Default::default()
 };
 let wrapped = client
-    .wrap_key("kek-name", &key_version, params.clone().try_into()?, None)
+    .wrap_key("kek-name", params.clone().try_into()?, None)
     .await?
     .into_model()?;
+
+// Retain the key version used to wrap so you can unwrap with the same version later
+let ResourceId { version, .. } = wrapped.resource_id()?;
+let key_version = version.as_deref().unwrap_or_default();
 
 // Unwrap to recover the DEK
 params.value = wrapped.result;
 let unwrapped = client
-    .unwrap_key("kek-name", &key_version, params.try_into()?, None)
+    .unwrap_key("kek-name", key_version, params.try_into()?, None)
     .await?
     .into_model()?;
 
-assert_eq!(unwrapped.result.as_ref(), Some(&dek));
+assert!(matches!(unwrapped.result, Some(ref result) if result.eq(&dek)));
 ```
 
 ## Key Types
@@ -197,15 +200,18 @@ For Entra ID auth, assign one of these roles:
 
 ## Best Practices
 
-1. **Use `DeveloperToolsCredential`** for local dev, **`ManagedIdentityCredential`** for production — the Rust SDK does not have `DefaultAzureCredential`
-2. **Never hardcode credentials** — use environment variables or managed identity
-3. **Use `..Default::default()`** with `#[allow(clippy::needless_update)]` for model struct updates
-4. **Use `ResourceExt`** to extract key name/version from key IDs
-5. **Reuse clients** — `KeyClient` is thread-safe; create once, share across tasks
+1. **Use `cargo add` to manage dependencies, never edit `Cargo.toml` directly.** Add and remove Rust SDK dependencies with cargo commands instead of manual manifest edits.
+2. **Add `azure_core` only when importing `azure_core` types directly.** If your code imports `azure_core::http::Url`, `azure_core::http::RequestContent`, or `azure_core::error::ErrorKind`, include `azure_core`; otherwise a direct dependency is optional.
+3. **Use `DeveloperToolsCredential`** for local dev, **`ManagedIdentityCredential`** for production — Rust does not provide a single `DefaultAzureCredential` type
+4. **Never hardcode credentials** — use environment variables or managed identity
+5. **Use `..Default::default()`** with `#[allow(clippy::needless_update)]` for model struct updates
+6. **Use `ResourceExt`** to extract key name/version from key IDs
+7. **Reuse clients** — `KeyClient` is thread-safe; create once, share across tasks
 
 ## Reference Links
 
-| Resource      | Link                                                  |
-| ------------- | ----------------------------------------------------- |
-| API Reference | https://docs.rs/azure_security_keyvault_keys          |
-| crates.io     | https://crates.io/crates/azure_security_keyvault_keys |
+| Resource      | Link                                                                                            |
+| ------------- | ----------------------------------------------------------------------------------------------- |
+| API Reference | https://docs.rs/azure_security_keyvault_keys/latest/azure_security_keyvault_keys                |
+| crates.io     | https://crates.io/crates/azure_security_keyvault_keys                                           |
+| Source Code   | https://github.com/Azure/azure-sdk-for-rust/tree/main/sdk/keyvault/azure_security_keyvault_keys |

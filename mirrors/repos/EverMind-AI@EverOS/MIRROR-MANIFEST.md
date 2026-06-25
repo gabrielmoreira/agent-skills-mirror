@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `EverMind-AI/EverOS` — 26 default patterns, 3 followed patterns, 11 file(s) materialized.
+Mirror of `EverMind-AI/EverOS` — 26 default patterns, 3 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `EverMind-AI/EverOS` — 26 default patterns, 3 followed patterns, 11 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,16 +62,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/rules/architecture.md`](.claude/rules/architecture.md) |
-| 2 | ✓ | [`.claude/skills/commit/SKILL.md`](.claude/skills/commit/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/new-branch/SKILL.md`](.claude/skills/new-branch/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/pr/SKILL.md`](.claude/skills/pr/SKILL.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`docs/how-memory-works.md`](docs/how-memory-works.md) |
-| 7 | ✓ | [`docs/overview.md`](docs/overview.md) |
-| 8 | ✓ | [`docs/storage_layout.md`](docs/storage_layout.md) |
-| 9 | → | [`.claude/rules/init-py-and-reexport.md`](.claude/rules/init-py-and-reexport.md) |
-| 10 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 11 | → | [`docs/engineering.md`](docs/engineering.md) |
+| 2 | ✓ | [`.claude/skills/add-memory-kind/SKILL.md`](.claude/skills/add-memory-kind/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/commit/SKILL.md`](.claude/skills/commit/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/new-branch/SKILL.md`](.claude/skills/new-branch/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/pr/SKILL.md`](.claude/skills/pr/SKILL.md) |
+| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 7 | ✓ | [`docs/how-memory-works.md`](docs/how-memory-works.md) |
+| 8 | ✓ | [`docs/overview.md`](docs/overview.md) |
+| 9 | ✓ | [`docs/storage_layout.md`](docs/storage_layout.md) |
+| 10 | → | [`.claude/rules/init-py-and-reexport.md`](.claude/rules/init-py-and-reexport.md) |
+| 11 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 12 | → | [`docs/engineering.md`](docs/engineering.md) |
 
 ---
 

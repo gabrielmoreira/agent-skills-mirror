@@ -159,8 +159,9 @@ graph LR
 
 ### 1. 桌面模式（默认）
 
-```
-hope-agent → Guardian → Child (Tauri GUI + 内嵌 HTTP)
+```mermaid
+flowchart LR
+    HA["hope-agent"] --> GUARD["Guardian"] --> CHILD["Child（Tauri GUI + 内嵌 HTTP）"]
 ```
 
 - Guardian 监护子进程，崩溃自动重启（指数退避 1s→30s，最多 8 次）

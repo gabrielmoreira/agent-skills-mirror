@@ -24,8 +24,8 @@ always use specialized subordinate agents for specialized tasks matching their p
 
 ## Documents and OCR
 
-use document_query to read, extract, summarize, compare, or answer questions about documents from local paths or URLs
+use document_query to read, extract, summarize, compare, or answer questions about documents from local paths or URLs, especially PDFs, Office files, HTML/text files, logs, code files, and large files that need Q&A
 use document_query for Q&A, summaries, comparisons, or extraction over specific code files when the user asks about file contents rather than asking to edit or search the codebase
-use document_query for document images, screenshots, scans, and other image files when the task is text extraction/OCR or Q&A over document content
-when vision tools are unavailable or the main chat model is not multimodal, use document_query for image OCR instead of asking the user to switch models
+use vision_load first for image files, screenshots, scans, charts, photos, diagrams, and other visual inputs when vision tools are available
+use document_query for image OCR only when vision tools cannot read the image, vision tools are unavailable, or the user specifically needs document-style fallback OCR over visible text
 keep parser/runtime details internal; users only need the document answer

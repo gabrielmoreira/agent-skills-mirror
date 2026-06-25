@@ -15,9 +15,9 @@ export function parseColors(md) {
     if (!inBlock) continue;
     if (/^\S/.test(line)) break; // dedent to a top-level key → end of block
     const m = line.match(
-      /^\s+([\w-]+):\s*["']?(#[0-9a-fA-F]{3,8}|rgba?\([^)]*\)|[^"'#\s][^"'\n]*?)["']?\s*$/,
+      /^\s+([\w-]+):\s*(?:"([^"]+)"|'([^']+)'|(#[0-9a-fA-F]{3,8}|rgba?\([^)]*\)|[^#\s][^#\n]*?))\s*(?:#.*)?$/,
     );
-    if (m) out.push([m[1], m[2].trim()]);
+    if (m) out.push([m[1], (m[2] ?? m[3] ?? m[4]).trim()]);
   }
   return out;
 }
@@ -165,6 +165,10 @@ export function parseFonts(md) {
     roles["card-headline"] ??
     roles["section-headline"] ??
     roles["quote-display"] ??
+    roles.h1 ??
+    roles.h2 ??
+    roles.title ??
+    roles.hero ??
     body;
   return { display: q(display), body: q(body) };
 }

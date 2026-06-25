@@ -25,10 +25,10 @@ Use this skill when:
 ## Installation
 
 ```sh
-cargo add azure_storage_blob azure_identity tokio
+cargo add azure_storage_blob azure_identity azure_core tokio futures
 ```
 
-> **Do not** add `azure_core` directly to `Cargo.toml`. It is re-exported by `azure_storage_blob`.
+> If your code uses `azure_core` types directly (for example, `azure_core::http::Url` or `azure_core::http::RequestContent`), add `azure_core` to `Cargo.toml`. If you only use `azure_storage_blob` re-exports, direct `azure_core` dependency is optional.
 
 ## Environment Variables
 
@@ -47,9 +47,16 @@ use azure_storage_blob::BlobServiceClient;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Local dev: DeveloperToolsCredential. Production: use ManagedIdentityCredential.
     let credential = DeveloperToolsCredential::new(None)?;
-    let service_url = Url::parse("https://<account>.blob.core.windows.net/")?;
-    let service_client = BlobServiceClient::new(service_url, Some(credential), None)?;
-    let blob_client = service_client.blob_client("container-name", "blob-name");
+    let service_url = Url::parse("https://<storage_account_name>.blob.core.windows.net/")?;
+    let service_client = BlobServiceClient::new(
+        service_url,
+        Some(credential),
+        None,
+    )?;
+
+    // Derive container and blob clients by name.
+    let container_client = service_client.blob_container_client("<container_name>");
+    let blob_client = container_client.blob_client("<blob_name>");
     Ok(())
 }
 ```
@@ -67,8 +74,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 ### Upload Blob
 
 ```rust
-use azure_core::http::RequestContent;
-use azure_core::http::Url;
+use azure_core::http::{RequestContent, Url};
 use azure_identity::DeveloperToolsCredential;
 use azure_storage_blob::BlobServiceClient;
 
@@ -76,14 +82,12 @@ use azure_storage_blob::BlobServiceClient;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Local dev: DeveloperToolsCredential. Production: use ManagedIdentityCredential.
     let credential = DeveloperToolsCredential::new(None)?;
-    let service_url = Url::parse("https://<account>.blob.core.windows.net/")?;
+    let service_url = Url::parse("https://<storage_account_name>.blob.core.windows.net/")?;
     let service_client = BlobServiceClient::new(service_url, Some(credential), None)?;
-    let blob_client = service_client.blob_client("container-name", "blob-name");
+    let blob_client = service_client.blob_client("<container_name>", "<blob_name>");
 
     let data = b"hello world";
-    blob_client
-        .upload(RequestContent::from(data.to_vec()), None)
-        .await?;
+    blob_client.upload(RequestContent::from(data.to_vec()), None).await?;
     Ok(())
 }
 ```
@@ -114,9 +118,9 @@ use azure_storage_blob::BlobServiceClient;
 use futures::TryStreamExt as _;
 
 let credential = DeveloperToolsCredential::new(None)?;
-let service_url = Url::parse("https://<account>.blob.core.windows.net/")?;
+let service_url = Url::parse("https://<storage_account_name>.blob.core.windows.net/")?;
 let service_client = BlobServiceClient::new(service_url, Some(credential), None)?;
-let container_client = service_client.blob_container_client("container-name");
+let container_client = service_client.blob_container_client("<container_name>");
 
 // Create container
 container_client.create(None).await?;
@@ -124,7 +128,7 @@ container_client.create(None).await?;
 // List blobs (Pager<T> — iterate items directly)
 let mut pager = container_client.list_blobs(None)?;
 while let Some(blob) = pager.try_next().await? {
-    println!("Blob: {}", blob.name);
+    println!("Blob: {:?}", blob.name);
 }
 ```
 
@@ -134,7 +138,8 @@ Use `StorageError` for programmatic access to storage-specific error codes:
 
 ```rust
 use azure_core::error::ErrorKind;
-use azure_storage_blob::{StorageError, StorageErrorCode};
+use azure_storage_blob::StorageError;
+use azure_storage_blob::models::StorageErrorCode;
 
 let result = blob_client.download(None).await;
 
@@ -174,6 +179,8 @@ match result {
 }
 ```
 
+> **Note:** `StorageError::try_into` requires an owned error object — it will not compile if handed a reference to an error.
+
 ## RBAC Roles
 
 For Entra ID auth, assign one of these roles to the identity:
@@ -186,15 +193,19 @@ For Entra ID auth, assign one of these roles to the identity:
 
 ## Best Practices
 
-1. **Use `DeveloperToolsCredential`** for local dev, **`ManagedIdentityCredential`** for production — the Rust SDK does not have `DefaultAzureCredential`
-2. **Never hardcode credentials** — use environment variables or managed identity
-3. **Use `RequestContent::from()`** to wrap upload data (bytes, strings, or streams)
-4. **Assign RBAC roles** — ensure "Storage Blob Data Contributor" for write access
-5. **Reuse clients** — clients are thread-safe; create once, share across tasks
+1. **Use `cargo add` to manage dependencies, never edit `Cargo.toml` directly.** Add and remove Rust SDK dependencies with cargo commands instead of manual manifest edits.
+2. **Add `azure_core` only when importing `azure_core` types directly.** If your code imports `azure_core::http::Url`, `azure_core::http::RequestContent`, or `azure_core::error::ErrorKind`, include `azure_core`; otherwise a direct dependency is optional.
+3. **Use `DeveloperToolsCredential`** for local dev, **`ManagedIdentityCredential`** for production — Rust does not provide a single `DefaultAzureCredential` type
+4. **Never hardcode credentials** — use environment variables or managed identity
+5. **Use `RequestContent::from()`** to wrap data for blob uploads — ensures proper content handling by the SDK
+6. **Assign RBAC roles** — ensure "Storage Blob Data Contributor" for write access
+7. **Reuse clients** — clients are thread-safe; create once, share across tasks
+8. **Prefer `BlobServiceClient` as the entry point** and derive container/blob clients from it
 
 ## Reference Links
 
-| Resource      | Link                                        |
-| ------------- | ------------------------------------------- |
-| API Reference | https://docs.rs/azure_storage_blob          |
-| crates.io     | https://crates.io/crates/azure_storage_blob |
+| Resource      | Link                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------ |
+| API Reference | https://docs.rs/crate/azure_storage_blob/latest                                      |
+| crates.io     | https://crates.io/crates/azure_storage_blob                                          |
+| Source Code   | https://github.com/Azure/azure-sdk-for-rust/tree/main/sdk/storage/azure_storage_blob |

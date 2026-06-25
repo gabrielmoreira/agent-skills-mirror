@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `modelcontextprotocol/go-sdk` — 26 default patterns, 0 followed patterns, 75 file(s) materialized.
+Mirror of `modelcontextprotocol/go-sdk` — 26 default patterns, 0 followed patterns, 77 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `modelcontextprotocol/go-sdk` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 75 |
+| Files         | 77 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -114,26 +114,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 53 | ✓ | [`mcp/streamable_test.go`](mcp/streamable_test.go) |
 | 54 | ✓ | [`mcp/streamable.go`](mcp/streamable.go) |
 | 55 | ✓ | [`mcp/testdata/conformance/server/bad_requests.txtar`](mcp/testdata/conformance/server/bad_requests.txtar) |
-| 56 | ✓ | [`mcp/testdata/conformance/server/lifecycle.txtar`](mcp/testdata/conformance/server/lifecycle.txtar) |
-| 57 | ✓ | [`mcp/testdata/conformance/server/prompts.txtar`](mcp/testdata/conformance/server/prompts.txtar) |
-| 58 | ✓ | [`mcp/testdata/conformance/server/resources.txtar`](mcp/testdata/conformance/server/resources.txtar) |
-| 59 | ✓ | [`mcp/testdata/conformance/server/spec-sep-973-additional-metadata.txtar`](mcp/testdata/conformance/server/spec-sep-973-additional-metadata.txtar) |
-| 60 | ✓ | [`mcp/testdata/conformance/server/tools.txtar`](mcp/testdata/conformance/server/tools.txtar) |
-| 61 | ✓ | [`mcp/testdata/conformance/server/version-latest.txtar`](mcp/testdata/conformance/server/version-latest.txtar) |
-| 62 | ✓ | [`mcp/testdata/conformance/server/version-older.txtar`](mcp/testdata/conformance/server/version-older.txtar) |
-| 63 | ✓ | [`mcp/testdata/files/info.txt`](mcp/testdata/files/info.txt) |
-| 64 | ✓ | [`mcp/testdata/files/template.txt`](mcp/testdata/files/template.txt) |
-| 65 | ✓ | [`mcp/testdata/private.txt`](mcp/testdata/private.txt) |
-| 66 | ✓ | [`mcp/testdata/public/dir/file3.txt`](mcp/testdata/public/dir/file3.txt) |
-| 67 | ✓ | [`mcp/testdata/public/file1.txt`](mcp/testdata/public/file1.txt) |
-| 68 | ✓ | [`mcp/testdata/public/file2.txt`](mcp/testdata/public/file2.txt) |
-| 69 | ✓ | [`mcp/tool_example_test.go`](mcp/tool_example_test.go) |
-| 70 | ✓ | [`mcp/tool_test.go`](mcp/tool_test.go) |
-| 71 | ✓ | [`mcp/tool.go`](mcp/tool.go) |
-| 72 | ✓ | [`mcp/transport_example_test.go`](mcp/transport_example_test.go) |
-| 73 | ✓ | [`mcp/transport_test.go`](mcp/transport_test.go) |
-| 74 | ✓ | [`mcp/transport.go`](mcp/transport.go) |
-| 75 | ✓ | [`mcp/util.go`](mcp/util.go) |
+| 56 | ✓ | [`mcp/testdata/conformance/server/discover.txtar`](mcp/testdata/conformance/server/discover.txtar) |
+| 57 | ✓ | [`mcp/testdata/conformance/server/lifecycle.txtar`](mcp/testdata/conformance/server/lifecycle.txtar) |
+| 58 | ✓ | [`mcp/testdata/conformance/server/mrtr.txtar`](mcp/testdata/conformance/server/mrtr.txtar) |
+| 59 | ✓ | [`mcp/testdata/conformance/server/prompts.txtar`](mcp/testdata/conformance/server/prompts.txtar) |
+| 60 | ✓ | [`mcp/testdata/conformance/server/resources.txtar`](mcp/testdata/conformance/server/resources.txtar) |
+| 61 | ✓ | [`mcp/testdata/conformance/server/spec-sep-973-additional-metadata.txtar`](mcp/testdata/conformance/server/spec-sep-973-additional-metadata.txtar) |
+| 62 | ✓ | [`mcp/testdata/conformance/server/tools.txtar`](mcp/testdata/conformance/server/tools.txtar) |
+| 63 | ✓ | [`mcp/testdata/conformance/server/version-latest.txtar`](mcp/testdata/conformance/server/version-latest.txtar) |
+| 64 | ✓ | [`mcp/testdata/conformance/server/version-older.txtar`](mcp/testdata/conformance/server/version-older.txtar) |
+| 65 | ✓ | [`mcp/testdata/files/info.txt`](mcp/testdata/files/info.txt) |
+| 66 | ✓ | [`mcp/testdata/files/template.txt`](mcp/testdata/files/template.txt) |
+| 67 | ✓ | [`mcp/testdata/private.txt`](mcp/testdata/private.txt) |
+| 68 | ✓ | [`mcp/testdata/public/dir/file3.txt`](mcp/testdata/public/dir/file3.txt) |
+| 69 | ✓ | [`mcp/testdata/public/file1.txt`](mcp/testdata/public/file1.txt) |
+| 70 | ✓ | [`mcp/testdata/public/file2.txt`](mcp/testdata/public/file2.txt) |
+| 71 | ✓ | [`mcp/tool_example_test.go`](mcp/tool_example_test.go) |
+| 72 | ✓ | [`mcp/tool_test.go`](mcp/tool_test.go) |
+| 73 | ✓ | [`mcp/tool.go`](mcp/tool.go) |
+| 74 | ✓ | [`mcp/transport_example_test.go`](mcp/transport_example_test.go) |
+| 75 | ✓ | [`mcp/transport_test.go`](mcp/transport_test.go) |
+| 76 | ✓ | [`mcp/transport.go`](mcp/transport.go) |
+| 77 | ✓ | [`mcp/util.go`](mcp/util.go) |
 
 ---
 

@@ -24,7 +24,7 @@ Workflow: Step 0 setup → `hyperframes.json` + `assets/bgm.mp3`; Step 1 analyze
 
 Goal: Establish the music source, create the HyperFrames project, and note any user-supplied media.
 
-The **music is the spine** — establish one track before anything else. This skill is tuned for **fast, high-energy BGM**: a strong beat grid drives the cuts (calm tracks work, but pace by phrase rather than beat). If the user gave you audio — a music file, or a video to pull the audio from — use it. If not, generate one: choose the mood from the user's description (e.g. "driving synthwave", "trap beat", "upbeat corporate") and produce a track via `/hyperframes-media` (`references/bgm.md` — HeyGen retrieval when credentialed, else local Lyria / MusicGen; ElevenLabs or another generator also works). Either way the track lands at `assets/bgm.mp3`. Stage any user-supplied images or videos so frames can weave them in on the beat grid; otherwise typography carries the whole video.
+The **music is the spine** — establish one track before anything else. This skill is tuned for **fast, high-energy BGM**: a strong beat grid drives the cuts (calm tracks work, but pace by phrase rather than beat). If the user gave you audio — a music file, or a video to pull the audio from — use it. If not, generate one: choose the mood from the user's description (e.g. "driving synthwave", "trap beat", "upbeat corporate") and produce a track via `/hyperframes-media` (`references/bgm.md` — HeyGen retrieval when credentialed, else local Lyria / MusicGen; ElevenLabs or another generator also works). Before generating, run `npx hyperframes auth status` and **relay its output verbatim (don't paraphrase or rewrite it)** — it shows whether BGM comes from HeyGen or local MusicGen and, if not signed in, how to sign in. **If not signed in, STOP and wait for the user to choose — sign in, or continue offline with local MusicGen — before generating the track**; don't write keys into a per-repo `.env`. (In autonomous mode, note the status and continue offline.) See `/hyperframes-media` → Preflight for the canonical guidance. Either way the track lands at `assets/bgm.mp3`. Stage any user-supplied images or videos so frames can weave them in on the beat grid; otherwise typography carries the whole video.
 
 Initialize only if `hyperframes.json` is missing. Name `<project>` from the brief in kebab-case, such as `midnight-drive-loop` — never a timestamp.
 
@@ -145,10 +145,10 @@ Run the CLI on the **assembled project** — that's the correct unit (the per-fr
 ( cd "$PROJECT_DIR" && npx hyperframes lint . && npx hyperframes validate . && npx hyperframes inspect . )
 ```
 
-Inspect at `t=0`, each frame start, the strongest DROP / SURGE, every `hard_stops[].t`, and the final frame. On failure, make the **cheapest safe fix**: edit the offending `compositions/frames/NN-*.html` for a local issue; **re-dispatch that one frame-worker** only when a whole frame must be rebuilt; go back to Step 3 only if the plan is creatively wrong. Never change duration or audio timing to hide a sync issue. Once the gates pass, pause for user review, then render only on approval:
+Inspect at `t=0`, each frame start, the strongest DROP / SURGE, every `hard_stops[].t`, and the final frame. On failure, make the **cheapest safe fix** yourself: edit the offending `compositions/frames/NN-*.html`. Never change duration or audio timing to hide a sync issue. Once the gates pass, pause for user review, then render only on approval:
 
 ```bash
-( cd "$PROJECT_DIR" && npx hyperframes render . -q draft -o renders/video.mp4 --fps 30 )
+( cd "$PROJECT_DIR" && npx hyperframes render . --skill=music-to-video -q draft -o renders/video.mp4 --fps 30 )
 ```
 
 **Gate:** `lint` / `validate` / `inspect` passed; the user approved; `renders/video.mp4` exists with audio, duration == `audiomap.audio.duration_sec`. The final reply states the MP4 path and duration.

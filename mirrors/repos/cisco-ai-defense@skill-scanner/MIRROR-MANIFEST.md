@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cisco-ai-defense/skill-scanner` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `cisco-ai-defense/skill-scanner` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cisco-ai-defense/skill-scanner` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,14 +79,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`evals/skills/safe-skills-2/file-validator/SKILL.md`](evals/skills/safe-skills-2/file-validator/SKILL.md) |
 | 19 | ✓ | [`evals/skills/safe-skills/simple-math/SKILL.md`](evals/skills/safe-skills/simple-math/SKILL.md) |
 | 20 | ✓ | [`evals/skills/sql-injection/database-query/SKILL.md`](evals/skills/sql-injection/database-query/SKILL.md) |
-| 21 | ✓ | [`evals/test_skills/malicious/eicar-test/SKILL.md`](evals/test_skills/malicious/eicar-test/SKILL.md) |
-| 22 | ✓ | [`evals/test_skills/malicious/exfiltrator/SKILL.md`](evals/test_skills/malicious/exfiltrator/SKILL.md) |
-| 23 | ✓ | [`evals/test_skills/malicious/flowise-cve-2025-59528/SKILL.md`](evals/test_skills/malicious/flowise-cve-2025-59528/SKILL.md) |
-| 24 | ✓ | [`evals/test_skills/malicious/mcp-atlassian-cve-2026-27825/SKILL.md`](evals/test_skills/malicious/mcp-atlassian-cve-2026-27825/SKILL.md) |
-| 25 | ✓ | [`evals/test_skills/malicious/mcpwn-cve-2026-33032/SKILL.md`](evals/test_skills/malicious/mcpwn-cve-2026-33032/SKILL.md) |
-| 26 | ✓ | [`evals/test_skills/malicious/prompt-injection/SKILL.md`](evals/test_skills/malicious/prompt-injection/SKILL.md) |
-| 27 | ✓ | [`evals/test_skills/safe/atr-benign-control/SKILL.md`](evals/test_skills/safe/atr-benign-control/SKILL.md) |
-| 28 | ✓ | [`evals/test_skills/safe/simple-formatter/SKILL.md`](evals/test_skills/safe/simple-formatter/SKILL.md) |
+| 21 | ✓ | [`evals/test_skills/malicious/ascii-smuggling/SKILL.md`](evals/test_skills/malicious/ascii-smuggling/SKILL.md) |
+| 22 | ✓ | [`evals/test_skills/malicious/eicar-test/SKILL.md`](evals/test_skills/malicious/eicar-test/SKILL.md) |
+| 23 | ✓ | [`evals/test_skills/malicious/exfiltrator/SKILL.md`](evals/test_skills/malicious/exfiltrator/SKILL.md) |
+| 24 | ✓ | [`evals/test_skills/malicious/flowise-cve-2025-59528/SKILL.md`](evals/test_skills/malicious/flowise-cve-2025-59528/SKILL.md) |
+| 25 | ✓ | [`evals/test_skills/malicious/mcp-atlassian-cve-2026-27825/SKILL.md`](evals/test_skills/malicious/mcp-atlassian-cve-2026-27825/SKILL.md) |
+| 26 | ✓ | [`evals/test_skills/malicious/mcpwn-cve-2026-33032/SKILL.md`](evals/test_skills/malicious/mcpwn-cve-2026-33032/SKILL.md) |
+| 27 | ✓ | [`evals/test_skills/malicious/prompt-injection/SKILL.md`](evals/test_skills/malicious/prompt-injection/SKILL.md) |
+| 28 | ✓ | [`evals/test_skills/safe/atr-benign-control/SKILL.md`](evals/test_skills/safe/atr-benign-control/SKILL.md) |
+| 29 | ✓ | [`evals/test_skills/safe/simple-formatter/SKILL.md`](evals/test_skills/safe/simple-formatter/SKILL.md) |
 
 ---
 

@@ -158,16 +158,20 @@ EventBus 流式进度事件，前端实时展示：
 
 ### 提取流程
 
-```
-候选会话 → 检查 RecapDb 缓存 → 命中？跳过 : 加载消息
-    ↓
-序列化对话记录（按 USER/ASSISTANT/TOOL 角色，工具结果截断 2KB）
-    ↓
-超 30KB？分块（head/middle/tail 偏向采样）
-    ↓
-每块调用 side_query（2048 token 预算，固定 JSON schema）
-    ↓
-多块合并 → 写入 RecapDb 缓存
+```mermaid
+flowchart TD
+    CAND["候选会话"]
+    CACHE{"检查 RecapDb 缓存命中?"}
+    SKIP["跳过"]
+    LOAD["加载消息"]
+    SER["序列化对话记录<br/>按 USER / ASSISTANT / TOOL 角色，工具结果截断 2KB"]
+    CHUNK["超 30KB? 分块<br/>head / middle / tail 偏向采样"]
+    SQ["每块调用 side_query<br/>2048 token 预算，固定 JSON schema"]
+    MERGE["多块合并 → 写入 RecapDb 缓存"]
+
+    CAND --> CACHE
+    CACHE -->|"命中"| SKIP
+    CACHE -->|"未命中"| LOAD --> SER --> CHUNK --> SQ --> MERGE
 ```
 
 并发度由 `facet_concurrency` 控制（默认 4），使用 `buffer_unordered()` 限流。
@@ -375,9 +379,12 @@ Dashboard 默认 Tab 之一，提供：
 
 前端通过 Transport 层（Tauri Channel / WebSocket）订阅 `recap_progress` 事件：
 
-```
-started → extractingFacets(progress%) → aggregatingDashboard
-→ generatingSections(progress%) → persisting → done(report_id) | failed(error)
+```mermaid
+flowchart LR
+    S["started"] --> EF["extractingFacets(progress%)"] --> AD["aggregatingDashboard"]
+    AD --> GS["generatingSections(progress%)"] --> P["persisting"]
+    P --> DONE["done(report_id)"]
+    P --> FAIL["failed(error)"]
 ```
 
 ## 触发方式

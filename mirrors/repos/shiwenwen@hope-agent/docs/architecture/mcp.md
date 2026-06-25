@@ -83,27 +83,21 @@ crates/ha-core/src/mcp/
 
 ## 生命周期与状态机
 
-```text
-Disabled ───────────(enable)──────────► Idle
-                                         │
-                                         │ first tool call | eager warm-up
-                                         ▼
-                                     Connecting
-                                         │
-                          ┌──────────────┼──────────────┐
-                          │              │              │
-                   (handshake OK)   (401 / 403)    (other err)
-                          │              │              │
-                          ▼              ▼              ▼
-                       Ready ───▶  NeedsAuth      Failed { retry_at }
-                          │           │                 │
-                          │           │ start_oauth     │ watchdog / user Reconnect
-                          │           ▼                 │
-                          │        (browser flow)       │
-                          │           │                 │
-                          │           ▼                 │
-                          └──── Idle ◄─────(new token)──┘
+```mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Disabled --> Idle: 配置 enable
+    Idle --> Connecting: 首个工具调用 / eager warm-up
+    Connecting --> Ready: handshake + catalog 就绪
+    Connecting --> NeedsAuth: Auth 错误（401 / 403）
+    Connecting --> Failed: 其它错误 / 超时 / catalog 失败
+    NeedsAuth --> Connecting: 用户 Authorize → OAuth 取新 token
+    Failed --> Connecting: watchdog 退避到点 / 用户 Reconnect
+    Ready --> Idle: disconnect（Reconnect / 配置变更）
+    Ready --> Disabled: 配置 disable
 ```
+
+> 真实恢复路径经 `connect_now()` 直接进 `Connecting`（watchdog / 用户 Reconnect / OAuth 取新 token 后），`Idle` 仅由 `disconnect()` 或初始态到达；`Failed { retry_at }` 的退避调度在 [`watchdog.rs`](../../crates/ha-core/src/mcp/watchdog.rs)。
 
 - **Ready** 携带 `tools: Vec<rmcp::Tool>`、`resources: Vec<rmcp::Resource>`、`prompts: Vec<rmcp::Prompt>` 三个 catalog 快照
 - **NeedsAuth** 的 `auth_url` 字段保留为空字符串；真实 PKCE URL 由 `oauth::authorize_server` 按点击动态生成

@@ -25,6 +25,8 @@
 - Component HTML loaded by the shared loader may include `<title>`, module scripts, body content, and scoped styles; modal content uses the same loader path.
 - Do not bypass WebSocket origin/auth/CSRF assumptions from frontend code.
 - Avoid editing vendored files unless intentionally updating the vendor asset.
+- Rubik (`--font-family-main`) is the default WebUI text and control font; use the code/mono font tokens only for code, logs, paths, and fixed-width data.
+- Hover, focus, and active border treatments should follow existing neutral border/background patterns; avoid hard-coded blue border highlights unless matching an established specialized surface.
 
 ## Work Guidance
 
@@ -48,3 +50,5 @@ Direct child DOX files:
 | [components/AGENTS.md](components/AGENTS.md) | Alpine component HTML, component stores, and component-local styles. |
 | [css/AGENTS.md](css/AGENTS.md) | Shared WebUI stylesheet modules. |
 | [js/AGENTS.md](js/AGENTS.md) | Shared frontend JavaScript modules and client-side infrastructure. |
+| [public/AGENTS.md](public/AGENTS.md) | First-party static WebUI images, icons, splash art, and PWA assets. |
+| [vendor/AGENTS.md](vendor/AGENTS.md) | Vendored third-party browser libraries. |

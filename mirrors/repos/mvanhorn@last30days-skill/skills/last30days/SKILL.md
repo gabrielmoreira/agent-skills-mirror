@@ -222,17 +222,21 @@ End of OUTPUT CONTRACT. The laws above are the contract; everything below is imp
 
 # HOW TO INVOKE THIS SKILL (READ FIRST, FOLLOW EVERY TIME)
 
-**STEP 0 - LOAD WEBSEARCH FIRST.** Your literal first tool call on every `/last30days` invocation MUST be:
+**STEP 0 - RESOLVE HOST WEB SEARCH FIRST.** Your first action on every `/last30days` invocation is to determine whether this agent session has a usable web-search tool. Most agent harnesses do: it may be built in, exposed as a deferred tool, or provided by an installed connector such as Brave, Firecrawl, Exa, Serper, or another search provider.
 
-```
-ToolSearch select:WebSearch
-```
+Use this capability rule:
 
-WebSearch is a **deferred tool** in Claude Code v2.1.114. The frontmatter of this file authorizes it (`allowed-tools: ... WebSearch`) but the runtime lists it as "schemas are NOT loaded." Calling WebSearch without `ToolSearch select:WebSearch` first will fail or do nothing. That friction is the documented cause of the second-most-common failure mode of this skill: the model sees "WebSearch is there but deferred," takes the low-friction path, skips Step 0.5 and 0.55, and runs the engine bare with only keyword search. The output looks fine but misses founder X timelines, GitHub repo activity, and subreddit-specific threads.
+- **If a web-search tool is available:** use it for Step 0.5 / 0.55 pre-research and Step 2 supplements. If your host requires loading, selecting, or enabling the web-search tool before use, do that using the host's mechanism. Do not fail the skill just because one particular schema lookup or tool name is unavailable; use the web-search capability you actually have.
 
-Load WebSearch first. No exceptions. Then run the first-run gate below before anything else.
+- **If no web-search tool is available in the agent session:** skip Step 0.55 and Step 0.75, and add `--auto-resolve` to the engine command. The engine will use configured web backends (`BRAVE_API_KEY`, `EXA_API_KEY`, `SERPER_API_KEY`, `PARALLEL_API_KEY`) or the keyless floor when available.
 
-**FIRST-RUN GATE — run this Bash command immediately after loading WebSearch, before reading the topic or doing any research:**
+When host web search is available, export `LAST30DAYS_NATIVE_SEARCH=1` in the same shell as the engine invocation so the engine does not also run the lower-quality keyless web floor. Leave it unset when the agent session has no web-search tool.
+
+Resolving this correctly prevents the second-most-common failure mode of this skill: the model skips Step 0.5 / 0.55 and runs the engine bare with only keyword search. The output looks fine but misses founder X timelines, GitHub repo activity, subreddit-specific threads, and current first-party positioning.
+
+After resolving host web search, run the first-run gate below before anything else.
+
+**FIRST-RUN GATE — run this Bash command immediately after resolving host web search, before reading the topic or doing any research:**
 
 ```bash
 grep -q "SETUP_COMPLETE=true" ~/.config/last30days/.env 2>/dev/null && echo "1" || echo "FIRST_RUN_DETECTED"
@@ -350,13 +354,13 @@ If the preflight script emits `ERROR: last30days v3 requires Python 3.12+` (or `
 
 WebSearch-only synthesis is not equivalent to running the engine — it misses Reddit community data, X/Twitter timelines, YouTube transcripts, TikTok, and Polymarket. Presenting it without disclosure misleads the user about what was actually searched. This is the same category of failure as a WebSearch-only run with no engine footer.
 
-**Native-search signal (web coverage).** If you (the hosting model) have your own web-search tool available — e.g. Claude Code's `WebSearch`, which STEP 0 loads — export `LAST30DAYS_NATIVE_SEARCH=1` in the same shell before invoking the engine:
+**Native-search signal (web coverage).** If you (the hosting model) have your own web-search tool available, export `LAST30DAYS_NATIVE_SEARCH=1` in the same shell before invoking the engine:
 
 ```bash
 export LAST30DAYS_NATIVE_SEARCH=1   # ONLY when you have a native web-search tool
 ```
 
-Your native search is better than the engine's keyless web fallback, so this tells the engine to skip that fallback and leave general web to you (you already run WebSearch supplements in Step 2). If you have NO native web-search tool (some non-Claude hosts and headless/cron paths), do **not** set this: the engine's keyless web floor supplies general-web coverage automatically. The rule is capability-based, not host-name-based — set it only when you genuinely have a better search, never to suppress the floor on a host that has nothing else.
+Your host search is better than the engine's keyless web fallback, so this tells the engine to skip that fallback and leave general web to you (you already run web-search supplements in Step 2). If you have NO web-search tool in the agent session, do **not** set this: the engine's keyless web floor supplies general-web coverage automatically. The rule is capability-based, not host-name-based — set it only when you genuinely have a better search, never to suppress the floor on a host that has nothing else.
 
 ## Configuration
 
@@ -371,8 +375,9 @@ The engine reads `LAST30DAYS_MEMORY_DIR` from either the process env or `~/.conf
 **You are the conversational driver.** The Python setup script does only mechanical work (cookie reads, tool installs, the GitHub device-auth flow) - it CANNOT prompt the user, because it runs as a non-interactive subprocess. So consent happens HERE, in chat: you ask, the user answers, and you gate each subprocess call on the answer. Do NOT just run `setup` and report the result - that is the silent-onboarding regression this section exists to prevent.
 
 **First-run detection (silent, no commands, no output to user):**
-- If `~/.config/last30days/.env` does NOT exist, this is a first run.
-- If the file exists and contains `SETUP_COMPLETE=true`, skip Step 0 entirely and go to Step 1 (CRITICAL: Parse User Intent below). Do NOT announce that setup is complete. The user does not need a status message on every run.
+- If `SETUP_COMPLETE=true` is available from process env, project config (`.claude/last30days.env`), global config (`~/.config/last30days/.env`), or the setup check reports configured credentials, skip Step 0 entirely and go to Step 1 (CRITICAL: Parse User Intent below). Do NOT announce that setup is complete. The user does not need a status message on every run.
+- Do NOT treat the absence of `~/.config/last30days/.env` alone as a first run. Credentials may live in process env, project config, macOS Keychain (`last30days-<KEY>`), pass(1), or host-provided auth.
+- If no setup marker or credential source is present, this is a first run.
 
 **Named onboarding contracts:**
 - *(2026-06-22, silent-wizard regression - Fredy Montero run):* a prior version said "Run `setup` ... follow the wizard's prompts end-to-end." But `run_auto_setup()` has NO prompts - it extracts cookies, installs yt-dlp + Digg, and writes `SETUP_COMPLETE` with zero interaction. The model ran the silent path, never asked cookie consent, never surfaced the macOS Full Disk Access fix, and never offered the ScrapeCreators signup. Consent must be conversational.
@@ -417,14 +422,14 @@ Options:
 
 **If the user picks Auto setup:**
 
-Get cookie consent first. Check if `BROWSER_CONSENT=true` already exists in `~/.config/last30days/.env`; if so, skip the consent prompt and run setup directly. Otherwise **call AskUserQuestion:**
+Get cookie consent first. Check if `BROWSER_CONSENT=true` already exists in `~/.config/last30days/.env`; if so, skip the consent prompt and run `setup --allow-browser-cookies` directly. Otherwise **call AskUserQuestion:**
 Question: "Auto setup will scan your browser (Firefox/Safari) for x.com cookies to authenticate X search. Cookies are read live, not saved to disk. OK to proceed?"
 Options:
-- "Yes, scan my cookies for X" - run `python3 skills/last30days/scripts/last30days.py setup` (relative to the skill root). Append `BROWSER_CONSENT=true` to `.env` after setup completes.
+- "Yes, scan my cookies for X" - run `python3 skills/last30days/scripts/last30days.py setup --allow-browser-cookies` (relative to the skill root). Append `BROWSER_CONSENT=true` to `.env` after setup completes.
 - "Skip X, just set up YouTube + Digg" - run `FROM_BROWSER=off python3 skills/last30days/scripts/last30days.py setup`. Skips all cookie reads; still installs yt-dlp and Digg.
 - "I have an xAI API key instead" - ask them to paste it, write `XAI_API_KEY` to `.env`, then run `FROM_BROWSER=off python3 skills/last30days/scripts/last30days.py setup` (installs yt-dlp + Digg, no cookie read).
 
-The `setup` run extracts cookies (Firefox/Safari by default - never Chrome, to avoid a macOS Keychain prompt) and best-effort installs yt-dlp (YouTube) and the free, keyless Digg CLI (`digg-pp-cli` via `@mvanhorn/printing-press-library install digg --cli-only`; Digg activates only when the binary is on the **agent subprocess PATH**, typically `$HOME/.local/bin`; setup reports honestly if installed off-PATH; recommend-only if `npx` is unavailable). Show the user what was found and installed - including whether Digg landed on PATH (active) or off-PATH (installed but not yet active).
+The consented `setup --allow-browser-cookies` run extracts cookies (Firefox/Safari by default - never Chrome, to avoid a macOS Keychain prompt, unless `FROM_BROWSER=auto` or a named Chromium browser was explicitly configured) and best-effort installs yt-dlp (YouTube) and the free, keyless Digg CLI (`digg-pp-cli` via `@mvanhorn/printing-press-library install digg --cli-only`; Digg activates only when the binary is on the **agent subprocess PATH**, typically `$HOME/.local/bin`; setup reports honestly if installed off-PATH; recommend-only if `npx` is unavailable). Show the user what was found and installed - including whether Digg landed on PATH (active) or off-PATH (installed but not yet active).
 
 **macOS Full Disk Access remediation.** After the `setup` run, inspect its stderr. If it contains `Permission denied reading Cookies.binarycookies` and the platform is macOS, the OS blocked the read - surface the fix instead of swallowing it: `macOS blocked the cookie read. To enable X/Twitter: System Settings > Privacy & Security > Full Disk Access > enable your terminal (or the Claude app), then I can retry.` Offer ONE retry of the `setup` command. If the user skips, continue.
 
@@ -475,19 +480,21 @@ For hosts without interactive modal prompts (OpenClaw, Codex, Cursor, Gemini CLI
 
 **1. Welcome.** One short branded line, e.g.: `Welcome to /last30days - let me get you set up (about 30 seconds).`
 
-**2. Cookie consent (ask BEFORE reading anything).** First check if `BROWSER_CONSENT=true` already exists in `~/.config/last30days/.env` (e.g. granted in a prior Claude Code session); if so, skip this prompt and run `setup` directly. Otherwise ask. Example: `I can read your browser cookies (Firefox/Safari) to unlock X/Twitter and other logged-in sources. Want me to? (yes / no)` **Wait for the answer.**
-   - On **yes** → run `python3 skills/last30days/scripts/last30days.py setup` (and append `BROWSER_CONSENT=true` to `.env` after it completes). Extracts cookies (Firefox/Safari, never Chrome) and best-effort installs yt-dlp (YouTube) and the free, keyless Digg CLI (`digg-pp-cli` via `@mvanhorn/printing-press-library install digg --cli-only`; activates only when on the agent subprocess PATH, typically `$HOME/.local/bin`; reports honestly if off-PATH; recommend-only if `npx` is unavailable).
+**2. Permission preflight.** Run `${LAST30DAYS_PYTHON:-python3} "${SKILL_DIR}/scripts/last30days.py" --preflight` using the directory of the `SKILL.md` you loaded, then summarize the human-readable result before setup: config source, project config trust/ignore state, planned browser-cookie mode, planned writes, optional commands, and active/ignored endpoint overrides. This is safe: it does not read browser-cookie values, does not write setup/config/report files, and does not run research. For Codex desktop and other folder-mode hosts, if hidden `.claude/last30days.env` project config is shown as ignored, tell the user it remains ignored unless `LAST30DAYS_TRUST_PROJECT_CONFIG=1` is set from the process environment or global config. Do not block normal research on missing optional commands; describe them as optional coverage.
+
+**3. Cookie consent (ask BEFORE reading anything).** First check if `BROWSER_CONSENT=true` already exists in `~/.config/last30days/.env` (e.g. granted in a prior Claude Code session); if so, skip this prompt and run `setup --allow-browser-cookies` directly. Otherwise ask. Example: `I can read your browser cookies (Firefox/Safari) to unlock X/Twitter and other logged-in sources. Want me to? (yes / no)` **Wait for the answer.**
+   - On **yes** → run `python3 skills/last30days/scripts/last30days.py setup --allow-browser-cookies` (and append `BROWSER_CONSENT=true` to `.env` after it completes). Extracts cookies (Firefox/Safari, never Chrome unless `FROM_BROWSER=auto` or a named Chromium browser was explicitly configured) and best-effort installs yt-dlp (YouTube) and the free, keyless Digg CLI (`digg-pp-cli` via `@mvanhorn/printing-press-library install digg --cli-only`; activates only when on the agent subprocess PATH, typically `$HOME/.local/bin`; reports honestly if off-PATH; recommend-only if `npx` is unavailable).
    - On **no** → run `FROM_BROWSER=off python3 skills/last30days/scripts/last30days.py setup`. Skips all cookie reads; still installs yt-dlp and Digg, still writes `SETUP_COMPLETE`.
 
-**3. Full Disk Access remediation (macOS only).** After `setup`, inspect stderr. If it contains `Permission denied reading Cookies.binarycookies` on macOS, surface: `macOS blocked the cookie read. To enable X/Twitter: System Settings > Privacy & Security > Full Disk Access > enable your terminal (or the Claude app), then I can retry.` Offer ONE retry. If skipped, continue.
+**4. Full Disk Access remediation (macOS only).** After `setup`, inspect stderr. If it contains `Permission denied reading Cookies.binarycookies` on macOS, surface: `macOS blocked the cookie read. To enable X/Twitter: System Settings > Privacy & Security > Full Disk Access > enable your terminal (or the Claude app), then I can retry.` Offer ONE retry. If skipped, continue.
 
-**4. ScrapeCreators signup offer (every first run, consent BEFORE launching the browser).** Explain it grants 10,000 free calls that unlock TikTok, Instagram, YouTube comments, plus a Reddit backup and a YouTube transcript fallback, and that it opens a GitHub authorization page. Ask, e.g.: `Want to unlock TikTok, Instagram, and more? I can sign you up for ScrapeCreators with GitHub (10,000 free calls) - it opens a browser to authorize. (yes / no)` **Wait for the answer.**
+**5. ScrapeCreators signup offer (every first run, consent BEFORE launching the browser).** Explain it grants 10,000 free calls that unlock TikTok, Instagram, YouTube comments, plus a Reddit backup and a YouTube transcript fallback, and that it opens a GitHub authorization page. Ask, e.g.: `Want to unlock TikTok, Instagram, and more? I can sign you up for ScrapeCreators with GitHub (10,000 free calls) - it opens a browser to authorize. (yes / no)` **Wait for the answer.**
    - On **yes** → run `python3 skills/last30days/scripts/last30days.py setup --github`. A browser window opens; the user authorizes with the code shown. On success the engine persists the key automatically and returns `"persisted": true` with a MASKED `api_key` (never ask for or echo the raw key). Confirm the paid sources are active.
    - On **success but `"persisted": false`** (auth completed yet the key write failed) → do NOT claim sources are active. Tell the user signup worked but saving failed, and have them add `SCRAPECREATORS_API_KEY=<key>` to `~/.config/last30days/.env` manually (the raw key is masked in output, so re-run `setup --github` or retrieve it from scrapecreators.com to get the value).
    - On **timeout / denied** → tell the user it didn't complete and offer to retry or skip.
    - On **no** → note they can run it later by asking to set up ScrapeCreators, then continue.
 
-**5. Complete.** Once `SETUP_COMPLETE=true` is written, briefly confirm which sources are now active (read the `setup --github` JSON `persisted` field, or re-run `--diagnose`) and proceed to research.
+**6. Complete.** Once `SETUP_COMPLETE=true` is written, briefly confirm which sources are now active (read the `setup --github` JSON `persisted` field, re-run `--preflight` for a human permission summary, or re-run safe `--diagnose` for JSON) and proceed to research. For Codex desktop, Cursor, Gemini CLI, and raw folder-mode hosts, hidden `.claude/last30days.env` project config is ignored unless `LAST30DAYS_TRUST_PROJECT_CONFIG=1` is set from the process environment or global config; do not tell the user a project file is active unless diagnose reports it as the config source.
 
 ---
 
@@ -583,6 +590,8 @@ SKILL_DIR="<absolute path of the directory containing the SKILL.md you just Read
 - If EXCLUDE_SOURCES is set (comma-separated, case-insensitive): drop any matching source from ACTIVE_SOURCES_LIST before displaying
 
 **Perplexity source:** use it only when the user asks for Perplexity, Deep Research, or paid grounded synthesis, or when `perplexity` is already enabled in `INCLUDE_SOURCES` / `--search`. Direct `PERPLEXITY_API_KEY` supports Sonar synthesis, Search API rows, and async Deep Research. `OPENROUTER_API_KEY` is only a Sonar fallback. Normal runs default to `LAST30DAYS_PERPLEXITY_MODE=sonar`; use `search` for raw ranked web rows, `both` for synthesis plus rows, and `--deep-research` for `sonar-deep-research` with a 600s default wall timeout. A local Deep Research timeout is not a failed API key; inspect the raw artifact's async request id/status and resume by id if needed.
+
+**Reddit backend pin:** Reddit defaults to the free public backend with ScrapeCreators as a backup when `SCRAPECREATORS_API_KEY` is available. If the user says public Reddit is shallow, bot-gated, or missing nested comments, tell them they can set `LAST30DAYS_REDDIT_BACKEND=scrapecreators` alongside `SCRAPECREATORS_API_KEY` to make ScrapeCreators primary and keep public Reddit as fallback. Do not set this automatically for normal runs.
 
 
 Then display (use "and more" if 5+ sources, otherwise list all with Oxford comma):
@@ -845,8 +854,9 @@ When the user asks "X vs Y" (or "X vs Y vs Z"), the engine fans out N full `pipe
 **MANDATORY per-entity resolution.** For each entity, resolve the full Step 0.55 stack (X handle, subreddits, GitHub user/repos, news context). Then assemble a `--competitors-plan` JSON mapping each entity to its targeting, and invoke the engine ONCE with the vs-topic string.
 
 **Output shape per run:**
-- Main topic saves to `{main-slug}-raw.md`.
-- Each peer saves to `{peer-slug}-raw.md`.
+- For `--emit=compact` / `--emit=md`, there is no separate merged Markdown raw file. The main topic saves to `{main-slug}-raw.md`; each peer saves to `{peer-slug}-raw.md`.
+- For `--emit=html`, the main saved artifact is the merged comparison HTML at `{main-slug}-vs-{peer-slug}-raw-html[...].html`; each peer may also save its own per-entity HTML artifact.
+- The engine logs every written file as `[last30days] Saved output to {path}` and, for comparison runs, follows with `[last30days] Comparison artifact set: main={path}; peers={path, ...}`. Treat that log line as authoritative instead of recomputing paths from slugs.
 - Stdout shows a merged comparison with the `## Head-to-Head` scaffold + per-entity Resolved Entities block.
 
 **Invocation:**
@@ -931,7 +941,7 @@ Topic A (the main topic, first in the vs-string) uses outer `--x-handle`, `--x-r
 
 **Engine-internal auto-resolve (headless fallback):** if the engine detects BRAVE_API_KEY / EXA_API_KEY / SERPER_API_KEY / PARALLEL_API_KEY / PERPLEXITY_API_KEY / OPENROUTER_API_KEY, it runs its own per-entity `resolve.auto_resolve()` before each sub-run. The hosting-model path does NOT need those keys — you are the WebSearch. The engine's auto-resolve is the cron/CI fallback for when no reasoning model is driving.
 
-**Output:** one `{slug}-raw.md` per entity in `--save-dir` plus the merged comparison on stdout. Synthesis contract identical to the vs-mode protocol above.
+**Output:** for Markdown/compact runs, one `{slug}-raw.md` per entity in `--save-dir` plus the merged comparison on stdout. For HTML runs, the main saved artifact is merged comparison HTML and peer artifacts remain per-entity. Always use the `[last30days] Comparison artifact set: main=...; peers=...` log line as the source of truth. Synthesis contract identical to the vs-mode protocol above.
 
 ### Hiring Signals mode (`--hiring-signals`)
 
@@ -1329,7 +1339,9 @@ For ALL query types:
 
 **Instructions:**
 1. Read the saved raw file. Locate it via the engine's `[last30days] Saved output to {path}` log line, not a hardcoded path.
-2. Append a `## WebSearch Supplemental Results` section at the end.
+   - **Single-topic runs:** append to the one Markdown raw file shown by the saved-output log.
+   - **Comparison runs:** locate the `[last30days] Comparison artifact set: main=...; peers=...` line. For compact/Markdown runs, append the same `## WebSearch Supplemental Results` section to every listed per-entity Markdown raw file, because the comparison synthesis draws from all of them and there is no separate merged Markdown raw file. For HTML/JSON-only artifacts, do not append Markdown text to `.html` or `.json`; keep the appendix in the Markdown raw artifacts from the source run.
+2. Append a `## WebSearch Supplemental Results` section at the end of each target Markdown raw file.
 3. For each WebSearch result, include one bullet in the canonical format (see Format example below).
 4. Write the updated file back.
 
@@ -1842,10 +1854,10 @@ Close with `I have all the links to the {N} {source list} I pulled from. Just as
 
 ## SHAREABLE HTML BRIEF (when the user asked for one)
 
-**This section fires if EITHER trigger is true:**
+**This section fires if EITHER prompt-level trigger is true:**
 
-- `$ARGUMENTS` contains `--emit=html`, `--emit:html`, or `--html` as a flag
-- The user's natural-language request asks for an HTML brief, shareable doc, or file for sharing (Slack, email, Notion, "export as HTML", etc). Use your judgment for phrasing variants.
+- The user included an HTML-looking argument such as `--emit=html`, `--emit:html`, or `--html` in the skill prompt. Treat this as a strong user intent signal for HTML; do not confuse it with the complete Python CLI contract.
+- The user's natural-language request asks for an HTML brief, shareable doc, or file for sharing (Slack, email, Notion, "give it to me in HTML", "export as HTML", etc). Use your judgment for phrasing variants; a literal flag is not required.
 
 **If neither trigger fires, skip this entire section and proceed to WAIT FOR USER'S RESPONSE.** No HTML save flow, no reference read needed.
 
@@ -1853,7 +1865,7 @@ Close with `I have all the links to the {N} {source list} I pulled from. Just as
 
 - Read `references/save-html-brief.md` BEFORE proceeding to WAIT FOR USER'S RESPONSE
 - Follow that file's instructions exactly - it is the canonical source for the save flow
-- Append the confirmation line (`📎 Shareable brief saved to <path>`) to your already-emitted chat response
+- End with the artifact handoff defined there: saved HTML path, open the local file when the host can do so, and a concise confirmation for requests where HTML is the requested deliverable
 
 **You MUST NOT:**
 
@@ -1862,6 +1874,7 @@ Close with `I have all the links to the {N} {source list} I pulled from. Just as
 - Save to a different path than the reference specifies
 - Add data quality warnings, debug headers, or safety notes to the saved HTML
 - Re-research the topic for the HTML render - the engine cache covers the second invocation
+- Upload or publish the HTML anywhere public in this flow
 
 **Why the directive is forceful:** the reference file is the only source of truth for the save flow. Skipping it produces broken artifacts - wrong path conventions, missing synthesis content, leaked engine debug output, or warnings that don't belong in shareable docs.
 
@@ -1974,25 +1987,27 @@ Want another prompt? Just tell me what you're creating next.
 **What this skill does:**
 - Sends search queries to ScrapeCreators API (`api.scrapecreators.com`) for TikTok and Instagram search, and as a Reddit backup when public Reddit is unavailable (requires SCRAPECREATORS_API_KEY)
 - Legacy: Sends search queries to OpenAI's Responses API (`api.openai.com`) for Reddit discovery (fallback if no SCRAPECREATORS_API_KEY)
-- Sends search queries to Twitter's GraphQL API (via optional user-provided AUTH_TOKEN/CT0 env vars - no browser session access), xAI's API (`api.x.ai`), Xquik's API (`xquik.com`), or the official X API v2 via xurl CLI (OAuth2, auto-detected when installed and authenticated) for X search
+- Sends search queries to X/Twitter via optional user-provided `AUTH_TOKEN`/`CT0` env vars, explicit browser-cookie opt-in (`FROM_BROWSER` or setup consent), xAI's API (`api.x.ai` by default), Xquik's API (`xquik.com` by default), or the official X API v2 via xurl CLI (OAuth2, auto-detected when installed and authenticated)
 - Sends search queries to Algolia HN Search API (`hn.algolia.com`) for Hacker News story and comment discovery (free, no auth)
 - Sends search queries to Polymarket Gamma API (`gamma-api.polymarket.com`) for prediction market discovery (free, no auth)
 - Runs `yt-dlp` locally for YouTube search and transcript extraction (no API key, public data)
-- Sends search queries to ScrapeCreators API (`api.scrapecreators.com`) for TikTok and Instagram search, transcript/caption extraction (PAYG after 100 free credits)
+- Sends search queries to ScrapeCreators API (`api.scrapecreators.com`) for TikTok and Instagram search, transcript/caption extraction (10,000 free calls, then PAYG)
 - Optionally sends search queries to Brave Search API, Parallel AI API, Perplexity API (`api.perplexity.ai`), or OpenRouter API for web search / synthesis
 - Fetches public Reddit thread data from `reddit.com` for engagement metrics
 - Stores research findings in local SQLite database (watchlist mode only)
 - Saves research briefings as .md files to `LAST30DAYS_MEMORY_DIR` (defaults to `~/Documents/Last30Days`)
+- Provides `--preflight` for a safe human-readable permission summary before research; it does not read browser-cookie values, write files, or run live research
 
 **What this skill does NOT do:**
 - Does not post, like, or modify content on any platform
-- Does not access your Reddit, X, or YouTube accounts
-- Does not share API keys between providers (OpenAI key only goes to api.openai.com, etc.)
+- Does not access browser cookies unless explicitly configured or consented (`FROM_BROWSER`, manual X cookies, or setup with `--allow-browser-cookies`); `--preflight` and `--diagnose` do not read browser-cookie values
+- Does not use Codex ChatGPT auth as an OpenAI provider credential
+- Does not share API keys between providers
 - Does not log, cache, or write API keys to output files
-- Does not send data to any endpoint not listed above
+- Endpoint destinations follow configured provider base URLs; `--preflight` reports active and ignored endpoint overrides without printing secrets
 - Hacker News and Polymarket sources are always available (no API key, no binary dependency)
-- TikTok and Instagram sources require SCRAPECREATORS_API_KEY (100 free credits one-time, then PAYG). Reddit uses ScrapeCreators only as a backup when public Reddit is unavailable.
-- Can be invoked autonomously by agents via the Skill tool (runs inline, not forked); pass `--agent` for non-interactive report output
+- TikTok and Instagram sources require SCRAPECREATORS_API_KEY (10,000 free calls, then PAYG). Reddit uses ScrapeCreators only as a backup when public Reddit is unavailable.
+- Agent hosts invoke the slash-command skill contract; if `--agent` appears in the user's slash-command arguments, treat it as skill-level mode guidance, not a Python CLI flag.
 
 **Bundled scripts:** `scripts/last30days.py` (main research engine), `scripts/lib/` (search, enrichment, rendering modules), `scripts/lib/vendor/bird-search/` (vendored X search client, MIT licensed)
 

@@ -119,7 +119,53 @@ Before any mutating action in F3, apply the
 
 4. Merge the PR using a **merge commit**, binding to the validated SHA
    to prevent a race where a new push lands after the F3 freshness check
-   but before the merge executes:
+   but before the merge executes.
+
+   **Preferred path (helper runtime enabled)**: run the F3 merge helper
+   documented in
+   [`docs/idd-helper-scripts.md`](../../docs/idd-helper-scripts.md#merge-execution-f3).
+   First run it in dry-run (no `--apply`) and confirm `ready: true` with
+   an empty `blockers[]`; the helper wraps the read-only
+   `pre-merge-readiness` gate and adds no new authority. Then re-run with
+   `--apply`: when `ready`, it re-fetches the head SHA and re-validates
+   the claim immediately before merging, fails closed (no merge) on head
+   drift or lost claim, and runs the merge commit bound to the validated
+   head (never squash/rebase). The gate checklist and decision table
+   below stay canonical: if the helper is unavailable, its output is
+   invalid, or its evidence conflicts with live GitHub state, discard it
+   and use the manual gate + merge steps in this section.
+
+   **Gate checklist** — confirm every field before merging; all must hold,
+   and any unmet or unknown field is a NO-GO (fail closed — stop, do not
+   merge):
+
+   - current HEAD SHA **equals** the carried F2-snapshot head
+     (`{f2-head-SHA}`);
+   - review-currency route is `proceed`;
+   - `F3_UNRESOLVED_ACTIONABLE_COUNT` is `0`;
+   - advisory `f3Outcome` is `SATISFIED` (the authoritative advisory gate —
+     do not add stricter sub-conditions; e.g. a pending-window `SATISFIED`
+     can keep `copilotPending` true and `LAST_COPILOT_COMMIT` off the head);
+   - all required CI checks pass for the current head;
+   - claim ownership still uses your `{claim-id}`.
+
+   For the head-SHA field, use this **copy-paste-safe, fail-closed** check
+   — both operands fully quoted, no glob, abort on mismatch — rather than
+   re-deriving the comparison ad hoc (a stray glob or an unquoted operand
+   can silently mis-gate the most safety-sensitive step). Set `F2_HEAD_SHA`
+   from the carried `{f2-head-SHA}` so the snippet is self-contained;
+   `PR_HEAD_SHA_F3` is the head re-fetched in step 3:
+
+   ```sh
+   F2_HEAD_SHA="{f2-head-SHA}"   # the head recorded in the F2 snapshot
+   if [ "$PR_HEAD_SHA_F3" != "$F2_HEAD_SHA" ]; then
+     echo "F3 abort: head moved ${F2_HEAD_SHA} -> ${PR_HEAD_SHA_F3}" >&2
+     exit 1  # do not merge — return to E1 per the freshness rules above
+   fi
+   ```
+
+   Then merge, binding `--match-head-commit` to the **freshly validated**
+   `${PR_HEAD_SHA_F3}` (never a stale, hardcoded, or unbound SHA):
 
    ```sh
    gh pr merge {pr-number} --merge --match-head-commit "${PR_HEAD_SHA_F3}"
@@ -266,4 +312,7 @@ Before any mutating action in F3, apply the
 
 ## F5 — Loop
 
-Return to `idd-discover.instructions.md` and pick the next issue.
+Return to `idd-discover.instructions.md` and pick the next issue. F4-complete /
+F5 is the **safe session-exit boundary**: under context pressure, exit here for
+a fresh Discover session rather than looping in-process — see the autopilot
+operating model in [`docs/idd-workflow.md`](../../docs/idd-workflow.md).

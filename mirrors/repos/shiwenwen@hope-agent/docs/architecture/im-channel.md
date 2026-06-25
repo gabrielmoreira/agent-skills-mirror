@@ -346,78 +346,52 @@ pub struct SecurityConfig {
 
 ### 入站流程
 
-```
-IM 平台 (Telegram/Discord/...)
-    │
-    ▼
-Channel Plugin (polling/webhook)
-    │ 将平台 Update 转换为 MsgContext
-    ▼
-mpsc::channel<MsgContext>  ← 所有渠道共享一个 inbound channel
-    │
-    ▼
-Worker Dispatcher (worker.rs)
-    ├── 1. 查找 ChannelAccountConfig
-    ├── 2. check_access() 权限校验
-    ├── 2c. mention/access gating 通过后调用 materialize_pending_media()
-    │       └── 支持媒体的 11 个渠道（除纯文本 iMessage / IRC）共用 deferred 模式：
-    │           plugin 在 webhook / gateway / polling 阶段只挂轻量 ref 到
-    │           raw["_hopePendingMedia"]（同步、无 I/O），gating 通过后才走
-    │           inbound_media_common::stream_to_disk 真正下载，详见「入站附件
-    │           deferred materialize 模式」一节
-    ├── 3. resolve_or_create_session() 查找/创建会话
-    ├── 4. send_typing() 发送输入中指示器
-    ├── 5. [斜杠命令预拦截] is_slash_command(user_text)?
-    │       ├── YES → dispatch_slash_for_channel()
-    │       │           ├── Reply 类 (help/status/clear/model/...) → command/result 落 event，直接回复，跳过 LLM，return
-    │       │           └── PassThrough 类 (技能调用/search) → 替换为转换后指令，继续 ↓
-    │       └── NO  → 继续 ↓
-    ├── 5b. append_message(user_msg) 保存真实对话用户消息
-    ├── 5c. [单飞闸 I8] active_turn::try_acquire(session, Channel, 合成 turn_id, cancel)
-    │       ├── Err（同会话已有活动回合，含被 GUI/HTTP 接管） → 回一句「正在处理上一条」并 return
-    │       └── Ok → 持守 guard 至回合 + 投递结束（RAII）
-    ├── 6. chat_engine::run_chat_engine() 共享聊天引擎
-    │       ├── 构建 Agent（model chain + failover）
-    │       ├── 恢复会话历史 (restore_agent_context)
-    │       ├── AssistantAgent.chat() → 流式执行 → Tool Loop
-    │       ├── 工具事件实时持久化 (persist_tool_event)
-    │       ├── 流式事件推送前端 (ChannelStreamSink → EventBus → channel:stream_delta)
-    │       ├── Context compaction (溢出时自动压缩)
-    │       ├── 保存助手回复（含 token/duration/thinking 元数据）
-    │       ├── 持久化对话上下文 (save_agent_context)
-    │       └── 异步记忆提取 (memory extraction)
-    ├── 8. markdown_to_native() 格式转换
-    ├── 9. chunk_message() 分块（4096 字符限制）
-    └── 10. send_message() 逐块发送
+```mermaid
+flowchart TD
+    IM["IM 平台<br/>Telegram / Discord / ..."]
+    PLUG["Channel Plugin（polling / webhook）<br/>平台 Update → MsgContext"]
+    MPSC["mpsc inbound channel<br/>所有渠道共享一个"]
+    WORKER["Worker Dispatcher（worker.rs）"]
+    S1["1. 查找 ChannelAccountConfig"]
+    S2["2. check_access() 权限校验"]
+    S2c["2c. gating 通过 → materialize_pending_media()<br/>支持媒体的 11 个渠道走 deferred 下载（详见下文）"]
+    S3["3. resolve_or_create_session() 查找/创建会话"]
+    S4["4. send_typing() 输入中指示器"]
+    D5{"5. is_slash_command?"}
+    SLASH["dispatch_slash_for_channel()"]
+    REPLY["Reply 类（help/status/clear/model/...）<br/>command/result 落 event，直接回复，跳过 LLM → return"]
+    S5b["5b. append_message(user_msg) 保存真实用户消息"]
+    D5c{"5c. active_turn::try_acquire<br/>单飞闸 I8"}
+    BUSY["同会话已有活动回合（含被 GUI/HTTP 接管）<br/>回「正在处理上一条」→ return"]
+    ENGINE["6. chat_engine::run_chat_engine()<br/>构建 Agent（model chain + failover）/ 恢复历史<br/>chat → Tool Loop / 工具事件持久化 / 流式推送<br/>Context compaction / 保存助手回复 / 异步记忆提取"]
+    S8["8. markdown_to_native() 格式转换"]
+    S9["9. chunk_message() 分块（4096 字符）"]
+    S10["10. send_message() 逐块发送"]
+
+    IM --> PLUG --> MPSC --> WORKER --> S1 --> S2 --> S2c --> S3 --> S4 --> D5
+    D5 -->|"YES"| SLASH
+    SLASH -->|"Reply 类"| REPLY
+    SLASH -->|"PassThrough 类（技能/search）：替换指令"| S5b
+    D5 -->|"NO"| S5b
+    S5b --> D5c
+    D5c -->|"Err"| BUSY
+    D5c -->|"Ok：持守 guard 至投递结束（RAII）"| ENGINE
+    ENGINE --> S8 --> S9 --> S10
 ```
 
 > **入站单飞（I8 / MISC-2 修复）**：dispatcher 用 `MAX_CONCURRENT_INBOUND` semaphore 限**全局**并发，但不串行化**同一会话**——两条快速到达的消息会并发 spawn 两个 `handle_inbound_message`，后到者在引擎深处输给 `stream_seq::begin` 竞争（此时 pipeline 已 spawn），以「active stream」错误回复收场。步骤 5c 接上 GUI/HTTP 同款 `active_turn::try_acquire` 单飞守卫：在持久化用户消息**之后**、引擎启动**之前**加闸，故每条入站照常入库 + 过 `UserPromptSubmit` preflight，仅「引擎回合」被单飞。守卫跨 IM/GUI/HTTP 在同一（1:1 attach）会话上互斥。用**合成 turn_id** 仅作单飞锁、引擎仍 `turn_id: None`（Channel 走 `channel:*` 总线，给它 seq-tracked turn_id 会改变 stream 接受 / 广播语义）；cancel `Arc` 一处创建供 `try_acquire` / `engine_params` / channel 取消注册表共用，使跨端取消能真正中止该引擎回合。被拒的消息已入库、搭下一回合上下文（无自动出队）。
 
 ### 出站流程
 
-```
-Agent Response (Markdown)
-    │
-    ▼
-markdown_to_native()
-    │ Telegram: Markdown → HTML (<b>, <i>, <code>, <pre>, <a>)
-    │ Discord:  保持原始 Markdown
-    │ Slack:    Markdown → mrkdwn
-    ▼
-chunk_message()
-    │ 按平台限制分块（Telegram: 4096 chars）
-    │ 优先在段落边界(\n\n)分割
-    │ 其次在行边界(\n)、句号(. )、空格处分割
-    ▼
-send_message() × N chunks
-    │ 每个 chunk 作为独立消息发送
-    │ reply_to（引用原消息）只挂在一次回复的第一条消息上：
-    │   chunk 维度只 chunk 0 带；多轮 split 维度，流式渠道由
-    │   stream task 在 round 0 收尾后清空 reply_to、deliver_split
-    │   末轮按 finalized_rounds gate，保证整轮回复只引用一次
-    │ 所有 chunk 带 thread_id（保持话题上下文）
-    ▼
-IM 平台 API
+```mermaid
+flowchart TD
+    RESP["Agent Response（Markdown）"]
+    CONV["markdown_to_native()<br/>Telegram: Markdown → HTML（b / i / code / pre / a）<br/>Discord: 保持原始 Markdown<br/>Slack: Markdown → mrkdwn"]
+    CHUNK["chunk_message()<br/>按平台限制分块（Telegram 4096）<br/>优先段落边界，其次行 / 句号 / 空格"]
+    SEND["send_message() × N chunks<br/>每 chunk 独立消息发送<br/>reply_to 仅挂一次回复的首条（chunk 0 / 末轮 gate）<br/>所有 chunk 带 thread_id 保持话题上下文"]
+    API["IM 平台 API"]
+
+    RESP --> CONV --> CHUNK --> SEND --> API
 ```
 
 ### 完整时序图
@@ -606,38 +580,34 @@ pub struct ChannelRegistry {
 
 ### 生命周期管理
 
-```
-App 启动
-    │
-    ▼
-ChannelRegistry::new(256)  ← 创建 registry + mpsc channel(256)
-    │
-    ▼
-registry.register_plugin(TelegramPlugin::new())  ← 注册插件
-    │
-    ▼
-spawn_dispatcher(registry, channel_db, inbound_rx)  ← 启动分发器
-    │
-    ▼
-for account in enabled_accounts:
-    registry.start_account(account)  ← 自动启动已启用的账户
-        │
-        ├── plugin.start_account(account, inbound_tx, cancel)
-        │       └── 启动 polling loop / webhook server
-        └── workers.insert(account_id, ChannelWorkerHandle)
+```mermaid
+flowchart TD
+    BOOT["App 启动"]
+    NEW["ChannelRegistry::new(256)<br/>创建 registry + mpsc channel(256)"]
+    REG["registry.register_plugin(TelegramPlugin::new()) 注册插件"]
+    SPAWN["spawn_dispatcher(registry, channel_db, inbound_rx) 启动分发器"]
+    START["for account in enabled_accounts → registry.start_account(account)<br/>自动启动已启用的账户"]
+    P1["plugin.start_account(account, inbound_tx, cancel)<br/>启动 polling loop / webhook server"]
+    P2["workers.insert(account_id, ChannelWorkerHandle)"]
+    BOOT --> NEW --> REG --> SPAWN --> START
+    START --> P1
+    START --> P2
 
-App 运行中
-    │
-    ├── registry.start_account()   ← 启动新账户
-    ├── registry.stop_account()    ← 停止账户
-    ├── registry.restart_account() ← 重启（stop + start）
-    ├── registry.health()          ← 查询运行状态
-    └── registry.send_reply()      ← 发送消息
+    RUN["App 运行中（运行时操作）"]
+    R1["registry.start_account() 启动新账户"]
+    R2["registry.stop_account() 停止账户"]
+    R3["registry.restart_account() 重启（stop + start）"]
+    R4["registry.health() 查询运行状态"]
+    R5["registry.send_reply() 发送消息"]
+    RUN --> R1
+    RUN --> R2
+    RUN --> R3
+    RUN --> R4
+    RUN --> R5
 
-App 关闭
-    │
-    ▼
-registry.stop_all()  ← 取消所有 CancellationToken
+    SHUT["App 关闭"]
+    STOPALL["registry.stop_all() 取消所有 CancellationToken"]
+    SHUT --> STOPALL
 ```
 
 ### ChannelWorkerHandle
@@ -718,10 +688,10 @@ CREATE TABLE channel_conversations (
 - **入口**:[`channel/db.rs::resolve_or_create_session`](../../crates/ha-core/src/channel/db.rs) 不再查 `projects` 表,新会话以 `project_id = NULL` 创建。`/project <id>` 在 IM 模式下发 `AssignProject` action,被 channel slash dispatcher 翻译为 `SessionDB::set_session_project` UPDATE 当前 session 的 `project_id`,**不创建新 session**。
 - **agent 解析**:统一入口 [`agent::resolver::resolve_default_agent_id_full`](../../crates/ha-core/src/agent/resolver.rs),7 级链:
 
-  ```
-  显式 → project.default_agent_id → topic.agent_id → group.agent_id
-       → tg_channel.agent_id → channel_account.agent_id
-       → AppConfig.default_agent_id → "ha-main"
+  ```mermaid
+  flowchart LR
+      A["显式参数"] --> B["project.default_agent_id"] --> C["topic.agent_id"] --> D["group.agent_id"]
+      D --> E["tg_channel.agent_id"] --> F["channel_account.agent_id"] --> G["AppConfig.default_agent_id"] --> H["ha-main"]
   ```
 
   channel worker 的私有 5 级解析(topic > group > channel > account > global)已删除——单一 helper。`AgentSource` 标签覆盖每个层级,`/status` 末尾输出 Agent Source 命中位置。
@@ -1695,19 +1665,13 @@ registry.register_plugin(Arc::new(channel::{channel_name}::{Channel}Plugin::new(
 
 ### 访问控制层级
 
-```
-入站消息
-    │
-    ├── Layer 1: 群组消息过滤
-    │   └── 仅处理 @mention / /command / reply-to-bot
-    │
-    ├── Layer 2: check_access() 策略引擎
-    │   ├── DM: dmPolicy (open/allowlist/pairing)
-    │   ├── Group: group_allowlist + user_allowlist
-    │   └── Admin: admin_ids 始终通过
-    │
-    └── Layer 3: Agent 工具权限
-        └── 复用 Hope Agent 的工具审批机制
+```mermaid
+flowchart TD
+    IN["入站消息"]
+    L1["Layer 1: 群组消息过滤<br/>仅处理 @mention / /command / reply-to-bot"]
+    L2["Layer 2: check_access() 策略引擎<br/>DM: dmPolicy（open / allowlist / pairing）<br/>Group: group_allowlist + user_allowlist<br/>Admin: admin_ids 始终通过"]
+    L3["Layer 3: Agent 工具权限<br/>复用 Hope Agent 的工具审批机制"]
+    IN --> L1 --> L2 --> L3
 ```
 
 ### 隔离机制

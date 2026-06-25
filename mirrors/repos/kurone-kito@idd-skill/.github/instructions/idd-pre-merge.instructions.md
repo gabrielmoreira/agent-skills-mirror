@@ -47,6 +47,15 @@ This check is read-only — F1 does not rebase, merge, or push.
   in `idd-review-triage.instructions.md`. Before returning, update the PR
   live status digest with `Phase: F1 sync-required`, the branch state in
   `Open blockers`, and `Next action: E-phase branch-sync`.
+- **`computing`** (`syncRecommendation` is `recheck`): `mergeable` is
+  `UNKNOWN` / null because GitHub computes mergeability asynchronously and
+  has not settled yet (common right after E1 posts its watermark/baseline) —
+  a **transient** state, not a terminal one. Do **not** hold. Re-poll the
+  branch state after a short wait (the helper is a single read; the wait
+  belongs to this caller), up to a small fixed attempt budget (distributed
+  default: 3 attempts, a few seconds apart), then route by the first settled
+  result. Only if it is **still** `computing` (or `unknown`) after the budget
+  is exhausted, fall through to the terminal hold below.
 - **`dirty`** (`mergeStateStatus` is `DIRTY`) or **`unknown`**: hold; post
   a PR comment documenting the branch state and stop. Do not proceed to F2
   without confirmed clean branch-state evidence. A maintainer must clear
@@ -120,7 +129,8 @@ returns the workflow to E1 instead of merging over it.
   - The current latest CI pass `completedAt` for HEAD differs from
     `{latest-ci-completed-at}` in the watermark (a new CI run completed
     after E1's snapshot; if watermark value is `none`, any current CI
-    pass triggers re-evaluation).
+    pass triggers re-evaluation). A late label-triggered job after the
+    watermark commonly causes this; sequence it before E1; this is not a fault.
 
   Structural ack-only carve-out: when the only trigger above is newer
   activity or count growth, and the helper evidence proves it consists
@@ -132,6 +142,14 @@ returns the workflow to E1 instead of merging over it.
   rule in `idd-review-triage.instructions.md` applies: do not return to
   E1 for that activity alone. The agent still confirms the semantic
   residual, and every other trigger and gate is unaffected.
+
+  A current-claim agent's own post-watermark disposition replies are
+  expected convergence activity, not reviewer input; the watermark refresh
+  on the E-phase branch-sync `clean` / `behind-no-conflict`
+  (direct-to-F-phase) route (`idd-review-triage.instructions.md`)
+  re-covers them so this check passes on the refreshed watermark. If a
+  return-to-E1 is triggered solely by those disposition replies, refresh
+  the watermark rather than treating them as new reviewer activity.
 - **Advisory bot wait** (restart-safe enforcement): `PR_HEAD_SHA` is
   already available from the review-currency check above. Apply the
   advisory-wait protocol (`idd-advisory-wait.instructions.md`):

@@ -330,7 +330,7 @@ graph LR
     subgraph "sync main thread"
         RX["mpsc::Receiver"]
         FORMAT["serde_json::to_string()"]
-        WRITE["writeln!(stdout)")
+        WRITE["writeln!(stdout)"]
     end
 
     CHAT -- "text_delta / tool_call / ..." --> CALLBACK

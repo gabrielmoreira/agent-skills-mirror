@@ -47,7 +47,7 @@ Move through these steps in order. Stop and ask only for the next missing decisi
 
 5. Define validation and stop conditions
    - Ask what evidence should decide success: tests passing, reviewer approval, checklist completion, no findings, or a human approval checkpoint.
-   - Keep max iterations/review rounds low unless the user asks for longer autonomous work.
+   - Keep max iterations low unless the user asks for longer autonomous work.
 
 6. Decide whether to save it
    - If the user wants reuse, save to the Loop Bank with a clear name and description.

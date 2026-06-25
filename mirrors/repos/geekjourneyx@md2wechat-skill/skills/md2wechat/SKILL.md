@@ -14,6 +14,7 @@ Choose the command family before taking any publish or generation action:
 - Standard article HTML, article preview, metadata inspection, or WeChat article draft: use `inspect`, `preview`, and `convert`.
 - Image-first post, image note, image-text note, `newspic`, or multi-image post: use `create_image_post`, not `convert --draft`.
 - Article cover or article infographic: prefer `generate_cover` or `generate_infographic` over raw `generate_image` when a bundled preset fits.
+- Host-agent image generation request with no provider configured: use image plan mode (`--plan --json`) to get prompt intent, then hand it to the host image-generation tool if one is available outside md2wechat.
 - Writing in a creator style or removing AI traces: use `write` or `humanize`.
 - Provider, theme, prompt, or layout uncertainty: run discovery first. Do not guess from memory or repository files.
 
@@ -83,7 +84,7 @@ Use CLI output as the source of truth for currently available modes, providers, 
 - API conversion requires md2wechat API credentials.
 - WeChat draft creation requires WeChat credentials.
 - Named WeChat account execution requires a valid `MD2WECHAT_API_KEY`; the CLI validates it before upload or draft side effects.
-- Image generation may require image-provider credentials.
+- Direct image generation requires image-provider credentials; image plan mode (`--plan --json`) only emits prompt intent for a host Agent or external tool and does not require image-provider credentials.
 - `doctor --json` is local-only: it checks local readiness and does not perform live authentication, upload images, or create drafts.
 - Use `config show --format json` when the user asks what configuration is currently effective.
 - Use `config wechat-accounts --json` when the user asks which local WeChat accounts are configured.

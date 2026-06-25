@@ -1,141 +1,93 @@
 ---
 name: screenpipe-api
-description: Query the user's data via the local screenpipe REST API at localhost:3030 — screen recordings, audio, UI elements, usage analytics, and the user's persistent memory store. Use when the user asks about their screen activity, meetings, apps, productivity, media export, retranscription, connected services, OR when they ask to save / remember / store / note information so it can be retrieved later (POST /memories — survives across sessions and is queryable by Claude/external agents via the same API).
+description: Query the user's data via the local screenpipe REST API at localhost:3030 — screen recordings, audio, UI elements, usage analytics, meetings, connected services, and the user's persistent memory store. Use for questions about screen activity, meetings, apps, productivity, media export, retranscription, connections, OR to save / remember / store information for later (POST /memories — survives across sessions, queryable by external agents).
 ---
 
 # Screenpipe API
 
-Local REST API at `http://localhost:3030`. 
+Local REST API at `http://localhost:3030`.
 
 ## Authentication
 
-**ALL requests require authentication.** Add the auth header to every curl call:
+**Every request needs auth.** `$SCREENPIPE_LOCAL_API_KEY` is already in your env; without it you get 403.
 
 ```bash
 curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/..."
 ```
 
-The `$SCREENPIPE_LOCAL_API_KEY` env var is already set in your environment. Without it you get 403. Endpoints that skip auth: `/health`, `/ws/health`, `/audio/device/status`, `/connections/oauth/callback`, `/frames/*`, `/notify`, `/pipes/store/*`.
+No-auth endpoints: `/health`, `/ws/health`, `/audio/device/status`, `/connections/oauth/callback`, `/frames/*`, `/notify`, `/pipes/store/*`.
 
 ## Context Window Protection
 
-API responses can be large. Always write curl output to a file first (`curl ... -o /tmp/sp_result.json`), check size (`wc -c /tmp/sp_result.json`), and if over 5KB read only the first 50-100 lines. Extract what you need with `jq`. NEVER dump full large responses into context.
+Responses can be large. Write curl output to a file (`-o /tmp/sp.json`), check size (`wc -c`), and if over ~5KB read only the first 50-100 lines / extract with `jq`. Never dump full large responses into context.
 
-For the list endpoints (`/search`, `/elements`, `/frames/{id}/elements`) you can also cut tokens at the source: add `&format=csv` (or `tsv`) to get a columnar table that writes each column name once instead of repeating keys per row, and `&fields=a,b,c` to return only the columns you need (dotted paths like `content.text`). On a list of UI elements that is roughly a 70% token cut versus JSON. Text-heavy `ocr`/`audio` barely benefit (the text blob dominates), so reach for `fields` + `max_content_length` there. With no `format`/`fields` the response is unchanged JSON.
+Cut tokens at the source on list endpoints (`/search`, `/elements`): add `&format=csv` (or `tsv`) for a columnar table (column names written once instead of per-row keys — ~70% cheaper on uniform rows like elements), and `&fields=a,b,c` for only the columns you need (dotted paths like `content.text`). Text-heavy `ocr`/`audio` barely benefit — use `fields` + `max_content_length` there instead.
 
 ---
 
 ## 1. Activity Summary — `GET /activity-summary`
 
-Default broad-context call. Bundles apps, windows, key_texts, audio, edited_files, recording health, top memories, deduped screen+audio snippets, and a `data_status` + `query_status` + `guidance` triple.
+Default broad-context call. Bundles apps, windows, key_texts, audio, edited_files, recording health, top memories, deduped screen+audio snippets, and a `data_status`/`query_status`/`guidance` triple.
 
 ```bash
 curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/activity-summary?start_time=30m%20ago&end_time=now"
 ```
 
-Required: `start_time`, `end_time`. Optional: `app_name`, `q` (filters memories+snippets, drives `query_status`), `include_recording|memories|snippets|guidance=false` (each defaults true — disable to slim), `max_snippets` (8/12), `max_snippet_chars` (500/1200), `max_memories` (5/20).
+Required: `start_time`, `end_time`. Optional: `app_name`, `q` (filters memories+snippets, drives `query_status`); `include_recording|memories|snippets|guidance=false` to slim (each defaults true); `max_snippets`, `max_snippet_chars`, `max_memories`. For a lean time-tracking sweep also set `include_key_texts=false` (biggest win), `include_apps=false`, `include_windows=false` — `total_active_minutes` + per-app/window `minutes` + the status triple still return.
 
-For a lean, token-cheap time-tracking sweep across many ranges, also drop the heavy always-on fields: `include_key_texts=false` (the biggest single win — omits the text-heavy `key_texts`), plus `include_apps=false` / `include_windows=false`. Each defaults true and, when false, omits that field entirely; `total_active_minutes` + per-app/window `minutes` + the status triple still come back. e.g. minutes-only: `&include_key_texts=false&include_windows=false`.
-
-`data_status` ∈ `ok|empty_but_recording|no_capture_in_range|not_recording`. Check before claiming "no activity". `query_status` ∈ `not_requested|matched|no_query_matches`. `guidance.next_best_query` is a ready-to-show hint when empty. Escalate to `/search` only for verbatim quotes / frame_ids.
+- `data_status` ∈ `ok|empty_but_recording|no_capture_in_range|not_recording` — check before claiming "no activity".
+- `query_status` ∈ `not_requested|matched|no_query_matches`; `guidance.next_best_query` is a ready hint when empty.
+- Escalate to `/search` only for verbatim quotes / frame_ids.
 
 ---
 
 ## 2. Search — `GET /search`
 
-Use when `/activity-summary` says `ok` but you need verbatim quotes, media paths, frame IDs, or a specific content match.
+Use when `/activity-summary` says `ok` but you need verbatim quotes, media paths, frame IDs, or a specific match.
 
 ```bash
 curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/search?q=QUERY&content_type=all&limit=10&start_time=1h%20ago"
 ```
 
-### Parameters
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `q` | No | Keywords. Avoid for audio — transcriptions are noisy, `q` over-filters. |
+| `content_type` | No | `all` (default), `accessibility`, `audio`, `input`, `ocr`, `memory`. Screen text is primarily the accessibility tree; OCR is the fallback for apps without it (videos, games, remote desktops). |
+| `limit` | No | Default 20. Keep ≤20 to protect context. |
+| `offset` | No | Pagination. Default 0. |
+| `start_time` | **Yes** | ISO 8601 or relative (`16h ago`, `2d ago`, `30m ago`). |
+| `end_time` | No | Defaults to now (`now`, `1h ago`). |
+| `app_name` | No | Substring, e.g. "Google Chrome", "Slack". |
+| `window_name` | No | Window title substring. |
+| `speaker_name` | No | Filter audio by speaker (case-insensitive partial). |
+| `focused` | No | Only focused windows. |
+| `tags` | No | Comma-separated; returns items carrying ALL of them (`person:ada,project:atlas`). Exact match. |
+| `include_related` | No | With `tags`, also return a `related` map of co-occurring tags (people/projects/workflows), most-frequent first. |
+| `max_content_length` | No | Middle-truncate each result's text. |
+| `format` | No | `json` (default), `csv`, `tsv`/`table`. CSV is lossless; TSV collapses newlines. |
+| `fields` | No | Column allowlist of dotted paths, e.g. `type,content.app_name,content.text`. |
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `q` | string | No | Keywords. Do NOT use for audio searches — transcriptions are noisy, q filters too aggressively. |
-| `content_type` | string | No | `all` (default), `accessibility`, `audio`, `input`, `ocr`, `memory`. Screen text is primarily captured via the OS accessibility tree (`accessibility`); OCR is a fallback for apps without accessibility support (videos, games, remote desktops). Use `all` unless you need a specific modality. |
-| `limit` | integer | No | Default: 20. Keep small (≤20) to protect context. |
-| `offset` | integer | No | Pagination. Default: 0 |
-| `start_time` | ISO 8601 or relative | **Yes** | Accepts `2024-01-15T10:00:00Z` or `16h ago`, `2d ago`, `30m ago` |
-| `end_time` | ISO 8601 or relative | No | Defaults to now. Accepts `now`, `1h ago` |
-| `app_name` | string | No | e.g. "Google Chrome", "Slack", "zoom.us" |
-| `window_name` | string | No | Window title substring |
-| `speaker_name` | string | No | Filter audio by speaker (case-insensitive partial) |
-| `focused` | boolean | No | Only focused windows |
-| `tags` | string | No | Comma-separated; return only items carrying ALL of them (e.g. `person:ada,project:atlas`). Works for screen/audio and, with `content_type=memory`, memories. See Tags below. |
-| `include_related` | boolean | No | With `tags`, also return a `related` map of co-occurring tags (people/projects/workflows seen alongside yours), most-frequent first. One call for the surrounding context instead of several. See Tags below. |
-| `max_content_length` | integer | No | Truncate each result's text (middle-truncation) |
-| `format` | string | No | `json` (default), `csv`, or `tsv`/`table`. CSV/TSV return a columnar table (column names written once) instead of one JSON object per row, much cheaper to read on list-shaped results. CSV is lossless; TSV collapses newlines (worse for long `ocr` text). |
-| `fields` | string | No | Comma-separated column allowlist of dotted paths, e.g. `type,content.app_name,content.text`. Returns only those columns (handy for dropping the repeated absolute `content.file_path`). Works for `json` too (sparse objects). |
+**Critical rules:** always include `start_time` (unbounded queries timeout) · "recent" = 30 min, "today" = since midnight, "yesterday" = yesterday's range · if `/search` is empty, fall back to `/activity-summary` and check `data_status` before saying "no data" · on timeout, narrow the range.
 
-### Tags — linking people, projects, topics
+**Tags** link people/projects/topics across screen, audio, and memories under one namespace (`person:ada`, `project:atlas`, `topic:pricing`). Add to a frame/audio: `POST /tags/vision/{frame_id}` or `POST /tags/audio/{chunk_id}` body `{"tags":["person:ada"]}`; to a memory: `tags` in `POST /memories`. Retrieve: `GET /search?tags=person:ada&start_time=30d%20ago` (add `content_type=memory` for memories). Frames are pruned by retention — tag a **memory** for durable links (memories carry `created_at` + a `frame_id` back to the moment). `include_related=true` returns co-occurring tags grouped by namespace, replacing 2-3 follow-up calls.
 
-Tags are a shared label layer across screen, audio, and memories under one string namespace. Use namespaced tags: `person:ada`, `project:atlas`, `topic:pricing`. Two items sharing a tag are connected.
-
-- Add to a frame/audio: `POST /tags/vision/{frame_id}` or `POST /tags/audio/{chunk_id}` body `{"tags":["person:ada"]}`.
-- Add to a memory: include `tags` in `POST /memories` (or `PUT /memories/{id}`).
-- Retrieve by tag: `GET /search?tags=person:ada&start_time=30d%20ago` (screen+audio), or add `content_type=memory` for memories. Multiple tags AND together; matching is exact, not substring.
-
-Frames are pruned by retention, so for a durable link tag a memory (memories also carry `created_at` and a `frame_id` back to the moment — jump there with `GET /frames/{frame_id}`). Tag frames/audio for short-term recall. To pull everything about a person across time: one call for captures (`content_type=all&tags=person:ada`) plus one for facts (`content_type=memory&tags=person:ada`).
-
-Add `include_related=true` to a tag query to get the surrounding context in the same response — the tags that co-occur with yours, grouped by namespace (prefix pluralized: `person:`→`people`, `project:`→`projects`) and ranked by frequency. Replaces the 2-3 follow-up "who/what else" calls with one:
-
-```bash
-curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
-  "http://localhost:3030/search?tags=person:ada&include_related=true&limit=5"
-# data: [...], related: { "people": ["connor","drew"], "projects": ["atlas"], "workflows": ["planning"] }
-```
-
-### Critical Rules
-
-1. **ALWAYS include `start_time`** — queries without time bounds WILL timeout
-2. **Use `app_name`** when user mentions a specific app (this is string contains)
-3. **"recent"** = 30 min. **"today"** = since midnight. **"yesterday"** = yesterday's range
-4. If `/search` is empty, fall back to `/activity-summary` and check `data_status` before saying "no data"
-5. If timeout, narrow the time range
-
-### Response Format
-
-```json
-{
-  "data": [
-    {"type": "OCR", "content": {"frame_id": 12345, "text": "...", "timestamp": "...", "app_name": "Chrome", "window_name": "..."}},
-    {"type": "Audio", "content": {"chunk_id": 678, "transcription": "...", "timestamp": "...", "speaker": {"name": "John"}}},
-    {"type": "Input", "content": {"id": 999, "text": "Clicked 'Submit'", "timestamp": "...", "app_name": "Safari"}}
-  ],
-  "pagination": {"limit": 10, "offset": 0, "total": 42}
-}
-```
+Response: `{"data": [{"type":"OCR","content":{"frame_id":...,"text":...,"app_name":...}}, {"type":"Audio","content":{"chunk_id":...,"transcription":...,"speaker":{"name":...}}}, {"type":"Input","content":{...}}], "pagination":{"limit":10,"offset":0,"total":42}}`.
 
 ---
 
 ## 3. Elements — `GET /elements`
 
-Lightweight FTS search across UI elements (~100-500 bytes each vs 5-20KB from `/search`).
+Lightweight FTS over UI elements (~100-500 bytes each vs 5-20KB from `/search`). Uniform rows, so `format=csv` pays off most.
 
 ```bash
-curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/elements?q=Submit&start_time=1h%20ago&limit=10"
-```
-
-Parameters: `q`, `frame_id`, `source` (`accessibility`|`ocr`), `role`, `start_time`, `end_time`, `app_name`, `limit`, `offset`, plus `format` (`json`/`csv`/`tsv`) and `fields` (dotted paths). Elements are uniform rows, so this is where the columnar format pays off most:
-
-```bash
-# compact table, only the columns you need (~70% fewer tokens than JSON)
 curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/elements?frame_id=12345&format=csv&fields=role,text,bounds.left,bounds.top"
 ```
 
-### Frame Context — `GET /frames/{id}/context`
+Params: `q`, `frame_id`, `source` (`accessibility`|`ocr`), `role`, `start_time`, `end_time`, `app_name`, `limit`, `offset`, `format`, `fields`.
 
-Returns accessibility text, parsed nodes, and extracted URLs for a frame.
+Frame context (accessibility text, parsed nodes, extracted URLs): `GET /frames/{id}/context`.
 
-```bash
-curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/frames/6789/context"
-```
-
-### Common Roles (platform-specific)
-
-Roles are **not normalized** across platforms. Use the correct format for the user's OS:
+**Roles are not normalized across platforms** — use the right one for the user's OS:
 
 | Concept | macOS | Windows | Linux |
 |---------|-------|---------|-------|
@@ -143,16 +95,13 @@ Roles are **not normalized** across platforms. Use the correct format for the us
 | Static text | `AXStaticText` | `Text` | `Label` |
 | Link | `AXLink` | `Hyperlink` | `Link` |
 | Text field | `AXTextField` | `Edit` | `Entry` |
-| Text area | `AXTextArea` | `Document` | `Text` |
 | Menu item | `AXMenuItem` | `MenuItem` | `MenuItem` |
 | Checkbox | `AXCheckBox` | `CheckBox` | `CheckBox` |
-| Group | `AXGroup` | `Group` | `Group` |
 | Web area | `AXWebArea` | `Pane` | `DocumentWeb` |
 | Heading | `AXHeading` | `Header` | `Heading` |
-| Tab | `AXTab` | `TabItem` | `Tab` |
 | List item | `AXRow` | `ListItem` | `ListItem` |
 
-OCR-only roles (fallback when accessibility unavailable): `line`, `word`, `block`, `paragraph`, `page`
+OCR-only roles (accessibility-unavailable fallback): `line`, `word`, `block`, `paragraph`, `page`.
 
 ---
 
@@ -162,66 +111,49 @@ OCR-only roles (fallback when accessibility unavailable): `line`, `word`, `block
 curl -o /tmp/frame.png "http://localhost:3030/frames/12345"
 ```
 
-Returns raw PNG. **Never fetch more than 2-3 frames per query** (~1000-2000 tokens each).
+Raw PNG. **Never fetch more than 2-3 frames per query** (~1000-2000 tokens each).
 
 ---
 
 ## 5. Media Export — `POST /export`
 
-Renders a real-time MP4 (screen frames at their true timestamps + synced microphone audio). The clip's duration matches the wall-clock span you ask for — it is NOT a sped-up timelapse.
+Real-time MP4 (screen frames at true timestamps + synced mic audio). Duration matches the wall-clock span — NOT a timelapse.
 
 ```bash
-curl -X POST http://localhost:3030/export \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
-  -d '{"start": "5m ago", "end": "now"}'
+curl -X POST http://localhost:3030/export -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" -d '{"start": "5m ago", "end": "now"}'
 ```
 
-Fields: `start` + `end` (ISO 8601 or relative like `"2h ago"`, `"now"`; `end` defaults to now), OR `meeting_id` to export a whole meeting. Optional `output_path` writes the MP4 to a specific absolute path (e.g. `~/Downloads/clip.mp4`); otherwise it lands in the data dir's `exports/` folder.
+Fields: `start`+`end` (ISO 8601 or relative; `end` defaults to now), OR `meeting_id` for a whole meeting. Optional `output_path` (absolute, e.g. `~/Downloads/clip.mp4`); else lands in the data dir's `exports/`. Returns `{output_path, frame_count, audio_chunk_count, duration_secs, file_size_bytes}` — show `output_path` as inline code. Long ranges take minutes.
 
-Returns `{"output_path": "...", "frame_count": N, "audio_chunk_count": N, "duration_secs": N, "file_size_bytes": N}`. Show `output_path` as an inline code block for playback. Long ranges can take a few minutes.
-
-### Audio & ffmpeg
-
-Audio files from search results (`file_path`). Common operations:
+ffmpeg on audio `file_path` from search results (always `-y`, save to `~/.screenpipe/exports/`):
 ```bash
-ffmpeg -y -i /path/to/audio.mp4 -q:a 2 ~/.screenpipe/exports/output.mp3          # convert
-ffmpeg -y -i input.mp4 -ss 00:01:00 -to 00:05:00 -q:a 2 clip.mp3                 # trim
-ffmpeg -y -i input.mp4 -filter:v "setpts=0.5*PTS" -an fast.mp4                    # speed 2x
-ffmpeg -y -i input.mp4 -t 10 -vf "fps=10,scale=640:-1" output.gif                 # GIF
+ffmpeg -y -i audio.mp4 -q:a 2 out.mp3                              # convert
+ffmpeg -y -i in.mp4 -ss 00:01:00 -to 00:05:00 -q:a 2 clip.mp3      # trim
+ffmpeg -y -i in.mp4 -t 10 -vf "fps=10,scale=640:-1" out.gif        # GIF
 ```
-
-Always use `-y`, save to `~/.screenpipe/exports/`.
 
 ---
 
 ## 6. Retranscribe — `POST /audio/retranscribe`
 
 ```bash
-curl -X POST http://localhost:3030/audio/retranscribe \
-  -H "Content-Type: application/json" \
+curl -X POST http://localhost:3030/audio/retranscribe -H "Content-Type: application/json" \
   -d '{"start": "1h ago", "end": "now"}'
 ```
 
-Optional: `engine` (one of `deepgram`, `screenpipe-cloud`, `whisper-large`, `whisper-large-v3-turbo`, `whisper-large-v3-turbo-quantized`, `qwen3-asr`, `parakeet`, `parakeet-mlx`, `openai-compatible`), `vocabulary` (array of `{"word": "...", "replacement": "..."}` for bias/replacement), `prompt` (topic context for Whisper).
-
-Keep ranges short (1h max). Show old vs new transcription.
+Optional: `engine` (`deepgram`, `screenpipe-cloud`, `whisper-large`, `whisper-large-v3-turbo`, `whisper-large-v3-turbo-quantized`, `qwen3-asr`, `parakeet`, `parakeet-mlx`, `openai-compatible`), `vocabulary` (array of `{"word","replacement"}`), `prompt` (Whisper topic context). Keep ranges ≤1h. Show old vs new.
 
 ---
 
 ## 7. Raw SQL — `POST /raw_sql`
 
 ```bash
-curl -X POST http://localhost:3030/raw_sql \
-  -H "Content-Type: application/json" \
+curl -X POST http://localhost:3030/raw_sql -H "Content-Type: application/json" \
   -d '{"query": "SELECT ... LIMIT 100"}'
 ```
 
-**Rules**: Every SELECT needs LIMIT. Always filter by time. Read-only. Use `datetime('now', '-24 hours')` for time math.
-
-**WARNING**: Do NOT use frame counts for time estimates — frames are event-driven, not fixed-interval. Use `/activity-summary` for screen time.
-
-### Schema
+**Rules:** every SELECT needs LIMIT · always filter by time (`datetime('now','-24 hours')`) · read-only. **Never use frame counts for time estimates** — frames are event-driven; use `/activity-summary` for screen time.
 
 | Table | Key Columns | Time Column |
 |-------|-------------|-------------|
@@ -236,369 +168,155 @@ curl -X POST http://localhost:3030/raw_sql \
 | `meetings` | `meeting_app`, `title`, `attendees`, `detection_source` | `meeting_start` |
 | `memories` | `content`, `source`, `tags`, `importance` | `created_at` |
 
-### Example Queries
-
 ```sql
 -- Most used apps (last 24h)
-SELECT app_name, COUNT(*) as frames FROM frames
-WHERE timestamp > datetime('now', '-24 hours') AND app_name IS NOT NULL
-GROUP BY app_name ORDER BY frames DESC LIMIT 20
-
--- Most visited domains
-SELECT CASE WHEN INSTR(SUBSTR(browser_url, INSTR(browser_url, '://') + 3), '/') > 0
-  THEN SUBSTR(SUBSTR(browser_url, INSTR(browser_url, '://') + 3), 1, INSTR(SUBSTR(browser_url, INSTR(browser_url, '://') + 3), '/') - 1)
-  ELSE SUBSTR(browser_url, INSTR(browser_url, '://') + 3) END as domain,
-COUNT(*) as visits FROM frames
-WHERE timestamp > datetime('now', '-24 hours') AND browser_url IS NOT NULL
-GROUP BY domain ORDER BY visits DESC LIMIT 20
-
--- Speaker stats
-SELECT COALESCE(NULLIF(s.name, ''), 'Unknown') as speaker, COUNT(*) as segments
-FROM audio_transcriptions at LEFT JOIN speakers s ON at.speaker_id = s.id
-WHERE at.timestamp > datetime('now', '-24 hours')
-GROUP BY at.speaker_id ORDER BY segments DESC LIMIT 20
+SELECT app_name, COUNT(*) AS frames FROM frames
+WHERE timestamp > datetime('now','-24 hours') AND app_name IS NOT NULL
+GROUP BY app_name ORDER BY frames DESC LIMIT 20;
 
 -- Context switches per hour
-SELECT strftime('%H:00', timestamp) as hour, COUNT(*) as switches
-FROM ui_events WHERE event_type = 'app_switch' AND timestamp > datetime('now', '-24 hours')
-GROUP BY hour ORDER BY hour LIMIT 24
+SELECT strftime('%H:00', timestamp) AS hour, COUNT(*) AS switches
+FROM ui_events WHERE event_type='app_switch' AND timestamp > datetime('now','-24 hours')
+GROUP BY hour ORDER BY hour LIMIT 24;
 ```
 
-Common patterns: `GROUP BY date(timestamp)` (daily), `GROUP BY strftime('%H:00', timestamp)` (hourly), `HAVING frames > 5` (filter noise).
+Patterns: `GROUP BY date(timestamp)` (daily), `GROUP BY strftime('%H:00', timestamp)` (hourly), `HAVING frames > 5` (filter noise).
 
 ---
 
 ## 8. Connections — `GET /connections`
 
 ```bash
-# List all integrations (Telegram, Slack, Discord, Email, Todoist, Teams, 40+)
-curl http://localhost:3030/connections
-
-# Get saved credentials for a webhook/token integration
-curl http://localhost:3030/connections/telegram
+curl http://localhost:3030/connections            # list all integrations (40+)
+curl http://localhost:3030/connections/telegram   # saved creds for a webhook/token integration
 ```
 
-**Credential integrations** — `GET /connections/<id>` returns saved fields to use with the service API directly:
-- **Telegram**: `bot_token` + `chat_id` → `POST https://api.telegram.org/bot{token}/sendMessage`
-- **Slack**: `webhook_url` → `POST {webhook_url}` with `{"text": "..."}`
-- **Discord**: `webhook_url` → `POST {webhook_url}` with `{"content": "..."}`
-- **Todoist**: `api_token` → `POST https://api.todoist.com/api/v1/tasks` with Bearer auth
-- **Teams**: `webhook_url` → `POST {webhook_url}` with `{"text": "..."}`
+Each entry's `description` is self-describing — for control surfaces (browsers, gateways, OAuth proxies) it includes the exact endpoint + body shape. Read it before guessing. If not connected, tell the user to set it up in Settings > Connections.
+
+**Credential integrations** — `GET /connections/<id>` returns fields to call the service directly:
+- **Telegram**: `bot_token`+`chat_id` → `POST https://api.telegram.org/bot{token}/sendMessage`
+- **Slack** / **Teams**: `webhook_url` → `POST {webhook_url}` with `{"text":...}`
+- **Discord**: `webhook_url` → `POST {webhook_url}` with `{"content":...}`
+- **Todoist**: `api_token` → `POST https://api.todoist.com/api/v1/tasks` (Bearer)
 - **Email**: `smtp_host`, `smtp_port`, `smtp_user`, `smtp_pass`, `from_address`
 
-**OAuth/proxy integrations** — tokens are stored in SecretStore and are never exposed via `GET /connections/<id>`. Call the local proxy instead; it injects auth and forwards to the upstream API:
+**OAuth/proxy integrations** — tokens live in SecretStore, never exposed via `GET`. Call the local proxy; it injects auth and forwards upstream. There is no `/connections/<id>/token` endpoint.
 
 ```bash
-# GitHub — create an issue (repo owner/name from pipe settings)
+# GitHub create issue (repo from pipe settings). Same shape for comments: .../issues/42/comments {"body":...}
 curl -X POST http://localhost:3030/connections/github/proxy/repos/OWNER/REPO/issues \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Found a bug","body":"Steps to reproduce..."}'
+  -H "Content-Type: application/json" -d '{"title":"Bug","body":"Steps..."}'
 
-# GitHub — comment on an issue
-curl -X POST http://localhost:3030/connections/github/proxy/repos/OWNER/REPO/issues/42/comments \
-  -H "Content-Type: application/json" \
-  -d '{"body":"Thanks for the report!"}'
-
-# Generic OAuth proxy pattern (Zoom, Vercel, Google Docs, Microsoft 365, etc.)
+# Generic OAuth proxy (Zoom, Vercel, Google Docs, Microsoft 365, ...)
 curl -X POST http://localhost:3030/connections/<id>/proxy/<upstream-api-path> \
-  -H "Content-Type: application/json" \
-  -d '{...}'
+  -H "Content-Type: application/json" -d '{...}'
 ```
+Don't call `https://api.github.com/...` directly from a pipe — use the proxy.
 
-Do **not** call `https://api.github.com/...` directly from a pipe — use `/connections/github/proxy/...` instead. There is no `/connections/<id>/token` endpoint.
-
-If not connected, tell user to set up in Settings > Connections.
-
-Each entry's `description` field is self-describing — for capabilities that
-need a control surface (browsers, gateways, OAuth proxies, etc.), the description includes
-the exact endpoint and body shape. Read it before guessing.
-
-### Calendar Connections
-
-Use calendar-specific endpoints when the user asks about appointments,
-meetings, or upcoming events:
-
+**Calendar** — use calendar endpoints for appointments/upcoming events. If `/connections` shows `ics-calendar.connected: true`, include ICS results too before saying the calendar is empty:
 ```bash
-# Native Apple/Windows Calendar
 curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
   "http://localhost:3030/connections/calendar/events?hours_back=0&hours_ahead=72"
-
-# Google Calendar
-curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
-  "http://localhost:3030/connections/google-calendar/events?hours_back=0&hours_ahead=72"
-
-# ICS/webcal subscriptions
-curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
-  "http://localhost:3030/connections/ics-calendar/events?hours_back=0&hours_ahead=72"
+# also: /connections/google-calendar/events , /connections/ics-calendar/events
 ```
 
-If `/connections` shows `ics-calendar.connected: true`, include ICS results
-alongside native and Google Calendar results before saying the calendar is empty.
-
-### Browser Control — `owned-default`
-
-You have an embedded browser you can drive directly, for the user it will displayed inside the chat. Three intent verbs;
-reach for `/eval` only when the first two aren't enough.
-
+**Browser control (`owned-default`)** — an embedded browser, shown in the chat. Cookies persist (isolated profile); password fields are stripped from snapshots. Try snapshot first; reach for eval only when needed.
 ```bash
-# 1. Navigate — opens the URL in the embedded browser sidebar.
-curl -X POST -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"url": "https://en.wikipedia.org/wiki/Giraffe"}' \
+# Navigate → {"ok":true,"url":"<final>"}
+curl -X POST -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" -H "Content-Type: application/json" \
+  -d '{"url":"https://en.wikipedia.org/wiki/Giraffe"}' \
   http://localhost:3030/connections/browsers/owned-default/navigate
-# → {"ok": true, "url": "<final-url-after-redirects>"}
 
-# 2. Snapshot — read the page WITHOUT writing JS. Returns title, url, and
-#    a compact accessibility-style outline (headings, links, buttons,
-#    form fields). This is almost always what you want for "what's on
-#    the page?" / "is this still loading?" / "what links are visible?".
+# Snapshot (no JS) → {title, url, tree:"[h1] ...\n  [a] ... → /href", truncated}. Best for "what's on the page?".
 curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
   http://localhost:3030/connections/browsers/owned-default/snapshot
-# → {
-#     "title": "Giraffe - Wikipedia",
-#     "url": "https://en.wikipedia.org/wiki/Giraffe",
-#     "tree": "[h1] Giraffe\n  [a] Article → /wiki/Giraffe\n  [a] Talk → /wiki/Talk:Giraffe\n  ...",
-#     "truncated": false
-#   }
 
-# 3. Eval (escape hatch) — run arbitrary JS, get the return value back.
-#    Use this when navigate + snapshot can't express what you need
-#    (e.g. clicking a specific button, reading a table you can't see in
-#    the snapshot tree, scraping with custom selectors).
-curl -X POST -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"code": "return [...document.querySelectorAll(\".title > a\")].slice(0,5).map(a => a.innerText)"}' \
+# Eval (escape hatch) — arbitrary JS return value, for clicks / values the snapshot tree omits.
+curl -X POST -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" -H "Content-Type: application/json" \
+  -d '{"code":"return [...document.querySelectorAll(\".title>a\")].slice(0,5).map(a=>a.innerText)"}' \
   http://localhost:3030/connections/browsers/owned-default/eval
-# → {"success": true, "result": [...]}
 ```
-
-Default rule: try snapshot first. Switch to eval only when you need a
-specific value the snapshot tree doesn't surface.
-
-Cookies persist across calls (own profile, isolated from the user's
-real browser). Password fields are stripped from snapshot output.
 
 ---
 
 ## 9. Meetings — `GET /meetings`, `PUT /meetings/:id`
 
 ```bash
-curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/meetings?start_time=1d%20ago&end_time=now&limit=10&offset=0"
-curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/meetings?q=alice%40acme.com"
+curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/meetings?start_time=1d%20ago&end_time=now&limit=10"
 curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/meetings/42"
 
-# Update mutable fields. This is a partial update body: omitted fields stay as-is.
-curl -X PUT http://localhost:3030/meetings/42 \
-  -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Q3 planning", "note":"<existing note>\n\n## Summary\n<summary>"}'
+# Partial update — omitted fields stay as-is. Read first and re-include existing `note` so user notes survive.
+curl -X PUT http://localhost:3030/meetings/42 -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
+  -H "Content-Type: application/json" -d '{"title":"Q3 planning","note":"<existing>\n\n## Summary\n<summary>"}'
 ```
 
-Returns detected meetings (from calendar, app detection, window titles, UI elements, multi-speaker audio). `q` is a case-insensitive substring filter against title, attendees, and notes.
-
-Meeting updates use `PUT /meetings/:id`, not PATCH. Before appending an AI-generated summary, read the current meeting first and include the existing `note` text in the new note body so user-written notes are preserved.
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | integer | Meeting ID |
-| `meeting_start` | ISO 8601 | Start time |
-| `meeting_end` | ISO 8601? | End time (null if ongoing) |
-| `meeting_app` | string | App (zoom, teams, meet, etc.) |
-| `title` | string? | Meeting title |
-| `attendees` | string? | Attendees |
-| `note` | string? | User notes / appended AI summaries |
-| `detection_source` | string | How detected (`app`, `calendar`, `ui`, etc.) |
-
-Also available via raw SQL: `SELECT * FROM meetings WHERE meeting_start > datetime('now', '-24 hours') LIMIT 20`
+Detected from calendar, app detection, window titles, UI elements, multi-speaker audio. `q` is a case-insensitive substring over title/attendees/notes. Uses PUT, not PATCH. Fields: `id`, `meeting_start`, `meeting_end` (null if ongoing), `meeting_app`, `title?`, `attendees?`, `note?`, `detection_source`. Also queryable via raw SQL on the `meetings` table.
 
 ---
 
-## 10. Speakers — Management & Reassignment
+## 10. Speakers — `POST /speakers/*`
 
-```bash
-# Search speakers by name
-curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/speakers/search?name=John"
+All POST with `Content-Type: application/json` unless noted:
+- `GET /speakers/search?name=John` — search by name
+- `GET /speakers/unnamed?limit=20` — unnamed speakers (for labeling)
+- `GET /speakers/similar?speaker_id=29&limit=5` — similar by voice embedding
+- `/speakers/update` `{"id":29,"name":"Jordan"}` — rename/metadata
+- `/speakers/reassign` `{"audio_chunk_id":456,"new_speaker_name":"Jordan","propagate_similar":true}` — returns `new_speaker_id`, `transcriptions_updated`, `old_assignments` (for undo)
+- `/speakers/undo-reassign` `{"old_assignments":[{"transcription_id":1,"old_speaker_id":29}]}`
+- `/speakers/merge` `{"speaker_to_keep_id":5,"speaker_to_merge_id":29}`
+- `/speakers/hallucination` `{"speaker_id":29}` — mark false detection
+- `/speakers/delete` `{"id":29}` — also removes audio chunk files
 
-# Get unnamed speakers (for labeling)
-curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/speakers/unnamed?limit=20&offset=0"
-
-# Get speakers similar to a given speaker (by voice embedding)
-curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/speakers/similar?speaker_id=29&limit=5"
-
-# Update speaker name/metadata
-curl -X POST http://localhost:3030/speakers/update \
-  -H "Content-Type: application/json" \
-  -d '{"id": 29, "name": "Jordan"}'
-
-# Reassign speaker for an audio chunk (propagates to similar chunks by default)
-curl -X POST http://localhost:3030/speakers/reassign \
-  -H "Content-Type: application/json" \
-  -d '{"audio_chunk_id": 456, "new_speaker_name": "Jordan", "propagate_similar": true}'
-# Returns: new_speaker_id, transcriptions_updated, old_assignments (for undo)
-
-# Undo a speaker reassignment
-curl -X POST http://localhost:3030/speakers/undo-reassign \
-  -H "Content-Type: application/json" \
-  -d '{"old_assignments": [{"transcription_id": 1, "old_speaker_id": 29}]}'
-
-# Merge two speakers (keeps one, merges the other into it)
-curl -X POST http://localhost:3030/speakers/merge \
-  -H "Content-Type: application/json" \
-  -d '{"speaker_to_keep_id": 5, "speaker_to_merge_id": 29}'
-
-# Mark speaker as hallucination (false detection)
-curl -X POST http://localhost:3030/speakers/hallucination \
-  -H "Content-Type: application/json" \
-  -d '{"speaker_id": 29}'
-
-# Delete a speaker (also removes associated audio chunk files)
-curl -X POST http://localhost:3030/speakers/delete \
-  -H "Content-Type: application/json" \
-  -d '{"id": 29}'
-```
-
-### Speaker Reassignment Workflow
-
-When the user says "that was actually Jordan, not Karishma":
-1. Search audio results to find the `chunk_id` for the misidentified audio
-2. Call `POST /speakers/reassign` with `audio_chunk_id` and `new_speaker_name`
-3. With `propagate_similar: true` (default), it also fixes similar-sounding chunks
+**"That was actually Jordan, not Karishma":** find the audio result's `chunk_id` → `POST /speakers/reassign` with `audio_chunk_id` + `new_speaker_name`; `propagate_similar:true` (default) also fixes similar chunks.
 
 ---
 
 ## 11. Memories — High-Signal Persistent Knowledge
 
-**Memories are the highest-signal data source in screenpipe.** They contain curated facts, user preferences, decisions, and project context — distilled from hours of screen/audio data. Always check memories when answering questions or building context.
-
-### When to Query Memories
-
-**Query memories FIRST (before or alongside `/search`)** when:
-- The user asks about preferences, decisions, or past context
-- You need background on a project, person, or workflow
-- You're generating a summary, recommendation, or action plan
-- You're unsure about user preferences or past decisions
-- Any task where historical context would improve the output
-
-**Rule: If you're calling `/search`, also call `/memories` in parallel.** Memories provide the "why" behind the raw screen data. Search gives you what happened; memories tell you what matters.
-
-### API
+**Memories are the highest-signal source** — curated facts, preferences, decisions, project context distilled from hours of data. **If you're calling `/search`, also query `/memories`**: search gives you what happened, memories give you what matters and why. Query memories first when answering about preferences/decisions/past context, building background on a project/person/workflow, or generating any summary/recommendation/plan.
 
 ```bash
-# Search memories (FTS) — do this often!
-curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/memories?q=preference&limit=20"
-
-# List recent memories (high importance first)
-curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/memories?min_importance=0.5&limit=20"
-
-# Filter by source or tags
-curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/memories?source=user&tags=project&limit=20"
-
-# Create a memory
-curl -X POST http://localhost:3030/memories \
-  -H "Content-Type: application/json" \
-  -d '{"content": "User prefers dark mode", "source": "user", "tags": ["preference", "ui"], "importance": 0.7}'
-
-# Update a memory
-curl -X PUT http://localhost:3030/memories/1 \
-  -H "Content-Type: application/json" \
-  -d '{"content": "User prefers dark mode in all apps", "importance": 0.8}'
-
-# Delete a memory
-curl -X DELETE http://localhost:3030/memories/1
+curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/memories?q=preference&limit=20"          # FTS search
+curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030/memories?min_importance=0.5&limit=20"    # recent, high importance
+curl -X POST http://localhost:3030/memories -H "Content-Type: application/json" \
+  -d '{"content":"User prefers dark mode","source":"user","tags":["preference","ui"],"importance":0.7}'                   # create
+curl -X PUT http://localhost:3030/memories/1 -H "Content-Type: application/json" -d '{"content":"...","importance":0.8}' # update
+curl -X DELETE http://localhost:3030/memories/1                                                                          # delete
 ```
 
-Parameters for `GET /memories`: `q` (FTS search), `source`, `tags`, `min_importance`, `start_time`, `end_time`, `limit`, `offset`.
-
-`GET /memories` is the direct read (richest filters: `min_importance`, `source`). Memories also come back via `GET /search?content_type=memory` (note: `content_type=all` does NOT include them — ask for `memory` explicitly), which is the path that supports `tags` + `include_related` for tag-linked recall.
-
-### Creating Memories
-
-When you learn something important about the user (preferences, decisions, project context), store it as a memory. Use `importance` 0.0-1.0 to rank signal. Only store genuinely useful long-lived facts, not transient observations.
+`GET /memories` params: `q`, `source`, `tags`, `min_importance`, `start_time`, `end_time`, `limit`, `offset`. Memories also come via `GET /search?content_type=memory` (NOT included in `content_type=all` — ask explicitly), which adds `tags` + `include_related`. When you learn a genuinely useful long-lived fact, store it with `importance` 0.0-1.0 — not transient observations.
 
 ---
 
 ## 12. Notifications — `POST http://localhost:11435/notify`
 
-Send a notification to the screenpipe desktop UI. This uses the Tauri sidecar server (port 11435), **not** the main API (port 3030).
-
-The notification body supports **markdown**: `**bold**`, `` `inline code` ``, and `[link text](url)`. Links can be web URLs, file paths, or screenpipe deeplinks.
+Notify the desktop UI. This is the Tauri sidecar (port **11435**), not the main API. `body` supports markdown (`**bold**`, `` `code` ``, `[text](url)`).
 
 ```bash
-# Simple notification
-curl -X POST http://localhost:11435/notify \
-  -H "Content-Type: application/json" \
-  -d '{"title": "3 new voice memos", "body": "found recordings from today"}'
+curl -X POST http://localhost:11435/notify -H "Content-Type: application/json" \
+  -d '{"title":"3 new voice memos","body":"found recordings from today"}'
 
-# Markdown body with links
-curl -X POST http://localhost:11435/notify \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Meeting summary", "body": "**Q3 Planning** notes saved\n\nopen [meeting notes](~/Documents/notes/q3.md) or view [recording](screenpipe://timeline)"}'
-
-# Link to a local file (absolute path or ~ path)
-curl -X POST http://localhost:11435/notify \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Export complete", "body": "saved to [report.csv](~/Downloads/report.csv)"}'
-
-# With action buttons
-# Use `type: "link"` for external URLs and `type: "deeplink"` for
-# screenpipe:// in-app routes. `type: "dismiss"` closes the notification.
-curl -X POST http://localhost:11435/notify \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Meeting summary", "body": "**Q3 Planning**\n- Budget approved", "actions": [{"id": "view", "label": "view", "type": "deeplink", "url": "screenpipe://timeline"}, {"id": "skip", "label": "skip", "type": "dismiss"}]}'
-
-# External URL action (opens in browser)
-curl -X POST http://localhost:11435/notify \
-  -H "Content-Type: application/json" \
-  -d '{"title": "PR ready for review", "body": "nice work", "actions": [{"id": "open", "label": "open pr", "type": "link", "url": "https://github.com/screenpipe/screenpipe/pull/1234"}]}'
-
-# Custom auto-dismiss (5 seconds)
-curl -X POST http://localhost:11435/notify \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Saved", "body": "Note saved", "timeout": 5000}'
+# Markdown body + action buttons. action types: "link" (web), "deeplink" (screenpipe://), "dismiss".
+curl -X POST http://localhost:11435/notify -H "Content-Type: application/json" \
+  -d '{"title":"Meeting summary","body":"**Q3 Planning** saved\n\nopen [notes](~/Documents/q3.md)","actions":[{"id":"view","label":"view","type":"deeplink","url":"screenpipe://timeline"},{"id":"skip","label":"skip","type":"dismiss"}]}'
 ```
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `title` | string | **Yes** | Notification title |
-| `body` | string | **Yes** | Markdown body (`**bold**`, `` `code` ``, `[text](url)`) |
-| `type` | string | No | Category (default "pipe") |
-| `timeout` | integer | No | Auto-dismiss in ms (default 20000) |
-| `autoDismissMs` | integer | No | Alias for timeout |
-| `actions` | array | No | Action buttons |
-
-**Supported link types in body markdown:**
-- Web URLs: `[docs](https://docs.screenpi.pe)` — opens in browser
-- File paths: `[notes](~/notes/file.md)` or `[log](/var/log/app.log)` — opens in default app
-- Deeplinks: `[timeline](screenpipe://timeline)` — navigates within screenpipe
-
-Returns `{"success": true, "message": "Notification sent successfully"}`.
+Fields: `title`* , `body`* (markdown), `type` (default "pipe"), `timeout`/`autoDismissMs` (ms, default 20000), `actions` (buttons). Body links: web URL → browser, file path (`~/notes.md`, `/var/log/app.log`) → default app, `screenpipe://...` → in-app. Returns `{"success":true}`.
 
 ---
 
 ## 13. Other Endpoints
 
 ```bash
-curl http://localhost:3030/health              # Health check
-curl http://localhost:3030/audio/list           # Audio devices
-curl http://localhost:3030/vision/list          # Monitors
+curl http://localhost:3030/health        # health check
+curl http://localhost:3030/audio/list    # audio devices
+curl http://localhost:3030/vision/list   # monitors
 ```
 
----
+## Deep Links & Videos
 
-## Deep Links
+Reference real moments with clickable links (only IDs/timestamps from actual results — never fabricate):
+- `[10:30 AM — Chrome](screenpipe://frame/12345)` — screen results (use `frame_id`)
+- `[meeting at 3pm](screenpipe://timeline?timestamp=ISO8601)` — audio results (use `timestamp`)
 
-Reference specific moments with clickable links:
-
-```markdown
-[10:30 AM — Chrome](screenpipe://frame/12345)           # screen text results (use frame_id)
-[meeting at 3pm](screenpipe://timeline?timestamp=ISO8601) # Audio results (use timestamp)
-```
-
-Only use IDs/timestamps from actual search results. Never fabricate.
-
-## Showing Videos
-
-Show `file_path` from search results as inline code for playable video:
-```
-`/Users/name/.screenpipe/data/monitor_1_2024-01-15_10-30-00.mp4`
-```
+Show a search result's `file_path` as inline code to make it a playable video: `` `/Users/name/.screenpipe/data/monitor_1_..._10-30-00.mp4` ``.

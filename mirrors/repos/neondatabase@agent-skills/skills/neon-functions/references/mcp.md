@@ -22,7 +22,6 @@ import { contacts } from "./db/schema";
 // One pool per isolate, reused across requests.
 const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 5 });
 const db = drizzle(pool);
-process.on("SIGINT", () => pool.end().then(() => process.exit(0)));
 
 const mcpServer = new McpServer({ name: "contacts", version: "1.0.0" });
 

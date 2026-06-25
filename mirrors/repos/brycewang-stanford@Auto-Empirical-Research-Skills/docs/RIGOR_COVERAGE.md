@@ -9,7 +9,7 @@ What rigor does AERS actually test, per method family? This map joins three laye
 - **Eval scenarios** — methodological-pitfall checks in [`eval-harness/`](../eval-harness/README.md): does a skill flag the known trap?
 - **Benchmark tasks** — numeric recovery checks in [`benchmark/`](../benchmark/README.md): does a pipeline get the right number?
 
-A family is **covered** when it has both an eval scenario and a benchmark task, **partial** when it has one, and a **gap** when skills claim the method but no rigor check targets it. Gaps are listed explicitly below — they are the to-do list, not an omission.
+A family is **covered** when it has both an eval scenario and a benchmark task, **partial** when it has one, **indirect** when a sibling family's checks defend it (see notes), and a **gap** when skills claim the method but no rigor check targets it. Gaps are listed explicitly below — they are the to-do list, not an omission.
 
 ## Coverage by method family
 
@@ -17,33 +17,23 @@ A family is **covered** when it has both an eval scenario and a benchmark task, 
 |---|---:|---|---|---|
 | Instrumental variables (IV / 2SLS) | 28 | `statspai-weak-iv` (critical) | `card-iv-recovery` | covered |
 | Regression discontinuity (RDD) | 26 | `statspai-rdd-diagnostics` (high) | `rdd-recovery` | covered |
-| Difference-in-differences (2x2) | 10 | — | — | gap |
+| Difference-in-differences (2x2) | 10 | — | — | indirect |
 | Staggered DiD / TWFE | 17 | `aer-identification-staggered` (critical)<br>`causal-inference-twfe-trap` (high)<br>`statspai-staggered-did` (critical) | `did-staggered-recovery` | covered |
-| Event study / pre-trends | 10 | `statspai-pretrends-eventstudy` (high) | — | eval only |
-| Panel fixed effects | 19 | — | — | gap |
-| Synthetic control | 11 | — | — | gap |
+| Event study / pre-trends | 10 | `statspai-pretrends-eventstudy` (high) | `event-study-recovery` | covered |
+| Panel fixed effects | 19 | `pyfixest-panel-clustering` (high) | `panel-fe-recovery` | covered |
+| Synthetic control | 11 | `statspai-synthetic-control` (high) | `synthetic-control-recovery` | covered |
 | Matching / propensity scores | 10 | `statspai-matching-overlap` (high) | `lalonde-recovery` | covered |
-| Double/debiased ML | 10 | — | — | gap |
-| Bayesian methods | 13 | — | — | gap |
-| Survival / duration | 3 | — | — | gap |
+| Double/debiased ML | 10 | `statspai-dml-crossfit` (high) | `dml-recovery` | covered |
+| Bayesian methods | 13 | `baygent-bayesian-diagnostics` (high) | `bayesian-recovery` | covered |
+| Survival / duration | 3 | `statspai-survival-assumptions` (high) | `survival-recovery` | covered |
 
 Notes:
 
-- **Difference-in-differences (2x2)** — 2x2 base case; staggered identification is tested under Staggered DiD.
-- **Panel fixed effects** — Clustered-inference check (cross-cutting) applies here.
+- **Difference-in-differences (2x2)** — 2x2 base case; the parallel-trends/pre-trends check lives under Event study, and staggered identification under Staggered DiD.
 
 ## Open gaps (skills exist, rigor check missing)
 
-- **Difference-in-differences (2x2)** — 10 skills tagged, no eval scenario or benchmark task yet.
-- **Panel fixed effects** — 19 skills tagged, no eval scenario or benchmark task yet.
-- **Synthetic control** — 11 skills tagged, no eval scenario or benchmark task yet.
-- **Double/debiased ML** — 10 skills tagged, no eval scenario or benchmark task yet.
-- **Bayesian methods** — 13 skills tagged, no eval scenario or benchmark task yet.
-- **Survival / duration** — 3 skills tagged, no eval scenario or benchmark task yet.
-
-Partially covered (one of two layers):
-
-- **Event study / pre-trends** — eval only.
+- None — every method family with tagged skills has at least one rigor check.
 
 ## Cross-cutting checks (method-agnostic)
 
@@ -60,6 +50,7 @@ Non-method checks that gate the rest of the workflow (writing, citations, reprod
 
 - eval `aer-abstract-100words` (writing-compliance, high) — AER abstract must be compressed to the mandatory 100-word limit
 - eval `aer-replication-package` (reproducibility, high) — Replication package must meet the AEA Data and Code Availability Policy
+- eval `aer-replication-portable-execution` (reproducibility, high) — Replication package must run from a clean checkout without local paths or secrets
 - eval `aer-submission-preflight` (writing-compliance, high) — Submission preflight must catch AER house-style compliance issues
 - eval `aer-tables-figures-housestyle` (writing-compliance, medium) — Regression table + figure must follow AER house style
 - eval `citation-hygiene-no-fake-refs` (citation-hygiene, high) — Literature positioning must not fabricate bibliographic details
@@ -69,4 +60,4 @@ Non-method checks that gate the rest of the workflow (writing, citations, reprod
 
 ---
 
-_18 eval scenarios and 5 benchmark tasks across 11 method families; 4 families fully covered, 6 open gaps. Regenerate with `make catalog`._
+_24 eval scenarios and 11 benchmark tasks across 11 method families; 10 families fully covered, 0 open gaps. Regenerate with `make catalog`._

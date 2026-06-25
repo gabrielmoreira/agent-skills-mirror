@@ -229,46 +229,47 @@ ACP minimal 的"少做"主要是后台 tier 选择（不跑 cron / dreaming / ch
 
 桌面 GUI（child 模式）：
 
-```
-Guardian parent ─ spawn ─▶ Child
-                             ├─ paths::ensure_dirs()                建数据目录
-                             ├─ agent_loader::ensure_default_agent  建默认 agent
-                             ├─ Tauri .manage(init_tauri_app_state())
-                             │   ├─ ha_core::init_runtime()         全部 OnceLock + channel registry + ACP control plane
-                             │   │   └─ AppLogger 线程 spawn writer + cleanup_loop
-                             │   └─ ha_core::build_app_state()      读 OnceLock 装配 AppState
-                             ├─ Tauri .setup()
-                             │   ├─ ha_server::start_server (内嵌 HTTP)
-                             │   ├─ EventBus → app_handle.emit 桥
-                             │   └─ async_runtime::spawn(start_background_tasks)
-                             │       ├─ channel approval / ask_user listener
-                             │       ├─ cron scheduler（独立 OS 线程）
-                             │       ├─ daily 三 retention loops
-                             │       ├─ dreaming idle-trigger
-                             │       ├─ MCP init_global + watchdog
-                             │       └─ ACP backend auto-discover
-                             └─ 进入 Tauri 事件循环
+```mermaid
+flowchart TD
+    GP["Guardian parent"] -->|"spawn"| CHILD["Child（--child-mode）"]
+    CHILD --> P1["paths::ensure_dirs() 建数据目录"]
+    P1 --> P2["agent_loader::ensure_default_agent 建默认 agent"]
+    P2 --> MANAGE["Tauri .manage(init_tauri_app_state())"]
+    MANAGE --> INIT["ha_core::init_runtime()<br/>全部 OnceLock + channel registry + ACP control plane<br/>AppLogger 线程 spawn writer + cleanup_loop"]
+    INIT --> BUILD["ha_core::build_app_state() 读 OnceLock 装配 AppState"]
+    BUILD --> SETUP["Tauri .setup()"]
+    SETUP --> SRV["ha_server::start_server（内嵌 HTTP）"]
+    SETUP --> BRIDGE["EventBus → app_handle.emit 桥"]
+    SETUP --> BG["async_runtime::spawn(start_background_tasks)"]
+    BG --> BG1["channel approval / ask_user listener"]
+    BG --> BG2["cron scheduler（独立 OS 线程）"]
+    BG --> BG3["daily 三 retention loops"]
+    BG --> BG4["dreaming idle-trigger"]
+    BG --> BG5["MCP init_global + watchdog"]
+    BG --> BG6["ACP backend auto-discover"]
+    SETUP --> LOOP["进入 Tauri 事件循环"]
 ```
 
 `hope-agent server`：
 
-```
-paths::ensure_dirs → 可选 cli_onboarding wizard → ensure_default_agent
-  → ha_core::init_runtime()
-  → 自建 multi-thread tokio runtime
-      ├─ tokio::spawn(start_background_tasks)   // 同桌面那一套
-      └─ ha_server::start_server(...).await     // axum HTTP/WS
+```mermaid
+flowchart TD
+    A["paths::ensure_dirs"] --> B["（可选）cli_onboarding wizard"]
+    B --> C["ensure_default_agent"] --> D["ha_core::init_runtime()"]
+    D --> E["自建 multi-thread tokio runtime"]
+    E --> F["tokio::spawn(start_background_tasks)<br/>同桌面那一套"]
+    E --> G["ha_server::start_server(...).await<br/>axum HTTP/WS"]
 ```
 
 `hope-agent acp`：
 
-```
-onboarding hard-fail（未配置则退出码 2）
-  → ha_core::init_runtime()
-  → 旁路 multi-thread tokio runtime（thread_name="acp-bg"）
-      └─ bg_rt.spawn(start_minimal_background_tasks)
-  → 主线程同步跑 acp::server::start (stdin NDJSON 阻塞循环)
-  → ACP 退出 → drop bg_rt → 后台任务取消
+```mermaid
+flowchart TD
+    A["onboarding hard-fail（未配置则退出码 2）"] --> B["ha_core::init_runtime()"]
+    B --> C["旁路 multi-thread tokio runtime（thread_name=acp-bg）"]
+    C --> D["bg_rt.spawn(start_minimal_background_tasks)"]
+    C --> E["主线程同步跑 acp::server::start<br/>stdin NDJSON 阻塞循环"]
+    E --> F["ACP 退出 → drop bg_rt → 后台任务取消"]
 ```
 
 每个 ACP `session/prompt` 在 `run_agent_chat` 内部用 `current_thread` runtime + `block_on` 跑工具循环，与外层旁路 runtime 互不嵌套。

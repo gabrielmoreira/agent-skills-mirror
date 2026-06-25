@@ -119,16 +119,18 @@ crates/ha-core/src/hooks/
 
 **dispatch 流**（`HookDispatcher::dispatch(event, input)`，唯一入口）：
 
-```
-fire 路径 → scopes::any_handlers_for(event, cwd)  // fast-path：无 handler 直接 noop
-  → scopes::resolve_for_cwd(cwd)                  // 全局(user+managed) ∪ project ∪ local，per-cwd 缓存
-  → matcher 过滤（per-event matcher target）
-  → should_run_handler（if 条件 + once 去重）
-  → emit statusMessage（如配置）
-  → 并发执行各 handler（catch_unwind 隔离 panic，per-handler timeout）
-  → parse（exit-code + JSON → HookContribution）
-  → decision::aggregate → HookOutcome
-  → audit（category="hooks"）
+```mermaid
+flowchart TD
+    A["fire 路径 → scopes::any_handlers_for(event, cwd)<br/>fast-path：无 handler 直接 noop"]
+    B["scopes::resolve_for_cwd(cwd)<br/>全局(user+managed) ∪ project ∪ local，per-cwd 缓存"]
+    C["matcher 过滤（per-event matcher target）"]
+    D["should_run_handler（if 条件 + once 去重）"]
+    E["emit statusMessage（如配置）"]
+    F["并发执行各 handler<br/>catch_unwind 隔离 panic，per-handler timeout"]
+    G["parse（exit-code + JSON → HookContribution）"]
+    H["decision::aggregate → HookOutcome"]
+    I["audit（category=hooks）"]
+    A --> B --> C --> D --> E --> F --> G --> H --> I
 ```
 
 **与既有 gate 的关系**：hook 层加在既有 gate **外侧**——先跑 hook，没拦住才走 Plan Mode / Approval / Dangerous 判定。`PostToolUse` 在结果回灌历史**之前**跑。业务代码只读 `HookOutcome`，**严禁 match 具体 handler 类型**。

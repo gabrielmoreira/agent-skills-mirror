@@ -4,6 +4,40 @@
 
 ---
 
+## v0.3.140 / extension v0.3.92 / desktop v0.3.140: 知乎多源接入与插件发现（2026-06-24）
+
+后端源码走 `backend-v0.3.140`，浏览器插件走 `extension-v0.3.92`，桌面安装包走 `desktop-v0.3.140`。
+
+- **新增知乎事件爬取 smoke 链路**：`openbiliclaw fetch-zhihu` 会通过后端 `zhihu_tasks` 队列与浏览器插件前台知乎 tab 拉取最近浏览记录、收藏夹条目和个人动态里的点赞 / 收藏动作。插件会优先用 `/api/v4/me` 自动识别当前知乎用户，`--profile-slug` 仅作为手动覆盖；收藏夹改走当前可用的 favlists API，旧 `/collections/mine` HTML 路径只作为 fallback；动态点赞和动态收藏各自独立使用单分支上限，不共享额度。插件新增知乎 `PlatformAdapter`、content task executor、后台 dispatcher 和 manifest 权限；后端新增 `/api/sources/zhihu/next-task` / `task-result` / `kick`。该命令只转换并打印统一事件计数，不写入 memory、不触发画像初始化或增量画像更新；任务 tab 带 `openbiliclaw_zhihu_task` 标记，content script 在该模式下只运行 executor，不启动普通行为采集，避免 smoke 拉取污染 `/api/events`。
+- **新增知乎搜索 discovery 链路**：`openbiliclaw discover-zhihu <keyword...>` 会入队 `zhihu_tasks(type="search")`，用已登录浏览器插件拉取 `zhihu_search` 候选并写入 `discovery_candidates(pending_eval)`，不写 memory、不触发画像初始化。runtime 新增 `ZhihuDiscoveryProducer`，在 `[sources.zhihu].enabled=true` 且候选池 Zhihu 低于 `[scheduler.pool_source_shares].zhihu` 配额时按统一关键词 planner / 画像 fallback 入队搜索任务；`DiscoveredContent` / 候选池 / source policy / refresh controller / `/api/config` / `/api/sources/status` / 插件设置页 / 桌面 Web 设置页都纳入 `source_platform="zhihu"`。默认保存配比改为 B 站 / 小红书 / 抖音 / YouTube / X / 知乎 = `5 / 1 / 1 / 1 / 1 / 1`，未启用的平台仍不会占 runtime quota。
+- **扩展知乎 discovery 为五路来源**：在搜索之外新增 `hot` / `feed` / `creator` / `related` 任务类型，分别回传 `zhihu_hot` / `zhihu_feed` / `zhihu_creator` / `zhihu_related` 候选并以 `zhihu-hot` / `zhihu-feed` / `zhihu-creator` / `zhihu-related` 写入统一待评估池。CLI 新增 `discover-zhihu-hot` / `discover-zhihu-feed` / `discover-zhihu-creator` / `discover-zhihu-related` 真实插件 smoke 命令；配置新增 `[sources.zhihu].source_modes` 和四个独立 daily budget。
+- **知乎接入正式 discover 与配置页分支开关**：`openbiliclaw discover --source zhihu` 不再只提示跳转 smoke 命令，而是复用 runtime `ZhihuDiscoveryProducer` 按配置的 `source_modes` 入队真实插件任务并接入统一 candidate evaluator。插件 side panel 与桌面 Web 配置页新增 search / hot / feed / creator / related 五个显式勾选项，保存时直接写回 `[sources.zhihu].source_modes`。
+- **知乎推荐卡三端显示补齐**：桌面 Web、移动 Web 与插件 side panel 的推荐卡现在都能按 `source_platform="zhihu"` 显示知乎来源；知乎回答 / 文章 / 问题默认走文字卡，不再在移动 Web 缺链接时误构造 B 站 URL，并为三端补齐知乎来源徽标 / 封面背景样式。
+- **知乎补齐初始化和状态闭环**：CLI、`/setup/`、桌面 Web 和插件初始化 CTA 都新增知乎来源选择；`init --yes-zhihu` 会复用 `zhihu_tasks(type="bootstrap_events")`，把最近浏览 / 收藏夹 / 动态点赞 / 动态收藏转换为首轮画像事件，并持久化 `[sources.zhihu].enabled=true`。`fetch-zhihu` 仍保持独立 smoke，不写 memory；`GET /api/sources/status` 的知乎状态改为根据最近任务结果本地判定 `unverified` / `ready` / `missing` / `partial`，不再固定显示 `no_auth`。`ZhihuDiscoveryProducer` 在 creator / related 没有历史种子时会用同轮 search / hot / feed 返回的作者页和内容 URL 兜底，冷启动也能跑全五个分支。
+- **知乎事件回填补齐 memory / 画像路径**：`fetch-zhihu` 新增 `--write-memory` 和 `--rebuild-profile`。默认仍只做真实插件 smoke；`--write-memory` 会把本次抓到的知乎浏览 / 收藏 / 点赞事件去重后写入 memory，`--rebuild-profile` 隐含写入并触发真实 LLM 画像重建。`/api/sources/zhihu/task-result` 对 payload 显式带 `profile_update=true` 的 `bootstrap_events` 任务会像其它平台一样把新增事件传播到 memory，并在 profile 已存在时进入 `ProfileUpdatePipeline`；普通 smoke 任务保持不污染画像。
+- **知乎来源比例升级兼容**：旧 `config.toml` 若已有 `[scheduler.pool_source_shares]` 但缺少 `zhihu`，配置加载和运行时 source policy 会自动补默认 `zhihu=1`；配置页保存 `pool_source_shares.zhihu` 后，启用知乎时会进入有效平台配比，关闭知乎时仍保留配置值但不占 runtime quota。
+- **画像偏好分析补齐网页长文本拒答兜底**：真实知乎画像重建时发现 DeepSeek 偶发把含长回答摘要的 preference chunk 拒答成非 JSON。`PreferenceAnalyzer` 的 chunked 路径现在先把可恢复的非 JSON 当作重试信号而不是直接 ERROR；单条事件仍失败时会去掉长 `context`，保留 title / URL / source metadata 做一次安全压缩重试，避免整条知乎浏览 / 收藏 / 点赞信号被丢弃。新增回归测试覆盖“原始 context 被拒答、压缩后成功提取兴趣”的场景。
+- **推荐池消费后库存状态实时收敛**：`GET /api/recommendations` 首次从候选池补历史、`/api/recommendations/reshuffle` 和 `/api/recommendations/append` 消费可换内容后，会立即重新读取 runtime 池子口径并广播 `refresh.pool_updated`，避免其它已打开客户端继续显示旧的“可换”数量。插件 side panel 和移动 Web 收到该事件时同步刷新底部可换提示 / 空态文案但不重拉推荐列表；桌面 Web 首屏在推荐 bootstrap 后会再读一次 `/api/runtime-status`，并把左侧标签改为“当前可换库存 / 上次成功补货”，减少“当前库存”和“上一轮补货结果”混读。
+
+## v0.3.139 / extension v0.3.91 / desktop v0.3.139: 更新检查限流兜底与知乎 smoke（2026-06-24）
+
+后端源码走 `backend-v0.3.139`，浏览器插件走 `extension-v0.3.91`，桌面安装包走 `desktop-v0.3.139`。
+
+- **检查更新区分并绕过 GitHub API 限流**：后端自动更新查询 GitHub tags 时会把 REST API quota 耗尽的 403/429 识别出来，并优先用 GitHub tags Atom feed 兜底继续选择 `backend-v*` / `desktop-v*`；兜底也失败时才稳定上报 `github_rate_limited`，不再误报 `github_unreachable`。插件 side panel 和桌面 Web 设置页同步显示「GitHub API 限流，请稍后再试」；安装包模式下插件也会隐藏“立即应用”，改为提示下载新版安装包。
+- **画像整理维护 active 库存上限**：`ProfileConsolidator` 新增 active likes 上限 / 整理水位 / 自动归档配置。画像整理在 active likes 超过上限时不再因 digest 未变 clean-skip，而是临时开 full boundary；合并后仍超上限时，把低权重且非用户保护的长尾兴趣移入 `archived_interests`，后续新信号命中同名同类会自动复活，run record 可整体回滚 active / archived inventory。
+- **超上限时动态放宽合并候选召回**：当 active likes 超过上限时，likes embedding 聚类阈值会按 `upper -> soft` 水位压力逐步从默认 `0.85` 降低，最低默认 `0.75`，让 LLM 看到更多可压缩候选簇；LLM 裁决、canonical 防泛化和归档兜底仍负责防止过度合并。CLI 与 run record 会记录本轮实际 likes 阈值。
+- **画像合并产出代表性 item**：LLM 画像整理的 canonical 不再偏向机械保留某个旧兴趣名；当多个成员分别覆盖合并概念的一部分时，prompt 要求产出更能代表整组的具体 item 名。合并后的 active interest 会把原成员词写入 `aliases`，后续增量偏好命中 alias 时会强化 canonical item 而不是重新长出重复兴趣；同时新增 likes 侧过泛 canonical 拒绝，避免把具体兴趣压成裸大类。
+- **新增知乎事件爬取 smoke 链路**：`openbiliclaw fetch-zhihu` 会通过后端 `zhihu_tasks` 队列与浏览器插件前台知乎 tab 拉取最近浏览记录、收藏夹条目，并可用 `--profile-slug` 补个人动态里的点赞 / 收藏动作。插件新增知乎 `PlatformAdapter`、content task executor、后台 dispatcher 和 manifest 权限；后端新增 `/api/sources/zhihu/next-task` / `task-result` / `kick`。该命令只转换并打印统一事件计数，不写入 memory、不触发画像初始化或增量画像更新，便于先做真实端到端来源验证。
+- **跨平台事件强度进入偏好分析**：统一事件构造会为缺失 `metadata.signal_strength` 的行为补兜底强度，B 站初始化 / 账号同步、小红书、抖音、YouTube、X、知乎等来源都能用同一套“证据强度”语义进入 PreferenceAnalyzer；平台自带的强度值优先保留。偏好分析 prompt 明确 `signal_strength` 不是最终兴趣权重，负向反馈 / dislike / thumbs_down / negative satisfaction 仍优先进入避让或降权。
+- **推荐卡反馈按强信号处理**：推荐卡 `comment` 反馈的 `signal_strength` 从 `0.6` 提到 `0.8`，`dismiss` 从 `0.4` 提到 `0.5`；`like` / `dislike` 继续保持 `1.0`。端到端覆盖 `/api/feedback` -> `MemoryManager` -> SQLite 事件入库，确保真实反馈卡片进入画像链路时带正确强度。
+- **推荐反馈画像学习防并发重放**：`/api/feedback` 现在通过 `FeedbackBatchScheduler` 做 5 秒 debounce / coalesce，burst 内多条反馈只触发一次画像批学习；`SoulEngine.process_feedback_batch_if_needed()` 增加 single-flight 锁，已有批处理运行时不再用旧 cursor 并发重复分析当前全部未处理反馈。反馈批处理改用 `query_events_since()` 按 `id ASC` 读取 cursor 后的全部新增 feedback，避免大积压时 newest-first `limit=500` 跳过较早未处理事件。传给 `PreferenceAnalyzer` 前还会瘦身 feedback 事件 metadata，避免扩展原始 `targetText/raw_context` 等大字段进入 LLM prompt。
+- **偏好分析 chunk 调度分批推进**：`PreferenceAnalyzer` 初始化大批量事件时不再一次性 fan-out 全部 chunk，而是每批最多推进 16 个 chunk，处理完再进入下一批；默认粗分片大小收口为 `DEFAULT_PREFERENCE_EVENT_CHUNK_SIZE=200`，即本地批次最多推进约 3200 条事件后再进入下一批。`LLMService` 默认并发保持不变，避免拉全量历史时产生无界 prompt 任务和等待队列。
+- **补充 PR #69 贡献者致谢**：README 中英文致谢列表新增 [@tangle111-design](https://github.com/tangle111-design)，记录其在 `style_key` 观看模式、推荐语气、B 站初始化和 LLM / 画像流程方面的探索贡献。
+- **X 发现依赖纳入默认安装**：`twitter-cli>=0.8.5` 从可选 extra 提升为默认运行时依赖，普通包安装、AI 默认安装和开发安装都会带上 `twitter_cli` import 包，避免启用 `[sources.twitter]` 后后台 producer 才报 `No module named 'twitter_cli'`。`openbiliclaw[x]` 仍保留为兼容旧脚本的别名。
+- **普通行为事件接入增量画像 pipeline**：`POST /api/events` 现在只把 accepted 的普通浏览器行为事件喂给 `ProfileUpdatePipeline.ingest_batch()`，并在 pipeline ingestion 后通过 `request_replenishment(reason="event_ingest")` 排队补货需求；rejected / not_initialized 事件不进入画像 pipeline。为覆盖旧版本已经落库但停在 discovery 水位后的行为，API 会用独立 `last_profile_pipeline_event_id` 先补喂这批 pending 事件，且不推进 discovery 的 `last_processed_event_id`。这样插件日常捕捉的点击、搜索、收藏等行为不再只落 memory 和 discovery 水位。
+- **补货入口收束到定时 / 手动两类执行路径**：新增 `ContinuousRefreshController.request_replenishment(reason, force=False)` 作为统一入口；普通事件和反馈只记录 reason，等待定时 `refresh_if_needed()` 或用户刷新后的低库存检查统一补货。init-completed、用户手动刷新和推荐刷新后低库存路径使用 `force=True` 触发手动补货，并会消费之前排队的 reason，避免普通事件入口分散直接执行 discovery refresh。
+- **pending 行为信号文案收口**：桌面 Web 和 `/api/activity-feed` 不再把 `pending_signal_events` 显示为“待处理行为信号”，统一改成“已记下 N 个新动作，下一轮补货会拿来参考”。该字段语义明确为 discovery refresh 游标后的新动作数量，不代表画像 pipeline backlog。
+
 ## v0.3.138 / extension v0.3.90 / desktop v0.3.138: macOS Ollama 动态库补齐（2026-06-23）
 
 后端源码走 `backend-v0.3.138`，浏览器插件沿用 `extension-v0.3.90`，桌面安装包走 `desktop-v0.3.138`。

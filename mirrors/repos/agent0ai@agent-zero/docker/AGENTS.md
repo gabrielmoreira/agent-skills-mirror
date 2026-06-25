@@ -31,4 +31,9 @@
 
 ## Child DOX Index
 
-No child DOX files.
+Direct child DOX files:
+
+| Child | Scope |
+| --- | --- |
+| [base/AGENTS.md](base/AGENTS.md) | Base image Dockerfile, copied filesystem, and installation scripts. |
+| [run/AGENTS.md](run/AGENTS.md) | Runnable image Dockerfile, compose example, entrypoints, and install scripts. |

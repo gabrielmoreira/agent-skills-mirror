@@ -56,4 +56,21 @@
 
 ## Child DOX Index
 
-No child DOX files.
+Direct child DOX files:
+
+| Child | Scope |
+| --- | --- |
+| [_examples/AGENTS.md](_examples/AGENTS.md) | Reference component and store examples. |
+| [canvas/AGENTS.md](canvas/AGENTS.md) | Right-canvas component surface and store. |
+| [chat/AGENTS.md](chat/AGENTS.md) | Chat composer, attachments, queue, navigation, and top-section components. |
+| [dropdown/AGENTS.md](dropdown/AGENTS.md) | Shared dropdown component. |
+| [messages/AGENTS.md](messages/AGENTS.md) | Message rendering helpers, action buttons, process groups, and resize behavior. |
+| [modals/AGENTS.md](modals/AGENTS.md) | Modal component workflows loaded through the shared modal stack. |
+| [notifications/AGENTS.md](notifications/AGENTS.md) | Toasts, notification modal, icons, and notification store. |
+| [plugins/AGENTS.md](plugins/AGENTS.md) | Plugin settings, info, list, execution, and toggle components. |
+| [projects/AGENTS.md](projects/AGENTS.md) | Project creation, selection, edit, secrets, model, skill, and file-structure components. |
+| [settings/AGENTS.md](settings/AGENTS.md) | Settings shell and built-in settings subsections. |
+| [sidebar/AGENTS.md](sidebar/AGENTS.md) | Left sidebar layout, chat/task lists, top actions, and preferences. |
+| [sync/AGENTS.md](sync/AGENTS.md) | WebUI sync status component and store. |
+| [tooltips/AGENTS.md](tooltips/AGENTS.md) | Shared tooltip store and behavior. |
+| [welcome/AGENTS.md](welcome/AGENTS.md) | Welcome screen, discovery cards, banners, and welcome state. |

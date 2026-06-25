@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `automateyournetwork/netclaw` — 26 default patterns, 3 followed patterns, 182 file(s) materialized.
+Mirror of `automateyournetwork/netclaw` — 26 default patterns, 3 followed patterns, 186 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `automateyournetwork/netclaw` — 26 default patterns, 3 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 182 |
+| Files         | 186 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -225,24 +225,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 162 | ✓ | [`workspace/skills/terraform-registry/SKILL.md`](workspace/skills/terraform-registry/SKILL.md) |
 | 163 | ✓ | [`workspace/skills/terraform-workspaces/SKILL.md`](workspace/skills/terraform-workspaces/SKILL.md) |
 | 164 | ✓ | [`workspace/skills/token-tracker/SKILL.md`](workspace/skills/token-tracker/SKILL.md) |
-| 165 | ✓ | [`workspace/skills/uml-diagram/SKILL.md`](workspace/skills/uml-diagram/SKILL.md) |
-| 166 | ✓ | [`workspace/skills/vault-mounts/SKILL.md`](workspace/skills/vault-mounts/SKILL.md) |
-| 167 | ✓ | [`workspace/skills/vault-pki/SKILL.md`](workspace/skills/vault-pki/SKILL.md) |
-| 168 | ✓ | [`workspace/skills/vault-secrets/SKILL.md`](workspace/skills/vault-secrets/SKILL.md) |
-| 169 | ✓ | [`workspace/skills/webex-incident-workflow/SKILL.md`](workspace/skills/webex-incident-workflow/SKILL.md) |
-| 170 | ✓ | [`workspace/skills/webex-network-alerts/SKILL.md`](workspace/skills/webex-network-alerts/SKILL.md) |
-| 171 | ✓ | [`workspace/skills/webex-report-delivery/SKILL.md`](workspace/skills/webex-report-delivery/SKILL.md) |
-| 172 | ✓ | [`workspace/skills/webex-user-context/SKILL.md`](workspace/skills/webex-user-context/SKILL.md) |
-| 173 | ✓ | [`workspace/skills/webex-voice-interface/SKILL.md`](workspace/skills/webex-voice-interface/SKILL.md) |
-| 174 | ✓ | [`workspace/skills/wikipedia-research/SKILL.md`](workspace/skills/wikipedia-research/SKILL.md) |
-| 175 | ✓ | [`workspace/skills/zscaler-identity/SKILL.md`](workspace/skills/zscaler-identity/SKILL.md) |
-| 176 | ✓ | [`workspace/skills/zscaler-insights/SKILL.md`](workspace/skills/zscaler-insights/SKILL.md) |
-| 177 | ✓ | [`workspace/skills/zscaler-zdx/SKILL.md`](workspace/skills/zscaler-zdx/SKILL.md) |
-| 178 | ✓ | [`workspace/skills/zscaler-zia/SKILL.md`](workspace/skills/zscaler-zia/SKILL.md) |
-| 179 | ✓ | [`workspace/skills/zscaler-zpa/SKILL.md`](workspace/skills/zscaler-zpa/SKILL.md) |
-| 180 | → | [`docs/DEFENSECLAW.md`](docs/DEFENSECLAW.md) |
-| 181 | → | [`docs/SOUL-DEFENSE.md`](docs/SOUL-DEFENSE.md) |
-| 182 | → | [`docs/UPGRADE-TO-DEFENSECLAW.md`](docs/UPGRADE-TO-DEFENSECLAW.md) |
+| 165 | ✓ | [`workspace/skills/twitter-check/SKILL.md`](workspace/skills/twitter-check/SKILL.md) |
+| 166 | ✓ | [`workspace/skills/twitter-heartbeat/SKILL.md`](workspace/skills/twitter-heartbeat/SKILL.md) |
+| 167 | ✓ | [`workspace/skills/twitter-respond/SKILL.md`](workspace/skills/twitter-respond/SKILL.md) |
+| 168 | ✓ | [`workspace/skills/twitter-share/SKILL.md`](workspace/skills/twitter-share/SKILL.md) |
+| 169 | ✓ | [`workspace/skills/uml-diagram/SKILL.md`](workspace/skills/uml-diagram/SKILL.md) |
+| 170 | ✓ | [`workspace/skills/vault-mounts/SKILL.md`](workspace/skills/vault-mounts/SKILL.md) |
+| 171 | ✓ | [`workspace/skills/vault-pki/SKILL.md`](workspace/skills/vault-pki/SKILL.md) |
+| 172 | ✓ | [`workspace/skills/vault-secrets/SKILL.md`](workspace/skills/vault-secrets/SKILL.md) |
+| 173 | ✓ | [`workspace/skills/webex-incident-workflow/SKILL.md`](workspace/skills/webex-incident-workflow/SKILL.md) |
+| 174 | ✓ | [`workspace/skills/webex-network-alerts/SKILL.md`](workspace/skills/webex-network-alerts/SKILL.md) |
+| 175 | ✓ | [`workspace/skills/webex-report-delivery/SKILL.md`](workspace/skills/webex-report-delivery/SKILL.md) |
+| 176 | ✓ | [`workspace/skills/webex-user-context/SKILL.md`](workspace/skills/webex-user-context/SKILL.md) |
+| 177 | ✓ | [`workspace/skills/webex-voice-interface/SKILL.md`](workspace/skills/webex-voice-interface/SKILL.md) |
+| 178 | ✓ | [`workspace/skills/wikipedia-research/SKILL.md`](workspace/skills/wikipedia-research/SKILL.md) |
+| 179 | ✓ | [`workspace/skills/zscaler-identity/SKILL.md`](workspace/skills/zscaler-identity/SKILL.md) |
+| 180 | ✓ | [`workspace/skills/zscaler-insights/SKILL.md`](workspace/skills/zscaler-insights/SKILL.md) |
+| 181 | ✓ | [`workspace/skills/zscaler-zdx/SKILL.md`](workspace/skills/zscaler-zdx/SKILL.md) |
+| 182 | ✓ | [`workspace/skills/zscaler-zia/SKILL.md`](workspace/skills/zscaler-zia/SKILL.md) |
+| 183 | ✓ | [`workspace/skills/zscaler-zpa/SKILL.md`](workspace/skills/zscaler-zpa/SKILL.md) |
+| 184 | → | [`docs/DEFENSECLAW.md`](docs/DEFENSECLAW.md) |
+| 185 | → | [`docs/SOUL-DEFENSE.md`](docs/SOUL-DEFENSE.md) |
+| 186 | → | [`docs/UPGRADE-TO-DEFENSECLAW.md`](docs/UPGRADE-TO-DEFENSECLAW.md) |
 
 ---
 

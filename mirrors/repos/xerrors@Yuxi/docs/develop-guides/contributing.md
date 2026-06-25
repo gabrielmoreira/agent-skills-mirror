@@ -12,7 +12,7 @@
 
 提交前建议先完成以下检查：
 
-- 搜索已有 [Issues](https://github.com/xerrors/Yuxi/issues) 和 [Discussions](https://github.com/xerrors/Yuxi/discussions)
+- 搜索已有 [Issues](https://github.com/xerrors/Yuxi/issues)
 - 对较大的功能改动，先发 Issue 讨论设计和边界
 - 保持一次 PR 只解决一个明确问题，避免把无关重构混在一起
 
@@ -157,83 +157,19 @@ test: 添加测试
 chore: 构建过程或辅助工具的变动
 ```
 
-## Beta 后临时 dev 分支流程
+## 智能体
 
-当已经打出 beta tag，并决定当前版本不再接收新功能时，`main` 进入 feature freeze：
+如果是 Agent 提交的 PR（如 Claude Code、Codex 等），请在 PR 标题最后添加 🤖 标志。
 
-- `main` 只接收当前版本必要的 bugfix、文档修正、测试补充、版本号和发布配置调整
-- 已开发但不进入当前版本的新功能，不再合入 `main`
-- 从 `main` 创建临时 `dev` 分支，用于接收冻结期间已经完成的新功能
-- 冻结期间，`feature/*` 分支合入 `dev`，不要直接合入 `main`
-- 冻结期间，合入 `main` 的 release bugfix 需要同步到 `dev`，避免正式发布后丢失修复
-- 正式版发布并打 tag 后，再将 `dev` 合回 `main`，然后删除临时 `dev` 分支
+并在 PR 正文中添加
 
-示例流程：
-
-```bash
-# 已经在 main 打出 beta tag 后
-git checkout main
-git checkout -b dev
-
-# 冻结期间：新功能合入 dev，发布修复合入 main
-
-# 正式发布后，将 main 上的发布修复同步到 dev，再合回 main
-git checkout dev
-git merge main
-
-git checkout main
-git merge --no-ff dev
-
-git branch -d dev
 ```
+<details>
+<summary>贡献说明</summary>
 
-这个 `dev` 不是长期分支，只在当前版本 feature freeze 期间作为下一版本的临时集成线。发布完成并回合后，应删除该分支，恢复日常 `feature/* -> main` 的开发方式。
-
-## Bug 修复发布流程
-
-当版本发布后发现 Bug，需要按实际分支状态处理。
-
-### 情况 1：`main` 上没有未完成的新功能
-
-直接在 `main` 修复并发布：
-
-```bash
-git commit -m "fix: resolve config parser crash"
-git tag -a v0.3.1 -m "Hotfix v0.3.1"
-git push origin main --tags
+本 PR 由 [Agent Name] 自动生成，且没有人工干预。
+</details>
 ```
-
-### 情况 2：`main` 上已有未完成的新功能
-
-从上一个 tag 创建 hotfix 分支：
-
-```bash
-git checkout -b hotfix/0.3.1 v0.3.0
-
-# 修复问题
-git commit -m "fix: resolve config parser crash"
-git push origin hotfix/0.3.1
-
-# 测试后合并回 main 并打 tag
-git checkout main
-git merge --no-ff hotfix/0.3.1
-git tag -a v0.3.1 -m "Hotfix v0.3.1"
-git push origin main --tags
-
-# 删除临时分支
-git branch -d hotfix/0.3.1
-git push origin --delete hotfix/0.3.1
-```
-
-## 测试配置
-
-首次运行部分测试前，需要准备测试环境变量：
-
-```bash
-cp test/.env.test.example test/.env.test
-```
-
-如果你的改动涉及认证、知识库、文件系统或智能体流程，建议补充对应集成测试，避免只覆盖单元逻辑。
 
 ## 反馈渠道
 

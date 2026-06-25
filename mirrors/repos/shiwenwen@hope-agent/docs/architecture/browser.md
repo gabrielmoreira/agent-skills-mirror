@@ -21,27 +21,22 @@ control { op: resize|scroll|wait_for|handle_dialog|evaluate|raw_cdp|download_can
 
 ## Backend 架构
 
-```
-┌─────────────────────────────────────────────────────────┐
-│ tools/browser/mod.rs  ←─ 8-action dispatch, URL guard   │
-└────────────────┬────────────────────────────────────────┘
-                 ▼
-        browser::acquire_backend(requirement)
-                 │
-                 ▼
-        backend_select::acquire_backend_with_requirement()
-          ┌──────┴──────────────────────────┐
-          ▼                                 ▼
-  ExtensionBackend                    CdpBackend
-  Chrome extension +                  chromiumoxide
-  Native Messaging Host               managed/user_attach
-          │                                 │
-          ▼                                 ▼
-  user's real Chrome tabs             Hope Agent CDP Chrome
+```mermaid
+flowchart TB
+    MOD["tools/browser/mod.rs<br/>8-action dispatch · URL guard"]
+    ACQ["browser::acquire_backend(requirement)"]
+    SEL["backend_select::acquire_backend_with_requirement()"]
+    EXT["ExtensionBackend<br/>Chrome 扩展 + Native Messaging Host"]
+    CDP["CdpBackend<br/>chromiumoxide · managed / user_attach"]
+    REAL["用户真实 Chrome 标签页"]
+    HOPE["Hope Agent CDP Chrome"]
 
-   observe_buffer ─── ring buffer: console / network / errors
-   frame.rs    ───── BROWSER_FRAME event + capture API
+    MOD --> ACQ --> SEL
+    SEL --> EXT --> REAL
+    SEL --> CDP --> HOPE
 ```
+
+> 跨后端旁路能力：`observe_buffer` 环形缓冲（console / network / errors）与 [`frame.rs`](../../crates/ha-core/src/tools/browser/frame.rs)（`BROWSER_FRAME` event + capture API）。
 
 `backend_select` 按动作要求选择后端：
 
@@ -106,11 +101,13 @@ LLM 看到的是高层 8-action；其底层是一条跨三进程的 native-messa
 
 ### 三进程拓扑
 
-```
-Chrome MV3 service worker ── stdio native messaging ──► ha-browser-host ── socket/pipe/tcp ──► Core broker
-  service_worker.js (SW)        4B LE len + JSON          (Rust 透传中继)      length-prefixed JSON     broker.rs
-  独占 chrome.debugger/tabs/                              decode→re-encode                            backend.rs 驱动 8-action
-  scripting/downloads
+```mermaid
+flowchart LR
+    SW["Chrome MV3 service worker<br/>service_worker.js（SW）<br/>独占 chrome.debugger / tabs / scripting / downloads"]
+    HOST["ha-browser-host<br/>Rust 透传中继<br/>decode → re-encode"]
+    BROKER["Core broker<br/>broker.rs · backend.rs 驱动 8-action"]
+    SW -->|"stdio native messaging<br/>4B LE len + JSON"| HOST
+    HOST -->|"socket / pipe / tcp<br/>length-prefixed JSON"| BROKER
 ```
 
 - **SW 是唯一可拨号 / 重连的一方**：Chrome 与 host 走 stdio，host 与 Core 走 socket/pipe/tcp；**Core 纯粹是 listener/broker，无任何 reconnect / keepalive / heartbeat**，broker 不实现 `heartbeat`/`ping` 方法。（注：扩展层配置 `BrowserExtensionConfig.heartbeat_interval_secs`（默认 15s）目前**未被任何路径消费**——既不 plumb 给 host 也不影响本链路；真正起作用的 heartbeat 属于另一条 CDP/WebSocket backend（[`browser_state.rs`](../../crates/ha-core/src/browser_state.rs)，ping `browser.version()`，默认 120s），与本节的 native-messaging 链路无关。）

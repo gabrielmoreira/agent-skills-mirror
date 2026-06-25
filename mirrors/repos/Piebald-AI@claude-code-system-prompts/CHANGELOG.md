@@ -4,6 +4,19 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.191](https://github.com/Piebald-AI/claude-code-system-prompts/commit/a52517c)
+
+_+59 tokens_
+
+- **NEW:** Agent Prompt: Context tip selector — Adds a selector for deciding when a brief Claude Code feature tip would help, defaulting to silence unless the transcript shows a repeated friction pattern, an eligible matching tip, and a non-interruptive moment.
+- **NEW:** Agent Prompt: Context tip reception evaluator — Adds follow-up evaluation for shown context tips, tracking whether the user acted on the suggested command or feature and whether the reception was positive, neutral, negative, or unknown.
+- **NEW:** Data: Context tip situations (manual polling, persistent memory) — Adds catalog situations for suggesting `/loop` when the user is manually polling status and memory guidance when the user keeps restating durable project context or explicitly asks Claude to remember it.
+- **REMOVED:** Memory prompts and reminders — Removes the standalone memory synthesis/pruning agent prompts, memory-file description and staleness guidance fragments, recalled-memory handling guidance, stale project-memory refresh guidance, and immutable memory extraction/consolidation tool-constraint reminders.
+
+#### [2.1.190](https://github.com/Piebald-AI/claude-code-system-prompts/commit/2c86a14)
+
+<sub>_No changes to the system prompts in v2.1.190._</sub>
+
 # [2.1.187](https://github.com/Piebald-AI/claude-code-system-prompts/commit/f5a21b2)
 
 _+9,726 tokens_

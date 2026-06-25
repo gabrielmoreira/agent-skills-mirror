@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dbt-labs/dbt-agent-skills` — 26 default patterns, 0 followed patterns, 64 file(s) materialized.
+Mirror of `dbt-labs/dbt-agent-skills` — 26 default patterns, 0 followed patterns, 65 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dbt-labs/dbt-agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 64 |
+| Files         | 65 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -118,11 +118,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 57 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/references/writing-documentation.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/references/writing-documentation.md) |
 | 58 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/scripts/review_run_results.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/scripts/review_run_results.md) |
 | 59 | ✓ | [`skills/dbt/skills/using-dbt-for-analytics-engineering/SKILL.md`](skills/dbt/skills/using-dbt-for-analytics-engineering/SKILL.md) |
-| 60 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/cross-project-collaboration.md`](skills/dbt/skills/working-with-dbt-mesh/references/cross-project-collaboration.md) |
-| 61 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/groups-and-access.md`](skills/dbt/skills/working-with-dbt-mesh/references/groups-and-access.md) |
-| 62 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/model-contracts.md`](skills/dbt/skills/working-with-dbt-mesh/references/model-contracts.md) |
-| 63 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/model-versions.md`](skills/dbt/skills/working-with-dbt-mesh/references/model-versions.md) |
-| 64 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/SKILL.md`](skills/dbt/skills/working-with-dbt-mesh/SKILL.md) |
+| 60 | ✓ | [`skills/dbt/skills/using-dbt-state/SKILL.md`](skills/dbt/skills/using-dbt-state/SKILL.md) |
+| 61 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/cross-project-collaboration.md`](skills/dbt/skills/working-with-dbt-mesh/references/cross-project-collaboration.md) |
+| 62 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/groups-and-access.md`](skills/dbt/skills/working-with-dbt-mesh/references/groups-and-access.md) |
+| 63 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/model-contracts.md`](skills/dbt/skills/working-with-dbt-mesh/references/model-contracts.md) |
+| 64 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/references/model-versions.md`](skills/dbt/skills/working-with-dbt-mesh/references/model-versions.md) |
+| 65 | ✓ | [`skills/dbt/skills/working-with-dbt-mesh/SKILL.md`](skills/dbt/skills/working-with-dbt-mesh/SKILL.md) |
 
 ---
 

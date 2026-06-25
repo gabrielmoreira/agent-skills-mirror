@@ -47,7 +47,7 @@ if os.name == "nt":
 SCRIPT_DIR = Path(__file__).parent.resolve()
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from lib import dates, env, html_render, pipeline, render, schema, ui
+from lib import dates, env, html_render, permission_preflight, pipeline, render, schema, ui
 
 _child_pids: set[int] = set()
 _child_pids_lock = threading.Lock()
@@ -293,6 +293,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--debug", action="store_true", help="Enable HTTP debug logging")
     parser.add_argument("--mock", action="store_true", help="Use mock retrieval fixtures")
     parser.add_argument("--diagnose", action="store_true", help="Print provider and source availability")
+    parser.add_argument("--preflight", action="store_true",
+                        help="Print a safe human-readable permission preflight")
+    parser.add_argument("--preflight-report-on-save-dir", help=argparse.SUPPRESS)
+    parser.add_argument("--no-browser-cookies", action="store_true",
+                        help="Disable browser-cookie extraction even when FROM_BROWSER is configured")
     parser.add_argument("--save-dir", help="Optional directory for saving the rendered output")
     parser.add_argument("--output", help="Optional exact file path for saving the rendered output")
     parser.add_argument("--synthesis-file", help="Markdown synthesis to embed in --emit=html output")
@@ -600,7 +605,50 @@ def _show_runtime_ui(
         progress.show_promo(promo, diag=diag)
 
 
-def _write_last_run(topic: str, report: "schema.Report") -> None:
+REPORT_CACHE_VERSION = "last30days-report-cache/v1"
+DEFAULT_REPORT_CACHE_TTL_SECONDS = 3600
+
+
+def _last_report_cache_path() -> Path | None:
+    if env.CONFIG_DIR is None:
+        return None
+    return env.CONFIG_DIR / "last-report.json"
+
+
+def _report_cache_ttl_seconds(config: dict[str, object]) -> int:
+    raw = os.environ.get("LAST30DAYS_REPORT_CACHE_TTL_SECONDS")
+    if raw is None:
+        raw = config.get("LAST30DAYS_REPORT_CACHE_TTL_SECONDS")
+    if raw is None or raw == "":
+        return DEFAULT_REPORT_CACHE_TTL_SECONDS
+    try:
+        return max(0, int(raw))
+    except (TypeError, ValueError):
+        return DEFAULT_REPORT_CACHE_TTL_SECONDS
+
+
+def _is_report_cache_fresh(timestamp: object, ttl_seconds: int) -> bool:
+    if ttl_seconds <= 0:
+        return False
+    if not isinstance(timestamp, str) or not timestamp:
+        return False
+    try:
+        created_at = datetime.datetime.fromisoformat(timestamp)
+    except ValueError:
+        return False
+    if created_at.tzinfo is None:
+        created_at = created_at.replace(tzinfo=datetime.timezone.utc)
+    age = datetime.datetime.now(datetime.timezone.utc) - created_at.astimezone(
+        datetime.timezone.utc
+    )
+    return age.total_seconds() <= ttl_seconds
+
+
+def _write_last_run(
+    topic: str,
+    report: "schema.Report",
+    entity_reports: list[tuple[str, schema.Report]] | None = None,
+) -> None:
     try:
         if env.CONFIG_DIR is None:
             return
@@ -612,13 +660,139 @@ def _write_last_run(topic: str, report: "schema.Report") -> None:
             "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "sources": counts,
             "total": sum(counts.values()),
+            "report_cache": str(target / "last-report.json"),
+            "comparison": bool(entity_reports),
         }
         (target / "last-run.json").write_text(json.dumps(payload, indent=2))
+        cached_reports = entity_reports or [(report.topic, report)]
+        cache_payload = {
+            "schema": REPORT_CACHE_VERSION,
+            "topic": topic,
+            "timestamp": payload["timestamp"],
+            "comparison": bool(entity_reports),
+            "reports": [
+                {"entity": label, "report": schema.to_dict(cached_report)}
+                for label, cached_report in cached_reports
+            ],
+        }
+        (target / "last-report.json").write_text(json.dumps(cache_payload, indent=2))
     except Exception:
         pass
 
 
-def _propagate_config_to_environ() -> None:
+def _load_last_report_cache(
+    topic: str,
+    ttl_seconds: int = DEFAULT_REPORT_CACHE_TTL_SECONDS,
+) -> tuple[schema.Report, list[tuple[str, schema.Report]] | None, Path] | None:
+    cache_path = _last_report_cache_path()
+    if cache_path is None or not cache_path.exists():
+        return None
+    try:
+        payload = json.loads(cache_path.read_text(encoding="utf-8"))
+        if payload.get("schema") != REPORT_CACHE_VERSION:
+            return None
+        if not _is_report_cache_fresh(payload.get("timestamp"), ttl_seconds):
+            return None
+        cached_topic = str(payload.get("topic") or "").strip().lower()
+        if cached_topic != topic.strip().lower():
+            return None
+        reports_payload = payload.get("reports") or []
+        if not reports_payload:
+            return None
+        entity_reports = [
+            (str(item.get("entity") or ""), schema.report_from_dict(item["report"]))
+            for item in reports_payload
+            if isinstance(item, dict) and isinstance(item.get("report"), dict)
+        ]
+        if not entity_reports:
+            return None
+        if payload.get("comparison"):
+            if len(entity_reports) < 2:
+                return None
+            if len(entity_reports) != len(reports_payload):
+                return None
+            return entity_reports[0][1], entity_reports, cache_path
+        return entity_reports[0][1], None, cache_path
+    except Exception:
+        return None
+
+
+def _render_save_and_print(
+    args: argparse.Namespace,
+    report: schema.Report,
+    entity_reports: list[tuple[str, schema.Report]] | None,
+    synthesis_md: str | None,
+    config: dict[str, object],
+) -> int:
+    fun_level = str(config.get("FUN_LEVEL", "medium")).lower()
+    # Comparison HTML is the one case where the saved file's title and content
+    # have to be overridden away from the leading entity's report. Compute the
+    # gate once so the footer-display and save-output paths can't disagree.
+    is_comparison_html = bool(entity_reports) and args.emit == "html"
+    footer_save_path = None
+    if args.output:
+        footer_save_path = compute_output_path_display(args.output)
+    elif args.save_dir:
+        save_topic_for_display = comparison_topic(entity_reports) if is_comparison_html else report.topic
+        footer_save_path = compute_save_path_display(
+            args.save_dir, save_topic_for_display, args.save_suffix or "", args.emit
+        )
+
+    if entity_reports:
+        rendered = emit_comparison_output(
+            entity_reports,
+            args.emit,
+            fun_level=fun_level,
+            save_path=footer_save_path,
+            synthesis_md=synthesis_md,
+        )
+    else:
+        rendered = emit_output(
+            report,
+            args.emit,
+            fun_level=fun_level,
+            save_path=footer_save_path,
+            synthesis_md=synthesis_md,
+        )
+    if args.output:
+        output_path = save_rendered_output(rendered, args.output)
+        sys.stderr.write(f"[last30days] Saved output to {output_path}\n")
+        sys.stderr.flush()
+    if args.save_dir:
+        # Save the main topic's raw file (single-entity or comparison main).
+        save_path = save_output(
+            report,
+            args.emit,
+            args.save_dir,
+            suffix=args.save_suffix or "",
+            synthesis_md=synthesis_md,
+            topic_override=comparison_topic(entity_reports) if is_comparison_html else None,
+            rendered_content=rendered if is_comparison_html else None,
+        )
+        sys.stderr.write(f"[last30days] Saved output to {save_path}\n")
+        comparison_peer_paths: list[Path] = []
+        # Competitor / vs-mode: also save a per-entity raw file for each peer.
+        # Matches historical vs-mode behavior (N passes -> N save files).
+        if entity_reports and len(entity_reports) > 1:
+            for label, entity_report in entity_reports[1:]:
+                peer_path = save_output(
+                    entity_report, args.emit, args.save_dir,
+                    suffix=args.save_suffix or "",
+                    synthesis_md=synthesis_md,
+                )
+                comparison_peer_paths.append(peer_path)
+                sys.stderr.write(f"[last30days] Saved output to {peer_path}\n")
+            peers_display = ", ".join(str(path) for path in comparison_peer_paths)
+            sys.stderr.write(
+                f"[last30days] Comparison artifact set: main={save_path}; "
+                f"peers={peers_display}\n"
+            )
+        sys.stderr.flush()
+    print(rendered)
+    return 0
+
+
+def _propagate_config_to_environ(config: dict[str, object]) -> None:
     """Push relevant env keys to os.environ so provider modules can read them.
 
     The env.get_config() function reads from a .env file, but providers.py
@@ -626,17 +800,72 @@ def _propagate_config_to_environ() -> None:
     XAI_BASE_URL overrides are silently ignored. This is a no-op for
     keys that are already set in process env.
     """
-    try:
-        config = env.get_config()
-    except Exception:
-        return
     for key in ("OPENAI_BASE_URL", "XAI_BASE_URL"):
         val = config.get(key)
         if val and not os.environ.get(key):
             os.environ[key] = val
 
 
-_propagate_config_to_environ()
+def _setup_allows_browser_cookies(args: argparse.Namespace, extra_argv: list[str]) -> bool:
+    return (
+        not args.no_browser_cookies
+        and not args.diagnose
+        and not args.preflight
+        and "--allow-browser-cookies" in extra_argv
+    )
+
+
+SETUP_PASSTHROUGH_FLAGS = {
+    "--allow-browser-cookies",
+    "--device-auth",
+    "--github",
+    "--openclaw",
+}
+
+SKILL_ONLY_FLAGS = {
+    "--agent",
+}
+
+
+def _validate_extra_argv(parser: argparse.ArgumentParser, topic: str, extra_argv: list[str]) -> None:
+    if not extra_argv:
+        return
+    if topic.lower() == "setup":
+        unsupported = [arg for arg in extra_argv if arg not in SETUP_PASSTHROUGH_FLAGS]
+        if unsupported:
+            parser.error(
+                "unsupported setup argument(s): "
+                + ", ".join(unsupported)
+                + f"; supported setup passthrough flags are {', '.join(sorted(SETUP_PASSTHROUGH_FLAGS))}"
+            )
+        return
+    skill_only = [arg for arg in extra_argv if arg in SKILL_ONLY_FLAGS]
+    other_unknown = [arg for arg in extra_argv if arg not in SKILL_ONLY_FLAGS]
+    if skill_only:
+        message = (
+            "unsupported Python CLI argument(s): "
+            + ", ".join(skill_only)
+            + "; these are skill arguments and must not be forwarded to scripts/last30days.py"
+        )
+        if other_unknown:
+            message += "; also unsupported: " + ", ".join(other_unknown)
+        parser.error(message)
+    parser.error("unsupported Python CLI argument(s): " + ", ".join(extra_argv))
+
+
+def _config_policy_for_args(args: argparse.Namespace, topic: str, extra_argv: list[str]) -> env.ConfigLoadPolicy:
+    if args.no_browser_cookies:
+        browser_mode = "off"
+    elif args.diagnose or args.preflight:
+        browser_mode = "plan_only"
+    elif topic.lower() == "setup":
+        browser_mode = "read" if _setup_allows_browser_cookies(args, extra_argv) else "off"
+    else:
+        browser_mode = "read"
+    return env.ConfigLoadPolicy(
+        browser_cookies=browser_mode,
+        inspect_ignored_project_config=args.diagnose or args.preflight,
+    )
 
 
 def main() -> int:
@@ -647,7 +876,11 @@ def main() -> int:
     if args.debug:
         os.environ["LAST30DAYS_DEBUG"] = "1"
 
-    config = env.get_config()
+    topic = " ".join(args.topic).strip()
+    original_topic = topic
+    _validate_extra_argv(parser, topic, extra_argv)
+    config = env.get_config(policy=_config_policy_for_args(args, topic, extra_argv))
+    _propagate_config_to_environ(config)
 
     # Env-var fallback for --save-dir, mirroring the LAST30DAYS_STORE pattern below.
     # Uses `is None` / `is not None` checks (not truthy `or`) at every layer so that
@@ -665,8 +898,25 @@ def main() -> int:
     if config.get("LAST30DAYS_YOUTUBE_SSH_HOST") and "LAST30DAYS_YOUTUBE_SSH_HOST" not in os.environ:
         os.environ["LAST30DAYS_YOUTUBE_SSH_HOST"] = config["LAST30DAYS_YOUTUBE_SSH_HOST"]
 
+    if args.preflight:
+        requested_sources = resolve_requested_sources(args.search, config)
+        diag = pipeline.diagnose(config, requested_sources, safe=True)
+        if args.save_dir or args.preflight_report_on_save_dir:
+            preflight = permission_preflight.build(
+                config,
+                diag,
+                planned_save_dir=args.save_dir,
+                report_on_save_dir=args.preflight_report_on_save_dir,
+            )
+        else:
+            preflight = diag["permission_preflight"]
+        if args.emit == "json":
+            print(json.dumps(preflight, indent=2, sort_keys=True))
+        else:
+            print(permission_preflight.render_text(preflight), end="")
+        return 0
+
     # Handle setup subcommand
-    topic = " ".join(args.topic).strip()
     if topic.lower() == "setup":
         from lib import setup_wizard
         if "--openclaw" in extra_argv:
@@ -690,14 +940,17 @@ def main() -> int:
             print(json.dumps(results))
             return 0
         sys.stderr.write("Running auto-setup...\n")
-        results = setup_wizard.run_auto_setup(config)
+        results = setup_wizard.run_auto_setup(
+            config,
+            allow_browser_cookies=_setup_allows_browser_cookies(args, extra_argv),
+        )
         # Persist FROM_BROWSER only when every service's cookies came from the
         # SAME single browser — then we can fast-path future runs to it. If
         # different services matched different browsers, or none matched, leave
-        # FROM_BROWSER unset: the safe default (Firefox/Safari) then covers all
-        # of them with no Keychain prompt. We deliberately do NOT pin "auto"
-        # here (it would re-probe Chrome and re-trigger the prompt) nor a single
-        # browser (it would silently skip the service that used the other one).
+        # FROM_BROWSER unset so the safe default remains no browser-cookie
+        # reads. We deliberately do NOT pin "auto" here (it would re-probe
+        # Chrome and re-trigger the prompt) nor a single browser (it would
+        # silently skip the service that used the other one).
         found_browsers = set(results.get("cookies_found", {}).values())
         from_browser = found_browsers.pop() if len(found_browsers) == 1 else None
         setup_wizard.write_setup_config(env.CONFIG_FILE, from_browser=from_browser)
@@ -706,7 +959,7 @@ def main() -> int:
         return 0
 
     requested_sources = resolve_requested_sources(args.search, config)
-    diag = pipeline.diagnose(config, requested_sources)
+    diag = pipeline.diagnose(config, requested_sources, safe=args.diagnose)
 
     if args.diagnose:
         print(json.dumps(diag, indent=2, sort_keys=True))
@@ -729,6 +982,26 @@ def main() -> int:
         if refuse_msg:
             sys.stderr.write(refuse_msg)
             return 2
+
+    if args.emit == "html" and synthesis_md is not None:
+        cached = _load_last_report_cache(
+            topic,
+            ttl_seconds=_report_cache_ttl_seconds(config),
+        )
+        if cached is not None:
+            cached_report, cached_entity_reports, cache_path = cached
+            sys.stderr.write(
+                f"[last30days] Reusing cached report data from {cache_path}\n"
+            )
+            sys.stderr.flush()
+            return _render_save_and_print(
+                args, cached_report, cached_entity_reports, synthesis_md, config
+            )
+        sys.stderr.write(
+            "[last30days] No matching cached report data for "
+            "--emit=html --synthesis-file; running fresh research.\n"
+        )
+        sys.stderr.flush()
 
     progress = ui.ProgressDisplay(topic, show_banner=True)
     progress.start_processing()
@@ -755,6 +1028,10 @@ def main() -> int:
                 external_plan = _json.loads(plan_str)
             except _json.JSONDecodeError as exc:
                 sys.stderr.write(f"[Planner] Invalid --plan JSON: {exc}\n")
+                # Fail fast instead of silently dropping to the internal planner
+                # and burning a paid run the user did not ask for. Mirrors the
+                # --plan file-read branch above and parse_competitors_plan.
+                raise SystemExit(2)
 
         # Auto-resolve: use web search to discover subreddits/handles before planning.
         # This is the engine-side equivalent of SKILL.md Steps 0.55/0.75 for platforms
@@ -1027,7 +1304,7 @@ def main() -> int:
         report, progress, diag,
         suppress_web_promo=bool(external_plan or comp_plan),
     )
-    _write_last_run(topic, report)
+    _write_last_run(original_topic, report, entity_reports=entity_reports)
     # LAST30DAYS_STORE env var = persistence default-on. Read both os.environ
     # (for shell-exported users) and config (for users who set it in
     # ~/.config/last30days/.env, which env.py loads but does not propagate
@@ -1091,20 +1368,6 @@ def main() -> int:
         except Exception:
             pass
 
-    fun_level = config.get("FUN_LEVEL", "medium").lower()
-    # Comparison HTML is the one case where the saved file's title and content
-    # have to be overridden away from the leading entity's report. Compute the
-    # gate once so the footer-display and save-output paths can't disagree.
-    is_comparison_html = bool(entity_reports) and args.emit == "html"
-    footer_save_path = None
-    if args.output:
-        footer_save_path = compute_output_path_display(args.output)
-    elif args.save_dir:
-        save_topic_for_display = comparison_topic(entity_reports) if is_comparison_html else report.topic
-        footer_save_path = compute_save_path_display(
-            args.save_dir, save_topic_for_display, args.save_suffix or "", args.emit
-        )
-
     # Signal to render_compact whether pre-research flags were supplied.
     # Used to emit a Pre-Research Status warning when the model skipped
     # Step 0.5 / 0.55 and invoked the engine bare on an eligible topic.
@@ -1119,51 +1382,7 @@ def main() -> int:
     )
     report.artifacts["pre_research_flags_present"] = pre_research_flags_present
 
-    if entity_reports:
-        rendered = emit_comparison_output(
-            entity_reports,
-            args.emit,
-            fun_level=fun_level,
-            save_path=footer_save_path,
-            synthesis_md=synthesis_md,
-        )
-    else:
-        rendered = emit_output(
-            report,
-            args.emit,
-            fun_level=fun_level,
-            save_path=footer_save_path,
-            synthesis_md=synthesis_md,
-        )
-    if args.output:
-        output_path = save_rendered_output(rendered, args.output)
-        sys.stderr.write(f"[last30days] Saved output to {output_path}\n")
-        sys.stderr.flush()
-    if args.save_dir:
-        # Save the main topic's raw file (single-entity or comparison main).
-        save_path = save_output(
-            report,
-            args.emit,
-            args.save_dir,
-            suffix=args.save_suffix or "",
-            synthesis_md=synthesis_md,
-            topic_override=comparison_topic(entity_reports) if is_comparison_html else None,
-            rendered_content=rendered if is_comparison_html else None,
-        )
-        sys.stderr.write(f"[last30days] Saved output to {save_path}\n")
-        # Competitor / vs-mode: also save a per-entity raw file for each peer.
-        # Matches historical vs-mode behavior (N passes → N save files).
-        if entity_reports and len(entity_reports) > 1:
-            for label, entity_report in entity_reports[1:]:
-                peer_path = save_output(
-                    entity_report, args.emit, args.save_dir,
-                    suffix=args.save_suffix or "",
-                    synthesis_md=synthesis_md,
-                )
-                sys.stderr.write(f"[last30days] Saved output to {peer_path}\n")
-        sys.stderr.flush()
-    print(rendered)
-    return 0
+    return _render_save_and_print(args, report, entity_reports, synthesis_md, config)
 
 
 if __name__ == "__main__":

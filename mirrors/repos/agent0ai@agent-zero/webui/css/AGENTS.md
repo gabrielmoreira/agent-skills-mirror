@@ -10,6 +10,7 @@
 - Each CSS file owns a named surface or primitive family such as buttons, messages, modals, notifications, scheduler, settings, surfaces, tables, or toast.
 - Component-specific styles should usually stay inside the component HTML unless they are intentionally shared.
 - `modals.css` owns the shared stacked modal shell, backdrop, scroll area, footer slot, modal button classes, floating/no-backdrop modal behavior, and shared modal section primitives.
+- `surfaces.css` owns surface modal switchers, action rails, draggable header affordances, focus-button state, and right-canvas surface primitives.
 - `index.css` defines global theme variables such as `--color-*`, `--spacing-*`, `--font-size-*`, and `--transition-speed`.
 
 ## Local Contracts
@@ -18,12 +19,14 @@
 - Avoid broad selectors that unexpectedly restyle plugin UI or unrelated components.
 - Keep layout rules responsive and verify text does not overflow fixed controls.
 - Shared modal buttons use `btn btn-ok` for positive actions and `btn btn-cancel` for dismissive or negative actions.
+- Shared compact text actions use `.text-button`; component-local styles may adjust layout or sizing but must not be the only definition of the primitive.
 - Modal footer action order is positive action first, dismissive or negative action second.
 - Modal footers use `.modal-footer` plus `data-modal-footer`; do not redefine `.btn`, `.modal-footer`, `.modal-inner`, or `.modal-scroll` inside components.
 - Shared modal sizing keeps `.modal-inner` centered with `width: 90%`, `max-width: 960px`, and `max-height: 90vh`.
 - Tall modal bodies must scroll inside `.modal-scroll`; pinned footer content must stay outside that scroll area.
 - `.modal-floating` must keep the full-screen shell pointer-transparent while `.modal-inner` remains pointer-active.
 - Use `.modal-no-backdrop` only for backdrop suppression without click-through floating behavior.
+- Shared modal layers must stay above the mobile right-canvas rail while confirmation dialogs remain above normal modals.
 - Do not add decorative one-note palette changes that conflict with existing WebUI design.
 
 ## Work Guidance

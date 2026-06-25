@@ -27,12 +27,14 @@
 
 **和 AI 的双向桥**（区别于纯手动 PKM 的核心）：
 
-```
-                ┌──────────────── 写入桥 ────────────────┐
-   对话 ──► Memory（碎片）──► Dreaming 提炼 ──► 知识库笔记（MOC / 可读层）
-                                                    │
-                ┌──────────────── 读取桥 ────────────┘
-   agent ◄── 召回 ◄── FTS5 + 向量索引 + 双链图谱 ◄── 笔记
+```mermaid
+flowchart LR
+    CHAT["对话"] -->|"写入桥"| MEM["Memory（碎片）"]
+    MEM --> DREAM["Dreaming 提炼"]
+    DREAM --> NOTE["知识库笔记<br/>MOC / 可读层"]
+    NOTE -->|"读取桥"| IDX["FTS5 + 向量索引 + 双链图谱"]
+    IDX --> RECALL["召回"]
+    RECALL --> AGENT["agent"]
 ```
 
 读取桥三通道：① 用户消息 `[[note]]` 确定性注入；② agent 主动调 `note_search` / `knowledge_recall`；③ 被动「相关笔记标题」提示（opt-in 默认关）。三者都套 `<untrusted_external_data>` 信封，永不提升为 system 指令（#7）。
