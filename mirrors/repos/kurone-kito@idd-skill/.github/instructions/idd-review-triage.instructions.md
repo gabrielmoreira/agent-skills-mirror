@@ -112,7 +112,14 @@ For each Rejected PATH A item whose source is reviewer feedback:
   `**Awaiting maintainer decision** — {your reasoning}` and wait for the
   maintainer's response.
 - After posting your reply, **immediately resolve the thread** — except
-  when the reply is `**Awaiting maintainer decision**`. Resolving means
+  when the reply is `**Awaiting maintainer decision**`. When helper runtime
+  is enabled, the profile-selected resolve-review-thread command
+  (`--pr <number> --comment-id <id> --apply`, with `--body` /
+  `--claim-issue` / `--claim-id`; see `docs/idd-helper-scripts.md`) posts the
+  reply and resolves the thread in one call — dry-run without `--apply`,
+  replying before resolving so a failed reply never leaves a
+  silently-resolved thread; the manual REST reply + GraphQL
+  `resolveReviewThread` sequence stays the fallback. Resolving means
   "agent has acted (fixed or definitively rejected)", not "reviewer has
   agreed". If the reviewer disagrees with a regular rejection, they can
   reopen the thread and add a reply, which will re-surface it in a
@@ -214,6 +221,21 @@ Use these prefixes so that disposition is always unambiguous:
 - CODEOWNER / required reviewer exception:
   `**Awaiting maintainer decision** — {reasoning}`
 
+Two requirements make the F2/F3 disposition-evidence gate recognize an
+`**Accepted**` / `**Rejected**` disposition — it reads `isDispositionComment`
+as "the body **starts with** that marker" and pairs such dispositions to
+advisory comments **1:1 by count** (the `**Awaiting maintainer decision**`
+marker is a separate PATH A thread signal, not part of this predicate or
+count pairing):
+
+- The marker must be the **first bytes of the comment body** — no heading,
+  block quote, or preamble before it, or the gate counts zero dispositions for
+  that comment.
+- Post **one disposition reply per advisory item**. Do **not** combine several
+  markers into one comment: the 1:1 count pairing clears only one item per
+  comment, so a combined reply leaves the rest flagged
+  `missing-disposition-evidence`.
+
 PATH B — Advisory items (completed review of the current HEAD):
 
 - Reply immediately with a decision marker, even when no code change is
@@ -237,11 +259,20 @@ ack / error, as defined in E4):
   prove that no review exists — if a separate _completed_ review of the
   current HEAD is also present, disposition that review under the
   completed-review rules above.)
+- **Helper-first (optional).** When helper runtime is enabled, the
+  `disposition-non-review-notices` helper (see
+  `docs/idd-helper-scripts.md`) detects these notices and emits (dry-run)
+  or posts (`--apply`) the canonical disposition below — marker-first, one
+  per notice, idempotently and fail-closed. The written rule here stays
+  authoritative; the manual `gh api` path is the fallback.
 - **Disposition it deterministically in the current pass — no
   re-request, no wait.** The notice item itself is **always rejected**,
   because it carries no advisory result — never record `**Accepted**` on
   the notice: `**Rejected** — {bot} did not review HEAD {sha}
-  ({reason}); this is not a completed review`. A separate _completed_
+  ({reason}); this is not a completed review`. Write `{bot}` as the bot's
+  **GitHub login** (e.g. `coderabbitai[bot]`, `chatgpt-codex-connector[bot]`)
+  so the carry-forward below can attribute the rejection to exactly that bot
+  when several advisory bots are configured. A separate _completed_
   review of the current HEAD, if one is present, is a **distinct**
   ReviewItems_snapshot item dispositioned `**Accepted**` under the
   completed-review rules above — accept that review, not the notice.
@@ -252,6 +283,20 @@ ack / error, as defined in E4):
   review out of the next pass. This
   keeps the disposition vocabulary unchanged for the E7 verifier and the
   F2/F3 gates, and never leaves the item pending across snapshots.
+- **Carry the rejection forward across pushes — do not re-disposition an
+  unchanged notice.** Once a non-review notice carries its `**Rejected** —
+  {bot} did not review HEAD …` reply, that disposition **persists across later
+  HEAD changes** while the same notice persists and the bot still has not
+  reviewed any HEAD. A review-fix push that bumps the notice's `updatedAt` (or a
+  re-posted identical rate-limit / usage-limit summary) does **not** require a
+  fresh identical rejection: the F2/F3 disposition-evidence gate carries the
+  existing rejection forward. The carry-forward is **scoped to the bot the
+  rejection names** (by GitHub login), so a rejection of one advisory bot's
+  notice never clears another bot's still-undispositioned notice. Re-disposition
+  **only** when the bot replaces the notice with an actual completed review of
+  the current HEAD — disposition that review under the completed-review rules
+  above (the carry-forward no longer applies to a notice that became a real
+  review).
 - **Do not auto-request a fresh review from triage** to "upgrade" a
   non-review notice. Triggering a new review is a separate concern:
   Copilot advisory state is owned solely by the advisory-wait protocol
@@ -381,8 +426,25 @@ Route based on `branchState` from the helper (or `mergeable` /
    `main` into the feature branch, as the merge commit will appear in the
    PR history.
 2. Merge `main` into the feature branch:
-   `git fetch origin main && git merge origin/main`
-3. If conflicts arise, resolve them and complete the merge.
+   `git fetch origin main && git merge origin/main`. On a signed-commit
+   repo with non-interactive-hostile primary signing (GPG pinentry /
+   hardware-touch) and a fallback signing wrapper for arbitrary git
+   subcommands (pass
+   `-c gpg.format=ssh -c user.signingkey=<abs-path> -c commit.gpgsign=true`
+   to `git` before the subcommand — `git -c … merge`, not `git merge -c …`;
+   a commit-only alias like `git commit-ssh` will not run `merge`), **run
+   this `git merge origin/main` through that wrapper — not the plain
+   command** — even a clean merge commits immediately, so the wrapper must
+   own the whole operation.
+3. If conflicts arise, resolve them and complete the merge — on the
+   signed-commit repos above, run the `--continue` through the wrapper too
+   (`git -c … merge --continue`) so it does not revert the merge commit to
+   the stalling primary signing; otherwise the plain `git merge --continue`
+   is fine. This is the
+   normal-path complement to the recovery-path re-signing documented in
+   `idd-pr-submit.instructions.md` (Post-rebase verification) and
+   `idd-overview-core.instructions.md` (cwd-vs-claim cherry-pick
+   recovery), mirroring the D1 rebase note.
 4. Run **post-fix-validate**.
 5. Push the feature branch normally (no force push required for merge
    commits).

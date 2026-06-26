@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rstackjs/agent-skills` — 26 default patterns, 0 followed patterns, 63 file(s) materialized.
+Mirror of `rstackjs/agent-skills` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rstackjs/agent-skills` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 63 |
+| Files         | 68 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -118,10 +118,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 57 | ✓ | [`skills/rspress-custom-theme/references/layout-slots.md`](skills/rspress-custom-theme/references/layout-slots.md) |
 | 58 | ✓ | [`skills/rspress-custom-theme/SKILL.md`](skills/rspress-custom-theme/SKILL.md) |
 | 59 | ✓ | [`skills/rspress-description-generator/SKILL.md`](skills/rspress-description-generator/SKILL.md) |
-| 60 | ✓ | [`skills/rspress-v2-upgrade/SKILL.md`](skills/rspress-v2-upgrade/SKILL.md) |
-| 61 | ✓ | [`skills/rstest-best-practices/SKILL.md`](skills/rstest-best-practices/SKILL.md) |
-| 62 | ✓ | [`skills/rstest-debugging/SKILL.md`](skills/rstest-debugging/SKILL.md) |
-| 63 | ✓ | [`skills/storybook-rsbuild/SKILL.md`](skills/storybook-rsbuild/SKILL.md) |
+| 60 | ✓ | [`skills/rspress-docs-generator/references/create-new-docs.md`](skills/rspress-docs-generator/references/create-new-docs.md) |
+| 61 | ✓ | [`skills/rspress-docs-generator/references/doc-structure-conventions.md`](skills/rspress-docs-generator/references/doc-structure-conventions.md) |
+| 62 | ✓ | [`skills/rspress-docs-generator/references/maintain-docs-for-prs.md`](skills/rspress-docs-generator/references/maintain-docs-for-prs.md) |
+| 63 | ✓ | [`skills/rspress-docs-generator/references/rspress-version-guard.md`](skills/rspress-docs-generator/references/rspress-version-guard.md) |
+| 64 | ✓ | [`skills/rspress-docs-generator/SKILL.md`](skills/rspress-docs-generator/SKILL.md) |
+| 65 | ✓ | [`skills/rspress-v2-upgrade/SKILL.md`](skills/rspress-v2-upgrade/SKILL.md) |
+| 66 | ✓ | [`skills/rstest-best-practices/SKILL.md`](skills/rstest-best-practices/SKILL.md) |
+| 67 | ✓ | [`skills/rstest-debugging/SKILL.md`](skills/rstest-debugging/SKILL.md) |
+| 68 | ✓ | [`skills/storybook-rsbuild/SKILL.md`](skills/storybook-rsbuild/SKILL.md) |
 
 ---
 

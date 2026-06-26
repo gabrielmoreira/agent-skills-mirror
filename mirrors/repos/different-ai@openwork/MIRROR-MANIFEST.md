@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,14 +72,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`.opencode/skills/daytona-recording-artifacts/SKILL.md`](.opencode/skills/daytona-recording-artifacts/SKILL.md) |
 | 12 | ✓ | [`.opencode/skills/daytona-secrets-volume/SKILL.md`](.opencode/skills/daytona-secrets-volume/SKILL.md) |
 | 13 | ✓ | [`.opencode/skills/daytona-seeded-cloud-demo/SKILL.md`](.opencode/skills/daytona-seeded-cloud-demo/SKILL.md) |
-| 14 | ✓ | [`.opencode/skills/release/SKILL.md`](.opencode/skills/release/SKILL.md) |
-| 15 | ✓ | [`.opencode/skills/run-evals/SKILL.md`](.opencode/skills/run-evals/SKILL.md) |
-| 16 | ✓ | [`.opencode/skills/shadcn/cli.md`](.opencode/skills/shadcn/cli.md) |
-| 17 | ✓ | [`.opencode/skills/shadcn/customization.md`](.opencode/skills/shadcn/customization.md) |
-| 18 | ✓ | [`.opencode/skills/shadcn/SKILL.md`](.opencode/skills/shadcn/SKILL.md) |
-| 19 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 20 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
-| 21 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
+| 14 | ✓ | [`.opencode/skills/fraimz/SKILL.md`](.opencode/skills/fraimz/SKILL.md) |
+| 15 | ✓ | [`.opencode/skills/release/SKILL.md`](.opencode/skills/release/SKILL.md) |
+| 16 | ✓ | [`.opencode/skills/run-evals/SKILL.md`](.opencode/skills/run-evals/SKILL.md) |
+| 17 | ✓ | [`.opencode/skills/shadcn/cli.md`](.opencode/skills/shadcn/cli.md) |
+| 18 | ✓ | [`.opencode/skills/shadcn/customization.md`](.opencode/skills/shadcn/customization.md) |
+| 19 | ✓ | [`.opencode/skills/shadcn/SKILL.md`](.opencode/skills/shadcn/SKILL.md) |
+| 20 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 21 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
+| 22 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
 
 ---
 

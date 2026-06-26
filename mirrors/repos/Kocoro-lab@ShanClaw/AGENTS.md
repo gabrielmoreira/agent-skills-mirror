@@ -130,7 +130,11 @@ Global config, project config, and local project config merge in that order. Sca
 
 ### Atomic Writes
 
-Persistent JSON indexes use write-temp, rename, and flock on a stable lock file. Never delete lock files; doing so can split locks across different inodes.
+Persistent JSON indexes use write-temp, rename, and an exclusive lock (via `internal/fslock`, not raw `syscall.Flock`) on a stable lock file. Never delete lock files; doing so can split locks across different inodes. Rename targets are read lock-free (the rename is atomic), and never locked directly — a mandatory `LockFileEx` on the destination would block the rename-over-open on Windows.
+
+### Cross-Platform Support
+
+The daemon cross-compiles to macOS / Linux / Windows with `CGO_ENABLED=0`. POSIX-only syscalls live behind build tags: file locking goes through `internal/fslock` (`flock` vs `LockFileEx`); process-group kill uses per-package `*_proc_{unix,windows}.go` helpers (`Setpgid`+`Kill(-pid)` vs `CREATE_NEW_PROCESS_GROUP`+`taskkill /T /F`); `shan daemon stop` uses `cmd/proc_signal_{unix,windows}.go`; the memory bundle `current` pointer uses `internal/memory/bundle_link_{unix,windows}.go` (symlink vs unprivileged directory junction). macOS-only GUI tools gate on `runtime.GOOS != "darwin"` with a clean error (except `notify`, which keeps its cross-platform Desktop route). Do not reintroduce raw `syscall.Flock`/`syscall.Kill`/`Setpgid`/`os.Symlink` outside a `_unix.go` file — it breaks the Windows build or fails unprivileged on Windows.
 
 ### Memory
 
@@ -148,7 +152,7 @@ Session sync is opt-in. It uses a single Run entry point, flock, atomic marker w
 
 ### Prompt Suggestions
 
-Suggestion generation is a forked request after a successful main turn. Cache safety invariant: the fork must be byte-equal to the main request except for the appended assistant reply, suggestion prompt, skip-cache-write flag, and debug-only fork kind. Do not change tools, max tokens, thinking budget, or ordering in the fork.
+Suggestion generation is a forked request after a successful main turn. Cache safety invariant: the fork must be byte-equal to the main request except for the appended assistant reply, suggestion prompt, skip-cache-write flag, and debug-only fork kind. Do not change tools, max tokens, thinking budget, or ordering in the fork. The fork is also source-gated (`wantsPromptSuggestion` allow-list in `daemon/runner.go`): only foreground sources with a UI consumer — `desktop`, `kocoro`, `web` — generate a suggestion; IM channels, schedule/cron, and autonomous local sources (heartbeat/watcher/mcp) are skipped. It is an allow-list, so any new background source defaults to skipped.
 
 ### Wire Contracts
 

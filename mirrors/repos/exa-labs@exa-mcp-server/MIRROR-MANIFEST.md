@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `exa-labs/exa-mcp-server` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `exa-labs/exa-mcp-server` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `exa-labs/exa-mcp-server` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,18 +59,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/search/references/extraction.md`](skills/search/references/extraction.md) |
-| 2 | ✓ | [`skills/search/references/filtering.md`](skills/search/references/filtering.md) |
-| 3 | ✓ | [`skills/search/references/patterns-code.md`](skills/search/references/patterns-code.md) |
-| 4 | ✓ | [`skills/search/references/patterns-companies.md`](skills/search/references/patterns-companies.md) |
-| 5 | ✓ | [`skills/search/references/patterns-news.md`](skills/search/references/patterns-news.md) |
-| 6 | ✓ | [`skills/search/references/patterns-papers.md`](skills/search/references/patterns-papers.md) |
-| 7 | ✓ | [`skills/search/references/patterns-people.md`](skills/search/references/patterns-people.md) |
-| 8 | ✓ | [`skills/search/references/patterns-relationships.md`](skills/search/references/patterns-relationships.md) |
-| 9 | ✓ | [`skills/search/references/searching.md`](skills/search/references/searching.md) |
-| 10 | ✓ | [`skills/search/references/source-quality.md`](skills/search/references/source-quality.md) |
-| 11 | ✓ | [`skills/search/references/synthesis.md`](skills/search/references/synthesis.md) |
-| 12 | ✓ | [`skills/search/SKILL.md`](skills/search/SKILL.md) |
+| 1 | ✓ | [`skills/agent/SKILL.md`](skills/agent/SKILL.md) |
+| 2 | ✓ | [`skills/search/references/extraction.md`](skills/search/references/extraction.md) |
+| 3 | ✓ | [`skills/search/references/filtering.md`](skills/search/references/filtering.md) |
+| 4 | ✓ | [`skills/search/references/patterns-code.md`](skills/search/references/patterns-code.md) |
+| 5 | ✓ | [`skills/search/references/patterns-companies.md`](skills/search/references/patterns-companies.md) |
+| 6 | ✓ | [`skills/search/references/patterns-news.md`](skills/search/references/patterns-news.md) |
+| 7 | ✓ | [`skills/search/references/patterns-papers.md`](skills/search/references/patterns-papers.md) |
+| 8 | ✓ | [`skills/search/references/patterns-people.md`](skills/search/references/patterns-people.md) |
+| 9 | ✓ | [`skills/search/references/patterns-relationships.md`](skills/search/references/patterns-relationships.md) |
+| 10 | ✓ | [`skills/search/references/searching.md`](skills/search/references/searching.md) |
+| 11 | ✓ | [`skills/search/references/source-quality.md`](skills/search/references/source-quality.md) |
+| 12 | ✓ | [`skills/search/references/synthesis.md`](skills/search/references/synthesis.md) |
+| 13 | ✓ | [`skills/search/SKILL.md`](skills/search/SKILL.md) |
 
 ---
 

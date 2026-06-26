@@ -60,12 +60,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/implementing-jsc-classes-cpp/SKILL.md`](.claude/skills/implementing-jsc-classes-cpp/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/implementing-jsc-classes-zig/SKILL.md`](.claude/skills/implementing-jsc-classes-zig/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/implementing-jsc-classes-rust/SKILL.md`](.claude/skills/implementing-jsc-classes-rust/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/javascriptcore-garbage-collector/SKILL.md`](.claude/skills/javascriptcore-garbage-collector/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/slowest-tests/SKILL.md`](.claude/skills/slowest-tests/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/writing-bundler-tests/SKILL.md`](.claude/skills/writing-bundler-tests/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/writing-dev-server-tests/SKILL.md`](.claude/skills/writing-dev-server-tests/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/zig-system-calls/SKILL.md`](.claude/skills/zig-system-calls/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/rust-system-calls/SKILL.md`](.claude/skills/rust-system-calls/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/slowest-tests/SKILL.md`](.claude/skills/slowest-tests/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/writing-bundler-tests/SKILL.md`](.claude/skills/writing-bundler-tests/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/writing-dev-server-tests/SKILL.md`](.claude/skills/writing-dev-server-tests/SKILL.md) |
 | 8 | ✓ | [`.cursor/environment.json`](.cursor/environment.json) |
 | 9 | ✓ | [`.github/workflows/CLAUDE.md`](.github/workflows/CLAUDE.md) |
 | 10 | ✓ | [`AGENTS.md`](AGENTS.md) |

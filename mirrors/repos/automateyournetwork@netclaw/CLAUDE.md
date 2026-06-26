@@ -1,6 +1,6 @@
 # netclaw Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-06-24
+Auto-generated from all feature plans. Last updated: 2026-06-25
 
 ## Active Technologies
 - N/A (stateless server; subscription state held in-memory during runtime) (003-gnmi-mcp-server)
@@ -49,6 +49,8 @@ Auto-generated from all feature plans. Last updated: 2026-06-24
 - Memory MCP (tweet history for deduplication, 30-day retention) (039-twitter-x-integration)
 - Python 3.10+ (consistent with existing NetClaw MCP servers) + FastMCP (MCP framework), tweepy 4.x (Twitter API v2 client), python-dotenv (040-twitter-mentions)
 - Memory MCP (feature 033) for interaction history; in-memory tracking for processed mention IDs (040-twitter-mentions)
+- Node.js 18+ (for @twilio-alpha/mcp), Python 3.10+ (for webhook server and skills) + @twilio-alpha/mcp (NPM), FastMCP (Python webhook), Twilio SDK, openai-whisper-api (existing skill for STT) (042-twilio-voice-mcp)
+- Memory MCP (feature 033) for call logging and audit trail (042-twilio-voice-mcp)
 
 - Python 3.10+ + FastMCP (MCP framework), grpcio + grpcio-tools (gRPC transport), pygnmi (gNMI client library), protobuf, cryptography (TLS handling) (003-gnmi-mcp-server)
 
@@ -68,9 +70,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.10+: Follow standard conventions
 
 ## Recent Changes
+- 042-twilio-voice-mcp: Added Node.js 18+ (for @twilio-alpha/mcp), Python 3.10+ (for webhook server and skills) + @twilio-alpha/mcp (NPM), FastMCP (Python webhook), Twilio SDK, openai-whisper-api (existing skill for STT)
 - 040-twitter-mentions: Added Python 3.10+ (consistent with existing NetClaw MCP servers) + FastMCP (MCP framework), tweepy 4.x (Twitter API v2 client), python-dotenv
 - 039-twitter-x-integration: Added Python 3.10+ (consistent with NetClaw MCP servers) + FastMCP (MCP framework), tweepy 4.x (Twitter API v2 client), python-dotenv
-- 038-docs-hud-refresh: Added Markdown (documentation files) + N/A (pure documentation)
 
 
 <!-- MANUAL ADDITIONS START -->

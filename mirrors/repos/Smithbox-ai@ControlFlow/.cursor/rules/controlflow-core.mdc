@@ -1,0 +1,14 @@
+---
+description: "Core ControlFlow identity, source hierarchy, and offline validations for the repository."
+alwaysApply: true
+---
+# ControlFlow Core
+
+This is a prompt/governance/eval repository, not a runtime application.
+Canonical multi-agent policies, roster, and tiers are governed by `.github/copilot-instructions.md` and `plans/project-context.md`.
+Cursor workflow: skills in `.cursor/skills/controlflow-*/`, subagents in `.cursor/agents/controlflow-*.md`, plugin package `plugins/controlflow-cursor/`.
+Entry: follow skill `controlflow-strict-workflow` for non-trivial tasks.
+Use `Task(subagent_type=...)` for delegation when available; see `docs/agent-engineering/CURSOR-SUPPORT.md` for fallback.
+Cursor cannot execute VS Code-only semantics (`agent/runSubagent`, `@Planner` UI). Do not claim otherwise.
+`AGENTS.md` is compatibility context only, not the primary Cursor artifact.
+All changes must pass: `cd evals && npm test`.

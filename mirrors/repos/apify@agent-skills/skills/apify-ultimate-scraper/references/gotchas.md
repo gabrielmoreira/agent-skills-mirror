@@ -38,6 +38,15 @@ Some social media scrapers require cookies or login sessions. If an Actor return
 
 Look for mentions of "cookies", "login", "session", or "proxy".
 
+**Input mechanics**
+Actor input is one JSON object, not an array. `--input` accepts inline JSON object input only; wrap inline JSON in quotes to avoid shell parsing issues. For JSON files or complex inputs, use `--input-file input.json`. If the CLI reports parse, path, or object-shape input errors, inspect the schema again with `apify actors info "ACTOR_ID" --user-agent apify-agent-skills/apify-ultimate-scraper --input --json`.
+
+    apify actors call "ACTOR_ID" --input '{"maxItems":10}' --user-agent apify-agent-skills/apify-ultimate-scraper --json
+
+Prefer this for larger inputs:
+
+    apify actors call "ACTOR_ID" --input-file input.json --user-agent apify-agent-skills/apify-ultimate-scraper --json
+
 **Rate limiting on large scrapes**
 Platforms throttle or block large-volume scraping. Mitigations:
 - Use proxy configuration when available: `"proxyConfiguration": {"useApifyProxy": true}`

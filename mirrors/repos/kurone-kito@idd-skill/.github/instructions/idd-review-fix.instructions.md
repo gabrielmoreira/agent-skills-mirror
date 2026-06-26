@@ -58,7 +58,19 @@ Convergence guardrails:
 Check for conflicts between the feature branch and `main`. If conflicts
 exist, merge `main` into the feature branch
 (`git fetch origin main && git merge origin/main`), resolve any
-conflicts, and complete the merge.
+conflicts, and complete the merge. On a signed-commit repo with
+non-interactive-hostile primary signing (GPG pinentry / hardware-touch)
+and a fallback signing wrapper for arbitrary git subcommands (pass
+`-c gpg.format=ssh -c user.signingkey=<abs-path> -c commit.gpgsign=true`
+to `git` before the subcommand — `git -c … merge`, not `git merge -c …`; a
+commit-only alias like `git commit-ssh` will not run `merge`), **run that
+`git merge origin/main` through the wrapper — not the plain command — and
+continue with the wrapper's own `--continue` (`git -c … merge --continue`)**;
+the wrapper must own the whole operation, so the merge commit is not
+reverted to the stalling primary signing — the normal-path
+complement to the recovery-path re-signing (the D1 Post-rebase
+detached-HEAD recovery in `idd-pr-submit.instructions.md` and the
+cwd-vs-claim cherry-pick recovery in `idd-overview-core.instructions.md`).
 
 **Active review gate**: if the PR has unresolved review threads,
 unreplied comments, or any reviewer's latest state is
@@ -85,11 +97,27 @@ unambiguous:
 - `**Accepted** — fixed in {commit-sha or comma-separated list}: {brief explanation}`
 
 - **Review threads**: after posting your reply, **immediately resolve
-  the thread**. Resolution means "agent has responded and acted on the
-  feedback", not "reviewer has agreed". If the reviewer disagrees, they
-  can reopen the thread and add a new reply, which will re-surface it in
-  the next E1 pass.
+  the thread**. When helper runtime is enabled, the profile-selected
+  resolve-review-thread command (`--pr <number> --comment-id <id> --apply`,
+  with `--body` / `--claim-issue` / `--claim-id`; see
+  `docs/idd-helper-scripts.md`)
+  posts the reply and resolves the thread in one call — dry-run without
+  `--apply`, replying before resolving so a failed reply never leaves a
+  silently-resolved thread; the manual REST reply + GraphQL
+  `resolveReviewThread` sequence stays the fallback. Resolution means "agent
+  has responded and acted on the feedback", not "reviewer has agreed". If the
+  reviewer disagrees, they can reopen the thread and add a new reply, which
+  will re-surface it in the next E1 pass.
 - **Regular comments**: reply only; do not resolve.
+- **Persistent non-review notices**: a non-review notice (rate-limit /
+  usage-limit / review-limit) already dispositioned `**Rejected** — {bot}
+  did not review HEAD …` in a prior pass **carries that rejection forward**
+  across this push — do **not** re-post an identical rejection just because
+  the notice's `updatedAt` bumped or the bot re-posted the same summary. The
+  F2/F3 disposition-evidence gate honors the existing rejection while the bot
+  still has not reviewed any HEAD (see the E6 non-review-notice rule). Only a
+  notice the bot replaces with an actual completed review of the current HEAD
+  needs a fresh disposition.
 
 After E13 replies and resolutions are complete, upsert the PR live
 status digest before E14 if the next route is still review-fix or CI

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ag-ui-protocol/ag-ui` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `ag-ui-protocol/ag-ui` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ag-ui-protocol/ag-ui` — 26 default patterns, 0 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,6 +87,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-streaming-chat/SKILL.md`](sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-streaming-chat/SKILL.md) |
 | 27 | ✓ | [`sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-troubleshoot/SKILL.md`](sdks/dotnet/plugins/ag-ui-dotnet/skills/agui-dotnet-troubleshoot/SKILL.md) |
 | 28 | ✓ | [`sdks/typescript/.cursor/rules/project-rules.mdc`](sdks/typescript/.cursor/rules/project-rules.mdc) |
+| 29 | ✓ | [`skills/ag-ui-a2ui-integration/references/a2ui-runtime-and-renderer.md`](skills/ag-ui-a2ui-integration/references/a2ui-runtime-and-renderer.md) |
+| 30 | ✓ | [`skills/ag-ui-a2ui-integration/references/framework-adapters.md`](skills/ag-ui-a2ui-integration/references/framework-adapters.md) |
+| 31 | ✓ | [`skills/ag-ui-a2ui-integration/references/verification.md`](skills/ag-ui-a2ui-integration/references/verification.md) |
+| 32 | ✓ | [`skills/ag-ui-a2ui-integration/SKILL.md`](skills/ag-ui-a2ui-integration/SKILL.md) |
+| 33 | ✓ | [`skills/ag-ui-a2ui-integration/sources.md`](skills/ag-ui-a2ui-integration/sources.md) |
 
 ---
 

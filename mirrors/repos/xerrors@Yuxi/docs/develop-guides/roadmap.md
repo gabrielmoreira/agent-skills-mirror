@@ -8,29 +8,24 @@
 ### 看板
 
 **知识库**
-- [ ] office 组件预览，docx/pptx 可以转PDF，然后前端预览 <Badge text="v0.7.1" />
 - [ ] 知识库工具新增 query_keywords 工具，专门用于基于关键词命中的排序 <Badge text="v0.7.1" />
 - [ ] 调研将当前知识库映射为虚拟文件系统的可行性，先明确文件树映射、权限边界、内容读取与 Agent 工具调用形态，再决定是否实现
 - [ ] 增强知识库检索体验：增强 metadata、标签等
 - [ ] 新增基于 PaddleOCR 的解析器：接入 PaddleOCR-VL-1.6、PP-OCRv6、PP-StructureV3，并抽象共用基类复用相似的脚本调用、产物收集和配置处理
-- [x] 优化思维导图构建的接口设计，支持增量构建和更新
 - [ ] 个人工作区增加可检索能力（但是不做向量化） <Badge text="v0.7.1" />
-- [ ] Yuxi CLI 支持 `yuxi kb upload <DIR_PATH|FILE_PATH>`，将本地文件上传、解析并添加到已有知识库 Badge text="v0.7.1" /> <Badge type="warning" text="开发中" />
 
 
 **智能体**
-- [ ] 子智能体缺少异步的机制 <Badge text="v0.7.1" />
+- [ ] 子智能体缺少异步的机制 <Badge text="v0.7.1" /> <Badge type="warning" text="开发中" />
 - [ ] 子智能体缺少 steer 机制 <Badge text="v0.7.1" />
 - [ ] 子智能体的双向通信，缺少 ask_for_main_agent 的机制
 - [ ] 子智能体与子智能体的通信机制
 - [ ] 如何停掉一个子智能体、查看智能体的进度
 - [ ] 优化 Agent `read_file` 工具：至少对齐 DeepAgents 的读取行为
-- [ ] RAG 评估支持 Agent 模式 <Badge text="v0.7.1" />
+- [ ] Skill 详情页增强绑定能力展示：内置 Skill 也应清晰展示只读的工具/MCP/Skill 依赖说明
 - [ ] 添加 Agent 独立调用接口，方便后续评估使用
 - [ ] 任务队列 <Badge text="v0.7.2" />
-
-**并发与分布式**
-- [ ] 提高 FastAPI 的并发能力
+- [ ] 反馈接入到 Langfuse
 
 **其他**
 - [ ] 历史对话新增分组（或者叫做项目）

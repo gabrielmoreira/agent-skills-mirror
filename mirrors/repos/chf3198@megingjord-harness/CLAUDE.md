@@ -27,6 +27,7 @@ and AI agent governance. All instructions below are binding for Claude Code sess
 @instructions/cross-team-communication-tiers.instructions.md
 @instructions/resource-tier-portability.instructions.md
 @instructions/credential-prompt-guard.instructions.md
+@instructions/worktree-tool-boundary.instructions.md
 
 ## On-demand instructions (Epic #3137 T1 — situational, not always-resident)
 

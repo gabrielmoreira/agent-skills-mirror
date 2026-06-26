@@ -13,18 +13,6 @@ metadata:
 
 Performance optimization guide for React Native applications, covering JavaScript/React, Native (iOS/Android), and bundling optimizations. Based on Callstack's "Ultimate Guide to React Native Optimization".
 
-## Skill Format
-
-Each reference file follows a hybrid format for fast lookup and deep understanding:
-
-- **Quick Pattern**: Incorrect/Correct code snippets for immediate pattern matching
-- **Quick Command**: Shell commands for process/measurement skills
-- **Quick Config**: Configuration snippets for setup-focused skills
-- **Quick Reference**: Summary tables for conceptual skills
-- **Deep Dive**: Full context with When to Use, Prerequisites, Step-by-Step, Common Pitfalls
-
-**Impact ratings**: CRITICAL (fix immediately), HIGH (significant improvement), MEDIUM (worthwhile optimization)
-
 ## When to Apply
 
 Reference these guidelines when:
@@ -40,7 +28,7 @@ Reference these guidelines when:
 
 - Treat shell commands in these references as local developer operations. Review them before running, prefer version-pinned tooling, and avoid piping remote scripts directly to a shell.
 - Treat third-party libraries and plugins as dependencies that still require normal supply-chain controls: pin versions, verify provenance, and update through your standard review process.
-- Treat Re.Pack code splitting as first-party artifact delivery only. Remote chunks must come from trusted HTTPS origins you control and be pinned to the current app release.
+- If using Re.Pack code splitting, only load first-party chunks from trusted HTTPS origins tied to the current release.
 
 ## Priority-Ordered Guidelines
 
@@ -53,13 +41,15 @@ Reference these guidelines when:
 | 5 | Memory Management | MEDIUM-HIGH | `js-*`, `native-*` |
 | 6 | Animations | MEDIUM | `js-*` |
 
+Impact labels are triage hints: CRITICAL first, HIGH next, MEDIUM when evidence points there.
+
 ## Quick Reference
 
 ### Optimization Workflow
 
 Follow this cycle for any performance issue: **Measure → Optimize → Re-measure → Validate**
 
-1. **Measure**: Capture baseline metrics before changes. For runtime issues, prefer commit timeline, re-render counts, slow components, heaviest-commit breakdown, and startup/TTI when available. Component tree depth or count are optional context, not substitutes.
+1. **Measure**: Capture baseline metrics before changes. For runtime issues, prefer commit timeline, re-render counts, slow components, heaviest-commit breakdown, and startup/TTI when available. Component tree depth or count are optional context, not substitutes. Do not recommend memoization, atomic state, or compiler changes without a measured render or FPS problem.
 2. **Optimize**: Apply the targeted fix from the relevant reference
 3. **Re-measure**: Run the same measurement to get updated metrics
 4. **Validate**: Confirm improvement (e.g., FPS 45→60, TTI 3.2s→1.8s, bundle 2.1MB→1.6MB)
@@ -77,14 +67,25 @@ If metrics did not improve, revert and try the next suggested fix.
 
 **Profile first:**
 ```bash
-# Open React Native DevTools
-# Press 'j' in Metro, or shake device → "Open DevTools"
+agent-device react-devtools status
+agent-device react-devtools wait --connected
+agent-device react-devtools profile start
+agent-device react-devtools profile stop
+agent-device react-devtools profile slow --limit 5
+agent-device react-devtools profile rerenders --limit 5
+agent-device react-devtools profile timeline --limit 20
 ```
 
+Drive the target interaction with normal `agent-device` commands between `profile start` and `profile stop`.
+
+Manual fallback when `agent-device` is unavailable: open React Native DevTools from Metro (`j`) or the Dev Menu, use the Profiler tab, and record the same interaction.
+
+For release-build React component profiling, connect [`@callstack/inspector`](https://github.com/callstackincubator/inspector#inspector) first so React DevTools can attach to the release app, then run the `agent-device react-devtools` flow above.
+
 **Common fixes:**
-- Replace ScrollView with FlatList/FlashList for lists
-- Use React Compiler for automatic memoization
-- Use atomic state (Jotai/Zustand) to reduce re-renders
+- Replace ScrollView with FlatList/FlashList/Legend List for long lists
+- After profiling shows cascading re-renders, use React Compiler for automatic memoization
+- After profiling shows broad store/context updates, use atomic state (Jotai/Zustand) to reduce re-renders
 - Use `useDeferredValue` for expensive computations
 
 ### Critical: Bundle Size
@@ -115,7 +116,7 @@ ls -lh output.js  # e.g., After: 1.6 MB  (24% reduction)
 **Common fixes:**
 - Avoid barrel imports (import directly from source)
 - Remove unnecessary Intl polyfills only after checking Hermes API and method coverage
-- Enable tree shaking (Expo SDK 52+ or Re.Pack)
+- Evaluate tree shaking (Expo SDK 52+ experimental unused import/export removal, or Re.Pack only if already configured)
 - Enable R8 for Android native code shrinking
 
 ### High: TTI Optimization
@@ -125,7 +126,7 @@ ls -lh output.js  # e.g., After: 1.6 MB  (24% reduction)
 - Only measure cold starts (exclude warm/hot/prewarm)
 
 **Common fixes:**
-- Disable JS bundle compression on Android (enables Hermes mmap)
+- For React Native 0.78 and earlier, disable Android JS bundle compression to enable Hermes mmap
 - Use native navigation (react-native-screens)
 - Preload commonly-used expensive screens before navigating to them
 
@@ -149,7 +150,7 @@ Full documentation with code examples in [references/][references]:
 | File | Impact | Description |
 |------|--------|-------------|
 | [js-lists-flatlist-flashlist.md][js-lists-flatlist-flashlist] | CRITICAL | Replace ScrollView with virtualized lists |
-| [js-profile-react.md][js-profile-react] | MEDIUM | React DevTools profiling |
+| [js-profile-react.md][js-profile-react] | MEDIUM | `agent-device react-devtools` profiling |
 | [js-measure-fps.md][js-measure-fps] | HIGH | FPS monitoring and measurement |
 | [js-memory-leaks.md][js-memory-leaks] | MEDIUM | JS memory leak hunting |
 | [js-atomic-state.md][js-atomic-state] | HIGH | Jotai/Zustand patterns |
@@ -187,19 +188,6 @@ Full documentation with code examples in [references/][references]:
 | [bundle-native-assets.md][bundle-native-assets] | HIGH | Asset catalog setup |
 | [bundle-library-size.md][bundle-library-size] | MEDIUM | Evaluate dependencies |
 | [bundle-code-splitting.md][bundle-code-splitting] | MEDIUM | Re.Pack code splitting |
-
-
-## Searching References
-
-```bash
-# Find patterns by keyword
-grep -l "reanimated" references/
-grep -l "flatlist" references/
-grep -l "memory" references/
-grep -l "profil" references/
-grep -l "tti" references/
-grep -l "bundle" references/
-```
 
 ## Problem → Skill Mapping
 

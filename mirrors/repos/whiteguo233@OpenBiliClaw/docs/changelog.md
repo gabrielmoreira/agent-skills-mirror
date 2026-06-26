@@ -4,6 +4,53 @@
 
 ---
 
+## v0.3.145 / extension v0.3.96 / desktop v0.3.145.1: Eval 缓存与推荐理由并发优化（2026-06-26）
+
+后端源码走 `backend-v0.3.145`，浏览器插件走 `extension-v0.3.96`，桌面安装包走 `desktop-v0.3.145.1`。
+
+- **抖音 / YouTube init 提问默认改为跳过**：交互式 `openbiliclaw init` 的“加入抖音数据?”和“加入 YouTube 数据?”现在与小红书一致默认 No，避免回车误触发需要登录浏览器前台 tab 的 bootstrap；显式启用仍使用 `--yes-douyin` / `--yes-youtube` 或回答 yes。
+- **Evo 前供给改为按水位补肉**：`DiscoveryCandidatePipeline.ensure_pending_supply()` 会按 `pending_eval + evaluating` 水位循环生产 raw candidates，直到接近本轮 evaluator batch、池子已满、没有新候选或达到尝试 / 时间预算；refresh path 优先调用该 supply loop，不再只跑一次 discover 后插入几个算几个。
+- **Evo 首批评估强制使用批量下限**：API runtime 配置的 `min_eval_batch_size=8` 现在会同时约束 refresh 的 supply target、策略预算和 drain claim size；即使池子只差 1-7 条，首次 evaluator 也会先攒到 8 条或等待超时，不再因缺口算法把 first drain 压成 6 条。
+- **入待评估池前过滤历史重复**：候选入库前会先过滤同批重复、历史 `discovery_candidates` 任意状态和已进入 `content_cache` 的 BVID/content_id，减少重复 discovery 占住 raw 前排后被 `INSERT OR IGNORE` 静默吞掉导致 Evo 只拿到 1-3 条。
+- **热重载取消不再卡住 evaluating**：真实端到端测试发现插件 cookie 同步触发 hot-reload 时，正在跑的 Evo batch 可能在模型返回后被取消，导致候选停在 `evaluating`；pipeline 现在捕获 `CancelledError` 并即时释放 claim 回 `pending_eval`，后续 drain 可继续处理。
+- **候选 eval 缓存命中优化**：批量 evaluator 的本地 cache key 改为候选身份 + full profile digest + negative_examples digest，不再被 Python profile 对象 id 或无关事件水位打穿；`discovery.evaluate_batch` 调用 LLMService 时会在支持的 provider/service 路径上关闭额外 core memory 注入，复用 prompt 内的完整结构化 profile，提升 provider prompt-cache 前缀稳定性。
+- **推荐理由生成缓存前缀保护**：推荐池批量文案、单条实时文案和备用 delight reason 调用 LLMService 时同样在支持路径上关闭额外 core memory 注入；推荐 prompt 仍保留完整结构化 profile，只去掉重复拼接，减少 token 并让 `recommendation.write_expression` / `recommendation.expression` 的 provider prompt-cache 前缀更稳定。
+- **eval / 推荐理由生成默认双 worker**：统一候选 evaluator 单次 drain 默认最多领取两个 batch 的候选，并由 `evaluate_content_batch()` 以 2 个 worker 跑 LLM batch；推荐池文案 `_drain_expression_copy()` 也改为默认 2 个 worker。外层 drain / expression lock 仍串行化多入口，claim size 仍受 evaluator hard cap 约束，取消时不吞 `CancelledError`。
+- **长上下文 eval 默认大 batch，推荐理由保守 30**：文本 `discovery.evaluate_batch` 默认 batch size 从 30 提到 45；周期 candidate-eval loop 未显式传参时也按 45 drain。多模态 eval 继续使用独立小 batch。真实 provider 并发测试显示 `recommendation.write_expression` 45 条偶发 JSON 解析失败，因此推荐文案默认 batch 保持 30；批量解析失败时仍会先在同一 worker 内递归拆半重试，provider 限流仍直接留空等待下一轮，避免并发或重试倍增。
+- **macOS DMG 加入首次打开指引**：未签名 / 未公证的实验桌面包现在会在 DMG 内放入 `首次打开说明 First Launch.html` 和可见安装提示图，Release notes 与 README 同步说明右键 / Control-click 打开和 Privacy & Security fallback，降低用户找不到“仍要打开”的概率。
+- **搜索关键词 claim 接入供给水位**：B 站 search 关键词只有在待评估水位不足时才 claim；如果 `pending_eval + evaluating` 已经足够，本轮不会空 claim 后又因 supply loop 不抓内容而误标 failed。
+- **相关推荐 seed 优先正反馈**：`RelatedChainStrategy` 的事件种子现在优先使用 `favorite` / `like` / `coin` / `share` / positive feedback，普通 `view` 降为 fallback，减少 related_chain 从弱浏览信号继续挖窄内容圈。
+
+## v0.3.143 / extension v0.3.94 / desktop v0.3.143: 候选评估蓄水与补池诊断（2026-06-25）
+
+后端源码走 `backend-v0.3.143`，浏览器插件沿用 `extension-v0.3.94`，桌面安装包走 `desktop-v0.3.143`。
+
+- **候选评估先蓄 batch**：API daemon runtime 的 `DiscoveryCandidatePipeline` 现在少于 8 条 `pending_eval` 不会立即跑 LLM，最多等待 120 秒后才放行小批次，避免 1-3 条候选也消耗一整份 20k+ token 画像 prompt。周期 drain 日志会把等待状态标成 `reason=batch_waiting`。
+- **评估 prompt 输入瘦身**：`ContentDiscoveryEngine.evaluate_content_batch()` 在构建 batch prompt 前会压缩画像摘要，只保留高权重兴趣 / 领域、最新 awareness / insight 和完整 `disliked_topics`，减少 evaluator 的固定输入 token，同时保留关键避雷和近期语境。
+- **低可用池不再被 source overflow 压掉**：`_enforce_pool_cap()` 在 `pool_available < pool_target_count` 时跳过 `trim_pool_source_overflow()`，避免 raw/source 配额把当前可用候选继续 suppress；总 raw ceiling 仍由 `trim_pool_to_target_count()` 收敛。
+- **空补货计划可诊断**：`_build_refresh_plan()` 在池子低于 target 但 plan 为空时会输出 `pool_available/raw/pending/source_available/source_raw/source_targets/raw_targets/requested_by_source`，方便直接定位是来源配额、raw headroom、非 B 站 producer 还是其它 gating 导致不补。
+- **减少重复 discovery 导致的小批 eval**：API runtime 的主 discovery raw 生产改为 4 倍 oversample，并同步放大 strategy limits；重复候选仍由 `candidate_key` 去重，但新候选更容易把 `pending_eval` 攒到有效 batch。
+- **画像整理日志区分 run 与 batch**：`ProfileConsolidator` 每次逻辑运行结束会输出一条 `profile consolidation run completed` 汇总，包含 `run_id`、候选簇数、LLM batch 数、合并 / 归档数量和前后库存，避免把同一轮拆批 LLM 调用误判为短时间重复合并。
+- **OpenAI SDK DEBUG 降噪**：全局 logging 初始化现在把 `openai` / `openai._base_client` 提升到 WARNING，避免 `logging.file_level=DEBUG` 时把完整 LLM prompt / 用户画像写进文件日志；业务侧 `[llm-cost]` 与模块 INFO 日志不受影响。
+
+## v0.3.142 / extension v0.3.94 / desktop v0.3.142: 知乎后台 discovery 与发布包同步（2026-06-25）
+
+后端源码走 `backend-v0.3.142`，浏览器插件走 `extension-v0.3.94`，桌面安装包走 `desktop-v0.3.142`。
+
+- **知乎 discovery 不再抢前台**：浏览器插件只在 `bootstrap_events` 初始化 / 事件 smoke 时打开前台知乎 tab，便于用户确认浏览 / 收藏 / 点赞收藏信息收集；search / hot / feed / creator / related discovery 改用后台任务 tab，后台补池不会打断当前浏览焦点。
+- **同步知乎来源对外定位**：GitHub About、包描述、README 中英文架构摘录、`docs/spec.md` 与 discovery 模块文档统一把知乎列为已落地跨平台来源，避免仍被描述成 B 站单源工具。
+- **发布插件与桌面安装包**：插件版本提升到 `extension-v0.3.94`，后端 / 桌面安装包版本提升到 `desktop-v0.3.142`，用于 GitHub Release 聚合页分发。
+- **真实环境验证**：本地真实 API + 已连接浏览器插件完成 `discover-zhihu-hot --limit 3` E2E，扩展任务完成并写入 3 条 `zhihu-hot` 候选；后台 tab 分支配套单测覆盖 `bootstrap_events` 前台、discovery 后台。
+
+## v0.3.141 / extension v0.3.93 / desktop v0.3.140: 推荐池补货死锁修复（2026-06-25）
+
+后端源码走 `backend-v0.3.141`，浏览器插件走 `extension-v0.3.93`，桌面安装包暂沿用 `desktop-v0.3.140`。
+
+- **修复 raw ceiling 误停补货**：当 `pool_available_count` 低于 `pool_target_count`、但 raw material 已达到 ceiling 时，`ContinuousRefreshController` 不再把 source deficit 算成 0；Search / producer 会继续补足可用池，raw ceiling 仍由 `_enforce_pool_cap()` 和 post-refresh trim 负责收敛，避免 pending keywords 长期不被消费、日志只剩 `enforce_pool_cap` / `candidate eval drain no_pending`。
+- **同步发布插件维护包**：浏览器插件版本提升到 `extension-v0.3.93`，用于 GitHub Release 和 Chrome Web Store 包同步分发；插件功能代码与 `v0.3.92` 保持一致。
+- **同步知乎来源对外定位文档**：GitHub About、包描述、README 中英文架构摘录、`docs/spec.md` 和 discovery 模块文档统一把知乎列为已落地跨平台来源，避免仍被描述成 B 站单源工具。
+- **知乎 discovery 改为后台任务 tab**：插件仍用前台 tab 执行 `bootstrap_events` 初始化 / 事件 smoke，便于用户感知浏览 / 收藏 / 点赞收藏信息收集；search / hot / feed / creator / related discovery 则改为后台 tab，避免后台补池打断用户当前浏览焦点。
+
 ## v0.3.140 / extension v0.3.92 / desktop v0.3.140: 知乎多源接入与插件发现（2026-06-24）
 
 后端源码走 `backend-v0.3.140`，浏览器插件走 `extension-v0.3.92`，桌面安装包走 `desktop-v0.3.140`。

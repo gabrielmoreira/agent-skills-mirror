@@ -28,7 +28,12 @@ const handleAnimate = useCallback((fromIndex, toIndex) => {
 const animatedIndex = useSharedValue(0);
 
 const overlayStyle = useAnimatedStyle(() => ({
-  opacity: withTiming(animatedIndex.value > 0 ? 0.5 : 0),
+  opacity: interpolate(
+    animatedIndex.value,
+    [0, 1],
+    [0, 0.5],
+    Extrapolation.CLAMP
+  ),
 }));
 
 <BottomSheet animatedIndex={animatedIndex}>
@@ -94,7 +99,12 @@ const handleAnimate = useCallback((fromIndex, toIndex) => {
 const animatedIndex = useSharedValue(0);
 
 const shadowStyle = useAnimatedStyle(() => ({
-  shadowOpacity: withTiming(animatedIndex.value > 0 ? 0.3 : 0),
+  shadowOpacity: interpolate(
+    animatedIndex.value,
+    [0, 1],
+    [0, 0.3],
+    Extrapolation.CLAMP
+  ),
 }));
 
 <BottomSheet animatedIndex={animatedIndex}>
@@ -123,10 +133,19 @@ const [showFooter, setShowFooter] = useState(false);
 const SheetVisibilityWrapper = ({ animatedIndex, threshold = 1, children }) => {
   const [isInteractive, setIsInteractive] = useState(false);
 
-  const style = useAnimatedStyle(() => ({
-    opacity: withTiming(animatedIndex.value >= threshold ? 1 : 0),
-    transform: [{ translateY: withTiming(animatedIndex.value >= threshold ? 0 : 50) }],
-  }));
+  const style = useAnimatedStyle(() => {
+    const progress = interpolate(
+      animatedIndex.value,
+      [threshold - 0.01, threshold],
+      [0, 1],
+      Extrapolation.CLAMP
+    );
+
+    return {
+      opacity: progress,
+      transform: [{ translateY: interpolate(progress, [0, 1], [50, 0]) }],
+    };
+  });
 
   useAnimatedReaction(
     () => animatedIndex.value >= threshold,
@@ -286,7 +305,7 @@ const backdropStyle = useAnimatedStyle(() => ({
 
 ## Native Alternative: react-native-true-sheet
 
-If your app already runs on **New Architecture (Fabric)**, consider `@lodev09/react-native-true-sheet` — a fully native bottom sheet that sidesteps JS re-render problems entirely.
+If your app already runs on **New Architecture (Fabric)** and needs a standard native-feeling sheet, evaluate `@lodev09/react-native-true-sheet`. Keep `@gorhom/bottom-sheet` when you need fine-grained Reanimated customization, custom gestures, or a mature cross-platform fallback.
 
 | Scenario | Recommendation |
 |----------|---------------|
@@ -295,25 +314,20 @@ If your app already runs on **New Architecture (Fabric)**, consider `@lodev09/re
 | Legacy Architecture (no Fabric) | `@gorhom/bottom-sheet` (true-sheet v3+ requires Fabric) |
 | Web support needed | Either (true-sheet uses `@gorhom/bottom-sheet` on web internally) |
 
-**Advantages**: zero JS overhead (sheet lives in native land — no SharedValue plumbing needed), built-in keyboard handling, native screen reader support, side sheet on tablets, iOS 26+ Liquid Glass support, React Navigation sheet navigator integration.
-
-**Requirements**: New Architecture (Fabric) for v3+, use v2.x for Legacy Architecture.
-
 ```bash
 npm install @lodev09/react-native-true-sheet
 ```
 
-> If requirements are met and you don't need the fine-grained Reanimated-driven customization described in this skill, `react-native-true-sheet` is the simpler and more performant choice.
-
 ## Common Pitfalls
 
 - **Using `onChange` for continuous position tracking** — it fires on snap completion only (discrete). Use `animatedPosition` or `animatedIndex` shared values instead.
+- **Starting timing animations inside sheet-index style worklets** — derive gesture-linked visuals with `interpolate`; reserve `withTiming` for explicit state transitions.
 - **Forgetting `pointerEvents='none'` on always-mounted hidden elements** — invisible elements still capture touches.
 - **Missing accessibility attributes on hidden elements** — add `accessibilityElementsHidden` and `importantForAccessibility='no-hide-descendants'`.
 - **Bundling independent state values in one context** — see [js-atomic-state.md](./js-atomic-state.md) for splitting patterns.
 - **Assuming `enableDynamicSizing` must be disabled whenever you pass `snapPoints`** — it does not have to be, but leaving it enabled can insert an additional snap point and change indexing.
 - **Using React Native `ScrollView`/`FlatList` inside bottom sheet** — gestures won't coordinate. Use `BottomSheetScrollView`, `BottomSheetFlatList`, etc.
-- **Using React Native touchables on Android** — import `TouchableOpacity`, `TouchableHighlight`, or `TouchableWithoutFeedback` from `@gorhom/bottom-sheet`.
+- **Gesture conflicts with React Native touchables** — when touches do not respond inside the sheet, use the touchable components exported by `@gorhom/bottom-sheet`, especially on Android.
 - **Not providing `containerHeight`** — causes an extra re-render on mount for measurement.
 - **Using a custom `TextInput` without porting the library's focus/blur handlers** — keyboard handling will be incomplete. Prefer `BottomSheetTextInput` unless you need a custom input.
 

@@ -208,6 +208,8 @@ Tauri ↔ COMMAND_MAP 差集为 7 条合法非 REST 命令（4 条 Desktop-only 
 | `move_session_to_project_cmd` | `PATCH /api/sessions/{sessionId}/project` | ✅ |
 | `list_project_memories_cmd` | `GET /api/projects/{id}/memories` | ✅ |
 
+`list_projects_cmd` / `GET /api/projects` 接受可选 `active_session_id`（HTTP query `activeSessionId`）：正在打开的那个会话会从其所属项目的未读聚合里排除（在 SQL 里按已读处理），使项目徽标与“当前会话读作 0”一致，无需前端跨数据源相减。
+
 **项目文件浏览器（workspace-scoped filesystem）**——上传/读写改走作用域文件管理 API（旧的 `list_project_files_cmd` / `upload_project_file_cmd` / `delete_project_file_cmd` / `rename_project_file_cmd` / `read_project_file_content_cmd` 五条命令与对应 `/api/projects/{id}/files*` 路由已删除）。命令以 `{ scope: "session"|"project", scopeId, ... }` 寻址，后端 `WorkspaceScope` 解析工作目录并做越界校验：
 
 | Tauri 命令 | HTTP 路由 | 对齐 |
@@ -575,6 +577,7 @@ KB 文件预览端点是**纯 owner 平面，无 session 参数、无 owner fall
 | `cron_toggle_job` | `POST /api/cron/jobs/{id}/toggle` | ✅ |
 | `cron_delete_job` | `DELETE /api/cron/jobs/{id}` | ✅ |
 | `cron_run_now` | `POST /api/cron/jobs/{id}/run` | ✅ |
+| `cron_jobs_referencing_account` | `GET /api/cron/jobs-referencing-account/{accountId}` | ✅ |
 | `cron_get_run_logs` | `GET /api/cron/jobs/{jobId}/logs` | ✅ |
 | `cron_get_calendar_events` | `GET /api/cron/calendar` | ✅ |
 
@@ -616,6 +619,8 @@ KB 文件预览端点是**纯 owner 平面，无 session 参数、无 owner fall
 |---|---|---|
 | `get_async_tools_config` | `GET /api/config/async-tools` | ✅ |
 | `save_async_tools_config` | `PUT /api/config/async-tools` | ✅ |
+| `get_cron_config` | `GET /api/config/cron` | ✅ |
+| `save_cron_config` | `PUT /api/config/cron` | ✅ |
 | `get_deferred_tools_config` | `GET /api/config/deferred-tools` | ✅ |
 | `save_deferred_tools_config` | `PUT /api/config/deferred-tools` | ✅ |
 | `get_memory_selection_config` | `GET /api/config/memory-selection` | ✅ |
@@ -1024,6 +1029,7 @@ Context / Cache 共用单 SQL `get_session_last_assistant_token_row`，避免渲
 | `open_url` | `POST /api/desktop/open-url` | HTTP 端点保留但返回 no-op（浏览器无系统调用权限） |
 | `open_directory` | `POST /api/desktop/open-directory` | 同上 |
 | `reveal_in_folder` | `POST /api/desktop/reveal-in-folder` | 同上 |
+| `set_dock_badge_cmd` | — | 仅桌面：把全局未读总数写到 app icon / Dock 角标（`count=0` 清除）；前端按 `isTauriMode()` 门控，Web 端不调用，无 HTTP 端点 |
 | `get_system_prompt` | `POST /api/system-prompt` | 调试端点 |
 
 ### Filesystem

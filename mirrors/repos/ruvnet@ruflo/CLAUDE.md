@@ -1158,6 +1158,9 @@ mcp__claude-flow__metaharness_audit_list
 mcp__claude-flow__metaharness_audit_trend
 mcp__claude-flow__metaharness_similarity          # iter 36 — ADR-152 §3.1 genome similarity
 mcp__claude-flow__metaharness_drift_from_history  # iter 53 — 1-command drift detection
+mcp__claude-flow__metaharness_bench               # ADR-153 — create/verify bench suites for evolve --bench
+mcp__claude-flow__metaharness_evolve              # MAP-Elites driver — evolve a harness across bench suites
+mcp__claude-flow__metaharness_security_bench      # security-focused benchmark suite gate
 ```
 
 ### Routing integration (ADR-148/149)

@@ -4,6 +4,20 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.193](https://github.com/Piebald-AI/claude-code-system-prompts/commit/10261ed)
+
+_+4,615 tokens_
+
+- **NEW:** Agent Prompt: Fleet agent suggestion scope personalization — Adds a fleet-agent scope personalizer that narrows three generic coding task scopes using recently merged PR titles, files, and bodies, returning JSON-only 2-6 word scope phrases or empty fallbacks.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Replaces the public-surface blocking rule with public data-sharing upload coverage for `gh gist create`/`edit`, including secret gists, `gh repo create` via the web UI so a human chooses org and visibility, and public paste/diagram/data-sharing services.
+- Agent Prompt: Status line setup — Tweaks the repository `host` example comment in the status-line JSON schema from a quoted string example to unquoted `github.com` wording.
+- Data: Managed Agents endpoint reference — Updates agent-create model shorthand guidance to use the current Opus model ID in full config objects and documents fast mode across Opus 4.8, 4.7, and 4.6, with Opus 4.8 as the durable tier and distinct deprecation behavior for 4.6 and 4.7.
+- Skill: Artifact design — Adds a `dataviz-callout` marker before the design-process section.
+- Skill: Building LLM-powered applications with Claude — Updates fast-mode guidance to include Opus 4.6 alongside Opus 4.8 and 4.7, mark both 4.6 and 4.7 fast mode as deprecated with different removal behavior, and preserve caller-chosen fast-mode model strings while flagging deprecation.
+- Skill: Model migration guide — Updates migration guidance for `-fast` model variants, treating Opus 4.8 as the durable fast-mode target, leaving existing Opus 4.6 fast strings unchanged with a deprecation comment, and warning not to migrate to deprecated Opus 4.7 fast mode.
+- System Reminder: Async agent launched — Removes the fallback instruction to work on non-overlapping tasks or briefly report the launched agent and end the response, leaving only the warning not to duplicate the async agent's files or topics.
+- Tool Description: Artifact — Adds guidance to include a one-sentence `<meta name="description">` so artifact gallery cards get a subtitle.
+
 # [2.1.191](https://github.com/Piebald-AI/claude-code-system-prompts/commit/a52517c)
 
 _+59 tokens_

@@ -1,4 +1,4 @@
-﻿Set-StrictMode -Version Latest
+Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 function Get-ReverseUserProfilePath {
@@ -47,7 +47,8 @@ function Get-ReverseToolCatalog {
             Name = 'jadx'
             Skill = 'apk-reverse'
             Purpose = 'Java 反编译'
-            VersionArgs = @('--version')
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'jadx' },
                 [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\jadx\bin\jadx.bat') }
@@ -57,7 +58,8 @@ function Get-ReverseToolCatalog {
             Name = 'apktool'
             Skill = 'apk-reverse'
             Purpose = 'APK 解包与重建'
-            VersionArgs = @('--version')
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'apktool' },
                 [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\apktool\apktool.bat') },
@@ -87,7 +89,8 @@ function Get-ReverseToolCatalog {
             Name = 'apksigner'
             Skill = 'apk-reverse'
             Purpose = 'APK 签名'
-            VersionArgs = @('--version')
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'apksigner' }
             )
@@ -96,7 +99,8 @@ function Get-ReverseToolCatalog {
             Name = 'zipalign'
             Skill = 'apk-reverse'
             Purpose = 'APK 对齐'
-            VersionArgs = @('--version')
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'zipalign' }
             )
@@ -105,7 +109,8 @@ function Get-ReverseToolCatalog {
             Name = 'frida'
             Skill = 'apk-reverse'
             Purpose = 'Frida 动态注入'
-            VersionArgs = @('--version')
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'frida' },
                 [pscustomobject]@{ Type = 'path'; Value = (Join-ReverseOptionalPath -Path $appData -ChildPath 'Python\Python3xx\Scripts\frida.exe') }
@@ -115,7 +120,8 @@ function Get-ReverseToolCatalog {
             Name = 'frida-ps'
             Skill = 'apk-reverse'
             Purpose = 'Frida 进程枚举'
-            VersionArgs = @('--version')
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'frida-ps' },
                 [pscustomobject]@{ Type = 'path'; Value = (Join-ReverseOptionalPath -Path $appData -ChildPath 'Python\Python3xx\Scripts\frida-ps.exe') }
@@ -197,7 +203,8 @@ function Get-ReverseToolCatalog {
             Name = 'python'
             Skill = 'reverse-engineering'
             Purpose = '辅助脚本执行'
-            VersionArgs = @('--version')
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'python' },
                 [pscustomobject]@{ Type = 'command'; Value = 'python3' }
@@ -207,7 +214,8 @@ function Get-ReverseToolCatalog {
             Name = 'pip'
             Skill = 'reverse-engineering'
             Purpose = 'Python 包管理'
-            VersionArgs = @('--version')
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'pip' },
                 [pscustomobject]@{ Type = 'command'; Value = 'pip3' }
@@ -217,7 +225,8 @@ function Get-ReverseToolCatalog {
             Name = 'node'
             Skill = 'js-reverse'
             Purpose = '运行 Node 侧 JS 复现与 MCP 客户端'
-            VersionArgs = @('--version')
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'node' }
             )
@@ -226,7 +235,8 @@ function Get-ReverseToolCatalog {
             Name = 'npx'
             Skill = 'js-reverse'
             Purpose = '运行临时 npm 包与 MCP 入口'
-            VersionArgs = @('--version')
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'npx' }
             )
@@ -245,7 +255,8 @@ function Get-ReverseToolCatalog {
             Name = 'agent-browser'
             Skill = 'browser-automation'
             Purpose = '浏览器自动化（Playwright）：打开页面、点击、填表、爬取、截图'
-            VersionArgs = @('--version')
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'agent-browser' }
             )
@@ -266,7 +277,8 @@ function Get-ReverseToolCatalog {
             Name = 'playwright'
             Skill = 'browser-automation'
             Purpose = 'Playwright 浏览器引擎'
-            VersionArgs = @('--version')
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'playwright' },
                 [pscustomobject]@{ Type = 'path'; Value = (Join-ReverseOptionalPath -Path $appData -ChildPath 'npm\playwright.ps1') }
@@ -276,7 +288,8 @@ function Get-ReverseToolCatalog {
             Name = 'proxycat'
             Skill = 'pentest-tools'
             Purpose = '代理池管理与轮换'
-            VersionArgs = @('--version')
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'proxycat' }
             )
@@ -293,10 +306,21 @@ function Get-ReverseToolCatalog {
             )
         }
         [pscustomobject]@{
+            Name = 'pentestswarm'
+            Skill = 'pentest-tools'
+            Purpose = '群体智能自主渗透与 MCP 执行'
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
+            Fallbacks = @(
+                [pscustomobject]@{ Type = 'command'; Value = 'pentestswarm' }
+            )
+        }
+        [pscustomobject]@{
             Name = 'nmap'
             Skill = 'pentest-tools'
             Purpose = '端口扫描与服务识别'
-            VersionArgs = @('--version')
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'nmap' },
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Program Files (x86)\Nmap\nmap.exe' },
@@ -911,4 +935,3 @@ function Get-ReverseToolReport {
         }
     }
 }
-

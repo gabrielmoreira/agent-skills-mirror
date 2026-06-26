@@ -22,6 +22,11 @@ In the idd-skill source repository, the following optional helpers were adopted:
   across limited scope, clear verification, and autonomous completion
   criteria (referenced in
   [kurone-kito/idd-skill#505](https://github.com/kurone-kito/idd-skill/issues/505))
+- `scripts/discover-shared-file-overlap.mjs` for read-only A4 Step 2
+  high-contention shared-file overlap evidence: it flags candidate issues
+  whose `## Candidate files` collide with actively-claimed / open-PR work on
+  the F-phase bundle instruction files (referenced in
+  [kurone-kito/idd-skill#1019](https://github.com/kurone-kito/idd-skill/issues/1019))
 - `scripts/suitability-triage.mjs` for A4.5 seven-check suitability
   evaluation (referenced in
   [kurone-kito/idd-skill#392](https://github.com/kurone-kito/idd-skill/issues/392))
@@ -37,6 +42,11 @@ In the idd-skill source repository, the following optional helpers were adopted:
   `review-watermark` / `review-baseline` marker bodies (emit-only, no
   network write; referenced in
   [kurone-kito/idd-skill#900](https://github.com/kurone-kito/idd-skill/issues/900))
+- `scripts/post-idd-marker.mjs` for rendering and POSTing any operational
+  marker (`claim` / `unclaim` / `watermark` / `baseline` / `advisory` /
+  `advisory-recovery`) via the reliable JSON path that HTML-comment-first
+  bodies require (referenced in
+  [kurone-kito/idd-skill#1047](https://github.com/kurone-kito/idd-skill/issues/1047))
 - `scripts/resume-claim-routing.mjs` for Resume Step 1 claim-state
   evaluation and takeover routing (referenced in
   [kurone-kito/idd-skill#394](https://github.com/kurone-kito/idd-skill/issues/394))
@@ -93,6 +103,16 @@ In the idd-skill source repository, the following optional helpers were adopted:
   `trustCollaboratorMarkers` config field)
 - `scripts/review-disposition-verify.mjs` for read-only E7 disposition
   marker presence verification across PATH A and PATH B items
+- `scripts/disposition-non-review-notices.mjs` for dry-run/apply
+  dispositioning of advisory non-review notices (rate-limit / usage-limit)
+  on a PR — emitting or posting the canonical E6 `**Rejected** — {bot} did
+  not review HEAD …` marker-first, one comment per notice, idempotently and
+  fail-closed (only classifier-recognized notices)
+- `scripts/resolve-review-thread.mjs` for the E13 write-side disposition:
+  post the reply to the review thread that owns a review comment **and**
+  resolve that thread in one invocation — dry-run by default, `--apply`
+  re-validates the active claim and posts the reply before resolving
+  (a failed reply never leaves a silently-resolved thread)
 
 **Operator Recovery Helpers:**
 
@@ -233,6 +253,53 @@ one or more issues.
     "summary": { "total": 2, "viableCount": 1, "discardedCount": 1, "discardedByCriterion": { "limited_scope": 1, "autonomous_completion": 1 } }
   }
   ```
+
+### Discover Shared File Overlap Contract
+
+`scripts/discover-shared-file-overlap.mjs` is the read-only file-contention
+companion to the `discover-roadmap-graph` `--with-claim-state` claim-eligibility
+annotation. For a set of candidate issues it reports the high-contention shared
+files each would touch (parsed from its `## Candidate files` section) and
+whether any overlap an actively-claimed or open-PR issue, and it emits the soft
+A4 Step 2 de-prioritization order. Evidence-only: it claims nothing.
+
+- **Inputs**: `--candidate <number>` (repeatable) or `--candidates <n1,n2>`,
+  with optional `--owner <owner>`, `--repo <repo>`, `--policy <path>`,
+  `--manifest <path>` (default `audit/sync-manifest.json`), `--bundles
+  <id1,id2>` (default `bundle-review,bundle-merge`), `--now <ISO8601>`, and
+  `--check-overlap`. The cross-issue active-set discovery (open PRs plus the
+  claim comments of issues that have a remote `issue/<n>-*` branch, resolved
+  with the shared claim-state rules and the configured claim stale age) is
+  **gated behind `--check-overlap`** because it adds GitHub API cost; without it
+  each candidate's high-contention files are still reported. **Coverage**
+  (best-effort, no repo-wide comment scan): open-PR overlap scans open PRs
+  (bounded by the `gh pr list` page cap); active-claim overlap covers every
+  issue that has a remote `issue/<n>-*` branch (every IDD claim creates one once
+  pushed, paginated to the end), so a non-stale claim held by another session is
+  detected even when it is outside the unclaimed candidate set being ranked. A
+  claim whose branch is not yet pushed is picked up once it appears remotely.
+- **High-contention set**: the union of the named bundles' member files plus
+  `audit/sync-manifest.json`. Instruction files are keyed by their repo-wide
+  unique basename so a source path, mirror path, or bare citation all match.
+- **JSON output**:
+  - `repository`: `{ owner: string, repo: string }`
+  - `checkedOverlap`: `boolean`
+  - `highContentionFiles`: `string[]` (sorted)
+  - `candidates`: `[{ number: number, score: number | null,`
+    `effectiveScore: number, candidateFiles: string[],`
+    `highContentionTouched: string[], overlaps: [{ number: number,`
+    `reason: "claim" | "pr", files: string[] }], overlapFlag: boolean }]`
+  - `recommendedOrder`: `number[]` — candidate numbers after the soft
+    tie-breaker (score desc, then non-overlapping first within a score band,
+    then issue number). It does **not** apply `discover.selectionDesync`; the
+    agent layers the overlap nudge after its own desync pick. Advisory only;
+    never a hard gate.
+  - `summary`: `{ candidateCount: number, flaggedCount: number,`
+    `activeIssueCount: number }`
+- **Behavior boundary**: evidence-only and heuristic. `## Candidate files` are
+  advisory cues, not an exhaustive manifest, so the overlap signal must stay a
+  soft A4 Step 2 tie-breaker — never a claim gate. The written discover
+  instructions remain authoritative.
 
 The exported template remains portable without a `scripts/` directory.
 Adopters can copy the helper separately when they want the same
@@ -445,6 +512,66 @@ The adopted helper boundaries are intentionally narrow:
   authoritative; this helper only reduces command-copy variance when
   confirming marker presence before triage exits
 
+### Non-review-notice disposition (E6 helper-first)
+
+- Command:
+  `node scripts/disposition-non-review-notices.mjs --pr <number>`
+  (dry-run); add `--apply --claim-issue <n> --claim-id <id>` to post.
+  Pass `--advisory-bot-logins` / `--trusted-marker-logins` to override the
+  defaults.
+- Detects advisory-bot regular comments that the single-sourced
+  `isAdvisoryNonReviewNotice` classifier (`protocol-helpers`) recognizes
+  (rate-limit / usage-limit), and emits / posts the canonical
+  `**Rejected** — {bot-login} did not review HEAD {sha} ({reason}); this
+  is not a completed review` — marker-first, one comment per notice,
+  naming the bot login so the carry-forward attributes it author-scoped.
+- **Idempotent**: per advisory bot, existing trusted
+  `isNonReviewNoticeDisposition` comments naming that bot already cover
+  that many of its notices, so a re-run posts nothing new.
+- **Fail-closed**: only classifier-recognized notices are dispositioned;
+  real reviews and review threads are never touched. `--apply`
+  re-validates the active claim and retries once on a transient post
+  failure.
+- Stable contract: [`disposition-non-review-notices.schema.json`][disposition-non-review-notices-schema].
+- The written E6 non-review-notice rule in
+  `idd-review-triage.instructions.md` stays authoritative; this helper is
+  the helper-first convenience path with the manual `gh api` fallback
+  retained.
+
+### E13 reply-and-resolve (resolve-review-thread)
+
+- Command:
+  `node scripts/resolve-review-thread.mjs --pr <number> --comment-id <id>`
+  (dry-run); add `--body "<disposition>" --apply --claim-issue <n>
+  --claim-id <id>` to post the reply and resolve the thread. Optional
+  `--owner` / `--repo` / `--agent-id` / `--trusted-marker-logins`.
+- Maps `--comment-id` (the review comment's REST id) to its owning review
+  thread by matching it against the `databaseId` of the comments inside each
+  GraphQL `reviewThreads` node (both the threads and the nested comments
+  connections are paginated to completion), then in
+  `--apply` posts the reply against the thread's **top-level** comment (REST
+  `pulls/.../comments/{root-id}/replies` — GitHub does not support replies to
+  replies, so a `--comment-id` naming a later reply still resolves the right
+  thread) and resolves the thread (GraphQL `resolveReviewThread`). Reply
+  first, resolve second, so a failed reply never resolves the thread without a
+  disposition.
+- **Dry-run** reports the resolved `threadId` and current `alreadyResolved`
+  state without posting; a comment with no owning thread omits `threadId`
+  and includes an `error` note.
+- **Fail-closed**: `--apply` requires `--body` and the
+  `--claim-issue` / `--claim-id` pair, re-validates the active claim before
+  **each** of the reply and the resolve (scoped to trusted marker authors,
+  aborting on a targeting `forced-handoff`), and binds the mutation to the
+  claimed PR by requiring the active claim's branch to equal the PR's head
+  branch. GraphQL `errors` fail fast rather than masquerading as a missing
+  thread, and a partial apply (reply posted, resolve not confirmed) still
+  reports the posted `replyId`.
+- Stable contract: [`resolve-review-thread.schema.json`][resolve-review-thread-schema].
+- The written E13 reply-and-resolve rule in
+  `idd-review-fix.instructions.md` stays authoritative; this helper is the
+  helper-first convenience path with the manual REST + GraphQL fallback
+  retained.
+
 ## Stable Helper Evidence Outputs
 
 ### Operator forced-handoff helpers
@@ -638,6 +765,38 @@ Interpretation rules:
 - The written marker formats in `idd-overview-core` (claim) and
   `idd-review-snapshot` (watermark/baseline) stay canonical; the render
   functions live in `protocol-helpers` with byte-shape tests
+
+### Post operational markers (write-side)
+
+- Source repo / vendored-node command:
+  `node scripts/post-idd-marker.mjs --type <type> --target <issue|pr> <number> <fields...>`
+  (dry-run prints a JSON envelope whose `body` field is the marker); add
+  `--apply` to POST it.
+- Package-manager / ephemeral-npx command: use the profile-selected
+  `idd:post-idd-marker` command from the helper runtime manifest wiring above
+- Write-side companion to `emit-marker`: it renders the canonical body for
+  each operational marker `<type>` (`claim`, `unclaim`, `watermark`,
+  `baseline`, `advisory`, `advisory-recovery`) by reusing the single-sourced
+  `protocol-helpers` renderers, then POSTs it as a JSON document
+  (`{"body": …}`) via `gh api --method POST .../comments --input -`. The JSON
+  path is mandatory because `gh issue comment` / `gh api -f body=` silently
+  reject the HTML-comment-first claim-family bodies.
+- The `claim` / `unclaim` / `watermark` / `baseline` bodies are
+  HTML-comment-first with a visible "Do not edit" note; `advisory` /
+  `advisory-recovery` are the **plain-text** `advisory-wait:` /
+  `advisory-wait-recovery:` forms (no visible note) so the AW2 / shell-fallback
+  recognizers still match.
+- Fields per type: `claim` takes `--agent-id --claim-id --supersedes
+  --timestamp --branch`; `unclaim` takes `--agent-id --claim-id --timestamp`;
+  `watermark` takes `--agent-id --claim-id --head-sha --max-activity-at
+  --total-item-count --ci-completed-at`; `baseline` takes `--agent-id
+  --claim-id --sha`; `advisory` / `advisory-recovery` take `--agent-id
+  --head-sha --timestamp`.
+- **No claim/state gating** (the `emit-marker` philosophy): this is a
+  single-marker render+POST primitive, so the calling phase must run its
+  claim-revalidation gate before `--apply`, exactly as the manual POST path it
+  replaces already requires.
+- Stable contract: [`post-idd-marker.schema.json`][post-idd-marker-schema].
 
 ### Resume claim and route evidence
 
@@ -1052,5 +1211,8 @@ pre-merge readiness or later claim-state inspection. They should not
 replace the written decision tables.
 
 [advisory-wait-state-schema]: https://kurone-kito.github.io/idd-skill/schemas/advisory-wait-state.schema.json
+[disposition-non-review-notices-schema]: https://kurone-kito.github.io/idd-skill/schemas/disposition-non-review-notices.schema.json
 [idd-merge-execute-schema]: https://kurone-kito.github.io/idd-skill/schemas/idd-merge-execute.schema.json
+[post-idd-marker-schema]: https://kurone-kito.github.io/idd-skill/schemas/post-idd-marker.schema.json
 [pre-merge-readiness-schema]: https://kurone-kito.github.io/idd-skill/schemas/pre-merge-readiness.schema.json
+[resolve-review-thread-schema]: https://kurone-kito.github.io/idd-skill/schemas/resolve-review-thread.schema.json

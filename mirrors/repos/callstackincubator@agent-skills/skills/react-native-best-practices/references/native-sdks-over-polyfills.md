@@ -21,8 +21,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 **After (native implementations):**
 
 ```tsx
-// Hermes has native Intl.DateTimeFormat support, so this polyfill is often unnecessary
-import { createHash } from 'react-native-quick-crypto';  // 58x faster
+// Keep this polyfill only if the app uses DateTimeFormat options/locales
+// unsupported by the target Hermes/platform combination.
+import { createHash } from 'react-native-quick-crypto';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 ```
 
@@ -54,12 +55,12 @@ import '@formatjs/intl-relativetimeformat/locale-data/en';
 import '@formatjs/intl-displaynames/polyfill';
 ```
 
-**Hermes Support (as of March 2026):**
+**Hermes Intl support must be checked against the Hermes version in the app:**
 
 | API | Hermes | Keep Polyfill? |
 |-----|--------|----------------|
 | `Intl.Collator` | ✅ | No |
-| `Intl.DateTimeFormat` | ✅ | No |
+| `Intl.DateTimeFormat` | ⚠️ Partial | Maybe |
 | `Intl.NumberFormat` | ⚠️ Partial | Maybe |
 | `Intl.getCanonicalLocales()` | ✅ | No |
 | `Intl.supportedValuesOf()` | ✅ | No |
@@ -70,7 +71,7 @@ import '@formatjs/intl-displaynames/polyfill';
 | `Intl.ListFormat` | ❌ | Yes |
 | `Intl.Segmenter` | ❌ | Yes |
 
-`Intl.NumberFormat` is not fully covered on Hermes across platforms. In particular, `Intl.NumberFormat.prototype.formatToParts()` still has an iOS gap, so keep `@formatjs/intl-numberformat` if your app relies on that method.
+Constructor support does not guarantee every option or method your app uses. Keep polyfills for any API, option, locale data, or method the app depends on but Hermes does not fully support on the target platform.
 
 ```tsx
 // AFTER: Keep only the polyfills your app still needs
@@ -97,8 +98,6 @@ Replace JS crypto with native C++ implementation:
 npm install react-native-quick-crypto
 ```
 
-**Performance**: Up to 58x faster than `crypto-js`.
-
 ```tsx
 // BEFORE: Slow JS implementation
 import CryptoJS from 'crypto-js';
@@ -111,6 +110,8 @@ Essential for:
 - Web3 wallet seed generation
 - CSPRNG (Cryptographically Secure Random Numbers)
 - Any heavy cryptographic operations
+
+Benchmark crypto changes on the target device class. Native implementations usually reduce JS-thread work, but the exact win depends on algorithm, payload size, and bridge/JSI overhead.
 
 ### 3. Use Native Stack Navigator
 
@@ -169,7 +170,6 @@ const Tabs = createNativeBottomTabNavigator();
 | Menus | `zeego` | Native menus (Radix-like API) |
 | Slider | `@react-native-community/slider` | Native slider |
 | Date Picker | `react-native-date-picker` | Native date/time picker |
-| Image | `react-native-fast-image` | Native image caching |
 
 ## Decision Matrix
 

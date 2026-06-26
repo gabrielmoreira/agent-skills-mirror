@@ -2,55 +2,56 @@
 name: rare-high-impact-variants
 description: >-
   Count rare, high-impact loss-of-function variants carried in a VCF, annotated with molecular consequence and population allele frequency
-version: 0.1.0
-author: Manuel Corpas
-domain: genomics
 license: MIT
-
-inputs:
-  - name: input_file
-    type: file
-    format: [vcf, csv, tsv, txt]
-    description: Primary input data file
-    required: true
-
-outputs:
-  - name: report
-    type: file
-    format: md
-    description: Analysis report
-  - name: result
-    type: file
-    format: json
-    description: Machine-readable results
-
-dependencies:
-  python: ">=3.11"
-  packages: []
-
-tags: [count, rare, high-impact, loss-of-function, variant-burden, lof]
-
-demo_data:
-  - path: demo_input.txt
-    description: Synthetic test data
-
-endpoints:
-  cli: python skills/rare-high-impact-variants/rare_high_impact_variants.py --input {input_file} --output {output_dir}
-
 metadata:
+  version: 0.1.0
+  author: Manuel Corpas
+  domain: genomics
+  inputs:
+    - name: input_file
+      type: file
+      format:
+        - vcf
+        - csv
+        - tsv
+        - txt
+      description: Primary input data file
+      required: true
+  outputs:
+    - name: report
+      type: file
+      format: md
+      description: Analysis report
+    - name: result
+      type: file
+      format: json
+      description: Machine-readable results
+  dependencies:
+    python: ">=3.11"
+  tags:
+    - count
+    - rare
+    - high-impact
+    - loss-of-function
+    - variant-burden
+    - lof
+  demo_data:
+    - path: demo_input.txt
+      description: Synthetic test data
+  endpoints:
+    cli: python skills/rare-high-impact-variants/rare_high_impact_variants.py --input {input_file} --output {output_dir}
   openclaw:
     requires:
       bins:
         - python3
-      env: []
-      config: []
     always: false
     homepage: https://github.com/ClawBio/ClawBio
-    os: [macos, linux]
+    os:
+      - macos
+      - linux
     install:
       - kind: pip
         package: pandas
-        bins: []
     trigger_keywords:
       - count
       - rare,

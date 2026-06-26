@@ -528,10 +528,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 466 | ✓ | [`.agents/skills/vercel-react-best-practices/rules/server-parallel-nested-fetching.md`](.agents/skills/vercel-react-best-practices/rules/server-parallel-nested-fetching.md) |
 | 467 | ✓ | [`.agents/skills/vercel-react-best-practices/rules/server-serialization.md`](.agents/skills/vercel-react-best-practices/rules/server-serialization.md) |
 | 468 | ✓ | [`.agents/skills/vercel-react-best-practices/SKILL.md`](.agents/skills/vercel-react-best-practices/SKILL.md) |
-| 469 | ✓ | [`.agents/skills/video_toolkit/SKILL.md`](.agents/skills/video_toolkit/SKILL.md) |
-| 470 | ✓ | [`.agents/skills/video-download/SKILL.md`](.agents/skills/video-download/SKILL.md) |
-| 471 | ✓ | [`.agents/skills/video-edit/references/operations.md`](.agents/skills/video-edit/references/operations.md) |
-| 472 | ✓ | [`.agents/skills/video-edit/SKILL.md`](.agents/skills/video-edit/SKILL.md) |
+| 469 | ✓ | [`.agents/skills/video-download/SKILL.md`](.agents/skills/video-download/SKILL.md) |
+| 470 | ✓ | [`.agents/skills/video-edit/references/operations.md`](.agents/skills/video-edit/references/operations.md) |
+| 471 | ✓ | [`.agents/skills/video-edit/SKILL.md`](.agents/skills/video-edit/SKILL.md) |
+| 472 | ✓ | [`.agents/skills/video-toolkit/SKILL.md`](.agents/skills/video-toolkit/SKILL.md) |
 | 473 | ✓ | [`.agents/skills/video-translate/SKILL.md`](.agents/skills/video-translate/SKILL.md) |
 | 474 | ✓ | [`.agents/skills/video-understand/references/output-format.md`](.agents/skills/video-understand/references/output-format.md) |
 | 475 | ✓ | [`.agents/skills/video-understand/scripts/understand_video.py`](.agents/skills/video-understand/scripts/understand_video.py) |

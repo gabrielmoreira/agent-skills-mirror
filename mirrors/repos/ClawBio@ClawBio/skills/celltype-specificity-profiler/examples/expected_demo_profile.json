@@ -1,0 +1,94 @@
+{
+  "skill": "celltype-specificity-profiler",
+  "gene": "MS4A1",
+  "atlas": "pbmc3k (10x, real; scanpy bundled)",
+  "tau": 0.956,
+  "tau_threshold": 0.69,
+  "tau_threshold_note": "cohort-specific K-means(k=2) midpoint of the trial-level tau distribution in Zhang et al. 2026 (tau=0.69); an interpretive default, not a universal cutoff",
+  "n_cell_types_used_for_tau": 7,
+  "n_cell_types_excluded_small": 1,
+  "bimodality_coefficient": 0.4936,
+  "interpretation": "cell-type-specific (tau > 0.69)",
+  "low_expression": false,
+  "top_cell_types": [
+    {
+      "cell_type": "B cells",
+      "mean_expr": 0.993,
+      "pct_expressing": 0.8596
+    },
+    {
+      "cell_type": "FCGR3A+ Monocytes",
+      "mean_expr": 0.0601,
+      "pct_expressing": 0.0867
+    },
+    {
+      "cell_type": "Dendritic cells",
+      "mean_expr": 0.0562,
+      "pct_expressing": 0.0811
+    }
+  ],
+  "per_celltype_stats": [
+    {
+      "cell_type": "B cells",
+      "mean_expr": 0.993,
+      "median_expr": 1.0986,
+      "pct_expressing": 0.8596,
+      "n_cells": 342
+    },
+    {
+      "cell_type": "FCGR3A+ Monocytes",
+      "mean_expr": 0.0601,
+      "median_expr": 0.0,
+      "pct_expressing": 0.0867,
+      "n_cells": 150
+    },
+    {
+      "cell_type": "Dendritic cells",
+      "mean_expr": 0.0562,
+      "median_expr": 0.0,
+      "pct_expressing": 0.0811,
+      "n_cells": 37
+    },
+    {
+      "cell_type": "Megakaryocytes",
+      "mean_expr": 0.0462,
+      "median_expr": 0.0,
+      "pct_expressing": 0.0667,
+      "n_cells": 15
+    },
+    {
+      "cell_type": "CD8 T cells",
+      "mean_expr": 0.0399,
+      "median_expr": 0.0,
+      "pct_expressing": 0.0538,
+      "n_cells": 316
+    },
+    {
+      "cell_type": "CD14+ Monocytes",
+      "mean_expr": 0.0361,
+      "median_expr": 0.0,
+      "pct_expressing": 0.0521,
+      "n_cells": 480
+    },
+    {
+      "cell_type": "NK cells",
+      "mean_expr": 0.036,
+      "median_expr": 0.0,
+      "pct_expressing": 0.0519,
+      "n_cells": 154
+    },
+    {
+      "cell_type": "CD4 T cells",
+      "mean_expr": 0.0338,
+      "median_expr": 0.0,
+      "pct_expressing": 0.0472,
+      "n_cells": 1144
+    }
+  ],
+  "trial_prior": {
+    "note": "Odds ratios from Zhang et al. 2026 (bioRxiv 10.64898/2026.02.23.707551)",
+    "phase_I_to_II_OR": 1.27,
+    "primary_endpoint_OR": 1.11,
+    "lower_AE_rate": true
+  }
+}

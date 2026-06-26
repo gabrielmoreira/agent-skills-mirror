@@ -8,7 +8,20 @@
 本 README 是给 AI Agent 读取和执行的 bootstrap 入口，刻意把执行规则放在前面。
 如果你只是想快速了解项目定位、架构、能力边界和 Demo，请先阅读人类友好的概览文档。
 
+## License
+
+本项目（`reverse-skill`）主体采用 **MIT License**。
+
+### 子模块与第三方依赖许可说明
+
+- **CTF-Sandbox-Orchestrator/**：采用 **GNU GPLv3** 协议（详见该目录下的 `LICENSE` 文件）。
+- **Pentest Swarm AI**（`pentestswarm` 能力）：原项目采用 **AGPL-3.0** 协议。本仓库仅通过命令/MCP 调用，不包含其源代码。
+- 其他工具（jadx、frida、nmap、burpsuite-mcp 等）请参考各自官方许可。
+
+使用本项目时，请遵守各子模块和依赖工具的许可证要求。
+
 AI 社区：https://linux.do
+
 
 > 本包放在哪个目录都行，AI 会自动检测实际路径。以下用 `<SKILL_ROOT>` 代指你的实际安装位置。
 

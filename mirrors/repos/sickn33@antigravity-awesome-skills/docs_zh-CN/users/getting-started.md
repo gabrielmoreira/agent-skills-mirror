@@ -1,4 +1,4 @@
-# Antigravity Awesome Skills 入门指南 (V11.5.0)
+# Antigravity Awesome Skills 入门指南 (V13.2.0)
 
 **新手入门？本指南将在 5 分钟内帮助您增强 AI 代理的能力。**
 
@@ -30,7 +30,7 @@ AI 代理（如 **Claude Code**、**Gemini**、**Cursor**）非常智能，但�
 npx antigravity-awesome-skills
 ```
 
-默认情况下，这会克隆到 `~/.agents/skills`。使用 `--cursor`、`--claude`、`--gemini`、`--codex` 或 `--kiro` 为特定工具安装，或使用 `--path <dir>` 指定自定义位置。运行 `npx antigravity-awesome-skills --help` 查看详细信息。
+默认情况下，这会克隆到 `~/.agents/skills`。使用 `--cursor`、`--claude`、`--gemini`、`--codex`、`--kiro`、`--antigravity` 或 `--agy` 为特定工具安装，或使用 `--path <dir>` 指定自定义位置。你也可以用 `--risk`、`--category` 和 `--tags` 缩小安装范围。运行 `npx antigravity-awesome-skills --help` 查看详细信息。
 
 如果看到 404 错误，请使用：`npx github:sickn33/antigravity-awesome-skills`
 
@@ -103,8 +103,9 @@ git clone https://github.com/sickn33/antigravity-awesome-skills.git .agent/skill
 | **Kiro CLI**    | ✅ 完全支持 | 全局：`~/.kiro/skills/` · 工作区：`.kiro/skills/`                |
 | **Kiro IDE**    | ✅ 完全支持 | 全局：`~/.kiro/skills/` · 工作区：`.kiro/skills/`                |
 | **Antigravity** | ✅ 原生支持       | 全局：`~/.agents/skills/` · 工作区：`.agent/skills/` |
+| **Antigravity CLI (`agy`)** | ✅ 完全支持 | `~/.gemini/antigravity-cli/skills/` |
 | **Cursor**      | ✅ 原生支持       | `.cursor/skills/`                                                     |
-| **OpenCode**    | ✅ 完全支持 | `.agents/skills/`                                                     |
+| **OpenCode**    | ✅ 完全支持 | `.agents/skills/`（建议用 `--risk`、`--category` 或 `--tags` 做缩小安装） |
 | **AdaL CLI**    | ✅ 完全支持 | `.adal/skills/`                                                       |
 | **Copilot**     | ⚠️ 仅文本    | 手动复制粘贴                                                     |
 
@@ -112,11 +113,13 @@ git clone https://github.com/sickn33/antigravity-awesome-skills.git .agent/skill
 
 ## 信任与安全
 
-我们对技能进行分类，以便您了解正在运行的内容：
+我们对技能进行分类，以便您了解正在运行的内容。这些值直接映射到每个 `SKILL.md` 前置元数据中的 `risk:` 字段：
 
-- 🟣 **官方**：由 Anthropic/Google/供应商维护（高信任度）。
-- 🔵 **安全**：非破坏性的社区技能（只读/规划）。
-- 🔴 **风险**：修改系统或执行安全测试的技能（仅授权使用）。
+- ⚪ **`unknown`**：遗留或未分类内容，仍需要维护者分流。
+- 🟢 **`none`**：纯文本/推理指导。
+- 🔵 **`safe`**：只读或低风险操作指导。
+- 🟠 **`critical`**：会改变状态或影响部署的指导。
+- 🔴 **`offensive`**：渗透测试/红队指导，必须包含明确的 Authorized Use Only 警告。
 
 添加新技能时，高风险指导会在发布前通过仓库范围的 `security:docs` 扫描进行额外审查。
 

@@ -158,6 +158,45 @@ def save_rendered_output(rendered_content: str, output_file: str) -> Path:
     return out_path
 
 
+def _publish_metadata_path(html_path: Path) -> Path:
+    return html_path.with_name(f"{html_path.name}.publish.json")
+
+
+def _write_publish_metadata(html_path: Path, publish_result: dict[str, object]) -> None:
+    payload = {
+        "url": publish_result.get("url"),
+        "site_id": publish_result.get("site_id"),
+        "status": publish_result.get("status"),
+        "published_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    }
+    _publish_metadata_path(html_path).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def publish_rendered_html(
+    rendered: str,
+    *,
+    password: str | None = None,
+    companion_paths: list[Path] | None = None,
+) -> dict[str, object]:
+    from lib import html_publish
+
+    result = html_publish.publish_html(rendered, password=password)
+    metadata_errors: list[str] = []
+    for path in companion_paths or []:
+        try:
+            _write_publish_metadata(path, result)
+        except OSError as exc:
+            metadata_errors.append(f"{path}: {exc}")
+    if metadata_errors:
+        result = dict(result)
+        result["_metadata_errors"] = metadata_errors
+    return result
+
+
+def _publish_password_for_args(args: argparse.Namespace) -> str | None:
+    return (args.publish_password or os.environ.get("LAST30DAYS_PUBLISH_PASSWORD") or None)
+
+
 def emit_output(
     report: schema.Report,
     emit: str,
@@ -301,6 +340,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--save-dir", help="Optional directory for saving the rendered output")
     parser.add_argument("--output", help="Optional exact file path for saving the rendered output")
     parser.add_argument("--synthesis-file", help="Markdown synthesis to embed in --emit=html output")
+    parser.add_argument("--publish-html", action="store_true",
+                        help="Publish --emit=html output to ht-ml.app (explicit opt-in; public by default)")
+    parser.add_argument("--publish-password",
+                        help="Optional shared password for --publish-html; prefer LAST30DAYS_PUBLISH_PASSWORD to avoid exposing secrets in process lists")
     parser.add_argument("--store", action="store_true", help="Persist ranked findings to the SQLite research store")
     parser.add_argument("--x-handle", help="X handle for targeted supplemental search")
     parser.add_argument("--x-related", help="Comma-separated related X handles (searched with lower weight)")
@@ -313,7 +356,8 @@ def build_parser() -> argparse.ArgumentParser:
                         help="Analyze public jobs/careers postings as evidence-backed company focus signals.")
     parser.add_argument("--plan", help="JSON query plan (skips internal LLM planner). Can be a JSON string or a file path.")
     parser.add_argument("--save-suffix", help="Suffix for saved output filename (e.g., 'gemini' → kanye-west-raw-gemini.md)")
-    parser.add_argument("--subreddits", help="Comma-separated subreddit names to search (e.g., SaaS,Entrepreneur)")
+    parser.add_argument("--subreddits", help="Comma-separated broad/category subreddit names to search (e.g., SaaS,Entrepreneur)")
+    parser.add_argument("--dedicated-subreddits", help="Comma-separated entity-home subreddit names (e.g., Kanye,WestSubEver). Pulled in full (top+hot+new) and exempt from the relevance floor since the whole sub is the topic.")
     parser.add_argument("--tiktok-hashtags", help="Comma-separated TikTok hashtags without # (e.g., tella,screenrecording)")
     parser.add_argument("--tiktok-creators", help="Comma-separated TikTok creator handles (e.g., TellaHQ,taborplace)")
     parser.add_argument("--ig-creators", help="Comma-separated Instagram creator handles (e.g., tella.tv,laborstories)")
@@ -754,8 +798,11 @@ def _render_save_and_print(
             save_path=footer_save_path,
             synthesis_md=synthesis_md,
         )
+    publish_companion_paths: list[Path] = []
     if args.output:
         output_path = save_rendered_output(rendered, args.output)
+        if args.emit == "html":
+            publish_companion_paths.append(output_path)
         sys.stderr.write(f"[last30days] Saved output to {output_path}\n")
         sys.stderr.flush()
     if args.save_dir:
@@ -769,6 +816,8 @@ def _render_save_and_print(
             topic_override=comparison_topic(entity_reports) if is_comparison_html else None,
             rendered_content=rendered if is_comparison_html else None,
         )
+        if args.emit == "html":
+            publish_companion_paths.append(save_path)
         sys.stderr.write(f"[last30days] Saved output to {save_path}\n")
         comparison_peer_paths: list[Path] = []
         # Competitor / vs-mode: also save a per-entity raw file for each peer.
@@ -788,6 +837,25 @@ def _render_save_and_print(
                 f"peers={peers_display}\n"
             )
         sys.stderr.flush()
+    if args.publish_html:
+        try:
+            publish_result = publish_rendered_html(
+                rendered,
+                password=_publish_password_for_args(args),
+                companion_paths=publish_companion_paths,
+            )
+            sys.stderr.write(f"[last30days] Published HTML to {publish_result['url']}\n")
+            for warning in publish_result.get("_metadata_errors") or []:
+                sys.stderr.write(f"[last30days] Publish metadata warning: {warning}\n")
+            if publish_result.get("update_key"):
+                sys.stderr.write(
+                    "[last30days] ht-ml.app returned an update key; not writing it "
+                    "to stdout, HTML, or publish metadata.\n"
+                )
+            sys.stderr.flush()
+        except Exception as exc:
+            sys.stderr.write(f"[last30days] HTML publish failed: {exc}\n")
+            sys.stderr.flush()
     print(rendered)
     return 0
 
@@ -968,6 +1036,9 @@ def main() -> int:
     if not topic:
         parser.print_usage(sys.stderr)
         return 2
+    if args.publish_html and args.emit != "html":
+        sys.stderr.write("[last30days] --publish-html requires --emit=html\n")
+        return 2
 
     synthesis_md = None
     if args.synthesis_file:
@@ -1010,6 +1081,7 @@ def main() -> int:
     try:
         x_related = [h.strip() for h in args.x_related.split(",") if h.strip()] if args.x_related else None
         subreddits = [s.strip().removeprefix("r/") for s in args.subreddits.split(",") if s.strip()] if args.subreddits else None
+        dedicated_subreddits = [s.strip().removeprefix("r/") for s in args.dedicated_subreddits.split(",") if s.strip()] if args.dedicated_subreddits else None
         tiktok_hashtags = [h.strip().lstrip("#") for h in args.tiktok_hashtags.split(",") if h.strip()] if args.tiktok_hashtags else None
         tiktok_creators = [c.strip().lstrip("@") for c in args.tiktok_creators.split(",") if c.strip()] if args.tiktok_creators else None
         ig_creators = [c.strip().lstrip("@") for c in args.ig_creators.split(",") if c.strip()] if args.ig_creators else None
@@ -1122,6 +1194,12 @@ def main() -> int:
                 f"[Competitors] vs-mode: routing to N-pass fanout: "
                 f"{' vs '.join(vs_entities)}\n"
             )
+
+        # Dedicated subs ride the config dict (already threaded to every source
+        # fetch) so the keyless Reddit path can pull them floor-exempt without
+        # widening pipeline.run / _retrieve_stream signatures.
+        if dedicated_subreddits:
+            config["_dedicated_subreddits"] = dedicated_subreddits
 
         def _main_runner() -> schema.Report:
             r = pipeline.run(

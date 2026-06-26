@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `EverMind-AI/EverOS` — 26 default patterns, 3 followed patterns, 12 file(s) materialized.
+Mirror of `EverMind-AI/EverOS` — 26 default patterns, 3 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `EverMind-AI/EverOS` — 26 default patterns, 3 followed patterns, 12 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,12 +67,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.claude/skills/new-branch/SKILL.md`](.claude/skills/new-branch/SKILL.md) |
 | 5 | ✓ | [`.claude/skills/pr/SKILL.md`](.claude/skills/pr/SKILL.md) |
 | 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 7 | ✓ | [`docs/how-memory-works.md`](docs/how-memory-works.md) |
-| 8 | ✓ | [`docs/overview.md`](docs/overview.md) |
-| 9 | ✓ | [`docs/storage_layout.md`](docs/storage_layout.md) |
-| 10 | → | [`.claude/rules/init-py-and-reexport.md`](.claude/rules/init-py-and-reexport.md) |
-| 11 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 12 | → | [`docs/engineering.md`](docs/engineering.md) |
+| 7 | ✓ | [`docs/configuration.md`](docs/configuration.md) |
+| 8 | ✓ | [`docs/how-memory-works.md`](docs/how-memory-works.md) |
+| 9 | ✓ | [`docs/overview.md`](docs/overview.md) |
+| 10 | ✓ | [`docs/storage_layout.md`](docs/storage_layout.md) |
+| 11 | → | [`.claude/rules/init-py-and-reexport.md`](.claude/rules/init-py-and-reexport.md) |
+| 12 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 13 | → | [`docs/engineering.md`](docs/engineering.md) |
 
 ---
 

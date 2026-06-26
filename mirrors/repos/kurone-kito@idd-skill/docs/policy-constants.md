@@ -252,12 +252,20 @@ pull-request-only bypass actor that can satisfy GitHub at F3.
 
 CI enforces two layers of instruction file size limits via `audit/sync-manifest.json`.
 
+A separate `audit-docs` guard (`docBudgetGuard` in
+`audit/sync-manifest.json`) cross-checks the hardcoded budget values in the
+maintained docs against these manifest budgets, so a documented number
+cannot silently drift from the manifest. It matches budget-shaped byte
+values — four or more digits, optionally comma-grouped, followed by
+`bytes` — so keep any non-budget value of that shape out of the guarded
+files, or express it without the `bytes` suffix.
+
 ### Per-file limits
 
 | Limit type    | Value        | Applies to                                                                 |
 | ------------- | ------------ | -------------------------------------------------------------------------- |
 | Always-loaded | 20,000 bytes | Files with `applyTo: "**"` in `.github/instructions/idd-*.instructions.md` |
-| Phase         | 30,000 bytes | Other files in `.github/instructions/idd-*.instructions.md`                |
+| Phase         | 32,200 bytes | Other files in `.github/instructions/idd-*.instructions.md`                |
 
 ### Bundle limits
 
@@ -296,6 +304,52 @@ margin (roughly 10% headroom, the convention recorded in `audit/README.md`)
 rather than bumping to an exact fit** — an exact-fit bump leaves the next
 concurrent session with zero free bytes, forcing an immediate rebase and
 re-bump.
+
+**Near-ceiling exception.** That prefer-raise default assumes there is still
+headroom to ratchet into. When a bundle, or an individual per-file
+instruction file, already sits in a high-utilization band — roughly **95%
+or more** of its `limitBytes` (or of the per-file phase cap) — flip the
+default and **prefer trimming or splitting the net addition over another
+ratchet bump**. The trade-off inverts only here, at the top of the range:
+below the band, the churn and terminology-drift cost of trimming outweighs a
+small raise; near the ceiling, each further bump raises the
+**always-resident review/merge instruction floor** — the `bundle-review` and
+`bundle-merge` members load on every F-phase session — which is the scarcest
+budget for smaller-context models. Read the two as one policy: raise by
+default while headroom remains, and trim or split once headroom is nearly
+gone.
+
+### High-contention shared files
+
+A small set of files concentrates concurrent autopilot edits and therefore
+conflicts most often: the **F-phase bundle instruction files** (the
+`bundle-review` and `bundle-merge` members — `idd-overview-core`,
+`idd-overview-appendix`, `idd-review-snapshot`, `idd-review-triage`,
+`idd-review-fix`, `idd-advisory-wait`, `idd-ci`, `idd-pre-merge`,
+`idd-merge-handoff`, `idd-merge`) and the single-line entries in
+`audit/sync-manifest.json`. When a change touches one of these:
+
+- **Expect a merge-from-main conflict** and keep the addition small and
+  localized so the conflict stays a trivial keep-both. Bump any affected
+  bundle budget with the margin convention above.
+- **Discover de-prioritizes overlap** softly: A4 Step 2 prefers a candidate
+  whose `## Candidate files` do not collide with actively-claimed / open-PR
+  work on these files (the `discover-shared-file-overlap` helper reports the
+  signal). It is advisory, never a claim gate.
+
+**Deterministic-ordering lever.** An **append-mostly shared file** — one that
+several independent issues mutate at the same anchor (a generated-file
+classification registry, a size-budget JSON, a barrel / export or registry
+list, and, in adopter repos, i18n message catalogs) — conflicts precisely
+because both sides append at the same insertion point, even though each PR
+passes its own CI in isolation. Where feasible, keep such files
+**deterministically ordered** (sorted keys / one entry per line) and guard
+that order where it can be guarded, so independent additions land in different
+positions and merge cleanly far more often. The conflict on such a file is
+almost always two independent additions, so resolve the sync by **keeping
+both**. Apply this to clearly append-mostly surfaces such as
+`audit/sync-manifest.json` helper / budget entries and any export / registry
+list; file a follow-up where a reorder is non-trivial.
 
 ## Changing A Default
 

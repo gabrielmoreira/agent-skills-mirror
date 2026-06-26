@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `micro/go-micro` — 26 default patterns, 8 followed patterns, 10 file(s) materialized.
+Mirror of `micro/go-micro` — 26 default patterns, 8 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `micro/go-micro` — 26 default patterns, 8 followed patterns, 10 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,16 +66,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`contrib/langchain-go-micro/CONTRIBUTING.md`](contrib/langchain-go-micro/CONTRIBUTING.md) |
-| 3 | → | [`.github/ISSUE_TEMPLATE/question.md`](.github/ISSUE_TEMPLATE/question.md) |
-| 4 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 5 | → | [`CODEX.md`](CODEX.md) |
-| 6 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 7 | → | [`internal/docs/IMPLEMENTATION_SUMMARY.md`](internal/docs/IMPLEMENTATION_SUMMARY.md) |
-| 8 | → | [`internal/website/docs/guides/migration/v5-to-v6.md`](internal/website/docs/guides/migration/v5-to-v6.md) |
-| 9 | → | [`internal/website/docs/roadmap.md`](internal/website/docs/roadmap.md) |
-| 10 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`contrib/langchain-go-micro/CONTRIBUTING.md`](contrib/langchain-go-micro/CONTRIBUTING.md) |
+| 4 | → | [`.github/ISSUE_TEMPLATE/question.md`](.github/ISSUE_TEMPLATE/question.md) |
+| 5 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 6 | → | [`CODEX.md`](CODEX.md) |
+| 7 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 8 | → | [`internal/docs/IMPLEMENTATION_SUMMARY.md`](internal/docs/IMPLEMENTATION_SUMMARY.md) |
+| 9 | → | [`internal/website/docs/guides/migration/v5-to-v6.md`](internal/website/docs/guides/migration/v5-to-v6.md) |
+| 10 | → | [`internal/website/docs/roadmap.md`](internal/website/docs/roadmap.md) |
+| 11 | → | [`ROADMAP.md`](ROADMAP.md) |
 
 ---
 

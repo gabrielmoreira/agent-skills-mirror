@@ -1,76 +1,70 @@
 ---
 name: controlflow-plan
-description: "Use when a repository task needs a high-quality ControlFlow plan before coding — small, medium, or large scope, cross-file edits, risky migrations, architectural uncertainty, or any work that should produce a saved Markdown plan artifact in plans/. Single-sources the plan format from schemas/planner.plan.schema.json and the plan template."
+description: "Use when a non-trivial repository task needs a durable, execution-ready ControlFlow plan before coding, especially for cross-file changes, migrations, architectural uncertainty, or explicit risk review."
 ---
 
 # ControlFlow Plan
 
 ## Overview
 
-Produce a durable, execution-ready plan in the shared ControlFlow format. The format is
-not restated here: it is single-sourced from `schemas/planner.plan.schema.json` (the
-machine-enforced contract) and `plans/templates/plan-document-template.md` (the human
-document skeleton). Read both at invoke time and conform to them; do not paraphrase the
-contract from memory.
+Produce a saved ControlFlow plan without replacing the host's native planning workflow.
+In Codex, native `/plan` is the preferred place to gather context and clarify the task;
+this skill adds the durable artifact format, complexity tiers, semantic-risk review, and
+restartability discipline.
 
-Invoke this skill via `/controlflow-plan`.
+Select the skill explicitly. In Codex, invoke it with `$controlflow-plan`.
 
-## Local Contract
+## Plan Contract Sources
 
-- Read the repository before phase decomposition; keep verified facts separate from
-  assumptions with a bounded scope statement.
-- The saved artifact defines scope, risks, files, phases, validation, review route, and
-  handoff without depending on plugin-host runtime contracts.
-- Apply [references/llm-behavior-guidelines.md](references/llm-behavior-guidelines.md) for
-  assumption, simplicity, scope, and verification discipline.
-- Ask the user directly when an answer changes file scope, user-visible behavior,
-  architecture, or destructive-risk handling; otherwise record a bounded assumption.
+1. If the active repository contains `schemas/planner.plan.schema.json` and
+   `plans/templates/plan-document-template.md`, read both and treat them as authoritative.
+2. Otherwise use [references/plan-format.md](references/plan-format.md), the bundled
+   standalone fallback contract.
+3. If repository canonical files conflict with the bundled fallback, repository files win
+   and the difference must be noted under `## Discoveries`.
 
 ## Workflow
 
-1. Create a saved plan when the user asks for one or when work is SMALL, MEDIUM, or LARGE;
-   skip only for truly TRIVIAL work. Save to `plans/<task-slug>-plan.md` unless the user
-   names another path.
-2. Read `schemas/planner.plan.schema.json` and
-   `plans/templates/plan-document-template.md` — these are the authoritative format. Use
-   [references/plan-format.md](references/plan-format.md) as a compact checklist, not a
-   substitute for them.
-3. Map likely files, tests, commands, dependencies, and change boundaries before phase
-   decomposition.
-4. Read [references/complexity-tiers.md](references/complexity-tiers.md); assign one tier.
-   Any unresolved HIGH-impact semantic risk forces LARGE regardless of file count.
-5. Fill all seven semantic risk categories (see
-   [references/plan-format.md](references/plan-format.md)); never skip a row — use
-   `not_applicable` with justification.
-6. Write the artifact using the template's header, 10 sections in order, and the five
-   lifecycle sections (`## Progress`, `## Discoveries`, `## Decision Log`, `## Outcomes`,
-   `## Idempotence & Recovery`) for SMALL+ plans.
-7. Every phase declares exactly one `executor_agent` from the schema enum, lists concrete
-   files, tests, acceptance criteria, quality gates, and failure expectations, and keeps
-   steps in numbered prose with NO code blocks.
-8. Add Mermaid diagrams per tier: `sequenceDiagram` for MEDIUM+ non-trivial orchestration;
-   `flowchart TD` + `sequenceDiagram` for LARGE. Each diagram ≤30 lines.
-9. Set `status: ABSTAIN` or `REPLAN_REQUIRED` when confidence is below 0.9 or evidence is
-   insufficient; include the terminal-outcome structure from the template.
-10. Add a research or spike phase before implementation when a HIGH-impact risk is
-    unresolved.
-11. For `READY_FOR_EXECUTION`, include a Handoff section pointing execution to
-    `plans/<task-slug>-plan.md` — do NOT inline the plan in chat. See
-    [references/inline-execution.md](references/inline-execution.md) for how execution
-    treats waves, the context packet, and optional delegation.
+1. Read the repository before phase decomposition. Keep verified facts separate from
+   assumptions.
+2. Create a saved plan for `SMALL`, `MEDIUM`, or `LARGE` work; skip it for truly
+   `TRIVIAL` work unless the user explicitly requests an artifact.
+3. Save to `plans/<task-slug>-plan.md` unless the user names another path.
+4. Map concrete files, tests, commands, dependencies, boundaries, and existing patterns.
+5. Read [references/complexity-tiers.md](references/complexity-tiers.md) and assign one
+   tier. Any unresolved applicable `HIGH` semantic risk forces `LARGE`.
+6. Fill every semantic-risk category exactly once: `data_volume`, `performance`,
+   `concurrency`, `access_control`, `migration_rollback`, `dependency`, `operability`.
+7. Keep phases incremental and executable. Each phase names files, tests, acceptance
+   criteria, quality gates, dependencies, failure expectations, and numbered prose steps.
+8. Preserve the five living-document sections for non-trivial plans:
+   `## Progress`, `## Discoveries`, `## Decision Log`, `## Outcomes`, and
+   `## Idempotence & Recovery`.
+9. Add compact Mermaid diagrams when required by the active contract. Keep each diagram
+   at or below 30 source lines.
+10. Use `ABSTAIN` or `REPLAN_REQUIRED` when evidence is insufficient or confidence is
+    below the contract threshold.
+11. Hand every non-trivial ready plan to `$controlflow-verify` before implementation.
 
-## Review Route (tier-gated, runs after this skill)
+## Native Host Boundary
 
-Hand non-TRIVIAL plans to `/controlflow-verify`, which runs inline adversarial verification:
-SMALL → phase 1; MEDIUM → phases 1–2; LARGE → phases 1–3.
+- Do not implement a second router, task state machine, approval engine, retry scheduler,
+  subagent lifecycle, or memory layer.
+- Use native host plan tracking for live progress and the saved plan for durable state.
+- The host owns sandboxing and approvals.
+- The host owns subagent orchestration; use it only when the user explicitly requests
+  subagents or parallel agent work.
+- Host memories are optional ambient context, never repository evidence.
+- See [references/inline-execution.md](references/inline-execution.md) for the small amount
+  of execution guidance that remains useful after plan approval.
 
-## Planning-Specific Failure Checks
+## Planning Failure Checks
 
-- Do not plan from chat memory when reading the repo would change scope.
-- Do not skip a semantic risk category because the tier feels low.
-- Do not decompose phases before mapping likely files and tests.
-- Do not mark READY_FOR_EXECUTION without a review route and artifact destination.
-- Do not restate the schema/template in the artifact — conform to them.
+- Do not invent requirements that change behavior, scope, architecture, or destructive
+  risk.
+- Do not duplicate the full plan contract inside `SKILL.md`.
+- Do not mark a plan ready without concrete automated verification.
+- Do not add plugin-level runtime controls that Codex already owns.
 
 ## References
 

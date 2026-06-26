@@ -42,7 +42,7 @@ src/ui-ux-pro-max/                # Source of Truth
     ├── base/                     # Base templates (skill-content.md, quick-reference.md)
     └── platforms/                # Platform configs (claude.json, cursor.json, ...)
 
-cli/                              # CLI installer (uipro-cli on npm)
+cli/                              # CLI installer (ui-ux-pro-max-cli on npm)
 ├── src/
 │   ├── commands/init.ts          # Install command with template generation
 │   └── utils/template.ts         # Template rendering engine
@@ -77,9 +77,9 @@ When modifying files:
 
 3. **CLI Assets** - Run sync before publishing:
    ```bash
-   cp -r src/ui-ux-pro-max/data/* cli/assets/data/
-   cp -r src/ui-ux-pro-max/scripts/* cli/assets/scripts/
-   cp -r src/ui-ux-pro-max/templates/* cli/assets/templates/
+   cd cli
+   npm run sync:assets
+   npm run check:assets
    ```
 
 4. **Reference Folders** - No manual sync needed. The CLI generates these from templates during `uipro init`.

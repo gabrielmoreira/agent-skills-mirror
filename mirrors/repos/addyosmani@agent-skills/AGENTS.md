@@ -124,7 +124,7 @@ Equivalent headings like `Workflow`, `Core Process`, or `When to Use` are fine w
 Include this section only if the skill ships runnable helpers under `scripts/`. Markdown-only skills can omit both the section and the directory entirely.
 
 ```bash
-bash /mnt/skills/user/{skill-name}/scripts/{script}.sh [args]
+bash skills/{skill-name}/scripts/{script}.sh [args]
 ```
 
 **Arguments:**
@@ -163,7 +163,7 @@ Skills are loaded on-demand — only the skill name and description are loaded a
 - Write status messages to stderr: `echo "Message" >&2`
 - Write machine-readable output (JSON) to stdout
 - Include a cleanup trap for temp files
-- Reference the script path as `/mnt/skills/user/{skill-name}/scripts/{script}.sh`
+- Reference the script path as `skills/{skill-name}/scripts/{script}.sh`
 
 ### Creating the Zip Package
 

@@ -84,6 +84,7 @@ src/
     clipboard.ts             OS clipboard read/write
     a11y.ts                  Accessibility tree query
     coords.ts                localToGlobal coordinate translation
+    wayland-portal.ts        xdg-desktop-portal screenshot sidecar for Wayland
     capabilities.ts          detectPlatformCapabilities
     desktop.ts               High-level desktop helpers
     helpers.ts               Shared platform utilities
@@ -172,6 +173,8 @@ bun run --cwd plugins/plugin-computeruse validate:android-device-evidence
                                                      # validate Android consumer evidence manifest
 bun run --cwd plugins/plugin-computeruse validate:android-aosp-evidence
                                                      # validate Android AOSP/system evidence manifest
+bun run --cwd plugins/plugin-computeruse capture:macos-desktop-evidence
+                                                     # capture macOS desktop evidence artifacts for issue #9581
 bun run --cwd plugins/plugin-computeruse validate:macos-desktop-evidence
                                                      # validate macOS desktop evidence manifest
 bun run --cwd plugins/plugin-computeruse validate:linux-desktop-evidence

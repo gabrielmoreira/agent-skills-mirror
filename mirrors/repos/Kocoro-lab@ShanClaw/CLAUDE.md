@@ -97,6 +97,7 @@ internal/
   config/                # Config struct, multi-level merge, --setup wizard
   cwdctx/                # Session-scoped CWD propagation
   context/               # EstimateTokens, GenerateSummary, PersistLearnings
+  fslock/                # Cross-platform advisory file lock (flock vs LockFileEx); see Cross-Platform Support
   schedule/              # Schedule CRUD + atomic writes (plist gen lives in daemon/)
   permissions/           # bash resolution pipeline (see Permission Model below)
   audit/                 # JSON-lines logger + RedactSecrets
@@ -219,7 +220,7 @@ Unknown tools → denied (fail-safe). Always-ask gate runs BEFORE the allowlist,
 | Empty-think force-stop | `loopdetect.go` rule "0a" | Two consecutive `think({})` → `LoopForceStop`. Defends against ritual empty think after native interleaved thinking. |
 | Thinking blocks | `client.ContentBlock` + `agent.buildAssistantMessage` | Cloud relays full ordered `content_blocks` incl. `thinking`/`redacted_thinking`. Persisted verbatim; `internal/sync/strip_thinking.go` removes from upload-side copy before size check. Sanitizers in `messagesForLLM` / time-based / micro-compact / `BuildForkedRequest` preserve them. |
 | Conditional `think` tool | `tools/register.go shouldRegisterThinkTool` | Not registered on default gateway+thinking path. Still registered when thinking disabled, Ollama provider, or `ForceThinkTool=true`. `operationalRules()` strips `### Planning` bullet only when think absent, keeping prompt byte-equal otherwise. |
-| Prompt suggestion | `agent/suggestion.go` | Forked LLM call after each main turn. **CACHE SAFETY**: byte-equal to main request except 2 appended messages + `SkipCacheWrite: true`. Any other divergence fragments the cache. |
+| Prompt suggestion | `agent/suggestion.go` + `daemon/runner.go` | Forked LLM call after each main turn. **CACHE SAFETY**: byte-equal to main request except 2 appended messages + `SkipCacheWrite: true`. Any other divergence fragments the cache. **Source-gated** (`wantsPromptSuggestion` allow-list): only foreground sources with a UI consumer — `desktop` (the Desktop message bridge POST /message hardcodes it), `kocoro` (handler backfill when Source omitted), `shanclaw` (legacy Desktop alias, one release), `web` — fork a suggestion. IM channels, schedule/cron, and autonomous local sources (heartbeat/watcher/mcp) are skipped (no consumer → dead work + a billed call). Allow-list, not deny-list: new background sources default to skipped. |
 | Email/password auth (macOS only) | `internal/daemon/auth.go` + `auth_handlers.go` + `ws_controller.go` + `internal/keychain/` | `/local/auth/*` proxy to Cloud `/api/v1/auth/*`. AuthManager state machine drives WS lifecycle — WS runs only in `signed_in`. api_key is the source-of-truth credential in Keychain (`ai.kocoro.daemon.api_key/<user_id>`); the yaml field is migrated away on first launch. Non-darwin: AuthManager nil, endpoints 503, legacy `cfg.APIKey` path. |
 
 ### Daemon Approval Protocol
@@ -279,7 +280,18 @@ Scalars override, lists merge+dedup, structs field-level merge. MCP server env-v
 
 ### Atomic Writes
 
-`schedules.json` and `secrets-index.json` use write-to-temp + `os.Rename` + `syscall.Flock` on a persistent `.lock` file. **Never delete the lock file** (causes flock race on different inodes).
+`schedules.json` and `secrets-index.json` use write-to-temp + `os.Rename` + an exclusive lock (via `internal/fslock`, NOT raw `syscall.Flock` — see Cross-Platform Support) on a persistent `.lock` file. **Never delete the lock file** (causes lock race on different inodes). Atomic-rename targets are read lock-free (the rename is atomic, so readers always see a complete file); never hold a lock on the destination file itself — on Windows a mandatory `LockFileEx` would block the rename-over-open.
+
+### Cross-Platform Support
+
+The daemon cross-compiles to macOS / Linux / Windows (`CGO_ENABLED=0`). POSIX-only syscalls are confined behind build tags so the Windows build stays green:
+
+- **File locking** → `internal/fslock` (`Lock`/`RLock`/`TryLock`/`Unlock`/`IsWouldBlock`): `lock_unix.go` wraps `flock(2)`, `lock_windows.go` wraps `LockFileEx`/`UnlockFileEx` (the only `golang.org/x/sys/windows` consumer). All lock call sites go through this — do NOT reintroduce raw `syscall.Flock` (breaks Windows).
+- **Process-group kill** → per-package `*_proc_{unix,windows}.go` helpers (`internal/hooks`, `internal/tools` for bash, `internal/memory` for the sidecar; `internal/mcp/processgroup_{unix,windows}.go` is the original): POSIX `Setpgid` + `Kill(-pid)` vs Windows `CREATE_NEW_PROCESS_GROUP` + `taskkill /T /F`. Windows has no usable graceful step for console children (graceful `taskkill` no-ops), so the sidecar force-kills directly.
+- **`shan daemon stop`** → `cmd/proc_signal_{unix,windows}.go` (`terminateDaemon`): POSIX SIGTERM vs Windows `taskkill`. HTTP `/shutdown` remains the cross-platform graceful primary; signal/taskkill is the PID-file fallback.
+- **macOS-only GUI tools** (`accessibility`/`applescript`/`clipboard`/`computer`/`screenshot`/`ghostty`) gate on `runtime.GOOS != "darwin"` and return a clean "only available on macOS" error elsewhere. `notify` is NOT gated — it has a cross-platform Desktop route; only its osascript fallback is darwin-gated.
+- **Memory bundle `current` pointer** → `internal/memory/bundle_link_{unix,windows}.go` (`swapCurrent`): a symlink (atomic tmp+rename) on POSIX vs an unprivileged directory junction (`mklink /J`, remove+recreate) on Windows — `os.Symlink` would fail with ERROR_PRIVILEGE_NOT_HELD off Developer Mode. Both keep `current/<file>` transparently traversable by the `tlm` sidecar and resolvable by `os.Readlink` (`currentTs`).
+- **Known Windows gaps (not yet ported)**: `bash` runs `sh -c` and requires Git Bash/WSL on PATH (returns a clean error otherwise).
 
 ### Prompt Cache
 

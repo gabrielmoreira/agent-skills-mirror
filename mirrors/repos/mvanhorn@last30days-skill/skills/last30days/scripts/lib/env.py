@@ -2,12 +2,9 @@
 
 from __future__ import annotations
 
-import base64
-import binascii
 import json
 import os
 import sys
-import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
@@ -26,8 +23,6 @@ elif _config_override:
 else:
     CONFIG_DIR = Path.home() / ".config" / "last30days"
     CONFIG_FILE = CONFIG_DIR / ".env"
-
-CODEX_AUTH_FILE = Path(os.environ.get("CODEX_AUTH_FILE", str(Path.home() / ".codex" / "auth.json")))
 
 # macOS Keychain integration: items stored with this service prefix are picked
 # up automatically on Darwin as the lowest-priority credential source.
@@ -62,17 +57,14 @@ KEYCHAIN_KEYS = (
 # separator. Honors PASSWORD_STORE_DIR.
 DEFAULT_PASS_PATH_PREFIX = "last30days/"
 
-AuthSource = Literal["api_key", "codex", "none"]
-AuthStatus = Literal["ok", "missing", "expired", "missing_account_id"]
+AuthSource = Literal["api_key", "none"]
+AuthStatus = Literal["ok", "missing"]
 
 AUTH_SOURCE_API_KEY: AuthSource = "api_key"
-AUTH_SOURCE_CODEX: AuthSource = "codex"
 AUTH_SOURCE_NONE: AuthSource = "none"
 
 AUTH_STATUS_OK: AuthStatus = "ok"
 AUTH_STATUS_MISSING: AuthStatus = "missing"
-AUTH_STATUS_EXPIRED: AuthStatus = "expired"
-AUTH_STATUS_MISSING_ACCOUNT_ID: AuthStatus = "missing_account_id"
 
 
 @dataclass(frozen=True)
@@ -80,8 +72,6 @@ class OpenAIAuth:
     token: str | None
     source: AuthSource
     status: AuthStatus
-    account_id: str | None
-    codex_auth_file: str
 
 
 BrowserCookieMode = Literal["off", "read", "plan_only"]
@@ -314,102 +304,20 @@ def _load_pass(keys: list[str], prefix: str) -> dict[str, str]:
     return env
 
 
-def _decode_jwt_payload(token: str) -> dict[str, Any] | None:
-    """Decode JWT payload without verification."""
-    try:
-        parts = token.split(".")
-        if len(parts) < 2:
-            return None
-        payload_b64 = parts[1]
-        pad = "=" * (-len(payload_b64) % 4)
-        decoded = base64.urlsafe_b64decode(payload_b64 + pad)
-        return json.loads(decoded.decode("utf-8"))
-    except (json.JSONDecodeError, UnicodeDecodeError, binascii.Error, IndexError) as exc:
-        sys.stderr.write(f"[last30days] WARNING: malformed JWT token: {exc}\n")
-        sys.stderr.flush()
-        return None
-
-
-def _token_expired(token: str, leeway_seconds: int = 60) -> bool:
-    """Check if JWT token is expired."""
-    payload = _decode_jwt_payload(token)
-    if not payload:
-        return False
-    exp = payload.get("exp")
-    if not exp:
-        return False
-    return exp <= (time.time() + leeway_seconds)
-
-
-def extract_chatgpt_account_id(access_token: str) -> str | None:
-    """Extract chatgpt_account_id from JWT token."""
-    payload = _decode_jwt_payload(access_token)
-    if not payload:
-        return None
-    auth_claim = payload.get("https://api.openai.com/auth", {})
-    if isinstance(auth_claim, dict):
-        return auth_claim.get("chatgpt_account_id")
-    return None
-
-
-def load_codex_auth(path: Path = CODEX_AUTH_FILE) -> dict[str, Any]:
-    """Load Codex auth JSON."""
-    if not path.exists():
-        return {}
-    try:
-        with open(path, "r") as f:
-            return json.load(f)
-    except json.JSONDecodeError:
-        sys.stderr.write(
-            f"[last30days] WARNING: {path} exists but contains invalid JSON -- ignoring\n"
-        )
-        sys.stderr.flush()
-        return {}
-
-
-def get_codex_access_token() -> tuple[str | None, str]:
-    """Get Codex access token from auth.json.
-
-    Returns:
-        (token, status) where status is 'ok', 'missing', or 'expired'
-    """
-    auth = load_codex_auth()
-    token = None
-    if isinstance(auth, dict):
-        tokens = auth.get("tokens") or {}
-        if isinstance(tokens, dict):
-            token = tokens.get("access_token")
-        if not token:
-            token = auth.get("access_token")
-    if not token:
-        return None, AUTH_STATUS_MISSING
-    if _token_expired(token):
-        return None, AUTH_STATUS_EXPIRED
-    return token, AUTH_STATUS_OK
-
-
 def get_openai_auth(file_env: dict[str, str]) -> OpenAIAuth:
-    """Resolve OpenAI auth from API key or Codex login."""
+    """Resolve OpenAI API auth from explicit user-provided API keys."""
     api_key = os.environ.get('OPENAI_API_KEY') or file_env.get('OPENAI_API_KEY')
     if api_key:
         return OpenAIAuth(
             token=api_key,
             source=AUTH_SOURCE_API_KEY,
             status=AUTH_STATUS_OK,
-            account_id=None,
-            codex_auth_file=str(CODEX_AUTH_FILE),
         )
-
-    # Codex auth (chatgpt.com backend) intentionally skipped.
-    # The endpoint is unstable and causes crashes when the token expires.
-    # Users who want OpenAI should set OPENAI_API_KEY explicitly.
 
     return OpenAIAuth(
         token=None,
         source=AUTH_SOURCE_NONE,
         status=AUTH_STATUS_MISSING,
-        account_id=None,
-        codex_auth_file=str(CODEX_AUTH_FILE),
     )
 
 
@@ -491,8 +399,6 @@ def get_config(policy: ConfigLoadPolicy | None = None) -> dict[str, Any]:
         'OPENAI_API_KEY': openai_auth.token,
         'OPENAI_AUTH_SOURCE': openai_auth.source,
         'OPENAI_AUTH_STATUS': openai_auth.status,
-        'OPENAI_CHATGPT_ACCOUNT_ID': openai_auth.account_id,
-        'CODEX_AUTH_FILE': openai_auth.codex_auth_file,
     }
 
     keys = [
@@ -507,6 +413,7 @@ def get_config(policy: ConfigLoadPolicy | None = None) -> dict[str, Any]:
         ('LAST30DAYS_X_MODEL', None),
         ('LAST30DAYS_X_BACKEND', None),
         ('LAST30DAYS_REDDIT_BACKEND', None),
+        ('LAST30DAYS_REDDIT_SC_MIN_ITEMS', None),
         ('LAST30DAYS_STORE', None),
         ('LAST30DAYS_MEMORY_DIR', None),
         ('OPENAI_MODEL_PIN', None),
