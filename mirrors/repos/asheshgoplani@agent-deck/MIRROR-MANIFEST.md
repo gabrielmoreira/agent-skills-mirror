@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `asheshgoplani/agent-deck` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
+Mirror of `asheshgoplani/agent-deck` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `asheshgoplani/agent-deck` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 37 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,12 +90,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`skills/agent-deck/scripts/self-improvement/run-analyzers.sh`](skills/agent-deck/scripts/self-improvement/run-analyzers.sh) |
 | 30 | ✓ | [`skills/agent-deck/scripts/self-improvement/sanitize.py`](skills/agent-deck/scripts/self-improvement/sanitize.py) |
 | 31 | ✓ | [`skills/agent-deck/SKILL.md`](skills/agent-deck/SKILL.md) |
-| 32 | ✓ | [`skills/session-share/scripts/.gitkeep`](skills/session-share/scripts/.gitkeep) |
-| 33 | ✓ | [`skills/session-share/scripts/export.sh`](skills/session-share/scripts/export.sh) |
-| 34 | ✓ | [`skills/session-share/scripts/import.sh`](skills/session-share/scripts/import.sh) |
-| 35 | ✓ | [`skills/session-share/scripts/utils.sh`](skills/session-share/scripts/utils.sh) |
-| 36 | ✓ | [`skills/session-share/SKILL.md`](skills/session-share/SKILL.md) |
-| 37 | ✓ | [`skills/session-share/tests/test_export_895_regression.sh`](skills/session-share/tests/test_export_895_regression.sh) |
+| 32 | ✓ | [`skills/fleet/SKILL.md`](skills/fleet/SKILL.md) |
+| 33 | ✓ | [`skills/session-share/scripts/.gitkeep`](skills/session-share/scripts/.gitkeep) |
+| 34 | ✓ | [`skills/session-share/scripts/export.sh`](skills/session-share/scripts/export.sh) |
+| 35 | ✓ | [`skills/session-share/scripts/import.sh`](skills/session-share/scripts/import.sh) |
+| 36 | ✓ | [`skills/session-share/scripts/utils.sh`](skills/session-share/scripts/utils.sh) |
+| 37 | ✓ | [`skills/session-share/SKILL.md`](skills/session-share/SKILL.md) |
+| 38 | ✓ | [`skills/session-share/tests/test_export_895_regression.sh`](skills/session-share/tests/test_export_895_regression.sh) |
 
 ---
 

@@ -358,7 +358,7 @@ Extract key information from user request:
 - **Product type**: Entertainment (social, video, music, gaming), Tool (scanner, editor, converter), Productivity (task manager, notes, calendar), or hybrid
 - **Target audience**: C-end consumer users; consider age group, usage context (commute, leisure, work)
 - **Style keywords**: playful, vibrant, minimal, dark mode, content-first, immersive, etc.
-- **Stack**: React Native (this project's only tech stack)
+- **Stack**: Match the project's framework. The engine ships guidance for many stacks (see [Available Stacks](#available-stacks) below) — pass the matching `--stack` (e.g. `nextjs`, `react`, `shadcn`, `vue`, `svelte`, `astro`, `swiftui`, `flutter`, `react-native`).
 
 ### Step 2: Generate Design System (REQUIRED)
 
@@ -438,12 +438,14 @@ python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --domain <domain> [-n
 | App interface a11y | `web` | `--domain web "accessibilityLabel touch safe-areas"` |
 | AI prompt / CSS keywords | `prompt` | `--domain prompt "minimalism"` |
 
-### Step 4: Stack Guidelines (React Native)
+### Step 4: Stack Guidelines (match your framework)
 
-Get React Native implementation-specific best practices:
+Get implementation-specific best practices for the stack you're building in.
+Pass the `--stack` that matches the project's framework:
 
 ```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --stack react-native
+python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --stack <your-stack>
+# e.g. --stack nextjs | react | shadcn | vue | svelte | astro | swiftui | flutter | react-native
 ```
 
 ---
@@ -468,9 +470,26 @@ python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --stack react-native
 
 ### Available Stacks
 
+Run `ls <skill>/data/stacks/` to see the live set. Shipped stacks:
+
 | Stack | Focus |
 |-------|-------|
+| `react` | Components, hooks, render performance |
+| `nextjs` | App Router, RSC, Server Actions, rendering |
+| `vue` | Components, Composition API, reactivity |
+| `nuxtjs` | Nuxt app patterns, SSR data fetching |
+| `nuxt-ui` | Nuxt UI component patterns |
+| `svelte` | Components, stores, transitions |
+| `astro` | Islands, content, partial hydration |
+| `shadcn` | shadcn/ui primitives, composition |
+| `html-tailwind` | Tailwind utility patterns |
+| `angular` | Components, signals, services |
+| `laravel` | Blade / server-rendered UI patterns |
+| `swiftui` | Views, state, navigation (iOS/macOS) |
+| `flutter` | Widgets, state, navigation |
+| `jetpack-compose` | Composables, state, navigation (Android) |
 | `react-native` | Components, Navigation, Lists |
+| `threejs` | 3D scenes, materials, performance |
 
 ---
 
@@ -482,7 +501,7 @@ python3 skills/ui-ux-pro-max/scripts/search.py "<keyword>" --stack react-native
 - Product type: Tool (AI search engine)
 - Target audience: C-end users looking for fast, intelligent search
 - Style keywords: modern, minimal, content-first, dark mode
-- Stack: React Native
+- Stack: Next.js (a homepage is a web surface; use a web `--stack`)
 
 ### Step 2: Generate Design System (REQUIRED)
 
@@ -505,7 +524,7 @@ python3 skills/ui-ux-pro-max/scripts/search.py "search loading animation" --doma
 ### Step 4: Stack Guidelines
 
 ```bash
-python3 skills/ui-ux-pro-max/scripts/search.py "list performance navigation" --stack react-native
+python3 skills/ui-ux-pro-max/scripts/search.py "list performance navigation" --stack nextjs
 ```
 
 **Then:** Synthesize design system + detailed searches and implement the design.
@@ -533,7 +552,7 @@ python3 skills/ui-ux-pro-max/scripts/search.py "fintech crypto" --design-system 
 - Use **multi-dimensional keywords** — combine product + industry + tone + density: `"entertainment social vibrant content-dense"` not just `"app"`
 - Try different keywords for the same need: `"playful neon"` → `"vibrant dark"` → `"content-first minimal"`
 - Use `--design-system` first for full recommendations, then `--domain` to deep-dive any dimension you're unsure about
-- Always add `--stack react-native` for implementation-specific guidance
+- Add the `--stack` that matches the project's framework for implementation-specific guidance
 
 ### Common Sticking Points
 

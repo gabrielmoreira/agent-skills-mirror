@@ -1,6 +1,6 @@
 # Installation & Quick Start
 
-There are three ways to use the skills in this collection, from "one command" to
+There are four ways to use the skills in this collection, from "one command" to
 "zero install". Pick the one that matches how you work.
 
 > **Requirements for the plugin path:** [Claude Code](https://code.claude.com/docs)
@@ -56,11 +56,37 @@ claude plugin details aer-skills    # shows the skills + token cost of any insta
 > **StatsPAI** (`skills/00`) is intentionally *not* packaged as a plugin here because it is
 > mirrored weekly from its upstream repo (a committed copy would drift). Install it from
 > [its own repo](https://github.com/brycewang-stanford/StatsPAI) (`pip install StatsPAI`) or
-> use method 2 below.
+> use method 3 below.
 
 ---
 
-## 2. Use any skill in the catalog — copy into `.claude/skills/`
+## 2. Whole-repo import — Codex, CodeBuddy, and IDE skill folders
+
+Some IDEs ask you to pick a folder and validate it as one skill. This repo now
+supports that path with the root [`SKILL.md`](SKILL.md): importing the repository
+root registers **one lightweight AERS catalog router**, not 1,145 separate child
+skills. The router chooses the right vendored skill and then reads only that
+child skill's `SKILL.md`.
+
+For local Codex-style discovery:
+
+```bash
+# Run from the repository root.
+mkdir -p ~/.codex/skills/auto-empirical-research-skills
+rsync -a --exclude .git --exclude .pytest_cache --exclude __pycache__ --exclude '*.pyc' \
+  ./ ~/.codex/skills/auto-empirical-research-skills/
+```
+
+If your IDE has a GitHub import flow, select the repository root and name the
+skill `auto-empirical-research-skills`. If it asks for a path, use `.`.
+
+Use this mode when you want a browse-and-route entry point. If you want the IDE
+to register one specific skill directly, use method 3 and copy the exact folder
+that contains that skill's `SKILL.md`.
+
+---
+
+## 3. Use any skill in the catalog — copy into a runtime skills folder
 
 Every entry in this catalog is a folder containing a `SKILL.md`. To use one, copy that
 folder into your project's (or your global) skills directory — no marketplace needed.
@@ -72,6 +98,10 @@ cp -R skills/00.1-Full-empirical-analysis-skill_Python  .claude/skills/empirical
 
 # Or global (every project sees it)
 cp -R skills/00.1-Full-empirical-analysis-skill_Python  ~/.claude/skills/empirical-python
+
+# Codex global skill folder
+mkdir -p ~/.codex/skills
+cp -R skills/00.1-Full-empirical-analysis-skill_Python  ~/.codex/skills/empirical-python
 ```
 
 The folder you copy must contain a `SKILL.md` at its top level (some catalog skills nest
@@ -94,7 +124,7 @@ claude --plugin-dir ./plugins/empirical-analysis-python
 
 ---
 
-## 3. Zero install — let the Stanford methodology team run it
+## 4. Zero install — let the Stanford methodology team run it
 
 If you'd rather skip assembly entirely, [**CoPaper.AI**](https://copaper.ai) runs the full
 empirical pipeline end-to-end (data → causal models → robustness → publication-quality
@@ -107,9 +137,10 @@ tables) with the same methodology these skills encode.
 | You want to… | Use |
 |--------------|-----|
 | Install a maintained, versioned skill stack and get updates | **Method 1** (marketplace) |
-| Grab one specific skill from the catalog and tweak it | **Method 2** (copy into `.claude/skills/`) |
-| Try a skill for one session without installing | **Method 2** (`--plugin-dir`) |
-| Get the result without installing anything | **Method 3** (CoPaper.AI) |
+| Import the whole repo into Codex, CodeBuddy, or another IDE | **Method 2** (root router skill) |
+| Grab one specific skill from the catalog and tweak it | **Method 3** (copy into `.claude/skills/` or `.codex/skills/`) |
+| Try a skill for one session without installing | **Method 3** (`--plugin-dir`) |
+| Get the result without installing anything | **Method 4** (CoPaper.AI) |
 
 ---
 
@@ -122,6 +153,13 @@ tables) with the same methodology these skills encode.
 - **Marketplace add failed** — confirm the repo slug is exact:
   `brycewang-stanford/Auto-Empirical-Research-Skills`. You can also add from a local clone:
   `claude plugin marketplace add /path/to/Auto-Empirical-Research-Skills`.
+- **Whole-repo import failed in Codex / CodeBuddy** — import the repository root
+  as `auto-empirical-research-skills` so the root `SKILL.md` is the selected
+  skill folder. Do not point a single-skill importer at `skills/` itself.
+- **Expected every child skill to appear separately** — most runtimes do not
+  recursively register nested skills from a repository root. Copy the specific
+  child folder that directly contains the `SKILL.md`, or use the Claude Code
+  marketplace plugins in method 1.
 
 For the full plugin/skill model, see the
 [Claude Code plugin docs](https://code.claude.com/docs/en/plugins).

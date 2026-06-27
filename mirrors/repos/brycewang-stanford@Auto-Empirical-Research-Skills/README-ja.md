@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**🌐 言語: [English](README.md) | [简体中文](README-zh-CN.md) | [繁體中文](README-zh-TW.md) | 日本語 | [한국어](README-ko.md)**
+**🌐 言語: [English](README-en.md) | [简体中文（デフォルト）](README.md) | [繁體中文](README-zh-TW.md) | 日本語 | [한국어](README-ko.md)**
 
 <br/>
 
@@ -39,6 +39,16 @@
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/brycewang-stanford/Auto-Empirical-Research-Skills/badge)](https://scorecard.dev/viewer/?uri=github.com/brycewang-stanford/Auto-Empirical-Research-Skills)
 [![Security audit: 52/52 CLEAN](https://img.shields.io/badge/security%20audit-52%2F52%20CLEAN-brightgreen)](SECURITY-SCAN-REPORT.md)
 [![Powered by StatsPAI](https://img.shields.io/badge/powered%20by-StatsPAI-orange)](https://github.com/brycewang-stanford/StatsPAI)
+
+---
+
+## 最初に読む: リポジトリ全体は 1 つの AERS Router Skill
+
+このリポジトリは、ルートディレクトリを Codex、CodeBuddy、Claude Code、または類似 IDE に 1 つの skill として取り込めます。ルートの [`SKILL.md`](SKILL.md) は `auto-empirical-research-skills` を登録し、69 コレクション・1,145 スキルを一度にコンテキストへ読み込むのではなく、実証研究タスクに合う vendored 子 skill へルーティングします。
+
+- **リポジトリ全体を取り込む場合**: リポジトリルートを選び、[`agents/openai.yaml`](agents/openai.yaml) とルート [`SKILL.md`](SKILL.md) で 1 つの catalog router を登録します。agent は [`catalog/skills.json`](catalog/skills.json) または [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) を確認してから、選んだ子 skill だけを読みます。
+- **単一 skill を取り込む場合**: IDE が「1 フォルダ = 1 skill」を期待するなら、対象の `SKILL.md` を直接含む子フォルダをコピーしてください。例: `skills/50-brycewang-aer-skills/skills/aer-workflow/`。IDE が明示的に再帰 discovery をサポートしない限り、ルート取り込みで 1,145 個の個別 skill が登録されるとは想定しないでください。
+- **インストール詳細**: [`docs/INSTALL.md`](docs/INSTALL.md) を参照してください。デフォルト README は簡体中文の [`README.md`](README.md) で、英語版は [`README-en.md`](README-en.md) です。
 
 ---
 

@@ -16,6 +16,16 @@ Agent tool definitions live in `src/pro/main/ipc/handlers/local_agent/tools/`. E
 - For Local Agent post-tool side effects that happen after the model/tool loop (for example shared Supabase function redeploys), use `ctx.onXmlComplete(...)` with escaped `<dyad-output>` content to surface warnings/errors inline. `warningMessages` creates toast warnings, and throwing turns the whole stream into a `ChatErrorBox`.
 - **`ctx.onXmlComplete` only updates the message `content` column and the UI; it does NOT make output visible to future agent turns.** `parseAiMessagesJson` reads from `aiMessagesJson` whenever it's present and ignores `content` entirely. For post-loop output that the agent should see next turn (deploy results, step-limit notices), also push a trailing assistant message into `accumulatedAiMessages` BEFORE the `aiMessagesJson` write, e.g.: `accumulatedAiMessages.push({ role: "assistant", content: [{ type: "text", text: xml }] })`.
 
+## MCP consent results
+
+- `requireMcpToolConsent` resolves to a structured result, not a bare boolean. If `npm run ts` reports `Argument of type 'boolean' is not assignable to parameter of type 'McpConsentResult'`, update mocks to return `{ approved: true/false }`.
+
+## SQL consent and auto-approval
+
+- When changing `execute_sql` consent metadata or safety checks, audit both Agent mode (`shouldAutoApproveAgentTool` / `executeSqlTool.getConsentMetadata`) and Build mode auto-apply (`chat_stream_handlers.ts` with `autoApproveChanges`). A SQL safety rule only on the Agent tool path can still be bypassed by Build mode global auto-approve.
+- SQL destructive-action classifiers that gate auto-approval must be conservative: incomplete/unparseable SQL, opaque dynamic execution (`DO`/`CALL`), and executing wrappers such as `EXPLAIN ANALYZE` should require consent unless the wrapped statement can be proven safe.
+- Treat prepared-statement execution as opaque for SQL auto-approval too: top-level `PREPARE` can hide the statement body and top-level `EXECUTE` runs a previously prepared statement, so both should require consent unless the classifier can prove the executed statement is safe.
+
 ## Stream retries
 
 - When extending `handleLocalAgentStream` retry behavior, do not only match transport errors like `"terminated"`. Providers can emit structured stream errors such as `{ type: "error", error: { type: "server_error", ... } }`, and those transient 5xx / rate-limit failures need explicit retry classification too.

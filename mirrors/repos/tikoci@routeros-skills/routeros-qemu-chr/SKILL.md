@@ -175,7 +175,7 @@ See the [VirtIO driver matrix](./references/virtio-drivers.md) for the full tabl
 
 ### The `if=virtio` Trap (aarch64)
 
-```
+```text
                          x86_64 (q35)              aarch64 (virt)
 if=virtio shorthand →    virtio-blk-pci (PCI) ✅    virtio-blk-device (MMIO) ❌
 -device virtio-blk-pci → virtio-blk-pci (PCI) ✅    virtio-blk-pci (PCI) ✅
@@ -337,6 +337,7 @@ QEMU user-mode networking (`-netdev user,hostfwd=...`) for typical RouterOS serv
 | WinBox | 8291 | 9291 | `tcp::9291-:8291` |
 
 Multiple forwards in one netdev:
+
 ```sh
 -netdev user,id=net0,hostfwd=tcp::9180-:80,hostfwd=tcp::9122-:22,hostfwd=tcp::9728-:8728
 ```
@@ -368,6 +369,9 @@ Use unique host ports per instance when running multiple CHRs (9180, 9181, 9182.
 - [Known issues](./references/known-issues.md) — boot failures, cross-arch limitations
 - [GitHub Actions CI patterns](./references/github-actions-ci.md) — running CHR on GitHub-hosted runners
 - [CHR licensing](./references/chr-licensing.md) — free tier (1 Mbps), 60-day trial, paid tiers, expiry behavior
+- For the **quickchr** reference implementation — driving CHR from tests &
+  automation (`QuickCHR.start`, `exec`/`rest`, networking recipes, the connection
+  surface for harnesses): see the `routeros-quickchr` skill
 - For RouterOS CLI/REST once booted: see the `routeros-fundamentals` skill
 - For packet capture and TZSP streaming from CHR: see the `routeros-sniffer` skill
 - For MNDP neighbor-discovery wire format / TLVs (received via the host-capture recipe above): see the `routeros-mndp` skill

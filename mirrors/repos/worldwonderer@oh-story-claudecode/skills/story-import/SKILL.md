@@ -1,16 +1,9 @@
 ---
 name: story-import
 version: 1.0.0
-description: |
-  逆向导入已有小说。将已写好的小说（半成品或完本）反向解析为标准项目目录结构，
-  兼容 story-long-write / story-short-write 后续写作流程。内部复用 story-long-analyze /
-  story-short-analyze 的拆解管道，按篇幅自动分流。
-  触发方式：/story-import、「导入小说」「反向解析」「导入」「把我的书导进来」
-metadata:
-  openclaw:
-    source: https://github.com/worldwonderer/oh-story-claudecode
+description: "逆向导入已有小说。将已写好的小说（半成品或完本）反向解析为标准项目目录结构，兼容 story-long-write / story-short-write 后续写作流程；内部复用 story-long-analyze / story-short-analyze 的拆解管道，按篇幅自动分流。触发方式：/story-import、「导入小说」「反向解析」「导入」「把我的书导进来」。"
+metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claudecode"}}
 ---
-
 # story-import：逆向导入已有小说
 
 你是小说项目逆向工程师。将用户已有的小说文本（半成品或完本）解析为标准项目目录结构，使其可以无缝接入 story-long-write / story-short-write 的后续写作流程。导入流程按篇幅分流：长篇走长篇路径，短篇走短篇路径。
@@ -20,6 +13,8 @@ metadata:
 **交付物是写作工程**：把作者已有的书重建为可续写的**写作工程**（项目结构 + 拆文库分析资产）。`拆文库/` 属于工程的一部分（喂给项目 `对标/`），不能当成用完即弃的中间产物，也不能替代交付物本身——交付物应让作者能直接续写。执行时以「建工程」为可见目标，别把「拆文」当成终点或对外标签。
 
 ---
+
+> Agent 兼容性：检查专业 agent 是否可用时，按 `.claude/agents/{agent}.md` → `.opencode/agents/{agent}.md` → `.codex/agents/{agent}.toml` 的顺序查找。Codex 原生子代理调用优先使用同名 `agent_type`；如果当前 Codex 运行时返回 `unknown agent_type` 或未暴露 custom-agent registry，必须降级为 solo/direct 执行并报告 fallback。Claude/OpenCode 兼容面保留 `subagent_type`。
 
 ## 核心原则
 
@@ -76,7 +71,7 @@ metadata:
 在进入 Phase 2 之前，先检测项目是否已部署 story-setup 基础设施：
 
 - 检测 `.story-deployed` 是否存在；
-- 优先检测 `.claude/agents/` 下的 `chapter-extractor.md` 是否存在；不存在时再检测 `.opencode/agents/`（Phase 2 长篇深度分析的并行 agent）。
+- 优先检测 `.claude/agents/` 下的 `chapter-extractor.md` 是否存在；不存在时再检测 `.opencode/agents/`，再不存在时检测 `.codex/agents/`（Phase 2 长篇深度分析的并行 agent）。
 
 **未部署时**，提示用户：
 
@@ -625,7 +620,7 @@ name: {角色名}
 
 - 设置 `.active-book` 指向导入的书名/标题目录
 - 确认项目可以被对应写作 skill 识别（长篇 → story-long-write，短篇 → story-short-write）
-- 可选验证：如果项目已部署 story-explorer agent（优先检查 `.claude/agents/` 下的 `story-explorer.md` 是否存在；不存在时再检查 `.opencode/agents/`），可 spawn `Agent(subagent_type: "story-explorer", prompt: "项目目录：{dir}\n查询类型：progress\n查询参数：导入验证")` 交叉验证迁移数据完整性
+- 可选验证：如果项目已部署 story-explorer agent（优先检查 `.claude/agents/` 下的 `story-explorer.md` 是否存在；不存在时再检查 `.opencode/agents/`，再不存在时检查 `.codex/agents/`），可 spawn `Agent(subagent_type: "story-explorer", prompt: "项目目录：{dir}\n查询类型：progress\n查询参数：导入验证")` 交叉验证迁移数据完整性
 
 > setup 环境检测已在 Phase 1「环境检测前置」完成，此处不再重复检测。
 

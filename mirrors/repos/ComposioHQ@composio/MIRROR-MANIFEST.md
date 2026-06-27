@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 55 file(s) materialized.
+Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 55
 | Ref           | `next` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 55 |
+| Files         | 46 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,61 +59,52 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/bug-fixing-guide/SKILL.md`](.agents/skills/bug-fixing-guide/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/building-agents-using-anthropic/SKILL.md`](.agents/skills/building-agents-using-anthropic/SKILL.md) |
-| 3 | ✓ | [`.agents/skills/building-agents-using-autogen/SKILL.md`](.agents/skills/building-agents-using-autogen/SKILL.md) |
-| 4 | ✓ | [`.agents/skills/building-agents-using-cloudflare/SKILL.md`](.agents/skills/building-agents-using-cloudflare/SKILL.md) |
-| 5 | ✓ | [`.agents/skills/building-agents-using-crewai/SKILL.md`](.agents/skills/building-agents-using-crewai/SKILL.md) |
-| 6 | ✓ | [`.agents/skills/building-agents-using-google/SKILL.md`](.agents/skills/building-agents-using-google/SKILL.md) |
-| 7 | ✓ | [`.agents/skills/building-agents-using-langchain/SKILL.md`](.agents/skills/building-agents-using-langchain/SKILL.md) |
-| 8 | ✓ | [`.agents/skills/building-agents-using-langgraph/SKILL.md`](.agents/skills/building-agents-using-langgraph/SKILL.md) |
-| 9 | ✓ | [`.agents/skills/building-agents-using-llamaindex/SKILL.md`](.agents/skills/building-agents-using-llamaindex/SKILL.md) |
-| 10 | ✓ | [`.agents/skills/building-agents-using-mastra/SKILL.md`](.agents/skills/building-agents-using-mastra/SKILL.md) |
-| 11 | ✓ | [`.agents/skills/building-agents-using-openai/SKILL.md`](.agents/skills/building-agents-using-openai/SKILL.md) |
-| 12 | ✓ | [`.agents/skills/building-agents-using-vercel/SKILL.md`](.agents/skills/building-agents-using-vercel/SKILL.md) |
-| 13 | ✓ | [`.agents/skills/building-agents/SKILL.md`](.agents/skills/building-agents/SKILL.md) |
-| 14 | ✓ | [`.agents/skills/cli-release-promotion/SKILL.md`](.agents/skills/cli-release-promotion/SKILL.md) |
-| 15 | ✓ | [`.agents/skills/cli-test-with-bundling/SKILL.md`](.agents/skills/cli-test-with-bundling/SKILL.md) |
-| 16 | ✓ | [`.agents/skills/cli-test/SKILL.md`](.agents/skills/cli-test/SKILL.md) |
-| 17 | ✓ | [`.agents/skills/create-cli-e2e/SKILL.md`](.agents/skills/create-cli-e2e/SKILL.md) |
-| 18 | ✓ | [`.agents/skills/create-cli/SKILL.md`](.agents/skills/create-cli/SKILL.md) |
-| 19 | ✓ | [`.agents/skills/ephemeral-e2e-sdk-tests/SKILL.md`](.agents/skills/ephemeral-e2e-sdk-tests/SKILL.md) |
-| 20 | ✓ | [`.agents/skills/eve/SKILL.md`](.agents/skills/eve/SKILL.md) |
-| 21 | ✓ | [`.agents/skills/implement-cli-command/SKILL.md`](.agents/skills/implement-cli-command/SKILL.md) |
-| 22 | ✓ | [`.agents/skills/test-sdk-in-realworld/SKILL.md`](.agents/skills/test-sdk-in-realworld/SKILL.md) |
-| 23 | ✓ | [`.claude/skills/bug-fixing-guide/SKILL.md`](.claude/skills/bug-fixing-guide/SKILL.md) |
-| 24 | ✓ | [`.claude/skills/building-agents-using-anthropic/SKILL.md`](.claude/skills/building-agents-using-anthropic/SKILL.md) |
-| 25 | ✓ | [`.claude/skills/building-agents-using-autogen/SKILL.md`](.claude/skills/building-agents-using-autogen/SKILL.md) |
-| 26 | ✓ | [`.claude/skills/building-agents-using-cloudflare/SKILL.md`](.claude/skills/building-agents-using-cloudflare/SKILL.md) |
-| 27 | ✓ | [`.claude/skills/building-agents-using-crewai/SKILL.md`](.claude/skills/building-agents-using-crewai/SKILL.md) |
-| 28 | ✓ | [`.claude/skills/building-agents-using-google/SKILL.md`](.claude/skills/building-agents-using-google/SKILL.md) |
-| 29 | ✓ | [`.claude/skills/building-agents-using-langchain/SKILL.md`](.claude/skills/building-agents-using-langchain/SKILL.md) |
-| 30 | ✓ | [`.claude/skills/building-agents-using-langgraph/SKILL.md`](.claude/skills/building-agents-using-langgraph/SKILL.md) |
-| 31 | ✓ | [`.claude/skills/building-agents-using-llamaindex/SKILL.md`](.claude/skills/building-agents-using-llamaindex/SKILL.md) |
-| 32 | ✓ | [`.claude/skills/building-agents-using-mastra/SKILL.md`](.claude/skills/building-agents-using-mastra/SKILL.md) |
-| 33 | ✓ | [`.claude/skills/building-agents-using-openai/SKILL.md`](.claude/skills/building-agents-using-openai/SKILL.md) |
-| 34 | ✓ | [`.claude/skills/building-agents-using-vercel/SKILL.md`](.claude/skills/building-agents-using-vercel/SKILL.md) |
-| 35 | ✓ | [`.claude/skills/building-agents/SKILL.md`](.claude/skills/building-agents/SKILL.md) |
-| 36 | ✓ | [`.claude/skills/cli-release/SKILL.md`](.claude/skills/cli-release/SKILL.md) |
-| 37 | ✓ | [`.claude/skills/cli-test-with-bundling/SKILL.md`](.claude/skills/cli-test-with-bundling/SKILL.md) |
-| 38 | ✓ | [`.claude/skills/cli-test/SKILL.md`](.claude/skills/cli-test/SKILL.md) |
-| 39 | ✓ | [`.claude/skills/create-cli-e2e/SKILL.md`](.claude/skills/create-cli-e2e/SKILL.md) |
-| 40 | ✓ | [`.claude/skills/create-cli/SKILL.md`](.claude/skills/create-cli/SKILL.md) |
-| 41 | ✓ | [`.claude/skills/ephemeral-e2e-sdk-tests/SKILL.md`](.claude/skills/ephemeral-e2e-sdk-tests/SKILL.md) |
-| 42 | ✓ | [`.claude/skills/full-cli-test/SKILL.md`](.claude/skills/full-cli-test/SKILL.md) |
-| 43 | ✓ | [`.claude/skills/good-docs-audit/SKILL.md`](.claude/skills/good-docs-audit/SKILL.md) |
-| 44 | ✓ | [`.claude/skills/good-docs-writing/SKILL.md`](.claude/skills/good-docs-writing/SKILL.md) |
-| 45 | ✓ | [`.claude/skills/implement-cli-command/SKILL.md`](.claude/skills/implement-cli-command/SKILL.md) |
-| 46 | ✓ | [`.claude/skills/test-sdk-in-realworld/SKILL.md`](.claude/skills/test-sdk-in-realworld/SKILL.md) |
-| 47 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 48 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 49 | ✓ | [`docs/app/llms.txt/route.ts`](docs/app/llms.txt/route.ts) |
-| 50 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 51 | ✓ | [`ts/packages/cli/.cursor/rules/cli-design-guidelines.mdc`](ts/packages/cli/.cursor/rules/cli-design-guidelines.mdc) |
-| 52 | ✓ | [`ts/packages/cli/.cursor/rules/composio-clients.mdc`](ts/packages/cli/.cursor/rules/composio-clients.mdc) |
-| 53 | ✓ | [`ts/packages/cli/.cursor/rules/effect-source-reference.mdc`](ts/packages/cli/.cursor/rules/effect-source-reference.mdc) |
-| 54 | ✓ | [`ts/packages/cli/AGENTS.md`](ts/packages/cli/AGENTS.md) |
-| 55 | ✓ | [`ts/packages/cli/CLAUDE.md`](ts/packages/cli/CLAUDE.md) |
+| 1 | ✓ | [`.agents/skills/bug-fixing/references/regression-testing.md`](.agents/skills/bug-fixing/references/regression-testing.md) |
+| 2 | ✓ | [`.agents/skills/bug-fixing/SKILL.md`](.agents/skills/bug-fixing/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/cli-command/references/client-cache-sync.md`](.agents/skills/cli-command/references/client-cache-sync.md) |
+| 4 | ✓ | [`.agents/skills/cli-command/references/design.md`](.agents/skills/cli-command/references/design.md) |
+| 5 | ✓ | [`.agents/skills/cli-command/references/implementation.md`](.agents/skills/cli-command/references/implementation.md) |
+| 6 | ✓ | [`.agents/skills/cli-command/SKILL.md`](.agents/skills/cli-command/SKILL.md) |
+| 7 | ✓ | [`.agents/skills/cli-e2e/references/docker-cli-e2e.md`](.agents/skills/cli-e2e/references/docker-cli-e2e.md) |
+| 8 | ✓ | [`.agents/skills/cli-e2e/SKILL.md`](.agents/skills/cli-e2e/SKILL.md) |
+| 9 | ✓ | [`.agents/skills/cross-sdk-parity/references/parity-workflow.md`](.agents/skills/cross-sdk-parity/references/parity-workflow.md) |
+| 10 | ✓ | [`.agents/skills/cross-sdk-parity/SKILL.md`](.agents/skills/cross-sdk-parity/SKILL.md) |
+| 11 | ✓ | [`.agents/skills/docs-decisions/references/decision-records.md`](.agents/skills/docs-decisions/references/decision-records.md) |
+| 12 | ✓ | [`.agents/skills/docs-decisions/references/docs-workflow.md`](.agents/skills/docs-decisions/references/docs-workflow.md) |
+| 13 | ✓ | [`.agents/skills/docs-decisions/SKILL.md`](.agents/skills/docs-decisions/SKILL.md) |
+| 14 | ✓ | [`.agents/skills/eve/references/source-of-truth.md`](.agents/skills/eve/references/source-of-truth.md) |
+| 15 | ✓ | [`.agents/skills/eve/SKILL.md`](.agents/skills/eve/SKILL.md) |
+| 16 | ✓ | [`.agents/skills/python-providers/references/provider-workflow.md`](.agents/skills/python-providers/references/provider-workflow.md) |
+| 17 | ✓ | [`.agents/skills/python-providers/SKILL.md`](.agents/skills/python-providers/SKILL.md) |
+| 18 | ✓ | [`.agents/skills/python-release/references/release-workflow.md`](.agents/skills/python-release/references/release-workflow.md) |
+| 19 | ✓ | [`.agents/skills/python-release/SKILL.md`](.agents/skills/python-release/SKILL.md) |
+| 20 | ✓ | [`.agents/skills/python-sdk/references/sdk-layout.md`](.agents/skills/python-sdk/references/sdk-layout.md) |
+| 21 | ✓ | [`.agents/skills/python-sdk/SKILL.md`](.agents/skills/python-sdk/SKILL.md) |
+| 22 | ✓ | [`.agents/skills/python-testing/references/nox-make.md`](.agents/skills/python-testing/references/nox-make.md) |
+| 23 | ✓ | [`.agents/skills/python-testing/SKILL.md`](.agents/skills/python-testing/SKILL.md) |
+| 24 | ✓ | [`.agents/skills/repo-guidance/references/repository-workflow.md`](.agents/skills/repo-guidance/references/repository-workflow.md) |
+| 25 | ✓ | [`.agents/skills/repo-guidance/SKILL.md`](.agents/skills/repo-guidance/SKILL.md) |
+| 26 | ✓ | [`.agents/skills/skill-maintenance/references/skill-format.md`](.agents/skills/skill-maintenance/references/skill-format.md) |
+| 27 | ✓ | [`.agents/skills/skill-maintenance/SKILL.md`](.agents/skills/skill-maintenance/SKILL.md) |
+| 28 | ✓ | [`.agents/skills/typescript-providers/references/provider-workflow.md`](.agents/skills/typescript-providers/references/provider-workflow.md) |
+| 29 | ✓ | [`.agents/skills/typescript-providers/SKILL.md`](.agents/skills/typescript-providers/SKILL.md) |
+| 30 | ✓ | [`.agents/skills/typescript-sdk/references/core-sdk.md`](.agents/skills/typescript-sdk/references/core-sdk.md) |
+| 31 | ✓ | [`.agents/skills/typescript-sdk/SKILL.md`](.agents/skills/typescript-sdk/SKILL.md) |
+| 32 | ✓ | [`.agents/skills/typescript-testing/references/test-commands.md`](.agents/skills/typescript-testing/references/test-commands.md) |
+| 33 | ✓ | [`.agents/skills/typescript-testing/SKILL.md`](.agents/skills/typescript-testing/SKILL.md) |
+| 34 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 35 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 36 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 37 | ✓ | [`docs/app/llms.txt/route.ts`](docs/app/llms.txt/route.ts) |
+| 38 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 39 | ✓ | [`python/AGENTS.md`](python/AGENTS.md) |
+| 40 | ✓ | [`python/providers/AGENTS.md`](python/providers/AGENTS.md) |
+| 41 | ✓ | [`ts/AGENTS.md`](ts/AGENTS.md) |
+| 42 | ✓ | [`ts/e2e-tests/AGENTS.md`](ts/e2e-tests/AGENTS.md) |
+| 43 | ✓ | [`ts/packages/cli/AGENTS.md`](ts/packages/cli/AGENTS.md) |
+| 44 | ✓ | [`ts/packages/cli/CLAUDE.md`](ts/packages/cli/CLAUDE.md) |
+| 45 | ✓ | [`ts/packages/core/AGENTS.md`](ts/packages/core/AGENTS.md) |
+| 46 | ✓ | [`ts/packages/providers/AGENTS.md`](ts/packages/providers/AGENTS.md) |
 
 ---
 

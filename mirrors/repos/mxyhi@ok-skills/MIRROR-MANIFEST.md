@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
+Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 55 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 46 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 46 |
+| Files         | 55 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,31 +80,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`get-api-docs/SKILL.md`](get-api-docs/SKILL.md) |
 | 20 | ✓ | [`grill-with-docs/SKILL.md`](grill-with-docs/SKILL.md) |
 | 21 | ✓ | [`grilling/SKILL.md`](grilling/SKILL.md) |
-| 22 | ✓ | [`huashu-design/SKILL.md`](huashu-design/SKILL.md) |
-| 23 | ✓ | [`improve-codebase-architecture/HTML-REPORT.md`](improve-codebase-architecture/HTML-REPORT.md) |
-| 24 | ✓ | [`improve-codebase-architecture/SKILL.md`](improve-codebase-architecture/SKILL.md) |
-| 25 | ✓ | [`karpathy-guidelines/SKILL.md`](karpathy-guidelines/SKILL.md) |
-| 26 | ✓ | [`kimi-webbridge/SKILL.md`](kimi-webbridge/SKILL.md) |
-| 27 | ✓ | [`migrate-to-shoehorn/SKILL.md`](migrate-to-shoehorn/SKILL.md) |
-| 28 | ✓ | [`minimax-docx/SKILL.md`](minimax-docx/SKILL.md) |
-| 29 | ✓ | [`minimax-pdf/SKILL.md`](minimax-pdf/SKILL.md) |
-| 30 | ✓ | [`minimax-xlsx/SKILL.md`](minimax-xlsx/SKILL.md) |
-| 31 | ✓ | [`opencli/opencli-adapter-author/SKILL.md`](opencli/opencli-adapter-author/SKILL.md) |
-| 32 | ✓ | [`opencli/opencli-autofix/SKILL.md`](opencli/opencli-autofix/SKILL.md) |
-| 33 | ✓ | [`opencli/opencli-browser-sitemap/SKILL.md`](opencli/opencli-browser-sitemap/SKILL.md) |
-| 34 | ✓ | [`opencli/opencli-browser/SKILL.md`](opencli/opencli-browser/SKILL.md) |
-| 35 | ✓ | [`opencli/opencli-sitemap-author/SKILL.md`](opencli/opencli-sitemap-author/SKILL.md) |
-| 36 | ✓ | [`opencli/opencli-usage/SKILL.md`](opencli/opencli-usage/SKILL.md) |
-| 37 | ✓ | [`opencli/smart-search/SKILL.md`](opencli/smart-search/SKILL.md) |
-| 38 | ✓ | [`planning-with-files/SKILL.md`](planning-with-files/SKILL.md) |
-| 39 | ✓ | [`pptx-generator/SKILL.md`](pptx-generator/SKILL.md) |
-| 40 | ✓ | [`systematic-debugging/SKILL.md`](systematic-debugging/SKILL.md) |
-| 41 | ✓ | [`tdd/mocking.md`](tdd/mocking.md) |
-| 42 | ✓ | [`tdd/refactoring.md`](tdd/refactoring.md) |
-| 43 | ✓ | [`tdd/SKILL.md`](tdd/SKILL.md) |
-| 44 | ✓ | [`tdd/tests.md`](tdd/tests.md) |
-| 45 | ✓ | [`xquik-twitter/skill-card.md`](xquik-twitter/skill-card.md) |
-| 46 | ✓ | [`xquik-twitter/SKILL.md`](xquik-twitter/SKILL.md) |
+| 22 | ✓ | [`handoff/SKILL.md`](handoff/SKILL.md) |
+| 23 | ✓ | [`huashu-design/SKILL.md`](huashu-design/SKILL.md) |
+| 24 | ✓ | [`improve-codebase-architecture/HTML-REPORT.md`](improve-codebase-architecture/HTML-REPORT.md) |
+| 25 | ✓ | [`improve-codebase-architecture/SKILL.md`](improve-codebase-architecture/SKILL.md) |
+| 26 | ✓ | [`karpathy-guidelines/SKILL.md`](karpathy-guidelines/SKILL.md) |
+| 27 | ✓ | [`kimi-webbridge/SKILL.md`](kimi-webbridge/SKILL.md) |
+| 28 | ✓ | [`migrate-to-shoehorn/SKILL.md`](migrate-to-shoehorn/SKILL.md) |
+| 29 | ✓ | [`minimax-docx/SKILL.md`](minimax-docx/SKILL.md) |
+| 30 | ✓ | [`minimax-pdf/SKILL.md`](minimax-pdf/SKILL.md) |
+| 31 | ✓ | [`minimax-xlsx/SKILL.md`](minimax-xlsx/SKILL.md) |
+| 32 | ✓ | [`opencli/opencli-adapter-author/SKILL.md`](opencli/opencli-adapter-author/SKILL.md) |
+| 33 | ✓ | [`opencli/opencli-autofix/SKILL.md`](opencli/opencli-autofix/SKILL.md) |
+| 34 | ✓ | [`opencli/opencli-browser-sitemap/SKILL.md`](opencli/opencli-browser-sitemap/SKILL.md) |
+| 35 | ✓ | [`opencli/opencli-browser/SKILL.md`](opencli/opencli-browser/SKILL.md) |
+| 36 | ✓ | [`opencli/opencli-sitemap-author/SKILL.md`](opencli/opencli-sitemap-author/SKILL.md) |
+| 37 | ✓ | [`opencli/opencli-usage/SKILL.md`](opencli/opencli-usage/SKILL.md) |
+| 38 | ✓ | [`opencli/smart-search/SKILL.md`](opencli/smart-search/SKILL.md) |
+| 39 | ✓ | [`planning-with-files/SKILL.md`](planning-with-files/SKILL.md) |
+| 40 | ✓ | [`pptx-generator/SKILL.md`](pptx-generator/SKILL.md) |
+| 41 | ✓ | [`prototype/LOGIC.md`](prototype/LOGIC.md) |
+| 42 | ✓ | [`prototype/SKILL.md`](prototype/SKILL.md) |
+| 43 | ✓ | [`prototype/UI.md`](prototype/UI.md) |
+| 44 | ✓ | [`systematic-debugging/SKILL.md`](systematic-debugging/SKILL.md) |
+| 45 | ✓ | [`tdd/mocking.md`](tdd/mocking.md) |
+| 46 | ✓ | [`tdd/refactoring.md`](tdd/refactoring.md) |
+| 47 | ✓ | [`tdd/SKILL.md`](tdd/SKILL.md) |
+| 48 | ✓ | [`tdd/tests.md`](tdd/tests.md) |
+| 49 | ✓ | [`teach/LEARNING-RECORD-FORMAT.md`](teach/LEARNING-RECORD-FORMAT.md) |
+| 50 | ✓ | [`teach/MISSION-FORMAT.md`](teach/MISSION-FORMAT.md) |
+| 51 | ✓ | [`teach/RESOURCES-FORMAT.md`](teach/RESOURCES-FORMAT.md) |
+| 52 | ✓ | [`teach/SKILL.md`](teach/SKILL.md) |
+| 53 | ✓ | [`x-twitter-scraper/skill-card.md`](x-twitter-scraper/skill-card.md) |
+| 54 | ✓ | [`x-twitter-scraper/SKILL.md`](x-twitter-scraper/SKILL.md) |
+| 55 | ✓ | [`x-twitter-scraper/skillspector-report.md`](x-twitter-scraper/skillspector-report.md) |
 
 ---
 

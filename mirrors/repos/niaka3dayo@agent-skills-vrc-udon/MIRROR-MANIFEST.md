@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `niaka3dayo/agent-skills-vrc-udon` — 26 default patterns, 3 followed patterns, 70 file(s) materialized.
+Mirror of `niaka3dayo/agent-skills-vrc-udon` — 26 default patterns, 3 followed patterns, 71 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `niaka3dayo/agent-skills-vrc-udon` — 26 default patterns, 3 followed
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 70 |
+| Files         | 71 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -118,19 +118,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 55 | ✓ | [`skills/unity-vrc-world-sdk-3/CHEATSHEET.md`](skills/unity-vrc-world-sdk-3/CHEATSHEET.md) |
 | 56 | ✓ | [`skills/unity-vrc-world-sdk-3/LICENSE.txt`](skills/unity-vrc-world-sdk-3/LICENSE.txt) |
 | 57 | ✓ | [`skills/unity-vrc-world-sdk-3/references/audio-video.md`](skills/unity-vrc-world-sdk-3/references/audio-video.md) |
-| 58 | ✓ | [`skills/unity-vrc-world-sdk-3/references/components.md`](skills/unity-vrc-world-sdk-3/references/components.md) |
-| 59 | ✓ | [`skills/unity-vrc-world-sdk-3/references/layers.md`](skills/unity-vrc-world-sdk-3/references/layers.md) |
-| 60 | ✓ | [`skills/unity-vrc-world-sdk-3/references/lighting.md`](skills/unity-vrc-world-sdk-3/references/lighting.md) |
-| 61 | ✓ | [`skills/unity-vrc-world-sdk-3/references/performance.md`](skills/unity-vrc-world-sdk-3/references/performance.md) |
-| 62 | ✓ | [`skills/unity-vrc-world-sdk-3/references/troubleshooting.md`](skills/unity-vrc-world-sdk-3/references/troubleshooting.md) |
-| 63 | ✓ | [`skills/unity-vrc-world-sdk-3/references/upload.md`](skills/unity-vrc-world-sdk-3/references/upload.md) |
-| 64 | ✓ | [`skills/unity-vrc-world-sdk-3/SKILL.md`](skills/unity-vrc-world-sdk-3/SKILL.md) |
-| 65 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
-| 66 | ✓ | [`templates/CLAUDE.md`](templates/CLAUDE.md) |
-| 67 | ✓ | [`templates/GEMINI.md`](templates/GEMINI.md) |
-| 68 | → | [`.claude/audit/README.md`](.claude/audit/README.md) |
-| 69 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 70 | → | [`unity-project-for-sdk-search/README.md`](unity-project-for-sdk-search/README.md) |
+| 58 | ✓ | [`skills/unity-vrc-world-sdk-3/references/build-validation.md`](skills/unity-vrc-world-sdk-3/references/build-validation.md) |
+| 59 | ✓ | [`skills/unity-vrc-world-sdk-3/references/components.md`](skills/unity-vrc-world-sdk-3/references/components.md) |
+| 60 | ✓ | [`skills/unity-vrc-world-sdk-3/references/layers.md`](skills/unity-vrc-world-sdk-3/references/layers.md) |
+| 61 | ✓ | [`skills/unity-vrc-world-sdk-3/references/lighting.md`](skills/unity-vrc-world-sdk-3/references/lighting.md) |
+| 62 | ✓ | [`skills/unity-vrc-world-sdk-3/references/performance.md`](skills/unity-vrc-world-sdk-3/references/performance.md) |
+| 63 | ✓ | [`skills/unity-vrc-world-sdk-3/references/troubleshooting.md`](skills/unity-vrc-world-sdk-3/references/troubleshooting.md) |
+| 64 | ✓ | [`skills/unity-vrc-world-sdk-3/references/upload.md`](skills/unity-vrc-world-sdk-3/references/upload.md) |
+| 65 | ✓ | [`skills/unity-vrc-world-sdk-3/SKILL.md`](skills/unity-vrc-world-sdk-3/SKILL.md) |
+| 66 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
+| 67 | ✓ | [`templates/CLAUDE.md`](templates/CLAUDE.md) |
+| 68 | ✓ | [`templates/GEMINI.md`](templates/GEMINI.md) |
+| 69 | → | [`.claude/audit/README.md`](.claude/audit/README.md) |
+| 70 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 71 | → | [`unity-project-for-sdk-search/README.md`](unity-project-for-sdk-search/README.md) |
 
 ---
 

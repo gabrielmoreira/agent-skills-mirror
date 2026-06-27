@@ -92,9 +92,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 31 | ✓ | [`skills/curriculum-assessment/backwards-design-unit-planner/SKILL.md`](skills/curriculum-assessment/backwards-design-unit-planner/SKILL.md) |
 | 32 | ✓ | [`skills/curriculum-assessment/competency-unpacker/SKILL.md`](skills/curriculum-assessment/competency-unpacker/SKILL.md) |
 | 33 | ✓ | [`skills/curriculum-assessment/criterion-referenced-rubric-generator/SKILL.md`](skills/curriculum-assessment/criterion-referenced-rubric-generator/SKILL.md) |
-| 34 | ✓ | [`skills/curriculum-assessment/critical-thinking-task-designer/SKILL.md`](skills/curriculum-assessment/critical-thinking-task-designer/SKILL.md) |
-| 35 | ✓ | [`skills/curriculum-assessment/curriculum-knowledge-architecture-designer/SKILL.md`](skills/curriculum-assessment/curriculum-knowledge-architecture-designer/SKILL.md) |
-| 36 | ✓ | [`skills/curriculum-assessment/differentiation-adapter/SKILL.md`](skills/curriculum-assessment/differentiation-adapter/SKILL.md) |
+| 34 | ✓ | [`skills/curriculum-assessment/curriculum-knowledge-architecture-designer/SKILL.md`](skills/curriculum-assessment/curriculum-knowledge-architecture-designer/SKILL.md) |
+| 35 | ✓ | [`skills/curriculum-assessment/differentiation-adapter/SKILL.md`](skills/curriculum-assessment/differentiation-adapter/SKILL.md) |
+| 36 | ✓ | [`skills/curriculum-assessment/discipline-specific-critical-thinking-task-designer/SKILL.md`](skills/curriculum-assessment/discipline-specific-critical-thinking-task-designer/SKILL.md) |
 | 37 | ✓ | [`skills/curriculum-assessment/formative-assessment-technique-selector/SKILL.md`](skills/curriculum-assessment/formative-assessment-technique-selector/SKILL.md) |
 | 38 | ✓ | [`skills/curriculum-assessment/gap-analysis-from-student-work/SKILL.md`](skills/curriculum-assessment/gap-analysis-from-student-work/SKILL.md) |
 | 39 | ✓ | [`skills/curriculum-assessment/kud-knowledge-type-mapper/SKILL.md`](skills/curriculum-assessment/kud-knowledge-type-mapper/SKILL.md) |

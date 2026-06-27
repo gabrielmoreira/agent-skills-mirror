@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bergside/typeui` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `bergside/typeui` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bergside/typeui` — 26 default patterns, 0 followed patterns, 8 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,12 +61,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`.mcp/server.json`](.mcp/server.json) |
-| 3 | ✓ | [`skills/fundamentals/accessibility.md`](skills/fundamentals/accessibility.md) |
-| 4 | ✓ | [`skills/fundamentals/SKILL.md`](skills/fundamentals/SKILL.md) |
-| 5 | ✓ | [`skills/fundamentals/spacing-principles.md`](skills/fundamentals/spacing-principles.md) |
-| 6 | ✓ | [`skills/fundamentals/typography-principles.md`](skills/fundamentals/typography-principles.md) |
-| 7 | ✓ | [`skills/fundamentals/ui-principles.md`](skills/fundamentals/ui-principles.md) |
-| 8 | ✓ | [`skills/fundamentals/ux-principles.md`](skills/fundamentals/ux-principles.md) |
+| 3 | ✓ | [`plugins/grok/typeui/skills/typeui/SKILL.md`](plugins/grok/typeui/skills/typeui/SKILL.md) |
+| 4 | ✓ | [`skills/fundamentals/accessibility.md`](skills/fundamentals/accessibility.md) |
+| 5 | ✓ | [`skills/fundamentals/SKILL.md`](skills/fundamentals/SKILL.md) |
+| 6 | ✓ | [`skills/fundamentals/spacing-principles.md`](skills/fundamentals/spacing-principles.md) |
+| 7 | ✓ | [`skills/fundamentals/typography-principles.md`](skills/fundamentals/typography-principles.md) |
+| 8 | ✓ | [`skills/fundamentals/ui-principles.md`](skills/fundamentals/ui-principles.md) |
+| 9 | ✓ | [`skills/fundamentals/ux-principles.md`](skills/fundamentals/ux-principles.md) |
 
 ---
 

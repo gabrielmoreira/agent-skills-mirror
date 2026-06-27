@@ -83,6 +83,17 @@ Once you've picked a workflow, check it's actually available to you. If the matc
 
 After they run it, re-read the workflow's skill and continue.
 
+## Keeping skills current
+
+HyperFrames skills are versioned. `npx hyperframes init` checks the installed skills against the latest on GitHub and installs/refreshes the **full** set whenever anything is out of date or missing — so a freshly init'd project always has the complete, latest set (and re-running init on an up-to-date project is a no-op). The check is a quick GitHub round-trip; offline (or rate-limited) it falls back to installing after a short timeout, so init never hard-fails on a network hiccup. The creation workflows scaffold with `init` (no `--skip-skills`), so starting a new project always runs this check and pulls our latest skills from GitHub when they're stale. Opt out only by adding `--skip-skills`.
+
+If a task is behaving unexpectedly, or before a long build, confirm the installed skills are current:
+
+- **Check:** `npx hyperframes skills check` (add `--json` for a machine-readable verdict; exits non-zero when anything is outdated **or missing**).
+- **Update:** `npx hyperframes skills update` — pulls the full set to the latest, **installing any not yet present** (same as init's install step).
+
+The CLI also surfaces a one-line reminder when a `render` / `lint` / `validate` run detects stale skills.
+
 ## Workflow details
 
 ### `/product-launch-video`

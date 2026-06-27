@@ -155,19 +155,40 @@ function preCompactOutput(): string {
   return lines.join("\n")
 }
 
-// 相对路径按项目根解析（对齐 guard-outline-before-prose.sh 的 $ROOT/$TARGET）
+// 相对路径按项目根解析（对齐 guard-outline-before-prose.sh 的 $ROOT/$TARGET）。
+// Windows 盘符绝对路径（F:/... 或 F:\...）先把反斜杠归一，再交给平台感知的 path.isAbsolute
+// 判断（win32 上 F:/... 为绝对），与 bash hook 的 [A-Za-z]:[/\\]* 分支等价（issue #184）。
 function resolveTarget(root: string, target: string): string {
   const normalized = target.replace(/\\/g, "/")
   return path.isAbsolute(normalized) ? normalized : path.resolve(root, normalized)
 }
 
-// 从 bash 命令里提取可能的「正文」写入目标，用于防止绕过 write/edit 守卫
+// 从 bash 命令里提取真正的「正文」写入目标（重定向 / tee / touch / cp|mv 目标），用于防止
+// 绕过 write/edit 守卫。只认真实写入目标，避免 heredoc 正文、文档字符串或 grep 模式里仅仅
+// “提到” 正文/第N章.md 就被误判为写正文（与 codex story_codex_hook.py 同实现，保持一致）。
 function extractProseTargets(cmd: string): string[] {
   const out: string[] = []
-  const re = /[^\s'"<>|;&()]*正文[^\s'"<>|;&()]*/g
-  let m: RegExpExecArray | null
-  while ((m = re.exec(cmd)) !== null) {
-    if (m[0]) out.push(m[0])
+  // 重定向 / tee / touch 用正则；起始/分隔符类（非 \b）保证与 codex story_codex_hook.py 一致
+  // （\b 在 Python re 是 Unicode-aware、在 JS 是 ASCII-only，会让两端对 CJK 粘连的判定不同）。
+  const patterns = [
+    />>?\s*['"]?([^\s'"<>|;&()]*正文[^\s'"<>|;&()]*)['"]?/g,
+    /(?:^|[\s;&|(){}<>])(?:tee(?:\s+-a)?|touch)\s+['"]?([^\s'"<>|;&()]*正文[^\s'"<>|;&()]*)['"]?/g,
+  ]
+  for (const re of patterns) {
+    let m: RegExpExecArray | null
+    while ((m = re.exec(cmd)) !== null) {
+      if (m[1]) out.push(m[1])
+    }
+  }
+  // cp/mv：写入目标是段内最后一个位置参数（正则分不清 正文 源/目标，且尾部 2>/dev/null/>log/|| 会破坏锚定）
+  for (const raw of cmd.split(/[;&|\n]/)) {
+    const seg = raw.split(/\d*[<>]/)[0]
+    const words = seg.split(/\s+/).filter(Boolean)
+    if (words.length >= 2 && (words[0] === "cp" || words[0] === "mv")) {
+      const positionals = words.slice(1).filter((w) => !w.startsWith("-"))
+      const dest = positionals[positionals.length - 1]
+      if (dest && dest.includes("正文")) out.push(dest.replace(/^['"]|['"]$/g, ""))
+    }
   }
   return out
 }

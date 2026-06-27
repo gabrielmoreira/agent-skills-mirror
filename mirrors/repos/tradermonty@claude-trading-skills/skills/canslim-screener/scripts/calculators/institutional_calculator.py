@@ -94,19 +94,17 @@ def calculate_institutional_sponsorship(
         >>> result = calculate_institutional_sponsorship(holders, profile)
         >>> print(f"I Score: {result['score']}, Holders: {result['num_holders']}, Ownership: {result['ownership_pct']:.1f}%")
     """
-    # Validate input
+    missing_holder_input = institutional_holders is None or institutional_holders == []
+
+    # Treat missing FMP data as "zero holders" instead of returning early — the
+    # Finviz fallback below (line ~162) can still recover ownership_pct in many
+    # cases. This matters for FMP free-tier users: /stable institutional-
+    # ownership endpoints return 402 "Restricted" and the legacy /api/v3
+    # institutional-holder endpoint returns 403 "Legacy" — get_institutional_
+    # holders() correctly returns None, but the old early-return killed the
+    # whole 'I' component (always score=0) before Finviz could fill the gap.
     if not institutional_holders:
-        return {
-            "score": 0,
-            "error": "No institutional holder data available",
-            "num_holders": 0,
-            "ownership_pct": None,
-            "superinvestor_present": False,
-            "superinvestors": [],
-            "total_shares_held": None,
-            "shares_outstanding": None,
-            "interpretation": "Data unavailable",
-        }
+        institutional_holders = []
 
     # Accept either the /stable aggregate shape (dict from get_institutional_holders)
     # or a legacy v3 holder list.
@@ -151,9 +149,17 @@ def calculate_institutional_sponsorship(
             if market_cap and price and price > 0:
                 shares_outstanding = market_cap / price
 
-        if shares_outstanding and shares_outstanding > 0:
+        # Only derive ownership_pct from the holder list if there IS a holder
+        # list. total_shares_held == 0 means the FMP /stable institutional
+        # endpoints returned nothing (free-tier 402 → fallback to v3 403 →
+        # get_institutional_holders returns None → empty list here). Computing
+        # 0 / shares_outstanding × 100 = 0.0 in that case would falsely set
+        # ownership_pct to 0.0, blocking the Finviz fallback below
+        # (which gates on `ownership_pct is None`). Leave it None so Finviz
+        # can recover the real value.
+        if shares_outstanding and shares_outstanding > 0 and total_shares_held > 0:
             ownership_pct = (total_shares_held / shares_outstanding) * 100
-        else:
+        elif not shares_outstanding:
             quality_warning = "Shares outstanding unavailable from FMP."
     elif ownership_pct is None:
         quality_warning = "Company profile not provided."
@@ -185,10 +191,17 @@ def calculate_institutional_sponsorship(
         else:
             quality_warning += " Score reduced by 50%."
 
-    # Score institutional sponsorship
-    score = score_institutional_sponsorship(
-        num_holders, ownership_pct, superinvestor_present, quality_warning
-    )
+    # Preserve the original no-data semantics when both FMP and Finviz are
+    # unavailable, but do not zero valid partial FMP aggregate data.
+    if missing_holder_input and ownership_pct is None:
+        score = 0
+        quality_warning = (
+            "Institutional holder data unavailable from FMP and Finviz. Score set to 0."
+        )
+    else:
+        score = score_institutional_sponsorship(
+            num_holders, ownership_pct, superinvestor_present, quality_warning
+        )
 
     # Generate interpretation
     interpretation = interpret_institutional_sponsorship(

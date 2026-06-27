@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Forward-Future/loop-library` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `Forward-Future/loop-library` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Forward-Future/loop-library` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,8 +62,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`skills/loop-library/agents/openai.yaml`](skills/loop-library/agents/openai.yaml) |
 | 3 | ✓ | [`skills/loop-library/references/audit.md`](skills/loop-library/references/audit.md) |
-| 4 | ✓ | [`skills/loop-library/references/discover.md`](skills/loop-library/references/discover.md) |
-| 5 | ✓ | [`skills/loop-library/SKILL.md`](skills/loop-library/SKILL.md) |
+| 4 | ✓ | [`skills/loop-library/references/debrief.md`](skills/loop-library/references/debrief.md) |
+| 5 | ✓ | [`skills/loop-library/references/discover.md`](skills/loop-library/references/discover.md) |
+| 6 | ✓ | [`skills/loop-library/references/publish.md`](skills/loop-library/references/publish.md) |
+| 7 | ✓ | [`skills/loop-library/references/run.md`](skills/loop-library/references/run.md) |
+| 8 | ✓ | [`skills/loop-library/SKILL.md`](skills/loop-library/SKILL.md) |
+| 9 | ✓ | [`skills/loopy/agents/openai.yaml`](skills/loopy/agents/openai.yaml) |
+| 10 | ✓ | [`skills/loopy/references/audit.md`](skills/loopy/references/audit.md) |
+| 11 | ✓ | [`skills/loopy/references/debrief.md`](skills/loopy/references/debrief.md) |
+| 12 | ✓ | [`skills/loopy/references/discover.md`](skills/loopy/references/discover.md) |
+| 13 | ✓ | [`skills/loopy/references/publish.md`](skills/loopy/references/publish.md) |
+| 14 | ✓ | [`skills/loopy/references/run.md`](skills/loopy/references/run.md) |
+| 15 | ✓ | [`skills/loopy/SKILL.md`](skills/loopy/SKILL.md) |
 
 ---
 

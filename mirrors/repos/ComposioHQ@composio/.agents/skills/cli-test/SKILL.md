@@ -1,1 +1,0 @@
-cache/repos/github.com/ComposioHQ@composio/.agents/skills/cli-test/../../../.claude/skills/cli-test/SKILL.md

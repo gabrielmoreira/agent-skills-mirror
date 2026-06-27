@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `diffusionstudio/lottie` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `diffusionstudio/lottie` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `diffusionstudio/lottie` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,7 +59,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/text-to-lottie/SKILL.md`](skills/text-to-lottie/SKILL.md) |
+| 1 | ✓ | [`skills/text-to-lottie/evals/output-rubric.md`](skills/text-to-lottie/evals/output-rubric.md) |
+| 2 | ✓ | [`skills/text-to-lottie/evals/reference-loading-prompts.json`](skills/text-to-lottie/evals/reference-loading-prompts.json) |
+| 3 | ✓ | [`skills/text-to-lottie/evals/routing-prompts.json`](skills/text-to-lottie/evals/routing-prompts.json) |
+| 4 | ✓ | [`skills/text-to-lottie/evals/trigger-prompts.json`](skills/text-to-lottie/evals/trigger-prompts.json) |
+| 5 | ✓ | [`skills/text-to-lottie/references/chapterization-transition-grammar.md`](skills/text-to-lottie/references/chapterization-transition-grammar.md) |
+| 6 | ✓ | [`skills/text-to-lottie/references/design-taste.md`](skills/text-to-lottie/references/design-taste.md) |
+| 7 | ✓ | [`skills/text-to-lottie/references/lottie-spec-map.md`](skills/text-to-lottie/references/lottie-spec-map.md) |
+| 8 | ✓ | [`skills/text-to-lottie/references/motion-taste.md`](skills/text-to-lottie/references/motion-taste.md) |
+| 9 | ✓ | [`skills/text-to-lottie/references/player-contract.md`](skills/text-to-lottie/references/player-contract.md) |
+| 10 | ✓ | [`skills/text-to-lottie/references/recipe-camera-scene-motion.md`](skills/text-to-lottie/references/recipe-camera-scene-motion.md) |
+| 11 | ✓ | [`skills/text-to-lottie/references/recipe-data-stats.md`](skills/text-to-lottie/references/recipe-data-stats.md) |
+| 12 | ✓ | [`skills/text-to-lottie/references/recipe-diagram-technical.md`](skills/text-to-lottie/references/recipe-diagram-technical.md) |
+| 13 | ✓ | [`skills/text-to-lottie/references/recipe-loaders-icons.md`](skills/text-to-lottie/references/recipe-loaders-icons.md) |
+| 14 | ✓ | [`skills/text-to-lottie/references/recipe-logo.md`](skills/text-to-lottie/references/recipe-logo.md) |
+| 15 | ✓ | [`skills/text-to-lottie/references/recipe-lower-thirds.md`](skills/text-to-lottie/references/recipe-lower-thirds.md) |
+| 16 | ✓ | [`skills/text-to-lottie/references/recipe-product-promo.md`](skills/text-to-lottie/references/recipe-product-promo.md) |
+| 17 | ✓ | [`skills/text-to-lottie/references/recipe-starter-projects.md`](skills/text-to-lottie/references/recipe-starter-projects.md) |
+| 18 | ✓ | [`skills/text-to-lottie/references/recipe-svg-animation.md`](skills/text-to-lottie/references/recipe-svg-animation.md) |
+| 19 | ✓ | [`skills/text-to-lottie/references/recipe-typography.md`](skills/text-to-lottie/references/recipe-typography.md) |
+| 20 | ✓ | [`skills/text-to-lottie/references/recipe-ui-microinteractions.md`](skills/text-to-lottie/references/recipe-ui-microinteractions.md) |
+| 21 | ✓ | [`skills/text-to-lottie/references/recipe-visual-effects.md`](skills/text-to-lottie/references/recipe-visual-effects.md) |
+| 22 | ✓ | [`skills/text-to-lottie/references/svg-compatibility.md`](skills/text-to-lottie/references/svg-compatibility.md) |
+| 23 | ✓ | [`skills/text-to-lottie/SKILL.md`](skills/text-to-lottie/SKILL.md) |
 
 ---
 

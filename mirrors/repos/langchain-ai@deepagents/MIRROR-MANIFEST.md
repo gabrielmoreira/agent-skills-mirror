@@ -81,7 +81,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`examples/nvidia_deep_agent/skills/data-visualization/SKILL.md`](examples/nvidia_deep_agent/skills/data-visualization/SKILL.md) |
 | 21 | ✓ | [`examples/nvidia_deep_agent/skills/gpu-document-processing/SKILL.md`](examples/nvidia_deep_agent/skills/gpu-document-processing/SKILL.md) |
 | 22 | ✓ | [`examples/nvidia_deep_agent/src/AGENTS.md`](examples/nvidia_deep_agent/src/AGENTS.md) |
-| 23 | ✓ | [`examples/talon-whatsapp/AGENTS.md`](examples/talon-whatsapp/AGENTS.md) |
+| 23 | ✓ | [`examples/talon/AGENTS.md`](examples/talon/AGENTS.md) |
 | 24 | ✓ | [`examples/text-to-sql-agent/AGENTS.md`](examples/text-to-sql-agent/AGENTS.md) |
 | 25 | ✓ | [`examples/text-to-sql-agent/skills/query-writing/SKILL.md`](examples/text-to-sql-agent/skills/query-writing/SKILL.md) |
 | 26 | ✓ | [`examples/text-to-sql-agent/skills/schema-exploration/SKILL.md`](examples/text-to-sql-agent/skills/schema-exploration/SKILL.md) |

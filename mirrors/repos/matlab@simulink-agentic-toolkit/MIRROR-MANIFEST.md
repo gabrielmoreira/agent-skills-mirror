@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `matlab/simulink-agentic-toolkit` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `matlab/simulink-agentic-toolkit` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `matlab/simulink-agentic-toolkit` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,18 +60,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`skills-catalog/model-based-design-core/building-simulink-models/SKILL.md`](skills-catalog/model-based-design-core/building-simulink-models/SKILL.md) |
-| 3 | ✓ | [`skills-catalog/model-based-design-core/configuring-block-policy/SKILL.md`](skills-catalog/model-based-design-core/configuring-block-policy/SKILL.md) |
-| 4 | ✓ | [`skills-catalog/model-based-design-core/curating-library-kg/SKILL.md`](skills-catalog/model-based-design-core/curating-library-kg/SKILL.md) |
-| 5 | ✓ | [`skills-catalog/model-based-design-core/filing-bug-reports/SKILL.md`](skills-catalog/model-based-design-core/filing-bug-reports/SKILL.md) |
-| 6 | ✓ | [`skills-catalog/model-based-design-core/generate-requirement-drafts/SKILL.md`](skills-catalog/model-based-design-core/generate-requirement-drafts/SKILL.md) |
-| 7 | ✓ | [`skills-catalog/model-based-design-core/managing-simulink-projects/SKILL.md`](skills-catalog/model-based-design-core/managing-simulink-projects/SKILL.md) |
-| 8 | ✓ | [`skills-catalog/model-based-design-core/setup-custom-libraries/SKILL.md`](skills-catalog/model-based-design-core/setup-custom-libraries/SKILL.md) |
-| 9 | ✓ | [`skills-catalog/model-based-design-core/simulating-simulink-models/SKILL.md`](skills-catalog/model-based-design-core/simulating-simulink-models/SKILL.md) |
-| 10 | ✓ | [`skills-catalog/model-based-design-core/specifying-mbd-algorithms/SKILL.md`](skills-catalog/model-based-design-core/specifying-mbd-algorithms/SKILL.md) |
-| 11 | ✓ | [`skills-catalog/model-based-design-core/specifying-plant-models/SKILL.md`](skills-catalog/model-based-design-core/specifying-plant-models/SKILL.md) |
-| 12 | ✓ | [`skills-catalog/model-based-design-core/testing-simulink-models/SKILL.md`](skills-catalog/model-based-design-core/testing-simulink-models/SKILL.md) |
-| 13 | ✓ | [`skills-catalog/model-based-system-engineering/building-architecture-models/SKILL.md`](skills-catalog/model-based-system-engineering/building-architecture-models/SKILL.md) |
+| 2 | ✓ | [`skills-catalog/agentic-review/check-authoring/SKILL.md`](skills-catalog/agentic-review/check-authoring/SKILL.md) |
+| 3 | ✓ | [`skills-catalog/agentic-review/checking-model-compliance/SKILL.md`](skills-catalog/agentic-review/checking-model-compliance/SKILL.md) |
+| 4 | ✓ | [`skills-catalog/model-based-design-core/building-simulink-models/SKILL.md`](skills-catalog/model-based-design-core/building-simulink-models/SKILL.md) |
+| 5 | ✓ | [`skills-catalog/model-based-design-core/configuring-block-policy/SKILL.md`](skills-catalog/model-based-design-core/configuring-block-policy/SKILL.md) |
+| 6 | ✓ | [`skills-catalog/model-based-design-core/curating-library-kg/SKILL.md`](skills-catalog/model-based-design-core/curating-library-kg/SKILL.md) |
+| 7 | ✓ | [`skills-catalog/model-based-design-core/filing-bug-reports/SKILL.md`](skills-catalog/model-based-design-core/filing-bug-reports/SKILL.md) |
+| 8 | ✓ | [`skills-catalog/model-based-design-core/generate-requirement-drafts/SKILL.md`](skills-catalog/model-based-design-core/generate-requirement-drafts/SKILL.md) |
+| 9 | ✓ | [`skills-catalog/model-based-design-core/managing-simulink-projects/SKILL.md`](skills-catalog/model-based-design-core/managing-simulink-projects/SKILL.md) |
+| 10 | ✓ | [`skills-catalog/model-based-design-core/setup-custom-libraries/SKILL.md`](skills-catalog/model-based-design-core/setup-custom-libraries/SKILL.md) |
+| 11 | ✓ | [`skills-catalog/model-based-design-core/simulating-simulink-models/SKILL.md`](skills-catalog/model-based-design-core/simulating-simulink-models/SKILL.md) |
+| 12 | ✓ | [`skills-catalog/model-based-design-core/specifying-mbd-algorithms/SKILL.md`](skills-catalog/model-based-design-core/specifying-mbd-algorithms/SKILL.md) |
+| 13 | ✓ | [`skills-catalog/model-based-design-core/specifying-plant-models/SKILL.md`](skills-catalog/model-based-design-core/specifying-plant-models/SKILL.md) |
+| 14 | ✓ | [`skills-catalog/model-based-design-core/testing-simulink-models/SKILL.md`](skills-catalog/model-based-design-core/testing-simulink-models/SKILL.md) |
+| 15 | ✓ | [`skills-catalog/model-based-system-engineering/building-architecture-models/SKILL.md`](skills-catalog/model-based-system-engineering/building-architecture-models/SKILL.md) |
 
 ---
 

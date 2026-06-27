@@ -5,7 +5,7 @@ Tests for FMP stable/v3 endpoint fallback in canslim-screener.
 Tier A (4): Fallback logic
 Tier B (4): Response normalization
 Tier B+ (2): Shape validation
-Caller regression (2): screen_canslim.py behavior on failure
+Caller regression: screen_canslim.py behavior on failure/fallback
 """
 
 import os
@@ -266,12 +266,73 @@ class TestSymbolMismatch:
 
 
 # ---------------------------------------------------------------------------
-# Caller regression (2 tests)
+# Caller regression
 # ---------------------------------------------------------------------------
 
 
 class TestCallerRegression:
     """Verify screen_canslim.py behavior when FMP endpoints fail."""
+
+    @pytest.mark.parametrize("institutional_holders", [None, []])
+    def test_analyze_stock_calls_institutional_calculator_when_holders_missing(
+        self, institutional_holders
+    ):
+        """Missing FMP holders must still reach the Finviz-capable calculator."""
+        import screen_canslim
+
+        profile = {
+            "companyName": "Test Corp",
+            "sector": "Technology",
+            "mktCap": 200_000_000_000,
+            "price": 200.0,
+            "sharesOutstanding": 1_000_000_000,
+        }
+        client = MagicMock()
+        client.get_profile.return_value = [profile]
+        client.get_quote.return_value = [
+            {
+                "symbol": "TEST",
+                "price": 200.0,
+                "yearHigh": 210.0,
+                "yearLow": 120.0,
+                "volume": 2_000_000,
+                "avgVolume": 1_000_000,
+            }
+        ]
+        client.get_income_statement.return_value = [
+            {"eps": 1.0, "revenue": 100_000_000, "date": "2026-03-31"}
+        ] * 8
+        client.get_historical_prices.return_value = {
+            "historical": [
+                {
+                    "date": f"2026-01-{(i % 28) + 1:02d}",
+                    "close": 100.0 + ((-1) ** i),
+                    "volume": 1_000_000 + (i * 1_000),
+                }
+                for i in range(90)
+            ]
+        }
+        client.get_institutional_holders.return_value = institutional_holders
+        market_data = {"score": 80, "trend": "uptrend"}
+
+        with patch.object(
+            screen_canslim,
+            "calculate_institutional_sponsorship",
+            return_value={"score": 50, "data_source": "Finviz"},
+        ) as mock_calculator:
+            result = screen_canslim.analyze_stock(
+                "TEST",
+                client,
+                market_data,
+                rs_benchmark_historical=None,
+                rs_benchmark="^GSPC",
+                disable_rs=True,
+            )
+
+        assert result["i_component"]["data_source"] == "Finviz"
+        mock_calculator.assert_called_once_with(
+            institutional_holders, profile, symbol="TEST", use_finviz_fallback=True
+        )
 
     def test_canslim_exits_on_quote_failure(self):
         """get_quote("^GSPC") → None causes sys.exit(1)."""

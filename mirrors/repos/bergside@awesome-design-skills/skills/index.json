@@ -101,17 +101,17 @@
     "skillPath": "skills/elegant/SKILL.md",
     "designPath": "skills/elegant/DESIGN.md"
   },
-  "energetic": {
-    "slug": "energetic",
-    "name": "Energetic",
-    "skillPath": "skills/energetic/SKILL.md",
-    "designPath": "skills/energetic/DESIGN.md"
+  "pulse": {
+    "slug": "pulse",
+    "name": "Pulse",
+    "skillPath": "skills/pulse/SKILL.md",
+    "designPath": "skills/pulse/DESIGN.md"
   },
-  "enterprise": {
-    "slug": "enterprise",
-    "name": "Enterprise",
-    "skillPath": "skills/enterprise/SKILL.md",
-    "designPath": "skills/enterprise/DESIGN.md"
+  "stitch": {
+    "slug": "stitch",
+    "name": "Stitch",
+    "skillPath": "skills/stitch/SKILL.md",
+    "designPath": "skills/stitch/DESIGN.md"
   },
   "expressive": {
     "slug": "expressive",
@@ -233,11 +233,11 @@
     "skillPath": "skills/professional/SKILL.md",
     "designPath": "skills/professional/DESIGN.md"
   },
-  "publication": {
-    "slug": "publication",
-    "name": "Publication",
-    "skillPath": "skills/publication/SKILL.md",
-    "designPath": "skills/publication/DESIGN.md"
+  "basic": {
+    "slug": "basic",
+    "name": "Basic",
+    "skillPath": "skills/basic/SKILL.md",
+    "designPath": "skills/basic/DESIGN.md"
   },
   "refined": {
     "slug": "refined",
@@ -323,17 +323,17 @@
     "skillPath": "skills/lingo/SKILL.md",
     "designPath": "skills/lingo/DESIGN.md"
   },
-  "dashboard": {
-    "slug": "dashboard",
-    "name": "Dashboard",
-    "skillPath": "skills/dashboard/SKILL.md",
-    "designPath": "skills/dashboard/DESIGN.md"
+  "enterprise": {
+    "slug": "enterprise",
+    "name": "Enterprise",
+    "skillPath": "skills/enterprise/SKILL.md",
+    "designPath": "skills/enterprise/DESIGN.md"
   },
-  "application": {
-    "slug": "application",
-    "name": "Application",
-    "skillPath": "skills/application/SKILL.md",
-    "designPath": "skills/application/DESIGN.md"
+  "roku": {
+    "slug": "roku",
+    "name": "Roku",
+    "skillPath": "skills/roku/SKILL.md",
+    "designPath": "skills/roku/DESIGN.md"
   },
   "ant": {
     "slug": "ant",
@@ -398,7 +398,7 @@
   "terracotta": {
     "slug": "terracotta",
     "name": "Terracotta",
-    "skillPath": "skills/terracotta.md/SKILL.md",
-    "designPath": "skills/terracotta.md/DESIGN.md"
+    "skillPath": "skills/terracotta/SKILL.md",
+    "designPath": "skills/terracotta/DESIGN.md"
   }
 }

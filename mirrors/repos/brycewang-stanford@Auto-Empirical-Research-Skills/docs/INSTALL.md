@@ -1,6 +1,7 @@
 # Installation and Usage Guide
 
-Use AERS in one of three modes: browse, copy a single skill, or vendor a workflow into a project.
+Use AERS in one of four modes: browse, import the repo router, copy a single skill,
+or vendor a workflow into a project.
 
 ## 1. Browse First
 
@@ -12,7 +13,27 @@ Start here:
 - [`catalog/skills.json`](../catalog/skills.json) for machine-readable skill metadata.
 - [`catalog/provenance.json`](../catalog/provenance.json) for source and license metadata.
 
-## 2. Copy One Skill
+## 2. Import the Whole Repo as One Router Skill
+
+Codex, CodeBuddy, and similar IDEs often validate the selected folder as a single
+skill by looking for a top-level `SKILL.md`. The AERS repository root has one:
+[`../SKILL.md`](../SKILL.md). Importing the root registers **one catalog router**
+named `auto-empirical-research-skills`; it does not recursively register every
+vendored child skill as a separate IDE skill.
+
+For a local Codex-style install:
+
+```bash
+# Run from the repository root.
+mkdir -p ~/.codex/skills/auto-empirical-research-skills
+rsync -a --exclude .git --exclude .pytest_cache --exclude __pycache__ --exclude '*.pyc' \
+  ./ ~/.codex/skills/auto-empirical-research-skills/
+```
+
+If an IDE asks for a GitHub path, use the repository root (`.`) and the skill
+name `auto-empirical-research-skills`.
+
+## 3. Copy One Skill
 
 Most agent runtimes expect a folder that contains `SKILL.md`.
 
@@ -29,6 +50,13 @@ mkdir -p ~/.claude/skills
 cp -R skills/50-brycewang-aer-skills/skills/aer-workflow ~/.claude/skills/aer-workflow
 ```
 
+For Codex-style local installs:
+
+```bash
+mkdir -p ~/.codex/skills
+cp -R skills/50-brycewang-aer-skills/skills/aer-workflow ~/.codex/skills/aer-workflow
+```
+
 For a project-local install:
 
 ```bash
@@ -36,7 +64,7 @@ mkdir -p ./.claude/skills
 cp -R skills/50-brycewang-aer-skills/skills/aer-workflow ./.claude/skills/aer-workflow
 ```
 
-## 3. Use AERS Without Installing
+## 4. Use AERS Without Installing
 
 You can point an agent at a local skill file directly:
 
@@ -46,7 +74,7 @@ Use the workflow in skills/50-brycewang-aer-skills/skills/aer-identification/SKI
 
 This is the safest first trial because it does not modify any runtime configuration.
 
-## 4. Recommended Starting Set
+## 5. Recommended Starting Set
 
 | Need | Start with |
 |---|---|
@@ -57,7 +85,7 @@ This is the safest first trial because it does not modify any runtime configurat
 | AER / AEJ manuscript pipeline | [`aer-workflow`](../skills/50-brycewang-aer-skills/skills/aer-workflow/SKILL.md) |
 | Chinese academic de-AIGC pass | [`chinese-de-aigc`](../skills/48-copaper-ai-chinese-de-aigc/SKILL.md) |
 
-## 5. License Check
+## 6. License Check
 
 Before using a vendored skill in a public, commercial, or redistributed project, check:
 

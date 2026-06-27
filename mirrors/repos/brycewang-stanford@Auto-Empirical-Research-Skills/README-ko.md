@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**🌐 언어: [English](README.md) | [简体中文](README-zh-CN.md) | [繁體中文](README-zh-TW.md) | [日本語](README-ja.md) | 한국어**
+**🌐 언어: [English](README-en.md) | [简体中文（기본）](README.md) | [繁體中文](README-zh-TW.md) | [日本語](README-ja.md) | 한국어**
 
 <br/>
 
@@ -39,6 +39,16 @@
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/brycewang-stanford/Auto-Empirical-Research-Skills/badge)](https://scorecard.dev/viewer/?uri=github.com/brycewang-stanford/Auto-Empirical-Research-Skills)
 [![Security audit: 52/52 CLEAN](https://img.shields.io/badge/security%20audit-52%2F52%20CLEAN-brightgreen)](SECURITY-SCAN-REPORT.md)
 [![Powered by StatsPAI](https://img.shields.io/badge/powered%20by-StatsPAI-orange)](https://github.com/brycewang-stanford/StatsPAI)
+
+---
+
+## 먼저 보기: 저장소 전체는 하나의 AERS Router Skill입니다
+
+이 저장소는 루트 디렉터리를 Codex, CodeBuddy, Claude Code 또는 유사 IDE에 하나의 skill로 가져올 수 있습니다. 루트 [`SKILL.md`](SKILL.md)는 `auto-empirical-research-skills`를 등록하며, 69개 컬렉션과 1,145개 skill을 한 번에 컨텍스트에 로드하는 대신 연구 과제에 맞는 vendored 하위 skill로 라우팅합니다.
+
+- **저장소 전체 가져오기**: 저장소 루트를 선택하고 [`agents/openai.yaml`](agents/openai.yaml)과 루트 [`SKILL.md`](SKILL.md)로 하나의 catalog router를 등록합니다. agent는 [`catalog/skills.json`](catalog/skills.json) 또는 [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md)를 확인한 뒤 선택된 하위 skill만 읽어야 합니다.
+- **단일 skill 가져오기**: IDE가 "폴더 하나 = skill 하나"를 기대한다면 대상 `SKILL.md`를 직접 포함하는 하위 폴더를 복사하세요. 예: `skills/50-brycewang-aer-skills/skills/aer-workflow/`. IDE가 재귀 discovery를 명시적으로 지원하지 않는 한, 루트 가져오기가 1,145개의 개별 skill을 등록한다고 가정하지 마세요.
+- **설치 세부 사항**: [`docs/INSTALL.md`](docs/INSTALL.md)를 보세요. 기본 README는 간체 중국어 [`README.md`](README.md)이며 영어판은 [`README-en.md`](README-en.md)입니다.
 
 ---
 

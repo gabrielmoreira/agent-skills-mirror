@@ -2,30 +2,32 @@
 name: project-architect
 description: >
   Documentation-first project planning that produces implementation-ready blueprints and
-  single-shot coding agent prompts. Generates 4 interconnected docs: SPECIFICATION.md,
-  IMPLEMENTATION.md, TASKS.md, BRANDING.md — plus a PROMPT.md prompt for autonomous execution.
-  Includes interactive tech stack selection, design pattern recommendations, and architecture
-  decisions with trade-off analysis. Trigger when user wants to: plan a project, create specs,
-  architect a system, break work into tasks, choose a tech stack, get design pattern advice,
-  generate a coding agent prompt, or do documentation-first development. Phrases: "plan my
-  project", "spec this out", "architect", "help me plan", "what stack should I use",
-  "generate a prompt", "break this into tasks", "project docs", "I want to build X".
+  single-shot coding agent prompts. Generates 4 interconnected docs — SPECIFICATION.md,
+  IMPLEMENTATION.md, TASKS.md, BRANDING.md — plus a self-contained PROMPT.md for autonomous
+  execution by any coding agent. Includes interactive tech stack selection, design pattern
+  recommendations, and architecture decisions with trade-off analysis. Trigger when user
+  wants to: plan a project, create specs, architect a system, break work into tasks, choose
+  a tech stack, get design pattern advice, generate a coding agent prompt, or do
+  documentation-first development. Phrases: "plan my project", "spec this out", "architect",
+  "help me plan", "what stack should I use", "generate a prompt", "break this into tasks",
+  "project docs", "I want to build X".
 license: MIT
 compatibility: >
   Works with any coding agent that supports file read/write and user interaction.
-  Optimized for Claude Code, also compatible with Cursor, Gemini CLI, Codex, and other
-  agentskills.io-compatible agents.
+  Optimized for WrongStack and Claude Code, also compatible with Cursor, Gemini CLI, Codex,
+  and other agentskills.io-compatible agents.
 metadata:
   author: ersinkoc
-  version: "1.0.0"
+  version: "1.1.0"
   category: development
 ---
 
 # Project Architect
 
 A documentation-first project planning system that produces **implementation-ready blueprints**
-and **Claude Code-ready prompts**. The philosophy: think deeply, document thoroughly, then
-execute with zero ambiguity.
+and **agent-ready prompts**. The philosophy: think deeply, document thoroughly, then
+execute with zero ambiguity. The final PROMPT.md is self-contained and portable — hand it to
+**WrongStack**, **Claude Code**, or any agent that reads and writes files.
 
 ## Output Pipeline
 
@@ -36,11 +38,12 @@ execute with zero ambiguity.
                        └────────────────────┴───────────────────┘
                                           ↓
                                      PROMPT.md
-                              (Claude Code Single-Shot)
+                             (Single-Shot Agent Prompt)
 ```
 
 Each document feeds the next. The final PROMPT.md synthesizes all documents into a single
-prompt optimized for Claude Code execution.
+prompt optimized for single-shot execution by any coding agent (WrongStack, Claude Code,
+Cursor, and others).
 
 ## Reference Files
 
@@ -55,7 +58,7 @@ Read the appropriate reference file before generating each document:
 | Implementation | `${CLAUDE_PLUGIN_ROOT}/references/implementation-guide.md` | Before generating IMPLEMENTATION.md |
 | Tasks | `${CLAUDE_PLUGIN_ROOT}/references/tasks-guide.md` | Before generating TASKS.md |
 | Branding | `${CLAUDE_PLUGIN_ROOT}/references/branding-guide.md` | Before generating BRANDING.md |
-| Prompt | `${CLAUDE_PLUGIN_ROOT}/references/claude-code-prompt.md` | Before generating PROMPT.md |
+| Prompt | `${CLAUDE_PLUGIN_ROOT}/references/agent-prompt.md` | Before generating PROMPT.md |
 
 ## Workflow
 
@@ -105,7 +108,7 @@ with a short code sketch.
 Read `${CLAUDE_PLUGIN_ROOT}/references/tasks-guide.md` before generating.
 
 Converts implementation into **ordered work items**. Each task must be:
-- Completable by Claude Code in a single session
+- Completable by a coding agent in a single session
 - Self-contained with full context
 - Ordered by strict dependency chain
 - Include the exact files to create/modify
@@ -118,12 +121,12 @@ Only generate if user wants it or the project is user-facing.
 
 ### Phase 5: PROMPT.md (Always Generate)
 
-Read `${CLAUDE_PLUGIN_ROOT}/references/claude-code-prompt.md` before generating.
+Read `${CLAUDE_PLUGIN_ROOT}/references/agent-prompt.md` before generating.
 
 **This is the most critical output.** Synthesize all documents into a single-shot prompt
-that Claude Code can execute to build the entire project from scratch. The prompt must be
-completely self-contained, with inline code for complex patterns and an ordered checklist
-of every file to create.
+that any coding agent (WrongStack, Claude Code, Cursor, …) can execute to build the entire
+project from scratch. The prompt must be completely self-contained, with inline code for
+complex patterns and an ordered checklist of every file to create.
 
 ## Operating Rules
 

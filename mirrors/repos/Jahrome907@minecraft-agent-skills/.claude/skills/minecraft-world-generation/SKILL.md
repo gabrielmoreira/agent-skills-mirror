@@ -1,6 +1,6 @@
 ---
 name: minecraft-world-generation
-description: "Create custom world generation content for Minecraft 1.21.x including custom biomes, dimensions, noise settings, surface rules, placed/configured features, carvers, structure sets, and biome modifiers. Covers both the datapack-only approach (JSON worldgen files) and the mod-code approach (NeoForge BiomeModifiers, Fabric BiomeModification API, code-driven worldgen registration with DeferredRegister). Includes compact JSON patterns and validator-backed reference checks for biome, dimension, placed_feature, configured_feature, structure, structure_set, and biome_modifier files. Targets Minecraft 1.21.x with official Mojang mappings. Use when the user asks about Minecraft worldgen, custom biomes, datapack JSON for dimensions or features, or mod-based biome modification with NeoForge or Fabric."
+description: "Create custom world generation content for Minecraft 1.21.x including custom biomes, dimensions, noise settings, surface rules, placed/configured features, carvers, structure sets, and biome modifiers. Covers both the datapack-only approach (JSON worldgen files) and the mod-code approach (NeoForge BiomeModifiers, Fabric BiomeModification API, code-driven worldgen registration with DeferredRegister). Includes compact JSON patterns and validator-backed reference checks for biome, dimension, placed_feature, configured_feature, structure, structure_set, and biome_modifier files. Targets Minecraft 1.21.x with official Mojang mappings, with explicit verification required before applying 1.21.10-and-earlier biome or dimension JSON shapes to 1.21.11+ packs. Use when the user asks about Minecraft worldgen, custom biomes, datapack JSON for dimensions or features, or mod-based biome modification with NeoForge or Fabric."
 ---
 
 # Minecraft World Generation Skill
@@ -68,6 +68,12 @@ shape. Minecraft 1.21.11 moves many visual/environment fields into Environment
 Attributes and Timelines, so for 1.21.11+ projects first verify the current
 vanilla registry JSON or generate from a known-good tool before copying old
 `effects` fields into new packs.
+
+For 1.21.11+ targets, treat the biome and dimension-type snippets in this file
+as structural orientation, not as copy-paste release artifacts. Start from a
+current vanilla export or generator output for the exact patch, preserve the
+new environment/timeline registries it uses, then apply only the feature,
+spawn, structure, or biome-source edits needed for the task.
 
 ### `data/<namespace>/worldgen/biome/my_biome.json`
 ```json
@@ -556,18 +562,22 @@ public class ModWorldgenProvider extends FabricDynamicRegistryProvider {
    - Cross-reference integrity for `placed_feature -> configured_feature`
    - Cross-reference integrity for `structure_set -> structure` and biome/biome_modifier feature targets
    - Cross-reference integrity for `jigsaw structure -> start_pool` and `template_pool -> structure template / processor_list`
-4. In-game biome and structure testing:
+4. For 1.21.11+ biome or dimension-type JSON, compare against the exact current
+   vanilla registry shape before in-game testing. Do not ship an older
+   `effects`/dimension-type shape just because the bundled structural validator
+   accepts the JSON and local references.
+5. In-game biome and structure testing:
    ```mcfunction
    /locate structure <namespace>:my_structure
    /locate biome <namespace>:my_biome
    /placefeature <namespace>:my_ore_placed
    ```
-5. For dimension testing, use `/execute in` (dimension must exist at world load, not added via `/reload`):
+6. For dimension testing, use `/execute in` (dimension must exist at world load, not added via `/reload`):
    ```mcfunction
    execute in <namespace>:my_dimension run tp @s 0 100 0
    ```
-6. Check `latest.log` for worldgen errors (missing biome references, malformed noise settings).
-7. Note: `/reload` refreshes datapack JSON but does **not** re-generate already-generated chunks. Test new worldgen in a fresh world or newly generated chunks. For existing test worlds, use a disposable copy and a purpose-built chunk reset/regeneration workflow; `/fill` only replaces blocks and is not a substitute for world generation.
+7. Check `latest.log` for worldgen errors (missing biome references, malformed noise settings).
+8. Note: `/reload` refreshes datapack JSON but does **not** re-generate already-generated chunks. Test new worldgen in a fresh world or newly generated chunks. For existing test worlds, use a disposable copy and a purpose-built chunk reset/regeneration workflow; `/fill` only replaces blocks and is not a substitute for world generation.
 
 ---
 

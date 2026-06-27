@@ -1,6 +1,6 @@
 ---
 name: md2wechat
-description: Convert Markdown to WeChat Official Account HTML. Use this whenever the user wants WeChat article formatting, article preview, WeChat draft upload, image generation for articles, cover or infographic generation, image-post creation, writer-style drafting, AI trace removal, or current discovery of supported providers, themes, prompts, and layout modules.
+description: Convert Markdown to WeChat Official Account HTML. Use this whenever the user wants WeChat article formatting, article preview, WeChat draft upload, image generation for articles, cover or infographic generation, image-post creation, writer-style drafting, title suggestions, AI trace removal, or current discovery of supported providers, themes, prompts, and layout modules.
 ---
 
 # md2wechat
@@ -15,6 +15,7 @@ Choose the command family before taking any publish or generation action:
 - Image-first post, image note, image-text note, `newspic`, or multi-image post: use `create_image_post`, not `convert --draft`.
 - Article cover or article infographic: prefer `generate_cover` or `generate_infographic` over raw `generate_image` when a bundled preset fits.
 - Host-agent image generation request with no provider configured: use image plan mode (`--plan --json`) to get prompt intent, then hand it to the host image-generation tool if one is available outside md2wechat.
+- WeChat title candidates for an existing article: use `title suggest <article.md> --json`; it emits a host-Agent AI request and does not choose or write the final title.
 - Writing in a creator style or removing AI traces: use `write` or `humanize`.
 - Provider, theme, prompt, or layout uncertainty: run discovery first. Do not guess from memory or repository files.
 
@@ -44,6 +45,12 @@ Run the smallest useful discovery set:
   ```bash
   md2wechat providers list --json
   md2wechat prompts list --kind image --json
+  ```
+
+- Title suggestion prompt selection:
+  ```bash
+  md2wechat prompts list --kind title --json
+  md2wechat prompts show wechat-title-expert --kind title --json
   ```
 
 - Draft, upload, API local-readiness, or configuration troubleshooting:
@@ -85,6 +92,8 @@ Use CLI output as the source of truth for currently available modes, providers, 
 - WeChat draft creation requires WeChat credentials.
 - Named WeChat account execution requires a valid `MD2WECHAT_API_KEY`; the CLI validates it before upload or draft side effects.
 - Direct image generation requires image-provider credentials; image plan mode (`--plan --json`) only emits prompt intent for a host Agent or external tool and does not require image-provider credentials.
+- `title suggest --json` only emits a title-generation prompt request for the host Agent or external model. It does not call a model, upload, create drafts, or write back to Markdown.
+- For stronger factual title hooks, pass --hook-level 2 or 3; do not treat generated titles as confirmed publishing intent.
 - `doctor --json` is local-only: it checks local readiness and does not perform live authentication, upload images, or create drafts.
 - Use `config show --format json` when the user asks what configuration is currently effective.
 - Use `config wechat-accounts --json` when the user asks which local WeChat accounts are configured.

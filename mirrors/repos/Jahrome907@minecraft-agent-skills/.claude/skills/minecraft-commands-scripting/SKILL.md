@@ -347,7 +347,8 @@ tellraw @a {"text":"Hello World","color":"green"}
 tellraw @a [{"text":"Hello ","color":"white"},{"selector":"@s","color":"gold"},{"text":"!","color":"white"}]
 
 # Translatable text
-tellraw @a {"translate":"death.attack.mob","with":[{"selector":"@p"},{"entity":"@p","selector":"type"}]}
+tellraw @a {"translate":"block.minecraft.diamond_block","color":"aqua"}
+tellraw @a {"translate":"commands.give.success.single","with":[{"text":"1"},{"translate":"item.minecraft.diamond"},{"selector":"@p"}]}
 
 # Clickable / hoverable
 tellraw @a {"text":"Click here","color":"aqua","clickEvent":{"action":"run_command","value":"/say hi"},"hoverEvent":{"action":"show_text","contents":"Run /say hi"}}

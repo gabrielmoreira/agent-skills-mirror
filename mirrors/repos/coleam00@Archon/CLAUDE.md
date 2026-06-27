@@ -1,11 +1,16 @@
 ## Project Overview
 
-**Remote Agentic Coding Platform**: Control AI coding assistants (Claude Code SDK, Codex SDK) remotely from Slack, Telegram, and GitHub. Built with **Bun + TypeScript + SQLite/PostgreSQL**, single-developer tool for AI-assisted development practitioners. Architecture prioritizes simplicity, flexibility, and user control.
+**Archon — a self-hostable, governed agentic automation engine.** Archon runs multi-step workflows that mix deterministic steps (bash/scripts) with AI agents (Claude Code SDK, Codex SDK, and others), with human approval gates and full audit trails — driven remotely from Slack, Telegram, GitHub, Discord, the web UI, or the CLI. Its most mature surface today is agentic **coding** (controlling Claude Code / Codex against repos); the same engine is being extended to drive general **business-operations** automation. Built with **Bun + TypeScript + SQLite/PostgreSQL** and deployed as a single-tenant install (one isolated instance per operator or client — see *Single-Tenant per Install*). Architecture prioritizes simplicity, flexibility, governance, and user control.
+
+## Product Direction
+
+Archon is being positioned as a governed agentic automation engine for business operations, not only coding.
 
 ## Core Principles
 
-**Single-Developer Tool**
-- No multi-tenant complexity
+**Single-Tenant per Install**
+- One isolated instance per operator or client — the deployment model is one install (e.g. one VPS) per client, **not** one install serving many tenants. Keep the data model and runtime single-tenant: no per-tenant isolation, row-scoping, or tenant multiplexing. Client isolation is achieved at the **deployment** layer, not in code — a deliberate simplification, not a limitation.
+- Multi-**user** within one install (several humans sharing an instance, each with their own identity and credentials) **is** supported, and is distinct from multi-**tenant**. Don't conflate them.
 
 **Platform Agnostic**
 - Unified conversation interface across Slack/Telegram/GitHub/cli/web
@@ -284,7 +289,7 @@ bun run cli doctor
 # App mode + TOKEN_ENCRYPTION_KEY). Identity from ARCHON_USER_ID or $USER.
 bun run cli auth github
 
-# Manage per-user AI-provider credentials (multi-user installs: TOKEN_ENCRYPTION_KEY).
+# Manage per-user AI-provider credentials (any install — vault auto-provisioned; TOKEN_ENCRYPTION_KEY overrides the local key on managed deploys).
 # Identity from ARCHON_USER_ID or $USER. The key is read from a masked prompt or
 # piped stdin — never from argv.
 bun run cli ai key set <vendor>            # connect an API key by VENDOR id (e.g. openrouter, anthropic, openai;
@@ -459,13 +464,13 @@ import type { DagNode, WorkflowDefinition } from '@/lib/api';
 4. **`isolation_environments`** - Git worktree isolation tracking; nullable `created_by_user_id` preserves first creator
 5. **`workflow_runs`** - Workflow execution tracking and state; nullable `user_id` for per-run attribution
 6. **`workflow_events`** - Step-level workflow event log (step transitions, artifacts, errors)
-7. **`messages`** - Conversation message history with tool call metadata (JSONB); nullable `user_id` (NULL for assistant rows)
+7. **`messages`** - Conversation message history with tool call metadata (JSONB); nullable `user_id` (NULL for assistant rows). Split write-path: the **web** adapter persists its own turns via `MessagePersistence`; the **orchestrator** persists non-web turns (Slack/Telegram/GitHub/Discord/CLI) fire-and-forget, guarded by `isWebAdapter` to avoid double-writing web turns — only AI-bound turns get a user row (deterministic-command and approval-only turns return earlier), so a `user` row always pairs with an `assistant` row
 8. **`codebase_env_vars`** - Per-project env vars injected into project-scoped execution surfaces (Claude, Codex, bash/script nodes, and direct chat when codebase-scoped), managed via Web UI or `env:` in config
 9. **`users`** - Archon-internal identity (one row per human/bot); created lazily on first sight by any adapter; `role` (`'admin'`(default)`/'member'`) is the identity seam for future per-resource scoping (visibility stays open today)
 10. **`user_identities`** - Per-platform mapping (Slack U-id, Telegram chat id, Discord snowflake, GitHub login, Better Auth web user id) → `users.id`; `UNIQUE(platform, platform_user_id)`
 11. **`workflow_node_sessions`** - Per-node provider session IDs persisted across workflow re-runs (opt-in via `persist_session`); keyed by `(workflow_name, node_id, scope_key, provider)`; `scope_key` is typically the conversation UUID
 12. **`user_github_tokens`** - Per-user GitHub device-flow tokens encrypted at rest (AES-256-GCM); one row per Archon user (`UNIQUE(user_id)`), cascades on user deletion; numeric `github_user_id` anchors the commit no-reply email
-13. **`user_provider_keys`** - Per-user AI-provider credentials encrypted at rest (AES-256-GCM, same `TOKEN_ENCRYPTION_KEY`); one row per `(user_id, provider)` (`UNIQUE(user_id, provider)`), cascades on user deletion; `kind` is `api_key` or `oauth`; resolved + injected into the **acting user's** (run starter / message sender) runs/chat env at execution time. Gated on `TOKEN_ENCRYPTION_KEY`. Since #1955 the `provider` column holds **vendor-canonical credential ids** (`anthropic`, `openai`, `github-copilot`, plus the Pi backend vendors) — NOT agent ids; legacy `claude`/`codex`/`copilot` rows are renamed by an idempotent startup data fix (vendor row wins on conflict), and the connectable catalog is derived from provider registrations (`acceptedCredentials` via `credentials:` on `ProviderRegistration`), never hand-listed
+13. **`user_provider_keys`** - Per-user AI-provider credentials encrypted at rest (AES-256-GCM); one row per `(user_id, provider)` (`UNIQUE(user_id, provider)`), cascades on user deletion; `kind` is `api_key` or `oauth`; resolved + injected into the **acting user's** (run starter / message sender) runs/chat env at execution time. Always available — the encryption key is auto-provisioned at `~/.archon/credential-key` when `TOKEN_ENCRYPTION_KEY` is not set. Since #1955 the `provider` column holds **vendor-canonical credential ids** (`anthropic`, `openai`, `github-copilot`, plus the Pi backend vendors) — NOT agent ids; legacy `claude`/`codex`/`copilot` rows are renamed by an idempotent startup data fix (vendor row wins on conflict), and the connectable catalog is derived from provider registrations (`acceptedCredentials` via `credentials:` on `ProviderRegistration`), never hand-listed
 14. **`user_ai_prefs`** - Per-user AI preferences (Phase 3): personal model `tiers`/`aliases` (JSON-as-TEXT) + `default_provider`. NON-encrypted (model names aren't secrets — mirrors `codebase_env_vars`, not the provider-key store); one row per user (`UNIQUE(user_id)`), cascades on user deletion. Folded into `buildAiProfile` as the highest-precedence layer at the userId-aware seams (workflow executor: run starter; chat orchestrator: message **sender**-first, conversation creator only as fallback — #1982); needs a web/CLI identity but NO `TOKEN_ENCRYPTION_KEY`
 15–18. **`remote_agent_auth_user` / `remote_agent_auth_session` / `remote_agent_auth_account` / `remote_agent_auth_verification`** - Better Auth tables for opt-in web login (**PostgreSQL only**; always created on Postgres via the idempotent schema apply, but populated only when web auth is enabled — `DATABASE_URL` + `BETTER_AUTH_SECRET`). Owned and shaped by Better Auth (text ids, camelCase columns); Archon never queries them directly — a session maps to the canonical `users` row via `user_identities('web', <betterAuthUserId>)`
 
@@ -648,6 +653,7 @@ curl http://localhost:3637/api/conversations/<conversationId>/messages
 ├── vendor/codex/                  # Codex native binary (binary builds, user-placed)
 ├── web-dist/<version>/            # Cached web UI dist (archon serve, binary only)
 ├── update-check.json              # Update check cache (binary builds, 24h TTL)
+├── tier-notice.json               # One-time tier-default notice state (CLI, per version)
 ├── archon.db                     # SQLite database (when DATABASE_URL not set)
 └── config.yaml                   # Global configuration (non-secrets)
 ```
@@ -820,7 +826,7 @@ async function createSession(conversationId: string, codebaseId: string) {
 - Source builds: Loaded from filesystem at runtime
 - Merged with repo-specific commands/workflows (repo overrides defaults by name)
 - Opt-out: Set `defaults.loadDefaultCommands: false` or `defaults.loadDefaultWorkflows: false` in `.archon/config.yaml`
-- **After adding, removing, or editing a default file, run `bun run generate:bundled`** to refresh the embedded bundle. After editing `migrations/000_combined.sql`, run `bun run generate:bundled-schema` to keep the embedded schema in sync. After a `@earendil-works/pi-ai` upgrade, run `bun run generate:pi-vendor-map` to regenerate the Pi backend → env-var map + credential specs from the installed SDK (a new upstream backend must be classified in `scripts/generate-pi-vendor-map.ts`). `bun run validate` (and CI) run `check:bundled`, `check:bundled-skill`, `check:bundled-schema`, and `check:pi-vendor-map` and will fail loudly if any generated file is stale.
+- **After adding, removing, or editing a default file, run `bun run generate:bundled`** to refresh the embedded bundle. After editing `migrations/000_combined.sql`, run `bun run generate:bundled-schema` to keep the embedded schema in sync, AND mirror any new table into `createSchema()` in `packages/core/src/db/adapters/sqlite.ts` — the SQLite schema is hand-maintained separately and is NOT generated from the migration; the only intentional Postgres-only exception is the `remote_agent_auth_*` Better Auth tables, and the schema-parity test in `sqlite.test.ts` fails CI on any other drift. After a `@earendil-works/pi-ai` upgrade, run `bun run generate:pi-vendor-map` to regenerate the Pi backend → env-var map + credential specs from the installed SDK (a new upstream backend must be classified in `scripts/generate-pi-vendor-map.ts`). `bun run validate` (and CI) run `check:bundled`, `check:bundled-skill`, `check:bundled-schema`, and `check:pi-vendor-map` and will fail loudly if any generated file is stale.
 
 **Home-scoped ("global") workflows, commands, and scripts** (user-level, applies to every project):
 - Workflows: `~/.archon/workflows/` (or `$ARCHON_HOME/workflows/`)
@@ -919,13 +925,13 @@ Pattern: Use `classifyIsolationError()` (from `@archon/isolation`) to map git er
 - `GET /api/auth/github` - Connection status for the current web user; returns `{ connected, githubLogin }`
 - `DELETE /api/auth/github` - Disconnect the current web user's GitHub identity
 
-**AI-Provider Keys (per-user; `TOKEN_ENCRYPTION_KEY`):**
-- `GET /api/auth/providers` - List the current web user's connected provider keys; returns `{ enabled, connections: [{ provider, kind, label }], available: string[], subscriptionAvailable: string[], agents: [...] }` (no secret values; `available` = registry-derived connectable **vendor** catalog, `subscriptionAvailable` = subset that supports OAuth login; `enabled:false` when the install has no `TOKEN_ENCRYPTION_KEY`). `agents` (#1955) is the agent → credential matrix: per registered agent `{ id, displayName, catalog: 'static'|'dynamic', ready, credentials: [{ vendor, displayName, kinds, connected, subscriptionAvailable, installEnv, ambientConfigured? }] }` — `installEnv`/`ambientConfigured` report server-env detection so readiness works on solo installs too; OpenCode is `catalog:'dynamic'` (introspect via the endpoint below). `requireWebUser` (401 without identity)
+**AI-Provider Keys (per-user; `requireWebUser`):**
+- `GET /api/auth/providers` - List the current web user's connected provider keys; returns `{ enabled, connections: [{ provider, kind, label }], available: string[], subscriptionAvailable: string[], agents: [...] }` (no secret values; `available` = registry-derived connectable **vendor** catalog, `subscriptionAvailable` = subset that supports OAuth login; `enabled` is always `true` — vault is auto-provisioned). `agents` (#1955) is the agent → credential matrix: per registered agent `{ id, displayName, catalog: 'static'|'dynamic', ready, credentials: [{ vendor, displayName, kinds, connected, subscriptionAvailable, installEnv, ambientConfigured? }] }` — `installEnv`/`ambientConfigured` report server-env detection so readiness works on solo installs too; OpenCode is `catalog:'dynamic'` (introspect via the endpoint below). `requireWebUser` (401 without identity)
 - `PUT /api/auth/providers/:provider` - Connect (upsert) an API key by **vendor id** (legacy `claude`/`codex`/`copilot` accepted + normalized); body `{ apiKey, label? }`; returns `{ success, provider: <vendor>, kind: 'api_key', label }` (never echoes the key). 400 on unknown vendor / blank key, 404 when per-user keys disabled, 500 (opaque) on storage failure
 - `DELETE /api/auth/providers/:provider` - Disconnect a credential (idempotent, vendor-normalized); returns `{ success }`. 404 when disabled
 - `POST /api/auth/providers/:provider/oauth/start` - Begin a subscription (OAuth) login (`anthropic`/`openai`/`github-copilot`); returns `{ sessionId, mode: 'manual'|'device', url?, userCode?, verificationUri?, expiresIn }` (no secret). 400 non-subscription vendor, 404 disabled, 503 when a previous login still holds the OAuth callback port (#1963 — retryable). Held server-side by the `oauth-bridge`: Pi's `login()` for anthropic/github-copilot; an Archon-OWNED PKCE flow for openai/ChatGPT (`openai-oauth.ts` — captures the `id_token` Pi drops, manual-paste only with no local callback server, #1924). `SUBSCRIPTION_PROVIDERS` (in `oauth-providers.ts`) is the single source of truth.
 - `POST /api/auth/providers/:provider/oauth/poll` - Poll the login session; body `{ sessionId, code? }` (`code` = pasted manual-code); returns `{ status: 'pending'|'connected'|'error', detail? }`. Session bound to the caller's userId.
-- Gated on `isPerUserProviderKeysEnabled()` (`TOKEN_ENCRYPTION_KEY`); credentials (API keys + subscriptions) injected into runs/chat env at execution time. Subscription tokens refresh-on-read and re-save on rotation. Subscriptions are delivered to native Claude/Codex (env / `CODEX_HOME/auth.json`) AND to Pi — in workflow runs via a per-run `auth.json` (`ARCHON_PI_AUTH_PATH`), and in env-only direct chat (no artifacts dir) an `anthropic` subscription rides `ANTHROPIC_OAUTH_TOKEN` in the env bag, which the Pi env bridge reads ahead of `ANTHROPIC_API_KEY` (#1984).
+- Credentials (API keys + subscriptions) injected into runs/chat env at execution time (vault always active — `TOKEN_ENCRYPTION_KEY` overrides the auto-key on managed deploys). Subscription tokens refresh-on-read and re-save on rotation. Subscriptions are delivered to native Claude/Codex (env / `CODEX_HOME/auth.json`) AND to Pi — in workflow runs via a per-run `auth.json` (`ARCHON_PI_AUTH_PATH`), and in env-only direct chat (no artifacts dir) an `anthropic` subscription rides `ANTHROPIC_OAUTH_TOKEN` in the env bag, which the Pi env bridge reads ahead of `ANTHROPIC_API_KEY` (#1984).
 
 **Per-User AI Prefs (Phase 3; `requireWebUser` — identity only, NO `TOKEN_ENCRYPTION_KEY`):**
 - `GET /api/auth/me/ai-prefs` - The current user's stored prefs (raw per-user layer, not merged with config); returns `{ tiers?, aliases?, defaultProvider? }`. 401 without identity — the console hides "Just me" on failure.

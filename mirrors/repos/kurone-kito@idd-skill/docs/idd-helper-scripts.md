@@ -105,9 +105,11 @@ In the idd-skill source repository, the following optional helpers were adopted:
   marker presence verification across PATH A and PATH B items
 - `scripts/disposition-non-review-notices.mjs` for dry-run/apply
   dispositioning of advisory non-review notices (rate-limit / usage-limit)
-  on a PR — emitting or posting the canonical E6 `**Rejected** — {bot} did
-  not review HEAD …` marker-first, one comment per notice, idempotently and
-  fail-closed (only classifier-recognized notices)
+  and the CodeRabbit summary walkthrough on a PR — emitting or posting the
+  canonical E6 `**Rejected** — {bot} did not review HEAD …` per notice and
+  `**Accepted** — {bot} summary walkthrough …` per current summary,
+  marker-first, idempotently and fail-closed (only classifier-recognized
+  notices and the exact summary marker)
 - `scripts/resolve-review-thread.mjs` for the E13 write-side disposition:
   post the reply to the review thread that owns a review comment **and**
   resolve that thread in one invocation — dry-run by default, `--apply`
@@ -191,10 +193,28 @@ default below is unchanged.
   - `leaves`: `[{ number: number, title: string, state: string,`
     `labels: string[], classification: "execution",`
     `roadmapMarkerId: string, autopilotSuitability: number | null,`
-    `sourceRoots: number[] }]` — the union of open execution leaves. Each
-    leaf records every roadmap root it is reachable from in `sourceRoots`
-    (provenance); a leaf shared by sibling epics appears **once** and is
-    never double-counted.
+    `effort: "S" | "M" | "L" | null, sourceRoots: number[] }]` — the union of
+    open execution leaves. Each leaf records every roadmap root it is reachable
+    from in `sourceRoots` (provenance); a leaf shared by sibling epics appears
+    **once** and is never double-counted.
+  - **Opt-in leaf annotations** (additive; absent flags leave the leaf shape
+    byte-stable and make no extra API call). `--with-claim-state` adds
+    `activeClaim` (always an object: `{ present, stale, claimId, agentId }`,
+    plus `ownedByCurrentSession` when `--current-claim-id` is passed) and
+    `claimEligible: boolean` on each open leaf. `--with-readiness` adds
+    `readiness: { ready: boolean, reasons: string[], authoringHeld: boolean,`
+    `startable: boolean }` — the A3 startability of each open leaf (dependency
+    resolution across visible `Blocked by #N` / `Depends on #N` / task-list refs
+    and hidden `{{PROJECT_MARKER_PREFIX}}-blocked-by` markers, plus
+    authoring-hold), where `reasons` lists the sorted filter reasons (e.g.
+    `blocked_by_open_issue:#N`) and is empty when `ready`, and `startable` is
+    `ready` **and** not claim-blocked (it folds
+    in `claimEligible` when `--with-claim-state` also ran; otherwise claim
+    eligibility is unknown and treated as non-blocking). `authoringHeld`
+    reports label **presence** only — `--with-readiness` does not compute the
+    stale-authoring warning (it would cost a discarded per-leaf timeline fetch
+    and does not change startability). Both annotations are **soft** discovery
+    hints — the A3/A4/A4.5/A5 gates remain authoritative.
   - `diagnostics`: same four buckets as single-root mode, deduped across
     every per-root enumeration.
   - `summary`: `{ rootCount: number, leafCount: number,`
@@ -528,6 +548,22 @@ The adopted helper boundaries are intentionally narrow:
 - **Idempotent**: per advisory bot, existing trusted
   `isNonReviewNoticeDisposition` comments naming that bot already cover
   that many of its notices, so a re-run posts nothing new.
+- **CodeRabbit summary walkthrough (#1122)**: it also auto-posts a
+  marker-first `**Accepted** — {bot-login} summary walkthrough at HEAD
+  {sha} …` for the CodeRabbit summary marker
+  (`<!-- This is an auto-generated comment: summarize by coderabbit.ai -->`),
+  which the gate scores through its general updatedAt-aware pairing rather
+  than the notice carry-forward. Because CodeRabbit edits the summary on each
+  re-review, the acceptance is re-dispositioned **per HEAD** by timestamp
+  (skipped only while a trusted acceptance naming the bot is strictly newer
+  than the summary's activity and no older undispositioned non-agent comment
+  could consume it under the gate's global pairing), and is skipped outright
+  when CodeRabbit
+  already reports "No actionable comments were generated" (the gate classifies
+  that RESOLVED). It never resolves a review thread — actionable findings stay
+  their own threads, gated independently. The body names the bot by its login
+  (never the standalone word "CodeRabbit") so per-HEAD re-disposition is
+  preserved.
 - **Fail-closed**: only classifier-recognized notices are dispositioned;
   real reviews and review threads are never touched. `--apply`
   re-validates the active claim and retries once on a transient post
@@ -792,6 +828,18 @@ Interpretation rules:
   --total-item-count --ci-completed-at`; `baseline` takes `--agent-id
   --claim-id --sha`; `advisory` / `advisory-recovery` take `--agent-id
   --head-sha --timestamp`.
+- One-command watermark (`watermark` only): `--from-pr <n>` derives
+  `--head-sha` / `--max-activity-at` / `--total-item-count` /
+  `--ci-completed-at` from a fresh `review-activity-snapshot` of PR `<n>` and
+  posts the marker to PR `<n>`, so only `--agent-id` / `--claim-id` (+ `--apply`)
+  are still supplied (it always targets the PR; an explicit non-pr `--target`
+  is rejected). It maps the snapshot's
+  `latestPassingCiCompletedAt` to `--ci-completed-at` (the latest _passing_ CI
+  completion, matching the E1 `{latest-ci-completed-at}` contract), forwards
+  optional `--trusted-marker-logins` / `--advisory-bot-logins` to the snapshot
+  child so its counts match the manual path, and rejects the four manual
+  snapshot fields as ambiguous. Unlike the manual dry-run it reads from GitHub
+  (it spawns the snapshot), but still posts nothing without `--apply`.
 - **No claim/state gating** (the `emit-marker` philosophy): this is a
   single-marker render+POST primitive, so the calling phase must run its
   claim-revalidation gate before `--apply`, exactly as the manual POST path it

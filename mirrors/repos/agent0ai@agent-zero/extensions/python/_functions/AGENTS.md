@@ -15,6 +15,7 @@
 - Do not flatten nested qualname paths into retired legacy folder names.
 - Extension functions must match the implicit hook's supplied arguments.
 - Preserve ordering prefixes where exception handling, watchdog registration, or cleanup depends on them.
+- Hooks that mirror persisted AI responses into UI logs must reuse existing stream log items and avoid duplicating live response-tool logs.
 
 ## Work Guidance
 

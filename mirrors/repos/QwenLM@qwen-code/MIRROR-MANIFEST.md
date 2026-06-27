@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
+Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 39 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 39 |
+| Files         | 42 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -86,18 +86,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md) |
 | 26 | ✓ | [`packages/cli/src/commands/extensions/examples/starter/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/starter/skills/synonyms/SKILL.md) |
 | 27 | ✓ | [`packages/core/src/skills/bundled/batch/SKILL.md`](packages/core/src/skills/bundled/batch/SKILL.md) |
-| 28 | ✓ | [`packages/core/src/skills/bundled/loop/SKILL.md`](packages/core/src/skills/bundled/loop/SKILL.md) |
-| 29 | ✓ | [`packages/core/src/skills/bundled/new-app/SKILL.md`](packages/core/src/skills/bundled/new-app/SKILL.md) |
-| 30 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
-| 31 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
-| 32 | ✓ | [`packages/core/src/skills/bundled/simplify/SKILL.md`](packages/core/src/skills/bundled/simplify/SKILL.md) |
-| 33 | ✓ | [`packages/core/src/skills/bundled/stuck/SKILL.md`](packages/core/src/skills/bundled/stuck/SKILL.md) |
-| 34 | ✓ | [`packages/desktop/.agents/skills/desktop-brand-builder/SKILL.md`](packages/desktop/.agents/skills/desktop-brand-builder/SKILL.md) |
-| 35 | ✓ | [`packages/desktop/.agents/skills/desktop-develop/SKILL.md`](packages/desktop/.agents/skills/desktop-develop/SKILL.md) |
-| 36 | ✓ | [`packages/desktop/.agents/skills/desktop-pet/SKILL.md`](packages/desktop/.agents/skills/desktop-pet/SKILL.md) |
-| 37 | ✓ | [`packages/desktop/apps/electron/resources/AGENTS.md`](packages/desktop/apps/electron/resources/AGENTS.md) |
-| 38 | ✓ | [`packages/desktop/apps/electron/resources/docs/craft-cli.md`](packages/desktop/apps/electron/resources/docs/craft-cli.md) |
-| 39 | ✓ | [`packages/desktop/apps/electron/resources/docs/skills.md`](packages/desktop/apps/electron/resources/docs/skills.md) |
+| 28 | ✓ | [`packages/core/src/skills/bundled/extension-creator/SKILL.md`](packages/core/src/skills/bundled/extension-creator/SKILL.md) |
+| 29 | ✓ | [`packages/core/src/skills/bundled/loop/SKILL.md`](packages/core/src/skills/bundled/loop/SKILL.md) |
+| 30 | ✓ | [`packages/core/src/skills/bundled/new-app/SKILL.md`](packages/core/src/skills/bundled/new-app/SKILL.md) |
+| 31 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
+| 32 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
+| 33 | ✓ | [`packages/core/src/skills/bundled/simplify/SKILL.md`](packages/core/src/skills/bundled/simplify/SKILL.md) |
+| 34 | ✓ | [`packages/core/src/skills/bundled/stuck/SKILL.md`](packages/core/src/skills/bundled/stuck/SKILL.md) |
+| 35 | ✓ | [`packages/cua-driver/rust/Skills/cua-driver/SKILL.md`](packages/cua-driver/rust/Skills/cua-driver/SKILL.md) |
+| 36 | ✓ | [`packages/cua-driver/swift/Skills/cua-driver/SKILL.md`](packages/cua-driver/swift/Skills/cua-driver/SKILL.md) |
+| 37 | ✓ | [`packages/desktop/.agents/skills/desktop-brand-builder/SKILL.md`](packages/desktop/.agents/skills/desktop-brand-builder/SKILL.md) |
+| 38 | ✓ | [`packages/desktop/.agents/skills/desktop-develop/SKILL.md`](packages/desktop/.agents/skills/desktop-develop/SKILL.md) |
+| 39 | ✓ | [`packages/desktop/.agents/skills/desktop-pet/SKILL.md`](packages/desktop/.agents/skills/desktop-pet/SKILL.md) |
+| 40 | ✓ | [`packages/desktop/apps/electron/resources/AGENTS.md`](packages/desktop/apps/electron/resources/AGENTS.md) |
+| 41 | ✓ | [`packages/desktop/apps/electron/resources/docs/craft-cli.md`](packages/desktop/apps/electron/resources/docs/craft-cli.md) |
+| 42 | ✓ | [`packages/desktop/apps/electron/resources/docs/skills.md`](packages/desktop/apps/electron/resources/docs/skills.md) |
 
 ---
 

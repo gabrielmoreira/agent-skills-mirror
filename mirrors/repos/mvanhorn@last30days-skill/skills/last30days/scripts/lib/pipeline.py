@@ -25,6 +25,7 @@ from . import (
     hiring_signals,
     instagram,
     jobs,
+    linkedin,
     normalize,
     permission_preflight,
     perplexity,
@@ -67,7 +68,7 @@ SEARCH_ALIAS = {
     "xquik": "x",  # xquik is a backend of the single "x" source, not its own source
 }
 
-MAX_SOURCE_FETCHES: dict[str, int] = {"x": 2, "jobs": 1}
+MAX_SOURCE_FETCHES: dict[str, int] = {"x": 2, "jobs": 1, "linkedin": 1}
 
 # Per-handle result caps for the X handle-search lanes. The FROM lane (the
 # subject's own timeline) is the single best source for a person topic, so it
@@ -99,6 +100,7 @@ MOCK_AVAILABLE_SOURCES = [
     "pinterest",
     "digg",
     "jobs",
+    "linkedin",
 ]
 
 
@@ -149,6 +151,15 @@ def available_sources(config: dict[str, Any], requested_sources: list[str] | Non
         "perplexity" in include_sources or (requested_sources and "perplexity" in requested_sources)
     ):
         available.append("perplexity")
+    # LinkedIn: opt-in additive source via INCLUDE_SOURCES=linkedin (same
+    # consent pattern as Perplexity). Unlike tiktok/instagram, which are
+    # offered during SKILL.md Step 0 onboarding, LinkedIn is power-user-only
+    # and must not silently activate for existing SCRAPECREATORS_API_KEY
+    # holders.
+    if config.get("SCRAPECREATORS_API_KEY") and (
+        "linkedin" in include_sources or (requested_sources and "linkedin" in requested_sources)
+    ):
+        available.append("linkedin")
     if requested_sources and "xiaohongshu" in requested_sources and env.is_xiaohongshu_available(config):
         available.append("xiaohongshu")
     if env.is_threads_available(config):
@@ -1399,6 +1410,24 @@ def _retrieve_stream(
             ig_creators=ig_creators,
         )
         return instagram.parse_instagram_response(result), {}
+    if source == "linkedin":
+        token = config.get("SCRAPECREATORS_API_KEY", "")
+        result = linkedin.search_linkedin(
+            subquery.search_query,
+            from_date,
+            to_date,
+            depth=depth,
+            token=token,
+        )
+        items = linkedin.parse_linkedin_response(
+            result, from_date=from_date, to_date=to_date
+        )
+        # Articles never appear in post search — surface them (high signal)
+        # via a bounded profile-enrichment lane on person topics.
+        items += linkedin.enrich_articles(
+            items, raw_topic or topic, token, from_date=from_date, to_date=to_date
+        )
+        return items, {}
     if source == "hackernews":
         result = hackernews.search_hackernews(subquery.search_query, from_date, to_date, depth=depth)
         return hackernews.parse_hackernews_response(result, query=subquery.search_query), {}

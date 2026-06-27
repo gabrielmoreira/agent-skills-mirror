@@ -121,6 +121,18 @@ await client.refresh_auth()
 ```
 Or re-run `notebooklm login` if session cookies are also expired. If the failure persists across re-login, the page structure has likely changed — file an issue and include the `Preview:` snippet from the error.
 
+#### "NotebookLM redirected this request to its region / anti-abuse access gate"
+
+**Cause:** The request to `notebooklm.google.com` was redirected to **`notebooklm.google/?location=unsupported`** — Google's region / anti-abuse risk-control gate (the marketing/landing page, which has no CSRF token). This is **not** a library bug, expired login, or page-structure change, and **re-running `notebooklm login` will not fix it** (the cookies are fine). It is driven by the *access environment*, not just the account's country, and fires even for accounts in supported regions when Google sees:
+
+- a **VPN / proxy / datacenter / shared IP** (especially previously-abused ones),
+- an **IP ↔ timezone ↔ browser-language mismatch**, or
+- a **non-browser / automated access pattern** (a raw HTTP client without a real browser fingerprint).
+
+**Confirm:** open `https://notebooklm.google.com` in a normal browser, signed in to the same account, on the same network. If it also redirects to `notebooklm.google/?location=unsupported`, the gate is environmental.
+
+**Solution:** access from a **residential connection in a supported region**, keep your system **timezone/language consistent** with the IP's country, and avoid shared/datacenter VPN exit IPs. (See issue [#1630](https://github.com/teng-lin/notebooklm-py/issues/1630).)
+
 #### Browser opens but login fails
 
 **Cause:** Google detecting automation and blocking login.

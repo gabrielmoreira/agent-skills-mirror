@@ -1,17 +1,12 @@
 ---
 name: story-setup
 version: 1.2.3
-description: |
-  网文写作工具集基础设施部署。将 hooks/rules/agents/CLAUDE.md 等基础设施部署到用户项目目录。
-  触发方式：/story-setup、「准备写书」「帮我搭一下环境」「配置写作项目」
-metadata:
-  openclaw:
-    source: https://github.com/worldwonderer/oh-story-claudecode
+description: "网文写作工具集基础设施部署。将 hooks/rules/agents/CLAUDE.md/AGENTS.md 等基础设施部署到用户项目目录，支持 Claude Code / OpenCode / Codex / OpenClaw。触发方式：/story-setup、$story-setup、「准备写书」「帮我搭一下环境」「配置写作项目」。"
+metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claudecode"}}
 ---
-
 # story-setup：网文写作工具集基础设施部署
 
-你是写作基础设施部署器。将网文写作工具集的全套基础设施（hooks、rules、agents、CLAUDE.md）部署到用户项目目录。
+你是写作基础设施部署器。将网文写作工具集的全套基础设施（hooks、rules、agents、CLAUDE.md、AGENTS.md、Codex/OpenClaw 配置）部署到用户项目目录。
 
 **执行铁律：不覆盖用户已有配置，合并而非替换。**
 
@@ -33,11 +28,19 @@ metadata:
 5. 检查 `opencode.json` 或 `.opencode/` 是否存在
    - 存在 → 识别为 opencode 项目，`target_cli = opencode`
    - 不存在 → 跳过
-6. 如 `.claude/` 或 `CLAUDE.md` 与 opencode 标记同时存在 → 使用 AskUserQuestion 让用户选择目标 CLI（选项：仅 Claude Code / 仅 OpenCode / 两者都部署）
-7. 如两者都不存在（全新项目）→ 使用 AskUserQuestion 让用户选择目标 CLI
+6. 检查 `.codex/`、`.codex/config.toml`、`.codex/agents/`、`.codex/hooks.json`、`AGENTS.md` 中的 Codex 段
+   - 存在 → 识别为 Codex 项目，`target_cli = codex`
+   - 不存在 → 跳过
+7. 检查 `openclaw.json`、`.openclaw/`、`.agents/skills/`、`AGENTS.md` 中的 OpenClaw 段，或 `skills/*/SKILL.md` 中的 `metadata.openclaw`
+   - 存在 → 识别为 OpenClaw 项目，`target_cli = openclaw`
+   - 不存在 → 跳过
+8. 如 `.claude/` 或 `CLAUDE.md`、opencode 标记、Codex 标记、OpenClaw 标记同时存在 → 使用 AskUserQuestion 让用户选择目标 CLI（选项：仅 Claude Code / 仅 OpenCode / 仅 Codex / 仅 OpenClaw / 任意组合）
+9. 如四者都不存在（全新项目）→ 使用 AskUserQuestion 让用户选择目标 CLI
    - 用户选择 opencode → `target_cli = opencode`，部署时创建 `opencode.json` 和 `.opencode/`
    - 用户选择 claude-code → 按现有逻辑处理
-   - 用户选择两者 → `target_cli = claude-code,opencode`
+   - 用户选择 codex → `target_cli = codex`，部署时创建 `.codex/`
+   - 用户选择 openclaw → `target_cli = openclaw`，部署时复制 OpenClaw 兼容 skills 到项目 `skills/`
+   - 用户选择多端 → `target_cli = claude-code,opencode,codex,openclaw`（仅包含用户选择的端）
 
 ## Phase 2：部署基础设施
 
@@ -62,6 +65,14 @@ metadata:
 | `skills/story-setup/references/opencode/opencode.json.patch` | merge into `opencode.json` | user+managed | merge by plugin/permission key | plugin entry registered | target_cli 含 opencode |
 | `skills/story-setup/references/agent-references/` | `skills/story-setup/references/agent-references/` | story-setup managed | replace | every reference resolves | target_cli 含 opencode |
 | `skills/story-setup/references/opencode/pre-commit.sh` | `.git/hooks/pre-commit` | user+managed | append or create | file exists and is executable；含 marker 块则替换块内容，不含则检测 exit 0 位置智能插入 | target_cli 含 opencode |
+| `skills/story-setup/references/codex/AGENTS.md.tmpl` | `AGENTS.md` | user+managed | marker/section merge | contains Codex story skill routing sections | target_cli 含 codex |
+| `skills/story-setup/references/codex/agents/` | `.codex/agents/` | story-setup managed | replace | 7 TOML agent files parse and contain `name`/`description`/`developer_instructions` | target_cli 含 codex |
+| `skills/story-setup/references/codex/hooks/hooks.json` | `.codex/hooks.json` | user+managed | merge by event+command | hook JSON valid; commands deduped | target_cli 含 codex |
+| `skills/story-setup/references/codex/hooks/story_codex_hook.py` | `.codex/hooks/story_codex_hook.py` | story-setup managed | replace | Python syntax valid | target_cli 含 codex |
+| `skills/story-setup/references/agent-references/` | `.codex/skills/story-setup/references/agent-references/` | story-setup managed | replace | every reference resolves | target_cli 含 codex |
+| `skills/story-setup/references/openclaw/AGENTS.md.tmpl` | `AGENTS.md` | user+managed | marker/section merge | contains OpenClaw story skill routing sections | target_cli 含 openclaw |
+| repository `skills/{browser-cdp,story*}/` | `skills/{browser-cdp,story*}/` | story-setup managed for known skill names | replace known skill dirs only | 13 `SKILL.md` files exist; OpenClaw-compatible frontmatter | target_cli 含 openclaw |
+| `skills/story-setup/references/agent-references/` | `skills/story-setup/references/agent-references/` | story-setup managed | replace via full skill copy | every reference resolves | target_cli 含 openclaw |
 
 ### opencode.json 合并算法
 
@@ -100,7 +111,8 @@ metadata:
 
 ### 2.4.1 Agent 兼容性处理
 
-- Agent frontmatter 以 Claude Code 为主；OpenClaw/qclaw 等只要支持 AgentSkills，未知字段（如 `memory`、`skills`、`disallowedTools`）应被忽略。若目标工具报 frontmatter 错误，保留 `name`、`description`、`tools` 三项，删除不支持字段后再部署。
+- Agent frontmatter 以 Claude Code 为主；OpenCode 由 `scripts/sync-opencode.py` 生成 `.opencode/agents/*.md`；Codex 由 `scripts/generate-codex-agents.py` 生成 `.codex/agents/*.toml`。
+- **OpenClaw Phase 1 不部署 agents**：OpenClaw 只部署 skills，agent 协作相关 skill 必须按既有 fallback 规则降级 solo/direct，不要把 Claude/OpenCode agent frontmatter 直接复制成 OpenClaw agent。
 - 部署到项目后，agent 内引用的参考资料必须走 `story-setup/references/agent-references/*.md` 这一本 skill 内复制路径；不要跨 skill 引用其他 skill 的 references。若全局安装路径不同，优先用项目内 `.claude/skills/` 或 `skills/` 作为规范路径前缀，其次用工具的 skill 搜索能力，不要假定固定绝对路径。
 
 ### 2.4.2 部署 Agent References
@@ -108,6 +120,15 @@ metadata:
 - 将 `skills/story-setup/references/agent-references/` 下所有 `.md` 复制到项目内 `.claude/skills/story-setup/references/agent-references/`
 - 如目标项目已经使用项目本地 `skills/` 目录，也可以同步复制到 `skills/story-setup/references/agent-references/` 作为 fallback，但不得只复制 fallback 而遗漏 `.claude/skills/` 主路径
 - 校验：凡 agent 或 reference 中出现 `story-setup/references/agent-references/<file>.md`，源包与目标包都必须存在 `<file>.md`
+
+### 2.4.3 部署 Codex Agents（target_cli 含 codex 时）
+
+- 读取 `skills/story-setup/references/codex/agents/` 下所有 `.toml` 文件，复制到用户项目 `.codex/agents/`
+- Agent 文件属于 story-setup 管理文件，可安全覆盖；生成源由 `scripts/generate-codex-agents.py` 从 Claude agent 模板确定性生成
+- 校验每个 TOML 都能解析，且包含 Codex 必需字段：`name`、`description`、`developer_instructions`
+- 只读职责 agent（`chapter-extractor`、`consistency-checker`、`story-explorer`）必须保留 `sandbox_mode = "read-only"`
+- **部署后必须 trust + 新开 Codex 会话**：Codex custom agents 位于 `.codex/agents/*.toml`，项目 `.codex/` 配置层需要被 trust；部署后需要新会话/刷新后才可能稳定暴露给 spawn。若运行时返回 `unknown agent_type`，调用方必须降级 solo/direct 并报告 fallback。
+- 将 `skills/story-setup/references/agent-references/` 同步复制到 `.codex/skills/story-setup/references/agent-references/`，作为 Codex agent 的项目内参考资料主路径
 
 ### 2.5 部署 Session State 模板
 
@@ -124,6 +145,28 @@ metadata:
 - 合并 hooks 配置（按「settings-hooks.json 合并算法」处理）
 - 写入 `.claude/settings.local.json`
 
+## Codex hooks.json 合并算法（target_cli 含 codex 时）
+
+Codex 项目 hooks 部署到 `.codex/hooks.json`，hook 脚本部署到 `.codex/hooks/story_codex_hook.py`。
+
+1. 读取 `skills/story-setup/references/codex/hooks/hooks.json`
+2. 读取用户现有 `.codex/hooks.json`（如存在），提取 hooks 部分
+3. 对每个 hook event（SessionStart、PreToolUse、PreCompact、PostCompact、Stop）按 `command` 去重追加；每个 hook 同时携带 `command`（POSIX sh，Unix）与 `commandWindows`（cmd.exe，Windows）两个字段，整体保留不要拆开
+4. 保留用户已有其他 hooks/config，不覆盖未知字段
+5. 写入 `.codex/hooks.json` 后提示用户：项目 `.codex/` 层需要被 Codex trust，非 managed command hooks 还需要在 `/hooks` 中 review/trust 后才会运行；Windows 下 Codex 以 cmd.exe 跑 hook，走 `commandWindows`（cwd 为项目根时生效，否则 no-op），正文守卫在 Windows 非项目根目录下不强制拦截
+
+## OpenClaw skills-only 部署算法（target_cli 含 openclaw 时）
+
+OpenClaw Phase 1 只部署 skills，不部署 OpenClaw agents/hooks/plugin。
+
+1. 读取仓库当前 `skills/` 下所有包含 `SKILL.md` 的 story skill 目录（13 个：`browser-cdp` 与 `story*`）。
+2. 写入目标项目 `skills/{skill-name}/`，仅替换这些 story-setup 管理的已知 skill 目录；保留用户在 `skills/` 下的其他目录。
+3. 每个 `SKILL.md` 必须满足 OpenClaw frontmatter 约束：`name` / `description` 是单行键值，`metadata` 是单行 JSON 对象且含 `metadata.openclaw`。
+4. 复制 `skills/story-setup/references/openclaw/AGENTS.md.tmpl` 到项目 `AGENTS.md`，按「AGENTS.md 合并策略」合并。
+5. `.story-deployed` 的 `target_cli` 写入 `openclaw` 或多端组合；`references_dir` 对 OpenClaw 写 `skills/story-setup/references/agent-references`。
+6. 安装报告必须提示：OpenClaw 会在 session 启动时 snapshot eligible skills；部署后如果命令/skills 未出现，需新开 OpenClaw session 或等待 skills watcher 刷新。
+7. 安装报告必须提示：OpenClaw Phase 1 没有硬 hooks/agents；写正文前大纲守卫、commit 提醒、session/compact 自动注入只作为 skill 内软约束，不是运行时强制拦截。
+
 ### 2.7 创建部署标记
 
 - 创建 `.story-deployed` 文件（sentinel file）
@@ -132,9 +175,9 @@ metadata:
   deployed_at: <date -u +"%Y-%m-%dT%H:%M:%SZ">
   agents_version: 14
   setup_skill_version: 1.2.3
-  target_cli: claude-code（或 opencode，或 claude-code,opencode 同时支持两个 CLI）
+  target_cli: claude-code（或 opencode、codex、openclaw，或 claude-code,opencode,codex,openclaw 等组合）
   resolver_strategy: project-local-skill-reference
-  references_dir: .claude/skills/story-setup/references/agent-references
+  references_dir: .claude/skills/story-setup/references/agent-references（Codex 可写 .codex/skills/story-setup/references/agent-references；OpenClaw 可写 skills/story-setup/references/agent-references；多端用逗号分隔）
   ```
 - 此文件供 session-start.sh 和写作 skill 检测部署状态，避免重复提示
 - 同时创建一次性标记文件 `.claude/.agents-pending-restart`（空文件即可）。session-start.sh 在下一个会话启动时据此确认 agents 已随新会话注册，并自动删除该标记——用来向用户确认「重启已生效」。
@@ -167,6 +210,18 @@ metadata:
     - 检查 `skills/story-setup/references/agent-references/` 下 reference 文件完整且数量与源目录一致
     - 检查 `opencode.json` 的 `plugin` 数组是否包含 story-hooks 条目
     - 检查 `.git/hooks/pre-commit` 是否存在且有执行权限（Windows 上跳过执行权限检查）
+8. 验证 Codex 部署（仅当 target_cli 含 codex 时）：
+    - 检查 `AGENTS.md` 含 Codex story skill routing sections
+    - 检查 `.codex/agents/` 下 7 个 `.toml` agent 定义文件存在并可解析
+    - 检查 `.codex/hooks.json` 存在且 JSON 有效，包含 `.codex/hooks/story_codex_hook.py` command
+    - 检查 `.codex/hooks/story_codex_hook.py` 存在且 Python 语法有效
+    - 检查 `.codex/skills/story-setup/references/agent-references/` 下 reference 文件完整且数量与源目录一致
+    - 安装报告必须提示：Codex 需要 trust 项目 `.codex/` 配置层，并在 `/hooks` review/trust 非 managed hooks；部署后新开 Codex 会话让 custom agents 生效；若当前运行时仍返回 `unknown agent_type`，按各 skill 的 fallback 规则降级 solo/direct
+9. 验证 OpenClaw 部署（仅当 target_cli 含 openclaw 时）：
+    - 检查 `AGENTS.md` 含 OpenClaw story skill routing sections
+    - 检查 `skills/` 下 13 个 story skill 目录存在，且每个 `SKILL.md` 包含单行 `name`、单行 `description`、单行 JSON `metadata.openclaw`
+    - 检查 `skills/story-setup/references/agent-references/` 下 reference 文件完整且数量与源目录一致
+    - 安装报告必须提示：OpenClaw Phase 1 是 skills-only；未部署 OpenClaw agents/hooks，运行时硬拦截不可用；部署后新开 OpenClaw session 或等待 watcher 刷新
 
 ---
 
@@ -191,6 +246,15 @@ metadata:
 5. 用户独有的 section（自定义内容）**保留**不动
 6. 未知冲突用 AskUserQuestion 让用户选择保留哪个版本
 
+## AGENTS.md 合并策略（OpenCode / Codex / OpenClaw）
+
+用户已有 AGENTS.md 时，按 marker/section 合并：
+1. 优先识别 story-setup 管理块标记（如果旧项目已有标记，只替换标记内内容）
+2. 无标记时，读取用户现有 AGENTS.md，按 `##` 标题切分为 section map
+3. OpenCode 使用 `skills/story-setup/references/opencode/AGENTS.md.tmpl`；Codex 使用 `skills/story-setup/references/codex/AGENTS.md.tmpl`；OpenClaw 使用 `skills/story-setup/references/openclaw/AGENTS.md.tmpl`
+4. 模板中的标准 section（Skill 路由表、文件结构、协作规则、Compact 后恢复上下文）覆盖同名 section；用户独有 section 保留
+5. 多端同时部署时，Codex/OpenCode/OpenClaw 共同可用的通用段落只保留一份；工具特有说明以小节区分，避免互相覆盖
+
 ## settings-hooks.json 合并算法
 
 hooks 注册合并按 command 字段去重：
@@ -206,7 +270,7 @@ hooks 注册合并按 command 字段去重：
 
 - `.story-deployed` 不存在 → 全新安装，Phase 2 全部执行
 - `.story-deployed` 存在且 `agents_version: 14` → 提示已部署，AskUserQuestion 确认是否重新部署
-- `.story-deployed` 存在但 `agents_version` < 14 → 提示需要更新，重新执行 Phase 2 覆盖 agents/hooks/rules/reference bundle，CLAUDE.md 和 settings.local.json 走合并策略
+- `.story-deployed` 存在但 `agents_version` < 14 → 提示需要更新，重新执行 Phase 2 覆盖 agents/hooks/rules/reference bundle，CLAUDE.md / AGENTS.md / settings.local.json / .codex/hooks.json 走合并策略
 
 ---
 
@@ -221,6 +285,11 @@ hooks 注册合并按 command 字段去重：
 | references/agent-references/ | Agent 模板自带的参考资料副本；部署到 `.claude/skills/story-setup/references/agent-references/`，避免跨 skill references |
 | references/templates/settings-hooks.json | hooks 注册 JSON 片段 |
 | references/templates/上下文.md.tmpl | 写作上下文模板 |
+| references/codex/AGENTS.md.tmpl | Codex 项目根 AGENTS.md 模板 |
+| references/codex/agents/ | 7 个 Codex custom agent TOML 模板 |
+| references/codex/hooks/hooks.json | Codex hooks 注册 JSON 模板（部署到 `.codex/hooks.json`） |
+| references/codex/hooks/story_codex_hook.py | Codex hook adapter（部署到 `.codex/hooks/story_codex_hook.py`） |
+| references/openclaw/AGENTS.md.tmpl | OpenClaw 项目根 AGENTS.md 模板（skills-only） |
 
 ---
 
@@ -231,6 +300,6 @@ hooks 注册合并按 command 字段去重：
 
 | 时机 | 跳转到 | 命令 |
 |---|---|---|
-| 部署完成，开始写作 | story-long-write / story-short-write | `/story-long-write` 或 `/story-short-write` |
-| 导入已有小说做拆解 | story-import | `/story-import` |
-| 需要浏览器登录态（扫榜/拆文取原文） | browser-cdp | `/browser-cdp` |
+| 部署完成，开始写作 | story-long-write / story-short-write | `/story-long-write` 或 `/story-short-write`；Codex 中也可用 `$story-long-write` / `$story-short-write`；OpenClaw 中可用 `/skill story-long-write` |
+| 导入已有小说做拆解 | story-import | `/story-import`；Codex 中也可用 `$story-import`；OpenClaw 中可用 `/skill story-import` |
+| 需要浏览器登录态（扫榜/拆文取原文） | browser-cdp | `/browser-cdp`；Codex 中也可用 `$browser-cdp`；OpenClaw 中可用 `/skill browser-cdp` |

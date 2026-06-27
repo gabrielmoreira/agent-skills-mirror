@@ -39,6 +39,7 @@
 - Frontend extension hooks such as `confirm_dialog_after_render` and `get_tool_message_handler` must preserve their mutable context contracts.
 - Sanitize or safely render user/model-provided HTML and markdown.
 - Do not expose secrets in localStorage, console logs, URLs, or WebSocket payloads.
+- Full message snapshots that start at backend log `no` 0 must replace the current message DOM before rendering; incremental snapshots should keep patching existing messages.
 
 ## Work Guidance
 

@@ -9,8 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.1.6] - 2026-06-18
 
+### ✨ Features
+
+- **CodeGraph MCP option + usage rule (#145)** — Init Step 3 gains a `codegraph` checkbox for local code knowledge graph (call chains, blast radius, architecture). Installs MCP (`npx @colbymchenry/codegraph serve --mcp`) and writes `ccg-codegraph.md` rule to `~/.claude/rules/`. The rule instructs AI to auto-run `codegraph init` when no `.codegraph/` index exists, then prefer `codegraph_explore` for structural queries, `fast_context_search` for semantic search, and grep for exact text matching.
+
 ### 🐛 Fixes
 
+- **Codex mode AGENTS.md missing `.exe` path replacement on Windows (#147)** — `installCodexMode()` called `injectConfigVariables()` on AGENTS.md but not `replaceHomePathsInTemplate()`, so `~/.claude/bin/codeagent-wrapper` was never replaced with the absolute path + `.exe` suffix on Windows. Codex app could not find the binary.
 - **Antigravity backend silent no-op on Windows (#146)** — On Windows the wrapper routed antigravity prompts through stdin pipe (like gemini, to avoid cmd.exe multi-line truncation). But `agy` does not read stdin — it requires `-p`. So it received `-p ""`, did nothing, exited 0, and the wrapper reported "completed without agent_message output". Fix: antigravity now always uses `-p` with the full prompt text on all platforms; only gemini uses stdin pipe on Windows.
 
 ---

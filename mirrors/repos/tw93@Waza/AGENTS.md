@@ -4,7 +4,7 @@ This file is the canonical agent guide for the Waza repository. `CLAUDE.md` is a
 
 ## Project
 
-Waza is a skill collection for engineering workflows. The repository contains eight skills: `think`, `design`, `check`, `hunt`, `write`, `learn`, `read`, and `health`.
+Waza is a skill collection for engineering workflows. The repository contains eight skills: `think`, `ui`, `check`, `hunt`, `write`, `learn`, `read`, and `health`.
 
 ## Repository Map
 
@@ -20,7 +20,7 @@ Waza is a skill collection for engineering workflows. The repository contains ei
 - `plugins/waza/` - **generated** Codex plugin tree. Mirrors `skills/` and `rules/` plus `plugins/waza/.codex-plugin/plugin.json`; edit source files and run `make regenerate`.
 - `packaging.allowlist` - default-deny list of paths that ship in `waza.zip`. New shippable assets must be added here explicitly; everything else is excluded.
 - `.github/workflows/` - public test and release automation. `release.yml` runs `make test` before `make package` so the tagged commit is gated by the same suite as PRs.
-- `scripts/build_metadata.py` - codegen for Claude and Codex marketplace metadata, README install URLs, Codex plugin mirror files, and installer-script `WAZA_REF` defaults. Run via `make regenerate`; CI checks drift via `make verify-generated`.
+- `scripts/build_metadata.py` - codegen for Claude and Codex marketplace metadata, README install URLs, Codex plugin mirror files, skill-local update checkers, installer-script `WAZA_REF` defaults, and update-checker `LOCAL_VERSION`. Run via `make regenerate`; CI checks drift via `make verify-generated`.
 - `scripts/verify_skills.py` - the only validator entrypoint. Covers frontmatter, references, marketplace, resolver, links, table pipes, trigger overlap, rule-file presence, README install string, English coaching guard, and AI-attribution leak detection.
 - `scripts/package-skill.sh` + `scripts/packaging_filter.py` - build `dist/waza.zip` from `packaging.allowlist`.
 - `scripts/setup-rule.sh` + `scripts/setup-statusline.sh` - public install helpers; `WAZA_REF` defaults are codegen-pinned to the current release tag.
@@ -31,7 +31,7 @@ Waza is a skill collection for engineering workflows. The repository contains ei
 
 ```bash
 make test             # verify-docs + verify-generated + verify-routing + verify-scripts + all smokes
-make regenerate       # rewrite marketplace.json, README install URLs, installer WAZA_REF defaults
+make regenerate       # rewrite marketplace.json, README install URLs, update checker copies
 make verify-generated # drift check used by CI; non-zero if regenerate would change anything
 make package          # build dist/waza.zip from packaging.allowlist
 ```
@@ -54,7 +54,7 @@ Examples: `verify_skills.py` is a script; `rules/english.md` and `rules/chinese.
 - Put adaptive, judgment-heavy workflows in skills.
 - Put deterministic checks, lookups, and table-driven validation in scripts.
 - `rules/anti-patterns.md` owns cross-skill always-on behavioral guardrails (AI failure modes that apply regardless of active skill). Per-skill gotchas stay in each `skills/*/SKILL.md` Gotchas table; a gotcha belongs in `rules/anti-patterns.md` only when it applies identically across all eight skills.
-- Catalogs consolidate, they do not accumulate. This covers `rules/anti-patterns.md` rows and every reference example list, banned-phrase list, and replacement table (`skills/write/references/*`, `skills/design/references/*`, and the like). Before adding a row, pattern, banned phrase, or example, find the existing row or principle it instantiates and fold it in; never append a near-synonym or a third encoding of a rule already stated above. Keep wording generic enough to ship outside this repo. A reference file that re-lists items it already covers under a numbered pattern is drift, not coverage.
+- Catalogs consolidate, they do not accumulate. This covers `rules/anti-patterns.md` rows and every reference example list, banned-phrase list, and replacement table (`skills/write/references/*`, `skills/ui/references/*`, and the like). Before adding a row, pattern, banned phrase, or example, find the existing row or principle it instantiates and fold it in; never append a near-synonym or a third encoding of a rule already stated above. Keep wording generic enough to ship outside this repo. A reference file that re-lists items it already covers under a numbered pattern is drift, not coverage.
 - The no-op test prunes skill prose sentence by sentence: a line earns its place only if it changes behavior versus the model's default. A line that re-teaches what a capable model already does (`be thorough` to an already-thorough agent) is a no-op you pay context load to say nothing; delete the whole sentence, do not trim words from it. When unsure whether a line states a default, assume it does and cut.
 - Leading words collapse a restated quality into one pretrained token the model already thinks with: `fast, deterministic, low-overhead` becomes a `tight` loop; `a repro you trust` becomes the loop that goes `red` on the bug. One token anchors a whole region of behavior and gives a sharper hook than the spelled-out triad, at fewer tokens. When a skill states the same quality three times, that is the passage to collapse into a leading word.
 - Keep `skills/RESOLVER.md` in sync when a skill description, trigger, or scope changes.
@@ -148,7 +148,7 @@ Use this path for any new skill or meaningful behavior change:
 1. **技能名**: 一句话说清楚改了什么以及对用户的影响。
 2. ...
 
-Update: `npx skills add tw93/Waza@latest` · [Claude Desktop](https://github.com/tw93/Waza/releases/latest/download/waza.zip) · ⭐ [tw93/Waza](https://github.com/tw93/Waza)
+Update: `npx skills update -g -y` · [Claude Desktop](https://github.com/tw93/Waza/releases/latest/download/waza.zip) · ⭐ [tw93/Waza](https://github.com/tw93/Waza)
 ```
 
 - Each item: `**Label**: one sentence`. Bold label is the skill or module name; the description leads with what changed.

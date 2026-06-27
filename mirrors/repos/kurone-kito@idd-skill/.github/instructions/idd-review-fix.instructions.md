@@ -25,6 +25,21 @@ Fix all Accepted PATH A items from ReviewItems_snapshot. Run **fix-validate**.
 
 Commit fixes atomically — one logical change per commit.
 
+These two fix-side rules are the complement of the accept-side
+"Verify before accept" rule in `idd-review-triage.instructions.md` (E5);
+both cut the advisory-review round count:
+
+- **Fix the whole class, not just the flagged line.** When an accepted
+  finding is one instance of a systemic class, sweep the current diff
+  (and the adjacent touched sections) and fix every instance in the same
+  commit. Advisory reviewers surface issues incrementally, so a
+  whole-class fix converges in fewer rounds than fixing only the flagged
+  line and waiting for the next instance to be re-flagged.
+- **Verify any claim a fix adds.** When a fix introduces a precision — a
+  name, value, path, or described behavior — to satisfy a reviewer, check
+  it against the actual implementation before committing, so the fix does
+  not trade one inaccuracy for another and cost an extra round.
+
 ## E10 — Validate fixes with critique pass
 
 Run a critique pass to verify that the fixes in E9 address the root
@@ -143,12 +158,19 @@ add-reviewer command (the reliable trigger). The REST `requested_reviewers`
 endpoint called with a bot's **display name** silently no-ops and wastes a
 full advisory-wait cycle, so do not use that path to request a re-review.
 
-**Copilot**: after every push, regardless of any reviewer's state,
-request a Copilot re-review if Copilot has not yet reviewed the current
-HEAD SHA. Subject to the configured Copilot re-review request cap
-(`REQUEST_CAP` from helper output or `.github/idd/config.json`
-`advisoryWait.requestCap`; default 30). This is a process limit, not a
-GitHub-enforced constraint.
+**Primary advisory bot** (default Copilot): after every push, regardless
+of any reviewer's state, request a re-review from the configured primary
+advisory bot (`.github/idd/config.json` `advisoryWait.primaryBotLogin`,
+which defaults to Copilot) if it has not yet reviewed the current HEAD
+SHA. Subject to the configured re-review request cap (`REQUEST_CAP` from
+helper output or `.github/idd/config.json` `advisoryWait.requestCap`;
+default 30). This is a process limit, not a GitHub-enforced constraint.
+
+Substitute `{primary-advisory-bot}` in the commands below with that bare
+login — the default is `copilot`, so the command resolves to `@copilot`.
+The advisory-wait helpers resolve the same identity from policy. The AW
+helper output fields keep their `COPILOT_PENDING` / `LAST_COPILOT_COMMIT`
+names regardless of the configured bot.
 
 1. Fetch `PR_HEAD_SHA`:
 
@@ -157,14 +179,14 @@ GitHub-enforced constraint.
    ```
 
 2. Run **AW1** (`idd-advisory-wait.instructions.md`). If **SATISFIED** →
-   E14 Copilot processing is done; proceed to E15.
+   E14 advisory-bot processing is done; proceed to E15.
 3. Run **AW2** to fetch markers.
 4. Apply the **AW3** decision table:
    - **SATISFIED** → proceed to E15.
    - **HOLD** → post the hold comment from **AW4** and stop.
    - **RECOVERY_NEEDED** (`COPILOT_PENDING` is `"true"`, no same-head
      marker): post the recovery marker from **AW3-R**. Do not request
-     another Copilot review.
+     another review from the bot.
    - **CAP_EXHAUSTED** (`REQUEST_MARKER_COUNT` ≥ `REQUEST_CAP`, no
      same-head marker) →
      if `CAP_EXHAUSTED_ROUTE` is `hold`, post the hold comment from
@@ -172,22 +194,22 @@ GitHub-enforced constraint.
      the advisory wait entirely and proceed directly to E15.
    - **REQUEST_NEEDED** (`COPILOT_PENDING` is `"false"`, or
      `COPILOT_PENDING` is `"true"` but current-head coverage is not
-     proven; request cap < `REQUEST_CAP`): request Copilot review and
-     immediately post a plain-text marker. If `COPILOT_PENDING` is
-     `"true"` in this branch, first remove the stale/unproven pending
-     reviewer request:
+     proven; request cap < `REQUEST_CAP`): request the primary advisory
+     bot's review and immediately post a plain-text marker. If
+     `COPILOT_PENDING` is `"true"` in this branch, first remove the
+     stale/unproven pending reviewer request:
 
      ```sh
-     gh pr edit {pr-number} --remove-reviewer "@copilot"
+     gh pr edit {pr-number} --remove-reviewer "@{primary-advisory-bot}"
      ```
 
-     If removal fails because Copilot is no longer pending, re-run
+     If removal fails because the bot is no longer pending, re-run
      AW1–AW3. If removal fails for any other reason, post the AW4
      pending-refresh-failed hold comment and stop. After removal
-     succeeds, request Copilot review:
+     succeeds, request the primary advisory bot's review:
 
      ```sh
-     gh pr edit {pr-number} --add-reviewer "@copilot"
+     gh pr edit {pr-number} --add-reviewer "@{primary-advisory-bot}"
      ```
 
      ```text
@@ -198,11 +220,29 @@ GitHub-enforced constraint.
      comment block.
    - **WAIT**, or after a **REQUEST_NEEDED** or **RECOVERY_NEEDED**
      marker is posted: enter the active polling loop below.
+5. **Optional secondary advisory bot (non-gating).** When the helper reports
+   `secondaryRequestNeeded: true` — or, in the shell fallback, when AW3 yields
+   **CAP_EXHAUSTED** or a stalled / rate-limited **SATISFIED** (closed by the
+   elapsed settle/pending window while the primary never reviewed the current
+   HEAD), `advisoryWait.secondaryBotLogin` is configured, and that secondary
+   has **not** already been `review_requested` after the current HEAD's
+   `committed` event — request the secondary bot **once** for the current HEAD:
+
+   ```sh
+   gh pr edit {pr-number} --add-reviewer "@{secondary-advisory-bot}"
+   ```
+
+   Post **no** `advisory-wait:` marker for the secondary (it must never satisfy
+   the primary gate or consume the primary cap), and do **not** let it change
+   the AW3 route — continue the primary route exactly as decided above (e.g.
+   `CAP_EXHAUSTED` still follows `CAP_EXHAUSTED_ROUTE`). The secondary's review
+   is ordinary advisory input, returned to review-triage by the E1 snapshot if
+   it lands before merge. Skipped entirely when no secondary is configured.
 
 Copilot and CI advisory bot comments are advisory; unanswered ones do
 not block merge.
 
-Whenever E14 posts a Copilot request marker, recovery marker, or hold
+Whenever E14 posts an advisory request marker, recovery marker, or hold
 comment, update the digest after that side effect with the current
 advisory state. Use the marker or hold comment as `Authoritative by`,
 set `Open blockers` to the advisory wait or hold reason, and set

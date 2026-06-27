@@ -1,16 +1,15 @@
 ---
 name: story
-description: |
-  网络小说工具箱主入口。根据用户需求自动路由到对应 skill。
-  触发方式：/story、/网文、「我想写小说」「帮我写书」「写网文」「检查更新」「有新版本吗」
-  当用户意图不明确时触发此 skill，由路由逻辑分发到具体的扫榜/拆文/写作/去AI味/封面 skill。
+description: "网络小说工具箱主入口。根据用户需求自动路由到对应 skill；当用户意图不明确时触发，由路由逻辑分发到具体的扫榜/拆文/写作/去AI味/封面/导入/审查 skill。触发方式：/story、$story、/网文、「我想写小说」「帮我写书」「写网文」「检查更新」「有新版本吗」。"
+metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claudecode"}}
 ---
-
 # story：网文工具箱路由
 
 你是网文工具箱的路由入口。用户的请求模糊时由你分发到具体 skill。
 
 ## 路由表
+
+> Codex CLI 中优先使用 `$story-*` 或 `/skills` 触发；Claude Code / OpenCode 继续使用 `/story-*`；OpenClaw 可用 `/skill story-*` 或自然语言点名 skill。下表以 slash command 展示，Codex 可将 `/story-long-write` 等价替换为 `$story-long-write`，OpenClaw 可将其等价替换为 `/skill story-long-write`。
 
 | 用户意图 | 关键词示例 | 路由到 |
 |---|---|---|
@@ -35,15 +34,15 @@ description: |
 
 1. 分析用户请求，提取意图关键词
 2. 匹配上表，找到对应的 skill
-3. 如果能明确匹配，直接调用对应 skill（`Skill("skill-name")`）
+3. 如果能明确匹配，直接调用对应 skill（Claude/OpenCode 可用 `Skill("skill-name")` 或 slash command；Codex 用 `$skill-name` / `/skills`；OpenClaw 用 `/skill skill-name` 或自然语言点名）
 4. 如果无法匹配，询问用户想做什么（从上表中选择）
 5. 如果用户说"我想写小说"但未指定长篇/短篇，询问篇幅类型后再路由
 
 ## 查询降级
 
-「查故事资料」「查资料」走 agent 前先做轻量可用性检查（路由只做这一层，不承担全局部署策略）：当前不在子代理上下文、Agent/Task 工具可用、且 `.claude/agents/{story-explorer|story-researcher}.md` 存在 → 正常 spawn。任一不满足则降级，不硬失败：
+「查故事资料」「查资料」走 agent 前先做轻量可用性检查（路由只做这一层，不承担全局部署策略）：当前不在子代理上下文、Agent/Task 工具可用、且 `.claude/agents/{story-explorer|story-researcher}.md`、`.opencode/agents/{story-explorer|story-researcher}.md` 或 `.codex/agents/{story-explorer|story-researcher}.toml` 存在 → 可尝试 spawn。任一不满足，或 Codex 运行时返回 `unknown agent_type` / 未暴露 custom-agent registry，则降级，不硬失败：
 
-- `story-explorer` 不可用 → 主线程直接用 Read/Grep 从项目文件检索（角色状态/伏笔/进度/设定），回答前标注 `Fallback: agent unavailable -> direct lookup`；项目尚未部署时提示先 `/story-setup`。
+- `story-explorer` 不可用 → 主线程直接用 Read/Grep 从项目文件检索（角色状态/伏笔/进度/设定），回答前标注 `Fallback: agent unavailable -> direct lookup`；项目尚未部署时提示先 `/story-setup`（Codex 中用 `$story-setup`）。
 - `story-researcher` 不可用 → 主线程用现有检索/回答能力完成，或提示用户改用 `/browser-cdp` 采集，同样标注 `Fallback: agent unavailable -> direct lookup`。
 
 ## 项目状态感知
@@ -51,9 +50,9 @@ description: |
 路由前先检查当前项目状态：
 
 - **无项目目录**（没有包含 `追踪/` 或 `设定/` 的书名目录）：
-  - 如果用户要写作，下一步是先运行 `/story-setup` 初始化环境
+  - 如果用户要写作，下一步是先运行 `/story-setup` 初始化环境（Codex 中用 `$story-setup`）
   - 如果用户要扫榜/拆文，直接路由
-- **已有项目**：检查 `.story-deployed` 标记，如未部署则先运行 `/story-setup`
+- **已有项目**：检查 `.story-deployed` 标记，如未部署则先运行 `/story-setup`（Codex 中用 `$story-setup`）
 
 ## 多书切换
 
@@ -74,5 +73,5 @@ description: |
 4. **告知**：
    - 已最新 → 「已是最新版 vX.Y.Z」。
    - 有新版 → 列出 当前 vA → 最新 vB + [Releases](https://github.com/worldwonderer/oh-story-claudecode/releases)/[CHANGELOG](https://github.com/worldwonderer/oh-story-claudecode/blob/main/CHANGELOG.md)（能拿到 release notes 就附本次要点），再用 AskUserQuestion 问「现在更新吗？」：
-     - 选更新 → 跑 `npx skills add worldwonderer/oh-story-claudecode -y -g`（`-g` 全局，去掉则只更当前目录）；完成后提示：已部署过的项目在项目根重跑 `/story-setup` 同步 hooks/agents/references，并**新开一个会话**让 agents 重新注册。
+     - 选更新 → 跑 `npx skills add worldwonderer/oh-story-claudecode -y -g`（`-g` 全局，去掉则只更当前目录）；完成后提示：已部署过的项目在项目根重跑 `/story-setup`（Codex 中用 `$story-setup`）同步 hooks/agents/references，并**新开一个会话**让 agents 重新注册。
      - 选先不 → 不动，告知随时可再来。

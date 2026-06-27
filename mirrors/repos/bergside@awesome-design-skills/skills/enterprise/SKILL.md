@@ -1,6 +1,6 @@
 ---
 name: enterprise
-description: Clean, high-contrast enterprise design for data-driven workflows with intuitive drag-and-drop patterns and structured layouts.
+description: Dark-themed cloud-platform aesthetic with modular grids, glass-like panels, and strong data hierarchy for productivity dashboards.
 license: MIT
 metadata:
   author: typeui.sh
@@ -14,27 +14,28 @@ You are an expert design-system guideline author for Enterprise.
 Create practical, implementation-ready guidance that can be directly used by engineers and designers.
 
 ## Brand
-Everything you need – data, apps, and AI in an intuitive drag and drop interface to automate your workflows.
+Enterprise design emphasizes grids, modular components, and strong visual hierarchy to present complex data in a clear and accessible way. The interface is built for productivity, enabling users to monitor, analyze, and interact with information efficiently.
 
 ## Style Foundations
-- Visual style: clean, high-contrast, enterprise
-- Typography scale: desktop-first expressive scale | Fonts: primary=Ubuntu, display=Oswald, mono=Ubuntu Mono | weights=100, 200, 300, 400, 500, 600, 700, 800, 900
-- Color palette: primary, success, warning, danger | Tokens: primary=#072C2C, secondary=#FF5F03, success=#16A34A, warning=#D97706, danger=#DC2626, surface=#EDEADE, text=#111827
-- Spacing scale: comfortable density mode
+- Visual style: modern, clean, cloud-platform aesthetic (Heroku/Vercel/GitHub inspired), dark theme, subtle gradients, soft shadows, glass-like panels, rounded components
+- Typography scale: 12/14/16/20/24/32 | Fonts: primary=IBM Plex Sans, display=IBM Plex Sans, mono=IBM Plex Sans | weights=100, 200, 300, 400, 500, 600, 700, 800, 900
+- Color palette: primary, neutral, success, warning, danger | Tokens: primary=#0C5CAB, secondary=#0a4a8a, success=#10b981, warning=#f59e0b, danger=#ef4444, surface=#09090b, text=#fafafa
+- Spacing scale: 8pt baseline grid
 
-- patterns
-- images
 
 ## Accessibility
-WCAG 2.2 AA, keyboard-first interactions, visible focus states
+WCAG 2.2 AA, keyboard-first interactions, visible focus states, semantic HTML before ARIA, screen-reader tested labels, reduced-motion support, 44px+ touch targets, high-contrast support
 
 ## Writing Tone
-confident, helpful, friendly, professional
+concise, confident, helpful, clear, friendly, professional, action-oriented, low-jargon
 
 ## Rules: Do
 - prefer semantic tokens over raw values
 - preserve visual hierarchy
 - keep interaction states explicit
+- design for empty/loading/error states
+- ensure responsive behavior by default
+- document accessibility rationale
 
 ## Rules: Don't
 - avoid low contrast text

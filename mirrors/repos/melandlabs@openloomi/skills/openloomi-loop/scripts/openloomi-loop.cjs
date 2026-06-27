@@ -15,6 +15,44 @@ const { paths, api, signals, decisions, rules, config, utils } = lib;
 // means shell redirects like `node script.js > data/daemon.log` succeed.
 paths.ensureDirs();
 
+// Strip CLAUDECODE before spawning `claude -p`, otherwise the child
+// refuses to start (it detects the parent Claude Code session and aborts).
+// See: https://docs.claude.com/claude-code — "Nested sessions" check.
+const cleanChildEnv = () => {
+  const env = { ...process.env };
+  env.CLAUDECODE = undefined;
+  return env;
+};
+
+// Build the spawn invocation for a `claude -p` run.
+// Returns { bin, args } ready to pass to child_process.spawn().
+// - Always adds `--verbose` so thinking / tool calls ARE emitted to stdout
+//   (without --verbose, `claude -p` only prints the final result).
+// - Adds `--dangerously-skip-permissions` so the child can call the same
+//   tool families the parent already has (mcp__composio__*, mcp__agentmemory__*,
+//   and the openloomi-{loop,memory} CLIs). Without this, the child hits the
+//   permission dialog on every tool call and the tick stalls. Tick is
+//   read/derive only — it never sends email / RSVP / dismisses — so the
+//   "dangerous" flag is safe for this use case. Set
+//   LOOP_CLAUDE_SAFE_PERMISSIONS=1 to opt out (back to the per-call prompt).
+// - We do NOT wrap with a PTY here even though libc block-buffers stdout
+//   when not a TTY: `script -q /dev/null …` fails with "Operation not
+//   supported on socket" when the parent stdout is a redirected file
+//   (the typical daemon case), and node has no built-in PTY allocator.
+//   Trace will therefore only appear in the log after claude exits.
+//   To get real-time line-buffered output, run the loop in a real TTY
+//   (don't redirect stdout) or `tail -f data/schedule.log` from another
+//   terminal — the file does grow as claude writes, just not per-line.
+function claudeSpawnArgs(prompt, extraArgs = []) {
+  const baseArgs = ['-p', prompt, '--output-format', 'text', '--verbose'];
+  if (process.env.LOOP_CLAUDE_SAFE_PERMISSIONS !== '1') {
+    baseArgs.push('--dangerously-skip-permissions');
+  }
+  baseArgs.push(...extraArgs);
+  const bin = process.env.LOOP_CLAUDE_BIN || 'claude';
+  return { bin, args: baseArgs };
+}
+
 // ---------------------------------------------------------------------------
 // Tiny arg parser (no deps)
 // ---------------------------------------------------------------------------
@@ -47,17 +85,23 @@ Usage: openloomi-loop <command> [options]
 
 Commands:
   tick [--compact]                Print the prompt Claude runs for one Loop tick
-  schedule [--interval N]         Loop: run \`claude -p $(loop tick --compact)\` every Ns + watch
+  schedule [--interval N] [--watch-interval N] [--timeout MS]
+                                    Loop: run \`claude -p ...\` every Ns + watch (independent).
+                                    Spawned ticks use --dangerously-skip-permissions
+                                    (set LOOP_CLAUDE_SAFE_PERMISSIONS=1 to opt out).
   watch [--interval N]            Poll decisions.json and fire macOS notifications on new pending
   notify [--all] [--webhook URL]  Manually fire notifications (--all = all pending; default = new only)
   ingest-decision <json|->        Append a decision (called by the Claude tick agent)
   status                          Show last-tick snapshot + counts
   inbox [--pick] [--limit N]      List pending decisions (--pick: arrow-key picker)
-  analyze                         Lib-level tick: inbox -> memory -> classify -> decisions
+  analyze [--seen-init]           Lib-level tick: inbox -> memory -> classify -> decisions
+                                  (--seen-init: clear notifications.seen.json so a running watch fires)
   inject <file.json|->            Drop a signal into data/inbox/
   decisions [--status pending|done|dismissed|all]
   decision <id>                   Show one decision
-  run <id> [--dry]                Execute decision -> spawn claude code
+  run <id> [--dry]                Execute decision -> spawn \`claude -p\` (with
+                                    --dangerously-skip-permissions; set
+                                    LOOP_CLAUDE_SAFE_PERMISSIONS=1 to opt out)
   dismiss <id>                    Mark as dismissed
   memory <subcommand> [args...]    Delegate to openloomi-memory CLI (search-all, search-memory, list-insights, add-memory, ...)
   config [get|set k v]            Read/edit config
@@ -275,6 +319,9 @@ async function cmdWatch(args) {
 
   const tick = () => {
     try {
+      // Re-merge with on-disk seen ids — picks up external `loop analyze --seen-init`
+      // and concurrent writes from another process (schedule).
+      for (const id of loadSeenIds()) seen.add(id);
       const pending = decisions.pending();
       const fresh = pending.filter((d) => !seen.has(d.id));
       if (fresh.length) {
@@ -294,13 +341,23 @@ function cmdSchedule(args) {
   const interval = Number.parseInt(args.flags.interval || config.read().intervalSec, 10);
   const claudeBin = process.env.LOOP_CLAUDE_BIN || 'claude';
   const alsoWatch = args.flags.watch !== false; // default: also watch for notifications
+  // Watch polls faster than the tick interval — when claude hangs, we still
+  // want to fire notifications for whatever did get queued.
+  const watchInterval = Number.parseInt(args.flags['watch-interval'] || '5', 10);
+  // Hard kill for the claude child if a tick runs too long. Without this, a
+  // stuck tick blocks notifications forever (notifications used to be gated
+  // by tick completion — see git history). Default 15 minutes — measured
+  // ticks with Composio + memory enrichment run ~7-8 min in practice.
+  const tickTimeoutMs = Number.parseInt(
+    process.env.LOOP_CLAUDE_TIMEOUT_MS || String(15 * 60 * 1000), 10,
+  );
 
   const session = writeSession();
-  console.log(`Scheduling Loop ticks every ${interval}s via "${claudeBin} -p"`);
+  console.log(`Scheduling Loop ticks every ${interval}s via "${claudeBin} -p" (timeout ${tickTimeoutMs / 1000}s)`);
   console.log(`Session:  pid=${session.pid} started=${session.started_at}`);
-  if (alsoWatch) console.log("Also watching for new decisions (desktop notifications enabled).");
+  if (alsoWatch) console.log(`Also watching every ${watchInterval}s (independent of tick — desktop notifications stay live even if a tick hangs).`);
   console.log("Press Ctrl+C to stop.\n");
-  utils.log(`[schedule] session started pid=${session.pid} interval=${interval}s`);
+  utils.log(`[schedule] session started pid=${session.pid} interval=${interval}s watch=${watchInterval}s tickTimeout=${tickTimeoutMs}ms`);
 
   paths.ensureDirs();
   fs.writeFileSync(paths.PID_PATH, String(process.pid));
@@ -317,28 +374,16 @@ function cmdSchedule(args) {
   for (const d of decisions.pending()) seen.add(d.id);
   saveSeenIds([...seen]);
 
-  const tick = async () => {
-    if (running) return;
-    running = true;
-    try {
-      const prompt = spawnSync(process.execPath, [path.join(__dirname, 'loop-tick.cjs'), '--compact'], { encoding: 'utf8' }).stdout;
-      utils.log("[schedule] spawning claude");
-      const child = spawn(claudeBin, ['-p', prompt, '--output-format', 'text'], {
-        stdio: 'inherit',
-        env: process.env,
-      });
-      await new Promise((resolve) => child.on('exit', (code) => {
-        utils.log(`[schedule] claude exited ${code}`);
-        resolve();
-      }));
-    } catch (e) {
-      utils.log(`[schedule] error: ${e.message}`);
-    }
-    running = false;
-
-    // After each tick, check for new pending decisions and notify.
+  // Independent watch loop — runs in parallel with the tick loop so that a
+  // hung claude child can never block notifications. Each poll reads
+  // `notifications.seen.json` from disk (cheap) and unions with the in-memory
+  // set, so an external `loop analyze --seen-init` immediately takes effect
+  // for the running schedule too.
+  const watchLoop = () => {
     if (alsoWatch) {
       try {
+        // Re-merge with on-disk seen ids — picks up external --seen-init clears
+        for (const id of loadSeenIds()) seen.add(id);
         const pending = decisions.pending();
         const fresh = pending.filter((d) => !seen.has(d.id));
         if (fresh.length) {
@@ -347,13 +392,46 @@ function cmdSchedule(args) {
           saveSeenIds([...seen]);
         }
       } catch (e) {
-        utils.log(`[schedule.notify] error: ${e.message}`);
+        utils.log(`[schedule.watch] error: ${e.message}`);
       }
     }
+    setTimeout(watchLoop, watchInterval * 1000);
+  };
 
+  const tick = async () => {
+    if (running) return;
+    running = true;
+    try {
+      const prompt = spawnSync(process.execPath, [path.join(__dirname, 'loop-tick.cjs'), '--compact'], { encoding: 'utf8' }).stdout;
+      utils.log("[schedule] spawning claude");
+      const { bin, args } = claudeSpawnArgs(prompt);
+      const child = spawn(bin, args, {
+        stdio: 'inherit',
+        env: cleanChildEnv(),
+      });
+
+      // Hard timeout: SIGTERM, give it 5s to clean up, then SIGKILL.
+      let timedOut = false;
+      const timer = setTimeout(() => {
+        timedOut = true;
+        utils.log(`[schedule] tick exceeded ${tickTimeoutMs}ms — SIGTERM claude pid=${child.pid}`);
+        try { child.kill('SIGTERM'); } catch {}
+        setTimeout(() => { try { child.kill('SIGKILL'); } catch {} }, 5000);
+      }, tickTimeoutMs);
+
+      await new Promise((resolve) => child.on('exit', (code, signal) => {
+        clearTimeout(timer);
+        utils.log(`[schedule] claude exited code=${code} signal=${signal}${timedOut ? ' (timed out)' : ''}`);
+        resolve();
+      }));
+    } catch (e) {
+      utils.log(`[schedule] error: ${e.message}`);
+    }
+    running = false;
     setTimeout(tick, interval * 1000);
   };
   tick();
+  watchLoop(); // independent — notifications stay live even if a tick hangs
 }
 
 function cmdIngestDecision(args) {
@@ -396,7 +474,7 @@ function cmdStatus() {
   }
   const sess = currentSession();
   if (sess) {
-    console.log(`session: pid=${sess.pid} started=${sess.started_at}` + (sess.host ? ' host=' + sess.host : ''));
+    console.log(`session: pid=${sess.pid} started=${sess.started_at}${sess.host ? ` host=${sess.host}` : ''}`);
   }
 }
 
@@ -627,7 +705,7 @@ function fmtDecision(d, idx = null) {
 }
 
 function cmdInbox(args) {
-  const limit = parseInt(args.flags.limit || '20', 10);
+  const limit = Number.parseInt(args.flags.limit || '20', 10);
   const pick = args.flags.pick;
   const list = decisions.pending().slice(0, limit);
   if (!list.length) { console.log('(no pending decisions — run `loop analyze` or have Claude run `loop tick`)'); return; }
@@ -635,7 +713,7 @@ function cmdInbox(args) {
   if (pick) return interactivePick(list);
   console.log(`${list.length} pending decision(s):\n`);
   list.forEach((d, i) => console.log(fmtDecision(d, i)));
-  console.log(`\nrun: \`openloomi-loop run <id>\`  or  \`openloomi-loop inbox --pick\``);
+  console.log("\nrun: \`openloomi-loop run <id>\`  or  \`openloomi-loop inbox --pick\`");
 }
 
 function interactivePick(list) {
@@ -735,24 +813,19 @@ function cmdRun(args) {
   decisions.update(id, { status: 'running', started_at: utils.now() });
   console.log(`spawning claude for decision ${id} (${dec.type})...`);
 
-  // Try several ways to invoke claude code
-  const candidates = process.env.LOOP_CLAUDE_BIN
-    ? [process.env.LOOP_CLAUDE_BIN]
-    : ['claude', 'claude-code', '/usr/local/bin/claude'];
-
-  let child = null;
-  for (const bin of candidates) {
-    try {
-      child = spawn(bin, ['-p', prompt, '--output-format', 'text'], {
-        stdio: 'inherit',
-        cwd: process.cwd(),
-        env: process.env,
-      });
-      break;
-    } catch (e) { /* try next */ }
-  }
-  if (!child) {
-    console.log(`failed to spawn claude. Tried: ${candidates.join(', ')}.`);
+  // Use the same helper as `loop schedule` so the child gets --verbose
+  // and --dangerously-skip-permissions (set LOOP_CLAUDE_SAFE_PERMISSIONS=1
+  // to opt out). Without the skip flag the child stalls on every tool call.
+  const { bin: claudeBin, args: claudeArgs } = claudeSpawnArgs(prompt);
+  let child;
+  try {
+    child = spawn(claudeBin, claudeArgs, {
+      stdio: 'inherit',
+      cwd: process.cwd(),
+      env: cleanChildEnv(),
+    });
+  } catch (e) {
+    console.log(`failed to spawn claude (${claudeBin}): ${e.message}`);
     console.log("Set LOOP_CLAUDE_BIN env var to your claude binary.");
     decisions.update(id, { status: 'pending' }); // revert
     return;
@@ -796,7 +869,17 @@ async function cmdPull() {
   console.log(`lib-tick: signals=${before} → ${after}  created=${status.last_tick.created}  skipped=${status.last_tick.skipped}`);
 }
 
-async function cmdAnalyze() {
+async function cmdAnalyze(args) {
+  // --seen-init  Clear notifications.seen.json so a running watch / schedule
+  //              will re-fire notifications for all current pending decisions
+  //              on its next poll (reads disk on every poll — see cmdWatch and
+  //              cmdSchedule's watchLoop). Use this to re-test the notification
+  //              pipeline without dismissing pending decisions.
+  if (args?.flags?.['seen-init']) {
+    const f = path.join(paths.DATA_DIR, 'notifications.seen.json');
+    try { fs.writeFileSync(f, '[]'); console.log(`cleared ${f}`); }
+    catch (e) { console.log(`warn: could not clear seen file: ${e.message}`); }
+  }
   const status = await daemon.tick();
   console.log(JSON.stringify(status, null, 2));
 }
@@ -936,7 +1019,7 @@ function cmdWeb(args) {
   const child = spawn(
     process.execPath,
     [path.join(__dirname, 'loop-web.cjs'), String(port)],
-    { stdio: 'inherit', env: process.env },
+    { stdio: 'inherit', env: cleanChildEnv() },
   );
   if (open) {
     const url = `http://127.0.0.1:${port}/`;
@@ -960,7 +1043,7 @@ async function main() {
       case 'ingest-decision':  return cmdIngestDecision(args);
       case 'status':           return cmdStatus();
       case 'inbox':            return cmdInbox(args);
-      case 'analyze':          return await cmdAnalyze();
+      case 'analyze':          return await cmdAnalyze(args);
       case 'decisions':        return cmdDecisions(args);
       case 'decision':         return cmdDecision(args);
       case 'run':              return cmdRun(args);

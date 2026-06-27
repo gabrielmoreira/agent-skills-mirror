@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shiwenwen/hope-agent` — 26 default patterns, 37 followed patterns, 142 file(s) materialized.
+Mirror of `shiwenwen/hope-agent` — 26 default patterns, 38 followed patterns, 143 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `shiwenwen/hope-agent` — 26 default patterns, 37 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 37 |
-| Files         | 142 |
+| Followed pats | 38 |
+| Files         | 143 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,6 +65,7 @@ Mirror of `shiwenwen/hope-agent` — 26 default patterns, 37 followed patterns, 
 - `docs/architecture/knowledge-base.md`
 - `docs/architecture/permission-system.md`
 - `docs/architecture/tool-system.md`
+- `docs/architecture/sandbox.md`
 - `docs/architecture/browser.md`
 - `docs/architecture/background-jobs.md`
 - `docs/architecture/subagent.md`
@@ -228,15 +229,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 131 | → | [`docs/architecture/prompt-system.md`](docs/architecture/prompt-system.md) |
 | 132 | → | [`docs/architecture/provider-system.md`](docs/architecture/provider-system.md) |
 | 133 | → | [`docs/architecture/recap.md`](docs/architecture/recap.md) |
-| 134 | → | [`docs/architecture/self-update.md`](docs/architecture/self-update.md) |
-| 135 | → | [`docs/architecture/session.md`](docs/architecture/session.md) |
-| 136 | → | [`docs/architecture/side-query.md`](docs/architecture/side-query.md) |
-| 137 | → | [`docs/architecture/skill-system.md`](docs/architecture/skill-system.md) |
-| 138 | → | [`docs/architecture/subagent.md`](docs/architecture/subagent.md) |
-| 139 | → | [`docs/architecture/tool-system.md`](docs/architecture/tool-system.md) |
-| 140 | → | [`docs/architecture/transport-modes.md`](docs/architecture/transport-modes.md) |
-| 141 | → | [`docs/README.md`](docs/README.md) |
-| 142 | → | [`docs/release-process.md`](docs/release-process.md) |
+| 134 | → | [`docs/architecture/sandbox.md`](docs/architecture/sandbox.md) |
+| 135 | → | [`docs/architecture/self-update.md`](docs/architecture/self-update.md) |
+| 136 | → | [`docs/architecture/session.md`](docs/architecture/session.md) |
+| 137 | → | [`docs/architecture/side-query.md`](docs/architecture/side-query.md) |
+| 138 | → | [`docs/architecture/skill-system.md`](docs/architecture/skill-system.md) |
+| 139 | → | [`docs/architecture/subagent.md`](docs/architecture/subagent.md) |
+| 140 | → | [`docs/architecture/tool-system.md`](docs/architecture/tool-system.md) |
+| 141 | → | [`docs/architecture/transport-modes.md`](docs/architecture/transport-modes.md) |
+| 142 | → | [`docs/README.md`](docs/README.md) |
+| 143 | → | [`docs/release-process.md`](docs/release-process.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `0xJacky/nginx-ui` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `0xJacky/nginx-ui` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `0xJacky/nginx-ui` — 26 default patterns, 0 followed patterns, 22 fi
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,28 +59,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
-| 2 | ✓ | [`.cursor/rules/backend.mdc`](.cursor/rules/backend.mdc) |
-| 3 | ✓ | [`.cursor/rules/frontend.mdc`](.cursor/rules/frontend.mdc) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`mcp/config/config_add.go`](mcp/config/config_add.go) |
-| 7 | ✓ | [`mcp/config/config_base_path.go`](mcp/config/config_base_path.go) |
-| 8 | ✓ | [`mcp/config/config_enable.go`](mcp/config/config_enable.go) |
-| 9 | ✓ | [`mcp/config/config_get.go`](mcp/config/config_get.go) |
-| 10 | ✓ | [`mcp/config/config_history.go`](mcp/config/config_history.go) |
-| 11 | ✓ | [`mcp/config/config_list.go`](mcp/config/config_list.go) |
-| 12 | ✓ | [`mcp/config/config_mkdir.go`](mcp/config/config_mkdir.go) |
-| 13 | ✓ | [`mcp/config/config_modify.go`](mcp/config/config_modify.go) |
-| 14 | ✓ | [`mcp/config/config_rename.go`](mcp/config/config_rename.go) |
-| 15 | ✓ | [`mcp/config/register.go`](mcp/config/register.go) |
-| 16 | ✓ | [`mcp/nginx/register.go`](mcp/nginx/register.go) |
-| 17 | ✓ | [`mcp/nginx/reload.go`](mcp/nginx/reload.go) |
-| 18 | ✓ | [`mcp/nginx/restart.go`](mcp/nginx/restart.go) |
-| 19 | ✓ | [`mcp/nginx/status.go`](mcp/nginx/status.go) |
-| 20 | ✓ | [`mcp/register.go`](mcp/register.go) |
-| 21 | ✓ | [`mcp/router_test.go`](mcp/router_test.go) |
-| 22 | ✓ | [`mcp/router.go`](mcp/router.go) |
+| 1 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
+| 2 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
+| 3 | ✓ | [`.cursor/rules/backend.mdc`](.cursor/rules/backend.mdc) |
+| 4 | ✓ | [`.cursor/rules/frontend.mdc`](.cursor/rules/frontend.mdc) |
+| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 7 | ✓ | [`mcp/config/config_add.go`](mcp/config/config_add.go) |
+| 8 | ✓ | [`mcp/config/config_base_path.go`](mcp/config/config_base_path.go) |
+| 9 | ✓ | [`mcp/config/config_enable.go`](mcp/config/config_enable.go) |
+| 10 | ✓ | [`mcp/config/config_get.go`](mcp/config/config_get.go) |
+| 11 | ✓ | [`mcp/config/config_history.go`](mcp/config/config_history.go) |
+| 12 | ✓ | [`mcp/config/config_list.go`](mcp/config/config_list.go) |
+| 13 | ✓ | [`mcp/config/config_mkdir.go`](mcp/config/config_mkdir.go) |
+| 14 | ✓ | [`mcp/config/config_modify.go`](mcp/config/config_modify.go) |
+| 15 | ✓ | [`mcp/config/config_rename.go`](mcp/config/config_rename.go) |
+| 16 | ✓ | [`mcp/config/register.go`](mcp/config/register.go) |
+| 17 | ✓ | [`mcp/nginx/register.go`](mcp/nginx/register.go) |
+| 18 | ✓ | [`mcp/nginx/reload.go`](mcp/nginx/reload.go) |
+| 19 | ✓ | [`mcp/nginx/restart.go`](mcp/nginx/restart.go) |
+| 20 | ✓ | [`mcp/nginx/status.go`](mcp/nginx/status.go) |
+| 21 | ✓ | [`mcp/register.go`](mcp/register.go) |
+| 22 | ✓ | [`mcp/router_test.go`](mcp/router_test.go) |
+| 23 | ✓ | [`mcp/router.go`](mcp/router.go) |
 
 ---
 

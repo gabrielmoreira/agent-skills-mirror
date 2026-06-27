@@ -172,10 +172,11 @@ Coverage guidance:
    - `docs/USAGE.md`
    - `docs/OPENCLAW.md` when platform behavior changes
 8. Do not stop at “updated one doc”. Re-audit the highest-signal entry points so user-facing docs, agent-facing docs, and CLI behavior stay aligned.
-9. When image prompts change, treat both skill entry points as mandatory review targets:
+9. Treat `SKILL.md` changes as agent-runtime contract changes, not routine documentation churn. Review the relevant skill entry points whenever CLI behavior, prompt assets, providers, themes, or Agent workflows change, but modify them only when the change helps an Agent choose the correct command or avoid a dangerous side effect. Do not add full prompts, scoring formulas, long tutorials, README-style explanations, implementation file paths, release notes, or marketing copy to `SKILL.md`.
+10. When image prompts change, treat both skill entry points as mandatory review targets, but apply the `SKILL.md` necessity rule above before editing:
    - `skills/md2wechat/SKILL.md`
    - `platforms/openclaw/md2wechat/SKILL.md`
-10. Keep configuration naming layers explicit:
+11. Keep configuration naming layers explicit:
    - config-file YAML keys such as `api.image_base_url`
    - environment variables such as `IMAGE_API_BASE`
    - `config show --format json` output keys such as `image_api_base`

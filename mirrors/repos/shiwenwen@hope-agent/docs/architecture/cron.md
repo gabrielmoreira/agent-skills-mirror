@@ -181,6 +181,9 @@ cron 投递携 IM 账号身份、可周期触发、且 `manage_cron` 标 `intern
 - **失效目标可见（`CronDeliveryTarget.stale`）**：投递期账号已删 → 该 target 标 `stale` 经 [`apply_delivery_target_stale_flags`](../../crates/ha-core/src/cron/db.rs)（**单锁内 read-modify-write、按 `account_id` 翻转 stale**——绝不经 `update_job` 重校验整条 schedule（§6 chokepoint 对坏行的副作用见上「遗留坏行的取舍」），且**绝不用 claim 时快照整列覆盖**：cron 单次可跑至 2h，期间用户经 `update_job` 改了投递目标，写回必须读 DB 当前列、只改匹配 account 的 stale 位，保留用户的增删改）写回；账号又恢复（同 id）则投递成功时清回 `stale=false`。删账号入口 [`channel::accounts::remove_account`](../../crates/ha-core/src/channel/accounts.rs) 经 `mark_account_delivery_targets_stale`（幂等、返回触达 job 数、每 job 走同一原子方法）**eager 标记**，避免 UI 仍显示一个永远投不出去的目标。GUI `CronJobForm` 目标行标红。
 - **删账号反向提醒**：`jobs_referencing_account(account_id)` → `Vec<CronAccountRef{job_id, job_name, target_count}>`，owner 平面 Tauri `cron_jobs_referencing_account` / HTTP `GET /api/cron/jobs-referencing-account/{account_id}`。前端 `ChannelPanel` 删除前先扫，命中则弹 `AlertDialog` 列出受影响任务，零命中沿用直接删。
 - **per-job 成功前缀（`prefix_delivery_with_name`，opt-in 默认关）**：开启后成功投递加 `[Cron] {name}\n\n` 前缀（失败投递本就带 `⚠️ [Cron] {name} failed:`），便于区分投到同一群的多个任务。迁移列 + `manage_cron` schema 字段 + `CronJobForm` 开关（仅有投递目标时显示）。**job 级字段、非 `AppConfig`**，故不走设置三件套。
+- **per-job 权限 / 沙箱覆盖（owner 专属）**：`CronJob.{permission_mode_override,sandbox_mode_override}: Option<{SessionMode,SandboxMode}>`（job 级、不走设置三件套，与 `job_timeout_secs` 同类）。`None`=跟随 Agent 默认；非空时 [`executor`](../../crates/ha-core/src/cron/executor.rs) 经 `update_session_{permission,sandbox}_mode` 回写会话行（会话行是引擎/exec 读取的单一真相源，**不碰权限引擎、不改无人值守 fail-closed**）。**只对 owner 平面开放**（GUI `CronJobForm` 两个 Select + Tauri/HTTP create/update）；**模型面 `manage_cron` 工具恒 `None`、不进 schema、`update` 拒改带 owner 覆盖的 job**——否则被注入的模型可排一个 `permission=yolo` 的无人值守任务自我提权、降沙箱、或改写现有特权 job 的 prompt 重置提权（`manage_cron_schema_never_exposes_*` 单测 + update `bail!` 双锁）。
+- **沙箱写入/预检全 fail-closed（红线）**：① 沙箱 override 写入失败 → fail-closed 终止本次运行（exec 读同一会话行，写丢=裸跑 host）；权限 override 写失败仅 `app_warn`（退回 Agent 默认更严、安全）。② Docker 预检读 `get_session_sandbox_mode`，**读错回退到 expected（per-job override，否则 Agent `effective_default_sandbox_mode()`）而非 `Off`**，避免读 blip 跳过应沙箱化任务的守卫。③ 有效沙箱 `enabled()` 则 `ensure_sandbox_available()`，失败 run_log `error`「sandbox unavailable」+ return、**绝不回落宿主机**；**`count_toward_disable=false`**——turn 未跑、无副作用（与 `no_session` 同档），否则瞬时 Docker 抖动（开机 / daemon 重启）或根本不调 `exec` 的任务会被误自动禁用。前端 `CronJobForm` 选非 off 沙箱渲染 `DockerSetupHint`、`permission=yolo && sandbox=off` 渲染醒目警示。
+- **意图感知 Smart（无人值守专属，见 [permission-system.md](permission-system.md)）**：executor 经 [`permission::task_intent`](../../crates/ha-core/src/permission/task_intent.rs)（session-keyed map + RAII `TaskIntentGuard`）记录 cron prompt 为「意图」；`execution.rs` **仅在 Smart 会话**经 `evaluate_approval_surface`（单一真相源，覆盖 cron / cron 血缘 subagent / headless / acp）派生 `ResolveContext.unattended` 并取意图 → `resolve_async` 透传 `judge::JudgeContext` → Smart 裁判放行与意图一致的删除/外发、拒越界或疑似被注入的。strict（`forbids_allow_always`）在裁判前已拦、永不放行；意图经 `<task_intent>` 信封结构隔离 + 「仅作范围参考、不自授权」声明（防意图自述「全部已授权」击穿）；**非 unattended/非 Smart 会话 judge prompt/cache key 与改动前逐字节一致，普通对话 smart 零变化**（穷举单测锁）。外发仍叠 `delivery_targets` 白名单。**已知限制**：cron 血缘 subagent 与跨 turn 后台 job 的意图按会话 id 查不到 → 退化为保守的无意图无人值守框架（安全、不越权，仅可能过严拒掉范围内操作）。
 - **槽释放时序（红线，合入前 /code-review #6）**：scheduled run 在 `deliver_results` fan-out **之前**就 `clear_running` 释放 §4 并发槽——其 `next_run_at` 已被 `update_after_run` 推进到未来 / NULL，不会被重新 claim，于是一个挂死 / 限流的投递目标（最坏 `MAX_SEND_ATTEMPTS × SEND_TIMEOUT` 量级）不再占用一个 cap slot 阻塞其它到期任务。run-now（`immediate`）**保槽穿过投递**：它不推进 `next_run_at`，提前清会让调度器在投递中途二次 claim 仍到期的任务（故 immediate 路径在投递后才 `clear_running`）。
 
 ## 调度机制
@@ -546,6 +549,33 @@ Tauri 全局事件，任务执行完成后（无论成功或失败）发射。
 | `failure_reason` | `String?` | 失败原因分类 key（`timeout` / `configuration` / `transient`），error run 携带；success / empty / cancelled 为 `null` |
 | `auto_disabled` | `bool?` | 仅 `emit_cron_disabled_event` 携带为 `true`：连续失败触顶被自动禁用（强制 `notify=true`，无视 `notify_on_complete`） |
 | `consecutive_failures` | `u32?` | 仅 `auto_disabled` 事件携带，连续失败次数，用于禁用通知文案 |
+
+### cron:unread_changed
+
+Tauri 全局事件，cron 未读聚合数发生变化时发射。当前在 `cron_mark_all_read`（一键清除）后发 `{ total: 0 }`。前端 `useCronUnreadStore` 收到后调 `cron_unread_total` 刷新侧边栏 cron icon 角标；`cron:run_completed` 同样触发刷新（让新结果实时增长角标）。
+
+## 运行历史时间线与未读聚合（cron 面板「历史」视图）
+
+cron 每次运行新建一个独立会话（`is_cron=1`，标题=job 名），过去散落在主侧边栏的「定时」Tab 里、与用户对话混排。现在 cron 会话**不再进主会话列表 / 全局搜索**，集中收进 cron 面板。
+
+**摘除**：`SessionDB::list_sessions_paged_for_sidebar` 传 `exclude_cron=true`（共享的 `list_sessions_paged_inner` 加 `s.is_cron=0` 谓词；通用 `list_sessions_paged` 仍传 `false`，awareness / tray 等内部读取不受影响）。前端 `SessionList` 去掉 cron Tab，并在搜索结果里滤掉 `isCron`。
+
+**时间线（跨库装配）**：`cron.db`（run logs + jobs）与 `sessions.db`（title + unread）是两个独立 SQLite，无法单条 SQL JOIN，故在 ha-core 的 `cron::timeline::cron_run_timeline` 里 Rust 层拼装：
+
+1. `CronDB::list_run_timeline(limit, offset)`——`cron_run_logs LEFT JOIN cron_jobs`，按 `started_at DESC, id DESC` 倒序分页，job 被删时 `job_name` 回退 `(deleted job)`；
+2. `SessionDB::cron_session_read_state(session_ids)`——按当前页 session id 批量取 `(title, 未读 assistant 数)`，session 被 purge 的 id 缺席，由装配层回退 `title=job_name`、`unread_count=0`。
+
+返回 `CronTimelineRow { sessionId, jobId, jobName, status, startedAt, finishedAt, resultPreview, title, unreadCount }`。前端 `CronConversationsPanel`（`CronCalendarView` 第三模式「历史」）做 master-detail：左栏时间线列表（状态点 / 相对时间 / 未读角标 / 翻页），右栏 `CronSessionViewer` 复用主聊天 `MessageList` + `parseSessionMessages` 只读渲染（无 ChatInput，对齐 ChatScreen 的 `isCronSession` 只读分支）。视图模式经 `localStorage`（`cron_view_mode`）持久化。
+
+**未读聚合 + 一键清除**：`SessionDB::cron_unread_total()` 聚合所有 `is_cron=1` 会话的未读 assistant 消息数（侧边栏 cron icon 角标，红色 `bg-destructive`）；`mark_all_cron_sessions_read()` 复用 `mark_session_read` 的 `last_read_message_id=MAX(id)` 逻辑、scope `is_cron=1`。前端 `useCronUnreadStore`（仿 `useDraftSkillsStore`）监听 `cron:run_completed` / `cron:unread_changed` 刷新；一键清除有两个入口——cron 面板「对话」视图头部「全部已读」按钮 + 侧边栏 cron icon 右键菜单，均调 `cron_mark_all_read`。**点开单条对话不自动标已读**（已读仅靠显式「全部已读」），Dock 角标不计入 cron 未读。
+
+命令 / 路由（Tauri ↔ HTTP）：`cron_run_timeline` ↔ `GET /api/cron/timeline`、`cron_unread_total` ↔ `GET /api/cron/unread`、`cron_mark_all_read` ↔ `POST /api/cron/read-all`。
+
+**删 job 连带删运行会话**：cron 运行会话（`is_cron=1`）从主侧栏 / 搜索摘除后，只经面板「历史」时间线（驱动自 `cron_run_logs`）可达。`delete_job` CASCADE 掉 `cron_run_logs` 后，这些会话既不可达又在 `sessions.db` 永久 orphan。故三处 owner delete 入口（Tauri `cron_delete_job` / HTTP `delete_job` / `manage_cron` delete）统一改走跨库编排 `cron::delete_job_and_sessions(cron_db, session_db, id)`：① CASCADE 前先 `CronDB::session_ids_for_job` 收集 session_id；② `delete_job`（删 job + CASCADE run_log）；③ 逐个 `SessionDB::delete_session` 清理，**best-effort**（单个失败 `app_warn` 但不阻断删 job）。语义＝删定时任务即删其全部运行对话，与「审计行丢失可接受」一致。
+
+**搜索侧排除 cron**：侧栏搜索（`search_sessions_cmd`）显式传 `types: ["regular","subagent","channel"]` 把 cron 排除在后端，避免固定 `SEARCH_LIMIT` 被隐藏的 cron 命中占满导致正常会话落选（不能只靠前端过滤）。
+
+**只读查看器分页**：`CronSessionViewer` 用 `load_session_messages_latest_cmd` 取最近 50 条并保留 `hasMore`，向上滚动经 `load_session_messages_before_cmd` 加载更早消息——cron 会话已不在主对话列表，工具密集的 run 超 50 条时早期 prompt/工具上下文否则不可达。
 
 ## 生命周期操作
 

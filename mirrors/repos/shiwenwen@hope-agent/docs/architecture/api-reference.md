@@ -22,11 +22,11 @@ Hope Agent 前端通过 `Transport` 抽象层和后端通信，内部根据运�
 |---|---|---|
 | ✅ 两端完全对齐（在 COMMAND_MAP 中） | 424 | 常规请求/响应命令（所有 COMMAND_MAP 条目都有 Tauri 命令对应） |
 | 🔧 特殊处理（不在 COMMAND_MAP 但 HTTP 已实现） | 3 | `save_avatar` multipart、`fs_list_dir` / `fs_search_files` query-string GET（HTTP 走 `HttpTransport.listServerDirectory` / `searchFiles` 自定义方法） |
-| 🖥️ Desktop-only（Tauri 专属，HTTP 无对应） | 4 | 权限 / 沙箱本地探测 |
+| 🖥️ Desktop-only（Tauri 专属，HTTP 无对应） | 5 | macOS / legacy 系统权限探测 |
 | ❌ HTTP 路由存在但 COMMAND_MAP 漏写 | 0 | — |
 | ❌ HTTP 路由完全缺失 | 0 | — |
 
-Tauri ↔ COMMAND_MAP 差集为 7 条合法非 REST 命令（4 条 Desktop-only 权限/沙箱 + `save_avatar` multipart + `fs_list_dir` / `fs_search_files` query-string GET）；HTTP 路由侧 430 - 424 = 6 条非 REST endpoint（`/api/health` / `/api/server/status` / `/api/filesystem/list-dir` / `/api/filesystem/search-files` / `/api/avatars/{...}` multipart / `/api/chat` 流式等）本身不映射到单条 Tauri 命令，它们的对齐状态在各自功能域章节单独说明。新增 Tauri 命令时须同步补 HTTP 路由 + COMMAND_MAP，保持差集不变——详见下文"新增接口 checklist"与"验证脚本"两节。
+Tauri ↔ COMMAND_MAP 差集为 8 条合法非 REST 命令（5 条 Desktop-only 系统权限命令 + `save_avatar` multipart + `fs_list_dir` / `fs_search_files` query-string GET）；HTTP 路由侧的非 REST endpoint（`/api/health` / `/api/server/status` / `/api/filesystem/list-dir` / `/api/filesystem/search-files` / `/api/avatars/{...}` multipart / `/api/chat` 流式等）本身不映射到单条 Tauri 命令，它们的对齐状态在各自功能域章节单独说明。新增 Tauri 命令时须同步补 HTTP 路由 + COMMAND_MAP，保持差集不变——详见下文"新增接口 checklist"与"验证脚本"两节。
 
 ## 运行模式与 Transport 切换
 
@@ -101,6 +101,7 @@ Tauri ↔ COMMAND_MAP 差集为 7 条合法非 REST 命令（4 条 Desktop-only 
 | `core_memory_updated` / `memory_extracted` | tools/memory.rs 及自动提取 |
 | `dreaming:cycle_started` / `dreaming:cycle_complete` | dreaming 固化周期开始 / 结束（payload 含 `runId`） |
 | `cron:run_completed` | cron/executor.rs |
+| `cron:unread_changed` | cron 未读聚合数变化（`cron_mark_all_read` 清除时发 `{ total: 0 }`）；前端 cron 未读 store 收到后刷新侧边栏角标 |
 | `job:created` / `job:updated` / `job:progress` / `job:completed` / `job:mark_injected_failed` | **统一后台任务事件（R3，替代旧 `async_tool_job:*`）**。`async_jobs::events` 发射；kind-tagged（payload `{ job_id, kind: "tool"\|"group", tool, status, session_id }`），覆盖后台**工具 + Group** 生命周期。`created`=新任务出现（running/queued）；`updated`=非终态变化（如 cancelling）；`progress`=`{ job_id, kind, session_id, current, total }`（目前 Group 报 N/M 子完成）；`completed`=终态；`mark_injected_failed`=结果注入主对话失败告警 `{ job_id, error }`。**`subagent` kind 沿用 `subagent:*` 流**（不双发），R4 面板合并两路 + `job_status list`。 |
 | `app_update:progress` / `app_update:completed` | 自升级 (`app_update` 工具) 进度上报。`progress` payload `{ job_id, label, phase, percent?, written?, total? }`（每 5% / 1s 节流）；`completed` payload `{ job_id, status: "done"|"failed", outcome?, error? }`，详见 [`self-update.md`](self-update.md) |
 
@@ -580,6 +581,9 @@ KB 文件预览端点是**纯 owner 平面，无 session 参数、无 owner fall
 | `cron_jobs_referencing_account` | `GET /api/cron/jobs-referencing-account/{accountId}` | ✅ |
 | `cron_get_run_logs` | `GET /api/cron/jobs/{jobId}/logs` | ✅ |
 | `cron_get_calendar_events` | `GET /api/cron/calendar` | ✅ |
+| `cron_run_timeline` | `GET /api/cron/timeline?limit=&offset=` | ✅ (跨 job 运行时间线，cron 面板「对话」视图) |
+| `cron_unread_total` | `GET /api/cron/unread` | ✅ (cron 未读聚合数，侧边栏角标) |
+| `cron_mark_all_read` | `POST /api/cron/read-all` | ✅ (一键清除 cron 未读，emit `cron:unread_changed`) |
 
 ### Dashboard
 
@@ -679,6 +683,7 @@ KB 文件预览端点是**纯 owner 平面，无 session 参数、无 owner fall
 | `set_shortcuts_paused` | `POST /api/config/shortcuts/pause` | ✅ |
 | `get_sandbox_config` | `GET /api/config/sandbox` | ✅ |
 | `set_sandbox_config` | `PUT /api/config/sandbox` | ✅ |
+| `check_sandbox_available` | `GET /api/config/sandbox/status` | ✅ |
 
 ### Canvas
 
@@ -1065,9 +1070,9 @@ Context / Cache 共用单 SQL `get_session_last_assistant_token_row`，避免渲
 
 ## 已知不对齐项
 
-截至 2026-05-17 三端差集稳定为 9 条（§7.3 的 6 条 Desktop-only + `save_avatar` multipart + `fs_list_dir` / `fs_search_files` 两条 query-string GET），没有"HTTP 漏写 COMMAND_MAP"或"HTTP 路由缺失"的破口。COMMAND_MAP 里的每一条都能在 `tauri::generate_handler!` 里找到对应命令；反向差 9 条均已在下表登记。
+截至 2026-06-26 三端差集稳定为 8 条（§7.3 的 5 条 Desktop-only + `save_avatar` multipart + `fs_list_dir` / `fs_search_files` 两条 query-string GET），没有"HTTP 漏写 COMMAND_MAP"或"HTTP 路由缺失"的破口。COMMAND_MAP 里的每一条都能在 `tauri::generate_handler!` 里找到对应命令；反向差 8 条均已在下表登记。`check_sandbox_available` 已对齐到 HTTP `GET /api/config/sandbox/status`，不再属于 Desktop-only。
 
-### §7.3 Desktop-only（Tauri 专属，合法缺失，6 条）
+### §7.3 Desktop-only（Tauri 专属，合法缺失，5 条）
 
 | Tauri Command | 说明 |
 |---|---|
@@ -1076,7 +1081,6 @@ Context / Cache 共用单 SQL `get_session_last_assistant_token_row`，避免渲
 | `check_all_permissions` | 权限 v1 兼容包装 |
 | `check_permission` | 权限 v1 兼容包装 |
 | `request_permission` | 权限 v1 兼容包装 |
-| `check_sandbox_available` | Linux bubblewrap 本地探测 |
 
 前端必须在 `supportsLocalFileOps()` / `isTauriMode()` 或等价的运行模式判定保护下调用，HTTP 模式应 gate 住相关 UI。
 
@@ -1137,10 +1141,9 @@ comm -23 \
       grep -oE '::[a-z_][a-zA-Z0-9_]*,?[[:space:]]*$' | tr -d ':, ' | sort -u) \
   <(awk '/^const COMMAND_MAP/,/^};/' src/lib/transport-http.ts | \
       grep -oE '^[[:space:]]+[a-z_][a-zA-Z0-9_]*:' | tr -d ': ' | sort -u)
-# 期望：9 行
+# 期望：8 行
 #   check_system_permissions / request_system_permission
 #   / check_all_permissions / check_permission / request_permission
-#   / check_sandbox_available  （§7.3 Desktop-only）
 #   / save_avatar / fs_list_dir / fs_search_files  （§7.3.1 非 REST 路径）
 ```
 

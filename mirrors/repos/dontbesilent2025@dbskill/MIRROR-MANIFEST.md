@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
+Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 37 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -91,11 +91,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`skills/dbs-hook/SKILL.md`](skills/dbs-hook/SKILL.md) |
 | 31 | ✓ | [`skills/dbs-learning/SKILL.md`](skills/dbs-learning/SKILL.md) |
 | 32 | ✓ | [`skills/dbs-report/SKILL.md`](skills/dbs-report/SKILL.md) |
-| 33 | ✓ | [`skills/dbs-restore/SKILL.md`](skills/dbs-restore/SKILL.md) |
-| 34 | ✓ | [`skills/dbs-save/SKILL.md`](skills/dbs-save/SKILL.md) |
-| 35 | ✓ | [`skills/dbs-slowisfast/SKILL.md`](skills/dbs-slowisfast/SKILL.md) |
-| 36 | ✓ | [`skills/dbs-xhs-title/SKILL.md`](skills/dbs-xhs-title/SKILL.md) |
-| 37 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
+| 33 | ✓ | [`skills/dbs-resonate/SKILL.md`](skills/dbs-resonate/SKILL.md) |
+| 34 | ✓ | [`skills/dbs-restore/SKILL.md`](skills/dbs-restore/SKILL.md) |
+| 35 | ✓ | [`skills/dbs-save/SKILL.md`](skills/dbs-save/SKILL.md) |
+| 36 | ✓ | [`skills/dbs-slowisfast/SKILL.md`](skills/dbs-slowisfast/SKILL.md) |
+| 37 | ✓ | [`skills/dbs-spread/SKILL.md`](skills/dbs-spread/SKILL.md) |
+| 38 | ✓ | [`skills/dbs-xhs-title/SKILL.md`](skills/dbs-xhs-title/SKILL.md) |
+| 39 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
 
 ---
 

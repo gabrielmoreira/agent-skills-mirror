@@ -145,6 +145,7 @@ function apiRequest(endpoint, method = 'GET', body = null) {
       };
       const req = http.request(opts, (res) => {
         let data = '';
+        // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
         res.on('data', (c) => (data += c));
         res.on('end', () => {
           try {
@@ -172,7 +173,7 @@ const api = { request: apiRequest, readToken };
 
 function defaultConfig() {
   return {
-    intervalSec: 60,
+    intervalSec: 600, // 10 minutes
     maxSignals: 5000,
     maxDecisions: 500,
     autoRun: false,

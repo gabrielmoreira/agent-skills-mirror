@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // openloomi-loop web — static UI + REST API on http://localhost:<port>
+//
 // Endpoints:
 //   GET  /                         → web/index.html
 //   GET  /api/state                → counts, last tick, status
@@ -9,7 +10,15 @@
 //   GET  /api/notifications?limit=50 → tail notifications.log
 //   GET  /api/memory?path=rel      → read a memory file (relative to ~/.openloomi/data/memory)
 //   GET  /api/source?path=rel      → read a raw source signal file (data/inbox/...)
-//   POST /api/run/:id[?dry=1]      → spawn `claude -p <prompt>` (or --dry)
+//   POST /api/run/:id[?dry=1]      → spawn `claude -p <prompt>` (or --dry).
+//                                    The spawned child is launched with
+//                                    `--dangerously-skip-permissions` so it
+//                                    can call mcp__composio__* /
+//                                    mcp__agentmemory__* / openloomi-*
+//                                    CLIs without per-call prompts (see
+//                                    `claudeSpawnArgs` below; set
+//                                    LOOP_CLAUDE_SAFE_PERMISSIONS=1 to opt
+//                                    out).
 //   POST /api/dismiss/:id          → mark dismissed
 //   POST /api/notify               → fire a manual notification test
 
@@ -23,6 +32,37 @@ const url = require('node:url');
 const ROOT = path.resolve(__dirname, '..');
 const SKILL_DIR = ROOT;
 const DATA_DIR = path.join(SKILL_DIR, 'data');
+
+// Strip CLAUDECODE before spawning `claude -p` — same workaround as
+// openloomi-loop.cjs. Otherwise the child refuses to start when the
+// web server itself was launched from inside a Claude Code session.
+const cleanChildEnv = () => {
+  const env = { ...process.env };
+  env.CLAUDECODE = undefined;
+  return env;
+};
+
+// Build spawn args for a `claude -p` run.
+// - Always adds `--verbose` so thinking + tool calls are emitted to stdout.
+// - Adds `--dangerously-skip-permissions` so the child can call the same
+//   tool families the parent already has (mcp__composio__*, mcp__agentmemory__*,
+//   and the openloomi-{loop,memory} CLIs). Without this, the child hits the
+//   permission dialog on every tool call and the run stalls. Ticks/runs are
+//   read/derive or sandboxed to a single user action — they never bulk-send —
+//   so the "dangerous" flag is safe here. Set LOOP_CLAUDE_SAFE_PERMISSIONS=1
+//   to opt out (back to the per-call prompt).
+// - See openloomi-loop.cjs for why we don't add a PTY wrapper (libc block
+//   buffering + script's own TTY requirement).
+function claudeSpawnArgs(prompt, extraArgs = []) {
+  const baseArgs = ['-p', prompt, '--output-format', 'text', '--verbose'];
+  if (process.env.LOOP_CLAUDE_SAFE_PERMISSIONS !== '1') {
+    baseArgs.push('--dangerously-skip-permissions');
+  }
+  baseArgs.push(...extraArgs);
+  const bin = process.env.LOOP_CLAUDE_BIN || 'claude';
+  return { bin, args: baseArgs };
+}
+
 const WEB_DIR = path.join(SKILL_DIR, 'web');
 const MEMORY_DIR = path.join(os.homedir(), '.openloomi', 'data', 'memory');
 
@@ -33,7 +73,7 @@ const NOTIFY_SEEN = path.join(DATA_DIR, 'notifications.seen.json');
 const STATUS_PATH = path.join(DATA_DIR, 'status.json');
 const DRAFT_DIR = path.join(DATA_DIR, 'drafts');
 
-const PORT = parseInt(process.env.LOOP_WEB_PORT || process.argv[2] || '3414', 10);
+const PORT = Number.parseInt(process.env.LOOP_WEB_PORT || process.argv[2] || '3414', 10);
 const HOST = process.env.LOOP_WEB_HOST || '127.0.0.1';
 
 // --- helpers -----------------------------------------------------------------
@@ -93,7 +133,7 @@ function moveDecision(id, toBucket) {
     }
   }
   if (!moved) return null;
-  const tmp = DECISIONS_PATH + '.tmp';
+  const tmp = `${DECISIONS_PATH}.tmp`;
   fs.writeFileSync(tmp, JSON.stringify(d, null, 2));
   fs.renameSync(tmp, DECISIONS_PATH);
   return moved;
@@ -164,7 +204,7 @@ function handleGetDecision(req, res, id) {
 }
 
 function handleSignals(req, res, q) {
-  const limit = Math.min(parseInt(q.limit || '50', 10), 500);
+  const limit = Math.min(Number.parseInt(q.limit || '50', 10), 500);
   jsonRes(res, 200, { signals: readJsonlTail(SIGNALS_PATH, limit) });
 }
 
@@ -201,13 +241,15 @@ function handleRun(req, res, id) {
   if (dry) {
     return jsonRes(res, 200, { dry: true, prompt, decision: f.dec });
   }
-  // Spawn claude -p (or LOOP_CLAUDE_BIN)
-  const claudeBin = process.env.LOOP_CLAUDE_BIN || 'claude';
+  // Spawn claude -p (or LOOP_CLAUDE_BIN), with --verbose +
+  // --dangerously-skip-permissions (see claudeSpawnArgs) so the child can
+  // call mcp__* and the openloomi CLIs without per-call permission prompts.
   try {
-    const child = spawn(claudeBin, ['-p', prompt, '--output-format', 'text'], {
+    const { bin, args } = claudeSpawnArgs(prompt);
+    const child = spawn(bin, args, {
       detached: true,
       stdio: 'ignore',
-      env: process.env,
+      env: cleanChildEnv(),
     });
     child.unref();
     return jsonRes(res, 202, { ok: true, spawned: child.pid, bin: claudeBin });
@@ -240,8 +282,8 @@ function handleNotify(req, res) {
 
 function serveStatic(req, res, pathname) {
   // Map "/" to index.html
-  let rel = pathname === '/' ? '/index.html' : pathname;
-  const abs = safeResolve(WEB_DIR, '.' + rel);
+  const rel = pathname === '/' ? '/index.html' : pathname;
+  const abs = safeResolve(WEB_DIR, `.${rel}`);
   if (!abs) return textRes(res, 403, 'forbidden');
   if (!fs.existsSync(abs) || !fs.statSync(abs).isFile()) {
     return textRes(res, 404, 'not found');
@@ -306,9 +348,9 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`openloomi-loop web`);
+  console.log("openloomi-loop kanban");
   console.log(`  url:    http://${HOST}:${PORT}/`);
   console.log(`  data:   ${DATA_DIR}`);
   console.log(`  memory: ${MEMORY_DIR}`);
-  console.log(`Press Ctrl+C to stop.\n`);
+  console.log("Press Ctrl+C to stop.\n");
 });

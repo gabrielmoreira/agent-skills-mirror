@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 24 followed patterns, 38 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 25 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 24 followed patterns, 38 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 24 |
-| Files         | 38 |
+| Followed pats | 25 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,6 +72,7 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 24 followed patterns, 38 fil
 - `docs/mobile-testing.md`
 - `docs/ad-hoc-daemon-testing.md`
 - `docs/android.md`
+- `docs/docker.md`
 - `docs/release.md`
 - `docs/terminal-activity.md`
 - `SECURITY.md`
@@ -105,21 +106,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | → | [`docs/data-model.md`](docs/data-model.md) |
 | 22 | → | [`docs/design.md`](docs/design.md) |
 | 23 | → | [`docs/development.md`](docs/development.md) |
-| 24 | → | [`docs/file-icons.md`](docs/file-icons.md) |
-| 25 | → | [`docs/floating-panels.md`](docs/floating-panels.md) |
-| 26 | → | [`docs/glossary.md`](docs/glossary.md) |
-| 27 | → | [`docs/hover.md`](docs/hover.md) |
-| 28 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
-| 29 | → | [`docs/product.md`](docs/product.md) |
-| 30 | → | [`docs/providers.md`](docs/providers.md) |
-| 31 | → | [`docs/release.md`](docs/release.md) |
-| 32 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
-| 33 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
-| 34 | → | [`docs/terminal-activity.md`](docs/terminal-activity.md) |
-| 35 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
-| 36 | → | [`docs/testing.md`](docs/testing.md) |
-| 37 | → | [`docs/unistyles.md`](docs/unistyles.md) |
-| 38 | → | [`SECURITY.md`](SECURITY.md) |
+| 24 | → | [`docs/docker.md`](docs/docker.md) |
+| 25 | → | [`docs/file-icons.md`](docs/file-icons.md) |
+| 26 | → | [`docs/floating-panels.md`](docs/floating-panels.md) |
+| 27 | → | [`docs/glossary.md`](docs/glossary.md) |
+| 28 | → | [`docs/hover.md`](docs/hover.md) |
+| 29 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
+| 30 | → | [`docs/product.md`](docs/product.md) |
+| 31 | → | [`docs/providers.md`](docs/providers.md) |
+| 32 | → | [`docs/release.md`](docs/release.md) |
+| 33 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
+| 34 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
+| 35 | → | [`docs/terminal-activity.md`](docs/terminal-activity.md) |
+| 36 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
+| 37 | → | [`docs/testing.md`](docs/testing.md) |
+| 38 | → | [`docs/unistyles.md`](docs/unistyles.md) |
+| 39 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

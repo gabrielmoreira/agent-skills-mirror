@@ -1,0 +1,4 @@
+interface:
+  display_name: "AERS Catalog Router"
+  short_description: "Route empirical-research skills from AERS"
+  default_prompt: "Use $auto-empirical-research-skills to choose the right empirical-research skill for my task."

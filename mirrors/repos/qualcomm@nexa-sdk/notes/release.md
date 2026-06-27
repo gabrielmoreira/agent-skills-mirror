@@ -92,11 +92,9 @@ All objects live directly under the prefix — no `<tag>/` subdirectories. The `
 | `geniex-cli-setup-windows-arm64-<tag>.exe(.sha256)` | every tag | default | Windows CLI installer (versioned) |
 | `geniex-cli-linux-arm64-<tag>.tar.gz(.sha256)` | every tag | default | Linux CLI archive (versioned) |
 | `install-<tag>.sh(.sha256)` | every tag | default | Linux install script (versioned, pinned via `--version`) |
-| `geniex-demo-<tag>.apk(.sha256)` | every tag | default | Android demo APK (versioned) |
 | `geniex-cli.exe` | stable only | `no-cache` | Mutable pointer to latest stable Windows installer |
 | `geniex-cli-linux-arm64.tar.gz(.sha256)` | stable only | `no-cache` | Mutable pointer consumed by `install.sh` |
 | `install.sh` | stable only | `no-cache` | Mutable install script — `curl ... \| sh` entrypoint |
-| `geniex-demo.apk` | stable only | `no-cache` | Mutable pointer to latest stable demo APK |
 | `manifest-<tag>.json` | every tag | `immutable` | Per-tag asset listing |
 | `index.json` | every tag | `no-cache` | Full version catalogue |
 | `latest.json` | stable only | `no-cache` | Pointer to the latest stable manifest |
@@ -105,7 +103,7 @@ Other assets (AAR, sdist, HTP cert/to-sign zips) ship via GitHub Releases / Mave
 
 ### Manifest contract for client apps
 
-Schema lives in [.github/scripts/release_s3_manifest.py](../.github/scripts/release_s3_manifest.py); all files carry `schema_version: 1`.
+S3 publishing runs in the geniex repo (the IAM role's OIDC trust only allows `qcom-ai-hub/geniex`); this repo's `publish-s3` job just dispatches it. The schema lives in [`release_s3_manifest.py`](https://github.com/qcom-ai-hub/geniex/blob/chore/publish-s3/.github/scripts/release_s3_manifest.py) on geniex's `chore/publish-s3` branch; all files carry `schema_version: 1`.
 
 - **Update check (lightest)** — GET `latest.json`. Compare `tag` with the locally installed version. Cached `no-cache`, so the response is always current. Only present once a stable tag has shipped.
 
@@ -148,7 +146,7 @@ Schema lives in [.github/scripts/release_s3_manifest.py](../.github/scripts/rele
   }
   ```
 
-  `assets[].url` always points at the versioned object (never at the mutable `geniex-cli.exe` / `geniex-cli-linux-arm64.tar.gz` / `install.sh` / `geniex-demo.apk`), so the referenced bytes are immutable and the listed `sha256` is authoritative. `kind` is one of `sdk` / `cli-installer` / `cli-archive` / `install-script` / `android-demo` / `sha256`.
+  `assets[].url` always points at the versioned object (never at the mutable `geniex-cli.exe` / `geniex-cli-linux-arm64.tar.gz` / `install.sh`), so the referenced bytes are immutable and the listed `sha256` is authoritative. `kind` is one of `sdk` / `cli-installer` / `cli-archive` / `install-script` / `sha256`.
 
 The per-tag manifest is byte-stable across workflow re-runs of the same tag — `released_at` is preserved from the first publish, so clients can cache it forever.
 

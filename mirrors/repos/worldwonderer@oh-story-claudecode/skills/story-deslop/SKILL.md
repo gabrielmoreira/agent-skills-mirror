@@ -1,14 +1,9 @@
 ---
 name: story-deslop
 version: 1.0.0
-description: |
-  网文去AI味。检测并清除文本中的AI写作痕迹，让文字回归自然、非模板化。
-  触发方式：/story-deslop、/去AI味、「去AI味」「这篇太AI了」「网文去AI味」
-metadata:
-  openclaw:
-    source: https://github.com/worldwonderer/oh-story-claudecode
+description: "网文去AI味。检测并清除文本中的AI写作痕迹，让文字回归自然、非模板化。触发方式：/story-deslop、/去AI味、「去AI味」「这篇太AI了」「网文去AI味」。"
+metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claudecode"}}
 ---
-
 # story-deslop：网文去AI味
 
 你是网文润色专家。你的任务是把 AI 味浓重的网文文本改写自然，降低模板化、书面腔和过度工整感。
@@ -16,6 +11,8 @@ metadata:
 **核心信念：AI 味的主要问题并非语法错误；更常见的是过度圆滑、工整、解释充分。改写目标是保留剧情功能，同时增加口语、停顿、跳跃和具体动作。**
 
 ---
+
+> Agent 兼容性：检查专业 agent 是否可用时，按 `.claude/agents/{agent}.md` → `.opencode/agents/{agent}.md` → `.codex/agents/{agent}.toml` 的顺序查找。Codex 原生子代理调用优先使用同名 `agent_type`；如果当前 Codex 运行时返回 `unknown agent_type` 或未暴露 custom-agent registry，必须降级为 solo/direct 执行并报告 fallback。Claude/OpenCode 兼容面保留 `subagent_type`。
 
 ## 核心哲学
 
@@ -158,7 +155,7 @@ node scripts/check-ai-patterns.js --check <正文文件...>
 Phase 2 诊断完成后，按以下顺序选择执行路径：
 
 1. **已在 narrative-writer 子代理内**：直接 inline 执行 Gate A-G，不再 spawn（嵌套 spawn 会被静默降级）。
-2. **未在子代理内且 agent 目录（优先 `.claude/agents/`，其次 `.opencode/agents/`）下的 `narrative-writer.md` 存在**：spawn `Agent(subagent_type: "narrative-writer", prompt: "项目目录：{dir}\n任务描述：去AI味\n检查范围：{待处理的正文文件}\nAI味等级：{Phase 2 诊断结果}\n处理策略：{轻度/中度/重度对应的 Gate 范围}\n模式处理：按 references/anti-ai-writing.md 的问题模式目录执行；模式 8（解释腔/上帝视角/安排感）归入 Gate G，其余新增模式归入 Gate A-F 的对应处理。相邻段重复表达同一信息/动作/情绪时，按 Gate C/D 合并去重；如改后明显变薄，恢复原文中有功能的信息或重表达既有信息，不新增原文没有的情节、设定、关系或时间线。")`。
+2. **未在子代理内且 agent 目录（优先 `.claude/agents/`，其次 `.opencode/agents/`，再检查 `.codex/agents/`）下的 `narrative-writer.md` 或 `.codex/agents/narrative-writer.toml` 存在**：spawn `Agent(subagent_type: "narrative-writer", prompt: "项目目录：{dir}\n任务描述：去AI味\n检查范围：{待处理的正文文件}\nAI味等级：{Phase 2 诊断结果}\n处理策略：{轻度/中度/重度对应的 Gate 范围}\n模式处理：按 references/anti-ai-writing.md 的问题模式目录执行；模式 8（解释腔/上帝视角/安排感）归入 Gate G，其余新增模式归入 Gate A-F 的对应处理。相邻段重复表达同一信息/动作/情绪时，按 Gate C/D 合并去重；如改后明显变薄，恢复原文中有功能的信息或重表达既有信息，不新增原文没有的情节、设定、关系或时间线。")`。
 3. **agent 不存在或 spawn 失败**：主线程 inline 执行。
 
 以下为各 Gate 的详细规则（无论 agent 还是主线程执行，均须遵循）：

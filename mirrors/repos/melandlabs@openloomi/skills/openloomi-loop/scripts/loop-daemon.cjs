@@ -6,7 +6,14 @@
  * Composio MCP and writes them to data/signals.jsonl. There is no
  * background process. The tick is invoked by:
  *
- *   claude -p "$(node $SKILL_DIR/scripts/loop-tick.cjs)"
+ *   claude -p --dangerously-skip-permissions "$(node $SKILL_DIR/scripts/loop-tick.cjs)"
+ *
+ * `--dangerously-skip-permissions` is required so the spawned child can
+ * call `mcp__composio__*` / `mcp__agentmemory__*` and the openloomi CLIs
+ * without per-call permission prompts (the child has no interactive UI
+ * to approve them). `loop schedule` and `loop run` add this flag
+ * automatically; add it manually here too if you invoke claude by hand.
+ * Set LOOP_CLAUDE_SAFE_PERMISSIONS=1 to opt out globally.
  *
  * This file is kept for two reasons:
  *   1. `tick()` exposes the same analyze pipeline (inbox → classify →

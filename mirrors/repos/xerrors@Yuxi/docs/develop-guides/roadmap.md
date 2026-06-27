@@ -28,6 +28,8 @@
 - [ ] 反馈接入到 Langfuse
 
 **其他**
+- [ ] 历史对话新增搜索能力（[#790](https://github.com/xerrors/Yuxi/issues/790)）
+- [ ] 消息中的代码块增加快速复制按钮（[#790](https://github.com/xerrors/Yuxi/issues/790)）
 - [ ] 历史对话新增分组（或者叫做项目）
 - [ ] 集成 Memory，基于 deepagents 的文件后端实现，需要考虑定位
 - [ ] 优化 Task 模块定位：区分真正的后台任务实体与进度条管理工具，重新定义任务中心/Tasker 的职责边界

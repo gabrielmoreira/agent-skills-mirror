@@ -64,7 +64,15 @@ ln -s "$(pwd)" ~/.claude/skills/obsidian-second-brain
 ln -s commands/* ~/.claude/commands/
 ```
 
-Then restart Claude Code and run the command against a test vault. There is no automated test suite yet - verification is manual: run the command, inspect the resulting vault notes, confirm AI-first compliance.
+Then restart Claude Code and run the command against a test vault. Command behavior itself is still verified manually: run the command, inspect the resulting vault notes, confirm AI-first compliance.
+
+There is a smoke-test suite (`tests/test_smoke.py`) that guards the build pipeline (adapter output paths, `vault_health` JSON, OKF export, and similar). CI runs it on every push. Run it locally before pushing any change to `adapters/`, `scripts/`, or `commands/`:
+
+```bash
+uv run pytest -q
+```
+
+If you change an adapter's output layout, update the matching assertion in `tests/test_smoke.py` in the same commit.
 
 ## Release process
 

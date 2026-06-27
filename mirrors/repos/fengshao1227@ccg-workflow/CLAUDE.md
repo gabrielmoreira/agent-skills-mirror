@@ -13,6 +13,8 @@
 > 完整变更历史请查看 [CHANGELOG.md](./CHANGELOG.md)
 
 ### 2026-06-18 (v3.1.6)
+- ✨ **CodeGraph MCP 可选安装（#145）**：init Step 3 新增 `codegraph` 选项，本地代码知识图谱（调用链/影响范围/架构查询）。安装 MCP（`npx @colbymchenry/codegraph serve --mcp`）+ 写入 `ccg-codegraph.md` 使用规则。规则指示 AI 在无 `.codegraph/` 时自动 `codegraph init` 建索引，优先 `codegraph_explore` 查结构、`fast_context_search` 查语义、grep 查精确文本。
+- 🐛 **Codex 模式 AGENTS.md 缺少 `.exe` 路径替换（#147）**：`installCodexMode()` 对 AGENTS.md 只调了 `injectConfigVariables()` 没调 `replaceHomePathsInTemplate()`，Windows 上 `~/.claude/bin/codeagent-wrapper` 未替换为绝对路径 + `.exe`，Codex app 找不到 binary。
 - 🐛 **Antigravity 后端 Windows 静默无输出（#146）**：Windows 上 wrapper 把 antigravity 的 prompt 走 stdin pipe（与 gemini 相同，为避免 cmd.exe 多行截断）。但 `agy` 不读 stdin、只认 `-p` 参数，收到 `-p ""` 后直接 exit 0 无输出。修复：antigravity 在所有平台统一走 `-p` 传参；仅 gemini 在 Windows 保留 stdin pipe。
 
 ### 2026-06-10 (v3.1.5)

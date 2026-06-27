@@ -152,15 +152,21 @@ src/
 
 ### Registries
 Everything in Minecraft lives in a registry. Always register objects; never
-construct them at field initializer time outside a registry call.
+construct them at field initializer time outside a registry call. Use the
+mapping-appropriate registry constants for the loader you are editing:
 
-- Blocks → `Registry.BLOCK`
-- Items → `Registry.ITEM`
-- Entity types → `Registry.ENTITY_TYPE`
-- Block entity types → `Registry.BLOCK_ENTITY_TYPE`
-- Menu types → `Registry.MENU` (NeoForge) / `Registry.MENU_TYPE` (Fabric)
-- Sound events → `Registry.SOUND_EVENT`
-- Biomes → `Registry.BIOME`
+| Type | NeoForge / Mojang mappings | Fabric / Yarn mappings |
+|------|-----------------------------|-------------------------|
+| Blocks | `BuiltInRegistries.BLOCK` | `Registries.BLOCK` |
+| Items | `BuiltInRegistries.ITEM` | `Registries.ITEM` |
+| Entity types | `BuiltInRegistries.ENTITY_TYPE` | `Registries.ENTITY_TYPE` |
+| Block entity types | `BuiltInRegistries.BLOCK_ENTITY_TYPE` | `Registries.BLOCK_ENTITY_TYPE` |
+| Menu / screen-handler types | `BuiltInRegistries.MENU` | `Registries.SCREEN_HANDLER` |
+| Sound events | `BuiltInRegistries.SOUND_EVENT` | `Registries.SOUND_EVENT` |
+| Biomes | `Registries.BIOME` registry keys | `RegistryKeys.BIOME` registry keys |
+
+Do not copy older `Registry.BLOCK` / `Registry.ITEM` constants into 1.21.x code;
+those names are stale for the examples in this skill.
 
 ### ResourceLocation / Identifier
 Every registry entry needs a namespaced ID:

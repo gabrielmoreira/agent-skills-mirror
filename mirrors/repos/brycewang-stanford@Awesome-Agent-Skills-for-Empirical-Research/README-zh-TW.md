@@ -2,7 +2,7 @@
 
 <div align="center">
 
-**🌐 語言: [English](README.md) | [简体中文](README-zh-CN.md) | 繁體中文 | [日本語](README-ja.md) | [한국어](README-ko.md)**
+**🌐 語言: [English](README-en.md) | [简体中文（預設）](README.md) | 繁體中文 | [日本語](README-ja.md) | [한국어](README-ko.md)**
 
 <br/>
 
@@ -39,6 +39,18 @@
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/brycewang-stanford/Auto-Empirical-Research-Skills/badge)](https://scorecard.dev/viewer/?uri=github.com/brycewang-stanford/Auto-Empirical-Research-Skills)
 [![Security audit: 52/52 CLEAN](https://img.shields.io/badge/security%20audit-52%2F52%20CLEAN-brightgreen)](SECURITY-SCAN-REPORT.md)
 [![Powered by StatsPAI](https://img.shields.io/badge/powered%20by-StatsPAI-orange)](https://github.com/brycewang-stanford/StatsPAI)
+
+---
+
+## 先看這裡：整倉是一個 AERS Router Skill
+
+本倉庫支援把倉庫根目錄作為一個整體 skill 匯入 Codex、CodeBuddy、Claude Code 或類似 IDE。根目錄的 [`SKILL.md`](SKILL.md) 會註冊為 `auto-empirical-research-skills`，用途是依照研究任務路由到合適的 vendored 子 skill，而不是把 69 個合集、1,145 個 skill 一次性載入上下文。
+
+- **推薦整倉匯入**：選擇倉庫根目錄，使用 [`agents/openai.yaml`](agents/openai.yaml) 和根 [`SKILL.md`](SKILL.md) 註冊一個 catalog router；後續由 agent 先查 [`catalog/skills.json`](catalog/skills.json) 或 [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md)，再只讀取目標子 skill。
+- **推薦單 skill 匯入**：如果 IDE 要求「一目錄一個 skill」，請複製那個直接包含 `SKILL.md` 的子目錄，例如 `skills/50-brycewang-aer-skills/skills/aer-workflow/`，不要把整倉誤當成 1,145 個獨立 skill 遞迴註冊。
+- **安裝細節**：見 [`docs/INSTALL.md`](docs/INSTALL.md)。簡體中文 README 是預設入口；英文入口保留在 [`README-en.md`](README-en.md)。
+
+---
 
 ## 全部 69 個 skill 合集一覽
 

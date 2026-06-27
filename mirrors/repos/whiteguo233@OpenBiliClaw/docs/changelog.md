@@ -4,6 +4,25 @@
 
 ---
 
+## v0.3.147 / extension v0.3.98 / desktop v0.3.147: PC Web 正向反馈与探针原地聊天（2026-06-26）
+
+后端源码走 `backend-v0.3.147`，浏览器插件走 `extension-v0.3.98`，桌面安装包走 `desktop-v0.3.147`。
+
+- **PC Web 平台源状态与 Cookie 展示优化**：设置页“平台源”现在把“来源开关是否进入调度”和“Cookie / 令牌 / 插件任务是否可用”拆成两个 badge；知乎 `pending/unverified` 显示为“状态待验证”，修改来源开关但未保存时会标注“保存后生效”。新增 `/api/sources/credentials`，PC Web 会把 B 站 / 抖音 / X 当前 Cookie 和小红书最近 `xsec_token` 放在默认折叠的只读面板里；下方 Cookie 输入框仅用于覆盖，留空保存不会覆盖，只有主动粘贴新 Cookie 时才提交。
+- **PC Web 推荐反馈保留正向内容**：推荐卡点赞和“聊一聊”提交后不再从当前列表消失，点赞按钮会显示已按下状态；只有“不感兴趣”和“忽略”这类负向 / 移除型反馈继续延迟淡出当前卡片。桌面端推荐加载过滤同步只隐藏负向反馈，和移动 Web 的反馈行为保持一致。
+- **PC Web Inbox 探针支持原地聊天**：消息抽屉里的兴趣 / 挑战 / 避雷探针点击“多聊聊”时不再切到画像聊天页，而是在当前卡片内展开输入框并通过 `/api/chat/turns` 提交上下文聊天，回复 / 错误状态直接显示在卡片里。
+- **插件维护包同步发布**：浏览器插件版本提升到 `extension-v0.3.98`，用于 GitHub Release 与 Chrome Web Store 同步分发；本次主要同步当前后端 / Web 修复后的聚合版本号，插件功能代码与 `extension-v0.3.97` 保持一致。
+- **桌面安装包同步发布**：桌面安装包提升到 `desktop-v0.3.147`，让冻结包用户直接获得本轮 PC Web 设置页、推荐反馈和 Inbox 探针原地聊天修复。
+- **聚合 Release 自动清理旧包资产**：`openbiliclaw-v*` 聚合页同步新插件 / 桌面安装包前会先删除旧版本 `.zip` / `.dmg` / `.exe` 包类资产，避免同一个最新 release 同时展示上一版下载包。
+- **CI Web E2E 避开 runner 失效 apt 源**：`Web guided-init E2E` 在安装 Playwright Chromium 依赖前会清理 GitHub runner 上可能返回 403 的 Microsoft / azure-cli apt 源，避免 `python -m playwright install --with-deps chromium` 在 apt update 阶段被外部源拖失败。
+- **候选评估限流不再误拒绝整批候选**：真实 SQLite + runtime drain E2E 复现 LLM 429 后，发现 batch evaluator 曾把 provider rate limit 转成全 0 分，导致 `discovery_candidates` 直接进入 `rejected_low_score`。现在 rate-limit / cooldown 会作为 transient failure 向上传递，`DiscoveryCandidatePipeline` 释放 claim 回 `pending_eval`，模型恢复后继续评估原候选。
+
+## v0.3.146 / extension v0.3.97 / desktop v0.3.146: 知乎长 ID 链接保真（2026-06-26）
+
+后端源码走 `backend-v0.3.146`，浏览器插件走 `extension-v0.3.97`，桌面安装包走 `desktop-v0.3.146`。
+
+- **知乎长 ID 链接不再被 JS 舍入**：插件知乎 task executor 对站内 API 响应做 lossless JSON 解析，把超过 `Number.MAX_SAFE_INTEGER` 的裸整数先转成字符串；归一化时也会优先从 URL 字符串解析 question / answer / article ID，修复 19 位 question id 被舍入成错误知乎链接的问题。真实后端 + 已连接浏览器插件 E2E 覆盖 `discover-zhihu-hot` 和指定 `2053435015258804659` 的 `discover-zhihu-related`，确认入库 URL 不再出现舍入后的 `2053435015258804700`。
+
 ## v0.3.145 / extension v0.3.96 / desktop v0.3.145.1: Eval 缓存与推荐理由并发优化（2026-06-26）
 
 后端源码走 `backend-v0.3.145`，浏览器插件走 `extension-v0.3.96`，桌面安装包走 `desktop-v0.3.145.1`。

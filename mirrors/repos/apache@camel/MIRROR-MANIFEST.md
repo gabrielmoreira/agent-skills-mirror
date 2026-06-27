@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `apache/camel` — 26 default patterns, 1 followed patterns, 3 file(s) materialized.
+Mirror of `apache/camel` — 26 default patterns, 2 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `apache/camel` — 26 default patterns, 1 followed patterns, 3 file(s)
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 3 |
+| Followed pats | 2 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `apache/camel` — 26 default patterns, 1 followed patterns, 3 file(s)
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `SECURITY.md`
+- `.oss-ai-helper-rules/project-standards.md`
 
 ## File Index
 
@@ -61,7 +62,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | → | [`SECURITY.md`](SECURITY.md) |
+| 3 | → | [`.oss-ai-helper-rules/project-standards.md`](.oss-ai-helper-rules/project-standards.md) |
+| 4 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 
