@@ -52,9 +52,12 @@ curl -X POST http://<mac-ip>:4140/read \
 | Field          | Type   | Required | Description                                      |
 |----------------|--------|----------|--------------------------------------------------|
 | `text`         | string | yes      | The text to speak (max 50,000 characters)        |
-| `voice`        | string | no       | OpenAI voice name: alloy, echo, fable, onyx, nova, shimmer |
+| `voice`        | string | no       | Voice name for the active engine (e.g. OpenAI: alloy, echo, fable, onyx, nova, shimmer) |
 | `rate`         | number | no       | Speech rate multiplier (e.g. 1.5 for faster)     |
 | `instructions` | string | no       | Natural language speaking style (e.g. "Read warmly", "Sound excited"). Only works with OpenAI voices. |
+| `engine`       | string | no       | Override the engine for this read: `apple`, `openai`, or `elevenlabs`. Defaults to the app's configured engine. ElevenLabs gives the tightest word-highlight sync (server-side character timestamps). |
+| `project_id`   | string | no       | Stable identifier for the calling project (recommend the working directory). VoxClaw assigns a distinct voice per project and groups overlay indicators by it. |
+| `agent_id`     | string | no       | Stable identifier for the agent/session. Combined with `project_id`, gives each concurrent agent its own voice, and scopes "stop reading" so prompting one agent never cuts off another. |
 
 **Plain text** also works:
 

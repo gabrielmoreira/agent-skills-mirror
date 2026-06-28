@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `HoangNguyen0403/agent-skills-standard` — 26 default patterns, 28 followed patterns, 1349 file(s) materialized.
+Mirror of `HoangNguyen0403/agent-skills-standard` — 26 default patterns, 29 followed patterns, 1350 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `HoangNguyen0403/agent-skills-standard` — 26 default patterns, 28 fo
 | Ref Type      | `branch` |
 | Ref           | `develop` |
 | Default pats  | 26 |
-| Followed pats | 28 |
-| Files         | 1349 |
+| Followed pats | 29 |
+| Files         | 1350 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,7 @@ Mirror of `HoangNguyen0403/agent-skills-standard` — 26 default patterns, 28 fo
 - `docs/sdlc-workflow-quick-reference.md`
 - `docs/mcp-integration-guide.md`
 - `benchmark-report.md`
+- `docs/SECURITY.md`
 - `cli/ARCHITECTURE.md`
 - `benchmarks/archive/v2.4.7.md`
 - `benchmarks/archive/v2.4.6.md`
@@ -1263,7 +1264,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1175 | ✓ | [`skills/react-native/react-native-platform-specific/references/native-modules.md`](skills/react-native/react-native-platform-specific/references/native-modules.md) |
 | 1176 | ✓ | [`skills/react-native/react-native-platform-specific/SKILL.md`](skills/react-native/react-native-platform-specific/SKILL.md) |
 | 1177 | ✓ | [`skills/react-native/react-native-security/evals/evals.json`](skills/react-native/react-native-security/evals/evals.json) |
-| 1178 | ✓ | [`skills/react-native/react-native-security/references/keychain-usage.md`](skills/react-native/react-native-security/references/keychain-usage.md) |
+| 1178 | ✓ | [`skills/react-native/react-native-security/references/secure-storage.md`](skills/react-native/react-native-security/references/secure-storage.md) |
 | 1179 | ✓ | [`skills/react-native/react-native-security/SKILL.md`](skills/react-native/react-native-security/SKILL.md) |
 | 1180 | ✓ | [`skills/react-native/react-native-state-management/evals/evals.json`](skills/react-native/react-native-state-management/evals/evals.json) |
 | 1181 | ✓ | [`skills/react-native/react-native-state-management/references/REFERENCE.md`](skills/react-native/react-native-state-management/references/REFERENCE.md) |
@@ -1434,7 +1435,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1346 | → | [`cli/ARCHITECTURE.md`](cli/ARCHITECTURE.md) |
 | 1347 | → | [`docs/mcp-integration-guide.md`](docs/mcp-integration-guide.md) |
 | 1348 | → | [`docs/sdlc-workflow-quick-reference.md`](docs/sdlc-workflow-quick-reference.md) |
-| 1349 | → | [`README.md`](README.md) |
+| 1349 | → | [`docs/SECURITY.md`](docs/SECURITY.md) |
+| 1350 | → | [`README.md`](README.md) |
 
 ---
 

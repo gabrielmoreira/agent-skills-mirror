@@ -4,6 +4,15 @@
 
 ---
 
+## v0.3.148: LLM 余额熔断与推荐避雷兜底（2026-06-27）
+
+- **DeepSeek / OpenAI-compatible 余额不足不再重试放大**：HTTP 402、`Insufficient Balance`、`payment required`、`billing`、余额不足等 provider 余额 / 账单失败现在归一为 `LLMRateLimitError`。Provider 自身不会再做 3 次 retry，registry 会进入 cooldown，批量推荐 / discovery 路径也会跳过逐条 fallback，避免余额不足时继续制造大量必失败请求和日志。
+- **Discovery 查询生成降本**：`TrendingStrategy` 的榜单分区 rids 按 `profile_kw_digest + 日期` 缓存约 6 小时；旧 B 站 `SearchStrategy` query 生成按画像 digest + pool hints 缓存；`ExploreStrategy` domain 生成改为短 JSON（只含 `domain/novelty_level/queries`，`max_tokens=2048`）并按画像 + covered topic groups 缓存；统一 `KeywordPlanner` 的 merged keyword 成功结果按画像 digest + 平台需求块 + 池子避让提示复用到 `[discovery].plan_ttl_hours`。真实环境验证发现 query/rid/domain 生成仍会被完整画像和 thinking 放大，因此这些生成 caller 现在统一使用稳定 compact profile summary，flat `interests` 保留前 64 个，关闭额外 core memory 注入，并对 `search/trending/explore` 关闭 DeepSeek thinking。后台 refresh 也改为约 90% 可换池低水位才跑 discovery，小缺口 B 站补货先只给 `search + related_chain` 预算，延后 `trending/explore`，避免几个库存缺口触发全套 planner/search/explore/trending。
+- **Discovery interest 丰富度保护**：query / rid / domain / keyword planner 的 compact profile summary 不再只是截取权重前 64 个兴趣；现在先取最多 128 个 interest 候选，再用 cache-only embedding 做 MMR 风格选择，在保留强兴趣的同时覆盖更多语义簇，并对贴近 `disliked_topics` 的 interest 降权。`disliked_topics` 自身也用同一缓存向量做多样性去重。没有 cached embedding 时保持原权重顺序，不新增热路径 embedding 调用。
+- **推荐出口增加 dislike 硬过滤兜底**：`RecommendationEngine.serve()` 从 discovery pool 读出候选后，会按当前 `profile.preferences.disliked_topics` 再过滤一次；主题字段精确命中，或标题 / 标签 / 简介 / 作者 / 短正文包含避雷 term 的候选不会进入排序，覆盖异步清池尚未完成或清池失败的窗口。
+- **画像增量回填增加并发 claim 保护**：`/api/events` 的 `last_profile_pipeline_event_id` backfill 现在有进程内 single-flight 保护；当前一批旧 pending 行正在喂给 `ProfileUpdatePipeline` 时，并发事件请求会跳过重复 backfill，只处理自身 accepted 事件，避免同一批 200 条画像信号被重复送进 `soul.preference.chunk`。
+- **初始化 chunk 顺带生成临时觉察 / 洞察上下文**：`soul.preference.chunk` 的结构化输出现在可包含 `awareness_candidates` / `insight_candidates`；后端会去重合并后只作为本次 `soul.profile_build` 的 prompt 上下文，不写入长期 `awareness.json` / `insight.json`，让初始人格画像在首次生成时就能利用每个 chunk 提炼出的观察和假设。
+
 ## v0.3.147 / extension v0.3.98 / desktop v0.3.147: PC Web 正向反馈与探针原地聊天（2026-06-26）
 
 后端源码走 `backend-v0.3.147`，浏览器插件走 `extension-v0.3.98`，桌面安装包走 `desktop-v0.3.147`。
@@ -14,8 +23,12 @@
 - **插件维护包同步发布**：浏览器插件版本提升到 `extension-v0.3.98`，用于 GitHub Release 与 Chrome Web Store 同步分发；本次主要同步当前后端 / Web 修复后的聚合版本号，插件功能代码与 `extension-v0.3.97` 保持一致。
 - **桌面安装包同步发布**：桌面安装包提升到 `desktop-v0.3.147`，让冻结包用户直接获得本轮 PC Web 设置页、推荐反馈和 Inbox 探针原地聊天修复。
 - **聚合 Release 自动清理旧包资产**：`openbiliclaw-v*` 聚合页同步新插件 / 桌面安装包前会先删除旧版本 `.zip` / `.dmg` / `.exe` 包类资产，避免同一个最新 release 同时展示上一版下载包。
+- **Firefox 签名 XPI 发布链路**：用户反馈 Firefox 直接安装 `openbiliclaw-extension-v*-firefox.zip` 会提示“未通过验证”。插件发布链路新增 AMO unlisted 签名脚本与 release workflow 上传，默认生成 `openbiliclaw-extension-v*-firefox.xpi` 供普通 Firefox 持久安装；`-firefox.zip` 保留为未签名开发包，仅用于 `about:debugging` 临时加载或 AMO 签名输入。
 - **CI Web E2E 避开 runner 失效 apt 源**：`Web guided-init E2E` 在安装 Playwright Chromium 依赖前会清理 GitHub runner 上可能返回 403 的 Microsoft / azure-cli apt 源，避免 `python -m playwright install --with-deps chromium` 在 apt update 阶段被外部源拖失败。
 - **候选评估限流不再误拒绝整批候选**：真实 SQLite + runtime drain E2E 复现 LLM 429 后，发现 batch evaluator 曾把 provider rate limit 转成全 0 分，导致 `discovery_candidates` 直接进入 `rejected_low_score`。现在 rate-limit / cooldown 会作为 transient failure 向上传递，`DiscoveryCandidatePipeline` 释放 claim 回 `pending_eval`，模型恢复后继续评估原候选。
+- **画像上下文 LLM 调用缓存前缀稳定**：`PreferenceAnalyzer` 的单批 / 分片结构化 LLM 调用现在会在 `LLMService` 支持时关闭额外 core memory 注入；事件批次和 existing preference 仍在 user prompt 中完整传递，但 system prompt 不再拼入动态画像片段，提升 `soul.preference.chunk` 这类初始化高频调用的 provider prompt-cache 命中率。同一策略也扩展到 discovery 单条 fallback、推荐池分类、delight 批量评分、跨平台关键词生成、awareness / insight / speculation / profile build 等已自带 `profile_summary` / `soul_profile` / `preference_summary` 的结构化调用，并用共享 helper 兼容不支持 `inject_core_memory` 的测试 stub 或旧服务对象。
+- **初始画像生成 prompt 稳定块前置**：`build_soul_profile_prompt()` 的 system prompt 改为完全静态，动态 `tone_profile` / 来源基调移动到 user prompt 首部；user prompt 顺序调整为 `<tone_profile>` → `<preference_summary>` → `<recent_awareness>` → `<active_insights>` → `<history_summary>`，并对 JSON 输入使用 `sort_keys=True`，避免巨大的历史摘要打断 provider prompt-cache 前缀。
+- **画像按层缓存输入扩展到推荐与关键词链路**：共享 `profile_prompt_layers()` 会把 `profile_summary` 拆成 `<profile_core>` / `<profile_life_context>` / `<profile_interests>` / `<profile_style_context>` / `<profile_recent_context>` 五层并按稳定性排序。`discovery.evaluate_batch`、推荐池分类、批量 / 单条推荐文案、delight 批量评分 / 备用理由、统一关键词 planner 都通过 `PromptLayerRenderCache` 按层 digest 复用渲染后的 prompt block：画像核心没变时保持 provider 可见前缀 byte-stable，近期觉察或洞察变化时只更新后置 recent 层，不牺牲各环节可见的完整画像。
 
 ## v0.3.146 / extension v0.3.97 / desktop v0.3.146: 知乎长 ID 链接保真（2026-06-26）
 

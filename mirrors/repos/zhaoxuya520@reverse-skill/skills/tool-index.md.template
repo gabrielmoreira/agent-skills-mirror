@@ -11,56 +11,52 @@
 
 ```powershell
 # Windows (PowerShell)
-powershell -NoProfile -ExecutionPolicy Bypass -File "<SKILL_ROOT>/scripts/refresh-tool-index.ps1"
-
-# 或者如果你在 skills/ 目录
-powershell -NoProfile -ExecutionPolicy Bypass -File "scripts/refresh-tool-index.ps1"
+powershell -NoProfile -ExecutionPolicy Bypass -File "skills/scripts/refresh-tool-index.ps1"
 ```
 
 ```bash
-# Linux / macOS
-bash <SKILL_ROOT>/skills/scripts/refresh-tool-index.sh
+# Linux / macOS / Kali
+bash skills/scripts/refresh-tool-index.sh
 ```
 
 ---
 
-## 工具状态表 / Tool Status Table
+## 生成的格式 / Generated Format
 
-| 工具 | 用途 | 自动安装 | 路径示例 |
-|------|------|---------|---------|
-| jadx | APK 反编译 | ✅ winget/GitHub | (自动检测) |
-| apktool | APK 解包/重打包 | ✅ GitHub | (自动检测) |
-| adb | Android 调试桥 | ✅ winget/apt | (自动检测) |
-| frida | 动态插桩 | ✅ pip | (自动检测) |
-| r2/radare2 | CLI 二进制分析 | ✅ GitHub | (自动检测) |
-| ida-pro-mcp | IDA Pro MCP 服务 | ✅ pip+gtt | (自动检测) |
-| jshookmcp | JS Hook/CDP | ✅ npm | (自动检测) |
-| anything-analyzer | 浏览器自动化 | ✅ npm | (自动检测) |
-| nmap | 端口扫描 | ✅ winget/apt | (自动检测) |
-| nuclei | 漏洞扫描 | ✅ GitHub | (自动检测) |
-| sqlmap | SQL 注入 | ✅ pip/apt | (自动检测) |
-| ffuf | 目录爆破 | ✅ GitHub | (自动检测) |
-| hashcat | 密码破解 | ✅ winget/apt | (自动检测) |
-| metasploit | 渗透框架 | ✅ winget/apt | (自动检测) |
-| binwalk | 固件分析 | ✅ apt | (自动检测) |
-| pwntools | CTF pwn | ✅ pip | (自动检测) |
-| yara | 恶意软件规则 | ✅ winget/apt | (自动检测) |
-| objection | 移动安全 | ✅ pip | (自动检测) |
-| gitleaks | 密钥扫描 | ✅ GitHub | (自动检测) |
-| trivy | 容器扫描 | ✅ winget/apt | (自动检测) |
+Windows (PowerShell) 生成 8 列表格：
+| 工具 | 归属 skill | 作用 | 可用 | 路径 | 版本 | 来源 | 脚本引用 |
+
+Linux/macOS (Bash) 生成 7 列表格：
+| Tool | Skill | Purpose | Available | Path | Version | Install hint |
+
+两者均附带 "能力状态视图 (Capability Status)" 子表，包含 MCP 注册状态和服务在线检测。
 
 ---
 
-## MCP 服务状态 / MCP Service Status
+## 本机已配能力 / Current Capabilities Snapshot
 
-| MCP 服务 | 端口 | 需要手动配置 | 备注 |
-|----------|------|------------|------|
-| ida-pro-mcp | 13337-13350 | 是（MCP json） | IDA 插件自动启动 |
-| anything-analyzer | 23816 | 是（MCP json） | `pnpm dev` 启动 |
-| jshookmcp | — (stdio) | 是（MCP json） | `npx -y @jshookmcp/jshook@latest` |
-| ghidra | 8765 | 是（MCP json） | Ghidra GUI 自动监听 |
-| burpsuite | 9876 | 是（MCP json） | Burp 扩展自动加载 |
+| 能力 | 工具可用 | Ready | MCP 已注册 | 服务在线 | 可自动安装 | 安装方式 |
+|------|:---:|:---:|:---:|:---:|:---:|--------|
+| jadx | — | — | — | — | ✓ | github-release-zip |
+| apktool | — | — | — | — | ✓ | github-release-jar-wrapper |
+| frida | — | — | — | — | ✓ | pip-package |
+| idalib-mcp | — | — | — | — | ✓ | pip-package |
+| jshookmcp | — | ✓ | — | — | ✓ | npm-mcp |
+| anything-analyzer | — | ✓ | — | — | ✓ | local-http-mcp |
+| idapro | — | ✓ | — | — | ✓ | local-http-mcp |
+| r2 | — | — | — | — | ✓ | github-release-zip |
+| adb | — | — | — | — | ✓ | winget-package / apt-package |
+| agent-browser | — | — | — | — | ✓ | npm-global |
+| ghidra-mcp | — | ✓ | — | — | ✓ | github-release-zip / apt-package |
+| seclists | — | — | — | — | ✓ | git-clone / apt-package |
+| proxycat | — | — | — | — | ✓ | pip-package / git-clone |
+| burpsuite-mcp | — | ✓ | — | — | ✗ | manual Burp extension |
+| nmap | — | — | — | — | ✓ | winget-package / apt-package |
+| pentestswarm | — | — | — | — | ✓ | go-install / docker-image |
+| binwalk | — | — | — | — | ✓ | winget-package / apt-package |
+| yara | — | — | — | — | ✓ | winget-package / apt-package |
+| pwntools | — | — | — | — | ✓ | pip-package |
 
----
-
-> 运行 `refresh-tool-index` 后，本文件将被替换为包含精确路径的真实 `tool-index.md`。该文件是 AI 路由的单一可信源。
+> ✓ = Yes | ✗ = No | — = 运行 refresh-tool-index 后可生成 (not scanned yet)
+>
+> MCP 服务在线检测包含 TCP 端口探活 + HTTP MCP `tools/list` 协议级握手（双重验证）。

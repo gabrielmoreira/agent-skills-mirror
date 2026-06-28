@@ -1,6 +1,6 @@
 ---
 name: doc-gen
-description: Generate and maintain documentation with drift detection
+description: Generate and maintain documentation with drift detection. Use when the user asks to write/update/refresh docs, detect doc drift against code, or schedule recurring documentation maintenance.
 argument-hint: "[--target PATH]"
 allowed-tools: Bash(npx *) mcp__claude-flow__hooks_worker-dispatch mcp__claude-flow__memory_store CronCreate Read Write
 ---

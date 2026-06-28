@@ -127,7 +127,7 @@ Usage:
 Capabilities (parity with bootstrap-reverse.ps1):
   jadx apktool frida frida-ps idalib-mcp jshookmcp anything-analyzer idapro
   r2 rabin2 adb agent-browser ghidra-mcp seclists proxycat burpsuite-mcp
-  nmap pentestswarm
+  nmap pentestswarm binwalk yara pwntools
 
 Examples:
   bash skills/scripts/bootstrap-reverse.sh jadx apktool frida
@@ -146,7 +146,7 @@ EOF
 ALL_CAPABILITIES=(
   jadx apktool frida frida-ps idalib-mcp jshookmcp anything-analyzer idapro
   r2 rabin2 adb agent-browser ghidra-mcp seclists proxycat burpsuite-mcp
-  nmap pentestswarm
+  nmap pentestswarm binwalk yara pwntools
 )
 
 if $LIST_ONLY; then
@@ -329,6 +329,28 @@ s.connect(('127.0.0.1', port))
 PY
 }
 
+test_mcp_http() {
+  local port="$1"
+  local timeout_seconds="${2:-3}"
+  python3 - "$port" "$timeout_seconds" <<'PY' >/dev/null 2>&1
+import sys, json, urllib.request
+port = int(sys.argv[1])
+timeout = int(sys.argv[2])
+body = json.dumps({"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}).encode()
+req = urllib.request.Request(
+    f"http://127.0.0.1:{port}/mcp",
+    data=body,
+    headers={"Content-Type": "application/json"},
+    method="POST"
+)
+try:
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        exit(0 if resp.status == 200 else 1)
+except Exception:
+    exit(1)
+PY
+}
+
 wait_for_port() {
   local port="$1"
   local timeout_seconds="${2:-90}"
@@ -415,7 +437,15 @@ ensure_anything_analyzer() {
   write_mcp_server "anything-analyzer" '{"url":"http://localhost:23816/mcp"}'
   if $START_SERVICES; then
     (cd "$dir" && pnpm install && nohup pnpm dev >/tmp/anything-analyzer.log 2>&1 &)
-    wait_for_port 23816 120 || log_warn "anything-analyzer did not open port 23816; see /tmp/anything-analyzer.log"
+    if wait_for_port 23816 120; then
+      if test_mcp_http 23816; then
+        log_ok "anything-analyzer MCP server ready on port 23816 (HTTP verified)"
+      else
+        log_warn "anything-analyzer port 23816 open but MCP HTTP handshake failed; check /tmp/anything-analyzer.log"
+      fi
+    else
+      log_warn "anything-analyzer did not open port 23816; see /tmp/anything-analyzer.log"
+    fi
   fi
 }
 
@@ -432,6 +462,11 @@ ensure_idapro() {
         ;;
     esac
     wait_for_port 13337 45 || log_warn "idapro MCP service is not online on port 13337 yet."
+    if test_mcp_http 13337 3; then
+      log_ok "idapro MCP server ready (HTTP verified)"
+    else
+      log_warn "idapro port 13337 open but MCP HTTP handshake failed; check IDA Output window"
+    fi
   fi
 }
 
@@ -525,6 +560,28 @@ ensure_pentestswarm() {
   fi
 }
 
+ensure_binwalk() {
+  if has_cmd binwalk; then log_ok "binwalk ready: $(cmd_path binwalk)"; return 0; fi
+  case "$PLATFORM" in
+    macos) install_brew binwalk ;;
+    linux) install_apt binwalk || manual_required binwalk "git clone https://github.com/ReFirmLabs/binwalk.git and install manually" ;;
+  esac
+}
+
+ensure_yara() {
+  if has_cmd yara; then log_ok "yara ready: $(cmd_path yara)"; return 0; fi
+  case "$PLATFORM" in
+    macos) install_brew yara ;;
+    linux) install_apt yara || manual_required yara "Install from source: https://github.com/VirusTotal/yara" ;;
+  esac
+}
+
+ensure_pwntools() {
+  ensure_python_runtime
+  if python3 -c "import pwn" 2>/dev/null; then log_ok "pwntools ready"; return 0; fi
+  pipx install pwntools || python3 -m pip install --user pwntools
+}
+
 status_json_line() {
   local name="$1"
   local status="$2"
@@ -579,6 +636,9 @@ ensure_capability() {
     burpsuite-mcp) ensure_burpsuite_mcp ;;
     nmap) ensure_nmap ;;
     pentestswarm) ensure_pentestswarm ;;
+    binwalk) ensure_binwalk ;;
+    yara) ensure_yara ;;
+    pwntools) ensure_pwntools ;;
     *) log_err "No bootstrap definition for capability: $name"; return 1 ;;
   esac
 }

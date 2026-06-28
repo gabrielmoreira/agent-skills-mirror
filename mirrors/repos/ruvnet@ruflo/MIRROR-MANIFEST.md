@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ruvnet/ruflo` — 26 default patterns, 2 followed patterns, 361 file(s) materialized.
+Mirror of `ruvnet/ruflo` — 26 default patterns, 2 followed patterns, 372 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ruvnet/ruflo` — 26 default patterns, 2 followed patterns, 361 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 361 |
+| Files         | 372 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -410,17 +410,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 348 | ✓ | [`v3/@claude-flow/cli/.claude/skills/v3-swarm-coordination/SKILL.md`](v3/@claude-flow/cli/.claude/skills/v3-swarm-coordination/SKILL.md) |
 | 349 | ✓ | [`v3/@claude-flow/cli/.claude/skills/verification-quality/SKILL.md`](v3/@claude-flow/cli/.claude/skills/verification-quality/SKILL.md) |
 | 350 | ✓ | [`v3/@claude-flow/cli/CLAUDE.md`](v3/@claude-flow/cli/CLAUDE.md) |
-| 351 | ✓ | [`v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md`](v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md) |
-| 352 | ✓ | [`v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md`](v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md) |
-| 353 | ✓ | [`v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md`](v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md) |
-| 354 | ✓ | [`v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md`](v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md) |
-| 355 | ✓ | [`v3/@claude-flow/codex/AGENTS.md`](v3/@claude-flow/codex/AGENTS.md) |
-| 356 | ✓ | [`v3/@claude-flow/mcp/CLAUDE.md`](v3/@claude-flow/mcp/CLAUDE.md) |
-| 357 | ✓ | [`v3/CLAUDE.md`](v3/CLAUDE.md) |
-| 358 | ✓ | [`v3/docs/adr/ADR-151-harness-intelligence-layer.md`](v3/docs/adr/ADR-151-harness-intelligence-layer.md) |
-| 359 | ✓ | [`v3/docs/adr/ADR-152-genome-similarity-search.md`](v3/docs/adr/ADR-152-genome-similarity-search.md) |
-| 360 | → | [`docs/reviews/intelligence-system-audit-2026-05-29.md`](docs/reviews/intelligence-system-audit-2026-05-29.md) |
-| 361 | → | [`v3/docs/adr/ADR-150-metaharness-integration-surfaces.md`](v3/docs/adr/ADR-150-metaharness-integration-surfaces.md) |
+| 351 | ✓ | [`v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-bench/SKILL.md`](v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-bench/SKILL.md) |
+| 352 | ✓ | [`v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-drift-from-history/SKILL.md`](v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-drift-from-history/SKILL.md) |
+| 353 | ✓ | [`v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-evolve/SKILL.md`](v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-evolve/SKILL.md) |
+| 354 | ✓ | [`v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-genome/SKILL.md`](v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-genome/SKILL.md) |
+| 355 | ✓ | [`v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-mcp-scan/SKILL.md`](v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-mcp-scan/SKILL.md) |
+| 356 | ✓ | [`v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-mint/SKILL.md`](v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-mint/SKILL.md) |
+| 357 | ✓ | [`v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-oia-audit/SKILL.md`](v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-oia-audit/SKILL.md) |
+| 358 | ✓ | [`v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-score/SKILL.md`](v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-score/SKILL.md) |
+| 359 | ✓ | [`v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-security-bench/SKILL.md`](v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-security-bench/SKILL.md) |
+| 360 | ✓ | [`v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-similarity/SKILL.md`](v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-similarity/SKILL.md) |
+| 361 | ✓ | [`v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-threat-model/SKILL.md`](v3/@claude-flow/cli/plugins/ruflo-metaharness/skills/harness-threat-model/SKILL.md) |
+| 362 | ✓ | [`v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md`](v3/@claude-flow/codex/.agents/skills/memory-management/SKILL.md) |
+| 363 | ✓ | [`v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md`](v3/@claude-flow/codex/.agents/skills/security-audit/SKILL.md) |
+| 364 | ✓ | [`v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md`](v3/@claude-flow/codex/.agents/skills/sparc-methodology/SKILL.md) |
+| 365 | ✓ | [`v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md`](v3/@claude-flow/codex/.agents/skills/swarm-orchestration/SKILL.md) |
+| 366 | ✓ | [`v3/@claude-flow/codex/AGENTS.md`](v3/@claude-flow/codex/AGENTS.md) |
+| 367 | ✓ | [`v3/@claude-flow/mcp/CLAUDE.md`](v3/@claude-flow/mcp/CLAUDE.md) |
+| 368 | ✓ | [`v3/CLAUDE.md`](v3/CLAUDE.md) |
+| 369 | ✓ | [`v3/docs/adr/ADR-151-harness-intelligence-layer.md`](v3/docs/adr/ADR-151-harness-intelligence-layer.md) |
+| 370 | ✓ | [`v3/docs/adr/ADR-152-genome-similarity-search.md`](v3/docs/adr/ADR-152-genome-similarity-search.md) |
+| 371 | → | [`docs/reviews/intelligence-system-audit-2026-05-29.md`](docs/reviews/intelligence-system-audit-2026-05-29.md) |
+| 372 | → | [`v3/docs/adr/ADR-150-metaharness-integration-surfaces.md`](v3/docs/adr/ADR-150-metaharness-integration-surfaces.md) |
 
 ---
 

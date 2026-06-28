@@ -32,7 +32,12 @@ When a new fact arrives, route it: update **compiled truth** if it changes curre
 
 ## Links
 
-Prefer path-qualified wikilinks when entity identity matters: `[[companies/acme|Acme]]`, `[[people/jane-founder|Jane Founder]]`, `[[concepts/agent-runtime-observability|agent-runtime observability]]`. Path-qualified links resolve to the right dossier under GBrain's typed extraction.
+Per the platform skill, prefer **standard markdown links** for new dossiers, and count the relative depth carefully for the cross-folder links this vault is full of — e.g. `[Alice Chen](../people/alice-chen.md)` from a `meetings/` note, `[Acme AI](../companies/acme-ai.md)` from a `people/` dossier. The write/edit `brokenLinks` response catches a wrong-depth path before you walk away. New brain pages render on GitHub, satisfy OK's `brokenLinks` check, and import cleanly into GBrain.
+
+Two deltas from the platform default, both GBrain-specific:
+
+- **Don't use the leading-slash root-absolute form** (`[Alice](/people/alice-chen.md)`). OK resolves it fine, but GBrain reads a leading `/` as an absolute filesystem path and rejects it — use a relative path. (GBrain also accepts a bare `[Alice](people/alice-chen.md)`, but from a subfolder OK resolves that *source-dir-relative* — `meetings/people/alice-chen` — and reports it broken, so stick to the `../`-correct relative form, which both accept.)
+- **Path-qualified wikilinks are first-class here**, not legacy: `[[people/alice-chen|Alice Chen]]` resolves vault-root from any folder (no `../` to count), is validated by `brokenLinks` like any link, and imports into GBrain. Keep them **extensionless** (`[[people/alice-chen]]`, never `[[people/alice-chen.md]]` — the `.md` makes it resolve to a nonexistent doc). A *bare* `[[note-name]]` with no folder is ambiguous (resolves only if GBrain's basename-globbing is on) — reserve it for Obsidian migration.
 
 ## Agent behaviors
 

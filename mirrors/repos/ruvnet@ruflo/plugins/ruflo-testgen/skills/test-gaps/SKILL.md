@@ -1,6 +1,6 @@
 ---
 name: test-gaps
-description: Detect missing test coverage and generate test suggestions
+description: Detect missing test coverage and generate test suggestions. Use when the user asks about coverage gaps, untested code, or what tests to write next; also after adding a feature to find what still needs tests.
 argument-hint: "[--path PATH] [--limit N]"
 allowed-tools: Bash(npx *) mcp__claude-flow__hooks_worker-dispatch Read Grep
 ---

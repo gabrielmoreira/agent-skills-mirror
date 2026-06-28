@@ -536,6 +536,7 @@ the default dependency.
 | [`_auth/refresh.py`](../src/notebooklm/_auth/refresh.py) | Token refresh driver (external login command, coalesced runs, secret redaction). |
 | [`_auth/keepalive.py`](../src/notebooklm/_auth/keepalive.py) | Cookie keepalive + `__Secure-1PSIDTS` rotation. |
 | [`_auth/psidts_recovery.py`](../src/notebooklm/_auth/psidts_recovery.py) | Inline PSIDTS recovery for cold-start (see issue #865). |
+| [`_auth/master_token.py`](../src/notebooklm/_auth/master_token.py) | Headless master-token auth: mint/persist web cookies from a durable Google master token; layer-4 re-mint recovery (ADR-0023). |
 
 The cookie lifecycle — what gets written, who rotates, what the
 keepalive contract is — is documented separately in
@@ -639,6 +640,7 @@ The cross-command helpers form a small internal CLI stack:
 |--------|------|
 | [`cli/runtime.py`](../src/notebooklm/cli/runtime.py) | Leaf runtime helpers: root `--quiet` lookup and the single `asyncio.run(...)` bridge for sync Click handlers. |
 | [`cli/auth_runtime.py`](../src/notebooklm/cli/auth_runtime.py) | Shared auth bootstrap, command-body error wrapping, and optional opened-client workflow helper. |
+| [`cli/master_token_login.py`](../src/notebooklm/cli/master_token_login.py) | Command driver for `notebooklm login --master-token[-refresh]`, rendering over the master-token login service [`cli/services/login/master_token.py`](../src/notebooklm/cli/services/login/master_token.py) (mint/persist/refresh + browser `oauth_token` capture; ADR-0023). |
 | [`cli/services/auth_source.py`](../src/notebooklm/cli/services/auth_source.py) | Single resolver for CLI auth-source precedence (`--storage`, `NOTEBOOKLM_AUTH_JSON`, active profile). |
 | [`cli/context.py`](../src/notebooklm/cli/context.py) | Profile/storage-scoped `context.json` persistence for active notebook, conversation, and account metadata. |
 | [`cli/resolve.py`](../src/notebooklm/cli/resolve.py) | Notebook/source/artifact/note ID resolution, including partial-ID matching against public client list calls. |
@@ -944,6 +946,7 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_mind_maps_api.py` | `client.mind_maps` API — unified surface over both mind-map backends (note-backed JSON + interactive studio-artifact), dispatching each op to the correct RPC family (#1256) |
 | `_artifact/downloads.py` | Asynchronous download coordinator for finished artifacts |
 | `_artifact/_redirect_guard.py` | Per-redirect-hop host/scheme revalidation for downloads — rejects off-allowlist / non-HTTPS redirect targets before the request is sent (#1521) |
+| `_artifact/_download_client.py` | Download trusted-host allowlist + transport-aware client factory — wires the #1521 redirect guard for httpx (event hook) or the opt-in curl_cffi (`get_guarded` manual loop) |
 | `_artifact/formatters.py` | Markdown, HTML, and plain text formatters for artifacts |
 | `_artifact/payloads.py` | Stable CREATE_ARTIFACT / GENERATE_MIND_MAP request payload builders |
 | `_artifact/generation.py` | Generation kickoff service (`generate_*`, `revise_slide`, `retry_failed`) extracted from `ArtifactsAPI`; the facade keeps thin delegators |
@@ -1019,6 +1022,7 @@ src/notebooklm/
 ├── _request_types.py            # AuthSnapshot, BuildRequest, PostBody, request materialization helpers
 ├── _transport_errors.py         # Transport exceptions, Retry-After parsing, Kernel.post error mapping
 ├── _streaming_post.py           # Size-capped streaming POST helper
+├── _curl_cffi_transport.py      # Opt-in curl_cffi browser-impersonation transport (NOTEBOOKLM_TRANSPORT=curl_cffi)
 ├── _rpc_executor.py             # RPC dispatch executor
 ├── _client_metrics.py           # Telemetry / metrics seam
 ├── _transport_drain.py          # In-flight transport drain coordinator
@@ -1098,6 +1102,7 @@ src/notebooklm/
 │   └── upload_payloads.py       # Source upload request payload builders
 ├── _artifact/                   # Artifact-feature subpackage (promoted from flat _artifact_*.py, #1328)
 │   ├── __init__.py              # Re-exports the cluster's public service classes/builders
+│   ├── _download_client.py      # Download trusted-host allowlist + transport-aware client factory (httpx event hook / curl_cffi get_guarded)
 │   ├── _redirect_guard.py       # Per-redirect-hop host/scheme revalidation for downloads (#1521)
 │   ├── downloads.py             # Artifact download coordinator
 │   ├── formatters.py            # Artifact formatting helpers
@@ -1137,6 +1142,7 @@ src/notebooklm/
 │   ├── storage.py               # Profile/state persistence on disk
 │   ├── keepalive.py             # Cookie keepalive + __Secure-1PSIDTS rotation
 │   ├── psidts_recovery.py       # Inline PSIDTS recovery for cold-start (issue #865)
+│   ├── master_token.py          # Headless master-token auth: mint cookies + layer-4 re-mint (ADR-0023)
 │   ├── refresh.py               # Token refresh driver (external login cmd, coalesced runs, redaction)
 │   └── tokens.py                # AuthTokens container + load_auth_from_storage loader
 ├── _types/                      # Dataclass implementation package re-exported by types.py
@@ -1212,6 +1218,7 @@ src/notebooklm/
     ├── input.py                 # CLI prompt and stdin input helpers
     ├── label_cmd.py             # label list/sources/generate/create/rename/emoji/add/remove/delete
     ├── language_cmd.py          # Language configuration CLI commands
+    ├── master_token_login.py    # Command driver for `login --master-token[-refresh]` (ADR-0023)
     ├── mcp_cmd.py               # `mcp install <client>` command — thin Click adapter over `_app/mcp_install.py`; resolves the client config path (`--config-path` override) and applies the merge inside `notebooklm.io.atomic_update_json` (locked, crash-safe, merge-not-clobber)
     ├── notebook_cmd.py          # list, create, delete, rename
     ├── note_cmd.py              # note commands
@@ -1247,6 +1254,7 @@ src/notebooklm/
         │   ├── exceptions.py
         │   ├── firefox_accounts.py
         │   ├── io_seam.py        # Caller-injected LoginIO Protocol + resolver (#1393)
+        │   ├── master_token.py   # Headless master-token bootstrap/refresh + browser oauth_token capture (ADR-0023)
         │   ├── outcomes.py
         │   ├── profile_targets.py
         │   ├── refresh.py

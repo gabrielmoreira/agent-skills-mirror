@@ -412,4 +412,4 @@ Scatter charts do not accept `series1.xValues` (UNSUPPORTED) — feed the x-axis
 
 ### Inherited (pointer only)
 
-Cross-sheet `!` trap, batch + resident for formulas, `labelRotation` on axis-by-role, `chartType=pareto`, `validate` while resident, data bar without explicit `min`/`max`, chart `anchor` / series immutability after create → see officecli-xlsx §Known Issues.
+Cross-sheet `!` trap, chart `anchor` / series immutability after create → see officecli-xlsx §Known Issues.

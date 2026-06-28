@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bergside/typeui` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `bergside/typeui` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bergside/typeui` — 26 default patterns, 0 followed patterns, 9 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,12 +62,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`.mcp/server.json`](.mcp/server.json) |
 | 3 | ✓ | [`plugins/grok/typeui/skills/typeui/SKILL.md`](plugins/grok/typeui/skills/typeui/SKILL.md) |
-| 4 | ✓ | [`skills/fundamentals/accessibility.md`](skills/fundamentals/accessibility.md) |
-| 5 | ✓ | [`skills/fundamentals/SKILL.md`](skills/fundamentals/SKILL.md) |
-| 6 | ✓ | [`skills/fundamentals/spacing-principles.md`](skills/fundamentals/spacing-principles.md) |
-| 7 | ✓ | [`skills/fundamentals/typography-principles.md`](skills/fundamentals/typography-principles.md) |
-| 8 | ✓ | [`skills/fundamentals/ui-principles.md`](skills/fundamentals/ui-principles.md) |
-| 9 | ✓ | [`skills/fundamentals/ux-principles.md`](skills/fundamentals/ux-principles.md) |
+| 4 | ✓ | [`prompts/application/login/2-default-centered-card.svg`](prompts/application/login/2-default-centered-card.svg) |
+| 5 | ✓ | [`prompts/application/register/1-default-centered-card.svg`](prompts/application/register/1-default-centered-card.svg) |
+| 6 | ✓ | [`prompts/marketing/blog/2-trending-topics-categorized-link-columns.svg`](prompts/marketing/blog/2-trending-topics-categorized-link-columns.svg) |
+| 7 | ✓ | [`prompts/marketing/contact/1-centered-heading-supporting-copy-and-stacked-form-with-dual-actions.svg`](prompts/marketing/contact/1-centered-heading-supporting-copy-and-stacked-form-with-dual-actions.svg) |
+| 8 | ✓ | [`prompts/marketing/content/1-two-column-split-copy-and-ctas-left-video-placeholder-right.svg`](prompts/marketing/content/1-two-column-split-copy-and-ctas-left-video-placeholder-right.svg) |
+| 9 | ✓ | [`prompts/marketing/cta/2-centered-headline-paragraph-and-dual-rounded-buttons.svg`](prompts/marketing/cta/2-centered-headline-paragraph-and-dual-rounded-buttons.svg) |
+| 10 | ✓ | [`prompts/marketing/customer-logo/1-centered-kicker-and-single-wrapping-logo-row.svg`](prompts/marketing/customer-logo/1-centered-kicker-and-single-wrapping-logo-row.svg) |
+| 11 | ✓ | [`prompts/marketing/event-schedule/2-centered-single-day-ruled-timeline.svg`](prompts/marketing/event-schedule/2-centered-single-day-ruled-timeline.svg) |
+| 12 | ✓ | [`prompts/marketing/faq/1-centered-heading-with-single-column-accordion.svg`](prompts/marketing/faq/1-centered-heading-with-single-column-accordion.svg) |
+| 13 | ✓ | [`prompts/marketing/feature/1-left-aligned-intro-with-six-up-icon-grid.svg`](prompts/marketing/feature/1-left-aligned-intro-with-six-up-icon-grid.svg) |
+| 14 | ✓ | [`prompts/marketing/footer/1-logo-links-and-copyright-centered-stack.svg`](prompts/marketing/footer/1-logo-links-and-copyright-centered-stack.svg) |
+| 15 | ✓ | [`prompts/marketing/hero/1-centered-stack-with-big-image-below.svg`](prompts/marketing/hero/1-centered-stack-with-big-image-below.svg) |
+| 16 | ✓ | [`prompts/marketing/newsletter/1-centered-stack-with-floating-avatar-portraits.svg`](prompts/marketing/newsletter/1-centered-stack-with-floating-avatar-portraits.svg) |
+| 17 | ✓ | [`prompts/marketing/portfolio/2-uniform-six-card-grid.svg`](prompts/marketing/portfolio/2-uniform-six-card-grid.svg) |
+| 18 | ✓ | [`prompts/marketing/pricing/1-three-pricing-cards-in-a-row.svg`](prompts/marketing/pricing/1-three-pricing-cards-in-a-row.svg) |
+| 19 | ✓ | [`prompts/marketing/social-proof/1-centered-inline-stat-row.svg`](prompts/marketing/social-proof/1-centered-inline-stat-row.svg) |
+| 20 | ✓ | [`prompts/marketing/team/1-four-column-grid-with-badge-role-and-contact-action.svg`](prompts/marketing/team/1-four-column-grid-with-badge-role-and-contact-action.svg) |
+| 21 | ✓ | [`prompts/marketing/testimonials/1-centered-single-testimonial-with-decorative-quote-mark.svg`](prompts/marketing/testimonials/1-centered-single-testimonial-with-decorative-quote-mark.svg) |
+| 22 | ✓ | [`skills/fundamentals/accessibility.md`](skills/fundamentals/accessibility.md) |
+| 23 | ✓ | [`skills/fundamentals/SKILL.md`](skills/fundamentals/SKILL.md) |
+| 24 | ✓ | [`skills/fundamentals/spacing-principles.md`](skills/fundamentals/spacing-principles.md) |
+| 25 | ✓ | [`skills/fundamentals/typography-principles.md`](skills/fundamentals/typography-principles.md) |
+| 26 | ✓ | [`skills/fundamentals/ui-principles.md`](skills/fundamentals/ui-principles.md) |
+| 27 | ✓ | [`skills/fundamentals/ux-principles.md`](skills/fundamentals/ux-principles.md) |
 
 ---
 

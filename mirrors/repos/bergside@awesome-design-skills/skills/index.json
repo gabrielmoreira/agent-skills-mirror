@@ -257,11 +257,11 @@
     "skillPath": "skills/shadcn/SKILL.md",
     "designPath": "skills/shadcn/DESIGN.md"
   },
-  "simple": {
-    "slug": "simple",
-    "name": "Simple",
-    "skillPath": "skills/simple/SKILL.md",
-    "designPath": "skills/simple/DESIGN.md"
+  "geometric": {
+    "slug": "geometric",
+    "name": "Geometric",
+    "skillPath": "skills/geometric/SKILL.md",
+    "designPath": "skills/geometric/DESIGN.md"
   },
   "skeumorphism": {
     "slug": "skeumorphism",

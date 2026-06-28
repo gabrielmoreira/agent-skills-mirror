@@ -40,6 +40,12 @@ shortcuts run "Read with VoxClaw" --input-string "Hello world"
 # Network listener (toggle in Settings or --listen flag)
 curl -X POST http://localhost:4140/read -d '{"text":"Hello"}'
 curl -X POST http://localhost:4140/read -H 'Content-Type: application/json' -d '{"text":"Hello"}'
+# Per-request engine override (apple | openai | elevenlabs):
+curl -X POST http://localhost:4140/read -H 'Content-Type: application/json' -d '{"text":"Hello","engine":"elevenlabs"}'
+# Per-agent voice + scoped interrupts: pass project_id (recommend cwd) and agent_id (recommend session id)
+curl -X POST http://localhost:4140/read -H 'Content-Type: application/json' -d '{"text":"Hello","project_id":"/repo","agent_id":"sess-1"}'
+# Ack (stop reading this agent's previous response): project_id + agent_id scope it to one agent
+curl -X POST http://localhost:4140/ack -H 'Content-Type: application/json' -d '{"project_id":"/repo","agent_id":"sess-1"}'
 curl http://localhost:4140/status
 ```
 

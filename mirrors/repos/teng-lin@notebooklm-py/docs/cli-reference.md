@@ -52,6 +52,7 @@ See [Configuration](configuration.md) for full env-var precedence and CI/CD setu
 | Command | Description | Example |
 |---------|-------------|---------|
 | `login` | Authenticate via browser | `notebooklm login` / `notebooklm login --browser msedge` |
+| `login --master-token` | Headless auth: mint cookies from a durable master token (`[headless]`) | `notebooklm login --master-token --account you@gmail.com` |
 | `use <id>` | Set active notebook | `notebooklm use abc123` |
 | `status` | Show current context | `notebooklm status` |
 | `status --paths` | Show configuration paths | `notebooklm status --paths` |
@@ -410,6 +411,14 @@ By default, opens a Chromium browser with a persistent profile. Complete the Goo
 - `--fresh` - Start with a clean browser session (deletes the cached browser profile). Use to switch Google accounts. Has no effect with `--browser-cookies`.
 - `--include-domains LABEL[,LABEL...]` - Opt in to extracting sibling-product cookies (default: required Google auth/Drive cookies only). Supported labels: `youtube`, `docs`, `myaccount`, `mail`, `all`. Pass labels comma-separated or repeat the flag.
 
+**Master-token (headless) options** — mint/refresh web cookies from a durable Google master token, no per-session browser. Requires `pip install "notebooklm-py[headless]"`. Full guide: [installation.md#d-headless-server-or-ci](installation.md#d-headless-server-or-ci).
+- `--master-token` - Bootstrap headless auth. Requires `--account EMAIL`. A visible browser opens Google's EmbeddedSetup to capture the single-use `oauth_token` (needs `[browser]`), or pass it with `--oauth-token`. Exchanges it for a durable master token (saved `0600` at `master_token.json`), mints cookies into `storage_state.json`, and verifies by listing notebooks.
+- `--master-token-refresh` - Re-mint cookies from the stored master token, no prompt (for recovery / cron). Replaces `storage_state.json` cookies, preserving CLI context.
+- `--oauth-token VALUE` - Provide the single-use EmbeddedSetup `oauth_token` manually (headless boxes without `[browser]`).
+- `--cdp-url URL` - Capture `oauth_token` by attaching to a running Chrome over CDP (e.g. `http://localhost:9222`) instead of launching a browser.
+- `--android-id HEX` - Override the per-install Android id (default: generated and persisted with the token). ⚠️ The master token is a **full-account, durable** credential — use a dedicated/throwaway account only.
+- `--force` - With `--master-token`, overwrite even if the target profile already holds a session for a **different** account. Without it, a mismatched `--account` is refused (use a dedicated `-p <profile>` instead) so account B's mint can't silently clobber account A's profile.
+
 **Examples:**
 ```bash
 # Default (Chromium)
@@ -440,6 +449,11 @@ notebooklm login --browser-cookies chrome --all-accounts
 
 # Force a clean browser session before logging in
 notebooklm login --fresh
+
+# Headless master-token auth (one browser sign-in, then no per-session browser)
+notebooklm login --master-token --account you@gmail.com
+notebooklm login --master-token --account you@gmail.com --oauth-token "$OAUTH_TOKEN"  # headless box
+notebooklm login --master-token-refresh   # re-mint cookies from the stored token
 ```
 
 **Notes on `--browser-cookies`:**

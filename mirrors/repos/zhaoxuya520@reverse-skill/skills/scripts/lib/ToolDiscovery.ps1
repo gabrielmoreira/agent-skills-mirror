@@ -327,6 +327,36 @@ function Get-ReverseToolCatalog {
                 [pscustomobject]@{ Type = 'path'; Value = 'C:\Program Files\Nmap\nmap.exe' }
             )
         }
+        [pscustomobject]@{
+            Name = 'binwalk'
+            Skill = 'firmware-pentest'
+            Purpose = '固件提取与分析'
+            VersionArgs = @('--version')
+            Fallbacks = @(
+                [pscustomobject]@{ Type = 'command'; Value = 'binwalk' }
+            )
+        }
+        [pscustomobject]@{
+            Name = 'yara'
+            Skill = 'malware-analysis'
+            Purpose = '恶意软件规则匹配引擎'
+            VersionArgs = @('--version')
+            Fallbacks = @(
+                [pscustomobject]@{ Type = 'command'; Value = 'yara' },
+                [pscustomobject]@{ Type = 'path'; Value = 'C:\Program Files\yara\yara.exe' }
+            )
+        }
+        [pscustomobject]@{
+            Name = 'pwntools'
+            Skill = 'reverse-engineering'
+            Purpose = 'CTF pwn 利用开发框架'
+            FixedVersion = 'v0.5.0'
+            VersionArgs = @()
+            Fallbacks = @(
+                [pscustomobject]@{ Type = 'command'; Value = 'pwntools' },
+                [pscustomobject]@{ Type = 'command'; Value = 'pwn' }
+            )
+        }
     )
 }
 
@@ -590,6 +620,40 @@ function Test-ReverseTcpPort {
     }
 }
 
+function Test-ReverseMcpHttp {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [int]$Port,
+
+        [string]$TargetHost = '127.0.0.1',
+
+        [int]$TimeoutMs = 3000
+    )
+
+    try {
+        $body = '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
+        $uri = "http://${TargetHost}:$Port/mcp"
+        $req = [System.Net.HttpWebRequest]::Create($uri)
+        $req.Method = 'POST'
+        $req.ContentType = 'application/json'
+        $req.Timeout = $TimeoutMs
+        $req.ReadWriteTimeout = $TimeoutMs
+        $bytes = [System.Text.Encoding]::UTF8.GetBytes($body)
+        $req.ContentLength = $bytes.Length
+        $reqStream = $req.GetRequestStream()
+        $reqStream.Write($bytes, 0, $bytes.Length)
+        $reqStream.Close()
+        $resp = $req.GetResponse()
+        $statusCode = [int]$resp.StatusCode
+        $resp.Close()
+        return $statusCode -eq 200
+    }
+    catch {
+        return $false
+    }
+}
+
 function Add-ReverseProcessPath {
     [CmdletBinding()]
     param(
@@ -666,8 +730,13 @@ function Get-ReverseCapabilityState {
     }
 
     $serviceOnline = $false
+    $mcpHttpVerified = $false
     if ($definition.PSObject.Properties['servicePort'] -and $definition.servicePort) {
         $serviceOnline = Test-ReverseTcpPort -Port ([int]$definition.servicePort)
+        # If TCP passes, attempt HTTP MCP protocol-level handshake for higher confidence
+        if ($serviceOnline) {
+            $mcpHttpVerified = Test-ReverseMcpHttp -Port ([int]$definition.servicePort)
+        }
     }
 
     $toolReady = $false
@@ -708,6 +777,7 @@ function Get-ReverseCapabilityState {
         Ready = $ready
         Registered = $registered
         ServiceOnline = $serviceOnline
+        McpHttpVerified = $mcpHttpVerified
     }
 }
 
@@ -932,6 +1002,7 @@ function Get-ReverseToolReport {
             Ready = if ($capabilityState) { $capabilityState.Ready } else { $spec.Available }
             McpRegistered = if ($capabilityState) { $capabilityState.Registered } else { $false }
             ServiceOnline = if ($capabilityState) { $capabilityState.ServiceOnline } else { $false }
+            McpHttpVerified = if ($capabilityState) { $capabilityState.McpHttpVerified } else { $false }
         }
     }
 }

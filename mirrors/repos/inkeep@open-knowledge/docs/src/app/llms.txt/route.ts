@@ -9,7 +9,7 @@ export async function GET() {
     [
       '# OpenKnowledge',
       '## Docs',
-      ...pages.map((page) => `- [${page.data.title}](${SITE_URL}${page.url})`),
+      ...pages.map((page) => `- [${page.data.title}](${SITE_URL}${page.url}.md)`),
     ].join('\n\n'),
   );
 }

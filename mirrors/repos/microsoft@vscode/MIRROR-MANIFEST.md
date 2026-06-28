@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/vscode` — 26 default patterns, 0 followed patterns, 115 file(s) materialized.
+Mirror of `microsoft/vscode` — 26 default patterns, 0 followed patterns, 116 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/vscode` — 26 default patterns, 0 followed patterns, 115 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 115 |
+| Files         | 116 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -171,9 +171,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 110 | ✓ | [`src/vs/sessions/skills/merge/SKILL.md`](src/vs/sessions/skills/merge/SKILL.md) |
 | 111 | ✓ | [`src/vs/sessions/skills/sync-upstream/SKILL.md`](src/vs/sessions/skills/sync-upstream/SKILL.md) |
 | 112 | ✓ | [`src/vs/sessions/skills/sync/SKILL.md`](src/vs/sessions/skills/sync/SKILL.md) |
-| 113 | ✓ | [`src/vs/sessions/skills/update-pr/SKILL.md`](src/vs/sessions/skills/update-pr/SKILL.md) |
-| 114 | ✓ | [`src/vs/sessions/skills/update-skills/SKILL.md`](src/vs/sessions/skills/update-skills/SKILL.md) |
-| 115 | ✓ | [`src/vs/workbench/contrib/imageCarousel/AGENTS.md`](src/vs/workbench/contrib/imageCarousel/AGENTS.md) |
+| 113 | ✓ | [`src/vs/sessions/skills/troubleshoot/SKILL.md`](src/vs/sessions/skills/troubleshoot/SKILL.md) |
+| 114 | ✓ | [`src/vs/sessions/skills/update-pr/SKILL.md`](src/vs/sessions/skills/update-pr/SKILL.md) |
+| 115 | ✓ | [`src/vs/sessions/skills/update-skills/SKILL.md`](src/vs/sessions/skills/update-skills/SKILL.md) |
+| 116 | ✓ | [`src/vs/workbench/contrib/imageCarousel/AGENTS.md`](src/vs/workbench/contrib/imageCarousel/AGENTS.md) |
 
 ---
 

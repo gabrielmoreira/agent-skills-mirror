@@ -1,6 +1,6 @@
 ---
 name: diff-analyze
-description: Analyze git diffs for risk scoring, reviewer recommendations, and change classification
+description: Analyze git diffs for risk scoring, reviewer recommendations, and change classification. Use when preparing a PR, reviewing a large or cross-module change, or before merging to assess risk and pick reviewers.
 argument-hint: "[--branch BRANCH] [--pr PR#]"
 allowed-tools: mcp__claude-flow__analyze_diff mcp__claude-flow__analyze_diff-risk mcp__claude-flow__analyze_diff-classify mcp__claude-flow__analyze_diff-reviewers mcp__claude-flow__analyze_diff-stats mcp__claude-flow__analyze_file-risk Bash
 ---

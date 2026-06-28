@@ -98,7 +98,6 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 > **拆文产出格式**：analyze 落盘的完整文件树、`_meta.json` schema、Stage→文件映射，以及「story-short-write 怎么读这些产出」的下游消费规范，见 [references/output-contract.md](references/output-contract.md)。
 
-<!-- cross-book-recall:trigger:structure-positioning -->
 > **多对标书时**：参 `references/cross-book-recall.md`，副对标 anchor 入「对标摘要」区
 
 #### Agent 调用：story-architect
@@ -178,7 +177,6 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 **写前准备**（每个场景写前执行 2 步，是核心方法的落地：确认情绪目标 → 召回技法模块）：
 - **步骤 1：记忆+召回**：① 本场景目标情绪词？② 借鉴哪个参考文件的哪个技法？③ 具体用在哪个段落？答不出 → 先回读参考再动笔。如有 `对标/` 或 `拆文库/` 结构化产出，按“对标上下文加载”规则检索与当前场景最相关的结构/情绪/反转/写作手法模块作为参考，并写入“拆文召回摘要”
-  <!-- cross-book-recall:trigger:tempo-section -->
   - **多对标书时**：参 `references/cross-book-recall.md`，副对标/参考对标按阶段预算进入"副对标召回摘要"；正文只传摘要，不传副书文风或原文
 - **步骤 2：指令确认**：用一句话概括本场景写作意图（情绪+技法+适配段落），确认后开始写作
 
@@ -300,7 +298,8 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 - [ ] 节数 = 小节大纲规划节数（不得合并/省略）
 - [ ] 身体部位同一词全文 ≤ 5 次
 - [ ] 「像」≤ 10 处
-- [ ] `node scripts/check-ai-patterns.js --check 正文.md` 无高危 AI 句式命中
+- [ ] `node scripts/check-ai-patterns.js --check 正文.md` 无高危 AI 对比句式与破折号命中（碎句号/长段落按提示处理）
+- [ ] `node scripts/check-degeneration.js --check 正文.md` 无 blocking 退化命中（复读/截断/工程词泄漏）
 
 **中文文本统计注意事项**：
 - `wc -c` 统计的是字节数，中文每字符 3 字节（UTF-8），不等于字数
@@ -316,12 +315,12 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 ### Phase 4：精修打磨
 
 加载 `references/writing-workflow.md` 中的精修清单完成检查。
-重点：开头钩子、情绪曲线、反转铺垫、每句话价值、格式规范、AI 腔排查。文件模式必须先运行 `node scripts/normalize-punctuation.js 正文.md`，再运行 `node scripts/check-ai-patterns.js --check 正文.md`；后者只报告不改写，命中时回到正文改掉并复扫到 0。
+重点：开头钩子、情绪曲线、反转铺垫、每句话价值、格式规范、AI 腔排查。文件模式必须先运行 `node scripts/check-ai-patterns.js --check 正文.md`（报告 AI 对比句式 + 破折号按功能改写 + 碎句号 + 长段落；前两类复扫到 0，后两类按情况改），再运行 `node scripts/normalize-punctuation.js 正文.md` 机械兜底标点。另跑 `node scripts/check-degeneration.js --check 正文.md` 报告模型退化（复读/截断/工程词泄漏）；blocking 命中说明该段要重新生成，不是改写。
 
 #### Agent 调用：narrative-writer（去AI味）+ consistency-checker
 
 精修阶段，如果项目已部署对应 agent，可 spawn：
-- `Agent(subagent_type: "narrative-writer", prompt: "项目目录：{dir}\n任务描述：去AI味+格式检查\n检查范围：{正文文件}\n必须检查：先否定再肯定的翻转句式；发现后直接改成后项或动作细节")` — 执行去AI味（7 Gate）和格式合规检查
+- `Agent(subagent_type: "narrative-writer", prompt: "项目目录：{dir}\n任务描述：去AI味+格式检查\n检查范围：{正文文件}\n删除优先：每条 AI 味项先判能否删除——删后不丢伏笔/钩子/角色/情节/必要信息的直接删，会丢才润色（删除受比例上限与字数下限约束，跌破下限改降AI重写）\n必须检查：先否定再肯定的翻转句式；发现后直接改成后项或动作细节")` — 执行去AI味（7 Gate）和格式合规检查
 - `Agent(subagent_type: "consistency-checker", prompt: "项目目录：{dir}\n检查范围：{正文文件}\n检查类型：事实冲突+伏笔断线+角色属性不一致")` — 执行一致性检查
 
 如 agent 不可用，由主线程直接执行。
@@ -372,7 +371,8 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 | [references/quality-checklist.md](references/quality-checklist.md) | 精修检查时 |
 | [references/banned-words.md](references/banned-words.md) | 禁用词表 |
 | [scripts/normalize-punctuation.js](scripts/normalize-punctuation.js) | Phase 4 文件模式确定性标点收尾 |
-| [scripts/check-ai-patterns.js](scripts/check-ai-patterns.js) | Phase 3 完成门槛与 Phase 4 复扫；只报告高危 AI 句式 |
+| [scripts/check-ai-patterns.js](scripts/check-ai-patterns.js) | Phase 3 完成门槛与 Phase 4 复扫；报告高危 AI 句式 + 破折号/碎句号/长段落 |
+| [scripts/check-degeneration.js](scripts/check-degeneration.js) | Phase 3 完成门槛与 Phase 4 复扫；报告模型退化（复读/截断/工程词泄漏），blocking 需重新生成 |
 | [references/female-audience-writing.md](references/female-audience-writing.md) | 女频写作时 |
 | [references/character-basics.md](references/character-basics.md) | 人物基础设定 |
 | [references/character-design-methods.md](references/character-design-methods.md) | 人设方法 |

@@ -539,7 +539,7 @@ LEAK=$(officecli view "$FILE" text | grep -niE 'TBD|\(fill in\)|xxxx|lorem|\{\{|
 
 ## Known Issues & Pitfalls
 
-→ Base pitfalls (cross-sheet `!` trap, batch JSON dotted-name rule, resident + formula batch deadlock, renderer caveats, `labelRotation` / `pareto` / databar-min-max bugs, `validate` while resident): see xlsx v2 §Known Issues & Pitfalls — all apply.
+→ Base pitfalls (cross-sheet `!` trap, batch JSON dotted-name rule, renderer caveats): see xlsx v2 §Known Issues & Pitfalls — all apply.
 
 Financial-model-specific:
 

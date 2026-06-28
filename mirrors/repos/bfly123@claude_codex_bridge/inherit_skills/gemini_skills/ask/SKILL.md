@@ -1,0 +1,73 @@
+---
+name: ask
+description: Send a request to a CCB agent with `ask`.
+metadata:
+  short-description: Ask agent
+---
+
+Use this skill when the user asks you to delegate with CCB, or when project
+memory says to use CCB `ask` for collaboration.
+
+## Decision Card
+
+Before every ask, decide:
+
+1. Need delegation? If no, answer directly.
+2. Result intent:
+   - `--silence`: publish/execute task; success result not needed. Failures,
+     blockers, risks, or required next actions still surface.
+   - `--compact`: result wanted, but only distilled
+     findings/status/risks/blockers/next actions.
+   - `+ --artifact-reply`: consultation/analysis/report where full text should
+     be preserved.
+   - plain `ask`: short question or short handoff where inline text is enough.
+   - `--callback`: active CCB parent job + child result required to finish.
+     Combine with `--compact` or `--artifact-reply` as needed. Submit, then
+     stop for continuation.
+3. Request fidelity:
+   - `+ --artifact-request`: exact transient input
+     (logs/output/diffs/copied contents/config/JSON/YAML/table/structured text).
+     Prefer repo paths when the target can read files directly.
+   - `--artifact-io`: request and reply both need artifacts.
+
+## Guardrails
+
+- Do not probe `--callback`; if unsure there is an active parent job, use plain
+  `ask`.
+- If CCB says `ask --callback requires an active parent job`, retry once with
+  plain `ask` for user-requested delegation.
+- `--callback` and `--silence` usually conflict; avoid mixing unless explicit.
+- Avoid `--silence --artifact-reply`; silence means no caller result needed; artifact-reply preserves one.
+- Artifact flags are orthogonal to `--callback`, `--silence`, and `--compact`.
+  They preserve content, not dependency shape.
+- Automatic spill for text over 4 KiB is a fallback, not the primary rule.
+- `--artifact-*` modes are CCB/daemon managed; targets do not write artifact reply files.
+- Plain nested `ask` from an active CCB task is rejected; use `--callback` or `--silence`.
+- In `A --silence -> B`, B still runs an active job. B-to-C depends on whether B needs C's result.
+- In callback chains, each waiting hop uses callback; CCB then propagates continuations.
+- If the current task is a CCB callback continuation, answer the current task
+  directly with the final result. Do not use `ask`, `--callback`, or
+  `--silence` to send that final result to the original caller; CCB routes the
+  continuation completion upstream.
+- `ask get`, `pend`, `watch`, and `ping` are diagnostics-only commands for
+  explicit debugging requests, not normal ask workflow tools.
+- Do not manually append output-policy text; `ask` injects reply guidance.
+
+Always send `MESSAGE` through the `<<'EOF' ... EOF` heredoc below. No other form
+is allowed. Use no flags or insert selected flags before `"$TARGET"`:
+
+```bash
+command ask "$TARGET" <<'EOF'
+$MESSAGE
+EOF
+```
+
+```bash
+command ask --callback --artifact-reply "$TARGET" <<'EOF'
+$MESSAGE
+EOF
+```
+
+After the command returns, end the turn. Do not wait for a reply,
+do not run `ask get` / `pend` / `ping` / `watch`, do not poll.
+For `--callback`, report only that delegation was submitted.

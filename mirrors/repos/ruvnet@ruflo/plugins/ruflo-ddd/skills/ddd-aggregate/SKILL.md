@@ -1,8 +1,8 @@
 ---
 name: ddd-aggregate
-description: Scaffold an aggregate root with entity, value objects, repository interface, domain events, and test stubs
+description: Scaffold an aggregate root with entity, value objects, repository interface, domain events, and test stubs. Use when adding a new aggregate to an existing bounded context, modeling a new business concept that owns invariants, or generating the boilerplate for an entity + repo + events triplet.
 argument-hint: "<context> <aggregate-name>"
-allowed-tools: Bash(mkdir * find * ls *) Read Write Edit Grep Glob mcp__claude-flow__memory_store mcp__claude-flow__memory_search mcp__claude-flow__agentdb_hierarchical-store mcp__claude-flow__hooks_pre-task mcp__claude-flow__hooks_post-task
+allowed-tools: Bash Read Write Edit Grep Glob mcp__claude-flow__memory_store mcp__claude-flow__memory_search mcp__claude-flow__agentdb_hierarchical-store mcp__claude-flow__hooks_pre-task mcp__claude-flow__hooks_post-task
 ---
 Scaffold a complete aggregate root inside a bounded context.
 

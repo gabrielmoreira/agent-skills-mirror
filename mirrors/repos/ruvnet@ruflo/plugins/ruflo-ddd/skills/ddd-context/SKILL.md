@@ -1,8 +1,8 @@
 ---
 name: ddd-context
-description: Create and manage a DDD bounded context with standard directory structure
+description: Create and manage a DDD bounded context with standard directory structure. Use when starting a new subdomain, splitting a monolith into bounded contexts, or scaffolding the domain/application/infrastructure layout for a fresh module.
 argument-hint: "<context-name>"
-allowed-tools: Bash(mkdir * find * ls *) Read Write Edit Grep Glob mcp__claude-flow__memory_store mcp__claude-flow__memory_search mcp__claude-flow__agentdb_hierarchical-store
+allowed-tools: Bash Read Write Edit Grep Glob mcp__claude-flow__memory_store mcp__claude-flow__memory_search mcp__claude-flow__agentdb_hierarchical-store
 ---
 Create a bounded context directory structure for the given context name.
 

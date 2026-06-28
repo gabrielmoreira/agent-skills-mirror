@@ -1,0 +1,126 @@
+---
+name: jop-research-design
+description: Use when defending the research design of a The Journal of Politics (JOP) manuscript — causal identification for quantitative work, experimental and survey-experimental design, formal-empirical linkage, or case selection and process tracing for qualitative work. JOP is methodologically diverse and makes acceptance contingent on replicability, so design with reproducibility in mind. Strengthens the design; it does not write code.
+---
+
+# Research Design (jop-research-design)
+
+JOP is **methodologically diverse** and demanding about each tradition. The design must credibly connect
+the argument (`jop-theory-building`) to evidence — and, because **acceptance is contingent on
+replicability**, it must be one a **JOP replication analyst** can re-run. This skill is mode-aware: pick
+the section matching your work and defend it against the strongest alternative.
+
+## When to trigger
+
+- Specifying identification, case selection, or experimental design
+- A reviewer questioned causal claims, case choice, external validity, or a confound
+- Preparing a pre-analysis plan
+- Justifying why your design adjudicates the rival account from `jop-literature-positioning`
+
+## Quantitative / causal inference
+- **Identification first.** State the estimand and the assumptions that license a causal reading
+  (ignorability, parallel trends, exclusion, continuity). Defend them, don't assert them.
+- **Designs**: experiments (incl. survey/conjoint), DID/event study (use modern staggered-adoption
+  estimators, not naive TWFE), IV (first-stage strength, exclusion, weak-IV-robust inference), RDD
+  (density/manipulation tests, bandwidth robustness), matching/weighting with balance + sensitivity.
+- **Inference**: cluster at the level of treatment assignment; randomization inference for experiments;
+  multiple-comparison adjustment when testing many implications.
+- **Sensitivity**: how strong must an unobserved confounder be to overturn the result?
+
+## Experiments (lab / survey / field)
+- Preregister the design and primary analyses; report power/MDE; pre-specify subgroups.
+- Address attention/manipulation checks, attrition, and ethics/IRB and consent.
+- For survey experiments: sampling frame, treatment realism, and generalization claims.
+
+## Formal-empirical linkage
+- Make the **empirical test follow from the model's comparative statics**, not a loose analogy.
+- Distinguish predictions unique to your model from those shared with rivals.
+
+## Qualitative / case-based
+- **Case selection** justified by design logic (typical, deviant, most/least-likely, paired comparison)
+  — not convenience. Say what the case is a case *of*.
+- **Process tracing** with explicit tests (hoop, smoking-gun, straw-in-the-wind); state what evidence
+  would have **disconfirmed** the argument.
+- **Source transparency**: plan how archives, interviews, and fieldnotes will be documented and cited
+  (see `jop-replication-and-data-policy`).
+
+## The adjudication test
+
+For the **single strongest rival explanation**, write one sentence: *"If the rival were true rather than
+my argument, the data would look like ___; instead they look like ___."* If you cannot, the design does
+not yet identify the contribution.
+
+## Design for replicability (JOP-specific)
+
+- Choose estimators and software you can **fully script** — the analyst re-runs your code.
+- Fix the analysis plan so results are not a moving target between drafts.
+- Keep the design within the **page budget**: defend it crisply in the main text, push diagnostics to
+  the Online Appendix.
+
+## Execution bridge (StatsPAI / Stata MCP)
+
+Estimate and audit the design, don't only describe it. Full map:
+[`execution-with-mcp`](../../../shared-resources/empirical-methods/execution-with-mcp.md). Journal of Politics spans observational and experimental political science; report the identifying assumption and the magnitude, not just stars.
+
+- `detect_design` → `recommend` → fit with `as_handle=true` → `audit_result`.
+- **Observational causal claims:** staggered DiD (`callaway_santanna` / `sun_abraham` +
+  `bacon_decomposition` + `honest_did_from_result`); IV (`effective_f_test` +
+  `anderson_rubin_ci`); RDD (`rdrobust` + `mccrary_test`).
+- **Experiments:** randomization-based inference, `romano_wolf` for many-outcome
+  family-wise control, and `mediate` for mediation (not naive controlling-away).
+- **Sensitivity:** `oster_delta` / `sensemakr` for observational claims.
+
+Report the effect size in interpretable units; route the full battery to the
+appendix/supplement. A run end-to-end (synthetic data, real returns) is in the
+[JF execution walkthrough](../../../Journal-of-Finance-Skills/resources/worked-examples/02-execution-walkthrough.md).
+## Anti-patterns
+
+- Naive TWFE on staggered treatment; clustering at the wrong level
+- "Causal" language on a design that only supports association
+- Convenience case selection dressed up as theory-driven
+- A design whose results cannot be regenerated by a clean script (fails the replication check)
+
+## Identification objections and the JOP-credible answer
+
+A JOP referee asks the same question of every empirical design: would the result survive if the cleanest
+rival story were true? Match the objection to the design move that closes it; keep diagnostics in the
+Online Appendix.
+
+| Referee objection | The design answer |
+|-------------------|-------------------|
+| "Leans on selection-on-observables" | Move to a counterfactual design (DID, IV, RDD) or show E-value/Oster bounds |
+| "Parallel trends is asserted, not shown" | Event-study pre-trends plot; heterogeneity-robust estimator |
+| "Exclusion restriction is doubtful" | Argue exclusion substantively; report first-stage F and weak-IV CIs |
+| "Case selection is convenience" | Justify by design logic; say what the case is a case *of* |
+
+## Worked micro-example (illustrative)
+
+A hypothetical paper claims a new transparency law cut local corruption, identifying off staggered
+adoption across municipalities. A referee objects that early adopters were already cleaning up — a
+selection story. The author answers structurally: an event study shows flat pre-trends, a
+Callaway–Sant'Anna estimate gives a −0.6 SD drop, 95% CI [−1.0, −0.2] (illustrative), and an Oster bound
+shows an unobserved confounder would need to be 1.7× the observed covariates to null the effect
+(illustrative).
+
+## Referee pushback patterns and the JOP fix
+
+- *"Your causal claim outruns the design."* Either downgrade the language to association or add the design
+  feature (counterfactual, instrument, discontinuity) that licenses the causal reading.
+- *"This is not reproducible."* Choose estimators you can fully script; the analyst re-runs the code, so a
+  bespoke hand-tuned procedure is a liability.
+
+## Output format
+
+```
+【Mode】quant-causal / experiment / formal-empirical / qualitative
+【Estimand or claim】what is being identified/shown
+【Key assumption(s)】and how each is defended
+【Rival ruled out】the adjudication sentence
+【Replicable?】fully scriptable for the JOP analyst? [Y/N]
+【Next】jop-data-analysis
+```
+
+## Supplementary resources
+
+- [`../../resources/external_tools.md`](../../resources/external_tools.md) — design/identification packages (R/Stata/Python) and CAQDAS for qualitative work
+- [`../../resources/official-source-map.md`](../../resources/official-source-map.md) — JOP methodological diversity and replicability-contingent acceptance

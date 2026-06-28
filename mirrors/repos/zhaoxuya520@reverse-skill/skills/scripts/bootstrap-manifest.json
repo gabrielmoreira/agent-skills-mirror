@@ -209,6 +209,30 @@
       "canAutoInstall": true,
       "verifyCommand": "pentestswarm",
       "note": "群体智能渗透框架。需要 Go 1.24+ 或 Docker。支持 MCP server 模式。需要 Claude/Ollama API key。"
+    },
+    {
+      "name": "binwalk",
+      "bootstrapKind": "winget-package",
+      "wingetId": "ReFirmLabs.binwalk",
+      "docsUrl": "https://github.com/ReFirmLabs/binwalk",
+      "canAutoInstall": true,
+      "verifyCommand": "binwalk"
+    },
+    {
+      "name": "yara",
+      "bootstrapKind": "winget-package",
+      "wingetId": "VirusTotal.YARA",
+      "docsUrl": "https://github.com/VirusTotal/yara",
+      "canAutoInstall": true,
+      "verifyCommand": "yara"
+    },
+    {
+      "name": "pwntools",
+      "bootstrapKind": "pip-package",
+      "pipPackage": "pwntools",
+      "docsUrl": "https://github.com/Gallopsled/pwntools",
+      "canAutoInstall": true,
+      "verifyCommand": "pwntools"
     }
   ]
 }

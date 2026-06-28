@@ -27,11 +27,11 @@ Before starting any non-trivial task. Replaces manual agent selection with data-
 
 | Tier | Handler | Latency | Cost | When |
 |------|---------|---------|------|------|
-| 1 | Agent Booster (WASM) | <1ms | $0 | Simple transforms (var→const, add types, remove console) — skip LLM entirely |
+| 1 | Deterministic codemod (TS compiler) | ~1ms | $0 | Structural transforms with no LLM: `var-to-const`, `remove-console`, `add-logging` |
 | 2 | Haiku | ~500ms | ~$0.0002 | Low complexity (<30%), bug fixes, quick patches |
 | 3 | Sonnet/Opus | 2–5s | $0.003–$0.015 | Complex reasoning, architecture, security, multi-file refactors |
 
-When `hooks_route` returns `[AGENT_BOOSTER_AVAILABLE]` for an intent type (`var-to-const`, `add-types`, `add-error-handling`, `async-await`, `add-logging`, `remove-console`), skip the LLM and use the Edit tool directly.
+When `hooks_route` returns `[CODEMOD_AVAILABLE]` for a deterministic intent (`var-to-const`, `remove-console`, `add-logging`), call `mcp__claude-flow__hooks_codemod` with the intent + file — it applies the transform via the TypeScript compiler at $0, no LLM. Note: `add-types`, `add-error-handling`, `async-await` require judgement and route to a model (Tier 2/3) per ADR-143; they are NOT $0 codemods. Agent Booster is a fast-apply merge engine for LLM-produced edits, not the Tier-1 path.
 
 ## Recording outcomes
 

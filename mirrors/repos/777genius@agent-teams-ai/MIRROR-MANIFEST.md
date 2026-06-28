@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `777genius/agent-teams-ai` — 26 default patterns, 10 followed patterns, 23 file(s) materialized.
+Mirror of `777genius/agent-teams-ai` — 26 default patterns, 10 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `777genius/agent-teams-ai` — 26 default patterns, 10 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 23 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,18 +79,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`landing/README.md`](landing/README.md) |
 | 10 | ✓ | [`src/features/agent-graph/README.md`](src/features/agent-graph/README.md) |
 | 11 | ✓ | [`src/features/CLAUDE.md`](src/features/CLAUDE.md) |
-| 12 | ✓ | [`src/features/recent-projects/README.md`](src/features/recent-projects/README.md) |
-| 13 | ✓ | [`src/renderer/features/CLAUDE.md`](src/renderer/features/CLAUDE.md) |
-| 14 | → | [`.github/CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md) |
-| 15 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
-| 16 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
-| 17 | → | [`AGENT_CRITICAL_GUARDRAILS.md`](AGENT_CRITICAL_GUARDRAILS.md) |
-| 18 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
-| 19 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
-| 20 | → | [`docs/research/gastown-paperclip-comparison-2026-05-16.md`](docs/research/gastown-paperclip-comparison-2026-05-16.md) |
-| 21 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
-| 22 | → | [`README.md`](README.md) |
-| 23 | → | [`src/features/README.md`](src/features/README.md) |
+| 12 | ✓ | [`src/features/organizations/README.md`](src/features/organizations/README.md) |
+| 13 | ✓ | [`src/features/recent-projects/README.md`](src/features/recent-projects/README.md) |
+| 14 | ✓ | [`src/renderer/features/CLAUDE.md`](src/renderer/features/CLAUDE.md) |
+| 15 | → | [`.github/CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md) |
+| 16 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
+| 17 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
+| 18 | → | [`AGENT_CRITICAL_GUARDRAILS.md`](AGENT_CRITICAL_GUARDRAILS.md) |
+| 19 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
+| 20 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
+| 21 | → | [`docs/research/gastown-paperclip-comparison-2026-05-16.md`](docs/research/gastown-paperclip-comparison-2026-05-16.md) |
+| 22 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
+| 23 | → | [`README.md`](README.md) |
+| 24 | → | [`src/features/README.md`](src/features/README.md) |
 
 ---
 

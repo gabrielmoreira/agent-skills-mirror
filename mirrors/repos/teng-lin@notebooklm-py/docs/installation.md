@@ -230,6 +230,48 @@ print(notebooklm.__version__)
 
 For runtime configuration (env vars, profiles, parallel agents), see [configuration.md#headless-servers--containers](configuration.md#headless-servers--containers).
 
+#### Alternative: master-token auth (no cookie file to ship, survives expiry)
+
+The cookie-copy recipe above ships a `storage_state.json` that eventually
+expires (cookies are short-lived; ephemeral CI runners can't persist rotations).
+The **master-token** path instead holds one durable Google master token and
+**mints fresh web cookies from it on demand** — no browser per session, and an
+expired session **re-mints automatically** (no manual re-login). One browser
+sign-in, then headless forever.
+
+<!-- not mirrored: master-token headless bootstrap (Persona D); not part of contributor flow -->
+```bash
+pip install "notebooklm-py[headless]"        # adds gpsoauth (pure-Python)
+
+# One-time bootstrap (a visible browser opens Google's EmbeddedSetup; sign in
+# with a DEDICATED/throwaway account, and the single-use oauth_token is captured
+# automatically). Add [browser] for the auto-capture, or paste it with
+# --oauth-token <value> on a headless box.
+notebooklm login --master-token --account you@gmail.com
+
+# Ship master_token.json to the server instead of storage_state.json:
+scp ~/.notebooklm/profiles/default/master_token.json \
+    user@server:~/.notebooklm/profiles/default/master_token.json
+
+# On the server, just run commands — cookies are minted/refreshed as needed:
+notebooklm list
+# Force a re-mint by hand (or from cron) any time:
+notebooklm login --master-token-refresh
+```
+
+When a `master_token.json` sits beside a profile's `storage_state.json`, an
+expired session is recovered by re-minting from the master token in-process
+(after the normal homepage/RotateCookies/headless ladder is exhausted) — so
+long-lived headless workers self-heal.
+
+> ⚠️ **Security:** the master token is **full-account, durable, and
+> infostealer-grade** — a materially larger blast radius than an expiring
+> `storage_state.json` (it survives password changes until explicitly revoked).
+> Use a **dedicated/throwaway Google account only**, store it `0600` (the CLI
+> does), and never commit or log it. This path uses Google's Android auth flow
+> (`gpsoauth`) and is unofficial/ToS-grey, like the rest of this client. See
+> [ADR-0023](adr/0023-master-token-headless-auth.md) for the design and rationale.
+
 ### E. Contributor
 
 Working on this repo.
@@ -296,11 +338,13 @@ Source of truth: `pyproject.toml` `[project.optional-dependencies]`.
 | (none) | `httpx`, `click`, `rich`, `filelock` | All RPC operations, all CLI commands except `login`. Suffices when you ship a `storage_state.json`. | `pip install notebooklm-py` | `uv add notebooklm-py` |
 | `browser` | `playwright>=1.40.0` | `notebooklm login` (interactive). | `pip install "notebooklm-py[browser]"` | `uv add "notebooklm-py[browser]"` |
 | `cookies` | `rookiepy>=0.1.0` | `notebooklm login --browser-cookies <browser>`, `notebooklm auth inspect`. | `pip install "notebooklm-py[cookies]"` | `uv add "notebooklm-py[cookies]"` |
+| `headless` | `gpsoauth>=1.1.0` | `notebooklm login --master-token` — headless auth that mints/refreshes web cookies from a durable master token, no per-session browser. Pure-Python (in `all`). See [§ D](#d-headless-server-or-ci). | `pip install "notebooklm-py[headless]"` | `uv add "notebooklm-py[headless]"` |
+| `impersonate` | `curl_cffi>=0.11` | **Experimental.** Browser TLS/JA3 impersonation transport — set `NOTEBOOKLM_TRANSPORT=curl_cffi` to route the authenticated API surface through a Chrome-fingerprinted connection (insurance vs TLS fingerprint-gating); override the profile with `NOTEBOOKLM_IMPERSONATE` (default `chrome`, e.g. `safari`, `chrome131`). Native wheels. | `pip install "notebooklm-py[impersonate]"` | `uv add "notebooklm-py[impersonate]"` |
 | `markdown` | `markdownify>=0.14.1` | `notebooklm source fulltext -f markdown`. | `pip install "notebooklm-py[markdown]"` | `uv add "notebooklm-py[markdown]"` |
 | `mcp` | `fastmcp>=2.14` | Run the MCP server (`notebooklm-mcp`) so an MCP client/agent can drive NotebookLM as tools. | `pip install "notebooklm-py[mcp]"` | `uv add "notebooklm-py[mcp]"` |
 | `server` | `fastapi`, `uvicorn[standard]`, `python-multipart` | The localhost REST API server (`notebooklm-server`, experimental). See [§ REST API server](#rest-api-server). | `pip install "notebooklm-py[server]"` | `uv add "notebooklm-py[server]"` |
 | `dev` | pytest stack, mypy, ruff (`==0.15.15` exact pin), pre-commit (`>=4.5.1`), vcrpy | Contributor tooling only. Not sufficient for this repo's default `uv run pytest`; add `browser` too because some unit tests import Playwright. | `pip install "notebooklm-py[dev]"` | `uv add "notebooklm-py[dev]"` (in your project) — but contributors *to this repo* use the [Persona E](#e-contributor) `uv sync` flow instead |
-| `all` | Resolves to `browser` + `dev` + `markdown` + `mcp` + `server` (**not `cookies`**) | Contributors who do not need `rookiepy`. | `pip install "notebooklm-py[all]"` | `uv add "notebooklm-py[all]"` (in your project) — see [All vs All-Extras](#all-vs-all-extras) |
+| `all` | Resolves to `browser` + `dev` + `headless` + `markdown` + `mcp` + `server` (**not `cookies`**) | Contributors who do not need `rookiepy`. | `pip install "notebooklm-py[all]"` | `uv add "notebooklm-py[all]"` (in your project) — see [All vs All-Extras](#all-vs-all-extras) |
 
 > **Note on `uv` columns:** the `uv (in your project)` column is for users adding `notebooklm-py` as a dependency in **their own** project (requires a `pyproject.toml` in that project). Contributors working inside *this* repo use the Persona E flow (`uv sync --frozen --extra ...`), governed by this repo's `uv.lock`. Do not run `uv sync` outside a project — it errors with `No pyproject.toml found`.
 

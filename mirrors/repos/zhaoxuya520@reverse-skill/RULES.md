@@ -82,7 +82,7 @@ If already written (global config contains "reverse skill routing" content), che
 - internal network, 内网渗透, lateral movement, 横向移动, domain penetration, 域渗透, AD attack, BloodHound
 - privilege escalation, 权限提升, credential extraction, 凭证提取, Mimikatz, Kerberoasting, DCSync
 - C2, persistence, 持久化, Cobalt Strike, Sliver, Havoc
-- game reverse, 游戏逆向, anti-cheat, 反作弊, Unity, IL2CPP, Unreal Engine, Cheat Engine
+- game reverse, 游戏逆向, anti-cheat, 反作弊, Unity, IL2CPP, Cheat Engine
 - symbol migration, 符号迁移, bindiff, cross-version, PDB missing
 - security diagram, 安全图表, attack path diagram, 攻击路径图, security architecture, 安全架构图 — trigger `diagram-generator/`
 

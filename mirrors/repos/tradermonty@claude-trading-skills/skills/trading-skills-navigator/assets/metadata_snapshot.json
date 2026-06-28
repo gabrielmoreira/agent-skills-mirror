@@ -721,6 +721,32 @@
       "timeframe": "weekly"
     },
     {
+      "category": "advanced-satellite",
+      "difficulty": "advanced",
+      "display_name": "Stockbee Episodic Pivot Analyzer",
+      "id": "stockbee-episodic-pivot-analyzer",
+      "integrations": [
+        {
+          "id": "catalyst_events_json",
+          "requirement": "required",
+          "type": "local_file"
+        },
+        {
+          "id": "fmp",
+          "requirement": "optional",
+          "type": "market_data"
+        },
+        {
+          "id": "local_calculation",
+          "requirement": "not_required",
+          "type": "calculation"
+        }
+      ],
+      "status": "beta",
+      "summary": "Analyze Stockbee-style Day 1 Episodic Pivot candidates from earnings, guidance, M&A, FDA, analyst, contract, product, short-squeeze, and story/theme catalysts using catalyst quality, gap/range expansion, volume shock, neglect/revaluation context, liquidity, and EP-day-low risk.",
+      "timeframe": "event-driven"
+    },
+    {
       "category": "swing-opportunity",
       "difficulty": "intermediate",
       "display_name": "Stockbee Momentum Burst Screener",
@@ -744,6 +770,32 @@
       ],
       "status": "beta",
       "summary": "Screen US stocks for Stockbee-style 3-5 day momentum burst candidates using 4% breakout, dollar breakout, range expansion, volume expansion, setup quality, and risk-distance filters.",
+      "timeframe": "daily"
+    },
+    {
+      "category": "trade-memory",
+      "difficulty": "intermediate",
+      "display_name": "Stockbee Setup Fluency Trainer",
+      "id": "stockbee-setup-fluency-trainer",
+      "integrations": [
+        {
+          "id": "prices_json",
+          "requirement": "optional",
+          "type": "local_file"
+        },
+        {
+          "id": "fmp",
+          "requirement": "optional",
+          "type": "market_data"
+        },
+        {
+          "id": "local_calculation",
+          "requirement": "not_required",
+          "type": "calculation"
+        }
+      ],
+      "status": "beta",
+      "summary": "Build a Stockbee-style setup model book from momentum-burst screener candidates, then update 3-day and 5-day forward outcomes with MFE/MAE, stop-hit status, outcome tags, and cohort statistics.",
       "timeframe": "daily"
     },
     {
@@ -1180,6 +1232,55 @@
         "part-time-swing-trader",
         "growth-investor",
         "macro-discretionary-trader"
+      ]
+    },
+    {
+      "api_profile": "mixed",
+      "cadence": "daily",
+      "difficulty": "advanced",
+      "display_name": "Stockbee EP Daily",
+      "estimated_minutes": 35,
+      "id": "stockbee-ep-daily",
+      "optional_skills": [
+        "earnings-trade-analyzer",
+        "stockbee-momentum-burst-screener",
+        "pead-screener",
+        "theme-detector",
+        "breakout-trade-planner"
+      ],
+      "prerequisite_workflows": [
+        "market-regime-daily"
+      ],
+      "required_skills": [
+        "stockbee-episodic-pivot-analyzer",
+        "technical-analyst",
+        "position-sizer",
+        "trader-memory-core"
+      ],
+      "target_users": [
+        "part-time-swing-trader",
+        "growth-investor"
+      ]
+    },
+    {
+      "api_profile": "no-api-basic",
+      "cadence": "daily",
+      "difficulty": "intermediate",
+      "display_name": "Stockbee Setup Fluency Loop",
+      "estimated_minutes": 20,
+      "id": "stockbee-fluency-loop",
+      "optional_skills": [
+        "trader-memory-core",
+        "signal-postmortem",
+        "backtest-expert"
+      ],
+      "prerequisite_workflows": [],
+      "required_skills": [
+        "stockbee-setup-fluency-trainer"
+      ],
+      "target_users": [
+        "part-time-swing-trader",
+        "growth-investor"
       ]
     },
     {

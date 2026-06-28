@@ -1,6 +1,6 @@
 ---
 name: odoo-code-review
-description: Review Odoo code for correctness, security, performance, and version-specific standards (Odoo 17, 18, or 19). Use when reviewing Odoo modules, diffs, or pull requests; produce a scored report with weighted criteria.
+description: Review Odoo code for correctness, security, performance, and version-specific standards (Odoo 16, 17, 18, or 19). Use when reviewing Odoo modules, diffs, or pull requests; produce a scored report with weighted criteria.
 ---
 
 # Odoo Code Review
@@ -11,7 +11,7 @@ Review Odoo code changes against clear criteria, identify risks, and score using
 
 ## Resolve the target Odoo version
 
-Before reviewing, resolve `ODOO_VERSION` (one of `17.0`, `18.0`, `19.0`) in this order. Stop at the first one that succeeds:
+Before reviewing, resolve `ODOO_VERSION` (one of `16.0`, `17.0`, `18.0`, `19.0`) in this order. Stop at the first one that succeeds:
 
 1. **Explicit argument** passed to the agent invocation (e.g. `odoo_version: "19.0"`).
 2. **Project config**, in this order:
@@ -23,7 +23,7 @@ Before reviewing, resolve `ODOO_VERSION` (one of `17.0`, `18.0`, `19.0`) in this
 
 Derive `ODOO_MAJOR` from `ODOO_VERSION` by stripping `.0` (e.g. `18.0` → `18`). All guide paths below use these placeholders.
 
-Supported versions: **17.0, 18.0, 19.0**. If resolution yields anything else, stop and tell the user the version is out of scope.
+Supported versions: **16.0, 17.0, 18.0, 19.0**. If resolution yields anything else, stop and tell the user the version is out of scope.
 
 ## Pre-review Requirements
 
@@ -80,8 +80,8 @@ Rules below are version-neutral unless they reference `api-highlights.md`. Alway
 - ✅ `@api.model_create_multi` on `create()` overrides (see `api-highlights.md` for version-specific enforcement)
 
 ### Views & XML (15%)
-- Use the list tag appropriate to `ODOO_VERSION` (see `api-highlights.md`: `<tree>` in 17, `<list>` in 18+).
-- Use direct-expression attrs (`invisible="..."`, `readonly="..."`, `required="..."`) — legacy `attrs=`/`states=` are rejected in 17+.
+- Use the list tag appropriate to `ODOO_VERSION` (see `api-highlights.md`: `<tree>` in 16/17, `<list>` in 18+).
+- Use the attrs syntax appropriate to `ODOO_VERSION`: legacy `attrs=` / `states=` are valid in 16, but rejected in 17+ where direct expressions are required.
 - Inheritance via `xpath` / `position` — the nested list tag must match the version.
 - Avoid duplicate `name=` attributes in records.
 
@@ -89,7 +89,7 @@ Rules below are version-neutral unless they reference `api-highlights.md`. Alway
 - `Monetary` with `currency_field`
 - `Many2one` with `ondelete`
 - Computed field with `store=True` if filtered/searched
-- Aggregation parameter: `group_operator=` (v17) vs `aggregator=` (v18+) — see `api-highlights.md`.
+- Aggregation parameter: `group_operator=` (v16/17) vs `aggregator=` (v18+) — see `api-highlights.md`.
 
 ### Decorators (10%)
 - `@api.depends` with complete dotted paths

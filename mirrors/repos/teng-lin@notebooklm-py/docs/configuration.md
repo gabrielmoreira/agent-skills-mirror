@@ -119,6 +119,22 @@ A persistent Chromium user data directory used during `notebooklm login`.
 
 **To reset:** Delete the `browser_profile/` directory and run `notebooklm login` again.
 
+### Master Token (`master_token.json`)
+
+Written only by `notebooklm login --master-token` (the `[headless]` extra). Holds
+a durable Google master token (mode `0600`) that mints/refreshes the profile's
+`storage_state.json` cookies with no per-session browser. When present beside a
+profile's `storage_state.json`, an expired session re-mints from it
+automatically.
+
+```json
+{"version": 1, "email": "...", "android_id": "<hex>", "master_token": "aas_et/..."}
+```
+
+> ⚠️ **Full-account, durable credential** — larger blast radius than
+> `storage_state.json`; dedicated/throwaway account only. See
+> [installation.md#alternative-master-token-auth-no-cookie-file-to-ship-survives-expiry](installation.md#d-headless-server-or-ci).
+
 ## Environment Variables
 
 | Variable | Description | Default |

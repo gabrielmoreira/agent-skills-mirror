@@ -479,7 +479,6 @@ Base pptx pitfalls (shell quoting, zsh `[N]` globbing, hex `#` prefix, `\n` in p
 | Writing `--prop text="$9/mo"` with double quotes | Shell eats `$9` as empty variable → text stored as `/mo` or stray `.`. Use single quotes: `--prop text='$9/mo'`. Gate 2 morph addendum greps this leak. |
 | Using `<a:br/>` literal inside `--prop text='line1<a:br/>line2'` | Stored as 7 literal characters, not a line break. Use `officecli add "/slide[N]/shape[@id=K]" --type paragraph` once per line (M-6). |
 | Using `shape[name^=!!actor-]` selector | `officecli query` has no `^=` operator — returns `invalid_selector`. Use `get /slide[N] --depth 1 --json \| jq '.data.results[0].children[]? \| select(.format.name \| startswith("!!actor-"))'`. |
-| Running `validate` while resident mode is open | Pptx v2 inherits this trap — `officecli close "$FILE"` BEFORE `validate` |
 
 ## Known Issues & Pitfalls
 

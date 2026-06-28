@@ -106,7 +106,7 @@ See `references/vault-schema.md` for full structural details.
 ## Core Operating Principles
 
 ### AI-first vault rule (applies to every note)
-The vault is designed for **future-Claude** to read and reason over, not for human review. Every note Claude writes - across all 45 commands - must follow `references/ai-first-rules.md`:
+The vault is designed for **future-Claude** to read and reason over, not for human review. Every note Claude writes - across all 44 commands - must follow `references/ai-first-rules.md`:
 
 1. **Self-contained context** - each note explains itself; don't rely on backlinks alone
 2. **"For future Claude" preamble** - 2-3 sentence summary so Claude can decide relevance in 10 seconds
@@ -380,27 +380,16 @@ Return the path of the daily note when done.
 
 ---
 
-### `/obsidian-agenda`
+### `/obsidian-calendar <mode>`
 
-**Reads Google Calendar and writes a re-derivable AI-first snapshot to the vault.** Claude Code only (needs the Google Calendar MCP).
+**One calendar command with four modes.** Claude Code only (needs the Google Calendar MCP). The first word selects the mode; a bare range word defaults to `agenda`; no argument at all defaults to `agenda today`.
 
-Range argument: `today` (default), `tomorrow`, `week`, `next-week`, `YYYY-MM-DD`, or `YYYY-MM-DD..YYYY-MM-DD`. Pulls the primary calendar, cross-links attendees to `[[Person]]` notes, and flags conflicts, 3+ back-to-back stretches, working-hours focus blocks, and externally-organized events. Saves to `wiki/agenda/` as `type: agenda-snapshot` (Google Calendar stays the source of truth; the note is a snapshot). Never paraphrases event titles or invents attendees.
+- **`agenda [range]`** - reads the calendar and writes a re-derivable AI-first snapshot to `wiki/agenda/` (`type: agenda-snapshot`). Range: `today`, `tomorrow`, `week`, `next-week`, a date, or a range. Cross-links attendees to `[[Person]]` notes; flags conflicts, 3+ back-to-back stretches, working-hours focus blocks, and externally-organized events. Read-only on the calendar; Google Calendar stays the source of truth.
+- **`reconcile [window]`** - flags commitments the vault implies (project `next_action`s, due tasks, dated commitments in daily notes, fixed dates in `CRITICAL_FACTS.md`) that are NOT on the calendar, plus events with no vault context. Flag only - never adds or changes events.
+- **`meeting [selector]`** - turns an event (`last`, `next`, `today`, `event-id:<id>`, or fuzzy title) into a `type: meeting` note in `wiki/meetings/` with metadata pre-filled and **empty** Notes / Decisions / Action items sections (never fabricate meeting content). Cross-links attendees, backlinks any task whose `calendar-event-id` matches.
+- **`schedule <args>`** - the only mode that writes to the calendar. Standalone (`"<title>" <when> <duration>`), from a task (`task:<path>`), or suggest-a-time (`task:<...> suggest:<window>`). Resolves attendee emails from person notes (never guesses), conflict-checks before writing, requests a Meet link when participants span domains, and writes `calendar-event-id` back into the task so a re-run reschedules rather than duplicating.
 
----
-
-### `/obsidian-schedule`
-
-**Creates or moves a Google Calendar event, then links it back to the vault.** Claude Code only.
-
-Three modes: standalone (`"<title>" <when> <duration>`), from a vault task (`task:<path>`), or suggest-a-time (`task:<...> suggest:<window>`). Resolves attendee emails from each person note's `email:` field and never guesses one; conflict-checks before writing; requests a Meet link when participants span domains. On success it writes `calendar-event-id` / `calendar-event-url` back into the task frontmatter, so a re-run reschedules rather than duplicating.
-
----
-
-### `/obsidian-meeting`
-
-**Generates a meeting note from a Google Calendar event.** Claude Code only.
-
-Resolve the event (`last`, `next`, `today`, `event-id:<id>`, or fuzzy title), cross-link attendees to person notes, and backlink any task whose frontmatter `calendar-event-id` matches. Saves to `wiki/meetings/` as `type: meeting` with the event metadata pre-filled and **empty** Notes / Decisions / Action items sections - never fabricate meeting content that did not happen.
+(Consolidated from the former `/obsidian-agenda`, `/obsidian-reconcile`-style calendar check, `/obsidian-meeting`, and `/obsidian-schedule` - same behaviors, one entry point. The natural-language triggers for all four still route here.)
 
 ---
 
@@ -567,6 +556,19 @@ Steps:
 
 ---
 
+### `/obsidian-board-hygiene [optional: board name]`
+
+**Bulk-triages a kanban board whose columns have gone stale.** Where `/obsidian-board` only flags overdue items, this clears them.
+
+Steps:
+1. Read `_CLAUDE.md` for the boards folder and kanban convention (columns, `@{date}` format)
+2. Read the target board (fuzzy-match; if none given, list boards and ask), parse every open item, compute age vs today
+3. Group items into overdue (`@{date}` past), stale (older than N days, default 14), and undated; show counts per column so the bloat is visible
+4. Propose ONE verdict per stale/overdue item with a one-line reason - done / reschedule / archive / keep - as a batch the user approves, edits, or overrides
+5. Apply approved verdicts in place (additive moves + strikethrough, never silent deletion), then report what moved and log it
+
+---
+
 ### `/obsidian-project [name]`
 
 **Creates or updates a project note.**
@@ -615,6 +617,14 @@ Steps:
 6. For safe fixes (missing frontmatter, obvious duplicates, creating pages for concept gaps), offer to fix them automatically
 7. For destructive fixes (archiving, merging, resolving contradictions), list them and ask for explicit confirmation before touching anything
 8. Append to `log.md` with severity counts
+
+---
+
+### `/obsidian-retrieval-eval [optional: N to generate | report]`
+
+**Measures how well vault search actually finds the right note - so improving retrieval is a number, not a hunch.**
+
+Hybrid command backed by `scripts/eval/retrieval_eval.py`, which reuses the REAL search engine (`integrations/obsidian-mcp-server/vault_ops.py`, the term-frequency, title-weighted ranking behind `/obsidian-find` and the MCP connector). It bootstraps its own eval set from the vault (an LLM writes a question per sampled note, avoiding the note's title words so it tests retrieval not string-match; the note is the gold answer), then scores recall@1/3/5/10 and MRR and lists the failures - misses and notes buried below #3, naming which note wrongly ranked #1. Claude interprets the numbers, turns failures into ranked retrieval fixes (each a hypothesis to re-measure on the same cases), and optionally writes an AI-first baseline note. Generated cases hold private note paths and are gitignored. The first run on a 1,000+ note vault scored **0% recall@10** on paraphrased questions (long `raw/` transcripts and `log.md` dominate term-frequency ranking) - proving the cheap structural fixes (exclude `raw/`, weight by `type:`) should be measured before reaching for a vector index.
 
 ---
 
@@ -835,6 +845,14 @@ Topic-driven (unlike `/obsidian-synthesize`, which scans the whole vault unpromp
 
 ---
 
+### `/obsidian-distill [note or source]`
+
+**Condenses one source into key claims, each tagged with provenance back to the exact block it came from.** A distillation, not a summary: condensed enough to read fast, anchored enough to audit.
+
+Segments the source into numbered, citable blocks (`B1`, `B2`, ...), extracts the key claims, and tags each claim with the block(s) it came from (`(src: B3)`). A claim with no traceable source does not make the cut - and gets reported as dropped, never silently cut. Inferences the source implies but never states go in a separate labelled section so distilled fact and reasoning never blur. Saves a `type: distillation` note (with the verbatim `source` and the numbered source blocks at the bottom), links it from the original. This is the trust primitive for a vault more than one person reads - the differentiator behind the team-vault direction. Pairs with `/obsidian-ingest` (brings the source in) and `/vault-deep-synthesis` (cross-references many notes).
+
+---
+
 ### `/idea-discovery`
 
 **Ranks 3-5 next-direction candidates from ungraduated ideas, open project questions, and orphan research.**
@@ -871,26 +889,13 @@ If `index.md` doesn't exist, offer to run `/obsidian-init` to generate it.
 
 ---
 
-### `/obsidian-adr`
+### `/obsidian-decide [topic] [--formal]`
 
-**Generates a decision record when the vault structure changes.**
+**Records decisions at two depths.** Default mode captures the decisions made in a conversation as dated one-liners appended to the relevant project notes' `## Key Decisions` sections (and the daily note) - for the steady stream of choices made while working. `--formal` (or leading with `adr`) instead writes one full Architecture Decision Record - Decision / Context / Options Considered / Rationale / Consequences / Related - to the decisions folder (resolved per `references/folder-map.md`: wiki-style `wiki/decisions/`, Obsidian-style `Knowledge/`), links it from the project's Key Decisions and `index.md`, and logs it. Use the formal mode for a structural or directional decision worth a real writeup; `python scripts/mine_commit_decisions.py` surfaces decision-shaped commits as ADR candidates.
 
-Steps:
-1. Identify the structural decision from the argument or conversation context
-2. Create `Knowledge/ADR-YYYY-MM-DD — Title.md` with:
-   - **Decision**: one-line summary
-   - **Context**: what prompted this
-   - **Options Considered**: 2-3 alternatives evaluated
-   - **Rationale**: why this option won
-   - **Consequences**: what changed - notes created, moved, or restructured
-   - **Related**: links to affected notes
-3. Update the relevant project note's Key Decisions section with a link to the ADR
-4. Update `index.md` and append to `log.md`
-5. Link from today's daily note
+The vault knows why it's structured the way it is - when a future session asks "why?", the formal record answers. `/obsidian-graduate`, `/obsidian-health` structural fixes, and folder reorganizations may offer to write a formal record; they offer, they don't force.
 
-The vault knows why it's structured the way it is. When a future session asks "why?" - the ADR has the answer.
-
-Can also be triggered automatically by `/obsidian-graduate`, `/obsidian-health` structural fixes, or folder reorganizations. In those cases, offer to create an ADR - don't force it.
+(Consolidated: the former standalone `/obsidian-adr` is now `/obsidian-decide --formal`; its triggers still route here.)
 
 ---
 

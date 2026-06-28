@@ -46,6 +46,9 @@ $scriptRefs = @{
     'analyzeHeadless' = @('reverse-engineering/SKILL.md')
     'proxycat' = @('pentest-tools/SKILL.md')
     'nmap' = @('pentest-tools/SKILL.md')
+    'binwalk' = @('firmware-pentest/SKILL.md')
+    'yara' = @('malware-analysis/SKILL.md')
+    'pwntools' = @('reverse-engineering/SKILL.md', 'reverse-engineering/patterns-ctf*.md')
 }
 
 $reports = Get-ReverseToolReport
@@ -79,7 +82,7 @@ $markdownContent = ($markdownLines -join [Environment]::NewLine) + [Environment]
 $markdownContent | Set-Content -LiteralPath $OutputMarkdown -Encoding utf8
 
 # --- Capability status view ---
-$capabilityNames = @('jadx', 'apktool', 'frida', 'frida-ps', 'idalib-mcp', 'jshookmcp', 'anything-analyzer', 'idapro', 'r2', 'rabin2', 'adb', 'agent-browser', 'ghidra-mcp', 'seclists', 'proxycat', 'burpsuite-mcp', 'pentestswarm', 'nmap')
+$capabilityNames = @('jadx', 'apktool', 'frida', 'frida-ps', 'idalib-mcp', 'jshookmcp', 'anything-analyzer', 'idapro', 'r2', 'rabin2', 'adb', 'agent-browser', 'ghidra-mcp', 'seclists', 'proxycat', 'burpsuite-mcp', 'pentestswarm', 'nmap', 'binwalk', 'yara', 'pwntools')
 $capabilityRows = @()
 foreach ($capName in $capabilityNames) {
     $state = Get-ReverseCapabilityState -Name $capName
@@ -99,6 +102,7 @@ foreach ($capName in $capabilityNames) {
         ready = $state.Ready
         mcp_registered = $state.Registered
         service_online = $state.ServiceOnline
+        mcp_http_verified = $state.McpHttpVerified
         can_auto_install = $state.CanAutoInstall
         bootstrap_kind = $state.BootstrapKind
     }
@@ -111,7 +115,7 @@ $markdownCapLines = @(
     '',
     '## 能力状态视图 (Capability Status)',
     '',
-    '| 能力 | 工具可用 | Ready | MCP 已注册 | 服务在线 | 可自动安装 | 安装方式 |',
+    '| 能力 | 工具可用 | Ready | MCP 已注册 | 服务在线 | MCP HTTP | 可自动安装 | 安装方式 |',
     '|------|---------|-------|-----------|---------|-----------|---------|'
 )
 foreach ($cap in $capabilityRows) {
@@ -119,9 +123,10 @@ foreach ($cap in $capabilityRows) {
     $readyText = if ($cap.ready) { '✓' } else { '✗' }
     $mcpText = if ($cap.mcp_registered) { '✓' } else { '—' }
     $svcText = if ($cap.service_online) { '✓' } else { '—' }
+    $mcpHttpText = if ($cap.mcp_http_verified) { '✓' } else { '—' }
     $autoText = if ($cap.can_auto_install) { '✓' } else { '✗' }
     $kindText = if ($cap.bootstrap_kind) { $cap.bootstrap_kind } else { '—' }
-    $markdownCapLines += "| $($cap.name) | $toolText | $readyText | $mcpText | $svcText | $autoText | $kindText |"
+    $markdownCapLines += "| $($cap.name) | $toolText | $readyText | $mcpText | $svcText | $mcpHttpText | $autoText | $kindText |"
 }
 $markdownCapLines += ''
 $markdownCapLines += '> ✓ = 是 | ✗ = 否 | — = 不适用或未检测'

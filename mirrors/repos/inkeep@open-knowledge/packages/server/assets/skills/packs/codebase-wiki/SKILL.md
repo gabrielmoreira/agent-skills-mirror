@@ -46,7 +46,7 @@ The `workflow({ kind: "wiki" })` guide is the authoritative source for exactly h
 ## Source-reference convention
 
 - **Intra-wiki navigation** → OK doc links — they build the backlink / hub / orphan graph, so link liberally; density is how the wiki stays navigable.
-- **Code references** → relative links + symbol code-spans (`internal`) or GitHub blob URLs (`public`). Source-file links produce **no dead-link noise** (the graph only tracks `.md`/`.mdx` edges). Never invent paths — reference only files you actually read.
+- **Code references** → relative links + symbol code-spans (`internal`) or GitHub blob URLs (`public`). Source-file links stay out of the navigation graph (`links` tracks only `.md`/`.mdx` edges, so they never show as graph dead-links or orphans) — but a wrong-depth path still surfaces in the write/edit `brokenLinks` response (`no-such-file`, or `unresolvable` if it overshoots the content root), so count the `../` hops from the page's folder. Never invent paths — reference only files you actually read.
 
 The full rules — the GitHub-URL / relative fallback, the `#Lxx` caveat, and the exact code-span shape — live in the `workflow({ kind: "wiki" })` guide.
 

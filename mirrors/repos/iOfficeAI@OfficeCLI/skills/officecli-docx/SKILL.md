@@ -43,7 +43,7 @@ If in doubt, `view text` after writing and compare character-for-character.
 
 **Incremental execution.** `officecli` mutates the file on every call. Run commands one at a time and check each exit code — a 50-command script that fails at command 3 cascades silently. After any structural op (new style, table, TOC, section break) run `get` on it before stacking more.
 
-**Resident mode is the default**, not an optimization: `officecli open <file>` at the start, `officecli close <file>` at the end — it avoids re-parsing the XML every call. For many paragraphs of one style, use `batch` (one open/save cycle for the whole array).
+**Open/save lifecycle:** `officecli open <file>` at the start, `officecli save <file>` at the end to flush to disk — `save` only writes and leaves the resident warm for follow-up edits; reach for `officecli close <file>` only to release the resident on a one-shot handoff. Both are always safe (never error or lose work). For many paragraphs of one style, use `batch` (one pass for the whole array). **Flush only at the non-officecli boundary:** officecli's own reads always see your edits; run `save`/`close` only before a non-officecli program reads the file (python-docx, Word, a renderer, delivery).
 
 **`$FILE` convention.** All commands use `"$FILE"` — set it once (`FILE="your-doc.docx"`). Never copy a literal `doc.docx` / `review.docx` into output — always substitute your actual target.
 
@@ -85,7 +85,7 @@ Six steps. Every non-trivial build follows this shape.
 2. **Orient.** Existing file: `officecli view "$FILE" outline` — heading tree, section count, whether a TOC / watermark / tracked changes already exist. Never edit blind.
 3. **Build incrementally.** Structural first, content next, formatting last: styles & numbering defs → sections / page setup → headings & body → tables / images / fields / TOC → headers / footers → comments. After each structural op, `get` it back before stacking on top.
 4. **Format to spec.** Explicit heading sizes, spacing, widths, alignment, tabs, list indents — formatting is part of the deliverable, not optional polish.
-5. **Close, then trust structure over cached text.** `officecli close "$FILE"` writes the XML. TOC / PAGE / NUMPAGES / SEQ / PAGEREF fields carry **cached values** that may be stale or empty until a human recalculates (F9 in Word). Confirm fields *exist* (`get --depth 3` finds `<w:fldChar>`) rather than trusting the visible text.
+5. **Save, then trust structure over cached text.** `officecli save "$FILE"` writes the XML. TOC / PAGE / NUMPAGES / SEQ / PAGEREF fields carry **cached values** that may be stale or empty until a human recalculates (F9 in Word). Confirm fields *exist* (`get --depth 3` finds `<w:fldChar>`) rather than trusting the visible text.
 6. **QA — assume there are problems.** You are done after one fix-and-verify cycle finds zero new issues, not when your last command exited 0. See QA.
 
 ## Quick Start
@@ -102,7 +102,7 @@ officecli add "$FILE" /body --type paragraph --prop text="Key Drivers" --prop st
 officecli add "$FILE" /body --type paragraph --prop text="Enterprise renewals, upsell, and a new EMEA region." --prop size=11pt
 officecli add "$FILE" / --type footer --prop type=default --prop size=9pt --prop text="Page " --prop field=page
 officecli set "$FILE" "/footer[1]/p[1]" --prop align=center
-officecli close "$FILE"
+officecli save "$FILE"
 officecli validate "$FILE"
 ```
 
@@ -445,7 +445,7 @@ Borders use the format `style;size;color;space`: `single;4;FF0000;1`. Hex colors
 2. `officecli view "$FILE" outline` — heading hierarchy (no H1 → H3 skips), TOC presence, section count.
 3. `officecli view "$FILE" text --max-lines 400` — typos, stray `\$`/`\t`/`\n` literals, placeholder tokens.
 4. `officecli validate "$FILE"` — schema check (the Delivery Gate re-runs this on the closed, on-disk file).
-5. **Visual pass — whole document as a contact sheet** (vision-capable agents only — if you cannot interpret images, skip this step: steps 1–4 are your ceiling, and flag the document "not visually verified" at handoff). `officecli view "$FILE" screenshot --grid auto -o /tmp/sheet.png`, then Read it. `--grid auto` tiles **every page** into one image (auto column count; `--grid 4` to force) — you *see* pagination, blank pages, heading rhythm, lopsided margins, and TOC/cover placement, not just the DOM. Windows+Word renders each page through real Word; elsewhere HTML. No headless browser (needs Chrome/Edge/Chromium/Firefox or `playwright`)? Fall back to `view html` and flag cross-page breaks / alignment / rhythm as "not visually verified". Thumbnails only **locate**: confirm any fine call (column alignment, line spacing, indents, dark-on-dark, caption placement) on the suspect page at full resolution with `screenshot --page N` (no `--grid`; real Word on Windows). "validate pass" is not delivery; "looks like a real document" is.
+5. **Visual pass — whole document as a contact sheet** (vision-capable agents only — if you cannot interpret images, skip this step: steps 1–4 are your ceiling, and flag the document "not visually verified" at handoff). `officecli view "$FILE" screenshot --grid auto -o /tmp/sheet.png`, then Read it. `--grid auto` tiles **every page** into one image (auto column count; `--grid 4` to force) — you *see* pagination, blank pages, heading rhythm, lopsided margins, and TOC/cover placement, not just the DOM. Windows+Word renders each page through real Word; elsewhere HTML. If the screenshot fails, fall back to `view html` and flag cross-page breaks / alignment / rhythm as "not visually verified". Thumbnails only **locate**: confirm any fine call (column alignment, line spacing, indents, dark-on-dark, caption placement) on the suspect page at full resolution with `screenshot --page N` (no `--grid`; real Word on Windows). "validate pass" is not delivery; "looks like a real document" is.
 6. If anything failed, fix, then **rerun the full cycle** — one fix commonly creates another problem.
 
 ### Delivery Gate (run before handing off — any failure = REJECT, do NOT deliver)

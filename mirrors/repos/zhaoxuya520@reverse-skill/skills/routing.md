@@ -21,9 +21,10 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | Firmware / IoT | `reverse-engineering/platforms.md` — binwalk/ARM/MIPS | `reverse-engineering/tools.md` — Ghidra headless |
 | WASM / Python bytecode / .NET | `reverse-engineering/languages.md` | Check specific language section |
 | macOS / iOS | `reverse-engineering/platforms.md` — Mach-O/ObjC/Swift | `mobile-reverse/` for iOS-specific |
-| Game (Unity/Unreal) | `game-security/` — engine reverse, anti-cheat, IL2CPP/Mono | `ida-reverse/` deep analysis |
+| Game (Unity) | `reverse-engineering/` — engine reverse, anti-cheat, IL2CPP/Mono (see seed-014) | `ida-reverse/` deep analysis |
 | Memory dump / PCAP | `reverse-engineering/platforms.md` | `reverse-engineering/patterns*.md` |
 | Malware / virus sample | `reverse-engineering/` — YARA/sandbox/behavior analysis | `ida-reverse/` deep analysis |
+| OLLVM-obfuscated binary (控制流平坦化/虚假控制流/MBA) | `reverse-engineering/references/ollvm-deobfuscation.md` — 完整脱密工作流 | obpo-plugin / d810-ng (IDA) / ollvm-unflattener (Miasm) / ollvm-breaker (Binary Ninja) / angr / deollvm (ARM64)
 | Cryptography / encryption algorithms | `reverse-engineering/patterns*.md` — crypto patterns | `js-reverse/` (if frontend crypto) |
 | Protocol reverse / custom protocol | `reverse-engineering/platforms.md` — network protocols | `js-reverse/` (if WebSocket/HTTP) |
 | Go / Rust binary | `reverse-engineering/languages-compiled.md` + `go-reverse.md` | `ida-reverse/` or `radare2/` |
@@ -52,6 +53,12 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | "jshookmcp / JS hook / CDP debug" | `js-reverse/SKILL.md` — same JS/Web chain |
 | "APK unpack / repack / modify smali" | `apk-reverse/SKILL.md` — decode→rebuild-sign-install |
 | "bypass anti-debug / anti-detection" | `reverse-engineering/anti-analysis.md` |
+| "OLLVM deobfuscate / 控制流平坦化去除 / deflat / 脱混淆" | `reverse-engineering/references/ollvm-deobfuscation.md` — 完整工作流 |
+| "obpo / obpo-plugin / d810-ng / d810" | `reverse-engineering/references/ollvm-deobfuscation.md` — 现代反混淆工具 |
+| "Hikari / Polaris / Pluto / O-MVLL / Arkari / goron 混淆" | `reverse-engineering/references/ollvm-deobfuscation.md` — 现代 OLLVM 变种处理 |
+| "Tigress / Hodur / Approov 混淆" | `reverse-engineering/references/ollvm-deobfuscation.md` — d810-ng 专用 unflattener |
+| "Trap Angr / angr 路径爆炸" | `reverse-engineering/references/ollvm-deobfuscation.md` — Pluto/Polaris 陷阱处理 |
+| "BR 混淆 / 间接分支混淆去除" | `reverse-engineering/references/ollvm-deobfuscation.md` — DeObfBR + 数据段只读 |
 | "what obfuscation / VM is this" | `reverse-engineering/patterns*.md` — match by pattern |
 | "Go/Rust/Swift reverse" | `reverse-engineering/languages-compiled.md` + `go-reverse.md` |
 | "kernel driver / Rootkit / LKM" | `reverse-engineering/kernel-driver-reverse.md` |
@@ -64,10 +71,9 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | "open webpage / browser automation / fill form" | `browser-automation/SKILL.md` — Playwright |
 | "crawl page / screenshot / auto login" | `browser-automation/SKILL.md` |
 | "desktop automation / Windows automation" | `browser-automation/SKILL.md` — OpenReverse |
-| "game reverse / anti-cheat / hack analysis" | `game-security/SKILL.md` |
-| "Unity / IL2CPP / Mono" | `game-security/SKILL.md` — Unity game reverse |
-| "Unreal Engine / UE reverse" | `game-security/SKILL.md` — UE game reverse |
-| "Cheat Engine / memory scan" | `game-security/SKILL.md` — memory analysis |
+| "game reverse / anti-cheat / hack analysis" | `reverse-engineering/SKILL.md` — game reverse (IL2CPP/Unity/Cheat Engine) |
+| "Unity / IL2CPP / Mono" | `reverse-engineering/SKILL.md` — Unity + `seed-014_unity-il2cpp-reverse.md` |
+| "Cheat Engine / memory scan" | `reverse-engineering/SKILL.md` — Cheat Engine memory analysis |
 | "symbol migration / cross-version compare" | `binary-diff/SKILL.md` — LLM batch migration |
 | "missing PDB / old version symbols" | `binary-diff/SKILL.md` — cross-version symbol migration |
 | "bindiff / function offset migration" | `binary-diff/SKILL.md` — binary diff |
@@ -124,6 +130,9 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | "Objection / SSL Pinning bypass" | `mobile-reverse/SKILL.md` — dynamic instrumentation |
 | "YARA / malware detection rules" | `malware-analysis/SKILL.md` — YARA/Sigma/IOC |
 | "N-day / patch diff / CVE reproduction" | `binary-diff/SKILL.md` — ghidriff/Diaphora/DeepDiff |
+| "MBA simplification / mixed boolean-arithmetic / 表达式化简" | `reverse-engineering/references/ollvm-deobfuscation.md` — SiMBA/D-810 |
+| "opaque predicate / 不透明谓词去除" | `reverse-engineering/references/ollvm-deobfuscation.md` — 符号执行去除 |
+| "Hikari deobfuscate / 字符串加密恢复" | `reverse-engineering/references/ollvm-deobfuscation.md` — Hikari 变种处理 |
 | "pwn / stack overflow / ROP / ret2libc" | `reverse-engineering/patterns-ctf*.md` + pwntools |
 | "Agent not working / AI lazy / skip steps" | `llm-security/references/agent-obedience-engineering.md` |
 | "MSF stuck / orphan process / MSF protocol" | `pentest-tools/references/msf-protocol.md` |
@@ -145,13 +154,19 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | GDB / GEF / pwndbg / rr | `reverse-engineering/tools.md` |
 | Ghidra (headless) | `reverse-engineering/tools.md` + Ghidra MCP |
 | angr / Qiling / Unicorn | `reverse-engineering/tools-dynamic.md` |
+| D-810 / d810-ng | `reverse-engineering/references/ollvm-deobfuscation.md` — IDA Pro 反混淆插件，OLLVM/Tigress/Hodur/Approov + Z3 SMT |
+| obpo-plugin | `reverse-engineering/references/ollvm-deobfuscation.md` — Hex-Rays microcode 云插件，效果最强 |
+| ollvm-unflattener (Miasm) / ollvm-breaker (Binary Ninja) | `reverse-engineering/references/ollvm-deobfuscation.md` — 无 IDA 场景 / BN 场景 |
+| DeObfBR | `reverse-engineering/references/ollvm-deobfuscation.md` — BR 间接分支混淆专项 |
+| deflat (QuarksLab) / angr symbol | `reverse-engineering/references/ollvm-deobfuscation.md` — 控制流平坦化去除 |
+| GOOMBA (Ghidra) | `reverse-engineering/references/ollvm-deobfuscation.md` — Ghidra P-Code 反混淆 |
 | BinDiff / Diaphora | `reverse-engineering/tools-advanced.md` |
 | anything-analyzer MCP | Port 23816 MCP server (browser + HTTP capture + AI analysis) |
 | jshookmcp | `js-reverse/` enhancement MCP for browser/CDP/Hook/Network/SourceMap/AST |
 | agent-browser / Playwright | `browser-automation/` — browser automation |
 | OpenReverse (UIA/CUA) | `browser-automation/` — Windows desktop automation |
-| Cheat Engine / x64dbg / ReClass | `game-security/` — game memory analysis |
-| IL2CPP Dumper / dnSpy | `game-security/` — Unity/Mono game reverse |
+| Cheat Engine / x64dbg / ReClass | `reverse-engineering/` — game memory analysis (seed-014) |
+| IL2CPP Dumper / dnSpy | `reverse-engineering/` — Unity/Mono game reverse (seed-014) |
 | LLM symbol migration / BinDiff alternative | `binary-diff/` — cross-version batch migration |
 | Nmap / Masscan | `pentest-tools/` — port scan, service identification |
 | Nuclei / ZAP / Nikto | `pentest-tools/` — vulnerability scanning |

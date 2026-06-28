@@ -1140,6 +1140,17 @@ npx ruflo metaharness drift-from-history \       # iter 53 — 1-command drift (
                                                  # iter 67 — --baseline-file skips memory entirely (~19x faster)
                                                  # iter 78 — --alert-on-new-severity adds orthogonal finding-severity gate
 npx ruflo metaharness mint --name foo --template vertical:coding --confirm
+npx ruflo metaharness redblue init               # @metaharness/redblue — scaffold redblue.yaml
+npx ruflo metaharness redblue run --mock-judge --tests 10
+                                                 # $0 marker-fixture path (CI / offline)
+npx ruflo metaharness redblue run --tests 50 --patch
+                                                 # real model judge (needs OPENROUTER_API_KEY,
+                                                 #   capped by max_cost_usd, default $3)
+npx ruflo metaharness redblue attack prompt --count 3
+                                                 # preview generated attack cases (no target call)
+npx ruflo metaharness redblue patch --mock-judge # baseline → blue-team patch → retest delta
+npx ruflo metaharness redblue report --in report.json
+                                                 # render existing report as markdown
 
 # Dedicated command
 npx ruflo eject --name my-harness                # lift ruflo project → standalone harness
@@ -1161,6 +1172,7 @@ mcp__claude-flow__metaharness_drift_from_history  # iter 53 — 1-command drift 
 mcp__claude-flow__metaharness_bench               # ADR-153 — create/verify bench suites for evolve --bench
 mcp__claude-flow__metaharness_evolve              # MAP-Elites driver — evolve a harness across bench suites
 mcp__claude-flow__metaharness_security_bench      # security-focused benchmark suite gate
+mcp__claude-flow__metaharness_redblue             # @metaharness/redblue — adversarial red/blue LLM testing (init|run|patch|attack|report)
 ```
 
 ### Routing integration (ADR-148/149)

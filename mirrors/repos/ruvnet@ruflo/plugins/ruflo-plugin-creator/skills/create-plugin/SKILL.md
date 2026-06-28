@@ -33,7 +33,7 @@ When you want to create a new plugin that extends Claude Code with skills, comma
    │   └── adrs/
    │       └── 0001-<name>-contract.md     # Plugin-level ADR (Proposed)
    ├── scripts/
-   │   └── smoke.sh                         # Structural contract (10+ checks)
+   │   └── smoke.sh                         # Structural contract (≥8 checks)
    └── README.md                            # Compatibility + Namespace coordination + Verification + ADR sections
    ```
 4. **Generate plugin.json** with name, description, version, author (do NOT include `skills`, `commands`, or `agents` arrays — Claude Code auto-discovers these from directory structure)

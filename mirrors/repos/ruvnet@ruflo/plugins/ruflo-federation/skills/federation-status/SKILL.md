@@ -1,6 +1,6 @@
 ---
 name: federation-status
-description: Show federation health — peers, sessions, trust levels, and message metrics
+description: Show federation health — peers, sessions, trust levels, and message metrics. Use when the user asks "is federation healthy?", "show peers", "federation status", or wants to inspect cross-installation agent connectivity.
 allowed-tools: Bash(npx *) mcp__claude-flow__memory_search Read
 argument-hint: ""
 ---

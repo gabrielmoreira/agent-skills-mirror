@@ -33,7 +33,7 @@ Help reflects the installed CLI version. When skill and help disagree, **help is
 
 1. **Shell.** `$` in a value still belongs to the shell — single-quote the whole value: `--prop text='$15M'`. Double-quoted `"$15M"` gets expanded to `M`. The CLI does NOT unescape `\$` for you.
 2. **CLI (`text=`).** The two-char escapes `\n` and `\t` ARE interpreted, consistently across pptx / docx / xlsx — `\n` is a line / paragraph break, `\t` is a tab. To produce a literal backslash-n in text, double it (`\\n`); this is rarely what you want.
-3. **JSON (batch).** Real newlines / tabs can also be passed as `"\n"` / `"\t"` inside a `<<'EOF'` heredoc; both forms produce the same result.
+3. **JSON (batch heredoc).** The recipes below pipe `cat <<EOF | officecli batch` **unquoted** so `$SLIDE` / `$FILE` expand inside the body. That same unquoted heredoc also expands a literal `$` in a value: `"$1.42"` silently becomes `.42` and `"$2.4B"` becomes `.4B` (`$1` / `$2` are empty shell params). **Escape currency as `\$`** — `"text":"\$1.42"` — which still lets `$SLIDE` expand. `\n` / `\t` inside the JSON work either way. A fully-quoted `<<'EOF'` protects every `$` but then `$SLIDE` won't expand, so only use it when the body has no shell variables. After writing money values, `view text` and confirm the `$` survived.
 
 If in doubt, `view text` after writing and compare character-for-character.
 
@@ -200,13 +200,13 @@ Copy-level tells live in "Copy reads human".
 
 ## Common Workflow
 
-1. **Open/close mode.** Always `officecli open <file>` at start + `officecli close <file>` at end. Resident is the default, not an optimization. Use `batch` for repetitive shape grids.
+1. **Open/save lifecycle.** `officecli open <file>` at the start, `officecli save <file>` at the end to flush your edits to disk. `save` only writes — it leaves the resident warm for any follow-up edit; reach for `officecli close <file>` only when you want to release the resident immediately (a one-shot handoff). Both are always safe — they never error or lose work. Use `batch` for repetitive shape grids. **Flush only at the non-officecli boundary:** officecli's own reads always see your edits; run `save`/`close` only before a non-officecli program reads the file (python-pptx, PowerPoint, a renderer, delivery).
 2. **Orient.** New deck: `officecli create "$FILE"`. Existing: `officecli view "$FILE" outline` first. Never edit blind.
 3. **Title sequence first (plan, don't build yet).** Before creating any slide or shape, write out the full ordered list of slide titles. If someone reading ONLY the titles can't follow the argument, fix the arc now — cheaper in a list than after 14 slides. Pick ONE title grammar — all topic noun-phrases or all action statements, never a mix — and hold it throughout (see "Copy reads human").
 4. **Build in display order.** Add slides in audience-view order: cover → agenda → section-1 divider → section-1 content → section-2 divider → … → closing. `--index` on slide add works, but linear append keeps the build script readable and avoids index-arithmetic bugs. **Before final delivery, confirm slide count + narrative arc match your build plan.** Gate 3's order-sanity check catches cases where the cover ends up as slide 11 of 14 instead of slide 1.
 5. **Incremental per slide.** Create slide + background, then title, then supporting shapes / charts / connectors. Always `layout=blank` for custom designs. After each structural op, `get /slide[N] --depth 1` to confirm shape IDs.
 6. **Format to spec.** Per the Requirements table; formatting is deliverable, not polish.
-7. **Close + verify.** `officecli close` writes the ZIP. Always open in the target presentation viewer before shipping — chart colors, animations, fonts, and zoom are runtime features `view html` can't render. Full verification in QA below.
+7. **Save + verify.** `officecli save` flushes the file to disk (or `officecli close` to flush and also end the session). Always open in the target presentation viewer before shipping — chart colors, animations, fonts, and zoom are runtime features `view html` can't render. Full verification in QA below.
 8. **QA — assume there are problems.** Fix-and-verify until a cycle finds zero new issues.
 
 ## Quick Start
@@ -234,11 +234,11 @@ officecli add "$FILE" /slide[2] --type shape --prop text="Enterprise renewals + 
   --prop font=Calibri --prop size=20 --prop color=333333
 officecli add "$FILE" /slide[2] --type notes --prop text="Lead with the 18% beat, preview EMEA."
 
-officecli close "$FILE"
+officecli save "$FILE"
 officecli validate "$FILE"
 ```
 
-Shape of every build: open → slide+background → title → body → notes → close → validate.
+Shape of every build: open → slide+background → title → body → notes → save → validate.
 
 ## Reading & Analysis
 
@@ -483,7 +483,7 @@ cat <<EOF | officecli batch "$FILE"
   {"command":"add","parent":"/slide[$SLIDE]","type":"shape","props":{"text":"USD millions · ARR","x":"1.5cm","y":"8cm","width":"9.78cm","height":"0.8cm","font":"Calibri","size":"14","color":"CADCFC","align":"center"}},
   {"command":"add","parent":"/slide[$SLIDE]","type":"shape","props":{"text":"+24% YoY","x":"1.5cm","y":"9cm","width":"9.78cm","height":"0.8cm","font":"Calibri","size":"14","bold":"true","color":"CADCFC","align":"center"}},
   {"command":"add","parent":"/slide[$SLIDE]","type":"shape","props":{"preset":"roundRect","fill":"B85042","line":"none","x":"22.58cm","y":"4cm","width":"9.78cm","height":"7cm"}},
-  {"command":"add","parent":"/slide[$SLIDE]","type":"shape","props":{"text":"$1.42","x":"22.58cm","y":"4.8cm","width":"9.78cm","height":"2.8cm","font":"Georgia","size":"60","bold":"true","color":"FFFFFF","align":"center"}},
+  {"command":"add","parent":"/slide[$SLIDE]","type":"shape","props":{"text":"\$1.42","x":"22.58cm","y":"4.8cm","width":"9.78cm","height":"2.8cm","font":"Georgia","size":"60","bold":"true","color":"FFFFFF","align":"center"}},
   {"command":"add","parent":"/slide[$SLIDE]","type":"shape","props":{"text":"CAC payback (yrs)","x":"22.58cm","y":"8cm","width":"9.78cm","height":"0.8cm","font":"Calibri","size":"14","color":"FFFFFF","align":"center"}},
   {"command":"add","parent":"/slide[$SLIDE]","type":"shape","props":{"text":"+8% — watch","x":"22.58cm","y":"9cm","width":"9.78cm","height":"0.8cm","font":"Calibri","size":"14","bold":"true","color":"FFFFFF","align":"center"}}
 ]
@@ -525,11 +525,11 @@ Each gate is **run a command, judge its output** — the officecli commands are 
 
 Pick **one** path:
 
-**Screenshot (default)** — needs image-Read + a headless browser. Screenshot each slide in turn — `officecli view "<file>" screenshot --page 1 -o slide1.png`, then `--page 2`, … — until the page index runs past the deck (one screenshot = one slide). If it errors on page 1, there's no headless backend → use the fallback below.
+**Screenshot (default)** — for vision-capable agents. Screenshot each slide in turn — `officecli view "<file>" screenshot --page 1 -o slide1.png`, then `--page 2`, … — until the page index runs past the deck (one screenshot = one slide). If it errors on page 1, use the fallback below.
 
 **Judge every PNG against the checklist, adversarially** — "assume problems exist; finding none means you didn't look hard enough." Report one `slide N: <issue>` line per problem, or `PASS`. This step is required however you run it. **If** your harness can spawn a subagent, delegate the judging to a *fresh, independent* one — the agent that built the deck is biased toward "looks fine", a separate pair of eyes is more critical — handing it the screenshots + this checklist and the same adversarial framing. No subagent? Do exactly the same yourself.
 
-**Fallback — HTML-text** (no image-Read or no browser): read `view "$FILE" html` as text. DOM cannot prove **dark-on-dark / fine overlap / arrowheads / gap-margin metrics / column alignment** — flag these as "not visually verified" rather than PASS.
+**Fallback — HTML-text** (no vision, or screenshot failed): read `view "$FILE" html` as text. DOM cannot prove **dark-on-dark / fine overlap / arrowheads / gap-margin metrics / column alignment** — flag these as "not visually verified" rather than PASS.
 
 **Optional `--grid N`** — only on user request for layout-rhythm, or when `view outline` shows anomalous layout distribution: `officecli view "<file>" screenshot --grid 3 -o grid.png`.
 
@@ -551,6 +551,8 @@ Pick **one** path:
 REJECT with `slide N: <issue>` lines, else "Gate 3 PASS" (HTML-text fallback adds "<unverified-items> not visually verified").
 
 **Fix-verify (mandatory, max 3 cycles).** Fix → re-run Gate 3 → repeat until zero new issues; one fix often surfaces another. After 3 rounds without convergence, **stop** — likely seesaw, template-level cause, or agent misread. Report `slide N: <issue> — attempted: <fixes> — likely root: <template|design-conflict|ambiguous>` and let the user decide.
+
+**Then flush (part of the gate).** Once Gate 3 converges, end with `officecli save "<file>"` — this guarantees your edits are written to disk before delivery (use `officecli close "<file>"` instead to also release the resident on a one-shot handoff). Required final step, not optional. Always safe: never errors or loses work.
 
 ## Common Pitfalls
 

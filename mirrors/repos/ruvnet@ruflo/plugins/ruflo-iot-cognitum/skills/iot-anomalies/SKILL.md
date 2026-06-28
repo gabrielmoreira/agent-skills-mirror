@@ -1,6 +1,6 @@
 ---
 name: iot-anomalies
-description: Detect and classify telemetry anomalies on Cognitum Seed devices
+description: Detect and classify telemetry anomalies on Cognitum Seed devices. Use when investigating a device that's reporting odd metrics, before approving a firmware canary advancement, or when triaging fleet-wide health alerts.
 allowed-tools: Bash(npx *) mcp__claude-flow__memory_store Read
 argument-hint: "<device-id>"
 ---

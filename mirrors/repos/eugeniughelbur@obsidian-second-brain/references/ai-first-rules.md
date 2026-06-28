@@ -223,6 +223,19 @@ related-projects: [...]
 ai-first: true
 ```
 
+### `type: distillation`
+Written by `/obsidian-distill`. A condensed view of ONE source where every claim carries a `(src: Bn)` pointer back to a numbered source block listed at the bottom, so the distillation can be audited against the original. `source` is the verbatim path/URL of what was distilled (the recency/verification anchor); inferences not stated in the source live in a separate labelled section, never mixed with distilled claims.
+```yaml
+date: YYYY-MM-DD
+type: distillation
+source: "<verbatim path or URL of the distilled source>"
+source-blocks: 0             # count of numbered source blocks
+tags: [distillation, thinking]
+related-people: [...]
+related-projects: [...]
+ai-first: true
+```
+
 ### `type: agenda-snapshot`
 Written by `/obsidian-agenda`. A re-derivable point-in-time view of the calendar - Google Calendar is the source of truth, not this note. `fetched-at` is the recency anchor.
 ```yaml

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xbtlin/ai-berkshire` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `xbtlin/ai-berkshire` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `xbtlin/ai-berkshire` — 26 default patterns, 0 followed patterns, 19
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,25 +59,45 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`skills/bottleneck-hunter.md`](skills/bottleneck-hunter.md) |
-| 3 | ✓ | [`skills/deep-company-series.md`](skills/deep-company-series.md) |
-| 4 | ✓ | [`skills/dyp-ask.md`](skills/dyp-ask.md) |
-| 5 | ✓ | [`skills/earnings-review.md`](skills/earnings-review.md) |
-| 6 | ✓ | [`skills/earnings-team.md`](skills/earnings-team.md) |
-| 7 | ✓ | [`skills/financial-data.md`](skills/financial-data.md) |
-| 8 | ✓ | [`skills/industry-funnel.md`](skills/industry-funnel.md) |
-| 9 | ✓ | [`skills/industry-research.md`](skills/industry-research.md) |
-| 10 | ✓ | [`skills/investment-checklist.md`](skills/investment-checklist.md) |
-| 11 | ✓ | [`skills/investment-research.md`](skills/investment-research.md) |
-| 12 | ✓ | [`skills/investment-team.md`](skills/investment-team.md) |
-| 13 | ✓ | [`skills/management-deep-dive.md`](skills/management-deep-dive.md) |
-| 14 | ✓ | [`skills/news-pulse.md`](skills/news-pulse.md) |
-| 15 | ✓ | [`skills/portfolio-review.md`](skills/portfolio-review.md) |
-| 16 | ✓ | [`skills/private-company-research.md`](skills/private-company-research.md) |
-| 17 | ✓ | [`skills/quality-screen.md`](skills/quality-screen.md) |
-| 18 | ✓ | [`skills/thesis-tracker.md`](skills/thesis-tracker.md) |
-| 19 | ✓ | [`skills/wechat-article.md`](skills/wechat-article.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`codex-skills/bottleneck-hunter/SKILL.md`](codex-skills/bottleneck-hunter/SKILL.md) |
+| 4 | ✓ | [`codex-skills/deep-company-series/SKILL.md`](codex-skills/deep-company-series/SKILL.md) |
+| 5 | ✓ | [`codex-skills/dyp-ask/SKILL.md`](codex-skills/dyp-ask/SKILL.md) |
+| 6 | ✓ | [`codex-skills/earnings-review/SKILL.md`](codex-skills/earnings-review/SKILL.md) |
+| 7 | ✓ | [`codex-skills/earnings-team/SKILL.md`](codex-skills/earnings-team/SKILL.md) |
+| 8 | ✓ | [`codex-skills/financial-data/SKILL.md`](codex-skills/financial-data/SKILL.md) |
+| 9 | ✓ | [`codex-skills/industry-funnel/SKILL.md`](codex-skills/industry-funnel/SKILL.md) |
+| 10 | ✓ | [`codex-skills/industry-research/SKILL.md`](codex-skills/industry-research/SKILL.md) |
+| 11 | ✓ | [`codex-skills/investment-checklist/SKILL.md`](codex-skills/investment-checklist/SKILL.md) |
+| 12 | ✓ | [`codex-skills/investment-memo-craft/SKILL.md`](codex-skills/investment-memo-craft/SKILL.md) |
+| 13 | ✓ | [`codex-skills/investment-research/SKILL.md`](codex-skills/investment-research/SKILL.md) |
+| 14 | ✓ | [`codex-skills/investment-team/SKILL.md`](codex-skills/investment-team/SKILL.md) |
+| 15 | ✓ | [`codex-skills/management-deep-dive/SKILL.md`](codex-skills/management-deep-dive/SKILL.md) |
+| 16 | ✓ | [`codex-skills/news-pulse/SKILL.md`](codex-skills/news-pulse/SKILL.md) |
+| 17 | ✓ | [`codex-skills/portfolio-review/SKILL.md`](codex-skills/portfolio-review/SKILL.md) |
+| 18 | ✓ | [`codex-skills/private-company-research/SKILL.md`](codex-skills/private-company-research/SKILL.md) |
+| 19 | ✓ | [`codex-skills/quality-screen/SKILL.md`](codex-skills/quality-screen/SKILL.md) |
+| 20 | ✓ | [`codex-skills/thesis-tracker/SKILL.md`](codex-skills/thesis-tracker/SKILL.md) |
+| 21 | ✓ | [`codex-skills/wechat-article/SKILL.md`](codex-skills/wechat-article/SKILL.md) |
+| 22 | ✓ | [`skills/bottleneck-hunter.md`](skills/bottleneck-hunter.md) |
+| 23 | ✓ | [`skills/deep-company-series.md`](skills/deep-company-series.md) |
+| 24 | ✓ | [`skills/dyp-ask.md`](skills/dyp-ask.md) |
+| 25 | ✓ | [`skills/earnings-review.md`](skills/earnings-review.md) |
+| 26 | ✓ | [`skills/earnings-team.md`](skills/earnings-team.md) |
+| 27 | ✓ | [`skills/financial-data.md`](skills/financial-data.md) |
+| 28 | ✓ | [`skills/industry-funnel.md`](skills/industry-funnel.md) |
+| 29 | ✓ | [`skills/industry-research.md`](skills/industry-research.md) |
+| 30 | ✓ | [`skills/investment-checklist.md`](skills/investment-checklist.md) |
+| 31 | ✓ | [`skills/investment-research.md`](skills/investment-research.md) |
+| 32 | ✓ | [`skills/investment-team.md`](skills/investment-team.md) |
+| 33 | ✓ | [`skills/management-deep-dive.md`](skills/management-deep-dive.md) |
+| 34 | ✓ | [`skills/news-pulse.md`](skills/news-pulse.md) |
+| 35 | ✓ | [`skills/portfolio-review.md`](skills/portfolio-review.md) |
+| 36 | ✓ | [`skills/private-company-research.md`](skills/private-company-research.md) |
+| 37 | ✓ | [`skills/quality-screen.md`](skills/quality-screen.md) |
+| 38 | ✓ | [`skills/thesis-tracker.md`](skills/thesis-tracker.md) |
+| 39 | ✓ | [`skills/wechat-article.md`](skills/wechat-article.md) |
 
 ---
 

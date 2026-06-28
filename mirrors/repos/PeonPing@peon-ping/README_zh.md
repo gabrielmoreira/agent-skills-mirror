@@ -381,6 +381,7 @@ peon-ping 有三个独立的控制开关，可以混合使用：
 - **session_ttl_days**（数字，默认：7）：使超过 N 天的陈旧每会话语音包分配过期。防止使用 `session_override` 模式时 `.state.json` 无限增长。
 - **headphones_only**（布尔值，默认：`false`）：仅在检测到耳机或外部音频设备时播放声音。启用后，如果内置扬声器是活动输出，声音将被静音 — 适用于开放式办公室。使用 `peon status` 查看状态。支持 macOS（通过 `system_profiler`）和 Linux（通过 PipeWire `wpctl` 或 PulseAudio `pactl`）。
 - **suppress_sound_when_tab_focused**（布尔值，默认：`false`）：当生成钩子事件的终端标签页处于当前活动/聚焦状态时，跳过声音播放。声音仍会在后台标签页中播放，提醒您其他地方发生了事件。桌面和移动通知不受影响。适用于只想在未查看的标签页中听到音频提示的用户。仅支持 macOS（使用 `osascript` 检查最前端应用和 iTerm2 标签页焦点）。
+- **tmux_passthrough**（布尔值，默认：`false`）：将标签页标题和 iTerm2 标签页颜色转义序列通过 tmux 的 DCS 透传发送到宿主终端（需要 tmux 3.3a+ 并设置 `set -g allow-passthrough on`）。默认关闭，因为 tmux 客户端会将多个窗格/窗口复用到单个宿主终端标签页上，且没有按窗格寻址的能力：当多个 agent 会话同时运行时，每个钩子（包括来自后台窗格的）都会以"最后写入者获胜"的方式重绘那个共享标签页，使其不再反映任何单个会话。建议保持关闭，让 tmux 自身的窗口/状态栏承载每个会话的状态；仅当您每个终端标签页只运行一个 tmux 窗口（即 1 个标签页 = 1 个会话）时才启用。在 tmux 之外无效，此时转义序列始终发送。
 - **meeting_detect**：检测麦克风是否正在使用中，并在麦克风使用期间临时抑制音频播放。通知仍会正常显示。
 - **focus_detect**（布尔值，默认：`false`）：遵循 macOS 的**专注模式 / 勿扰模式**。peon-ping 通过 `afplay` 播放声音并在自定义窗口中绘制覆盖通知，两者都绕过通知中心，因此系统的专注模式开关默认对它们没有影响。启用后，peon-ping 会直接读取专注模式状态，并在**任意**专注模式（勿扰、工作、睡眠等）激活时抑制输出，关闭专注模式后自动恢复。移动推送（如已配置）不受影响，因为手机会遵循其自身的专注模式。仅支持 macOS，采用失败放行策略（若无法读取专注模式状态，则照常播放声音）。
 - **focus_detect_mode**（字符串，默认：`"all"`）：专注模式激活时 `focus_detect` 抑制的内容。`"all"` 同时静音声音和覆盖/桌面通知。`"sound"` 仅静音声音（通知仍会显示）。`"notifications"` 仅静音通知（声音仍会播放）。当 `focus_detect` 为 `false` 时忽略此设置。
@@ -1049,6 +1050,17 @@ curl -fsSL peonping.com/install | bash -s -- --kimi
 - Agent 完成回合 → 完成音效（*"Work, work."*、*"Job's done!"*）
 - 上下文压缩 → Token 限制音效
 - 子 Agent 启动 → 子 Agent 跟踪
+
+### 工具无关的安装根目录（`--openpeon`）
+
+将全部内容（钩子、语音包、`settings.json`）安装到 `~/.openpeon` 而非 `~/.claude`：
+
+```bash
+curl -fsSL peonping.com/install | bash -s -- --openpeon
+# Windows：powershell -File install.ps1 -OpenPeon
+```
+
+适用于 OpenPeon 品牌化或工具无关的部署：`peon.sh` 会通过其 packs 锚定回退自动发现 `~/.openpeon/packs`，因此指向该根目录的适配器无需 `~/.claude` 即可工作。无需此标志时，也可用 `CLAUDE_CONFIG_DIR=~/.openpeon bash install.sh` 实现相同的重定向。
 
 ### oh-my-pi (omp) 设置
 

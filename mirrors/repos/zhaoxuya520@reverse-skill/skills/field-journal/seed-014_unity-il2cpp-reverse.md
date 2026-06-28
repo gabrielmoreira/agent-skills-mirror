@@ -94,8 +94,8 @@ IDA 静态 patch：
 
 ## 对本包的改进建议
 
-- `game-security/SKILL.md` 已覆盖 Unity，但缺 IL2CPP **完整工作链** 案例
-- `game-security/references/il2cpp-cheatsheet.md` 单独成文：dump 工具对比、frida-bridge 模板、加密 metadata 处理
+- `reverse-engineering/SKILL.md` 已覆盖 Unity，但缺 IL2CPP **完整工作链** 案例
+- `reverse-engineering/references/il2cpp-cheatsheet.md` 单独成文：dump 工具对比、frida-bridge 模板、加密 metadata 处理
 - bootstrap manifest 增加 frida-il2cpp-bridge
 
 ## 可复用的模式/脚本片段
@@ -121,7 +121,7 @@ IDA 静态 patch：
 ```
 
 ## 进化动作
-- [ ] game-security 增加 il2cpp 完整章节
+- [ ] reverse-engineering/references 增加 il2cpp 完整章节
 - [ ] bootstrap-manifest 加入 frida-il2cpp-bridge / Il2CppInspectorRedux
 - [x] 路由矩阵已含 Unity / IL2CPP
 

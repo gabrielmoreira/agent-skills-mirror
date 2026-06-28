@@ -35,16 +35,24 @@ the cleanest mechanism is a direct `POST` to
 rotation endpoint. This is the L1 primitive at the bottom of a tiered
 recovery design that escalates progressively as failure modes get harder.
 
-The current in-tree recovery layers, ordered cheapest to heaviest:
+The current in-tree recovery layers, ordered cheapest to heaviest (this ladder
+mirrors the one in [troubleshooting.md](troubleshooting.md#authentication-errors)):
 
 | Layer | Mechanism | Cost | Survives DBSC? | Ship status |
 |---|---|---|---|---|
 | **L1** | Per-call `RotateCookies` POST + mtime / in-process throttle | ~150 ms / token fetch, skipped when recently rotated | No, but DBSC is not enforced on this path today | Default ON |
 | **L2** | Background `NotebookLMClient(keepalive=N)` task | One POST every N s | Same as L1 | Opt-in client kwarg |
 | **L3** | Headless re-auth from the persisted browser profile, optionally CDP-attaching to loopback Chrome | Browser launch/attach only after first-party cookies are dead | CDP arm inherits Chrome's DBSC enrollment | Opt-in via `refresh_auth(allow_headless=True)` or `NOTEBOOKLM_HEADLESS_REAUTH=1`; CDP via `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL` |
-| **L4** | `NOTEBOOKLM_REFRESH_CMD` external recovery script | One subprocess on auth-expiry signal | Depends on the script; common case is browser-cookie re-extract | Merged, same-loop single-flight and cancel-safe |
-| **L5** | Manual `notebooklm login` | Human sign-in | Yes | Baseline recovery |
-| **L6** | OS-scheduled `notebooklm auth refresh` | One token-fetch per cron / launchd / systemd / Task Scheduler tick | Same as L1 | Recommended for idle profiles; 15-20 min cadence |
+| **L4** | **Master-token re-mint** — re-mint a fresh session from a durable Google master token, **no browser** ([§4.5](#45-l4-master-token-re-mint)) | Two Google round-trips on full expiry; fully automatic | Server-minted cookies; rejected only if/when DBSC is enforced — re-mint is the mitigation | Opt-in via the `[headless]` extra + `notebooklm login --master-token` |
+| **L5** | `NOTEBOOKLM_REFRESH_CMD` external recovery script | One subprocess on auth-expiry signal | Depends on the script; common case is browser-cookie re-extract | Merged, same-loop single-flight and cancel-safe |
+| **L6** | Manual `notebooklm login` | Human sign-in | Yes | Baseline recovery |
+| **L7** | OS-scheduled `notebooklm auth refresh` | One token-fetch per cron / launchd / systemd / Task Scheduler tick | Same as L1 | Recommended for idle profiles; 15-20 min cadence |
+
+**L4 (master-token re-mint) is the standout for headless/unattended use:** unlike
+L3 it needs no browser at refresh time, and unlike L5/L6 it is fully automatic.
+One durable master token (one human sign-in, then good for months) re-mints web
+cookies on demand and self-heals an expired session in-process. See
+[§4.5](#45-l4-master-token-re-mint).
 
 A separate, complementary refresh hook also lives in the codebase:
 ``NOTEBOOKLM_REFRESH_CMD`` ([#336](https://github.com/teng-lin/notebooklm-py/pull/336))
@@ -985,9 +993,18 @@ mechanisms fail. Each layer has a distinct trigger and target failure mode.
 │     profile can silently mint a fresh session                │
 └──────────────────────────────────────────────────────────────┘
                           │
+                          ▼ (first-party cookies dead AND master_token.json present)
+┌──────────────────────────────────────────────────────────────┐
+│ L4: master-token re-mint (headless, no browser) [§4.5]       │
+│   - _auth.session._try_master_token_reauth, after L1/L2/L3   │
+│   - mints a fresh session from the durable aas_et/ token,    │
+│     reloads cookies, retries the homepage GET once           │
+│   - covers: dead session on a headless box with no browser   │
+└──────────────────────────────────────────────────────────────┘
+                          │
                           ▼ (auth-expiry signal survives in-process refresh)
 ┌──────────────────────────────────────────────────────────────┐
-│ L4: NOTEBOOKLM_REFRESH_CMD external recovery script          │
+│ L5: NOTEBOOKLM_REFRESH_CMD external recovery script          │
 │   - same-loop callers coalesce on one subprocess             │
 │   - cancellation of one waiter does not cancel the command   │
 │   - common command: notebooklm login --browser-cookies ...   │
@@ -995,24 +1012,58 @@ mechanisms fail. Each layer has a distinct trigger and target failure mode.
                           │
                           ▼ (operator intervention)
 ┌──────────────────────────────────────────────────────────────┐
-│ L5: notebooklm login                                         │
+│ L6: notebooklm login                                         │
 │   - human browser sign-in or --browser-cookies extraction    │
 │   - baseline recovery when all automatic paths fail          │
 └──────────────────────────────────────────────────────────────┘
                           │
                           ▼ (idle profiles between processes)
 ┌──────────────────────────────────────────────────────────────┐
-│ L6: notebooklm auth refresh (OS-scheduled)                   │
+│ L7: notebooklm auth refresh (OS-scheduled)                   │
 │   - cron / launchd / systemd / Task Scheduler / k8s          │
 │   - calls _auth.refresh.fetch_tokens_with_domains, exits 0/1 │
 │   - covers: profiles idle > SIDTS window between Python runs │
 └──────────────────────────────────────────────────────────────┘
 ```
 
-Each layer is a fallback for the next one above. L1/L2 are HTTP-only and
-cheap; L3 is the heaviest in-process recovery because it drives a browser;
-L4 delegates policy to the operator; L5 is manual; L6 is proactive scheduling
-for profiles that sit idle between Python runs.
+Each layer is a fallback for the next one above. L1/L2 are HTTP-only and cheap;
+L3 drives a browser; **L4 re-mints from a durable master token with no browser
+(headless's best recovery — [§4.5](#45-l4-master-token-re-mint))**; L5 delegates
+policy to the operator; L6 is manual; L7 is proactive scheduling for profiles
+that sit idle between Python runs.
+
+### 4.5 · L4 master-token re-mint
+
+When the profile holds a `master_token.json` (written by `notebooklm login
+--master-token`, the `[headless]` extra), a fully-expired session re-mints **in
+process, with no browser** — the recovery the `RotateCookies`/headless-browser
+ladder can't provide off-device.
+
+- **Credential.** A durable Google **master token** (`aas_et/…`), obtained once
+  from `accounts.google.com/EmbeddedSetup` and stored `0600`. It mints fresh web
+  cookies on demand (`perform_oauth → OAuthLogin?issueuberauth=1 → MergeSession`)
+  and survives password changes until explicitly revoked. The same token also
+  bootstraps the initial `storage_state.json`.
+- **Where it fires.** `_auth/session.py::_try_master_token_reauth`, as **layer-4
+  of `refresh_auth_session`** — only after L1 (homepage), L2 (`RotateCookies`),
+  and L3 (headless browser) are exhausted (fallback-after-ladder). It mints a new
+  session, persists it (replacing the dead cookies under the storage lock),
+  reloads the jar into the live HTTP client, and retries the homepage GET once.
+  Reached through the `AuthRefreshCoordinator` single-flight, so concurrent RPCs
+  coalesce **one** re-mint.
+- **Cold start.** A session that is already dead at process start is recovered by
+  `notebooklm login --master-token-refresh` (or the next bootstrap); the in-process
+  layer-4 covers the mid-session case that long-lived workers hit.
+- **PSIDTS interaction.** A re-mint yields `SID`+`APISID`+`SAPISID` but not
+  `__Secure-1PSIDTS`; the existing inline recovery ([§5.7](#57-inline-__secure-1psidts-cold-start-recovery))
+  mints PSIDTS from that secondary binding on the reload — so L1 keepalive then
+  proceeds normally on the fresh session.
+- **Security & limits.** The master token is full-account and infostealer-grade
+  — dedicated/throwaway account only; never logged or committed. Each re-mint is
+  a new session, so one account is **single-consumer**: N workers re-minting
+  concurrently can invalidate each other's `SID`. DBSC is the standing risk
+  (server-minted cookies could be rejected if enforced); re-mint is itself the
+  mitigation while it isn't. See [ADR-0023](adr/0023-master-token-headless-auth.md).
 
 ---
 
@@ -1209,92 +1260,18 @@ See [ADR-0013 Consequences](./adr/0013-composable-session-capabilities.md#conseq
 
 ## 6 · Comparison with related projects
 
-### 6.1 [`HanaokaYuzu/Gemini-API`](https://github.com/HanaokaYuzu/Gemini-API)
+The auth surface (same `*.google.com` cookies, same `RotateCookies` endpoint) is
+shared with other Google-web-UI clients; what differs is the recovery design.
 
-Closest peer. Targets Google Bard / Gemini web UI rather than NotebookLM,
-but the auth surface is identical (same `*.google.com` cookies, same
-`RotateCookies` endpoint).
+| Project | Refresh model | Takeaway for us |
+|---|---|---|
+| [`HanaokaYuzu/Gemini-API`](https://github.com/HanaokaYuzu/Gemini-API) | Default-on `RotateCookies` rotation (our **L1** mirrors it, in `_auth/keepalive.py`); `__Secure-1PSID`-keyed cache; **no reactive recovery** | The reference for L1. Its lack of any fallback is exactly the gap our L3/L4/L5 close. Uses curl_cffi TLS impersonation (cf. our optional `[impersonate]`); canaries [#310](https://github.com/HanaokaYuzu/Gemini-API/pull/310)/[#319](https://github.com/HanaokaYuzu/Gemini-API/issues/319) show the bare sentinel pattern decaying under DBSC. |
+| [`easychen/CookieCloud`](https://github.com/easychen/CookieCloud) | Browser-extension cookie federation, E2E-encrypted, self-hosted | DBSC-immune (cookies sourced from the user's daily Chrome via the extension API, sidestepping Chrome 127+ App-Bound Encryption). A viable `NOTEBOOKLM_REFRESH_CMD` source via [`PyCookieCloud`](https://github.com/lupohan44/PyCookieCloud); no in-tree client. |
+| [`dsdanielpark/Bard-API`](https://github.com/dsdanielpark/Bard-API) (archived 2024) | Manual cookie re-paste, no automated refresh | The cautionary tale — reactive/manual-only management proved untenable and the project archived; why proactive L1/L2 matters. |
 
-**Strengths:**
-- The reference implementation of `RotateCookies` rotation
-  (mirrored in our codebase at `src/notebooklm/_auth/keepalive.py`).
-- Cache-file-mtime rate-limit guard.
-- Cache file keyed by `__Secure-1PSID` value
-  (`.cached_cookies_<sid>.json`) — automatically scopes by Google account.
-- Default-on background refresh (`auto_refresh=True`, 600s interval) for
-  long-lived clients.
-- CLI explicitly opts out (`auto_refresh=False`) since each invocation
-  is short-lived.
-
-**Weaknesses:**
-- No reactive/recovery layer — when rotation fails, the client just dies.
-  No L4-equivalent to fall back to.
-- The init() docstring overpromises: claims to refresh "cookies and access
-  token" but the background loop only rotates cookies, never re-runs
-  `get_access_token`.
-- Uses curl_cffi (browser-impersonating TLS); we use httpx. Their tighter
-  fingerprint may explain why Gemini-API hasn't seen DBSC issues yet for
-  most users.
-
-**Canary:** issues
-[#310](https://github.com/HanaokaYuzu/Gemini-API/pull/310) (Apr 2026 —
-proposes "activity warmup + browser impersonation" as workaround for
-Chrome's DBSC-related compat issues) and
-[#319](https://github.com/HanaokaYuzu/Gemini-API/issues/319) (Apr 2026 —
-`UNAUTHENTICATED` after rotation). When #310 ships as default, the simple
-sentinel pattern is decaying.
-
-### 6.2 [`easychen/CookieCloud`](https://github.com/easychen/CookieCloud)
-
-A different category — browser-companion cookie federation. Browser
-extension (Chrome/Edge/Firefox) watches cookies on configured domains,
-encrypts with AES-CryptoJS using `MD5(uuid+password)[:16]` as key,
-periodically uploads to a self-hosted server. Clients (Python, Go, JS, Deno)
-download and decrypt.
-
-**Strengths:**
-- **Sidesteps Chrome 127+ App-Bound Encryption entirely.** The extension
-  reads cookies via Chrome's own `chrome.cookies` API, not by reading the
-  SQLite DB.
-- DBSC-immune for the same reason — the cookies are sourced from the user's
-  daily Chrome which handles all DBSC dance internally.
-- Server is tiny (a Node.js or PHP daemon, single Docker container).
-- End-to-end encrypted; server never sees plaintext.
-- Cross-machine — your cron on a remote server can pull cookies refreshed
-  by your laptop's daily Chrome.
-- Active maintenance (v1.0.3 May 2026), Python client
-  ([`PyCookieCloud`](https://github.com/lupohan44/PyCookieCloud)) is ~200
-  LOC to integrate.
-
-**Weaknesses:**
-- Requires user to install browser extension AND self-host server.
-- No upstream NotebookLM/Gemini integration — would need to be built.
-- Some Chinese-origin codebase elements may give pause to Western
-  enterprise users; the project itself is MIT, code is auditable.
-
-### 6.3 [`dsdanielpark/Bard-API`](https://github.com/dsdanielpark/Bard-API) (archived)
-
-Historical reference. **Archived April 2024.** No automated refresh — users
-manually re-paste cookies on every breakage. Issue
-[#231](https://github.com/dsdanielpark/Bard-API/issues/231) is the canonical
-"we can't reliably automate `SNlM0e` refresh" thread that motivated
-Gemini-API's design. The failure mode of *not* having an L1+ design is
-visible here: project archived because manual cookie management was
-untenable.
-
-### 6.4 Crosscuts
-
-Common patterns across the projects reviewed:
-
-- **Docstring rot is universal.** Every project surveyed has docstrings that
-  overpromise about what the refresh mechanism does. Worth being defensive
-  about in our own.
-- **`SID`-keyed cache files** (Gemini-API) are a nicer pattern than
-  profile-name-keyed. Worth consideration for #345 MEDIUM-3.
-- **Reactive-only is insufficient.** Bard-API's no-automated-refresh design
-  ended in archival; users gave up because manual re-paste was
-  untenable. Demonstrates why proactive L1/L2/L3 matters even when L4/L5
-  recovery is in place.
+Recurring lessons: docstring rot is universal (be defensive about overpromising
+what refresh actually does); `SID`-keyed caches scope cleanly by account; and
+reactive-only recovery is insufficient on its own.
 
 ---
 
@@ -1403,9 +1380,24 @@ This was sufficient through the entire 24h+ window of our experiment.
 
 ### 8.3 Unattended / headless / CI / cron
 
-Two stacks, in order of preference:
+Three stacks, in order of preference:
 
-**Preferred (today, May 2026):**
+**Preferred for true headless (master token — no browser after bootstrap):**
+
+1. `pip install "notebooklm-py[headless]"`.
+2. One-time, on a machine with a browser: `notebooklm -p <profile> login
+   --master-token --account you@gmail.com` (dedicated/throwaway account).
+3. Ship `master_token.json` to the server (sibling of `storage_state.json`).
+4. Run commands normally — cookies are minted on bootstrap and **re-minted
+   automatically** when the session dies (L4, [§4.5](#45-l4-master-token-re-mint));
+   force one by hand with `notebooklm -p <profile> login --master-token-refresh`.
+
+This beats the cookie-extract stacks below for unattended use: no browser at
+refresh time, survives full cookie expiry, and no `storage_state` to keep
+re-shipping. Caveats: full-account credential (dedicated account, `0600`), one
+account is single-consumer, and it inherits the standing DBSC risk.
+
+**Cookie extraction (no extra dependency, browser at bootstrap):**
 
 1. Sign in to NotebookLM **once** in Firefox (or any rookiepy-supported
    browser — see note below).

@@ -80,10 +80,15 @@ npm run verify:app-version
 ## Lime vX.Y.Z
 
 ### 新功能
+
 ### 修复
+
 ### 优化与重构
+
 ### 测试与质量
+
 ### 文档
+
 ### 其他
 
 **完整变更**: `vA.B.C` -> `vX.Y.Z`
@@ -116,6 +121,14 @@ npm run verify:gui-smoke
 ```bash
 npm run verify:app-version
 ```
+
+前端全量 Vitest 通过 `scripts/run-vitest-smart.mjs` 分批执行并写入 `.lime/test/vitest-smart-last-run.json`。如果 `npm test` 已经失败或被用户中断，继续发版验证时默认先执行：
+
+```bash
+npm run test:resume
+```
+
+也可以用 `npm test -- --from-batch <N>`、`npm test -- --only-batch <N>` 精确补批次；局部修复优先用 `npm run test:related -- <files>`、`npm run test:changed -- <ref>` 或直接点名失败测试。只有测试收集规则、批次大小、依赖图或目标分支已经改变，才从头执行裸 `npm test`，并在汇报中说明原因。
 
 如果只做 release note 或文档更新，可按 `internal/aiprompts/quality-workflow.md` 降级，但最终汇报必须说明降级理由。
 

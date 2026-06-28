@@ -100,6 +100,21 @@ async with NotebookLMClient.from_storage("/path/to/storage_state.json") as clien
 async with NotebookLMClient.from_storage(profile="work") as client:
     ...
 
+# Headless: mint cookies from a durable master token (the [headless] extra),
+# then drive the normal client. No per-session browser; expired sessions
+# re-mint automatically when master_token.json sits beside storage_state.json.
+# (One-time bootstrap: `notebooklm login --master-token --account you@gmail.com`.)
+import json
+from notebooklm.auth import mint_cookies, persist_minted_jar, read_master_token
+from notebooklm.paths import get_master_token_path, get_storage_path
+
+rec = read_master_token(get_master_token_path())            # {email, android_id, master_token}
+jar = await mint_cookies(rec["email"], rec["master_token"], rec["android_id"])
+persist_minted_jar(get_storage_path(), jar, email=rec["email"])
+async with NotebookLMClient.from_storage() as client:       # inline PSIDTS recovery heals the jar
+    ...
+# ⚠️ The master token is a full-account, durable credential — dedicated account only.
+
 # From AuthTokens directly
 from notebooklm import AuthTokens
 auth = AuthTokens(

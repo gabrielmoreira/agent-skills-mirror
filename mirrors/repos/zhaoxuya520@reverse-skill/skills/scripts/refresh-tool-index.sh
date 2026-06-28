@@ -85,6 +85,14 @@ install_hint() {
     macos:anything-analyzer) echo "git clone + corepack enable + pnpm install + pnpm dev" ;;
     macos:nuclei) echo "brew: brew install nuclei" ;;
     macos:seclists) echo "git clone https://github.com/danielmiessler/SecLists ~/tools/SecLists" ;;
+
+    linux:binwalk) echo "apt: sudo apt install binwalk" ;;
+    linux:yara) echo "apt: sudo apt install yara" ;;
+    linux:pwntools) echo "pipx: pipx install pwntools" ;;
+
+    macos:binwalk) echo "brew: brew install binwalk" ;;
+    macos:yara) echo "brew: brew install yara" ;;
+    macos:pwntools) echo "pipx: pipx install pwntools" ;;
     *) echo "see PLATFORMS.md and docs/platforms/${PLATFORM}.md" ;;
   esac
 }
@@ -119,6 +127,9 @@ TOOLS=(
   "jshookmcp|js-reverse|JS/CDP/Hook MCP runtime via npx|npx|npx --version|"
   "anything-analyzer|browser-automation|Browser/HTTP analyzer MCP project|none|none|$HOME/tools/anything-analyzer;$REPO_ROOT/../anything-analyzer"
   "burp-mcp-full|burp-mcp|Local Burp MCP extension and stdio bridge|none|none|$REPO_ROOT/burp-mcp-full/mcp-bridge.js"
+  "binwalk|firmware-pentest|Firmware extraction and analysis|binwalk|binwalk --version|"
+  "yara|malware-analysis|Malware rule matching engine|yara|yara --version|"
+  "pwntools|reverse-engineering|CTF pwn exploit development framework|pwn|pwn --version|"
 )
 
 records_tmp="$(mktemp)"
@@ -132,8 +143,8 @@ trap 'rm -f "$records_tmp"' EXIT
   echo "- Script: \`skills/scripts/refresh-tool-index.sh\`"
   echo "- Note: This script detects tools only. It does not install tools."
   echo ""
-  echo "| Tool | Skill | Purpose | Available | Path | Version | Install hint |"
-  echo "|---|---|---|---|---|---|---|"
+  echo "| Tool | Skill | Purpose | Available | Path | Version | Source | Install hint |"
+  echo "|---|---|---|---|---|---|---|---|"
 } > "$OUTPUT_MD"
 
 for entry in "${TOOLS[@]}"; do
@@ -142,6 +153,7 @@ for entry in "${TOOLS[@]}"; do
   available="no"
   path=""
   version=""
+  source=""
 
   if [[ "$commands" != "none" ]]; then
     IFS=',' read -ra cmd_list <<< "$commands"
@@ -149,6 +161,7 @@ for entry in "${TOOLS[@]}"; do
       if has_cmd "$cmd"; then
         available="yes"
         path="$(cmd_path "$cmd")"
+        source="command"
         break
       fi
     done
@@ -160,6 +173,7 @@ for entry in "${TOOLS[@]}"; do
       if [[ -e "$probe" ]]; then
         available="yes"
         path="$probe"
+        source="path-probe"
         break
       fi
     done
@@ -174,10 +188,11 @@ for entry in "${TOOLS[@]}"; do
 
   [[ -z "$path" ]] && path="—"
   [[ -z "$version" ]] && version="—"
+  [[ -z "$source" ]] && source="—"
   hint="$(install_hint "$name")"
 
-  echo "| $name | $skill | $purpose | $available | $path | $version | $hint |" >> "$OUTPUT_MD"
-  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$name" "$skill" "$purpose" "$available" "$path" "$version" "$hint" >> "$records_tmp"
+  echo "| $name | $skill | $purpose | $available | $path | $version | $source | $hint |" >> "$OUTPUT_MD"
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$name" "$skill" "$purpose" "$available" "$path" "$version" "$source" "$hint" >> "$records_tmp"
 done
 
 {
@@ -207,7 +222,7 @@ records_path, output_json, generated_at, platform, uname = sys.argv[1:]
 tools=[]
 with open(records_path, encoding='utf-8') as f:
     for line in f:
-        name, skill, purpose, available, path, version, hint = line.rstrip('\n').split('\t')
+        name, skill, purpose, available, path, version, source, hint = line.rstrip('\n').split('\t')
         tools.append({
             'name': name,
             'skill': skill,
@@ -215,6 +230,7 @@ with open(records_path, encoding='utf-8') as f:
             'available': available == 'yes',
             'path': None if path == '—' else path,
             'version': None if version == '—' else version,
+            'source': None if source == '—' else source,
             'install_hint': hint,
         })
 with open(output_json, 'w', encoding='utf-8') as f:

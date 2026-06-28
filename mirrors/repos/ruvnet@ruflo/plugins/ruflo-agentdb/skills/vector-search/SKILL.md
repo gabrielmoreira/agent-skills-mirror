@@ -11,7 +11,7 @@ Two distinct vector-search paths live in this plugin. Pick the right one — the
 
 | Path | Tool family | Backing | Capacity | Latency |
 |------|-------------|---------|----------|---------|
-| **Large-scale corpus** | `embeddings_*` | `@claude-flow/memory` HNSW (Rust/Native) | up to millions of vectors | 150×–12,500× faster than brute-force, depending on N and parameters |
+| **Large-scale corpus** | `embeddings_*` | `@claude-flow/memory` HNSW (Rust/Native) | up to millions of vectors | ~1.9× at N=20k, ~3.2×–4.7× at N=5k vs brute-force (measured; recall@10 ≈ 0.99). ANN wins above the crossover |
 | **Hot-path router** | `ruvllm_hnsw_*` | WASM-backed router (v2.0.1) | **~11 patterns max** (`ruvllm-tools.ts:58`) | sub-ms; designed for high-priority routing, not corpus search |
 
 The "12,500×" headline applies to the large-scale `embeddings_search` path. The WASM router is **not** that path.
@@ -85,10 +85,13 @@ npx @claude-flow/cli@latest memory search --query "your query"
 
 ## Performance
 
-| Method | Speed |
-|--------|-------|
+Measured numbers (source: `scripts/benchmark-intelligence.mjs`, ruvector NAPI backend; recall@10 ≈ 0.99). The older "150×–12,500×" figures were brute-force-fallback artifacts and have been retired — see project CLAUDE.md "V3 Performance Targets".
+
+| Method | Measured speedup vs brute-force |
+|--------|---------------------------------|
 | Brute-force scan | Baseline |
-| HNSW (n=500, balanced) | ~150× faster |
-| HNSW (n=10,000, balanced) | ~12,500× faster |
-| RaBitQ + rerank (n=10,000) | ~12,500× search speed at 32× lower memory |
+| HNSW (N=5,000) | ~3.2×–4.7× faster |
+| HNSW (N=20,000) | ~1.9× faster |
+| HNSW (below crossover, small N) | ties/loses vs brute-force |
+| RaBitQ quantization | 32× memory reduction; 0.60 ms/query at N≈14.7k |
 | `ruvllm_hnsw_route` (n≤11) | sub-ms per route, fixed cost |

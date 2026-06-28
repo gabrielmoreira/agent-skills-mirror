@@ -61,8 +61,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`docs/context/skills.md`](docs/context/skills.md) |
-| 3 | ✓ | [`test/beta/AGENTS.md`](test/beta/AGENTS.md) |
-| 4 | ✓ | [`test/beta/CLAUDE.md`](test/beta/CLAUDE.md) |
+| 3 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 4 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
 | 5 | ✓ | [`website/AGENTS.md`](website/AGENTS.md) |
 | 6 | ✓ | [`website/CLAUDE.md`](website/CLAUDE.md) |
 

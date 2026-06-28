@@ -12,6 +12,8 @@ description: >
 
 You are extracting knowledge from the user's Pi coding agent sessions and distilling it into the Obsidian wiki. Pi sessions are stored as structured JSONL with a tree layout — your job is to follow the active branch, extract durable knowledge, and compile it.
 
+**Session knowledge closure:** Pi session files are the only factual source for this skill. Do not add background knowledge from model training, other tools, package docs, local files, or the current conversation unless that fact appears in the selected session entries. If outside context seems useful, mark it as an open question or skip it — never present it as extracted session knowledge.
+
 This skill can be invoked directly or via the `wiki-history-ingest` router (`/wiki-history-ingest pi`).
 
 ## Before You Start
@@ -135,6 +137,16 @@ From the active path, extract:
 - **`compaction` entries** — read `summary` verbatim; it's already distilled
 - **`branch_summary` entries** — read `summary` verbatim; captures abandoned approaches
 
+### Evidence ledger
+
+As you parse, build a private evidence ledger before writing any wiki page. Each durable fact or decision you may write must carry at least one source reference:
+
+```
+pi:<session-file-basename>#<entry-id>
+```
+
+If an entry lacks an `id`, use `pi:<session-file-basename>:line<N>` from the JSONL line number. Keep the cited text snippet or summarized observation next to the reference while drafting so you can verify claims before writing.
+
 ### Skip / noise filters
 
 - `thinking` content blocks — internal reasoning, not durable knowledge
@@ -158,9 +170,10 @@ Do not create one wiki page per session.
 
 - Group knowledge by stable topic across many sessions
 - Split mixed sessions into separate themes
-- Merge recurring patterns across dates and projects
+- Merge recurring patterns across dates and projects **only when each pattern member has evidence ledger references**
 - Use the `cwd` from the session header to infer project scope
 - Use `session_info.name` as a topic hint when available
+- Drop any cluster whose key claims cannot be traced back to the selected session files
 
 ## Step 4: Distill into Wiki Pages
 
@@ -178,6 +191,7 @@ For each impacted project, create/update `projects/<name>/<name>.md`.
 
 - Distill knowledge, not chronology
 - Avoid "on date X we discussed..." unless date context is essential
+- Preserve session-specific decision context when it explains why an approach was chosen; do not flatten it into generic tool advice.
 - Add `summary:` frontmatter on each new/updated page (1–2 sentences, ≤ 200 chars)
 - Add confidence and lifecycle fields to every new page:
   ```yaml
@@ -186,16 +200,31 @@ For each impacted project, create/update `projects/<name>/<name>.md`.
   lifecycle_changed: <ISO date today>
   ```
   Leave `lifecycle` unchanged on update.
-- Add provenance markers:
-  - `^[extracted]` when directly grounded in explicit session content (compaction/branch summaries, explicit assistant statements)
-  - `^[inferred]` when synthesizing patterns across multiple sessions or inferring from tool calls
-  - `^[ambiguous]` when sessions conflict or a compaction summary contradicts later turns
-- Add/update `provenance:` frontmatter mix for each changed page
+- Add provenance markers using the convention in `llm-wiki`:
+  - Extracted claims use no inline marker by default, but must have a nearby source reference comment.
+  - `^[inferred]` when synthesizing patterns across multiple sessions or inferring from tool calls.
+  - `^[ambiguous]` when sessions conflict or a compaction summary contradicts later turns.
+- Add a source reference comment near every extracted paragraph or bullet:
+  ```markdown
+  - Durable fact from the session. <!-- source: pi:2026-06-01T120000_abcd.jsonl#entry-123 -->
+  ```
+  Multiple sources are comma-separated. These comments are the audit trail; do not omit them for extracted claims.
+- Add/update `provenance:` frontmatter mix for each changed page.
 
 **Mark provenance** per the convention in `llm-wiki`:
-- `compaction` and `branch_summary` entries are pre-distilled — treat as mostly `^[extracted]`
-- Conversation distillation is mostly `^[inferred]` — you're synthesizing from dialogue
-- Use `^[ambiguous]` when the user changed their mind across sessions or when compaction summaries disagree with later conversation turns
+- `compaction` and `branch_summary` entries are pre-distilled — treat as mostly extracted, with source reference comments.
+- Conversation distillation is mostly `^[inferred]` — you're synthesizing from dialogue, and it still needs source references to the turns that support the synthesis.
+- Use `^[ambiguous]` when the user changed their mind across sessions or when compaction summaries disagree with later conversation turns.
+
+### Source verification gate
+
+Before writing any page, verify the draft against the evidence ledger:
+
+1. Every claim (extracted / ^[inferred] / ^[ambiguous]) has at least one `pi:...` source reference; extracted claims must use a nearby `<!-- source: pi:... -->` comment.
+2. Every source reference points to a selected session file and an entry on the active branch (or a cited `compaction` / `branch_summary`).
+3. Proper nouns, tool names, command names, filenames, URLs, package names, and error strings in claims appear in the cited entry text or command fields. Use literal search (`grep`/`rg`) on the session file for distinctive strings when in doubt.
+4. If a claim cannot be verified, either delete it or mark it `^[inferred]` / `^[ambiguous]` with the supporting source refs; never leave unverifiable content without one of these markers (unmarked implies extracted).
+5. Do not write facts learned from the model's training data or the current agent session unless they are explicitly present in the Pi session evidence.
 
 ## Step 5: Update Manifest, Log, and Index
 
