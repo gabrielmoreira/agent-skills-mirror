@@ -1,14 +1,15 @@
 ---
 name: lark-skill-maker
-description: '把飞书 API 操作封装成可复用技能和多步流程。'
-version: "1.0.1"
+description: 'Use when users need to turn Feishu/Lark API operations into reusable agent skills, compose multi-step Lark workflows, or package verified Lark automation patterns for repeatable execution.'
+zh_description: "用于把飞书 API 操作封装为可复用技能、流程模板和多步自动化。"
+version: "1.0.2"
 author: larksuite
 source: "github:larksuite/cli"
 source_url: "https://github.com/larksuite/cli/tree/main/skills/lark-skill-maker"
 license: MIT
 tags: '[feishu, lark, lark-cli, skills, agent-workflow]'
 created_at: "2026-05-19"
-updated_at: "2026-05-20"
+updated_at: "2026-06-29"
 quality: 3
 complexity: intermediate
 metadata:
@@ -118,3 +119,21 @@ source is intentionally concise.
 - Stop and ask for clarification when the next action could overwrite user work,
   expose private data, or change production state.
 <!-- LOCAL-QUALITY-SUPPLEMENT:END -->
+
+<!-- LOCAL-CURATION-SUPPLEMENT:START -->
+## Skill Packaging Checklist
+
+When converting a Lark API workflow into a reusable skill, include:
+
+- A trigger-focused `description` that says when the skill should activate and what it must not handle.
+- Required scopes and authentication steps before any command examples.
+- A minimal read-only example before write operations.
+- A dry-run or confirmation pattern for destructive or externally visible writes.
+- Data handoff notes between steps, including which response fields become inputs for later calls.
+- Failure handling for missing permissions, rate limits, partial writes, and invalid identifiers.
+- A final verification command or UI check that proves the workflow completed.
+
+## Quality Bar
+
+Do not package a Lark workflow as a skill if it is only a single undocumented API call. A useful skill should explain intent, parameters, scopes, boundaries, and repeatable troubleshooting steps so another agent can run it without rediscovering the API from scratch.
+<!-- LOCAL-CURATION-SUPPLEMENT:END -->

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `chf3198/megingjord-harness` — 26 default patterns, 11 followed patterns, 112 file(s) materialized.
+Mirror of `chf3198/megingjord-harness` — 26 default patterns, 9 followed patterns, 110 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `chf3198/megingjord-harness` — 26 default patterns, 11 followed patt
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 11 |
-| Files         | 112 |
+| Followed pats | 9 |
+| Files         | 110 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,6 @@ Mirror of `chf3198/megingjord-harness` — 26 default patterns, 11 followed patt
 - `docs/contributing-dev-setup.md`
 - `docs/howto/100-line-design-contract.md`
 - `CODE_OF_CONDUCT.md`
-- `wiki/WIKI-operations.md`
-- `wiki/WIKI-typology.md`
 
 ## File Index
 
@@ -179,8 +177,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 108 | → | [`docs/contributing-skills.md`](docs/contributing-skills.md) |
 | 109 | → | [`docs/contributing-workflow.md`](docs/contributing-workflow.md) |
 | 110 | → | [`docs/howto/100-line-design-contract.md`](docs/howto/100-line-design-contract.md) |
-| 111 | → | [`wiki/WIKI-operations.md`](wiki/WIKI-operations.md) |
-| 112 | → | [`wiki/WIKI-typology.md`](wiki/WIKI-typology.md) |
 
 ---
 

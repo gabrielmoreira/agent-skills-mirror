@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `gaasher/Agent-Loop-Skills` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `gaasher/Agent-Loop-Skills` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `gaasher/Agent-Loop-Skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,25 +61,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`loops/alpha-evolve/SKILL.md`](loops/alpha-evolve/SKILL.md) |
 | 2 | ✓ | [`loops/anomaly-investigation/SKILL.md`](loops/anomaly-investigation/SKILL.md) |
-| 3 | ✓ | [`loops/claim-verify/SKILL.md`](loops/claim-verify/SKILL.md) |
-| 4 | ✓ | [`loops/data-analysis/SKILL.md`](loops/data-analysis/SKILL.md) |
-| 5 | ✓ | [`loops/dueling-autoresearch/SKILL.md`](loops/dueling-autoresearch/SKILL.md) |
-| 6 | ✓ | [`loops/exploratory-autoresearch/SKILL.md`](loops/exploratory-autoresearch/SKILL.md) |
-| 7 | ✓ | [`loops/hypothesis-gen/SKILL.md`](loops/hypothesis-gen/SKILL.md) |
-| 8 | ✓ | [`loops/karpathy/SKILL.md`](loops/karpathy/SKILL.md) |
-| 9 | ✓ | [`loops/literature-search/SKILL.md`](loops/literature-search/SKILL.md) |
-| 10 | ✓ | [`loops/literature-survey/SKILL.md`](loops/literature-survey/SKILL.md) |
-| 11 | ✓ | [`loops/ml-autoresearch/SKILL.md`](loops/ml-autoresearch/SKILL.md) |
-| 12 | ✓ | [`loops/optimize-loop/SKILL.md`](loops/optimize-loop/SKILL.md) |
-| 13 | ✓ | [`loops/power-analysis/SKILL.md`](loops/power-analysis/SKILL.md) |
-| 14 | ✓ | [`loops/prompt-optimize/SKILL.md`](loops/prompt-optimize/SKILL.md) |
-| 15 | ✓ | [`loops/red-team/SKILL.md`](loops/red-team/SKILL.md) |
-| 16 | ✓ | [`loops/research-proposal/SKILL.md`](loops/research-proposal/SKILL.md) |
-| 17 | ✓ | [`loops/research-question/SKILL.md`](loops/research-question/SKILL.md) |
-| 18 | ✓ | [`loops/scientific-figure/SKILL.md`](loops/scientific-figure/SKILL.md) |
-| 19 | ✓ | [`loops/scientific-writer/SKILL.md`](loops/scientific-writer/SKILL.md) |
-| 20 | ✓ | [`loops/tabular-cleanup/SKILL.md`](loops/tabular-cleanup/SKILL.md) |
-| 21 | ✓ | [`loops/tournament-autoresearch/SKILL.md`](loops/tournament-autoresearch/SKILL.md) |
+| 3 | ✓ | [`loops/blue-team/SKILL.md`](loops/blue-team/SKILL.md) |
+| 4 | ✓ | [`loops/claim-verify/SKILL.md`](loops/claim-verify/SKILL.md) |
+| 5 | ✓ | [`loops/data-analysis/SKILL.md`](loops/data-analysis/SKILL.md) |
+| 6 | ✓ | [`loops/dueling-autoresearch/SKILL.md`](loops/dueling-autoresearch/SKILL.md) |
+| 7 | ✓ | [`loops/exploratory-autoresearch/SKILL.md`](loops/exploratory-autoresearch/SKILL.md) |
+| 8 | ✓ | [`loops/hypothesis-gen/SKILL.md`](loops/hypothesis-gen/SKILL.md) |
+| 9 | ✓ | [`loops/karpathy/SKILL.md`](loops/karpathy/SKILL.md) |
+| 10 | ✓ | [`loops/literature-search/SKILL.md`](loops/literature-search/SKILL.md) |
+| 11 | ✓ | [`loops/literature-survey/SKILL.md`](loops/literature-survey/SKILL.md) |
+| 12 | ✓ | [`loops/ml-autoresearch/SKILL.md`](loops/ml-autoresearch/SKILL.md) |
+| 13 | ✓ | [`loops/optimize-loop/SKILL.md`](loops/optimize-loop/SKILL.md) |
+| 14 | ✓ | [`loops/plan-loop/SKILL.md`](loops/plan-loop/SKILL.md) |
+| 15 | ✓ | [`loops/power-analysis/SKILL.md`](loops/power-analysis/SKILL.md) |
+| 16 | ✓ | [`loops/prompt-optimize/SKILL.md`](loops/prompt-optimize/SKILL.md) |
+| 17 | ✓ | [`loops/purple-team/SKILL.md`](loops/purple-team/SKILL.md) |
+| 18 | ✓ | [`loops/red-team/SKILL.md`](loops/red-team/SKILL.md) |
+| 19 | ✓ | [`loops/research-proposal/SKILL.md`](loops/research-proposal/SKILL.md) |
+| 20 | ✓ | [`loops/research-question/SKILL.md`](loops/research-question/SKILL.md) |
+| 21 | ✓ | [`loops/scientific-figure/SKILL.md`](loops/scientific-figure/SKILL.md) |
+| 22 | ✓ | [`loops/scientific-writer/SKILL.md`](loops/scientific-writer/SKILL.md) |
+| 23 | ✓ | [`loops/tabular-cleanup/SKILL.md`](loops/tabular-cleanup/SKILL.md) |
+| 24 | ✓ | [`loops/tournament-autoresearch/SKILL.md`](loops/tournament-autoresearch/SKILL.md) |
 
 ---
 

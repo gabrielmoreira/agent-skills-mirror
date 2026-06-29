@@ -1,9 +1,10 @@
 ---
 name: andrej-karpathy-skills
 description: 'Karpathy-inspired coding discipline for AI agents: think before coding, keep changes simple, edit surgically, and define verifiable success criteria before implementation.'
+zh_description: "用于应用 Andrej Karpathy 风格的 AI 学习、构建和研究实践。"
 version: "1.0.0"
 author: seaworld008
-source: github:swarmclawai/andrej-karpathy-skills
+source: in-house
 source_url: "https://github.com/swarmclawai/andrej-karpathy-skills/blob/main/skills/karpathy-guidelines/SKILL.md"
 license: MIT
 tags: '[coding-discipline, architecture, backend, refactoring, code-review, ai-workflow, verification]'

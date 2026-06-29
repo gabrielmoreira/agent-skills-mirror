@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aaron-he-zhu/seo-geo-claude-skills` — 26 default patterns, 6 followed patterns, 29 file(s) materialized.
+Mirror of `aaron-he-zhu/seo-geo-claude-skills` — 26 default patterns, 7 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `aaron-he-zhu/seo-geo-claude-skills` — 26 default patterns, 6 follow
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 29 |
+| Followed pats | 7 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -57,6 +57,7 @@ Mirror of `aaron-he-zhu/seo-geo-claude-skills` — 26 default patterns, 6 follow
 - `CONNECTORS.md`
 - `docs/README.zh.md`
 - `scripts/connectors/README.md`
+- `references/measurement-protocol.md`
 
 ## File Index
 
@@ -83,16 +84,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`optimize/internal-linking-optimizer/SKILL.md`](optimize/internal-linking-optimizer/SKILL.md) |
 | 18 | ✓ | [`optimize/on-page-seo-auditor/SKILL.md`](optimize/on-page-seo-auditor/SKILL.md) |
 | 19 | ✓ | [`optimize/technical-seo-checker/SKILL.md`](optimize/technical-seo-checker/SKILL.md) |
-| 20 | ✓ | [`research/competitor-analysis/SKILL.md`](research/competitor-analysis/SKILL.md) |
-| 21 | ✓ | [`research/content-gap-analysis/SKILL.md`](research/content-gap-analysis/SKILL.md) |
-| 22 | ✓ | [`research/keyword-research/SKILL.md`](research/keyword-research/SKILL.md) |
-| 23 | ✓ | [`research/serp-analysis/SKILL.md`](research/serp-analysis/SKILL.md) |
-| 24 | → | [`CONNECTORS.md`](CONNECTORS.md) |
-| 25 | → | [`docs/README.zh.md`](docs/README.zh.md) |
-| 26 | → | [`README.md`](README.md) |
-| 27 | → | [`references/cite-domain-rating.md`](references/cite-domain-rating.md) |
-| 28 | → | [`references/core-eeat-benchmark.md`](references/core-eeat-benchmark.md) |
-| 29 | → | [`scripts/connectors/README.md`](scripts/connectors/README.md) |
+| 20 | ✓ | [`references/auditor-runbook.md`](references/auditor-runbook.md) |
+| 21 | ✓ | [`references/state-model.md`](references/state-model.md) |
+| 22 | ✓ | [`research/competitor-analysis/SKILL.md`](research/competitor-analysis/SKILL.md) |
+| 23 | ✓ | [`research/content-gap-analysis/SKILL.md`](research/content-gap-analysis/SKILL.md) |
+| 24 | ✓ | [`research/keyword-research/SKILL.md`](research/keyword-research/SKILL.md) |
+| 25 | ✓ | [`research/serp-analysis/SKILL.md`](research/serp-analysis/SKILL.md) |
+| 26 | → | [`CONNECTORS.md`](CONNECTORS.md) |
+| 27 | → | [`docs/README.zh.md`](docs/README.zh.md) |
+| 28 | → | [`README.md`](README.md) |
+| 29 | → | [`references/cite-domain-rating.md`](references/cite-domain-rating.md) |
+| 30 | → | [`references/core-eeat-benchmark.md`](references/core-eeat-benchmark.md) |
+| 31 | → | [`references/measurement-protocol.md`](references/measurement-protocol.md) |
+| 32 | → | [`scripts/connectors/README.md`](scripts/connectors/README.md) |
 
 ---
 

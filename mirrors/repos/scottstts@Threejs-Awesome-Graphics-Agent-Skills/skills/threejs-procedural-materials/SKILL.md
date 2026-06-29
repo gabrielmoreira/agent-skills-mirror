@@ -1,6 +1,6 @@
 ---
 name: threejs-procedural-materials
-description: Author production procedural materials in Three.js. Use for atlas filtering and specular AA, planet-space material fields, terrain wetness, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
+description: Author production procedural materials in Three.js. Use for atlas filtering and specular AA, planet-space material fields, terrain wetness, lava and hot emissive procedural surfaces, raymarched material fields, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
 ---
 
 # Procedural Materials
@@ -38,6 +38,11 @@ Read the
 for coupled reflection, refraction, absorption, filtered microstructure,
 resolved crest response, and their diagnostic channels.
 
+Read the
+[lava flow surface material](examples/lava-flow-surface/lava-surface.js)
+for raymarched procedural height fields whose normals, rock/lava identity,
+emission, glow, embers, fog, and grain are coupled to one material cause stack.
+
 ## Required controls
 
 - real or perceptual texture scale;
@@ -47,6 +52,8 @@ resolved crest response, and their diagnostic channels.
 - distance/derivative filtering;
 - specular antialiasing;
 - channel and mask debug modes.
+- emissive-material debug modes when the material owns glow or volumetric
+  accumulation.
 
 ## Failure conditions
 

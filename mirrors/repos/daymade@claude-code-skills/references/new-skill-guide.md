@@ -8,7 +8,7 @@
 ✅ CHANGELOG.md                        (Add version entry)
 ✅ README.md                          (7 locations: badges, description, install, skill section, use case, docs link, requirements)
 ✅ README.zh-CN.md                    (7 locations: same as above, translated) ⚠️ CRITICAL
-✅ CLAUDE.md                          (3 locations: overview, marketplace config, available skills)
+✅ CLAUDE.md                          (Available Skills list only — overview/config counts were removed as derived values)
 ✅ .claude-plugin/marketplace.json    (CRITICAL: metadata + new plugin entry)
 ✅ skill-name/                        (The actual skill directory)
 ✅ skill-name/skill-name.zip          (Packaged skill)
@@ -16,11 +16,13 @@
 
 ## Step-by-Step Process
 
-### 1. Refine the Skill (if needed)
+### 1. Refine the Skill + PII Read-Through (mandatory gate)
 ```bash
 cd skill-creator
 uv run python -m scripts.security_scan ../skill-name --verbose
 ```
+
+`security_scan` (gitleaks) is a **keyword-based first pass, NOT the gate**. It cannot see real project/person nicknames, CJK names (gitleaks ignores CJK), or verbatim transcript lines — none have a secret signature. **Before publishing you MUST read the whole skill yourself** (SKILL.md + every reference + every example) and judge each concrete noun semantically: generic placeholder, or lifted from a real project/person? See [`../daymade-skill/skill-creator/references/sanitization_checklist.md`](../daymade-skill/skill-creator/references/sanitization_checklist.md). A green scan is **not** a clean bill of health. (2026-06-28: openclaw shipped review with real instance nicknames that scan/gitleaks/grep all missed — caught only by the read-through.)
 
 ### 2. Package the Skill
 ```bash
@@ -42,13 +44,11 @@ Add new version entry at the top (after [Unreleased]):
   - Bundled scripts/references/assets
 
 ### Changed
-- Updated marketplace skills count from N to N+1
 - Updated marketplace version from X.(Y-1).0 to X.Y.0
 - Updated README.md badges (skills count, version)
 - Updated README.md to include skill-name in skills listing
 - Updated README.zh-CN.md badges (skills count, version)
 - Updated README.zh-CN.md to include skill-name in skills listing
-- Updated CLAUDE.md skills count from N to N+1
 - Added skill-name use case section to README.md
 - Added skill-name use case section to README.zh-CN.md
 - Added dependencies to requirements section (if any, both EN and ZH)
@@ -111,9 +111,7 @@ Use **skill-name** to [describe primary use case]. Combine with **other-skill** 
 
 ### 5. Update CLAUDE.md
 
-- Update repository overview skill count
-- Update marketplace configuration plugin count
-- Add skill to Available Skills list
+- Add skill to Available Skills list (the only per-skill edit CLAUDE.md needs — the overview & marketplace-config counts were removed as derived values; don't reintroduce them)
 
 ### 6. Update .claude-plugin/marketplace.json (MOST IMPORTANT)
 
@@ -203,7 +201,6 @@ Before committing, verify:
 - [ ] README.zh-CN.md has documentation link
 - [ ] README.zh-CN.md requirements updated (if needed)
 - [ ] README.zh-CN.md installation command added
-- [ ] CLAUDE.md skill count updated in 3 places
 - [ ] CLAUDE.md has skill in Available Skills list
 - [ ] marketplace.json metadata.version updated
 - [ ] marketplace.json metadata.description updated
@@ -217,11 +214,12 @@ Before committing, verify:
 1. **Forgetting marketplace.json** - Without this, `claude plugin install` fails
 2. **Forgetting Chinese documentation** - README.zh-CN.md must be updated in sync (6 locations)
 3. **Inconsistent version numbers** - CHANGELOG, README badges (both EN and ZH), CLAUDE.md, and marketplace.json must all match
-4. **Inconsistent skill counts** - README description (both EN and ZH), badges, CLAUDE.md must all have same count
+4. **Inconsistent skill counts** - the skill count now lives ONLY in the README/zh `shields.io` badges (a literal is required there); `check_doc_skill_lists.py` enforces it against marketplace.json. CLAUDE.md and the README description no longer carry a count — don't add one back
 5. **Missing skill number in README** - Skills must be numbered sequentially in both EN and ZH versions
 6. **Relying on JSON syntax check alone** - `python -m json.tool` only catches malformed JSON. It will NOT catch missing plugin entries, broken source+skills resolution, or orphan SKILL.md files on disk. Use `bash daymade-claude-code/marketplace-dev/scripts/check_marketplace.sh` for the full 4-check validation.
 7. **Leaving orphan SKILL.md directories** - A tracked skill directory with no plugin entry in marketplace.json is invisible to `claude plugin install`. The reverse-sync check in `check_marketplace.sh` emits a WARN for each orphan. Treat every WARN as a real signal: register it or delete it.
 8. **Using `git add -A` or `git add .`** - When multiple sessions/agents edit the repo in parallel, a blanket stage can piggyback another agent's unstaged changes into your commit. Always stage files by name.
+   - **Detecting a concurrent session before you commit:** if working-tree files keep changing between your `git status` calls (e.g. a file you just deleted reappears, or `marketplace.json` grows entries you didn't add), find who is writing instead of guessing. List each Claude session's working directory — `for p in $(pgrep -f 'claude --dangerously'); do echo -n "$p "; lsof -a -p $p -d cwd -Fn 2>/dev/null | sed -n 's/^n//p'; done` — any session whose cwd is this repo is the culprit. Then cross-check file mtimes (`stat -f '%Sm %N' <file>`): minutes-old and static ⇒ the other session has stopped, the tree is safe to integrate; seconds-fresh ⇒ still active, so let it settle (or isolate your work in a `git worktree`) before committing. *(2026-06-28: ~10 rounds were lost treating a concurrent session's writes as a phantom bug — "the working tree keeps changing on its own" — until `ps`/`lsof` cwd + mtime pinned the real root cause. Root-cause first, don't keep reverting symptoms.)*
 9. **Forgetting to push** - Local changes are invisible until pushed to GitHub
 
 ## Quick Reference Commands

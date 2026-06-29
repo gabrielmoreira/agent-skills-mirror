@@ -71,8 +71,8 @@ primary-doc-advanced.md ← advanced topics, edge cases, troubleshooting
 **Linking pattern** in the primary file:
 
 ```markdown
-For operational procedures, see [WIKI-operations.md](wiki/WIKI-operations.md).
-For taxonomy and typology, see [WIKI-typology.md](wiki/WIKI-typology.md).
+For operational procedures, see [WIKI-operations.md](../../wiki/WIKI-operations.md).
+For taxonomy and typology, see [WIKI-typology.md](../../wiki/WIKI-typology.md).
 ```
 
 **Do not** consolidate all links into a compressed one-liner. Each link should

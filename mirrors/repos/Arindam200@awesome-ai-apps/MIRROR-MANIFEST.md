@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Arindam200/awesome-ai-apps` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `Arindam200/awesome-ai-apps` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Arindam200/awesome-ai-apps` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,7 +68,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/.claude/skills/implement/SKILL.md`](advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/.claude/skills/implement/SKILL.md) |
 | 8 | ✓ | [`advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/AGENTS.md`](advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/AGENTS.md) |
 | 9 | ✓ | [`advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/CLAUDE.md`](advance_ai_agents/deep_research_writing_agents_nebius_okahu/implement_yourself/CLAUDE.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -75,7 +75,7 @@ The console script is `notebooklm-mcp`:
 ```bash
 notebooklm-mcp                         # stdio transport (default — for desktop hosts)
 notebooklm-mcp --profile work          # bind a specific auth profile
-notebooklm-mcp --transport http        # loopback streamable-HTTP on 127.0.0.1:8000
+notebooklm-mcp --transport http        # loopback streamable-HTTP on 127.0.0.1:9420
 notebooklm-mcp --transport http --port 9000
 ```
 
@@ -84,13 +84,87 @@ notebooklm-mcp --transport http --port 9000
 | `--profile` | active profile | which stored auth profile the process binds |
 | `--transport` | `stdio` | `stdio` (subprocess hosts) or `http` (loopback) |
 | `--host` | `127.0.0.1` | http only; non-loopback is **refused** unless `NOTEBOOKLM_MCP_ALLOW_EXTERNAL_BIND=1` |
-| `--port` | `8000` | http only |
+| `--port` | `9420` | http only |
 | `--log-level` | `INFO` | logs go to **stderr**; stdout stays pure JSON-RPC |
+
+There is no `--token` flag — the HTTP bearer token is **env-only**
+(`NOTEBOOKLM_MCP_TOKEN`) so it cannot leak via `ps aux`.
 
 `stdio` is right for Claude Desktop/Code, Cursor, and Windsurf (they launch the server as a
 subprocess). Use `http` for a local web client or to share one running server across clients on
-the same machine. The HTTP transport is single-user and loopback-only by design; binding to a
-non-loopback address requires the explicit `NOTEBOOKLM_MCP_ALLOW_EXTERNAL_BIND=1` override.
+the same machine. The HTTP transport is loopback-only by default; binding to a non-loopback
+address requires **both** the explicit `NOTEBOOKLM_MCP_ALLOW_EXTERNAL_BIND=1` override **and** a
+`NOTEBOOKLM_MCP_TOKEN` — the server fails closed (refuses to start) on a network bind without a
+token, since it fronts a full Google account.
+
+## Remote deployment (Docker + a tunnel)
+
+Because master-token auth keeps the session alive unattended (no browser), the HTTP transport can
+run as a **remote connector** reachable from Claude Code, Claude Desktop, claude.ai, and mobile.
+The [`deploy/`](../deploy/) directory ships a turn-key Docker + Compose stack with a **tunnel
+sidecar** — pick one via a Compose profile — so you get HTTPS with **no public IP, no open ports,
+and no TLS certificate to manage** (the tunnel terminates TLS at its edge).
+
+**Common setup (both tunnels):**
+```bash
+# 1. bootstrap the master token once (a machine with a browser):
+notebooklm login --master-token --account you@example.com      # writes ~/.notebooklm/profiles/default
+# 2. secrets:
+cp deploy/.env.example deploy/.env                              # edit per the steps below
+#    NOTEBOOKLM_PROFILE_DIR defaults to ~/.notebooklm/profiles/default (override for a throwaway profile)
+```
+
+**Two auth methods coexist on one `/mcp`** (FastMCP `MultiAuth`):
+- **Claude Code / Desktop** → the static `NOTEBOOKLM_MCP_TOKEN` bearer (an `Authorization` header).
+- **claude.ai (web/mobile)** → optional **self-hosted OAuth** (one password, no external IdP):
+  set `NOTEBOOKLM_MCP_OAUTH_PASSWORD` (≥16 random chars) + `NOTEBOOKLM_MCP_OAUTH_BASE_URL`
+  (the **bare public origin**, no `/mcp`). Unset → bearer-only.
+
+### Tunnel A — Cloudflare (needs a domain in your Cloudflare account)
+1. Cloudflare **Zero Trust → Networks → Tunnels**: create a tunnel; copy its token to
+   `CF_TUNNEL_TOKEN` in `.env`.
+2. Add a **Public Hostname** (e.g. `notebooklm.yourdomain.com`) → **Service**
+   `http://notebooklm-mcp:9420` — the **docker service name**, not `localhost`; route the **whole
+   host** (`/`), not a `/mcp`-scoped ingress (the OAuth routes live at the root). Cloudflare
+   auto-creates the proxied DNS record and serves a valid cert.
+3. `.env`: `NOTEBOOKLM_MCP_OAUTH_BASE_URL=https://notebooklm.yourdomain.com` (bare origin).
+4. Run: `cd deploy && make dev` (Cloudflare is the default profile).
+
+### Tunnel B — Tailscale Funnel (no domain — free, stable `*.ts.net` HTTPS)
+Best when you don't own a domain: Tailscale Funnel gives a stable public HTTPS hostname on
+Tailscale's domain, free on the personal plan, no DNS to manage. **One-time tailnet setup in
+the admin console** (these are policy/feature prerequisites, not per-machine toggles):
+1. Enable **MagicDNS** and **HTTPS certificates** (admin console → DNS; → HTTPS Certificates).
+2. Grant the **`funnel` node attribute**: admin console → **Settings → General → Funnel →
+   Manage → Node attributes → Add node attribute** → `funnel` (JSON preview:
+   `{"target": ["*"], "attr": ["funnel"]}`).
+3. Create a **normal auth key** (Settings → Keys) → `.env` `TS_AUTHKEY` (there's no
+   "Funnel-capable" key type; Funnel comes from the policy in step 2).
+
+Then:
+4. `.env`: `NOTEBOOKLM_MCP_OAUTH_BASE_URL=https://notebooklm-mcp.<your-tailnet>.ts.net` (bare origin).
+   Find `<your-tailnet>` on the admin console **DNS** page (the **"Tailnet name"**, e.g.
+   `tailXXXXXX.ts.net`).
+5. Run: `cd deploy && make dev TUNNEL=tailscale`. The sidecar (`deploy/tailscale/funnel.json` via
+   `TS_SERVE_CONFIG`, mounted as a directory) funnels public `:443 /` → `notebooklm-mcp:9420`;
+   the node is `TS_HOSTNAME=notebooklm-mcp`, so the origin is `https://notebooklm-mcp.<tailnet>.ts.net`.
+   Confirm the served URL with `docker compose --profile tailscale exec tailscale tailscale serve status`.
+
+**Verify** either tunnel (the OAuth metadata must serve at the root over a valid cert):
+```bash
+curl https://<host>/.well-known/oauth-authorization-server     # 200 JSON; issuer == your base URL
+```
+
+**Connect:**
+- **Claude Code:** `claude mcp add --transport http notebooklm https://<host>/mcp --header "Authorization: Bearer $NOTEBOOKLM_MCP_TOKEN"`
+- **claude.ai:** Settings → Connectors → **Add custom connector** → `https://<host>/mcp` (the URL
+  **with** `/mcp`) → it registers (DCR) and opens the server's password page.
+
+Full step-by-step + security model: [`deploy/README.md`](../deploy/README.md). Use a
+**dedicated/throwaway Google account** — the mounted `master_token.json` is a durable full-account
+credential. The connector moves text/references only; add device files via Google Drive
+(`source_add` with a Drive id) and consume generated podcasts/videos in the NotebookLM app.
+Multi-tenant hosting is out of scope for this single-tenant setup.
 
 ## Core concepts
 

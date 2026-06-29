@@ -105,7 +105,7 @@ Why: silent "lookup" paths that walk to the wire (alias dispatch, hook context b
 
 What currently reaches the wire:
 
-- `wt list --full`, `wt list statusline` — CI status
+- `wt list --full`, `wt list statusline` — CI status; also plain `wt list` when `[list] columns` names `ci`, which forces the column (and its fetch) on without `--full`
 - `wt switch` (interactive picker, no target) — per-row CI status, primed from the local cache then fetched live and streamed into the rows; once a row's CI fetch surfaces an open PR/MR, a per-row background `gh pr view <n> --json comments` (`glab api …/notes` on GitLab) fills that row's `comments` preview tab — the same fetch a `--prs` row makes, spawned once per row from `progressive_handler` (see `picker::prs::spawn_comments_fetch`). The `comments` tab is the only PR data fetched lazily here; `pr` rides the CI call and `log` is the local `git log`
 - generating a branch summary with a `commit.generation` command
 - generating a commit message with a `commit.generation` command
@@ -193,7 +193,7 @@ No `get_*` — bare nouns follow Rust stdlib convention.
 
 ## Repository Caching
 
-`Repository` caches read-only values via `Arc<RepoCache>` (cloning shares it). What is and isn't cached, the `list_worktrees()` post-mutation invariant, and the two storage patterns: the `# Caching` section in `src/git/repository/mod.rs`.
+`Repository` caches read-only values via `Arc<RepoCache>` (cloning shares it). What is and isn't cached, the `list_worktrees()` post-mutation invariant, the two storage patterns, and the in-memory-`RepoCache`-vs-persistent-`sha_cache` decision (cheap-and-hot → in-memory get-or-create; expensive → disk; both → in-memory front over disk back): the `# Caching` section in `src/git/repository/mod.rs`.
 
 ## Releases
 

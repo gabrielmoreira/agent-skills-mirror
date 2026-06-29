@@ -59,7 +59,7 @@
 10. **前端新代码先守住测试分层** - 新增或重写复杂 UI / hook 逻辑时，先抽到 View Model / projection / selector / reducer 并用 `*.unit.test.ts` 覆盖；`*.test.tsx` / component 测试只保留渲染、事件接线和少量关键回归。禁止把业务状态机、筛选/分组/格式化、运行时参数拼装等可纯化分支继续塞进 React 挂载测试；确实不能纯化时，必须在对应路线图或执行计划说明原因、风险层级和验证入口
 11. **用户可见文案必须全球本地化** - 新增或改动的按钮、标题、空态、toast、confirm、prompt、placeholder、aria/title、错误提示、导出 Markdown / copy prompt / artifact title 等 presentation 文案，必须覆盖 Lime current 五语言 `zh-CN / zh-TW / en-US / ja-JP / ko-KR`；前端走 key-based resources，Rust / Electron host / App Server 导出走 locale copy service；禁止只做中文 / 英文双语兜底，除非路线图明确写出临时例外和退出条件
 12. **配置与依赖改动要成组更新** - schema、校验器、消费者、文档、锁文件保持同步
-13. **Rust 变更先小测后全量** - 先跑受影响 crate / 模块 / 定向测试，优先 `npm run test:rust:unit -- -p <crate> <filter>` 或 `npm run test:rust:integration -- -p <crate> --test <target>`；只有跨 crate 协议、workspace 版本 / schema、发布最终门禁或定向覆盖不足时，才扩大到 `--workspace` / `npm run test:rust`。冷编译慢时优先复用 `lime-rs/target`、增量缓存和可选 `RUSTC_WRAPPER=sccache` / Nextest 环境能力，不用反复无差别全量重跑；新增模块尽量控制在 `500 LoC` 内，文件接近 `800 LoC` 时优先拆新模块；Rust 文件超过 `1000` 行时同样遵守基础约束中的代码体量边界
+13. **Rust 变更先小测后全量** - 先跑受影响 crate / 模块 / 定向测试，优先 `npm run test:rust:changed`、`npm run test:rust:related -- <paths...>`、`npm run test:rust:unit -- -p <crate> <filter>` 或 `npm run test:rust:integration -- -p <crate> --test <target>`；`changed/related` 会按 `lime-rs` 路径推导 workspace crate 并用 `cargo metadata` 扩展反向依赖，根 `Cargo.toml` / `Cargo.lock` 等 workspace 边界自动扩大到 `--workspace`，无法映射 crate 时必须 fail closed。只有跨 crate 协议、workspace 版本 / schema、发布最终门禁或定向覆盖不足时，才扩大到 `--workspace` / `npm run test:rust`。冷编译慢时优先复用 `lime-rs/target`、增量缓存和可选 `RUSTC_WRAPPER=sccache` / Nextest 环境能力，不用反复无差别全量重跑；新增模块尽量控制在 `500 LoC` 内，文件接近 `800 LoC` 时优先拆新模块；Rust 文件超过 `1000` 行时同样遵守基础约束中的代码体量边界
 14. **Rust 构建必须走 workspace manifest** - 在仓库根运行 Rust 校验必须带 `--manifest-path "lime-rs/Cargo.toml"`，或先 `cd lime-rs`；禁止直接 `rustc lime-rs/src/*.rs` 编译 Lime 主 crate，避免绕过 workspace 依赖导致 `can't find crate for lime_*` 误报
 15. **Harness Engine 只认单一事实源** - handoff / evidence / replay / analysis / review / GUI 统一消费 App Server `evidence/export` 与 `agentSession/*/export` current 导出链；旧 `agent_runtime_export_*` 只允许作为 retired guard / 历史 evidence / 迁移残留出现；`requestTelemetry` 需要按 `session/thread/turn` 真实关联导出，无匹配请求时输出空摘要，不再保留伪 `unlinked`
 
@@ -117,6 +117,8 @@ npm run test:resume
 npm run test:related -- <files>
 npm run test:changed -- <ref>
 npm run test:rust:unit
+npm run test:rust:changed
+npm run test:rust:related -- <paths...>
 npm run test:rust:layers:stats
 npm run governance:legacy-report
 npm run electron:dev

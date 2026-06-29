@@ -13,7 +13,9 @@ description: 准备并执行 Lime 发版流程。适用于用户要求更新 Lim
 - 只有用户明确要求“只更新版本 / 只写 release note / 不提交其它改动”时，才允许只修改和提交发版事实源；否则发版提交必须纳入本次 release candidate 的全部产品 / 文档 / 测试改动，或先停止并让用户确认排除清单。
 - 版本号事实源以 `package.json`、`forge.config.mjs`、App Server manifest 与 `lime-rs/Cargo.toml` 的 workspace version 为准，完成后必须跑 `npm run verify:app-version`。
 - Electron 发布 / 签名 / 公证 / updater metadata 的 current 打包事实源是 `forge.config.mjs`、`electron-forge package`、`electron-forge make` 与 Forge 官方 maker；旧 builder 配置 / CLI、自定义 Windows installer maker 与旧 YAML / blockmap updater metadata 按 `dead` 处理，不得写回 release workflow、docs、quality guard 或 i18n evidence。运行时更新以 `electron/updateHost.ts` + Electron 内置 `autoUpdater` 为 current；Windows installer 必须走 Forge Squirrel。
+- 发版前必须跑通 `npm run typecheck`。不能用 `npm run typecheck:electron`、`npm run lint`、局部单测或 Rust 测试替代；如果 `typecheck` 失败，必须先修到通过再进入 commit / tag / push 确认。
 - Lime 是 GUI 桌面产品；即使静态检查和单测通过，涉及发布也要尽量跑 `npm run verify:gui-smoke`，跑不了要说明环境限制。
+- 用户要求“发版 / 发布 / release”时，默认目标不是只准备版本文件，而是完成一次端到端发布：整理 release candidate、更新版本与 release notes、跑门禁、创建 release commit、创建 tag、推送 main 和 tag。`git commit` / `git tag` / `git push` 仍必须按危险操作格式请求一次明确确认；拿到确认后必须继续执行到底，并做 tag / 远端状态复核，不能把“是否提交 / 是否打 tag / 是否推送”留给用户自己处理。
 
 ## 入口判断
 
@@ -111,6 +113,7 @@ cargo fmt --manifest-path "lime-rs/Cargo.toml" --all
 cargo test --manifest-path "lime-rs/Cargo.toml"
 cargo clippy --manifest-path "lime-rs/Cargo.toml"
 npm run lint
+npm run typecheck
 npm test
 npm run smoke:electron
 npm run verify:gui-smoke
@@ -134,12 +137,15 @@ npm run test:resume
 
 ## Commit / Tag / Push
 
+完整发版默认必须包含 commit / tag / push。不要在验证通过后只汇报“可以提交了”就结束；应主动给出危险操作确认请求。只有用户明确说“只准备、不提交 / 不打 tag / 不推送”时，才允许停在准备态，并在最终汇报中标明不是完整发布。
+
 执行任何 git 写操作前，先汇总：
 
 - 目标版本与 tag
 - 将纳入提交的文件列表，必须区分 `release metadata` 与 `candidate changes`
 - `git diff --cached --stat` 的 staged 摘要
 - 已通过 / 未通过 / 未执行的验证
+- `npm run typecheck` 必须已通过；未通过时不得请求 commit / tag / push 确认
 - 是否存在未提交或未跟踪但未纳入发布的改动；如果存在，必须列出排除原因或等待用户确认
 
 然后按危险操作格式请求确认。确认后再执行：
@@ -149,6 +155,15 @@ git add <release-candidate-files>
 git commit -m "Release vX.Y.Z"
 git tag vX.Y.Z
 git push origin main --follow-tags
+```
+
+确认后不要只执行其中一部分。若 `git add`、`git commit`、`git tag` 或 `git push` 任一步失败，必须修复或明确说明阻塞点；成功后立即复核：
+
+```bash
+git status --short
+git log --oneline --decorate --max-count=3
+git tag --list "vX.Y.Z"
+git ls-remote --tags origin "refs/tags/vX.Y.Z"
 ```
 
 如果 tag 已存在或已推送，不要覆盖；先说明本地与远端 tag 状态，并单独确认删除或重建策略。重打已推送 tag 时，必须明确说明会改写远端发布引用，并优先建议补丁版，除非用户明确要求保留同一版本号。

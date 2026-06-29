@@ -57,3 +57,7 @@ validation tools. Keep compatibility with both Claude Code and Codex users.
 - Before finishing a skill/tool change, run the relevant syntax or generation
   check. For compatibility changes, run:
   `python3 scripts/sync-codex-skills.py`
+- To verify generated Codex artifacts are current without rewriting files, run:
+  `python3 scripts/sync-codex-skills.py --check`
+  and, when slash prompts are relevant:
+  `python3 scripts/sync-codex-prompts.py --check`

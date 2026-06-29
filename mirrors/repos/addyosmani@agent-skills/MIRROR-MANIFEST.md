@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `addyosmani/agent-skills` — 26 default patterns, 2 followed patterns, 36 file(s) materialized.
+Mirror of `addyosmani/agent-skills` — 26 default patterns, 3 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `addyosmani/agent-skills` — 26 default patterns, 2 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 36 |
+| Followed pats | 3 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `addyosmani/agent-skills` — 26 default patterns, 2 followed patterns
 
 - `docs/agents.md`
 - `references/orchestration-patterns.md`
+- `docs/skill-anatomy.md`
 
 ## File Index
 
@@ -95,7 +96,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 33 | ✓ | [`skills/test-driven-development/SKILL.md`](skills/test-driven-development/SKILL.md) |
 | 34 | ✓ | [`skills/using-agent-skills/SKILL.md`](skills/using-agent-skills/SKILL.md) |
 | 35 | → | [`docs/agents.md`](docs/agents.md) |
-| 36 | → | [`references/orchestration-patterns.md`](references/orchestration-patterns.md) |
+| 36 | → | [`docs/skill-anatomy.md`](docs/skill-anatomy.md) |
+| 37 | → | [`references/orchestration-patterns.md`](references/orchestration-patterns.md) |
 
 ---
 

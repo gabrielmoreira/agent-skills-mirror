@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `santifer/career-ops` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `santifer/career-ops` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `santifer/career-ops` — 26 default patterns, 0 followed patterns, 9 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,11 +63,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.antigravitycli/skills/career-ops/SKILL.md`](.antigravitycli/skills/career-ops/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/career-ops/SKILL.md`](.claude/skills/career-ops/SKILL.md) |
 | 4 | ✓ | [`.grok/skills/career-ops/SKILL.md`](.grok/skills/career-ops/SKILL.md) |
-| 5 | ✓ | [`.opencode/skills/career-ops/SKILL.md`](.opencode/skills/career-ops/SKILL.md) |
-| 6 | ✓ | [`.qwen/skills/career-ops/SKILL.md`](.qwen/skills/career-ops/SKILL.md) |
-| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 9 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 5 | ✓ | [`.kimi/skills/career-ops/SKILL.md`](.kimi/skills/career-ops/SKILL.md) |
+| 6 | ✓ | [`.opencode/skills/career-ops/SKILL.md`](.opencode/skills/career-ops/SKILL.md) |
+| 7 | ✓ | [`.qwen/skills/career-ops/SKILL.md`](.qwen/skills/career-ops/SKILL.md) |
+| 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`GEMINI.md`](GEMINI.md) |
 
 ---
 

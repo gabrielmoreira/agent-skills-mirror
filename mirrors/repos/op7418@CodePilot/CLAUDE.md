@@ -197,6 +197,12 @@ CodePilot — 多模型 AI Agent 桌面客户端，基于 Electron + Next.js。
 
 **修复闭环：** 接手 P1/P2 review finding、用户反馈、CDP 失败或测试失败时，按 `Signal → Triage → Fix → Verify → Guardrail` 处理；修复说明必须包含根因、改动、验证和防回归。不要只在聊天里关闭问题；需要沉淀的同类问题写入执行计划、tech-debt tracker 或 guardrail。
 
+**完成即回写进度（与 Codex 对齐协作）：** 执行计划里的任一 Phase / 子项做完后，必须立即把进度回写到对应执行计划文档，不能只在聊天里说"做完了"——Codex 负责审查与文档维护，只能据文档判断真实进度。回写三处且必须互相一致：
+1. **执行清单**：对应 `[ ]` → `[x]`（部分完成的项标注"部分：已做 X，待 Y"）。
+2. **「状态总览」表**：更新该 Phase 状态（`📋 待开始` / `🚧 进行中` / `✅ 已完成`），并同步顶部 frontmatter 的总状态行。
+3. **决策日志**：追加一条，含 commit hash + 验证结论（测试数 / smoke 结果）+ 推翻或转 tech-debt 的结论。
+分工：Claude Code 负责实施 + 回写进度，Codex 负责审查与维护文档结构；状态表、清单勾选、决策日志三者出现不一致即视为状态失真，必须先对齐再继续。Phase 全部子项完成后把计划从 `active/` 移到 `completed/`。
+
 ## 文档
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — 项目架构、目录结构、数据流、新功能触及点

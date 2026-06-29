@@ -5,10 +5,10 @@
 [![简体中文](https://img.shields.io/badge/README-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-1677ff)](./README.md)
 [![English](https://img.shields.io/badge/README-English-111111)](./README.en.md)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-Compatible-00b894)](./openclaw-skills/README.md)
-[![Skills](https://img.shields.io/badge/Skills-308-7c3aed)](./skills/)
+[![Skills](https://img.shields.io/badge/Skills-309-7c3aed)](./skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-面向全球 AI 开发者与 Agent 工作流构建者的高价值 Skills 仓库，覆盖开发工程、DevOps、产品设计、运营、办公自动化、金融投资、AI 平台与安全治理等高频任务场景。当前共 **16 个分类 / 308 个技能**。
+面向全球 AI 开发者与 Agent 工作流构建者的高价值 Skills 仓库，覆盖开发工程、DevOps、产品设计、运营、办公自动化、金融投资、AI 平台与安全治理等高频任务场景。当前共 **16 个分类 / 309 个技能**。
 
 ## 为什么值得收藏
 
@@ -41,7 +41,47 @@
 | 安装到 `Claude Code` 本机技能目录 | 将 `skills/` 同步到 `~/.claude/skills` 或项目内 `.claude/skills` |
 | `OpenClaw` | `openclaw-skills/` |
 
-### 方式一：直接发给 AI 工具的安装提示词（推荐）
+### 方式一：npx 一键安装（推荐给命令行用户）
+
+不想手动 clone 和复制目录时，可以直接用 GitHub 源运行安装器：
+
+```bash
+npx github:seaworld008/Commonly-used-high-value-skills install
+```
+
+默认会把技能安装到当前项目的 `.agents/skills`，适合多种支持 Agent Skills 约定的工具读取。你也可以一次安装到多个客户端目录：
+
+```bash
+# 安装到 Codex 和 Claude Code 的用户级 skills 目录
+npx github:seaworld008/Commonly-used-high-value-skills install --target codex,claude
+
+# 安装到项目 .agents、Codex、Claude Code、Claude 项目级和 OpenClaw 默认目录
+npx github:seaworld008/Commonly-used-high-value-skills install --all
+
+# 安装到自定义目录，适配其他 AI Agent 客户端
+npx github:seaworld008/Commonly-used-high-value-skills install --target custom --dir ./vendor/agent-skills
+```
+
+可用目标：
+
+| 目标 | 安装目录 |
+|------|----------|
+| `agents-project` | `./.agents/skills` |
+| `codex` | `~/.codex/skills` |
+| `claude` | `~/.claude/skills` |
+| `claude-project` | `./.claude/skills` |
+| `openclaw` | `~/.openclaw/skills`，本地仓库优先使用 `openclaw-skills/`，npx 包会从 `skills/` 平铺安装 |
+| `custom` | 通过 `--dir` 指定 |
+
+如果你已经在使用 `skills.sh` 生态，也可以尝试标准安装入口：
+
+```bash
+npx skills add seaworld008/Commonly-used-high-value-skills --all -a codex -a claude-code --copy
+```
+
+本仓库自带的 `high-value-skills` 安装器更适合需要明确选择 Codex / Claude / OpenClaw / 自定义目录的场景。
+
+### 方式二：直接发给 AI 工具的安装提示词
 
 如果你希望让 AI 工具直接帮你安装，优先发这段短提示词：
 
@@ -57,7 +97,7 @@
 
 之所以可以这样简化，是因为仓库里已经包含给 AI 工具读取的安装规则与目录约定文档，通常不需要你手动把安装逻辑全部写进提示词里。
 
-### 方式二：手动安装步骤
+### 方式三：手动安装步骤
 
 1. 克隆本仓库到本地并进入目录：
 
@@ -332,379 +372,380 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 2. 打开对应技能的 `SKILL.md` 查看触发条件、操作流程和脚本说明。
 3. 若技能下含 `scripts/`、`references/`、`assets/`，优先复用现成内容。
 
-## 技能总览（按分类，16 类 / 308 技能）
+## 技能总览（按分类，16 类 / 309 技能）
 
 <a id="cat-developer-engineering"></a>
-### 1. 开发工程（developer-engineering，50）
+### 1. 开发工程（developer-engineering，51）
 
-- `agent-designer`：用于设计、拆分和评估多智能体协作系统。
-- `api-design-reviewer`：用于审查接口设计、命名一致性、边界和可维护性。
-- `api-test-suite-builder`：用于为接口服务生成自动化测试、覆盖异常和回归场景。
-- `aws-solution-architect`：用于云架构设计、服务选型、成本优化和可靠性评估。
-- `builder`：生产级业务逻辑、接口集成和类型安全实现。
-- `cli-demo-generator`：用于制作命令行演示流程、终端录制和交互示例。
-- `code-review-excellence`：用于提升代码审查质量，发现缺陷并给出建设性反馈。
-- `codebase-inspection`：用于统计代码规模、语言分布和注释比例，快速体检仓库。
-- `codebase-onboarding`：用于快速理解陌生代码库结构、关键模块和上手路径。
-- `database-designer`：用于数据库建模、索引规划、性能优化和迁移设计。
-- `database-schema-designer`：用于根据需求设计表结构、字段关系、索引和种子数据。
-- `debugging-strategies`：用于系统化定位问题、分析根因并制定修复路径。
-- `dependency-auditor`：用于审计依赖版本、许可证风险和安全漏洞。
-- `docker-expert`：用于容器化构建、镜像优化、多阶段构建和编排实践。
-- `frontend-design`：用于设计和实现高质量前端界面，提升视觉与交互体验。
-- `gateway`：接口设计、规范生成、版本策略和破坏性变更检查。
-- `git-worktree-manager`：用于管理并行工作区，支持多分支隔离开发。
-- `github-contributor`：用于规范开源贡献流程、议题选择、变更提交和协作沟通。
-- `graphify`：用于把代码、文档和资料转成知识图谱并生成可视化报告。
-- `graphql-expert`：用于图查询接口设计、模式治理、查询优化和安全审查。
-- `i18n-expert`：用于国际化与本地化改造，处理多语言文案和格式适配。
-- `kubernetes-specialist`：用于容器集群部署、服务编排、故障排查和包管理。
-- `mcp-builder`：用于构建模型上下文协议工具，让模型安全调用外部服务。
-- `mcp-server-builder`：用于设计和实现模型上下文协议服务端，封装数据和工具能力。
-- `migration-architect`：用于规划低风险迁移、兼容验证、回滚策略和切换步骤。
-- `monorepo-navigator`：用于浏览大型单仓库，分析包依赖和跨模块影响。
-- `neon-postgres`：用于 Neon Serverless Postgres 设置、连接、分支、扩缩容和工具链实践。
-- `nextjs-app-router`：用于现代网页框架路由开发、服务端组件和表单动作实践。
-- `parallel-debugging`：用于并行验证多个故障假设，加速复杂问题定位。
-- `performance-profiler`：用于性能剖析、瓶颈定位、资源消耗分析和优化建议。
-- `pr-review-expert`：用于系统化审查合并请求，评估影响面、风险和测试缺口。
-- `promptfoo-evaluation`：用于配置提示词和模型输出评测，比较质量与稳定性。
-- `python-performance`：用于脚本性能优化、内存分析、并发设计和热点定位。
-- `qa-expert`：用于制定质量保障策略、测试计划、验收标准和回归流程。
-- `repomix-safe-mixer`：用于安全打包仓库上下文，自动识别并排除敏感信息。
-- `rust-engineer`：用于系统级编程、并发设计、错误处理和工程最佳实践。
-- `schema`：数据库模式设计、迁移规划、索引策略和关系建模。
-- `skill-tester`：用于验证技能可用性、触发条件、输出质量和边界行为。
-- `supabase`：用于 Supabase 数据库、认证、边缘函数、实时能力、存储、CLI 和 MCP 工作流。
-- `supabase-postgres`：用于后端数据库开发、权限策略、实时订阅和边缘函数实践。
-- `supabase-postgres-best-practices`：用于编写、审查和优化 Postgres 查询、表结构与数据库配置。
-- `systematic-debugging`：用于按证据推进调试，构建最小复现并确认根因。
-- `tailwind-design-system`：用于搭建样式体系、组件规范、主题变量和视觉一致性。
-- `tech-debt-tracker`：用于识别技术债、记录影响、排序治理并跟踪改善进度。
-- `terraform-engineer`：用于基础设施即代码设计、模块化管理和状态治理。
-- `typescript-best-practices`：用于类型安全设计、复杂类型建模和常见反模式避免。
-- `vercel-react-best-practices`：用于按 Vercel 工程实践优化 React 与 Next.js 性能。
-- `vercel-react-view-transitions`：Guide for adding native-feeling page, route, shared-element, and list transitions in React and Next.js with the View Transition API。
-- `web-artifacts-builder`：用于构建复杂网页制品、交互组件和可复用前端成果。
-- `webapp-testing`：用于测试本地网页应用，验证交互、页面状态和回归问题。
+- `agent-designer`：用于Agent、设计，支持开发、调试、评审和交付。
+- `api-design-reviewer`：用于评审 API 设计的一致性、可用性、版本策略、错误语义、安全性和开发者体验。
+- `api-test-suite-builder`：用于API、测试、套件、构建，支持开发、调试、评审和交付。
+- `aws-solution-architect`：用于 AWS 云架构设计、服务选型、成本优化与 Well-Architected Framework 评估。
+- `builder`：用于构建，支持开发、调试、评审和交付。
+- `cli-demo-generator`：用于CLI、演示、生成，支持开发、调试、评审和交付。
+- `code-review-excellence`：用于代码、评审、excellence，支持开发、调试、评审和交付。
+- `codebase-inspection`：用于用 pygount 检查代码行数、语言构成、仓库规模和代码/注释比例。
+- `codebase-onboarding`：用于代码库、onboarding，支持开发、调试、评审和交付。
+- `database-designer`：用于数据库、设计，支持开发、调试、评审和交付。
+- `database-schema-designer`：用于数据库、Schema、设计，支持开发、调试、评审和交付。
+- `debugging-strategies`：用于调试、策略，支持开发、调试、评审和交付。
+- `dependency-auditor`：用于dependency、审计，支持开发、调试、评审和交付。
+- `docker-expert`：用于 Docker 容器化最佳实践、多阶段构建优化与 Docker Compose 编排。
+- `frontend-design`：用于创建高质量、非模板化的前端页面、组件、仪表盘、海报和 Web UI。
+- `gateway`：用于gateway，支持开发、调试、评审和交付。
+- `git-worktree-manager`：用于Git、worktree、管理，支持开发、调试、评审和交付。
+- `github-contributor`：用于GitHub、贡献，支持开发、调试、评审和交付。
+- `graphify`：用于Graphify，支持开发、调试、评审和交付。
+- `graphql-expert`：用于 GraphQL API 设计、Schema/Resolver 评审、查询优化和安全最佳实践。
+- `i18n-expert`：用于i18n、expert，支持开发、调试、评审和交付。
+- `kubernetes-specialist`：用于 Kubernetes 集群管理、Pod 调试、Helm Chart 设计、清单评审和部署优化。
+- `mcp-builder`：用于MCP、构建，支持开发、调试、评审和交付。
+- `mcp-server-builder`：用于MCP、服务器、构建，支持开发、调试、评审和交付。
+- `migration-architect`：用于migration、架构，支持开发、调试、评审和交付。
+- `monorepo-navigator`：用于Monorepo、导航，支持开发、调试、评审和交付。
+- `neon-postgres`：用于 Neon Postgres 数据库连接、分支、迁移和运行维护。
+- `neon-postgres-egress-optimizer`：诊断并降低 Neon / Postgres 数据出口流量与相关成本。
+- `nextjs-app-router`：用于 Next.js App Router 项目开发、路由设计和服务端渲染实践。
+- `parallel-debugging`：用于并行、调试，支持开发、调试、评审和交付。
+- `performance-profiler`：用于性能、性能分析，支持开发、调试、评审和交付。
+- `pr-review-expert`：用于PR、评审、expert，支持开发、调试、评审和交付。
+- `promptfoo-evaluation`：用于promptfoo、评估，支持开发、调试、评审和交付。
+- `python-performance`：用于 Python 性能分析、内存优化、热点路径调优和并发模式评审。
+- `qa-expert`：用于质量保障、expert，支持开发、调试、评审和交付。
+- `repomix-safe-mixer`：用于repomix、safe、mixer，支持开发、调试、评审和交付。
+- `rust-engineer`：用于 Rust 代码开发、所有权和生命周期调试、异步模式选择和系统性能优化。
+- `schema`：用于Schema，支持开发、调试、评审和交付。
+- `skill-tester`：用于技能、tester，支持开发、调试、评审和交付。
+- `supabase`：用于Supabase，支持开发、调试、评审和交付。
+- `supabase-postgres`：用于 Supabase 平台开发与 PostgreSQL 最佳实践，包含 RLS、Edge Functions 和实。
+- `supabase-postgres-best-practices`：用于编写、评审和优化 Supabase/Postgres 查询、Schema、索引和数据库配置。
+- `systematic-debugging`：用于systematic、调试，支持开发、调试、评审和交付。
+- `tailwind-design-system`：用于 Tailwind CSS 设计系统、主题 token、组件样式和响应式布局规范。
+- `tech-debt-tracker`：用于tech、技术债、跟踪，支持开发、调试、评审和交付。
+- `terraform-engineer`：用于 Terraform IaC 设计、模块评审、状态管理、Provider 升级和基础设施部署优化。
+- `typescript-best-practices`：用于 TypeScript 类型安全设计、高级类型、API 边界、strict 迁移和反模式规避。
+- `vercel-react-best-practices`：用于 Vercel/React 项目的架构、性能和部署最佳实践。
+- `vercel-react-view-transitions`：用于在 React/Vercel 项目中实现和优化 View Transitions。
+- `web-artifacts-builder`：用于构建复杂多组件 HTML/React 网页 artifacts，尤其适合需要状态、路由或 shadcn/ui 的场景。
+- `webapp-testing`：用于使用 Playwright 测试本地 Web 应用、验证前端行为、截图和查看浏览器日志。
 
 <a id="cat-ai-workflow"></a>
 ### 2. AI 工作流（ai-workflow，45）
 
-- `agent-workflow-designer`：用于设计智能体协作流程、角色分工和执行顺序。
-- `andrej-karpathy-skills`：用于约束 AI 编码行为，强调先思考、少假设、保持改动简单、手术式编辑并用可验证标准收尾。
-- `api-and-interface-design`：用于设计稳定接口、模块边界和公共调用约定。
-- `brainstorming`：用于需求澄清、方案发散、创意筛选和行动前思考。
-- `browser-testing-with-devtools`：用于真实浏览器调试页面、检查元素、网络和控制台问题。
-- `ci-cd-and-automation`：用于搭建持续集成与持续交付流程，自动化构建和发布。
-- `code-review-and-quality`：用于多维度审查代码质量、正确性、风险和测试覆盖。
-- `code-simplification`：用于在不改变行为的前提下简化代码结构和表达。
-- `context-engineering`：用于优化智能体上下文、任务说明、资料组织和指令边界。
-- `debugging-and-error-recovery`：用于构建系统化排错流程，恢复失败构建和异常行为。
-- `deep-research`：用于深度研究主题、整理证据、引用来源并形成报告。
-- `deprecation-and-migration`：用于下线旧能力、迁移用户路径并控制兼容风险。
-- `dispatching-parallel-agents`：用于把独立任务分派给多个智能体并行推进。
-- `documentation-and-adrs`：用于记录技术决策、架构说明、变更背景和文档规范。
-- `executing-plans`：用于按既定实施计划执行任务，并在关键节点复核。
-- `find-skills`：用于自动搜索并安装适合当前任务的技能。
-- `finishing-a-development-branch`：用于开发完成后的收尾、验证、提交和合并准备。
-- `frontend-ui-engineering`：用于构建面向用户的界面、组件、状态和响应式布局。
-- `git-workflow-and-versioning`：用于规范分支、提交、版本、冲突处理和变更记录。
-- `idea-refine`：用于把初步想法打磨成清晰目标、约束和可执行方案。
-- `incremental-implementation`：用于把大任务拆成小步交付，逐步验证并降低风险。
-- `nexus`：多智能体任务分解、链路编排、执行协调和结果整合。
+- `agent-workflow-designer`：用于Agent、工作流、设计，支持任务规划、执行、评审和验证。
+- `andrej-karpathy-skills`：用于应用 Andrej Karpathy 风格的 AI 学习、构建和研究实践。
+- `api-and-interface-design`：用于API、interface、设计，支持任务规划、执行、评审和验证。
+- `brainstorming`：用于brainstorming，支持任务规划、执行、评审和验证。
+- `browser-testing-with-devtools`：用于通过浏览器 DevTools 测试、调试和验证前端行为。
+- `ci-cd-and-automation`：用于CI、CD、自动化，支持任务规划、执行、评审和验证。
+- `code-review-and-quality`：用于代码、评审、质量，支持任务规划、执行、评审和验证。
+- `code-simplification`：用于代码、simplification，支持任务规划、执行、评审和验证。
+- `context-engineering`：用于设计上下文工程策略、提示输入结构和长任务信息流。
+- `debugging-and-error-recovery`：用于调试、错误、recovery，支持任务规划、执行、评审和验证。
+- `deep-research`：用于执行深度研究、资料收集、来源核验和综合分析。
+- `deprecation-and-migration`：用于deprecation、migration，支持任务规划、执行、评审和验证。
+- `dispatching-parallel-agents`：用于拆分任务并调度多个 Agent 并行协作。
+- `documentation-and-adrs`：用于documentation、adrs，支持任务规划、执行、评审和验证。
+- `executing-plans`：用于按既定实现计划逐步执行任务，并在关键节点进行审查和完成验证。
+- `find-skills`：用于搜索、比较并安装适合当前任务的技能，帮助 Agent 正确路由能力。
+- `finishing-a-development-branch`：用于finishing、development、branch，支持任务规划、执行、评审和验证。
+- `frontend-ui-engineering`：用于前端、UI、工程，支持任务规划、执行、评审和验证。
+- `git-workflow-and-versioning`：用于Git、工作流、versioning，支持任务规划、执行、评审和验证。
+- `idea-refine`：用于idea、refine，支持任务规划、执行、评审和验证。
+- `incremental-implementation`：用于incremental、实现，支持任务规划、执行、评审和验证。
+- `nexus`：用于nexus，支持任务规划、执行、评审和验证。
 - `nlpm-audit`：审计 SKILL.md、AGENTS.md、CLAUDE.md、插件清单、hooks、commands 和提示词，检查安装一致性、质量评分、安全风险与版本漂移。
-- `performance-optimization`：用于分析性能瓶颈、制定优化方案并验证改善效果。
-- `planning-and-task-breakdown`：用于把目标拆解为任务、依赖、里程碑和验收标准。
-- `prompt-optimizer`：用于优化提示词结构、上下文、约束和输出稳定性。
-- `rally`：多会话并行执行编排，协调多个智能体共同完成任务。
-- `receiving-code-review`：用于处理代码审查反馈，判断优先级并逐项修复。
-- `requesting-code-review`：用于准备高质量代码审查请求，说明背景、风险和验证方式。
-- `security-and-hardening`：用于加固代码、配置和运行环境，减少安全风险。
-- `sherpa`：把复杂任务拆成短步骤，控制漂移并推进交付。
-- `shipping-and-launch`：用于发布前检查、上线计划、回滚准备和交付沟通。
-- `skill-creator`：用于创建新技能，定义触发条件、流程、边界和验证方法。
-- `skill-reviewer`：用于审查技能质量、实用性、安全性和可维护性。
-- `skills-search`：用于快速检索技能库，匹配当前任务所需能力。
-- `source-driven-development`：用于从权威来源和现有代码出发推进实现。
-- `spec-driven-development`：用于根据规格说明驱动开发、测试和验收。
-- `subagent-driven-development`：用于组织多个子智能体协作开发、审查和整合结果。
-- `test-driven-development`：用于按先写测试、再实现、再重构的节奏开发。
-- `using-agent-skills`：用于指导智能体正确选择、组合和执行技能。
-- `using-git-worktrees`：用于使用多个工作区并行处理不同任务。
-- `using-superpowers`：用于调用增强型技能流程，提升任务执行质量。
-- `verification-before-completion`：用于完成前复核结果、证据、测试和交付标准。
-- `writing-plans`：用于编写清晰、可执行、可验证的实施计划。
-- `writing-skills`：用于编写结构完整、触发清楚、可复用的技能文档。
+- `performance-optimization`：用于性能、优化，支持任务规划、执行、评审和验证。
+- `planning-and-task-breakdown`：用于planning、任务、breakdown，支持任务规划、执行、评审和验证。
+- `prompt-optimizer`：用于提示词、optimizer，支持任务规划、执行、评审和验证。
+- `rally`：用于rally，支持任务规划、执行、评审和验证。
+- `receiving-code-review`：用于receiving、代码、评审，支持任务规划、执行、评审和验证。
+- `requesting-code-review`：用于在完成任务、实现重要功能或合并前请求代码审查并验证需求满足情况。
+- `security-and-hardening`：用于安全、加固，支持任务规划、执行、评审和验证。
+- `sherpa`：用于sherpa，支持任务规划、执行、评审和验证。
+- `shipping-and-launch`：用于shipping、launch，支持任务规划、执行、评审和验证。
+- `skill-creator`：用于技能、创建，支持任务规划、执行、评审和验证。
+- `skill-reviewer`：用于技能、评审，支持任务规划、执行、评审和验证。
+- `skills-search`：用于技能、搜索，支持任务规划、执行、评审和验证。
+- `source-driven-development`：用于来源、驱动、development，支持任务规划、执行、评审和验证。
+- `spec-driven-development`：用于spec、驱动、development，支持任务规划、执行、评审和验证。
+- `subagent-driven-development`：用于subagent、驱动、development，支持任务规划、执行、评审和验证。
+- `test-driven-development`：用于测试、驱动、development，支持任务规划、执行、评审和验证。
+- `using-agent-skills`：用于选择、加载和正确使用 Agent Skills 完成任务。
+- `using-git-worktrees`：用于使用 Git worktree 隔离并行开发和审查工作。
+- `using-superpowers`：用于使用 Superpowers 工作流提升计划、执行和验证质量。
+- `verification-before-completion`：用于verification、before、completion，支持任务规划、执行、评审和验证。
+- `writing-plans`：用于writing、plans，支持任务规划、执行、评审和验证。
+- `writing-skills`：用于writing、技能，支持任务规划、执行、评审和验证。
 
 <a id="cat-ai-agent-platform"></a>
 ### 3. AI 平台与 Agent 开发（ai-agent-platform，16）
 
-- `agent-hub`：用于编排多个智能体并行尝试方案，比较结果并选择最佳分支。
-- `arena`：多引擎方案竞赛与协作，比较结果并择优采用。
-- `chatgpt-apps`：用于构建、调试和发布聊天应用能力。
-- `develop-web-game`：用于快速开发网页游戏、验证玩法并迭代体验。
-- `figma`：用于读取设计稿上下文、提取视觉信息和资源。
-- `figma-implement-design`：用于把设计稿高保真转化为可生产的前端代码。
-- `hermes-agent`：用于配置和使用智能体运行时、资料、记忆和扩展能力。
-- `hermes-graphify-gsd-nonintrusive-workflow`：用于全局非侵入式智能工作流，连接图谱分析和开发流程。
-- `hermes-graphify-gsd-runtime-operator`：用于运行态排障、状态观察和智能体操作管理。
-- `mcporter`：用于迁移和适配模型上下文协议工具与服务。
-- `native-mcp`：用于配置原生模型上下文协议连接和工具调用。
-- `openai-docs`：用于查询官方文档并据此实现相关能力。
-- `oracle`：人工智能应用设计、评估、检索增强和安全护栏规划。
-- `proactive-agent`：用于让智能体更主动地规划、提醒、推进和协作。
-- `self-improving-agent`：用于通过复盘、记忆和反馈持续优化智能体行为。
-- `sigil`：根据项目代码自动生成贴合仓库约定的技能。
+- `agent-hub`：用于管理 Agent 能力中心、技能发现、路由和协作工作流。
+- `arena`：用于构建和运行 Agent 竞技场、评测对战和能力比较流程。
+- `chatgpt-apps`：用于设计、构建和调试 ChatGPT Apps 与相关集成能力。
+- `develop-web-game`：用于开发网页游戏原型、玩法循环、交互逻辑和前端实现。
+- `figma`：用于处理 Figma 设计读取、解析、交付和实现协作。
+- `figma-implement-design`：用于将 Figma 设计转化为可实现的前端界面和组件。
+- `hermes-agent`：用于配置、扩展、调试和贡献 Hermes Agent，包括多 Agent、CLI 和网关工作流。
+- `hermes-graphify-gsd-nonintrusive-workflow`：用于hermes、Graphify、gsd、nonintrusive、工作流，支持 Agent 平台编排、集成和运行管理。
+- `hermes-graphify-gsd-runtime-operator`：用于hermes、Graphify、gsd、runtime、operator，支持 Agent 平台编排、集成和运行管理。
+- `mcporter`：用于通过 mcporter CLI 列出、配置、鉴权和调用 MCP 服务器或工具。
+- `native-mcp`：用于构建和调试原生 MCP 集成、服务器和工具调用流程。
+- `openai-docs`：用于查阅和应用 OpenAI 官方文档、API 行为和集成指南。
+- `oracle`：用于oracle，支持 Agent 平台编排、集成和运行管理。
+- `proactive-agent`：用于让 Agent 主动规划、跟踪进展、暴露风险并提出下一步行动。
+- `self-improving-agent`：用于构建具备记忆、反馈吸收和安全自我优化机制的持续改进型 Agent。
+- `sigil`：用于sigil，支持 Agent 平台编排、集成和运行管理。
 
 <a id="cat-workflow-automation"></a>
 ### 4. 工程工作流自动化（engineering-workflow-automation，16）
 
-- `agent-browser`：用于用自然语言驱动真实浏览器完成操作和检查。
-- `billing-automation`：用于搭建订阅计费、账单生成、催款（dunning）与税务计算等自动化流程。
-- `changelog-automation`：用于根据提交/PR/Release 自动生成 Changelog 与发布说明，并规范提交约定。
-- `gh-address-comments`：用于处理代码托管平台评论、逐条回应并完成修复闭环。
-- `gh-fix-ci`：用于诊断持续集成失败、定位原因并修复流水线问题。
-- `github`：用于管理代码托管平台的议题、合并请求、分支和自动化流程。
-- `gsd-graphify-brownfield-bootstrap`：用于为存量项目建立图谱化理解和任务推进基础。
-- `guardian`：提交、分支、合并请求策略和变更粒度把关。
-- `harvest`：采集合并请求信息并生成工作报告和发布材料。
-- `hermes-graphify-gsd-project-integration`：用于把项目接入图谱化智能开发工作流。
-- `jupyter-notebook`：用于创建、整理和维护交互式分析笔记本。
-- `latch`：配置和维护生命周期钩子、质量门禁和自动化守卫。
-- `playwright`：用于浏览器自动化测试、页面检查和交互验证。
-- `playwright-pro`：用于构建生产级 Playwright 端到端测试、诊断 flaky 测试、迁移旧测试框架并接入 CI 回归验证。
-- `web-scraper`：用于抓取网页数据、结构化提取内容并处理反爬限制。
-- `yeet`：用于一体化完成暂存、提交、推送和合并请求流程。
+- `agent-browser`：用于让 Agent 操作真实浏览器，完成页面交互、截图录屏、脚本执行和端到端验证。
+- `billing-automation`：用于构建订阅计费、自动开票、续费生命周期和催收管理流程。
+- `changelog-automation`：用于基于提交、PR 和发布记录自动生成 Keep a Changelog 风格的变更日志。
+- `gh-address-comments`：用于通过 gh CLI 处理当前分支的 GitHub PR Review 评论或 Issue 评论。
+- `gh-fix-ci`：用于gh、修复、CI，支持工程协作、自动化验证和交付闭环。
+- `github`：用于通过 GitHub CLI 自动化 Issue、PR、Review、CI 检查、标签和发布协作。
+- `gsd-graphify-brownfield-bootstrap`：用于gsd、Graphify、brownfield、启动，支持工程协作、自动化验证和交付闭环。
+- `guardian`：用于guardian，支持工程协作、自动化验证和交付闭环。
+- `harvest`：用于harvest，支持工程协作、自动化验证和交付闭环。
+- `hermes-graphify-gsd-project-integration`：用于hermes、Graphify、gsd、project、集成，支持工程协作、自动化验证和交付闭环。
+- `jupyter-notebook`：用于Jupyter、Notebook，支持工程协作、自动化验证和交付闭环。
+- `latch`：用于latch，支持工程协作、自动化验证和交付闭环。
+- `playwright`：用于使用 Playwright 编写、运行和调试端到端测试。
+- `playwright-pro`：用于高级 Playwright 测试、诊断、稳定性和浏览器自动化。
+- `web-scraper`：用于网页抓取、结构化数据提取、爬取策略、选择器设计和反爬应对。
+- `yeet`：用于yeet，支持工程协作、自动化验证和交付闭环。
 
 <a id="cat-devops-sre"></a>
 ### 5. DevOps / SRE（devops-sre，15）
 
-- `azure-kubernetes`：用于规划、创建和治理生产级 Azure Kubernetes Service（AKS）集群。
-- `beacon`：可观测性、服务目标、告警、容量和可靠性设计。
-- `cc-devops-skills`：用于 SRE、DevOps、Kubernetes、CI/CD、PromQL、Terraform、Docker 与事故响应等可靠性交付流程。
-- `changelog-generator`：用于根据提交和变更自动生成版本更新日志。
-- `ci-cd-pipeline-builder`：用于设计持续集成和持续交付流水线。
-- `cloudflare-troubleshooting`：用于排查云网络、边缘服务、缓存和访问异常。
-- `env-secrets-manager`：用于管理环境变量、密钥、配置分层和泄露风险。
-- `gear`：依赖、构建、容器、监控和开发环境运维优化。
-- `github-ops`：用于仓库运维、权限、自动化任务和协作流程管理。
-- `incident-commander`：用于事故响应、分级、沟通、恢复和复盘。
-- `observability-designer`：用于设计监控、日志、指标、告警和服务目标。
-- `release-manager`：用于规划发布节奏、变更窗口、风险控制和回滚方案。
-- `senior-architect`：用于架构评审、技术选型、扩展性和系统演进判断。
-- `senior-devops`：用于综合运维、自动化、可靠性和交付体系建设。
-- `triage`：事故首响、影响范围识别、恢复步骤和复盘整理。
+- `azure-kubernetes`：用于 Azure Kubernetes 集群管理、部署、排障和运维。
+- `beacon`：用于beacon，支持部署、监控、排障和发布管理。
+- `cc-devops-skills`：用于cc、DevOps、技能，支持部署、监控、排障和发布管理。
+- `changelog-generator`：用于changelog、生成，支持部署、监控、排障和发布管理。
+- `ci-cd-pipeline-builder`：用于CI、CD、流水线、构建，支持部署、监控、排障和发布管理。
+- `cloudflare-troubleshooting`：用于Cloudflare、排障，支持部署、监控、排障和发布管理。
+- `env-secrets-manager`：用于env、secrets、管理，支持部署、监控、排障和发布管理。
+- `gear`：用于gear，支持部署、监控、排障和发布管理。
+- `github-ops`：用于 GitHub 运维、仓库管理、PR/Issue 流程和自动化协作。
+- `incident-commander`：用于事故响应中的分诊、角色分配、沟通协调、缓解跟踪和复盘。
+- `observability-designer`：用于可观测性、设计，支持部署、监控、排障和发布管理。
+- `release-manager`：用于发布、管理，支持部署、监控、排障和发布管理。
+- `senior-architect`：用于高级、架构，支持部署、监控、排障和发布管理。
+- `senior-devops`：用于高级、DevOps，支持部署、监控、排障和发布管理。
+- `triage`：用于triage，支持部署、监控、排障和发布管理。
 
 <a id="cat-finance-investing"></a>
 ### 6. 金融投资（finance-investing，16）
 
-- `comps-valuation-analyst`：用于可比公司估值、倍数分析和估值区间判断。
-- `earnings-call-analyzer`：用于分析财报电话会、管理层表述、指引和风险信号。
-- `event-driven-tracker`：用于跟踪财报、并购、回购、分红等市场事件。
-- `factor-backtester`：用于回测因子策略、检验收益、换手和稳定性。
-- `financial-analyst`：用于财务比率分析、估值、预算差异和预测。
-- `financial-data-collector`：用于采集、清洗和校验公司财务与市场数据。
-- `helm`：商业战略场景模拟、市场分析、指标预测和路线图规划。
-- `investment-memo-writer`：用于把研究结论整理成投资备忘录和决策材料。
-- `ledger`：云成本、预算告警、资源规格和人工智能工作负载成本优化。
-- `levy`：日本个税申报、收入分类、扣除优化和税额测算。
-- `macro-regime-monitor`：用于跟踪宏观环境、通胀、增长、流动性和风险偏好。
-- `options-strategy-evaluator`：用于评估期权结构、盈亏场景、成本和风险。
-- `portfolio-risk-manager`：用于分析组合风险、集中度、行业暴露和波动来源。
-- `saas-metrics-coach`：用于分析订阅业务收入、留存、获客成本和健康度。
-- `sec-filing-reviewer`：用于审阅上市公司披露文件，提取风险和关键变化。
-- `stock-screener-builder`：用于构建选股条件、筛选股票池和生成研究清单。
+- `comps-valuation-analyst`：用于可比公司、估值、分析，支持投资研究、风险评估和报告生成。
+- `earnings-call-analyzer`：用于摘要财报电话会、提取管理层语气变化、业绩指引措辞和投资者更新。
+- `event-driven-tracker`：用于event、驱动、跟踪，支持投资研究、风险评估和报告生成。
+- `factor-backtester`：用于factor、回测，支持投资研究、风险评估和报告生成。
+- `financial-analyst`：用于金融、分析，支持投资研究、风险评估和报告生成。
+- `financial-data-collector`：用于收集股票、财报、宏观和市场数据并生成分析输入。
+- `helm`：用于helm，支持投资研究、风险评估和报告生成。
+- `investment-memo-writer`：用于投资、memo、writer，支持投资研究、风险评估和报告生成。
+- `ledger`：用于ledger，支持投资研究、风险评估和报告生成。
+- `levy`：用于levy，支持投资研究、风险评估和报告生成。
+- `macro-regime-monitor`：用于macro、regime、monitor，支持投资研究、风险评估和报告生成。
+- `options-strategy-evaluator`：用于options、策略、评估，支持投资研究、风险评估和报告生成。
+- `portfolio-risk-manager`：用于投资组合风险分析、仓位约束和风险报告生成。
+- `saas-metrics-coach`：用于saas、metrics、教练，支持投资研究、风险评估和报告生成。
+- `sec-filing-reviewer`：用于sec、申报文件、评审，支持投资研究、风险评估和报告生成。
+- `stock-screener-builder`：用于stock、screener、构建，支持投资研究、风险评估和报告生成。
 
 <a id="cat-growth-operations"></a>
 ### 7. 增长运营（growth-operations-xiaohongshu，16）
 
-- `algorithmic-art`：用于生成算法视觉作品、参数化图形和创意素材。
-- `app-store-optimization`：用于应用商店关键词、标题、描述和转化优化。
-- `campaign-analytics`：用于分析营销活动表现、归因、转化和投入产出。
-- `compete`：竞品研究、差异化定位、矩阵对比和竞争战卡。
-- `competitors-analysis`：用于采集竞品信息、对比定位、功能和市场表现。
-- `content-creator`：用于策划内容主题、撰写文案、脚本和发布计划。
-- `growth`：搜索、社交、转化和人工智能引用优化的一体化增长。
-- `marketing-demand-acquisition`：用于设计获客渠道、投放策略、线索转化和增长实验。
-- `marketing-strategy-pmm`：用于市场定位、发布策略、竞争叙事和产品营销。
-- `prompt-engineer-toolkit`：用于系统化设计、测试、版本化和优化提示词。
-- `pulse`：关键指标、埋点、漏斗、留存和仪表盘规格设计。
-- `seo-audit`：用于网站搜索优化审计、页面建议和技术检查。
-- `social-media-analyzer`：用于分析社媒数据、互动率、内容表现和趋势。
-- `tweetclaw-source-research`：Use TweetClaw through OpenClaw to collect X/Twitter source context before drafting, monitoring, or campaign analysis。
-- `twitter-reader`：用于读取社交平台帖子内容并提炼关键信息。
-- `x-twitter-scraper`：Use Xquik for authorized X/Twitter data workflows, including tweet search, profile reads, follower exports, media lookup, monitoring, webhooks, REST API calls, SDK usage, and MCP setup。
+- `algorithmic-art`：用于algorithmic、art，支持内容、营销、渠道和数据分析。
+- `app-store-optimization`：用于应用、store、优化，支持内容、营销、渠道和数据分析。
+- `campaign-analytics`：用于活动、分析，支持内容、营销、渠道和数据分析。
+- `compete`：用于compete，支持内容、营销、渠道和数据分析。
+- `competitors-analysis`：Analyze competitor repositories with evidence-based approa。
+- `content-creator`：用于内容、创建，支持内容、营销、渠道和数据分析。
+- `growth`：用于增长，支持内容、营销、渠道和数据分析。
+- `marketing-demand-acquisition`：用于营销、需求、acquisition，支持内容、营销、渠道和数据分析。
+- `marketing-strategy-pmm`：用于营销、策略、PMM，支持内容、营销、渠道和数据分析。
+- `prompt-engineer-toolkit`：用于提示词、工程、工具包，支持内容、营销、渠道和数据分析。
+- `pulse`：用于pulse，支持内容、营销、渠道和数据分析。
+- `seo-audit`：用于执行网站 SEO 审计、页面优化、技术检查和搜索增长建议。
+- `social-media-analyzer`：用于社交、媒体、分析，支持内容、营销、渠道和数据分析。
+- `tweetclaw-source-research`：用于tweetclaw、来源、研究，支持内容、营销、渠道和数据分析。
+- `twitter-reader`：用于通过 URL 抓取 Twitter/X 帖子内容、作者、时间、图片和线程回复。
+- `x-twitter-scraper`：用于抓取和分析 X/Twitter 公开内容、线程和增长信号。
 
 <a id="cat-office-white-collar"></a>
 ### 8. 办公与文档（office-white-collar，20）
 
-- `capture-screen`：用于在本机采集全屏、窗口或区域截图。
-- `doc`：用于读取、创建和编辑文字处理文档。
-- `doc-coauthoring`：用于协同撰写文档、审阅修改和统一结构。
-- `docx`：用于处理文字处理文件的内容、样式和版式。
-- `excel-automation`：用于自动化处理电子表格、公式、格式和批量任务。
-- `gog`：用于自动化处理邮件、日历、网盘和在线文档办公流程。
-- `guizang-ppt-skill`：用于制作电子杂志与电子墨水风格的横向翻页网页 PPT。
-- `markdown-tools`：用于转换、合并、清理和格式化标记文档。
-- `meeting-minutes-taker`：用于把会议记录整理为结构化纪要、结论和行动项。
-- `mermaid-tools`：用于提取、生成和渲染流程图与结构图。
-- `morph`：文档格式转换、分发版生成和可复用转换脚本。
-- `pdf`：用于读取、拆分、合并和提取便携文档内容。
-- `pdf-creator`：用于从文本或标记文档生成便携文档。
-- `ppt-creator`：用于快速生成演示文稿结构、内容和讲稿。
-- `pptx`：用于编辑演示文件、清理版式和调整幻灯片结构。
-- `prism`：资料准备和提示设计，优化知识型工具的多格式输出。
-- `spreadsheet`：用于处理表格数据、分析结果和格式化工作簿。
-- `stage`：演示文稿生成、叙事节奏设计和会议演讲优化。
-- `transcript-fixer`：用于修正转录文本错误、统一术语和整理段落。
-- `xlsx`：用于读取、编辑、分析和修复电子表格文件。
+- `capture-screen`：用于捕获、screen，支持文档、表格、演示和资料整理。
+- `doc`：用于读取、创建和编辑 `.docx` 文档，尤其适合需要格式和版面保真时。
+- `doc-coauthoring`：用于文档、coauthoring，支持文档、表格、演示和资料整理。
+- `docx`：用于创建、编辑和检查 Word `.docx` 文档。
+- `excel-automation`：用于自动化 Excel 工作簿、公式、图表和数据处理。
+- `gog`：用于跨 Gmail、Calendar、Drive、Docs 等 Google Workspace 工具执行办公自动化流程。
+- `guizang-ppt-skill`：生成横向翻页网页 PPT（单 HTML 文件），含 WebGL 背景、章节幕封、数据大字报、图片网格等模板。
+- `markdown-tools`：用于Markdown、tools，支持文档、表格、演示和资料整理。
+- `meeting-minutes-taker`：用于会议、纪要、taker，支持文档、表格、演示和资料整理。
+- `mermaid-tools`：用于mermaid、tools，支持文档、表格、演示和资料整理。
+- `morph`：用于morph，支持文档、表格、演示和资料整理。
+- `pdf`：用于pdf，支持文档、表格、演示和资料整理。
+- `pdf-creator`：用于将 Markdown 转为支持中文字体和正式排版的 PDF 文档。
+- `ppt-creator`：用于PPT、创建，支持文档、表格、演示和资料整理。
+- `pptx`：用于创建、编辑和美化 PowerPoint 演示文稿。
+- `prism`：用于prism，支持文档、表格、演示和资料整理。
+- `spreadsheet`：用于处理电子表格数据、公式、清洗和分析。
+- `stage`：用于stage，支持文档、表格、演示和资料整理。
+- `transcript-fixer`：用于转录稿、fixer，支持文档、表格、演示和资料整理。
+- `xlsx`：用于XLSX，支持文档、表格、演示和资料整理。
 
 <a id="cat-knowledge-pm"></a>
 ### 9. 项目管理与知识库集成（knowledge-and-pm-integrations，36）
 
 - `arxiv`：用于按关键词、作者、分类或编号检索 arXiv 论文。
-- `grove`：用于规划仓库结构、文档目录、测试脚本组织和迁移方案。
-- `lark-approval`：飞书审批 API：审批实例、审批任务管理。
-- `lark-attendance`：飞书考勤打卡查询、异常记录整理和缺失核对。
-- `lark-base`：飞书多维表格的表、字段、记录、视图和工作流管理。
-- `lark-calendar`：飞书日历、日程、参会人、忙闲状态和会议室管理。
-- `lark-contact`：飞书通讯录人员查询、身份解析和联系信息检索。
-- `lark-doc`：飞书文档读取、创建、编辑、总结和排版处理。
-- `lark-drive`：飞书云空间文件上传、下载、权限、评论和目录管理。
-- `lark-event`：飞书实时事件监听、订阅和机器人消息处理。
-- `lark-im`：飞书消息收发、群聊管理、聊天记录和文件处理。
-- `lark-mail`：飞书邮箱草稿、发送、回复、搜索、附件和规则管理。
-- `lark-markdown`：飞书 Markdown 文件创建、读取、上传和编辑。
-- `lark-minutes`：飞书妙记查询、下载、总结、待办和音视频转写。
-- `lark-okr`：飞书 OKR 周期、目标、关键结果和进展管理。
-- `lark-openapi-explorer`：飞书原生 OpenAPI 查询、探索和补充调用。
-- `lark-shared`：飞书 CLI 登录、身份切换、权限排查和版本更新。
-- `lark-sheets`：飞书电子表格创建、工作表管理、单元格读写和导出。
-- `lark-skill-maker`：把飞书 API 操作封装成可复用技能和多步流程。
-- `lark-slides`：飞书幻灯片创建、页面读取、局部编辑和演示稿管理。
-- `lark-task`：飞书任务、清单、子任务、协作者和附件管理。
-- `lark-vc`：飞书历史会议、纪要、逐字稿和参会人查询。
-- `lark-vc-agent`：飞书会议机器人入会、离会和会中事件读取。
-- `lark-whiteboard`：飞书画板查看、导出、编辑和结构化内容可视化。
-- `lark-wiki`：飞书知识库空间、成员、节点和文档组织管理。
-- `lark-workflow-meeting-summary`：汇总会议纪要、提炼结论并生成结构化报告。
-- `lark-workflow-standup-report`：汇总今日日程、未完成待办和阻塞事项，生成每日站会摘要。
-- `linear`：用于管理 Linear issues、项目、团队和协作状态。
-- `llm-wiki`：用于构建和维护互联的 LLM Markdown 知识库。
-- `lore`：用于沉淀跨 Agent 经验、模式和组织记忆。
+- `grove`：用于grove，支持知识管理、项目同步和平台集成。
+- `lark-approval`：用于查询、处理和发起飞书原生审批，区分审批待办与普通飞书任务。
+- `lark-attendance`：用于查询飞书考勤记录、核对打卡缺失、整理异常考勤并生成可追溯说明。
+- `lark-base`：用于操作飞书 Base 数据表、记录、字段和自动化数据流程。
+- `lark-calendar`：用于查询、创建和管理飞书日历事件与日程安排。
+- `lark-contact`：用于按姓名或邮箱解析飞书 open_id，并反查成员姓名、部门、邮箱和个人状态。
+- `lark-doc`：用于读取、编辑和生成飞书云文档内容。
+- `lark-drive`：用于搜索、读取和管理飞书云空间文件与权限。
+- `lark-event`：用于订阅、消费和处理飞书实时事件流，支持消息、任务、会议纪要和画板更新。
+- `lark-im`：用于发送、读取和处理飞书即时消息与群聊交互。
+- `lark-mail`：飞书邮箱：Use when user mentions 起草邮件、写邮件、草稿、发送/回复/转发邮件、查阅邮件、看邮。
+- `lark-markdown`：飞书 Markdown：查看、创建、上传、编辑和比较 Markdown 文件。
+- `lark-minutes`：飞书妙记：搜索妙记、查看妙记基础信息、下载/上传音视频、读取或编辑妙记的产物内容、改标题、替换说话人/关键词。
+- `lark-okr`：飞书 OKR：管理目标与关键结果。
+- `lark-openapi-explorer`：飞书/Lark 原生 OpenAPI 探索：从官方文档库中挖掘未经 CLI 封装的原生 OpenAPI 接口。
+- `lark-shared`：用于lark、shared，支持知识管理、项目同步和平台集成。
+- `lark-sheets`：用于读取、编辑和分析飞书电子表格数据。
+- `lark-skill-maker`：用于把飞书 API 操作封装为可复用技能、流程模板和多步自动化。
+- `lark-slides`：飞书幻灯片：创建和编辑幻灯片。
+- `lark-task`：用于创建、查询和更新飞书任务及待办事项。
+- `lark-vc`：飞书视频会议：搜索历史会议记录、查询会议纪要（总结/待办/章节/逐字稿）、查询参会人快照。
+- `lark-vc-agent`：飞书视频会议会中能力：用于让应用机器人真实加入或离开正在进行的会议，并读取当前身份可见的会中事件，如参会人加入/离开。
+- `lark-whiteboard`：用于查询、导出和编辑飞书云文档中的画板内容和节点结构。
+- `lark-wiki`：飞书知识库：管理知识空间、空间成员和文档节点。
+- `lark-workflow-meeting-summary`：用于汇总指定时间范围内的飞书会议纪要，并生成结构化会议报告或周报。
+- `lark-workflow-standup-report`：日程待办摘要：编排 calendar +agenda 和 task +get-my-tasks，生成指定日期的日程与。
+- `linear`：用于管理 Linear issue、项目、状态流转和工程协作。
+- `llm-wiki`：用于构建、查询和维护 Karpathy 风格的互联 Markdown LLM 知识库。
+- `lore`：用于lore，支持知识管理、项目同步和平台集成。
 - `notion-knowledge-capture`：用于把对话、决策和笔记沉淀到 Notion。
 - `notion-meeting-intelligence`：用于基于 Notion 上下文准备会议材料。
 - `notion-research-documentation`：用于整合 Notion 信息并生成研究文档。
-- `notion-spec-to-implementation`：用于把 Notion 规格转成计划、任务和进度跟踪。
-- `obsidian`：用于读取、搜索、创建和编辑 Obsidian 笔记。
-- `tome`：用于把仓库变更整理成学习文档和知识沉淀。
+- `notion-spec-to-implementation`：用于将 Notion 规格文档转化为可执行实现计划。
+- `obsidian`：用于读取、搜索、创建和编辑 Obsidian 知识库笔记，并维护 Markdown 结构和链接关系。
+- `tome`：用于tome，支持知识管理、项目同步和平台集成。
 
 <a id="cat-operations-general"></a>
 ### 10. 通用运营（operations-general，14）
 
-- `brand-guidelines`：用于制定品牌颜色、字体、语气和视觉表达规范。
-- `confidence-check`：用于结构化自我审查，识别假设、不确定性和幻觉风险。
-- `crest`：技术个人品牌、主页资料、文章和公开形象策略。
-- `dawn`：提出适合短周期实现的个人项目创意和最小可行方案。
-- `docs-cleaner`：用于清理重复文档、合并有效内容并提升可读性。
-- `fact-checker`：用于核查事实、寻找可靠来源并提出修正建议。
-- `hearth`：终端、编辑器和本地开发环境配置生成与审计。
-- `internal-comms`：用于撰写内部公告、说明、同步和变更沟通。
-- `interview-system-designer`：用于设计招聘流程、面试题、评分标准和校准机制。
-- `slack-gif-creator`：用于制作适合团队沟通工具使用的动态图片素材。
-- `supermemory`：用于管理长期记忆、用户偏好、项目状态和矛盾信息。
-- `teams-channel-post-writer`：用于撰写团队频道知识分享和功能介绍内容。
-- `theme-factory`：用于为文档、页面和演示生成统一视觉主题。
-- `weather`：用于查询天气、整理出行信息和辅助日程安排。
+- `brand-guidelines`：用于在文档、页面或视觉产物中应用 Anthropic 风格的品牌色、字体和视觉规范。
+- `confidence-check`：用于结构化自检答案、验证假设、识别不确定性并降低幻觉风险。
+- `crest`：用于crest，支持信息整理、沟通和执行管理。
+- `dawn`：用于dawn，支持信息整理、沟通和执行管理。
+- `docs-cleaner`：用于合并冗余文档、减少文档膨胀，并在保留有效内容的前提下整理知识库。
+- `fact-checker`：用于事实、checker，支持信息整理、沟通和执行管理。
+- `hearth`：用于hearth，支持信息整理、沟通和执行管理。
+- `internal-comms`：用于撰写状态报告、领导层更新、FAQ、事故通报和项目进展等内部沟通材料。
+- `interview-system-designer`：用于interview、系统、设计，支持信息整理、沟通和执行管理。
+- `slack-gif-creator`：用于Slack、gif、创建，支持信息整理、沟通和执行管理。
+- `supermemory`：用于长期记忆管理、偏好捕获、矛盾检测和项目状态跟踪。
+- `teams-channel-post-writer`：用于teams、channel、post、writer，支持信息整理、沟通和执行管理。
+- `theme-factory`：用于为幻灯片、文档、报告和网页应用预设主题或生成新的颜色字体系统。
+- `weather`：用于免 API Key 查询当前天气、预报、恶劣天气和旅行天气信息。
 
 <a id="cat-product-design"></a>
 ### 11. 产品与设计（product-design，14）
 
-- `agile-product-owner`：用于敏捷需求管理、用户故事、验收标准和迭代规划。
-- `canvas-design`：用于创建商业画布、产品画布和视觉化方案。
-- `competitive-teardown`：用于系统拆解竞品、价格、评价、招聘和流量信号。
-- `landing-page-generator`：用于生成高转化落地页结构、内容和前端实现。
-- `product-analysis`：用于多角度分析产品问题、机会、指标和改进方向。
-- `product-manager-toolkit`：用于产品经理常用的优先级、访谈、需求和发现方法。
-- `product-strategist`：用于产品战略、路线图、目标体系和团队扩展规划。
-- `researcher`：用户访谈、可用性测试、画像和旅程地图研究。
-- `saas-scaffolder`：用于根据产品简报生成订阅软件项目脚手架。
-- `trace`：会话回放分析、行为模式提取和体验问题叙事。
-- `ui-design-system`：用于设计界面组件体系、设计令牌和响应式规范。
-- `ui-ux-pro-max`：用于增强前端 UI/UX 设计判断，创建、审查和打磨网页、移动端、仪表盘、SaaS 与电商界面。
-- `ux-researcher-designer`：用于用户研究、旅程地图、可用性测试和体验设计。
-- `voice`：用户反馈收集、满意度调研、评论分析和洞察提炼。
+- `agile-product-owner`：用于agile、产品、负责人，支持产品研究、策略、界面和交付协作。
+- `canvas-design`：用于画布、设计，支持产品研究、策略、界面和交付协作。
+- `competitive-teardown`：用于竞品、teardown，支持产品研究、策略、界面和交付协作。
+- `landing-page-generator`：用于落地页、page、生成，支持产品研究、策略、界面和交付协作。
+- `product-analysis`：Multi-path parallel product analysis with cross-model test。
+- `product-manager-toolkit`：用于产品、管理、工具包，支持产品研究、策略、界面和交付协作。
+- `product-strategist`：用于产品、strategist，支持产品研究、策略、界面和交付协作。
+- `researcher`：用于研究，支持产品研究、策略、界面和交付协作。
+- `saas-scaffolder`：用于saas、scaffolder，支持产品研究、策略、界面和交付协作。
+- `trace`：用于trace，支持产品研究、策略、界面和交付协作。
+- `ui-design-system`：用于UI、设计、系统，支持产品研究、策略、界面和交付协作。
+- `ui-ux-pro-max`：用于UI、UX、pro、max，支持产品研究、策略、界面和交付协作。
+- `ux-researcher-designer`：用于UX、研究、设计，支持产品研究、策略、界面和交付协作。
+- `voice`：用于voice，支持产品研究、策略、界面和交付协作。
 
 <a id="cat-security-reliability"></a>
 ### 12. 安全治理与稳定性（security-and-reliability，21）
 
-- `breach`：红队场景、攻击路径、威胁建模和对抗演练设计。
-- `cloak`：隐私工程、敏感信息流、同意管理和数据治理。
-- `codeql-security-scanner`：用于 CodeQL 语义代码扫描、安全查询和 SARIF 报告。
-- `comply`：合规控制映射、审计轨迹和政策即代码实现。
-- `gha-security-review`：GitHub Actions security review for workflow exploitation vulnerabilities. Use when asked to "review GitHub Actions", "audit workflows", "check CI security", "GHA security", "workflow security review", or review .github/workflows/ for pwn requests, expression injection, credential theft, and supply chain attacks. Exploitation-focused with concrete PoC scenarios。
+- `breach`：用于breach，支持安全扫描、审计、加固和风险治理。
+- `cloak`：用于cloak，支持安全扫描、审计、加固和风险治理。
+- `codeql-security-scanner`：用于通过 CodeQL 执行语义代码扫描、安全查询、自定义规则、SARIF 报告和 GitHub Code Scan。
+- `comply`：用于comply，支持安全扫描、审计、加固和风险治理。
+- `gha-security-review`：用于gha、安全、评审，支持安全扫描、审计、加固和风险治理。
 - `grype-syft-sbom-scanner`：用于基于 SBOM 扫描容器、文件系统和软件包漏洞。
-- `information-security-manager-iso27001`：用于 ISO 27001 ISMS 实施、风险评估、控制落地与认证准备。
-- `link-checker`：用于检查链接可达性、跳转链路和可疑域名风险。
+- `information-security-manager-iso27001`：用于information、安全、管理、iso27001，支持安全扫描、审计、加固和风险治理。
+- `link-checker`：用于检测 URL 可达性、失效链接、跳转链路、可疑域名和文档链接健康度。
 - `osv-scanner`：用于通过 OSV 数据库检查开源依赖、锁文件和 SBOM 漏洞。
-- `security-auditor`：用于审计 AI 生成代码、API、基础设施变更、依赖、密钥、认证授权流程和合并请求安全风险。
-- `security-best-practices`：用于按语言和框架检查安全最佳实践并提出改进。
+- `security-auditor`：用于安全、审计，支持安全扫描、审计、加固和风险治理。
+- `security-best-practices`：用于按语言或框架检查安全最佳实践，生成安全审查报告和 secure-by-default 建议。
 - `security-ownership-map`：用于分析代码责任分布、敏感模块归属和人员风险。
-- `security-pen-testing`：用于授权渗透测试、OWASP Top 10 攻击面评估与渗透测试报告。
-- `security-review`：Security code review for vulnerabilities. Use when asked to \"security review\", \"find vulnerabilities\", \"check for security issues\", \"audit security\", \"OWASP review\", or review code for injection, XSS, authentication, authorization, cryptography issues. Provides systematic review with confidence-based reporting。
-- `security-threat-model`：用于识别资产、边界、攻击路径和缓解措施。
+- `security-pen-testing`：用于安全、pen、测试，支持安全扫描、审计、加固和风险治理。
+- `security-review`：用于安全、评审，支持安全扫描、审计、加固和风险治理。
+- `security-threat-model`：用于基于代码库或架构梳理资产、信任边界、攻击者能力、滥用路径和缓解措施。
 - `semgrep-appsec-scanner`：用于 Semgrep SAST、规则编写、供应链和密钥扫描流程。
 - `sentry`：用于查看线上异常、错误事件和服务健康信息。
-- `skill-security-auditor`：用于安装前审计技能安全风险并给出处理建议。
-- `skill-vetter`：用于检查第三方技能中的恶意指令、越权和泄露风险。
-- `trivy-vulnerability-scanner`：用于扫描仓库、容器、Kubernetes、SBOM、IaC 和系统 CVE。
-- `vuls-linux-cve-scanner`：用于 Linux 和 FreeBSD 主机的无代理 CVE 扫描。
+- `skill-security-auditor`：用于技能、安全、审计，支持安全扫描、审计、加固和风险治理。
+- `skill-vetter`：用于安装外部技能前审计指令、脚本、权限、依赖和来源风险。
+- `trivy-vulnerability-scanner`：用于通过 Trivy 扫描仓库、容器镜像、文件系统、rootfs、SBOM、Kubernetes、IaC、密钥、许可。
+- `vuls-linux-cve-scanner`：用于通过 Vuls 对 Linux、FreeBSD、容器、WordPress、库和网络设备执行 Agentless。
 
 <a id="cat-multimodal-media"></a>
 ### 13. 多模态内容（multimodal-media，10）
 
-- `clay`：三维模型生成、网格处理、材质和游戏资产流水线。
+- `clay`：用于clay，支持内容生成、编辑、分析和交付。
 - `gpt-image2`：让 Codex 通过本地配置的 gpt-image-2 兼容画图服务生成图片，支持提示词、参考图、比例、清晰度和本地保存。
-- `imagegen`：用于生成、编辑、抠图和扩展图片内容。
-- `screenshot`：用于采集桌面截图、窗口截图或指定区域截图。
-- `sketch`：图像生成代码、提示优化、批量生成和成本估算。
-- `sora`：用于生成、轮询、下载和管理视频内容。
-- `speech`：用于把文本转换为语音旁白或批量音频。
-- `summarize`：用于摘要网页、文档、邮件和长文本内容。
-- `tone`：游戏音效、背景音乐、语音和音频管线生成。
-- `transcribe`：用于把音频或视频转写为文本并可区分说话人。
+- `imagegen`：用于生成、编辑和迭代图像内容与视觉素材。
+- `screenshot`：用于截图、屏幕捕获、视觉核查和界面证据收集。
+- `sketch`：用于sketch，支持内容生成、编辑、分析和交付。
+- `sora`：用于构思、生成和评审 Sora 视频或视频提示词。
+- `speech`：用于语音，支持内容生成、编辑、分析和交付。
+- `summarize`：用于忠实摘要网页、文档、邮件、转录稿或长文本，并提炼重点和后续行动。
+- `tone`：用于tone，支持内容生成、编辑、分析和交付。
+- `transcribe`：用于将音频或视频中的语音转写为文本，并可结合说话人分离和已知说话人提示。
 
 <a id="cat-deployment-platforms"></a>
 ### 14. 部署平台（deployment-platforms，7）
 
-- `cloudflare-deploy`：用于部署网站和应用到边缘计算与静态托管平台。
-- `netlify-deploy`：用于发布静态站点和前端项目到托管平台。
-- `pipe`：持续集成工作流、触发策略、安全加固和复用设计。
-- `render-deploy`：用于分析项目并生成云托管部署配置。
-- `scaffold`：云基础设施、环境配置和本地开发部署脚手架。
-- `shard`：多租户架构、租户隔离、路由和规模化设计。
-- `vercel-deploy`：用于发布网页应用、预览环境和生产环境。
+- `cloudflare-deploy`：用于将应用部署到 Cloudflare 并处理相关发布流程。
+- `netlify-deploy`：用于将网站或应用部署到 Netlify 并获取预览或生产链接。
+- `pipe`：用于pipe，支持部署发布、配置、预览和故障处理。
+- `render-deploy`：用于将服务或应用部署到 Render 并处理运行配置。
+- `scaffold`：用于scaffold，支持部署发布、配置、预览和故障处理。
+- `shard`：用于shard，支持部署发布、配置、预览和故障处理。
+- `vercel-deploy`：用于将应用或网站部署到 Vercel，创建预览部署或生产发布链接。
 
 <a id="cat-memory-safety"></a>
 ### 15. 记忆与安全（openclaw-memory-and-safety，7）
 
-- `cast`：用户画像生成、角色注册、生命周期和跨智能体同步。
-- `honcho`：用于配置长期记忆、用户画像和多配置隔离。
-- `input-guard`：用于扫描外部文本中的提示注入和不可信指令。
-- `omen`：预演失败模式，识别计划风险并给出优先级。
-- `rag-architect`：用于设计检索增强生成系统、评估召回和回答质量。
-- `runbook-generator`：用于根据代码库生成运维手册、排障步骤和响应流程。
-- `warden`：发布前质量标准评估、评分卡和通过失败判定。
+- `cast`：用于cast，支持记忆管理、安全防护和运行治理。
+- `honcho`：用于管理 Agent 记忆、运行状态、协作上下文和安全边界。
+- `input-guard`：用于输入安全检查、提示注入防护和高风险请求拦截。
+- `omen`：用于omen，支持记忆管理、安全防护和运行治理。
+- `rag-architect`：用于设计 RAG 架构、检索策略、索引和评估流程。
+- `runbook-generator`：用于runbook、生成，支持记忆管理、安全防护和运行治理。
+- `warden`：用于warden，支持记忆管理、安全防护和运行治理。
 
 <a id="cat-task-understanding"></a>
 ### 16. 任务理解与拆解（task-understanding-decomposition，5）
 
-- `lens`：代码库理解、功能发现、数据流追踪和上下文调查。
-- `reflect-learn`：用于从对话、纠错和成功经验中提炼可复用学习。
-- `ripple`：变更前影响分析，评估依赖链和一致性风险。
-- `scout`：缺陷调查、复现步骤、根因分析和影响评估。
-- `tavily-search`：用于联网检索最新信息、补充来源证据和事实核查。
+- `lens`：用于lens，支持检索、拆解、反思和决策。
+- `reflect-learn`：用于reflect、learn，支持检索、拆解、反思和决策。
+- `ripple`：用于ripple，支持检索、拆解、反思和决策。
+- `scout`：用于scout，支持检索、拆解、反思和决策。
+- `tavily-search`：用于实时联网检索最新事实、来源证据、新闻市场信息和 Tavily 检索结果。
 
 ## 下一轮建议补充方向
 

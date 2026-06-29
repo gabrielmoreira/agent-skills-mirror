@@ -169,7 +169,8 @@ npm run verify:local:full
 - 命令 / Bridge / mock 改动，默认把 `npm run test:contracts` 纳入最小验证集合。
 - 生产路径如果靠 mock 才通过，不得标为可交付；只能记录为 current 主链阻塞缺口。
 - GUI 壳 / Workspace / 主路径改动，默认把 `npm run verify:gui-smoke` 纳入最小验证集合。
-- Rust 校验默认先小后大，不要一上来无差别全量 `cargo test`。优先用 `npm run test:rust:unit -- -p <crate> <filter>`、`npm run test:rust:integration -- -p <crate> --test <target>` 收缩范围；冷编译慢时优先复用 `lime-rs/target`、增量缓存和可选 `RUSTC_WRAPPER=sccache`，只有工具链和 CI 已配置后才把 `cargo nextest run` 作为默认门禁。
+- Rust 校验默认先小后大，不要一上来无差别全量 `cargo test`。优先用 `npm run test:rust:changed`、`npm run test:rust:related -- <paths...>`、`npm run test:rust:unit -- -p <crate> <filter>`、`npm run test:rust:integration -- -p <crate> --test <target>` 收缩范围；`changed/related` 会按 `lime-rs` 路径推导 workspace crate 并用 `cargo metadata` 扩展反向依赖，workspace manifest / lockfile 边界自动扩大到 `--workspace`，无法映射 crate 时 fail closed；冷编译慢时优先复用 `lime-rs/target`、增量缓存和可选 `RUSTC_WRAPPER=sccache`，只有工具链和 CI 已配置后才把 `cargo nextest run` 作为默认门禁。
+- `verify:local` 的 smart 模式遇到 Rust 路径改动应走 `test:rust:changed`，`--staged` 走 `test:rust:related -- <staged-rust-paths>`；`--full`、无改动兜底和 workflow 全局风险才保留 workspace 全量 `cargo test`。
 - 如果因为环境限制无法完成 GUI smoke 或交互验证，必须在结果里明确写出来，不能假装已经验证。
 - 过时实现即使校验通过，也不等于 current 路线图可交付；对已判 `dead` / `deprecated` 且明确无需兼容的路径，不要为了“测过”继续保留。
 

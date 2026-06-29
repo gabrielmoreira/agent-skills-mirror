@@ -95,11 +95,11 @@
     "skillPath": "skills/editorial/SKILL.md",
     "designPath": "skills/editorial/DESIGN.md"
   },
-  "elegant": {
-    "slug": "elegant",
-    "name": "Elegant",
-    "skillPath": "skills/elegant/SKILL.md",
-    "designPath": "skills/elegant/DESIGN.md"
+  "square": {
+    "slug": "square",
+    "name": "Square",
+    "skillPath": "skills/square/SKILL.md",
+    "designPath": "skills/square/DESIGN.md"
   },
   "pulse": {
     "slug": "pulse",
@@ -155,11 +155,11 @@
     "skillPath": "skills/gradient/SKILL.md",
     "designPath": "skills/gradient/DESIGN.md"
   },
-  "luxury": {
-    "slug": "luxury",
-    "name": "Luxury",
-    "skillPath": "skills/luxury/SKILL.md",
-    "designPath": "skills/luxury/DESIGN.md"
+  "power": {
+    "slug": "power",
+    "name": "Power",
+    "skillPath": "skills/power/SKILL.md",
+    "designPath": "skills/power/DESIGN.md"
   },
   "material": {
     "slug": "material",

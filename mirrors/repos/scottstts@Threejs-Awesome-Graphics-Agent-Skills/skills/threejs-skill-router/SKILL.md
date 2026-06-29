@@ -14,15 +14,15 @@ Treat the model's Three.js knowledge and official documentation as prerequisites
 | shot composition, chase/side/orbit rigs, camera handoffs, projection ownership, pointer look, floating origins | `$threejs-camera-direction` |
 | launch and docking timelines, procedural transform phases, springs, staging, rotating-frame alignment, debris motion | `$threejs-procedural-animation` |
 | reusable scalar/vector fields, domain warping, causal masks, procedural normals | `$threejs-procedural-fields` |
-| atlas-filtered blocks, planetary surfaces, terrain wetness, authored frame PBR, specular AA | `$threejs-procedural-materials` |
+| atlas-filtered blocks, planetary surfaces, terrain wetness, lava/emissive procedural surfaces, authored frame PBR, specular AA | `$threejs-procedural-materials` |
 | sculpted rails/frames, branch rings, semantic mesh writers, material groups | `$threejs-procedural-geometry` |
-| trees, branching organisms, roots, foliage, wind deformation | `$threejs-procedural-vegetation` |
+| trees, stylized grass, branching organisms, roots, foliage, rooted wind deformation | `$threejs-procedural-vegetation` |
 | buildings, façade grammars, profiles, ornaments, modular mesh writers | `$threejs-procedural-architecture` |
 | planets, terrain, craters, biome fields, coastlines, spherical detail | `$threejs-procedural-planets` |
 | sky scattering, planetary shells, depth-based aerial perspective | `$threejs-atmosphere-aerial-perspective` |
 | weather-driven raymarched clouds and cloud shadows | `$threejs-volumetric-clouds` |
-| FFT oceans, spectral cascades, choppy derivatives, Jacobian whitecaps | `$threejs-spectral-ocean` |
-| authored analytic waves, shared normals, heuristic refraction, fallback absorption, crest foam | `$threejs-water-optics` |
+| FFT oceans, hybrid FFT/Gerstner clear water, stylized above/below ocean optics, spectral cascades, choppy derivatives, Jacobian whitecaps | `$threejs-spectral-ocean` |
+| authored analytic waves, bounded heightfield pools, object ripples, differential-area caustics, ray-traced pool volume optics, shared normals, heuristic refraction, fallback absorption, crest foam | `$threejs-water-optics` |
 | curved-ray black holes, accretion disks, wormholes | `$threejs-raymarched-space-effects` |
 | particles, trails, plasma, shockwaves, layered event effects | `$threejs-procedural-vfx` |
 | accumulated screen frost, touch clearing, reduced blur, and refraction masks | `$threejs-temporal-surfaces` |

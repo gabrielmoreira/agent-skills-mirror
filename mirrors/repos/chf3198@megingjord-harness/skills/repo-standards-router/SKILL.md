@@ -35,7 +35,7 @@ If the request includes GitHub workflow governance controls, hand off to `github
 1. Detect `primary_type` from runtime intent and repository artifacts.
 2. Detect `secondary_types` only when overlap is clear and evidence-backed.
 3. Apply `core-baseline` controls.
-4. Apply primary-type controls from [APP-TYPE-SKILL-TREE.md](../APP-TYPE-SKILL-TREE.md).
+4. Apply primary-type controls per the app-type classification (the `core-baseline` controls above plus the per-type overlays selected in steps 5-6).
 5. Apply selected overlays (`security`, `collaboration`, `release`, optional `observability`).
 6. Calibrate severity with `policy_profile`.
 7. Emit actionable controls and checks.

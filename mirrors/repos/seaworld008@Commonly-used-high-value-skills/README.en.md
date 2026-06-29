@@ -5,12 +5,12 @@
 [![简体中文](https://img.shields.io/badge/README-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-1677ff)](./README.md)
 [![English](https://img.shields.io/badge/README-English-111111)](./README.en.md)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-Compatible-00b894)](./openclaw-skills/README.md)
-[![Skills](https://img.shields.io/badge/Skills-308-7c3aed)](./skills/)
+[![Skills](https://img.shields.io/badge/Skills-309-7c3aed)](./skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 A high-value skills repository for AI developers, organized by real work scenarios such as developer engineering, DevOps, automation, finance, design, knowledge workflows, and reliability.
 
-This repository currently contains **16 categories / 308 skills**.
+This repository currently contains **16 categories / 309 skills**.
 
 ## Who This Is For
 
@@ -43,7 +43,47 @@ This repository currently contains **16 categories / 308 skills**.
 
 ## Quick Start
 
-### Option 1: Give This Prompt to Your AI Tool (Recommended)
+### Option 1: Install With npx
+
+If you do not want to clone and copy directories manually, run the installer directly from GitHub:
+
+```bash
+npx github:seaworld008/Commonly-used-high-value-skills install
+```
+
+By default, this installs skills into the current project's `.agents/skills` directory, which is a safe project-local target for agent skill consumers. You can also install into multiple client directories in one command:
+
+```bash
+# Install into Codex and Claude Code user-level skills directories
+npx github:seaworld008/Commonly-used-high-value-skills install --target codex,claude
+
+# Install into project .agents, Codex, Claude Code, Claude project, and OpenClaw default directories
+npx github:seaworld008/Commonly-used-high-value-skills install --all
+
+# Install into a custom directory for another AI agent client
+npx github:seaworld008/Commonly-used-high-value-skills install --target custom --dir ./vendor/agent-skills
+```
+
+Available targets:
+
+| Target | Install Directory |
+|--------|-------------------|
+| `agents-project` | `./.agents/skills` |
+| `codex` | `~/.codex/skills` |
+| `claude` | `~/.claude/skills` |
+| `claude-project` | `./.claude/skills` |
+| `openclaw` | `~/.openclaw/skills`; local clones prefer `openclaw-skills/`, while npx packages flatten `skills/` |
+| `custom` | selected with `--dir` |
+
+If you already use the `skills.sh` ecosystem, you can also try the standard installer:
+
+```bash
+npx skills add seaworld008/Commonly-used-high-value-skills --all -a codex -a claude-code --copy
+```
+
+This repository's own `high-value-skills` installer is the more explicit option when you need to choose Codex, Claude, OpenClaw, or a custom target directory.
+
+### Option 2: Give This Prompt to Your AI Tool
 
 If you want your AI tool to install the skills for you, start with this short prompt:
 
@@ -59,7 +99,7 @@ The current tool is `<Codex / Claude Code / Hermes Agent / Cursor / OpenClaw>`, 
 
 This works because the repository already includes AI-readable installation rules and directory conventions, so users usually do not need to spell out the full install workflow in the prompt.
 
-### Option 2: Manual Setup
+### Option 3: Manual Setup
 
 1. Clone the repository and enter it:
 
@@ -274,10 +314,10 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 2. Open the relevant `SKILL.md` and read its triggers, workflow, boundaries, and scripts.
 3. If a skill includes `scripts/`, `references/`, or `assets/`, reuse those files before recreating similar content.
 
-## Skill Overview (by category, 16 categories / 308 skills)
+## Skill Overview (by category, 16 categories / 309 skills)
 
 <a id="cat-developer-engineering"></a>
-### 1. Developer Engineering (developer-engineering, 50)
+### 1. Developer Engineering (developer-engineering, 51)
 
 - [`agent-designer`](./skills/developer-engineering/agent-designer/)
 - [`api-design-reviewer`](./skills/developer-engineering/api-design-reviewer/)
@@ -306,6 +346,7 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`migration-architect`](./skills/developer-engineering/migration-architect/)
 - [`monorepo-navigator`](./skills/developer-engineering/monorepo-navigator/)
 - [`neon-postgres`](./skills/developer-engineering/neon-postgres/)
+- [`neon-postgres-egress-optimizer`](./skills/developer-engineering/neon-postgres-egress-optimizer/)
 - [`nextjs-app-router`](./skills/developer-engineering/nextjs-app-router/)
 - [`parallel-debugging`](./skills/developer-engineering/parallel-debugging/)
 - [`performance-profiler`](./skills/developer-engineering/performance-profiler/)

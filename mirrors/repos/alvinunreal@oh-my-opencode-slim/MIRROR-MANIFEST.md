@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 30 followed patterns, 42 file(s) materialized.
+Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 30 followed patterns, 43 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 30 followed
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 30 |
-| Files         | 42 |
+| Files         | 43 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -98,38 +98,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`src/skills/deepwork/SKILL.md`](src/skills/deepwork/SKILL.md) |
 | 9 | ✓ | [`src/skills/oh-my-opencode-slim/SKILL.md`](src/skills/oh-my-opencode-slim/SKILL.md) |
 | 10 | ✓ | [`src/skills/reflect/SKILL.md`](src/skills/reflect/SKILL.md) |
-| 11 | ✓ | [`src/skills/simplify/SKILL.md`](src/skills/simplify/SKILL.md) |
-| 12 | ✓ | [`src/skills/worktrees/SKILL.md`](src/skills/worktrees/SKILL.md) |
-| 13 | → | [`codemap.md`](codemap.md) |
-| 14 | → | [`scripts/codemap.md`](scripts/codemap.md) |
-| 15 | → | [`src/agents/codemap.md`](src/agents/codemap.md) |
-| 16 | → | [`src/cli/codemap.md`](src/cli/codemap.md) |
-| 17 | → | [`src/codemap.md`](src/codemap.md) |
-| 18 | → | [`src/config/codemap.md`](src/config/codemap.md) |
-| 19 | → | [`src/council/codemap.md`](src/council/codemap.md) |
-| 20 | → | [`src/hooks/apply-patch/codemap.md`](src/hooks/apply-patch/codemap.md) |
-| 21 | → | [`src/hooks/auto-update-checker/codemap.md`](src/hooks/auto-update-checker/codemap.md) |
-| 22 | → | [`src/hooks/codemap.md`](src/hooks/codemap.md) |
-| 23 | → | [`src/hooks/delegate-task-retry/codemap.md`](src/hooks/delegate-task-retry/codemap.md) |
-| 24 | → | [`src/hooks/filter-available-skills/codemap.md`](src/hooks/filter-available-skills/codemap.md) |
-| 25 | → | [`src/hooks/foreground-fallback/codemap.md`](src/hooks/foreground-fallback/codemap.md) |
-| 26 | → | [`src/hooks/json-error-recovery/codemap.md`](src/hooks/json-error-recovery/codemap.md) |
-| 27 | → | [`src/hooks/phase-reminder/codemap.md`](src/hooks/phase-reminder/codemap.md) |
-| 28 | → | [`src/hooks/post-file-tool-nudge/codemap.md`](src/hooks/post-file-tool-nudge/codemap.md) |
-| 29 | → | [`src/hooks/task-session-manager/codemap.md`](src/hooks/task-session-manager/codemap.md) |
-| 30 | → | [`src/interview/codemap.md`](src/interview/codemap.md) |
-| 31 | → | [`src/mcp/codemap.md`](src/mcp/codemap.md) |
-| 32 | → | [`src/multiplexer/codemap.md`](src/multiplexer/codemap.md) |
-| 33 | → | [`src/multiplexer/tmux/codemap.md`](src/multiplexer/tmux/codemap.md) |
-| 34 | → | [`src/multiplexer/zellij/codemap.md`](src/multiplexer/zellij/codemap.md) |
-| 35 | → | [`src/skills/clonedeps/codemap.md`](src/skills/clonedeps/codemap.md) |
-| 36 | → | [`src/skills/codemap.md`](src/skills/codemap.md) |
-| 37 | → | [`src/skills/codemap/codemap.md`](src/skills/codemap/codemap.md) |
-| 38 | → | [`src/skills/simplify/codemap.md`](src/skills/simplify/codemap.md) |
-| 39 | → | [`src/tools/ast-grep/codemap.md`](src/tools/ast-grep/codemap.md) |
-| 40 | → | [`src/tools/codemap.md`](src/tools/codemap.md) |
-| 41 | → | [`src/tools/smartfetch/codemap.md`](src/tools/smartfetch/codemap.md) |
-| 42 | → | [`src/utils/codemap.md`](src/utils/codemap.md) |
+| 11 | ✓ | [`src/skills/release-smoke-test/SKILL.md`](src/skills/release-smoke-test/SKILL.md) |
+| 12 | ✓ | [`src/skills/simplify/SKILL.md`](src/skills/simplify/SKILL.md) |
+| 13 | ✓ | [`src/skills/worktrees/SKILL.md`](src/skills/worktrees/SKILL.md) |
+| 14 | → | [`codemap.md`](codemap.md) |
+| 15 | → | [`scripts/codemap.md`](scripts/codemap.md) |
+| 16 | → | [`src/agents/codemap.md`](src/agents/codemap.md) |
+| 17 | → | [`src/cli/codemap.md`](src/cli/codemap.md) |
+| 18 | → | [`src/codemap.md`](src/codemap.md) |
+| 19 | → | [`src/config/codemap.md`](src/config/codemap.md) |
+| 20 | → | [`src/council/codemap.md`](src/council/codemap.md) |
+| 21 | → | [`src/hooks/apply-patch/codemap.md`](src/hooks/apply-patch/codemap.md) |
+| 22 | → | [`src/hooks/auto-update-checker/codemap.md`](src/hooks/auto-update-checker/codemap.md) |
+| 23 | → | [`src/hooks/codemap.md`](src/hooks/codemap.md) |
+| 24 | → | [`src/hooks/delegate-task-retry/codemap.md`](src/hooks/delegate-task-retry/codemap.md) |
+| 25 | → | [`src/hooks/filter-available-skills/codemap.md`](src/hooks/filter-available-skills/codemap.md) |
+| 26 | → | [`src/hooks/foreground-fallback/codemap.md`](src/hooks/foreground-fallback/codemap.md) |
+| 27 | → | [`src/hooks/json-error-recovery/codemap.md`](src/hooks/json-error-recovery/codemap.md) |
+| 28 | → | [`src/hooks/phase-reminder/codemap.md`](src/hooks/phase-reminder/codemap.md) |
+| 29 | → | [`src/hooks/post-file-tool-nudge/codemap.md`](src/hooks/post-file-tool-nudge/codemap.md) |
+| 30 | → | [`src/hooks/task-session-manager/codemap.md`](src/hooks/task-session-manager/codemap.md) |
+| 31 | → | [`src/interview/codemap.md`](src/interview/codemap.md) |
+| 32 | → | [`src/mcp/codemap.md`](src/mcp/codemap.md) |
+| 33 | → | [`src/multiplexer/codemap.md`](src/multiplexer/codemap.md) |
+| 34 | → | [`src/multiplexer/tmux/codemap.md`](src/multiplexer/tmux/codemap.md) |
+| 35 | → | [`src/multiplexer/zellij/codemap.md`](src/multiplexer/zellij/codemap.md) |
+| 36 | → | [`src/skills/clonedeps/codemap.md`](src/skills/clonedeps/codemap.md) |
+| 37 | → | [`src/skills/codemap.md`](src/skills/codemap.md) |
+| 38 | → | [`src/skills/codemap/codemap.md`](src/skills/codemap/codemap.md) |
+| 39 | → | [`src/skills/simplify/codemap.md`](src/skills/simplify/codemap.md) |
+| 40 | → | [`src/tools/ast-grep/codemap.md`](src/tools/ast-grep/codemap.md) |
+| 41 | → | [`src/tools/codemap.md`](src/tools/codemap.md) |
+| 42 | → | [`src/tools/smartfetch/codemap.md`](src/tools/smartfetch/codemap.md) |
+| 43 | → | [`src/utils/codemap.md`](src/utils/codemap.md) |
 
 ---
 

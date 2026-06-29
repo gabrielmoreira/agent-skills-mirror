@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `EverMind-AI/EverOS` — 26 default patterns, 3 followed patterns, 13 file(s) materialized.
+Mirror of `EverMind-AI/EverOS` — 26 default patterns, 4 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `EverMind-AI/EverOS` — 26 default patterns, 3 followed patterns, 13 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 13 |
+| Followed pats | 4 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `EverMind-AI/EverOS` — 26 default patterns, 3 followed patterns, 13 
 
 - `docs/architecture.md`
 - `docs/engineering.md`
+- `docs/github-sync.md`
 - `.claude/rules/init-py-and-reexport.md`
 
 ## File Index
@@ -74,6 +75,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | → | [`.claude/rules/init-py-and-reexport.md`](.claude/rules/init-py-and-reexport.md) |
 | 12 | → | [`docs/architecture.md`](docs/architecture.md) |
 | 13 | → | [`docs/engineering.md`](docs/engineering.md) |
+| 14 | → | [`docs/github-sync.md`](docs/github-sync.md) |
 
 ---
 

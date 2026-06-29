@@ -1,9 +1,10 @@
 ---
 name: playwright-pro
 description: 'Production-grade Playwright testing skill for E2E suites, flaky test diagnosis, browser automation, migration from Cypress/Selenium, CI integration, visual checks, and regression validation.'
+zh_description: "用于高级 Playwright 测试、诊断、稳定性和浏览器自动化。"
 version: "1.0.0"
 author: seaworld008
-source: github:alirezarezvani/claude-skills
+source: in-house
 source_url: "https://github.com/alirezarezvani/claude-skills/tree/main/engineering-team/playwright-pro"
 license: MIT
 tags: '[playwright, e2e-testing, regression-testing, browser-automation, ci, flaky-tests, visual-regression, qa]'

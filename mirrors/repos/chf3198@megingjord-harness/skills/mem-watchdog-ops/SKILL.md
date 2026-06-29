@@ -79,8 +79,8 @@ The daemon detects active Playwright sessions via `pgrep -f 'node.*playwright'`.
 
 ## Key Repo References
 
-- [Daemon logic](../../mem-watchdog.sh)
-- [Extension activation](../../extension.js)
-- [Dashboard/actions](../../commands.js)
-- [Config bridge](../../configWriter.js)
-- [System stability doc](../../../../docs/technical/system-stability.md)
+- [Snapshot helper](watchdog-snapshot.sh) — the in-repo memory snapshot script shipped with this skill.
+
+The watchdog daemon, extension activation, dashboard actions, config bridge, and the
+system-stability design doc live in the upstream VS Code extension repository (the
+canonical home of this skill), not in this harness checkout.

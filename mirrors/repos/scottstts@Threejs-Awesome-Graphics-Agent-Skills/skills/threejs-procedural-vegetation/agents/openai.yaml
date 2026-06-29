@@ -1,4 +1,4 @@
 interface:
   display_name: "Three.js Procedural Vegetation"
-  short_description: "Generate trees, foliage, and organic growth"
-  default_prompt: "Use $threejs-procedural-vegetation to build this plant as a deterministic growth hierarchy."
+  short_description: "Generate trees, grass, foliage, and organic growth"
+  default_prompt: "Use $threejs-procedural-vegetation to build deterministic plant growth, authored foliage, or rooted stylized grass with coherent wind and diagnostics."

@@ -14,4 +14,8 @@ Steps:
    - Check that the first and last messages match the current conversation
 4. Run the clone: `<script-path> <session-id> <project-path>`
    - Always pass the project path from the history entry, not the current working directory
-5. Tell the user they can access the half-cloned conversation with `claude -r` and look for the one marked `[HALF-CLONE <timestamp>]` (e.g., `[HALF-CLONE Jan 7 14:30]`). The script automatically appends a reference to the original conversation at the end of the cloned file.
+5. The script prints the new session ID (the `New session: <id>` line). Give the user the exact command to resume it directly, no picker needed:
+   ```
+   claude --resume <new-session-id>
+   ```
+   The script automatically appends a reference to the original conversation at the end of the cloned file. (The new session is also marked `[HALF-CLONE <timestamp>]`, e.g. `[HALF-CLONE Jan 7 14:30]`, so `claude -r` and picking it works as a fallback.)

@@ -1,6 +1,6 @@
 ---
 name: threejs-procedural-vegetation
-description: Generate authored procedural trees and vegetation in Three.js. Use for trunks, recursive branches, roots, canopies, leaf cards, species presets, growth forces, trellises, deterministic variation, and wind deformation.
+description: Generate authored procedural trees, grass, and vegetation in Three.js. Use for stylized meadow grass, trunks, recursive branches, roots, canopies, leaf cards, species presets, growth forces, trellises, deterministic variation, rooted blade/leaf wind, and wind deformation.
 ---
 
 # Procedural Vegetation
@@ -28,6 +28,13 @@ Read the [Ash Growth System implementation](examples/structured-ash-growth/tree-
 with its [authored preset](examples/structured-ash-growth/ash-preset.js) for a
 contract-accurate implementation and its diagnostic attributes.
 
+Read the
+[stylized meadow grass implementation](examples/stylized-meadow-grass/grass-system.js)
+for authored blade-cluster geometry with a procedural fallback, image-driven
+path masking, per-instance origin/facing attributes, circular-arc rooted wind,
+gust fronts, tip flutter, color clumps, macro variation, translucency, and rim
+diagnostics.
+
 ## Visual failure conditions
 
 - branches form visible helices;
@@ -43,4 +50,4 @@ contract-accurate implementation and its diagnostic attributes.
 
 Use `$threejs-procedural-geometry` for generic branch-ring emission without a
 growth model. This skill owns species tables, topology, child placement,
-foliage, roots, and hierarchical wind.
+foliage, grass fields, roots, and hierarchical/rooted wind.

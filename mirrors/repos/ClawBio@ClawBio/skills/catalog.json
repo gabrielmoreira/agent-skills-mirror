@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated_by": "scripts/generate_catalog.py",
-  "skill_count": 89,
+  "skill_count": 90,
   "galaxy_tool_count": 8182,
   "skills": [
     {
@@ -870,6 +870,45 @@
         "pharmgx-reporter",
         "gwas-lookup"
       ]
+    },
+    {
+      "name": "cnv-acmg-classifier",
+      "cli_alias": "cnv-acmg",
+      "description": "Classify structural variants / copy-number variants (deletions and duplications) using the ClinGen / ACMG 2019 (Riggs et al. 2020) point framework and return a five-tier classification with a per-section evidence trail. Germline CNV interpretation, not SNV/indel.",
+      "version": "0.1.0",
+      "status": "planned",
+      "maturity_tier": "cli-registered",
+      "maturity_evidence": {
+        "has_skill_md": true,
+        "has_script": true,
+        "has_tests": true,
+        "has_demo": true,
+        "cli_registered": true,
+        "ci_tested": false,
+        "benchmark_validated": false
+      },
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python clawbio.py run cnv-acmg --demo",
+      "dependencies": [
+        "python>=3.10"
+      ],
+      "tags": [
+        "cnv",
+        "structural-variant",
+        "acmg",
+        "clingen",
+        "dosage-sensitivity"
+      ],
+      "trigger_keywords": [
+        "CNV classification",
+        "copy number variant ACMG",
+        "structural variant interpretation",
+        "ClinGen dosage sensitivity",
+        "deletion duplication pathogenic"
+      ],
+      "chaining_partners": []
     },
     {
       "name": "crispr-screen-triage",

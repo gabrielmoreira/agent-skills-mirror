@@ -1,0 +1,8 @@
+cnv_id,chrom,start,end,type,inheritance,case_evidence_points
+CNV_P_TP53del,chr17,7660000,7695000,DEL,unknown,0
+CNV_LP_TP53partial,chr17,7680000,7700000,DEL,unknown,0
+CNV_B_benign,chr1,152030000,152070000,DEL,unknown,0
+CNV_VUS_inh,chr2,50120000,50180000,DEL,inherited,0
+CNV_LB_caseev,chr2,50120000,50180000,DEL,inherited,-0.65
+CNV_P_dup22q,chr22,18800000,21600000,DUP,de_novo,0
+CNV_LP_genedense,chr19,51990000,52410000,DEL,unknown,0

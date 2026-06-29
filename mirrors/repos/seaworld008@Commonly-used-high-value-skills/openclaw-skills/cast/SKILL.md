@@ -1,14 +1,15 @@
 ---
 name: cast
 description: 'Casting personas via rapid generation, persistence, lifecycle management, and inter-agent sync. Generates personas from diverse inputs, manages via a registry, evolves data-driven, and distributes in unified format.'
-version: "1.0.6"
+zh_description: "用于cast，支持记忆管理、安全防护和运行治理。"
+version: "1.0.7"
 author: "seaworld008"
 source: "github:simota/agent-skills"
 source_url: "https://github.com/simota/agent-skills/tree/main/cast"
 license: MIT
 tags: '["cast", "memory", "safety"]'
 created_at: "2026-04-25"
-updated_at: "2026-06-21"
+updated_at: "2026-06-29"
 quality: 5
 complexity: "advanced"
 ---
@@ -66,6 +67,7 @@ Route elsewhere when the task is primarily:
 - user feedback collection and analysis: `Voice`
 - feature ideation (not persona creation): `Spark`
 - session replay behavioral analysis: `Trace`
+- channeling a real named public figure's documented thinking (not a synthetic user persona): `Summon`
 
 ## Core Contract
 

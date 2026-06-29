@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `andreaswasita/copilot-agents-dojo` — 26 default patterns, 8 followed patterns, 122 file(s) materialized.
+Mirror of `andreaswasita/copilot-agents-dojo` — 26 default patterns, 8 followed patterns, 121 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `andreaswasita/copilot-agents-dojo` — 26 default patterns, 8 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 122 |
+| Files         | 121 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -160,34 +160,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 92 | ✓ | [`skills/refactoring/SKILL.md`](skills/refactoring/SKILL.md) |
 | 93 | ✓ | [`skills/requesting-code-review/SKILL.md`](skills/requesting-code-review/SKILL.md) |
 | 94 | ✓ | [`skills/requirements-elicitation/SKILL.md`](skills/requirements-elicitation/SKILL.md) |
-| 95 | ✓ | [`skills/safety-guardrails/scripts/__pycache__/safety_guard.cpython-311.pyc`](skills/safety-guardrails/scripts/__pycache__/safety_guard.cpython-311.pyc) |
-| 96 | ✓ | [`skills/safety-guardrails/scripts/safety_guard.py`](skills/safety-guardrails/scripts/safety_guard.py) |
-| 97 | ✓ | [`skills/safety-guardrails/scripts/safety-guard.ps1`](skills/safety-guardrails/scripts/safety-guard.ps1) |
-| 98 | ✓ | [`skills/safety-guardrails/scripts/safety-guard.sh`](skills/safety-guardrails/scripts/safety-guard.sh) |
-| 99 | ✓ | [`skills/safety-guardrails/SKILL.md`](skills/safety-guardrails/SKILL.md) |
-| 100 | ✓ | [`skills/security-audit/scripts/security_audit.py`](skills/security-audit/scripts/security_audit.py) |
-| 101 | ✓ | [`skills/security-audit/scripts/security-audit.ps1`](skills/security-audit/scripts/security-audit.ps1) |
-| 102 | ✓ | [`skills/security-audit/scripts/security-audit.sh`](skills/security-audit/scripts/security-audit.sh) |
-| 103 | ✓ | [`skills/security-audit/SKILL.md`](skills/security-audit/SKILL.md) |
-| 104 | ✓ | [`skills/self-improvement/examples/lesson-entry.md`](skills/self-improvement/examples/lesson-entry.md) |
-| 105 | ✓ | [`skills/self-improvement/SKILL.md`](skills/self-improvement/SKILL.md) |
-| 106 | ✓ | [`skills/subagent-strategy/SKILL.md`](skills/subagent-strategy/SKILL.md) |
-| 107 | ✓ | [`skills/test-writing/SKILL.md`](skills/test-writing/SKILL.md) |
-| 108 | ✓ | [`skills/traceability-gate/SKILL.md`](skills/traceability-gate/SKILL.md) |
-| 109 | ✓ | [`skills/using-git-worktrees/SKILL.md`](skills/using-git-worktrees/SKILL.md) |
-| 110 | ✓ | [`skills/using-superpowers/SKILL.md`](skills/using-superpowers/SKILL.md) |
-| 111 | ✓ | [`skills/verify-before-done/SKILL.md`](skills/verify-before-done/SKILL.md) |
-| 112 | ✓ | [`tasks/board/README.md`](tasks/board/README.md) |
-| 113 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
-| 114 | ✓ | [`tests/README.md`](tests/README.md) |
-| 115 | → | [`.github/known-pitfalls.md`](.github/known-pitfalls.md) |
-| 116 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 117 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 118 | → | [`docs/brand.md`](docs/brand.md) |
-| 119 | → | [`docs/memory-mcp.md`](docs/memory-mcp.md) |
-| 120 | → | [`memory/README.md`](memory/README.md) |
-| 121 | → | [`README.md`](README.md) |
-| 122 | → | [`spec/copilot-skills-spec.md`](spec/copilot-skills-spec.md) |
+| 95 | ✓ | [`skills/safety-guardrails/scripts/safety_guard.py`](skills/safety-guardrails/scripts/safety_guard.py) |
+| 96 | ✓ | [`skills/safety-guardrails/scripts/safety-guard.ps1`](skills/safety-guardrails/scripts/safety-guard.ps1) |
+| 97 | ✓ | [`skills/safety-guardrails/scripts/safety-guard.sh`](skills/safety-guardrails/scripts/safety-guard.sh) |
+| 98 | ✓ | [`skills/safety-guardrails/SKILL.md`](skills/safety-guardrails/SKILL.md) |
+| 99 | ✓ | [`skills/security-audit/scripts/security_audit.py`](skills/security-audit/scripts/security_audit.py) |
+| 100 | ✓ | [`skills/security-audit/scripts/security-audit.ps1`](skills/security-audit/scripts/security-audit.ps1) |
+| 101 | ✓ | [`skills/security-audit/scripts/security-audit.sh`](skills/security-audit/scripts/security-audit.sh) |
+| 102 | ✓ | [`skills/security-audit/SKILL.md`](skills/security-audit/SKILL.md) |
+| 103 | ✓ | [`skills/self-improvement/examples/lesson-entry.md`](skills/self-improvement/examples/lesson-entry.md) |
+| 104 | ✓ | [`skills/self-improvement/SKILL.md`](skills/self-improvement/SKILL.md) |
+| 105 | ✓ | [`skills/subagent-strategy/SKILL.md`](skills/subagent-strategy/SKILL.md) |
+| 106 | ✓ | [`skills/test-writing/SKILL.md`](skills/test-writing/SKILL.md) |
+| 107 | ✓ | [`skills/traceability-gate/SKILL.md`](skills/traceability-gate/SKILL.md) |
+| 108 | ✓ | [`skills/using-git-worktrees/SKILL.md`](skills/using-git-worktrees/SKILL.md) |
+| 109 | ✓ | [`skills/using-superpowers/SKILL.md`](skills/using-superpowers/SKILL.md) |
+| 110 | ✓ | [`skills/verify-before-done/SKILL.md`](skills/verify-before-done/SKILL.md) |
+| 111 | ✓ | [`tasks/board/README.md`](tasks/board/README.md) |
+| 112 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
+| 113 | ✓ | [`tests/README.md`](tests/README.md) |
+| 114 | → | [`.github/known-pitfalls.md`](.github/known-pitfalls.md) |
+| 115 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 116 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 117 | → | [`docs/brand.md`](docs/brand.md) |
+| 118 | → | [`docs/memory-mcp.md`](docs/memory-mcp.md) |
+| 119 | → | [`memory/README.md`](memory/README.md) |
+| 120 | → | [`README.md`](README.md) |
+| 121 | → | [`spec/copilot-skills-spec.md`](spec/copilot-skills-spec.md) |
 
 ---
 

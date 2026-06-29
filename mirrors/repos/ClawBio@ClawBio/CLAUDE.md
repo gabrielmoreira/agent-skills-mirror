@@ -56,6 +56,7 @@ When the user asks a question, match it to a skill and act:
 | Proteomics differential expression, LFQ, MaxQuant, DIA-NN, protein DE, proteomics volcano plot | `skills/proteomics-de/` | Run `proteomics_de.py` |
 | Protein structure, AlphaFold, PDB, Boltz | `skills/struct-predictor/` | Run `struct_predictor.py` |
 | Clinical variant classification, ACMG, AMP, secondary findings, germline VCF interpretation | `skills/clinical-variant-reporter/` | Run `clinical_variant_reporter.py` |
+| CNV/SV classification, copy-number variant ACMG, ClinGen dosage sensitivity, deletion/duplication pathogenicity, structural variant interpretation, haploinsufficiency, triplosensitivity | `skills/cnv-acmg-classifier/` | Run `cnv_acmg_classifier.py` |
 | Reproducibility, Nextflow, Singularity, Conda export | `skills/repro-enforcer/` | Read SKILL.md, apply methodology |
 | Sequence QC, FASTQ, alignment, BAM, trimming | `skills/seq-wrangler/` | Read SKILL.md, apply methodology |
 | MultiQC, aggregate QC, QC report, FastQC summary, multi-sample QC, sequencing QC report, combine QC results | `skills/multiqc-reporter/` | Run `multiqc_reporter.py` |
@@ -322,6 +323,11 @@ python skills/crispr-screen-triage/crispr_screen_triage.py \
   --input <screen_counts.csv> --output <report_dir>
 python skills/crispr-screen-triage/crispr_screen_triage.py --demo --output /tmp/crispr_triage_demo
 
+# CNV/SV ACMG classifier - ClinGen 2019 / Riggs 2020 dosage point framework
+python skills/cnv-acmg-classifier/cnv_acmg_classifier.py \
+  --input <cnvs.vcf_or_csv> [--dosage-map <map.csv>] [--gene-model <genes.csv>] --output <report_dir>
+python skills/cnv-acmg-classifier/cnv_acmg_classifier.py --demo --output /tmp/cnv_acmg_demo
+
 # Marker dominance mapper - marker-based spot region mapping
 python skills/marker-dominance-mapper/marker_dominance_mapper.py \
   --input <spot_counts.csv> --output <report_dir>
@@ -387,6 +393,7 @@ For instant demos when the user has no data:
 | Sample QC demo metrics (5 synthetic samples) | `skills/sample-qc-triage/demo_qc_metrics.csv` | sample-qc-triage |
 | CRISPR screen demo counts (12 synthetic guides, 6 genes) | `skills/crispr-screen-triage/demo_screen_counts.csv` | crispr-screen-triage |
 | Marker dominance demo counts (6 synthetic spots) | `skills/marker-dominance-mapper/demo_marker_counts.csv` | marker-dominance-mapper |
+| CNV ACMG demo calls (7 synthetic CNVs spanning all 5 ACMG tiers) | `skills/cnv-acmg-classifier/demo_cnv_calls.csv` | cnv-acmg-classifier |
 | Flow.bio demo (live API + offline cache) | `--demo` flag / `skills/flow-bio/data/demo_cache.json` | flow-bio |
 | Sarek demo (upstream nf-core/sarek `-profile test` dataset, no local files) | `--demo` flag | nfcore-sarek-wrapper |
 | scRNA-seq demo (upstream nf-core/scrnaseq `-profile test` dataset, no local files) | `--demo` flag | nfcore-scrnaseq-wrapper |

@@ -23,7 +23,7 @@ say **Eliza agents**. Exception: the **Eliza Classic** plugin keeps `Eliza`
 - **Monorepo:** [Turbo](https://turbo.build) drives `build` / `typecheck` /
   `lint` / `test` across workspaces. Workspace globs are in `package.json`
   (`packages/*`, `plugins/*`, `packages/native/*`, `packages/os/*`,
-  `packages/examples/*`, `packages/cloud-services/*`, …).
+  `packages/examples/*`, `packages/cloud/services/*`, …).
 - **Lint/format:** [Biome](https://biomejs.dev) (`biome.json`). Ignore globs in
   `.biomeignore`.
 - **Tests:** Vitest, orchestrated by `packages/scripts/run-all-tests.mjs`.
@@ -69,16 +69,15 @@ packages/        framework, shared libraries, and product surfaces
   tui/           terminal UI
   skills/        runtime skills knowledge base (USE_SKILL)
   scenario-runner/ scenario + eval harness
-  sweagent/      SWE-bench style coding-agent harness
-  cloud-api/     managed backend API (Hono on Cloudflare Workers)
+  cloud/api/     managed backend API (Hono on Cloudflare Workers)
   app/           web + desktop dashboard; also hosts the current cloud apex UI
-  cloud-shared/  shared cloud backend: db (Drizzle), billing, services, types
-  cloud-sdk/ cloud-routing/ cloud-infra/  cloud client SDK, model routing, IaC
+  cloud/shared/  shared cloud backend: db (Drizzle), billing, services, types
+  cloud/sdk/ cloud/routing/ cloud/infra/  cloud client SDK, model routing, IaC
   contracts/     on-chain contracts + ABIs
   security/ vault/ soc2-verify/  secrets, key management, compliance tooling
-  os/ os-homepage/ robot/        device/OS images, OS landing, robotics
-  plugin-host-shim*/ plugin-worker-runtime/ plugin-remote-manifest/
-                 plugin loading shims for native/electrobun/ios/android/worker targets
+  os/ robot/                     device/OS images, OS landing, robotics
+  plugin-remote-manifest/ plugin-worker-runtime/
+                 remote plugin manifests, host shims, and worker runtime support
   homepage/ docs/ docs-elizacloud-redirect/  marketing site, docs site, redirects
   examples/      30+ standalone runnable examples (each has its own README)
   benchmarks/    30+ evaluation suites (each has its own README + harness)
@@ -211,6 +210,19 @@ be able to confirm it works **without reading the code**. Full standard:
   - **Before/after full-page screenshots** + a **video walkthrough** of the
     flow — `bun run test:e2e:record`; for app UI,
     `bun run --cwd packages/app audit:app`.
+  - **Per-platform capture** (screenshot + recording + logs) for native/mobile/
+    desktop changes — `bun run --cwd packages/app capture:ios-sim` /
+    `capture:android-emu` / `capture:linux-desktop` / `capture:windows-desktop`,
+    electrobun `GET /api/dev/cursor-screenshot`. Full surface→command matrix in
+    `PR_EVIDENCE.md`.
+  - **Always build + deploy the latest before capturing.** Capture helpers
+    screenshot whatever is **already installed/running** — they do not build.
+    Before any on-device/simulator/desktop capture, rebuild and redeploy the
+    current tree (mobile: `build:android` / `build:ios` cap sync **and
+    reinstall** — a Capacitor app bakes the web bundle into the APK/IPA at build
+    time, so restarting the old app never picks up a renderer change). Confirm
+    the running build is yours (`versionName` / a known on-screen change) — a
+    screenshot of a stale install proves nothing.
   - **Audio + narrated walkthrough** for voice/transcript/TTS/STT changes.
   - Artifacts land in `.github/issue-evidence/<issue#>-<slug>.<ext>` (see that
     dir's `README.md`). Each evidence type is attached **or** explicitly marked

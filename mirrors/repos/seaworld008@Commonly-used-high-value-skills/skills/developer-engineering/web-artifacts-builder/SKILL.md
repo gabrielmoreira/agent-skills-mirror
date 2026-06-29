@@ -1,6 +1,7 @@
 ---
 name: web-artifacts-builder
 description: 'Suite of tools for creating elaborate, multi-component claude.ai HTML artifacts using modern frontend web technologies (React, Tailwind CSS, shadcn/ui). Use for complex artifacts requiring state management, routing, or shadcn/ui components - not for simple single-file HTML/JSX artifacts.'
+zh_description: "用于构建复杂多组件 HTML/React 网页 artifacts，尤其适合需要状态、路由或 shadcn/ui 的场景。"
 version: "1.0.0"
 author: "seaworld008"
 source: "in-house"
@@ -8,7 +9,7 @@ source_url: ""
 license: Complete terms in LICENSE.txt
 tags: '["artifacts", "builder", "development", "web"]'
 created_at: "2026-03-04"
-updated_at: "2026-03-20"
+updated_at: "2026-06-29"
 quality: 3
 complexity: "intermediate"
 ---
@@ -81,3 +82,25 @@ To test/visualize the artifact, use available tools (including other Skills or b
 ## Reference
 
 - **shadcn/ui components**: https://ui.shadcn.com/docs/components
+
+## Artifact Quality Checklist
+
+Before handing off the final HTML artifact, verify these points:
+
+- The artifact opens without a build server and does not depend on local-only file paths.
+- Core interactions work from the bundled `bundle.html`, not only during Vite development.
+- Responsive layout has been considered for mobile, tablet, and desktop widths.
+- State is initialized deterministically so the first render is useful without user setup.
+- Any imported assets are embedded, copied, or replaced with stable remote URLs.
+- The visual language is intentional; avoid default Tailwind spacing and generic component stacks when the user asks for design polish.
+
+## Common Failure Modes
+
+- **Missing path alias support**: rerun the bundling script and confirm `.parcelrc` contains the resolver configuration.
+- **Oversized bundle**: remove unused component imports, large image assets, and debug-only dependencies.
+- **Broken shadcn styles**: confirm generated components import from the expected `@/components/ui/*` paths.
+- **Hydration-like mismatch**: avoid relying on `Date.now()`, random values, or browser-only APIs during first render unless guarded.
+
+## Delivery Notes
+
+When the user only asked for a quick static page, do not force this full React artifact workflow. Use it when complexity justifies the setup: multi-screen state, component libraries, rich interactions, or a reusable artifact that benefits from a local build loop.

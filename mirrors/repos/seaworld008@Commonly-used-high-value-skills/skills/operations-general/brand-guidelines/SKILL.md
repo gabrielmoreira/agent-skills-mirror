@@ -1,6 +1,7 @@
 ---
 name: brand-guidelines
 description: 'Applies Anthropic''s official brand colors and typography to any sort of artifact that may benefit from having Anthropic''s look-and-feel. Use it when brand colors or style guidelines, visual formatting, or company design standards apply.'
+zh_description: "用于在文档、页面或视觉产物中应用 Anthropic 风格的品牌色、字体和视觉规范。"
 version: "1.0.0"
 author: "seaworld008"
 source: "in-house"
@@ -8,7 +9,7 @@ source_url: ""
 license: Complete terms in LICENSE.txt
 tags: '["brand", "guidelines", "productivity"]'
 created_at: "2026-03-04"
-updated_at: "2026-03-20"
+updated_at: "2026-06-29"
 quality: 3
 complexity: "intermediate"
 ---
@@ -109,3 +110,26 @@ from pptx.dml.color import RGBColor
 ANTHROPIC_ORANGE = RGBColor(0xD9, 0x77, 0x57)
 ANTHROPIC_DARK = RGBColor(0x14, 0x14, 0x13)
 ```
+
+## Application Checklist
+
+When applying brand styling to an artifact:
+
+- Preserve the user's content hierarchy before changing colors or fonts.
+- Apply brand colors as accents, not as full-page decoration unless the user asks for a campaign-style visual.
+- Check contrast for body text, captions, chart labels, and callout blocks.
+- Keep typography consistent across headings, body copy, tables, and annotations.
+- Avoid mixing unrelated brand systems in the same output.
+- If the artifact already follows another company's brand, ask before replacing it with Anthropic styling.
+
+## Review Criteria
+
+The final artifact should pass these checks:
+
+- The primary action or message is still visually dominant after styling.
+- Orange accents are used sparingly enough to retain emphasis.
+- Dark backgrounds do not reduce readability or printability.
+- Charts and diagrams remain interpretable in grayscale or low-contrast projectors.
+- Font fallbacks produce acceptable layout if Poppins or Lora are unavailable.
+
+Use brand guidelines to improve clarity and polish, not to obscure the user's original intent.

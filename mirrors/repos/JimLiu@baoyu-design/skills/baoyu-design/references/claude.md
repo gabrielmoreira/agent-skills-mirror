@@ -12,8 +12,8 @@ The upstream prompt references Claude.ai web tools that do not exist in Claude C
 | `done`, `fork_verifier_agent` | `SendUserFile` + the Claude Preview MCP; an `Agent` subagent (prompt: [`../agents/fork-verifier-agent.md`](../agents/fork-verifier-agent.md)) for thorough checks — see "Verification & debug" below |
 | `write_file` (and its `asset:` param) | `Write` — drop the "asset review pane" concept entirely |
 | `copy_files` | `Bash cp` |
-| `read_file`, `list_files`, `view_image` | `Read` (it renders images too), `Glob` / `Bash ls`, `Grep` |
-| `show_to_user` | `SendUserFile` (or `open <path>` for a self-contained file); for final deliverables also surface a screenshot and give the served `http://localhost:<port>/...` URL so the user can open and interact with the live result — Claude Code has no user-visible agent browser, so delivery is file + screenshot + URL (see "Showing files & preview") |
+| `read_file`, `list_files`, `view_image` | `Read` (it renders images too), `Glob` / `Bash ls`, `Grep`; before using `Read` on image files, run the vision probe below |
+| `show_to_user` | `SendUserFile` (or `open <path>` for a self-contained file); for final deliverables also give the served `http://localhost:<port>/...` URL. Surface screenshots only after the vision probe passes; otherwise provide screenshot file paths without reading them (see "Showing files & preview"). |
 | `eval_js`, `eval_js_user_view`, `run_script` | `Bash`; the Claude Preview MCP `preview_eval` for in-page JS |
 | `web_fetch`, `web_search` | `WebFetch`, `WebSearch` |
 | `copy_starter_component` | `Bash cp starter-components/<file> designs/<project>/` (or `Read` + adapt) |
@@ -35,11 +35,43 @@ Replaces `questions_v2`. `AskUserQuestion` **returns the user's answers inline**
 
 To surface a deliverable, use `SendUserFile` with the file path (works for any file type — HTML, images, text). Reading a file does NOT show it to the user.
 
-**For final design/prototype deliverables, treat the preview as part of delivery, not only private validation.** Claude Code has no shared, user-visible browser to flip on (the Claude Preview MCP is agent-driven), so make the result visible by handing it off: `SendUserFile` the deliverable, surface a final `preview_screenshot` (it renders inline in the transcript), and give the user the served `http://localhost:<port>/<project>/<file>.html` URL so they can open and interact with the live prototype in their own browser. Do this after verification, unless the user asked you not to.
+**For final design/prototype deliverables, treat the preview as part of delivery, not only private validation.** Claude Code has no shared, user-visible browser to flip on (the Claude Preview MCP is agent-driven), so make the result visible by handing it off: `SendUserFile` the deliverable and give the user the served `http://localhost:<port>/<project>/<file>.html` URL so they can open and interact with the live prototype in their own browser. If the vision probe passes, also surface a final `preview_screenshot` (it renders inline in the transcript). If the probe does not pass, save any screenshot to disk and report its path without reading or embedding it. Do this after verification, unless the user asked you not to.
 
 To open a prototype in a browser — whether for the user to interact with or for you to preview/screenshot it — **always serve it over HTTP and load the `http://localhost:<port>/<project>/<file>.html` URL; do not open the HTML directly from `file://`.** A multi-file prototype (an HTML entry that loads `<script type="text/babel" src="…jsx">` components) only works over HTTP — the browser blocks cross-origin local script reads — and self-contained single files go through the same served URL so preview and screenshots stay consistent.
 
 Serve the whole `designs/` directory once (one server for all projects) and reuse it. Preview through the Claude Preview MCP, which serves from a named config in `.claude/launch.json`: define a single `designs` server that serves the whole `designs/` directory (`python3 -m http.server 4311 --directory designs`) so every project shares one server.
+
+## Vision input probe
+
+Probe **once per session** — the model/provider can't change mid-session, so cache
+the verdict and reuse it for every later design task instead of re-probing. Do this
+before the first action that would put image bytes into the main conversation:
+`Read` on a PNG/JPG/WebP, `preview_screenshot`, or a subagent asked to visually
+judge a screenshot.
+
+1. Use the committed probe image shipped with this skill — a tiny colorful square
+   with a dark X/border. Nothing to generate or write; just resolve its absolute
+   path:
+
+   ```text
+   <skill>/agents/assets/vision-probe.png
+   ```
+
+2. Spawn an `Agent` subagent with the prompt in
+   [`../agents/vision-probe-agent.md`](../agents/vision-probe-agent.md), passing
+   only that absolute path. Spawn it on the **same model/provider as this session**
+   (the default) so its verdict reflects the main agent's capability. The probe is
+   intentionally isolated: a provider that rejects image input should fail inside
+   this disposable subtask, not after a real design screenshot has entered the main
+   task.
+3. Treat only an exact final response of `VISION_OK` as image support. Any other
+   outcome — `VISION_UNSUPPORTED`, an Agent/tool error, no usable final response,
+   or extra prose — means **non-visual mode** for the rest of this session.
+
+In non-visual mode, do not call `Read` on PNG/JPG/WebP files and do not call
+`preview_screenshot` or any other tool that returns image content to the model.
+You may still use Chrome/Playwright/headless browser commands to write a
+screenshot file to disk; report the path for the user to open manually.
 
 ## Verification & debug
 
@@ -50,10 +82,25 @@ Preview through the Claude Preview MCP:
 1. `mcp__Claude_Preview__preview_start` with `{name: "designs"}` (the `designs` config in `.claude/launch.json`).
 2. Open `http://localhost:<port>/<project>/<file>.html`.
 3. `mcp__Claude_Preview__preview_console_logs` to catch JS errors.
-4. `mcp__Claude_Preview__preview_screenshot` to inspect layout. Fix any errors and surface it again.
-5. When the deliverable is ready, hand off the result: `SendUserFile` the file, surface the final `preview_screenshot`, and give the user the served URL so they can open and interact with it directly.
+4. Run the vision probe before any screenshot inspection. If it returns
+   `VISION_OK`, use `mcp__Claude_Preview__preview_screenshot` to inspect layout.
+   If it does not, skip visual screenshot inspection and perform the text checks
+   below instead.
+5. When the deliverable is ready, hand off the result: `SendUserFile` the file
+   and give the user the served URL so they can open and interact with it
+   directly. If non-visual mode was used, say that the current model/provider
+   did not accept image input, visual review was skipped, and any screenshot was
+   saved only as a file path.
 
-For thorough or directed checks ("screenshot and check the spacing"), spawn an `Agent` subagent to load the file, take screenshots, probe the JS, and report back — useful when you don't want to clutter your own context. Use the prompt in [`../agents/fork-verifier-agent.md`](../agents/fork-verifier-agent.md) (pass the project dir, the file path(s), and the served URL).
+In non-visual mode, verify with text and DOM evidence: confirm the HTTP URL
+loads, console logs contain no blocking errors, expected root elements exist,
+the main container has non-zero width/height, visible text is present, and
+network/resource failures are absent or explained. For blank-page checks, use
+in-page JS such as `document.body.innerText.trim()`,
+`document.querySelectorAll('*').length`, and key element
+`getBoundingClientRect()` values rather than a screenshot.
+
+For thorough or directed checks ("screenshot and check the spacing"), first run the vision probe. If it returns `VISION_OK`, spawn an `Agent` subagent to load the file, take screenshots, probe the JS, and report back — useful when you don't want to clutter your own context. Use the prompt in [`../agents/fork-verifier-agent.md`](../agents/fork-verifier-agent.md) and pass the project dir, the file path(s), the served URL, plus an explicit note that image input is supported. If the probe does not pass, do not ask a subagent to inspect screenshots; use the text and DOM checks above and tell the user visual review was skipped.
 
 **Preview-harness gotchas (React + Babel prototypes)** — quirks of the Claude Preview MCP, not your code:
 

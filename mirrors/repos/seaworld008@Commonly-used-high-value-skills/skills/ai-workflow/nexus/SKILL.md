@@ -1,14 +1,15 @@
 ---
 name: nexus
 description: 'Orchestrating specialist AI agent teams as a meta-coordinator. Decomposes requests into minimum viable chains, spawns each as an independent session in AUTORUN modes, and drives to final output. Use when a task spans multiple specialist domains, requires parallel agent execution, or needs hub-and-spoke routing across the skill ecosystem.'
-version: "1.0.10"
+zh_description: "用于nexus，支持任务规划、执行、评审和验证。"
+version: "1.0.11"
 author: "seaworld008"
 source: "github:simota/agent-skills"
 source_url: "https://github.com/simota/agent-skills/tree/main/nexus"
 license: MIT
 tags: '["ai", "nexus", "workflow"]'
 created_at: "2026-04-25"
-updated_at: "2026-06-24"
+updated_at: "2026-06-29"
 quality: 5
 complexity: "advanced"
 ---
@@ -150,8 +151,8 @@ The full table below is flat; these families group it and name the axis that sep
 | Family | Recipes | Distinguishing axis within the family |
 |--------|---------|----------------------------------------|
 | **Fix** | `bug` · `security` | fault class: defect vs vulnerability |
-| **Improve** (existing code) | `refactor` · `optimize` · `kaizen` · `converge` | refactor = internal-only · optimize = perf-only (a number) · kaizen = multi-axis polish vs target · converge = execution-control loop wrapping any generator. **`improve`/`polish`/`enhance` is overloaded across all four → REDIRECT.** |
-| **Build** (new) | `feature` · `apex` | feature = single guided build · apex = discovery→ship one-shot (8-25 agents) |
+| **Improve** (existing code) | `refactor` · `optimize` · `kaizen` · `anneal` · `converge` | refactor = apply a *known* internal restructure (known scope) · optimize = perf-only (a number) · kaizen = multi-axis polish of *one feature* vs a known target · **anneal = *discover* undiagnosed design weaknesses across a scope → brush up the prioritized slate, behavior-preserving** · converge = execution-control loop wrapping any generator. **`improve`/`polish`/`enhance` is overloaded across all five → REDIRECT** (`audit the design` / `brush up the codebase` / `harden the architecture` → `anneal`; `improve a feature vs a target` → `kaizen`; `known single restructure` → `refactor`). |
+| **Build** (new) | `feature` · `apex` · `playable` | feature = single guided build · apex = general discovery→ship one-shot (8-25 agents) · **playable = game-specialized all-in-one (Quest design→Glance UI/UX→Tick impl→Dot assets) with a vertical-slice-first gate** |
 | **Discover → build pairs** | `spec`→`feature`/`apex` · `charter`→`enact` | spec = one feature spec (dialogue) · charter = whole-repo team design. Both stop at a document. |
 | **Reason** (no code) | `gedanken` · `delve` | output = insight, not a build. **gedanken** = abstract thought-experiment about a claim/hypothesis (construct→reason→perturb→refute→conclude); **delve** = grounded deep-dive into a *shipped* feature → evolution directions (deepen/broaden/reframe). Axis: abstract-hypothetical vs grounded-existing-feature. Both orchestrate `magi`/`flux`; trivial "what if" → `flux`/`magi`, trivial "what could we do with X" → `riff`/`spark` direct. **`delve` vs `kaizen`** (discover directions vs execute vs a target): `evolve`/`improve a feature` is overloaded → REDIRECT. |
 | **Verdict** (which feature) | `essential` · `killer` · `trim` | essential = THE must-have · killer = THE differentiator · trim = remove dead-weight (inverse). Shared gate: `reference/verdict-gate.md`. |
@@ -165,13 +166,15 @@ The full table below is flat; these families group it and name the axis that sep
 | Auto Classify | `classify` (default) | No Recipe specified — auto-classification. **Redirects to a curated Recipe when the resolved intent matches one; ad-hoc chain only for no-Recipe task types.** | `RESOLVE → GATE → REDIRECT? → SELECT → CHAIN_SELECT` | `reference/routing-matrix.md` (Classify Flow contract) |
 | Bug Fix | `bug` | Bug reports and fix requests | `Scout[RCA] → Sherpa? → Radar[failing repro] → Builder[root-cause] → Radar[verify] → Guardian`<br>*Reproduce-before-fix (red→green). Sherpa skip when files ≤ 2 / single-component. +Sentinel security, +Trail regression-from-commit. Phase contract: RCA→REPRODUCE→FIX→VERIFY→SHIP.* | `reference/routing-quick-start.md`, `reference/routing-matrix.md` |
 | Feature | `feature` | New web/backend/generic feature. **iOS/Android native → `MOBILE_NATIVE` (Native) instead.** | `Lens?[reuse] → Sherpa[spec+AC] → Forge? → Builder → Radar[+verify gate] → Guardian`<br>*Lens reuse-scan on existing codebases. Forge spike only when approach unproven. +Muse/Palette/Artisan when UI surface; backend/CLI skip them. Phase contract: SURVEY→SPEC→PROTOTYPE→BUILD→VERIFY→SHIP.* | `reference/routing-quick-start.md`, `reference/routing-matrix.md` |
-| Security | `security` | Security response | `Sentinel[triage] → Probe?[confirm-exploit] → Builder[root-cause] → Probe/Radar[verify-closed] → Vigil? → Guardian`<br>*Confirm-exploit before & verify-closed after the fix. +Breach/Specter/Shift/Crypt. Phase contract: TRIAGE→CONFIRM-EXPLOIT→FIX→VERIFY-CLOSED→DETECT→SHIP.* | `reference/routing-quick-start.md`, `reference/routing-matrix.md` |
+| Security | `security` | Security response | `Sentinel[triage] → Probe?[confirm-exploit] → Builder[root-cause] → Probe/Radar[verify-closed] → Vigil? → Guardian`<br>*Confirm-exploit before & verify-closed after the fix. +Breach/Shift/Crypt. Phase contract: TRIAGE→CONFIRM-EXPLOIT→FIX→VERIFY-CLOSED→DETECT→SHIP.* | `reference/routing-quick-start.md`, `reference/routing-matrix.md` |
 | Refactor | `refactor` | Internal-only refactor, no external behavior change | `Radar?[safety-net] → Zen → Radar[verify-equivalence] → Guardian`<br>*Green-before / same-suite-same-result-after. Safety-net skip for tool-assisted pure rename/extract. +Atlas module boundaries, +Sherpa multi-file. Phase contract: SAFETY-NET→SCOPE-GUARD→REFACTOR→VERIFY-EQUIVALENCE→SHIP.* | `reference/routing-quick-start.md`, `reference/routing-matrix.md` |
 | Optimize | `optimize` | Performance-only improvement | `Bolt/Tuner[measure→target→optimize] → Radar[verify-speedup] → Guardian`<br>*Measure-first / prove-with-a-number / no-regression. +Schema DB, +Siege load-test, +Beacon prod SLO. Phase contract: MEASURE→TARGET→OPTIMIZE→VERIFY→ITERATE→SHIP.* | `reference/routing-quick-start.md`, `reference/routing-matrix.md` |
 | Kaizen | `kaizen` | Existing-feature continuous improvement (perf / UX / code-quality / feature-extension). **PDCA loop** vs quantified target; stops on target-met / diminishing-returns. 4-8 agents × ≤3 cycles | See `reference/recipes-detail.md` | `reference/recipes-detail.md`, `reference/inline-recipes.md` |
+| Anneal | `anneal` | **Codebase design audit → prioritized behavior-preserving brush-up.** Discovery-first: surface *undiagnosed* design weaknesses / loose ends across 6 axes (architecture · design smells · standards · over-engineering · under-specified design · **specification (spec↔code drift / AC traceability)**) across a scope, prioritize by value × risk, then brush up the slate gated by **no-regression + Before/After design-metric** proof. `<target>` scopes; **no target → whole-codebase sweep** (confirm-before-launch, top-N slate). Behavior-preserving by default; PDCA-style ≤3-cycle brush-up loop. Named **Design Ledger**. 6-16 agents × ≤3 cycles | See `reference/recipes-detail.md` | `reference/recipes-detail.md`, `reference/anneal-recipe.md` |
 | Converge | `converge` | **Quality-convergence loop** — invocable Generator-Evaluator iteration (Contract + Rubric) with mandatory termination bounds (max_cycles/budget/diminishing-returns/BLOCK). Generator never grades itself. `converge <recipe>` wraps an inner recipe as generator; **flattens** loop-recipes (kaizen/apex/summit). Execution-control, not task shape. 4-10 agents × ≤3 cycles. | See `reference/recipes-detail.md` | `reference/recipes-detail.md`, `reference/converge-recipe.md`, `reference/evaluator-loop-protocol.md` |
 | Proactive | `proactive` | `/Nexus` with no arguments — project state scan | `Scan project → recommend` | `reference/proactive-mode.md` |
 | Apex | `apex` | Full-cycle auto-implementation: discovery → spec → parallel design → risk gate → loop → **AC-verify (attest) → ship**. Run-level budget ceiling + cross-phase resume. 8-25 agents. **Confirm before launch.** | See `reference/recipes-detail.md` | `reference/recipes-detail.md`, `reference/apex-recipe.md`, `reference/apex-walkthrough.md` |
+| Playable | `playable` | **All-in-one game production** — concept → playable, shippable game via the game cluster (Quest design · Glance UI/UX · Tick impl · Dot assets) under a **vertical-slice-first** gate + game acceptance (fun/determinism/a11y/frame-budget). Game-specialized `apex`. 8-22 agents. **Confirm before launch.** | See `reference/recipes-detail.md` | `reference/recipes-detail.md`, `reference/playable-recipe.md` |
 | Charter | `charter` | **Repo-wide analysis → self-driving Charter incl. team design + checklists.** Document-first; stops at durable `docs/CHARTER.md` (no execution). Designs **multi-engine orchestration** (Claude Code plan/design + Codex CLI build loops) and §10 checklists (pre-flight / per-package DoD / progress tracker / final delivery). Pair with `enact` to run it. 5-15 agents. | See `reference/recipes-detail.md` | `reference/recipes-detail.md`, `reference/charter-recipe.md` |
 | Enact | `enact` | **Execute a Charter end-to-end** — construct the team from §5 roster, orchestrate §4 work breakdown, verify, ship. **Runs to completion**: drives every package to a terminal state, no mid-run stops except §8 safety red lines (L4/destructive/out-of-scope); announce-and-proceed. Streams progress to an **append-only run log** (`docs/CHARTER.run.log.md`) for audit + `resume`. `enact <path>` / `dry-run` / `resume` / `log=`. 6-30+ agents. | See `reference/recipes-detail.md` | `reference/recipes-detail.md`, `reference/enact-recipe.md` |
 | Goal Setup | `goal` | `/goal` autonomous long-running execution setup. **Gates on a machine-checkable completion oracle + mandatory hard-stop bound** (rejects unverifiable goals). 1-3 agents, no code execution | `Hone → Latch → Scribe? → DELIVER` | `reference/goal-recipe.md` |
@@ -207,15 +210,17 @@ For natural-language input without an explicit subcommand. **Subcommand match al
 | `refactor`, `clean up`, `code smell` | `refactor` |
 | `optimize`, `slow`, `performance` | `optimize` |
 | `kaizen`, `improve`, `polish`, `enhance existing`, `refine` | `kaizen` |
+| `anneal`, `design audit`, `audit the design`, `brush up the design`, `brush up the codebase`, `harden the architecture`, `tighten loose ends`, `design weaknesses`, `design improvement`, `spec-code drift cleanup` | `anneal` |
 | `converge`, `iterate to rubric`, `generator-evaluator`, `quality loop`, `evaluator loop`, `iterate until accept` | `converge` |
 | `review`, `check`, `audit` | legacy quality review (`routing-matrix.md`) |
 | `brainstorm`, `riff`, `ideate`, `sounding board` | Riff direct (single-agent) |
 | `apex`, `auto-impl`, `full implementation`, `discovery to launch` | `apex` |
+| `playable`, `make a game`, `build a game`, `game from scratch`, `all-in-one game`, `concept to playable` | `playable` |
 | `charter`, `instruction document`, `analyze repo and design a team`, `self-driving team charter`, `team operating manual`, `team design spec` | `charter` |
 | `enact`, `run the charter`, `execute the instruction document`, `build team from charter and run`, `orchestrate the charter` | `enact` |
 | `goal`, `/goal setup`, `autonomous loop setup` | `goal` |
-| `gedanken`, `thought experiment`, `what if`, `reason through`, `counterfactual`, `limiting case`, `reductio`, `intuition pump`, `思考実験`, `反実仮想` | `gedanken` |
-| `delve`, `deep dive`, `dig into the feature`, `unlock the feature's potential`, `evolve this feature`, `feature evolution`, `深掘り`, `深化` | `delve` |
+| `gedanken`, `thought experiment`, `what if`, `reason through`, `counterfactual`, `limiting case`, `reductio`, `intuition pump` | `gedanken` |
+| `delve`, `deep dive`, `dig into the feature`, `unlock the feature's potential`, `evolve this feature`, `feature evolution` | `delve` |
 | `spec`, `spec out`, `flesh out the spec`, `nail down requirements`, `talk through a feature`, `refine until spec is locked`, `idea to spec` | `spec` |
 | `essential`, `must-have`, `MVP definition`, `core feature`, `cut scope` | `essential` |
 | `killer`, `killer feature`, `differentiator`, `decisive feature` | `killer` |
@@ -355,7 +360,7 @@ Opus 4.8 requires the four directive fields above (calibrates length to context,
 - **Error handling:** `L1` retry (max 3) → `L2` auto-adjust or inject Builder → `L3` rollback + recovery chain → `L4` ask user (max 5) → `L5` abort.
 - **Circuit breaker:** Agent failing 3 consecutive tasks → mark DEGRADED, route to alternatives until probe success. Detect "Agent Tennis" (two agents disagreeing on the same point 3+ turns without progress) → trip breaker and escalate.
 - **Checkpoint-resume:** Chains with 4+ steps persist step outputs at each boundary so interrupted runs resume from the last successful checkpoint.
-- **Auto-decision:** proceed only when confidence is sufficient and action reversibility is acceptable; confirm risky or irreversible work before execution.
+- **Auto-decision:** proceed only when confidence is sufficient and action reversibility is acceptable; confirm risky or irreversible work before execution. Routine confirmation depth follows the per-task-type Autonomy Ledger (`reference/routing-learning.md`); it never relaxes an Ask First gate.
 - **Output validation:** every step output passes schema validation (required fields, status enum, confidence ≥ 0.6) before flowing onward. Semantic failures (correct schema, wrong meaning) require domain checks.
 - **Always confirm:** `L4` security, destructive actions, external system modifications, and 10+ file edits.
 
@@ -443,19 +448,21 @@ Read only the files that match the current decision point.
 | `reference/loop-engineering-primitives.md` | Mapping the loop-engineering pattern onto Claude Code / Codex primitives (`/loop`, `/goal`, worktree, subagents, memory) with 2026-06 version detail — read when designing a `goal`/apex/summit loop or explaining which primitive implements which loop part |
 | `reference/context-strategy.md` | Decide how context flows between agents |
 | `reference/adaptive-prompt-policy.md` | Tailor each spawn prompt to project + session context (Context-Adaptive Spawn Tuning); ephemeral, reversible, no durable global write |
-| `reference/routing-learning.md` | Adapting routing from execution evidence |
+| `reference/routing-learning.md` | Adapting routing from execution evidence; per-task-type autonomy calibration (Autonomy Ledger) |
 | `reference/quality-iteration.md` | Output needs post-delivery PDCA improvement |
 | `reference/{orchestration,task-routing,production-reliability,agent-communication}-anti-patterns.md` | Anti-pattern catalogs — orchestration / routing / reliability / handoff (load when chain ≥ 4 agents) |
 | `reference/execution-layers.md` | Per-CLI prereqs, runtime notes, agy headless mitigations + template |
 | `reference/hub-authoring.md` | Per-engine authoring (Claude/Codex/agy), spawn-template variants, model selection table, execution-layer key rules |
-| `reference/recipes-detail.md` | Extended Recipe descriptions + full chain templates (kaizen, apex, essential, killer, trim, acceptance, growth-acceptance, summit, podium, migrate, transmute, clone, fuse, graft, venture, package) |
+| `reference/recipes-detail.md` | Extended Recipe descriptions + full chain templates (kaizen, anneal, apex, essential, killer, trim, acceptance, growth-acceptance, summit, podium, migrate, transmute, clone, fuse, graft, venture, package) |
 | `reference/inline-recipes.md` | Full phase contracts for `kaizen` / `essential` / `killer` / `trim` |
+| `reference/anneal-recipe.md` | `/nexus anneal` — codebase design audit → prioritized behavior-preserving brush-up (MAP→CRITIQUE→PRIORITIZE→BRUSH-UP→VERIFY→SHIP); 6-axis Design-Issue Ledger (architecture/code-smell/standards/over-engineering/under-specified-design/**spec↔code drift+AC traceability**), value×risk slate, ≤3-cycle brush-up loop, no-regression + Before/After design-metric dual gate, named **Design Ledger**; `<target>` scopes / no-target → whole-codebase sweep (confirm-before-launch); checkpoint-resume (`anneal resume`) |
 | `reference/recipe-contract.md` | **Authoring standard for nexus recipes** — the 8 required elements + canonical phrasing (loop cap, confirm tiers, resume, report naming, shared-protocol refs). Read when authoring a new recipe, leveling up a thin one, or normalizing phrasing |
 | `reference/verdict-gate.md` | **Shared contract for verdict recipes** (`essential`/`killer`/`trim` + graft flag clause) — the AskUserQuestion verdict card, Yes/No/Modify branches (Modify bound = 2), flag + KPI + kill-criterion |
 | `reference/signal-keywords.md` | Canonical full Signal Keywords → Recipe table (Core / Specialist / Mobile / Package / Fallback) |
 | `reference/official-skill-categories.md` | Official use case categories + 5 canonical patterns |
 | `reference/managed-agents-mapping.md` | Managed Agents / Outcomes / Dreaming / Webhooks mapping + Dynamic Workflows |
 | `reference/apex-recipe.md` | `/nexus apex` — phase contracts, sub-orchestration topology, Risk Gate |
+| `reference/playable-recipe.md` | `/nexus playable` — all-in-one game production (CONCEPT→DESIGN→SLICE→PRODUCE→INTEGRATE→VERIFY→SHIP); game cluster (Quest/Glance/Tick/Dot), vertical-slice-first gate, game acceptance, **Playable Report**; game-specialized apex; checkpoint-resume (`playable resume`) |
 | `reference/charter-recipe.md` | `/nexus charter` — repo analysis → Charter authoring incl. team design (stops at the document); Charter schema, invocation modes, charter→enact split |
 | `reference/enact-recipe.md` | `/nexus enact` — execute a Charter: team construction from §5 → end-to-end orchestration → verify/ship; Confirm Gate, `dry-run`/`resume` modes |
 | `reference/apex-walkthrough.md` | Human-facing apex — Mermaid flowcharts, storyboards, failure paths |

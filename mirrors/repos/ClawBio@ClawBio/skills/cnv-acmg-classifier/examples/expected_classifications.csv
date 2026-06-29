@@ -1,0 +1,8 @@
+cnv_id,chrom,start,end,cnv_type,gene_count,total_score,classification,evidence_codes
+CNV_P_TP53del,chr17,7660000,7695000,loss,1,1.0,Pathogenic,1A;2A
+CNV_LP_TP53partial,chr17,7680000,7700000,loss,1,0.9,Likely pathogenic,1A;2C-1;3A
+CNV_B_benign,chr1,152030000,152070000,loss,1,-1.0,Benign,1A;2F
+CNV_VUS_inh,chr2,50120000,50180000,loss,1,-0.3,Variant of uncertain significance,1A;3A;5B
+CNV_LB_caseev,chr2,50120000,50180000,loss,1,-0.95,Likely benign,1A;3A;4;5B
+CNV_P_dup22q,chr22,18800000,21600000,gain,3,1.45,Pathogenic,1A;2A;5A
+CNV_LP_genedense,chr19,51990000,52410000,loss,40,0.9,Likely pathogenic,1A;3C

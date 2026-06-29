@@ -4,12 +4,20 @@
 
 ---
 
-## v0.3.148: LLM 余额熔断与推荐避雷兜底（2026-06-27）
+## v0.3.148 / extension v0.3.99 / desktop v0.3.148: LLM 余额熔断与推荐避雷兜底（2026-06-28）
+
+后端源码走 `backend-v0.3.148`，浏览器插件走 `extension-v0.3.99`，桌面安装包走 `desktop-v0.3.148`。
 
 - **DeepSeek / OpenAI-compatible 余额不足不再重试放大**：HTTP 402、`Insufficient Balance`、`payment required`、`billing`、余额不足等 provider 余额 / 账单失败现在归一为 `LLMRateLimitError`。Provider 自身不会再做 3 次 retry，registry 会进入 cooldown，批量推荐 / discovery 路径也会跳过逐条 fallback，避免余额不足时继续制造大量必失败请求和日志。
-- **Discovery 查询生成降本**：`TrendingStrategy` 的榜单分区 rids 按 `profile_kw_digest + 日期` 缓存约 6 小时；旧 B 站 `SearchStrategy` query 生成按画像 digest + pool hints 缓存；`ExploreStrategy` domain 生成改为短 JSON（只含 `domain/novelty_level/queries`，`max_tokens=2048`）并按画像 + covered topic groups 缓存；统一 `KeywordPlanner` 的 merged keyword 成功结果按画像 digest + 平台需求块 + 池子避让提示复用到 `[discovery].plan_ttl_hours`。真实环境验证发现 query/rid/domain 生成仍会被完整画像和 thinking 放大，因此这些生成 caller 现在统一使用稳定 compact profile summary，flat `interests` 保留前 64 个，关闭额外 core memory 注入，并对 `search/trending/explore` 关闭 DeepSeek thinking。后台 refresh 也改为约 90% 可换池低水位才跑 discovery，小缺口 B 站补货先只给 `search + related_chain` 预算，延后 `trending/explore`，避免几个库存缺口触发全套 planner/search/explore/trending。
-- **Discovery interest 丰富度保护**：query / rid / domain / keyword planner 的 compact profile summary 不再只是截取权重前 64 个兴趣；现在先取最多 128 个 interest 候选，再用 cache-only embedding 做 MMR 风格选择，在保留强兴趣的同时覆盖更多语义簇，并对贴近 `disliked_topics` 的 interest 降权。`disliked_topics` 自身也用同一缓存向量做多样性去重。没有 cached embedding 时保持原权重顺序，不新增热路径 embedding 调用。
+- **Discovery 查询生成降本**：旧 B 站 `SearchStrategy` query 生成按画像 digest + pool hints 缓存；`ExploreStrategy` domain 生成改为短 JSON（只含 `domain/novelty_level/queries`，`max_tokens=2048`）并按画像 + covered topic groups 缓存；统一 `KeywordPlanner` 的 merged keyword 成功结果按画像 digest + 平台需求块 + 池子避让提示复用到 `[discovery].plan_ttl_hours`。真实环境验证发现 query/domain 生成仍会被完整画像和 thinking 放大，因此这些生成 caller 现在统一使用稳定 compact profile summary，flat `interests` 保留前 64 个，关闭额外 core memory 注入，并对 `search/explore` 关闭 DeepSeek thinking。后台 refresh 也改为约 90% 可换池低水位才跑 discovery，小缺口 B 站补货先只给 `search + related_chain` 预算，延后 `trending/explore`，避免几个库存缺口触发全套 planner/search/explore/trending。
+- **Trending rids 改为零 token 本地轮转**：`TrendingStrategy` 不再为选择 B 站排行榜分区调用 `discovery.trending.rids` LLM。现在固定抓 `rid=0` 全站榜，其余非 0 分区按 `profile_kw_digest + cycle + rid` 确定性洗牌，每轮最多取 `max_related_rids` 个，覆盖完一轮后再重新洗牌；个性化筛选留给后续内容 evaluator。
+- **Discovery evaluator 去掉 text-first 重复正文**：知乎 / X 等文字优先来源如果 `description` 与 `body_text` 来自同一段文本，`discovery.evaluate_batch` 和单条 fallback 评估 prompt 会省略重复的 `description`，只保留 `body_text` 作为正文输入，降低旧知乎候选里摘要 / 正文重复造成的 prompt 膨胀。
+- **Discovery interest 丰富度保护**：query / domain / keyword planner 的 compact profile summary 不再只是截取权重前 64 个兴趣；现在先取最多 128 个 interest 候选，再用 cache-only embedding 做 MMR 风格选择，在保留强兴趣的同时覆盖更多语义簇，并对贴近 `disliked_topics` 的 interest 降权。`disliked_topics` 自身也用同一缓存向量做多样性去重。没有 cached embedding 时保持原权重顺序，不新增热路径 embedding 调用。
 - **推荐出口增加 dislike 硬过滤兜底**：`RecommendationEngine.serve()` 从 discovery pool 读出候选后，会按当前 `profile.preferences.disliked_topics` 再过滤一次；主题字段精确命中，或标题 / 标签 / 简介 / 作者 / 短正文包含避雷 term 的候选不会进入排序，覆盖异步清池尚未完成或清池失败的窗口。
+- **统一关键词 planner 切断 B 站旧搜索词 LLM 兜底**：`[discovery].unified_keyword_planner_enabled=true` 时，B 站主 refresh 若暂时 claim 不到 `discovery_keywords` 里的 pending 词，会只移除本轮 `search` 子策略并保留 `related_chain/trending/explore`，不再把 `queries=None` 传给 `SearchStrategy` 触发 `discovery.search.queries`，避免 planner 与旧搜索词生成同时烧 token。
+- **插件与桌面安装包同步发布**：浏览器插件版本提升到 `extension-v0.3.99`，用于 GitHub Release 与 Chrome Web Store 同步分发；桌面安装包提升到 `desktop-v0.3.148`，让冻结包用户直接获得本轮 LLM 费用控制、dislike 兜底和关键词 planner 修复。
+- **插件连接空态实时同步**：side panel 首次打开时如果 `/api/ping` 瞬时失败但 `/api/runtime-stream` 随后连上，现在会立刻把推荐页从“后端还没开张”离线空态切回在线刷新流程，不再只更新顶部“已连接”徽标。
+- **插件 Release 缺 AMO 密钥不再阻断**：`release-extension.yml` 现在会先探测 Firefox AMO 签名凭证；只有 `FIREFOX_SIGNING_ENABLED=true` 且 `AMO_JWT_ISSUER` / `AMO_JWT_SECRET` 同时存在时才要求 signed XPI，否则仍发布 Chrome / Edge zip 与 Firefox 临时加载 zip，避免未配置 Firefox 签名密钥时阻断插件包发版。
 - **画像增量回填增加并发 claim 保护**：`/api/events` 的 `last_profile_pipeline_event_id` backfill 现在有进程内 single-flight 保护；当前一批旧 pending 行正在喂给 `ProfileUpdatePipeline` 时，并发事件请求会跳过重复 backfill，只处理自身 accepted 事件，避免同一批 200 条画像信号被重复送进 `soul.preference.chunk`。
 - **初始化 chunk 顺带生成临时觉察 / 洞察上下文**：`soul.preference.chunk` 的结构化输出现在可包含 `awareness_candidates` / `insight_candidates`；后端会去重合并后只作为本次 `soul.profile_build` 的 prompt 上下文，不写入长期 `awareness.json` / `insight.json`，让初始人格画像在首次生成时就能利用每个 chunk 提炼出的观察和假设。
 

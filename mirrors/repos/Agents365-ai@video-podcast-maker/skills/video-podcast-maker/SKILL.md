@@ -1,13 +1,13 @@
 ---
 name: video-podcast-maker
-description: Use when the user gives a topic and wants an automated topic-driven narrated explainer, podcast, or knowledge-summary video (Bilibili / YouTube / Xiaohongshu / Douyin / WeChat Channels), or asks to learn visual design patterns from a reference video/image. Trigger when the user mentions creating a knowledge video, narrated explainer, video podcast, or talking-head topic video from a topic — even if they don't say "video podcast" explicitly. Do NOT trigger for generic video editing, trimming, format conversion, color grading, or non-narrative video tasks. Produces 4K video via research → script → TTS → Remotion → MP4 + BGM.
+description: Use when the user gives a topic and wants an automated topic-driven narrated explainer, podcast, or knowledge-summary video (Bilibili / YouTube / Xiaohongshu / Douyin / WeChat Channels), or asks to learn visual design patterns from a reference video/image. Trigger when the user mentions creating a knowledge video, narrated explainer, video podcast, or talking-head topic video from a topic — even if they don't say "video podcast" explicitly. Also trigger when the user wants to regenerate, re-render, rebuild, update, or iterate on a narrated video this skill already produced — e.g. they edited the script/prompt, changed the visuals, or swapped the background music and want the final video remade (reuse the existing videos/{name}/ directory, never start a new project). Do NOT trigger for generic video editing, trimming, format conversion, color grading, or non-narrative video tasks. Produces 4K video via research → script → TTS → Remotion → MP4 + BGM.
 argument-hint: "[topic]"
 effort: high
 author: Agents365-ai
 category: Content Creation
-version: 2.3.0
+version: 2.4.1
 created: 2025-01-27
-updated: 2026-05-06
+updated: 2026-06-28
 bilibili: https://space.bilibili.com/441831884
 github: https://github.com/Agents365-ai/video-podcast-maker
 dependencies:
@@ -44,6 +44,7 @@ Automated pipeline for **4K Bilibili horizontal knowledge videos** from a topic.
 
 - [Bootstrap](#bootstrap) — update check + prerequisites (run before Step 1)
 - [Execution Modes](#execution-modes) — Auto vs Interactive, default decisions
+- [Regenerating an Existing Video](#regenerating-an-existing-video) — reuse `videos/{name}/` to iterate on a finished video
 - [Workflow](#workflow) — the 15 steps + phase-file pointers + mandatory stops
 - [Hard Rules](#hard-rules) — non-negotiable production constraints + output specs
 - [Per-Video Layout](#per-video-layout) — directory structure, `--public-dir`, naming
@@ -108,7 +109,32 @@ Prompts at each decision point.
 
 ---
 
+## Regenerating an Existing Video
+
+If `videos/{name}/` **already exists** and the user is iterating on a finished or in-progress video — "regenerate", "re-render", "rebuild", "I edited the script/prompt", "update the video", "change the BGM" — **reuse that directory**. Do NOT start a new project or a new `videos/{newname}/`; that is the [Single Project](#hard-rules) rule applied to iteration, and starting fresh is the most common mistake here.
+
+Pick the **smallest** re-run for what actually changed. Every command targets the *same* `videos/{name}/`, and every Remotion command keeps `--public-dir videos/{name}/`:
+
+| Changed | Re-run | Reuses (don't redo) |
+|---------|--------|---------------------|
+| Narration script (`podcast.txt`) | Step 8 (`generate_tts.py --output-dir videos/{name}`) → Step 10 render → Step 11 BGM | topic research + section design |
+| Visuals only (components, layout, colors, props) | Step 10 render | `podcast_audio.wav` / `timing.json` (audio unchanged) |
+| Background music only | Step 11 mix | `output.mp4` (no re-render) |
+| Subtitles only | Step 12 | `output.mp4` / `video_with_bgm.mp4` |
+
+A **script** change shifts every downstream timestamp, so always regenerate `timing.json` through TTS — never hand-edit it (see [Audio-Master Clock](#audio-master-clock--sync)). After any re-run, re-verify:
+
+```bash
+python3 ${SKILL_DIR}/scripts/verify_output.py videos/{name}/
+```
+
+> Cleanup only removes TTS temp files, never `output.mp4` / `video_with_bgm.mp4` — so BGM/subtitle re-runs avoid a full ~8-min re-render.
+
+---
+
 ## Workflow
+
+> **Iterating on a finished video?** If `videos/{name}/` already exists and the user wants to regenerate after a change, do NOT start at Step 1 — see [Regenerating an Existing Video](#regenerating-an-existing-video) for the minimal re-run.
 
 At Step 1 start, create one task per step in your agent's tracker (Claude Code `TaskCreate` / Codex todo list / equivalent). Mark `in_progress` on start, `completed` on finish. Files in `videos/{name}/` are the durable record — if interrupted, inspect the directory to determine where to resume.
 
@@ -157,12 +183,39 @@ Flags beats that drift > 1.5s from narration. Especially important for kinetic-t
 |------|-------------|
 | **Single Project** | All videos under `videos/{name}/` in user's Remotion project. NEVER create a new project per video. |
 | **4K Output** | 3840×2160 (or 2160×3840 vertical), use `scale(2)` wrapper over 1920×1080 design space |
-| **Audio Sync** | All animations driven by `timing.json` timestamps |
+| **Audio Sync** | Audio (`podcast_audio.wav` + `podcast_audio.srt`) is the master clock. `timing.json` MUST be generated from the real TTS output, never hand-estimated. Before rendering, final video duration must match audio within ±0.5s. See [Audio-Master Clock](#audio-master-clock--sync). |
 | **Thumbnail** | MUST generate both 16:9 (1920×1080) AND 4:3 (1200×900) — see [design-guide.md](references/design-guide.md) |
 | **Studio Before Render** | MUST launch `remotion studio` for review. NEVER render 4K until user explicitly confirms. |
 | **`--public-dir`** | Every Remotion command uses `--public-dir videos/{name}/` |
 
 Visual minimums (text sizes, content width, safe zones, animation safety) live in [references/design-guide.md](references/design-guide.md). **MUST load before Step 9.**
+
+## Audio-Master Clock & Sync
+
+### Golden rules
+
+1. **Audio is the master clock.** Every slide start, subtitle, progress-bar chapter, and animation beat is derived from `podcast_audio.wav` and `podcast_audio.srt`.
+2. **Generate timing from TTS, not from text estimates.** The canonical pipeline is:
+   ```
+   podcast.txt (final)
+     → generate_tts.py
+     → podcast_audio.wav + podcast_audio.srt + timing.json
+     → Remotion composition
+     → render
+   ```
+3. **Never hand-write `timing.json` before audio exists.** If you already have curated slides, run `align_timing_from_srt.py` to anchor them to the real SRT, or add a `"section"` field to each slide and then run it.
+4. **Compensate TransitionSeries overlap.** `TransitionSeries` renders `sum(section.duration_frames) - (N-1) * transitionFrames` frames. To keep the rendered length equal to `timing.total_frames`, scale every section proportionally; do **not** stuff all overlap frames into the first section. The corrected pattern is in `templates/Video.tsx`.
+
+### Mandatory sync checkpoints
+
+| When | Check | Command / Action |
+|------|-------|------------------|
+| After Step 8 | `timing.json.total_duration` matches `podcast_audio.wav` within ±0.5s | `ffprobe -show_entries format=duration podcast_audio.wav` |
+| Before Step 10 | `Video.tsx` scales all sections for transition overlap | Inspect the `compensatedSections` calculation |
+| After Step 10/12 | `final_video.mp4` duration matches `podcast_audio.wav` within ±0.5s | `ffprobe -show_entries format=duration final_video.mp4` |
+| Step 14 | `verify_output.py` exits 0 and reports green on audio/timing | `python3 ${SKILL_DIR}/scripts/verify_output.py videos/<name>/` |
+
+If any checkpoint fails, stop. Do not publish.
 
 ### Output Specs
 
@@ -247,7 +300,7 @@ python3 ${SKILL_DIR}/scripts/cli.py <resource> <action> --help    # forwards to 
 python3 ${SKILL_DIR}/scripts/cli.py schema [<method>]       # JSON parameter schema
 ```
 
-Routes: `tts run|validate`, `verify`, `audit beats`, `shorts gen`, `design list|show|delete|add`, `prereqs`, `prefs get|migrate|backend|bgm-path`, `schema [<method>]`. Direct script invocation (`python3 scripts/<name>.py ...`) keeps working — the dispatcher is additive.
+Routes: `tts run|validate`, `verify`, `align`, `audit beats`, `shorts gen`, `design list|show|delete|add`, `prereqs`, `prefs get|migrate|backend|bgm-path`, `schema [<method>]`. Direct script invocation (`python3 scripts/<name>.py ...`) keeps working — the dispatcher is additive.
 
 ---
 

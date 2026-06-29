@@ -1,0 +1,5 @@
+chrom,start,end,name,hi_score,ts_score,benign,element_type,strand,cds_start,cds_end
+chr17,7668421,7687550,TP53,3,0,false,gene,-,7669000,7687000
+chr22,18900000,21500000,22q11.2,3,3,false,region,,,
+chrX,154021000,154137000,MECP2,3,3,false,gene,-,154022000,154092000
+chr1,152000000,152100000,BENIGN_DEMO_REGION,0,0,true,region,,,

@@ -1,6 +1,7 @@
 ---
 name: supabase-postgres-best-practices
 description: 'Postgres performance optimization and best practices from Supabase. Use this skill when writing, reviewing, or optimizing Postgres queries, schema designs, or database configurations.'
+zh_description: "用于编写、评审和优化 Supabase/Postgres 查询、Schema、索引和数据库配置。"
 version: "1.0.1"
 author: "seaworld008"
 source: "github:supabase/agent-skills"
@@ -8,7 +9,7 @@ source_url: "https://skills.sh/supabase/agent-skills/supabase-postgres-best-prac
 license: MIT
 tags: '["best", "development", "postgres", "supabase"]'
 created_at: "2026-05-05"
-updated_at: "2026-05-19"
+updated_at: "2026-06-29"
 quality: 3
 complexity: "intermediate"
 metadata:
@@ -97,3 +98,25 @@ source is intentionally concise.
 - Stop and ask for clarification when the next action could overwrite user work,
   expose private data, or change production state.
 <!-- LOCAL-QUALITY-SUPPLEMENT:END -->
+
+## Review Checklist
+
+Use this checklist when applying the Supabase/Postgres rules:
+
+- Identify the workload first: OLTP, analytics, background jobs, auth/RLS-heavy access, or mixed traffic.
+- Inspect query plans before proposing indexes; avoid adding indexes only because a column appears in a `WHERE` clause.
+- Check row-level security policies for both correctness and performance.
+- Consider write amplification, storage growth, and vacuum pressure before adding multiple indexes.
+- Prefer partial indexes when predicates are stable and selectivity is high.
+- Verify that migration SQL is reversible or has a documented rollback path.
+
+## Evidence to Return
+
+For meaningful database changes, include:
+
+- The slow query or schema object being addressed.
+- The before/after plan or the reason a plan could not be captured.
+- The index, policy, or schema change proposed.
+- Expected tradeoffs for writes, storage, lock time, and operational rollout.
+
+Do not claim a performance improvement without plan evidence, representative data, or a clearly labeled hypothesis.
