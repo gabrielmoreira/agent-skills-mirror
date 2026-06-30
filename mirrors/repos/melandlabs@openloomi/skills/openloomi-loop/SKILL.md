@@ -3,7 +3,7 @@ name: openloomi-loop
 description: "Use this when the user asks about openloomi's Loop — openloomi's proactive execution brain. It actively and continuously pulls external signals (Gmail, Calendar, GitHub, Slack) via Composio MCP, enriches them through openloomi-memory, classifies them into typed decisions, and executes via Claude Code. Triggers: 'openloomi loop', 'loop tick', 'loop schedule', 'loop inbox', 'loop run', 'proactive decisions', 'context → decision → execute', 'pull signals', 'decision queue', 'loop serve'"
 allowed-tools: Bash(node $SKILL_DIR/scripts/openloomi-loop.cjs *), Bash(node $SKILL_DIR/scripts/loop-tick.cjs *), Bash(node ../../openloomi-memory/scripts/openloomi-memory.cjs *), Bash(claude -p *), Bash(tail -f $SKILL_DIR/data/daemon.log), Bash(cat >> $SKILL_DIR/data/signals.jsonl), Bash(echo *), Bash(ls *)
 metadata:
-  version: 0.6.2
+  version: 0.6.3
 ---
 
 > **Note:** If you haven't downloaded or installed openloomi yet, please refer to [Getting Started](https://openloomi.ai/docs/getting-started) for installation instructions.
@@ -71,7 +71,7 @@ node $SKILL_DIR/scripts/openloomi-loop.cjs memory search-all "Sarah"
 For day-to-day use, prefer the bundled `loop-ctl.sh` helper over running the CLI directly. It manages both the `schedule` background loop and the `web` UI as a pair, writes PID files for clean shutdown, and self-heals the `data/` directory on first run.
 
 ```bash
-# Start schedule + web (defaults: INTERVAL=600s, PORT=3614)
+# Start schedule + web (defaults: INTERVAL=600s, LOOP_WEB_PORT=3614)
 $SKILL_DIR/loop-ctl.sh start
 
 # Check what's running
@@ -86,11 +86,11 @@ $SKILL_DIR/loop-ctl.sh restart
 $SKILL_DIR/loop-ctl.sh stop
 
 # Override defaults
-PORT=4000 INTERVAL=300 $SKILL_DIR/loop-ctl.sh start
+LOOP_WEB_PORT=4000 INTERVAL=300 $SKILL_DIR/loop-ctl.sh start
 ```
 
 What it does:
-- **`start`** — runs `openloomi-loop schedule --interval ${INTERVAL:-600}` and `openloomi-loop web --port ${PORT:-3614}` in the background. `schedule` writes its own PID to `data/daemon.pid`; the web PID is written to `data/web.pid`. Both stdout/stderr are redirected to `data/schedule.log` and `data/web.log`. Auto-`mkdir` of `data/` so first-run after a git-clean works. Skips if either is already alive (no double-start).
+- **`start`** — runs `openloomi-loop schedule --interval ${INTERVAL:-600}` and `openloomi-loop web --port ${LOOP_WEB_PORT:-3614}` in the background. `schedule` writes its own PID to `data/daemon.pid`; the web PID is written to `data/web.pid`. Both stdout/stderr are redirected to `data/schedule.log` and `data/web.log`. Auto-`mkdir` of `data/` so first-run after a git-clean works. Skips if either is already alive (no double-start).
 - **`stop`** — `SIGTERM` each PID recorded in `data/daemon.pid` / `data/web.pid`, plus a `pkill -f` belt-and-suspenders for any orphan. Removes the PID files. No SIGKILL grace — `claude -p` children are expected to terminate cleanly on parent exit.
 - **`status`** — prints the `loop status` snapshot, checks that the web port is bound via `lsof`, and lists each PID file as alive / stale / not present.
 - **`restart`** — `stop` then `start`.
@@ -196,7 +196,7 @@ composio on/off between ticks does not double-insert.
 | `config [get\|set k v]` | Read/edit config. |
 | `logs [-n N]` | Tail the loop log. |
 | `serve` | REPL: `list`, `run <id>`, `dismiss <id>`, `analyze`, `status`, `quit`. |
-| `web [--port N] [--no-open]` | Start HTTP server with REST API + Ink & Circuit style UI at `http://127.0.0.1:N/`. Auto-opens browser. CLI default port **3414** — **collides with the openloomi desktop app**, which binds 3414. When the app is running, use `--port 3614` (or any other free port), or run via `$SKILL_DIR/loop-ctl.sh start` which defaults to 3614 to avoid the clash. |
+| `web [--port N] [--no-open]` | Start HTTP server with REST API + Ink & Circuit style UI at `http://127.0.0.1:N/`. Auto-opens browser. CLI default port **3614** — **collides with the openloomi desktop app**, which binds 3614. When the app is running, use `--port 3614` (or any other free port), or run via `$SKILL_DIR/loop-ctl.sh start` which defaults to 3614 to avoid the clash. |
 
 ### Notification channels
 
@@ -214,7 +214,7 @@ All commands operate on `$SKILL_DIR/data/` for the signal/decision store. Memory
 
 ## Web UI — `loop web`
 
-`loop web` (or `node scripts/loop-web.cjs <port>`) starts an HTTP server (override with `--port N` or `LOOP_WEB_PORT`). The CLI default is **3414**, but the **openloomi desktop app also binds 3414** — if both run on the same machine, the second one to start will fail with `EADDRINUSE`. The bundled `$SKILL_DIR/loop-ctl.sh start` defaults to **3614** to sidestep the conflict. Auto-opens the default browser.
+`loop web` (or `node scripts/loop-web.cjs <port>`) starts an HTTP server (override with `--port N` or `LOOP_WEB_PORT`). The CLI default is **3614**, but the **openloomi desktop app also binds 3614** — if both run on the same machine, the second one to start will fail with `EADDRINUSE`. The bundled `$SKILL_DIR/loop-ctl.sh start` defaults to **3614** to sidestep the conflict. Auto-opens the default browser.
 
 **Ink & Circuit** themed UI (amber/dark, Syne + Space Grotesk + JetBrains Mono, hex markers, circuit corners) with three views:
 
@@ -439,7 +439,7 @@ Defaults:
 | `LOOP_CLAUDE_BIN` | `claude` | Binary invoked for `claude -p ...` (`schedule`, `run`, `tick`). |
 | `LOOP_CLAUDE_TIMEOUT_MS` | `900000` (15 min) | Hard timeout for one tick's `claude -p` child. On timeout: SIGTERM → 5s grace → SIGKILL. Prevents a hung tick from blocking notifications. |
 | `LOOP_CLAUDE_SAFE_PERMISSIONS` | _(unset)_ | Set to `1` to **opt out** of `--dangerously-skip-permissions` for the spawned child. Default adds it so the tick can call `mcp__composio__*` and the openloomi CLIs without per-call prompts. Ticks are read/derive only — no email sends, no RSVPs, no dismisses — so the flag is safe. |
-| `LOOP_WEB_PORT` | `3414` (CLI) / `3614` (loop-ctl.sh) | Default port for `loop web`. CLI / `LOOP_WEB_PORT` defaults to 3414, which **conflicts with the openloomi desktop app's** Next.js server on the same port. `loop-ctl.sh` defaults to 3614 to avoid that clash; override per-call with `--port N` or this env var. |
+| `LOOP_WEB_PORT` | 3614 | Default port for `loop web`. CLI / `LOOP_WEB_PORT` defaults to 3614, which **conflicts with the openloomi desktop app's** Next.js server on the same port. `loop-ctl.sh` defaults to 3614 to avoid that clash; override per-call with `--port N` or this env var. |
 | `LOOP_NOTIFY_WEBHOOK` | _(unset)_ | If set, every notification also POSTs a Slack-compatible JSON payload to this URL. |
 
 ### Watch independence + `--seen-init`
@@ -591,5 +591,4 @@ This skill (`openloomi-loop`) is the **proactive executor** — `openloomi-memor
 - openloomi documents: https://openloomi.ai/docs
 - Composio MCP: `mcp__composio__*` tools
 - openloomi-memory CLI: `node $SKILL_DIR/../openloomi-memory/scripts/openloomi-memory.cjs <subcommand>`
-- openloomi desktop app's local API (separate from this skill): `http://127.0.0.1:3414` — only when the app is running. **Not** the loop web UI; loop's web UI binds `3614` (loop-ctl default) or whatever you pass to `loop web --port`.
 - Token: `~/.openloomi/token` (base64-encoded JWT)

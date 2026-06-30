@@ -162,9 +162,34 @@ curl https://<host>/.well-known/oauth-authorization-server     # 200 JSON; issue
 
 Full step-by-step + security model: [`deploy/README.md`](../deploy/README.md). Use a
 **dedicated/throwaway Google account** — the mounted `master_token.json` is a durable full-account
-credential. The connector moves text/references only; add device files via Google Drive
-(`source_add` with a Drive id) and consume generated podcasts/videos in the NotebookLM app.
-Multi-tenant hosting is out of scope for this single-tenant setup.
+credential. Multi-tenant hosting is out of scope for this single-tenant setup.
+
+### File upload & download (remote)
+
+The MCP/JSON-RPC channel can't carry binaries, so over a remote connector
+`source_add type=file` and `artifact_download` broker a **short-lived signed URL**
+served by the same container; your browser does the byte transfer (see
+[ADR-0024](adr/0024-mcp-remote-file-transfer.md)). This is the standard pattern for
+remote MCP file transfer — MCP has no native file-upload primitive, and its native
+download (binary Resources) is capped far below a podcast/video.
+
+**Enable it:** set `NOTEBOOKLM_MCP_PUBLIC_URL` to your bare public origin (the same
+host as the tunnel, no `/mcp`). It falls back to `NOTEBOOKLM_MCP_OAUTH_BASE_URL`, so
+if you configured claude.ai OAuth above, **file transfer is already on**. Unset on a
+bearer-only deploy → the two file tools return a clear "not configured" error
+(everything else still works; the server does not refuse to start).
+
+- **Upload a local file:** `source_add type=file` returns an `upload_required` link.
+  Open it in your browser, pick the file, and it's added to the notebook. (Claude can
+  also `PUT` a file it already holds to that link from its **code-execution sandbox** —
+  but that requires Code Execution enabled **and your server domain whitelisted** in
+  claude.ai Settings → Capabilities → additional allowed domains, or the `PUT` fails.)
+- **Download an artifact:** `artifact_download` returns a `download_ready` link (a
+  clickable `resource_link`); open it to stream the podcast/video/PDF to your device.
+- Links are HMAC-signed and short-lived (upload 15 min, download 30 min) and expire on
+  a server restart. Google Drive (`source_add` with a Drive id) remains a no-browser
+  alternative for adding files. stdio (local) installs are unchanged — they still read
+  and write real local paths directly.
 
 ## Core concepts
 
@@ -205,18 +230,48 @@ internal/loopback hosts by default; pass `allow_internal=true` only for
 deliberate local NotebookLM tests. `chat_ask` continues the most-recent
 conversation unless you pass a `conversation_id`.
 
+To ingest many URLs at once, pass `urls` (batch mode) instead of `source_type`
+— one call instead of one round-trip each. The response is an explicit per-item
+list so a partial failure is never hidden behind a single success flag:
+
+```text
+source_add(notebook="Quantum Computing", urls=[
+    "https://arxiv.org/abs/2401.00001",
+    "https://www.youtube.com/watch?v=...",
+])
+# → {"notebook_id": ..., "added": 2, "failed": 0,
+#    "results": [{"input": "https://arxiv.org/abs/2401.00001", "status": "added", "source_id": ..., "title": ...},
+#                {"input": "https://www.youtube.com/watch?v=...", "status": "added", "source_id": ..., "title": ...}]}
+```
+
+Batch mode is URL-only (a non-URL entry is reported as a per-item `VALIDATION`
+error, never added as text); `source_type`/`url`/`text`/`title`/`path`/
+`document_id`/`mime_type` are not valid with `urls`, but `allow_internal`
+applies to every entry.
+
 ### Generate and download a studio artifact
 
 ```text
 task = artifact_generate(notebook="Quantum Computing", artifact_type="audio")
 artifact_status(notebook="Quantum Computing", task_id="<task_id from above>")   # poll until complete
 artifact_download(notebook="Quantum Computing", artifact_type="audio", path="podcast.mp3")
+
+# Target a specific/older artifact instead of the latest-by-type (full ID or unique prefix):
+artifact_download(notebook="Quantum Computing", artifact_type="audio", path="old_podcast.mp3", artifact_id="aaaaaaaa-aaaa")
+
+# Per-kind styling options are agent-settable, e.g. a custom-styled video:
+artifact_generate(notebook="Quantum Computing", artifact_type="video",
+                  style="custom", style_prompt="hand-drawn diagrams")
 ```
 
 `artifact_type` is one of `audio`, `video`, `cinematic-video`, `slide-deck`, `quiz`, `flashcards`,
-`infographic`, `data-table`, `mind-map`, `report`. Agent-settable options are `audio_format` /
-`audio_length` (audio), `quantity` / `difficulty` (quiz, flashcards), and `report_format` (report);
-the other kinds use fixed defaults.
+`infographic`, `data-table`, `mind-map`, `report`. Each kind's styling options are agent-settable
+(matching the CLI flags): `audio_format` / `audio_length` (audio); `video_format` / `style` /
+`style_prompt` (video); `deck_format` / `deck_length` (slide-deck); `quantity` / `difficulty`
+(quiz, flashcards); `orientation` / `detail` / `style` (infographic); `map_kind` (mind-map);
+and `report_format` (report). `cinematic-video` and `data-table` take no per-kind options. An
+option is valid only for its own kind — passing one to a different `artifact_type` is a
+validation error, not a silent no-op.
 
 ### Run deep research and import the findings
 
@@ -236,10 +291,10 @@ a single in-flight task.
 | Domain | Tools |
 |--------|-------|
 | **Notebooks** | `notebook_list` · `notebook_create(title)` · `notebook_describe(notebook)` · `notebook_rename(notebook, new_title)` · `notebook_delete(notebook, confirm)` |
-| **Sources** | `source_list(notebook)` · `source_get_content(notebook, source)` · `source_rename(notebook, source, new_title)` · `source_delete(notebook, source, confirm)` · `source_wait(notebook, source?, timeout, interval)` · `source_add(notebook, source_type, ..., allow_internal?)` |
-| **Chat** | `chat_ask(notebook, question, conversation_id?)` · `chat_configure(notebook, goal?, response_length?)` |
+| **Sources** | `source_list(notebook, status?)` (each source has string `kind`/`status_label`; `status` filters to one of ready\|processing\|error\|preparing — e.g. `status="error"` finds failed imports) · `source_get_content(notebook, source, output_format?, max_chars?, offset?)` (metadata **+ full indexed text**, windowable via `max_chars`/`offset` → `content` slice + `truncated` flag, with full `char_count`; `output_format`: text\|markdown) · `source_rename(notebook, source, new_title)` · `source_delete(notebook, source, confirm)` · `source_wait(notebook, source?, timeout, interval)` · `source_add(notebook, source_type, ..., allow_internal?)` (single; echoes `kind`/`status_label`, flags a failed import inline with a `warning`) / `source_add(notebook, urls=[...], allow_internal?)` (batch → per-item `results`) |
+| **Chat** | `chat_ask(notebook, question, conversation_id?, references?, source_ids?)` (`references`: lite\|full; never returns the raw debug blob; `source_ids` scopes to specific sources — list, JSON-array string, or comma string; omit for all) · `chat_configure(notebook, goal?, response_length?)` |
 | **Notes** | `note_create(notebook, title, content)` · `note_list(notebook)` · `note_update(notebook, note, content)` · `note_delete(notebook, note, confirm)` |
-| **Artifacts** | `artifact_list(notebook)` · `artifact_generate(notebook, artifact_type, …)` · `artifact_status(notebook, task_id)` · `artifact_download(notebook, artifact_type, path, output_format?)` |
+| **Artifacts** | `artifact_list(notebook)` · `artifact_generate(notebook, artifact_type, …)` · `artifact_status(notebook, task_id)` · `artifact_download(notebook, artifact_type, path, output_format?, artifact_id?)` |
 | **Research** | `research_start(notebook, query, source, mode)` · `research_status(notebook, task_id?)` · `research_import(notebook, task_id)` |
 | **Server** | `server_info` — version + local auth health |
 

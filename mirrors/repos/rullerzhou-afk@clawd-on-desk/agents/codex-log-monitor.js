@@ -526,25 +526,32 @@ class CodexLogMonitor {
         ? { command: cmd, rawPayload: payload }
         : null;
       if (cmd) {
-        if (this._isExplicitApprovalRequest(payload)) {
+        // Codex Desktop has its own native permission / guardian UI — skip the
+        // CLI approval heuristic entirely so auto-reviewed commands don't pop a
+        // passive notify bubble. See _isCodexDesktopSession for the full rationale.
+        // Falling through (not returning) lets the function_call still emit
+        // "working" via the generic path below, same as any other tool call.
+        if (this._isCodexDesktopSession(tracked)) {
+          tracked.pendingApprovalDetail = null;
+        } else if (this._isExplicitApprovalRequest(payload)) {
           tracked.lastState = "codex-permission";
           if (tracked.backfilling) return;
           this._emitStateChange(tracked, "codex-permission", key, {
             permissionDetail: tracked.pendingApprovalDetail,
           });
           return;
-        }
-        if (tracked.backfilling) {
+        } else if (tracked.backfilling) {
           tracked.lastState = "codex-permission";
           return;
+        } else {
+          tracked.approvalTimer = setTimeout(() => {
+            tracked.approvalTimer = null;
+            tracked.lastState = "codex-permission";
+            this._emitStateChange(tracked, "codex-permission", key, {
+              permissionDetail: tracked.pendingApprovalDetail,
+            });
+          }, APPROVAL_HEURISTIC_MS);
         }
-        tracked.approvalTimer = setTimeout(() => {
-          tracked.approvalTimer = null;
-          tracked.lastState = "codex-permission";
-          this._emitStateChange(tracked, "codex-permission", key, {
-            permissionDetail: tracked.pendingApprovalDetail,
-          });
-        }, APPROVAL_HEURISTIC_MS);
       }
     }
 
@@ -624,6 +631,18 @@ class CodexLogMonitor {
     if (!payload || typeof payload !== "object") return false;
     if (payload.type !== "guardian_assessment") return false;
     return payload.status === "in_progress" || payload.status === "approved";
+  }
+
+  // Codex Desktop has its own native permission / guardian auto-review UI.
+  // The 2s approval heuristic below is a CLI-terminal fallback for sessions
+  // with no native prompt to observe; applying it to Desktop sessions spams
+  // passive "知道了" notify bubbles even when guardian auto-approves, because
+  // Desktop's guardian_assessment event often lands in the JSONL well past
+  // the 2s timer window (Desktop write cadence is slow). Desktop state still
+  // flows through the normal working → attention/idle mapping above.
+  _isCodexDesktopSession(tracked) {
+    return typeof tracked.codexOriginator === "string"
+      && tracked.codexOriginator.toLowerCase() === "codex desktop";
   }
 
   // Extract UUID from rollout filename

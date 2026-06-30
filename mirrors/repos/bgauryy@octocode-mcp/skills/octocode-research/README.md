@@ -1,46 +1,52 @@
 # Octocode Research
 
-`octocode-research` is the broad technical research skill for evidence-first answers. It can map a landscape, validate a technical direction, investigate behavior, or plan a change using local code, GitHub, npm, PRs, history, artifacts, binaries, OQL packets, papers, specs, and official docs.
+`octocode-research` gives an agent the discipline to answer technical questions with evidence instead of vibes. It covers investigation, planning, review, implementation, refactor analysis, artifact inspection, prior-art mapping, and repeated loops when one pass is not enough.
 
-It is a research skill, not an implementation session.
+Use it when the answer should be grounded in code, history, package data, exact files, or verifiable behavior.
 
-## How it works
+## The Problem
 
-The skill classifies the request as map, validate, investigate, or plan, then selects only the useful evidence surfaces: local code, GitHub, npm, history, artifacts, specs, papers, or official docs. It starts broad enough to avoid tunnel vision, deep-reads the strongest anchors, marks confidence explicitly, and recommends one next action.
+Technical work fails when an agent treats search snippets as proof, edits before understanding blast radius, or reports confidence without showing where it came from. A codebase rarely rewards a single lucky query.
 
-## Good asks
+This skill makes the agent scope the question, search cheaply first, read exact evidence, validate findings, and either recommend a path or make a scoped change with verification.
 
-- "Research this technical area and tell me what matters."
-- "Why does this tool or package behave this way?"
-- "What options exist across local code, GitHub, npm, and docs?"
-- "What evidence supports this implementation direction?"
-- "Find the files, repos, packages, or docs that prove the answer."
+## Capabilities
 
-## What you get
+- Mode selection for map, validate, investigate, plan, review, change, and loop tasks.
+- Evidence surfaces that can include local code, GitHub, npm, PR history, artifacts, binaries, docs, specs, and papers.
+- Exact anchors such as `file:line`, repo path, package id, PR number, commit, artifact fact, or fetched URL.
+- AST, structural search, LSP, history, package, GitHub, and local-file workflows through Octocode when available.
+- Confidence labels for confirmed, likely, uncertain, and weak claims.
+- Finding checks that keep alternate explanations alive until evidence resolves them.
+- Review output ordered by severity, impact, confidence, and citation quality.
+- Change output that stays scoped and reports the verification that actually ran.
 
-- A one-line scope: question, corpus, mode, and active surfaces.
-- A small hypothesis map before the agent narrows too early.
-- Evidence grouped by surface rather than dumped as raw results.
-- Exact anchors such as file:line, repo path, package id, PR number, commit, artifact fact, or fetched formal URL.
-- Confidence marked as confirmed, likely, or uncertain.
-- One recommended next action.
+## Operating Model
 
-## Research modes
+The workflow is:
 
-| Mode | Best for | User result |
-|---|---|---|
-| Map | Prior art or "what exists?" | Landscape clusters and the strongest evidence. |
-| Validate | "Is this direction worth it?" | A verdict with supporting and weakening signals. |
-| Investigate | "Why does this happen?" | Root cause or behavior explanation with proof. |
-| Plan | "What path should we take?" | Current-state evidence, options, and a safe next step. |
+```text
+SCOPE -> SEARCH -> READ EXACT -> VALIDATE -> DECIDE/PATCH -> VERIFY
+```
 
-## Use another skill when
+The agent starts by naming the corpus, question, mode, and active evidence surfaces. It then uses cheap discovery to find anchors, reads exact slices once anchors appear, validates claims against stronger evidence, and only then decides, plans, reviews, or patches.
 
-- The idea is still fuzzy or market-like: use `octocode-brainstorming`.
-- The user wants code changes, review, or refactoring: use `octocode-engineer`.
-- The user specifically wants repeated Act -> Observe loops: use `octocode-loop`.
-- The result should be a full RFC or proposal: use `octocode-rfc-generator`.
+For open-ended questions, the skill loops: act, observe, learn, and repeat until evidence converges or the remaining gap is clear enough to report honestly.
 
-## User value
+## User Experience
 
-This skill gives users a researched answer with traceable proof and honest uncertainty. It is useful when the answer spans more than one source but does not yet require code edits.
+Users should see a concise answer with proof. A good research response says what was checked, what was found, how confident the agent is, and what the next step should be. When the task is a review, findings lead. When the task is a change, the patch stays as small as the evidence allows.
+
+The skill is the default technical workhorse for Octocode because it can move from question to plan to verified edit without losing the evidence trail.
+
+## Installation
+
+Install the published skill with:
+
+```bash
+npx octocode skill --name octocode-research
+```
+
+## Maintainer Notes
+
+Keep this README about the research discipline users should expect. Keep mode-specific tactics, exact tool routing, long-report behavior, and ecosystem-comparison details in the agent-facing skill file and focused references.

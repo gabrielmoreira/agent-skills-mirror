@@ -179,6 +179,9 @@ bun run --cwd plugins/plugin-computeruse validate:macos-desktop-evidence
                                                      # validate macOS desktop evidence manifest
 bun run --cwd plugins/plugin-computeruse validate:linux-desktop-evidence
                                                      # validate Linux desktop evidence manifest
+bun run --cwd plugins/plugin-computeruse capture:windows-desktop-evidence
+                                                     # capture Windows desktop evidence artifacts for issue #9581
+                                                     # (non-disruptive: drives a controlled Notepad window, not the user's apps)
 bun run --cwd plugins/plugin-computeruse validate:windows-desktop-evidence
                                                      # validate Windows desktop evidence manifest
 ```
@@ -202,6 +205,13 @@ All read via `runtime.getSetting()` / `process.env`. Core vars are declared in `
 | `COMPUTER_USE_SANDBOX_RPC_URL` | string | — | No | VM-provider (wsb/qemu) in-guest computer-server RPC URL (#9170 M13). Default `http://127.0.0.1:<rpcPort>/cua`. Alias: `COMPUTERUSE_SANDBOX_RPC_URL` |
 | `COMPUTER_USE_SANDBOX_RPC_PORT` | number | `8000` | No | Host-forwarded guest RPC port for wsb/qemu. Alias: `COMPUTERUSE_SANDBOX_RPC_PORT` |
 | `COMPUTER_USE_SANDBOX_IMAGE` | string | — | No | Docker image to use for sandbox mode. Alias: `COMPUTERUSE_SANDBOX_IMAGE` |
+
+Power-user escape hatches read directly via `process.env` (not declared as plugin parameters):
+
+| Env var | Type | Default | Description |
+|---------|------|---------|-------------|
+| `COMPUTERUSE_PS_HOST` | `0` to disable | enabled | Windows-only warm PowerShell host (`ps-host.ts`) that amortizes the cold-spawn AV tax. Set `0` to force every spawn through one-shot `powershell.exe`. |
+| `ELIZA_COMPUTERUSE_PS_TIMEOUT_MS` | number | unset | Windows-only **floor** for every PowerShell/WinRT spawn budget (capture, clipboard, ps-host startup, window enumeration/ops in `windows-list.ts`). Applied via `psSpawnTimeoutMs` — only ever RAISES a call site's default, never lowers it. Raise it on Defender-heavy hosts where cold `powershell.exe` spawns exceed the default budgets and false-fail with `ETIMEDOUT` (#9581). Mirrors `ELIZA_WAYLAND_PORTAL_TIMEOUT_MS`. |
 
 `BROWSER_EXECUTE_DISABLED` is declared in `package.json#agentConfig.pluginParameters` but is **inert**: `browser_execute` is unconditionally disabled in `src/security/browser-script-policy.ts` (`isBrowserExecuteAllowed()` always returns `false`, GHSA-rcvr-766c-4phv). No setting re-enables it.
 
@@ -253,3 +263,45 @@ Call `registerSetOfMarksProvider(provider)` (same module, `src/mobile/ocr-provid
 - **OSWorld benchmark**: `src/osworld/` adapts the plugin to the OSWorld desktop benchmark format. Not part of normal agent runtime.
 - **Parity matrix (#9170 M14)**: `src/parity/parity-matrix.ts` is the machine-checkable trycua/cua capability map. `validateParityMatrix(actionNames)` is asserted in the test suite — adding a verb to the matrix without registering it (or renaming a promoted action) fails CI, so the map can't silently drift. `src/parity/screenspot.ts` scores click-grounding (point-in-bbox) for any grounder.
 - **Further reading**: `docs/MULTI_MONITOR.md`, `docs/SCENE_BUILDER.md`, `docs/MOBILE_ASSISTANT_ROUTING.md`, `docs/AOSP_SYSTEM_APP.md`, `docs/TEST_LANES_COMPUTERUSE_VISION.md` (unit vs real-driver lanes, per-OS reqs, and the Windows non-interactive-session input gotcha).
+
+<!-- BEGIN: evidence-and-e2e-mandate (managed; canonical standard = repo-root PR_EVIDENCE.md) -->
+## ⛔ NON-NEGOTIABLE — evidence, trajectories & real end-to-end tests
+
+> The binding, repo-wide standard is **[PR_EVIDENCE.md](../../PR_EVIDENCE.md)**. Read it.
+> Nothing in this package is *done* until it is *proven* done — a reviewer must confirm it
+> works **without reading the code**, from the artifacts you attach. This applies to **every**
+> feature, fix, refactor, and chore here. "Tests pass" is not proof; "CI is green" is not proof.
+
+- **Record AND read model trajectories.** Capture the *actual* inputs and outputs of the model
+  from a **live** LLM — not the deterministic proxy, not a mock: the prompt, the
+  providers/context, the raw model output, every tool/action call, and the result. Then **open
+  the trajectory and review it by hand.** A captured-but-unread trajectory is not evidence
+  (`packages/scenario-runner/bin/eliza-scenarios run <scenario> --report <out>`).
+- **Real, full-featured E2E — no larp.** Every feature ships detailed end-to-end tests that
+  drive the *real* path end to end. Not the happy "front door" only: cover error paths,
+  edge/empty/invalid input, concurrency, roles/permissions, and adversarial input. A test that
+  asserts against a mock/stub/fixture standing in for the thing under test **does not count**.
+  If the real model/device/chain/connector/account is hard to reach, **make it reachable — that
+  is the work**, not an excuse to mock. If the existing tests here are shallow or mocked, fixing
+  them is part of your change.
+- **Screenshots + logs at every phase**, plus a **complete walkthrough video/run-through** of
+  the entire feature or view, start to finish (`bun run test:e2e:record`).
+- **Manually review every artifact the change touches** — never just the green check: client
+  logs (console + network), server logs (`[ClassName] …`), the model trajectories in and out,
+  before/after full-page screenshots, **and the domain artifacts listed below for this package.**
+- **No residuals. No shortcuts.** The goal is not "done" — it is *everything* done. Clear every
+  blocker by the **hard path**: build the real architecture, stand up the real
+  model/device/service, actually test it. Never leave a TODO, a stub, a stepping-stone, or a
+  "follow-up." When unsure, research thoroughly, weigh the options, and ship the best,
+  highest-effort, production-ready version. Keep going until every possibility is exhausted.
+
+Artifacts → `.github/issue-evidence/<issue#>-<slug>.<ext>`; attach each evidence type **or**
+explicitly mark it N/A with a reason — never leave it blank. If `develop` moved and changed
+behavior, **re-capture** evidence; stale proof is worse than none.
+
+**Capture & manually review for this package — CLI / tooling:**
+- The real command/flow invocation transcript (args in, stdout/stderr, exit code) and the artifacts it generated (files, scaffolds, manifests, screenshots/recordings).
+- Failure paths: bad args, missing deps, partial state, permission/network errors.
+- A recording/log of the actual run end to end — not a unit test of one helper.
+- Any model interaction captured as a live trajectory and reviewed.
+<!-- END: evidence-and-e2e-mandate -->

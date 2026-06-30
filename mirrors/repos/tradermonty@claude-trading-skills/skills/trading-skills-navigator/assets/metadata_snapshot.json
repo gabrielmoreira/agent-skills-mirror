@@ -721,6 +721,42 @@
       "timeframe": "weekly"
     },
     {
+      "category": "strategy-research",
+      "difficulty": "advanced",
+      "display_name": "Stockbee 20% Study",
+      "id": "stockbee-20pct-study",
+      "integrations": [
+        {
+          "id": "fmp",
+          "requirement": "required",
+          "type": "market_data"
+        },
+        {
+          "id": "prices_json",
+          "requirement": "optional",
+          "type": "local_file"
+        },
+        {
+          "id": "news_events_json",
+          "requirement": "optional",
+          "type": "local_file"
+        },
+        {
+          "id": "websearch",
+          "requirement": "optional",
+          "type": "web"
+        },
+        {
+          "id": "local_calculation",
+          "requirement": "not_required",
+          "type": "calculation"
+        }
+      ],
+      "status": "beta",
+      "summary": "Build a daily Stockbee-style +20%/-20% mover event study, classify catalysts and setup context, update forward outcomes, and export evidence-backed edge hints without treating movers as buy/sell signals.",
+      "timeframe": "daily"
+    },
+    {
       "category": "advanced-satellite",
       "difficulty": "advanced",
       "display_name": "Stockbee Episodic Pivot Analyzer",
@@ -745,6 +781,37 @@
       "status": "beta",
       "summary": "Analyze Stockbee-style Day 1 Episodic Pivot candidates from earnings, guidance, M&A, FDA, analyst, contract, product, short-squeeze, and story/theme catalysts using catalyst quality, gap/range expansion, volume shock, neglect/revaluation context, liquidity, and EP-day-low risk.",
       "timeframe": "event-driven"
+    },
+    {
+      "category": "swing-opportunity",
+      "difficulty": "intermediate",
+      "display_name": "Stockbee Exhaustion Hammer Screener",
+      "id": "stockbee-exhaustion-hammer-screener",
+      "integrations": [
+        {
+          "id": "fmp",
+          "requirement": "required",
+          "type": "market_data"
+        },
+        {
+          "id": "prices_json",
+          "requirement": "optional",
+          "type": "local_file"
+        },
+        {
+          "id": "profiles_json",
+          "requirement": "optional",
+          "type": "local_file"
+        },
+        {
+          "id": "local_calculation",
+          "requirement": "not_required",
+          "type": "calculation"
+        }
+      ],
+      "status": "beta",
+      "summary": "Screen US stocks for Stockbee-style selling-exhaustion hammer candidates using quality/liquidity gates, prior momentum, pullback depth, undercut/reclaim, hammer geometry, volume confirmation, market gate, and risk-distance filters.",
+      "timeframe": "daily"
     },
     {
       "category": "swing-opportunity",
@@ -1086,6 +1153,7 @@
       "id": "swing-opportunity",
       "optional_skills": [
         "stockbee-momentum-burst-screener",
+        "stockbee-exhaustion-hammer-screener",
         "finviz-screener"
       ],
       "recommended_skills": [
@@ -1238,6 +1306,31 @@
       "api_profile": "mixed",
       "cadence": "daily",
       "difficulty": "advanced",
+      "display_name": "Stockbee 20% Study Daily",
+      "estimated_minutes": 30,
+      "id": "stockbee-20pct-study-daily",
+      "optional_skills": [
+        "trader-memory-core",
+        "edge-candidate-agent",
+        "edge-hint-extractor",
+        "stockbee-episodic-pivot-analyzer",
+        "theme-detector",
+        "backtest-expert"
+      ],
+      "prerequisite_workflows": [],
+      "required_skills": [
+        "stockbee-20pct-study"
+      ],
+      "target_users": [
+        "part-time-swing-trader",
+        "growth-investor",
+        "strategy-researcher"
+      ]
+    },
+    {
+      "api_profile": "mixed",
+      "cadence": "daily",
+      "difficulty": "advanced",
       "display_name": "Stockbee EP Daily",
       "estimated_minutes": 35,
       "id": "stockbee-ep-daily",
@@ -1288,10 +1381,11 @@
       "cadence": "daily",
       "difficulty": "intermediate",
       "display_name": "Swing Opportunity Daily",
-      "estimated_minutes": 35,
+      "estimated_minutes": 40,
       "id": "swing-opportunity-daily",
       "optional_skills": [
         "stockbee-momentum-burst-screener",
+        "stockbee-exhaustion-hammer-screener",
         "canslim-screener",
         "breakout-trade-planner",
         "theme-detector"

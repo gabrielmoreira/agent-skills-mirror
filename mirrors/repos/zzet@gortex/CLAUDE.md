@@ -120,14 +120,14 @@ Useful kinds and tags: `invariant`, `constraint`, `convention`, `gotcha`, `decis
 
 These are not suggestions — run each step at the trigger.
 
-1. **Always call** `graph_stats` first to confirm the daemon is up and orient (check `per_repo` in multi-repo mode).
+1. Confirm the daemon is up with `index_health` (cheap liveness + scope). Call `graph_stats` only when you actually need node/edge counts or `per_repo` orientation — it returns a large payload and can block during warmup.
 2. If `total_nodes` is 0, **call** `index_repository` with `"."` before anything else.
 3. In multi-repo mode, **call** `get_active_project` to see scope; use `set_active_project` to switch.
-4. For every new task, **call** `smart_context` with the task description before reading any file.
+4. Open a non-trivial task with `smart_context` for orientation. For a single known symbol or file, go straight to `search_symbols` / `get_symbol_source` — don't front-load `smart_context` before every read.
 5. Immediately after `smart_context`, **call** `surface_memories task:"<task>" symbol_ids:"<top hits>"` to pick up any cross-session invariants / gotchas / decisions anchored to your working set. Skipping this re-derives knowledge other agents have already recorded.
 6. Before editing a file, **call** `get_editing_context` on it first.
 7. Before changing any function signature, **call** `verify_change` to catch broken callers and interface implementors (cross-repo).
 8. For any refactor, **call** `get_edit_plan` for the dependency-ordered file list, then **`batch_edit`** to apply atomically.
-9. After every edit, **call** `check_guards` (team conventions) then `get_test_targets` (includes cross-repo tests).
+9. Verify with the project's real build/test (`go build` / `go test`). Reserve `check_guards` for guard-relevant changes and `get_test_targets` (includes cross-repo tests) to find the tests covering a substantive change — not mechanically after every edit.
 10. Before committing, **call** `detect_changes` for scope and `diff_context` for graph-enriched review.
-11. When the task is done, **call** `feedback action: "record"` to score which `smart_context` suggestions were useful / not needed / missing. This is required — it improves future context quality. If the task surfaced a durable invariant / decision / gotcha worth teaching the team, **also call** `store_memory` so the next agent inherits the lesson.
+11. When the task is done, if you used `smart_context`, optionally **call** `feedback action: "record"` to score which suggestions were useful / not needed / missing — it improves future context quality. If the task surfaced a durable invariant / decision / gotcha worth teaching the team, **call** `store_memory` so the next agent inherits the lesson.

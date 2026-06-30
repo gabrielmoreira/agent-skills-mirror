@@ -1,4 +1,5 @@
 # AI Agent 指南
+DO NOT send optional commentary
 
 本文件只用于 **开发 Lime 源码仓库本身**。根 `AGENTS.md` 只保留仓库级约束、导航和统一入口；模块细节与长流程统一下沉到 `internal/`。
 

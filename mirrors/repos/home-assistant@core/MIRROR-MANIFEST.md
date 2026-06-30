@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 9 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,15 +59,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/github-pr-reviewer/SKILL.md`](.claude/skills/github-pr-reviewer/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-diagnostics.md`](.claude/skills/ha-integration-knowledge/platform-diagnostics.md) |
-| 3 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-repairs.md`](.claude/skills/ha-integration-knowledge/platform-repairs.md) |
-| 4 | ✓ | [`.claude/skills/ha-integration-knowledge/SKILL.md`](.claude/skills/ha-integration-knowledge/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/review/SKILL.md`](.claude/skills/review/SKILL.md) |
-| 6 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 7 | ✓ | [`.github/instructions/integrations.instructions.md`](.github/instructions/integrations.instructions.md) |
-| 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`.claude/skills/bump-dependency/SKILL.md`](.claude/skills/bump-dependency/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/github-pr-reviewer/SKILL.md`](.claude/skills/github-pr-reviewer/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-diagnostics.md`](.claude/skills/ha-integration-knowledge/platform-diagnostics.md) |
+| 4 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-repairs.md`](.claude/skills/ha-integration-knowledge/platform-repairs.md) |
+| 5 | ✓ | [`.claude/skills/ha-integration-knowledge/SKILL.md`](.claude/skills/ha-integration-knowledge/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/review/SKILL.md`](.claude/skills/review/SKILL.md) |
+| 7 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 8 | ✓ | [`.github/instructions/integrations.instructions.md`](.github/instructions/integrations.instructions.md) |
+| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

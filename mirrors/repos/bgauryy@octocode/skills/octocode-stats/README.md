@@ -1,41 +1,50 @@
 # Octocode Stats
 
-`octocode-stats` builds a local HTML dashboard from Octocode MCP usage stats. It is for users who want to see response savings, cache behavior, errors, and rate-limit effects without manually reading `stats.json`.
+`octocode-stats` gives an agent a way to explain Octocode usage. It turns raw local telemetry into a readable picture of tool calls, response savings, cache behavior, avoided rate limits, and errors.
 
-The dashboard builder script owns the math and rendering.
+Use it when the user wants to understand how Octocode is performing over time rather than inspect code.
 
-## How it works
+## The Problem
 
-The skill resolves the stats source from an explicit path, `${OCTOCODE_HOME}/stats.json`, or `~/.octocode/stats.json`, then runs `scripts/build_dashboard.mjs` to generate a local HTML report. It summarizes measured calls, savings estimates, cache behavior, rate-limit signals, and tool errors, including an empty-state dashboard when stats are missing but the user still wants the view.
+Telemetry is useful only when it becomes legible. A raw stats file can show counts and sizes, but users usually want the operational story: how much work was saved, where the cache helped, whether errors are clustered, and whether rate limits were avoided.
 
-## Good asks
+This skill gives the agent a dashboard-oriented interpretation mode for Octocode's own usage data.
 
-- "Show my Octocode stats."
-- "Open the usage dashboard."
-- "How many approximate tokens or characters did Octocode save?"
-- "Check GitHub cache hits and avoided rate limits."
-- "Render this specific stats file."
-- "Review Octocode tool errors from the stats data."
+## Capabilities
 
-## What you get
+- Stats discovery from the active Octocode home or an explicit stats file.
+- Local HTML dashboard generation for visual inspection.
+- Total measured tool-call reporting.
+- Raw, response, and saved-character estimates.
+- Approximate token-savings view.
+- Cache-hit and rate-limit avoidance signals.
+- Error summaries and empty-state behavior.
+- Consistent metric interpretation so the dashboard and chat summary agree.
 
-- A generated dashboard path.
-- The stats source path.
-- Total measured tool calls.
-- Approximate tokens and characters saved.
-- GitHub cache hits and rate-limit avoidance signals.
-- Error counts and missing-stats notes when relevant.
+## Operating Model
 
-## Where it reads from
+The workflow is:
 
-The skill resolves stats from `${OCTOCODE_HOME}/stats.json`, then `~/.octocode/stats.json`, unless the user provides a specific stats path. It can render an empty-state dashboard when requested.
+```text
+RESOLVE STATS -> BUILD DASHBOARD -> REPORT PATH + KEY NUMBERS
+```
 
-## Use another skill when
+The agent locates the relevant stats source, creates a local dashboard, and reports the key numbers in plain language. It does not turn telemetry into product claims; it presents the measured data with the caveats users need.
 
-- The user is asking about credentials, MCP install, or configuration: use regular Octocode setup guidance.
-- The user wants research about a codebase: route to the `octocode` or `octocode-engineer` skill.
-- The user wants durable memory or handoff data: use `octocode-awareness`.
+## User Experience
 
-## User value
+Users get a local report they can open, plus a short explanation of the most important numbers. The skill is useful for understanding savings, cache effectiveness, error patterns, and whether Octocode has enough activity to evaluate.
 
-This skill turns a raw telemetry file into a readable local dashboard and a short summary, so users can understand Octocode's practical savings and failure patterns at a glance.
+It is not for credential setup, MCP installation, or code research. Those belong to Octocode setup or research skills.
+
+## Installation
+
+Install the published skill with:
+
+```bash
+npx octocode skill --name octocode-stats
+```
+
+## Maintainer Notes
+
+Keep this README focused on telemetry interpretation. Keep metric caveats, transport notes, and dashboard implementation details in the agent-facing skill file and references so users see the story before the plumbing.

@@ -33,7 +33,7 @@ run_version() {
     echo ""
     return 0
   fi
-  "$cmd" "$@" 2>&1 | head -n 1 | tr '\n' ' ' | sed 's/[[:space:]]*$//'
+  "$cmd" "$@" 2>&1 | head -n 1 | tr '\n' ' ' | sed 's/[[:space:]]*$//' || true
 }
 
 file_exists_any() {

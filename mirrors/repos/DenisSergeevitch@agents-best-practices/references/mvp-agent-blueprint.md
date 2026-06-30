@@ -21,8 +21,9 @@ An MVP agent harness includes:
 11. Goal-like loop behavior for longer objectives.
 12. Skill and connector attachment strategy.
 13. Prompt-cache-aware and cost-aware context layout.
-14. Observability, evals, and launch criteria.
-15. A minimal implementation path.
+14. Observability and incident readiness.
+15. Evals and launch criteria.
+16. A minimal implementation path.
 
 Coding is only one possible domain. Apply the same structure to research, operations, sales, finance, support, legal, healthcare, education, procurement, HR, analytics, and workflow automation agents.
 
@@ -141,13 +142,16 @@ Use this structure when generating a domain-specific MVP agent.
 ## 12. Safety and approval policy
 [Prompt injection handling, secrets, sandboxing, human review, audit logs.]
 
-## 13. Observability and evals
-[Trace events, metrics, test cases, failure probes, launch gates.]
+## 13. Observability
+[Trace events, metrics, replay, auditability, and incident response.]
 
-## 14. Minimal implementation path
+## 14. Evals
+[Eval cases, failure probes, trace grading, regression suites, and launch criteria.]
+
+## 15. Minimal implementation path
 [Build order for a working MVP.]
 
-## 15. First release checklist
+## 16. First release checklist
 [Concrete pass/fail checks before limited rollout.]
 ```
 
@@ -481,7 +485,7 @@ summaries for old state
 hard budgets per run
 ```
 
-## Observability and evals
+## Observability
 
 Trace operational events, not hidden reasoning.
 
@@ -503,6 +507,10 @@ errors/retries
 final status
 ```
 
+Use [security-observability.md](security-observability.md) for threat modeling, approval records, trace fields, incident response, and launch safety gates.
+
+## Evals
+
 MVP eval set:
 
 ```text
@@ -518,7 +526,7 @@ high-risk action request
 cost/latency budget test
 ```
 
-Launch only when the MVP passes critical safety and reliability evals for its autonomy level.
+Launch only when the MVP passes critical safety and reliability evals for its autonomy level. Use [evals.md](evals.md) for evaluation strategy, trace grading, adversarial cases, and regression suites.
 
 ## Minimal implementation path
 

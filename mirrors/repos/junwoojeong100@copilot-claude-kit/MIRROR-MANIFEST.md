@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `junwoojeong100/copilot-claude-kit` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `junwoojeong100/copilot-claude-kit` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `junwoojeong100/copilot-claude-kit` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,7 +60,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`.github/skills/google-web-search/SKILL.md`](.github/skills/google-web-search/SKILL.md) |
+| 2 | ✓ | [`.github/skills/ai-platform-demo/SKILL.md`](.github/skills/ai-platform-demo/SKILL.md) |
+| 3 | ✓ | [`.github/skills/google-web-search/SKILL.md`](.github/skills/google-web-search/SKILL.md) |
 
 ---
 

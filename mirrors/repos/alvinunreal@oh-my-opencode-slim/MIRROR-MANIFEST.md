@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 30 followed patterns, 43 file(s) materialized.
+Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 31 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 30 followed
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 30 |
-| Files         | 43 |
+| Followed pats | 31 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,6 +72,7 @@ Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 30 followed
 - `src/multiplexer/codemap.md`
 - `src/multiplexer/tmux/codemap.md`
 - `src/multiplexer/zellij/codemap.md`
+- `src/multiplexer/herdr/codemap.md`
 - `src/skills/codemap.md`
 - `src/skills/codemap/codemap.md`
 - `src/skills/clonedeps/codemap.md`
@@ -121,16 +122,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 31 | → | [`src/interview/codemap.md`](src/interview/codemap.md) |
 | 32 | → | [`src/mcp/codemap.md`](src/mcp/codemap.md) |
 | 33 | → | [`src/multiplexer/codemap.md`](src/multiplexer/codemap.md) |
-| 34 | → | [`src/multiplexer/tmux/codemap.md`](src/multiplexer/tmux/codemap.md) |
-| 35 | → | [`src/multiplexer/zellij/codemap.md`](src/multiplexer/zellij/codemap.md) |
-| 36 | → | [`src/skills/clonedeps/codemap.md`](src/skills/clonedeps/codemap.md) |
-| 37 | → | [`src/skills/codemap.md`](src/skills/codemap.md) |
-| 38 | → | [`src/skills/codemap/codemap.md`](src/skills/codemap/codemap.md) |
-| 39 | → | [`src/skills/simplify/codemap.md`](src/skills/simplify/codemap.md) |
-| 40 | → | [`src/tools/ast-grep/codemap.md`](src/tools/ast-grep/codemap.md) |
-| 41 | → | [`src/tools/codemap.md`](src/tools/codemap.md) |
-| 42 | → | [`src/tools/smartfetch/codemap.md`](src/tools/smartfetch/codemap.md) |
-| 43 | → | [`src/utils/codemap.md`](src/utils/codemap.md) |
+| 34 | → | [`src/multiplexer/herdr/codemap.md`](src/multiplexer/herdr/codemap.md) |
+| 35 | → | [`src/multiplexer/tmux/codemap.md`](src/multiplexer/tmux/codemap.md) |
+| 36 | → | [`src/multiplexer/zellij/codemap.md`](src/multiplexer/zellij/codemap.md) |
+| 37 | → | [`src/skills/clonedeps/codemap.md`](src/skills/clonedeps/codemap.md) |
+| 38 | → | [`src/skills/codemap.md`](src/skills/codemap.md) |
+| 39 | → | [`src/skills/codemap/codemap.md`](src/skills/codemap/codemap.md) |
+| 40 | → | [`src/skills/simplify/codemap.md`](src/skills/simplify/codemap.md) |
+| 41 | → | [`src/tools/ast-grep/codemap.md`](src/tools/ast-grep/codemap.md) |
+| 42 | → | [`src/tools/codemap.md`](src/tools/codemap.md) |
+| 43 | → | [`src/tools/smartfetch/codemap.md`](src/tools/smartfetch/codemap.md) |
+| 44 | → | [`src/utils/codemap.md`](src/utils/codemap.md) |
 
 ---
 

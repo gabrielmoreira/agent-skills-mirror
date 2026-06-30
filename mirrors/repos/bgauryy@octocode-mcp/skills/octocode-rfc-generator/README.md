@@ -1,37 +1,48 @@
 # Octocode RFC Generator
 
-`octocode-rfc-generator` writes evidence-backed RFCs, design docs, architecture proposals, migration plans, implementation plans, and technical decision briefs before coding.
+`octocode-rfc-generator` gives an agent the structure to turn research into a reviewable technical decision. It writes RFCs, design docs, migration plans, implementation plans, architecture proposals, and decision briefs before risky work begins.
 
-Use it when the cost of being wrong is higher than the cost of writing the decision down.
+Use it when the cost of being wrong is higher than the cost of writing the reasoning down.
 
-## How it works
+## The Problem
 
-The skill gathers current-state evidence first, then turns the decision into alternatives with explicit tradeoffs. It recommends one path, documents risks and rollback options, orders implementation steps by dependency, and leaves open questions visible instead of hiding weak assumptions inside the plan.
+Complex changes fail when the decision lives only in chat. Alternatives disappear, assumptions go untested, rollout order becomes vibes, and rollback is discovered too late.
 
-## Good asks
+This skill makes the agent capture current-state evidence, compare viable options, explain tradeoffs, and produce a document another engineer can review or implement.
 
-- "Turn this investigation into an RFC."
-- "Compare these implementation approaches."
-- "Write a migration plan with rollback notes."
-- "Validate this proposal against the current codebase."
-- "Create an implementation plan before we touch shared contracts."
+## Capabilities
 
-## What you get
+- Current-state evidence from local code, GitHub paths, PRs, commits, packages, or formal sources.
+- Alternative comparison before recommendation, unless the user explicitly asks for a single plan.
+- Decision language tied to constraints, evidence, tradeoffs, and non-goals.
+- Risk, unresolved-question, migration, rollout, and rollback sections.
+- Implementation steps ordered by dependency rather than preference.
+- Saved RFC flow when the user wants a durable artifact in the repo.
 
-- A concise decision summary.
-- Current-state evidence with file:line or external citations.
-- At least two alternatives unless the user asks for a single path.
-- A recommendation tied to the evidence.
-- Risks, tradeoffs, migration notes, rollback options, and open questions.
-- Implementation steps ordered by dependency.
+## Operating Model
 
-## Use another skill when
+The workflow is:
 
-- The idea still needs validation: use `octocode-brainstorming`.
-- The user wants the code changed now: use `octocode-engineer`.
-- The request is a quick research answer, not a document: use `octocode-research`.
-- The user wants critique rather than a plan: use `octocode-roast`.
+```text
+UNDERSTAND -> RESEARCH -> COMPARE OPTIONS -> WRITE RFC / PLAN -> VALIDATE -> DELIVER
+```
 
-## User value
+The agent first clarifies the decision and the evidence surfaces. It gathers proof, compares options, writes the right document shape, validates citations and open questions, then delivers the RFC or plan in chat or as an approved repo artifact.
 
-This skill converts research into a reviewable technical decision. It keeps facts cited, alternatives visible, and the rollout practical enough that another engineer can act on it.
+## User Experience
+
+Users should get a document that feels ready for review: summary, context, evidence, options, recommendation, risks, rollout, rollback, and implementation order. The skill is not meant to replace engineering judgment; it makes that judgment visible.
+
+It pairs well with `octocode-brainstorming` before the decision exists and `octocode-research` when the decision needs more proof or implementation.
+
+## Installation
+
+Install the published skill with:
+
+```bash
+npx octocode skill --name octocode-rfc-generator
+```
+
+## Maintainer Notes
+
+Keep this README focused on the decision-document story. Keep the detailed RFC structure, migration mechanics, and validation behavior in the agent-facing skill file and references.

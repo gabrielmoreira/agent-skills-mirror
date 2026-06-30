@@ -15,7 +15,30 @@
   <sub>Free desktop app for AI agent teams. Start with a free model with no auth - no signup, API key, or card - or connect Claude/Codex/OpenCode provider access for more models. Not just coding agents.</sub>
 </p>
 
-<img width="2546" height="1590" alt="image" src="https://github.com/user-attachments/assets/a07d39b2-8529-42c8-8133-4685628b5a92" />
+<table>
+<tr>
+<td width="33.33%">
+  <img src="docs/screenshots/8.png" alt="Task details and comments" width="100%" />
+</td>
+<td width="33.33%">
+  <img src="docs/screenshots/9.png" alt="Built-in code editor" width="100%" />
+</td>
+<td width="33.33%">
+  <img src="docs/screenshots/7.png" alt="Cross-team messaging" width="100%" />
+</td>
+</tr>
+<tr>
+<td width="33.33%">
+  <img src="docs/screenshots/4.png" alt="Team management dashboard" width="100%" />
+</td>
+<td width="33.33%">
+  <img src="docs/screenshots/1.jpg" alt="Kanban board with agent tasks" width="100%" />
+</td>
+<td width="33.33%">
+  <img src="https://github.com/user-attachments/assets/a07d39b2-8529-42c8-8133-4685628b5a92" alt="Agent Teams AI product screenshot" width="100%" />
+</td>
+</tr>
+</table>
 
 <!--
 <img width="1304" height="820" alt="image" src="https://github.com/user-attachments/assets/dea53a01-68b3-4c36-bcf6-e4d1ad4cdb31" />
@@ -25,6 +48,8 @@
 <a href="https://agentteams.live/">Watch demo on the site or here:</a>
 
 [demo_new_15s.webm](https://github.com/user-attachments/assets/d78cf5a4-80fe-4a8b-a1db-fb272e18029c)
+
+Old videos:
 
 <table>
 <tr>
@@ -172,7 +197,7 @@ An orchestration layer for AI agent teams across Claude, Codex, and OpenCode.
 | **Task attachments** | ✅ Auto-attach, agents read & attach files | ❌ Not task-level | ✅ Docs, attachments, work products | ⚠️ Chat session only | ⚠️ Chat images only |
 | **Hunk-level review** | ✅ Accept / reject individual hunks | ❌ | ❌ Bring your own review | ✅ | ❌ |
 | **Built-in code editor** | ✅ With Git support | ❌ | ❌ Control plane, not editor | ✅ Full IDE | ❌ |
-| **Full autonomy** | ✅ Agents plan, assign, work, and review | ✅ Coordinator, grouped work, recovery | ✅ Wake-up runs + governance | ⚠️ Background agents, not teams | ✅ Experimental CLI teams |
+| **Full autonomy** | ✅ Agents plan, assign, work, and review | ✅ Coordinator, grouped work, recovery | ✅ Wake-up runs + governance | ⚠️ Cloud agents, not teams | ✅ Experimental CLI teams |
 | **Task dependencies** | ✅ Tasks wait for blockers automatically | ✅ Dependency waves | ✅ Blockers + execution locks | ❌ | ✅ Team task deps, no UI |
 | **Review workflow** | ✅ Agents review each other + human review UI | ⚠️ Merge queue | ✅ Approvals + governance | ⚠️ PR/BugBot only | ✅ Team review, no UI |
 | **Zero setup** | ✅ Guided runtime setup | ❌ Manual CLI stack | ⚠️ `npx` + local database | ✅ | ⚠️ CLI + env flag |
@@ -181,18 +206,18 @@ An orchestration layer for AI agent teams across Claude, Codex, and OpenCode.
 | **Live processes** | ✅ View, stop, open URLs in browser | ⚠️ Agent health dashboard | ⚠️ Manual services + previews | ⚠️ Native terminal only | ❌ |
 | **CPU/RAM per teammate** | ✅ See CPU/RAM history for each live teammate | ⚠️ Shows activity/health, not CPU/RAM | ⚠️ Shows run status/cost, not CPU/RAM | ❌ Remote agent/terminal only | ❌ |
 | **Per-task code review** | ✅ Accept / reject / comment | ⚠️ Merge queue, no diff UI | ⚠️ PR/work products, no inline diff | ✅ BugBot on PRs | ❌ |
-| **Flexible autonomy** | ✅ Per-action approvals + notifications | ✅ Gates, escalation, recovery | ✅ Board approvals, pause, terminate | ⚠️ Background agents auto-run commands | ✅ Permissions + hooks |
-| **Git worktree isolation** | ✅ Optional | ✅ Core primitive | ✅ Worktrees / branches | ⚠️ Background branches/VMs | ⚠️ Manual worktrees |
+| **Flexible autonomy** | ✅ Per-action approvals + notifications | ✅ Gates, escalation, recovery | ✅ Board approvals, pause, terminate | ⚠️ Cloud agents run commands | ✅ Permissions + hooks |
+| **Git worktree isolation** | ✅ Optional | ✅ Core primitive | ✅ Worktrees / branches | ✅ Agents Window worktrees | ⚠️ Manual worktrees |
 | **Mixed AI teammates** | ✅ Claude, Codex, and OpenCode in one team | ✅ Many providers, terminal-first | ✅ Bring your own agents/runtimes | ⚠️ Multi-model agents, no shared team | ⚠️ Claude-only experimental teams |
 | **Live team map** | ✅ Map of teammates, tasks, blockers, handoffs, activity, logs | ⚠️ Agent tree + feed panels | ⚠️ Org chart/status, not a task/log map | ❌ | ❌ |
-| **Live teammates** | ✅ Watch teammates work and message them directly | ⚠️ Terminal-based agent sessions | ⚠️ Agents wake up for runs, then sleep | ⚠️ Background agents per task | ⚠️ CLI teams, no desktop view |
+| **Live teammates** | ✅ Watch teammates work and message them directly | ⚠️ Terminal-based agent sessions | ⚠️ Agents wake up for runs, then sleep | ⚠️ Cloud agents per task | ⚠️ CLI teams, no desktop view |
 | **Team workspace** | ✅ Tasks, logs, Kanban, review, and teammates in one app | ⚠️ Mail/feed/dashboard across tools | ⚠️ Board + transcripts, less live teammate view | ⚠️ IDE chats/tasks, not team view | ❌ No desktop UI |
 | **Teammate launch status** | ✅ Know who started, who is stuck, and who replied | ⚠️ Session health, less clear message status | ⚠️ Run status, not live teammate status | ❌ | ⚠️ CLI mailbox, no visual status |
 | **Org chart / governance** | ⚠️ Roles + approvals, no org chart | ⚠️ Roles + escalation | ✅ Org chart + board governance | ⚠️ Team admin only | ❌ |
-| **Budget controls** | ⚠️ Cost/token visibility, no hard caps | ⚠️ Cost tiers + digest, no hard caps | ✅ Per-agent budgets + hard stops | ⚠️ Usage + BG spend limits | ⚠️ `/usage` + workspace limits |
+| **Budget controls** | ⚠️ Cost/token visibility, no hard caps | ⚠️ Cost tiers + digest, no hard caps | ✅ Per-agent budgets + hard stops | ⚠️ Usage + cloud spend limits | ⚠️ `/usage` + workspace limits |
 | **Price** | **Free OSS UI + free model with no auth**, paid providers optional | Free OSS, runtime plans needed | Free OSS, self-hosted + infra | Free + paid usage | Claude plan or API usage |
 
-Fact sources checked on May 18, 2026: [detailed research notes](docs/research/gastown-paperclip-comparison-2026-05-16.md), [Gastown README](https://github.com/gastownhall/gastown), [Gastown provider guide](https://github.com/gastownhall/gastown/blob/main/docs/agent-provider-integration.md), [Gastown scheduler](https://github.com/gastownhall/gastown/blob/main/docs/design/scheduler.md), [Gastown dashboard source](https://github.com/gastownhall/gastown/blob/main/internal/web/templates/convoy.html), [Gastown release](https://github.com/gastownhall/gastown/releases/tag/v1.1.0), [Paperclip README](https://github.com/paperclipai/paperclip), [Paperclip adapters](https://github.com/paperclipai/paperclip/blob/master/docs/adapters/overview.md), [Paperclip heartbeat protocol](https://github.com/paperclipai/paperclip/blob/master/docs/guides/agent-developer/heartbeat-protocol.md), [Paperclip org chart](https://paperclip.inc/docs/guides/board-operator/org-structure/), [Paperclip OrgChart source](https://github.com/paperclipai/paperclip/blob/master/ui/src/pages/OrgChart.tsx), [Paperclip budgets](https://github.com/paperclipai/paperclip/blob/master/docs/guides/board-operator/costs-and-budgets.md), [Paperclip runtime services](https://github.com/paperclipai/paperclip/blob/master/docs/guides/board-operator/execution-workspaces-and-runtime-services.md), [Paperclip Kanban source](https://github.com/paperclipai/paperclip/blob/master/ui/src/components/KanbanBoard.tsx), [Paperclip work products](https://github.com/paperclipai/paperclip/blob/master/packages/shared/src/validators/work-product.ts), [Paperclip release](https://github.com/paperclipai/paperclip/releases/tag/v2026.517.0), [Cursor Background Agents](https://docs.cursor.com/en/background-agents), [Cursor Diffs & Review](https://docs.cursor.com/en/agent/review), [Cursor Bugbot](https://docs.cursor.com/en/bugbot), [Cursor pricing](https://docs.cursor.com/en/account/usage), [Claude Code agent teams](https://code.claude.com/docs/en/agent-teams), [Claude Code subagents](https://code.claude.com/docs/en/sub-agents), [Claude Code workflows](https://code.claude.com/docs/en/common-workflows), [Claude Code costs](https://code.claude.com/docs/en/costs), [Claude pricing](https://claude.com/pricing).
+Fact sources checked on June 25, 2026: [detailed research notes](docs/research/gastown-paperclip-comparison-2026-06-25.md), [Gastown README](https://github.com/gastownhall/gastown), [Gastown provider guide](https://github.com/gastownhall/gastown/blob/main/docs/agent-provider-integration.md), [Gastown scheduler](https://github.com/gastownhall/gastown/blob/main/docs/design/scheduler.md), [Gastown dashboard source](https://github.com/gastownhall/gastown/blob/main/internal/web/templates/convoy.html), [Gastown release](https://github.com/gastownhall/gastown/releases/tag/v1.2.1), [Paperclip README](https://github.com/paperclipai/paperclip), [Paperclip adapters](https://github.com/paperclipai/paperclip/blob/master/docs/adapters/overview.md), [Paperclip heartbeat protocol](https://github.com/paperclipai/paperclip/blob/master/docs/guides/agent-developer/heartbeat-protocol.md), [Paperclip org chart](https://paperclip.inc/docs/guides/board-operator/org-structure/), [Paperclip OrgChart source](https://github.com/paperclipai/paperclip/blob/master/ui/src/pages/OrgChart.tsx), [Paperclip budgets](https://github.com/paperclipai/paperclip/blob/master/docs/guides/board-operator/costs-and-budgets.md), [Paperclip runtime services](https://github.com/paperclipai/paperclip/blob/master/docs/guides/board-operator/execution-workspaces-and-runtime-services.md), [Paperclip Kanban source](https://github.com/paperclipai/paperclip/blob/master/ui/src/components/KanbanBoard.tsx), [Paperclip work products](https://github.com/paperclipai/paperclip/blob/master/packages/shared/src/validators/work-product.ts), [Paperclip release](https://github.com/paperclipai/paperclip/releases/tag/v2026.618.0), [Cursor Cloud Agents](https://cursor.com/docs/cloud-agent), [Cursor Agent Review](https://cursor.com/docs/agent/agent-review), [Cursor Bugbot](https://cursor.com/docs/bugbot), [Cursor worktrees](https://cursor.com/docs/configuration/worktrees), [Cursor Models & Pricing](https://cursor.com/docs/models-and-pricing), [Cursor Team Pricing](https://cursor.com/docs/account/teams/pricing), [Claude Code agent teams](https://code.claude.com/docs/en/agent-teams), [Claude Code subagents](https://code.claude.com/docs/en/sub-agents), [Claude Code workflows](https://code.claude.com/docs/en/common-workflows), [Claude Code costs](https://code.claude.com/docs/en/costs), [Claude pricing](https://claude.com/pricing).
 
 ---
 

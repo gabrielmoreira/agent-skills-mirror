@@ -401,14 +401,6 @@ State the obligation and cadence (e.g. "pay social benefits, monthly day 20"). S
 
 ---
 
-### `/obsidian-calendar`
-
-**Reconciles the vault against your calendar - flags commitments implied by notes that are not scheduled.** Claude Code only (needs the Google Calendar MCP).
-
-Window argument (`today` / `this week` / `this month`, default this week). Pulls the calendar, then gathers vault-implied commitments by listing and grepping (project `next_action`s and deadlines, due tasks, commitments in recent daily notes, fixed dates in `CRITICAL_FACTS.md`), and reports the gap in two directions. **Flag only - never adds, moves, or changes calendar events.** The inverse of `/obsidian-daily`'s calendar pull.
-
----
-
 ### `/obsidian-log`
 
 **Logs a work or dev session to the vault.**
@@ -448,20 +440,6 @@ Steps:
 4. Fill in everything inferable from the conversation: role, company, context, relationship strength, last interaction date
 5. Log the interaction in today's daily note
 6. If a People index file exists, add or update the entry there
-
----
-
-### `/obsidian-decide [optional: topic]`
-
-**Extracts and logs decisions from the conversation.**
-
-Steps:
-1. Scan the conversation for decisions made - look for conclusions, choices, commitments, direction changes
-2. If a topic argument is given, focus on decisions related to that topic
-3. Find the relevant project note(s) - search if needed
-4. Append each decision to the project note's `## Key Decisions` section with date
-5. Log a summary in today's daily note
-6. If a decision affects multiple projects, log it in all of them
 
 ---
 
@@ -708,6 +686,22 @@ Hybrid command: `scripts/architect_scan.py` does a deterministic scan (stack, mo
 
 ---
 
+### `/obsidian-visualize [scope]`
+
+**Generates a JSON Canvas map of the vault's knowledge graph, openable in Obsidian's native canvas viewer.**
+
+Backed by `scripts/link_graph.py` (deterministic link extraction - no whole-vault read). Optional scope: a project, entity, topic, or `full` (default). Builds nodes and edges from `[[wikilinks]]`, clusters by type (entities, projects, concepts, daily, sources) with color and size keyed to centrality, flags orphans with a red border, and writes `atlas.canvas` (or `atlas-<topic>.canvas`) to the vault root. Also emits a text summary: hub nodes by degree centrality, bridge nodes, stale orphans, clusters, and any centrality skew (a single navigation point of failure). Appends a one-line entry to the operation log.
+
+---
+
+### `/create-command [seed]`
+
+**Scaffolds a new obsidian-second-brain command through a short interview - no markdown or frontmatter editing.**
+
+A guided conversation (intent, name, category, trigger phrases, behavior steps, AI-first compliance, external APIs) writes a fully-formed `commands/<name>.md` that the build pipeline picks up on the next `bash scripts/build.sh`, flowing into all six platform builds. The optional seed pre-fills suggestions. Every command created this way lands AI-first-compliant by construction. (This is the command that creates commands; it does not run on itself.)
+
+---
+
 ### `/obsidian-ingest`
 
 **Ingests a source into the vault - one source touches many pages.**
@@ -861,6 +855,14 @@ Answers "what is worth doing next" from vault material. Distinct from `/obsidian
 
 ---
 
+### `/obsidian-learn [recent|all|topic]`
+
+**Reviews the lessons scattered across the vault and turns them into a living rulebook.**
+
+Scans daily notes, dev logs, ADRs, and auto-generated pattern reports for lessons, mistakes, and wins, then classifies each as active, stale, superseded, or a promotion candidate (appeared 3+ times - worth becoming a permanent rule in `_CLAUDE.md`). Default scope is the last 30 days (`all` for the whole vault, or a named topic). Writes a Learnings Review to `wiki/concepts/YYYY-MM-DD — Learnings Review.md` and offers to promote candidates or archive stale lessons with confirmation. Lessons that are not reviewed do not compound.
+
+---
+
 ## Context Engine
 
 ### `/obsidian-world`
@@ -901,7 +903,7 @@ The vault knows why it's structured the way it is - when a future session asks "
 
 ## Research Commands
 
-Five commands that pull external knowledge into the vault - X posts, X discourse, web research with citations, and YouTube videos. All output AI-first notes per the vault's Section 0 rule (preamble, rich frontmatter, recency markers, mandatory wikilinks, sources verbatim).
+Seven commands that pull external knowledge into the vault - X posts, X discourse, web research with citations, vault-grounded synthesis, YouTube videos, and podcast episodes (plus `/obsidian-ingest` above for arbitrary URLs, PDFs, audio, and screenshots). All output AI-first notes per the vault's Section 0 rule (preamble, rich frontmatter, recency markers, mandatory wikilinks, sources verbatim).
 
 **Setup:** API keys live at `~/.config/obsidian-second-brain/.env`. Run `install.sh` and answer "y" to the research toolkit prompt, or copy `.env.example` manually. xAI Grok and Perplexity keys are required; YouTube key is optional (transcripts work without it).
 

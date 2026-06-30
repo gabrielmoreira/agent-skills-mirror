@@ -448,6 +448,32 @@ function cmdIngestDecision(args) {
   let obj;
   try { obj = JSON.parse(raw); }
   catch (e) { console.error(`bad json: ${e.message}`); process.exit(1); }
+  // --- Normalize context-scoped fields -----------------------------------
+  // Schema contract: memory_refs and insight_refs live INSIDE `context`.
+  // Some agent emits put them at the top level; hoist them so all readers
+  // (web UI, inbox formatter, run executor) see them consistently.
+  if (!obj.context || typeof obj.context !== 'object') obj.context = {};
+  const ctx = obj.context;
+  const refKeys = ['memory_refs', 'insight_refs'];
+  const hoisted = [];
+  for (const k of refKeys) {
+    if (Array.isArray(obj[k]) && obj[k].length) {
+      if (!Array.isArray(ctx[k])) ctx[k] = [];
+      for (const v of obj[k]) {
+        if (!ctx[k].includes(v)) ctx[k].push(v);
+      }
+      hoisted.push(k);
+      delete obj[k];
+    }
+  }
+  if (hoisted.length) {
+    process.stderr.write(`[ingest-decision] hoisted ${hoisted.join(',')} from top-level into context (fix the emit to put them there directly)\n`);
+  }
+  // Drop null/empty context fields so they don't render as blanks
+  for (const k of Object.keys(ctx)) {
+    if (ctx[k] == null || (Array.isArray(ctx[k]) && ctx[k].length === 0)) delete ctx[k];
+  }
+  // -----------------------------------------------------------------------
   // Normalize required fields
   obj.id = obj.id || `dec_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
   obj.ts = obj.ts || utils.now();
@@ -1014,7 +1040,7 @@ async function cmdServe() {
 
 function cmdWeb(args) {
   // Delegate to scripts/loop-web.cjs (separate process for clean signal handling).
-  const port = args.flags.port || process.env.LOOP_WEB_PORT || args._[1] || '3414';
+  const port = args.flags.port || process.env.LOOP_WEB_PORT || args._[1] || '3614';
   const open = args.flags.open !== false && !args.flags['no-open'];
   const child = spawn(
     process.execPath,

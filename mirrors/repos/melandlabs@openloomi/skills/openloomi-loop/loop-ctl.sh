@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # loop-ctl.sh — quick start/stop/status for openloomi-loop
 # Usage: ./loop-ctl.sh {start|stop|status|restart}
-# Env:   PORT=3614  INTERVAL=600  (10 min)
+# Env:   LOOP_WEB_PORT=3614  INTERVAL=600  (10 min)
 set -euo pipefail
 
 SKILL_DIR="$(cd "$(dirname "$0")" && pwd)"
 DATA="$SKILL_DIR/data"
 LOOP=(node "$SKILL_DIR/scripts/openloomi-loop.cjs")
-PORT="${PORT:-3614}"
+LOOP_WEB_PORT="${LOOP_WEB_PORT:-3614}"
 INTERVAL="${INTERVAL:-600}"
 DAEMON_PID="$DATA/daemon.pid"
 WEB_PID="$DATA/web.pid"
@@ -37,7 +37,7 @@ cmd_start() {
   disown 2>/dev/null || true
 
   # web
-  nohup "${LOOP[@]}" web --port "$PORT" > "$DATA/web.log" 2>&1 &
+  nohup "${LOOP[@]}" web --port "$LOOP_WEB_PORT" > "$DATA/web.log" 2>&1 &
   local web_pid=$!
   echo "$web_pid" > "$WEB_PID"
   disown 2>/dev/null || true
@@ -52,8 +52,8 @@ cmd_start() {
     echo "✗ schedule failed (see $DATA/schedule.log)"
     ok=0
   fi
-  if lsof -i ":$PORT" -P -n >/dev/null 2>&1; then
-    echo "✓ web started (pid=$web_pid, http://127.0.0.1:$PORT/)"
+  if lsof -i ":$LOOP_WEB_PORT" -P -n >/dev/null 2>&1; then
+    echo "✓ web started (pid=$web_pid, http://127.0.0.1:$LOOP_WEB_PORT/)"
   else
     echo "✗ web failed (see $DATA/web.log)"
     ok=0
@@ -75,7 +75,7 @@ cmd_stop() {
   done
   # belt-and-suspenders: catch anything that escaped the pid files
   pkill -f "openloomi-loop.cjs (schedule|web)" 2>/dev/null || true
-  pkill -f "loop-web.cjs $PORT" 2>/dev/null || true
+  pkill -f "loop-web.cjs $LOOP_WEB_PORT" 2>/dev/null || true
   if [ "$stopped" -eq 0 ]; then
     echo "(nothing was running)"
   fi
@@ -86,8 +86,8 @@ cmd_status() {
   echo "=== loop status ==="
   "${LOOP[@]}" status || true
   echo ""
-  echo "=== web port $PORT ==="
-  lsof -i ":$PORT" -P -n 2>/dev/null | head -3 || echo "(not listening)"
+  echo "=== web port $LOOP_WEB_PORT ==="
+  lsof -i ":$LOOP_WEB_PORT" -P -n 2>/dev/null | head -3 || echo "(not listening)"
   echo ""
   echo "=== pid files ==="
   for pf in "$DAEMON_PID" "$WEB_PID"; do

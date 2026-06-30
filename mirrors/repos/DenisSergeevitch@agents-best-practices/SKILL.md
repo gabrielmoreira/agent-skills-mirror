@@ -88,7 +88,8 @@ Default behavior:
 - Read [skills-and-connectors.md](references/skills-and-connectors.md) for Agent Skills, progressive disclosure, MCP, external connectors, tool search, and attachment strategy.
 - Read [system-prompts-instructions.md](references/system-prompts-instructions.md) for system/developer/user instruction hierarchy and prompt templates.
 - Read [provider-api-patterns.md](references/provider-api-patterns.md) for OpenAI, Anthropic, and OpenAI-compatible API implementation patterns.
-- Read [security-evals-observability.md](references/security-evals-observability.md) for guardrails, threat models, tracing, evals, and launch gates.
+- Read [security-observability.md](references/security-observability.md) for guardrails, threat models, approval records, trace design, launch safety gates, and incident response.
+- Read [evals.md](references/evals.md) for evaluation strategy, adversarial test cases, trace grading, regression evals, and eval-driven launch criteria.
 - Read [checklists.md](references/checklists.md) for condensed implementation and audit checklists.
 - Read [source-links.md](references/source-links.md) for official links and provider-specific references.
 - Read [coverage-audit.md](references/coverage-audit.md) to verify the skill covers the requested harness topics.
@@ -107,9 +108,10 @@ When the user asks for guidance, produce a concrete architecture, not generic pr
 7. **Workflow orchestration**: when to decompose into durable work packets, worker contexts, verifier contexts, and integration.
 8. **Skills/connectors**: how skills and MCP/external connectors are discovered, loaded, permissioned, and audited.
 9. **Safety**: prompt injection boundaries, secrets, sandboxing, data access, and guardrails.
-10. **Observability/evals**: traces, metrics, test cases, and failure probes.
-11. **Rollout**: minimal viable harness first, then add autonomy only when measured results justify it.
-12. **Legibility loop**: source-of-truth artifacts, validation signals, feedback capture, and recurring cleanup.
+10. **Observability**: traces, metrics, replay, auditability, and incident readiness.
+11. **Evals**: test cases, failure probes, trace grading, regression suites, and launch criteria.
+12. **Rollout**: minimal viable harness first, then add autonomy only when measured results justify it.
+13. **Legibility loop**: source-of-truth artifacts, validation signals, feedback capture, and recurring cleanup.
 
 ## Non-negotiable principles
 
@@ -164,8 +166,11 @@ Use this template when the user wants a harness design. If the user asks to make
 ## Safety and approvals
 [Guardrails, prompt injection treatment, secrets, sandboxing, human review.]
 
-## Observability and evals
-[Trace events, eval cases, launch criteria, failure probes.]
+## Observability
+[Trace events, metrics, replay, auditability, and incident response.]
+
+## Evals
+[Eval cases, failure probes, trace grading, regression suites, and launch criteria.]
 
 ## Minimal implementation path
 [Smallest safe version first, implementation skeleton, validation path, then measured expansion.]

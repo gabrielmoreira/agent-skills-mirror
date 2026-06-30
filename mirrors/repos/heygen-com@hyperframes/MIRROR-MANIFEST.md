@@ -207,7 +207,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 146 | ✓ | [`skills/embedded-captions/themes/thunder.json`](skills/embedded-captions/themes/thunder.json) |
 | 147 | ✓ | [`skills/embedded-captions/themes/transit.json`](skills/embedded-captions/themes/transit.json) |
 | 148 | ✓ | [`skills/embedded-captions/themes/vhs.json`](skills/embedded-captions/themes/vhs.json) |
-| 149 | ✓ | [`skills/faceless-explainer/references/composition.md`](skills/faceless-explainer/references/composition.md) |
+| 149 | ✓ | [`skills/faceless-explainer/references/cut-catalog.md`](skills/faceless-explainer/references/cut-catalog.md) |
 | 150 | ✓ | [`skills/faceless-explainer/references/motion-language.md`](skills/faceless-explainer/references/motion-language.md) |
 | 151 | ✓ | [`skills/faceless-explainer/references/story-design.md`](skills/faceless-explainer/references/story-design.md) |
 | 152 | ✓ | [`skills/faceless-explainer/references/visual-design.md`](skills/faceless-explainer/references/visual-design.md) |
@@ -653,7 +653,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 592 | ✓ | [`skills/music-to-video/SKILL.md`](skills/music-to-video/SKILL.md) |
 | 593 | ✓ | [`skills/music-to-video/sub-agents/frame-worker.md`](skills/music-to-video/sub-agents/frame-worker.md) |
 | 594 | ✓ | [`skills/pr-to-video/references/code-vocabulary.md`](skills/pr-to-video/references/code-vocabulary.md) |
-| 595 | ✓ | [`skills/pr-to-video/references/composition.md`](skills/pr-to-video/references/composition.md) |
+| 595 | ✓ | [`skills/pr-to-video/references/cut-catalog.md`](skills/pr-to-video/references/cut-catalog.md) |
 | 596 | ✓ | [`skills/pr-to-video/references/motion-language.md`](skills/pr-to-video/references/motion-language.md) |
 | 597 | ✓ | [`skills/pr-to-video/references/story-design.md`](skills/pr-to-video/references/story-design.md) |
 | 598 | ✓ | [`skills/pr-to-video/references/visual-design.md`](skills/pr-to-video/references/visual-design.md) |

@@ -153,7 +153,9 @@ curl -X POST http://localhost:3030/raw_sql -H "Content-Type: application/json" \
   -d '{"query": "SELECT ... LIMIT 100"}'
 ```
 
-**Rules:** every SELECT needs LIMIT · always filter by time (`datetime('now','-24 hours')`) · read-only. **Never use frame counts for time estimates** — frames are event-driven; use `/activity-summary` for screen time.
+**Rules:** every SELECT needs LIMIT · always filter by time · read-only. **Never use frame counts for time estimates** — frames are event-driven; use `/activity-summary` for screen time.
+
+**Timestamp caveat:** DB timestamps are stored as RFC3339 strings — usually `2026-06-26T18:01:14.214586+00:00` (frames / audio_transcriptions / ui_events), though some tables (e.g. `meetings.meeting_start`, memories) use a `Z` suffix with milliseconds: `2026-06-26T18:01:14.214Z`. Do not compare either form directly to SQLite `datetime()` strings like `timestamp > datetime('now','-10 seconds')`: the `T` vs space makes it a lexical string comparison and can include stale same-day rows. Use `datetime(timestamp) > datetime('now','-10 seconds')` (works for both forms), or for indexed string comparisons use an RFC3339-shaped cutoff: `timestamp > strftime('%Y-%m-%dT%H:%M:%f+00:00','now','-10 seconds')`.
 
 | Table | Key Columns | Time Column |
 |-------|-------------|-------------|
@@ -171,12 +173,12 @@ curl -X POST http://localhost:3030/raw_sql -H "Content-Type: application/json" \
 ```sql
 -- Most used apps (last 24h)
 SELECT app_name, COUNT(*) AS frames FROM frames
-WHERE timestamp > datetime('now','-24 hours') AND app_name IS NOT NULL
+WHERE timestamp > strftime('%Y-%m-%dT%H:%M:%f+00:00','now','-24 hours') AND app_name IS NOT NULL
 GROUP BY app_name ORDER BY frames DESC LIMIT 20;
 
 -- Context switches per hour
 SELECT strftime('%H:00', timestamp) AS hour, COUNT(*) AS switches
-FROM ui_events WHERE event_type='app_switch' AND timestamp > datetime('now','-24 hours')
+FROM ui_events WHERE event_type='app_switch' AND timestamp > strftime('%Y-%m-%dT%H:%M:%f+00:00','now','-24 hours')
 GROUP BY hour ORDER BY hour LIMIT 24;
 ```
 
@@ -299,9 +301,22 @@ curl -X POST http://localhost:11435/notify -H "Content-Type: application/json" \
 # Markdown body + action buttons. action types: "link" (web), "deeplink" (screenpipe://), "dismiss".
 curl -X POST http://localhost:11435/notify -H "Content-Type: application/json" \
   -d '{"title":"Meeting summary","body":"**Q3 Planning** saved\n\nopen [notes](~/Documents/q3.md)","actions":[{"id":"view","label":"view","type":"deeplink","url":"screenpipe://timeline"},{"id":"skip","label":"skip","type":"dismiss"}]}'
+
+# Ask permission, then run a pipe on approval — the opt-in flow. `type:"pipe"`
+# runs the TARGET pipe when clicked; `context` is injected into that pipe's
+# prompt. Set `pipe` explicitly (omit it and it falls back to the sender = no-op).
+# Actions persist to the notification bell, so the user can approve later even
+# if the toast already faded. Use `open_in_chat:true` to surface the run live.
+curl -X POST http://localhost:11435/notify -H "Content-Type: application/json" \
+  -d '{"title":"share meeting notes with the team?","body":"approve to send the adriaan call notes","actions":[{"id":"approve","label":"approve","type":"pipe","primary":true,"pipe":"share-data","context":{"meeting_id":274}},{"id":"no","label":"decline","type":"dismiss"}]}'
+
+# No installed pipe? Use `type:"chat"` to run an inline prompt in a fresh chat
+# session — write the whole task in `prompt`, attach data in `context`.
+curl -X POST http://localhost:11435/notify -H "Content-Type: application/json" \
+  -d '{"title":"summarize this call into a CRM note?","body":"approve to draft it","actions":[{"id":"go","label":"draft it","type":"chat","primary":true,"prompt":"summarize meeting 274 into a short CRM follow-up note and save it to output/","context":{"meeting_id":274}},{"id":"no","label":"no","type":"dismiss"}]}'
 ```
 
-Fields: `title`* , `body`* (markdown), `type` (default "pipe"), `timeout`/`autoDismissMs` (ms, default 20000), `actions` (buttons). Body links: web URL → browser, file path (`~/notes.md`, `/var/log/app.log`) → default app, `screenpipe://...` → in-app. Returns `{"success":true}`.
+Action types: `link` (web URL), `deeplink` (`screenpipe://`), `pipe` (run an installed pipe — needs `pipe`, optional `context`, optional `open_in_chat`), `chat` (run an inline `prompt` in a fresh chat session, no installed pipe needed — optional `context`, optional `auto_send`), `api` (POST a local endpoint — needs `url`, optional `method`/`body`), `dismiss`. Fields: `title`* , `body`* (markdown), `type` (default "pipe"), `timeout`/`autoDismissMs` (ms, default 20000), `actions` (buttons; up to 5, each needs `id`/`label`/`type`). Body links: web URL → browser, file path (`~/notes.md`, `/var/log/app.log`) → default app, `screenpipe://...` → in-app. Returns `{"success":true}`.
 
 ---
 

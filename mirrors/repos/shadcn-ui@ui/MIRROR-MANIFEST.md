@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shadcn-ui/ui` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `shadcn-ui/ui` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shadcn-ui/ui` — 26 default patterns, 0 followed patterns, 18 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,13 +70,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`skills/shadcn/mcp.md`](skills/shadcn/mcp.md) |
 | 10 | ✓ | [`skills/shadcn/registry.md`](skills/shadcn/registry.md) |
 | 11 | ✓ | [`skills/shadcn/rules/base-vs-radix.md`](skills/shadcn/rules/base-vs-radix.md) |
-| 12 | ✓ | [`skills/shadcn/rules/composition.md`](skills/shadcn/rules/composition.md) |
-| 13 | ✓ | [`skills/shadcn/rules/forms.md`](skills/shadcn/rules/forms.md) |
-| 14 | ✓ | [`skills/shadcn/rules/icons.md`](skills/shadcn/rules/icons.md) |
-| 15 | ✓ | [`skills/shadcn/rules/styling.md`](skills/shadcn/rules/styling.md) |
-| 16 | ✓ | [`skills/shadcn/SKILL.md`](skills/shadcn/SKILL.md) |
-| 17 | ✓ | [`templates/next-app/AGENTS.md`](templates/next-app/AGENTS.md) |
-| 18 | ✓ | [`templates/next-monorepo/AGENTS.md`](templates/next-monorepo/AGENTS.md) |
+| 12 | ✓ | [`skills/shadcn/rules/chat.md`](skills/shadcn/rules/chat.md) |
+| 13 | ✓ | [`skills/shadcn/rules/composition.md`](skills/shadcn/rules/composition.md) |
+| 14 | ✓ | [`skills/shadcn/rules/forms.md`](skills/shadcn/rules/forms.md) |
+| 15 | ✓ | [`skills/shadcn/rules/icons.md`](skills/shadcn/rules/icons.md) |
+| 16 | ✓ | [`skills/shadcn/rules/styling.md`](skills/shadcn/rules/styling.md) |
+| 17 | ✓ | [`skills/shadcn/SKILL.md`](skills/shadcn/SKILL.md) |
+| 18 | ✓ | [`templates/next-app/AGENTS.md`](templates/next-app/AGENTS.md) |
+| 19 | ✓ | [`templates/next-monorepo/AGENTS.md`](templates/next-monorepo/AGENTS.md) |
 
 ---
 

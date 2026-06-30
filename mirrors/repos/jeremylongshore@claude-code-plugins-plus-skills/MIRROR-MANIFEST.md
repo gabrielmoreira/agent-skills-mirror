@@ -528,7 +528,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 467 | ✓ | [`plugins/examples/jeremy-plugin-tool/skills/version-bumper/SKILL.md`](plugins/examples/jeremy-plugin-tool/skills/version-bumper/SKILL.md) |
 | 468 | ✓ | [`plugins/examples/pi-pathfinder/skills/skill-adapter/SKILL.md`](plugins/examples/pi-pathfinder/skills/skill-adapter/SKILL.md) |
 | 469 | ✓ | [`plugins/examples/security-agent/skills/performing-security-code-review/SKILL.md`](plugins/examples/security-agent/skills/performing-security-code-review/SKILL.md) |
-| 470 | ✓ | [`plugins/mcp/beads-dolt/skills/beads-dolt/SKILL.md`](plugins/mcp/beads-dolt/skills/beads-dolt/SKILL.md) |
+| 470 | ✓ | [`plugins/mcp/dolt-mcp-vcs/skills/dolt-mcp-vcs/SKILL.md`](plugins/mcp/dolt-mcp-vcs/skills/dolt-mcp-vcs/SKILL.md) |
 | 471 | ✓ | [`plugins/mcp/governed-second-brain/skills/brain-save/SKILL.md`](plugins/mcp/governed-second-brain/skills/brain-save/SKILL.md) |
 | 472 | ✓ | [`plugins/mcp/governed-second-brain/skills/brain/SKILL.md`](plugins/mcp/governed-second-brain/skills/brain/SKILL.md) |
 | 473 | ✓ | [`plugins/mcp/pr-to-spec/.claude/skills/pr-to-spec/SKILL.md`](plugins/mcp/pr-to-spec/.claude/skills/pr-to-spec/SKILL.md) |

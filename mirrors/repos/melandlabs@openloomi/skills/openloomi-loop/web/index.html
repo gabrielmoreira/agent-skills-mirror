@@ -341,8 +341,12 @@ function showToast(msg, ms=2200){
 
 // ── FORMATTERS ───────────────────────────────────────────────────────────────
 function fmtContext(dec){
-  const p = dec.source_signal?.payload || {};
-  const t = dec.source_signal?.type;
+  // Defensive: API returns decision with `source` (e.g. "gmail:email") + flat `context` (the payload).
+  // Older enrichment shape nested payload under `source_signal.payload` — keep both paths working.
+  const sigType = dec.source_signal?.type
+    || (dec.source ? String(dec.source).split(':').slice(-1)[0] : null);
+  const p = dec.context || dec.source_signal?.payload || {};
+  const t = sigType;
   const out = [];
   if (t === 'calendar_event') {
     if (p.start) out.push(`<span class="k">⏰</span><span class="v">${fmtTimeShort(p.start)} – ${fmtTimeShort(p.end)} <em style="color:var(--text3)">(${relTime(p.start)})</em></span>`);
@@ -355,7 +359,9 @@ function fmtContext(dec){
     if (p.attachmentUrl || p.hasAttachment) out.push(`<span class="k">📎</span><span class="v">agenda attached</span>`);
   } else if (t === 'email') {
     if (p.from) out.push(`<span class="k">from</span><span class="v amber">${extractName(p.from)}</span>`);
-    if (p.timestamp) out.push(`<span class="k">sent</span><span class="v">${fmtTimeShort(p.timestamp)} <em style="color:var(--text3)">(${relTime(p.timestamp)})</em></span>`);
+    // API uses messageTimestamp (single email) or messageTimestamp_reply (thread reply); legacy payload used `timestamp`.
+    const ts = p.timestamp || p.messageTimestamp_reply || p.messageTimestamp;
+    if (ts) out.push(`<span class="k">sent</span><span class="v">${fmtTimeShort(ts)} <em style="color:var(--text3)">(${relTime(ts)})</em></span>`);
     if (p.subject) out.push(`<span class="k">re</span><span class="v">${escapeHTML(p.subject)}</span>`);
     if (Array.isArray(p.labels) && p.labels.length) {
       const skipLabels = new Set(['INBOX','SENT','DRAFT','IMPORTANT','UNREAD','STARRED','CATEGORY_PERSONAL','CATEGORY_PROMOTIONS','CATEGORY_SOCIAL','CATEGORY_UPDATES','CATEGORY_FORUMS']);
@@ -372,21 +378,44 @@ function fmtContext(dec){
     if (p.channel) out.push(`<span class="k">chan</span><span class="v amber">#${escapeHTML(p.channel)}</span>`);
     if (p.user) out.push(`<span class="k">user</span><span class="v amber">${escapeHTML(p.user)}</span>`);
   }
-  return out.length ? out.map(r=>`<div class="row">${r}</div>`).join('') : '<span class="v" style="color:var(--text3)">— no context —</span>';
+  return out.length ? out.map(r=>`<div class="row">${r}</div>`).join('') : '';
+}
+function fmtCtxBlock(d){
+  const html = fmtContext(d);
+  return html ? `<div class="card-ctx">${html}</div>` : '';
 }
 function fmtPerson(d){
   if (!d.context?.person) return '';
   return `<div class="card-person">👤 ${escapeHTML(d.context.person.name||'?')} ${d.context.person.email ? `&lt;${escapeHTML(d.context.person.email)}&gt;` : ''}</div>`;
 }
 function fmtMemory(d){
-  const refs = d.context?.memory_refs || [];
+  // memory_refs can be either a plain string ("insight:xxx" or "/path/to/file.md")
+  // or an object {type, path, excerpt} written by the enrich step. Normalize first
+  // so downstream rendering can treat refs uniformly.
+  const raw = d.context?.memory_refs || [];
+  const refs = raw.map(r => {
+    if (typeof r === 'string') {
+      return r.startsWith('insight:')
+        ? { kind: 'insight', id: r.slice(8) }
+        : { kind: 'mem', path: r };
+    }
+    if (r && typeof r === 'object') {
+      const t = r.type || '';
+      const p = r.path || '';
+      if (t === 'insight') {
+        const id = p.startsWith('insights:') ? p.slice(9) : p;
+        return { kind: 'insight', id };
+      }
+      return { kind: 'mem', path: p };
+    }
+    return null;
+  }).filter(Boolean);
   if (!refs.length) return '<div class="card-mem" style="color:var(--text3)">(no memory refs — run `loop tick` for Claude to enrich)</div>';
   const items = refs.map(r => {
-    if (r.startsWith('insight:')) {
-      const id = r.slice(8);
-      return `<span class="m" style="color:var(--pr);text-decoration-color:var(--pr)" data-insight="${escapeHTML(id)}">🧠 insight:${escapeHTML(id.slice(0,12))}…</span>`;
+    if (r.kind === 'insight') {
+      return `<span class="m" style="color:var(--pr);text-decoration-color:var(--pr)" data-insight="${escapeHTML(r.id)}">🧠 insight:${escapeHTML(r.id.slice(0,12))}…</span>`;
     }
-    return `<span class="m" data-mem="${escapeHTML(r)}">🧠 ${escapeHTML(r)}</span>`;
+    return `<span class="m" data-mem="${escapeHTML(r.path)}">🧠 ${escapeHTML(r.path)}</span>`;
   });
   return `<div class="card-mem">${items.join(' ')}</div>`;
 }
@@ -405,7 +434,7 @@ function fmtCard(d){
       <span class="card-cf">${cf}<span class="bar"><i style="width:${Math.round(cf*100)}%"></i></span></span>
     </div>
     <div class="card-t">${escapeHTML(d.title||'(no title)')}</div>
-    <div class="card-ctx">${fmtContext(d)}</div>
+    ${fmtCtxBlock(d)}
     ${fmtPerson(d)}
     ${fmtMemory(d)}
     ${fmtAction(d)}

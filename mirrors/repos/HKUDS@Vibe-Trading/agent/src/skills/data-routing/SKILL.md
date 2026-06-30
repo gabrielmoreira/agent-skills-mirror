@@ -66,9 +66,9 @@ is required only where listed (no key listed = free / no auth).
 | iWenCai NL search (问财) | `iwencai_search` | A-share | `VIBE_TRADING_IWENCAI_KEY` |
 
 Notes:
-- `get_financial_statements` reads A-share, US, and HK statements via the
-  Eastmoney datacenter report API (per-market F10 report names) — an IP-throttled
-  client, not the OHLCV loader of the same name.
+- `get_financial_statements` reads US statements from SEC EDGAR companyfacts
+  (ticker -> CIK -> XBRL concepts) and A-share/HK statements from the Eastmoney
+  datacenter report API (per-market F10 report names).
 - `get_stock_news` routes A-share (SH/SZ/BJ) to an Eastmoney news client and
   US (.US) / HK (.HK) to a Yahoo search client; a failure on one upstream is
   returned as an error envelope, never raised, so a single bad symbol never

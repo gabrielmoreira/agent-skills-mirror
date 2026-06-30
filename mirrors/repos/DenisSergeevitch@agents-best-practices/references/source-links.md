@@ -30,6 +30,7 @@ Use this file when the user asks for cited, provider-specific, or standards-back
 - Anthropic effective context engineering: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
 - Anthropic writing effective tools for agents: https://www.anthropic.com/engineering/writing-tools-for-agents
 - Anthropic effective harnesses for long-running agents: https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
+- Anthropic demystifying evals for agents: https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents
 - Anthropic code execution with MCP: https://www.anthropic.com/engineering/code-execution-with-mcp
 - Anthropic Agent Skills engineering note: https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills
 
@@ -53,7 +54,7 @@ Use this file when the user asks for cited, provider-specific, or standards-back
 
 - Use Agent Skills links for format, metadata, progressive disclosure, descriptions, and skill evals.
 - Use OpenAI links for API implementation patterns, function calling, hosted tools, guardrails, sandboxes, prompt caching, response-style APIs, and harness engineering practices.
-- Use Anthropic links for simple agent patterns, context engineering, tool ergonomics, long-running harnesses, MCP execution patterns, and skill architecture.
+- Use Anthropic links for simple agent patterns, context engineering, tool ergonomics, long-running harnesses, agent evals, MCP execution patterns, and skill architecture.
 - Use MCP links for external resources, prompts, tools, authorization, and connector design.
 - Use OWASP and NIST links for threat modeling, governance, auditability, and enterprise deployment controls.
 - Use implementation examples as concrete shape references, not as normative architecture or provider-neutral policy.

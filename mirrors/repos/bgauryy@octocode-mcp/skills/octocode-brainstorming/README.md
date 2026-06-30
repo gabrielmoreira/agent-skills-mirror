@@ -1,37 +1,50 @@
 # Octocode Brainstorming
 
-`octocode-brainstorming` turns a fuzzy idea into an evidence-grounded decision brief. It is for "is this worth building?", "has anyone built this?", "what are the angles?", and "should we add this?" moments.
+`octocode-brainstorming` gives an agent a disciplined way to explore fuzzy ideas before anyone commits to a feature, library, workflow, or product direction.
 
-It does not write code or design the final system. It decides whether the idea deserves that next step.
+The skill is built for the moment when a user asks, "Is this worth building?", "Has anyone already tried this?", or "What is the sharper version of this idea?" It keeps the conversation creative, but it makes the final answer answerable to evidence.
 
-## How it works
+## The Problem
 
-The skill reframes the idea into testable claims, then checks the local workspace when relevant, GitHub, packages, and the web for prior art and contrary evidence. It groups signals into crowded, partial, abandoned, contested, or open-space buckets, debates objections against opportunities, and ends with a decision brief plus a handoff when an RFC is warranted.
+Early ideas are fragile. If the agent searches only for the user's first wording, it may miss better framings. If it jumps straight to enthusiasm, it can turn a vague hunch into roadmap debt. If it only lists prior art, it can still avoid the harder question: what should we do next?
 
-## Good asks
+This skill makes the agent diverge before it converges. It frames the idea several ways, checks evidence across the right surfaces, notices conflict, and then recommends one practical next move.
 
-- "Validate this idea before I build it."
-- "Has anyone already solved this?"
-- "Brainstorm product directions for this technical area."
-- "Find prior art and white space for this feature."
-- "Should this become an RFC?"
+## Capabilities
 
-## What you get
+- Alternative framings that prevent the first wording from anchoring the whole search.
+- A surface plan that explains which sources matter: local code, web resources, GitHub, packages, and exact code reads.
+- Top-resource-first prior-art mapping, so articles, docs, papers, and official sources seed repo and package research.
+- Claim tracking, with confidence and next-query thinking instead of unsupported assertions.
+- Cross-surface loops where web findings lead to code reads and code findings send the agent back to resources.
+- Perspective review through critical, entrepreneurial, and product lenses.
+- Conflict handling that concedes weak or contradictory evidence before the verdict.
+- A final decision shape such as build RFC, prototype, narrow, park, or do not build.
 
-- A reframed problem statement so the search is not trapped by the first wording.
-- A surface plan covering local code when relevant, GitHub, packages, and the web.
-- Prior art grouped into crowded, partial, abandoned, contested, or open-space signals.
-- Evidence-backed objections and opportunity angles.
-- A verdict such as worth prototyping, narrow first, park, or do not build.
-- A handoff packet for `octocode-rfc-generator` when the idea is ready for a design plan.
+## Operating Model
 
-## Use another skill when
+The workflow is:
 
-- The user already knows what to build and wants code work: use `octocode-engineer`.
-- The question is technical research rather than idea validation: use `octocode-research`.
-- The goal is clear and needs repeated proof loops: use `octocode-loop`.
-- The decision is made and needs a proposal: use `octocode-rfc-generator`.
+```text
+FRAME -> DIVERGE -> RESEARCH -> CROSS-POLLINATE -> STRESS-TEST -> SYNTHESIZE -> DECIDE
+```
 
-## User value
+The agent first turns the idea into testable framings. It then researches the strongest surfaces, follows leads from one surface into another, and stress-tests the emerging thesis. The answer is not complete until the agent has stated what survived review, what was weakened, and what next step would change the decision.
 
-This skill protects users from building the first plausible idea. It widens the frame, checks reality across multiple surfaces, then compresses the result into a brief that supports a decision.
+## User Experience
+
+For users, this skill feels like a product-minded technical partner. It does not merely say "yes" or "no." It names the better angle, shows which evidence supports it, marks uncertainty, and gives a next action that is small enough to be useful.
+
+The output is a decision brief rather than code or design. When the idea becomes ready for architecture or implementation planning, it can hand off cleanly to research or RFC work.
+
+## Installation
+
+Install the published skill with:
+
+```bash
+npx octocode skill --name octocode-brainstorming
+```
+
+## Maintainer Notes
+
+Keep the README focused on the reasoning model: divergent framing, resource-first research, surface loops, conflict concessions, and decision usefulness. Keep operational details, eval mechanics, and web adapter behavior in the agent-facing skill file and references.

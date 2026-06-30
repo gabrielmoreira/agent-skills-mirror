@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Nimbleway/agent-skills` — 26 default patterns, 0 followed patterns, 125 file(s) materialized.
+Mirror of `Nimbleway/agent-skills` — 26 default patterns, 0 followed patterns, 131 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Nimbleway/agent-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 125 |
+| Files         | 131 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -125,65 +125,71 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 64 | ✓ | [`skills/marketing/competitor-positioning/references/positioning-snapshot-format.md`](skills/marketing/competitor-positioning/references/positioning-snapshot-format.md) |
 | 65 | ✓ | [`skills/marketing/competitor-positioning/references/profile-and-onboarding.md`](skills/marketing/competitor-positioning/references/profile-and-onboarding.md) |
 | 66 | ✓ | [`skills/marketing/competitor-positioning/SKILL.md`](skills/marketing/competitor-positioning/SKILL.md) |
-| 67 | ✓ | [`skills/productivity/local-places/references/memory-and-distribution.md`](skills/productivity/local-places/references/memory-and-distribution.md) |
-| 68 | ✓ | [`skills/productivity/local-places/references/nimble-playbook.md`](skills/productivity/local-places/references/nimble-playbook.md) |
-| 69 | ✓ | [`skills/productivity/local-places/references/profile-and-onboarding.md`](skills/productivity/local-places/references/profile-and-onboarding.md) |
-| 70 | ✓ | [`skills/productivity/local-places/references/wsa-pipeline.md`](skills/productivity/local-places/references/wsa-pipeline.md) |
-| 71 | ✓ | [`skills/productivity/local-places/SKILL.md`](skills/productivity/local-places/SKILL.md) |
-| 72 | ✓ | [`skills/productivity/meeting-prep/references/attendee-agent-prompt.md`](skills/productivity/meeting-prep/references/attendee-agent-prompt.md) |
-| 73 | ✓ | [`skills/productivity/meeting-prep/references/memory-and-distribution.md`](skills/productivity/meeting-prep/references/memory-and-distribution.md) |
-| 74 | ✓ | [`skills/productivity/meeting-prep/references/nimble-playbook.md`](skills/productivity/meeting-prep/references/nimble-playbook.md) |
-| 75 | ✓ | [`skills/productivity/meeting-prep/references/profile-and-onboarding.md`](skills/productivity/meeting-prep/references/profile-and-onboarding.md) |
-| 76 | ✓ | [`skills/productivity/meeting-prep/SKILL.md`](skills/productivity/meeting-prep/SKILL.md) |
-| 77 | ✓ | [`skills/seo/seo-intel/references/ai-platform-profiles.md`](skills/seo/seo-intel/references/ai-platform-profiles.md) |
-| 78 | ✓ | [`skills/seo/seo-intel/references/ai-visibility-agent-prompt.md`](skills/seo/seo-intel/references/ai-visibility-agent-prompt.md) |
-| 79 | ✓ | [`skills/seo/seo-intel/references/audit-agent-prompt.md`](skills/seo/seo-intel/references/audit-agent-prompt.md) |
-| 80 | ✓ | [`skills/seo/seo-intel/references/content-gap-agent-prompt.md`](skills/seo/seo-intel/references/content-gap-agent-prompt.md) |
-| 81 | ✓ | [`skills/seo/seo-intel/references/github-seo-checks.md`](skills/seo/seo-intel/references/github-seo-checks.md) |
-| 82 | ✓ | [`skills/seo/seo-intel/references/keyword-research-agent-prompt.md`](skills/seo/seo-intel/references/keyword-research-agent-prompt.md) |
-| 83 | ✓ | [`skills/seo/seo-intel/references/memory-and-distribution.md`](skills/seo/seo-intel/references/memory-and-distribution.md) |
-| 84 | ✓ | [`skills/seo/seo-intel/references/nimble-playbook.md`](skills/seo/seo-intel/references/nimble-playbook.md) |
-| 85 | ✓ | [`skills/seo/seo-intel/references/profile-and-onboarding.md`](skills/seo/seo-intel/references/profile-and-onboarding.md) |
-| 86 | ✓ | [`skills/seo/seo-intel/references/seo-audit-checks.md`](skills/seo/seo-intel/references/seo-audit-checks.md) |
-| 87 | ✓ | [`skills/seo/seo-intel/references/seo-extraction-prompt.md`](skills/seo/seo-intel/references/seo-extraction-prompt.md) |
-| 88 | ✓ | [`skills/seo/seo-intel/references/serp-query-patterns.md`](skills/seo/seo-intel/references/serp-query-patterns.md) |
-| 89 | ✓ | [`skills/seo/seo-intel/references/wf-ai-visibility.md`](skills/seo/seo-intel/references/wf-ai-visibility.md) |
-| 90 | ✓ | [`skills/seo/seo-intel/references/wf-competitor-keywords.md`](skills/seo/seo-intel/references/wf-competitor-keywords.md) |
-| 91 | ✓ | [`skills/seo/seo-intel/references/wf-content-gap.md`](skills/seo/seo-intel/references/wf-content-gap.md) |
-| 92 | ✓ | [`skills/seo/seo-intel/references/wf-github-seo.md`](skills/seo/seo-intel/references/wf-github-seo.md) |
-| 93 | ✓ | [`skills/seo/seo-intel/references/wf-keyword-research.md`](skills/seo/seo-intel/references/wf-keyword-research.md) |
-| 94 | ✓ | [`skills/seo/seo-intel/references/wf-rank-tracker.md`](skills/seo/seo-intel/references/wf-rank-tracker.md) |
-| 95 | ✓ | [`skills/seo/seo-intel/references/wf-site-audit.md`](skills/seo/seo-intel/references/wf-site-audit.md) |
-| 96 | ✓ | [`skills/seo/seo-intel/SKILL.md`](skills/seo/seo-intel/SKILL.md) |
-| 97 | ✓ | [`skills/web-search-tools/nimble-agent-builder/README.md`](skills/web-search-tools/nimble-agent-builder/README.md) |
-| 98 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/agent-api-reference.md`](skills/web-search-tools/nimble-agent-builder/references/agent-api-reference.md) |
-| 99 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/batch-patterns.md`](skills/web-search-tools/nimble-agent-builder/references/batch-patterns.md) |
-| 100 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/error-recovery.md`](skills/web-search-tools/nimble-agent-builder/references/error-recovery.md) |
-| 101 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/generate-update-and-publish.md`](skills/web-search-tools/nimble-agent-builder/references/generate-update-and-publish.md) |
-| 102 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/rest-api-patterns.md`](skills/web-search-tools/nimble-agent-builder/references/rest-api-patterns.md) |
-| 103 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/sdk-patterns.md`](skills/web-search-tools/nimble-agent-builder/references/sdk-patterns.md) |
-| 104 | ✓ | [`skills/web-search-tools/nimble-agent-builder/rules/nimble-agent-builder.mdc`](skills/web-search-tools/nimble-agent-builder/rules/nimble-agent-builder.mdc) |
-| 105 | ✓ | [`skills/web-search-tools/nimble-agent-builder/rules/setup.md`](skills/web-search-tools/nimble-agent-builder/rules/setup.md) |
-| 106 | ✓ | [`skills/web-search-tools/nimble-agent-builder/SKILL.md`](skills/web-search-tools/nimble-agent-builder/SKILL.md) |
-| 107 | ✓ | [`skills/web-search-tools/nimble-web-expert/README.md`](skills/web-search-tools/nimble-web-expert/README.md) |
-| 108 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/batch-patterns.md`](skills/web-search-tools/nimble-web-expert/references/batch-patterns.md) |
-| 109 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/error-handling.md`](skills/web-search-tools/nimble-web-expert/references/error-handling.md) |
-| 110 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-agents/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-agents/SKILL.md) |
-| 111 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-crawl/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-crawl/SKILL.md) |
-| 112 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-actions.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-actions.md) |
-| 113 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-investigation.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-investigation.md) |
-| 114 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/network-capture.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/network-capture.md) |
-| 115 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/parsing-schema.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/parsing-schema.md) |
-| 116 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/SKILL.md) |
-| 117 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-map/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-map/SKILL.md) |
-| 118 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-search/search-focus-modes.md`](skills/web-search-tools/nimble-web-expert/references/nimble-search/search-focus-modes.md) |
-| 119 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-search/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-search/SKILL.md) |
-| 120 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-tasks/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-tasks/SKILL.md) |
-| 121 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/recipes.md`](skills/web-search-tools/nimble-web-expert/references/recipes.md) |
-| 122 | ✓ | [`skills/web-search-tools/nimble-web-expert/rules/nimble-web-expert.mdc`](skills/web-search-tools/nimble-web-expert/rules/nimble-web-expert.mdc) |
-| 123 | ✓ | [`skills/web-search-tools/nimble-web-expert/rules/output.md`](skills/web-search-tools/nimble-web-expert/rules/output.md) |
-| 124 | ✓ | [`skills/web-search-tools/nimble-web-expert/rules/setup.md`](skills/web-search-tools/nimble-web-expert/rules/setup.md) |
-| 125 | ✓ | [`skills/web-search-tools/nimble-web-expert/SKILL.md`](skills/web-search-tools/nimble-web-expert/SKILL.md) |
+| 67 | ✓ | [`skills/marketing/launch-monitor/references/memory-and-distribution.md`](skills/marketing/launch-monitor/references/memory-and-distribution.md) |
+| 68 | ✓ | [`skills/marketing/launch-monitor/references/nimble-playbook.md`](skills/marketing/launch-monitor/references/nimble-playbook.md) |
+| 69 | ✓ | [`skills/marketing/launch-monitor/references/profile-and-onboarding.md`](skills/marketing/launch-monitor/references/profile-and-onboarding.md) |
+| 70 | ✓ | [`skills/marketing/launch-monitor/references/sources.md`](skills/marketing/launch-monitor/references/sources.md) |
+| 71 | ✓ | [`skills/marketing/launch-monitor/references/template.html`](skills/marketing/launch-monitor/references/template.html) |
+| 72 | ✓ | [`skills/marketing/launch-monitor/SKILL.md`](skills/marketing/launch-monitor/SKILL.md) |
+| 73 | ✓ | [`skills/productivity/local-places/references/memory-and-distribution.md`](skills/productivity/local-places/references/memory-and-distribution.md) |
+| 74 | ✓ | [`skills/productivity/local-places/references/nimble-playbook.md`](skills/productivity/local-places/references/nimble-playbook.md) |
+| 75 | ✓ | [`skills/productivity/local-places/references/profile-and-onboarding.md`](skills/productivity/local-places/references/profile-and-onboarding.md) |
+| 76 | ✓ | [`skills/productivity/local-places/references/wsa-pipeline.md`](skills/productivity/local-places/references/wsa-pipeline.md) |
+| 77 | ✓ | [`skills/productivity/local-places/SKILL.md`](skills/productivity/local-places/SKILL.md) |
+| 78 | ✓ | [`skills/productivity/meeting-prep/references/attendee-agent-prompt.md`](skills/productivity/meeting-prep/references/attendee-agent-prompt.md) |
+| 79 | ✓ | [`skills/productivity/meeting-prep/references/memory-and-distribution.md`](skills/productivity/meeting-prep/references/memory-and-distribution.md) |
+| 80 | ✓ | [`skills/productivity/meeting-prep/references/nimble-playbook.md`](skills/productivity/meeting-prep/references/nimble-playbook.md) |
+| 81 | ✓ | [`skills/productivity/meeting-prep/references/profile-and-onboarding.md`](skills/productivity/meeting-prep/references/profile-and-onboarding.md) |
+| 82 | ✓ | [`skills/productivity/meeting-prep/SKILL.md`](skills/productivity/meeting-prep/SKILL.md) |
+| 83 | ✓ | [`skills/seo/seo-intel/references/ai-platform-profiles.md`](skills/seo/seo-intel/references/ai-platform-profiles.md) |
+| 84 | ✓ | [`skills/seo/seo-intel/references/ai-visibility-agent-prompt.md`](skills/seo/seo-intel/references/ai-visibility-agent-prompt.md) |
+| 85 | ✓ | [`skills/seo/seo-intel/references/audit-agent-prompt.md`](skills/seo/seo-intel/references/audit-agent-prompt.md) |
+| 86 | ✓ | [`skills/seo/seo-intel/references/content-gap-agent-prompt.md`](skills/seo/seo-intel/references/content-gap-agent-prompt.md) |
+| 87 | ✓ | [`skills/seo/seo-intel/references/github-seo-checks.md`](skills/seo/seo-intel/references/github-seo-checks.md) |
+| 88 | ✓ | [`skills/seo/seo-intel/references/keyword-research-agent-prompt.md`](skills/seo/seo-intel/references/keyword-research-agent-prompt.md) |
+| 89 | ✓ | [`skills/seo/seo-intel/references/memory-and-distribution.md`](skills/seo/seo-intel/references/memory-and-distribution.md) |
+| 90 | ✓ | [`skills/seo/seo-intel/references/nimble-playbook.md`](skills/seo/seo-intel/references/nimble-playbook.md) |
+| 91 | ✓ | [`skills/seo/seo-intel/references/profile-and-onboarding.md`](skills/seo/seo-intel/references/profile-and-onboarding.md) |
+| 92 | ✓ | [`skills/seo/seo-intel/references/seo-audit-checks.md`](skills/seo/seo-intel/references/seo-audit-checks.md) |
+| 93 | ✓ | [`skills/seo/seo-intel/references/seo-extraction-prompt.md`](skills/seo/seo-intel/references/seo-extraction-prompt.md) |
+| 94 | ✓ | [`skills/seo/seo-intel/references/serp-query-patterns.md`](skills/seo/seo-intel/references/serp-query-patterns.md) |
+| 95 | ✓ | [`skills/seo/seo-intel/references/wf-ai-visibility.md`](skills/seo/seo-intel/references/wf-ai-visibility.md) |
+| 96 | ✓ | [`skills/seo/seo-intel/references/wf-competitor-keywords.md`](skills/seo/seo-intel/references/wf-competitor-keywords.md) |
+| 97 | ✓ | [`skills/seo/seo-intel/references/wf-content-gap.md`](skills/seo/seo-intel/references/wf-content-gap.md) |
+| 98 | ✓ | [`skills/seo/seo-intel/references/wf-github-seo.md`](skills/seo/seo-intel/references/wf-github-seo.md) |
+| 99 | ✓ | [`skills/seo/seo-intel/references/wf-keyword-research.md`](skills/seo/seo-intel/references/wf-keyword-research.md) |
+| 100 | ✓ | [`skills/seo/seo-intel/references/wf-rank-tracker.md`](skills/seo/seo-intel/references/wf-rank-tracker.md) |
+| 101 | ✓ | [`skills/seo/seo-intel/references/wf-site-audit.md`](skills/seo/seo-intel/references/wf-site-audit.md) |
+| 102 | ✓ | [`skills/seo/seo-intel/SKILL.md`](skills/seo/seo-intel/SKILL.md) |
+| 103 | ✓ | [`skills/web-search-tools/nimble-agent-builder/README.md`](skills/web-search-tools/nimble-agent-builder/README.md) |
+| 104 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/agent-api-reference.md`](skills/web-search-tools/nimble-agent-builder/references/agent-api-reference.md) |
+| 105 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/batch-patterns.md`](skills/web-search-tools/nimble-agent-builder/references/batch-patterns.md) |
+| 106 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/error-recovery.md`](skills/web-search-tools/nimble-agent-builder/references/error-recovery.md) |
+| 107 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/generate-update-and-publish.md`](skills/web-search-tools/nimble-agent-builder/references/generate-update-and-publish.md) |
+| 108 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/rest-api-patterns.md`](skills/web-search-tools/nimble-agent-builder/references/rest-api-patterns.md) |
+| 109 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/sdk-patterns.md`](skills/web-search-tools/nimble-agent-builder/references/sdk-patterns.md) |
+| 110 | ✓ | [`skills/web-search-tools/nimble-agent-builder/rules/nimble-agent-builder.mdc`](skills/web-search-tools/nimble-agent-builder/rules/nimble-agent-builder.mdc) |
+| 111 | ✓ | [`skills/web-search-tools/nimble-agent-builder/rules/setup.md`](skills/web-search-tools/nimble-agent-builder/rules/setup.md) |
+| 112 | ✓ | [`skills/web-search-tools/nimble-agent-builder/SKILL.md`](skills/web-search-tools/nimble-agent-builder/SKILL.md) |
+| 113 | ✓ | [`skills/web-search-tools/nimble-web-expert/README.md`](skills/web-search-tools/nimble-web-expert/README.md) |
+| 114 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/batch-patterns.md`](skills/web-search-tools/nimble-web-expert/references/batch-patterns.md) |
+| 115 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/error-handling.md`](skills/web-search-tools/nimble-web-expert/references/error-handling.md) |
+| 116 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-agents/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-agents/SKILL.md) |
+| 117 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-crawl/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-crawl/SKILL.md) |
+| 118 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-actions.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-actions.md) |
+| 119 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-investigation.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-investigation.md) |
+| 120 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/network-capture.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/network-capture.md) |
+| 121 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/parsing-schema.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/parsing-schema.md) |
+| 122 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/SKILL.md) |
+| 123 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-map/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-map/SKILL.md) |
+| 124 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-search/search-focus-modes.md`](skills/web-search-tools/nimble-web-expert/references/nimble-search/search-focus-modes.md) |
+| 125 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-search/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-search/SKILL.md) |
+| 126 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-tasks/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-tasks/SKILL.md) |
+| 127 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/recipes.md`](skills/web-search-tools/nimble-web-expert/references/recipes.md) |
+| 128 | ✓ | [`skills/web-search-tools/nimble-web-expert/rules/nimble-web-expert.mdc`](skills/web-search-tools/nimble-web-expert/rules/nimble-web-expert.mdc) |
+| 129 | ✓ | [`skills/web-search-tools/nimble-web-expert/rules/output.md`](skills/web-search-tools/nimble-web-expert/rules/output.md) |
+| 130 | ✓ | [`skills/web-search-tools/nimble-web-expert/rules/setup.md`](skills/web-search-tools/nimble-web-expert/rules/setup.md) |
+| 131 | ✓ | [`skills/web-search-tools/nimble-web-expert/SKILL.md`](skills/web-search-tools/nimble-web-expert/SKILL.md) |
 
 ---
 

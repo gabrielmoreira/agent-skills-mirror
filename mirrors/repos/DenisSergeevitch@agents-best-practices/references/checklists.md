@@ -157,6 +157,8 @@ For each tool:
 
 ## Evals checklist
 
+Use [evals.md](evals.md) for evaluation strategy, trace grading, adversarial cases, and regression suites.
+
 - [ ] Happy-path tasks.
 - [ ] Near-miss tasks.
 - [ ] Prompt injection tasks.

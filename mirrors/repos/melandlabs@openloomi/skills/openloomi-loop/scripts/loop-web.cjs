@@ -73,7 +73,7 @@ const NOTIFY_SEEN = path.join(DATA_DIR, 'notifications.seen.json');
 const STATUS_PATH = path.join(DATA_DIR, 'status.json');
 const DRAFT_DIR = path.join(DATA_DIR, 'drafts');
 
-const PORT = Number.parseInt(process.env.LOOP_WEB_PORT || process.argv[2] || '3414', 10);
+const LOOP_WEB_PORT = Number.parseInt(process.env.LOOP_WEB_PORT || process.argv[2] || '3614', 10);
 const HOST = process.env.LOOP_WEB_HOST || '127.0.0.1';
 
 // --- helpers -----------------------------------------------------------------
@@ -81,6 +81,27 @@ const HOST = process.env.LOOP_WEB_HOST || '127.0.0.1';
 function readJson(p, fallback) {
   try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return fallback; }
 }
+// Schema contract: `memory_refs` and `insight_refs` live INSIDE `context`.
+// Some agent emits put them at the top level of the decision object.
+// Hoist them into `context` on every read so the web UI, the run-prompt
+// builder, and the move/bucket writers all see one consistent shape.
+// Mutates and returns the same object.
+function normalizeDecision(dec) {
+  if (!dec || typeof dec !== 'object') return dec;
+  if (!dec.context || typeof dec.context !== 'object') dec.context = {};
+  const ctx = dec.context;
+  for (const k of ['memory_refs', 'insight_refs']) {
+    if (Array.isArray(dec[k]) && dec[k].length) {
+      if (!Array.isArray(ctx[k])) ctx[k] = [];
+      for (const v of dec[k]) {
+        if (!ctx[k].includes(v)) ctx[k].push(v);
+      }
+      delete dec[k];
+    }
+  }
+  return dec;
+}
+
 function readJsonlTail(p, limit) {
   if (!fs.existsSync(p)) return [];
   const lines = fs.readFileSync(p, 'utf8').split('\n').filter(Boolean);
@@ -114,7 +135,7 @@ function findDecision(id) {
   const d = readJson(DECISIONS_PATH, { pending: [], done: [], dismissed: [] });
   for (const bucket of ['pending', 'done', 'dismissed']) {
     const found = (d[bucket] || []).find((x) => x.id === id);
-    if (found) return { dec: found, bucket, store: d };
+    if (found) return { dec: normalizeDecision(found), bucket, store: d };
   }
   return null;
 }
@@ -133,6 +154,12 @@ function moveDecision(id, toBucket) {
     }
   }
   if (!moved) return null;
+  // Defensive: clean up top-level memory_refs/insight_refs on write so the
+  // on-disk format matches the schema contract (refs live inside `context`).
+  // Idempotent — no-op if already correctly nested.
+  for (const bucket of ['pending', 'done', 'dismissed']) {
+    if (Array.isArray(d[bucket])) for (const dec of d[bucket]) normalizeDecision(dec);
+  }
   const tmp = `${DECISIONS_PATH}.tmp`;
   fs.writeFileSync(tmp, JSON.stringify(d, null, 2));
   fs.renameSync(tmp, DECISIONS_PATH);
@@ -194,6 +221,9 @@ function handleState(req, res) {
 
 function handleListDecisions(req, res) {
   const d = readJson(DECISIONS_PATH, { pending: [], done: [], dismissed: [] });
+  for (const bucket of ['pending', 'done', 'dismissed']) {
+    if (Array.isArray(d[bucket])) for (const dec of d[bucket]) normalizeDecision(dec);
+  }
   jsonRes(res, 200, d);
 }
 
@@ -252,7 +282,7 @@ function handleRun(req, res, id) {
       env: cleanChildEnv(),
     });
     child.unref();
-    return jsonRes(res, 202, { ok: true, spawned: child.pid, bin: claudeBin });
+    return jsonRes(res, 202, { ok: true, spawned: child.pid, bin });
   } catch (e) {
     return jsonRes(res, 500, { error: 'spawn_failed', message: e.message });
   }
@@ -347,9 +377,9 @@ const server = http.createServer((req, res) => {
   textRes(res, 405, 'method not allowed');
 });
 
-server.listen(PORT, HOST, () => {
+server.listen(LOOP_WEB_PORT, HOST, () => {
   console.log("openloomi-loop kanban");
-  console.log(`  url:    http://${HOST}:${PORT}/`);
+  console.log(`  url:    http://${HOST}:${LOOP_WEB_PORT}/`);
   console.log(`  data:   ${DATA_DIR}`);
   console.log(`  memory: ${MEMORY_DIR}`);
   console.log("Press Ctrl+C to stop.\n");

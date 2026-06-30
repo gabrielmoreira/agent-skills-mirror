@@ -226,9 +226,38 @@ const signals = {
 // Decisions
 // ---------------------------------------------------------------------------
 
+// Schema contract: `memory_refs` and `insight_refs` live INSIDE `context`.
+// Some agent emits put them at the top level of the decision object. This
+// hoists them into `context` so every consumer (CLI inbox formatter, webhook
+// payload, run-prompt builder, web UI) sees one consistent shape regardless
+// of how the decision was originally emitted. Mutates and returns the same
+// object — callers can chain or assign. Idempotent: no-op when already nested.
+function normalizeDecision(dec) {
+  if (!dec || typeof dec !== 'object') return dec;
+  if (!dec.context || typeof dec.context !== 'object') dec.context = {};
+  const ctx = dec.context;
+  for (const k of ['memory_refs', 'insight_refs']) {
+    if (Array.isArray(dec[k]) && dec[k].length) {
+      if (!Array.isArray(ctx[k])) ctx[k] = [];
+      for (const v of dec[k]) {
+        if (!ctx[k].includes(v)) ctx[k].push(v);
+      }
+      delete dec[k];
+    }
+  }
+  return dec;
+}
+
 function readDecisions() {
   ensureDirs();
-  return readJson(DECISIONS_PATH, { pending: [], done: [], dismissed: [] });
+  const d = readJson(DECISIONS_PATH, { pending: [], done: [], dismissed: [] });
+  // Defensive: hoist any top-level memory_refs/insight_refs on read so the
+  // CLI, web, and webhook formatters all see the schema-correct shape even
+  // for legacy on-disk records that pre-date the contract.
+  for (const bucket of ['pending', 'done', 'dismissed']) {
+    if (Array.isArray(d[bucket])) for (const dec of d[bucket]) normalizeDecision(dec);
+  }
+  return d;
 }
 
 function writeDecisions(d) {
@@ -244,6 +273,7 @@ const decisions = {
   pending() { return readDecisions().pending; },
   add(decision) {
     const d = readDecisions();
+    normalizeDecision(decision);
     decision.id = decision.id || uid('dec');
     decision.ts = decision.ts || now();
     decision.status = decision.status || 'pending';
@@ -422,4 +452,5 @@ module.exports = {
   rules,
   config: { read: readConfig, write: writeConfig, defaults: defaultConfig },
   utils: { now, uid, log, readJson, writeJsonAtomic, readJsonl, appendJsonl },
+  normalizeDecision,
 };

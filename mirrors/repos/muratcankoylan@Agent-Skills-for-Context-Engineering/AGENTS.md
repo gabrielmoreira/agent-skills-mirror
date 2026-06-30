@@ -16,13 +16,13 @@ Workspace memory for agents collaborating on this repository. Keep entries durab
 - This repo is an autonomous research-to-skill organization. External AI research is curated through rubrics and distilled into context-engineering and harness-engineering skill updates.
 - `researcher/` is repo-native and file-based so agents can resume, audit, validate, and prepare PR-ready skill changes without a hosted scheduler.
 - Per-run state lives in `researcher/runs/<run-id>/run-state.json` with explicit transitions (`initialized -> retrieved -> evaluated -> proposed -> novelty_checked -> validated -> pr_ready -> closed`). Use `research_loop.py` subcommands to advance state, never hand-edit `run-state.json`.
-- Repo health (`validate_repo.py`) and per-run readiness (`validate_run.py`) are different questions. CI runs `validate_repo.py --strict`, `run_benchmarks.py`, and `check_activation_cases.py` on every PR via `.github/workflows/validate.yml`.
+- Repo health (`validate_repo.py`) and per-run readiness (`validate_run.py`) are different questions. CI runs `validate_platform_compat.py --require-reference-validator`, `validate_repo.py --strict`, `skill_health.py --strict --no-history`, `run_benchmarks.py`, and `check_activation_cases.py` on every PR via `.github/workflows/validate.yml`.
 - The mechanism registry (`researcher/mechanisms/registry.jsonl`) is the encyclopedia backbone. Promotion is gated by `research_loop.py promote-mechanisms` with a recorded reviewer; ledgers live under `researcher/mechanisms/ledgers/`.
 - Claim provenance for numeric or volatile claims lives in `researcher/claims/index.jsonl`. Add an entry for any new benchmark or volatility-sensitive claim.
 - The corpus index (`researcher/corpus/index.json`) is the machine-readable map of skills, activation scenarios, mechanisms, and claims. Update it when adding or restructuring skills.
 - The continuous loop (`researcher/scripts/loop_*.py`) runs from launchd via `researcher/orchestration/launchd/`. It never invokes paid LLMs; HTTP retrieval is stdlib-only with a 1.5 MB cap and a 30-second timeout.
 - Runtime state is not committed: `researcher/queue/*.jsonl`, `researcher/queue/.locks/`, `researcher/reports/{logs,snapshots,loop-events.jsonl,loop-failures.jsonl,status.md,parked-review.md}`, and `researcher/runs/*/` are gitignored. The seed run `20260515-035228-executable-autonomous-research-frameworks` is the only committed run; it is closed as `reference-only` and serves as a worked example.
-- The current published version is 2.3.0 across `.claude-plugin/marketplace.json`, `.plugin/plugin.json`, and root `SKILL.md`. There are 15 skills (latent-briefing covers KV cache sharing between agents).
+- The current prepared release version is 2.3.1 across `.claude-plugin/marketplace.json`, `.plugin/plugin.json`, and root `SKILL.md`. There are 15 skills (latent-briefing covers KV cache sharing between agents).
 - Detailed lessons from building the researcher OS live in `researcher/insights/auto-research-experiment.md` (engineering rationale) and `researcher/insights/how-we-built-this.md` (project narrative and sharing templates); read both before extending the harness or writing release-facing prose.
 - Benchmarks are staged in `researcher/benchmarks/`: Stage 0 deterministic harness (shipped), Stage 1 per-skill health via `researcher/scripts/skill_health.py` (shipped; output `researcher/reports/skill-health.json` is gitignored), Stage 2 router (shipped; results in `researcher/benchmarks/router/results-published/`), Stage 3 effectiveness (scaffolded, one task built), Stage 4 composition (future). `researcher/benchmarks/PLAN.md` is the methodology source of truth.
 - Current corpus-hardening baseline: 16 accepted mechanisms, 12 provenance-tracked claims, 19 activation cases, and strict skill-health score 0.9117 with 0 flagged skills. Do not describe a skill improvement as complete unless the prose, mechanism registry, claim index, corpus index, activation fixtures, and validators all agree.
@@ -31,7 +31,7 @@ Workspace memory for agents collaborating on this repository. Keep entries durab
 
 ## Repository Operating Defaults
 
-- Deterministic checks before model judges. Always run `validate_repo.py --strict` before claiming a change is complete.
+- Deterministic checks before model judges. Always run `validate_platform_compat.py --require-reference-validator` and `validate_repo.py --strict` before claiming a skill-format or packaging change is complete.
 - Adversarial benchmarks before declaring the harness safe. Add a scenario when a new failure mode is discovered.
 - Append-only ledgers for accepted and rejected mechanisms so future agents do not rediscover failed paths.
 - Atomic writes (`tempfile` + `os.replace`) and `fcntl` locks for any shared file the loop touches.

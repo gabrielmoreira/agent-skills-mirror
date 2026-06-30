@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `op7418/CodePilot` — 26 default patterns, 2 followed patterns, 6 file(s) materialized.
+Mirror of `op7418/CodePilot` — 26 default patterns, 7 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `op7418/CodePilot` — 26 default patterns, 2 followed patterns, 6 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 6 |
+| Followed pats | 7 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,11 @@ Mirror of `op7418/CodePilot` — 26 default patterns, 2 followed patterns, 6 fil
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `ARCHITECTURE.md`
+- `docs/rules/README.md`
+- `docs/rules/reporting.md`
+- `docs/rules/release.md`
+- `docs/exec-plans/README.md`
+- `docs/guardrails/README.md`
 - `docs/design.md`
 
 ## File Index
@@ -63,9 +68,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 4 | ✓ | [`src/lib/bridge/CLAUDE.md`](src/lib/bridge/CLAUDE.md) |
-| 5 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 6 | → | [`docs/design.md`](docs/design.md) |
+| 4 | ✓ | [`docs/guardrails/ComposerModelSelection.md`](docs/guardrails/ComposerModelSelection.md) |
+| 5 | ✓ | [`docs/guardrails/DatabaseSchema.md`](docs/guardrails/DatabaseSchema.md) |
+| 6 | ✓ | [`docs/guardrails/ElectronMain.md`](docs/guardrails/ElectronMain.md) |
+| 7 | ✓ | [`docs/guardrails/i18n.md`](docs/guardrails/i18n.md) |
+| 8 | ✓ | [`docs/guardrails/MCP.md`](docs/guardrails/MCP.md) |
+| 9 | ✓ | [`docs/guardrails/ModelDiscovery.md`](docs/guardrails/ModelDiscovery.md) |
+| 10 | ✓ | [`docs/guardrails/Onboarding.md`](docs/guardrails/Onboarding.md) |
+| 11 | ✓ | [`docs/guardrails/PermissionBoundary.md`](docs/guardrails/PermissionBoundary.md) |
+| 12 | ✓ | [`docs/guardrails/ProviderManagement.md`](docs/guardrails/ProviderManagement.md) |
+| 13 | ✓ | [`docs/guardrails/Release.md`](docs/guardrails/Release.md) |
+| 14 | ✓ | [`docs/guardrails/Runtime.md`](docs/guardrails/Runtime.md) |
+| 15 | ✓ | [`docs/guardrails/StreamSession.md`](docs/guardrails/StreamSession.md) |
+| 16 | ✓ | [`src/lib/bridge/CLAUDE.md`](src/lib/bridge/CLAUDE.md) |
+| 17 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 18 | → | [`docs/design.md`](docs/design.md) |
+| 19 | → | [`docs/exec-plans/README.md`](docs/exec-plans/README.md) |
+| 20 | → | [`docs/guardrails/README.md`](docs/guardrails/README.md) |
+| 21 | → | [`docs/rules/README.md`](docs/rules/README.md) |
+| 22 | → | [`docs/rules/release.md`](docs/rules/release.md) |
+| 23 | → | [`docs/rules/reporting.md`](docs/rules/reporting.md) |
 
 ---
 

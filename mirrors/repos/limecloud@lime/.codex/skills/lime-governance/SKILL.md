@@ -3,7 +3,7 @@ name: lime-governance
 description: Govern legacy cleanup and fact-source convergence. Use when Codex needs to reduce new/old coexistence, classify paths as current/compat/deprecated/dead, collapse compat or deprecated paths, centralize runtime paths or migration boundaries, add repository guardrails, or continue governance-driven subtraction instead of adding parallel implementations.
 ---
 
-# 治理收口
+# 治理与立即替换
 
 先读取 `internal/aiprompts/governance.md`（仓库事实源）。
 如果需要快速找入口，再看 `internal/aiprompts/README.md`。
@@ -58,9 +58,28 @@ description: Govern legacy cleanup and fact-source convergence. Use when Codex n
 
 如果用户已明确“上一版无人使用 / 不用兼容 / 旧实现阻碍主线”，额外遵守：
 
-1. 优先把旧实现判成 `dead` 或带退出条件的 `deprecated`
-2. 不要为了减少 diff 再补 compat 包装层
-3. `legacy current reference` 只当历史锚点，不当续命许可
+1. 先判断能否本轮直接替换；能替换就直接替换，不先设计长期收口期
+2. 优先把旧实现判成 `dead`；只有存在真实外部兼容、数据迁移或发布节奏约束时，才允许带退出条件的 `deprecated`
+3. 不要为了减少 diff 再补 compat 包装层
+4. `legacy current reference` 只当历史锚点，不当续命许可
+5. 不要把“先平移成新壳、后面再清理”当作默认工程步骤
+
+适合立即替换、而不是长期收口的典型场景：
+
+- 临时 UI / MVP UI：textarea、静态预览、占位 Profile、假按钮、只读卡片等被正式编辑器、正式工作台或真实 workflow 取代时，直接替换入口和测试断言，不保留双 UI。
+- 编辑器 / 渲染器选型：已经确定 Tiptap / ProseMirror、Canvas、Monaco、Three.js 等唯一事实源时，旧自研简化版、旧 Markdown textarea、旧 iframe / webview renderer 直接下线。
+- mock / fallback 生产路径：生产入口依赖 mock backend、renderer mock fallback、defaultMocks、invokeMockOnly、模板假数据时，直接替换为 current App Server / Desktop Host / 真实 fixture 链；mock 只能留在测试夹具。
+- 硬编码策略：浏览器要求、插件触发、@ 命令、技能路由、artifact 类型判断、内置应用列表等硬编码已经有 registry / manifest / catalog 事实源时，直接删硬编码分支。
+- 重复组件 / Hook / ViewModel：新旧组件表达同一业务对象，且没有真实外部消费者时，直接把调用迁到 current 组件并删除旧组件；不要让父层同时支持两套 props。
+- 旧命名阻碍产品语义：旧命名暴露实现词、历史品牌、内部协议或错误业务概念时，直接改到 current 领域命名；只有外部协议或数据迁移需要时才保留映射层。
+- 插件 / Agent App 标准变更：manifest、skills、子 Agent、renderer contract、workflow schema 已确定新标准时，旧 `app.md`、旧本地包结构、旧安装入口、旧 renderer 占位直接删除或迁移，不做双标准。
+- 命令 / API 无外部兼容者：旧 Electron IPC、legacy command、前端 API 网关、App Server 方法如果没有外部调用契约，直接替换到 current JSON-RPC / gateway；旧命令只允许 retired guard / negative test。
+- 数据结构无存量或可一次迁移：本地表、缓存、artifact payload、profile schema 若无真实存量，或能在启动 / 读取边界一次迁完，直接替换 schema；不要长期双读双写。
+- 路由 / 页面入口换代：旧页面、旧导航、旧插件中心、旧工作台入口已经和 current 产品路径冲突时，直接从导航、路由、测试和文档中移除。
+- 依赖栈替换：已经选择更成熟的库或现有标准库时，旧自研实现和同类新旧依赖不并行维护；除非迁移风险来自外部数据格式，否则直接替换调用点。
+- 文档规则和实现冲突：路线图、技术文档、skill 与代码主线不一致时，直接更新文档事实源和对应 skill；不要用聊天结论充当长期例外。
+
+仍然可以分阶段 `deprecated` 的场景必须同时满足：有真实外部用户、插件、持久化数据或发布版本依赖旧协议；本轮直接删除会造成不可恢复的数据损坏或生产不可用；已写清退出条件、最后删除入口、验证命令和下一次替换时间点。否则默认就是直接替换。
 
 ### 1. 先盘点，再修改
 
@@ -106,6 +125,7 @@ description: Govern legacy cleanup and fact-source convergence. Use when Codex n
 
 如果当前主线已经被旧实现卡住，而用户又明确不需要兼容，默认动作应是：
 
+- 直接替换旧实现
 - 删除旧入口
 - 下线旧命名
 - 清理旧文档与旧协议

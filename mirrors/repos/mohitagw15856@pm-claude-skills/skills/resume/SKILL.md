@@ -10,9 +10,24 @@ A resume gets ~7 seconds and an ATS scan before a human reads it. So it has to b
 into quantified accomplishment bullets, structured single-column (ATS-safe), and tailored to the target
 role. Export it with the **Paper** or **Modern** PDF theme for a typeset result.
 
-## Required Inputs
+## Working from a brief
 
-Ask for these only if they aren't already provided:
+You will often get rough notes, a partial history, or just a target role. **Always deliver a complete,
+ready-to-use resume anyway** — do not stop to ask questions and do not leave bracketed placeholders like
+`[Company]` or `[add metric]`. Where a detail is missing, infer a specific, realistic one from the rest of
+the brief and the target role, and mark anything you inferred *(assumed — confirm)* so the user knows to
+verify it. A concrete, labelled assumption always beats a blank or a clarifying question.
+
+Quantify every achievement. **Lead with the user's real numbers** — when they gave a figure, use it exactly.
+Only when a metric is genuinely absent, turn the duty into an outcome-focused achievement (the *result*, e.g.
+"shipped the mobile app v1, growing it to its first cohort of users"); add a number only if it's a
+**defensible, conservative estimate**, marked *(assumed — confirm)*. Never silently fabricate or inflate
+numbers on a real person's resume — an unmarked invented metric is the one thing worse than a missing one.
+
+Output **only the finished resume** (and its short tailoring note) — no preamble, no "here's your resume", no
+meta-commentary about what you did.
+
+## Inputs (infer any not provided — label assumptions)
 
 - **Target role / job description** — so the resume is tailored and keyword-aligned (generic resumes lose).
 - **Your experience** — roles, dates, and what you did/achieved (rough notes fine; the skill quantifies them).

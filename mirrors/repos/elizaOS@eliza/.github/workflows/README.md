@@ -6,8 +6,9 @@ This directory contains GitHub Actions workflows for the elizaOS project (v2.0.0
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| `ci.yaml` | Push/PR to main | Main CI - tests, lint, build, zero-key deterministic E2E |
-| `test.yml` | Push/PR to main/develop, manual, schedule | Broader tests plus required zero-key deterministic E2E; live jobs are separate |
+| `ci.yaml` | Push/PR to main | Main-specific CI - typecheck, tests, lint, build, dev startup |
+| `test.yml` | Push/PR to develop, manual, schedule | Broader develop tests plus required zero-key deterministic E2E; live jobs are separate |
+| `quality.yml` | Push/PR to main/develop, manual | Develop/main quality gates: format, type-safety ratchet, prompt-secret scan, UI determinism, lint |
 | `scenario-pr.yml` | PR to main/develop, manual | Secret-free deterministic scenario/browser E2E gate |
 | `scenario-matrix.yml` | Develop/manual opt-in | Real-service scenario matrix; not a PR gate |
 | `pr.yaml` | PR opened/edited | PR title validation |
@@ -127,6 +128,11 @@ coverage, browser coverage, diagnostics, and scenario execution. The visible
 `Zero-Key Deterministic E2E` check is an aggregate status over those slices, so
 reviewers can see the failing surface without opening one giant serial log.
 
+Plugin tests are also split across `TEST_SHARD=1/4` through `4/4` in the
+`Tests` workflow. The root `test:plugins` script uses the cross-package runner
+so shard membership is deterministic by package path, while the visible
+`Plugin Tests` check remains an aggregate over the shard matrix.
+
 Why the aggregate stays:
 
 - Branch protection and reviewer muscle memory can keep using one stable check.
@@ -144,13 +150,16 @@ Related CI docs:
 
 Runs on PRs and pushes to main:
 
-- TypeScript tests with coverage
+- Typecheck + core/plugin tests
 - Linting and formatting checks
 - Build verification
+- Dev startup + HMR propagation
 - Interop TypeScript tests (`packages/interop`)
-- Zero-key deterministic E2E. This lane clears provider keys, sets `TEST_LANE=pr`,
-  `ELIZA_LIVE_TEST=0`, and `SCENARIO_USE_LLM_PROXY=1`, then runs the deterministic
-  scenario/browser coverage plus the scenario catalog coverage gate.
+
+The broader `test.yml` orchestrator runs automatically on `develop` only to
+avoid duplicating the main-branch CI gate. Secret-free deterministic zero-key
+coverage for PRs to either protected branch is handled by `scenario-pr.yml`;
+`test.yml` keeps the broader develop push/PR, manual, and scheduled coverage.
 
 ### Live E2E
 

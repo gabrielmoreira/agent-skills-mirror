@@ -207,7 +207,7 @@ For each surviving signal, append a decision to ${path.join(SKILL_DIR, 'data/dec
 node ${path.join(SKILL_DIR, 'scripts/openloomi-loop.cjs')} ingest-decision '<json>'
 \`\`\`
 
-where <json> is:
+where <json> is (FIELD PLACEMENT IS STRICT — see warning below):
 \`\`\`json
 {
   "signal_id": "<sig id>",
@@ -216,12 +216,19 @@ where <json> is:
   "action": { "kind": "<typed>", "params": { ... } },
   "context": {
     "why": ["<bullet>", ...],
-    "memory_refs": ["<list of openloomi-memory insight ids / file paths the decision cites>"]
+    "memory_refs": ["<openloomi-memory insight id or file path>"],
+    "insight_refs": ["<optional: extracted insight id>"]
   },
   "confidence": 0.85,
   "source_signal": <original signal object>
 }
 \`\`\`
+
+⚠️ FIELD-PLACEMENT WARNING ⚠️
+- \`memory_refs\` and \`insight_refs\` MUST live INSIDE \`context\` (nested), NEVER at the top level of the decision object.
+- The schema contract is: \`context.memory_refs\`. All readers (CLI \`openloomi-loop inbox\`, web UI, webhook payload, run-prompt builder) read from there.
+- Safety net: \`loop-lib.cjs → readDecisions()\` and \`loop-web.cjs → handleListDecisions\` / \`findDecision\` / \`moveDecision\` hoist misplaced top-level \`memory_refs\` / \`insight_refs\` into \`context\` on every read and write. The on-disk format will self-heal as decisions are moved between buckets.
+- \`cmdIngestDecision\` prints a one-line stderr warning when it hoists, so emit-side bugs are still visible. Fix the emitter rather than relying on the safety net.
 
 Confidence: 0.85 if sender is in openloomi-memory, else 0.60.
 

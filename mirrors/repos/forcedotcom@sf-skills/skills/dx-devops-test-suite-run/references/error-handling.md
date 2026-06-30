@@ -28,4 +28,4 @@ If no `DevopsTestExecution` record matches the runId, report it gracefully and d
 
 ## Do NOT use `sf apex run test`
 
-That command is for the `running-apex-tests` skill, not DevOps Center test suites.
+That command is for the `platform-apex-test-run` skill, not DevOps Center test suites.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `gaasher/Agent-Loop-Skills` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `gaasher/Agent-Loop-Skills` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `gaasher/Agent-Loop-Skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,8 +81,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`loops/research-question/SKILL.md`](loops/research-question/SKILL.md) |
 | 21 | ✓ | [`loops/scientific-figure/SKILL.md`](loops/scientific-figure/SKILL.md) |
 | 22 | ✓ | [`loops/scientific-writer/SKILL.md`](loops/scientific-writer/SKILL.md) |
-| 23 | ✓ | [`loops/tabular-cleanup/SKILL.md`](loops/tabular-cleanup/SKILL.md) |
-| 24 | ✓ | [`loops/tournament-autoresearch/SKILL.md`](loops/tournament-autoresearch/SKILL.md) |
+| 23 | ✓ | [`loops/swe-loop/SKILL.md`](loops/swe-loop/SKILL.md) |
+| 24 | ✓ | [`loops/tabular-cleanup/SKILL.md`](loops/tabular-cleanup/SKILL.md) |
+| 25 | ✓ | [`loops/tournament-autoresearch/SKILL.md`](loops/tournament-autoresearch/SKILL.md) |
 
 ---
 

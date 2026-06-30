@@ -4,7 +4,7 @@
 
 - Provide multiplexer-backed visualization for spawned subagent sessions.
 - Select and instantiate terminal backend based on config/env:
-  `auto`, `tmux`, `zellij`, or `none`.
+  `auto`, `tmux`, `zellij`, `herdr`, or `none`.
 - Manage lifecycle of child session panes with lifecycle hooks from OpenCode
   events plus health/polling fallback.
 - Keep pane cleanup safe and graceful (best-effort interrupt + kill).
@@ -42,6 +42,14 @@
   - Layout configuration maps `main-vertical` to right and `main-horizontal` to
     down; `tiled`/`even-horizontal`/`even-vertical` use Zellij native placement
     and `main_pane_size` remains a no-op.
+
+- `herdr/index.ts` (`HerdrMultiplexer`)
+  - Detects binary via `which`. `spawnPane` splits the parent pane (using
+    `HERDR_PANE_ID` or `--current`), renames it, and runs `opencode attach`
+    via `herdr pane run`. Parses JSON CLI output to extract pane IDs.
+  - `closePane` sends `ctrl+c` then `herdr pane close`.
+  - `applyLayout` is a no-op (like Zellij).
+  - Auto-detects via `HERDR_ENV`/`HERDR_PANE_ID` env vars.
 
 - `session-manager.ts` (`MultiplexerSessionManager`)
   - Initialized once from plugin context and config.
@@ -84,8 +92,8 @@
 - Integrates with OpenCode session events and server URL from plugin input.
 - Uses helper endpoints defined by `src/config` multiplexer settings:
   `type`, `layout`, `main_pane_size`.
-- Implementations in `src/multiplexer/tmux` and `src/multiplexer/zellij` are used
-  through the shared abstraction.
+- Implementations in `src/multiplexer/tmux`, `src/multiplexer/zellij`, and
+  `src/multiplexer/herdr` are used through the shared abstraction.
 - Validation coverage:
   - `src/multiplexer/factory.test.ts`
   - `src/multiplexer/session-manager.test.ts`

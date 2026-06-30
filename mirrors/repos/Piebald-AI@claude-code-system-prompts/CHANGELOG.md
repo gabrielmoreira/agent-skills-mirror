@@ -4,6 +4,23 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.196](https://github.com/Piebald-AI/claude-code-system-prompts/commit/611dcff)
+
+_+1,869 tokens_
+
+- **NEW:** Tool Description: Invoke skill — Adds a tool prompt for loading packaged skills by exact listed name or explicit user request, including scoped skill-name resolution, optional args, and guidance not to reinvoke a skill already loaded in the turn.
+- **NEW:** Tool Description: Report code-review findings — Adds a typed code-review reporting tool prompt that tells review flows to submit one ranked list of verified findings for host rendering, use an empty array when nothing survives verification, and avoid duplicating the findings in text.
+- Agent Prompt: Fleet agent suggestion scope personalization — Requires generated scope phrases to be singular noun phrases so they fit task text that conjugates the scope as a subject.
+- Agent Prompt: /review slash command — Passes output-format options into the medium-effort code-review prompt used by `/review`.
+- Agent Prompt: Status line setup — Adds `prompt_id` to the status-line input schema as the optional UUID of the prompt being processed, matching OTel `prompt.id`.
+- Data: Managed Agents endpoint reference; Skill: Building LLM-powered applications with Claude; and Skill: Model migration guide — Narrows fast-mode support guidance to Opus 4.8 and Opus 4.7, removes Opus 4.6 as a supported fast-mode tier, and updates migration guidance to move retired `-fast` model strings to Opus 4.8 with `speed="fast"`, the `fast-mode-2026-02-01` beta, and the beta messages endpoint.
+- Skill: Building LLM-powered applications with Claude — Adds an authentication quick reference for `ant auth` and SDK credential discovery, telling agents to check `ant auth status` before asking for an API key, use profile-backed zero-arg SDK clients when available, and use bearer OAuth tokens plus the `oauth-2025-04-20` beta header for raw HTTP calls.
+- System Prompt: Coordinator mode orchestration — Updates the coordinator wording to use shared instructions for user-message routing and post-agent-launch waiting, while preserving the guidance that worker results and system notifications are internal signals.
+- System Prompt: Current Claude models — Replaces the fixed model-ID list with a generated list from the current model collection, preserving the special Haiku 4.5 dated ID fallback.
+- System Reminder: Coordinator message — Reframes coordinator messages as actionable task direction from someone working on the user's behalf, while explicitly keeping escalation, permission-setting, CLAUDE.md/config edits, and pending approvals limited to the user's own messages.
+- Tool Description: Artifact — Changes gallery subtitle guidance from adding a `<meta name="description">` tag in the HTML to passing the Artifact tool's `description` parameter.
+- Tool Description: SendUserFile — Adds `display` guidance so agents can choose inline rendering for charts, HTML pages, diagrams, and images, or attachment presentation for files meant to be saved and opened elsewhere.
+
 # [2.1.195](https://github.com/Piebald-AI/claude-code-system-prompts/commit/7b9ccd1)
 
 _+12,157 tokens_

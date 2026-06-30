@@ -7,7 +7,7 @@ This file maps the required agent-harness knowledge areas to the Markdown files 
 | Topic | Covered in | Notes |
 |---|---|---|
 | General-purpose agent harness | `SKILL.md`, `architecture.md` | Treats coding as one domain among many. |
-| Coding-agent harness overlay | `coding-agents.md`, `mvp-agent-blueprint.md`, `tools-and-permissions.md`, `security-evals-observability.md`, `checklists.md` | Optional domain overlay for repository-reading, patching, validating, reviewing, migration, dependency, test, and docs-sync agents. |
+| Coding-agent harness overlay | `coding-agents.md`, `mvp-agent-blueprint.md`, `tools-and-permissions.md`, `security-observability.md`, `evals.md`, `checklists.md` | Optional domain overlay for repository-reading, patching, validating, reviewing, migration, dependency, test, and docs-sync agents. |
 | Agent-legible environment and feedback loops | `agent-legibility-feedback-loops.md`, `architecture.md` | Covers source-of-truth knowledge bases, validation signals, mechanical invariants, throughput, and entropy cleanup. |
 | Agentic loop | `agentic-loop.md` | Includes canonical loop, invariants, budgets, retries, provider-neutral variants, and termination. |
 | Goal-like loop | `agentic-loop.md`, `planning-and-goals.md` | Includes objective, done condition, budget, checkpoints, progress log, validation, and stop rules. |
@@ -19,11 +19,11 @@ This file maps the required agent-harness knowledge areas to the Markdown files 
 | MCP and external connectors | `skills-and-connectors.md` | Covers resources/prompts/tools, staged loading, namespacing, authorization, deferred tool loading, and code-execution patterns. |
 | System prompts and instructions | `system-prompts-instructions.md` | Covers authority hierarchy, runtime reminders, injection boundaries, and prompt templates. |
 | Tool design | `tools-and-permissions.md` | Covers schemas, risk taxonomy, structured outputs, result limits, errors, sandboxing, secrets, and tool visibility. |
-| Permissions and approvals | `tools-and-permissions.md`, `security-evals-observability.md` | Covers permission matrix, draft/commit split, approval records, and policy enforcement. |
+| Permissions and approvals | `tools-and-permissions.md`, `security-observability.md` | Covers permission matrix, draft/commit split, approval records, and policy enforcement. |
 | Provider API differences | `provider-api-patterns.md` | Covers OpenAI Responses-style APIs, Chat Completions-style/OpenAI-compatible APIs, Anthropic APIs, hosted tools, adapters, streaming, and state. |
-| Security | `security-evals-observability.md` | Covers threat model, guardrails, prompt injection, approvals, launch gates, and incidents. |
-| Observability | `security-evals-observability.md` | Covers traces, events, token/cost/latency, and replay. |
-| Evals | `security-evals-observability.md`, `checklists.md` | Covers task success, tool precision, adversarial tests, trace grading, and regression tests. |
+| Security | `security-observability.md` | Covers threat model, guardrails, prompt injection, approvals, launch gates, and incidents. |
+| Observability | `security-observability.md` | Covers traces, events, token/cost/latency, and replay. |
+| Evals | `evals.md`, `coding-agents.md`, `checklists.md` | Covers task success, tool precision, adversarial tests, trace grading, regression tests, and eval-driven launch criteria. |
 | Implementation checklist | `checklists.md` | Includes design, tool, permission, context, planning, goal, skill, connector, eval, and rollout checklists. |
 
 ## Required language and scope checks
@@ -55,7 +55,8 @@ agents-best-practices/
     skills-and-connectors.md
     system-prompts-instructions.md
     provider-api-patterns.md
-    security-evals-observability.md
+    security-observability.md
+    evals.md
     checklists.md
     coverage-audit.md
 ```
@@ -63,4 +64,4 @@ agents-best-practices/
 
 ## MVP agent blueprint generation
 
-Covered in `SKILL.md`, `references/mvp-agent-blueprint.md`, `references/architecture.md`, and `references/checklists.md`. The skill now explicitly instructs assistants to produce a domain-specific MVP harness blueprint when the user asks to make or build an agent. The blueprint includes agentic loop, tool registry, permissions, context and memory, auto-compaction, planning mode, goal-like loop criteria, skills, MCP/external connectors, prompt caching, cost-aware context, observability, evals, and launch path.
+Covered in `SKILL.md`, `references/mvp-agent-blueprint.md`, `references/architecture.md`, and `references/checklists.md`. The skill now explicitly instructs assistants to produce a domain-specific MVP harness blueprint when the user asks to make or build an agent. The blueprint includes agentic loop, tool registry, permissions, context and memory, auto-compaction, planning mode, goal-like loop criteria, skills, MCP/external connectors, prompt caching, cost-aware context, observability, dedicated eval strategy, and launch path.

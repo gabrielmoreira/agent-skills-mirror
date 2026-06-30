@@ -1,6 +1,6 @@
 # obsidian-second-brain
 
-> A cross-CLI skill that turns any Obsidian vault into a self-rewriting second brain. Runs in Claude Code, OpenAI Codex CLI, Google Gemini CLI, OpenCode, Nous Research Hermes, and Pi from one platform-neutral source via a build-time adapter pattern. An evolution of Karpathy's LLM Wiki pattern (https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): every source updates existing pages instead of just appending, contradictions reconcile automatically, and 4 scheduled agents maintain the vault while you sleep. 45 commands span vault management, thinking tools, scheduled agents, and a research toolkit (live X posts via Grok, web research via Perplexity, YouTube transcripts, podcast episodes via RSS or Whisper, and vault-grounded synthesis via Gemini File Search), plus optional local+private semantic search, a write-time AI-first validator hook and a `/create-command` interview flow for user-built extensions. As of v0.10 ("The Architect"), `/obsidian-architect` also scans a codebase and writes maintained, self-refreshing architecture notes into the vault (so your code lives in the same brain as your ideas and decisions), and `/research` + `/research-deep` run key-less by default with free fallback sources.
+> A cross-CLI skill that turns any Obsidian vault into a self-rewriting second brain. Runs in Claude Code, OpenAI Codex CLI, Google Gemini CLI, OpenCode, Nous Research Hermes, and Pi from one platform-neutral source via a build-time adapter pattern. An evolution of Karpathy's LLM Wiki pattern (https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): every source updates existing pages instead of just appending, contradictions reconcile automatically, and 4 scheduled agents maintain the vault while you sleep. 44 commands span vault management, thinking tools, scheduled agents, and a research toolkit (live X posts via Grok, web research via Perplexity, YouTube transcripts, podcast episodes via RSS or Whisper, and vault-grounded synthesis via Gemini File Search), plus optional local+private semantic search, a write-time AI-first validator hook and a `/create-command` interview flow for user-built extensions. As of v0.10 ("The Architect"), `/obsidian-architect` also scans a codebase and writes maintained, self-refreshing architecture notes into the vault (so your code lives in the same brain as your ideas and decisions), and `/research` + `/research-deep` run key-less by default with free fallback sources.
 
 ## What this is
 
@@ -16,7 +16,7 @@ Owner: Eugeniu Ghelbur. AI Automation Engineer at Single Grain.
 - Notes accumulate unconnected. This skill propagates every write across people, projects, kanban boards, and daily notes automatically.
 - Research findings get lost. The research toolkit (8 commands) saves every X read, X pulse, web research (key-less by default), YouTube and podcast transcript, and vault-grounded synthesis directly to the vault as structured notes.
 - Vaults are usually optimized for humans browsing in Obsidian. This skill treats the vault as an AI knowledge graph: future-Claude (or future-Codex/Gemini) is the primary reader.
-- Different AI users use different CLIs. The same vault works whether the user is on Claude Code, Codex CLI, Gemini CLI, or OpenCode — no rewriting commands per platform.
+- Different AI users use different CLIs. The same vault works whether the user is on Claude Code, Codex CLI, Gemini CLI, OpenCode, Hermes, or Pi - no rewriting commands per platform.
 
 ## How this extends Karpathy's LLM Wiki pattern
 
@@ -41,17 +41,17 @@ The complete analysis of how this skill extends Karpathy's pattern, including th
 
 ## The 44 commands (organized by category)
 
-**Vault (17)** - daily writing, capture, find, kanban, calendar, recurring obligations, recall:
-obsidian-agenda, obsidian-board, obsidian-calendar, obsidian-capture, obsidian-daily, obsidian-find, obsidian-log, obsidian-meeting, obsidian-person, obsidian-project, obsidian-projects, obsidian-recap, obsidian-recurring, obsidian-save, obsidian-schedule, obsidian-task, obsidian-world. (obsidian-agenda / obsidian-schedule / obsidian-meeting / obsidian-calendar are Claude Code only - they use the Google Calendar MCP connector.)
+**Vault (16)** - daily writing, capture, find, kanban, calendar, recurring obligations, recall:
+obsidian-board, obsidian-board-hygiene, obsidian-calendar, obsidian-capture, obsidian-catchup, obsidian-daily, obsidian-find, obsidian-log, obsidian-person, obsidian-project, obsidian-projects, obsidian-recap, obsidian-recurring, obsidian-save, obsidian-task, obsidian-world. (obsidian-calendar uses the Google Calendar MCP connector, so it ships on Claude Code and Pi only; its agenda / meeting / schedule / reconcile modes consolidate the four former standalone calendar commands.)
 
 **Thinking (13)** - synthesis, decisions, learning, reviews, panels, discovery:
-obsidian-adr, obsidian-challenge, obsidian-connect, obsidian-decide, obsidian-emerge, obsidian-graduate, obsidian-learn, obsidian-panel, obsidian-reconcile, obsidian-review, obsidian-synthesize, idea-discovery, vault-deep-synthesis.
+obsidian-challenge, obsidian-connect, obsidian-decide, obsidian-distill, obsidian-emerge, obsidian-graduate, obsidian-learn, obsidian-panel, obsidian-reconcile, obsidian-review, obsidian-synthesize, idea-discovery, vault-deep-synthesis. (obsidian-decide --formal absorbs the former standalone obsidian-adr.)
 
-**Research (8)** — bring external sources into the vault:
+**Research (8)** - bring external sources into the vault:
 obsidian-ingest, notebooklm, podcast, research, research-deep, x-pulse, x-read, youtube. Powered by xAI Grok (X + Live Search), Perplexity Sonar (web with citations), Google Gemini File Search (vault-grounded synthesis), youtube-transcript-api, and feedparser + optional OpenAI Whisper for podcasts.
 
-**Meta (6)** - vault setup, health, structure, codebase docs, tooling:
-obsidian-architect, obsidian-export, obsidian-health, obsidian-init, obsidian-visualize, create-command.
+**Meta (7)** - vault setup, health, structure, codebase docs, search quality, tooling:
+obsidian-architect, obsidian-export, obsidian-health, obsidian-init, obsidian-retrieval-eval, obsidian-visualize, create-command.
 
 Plus 4 scheduled agents (morning, nightly, weekly, health-check) and 2 hook scripts (`obsidian-bg-agent.sh` for PostCompact session propagation, `validate-ai-first.sh` for write-time AI-first enforcement).
 
@@ -59,13 +59,15 @@ Plus 4 scheduled agents (morning, nightly, weekly, health-check) and 2 hook scri
 
 The repo is structured around a build-time adapter pattern:
 
-- `commands/` - 44 platform-neutral source files with frontmatter declaring `description`, `category` (vault/thinking/research/meta), `triggers_en` (natural-language trigger phrases), and an optional `exclude` (per-platform opt-out; the calendar command sets it to ship Claude Code only). The schema is extensible to other languages via `triggers_es`, `triggers_it`, `triggers_fr`, `triggers_de`, `triggers_pt`, `triggers_ru`, `triggers_ja`.
-- `adapters/lib.sh` — shared parsing, path rewriting, tool-name neutralization, grouped routing-table emission, multilingual trigger emission.
-- `adapters/claude-code/adapter.sh` — identity copy (Claude Code's slash-command format matches the source).
-- `adapters/codex-cli/adapter.sh` — emits `AGENTS.md` with auto-generated routing table grouped by category and trigger phrase reference grouped by language. Commands go under `.codex/commands/`.
-- `adapters/gemini-cli/adapter.sh` — emits `GEMINI.md` with the same structure. Commands under `.gemini/commands/`.
-- `adapters/opencode/adapter.sh` — emits `AGENTS.md`. Commands under `.opencode/commands/`.
-- `scripts/build.sh` — orchestrator. Run with `--platform <name>` for one platform or no argument for all six.
+- `commands/` - 44 platform-neutral source files with frontmatter declaring `description`, `category` (vault/thinking/research/meta), `triggers_en` (natural-language trigger phrases), and an optional `exclude` (per-platform opt-out; the calendar command sets it to ship on Claude Code and Pi only). The schema is extensible to other languages via `triggers_es`, `triggers_it`, `triggers_fr`, `triggers_de`, `triggers_pt`, `triggers_ru`, `triggers_ja`.
+- `adapters/lib.sh` - shared parsing, path rewriting, tool-name neutralization, grouped routing-table emission, multilingual trigger emission.
+- `adapters/claude-code/adapter.sh` - identity copy (Claude Code's slash-command format matches the source).
+- `adapters/codex-cli/adapter.sh` - emits `AGENTS.md` with auto-generated routing table grouped by category and trigger phrase reference grouped by language. Commands go under `.codex/commands/`.
+- `adapters/gemini-cli/adapter.sh` - emits `GEMINI.md` with the same structure. Commands under `.gemini/commands/`.
+- `adapters/opencode/adapter.sh` - emits `AGENTS.md`. Commands under `.opencode/commands/`.
+- `adapters/hermes/adapter.sh` - emits Nous Research Hermes native skills.
+- `adapters/pi/adapter.sh` - emits a Pi package (`package.json` + `.pi/`) with the same routing table.
+- `scripts/build.sh` - orchestrator. Run with `--platform <name>` for one platform or no argument for all six.
 
 Output goes to `dist/<platform>/` (gitignored). Each `dist/<platform>/INSTALL.md` documents the install path for that CLI.
 
@@ -158,7 +160,7 @@ Yes. The skill never deletes or modifies notes destructively without explicit co
 `/research` runs a single Perplexity query and returns a dossier. `/research-deep` scans your vault first, identifies what you already know about the topic, spawns 3-5 targeted follow-up searches to fill only the gaps, and produces a delta report (what's new, what's confirmed, contradictions to resolve). Vault-first means you stop re-researching what's already in your notes.
 
 ### What does /create-command do?
-Lets the user scaffold a new obsidian-second-brain command via interview. Zero markdown editing. A 9-phase conversation collects intent, name, category, trigger phrases, behavior steps, AI-first compliance status, and external API needs, then writes a fully-formed `commands/<name>.md` file. The new command flows automatically into all 4 platform builds on the next `bash scripts/build.sh`.
+Lets the user scaffold a new obsidian-second-brain command via interview. Zero markdown editing. A 9-phase conversation collects intent, name, category, trigger phrases, behavior steps, AI-first compliance status, and external API needs, then writes a fully-formed `commands/<name>.md` file. The new command flows automatically into all 6 platform builds on the next `bash scripts/build.sh`.
 
 ### What do the research commands cost?
 Approximate per-call costs as of 2026-04: /x-read ~$0.05, /x-pulse ~$0.13, /research ~$0.04, /research-deep ~$0.40-$0.80, /youtube ~$0.04. Costs are tracked per call in `~/.research-toolkit/usage.log`. No hard caps; user is trusted to monitor.

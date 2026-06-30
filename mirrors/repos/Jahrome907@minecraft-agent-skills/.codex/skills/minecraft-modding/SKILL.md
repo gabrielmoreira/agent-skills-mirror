@@ -1,6 +1,6 @@
 ---
 name: minecraft-modding
-description: "Full-stack Minecraft mod development skill for both NeoForge (1.21+) and Fabric (1.21+). Scaffolds new mods, adds custom blocks, items, entities, recipes, commands, GUIs, dimensions, and data generation. Knows the NeoForge DeferredRegister + event-bus system and the Fabric Registry + ModInitializer system. Use when the user asks to create a Minecraft mod, add a feature to an existing mod, fix a mod bug, generate JSON assets/data, or migrate between modding platforms. Prefer NeoForge unless the user specifies Fabric or Multiloader."
+description: "Full-stack Minecraft mod development skill for NeoForge (1.21+), Fabric (1.21+), and legacy Forge 1.20.1. Scaffolds new mods, adds custom blocks, items, entities, recipes, commands, GUIs, dimensions, and data generation. Knows NeoForge DeferredRegister + event-bus patterns, Forge 1.20.1 MDK/FMLJavaModLoadingContext patterns, and Fabric Registry + ModInitializer patterns. Use when the user asks to create a Minecraft mod, add a feature to an existing mod, fix a mod bug, generate JSON assets/data, support Forge 1.20.1, or migrate between modding platforms. Prefer NeoForge unless the user specifies Fabric, Forge 1.20.1, or Multiloader."
 ---
 
 # Minecraft Modding Skill
@@ -13,6 +13,7 @@ Target platforms:
 | Platform | MC Version | Java | Build System |
 |---|---|---|---|
 | **NeoForge** | 1.21.x with 1.21.11 examples | Java 21 | Gradle + ModDevGradle |
+| **Forge** | 1.20.1 legacy lane | Java 17 | Gradle + ForgeGradle 6 |
 | **Fabric** | 1.21.x with 1.21.11 examples | Java 21 | Gradle + Fabric Loom |
 | **Architectury** (multiloader) | 1.21.x | Java 21 | Gradle + Architectury Loom |
 
@@ -32,6 +33,9 @@ before writing any mod-specific code.
 # NeoForge project signature
 grep -r "net.neoforged" gradle.properties build.gradle settings.gradle 2>/dev/null | head -5
 
+# Forge 1.20.1 project signature
+grep -r "net.minecraftforge" gradle.properties build.gradle settings.gradle 2>/dev/null | head -5
+
 # Fabric project signature
 grep -r "fabric" gradle.properties build.gradle settings.gradle 2>/dev/null | head -5
 
@@ -42,6 +46,7 @@ cat gradle.properties
 Key files per platform:
 
 - **NeoForge**: `src/main/resources/META-INF/neoforge.mods.toml`, annotated `@Mod` main class
+- **Forge 1.20.1**: `src/main/resources/META-INF/mods.toml`, `net.minecraftforge:forge` dependency
 - **Fabric**: `src/main/resources/fabric.mod.json`, class implementing `ModInitializer`
 - **Architectury**: `common/`, `fabric/`, `neoforge/` subprojects
 
@@ -119,7 +124,33 @@ src/
           items/
 ```
 
-## 4. Project Layout (Fabric)
+## 4. Project Layout (Forge 1.20.1)
+
+Use this layout only when `minecraft_version=1.20.1` and the project depends on
+`net.minecraftforge:forge`. Forge 1.20.1 is not NeoForge: keep `mods.toml`,
+`net.minecraftforge.*` imports, Java 17, and ForgeGradle 6 patterns.
+
+```
+src/
+  main/
+    java/<groupId>/<modid>/
+      MyMod.java               <- @Mod entry point
+      block/
+        ModBlocks.java         <- DeferredRegister<Block>
+      item/
+        ModItems.java          <- DeferredRegister<Item>
+      datagen/
+        ModDataGen.java        <- GatherDataEvent handler
+    resources/
+      META-INF/
+        mods.toml              <- Forge metadata
+      assets/<modid>/          <- client assets
+      data/<modid>/            <- server data using 1.20.1 paths
+```
+
+See `references/forge-1.20.1-api.md` before editing Forge 1.20.1 projects.
+
+## 5. Project Layout (Fabric)
 
 ```
 src/
@@ -140,7 +171,7 @@ src/
 
 ---
 
-## 5. Core Concepts Cheatsheet
+## 6. Core Concepts Cheatsheet
 
 ### Sides
 - **Physical client** – the game client JAR (has rendering code)
@@ -180,7 +211,7 @@ Identifier id = Identifier.of("mymod", "my_block");
 
 ---
 
-## 6. NeoForge Quick Patterns
+## 7. NeoForge Quick Patterns
 
 See full patterns in `references/neoforge-api.md`.
 
@@ -220,7 +251,48 @@ public class ModBlocks {
 
 ---
 
-## 7. Fabric Quick Patterns
+## 8. Forge 1.20.1 Quick Patterns
+
+See full patterns in `references/forge-1.20.1-api.md`.
+
+```java
+// Main mod class
+@Mod(MyMod.MOD_ID)
+public class MyMod {
+    public static final String MOD_ID = "mymod";
+
+    public MyMod(FMLJavaModLoadingContext context) {
+        IEventBus modEventBus = context.getModEventBus();
+        ModBlocks.BLOCKS.register(modEventBus);
+        ModItems.ITEMS.register(modEventBus);
+        modEventBus.addListener(this::commonSetup);
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    private void commonSetup(FMLCommonSetupEvent event) {
+        // runs after registries are prepared
+    }
+}
+```
+
+```java
+// Block registration
+public class ModBlocks {
+    public static final DeferredRegister<Block> BLOCKS =
+        DeferredRegister.create(ForgeRegistries.BLOCKS, MyMod.MOD_ID);
+
+    public static final RegistryObject<Block> MY_BLOCK =
+        BLOCKS.register("my_block", () -> new Block(
+            BlockBehaviour.Properties.of()
+                .mapColor(MapColor.STONE)
+                .strength(1.5f, 6.0f)
+                .sound(SoundType.STONE)
+                .requiresCorrectToolForDrops()));
+}
+```
+
+---
+## 9. Fabric Quick Patterns
 
 See full patterns in `references/fabric-api.md`.
 
@@ -258,10 +330,12 @@ public class ModBlocks {
 
 ---
 
-## 8. JSON Asset Templates
+## 10. JSON Asset Templates
 
 Always provide matching JSON assets for every registered block/item.
 Codex should generate or update these files alongside Java code.
+For Forge 1.20.1, check `references/forge-1.20.1-api.md` for legacy server-data
+directory names before creating loot tables or tags.
 
 See `references/common-patterns.md` for full JSON templates for:
 - Blockstate JSON
@@ -274,7 +348,7 @@ See `references/common-patterns.md` for full JSON templates for:
 
 ---
 
-## 9. Data Generation
+## 11. Data Generation
 
 Prefer data generation over hand-authored JSON for maintainability.
 
@@ -296,10 +370,13 @@ public static void gatherData(GatherDataEvent event) {
 ```
 
 Run data generation with `./gradlew runData`, then commit the generated files.
+For Forge 1.20.1, use the mod-event-bus registration, `GatherDataEvent`
+signature, provider classes, and legacy output paths from
+`references/forge-1.20.1-api.md`.
 
 ---
 
-## 10. Common Tasks Checklist
+## 12. Common Tasks Checklist
 
 When adding a **new block**:
 - [ ] `Block` subclass (or use vanilla Block with properties)
@@ -309,9 +386,11 @@ When adding a **new block**:
 - [ ] Block model JSON → `assets/<modid>/models/block/<name>.json`
 - [ ] Item model JSON → `assets/<modid>/models/item/<name>.json` (or inherits from block)
 - [ ] Texture PNG → `assets/<modid>/textures/block/<name>.png`
-- [ ] Loot table JSON → `data/<modid>/loot_table/blocks/<name>.json`
+- [ ] Loot table JSON -> 1.21.x: `data/<modid>/loot_table/blocks/<name>.json`; Forge 1.20.1: `data/<modid>/loot_tables/blocks/<name>.json`
+- [ ] Tags -> 1.21.x: `data/<modid>/tags/block/` and `tags/item/`; Forge 1.20.1: `data/<modid>/tags/blocks/` and `tags/items/`
 - [ ] Language entry in `en_us.json`
 - [ ] Mine-with-correct-tool tag if hardness > 0
+- [ ] Do not mix Forge 1.20.1 plural server-data paths with 1.21.x singular server-data paths
 
 When adding a **new item**:
 - [ ] `Item` subclass (or use `new Item(properties)`)
@@ -319,7 +398,7 @@ When adding a **new item**:
 - [ ] Item model JSON
 - [ ] Texture PNG
 - [ ] Language entry
-- [ ] Creative tab registration (NeoForge: `BuildCreativeModeTabContentsEvent`; Fabric: `ItemGroupEvents`)
+- [ ] Creative tab registration (NeoForge/Forge: `BuildCreativeModeTabContentsEvent`; Fabric: `ItemGroupEvents`)
 - [ ] Recipe JSON if craftable
 
 When adding a **new entity**:
@@ -334,7 +413,7 @@ When adding a **new entity**:
 
 ---
 
-## 11. Open-Source Conventions
+## 13. Open-Source Conventions
 
 - **License**: MIT or LGPL-3.0 — include `LICENSE` file and `SPDX-License-Identifier` header
 - **Versioning**: `{mod_version}+{mc_version}` (e.g., `2.0.0+1.21.11`)
@@ -345,9 +424,10 @@ When adding a **new entity**:
 
 ---
 
-## 12. References
+## 14. References
 
 - NeoForge API patterns and event system: `./references/neoforge-api.md`
+- Forge 1.20.1 API patterns and MDK workflow: `./references/forge-1.20.1-api.md`
 - Fabric API patterns and mixin guide: `./references/fabric-api.md`
 - Blocks, items, recipes, commands, GUIs, datagen: `./references/common-patterns.md`
 - NeoForge official docs: https://docs.neoforged.net/
