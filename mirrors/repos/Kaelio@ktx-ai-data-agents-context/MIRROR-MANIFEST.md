@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Kaelio/ktx-ai-data-agents-context` — 26 default patterns, 2 followed patterns, 26 file(s) materialized.
+Mirror of `Kaelio/ktx-ai-data-agents-context` — 26 default patterns, 2 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Kaelio/ktx-ai-data-agents-context` — 26 default patterns, 2 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 26 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,16 +76,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`packages/cli/src/skills/metabase_ingest/SKILL.md`](packages/cli/src/skills/metabase_ingest/SKILL.md) |
 | 15 | ✓ | [`packages/cli/src/skills/metricflow_ingest/SKILL.md`](packages/cli/src/skills/metricflow_ingest/SKILL.md) |
 | 16 | ✓ | [`packages/cli/src/skills/notion_synthesize/SKILL.md`](packages/cli/src/skills/notion_synthesize/SKILL.md) |
-| 17 | ✓ | [`packages/cli/src/skills/sl_capture/SKILL.md`](packages/cli/src/skills/sl_capture/SKILL.md) |
-| 18 | ✓ | [`packages/cli/src/skills/sl/SKILL.md`](packages/cli/src/skills/sl/SKILL.md) |
-| 19 | ✓ | [`packages/cli/src/skills/wiki_capture/SKILL.md`](packages/cli/src/skills/wiki_capture/SKILL.md) |
-| 20 | ✓ | [`python/ktx-sl/AGENTS.md`](python/ktx-sl/AGENTS.md) |
-| 21 | ✓ | [`python/ktx-sl/CLAUDE.md`](python/ktx-sl/CLAUDE.md) |
-| 22 | ✓ | [`skills/ktx/agents/openai.yaml`](skills/ktx/agents/openai.yaml) |
-| 23 | ✓ | [`skills/ktx/SKILL.md`](skills/ktx/SKILL.md) |
-| 24 | ✓ | [`skills/ktx/troubleshooting.md`](skills/ktx/troubleshooting.md) |
-| 25 | → | [`docs/code-design.md`](docs/code-design.md) |
-| 26 | → | [`docs/terminology.md`](docs/terminology.md) |
+| 17 | ✓ | [`packages/cli/src/skills/sigma_ingest/SKILL.md`](packages/cli/src/skills/sigma_ingest/SKILL.md) |
+| 18 | ✓ | [`packages/cli/src/skills/sl_capture/SKILL.md`](packages/cli/src/skills/sl_capture/SKILL.md) |
+| 19 | ✓ | [`packages/cli/src/skills/sl/SKILL.md`](packages/cli/src/skills/sl/SKILL.md) |
+| 20 | ✓ | [`packages/cli/src/skills/wiki_capture/SKILL.md`](packages/cli/src/skills/wiki_capture/SKILL.md) |
+| 21 | ✓ | [`python/ktx-sl/AGENTS.md`](python/ktx-sl/AGENTS.md) |
+| 22 | ✓ | [`python/ktx-sl/CLAUDE.md`](python/ktx-sl/CLAUDE.md) |
+| 23 | ✓ | [`skills/ktx/agents/openai.yaml`](skills/ktx/agents/openai.yaml) |
+| 24 | ✓ | [`skills/ktx/SKILL.md`](skills/ktx/SKILL.md) |
+| 25 | ✓ | [`skills/ktx/troubleshooting.md`](skills/ktx/troubleshooting.md) |
+| 26 | → | [`docs/code-design.md`](docs/code-design.md) |
+| 27 | → | [`docs/terminology.md`](docs/terminology.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wonderwhy-er/DesktopCommanderMCP` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `wonderwhy-er/DesktopCommanderMCP` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wonderwhy-er/DesktopCommanderMCP` — 26 default patterns, 0 followed
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,9 +59,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`plugins/claude/skills/desktop-commander-overview/SKILL.md`](plugins/claude/skills/desktop-commander-overview/SKILL.md) |
-| 2 | ✓ | [`plugins/cursor/skills/desktop-commander-overview/SKILL.md`](plugins/cursor/skills/desktop-commander-overview/SKILL.md) |
-| 3 | ✓ | [`skills/desktop-commander-overview/SKILL.md`](skills/desktop-commander-overview/SKILL.md) |
+| 1 | ✓ | [`plugins/claude/skills/ai-tools-setup/SKILL.md`](plugins/claude/skills/ai-tools-setup/SKILL.md) |
+| 2 | ✓ | [`plugins/claude/skills/computer-health-check/SKILL.md`](plugins/claude/skills/computer-health-check/SKILL.md) |
+| 3 | ✓ | [`plugins/claude/skills/desktop-commander-overview/SKILL.md`](plugins/claude/skills/desktop-commander-overview/SKILL.md) |
+| 4 | ✓ | [`plugins/claude/skills/knowledge-base/SKILL.md`](plugins/claude/skills/knowledge-base/SKILL.md) |
+| 5 | ✓ | [`plugins/claude/skills/obsidian-vault/SKILL.md`](plugins/claude/skills/obsidian-vault/SKILL.md) |
+| 6 | ✓ | [`plugins/claude/skills/terminal/SKILL.md`](plugins/claude/skills/terminal/SKILL.md) |
+| 7 | ✓ | [`plugins/cursor/skills/ai-tools-setup/SKILL.md`](plugins/cursor/skills/ai-tools-setup/SKILL.md) |
+| 8 | ✓ | [`plugins/cursor/skills/computer-health-check/SKILL.md`](plugins/cursor/skills/computer-health-check/SKILL.md) |
+| 9 | ✓ | [`plugins/cursor/skills/desktop-commander-overview/SKILL.md`](plugins/cursor/skills/desktop-commander-overview/SKILL.md) |
+| 10 | ✓ | [`plugins/cursor/skills/knowledge-base/SKILL.md`](plugins/cursor/skills/knowledge-base/SKILL.md) |
+| 11 | ✓ | [`plugins/cursor/skills/obsidian-vault/SKILL.md`](plugins/cursor/skills/obsidian-vault/SKILL.md) |
+| 12 | ✓ | [`plugins/cursor/skills/terminal/SKILL.md`](plugins/cursor/skills/terminal/SKILL.md) |
+| 13 | ✓ | [`skills/ai-tools-setup/references/claude-desktop-mcp.md`](skills/ai-tools-setup/references/claude-desktop-mcp.md) |
+| 14 | ✓ | [`skills/ai-tools-setup/references/hermes.md`](skills/ai-tools-setup/references/hermes.md) |
+| 15 | ✓ | [`skills/ai-tools-setup/references/openclaw.md`](skills/ai-tools-setup/references/openclaw.md) |
+| 16 | ✓ | [`skills/ai-tools-setup/SKILL.md`](skills/ai-tools-setup/SKILL.md) |
+| 17 | ✓ | [`skills/computer-health-check/references/linux.md`](skills/computer-health-check/references/linux.md) |
+| 18 | ✓ | [`skills/computer-health-check/references/macos.md`](skills/computer-health-check/references/macos.md) |
+| 19 | ✓ | [`skills/computer-health-check/references/windows.md`](skills/computer-health-check/references/windows.md) |
+| 20 | ✓ | [`skills/computer-health-check/SKILL.md`](skills/computer-health-check/SKILL.md) |
+| 21 | ✓ | [`skills/desktop-commander-overview/SKILL.md`](skills/desktop-commander-overview/SKILL.md) |
+| 22 | ✓ | [`skills/knowledge-base/SKILL.md`](skills/knowledge-base/SKILL.md) |
+| 23 | ✓ | [`skills/obsidian-vault/SKILL.md`](skills/obsidian-vault/SKILL.md) |
+| 24 | ✓ | [`skills/terminal/SKILL.md`](skills/terminal/SKILL.md) |
 
 ---
 

@@ -286,13 +286,23 @@ Where the delta report tells the user what's pending, insights mode tells them w
 
 ### What to compute
 
-**First, build the wikilink graph.** Glob all `.md` pages, extract every `[[wikilink]]`, and build:
-- `incoming[page]` = count of other pages that link to this page
-- `outgoing[page]` = count of pages this page links out to
-- `tags[page]` = set of tags from frontmatter
-- `category[page]` = directory prefix (concepts/, entities/, skills/, etc.)
+**First, run the graph analyser.** This replaces manual wikilink parsing — one command produces all the raw data you need:
 
-You'll reuse this graph across all sections below.
+```bash
+obsidian-wiki graph-analyse "$OBSIDIAN_VAULT_PATH" --pretty
+```
+
+Output fields used below:
+- `god_nodes` — pages ranked by total degree (in + out). Use for anchor pages and hub classification.
+- `communities` — page clusters by link density (label propagation / Leiden). Use for bridge detection and cluster labelling.
+- `surprising_connections` — cross-community edges ranked by unexpectedness. Use directly in the Surprising Connections section.
+- `dead_ends` — pages with zero outgoing links. Use for orphan-adjacent and cross-linker suggestions.
+- `isolated` — pages with zero links in either direction. Use for stubs/orphan reporting.
+- `stats` — total pages, edges, communities.
+
+**Fallback** (if `obsidian-wiki` is not installed): glob all `.md` pages, extract every `[[wikilink]]`, and build `incoming`, `outgoing`, and `tags` maps manually.
+
+You'll reuse this data across all sections below.
 
 ---
 

@@ -41,4 +41,6 @@ frost-mask composition, and two-scale refraction.
 ## Routing boundary
 
 Use `$threejs-procedural-vfx` for world- or object-space residue, particles, and
-dissolves. This skill owns screen-space persistent history and its composite.
+dissolves. Use `$threejs-precipitation-surfaces` for rain wetness, puddles,
+snow accumulation, and weather-surface coupling. This skill owns screen-space
+persistent history and its composite.

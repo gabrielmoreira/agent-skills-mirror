@@ -1,6 +1,6 @@
 // Codex CLI agent configuration
-// Official hooks are primary for lifecycle state; JSONL polling remains as
-// fallback and for events official hooks do not cover yet.
+// Official hooks are primary for lifecycle state and permissions; JSONL polling
+// remains as state/metadata fallback for events official hooks do not cover yet.
 
 module.exports = {
   id: "codex",
@@ -37,8 +37,7 @@ module.exports = {
   capabilities: {
     httpHook: false,
     permissionApproval: true,
-    // Official PermissionRequest is a real approval path. JSONL fallback still
-    // keeps interactiveBubble=true for older/no-hook sessions.
+    // Official PermissionRequest is the real approval path.
     interactiveBubble: true,
     sessionEnd: false, // no SessionEnd event; task_complete marks the turn done, process exit clears the session
     subagent: false,

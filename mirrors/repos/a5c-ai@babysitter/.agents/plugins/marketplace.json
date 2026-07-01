@@ -1,14 +1,17 @@
 {
-  "name": "babysitter-local",
+  "name": "babysitter",
+  "version": "6.0.0",
   "interface": {
-    "displayName": "Babysitter Local"
+    "displayName": "Babysitter"
   },
   "plugins": [
     {
       "name": "babysitter",
+      "version": "6.0.0",
       "source": {
-        "source": "local",
-        "path": "./plugins/babysitter-codex"
+        "source": "url",
+        "url": "https://github.com/a5c-ai/babysitter-codex.git",
+        "ref": "staging"
       },
       "policy": {
         "installation": "AVAILABLE",

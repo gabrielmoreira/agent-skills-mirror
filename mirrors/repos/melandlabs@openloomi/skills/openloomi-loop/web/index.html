@@ -103,6 +103,30 @@ header{display:flex;align-items:center;gap:12px;padding:10px 16px 8px;border-bot
 .t-todo{border-left-color:var(--todo)}
 .t-todo .card-tbadge{background:var(--todo)}
 
+/* FOCUS MODE (slim rows) */
+#fv{flex:1;display:none;flex-direction:column;padding:8px 12px;gap:4px;overflow-y:auto}
+#fv.on{display:flex}
+.frow{display:grid;grid-template-columns:64px 1fr auto;align-items:center;gap:12px;padding:10px 12px;border:1px solid rgba(255,255,255,.06);border-left:3px solid;background:rgba(255,255,255,.02);cursor:pointer;transition:background .12s;position:relative}
+.frow:hover{background:rgba(232,160,32,.06)}
+.frow.sel{background:rgba(232,160,32,.1);border-color:var(--amber)}
+.frow.t-rsvp{border-left-color:var(--rsvp)}
+.frow.t-draft_reply{border-left-color:var(--draft)}
+.frow.t-review_pr{border-left-color:var(--pr)}
+.frow.t-slack_reply{border-left-color:var(--slack)}
+.frow.t-todo{border-left-color:var(--todo)}
+.fbadge{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#111;padding:3px 6px;text-align:center;font-weight:500}
+.fmain{display:flex;flex-direction:column;gap:2px;min-width:0}
+.fmain .t{font-weight:600;font-size:13px;line-height:1.3;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fmain .why{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fmain .why .k{color:var(--text3);margin-right:4px}
+.fact{display:flex;gap:4px;align-items:center;flex-shrink:0}
+.fbtn{font-family:'JetBrains Mono',monospace;font-size:9px;padding:5px 10px;border:1px solid rgba(232,160,32,.35);background:rgba(232,160,32,.1);color:var(--amber);cursor:pointer;letter-spacing:.08em;transition:all .12s}
+.fbtn:hover{background:rgba(232,160,32,.2);border-color:var(--amber)}
+.fbtn.x{border-color:rgba(232,112,112,.3);color:var(--text3);background:transparent;padding:5px 7px}
+.fbtn.x:hover{color:var(--todo);border-color:var(--todo)}
+.fempty{margin:auto;text-align:center;color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;padding:60px 20px;opacity:.7}
+.fempty .ok{color:var(--green);font-size:20px;margin-bottom:12px;display:block}
+
 /* TIMELINE (graph) */
 #tv{flex:1;display:none;position:relative}
 #tv.on{display:block}
@@ -232,7 +256,8 @@ header{display:flex;align-items:center;gap:12px;padding:10px 16px 8px;border-bot
   </div>
   <div class="chips" id="chips"></div>
   <div class="view-tabs">
-    <button class="vtab on" id="tq" onclick="SV('queue')">Q QUEUE</button>
+    <button class="vtab on" id="tf" onclick="SV('focus')">Q FOCUS</button>
+    <button class="vtab" id="tq" onclick="SV('queue')">K BOARD</button>
     <button class="vtab" id="tt" onclick="SV('timeline')">T TIMELINE</button>
     <button class="vtab" id="ta" onclick="SV('activity')">A ACTIVITY</button>
   </div>
@@ -240,6 +265,7 @@ header{display:flex;align-items:center;gap:12px;padding:10px 16px 8px;border-bot
 </header>
 
 <div id="main">
+  <div id="fv"></div>
   <div id="qv"></div>
   <div id="tv"><canvas id="tc"></canvas><div id="tlegend"></div></div>
   <div id="av">
@@ -278,7 +304,7 @@ header{display:flex;align-items:center;gap:12px;padding:10px 16px 8px;border-bot
 </div>
 
 <div id="toast"></div>
-<div id="hints"><kbd>Q</kbd>/<kbd>T</kbd>/<kbd>A</kbd> views · <kbd>/</kbd> search · <kbd>ESC</kbd> close · <kbd>ENTER</kbd> run</div>
+<div id="hints"><kbd>Q</kbd>/<kbd>K</kbd>/<kbd>T</kbd>/<kbd>A</kbd> views · <kbd>/</kbd> search · <kbd>ESC</kbd> close · <kbd>ENTER</kbd> run</div>
 
 <script>
 // ── PALETTE ──────────────────────────────────────────────────────────────────
@@ -287,7 +313,7 @@ const TL = {rsvp:'RSVP',draft_reply:'DRAFT',review_pr:'PR',slack_reply:'SLACK',t
 const TYPES = ['rsvp','draft_reply','review_pr','slack_reply','todo'];
 
 // ── STATE ────────────────────────────────────────────────────────────────────
-let view = 'queue';
+let view = 'focus';
 let data = { pending: [], done: [], dismissed: [] };
 let state = { counts: { pending: 0, done: 0, dismissed: 0, signals: 0 }, last_tick: null };
 let typeFilter = new Set(TYPES);
@@ -410,7 +436,7 @@ function fmtMemory(d){
     }
     return null;
   }).filter(Boolean);
-  if (!refs.length) return '<div class="card-mem" style="color:var(--text3)">(no memory refs — run `loop tick` for Claude to enrich)</div>';
+  if (!refs.length) return '<div class="card-mem" style="color:var(--text3)">(no memory refs — run `loop tick` to enrich)</div>';
   const items = refs.map(r => {
     if (r.kind === 'insight') {
       return `<span class="m" style="color:var(--pr);text-decoration-color:var(--pr)" data-insight="${escapeHTML(r.id)}">🧠 insight:${escapeHTML(r.id.slice(0,12))}…</span>`;
@@ -448,6 +474,88 @@ function renderChips(){
   c.innerHTML = TYPES.map(t => `<div class="chip ${typeFilter.has(t)?'on':''}" data-t="${t}" onclick="toggleType('${t}')"><span class="dot" style="background:${TC[t]}"></span>${TL[t]}</div>`).join('');
 }
 function toggleType(t){ typeFilter.has(t) ? typeFilter.delete(t) : typeFilter.add(t); renderChips(); render(); }
+
+// ── FOCUS MODE ────────────────────────────────────────────────────────────────
+// One slim row per PENDING decision. Sort: todo first, then by confidence desc.
+// typeFilter still applies (chips). Click row → openDetail. Inline RUN / DISMISS.
+function renderFocus(){
+  const TYPE_ORDER = ['todo','draft_reply','rsvp','review_pr','slack_reply'];
+  const arr = (data.pending || [])
+    .filter(d => typeFilter.has(d.type || 'unknown'))
+    .sort((a, b) => {
+      const ai = TYPE_ORDER.indexOf(a.type); const bi = TYPE_ORDER.indexOf(b.type);
+      if (ai !== bi) return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
+      return (b.confidence || 0) - (a.confidence || 0);
+    });
+  const root = document.getElementById('fv');
+  if (!arr.length) {
+    root.innerHTML = `<div class="fempty"><span class="ok">✓</span>INBOX ZERO · WAITING FOR NEXT TICK</div>`;
+    return;
+  }
+  root.innerHTML = arr.map(d => {
+    const t = d.type || 'unknown';
+    const why = whyOneLiner(d);
+    return `<div class="frow t-${t} ${d.id===selId?'sel':''}" data-id="${d.id}">
+      <span class="fbadge" style="background:${hexColor(t)}">${TL[t]||t}</span>
+      <div class="fmain">
+        <div class="t">${escapeHTML(d.title||'(no title)')}</div>
+        ${why ? `<div class="why">${why}</div>` : ''}
+      </div>
+      <div class="fact">
+        <button class="fbtn" data-act="run" data-id="${d.id}">▶ RUN</button>
+        <button class="fbtn x" data-act="dismiss" data-id="${d.id}" title="dismiss">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+  // Row click → detail; button clicks → action (stop propagation).
+  root.querySelectorAll('.frow').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if (e.target.closest('button')) return;
+      openDetail(el.dataset.id);
+    });
+  });
+  root.querySelectorAll('button[data-act]').forEach(el => {
+    el.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const id = el.dataset.id, act = el.dataset.act;
+      if (act === 'run') { runDec(id, false); }
+      else if (act === 'dismiss') {
+        if (!confirm(`Dismiss ${id}?`)) return;
+        await fetch(`/api/dismiss/${id}`, { method: 'POST' });
+        showToast(`dismissed ${id}`);
+        await refresh();
+      }
+    });
+  });
+}
+
+// One-line "why this is here" — pull the most useful single fact out of the
+// source signal payload. Used as the second line in each focus row.
+function whyOneLiner(d){
+  const p = d.source_signal?.payload || d.context || {};
+  const t = d.source_signal?.type || (d.source ? String(d.source).split(':').slice(-1)[0] : '');
+  if (t === 'email') {
+    const from = p.from ? extractName(p.from) : '';
+    const subj = p.subject ? `re: ${p.subject}` : '';
+    return `${from ? `<span class="k">from</span>${escapeHTML(from)}` : ''}${from && subj ? ' · ' : ''}${subj ? `<span class="k">re</span>${escapeHTML(subj)}` : ''}`;
+  }
+  if (t === 'calendar_event') {
+    const when = p.start ? fmtTimeShort(p.start) + ' (' + relTime(p.start) + ')' : '';
+    const org = p.organizer ? `org: ${extractName(p.organizer)}` : '';
+    return `${when ? `<span class="k">⏰</span>${escapeHTML(when)}` : ''}${when && org ? ' · ' : ''}${org ? `<span class="k">org</span>${escapeHTML(org)}` : ''}`;
+  }
+  if (t === 'github_pr') {
+    return `<span class="k">repo</span>${escapeHTML(p.repo||'?')} <span class="k">#</span>${p.number||'?'} <span class="k">by</span>${escapeHTML(p.author||'?')}`;
+  }
+  if (t === 'slack_message') {
+    return `<span class="k">chan</span>#${escapeHTML(p.channel||'?')} <span class="k">user</span>${escapeHTML(p.user||'?')}`;
+  }
+  // Unknown type — fall back to memory_refs first one (if any), else action.kind.
+  const refs = d.context?.memory_refs || [];
+  if (refs.length) return `<span class="k">🧠</span>${escapeHTML(String(refs[0]))}`;
+  if (d.action?.kind) return `<span class="k">→</span>${escapeHTML(d.action.kind)}`;
+  return '';
+}
 
 function renderQueue(){
   const q = document.getElementById('qv');
@@ -713,12 +821,16 @@ async function loadMemoryInline(rel, el){
 // ── VIEWS / SWITCH ───────────────────────────────────────────────────────────
 function SV(v){
   view = v;
+  document.getElementById('fv').classList.toggle('on', v==='focus');
   document.getElementById('qv').style.display = v==='queue' ? 'flex' : 'none';
   document.getElementById('tv').classList.toggle('on', v==='timeline');
   document.getElementById('av').classList.toggle('on', v==='activity');
+  document.getElementById('tf').classList.toggle('on', v==='focus');
   document.getElementById('tq').classList.toggle('on', v==='queue');
   document.getElementById('tt').classList.toggle('on', v==='timeline');
   document.getElementById('ta').classList.toggle('on', v==='activity');
+  if (v === 'focus') renderFocus();
+  if (v === 'queue') renderQueue();
   if (v === 'timeline') renderTimeline();
   if (v === 'activity') renderActivity();
 }
@@ -766,7 +878,8 @@ document.addEventListener('keydown', (e) => {
   }
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.key === '/') { e.preventDefault(); OS(); }
-  else if (e.key === 'q' || e.key === 'Q') SV('queue');
+  else if (e.key === 'q' || e.key === 'Q') SV('focus');
+  else if (e.key === 'k' || e.key === 'K') SV('queue');
   else if (e.key === 't' || e.key === 'T') SV('timeline');
   else if (e.key === 'a' || e.key === 'A') SV('activity');
   else if (e.key === 'Escape') CD();
@@ -786,7 +899,8 @@ async function refresh(){
   data = d; state = s;
   const c = state.counts;
   document.getElementById('hdMeta').innerHTML = `CONTEXT → DECISION → EXECUTE · <span style="color:var(--amber)">${c.pending} pending</span> · ${c.done} done · ${c.dismissed} dismissed · ${c.signals} signals${state.last_tick?.created ? ` · last tick: created ${state.last_tick.created}` : ''}`;
-  if (view === 'queue') renderQueue();
+  if (view === 'focus') renderFocus();
+  else if (view === 'queue') renderQueue();
   else if (view === 'timeline') renderTimeline();
   else if (view === 'activity') renderActivity();
 }
@@ -794,7 +908,7 @@ async function refresh(){
 // ── INIT ─────────────────────────────────────────────────────────────────────
 async function init(){
   renderChips();
-  SV('queue');
+  SV('focus');
   await refresh();
   setInterval(refresh, 4000);
   setInterval(() => { if (view === 'activity') renderActivity(); }, 4000);

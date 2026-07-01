@@ -9,12 +9,12 @@ Use this skill when the user wants to create, convert, review, or validate an Ag
 
 ## Choose the save location
 
-Before creating a new skill, explicitly ask the user where it should live using `ask_user` unless they already gave an unambiguous location. Offer at least these choices:
+Before creating a new skill, explicitly ask the user where it should live using `ask_user` unless they already gave an unambiguous location. Offer global/catalog choices, not project-local resources:
 
 - Global personal skill — reusable across projects and safe to assign to global/library agents.
-- Project skill — ad-hoc or repository-specific; only that project can resolve it unless separately imported/copied.
+- Catalog/imported skill — keep the skill where it lives and add it through Agent Deck’s `+` import flow. Import is by reference, not a copy.
 
-Do not infer project-local just because the current working directory is a repository. A project-local skill assigned to a global/library agent can cause missing-skill warnings in other projects.
+Do not infer project-local just because the current working directory is a repository. Agent Deck no longer discovers project-local `.pi/skills` as a resource catalog source.
 
 Use a global personal skill when the skill should be reusable across projects:
 
@@ -22,26 +22,19 @@ Use a global personal skill when the skill should be reusable across projects:
 ~/.pi/agent/skills/<skill-name>/SKILL.md
 ```
 
-Use a project skill when the skill is specific to one repository, codebase, team convention, or local workflow:
-
-```text
-<project>/.pi/skills/<skill-name>/SKILL.md
-```
-
-Use a non-standard path only when the user explicitly asks for one. Warn that Agent Deck will not discover that skill unless the path is also configured/imported as an external skill:
+Use a non-standard path only when the user explicitly asks for one. Warn that Agent Deck will not discover that skill unless the path is also configured/imported as an external skill through the `+` import flow:
 
 ```text
 /path/to/skills/<skill-name>/SKILL.md
 ```
 
-Read compatibility locations such as `.agents/skills/<skill-name>/SKILL.md` when reviewing existing skills, but do not create new skills there unless the user explicitly asks for legacy compatibility.
+Read compatibility locations such as `.agents/skills/<skill-name>/SKILL.md` when reviewing existing skills, but do not create new project-local skills there. Use global personal storage or catalog/import instead.
 
 After creating a skill, tell the user where it was saved and whether it still needs Default, Project, or Agent assignment in Agent Deck before it is injected into a runtime session.
 
 Ask the user when any of these are unclear:
 
-- whether the skill should be global or project-specific
-- the target project when creating a project skill
+- whether the skill should be global personal storage or catalog/imported by reference
 - whether the user really wants a non-standard path, with a warning that Agent Deck will not discover it unless configured/imported as an external skill
 - the skill's scope, activation trigger, or expected workflow
 - whether a complex skill should be modular or kept simple
@@ -144,7 +137,7 @@ This keeps the initial skill small and delegates token-heavy reference material 
 ## Authoring workflow
 
 1. Choose a short, stable kebab-case skill name.
-2. Decide whether it is a global skill or a project skill; ask if unclear.
+2. Decide whether it is a global personal skill or an imported/catalog skill; ask if unclear.
 3. Write frontmatter with a specific use-triggering description.
 4. Decide whether the skill should be simple or modular.
 5. For simple skills, keep the workflow in `SKILL.md`.

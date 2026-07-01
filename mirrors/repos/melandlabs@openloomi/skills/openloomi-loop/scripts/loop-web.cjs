@@ -10,15 +10,16 @@
 //   GET  /api/notifications?limit=50 → tail notifications.log
 //   GET  /api/memory?path=rel      → read a memory file (relative to ~/.openloomi/data/memory)
 //   GET  /api/source?path=rel      → read a raw source signal file (data/inbox/...)
-//   POST /api/run/:id[?dry=1]      → spawn `claude -p <prompt>` (or --dry).
-//                                    The spawned child is launched with
-//                                    `--dangerously-skip-permissions` so it
-//                                    can call mcp__composio__* /
-//                                    mcp__agentmemory__* / openloomi-*
-//                                    CLIs without per-call prompts (see
-//                                    `claudeSpawnArgs` below; set
-//                                    LOOP_CLAUDE_SAFE_PERMISSIONS=1 to opt
-//                                    out).
+//   POST /api/run/:id[?dry=1]      → invoke the agent on a pending decision
+//                                    and stream the result to the daemon log.
+//                                    Default surface is the local
+//                                    /api/native/agent endpoint (loop-lib →
+//                                    agent.invoke). The endpoint returns
+//                                    202 immediately; the move-to-done/
+//                                    dismissed happens in the background
+//                                    once the agent finishes. Set
+//                                    LOOP_LEGACY=1 to fall back to the
+//                                    legacy `claude -p` child.
 //   POST /api/dismiss/:id          → mark dismissed
 //   POST /api/notify               → fire a manual notification test
 
@@ -26,42 +27,14 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
-const { spawn, spawnSync } = require('node:child_process');
 const url = require('node:url');
+const lib = require('./loop-lib.cjs');
+
+const { agent, decisions, utils } = lib;
 
 const ROOT = path.resolve(__dirname, '..');
 const SKILL_DIR = ROOT;
 const DATA_DIR = path.join(SKILL_DIR, 'data');
-
-// Strip CLAUDECODE before spawning `claude -p` — same workaround as
-// openloomi-loop.cjs. Otherwise the child refuses to start when the
-// web server itself was launched from inside a Claude Code session.
-const cleanChildEnv = () => {
-  const env = { ...process.env };
-  env.CLAUDECODE = undefined;
-  return env;
-};
-
-// Build spawn args for a `claude -p` run.
-// - Always adds `--verbose` so thinking + tool calls are emitted to stdout.
-// - Adds `--dangerously-skip-permissions` so the child can call the same
-//   tool families the parent already has (mcp__composio__*, mcp__agentmemory__*,
-//   and the openloomi-{loop,memory} CLIs). Without this, the child hits the
-//   permission dialog on every tool call and the run stalls. Ticks/runs are
-//   read/derive or sandboxed to a single user action — they never bulk-send —
-//   so the "dangerous" flag is safe here. Set LOOP_CLAUDE_SAFE_PERMISSIONS=1
-//   to opt out (back to the per-call prompt).
-// - See openloomi-loop.cjs for why we don't add a PTY wrapper (libc block
-//   buffering + script's own TTY requirement).
-function claudeSpawnArgs(prompt, extraArgs = []) {
-  const baseArgs = ['-p', prompt, '--output-format', 'text', '--verbose'];
-  if (process.env.LOOP_CLAUDE_SAFE_PERMISSIONS !== '1') {
-    baseArgs.push('--dangerously-skip-permissions');
-  }
-  baseArgs.push(...extraArgs);
-  const bin = process.env.LOOP_CLAUDE_BIN || 'claude';
-  return { bin, args: baseArgs };
-}
 
 const WEB_DIR = path.join(SKILL_DIR, 'web');
 const MEMORY_DIR = path.join(os.homedir(), '.openloomi', 'data', 'memory');
@@ -139,7 +112,7 @@ function findDecision(id) {
   }
   return null;
 }
-function moveDecision(id, toBucket) {
+function moveDecision(id, toBucket, result = null) {
   const d = readJson(DECISIONS_PATH, { pending: [], done: [], dismissed: [] });
   let moved = null;
   for (const bucket of ['pending', 'done', 'dismissed']) {
@@ -148,6 +121,9 @@ function moveDecision(id, toBucket) {
       moved = d[bucket].splice(i, 1)[0];
       moved.status = toBucket;
       moved.movedAt = new Date().toISOString();
+      if (result && typeof result === 'object') {
+        moved.result = { ...(moved.result || {}), ...result };
+      }
       d[toBucket] = d[toBucket] || [];
       d[toBucket].unshift(moved);
       break;
@@ -271,21 +247,34 @@ function handleRun(req, res, id) {
   if (dry) {
     return jsonRes(res, 200, { dry: true, prompt, decision: f.dec });
   }
-  // Spawn claude -p (or LOOP_CLAUDE_BIN), with --verbose +
-  // --dangerously-skip-permissions (see claudeSpawnArgs) so the child can
-  // call mcp__* and the openloomi CLIs without per-call permission prompts.
-  try {
-    const { bin, args } = claudeSpawnArgs(prompt);
-    const child = spawn(bin, args, {
-      detached: true,
-      stdio: 'ignore',
-      env: cleanChildEnv(),
+  // Default surface is the local /api/native/agent endpoint. We respond
+  // 202 immediately so the UI can navigate away; the agent's progress
+  // streams into data/daemon.log, and the move-to-done/dismissed happens
+  // in the background once the invoke promise resolves.
+  const surface = agent.legacy.isForced() ? 'legacy' : 'native';
+  const dispatchedAt = utils.now();
+  // Mark the decision as running in-place (stays in `pending` until the
+  // background invoke resolves).
+  decisions.update(id, { status: 'running', started_at: dispatchedAt, surface });
+  agent.invoke(prompt, { onEvent: agent.defaultStreamOnEvent() })
+    .then((result) => {
+      const ok = !!result.ok;
+      const summary = result.surface === 'legacy'
+        ? (ok ? 'claude exited 0' : `claude exited ${result.code}/${result.signal}`)
+        : (ok ? `native ok (text=${(result.text || '').length}chars)` : `native failed: ${result.error || 'see events'}`);
+      moveDecision(id, ok ? 'done' : 'dismissed', {
+        ok,
+        surface: result.surface || surface,
+        summary,
+        finished_at: utils.now(),
+      });
+      utils.log(`[web.run] ${id} → ${ok ? 'done' : 'failed'} (${summary})`);
+    })
+    .catch((e) => {
+      utils.log(`[web.run] ${id} → failed (${e.message})`);
+      moveDecision(id, 'dismissed', { ok: false, error: e.message, finished_at: utils.now() });
     });
-    child.unref();
-    return jsonRes(res, 202, { ok: true, spawned: child.pid, bin });
-  } catch (e) {
-    return jsonRes(res, 500, { error: 'spawn_failed', message: e.message });
-  }
+  return jsonRes(res, 202, { ok: true, dispatched: true, id, surface, dispatched_at: dispatchedAt });
 }
 
 function handleDismiss(req, res, id) {

@@ -57,6 +57,20 @@ You will often get a short brief (a few themes, an audience) without a full init
 - Lead with customer outcomes, not features
 - Be honest about what's NOT on the roadmap and why
 
+## Timeline, drawn
+When the themes have a sequence or dates, also render the roadmap as a Mermaid Gantt chart so the shape of the plan is visible (it renders live in the playground; with real ISO dates it also exports to a calendar .ics). Use `section` per theme/quarter and mark key checkpoints as milestones.
+
+```mermaid
+gantt
+    title Roadmap
+    dateFormat YYYY-MM-DD
+    section Theme 1
+        Initiative      :2026-07-01, 30d
+        Checkpoint      :milestone, 2026-07-31, 0d
+    section Theme 2
+        Initiative      :2026-08-01, 45d
+```
+
 ## Quality Checks
 
 - [ ] Every initiative in the input maps to a strategic theme

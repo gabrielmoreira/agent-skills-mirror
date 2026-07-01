@@ -5,7 +5,7 @@ description: Create or improve Agent Deck/Pi prompt templates for reusable paren
 
 # Prompt authoring
 
-Use this skill when the user wants a reusable slash prompt, workflow shortcut, or project/global prompt template for parent Pi Agent sessions.
+Use this skill when the user wants a reusable slash prompt, workflow shortcut, or global/imported prompt template for parent Pi Agent sessions.
 
 ## Runtime facts
 
@@ -18,19 +18,13 @@ Use this skill when the user wants a reusable slash prompt, workflow shortcut, o
 
 ## Locations
 
-Create reusable catalog prompts in Agent Deck's prompt library unless the user asks for a specific project-local file:
+Create reusable catalog prompts in Agent Deck's prompt library unless the user asks to keep an existing file elsewhere and import it by reference through Agent Deck’s `+` flow:
 
 ```text
 ~/.pi/agent/prompt-library/<name>.md
 ```
 
-Project-local source prompts may live at:
-
-```text
-<project>/.pi/prompts/<name>.md
-```
-
-Global/default and project availability are Agent Deck assignments. Do not rely on ambient Pi prompt discovery.
+Agent Deck no longer discovers project-local `.pi/prompts` or project settings `prompts`/package prompt sources as catalog resources. Global/default and project availability are Agent Deck assignments. Do not rely on ambient Pi prompt discovery. Import is by reference, not a copy.
 
 ## Format
 

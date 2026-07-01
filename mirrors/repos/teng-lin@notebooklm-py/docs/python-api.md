@@ -958,7 +958,7 @@ async with NotebookLMClient.from_storage(rate_limit_max_retries=0) as client:
 | `delete(notebook_id)` | `notebook_id: str` | `None` | Delete a notebook (idempotent; returns `None` whether or not it existed) |
 | `rename(notebook_id, new_title)` | `notebook_id: str, new_title: str` | `Notebook` | Rename a notebook (re-fetched; raises `NotebookNotFoundError` if missing) |
 | `get_description(notebook_id)` | `notebook_id: str` | `NotebookDescription` | Get AI summary and topics |
-| `suggest_prompts(notebook_id, *, source_ids=None, mode=4, query=None)` | `str, list[str] \| None, int, str \| None` | `list[PromptSuggestion]` | Get AI-suggested prompts for the notebook. `source_ids=None` uses all sources; `mode` is the required `1..9` "mode/surface" int (default `4` suggests chat questions; other modes target other surfaces); `query` optionally steers the suggestions. Each `PromptSuggestion.prompt` is a ready-to-send instruction for `ask()`. |
+| `suggest_prompts(notebook_id, *, source_ids=None, mode=4, query=None)` | `str, list[str] \| None, int, str \| None` | `list[PromptSuggestion]` | Get AI-suggested prompts for the notebook. `source_ids=None` uses all sources; `mode` is the required `1..10` "mode/surface" int (default `4` suggests chat questions; other modes target other surfaces); `query` optionally steers the suggestions. Each `PromptSuggestion.prompt` is a ready-to-send instruction for `ask()`. |
 | `get_metadata(notebook_id)` | `notebook_id: str` | `NotebookMetadata` | Get notebook metadata and sources |
 | `get_summary(notebook_id)` | `notebook_id: str` | `str` | Get raw summary text |
 | `get_share_url(notebook_id, artifact_id=None)` | `notebook_id: str, str \| None` | `str` | Get a share URL |

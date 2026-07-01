@@ -51,7 +51,8 @@ A short ordered list, not a wall of text:
 
 1. **Edit `.github/copilot-instructions.local.md`** — at minimum, fill in the `## Project Context` paragraph. Identity grounding from session 1 beats identity grounding at session 10.
 2. **Run `/configure-vscode`** — applies fleet-baseline VS Code user-scope settings (Copilot model defaults, agent behaviors). Skip if you've already run it on this machine for another heir.
-3. **Start a real chat** — pick any of the three first-prompt examples above, or describe what you actually want to build.
+3. **Run `/configure-workspace-verify` → `/configure-workspace`** — bootstrap installs `.vscode/markdown-light.css` + discovery-location keys in `.vscode/settings.json`; the verify/apply pair is the recovery path if those files were git-ignored, deleted, or you cloned the heir onto a new machine without the workspace assets.
+4. **Start a real chat** — pick any of the three first-prompt examples above, or describe what you actually want to build.
 
 ### 6. When you need more
 

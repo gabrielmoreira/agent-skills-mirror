@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `OSideMedia/higgsfield-ai-prompt-skill` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
+Mirror of `OSideMedia/higgsfield-ai-prompt-skill` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `OSideMedia/higgsfield-ai-prompt-skill` — 26 default patterns, 0 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 39 |
+| Files         | 42 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,17 +87,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`skills/higgsfield-prompt/SKILL.md`](skills/higgsfield-prompt/SKILL.md) |
 | 27 | ✓ | [`skills/higgsfield-recall/SKILL.md`](skills/higgsfield-recall/SKILL.md) |
 | 28 | ✓ | [`skills/higgsfield-recipes/SKILL.md`](skills/higgsfield-recipes/SKILL.md) |
-| 29 | ✓ | [`skills/higgsfield-seedance/ENGINE-RULES.md`](skills/higgsfield-seedance/ENGINE-RULES.md) |
-| 30 | ✓ | [`skills/higgsfield-seedance/FAILURE-MODES.md`](skills/higgsfield-seedance/FAILURE-MODES.md) |
-| 31 | ✓ | [`skills/higgsfield-seedance/SKILL.md`](skills/higgsfield-seedance/SKILL.md) |
-| 32 | ✓ | [`skills/higgsfield-shotlist-director/SKILL.md`](skills/higgsfield-shotlist-director/SKILL.md) |
-| 33 | ✓ | [`skills/higgsfield-soul/SKILL.md`](skills/higgsfield-soul/SKILL.md) |
-| 34 | ✓ | [`skills/higgsfield-stack/SKILL.md`](skills/higgsfield-stack/SKILL.md) |
-| 35 | ✓ | [`skills/higgsfield-style/SKILL.md`](skills/higgsfield-style/SKILL.md) |
-| 36 | ✓ | [`skills/higgsfield-troubleshoot/SKILL.md`](skills/higgsfield-troubleshoot/SKILL.md) |
-| 37 | ✓ | [`skills/higgsfield-vibe-motion/SKILL.md`](skills/higgsfield-vibe-motion/SKILL.md) |
-| 38 | ✓ | [`skills/higgsfield-workspaces/SKILL.md`](skills/higgsfield-workspaces/SKILL.md) |
-| 39 | ✓ | [`skills/shared/negative-constraints.md`](skills/shared/negative-constraints.md) |
+| 29 | ✓ | [`skills/higgsfield-seedance-vfx/references/dialogue-timing.md`](skills/higgsfield-seedance-vfx/references/dialogue-timing.md) |
+| 30 | ✓ | [`skills/higgsfield-seedance-vfx/references/first-frame.md`](skills/higgsfield-seedance-vfx/references/first-frame.md) |
+| 31 | ✓ | [`skills/higgsfield-seedance-vfx/SKILL.md`](skills/higgsfield-seedance-vfx/SKILL.md) |
+| 32 | ✓ | [`skills/higgsfield-seedance/ENGINE-RULES.md`](skills/higgsfield-seedance/ENGINE-RULES.md) |
+| 33 | ✓ | [`skills/higgsfield-seedance/FAILURE-MODES.md`](skills/higgsfield-seedance/FAILURE-MODES.md) |
+| 34 | ✓ | [`skills/higgsfield-seedance/SKILL.md`](skills/higgsfield-seedance/SKILL.md) |
+| 35 | ✓ | [`skills/higgsfield-shotlist-director/SKILL.md`](skills/higgsfield-shotlist-director/SKILL.md) |
+| 36 | ✓ | [`skills/higgsfield-soul/SKILL.md`](skills/higgsfield-soul/SKILL.md) |
+| 37 | ✓ | [`skills/higgsfield-stack/SKILL.md`](skills/higgsfield-stack/SKILL.md) |
+| 38 | ✓ | [`skills/higgsfield-style/SKILL.md`](skills/higgsfield-style/SKILL.md) |
+| 39 | ✓ | [`skills/higgsfield-troubleshoot/SKILL.md`](skills/higgsfield-troubleshoot/SKILL.md) |
+| 40 | ✓ | [`skills/higgsfield-vibe-motion/SKILL.md`](skills/higgsfield-vibe-motion/SKILL.md) |
+| 41 | ✓ | [`skills/higgsfield-workspaces/SKILL.md`](skills/higgsfield-workspaces/SKILL.md) |
+| 42 | ✓ | [`skills/shared/negative-constraints.md`](skills/shared/negative-constraints.md) |
 
 ---
 

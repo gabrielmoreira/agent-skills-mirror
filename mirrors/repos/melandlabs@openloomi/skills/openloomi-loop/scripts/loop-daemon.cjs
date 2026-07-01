@@ -1,19 +1,22 @@
 #!/usr/bin/env node
 /**
- * openloomi-loop daemon (legacy / lib-only mode)
+ * openloomi-loop daemon (lib-only mode)
  *
  * In the **agentic** mode (default), Claude itself pulls signals via
  * Composio MCP and writes them to data/signals.jsonl. There is no
- * background process. The tick is invoked by:
+ * background process. The tick is invoked by the local native-agent
+ * endpoint (POST /api/native/agent, Bearer token from
+ * ~/.openloomi/token). For example, to run one tick from the shell:
  *
- *   claude -p --dangerously-skip-permissions "$(node $SKILL_DIR/scripts/loop-tick.cjs)"
+ *   PROMPT="$(node $SKILL_DIR/scripts/loop-tick.cjs --compact)"
+ *   curl -X POST http://127.0.0.1:3414/api/native/agent \
+ *     -H "Authorization: Bearer $(cat ~/.openloomi/token | base64 -d)" \
+ *     -H "Content-Type: application/json" \
+ *     -d "$(jq -n --arg p "$PROMPT" '{prompt:$p}')"
  *
- * `--dangerously-skip-permissions` is required so the spawned child can
- * call `mcp__composio__*` / `mcp__agentmemory__*` and the openloomi CLIs
- * without per-call permission prompts (the child has no interactive UI
- * to approve them). `loop schedule` and `loop run` add this flag
- * automatically; add it manually here too if you invoke claude by hand.
- * Set LOOP_CLAUDE_SAFE_PERMISSIONS=1 to opt out globally.
+ * Set LOOP_LEGACY=1 to fall back to spawning the legacy `claude -p`
+ * child instead. `loop schedule` and `loop run` add this flag
+ * automatically via loop-lib.cjs → agent.invoke.
  *
  * This file is kept for two reasons:
  *   1. `tick()` exposes the same analyze pipeline (inbox → classify →

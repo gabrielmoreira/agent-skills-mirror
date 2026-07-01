@@ -1,10 +1,10 @@
 ---
 name: team-topologies
-description: 'Organize business and technology teams for fast flow using Skelton & Pais''s "Team Topologies". Use when the user mentions "team topologies", "Conway''s law", "platform team", "stream-aligned team", "team boundaries", "cognitive load", "how should we split teams", "org design", "who owns this service", "team dependencies", "reorg", or "teams keep stepping on each other". Also trigger when reorganizing engineering teams, aligning team and service boundaries, splitting a monolith and deciding ownership, reducing cross-team handoffs, or designing an internal platform. Covers the four team types, three interaction modes, the inverse Conway maneuver, and fracture planes. For bounded contexts, see domain-driven-design. For dependency direction in code, see clean-architecture.'
+description: 'Organize business and technology teams for fast flow using Skelton & Pais''s "Team Topologies". Use when the user mentions "team topologies", "Conway''s law", "platform team", "stream-aligned team", "team boundaries", "cognitive load", "how should we split teams", "who owns this service", "team dependencies", or "reorg". Also trigger when reorganizing engineering teams, aligning team and service boundaries, splitting a monolith and deciding ownership, reducing cross-team handoffs, or designing an internal platform. Covers the four team types, three interaction modes, the inverse Conway maneuver, and fracture planes. For bounded contexts, see domain-driven-design. For dependency direction in code, see clean-architecture.'
 license: MIT
 metadata:
   author: wondelai
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Team Topologies
@@ -59,7 +59,7 @@ A team-first approach to organization design from Matthew Skelton and Manuel Pai
 - Stream-aligned is the default; the other three types are justified only by the load they remove from streams
 - An enabling team that never disengages has become a dependency — measure it by capabilities transferred, not tickets closed
 - Complicated-subsystem teams are justified by genuine specialism, never by managerial convenience — most orgs need zero or one
-- A platform is judged by cognitive load removed: if using it is harder than self-hosting, it is a liability with a roadmap
+- A platform exists to remove load from streams: if adopting it is harder than self-hosting, it is a liability, not a platform
 - Anti-patterns: shared-services teams become ticket-queue bottlenecks; a "DevOps team" between dev and ops adds a third silo; component teams everywhere mean every feature crosses many teams
 
 **Applications:**
@@ -192,14 +192,6 @@ See: [references/case-studies.md](references/case-studies.md)
 | Is platform adoption optional and measured by load removed? | Mandate is masking a failing platform | Run the platform as a product; track voluntary adoption and DevEx |
 | Are enabling engagements time-boxed with exit criteria? | Permanent dependency replaces learning | Set end dates and capability-transfer goals up front |
 | Is there a recurring mechanism to sense and evolve the topology? | Design rots as system and market shift | Quarterly review of friction, wait times, and on-call signals |
-
-## Reference Files
-
-- [team-types.md](references/team-types.md): Each team type in depth — responsibilities, staffing, success metrics, failure modes, converting existing teams, and a "which type is this team really?" decision guide
-- [interaction-modes.md](references/interaction-modes.md): Mode-by-mode mechanics, team interaction contracts, time-boxing collaboration, designing X-as-a-Service interfaces, the facilitation playbook, and mode-evolution triggers
-- [cognitive-load.md](references/cognitive-load.md): Assessing team cognitive load (survey, domain counting, on-call and tooling proxies), the full team API template, domain-allocation heuristics, and overload warning signs
-- [fracture-planes.md](references/fracture-planes.md): The fracture-plane catalog with selection criteria, a monolith-to-team-ownership mapping exercise, DDD alignment, shared-code options, and sequencing an inverse Conway reorg
-- [case-studies.md](references/case-studies.md): Three scenarios — a scale-up redesigned into stream-aligned plus platform teams, an ops team converted to platform-as-product, and a monolith split with explicit interaction modes
 
 ## Further Reading
 

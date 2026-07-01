@@ -228,9 +228,10 @@ Four corners (`.tl` `.tr` `.bl` `.br`); mirror with `transform: scaleX(-1)` / `s
 
 | Component | Files | Purpose |
 |---|---|---|
-| `header` | every page | brand + meta + view tabs + search |
+| `header` | every page | brand + meta + view tabs + search · Focus view is the default landing; press `K` to drop into the 3-column board |
 | `chips` | header | filter pills, 1=type, 2=source, etc. |
 | `kanban` | Queue view | 3-column boards, scrollable cards |
+| `focus-row` | Focus view | slim PENDING list · type badge + title + 1-line why + inline RUN/DISMISS |
 | `card` | inside kanban / activity | type badge + title + context + person + memory + action |
 | `timeline` | Timeline view | canvas + sim physics + hex nodes |
 | `split` | Activity view | live feed + recent list |
@@ -244,7 +245,7 @@ Four corners (`.tl` `.tr` `.bl` `.br`); mirror with `transform: scaleX(-1)` / `s
 
 | Key | Action |
 |---|---|
-| `Q` / `T` / `A` | Queue / Timeline / Activity |
+| `Q` / `K` / `T` / `A` | Focus / Board (kanban) / Timeline / Activity |
 | `/` | Search |
 | `↑` `↓` | Navigate search |
 | `Enter` | Run selected (in detail) / open in search |

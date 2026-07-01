@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `fabioc-aloha/Alex_ACT_Edition` — 26 default patterns, 0 followed patterns, 103 file(s) materialized.
+Mirror of `fabioc-aloha/Alex_ACT_Edition` — 26 default patterns, 0 followed patterns, 105 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `fabioc-aloha/Alex_ACT_Edition` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 103 |
+| Files         | 105 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -101,67 +101,69 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 40 | ✓ | [`.github/prompts/checkin.prompt.md`](.github/prompts/checkin.prompt.md) |
 | 41 | ✓ | [`.github/prompts/configure-vscode-verify.prompt.md`](.github/prompts/configure-vscode-verify.prompt.md) |
 | 42 | ✓ | [`.github/prompts/configure-vscode.prompt.md`](.github/prompts/configure-vscode.prompt.md) |
-| 43 | ✓ | [`.github/prompts/convert.prompt.md`](.github/prompts/convert.prompt.md) |
-| 44 | ✓ | [`.github/prompts/critical-thinking.prompt.md`](.github/prompts/critical-thinking.prompt.md) |
-| 45 | ✓ | [`.github/prompts/feedback.prompt.md`](.github/prompts/feedback.prompt.md) |
-| 46 | ✓ | [`.github/prompts/format-markdown.prompt.md`](.github/prompts/format-markdown.prompt.md) |
-| 47 | ✓ | [`.github/prompts/initialize.prompt.md`](.github/prompts/initialize.prompt.md) |
-| 48 | ✓ | [`.github/prompts/lint-markdown.prompt.md`](.github/prompts/lint-markdown.prompt.md) |
-| 49 | ✓ | [`.github/prompts/mall-contribute.prompt.md`](.github/prompts/mall-contribute.prompt.md) |
-| 50 | ✓ | [`.github/prompts/mall-install.prompt.md`](.github/prompts/mall-install.prompt.md) |
-| 51 | ✓ | [`.github/prompts/mall-refresh.prompt.md`](.github/prompts/mall-refresh.prompt.md) |
-| 52 | ✓ | [`.github/prompts/mall-search.prompt.md`](.github/prompts/mall-search.prompt.md) |
-| 53 | ✓ | [`.github/prompts/mall-show.prompt.md`](.github/prompts/mall-show.prompt.md) |
-| 54 | ✓ | [`.github/prompts/meditate.prompt.md`](.github/prompts/meditate.prompt.md) |
-| 55 | ✓ | [`.github/prompts/note.prompt.md`](.github/prompts/note.prompt.md) |
-| 56 | ✓ | [`.github/prompts/problem-framing-audit.prompt.md`](.github/prompts/problem-framing-audit.prompt.md) |
-| 57 | ✓ | [`.github/prompts/review-agent.prompt.md`](.github/prompts/review-agent.prompt.md) |
-| 58 | ✓ | [`.github/prompts/review-instruction.prompt.md`](.github/prompts/review-instruction.prompt.md) |
-| 59 | ✓ | [`.github/prompts/review-prompt.prompt.md`](.github/prompts/review-prompt.prompt.md) |
-| 60 | ✓ | [`.github/prompts/review-skill.prompt.md`](.github/prompts/review-skill.prompt.md) |
-| 61 | ✓ | [`.github/prompts/save-session-note.prompt.md`](.github/prompts/save-session-note.prompt.md) |
-| 62 | ✓ | [`.github/prompts/status.prompt.md`](.github/prompts/status.prompt.md) |
-| 63 | ✓ | [`.github/prompts/upgrade.prompt.md`](.github/prompts/upgrade.prompt.md) |
-| 64 | ✓ | [`.github/prompts/welcome.prompt.md`](.github/prompts/welcome.prompt.md) |
-| 65 | ✓ | [`.github/skills/agent-creator/SKILL.md`](.github/skills/agent-creator/SKILL.md) |
-| 66 | ✓ | [`.github/skills/agent-review/SKILL.md`](.github/skills/agent-review/SKILL.md) |
-| 67 | ✓ | [`.github/skills/ai-memory-setup/SKILL.md`](.github/skills/ai-memory-setup/SKILL.md) |
-| 68 | ✓ | [`.github/skills/alex-banner-generation/SKILL.md`](.github/skills/alex-banner-generation/SKILL.md) |
-| 69 | ✓ | [`.github/skills/anti-hallucination/SKILL.md`](.github/skills/anti-hallucination/SKILL.md) |
-| 70 | ✓ | [`.github/skills/brain-audit/SKILL.md`](.github/skills/brain-audit/SKILL.md) |
-| 71 | ✓ | [`.github/skills/code-review/SKILL.md`](.github/skills/code-review/SKILL.md) |
-| 72 | ✓ | [`.github/skills/creative-writing/SKILL.md`](.github/skills/creative-writing/SKILL.md) |
-| 73 | ✓ | [`.github/skills/critical-thinking/SKILL.md`](.github/skills/critical-thinking/SKILL.md) |
-| 74 | ✓ | [`.github/skills/deep-review/SKILL.md`](.github/skills/deep-review/SKILL.md) |
-| 75 | ✓ | [`.github/skills/doc-hygiene/SKILL.md`](.github/skills/doc-hygiene/SKILL.md) |
-| 76 | ✓ | [`.github/skills/docx-to-md/SKILL.md`](.github/skills/docx-to-md/SKILL.md) |
-| 77 | ✓ | [`.github/skills/git-workflow/SKILL.md`](.github/skills/git-workflow/SKILL.md) |
-| 78 | ✓ | [`.github/skills/greeting-checkin/SKILL.md`](.github/skills/greeting-checkin/SKILL.md) |
-| 79 | ✓ | [`.github/skills/html-to-md/SKILL.md`](.github/skills/html-to-md/SKILL.md) |
-| 80 | ✓ | [`.github/skills/humanizer/SKILL.md`](.github/skills/humanizer/SKILL.md) |
-| 81 | ✓ | [`.github/skills/instruction-creator/SKILL.md`](.github/skills/instruction-creator/SKILL.md) |
-| 82 | ✓ | [`.github/skills/instruction-review/SKILL.md`](.github/skills/instruction-review/SKILL.md) |
-| 83 | ✓ | [`.github/skills/lint-clean-markdown/SKILL.md`](.github/skills/lint-clean-markdown/SKILL.md) |
-| 84 | ✓ | [`.github/skills/markdown-mermaid/SKILL.md`](.github/skills/markdown-mermaid/SKILL.md) |
-| 85 | ✓ | [`.github/skills/markdown-sanitization-chain/SKILL.md`](.github/skills/markdown-sanitization-chain/SKILL.md) |
-| 86 | ✓ | [`.github/skills/md-to-eml/SKILL.md`](.github/skills/md-to-eml/SKILL.md) |
-| 87 | ✓ | [`.github/skills/md-to-html/SKILL.md`](.github/skills/md-to-html/SKILL.md) |
-| 88 | ✓ | [`.github/skills/md-to-txt/SKILL.md`](.github/skills/md-to-txt/SKILL.md) |
-| 89 | ✓ | [`.github/skills/md-to-word/SKILL.md`](.github/skills/md-to-word/SKILL.md) |
-| 90 | ✓ | [`.github/skills/meditation/SKILL.md`](.github/skills/meditation/SKILL.md) |
-| 91 | ✓ | [`.github/skills/plan/SKILL.md`](.github/skills/plan/SKILL.md) |
-| 92 | ✓ | [`.github/skills/problem-framing-audit/SKILL.md`](.github/skills/problem-framing-audit/SKILL.md) |
-| 93 | ✓ | [`.github/skills/prompt-creator/SKILL.md`](.github/skills/prompt-creator/SKILL.md) |
-| 94 | ✓ | [`.github/skills/prompt-review/SKILL.md`](.github/skills/prompt-review/SKILL.md) |
-| 95 | ✓ | [`.github/skills/security-and-hardening/SKILL.md`](.github/skills/security-and-hardening/SKILL.md) |
-| 96 | ✓ | [`.github/skills/skill-creator/assets/skill-skeleton/SKILL.md`](.github/skills/skill-creator/assets/skill-skeleton/SKILL.md) |
-| 97 | ✓ | [`.github/skills/skill-creator/examples/minimal-skill/SKILL.md`](.github/skills/skill-creator/examples/minimal-skill/SKILL.md) |
-| 98 | ✓ | [`.github/skills/skill-creator/SKILL.md`](.github/skills/skill-creator/SKILL.md) |
-| 99 | ✓ | [`.github/skills/skill-review/SKILL.md`](.github/skills/skill-review/SKILL.md) |
-| 100 | ✓ | [`.github/skills/spike/SKILL.md`](.github/skills/spike/SKILL.md) |
-| 101 | ✓ | [`.github/skills/status-reporting/SKILL.md`](.github/skills/status-reporting/SKILL.md) |
-| 102 | ✓ | [`.github/skills/systematic-debugging/SKILL.md`](.github/skills/systematic-debugging/SKILL.md) |
-| 103 | ✓ | [`.github/skills/test-driven-development/SKILL.md`](.github/skills/test-driven-development/SKILL.md) |
+| 43 | ✓ | [`.github/prompts/configure-workspace-verify.prompt.md`](.github/prompts/configure-workspace-verify.prompt.md) |
+| 44 | ✓ | [`.github/prompts/configure-workspace.prompt.md`](.github/prompts/configure-workspace.prompt.md) |
+| 45 | ✓ | [`.github/prompts/convert.prompt.md`](.github/prompts/convert.prompt.md) |
+| 46 | ✓ | [`.github/prompts/critical-thinking.prompt.md`](.github/prompts/critical-thinking.prompt.md) |
+| 47 | ✓ | [`.github/prompts/feedback.prompt.md`](.github/prompts/feedback.prompt.md) |
+| 48 | ✓ | [`.github/prompts/format-markdown.prompt.md`](.github/prompts/format-markdown.prompt.md) |
+| 49 | ✓ | [`.github/prompts/initialize.prompt.md`](.github/prompts/initialize.prompt.md) |
+| 50 | ✓ | [`.github/prompts/lint-markdown.prompt.md`](.github/prompts/lint-markdown.prompt.md) |
+| 51 | ✓ | [`.github/prompts/mall-contribute.prompt.md`](.github/prompts/mall-contribute.prompt.md) |
+| 52 | ✓ | [`.github/prompts/mall-install.prompt.md`](.github/prompts/mall-install.prompt.md) |
+| 53 | ✓ | [`.github/prompts/mall-refresh.prompt.md`](.github/prompts/mall-refresh.prompt.md) |
+| 54 | ✓ | [`.github/prompts/mall-search.prompt.md`](.github/prompts/mall-search.prompt.md) |
+| 55 | ✓ | [`.github/prompts/mall-show.prompt.md`](.github/prompts/mall-show.prompt.md) |
+| 56 | ✓ | [`.github/prompts/meditate.prompt.md`](.github/prompts/meditate.prompt.md) |
+| 57 | ✓ | [`.github/prompts/note.prompt.md`](.github/prompts/note.prompt.md) |
+| 58 | ✓ | [`.github/prompts/problem-framing-audit.prompt.md`](.github/prompts/problem-framing-audit.prompt.md) |
+| 59 | ✓ | [`.github/prompts/review-agent.prompt.md`](.github/prompts/review-agent.prompt.md) |
+| 60 | ✓ | [`.github/prompts/review-instruction.prompt.md`](.github/prompts/review-instruction.prompt.md) |
+| 61 | ✓ | [`.github/prompts/review-prompt.prompt.md`](.github/prompts/review-prompt.prompt.md) |
+| 62 | ✓ | [`.github/prompts/review-skill.prompt.md`](.github/prompts/review-skill.prompt.md) |
+| 63 | ✓ | [`.github/prompts/save-session-note.prompt.md`](.github/prompts/save-session-note.prompt.md) |
+| 64 | ✓ | [`.github/prompts/status.prompt.md`](.github/prompts/status.prompt.md) |
+| 65 | ✓ | [`.github/prompts/upgrade.prompt.md`](.github/prompts/upgrade.prompt.md) |
+| 66 | ✓ | [`.github/prompts/welcome.prompt.md`](.github/prompts/welcome.prompt.md) |
+| 67 | ✓ | [`.github/skills/agent-creator/SKILL.md`](.github/skills/agent-creator/SKILL.md) |
+| 68 | ✓ | [`.github/skills/agent-review/SKILL.md`](.github/skills/agent-review/SKILL.md) |
+| 69 | ✓ | [`.github/skills/ai-memory-setup/SKILL.md`](.github/skills/ai-memory-setup/SKILL.md) |
+| 70 | ✓ | [`.github/skills/alex-banner-generation/SKILL.md`](.github/skills/alex-banner-generation/SKILL.md) |
+| 71 | ✓ | [`.github/skills/anti-hallucination/SKILL.md`](.github/skills/anti-hallucination/SKILL.md) |
+| 72 | ✓ | [`.github/skills/brain-audit/SKILL.md`](.github/skills/brain-audit/SKILL.md) |
+| 73 | ✓ | [`.github/skills/code-review/SKILL.md`](.github/skills/code-review/SKILL.md) |
+| 74 | ✓ | [`.github/skills/creative-writing/SKILL.md`](.github/skills/creative-writing/SKILL.md) |
+| 75 | ✓ | [`.github/skills/critical-thinking/SKILL.md`](.github/skills/critical-thinking/SKILL.md) |
+| 76 | ✓ | [`.github/skills/deep-review/SKILL.md`](.github/skills/deep-review/SKILL.md) |
+| 77 | ✓ | [`.github/skills/doc-hygiene/SKILL.md`](.github/skills/doc-hygiene/SKILL.md) |
+| 78 | ✓ | [`.github/skills/docx-to-md/SKILL.md`](.github/skills/docx-to-md/SKILL.md) |
+| 79 | ✓ | [`.github/skills/git-workflow/SKILL.md`](.github/skills/git-workflow/SKILL.md) |
+| 80 | ✓ | [`.github/skills/greeting-checkin/SKILL.md`](.github/skills/greeting-checkin/SKILL.md) |
+| 81 | ✓ | [`.github/skills/html-to-md/SKILL.md`](.github/skills/html-to-md/SKILL.md) |
+| 82 | ✓ | [`.github/skills/humanizer/SKILL.md`](.github/skills/humanizer/SKILL.md) |
+| 83 | ✓ | [`.github/skills/instruction-creator/SKILL.md`](.github/skills/instruction-creator/SKILL.md) |
+| 84 | ✓ | [`.github/skills/instruction-review/SKILL.md`](.github/skills/instruction-review/SKILL.md) |
+| 85 | ✓ | [`.github/skills/lint-clean-markdown/SKILL.md`](.github/skills/lint-clean-markdown/SKILL.md) |
+| 86 | ✓ | [`.github/skills/markdown-mermaid/SKILL.md`](.github/skills/markdown-mermaid/SKILL.md) |
+| 87 | ✓ | [`.github/skills/markdown-sanitization-chain/SKILL.md`](.github/skills/markdown-sanitization-chain/SKILL.md) |
+| 88 | ✓ | [`.github/skills/md-to-eml/SKILL.md`](.github/skills/md-to-eml/SKILL.md) |
+| 89 | ✓ | [`.github/skills/md-to-html/SKILL.md`](.github/skills/md-to-html/SKILL.md) |
+| 90 | ✓ | [`.github/skills/md-to-txt/SKILL.md`](.github/skills/md-to-txt/SKILL.md) |
+| 91 | ✓ | [`.github/skills/md-to-word/SKILL.md`](.github/skills/md-to-word/SKILL.md) |
+| 92 | ✓ | [`.github/skills/meditation/SKILL.md`](.github/skills/meditation/SKILL.md) |
+| 93 | ✓ | [`.github/skills/plan/SKILL.md`](.github/skills/plan/SKILL.md) |
+| 94 | ✓ | [`.github/skills/problem-framing-audit/SKILL.md`](.github/skills/problem-framing-audit/SKILL.md) |
+| 95 | ✓ | [`.github/skills/prompt-creator/SKILL.md`](.github/skills/prompt-creator/SKILL.md) |
+| 96 | ✓ | [`.github/skills/prompt-review/SKILL.md`](.github/skills/prompt-review/SKILL.md) |
+| 97 | ✓ | [`.github/skills/security-and-hardening/SKILL.md`](.github/skills/security-and-hardening/SKILL.md) |
+| 98 | ✓ | [`.github/skills/skill-creator/assets/skill-skeleton/SKILL.md`](.github/skills/skill-creator/assets/skill-skeleton/SKILL.md) |
+| 99 | ✓ | [`.github/skills/skill-creator/examples/minimal-skill/SKILL.md`](.github/skills/skill-creator/examples/minimal-skill/SKILL.md) |
+| 100 | ✓ | [`.github/skills/skill-creator/SKILL.md`](.github/skills/skill-creator/SKILL.md) |
+| 101 | ✓ | [`.github/skills/skill-review/SKILL.md`](.github/skills/skill-review/SKILL.md) |
+| 102 | ✓ | [`.github/skills/spike/SKILL.md`](.github/skills/spike/SKILL.md) |
+| 103 | ✓ | [`.github/skills/status-reporting/SKILL.md`](.github/skills/status-reporting/SKILL.md) |
+| 104 | ✓ | [`.github/skills/systematic-debugging/SKILL.md`](.github/skills/systematic-debugging/SKILL.md) |
+| 105 | ✓ | [`.github/skills/test-driven-development/SKILL.md`](.github/skills/test-driven-development/SKILL.md) |
 
 ---
 

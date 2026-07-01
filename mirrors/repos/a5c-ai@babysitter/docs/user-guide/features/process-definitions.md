@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Features](./index.md) › Process Definitions
+
 # Process Definitions: JavaScript Workflow Orchestration
 
 **Version:** 1.1
@@ -12,7 +14,11 @@
 
 Just like a cooking recipe says "chop vegetables, then cook them, then serve" - a process says "research the codebase, then write tests, then implement, then verify."
 
-**You don't need to write processes to use Babysitter.** The [Process Library](./process-library.md) has 2,000+ pre-built processes ready to use.
+<!-- process-definitions:lead:start -->
+**You don't need to write processes to use Babysitter.** The [Process Library](./process-library.md) is the SDK-managed library under `library/`, and the current generated snapshot counts 2,239 JavaScript process files in the live repository tree.
+<!-- process-definitions:lead:end -->
+
+> **Renamed in v6:** Process files now live under **`blueprints/`** (formerly `plugins/`) — for example `blueprints/babysitter/skills/babysit/process/...`. They are managed with `blueprints:*` commands; the old `plugin:*` aliases are **deprecated** and kept for one release only.
 
 **When would you write a process?**
 - You have a specific workflow your team follows
@@ -23,9 +29,21 @@ Just like a cooking recipe says "chop vegetables, then cook them, then serve" - 
 
 ---
 
+## On this page
+
+- [Overview](#overview)
+- [Use Cases and Scenarios](#use-cases-and-scenarios)
+- [Step-by-Step Instructions](#step-by-step-instructions)
+- [Configuration Options](#configuration-options)
+- [Code Examples and Best Practices](#code-examples-and-best-practices)
+- [Common Pitfalls and Troubleshooting](#common-pitfalls-and-troubleshooting)
+- [Pre-Built Workflows: Methodologies & Processes](#pre-built-workflows-methodologies--processes)
+
+---
+
 ## Overview
 
-Process definitions are JavaScript functions that orchestrate workflows in Babysitter. A process defines what tasks to execute, in what order, and how to handle results. The process function acts as the "brain" of your workflow, making decisions and coordinating execution while Babysitter handles state management, persistence, and resumability.
+Process definitions are JavaScript functions that orchestrate workflows in Babysitter. A [process](../reference/glossary.md) defines what tasks to execute, in what order, and how to handle results. The process function acts as the "brain" of your workflow, making decisions and coordinating execution while Babysitter handles state management, persistence, and resumability.
 
 ### Why Use Process Definitions
 
@@ -585,7 +603,7 @@ export async function process(inputs, ctx) {
 - [Breakpoints](./breakpoints.md) - Add human approval gates
 - [Journal System](./journal-system.md) - Understand event sourcing
 - [Best Practices](./best-practices.md) - Patterns for process structure, error handling, idempotency, and testing
-- [Process Library](./process-library.md) - 2,000+ ready-to-use process definitions
+- [Process Library](./process-library.md) - SDK-managed built-in library and current counts
 
 ---
 
@@ -593,7 +611,7 @@ export async function process(inputs, ctx) {
 
 **Don't start from scratch!** Babysitter includes thousands of ready-to-use workflows:
 
-### Methodologies (19+) - Development Approaches
+### Methodologies (38 directories in this repo snapshot) - Development Approaches
 
 High-level approaches you can apply to any project:
 
@@ -601,21 +619,24 @@ High-level approaches you can apply to any project:
 - **GSD (Get Stuff Done)** - Rapid 8-phase execution workflow
 - **Spec-Kit** - Specification-driven with governance
 - **Domain-Driven Design** - Strategic and tactical DDD patterns
-- And 15+ more...
+- And many more under [`library/methodologies/`](../../../library/methodologies/)
 
 **Browse methodologies:**
-- [All 19+ with source code](../reference/glossary.md#methodology)
-- [Methodologies folder](../../../plugins/babysitter/skills/babysit/process/methodologies/)
+- [Methodology overview](../reference/glossary.md#methodology)
+- [Methodologies folder](../../../library/methodologies/)
 
-### Domain Processes (2,000+) - Task-Specific Workflows
+### Domain Processes - Task-Specific Workflows
 
 Complete process definitions for specific domains:
 
+<!-- process-definitions:domains:start -->
 | Domain | Processes | Browse |
 |--------|-----------|--------|
-| **Development** | 680+ | [specializations/](../../../plugins/babysitter/skills/babysit/process/specializations/) |
-| **Business** | 430+ | [domains/business/](../../../plugins/babysitter/skills/babysit/process/specializations/domains/business/) |
-| **Science & Engineering** | 550+ | [domains/science/](../../../plugins/babysitter/skills/babysit/process/specializations/domains/science/) |
+| **Development and technical specializations** | 837 | [Browse →](../../../library/specializations/) |
+| **Business domains** | 490 | [Browse →](../../../library/specializations/domains/business/) |
+| **Science & engineering domains** | 551 | [Browse →](../../../library/specializations/domains/science/) |
+| **Social sciences & humanities** | 160 | [Browse →](../../../library/specializations/domains/social-sciences-humanities/) |
+<!-- process-definitions:domains:end -->
 
 See the full catalog with descriptions in the [Process Library](./process-library.md).
 
@@ -624,3 +645,10 @@ See the full catalog with descriptions in the [Process Library](./process-librar
 ## Summary
 
 Process definitions are JavaScript functions that orchestrate workflows. Define reusable tasks, compose them with conditionals and loops, and let Babysitter handle state management. Keep processes deterministic for reliable replay and resumption. Use the full power of JavaScript while benefiting from event-sourced persistence.
+
+---
+
+## Next steps
+
+- **Next:** [Custom Process tutorial](../tutorials/intermediate-custom-process.md)
+- **Related:** [Process Library](./process-library.md), [Parallel Execution](./parallel-execution.md), [Breakpoints](./breakpoints.md)

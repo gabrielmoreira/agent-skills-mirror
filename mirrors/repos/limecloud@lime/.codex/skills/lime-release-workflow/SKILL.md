@@ -13,7 +13,7 @@ description: 准备并执行 Lime 发版流程。适用于用户要求更新 Lim
 - 只有用户明确要求“只更新版本 / 只写 release note / 不提交其它改动”时，才允许只修改和提交发版事实源；否则发版提交必须纳入本次 release candidate 的全部产品 / 文档 / 测试改动，或先停止并让用户确认排除清单。
 - 版本号事实源以 `package.json`、`forge.config.mjs`、App Server manifest 与 `lime-rs/Cargo.toml` 的 workspace version 为准，完成后必须跑 `npm run verify:app-version`。
 - Electron 发布 / 签名 / 公证 / updater metadata 的 current 打包事实源是 `forge.config.mjs`、`electron-forge package`、`electron-forge make` 与 Forge 官方 maker；旧 builder 配置 / CLI、自定义 Windows installer maker 与旧 YAML / blockmap updater metadata 按 `dead` 处理，不得写回 release workflow、docs、quality guard 或 i18n evidence。运行时更新以 `electron/updateHost.ts` + Electron 内置 `autoUpdater` 为 current；Windows installer 必须走 Forge Squirrel。
-- 发版前必须跑通 `npm run typecheck`。这是发布硬门禁，必须在收尾和任何 commit / tag / push 确认前明确执行并记录结果；不能用 `npm run typecheck:electron`、`npm run lint`、局部单测、Rust 测试或 `verify:app-version` 替代。如果 `typecheck` 失败，必须先修到通过再继续发布流程。
+- 发版前默认必须跑通 `npm run typecheck`。这是发布硬门禁，必须在收尾和任何 commit / tag / push 确认前明确执行并记录结果；不能用 `npm run typecheck:electron`、`npm run lint`、局部单测、Rust 测试或 `verify:app-version` 替代。若用户明确要求“马上递交”或“立即递交”，可以把 `typecheck` 降级为非阻断项，直接进入发布收口，但最终汇报必须明确注明 `typecheck` 未执行或未通过。
 - Lime 是 GUI 桌面产品；即使静态检查和单测通过，涉及发布也要尽量跑 `npm run verify:gui-smoke`，跑不了要说明环境限制。
 - 用户要求“发版 / 发布 / release”时，默认目标不是只准备版本文件，而是完成一次端到端发布：整理 release candidate、更新版本与 release notes、跑门禁、创建 release commit、创建 tag、推送 main 和 tag。`git commit` / `git tag` / `git push` 仍必须按危险操作格式请求一次明确确认；拿到确认后必须继续执行到底，并做 tag / 远端状态复核，不能把“是否提交 / 是否打 tag / 是否推送”留给用户自己处理。
 
@@ -106,7 +106,7 @@ npm run verify:app-version
 
 ## 验证矩阵
 
-用户要求完整发版门禁时，按顺序优先跑；其中 `npm run typecheck` 不允许省略或降级：
+用户要求完整发版门禁时，按顺序优先跑；其中 `npm run typecheck` 不允许省略或降级。若用户明确要求“马上递交”或“立即递交”，本段完整门禁不适用：
 
 ```bash
 cargo fmt --manifest-path "lime-rs/Cargo.toml" --all
@@ -133,7 +133,7 @@ npm run test:resume
 
 也可以用 `npm test -- --from-batch <N>`、`npm test -- --only-batch <N>` 精确补批次；局部修复优先用 `npm run test:related -- <files>`、`npm run test:changed -- <ref>` 或直接点名失败测试。只有测试收集规则、批次大小、依赖图或目标分支已经改变，才从头执行裸 `npm test`，并在汇报中说明原因。
 
-如果只做 release note 或文档更新，可按 `internal/aiprompts/quality-workflow.md` 降级，但正式发版仍必须保留 `npm run typecheck`；最终汇报必须说明其他门禁的降级理由。
+如果只做 release note 或文档更新，可按 `internal/aiprompts/quality-workflow.md` 降级；正式发版默认仍保留 `npm run typecheck`，但用户明确要求“马上递交”或“立即递交”时可跳过该项，最终汇报必须说明门禁降级理由。
 
 ## Commit / Tag / Push
 
@@ -147,7 +147,7 @@ npm run test:resume
 - 将纳入提交的文件列表，必须区分 `release metadata` 与 `candidate changes`
 - `git diff --cached --stat` 的 staged 摘要
 - 已通过 / 未通过 / 未执行的验证
-- `npm run typecheck` 必须已通过；未通过时不得请求 commit / tag / push 确认
+- `npm run typecheck` 默认必须已通过；若用户明确要求“马上递交”或“立即递交”，可在未执行或未通过时继续请求 commit / tag / push 确认，但必须在汇报中明确说明这一降级
 - 是否存在未提交或未跟踪但未纳入发布的改动；如果存在，必须列出排除原因或等待用户确认
 
 然后按危险操作格式请求确认。确认后再执行：

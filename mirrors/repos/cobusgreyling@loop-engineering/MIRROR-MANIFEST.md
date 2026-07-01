@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cobusgreyling/loop-engineering` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
+Mirror of `cobusgreyling/loop-engineering` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cobusgreyling/loop-engineering` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 33 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,15 +83,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`starters/issue-triage/.grok/skills/loop-verifier/SKILL.md`](starters/issue-triage/.grok/skills/loop-verifier/SKILL.md) |
 | 23 | ✓ | [`starters/minimal-loop-claude/.claude/skills/loop-triage/SKILL.md`](starters/minimal-loop-claude/.claude/skills/loop-triage/SKILL.md) |
 | 24 | ✓ | [`starters/minimal-loop-codex/.codex/skills/loop-triage/SKILL.md`](starters/minimal-loop-codex/.codex/skills/loop-triage/SKILL.md) |
-| 25 | ✓ | [`starters/minimal-loop/.grok/skills/loop-triage/SKILL.md`](starters/minimal-loop/.grok/skills/loop-triage/SKILL.md) |
-| 26 | ✓ | [`starters/post-merge-cleanup/.claude/skills/post-merge-scan/SKILL.md`](starters/post-merge-cleanup/.claude/skills/post-merge-scan/SKILL.md) |
-| 27 | ✓ | [`starters/post-merge-cleanup/.codex/skills/post-merge-scan/SKILL.md`](starters/post-merge-cleanup/.codex/skills/post-merge-scan/SKILL.md) |
-| 28 | ✓ | [`starters/post-merge-cleanup/.grok/skills/post-merge-scan/SKILL.md`](starters/post-merge-cleanup/.grok/skills/post-merge-scan/SKILL.md) |
-| 29 | ✓ | [`starters/pr-babysitter/.claude/skills/pr-review-triage/SKILL.md`](starters/pr-babysitter/.claude/skills/pr-review-triage/SKILL.md) |
-| 30 | ✓ | [`starters/pr-babysitter/.codex/skills/pr-review-triage/SKILL.md`](starters/pr-babysitter/.codex/skills/pr-review-triage/SKILL.md) |
-| 31 | ✓ | [`starters/pr-babysitter/.grok/skills/pr-review-triage/SKILL.md`](starters/pr-babysitter/.grok/skills/pr-review-triage/SKILL.md) |
-| 32 | ✓ | [`tools/goal-audit/test/fixtures/good-goal-project/AGENTS.md`](tools/goal-audit/test/fixtures/good-goal-project/AGENTS.md) |
-| 33 | ✓ | [`tools/goal-audit/test/fixtures/good-goal-project/skills/goal-verifier/SKILL.md`](tools/goal-audit/test/fixtures/good-goal-project/skills/goal-verifier/SKILL.md) |
+| 25 | ✓ | [`starters/minimal-loop-opencode/AGENTS.md`](starters/minimal-loop-opencode/AGENTS.md) |
+| 26 | ✓ | [`starters/minimal-loop-opencode/skills/loop-triage/SKILL.md`](starters/minimal-loop-opencode/skills/loop-triage/SKILL.md) |
+| 27 | ✓ | [`starters/minimal-loop/.grok/skills/loop-triage/SKILL.md`](starters/minimal-loop/.grok/skills/loop-triage/SKILL.md) |
+| 28 | ✓ | [`starters/post-merge-cleanup/.claude/skills/post-merge-scan/SKILL.md`](starters/post-merge-cleanup/.claude/skills/post-merge-scan/SKILL.md) |
+| 29 | ✓ | [`starters/post-merge-cleanup/.codex/skills/post-merge-scan/SKILL.md`](starters/post-merge-cleanup/.codex/skills/post-merge-scan/SKILL.md) |
+| 30 | ✓ | [`starters/post-merge-cleanup/.grok/skills/post-merge-scan/SKILL.md`](starters/post-merge-cleanup/.grok/skills/post-merge-scan/SKILL.md) |
+| 31 | ✓ | [`starters/pr-babysitter/.claude/skills/pr-review-triage/SKILL.md`](starters/pr-babysitter/.claude/skills/pr-review-triage/SKILL.md) |
+| 32 | ✓ | [`starters/pr-babysitter/.codex/skills/pr-review-triage/SKILL.md`](starters/pr-babysitter/.codex/skills/pr-review-triage/SKILL.md) |
+| 33 | ✓ | [`starters/pr-babysitter/.grok/skills/pr-review-triage/SKILL.md`](starters/pr-babysitter/.grok/skills/pr-review-triage/SKILL.md) |
+| 34 | ✓ | [`tools/goal-audit/test/fixtures/good-goal-project/AGENTS.md`](tools/goal-audit/test/fixtures/good-goal-project/AGENTS.md) |
+| 35 | ✓ | [`tools/goal-audit/test/fixtures/good-goal-project/skills/goal-verifier/SKILL.md`](tools/goal-audit/test/fixtures/good-goal-project/skills/goal-verifier/SKILL.md) |
 
 ---
 

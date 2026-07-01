@@ -17,6 +17,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
 const http = require('node:http');
+const { spawn } = require('node:child_process');
 const { URL } = require('node:url');
 
 // ---------------------------------------------------------------------------
@@ -63,6 +64,17 @@ const paths = {
 
 function now() {
   return new Date().toISOString();
+}
+
+// Strip CLAUDECODE / nested-session markers from a copy of process.env
+// before spawning a child. The Claude Code runtime sets CLAUDECODE in any
+// session it starts; a child that inherits it refuses to launch with
+// "nested session detected" — relevant for any child spawned from inside
+// an openloomi session (loop-web, legacy `claude -p`, etc.).
+function cleanChildEnv() {
+  const env = { ...process.env };
+  env.CLAUDECODE = undefined;
+  return env;
 }
 
 function uid(prefix = 'id') {
@@ -166,6 +178,199 @@ function apiRequest(endpoint, method = 'GET', body = null) {
 }
 
 const api = { request: apiRequest, readToken };
+
+// ---------------------------------------------------------------------------
+// Agent runtime
+//   - Surface A (default): POST to the local native-agent endpoint and parse
+//     the SSE response. Keeps the loop inside the openloomi process tree
+//     (no nested `claude` child) and works from any cwd.
+//   - Surface B (fallback): spawn `claude -p` as a child process. Opt in by
+//     setting `LOOP_LEGACY=1`. Useful for debugging tick behavior in a real
+//     TTY or when the native-agent endpoint is down.
+// ---------------------------------------------------------------------------
+
+const NATIVE_AGENT_DEFAULT_URL = 'http://127.0.0.1:3414/api/native/agent';
+
+function resolveNativeAgentUrl() {
+  return (process.env.LOOP_NATIVE_AGENT_URL || NATIVE_AGENT_DEFAULT_URL).replace(/\/+$/, '');
+}
+
+// POST to the local native-agent endpoint and parse the SSE response.
+// Returns:
+//   { ok, status, text, reasoning, result, events, error }
+// `onEvent(evt)` is called for every parsed SSE event (text, reasoning,
+// tool_use, tool_result, result, done, ...).
+function postNativeAgent(urlStr, body, { timeoutMs, onEvent } = {}) {
+  return new Promise((resolve) => {
+    const token = readToken();
+    let parsed;
+    try { parsed = new URL(urlStr); }
+    catch { resolve({ ok: false, error: `bad url ${urlStr}` }); return; }
+    const opts = {
+      hostname: parsed.hostname,
+      port: parsed.port || (parsed.protocol === 'https:' ? 443 : 80),
+      path: parsed.pathname + parsed.search,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'text/event-stream',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
+    };
+    const req = http.request(opts, (res) => {
+      if (res.statusCode >= 400) {
+        let err = '';
+        res.on('data', (c) => (err += c));
+        res.on('end', () => resolve({ ok: false, status: res.statusCode, error: err || `HTTP ${res.statusCode}` }));
+        return;
+      }
+      const events = [];
+      const textChunks = [];
+      const reasoningChunks = [];
+      let result = null;
+      let buffer = '';
+      res.setEncoding('utf8');
+      res.on('data', (chunk) => {
+        buffer += chunk;
+        let nl;
+        while ((nl = buffer.indexOf('\n')) >= 0) {
+          const line = buffer.slice(0, nl).replace(/\r$/, '');
+          buffer = buffer.slice(nl + 1);
+          if (!line.startsWith('data:')) continue;
+          const payload = line.slice(5).trim();
+          if (!payload) continue;
+          let evt;
+          try { evt = JSON.parse(payload); } catch { continue; }
+          events.push(evt);
+          if (typeof onEvent === 'function') onEvent(evt);
+          if (evt.type === 'text' && typeof evt.content === 'string') textChunks.push(evt.content);
+          else if (evt.type === 'reasoning' && typeof evt.content === 'string') reasoningChunks.push(evt.content);
+          else if (evt.type === 'result' && evt.content) result = evt.content;
+        }
+      });
+      res.on('end', () => resolve({
+        ok: true, status: res.statusCode,
+        text: textChunks.join(''),
+        reasoning: reasoningChunks.join(''),
+        result, events,
+      }));
+      res.on('error', (err) => resolve({ ok: false, error: err.message }));
+    });
+    req.on('error', (err) => resolve({ ok: false, error: err.message }));
+    req.setTimeout(timeoutMs || 15 * 60 * 1000, () => req.destroy(new Error('native agent timeout')));
+    req.write(JSON.stringify(body));
+    req.end();
+  });
+}
+
+// Build a default `onEvent` handler that streams agent text + tool calls to
+// the terminal. Every text chunk is written as it arrives, plus a short
+// line for each tool_use / tool_result so the user sees progress (matches
+// the streaming experience of `claude -p --verbose` stdio=inherit).
+function defaultStreamOnEvent({ showReasoning = false } = {}) {
+  return (evt) => {
+    if (evt.type === 'text' && typeof evt.content === 'string') {
+      process.stdout.write(evt.content);
+    } else if (evt.type === 'reasoning' && showReasoning && typeof evt.content === 'string') {
+      process.stderr.write(`\x1b[2m${evt.content}\x1b[0m`);
+    } else if (evt.type === 'tool_use') {
+      const name = evt.name || 'tool';
+      const input = evt.input ? JSON.stringify(evt.input).slice(0, 120) : '';
+      process.stderr.write(`\n  → ${name} ${input}\n`);
+    } else if (evt.type === 'tool_result') {
+      const ok = evt.isError ? '✗' : '✓';
+      const out = (evt.output || '').toString().slice(0, 160).replace(/\n/g, ' ');
+      process.stderr.write(`  ${ok} ${out}${out.length === 160 ? '…' : ''}\n`);
+    } else if (evt.type === 'result' && evt.content) {
+      const c = evt.content;
+      if (typeof c.cost === 'number') process.stderr.write(`\n[agent] cost=$${c.cost.toFixed(4)} duration=${c.duration}ms\n`);
+    }
+  };
+}
+
+// Surface A entry point — POST to /api/native/agent and resolve when the
+// SSE stream ends. Returns the same shape `postNativeAgent` returns.
+async function nativeAgentInvoke(prompt, opts = {}) {
+  const url = resolveNativeAgentUrl();
+  const body = {
+    prompt,
+    ...(opts.provider ? { provider: opts.provider } : {}),
+    ...(opts.sessionId ? { sessionId: opts.sessionId } : {}),
+  };
+  const timeoutMs = opts.timeoutMs
+    || Number(process.env.LOOP_NATIVE_AGENT_TIMEOUT_MS)
+    || 15 * 60 * 1000;
+  return postNativeAgent(url, body, { timeoutMs, onEvent: opts.onEvent });
+}
+
+// Surface B fallback — spawn `claude -p` and resolve when the child exits.
+// Returns { ok, surface, child, code, signal, bin, args, error, timedOut }.
+// `opts.timeoutMs` enforces a hard kill (SIGTERM, then SIGKILL after 5s).
+function spawnClaudeLegacy(prompt, opts = {}) {
+  return new Promise((resolve) => {
+    const baseArgs = ['-p', prompt, '--output-format', 'text', '--verbose'];
+    if (process.env.LOOP_CLAUDE_SAFE_PERMISSIONS !== '1') {
+      baseArgs.push('--dangerously-skip-permissions');
+    }
+    baseArgs.push(...(opts.extraArgs || []));
+    const bin = process.env.LOOP_CLAUDE_BIN || 'claude';
+    const env = { ...process.env };
+    env.CLAUDECODE = undefined;
+    let child;
+    try {
+      child = spawn(bin, baseArgs, {
+        stdio: opts.stdio || 'inherit',
+        cwd: opts.cwd || process.cwd(),
+        env,
+      });
+    } catch (e) {
+      resolve({ ok: false, surface: 'legacy', error: e.message, bin, args: baseArgs });
+      return;
+    }
+    let resolved = false;
+    let killTimer = null;
+    let escalateTimer = null;
+    const settle = (payload) => {
+      if (resolved) return;
+      resolved = true;
+      if (killTimer) clearTimeout(killTimer);
+      if (escalateTimer) clearTimeout(escalateTimer);
+      resolve({ ...payload, child, bin, args: baseArgs });
+    };
+    child.on('error', (e) => settle({ ok: false, error: e.message }));
+    child.on('exit', (code, signal) => settle({ ok: code === 0, code, signal }));
+    if (opts.timeoutMs && opts.timeoutMs > 0) {
+      killTimer = setTimeout(() => {
+        try { child.kill('SIGTERM'); } catch {}
+        escalateTimer = setTimeout(() => { try { child.kill('SIGKILL'); } catch {} }, 5000);
+      }, opts.timeoutMs);
+    }
+  });
+}
+
+// Unified entry point. Default = Surface A. `LOOP_LEGACY=1` (or
+// `opts.legacy = true`) switches to Surface B (`spawn claude -p`).
+// `opts.timeoutMs` is forwarded to both surfaces (native: HTTP socket
+// timeout; legacy: SIGTERM after timeoutMs + SIGKILL after another 5s).
+async function agentInvoke(prompt, opts = {}) {
+  if (process.env.LOOP_LEGACY === '1' || opts.legacy) {
+    return spawnClaudeLegacy(prompt, opts);
+  }
+  return nativeAgentInvoke(prompt, opts);
+}
+
+const agent = {
+  invoke: agentInvoke,
+  native: {
+    invoke: nativeAgentInvoke,
+    resolveUrl: resolveNativeAgentUrl,
+  },
+  legacy: {
+    spawn: spawnClaudeLegacy,
+    isForced: () => process.env.LOOP_LEGACY === '1',
+  },
+  defaultStreamOnEvent,
+};
 
 // ---------------------------------------------------------------------------
 // Config
@@ -447,10 +652,11 @@ const rules = {
 module.exports = {
   paths,
   api,
+  agent,
   signals,
   decisions,
   rules,
   config: { read: readConfig, write: writeConfig, defaults: defaultConfig },
-  utils: { now, uid, log, readJson, writeJsonAtomic, readJsonl, appendJsonl },
+  utils: { now, uid, log, readJson, writeJsonAtomic, readJsonl, appendJsonl, cleanChildEnv },
   normalizeDecision,
 };

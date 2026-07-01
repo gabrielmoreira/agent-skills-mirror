@@ -1,6 +1,6 @@
 ---
 name: threejs-procedural-vegetation
-description: Generate authored procedural trees, grass, and vegetation in Three.js. Use for stylized meadow grass, trunks, recursive branches, roots, canopies, leaf cards, species presets, growth forces, trellises, deterministic variation, rooted blade/leaf wind, and wind deformation.
+description: Generate authored procedural trees, grass, and vegetation in Three.js. Use for stylized meadow grass, realistic GPU-computed grass, trunks, recursive branches, roots, canopies, leaf cards, species presets, growth forces, trellises, deterministic variation, rooted blade/leaf wind, and wind deformation.
 ---
 
 # Procedural Vegetation
@@ -35,9 +35,16 @@ path masking, per-instance origin/facing attributes, circular-arc rooted wind,
 gust fronts, tip flutter, color clumps, macro variation, translucency, and rim
 diagnostics.
 
+Read the
+[GPU-computed grass implementation](examples/gpu-computed-grass/gpu-grass-system.js)
+for MRT blade-parameter generation, deterministic terrain-conforming placement,
+Voronoi clumps, Bezier blade folding, wind-facing yaw, distance LOD/culling,
+normal/color fading, translucency, and field diagnostics.
+
 ## Visual failure conditions
 
 - branches form visible helices;
+- dense grass ignores terrain height or clump-level variation;
 - every child emerges at the same relative height;
 - bark texture scale changes with branch radius;
 - leaves reveal flat card normals under rotation;

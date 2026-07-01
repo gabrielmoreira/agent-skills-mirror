@@ -6,7 +6,7 @@
 > server and its dependencies only arrive with the `mcp` extra.
 
 The MCP server exposes NotebookLM to any [Model Context Protocol](https://modelcontextprotocol.io)
-client (Claude Desktop, Claude Code, Cursor, Windsurf, …) as a set of **25 tools** — manage
+client (Claude Desktop, Claude Code, Cursor, Windsurf, …) as a set of **37 tools** — manage
 notebooks and sources, chat over a notebook's sources, generate and download studio artifacts,
 and run deep research. It is a thin adapter over the same business logic the CLI uses, so it
 behaves identically to `notebooklm <command>`.
@@ -195,11 +195,11 @@ bearer-only deploy → the two file tools return a clear "not configured" error
 
 These conventions hold across every tool:
 
-- **Name *or* ID.** Every `notebook`/`source`/`note` argument accepts a human title **or** an ID
-  (full, or a unique prefix). Use the matching `*_list` tool to discover them. An ambiguous name or
-  prefix returns a `VALIDATION` error listing the candidates so you can retry with an exact ID.
-- **Destructive tools need confirmation.** `notebook_delete`, `source_delete`, and `note_delete`
-  take `confirm` (default `false`). Called without it, they return a `needs_confirmation` preview
+- **Name *or* ID.** Every `notebook`/`source`/`note`/`artifact` argument accepts a human title **or**
+  an ID (full, or a unique prefix). Use the matching `*_list` tool to discover them. An ambiguous name
+  or prefix returns a `VALIDATION` error listing the candidates so you can retry with an exact ID.
+- **Destructive tools need confirmation.** `notebook_delete`, `source_delete`, `note_delete`,
+  `artifact_delete`, and `share_remove_user` take `confirm` (default `false`). Called without it, they return a `needs_confirmation` preview
   (with the resolved title) and delete **nothing**; call again with `confirm=true` to execute.
 - **Long-running work is non-blocking.** `artifact_generate` returns immediately with a `task_id`;
   poll `artifact_status` until it's complete, then `artifact_download`. Research is the same shape:
@@ -290,15 +290,16 @@ a single in-flight task.
 
 | Domain | Tools |
 |--------|-------|
-| **Notebooks** | `notebook_list` · `notebook_create(title)` · `notebook_describe(notebook)` · `notebook_rename(notebook, new_title)` · `notebook_delete(notebook, confirm)` |
-| **Sources** | `source_list(notebook, status?)` (each source has string `kind`/`status_label`; `status` filters to one of ready\|processing\|error\|preparing — e.g. `status="error"` finds failed imports) · `source_get_content(notebook, source, output_format?, max_chars?, offset?)` (metadata **+ full indexed text**, windowable via `max_chars`/`offset` → `content` slice + `truncated` flag, with full `char_count`; `output_format`: text\|markdown) · `source_rename(notebook, source, new_title)` · `source_delete(notebook, source, confirm)` · `source_wait(notebook, source?, timeout, interval)` · `source_add(notebook, source_type, ..., allow_internal?)` (single; echoes `kind`/`status_label`, flags a failed import inline with a `warning`) / `source_add(notebook, urls=[...], allow_internal?)` (batch → per-item `results`) |
-| **Chat** | `chat_ask(notebook, question, conversation_id?, references?, source_ids?)` (`references`: lite\|full; never returns the raw debug blob; `source_ids` scopes to specific sources — list, JSON-array string, or comma string; omit for all) · `chat_configure(notebook, goal?, response_length?)` |
-| **Notes** | `note_create(notebook, title, content)` · `note_list(notebook)` · `note_update(notebook, note, content)` · `note_delete(notebook, note, confirm)` |
-| **Artifacts** | `artifact_list(notebook)` · `artifact_generate(notebook, artifact_type, …)` · `artifact_status(notebook, task_id)` · `artifact_download(notebook, artifact_type, path, output_format?, artifact_id?)` |
-| **Research** | `research_start(notebook, query, source, mode)` · `research_status(notebook, task_id?)` · `research_import(notebook, task_id)` |
-| **Server** | `server_info` — version + local auth health |
+| **Notebooks** | `notebook_list` · `notebook_create(title)` · `notebook_describe(notebook, include_metadata?)` (AI description; `include_metadata=true` adds a `metadata` block with notebook details + source list) · `notebook_rename(notebook, new_title)` · `notebook_delete(notebook, confirm)` |
+| **Sources** | `source_list(notebook, status?)` (each source has string `kind`/`status_label`; `status` filters to one of ready\|processing\|error\|preparing — e.g. `status="error"` finds failed imports) · `source_get_content(notebook, source, output_format?, max_chars?, offset?)` (metadata **+ full indexed text**, windowable via `max_chars`/`offset` → `content` slice + `truncated` flag, with full `char_count`; `output_format`: text\|markdown) · `source_describe(notebook, source)` (low-token triage: AI summary **+ keywords**, not the full text) · `source_rename(notebook, source, new_title)` · `source_delete(notebook, source, confirm)` · `source_wait(notebook, source?, timeout, interval)` (a READY web page with thin/empty text, or a short body matching a dead-link / soft-404 boilerplate pattern, carries a non-blocking `warning`) · `source_add(notebook, source_type, ..., allow_internal?)` (single; echoes `kind`/`status_label`, flags a failed import inline with a `warning`) / `source_add(notebook, urls=[...], allow_internal?)` (batch → per-item `results`; a synchronously-ready web-page item may also carry the same content-sanity `warning`) |
+| **Chat** | `chat_ask(notebook, question?, conversation_id?, references?, source_ids?, history?, suggest_followups?)` (`references`: lite\|full; never returns the raw debug blob; `source_ids` scopes to specific sources — list, JSON-array string, or comma string; omit for all; `history`>0 also returns up to N prior `{question, answer}` pairs — omit `question` to recall only; `suggest_followups=true` also returns `suggested_prompts` (3 questions to ask — works question-less too)) · `chat_configure(notebook, chat_mode?, goal?, response_length?)` (`chat_mode`: default\|learning-guide\|concise\|detailed — a preset, mutually exclusive with `goal`/`response_length`) · `suggest_prompts(notebook, surface?, source_ids?, query?)` (READ_ONLY; `surface`: ask\|audio-deep-dive\|audio-brief\|audio-critique\|audio-debate\|video-explainer\|video-short\|quiz\|flashcards — returns `{title, prompt}` suggestions to steer that studio surface; `ask` (default) = chat questions) |
+| **Notes** | `note_create(notebook, title, content)` · `note_get(notebook, note)` (one note with full title + content) · `note_list(notebook)` · `note_update(notebook, note, content?, title?)` (content and/or title; title-only = rename) · `note_delete(notebook, note, confirm)` |
+| **Artifacts** | `artifact_list(notebook)` · `artifact_generate(notebook, artifact_type, …)` · `artifact_status(notebook, task_id)` · `artifact_get_prompt(notebook, artifact)` (the free-text prompt an artifact was generated from; `null` if none) · `artifact_download(notebook, artifact_type, path, output_format?, artifact_id?)` · `artifact_rename(notebook, artifact, new_title)` · `artifact_retry(notebook, artifact)` (re-run a failed artifact in place; task_id == artifact_id) · `artifact_delete(notebook, artifact, confirm)` |
+| **Research** | `research_start(notebook, query, source, mode)` · `research_status(notebook, task_id?)` · `research_import(notebook, task_id)` · `research_cancel(notebook, run_id)` |
+| **Sharing** | `share_status(notebook)` (is_public/access/share_url/shared_users; enums as string labels; `view_level` omitted — the read API can't report it) · `share_set_access(notebook, public?, view_level?)` (link settings; `view_level`: full\|chat, echoed back only when set) · `share_set_user(notebook, email, permission?, notify?, message?)` (upsert grant; `permission`: editor\|viewer) · `share_remove_user(notebook, email, confirm)` |
+| **Server** | `server_info(include_account?)` — version + local auth health; `include_account=true` adds an `account` block (tier, plan name, notebook/source limits, global `output_language`) for quota pacing + language context (best-effort, needs a live session) |
 
-Tools that only read are annotated read-only; the three `*_delete` tools are annotated destructive
+Tools that only read are annotated read-only; the destructive tools (the four `*_delete` tools plus `share_remove_user`) are annotated destructive
 and require `confirm`. A host that honors MCP annotations can auto-allow the read-only calls and
 gate the destructive ones.
 

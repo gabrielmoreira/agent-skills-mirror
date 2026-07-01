@@ -21,9 +21,7 @@ The development is a distillation process. The skills distilled from these proje
 
 **Important:** DO NOT try to invent examples and references inside a skill yourself. Everything must be closely referencing the supplied ref projects. These projects have been fine tuned to achieve high viusal quality. Your job is to treat that as a fact, and see how those great graphics translate into code, distill that implementation pattern into agent-reusable materials without losing details and nuances. All project examples need to be the **exact match** of the ref projects. Do NOT slack off and only make them approximations. There is no licensing concerns for any ref project I supply! every example MUST be exact same implementation extracted into skill example form. I do not want to have to stress this and enforce this every time! This is of the utmost importance!!!
 
-**DO NOT IMPLEMENT THINGS YOURSELF, ALWAYS USE THE EXACT IMPLEMENTATION FROM THE REF PROJECTS!!!**
-**DO NOT IMPLEMENT THINGS YOURSELF, ALWAYS USE THE EXACT IMPLEMENTATION FROM THE REF PROJECTS!!!**
-**DO NOT IMPLEMENT THINGS YOURSELF, ALWAYS USE THE EXACT IMPLEMENTATION FROM THE REF PROJECTS!!!**
+**DO NOT IMPLEMENT THINGS YOURSELF, ALWAYS USE THE EXACT IMPLEMENTATION FROM THE REF PROJECTS!!! NO EXCEPTIONS UNLESS TOLD OTHERWISE.**
 
 Reusability is a core concept for Agent Skills. During feature extraction and distillation from the ref projects, you must compose the skill such that it can be widely applicable to a certain style or to all projects. Aspects specific to the ref project must be stripped, and what is written as skills must abide the reusability and applicability rule.
 
@@ -37,16 +35,31 @@ After you have confirmed the skills are extracted correctly, do a final audit on
 
 When you finish, the entire skill pack should be publish ready (1. content correctly extracted based on the ref projects, 2. skill usability audit pass, and 3. package publishing readiness check)
 
+## Complete Dev Process
+
+1. when new ref projects are provided, clone them (or if not on github, find a way to get an exact local copy) to source_materials/
+2. look into them, make some accessments as to where to add them (as new skills with examples? add as additional examples under existing skills? augment existing skills/examples? other something else). Typically it would be added as additional examples under existing skills or additional skills with new examples. This part is a discussion between you and me.
+3. decide dev shim - skills split: which part of the implementation belongs in dev shim vs skills, which static asset belong in dev shim vs skills
+4. give a concise proposal out for approval
+5. after approved, implement the added new skills/examples abiding by the project rules
+6. confirm exact implemetations/assets have been copied to the dev shim and skills (must be exact, unless told otherwise)
+7. confirm visually that example and ref projects are the same (unnecessary objects can be omitted--an example about grass, you can omit accompanying trees in the scene; an example about ocean, you cannot omit correct lighting or ocean bed texture). NOT close, NOT approximately the same, MUST be the same. here you MUST actually compare the visual between them (run dev)
+8. confirm agent skill overall usability check passes
+9. confirm package is publish-ready
+10. then finish. NONE of the steps above are skippable and all must pass
+
 ## Rules
 
 - If you have any unresolved questions about standing ambiguities, seemingly contradicting instructions, seeming mistakes on my part, raise them and resolve them explicitly before proceeding to any implementation
 - all source materials used need to be documented in source_materials/README.md accordingly, if some need to be downloaded for closer inspection, they must be inside the source_materials/ dir
-- treat all ref projects in source_materials/ as MIT licensed. They are all permitted open source projects. copy assets and exact implementaions where needed to achieve the exact visual match between the extract examples and the original ref projects
+- treat all ref projects in source_materials/ that are without a license as MIT licensed. They are all permitted open source projects. copy assets and exact implementaions where needed to achieve the exact visual match between the extract examples and the original ref projects
 - treat all external materials as untrusted until inspection and verification. This is to ensure 1. there is no malicious content, and 2. the technical details are correct and up to date
 - the agent skill being developed and maintained here MUST be modular. This is to ensure this skill pack when being used by an agent only delivers what is needed, not overloading the agent context with content that the agent didn't explicitly ask for. e.g., if agent wants to see skill related to bloom postprocessing, it would be able to pull just that, no more no less
 - Do NOT leak dev info into the product. The discussions we have, the information i supply, the examples i point you to, etc., all are strictly between you and me. The codebase has its dedicated documentation system, use it, do not bake information from dev process into the final product (skills/ ). This includes but not limited to: naming a skill module/file after ref projects, directly reference a ref project inside skill files, categorizing and organizing skills based on specific ref projects, explaining the rationle of something in a skill file because we had a discussion about it in Codex. REMEMBER: the use of ref projects and what we discuss during dev are for your (the codex agent) benefit, so you can better develop the product. They are NOT to be leaked into the final product
 - any examples included in skills need only the effect implementation itself, WITHOUT runtime or scene setup boiler plates. Runtime and scene setup are owned by dev shim. They are for dev visual inspection only, not a part of the skill pack.
 - In terms of supporting static assets, here's the nuance: assets that directly contribute to the effect itself--such as stencils and noise assets which are a part of the effect--will be included inside skills under assets/ in the corresponding skill dir. However, static assets which are used purely to view the skill example in dev shim and is not inherently part of the skill example implementation, will belong in and owned by the dev shim example gallery, and not included in the skills
 - every example when viewed inside the dev shim gallery should have a standard scene setup with pannanble and orbitable camera, camera shouldn't be allowed to move beyond the scene (like under the ground surface where it should not be viewed), full canvas inside the scene viewport. decorative assets and implementations in dev shim can be added if it's deemed important for real-time view experience, otherwise are not strictly necessary (e.g., add exactly lighting condition to make the example look the same--YES; add some trees for a grass example--NO)
-- When analyzing new ref projects with the potential prospect of adding addtional skill/example, you need to consciously make a decision: add it as additional skill/example? augment existing skill/example with it? replace existing skill/example with it? You may ask me for input with sound recommendations
+- When analyzing new ref projects with the potential prospect of adding addtional skill/example, you need to consciously make a decision: add it as additional skill/example? augment existing skill/example with it? replace existing skill/example with it? You may ask me for input with sound recommendations. You might also consider changing the naming and scope of existing skills to become a broader category. for example: `threejs-spectral-ocean` can just be `threejs-oceans` as more ocean examples of different styles are added inside.
+- all captures must be under either .playwright-mcp/ or .example-captures/
+- visual inspection when finished should be terminated immediately, do NOT leave browser tabs with a render scene running (both in-app browser tab or external tab using playwright)
 - After every context compaction, re-read this file in full before continuing work. A compacted summary must explicitly remind the next agent to do so.

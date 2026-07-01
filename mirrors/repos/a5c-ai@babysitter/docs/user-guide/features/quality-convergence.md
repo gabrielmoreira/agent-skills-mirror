@@ -1,14 +1,20 @@
+[Docs](../index.md) › [Features](./index.md) › Quality Convergence
+
 # Quality Convergence: Iterative Improvement Until Targets Met
 
-**Version:** 2.1
-**Last Updated:** 2026-01-26
+**Version:** 3.0 (v6 edition)
+**Last Updated:** 2026-06-23
 **Category:** Feature Guide
 
 ---
 
-## Quick Summary (Read This First)
+## Where This Fits
 
-**Quality Convergence = "Keep trying until it's good enough"**
+> **Quality convergence is *one* of Babysitter's roughly five core capabilities — not the whole product.** Babysitter is an enforcement engine for agentic work: it delivers (1) deterministic, event-sourced process execution, (2) complex agentic workflows (parallelism, dependencies, sub-agent delegation), (3) policy/process adherence and obedience (the orchestrator does only what your code permits), (4) multi-harness portability via the [Adapters](./adapters.md) runtime, and (5) quality convergence. For the full picture, start with the [Two-Loops Architecture](./two-loops-architecture.md) and the [Architecture Overview](./architecture-overview.md). This page documents capability #5: iterating until a defined quality target is met.
+
+## What Quality Convergence Is
+
+**Quality convergence is the pattern of looping — implement, measure, refine — until quality metrics meet a defined target, instead of running a task once and hoping.**
 
 Instead of:
 ```
@@ -19,6 +25,8 @@ Babysitter does:
 ```
 AI writes code → Tests: 60% pass → AI fixes → Tests: 85% pass → AI fixes → Tests: 95% pass ✓ Done!
 ```
+
+It is enforced by the same process-as-code authority that governs every other capability: the convergence loop is a gate your process defines, not a magic "try harder" mode.
 
 ### What You'll Learn in This Document
 
@@ -92,9 +100,21 @@ This flexibility means quality convergence adapts to any domain - from ML model 
 
 ---
 
+## On this page
+
+- [Overview](#overview)
+- [The Five Quality Gate Categories](#the-five-quality-gate-categories)
+- [The 90-Score Quality Convergence Pattern](#the-90-score-quality-convergence-pattern)
+- [Real-World Process Examples](#real-world-process-examples)
+- [Step-by-Step Instructions](#step-by-step-instructions)
+- [Configuration Options](#configuration-options)
+- [Common Pitfalls and Troubleshooting](#common-pitfalls-and-troubleshooting)
+
+---
+
 ## Overview
 
-Quality convergence is an iterative improvement pattern where Babysitter repeatedly refines work until a defined quality target is achieved. Instead of executing a task once and hoping for the best, quality convergence loops through implementation, testing, and scoring cycles until the output meets your standards.
+Quality [convergence](../reference/glossary.md) is an iterative improvement pattern where Babysitter repeatedly refines work until a defined quality target is achieved. Instead of executing a task once and hoping for the best, quality convergence loops through implementation, testing, and scoring cycles until the output meets your standards.
 
 ### The Core Principle: Evidence-Driven Completion
 
@@ -1061,7 +1081,7 @@ const [coverage, lint, security] = await ctx.parallel.all([
 - [Parallel Execution](./parallel-execution.md) - Optimize quality checks with parallelism
 - [Breakpoints](./breakpoints.md) - Add approval gates to quality convergence workflows
 - [Best Practices](./best-practices.md) - Patterns for setting targets, custom scoring strategies, and balancing speed vs thoroughness
-- [Process Library](./process-library.md) - Browse 2,000+ pre-built processes with quality convergence
+- [Process Library](./process-library.md) - Browse the SDK-managed library and current process counts
 - [Two-Loops Architecture](./two-loops-architecture.md) - Deep dive into the evidence-driven completion model
 
 ---
@@ -1070,9 +1090,9 @@ const [coverage, lint, security] = await ctx.parallel.all([
 
 Babysitter offers two levels of reusable workflows:
 
-### Methodologies (19+) - The "How"
+### Methodologies (38 directories in this repo snapshot) - The "How"
 
-**Quality convergence works with ANY of Babysitter's 19+ methodologies** - not just TDD. Methodologies define your development approach:
+**Quality convergence works with ANY of Babysitter's methodology families** - not just TDD. In this repository snapshot there are 38 methodology directories under `library/methodologies/`.
 
 | Methodology | Best For | Quality Focus |
 |-------------|----------|---------------|
@@ -1083,23 +1103,25 @@ Babysitter offers two levels of reusable workflows:
 | **Domain-Driven Design** | Complex business domains | Domain model integrity, bounded contexts |
 
 **Browse methodologies:**
-- [All 19+ methodologies with source code](../reference/glossary.md#methodology)
-- [Methodologies folder](../../../plugins/babysitter/skills/babysit/process/methodologies/)
+- [Methodology overview](../reference/glossary.md#methodology)
+- [Methodologies folder](../../../library/methodologies/)
 
-### Domain Processes (2,000+) - The "What"
+### Domain Processes - The "What"
 
-Beyond methodologies, Babysitter includes **2,000+ domain-specific processes** for specific tasks:
+Beyond methodologies, Babysitter includes the following generated specialization snapshot from the live repository tree:
 
+<!-- quality-convergence:domains:start -->
 | Domain | Processes | Examples |
 |--------|-----------|----------|
-| **Development** | 680+ | Web APIs, mobile apps, DevOps pipelines |
-| **Business** | 430+ | Legal contracts, HR workflows, marketing campaigns |
-| **Science & Engineering** | 550+ | Quantum algorithms, aerospace systems, biomedical devices |
-| **Social Sciences** | 150+ | Research methodologies, survey analysis |
+| **Development and technical specializations** | 837 | Web APIs, mobile apps, DevOps pipelines, AI, security, and related technical workflows |
+| **Business domains** | 490 | Legal contracts, HR workflows, marketing campaigns, finance, logistics, and related domains |
+| **Science & engineering domains** | 551 | Quantum algorithms, aerospace systems, biomedical devices, mathematics, and related domains |
+| **Social sciences & humanities** | 160 | Education, healthcare, arts, philosophy, and social-science research |
+<!-- quality-convergence:domains:end -->
 
 **Browse processes:**
 - [Process Library](./process-library.md) - Full catalog with descriptions
-- [Specializations folder](../../../plugins/babysitter/skills/babysit/process/specializations/)
+- [Specializations folder](../../../library/specializations/)
 
 ---
 
@@ -1126,3 +1148,10 @@ Quality convergence enables automated iterative improvement until defined qualit
 3. **Pass feedback between iterations** - AI learns from each failure
 4. **Detect plateaus early** - Don't waste iterations on no improvement
 5. **Parallelize independent checks** - Faster iterations mean faster convergence
+
+---
+
+## Next steps
+
+- **Next:** [Best Practices](./best-practices.md)
+- **Related:** [Two-Loops Architecture](./two-loops-architecture.md), [Process Definitions](./process-definitions.md)

@@ -56,6 +56,31 @@ In filtered mode, note the filter in the Step 6 log entry: `mode=filtered`.
 
 **Follow the Retrieval Primitives table in `llm-wiki/SKILL.md`.** Reading is the dominant cost of this skill — use the cheapest primitive that answers the question and escalate only when it can't. Never jump straight to full-page reads.
 
+### Step 0: GraphRAG Pre-pass (fast index query — no page reads)
+
+Before opening any pages, query the compiled graph index:
+
+```bash
+obsidian-wiki graph-query "$OBSIDIAN_VAULT_PATH" "<question>" --pretty
+```
+
+Output fields:
+
+- **`answer_type`**: `direct` | `path` | `list` | `gap` — shapes what to do next
+- **`candidates`**: top-ranked pages by title/tag/summary match + degree, with scores and summaries
+- **`should_read`**: the pages most worth opening — start here instead of speculatively reading many files
+- **`path`**: for multi-hop queries, the shortest wikilink path between the two concepts
+- **`god_nodes_relevant`**: hub pages related to your query terms — always useful context
+- **`index_only`**: if `true`, the top candidate's summary already answers the question — skip page reads
+
+**Decision tree:**
+
+1. If `index_only: true` → answer directly from `candidates[0].summary`. Skip Steps 1–4, go to Step 5.
+2. If `answer_type == "path"` and `path` is non-empty → the connection is in `path`. Read only those pages.
+3. Otherwise → open only `should_read` pages (not all candidates). This replaces the speculative 5–10 page reads the old flow required.
+
+**Fallback** (if `obsidian-wiki` is not installed): proceed with Step 1 as normal using grep and index.md.
+
 ### Step 1: Understand the Question
 
 Classify the query type:

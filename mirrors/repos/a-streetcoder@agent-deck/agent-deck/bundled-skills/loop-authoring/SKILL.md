@@ -38,7 +38,7 @@ Move through these steps in order. Stop and ask only for the next missing decisi
 3. Select agents explicitly
    - Agent fields must stay blank until the user chooses an agent.
    - Never invent fallback agent names such as `Maker` or `Checker`.
-   - If the available agent list is unknown, ask the user to choose from Agent Deck or inspect the project’s assigned agents if tools/context allow it.
+   - If the available agent list is unknown, ask the user to choose from Agent Deck or inspect the global/imported catalog plus the project’s Agent Deck assignments if tools/context allow it. Do not offer project-local `.pi/agents` or legacy `.agents` files; import/catalog entries are by reference, not copy.
 
 4. Choose the write target
    - Prefer `artifactMarkdown` for planning, research, review, and safe reports.

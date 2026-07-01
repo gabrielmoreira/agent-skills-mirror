@@ -76,6 +76,21 @@ Rules for timeline entries:
 - Include: first symptom, detection, escalation, hypothesis tested, fix applied, confirmation of resolution
 - Note time between key events (e.g. "22 minutes between detection and escalation")
 
+**Timeline, drawn** — also render the incident timeline as a Mermaid Gantt so the gaps (e.g. detection → escalation) are visible at a glance (it renders live in the playground and exports as PNG). Use the incident phases as bars; keep it blameless and system-focused:
+
+```mermaid
+gantt
+    title Incident timeline (UTC)
+    dateFormat HH:mm
+    axisFormat %H:%M
+    section Phases
+        Undetected impact   :22:00, 18m
+        Detection           :milestone, 22:18, 0m
+        Investigation       :22:18, 22m
+        Mitigation          :22:40, 15m
+        Resolved            :milestone, 22:55, 0m
+```
+
 ---
 
 ## Root Cause

@@ -1,3 +1,5 @@
+[Docs](../index.md) › [Features](./index.md) › Breakpoints
+
 # Breakpoints: Human-in-the-Loop Approval
 
 **Version:** 3.0
@@ -8,16 +10,28 @@
 
 ## In Plain English
 
-**A breakpoint is a pause button.** When your workflow reaches a breakpoint, it stops and waits for you to say "OK, continue."
+**A [breakpoint](../reference/glossary.md) is a pause button.** When your workflow reaches a breakpoint, it stops and waits for you to say "OK, continue."
 
 **Why does this matter?**
 - The AI writes a plan → pauses → you review it → approve → then it builds
 - The AI makes changes → pauses → you check the changes → approve → then it deploys
 - You stay in control of important decisions
 
-**How it works:** When a breakpoint is reached, Claude asks you directly in the chat using the `AskUserQuestion` tool. You respond, and the workflow continues.
+**How it works:** When a breakpoint is reached, the harness asks you directly. In a Claude Code session this uses the `AskUserQuestion` tool in the chat; the in-session prompt mechanism varies by harness. You respond, and the workflow continues. For approvals that need to outlive the session — or happen somewhere other than the chat — the **Breakpoints Adapter** can route the question to a durable backend (see below).
 
 **No setup required!** Breakpoints work out of the box in Claude Code sessions.
+
+---
+
+## On this page
+
+- [Overview](#overview)
+- [Use Cases and Scenarios](#use-cases-and-scenarios)
+- [Using Breakpoints](#using-breakpoints)
+- [Configuration Options](#configuration-options)
+- [Code Examples and Best Practices](#code-examples-and-best-practices)
+- [Auto-Approval Rules](#auto-approval-rules)
+- [Common Pitfalls and Troubleshooting](#common-pitfalls-and-troubleshooting)
 
 ---
 
@@ -40,6 +54,19 @@ When running Babysitter within a Claude Code session, breakpoints are handled **
 - Immediate, real-time interaction
 - Context preserved in conversation
 - Simple API - just call `ctx.breakpoint()`
+
+### The Breakpoints Adapter (v6)
+
+In-chat approval is the simplest path, but v6 introduces the **Breakpoints Adapter** — the durable, harness-agnostic home for human-in-the-loop approvals. It is part of the [Adapters](./adapters.md) runtime and **replaces the legacy `breakpoints-pro` package** (`breakpoints-pro` is **DEPRECATED**; migrate to the Breakpoints Adapter).
+
+Key properties:
+
+- **Serverless-durable**: A pending approval survives session timeouts, restarts, and handoffs. The breakpoint state lives in the journal and the configured backend, not only in the live chat.
+- **Pluggable backends**: Route approvals to a **GitHub Issues** backend (approve by commenting on an issue) or a **server** backend, in addition to in-session prompting. Pick the backend that matches where your reviewers already work.
+- **"Proven" cryptographic signing**: Approvals are cryptographically signed for tamper-evidence, so an audit trail of who approved what can be verified rather than merely trusted. See [Security](../reference/security.md).
+- **MCP server**: The adapter exposes an MCP server so external tools and agents can list, present, and resolve pending breakpoints programmatically.
+
+The `ctx.breakpoint()` API is unchanged regardless of backend — see the [Glossary](../reference/glossary.md) for terminology.
 
 ### Why Use Breakpoints
 
@@ -219,6 +246,9 @@ Claude: Plan approved. Proceeding with implementation...
 | `strategy` | string | No | Resolution strategy: `'single'` (default), `'first-response-wins'`, `'collect-all'`, or `'quorum'` |
 | `previousFeedback` | string | No | Feedback from a prior rejection (used for retry context) |
 | `attempt` | number | No | Current retry attempt number |
+| `breakpointId` | string | No | Canonical identity for cross-run/cross-process matching. Dotted namespace, kebab-case (e.g., `confirm.star-repo`). Auto-derived from title via slugification if not provided. |
+| `autoApproveAfterN` | number | No | Auto-approve after N consecutive approvals for this breakpointId. Default: `-1` (disabled). |
+| `presentAlwaysApprove` | boolean | No | Whether to present an "Always Approve" option to the user. Default: `true`. |
 
 ### Breakpoint Routing
 
@@ -447,6 +477,110 @@ export async function process(inputs, ctx) {
 
 ---
 
+## Auto-Approval Rules
+
+Breakpoint auto-approval lets you configure rules to automatically approve recurring breakpoints based on patterns, reducing repetitive manual approvals while maintaining control over critical decisions.
+
+### How It Works
+
+1. When a breakpoint effect is dispatched, the SDK evaluates rules from `~/.a5c/breakpoint-approvals/rules.json`
+2. A pre-computed `autoApproval` field is written to `task.json` with the recommendation
+3. The harness reads `autoApproval.recommended` and can auto-approve without prompting
+
+### Precedence (highest wins)
+
+| Priority | Source | Description |
+|----------|--------|-------------|
+| 1 | `never-auto-approve` rule | Explicit block — always prompt |
+| 2 | Profile `alwaysBreakOn` tags | Tags configured in user profile that always require manual approval |
+| 3 | `auto-approve` rule | Explicit allow — skip the prompt |
+| 4 | `autoApproveAfterN` threshold | Auto-approve after N consecutive manual approvals |
+| 5 | Prompt (default) | No matching rule — ask the user |
+
+### Managing Rules via CLI
+
+```bash
+# Add an auto-approve rule for all "confirm.*" breakpoints
+babysitter breakpoint:approve-rule "confirm.*" --note "Routine confirmations"
+
+# Add a never-auto-approve rule for production deployments
+babysitter breakpoint:approve-rule "gate.deploy-production" --action never-auto-approve --note "Always review prod deploys"
+
+# Add a rule with attribute predicates
+babysitter breakpoint:approve-rule "*.review(tags contains 'design')" --note "Auto-approve design reviews"
+
+# List all rules
+babysitter breakpoint:list-rules
+
+# Check if a breakpoint should auto-approve
+babysitter breakpoint:should-auto-approve "confirm.star-repo" --json
+
+# View breakpoint approval history
+babysitter breakpoint:history --limit 20
+
+# Remove a rule
+babysitter breakpoint:remove-rule <rule-id>
+```
+
+### Pattern Syntax
+
+Patterns match against `breakpointId` values with optional attribute predicates:
+
+| Pattern | Matches |
+|---------|---------|
+| `confirm.*` | Any breakpointId starting with `confirm.` |
+| `*.review` | Any breakpointId ending with `.review` |
+| `gate.deploy-production` | Exact match |
+| `*.review(tags contains 'design')` | Matching IDs where tags include "design" |
+| `gate.*(tags contains 'prerequisites' AND expert = 'owner')` | Matching IDs with both tag and expert conditions |
+
+### Using Auto-Approval in Processes
+
+```javascript
+// Breakpoint with explicit ID and auto-approve threshold
+await ctx.breakpoint({
+  question: 'Confirm repository star?',
+  title: 'Star Repository',
+  breakpointId: 'confirm.star-repo',        // Canonical cross-run identity
+  autoApproveAfterN: 3,                      // Auto-approve after 3 consecutive approvals
+  presentAlwaysApprove: true,                // Show "Always Approve" option
+  tags: ['routine', 'github'],
+});
+
+// breakpointId is auto-derived from title if not provided:
+// title "Review Design Document" → breakpointId "review-design-document"
+await ctx.breakpoint({
+  question: 'Review the design?',
+  title: 'Review Design Document',
+  tags: ['design'],
+});
+```
+
+### Pre-Computed autoApproval in task.json
+
+When a breakpoint effect is written to disk, the SDK evaluates rules and writes the result to `task.json`:
+
+```json
+{
+  "kind": "breakpoint",
+  "title": "Star Repository",
+  "metadata": {
+    "breakpointId": "confirm.star-repo",
+    "tags": ["routine", "github"]
+  },
+  "autoApproval": {
+    "recommended": true,
+    "reason": "Matched auto-approve rule: rule-a1b2c3d4",
+    "matchedRule": "rule-a1b2c3d4",
+    "consecutiveApprovals": 5
+  }
+}
+```
+
+The harness can read `autoApproval.recommended` directly from task.json without calling the CLI.
+
+---
+
 ## Common Pitfalls and Troubleshooting
 
 ### Pitfall 1: Session Timeout During Review
@@ -524,6 +658,9 @@ The breakpoint state is preserved in the journal and will be restored on resume.
 - [Run Resumption](./run-resumption.md) - Resume workflows after breakpoint approval
 - [Journal System](./journal-system.md) - Understand how breakpoint events are recorded
 - [Best Practices](./best-practices.md) - Patterns for strategic breakpoint placement and workflow design
+- [Adapters](./adapters.md) - The runtime the Breakpoints Adapter is part of
+- [Security](../reference/security.md) - Cryptographic signing and tamper-evidence for approvals
+- [Glossary](../reference/glossary.md) - Breakpoints Adapter and related terminology
 
 ---
 
@@ -543,3 +680,10 @@ Breakpoints enable human-in-the-loop approval within automated workflows. Use `c
 - The workflow continues based on your response
 - No external services or setup required - breakpoints work in-session
 - Backward compatible: existing code that ignores the return value still works
+
+---
+
+## Next steps
+
+- **Next:** [Hooks](./hooks.md)
+- **Related:** [Run Resumption](./run-resumption.md), [Best Practices](./best-practices.md), [Slash Commands](../reference/slash-commands.md)

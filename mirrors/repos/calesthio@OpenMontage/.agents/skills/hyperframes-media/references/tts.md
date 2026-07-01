@@ -65,6 +65,27 @@ node skills/hyperframes-media/scripts/heygen-tts.mjs --list   # public starfish 
 | Offline, no API key, fast iteration                       | **Kokoro**                                          |
 | Non-English multilingual with deterministic phonemization | **Kokoro** (`ef_dora`, `jf_alpha`, `zf_xiaobei`, …) |
 
+## Expressive narration contract
+
+Before generating narration, write a compact voice-performance plan:
+
+- `performance_intent` - who the narrator is and how they should feel
+- `pacing_profile` - contemplative, conversational, energetic, technical, or custom
+- `energy_curve` - how the read changes across the piece
+- `pause_policy` - where silence should happen and why
+- section-level cues - `pace`, `energy`, `emphasis_words`, `pause_before_seconds`,
+  `pause_after_seconds`, and optional provider-ready text
+
+Do not rely on a vague instruction like "make it natural." Put the direction in
+the text or provider settings:
+
+- Use short sentences and purposeful punctuation.
+- Use `<break time="0.4s"/>` to `<break time="1.0s"/>` for important pauses when
+  the chosen provider supports SSML-style break tags.
+- Generate a sample from the most performance-sensitive section before batching.
+- If the sample sounds monotone, rushed, or ignores pauses, revise the plan or
+  provider settings before generating the rest.
+
 ## ffmpeg requirement
 
 HeyGen + ElevenLabs return mp3. The CLI transcodes to wav when `--output` ends in `.wav` (the default and what downstream `ffprobe` + Whisper expect). If you'd rather skip the transcode, pass `-o file.mp3`. Without `ffmpeg` on PATH, `.wav` output from the cloud providers fails — install ffmpeg or use `.mp3`.

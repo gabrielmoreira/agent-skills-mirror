@@ -45,16 +45,28 @@ This applies to all ingest modes and all source formats.
 This skill supports three modes. Ask the user or infer from context:
 
 ### Append Mode (default)
-Only ingest sources that are **new or modified** since last ingest. Check the manifest using both timestamp **and content hash**:
+Only ingest sources that are **new or modified** since last ingest. Use the built-in cache command for a reliable, platform-independent check:
 
-- If a source path is not in `.manifest.json` → it's new, ingest it
-- If a source path is in `.manifest.json`:
-  - Compute the file's SHA-256 hash: `sha256sum -- "<file>"` (or `shasum -a 256 -- "<file>"` on macOS). Always double-quote the path and use `--` to prevent filenames with special characters or leading dashes from being interpreted by the shell.
-  - If the hash matches `content_hash` in the manifest → **skip it**, even if the modification time differs (file was touched but content is identical — git checkout, copy, NFS timestamp drift)
-  - If the hash differs → it's genuinely modified, re-ingest it
-- If a source path is in `.manifest.json` and has no `content_hash` (older entry) → fall back to mtime comparison as before
+```bash
+obsidian-wiki cache-check "$OBSIDIAN_VAULT_PATH" <source1> [source2 ...]
+```
 
-This is the right choice most of the time. It's fast and avoids redundant work even when timestamps are unreliable.
+Output: `{"new": [...], "modified": [...], "unchanged": [...], "missing": [...]}`.
+
+- `new` → ingest these
+- `modified` → re-ingest these (content changed since last run)
+- `unchanged` → skip entirely — hash matches, content is identical
+- `missing` → in manifest but no longer on disk; skip and optionally clean up
+
+After ingesting each source, record its hash:
+
+```bash
+obsidian-wiki cache-update "$OBSIDIAN_VAULT_PATH" <source> --pages <page1> [page2 ...]
+```
+
+**Fallback** (if `obsidian-wiki` is not installed): compute hashes manually with `sha256sum -- "<file>"` (Linux) or `shasum -a 256 -- "<file>"` (macOS) and compare against `content_hash` in `.manifest.json`. If the entry has no `content_hash`, fall back to mtime comparison.
+
+This avoids redundant work even when timestamps are unreliable (git checkout, NFS drift, copy operations).
 
 ### Full Mode
 Ingest everything regardless of manifest state. Use when:
@@ -81,6 +93,33 @@ This keeps faith with the "immutable raw layer" principle in `llm-wiki/SKILL.md`
 **Move safety:** Only move the specific file that was just promoted. Before moving, verify the resolved path is inside `$OBSIDIAN_VAULT_PATH/_raw/` — never touch files outside this directory. Never use wildcards or recursive operations (`rm -rf`, `mv *`). Move one file at a time by its exact path into `_raw/_archived/`, preserving its filename. If a file of the same name already exists there, append a numeric suffix rather than overwriting.
 
 ## The Ingest Process
+
+### Step 0: Batch Planning for Large Folders
+
+**GUARD: Only run this step when the source is a directory with more than 20 files.** For single files, small folders, or `_raw/` mode, skip directly to Step 1.
+
+When the source is a large directory of docs, plan the parallel dispatch first:
+
+```bash
+obsidian-wiki batch-plan "$OBSIDIAN_VAULT_PATH" <source-dir> --pretty
+```
+
+This outputs a JSON plan with `batches` (each a list of files + total_bytes + kind counts) and `stats` (total, to_ingest, skipped_unchanged).
+
+**What to do with the plan:**
+
+1. **Check `stats.skipped_unchanged`** — report to the user how many files are being skipped (already ingested, hash unchanged).
+2. **If `batch_count == 0`** — all files are unchanged. Tell the user and stop.
+3. **If `batch_count == 1`** — proceed with the single batch as a normal Step 1 ingest.
+4. **If `batch_count > 1`** — dispatch each batch as a **parallel subagent** (multiple Agent tool calls in a single message). Each subagent receives a message like:
+   ```
+   Ingest these files into the wiki at $OBSIDIAN_VAULT_PATH using wiki-ingest Step 1 onward:
+   <list of file paths from this batch>
+   Skip batch-plan — these files are already partitioned.
+   ```
+   Wait for all subagents to complete, then run `/cross-linker` once to wire cross-references across all batches.
+
+**Fallback** (if `obsidian-wiki` is not installed): process files sequentially in groups of 15.
 
 ### Step 1: Read the Source
 
@@ -214,6 +253,41 @@ Use the returned snippets to:
 If the QMD results show that 3+ papers touch the same concept, that concept almost certainly warrants a global `concepts/` page.
 
 **Skip this step** if `QMD_PAPERS_COLLECTION` is not set.
+
+
+### Step 1c: Code Source Detection (free local extraction — no LLM)
+
+**GUARD: Only run this step when the source contains code files** (`.py`, `.ts`, `.js`, `.go`, `.rs`, `.java`, `.kt`, `.rb`, `.c`, `.cpp`, `.swift`, `.sh`, etc.). Skip for docs-only, PDFs, images, chat exports.
+
+When the source path is a directory or file with code, run the local AST extractor before doing any LLM work. This is free — it parses code structure locally (classes, functions, imports, inheritance) using deterministic patterns, zero tokens spent.
+
+```bash
+obsidian-wiki ast-extract <path> --pretty
+```
+
+The output is JSON with three sections you'll use directly:
+
+**`nodes`** — every class, function, import, and file found. Fields: `id`, `label`, `kind` (`class`/`function`/`import`/`file`), `file`, `line`, `language`.
+
+**`edges`** — structural relationships. `relation` is one of: `defines`, `imports`, `inherits`, `calls`. All have `confidence: "EXTRACTED"` — these are facts, not inferences.
+
+**`god_nodes`** — the 10 most-connected node IDs by degree. These are the architectural hubs of the codebase.
+
+**`stats`** — `files_processed`, `nodes`, `edges`, `languages`.
+
+#### What to do with the AST output
+
+1. **Seed entity pages** — each `kind: "class"` node with degree ≥ 2 (appears in multiple edges) gets a stub `entities/<name>.md` page. Do not create a page per function — only architectural-level entities.
+
+2. **Mark god nodes** — the top `god_nodes` entries are the concepts every other page should link to. Reference them in the project overview page.
+
+3. **Map import graph** — `relation: "imports"` edges reveal what the codebase depends on. List the top 5 external imports in the project overview under a "Dependencies" section.
+
+4. **Surface inheritance hierarchies** — `relation: "inherits"` edges show class relationships. Group sibling classes into a single page when they share a parent.
+
+5. **Skip code files in the LLM pass** — do NOT send `.py`, `.ts`, `.go`, etc. source files to the model for Step 2 extraction. The AST output already captured their structure. Only send: `README.md`, `CHANGELOG.md`, inline docstrings/comments (extract as plain text), and any `.md`/`.txt` docs alongside the code.
+
+If `obsidian-wiki` is not installed or the command fails, skip this step and proceed to Step 2 as normal — it is an optimisation, not a requirement.
 
 
 ### Step 2: Extract Knowledge

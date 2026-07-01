@@ -1,6 +1,6 @@
 ---
 description: "Apply baseline VS Code user-scope settings for fleet policy compliance"
-lastReviewed: 2026-06-10
+lastReviewed: 2026-06-30
 ---
 
 # Configure VS Code
@@ -8,6 +8,7 @@ lastReviewed: 2026-06-10
 Use this on first session setup (or when moving to a new machine) to apply a stable user-level VS Code policy.
 
 For a first-session **orientation tour** (identity, what's loaded, where to start), use `/welcome` instead.
+For WORKSPACE-scope settings + `.vscode/` assets (`markdown-light.css`, discovery-location keys), use `/configure-workspace`.
 
 ## Objective
 
@@ -71,7 +72,7 @@ All three are non-destructive merges — unrelated user-scope keys are preserved
 
 ## Guardrails
 
-- User-scope only. Do not write these keys to workspace `.vscode/settings.json`.
+- User-scope only. Do not write these keys to workspace `.vscode/settings.json` — workspace-scope is owned by `/configure-workspace`.
 - Stable settings only — the baseline file is the source of truth; do not inline payload here.
 - Preserve all unrelated existing user settings.
 

@@ -1,11 +1,13 @@
 ---
 description: "Read-only audit of user-level VS Code/Copilot settings compliance"
-lastReviewed: 2026-06-10
+lastReviewed: 2026-06-30
 ---
 
 # Configure VS Code — Verify
 
 Use this to verify fleet policy compliance on a machine without changing any settings.
+
+For a WORKSPACE-scope audit (`.vscode/` assets, discovery-location keys), use `/configure-workspace-verify`.
 
 ## Objective
 

@@ -7,7 +7,7 @@ ref: beta
 
 # Mirror Manifest
 
-Mirror of `CoplayDev/unity-mcp` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `CoplayDev/unity-mcp` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `CoplayDev/unity-mcp` — 26 default patterns, 0 followed patterns, 4 
 | Ref           | `beta` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,10 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/mcp-source/SKILL.md`](.claude/skills/mcp-source/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/unity-mcp-skill/SKILL.md`](.claude/skills/unity-mcp-skill/SKILL.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`unity-mcp-skill/SKILL.md`](unity-mcp-skill/SKILL.md) |
+| 1 | ✓ | [`.claude/skills/blender-to-unity/SKILL.md`](.claude/skills/blender-to-unity/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/mcp-source/SKILL.md`](.claude/skills/mcp-source/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/unity-mcp-skill/SKILL.md`](.claude/skills/unity-mcp-skill/SKILL.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`unity-mcp-skill/SKILL.md`](unity-mcp-skill/SKILL.md) |
 
 ---
 

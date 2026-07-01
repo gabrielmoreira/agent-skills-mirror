@@ -7,9 +7,9 @@
 //      older than monitor start. Only helps lines that carry a timestamp.
 //   2. File-level: _pollFile sets tracked.backfilling when attaching to a
 //      file whose mtime predates monitor start. _processLine then suppresses
-//      historical emits + deferred timers until the first read drains, then
+//      historical emits until the first read drains, then
 //      _emitBackfillSnapshot may synthesize ONE current sustained state
-//      (thinking / working / codex-permission). Works for any line shape,
+//      (thinking / working). Works for any line shape,
 //      covers what layer 1 can't.
 // The two overlap but don't duplicate each other — collapsing them takes a
 // refactor, not a tweak.
@@ -24,7 +24,6 @@ const {
   extractAssistantTextFromRecord,
 } = require("../hooks/codex-assistant-output");
 
-const APPROVAL_HEURISTIC_MS = 2000;
 const MAX_TRACKED_FILES = 50;
 const MAX_RETIRED_TRACKED_FILES = 100;
 const MAX_PARTIAL_BYTES = 65536;
@@ -39,7 +38,7 @@ const ACTIVE_SESSION_WINDOW_MS = 5 * 60 * 1000;
 // replay it silently (backfill) instead of emitting stale transitions. A
 // file written within the grace window is a live session and emits normally.
 const BACKFILL_GRACE_MS = 5 * 1000;
-const BACKFILL_SNAPSHOT_STATES = new Set(["thinking", "working", "codex-permission"]);
+const BACKFILL_SNAPSHOT_STATES = new Set(["thinking", "working"]);
 
 function finiteNonnegativeNumber(value) {
   const n = Number(value);
@@ -128,9 +127,6 @@ class CodexLogMonitor {
     if (this._interval) {
       clearInterval(this._interval);
       this._interval = null;
-    }
-    for (const tracked of this._tracked.values()) {
-      if (tracked.approvalTimer) clearTimeout(tracked.approvalTimer);
     }
     this._tracked.clear();
     this._retiredTracked.clear();
@@ -345,7 +341,6 @@ class CodexLogMonitor {
         hadToolUse: retired ? retired.hadToolUse === true : false,
         isSubagent: retired ? retired.isSubagent === true : false,
         agentPid: retired ? retired.agentPid : null,
-        pendingApprovalDetail: null,
         assistantLastOutput: retired ? retired.assistantLastOutput || null : null,
         assistantLastOutputTruncated: retired ? retired.assistantLastOutputTruncated === true : false,
         contextUsage: retired ? retired.contextUsage || null : null,
@@ -462,25 +457,6 @@ class CodexLogMonitor {
       tracked.sessionTitle = threadName;
     }
 
-    // Approval heuristic: exec_command_end / function_call_output means command finished.
-    // guardian_assessment is Codex Desktop auto-review approving or checking the shell
-    // call before it runs; once present, the shell is not waiting on the user-facing
-    // approval prompt this heuristic is trying to infer.
-    if (
-      key === "event_msg:exec_command_end"
-      || key === "response_item:function_call_output"
-      || this._isGuardianApprovalActivity(payload)
-    ) {
-      if (tracked.approvalTimer) {
-        clearTimeout(tracked.approvalTimer);
-        tracked.approvalTimer = null;
-      }
-      tracked.pendingApprovalDetail = null;
-      if (tracked.backfilling && tracked.lastState === "codex-permission") {
-        tracked.lastState = "working";
-      }
-    }
-
     // Look up state mapping
     const map = this._config.logEventMap;
     const state = map[key];
@@ -501,11 +477,6 @@ class CodexLogMonitor {
     // Turn-end: happy if tools were used or the turn produced assistant text;
     // metadata-only completions stay idle to avoid noisy fallback animation.
     if (state === "codex-turn-end") {
-      if (tracked.approvalTimer) {
-        clearTimeout(tracked.approvalTimer);
-        tracked.approvalTimer = null;
-      }
-      tracked.pendingApprovalDetail = null;
       const resolved = this._isTrackedSubagent(tracked)
         ? "idle"
         : (tracked.hadToolUse || !!tracked.assistantLastOutput ? "attention" : "idle");
@@ -516,47 +487,8 @@ class CodexLogMonitor {
       return;
     }
 
-    // Approval heuristic: function_call starts a 2s timer — if no exec_command_end arrives,
-    // assume Codex is waiting for user approval and emit codex-permission.
-    // Explicit escalated requests (sandbox_permissions/justification) skip the timer.
-    if (key === "response_item:function_call") {
-      if (tracked.approvalTimer) clearTimeout(tracked.approvalTimer);
-      const cmd = this._extractShellCommand(payload);
-      tracked.pendingApprovalDetail = cmd
-        ? { command: cmd, rawPayload: payload }
-        : null;
-      if (cmd) {
-        // Codex Desktop has its own native permission / guardian UI — skip the
-        // CLI approval heuristic entirely so auto-reviewed commands don't pop a
-        // passive notify bubble. See _isCodexDesktopSession for the full rationale.
-        // Falling through (not returning) lets the function_call still emit
-        // "working" via the generic path below, same as any other tool call.
-        if (this._isCodexDesktopSession(tracked)) {
-          tracked.pendingApprovalDetail = null;
-        } else if (this._isExplicitApprovalRequest(payload)) {
-          tracked.lastState = "codex-permission";
-          if (tracked.backfilling) return;
-          this._emitStateChange(tracked, "codex-permission", key, {
-            permissionDetail: tracked.pendingApprovalDetail,
-          });
-          return;
-        } else if (tracked.backfilling) {
-          tracked.lastState = "codex-permission";
-          return;
-        } else {
-          tracked.approvalTimer = setTimeout(() => {
-            tracked.approvalTimer = null;
-            tracked.lastState = "codex-permission";
-            this._emitStateChange(tracked, "codex-permission", key, {
-              permissionDetail: tracked.pendingApprovalDetail,
-            });
-          }, APPROVAL_HEURISTIC_MS);
-        }
-      }
-    }
-
     // Backfill gate: first-pass replay of a file's historical content skips
-    // every callback and every deferred approval timer, but it still updates
+    // every callback, but it still updates
     // internal state so attach can synthesize the current visible state once.
     // Independent of the timestamp-based replay guard, which only helps lines
     // that carry a timestamp field.
@@ -597,52 +529,6 @@ class CodexLogMonitor {
       if (summary && summary !== "none" && summary !== "auto") return summary;
     }
     return null;
-  }
-
-  // Extract shell command from function_call payload
-  // shell_command: {"command":"...","workdir":"..."}
-  // exec_command:  {"cmd":"...","workdir":"..."}
-  _extractShellCommand(payload) {
-    if (!payload || typeof payload !== "object") return "";
-    if (payload.name !== "shell_command" && payload.name !== "exec_command") return "";
-    try {
-      const args = typeof payload.arguments === "string"
-        ? JSON.parse(payload.arguments) : payload.arguments;
-      if (args && args.command) return String(args.command);
-      if (args && args.cmd) return String(args.cmd);
-    } catch {}
-    return "";
-  }
-
-  _isExplicitApprovalRequest(payload) {
-    if (!payload || typeof payload !== "object") return false;
-    if (payload.name !== "shell_command" && payload.name !== "exec_command") return false;
-    try {
-      const args = typeof payload.arguments === "string"
-        ? JSON.parse(payload.arguments) : payload.arguments;
-      if (!args || typeof args !== "object") return false;
-      if (args.sandbox_permissions === "require_escalated") return true;
-      if (typeof args.justification === "string" && args.justification.trim()) return true;
-    } catch {}
-    return false;
-  }
-
-  _isGuardianApprovalActivity(payload) {
-    if (!payload || typeof payload !== "object") return false;
-    if (payload.type !== "guardian_assessment") return false;
-    return payload.status === "in_progress" || payload.status === "approved";
-  }
-
-  // Codex Desktop has its own native permission / guardian auto-review UI.
-  // The 2s approval heuristic below is a CLI-terminal fallback for sessions
-  // with no native prompt to observe; applying it to Desktop sessions spams
-  // passive "知道了" notify bubbles even when guardian auto-approves, because
-  // Desktop's guardian_assessment event often lands in the JSONL well past
-  // the 2s timer window (Desktop write cadence is slow). Desktop state still
-  // flows through the normal working → attention/idle mapping above.
-  _isCodexDesktopSession(tracked) {
-    return typeof tracked.codexOriginator === "string"
-      && tracked.codexOriginator.toLowerCase() === "codex desktop";
   }
 
   // Extract UUID from rollout filename
@@ -722,7 +608,6 @@ class CodexLogMonitor {
   }
 
   _retireTrackedFile(filePath, tracked) {
-    if (tracked && tracked.approvalTimer) clearTimeout(tracked.approvalTimer);
     this._tracked.delete(filePath);
     if (!filePath || !tracked) return;
     this._retiredTracked.delete(filePath);
@@ -756,14 +641,11 @@ class CodexLogMonitor {
       }
       return;
     }
-    const extra = snapshotState === "codex-permission" && tracked.pendingApprovalDetail
-      ? { permissionDetail: tracked.pendingApprovalDetail }
-      : null;
     this._emitStateChange(
       tracked,
       snapshotState,
       tracked.lastStateEvent || "session_meta",
-      extra
+      null
     );
   }
 

@@ -43,6 +43,18 @@ The 2–3 input metrics where a realistic improvement moves the north star most 
 ### 4. Instrumentation gaps
 Which input metrics aren't being measured yet but should be, to make the tree usable.
 
+### 5. The tree, drawn
+Also render the decomposition as a Mermaid flowchart so the structure is visible at a glance (it renders live in the playground and exports as PNG/SVG). North star at the top, drivers below, input metrics as leaves; keep labels short.
+
+```mermaid
+flowchart TD
+    NS[North star] --> D1[Driver A]
+    NS --> D2[Driver B]
+    D1 --> I1[Input metric]
+    D1 --> I2[Input metric]
+    D2 --> I3[Input metric]
+```
+
 ## Quality Checks
 
 - [ ] The top metric is expressed as an actual equation of its drivers

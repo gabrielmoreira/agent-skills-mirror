@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `infiniflow/ragflow` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `infiniflow/ragflow` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `infiniflow/ragflow` — 26 default patterns, 0 followed patterns, 10 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,8 +67,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`mcp/client/client.py`](mcp/client/client.py) |
 | 7 | ✓ | [`mcp/client/streamable_http_client.py`](mcp/client/streamable_http_client.py) |
 | 8 | ✓ | [`mcp/server/server.py`](mcp/server/server.py) |
-| 9 | ✓ | [`web/.agents/skills/tanstack-query-best-practices/SKILL.md`](web/.agents/skills/tanstack-query-best-practices/SKILL.md) |
-| 10 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
+| 9 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
 
 ---
 

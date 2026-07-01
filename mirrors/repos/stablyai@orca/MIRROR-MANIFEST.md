@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `stablyai/orca` — 26 default patterns, 1 followed patterns, 11 file(s) materialized.
+Mirror of `stablyai/orca` — 26 default patterns, 1 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `stablyai/orca` — 26 default patterns, 1 followed patterns, 11 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,9 +67,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`skills/orca-emulator-android/SKILL.md`](skills/orca-emulator-android/SKILL.md) |
 | 7 | ✓ | [`skills/orca-emulator/SKILL.md`](skills/orca-emulator/SKILL.md) |
 | 8 | ✓ | [`skills/orca-linear/SKILL.md`](skills/orca-linear/SKILL.md) |
-| 9 | ✓ | [`skills/orchestration/SKILL.md`](skills/orchestration/SKILL.md) |
-| 10 | ✓ | [`tests/e2e/AGENTS.md`](tests/e2e/AGENTS.md) |
-| 11 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
+| 9 | ✓ | [`skills/orca-per-workspace-env/SKILL.md`](skills/orca-per-workspace-env/SKILL.md) |
+| 10 | ✓ | [`skills/orchestration/SKILL.md`](skills/orchestration/SKILL.md) |
+| 11 | ✓ | [`tests/e2e/AGENTS.md`](tests/e2e/AGENTS.md) |
+| 12 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
 
 ---
 

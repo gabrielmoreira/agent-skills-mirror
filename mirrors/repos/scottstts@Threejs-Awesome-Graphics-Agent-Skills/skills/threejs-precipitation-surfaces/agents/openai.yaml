@@ -1,0 +1,4 @@
+interface:
+  display_name: "Three.js Precipitation Surfaces"
+  short_description: "Coupled rain, snow, puddle, and wetness effects"
+  default_prompt: "Use $threejs-precipitation-surfaces when rain or snow must affect visible surfaces: falling precipitation, ground accumulation, wet puddle masks, ripple normals, splash flipbooks, shared wind/time envelopes, and material roughness or coverage transitions."

@@ -40,13 +40,13 @@ Keep the agent body focused on:
 - output/return format
 - role-specific supervisor or progress-update cases, if any
 
-This applies equally to bundled, project, global, and library agents.
+This applies equally to bundled, global, and library/catalog agents.
 
 ## Required decisions
 
 When creating an agent, decide:
 
-1. Scope: project-local, user-global, library/catalog, builtin override, or builtin replacement. Ask the user before writing files when the intended scope is not explicit.
+1. Scope: user-global, library/catalog, builtin override, or builtin replacement. Ask the user before writing files when the intended scope is not explicit. Do not offer project-local agent files.
 2. Role: explorer, planner, coder, reviewer, tester, docs writer, release helper, etc.
 3. Routing: write `whenToUse` as one concise sentence that tells the parent exactly when to delegate to this agent; keep it distinct from the human-facing `description`.
 4. Tool boundary: prefer `read`, `grep`, `find`, `ls`; add `bash`, `edit`, `write` only when needed.
@@ -58,12 +58,12 @@ When creating an agent, decide:
 
 ## Scope rules
 
-Do not assume project-local scope just because the current working directory is a project. If the user asks to create an agent and does not specify where it should live, ask one focused question before writing:
+Do not assume project-local scope just because the current working directory is a project. Agent Deck no longer discovers project `.pi/agents` or legacy project `.agents` as catalog sources. If the user asks to create an agent and does not specify where it should live, ask one focused question before writing:
 
-- project-local: `.pi/agents/<name>.md`, only for the current project
 - user-global: `~/.pi/agent/agents/<name>.md`, available across the user's projects
 - library/catalog: `~/.pi/agent/agent-library/agents/<name>.md`, reusable but not automatically active
-If the agent references skills, also verify the skill is visible in the target scope or warn before completion.
+- imported/catalog by reference: add an existing file through Agent Deck’s `+` import/catalog flow; import is by reference, not a copy
+If the agent references skills, also verify the skill is visible in the global/imported catalog or warn before completion.
 
 ## Routing metadata rules
 

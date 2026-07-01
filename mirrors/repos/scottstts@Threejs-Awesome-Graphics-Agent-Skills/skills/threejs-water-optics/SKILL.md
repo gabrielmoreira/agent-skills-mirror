@@ -51,6 +51,8 @@ shadered pool/water/sphere ray tracing against the pool bounds and sphere.
 ## Routing boundary
 
 Use `$threejs-spectral-ocean` for stochastic directional spectra, FFT
-cascades, Jacobian breaking, and persistent ocean foam. This skill owns
-authored analytic waves, bounded heightfield simulation, ray-traced
-pool-volume optics, and bounded-water optics.
+cascades, Jacobian breaking, and persistent ocean foam. Use
+`$threejs-precipitation-surfaces` for rain-driven puddle wetness, ripple masks,
+and weather-coupled splashes on ground surfaces. This skill owns authored
+analytic waves, bounded heightfield simulation, ray-traced pool-volume optics,
+and bounded-water optics.

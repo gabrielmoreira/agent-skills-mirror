@@ -157,10 +157,19 @@ gh release create vX.Y.Z --title "vX.Y.Z — Title" --notes "release notes"
 
 This triggers the `Publish to npm` workflow automatically.
 
+**Publishing uses npm trusted publishing (OIDC) — there is no `NPM_TOKEN` to rotate.**
+`publish.yml` upgrades npm to >= 11.5.1 and runs `npm publish --provenance --access public`
+with no auth token; credentials come from GitHub OIDC (`id-token: write`) against the Trusted
+Publisher configured on npmjs.com (Package → Settings: repo `Enderfga/claw-orchestrator`,
+workflow `publish.yml`, no environment). If a publish ever 404s on the PUT, check the Trusted
+Publisher config on npmjs.com — it is not a token problem. (Migrated from a 90-day-expiring
+`NPM_TOKEN` secret in v4.5.0.)
+
 ### 7. Verify
 
 ```bash
-gh run list --limit 2   # CI + Publish should both pass
+gh run list --limit 2                          # CI + Publish should both pass
+npm view @enderfga/claw-orchestrator version   # should equal X.Y.Z
 ```
 
 ## Engine CLI Reference
@@ -169,8 +178,8 @@ Current tested versions (update on each release):
 
 | Engine | CLI | Tested Version | Invocation |
 |--------|-----|---------------|------------|
-| Claude | `claude` | 2.1.178 | Persistent subprocess, `--output-format stream-json` |
-| Codex | `codex` | 0.137.0 | `codex exec --sandbox workspace-write --skip-git-repo-check --json -C <dir>` (or `codex app-server --listen stdio://` for /goal) |
+| Claude | `claude` | 2.1.197 | Persistent subprocess, `--output-format stream-json` |
+| Codex | `codex` | 0.142.4 | `codex exec --sandbox workspace-write --skip-git-repo-check --json -C <dir>` (or `codex app-server --listen stdio://` for /goal) |
 | Gemini | `gemini` | 0.43.0 | `gemini -p <msg> --output-format stream-json --skip-trust --yolo/--sandbox` |
 | Cursor | `agent` | 2026.03.30 | `agent -p <msg> --force --trust --output-format stream-json --workspace <dir>` |
 | OpenCode | `opencode` | 1.1.40 | `opencode run <msg> --format json [--model provider/model]` |

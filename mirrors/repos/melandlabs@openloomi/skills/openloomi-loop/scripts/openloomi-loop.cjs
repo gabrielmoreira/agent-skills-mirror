@@ -7,7 +7,7 @@ const { spawn, spawnSync, execSync } = require('node:child_process');
 const lib = require('./loop-lib.cjs');
 const daemon = require('./loop-daemon.cjs');
 
-const { paths, api, signals, decisions, rules, config, utils } = lib;
+const { paths, api, agent, signals, decisions, rules, config, utils } = lib;
 
 // Always ensure runtime dirs exist on script load — so a fresh install
 // works regardless of how the script is invoked (foreground, nohup redirect,
@@ -15,43 +15,10 @@ const { paths, api, signals, decisions, rules, config, utils } = lib;
 // means shell redirects like `node script.js > data/daemon.log` succeed.
 paths.ensureDirs();
 
-// Strip CLAUDECODE before spawning `claude -p`, otherwise the child
-// refuses to start (it detects the parent Claude Code session and aborts).
-// See: https://docs.claude.com/claude-code — "Nested sessions" check.
-const cleanChildEnv = () => {
-  const env = { ...process.env };
-  env.CLAUDECODE = undefined;
-  return env;
-};
-
-// Build the spawn invocation for a `claude -p` run.
-// Returns { bin, args } ready to pass to child_process.spawn().
-// - Always adds `--verbose` so thinking / tool calls ARE emitted to stdout
-//   (without --verbose, `claude -p` only prints the final result).
-// - Adds `--dangerously-skip-permissions` so the child can call the same
-//   tool families the parent already has (mcp__composio__*, mcp__agentmemory__*,
-//   and the openloomi-{loop,memory} CLIs). Without this, the child hits the
-//   permission dialog on every tool call and the tick stalls. Tick is
-//   read/derive only — it never sends email / RSVP / dismisses — so the
-//   "dangerous" flag is safe for this use case. Set
-//   LOOP_CLAUDE_SAFE_PERMISSIONS=1 to opt out (back to the per-call prompt).
-// - We do NOT wrap with a PTY here even though libc block-buffers stdout
-//   when not a TTY: `script -q /dev/null …` fails with "Operation not
-//   supported on socket" when the parent stdout is a redirected file
-//   (the typical daemon case), and node has no built-in PTY allocator.
-//   Trace will therefore only appear in the log after claude exits.
-//   To get real-time line-buffered output, run the loop in a real TTY
-//   (don't redirect stdout) or `tail -f data/schedule.log` from another
-//   terminal — the file does grow as claude writes, just not per-line.
-function claudeSpawnArgs(prompt, extraArgs = []) {
-  const baseArgs = ['-p', prompt, '--output-format', 'text', '--verbose'];
-  if (process.env.LOOP_CLAUDE_SAFE_PERMISSIONS !== '1') {
-    baseArgs.push('--dangerously-skip-permissions');
-  }
-  baseArgs.push(...extraArgs);
-  const bin = process.env.LOOP_CLAUDE_BIN || 'claude';
-  return { bin, args: baseArgs };
-}
+// Agent invocation — default surface is the local native-agent endpoint
+// (POST /api/native/agent, Bearer token from ~/.openloomi/token). Falls
+// back to spawning the legacy `claude -p` child when LOOP_LEGACY=1.
+// See loop-lib.cjs → agent.
 
 // ---------------------------------------------------------------------------
 // Tiny arg parser (no deps)
@@ -86,9 +53,10 @@ Usage: openloomi-loop <command> [options]
 Commands:
   tick [--compact]                Print the prompt Claude runs for one Loop tick
   schedule [--interval N] [--watch-interval N] [--timeout MS]
-                                    Loop: run \`claude -p ...\` every Ns + watch (independent).
-                                    Spawned ticks use --dangerously-skip-permissions
-                                    (set LOOP_CLAUDE_SAFE_PERMISSIONS=1 to opt out).
+                                    Loop: invoke the agent every Ns + watch (independent).
+                                    Default surface is /api/native/agent (Bearer token from
+                                    ~/.openloomi/token). Set LOOP_LEGACY=1 to fall back to
+                                    spawning \`claude -p\`.
   watch [--interval N]            Poll decisions.json and fire macOS notifications on new pending
   notify [--all] [--webhook URL]  Manually fire notifications (--all = all pending; default = new only)
   ingest-decision <json|->        Append a decision (called by the Claude tick agent)
@@ -99,9 +67,8 @@ Commands:
   inject <file.json|->            Drop a signal into data/inbox/
   decisions [--status pending|done|dismissed|all]
   decision <id>                   Show one decision
-  run <id> [--dry]                Execute decision -> spawn \`claude -p\` (with
-                                    --dangerously-skip-permissions; set
-                                    LOOP_CLAUDE_SAFE_PERMISSIONS=1 to opt out)
+  run <id> [--dry]                Execute decision -> invoke the agent (Surface A by default).
+                                    Set LOOP_LEGACY=1 to fall back to spawning \`claude -p\`.
   dismiss <id>                    Mark as dismissed
   memory <subcommand> [args...]    Delegate to openloomi-memory CLI (search-all, search-memory, list-insights, add-memory, ...)
   config [get|set k v]            Read/edit config
@@ -339,25 +306,29 @@ async function cmdWatch(args) {
 
 function cmdSchedule(args) {
   const interval = Number.parseInt(args.flags.interval || config.read().intervalSec, 10);
-  const claudeBin = process.env.LOOP_CLAUDE_BIN || 'claude';
   const alsoWatch = args.flags.watch !== false; // default: also watch for notifications
-  // Watch polls faster than the tick interval — when claude hangs, we still
+  // Watch polls faster than the tick interval — when the agent hangs, we still
   // want to fire notifications for whatever did get queued.
   const watchInterval = Number.parseInt(args.flags['watch-interval'] || '5', 10);
-  // Hard kill for the claude child if a tick runs too long. Without this, a
+  // Hard kill for the agent if a tick runs too long. Without this, a
   // stuck tick blocks notifications forever (notifications used to be gated
   // by tick completion — see git history). Default 15 minutes — measured
   // ticks with Composio + memory enrichment run ~7-8 min in practice.
   const tickTimeoutMs = Number.parseInt(
-    process.env.LOOP_CLAUDE_TIMEOUT_MS || String(15 * 60 * 1000), 10,
+    args.flags.timeout
+      || process.env.LOOP_NATIVE_AGENT_TIMEOUT_MS
+      || String(15 * 60 * 1000), 10,
   );
+  const surfaceLabel = agent.legacy.isForced()
+    ? `${process.env.LOOP_CLAUDE_BIN || 'claude'} -p (legacy)`
+    : agent.native.resolveUrl();
 
   const session = writeSession();
-  console.log(`Scheduling Loop ticks every ${interval}s via "${claudeBin} -p" (timeout ${tickTimeoutMs / 1000}s)`);
+  console.log(`Scheduling Loop ticks every ${interval}s via ${surfaceLabel} (timeout ${tickTimeoutMs / 1000}s)`);
   console.log(`Session:  pid=${session.pid} started=${session.started_at}`);
   if (alsoWatch) console.log(`Also watching every ${watchInterval}s (independent of tick — desktop notifications stay live even if a tick hangs).`);
   console.log("Press Ctrl+C to stop.\n");
-  utils.log(`[schedule] session started pid=${session.pid} interval=${interval}s watch=${watchInterval}s tickTimeout=${tickTimeoutMs}ms`);
+  utils.log(`[schedule] session started pid=${session.pid} interval=${interval}s watch=${watchInterval}s tickTimeout=${tickTimeoutMs}ms surface=${agent.legacy.isForced() ? 'legacy' : 'native'}`);
 
   paths.ensureDirs();
   fs.writeFileSync(paths.PID_PATH, String(process.pid));
@@ -403,27 +374,23 @@ function cmdSchedule(args) {
     running = true;
     try {
       const prompt = spawnSync(process.execPath, [path.join(__dirname, 'loop-tick.cjs'), '--compact'], { encoding: 'utf8' }).stdout;
-      utils.log("[schedule] spawning claude");
-      const { bin, args } = claudeSpawnArgs(prompt);
-      const child = spawn(bin, args, {
-        stdio: 'inherit',
-        env: cleanChildEnv(),
+      const surface = agent.legacy.isForced() ? 'legacy' : 'native';
+      utils.log(`[schedule] invoking agent (${surface})`);
+      // Stream text + tool calls to stderr as the agent works. The lib
+      // enforces a hard timeoutMs on both surfaces (native: HTTP socket
+      // destroyed; legacy: SIGTERM, then SIGKILL after 5s).
+      const result = await agent.invoke(prompt, {
+        timeoutMs: tickTimeoutMs,
+        onEvent: agent.defaultStreamOnEvent(),
       });
-
-      // Hard timeout: SIGTERM, give it 5s to clean up, then SIGKILL.
-      let timedOut = false;
-      const timer = setTimeout(() => {
-        timedOut = true;
-        utils.log(`[schedule] tick exceeded ${tickTimeoutMs}ms — SIGTERM claude pid=${child.pid}`);
-        try { child.kill('SIGTERM'); } catch {}
-        setTimeout(() => { try { child.kill('SIGKILL'); } catch {} }, 5000);
-      }, tickTimeoutMs);
-
-      await new Promise((resolve) => child.on('exit', (code, signal) => {
-        clearTimeout(timer);
-        utils.log(`[schedule] claude exited code=${code} signal=${signal}${timedOut ? ' (timed out)' : ''}`);
-        resolve();
-      }));
+      if (result.surface === 'legacy') {
+        utils.log(`[schedule] claude exited code=${result.code} signal=${result.signal}`);
+      } else {
+        utils.log(`[schedule] native done status=${result.status} text=${(result.text || '').length}chars result=${result.result || ''}`);
+      }
+      if (!result.ok) {
+        utils.log(`[schedule] agent returned ok=false: ${result.error || (result.result ? 'see events' : '')}`);
+      }
     } catch (e) {
       utils.log(`[schedule] error: ${e.message}`);
     }
@@ -718,7 +685,7 @@ function fmtDecision(d, idx = null) {
   if (memPieces.length) lines.push(`${ind}context: ${memPieces.join('  •  ')}`);
   else if (person == null && !memRefs.length) {
     // Hint that memory enrichment was skipped (lib-level tick)
-    lines.push(`${ind}context: (no memory refs — run \`loop tick\` for Claude to enrich)`);
+    lines.push(`${ind}context: (no memory refs — run \`loop tick\`)`);
   }
 
   // Suggested action
@@ -831,45 +798,38 @@ function cmdRun(args) {
 
   const prompt = buildPrompt(dec);
   if (args.flags.dry) {
-    console.log('--- DRY RUN — would spawn claude with prompt ---\n');
+    console.log('--- DRY RUN — would invoke agent with prompt ---\n');
     console.log(prompt);
     return;
   }
 
   decisions.update(id, { status: 'running', started_at: utils.now() });
-  console.log(`spawning claude for decision ${id} (${dec.type})...`);
+  const surface = agent.legacy.isForced() ? 'legacy claude' : 'native agent';
+  console.log(`invoking ${surface} for decision ${id} (${dec.type})...`);
 
-  // Use the same helper as `loop schedule` so the child gets --verbose
-  // and --dangerously-skip-permissions (set LOOP_CLAUDE_SAFE_PERMISSIONS=1
-  // to opt out). Without the skip flag the child stalls on every tool call.
-  const { bin: claudeBin, args: claudeArgs } = claudeSpawnArgs(prompt);
-  let child;
-  try {
-    child = spawn(claudeBin, claudeArgs, {
-      stdio: 'inherit',
-      cwd: process.cwd(),
-      env: cleanChildEnv(),
+  // Default surface is /api/native/agent (loop-lib → agent.invoke). Set
+  // LOOP_LEGACY=1 to fall back to the legacy `claude -p` child. The lib
+  // handles the hard timeout and stream parsing in both modes.
+  agent.invoke(prompt, { onEvent: agent.defaultStreamOnEvent() })
+    .then((result) => {
+      const ok = !!result.ok;
+      const summary = result.surface === 'legacy'
+        ? (ok ? 'claude exited 0' : `claude exited ${result.code}/${result.signal}`)
+        : (ok ? `native ok (text=${(result.text || '').length}chars)` : `native failed: ${result.error || 'see events'}`);
+      decisions.moveTo(id, ok ? 'done' : 'dismissed', {
+        ok,
+        surface: result.surface || (agent.legacy.isForced() ? 'legacy' : 'native'),
+        summary,
+      });
+      console.log(`\n[loop] decision ${id} → ${ok ? 'done' : 'failed'} (${summary})`);
+      // Note: any memory writeback happens in the executing Claude session
+      // itself via the openloomi-memory skill (add-insight / add-memory).
+      // The loop CLI does NOT maintain a local memory store.
+    })
+    .catch((e) => {
+      console.log(`\n[loop] decision ${id} → failed (${e.message})`);
+      decisions.moveTo(id, 'dismissed', { ok: false, error: e.message });
     });
-  } catch (e) {
-    console.log(`failed to spawn claude (${claudeBin}): ${e.message}`);
-    console.log("Set LOOP_CLAUDE_BIN env var to your claude binary.");
-    decisions.update(id, { status: 'pending' }); // revert
-    return;
-  }
-
-  child.on('exit', (code, signal) => {
-    const ok = code === 0;
-    decisions.moveTo(id, ok ? 'done' : 'dismissed', {
-      ok,
-      code,
-      signal,
-      summary: ok ? 'claude exited 0' : `claude exited ${code}/${signal}`,
-    });
-    console.log(`\n[loop] decision ${id} → ${ok ? 'done' : 'failed'} (${code}/${signal})`);
-    // Note: any memory writeback happens in the executing Claude session itself
-    // via the openloomi-memory skill (add-insight / add-memory). The loop CLI
-    // does NOT maintain a local memory store.
-  });
 }
 
 function cmdDismiss(args) {
@@ -1045,7 +1005,7 @@ function cmdWeb(args) {
   const child = spawn(
     process.execPath,
     [path.join(__dirname, 'loop-web.cjs'), String(port)],
-    { stdio: 'inherit', env: cleanChildEnv() },
+    { stdio: 'inherit', env: utils.cleanChildEnv() },
   );
   if (open) {
     const url = `http://127.0.0.1:${port}/`;

@@ -39,5 +39,7 @@ fields, opacity shaping, and additive emission diagnostics.
 ## Routing boundary
 
 Use `$threejs-temporal-surfaces` only for the screen-space
-frost/touch-history pipeline. Keep ship-space plasma, generated wakes, sparks,
-and pooled debris in this skill.
+frost/touch-history pipeline. Use `$threejs-precipitation-surfaces` for
+falling rain or snow, splash flipbooks, and weather events that alter ground
+materials. Keep ship-space plasma, generated wakes, sparks, and pooled debris
+in this skill.

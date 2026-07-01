@@ -19,10 +19,10 @@ Skills are adapted from two upstream repos:
 - **Anthropic**: `https://github.com/anthropics/claude-plugins-official` — local mirror at `~/projects/claude-plugins-official`
 - **OpenAI**: `https://github.com/openai/skills` — local mirror at `~/projects/skills`
 
-Last upstream check: **2026-04-30**
+Last upstream check: **2026-06-30**
 
-- Anthropic checked up to commit `0742692`
-- OpenAI checked up to commit `fb7b56d`
+- Anthropic checked up to commit `cd3ca5b`
+- OpenAI checked up to commit `49f948f`
 
 ### How to check for updates
 
@@ -42,3 +42,7 @@ Last upstream check: **2026-04-30**
 ### Skills evaluated and skipped
 
 - `session-report` (Anthropic, added 2026-04) — depends on reading `~/.claude/projects` Claude Code transcripts; not portable to VS Code Copilot.
+- `cardputer-buddy`, `m5-onboard` (Anthropic `cwc-makers`, added 2026-05) — M5Stack ESP32 hardware provisioning over USB serial / BLE; not applicable to VS Code Copilot.
+- `define-goal` (OpenAI, added 2026-05) — depends on Codex `get_goal` / `create_goal` tools that have no Copilot equivalent.
+- `hatch-pet` (OpenAI, added 2026-05) — Codex pet sprite-atlas workflow built on the `$imagegen` system skill; not applicable to VS Code Copilot.
+- `project-artifact` (Anthropic, added 2026-06) — depends on Claude Code's built-in `Artifact` tool, `claude.ai/code/artifact/...` publishing, and `${CLAUDE_PLUGIN_DATA}` config state; not portable to VS Code Copilot.

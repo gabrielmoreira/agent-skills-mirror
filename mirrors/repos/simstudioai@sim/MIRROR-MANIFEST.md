@@ -135,15 +135,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 74 | ✓ | [`apps/sim/AGENTS.md`](apps/sim/AGENTS.md) |
 | 75 | ✓ | [`apps/sim/app/llms.txt/route.ts`](apps/sim/app/llms.txt/route.ts) |
 | 76 | ✓ | [`apps/sim/blocks/AGENTS.md`](apps/sim/blocks/AGENTS.md) |
-| 77 | ✓ | [`apps/sim/components/emcn/AGENTS.md`](apps/sim/components/emcn/AGENTS.md) |
-| 78 | ✓ | [`apps/sim/hooks/AGENTS.md`](apps/sim/hooks/AGENTS.md) |
-| 79 | ✓ | [`apps/sim/hooks/queries/AGENTS.md`](apps/sim/hooks/queries/AGENTS.md) |
-| 80 | ✓ | [`apps/sim/public/llms.txt`](apps/sim/public/llms.txt) |
-| 81 | ✓ | [`apps/sim/stores/AGENTS.md`](apps/sim/stores/AGENTS.md) |
-| 82 | ✓ | [`apps/sim/tools/AGENTS.md`](apps/sim/tools/AGENTS.md) |
-| 83 | ✓ | [`apps/sim/triggers/AGENTS.md`](apps/sim/triggers/AGENTS.md) |
-| 84 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 85 | ✓ | [`helm/sim/.claude/skills/sim-helm/SKILL.md`](helm/sim/.claude/skills/sim-helm/SKILL.md) |
+| 77 | ✓ | [`apps/sim/hooks/AGENTS.md`](apps/sim/hooks/AGENTS.md) |
+| 78 | ✓ | [`apps/sim/hooks/queries/AGENTS.md`](apps/sim/hooks/queries/AGENTS.md) |
+| 79 | ✓ | [`apps/sim/public/llms.txt`](apps/sim/public/llms.txt) |
+| 80 | ✓ | [`apps/sim/stores/AGENTS.md`](apps/sim/stores/AGENTS.md) |
+| 81 | ✓ | [`apps/sim/tools/AGENTS.md`](apps/sim/tools/AGENTS.md) |
+| 82 | ✓ | [`apps/sim/triggers/AGENTS.md`](apps/sim/triggers/AGENTS.md) |
+| 83 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 84 | ✓ | [`helm/sim/.claude/skills/sim-helm/SKILL.md`](helm/sim/.claude/skills/sim-helm/SKILL.md) |
+| 85 | ✓ | [`packages/emcn/src/AGENTS.md`](packages/emcn/src/AGENTS.md) |
 
 ---
 

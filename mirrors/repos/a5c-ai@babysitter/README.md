@@ -1,17 +1,17 @@
 <div align="center">
 
 # Babysitter
+> **Enforce obedience on agentic workforces. Manage extremely complex workflows through deterministic, hallucination-free self-orchestration.**
 
-https://a5c.ai
-
----
-
-[![npm version](https://img.shields.io/npm/v/@a5c-ai/babysitter-sdk.svg)](https://www.npmjs.com/package/@a5c-ai/babysitter-sdk)
+[![npm version](https://img.shields.io/npm/v/@a5c-ai/babysitter.svg)](https://www.npmjs.com/package/@a5c-ai/babysitter)
+[![CI](https://img.shields.io/github/actions/workflow/status/a5c-ai/babysitter/ci.yml?branch=staging)](https://github.com/a5c-ai/babysitter/actions/workflows/ci.yml)
+[![npm downloads](https://img.shields.io/npm/dm/@a5c-ai/babysitter?label=downloads)](https://www.npmjs.com/package/@a5c-ai/babysitter)
+[![Node.js](https://img.shields.io/node/v/@a5c-ai/babysitter)](https://nodejs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![GitHub issues](https://img.shields.io/github/issues/a5c-ai/babysitter.svg)](https://github.com/a5c-ai/babysitter/issues)
 [![GitHub stars](https://img.shields.io/github/stars/a5c-ai/babysitter.svg)](https://github.com/a5c-ai/babysitter/stargazers)
 
-> **Enforce obedience to agentic workforces. Manage extremely complex workflows through deterministic, hallucination-free self-orchestration.**
+---
 
 [Getting Started](#installation) | [Documentation](#documentation) | [Community](#community-and-support)
 
@@ -28,12 +28,12 @@ https://github.com/user-attachments/assets/8c3b0078-9396-48e8-aa43-5f40da30c20b
 - [What is Babysitter?](#what-is-babysitter)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Plugins](#plugins)
 - [First Steps](#first-steps)
 - [Quick Start](#quick-start)
-- [Harness CLI Wrappers](#harness-cli-wrappers)
+- [Agent Runtime CLI](#agent-runtime-cli)
 - [How It Works](#how-it-works)
 - [Why Babysitter?](#why-babysitter)
+- [Blueprints](#blueprints)
 - [Compression](#compression)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
@@ -46,136 +46,213 @@ https://github.com/user-attachments/assets/8c3b0078-9396-48e8-aa43-5f40da30c20b
 
 Babysitter enforces obedience to agentic workforces, enabling them to manage extremely complex tasks and workflows through deterministic, hallucination-free self-orchestration. Define your workflow in code - Babysitter enforces every step, ensures quality gates pass before progression, requires human approval at breakpoints, and records every decision in an immutable journal. Your agents do exactly what the process permits, nothing more.
 
+As of v6, Babysitter is harness-agnostic via its **Adapters** runtime: the same processes run across the 12 supported AI coding harnesses, so you are not locked to a single tool. See [Adapters](docs/user-guide/features/adapters.md) and the [harness install matrix](docs/user-guide/harnesses/install-matrix.md).
+
 ---
 
 ## Prerequisites
 
-- **Node.js**: Version 20.0.0+ (22.x LTS recommended)
-- **Claude Code**: Latest version ([docs](https://code.claude.com/docs/en/quickstart))
+- **Node.js**: Version 20.0.0+ (22.x LTS recommended). The host-side `adapters` CLI pins a slightly higher floor of 20.9.0+.
+- **A supported AI coding harness**: any of the 12 harnesses covered in the [install matrix](docs/user-guide/harnesses/install-matrix.md) (e.g. Claude Code — [docs](https://code.claude.com/docs/en/quickstart)).
 - **Git**: For cloning (optional)
 
 ---
 
 ## Installation
 
-Babysitter supports multiple AI coding harnesses. Install the plugin for your harness of choice:
+Babysitter v6 has two install tracks that should not be conflated: the **host-side `adapters` CLI** for running any harness directly from your shell, and the **in-session per-harness plugin** for driving full orchestration runs from inside your harness. Most people want both. The package split is:
 
-### Claude Code (recommended)
+- `@a5c-ai/babysitter` is the recommended end-user install for the main `babysitter` CLI.
+- `@a5c-ai/adapters-cli` provides the host-side `adapters` CLI (Node >=20.9.0) for running and managing any supported harness from your shell. See the [Adapters CLI reference](docs/user-guide/reference/adapters-cli.md).
+- `@a5c-ai/babysitter-sdk` is the public SDK/library package and the underlying implementation behind the core CLI.
+- `@a5c-ai/genty-platform` is the optional runtime CLI for `genty call`, `resume`, `start-server`, `tui`, and other orchestration/runtime commands.
+- Harness plugins such as `@a5c-ai/babysitter-codex` or `@a5c-ai/babysitter-cursor` integrate Babysitter into a specific host tool. They do not replace the core CLI packages.
+
+For most users, install the main CLI first:
+
+```bash
+npm install -g @a5c-ai/babysitter
+```
+
+Prefer to drive a harness directly from your shell instead of from inside a session? Install the host-side `adapters` CLI and run any supported harness with one command — see the [Adapters CLI reference](docs/user-guide/reference/adapters-cli.md):
+
+```bash
+npm install -g @a5c-ai/adapters-cli
+adapters doctor
+adapters run claude "explain this codebase"
+```
+
+Babysitter supports the 12 AI coding harnesses listed in the [install matrix](docs/user-guide/harnesses/install-matrix.md). Install the plugin for your harness of choice; the two fully-worked harnesses have dedicated pages — [Claude Code](docs/user-guide/harnesses/claude-code.md) and [Codex](docs/user-guide/harnesses/codex.md).
+In this repository, [`plugins/babysitter-unified`](plugins/babysitter-unified/plugin.json) is the only maintained plugin source; harness-specific bundles are generated during build/release and are not committed:
+
+### Claude Code
 
 Native marketplace install:
 
 ```bash
-claude plugin marketplace add a5c-ai/babysitter
+claude plugin marketplace add a5c-ai/babysitter-claude
 claude plugin install --scope user babysitter@a5c.ai
 ```
 
 Restart Claude Code, then type `/skills` to verify "babysit" appears.
 
-[Plugin README](plugins/babysitter/README.md)
+Claude Cowork can install the same plugin. For a personal install from this
+repo's Claude marketplace:
+
+1. Open Claude Desktop and switch to the `Cowork` tab.
+2. Click `Customize` in the left sidebar.
+3. Click `Browse plugins`.
+4. Select `Personal`.
+5. Click `+`, then choose `Add marketplace from GitHub`.
+6. Enter `https://github.com/a5c-ai/babysitter`.
+7. Install the `Babysitter` plugin from that marketplace.
+
+For Team and Enterprise org-managed installs, owners can add plugins through
+`Organization settings > Plugins`. GitHub-synced organization marketplaces
+require a private or internal GitHub repository, so use a private/internal fork
+of this repo for that flow, or upload plugin ZIPs manually.
+
+[Plugin README](plugins/babysitter-unified/per-harness/claude-code/README.md)
 
 ### Codex CLI (Beta)
 
-After cloning this repo, From within the Codex CLI:
+Official marketplace install:
 
+```bash
+codex plugin marketplace add a5c-ai/babysitter
 ```
-codex
-> /plugins
+
+Or via the SDK helper:
+
+```bash
+babysitter harness:install-plugin codex
 ```
 
-Navigate to the "babysitter" entry and select "Install".
-
-[Plugin README](plugins/babysitter-codex/README.md)
+[Plugin README](plugins/babysitter-unified/per-harness/codex/README.md)
 
 ### Cursor IDE and CLI (Experimental)
 
-Via the Cursor marketplace or npm:
+Via the Cursor marketplace or the SDK helper:
 
 ```bash
-npm install -g @a5c-ai/babysitter-cursor
+babysitter harness:install-plugin cursor
 ```
 
-[Plugin README](plugins/babysitter-cursor/README.md)
+[Plugin README](plugins/babysitter-unified/per-harness/cursor/README.md)
 
 ### Gemini CLI (Experimental)
 
 ```bash
-npm install -g @a5c-ai/babysitter-gemini
-babysitter-gemini install --global
+babysitter harness:install-plugin gemini-cli
 ```
 
-[Plugin README](plugins/babysitter-gemini/README.md)
+[Plugin README](plugins/babysitter-unified/per-harness/gemini/README.md)
 
 ### GitHub Copilot (Experimental)
 
 Via the GitHub Copilot CLI marketplace, or:
 
 ```bash
-npm install -g @a5c-ai/babysitter-github
+babysitter harness:install-plugin github-copilot
 ```
 
-[Plugin README](plugins/babysitter-github/README.md)
+[Plugin README](plugins/babysitter-unified/per-harness/github/README.md)
 
 ### Pi (Experimental)
 
-Native Pi plugin install:
-
 ```bash
-pi install npm:@a5c-ai/babysitter-pi
+babysitter harness:install-plugin pi
 ```
 
-[Plugin README](plugins/babysitter-pi/README.md)
+[Plugin README](plugins/babysitter-unified/per-harness/pi/README.md)
+
+### Hermes (Experimental)
+
+```bash
+babysitter harness:install-plugin hermes
+```
+
+[Plugin README](plugins/babysitter-unified/per-harness/hermes/README.md)
 
 ### Oh-My-Pi (Experimental)
 
-Native omp plugin install:
-
 ```bash
-omp plugin install @a5c-ai/babysitter-omp
+babysitter harness:install-plugin oh-my-pi
 ```
 
-[Plugin README](plugins/babysitter-omp/README.md)
+[Plugin README](plugins/babysitter-unified/per-harness/omp/README.md)
 
 ### OpenCode (Experimental)
 
 ```bash
-npm install -g @a5c-ai/babysitter-opencode
+babysitter harness:install-plugin opencode
 ```
 
-The postinstall script copies the plugin to `.opencode/plugins/babysitter/` automatically.
+[Plugin README](plugins/babysitter-unified/per-harness/opencode/README.md)
 
-[Plugin README](plugins/babysitter-opencode/README.md)
+### OpenClaw (Experimental)
+
+```bash
+babysitter harness:install-plugin openclaw
+```
+
+[Plugin README](plugins/babysitter-unified/per-harness/openclaw/README.md)
 
 ### Internal Harness (No AI Coding Agent Required)
 
 Babysitter ships with a built-in **internal harness** that runs processes programmatically without any external AI coding agent. This is useful for CI/CD pipelines, scripts, automated testing, and headless orchestration:
 
 ```bash
-npm install -g @a5c-ai/babysitter-sdk
+npm install -g @a5c-ai/genty-platform
 
 # Run a process definition using the internal harness
-babysitter harness:call --harness internal --process .a5c/processes/my-process.js#process --workspace .
+genty call --harness internal --process .a5c/processes/my-process.js#process --workspace .
 
 # Or run a free-form prompt
-babysitter harness:call --harness internal --prompt "run lint and tests" --workspace .
+genty call --harness internal --prompt "run lint and tests" --workspace .
 ```
 
-The internal harness uses the SDK's built-in Pi execution engine directly. It supports all capabilities (Programmatic, SessionBinding, StopHook, HeadlessPrompt) and requires no external CLI.
+The internal harness uses the SDK's built-in Pi execution engine directly. It supports all capabilities (Programmatic, SessionBinding, StopHook, HeadlessPrompt) and requires no external AI harness CLI.
 
 During process execution, the internal harness can **delegate tasks to any discovered installed harness** via the invoker. A process running under `--harness internal` can spawn subagent tasks that execute through Claude Code, Codex, Gemini CLI, or any other harness found on the system -- the SDK discovers available harness CLIs at runtime and routes task execution accordingly. This means you can orchestrate a multi-agent workflow from a single headless entry point, with different tasks delegated to whichever harness is best suited for them.
 
 ---
 
-## Plugins
+## Runtime Package Builds
 
-Babysitter has its own plugin system -- and it works differently from what you might expect. A babysitter plugin is not a code module with extension points. It's a **set of natural language instructions** (markdown files) or **deterministic coded processes** (JS files) that an AI agent reads and executes. The SDK stores, versions, and distributes the instructions. The AI agent is the runtime.
+For the core runtime chain (`@a5c-ai/babysitter-sdk`, `@a5c-ai/adapters`, `@a5c-ai/genty-core`, `@a5c-ai/genty-platform`), use the shared workspace entrypoint from a fresh checkout:
 
-This means a plugin can do anything an AI agent can do: install npm packages, generate CI/CD pipelines, set up git hooks, create Terraform configs, modify your linter rules, copy babysitter processes into your project, and interview you about your preferences along the way.
+```bash
+npm ci
+npm run build:runtime
+```
 
-The official marketplace includes plugins for **security** (gitleaks, ESLint security rules, audit processes), **testing** (Vitest/Playwright/pytest setup, coverage gates, TDD processes), **deployment** (Terraform, Helm, Dockerfiles, multi-environment pipelines), **themes** (sound effects, design systems, conversational personality), **CI/CD** (GitHub Actions workflows), and **rate limiting** (exponential backoff hooks).
+`build:runtime` is the supported root entrypoint for release and CI validation. It builds the runtime graph in workspace order: SDK -> adapters SDK surface -> genty-core -> genty-platform.
 
-To manage plugins, use the `/babysitter:plugins` command inside your harness (or `babysitter harness:plugins` from the CLI). The agent reads the plugin's install instructions, interviews you, analyzes your project, and executes the setup -- all within a babysitter orchestration run.
+Package-local validation is also supported:
 
-See the full [Plugins documentation](docs/plugins.md) for details on how installs work, the marketplace format, creating your own plugins, and the migration system.
+```bash
+npm run build --workspace=@a5c-ai/genty-core
+npm run build --workspace=@a5c-ai/genty-platform
+```
+
+Those package-local builds now use `tsc --build` project references where the runtime packages are owned in this workspace, and they explicitly bootstrap the `@a5c-ai/adapters` SDK chain through the root runtime scripts. Fresh-checkout validation no longer assumes prebuilt upstream `dist/` artifacts.
+
+`@a5c-ai/atlas` provides the unified knowledge graph, ontology, and catalog data consumed by SDK, adapters, hooks, plugin tooling, and the catalog UI. The agent catalog surface is `@a5c-ai/atlas/catalog`. See [`packages/atlas/README.md`](packages/atlas/README.md).
+
+### CLI Walkthrough Verification
+
+The published CLI walkthrough at `docs/cli-examples.md` is verified against the real repo surfaces, not a separate docs-only harness. From a fresh checkout, use:
+
+```bash
+npm ci
+npm run build --workspace=@a5c-ai/babysitter-sdk
+npm run docs:prepare
+npm run docs:examples:smoke
+npm run docs:qa
+```
+
+`npm run docs:examples:verify` runs that docs-focused flow end-to-end. The generated traceability map for the walkthrough lives at `docs/generated/cli-examples-verification.md`.
 
 ---
 
@@ -249,54 +326,70 @@ Claude will create an orchestration run, execute tasks step-by-step, handle qual
 
 ---
 
-## Harness CLI Wrappers
+## Agent Runtime CLI
 
-Beyond the in-session skill commands (`/babysitter:call`, etc.), the Babysitter SDK provides `harness:*` CLI commands that let you create, run, and manage orchestration sessions from the terminal. These commands work with any installed harness.
+Beyond the in-session skill commands (`/babysitter:call`, etc.), Babysitter provides an optional agent runtime CLI package, `@a5c-ai/genty-platform`, for orchestration, session management, MCP serving, daemon utilities, and the TUI. The main `babysitter` CLI comes from `@a5c-ai/babysitter` and is backed by `@a5c-ai/babysitter-sdk`; it keeps the core run/task/session/plugin surfaces plus `harness:install` and `harness:install-plugin`.
+
+```bash
+npm install -g @a5c-ai/babysitter
+npm install -g @a5c-ai/genty-platform
+```
 
 ### Running Processes via a Harness
 
 ```bash
 # Run a process interactively via Claude Code (pauses at breakpoints)
-babysitter harness:call --harness claude-code --prompt "implement user authentication with TDD" --workspace .
+genty call --harness claude-code --prompt "implement user authentication with TDD" --workspace .
 
 # Run fully autonomous (no breakpoints)
-babysitter harness:yolo --harness claude-code --prompt "add pagination to the API" --workspace .
+genty yolo --harness claude-code --prompt "add pagination to the API" --workspace .
 
 # Plan only (stops after Phase 1)
-babysitter harness:plan --harness claude-code --prompt "implement feature X"
+genty plan --harness claude-code --prompt "implement feature X"
 
 # Run with the internal harness (no external AI agent needed)
-babysitter harness:call --harness internal --prompt "run lint and tests" --workspace .
+genty call --harness internal --prompt "run lint and tests" --workspace .
 ```
 
 ### Managing Runs
 
 ```bash
 # Resume an interrupted run
-babysitter harness:resume --run-id <runId> --harness claude-code --workspace .
+genty resume --run-id <runId> --harness claude-code --workspace .
+
+# Initialize or inspect orchestration session state
+babysitter session:init --session-id demo --state-dir .a5c --run-id <runId>
+babysitter session:state --session-id demo --state-dir .a5c
+
+# Start the MCP server owned by the agent runtime CLI
+genty start-server --transport stdio
 
 # Diagnose run health
-babysitter harness:doctor --run-id <runId>
+genty doctor --run-id <runId>
 
 # Analyze past runs for insights
-babysitter harness:retrospect --all --harness claude-code --workspace .
+genty retrospect --all --harness claude-code --workspace .
 
 # Clean up old runs
-babysitter harness:cleanup --keep-days 7 --harness claude-code --workspace .
+genty cleanup --keep-days 7 --harness claude-code --workspace .
 ```
 
 ### Harness Discovery
 
 ```bash
-# See which harness CLIs are installed on your system
-babysitter harness:discover
+# Install an agent harness CLI (preferred)
+adapters install claude-code
 
-# Install a harness CLI
-babysitter harness:install claude-code
-
-# Install a harness plugin
+# Install a Babysitter harness plugin globally
 babysitter harness:install-plugin claude-code
+
+# Install a Babysitter harness plugin into a workspace
+babysitter harness:install-plugin codex --workspace /path/to/repo
 ```
+
+> **Note:** `babysitter harness:install` and `babysitter harness:discover` are deprecated. Use `adapters install <agent>` for agent installation and `genty` for runtime commands.
+
+`harness:install-plugin` is the canonical scriptable install path for Babysitter plugins. For non-Claude harnesses it resolves to the published package installer shape tested in the SDK, for example `npx --yes @a5c-ai/babysitter-codex install --workspace /path/to/repo`.
 
 ### Using `--harness internal` for Automation
 
@@ -304,7 +397,7 @@ The `internal` harness is particularly useful for CI/CD and scripting because it
 
 ```bash
 # In a CI pipeline or script
-babysitter harness:call \
+genty call \
   --harness internal \
   --process .a5c/processes/lint-and-test.js#process \
   --workspace . \
@@ -313,6 +406,45 @@ babysitter harness:call \
 ```
 
 It executes processes using the SDK's built-in engine, supports all effect types (tasks, breakpoints, sleeps, parallel dispatch), and produces the same event-sourced journal as any other harness.
+
+### Package Boundaries
+
+| Package | Installs | Use it for |
+|---------|----------|------------|
+| `@a5c-ai/babysitter` | `babysitter` | Recommended human-facing install for the main CLI |
+| `@a5c-ai/babysitter-sdk` | `babysitter`, `babysitter-sdk`, `babysitter-mcp-server` | SDK/library usage and direct access to the core CLI implementation |
+| `@a5c-ai/genty-platform` | `genty` | Optional runtime/orchestration commands (`call`, `resume`, `plan`, `start-server`, `tui`, `doctor`) |
+| `@a5c-ai/babysitter-<harness>` | Harness-specific installer or plugin binary | Integrating Babysitter into a specific host tool such as Codex, Cursor, Gemini CLI, Pi, or GitHub Copilot |
+
+The repository root `package.json` is workspace metadata for this monorepo. The public packages users install are the scoped packages above.
+
+### Monorepo Structure
+
+```
+packages/
+  genty/                   # genty agent stack
+    cli/                  #   @a5c-ai/genty — CLI binary "genty"
+    core/                 #   @a5c-ai/genty-core — agent-core runtime
+    platform/             #   @a5c-ai/genty-platform — orchestration platform
+    runtime/              #   @a5c-ai/genty-runtime — agent runtime
+    ui/ webui/ tui/       #   UI surfaces (web console, terminal UI)
+  adapters/               # Adapter family
+    sdk/                  #   @a5c-ai/adapters — root SDK + CLI "adapters"
+    codecs/               #   @a5c-ai/adapters-codecs — harness codec impls
+    cli/                  #   @a5c-ai/adapters-cli
+    gateway/              #   @a5c-ai/adapters-gateway
+    hooks/                #   hooks-adapter-* (per-harness hook adapters)
+    core/ transport/ ...  #   comm-adapter, transport-adapter, etc.
+  atlas/                  # @a5c-ai/atlas — knowledge graph + catalog
+  sdk/                    # @a5c-ai/babysitter-sdk — core SDK
+  kradle/                 # @a5c-ai/kradle — Kubernetes-native forge
+    core/ sdk/ cli/ web/
+plugins/                  # Installable plugin packages
+  babysitter-unified/     #   Unified plugin for all harnesses
+blueprints/               # Blueprint marketplace registry
+  a5c/marketplace/
+library/                  # Process library (methodologies + specializations)
+```
 
 ---
 
@@ -373,7 +505,7 @@ It executes processes using the SDK's built-in engine, supports all effect types
 - **Process as Code:** Your workflow is JavaScript - the orchestrator can ONLY do what this code permits
 - **Mandatory Stop:** Claude cannot "keep running" - every step ends with a forced stop, then the process decides what's next
 - **Enforcement, not Assistance:** Gates block progression until satisfied - they're not suggestions
-- **Event-Sourced Journal:** All state in `.a5c/runs/` - deterministic replay and resume from any point
+- **Event-Sourced Journal:** All run state in `~/.a5c/runs/` by default, with repo-local `.a5c/runs/` compatibility reads - deterministic replay and resume from any point
 
 ---
 
@@ -381,20 +513,36 @@ It executes processes using the SDK's built-in engine, supports all effect types
 
 | Traditional Approach | Babysitter |
 |---------------------|------------|
-| Run script once, hope it works | Process enforces quality gates before completion |
+| Agent decides what to do and when it's "done" | Orchestrator can only do what your process code permits |
+| Ad-hoc workflow | Deterministic, code-defined processes — mandatory stop after every step (enforcement, not assistance) |
+| Single task execution | Complex agentic workflows: parallel execution, dependencies, sub-agent delegation across harnesses |
+| State lost on session end | Event-sourced, deterministic replay, fully resumable |
 | Manual approval via chat | Structured breakpoints with context |
-| State lost on session end | Event-sourced, fully resumable |
-| Single task execution | Parallel execution, dependencies |
 | No audit trail | Complete journal of all events |
-| Ad-hoc workflow | Deterministic, code-defined processes |
+| Run script once, hope it works | Gates (including quality gates) block progression until satisfied |
 
-**Key differentiators:** Process enforcement, deterministic replay, quality convergence, human-in-the-loop breakpoints, and parallel execution.
+**Key differentiators:** Process enforcement, deterministic replay, human-in-the-loop breakpoints, parallel execution, and quality convergence (one gate type among several).
+
+---
+
+
+## Blueprints
+
+Babysitter has its own blueprint system -- and it works differently from what you might expect. A blueprint is not a code module with extension points. It's a **set of natural language instructions** (markdown files) or **deterministic coded processes** (JS files) that an AI agent reads and executes. The SDK stores, versions, and distributes the instructions. The AI agent is the runtime.
+
+This means a blueprint can do anything an AI agent can do: install npm packages, generate CI/CD pipelines, set up git hooks, create Terraform configs, modify your linter rules, copy babysitter processes into your project, and interview you about your preferences along the way.
+
+The official marketplace includes blueprints for **security** (gitleaks, ESLint security rules, audit processes), **testing** (Vitest/Playwright/pytest setup, coverage gates, TDD processes), **deployment** (Terraform, Helm, Dockerfiles, multi-environment pipelines), **themes** (sound effects, design systems, conversational personality), **CI/CD** (GitHub Actions workflows), and **rate limiting** (exponential backoff hooks).
+
+To manage blueprints, use the `/babysitter:blueprints` command inside your harness (or `babysitter blueprints:*` from the CLI). The agent reads the blueprint's install instructions, interviews you, analyzes your project, and executes the setup -- all within a babysitter orchestration run.
+
+See the full [Blueprints documentation](docs/blueprints.md) for details on how installs work, the marketplace format, creating your own blueprints, and the migration system. Agent harness plugins are covered separately in [Plugins documentation](docs/plugins.md).
 
 ---
 
 ## Compression
 
-Babysitter includes a 4-layer token compression subsystem (built into `packages/sdk/`) that reduces context window usage by 50-67% on real sessions while maintaining 99% fact retention.
+Babysitter includes a 4-layer token compression subsystem (built into `packages/babysitter-sdk/`) that reduces context window usage by 50-67% on real sessions while maintaining 99% fact retention.
 
 All compression hooks are **automatically registered** by the babysitter plugin -- no manual `settings.json` configuration needed. Install the plugin and compression is active.
 
@@ -442,12 +590,20 @@ Toggle any layer with `babysitter compression:toggle <layer> <on|off>` or set in
 
 ## Documentation
 
+<!-- docs-surface-map:start -->
+### Package and Plugin Surface Map
+- [Package and Plugin Docs Map](docs/package-and-plugin-map.md) - canonical public/internal status, docs entrypoints, and coverage notes for active packages and plugins
+<!-- docs-surface-map:end -->
+
 ### Getting Started
 - [Quickstart Guide](docs/user-guide/getting-started/quickstart.md)
 - [Beginner Tutorial: REST API](docs/user-guide/tutorials/beginner-rest-api.md)
-- [Best Practices](docs/user-guide/BEST-PRACTICES.md)
+- [Best Practices](docs/user-guide/features/best-practices.md)
+- [Migration Guide (0.0.x → v6)](docs/user-guide/getting-started/migration.md)
 
 ### Features
+- [Adapters](docs/user-guide/features/adapters.md) - Harness-agnostic runtime across the 12 supported harnesses
+- [Harness Install Matrix](docs/user-guide/harnesses/install-matrix.md) - Per-harness install instructions and invocation tokens
 - [Process Library](docs/user-guide/features/process-library.md) - 2,000+ pre-built processes
 - [Process Definitions](docs/user-guide/features/process-definitions.md)
 - [Quality Convergence](docs/user-guide/features/quality-convergence.md)
@@ -460,7 +616,9 @@ Toggle any layer with `babysitter compression:toggle <layer> <on|off>` or set in
 - [FAQ](docs/user-guide/reference/faq.md)
 - [Troubleshooting](docs/user-guide/reference/troubleshooting.md)
 - [Security](docs/user-guide/reference/security.md)
-- [CLI Reference](docs/user-guide/reference/cli-reference.md)
+- [CLI Reference](docs/user-guide/reference/cli-reference.md) - The core `babysitter` CLI
+- [Adapters CLI Reference](docs/user-guide/reference/adapters-cli.md) - The host-side `adapters` CLI
+- [Atlas Knowledge Graph](packages/atlas/README.md)
 
 ---
 
@@ -472,6 +630,7 @@ We welcome contributions! Here's how you can help:
 - **Suggest features**: Share your ideas for improvements
 - **Submit pull requests**: Fix bugs or add features
 - **Improve documentation**: Help make docs clearer
+- **Check workspace coverage**: [docs/workspace-validation.md](docs/workspace-validation.md)
 
 See [CONTRIBUTING.md](https://github.com/a5c-ai/babysitter/blob/main/CONTRIBUTING.md) for detailed guidelines.
 
@@ -482,13 +641,13 @@ See [CONTRIBUTING.md](https://github.com/a5c-ai/babysitter/blob/main/CONTRIBUTIN
 - **Discord**: [Join our community](https://discord.gg/dHGkzxf48a) *(GitHub invite link)*
 - **GitHub Issues**: [Report bugs or request features](https://github.com/a5c-ai/babysitter/issues)
 - **GitHub Discussions**: [Ask questions and share ideas](https://github.com/a5c-ai/babysitter/discussions)
-- **npm**: [@a5c-ai/babysitter-sdk](https://www.npmjs.com/package/@a5c-ai/babysitter-sdk)
+- **npm**: [@a5c-ai/babysitter](https://www.npmjs.com/package/@a5c-ai/babysitter)
 
 ### Community Tools
 
 | Tool | Description |
 |------|-------------|
-| [Observer Dashboard](https://github.com/yoavmayer/babysitter-observer-dashboard) | Real-time monitoring UI for parallel runs |
+| [Observer Dashboard](https://github.com/a5c-ai/babysitter) | Real-time monitoring UI for parallel runs — install and launch with the built-in `/babysitter:observe` command |
 | [Telegram Bot](https://github.com/a5c-ai/claude-code-telegram-bot) | Control sessions remotely |
 | [vibe-kanban](https://github.com/BloopAI/vibe-kanban) | Parallel process management |
 

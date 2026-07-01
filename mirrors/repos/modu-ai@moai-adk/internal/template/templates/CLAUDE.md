@@ -42,9 +42,9 @@ Core Skills (load when needed): `Skill("moai-foundation-cc")` (orchestration pat
 
 ### Phase 2: Route
 
-- **Workflow Subcommands**: /moai project, /moai plan, /moai run, /moai sync, /moai design, /moai brain, /moai harness
+- **Workflow Subcommands**: /moai project, /moai plan, /moai run, /moai sync, /moai harness
 - **Utility Subcommands**: /moai (default), /moai fix, /moai loop, /moai clean, /moai mx
-- **Quality Subcommands**: /moai review, /moai coverage, /moai e2e, /moai codemaps, /moai gate, /moai security
+- **Quality Subcommands**: /moai review, /moai codemaps, /moai gate
 - **Feedback Subcommand**: /moai feedback
 - **Direct Agent Requests**: Immediate delegation when user explicitly requests an agent
 
@@ -69,12 +69,8 @@ Execute using explicit agent invocation:
 
 Single entry point for all MoAI development workflows.
 
-Subcommands: plan, run, sync, design, brain, project, fix, loop, mx, feedback, review, clean, codemaps, coverage, e2e, gate, security, harness
+Subcommands: plan, run, sync, project, fix, loop, mx, feedback, review, clean, codemaps, gate, harness
 Default (natural language): Routes to autonomous workflow (plan -> run -> sync pipeline)
-
-### Unified Skill: /moai design
-
-Hybrid design workflow — Claude Design (path A) or code-based brand design (path B). Default (natural language) routes to /moai design with AskUserQuestion path selection (Claude Design vs code-based). For detailed design rules, see .claude/rules/moai/design/constitution.md
 
 ---
 
@@ -288,9 +284,9 @@ For core parallel execution principles, see .claude/rules/moai/core/moai-constit
 - **Team File Ownership**: In team mode, each teammate owns specific file patterns to prevent write conflicts
 - **Background Agent Write Restriction**: [ZONE:Frozen] [HARD] As of Claude Code v2.1.186, when a background subagent (`run_in_background: true`) reaches a tool call needing permission, the prompt surfaces in the main session (naming the asking subagent; Esc denies just that one call). MoAI nonetheless keeps `run_in_background: false` for agents that modify files as a conservative default — each background write would otherwise raise a main-session prompt that interrupts the leader's flow and undercuts the parallelism benefit of backgrounding. Read-only agents (research, analysis) can safely run in background.
 
-### Worktree Isolation Rules (Advisory — 2026-05-17 Policy)
+### Worktree Isolation Rules (Advisory)
 
-Per user policy 2026-05-17, L2/L3 worktree usage is user opt-in. L1 `Agent(isolation: "worktree")` is Claude Code runtime autonomous — MoAI orchestrator does not mandate isolation (implementation/read-only teammate guidance, one-shot cross-file changes, and GitHub fixer isolation are all [SHOULD], runtime-decided). For the complete worktree selection decision tree and per-role isolation guidance, see .claude/rules/moai/workflow/worktree-integration.md § Terminology Glossary.
+Per the current worktree-opt-in policy, L2/L3 worktree usage is user opt-in. L1 `Agent(isolation: "worktree")` is Claude Code runtime autonomous — MoAI orchestrator does not mandate isolation (implementation/read-only teammate guidance, one-shot cross-file changes, and GitHub fixer isolation are all [SHOULD], runtime-decided). For the complete worktree selection decision tree and per-role isolation guidance, see .claude/rules/moai/workflow/worktree-integration.md § Terminology Glossary.
 
 ---
 

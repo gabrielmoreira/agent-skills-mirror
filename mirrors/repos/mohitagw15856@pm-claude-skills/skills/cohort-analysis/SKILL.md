@@ -63,6 +63,20 @@ Ask the user for these if not provided:
 - [e.g. Cohorts acquired via [channel] retain X% better at Period 6]
 - [e.g. Retention has improved from X% → Y% at Period 3 comparing oldest to newest cohort]
 
+**Retention curves, drawn** — also render the curves as a Mermaid/chart line chart so the plateau and cross-cohort gaps are visible (it renders live in the playground and exports as PNG). One line per cohort, period on the x-axis:
+
+```chart
+{
+  "type": "line",
+  "title": "Retention by cohort (%)",
+  "labels": ["P0", "P1", "P2", "P3", "P6", "P12"],
+  "series": [
+    { "name": "Jan 2025", "data": [100, 62, 51, 45, 40, 37] },
+    { "name": "Feb 2025", "data": [100, 66, 55, 49, 44, 41] }
+  ]
+}
+```
+
 ---
 
 ## 3. LTV Projection (if applicable)

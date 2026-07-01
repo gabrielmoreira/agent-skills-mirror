@@ -969,7 +969,7 @@ params = [
     [2, None, None, [1, None, None, None, None, None, None, None, None, None, [1]]],
     notebook_id,                  # 1: Notebook to suggest prompts for
     [[source_id], ...],           # 2: Source-id wrappers (one [id] per source)
-    mode,                         # 3: REQUIRED int "mode/surface" enum (1..9;
+    mode,                         # 3: REQUIRED int "mode/surface" enum (1..10;
                                   #    0/omitted -> server INTERNAL). Default 4.
     None,                         # 4: Reserved (always null)
     query,                        # 5: Optional free-text steer (or null)

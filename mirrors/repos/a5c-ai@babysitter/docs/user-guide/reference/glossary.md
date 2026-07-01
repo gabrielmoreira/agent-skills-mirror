@@ -1,7 +1,10 @@
+[Docs](../index.md) › [Reference](./index.md) › Glossary
+
 # Babysitter Glossary
 
-**Version:** 1.1
-**Last Updated:** 2026-01-26
+**Version:** 1.2
+**Last Updated:** 2026-06-22
+Last refreshed: 2026-06-23
 **Audience:** All users
 
 This glossary provides definitions for technical terms and concepts used in Babysitter documentation. Terms are organized alphabetically with cross-references to related concepts and links to detailed documentation.
@@ -29,9 +32,9 @@ This glossary provides definitions for technical terms and concepts used in Baby
 
 ---
 
-## Table of Contents
+## On this page
 
-- [A](#a) | [B](#b) | [C](#c) | [D](#d) | [E](#e) | [F](#f) | [G](#g) | [H](#h) | [I](#i) | [J](#j) | [K](#k) | [L](#l) | [M](#m) | [N](#n) | [O](#o) | [P](#p) | [Q](#q) | [R](#r) | [S](#s) | [T](#t) | [U](#u) | [V](#v) | [W](#w)
+- [A](#a) | [B](#b) | [C](#c) | [D](#d) | [E](#e) | [G](#g) | [H](#h) | [I](#i) | [J](#j) | [K](#k) | [L](#l) | [M](#m) | [N](#n) | [O](#o) | [P](#p) | [Q](#q) | [R](#r) | [S](#s) | [T](#t) | [U](#u) | [V](#v) | [W](#w)
 
 ---
 
@@ -83,9 +86,45 @@ const agentTask = defineTask('scorer', (args, ctx) => ({
 
 ---
 
+### Adapter
+
+A unit in Babysitter's **Adapters** runtime that lets the same orchestration core drive many different harnesses, providers, and integrations without bespoke per-target code. Instead of writing integration code for each new harness, you add an adapter/data entry that the [Atlas](#atlas) catalog discovers at runtime. Specialized adapters include the [Hooks Adapter](#hooks-adapter), the [Breakpoints Adapter](#breakpoints-adapter), and the [Transport Adapter](#transport-adapter).
+
+**Related:** [Harness](#harness), [Atlas](#atlas), [Adapters CLI](#adapters-cli)
+
+**See Also:** [Adapters](../features/adapters.md)
+
+---
+
+### Adapters CLI
+
+The host-side companion CLI (`adapters`, package `@a5c-ai/adapters-cli`) for running and managing AI coding harnesses directly from your shell - install, run, models, sessions, config, and auth. It runs a harness from *outside*, whereas the in-session `/babysitter:*` commands drive an orchestration run from *inside* a harness.
+
+**Binary:** `adapters` · **Requires:** Node.js >=20.9.0
+
+**See Also:** [Adapters CLI Reference](./adapters-cli.md)
+
+---
+
+### Agent-Mux
+
+> **Deprecated.** Renamed to [Adapters](#adapter). The harness-agnostic runtime formerly called "Agent Mux" is now the **Adapters** runtime; use that term.
+
+---
+
 ### Approval Gate
 
 See [Breakpoint](#breakpoint).
+
+---
+
+### Atlas
+
+The catalog that the [Adapters](#adapter) runtime reads to discover harness capabilities and adapters. New harness support is largely a matter of adding an entry to Atlas rather than writing bespoke integration code. Inspect it with the `atlas` (alias `a5c-atlas`) binary.
+
+**Related:** [Adapter](#adapter), [Harness](#harness)
+
+**See Also:** [Adapters](../features/adapters.md)
 
 ---
 
@@ -108,13 +147,15 @@ Any file produced during a run, stored in the `artifacts/` directory. Common art
 
 ### Babysitter
 
-The orchestration framework for Claude Code that enables deterministic, event-sourced workflow management. Babysitter provides structured multi-step workflows with quality gates, human approval checkpoints, and session persistence.
+The harness-agnostic orchestration framework (v6) that enables deterministic, event-sourced workflow management across any supported AI coding harness via the Adapters runtime. Babysitter provides structured multi-step workflows with quality gates, human approval checkpoints, and session persistence.
 
 **Components:**
-- SDK (`@a5c-ai/babysitter-sdk`) - Core runtime, CLI
-- Plugin (`babysitter@a5c.ai`) - Claude Code integration
+- Main CLI (`@a5c-ai/babysitter`) - End-user command-line tool (the primary install) for `babysitter`
+- SDK (`@a5c-ai/babysitter-sdk`) - Programmatic runtime imported by process code; public SDK/library and core CLI implementation
+- Runtime CLI (`@a5c-ai/genty-platform`) - Optional runtime/orchestration commands
+- Plugin (`babysitter@a5c.ai`) - Per-harness extension package (skills, hooks, commands)
 
-**Related:** [SDK](#sdk), [Plugin](#plugin)
+**Related:** [SDK](#sdk-software-development-kit), [Blueprint](#blueprint), [Plugin](#plugin), [Harness](#harness)
 
 ---
 
@@ -122,7 +163,7 @@ The orchestration framework for Claude Code that enables deterministic, event-so
 
 The primary Claude Code skill for orchestrating runs. The skill manages the orchestration loop, executing iterations until completion.
 
-**Location:** `plugins/babysitter/skills/babysit/SKILL.md`
+**Location:** `plugins/babysitter-unified/skills/babysit/SKILL.md`
 
 **Invocation:**
 ```bash
@@ -166,20 +207,38 @@ if (!result.approved) {
 
 ---
 
+### Breakpoints Adapter
+
+The v6, harness-agnostic home for human-in-the-loop approvals, part of the [Adapters](#adapter) runtime. It routes a breakpoint question to a durable backend so an approval can outlive the session or happen somewhere other than the chat, and it cryptographically signs approvals for tamper-evidence ("proven" approvals). It **replaces** the legacy `breakpoints-pro` package (now deprecated).
+
+**Related:** [Breakpoint](#breakpoint), [Adapter](#adapter)
+
+**See Also:** [Breakpoints Feature](../features/breakpoints.md), [Security](./security.md)
+
+---
+
+### Blueprint
+
+A packaged, installable unit of orchestration content (processes, skills, hooks, commands) for a harness. In v6 the processes directory is `blueprints/` (formerly `plugins/`), and the in-session command namespace is `blueprints:*` (the older `plugin:*` aliases are **deprecated**). Manage blueprints with `/babysitter:blueprints`.
+
+**Related:** [Plugin](#plugin), [Process](#process)
+
+---
+
 ## C
 
 ### CLI (Command-Line Interface)
 
 The command-line tool for managing Babysitter runs. Provides commands for run lifecycle management, task operations, and state inspection.
 
-**Binary Names:** `babysitter`, `babysitter-sdk`
+**Binary Name:** `babysitter`
 
 **Installation:**
 ```bash
-npm install -g @a5c-ai/babysitter-sdk
+npm install -g @a5c-ai/babysitter
 ```
 
-**Related:** [SDK](#sdk)
+**Related:** [SDK](#sdk-software-development-kit)
 
 **See Also:** [CLI Reference](./cli-reference.md)
 
@@ -288,7 +347,7 @@ The JavaScript/TypeScript file and export that defines a process. Specified when
 
 **Example:** `.a5c/processes/build/process.js#buildProcess`
 
-**Related:** [Process](#process), [run:create](#runcreate)
+**Related:** [Process](#process), [run:create](./cli-reference.md)
 
 ---
 
@@ -323,17 +382,35 @@ An architectural pattern where all state changes are recorded as immutable event
 
 ## G
 
+### genty
+
+A supported [harness](#harness) (harness key `genty`), distributed from npm as `@a5c-ai/babysitter-genty`. Formerly named **tula** (now deprecated).
+
+**See Also:** [Install Matrix](../harnesses/install-matrix.md)
+
+---
+
 ### GSD (Get Stuff Done)
 
 A methodology focused on rapid task completion. GSD emphasizes pragmatic execution over extensive planning.
 
-**Location:** `plugins/babysitter/skills/babysit/process/gsd/`
+**Location:** `library/methodologies/gsd/`
 
 **Related:** [Methodology](#methodology), [TDD](#tdd-test-driven-development)
 
 ---
 
 ## H
+
+### Harness
+
+An AI coding tool that Babysitter drives - Claude Code, Codex, Cursor, Gemini, GitHub Copilot, [genty](#genty), and others. Babysitter v6 is harness-agnostic via the [Adapters](#adapter) runtime and supports a dozen (12) harnesses. Each harness has a **harness key** (the argument to `babysitter harness:install-plugin <harness-key>`), which is not always the harness's display name.
+
+**Related:** [Adapter](#adapter), [Atlas](#atlas)
+
+**See Also:** [Install Matrix](../harnesses/install-matrix.md)
+
+---
 
 ### Hook
 
@@ -342,7 +419,7 @@ A shell script executed at specific lifecycle points during orchestration. Hooks
 **Discovery Priority:**
 1. Per-repo: `.a5c/hooks/<hook-name>/`
 2. Per-user: `~/.config/babysitter/hooks/<hook-name>/`
-3. Plugin: `plugins/babysitter/hooks/<hook-name>/`
+3. Plugin: `plugins/babysitter-unified/hooks/<hook-name>/`
 
 **Hook Types:**
 - `on-run-start` - When run is created
@@ -361,9 +438,19 @@ A shell script executed at specific lifecycle points during orchestration. Hooks
 
 ### Hook Dispatcher
 
-The component that discovers and executes hooks. Located at `plugins/babysitter/hooks/hook-dispatcher.sh`. Responsible for finding hooks, executing them with payloads, and collecting results.
+The component that discovers and executes hooks. The maintained hook source lives under `plugins/babysitter-unified/hooks/`. It is responsible for finding hooks, executing them with payloads, and collecting results.
 
 **Related:** [Hook](#hook)
+
+---
+
+### Hooks Adapter
+
+The v6 unification layer for hooks, part of the [Adapters](#adapter) runtime. It provides a canonical session store plus a merge engine that takes each harness's distinct hook/continuation model and presents one consistent contract to the runtime and to your custom hooks. SDK lifecycle hooks behave the same everywhere; what varies is the per-harness continuation model that advances the loop each turn. Do not assume Claude Code's `Stop`-hook model on other harnesses.
+
+**Related:** [Hook](#hook), [Adapter](#adapter)
+
+**See Also:** [Hooks](../features/hooks.md)
 
 ---
 
@@ -385,17 +472,17 @@ A workflow pattern that includes human approval checkpoints. Implemented through
 
 ### In-Session Loop
 
-A mechanism for continuous iteration within a single Claude Code session. The stop hook intercepts exit attempts and continues the loop until completion or max iterations reached.
+A mechanism for continuous iteration within a single harness session: each turn the loop re-injects the next iteration until the run reaches completion (or max iterations). **How continuation is driven is harness-specific** - it is one part of the per-harness hook/continuation model that the [Hooks Adapter](#hooks-adapter) normalizes. Claude Code's [Stop Hook](#stop-hook) is one such mechanism; other harnesses use different signals (e.g. Codex also intercepts `Stop`; Gemini and Antigravity re-inject via an `AfterAgent` hook with no `Stop`; openclaw drives it from a daemon; opencode runs the loop within a single turn on `session.idle`; Hermes drives orchestration over ACP). Do not assume Claude Code's `Stop`-hook model on other harnesses.
 
 **Components:**
-- State file: `$CLAUDE_PLUGIN_ROOT/state/${SESSION_ID}.md`
+- State file: `$BABYSITTER_PLUGIN_ROOT/state/${AGENT_SESSION_ID}.md`
 
 **Invocation:**
 ```bash
 /babysitter:call Build feature --max-iterations 20
 ```
 
-**Related:** [Stop Hook](#stop-hook), [Completion Promise](#completion-promise)
+**Related:** [Hooks Adapter](#hooks-adapter), [Stop Hook](#stop-hook), [Completion Promise](#completion-promise)
 
 ---
 
@@ -510,6 +597,18 @@ The type classification of an effect or task. Determines how the effect is execu
 
 ---
 
+### Kradle
+
+The artifact/content store component (formerly **Krate**). Use the name "Kradle"; "Krate" is **deprecated**.
+
+---
+
+### Krate
+
+> **Deprecated.** Renamed to [Kradle](#kradle). Use "Kradle".
+
+---
+
 ## L
 
 ### Label
@@ -537,36 +636,25 @@ A high-level structured approach or pattern for software development. Methodolog
 
 **Key distinction:** Methodology = high-level concept/pattern; Process = low-level code implementation of a methodology.
 
-**You can use ANY methodology and get great results.** Babysitter includes 19+ built-in methodologies - pick the one that fits your project style, or let Babysitter choose automatically based on your request.
+**You can use ANY methodology and get great results.** In this repository snapshot, Babysitter includes 38 methodology directories under `library/methodologies/` - pick the one that fits your project style, or let Babysitter choose automatically based on your request.
 
-**Built-in Methodologies (19+):**
+**Built-in Methodologies (examples from the current library):**
 
 | Methodology | Description | Source |
 |-------------|-------------|--------|
-| **TDD Quality Convergence** | Test-first development with iterative quality improvement | [tdd-quality-convergence.js](../../../plugins/babysitter/skills/babysit/process/tdd-quality-convergence.js) |
-| **GSD (Get Stuff Done)** | Rapid, pragmatic 8-phase execution | [gsd/](../../../plugins/babysitter/skills/babysit/process/gsd/) |
-| **Spec-Kit** | Specification-driven development with governance | [SPEC-KIT.md](../../../plugins/babysitter/skills/babysit/process/SPEC-KIT.md) |
-| **ATDD/TDD** | Acceptance test-driven and test-driven development | [atdd-tdd/](../../../plugins/babysitter/skills/babysit/process/methodologies/atdd-tdd/) |
-| **BDD/Specification by Example** | Behavior-driven development with Gherkin | [bdd-specification-by-example/](../../../plugins/babysitter/skills/babysit/process/methodologies/bdd-specification-by-example/) |
-| **Domain-Driven Design** | Strategic and tactical DDD patterns | [domain-driven-design/](../../../plugins/babysitter/skills/babysit/process/methodologies/domain-driven-design/) |
-| **Feature-Driven Development** | Feature-centric with parking lot tracking | [feature-driven-development/](../../../plugins/babysitter/skills/babysit/process/methodologies/feature-driven-development/) |
-| **Hypothesis-Driven Development** | Experimentation and validation framework | [hypothesis-driven-development/](../../../plugins/babysitter/skills/babysit/process/methodologies/hypothesis-driven-development/) |
-| **Example Mapping** | BDD workshop technique for requirements | [example-mapping/](../../../plugins/babysitter/skills/babysit/process/methodologies/example-mapping/) |
-| **Scrum** | Sprint-based iterative development | [scrum/](../../../plugins/babysitter/skills/babysit/process/methodologies/scrum/) |
-| **Kanban** | Pull-based system with WIP limits | [kanban/](../../../plugins/babysitter/skills/babysit/process/methodologies/kanban/) |
-| **Extreme Programming (XP)** | XP engineering practices (pair programming, TDD) | [extreme-programming/](../../../plugins/babysitter/skills/babysit/process/methodologies/extreme-programming/) |
-| **Shape Up** | 6-week cycle product development | [shape-up/](../../../plugins/babysitter/skills/babysit/process/methodologies/shape-up/) |
-| **Jobs to Be Done** | Outcome-focused development | [jobs-to-be-done/](../../../plugins/babysitter/skills/babysit/process/methodologies/jobs-to-be-done/) |
-| **Impact Mapping** | Goal-to-feature traceability | [impact-mapping/](../../../plugins/babysitter/skills/babysit/process/methodologies/impact-mapping/) |
-| **Event Storming** | Collaborative domain modeling workshop | [event-storming/](../../../plugins/babysitter/skills/babysit/process/methodologies/event-storming/) |
-| **Double Diamond** | Design thinking framework | [double-diamond/](../../../plugins/babysitter/skills/babysit/process/methodologies/double-diamond/) |
-| **V-Model** | Verification and validation phases | [v-model/](../../../plugins/babysitter/skills/babysit/process/methodologies/v-model/) |
-| **Spiral Model** | Risk-driven iterative development | [spiral-model/](../../../plugins/babysitter/skills/babysit/process/methodologies/spiral-model/) |
-| **Waterfall** | Sequential SDLC phases | [waterfall/](../../../plugins/babysitter/skills/babysit/process/methodologies/waterfall/) |
-| **RUP** | Rational Unified Process | [rup/](../../../plugins/babysitter/skills/babysit/process/methodologies/rup/) |
-| **Cleanroom** | Cleanroom software engineering | [cleanroom/](../../../plugins/babysitter/skills/babysit/process/methodologies/cleanroom/) |
+| **TDD Quality Convergence** | Test-first development with iterative quality improvement | `library/tdd-quality-convergence.js` |
+| **GSD (Get Stuff Done)** | Rapid, pragmatic 8-phase execution | [gsd/](../../../library/methodologies/gsd/README.md) |
+| **Spec-Kit** | Specification-driven development with governance | [spec-kit/](../../../library/methodologies/spec-kit/README.md) |
+| **ATDD/TDD** | Acceptance test-driven and test-driven development | [atdd-tdd/](../../../library/methodologies/atdd-tdd/README.md) |
+| **BDD/Specification by Example** | Behavior-driven development with Gherkin | [bdd-specification-by-example/](../../../library/methodologies/bdd-specification-by-example/README.md) |
+| **Domain-Driven Design** | Strategic and tactical DDD patterns | [domain-driven-design/](../../../library/methodologies/domain-driven-design/README.md) |
+| **Feature-Driven Development** | Feature-centric with parking lot tracking | [feature-driven-development/](../../../library/methodologies/feature-driven-development/README.md) |
+| **Hypothesis-Driven Development** | Experimentation and validation framework | [hypothesis-driven-development/](../../../library/methodologies/hypothesis-driven-development/README.md) |
+| **Example Mapping** | BDD workshop technique for requirements | [example-mapping/](../../../library/methodologies/example-mapping/README.md) |
+| **Scrum** | Sprint-based iterative development | [scrum/](../../../library/methodologies/scrum/README.md) |
+| **Kanban** | Pull-based system with WIP limits | [kanban/](../../../library/methodologies/kanban/README.md) |
 
-Each methodology has one or more [Process](#process) implementations in the codebase. Browse all methodologies at [`plugins/babysitter/skills/babysit/process/methodologies/`](../../../plugins/babysitter/skills/babysit/process/methodologies/).
+Each methodology has one or more [Process](#process) implementations in the codebase. Browse all methodologies at [`library/methodologies/`](../../../library/methodologies/).
 
 **Related:** [Process](#process), [TDD Quality Convergence](#tdd-quality-convergence), [Process Library](../features/process-library.md)
 
@@ -612,7 +700,7 @@ The iterative cycle that drives run execution. Each loop iteration: runs `run:it
 iterate -> get effects -> perform effects -> post results -> repeat
 ```
 
-**Related:** [Iteration](#iteration), [run:iterate](#runiterate)
+**Related:** [Iteration](#iteration), [run:iterate](./cli-reference.md)
 
 ---
 
@@ -647,15 +735,17 @@ An effect that has been requested but not yet resolved. Listed via `task:list --
 
 ### Plugin
 
-A Claude Code extension package. The Babysitter plugin (`babysitter@a5c.ai`) provides skills, hooks, and commands for orchestration.
+A harness extension package that provides skills, hooks, and commands for orchestration (for example, installed into Claude Code via `babysitter harness:install-plugin claude-code`).
 
 **Installation:**
 ```bash
-claude plugin marketplace add a5c-ai/babysitter
+claude plugin marketplace add a5c-ai/babysitter-claude
 claude plugin install --scope user babysitter@a5c.ai
 ```
 
-**Related:** [Babysitter Skill](#babysitter-skill)
+> **Note on naming:** Where "plugin" referred to the orchestration *content* directory (`plugins/`) or the in-session command namespace (`plugin:*`), the v6 term is [Blueprint](#blueprint) - the directory is now `blueprints/` and the namespace is `blueprints:*` (the `plugin:*` aliases are deprecated). "Plugin" still refers to the per-harness extension package installed by `harness:install-plugin`.
+
+**Related:** [Blueprint](#blueprint), [Babysitter Skill](#babysitter-skill), [Harness](#harness)
 
 ---
 
@@ -665,13 +755,16 @@ A JavaScript/TypeScript function that is the *low-level code implementation* of 
 
 **Key distinction:** Process = low-level code implementation; [Methodology](#methodology) = high-level concept/pattern that a process implements.
 
-**Babysitter includes 2,000+ ready-to-use processes** organized by domain:
+<!-- glossary:process-library:start -->
+**Babysitter currently exposes 2,243 JavaScript process files in the live repository tree** organized across methodologies, shared processes, and specializations.
 
 | Domain | Processes | Browse |
 |--------|-----------|--------|
-| **Development** | 680+ (web, mobile, DevOps, AI, security) | [Browse →](../../../plugins/babysitter/skills/babysit/process/specializations/) |
-| **Business** | 430+ (legal, HR, marketing, finance) | [Browse →](../../../plugins/babysitter/skills/babysit/process/specializations/domains/business/) |
-| **Science & Engineering** | 550+ (physics, aerospace, biomedical) | [Browse →](../../../plugins/babysitter/skills/babysit/process/specializations/domains/science/) |
+| **Development and technical specializations** | 840 | [Browse →](../../../library/specializations/) |
+| **Business domains** | 490 | [Browse →](../../../library/specializations/domains/business/) |
+| **Science & engineering domains** | 551 | [Browse →](../../../library/specializations/domains/science/) |
+| **Social sciences & humanities** | 160 | [Browse →](../../../library/specializations/domains/social-sciences-humanities/) |
+<!-- glossary:process-library:end -->
 
 **Structure:**
 ```javascript
@@ -706,7 +799,7 @@ A unique identifier for a process type. Used when creating runs to specify which
 
 **Example:** `dev/build`, `ci/test`, `tdd/feature`
 
-**Related:** [Process](#process), [run:create](#runcreate)
+**Related:** [Process](#process), [run:create](./cli-reference.md)
 
 ---
 
@@ -778,7 +871,7 @@ The output from a completed task. Stored at `tasks/<effectId>/result.json`.
 }
 ```
 
-**Related:** [Task](#task), [task:post](#taskpost)
+**Related:** [Task](#task), [task:post](./cli-reference.md)
 
 ---
 
@@ -848,18 +941,17 @@ A unique identifier for a run. Typically includes timestamp and description.
 
 ### SDK (Software Development Kit)
 
-The core Babysitter package providing the orchestration runtime, CLI, and APIs.
+The programmatic runtime package providing the orchestration engine and APIs. It is imported by custom process code, not installed as the end-user CLI (for that, see [CLI](#cli-command-line-interface) / `@a5c-ai/babysitter`).
 
 **Package:** `@a5c-ai/babysitter-sdk`
 
 **Installation:**
 ```bash
-npm install -g @a5c-ai/babysitter-sdk
+npm install @a5c-ai/babysitter-sdk
 ```
 
 **Components:**
 - Runtime - Process execution engine
-- CLI - Command-line interface
 - Storage - Journal and state management
 - Tasks - Task definition and execution
 
@@ -869,9 +961,9 @@ npm install -g @a5c-ai/babysitter-sdk
 
 ### Session ID
 
-A unique identifier for a Claude Code session. Used for state isolation in in-session loops.
+A unique identifier for a harness session. Used for state isolation in in-session loops.
 
-**Environment Variable:** `BABYSITTER_SESSION_ID`
+**Environment Variable:** `AGENT_SESSION_ID` (harness-agnostic; supersedes the deprecated `BABYSITTER_SESSION_ID` and `CLAUDE_SESSION_ID`). Session resolution is PID-scoped in v6.
 
 **Related:** [In-Session Loop](#in-session-loop)
 
@@ -984,7 +1076,7 @@ A monotonically increasing number tracking state changes. Increments with each j
 
 A Claude Code hook that intercepts exit attempts during in-session loops. Decides whether to allow exit or continue the loop.
 
-**Location:** `plugins/babysitter/hooks/babysitter-stop-hook.sh`
+**Location:** generated from `plugins/babysitter-unified/hooks/stop.sh`
 
 **Output (block):**
 ```json
@@ -1067,6 +1159,32 @@ See [TDD Quality Convergence](#tdd-quality-convergence).
 
 ---
 
+### Transport Adapter
+
+The [Adapter](#adapter) that normalizes provider transports so a harness can speak to a provider it cannot reach natively (used together with the `adapters-proxy` binary). Paired with [Triggers](#triggers) to launch runs from CI.
+
+**Related:** [Adapter](#adapter), [Triggers](#triggers)
+
+**See Also:** [Adapters](../features/adapters.md)
+
+---
+
+### Triggers
+
+The v6 mechanism that normalizes inbound webhooks from GitHub, GitLab, and Bitbucket (via the `adapters-triggers` action) so a run can be launched from CI regardless of provider. Part of the [Adapters](#adapter) runtime alongside the [Transport Adapter](#transport-adapter).
+
+**Related:** [Transport Adapter](#transport-adapter), [Adapter](#adapter)
+
+**See Also:** [GitHub Actions Setup](../../github-actions-setup-babysitter.md)
+
+---
+
+### tula
+
+> **Deprecated.** Renamed to [genty](#genty). Use "genty".
+
+---
+
 ## U
 
 ### ULID (Universally Unique Lexicographically Sortable Identifier)
@@ -1090,7 +1208,7 @@ The main output data from a task result. Passed via `--value` flag when posting 
 $CLI task:post <runId> <effectId> --status ok --value output.json
 ```
 
-**Related:** [Result](#result), [task:post](#taskpost)
+**Related:** [Result](#result), [task:post](./cli-reference.md)
 
 ---
 
@@ -1118,7 +1236,7 @@ A run status indicating a blocking effect (breakpoint or sleep) is active. Orche
 [Orchestration Loop](#orchestration-loop), [Iteration](#iteration), [Quality Convergence](#quality-convergence), [Breakpoint](#breakpoint)
 
 **Architecture:**
-[SDK](#sdk-software-development-kit), [CLI](#cli-command-line-interface), [Plugin](#plugin), [Hook](#hook)
+[SDK](#sdk-software-development-kit), [CLI](#cli-command-line-interface), [Adapter](#adapter), [Adapters CLI](#adapters-cli), [Atlas](#atlas), [Harness](#harness), [Blueprint](#blueprint), [Plugin](#plugin), [Hook](#hook), [Hooks Adapter](#hooks-adapter), [Breakpoints Adapter](#breakpoints-adapter), [Transport Adapter](#transport-adapter), [Triggers](#triggers), [Kradle](#kradle)
 
 **Session Management:**
 [In-Session Loop](#in-session-loop), [Completion Promise](#completion-promise), [Stop Hook](#stop-hook)
@@ -1127,7 +1245,17 @@ A run status indicating a blocking effect (breakpoint or sleep) is active. Orche
 
 ## Related Documentation
 
-- [CLI Reference](./cli-reference.md) - Complete CLI command documentation
+- [CLI Reference](./cli-reference.md) - Complete `babysitter` CLI command documentation
+- [Adapters CLI Reference](./adapters-cli.md) - The host-side `adapters` CLI
+- [Install Matrix](../harnesses/install-matrix.md) - Supported harnesses and harness keys
+- [Adapters](../features/adapters.md) - The Adapters runtime, Atlas, and Triggers
 - [Configuration Reference](./configuration.md) - Environment variables and settings
 - [FAQ](./faq.md) - Frequently asked questions
 - [Troubleshooting](./troubleshooting.md) - Common issues and solutions
+
+---
+
+## Next steps
+
+- **Next:** [Getting Started overview](../getting-started/README.md)
+- **Related:** [Two-Loops Architecture](../features/two-loops-architecture.md), [FAQ](./faq.md)

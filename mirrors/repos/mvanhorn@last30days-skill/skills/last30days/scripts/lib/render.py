@@ -69,6 +69,9 @@ SOURCE_LABELS = {
     "x": "X",
     "github": "GitHub",
     "digg": "Digg",
+    "arxiv": "arXiv",
+    "techmeme": "Techmeme",
+    "trustpilot": "Trustpilot",
     "perplexity": "Perplexity",
     "jobs": "Jobs",
 }
@@ -1488,6 +1491,9 @@ _FOOTER_SOURCES: list[tuple[str, str, str, str, list[tuple[str, str]]]] = [
     ("truthsocial", "🇺🇸", "Truth Social", "post",     [("likes", "likes"), ("reposts", "reposts")]),
     ("github",      "🐙", "GitHub",       "item",     [("stars", "stars"), ("merged_prs", "merged"), ("reactions", "reactions"), ("comments", "comments")]),
     ("digg",        "⛏️", "Digg",         "cluster",  [("postCount", "posts"), ("uniqueAuthors", "authors")]),
+    ("arxiv",       "📄", "arXiv",        "paper",    []),
+    ("techmeme",    "📰", "Techmeme",     "headline", []),
+    ("trustpilot",  "⭐", "Trustpilot",   "review",   [("reviews", "reviews")]),
     # Jobs must appear so a scoped --hiring-signals run (jobs-only) still emits
     # the LAW 5 footer; without it the footer was dropped entirely.
     ("jobs",        "💼", "Jobs",         "role",     []),
@@ -1756,6 +1762,7 @@ ENGAGEMENT_DISPLAY: dict[str, list[tuple[str, str]]] = {
     "github":       [("stars", "stars"), ("merged_prs", "merged"), ("reactions", "react"), ("comments", "cmt")],
     "perplexity":   [("citations", "cite")],
     "digg":         [("postCount", "posts"), ("uniqueAuthors", "auth")],
+    "trustpilot":   [("reviews", "reviews")],
 }
 
 

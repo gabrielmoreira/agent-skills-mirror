@@ -452,6 +452,9 @@ def get_config(policy: ConfigLoadPolicy | None = None) -> dict[str, Any]:
         ('LAST30DAYS_NATIVE_SEARCH', None),
         # Optional SearXNG instance for the keyless-search fallback rung.
         ('LAST30DAYS_SEARXNG_URL', None),
+        # Truthy -> disable Trustpilot's headless-Chrome WAF-cookie harvest in
+        # automated contexts (cron/CI/eval). Read by trustpilot._harvest_allowed.
+        ('LAST30DAYS_TRUSTPILOT_NO_BROWSER', None),
         ('FROM_BROWSER', None),
         ('LAST30DAYS_TRUST_PROJECT_CONFIG', None),
         ('SETUP_COMPLETE', None),
@@ -717,6 +720,39 @@ def get_x_source(config: dict[str, Any]) -> str | None:
     """
     chain = x_backend_chain(config)
     return chain[0] if chain else None
+
+
+def x_pending_browser_auth(config: dict[str, Any]) -> bool:
+    """True when X is not available now but ``FROM_BROWSER`` will authenticate it at run time.
+
+    ``--diagnose`` / ``--preflight`` load config in ``plan_only`` mode, which
+    deliberately skips browser-cookie extraction (no Keychain popup,
+    ``reads_values: false``). As a result ``get_x_source`` returns None and X is
+    dropped from ``available_sources`` even though a normal run would extract the
+    same cookies and authenticate X fine. This predicate reports that
+    "available pending browser auth" state without reading a single cookie — it
+    keys only on the already-resolved browser list (``cookie_extraction_browsers``
+    derives it from ``FROM_BROWSER`` alone, no secrets), bird being installed, and
+    X having a cookie-domain mapping. Side-effect free, so the safe-inspection
+    contract of diagnose/preflight is preserved.
+
+    Returns False whenever X is already available outright (static AUTH_TOKEN/CT0,
+    or xAI/xurl/xquik backend), and in ``read`` mode (a real run has already
+    extracted creds, so its status must be unchanged — never "pending").
+    """
+    # Already available via a static backend (bird creds, xAI, xurl, xquik).
+    if get_x_source(config):
+        return False
+    # Only meaningful in inspection modes that skip extraction; a real ``read``
+    # run has already attempted extraction and must report its true state.
+    if config.get('_BROWSER_COOKIE_MODE') == 'read':
+        return False
+    if 'x' not in COOKIE_DOMAINS:
+        return False
+    if not cookie_extraction_browsers(config):
+        return False
+    from . import bird_x
+    return bird_x.is_bird_installed()
 
 
 def is_ytdlp_available() -> bool:

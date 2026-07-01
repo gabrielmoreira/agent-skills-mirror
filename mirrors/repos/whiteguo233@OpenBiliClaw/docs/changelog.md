@@ -4,6 +4,16 @@
 
 ---
 
+## v0.3.150 / extension v0.3.101 / desktop v0.3.150: Reddit rdt-cli 默认后端与发布包同步（2026-06-30）
+
+后端源码走 `backend-v0.3.150`，浏览器插件走 `extension-v0.3.101`，桌面安装包走 `desktop-v0.3.150`。
+
+- **Reddit discovery 默认切到 rdt-cli**：`rdt-cli>=0.4.1` 纳入默认运行时依赖，源码安装、AI 一键安装、Docker `pip install .` 和桌面 PyInstaller 安装包都会默认携带；日常 discovery 默认后端为 rdt-cli，插件仍负责 bootstrap 初始化信号，并在命令后端不可用、未登录或用户显式选择时作为 fallback。
+- **插件同步 rdt credential**：已连接 OpenBiliClaw 插件会尝试把浏览器里的 `reddit_session` 同步到 rdt-cli credential store，`rdt login` 仅作为插件不可用或浏览器 Cookie 不可读时的手动 fallback；后端状态页和 CLI 文案会明确区分 rdt 缺凭据、插件 fallback 可用和真实登录态任务结果。
+- **安装包与冻结包依赖对齐**：桌面打包显式收集 `rdt_cli` 及其 lazy 依赖，且在冻结包里提供 in-process fallback，避免只有 Python 包而没有 `rdt` console script 时 Reddit discovery 不可用。
+- **LLM 探测预算与 reasoning-only 诊断**：配置页 LLM 探测和 `LLMProvider.health_check()` 的共享输出预算从 1024 提到 4096。`DeepSeekProvider` 在 `reasoning_effort=""` 时会向 DeepSeek 请求体写入 `thinking={"type":"disabled"}`，而不是省略 thinking 字段；OpenAI-compatible / DeepSeek / OpenRouter / Ollama native 若只返回 `reasoning_content` / `reasoning` / `thinking` 而没有最终 `content`，现在仍判失败，但错误会明确提示“returned reasoning but no final content”并带 `finish_reason`，避免误以为服务完全没返回。
+- **真实环境验证补充**：本地真实插件登录态完成 `fetch-reddit --mode bootstrap`、四个 `discover-reddit*` smoke 和正式 `discover --source reddit`；当前浏览器会话里 rdt credential 仍未同步到 `reddit_session` 时，fallback 插件路径能完成事件拉取和 discovery。
+
 ## v0.3.149 / extension v0.3.100 / desktop v0.3.149: Reddit 来源接入（2026-06-30）
 
 后端源码走 `backend-v0.3.149`，浏览器插件走 `extension-v0.3.100`，桌面安装包走 `desktop-v0.3.149`。
