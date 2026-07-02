@@ -50,6 +50,11 @@ echo '[{"name":"Onboarding","reach":5000,"impact":2,"confidence":0.8,"effort":3}
 
 It outputs a ranked table with computed RICE scores and auto-flags **quick-win** (strong score, low relative effort), **moonshot** (high impact, high effort), and **low-confidence** (≤50%) items. Use the computed ranking as the starting point, then apply the validation step below — never accept a surprising top rank without checking the estimates behind it.
 
+## Deeper Materials
+
+- **`references/estimate-calibration.md`** — how to anchor each of the four estimates (reach sources, the impact scale with reserve-it-for examples, evidence-based confidence, cross-functional effort) and the cross-checks to run on the finished ranking. Apply it when challenging the user's inputs.
+- **`templates/scoring-worksheet.md`** — a fill-in worksheet whose evidence columns force each score to name its source. Offer it when a team wants to score together rather than have the ranking generated.
+
 ## Process
 1. For each initiative provided, gather or estimate R, I, C, E values
 2. Flag where estimates are weak and note what data would improve them

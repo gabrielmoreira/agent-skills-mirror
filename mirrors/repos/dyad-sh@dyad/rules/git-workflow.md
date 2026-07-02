@@ -20,6 +20,8 @@ When creating a new worktree branch from `upstream/main` with `git worktree add 
 
 If a PR's head branch is on another user's fork and `gh pr view --json maintainerCanModify` returns `false`, bot accounts cannot push fixes to that PR head even if review threads can be resolved. A fallback push to the base repo publishes the commit but does **not** update the original fork PR; call this out in the PR summary and ask the PR author or a maintainer to apply the published commit.
 
+If `gh pr checkout <number>` fetched a fork PR into a local branch without adding the fork as a remote, and `gh pr view --json headRepository --jq .headRepository.nameWithOwner` returns blank, use the REST pull payload instead: `gh api repos/dyad-sh/dyad/pulls/<number> --jq '{head_repo:.head.repo.full_name, head_ref:.head.ref, head_sha:.head.sha}'`. Push directly to `https://github.com/<head_repo>` with `HEAD:<head_ref>` and a `--force-with-lease` pinned to `head_sha`. Treat `head_ref` as untrusted shell input: assign it to a variable and quote the refspec, for example `git push <url> HEAD:\"$head_ref\"`, instead of interpolating it unquoted.
+
 ## `gh pr create` branch detection
 
 If `gh pr create` says `you must first push the current branch to a remote` even though `git push -u` succeeded, create the PR with an explicit head ref:
@@ -36,9 +38,13 @@ This repo's installed `gh pr view` may fail with `unknown flag: --head`. To chec
 
 When a workflow has already identified a target PR number, pass that number explicitly to later `gh pr view`, `gh pr edit`, and `gh pr comment` calls. In workspaces with multiple open PRs or unusual branch associations, bare `gh pr view` can resolve a different PR than the one whose comments or checks are being handled.
 
+If `gh pr view --repo <owner>/<repo> --json ...` fails with `argument required when using the --repo flag`, rerun it with an explicit PR number, URL, or branch argument. If a prior `gh pr edit` printed a PR URL, extract that number and use `gh pr view <number> --repo <owner>/<repo>`.
+
 ## GH auth allowlist and git push
 
 If `gh auth status` succeeds but `git push` fails with `Repo <owner>/<repo> is not allowlisted` followed by `fatal: could not read Username for 'https://github.com/...': Device not configured`, run `gh auth setup-git` first and then push to an allowlisted remote. In some bot workspaces, fork remotes are not allowlisted even when `upstream` is, so retry the push against `upstream` if project policy permits it.
+
+If `git push` succeeds but sandboxed `gh pr view` / `gh auth status` reports `The token in default is invalid`, rerun the `gh` command outside the sandbox before giving up on PR creation. The keyring-backed token may be available only to escalated commands.
 
 ## Empty branches cannot produce PRs
 

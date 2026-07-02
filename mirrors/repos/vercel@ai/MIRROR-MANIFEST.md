@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel/ai` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `vercel/ai` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel/ai` — 26 default patterns, 0 followed patterns, 31 file(s) m
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,11 +85,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`skills/major-version-mode/SKILL.md`](skills/major-version-mode/SKILL.md) |
 | 25 | ✓ | [`skills/migrate-ai-sdk-v6-to-v7/SKILL.md`](skills/migrate-ai-sdk-v6-to-v7/SKILL.md) |
 | 26 | ✓ | [`skills/update-provider-models/SKILL.md`](skills/update-provider-models/SKILL.md) |
-| 27 | ✓ | [`skills/use-ai-sdk/references/ai-gateway.md`](skills/use-ai-sdk/references/ai-gateway.md) |
-| 28 | ✓ | [`skills/use-ai-sdk/references/common-errors.md`](skills/use-ai-sdk/references/common-errors.md) |
-| 29 | ✓ | [`skills/use-ai-sdk/references/devtools.md`](skills/use-ai-sdk/references/devtools.md) |
-| 30 | ✓ | [`skills/use-ai-sdk/references/type-safe-agents.md`](skills/use-ai-sdk/references/type-safe-agents.md) |
-| 31 | ✓ | [`skills/use-ai-sdk/SKILL.md`](skills/use-ai-sdk/SKILL.md) |
+| 27 | ✓ | [`skills/use-ai-sdk/SKILL.md`](skills/use-ai-sdk/SKILL.md) |
 
 ---
 

@@ -43,4 +43,6 @@ Export an HTML slide deck to a `.pptx` as full-bleed PNG images. Pixel-perfect, 
 
 Same flags as editable mode, except `reset_selector_miss` and `slide_size_mismatch` won't fire — the iframe is locked to width × height instead of fiddling with the deck's wrapper. Watch for `duplicate_adjacent` (showJs didn't navigate).
 
+Screenshot mode exports flat images, so `data-anim` builds are NOT exported — slides are captured in their final layout, and the `animations_ignored_screenshots` flag reports any that were skipped. Use the [editable export](export-as-pptx-editable.md) to keep animations. When the flag fires, tell the user in plain language — e.g. "this export is pixel-perfect but static: the N slide builds don't play in it; I can re-export as editable PPTX to keep them as real PowerPoint animations" — and offer the editable export.
+
 Speaker notes from `#speaker-notes` are attached automatically. Page reloads after.

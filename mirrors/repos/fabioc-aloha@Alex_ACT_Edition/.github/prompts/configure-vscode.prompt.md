@@ -12,7 +12,7 @@ For WORKSPACE-scope settings + `.vscode/` assets (`markdown-light.css`, discover
 
 ## Objective
 
-Produce and apply a portable settings payload at user scope so workspace settings do not override fleet behavior.
+Produce and apply a portable settings payload at user scope so every machine starts from the same safe defaults. Workspace settings remain the project-specific override layer and are handled by `/configure-workspace`.
 
 ## Source of truth
 
@@ -72,7 +72,7 @@ All three are non-destructive merges — unrelated user-scope keys are preserved
 
 ## Guardrails
 
-- User-scope only. Do not write these keys to workspace `.vscode/settings.json` — workspace-scope is owned by `/configure-workspace`.
+- User-scope only. Do not write these keys to workspace `.vscode/settings.json` — workspace-scope is owned by `/configure-workspace` and may override user settings for a particular project.
 - Stable settings only — the baseline file is the source of truth; do not inline payload here.
 - Preserve all unrelated existing user settings.
 

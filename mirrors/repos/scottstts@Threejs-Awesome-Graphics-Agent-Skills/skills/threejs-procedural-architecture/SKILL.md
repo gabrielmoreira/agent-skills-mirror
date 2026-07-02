@@ -22,9 +22,10 @@ settings
 Read [references/grammar-and-mesh-compiler.md](references/grammar-and-mesh-compiler.md) before implementing the generator.
 
 Read the
-[authored financial tower compiler](examples/authored-financial-tower/building-system.js)
+[procedural financial tower compiler](examples/procedural-financial-tower/building-system.js)
 for seeded tier planning, semantic façade placement, reserved zones,
-material-slot instancing, projected detail, and mechanism-specific diagnostics.
+material-slot BufferGeometry output, projected detail, and mechanism-specific
+diagnostics.
 
 ## Rules
 
@@ -34,7 +35,8 @@ material-slot instancing, projected detail, and mechanism-specific diagnostics.
 - Compile by material slot to reduce draw calls without destroying material separation.
 - Preserve real dimensions for floor height, bay width, trim projection, and texture density.
 - Randomness may select among valid designs; it must not repair invalid geometry.
-- Provide topology, placement, material-slot, and UV-density debug modes.
+- Provide topology, façade ownership, material/geometry, and shadow diagnostics
+  appropriate to the renderer path.
 
 ## Acceptance
 

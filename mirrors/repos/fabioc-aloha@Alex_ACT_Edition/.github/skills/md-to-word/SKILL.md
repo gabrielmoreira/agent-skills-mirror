@@ -114,7 +114,7 @@ node .github/skills/md-to-word/scripts/md-to-word.cjs docs/plan.md --keep-temp
 
 | Tool | Install (macOS) | Install (Windows) | Purpose |
 |------|-----------------|-------------------|---------|
-| **Node.js 18+** | `brew install node` | `winget install OpenJS.NodeJS.LTS` | Script runtime |
+| **Node.js 24+** | `brew install node` | `winget install OpenJS.NodeJS.LTS` | Script runtime |
 | **pandoc** | `brew install pandoc` | `winget install JohnMacFarlane.Pandoc` | Markdown to Word |
 | **mermaid-cli** | `npm install -g @mermaid-js/mermaid-cli` | same | Mermaid to PNG |
 | **jszip** | (bundled with extension) | same | OOXML post-processing |

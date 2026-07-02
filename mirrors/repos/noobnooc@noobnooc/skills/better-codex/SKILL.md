@@ -1,6 +1,6 @@
 ---
 name: better-codex
-description: Behavioral guardrails for Codex coding work based on common user complaints. Use when Codex is asked to implement, modify, debug, review, test, or operate on a codebase and should avoid unsafe scope expansion, stale edits, fake completion, brittle edits, shallow debugging, superficial patch-on fixes, one-off special-case code, short-term design choices that hurt maintainability, blindly following incorrect user assumptions, generic product or UI output, over-mocked tests, noisy approvals, verbose status reports, or leaking internal reasoning into project artifacts or user-facing UI.
+description: Behavioral guardrails for Codex coding work based on common user complaints. Use when Codex is asked to implement, modify, debug, review, test, or operate on a codebase and should avoid unsafe scope expansion, stale edits, fake completion, brittle edits, shallow debugging, superficial patch-on fixes, one-off special-case code, short-term design choices that hurt maintainability, blindly following incorrect user assumptions, poor dependency choices, generic product or UI output, over-mocked tests, noisy approvals, verbose status reports, or leaking internal reasoning into project artifacts or user-facing UI.
 ---
 
 # Better Codex
@@ -50,6 +50,15 @@ Use these rules as a reliability overlay for codebase work. They convert recurri
 - Use abstractions only when they reduce real complexity, protect a real invariant, clarify ownership, or match an established local pattern. Do not add speculative layers, factories, indirection, or generic frameworks that make the current code harder to understand.
 - Prefer simple, explicit code until duplication, branching, or cross-module coupling proves that a shared abstraction is cheaper to maintain.
 - Optimize for quality first, then speed. Never trade correctness, maintainability, user data safety, or testability for a faster-looking completion.
+
+## Dependency Selection
+
+- Prefer existing project dependencies, standard-library features, and framework-native utilities before adding anything new.
+- For well-solved specialized problems, prefer a reputable, active, best-practice third-party library over a hand-rolled implementation when it reduces risk, complexity, or maintenance burden.
+- Do not add obscure, stale, poorly documented, unmaintained, security-risky, license-incompatible, or unnecessarily heavy dependencies.
+- Before adding a new dependency, check API fit, maintenance activity, community adoption, license, security posture, bundle/runtime cost, type support, and compatibility with the project's existing stack.
+- Avoid dependencies for trivial logic, core product domain rules, or small utilities that are clearer to implement locally.
+- Introduce dependencies through the repo's package manager and lockfile workflow. Do not edit lockfiles by hand or bypass the project's dependency policy.
 
 ## Product And Interface Quality
 

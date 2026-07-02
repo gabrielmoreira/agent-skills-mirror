@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `elementalsouls/Claude-BugHunter` — 26 default patterns, 0 followed patterns, 90 file(s) materialized.
+Mirror of `elementalsouls/Claude-BugHunter` — 26 default patterns, 0 followed patterns, 94 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elementalsouls/Claude-BugHunter` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 90 |
+| Files         | 94 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -135,20 +135,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 74 | ✓ | [`skills/offensive-osint/references/severity-matrix.md`](skills/offensive-osint/references/severity-matrix.md) |
 | 75 | ✓ | [`skills/offensive-osint/references/specialized-osint.md`](skills/offensive-osint/references/specialized-osint.md) |
 | 76 | ✓ | [`skills/offensive-osint/references/tooling-install.md`](skills/offensive-osint/references/tooling-install.md) |
-| 77 | ✓ | [`skills/offensive-osint/scripts/secret_scan.py`](skills/offensive-osint/scripts/secret_scan.py) |
-| 78 | ✓ | [`skills/offensive-osint/SKILL.md`](skills/offensive-osint/SKILL.md) |
-| 79 | ✓ | [`skills/okta-attack/SKILL.md`](skills/okta-attack/SKILL.md) |
-| 80 | ✓ | [`skills/osint-methodology/README.md`](skills/osint-methodology/README.md) |
-| 81 | ✓ | [`skills/osint-methodology/SKILL.md`](skills/osint-methodology/SKILL.md) |
-| 82 | ✓ | [`skills/redteam-mindset/SKILL.md`](skills/redteam-mindset/SKILL.md) |
-| 83 | ✓ | [`skills/redteam-report-template/SKILL.md`](skills/redteam-report-template/SKILL.md) |
-| 84 | ✓ | [`skills/report-writing/SKILL.md`](skills/report-writing/SKILL.md) |
-| 85 | ✓ | [`skills/security-arsenal/SKILL.md`](skills/security-arsenal/SKILL.md) |
-| 86 | ✓ | [`skills/supply-chain-attack-recon/SKILL.md`](skills/supply-chain-attack-recon/SKILL.md) |
-| 87 | ✓ | [`skills/triage-validation/SKILL.md`](skills/triage-validation/SKILL.md) |
-| 88 | ✓ | [`skills/vmware-vcenter-attack/SKILL.md`](skills/vmware-vcenter-attack/SKILL.md) |
-| 89 | ✓ | [`skills/web2-recon/SKILL.md`](skills/web2-recon/SKILL.md) |
-| 90 | ✓ | [`skills/web3-audit/SKILL.md`](skills/web3-audit/SKILL.md) |
+| 77 | ✓ | [`skills/offensive-osint/scripts/assets/archivo-black.woff2`](skills/offensive-osint/scripts/assets/archivo-black.woff2) |
+| 78 | ✓ | [`skills/offensive-osint/scripts/assets/FONT-LICENSE.txt`](skills/offensive-osint/scripts/assets/FONT-LICENSE.txt) |
+| 79 | ✓ | [`skills/offensive-osint/scripts/dashboard.py`](skills/offensive-osint/scripts/dashboard.py) |
+| 80 | ✓ | [`skills/offensive-osint/scripts/h1_reference.py`](skills/offensive-osint/scripts/h1_reference.py) |
+| 81 | ✓ | [`skills/offensive-osint/scripts/secret_scan.py`](skills/offensive-osint/scripts/secret_scan.py) |
+| 82 | ✓ | [`skills/offensive-osint/SKILL.md`](skills/offensive-osint/SKILL.md) |
+| 83 | ✓ | [`skills/okta-attack/SKILL.md`](skills/okta-attack/SKILL.md) |
+| 84 | ✓ | [`skills/osint-methodology/README.md`](skills/osint-methodology/README.md) |
+| 85 | ✓ | [`skills/osint-methodology/SKILL.md`](skills/osint-methodology/SKILL.md) |
+| 86 | ✓ | [`skills/redteam-mindset/SKILL.md`](skills/redteam-mindset/SKILL.md) |
+| 87 | ✓ | [`skills/redteam-report-template/SKILL.md`](skills/redteam-report-template/SKILL.md) |
+| 88 | ✓ | [`skills/report-writing/SKILL.md`](skills/report-writing/SKILL.md) |
+| 89 | ✓ | [`skills/security-arsenal/SKILL.md`](skills/security-arsenal/SKILL.md) |
+| 90 | ✓ | [`skills/supply-chain-attack-recon/SKILL.md`](skills/supply-chain-attack-recon/SKILL.md) |
+| 91 | ✓ | [`skills/triage-validation/SKILL.md`](skills/triage-validation/SKILL.md) |
+| 92 | ✓ | [`skills/vmware-vcenter-attack/SKILL.md`](skills/vmware-vcenter-attack/SKILL.md) |
+| 93 | ✓ | [`skills/web2-recon/SKILL.md`](skills/web2-recon/SKILL.md) |
+| 94 | ✓ | [`skills/web3-audit/SKILL.md`](skills/web3-audit/SKILL.md) |
 
 ---
 

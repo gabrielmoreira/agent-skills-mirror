@@ -15,7 +15,13 @@ import {
   isPreserveWhitespace,
   trimBlockNewlines,
 } from "../core/css.ts";
-import { type RenderContext, rectToPptx } from "./context.ts";
+import {
+  type RenderContext,
+  type SlideAnimEntry,
+  rectToPptx,
+  mintAnimName,
+  recordAnimShape,
+} from "./context.ts";
 import { imageKey } from "./media-cache.ts";
 import {
   type TextRun,
@@ -41,7 +47,17 @@ export function renderNodeToPptx(
   node: SlideNode,
   ctx: RenderContext,
   inheritedOpacity = 1,
+  activeAnim?: SlideAnimEntry,
 ): void {
+  // A data-anim node opens a manifest entry that tags every shape its subtree
+  // emits; a nested data-anim replaces the outer one (inner wins — flagged at
+  // capture time as animation_nested).
+  let anim = activeAnim;
+  if (node.anim) {
+    anim = { def: node.anim, spids: [], shapeNames: [], minted: 0 };
+    ctx.animEntries.push(anim);
+  }
+
   // ---- text leaf ----
   if (node.tag === "#text") {
     const style = node.style;
@@ -52,28 +68,31 @@ export function renderNodeToPptx(
     const fontSize = fmt.fontSize ?? clamp(pxToPoints(extractPx(style.fontSize) || 16), 1, 400);
     const opacity = inheritedOpacity * clamp(parseFloat(style.opacity ?? "1") || 1, 0, 1);
     const widthPad = pxToInches(Math.max(8, node.rect.w * 0.03));
+    const opts: Opts = {
+      x: coords.x,
+      y: coords.y,
+      w: coords.w + widthPad,
+      h: coords.h + pxToInches(4),
+      margin: 0,
+      fontFace: fmt.fontFace,
+      fontSize,
+      bold: fmt.bold,
+      italic: fmt.italic,
+      underline: fmt.underline,
+      strike: fmt.strike,
+      color: fmt.color,
+      transparency: opacityToTransparency((1 - fmt.transparency / 100) * opacity),
+      align: textAlign(style.textAlign),
+      valign: "top",
+      fit: "shrink",
+      wrap: !noWrap(style),
+      lineSpacingMultiple: lineSpacingMultiple(style.lineHeight, fontSize),
+      charSpacing: letterSpacingPoints(style.letterSpacing),
+    };
+    if (anim) opts.objectName = mintAnimName(ctx, anim);
     try {
-      ctx.slide.addText(textTransformFn(style.textTransform)(text), {
-        x: coords.x,
-        y: coords.y,
-        w: coords.w + widthPad,
-        h: coords.h + pxToInches(4),
-        margin: 0,
-        fontFace: fmt.fontFace,
-        fontSize,
-        bold: fmt.bold,
-        italic: fmt.italic,
-        underline: fmt.underline,
-        strike: fmt.strike,
-        color: fmt.color,
-        transparency: opacityToTransparency((1 - fmt.transparency / 100) * opacity),
-        align: textAlign(style.textAlign),
-        valign: "top",
-        fit: "shrink",
-        wrap: !noWrap(style),
-        lineSpacingMultiple: lineSpacingMultiple(style.lineHeight, fontSize),
-        charSpacing: letterSpacingPoints(style.letterSpacing),
-      });
+      ctx.slide.addText(textTransformFn(style.textTransform)(text), opts);
+      if (anim) recordAnimShape(ctx, anim, opts.objectName as string);
     } catch (err) {
       ctx.warnings.push(`addText(#text) failed: ${errMsg(err)}`);
     }
@@ -83,12 +102,12 @@ export function renderNodeToPptx(
   const style = node.style;
   const opacity = inheritedOpacity * clamp(parseFloat(style.opacity ?? "1") || 1, 0, 1);
   if (node.rect.w < 0.5 || node.rect.h < 0.5) {
-    for (const child of node.children) renderNodeToPptx(child, ctx, opacity);
+    for (const child of node.children) renderNodeToPptx(child, ctx, opacity, anim);
     return;
   }
   if (style.display === "none" || style.opacity === "0") return;
   if (style.visibility === "hidden") {
-    for (const child of node.children) renderNodeToPptx(child, ctx, opacity);
+    for (const child of node.children) renderNodeToPptx(child, ctx, opacity, anim);
     return;
   }
 
@@ -169,8 +188,10 @@ export function renderNodeToPptx(
       shapeName = "roundRect";
       opts.rectRadius = pxToInches(radiusPx);
     }
+    if (anim) opts.objectName = mintAnimName(ctx, anim);
     try {
       ctx.slide.addShape(shapeName, opts);
+      if (anim) recordAnimShape(ctx, anim, opts.objectName as string);
     } catch (err) {
       ctx.warnings.push(`addShape failed for <${node.tag}>: ${errMsg(err)}`);
     }
@@ -212,7 +233,9 @@ export function renderNodeToPptx(
           line: { type: "none" },
         };
         if (rotation !== undefined) opts.rotate = rotation;
+        if (anim) opts.objectName = mintAnimName(ctx, anim);
         ctx.slide.addShape("rect", opts);
+        if (anim) recordAnimShape(ctx, anim, opts.objectName as string);
       } catch {
         /* per-side border is best-effort */
       }
@@ -260,8 +283,10 @@ export function renderNodeToPptx(
       if (radiusRatio >= 0.4 && !node.gradient) opts.rounding = true;
       if (opacity < 1) opts.transparency = clamp(Math.round((1 - opacity) * 100), 0, 100);
       if (rotation !== undefined) opts.rotate = rotation;
+      if (anim) opts.objectName = mintAnimName(ctx, anim);
       try {
         ctx.slide.addImage(opts);
+        if (anim) recordAnimShape(ctx, anim, opts.objectName as string);
       } catch (err) {
         ctx.warnings.push(`addImage failed for <${node.tag}>: ${errMsg(err)}`);
       }
@@ -323,8 +348,10 @@ export function renderNodeToPptx(
         breakLine: i < listItems.length - 1,
       },
     }));
+    if (anim) opts.objectName = mintAnimName(ctx, anim);
     try {
       ctx.slide.addText(textObjs, opts);
+      if (anim) recordAnimShape(ctx, anim, opts.objectName as string);
     } catch (err) {
       ctx.warnings.push(`addText(list) failed: ${errMsg(err)}`);
     }
@@ -408,8 +435,10 @@ export function renderNodeToPptx(
         color: run.fmt.color,
         transparency: opacityToTransparency(alpha),
       });
+      if (anim) opts.objectName = mintAnimName(ctx, anim);
       try {
         ctx.slide.addText(transform(run.text), opts);
+        if (anim) recordAnimShape(ctx, anim, opts.objectName as string);
       } catch (err) {
         ctx.warnings.push(`addText failed for <${node.tag}>: ${errMsg(err)}`);
       }
@@ -471,8 +500,10 @@ export function renderNodeToPptx(
           });
         });
       });
+      if (anim) opts.objectName = mintAnimName(ctx, anim);
       try {
         ctx.slide.addText(textObjs, opts);
+        if (anim) recordAnimShape(ctx, anim, opts.objectName as string);
       } catch (err) {
         ctx.warnings.push(`addText(runs) failed for <${node.tag}>: ${errMsg(err)}`);
       }
@@ -480,7 +511,7 @@ export function renderNodeToPptx(
   }
 
   for (const child of orderByZIndex(node.children))
-    if (!consumed.has(child)) renderNodeToPptx(child, ctx, opacity);
+    if (!consumed.has(child)) renderNodeToPptx(child, ctx, opacity, anim);
 }
 
 // Paint children in CSS stacking order: positioned siblings with a numeric

@@ -10,8 +10,11 @@ PinMe is a zero-config CLI tool for deploying static sites to IPFS. Built with T
 
 ```bash
 npm run build          # Production build (esbuild → dist/index.js)
-npm run dev            # Dev build (NODE_ENV=development)
-node test/build-env.test.js  # Run tests (node:test, no framework)
+npm run dev            # Dev build
+npm run test           # Unit/integration tests (Vitest)
+npm run test:cli       # Real CLI black-box tests against dist/index.js
+npm run verify         # Full PR gate: lint, typecheck, tests, build, CLI, pack
+npm run test:mutation  # Slow mutation tests (manual/nightly)
 ```
 
 Build uses `build.js` (esbuild), NOT `rollup.config.js` (legacy, unused). esbuild reads `.env` via dotenv at build time and injects env vars as `process.env.*` defines.

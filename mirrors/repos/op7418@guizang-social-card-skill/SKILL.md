@@ -1,19 +1,25 @@
 ---
 name: guizang-social-card-skill
-description: Generate Guizang-style social card image sets and WeChat official account cover pairs from articles, scripts, screenshots, product notes, subtitles, or photos. Use when the user asks for 小红书图文, Rednote/Xiaohongshu images, social cards, carousel images, 3:4 covers, 微信公众号封面, WeChat 21:9 + 1:1 covers, Swiss Style, or magazine-style social images.
+description: Generate Guizang-style social card image sets, Live Photo motion cards, material-first Live Photo puzzle layouts, triple Live Photo collages, long-video-to-Live-Photo treatments, and WeChat official account cover pairs from articles, scripts, screenshots, product notes, subtitles, photos, or user-supplied videos. Use when the user asks for 小红书图文, Rednote/Xiaohongshu images, social cards, carousel images, 3:4 covers, Live Photo, 实况照片, 单视频实况拼图, 二宫格实况拼图, 三连实况拼图, 四宫格实况拼图, 微信公众号封面, WeChat 21:9 + 1:1 covers, Swiss Style, or magazine-style social images.
 ---
 
 # Guizang Social Card Skill
 
 Create polished social card packages for Xiaohongshu/Rednote, WeChat Official Account, article covers, and platform thumbnails.
 
-This skill is self-contained. It borrows visual principles from the Guizang PPT style system, but it must not edit the original PPT skill, its templates, or its references. If the original PPT skill is available, you may read it for reference only. Put all generated work in the current project or in the user-requested output folder.
+This skill is self-contained. It borrows visual principles from the Guizang PPT style system, but it must not edit the original PPT skill, its templates, or its references. If the original PPT skill is available, you may read it for reference only.
+
+Generated work must live in a task folder, not in the skill root. Default to `local-tests/<slug>/` inside this repository, or use the explicit output folder requested by the user. Do not create root-level task folders such as `social-card-*`, `livephoto-*`, `wechat-*`, `output/`, or loose rendered assets next to `SKILL.md`.
 
 ## What To Produce
 
 Use this skill for:
 
 - Social card / carousel image sets: cover plus content pages, especially Xiaohongshu/Rednote 3:4.
+- Short Live Photo motion cards when the user asks for Live Photo / 实况照片 and supplies video evidence or screen recordings.
+- Material-first Live Photo puzzle layouts when the user has high-quality video assets and wants single-video, two-grid, three-grid, or four-grid motion cards with little or no added text.
+- Triple Live Photo collages when the user has three short videos, three results, three viewpoints, or a high-information comparison that should stay inside one image-card unit.
+- Long-video intake for Live Photo: diagnose whether to trim, speed up, split into a triple collage, or ask the user for a specific time range before rendering.
 - WeChat Official Account cover pairs: one `21:9` main cover plus one `1:1` square cover, composed together in the same HTML for visual checking.
 - Screenshot-heavy product posts, article covers, tutorial carousels, outdoor/lifestyle notes, AI/product update explainers.
 - Social images that need Guizang-style Swiss or editorial magazine layouts.
@@ -21,7 +27,7 @@ Use this skill for:
 Do not use this skill for:
 
 - Full slide decks or horizontal PPT websites. Use the PPT skill for that.
-- Long-form video generation. Use a video skill for that.
+- Long-form video generation. Use a video skill for that. This skill only supports short, layout-bound Live Photo cards that replace a still image slot with video.
 - Pure image editing with no layout or article extraction requirement.
 
 ### Rednote Category Capability (capability circle)
@@ -70,6 +76,7 @@ Read these files as needed:
 - `references/portrait-fill.md` when adapting layouts to 3:4 and avoiding under-filled vertical space.
 - `references/content-planning.md` for cover hooks, page breakdown, and copy compression.
 - `references/production-workflow.md` for HTML/CSS rendering and image handling.
+- `references/live-photo-production.md` when the user asks for Live Photo / 实况照片 / 三连实况拼图, supplies video assets for a social card, or wants Xiaohongshu / WeChat motion-card delivery. It covers information budget, single vs triple Live Photo, long-video intake, and platform publishing reminders.
 - `references/image-overlay.md` whenever text sits on top of a photo: photo qualification, localized tint fallback, and face / subject avoidance via multimodal subject mapping.
 - `references/screenshot-treatment.md` when the user supplies an app / web / code / dashboard screenshot — picks `.frame-shot` over `.frame-img`, sets corners/shadow/bg/inset, decides on `.device-browser` or `.device-phone` chrome.
 - `references/map-component.md` when the content has spatial relationships (travel route, store locations, walking tour) — real routes default to Mapbox Static or OSM static tiles; schematic SVG is only for conceptual / illustrative maps. Pins are HTML overlays; never use live JS maps.
@@ -87,6 +94,7 @@ Gather only the missing information that changes the output:
 - Source text, subtitles, article, or title.
 - **Rednote category** — if the user names one of the 11 common types (旅行 / 职场 / 游戏 / 影视 / 美食 / 彩妆 / 穿搭 / 家居 / 健身 / 情感 / 推荐), route via `references/category-cookbook.md` to find the right recipes and to confirm the request is inside the capability circle (see "Rednote Category Capability" above). If a request lands in the outside-scope bucket, surface that to the user **before** designing, do not silently retrofit.
 - Supplied images/screenshots and where each should appear. **For News / Tutorial / Data / Review content, actively prompt for screenshots or photos** — they are the evidence layer. A poster with no real artifact tends to read as filler.
+- Supplied video assets, if the user asks for Live Photo. Treat user-provided video as the normal path; web-sourced free video is only for demo/promo cases or when the user explicitly asks for sourced material. Confirm the target platform because duration differs: Xiaohongshu supports `5s`; WeChat Official Account Live Photo should stay at `3s` and must be uploaded from iPhone. Before cutting, read `references/live-photo-production.md` and classify the request as single Live Photo, triple collage, or long-video intake. If the source is too long or contains multiple usable moments, do a low-cost diagnosis first, then ask once whether to trim, speed up, split into multiple wells, or use a user-specified time range. If the source is shorter than the target duration, ask whether to provide a longer clip, accept a shorter Live Photo, or explicitly allow a hold/slowdown. If the important focus is ambiguous, suggest possible crop/enlarge options but let the user decide before executing.
 - **If the user supplies only text (no images at all), ask once before designing:**
 
   ```
@@ -167,6 +175,14 @@ Use `references/layout-recipes.md` to choose page structures. Avoid making every
 
 For 3:4 images, check `references/portrait-fill.md` before coding. A short table or ledger must be expanded into a full portrait composition with a quote column, image evidence, marginalia, larger rows, or a background hero zone.
 
+Audience-facing copy must describe the user's actual scene, not the production method. Internal terms such as `3s`, `5s`, `Live Photo`, `triple collage`, `information budget`, `long-video intake`, `speed-up`, `highlight detection`, `one action point`, or `layout template` may guide planning, filenames, QA notes, and delivery summaries, but they must not become the H1, hook, or main body copy unless the user is explicitly making an instructional post about those concepts. Before rendering, read every visible headline once as a real viewer: if it sounds like a task requirement, replace it with scene-specific copy.
+
+Do not add non-template ornaments just to satisfy an automated density warning. Extra rulers, side bars, pseudo time axes, decorative labels, or invented badges must come from an existing layout recipe or a user request. If a density warning appears, fix it by choosing a better recipe, resizing real content, or accepting the advisory warning with a visual rationale; do not put meaningless UI on the card.
+
+For Live Photo cards, plan them as normal social cards first, then decide the motion role: one action point, one small process, a before/after change, three parallel results, or ambience/evidence. The only structural change is that one or more image wells become video wells. Keep the same ratio, crop, safe-area, typography, and style mode rules; apply the still-image crop logic to the video stream. The first frame must pass the same checks as a static image: no excessive crop, key UI/content remains readable, and the card still follows the chosen layout recipe. Read `references/live-photo-production.md` before rendering.
+
+For material-first Live Photo puzzle cards, let the video assets lead. Use little or no copy: one short headline is enough for a single-video cover, and two-grid / three-grid / four-grid versions should usually have no added text. When a single-video cover adds text on top of the footage, use the M16 Image-Led Cover / text-on-image rules: subject map first, safe quiet zone, Editorial serif/Songti title at regular-medium weight, paper-cream text, and no default full-canvas mask. Do not invent extra kicker, meta, hairlines, labels, rulers, badges, subtitles, or explanatory production terms just to make the overlay feel designed. If only one headline is available, make the typography carry the layout: phrase-aware line break, restrained size, tracking, alignment, and placement. Treat source-embedded text as part of the footage; only avoid adding new text unless the user asks.
+
 ### 4.5. Copy The Seed Template
 
 Do not write HTML from scratch. Pick one seed template based on the style mode chosen in Step 3:
@@ -187,13 +203,23 @@ Replace the single placeholder poster after `<!-- POSTERS_HERE -->` with one `<s
 
 Default implementation pattern:
 
-- Create a task folder in the current workspace, for example `social-card-<slug>/`.
+- Create a task folder under `local-tests/<slug>/` by default, or inside the user-requested output folder. Never put generated task folders, rendered images, MOV files, `.pvt` packages, or downloaded sources in the skill root next to `SKILL.md`.
 - Put source images in `assets/`.
 - Start from the seed template copied in Step 4.5, not a blank file. Prefer changing only the `<!-- POSTERS_HERE -->` region page-to-page. If a task needs custom layout CSS, add one clearly named task-scoped block in the copied file and keep semantic defaults reset (`figure { margin:0; }`, no browser-default spacing surprises).
 - Use Playwright or a browser screenshot tool to export each `.poster` or `.cover` node.
 - Save rendered images in `output/`.
 - Verify dimensions and inspect the rendered PNGs.
-- Keep `node validate-social-deck.mjs <task-dir>` available for auto-check passes. It checks overflow (R1), footer collision (R2), Swiss bold display (R3), minimum font size (R4), 4-band density (R5), `.h-xl` line caps (R6), and browser-default figure margin drift (R7). Exit code 1 on any FAIL — fix before final delivery when auto-check is requested. WARN is advisory but read it.
+- Keep `node validate-social-deck.mjs <task-dir>` available for auto-check passes. It checks overflow (R1), footer collision (R2), Swiss bold display (R3), minimum font size (R4), 4-band density (R5), `.h-xl` line caps (R6), browser-default figure margin drift (R7), visual bounds / bottom whitespace (R8), and title-to-content gaps (R9). Exit code 1 on any FAIL — fix before final delivery when auto-check is requested. WARN is advisory but read it.
+
+Live Photo branch:
+
+- Decide the information budget before rendering: `3s` fits one action point; `5s` fits one small process; triple collage fits three parallel clips but not a complex story; long videos require diagnosis before editing.
+- For long sources, avoid claiming precise automatic highlight detection. Probe duration/resolution, make a sparse contact sheet, and choose between trim, speed-up, split/triple collage, or asking the user for a time range.
+- Extract a first frame from each video well, place it in the final static card layout, and show/inspect that preview before making `.pvt`. This catches crop and hierarchy issues with much lower token and render cost.
+- Render the paired MOV at the platform duration: `5s` for Xiaohongshu, `3s` for WeChat Official Account.
+- Extract the key JPG from a readable representative frame.
+- Package `JPG + MOV` into `.pvt` with `makelive`; AirDrop the `.pvt` as one item for iPhone tests.
+- Validate dimensions, duration, frame count, package contents, and motion quality. Prefer a contact-sheet frame strip for visual checks so only the final tiled image needs human/model inspection. Use `references/live-photo-production.md` for exact commands and failure-mode checks.
 
 Do not place visible instructions, keyboard shortcuts, or usage explanations inside the images.
 
@@ -283,18 +309,28 @@ Final response (after the user has reviewed or asked for auto-check) should incl
 - Rendered images shown inline with absolute paths when useful.
 - A short note on dimensions and verification (or "not yet validated, awaiting your review").
 - For any image fetched from the web: source URL + site + the attribution decision the user made.
+- For Live Photo: the `.pvt` package path, the debug `JPG + MOV` pair, target platform duration, and validation summary.
+- For Live Photo publishing: remind the user of two things: platform limits (`5s` Xiaohongshu, `3s` WeChat Official Account) and publish path (AirDrop the `.pvt` package as one item to iPhone, then publish from the matching mobile app path; desktop/web upload paths generally cannot recognize `.pvt` as a publishable Live Photo).
+- If the user cannot use the iPhone/AirDrop publishing path (e.g. desktop-only workflow, Android, or a platform that does not support Live Photo), offer a degraded delivery: export a short looping GIF or a silent MP4 clip from the same MOV source. The GIF/MP4 keeps the motion evidence but loses the Live Photo tap-to-play experience. Confirm with the user before switching to this fallback.
 - Any unresolved risks, such as source images being low resolution.
 
 ## Non-Negotiables
 
 - Never edit the original Guizang PPT skill or any upstream skill copied from elsewhere.
+- Never create generated work in the skill root. All task artifacts must be under `local-tests/<slug>/` by default, or under a user-requested output folder. Root-level generated folders like `social-card-*`, `livephoto-*`, `wechat-*`, and loose output assets are forbidden.
 - Do not create random decorative SVG ovals, blobs, rain drops, stickers, or meaningless circles.
 - Do not use nested cards or generic SaaS card layouts as the default.
 - Do not let text overflow, touch the edge, or collide with the footer band. Pin `.foot` with `margin-top: auto` inside a flex column, never with `position: absolute` over growing content.
+- When content overflows, measure the amount before editing. Small overflows should get small fixes: `1-40px` means nudge/tighten, `40-90px` means local compaction, `90-160px` means slight title or paragraph compression, and only `160px+` should trigger recipe changes or content removal. After fixing, check R8 bottom whitespace so the page does not swing from overflow to a giant empty lower band.
+- Do not let a title touch the next content block. Main display titles should usually keep at least `28px` below; local headings should keep at least `16px`. Use validator R9 before relying on visual inspection.
 - Do not let text become too small to read on mobile.
 - Do not write inline `font-size` + `font-weight` on display titles in Swiss. Use the typed classes (`.h-hero` / `.h-statement` / `.h-xl` / `.num-mega`). A 80-120px headline at weight 700-900 is not Swiss; "the larger, the lighter" is a hard rule.
 - Do not deliver Editorial posters with a flat paper background, mono labels on every row, and no atmosphere layer. Run the Editorial Identity Test in `references/style-system.md` — a serif title alone does not make a poster Editorial.
 - Do not fake data, release details, or percentages.
 - Do not crop faces, key UI text, or hardware/product details unless the user explicitly accepts it.
+- Do not turn a video card into a fake still sequence without saying so. If a source is shorter than the target duration, ask for a longer source, use a shorter platform-safe duration, or explicitly document any hold/slowdown.
+- Do not skip the first-frame preview for Live Photo. Video is an image well with motion; its first frame must satisfy the static 3:4 layout and crop rules before rendering the MOV.
+- Do not let result videos scroll through section boundaries in a shallow crop; this creates the "overlapping video" failure. Inspect contact sheets and choose a stable time window before packaging.
+- Do not guess the user's visual priority when enlarging/cropping video for readability. Offer the crop/enlarge tradeoff and apply it after the user confirms, unless the request already makes the focal region explicit.
 - Do not reuse a 21:9 cover by blindly cropping it into 1:1. Compose each ratio separately.
 - **3:4 卡必须吃满画布**。Content (text + image + data) 必须覆盖 ≥75% 画布高度。任何 >15% 画布高度的纯空白带都需要"留白理由"：(a) hero image 自带呼吸、(b) 单句宣言式 hero statement、(c) 段落顶/底 leading & trailing whitespace（前后总和 ≤15%）。**禁止用 `<div style="flex: 1"></div>` 上下夹击把内容塞到中段**——杂志页留白逻辑不适用于社交卡（杂志靠对开页吸收留白，社交卡逐张独立刷，欠填看着像 PPT 漏排）。Recipe-by-recipe 最小密度见 `references/layout-recipes.md` 每条 recipe 的「Minimum density」段。Render 后必须跑 `qa-checklist.md` 的 4 横带密度检查。

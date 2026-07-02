@@ -17,9 +17,11 @@ Read [references/atmosphere-system-contract.md](references/atmosphere-system-con
 before implementation. It separates the LUT/ellipsoid architecture from
 dynamic integration and the shell/post handoff.
 
-Read the [LUT sky and aerial-perspective implementation](examples/lut-aerial-perspective/atmosphere-effect.js)
-for shared transmittance/scattering lookup coordinates, sky-ray reconstruction,
-surface-segment transmittance, and inscattering.
+Read the [LUT sky and aerial-perspective entry](examples/lut-aerial-perspective/atmosphere-effect.js)
+and its `source/` modules for the SkyMaterial, SkyLightProbe,
+SunDirectionalLight, AerialPerspectiveEffect, precomputed-texture loader,
+sun/moon direction, lens flare, tone mapping, and dithering path used by the
+LUT example.
 
 ## Required outputs
 

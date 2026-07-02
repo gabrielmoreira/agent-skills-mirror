@@ -34,6 +34,11 @@ If a [`professional-brain`](../professional-brain/SKILL.md) (`brain/`) exists, u
 - **Read first:** the affected system's `entities/` file and any related prior `decisions/` or past incidents (recurring root causes are the most important thing to surface).
 - **Write after:** log the action items and decisions to `decisions/`, and the root-cause learning to `knowledge/` — tag a measured cause `[data]` and a suspected one `[hunch]`, never the reverse.
 
+## Deeper Materials
+
+- **`references/root-cause-digging.md`** — five-whys done properly (stop at a changeable system property, branch into cause/detection/response chains), a contributing-factor taxonomy to sweep, and blame-shaped → systemic language rewrites. Use it while writing the Root Cause section and to reframe any blameful input notes.
+- **`templates/review-meeting-agenda.md`** — a 45-minute, document-first agenda for the postmortem review meeting, with ground rules and an action-item quality gate. Offer it alongside the finished postmortem.
+
 ## Output Format
 
 ---

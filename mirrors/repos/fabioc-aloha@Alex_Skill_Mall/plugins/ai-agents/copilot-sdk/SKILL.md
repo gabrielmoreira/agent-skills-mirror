@@ -25,7 +25,7 @@ The SDK wraps the Copilot CLI via JSON-RPC, providing session management, custom
 
 - **GitHub Copilot CLI** installed and authenticated (`copilot --version`)
 - **GitHub Copilot subscription** (Individual, Business, or Enterprise) — not required for BYOK
-- **Runtime:** Node.js 18+ / Python 3.10+ / Go 1.21+ / .NET 8.0+
+- **Runtime:** Node.js 24+ / Python 3.10+ / Go 1.21+ / .NET 8.0+
 
 ## Installation
 

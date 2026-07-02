@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:bf89b38dfc462393fa4e2260440fc53a1e66fe55`
+**Shape snapshot:** `sha1:7247a6c6bfb40d3cb70c0c2815edbb1ba13ffaec`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -45,8 +45,8 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ## At a Glance
 
-- **273** active API routes across **66** categories (321 total including archived)
-- **4** required + **183** optional environment variables
+- **275** active API routes across **67** categories (323 total including archived)
+- **4** required + **185** optional environment variables
 - **100** database tables
 
 ## API Surface
@@ -273,6 +273,10 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `GET` `/api/integrity/jwks`
 - `POST` `/api/integrity/verify`
 
+### `internal`
+
+- `POST` `/api/internal/resolve-key`
+
 ### `invite`
 
 - `GET, POST` `/api/invite/[token]`
@@ -362,6 +366,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `POST` `/api/policies/modes/import`
 - `POST` `/api/policies/modes/preview`
 - `GET` `/api/policies/proof`
+- `GET, POST` `/api/policies/proposals`
 - `GET` `/api/policies/review`
 - `POST` `/api/policies/review/verdict`
 - `POST` `/api/policies/simulate`
@@ -527,8 +532,8 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 These must be set — DashClaw will fail to start without them.
 
-- **`DASHCLAW_API_KEY`** - referenced in 77 file(s)
-- **`DATABASE_URL`** - referenced in 98 file(s)
+- **`DASHCLAW_API_KEY`** - referenced in 80 file(s)
+- **`DATABASE_URL`** - referenced in 100 file(s)
 - **`ENCRYPTION_KEY`** - referenced in 8 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 5 file(s)
 
@@ -585,6 +590,7 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_HTTP_RETRIES` *(undocumented)*
 - `DASHCLAW_HTTP_RETRY_BASE_MS` *(undocumented)*
 - `DASHCLAW_HTTP_TIMEOUT_MS` *(undocumented)*
+- `DASHCLAW_INTERNAL_BASE_URL` *(undocumented)*
 - `DASHCLAW_JTI_MAX_TTL_SECONDS` *(undocumented)*
 - `DASHCLAW_JTI_REPLAY_PROTECTION` *(undocumented)*
 - `DASHCLAW_JWT_AUDIENCE` *(undocumented)*
@@ -688,6 +694,7 @@ These have fallbacks or only activate specific features.
 - `SQL_CAPTURE_FILE` *(undocumented)*
 - `STARTUP_SMOKE_BASE_URL` *(undocumented)*
 - `STARTUP_SMOKE_INTERVAL_MS` *(undocumented)*
+- `STARTUP_SMOKE_SKIP_POLICY` *(undocumented)*
 - `STARTUP_SMOKE_TIMEOUT_MS` *(undocumented)*
 - `STRIPE_LIVE_SECRET_KEY` *(undocumented)*
 - `STRIPE_PRICE_BUSINESS` *(undocumented)*

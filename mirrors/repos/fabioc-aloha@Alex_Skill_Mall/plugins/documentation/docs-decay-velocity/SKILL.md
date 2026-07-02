@@ -20,7 +20,7 @@ lastReviewed: 2026-04-30
 
 ## The Problem
 
-Your README says "47 unit tests" but you now have 89. Your docs say "requires Node 16" but the project uses Node 22. Your architecture diagram shows a service that was removed 6 months ago.
+Your README says "47 unit tests" but you now have 89. Your docs say "requires Node 16" but the project uses Node 24. Your architecture diagram shows a service that was removed 6 months ago.
 
 ## Why It Happens
 

@@ -278,6 +278,19 @@ Ask these checks:
    codebase — do not overload a name with a new shape or source.
 2. Flag values that are mutable at runtime — specify a live read at the
    point of use rather than a one-time capture at construction.
+3. When an issue proposes to **delete, replace, or "align to upstream"**
+   code, first check the target for an intentional-divergence signal — a
+   local change made on purpose to differ from upstream. If one is present,
+   require the issue body to acknowledge that divergence and justify
+   overriding it, rather than silently reverting hardening a consumer added
+   deliberately (blind "resync to upstream" resets are a recurring
+   Discover→plan-cycle waste when the divergence turns out to be
+   intentional). The recommended portable signal is a canonical inline
+   code-comment convention (for example a `do-not-revert:` / `idd-divergence:`
+   marker) — it travels with vendored files and needs no repo-wide label
+   taxonomy. An owner/CODEOWNERS marker or a referenced tracking issue may
+   also serve, but the code-comment convention is the recommended default.
+   Do not hard-code any single consumer's divergence-tracking mechanism.
 
 ## Dependency minimization
 
@@ -301,6 +314,15 @@ availability, or ordering constraint.
   tense is a recurring advisory-review-thrash pattern; "describe shipped
   behavior" is a true ordering constraint, so this edge is consistent
   with the encode-only-a-real-constraint rule above
+- when authoring a **finalize or verify track whose acceptance criteria
+  assert state produced by sibling implementation tracks**, encode
+  `Blocked by #NNN` on **each** such sibling rather than stating the
+  ordering only in prose. Discover and A4.5 honor the hard `Blocked by`
+  edge, not a prose "runs after the siblings" note: A4.5 Actionability
+  inspects the body, not completability, so a prose-sequenced finalize
+  track reports startable the moment its build foundation closes, and
+  claiming it then means either failing its acceptance criteria or doing
+  the siblings' unmerged work
 
 When an issue keeps a dependency edge, justify each dependency edge in
 the surrounding issue body and confirm that the split still preserves

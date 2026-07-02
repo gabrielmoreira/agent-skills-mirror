@@ -7,7 +7,7 @@ git tag v1.2.3 && git push origin v1.2.3
 ```
 
 - Tags containing `-` are drafts (and push the sdist to TestPyPI).
-- Bare `vX.Y.Z` tags publish immediately.
+- Bare `vX.Y.Z` tags publish immediately (and push the sdist to production PyPI).
 - Assets: `geniex-sdk-{linux,windows}-arm64-<tag>.zip`, `geniex-cli-linux-arm64-<tag>.tar.gz`, `geniex-cli-setup-windows-arm64-<tag>.exe`, `*.whl`, `*.aar`, and per-file `.sha256` sidecars.
 - Re-running the same tag via **Actions → Release → Run workflow** is safe **as long as you set "Use workflow from" to the tag** (Tags tab in the dropdown). Dispatching from `main` is rejected by `resolve-tag` so the workflow never builds a tag against the wrong commit.
 - S3 mirror at `s3://qaihub-public-assets/qai-hub-geniex/` — see [§ S3 mirror & manifest](#s3-mirror--manifest) below.
@@ -99,7 +99,7 @@ All objects live directly under the prefix — no `<tag>/` subdirectories. The `
 | `index.json` | every tag | `no-cache` | Full version catalogue |
 | `latest.json` | stable only | `no-cache` | Pointer to the latest stable manifest |
 
-Other assets (AAR, sdist, HTP cert/to-sign zips) ship via GitHub Releases / Maven Central / TestPyPI only — not via S3.
+Other assets (AAR, sdist, HTP cert/to-sign zips) ship via GitHub Releases / Maven Central / PyPI (stable) / TestPyPI (prerelease) only — not via S3.
 
 ### Manifest contract for client apps
 

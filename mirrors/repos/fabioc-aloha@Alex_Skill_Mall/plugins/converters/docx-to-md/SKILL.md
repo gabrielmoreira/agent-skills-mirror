@@ -211,7 +211,7 @@ Get-ChildItem *.docx | ForEach-Object {
 
 ## Requirements
 
-- Node.js 18+
+- Node.js 24+
 - pandoc (`winget install pandoc`)
 
 ---

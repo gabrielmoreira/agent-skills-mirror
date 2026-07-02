@@ -73,7 +73,7 @@ Seeded randomness perturbs constrained decisions:
 
 ```text
 towerScale = clamp(
-  authoredTowerScale + random(-0.05, 0.04),
+  settings.towerScale + random(-0.05, 0.04),
   0.62,
   0.96
 )

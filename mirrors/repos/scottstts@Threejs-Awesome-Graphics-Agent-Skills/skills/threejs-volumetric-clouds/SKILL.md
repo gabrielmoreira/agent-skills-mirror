@@ -19,11 +19,10 @@ Cloud quality comes from density organization, lighting, and temporal stabilityâ
 
 Read [references/weather-volume-and-reconstruction.md](references/weather-volume-and-reconstruction.md) before implementing or auditing the cloud system.
 
-Read the [weather volume cloud shader](examples/weather-volume-clouds/cloud-system.js)
-and [temporal effect wrapper](examples/weather-volume-clouds/cloud-effect.js)
-for weather-layer ownership, spherical shell bounds, authored shape/detail
-sampling, directional optical depth, low-resolution rendering, and history
-diagnostics.
+Read the [weather volume cloud entry](examples/weather-volume-clouds/cloud-effect.js)
+and its `source/` modules for weather-layer ownership, spherical shell bounds,
+authored shape/detail sampling, cloud shadow maps, temporal upscale,
+atmospheric composition, and package-owned diagnostics.
 
 ## Required controls
 

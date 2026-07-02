@@ -43,7 +43,7 @@ When you uninstall ANY of them, winget removes the shared binaries — even if a
 ### Step 1: Install New Version First
 
 ```powershell
-# Install Node 22 (don't uninstall old yet!)
+# Install Node 24 (don't uninstall old yet!)
 winget install OpenJS.NodeJS --version 22.x.x
 
 # Or use the versioned package

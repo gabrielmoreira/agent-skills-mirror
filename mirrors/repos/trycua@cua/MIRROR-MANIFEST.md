@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `trycua/cua` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `trycua/cua` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `trycua/cua` — 26 default patterns, 0 followed patterns, 21 file(s) 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,27 +59,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`docs/src/app/llms.txt/route.ts`](docs/src/app/llms.txt/route.ts) |
-| 2 | ✓ | [`libs/cua-bench/cua_bench/templates/starter_env/CLAUDE.md`](libs/cua-bench/cua_bench/templates/starter_env/CLAUDE.md) |
-| 3 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/click-button/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/click-button/CLAUDE.md) |
-| 4 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/click-icon/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/click-icon/CLAUDE.md) |
-| 5 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/color-picker/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/color-picker/CLAUDE.md) |
-| 6 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/date-picker/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/date-picker/CLAUDE.md) |
-| 7 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/drag-drop/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/drag-drop/CLAUDE.md) |
-| 8 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/drag-slider/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/drag-slider/CLAUDE.md) |
-| 9 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/fill-form/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/fill-form/CLAUDE.md) |
-| 10 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/right-click-menu/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/right-click-menu/CLAUDE.md) |
-| 11 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/select-dropdown/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/select-dropdown/CLAUDE.md) |
-| 12 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/spreadsheet-cell/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/spreadsheet-cell/CLAUDE.md) |
-| 13 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/toggle-switch/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/toggle-switch/CLAUDE.md) |
-| 14 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/typing-input/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/typing-input/CLAUDE.md) |
-| 15 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md) |
-| 16 | ✓ | [`libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md`](libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md) |
-| 17 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/SKILL.md`](libs/cua-driver/rust/Skills/cua-driver/SKILL.md) |
-| 18 | ✓ | [`libs/cua-driver/swift/Skills/cua-driver/SKILL.md`](libs/cua-driver/swift/Skills/cua-driver/SKILL.md) |
-| 19 | ✓ | [`libs/typescript/cua-cli/CLAUDE.md`](libs/typescript/cua-cli/CLAUDE.md) |
-| 20 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
-| 21 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |
+| 1 | ✓ | [`libs/cua-bench/cua_bench/templates/starter_env/CLAUDE.md`](libs/cua-bench/cua_bench/templates/starter_env/CLAUDE.md) |
+| 2 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/click-button/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/click-button/CLAUDE.md) |
+| 3 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/click-icon/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/click-icon/CLAUDE.md) |
+| 4 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/color-picker/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/color-picker/CLAUDE.md) |
+| 5 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/date-picker/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/date-picker/CLAUDE.md) |
+| 6 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/drag-drop/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/drag-drop/CLAUDE.md) |
+| 7 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/drag-slider/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/drag-slider/CLAUDE.md) |
+| 8 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/fill-form/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/fill-form/CLAUDE.md) |
+| 9 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/right-click-menu/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/right-click-menu/CLAUDE.md) |
+| 10 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/select-dropdown/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/select-dropdown/CLAUDE.md) |
+| 11 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/spreadsheet-cell/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/spreadsheet-cell/CLAUDE.md) |
+| 12 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/toggle-switch/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/toggle-switch/CLAUDE.md) |
+| 13 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/typing-input/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/typing-input/CLAUDE.md) |
+| 14 | ✓ | [`libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md`](libs/cua-bench/datasets/cua-bench-basic/video-player/CLAUDE.md) |
+| 15 | ✓ | [`libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md`](libs/cua-bench/example_tasks/minesweeper_game_env/CLAUDE.md) |
+| 16 | ✓ | [`libs/cua-driver/rust/Skills/cua-driver/SKILL.md`](libs/cua-driver/rust/Skills/cua-driver/SKILL.md) |
+| 17 | ✓ | [`libs/typescript/cua-cli/CLAUDE.md`](libs/typescript/cua-cli/CLAUDE.md) |
+| 18 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
+| 19 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |
 
 ---
 

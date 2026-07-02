@@ -28,7 +28,7 @@ bundles, grazing spotlights, selective bloom ownership, and geometry
 diagnostics.
 
 Read the
-[authored financial tower compiler](../threejs-procedural-architecture/examples/authored-financial-tower/building-system.js)
+[procedural financial tower compiler](../threejs-procedural-architecture/examples/procedural-financial-tower/building-system.js)
 for semantic placement compilation and material-slot instancing at building
 scale.
 

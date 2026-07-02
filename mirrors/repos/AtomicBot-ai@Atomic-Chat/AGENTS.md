@@ -309,6 +309,144 @@ Append-only. Newest at top. Each entry follows this shape:
 
 ---
 
+### 2026-07-01 — Fix Hermes Agent config on Windows writing to the wrong file (`%USERPROFILE%\.hermes` vs the installer's real `HERMES_HOME`), plus a stale-registry-env guard
+- **Context:** A Windows user reported that changing the model in Settings →
+  Hermes Agent had no effect — the `hermes` CLI kept using its old model.
+  Root-caused via two focused subagent investigations (codebase patterns +
+  Hermes installer mechanics), confirmed against the upstream
+  `NousResearch/hermes-agent` `install.ps1` and Python source:
+  1. **Wrong file, unconditionally.** `configure_hermes_agent` /
+     `clear_hermes_agent_config`
+     ([`commands.rs`](src-tauri/src/core/system/commands.rs)) always wrote to
+     `%USERPROFILE%\.hermes\config.yaml`. But the official Windows installer
+     (`install.ps1`) sets `HERMES_HOME` to `%LOCALAPPDATA%\hermes` via
+     `[Environment]::SetEnvironmentVariable("HERMES_HOME", ..., "User")` and
+     seeds a template `config.yaml` there — even with `-SkipSetup
+     -NonInteractive` (those flags only skip the interactive API-key/model
+     wizard, not the `HERMES_HOME` env-var setup or directory scaffolding).
+     Hermes' own `hermes_constants.py::get_hermes_home()` resolves
+     `os.environ["HERMES_HOME"]` first, then falls back to
+     `%LOCALAPPDATA%\hermes` — **never** `%USERPROFILE%\.hermes`, which isn't
+     a Hermes default on any platform. So our app was patching a file the
+     `hermes` CLI never reads.
+  2. **Stale env var, same-session.** Even a naive `std::env::var("HERMES_HOME")`
+     read would be unreliable: the Launch page's Run flow calls
+     `install_agent` (spawns `install.ps1`, which writes `HERMES_HOME` to
+     `HKCU\Environment`) and `configure_hermes_agent` back-to-back in the
+     *same* already-running Tauri process, whose environment block is a
+     snapshot taken at its own startup — registry writes from a child
+     installer never propagate back into it. (Hermes' own official Electron
+     desktop app hit and fixed this exact gap by reading the registry
+     directly — precedent confirmed in
+     `apps/desktop/electron/windows-user-env.cjs`.)
+- **Decision:** New `resolve_hermes_dir()` helper
+  ([`commands.rs`](src-tauri/src/core/system/commands.rs)), used by both
+  `configure_hermes_agent` and `clear_hermes_agent_config`, replacing the
+  hardcoded `USERPROFILE\.hermes` / `HOME/.hermes` split. On Windows it tries,
+  in order: (1) a **fresh** registry read of `HERMES_HOME` via new
+  `#[cfg(windows)] read_windows_user_env(name)` (spawns
+  `powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('HERMES_HOME', 'User')"`,
+  `CREATE_NO_WINDOW`, mirroring the existing `refresh_windows_path::read_scope`
+  PATH-refresh pattern rather than adding a new `winreg`-based path — the
+  crate is already a dependency but this keeps the read symmetric with the
+  proven PATH mechanism); (2) the process's own (possibly stale but
+  non-worse) `HERMES_HOME` env var, in case a previous launch already picked
+  it up; (3) `%LOCALAPPDATA%\hermes` — Hermes' genuine platform default. Off
+  Windows, behavior is unchanged (`$HOME/.hermes`).
+- **Consequences:** Model/base-URL/provider changes made in Settings → Hermes
+  Agent (and the Launch-page one-click Run flow) now land in the file the
+  `hermes` CLI actually reads, on both a fresh install (installer just ran,
+  same session) and a pre-existing install. No IPC, schema, or on-disk-layout
+  change beyond which directory is targeted; macOS/Linux (`$HOME/.hermes`)
+  are untouched. **Deliberately not done:** no generic reusable
+  "read any Windows user env var" abstraction beyond this one function (the
+  existing `refresh_windows_path` remains PATH-specific and unchanged); no
+  `winreg`-crate-based read was introduced (the PowerShell approach mirrors
+  the already-proven pattern one function above it). **Verified:**
+  `cargo check -p Atomic-Chat` clean (0 errors, only the pre-existing
+  unrelated `FileMetadata` dead_code warning in `tauri-plugin-vector-db`);
+  `ReadLints` clean on the edited file. A live Windows smoke test (install
+  Hermes fresh -> change model in Settings -> confirm `hermes` picks it up)
+  is the residual manual step (no such host in the sandbox).
+- **Owner:** team.
+- **Links:** the 2026-06-01 ADR *Add a "Launch" page ...* (the
+  `configure_hermes_agent` / `install_agent` sequencing this fix corrects
+  for), the 2026-06-29/2026-06-25 ADRs on Windows PATH refresh (the
+  `read_scope` / `refresh_windows_path` pattern reused here), files:
+  [`src-tauri/src/core/system/commands.rs`](src-tauri/src/core/system/commands.rs)
+  (`resolve_hermes_dir`, `read_windows_user_env`, `configure_hermes_agent`,
+  `clear_hermes_agent_config`),
+  [`web-app/src/routes/settings/hermes-agent.tsx`](web-app/src/routes/settings/hermes-agent.tsx).
+
+### 2026-07-01 — Fix `llamacpp-upstream` hot-swap race: persist `version_backend` *before* unloading, not after (Windows "optimal backend selected but still running on CPU" bug)
+- **Context:** Windows user report — after "Find optimal backend" downloads
+  and applies a GPU backend onto a host that was already running a loaded
+  model on the bundled CPU build, the Settings UI immediately shows the new
+  backend as active, but the running `llama-server.exe` process silently
+  stays on the **old** CPU build (no crash, no error — just wrong binary,
+  confirmed by throughput staying CPU-bound). Root cause is a hot-swap
+  ordering race in `applyBackendLive()`
+  ([`extensions/llamacpp-upstream-extension/src/index.ts`](extensions/llamacpp-upstream-extension/src/index.ts)),
+  the private helper `downloadRecommendedBackend()` calls after a successful
+  download to apply the new backend without a full app restart. The old
+  order was: (1) `getLoadedModels()` → (2) `unload()` every loaded model →
+  (3) `updateBackend()` (persists settings + commits
+  `this.config.version_backend` to the new string). Step (2)'s `unload()`
+  flips the model's server status to stopped, which the web-app's
+  local-model auto-start effect
+  ([`ChatInput.tsx`](web-app/src/containers/ChatInput.tsx), the
+  `ensureLocalModelRunning` effect) reacts to *immediately* by calling
+  `switchToModel()` → `performLoad()`. `performLoad()` reads
+  `cfg.version_backend` off a synchronous snapshot of `this.config` taken at
+  call time — so if that auto-reload fires before step (3) commits (a race
+  window Windows widens with the deliberate ~1s delay inside
+  `updateBackend()`), the auto-reload spawns a fresh `llama-server.exe`
+  against the **still-old** `version_backend`, then `updateBackend()`
+  finishes a moment later and flips the UI/config to the new value — leaving
+  the UI and the actually-running process permanently out of sync until the
+  next manual restart. Confirmed the Rust-side process-termination path
+  (`unload_llama_model` / `force_terminate_process` / `find_session_by_model_id`
+  in `tauri-plugin-llamacpp-upstream`) is not at fault — termination is
+  reliable; this is purely a TS-side config-commit-vs-reload ordering bug.
+- **Decision (scope: `llamacpp-upstream-extension` only — the user
+  explicitly declined mirroring it into the turboquant `llamacpp-extension`,
+  which carries the byte-identical pattern but is macOS-only and not the
+  reported bug):** Reorder `applyBackendLive()` so `updateBackend()` commits
+  the new `version_backend` into `this.config` **before** any loaded model is
+  unloaded: (1) `getLoadedModels()` (best-effort, unchanged) → (2)
+  `updateBackend(backendString)`, now throwing early (and touching **no**
+  loaded model) if `wasUpdated` is false → (3) unload each previously-loaded
+  model (best-effort, log-and-continue, unchanged). Any auto-reload the
+  unload step triggers now reads the already-committed new backend. A
+  `updateBackend()` failure is also now strictly safer than before — a
+  working session is never killed on a failed hot-swap attempt, whereas the
+  old order unloaded first and could fail on the update, stranding the user
+  model-less until `activatePendingBackend()` retried on next launch.
+- **Consequences:** Windows (and any other platform driving
+  `llamacpp-upstream`) users who hot-swap onto a better backend while a
+  model is loaded now actually run on the new backend the moment the UI
+  reports it, closing the "optimal backend selected but silently still on
+  CPU" gap. **Deliberately NOT mirrored into `extensions/llamacpp-extension/`
+  (the TurboQuant provider, macOS-only)** — it has the identical
+  unload-then-update ordering in its own `applyBackendLive()` and is
+  logically exposed to the same race, but is out of scope for this fix per
+  explicit user decision; a future ADR should port this reorder there if the
+  same symptom is ever reported on macOS TurboQuant. No IPC, Rust,
+  settings-schema, or on-disk-layout change — pure reorder inside one
+  extension method. **Verified:** rolldown build clean
+  (`dist/index.js` 240.63 kB, exit 0 — the authoritative compile);
+  `ReadLints` clean on the edited file.
+- **Owner:** team.
+- **Links:** §4.2 *LLM backend*, the 2026-06-15/16 ADRs on
+  `llamacpp-upstream` backend fallback/recovery (the broader hot-swap /
+  fallback machinery this method belongs to), files:
+  [`extensions/llamacpp-upstream-extension/src/index.ts`](extensions/llamacpp-upstream-extension/src/index.ts)
+  (`applyBackendLive`, `downloadRecommendedBackend`, `updateBackend`),
+  [`web-app/src/containers/ChatInput.tsx`](web-app/src/containers/ChatInput.tsx)
+  (the local-model auto-start effect that triggered the race).
+
+---
+
 ### 2026-06-29 — Auto-install Node.js/npm via `winget` when an npm-based Launch-page agent is installed on a Windows host without npm (graceful fallback to the nodejs.org error)
 - **Context:** `install_agent`
  ([`commands.rs`](src-tauri/src/core/system/commands.rs)) gates every

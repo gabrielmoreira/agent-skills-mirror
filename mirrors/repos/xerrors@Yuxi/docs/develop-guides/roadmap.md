@@ -16,24 +16,22 @@
 
 
 **智能体**
-- [ ] 子智能体缺少异步的机制 <Badge text="v0.7.1" /> <Badge type="warning" text="开发中" />
+- [x] 子智能体缺少异步的机制 <Badge text="v0.7.1" /> <Badge type="warning" text="开发中" />
 - [ ] 子智能体缺少 steer 机制 <Badge text="v0.7.1" />
 - [ ] 子智能体的双向通信，缺少 ask_for_main_agent 的机制
 - [ ] 子智能体与子智能体的通信机制
-- [ ] 如何停掉一个子智能体、查看智能体的进度
 - [ ] 优化 Agent `read_file` 工具：至少对齐 DeepAgents 的读取行为
 - [ ] Skill 详情页增强绑定能力展示：内置 Skill 也应清晰展示只读的工具/MCP/Skill 依赖说明
-- [ ] 添加 Agent 独立调用接口，方便后续评估使用
+- [x] 添加 Agent 独立调用接口，方便后续评估使用
 - [ ] 任务队列 <Badge text="v0.7.2" />
-- [ ] 反馈接入到 Langfuse
+- [x] 反馈接入到 Langfuse
 
 **其他**
-- [ ] 历史对话新增搜索能力（[#790](https://github.com/xerrors/Yuxi/issues/790)）
-- [ ] 消息中的代码块增加快速复制按钮（[#790](https://github.com/xerrors/Yuxi/issues/790)）
-- [ ] 历史对话新增分组（或者叫做项目）
+- [x] 历史对话新增搜索能力（[#790](https://github.com/xerrors/Yuxi/issues/790)）
+- [x] 消息中的代码块增加快速复制按钮（[#790](https://github.com/xerrors/Yuxi/issues/790)）
 - [ ] 集成 Memory，基于 deepagents 的文件后端实现，需要考虑定位
-- [ ] 优化 Task 模块定位：区分真正的后台任务实体与进度条管理工具，重新定义任务中心/Tasker 的职责边界
-- [ ] 模型供应商类型继续补齐非 OpenAI 兼容适配，并清理不再支持的 provider type 字样 <Badge text="v0.7.1" />
+- [x] 优化 Task 模块定位：区分真正的后台任务实体与进度条管理工具，重新定义任务中心/Tasker 的职责边界
+- [x] 模型供应商类型继续补齐非 OpenAI 兼容适配，并清理不再支持的 provider type 字样 <Badge text="v0.7.1" />
 - [ ] 优化 Agent 向用户追问交互：支持较长文本回答输入，并在流式输出时保持聊天区跟随最新内容（[#753](https://github.com/xerrors/Yuxi/issues/753)）
 
 **仅设想**

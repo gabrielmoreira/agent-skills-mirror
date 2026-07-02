@@ -53,6 +53,12 @@ Export an HTML slide deck to a `.pptx` with native PowerPoint objects (editable 
 - `slides[N].selector`: `"deck-stage > [data-deck-active]"`.
 - `hideSelectors` is unnecessary — the overlay and tap-zones live in shadow DOM and aren't captured.
 
+### Slide animations
+
+If the deck uses the `data-anim` convention ([make-a-deck](make-a-deck.md) → *Animations*), gen_pptx detects the attributes automatically — there is no input field to set — and writes them as native PowerPoint entrance/exit/emphasis/motion-path animations (the full effect set: fade, fly, wipe, float, split, bounce, zoom, wheel, random-bars, appear/disappear, spin, grow/shrink, pulse, teeter, custom paths) with the authored trigger, delay, duration, order, repeat, and auto-reverse. Capture is unaffected: slides are still captured in their base (finished) layout.
+
+**Verify the builds landed:** the result JSON's `animations` count should equal the number of `data-anim` elements you authored (count them: `grep -c 'data-anim="' deck.html`). A lower number means some animations fell back to static — read the `animation_invalid` / `animation_hidden_target` / `animation_nested` flags below for which and why, fix the attributes, and re-export. Zero with no flags means the capture never saw the attributes (wrong file or selector).
+
 ## Speaker notes
 
 Read automatically from `<script type="application/json" id="speaker-notes">` and attached by index. You don't pass them.
@@ -70,6 +76,10 @@ The result lists flags. **These are warnings, not errors** — read each message
 - `font_swap_failed` — one or more `fontSwaps` targets never loaded (misspelled family, or Google Fonts doesn't serve it), so the deck was laid out with a fallback while the file names the swap font. Retry with a corrected or different family, or fall back to web-safe fonts. Whatever you do next, tell the user plainly which fonts couldn't be applied — e.g. "Heads up: Poppins couldn't be loaded during export, so the deck uses a stand-in font and text may wrap differently. Want me to try a different font?"
 - `images_failed` — images didn't decode before capture. Usually a 404 or CORS.
 - `reset_selector_miss` — your `resetTransformSelector` matched nothing.
+- `animation_invalid` — a `data-anim-*` value had a problem; read the message for which of two outcomes applies. Recoverable values (bad trigger/dir/delay/duration/order, over-long paths, `repeat` on an instant effect, `auto-reverse` on an entrance/exit) fall back to defaults and the animation **is** still exported; unusable ones (unknown effect, `rotate` 0, `scale` 1, missing/bad path, `data-anim` on the slide root, element hidden at capture) drop the animation and the element exports statically. Fix the attribute (see [make-a-deck](make-a-deck.md) → *Animations*) and re-export.
+- `animation_hidden_target` — a `data-anim` element produced no exported shapes because it was hidden at capture. Author the deck in its final visible state — the animation does the hiding, not your CSS.
+- `animation_nested` — a `data-anim` element sits inside another `data-anim` subtree; the innermost one wins for its subtree (the outer element's remaining shapes keep the outer animation).
+- `animations_ignored_screenshots` — screenshots mode only, never fires here; see [screenshots export](export-as-pptx-screenshots.md).
 
 If the flags look like real problems, fix the inputs and retry. If they're expected (deck genuinely has no notes, two slides really are identical), tell the user the download fired and move on.
 

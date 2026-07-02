@@ -7,6 +7,8 @@ lastReviewed: 2026-06-30
 
 Use this to audit `.vscode/` compliance on a heir without changing anything. To apply, use `/configure-workspace`.
 
+Workspace settings are the project-specific override layer over user-scope settings.
+
 ## Objective
 
 Report drift between the workspace's `.vscode/` and the heir-workspace baseline:

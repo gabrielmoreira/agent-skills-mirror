@@ -17,11 +17,11 @@ lastReviewed: 2026-04-30
 Older action versions trigger deprecation warnings and will eventually break:
 
 ```yaml
-# Deprecated - Node.js 16 warnings
-- uses: actions/checkout@v3
-- uses: actions/setup-node@v3
+# Deprecated - old action majors and pre-24 Node runners
+- uses: actions/checkout@vOLD
+- uses: actions/setup-node@vOLD
   with:
-    node-version: '18'
+    node-version: '<24'
 ```
 
 ## The Solution
@@ -29,30 +29,30 @@ Older action versions trigger deprecation warnings and will eventually break:
 Proactively use current versions:
 
 ```yaml
-# Current as of 2024
-- uses: actions/checkout@v5
-- uses: actions/setup-node@v5
+# Current ACT baseline
+- uses: actions/checkout@v6
+- uses: actions/setup-node@v6
   with:
-    node-version: '22'
+    node-version: '24'
 ```
 
 ## Version Reference
 
 | Action | Current | Node.js Runtime |
 |--------|---------|-----------------|
-| actions/checkout | v5 | Node 20 |
-| actions/setup-node | v5 | Node 20 |
-| actions/upload-artifact | v4 | Node 20 |
-| actions/download-artifact | v4 | Node 20 |
-| actions/cache | v4 | Node 20 |
-| actions/github-script | v7 | Node 20 |
+| actions/checkout | v6 | Node 24 |
+| actions/setup-node | v6 | Node 24 |
+| actions/upload-artifact | latest Node 24-compatible major | Node 24 |
+| actions/download-artifact | latest Node 24-compatible major | Node 24 |
+| actions/cache | latest Node 24-compatible major | Node 24 |
+| actions/github-script | latest Node 24-compatible major | Node 24 |
 
 ## Migration Script
 
 ```bash
-# Update all common actions to v5/v4
-sed -i 's/actions\/checkout@v[0-4]/actions\/checkout@v5/g' .github/workflows/*.yml
-sed -i 's/actions\/setup-node@v[0-4]/actions\/setup-node@v5/g' .github/workflows/*.yml
+# Update core actions to the Node 24-compatible majors
+sed -i 's/actions\/checkout@v[0-5]/actions\/checkout@v6/g' .github/workflows/*.yml
+sed -i 's/actions\/setup-node@v[0-5]/actions\/setup-node@v6/g' .github/workflows/*.yml
 sed -i 's/actions\/upload-artifact@v[0-3]/actions\/upload-artifact@v4/g' .github/workflows/*.yml
 sed -i 's/actions\/download-artifact@v[0-3]/actions\/download-artifact@v4/g' .github/workflows/*.yml
 ```
@@ -62,10 +62,10 @@ sed -i 's/actions\/download-artifact@v[0-3]/actions\/download-artifact@v4/g' .gi
 ```yaml
 strategy:
   matrix:
-    node-version: ['18', '20', '22']  # LTS versions
-    
-# Or just latest LTS
-node-version: '22'
+    node-version: ['24']
+
+# ACT baseline
+node-version: '24'
 ```
 
 ## Verification

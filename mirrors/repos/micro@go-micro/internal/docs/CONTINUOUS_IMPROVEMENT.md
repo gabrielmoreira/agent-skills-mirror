@@ -1,0 +1,203 @@
+# Continuous Improvement Loop
+
+Go Micro is an agent harness. This file defines the **autonomous loop that builds
+it** — the framework's own thesis (an agent operating a system) pointed at itself.
+Claude Code drives the loop; Codex executes scoped tasks; the human sets direction
+and can stop or revert anything at any time.
+
+> **North Star.** Every increment must advance the thesis in [`THESIS.md`](THESIS.md):
+> a holistic agent harness and service framework encapsulating the lifecycle of
+> **services → agents → workflows**. Judge each change against it — work that
+> doesn't move toward that lifecycle isn't an improvement, however clean.
+
+## The pipeline (planner → generator → evaluator)
+
+The development process is an operational instance of the long-running-agent
+harness pattern ([Anthropic on harness design](https://www.anthropic.com/engineering/harness-design-long-running-apps)) —
+a planner, a generator, and a *separate* evaluator — distributed across GitHub
+Actions instead of subagents. Each role is a workflow:
+
+| Role | Workflow (action name) | What it does |
+|------|------------------------|--------------|
+| **Planner** | `loop-architect.yml` — *Loop: Architect (Planner)* | Tracks live state, prioritizes the roadmap + an internal scan, and maintains the ranked queue in [`PRIORITIES.md`](PRIORITIES.md). Decides *what*. |
+| **Generator** | `loop-builder.yml` — *Loop: Builder (Generator)* | Builds the top open queue item as a single-concern PR (via Codex) and self-merges on green CI. Does the work. |
+| **Evaluator** | `harness.yml` — *Harness (E2E)*, plus the CI gate (`tests.yaml`, `lint.yaml`) | Grades every change: the mock harness + unit/lint on each push/PR, and real-model conformance hourly. A *separate* grader — never the generator judging itself. |
+| **Evaluator → feedback** | `loop-triage.yml` — *Loop: Triage (Evaluator feedback)* | On harness failure, root-causes, dedupes, and files scoped fix issues back into the planner's queue. The hill-climbing feedback path. |
+| **Coherence** | `loop-devrel.yml` — *Loop: DevRel* | Keeps README/website/docs/blog aligned with the North Star, keeps `CHANGELOG.md` living (reconciling `[Unreleased]` against merged PRs and rolling it into version headings as tags cut), and drafts the changelog blog post. |
+| **Release** | `loop-release.yml` — *Loop: Release (daily patch)* | Cuts a daily patch tag when master has new commits, so the *installable* framework tracks the loop's improvements (triggers `release.yml`/goreleaser). Minor/major bumps stay with the human. |
+
+Generation is separated from evaluation on purpose: an agent grading its own work
+reliably over-rates it, so **CI and the harness — not the builder — are the gate**.
+The human sets direction and owns the calls that need taste (see Guardrails).
+
+## Autonomy
+
+Full autonomy, **no approval gates**. Each increment: Claude Code picks the work,
+implements it (or dispatches Codex), opens a PR, and **merges it** — including
+reviewing and merging Codex's PRs. The only gate is **correctness**: `go build`,
+`go test`, and `golangci-lint` must be green (that's not an approval, it's not
+shipping broken code).
+
+Transparency replaces approval: every increment ends with a one-line digest, and
+every change is a small, reversible, single-concern PR the human can revert.
+
+## What counts as an improvement
+
+Grounded in real signal, never speculative rewrites. Each cycle draws from:
+
+1. **Roadmap** — the Now/Next items in `ROADMAP.md` (harness depth: durable runs,
+   observability, streaming, human-in-the-loop; hardening: resilience, conformance).
+2. **Open issues** — the scoped backlog (e.g. #3010–#3014).
+3. **Improvement radar** — a scan each cycle for: missing/weak tests, lint or
+   quality issues, docs/code drift, and DX friction.
+4. **Dogfooding** — actually build with the harness (`micro new` → `run` → `chat`,
+   an agent + a flow) and fix what hurts. Friction found here is high-signal.
+
+## The cycle (one increment)
+
+1. Sync `master`.
+2. If a Codex PR is open and CI-green → review (diff + gates + correctness vs its
+   issue) and merge it.
+3. Else pick the single highest-value item from the sources above.
+4. Implement it, or dispatch to Codex (`@codex <instruction>` on the issue) if it's
+   a well-scoped chunk and Codex is free. **Codex is serial — one task at a time.**
+5. Verify `build`/`test`/`lint` locally.
+6. Open a PR (one concern) and merge it.
+7. Post a one-line digest; refresh the backlog from the radar.
+
+## Roles
+
+- **Claude Code** — orchestrator, implementer, reviewer, integrator, merger.
+- **Codex** — serial builder for well-scoped chunks, dispatched via `@codex`.
+- **Human** — sets direction; owns brand/positioning copy and breaking public-API
+  decisions; can stop or revert anything.
+
+## Guardrails
+
+- One concern per PR; small and reversible.
+- Stay on `claude/*` branches (Codex on `codex/*`); never two agents on one branch;
+  base PRs on `master` (don't stack on an in-flight branch). See `CODEX.md`.
+- **Off-limits without the human:** brand/positioning/marketing copy, breaking
+  public API changes, product-default changes with broad behavioral impact, new
+  dependencies, architectural rewrites. The loop proposes these in the digest; it
+  does not merge them autonomously.
+
+## Scheduling
+
+- **In-session cron** (`CronCreate`) — runs increments while this Claude session is
+  alive. Convenient, but the remote environment is reclaimed on inactivity and
+  recurring jobs expire after 7 days, so it is **not** a durable scheduler.
+- **GitHub Actions (durable)** — a scheduled workflow that runs the loop
+  independently of any session. This is the real backbone; it opens a fresh
+  tracking issue for each increment and dispatches Codex there. It needs a
+  `CODEX_TRIGGER_TOKEN` repo secret from a user account Codex responds to;
+  without that secret the workflow deliberately no-ops to avoid ignored bot
+  comments. See `.github/workflows/loop-builder.yml` and the mechanics
+  below.
+
+## How the durable loop works (mechanics)
+
+Hard-won wiring — change any one piece and the loop silently stops producing
+merged PRs. Each scheduled run:
+
+1. **Opens a fresh issue per increment** (`Continuous improvement increment #N`)
+   and posts the `@codex` instruction on it. *Why a fresh issue:* Codex derives
+   its branch name from the triggering issue's context, so re-using one tracker
+   issue collapses every run onto one branch name and only the first PR opens —
+   the rest collide and silently fail.
+2. **Posts as a user, not the Actions bot.** Codex ignores `@codex` comments
+   authored by `github-actions[bot]`, so the dispatch uses `CODEX_TRIGGER_TOKEN`
+   (a PAT for a user account Codex follows). No token → the step no-ops.
+3. **Codex opens the PR itself with `gh` — never `make_pr`.** In the Codex Cloud
+   sandbox the `make_pr` tool is a **no-op stub**: it records the PR title/body
+   for the manual "Create PR" button and never pushes a branch or calls the API.
+   So the dispatch and [`AGENTS.md`](../../AGENTS.md) tell Codex to do it by hand:
+
+   ```sh
+   git switch -c codex/increment-<issue>     # unique branch, codex/ prefix
+   git push -u origin codex/increment-<issue>
+   gh pr create --base master --label codex --title "…" --body "… Closes #<issue>"
+   gh pr merge  --squash --auto --delete-branch
+   ```
+
+   This requires the Codex setup script to install `gh` and run `gh auth
+   setup-git` (so `git push` is authenticated) with a write-scoped token.
+4. **Merges via GitHub native auto-merge, gated by branch protection.** `master`
+   requires the CI status checks (build, tests, golangci-lint) and **0 approving
+   reviews**. `gh pr merge --auto` enables auto-merge; GitHub lands the PR the
+   moment checks pass and deletes the branch. `Closes #<issue>` auto-closes the
+   tracking issue. There is **no merge sweep workflow** — branch protection is
+   the gate.
+
+### Do-not-break list
+
+- **Don't re-add required approvals** to `master` — it blocks every autonomous
+  merge. The intended gate is **green CI only**.
+- **Don't point the dispatch at one standing tracker issue** — one issue per run.
+- **Don't tell Codex to use `make_pr`** (or imply a token "isn't a substitute"):
+  it cannot open a PR. `gh` is the only path.
+- **Don't manually re-implement a Codex increment during the summary→PR lag**
+  (Codex posts an optimistic "opened a PR" comment ~30–45 min before the PR
+  actually appears). Re-doing it creates duplicate PRs and stale branches that
+  then block the next run. Wait for the PR, or let it ride.
+
+## Overseer passes (DevRel + Architect)
+
+The hourly loop ships increments; two periodic passes keep the *whole* heading in
+the right direction. Both use the same mechanism (fresh issue → `@codex` →
+output) but produce direction and coherence, not just code.
+
+- **DevRel — daily** (`.github/workflows/loop-devrel.yml`). Audits the public
+  surface (README, website landing + docs, blog) for coherence with the North
+  Star, README crispness, and blog-worthy material. It also keeps `CHANGELOG.md`
+  living: each run reconciles the `[Unreleased]` section against the PRs that
+  actually merged (Keep-a-Changelog format, user-facing entries only — internal
+  loop/CI churn is skipped), and rolls `[Unreleased]` into a dated version
+  heading whenever a new `v6.MINOR.PATCH` tag has been cut (by `loop-release`).
+  When enough user-facing work has accumulated (roughly weekly, not a near-empty
+  post every day) it also drafts a "what's new" changelog blog post narrating it.
+  **Autonomy boundary:** safe factual-alignment and crispness fixes — *including
+  the `CHANGELOG.md` upkeep* — auto-merge like any increment; brand/positioning
+  copy and the changelog blog post are opened as a PR (or surfaced in the report)
+  and left for the human to review/merge — blog voice stays with the human.
+- **Architect — continuous (hourly)** (`.github/workflows/loop-architect.yml`).
+  The *founder lens*, running alongside the builders. Each run it **tracks live
+  state** (what just merged, what's in flight), **prioritizes the roadmap**
+  (`ROADMAP.md`, Now → Next → Later) against an internal scan (lifecycle gaps, API
+  coherence and seams, dev-UX friction, missing pieces, drift/realignment), and
+  **maintains the ranked queue** in [`PRIORITIES.md`](PRIORITIES.md) — re-ranking
+  to reflect reality, backing each top item with a scoped issue, and posting an
+  assessment. It runs at `:59`, just before the `:29` increment, so it
+  re-prioritizes and *then* the loop builds the new top. **Its output is the
+  prioritized queue plus the assessment** — it does **not** make breaking or
+  architectural changes itself (those stay with the human). To avoid churn it only
+  opens a PR when the ranking actually changes.
+
+The two loops are coupled through `PRIORITIES.md`: the **architect decides *what***
+(roadmap + internal priorities, ranked, issue-linked) and the **hourly increment
+loop builds the top open item** — falling back to its own judgment only if the
+queue is empty. DevRel keeps the public story honest alongside. So work is
+roadmap-driven by default, not a fresh guess every hour. Cadence is tunable in each
+workflow's `cron`; the human can reorder `PRIORITIES.md` or its issues at any time
+to redirect. Codex is serial, so these passes queue behind any in-flight increment.
+
+## Failure triage (the feedback loop)
+
+The loop also closes on its own failures. `.github/workflows/loop-triage.yml`
+fires when the live provider-conformance harness finishes with `conclusion:
+failure` (scheduled/manual runs only), and dispatches Codex to **triage** the
+failing run: read the logs, root-cause each distinct failure, **dedupe** against
+open issues (comment "recurred" rather than filing a duplicate), and file a scoped
+`codex`/`enhancement` issue for each genuine, self-contained defect — which the
+increment loop then builds and the next harness run verifies. Transient flakes
+(live-model latency, provider outages) are ignored; anything needing a breaking or
+architectural change is escalated as `needs-human` instead of auto-built. This is
+the hill-climbing layer: CI/harness failures become fixes with no human in the
+middle, short of a decision that's genuinely the human's.
+
+## Stop / redirect
+
+- In-session: `CronDelete <id>` (or end the session).
+- Durable: disable/delete the workflow.
+- Or just tell Claude Code to pause or change focus — direction always wins over
+  the loop.

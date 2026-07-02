@@ -1,0 +1,4 @@
+interface:
+  display_name: "Behavior Validator"
+  short_description: "Black-box validation against behavior contracts."
+  default_prompt: "Use $behavior-validator to validate this workflow against a source-blind behavior contract."

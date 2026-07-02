@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `dannote/dot-pi` — 26 default patterns, 0 followed patterns, 45 file(s) materialized.
+Mirror of `dannote/dot-pi` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dannote/dot-pi` — 26 default patterns, 0 followed patterns, 45 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 45 |
+| Files         | 46 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -103,7 +103,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`skills/session-reflect/tsconfig.json`](skills/session-reflect/tsconfig.json) |
 | 43 | ✓ | [`skills/session-reflect/types/session-reflect-deps.d.ts`](skills/session-reflect/types/session-reflect-deps.d.ts) |
 | 44 | ✓ | [`skills/skill-discovery/SKILL.md`](skills/skill-discovery/SKILL.md) |
-| 45 | ✓ | [`skills/vibe-merge/SKILL.md`](skills/vibe-merge/SKILL.md) |
+| 45 | ✓ | [`skills/twitter-thread-style/SKILL.md`](skills/twitter-thread-style/SKILL.md) |
+| 46 | ✓ | [`skills/vibe-merge/SKILL.md`](skills/vibe-merge/SKILL.md) |
 
 ---
 

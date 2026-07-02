@@ -147,7 +147,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 86 | ✓ | [`agents/hermes/Dockerfile`](agents/hermes/Dockerfile) |
 | 87 | ✓ | [`agents/hermes/Dockerfile.base`](agents/hermes/Dockerfile.base) |
 | 88 | ✓ | [`agents/hermes/generate-config.ts`](agents/hermes/generate-config.ts) |
-| 89 | ✓ | [`agents/hermes/hermes-wrapper.sh`](agents/hermes/hermes-wrapper.sh) |
+| 89 | ✓ | [`agents/hermes/hermes-wrapper.py`](agents/hermes/hermes-wrapper.py) |
 | 90 | ✓ | [`agents/hermes/host/managed-tool-gateway-matrix.json`](agents/hermes/host/managed-tool-gateway-matrix.json) |
 | 91 | ✓ | [`agents/hermes/host/tool-gateway-broker.ts`](agents/hermes/host/tool-gateway-broker.ts) |
 | 92 | ✓ | [`agents/hermes/manifest.yaml`](agents/hermes/manifest.yaml) |

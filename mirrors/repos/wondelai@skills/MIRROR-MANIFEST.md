@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wondelai/skills` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
+Mirror of `wondelai/skills` — 26 default patterns, 0 followed patterns, 54 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wondelai/skills` — 26 default patterns, 0 followed patterns, 53 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 53 |
+| Files         | 54 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,59 +59,60 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.cursorrules`](.cursorrules) |
-| 2 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 3 | ✓ | [`37signals-way/SKILL.md`](37signals-way/SKILL.md) |
-| 4 | ✓ | [`blue-ocean-strategy/SKILL.md`](blue-ocean-strategy/SKILL.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`clean-architecture/SKILL.md`](clean-architecture/SKILL.md) |
-| 7 | ✓ | [`clean-code/SKILL.md`](clean-code/SKILL.md) |
-| 8 | ✓ | [`cold-start-problem/SKILL.md`](cold-start-problem/SKILL.md) |
-| 9 | ✓ | [`contagious/SKILL.md`](contagious/SKILL.md) |
-| 10 | ✓ | [`continuous-discovery/SKILL.md`](continuous-discovery/SKILL.md) |
-| 11 | ✓ | [`cro-methodology/SKILL.md`](cro-methodology/SKILL.md) |
-| 12 | ✓ | [`crossing-the-chasm/SKILL.md`](crossing-the-chasm/SKILL.md) |
-| 13 | ✓ | [`ddia-systems/SKILL.md`](ddia-systems/SKILL.md) |
-| 14 | ✓ | [`design-everyday-things/SKILL.md`](design-everyday-things/SKILL.md) |
-| 15 | ✓ | [`design-sprint/SKILL.md`](design-sprint/SKILL.md) |
-| 16 | ✓ | [`domain-driven-design/SKILL.md`](domain-driven-design/SKILL.md) |
-| 17 | ✓ | [`drive-motivation/SKILL.md`](drive-motivation/SKILL.md) |
-| 18 | ✓ | [`good-strategy-bad-strategy/SKILL.md`](good-strategy-bad-strategy/SKILL.md) |
-| 19 | ✓ | [`high-output-management/SKILL.md`](high-output-management/SKILL.md) |
-| 20 | ✓ | [`high-perf-browser/SKILL.md`](high-perf-browser/SKILL.md) |
-| 21 | ✓ | [`hooked-ux/SKILL.md`](hooked-ux/SKILL.md) |
-| 22 | ✓ | [`hundred-million-offers/SKILL.md`](hundred-million-offers/SKILL.md) |
-| 23 | ✓ | [`improve-retention/SKILL.md`](improve-retention/SKILL.md) |
-| 24 | ✓ | [`influence-psychology/SKILL.md`](influence-psychology/SKILL.md) |
-| 25 | ✓ | [`inspired-product/SKILL.md`](inspired-product/SKILL.md) |
-| 26 | ✓ | [`ios-hig-design/SKILL.md`](ios-hig-design/SKILL.md) |
-| 27 | ✓ | [`jobs-to-be-done/SKILL.md`](jobs-to-be-done/SKILL.md) |
-| 28 | ✓ | [`lean-analytics/SKILL.md`](lean-analytics/SKILL.md) |
-| 29 | ✓ | [`lean-startup/SKILL.md`](lean-startup/SKILL.md) |
-| 30 | ✓ | [`lean-ux/SKILL.md`](lean-ux/SKILL.md) |
-| 31 | ✓ | [`made-to-stick/SKILL.md`](made-to-stick/SKILL.md) |
-| 32 | ✓ | [`microinteractions/SKILL.md`](microinteractions/SKILL.md) |
-| 33 | ✓ | [`mom-test/SKILL.md`](mom-test/SKILL.md) |
-| 34 | ✓ | [`monetizing-innovation/SKILL.md`](monetizing-innovation/SKILL.md) |
-| 35 | ✓ | [`negotiation/SKILL.md`](negotiation/SKILL.md) |
-| 36 | ✓ | [`obviously-awesome/SKILL.md`](obviously-awesome/SKILL.md) |
-| 37 | ✓ | [`one-page-marketing/SKILL.md`](one-page-marketing/SKILL.md) |
-| 38 | ✓ | [`pragmatic-programmer/SKILL.md`](pragmatic-programmer/SKILL.md) |
-| 39 | ✓ | [`predictable-revenue/SKILL.md`](predictable-revenue/SKILL.md) |
-| 40 | ✓ | [`refactoring-patterns/SKILL.md`](refactoring-patterns/SKILL.md) |
-| 41 | ✓ | [`refactoring-ui/SKILL.md`](refactoring-ui/SKILL.md) |
-| 42 | ✓ | [`release-it/SKILL.md`](release-it/SKILL.md) |
-| 43 | ✓ | [`scorecard-marketing/SKILL.md`](scorecard-marketing/SKILL.md) |
-| 44 | ✓ | [`software-design-philosophy/SKILL.md`](software-design-philosophy/SKILL.md) |
-| 45 | ✓ | [`steve-jobs-design-review/SKILL.md`](steve-jobs-design-review/SKILL.md) |
-| 46 | ✓ | [`storybrand-messaging/SKILL.md`](storybrand-messaging/SKILL.md) |
-| 47 | ✓ | [`system-design/SKILL.md`](system-design/SKILL.md) |
-| 48 | ✓ | [`team-topologies/SKILL.md`](team-topologies/SKILL.md) |
-| 49 | ✓ | [`top-design/SKILL.md`](top-design/SKILL.md) |
-| 50 | ✓ | [`traction-eos/SKILL.md`](traction-eos/SKILL.md) |
-| 51 | ✓ | [`ux-heuristics/SKILL.md`](ux-heuristics/SKILL.md) |
-| 52 | ✓ | [`web-typography/SKILL.md`](web-typography/SKILL.md) |
-| 53 | ✓ | [`working-with-legacy-code/SKILL.md`](working-with-legacy-code/SKILL.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`.cursorrules`](.cursorrules) |
+| 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 4 | ✓ | [`37signals-way/SKILL.md`](37signals-way/SKILL.md) |
+| 5 | ✓ | [`blue-ocean-strategy/SKILL.md`](blue-ocean-strategy/SKILL.md) |
+| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 7 | ✓ | [`clean-architecture/SKILL.md`](clean-architecture/SKILL.md) |
+| 8 | ✓ | [`clean-code/SKILL.md`](clean-code/SKILL.md) |
+| 9 | ✓ | [`cold-start-problem/SKILL.md`](cold-start-problem/SKILL.md) |
+| 10 | ✓ | [`contagious/SKILL.md`](contagious/SKILL.md) |
+| 11 | ✓ | [`continuous-discovery/SKILL.md`](continuous-discovery/SKILL.md) |
+| 12 | ✓ | [`cro-methodology/SKILL.md`](cro-methodology/SKILL.md) |
+| 13 | ✓ | [`crossing-the-chasm/SKILL.md`](crossing-the-chasm/SKILL.md) |
+| 14 | ✓ | [`ddia-systems/SKILL.md`](ddia-systems/SKILL.md) |
+| 15 | ✓ | [`design-everyday-things/SKILL.md`](design-everyday-things/SKILL.md) |
+| 16 | ✓ | [`design-sprint/SKILL.md`](design-sprint/SKILL.md) |
+| 17 | ✓ | [`domain-driven-design/SKILL.md`](domain-driven-design/SKILL.md) |
+| 18 | ✓ | [`drive-motivation/SKILL.md`](drive-motivation/SKILL.md) |
+| 19 | ✓ | [`good-strategy-bad-strategy/SKILL.md`](good-strategy-bad-strategy/SKILL.md) |
+| 20 | ✓ | [`high-output-management/SKILL.md`](high-output-management/SKILL.md) |
+| 21 | ✓ | [`high-perf-browser/SKILL.md`](high-perf-browser/SKILL.md) |
+| 22 | ✓ | [`hooked-ux/SKILL.md`](hooked-ux/SKILL.md) |
+| 23 | ✓ | [`hundred-million-offers/SKILL.md`](hundred-million-offers/SKILL.md) |
+| 24 | ✓ | [`improve-retention/SKILL.md`](improve-retention/SKILL.md) |
+| 25 | ✓ | [`influence-psychology/SKILL.md`](influence-psychology/SKILL.md) |
+| 26 | ✓ | [`inspired-product/SKILL.md`](inspired-product/SKILL.md) |
+| 27 | ✓ | [`ios-hig-design/SKILL.md`](ios-hig-design/SKILL.md) |
+| 28 | ✓ | [`jobs-to-be-done/SKILL.md`](jobs-to-be-done/SKILL.md) |
+| 29 | ✓ | [`lean-analytics/SKILL.md`](lean-analytics/SKILL.md) |
+| 30 | ✓ | [`lean-startup/SKILL.md`](lean-startup/SKILL.md) |
+| 31 | ✓ | [`lean-ux/SKILL.md`](lean-ux/SKILL.md) |
+| 32 | ✓ | [`made-to-stick/SKILL.md`](made-to-stick/SKILL.md) |
+| 33 | ✓ | [`microinteractions/SKILL.md`](microinteractions/SKILL.md) |
+| 34 | ✓ | [`mom-test/SKILL.md`](mom-test/SKILL.md) |
+| 35 | ✓ | [`monetizing-innovation/SKILL.md`](monetizing-innovation/SKILL.md) |
+| 36 | ✓ | [`negotiation/SKILL.md`](negotiation/SKILL.md) |
+| 37 | ✓ | [`obviously-awesome/SKILL.md`](obviously-awesome/SKILL.md) |
+| 38 | ✓ | [`one-page-marketing/SKILL.md`](one-page-marketing/SKILL.md) |
+| 39 | ✓ | [`pragmatic-programmer/SKILL.md`](pragmatic-programmer/SKILL.md) |
+| 40 | ✓ | [`predictable-revenue/SKILL.md`](predictable-revenue/SKILL.md) |
+| 41 | ✓ | [`refactoring-patterns/SKILL.md`](refactoring-patterns/SKILL.md) |
+| 42 | ✓ | [`refactoring-ui/SKILL.md`](refactoring-ui/SKILL.md) |
+| 43 | ✓ | [`release-it/SKILL.md`](release-it/SKILL.md) |
+| 44 | ✓ | [`scorecard-marketing/SKILL.md`](scorecard-marketing/SKILL.md) |
+| 45 | ✓ | [`software-design-philosophy/SKILL.md`](software-design-philosophy/SKILL.md) |
+| 46 | ✓ | [`steve-jobs-design-review/SKILL.md`](steve-jobs-design-review/SKILL.md) |
+| 47 | ✓ | [`storybrand-messaging/SKILL.md`](storybrand-messaging/SKILL.md) |
+| 48 | ✓ | [`system-design/SKILL.md`](system-design/SKILL.md) |
+| 49 | ✓ | [`team-topologies/SKILL.md`](team-topologies/SKILL.md) |
+| 50 | ✓ | [`top-design/SKILL.md`](top-design/SKILL.md) |
+| 51 | ✓ | [`traction-eos/SKILL.md`](traction-eos/SKILL.md) |
+| 52 | ✓ | [`ux-heuristics/SKILL.md`](ux-heuristics/SKILL.md) |
+| 53 | ✓ | [`web-typography/SKILL.md`](web-typography/SKILL.md) |
+| 54 | ✓ | [`working-with-legacy-code/SKILL.md`](working-with-legacy-code/SKILL.md) |
 
 ---
 

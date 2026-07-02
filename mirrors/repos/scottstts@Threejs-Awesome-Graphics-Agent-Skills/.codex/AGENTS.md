@@ -42,7 +42,7 @@ When you finish, the entire skill pack should be publish ready (1. content corre
 3. decide dev shim - skills split: which part of the implementation belongs in dev shim vs skills, which static asset belong in dev shim vs skills
 4. give a concise proposal out for approval
 5. after approved, implement the added new skills/examples abiding by the project rules
-6. confirm exact implemetations/assets have been copied to the dev shim and skills (must be exact, unless told otherwise)
+6. confirm exact implemetations/assets have been copied to the dev shim and skills (must be exact, unless told otherwise). **Important:** when i say "copy", I do NOT mean just copy paste, I mean be faithful to the original ref project implementation, but the code should still be translated into what skill examples and dev shim expects, this is your responsibility. Do NOT just copy built minified js code from ref project into the skills! Always use the source code!
 7. confirm visually that example and ref projects are the same (unnecessary objects can be omitted--an example about grass, you can omit accompanying trees in the scene; an example about ocean, you cannot omit correct lighting or ocean bed texture). NOT close, NOT approximately the same, MUST be the same. here you MUST actually compare the visual between them (run dev)
 8. confirm agent skill overall usability check passes
 9. confirm package is publish-ready

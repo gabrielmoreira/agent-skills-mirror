@@ -12,6 +12,16 @@ Tons of Skills — Claude Code plugins marketplace. Live at https://tonsofskills
 
 **Session protocol lives in `AGENTS.md`** — post-compaction recovery, end-of-session push checklist, and beads workflow. Read it before starting work.
 
+## Cross-session coordination — another Claude session may be in this repo
+
+This repo is frequently worked in **parallel** with the `intent-eval-platform` umbrella session (that platform's CCPI validator + jrig-cli + kernel reach into this repo). Sessions are separate processes that share only the filesystem, so stay in sync via the shared surfaces:
+
+- **Read + append the shared journal** on cross-repo work: `~/000-projects/CROSS-SESSION-LOG.md` (append a dated line: what / branch or PR# / status).
+- **Durable cross-cutting tasks:** umbrella beads `~/000-projects/.beads/`, label `cross-session` (`bd list --label cross-session`).
+- **Guard the working tree:** this repo has ONE checkout; a concurrent session can `git checkout`/`reset` it out from under you and **wipe UNCOMMITTED work** (happened 2026-07-01). Commit early, or do multi-step file work in a `git worktree`.
+
+Full protocol (loaded by every session under `/home/jeremy`): `/home/jeremy/CLAUDE.md` § "Cross-session coordination".
+
 ## Essential Commands
 
 ```bash
@@ -27,7 +37,7 @@ pnpm test && pnpm typecheck
 pnpm lint
 pnpm run verify                   # Full pipeline — what CI's `verify` job runs
 
-# Validator (schema 3.11.0 — see 000-docs/SCHEMA_CHANGELOG.md)
+# Validator (schema 3.15.0 — see 000-docs/SCHEMA_CHANGELOG.md)
 python3 scripts/validate-skills-schema.py --verbose
 python3 scripts/validate-skills-schema.py --marketplace --verbose
 python3 scripts/validate-skills-schema.py --marketplace --populate-db freshie/inventory.sqlite
@@ -53,7 +63,7 @@ cd packages/cli && pnpm test -- --grep "pattern"
 # JRig behavioral eval — the published @intentsolutions/jrig-cli (bin `j-rig`),
 # pinned as a root devDep. Invoke via `pnpm exec j-rig` so it resolves the
 # repo's pinned version (node_modules/.bin/j-rig), NOT a global shim.
-pnpm exec j-rig --version         # → 0.1.1 (the real 7-layer CLI)
+pnpm exec j-rig --version         # → 0.1.2 (the real 7-layer CLI)
 pnpm exec j-rig check <skill-dir> # Tier 3A: deterministic (~seconds, free, no API key, no DB)
 
 # Real behavioral eval (opt-in, ~$2-5/skill) — needs a provider API key + the
@@ -104,6 +114,22 @@ Performance budgets (CI-enforced): 40 MB total gzipped, 1 MB largest file, < 30s
 **Don't commit downloads/.** `marketplace/public/downloads/` is gitignored (see `.gitignore:146`). CI checks out fresh and rebuilds from scratch — local state cannot leak to prod. Never commit or hand-edit anything under that directory.
 
 **Don't wire cowork build into `sync-marketplace`.** `sync-marketplace` is the fast (<2s) per-commit hook; `cowork:zips` is the slow (~30s) per-build step. They run on different cadences by design.
+
+## External Plugin Sync (mirror-by-default)
+
+Adopted model: **mirror by default · upstream improvements · never clobber.** Decision record: `000-docs/694-AT-DECR-external-sync-mirror-by-default-model.md`; pipeline audit + hardening: `000-docs/691-AT-AUDT-sync-external-pipeline-audit-and-hardening.md`.
+
+**Scale first — external is a minority augment, not the core.** 454 plugins total, but only ~51 are externally synced (48 third-party sources + 6 of Jeremy's own repos). The other ~403 (89%) are in-repo Intent Solutions work. The sync is a curated side-channel, not the marketplace — treat external contributors as a respected minority augment, never the center of gravity.
+
+**How sync works.** `sources.yaml` registers each external source. `.github/workflows/sync-external.yml` runs weekly (Mondays 06:00 UTC) and on demand (`workflow_dispatch` / `repository_dispatch`), invoking `scripts/sync-external.mjs` to mirror a source's files into `plugins/` and open an automated PR. A human reviews every auto-PR — historically ~1 in 10 sync PRs merges. The contributor's own repo is the source of truth; we do NOT locally edit a pure-mirror plugin.
+
+**Mirror vs curate.** Default is a pure mirror — the upstream repo governs, and improvements flow by upstreaming (see below), so the mirror becomes A-grade naturally with nothing to revert. Only when we deliberately harden a plugin past its upstream do we mark it `curated:` and freeze it.
+
+**Never-clobber guard (`curated:` freeze).** A source with `curated: true` in `sources.yaml` is FROZEN: `sync-external.mjs` logs `Curated — mirror frozen`, writes no files (no clone, no overwrite, no orphan-prune), and only keeps the catalog entry current — so even a `--force` sync can never revert our edits. `tonone` and `hyperflow` carry `curated: true` today (we A-graded their agents; upstreaming is planned). This guard exists because a prior `--force` run reverted ~100 A-graded agents back to 3-field upstream stubs — the ~18.9k-line deletion that motivated the whole model. Note `curated:` (we hardened it locally) and `verified:` (a maintainer vetted quality/trust) are orthogonal: tonone/hyperflow are `curated: true` but `verified: false`, an honest state and exactly why the two flags are separate.
+
+**Pileup auto-close (≤1 open sync PR).** `sync-external.yml` runs a "Close superseded sync PRs" step before Create-PR: it closes older open `automation/sync-external-*` PRs (with `--delete-branch`), keeping at most one open sync PR. The safe unique-per-run-branch model (from the 691 audit, which fixed an earlier shared-branch clobber) is preserved — this only prunes the pileup that model produced.
+
+**How we upstream respectfully.** Want a plugin at our A-grade bar? We bring THEIR plugin to standard on THEIR repo: a friendly issue first ("we featured your plugin and hardened its frontmatter to our A-grade bar — would you be open to a PR upstreaming it?"), then a PR the contributor owns and merges. No surprise PRs; credit preserved; they decide. Once merged upstream, the mirror is A-grade naturally and `curated:` can be dropped. **Any contributor-facing post (issue or PR body) gets Jeremy's wording sign-off BEFORE posting.**
 
 ## Plugin Structure
 
@@ -176,7 +202,7 @@ The validator itself does a kernel-loaded **shadow read** of `ALWAYS_REQUIRED` (
 
 As of now the soak has **not** met the bar — agreement sits below 99.5%, and the open disagreements are real tool-safety / shell-substitution security cases that the prose-spec validator correctly blocks (so flipping early would weaken a real gate). Until every condition above is satisfied, validator authority stays with `validate-skills-schema.py` and both kernel lanes stay advisory. Promotion to blocking is a separate, later cutover step gated by these conditions — never a side effect of an unrelated PR.
 
-**Alignment note (`@intentsolutions/jrig-cli`).** The `j-rig` behavioral-eval CLI is a root devDep pinned to **exactly `@intentsolutions/jrig-cli@0.1.1`**, which depends on **`@intentsolutions/core@0.9.0` (exact)** — the same version the **root** `@intentsolutions/core` pin carries — so they resolve to one shared root-hoisted copy and the kernel-shadow + kernel-vendor lanes read it directly. (The bump from `0.1.0` → `0.1.1` also picked up the per-test-case `criteria_ids` scoping fix [jrig #162], so `pnpm exec j-rig eval` no longer applies every criterion to every test case — the prior `0.1.0` lacked it. A transitive dep, `@intentsolutions/refiner-core@0.2.0`, still peer-wants `core@^0.8.0`; pnpm surfaces that as a non-fatal warning until refiner-core widens its peer range.) The pin bump is a coupling update only; the authority flip and the root-pin cutover to `authoring/v2` remain the separate, gated steps above.
+**Alignment note (`@intentsolutions/jrig-cli`).** The `j-rig` behavioral-eval CLI is a root devDep pinned to **exactly `@intentsolutions/jrig-cli@0.1.2`**, which depends on **`@intentsolutions/core@0.9.0` (exact)** — the same version the **root** `@intentsolutions/core` pin carries — so they resolve to one shared root-hoisted copy and the kernel-shadow + kernel-vendor lanes read it directly. (The `0.1.2` cut carries the eval→Evidence-Bundle bridge `j-rig eval --emit-bundle` [jrig #172], a functional-exec `max_tokens` / length-truncation fix [jrig #173], `j-rig scaffold-spec` from a `SKILL.md` [jrig #174], and a judge-verdict recovery from truncated / fenced JSON that had inflated NO-SHIP [jrig #175]; it also retains the per-test-case `criteria_ids` scoping fix [jrig #162], so `pnpm exec j-rig eval` scopes each criterion to its own test case. A transitive dep, `@intentsolutions/refiner-core@0.2.0`, still peer-wants `core@^0.8.0`; pnpm surfaces that as a non-fatal warning until refiner-core widens its peer range.) The pin bump is a coupling update only; the authority flip and the root-pin cutover to `authoring/v2` remain the separate, gated steps above.
 
 ### Validator consolidation (already landed)
 

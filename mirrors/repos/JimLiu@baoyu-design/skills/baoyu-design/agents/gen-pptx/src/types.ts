@@ -39,6 +39,66 @@ export interface Rect {
 
 export type StyleMap = Record<string, string>;
 
+export type AnimEffect =
+  | "appear"
+  | "disappear"
+  | "fade-in"
+  | "fade-out"
+  | "fly-in"
+  | "fly-out"
+  | "wipe-in"
+  | "wipe-out"
+  | "float-in"
+  | "float-out"
+  | "split-in"
+  | "split-out"
+  | "bounce-in"
+  | "bounce-out"
+  | "zoom-in"
+  | "zoom-out"
+  | "wheel-in"
+  | "wheel-out"
+  | "random-bars-in"
+  | "random-bars-out"
+  | "spin"
+  | "grow"
+  | "shrink"
+  | "pulse"
+  | "teeter"
+  | "path";
+
+export type AnimTrigger = "click" | "with" | "after";
+/** Edge dirs (fly/wipe: the side the element enters from / exits toward; float:
+ *  top|bottom only) plus axis dirs (split/random-bars: the bar/seam axis). */
+export type AnimDir = "left" | "right" | "top" | "bottom" | "horizontal" | "vertical";
+
+/** One motion-path segment, px offsets re-based so the path starts at (0,0). */
+export interface AnimPathSeg {
+  c: "L" | "C";
+  /** L: [x,y]. C: [x1,y1,x2,y2,x,y]. */
+  p: number[];
+}
+
+/** A parsed `data-anim-*` attribute set (see core/anim.ts for the grammar). */
+export interface AnimationDef {
+  effect: AnimEffect;
+  trigger: AnimTrigger;
+  delayMs: number;
+  durationMs: number;
+  /** data-anim-order (default 0); ties break on `index`. */
+  order: number;
+  /** Per-slide document order, assigned by walk(). */
+  index: number;
+  dir?: AnimDir;
+  rotateDeg?: number;
+  scale?: number;
+  pathSegs?: AnimPathSeg[];
+  /** data-anim-repeat (2–100); absent means play once. */
+  repeat?: number;
+  /** data-anim-auto-reverse — emphasis/path effects only; absent means off. */
+  autoReverse?: boolean;
+}
+
 /** A captured DOM node. Mirrors the tree the in-page walk() emits. */
 export interface SlideNode {
   tag: string;
@@ -57,6 +117,8 @@ export interface SlideNode {
   untransformedRect?: Rect;
   /** 1-based ordinal for <li> with a non-trivial list-style. */
   liIndex?: number;
+  /** PowerPoint animation parsed from data-anim-* attributes, when present. */
+  anim?: AnimationDef;
 }
 
 export interface CapturedSlide {
@@ -70,6 +132,8 @@ export interface SetupResult {
   fontsReady: boolean;
   resetRect: Rect | null;
   fontSwapMisses: string[];
+  /** Count of [data-anim] elements in the document (screenshots-mode advisory). */
+  animCount: number;
 }
 
 export interface SlideCaptureResult {
@@ -89,7 +153,11 @@ export type WarningKind =
   | "no_speaker_notes"
   | "notes_count_mismatch"
   | "notes_uniform_nonempty"
-  | "images_failed";
+  | "images_failed"
+  | "animation_invalid"
+  | "animation_nested"
+  | "animation_hidden_target"
+  | "animations_ignored_screenshots";
 
 export interface ValidationFlag {
   kind: WarningKind;
@@ -124,5 +192,7 @@ export interface GenPptxResult {
   warnings: string[];
   validation: ValidationFlag[];
   speakerNotes: string[];
+  /** Count of data-anim animations exported as native PPTX effects (0 in screenshots mode). */
+  animations: number;
   savedPath?: string;
 }

@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `rtk-ai/rtk` — 26 default patterns, 13 followed patterns, 53 file(s) materialized.
+Mirror of `rtk-ai/rtk` — 26 default patterns, 13 followed patterns, 54 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rtk-ai/rtk` — 26 default patterns, 13 followed patterns, 53 file(s)
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 13 |
-| Files         | 53 |
+| Files         | 54 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -104,26 +104,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 31 | ✓ | [`src/cmds/go/README.md`](src/cmds/go/README.md) |
 | 32 | ✓ | [`src/cmds/js/README.md`](src/cmds/js/README.md) |
 | 33 | ✓ | [`src/cmds/jvm/README.md`](src/cmds/jvm/README.md) |
-| 34 | ✓ | [`src/cmds/python/README.md`](src/cmds/python/README.md) |
-| 35 | ✓ | [`src/cmds/ruby/README.md`](src/cmds/ruby/README.md) |
-| 36 | ✓ | [`src/cmds/rust/README.md`](src/cmds/rust/README.md) |
-| 37 | ✓ | [`src/cmds/system/README.md`](src/cmds/system/README.md) |
-| 38 | ✓ | [`src/discover/README.md`](src/discover/README.md) |
-| 39 | ✓ | [`src/learn/README.md`](src/learn/README.md) |
-| 40 | ✓ | [`src/parser/README.md`](src/parser/README.md) |
-| 41 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 42 | → | [`DISCLAIMER.md`](DISCLAIMER.md) |
-| 43 | → | [`docs/contributing/ARCHITECTURE.md`](docs/contributing/ARCHITECTURE.md) |
-| 44 | → | [`docs/contributing/TECHNICAL.md`](docs/contributing/TECHNICAL.md) |
-| 45 | → | [`docs/TELEMETRY.md`](docs/TELEMETRY.md) |
-| 46 | → | [`hooks/README.md`](hooks/README.md) |
-| 47 | → | [`INSTALL.md`](INSTALL.md) |
-| 48 | → | [`README.md`](README.md) |
-| 49 | → | [`SECURITY.md`](SECURITY.md) |
-| 50 | → | [`src/cmds/README.md`](src/cmds/README.md) |
-| 51 | → | [`src/core/README.md`](src/core/README.md) |
-| 52 | → | [`src/filters/README.md`](src/filters/README.md) |
-| 53 | → | [`src/hooks/README.md`](src/hooks/README.md) |
+| 34 | ✓ | [`src/cmds/php/README.md`](src/cmds/php/README.md) |
+| 35 | ✓ | [`src/cmds/python/README.md`](src/cmds/python/README.md) |
+| 36 | ✓ | [`src/cmds/ruby/README.md`](src/cmds/ruby/README.md) |
+| 37 | ✓ | [`src/cmds/rust/README.md`](src/cmds/rust/README.md) |
+| 38 | ✓ | [`src/cmds/system/README.md`](src/cmds/system/README.md) |
+| 39 | ✓ | [`src/discover/README.md`](src/discover/README.md) |
+| 40 | ✓ | [`src/learn/README.md`](src/learn/README.md) |
+| 41 | ✓ | [`src/parser/README.md`](src/parser/README.md) |
+| 42 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 43 | → | [`DISCLAIMER.md`](DISCLAIMER.md) |
+| 44 | → | [`docs/contributing/ARCHITECTURE.md`](docs/contributing/ARCHITECTURE.md) |
+| 45 | → | [`docs/contributing/TECHNICAL.md`](docs/contributing/TECHNICAL.md) |
+| 46 | → | [`docs/TELEMETRY.md`](docs/TELEMETRY.md) |
+| 47 | → | [`hooks/README.md`](hooks/README.md) |
+| 48 | → | [`INSTALL.md`](INSTALL.md) |
+| 49 | → | [`README.md`](README.md) |
+| 50 | → | [`SECURITY.md`](SECURITY.md) |
+| 51 | → | [`src/cmds/README.md`](src/cmds/README.md) |
+| 52 | → | [`src/core/README.md`](src/core/README.md) |
+| 53 | → | [`src/filters/README.md`](src/filters/README.md) |
+| 54 | → | [`src/hooks/README.md`](src/hooks/README.md) |
 
 ---
 

@@ -49,7 +49,7 @@ If unsure, ask the user to run `ollama list` and verify.
 |---|---|---|
 | **`claude-fable-5`** | Mythos-class (above Opus); GA 2026-06-09. ⚠️ **Suspended 2026-06-12** (US export-control directive); currently unavailable, use `claude-opus-4-8` | $10 input / $50 output |
 | **`claude-haiku-4-5`** | Cheapest cloud option, OK for all exercises | $1 input / $5 output |
-| **`claude-sonnet-4-6`** | Production default, agent development | $3 input / $15 output |
+| **`claude-sonnet-5`** | Production default, agent development | $3 input / $15 output |
 | **`claude-opus-4-8`** | Opus-class flagship; current top usable tier (Fable 5 suspended 2026-06-12); high quality, complex reasoning | $5 input / $25 output |
 
 ## Framing rules (do not violate)

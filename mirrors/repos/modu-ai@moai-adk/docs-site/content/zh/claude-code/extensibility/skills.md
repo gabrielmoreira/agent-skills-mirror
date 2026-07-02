@@ -5,6 +5,8 @@ draft: false
 description: "梳理 Claude Code 技能（SKILL.md）的概念与 Progressive Disclosure 工作方式的概览文档。"
 ---
 
+# 技能
+
 Claude Code 的技能（skill）是一种扩展机制，它将重复的流程或专业知识汇总到一个 `SKILL.md` 文件中，并将其添加到 Claude 的工具箱里。
 
 {{< callout type="info" >}}
@@ -24,7 +26,11 @@ Claude Code 的技能（skill）是一种扩展机制，它将重复的流程或
 - 当你反复把相同的指引或清单粘贴到聊天里时
 - 当 CLAUDE.md 中的某个章节不再是"事实信息"，而是膨胀成了"多步骤流程"时
 
-CLAUDE.md 的内容始终驻留在上下文中，而技能正文只在实际被使用时才加载。因此，即便放置篇幅长而详尽的参考资料，在用到之前几乎不会产生 token 成本。另外，用户自定义命令（`.claude/commands/`）已整合进技能，现有的命令文件也能照常运作。
+CLAUDE.md 的内容始终驻留在上下文中，而技能正文只在实际被使用时才加载。因此，即便放置篇幅长而详尽的参考资料，在用到之前几乎不会产生 token 成本。
+
+### 技能和自定义命令
+
+在技能功能出现之前，用户定义的命令曾存放在 `.claude/commands/` 目录中。现在 **技能已包含命令功能**，所以当 `.claude/commands/deploy.md` 和 `.claude/skills/deploy/SKILL.md` 同时存在时，技能会优先。既有的命令文件仍能正常工作，但建议新增的扩展功能都用技能来编写。
 
 ### 技能的结构
 
@@ -32,11 +38,11 @@ CLAUDE.md 的内容始终驻留在上下文中，而技能正文只在实际被�
 
 ```text
 my-skill/
-├── SKILL.md       # 필수: 지침 + 프론트매터
-├── reference.md   # 선택: 상세 참조 (필요할 때 로드)
-├── examples.md    # 선택: 예시 출력
+├── SKILL.md       # 必需: 指引 + frontmatter
+├── reference.md   # 可选: 详细参考 (按需加载)
+├── examples.md    # 可选: 示例输出
 └── scripts/
-    └── helper.py  # 선택: Claude가 실행하는 스크립트
+    └── helper.py  # 可选: Claude 执行的脚本
 ```
 
 frontmatter 字段全部为可选项，但用于让 Claude 判断何时该使用此技能的 `description` 实际上是必需的。
@@ -44,14 +50,14 @@ frontmatter 字段全部为可选项，但用于让 Claude 判断何时该使用
 ```yaml
 ---
 name: api-conventions
-description: 이 코드베이스의 API 설계 패턴. 엔드포인트를 작성하거나 리뷰할 때 사용.
+description: 此代码库的 API 设计模式。在编写或审查端点时使用。
 allowed-tools: Read Grep
 ---
 
-API 엔드포인트를 작성할 때:
-- RESTful 명명 규칙을 따른다
-- 일관된 오류 형식을 반환한다
-- 요청 검증을 포함한다
+编写 API 端点时:
+- 遵循 RESTful 命名规范
+- 返回一致的错误格式
+- 包含请求验证
 ```
 
 主要的 frontmatter 字段如下。
@@ -112,16 +118,16 @@ flowchart TD
 
 ```yaml
 ---
-description: 커밋되지 않은 변경을 요약하고 위험 요소를 표시한다. 무엇이 바뀌었는지 물을 때 사용.
+description: 汇总未提交的变更并标注风险因素。当你询问"我改了什么?"时使用。
 ---
 
-## 현재 변경 사항
+## 当前变更
 
 !`git diff HEAD`
 
-## 지침
+## 指引
 
-위 변경을 두세 개의 불릿으로 요약한 뒤, 누락된 오류 처리나 하드코딩 같은 위험을 나열한다.
+将上述变更用两三条要点总结，然后列举缺失错误处理或硬编码等风险。
 ```
 
 这个技能会在用户问"我改了些什么？"时自动调用，或者通过 `/summarize-changes` 直接调用。

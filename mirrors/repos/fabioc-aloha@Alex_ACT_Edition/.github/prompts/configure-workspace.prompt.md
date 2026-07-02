@@ -16,7 +16,7 @@ For verification only, use `/configure-workspace-verify`.
 
 ## Objective
 
-Bring the workspace `.vscode/` into compliance with the heir-workspace baseline:
+Bring the workspace `.vscode/` into compliance with the heir-workspace baseline. Workspace settings intentionally override user-scope settings for this project:
 
 1. Refresh EDITION_OWNED assets listed in `vscode_assets` (e.g. `markdown-light.css`) — overwrite always.
 2. Seed HEIR_OWNED bootstrap templates with `.vscode/` prefix if missing (`extensions.json`, `settings.json`).
@@ -147,7 +147,7 @@ All commands are idempotent — running twice is safe; only changed keys are rep
 ## Guardrails
 
 - Heir-only. Refuse if `.github/.act-heir.json` is absent.
-- Workspace-scope only. Do not write user-scope keys to workspace `.vscode/`.
+- Workspace-scope only. Do not write user-scope keys to workspace `.vscode/`; use workspace settings only for project-specific overrides and Edition-owned workspace assets.
 - Preserve all unrelated keys in `.vscode/settings.json`.
 - `vscode_assets` (e.g. `markdown-light.css`) REFRESH on every invocation (EDITION_OWNED contract).
 - `.vscode/extensions.json` and `.vscode/settings.json` files themselves are SEEDED only if missing (HEIR_OWNED contract).

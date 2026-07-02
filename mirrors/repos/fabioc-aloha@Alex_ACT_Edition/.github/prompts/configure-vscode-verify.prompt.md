@@ -11,7 +11,7 @@ For a WORKSPACE-scope audit (`.vscode/` assets, discovery-location keys), use `/
 
 ## Objective
 
-Audit user-scope VS Code settings against the central baseline and report drift.
+Audit user-scope VS Code settings against the central baseline and report drift. Project-specific overrides belong in workspace `.vscode/settings.json` and are audited by `/configure-workspace-verify`.
 
 ## Source of truth
 
@@ -105,7 +105,7 @@ Recommendation:
 ## Guardrails
 
 - Do not modify files.
-- User-scope only (never evaluate workspace `.vscode/settings.json` for policy compliance).
+- User-scope only (never evaluate workspace `.vscode/settings.json` for policy compliance; workspace settings are the project override layer).
 - Treat unknown extra keys as informational only, not non-compliance.
 
 ## Would Revise If

@@ -184,7 +184,7 @@ Slide decks, presentations, videos, and other fixed-size content must implement 
 
 For slide decks specifically, don't hand-roll this — start from the `starter-components/deck-stage.js` scaffold and put each slide as a direct child `<section>` of the `<deck-stage>` element; its in-file usage notes cover the slide markup, scaling, keyboard/thumbnail navigation, speaker notes, and print-to-PDF, plus how to keep slides directly editable. (It carries some host-persistence assumptions — see the Starter Components caveat — but the scaling and nav work standalone.) If you'd rather build the stage yourself: compute `transform: scale()` from `window.innerWidth/innerHeight` vs the canvas size (recompute on resize), make each slide a direct child `<section>` of the stage, and wire keyboard + click prev/next to switch the active slide (slide position can live in the URL hash so refreshes keep your place).
 
-Slide entrance animations: make the visible end-state the base style and animate *from* hidden, gating the animation on `[data-deck-active]` and `@media (prefers-reduced-motion: no-preference)` — so print, PDF export, and reduced-motion show content instead of the pre-animation `opacity:0`. Avoid infinite decorative loops on slide content.
+Slide animations: for `deck-stage` decks, prefer the `data-anim` convention (see `built-in-skills/make-a-deck.md` → *Animations*) — the component previews the builds and they export as native PowerPoint animations. Either way, make the visible end-state the base style. Hand-written CSS entrance animations gated on `[data-deck-active]` and `@media (prefers-reduced-motion: no-preference)` still work — print, PDF export, and reduced-motion show content instead of the pre-animation `opacity:0` — but they do not export to PPTX. Avoid infinite decorative loops on slide content.
 
 ## Starter Components
 Ready-made HTML/JS/JSX scaffolds live in the `starter-components/` directory next to this file — use them instead of hand-drawing device frames, deck shells, canvases, or animation timelines. To use one, copy it into your project (`cp starter-components/<file> designs/<project>/`) or read it and adapt; each file carries its own usage notes at the top.
@@ -196,7 +196,7 @@ Ready-made HTML/JS/JSX scaffolds live in the `starter-components/` directory nex
 - **[browser-window.jsx](starter-components/browser-window.jsx)** — Browser window chrome with tabs, URL bar, controls.
 - **[animations.jsx](starter-components/animations.jsx)** — Timeline-based animation engine (Stage, Sprite, easing, scrubber).
 - **[tweaks-panel.jsx](starter-components/tweaks-panel.jsx)** — Tweaks shell: form-control helpers + host-protocol wiring. *(Host-coupled — it only opens on the host's `__activate_edit_mode` postMessage, which no agent harness sends; drive its visibility from your own in-page Show/Hide toggle, or build a plain in-page control panel instead.)*
-- **[deck-stage.js](starter-components/deck-stage.js)** — Slide-deck shell: scaling, keyboard nav, thumbnail rail (click to jump, drag to reorder, right-click to skip/move/delete), speaker notes, print-to-PDF. Programmatic nav: `document.querySelector('deck-stage').goTo(n)` (0-indexed).
+- **[deck-stage.js](starter-components/deck-stage.js)** — Slide-deck shell: scaling, keyboard nav, thumbnail rail (click to jump, drag to reorder, right-click to skip/move/delete), speaker notes, print-to-PDF, and per-element build animations via `data-anim` (exported to PPTX). Programmatic nav: `document.querySelector('deck-stage').goTo(n)` (0-indexed).
 - **[image-slot.js](starter-components/image-slot.js)** — User-fillable image placeholder: a drag-and-drop target that persists the dropped image; shape/mask/size are author-controlled.
 
 ## GitHub
@@ -252,7 +252,7 @@ You have the following built-in skill prompts, located in the `built-in-skills/`
 - **[Wireframe](built-in-skills/wireframe.md)** — Explore many ideas with wireframes and storyboards
 - **[Hi-fi design](built-in-skills/hi-fi-design.md)** — Polished, production-quality mockups
 - **[Speaker notes](built-in-skills/speaker-notes.md)** — Presenter script alongside visual-first slides
-- **[Export as PPTX (editable)](built-in-skills/export-as-pptx-editable.md)** — Native text & shapes — editable in PowerPoint
+- **[Export as PPTX (editable)](built-in-skills/export-as-pptx-editable.md)** — Native text & shapes — editable in PowerPoint, including `data-anim` slide animations
 - **[Export as PPTX (screenshots)](built-in-skills/export-as-pptx-screenshots.md)** — Flat images — pixel-perfect but not editable
 - **[Export as video](built-in-skills/export-as-video.md)** — Render a timeline animation to a real .mp4 file
 - **[Design system authoring](built-in-skills/design-system-authoring-guide.md)** — Set up or import a design system (full flow + portable compiler & read-only checker)

@@ -8,12 +8,17 @@ import {
   makeColorNormalizer,
   makeFontResolver,
 } from "./dom-style.ts";
+import { parseAnimAttrs } from "../core/anim.ts";
 
 export interface EditableCapture {
   slide: { rect: Rect; root: SlideNode };
   hash: number;
   imagesWaited: number;
   imagesFailed: number;
+  /** data-anim-* problems on this slide (bad values, root/hidden misuse). */
+  animWarnings: string[];
+  /** data-anim elements inside another data-anim subtree (inner wins). */
+  animNested: string[];
 }
 
 const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
@@ -87,6 +92,10 @@ export async function captureEditable(
   for (const s of fontSwaps) swapMap[s.from.toLowerCase()] = s.to;
   const resolveFontFace = makeFontResolver(swapMap);
 
+  let animIndex = 0;
+  const animWarnings: string[] = [];
+  const animNested: string[] = [];
+
   // djb2 — fast, non-crypto; just "did slide N === slide N+1".
   let h = 5381;
   const hashStr = (s: string): void => {
@@ -144,6 +153,35 @@ export async function captureEditable(
       const oh = (el as HTMLElement).offsetHeight;
       if (ow != null && oh != null && (ow !== r.w || oh !== r.h)) {
         node.untransformedRect = { x: r.x + r.w / 2 - ow / 2, y: r.y + r.h / 2 - oh / 2, w: ow, h: oh };
+      }
+    }
+
+    // data-anim → AnimationDef. Not hashed: animations don't change pixels, and
+    // the hash only detects duplicate adjacent slides.
+    if (el.getAttribute("data-anim") !== null) {
+      const parsed = parseAnimAttrs((n) => el.getAttribute(n), animIndex++);
+      const cls = (el.getAttribute("class") ?? "").trim().split(/\s+/)[0];
+      const label = `<${node.tag}${cls ? "." + cls : ""}>`;
+      for (const w of parsed.warnings) animWarnings.push(`${label} ${w}`);
+      if (parsed.def) {
+        if (el === rootEl) {
+          animWarnings.push(
+            `${label} data-anim on the slide root is not supported (its background becomes the slide background) — animate an inner wrapper instead`,
+          );
+        } else {
+          if (cs.opacity === "0" || cs.visibility === "hidden") {
+            animWarnings.push(
+              `${label} data-anim element is hidden at capture (opacity:0 / visibility:hidden) — author the slide in its final visible state; the exporter handles entrance hiding`,
+            );
+          }
+          for (let p = el.parentElement; p && p !== rootEl; p = p.parentElement) {
+            if (p.getAttribute("data-anim") !== null) {
+              animNested.push(`${label} sits inside another data-anim element`);
+              break;
+            }
+          }
+          node.anim = parsed.def;
+        }
       }
     }
 
@@ -329,5 +367,7 @@ export async function captureEditable(
     hash: h >>> 0,
     imagesWaited: waited,
     imagesFailed: failed,
+    animWarnings,
+    animNested,
   };
 }

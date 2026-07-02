@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ferminrp/agent-skills` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `ferminrp/agent-skills` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ferminrp/agent-skills` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,7 +79,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`skills/mapcn/SKILL.md`](skills/mapcn/SKILL.md) |
 | 19 | ✓ | [`skills/riesgo-pais-argentina/SKILL.md`](skills/riesgo-pais-argentina/SKILL.md) |
 | 20 | ✓ | [`skills/travel-promos-argentina/SKILL.md`](skills/travel-promos-argentina/SKILL.md) |
-| 21 | ✓ | [`skills/writing-well/SKILL.md`](skills/writing-well/SKILL.md) |
+| 21 | ✓ | [`skills/workflowy/SKILL.md`](skills/workflowy/SKILL.md) |
+| 22 | ✓ | [`skills/writing-well/SKILL.md`](skills/writing-well/SKILL.md) |
 
 ---
 

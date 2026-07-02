@@ -18,6 +18,11 @@ If a [`professional-brain`](../professional-brain/SKILL.md) (`brain/`) exists, g
 
 You will often get a short brief without every detail (no baselines, no exact numbers). **Always deliver a complete, specific OKR set anyway** — do not stop to ask questions and do not leave bracketed placeholders like `[target]`. Where a baseline or number is missing, infer a realistic value from the brief and the domain, and mark it *(assumed — confirm)*. A clearly-labelled assumed baseline (e.g. "activation 40% *(assumed)* → 60%") is always better than a blank or an invented-as-fact figure.
 
+## Deeper Materials
+
+- **`references/bad-okr-gallery.md`** — six realistic bad OKRs with diagnosis and rewrite (disguised roadmap, unfalsifiable objective, sandbagging, uncontrollable KR, metric zoo, missing guardrail), ending in a 5-question diagnostic. Use it when *reviewing* existing OKRs — match against the gallery before writing feedback.
+- **`templates/okr-worksheet.md`** — a fill-in worksheet whose columns enforce the quality gates (baseline source, drift test, control test, guardrail) plus a pre-committed quarter-end scoring rubric. Offer it when a team wants to draft OKRs themselves.
+
 ## OKR Fundamentals
 
 **Objective:** Qualitative, inspiring, time-bound. Answers "where are we going?"

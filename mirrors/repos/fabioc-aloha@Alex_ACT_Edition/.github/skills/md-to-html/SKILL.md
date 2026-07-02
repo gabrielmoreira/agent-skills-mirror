@@ -172,7 +172,7 @@ Get-ChildItem docs/*.md | ForEach-Object {
 
 ## Requirements
 
-- Node.js 18+
+- Node.js 24+
 - pandoc (`winget install pandoc`)
 - mermaid-cli (optional, only for `--mermaid-png`)
 

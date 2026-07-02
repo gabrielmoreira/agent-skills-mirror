@@ -5,6 +5,8 @@ draft: false
 description: "An overview of the concept of Claude Code skills (SKILL.md) and how Progressive Disclosure works."
 ---
 
+# Skills
+
 A Claude Code skill is an extension mechanism that bundles a recurring procedure or specialized knowledge into a single `SKILL.md` file and adds it to Claude's toolbox.
 
 {{< callout type="info" >}}
@@ -24,7 +26,11 @@ The following situations are signals that you should create a skill:
 - When you keep pasting the same instructions or checklist into chat
 - When a section of CLAUDE.md grows from "factual information" into a "multi-step procedure"
 
-CLAUDE.md content always resides in the context, but a skill's body loads only when it is actually used. As a result, you can keep long, detailed reference material with almost no token cost until it is needed. Note that custom commands (`.claude/commands/`) have been integrated into skills, and existing command files still work as before.
+CLAUDE.md content always resides in the context, but a skill's body loads only when it is actually used. As a result, you can keep long, detailed reference material with almost no token cost until it is needed.
+
+### Skill and Custom Commands
+
+Custom commands (`.claude/commands/`) have been integrated into skills. Existing command files still work as before, but new extensions should be written as skills. If both a command file and a skill with the same name exist, the skill takes precedence.
 
 ### Skill Structure
 
@@ -65,6 +71,7 @@ The main frontmatter fields are as follows.
 | `allowed-tools` | Tools that can be used without approval while the skill is active |
 | `context` | When set to `fork`, runs in a separate subagent context |
 | `paths` | Auto-loads only when handling specific file patterns |
+| `shell` | Optional: shell to use when running shell commands |
 
 ## Progressive Disclosure
 

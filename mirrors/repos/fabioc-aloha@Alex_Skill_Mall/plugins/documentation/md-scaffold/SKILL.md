@@ -220,7 +220,7 @@ node .github/muscles/md-to-word.cjs quarterly-review.md --style professional
 
 ## Requirements
 
-- Node.js 18+
+- Node.js 24+
 
 ---
 

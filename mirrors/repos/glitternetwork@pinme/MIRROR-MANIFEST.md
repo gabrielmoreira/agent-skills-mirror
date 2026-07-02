@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `glitternetwork/pinme` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `glitternetwork/pinme` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `glitternetwork/pinme` — 26 default patterns, 0 followed patterns, 6
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,12 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`skills/pinme-auth/SKILL.md`](skills/pinme-auth/SKILL.md) |
-| 3 | ✓ | [`skills/pinme-email/SKILL.md`](skills/pinme-email/SKILL.md) |
-| 4 | ✓ | [`skills/pinme-llm/SKILL.md`](skills/pinme-llm/SKILL.md) |
-| 5 | ✓ | [`skills/pinme-share/SKILL.md`](skills/pinme-share/SKILL.md) |
-| 6 | ✓ | [`skills/pinme/SKILL.md`](skills/pinme/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`skills/pinme-auth/SKILL.md`](skills/pinme-auth/SKILL.md) |
+| 4 | ✓ | [`skills/pinme-email/SKILL.md`](skills/pinme-email/SKILL.md) |
+| 5 | ✓ | [`skills/pinme-llm/SKILL.md`](skills/pinme-llm/SKILL.md) |
+| 6 | ✓ | [`skills/pinme-share/SKILL.md`](skills/pinme-share/SKILL.md) |
+| 7 | ✓ | [`skills/pinme/SKILL.md`](skills/pinme/SKILL.md) |
 
 ---
 

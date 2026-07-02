@@ -184,7 +184,7 @@ For high-fidelity diagrams, pre-render to PNG and include as images.
 
 ## Requirements
 
-- Node.js 18+
+- Node.js 24+
 - pandoc (for Markdown to HTML conversion)
 - Shared modules: `markdown-preprocessor.cjs`, `mermaid-pipeline.cjs`
 

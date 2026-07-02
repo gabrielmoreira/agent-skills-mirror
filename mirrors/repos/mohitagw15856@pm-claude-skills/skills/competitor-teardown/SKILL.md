@@ -1,6 +1,6 @@
 ---
 name: competitor-teardown
-description: "Produce a structured competitive analysis for any product or market. Use when asked for a competitor analysis, competitive teardown, market comparison, SWOT, or positioning map. Generates a structured teardown with positioning map, feature comparison, messaging gaps, and strategic recommendations."
+description: "Produce a structured competitive analysis for any product or market. Use when asked for a competitor analysis, competitive teardown, market comparison, SWOT, or positioning map. Generates a structured teardown with positioning map, feature comparison, messaging gaps, and strategic recommendations. For a full landscape doc with feature matrix and win/loss analysis use competitive-analysis instead."
 ---
 
 # Competitor Teardown Skill
@@ -14,6 +14,11 @@ Ask the user for these if not provided:
 - **Competitors to analyse** (list 2–5 names; if not provided, ask)
 - **Analysis depth** (quick overview / detailed teardown)
 - **Primary use case for this analysis** (e.g. sales enablement, investor deck, internal strategy, product planning)
+
+## Deeper Materials
+
+- **`references/intel-sourcing-guide.md`** — where competitive facts come from (four source tiers), which source to use per teardown section, the [verified]/[reported]/[assumed] confidence labels, and the ethics line. Apply its labelling to every substantive claim in the output.
+- **`templates/teardown-skeleton.md`** — a fill-in teardown with the confidence labels and a verification queue built in. Offer it when the user wants to gather the intel themselves.
 
 ## Output Structure
 
