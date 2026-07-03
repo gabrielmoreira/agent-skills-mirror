@@ -1,7 +1,7 @@
 ---
 name: seo-content-writer
 description: 'Use when the user asks to "write SEO content"; drafts new posts, articles, and landing pages with keywords, headers, snippets, and evidence boundaries. Not for AI-citation/GEO readiness scoring — use geo-content-optimizer; not for updating decaying existing content — use content-refresher. SEO文章写作/内容优化'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -9,7 +9,9 @@ when_to_use: "Use when writing SEO-optimized articles, blog posts, landing pages
 argument-hint: "<topic> <target keyword>"
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: seo-geo
+  phase: build
   geo-relevance: "medium"
 ---
 
@@ -35,7 +37,7 @@ Here's my content brief: [brief]. Write SEO-optimized content following this out
 - **Writes**: a user-facing content deliverable and reusable summary.
 - **Promotes**: approved angles, messaging choices, missing evidence, and publish blockers to `memory/hot-cache.md` and `memory/open-loops.md`; propose durable decisions as pending-decision items.
 - **Done when**: the draft satisfies the target intent with the primary keyword placed naturally; H1/H2 structure, meta description, and at least one snippet-targetable block are present; and every claim needing a source is either cited or flagged.
-- **Primary next skill**: [content-quality-auditor](../../cross-cutting/content-quality-auditor/SKILL.md) when the draft is ready for gating.
+- **Primary next skill**: [content-quality-auditor](../../optimize/content-quality-auditor/SKILL.md) when the draft is ready for gating.
 
 ### Handoff Summary
 
@@ -83,7 +85,8 @@ On user confirmation, save to `memory/content/YYYY-MM-DD-<topic>.md` — see [Sk
 - [SEO Writing Checklist](references/seo-writing-checklist.md) — On-page checklist, snippet patterns, and copy-start template
 - [Title Formulas](references/title-formulas.md) — Headline formulas and CTR patterns
 - [Content Structure Templates](references/content-structure-templates.md) — Compact content blueprints
+- [Humanizer Slop Check](../../references/humanizer-slop.md) — Pre-publish self-check that strips AI-slop phrasing and tells before handoff
 
 ## Next Best Skill
 
-- **Primary**: [content-quality-auditor](../../cross-cutting/content-quality-auditor/SKILL.md) — gate the draft before publishing.
+- **Primary**: [content-quality-auditor](../../optimize/content-quality-auditor/SKILL.md) — gate the draft before publishing.

@@ -68,15 +68,26 @@ Author the slide in its **final visible layout** — the CSS you write is the fi
 | `zoom-in` / `zoom-out` | Zoom | entrance / exit | — |
 | `wheel-in` / `wheel-out` | Wheel | entrance / exit | — |
 | `random-bars-in` / `random-bars-out` | Random Bars | entrance / exit | `data-anim-dir` (`horizontal`/`vertical`; default `horizontal`) |
+| `blinds-in` / `blinds-out` | Blinds | entrance / exit | `data-anim-dir` (`horizontal`/`vertical`; default `horizontal`) |
+| `checkerboard-in` / `checkerboard-out` | Checkerboard | entrance / exit | `data-anim-dir` (`horizontal`=across / `vertical`=down; default `horizontal`) |
+| `dissolve-in` / `dissolve-out` | Dissolve | entrance / exit | — |
+| `box-in` / `box-out` | Box | entrance / exit | `data-anim-dir` (`in`/`out`; entrance defaults `in`, exit `out`) |
+| `circle-in` / `circle-out` | Circle | entrance / exit | `data-anim-dir` (`in`/`out`; entrance defaults `in`, exit `out`) |
+| `diamond-in` / `diamond-out` | Diamond | entrance / exit | `data-anim-dir` (`in`/`out`; entrance defaults `in`, exit `out`) |
+| `plus-in` / `plus-out` | Plus | entrance / exit | `data-anim-dir` (`in`/`out`; entrance defaults `in`, exit `out`) |
+| `strips-in` / `strips-out` | Strips | entrance / exit | `data-anim-dir` (`down-right`/`down-left`/`up-right`/`up-left`; default `down-right`) |
+| `wedge-in` / `wedge-out` | Wedge | entrance / exit | — |
 | `spin` | Spin | emphasis | `data-anim-rotate` (degrees; default `360`, negative = counter-clockwise) |
 | `grow` / `shrink` | Grow/Shrink | emphasis | `data-anim-scale` (default `1.5` / `0.67`) |
 | `pulse` | Pulse | emphasis | `data-anim-scale` (peak; default `1.05`) |
 | `teeter` | Teeter | emphasis | `data-anim-rotate` (peak tilt in degrees; default `5`) |
 | `path` | Custom motion path | motion path | `data-anim-path` (required) |
 
-`data-anim-dir` comes in three families. Fly and wipe take `left` / `right` / `top` / `bottom` (default `bottom`) — the edge the element enters from or exits toward. Float takes `top` / `bottom` only (default `bottom`: rises in from below, sinks away below). Split and random-bars take `horizontal` / `vertical` — the axis of the seam/bars (split defaults to `vertical`, PowerPoint's "Vertical In"; random-bars to `horizontal`). Values outside an effect's family fall back to its default.
+`data-anim-dir` comes in five families. Fly and wipe take `left` / `right` / `top` / `bottom` (default `bottom`) — the edge the element enters from or exits toward. Float takes `top` / `bottom` only (default `bottom`: rises in from below, sinks away below). Split, random-bars, blinds, and checkerboard take `horizontal` / `vertical` — the axis of the seam/bars/rows (split defaults to `vertical`, PowerPoint's "Vertical In"; the others to `horizontal`; for checkerboard, `horizontal` is PowerPoint's "Across" and `vertical` its "Down"). Box, circle, diamond, and plus take `in` / `out` — whether the pattern closes in on the center or grows out of it (entrances default `in`, exits `out`, PowerPoint's own pairings). Strips takes `down-right` / `down-left` / `up-right` / `up-left` (default `down-right`) — the corner the diagonal sweep travels toward. Values outside an effect's family fall back to its default.
 
-In the browser preview, wheel, split, and random-bars are gradient-mask approximations of PowerPoint's filters (exact in the exported file); don't put them on an element that already uses CSS `mask`/`mask-image` — the build would override it. On browsers without `CSS.registerProperty` these three preview as plain fades; the export is unaffected.
+In the browser preview, wheel, wedge, split, random-bars, blinds, checkerboard, dissolve, circle, plus, strips, and the `in` variants of box/diamond are gradient-mask approximations of PowerPoint's filters (exact in the exported file); don't put them on an element that already uses CSS `mask`/`mask-image` — the build would override it. On browsers without `CSS.registerProperty` these preview as plain fades; the export is unaffected. (The `out` variants of box/diamond preview via `clip-path` and work everywhere.)
+
+The pattern-seeded effects (wheel, wedge, random-bars, blinds, checkerboard, dissolve, box, circle, diamond, plus, strips) look best on elements that export as a **single shape** — an image, or a plain text block without its own background panel. An element that exports as several stacked shapes (a filled card with a text label) can't run those filters in unison, because PowerPoint seeds them per shape: the export keeps the effect on the background shape and fades the pieces on top in step. Directional effects (wipe, split, fly, float) don't have this constraint. Judge the exported file in **desktop PowerPoint** — Keynote's `.pptx` import substitutes effects it lacks (wheel, random-bars, and several other filters become dissolves) and drops repeat timing; that substitution is a Keynote import limitation, not an export bug.
 
 `data-anim-path` is a small SVG-path subset in slide px, as offsets from the element's resting position (+y is down): an optional leading `M x y` (the path is rebased to start at 0,0), then `L x y` and `C x1 y1 x2 y2 x y` segments, comma- or whitespace-separated, up to 32 points. `data-anim-path="L 240 0"` moves the element 240px right; `data-anim-path="C 100 -200 300 -200 400 0"` arcs it up and over.
 
@@ -89,11 +100,11 @@ In the browser preview, wheel, split, and random-bars are gradient-mask approxim
 | `data-anim-duration` | ms, integer | PowerPoint's per-effect defaults: `500` for fade/fly/wipe/split/zoom/random-bars/pulse; `1000` for float/teeter; `2000` for bounce/wheel/spin/grow/shrink/path; appear/disappear are instant |
 | `data-anim-order` | integer | document order |
 | `data-anim-repeat` | integer `2`–`100` | `1` (play once); not on appear/disappear |
-| `data-anim-auto-reverse` | `true` / `false` (bare attribute = true) | `false`; emphasis and `path` effects only |
+| `data-anim-auto-reverse` | `true` / `false` (bare attribute = true) | `false`; `spin`/`grow`/`shrink`/`path` only |
 
 Animations sort by `data-anim-order`, then document order to break ties. `click` starts a new step and waits for the presenter — →/Space/tap play the next step before advancing the slide; `after` starts once everything already scheduled in the step has finished (PowerPoint's *After Previous*); `with` starts together with the previous one; `data-anim-delay` shifts the start in every case. Everything before the first `click` is an automatic lead-in that plays when the slide activates — so a lone `data-anim="fade-in"` simply plays on arrival, and `click` is the explicit opt-in to presenter-paced builds.
 
-`data-anim-repeat` replays the whole effect N times; `data-anim-auto-reverse` plays each pass forward then backward (a spin that unwinds, a path that returns) and is meaningful only on emphasis/path effects — on an entrance or exit it's ignored with a warning at export. `after` chaining and click-step boundaries count the full repeated/reversed length, in the preview and in the exported file alike.
+`data-anim-repeat` replays the whole effect N times; `data-anim-auto-reverse` plays each pass forward then backward (a spin that unwinds, a path that returns) and is meaningful only on `spin`/`grow`/`shrink`/`path` — entrances, exits, `pulse`, and `teeter` ignore it with a warning at export (the last two already return to base on their own). On a `path` without auto-reverse, each repeat restarts from the origin (PowerPoint semantics); with auto-reverse the whole out-and-back journey is baked into the exported path geometry, so it plays identically everywhere. `after` chaining and click-step boundaries count the full repeated/reversed length, in the preview and in the exported file alike.
 
 ```html
 <ul>

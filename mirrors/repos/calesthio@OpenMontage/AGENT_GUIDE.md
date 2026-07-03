@@ -489,7 +489,7 @@ Three selector tools abstract multi-provider capabilities. **Selectors auto-disc
 | Selector | Routes to | How it discovers |
 |----------|-----------|-----------------|
 | `tts_selector` | All tools with `capability="tts"` (ElevenLabs, Google TTS, OpenAI, Piper) | `registry.get_by_capability("tts")` |
-| `image_selector` | All tools with `capability="image_generation"` (FLUX, Google Imagen, DALL-E, Recraft, etc.) | `registry.get_by_capability("image_generation")` |
+| `image_selector` | All tools with `capability="image_generation"` (FLUX, Google Imagen, GPT Image, Recraft, etc.) | `registry.get_by_capability("image_generation")` |
 | `video_selector` | All tools with `capability="video_generation"` | `registry.get_by_capability("video_generation")` |
 
 Selectors route based on: user preference > availability > discovery order. They adapt input schemas between providers transparently.

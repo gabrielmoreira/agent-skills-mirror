@@ -1,7 +1,7 @@
 ---
 name: technical-seo-checker
 description: 'Use when the user asks to "check technical SEO"; audits crawlability, indexing, Core Web Vitals, robots.txt, sitemaps, canonicals, redirects, and migrations. Not for on-page tags or content — use on-page-seo-auditor. 技术SEO/网站速度'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -10,7 +10,9 @@ argument-hint: "<URL or domain>"
 allowed-tools: WebFetch
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: seo-geo
+  phase: optimize
   geo-relevance: "low"
 ---
 
@@ -111,9 +113,15 @@ When a user requests a technical SEO audit, use the compact step templates in [r
 4. **Audit Mobile-Friendliness** — check viewport setup, layout fit, tap targets, and mobile-first parity.
 5. **Audit Security & HTTPS** — confirm SSL health, HTTPS enforcement, mixed content, HSTS, and security headers.
 6. **Audit URL Structure** — inspect URL patterns, parameters, case consistency, and redirect hygiene.
-7. **Audit Structured Data** — validate schema, map missing opportunities, and note CORE-EEAT `O05` implications.
+7. **Audit Structured Data** — validate schema, map missing opportunities, and note CORE-EEAT `O05` implications. ⚠ Raw fetches miss client-side-injected JSON-LD (Yoast/RankMath/AIOSEO render via JS); verify with the rendered DOM (`document.querySelectorAll('script[type="application/ld+json"]')`) or Rich Results Test before reporting "no schema".
 8. **Audit International SEO (if applicable)** — verify hreflang, return tags, locale targeting, and `x-default`.
 9. **Generate Technical Audit Summary** — roll findings into a scorecard, priority queue, quick wins, roadmap, and monitoring plan.
+
+### Audit Notes
+
+- **Rendering (step 1 & 7)** — AI crawlers don't execute JS; critical content and JSON-LD must be in the initial HTML. SSR/SSG ships it server-side; pure CSR hides it until hydration, so client-injected content and schema can go unseen. Compare raw fetch vs rendered DOM.
+- **Core Web Vitals thresholds (step 3)** — pass: LCP <2.5s, INP <200ms, CLS <0.1.
+- **Crawl-budget checklist (step 1)** — flag faceted-nav explosion (filter/sort combinations), parameterized URLs (tracking/session params creating duplicates), and session-ID URLs. Each multiplies crawlable URLs and wastes budget on near-duplicates.
 
 ## Decision Gates
 

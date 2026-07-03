@@ -1,7 +1,7 @@
-﻿---
+---
 name: intent
 version: 1.2.1
-description: 'Apply Commander''s Intent to the user''s own prompt before acting. Interpret what the user is trying to achieve, not what they literally wrote. Narrate the interpretation so the user can correct drift before work begins. USE WHEN: any substantive request that implies work (build, fix, improve, explain, investigate, decide). SKIP WHEN: the request is unambiguous and mechanical (a specific file read, a one-line command, a yes/no confirmation).'
+description: 'Apply Operator''s Intent to the user''s own prompt before acting. Interpret what the user is trying to achieve, not what they literally wrote. Narrate the interpretation so the user can correct drift before work begins. USE WHEN: any substantive request that implies work (build, fix, improve, explain, investigate, decide). SKIP WHEN: the request is unambiguous and mechanical (a specific file read, a one-line command, a yes/no confirmation).'
 argument-hint: 'Triggered automatically by any substantive user prompt; can also be invoked explicitly: "apply intent to this request"'
 ---
 
@@ -11,7 +11,7 @@ argument-hint: 'Triggered automatically by any substantive user prompt; can also
 
 *Memory Model role: Ensures each session is aimed correctly — so the memory accumulates progress, not drift.*
 
-> **Governing principle:** [Commander's Intent](../PRINCIPLES.md#principle-1-commanders-intent) — *Define the destination. Never prescribe the route.* This skill applies that principle in reverse: the user is the commander, the agent is the subordinate, and imprecise prompts are the norm, not the exception.
+> **Governing principle:** [Operator's Intent](../PRINCIPLES.md#principle-1-operators-intent) — *Define the destination. Never prescribe the route.* This skill applies that principle in reverse: the user is the operator, the agent is the subordinate, and imprecise prompts are the norm, not the exception.
 
 A prompt is a compressed statement of intent. The user has a destination in mind and has picked words to point at it. Those words are almost always under-specified, occasionally contradictory, and sometimes literally wrong about details the user doesn't care about. An agent that executes the literal text produces technically-correct work that misses the point. An agent that interprets the intent, states the interpretation, and then executes gets to the destination.
 

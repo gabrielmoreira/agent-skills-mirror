@@ -277,10 +277,10 @@ files, or express it without the `bytes` suffix.
 
 ### Per-file limits
 
-| Limit type    | Value        | Applies to                                                                 |
-| ------------- | ------------ | -------------------------------------------------------------------------- |
-| Always-loaded | 20,000 bytes | Files with `applyTo: "**"` in `.github/instructions/idd-*.instructions.md` |
-| Phase         | 32,200 bytes | Other files in `.github/instructions/idd-*.instructions.md`                |
+| Limit type    | Value        | Applies to                                                                 | Rationale                                                                                                                                                                                               |
+| ------------- | ------------ | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Always-loaded | 20,000 bytes | Files with `applyTo: "**"` in `.github/instructions/idd-*.instructions.md` | These files load on every phase regardless of which is active, so this is the strictest ceiling — it bounds the fixed floor cost every session pays before any phase-specific content is even selected. |
+| Phase         | 32,200 bytes | Other files in `.github/instructions/idd-*.instructions.md`                | Only the one file matching the active phase loads at a time, so this ceiling can run larger than the always-loaded one without raising a session's floor cost.                                          |
 
 ### Bundle limits
 
@@ -291,13 +291,13 @@ the volatile byte values, so this page cannot silently re-drift from the
 manifest. Read the live limits with
 `jq '.bundleBudgets' audit/sync-manifest.json`.
 
-| Bundle ID          | Files included (phase path)                                                                                                                     |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `bundle-discovery` | `idd-overview-core` + `idd-overview-appendix` + `idd-discover` + `idd-suitability` + `idd-claim`                                                |
-| `bundle-resume`    | `idd-overview-core` + `idd-overview-appendix` + `idd-resume`                                                                                    |
-| `bundle-work`      | `idd-overview-core` + `idd-overview-appendix` + `idd-work`                                                                                      |
-| `bundle-review`    | `idd-overview-core` + `idd-overview-appendix` + `idd-review-snapshot` + `idd-review-triage` + `idd-review-fix` + `idd-advisory-wait` + `idd-ci` |
-| `bundle-merge`     | `idd-overview-core` + `idd-overview-appendix` + `idd-pre-merge` + `idd-merge-handoff` + `idd-merge` + `idd-advisory-wait` + `idd-ci`            |
+| Bundle ID          | Files included (phase path)                                                                                                                     | Rationale                                                                                                                                                                                     |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bundle-discovery` | `idd-overview-core` + `idd-overview-appendix` + `idd-discover` + `idd-suitability` + `idd-claim`                                                | Bounds the Discover-path working set (A0–A4.5); this path's branching roadmap-traversal and gate logic is the most extensive of any phase group.                                              |
+| `bundle-resume`    | `idd-overview-core` + `idd-overview-appendix` + `idd-resume`                                                                                    | Bounds the Resume-path working set for crash / rate-limit / handoff recovery; narrow in scope, since resume only re-establishes state before handing off to the matching phase-specific file. |
+| `bundle-work`      | `idd-overview-core` + `idd-overview-appendix` + `idd-work`                                                                                      | Bounds the Work-path working set (worktree setup through B-phase implementation); B-phase defers review and merge decisions to their own bundles, so this stays the leanest bundle.           |
+| `bundle-review`    | `idd-overview-core` + `idd-overview-appendix` + `idd-review-snapshot` + `idd-review-triage` + `idd-review-fix` + `idd-advisory-wait` + `idd-ci` | Bounds the Review-path working set (E1–E8 triage, advisory-wait, CI gating); the most contention-prone bundle, since every PR push re-enters it.                                              |
+| `bundle-merge`     | `idd-overview-core` + `idd-overview-appendix` + `idd-pre-merge` + `idd-merge-handoff` + `idd-merge` + `idd-advisory-wait` + `idd-ci`            | Bounds the Merge-path working set (F1–F5 pre-merge through cleanup); shares `idd-advisory-wait` / `idd-ci` with `bundle-review` since both gate on the same review-currency and CI evidence.  |
 
 Bundle checks run unconditionally (not filtered by changed files) and
 measure the combined byte length of all listed files.
@@ -365,6 +365,34 @@ almost always two independent additions, so resolve the sync by **keeping
 both**. Apply this to clearly append-mostly surfaces such as
 `audit/sync-manifest.json` helper / budget entries and any export / registry
 list; file a follow-up where a reorder is non-trivial.
+
+### Table-column alignment padding
+
+`dprint`'s markdown plugin **aligns table columns** by padding every cell in
+a column out to that column's widest cell, and exposes no config option to
+turn this off; `dprint check` (part of **pre-push-validate**) enforces the
+padded result. The per-file limits above measure the dprint-formatted
+bytes, so widening a single table cell in a near-ceiling instruction file
+can silently re-pad every other row in that column and add far more bytes
+than the edit itself appears to. `markdownlint`'s `table-column-style:
+false` permits a non-aligned table, but only `dprint` decides what actually
+gets written, so that setting alone does not prevent the padding.
+
+**Convention**: in a budget-guarded instruction file, keep table cells
+short. When a row would otherwise need long conditional or branching
+prose, move that prose out of the cell and into a paragraph placed after
+the table instead of widening the column.
+
+**Escape hatch**: wrap a table that genuinely needs wide cells in
+`<!-- dprint-ignore-start -->` / `<!-- dprint-ignore-end -->` to exempt it
+from alignment; `markdownlint`'s existing `table-column-style: false`
+already accepts the resulting non-aligned table.
+
+**Measure after formatting**: a byte count taken before running `dprint
+fmt` (or **fix-validate**) under-reports the size the budget check will
+actually see, because column padding is applied at format time. Re-run
+`dprint fmt` (or **fix-validate**) and re-measure before trusting a
+near-ceiling file's size against its budget.
 
 ## Changing A Default
 

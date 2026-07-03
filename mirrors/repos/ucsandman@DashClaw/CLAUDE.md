@@ -45,6 +45,35 @@ npm run lint         # eslint
 npm run db:migrate   # apply pending schema to local DB (auto-loads .env.local; idempotent)
 ```
 
+## Definition of done includes a human-visible, human-OPERABLE surface
+
+The full contract is **`HUMAN-EXPERIENCE.md`** at the repo root (adopted 2026-07-02
+by Wes's direction) — read it before designing any feature. The classic agent failure
+mode in this repo: build the schema + route + repository + tests for a feature and
+never give a **human** a way to see or use it — the feature ships and silently
+disappears, or ships with a terminal command where a button belongs. Before calling
+any feature done, answer four questions in writing (spec, plan, or ship summary):
+
+1. **Where does a human SEE it?** Name the page and the click path from an existing
+   surface (nav, sidebar, an existing detail view). A deep URL nobody links to is not
+   a surface.
+2. **Is it discoverable?** The path must start somewhere humans already are. If the
+   feature only enriches an API response, the consuming page must render the new data.
+3. **Is every human step a CLICK?** Wherever the human's role is judgment (review,
+   approve, ratify, tune, dismiss), it's a button/toggle/form in the product — never
+   "copy this command," "open GitHub," or "run this script." Zero-terminal test:
+   walk the human's entire role for the feature; terminal commands + GitHub visits
+   required must be zero.
+4. **Was it verified rendered?** Drive the actual page (frontend-verify skill /
+   headless browser) and confirm the new element appears and its controls work — API
+   tests and unit tests prove the data exists, not that anyone can see or use it.
+
+API/SDK-only features are allowed, but that is an **explicit stated decision** in the
+spec ("no UI surface because X"), never a default you fall into. The `dashclaw-ship`
+skill enforces this as a UI-discoverability gate at ship time; this rule exists so the
+surface is *designed in* at build time, not bolted on at the gate. The marketing site
+is updated with new features **in the same ship** (`HUMAN-EXPERIENCE.md` clause 4).
+
 ## Verify before you commit
 
 CLAUDE.md is advisory; CI is not. A push is its own step - run these and READ the output first:
@@ -85,7 +114,7 @@ DashClaw-specific gaps surfaced from my agent history (most generic rules are al
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **DashClaw** (23754 symbols, 47905 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **DashClaw** (25844 symbols, 51815 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 
@@ -94,8 +123,9 @@ This project is indexed by GitNexus as **DashClaw** (23754 symbols, 47905 relati
 - **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
 - **MUST run `detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows. For regression review, compare against the default branch: `detect_changes({scope: "compare", base_ref: "main"})`.
 - **MUST warn the user** if impact analysis returns HIGH or CRITICAL risk before proceeding with edits.
-- When exploring unfamiliar code, use `query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
+- When exploring unfamiliar code, use `query({search_query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
 - When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `context({name: "symbolName"})`.
+- For security review, `explain({target: "fileOrSymbol"})` lists taint findings (source→sink flows; needs `analyze --pdg`).
 
 ## Never Do
 

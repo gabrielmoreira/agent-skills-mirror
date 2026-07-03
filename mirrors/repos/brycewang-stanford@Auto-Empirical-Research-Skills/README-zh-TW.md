@@ -38,23 +38,24 @@
 [![Validate catalog](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml/badge.svg)](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/brycewang-stanford/Auto-Empirical-Research-Skills/badge)](https://scorecard.dev/viewer/?uri=github.com/brycewang-stanford/Auto-Empirical-Research-Skills)
 [![Security audit: 52/52 CLEAN](https://img.shields.io/badge/security%20audit-52%2F52%20CLEAN-brightgreen)](SECURITY-SCAN-REPORT.md)
+[![Rigor coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbrycewang-stanford%2FAuto-Empirical-Research-Skills%2Fmain%2Fdocs%2Fbadges%2Frigor-coverage.json)](docs/RIGOR_COVERAGE.md)
 [![Powered by StatsPAI](https://img.shields.io/badge/powered%20by-StatsPAI-orange)](https://github.com/brycewang-stanford/StatsPAI)
 
 ---
 
 ## 先看這裡：整倉是一個 AERS Router Skill
 
-本倉庫支援把倉庫根目錄作為一個整體 skill 匯入 Codex、CodeBuddy、Claude Code 或類似 IDE。根目錄的 [`SKILL.md`](SKILL.md) 會註冊為 `auto-empirical-research-skills`，用途是依照研究任務路由到合適的 vendored 子 skill，而不是把 69 個合集、1,145 個 skill 一次性載入上下文。
+本倉庫支援把倉庫根目錄作為一個整體 skill 匯入 Codex、CodeBuddy、Claude Code 或類似 IDE。根目錄的 [`SKILL.md`](SKILL.md) 會註冊為 `auto-empirical-research-skills`，用途是依照研究任務路由到合適的 vendored 子 skill，而不是把 69 個合集、1,150 個 skill 一次性載入上下文。
 
 - **推薦整倉匯入**：選擇倉庫根目錄，使用 [`agents/openai.yaml`](agents/openai.yaml) 和根 [`SKILL.md`](SKILL.md) 註冊一個 catalog router；後續由 agent 先查 [`catalog/skills.json`](catalog/skills.json) 或 [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md)，再只讀取目標子 skill。
-- **推薦單 skill 匯入**：如果 IDE 要求「一目錄一個 skill」，請複製那個直接包含 `SKILL.md` 的子目錄，例如 `skills/50-brycewang-aer-skills/skills/aer-workflow/`，不要把整倉誤當成 1,145 個獨立 skill 遞迴註冊。
+- **推薦單 skill 匯入**：如果 IDE 要求「一目錄一個 skill」，請複製那個直接包含 `SKILL.md` 的子目錄，例如 `skills/50-brycewang-aer-skills/skills/aer-workflow/`，不要把整倉誤當成 1,150 個獨立 skill 遞迴註冊。
 - **安裝細節**：見 [`docs/INSTALL.md`](docs/INSTALL.md)。簡體中文 README 是預設入口；英文入口保留在 [`README-en.md`](README-en.md)。
 
 ---
 
 ## 全部 69 個 skill 合集一覽
 
-> **打開倉庫 → 看見整座資料庫。** 全部 **69 個合集 · 1,145 個 skill**，編號 `00 → 69`，每一個都**自有進本倉庫**（不只是對外連結），並在 [`catalog/skills.json`](catalog/skills.json) 裡追蹤。**點任一列即可打開其資料夾。** **⭐ = 由 Stanford REAP × CoPaper.AI 團隊自研的旗艦 skill**；其餘皆為精選、經安全稽核的社群成果。
+> **打開倉庫 → 看見整座資料庫。** 全部 **69 個合集 · 1,150 個 skill**，編號 `00 → 69`，每一個都**自有進本倉庫**（不只是對外連結），並在 [`catalog/skills.json`](catalog/skills.json) 裡追蹤。**點任一列即可打開其資料夾。** **⭐ = 由 Stanford REAP × CoPaper.AI 團隊自研的旗艦 skill**；其餘皆為精選、經安全稽核的社群成果。
 >
 > **主題對照 ——** 🚀 全流程與調度器 · 🎯 因果推斷與計量 · 📚 文獻與研究設計 · ✍️ 寫作、編修與去 AIGC · 📑 引用、重現與同儕審稿 · 🛠️ 資料、工具與基礎設施
 
@@ -134,7 +135,7 @@
 
 ---
 
-**面向實證研究的專業級 Agent Skills 發行版。** 不是一份行銷清單 —— 本倉庫**自有並已編目 1,145 個 skill**，外加一套**數值基準 + 評測套件 + 安全稽核 + CI** 把品質焊死，再疊加一張涵蓋**生態 23,000+ skill / 119 個倉庫**的精選地圖。
+**面向實證研究的專業級 Agent Skills 發行版。** 不是一份行銷清單 —— 本倉庫**自有並已編目 1,150 個 skill**，外加一套**數值基準 + 評測套件 + 安全稽核 + CI** 把品質焊死，再疊加一張涵蓋**生態 23,000+ skill / 119 個倉庫**的精選地圖。
 
 AERS 同時是兩樣東西：(1) 一小撮**自研旗艦 skill**，能跑通完整實證流水線 —— 資料清洗 → 識別 → 估計 → 穩健性 → 表格圖形 → 可投稿初稿；(2) 一份**精選、安全可控的目錄**，按研究流程階段組織整個實證研究 skill 生態。我們的差異化不在數量，而在於：旗艦 skill 的行為是**對著已知答案驗證過的**，而不是嘴上聲稱的。
 
@@ -170,7 +171,7 @@ AERS 同時是兩樣東西：(1) 一小撮**自研旗艦 skill**，能跑通完�
 
 ## 69 個合集 · 按用途分組
 
-> 與[頂部的順序索引 ↑](#全部-69-個-skill-合集一覽)相同的 **69 個合集 · 1,145 個 skill** —— 這裡**按研究用途**重新排序，方便你直接掃到正在進行的階段。**⭐ = 自研**（Stanford REAP × CoPaper.AI）；其餘皆為精選、經安全稽核的社群成果。
+> 與[頂部的順序索引 ↑](#全部-69-個-skill-合集一覽)相同的 **69 個合集 · 1,150 個 skill** —— 這裡**按研究用途**重新排序，方便你直接掃到正在進行的階段。**⭐ = 自研**（Stanford REAP × CoPaper.AI）；其餘皆為精選、經安全稽核的社群成果。
 
 **🚀 全流程旗艦與調度器** —— *一次呼叫，跑完整個實證閉環*
 
@@ -279,14 +280,14 @@ AERS 同時是兩樣東西：(1) 一小撮**自研旗艦 skill**，能跑通完�
 
 | 它是什麼 | 數量 | 事實來源 |
 |---|---:|---|
-| **本倉庫自有**並已編目的 skill | **1,145** | [`catalog/skills.json`](catalog/skills.json) |
+| **本倉庫自有**並已編目的 skill | **1,150** | [`catalog/skills.json`](catalog/skills.json) |
 | 自有 **合集（collections）** | **69** | [`catalog/skills.json`](catalog/skills.json) · [全部 69 個一覽 ↑](#全部-69-個-skill-合集一覽) |
 | **自研旗艦**全流程 skill（StatsPAI DSL + 顯式 Python/Stata/R） | **4** | [`skills/00*`](skills/) |
-| 每次執行從資料**重算 gold 值**的數值基準任務 | **5** | [`benchmark/`](benchmark/) |
-| 行為級**評測場景 / rubric 條目** | **17 / 95** | [`eval-harness/`](eval-harness/) |
+| 每次執行從資料**重算 gold 值**的數值基準任務 | **16** | [`benchmark/`](benchmark/) |
+| 行為級**評測場景 / rubric 條目** | **29 / 153** | [`eval-harness/`](eval-harness/) |
 | **原始基線**安全稽核（合集 / 檔案） | **52 / 2,940+**，52/52 CLEAN | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
 | 涵蓋**更廣生態**的精選地圖 | **23,000+ skill / 119 倉庫** | 本 README · [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
-| **工具目錄**（`tools/`）：因果/計量庫、自動化研究 Agent、MCP 服務、因果發現、基準資料集 | **335 工具 / 6 類** | [`tools/tools.json`](tools/tools.json) · [`tools/CATALOG.md`](tools/CATALOG.md) |
+| **工具目錄**（`tools/`）：因果/計量庫、自動化研究 Agent、MCP 服務、因果發現、基準資料集 | **334 工具 / 6 類** | [`tools/tools.json`](tools/tools.json) · [`tools/CATALOG.md`](tools/CATALOG.md) |
 
 > 安全稽核涵蓋的是**原始 52 合集 / 2,940 檔案的基線（52/52 CLEAN）**。在該基線之後新增的 vendor skill 由 [`catalog/provenance.json`](catalog/provenance.json)、[`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md)、[`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) 追蹤；高信任場景使用前請先 `make audit` 複核。
 
@@ -340,6 +341,18 @@ make check        # 仓库校验 + 单元测试 + eval lint + 数值基准
 
 > **為什麼既要 DSL 又要顯式三件套？** 信任一鍵 DSL 時用 StatsPAI；做教學、稽核、或要逐個替換診斷時用 00.1/00.2/00.3。AER-skills 再把一份正確的分析推到錄取門檻 —— 它們解決的是*不同*問題，可以組合。
 
+### 眼見為實 —— 旗艦流水線的真實產出
+
+下面三張圖直接來自倉庫內已提交的 [Card 教育報酬復現示範](demo-StatsPAI-skill/)（StatsPAI 一條流水線跑出，含 notebook、資料、表格與復現包）；LaLonde 的 Python/R/Stata/StatsPAI 四棧對照示範見 [`demo-notebooks/`](demo-notebooks/)。
+
+| 主估計係數圖 | 規格曲線 | 敏感性儀表板 |
+|---|---|---|
+| ![主估計係數圖](demo-StatsPAI-skill/figures/fig3_coefplot_main.png) | ![規格曲線](demo-StatsPAI-skill/figures/fig5_spec_curve.png) | ![敏感性儀表板](demo-StatsPAI-skill/figures/fig6_sensitivity_dashboard.png) |
+
+> 🧪 **端到端復現實證**：一條零依賴命令從 Card & Krueger (1994) 官方原始資料復現最低工資 DiD —— 波次均值逐位命中、Table 4 係數精確一致，復現評分器判定 **PERFECT**（三檔命中率 100%）。見 [`demo-notebooks/card-krueger-1994/`](demo-notebooks/card-krueger-1994/)。
+>
+> 🔎 線上目錄站（GitHub Pages，零建置）：**[技能搜尋](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/search.html)** · [工具搜尋](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/tools-search.html) · [站點首頁](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/)
+
 ---
 
 ## 從這裡開始 —— 30 秒選一個 skill
@@ -369,10 +382,10 @@ make check        # 仓库校验 + 单元测试 + eval lint + 数值基准
 
 | 層 | 它能擋住什麼 | 在哪 |
 |---|---|---|
-| **數值基準** | 報告數字與真實資料重算真值不符 —— 樸素 DID 符號陷阱、缺第一階段 F 的弱 IV、交錯時點下的 TWFE 偏誤、RDD 趨勢混淆、後處理壞控制 | [`benchmark/`](benchmark/) · 5 任務 |
-| **評測套件** | 散文級失誤：弱 IV 假性安心、交錯 DID 誤用 TWFE、編造引用、不安全的 `curl \| bash` 安裝、多重檢驗濫用、AER 合規缺口 | [`eval-harness/`](eval-harness/) · 17 場景 / 95 rubric |
+| **數值基準** | 報告數字與真實資料重算真值不符 —— 樸素 DID 符號陷阱、缺第一階段 F 的弱 IV、交錯時點下的 TWFE 偏誤、RDD 趨勢混淆、後處理壞控制、被合併均值掩蓋的異質效應（CATE）、只看均值漏掉尾部的分位數效應、本地衝擊混淆的移位份額（Bartik）IV、把中介當控制變數導致直接效應翻號、依賴參照組的 Oaxaca 分解拆分 | [`benchmark/`](benchmark/) · 16 任務 |
+| **評測套件** | 散文級失誤：弱 IV 假性安心、交錯 DID 誤用 TWFE、編造引用、不安全的 `curl \| bash` 安裝、多重檢驗濫用、AER 合規缺口 | [`eval-harness/`](eval-harness/) · 29 場景 / 153 rubric |
 | **安全稽核** | pipe-to-shell、反向 shell、憑據外洩、prompt 注入等 13 類風險 —— 六階段，40+ hook 腳本人工核查 | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
-| **來源與授權** | 未聲明來源、授權風險、1,145 個編目 skill 的衛生度漂移 | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
+| **來源與授權** | 未聲明來源、授權風險、1,150 個編目 skill 的衛生度漂移 | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
 | **CI 與相容性** | catalog 新鮮度、本機死連、GitHub Actions 政策、Python 3.9 **與** 3.12 語法基線 | [`.github/workflows/`](.github/workflows/) · 6 條 workflow |
 
 ```bash
@@ -485,7 +498,7 @@ make check       # 完整 gate：validate + Python 编译 + 单元测试 + eval 
 
 > 與上面的 skill 不同，[`tools/`](tools/) 收錄的是 agent / 研究者**實際呼叫的軟體與服務**——已結構化編目、核實過 license 與維護狀態，並接入 `make validate`。事實源 [`tools/tools.json`](tools/tools.json)，可瀏覽清單 [`tools/CATALOG.md`](tools/CATALOG.md)。
 
-**335 個工具 / 6 類**（2026-06 收錄）：
+**334 個工具 / 6 類**（2026-06 收錄）：
 
 - **因果推斷 / 處理效應庫（32）** — DoWhy · EconML · CausalML · DoubleML · CausalPy · causallib · grf · CATENets · TMLE 系列 · 孟德爾隨機化 …
 - **計量 / 準實驗庫（170）** — 面板FE · DiD（含現代/staggered）· 事件研究 · RDD · IV · 合成控制/SDID · 匹配加權 · 敏感性分析（fixest · did · HonestDiD · rdrobust · synthdid · reghdfe · csdid · sdid · pyfixest · linearmodels …）；**新增**空間計量（spdep · PySAL/spreg · GeoDa）· 局部投影/IRF & (S)VAR（lpirfs · vars · svars）· 調查加權/MRP/raking（survey · samplics · balance）· 元分析（metafor · meta · netmeta · metan）；橫跨 R/Python/Stata/Julia。
@@ -545,6 +558,7 @@ make check       # 完整 gate：validate + Python 编译 + 单元测试 + eval 
 
 敘事版更新日誌已遷至 [**CHANGELOG.md**](CHANGELOG.md)。近期要點：
 
+- **2026-07** —— 發布首個 tagged release **v2026.07**；方法嚴謹性覆蓋圖擴到 **16 個方法族全閉環**（新增 CATE、分位數效應、Bartik 移位份額、因果中介、Oaxaca 分解，每族 eval 場景 + 數值基準雙覆蓋），基準擴到 **16 任務**、評測套件擴到 **29 場景 / 153 rubric**；上線機器生成的發布快照、rigor 覆蓋徽章與六語 README 數字一致性門。
 - **2026-05** —— 收錄 **AER-skills**（Top-5 經濟學投稿套件，9 個 skill）並設週更上游同步；數值基準擴到 **5 個因果復原任務**、評測套件擴到 **17 場景 / 95 rubric**。
 - **2026-04** —— 完成 **52/52 安全基線**；交付四個全流程旗艦（**StatsPAI** + 顯式 **Python / Stata / R**）；上線原創 **chinese-de-aigc** skill。
 - **更早** —— 從 43 個合集成長為涵蓋 **119 倉庫 / 23,000+ skill** 的精選地圖；新增雙語 README、學術資料 MCP 伺服器與多代理系統。

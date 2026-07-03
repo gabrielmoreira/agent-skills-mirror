@@ -13,7 +13,7 @@
 
 ## Local Contracts
 
-- Do not place secrets, chat transcripts, private user memory, or local deployment details in repository knowledge.
+- Do not place secrets, chat transcripts, private user data, or local deployment details in repository knowledge.
 - Keep self-knowledge consistent with current architecture, configuration, capabilities, and setup docs.
 - Markdown here is for agent runtime context, not general marketing copy.
 

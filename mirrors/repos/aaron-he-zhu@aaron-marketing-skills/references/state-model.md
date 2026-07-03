@@ -40,7 +40,7 @@ WARM file last_updated > 90 days      → WARM demotes to COLD (archive with YYY
 
 ### Dual Truncation Rule
 
-HOT tier is limited to 80 lines AND 25KB (whichever triggers first). Truncation occurs at newline boundaries — no mid-line cuts. If exceeded after Claude Write/Edit, the PostToolUse hook warns the user.
+HOT tier is limited to 80 lines AND 25KB (whichever triggers first). A cache within both limits is injected in full; the SessionStart hook applies the 80-line cap at a newline boundary and the 25KB cap at the byte limit, so an over-limit cache may be cut mid-line. If exceeded after Claude Write/Edit, the PostToolUse hook warns the user.
 
 ### Staleness Protocol
 
@@ -123,6 +123,33 @@ Store:
 
 Only `entity-optimizer` should write canonical records here. Other skills should keep raw entity leads in their own category notes until canonicalization is needed.
 
+### `memory/creators/`
+
+Store (one file per creator, `<handle-slug>.md`, slug = canonical primary-platform handle):
+
+- verified cross-platform handles with confirmed/unconfirmed status
+- audience stats with as-of dates and Measured/User-provided/Estimated provenance
+- rate card and negotiation history
+- past-campaign performance baselines
+- dated disclosure/FTC compliance events citing content-reviewer verdict IDs
+- exclusivity windows, contract status, and the confirmed contact path
+
+Only `creator-registry` writes canonical records here. Other skills submit updates to `memory/creators/candidates.md` only.
+
+**Lifecycle exemption**: canonical creator records are roster state, not dated run artifacts — no `YYYY-MM-DD` filename, and they are exempt from the 90-day WARM demotion (like `memory/entities/`). Demotion happens only when the user drops a creator from the roster, and `memory-management` remains the sole executor of that archival.
+
+### `memory/claims/`
+
+Store (standing ledger files, not per-run artifacts):
+
+- `claims-ledger.md` — one row per marketing claim: claim text → substantiation evidence (source, date, provenance label) → approved wording + required disclosures → where used (ads / landing pages / briefs) → review/expiry date
+- `offers.md` — live offers: terms, promo codes, dates, landing URLs
+- `candidates.md` — intake from other skills (mirror of the entity/creator pattern)
+
+Only `offer-claims-registry` writes canonical records here. Other skills submit updates to `memory/claims/candidates.md` only.
+
+**Lifecycle exemption**: ledger files are standing state, not dated run artifacts — exempt from the 90-day WARM demotion (like `memory/entities/` and `memory/creators/`); rows retire via their review/expiry date, and `memory-management` remains the sole executor of archival.
+
 ### `memory/research/`
 
 Common subfolders:
@@ -159,17 +186,18 @@ Store:
 
 Common subfolders:
 
-- `content/`
-- `domain/`
-- `technical/`
-- `internal-linking/`
+- `content/` (content-quality-auditor — CORE-EEAT)
+- `domain/` (domain-authority-auditor — CITE)
+- `<skill>/` (other Optimize skills, per-skill — e.g. `technical-seo-checker/`, `internal-linking-optimizer/`)
+- `influencer/` (content-reviewer — C³ ART gate artifacts)
+- `paid/` (ad-account-auditor — ROAS gate artifacts)
 
 Store:
 
 - audit summaries
 - veto items
 - prioritized fixes
-- pass/fail gate decisions
+- pass/fail gate decisions (all gated artifacts carry `class: auditor-output` + the cap schema per [auditor-runbook.md](auditor-runbook.md))
 
 ### `memory/monitoring/`
 
@@ -201,7 +229,19 @@ Store:
 - amplification plans, repurposed UGC, landing-page optimizations (Convert)
 - performance analyses, ROI/CVI calculations, reports (Track)
 
-Same WARM lifecycle as the other categories: dated files `YYYY-MM-DD-<topic>.md`, demoted to `memory/archive/` after 90 days by `last_updated`.
+Same WARM lifecycle as the other categories: dated files `YYYY-MM-DD-<topic>.md`, demoted to `memory/archive/` after 90 days by `last_updated`. (content-reviewer's **gated** ART verdict is an auditor artifact and lives in `memory/audits/influencer/`, not here.)
+
+### `memory/paid-ads/`
+
+Per-skill subfolders, one per Paid Ads skill: `memory/paid-ads/<skill>/` (e.g. `campaign-architect/`, `ad-creative-builder/`, `paid-measurement-loop/`). Scored on the [ROAS framework](roas-benchmark.md).
+
+Store:
+
+- account/campaign structure plans, targeting + negative lists, cannibalization audits (build)
+- ad-creative sets and angle matrices (build)
+- ROAS/CPA readback snapshots vs control (scale)
+
+Same WARM lifecycle (dated files, demoted to `memory/archive/` after 90 days). ad-account-auditor's **gated** RQS verdict is an auditor artifact and lives in `memory/audits/paid/`.
 
 ## Writing Guidance
 
@@ -218,7 +258,11 @@ When a skill describes state updates, it should:
 - `memory-management` is the sole executor of WARM → COLD archival operations
 - `entity-optimizer` is the sole writer of canonical records in `memory/entities/<name>.md`
 - Other skills write entity candidates to `memory/entities/candidates.md` only
+- `creator-registry` is the sole writer of canonical records in `memory/creators/<handle-slug>.md`; other skills write to `memory/creators/candidates.md` only
+- `offer-claims-registry` is the sole writer of canonical records in `memory/claims/`; other skills write to `memory/claims/candidates.md` only
 - `content-quality-auditor` owns publish-readiness state in `memory/audits/content/`
 - `domain-authority-auditor` owns citation-trust state in `memory/audits/domain/`
+- `content-reviewer` owns the C³ ART gate state in `memory/audits/influencer/`
+- `ad-account-auditor` owns the ROAS gate state in `memory/audits/paid/`
 
 See [skill-contract.md](skill-contract.md) for the full protocol-layer vs execution-layer behavior matrix.

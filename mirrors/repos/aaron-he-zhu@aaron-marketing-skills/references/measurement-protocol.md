@@ -1,9 +1,11 @@
-# Measurement & Attribution Protocol (SEO / GEO)
+# Measurement & Attribution Protocol
 
 > The honest answer to "how do we know a change worked?" — and, just as important, to
 > "which questions can we answer in minutes, and which take weeks and a control group?"
 > Without this discipline, every version is guesswork. This file is the SSOT for what is
 > testable, how fast, and what each signal does and does NOT prove.
+
+**Scope**: the layered latency model below (proxy vs outcome) is **SEO/GEO-specific**. The **cross-discipline decision protocol** and **per-discipline latency notes** further down apply to all disciplines — SEO/GEO, influencer, and paid ads. Influencer and paid skills use the decision protocol + their own latency note; they do not use the crawler/citation layers.
 
 ## The problem this exists to fix
 
@@ -138,6 +140,35 @@ just a different data source and a longer window.
 - **Single runs are noise.** L2 is stochastic; sample and report rates.
 - **Collection is semi-manual.** The tools structure and diff the data; they do not, for the AI
   engines, automate the asking.
+
+## Cross-discipline decision protocol (readback windows + promote / rollback)
+
+Discipline-neutral. Every monitored change (SEO/GEO edit, influencer activation, paid campaign change) is judged on a fixed schedule against a control, then promoted, kept-testing, rolled back, or marked unproven — never on vibes.
+
+**Readback windows** (set before the change; do not react inside the window):
+
+| Change type | Readbacks |
+|---|---|
+| Content refresh (existing page) | 7 / 14 / 28 / 56 days |
+| New content / new asset | 14 / 28 / 56 / 90 days |
+| Technical fix | daily ×7, then 28 |
+| AEO/GEO surfacing | weekly |
+| Influencer activation | per post + 7 / 30 days |
+| Paid campaign change | exit learning phase first, then 7 / 14 days |
+
+**Required readback fields** (record each time): change · owner · baseline window · candidate window · sources · primary + secondary metric · winner · caveats · decision · next-patch · next-readback date.
+
+**Decision rule**: **Promote** only if it beats the control on the primary metric past the bar below; **Keep-testing** if trending but not yet significant; **Rollback** if it loses by the same bar; **Unproven** otherwise (record and move on).
+
+**Significance bar (documented method — no scipy, no code in this repo)**: treat a winner as real only when the lift is both statistically and practically meaningful — a non-parametric test (e.g. Mann-Whitney U) at p < 0.05 **and** ≥ 15% relative lift, with a bootstrap confidence interval on the lift that excludes zero. Below the sample floor, stay Keep-testing. State the method and compute it by hand or in a notebook; do not add a stats dependency to this repo.
+
+**Do NOT promote when**: sample too small (below the floor) · attribution dirty (no control / confounded) · the move is explained by seasonality · a connector failed mid-window · "only the author liked it."
+
+## Per-discipline latency notes
+
+- **SEO/GEO** — the four-layer model above (crawler access → citability → surfacing → rankings). Proxy (L2) is minutes; outcomes (L3/L4) are weeks. Always read against a control.
+- **Influencer** — content has a short head (first 24–48h decides most reach) then a long tail; judge a post on its own platform analytics vs the creator's recent median, not vs another creator. ROI/CVI roll up per the [C³ framework](c3-benchmark.md).
+- **Paid ads** — auction feedback is near-instant, so the latency problem inverts vs GEO: the slow parts are **conversion lag** (a click today converts days later) and **attribution windows** (Meta 7-day-click vs Google last-click are not comparable — normalize before diffing), plus **learning-phase noise** (editing a campaign still in learning resets it; do not read or change it until it exits). Never compare cross-platform ROAS without normalizing window + currency. Scores roll up per the ROAS framework (`references/roas-benchmark.md`, added in the Paid Ads wave).
 
 ## Tooling map
 

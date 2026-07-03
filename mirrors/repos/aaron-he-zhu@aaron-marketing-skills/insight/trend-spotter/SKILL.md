@@ -1,7 +1,7 @@
 ---
 name: trend-spotter
 description: 'Use when the user asks to "find trending topics", "what trends should my brand jump on", or "time a campaign around a cultural moment"; produces a ranked trend report with brand-fit scores, format calls (rising/peak/declining), a cultural calendar, and go/skip recommendations. Not for finding the creators to run those trends — use influencer-discovery.'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -9,7 +9,9 @@ when_to_use: "Use when planning campaign timing and themes, deciding whether to 
 argument-hint: "<brand or industry> [platform] [time horizon]"
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: influencer
+  phase: insight
   family: influencer-marketing
   impact-phase: Insight
 ---
@@ -58,347 +60,29 @@ This skill works with no live integrations (Tier 1): ask the user for the brand,
 
 No connector is required to produce a useful report. See [CONNECTORS.md](../../CONNECTORS.md) for the free/keyless recipe per category.
 
+For a keyless way to fill the trending tables with real signal, run the multi-source trend scout — Google Trends RSS + Hacker News + Reddit + YouTube-outlier, scored against the brand's verticals via the bundled stdlib `rss_monitor.py` (no new dependency): [references/trend-scout-recipe.md](references/trend-scout-recipe.md). This is the Tier-1 recipe behind `~~trend database` (Google Trends RSS).
+
 ## Instructions
 
-When a user requests trend analysis:
-
-1. **Define Trend Parameters**
-
-   ```markdown
-   ### Trend Analysis Parameters
-
-   **Brand/Industry**: [name]
-   **Target Platforms**: [platforms]
-   **Target Audience**: [audience description]
-   **Geographic Focus**: [regions]
-   **Time Horizon**: [immediate/this month/this quarter]
-   **Content Categories**: [relevant categories]
-   ```
-
-2. **Identify Current Trends**
-
-   ```markdown
-   ## Current Trends
-
-   ### Trending Topics
-
-   | Topic | Platform | Volume | Relevance | Lifespan |
-   |-------|----------|--------|-----------|----------|
-   | [Topic 1] | [platform] | High/Med/Low | ⭐⭐⭐⭐⭐ | [days/weeks] |
-   | [Topic 2] | [platform] | High/Med/Low | ⭐⭐⭐⭐ | [days/weeks] |
-   | [Topic 3] | [platform] | High/Med/Low | ⭐⭐⭐ | [days/weeks] |
-
-   ### Trending Hashtags
-
-   | Hashtag | Platform | Posts | Growth | Brand Fit |
-   |---------|----------|-------|--------|-----------|
-   | #[hashtag1] | [platform] | [volume] | +[%] | ✅/⚠️/❌ |
-   | #[hashtag2] | [platform] | [volume] | +[%] | ✅/⚠️/❌ |
-
-   ### Trending Audio/Sounds
-
-   | Sound | Platform | Uses | Origin | Brand Safe |
-   |-------|----------|------|--------|------------|
-   | [sound 1] | TikTok | [count] | [source] | ✅/⚠️/❌ |
-   | [sound 2] | Reels | [count] | [source] | ✅/⚠️/❌ |
-
-   ### Trending Challenges
-
-   | Challenge | Platforms | Participation | Difficulty | Risk |
-   |-----------|-----------|---------------|------------|------|
-   | [challenge 1] | [platforms] | [level] | [easy/medium/hard] | [risk level] |
-   ```
-
-3. **Analyze Content Format Trends**
-
-   ```markdown
-   ## Trending Content Formats
-
-   ### Video Formats
-
-   | Format | Platform | Performance | Example | Adoption |
-   |--------|----------|-------------|---------|----------|
-   | [Format 1] | [platform] | [engagement] | [example] | Rising/Peak/Declining |
-   | [Format 2] | [platform] | [engagement] | [example] | Rising/Peak/Declining |
-
-   **Hot Formats Right Now**:
-
-   1. **[Format Name]**
-      - What it is: [description]
-      - Why it works: [explanation]
-      - Best for: [use cases]
-      - How to adapt: [brand approach]
-      - Example: [link or description]
-
-   2. **[Format Name]**
-      - What it is: [description]
-      - Why it works: [explanation]
-      - Best for: [use cases]
-      - How to adapt: [brand approach]
-
-   ### Emerging Formats to Watch
-
-   | Format | Platform | Status | When to Adopt |
-   |--------|----------|--------|---------------|
-   | [format] | [platform] | Early adopter phase | Now for first-mover advantage |
-   | [format] | [platform] | Growing | Next 2-4 weeks |
-
-   ### Declining Formats to Avoid
-
-   | Format | Platform | Why Declining | Alternative |
-   |--------|----------|---------------|-------------|
-   | [format] | [platform] | [reason] | [alternative] |
-   ```
-
-4. **Track Cultural Moments**
-
-   ```markdown
-   ## Cultural Calendar & Moments
-
-   ### Upcoming Cultural Moments
-
-   | Event/Moment | Date | Relevance | Lead Time | Opportunity |
-   |--------------|------|-----------|-----------|-------------|
-   | [Event 1] | [date] | ⭐⭐⭐⭐⭐ | [weeks needed] | [opportunity description] |
-   | [Event 2] | [date] | ⭐⭐⭐⭐ | [weeks needed] | [opportunity description] |
-   | [Event 3] | [date] | ⭐⭐⭐ | [weeks needed] | [opportunity description] |
-
-   ### Cultural Conversations
-
-   **Active Conversations to Join**:
-
-   | Conversation | Platforms | Sentiment | Brand Angle |
-   |--------------|-----------|-----------|-------------|
-   | [topic] | [platforms] | Positive/Mixed/Negative | [how to participate] |
-
-   **Conversations to Avoid**:
-
-   | Topic | Risk Level | Why Avoid |
-   |-------|------------|-----------|
-   | [topic] | High | [reason] |
-
-   ### Seasonal Opportunities
-
-   | Season/Period | Themes | Content Ideas | Influencer Angle |
-   |---------------|--------|---------------|------------------|
-   | [period] | [themes] | [ideas] | [approach] |
-   ```
-
-5. **Assess Trend Relevance**
-
-   ```markdown
-   ## Trend Relevance Assessment
-
-   ### Trend: [Name]
-
-   **Overview**:
-   - What: [description]
-   - Origin: [where it started]
-   - Current Status: [rising/peaking/declining]
-   - Platform: [primary platforms]
-   - Audience: [who's participating]
-
-   **Brand Fit Analysis**:
-
-   | Factor | Score | Notes |
-   |--------|-------|-------|
-   | Audience alignment | [1-5] | [explanation] |
-   | Brand value fit | [1-5] | [explanation] |
-   | Content adaptability | [1-5] | [explanation] |
-   | Risk level | [1-5] | [explanation] |
-   | Timing window | [1-5] | [explanation] |
-   | **Total Score** | [X/25] | |
-
-   **Recommendation**: ✅ Participate / ⚠️ Proceed with caution / ❌ Skip
-
-   **If Participating**:
-   - Best approach: [how to adapt]
-   - Timing: [when to post]
-   - Influencer type: [who should create]
-   - Risk mitigation: [how to stay safe]
-
-   **If Skipping**:
-   - Reason: [why not]
-   - Alternative: [what to do instead]
-   ```
-
-6. **Monitor Competitor Trend Adoption**
-
-   ```markdown
-   ## Competitor Trend Activity
-
-   ### Competitor Trend Adoption
-
-   | Competitor | Recent Trends Adopted | Performance | Learnings |
-   |------------|----------------------|-------------|-----------|
-   | [Comp 1] | [trends] | [results if known] | [what to learn] |
-   | [Comp 2] | [trends] | [results if known] | [what to learn] |
-
-   ### Gap Analysis
-
-   **Trends competitors are missing**:
-   - [Trend 1]: [opportunity for you]
-   - [Trend 2]: [opportunity for you]
-
-   **Trends competitors are overusing**:
-   - [Trend 1]: [saturation level]
-
-   ### Best Practices from Competitors
-
-   | Competitor | What They Did Well | How to Apply |
-   |------------|-------------------|--------------|
-   | [comp] | [execution] | [your approach] |
-   ```
-
-7. **Generate Trend Report**
-
-   ```markdown
-   # Trend Report: [Brand/Industry]
-
-   **Report Date**: [date]
-   **Time Horizon**: [period covered]
-
-   ## Executive Summary
-
-   **Top 3 Trends to Act On Now**:
-   1. [Trend 1]: [why and how]
-   2. [Trend 2]: [why and how]
-   3. [Trend 3]: [why and how]
-
-   **Trends to Watch**:
-   - [Trend]: [when it might peak]
-
-   **Trends to Avoid**:
-   - [Trend]: [why]
-
-   ## Priority Action Items
-
-   ### Immediate (This Week)
-
-   1. **[Trend/Opportunity]**
-      - Action: [specific action]
-      - Influencer approach: [type of creator]
-      - Content format: [format]
-      - Hashtags: [relevant hashtags]
-
-   ### Short-term (This Month)
-
-   1. **[Trend/Opportunity]**
-      - Action: [specific action]
-      - Timeline: [when to execute]
-
-   ### Plan Ahead (This Quarter)
-
-   | Opportunity | Timing | Prep Needed | Budget Consideration |
-   |-------------|--------|-------------|---------------------|
-   | [opportunity] | [date] | [weeks] | [notes] |
-
-   ## Content Format Recommendations
-
-   | Platform | Hot Formats | Content Ideas |
-   |----------|-------------|---------------|
-   | TikTok | [formats] | [ideas] |
-   | Instagram | [formats] | [ideas] |
-   | YouTube | [formats] | [ideas] |
-
-   ## Hashtag Strategy
-
-   **Trending to use**:
-   - #[hashtag] - [context]
-   - #[hashtag] - [context]
-
-   **Brand + Trend combinations**:
-   - #[brand] + #[trend] = [combination]
-
-   ## Risk Assessment
-
-   | Trend | Risk Level | Mitigation |
-   |-------|------------|------------|
-   | [trend] | [level] | [how to stay safe] |
-
-   ## Next Steps
-
-   1. Brief influencers on [top trend]
-   2. Create content calendar incorporating [cultural moments]
-   3. Monitor [emerging trends] for right timing
-   4. Review trend report again on [date]
-   ```
-
-## When to Use This Skill
-
-- Planning campaign timing and themes
-- Identifying trending content formats to incorporate
-- Finding viral moments to capitalize on
-- Discovering emerging hashtags and challenges
-- Understanding cultural conversations relevant to your brand
-- Staying ahead of competitor trend adoption
-
-## What This Skill Does
-
-1. **Trend Identification**: Spots emerging trends across platforms
-2. **Relevance Assessment**: Evaluates trend fit for your brand
-3. **Timing Analysis**: Determines optimal moment to act
-4. **Format Discovery**: Identifies trending content formats
-5. **Cultural Monitoring**: Tracks cultural moments and conversations
-6. **Competitor Tracking**: Monitors competitor trend adoption
+When a user requests trend analysis, run these steps. Each step has a fill-in template in [references/templates.md](references/templates.md) — copy the matching block and populate it.
+
+1. **Define trend parameters** — capture brand/industry, platforms, audience, geographic focus, time horizon, and content categories. (Template: Step 1.)
+2. **Identify current trends** — log trending topics, hashtags, audio/sounds, and challenges with volume, growth, lifespan, and brand-safety flags. (Template: Step 2.)
+3. **Analyze content format trends** — list hot, emerging, and declining formats per platform with how-to-adapt notes. (Template: Step 3.)
+4. **Track cultural moments** — build the cultural calendar (events + lead times), conversations to join vs avoid, and seasonal opportunities. (Template: Step 4.)
+5. **Assess trend relevance** — for each candidate trend, score audience alignment, brand value fit, content adaptability, risk, and timing (X/25) and land a ✅ participate / ⚠️ caution / ❌ skip call. (Template: Step 5.)
+6. **Monitor competitor trend adoption** — record which trends rivals adopted, gaps they missed, and what they overused. (Template: Step 6.)
+7. **Generate the trend report** — assemble top-3-act-now, watch list, avoid list, timed action items, format and hashtag strategy, and a next-review date. Save to `memory/influencer/trend-spotter/YYYY-MM-DD-<topic>.md` and promote durable facts to `memory/hot-cache.md`. (Template: Step 7.)
 
 ## Example
 
 **User**: "What TikTok trends should a fitness brand run right now?"
 
-**Output**:
-
-```markdown
-# TikTok Fitness Trends Report
-
-## Top Trends to Act On Now
-
-### 1. "Hot Girl Walk" Evolution
-- **What**: Walking content with self-improvement audio
-- **Volume**: 2.3B views on related hashtags
-- **Status**: Still growing, evolved into multiple variations
-- **Brand Fit**: ⭐⭐⭐⭐⭐ Strong for fitness apparel/supplements
-- **How to Use**: Partner with lifestyle influencers for "walk with me" content featuring products
-
-### 2. "75 Hard" / Challenge Content
-- **What**: Fitness challenge documentation
-- **Volume**: 1.8B views
-- **Status**: Evergreen, consistent interest
-- **Brand Fit**: ⭐⭐⭐⭐ Good for supplements, programs
-- **How to Use**: Sponsor influencers doing challenges, provide products as part of their journey
-
-### 3. GRWM (Get Ready With Me) Workout Edition
-- **What**: Pre-workout routines showing products used
-- **Volume**: Rising trend
-- **Status**: Early growth phase - first mover advantage
-- **Brand Fit**: ⭐⭐⭐⭐⭐ Strong for all fitness products
-- **How to Use**: Brief creators on "GRWM: Gym Edition" showing outfit + supplements + routine
-
-## Content Format Recommendation
-
-Best performing format: 15-30 second videos with:
-- Hook in first 2 seconds
-- Trending audio
-- Text overlay
-- Quick cuts
-
-## Hashtags to Use
-- #FitTok (42B views)
-- #GymTok (18B views)
-- #[Your product category specific]
-
-## Action: Brief your influencers this week on GRWM Gym Edition content
-```
-
-## Tips for Success
-
-1. **Act fast but thoughtfully** - Trends move quickly, but brand safety matters
-2. **Adapt, don't copy** - Put your brand's spin on trends
-3. **Consider timing** - Early is better, but not too early
-4. **Monitor continuously** - Set up regular trend reviews
-5. **Know when to skip** - Not every trend is for every brand
+Output names the top trends to act on now — e.g. "Hot Girl Walk" Evolution (2.3B views, still growing, ⭐⭐⭐⭐⭐ for apparel/supplements via "walk with me" content), "75 Hard" challenge content (⭐⭐⭐⭐, sponsor creators mid-challenge), and GRWM Gym Edition (early-growth, first-mover, ⭐⭐⭐⭐⭐) — with a 15-30s format recommendation (hook in 2s, trending audio, text overlay, quick cuts), hashtags (#FitTok, #GymTok), and a this-week action to brief creators on GRWM Gym Edition. Full version: [references/templates.md](references/templates.md#extended-example--tiktok-fitness-trends).
 
 ## Reference Materials
+
+- [references/templates.md](references/templates.md) — fill-in templates for every step, the extended worked example, and execution tips.
 
 - [skill-contract.md](../../references/skill-contract.md) — shared contract and Handoff Summary format.
 - [state-model.md](../../references/state-model.md) — HOT/WARM/COLD memory tiers and save paths.

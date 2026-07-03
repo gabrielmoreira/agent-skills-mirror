@@ -15,6 +15,17 @@ Ask the user for these if not provided:
 - **Raw notes or transcript** (paste discussion notes, a transcript, or describe what was discussed)
 - **Meeting type** (1:1 / sprint planning / product review / stakeholder sync / other) — determines which template to use
 
+## Reads from / Writes to the Brain
+
+If a [`professional-brain`](../professional-brain/SKILL.md) (`brain/`) exists, this is where notes become durable memory:
+
+- **Read first:** the relevant `stakeholders/` files (so you arrive knowing each attendee's
+  open asks and concerns) and any `decisions/` the meeting revisits.
+- **Write after:** append each **decision** (with its rationale and a `reopen-when`) to
+  `decisions/`, add new **asks/concerns** to the right `stakeholders/` file, and flag any new
+  **assumption** into `hypotheses/`. Tag every captured fact with its provenance — most meeting
+  statements are `[verbal]` until independently confirmed. Save the raw notes to `source/`.
+
 ## Standard Meeting Notes Template
 
 ### Meeting Header
@@ -251,6 +262,13 @@ Template additions:
 **Notes Sent**: January 20, 2026 5:30 PM
 ```
 
+## Deeper Materials
+
+This skill ships with support files — use them when they are available:
+
+- **`references/decisions-vs-discussion.md`** — Separating Decisions from Discussion. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
+- **`templates/notes-skeleton.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
 ## Quality Checks
 
 - [ ] Every action item has a single named owner (not "team")
@@ -282,3 +300,26 @@ Example: "Product Roadmap Review Notes - Jan 20 - Q1 Prioritization"
 - Send reminder 3 days before action item due dates
 - Weekly summary of all open action items
 - Mark action items as complete and share updates
+
+## Execution
+
+For tool-using agents with connected MCP servers (Notion, Linear/Jira, Slack). Runtimes without tool access ignore this section and deliver the document. See [SKILLSPEC.md §5](../../SKILLSPEC.md) and [connectors/mcp-pairings.md](../../connectors/mcp-pairings.md).
+
+### Preconditions
+- The structured notes above have been shown to the human and **explicitly approved**, including the destination (which Notion database/page, which tracker project).
+- The MCP servers are already connected and authenticated in the agent's environment.
+- Action items each have a named owner — unowned items are resolved with the human first, never assigned by guess.
+
+### Allowed actions
+- Create ONE page in the approved Notion database (or equivalent docs tool) containing the approved notes, verbatim.
+- Create one tracker issue per approved action item (title, owner, due date from the notes) in the approved project.
+- Post the page link (only the link and a one-line summary) to the approved channel, if the human named one.
+- Nothing else: no editing existing pages/issues, no inviting or notifying people beyond the named channel, no calendar writes.
+
+### Verification
+- Fetch the created page and each created issue; confirm titles, owners, and dates match the approved notes.
+- Report every created URL back to the human in one list.
+
+### Rollback
+- Undo = archive/delete the just-created page and issues, only on explicit human instruction.
+- Stop and ask a human if: the destination database/project is not found, any issue creation fails partway (report what WAS created), or an action-item owner does not exist in the tracker.

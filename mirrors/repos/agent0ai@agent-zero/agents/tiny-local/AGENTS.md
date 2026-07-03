@@ -17,7 +17,7 @@
 ## Local Contracts
 
 - Preserve the normal Agent Zero tool-call shape: `tool_name` plus `tool_args`.
-- Do not add parser repair, duplicate suppression runtime, model transport, memory, or text-editor runtime behavior here.
+- Do not add parser repair, duplicate suppression runtime, model transport, or text-editor runtime behavior here.
 - Duplicate-message handling may be tightened through profile prompts only.
 - Keep prompt text short enough for small local models to follow.
 - Treat continuation requests such as `proceed` or `continue` as commands to execute the next unfinished step, not as prompts for another status response.

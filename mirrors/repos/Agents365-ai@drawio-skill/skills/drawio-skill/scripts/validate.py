@@ -247,7 +247,18 @@ def check_page(diagram):
             return [], [f"page {name!r}: compressed, skipped (cannot lint)"]
         return [f"page {name!r}: no <mxGraphModel>"], []
     root = model.find("root")
-    cells = root.findall("mxCell") if root is not None else []
+    # Normalize UserObject/object wrappers (used for links & metadata): the id
+    # lives on the wrapper, geometry/style on the inner mxCell — fold the two
+    # into one cell so edges referencing the wrapper id resolve.
+    cells = []
+    for child in (root if root is not None else []):
+        if child.tag == "mxCell":
+            cells.append(child)
+        elif child.tag in ("UserObject", "object"):
+            inner = child.find("mxCell")
+            if inner is not None:
+                inner.set("id", child.get("id", ""))
+                cells.append(inner)
     errors, warns = [], []
     ids = {}
     for c in cells:
@@ -294,6 +305,9 @@ def main():
     ap = argparse.ArgumentParser(description="Lint a .drawio file for structural errors.")
     ap.add_argument("file")
     ap.add_argument("--strict", action="store_true", help="treat warnings as failure too")
+    ap.add_argument("--score", action="store_true",
+                    help="also print a readability score (lower is better) — "
+                         "useful for comparing layout variants of the same graph")
     args = ap.parse_args()
     try:
         tree = ET.parse(args.file)
@@ -310,6 +324,14 @@ def main():
     for e in errors:
         print(f"error: {e}")
     print(f"{len(errors)} error(s), {len(warns)} warning(s)")
+    if args.score:
+        # Weighted by how badly each defect hurts readability. Comparable only
+        # across variants of the SAME graph (same nodes/edges).
+        through = sum(1 for w in warns if "routes through" in w)
+        cross = sum(1 for w in warns if " cross" in w)
+        olap = sum(1 for w in warns if " overlap" in w)
+        print(f"score: {20 * through + 10 * cross + 5 * olap} "
+              f"({through} through-vertex, {cross} crossings, {olap} overlaps)")
     if errors or (args.strict and warns):
         sys.exit(1)
 

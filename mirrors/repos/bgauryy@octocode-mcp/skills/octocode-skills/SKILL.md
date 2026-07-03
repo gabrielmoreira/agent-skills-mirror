@@ -1,6 +1,6 @@
 ---
 name: octocode-skills
-description: "Use when the task is about Agent Skills or SKILL.md folders: find, compare, evaluate, lint, rate, improve, refactor, install, preview, synthesize, or create skills from local paths, GitHub, or marketplaces. Trigger on skill descriptions, trigger tuning, skill quality, or skill installation targets."
+description: "Use when the task is about Agent Skills or SKILL.md folders — find, evaluate, lint, rate, improve, install, or create them across local paths, GitHub, and marketplaces. Also triggers on skill descriptions, trigger tuning, skill quality, refactoring, and install targets."
 ---
 
 # Octocode Skills
@@ -9,13 +9,16 @@ Evaluate, lint, install, and author Agent Skills: folders with `SKILL.md` plus o
 
 Flow: `UNDERSTAND -> DISCOVER -> INSPECT -> JUDGE -> RECOMMEND -> USER GATE -> ACT -> VERIFY`.
 
-Hard rules: inspect real `SKILL.md` content before recommending, adapting, installing, or quoting it; identify candidates by repo/path or absolute path; gate installs, writes, overwrites, symlinks, and config changes; filter results instead of handing the user raw search dumps.
+Hard rules:
+- Inspect real `SKILL.md` content before recommending, adapting, installing, or quoting.
+- Identify each candidate by repo/path or absolute path; filter results, never hand over raw search dumps.
+- Gate every install, write, overwrite, symlink, and config change behind user approval.
 
 Stop when one inspected recommendation fits, two High-quality candidates establish a clear top pick, three search angles add nothing new, or a user gate is pending.
 
 ## Tooling
 
-Use Octocode for skill research: MCP tools if available, otherwise the CLI. Read `references/octocode.md` when choosing transport or schema-exact calls. For public skill queries, also run web search in parallel, then confirm any lead by inspecting the real `SKILL.md`.
+Use Octocode for skill research: MCP tools if available, else the CLI. Read `references/octocode.md` when choosing transport or schema-exact calls. For public queries, run web search in parallel, then confirm each lead against the real `SKILL.md`.
 
 ## Reference Map
 
@@ -37,7 +40,7 @@ Load one reference on demand; each route states when it applies.
 
 ## Scripts
 
-- `scripts/skill-lint.mjs` — lint skill structure, routing, scripts, and prompt quality.
+`scripts/skill-lint.mjs` — lint skill structure, routing, scripts, and prompt quality. Run it before reporting any created or edited skill done.
 
 ## Installation
 

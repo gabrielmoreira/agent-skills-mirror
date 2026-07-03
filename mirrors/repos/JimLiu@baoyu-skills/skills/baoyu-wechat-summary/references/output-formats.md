@@ -43,6 +43,8 @@ Example:
   - Exclude system messages and revoked messages (`[系统]`, `revokemsg`).
   - For the `self_wxid` user, substitute `self_display` from EXTEND.md before counting/displaying.
   - Resolve ambiguous nicknames (per SKILL.md Step 3.6) before tallying so the same person isn't double-counted.
+  - **Counts must be computed mechanically** from the `$TMPDIR` messages file (e.g. `jq 'group_by(.from_wxid) | map({name: .[0].from_nickname, n: length}) | sort_by(-.n)'`) — never estimated by eyeballing. Total and per-person counts both.
+- **Incremental runs must show the precise coverage window**: day-granular date ranges share their boundary day with the previous digest, which readers misread as overlap. Add a line right after the message count: `⏱ 覆盖区间: MM-DD HH:MM ~ MM-DD HH:MM` (first and last included message timestamps).
 
 Example:
 

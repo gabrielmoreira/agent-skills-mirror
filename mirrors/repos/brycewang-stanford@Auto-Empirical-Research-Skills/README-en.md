@@ -38,23 +38,24 @@
 [![Validate catalog](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml/badge.svg)](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/brycewang-stanford/Auto-Empirical-Research-Skills/badge)](https://scorecard.dev/viewer/?uri=github.com/brycewang-stanford/Auto-Empirical-Research-Skills)
 [![Security audit: 52/52 CLEAN](https://img.shields.io/badge/security%20audit-52%2F52%20CLEAN-brightgreen)](SECURITY-SCAN-REPORT.md)
+[![Rigor coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbrycewang-stanford%2FAuto-Empirical-Research-Skills%2Fmain%2Fdocs%2Fbadges%2Frigor-coverage.json)](docs/RIGOR_COVERAGE.md)
 [![Powered by StatsPAI](https://img.shields.io/badge/powered%20by-StatsPAI-orange)](https://github.com/brycewang-stanford/StatsPAI)
 
 ---
 
 ## Start Here: The Repo Is One AERS Router Skill
 
-This repository can be imported from its root as one skill in Codex, CodeBuddy, Claude Code, or similar IDEs. The root [`SKILL.md`](SKILL.md) registers `auto-empirical-research-skills`; it routes each empirical-research task to the right vendored child skill instead of loading all 69 collections and 1,145 skills into context at once.
+This repository can be imported from its root as one skill in Codex, CodeBuddy, Claude Code, or similar IDEs. The root [`SKILL.md`](SKILL.md) registers `auto-empirical-research-skills`; it routes each empirical-research task to the right vendored child skill instead of loading all 69 collections and 1,150 skills into context at once.
 
 - **Whole-repo import**: select the repository root and let [`agents/openai.yaml`](agents/openai.yaml) plus the root [`SKILL.md`](SKILL.md) register one catalog router. The agent should inspect [`catalog/skills.json`](catalog/skills.json) or [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md), then read only the selected child skill.
-- **Single-skill import**: if an IDE expects one folder per skill, copy the child folder that directly contains the target `SKILL.md`, such as `skills/50-brycewang-aer-skills/skills/aer-workflow/`. Do not expect a recursive import of the repo root to register 1,145 separate skills unless the IDE explicitly supports that.
+- **Single-skill import**: if an IDE expects one folder per skill, copy the child folder that directly contains the target `SKILL.md`, such as `skills/50-brycewang-aer-skills/skills/aer-workflow/`. Do not expect a recursive import of the repo root to register 1,150 separate skills unless the IDE explicitly supports that.
 - **Install details**: see [`docs/INSTALL.md`](docs/INSTALL.md). Simplified Chinese is now the default README at [`README.md`](README.md); this English version lives at [`README-en.md`](README-en.md).
 
 ---
 
 ## All 69 skill collections at a glance
 
-> **Open the repo → see the whole library.** All **69 collections · 1,145 skills**, numbered `00 → 69`, every one **vendored into this repo** (not just linked out) and tracked in [`catalog/skills.json`](catalog/skills.json). **Click any row to open its folder.** **⭐ = first-party skills built by the Stanford REAP × CoPaper.AI team**; everything else is curated, security-audited community work.
+> **Open the repo → see the whole library.** All **69 collections · 1,150 skills**, numbered `00 → 69`, every one **vendored into this repo** (not just linked out) and tracked in [`catalog/skills.json`](catalog/skills.json). **Click any row to open its folder.** **⭐ = first-party skills built by the Stanford REAP × CoPaper.AI team**; everything else is curated, security-audited community work.
 >
 > **Theme key —** 🚀 full-pipeline & orchestrators · 🎯 causal inference & econometrics · 📚 literature & research design · ✍️ writing, editing & de-AIGC · 📑 citation, replication & peer review · 🛠️ data, tooling & infrastructure
 
@@ -132,7 +133,7 @@ This repository can be imported from its root as one skill in Codex, CodeBuddy, 
 
 > ⭐ **The spine we built ourselves:** [StatsPAI](skills/00-Full-empirical-analysis-skill_StatsPAI/) (the causal engine) · the explicit [Python](skills/00.1-Full-empirical-analysis-skill_Python/) / [Stata](skills/00.2-Full-empirical-analysis-skill_Stata/) / [R](skills/00.3-Full-empirical-analysis-skill_R/) full-pipeline ports · [AER-skills](skills/50-brycewang-aer-skills/) (top-5 submission stack) · [chinese-de-aigc](skills/48-copaper-ai-chinese-de-aigc/) · [Paper-WorkFlow](skills/69-Paper-WorkFlow/) (meta-orchestrator). These are the spine of AERS — full comparison in [The flagship pipeline skills ↓](#the-flagship-pipeline-skills). Prefer to browse by purpose? See [the same 69 grouped by what they do ↓](#the-69-grouped-by-what-they-do).
 
-**The empirical-research specialist's agent-skills distribution.** Not a marketing list — **1,145 skills vendored and cataloged** in this repo, wrapped in a **numeric benchmark, an eval harness, a security audit, and CI**, plus a curated map of **23,000+ skills across 119 repositories** in the wider ecosystem.
+**The empirical-research specialist's agent-skills distribution.** Not a marketing list — **1,150 skills vendored and cataloged** in this repo, wrapped in a **numeric benchmark, an eval harness, a security audit, and CI**, plus a curated map of **23,000+ skills across 119 repositories** in the wider ecosystem.
 
 AERS is two things at once: (1) a small set of **first-party flagship skills** that run the full empirical pipeline — data cleaning → identification → estimation → robustness → tables/figures → submission-ready draft — and (2) a **curated, security-aware catalog** of the empirical-research skill ecosystem, organized by research-workflow stage. The differentiator is not the count; it is that the flagship behavior is **verified against known answers**, not asserted.
 
@@ -168,7 +169,7 @@ AERS is two things at once: (1) a small set of **first-party flagship skills** t
 
 ## The 69, grouped by what they do
 
-> Same **69 collections · 1,145 skills** as the [sequential index at the top ↑](#all-69-skill-collections-at-a-glance) — re-sorted here **by research purpose** so you can scan to the stage you're working on. **⭐ = first-party** (Stanford REAP × CoPaper.AI); everything else is curated, security-audited community work.
+> Same **69 collections · 1,150 skills** as the [sequential index at the top ↑](#all-69-skill-collections-at-a-glance) — re-sorted here **by research purpose** so you can scan to the stage you're working on. **⭐ = first-party** (Stanford REAP × CoPaper.AI); everything else is curated, security-audited community work.
 
 **🚀 Full-pipeline flagships & orchestrators** — *one call, the whole empirical loop*
 
@@ -277,14 +278,14 @@ Numbers in this README are kept honest and disambiguated. "Vendored" means the f
 
 | What it is | Count | Source of truth |
 |---|---:|---|
-| Skills **vendored into this repo** and cataloged | **1,145** | [`catalog/skills.json`](catalog/skills.json) |
+| Skills **vendored into this repo** and cataloged | **1,150** | [`catalog/skills.json`](catalog/skills.json) |
 | Vendored **collections** | **69** | [`catalog/skills.json`](catalog/skills.json) · [all 69 at a glance ↑](#all-69-skill-collections-at-a-glance) |
 | **First-party flagship** full-pipeline skills (StatsPAI DSL + explicit Python/Stata/R) | **4** | [`skills/00*`](skills/) |
-| Numeric **benchmark tasks** with gold values recomputed from data each run | **11** | [`benchmark/`](benchmark/) |
-| Behavioral **eval scenarios / rubric items** | **17 / 95** | [`eval-harness/`](eval-harness/) |
+| Numeric **benchmark tasks** with gold values recomputed from data each run | **16** | [`benchmark/`](benchmark/) |
+| Behavioral **eval scenarios / rubric items** | **29 / 153** | [`eval-harness/`](eval-harness/) |
 | Security audit of the **original baseline** (collections / files) | **52 / 2,940+**, 52/52 CLEAN | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
 | Curated **map of the wider ecosystem** | **23,000+ skills / 119 repos** | this README · [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
-| **Tools catalog** (`tools/`): causal/econometrics libraries, autonomous research agents, MCP servers, causal discovery, benchmark datasets | **335 tools / 6 categories** | [`tools/tools.json`](tools/tools.json) · [`tools/CATALOG.md`](tools/CATALOG.md) |
+| **Tools catalog** (`tools/`): causal/econometrics libraries, autonomous research agents, MCP servers, causal discovery, benchmark datasets | **334 tools / 6 categories** | [`tools/tools.json`](tools/tools.json) · [`tools/CATALOG.md`](tools/CATALOG.md) |
 
 > The security audit covered the original **52-collection / 2,940-file baseline (52/52 CLEAN)**. Skills vendored after that baseline are tracked in [`catalog/provenance.json`](catalog/provenance.json), [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md), and [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md); run `make audit` before relying on them in high-trust contexts.
 
@@ -338,6 +339,18 @@ Four parallel implementations of the **same 8-step empirical loop** — *data cl
 
 > **Why a DSL *and* explicit ports?** Reach for StatsPAI when you trust the one-shot DSL; reach for 00.1/00.2/00.3 when you are teaching, auditing, or must swap every diagnostic by hand. AER-skills then takes a correct analysis to acceptance threshold — these solve *different* problems and compose.
 
+### Seeing is believing — real output from the flagship pipeline
+
+These three figures come straight from the committed [Card returns-to-schooling replication demo](demo-StatsPAI-skill/) (one StatsPAI pipeline run: notebook, data, tables, and replication package included); the LaLonde four-stack comparison (Python/R/Stata/StatsPAI) lives in [`demo-notebooks/`](demo-notebooks/).
+
+| Main coefficient plot | Specification curve | Sensitivity dashboard |
+|---|---|---|
+| ![Main coefficient plot](demo-StatsPAI-skill/figures/fig3_coefplot_main.png) | ![Specification curve](demo-StatsPAI-skill/figures/fig5_spec_curve.png) | ![Sensitivity dashboard](demo-StatsPAI-skill/figures/fig6_sensitivity_dashboard.png) |
+
+> 🧪 **End-to-end replication, proven**: one zero-dependency command reproduces the Card & Krueger (1994) minimum-wage DiD from the official raw data — wave means match digit-for-digit, Table 4 coefficients exactly, and the replication scorer rates it **PERFECT** (100% on all three accuracy tiers). See [`demo-notebooks/card-krueger-1994/`](demo-notebooks/card-krueger-1994/).
+>
+> 🔎 Browse the catalog online (GitHub Pages, zero build): **[Skill search](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/search.html)** · [Tools search](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/tools-search.html) · [Site home](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/)
+
 ---
 
 ## Start here — pick a skill in 30 seconds
@@ -369,10 +382,10 @@ Public-skill counts are easy to inflate, and recent studies show large skill ind
 
 | Layer | What it catches | Where |
 |---|---|---|
-| **Numeric benchmark** | Reported numbers that don't match truth recomputed from real data — the naive-DID sign trap, weak-IV without first-stage F, TWFE bias under staggered timing, RDD trend confound, post-treatment bad controls, omitted unit heterogeneity (panel FE), dynamic effects / pre-trends (event study), omitted-control bias under cross-fitting (DML), censoring (survival), prior sensitivity (Bayesian), and pre-period donor fit (synthetic control) | [`benchmark/`](benchmark/) · 11 tasks |
-| **Eval harness** | Prose-level failures: weak-IV false reassurance, staggered-DID TWFE misuse, fabricated citations, unsafe `curl \| bash` setup, multiple-testing abuse, AER compliance gaps | [`eval-harness/`](eval-harness/) · 23 scenarios / 121 rubric items |
+| **Numeric benchmark** | Reported numbers that don't match truth recomputed from real data — the naive-DID sign trap, weak-IV without first-stage F, TWFE bias under staggered timing, RDD trend confound, post-treatment bad controls, omitted unit heterogeneity (panel FE), dynamic effects / pre-trends (event study), omitted-control bias under cross-fitting (DML), censoring (survival), prior sensitivity (Bayesian), pre-period donor fit (synthetic control), opposite-signed subgroup effects a pooled mean hides (CATE), tail-only gains a mean-only report misses (QTE), local-shock confounding in a shift-share (Bartik) IV, mediator-as-control sign flips (mediation), and reference-dependent gap splits (Oaxaca-Blinder) | [`benchmark/`](benchmark/) · 16 tasks |
+| **Eval harness** | Prose-level failures: weak-IV false reassurance, staggered-DID TWFE misuse, fabricated citations, unsafe `curl \| bash` setup, multiple-testing abuse, AER compliance gaps | [`eval-harness/`](eval-harness/) · 29 scenarios / 153 rubric items |
 | **Security audit** | Pipe-to-shell, reverse shells, credential exfiltration, prompt injection across 13 risk categories — 6-phase, 40+ hook scripts reviewed by hand | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
-| **Provenance & license** | Unvendored sources, license risk, hygiene drift across all 1,145 cataloged skills | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
+| **Provenance & license** | Unvendored sources, license risk, hygiene drift across all 1,150 cataloged skills | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
 | **CI & compatibility** | Catalog freshness, broken local links, GitHub Actions policy, Python 3.9 **and** 3.12 syntax floor | [`.github/workflows/`](.github/workflows/) · 6 workflows |
 
 ```bash
@@ -486,7 +499,7 @@ The first-party flagships ([StatsPAI](skills/00-Full-empirical-analysis-skill_St
 
 > Unlike the skills above, [`tools/`](tools/) catalogs the **software and services an agent (or researcher) actually invokes** — structured, license- and maintenance-aware, and wired into `make validate`. Source of truth: [`tools/tools.json`](tools/tools.json); browsable list: [`tools/CATALOG.md`](tools/CATALOG.md).
 
-**335 tools across 6 categories** (curated 2026-06):
+**334 tools across 6 categories** (curated 2026-06):
 
 - **Causal-inference / treatment-effect libraries (32)** — DoWhy · EconML · CausalML · DoubleML · CausalPy · causallib · grf · CATENets · TMLE family · Mendelian randomization …
 - **Econometrics / quasi-experimental libraries (170)** — panel FE · DiD (incl. modern/staggered) · event study · RDD · IV · synthetic control/SDID · matching & weighting · sensitivity (fixest · did · HonestDiD · rdrobust · synthdid · reghdfe · csdid · sdid · pyfixest · linearmodels …); **plus** spatial econometrics (spdep · PySAL/spreg · GeoDa), local projections/IRF & (S)VAR (lpirfs · vars · svars), survey weighting/MRP/raking (survey · samplics · balance), and meta-analysis (metafor · meta · netmeta · metan) — across R/Python/Stata/Julia.
@@ -546,6 +559,7 @@ Newer vendored additions are tracked in [`catalog/provenance.json`](catalog/prov
 
 The narrative changelog has moved to [**CHANGELOG.md**](CHANGELOG.md). Recent highlights:
 
+- **2026-07** — Cut the first tagged release **v2026.07**; expanded the rigor coverage map to **16 method families with full closure** (added CATE, quantile effects, Bartik shift-share, causal mediation, and Oaxaca decomposition — each with both an eval scenario and a numeric benchmark), growing the benchmark to **16 tasks** and the eval harness to **29 scenarios / 153 rubric items**; shipped the machine-generated release snapshot, the rigor coverage badge, and a six-locale README stats consistency gate.
 - **2026-05** — Vendored **AER-skills** (top-5 economics submission stack, 9 skills) with weekly upstream sync; expanded the numeric benchmark to **5 causal-recovery tasks** and the eval harness to **17 scenarios / 95 rubric items**.
 - **2026-04** — Completed the **52/52 security baseline**; shipped the four full-pipeline flagships (**StatsPAI** + explicit **Python / Stata / R**); launched the original **chinese-de-aigc** skill.
 - **Earlier** — Grew from 43 collections to a curated map of **119 repos / 23,000+ skills**; added bilingual README, academic data MCP servers, and multi-agent systems.

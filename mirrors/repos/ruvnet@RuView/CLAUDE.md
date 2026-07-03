@@ -62,7 +62,7 @@ All 5 ruvector crates integrated in workspace:
 - `ruvector-attention` → `model.rs` (apply_spatial_attention) + `bvp.rs`
 
 ### Architecture Decisions
-43 ADRs in `docs/adr/` (ADR-001 through ADR-043). Key ones:
+182 ADRs in `docs/adr/` (numbered ADR-001 through ADR-265, with gaps). Key ones:
 - ADR-014: SOTA signal processing (Accepted)
 - ADR-015: MM-Fi + Wi-Pose training datasets (Accepted)
 - ADR-016: RuVector training pipeline integration (Accepted — complete)
@@ -77,6 +77,10 @@ All 5 ruvector crates integrated in workspace:
 - ADR-148: Drone swarm control system / `ruview-swarm` (In Progress)
 - ADR-152: WiFi-Pose SOTA 2026 intake — geometry conditioning, WiFlow-STD benchmark (measurement (a) complete: claims MEASURED-EQUIVALENT at ~96% PCK@20), MAE recipe (Proposed; §2.1–2.3, 2.6 implemented)
 - ADR-153: IEEE 802.11bf-2025 forward-compatibility protocol model (Accepted — amends ADR-152 §2.4)
+- ADR-182: `npx ruview` harness minted via MetaHarness (Accepted — P1+P2 shipped as `@ruvnet/ruview`)
+- ADR-263: `@ruvnet/ruview` npm harness deep review + optimization strategy (Proposed)
+- ADR-264: `@ruvnet/rvagent` MCP server + `@ruv/ruview-cli` deep review + optimization strategy (Proposed)
+- ADR-265: RuView npm distribution strategy — CI gate, provenance, version single-sourcing (Proposed)
 
 ### Supported Hardware
 

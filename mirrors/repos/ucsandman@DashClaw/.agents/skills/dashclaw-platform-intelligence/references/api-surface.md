@@ -1,6 +1,6 @@
 # DashClaw API Surface
 
-**323 active routes** (verified 2026-07-01 against `docs/api-inventory.json`): 55 stable, 24 beta, 244 experimental. Node SDK uses camelCase, Python SDK uses snake_case.
+**325 active routes** (verified 2026-07-02 against `docs/api-inventory.json`): 55 stable, 24 beta, 246 experimental. Node SDK uses camelCase, Python SDK uses snake_case.
 
 > ⚠️ **Authoritative source:** `SKILL.md` (regenerated from the livingcode shape) and `docs/api-inventory.md`. This file is a curated narrative for the most commonly consumed surfaces plus anything new that doesn't yet have an SDK mapping. Some sections below describe legacy v1 endpoints that may not exist in the current build (e.g. `/api/context/*`, `/api/snippets/*`, `/api/decisions`, `/api/feedback/*`) — cross-check against `docs/api-inventory.md` before integrating.
 
@@ -65,9 +65,9 @@ The CLI (`dashclaw doctor`) invokes these endpoints and merges in operator-machi
 
 | Endpoint | Methods | Purpose |
 |---|---|---|
-| `/api/mcp` | POST | Model Context Protocol Streamable HTTP transport. Same 32 tools / 6 resources exposed by the stdio binary (`@dashclaw/mcp-server`). |
+| `/api/mcp` | POST | Model Context Protocol Streamable HTTP transport. Same 33 tools / 6 resources exposed by the stdio binary (`@dashclaw/mcp-server`). |
 
-**32 tools across 12 groups.** Core governance (8): `dashclaw_guard`, `dashclaw_record`, `dashclaw_invoke`, `dashclaw_capabilities_list`, `dashclaw_policies_list`, `dashclaw_wait_for_approval`, `dashclaw_session_start`, `dashclaw_session_end`. Optimal files (2): `dashclaw_optimal_files_preview`, `dashclaw_optimal_files_manifest`. Session continuity (3): `dashclaw_handoff_create`, `dashclaw_handoff_latest`, `dashclaw_handoff_consume`. Credential hygiene (3): `dashclaw_secret_list`, `dashclaw_secret_due`, `dashclaw_secret_mark_rotated`. Skill safety (1): `dashclaw_skill_scan`. Open loops (3): `dashclaw_loop_add`, `dashclaw_loop_list`, `dashclaw_loop_close`. Learning + retrospection (4): `dashclaw_learning_log`, `dashclaw_learning_query`, `dashclaw_decisions_recent`, `dashclaw_assumption_record`. Agent inbox (2): `dashclaw_inbox_list`, `dashclaw_messages_mark_read`. Agent identity (1): `dashclaw_pair`. Behavior learning (1): `dashclaw_behavior_suggestions`. Governance posture (2, read-only): `dashclaw_posture`, `dashclaw_posture_next`. Work orders (2): `dashclaw_work_order_submit`, `dashclaw_work_order_status`.
+**33 tools across 12 groups.** Core governance (9): `dashclaw_guard`, `dashclaw_record`, `dashclaw_invoke`, `dashclaw_capabilities_list`, `dashclaw_policies_list`, `dashclaw_wait_for_approval`, `dashclaw_session_start`, `dashclaw_session_end`, `dashclaw_session_retro`. Optimal files (2): `dashclaw_optimal_files_preview`, `dashclaw_optimal_files_manifest`. Session continuity (3): `dashclaw_handoff_create`, `dashclaw_handoff_latest`, `dashclaw_handoff_consume`. Credential hygiene (3): `dashclaw_secret_list`, `dashclaw_secret_due`, `dashclaw_secret_mark_rotated`. Skill safety (1): `dashclaw_skill_scan`. Open loops (3): `dashclaw_loop_add`, `dashclaw_loop_list`, `dashclaw_loop_close`. Learning + retrospection (4): `dashclaw_learning_log`, `dashclaw_learning_query`, `dashclaw_decisions_recent`, `dashclaw_assumption_record`. Agent inbox (2): `dashclaw_inbox_list`, `dashclaw_messages_mark_read`. Agent identity (1): `dashclaw_pair`. Behavior learning (1): `dashclaw_behavior_suggestions`. Governance posture (2, read-only): `dashclaw_posture`, `dashclaw_posture_next`. Work orders (2): `dashclaw_work_order_submit`, `dashclaw_work_order_status`.
 
 **Resources:** `dashclaw://policies`, `dashclaw://capabilities`, `dashclaw://agent/{agent_id}/history`, `dashclaw://status`, `dashclaw://code-sessions/projects`, `dashclaw://code-sessions/sessions/{session_id}`.
 
@@ -133,7 +133,7 @@ x402 micropayments are treated as **governed capability spend**: DashClaw govern
 | `/api/x402/providers/[id]/endpoints` | GET, POST | List / register priced endpoints for a provider |
 | `/api/x402/purchases` | GET, POST | Record a purchase intent and its recorded spend |
 
-Purchases are evaluated against the `x402_spend_limit` guard policy type (per-purchase / daily ceiling) before they are recorded. See [Guard Policy Types](#guard-policy-types).
+Purchases are evaluated against the `x402_spend_limit` guard policy type (per-purchase caps, a cumulative rolling-window budget, and provider allow/block lists) before they are recorded. See [Guard Policy Types](#guard-policy-types).
 
 ## FinOps / Spend
 
@@ -541,12 +541,14 @@ Condition operators: `==`, `!=`, `>`, `>=`, `<`, `<=`, `contains`. Supports nest
 | `/api/sessions` | GET, POST | `createSession`, `listSessions` | `create_session`, `list_sessions` |
 | `/api/sessions/{sessionId}` | GET, PATCH | `getSession`, `updateSession` | `get_session`, `update_session` |
 | `/api/sessions/{sessionId}/events` | GET | `getSessionEvents` | `get_session_events` |
+| `/api/sessions/{sessionId}/retro` | GET | — | — |
 
 `POST /api/sessions` — Create a session. Body: `{ agent_id, workspace, branch }`.
 `GET /api/sessions` — List sessions. Query: `agent_id`, `status`, `limit`.
 `GET /api/sessions/{sessionId}` — Get a single session.
 `PATCH /api/sessions/{sessionId}` — Update session. Body: `{ status, green_level, branch_freshness, commits_behind, blocked_reason }`.
 `GET /api/sessions/{sessionId}/events` — Get session lifecycle events.
+`GET /api/sessions/{sessionId}/retro` — Per-session defensibility retro: clean/review/flagged posture composed on read from injection flags, goal drift, spend anomalies, interventions, and invalidated assumptions (no rows written). No SDK method yet — same data the `dashclaw_session_retro` MCP tool returns.
 
 Session IDs use `sess_` prefix.
 
@@ -563,7 +565,7 @@ Guard policies use a `policy_type` field. All types are evaluated server-side wi
 | `permission_escalation` | Block when an agent requests a higher permission level than allowed |
 | `green_contract` | Require green (passing) test status before certain actions proceed |
 | `branch_freshness` | Block actions when the working branch is stale (N+ commits behind) |
-| `x402_spend_limit` | Cap x402 micropayment spend (per-purchase / daily USDC ceiling) |
+| `x402_spend_limit` | Cap x402 micropayment spend (per-purchase caps + cumulative rolling-window budget + provider lists) |
 
 The three new types (`permission_escalation`, `green_contract`, `branch_freshness`) integrate with session lifecycle data. The guard evaluator reads `green_level`, `branch_freshness`, and `commits_behind` from the active session when evaluating these policies.
 

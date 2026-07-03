@@ -200,6 +200,13 @@ Then the export contains only invoices from Jan 2026 — not all invoices
 
 ---
 
+## Deeper Materials
+
+This skill ships with support files — use them when they are available:
+
+- **`references/acceptance-criteria-craft.md`** — Acceptance Criteria That Actually Gate. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
+- **`templates/story-card.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
 ## Quality Checks
 
 - [ ] Every story has a specific user type — not "a user" or "the system"

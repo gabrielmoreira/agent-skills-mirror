@@ -154,11 +154,15 @@ for ext in ("docx","xlsx","tex","md"): c.save(f"replication/paper.{ext}")
 3. **One import, full pipeline**: data contract → Table 1 → estimand-first DSL → identification graphs → main table → heterogeneity → mechanisms → robustness → replication package.
 4. **Estimand-first**: `sp.causal_question(...).identify()` forces the "DID vs RD vs IV?" decision *before* estimation, with the identifying assumption written down — the way a referee expects to read it.
 
-## SkillOpt-style execution gate
+## SkillOpt-derived operating loop (read before the playbook)
 
 SkillOpt's useful lesson for this skill is procedural, not cosmetic: a skill is a
 bounded decision policy that should improve from rollout evidence while preserving
-verified behavior. Before generating or revising StatsPAI analysis code, compress
+verified behavior.
+
+### SkillOpt-style execution gate (task-local card)
+
+Before generating or revising StatsPAI analysis code, compress
 the request into a task-local `best_skill` card:
 
 ```text
@@ -179,6 +183,8 @@ reject_if: <conditions that force rollback to the last passing spec>
 5. **Reject buffer**: if a candidate spec fails the gate, log the failure, code diff, and gate output in `analysis_log.md`; revert to the last passing spec and do not retry the same unchecked pattern.
 6. **Slow/meta update**: at the end of the task, write down `accepted_patterns` and `rejected_patterns` from the trajectory. Do not widen the canonical project template from a single passing run.
 7. **Promote only after validation**: only turn a one-off fix into reusable project boilerplate after it passes the current data and at least one alternate outcome/sample/specification.
+
+### Mini-rollout loop
 
 Treat every StatsPAI request as a mini rollout:
 

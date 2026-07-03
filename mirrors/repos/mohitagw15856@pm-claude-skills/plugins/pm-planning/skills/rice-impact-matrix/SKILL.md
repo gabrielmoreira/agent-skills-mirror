@@ -53,6 +53,13 @@ Combined Score = RICE Score + (Strategic Alignment × 10)
 #### Recommendations
 [Top 5 initiatives with rationale for sequencing]
 
+## Deeper Materials
+
+This skill ships with support files — use them when they are available:
+
+- **`references/strategic-weighting.md`** — Blending RICE with Strategic Fit — Without Cooking the Books. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
+- **`templates/matrix-worksheet.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
 ## Quality Checks
 
 - [ ] All RICE components have an estimate (even if low confidence — flag those)

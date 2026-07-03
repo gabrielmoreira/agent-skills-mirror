@@ -64,7 +64,7 @@ claude plugin details aer-skills    # shows the skills + token cost of any insta
 
 Some IDEs ask you to pick a folder and validate it as one skill. This repo now
 supports that path with the root [`SKILL.md`](SKILL.md): importing the repository
-root registers **one lightweight AERS catalog router**, not 1,145 separate child
+root registers **one lightweight AERS catalog router**, not 1,150 separate child
 skills. The router chooses the right vendored skill and then reads only that
 child skill's `SKILL.md`.
 

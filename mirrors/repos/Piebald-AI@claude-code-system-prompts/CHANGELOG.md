@@ -4,6 +4,24 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.199](https://github.com/Piebald-AI/claude-code-system-prompts/commit/1c1bf59)
+
+_+25,167 tokens_
+
+- **NEW:** Agent Prompt: /code-review part 10 ReportFindings output format — Adds output instructions for `/code-review` runs to call `ReportFindings` once with capped, severity-ranked findings, category slugs, optional verification verdicts, and an empty array when no findings survive.
+- **NEW:** Skill: Setup Cowork and Setup Cowork role selection — Adds a guided Cowork onboarding flow that explains skills/plugins/connectors, asks for the user's role through a role picker or plain text, suggests a matching plugin, helps the user try a skill, then suggests connectors.
+- **NEW:** Tool Description: SearchPlugins, SearchSkills, SearchMcpRegistry, SuggestConnectors, and ListConnectors — Adds discovery prompts for searching org plugins/skills and MCP connector registries, rendering suggestion cards, and interpreting enabled, installed, connected, and chat-enabled states.
+- **NEW:** Tool Description: ClaudeDesign — Adds instructions for working with Claude Design projects, including loading design-system context, managing projects and files, rendering previews, reading transcripts, using plan tokens for writes/deletes, and treating design content as data.
+- **NEW:** System Reminder: File already in context — Tells Claude to reuse unchanged file contents already present in context instead of re-reading from disk.
+- Agent Prompt: Security monitor for autonomous agent actions — Clarifies that the action under review is the last tool call, ignoring harness-inserted meta lines when selecting the action.
+- Agent Prompt: Status line setup — Adds Windows-specific status-line command path guidance before writing the `statusLine` settings command.
+- Data: Plan artifact HTML template and Skill: Plan Artifact — Reworks standard plan artifacts to use embedded `@ant/cds` vanilla tokens, separate `{{TAB_TITLE}}` and `{{TITLE}}` slots, and the updated light/dark template contract.
+- Skill: Artifact design and Tool Description: Artifact — Adds theme-aware artifact guidance requiring light and dark styling with `prefers-color-scheme` plus `:root[data-theme]` overrides, while allowing deliberate single-theme designs.
+- Skill: Design sync Storybook source shape — Updates the oversized-preview diagnostic from `[FILE_OVER_5MB]` to `[FILE_TOO_LARGE]` and documents a 12 MB per-file upload cap.
+- System Prompt: Coordinator mode orchestration and Tool Description: SendMessageTool — Updates cross-session messaging guidance to address peers by their `name [ref]` name and to use `agentId` for unnamed or completed background agents.
+- Tool Description: claude.ai Project — Removes direct-injection budget/threshold and forced-write guidance from project info/write instructions while keeping the warnings about doc churn and treating project docs as data.
+- Tool Description: PushNotification — Explains that notifications are skipped when terminal output already reaches an active user, and that a "not sent" result only means this notification was redundant, disabled, or undeliverable.
+
 # [2.1.198](https://github.com/Piebald-AI/claude-code-system-prompts/commit/c831b94)
 
 _+53,384 tokens_

@@ -17,6 +17,14 @@ next version when it ships.
 ## [Unreleased]
 
 ### Added
+- **`micro loop`** — scaffold an autonomous improvement loop into any repository: GitHub Actions workflows dispatched to an @mention-driven coding agent, across up to five roles — `planner` (ranked queue), `builder` (top item as a single-concern PR, auto-merged on green CI), `triage` (CI failures → fix issues), and opt-in `coherence` (docs/CHANGELOG alignment) and `release` (daily patch tag). Each dispatch role's instruction lives in an editable `.github/loop/prompts/<role>.md` file — the workflow is the mechanism, the prompt is the policy — so a repo customizes behavior without forking the CLI. `micro loop init --roles …` writes it all; `micro loop verify` checks the wiring. This is the loop that maintains go-micro itself, generalized. (`cmd/micro/loop/`)
+
+---
+
+## [6.3.12] - July 2026
+
+### Added
+- **Ollama provider** — run agents against open-weight models locally (`/api/chat`, NDJSON streaming) or via Ollama Cloud (OpenAI-compatible `/v1/chat/completions`, SSE), auto-detected from the base URL, with tool calling in both modes. Point any agent at a non-default endpoint with the new `agent.BaseURL` / `micro.AgentBaseURL` option. (`ai/ollama/`, `examples/agent-ollama/`)
 - **Retrieval-backed agent memory** — agents can recall relevant prior turns by similarity, not just the recent window, with a summarizer hook that compacts older history so long conversations stay in budget. (`agent/`)
 - **Scheduled flows** — a flow can run an agent (or any step) on a cron-style schedule, with the dispatch traced end to end. (`flow/`)
 - **Flow verification/grader loop** — a workflow can grade its own step output against a rubric and retry until it passes, plus run-trace analysis to surface where a flow spends its time. (`flow/`)

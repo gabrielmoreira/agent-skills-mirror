@@ -32,6 +32,24 @@ const DURATION_DEFAULT: Record<AnimEffect, number> = {
   "wheel-out": 2000,
   "random-bars-in": 500,
   "random-bars-out": 500,
+  "blinds-in": 500,
+  "blinds-out": 500,
+  "checkerboard-in": 500,
+  "checkerboard-out": 500,
+  "dissolve-in": 500,
+  "dissolve-out": 500,
+  "box-in": 500,
+  "box-out": 500,
+  "circle-in": 500,
+  "circle-out": 500,
+  "diamond-in": 500,
+  "diamond-out": 500,
+  "plus-in": 500,
+  "plus-out": 500,
+  "strips-in": 500,
+  "strips-out": 500,
+  "wedge-in": 500,
+  "wedge-out": 500,
   spin: 2000,
   grow: 2000,
   shrink: 2000,
@@ -63,6 +81,24 @@ export const EFFECT_KIND: Record<AnimEffect, "entr" | "exit" | "emph" | "path"> 
   "wheel-out": "exit",
   "random-bars-in": "entr",
   "random-bars-out": "exit",
+  "blinds-in": "entr",
+  "blinds-out": "exit",
+  "checkerboard-in": "entr",
+  "checkerboard-out": "exit",
+  "dissolve-in": "entr",
+  "dissolve-out": "exit",
+  "box-in": "entr",
+  "box-out": "exit",
+  "circle-in": "entr",
+  "circle-out": "exit",
+  "diamond-in": "entr",
+  "diamond-out": "exit",
+  "plus-in": "entr",
+  "plus-out": "exit",
+  "strips-in": "entr",
+  "strips-out": "exit",
+  "wedge-in": "entr",
+  "wedge-out": "exit",
   spin: "emph",
   grow: "emph",
   shrink: "emph",
@@ -72,11 +108,25 @@ export const EFFECT_KIND: Record<AnimEffect, "entr" | "exit" | "emph" | "path"> 
 };
 
 // data-anim-dir families: fly/wipe take the four edges (the side the element
-// enters from / exits toward); float is vertical-only; split/random-bars take
-// the bar/seam axis (split default matches PowerPoint's "Vertical In").
+// enters from / exits toward); float is vertical-only; split/random-bars/
+// blinds/checkerboard take the bar/seam axis (split default matches
+// PowerPoint's "Vertical In"); box/circle/diamond/plus take in|out (the
+// pattern closes on the center or grows out of it — entrances default in,
+// exits default out, PowerPoint's own pairings); strips takes the corner the
+// diagonal sweep travels toward.
 const EDGE_DIRS: Record<string, AnimDir> = { left: "left", right: "right", top: "top", bottom: "bottom" };
 const VERT_DIRS: Record<string, AnimDir> = { top: "top", bottom: "bottom" };
 const AXIS_DIRS: Record<string, AnimDir> = { horizontal: "horizontal", vertical: "vertical" };
+const SHAPE_DIRS: Record<string, AnimDir> = { in: "in", out: "out" };
+const CORNER_DIRS: Record<string, AnimDir> = {
+  "down-right": "down-right",
+  "down-left": "down-left",
+  "up-right": "up-right",
+  "up-left": "up-left",
+};
+const AXIS = { allowed: AXIS_DIRS, label: "horizontal|vertical" };
+const SHAPE = { allowed: SHAPE_DIRS, label: "in|out" };
+const CORNER = { allowed: CORNER_DIRS, def: "down-right" as AnimDir, label: "down-right|down-left|up-right|up-left" };
 const DIR_FAMILY: Partial<Record<AnimEffect, { allowed: Record<string, AnimDir>; def: AnimDir; label: string }>> = {
   "fly-in": { allowed: EDGE_DIRS, def: "bottom", label: "left|right|top|bottom" },
   "fly-out": { allowed: EDGE_DIRS, def: "bottom", label: "left|right|top|bottom" },
@@ -84,10 +134,24 @@ const DIR_FAMILY: Partial<Record<AnimEffect, { allowed: Record<string, AnimDir>;
   "wipe-out": { allowed: EDGE_DIRS, def: "bottom", label: "left|right|top|bottom" },
   "float-in": { allowed: VERT_DIRS, def: "bottom", label: "top|bottom" },
   "float-out": { allowed: VERT_DIRS, def: "bottom", label: "top|bottom" },
-  "split-in": { allowed: AXIS_DIRS, def: "vertical", label: "horizontal|vertical" },
-  "split-out": { allowed: AXIS_DIRS, def: "vertical", label: "horizontal|vertical" },
-  "random-bars-in": { allowed: AXIS_DIRS, def: "horizontal", label: "horizontal|vertical" },
-  "random-bars-out": { allowed: AXIS_DIRS, def: "horizontal", label: "horizontal|vertical" },
+  "split-in": { ...AXIS, def: "vertical" },
+  "split-out": { ...AXIS, def: "vertical" },
+  "random-bars-in": { ...AXIS, def: "horizontal" },
+  "random-bars-out": { ...AXIS, def: "horizontal" },
+  "blinds-in": { ...AXIS, def: "horizontal" },
+  "blinds-out": { ...AXIS, def: "horizontal" },
+  "checkerboard-in": { ...AXIS, def: "horizontal" },
+  "checkerboard-out": { ...AXIS, def: "horizontal" },
+  "box-in": { ...SHAPE, def: "in" },
+  "box-out": { ...SHAPE, def: "out" },
+  "circle-in": { ...SHAPE, def: "in" },
+  "circle-out": { ...SHAPE, def: "out" },
+  "diamond-in": { ...SHAPE, def: "in" },
+  "diamond-out": { ...SHAPE, def: "out" },
+  "plus-in": { ...SHAPE, def: "in" },
+  "plus-out": { ...SHAPE, def: "out" },
+  "strips-in": CORNER,
+  "strips-out": CORNER,
 };
 const TRIGGERS: Record<string, 1> = { click: 1, with: 1, after: 1 };
 
@@ -231,11 +295,12 @@ export function parseAnimAttrs(
   if (rawAutoRev !== null) {
     const b = rawAutoRev.trim().toLowerCase();
     if (b === "" || b === "true" || b === "1") {
-      const kind = EFFECT_KIND[eff];
       // A reversed entrance ends back at hidden and snaps visible; a reversed
-      // exit ends visible and then the re-hide pops it — both nonsense.
-      if (kind === "emph" || kind === "path") def.autoReverse = true;
-      else warnings.push(`data-anim-auto-reverse only applies to emphasis and path effects — ignored for "${eff}"`);
+      // exit ends visible and then the re-hide pops it; pulse and teeter
+      // already return to base on their own — only the emphasis effects that
+      // end away from base (and motion paths) can meaningfully reverse.
+      if (eff === "spin" || eff === "grow" || eff === "shrink" || eff === "path") def.autoReverse = true;
+      else warnings.push(`data-anim-auto-reverse only applies to spin/grow/shrink/path — ignored for "${eff}"`);
     } else if (b !== "false" && b !== "0") {
       warnings.push(`invalid data-anim-auto-reverse "${rawAutoRev}" — ignored`);
     }

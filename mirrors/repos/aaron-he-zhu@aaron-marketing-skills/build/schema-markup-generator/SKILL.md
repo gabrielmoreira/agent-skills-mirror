@@ -1,7 +1,7 @@
 ---
 name: schema-markup-generator
 description: 'Use when the user asks to "generate schema"; creates JSON-LD for FAQ, HowTo, Article, Product, and LocalBusiness rich-result candidates. Not for title/meta-description tags — use meta-tags-optimizer; not for crawl/index technical issues — use technical-seo-checker. Schema标记/结构化数据'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -10,7 +10,9 @@ argument-hint: "<page URL or content type>"
 allowed-tools: WebFetch
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: seo-geo
+  phase: build
   geo-relevance: "medium"
 ---
 
@@ -67,6 +69,8 @@ Populate properties only from visible page content or user-provided facts; for a
 > - **HowTo**: Google **deprecated HowTo rich results on desktop (2023)**. Generate HowTo for semantic/AEO value and content structure, **not** for a rich-result promise.
 >
 > Run the bundled local pre-flight before the manual UI step: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/schema_lint.py" <url>` (extracts JSON-LD, checks required/recommended properties, and flags these deprecations). It is a pre-check, not a replacement for Google's Rich Results Test.
+>
+> ⚠ **JS-injected JSON-LD caveat**: `schema_lint.py` and any raw fetch (`WebFetch`/`curl`) read the server HTML and will **not** see JSON-LD injected client-side by SEO plugins (Yoast/RankMath/AIOSEO render it via JS). When the pre-check reports no/partial schema on such a site, confirm in the rendered DOM (`document.querySelectorAll('script[type="application/ld+json"]')`) or the Rich Results Test before concluding schema is missing — reporting "no schema" from a raw fetch is a false negative.
 
 > **Reference**: See [Instructions Detail](references/instructions-detail.md) for the mapping table, eligibility matrix, implementation guide, validation checklist, FAQ example, and tips. See [Schema Templates](references/schema-templates.md) for compact starter JSON-LD blocks.
 
@@ -100,6 +104,7 @@ On user confirmation, save to `memory/content/YYYY-MM-DD-<topic>.md` — see [Sk
 - [Schema Templates](references/schema-templates.md) - Compact starter JSON-LD blocks for common schema types
 - [Schema Decision Tree](references/schema-decision-tree.md) - Content-to-schema mapping, industry recommendations, and priority tiers
 - [Validation Guide](references/validation-guide.md) - Common errors, required properties, and testing workflow
+- [llms.txt / OKF](../../references/llms-txt-okf.md) - llms.txt and OKF layer that sits alongside JSON-LD in the agent-readable stack
 
 ## Next Best Skill
 

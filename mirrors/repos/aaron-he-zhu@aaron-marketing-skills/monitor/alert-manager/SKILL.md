@@ -1,7 +1,7 @@
 ---
 name: alert-manager
 description: 'Use when the user asks to "set SEO alerts" or "排名掉了提醒我"; configures threshold notifications for FUTURE ranking, traffic, technical, and competitor changes. Not for one-time measurement or reporting — use rank-tracker or performance-reporter. SEO预警/排名监控'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -9,7 +9,9 @@ when_to_use: "Use when setting up monitoring alerts for rankings, traffic, backl
 argument-hint: "<domain> [metric]"
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: seo-geo
+  phase: monitor
   geo-relevance: "low"
 ---
 
@@ -84,6 +86,10 @@ Sample outcome: a keyword alert matrix with Critical vs High thresholds, a respo
 | Backlinks lost | >5% in 1 week | >15% in 1 week | Weekly |
 | AI citation loss | Any key query | >20% queries | Weekly |
 | Security issues | Any detected | Any detected | Daily |
+
+**Steep-decline trigger (always on):** if organic traffic OR aggregate keyword rank falls **>30%** below its trailing baseline (default: prior 28-day median for the same weekday band), fire a Critical alert regardless of category. Use a trailing median, not a single prior day, so one noisy data point does not trip it. Label the baseline Measured / User-provided / Estimated.
+
+An alert opens a **readback window**, not an instant verdict. Treat a fired alert as a hypothesis: confirm the drop holds across the readback window before declaring an incident, then promote (incident + rollback/fix) or roll back the alert (transient noise — close it). See [measurement-protocol.md](../../references/measurement-protocol.md) for the window length and promote/rollback rule.
 
 > **Reference**: See [Alert Threshold Guide](references/alert-threshold-guide.md) for threshold setting, fatigue prevention, escalation paths, and response playbooks.
 

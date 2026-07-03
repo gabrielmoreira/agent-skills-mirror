@@ -35,6 +35,27 @@ function loadEnvFile() {
   } catch { /* .env not present */ }
 }
 
+// Unified env loading via octocode-config.mjs (injected by skills/scripts/sync.mjs).
+//
+// Priority (highest → lowest):
+//   1. process.env already set (shell / MCP client / pi-extension session_start)
+//   2. <workspace>/.octocode/.env   (project-level, WORKSPACE_ROOT or cwd)
+//   3. ~/.octocode/.env             (global octocode home)
+//   4. <skill-dir>/.env             (legacy skill-local fallback, used in source/dev)
+//
+// Project env wins over global; already-set process.env vars always win over both.
+async function loadEnv() {
+  try {
+    const { propagateOctocodeEnv, getOctocodeHome } = await import(new URL('./octocode-config.mjs', import.meta.url).href);
+    propagateOctocodeEnv({
+      home: getOctocodeHome(),                               // ~/.octocode/.env
+      cwd: process.env.WORKSPACE_ROOT || process.cwd(),     // <workspace>/.octocode/.env (wins)
+      trusted: true,
+    });
+  } catch { /* octocode-config.mjs not present — local .env fallback below */ }
+  loadEnvFile(); // skill-local .env: last resort, only sets keys not already in process.env
+}
+
 function parseArgs(argv) {
   const opts = {
     query: '', maxResults: 8, timeRange: 'year', gl: 'us', hl: 'en',
@@ -152,7 +173,7 @@ Options:
     return;
   }
 
-  loadEnvFile();
+  await loadEnv();
   const apiKey = process.env.SERPER_API_KEY;
 
   if (opts.check) {

@@ -1,7 +1,7 @@
 ---
 name: on-page-seo-auditor
 description: 'Use when the user asks to "audit on-page SEO" or "diagnose why a single page dropped"; scores titles, meta, header structure, keyword placement, links, and images with prioritized fixes. Not for E-E-A-T / publish-readiness scoring — use content-quality-auditor; not for crawl / CWV / indexing — use technical-seo-checker. 页面SEO审计/排名诊断'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -10,7 +10,9 @@ argument-hint: "<URL> [keyword]"
 allowed-tools: WebFetch
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: seo-geo
+  phase: optimize
   geo-relevance: "medium"
 ---
 
@@ -21,7 +23,7 @@ This skill audits the structural on-page SEO signals a single page controls and 
 
 ## What This Skill Does
 
-Audits structural on-page signals (title tag, meta description, header structure, keyword placement, internal/external links, images) with scored results and prioritized fix recommendations. For E-E-A-T and publish-readiness scoring, hand off to [content-quality-auditor](../../cross-cutting/content-quality-auditor/SKILL.md); for crawl, indexing, and Core Web Vitals, use [technical-seo-checker](../technical-seo-checker/SKILL.md).
+Audits structural on-page signals (title tag, meta description, header structure, keyword placement, internal/external links, images) with scored results and prioritized fix recommendations. For E-E-A-T and publish-readiness scoring, hand off to [content-quality-auditor](../../optimize/content-quality-auditor/SKILL.md); for crawl, indexing, and Core Web Vitals, use [technical-seo-checker](../technical-seo-checker/SKILL.md).
 
 ## Quick Start
 
@@ -101,11 +103,11 @@ When a user requests an on-page SEO audit, use the compact step templates in [re
 2. **Audit Title Tag** — length (50-60 chars), keyword inclusion/position, uniqueness, compelling copy, intent match; score /10 and recommend an optimized title
 3. **Audit Meta Description** — length (150-160 chars), keyword, CTA, uniqueness, accuracy, compelling copy; score /10 and recommend an optimized description
 4. **Audit Header Structure** — single H1, H1 keyword, logical hierarchy, H2 keyword coverage, no skipped levels, descriptive headers; score /10 and recommend changes.
-5. **Audit On-Page Content Structure** — word count, reading level, formatting, content-elements checklist, and structural gaps. This is a structural pass, not a quality verdict — route depth/E-E-A-T scoring to [content-quality-auditor](../../cross-cutting/content-quality-auditor/SKILL.md).
+5. **Audit On-Page Content Structure** — word count, reading level, formatting, content-elements checklist, and structural gaps. This is a structural pass, not a quality verdict — route depth/E-E-A-T scoring to [content-quality-auditor](../../optimize/content-quality-auditor/SKILL.md).
 6. **Audit Keyword Usage** — primary/secondary keyword placement across page elements, related terms, and density analysis.
 7. **Audit Internal Links** — link count, anchor relevance, broken links, and recommended additions.
 8. **Audit Images** — alt text, file names, sizes, formats, and lazy loading.
-9. **Audit Page-Level Tags** — URL slug, canonical tag, and on-page schema presence. For deep crawl/indexing, Core Web Vitals, mobile rendering, and HTTPS/security, route to [technical-seo-checker](../technical-seo-checker/SKILL.md).
+9. **Audit Page-Level Tags** — URL slug, canonical tag, and on-page schema presence. For deep crawl/indexing, Core Web Vitals, mobile rendering, and HTTPS/security, route to [technical-seo-checker](../technical-seo-checker/SKILL.md). ⚠ **JS-injected JSON-LD caveat**: a raw fetch (`WebFetch`/`curl`/`onpage.py`) reads the server HTML and misses JSON-LD injected client-side by plugins (Yoast/RankMath/AIOSEO), so "no schema" from a raw fetch is a **false negative** — confirm in the rendered DOM (`document.querySelectorAll('script[type="application/ld+json"]')`) or Google's Rich Results Test before reporting schema as missing.
 10. **CORE-EEAT Quick Scan** — 17 on-page-relevant items from the 80-item CORE-EEAT benchmark, used to flag where a full quality audit is warranted (not a publish verdict). Full benchmark: [CORE-EEAT Benchmark](../../references/core-eeat-benchmark.md).
 11. **Generate Audit Summary** — overall score, priority issues, quick wins, detailed recommendations, competitor comparison, and action checklist.
 

@@ -16,11 +16,11 @@
 
 <!-- BEGIN GENERATED: summary (scripts/build-tools-catalog.py) -->
 
-**335 tools** across 6 categories.
+**334 tools** across 6 categories.
 
 | Category | Count |
 |---|---:|
-| Causal-inference & treatment-effect libraries | 32 |
+| Causal-inference & treatment-effect libraries | 31 |
 | Econometrics & quasi-experimental libraries | 170 |
 | Causal discovery / structure learning | 25 |
 | Autonomous research & data-science agents | 51 |
@@ -29,8 +29,8 @@
 
 | By language | Tools | | By maintenance | Tools | | By license | Tools |
 |---|---:|:-:|---|---:|:-:|---|---:|
-| Python | 165 |  | 🟢 active | 181 |  | permissive (MIT/BSD/Apache/…) | 184 |
-| R | 109 |  | 🟡 maintained | 95 |  | copyleft (GPL/AGPL/LGPL/CeCILL) | 104 |
+| Python | 164 |  | 🟢 active | 181 |  | permissive (MIT/BSD/Apache/…) | 183 |
+| R | 109 |  | 🟡 maintained | 94 |  | copyleft (GPL/AGPL/LGPL/CeCILL) | 104 |
 | Stata | 53 |  | 🔴 dormant | 59 |  | unverified / unmapped | 39 |
 | TypeScript | 16 |  |  |  |  | proprietary / non-OSI / custom | 8 |
 | Julia | 11 |  |  |  |  |  |  |

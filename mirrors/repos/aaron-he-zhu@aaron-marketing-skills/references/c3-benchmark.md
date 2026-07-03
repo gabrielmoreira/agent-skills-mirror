@@ -35,6 +35,14 @@ Naming order follows the value chain `Creator · Content · Campaign`; report dr
 
 **Campaign Value Index**: `CVI = (ACE_avg × ART_avg × ROI)^(1/3)`. Keep the three scope scores beside the CVI — the index ranks and alerts, the three scores diagnose.
 
+### Worked example (golden-math fixture)
+
+Concrete CVI computations (geometric mean, floor-rounded), kept here so `scripts/golden-auditor-math.py` can assert the arithmetic deterministically:
+
+- **No-veto** — `ACE_avg=90 ART_avg=80 ROI=70` → `CVI = floor(504000^(1/3)) = 79`. (The geometric mean 79 sits below the arithmetic mean 80 — a weaker scope drags the whole index, which is the point of the multiplicative rollup.)
+- **Veto-capped** — an ACE veto (e.g. A2 real-follower fraud) caps the Creator scope at the Low-band ceiling, so `ACE_avg=59 (capped)` → `CVI = floor(330400^(1/3)) = 69`.
+- **Cap-reconciliation boundary** — at a raw scope of exactly 60 with one veto, C³ caps to its Low-band ceiling **≤ 59**, while the framework-agnostic [auditor-runbook.md](auditor-runbook.md) §2 caps the weighted overall at `min(raw, 60) = 60`. These are **band-aligned**: they differ by ≤ 1 point *only* at this boundary (C³'s Low band tops at 59 by definition). No rubric numbers change; the runbook value is authoritative for the Artifact Gate.
+
 ## Veto items (red lines)
 
 | Scope | Veto | Trigger |

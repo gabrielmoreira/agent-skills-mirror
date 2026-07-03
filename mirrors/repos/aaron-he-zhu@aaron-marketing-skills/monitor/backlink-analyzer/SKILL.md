@@ -1,7 +1,7 @@
 ---
 name: backlink-analyzer
 description: 'Use when the user asks to "analyze backlinks" or "外链分析"; profiles external referring domains, anchor-text distribution, toxic links, and competitor link gaps. Not for internal links — use internal-linking-optimizer. 外链分析/反向链接'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -10,7 +10,9 @@ argument-hint: "<domain or URL>"
 allowed-tools: WebFetch
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: seo-geo
+  phase: monitor
   geo-relevance: "low"
 ---
 
@@ -36,7 +38,7 @@ Find link building opportunities by analyzing [competitor domains]
 - **Writes**: a user-facing monitoring deliverable and reusable summary.
 - **Promotes**: significant changes, confirmed anomalies, follow-up actions, and pending decisions to `memory/open-loops.md`.
 - **Done when**: referring domains, anchor mix, and toxic-link share are reported with each metric source-tagged (or N/A); toxic ratio is computed; and at least 3 link-building or disavow actions are named.
-- **Primary next skill**: [domain-authority-auditor](../../cross-cutting/domain-authority-auditor/SKILL.md) when toxicity or authority concerns need formal scoring.
+- **Primary next skill**: [domain-authority-auditor](../../monitor/domain-authority-auditor/SKILL.md) when toxicity or authority concerns need formal scoring.
 
 ### Handoff Summary
 
@@ -106,4 +108,4 @@ Ask "Save these results?" If yes, write to `memory/monitoring/` — see [Skill C
 
 ## Next Best Skill
 
-Toxic ratio > 15% → [domain-authority-auditor](../../cross-cutting/domain-authority-auditor/SKILL.md). Otherwise → Terminal. Visited-set rule applies per [skill-contract.md](../../references/skill-contract.md).
+Toxic ratio > 15% → [domain-authority-auditor](../../monitor/domain-authority-auditor/SKILL.md). Otherwise → Terminal. Visited-set rule applies per [skill-contract.md](../../references/skill-contract.md).

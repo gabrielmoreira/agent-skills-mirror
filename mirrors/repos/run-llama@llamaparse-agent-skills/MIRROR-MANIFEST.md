@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `run-llama/llamaparse-agent-skills` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `run-llama/llamaparse-agent-skills` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `run-llama/llamaparse-agent-skills` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,8 +61,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`skills/liteparse/scripts/search.py`](skills/liteparse/scripts/search.py) |
 | 2 | ✓ | [`skills/liteparse/SKILL.md`](skills/liteparse/SKILL.md) |
-| 3 | ✓ | [`skills/llamaparse/scripts/example.ts`](skills/llamaparse/scripts/example.ts) |
-| 4 | ✓ | [`skills/llamaparse/SKILL.md`](skills/llamaparse/SKILL.md) |
+| 3 | ✓ | [`skills/llamacloud-index/SKILL.md`](skills/llamacloud-index/SKILL.md) |
+| 4 | ✓ | [`skills/llamaparse/scripts/example.ts`](skills/llamaparse/scripts/example.ts) |
+| 5 | ✓ | [`skills/llamaparse/SKILL.md`](skills/llamaparse/SKILL.md) |
 
 ---
 

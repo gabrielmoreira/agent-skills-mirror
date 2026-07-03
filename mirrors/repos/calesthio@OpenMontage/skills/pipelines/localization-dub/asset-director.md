@@ -85,7 +85,7 @@ If you encounter a generation technique, provider behavior, or prompting pattern
 
 This is especially important for:
 - **Video generation prompting** — models respond to specific vocabularies that change with each version
-- **Image model parameters** — optimal settings for FLUX, DALL-E, Imagen differ and evolve
+- **Image model parameters** — optimal settings for FLUX, GPT Image, Imagen differ and evolve
 - **Audio provider quirks** — voice cloning, music generation, and TTS each have model-specific best practices
 - **Remotion component patterns** — new composition techniques emerge as the framework evolves
 

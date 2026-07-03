@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `codeaholicguy/ai-devkit` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
+Mirror of `codeaholicguy/ai-devkit` — 26 default patterns, 0 followed patterns, 52 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `codeaholicguy/ai-devkit` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 50 |
+| Files         | 52 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -102,13 +102,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 41 | ✓ | [`skills/simplify-implementation/SKILL.md`](skills/simplify-implementation/SKILL.md) |
 | 42 | ✓ | [`skills/structured-debug/agents/openai.yaml`](skills/structured-debug/agents/openai.yaml) |
 | 43 | ✓ | [`skills/structured-debug/SKILL.md`](skills/structured-debug/SKILL.md) |
-| 44 | ✓ | [`skills/tdd/agents/openai.yaml`](skills/tdd/agents/openai.yaml) |
-| 45 | ✓ | [`skills/tdd/SKILL.md`](skills/tdd/SKILL.md) |
-| 46 | ✓ | [`skills/technical-writer/agents/openai.yaml`](skills/technical-writer/agents/openai.yaml) |
-| 47 | ✓ | [`skills/technical-writer/SKILL.md`](skills/technical-writer/SKILL.md) |
-| 48 | ✓ | [`skills/verify/agents/openai.yaml`](skills/verify/agents/openai.yaml) |
-| 49 | ✓ | [`skills/verify/SKILL.md`](skills/verify/SKILL.md) |
-| 50 | ✓ | [`web/public/llms.txt`](web/public/llms.txt) |
+| 44 | ✓ | [`skills/task/agents/openai.yaml`](skills/task/agents/openai.yaml) |
+| 45 | ✓ | [`skills/task/SKILL.md`](skills/task/SKILL.md) |
+| 46 | ✓ | [`skills/tdd/agents/openai.yaml`](skills/tdd/agents/openai.yaml) |
+| 47 | ✓ | [`skills/tdd/SKILL.md`](skills/tdd/SKILL.md) |
+| 48 | ✓ | [`skills/technical-writer/agents/openai.yaml`](skills/technical-writer/agents/openai.yaml) |
+| 49 | ✓ | [`skills/technical-writer/SKILL.md`](skills/technical-writer/SKILL.md) |
+| 50 | ✓ | [`skills/verify/agents/openai.yaml`](skills/verify/agents/openai.yaml) |
+| 51 | ✓ | [`skills/verify/SKILL.md`](skills/verify/SKILL.md) |
+| 52 | ✓ | [`web/public/llms.txt`](web/public/llms.txt) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `butterbase-ai/butterbase-skills` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
+Mirror of `butterbase-ai/butterbase-skills` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `butterbase-ai/butterbase-skills` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 40 |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -91,14 +91,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`skills/journey-substrate/SKILL.md`](skills/journey-substrate/SKILL.md) |
 | 31 | ✓ | [`skills/journey-templates/SKILL.md`](skills/journey-templates/SKILL.md) |
 | 32 | ✓ | [`skills/journey/SKILL.md`](skills/journey/SKILL.md) |
-| 33 | ✓ | [`skills/migrations/SKILL.md`](skills/migrations/SKILL.md) |
-| 34 | ✓ | [`skills/payments/SKILL.md`](skills/payments/SKILL.md) |
-| 35 | ✓ | [`skills/rag-dev/SKILL.md`](skills/rag-dev/SKILL.md) |
-| 36 | ✓ | [`skills/realtime/SKILL.md`](skills/realtime/SKILL.md) |
-| 37 | ✓ | [`skills/schema-design/SKILL.md`](skills/schema-design/SKILL.md) |
-| 38 | ✓ | [`skills/storage/SKILL.md`](skills/storage/SKILL.md) |
-| 39 | ✓ | [`skills/substrate/SKILL.md`](skills/substrate/SKILL.md) |
-| 40 | ✓ | [`skills/templates/SKILL.md`](skills/templates/SKILL.md) |
+| 33 | ✓ | [`skills/meetings/SKILL.md`](skills/meetings/SKILL.md) |
+| 34 | ✓ | [`skills/migrations/SKILL.md`](skills/migrations/SKILL.md) |
+| 35 | ✓ | [`skills/payments/SKILL.md`](skills/payments/SKILL.md) |
+| 36 | ✓ | [`skills/rag-dev/SKILL.md`](skills/rag-dev/SKILL.md) |
+| 37 | ✓ | [`skills/realtime/SKILL.md`](skills/realtime/SKILL.md) |
+| 38 | ✓ | [`skills/schema-design/SKILL.md`](skills/schema-design/SKILL.md) |
+| 39 | ✓ | [`skills/storage/SKILL.md`](skills/storage/SKILL.md) |
+| 40 | ✓ | [`skills/substrate/SKILL.md`](skills/substrate/SKILL.md) |
+| 41 | ✓ | [`skills/templates/SKILL.md`](skills/templates/SKILL.md) |
 
 ---
 

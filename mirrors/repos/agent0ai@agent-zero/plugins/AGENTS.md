@@ -79,7 +79,7 @@ Direct child DOX files:
 | [_error_retry/AGENTS.md](_error_retry/AGENTS.md) | Critical exception retry lifecycle hooks. |
 | [_infection_check/AGENTS.md](_infection_check/AGENTS.md) | Prompt-injection safety analysis before tool execution. |
 | [_kokoro_tts/AGENTS.md](_kokoro_tts/AGENTS.md) | Kokoro text-to-speech integration. |
-| [_memory/AGENTS.md](_memory/AGENTS.md) | Persistent vector memory, knowledge import, tools, and dashboard. |
+| [_memory/AGENTS.md](_memory/AGENTS.md) | Optional persistent recall plugin, knowledge import, tools, and dashboard; do not assume it is enabled outside this plugin. |
 | [_model_config/AGENTS.md](_model_config/AGENTS.md) | Model selection, presets, API-key checks, and scoped overrides. |
 | [_oauth/AGENTS.md](_oauth/AGENTS.md) | OAuth-backed model-provider connections and local proxy routes. |
 | [_office/AGENTS.md](_office/AGENTS.md) | LibreOffice office artifacts and office canvas sessions. |
@@ -93,5 +93,5 @@ Direct child DOX files:
 | [_text_editor/AGENTS.md](_text_editor/AGENTS.md) | Native text read, write, and patch tool. |
 | [_time_travel/AGENTS.md](_time_travel/AGENTS.md) | Workspace history, diff, travel, snapshot, and revert flows. |
 | [_whatsapp_integration/AGENTS.md](_whatsapp_integration/AGENTS.md) | WhatsApp Baileys bridge integration. |
-| [_whats_new/AGENTS.md](_whats_new/AGENTS.md) | Version-gated What's New showcase modal and startup trigger. |
+| [_whats_new/AGENTS.md](_whats_new/AGENTS.md) | Version-gated What's New showcase modal, card list, and startup trigger. |
 | [_whisper_stt/AGENTS.md](_whisper_stt/AGENTS.md) | Whisper speech-to-text integration. |

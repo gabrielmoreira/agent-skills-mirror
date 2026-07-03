@@ -117,6 +117,13 @@ Ask the user for these if not provided:
 - **Key question to answer** (why is retention dropping? what drives retention?)
 - **Available data** (analytics events, churn surveys, interview notes)
 
+## Deeper Materials
+
+This skill ships with support files — use them when they are available:
+
+- **`references/curve-reading.md`** — Reading Retention Curves Without Fooling Yourself. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
+- **`templates/retention-readout.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
 ## Quality Checks
 
 - [ ] Retention curve shape is diagnosed (flattening vs trending to zero = PMF vs onboarding)

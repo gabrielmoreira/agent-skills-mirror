@@ -19,7 +19,7 @@
 ## Work Guidance
 
 - Prefer prompt changes that improve citation, evidence handling, and analysis quality for research tasks.
-- Coordinate broad research behavior changes with document, memory, or browser plugin contracts when relevant.
+- Coordinate broad research behavior changes with document or browser plugin contracts when relevant.
 
 ## Verification
 

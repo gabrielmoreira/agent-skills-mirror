@@ -14,6 +14,7 @@ description: 准备并执行 Lime 发版流程。适用于用户要求更新 Lim
 - 版本号事实源以 `package.json`、`forge.config.mjs`、App Server manifest 与 `lime-rs/Cargo.toml` 的 workspace version 为准，完成后必须跑 `npm run verify:app-version`。
 - Electron 发布 / 签名 / 公证 / updater metadata 的 current 打包事实源是 `forge.config.mjs`、`electron-forge package`、`electron-forge make` 与 Forge 官方 maker；旧 builder 配置 / CLI、自定义 Windows installer maker 与旧 YAML / blockmap updater metadata 按 `dead` 处理，不得写回 release workflow、docs、quality guard 或 i18n evidence。运行时更新以 `electron/updateHost.ts` + Electron 内置 `autoUpdater` 为 current；Windows installer 必须走 Forge Squirrel。
 - 发版前默认必须跑通 `npm run typecheck`。这是发布硬门禁，必须在收尾和任何 commit / tag / push 确认前明确执行并记录结果；不能用 `npm run typecheck:electron`、`npm run lint`、局部单测、Rust 测试或 `verify:app-version` 替代。若用户明确要求“马上递交”或“立即递交”，可以把 `typecheck` 降级为非阻断项，直接进入发布收口，但最终汇报必须明确注明 `typecheck` 未执行或未通过。
+- 默认发版门禁不要再自动执行裸 `npm run lint`、裸 `npm test` 或全量 `cargo test --manifest-path "lime-rs/Cargo.toml"`。这些命令在当前仓库经常耗时长、续跑差或被大写集噪音阻断；只有用户明确要求“完整矩阵 / 全量门禁 / CI 同款验证”，或当前改动风险确实需要时才执行，并优先使用下方的定向 / 续跑入口。
 - Lime 是 GUI 桌面产品；即使静态检查和单测通过，涉及发布也要尽量跑 `npm run verify:gui-smoke`，跑不了要说明环境限制。
 - 用户要求“发版 / 发布 / release”时，默认目标不是只准备版本文件，而是完成一次端到端发布：整理 release candidate、更新版本与 release notes、跑门禁、创建 release commit、创建 tag、推送 main 和 tag。`git commit` / `git tag` / `git push` 仍必须按危险操作格式请求一次明确确认；拿到确认后必须继续执行到底，并做 tag / 远端状态复核，不能把“是否提交 / 是否打 tag / 是否推送”留给用户自己处理。
 
@@ -26,7 +27,7 @@ description: 准备并执行 Lime 发版流程。适用于用户要求更新 Lim
    - `git status --short`
    - `git log --oneline --decorate --max-count=20`
    - `git tag --list "vX.Y.Z"`
-   - `rg -n '旧版本|目标版本'` 覆盖 `package.json`、`package-lock.json`、`packages/lime-cli-npm/package.json`、`forge.config.mjs`、App Server manifest、`lime-rs/Cargo.toml`、`lime-rs/Cargo.lock`、`RELEASE_NOTES*.md`
+   - `rg -n '旧版本|目标版本'` 覆盖 `package.json`、存在的 npm/pnpm lockfile、`packages/lime-cli-npm/package.json`、`forge.config.mjs`、App Server manifest、`lime-rs/Cargo.toml`、`lime-rs/Cargo.lock`、`lime-rs/crates/aster-rust/Cargo.lock`、`RELEASE_NOTES*.md`
 3. 如果发现上一轮发版命令仍在跑，只停止自己启动且已被用户中断的进程；不杀掉明显属于用户的 dev server / test / Electron 进程。
 
 ## Release Candidate 范围确认
@@ -45,15 +46,16 @@ description: 准备并执行 Lime 发版流程。适用于用户要求更新 Lim
 
 ## 更新版本事实源
 
-必须同步这些文件：
+必须同步这些事实源；仓库不存在或不包含显式版本的文件不要强行创建或改写：
 
 - `package.json`
-- `package-lock.json`
+- 存在的 npm/pnpm lockfile
 - `packages/lime-cli-npm/package.json`
-- `forge.config.mjs`
-- App Server manifest
+- `forge.config.mjs`（仅当存在显式版本；当前通常从 `package.json` 读取）
+- App Server manifest / release manifest（仅当存在显式发布版本）
 - `lime-rs/Cargo.toml`
 - `lime-rs/Cargo.lock`
+- `lime-rs/crates/aster-rust/Cargo.lock` 中引用 Lime workspace crate 的版本行
 
 更新方式优先使用结构化解析；锁文件和 Cargo lock 的 workspace 版本可做机械替换，但替换前后要用 `rg` 复核旧版本残留。
 
@@ -106,32 +108,41 @@ npm run verify:app-version
 
 ## 验证矩阵
 
-用户要求完整发版门禁时，按顺序优先跑；其中 `npm run typecheck` 不允许省略或降级。若用户明确要求“马上递交”或“立即递交”，本段完整门禁不适用：
-
-```bash
-cargo fmt --manifest-path "lime-rs/Cargo.toml" --all
-cargo test --manifest-path "lime-rs/Cargo.toml"
-cargo clippy --manifest-path "lime-rs/Cargo.toml"
-npm run lint
-npm run typecheck
-npm test
-npm run smoke:electron
-npm run verify:gui-smoke
-```
-
-如版本改动已发生，还必须包含：
+默认发版验证按“稳定必要门禁优先，重型矩阵按需扩展”执行。版本改动后必须先跑：
 
 ```bash
 npm run verify:app-version
+npm run typecheck
 ```
 
-前端全量 Vitest 通过 `scripts/run-vitest-smart.mjs` 分批执行并写入 `.lime/test/vitest-smart-last-run.json`。如果 `npm test` 已经失败或被用户中断，继续发版验证时默认先执行：
+然后按改动风险补充：
 
 ```bash
-npm run test:resume
+npm run test:contracts      # 协议 / Bridge / command catalog / mock / governance 变更
+npm run verify:gui-smoke    # GUI 壳、Workspace、主路径或正式发布尽量执行；跑不了要说明环境限制
 ```
 
-也可以用 `npm test -- --from-batch <N>`、`npm test -- --only-batch <N>` 精确补批次；局部修复优先用 `npm run test:related -- <files>`、`npm run test:changed -- <ref>` 或直接点名失败测试。只有测试收集规则、批次大小、依赖图或目标分支已经改变，才从头执行裸 `npm test`，并在汇报中说明原因。
+不要把下面这些命令作为默认发版阻断项：
+
+- `npm run lint`
+- 裸 `npm test`
+- 全量 `cargo test --manifest-path "lime-rs/Cargo.toml"`
+- 全量 `cargo clippy --manifest-path "lime-rs/Cargo.toml"`
+
+只有用户明确要求“完整矩阵 / 全量门禁 / CI 同款验证”，或当前改动直接需要它们时才执行。需要验证时优先使用更稳定的定向入口：
+
+```bash
+npx eslint "<changed-path>" --max-warnings 0
+npm run test:related -- <files>
+npm run test:changed -- <ref>
+npm run test:resume
+npm run test:rust:changed
+npm run test:rust:related -- <paths...>
+npm run test:rust:unit -- -p <crate> <filter>
+cargo test --manifest-path "lime-rs/Cargo.toml" -p <crate> <filter>
+```
+
+前端全量 Vitest 通过 `scripts/run-vitest-smart.mjs` 分批执行并写入 `.lime/test/vitest-smart-last-run.json`。如果 `npm test` 已经失败或被用户中断，继续发版验证时默认先执行 `npm run test:resume`，也可以用 `npm test -- --from-batch <N>`、`npm test -- --only-batch <N>` 精确补批次。只有测试收集规则、批次大小、依赖图或目标分支已经改变，才从头执行裸 `npm test`，并在汇报中说明原因。
 
 如果只做 release note 或文档更新，可按 `internal/aiprompts/quality-workflow.md` 降级；正式发版默认仍保留 `npm run typecheck`，但用户明确要求“马上递交”或“立即递交”时可跳过该项，最终汇报必须说明门禁降级理由。
 
@@ -139,7 +150,7 @@ npm run test:resume
 
 完整发版默认必须包含 commit / tag / push。不要在验证通过后只汇报“可以提交了”就结束；应主动给出危险操作确认请求。只有用户明确说“只准备、不提交 / 不打 tag / 不推送”时，才允许停在准备态，并在最终汇报中标明不是完整发布。
 
-拿到 git 写操作确认后，必须把 `git add`、`git commit`、`git tag`、`git push` 与远端 tag 复核连续执行到底；不能在 commit 后停下让用户自己打 tag，也不能在 tag 后停下让用户自己 push。若中间失败，先修复或明确阻塞，不要把剩余步骤转交给用户。
+拿到 git 写操作确认后，必须把 `git add`、`git commit`、`git tag`、`git push origin main`、`git push origin <tag>` 与远端 tag 复核连续执行到底；不能在 commit 后停下让用户自己打 tag，也不能在 tag 后停下让用户自己 push。若中间失败，先修复或明确阻塞，不要把剩余步骤转交给用户。
 
 执行任何 git 写操作前，先汇总：
 
@@ -156,10 +167,11 @@ npm run test:resume
 git add <release-candidate-files>
 git commit -m "Release vX.Y.Z"
 git tag vX.Y.Z
-git push origin main --follow-tags
+git push origin main
+git push origin vX.Y.Z
 ```
 
-确认后不要只执行其中一部分。若 `git add`、`git commit`、`git tag` 或 `git push` 任一步失败，必须修复或明确说明阻塞点；成功后立即复核：
+确认后不要只执行其中一部分。不要依赖 `git push origin main --follow-tags` 作为唯一 tag 推送方式：轻量 tag 不会被 `--follow-tags` 推送，容易造成 main 已发布但远端 release tag 缺失。若 main 已推送但 `git ls-remote --tags origin "refs/tags/vX.Y.Z"` 为空，必须继续执行 `git push origin vX.Y.Z` 并再次复核。若 `git add`、`git commit`、`git tag` 或任一 `git push` 失败，必须修复或明确说明阻塞点；成功后立即复核：
 
 ```bash
 git status --short

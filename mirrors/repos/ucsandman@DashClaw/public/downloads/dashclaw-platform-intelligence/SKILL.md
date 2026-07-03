@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:7247a6c6bfb40d3cb70c0c2815edbb1ba13ffaec`
+**Shape snapshot:** `sha1:1499ffc8bd988cc4a9f51e32d26fe40f728f8408`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -45,9 +45,9 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ## At a Glance
 
-- **275** active API routes across **67** categories (323 total including archived)
+- **277** active API routes across **68** categories (325 total including archived)
 - **4** required + **185** optional environment variables
-- **100** database tables
+- **101** database tables
 
 ## API Surface
 
@@ -125,6 +125,10 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 - `POST` `/api/billing/checkout`
 - `GET` `/api/billing/portal`
+
+### `calibration`
+
+- `GET, POST` `/api/calibration/proposals`
 
 ### `capabilities`
 
@@ -439,6 +443,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `GET, PATCH` `/api/sessions/[sessionId]`
 - `GET` `/api/sessions/[sessionId]/actions`
 - `GET` `/api/sessions/[sessionId]/events`
+- `GET` `/api/sessions/[sessionId]/retro`
 
 ### `settings`
 
@@ -532,8 +537,8 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 These must be set — DashClaw will fail to start without them.
 
-- **`DASHCLAW_API_KEY`** - referenced in 80 file(s)
-- **`DATABASE_URL`** - referenced in 100 file(s)
+- **`DASHCLAW_API_KEY`** - referenced in 81 file(s)
+- **`DATABASE_URL`** - referenced in 104 file(s)
 - **`ENCRYPTION_KEY`** - referenced in 8 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 5 file(s)
 
@@ -729,7 +734,7 @@ These have fallbacks or only activate specific features.
 
 ## Database Tables
 
-All 100 tables defined in `schema/schema.js` (Drizzle ORM):
+All 101 tables defined in `schema/schema.js` (Drizzle ORM):
 
 - `action_embeddings`
 - `action_records`
@@ -747,6 +752,7 @@ All 100 tables defined in `schema/schema.js` (Drizzle ORM):
 - `behavior_dismissals`
 - `behavior_samples`
 - `calendar_events`
+- `calibration_proposal_decisions`
 - `code_optimal_file_manifests`
 - `code_projects`
 - `code_session_alerts`

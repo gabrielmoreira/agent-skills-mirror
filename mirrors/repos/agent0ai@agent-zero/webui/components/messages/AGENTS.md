@@ -15,6 +15,7 @@
 - Keep message DOM helpers compatible with extension points that modify rendered messages.
 - Sanitize or safely render model/user-provided content through shared rendering paths.
 - Avoid layout shifts that break long-running message streaming.
+- Keep message action chrome out of text selection so copy/paste captures message content without button labels or icons.
 
 ## Work Guidance
 

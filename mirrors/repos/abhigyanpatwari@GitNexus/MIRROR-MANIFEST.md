@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 10 followed patterns, 55 file(s) materialized.
+Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 11 followed patterns, 56 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 10 followed patter
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 10 |
-| Files         | 55 |
+| Followed pats | 11 |
+| Files         | 56 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,6 +61,7 @@ Mirror of `abhigyanpatwari/GitNexus` — 26 default patterns, 10 followed patter
 - `TESTING.md`
 - `.devcontainer/README.md`
 - `MIGRATION.md`
+- `Documentation/kilo-code-mcp.md`
 
 ## File Index
 
@@ -116,13 +117,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 46 | → | [`.devcontainer/README.md`](.devcontainer/README.md) |
 | 47 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | 48 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 49 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
-| 50 | → | [`MIGRATION.md`](MIGRATION.md) |
-| 51 | → | [`pr-swarm-review/orchestration.md`](pr-swarm-review/orchestration.md) |
-| 52 | → | [`pr-swarm-review/README.md`](pr-swarm-review/README.md) |
-| 53 | → | [`README.md`](README.md) |
-| 54 | → | [`RUNBOOK.md`](RUNBOOK.md) |
-| 55 | → | [`TESTING.md`](TESTING.md) |
+| 49 | → | [`Documentation/kilo-code-mcp.md`](Documentation/kilo-code-mcp.md) |
+| 50 | → | [`GUARDRAILS.md`](GUARDRAILS.md) |
+| 51 | → | [`MIGRATION.md`](MIGRATION.md) |
+| 52 | → | [`pr-swarm-review/orchestration.md`](pr-swarm-review/orchestration.md) |
+| 53 | → | [`pr-swarm-review/README.md`](pr-swarm-review/README.md) |
+| 54 | → | [`README.md`](README.md) |
+| 55 | → | [`RUNBOOK.md`](RUNBOOK.md) |
+| 56 | → | [`TESTING.md`](TESTING.md) |
 
 ---
 

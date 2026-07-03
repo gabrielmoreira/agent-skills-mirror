@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 123 file(s) materialized.
+Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 124 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 123 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 123 |
+| Files         | 124 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -159,29 +159,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 98 | ✓ | [`agents/hermes/seed-dashboard-config.py`](agents/hermes/seed-dashboard-config.py) |
 | 99 | ✓ | [`agents/hermes/start.sh`](agents/hermes/start.sh) |
 | 100 | ✓ | [`agents/hermes/validate-env-secret-boundary.py`](agents/hermes/validate-env-secret-boundary.py) |
-| 101 | ✓ | [`agents/langchain-deepagents-code/dcode-wrapper.sh`](agents/langchain-deepagents-code/dcode-wrapper.sh) |
-| 102 | ✓ | [`agents/langchain-deepagents-code/dependency-review.md`](agents/langchain-deepagents-code/dependency-review.md) |
-| 103 | ✓ | [`agents/langchain-deepagents-code/Dockerfile`](agents/langchain-deepagents-code/Dockerfile) |
-| 104 | ✓ | [`agents/langchain-deepagents-code/Dockerfile.base`](agents/langchain-deepagents-code/Dockerfile.base) |
-| 105 | ✓ | [`agents/langchain-deepagents-code/generate-config.ts`](agents/langchain-deepagents-code/generate-config.ts) |
-| 106 | ✓ | [`agents/langchain-deepagents-code/manifest.yaml`](agents/langchain-deepagents-code/manifest.yaml) |
-| 107 | ✓ | [`agents/langchain-deepagents-code/patch-managed-deepagents-code.py`](agents/langchain-deepagents-code/patch-managed-deepagents-code.py) |
-| 108 | ✓ | [`agents/langchain-deepagents-code/policy-additions.yaml`](agents/langchain-deepagents-code/policy-additions.yaml) |
-| 109 | ✓ | [`agents/langchain-deepagents-code/requirements.in`](agents/langchain-deepagents-code/requirements.in) |
-| 110 | ✓ | [`agents/langchain-deepagents-code/requirements.lock`](agents/langchain-deepagents-code/requirements.lock) |
-| 111 | ✓ | [`agents/langchain-deepagents-code/start.sh`](agents/langchain-deepagents-code/start.sh) |
-| 112 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
-| 113 | ✓ | [`agents/openclaw/policy-permissive.yaml`](agents/openclaw/policy-permissive.yaml) |
-| 114 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 115 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 116 | ✓ | [`fern/AGENTS.md`](fern/AGENTS.md) |
-| 117 | ✓ | [`skills/nemoclaw-user-guide/BENCHMARK.md`](skills/nemoclaw-user-guide/BENCHMARK.md) |
-| 118 | ✓ | [`skills/nemoclaw-user-guide/evals/evals.json`](skills/nemoclaw-user-guide/evals/evals.json) |
-| 119 | ✓ | [`skills/nemoclaw-user-guide/skill-card.md`](skills/nemoclaw-user-guide/skill-card.md) |
-| 120 | ✓ | [`skills/nemoclaw-user-guide/SKILL.md`](skills/nemoclaw-user-guide/SKILL.md) |
-| 121 | ✓ | [`skills/nemoclaw-user-guide/skill.oms.sig`](skills/nemoclaw-user-guide/skill.oms.sig) |
-| 122 | ✓ | [`skills/README.md`](skills/README.md) |
-| 123 | ✓ | [`src/lib/messaging/AGENTS.md`](src/lib/messaging/AGENTS.md) |
+| 101 | ✓ | [`agents/langchain-deepagents-code/dcode-launcher.sh`](agents/langchain-deepagents-code/dcode-launcher.sh) |
+| 102 | ✓ | [`agents/langchain-deepagents-code/dcode-wrapper.sh`](agents/langchain-deepagents-code/dcode-wrapper.sh) |
+| 103 | ✓ | [`agents/langchain-deepagents-code/dependency-review.md`](agents/langchain-deepagents-code/dependency-review.md) |
+| 104 | ✓ | [`agents/langchain-deepagents-code/Dockerfile`](agents/langchain-deepagents-code/Dockerfile) |
+| 105 | ✓ | [`agents/langchain-deepagents-code/Dockerfile.base`](agents/langchain-deepagents-code/Dockerfile.base) |
+| 106 | ✓ | [`agents/langchain-deepagents-code/generate-config.ts`](agents/langchain-deepagents-code/generate-config.ts) |
+| 107 | ✓ | [`agents/langchain-deepagents-code/manifest.yaml`](agents/langchain-deepagents-code/manifest.yaml) |
+| 108 | ✓ | [`agents/langchain-deepagents-code/patch-managed-deepagents-code.py`](agents/langchain-deepagents-code/patch-managed-deepagents-code.py) |
+| 109 | ✓ | [`agents/langchain-deepagents-code/policy-additions.yaml`](agents/langchain-deepagents-code/policy-additions.yaml) |
+| 110 | ✓ | [`agents/langchain-deepagents-code/requirements.in`](agents/langchain-deepagents-code/requirements.in) |
+| 111 | ✓ | [`agents/langchain-deepagents-code/requirements.lock`](agents/langchain-deepagents-code/requirements.lock) |
+| 112 | ✓ | [`agents/langchain-deepagents-code/start.sh`](agents/langchain-deepagents-code/start.sh) |
+| 113 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
+| 114 | ✓ | [`agents/openclaw/policy-permissive.yaml`](agents/openclaw/policy-permissive.yaml) |
+| 115 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 116 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 117 | ✓ | [`fern/AGENTS.md`](fern/AGENTS.md) |
+| 118 | ✓ | [`skills/nemoclaw-user-guide/BENCHMARK.md`](skills/nemoclaw-user-guide/BENCHMARK.md) |
+| 119 | ✓ | [`skills/nemoclaw-user-guide/evals/evals.json`](skills/nemoclaw-user-guide/evals/evals.json) |
+| 120 | ✓ | [`skills/nemoclaw-user-guide/skill-card.md`](skills/nemoclaw-user-guide/skill-card.md) |
+| 121 | ✓ | [`skills/nemoclaw-user-guide/SKILL.md`](skills/nemoclaw-user-guide/SKILL.md) |
+| 122 | ✓ | [`skills/nemoclaw-user-guide/skill.oms.sig`](skills/nemoclaw-user-guide/skill.oms.sig) |
+| 123 | ✓ | [`skills/README.md`](skills/README.md) |
+| 124 | ✓ | [`src/lib/messaging/AGENTS.md`](src/lib/messaging/AGENTS.md) |
 
 ---
 

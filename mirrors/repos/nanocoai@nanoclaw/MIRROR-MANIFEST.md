@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nanocoai/nanoclaw` — 26 default patterns, 23 followed patterns, 116 file(s) materialized.
+Mirror of `nanocoai/nanoclaw` — 26 default patterns, 24 followed patterns, 118 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `nanocoai/nanoclaw` — 26 default patterns, 23 followed patterns, 116
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 23 |
-| Files         | 116 |
+| Followed pats | 24 |
+| Files         | 118 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,6 +69,7 @@ Mirror of `nanocoai/nanoclaw` — 26 default patterns, 23 followed patterns, 116
 - `docs/customizing.md`
 - `docs/skills-model.md`
 - `docs/skill-guidelines.md`
+- `docs/templates.md`
 - `docs/docker-sandboxes.md`
 - `CHANGELOG.md`
 - `docs/onecli-upgrades.md`
@@ -174,29 +175,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 91 | ✓ | [`groups/global/CLAUDE.md`](groups/global/CLAUDE.md) |
 | 92 | ✓ | [`groups/main/CLAUDE.md`](groups/main/CLAUDE.md) |
 | 93 | ✓ | [`repo-tokens/README.md`](repo-tokens/README.md) |
-| 94 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 95 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 96 | → | [`docs/agent-runner-details.md`](docs/agent-runner-details.md) |
-| 97 | → | [`docs/api-details.md`](docs/api-details.md) |
-| 98 | → | [`docs/architecture-diagram.md`](docs/architecture-diagram.md) |
-| 99 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 100 | → | [`docs/build-and-runtime.md`](docs/build-and-runtime.md) |
-| 101 | → | [`docs/customizing.md`](docs/customizing.md) |
-| 102 | → | [`docs/db-central.md`](docs/db-central.md) |
-| 103 | → | [`docs/db-session.md`](docs/db-session.md) |
-| 104 | → | [`docs/db.md`](docs/db.md) |
-| 105 | → | [`docs/docker-sandboxes.md`](docs/docker-sandboxes.md) |
-| 106 | → | [`docs/isolation-model.md`](docs/isolation-model.md) |
-| 107 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
-| 108 | → | [`docs/onecli-upgrades.md`](docs/onecli-upgrades.md) |
-| 109 | → | [`docs/provider-migration.md`](docs/provider-migration.md) |
-| 110 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
-| 111 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
-| 112 | → | [`docs/skills-model.md`](docs/skills-model.md) |
-| 113 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
-| 114 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
-| 115 | → | [`README.md`](README.md) |
-| 116 | → | [`RELEASING.md`](RELEASING.md) |
+| 94 | ✓ | [`templates/README.md`](templates/README.md) |
+| 95 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 96 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 97 | → | [`docs/agent-runner-details.md`](docs/agent-runner-details.md) |
+| 98 | → | [`docs/api-details.md`](docs/api-details.md) |
+| 99 | → | [`docs/architecture-diagram.md`](docs/architecture-diagram.md) |
+| 100 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 101 | → | [`docs/build-and-runtime.md`](docs/build-and-runtime.md) |
+| 102 | → | [`docs/customizing.md`](docs/customizing.md) |
+| 103 | → | [`docs/db-central.md`](docs/db-central.md) |
+| 104 | → | [`docs/db-session.md`](docs/db-session.md) |
+| 105 | → | [`docs/db.md`](docs/db.md) |
+| 106 | → | [`docs/docker-sandboxes.md`](docs/docker-sandboxes.md) |
+| 107 | → | [`docs/isolation-model.md`](docs/isolation-model.md) |
+| 108 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
+| 109 | → | [`docs/onecli-upgrades.md`](docs/onecli-upgrades.md) |
+| 110 | → | [`docs/provider-migration.md`](docs/provider-migration.md) |
+| 111 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
+| 112 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
+| 113 | → | [`docs/skills-model.md`](docs/skills-model.md) |
+| 114 | → | [`docs/templates.md`](docs/templates.md) |
+| 115 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
+| 116 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
+| 117 | → | [`README.md`](README.md) |
+| 118 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

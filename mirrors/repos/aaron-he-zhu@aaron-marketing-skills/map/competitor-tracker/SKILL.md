@@ -1,7 +1,7 @@
 ---
 name: competitor-tracker
 description: 'Use when the user asks to "track competitor influencer marketing", "see who my rivals partner with", or "benchmark my influencer program"; produces a competitor partnership roster, campaign and content-strategy breakdown, performance estimates, and a gap/opportunity list. Not for finding your own new creators — use influencer-discovery.'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -9,14 +9,16 @@ when_to_use: "Use when the user wants to understand a competitor's influencer ma
 argument-hint: "<your brand> [competitor names] [platform]"
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: influencer
+  phase: map
   family: influencer-marketing
   impact-phase: Map
 ---
 
 # Competitor Tracker
 
-This skill helps you monitor and analyze your competitors' influencer marketing activities. It tracks who they partner with, what campaigns they run, how they structure collaborations, and what results they appear to achieve.
+Monitor and analyze competitors' influencer marketing: who they partner with, what campaigns they run, how they structure collaborations, and what results they appear to achieve.
 
 ## Quick Start
 
@@ -26,7 +28,7 @@ Shortest invocation:
 Monitor [competitor name]'s influencer marketing activities
 ```
 
-Common scenario — compare a set of rivals and surface gaps:
+Compare a set of rivals and surface gaps:
 
 ```
 Compare influencer strategies across [competitor 1], [competitor 2], and [competitor 3], then show me which influencers they're missing in [category]
@@ -36,7 +38,7 @@ Compare influencer strategies across [competitor 1], [competitor 2], and [compet
 
 - **Reads**: your brand name, the competitor set, platforms to monitor, time period, focus areas (partnerships/campaigns/content/all). Public creator handles and post data the user supplies or that ~~social platform analytics returns.
 - **Writes**: a competitive intelligence report saved to `memory/influencer/competitor-tracker/YYYY-MM-DD-<topic>.md` (partnership roster, campaign analysis, content-strategy review, performance estimates, side-by-side comparison, opportunity list).
-- **Promotes**: durable facts (named competitors, their primary tiers/platforms, confirmed exclusive partners, recurring campaign windows) to `memory/hot-cache.md`.
+- **Promotes**: durable facts (named competitors, their primary tiers/platforms, confirmed exclusive partners, recurring campaign windows) to `memory/hot-cache.md`. Competitor-partner and exclusivity flags for creators already on the roster go as one-line updates to `memory/creators/candidates.md` for [creator-registry](../../protocol/creator-registry/SKILL.md) to reconcile.
 - **Done when**:
   1. Each tracked competitor has a partnership roster and campaign breakdown with sources or stated estimates.
   2. A side-by-side comparison table covers your brand plus every competitor.
@@ -61,457 +63,26 @@ Label every estimate as an estimate. See [CONNECTORS.md](../../CONNECTORS.md) fo
 
 ## Instructions
 
-When a user requests competitor tracking:
+Each step has a fill-in template in [references/templates.md](references/templates.md).
 
-1. **Define Competitive Set**
+1. **Define competitive set** — capture your brand, prioritized competitors (direct/indirect), platforms, time period, and focus areas. ([template](references/templates.md#1-define-competitive-set))
+2. **Track influencer partnerships** — for each competitor, build a current/recent partner roster (handle, platform, followers, partnership type, duration), then the observed selection criteria, relationship-type mix, partnership frequency, and notable partners. ([template](references/templates.md#2-track-influencer-partnerships))
+3. **Analyze campaigns** — break down recent campaigns (timeline, platforms, tier mix, content type, hashtag, CTA, estimated spend, what worked/didn't), plus a calendar and seasonal/launch patterns. ([template](references/templates.md#3-analyze-campaigns))
+4. **Review content strategy** — log format preferences, content themes, messaging, hashtag strategy, and creative direction. ([template](references/templates.md#4-review-content-strategy))
+5. **Estimate performance** — estimate overall program metrics, performance by platform and by tier, and top/underperforming content. Mark every figure as an estimate. ([template](references/templates.md#5-estimate-performance))
+6. **Generate competitive comparison** — a side-by-side table (your brand + every competitor), a strategy-element matrix, and a share-of-voice bar. ([template](references/templates.md#6-generate-competitive-comparison))
+7. **Identify opportunities** — rank untapped and former-competitor creators, strategy gaps, and platform/niche/format openings (at least 3 ranked). ([template](references/templates.md#7-identify-opportunities))
+8. **Generate insights report** — executive summary, strategic recommendations (immediate/short/long-term), tracking recommendations, and next review date. Save to the memory path above. ([template](references/templates.md#8-generate-insights-report))
 
-   ```markdown
-   ### Competitive Tracking Parameters
-   
-   **Your Brand**: [brand name]
-   **Competitors to Track**:
-   
-   | Competitor | Priority | Category | Notes |
-   |------------|----------|----------|-------|
-   | [Comp 1] | High | Direct | [notes] |
-   | [Comp 2] | High | Direct | [notes] |
-   | [Comp 3] | Medium | Indirect | [notes] |
-   
-   **Platforms to Monitor**: [platforms]
-   **Time Period**: [date range]
-   **Focus Areas**: [partnerships/campaigns/content/all]
-   ```
-
-2. **Track Influencer Partnerships**
-
-   ```markdown
-   ## Competitor Influencer Partnerships
-   
-   ### [Competitor Name]
-   
-   **Overview**:
-   - Total identified partnerships: [#]
-   - Active influencer roster: ~[#] creators
-   - Primary platforms: [platforms]
-   - Influencer tiers used: [mega/macro/micro/nano mix]
-   
-   #### Current/Recent Partners
-   
-   | Influencer | Platform | Followers | Partnership Type | Duration |
-   |------------|----------|-----------|------------------|----------|
-   | @[handle1] | [platform] | [count] | [ambassador/campaign/one-off] | [ongoing/date] |
-   | @[handle2] | [platform] | [count] | [type] | [duration] |
-   | @[handle3] | [platform] | [count] | [type] | [duration] |
-   
-   #### Partnership Patterns
-   
-   **Influencer Selection Criteria** (observed):
-   - Follower range: [typical range]
-   - Content style: [style preference]
-   - Demographics: [audience focus]
-   - Niche focus: [categories]
-   
-   **Relationship Types**:
-   | Type | % of Partnerships | Examples |
-   |------|-------------------|----------|
-   | Brand Ambassadors | [%] | @[handle] |
-   | Campaign-based | [%] | @[handle] |
-   | One-off posts | [%] | @[handle] |
-   | Affiliate | [%] | @[handle] |
-   
-   **Partnership Frequency**:
-   - New partnerships/month: ~[#]
-   - Average partnership length: [duration]
-   - Repeat collaboration rate: [%]
-   
-   #### Notable Partners
-   
-   **[Influencer Name] @[handle]**
-   - Relationship since: [date]
-   - Content produced: [#] pieces
-   - Estimated spend: [$X]
-   - Why they work together: [analysis]
-   ```
-
-3. **Analyze Campaigns**
-
-   ```markdown
-   ## Competitor Campaign Analysis
-   
-   ### [Competitor Name] Campaigns
-   
-   #### Recent/Current Campaigns
-   
-   **Campaign: [Name/Theme]**
-   
-   | Attribute | Details |
-   |-----------|---------|
-   | Timeline | [dates] |
-   | Platforms | [platforms] |
-   | # of Influencers | [count] |
-   | Influencer Tier Mix | [breakdown] |
-   | Content Type | [types] |
-   | Hashtag | #[hashtag] |
-   | CTA | [call to action] |
-   | Estimated Spend | [$X] |
-   
-   **Campaign Content Examples**:
-   1. @[handle]: [content description] - [engagement]
-   2. @[handle]: [content description] - [engagement]
-   
-   **Campaign Performance Estimates**:
-   | Metric | Estimated Value |
-   |--------|-----------------|
-   | Total Reach | [estimate] |
-   | Total Engagement | [estimate] |
-   | Engagement Rate | [%] |
-   | Content Pieces | [#] |
-   | EMV | [$X] |
-   
-   **What Worked**:
-   - [Observation 1]
-   - [Observation 2]
-   
-   **What Didn't**:
-   - [Observation 1]
-   
-   ---
-   
-   #### Campaign Calendar
-   
-   | Month | Campaigns | Themes | Spend Level |
-   |-------|-----------|--------|-------------|
-   | [Month] | [campaigns] | [themes] | [low/medium/high] |
-   
-   #### Campaign Strategy Patterns
-   
-   **Seasonal Patterns**:
-   - Q1: [typical activity]
-   - Q2: [typical activity]
-   - Q3: [typical activity]
-   - Q4: [typical activity]
-   
-   **Launch Patterns**:
-   - New product launches: [influencer approach]
-   - Seasonal campaigns: [approach]
-   - Always-on: [approach]
-   ```
-
-4. **Review Content Strategy**
-
-   ```markdown
-   ## Competitor Content Strategy
-   
-   ### [Competitor Name]
-   
-   #### Content Format Preferences
-   
-   | Format | Usage % | Performance | Notes |
-   |--------|---------|-------------|-------|
-   | Static posts | [%] | [engagement] | [notes] |
-   | Reels/TikToks | [%] | [engagement] | [notes] |
-   | Stories | [%] | [engagement] | [notes] |
-   | YouTube videos | [%] | [engagement] | [notes] |
-   | Live streams | [%] | [engagement] | [notes] |
-   
-   #### Content Themes
-   
-   | Theme | Frequency | Example | Performance |
-   |-------|-----------|---------|-------------|
-   | Product demo | [%] | [example] | [performance] |
-   | Lifestyle integration | [%] | [example] | [performance] |
-   | Tutorial/How-to | [%] | [example] | [performance] |
-   | UGC/Testimonial | [%] | [example] | [performance] |
-   | Behind-the-scenes | [%] | [example] | [performance] |
-   
-   #### Messaging Analysis
-   
-   **Key Messages Used**:
-   1. "[Message 1]" - used in [%] of content
-   2. "[Message 2]" - used in [%] of content
-   
-   **Value Propositions Emphasized**:
-   - [Prop 1]: [frequency]
-   - [Prop 2]: [frequency]
-   
-   **Hashtag Strategy**:
-   - Branded hashtags: #[hashtag1], #[hashtag2]
-   - Campaign hashtags: #[hashtag]
-   - Community hashtags: #[hashtag]
-   
-   #### Creative Direction
-   
-   **Visual Style**:
-   - Aesthetic: [description]
-   - Color palette: [colors]
-   - Production level: [polished/authentic/mix]
-   
-   **Tone of Voice**:
-   - [Description of typical influencer content tone]
-   
-   **Creative Freedom Given**:
-   - [High/Medium/Low] - [evidence]
-   ```
-
-5. **Estimate Performance**
-
-   ```markdown
-   ## Competitor Performance Estimates
-   
-   ### [Competitor Name]
-   
-   #### Overall Program Metrics (Estimated)
-   
-   | Metric | Monthly Avg | Quarterly | Annual |
-   |--------|-------------|-----------|--------|
-   | Active Partnerships | [#] | [#] | [#] |
-   | Content Pieces | [#] | [#] | [#] |
-   | Total Reach | [X] | [X] | [X] |
-   | Total Engagement | [X] | [X] | [X] |
-   | EMV Generated | [$X] | [$X] | [$X] |
-   | Est. Spend | [$X] | [$X] | [$X] |
-   
-   #### Performance by Platform
-   
-   | Platform | Reach | Engagement | ER | Est. Spend |
-   |----------|-------|------------|----|-----------| 
-   | Instagram | [X] | [X] | [%] | [$X] |
-   | TikTok | [X] | [X] | [%] | [$X] |
-   | YouTube | [X] | [X] | [%] | [$X] |
-   
-   #### Performance by Influencer Tier
-   
-   | Tier | Partners | Avg Reach | Avg ER | Est. Cost/Partner |
-   |------|----------|-----------|--------|-------------------|
-   | Mega | [#] | [X] | [%] | [$X] |
-   | Macro | [#] | [X] | [%] | [$X] |
-   | Micro | [#] | [X] | [%] | [$X] |
-   | Nano | [#] | [X] | [%] | [$X] |
-   
-   #### Top Performing Content
-   
-   1. **@[handle]** - [content type]
-      - Engagement: [X]
-      - Why it worked: [analysis]
-   
-   2. **@[handle]** - [content type]
-      - Engagement: [X]
-      - Why it worked: [analysis]
-   
-   #### Underperforming Content
-   
-   1. **@[handle]** - [content type]
-      - Engagement: [X]
-      - Why it failed: [analysis]
-   ```
-
-6. **Generate Competitive Comparison**
-
-   ```markdown
-   ## Competitive Comparison
-   
-   ### Side-by-Side Analysis
-   
-   | Factor | [Your Brand] | [Comp 1] | [Comp 2] | [Comp 3] |
-   |--------|--------------|----------|----------|----------|
-   | # Active Partners | [#] | [#] | [#] | [#] |
-   | Primary Tier | [tier] | [tier] | [tier] | [tier] |
-   | Main Platform | [platform] | [platform] | [platform] | [platform] |
-   | Est. Monthly Spend | [$X] | [$X] | [$X] | [$X] |
-   | Avg ER | [%] | [%] | [%] | [%] |
-   | Content Style | [style] | [style] | [style] | [style] |
-   | Relationship Type | [type] | [type] | [type] | [type] |
-   
-   ### Strategy Comparison
-   
-   | Strategy Element | [Comp 1] | [Comp 2] | [Comp 3] |
-   |------------------|----------|----------|----------|
-   | Ambassador program | ✅/❌ | ✅/❌ | ✅/❌ |
-   | Affiliate program | ✅/❌ | ✅/❌ | ✅/❌ |
-   | Product seeding | ✅/❌ | ✅/❌ | ✅/❌ |
-   | Paid partnerships | ✅/❌ | ✅/❌ | ✅/❌ |
-   | Events/Trips | ✅/❌ | ✅/❌ | ✅/❌ |
-   | User-generated content | ✅/❌ | ✅/❌ | ✅/❌ |
-   
-   ### Share of Voice
-   
-   ```
-   Category Influencer Share of Voice:
-   
-   [Your Brand]  |████████░░░░░░░░| 20%
-   [Comp 1]      |██████████████░░| 35%
-   [Comp 2]      |████████████░░░░| 30%
-   [Comp 3]      |██████░░░░░░░░░░| 15%
-   ```
-   ```
-
-7. **Identify Opportunities**
-
-   ```markdown
-   ## Competitive Opportunities
-   
-   ### Influencer Availability
-   
-   **Untapped Influencers** (not working with competitors):
-   
-   | Influencer | Platform | Followers | Fit Score | Opportunity |
-   |------------|----------|-----------|-----------|-------------|
-   | @[handle] | [platform] | [count] | [score] | [why available] |
-   | @[handle] | [platform] | [count] | [score] | [why available] |
-   
-   **Former Competitor Partners** (available):
-   
-   | Influencer | Former Partner | Why Ended | Your Opportunity |
-   |------------|----------------|-----------|------------------|
-   | @[handle] | [competitor] | [reason] | [opportunity] |
-   
-   ### Strategy Gaps
-   
-   **What Competitors Are Missing**:
-   
-   1. **[Gap 1]**: [description]
-      - Opportunity: [how to capitalize]
-      - Priority: [High/Medium/Low]
-   
-   2. **[Gap 2]**: [description]
-      - Opportunity: [how to capitalize]
-      - Priority: [High/Medium/Low]
-   
-   ### Platform Opportunities
-   
-   | Platform | Competitor Activity | Your Opportunity |
-   |----------|---------------------|------------------|
-   | [Platform] | [low/medium/high] | [opportunity] |
-   
-   ### Niche Opportunities
-   
-   | Niche | Competitor Coverage | Your Opportunity |
-   |-------|---------------------|------------------|
-   | [Niche] | [level] | [opportunity] |
-   
-   ### Content Format Opportunities
-   
-   | Format | Competitor Usage | Performance | Your Opportunity |
-   |--------|------------------|-------------|------------------|
-   | [Format] | [level] | [if known] | [opportunity] |
-   ```
-
-8. **Generate Insights Report**
-
-   ```markdown
-   # Competitive Intelligence Report
-   
-   **Report Date**: [date]
-   **Period Covered**: [timeframe]
-   **Competitors Analyzed**: [list]
-   
-   ## Executive Summary
-   
-   **Key Findings**:
-   1. [Finding 1]
-   2. [Finding 2]
-   3. [Finding 3]
-   
-   **Top Opportunities**:
-   1. [Opportunity 1]
-   2. [Opportunity 2]
-   
-   **Threats to Monitor**:
-   1. [Threat 1]
-   2. [Threat 2]
-   
-   ## Strategic Recommendations
-   
-   ### Immediate Actions (This Month)
-   
-   1. **[Action 1]**
-      - Why: [rationale]
-      - How: [approach]
-      - Expected impact: [outcome]
-   
-   2. **[Action 2]**
-      - Why: [rationale]
-      - How: [approach]
-   
-   ### Short-term (This Quarter)
-   
-   1. **[Action]**: [description]
-   
-   ### Long-term (This Year)
-   
-   1. **[Action]**: [description]
-   
-   ## Tracking Recommendations
-   
-   **Continue monitoring**:
-   - [Competitor]: [specific aspects]
-   - [Influencer]: [why important]
-   
-   **Set alerts for**:
-   - [Trigger 1]
-   - [Trigger 2]
-   
-   ## Next Review Date: [date]
-   ```
-
-## When to Use This Skill
-
-- Understanding competitor influencer strategies
-- Identifying influencers working with competitors
-- Finding gaps in competitor coverage
-- Benchmarking your influencer program
-- Learning from competitor successes and failures
-- Identifying saturated vs. available influencers
-
-## What This Skill Does
-
-1. **Partnership Tracking**: Monitors which influencers competitors use
-2. **Campaign Analysis**: Analyzes competitor campaign themes and tactics
-3. **Content Strategy Review**: Examines content approaches and formats
-4. **Performance Estimation**: Estimates competitor campaign performance
-5. **Gap Identification**: Finds opportunities competitors are missing
-6. **Trend Detection**: Spots shifts in competitor strategies
-
-## Invocation Patterns
-
-### Track Specific Competitors
-
-```
-Monitor [competitor name]'s influencer marketing activities
-```
-
-```
-Who are the influencers partnering with [competitor]?
-```
-
-### Competitive Analysis
-
-```
-Compare influencer strategies across [competitor 1], [competitor 2], and [competitor 3]
-```
-
-### Find Opportunities
-
-```
-What influencer opportunities are my competitors missing in [category]?
-```
-
-## Example
+## Worked Example
 
 **User**: "Track the influencer marketing activities of Glossier, Fenty Beauty, and Rare Beauty"
 
-**Output**: [Comprehensive competitor analysis showing Glossier's UGC-heavy approach, Fenty's diverse creator network, Rare Beauty's mental health-focused partnerships, with identification of gaps and opportunities]
-
-## Tips for Success
-
-1. **Monitor continuously** - Set up regular tracking cadence
-2. **Go beyond surface level** - Look for patterns, not just partnerships
-3. **Track changes** - Note strategy shifts over time
-4. **Learn from failures too** - Competitor mistakes are lessons
-5. **Stay objective** - Data over assumptions
+**Output**: Competitor analysis showing Glossier's UGC-heavy approach, Fenty's diverse creator network, Rare Beauty's mental health-focused partnerships, with identified gaps and ranked opportunities. Full invocation patterns, "what this skill does", and tips for success live in [references/templates.md](references/templates.md#when-to-use-this-skill).
 
 ## Reference Materials
 
+- [references/templates.md](references/templates.md) — fill-in templates for all 8 steps, invocation patterns, worked example, and tips.
 - [skill-contract.md](../../references/skill-contract.md) — shared contract and handoff summary format.
 - [state-model.md](../../references/state-model.md) — memory tiers and save-path conventions.
 - [CONNECTORS.md](../../CONNECTORS.md) — keyless/free data recipe per `~~` connector category.

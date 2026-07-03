@@ -15,7 +15,7 @@
 
 ## Work Guidance
 
-- Coordinate history mutation changes with message persistence and memory behavior.
+- Coordinate history mutation changes with message persistence and plugin-owned history consumers.
 
 ## Verification
 

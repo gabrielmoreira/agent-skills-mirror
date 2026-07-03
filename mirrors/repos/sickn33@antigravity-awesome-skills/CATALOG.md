@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-07-01T11:43:01.000Z
+Generated at: 2026-07-02T05:56:17.000Z
 
-Total skills: 1891
+Total skills: 1894
 
 ## architecture (113)
 
@@ -122,7 +122,7 @@ Total skills: 1891
 | `workflow-patterns` | Use this skill when implementing tasks according to Conductor's TDD workflow, handling phase checkpoints, managing git commits for tasks, or understanding th... |  | skill, implementing, tasks, according, conductor, tdd, handling, phase, checkpoints, managing, git, commits |
 | `zapier-make-patterns` | No-code automation democratizes workflow building. Zapier and Make (formerly Integromat) let non-developers automate business processes without writing code.... | zapier, make | zapier, make, no, code, automation, democratizes, building, formerly, integromat, let, non, developers |
 
-## business (100)
+## business (103)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -131,6 +131,7 @@ Total skills: 1891
 | `apify-competitor-intelligence` | Analyze competitor strategies, content, pricing, ads, and market positioning across Google Maps, Booking.com, Facebook, Instagram, YouTube, and TikTok. | apify, competitor, intelligence | apify, competitor, intelligence, analyze, content, pricing, ads, market, positioning, google, maps, booking |
 | `apify-market-research` | Analyze market conditions, geographic opportunities, pricing, consumer behavior, and product validation across Google Maps, Facebook, Instagram, Booking.com,... | apify, market, research | apify, market, research, analyze, conditions, geographic, opportunities, pricing, consumer, behavior, product, validation |
 | `atlas-ledger` | Companion to atlas-contract. Auto-invoked by its Final Audit on caught drift; also use after Post Reviews or user requests to record a mistake. Distills drif... | atlas, ledger | atlas, ledger, companion, contract, auto, invoked, final, audit, caught, drift, after, post |
+| `before-you-build` | Review product risk before coding by checking demand, alternatives, channels, switching costs, and failure signals. | product-validation, planning, ai-coding, risk-review | product-validation, planning, ai-coding, risk-review, before, review, product, risk, coding, checking, demand, alternatives |
 | `blog-writing-guide` | This skill enforces Sentry's blog writing standards across every post — whether you're helping an engineer write their first blog post or a marketer draft a ... | blog, writing | blog, writing, skill, enforces, sentry, standards, every, post, whether, re, helping, engineer |
 | `brand-guidelines` | Write copy following Sentry brand guidelines. Use when writing UI text, error messages, empty states, onboarding flows, 404 pages, documentation, marketing c... | brand, guidelines | brand, guidelines, write, copy, following, sentry, writing, ui, text, error, messages, empty |
 | `brevo-automation` | Automate Brevo (formerly Sendinblue) email marketing operations through Composio's Brevo toolkit via Rube MCP. | brevo | brevo, automation, automate, formerly, sendinblue, email, marketing, operations, through, composio, toolkit, via |
@@ -143,6 +144,7 @@ Total skills: 1891
 | `copy-editing` | You are an expert copy editor specializing in marketing and conversion copy. Your goal is to systematically improve existing copy through focused editing pas... | copy, editing | copy, editing, editor, specializing, marketing, conversion, goal, systematically, improve, existing, through, passes |
 | `copywriting` | Write rigorous, conversion-focused marketing copy for landing pages and emails. Enforces brief confirmation and strict no-fabrication rules. | copywriting | copywriting, write, rigorous, conversion, marketing, copy, landing, pages, emails, enforces, brief, confirmation |
 | `cro` | When the user wants to optimize, improve, or increase conversions on any marketing page or form — including homepage, landing pages, pricing pages, feature p... | cro | cro, user, wants, optimize, improve, increase, conversions, any, marketing, page, form, including |
+| `crossframe-org` | Use when CrossFrame Suite routes explicit Chinese analysis of teams, projects, organizations, responsibility chains, feedback write-back, repair, or retrospe... | crossframe, chinese, organization, retrospective, repair | crossframe, chinese, organization, retrospective, repair, org, suite, routes, explicit, analysis, teams, organizations |
 | `customer-psychographic-profiler` | One sentence - what this skill does and when to invoke it | customer, psychographic, profiler | customer, psychographic, profiler, one, sentence, what, skill, does, invoke |
 | `customer-research` | When the user wants to conduct, analyze, or synthesize customer research. Use when the user mentions "customer research," "ICP research," "talk to customers,... | customer, research | customer, research, user, wants, conduct, analyze, synthesize, mentions, icp, talk, customers, transcripts |
 | `defi-protocol-templates` | Implement DeFi protocols with production-ready templates for staking, AMMs, governance, and lending systems. Use when building decentralized finance applicat... | defi, protocol | defi, protocol, protocols, staking, amms, governance, lending, building, decentralized, finance, applications, smart |
@@ -162,6 +164,7 @@ Total skills: 1891
 | `kotler-macro-analyzer` | Professional PESTEL/SWOT analysis agent based on Kotler's methodology for strategic market audits. | marketing, economics, strategy, kotler, pestel | marketing, economics, strategy, kotler, pestel, macro, analyzer, professional, swot, analysis, agent, methodology |
 | `launch-strategy` | You are an expert in SaaS product launches and feature announcements. Your goal is to help users plan launches that build momentum, capture attention, and co... | launch | launch, saas, product, launches, feature, announcements, goal, users, plan, momentum, capture, attention |
 | `leiloeiro-juridico` | Analise juridica de leiloes: nulidades, bem de familia, alienacao fiduciaria, CPC arts 829-903, Lei 9514/97, onus reais, embargos e jurisprudencia. | legal, auction-law, brazilian, judicial | legal, auction-law, brazilian, judicial, leiloeiro, juridico, analise, juridica, de, leiloes, nulidades, bem |
+| `lex` | Centralized 'Truth Engine' for cross-jurisdictional legal context (US, EU, CA) and contract scaffolding. | legal, context, cross-jurisdictional, compliance, scaffolding | legal, context, cross-jurisdictional, compliance, scaffolding, lex, centralized, truth, engine, cross, jurisdictional, us |
 | `linkedin-cli` | Use when automating LinkedIn via CLI: fetch profiles, search people/companies, send messages, manage connections, create posts, and Sales Navigator. | linkedin, cli | linkedin, cli, automating, via, fetch, profiles, search, people, companies, send, messages, connections |
 | `linkedin-profile-optimizer` | High-intent expert for LinkedIn profile checks, authority building, and SEO optimization. Invoke to audit, rewrite, and enhance profiles for top 1% positioning. | linkedin, branding, career, growth, personal-brand | linkedin, branding, career, growth, personal-brand, profile, optimizer, high, intent, checks, authority, building |
 | `local-legal-seo-audit` | Audit and improve local SEO for law firms, attorneys, forensic experts and legal/professional services sites with local presence, focusing on GBP, directorie... | local, legal, seo, audit | local, legal, seo, audit, improve, law, firms, attorneys, forensic, experts, professional, sites |
@@ -866,7 +869,7 @@ Total skills: 1891
 | `yann-lecun-filosofia` | Sub-skill filosófica e pedagógica de Yann LeCun. | persona, ai-philosophy, open-source, education | persona, ai-philosophy, open-source, education, yann, lecun, filosofia, sub, skill, filos, fica, pedag |
 | `youtube-notetaker` | Turn YouTube talks into local study notes with slides, transcripts, editable annotations, and a markdown-backed viewer. | dair-academy, ai, workflow | dair-academy, ai, workflow, youtube, notetaker, turn, talks, local, study, notes, slides, transcripts |
 
-## general (507)
+## general (508)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -982,7 +985,6 @@ Total skills: 1891
 | `crossframe-dialogue` | Use when CrossFrame Suite routes explicit Chinese reader replies, editor responses, consultation-style short answers, or boundary-aware structural advice. | crossframe, chinese, dialogue, reader-reply, consultation | crossframe, chinese, dialogue, reader-reply, consultation, suite, routes, explicit, reader, replies, editor, responses |
 | `crossframe-essay` | Use when explicit CrossFrame work needs a Chinese critical insight essay, commentary, concept essay, public piece, or structure-to-article draft after diagno... | crossframe, chinese, essay, writing, commentary | crossframe, chinese, essay, writing, commentary, explicit, work, critical, insight, concept, public, piece |
 | `crossframe-notebook` | Use when CrossFrame Suite routes explicit Chinese notes for books, theories, articles, excerpts, bidirectional reading, absorption, or conflict mapping. | crossframe, chinese, notebook, research, reading | crossframe, chinese, notebook, research, reading, suite, routes, explicit, notes, books, theories, articles |
-| `crossframe-org` | Use when CrossFrame Suite routes explicit Chinese analysis of teams, projects, organizations, responsibility chains, feedback write-back, repair, or retrospe... | crossframe, chinese, organization, retrospective, repair | crossframe, chinese, organization, retrospective, repair, org, suite, routes, explicit, analysis, teams, organizations |
 | `crossframe-review` | Use when explicit CrossFrame output needs review for reasoning fidelity, evidence boundaries, source anchors, concept drift, article collapse, or repair steps. | crossframe, chinese, review, quality-gate, evidence | crossframe, chinese, review, quality-gate, evidence, explicit, output, reasoning, fidelity, boundaries, source, anchors |
 | `crossframe-teach` | Use when CrossFrame Suite routes explicit Chinese teaching of CrossFrame concepts, misreading boundaries, plain-language examples, signals, or exercises. | crossframe, chinese, teaching, concepts, plain-language | crossframe, chinese, teaching, concepts, plain-language, teach, suite, routes, explicit, misreading, boundaries, plain |
 | `cv-generator` | Generate professional, ATS-optimized CVs for FlowCV, Canva, Google Docs, or Word. Handles multi-source merging, JD targeting, seniority adaptation, and human... | cv, resume, ats, career, job-application, career-change | cv, resume, ats, career, job-application, career-change, generator, generate, professional, optimized, cvs, flowcv |
@@ -1051,6 +1053,7 @@ Total skills: 1891
 | `developer-onboarding` | Get developers to "Hello World" fast with optimized quickstarts, tutorials, and sample apps. Trigger phrases: developer onboarding, time to first value, quic... | onboarding | onboarding, developer, get, developers, hello, world, fast, optimized, quickstarts, tutorials, sample, apps |
 | `devrel-content` | When the user wants to create technical content for developers including blog posts, tutorials, and documentation. Trigger phrases include "write a blog post... | devrel, content | devrel, content, user, wants, technical, developers, including, blog, posts, tutorials, documentation, trigger |
 | `diary` | Unified Diary System: A context-preserving automated logger for multi-project development. | diary | diary, unified, context, preserving, automated, logger, multi, development |
+| `dispatch` | Delegate tasks to OpenAI Codex CLI and Google Antigravity CLI from Claude Code with topic-aware sessions | delegation, codex, antigravity, gemini, multi-model, second-opinion, agent-workflow | delegation, codex, antigravity, gemini, multi-model, second-opinion, agent-workflow, dispatch, delegate, tasks, openai, cli |
 | `dispatching-parallel-agents` | Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies | dispatching, parallel, agents | dispatching, parallel, agents, facing, independent, tasks, worked, without, shared, state, sequential, dependencies |
 | `doc2math` | Convert narrative technical documents into grounded Mathematical Problem Specifications with variables, constraints, objectives, and uncertainty. | doc2math | doc2math, convert, narrative, technical, documents, grounded, mathematical, problem, specifications, variables, constraints, objectives |
 | `documentation-and-adrs` | Records decisions and documentation. Use when making architectural decisions, changing public APIs, shipping features, or when you need to record context tha... | documentation, and, adrs | documentation, and, adrs, records, decisions, making, architectural, changing, public, apis, shipping, features |
@@ -1180,6 +1183,7 @@ Total skills: 1891
 | `matematico-tao` | Matemático ultra-avançado inspirado em Terence Tao. Análise rigorosa de código e arquitetura com teoria matemática profunda: teoria da informação, teoria dos... | mathematics, code-analysis, algorithms, formal-methods | mathematics, code-analysis, algorithms, formal-methods, matematico, tao, matem, tico, ultra, avan, ado, inspirado |
 | `mathguard` | Math-heavy escalation for n >= 10^6 — Bloom, HyperLogLog, Count-Min, MinHash/LSH, FFT, JL projection, sweep line. Use when classical O(n log n) is the floor ... | algorithms, probabilistic-data-structures, approximate-algorithms, bloom-filter, hyperloglog, fft, performance | algorithms, probabilistic-data-structures, approximate-algorithms, bloom-filter, hyperloglog, fft, performance, mathguard, math, heavy, escalation, 10 |
 | `mcp-builder` | Create MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. The quality of an MCP server is ... | mcp, builder | mcp, builder, model, context, protocol, servers, enable, llms, interact, external, through, well |
+| `mdpr-skill` | Review MDPR Markdown presentation workflows with semantic hints, visual checks, and deterministic renderer boundaries. | mdpr, presentations, markdown, powerpoint, codex, visual-review, agent-hints | mdpr, presentations, markdown, powerpoint, codex, visual-review, agent-hints, skill, review, presentation, semantic, hints |
 | `memory-systems` | Design short-term, long-term, and graph-based memory architectures. Use when building agents that must persist across sessions, needing to maintain entity co... | memory | memory, short, term, long, graph, architectures, building, agents, must, persist, sessions, needing |
 | `mental-health-analyzer` | 分析心理健康数据、识别心理模式、评估心理健康状况、提供个性化心理健康建议。支持与睡眠、运动、营养等其他健康数据的关联分析。 | mental, health, analyzer | mental, health, analyzer |
 | `mercury-mcp` | Cheatsheet for the Mercury (proton) MCP tools. Use when connected to the Mercury MCP server to look up which mercury_* tool to call for messaging teammates, ... | mercury, mcp | mercury, mcp, cheatsheet, proton, connected, server, look, up, which, call, messaging, teammates |
@@ -1565,7 +1569,7 @@ Total skills: 1891
 | `workflow-automation` | Workflow automation is the infrastructure that makes AI agents reliable. Without durable execution, a network hiccup during a 10-step payment flow means lost... |  | automation, infrastructure, makes, ai, agents, reliable, without, durable, execution, network, hiccup, during |
 | `youtube-full` | Fetch YouTube transcripts, search videos, browse channels, and extract playlists via TranscriptAPI — no yt-dlp, no Google API key, works from any cloud server. | youtube, transcripts, video-search, channels, playlists, api, transcriptapi | youtube, transcripts, video-search, channels, playlists, api, transcriptapi, full, fetch, search, videos, browse |
 
-## security (201)
+## security (200)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -1662,7 +1666,6 @@ Total skills: 1891
 | `laravel-security-audit` | Security auditor for Laravel applications. Analyzes code for vulnerabilities, misconfigurations, and insecure practices using OWASP standards and Laravel sec... | laravel, security, audit | laravel, security, audit, auditor, applications, analyzes, code, vulnerabilities, misconfigurations, insecure, owasp, standards |
 | `legal-advisor` | Draft privacy policies, terms of service, disclaimers, and legal notices. Creates GDPR-compliant texts, cookie policies, and data processing agreements. | legal, advisor | legal, advisor, draft, privacy, policies, terms, disclaimers, notices, creates, gdpr, compliant, texts |
 | `leiloeiro-edital` | Analise e auditoria de editais de leilao judicial e extrajudicial. Riscos ocultos, clausulas perigosas, debitos, ocupante e classificacao da oportunidade. | auction, legal-analysis, risk, brazilian | auction, legal-analysis, risk, brazilian, leiloeiro, edital, analise, auditoria, de, editais, leilao, judicial |
-| `lex` | Centralized 'Truth Engine' for cross-jurisdictional legal context (US, EU, CA) and contract scaffolding. | legal, context, cross-jurisdictional, compliance, scaffolding | legal, context, cross-jurisdictional, compliance, scaffolding, lex, centralized, truth, engine, cross, jurisdictional, us |
 | `lightning-architecture-review` | Review Bitcoin Lightning Network protocol designs, compare channel factory approaches, and analyze Layer 2 scaling tradeoffs. Covers trust models, on-chain f... | lightning, architecture | lightning, architecture, review, bitcoin, network, protocol, designs, compare, channel, factory, approaches, analyze |
 | `linkerd-patterns` | Production patterns for Linkerd service mesh - the lightweight, security-first service mesh for Kubernetes. | linkerd | linkerd, mesh, lightweight, security, first, kubernetes |
 | `linux-privilege-escalation` | Execute systematic privilege escalation assessments on Linux systems to identify and exploit misconfigurations, vulnerable services, and security weaknesses ... | linux, privilege, escalation | linux, privilege, escalation, execute, systematic, assessments, identify, exploit, misconfigurations, vulnerable, security, weaknesses |

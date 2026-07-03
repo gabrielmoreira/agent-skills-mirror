@@ -16,6 +16,7 @@
 - CTA actions must match supported welcome-screen action contracts.
 - Keep card IDs unique and plugin-prefixed.
 - The Welcome screen `welcome-actions-end` surface renders feature channel cards plus the compact OAuth account-provider card; other hero discovery cards stay out of the lower welcome grid.
+- Do not hide discovery cards solely because model setup is incomplete; model setup gating belongs to the chat thread.
 
 ## Work Guidance
 

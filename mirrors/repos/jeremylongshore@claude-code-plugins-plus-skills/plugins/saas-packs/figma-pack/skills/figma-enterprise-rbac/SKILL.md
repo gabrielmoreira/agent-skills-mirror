@@ -117,7 +117,7 @@ app.get('/auth/figma/callback', async (req, res) => {
 
     // Get user info with the new token
     const userRes = await fetch('https://api.figma.com/v1/me', {
-      headers: { 'X-Figma-Token': tokens.access_token },
+      headers: { Authorization: `Bearer ${tokens.access_token}` },
     });
     const user = await userRes.json();
 
@@ -143,7 +143,7 @@ app.get('/auth/figma/callback', async (req, res) => {
 async function getTeamProjects(teamId: string, token: string) {
   const res = await fetch(
     `https://api.figma.com/v1/teams/${teamId}/projects`,
-    { headers: { 'X-Figma-Token': token } }
+    { headers: { Authorization: `Bearer ${token}` } }
   );
   return res.json(); // { projects: [{ id, name }] }
 }
@@ -152,7 +152,7 @@ async function getTeamProjects(teamId: string, token: string) {
 async function getProjectFiles(projectId: string, token: string) {
   const res = await fetch(
     `https://api.figma.com/v1/projects/${projectId}/files`,
-    { headers: { 'X-Figma-Token': token } }
+    { headers: { Authorization: `Bearer ${token}` } }
   );
   return res.json(); // { files: [{ key, name, thumbnail_url, last_modified }] }
 }
@@ -161,7 +161,7 @@ async function getProjectFiles(projectId: string, token: string) {
 async function getTeamComponents(teamId: string, token: string) {
   const res = await fetch(
     `https://api.figma.com/v1/teams/${teamId}/components`,
-    { headers: { 'X-Figma-Token': token } }
+    { headers: { Authorization: `Bearer ${token}` } }
   );
   return res.json();
   // { meta: { components: [{ key, file_key, node_id, name, description }] } }
@@ -171,7 +171,7 @@ async function getTeamComponents(teamId: string, token: string) {
 async function getTeamStyles(teamId: string, token: string) {
   const res = await fetch(
     `https://api.figma.com/v1/teams/${teamId}/styles`,
-    { headers: { 'X-Figma-Token': token } }
+    { headers: { Authorization: `Bearer ${token}` } }
   );
   return res.json();
   // { meta: { styles: [{ key, file_key, node_id, name, style_type }] } }
@@ -185,7 +185,7 @@ async function getTeamStyles(teamId: string, token: string) {
 async function getLocalVariables(fileKey: string, token: string) {
   const res = await fetch(
     `https://api.figma.com/v1/files/${fileKey}/variables/local`,
-    { headers: { 'X-Figma-Token': token } }
+    { headers: { Authorization: `Bearer ${token}` } }
   );
   if (res.status === 403) {
     throw new Error('Variables API requires Figma Enterprise plan');
@@ -198,7 +198,7 @@ async function getLocalVariables(fileKey: string, token: string) {
 async function getPublishedVariables(fileKey: string, token: string) {
   const res = await fetch(
     `https://api.figma.com/v1/files/${fileKey}/variables/published`,
-    { headers: { 'X-Figma-Token': token } }
+    { headers: { Authorization: `Bearer ${token}` } }
   );
   return res.json();
   // Published variables have a subscribed_id that changes each publish
@@ -215,7 +215,7 @@ async function updateVariables(
     {
       method: 'POST',
       headers: {
-        'X-Figma-Token': token,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(changes),
@@ -239,7 +239,7 @@ async function requireFigmaAccess(fileKey: string) {
     // Check if user's token can access this file
     const check = await fetch(
       `https://api.figma.com/v1/files/${fileKey}?depth=1`,
-      { headers: { 'X-Figma-Token': userToken } }
+      { headers: { Authorization: `Bearer ${userToken}` } }
     );
 
     if (check.status === 403) {
@@ -266,6 +266,26 @@ async function requireFigmaAccess(fileKey: string) {
 | Token refresh failed | Refresh token revoked | Re-authenticate user through OAuth flow |
 | 403 on Variables API | Not Enterprise plan | Use styles API instead (available on all plans) |
 | Team components empty | No published components | Publish components in Figma first |
+
+## Examples
+
+Complete the OAuth flow locally and inspect the granted user (Steps 1-2):
+
+```bash
+# After the callback exchanges the code (POST /v1/oauth/token):
+curl -s -H "Authorization: Bearer ${FIGMA_OAUTH_TOKEN}" https://api.figma.com/v1/me \
+  | jq '{handle, email}'
+# {"handle": "ops-bot", "email": "design-infra@example.com"}
+```
+
+List a project's files as that user — RBAC means you only see what the user can (Step 3):
+
+```bash
+curl -s -H "Authorization: Bearer ${FIGMA_OAUTH_TOKEN}" \
+  "https://api.figma.com/v1/projects/${PROJECT_ID}/files" | jq '.files[].name'
+```
+
+A 403 here is working access control, not a bug — route it through the Step 5 middleware. Variables API (Enterprise-only) usage: `references/variables-api-enterprise-only.md`.
 
 ## Resources
 

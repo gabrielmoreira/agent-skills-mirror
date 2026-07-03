@@ -1,55 +1,71 @@
 # Aaron Marketing Skills — Versions
 
-Current versions for the plugin and all 38 skills. Agents can fetch this file from `https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/VERSIONS.md` once per session.
+Current versions for the plugin and all 54 skills. Agents can fetch this file from `https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/VERSIONS.md` once per session.
 
-**Current release**: `10.0.1` (2026-06-28). Skill `version`, `metadata.version`, plugin manifests, marketplace files, and badges are aligned to the same public version.
+**Current release**: `11.0.0` (2026-06-29). Skill `version`, `metadata.version`, plugin manifests, marketplace files, and badges are aligned to the same public version.
 
 ## Skills
 
 | Skill | Category | Version | Last Updated |
 |-------|----------|---------|--------------|
-| keyword-research | research | 10.0.1 | 2026-06-28 |
-| competitor-analysis | research | 10.0.1 | 2026-06-28 |
-| serp-analysis | research | 10.0.1 | 2026-06-28 |
-| content-gap-analysis | research | 10.0.1 | 2026-06-28 |
-| seo-content-writer | build | 10.0.1 | 2026-06-28 |
-| geo-content-optimizer | build | 10.0.1 | 2026-06-28 |
-| meta-tags-optimizer | build | 10.0.1 | 2026-06-28 |
-| schema-markup-generator | build | 10.0.1 | 2026-06-28 |
-| on-page-seo-auditor | optimize | 10.0.1 | 2026-06-28 |
-| technical-seo-checker | optimize | 10.0.1 | 2026-06-28 |
-| internal-linking-optimizer | optimize | 10.0.1 | 2026-06-28 |
-| content-refresher | optimize | 10.0.1 | 2026-06-28 |
-| rank-tracker | monitor | 10.0.1 | 2026-06-28 |
-| backlink-analyzer | monitor | 10.0.1 | 2026-06-28 |
-| performance-reporter | monitor | 10.0.1 | 2026-06-28 |
-| alert-manager | monitor | 10.0.1 | 2026-06-28 |
-| content-quality-auditor | cross-cutting | 10.0.1 | 2026-06-28 |
-| domain-authority-auditor | cross-cutting | 10.0.1 | 2026-06-28 |
-| entity-optimizer | cross-cutting | 10.0.1 | 2026-06-28 |
-| memory-management | cross-cutting | 10.0.1 | 2026-06-28 |
-| audience-analyzer | insight | 10.0.1 | 2026-06-28 |
-| niche-researcher | insight | 10.0.1 | 2026-06-28 |
-| trend-spotter | insight | 10.0.1 | 2026-06-28 |
-| influencer-discovery | map | 10.0.1 | 2026-06-28 |
-| fit-scorer | map | 10.0.1 | 2026-06-28 |
-| competitor-tracker | map | 10.0.1 | 2026-06-28 |
-| campaign-planner | plan | 10.0.1 | 2026-06-28 |
-| brief-generator | plan | 10.0.1 | 2026-06-28 |
-| budget-optimizer | plan | 10.0.1 | 2026-06-28 |
-| outreach-manager | activate | 10.0.1 | 2026-06-28 |
-| content-reviewer | activate | 10.0.1 | 2026-06-28 |
-| contract-helper | activate | 10.0.1 | 2026-06-28 |
-| content-amplifier | convert | 10.0.1 | 2026-06-28 |
-| ugc-repurposer | convert | 10.0.1 | 2026-06-28 |
-| landing-optimizer | convert | 10.0.1 | 2026-06-28 |
-| performance-analyzer | track | 10.0.1 | 2026-06-28 |
-| roi-calculator | track | 10.0.1 | 2026-06-28 |
-| report-generator | track | 10.0.1 | 2026-06-28 |
+| keyword-research | research | 11.0.0 | 2026-06-28 |
+| competitor-analysis | research | 11.0.0 | 2026-06-28 |
+| serp-analysis | research | 11.0.0 | 2026-06-28 |
+| content-gap-analysis | research | 11.0.0 | 2026-06-28 |
+| seo-content-writer | build | 11.0.0 | 2026-06-28 |
+| geo-content-optimizer | build | 11.0.0 | 2026-06-28 |
+| meta-tags-optimizer | build | 11.0.0 | 2026-06-28 |
+| schema-markup-generator | build | 11.0.0 | 2026-06-28 |
+| on-page-seo-auditor | optimize | 11.0.0 | 2026-06-28 |
+| technical-seo-checker | optimize | 11.0.0 | 2026-06-28 |
+| internal-linking-optimizer | optimize | 11.0.0 | 2026-06-28 |
+| content-refresher | optimize | 11.0.0 | 2026-06-28 |
+| rank-tracker | monitor | 11.0.0 | 2026-06-28 |
+| backlink-analyzer | monitor | 11.0.0 | 2026-06-28 |
+| performance-reporter | monitor | 11.0.0 | 2026-06-28 |
+| alert-manager | monitor | 11.0.0 | 2026-06-28 |
+| content-quality-auditor | optimize | 11.0.0 | 2026-06-29 |
+| domain-authority-auditor | monitor | 11.0.0 | 2026-06-29 |
+| entity-optimizer | protocol | 11.0.0 | 2026-06-28 |
+| memory-management | protocol | 11.0.0 | 2026-06-28 |
+| creator-registry | protocol | 11.0.0 | 2026-06-29 |
+| offer-claims-registry | protocol | 11.0.0 | 2026-06-29 |
+| audience-analyzer | insight | 11.0.0 | 2026-06-28 |
+| niche-researcher | insight | 11.0.0 | 2026-06-28 |
+| trend-spotter | insight | 11.0.0 | 2026-06-28 |
+| influencer-discovery | map | 11.0.0 | 2026-06-28 |
+| fit-scorer | map | 11.0.0 | 2026-06-28 |
+| competitor-tracker | map | 11.0.0 | 2026-06-28 |
+| campaign-planner | plan | 11.0.0 | 2026-06-28 |
+| brief-generator | plan | 11.0.0 | 2026-06-28 |
+| budget-optimizer | plan | 11.0.0 | 2026-06-28 |
+| outreach-manager | activate | 11.0.0 | 2026-06-28 |
+| content-reviewer | activate | 11.0.0 | 2026-06-28 |
+| contract-helper | activate | 11.0.0 | 2026-06-28 |
+| content-amplifier | convert | 11.0.0 | 2026-06-28 |
+| ugc-repurposer | convert | 11.0.0 | 2026-06-28 |
+| landing-optimizer | convert | 11.0.0 | 2026-06-28 |
+| performance-analyzer | track | 11.0.0 | 2026-06-28 |
+| roi-calculator | track | 11.0.0 | 2026-06-28 |
+| report-generator | track | 11.0.0 | 2026-06-28 |
+| programmatic-seo | build | 11.0.0 | 2026-06-29 |
+| parasite-seo | build | 11.0.0 | 2026-06-29 |
+| comparison-page-builder | build | 11.0.0 | 2026-06-29 |
+| local-seo | build | 11.0.0 | 2026-06-29 |
+| site-architecture | optimize | 11.0.0 | 2026-06-29 |
+| ai-traffic | monitor | 11.0.0 | 2026-06-29 |
+| campaign-architect | paid | 11.0.0 | 2026-06-29 |
+| audience-segment-builder | paid | 11.0.0 | 2026-06-29 |
+| ad-creative-builder | paid | 11.0.0 | 2026-06-29 |
+| ad-test-designer | paid | 11.0.0 | 2026-06-29 |
+| ad-account-auditor | paid | 11.0.0 | 2026-06-29 |
+| conversion-signal-qa | paid | 11.0.0 | 2026-06-29 |
+| paid-measurement-loop | paid | 11.0.0 | 2026-06-29 |
+| attribution-reconciler | paid | 11.0.0 | 2026-06-29 |
 
 ## Changelog
 
-### v10.0.1 — Quality & correctness patch: Artifact Gate fix, C³ wiring, full-coverage CI (2026-06-28)
+### v11.0.0 — Correctness patch + OSS-borrow expansion + Paid Ads discipline (2026-06-29)
 
 **Fixed**
 - Artifact Gate: the PostToolUse hook's `hb()` body parser truncated auditor artifacts at the first blank line, false-blocking every compliant `memory/audits/` output; it now reads the full post-frontmatter body. Reconciled the `auditor-runbook.md` cap-field prose with the authoritative §2/§4 (only `final_overall_score` is BLOCKED-exempt).
@@ -57,13 +73,22 @@ Current versions for the plugin and all 38 skills. Agents can fetch this file fr
 
 **Changed**
 - C³ now enforced (route C): `fit-scorer` emits ACE with the A2/C1/E2 veto and caps the score on veto; `content-reviewer` enforces ART T1 (FTC disclosure) / T2 (claim integrity) as Reject vetoes; `roi-calculator` emits the CVI rollup. `c3-benchmark.md` "Where it is used" corrected so `influencer-discovery`/`performance-analyzer` inform/contribute rather than compute.
-- Shared contract + state model extended to all 38 skills: Influencer category defaults, the `memory/influencer/<skill>/` write path, and C³ cross-links.
+- Shared contract + state model extended to all skills: Influencer category defaults, the `memory/influencer/<skill>/` write path, and C³ cross-links.
 
 **Added**
-- CI validates all 38 skills (was 20) and runs new hook-gate + connector unit tests (connector tests 3 → 11).
-- `CONNECTORS.md` recipes for the 18 influencer `~~` categories; unified 8-file tracking list (authoritative in `CONTRIBUTING.md`); eval seed cases for all 18 influencer skills (evals now cover 38/38); `bug-report.yml` issue template; `memory/{research,content,monitoring,archive}/` scaffolding; validator eval-presence advisory.
+- CI validates all skills (was 20) and runs new hook-gate + connector unit tests (connector tests 3 → 11).
+- `CONNECTORS.md` recipes for the 18 influencer `~~` categories; unified 8-file tracking list (authoritative in `CONTRIBUTING.md`); eval seed cases for all 18 influencer skills (evals now cover every skill — 54/54 after the expansions below); `bug-report.yml` issue template; `memory/{research,content,monitoring,archive}/` scaffolding; validator eval-presence advisory.
 
-**Versions**: all 38 skills, plugin manifests, and marketplace mirrors unified at `10.0.1`.
+**Added — OSS-borrow expansion + Paid Ads (3rd discipline), the 7-wave roadmap**
+- **Platform de-SEO**: `auditor-runbook` admits C³ (and now ROAS) as framework veto-sets with a documented cap reconciliation; `memory-management`/`state-model`/`measurement-protocol` de-SEO'd to cross-discipline; `CONNECTORS.md` gains a Discipline column + Agent-default; connector UA renamed.
+- **New guards**: `golden-auditor-math.py` now guards all **4 frameworks** (CORE-EEAT/CITE/C³/ROAS); `check-evals.py` (eval structural-lint, not a runner) + `evals/structure-manifest.json`; `check-pii.py`; `check-stdlib-only.sh` (dependency-creep + Paid-Ads keyed-API red-line). All wired into CI.
+- **Capability borrows (Markdown/keyless)**: `humanizer-slop.md`, `llms-txt-okf.md`, 6 platform playbooks (`references/platforms/`), conversion/visual scoring rubrics, `expert-panel.md`, AI-citation factors (4→9 engines), JS-injected-JSON-LD caveat, Impact×Confidence keyword scoring, trend-scout, atom-extraction, cold-copy rules, creator-dossier, recursive auditor loop.
+- **6 new SEO/GEO skills**: programmatic-seo, parasite-seo, comparison-page-builder, local-seo, site-architecture, ai-traffic.
+- **Paid Ads discipline (8 skills + ROAS framework)** across the 4-phase ROAS loop — Research: campaign-architect, audience-segment-builder; Orchestrate: ad-creative-builder, ad-test-designer; Activate: ad-account-auditor (auditor-class gate → `memory/audits/paid/`), conversion-signal-qa; Scale: paid-measurement-loop, attribution-reconciler. `roas-benchmark.md` (R/O/A/S, RQS arithmetic rollup, vetoes R1/R2/O1/O2/A1). content-reviewer promoted to the C³ ART gate consumer (`memory/audits/influencer/`). Per the Balanced anti-bloat design, search-term mining and bid-pacing/learning-phase ship as **modes** of campaign-architect and budget-optimizer (not standalone skills); budget-optimizer/landing-optimizer/roi-calculator/report-generator/performance-analyzer are reused cross-discipline.
+- **Systematization + protocol truth-SSOTs**: unified `discipline`/`phase` frontmatter on every skill; influencer skills trimmed to baseline density (templates → per-skill `references/`); `/impact` + `/paid` commands added, then the four SEO/GEO mode commands merged into **`/seo-geo`** (net **4 commands** — auto + one entrypoint per discipline); paid phase directories (`paid/<phase>/`); **creator-registry** (influencer roster/dossier SSOT) + **offer-claims-registry** (offer & claim-substantiation SSOT) added to the protocol layer; content-quality-auditor/domain-authority-auditor re-homed to optimize//monitor/ (gates live in their disciplines — protocol/ is now 3 truth registries + memory). The earlier `creator-entity` deferral is superseded by creator-registry.
+- **Deferred by design**: `disciplines.md` registry, eval runner, standalone bid/search-term/policy skills (shipped as modes) — per the roadmap's over-engineering guard.
+
+**Versions**: all **54** skills (24 SEO/GEO + 18 influencer + 8 paid + 4 protocol), plugin manifests, and marketplace mirrors unified at `11.0.0`.
 
 ### v10.0.0 — Marketing umbrella: SEO/GEO + influencer-marketing merge + rename (2026-06-28)
 
@@ -87,7 +112,7 @@ Ships the `refactor/url-stable-overhaul` line as a single release. The 20 skill 
 **URL-stable overhaul**:
 - All intra-repo links in `SKILL.md`/`references/` are plugin-relative paths; `validate-skill.sh` now fails on any `blob/main` GitHub URL. Connector invocations use `${CLAUDE_PLUGIN_ROOT}/scripts/connectors/...`.
 - `references/auditor-runbook.md` is the framework-agnostic SSOT both auditors `Read` at activation; each inlines only its framework-specific CORE-EEAT (8-dim weighted) vs CITE (`C×.35+I×.20+T×.25+E×.20`) examples and veto rows. `raw_overall_score` = weighted total (floor-rounded, pre-cap).
-- MCP stays opt-in (`plugin.json` carries no `mcpServers` key; `.mcp.json` is a copy-paste catalog). New `_http.get` scheme allowlist (`http`/`https`) guards sitemap-harvested URLs (LFI/SSRF); `crawl.py` uses `robots.py` for correct Allow/wildcard/UA handling.
+- MCP stays opt-in (`plugin.json` carries no `mcpServers` key; the copy-paste catalog then shipped as `.mcp.json`, since relocated to `docs/mcp-catalog.json`). New `_http.get` scheme allowlist (`http`/`https`) guards sitemap-harvested URLs (LFI/SSRF); `crawl.py` uses `robots.py` for correct Allow/wildcard/UA handling.
 - Honesty-bound memory model: explicit-pin + `last_updated` only, no frequency-based promotion; SessionStart surfaces an open-loops pointer.
 - New `scripts/connectors/ledger.py` (local JSONL time-series) and `scripts/golden-auditor-math.py` (CI-wired weight-table guard); ledger wired into rank-tracker / performance-reporter / technical-seo-checker. `evals/product-api-scenarios.md` → `references/auto-routing-scenarios.md`.
 
@@ -127,7 +152,7 @@ Final 9.x release consolidating the entire post-v9.0.0 development line into a s
 - **Bulk + force retire flows**: `/aaron-marketing:guard --wiki --retire-preview --bulk-confirmed` retires all `safe`-marked candidates in one operation; `force-retire <path>` bypasses C5 (frontmatter-coverage) only. Day-cap (20/UTC-day) still enforced.
 - **Multi-project guardrail**: pre-compile prompt when ≥2 distinct project slugs in hot-cache history.
 - **PII compile guardrail**: heuristic detection of natural-person entities (title-case names / LinkedIn / `entity_type: person`); surfaces GDPR Art 5(1)(c) data-minimization warning before compile.
-- **GDPR purge schema**: honest, minimal template at `cross-cutting/memory-management/references/gdpr-purge-log-template.md` — a human-readable record of erasure requests (date, redacted_label, legal_basis, action, scope, working_tree_only), never raw subject data. Working-tree redaction only; git history is the user's responsibility (no salted fingerprint / reingest tombstone).
+- **GDPR purge schema**: honest, minimal template at `protocol/memory-management/references/gdpr-purge-log-template.md` — a human-readable record of erasure requests (date, redacted_label, legal_basis, action, scope, working_tree_only), never raw subject data. Working-tree redaction only; git history is the user's responsibility (no salted fingerprint / reingest tombstone).
 - **`/aaron-marketing:series` command**: plan / write / continue / publish-handoff modes for content series workflows.
 - **Multi-agent compatibility**: Gemini, Qwen, Amp, Kimi, CodeBuddy manifest support.
 - **31 eval cases** under `evals/memory-management/` (was 6 pre-9.5.0) covering retirement, recovery, contradiction reconciliation, GDPR, multi-project, PII, force-retire.

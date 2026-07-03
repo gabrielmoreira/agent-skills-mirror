@@ -88,9 +88,9 @@ When running in Docker, Agent Zero uses two distinct Python runtimes to isolate 
 ├── agents/               # Agent profiles (prompts and config)
 ├── prompts/              # System and message prompt templates
 ├── knowledge/
-│   └── main/about/       # Agent self-knowledge (indexed into vector DB for runtime recall)
+│   └── main/about/       # Agent self-knowledge reference material
 │       ├── identity.md           # Philosophy, principles, project context
-│       ├── architecture.md       # Agent loop, memory pipeline, multi-agent, extensions
+│       ├── architecture.md       # Agent loop, multi-agent coordination, extensions
 │       ├── capabilities.md       # Detailed capabilities and limitations
 │       ├── configuration.md      # LLM roles, providers, profiles, plugins, settings
 │       └── setup-and-deployment.md  # Docker deployment, updates, troubleshooting
@@ -104,7 +104,7 @@ Key Files:
 - helpers/api.py: Base class for all API endpoints.
 - models.py: LLM provider configuration and LiteLLM wrappers; framework LiteLLM defaults such as `drop_params=True` are merged with `litellm_global_kwargs`, configured values override framework defaults, documented module-level switches such as `drop_params` are applied to LiteLLM, and merged kwargs are passed per call.
 - scripts/openrouter_release_notes_system_prompt.md: Editable system prompt used to generate GitHub release notes during Docker publishing.
-- knowledge/main/about/: Agent self-knowledge files, indexed into the vector DB for runtime recall. Not user-facing docs - written for the agent's internal reference.
+- knowledge/main/about/: Agent self-knowledge files. Not user-facing docs - written for the agent's internal reference.
 - webui/components/AGENTS.md: DOX contract for Alpine component architecture.
 - webui/js/AGENTS.md: DOX contract for frontend infrastructure, modal stack, API helpers, and extension loading.
 - plugins/AGENTS.md: DOX contract for bundled and custom plugin architecture; `usr/plugins/` remains ignored user state.
@@ -274,7 +274,7 @@ pip install -r requirements.txt
 6. Use the nearest AGENTS.md as the local contract and parent docs for repo-wide rules
 7. If docs conflict, the closer doc controls local work details, but no child doc may weaken DOX
 
-Do not rely on memory. Re-read the applicable DOX chain in the current session before editing.
+Do not rely on prior context. Re-read the applicable DOX chain in the current session before editing.
 
 ## Update After Editing
 

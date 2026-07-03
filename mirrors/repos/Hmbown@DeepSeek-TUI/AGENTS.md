@@ -28,10 +28,11 @@
   gate: `cargo test --workspace`. Release build:
   `cargo build --release -p codewhale-cli -p codewhale-tui`.
 - **Known suite papercuts (pre-existing, not regressions):**
-  `config_command_allow_shell_*` fail on machines whose `~/.codewhale/settings.toml`
-  sets `default_mode = "yolo"` (the tests aren't hermetic); `run_verifiers_background_*`
-  is flaky under full-suite parallelism but passes in isolation. Don't treat
-  these as caused by your change.
+  `run_verifiers_background_*` is flaky under full-suite parallelism but passes
+  in isolation. Don't treat it as caused by your change. (The old
+  `config_command_allow_shell_*` failures on machines with
+  `default_mode = "yolo"` were fixed by pinning the command-test app to
+  Agent mode.)
 
 ## Continuous agent work conventions
 

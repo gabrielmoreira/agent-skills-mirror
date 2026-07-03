@@ -2,7 +2,7 @@
 
 > Based on [CITE Domain Rating](https://github.com/aaron-he-zhu/cite-domain-rating) **v1.0** (2026-02-10)
 >
-> This file is a reference adaptation for the SEO & GEO Skills Library. For the full specification with examples, see the source repository.
+> This file is a reference adaptation for Aaron Marketing Skills. For the full specification with examples, see the source repository.
 >
 > **Version sync**: When the source spec updates, check: item count references in README (currently "40 items"), skill validation checkpoints, and Sections 2, 3, 7 below.
 
@@ -151,7 +151,7 @@ Failing any veto item activates the Critical Fail Cap. The cap arithmetic and th
 
 **Single veto fail**: cap applies per [Runbook §2 decision table](auditor-runbook.md). Also raises a **Manipulation Alert** in the handoff `open_loops` field.
 
-**2+ veto fails**: audit returns `status: BLOCKED` per [Runbook §2 Worked Example 3](auditor-runbook.md). Calibration for a numeric multi-veto cap is pending v7.3, gated on 30+ real multi-veto audits in `memory/audits/`.
+**2+ veto fails**: audit returns `status: BLOCKED` per [§2 Worked example 3 in domain-authority-auditor](../monitor/domain-authority-auditor/SKILL.md). Calibration for a numeric multi-veto cap is pending v7.3, gated on 30+ real multi-veto audits in `memory/audits/`.
 
 ---
 

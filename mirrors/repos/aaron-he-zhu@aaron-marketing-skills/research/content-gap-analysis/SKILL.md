@@ -1,7 +1,7 @@
 ---
 name: content-gap-analysis
 description: 'Use when the user asks to "find content gaps", "竞品写了什么", or "还应该写什么"; builds a competitor-relative coverage map of missing topics, keyword gaps, and editorial-calendar opportunities. Not for raw keyword demand discovery — use keyword-research. 内容缺口/选题规划'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -9,7 +9,9 @@ when_to_use: "Use when finding content gaps between two domains, discovering mis
 argument-hint: "<your domain> <competitor domain>"
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: seo-geo
+  phase: research
   geo-relevance: "medium"
 ---
 
@@ -44,6 +46,8 @@ What content am I missing compared to my top 3 competitors?
 ## Data Sources
 
 Optional integrations: ~~SEO tool, ~~search console, ~~analytics, ~~AI monitor. Without tools, ask for site URL, content inventory, competitor URLs, and business goals. See [CONNECTORS.md](../../CONNECTORS.md).
+
+**Trend-scout as a gap-discovery input (keyless)**: feed the multi-source trend scout — Google Trends RSS plus Hacker News and Reddit, via [`scripts/connectors/rss_monitor.py`](../../scripts/connectors/rss_monitor.py) — to surface rising topics your competitors and you may both miss. Treat each hit as a candidate gap, then check it against your and competitor coverage in steps 5-7. Mark these signals **Estimated**. See [CONNECTORS.md](../../CONNECTORS.md) `~~trend database`.
 
 ## Decision Gates
 

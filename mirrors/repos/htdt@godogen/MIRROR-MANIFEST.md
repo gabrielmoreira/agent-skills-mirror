@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `htdt/godogen` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `htdt/godogen` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `htdt/godogen` — 26 default patterns, 0 followed patterns, 8 file(s)
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,13 +60,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`babylon/skills/babylon-help/SKILL.md`](babylon/skills/babylon-help/SKILL.md) |
-| 3 | ✓ | [`babylon/skills/godogen/SKILL.md`](babylon/skills/godogen/SKILL.md) |
-| 4 | ✓ | [`bevy/skills/bevy-help/SKILL.md`](bevy/skills/bevy-help/SKILL.md) |
-| 5 | ✓ | [`bevy/skills/godogen/SKILL.md`](bevy/skills/godogen/SKILL.md) |
-| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 7 | ✓ | [`godot/skills/godogen/SKILL.md`](godot/skills/godogen/SKILL.md) |
-| 8 | ✓ | [`godot/skills/godot-api/SKILL.md`](godot/skills/godot-api/SKILL.md) |
+| 2 | ✓ | [`asset-gen/SKILL.md`](asset-gen/SKILL.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`prompts/runtime.md`](prompts/runtime.md) |
 
 ---
 

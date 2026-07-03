@@ -107,6 +107,24 @@ test("parseAnimAttrs: new-effect defaults", () => {
     ["wheel-out", 2000, undefined],
     ["random-bars-in", 500, "horizontal"],
     ["random-bars-out", 500, "horizontal"],
+    ["blinds-in", 500, "horizontal"],
+    ["blinds-out", 500, "horizontal"],
+    ["checkerboard-in", 500, "horizontal"],
+    ["checkerboard-out", 500, "horizontal"],
+    ["dissolve-in", 500, undefined],
+    ["dissolve-out", 500, undefined],
+    ["box-in", 500, "in"],
+    ["box-out", 500, "out"],
+    ["circle-in", 500, "in"],
+    ["circle-out", 500, "out"],
+    ["diamond-in", 500, "in"],
+    ["diamond-out", 500, "out"],
+    ["plus-in", 500, "in"],
+    ["plus-out", 500, "out"],
+    ["strips-in", 500, "down-right"],
+    ["strips-out", 500, "down-right"],
+    ["wedge-in", 500, undefined],
+    ["wedge-out", 500, undefined],
     ["pulse", 500, undefined],
     ["teeter", 1000, undefined],
   ];
@@ -140,9 +158,34 @@ test("parseAnimAttrs: per-family data-anim-dir validation", () => {
   assert.match(bad.warnings[0], /horizontal\|vertical/);
   const rb = parseAnimAttrs(attrs({ "data-anim": "random-bars-in", "data-anim-dir": "vertical" }), 0);
   assert.equal(rb.def?.dir, "vertical");
+  // blinds/checkerboard share the axis family.
+  const bl = parseAnimAttrs(attrs({ "data-anim": "blinds-in", "data-anim-dir": "vertical" }), 0);
+  assert.equal(bl.def?.dir, "vertical");
+  const cb = parseAnimAttrs(attrs({ "data-anim": "checkerboard-out", "data-anim-dir": "left" }), 0);
+  assert.equal(cb.def?.dir, "horizontal");
+  assert.match(cb.warnings[0], /horizontal\|vertical/);
+  // box/circle/diamond/plus take in|out; entrance defaults in, exit out, and
+  // either variant accepts the other's value.
+  const bx = parseAnimAttrs(attrs({ "data-anim": "box-in", "data-anim-dir": "out" }), 0);
+  assert.equal(bx.def?.dir, "out");
+  assert.deepEqual(bx.warnings, []);
+  const ci = parseAnimAttrs(attrs({ "data-anim": "circle-out", "data-anim-dir": "sideways" }), 0);
+  assert.equal(ci.def?.dir, "out");
+  assert.match(ci.warnings[0], /in\|out/);
+  // strips takes the four corners.
+  for (const d of ["down-right", "down-left", "up-right", "up-left"]) {
+    const st = parseAnimAttrs(attrs({ "data-anim": "strips-in", "data-anim-dir": d }), 0);
+    assert.equal(st.def?.dir, d);
+    assert.deepEqual(st.warnings, []);
+  }
+  const sb = parseAnimAttrs(attrs({ "data-anim": "strips-out", "data-anim-dir": "left" }), 0);
+  assert.equal(sb.def?.dir, "down-right");
+  assert.match(sb.warnings[0], /down-right\|down-left\|up-right\|up-left/);
   // dir still means nothing on non-directional effects.
   const p = parseAnimAttrs(attrs({ "data-anim": "pulse", "data-anim-dir": "left" }), 0);
   assert.match(p.warnings[0], /no effect/);
+  const wg = parseAnimAttrs(attrs({ "data-anim": "wedge-in", "data-anim-dir": "left" }), 0);
+  assert.match(wg.warnings[0], /no effect/);
 });
 
 test("parseAnimAttrs: no-op pulse/teeter dropped like spin/grow", () => {
@@ -181,17 +224,21 @@ test("parseAnimAttrs: data-anim-auto-reverse matrix", () => {
     if (val !== null) map["data-anim-auto-reverse"] = val;
     return parseAnimAttrs(attrs(map), 0);
   };
-  // Bare attribute / "true" / "1" all switch it on for emphasis + path.
+  // Bare attribute / "true" / "1" all switch it on for spin/grow/shrink/path.
   assert.equal(of("spin", "").def?.autoReverse, true);
-  assert.equal(of("teeter", "true").def?.autoReverse, true);
+  assert.equal(of("grow", "true").def?.autoReverse, true);
   assert.equal(of("path", "1").def?.autoReverse, true);
   // Off forms are silent no-ops.
   assert.equal(of("spin", "false").def?.autoReverse, undefined);
   assert.equal(of("spin", "0").warnings.length, 0);
-  // Entrances/exits reject it with a warning.
+  // Entrances/exits reject it with a warning; so do pulse/teeter (they
+  // already return to base on their own).
   const fade = of("fade-in", "true");
   assert.equal(fade.def?.autoReverse, undefined);
-  assert.match(fade.warnings[0], /only applies to emphasis and path/);
+  assert.match(fade.warnings[0], /only applies to spin\/grow\/shrink\/path/);
+  const teeter = of("teeter", "true");
+  assert.equal(teeter.def?.autoReverse, undefined);
+  assert.match(teeter.warnings[0], /only applies to spin\/grow\/shrink\/path/);
   // Junk value warns.
   assert.match(of("spin", "maybe").warnings[0], /invalid data-anim-auto-reverse/);
 });

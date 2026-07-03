@@ -243,13 +243,174 @@ test("buildTimingXml: new-effect fragments", () => {
   assert.deepEqual(rockDelays, ["200", "400", "600", "800"]);
 });
 
-test("buildTimingXml: repeat and auto-reverse land on the effect cTn", () => {
-  const xml = buildTimingXml(
+test("buildTimingXml: filter-effect fragments (blinds/checkerboard/dissolve/box/circle/diamond/plus/strips/wedge)", () => {
+  const one = (over: Partial<AnimationDef>) => buildTimingXml([anim([2], over)], 1280, 720);
+
+  // blinds shares random-bars' axis subtypes (horizontal 10, vertical 5).
+  const blindsH = one({ effect: "blinds-in", dir: "horizontal" });
+  assert.match(blindsH, /presetID="3" presetClass="entr" presetSubtype="10"/);
+  assert.match(blindsH, /<p:animEffect transition="in" filter="blinds\(horizontal\)">/);
+  const blindsV = one({ effect: "blinds-out", dir: "vertical", durationMs: 500 });
+  assert.match(blindsV, /presetID="3" presetClass="exit" presetSubtype="5"/);
+  assert.match(blindsV, /transition="out" filter="blinds\(vertical\)"/);
+  assert.match(blindsV, /<p:cond delay="499"\/>.*<p:strVal val="hidden"\/>/);
+
+  // checkerboard: horizontal → across (10), vertical → down (5).
+  const checkH = one({ effect: "checkerboard-in", dir: "horizontal" });
+  assert.match(checkH, /presetID="5" presetClass="entr" presetSubtype="10"/);
+  assert.match(checkH, /filter="checkerboard\(across\)"/);
+  const checkV = one({ effect: "checkerboard-out", dir: "vertical" });
+  assert.match(checkV, /presetID="5" presetClass="exit" presetSubtype="5"/);
+  assert.match(checkV, /transition="out" filter="checkerboard\(down\)"/);
+
+  // dissolve: no direction, subtype 0.
+  const dis = one({ effect: "dissolve-in" });
+  assert.match(dis, /presetID="9" presetClass="entr" presetSubtype="0"/);
+  assert.match(dis, /<p:animEffect transition="in" filter="dissolve">/);
+  const disOut = one({ effect: "dissolve-out" });
+  assert.match(disOut, /presetID="9" presetClass="exit"/);
+  assert.match(disOut, /transition="out" filter="dissolve"/);
+
+  // box/circle/diamond/plus: dir defaults follow the effect (in for
+  // entrances, out for exits) and are overridable; subtype in 16, out 32.
+  const box = one({ effect: "box-in" });
+  assert.match(box, /presetID="4" presetClass="entr" presetSubtype="16"/);
+  assert.match(box, /filter="box\(in\)"/);
+  const boxOut = one({ effect: "box-out" });
+  assert.match(boxOut, /presetID="4" presetClass="exit" presetSubtype="32"/);
+  assert.match(boxOut, /transition="out" filter="box\(out\)"/);
+  const circleGrow = one({ effect: "circle-in", dir: "out" });
+  assert.match(circleGrow, /presetID="6" presetClass="entr" presetSubtype="32"/);
+  assert.match(circleGrow, /filter="circle\(out\)"/);
+  const diamond = one({ effect: "diamond-out", dir: "in" });
+  assert.match(diamond, /presetID="8" presetClass="exit" presetSubtype="16"/);
+  assert.match(diamond, /transition="out" filter="diamond\(in\)"/);
+  const plus = one({ effect: "plus-in" });
+  assert.match(plus, /presetID="13" presetClass="entr" presetSubtype="16"/);
+  assert.match(plus, /filter="plus\(in\)"/);
+
+  // strips: corner filter tokens with the edge-bitmask subtypes.
+  const stripsDR = one({ effect: "strips-in" });
+  assert.match(stripsDR, /presetID="18" presetClass="entr" presetSubtype="6"/);
+  assert.match(stripsDR, /filter="strips\(downRight\)"/);
+  const stripsUL = one({ effect: "strips-out", dir: "up-left" });
+  assert.match(stripsUL, /presetID="18" presetClass="exit" presetSubtype="9"/);
+  assert.match(stripsUL, /transition="out" filter="strips\(upLeft\)"/);
+  const stripsUR = one({ effect: "strips-in", dir: "up-right" });
+  assert.match(stripsUR, /presetSubtype="3"/);
+  assert.match(stripsUR, /filter="strips\(upRight\)"/);
+  const stripsDL = one({ effect: "strips-in", dir: "down-left" });
+  assert.match(stripsDL, /presetSubtype="12"/);
+  assert.match(stripsDL, /filter="strips\(downLeft\)"/);
+
+  // wedge: no direction, subtype 0.
+  const wedge = one({ effect: "wedge-in" });
+  assert.match(wedge, /presetID="20" presetClass="entr" presetSubtype="0"/);
+  assert.match(wedge, /<p:animEffect transition="in" filter="wedge">/);
+  const wedgeOut = one({ effect: "wedge-out", durationMs: 500 });
+  assert.match(wedgeOut, /presetID="20" presetClass="exit"/);
+  assert.match(wedgeOut, /transition="out" filter="wedge"/);
+  assert.match(wedgeOut, /<p:cond delay="499"\/>.*hidden/);
+});
+
+test("buildTimingXml: pattern-seeded secondaries fade across the new filter effects", () => {
+  const filters = (effect: AnimationDef["effect"], dir?: AnimationDef["dir"]) => {
+    const xml = buildTimingXml([anim([2, 3], { effect, dir })], 1920, 1080);
+    return [...xml.matchAll(/<p:animEffect transition="(?:in|out)" filter="([^"]+)">/g)].map((m) => m[1]);
+  };
+  assert.deepEqual(filters("blinds-in", "horizontal"), ["blinds(horizontal)", "fade"]);
+  assert.deepEqual(filters("checkerboard-in", "horizontal"), ["checkerboard(across)", "fade"]);
+  assert.deepEqual(filters("dissolve-out"), ["dissolve", "fade"]);
+  assert.deepEqual(filters("circle-in", "in"), ["circle(in)", "fade"]);
+  assert.deepEqual(filters("strips-in", "down-right"), ["strips(downRight)", "fade"]);
+  assert.deepEqual(filters("wedge-out"), ["wedge", "fade"]);
+});
+
+test("buildTimingXml: repeat/auto-reverse land on the BEHAVIOR cTn for single-behavior effects", () => {
+  // A repeatCount on a container cTn without an explicit dur has no resolved
+  // simple duration — PowerPoint silently ignores it. Spin/grow/shrink/
+  // pulse/path therefore carry it on the behavior, like PowerPoint's writer.
+  const spin = buildTimingXml(
     [anim([2], { effect: "spin", rotateDeg: 360, durationMs: 500, repeat: 3, autoReverse: true })],
     1920,
     1080,
   );
-  assert.match(xml, /presetID="8" presetClass="emph" presetSubtype="0" repeatCount="3000" autoRev="1" fill="hold"/);
+  assert.match(spin, /<p:animRot by="21600000"><p:cBhvr><p:cTn id="\d+" dur="500" fill="hold" repeatCount="3000" autoRev="1"\/>/);
+  assert.ok(!/presetID="8"[^>]*repeatCount/.test(spin), "effect par must not carry repeatCount");
+
+  // Repeat-only path: repeatCount on the behavior (each pass restarts from
+  // the origin, which a continuous path can't draw).
+  const path = buildTimingXml(
+    [anim([2], { effect: "path", pathSegs: [{ c: "L", p: [100, 0] }], durationMs: 800, repeat: 2 })],
+    1920,
+    1080,
+  );
+  assert.match(path, /<p:animMotion[^>]*><p:cBhvr><p:cTn id="\d+" dur="800" fill="hold" repeatCount="2000"\/>/);
+
+  // Pulse: both behaviors repeat in lockstep; the scale keeps its own autoRev.
+  const pulse = buildTimingXml([anim([2], { effect: "pulse", scale: 1.05, durationMs: 500, repeat: 2 })], 1920, 1080);
+  assert.match(pulse, /<p:cBhvr tmFilter="[^"]+"><p:cTn id="\d+" dur="500" repeatCount="2000"\/>/);
+  assert.match(pulse, /<p:cTn id="\d+" dur="250" fill="hold" autoRev="1" repeatCount="2000"\/>/);
+});
+
+test("buildTimingXml: auto-reversed paths unroll into one continuous behavior", () => {
+  // 300px right on a 1920px slide = 0.15625; out-and-back ×2 cycles, no
+  // repeat attributes — the geometry carries everything, so PowerPoint's
+  // spotty repeatCount/autoRev support on animMotion never matters.
+  const xml = buildTimingXml(
+    [anim([2], { effect: "path", pathSegs: [{ c: "L", p: [300, 0] }], durationMs: 800, repeat: 2, autoReverse: true })],
+    1920,
+    1080,
+  );
+  assert.match(
+    xml,
+    /path="M 0 0 L 0\.15625 0\.00000 L 0\.00000 0\.00000 L 0\.15625 0\.00000 L 0\.00000 0\.00000 E"/,
+  );
+  // One behavior spanning the whole effective duration: 800 × 2 × 2 = 3200.
+  assert.match(xml, /<p:animMotion[^>]*><p:cBhvr><p:cTn id="\d+" dur="3200" fill="hold"\/>/);
+  assert.ok(!/repeatCount|autoRev/.test(xml), "no repeat attributes when unrolled");
+
+  // Cubic cycles reverse with swapped control points.
+  const curve = buildTimingXml(
+    [anim([2], { effect: "path", pathSegs: [{ c: "C", p: [192, -108, 384, -108, 576, 0] }], durationMs: 1000, autoReverse: true })],
+    1920,
+    1080,
+  );
+  assert.match(
+    curve,
+    /path="M 0 0 C 0\.10000 -0\.10000 0\.20000 -0\.10000 0\.30000 0\.00000 C 0\.20000 -0\.10000 0\.10000 -0\.10000 0\.00000 0\.00000 E"/,
+  );
+});
+
+test("buildTimingXml: wheel/random-bars secondaries fade in step with the primary", () => {
+  // A card exports as background + text: PowerPoint seeds those filters per
+  // shape, so two stacked copies clash — the ride-along shape fades instead.
+  const wheel = buildTimingXml([anim([2, 3], { effect: "wheel-in", durationMs: 2000 })], 1920, 1080);
+  const wheelFilters = [...wheel.matchAll(/<p:animEffect transition="in" filter="([^"]+)">/g)].map((m) => m[1]);
+  assert.deepEqual(wheelFilters, ["wheel(1)", "fade"]);
+
+  const bars = buildTimingXml([anim([2, 3], { effect: "random-bars-out", dir: "vertical", durationMs: 500 })], 1920, 1080);
+  const barFilters = [...bars.matchAll(/<p:animEffect transition="out" filter="([^"]+)">/g)].map((m) => m[1]);
+  assert.deepEqual(barFilters, ["randombar(vertical)", "fade"]);
+
+  // Directional filters stay identical on every shape.
+  const split = buildTimingXml([anim([2, 3], { effect: "split-in", dir: "vertical" })], 1920, 1080);
+  const splitFilters = [...split.matchAll(/filter="([^"]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(splitFilters, ["barn(inVertical)", "barn(inVertical)"]);
+});
+
+test("buildTimingXml: composite effects repeat via an inner wrapper par with explicit dur", () => {
+  // fade-in (setVis + animEffect) — the pair must loop as one unit.
+  const fade = buildTimingXml([anim([2], { effect: "fade-in", durationMs: 500, repeat: 2 })], 1920, 1080);
+  assert.match(
+    fade,
+    /nodeType="afterEffect"><p:stCondLst><p:cond delay="0"\/><\/p:stCondLst><p:childTnLst><p:par><p:cTn id="\d+" dur="500" repeatCount="2000" fill="hold">/,
+  );
+
+  // teeter's five chained rocks repeat as a cycle, not per-rock.
+  const teeter = buildTimingXml([anim([2], { effect: "teeter", rotateDeg: 5, durationMs: 1000, repeat: 3 })], 1920, 1080);
+  assert.match(teeter, /<p:cTn id="\d+" dur="1000" repeatCount="3000" fill="hold">/);
+  assert.ok(!/<p:animRot[^>]*><p:cBhvr><p:cTn[^>]*repeatCount/.test(teeter), "individual rocks must not repeat");
 });
 
 test("buildTimingXml: after-chain waits out the effective duration", () => {
@@ -305,11 +466,29 @@ test("buildTimingXml: all-effects sweep — unique ids, balanced tags", () => {
       { effect: "wheel-out" },
       { effect: "random-bars-in", dir: "horizontal" },
       { effect: "random-bars-out", dir: "vertical" },
+      { effect: "blinds-in", dir: "horizontal" },
+      { effect: "blinds-out", dir: "vertical" },
+      { effect: "checkerboard-in", dir: "vertical" },
+      { effect: "checkerboard-out", dir: "horizontal" },
+      { effect: "dissolve-in" },
+      { effect: "dissolve-out" },
+      { effect: "box-in", dir: "in" },
+      { effect: "box-out", dir: "out" },
+      { effect: "circle-in", dir: "out" },
+      { effect: "circle-out", dir: "in" },
+      { effect: "diamond-in" },
+      { effect: "diamond-out" },
+      { effect: "plus-in" },
+      { effect: "plus-out" },
+      { effect: "strips-in", dir: "up-left" },
+      { effect: "strips-out", dir: "down-left" },
+      { effect: "wedge-in" },
+      { effect: "wedge-out" },
       { effect: "spin", rotateDeg: -720, repeat: 2 },
       { effect: "grow", scale: 2 },
       { effect: "shrink", scale: 0.5, autoReverse: true },
       { effect: "pulse", scale: 1.05 },
-      { effect: "teeter", rotateDeg: 5, repeat: 3, autoReverse: true },
+      { effect: "teeter", rotateDeg: 5, repeat: 3 },
       { effect: "path", pathSegs: [{ c: "C", p: [1, 2, 3, 4, 5, 6] }] },
     ] as Partial<AnimationDef>[]
   ).map((over, i) =>

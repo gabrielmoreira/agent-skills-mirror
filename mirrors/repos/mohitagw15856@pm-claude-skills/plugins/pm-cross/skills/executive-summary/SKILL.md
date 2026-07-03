@@ -83,6 +83,13 @@ An executive summary is NOT a summary of the document. It is a standalone docume
 **Minister/senior public sector:** Lead with public benefit or policy alignment. Include cost-benefit framing.
 **Client:** Lead with their problem. Show you understand before presenting recommendation.
 
+## Deeper Materials
+
+This skill ships with support files — use them when they are available:
+
+- **`references/compression-craft.md`** — Compression Craft: Summaries Executives Actually Absorb. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
+- **`templates/summary-frame.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
 ## Quality Checks
 
 - [ ] Bottom line in first 3 sentences

@@ -1,7 +1,7 @@
 ---
 name: meta-tags-optimizer
 description: 'Use when the user asks to "optimize meta tags"; improves titles, descriptions, Open Graph, Twitter cards, and CTR test variants. Not for JSON-LD structured data — use schema-markup-generator; not for body copy — use seo-content-writer. 标题优化/元描述/CTR'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -9,7 +9,9 @@ when_to_use: "Use when optimizing title tags, meta descriptions, Open Graph tags
 argument-hint: "<page URL or content>"
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: seo-geo
+  phase: build
   geo-relevance: "low"
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: internal-linking-optimizer
 description: 'Use when the user asks to "fix internal linking" or "find orphan pages"; maps link architecture, authority flow, anchor text, and crawl depth, then delivers a prioritized source/target/anchor plan. Not for external backlinks — use backlink-analyzer. 内链优化/站内架构'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -9,7 +9,9 @@ when_to_use: "Use when improving internal link structure, anchor text distributi
 argument-hint: "<URL or sitemap>"
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: seo-geo
+  phase: optimize
   geo-relevance: "low"
 ---
 
@@ -68,6 +70,24 @@ When a user requests internal linking optimization:
    > **Reference**: [references/linking-templates.md](references/linking-templates.md) contains the Step 6 template.
 7. **Generate Implementation Plan** — Include executive summary, current-state metrics, phased priority actions, implementation guide, and tracking plan.
    > **Reference**: [references/linking-templates.md](references/linking-templates.md) contains the Step 7 template.
+
+### Site-Map Diagram (optional)
+
+To make orphan pages and link islands visible, draw a Mermaid `graph TD` with one subgraph per nav zone. Orphans sit in their own subgraph with no inbound edges; islands are clusters that link among themselves but never back to a pillar. Paste into any Mermaid renderer.
+
+```mermaid
+graph TD
+  subgraph Pillars
+    H[Home] --> P[Pillar: Email]
+  end
+  subgraph Cluster
+    P --> A[List building]
+    P --> B[Subject lines]
+  end
+  subgraph Orphans
+    O[Old promo page]
+  end
+```
 
 ## Decision Gates
 

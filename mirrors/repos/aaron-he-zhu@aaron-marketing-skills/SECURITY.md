@@ -4,9 +4,10 @@
 
 | Version | Supported |
 |---------|-----------|
-| 9.9.x   | Yes (current line) |
-| 9.0–9.8 | Security fixes only |
-| < 9.0   | No        |
+| 11.0.x  | Yes (current line) |
+| < 11.0  | No        |
+
+Policy: only the latest minor of the current major line receives fixes; older majors are unsupported — upgrade to the current release.
 
 ## Reporting a Vulnerability
 
@@ -36,7 +37,7 @@ Python-stdlib connectors** under `scripts/connectors/` that make outbound networ
 
 - **Prompt injection**: Skill files or fetched content manipulated to produce harmful outputs
 - **Connector network behavior**: outbound fetches from `scripts/connectors/` (scheme, SSRF, rate)
-- **MCP server configuration**: `.mcp.json` is opt-in (not auto-registered); misconfigured connectors could expose credentials if a user enables them
+- **MCP server configuration**: the `docs/mcp-catalog.json` catalog is opt-in (kept outside the auto-registered plugin-root `.mcp.json` path); misconfigured connectors could expose credentials if a user enables them
 - **Placeholder misuse**: `~~tool` placeholders resolving to unintended targets
 - **Memory poisoning across sessions** — malicious content written to `memory/` that affects future session behavior (e.g., fake `approved_by: user` decisions, poisoned `memory/entities/` records)
 - **WebFetch-injected instructions** — prompt injection via target page HTML/meta/body attempting to manipulate audit outcomes or Artifact Gate validation
@@ -44,7 +45,7 @@ Python-stdlib connectors** under `scripts/connectors/` that make outbound networ
 ## Security Design Principles
 
 - **Zero third-party dependencies**: connectors use only the Python standard library — no PyPI packages to compromise via supply chain attacks
-- **No credential storage**: Skills and connectors never store API keys; `.mcp.json` declares endpoints only, and the optional connector API keys (Open PageRank, PageSpeed) are read from the user's environment at call time and never written to disk
+- **No credential storage**: Skills and connectors never store API keys; `docs/mcp-catalog.json` declares endpoints only, and the optional connector API keys (Open PageRank, PageSpeed) are read from the user's environment at call time and never written to disk
 - **Tool-agnostic placeholders**: Skills reference tools by category (`~~SEO tool`), never by hardcoded API endpoints
 - **Apache 2.0 license**: Full source available for security review
 

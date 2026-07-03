@@ -266,7 +266,7 @@ Then add the fullscreen-button rules. **Anchor** (the closing brace of that `.kb
 **Approach / invariants**:
 
 - WAAPI only, animating the independent `translate` / `rotate` / `scale` properties plus `opacity` / `clip-path` — **never** the `transform` shorthand (authors use transform for centering). Wheel/split/random-bars approximate PowerPoint's filters with a gradient `mask-image` driven by one registered custom property (`--deck-anim-t`; see `MASK_OK` in the constants hunk). Both the mask string and the property live only inside keyframes, so `cancel()` cleans everything; browsers without `CSS.registerProperty` fall back to a plain fade.
-- Effect timing follows PowerPoint's defaults (see `ANIM_EFFECTS`); `data-anim-repeat` and `data-anim-auto-reverse` (emphasis/path only) map to WAAPI `iterations`/`direction:'alternate'`, and `_animSteps` counts the full repeated/reversed length when chaining `after` steps — the same formula gen-pptx's timing.ts uses, so preview and export stay in step.
+- Effect timing follows PowerPoint's defaults (see `ANIM_EFFECTS`); `data-anim-repeat` and `data-anim-auto-reverse` (spin/grow/shrink/path only) map to WAAPI `iterations`/`direction:'alternate'`, and `_animSteps` counts the full repeated/reversed length when chaining `after` steps — the same formula gen-pptx's timing.ts uses, so preview and export stay in step.
 - No inline styles; the only DOM writes are `data-deck-anim-*` runtime attrs, which the rail's `MutationObserver` already ignores (`OWN_ATTRS` matches every `data-deck-*` except `data-deck-skip`), so playback never re-clones thumbnails. End states are held by kept-alive `fill:'both'` Animation objects (cancelled on slide deactivation); persistent hidden states are the `data-deck-anim-hidden` attr plus one injected head rule.
 - Base-state invariant: authored CSS **is** the finished layout. The head rule is scoped `@media screen` (print sees base state) and `deck-stage:not([noscale])` (PPTX capture sees base state); thumbnail clones live in nested shadow roots the descendant combinator can't reach.
 - Navigation policy (stateless): forward arrival → reset + autoplay the pre-click auto step; backward arrival → fully built instantly; leaving → cancel + strip (only the active slide carries runtime state); →/Space/tap play pending click steps before advancing (`deckstep` CustomEvent per step); ←, number keys, Home/End and rail clicks bypass steps; reduced-motion plays instantly but keeps click gating; `noscale` / `?_snthumb=` disable the engine outright.
@@ -289,16 +289,21 @@ Thirteen edits.
 ```js
  *  (h) build animations — slide elements carrying data-anim (fade-in/out,
  *      fly-in/out, wipe-in/out, float-in/out, split-in/out, bounce-in/out,
- *      zoom-in/out, wheel-in/out, random-bars-in/out, appear/disappear,
- *      spin, grow/shrink, pulse, teeter, path) play with the Web Animations
- *      API and export as native PowerPoint animations via the PPTX
- *      exporter. Timing attrs: data-anim-trigger click|with|after (default
- *      after — chained autoplay on slide arrival), data-anim-delay,
- *      data-anim-duration, data-anim-order, data-anim-repeat,
- *      data-anim-auto-reverse (emphasis/path only), plus per-effect
- *      data-anim-dir/-rotate/-scale/-path. data-anim-dir families: fly/wipe
- *      take left|right|top|bottom, float takes top|bottom, and
- *      split/random-bars take horizontal|vertical.
+ *      zoom-in/out, wheel-in/out, random-bars-in/out, blinds-in/out,
+ *      checkerboard-in/out, dissolve-in/out, box-in/out, circle-in/out,
+ *      diamond-in/out, plus-in/out, strips-in/out, wedge-in/out,
+ *      appear/disappear, spin, grow/shrink, pulse, teeter, path) play with
+ *      the Web Animations API and export as native PowerPoint animations
+ *      via the PPTX exporter. Timing attrs: data-anim-trigger
+ *      click|with|after (default after — chained autoplay on slide
+ *      arrival), data-anim-delay, data-anim-duration, data-anim-order,
+ *      data-anim-repeat, data-anim-auto-reverse (spin/grow/shrink/path
+ *      only), plus per-effect data-anim-dir/-rotate/-scale/-path.
+ *      data-anim-dir families: fly/wipe take left|right|top|bottom, float
+ *      takes top|bottom, split/random-bars/blinds/checkerboard take
+ *      horizontal|vertical, box/circle/diamond/plus take in|out (entrances
+ *      default in, exits out), and strips takes
+ *      down-right|down-left|up-right|up-left.
  *      →/Space/tap play pending click steps before advancing (a `deckstep`
  *      CustomEvent fires per step); ← and direct jumps (number keys,
  *      Home/End, rail clicks) bypass them. Arriving backward shows the
@@ -373,6 +378,7 @@ Thirteen edits.
   // data-deck-anim-* attrs only, which the rail's MutationObserver already
   // ignores (OWN_ATTRS), so playing an animation never re-clones a thumbnail.
   const ANIM_HIDDEN_ATTR = 'data-deck-anim-hidden';
+  const ANIM_MASK_ATTR = 'data-deck-anim-mask';
   const ANIM_EFFECTS = {
     'appear':          { kind: 'entr', dur: 1 },
     'disappear':       { kind: 'exit', dur: 1 },
@@ -394,12 +400,45 @@ Thirteen edits.
     'wheel-out':       { kind: 'exit', dur: 2000 },
     'random-bars-in':  { kind: 'entr', dur: 500 },
     'random-bars-out': { kind: 'exit', dur: 500 },
+    'blinds-in':       { kind: 'entr', dur: 500 },
+    'blinds-out':      { kind: 'exit', dur: 500 },
+    'checkerboard-in': { kind: 'entr', dur: 500 },
+    'checkerboard-out':{ kind: 'exit', dur: 500 },
+    'dissolve-in':     { kind: 'entr', dur: 500 },
+    'dissolve-out':    { kind: 'exit', dur: 500 },
+    'box-in':          { kind: 'entr', dur: 500 },
+    'box-out':         { kind: 'exit', dur: 500 },
+    'circle-in':       { kind: 'entr', dur: 500 },
+    'circle-out':      { kind: 'exit', dur: 500 },
+    'diamond-in':      { kind: 'entr', dur: 500 },
+    'diamond-out':     { kind: 'exit', dur: 500 },
+    'plus-in':         { kind: 'entr', dur: 500 },
+    'plus-out':        { kind: 'exit', dur: 500 },
+    'strips-in':       { kind: 'entr', dur: 500 },
+    'strips-out':      { kind: 'exit', dur: 500 },
+    'wedge-in':        { kind: 'entr', dur: 500 },
+    'wedge-out':       { kind: 'exit', dur: 500 },
     'spin':            { kind: 'emph', dur: 2000 },
     'grow':            { kind: 'emph', dur: 2000 },
     'shrink':          { kind: 'emph', dur: 2000 },
     'pulse':           { kind: 'emph', dur: 500 },
     'teeter':          { kind: 'emph', dur: 1000 },
     'path':            { kind: 'path', dur: 2000 },
+  };
+
+  // Effects that must run on a LINEAR effect-level timing function: multi-
+  // frame effects carry their pacing in keyframe offsets (an eased iteration
+  // would warp the schedule — teeter's rocks would rush then crawl), and the
+  // filter approximations mirror PowerPoint's constant-rate transitions.
+  const ANIM_LINEAR = {
+    'path': 1, 'bounce-in': 1, 'bounce-out': 1, 'pulse': 1, 'teeter': 1,
+    'wipe-in': 1, 'wipe-out': 1, 'split-in': 1, 'split-out': 1,
+    'wheel-in': 1, 'wheel-out': 1, 'random-bars-in': 1, 'random-bars-out': 1,
+    'blinds-in': 1, 'blinds-out': 1, 'checkerboard-in': 1, 'checkerboard-out': 1,
+    'dissolve-in': 1, 'dissolve-out': 1, 'box-in': 1, 'box-out': 1,
+    'circle-in': 1, 'circle-out': 1, 'diamond-in': 1, 'diamond-out': 1,
+    'plus-in': 1, 'plus-out': 1, 'strips-in': 1, 'strips-out': 1,
+    'wedge-in': 1, 'wedge-out': 1,
   };
 
   // Wipe clip-path insets by data-anim-dir (the side the element enters from
@@ -627,7 +666,92 @@ Two one-line inserts. **Anchor A** (the noscale branch):
       if (document.getElementById(id)) return;
       const tag = document.createElement('style');
       tag.id = id;
-      tag.textContent = '@media screen { deck-stage:not([noscale]) [' + ANIM_HIDDEN_ATTR + '] { visibility: hidden !important; opacity: 0 !important; } }';
+      // Mask-driven effects (wheel/split/random-bars): the gradient must live
+      // in a stylesheet — a var() inside a WAAPI keyframe value is substituted
+      // against the base style when the keyframe is parsed, so it would bake
+      // the initial 0 and never sweep. Rules are keyed by the runtime
+      // data-deck-anim-mask attr and read the keyframe-animated --deck-anim-t.
+      let mask = '';
+      if (MASK_OK) {
+        const T = 'var(--deck-anim-t)';
+        const wheel = 'conic-gradient(#000 0deg calc(' + T + '*1turn), transparent calc(' + T + '*1turn) 1turn)';
+        // Wedge opens symmetrically from 12 o'clock, both directions at once.
+        const wedge = 'conic-gradient(#000 0deg calc(' + T + '*180deg), transparent calc(' + T + '*180deg) calc(360deg - ' + T + '*180deg), #000 calc(360deg - ' + T + '*180deg) 360deg)';
+        const split = (ang) => 'linear-gradient(' + ang + ', #000 0 calc(' + T + '*50%), transparent calc(' + T + '*50%) calc(100% - ' + T + '*50%), #000 calc(100% - ' + T + '*50%) 100%)';
+        // Uniform slats growing to the full period — PowerPoint's Blinds.
+        const blinds = (ang) => 'repeating-linear-gradient(' + ang + ', #000 0 calc(' + T + '*12px), transparent calc(' + T + '*12px) 12px)';
+        // Random bars: four sub-stripes of one 17px period pop in over
+        // staggered quarters of the timeline (clamp gates each), so thin
+        // bars APPEAR in scrambled order instead of thickening in unison —
+        // the closest gradient-mask read of PowerPoint's per-shape noise.
+        const bar = (ang, at, w, from) => 'repeating-linear-gradient(' + ang + ', transparent 0 ' + at + 'px, #000 ' + at + 'px calc(' + at + 'px + clamp(0, (' + T + ' - ' + from + ')*4, 1)*' + w + 'px), transparent calc(' + at + 'px + clamp(0, (' + T + ' - ' + from + ')*4, 1)*' + w + 'px) 17px)';
+        const bars = (ang) => [bar(ang, 0, 4, 0.5), bar(ang, 4, 5, 0), bar(ang, 9, 4, 0.75), bar(ang, 13, 4, 0.25)].join(', ');
+        // Box "in": four edge bands close on the center ("out" is clip-path).
+        const edge = (ang) => 'linear-gradient(' + ang + ', #000 0 calc(' + T + '*50%), transparent calc(' + T + '*50%))';
+        const boxIn = [edge('90deg'), edge('270deg'), edge('180deg'), edge('0deg')].join(', ');
+        // Diamond "in": four diagonal half-planes leave a shrinking
+        // diamond-shaped hole ("out" is clip-path).
+        const diamondIn = [edge('45deg'), edge('135deg'), edge('225deg'), edge('315deg')].join(', ');
+        const circle = (isIn) => isIn
+          ? 'radial-gradient(circle farthest-corner at 50% 50%, transparent 0 calc((1 - ' + T + ')*100%), #000 calc((1 - ' + T + ')*100%))'
+          : 'radial-gradient(circle farthest-corner at 50% 50%, #000 0 calc(' + T + '*100%), transparent calc(' + T + '*100%))';
+        // Plus "out": two center bands grow into a cross; "in": four corner
+        // conic quadrants close on the center around a shrinking cross.
+        const band = (ang) => 'linear-gradient(' + ang + ', transparent 0 calc(50% - ' + T + '*50%), #000 calc(50% - ' + T + '*50%) calc(50% + ' + T + '*50%), transparent calc(50% + ' + T + '*50%))';
+        const plusOut = [band('180deg'), band('90deg')].join(', ');
+        const quad = (fromDeg, x, y) => 'conic-gradient(from ' + fromDeg + ' at ' + x + ' ' + y + ', #000 0 90deg, transparent 90deg 360deg)';
+        const near = 'calc(' + T + '*50%)';
+        const far = 'calc(100% - ' + T + '*50%)';
+        const plusIn = [quad('270deg', near, near), quad('0deg', far, near), quad('90deg', far, far), quad('180deg', near, far)].join(', ');
+        // Strips: a hard diagonal front sweeping toward the named corner
+        // (the staircase quantization is export-only).
+        const strips = (ang) => 'linear-gradient(' + ang + ', #000 0 calc(' + T + '*100%), transparent calc(' + T + '*100%))';
+        // Checkerboard: 12px rows (or columns) sweep across, odd lanes
+        // lagging the even ones — the tile quadrant trick needs mask-size,
+        // carried per variant below.
+        const lag = 'calc(clamp(0, (' + T + ' - 0.15)/0.85, 1)*100%)';
+        const lead = 'calc(' + T + '*100%)';
+        const checkH = quad('270deg', lead, '12px') + ', ' + quad('270deg', lag, '24px');
+        const checkV = quad('270deg', '12px', lead) + ', ' + quad('270deg', '24px', lag);
+        // Dissolve: two offset dot lattices whose dots grow to cover their
+        // tiles, the second gated to start late — a coarse dither.
+        const dot = (r, from) => {
+          const rr = from ? 'calc(clamp(0, (' + T + ' - ' + from + ')*1.4, 1)*' + r + 'px)' : 'calc(' + T + '*' + r + 'px)';
+          return 'radial-gradient(circle at 50% 50%, #000 0 ' + rr + ', transparent ' + rr + ')';
+        };
+        const dissolve = dot(8, 0) + ', ' + dot(10, 0.25);
+        const variants = {
+          'wheel': wheel,
+          'wedge': wedge,
+          'split-v': split('90deg'),
+          'split-h': split('180deg'),
+          'bars-h': bars('180deg'),
+          'bars-v': bars('90deg'),
+          'blinds-h': blinds('180deg'),
+          'blinds-v': blinds('90deg'),
+          'checker-h': { i: checkH, s: '100% 24px, 100% 24px' },
+          'checker-v': { i: checkV, s: '24px 100%, 24px 100%' },
+          'dissolve': { i: dissolve, s: '11px 11px, 14px 14px', p: '0 0, 4px 7px' },
+          'box-in': boxIn,
+          'circle-in': circle(true),
+          'circle-out': circle(false),
+          'diamond-in': diamondIn,
+          'plus-in': plusIn,
+          'plus-out': plusOut,
+          'strips-dr': strips('135deg'),
+          'strips-dl': strips('225deg'),
+          'strips-ur': strips('45deg'),
+          'strips-ul': strips('315deg'),
+        };
+        mask = Object.keys(variants).map((k) => {
+          const v = typeof variants[k] === 'string' ? { i: variants[k] } : variants[k];
+          let decl = '-webkit-mask-image: ' + v.i + '; mask-image: ' + v.i + ';';
+          if (v.s) decl += ' -webkit-mask-size: ' + v.s + '; mask-size: ' + v.s + ';';
+          if (v.p) decl += ' -webkit-mask-position: ' + v.p + '; mask-position: ' + v.p + ';';
+          return ' deck-stage:not([noscale]) [' + ANIM_MASK_ATTR + '="' + k + '"] { ' + decl + ' }';
+        }).join('');
+      }
+      tag.textContent = '@media screen { deck-stage:not([noscale]) [' + ANIM_HIDDEN_ATTR + '] { visibility: hidden !important; opacity: 0 !important; }' + mask + ' }';
       document.head.appendChild(tag);
     }
 
@@ -678,21 +802,29 @@ Two one-line inserts. **Anchor A** (the noscale branch):
         const trig = (el.getAttribute('data-anim-trigger') || '').trim();
         const dirRaw = (el.getAttribute('data-anim-dir') || '').trim();
         // dir families (same fallbacks as the exporter): fly/wipe take the
-        // four edges, float only top|bottom, split/random-bars the bar/seam
-        // axis (split defaults to PowerPoint's "Vertical In").
+        // four edges, float only top|bottom, split/random-bars/blinds/
+        // checkerboard the bar/seam axis (split defaults to PowerPoint's
+        // "Vertical In"), box/circle/diamond/plus in|out (entrances default
+        // in, exits out), strips the corner the sweep travels toward.
         let dir = 'bottom';
-        if (effect === 'split-in' || effect === 'split-out'
-            || effect === 'random-bars-in' || effect === 'random-bars-out') {
+        if (/^(split|random-bars|blinds|checkerboard)-/.test(effect)) {
           const dflt = effect.indexOf('split') === 0 ? 'vertical' : 'horizontal';
           dir = dirRaw === 'horizontal' || dirRaw === 'vertical' ? dirRaw : dflt;
+        } else if (/^(box|circle|diamond|plus)-/.test(effect)) {
+          const dflt = /-out$/.test(effect) ? 'out' : 'in';
+          dir = dirRaw === 'in' || dirRaw === 'out' ? dirRaw : dflt;
+        } else if (effect === 'strips-in' || effect === 'strips-out') {
+          dir = dirRaw === 'down-left' || dirRaw === 'up-right' || dirRaw === 'up-left' ? dirRaw : 'down-right';
         } else if (effect === 'float-in' || effect === 'float-out') {
           dir = dirRaw === 'top' ? 'top' : 'bottom';
         } else if (dirRaw === 'left' || dirRaw === 'right' || dirRaw === 'top') {
           dir = dirRaw;
         }
-        // Auto-reverse only means something on emphasis/path effects (a
-        // reversed entrance ends hidden; a reversed exit fights the re-hide).
+        // Auto-reverse only means something on spin/grow/shrink/path (a
+        // reversed entrance ends hidden; a reversed exit fights the re-hide;
+        // pulse and teeter already return to base on their own).
         const revRaw = el.getAttribute('data-anim-auto-reverse');
+        const revOk = effect === 'spin' || effect === 'grow' || effect === 'shrink' || effect === 'path';
         const e = {
           el,
           effect,
@@ -708,11 +840,29 @@ Two one-line inserts. **Anchor A** (the noscale branch):
             effect === 'shrink' ? 0.67 : effect === 'pulse' ? 1.05 : 1.5))),
           repeat: spec.dur === 1 ? 1
             : Math.max(1, Math.min(100, Math.floor(num('data-anim-repeat', 1)) || 1)),
-          autoRev: (spec.kind === 'emph' || spec.kind === 'path')
-            && revRaw !== null && /^(true|1)?$/i.test(revRaw.trim()),
+          autoRev: revOk && revRaw !== null && /^(true|1)?$/i.test(revRaw.trim()),
+          // Mask-rule variant for the gradient-mask effects (see _injectAnimRule).
+          mask: null,
           path: null,
           baseOpacity: 1,
         };
+        if (MASK_OK) {
+          if (effect === 'wheel-in' || effect === 'wheel-out') e.mask = 'wheel';
+          else if (effect === 'wedge-in' || effect === 'wedge-out') e.mask = 'wedge';
+          else if (effect === 'split-in' || effect === 'split-out') e.mask = dir === 'horizontal' ? 'split-h' : 'split-v';
+          else if (effect === 'random-bars-in' || effect === 'random-bars-out') e.mask = dir === 'vertical' ? 'bars-v' : 'bars-h';
+          else if (effect === 'blinds-in' || effect === 'blinds-out') e.mask = dir === 'vertical' ? 'blinds-v' : 'blinds-h';
+          else if (effect === 'checkerboard-in' || effect === 'checkerboard-out') e.mask = dir === 'vertical' ? 'checker-v' : 'checker-h';
+          else if (effect === 'dissolve-in' || effect === 'dissolve-out') e.mask = 'dissolve';
+          // box(out)/diamond(out) are clip-path keyframes, no mask needed.
+          else if (effect === 'box-in' || effect === 'box-out') e.mask = dir === 'out' ? null : 'box-in';
+          else if (effect === 'diamond-in' || effect === 'diamond-out') e.mask = dir === 'out' ? null : 'diamond-in';
+          else if (effect === 'circle-in' || effect === 'circle-out') e.mask = dir === 'out' ? 'circle-out' : 'circle-in';
+          else if (effect === 'plus-in' || effect === 'plus-out') e.mask = dir === 'out' ? 'plus-out' : 'plus-in';
+          else if (effect === 'strips-in' || effect === 'strips-out') {
+            e.mask = { 'down-right': 'strips-dr', 'down-left': 'strips-dl', 'up-right': 'strips-ur', 'up-left': 'strips-ul' }[dir];
+          }
+        }
         if (effect === 'path') {
           e.path = this._parseAnimPath(el.getAttribute('data-anim-path'));
           if (!e.path) return;
@@ -724,7 +874,7 @@ Two one-line inserts. **Anchor A** (the noscale branch):
         // attr (whose opacity:0 !important would poison the read). The mask
         // effects need it only for their no-@property fade fallback.
         if (/^(fade|zoom|float|bounce)-/.test(effect) || effect === 'pulse'
-            || (!MASK_OK && /^(wheel|split|random-bars)-/.test(effect))) {
+            || (!MASK_OK && /^(wheel|wedge|split|random-bars|blinds|checkerboard|dissolve|box|circle|diamond|plus|strips)-/.test(effect))) {
           const o = parseFloat(getComputedStyle(el).opacity);
           if (Number.isFinite(o)) e.baseOpacity = o;
         }
@@ -870,12 +1020,15 @@ Two one-line inserts. **Anchor A** (the noscale branch):
       const inst = instant || REDUCED_MQ.matches;
       step.items.forEach(({ e, start }) => {
         if (e.kind === 'entr') e.el.removeAttribute(ANIM_HIDDEN_ATTR);
+        // Attach the stylesheet mask (wheel/split/random-bars) — the
+        // keyframes below only drive --deck-anim-t through it.
+        if (e.mask) e.el.setAttribute(ANIM_MASK_ATTR, e.mask);
         let anim;
         try {
           anim = e.el.animate(this._animKeyframes(e), {
             duration: e.dur,
             delay: inst ? 0 : start,
-            easing: e.effect === 'path' ? 'linear' : 'ease',
+            easing: ANIM_LINEAR[e.effect] ? 'linear' : 'ease',
             fill: 'both',
             // WAAPI 2N alternate iterations ≡ PowerPoint repeatCount N with
             // autoRev — each forward leg replays backwards.
@@ -939,48 +1092,55 @@ Two one-line inserts. **Anchor A** (the noscale branch):
           return [{ translate: '0px 0px', opacity: e.baseOpacity, visibility: 'visible' },
                   { translate: '0px ' + dy + 'px', opacity: 0, visibility: 'hidden' }];
         }
+        case 'zoom-in':
+          return [{ scale: '0.1', opacity: 0, visibility: 'hidden' },
+                  { scale: '1', opacity: e.baseOpacity, visibility: 'visible' }];
+        case 'zoom-out':
+          return [{ scale: '1', opacity: e.baseOpacity, visibility: 'visible' },
+                  { scale: '0.1', opacity: 0, visibility: 'hidden' }];
+        case 'box-in':
+        case 'box-out': {
+          // dir=out grows/shrinks a centered rectangle — plain clip-path,
+          // works even without @property. dir=in uses the edge-band mask.
+          if (e.dir === 'out') {
+            const from = { clipPath: 'inset(50% 50% 50% 50%)', visibility: 'hidden' };
+            const to = { clipPath: 'inset(0 0 0 0)', visibility: 'visible' };
+            return e.kind === 'entr' ? [from, to] : [to, from];
+          }
+          return this._animMaskFrames(e);
+        }
+        case 'diamond-in':
+        case 'diamond-out': {
+          // dir=out grows/shrinks a centered diamond polygon (vertices past
+          // the box so the corners are covered at full size).
+          if (e.dir === 'out') {
+            const from = { clipPath: 'polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%)', visibility: 'hidden' };
+            const to = { clipPath: 'polygon(50% -50%, 150% 50%, 50% 150%, -50% 50%)', visibility: 'visible' };
+            return e.kind === 'entr' ? [from, to] : [to, from];
+          }
+          return this._animMaskFrames(e);
+        }
         case 'split-in':
         case 'split-out':
         case 'wheel-in':
         case 'wheel-out':
+        case 'wedge-in':
+        case 'wedge-out':
         case 'random-bars-in':
-        case 'random-bars-out': {
-          const isIn = e.kind === 'entr';
-          // No @property support → honest fade at the same duration.
-          if (!MASK_OK) {
-            return isIn
-              ? [{ opacity: 0, visibility: 'hidden' }, { opacity: e.baseOpacity, visibility: 'visible' }]
-              : [{ opacity: e.baseOpacity, visibility: 'visible' }, { opacity: 0, visibility: 'hidden' }];
-          }
-          // One gradient string, animated only through --deck-anim-t 0→1
-          // (fully hidden → fully shown); exits play the same mask 1→0.
-          let G;
-          if (e.effect.indexOf('split') === 0) {
-            // Two bands converging on the center seam = PowerPoint's barn-in
-            // geometry ("vertical" = vertical seam, bands travel horizontally).
-            const ang = e.dir === 'horizontal' ? '180deg' : '90deg';
-            G = 'linear-gradient(' + ang + ', #000 0 calc(var(--deck-anim-t)*50%), '
-              + 'transparent calc(var(--deck-anim-t)*50%) calc(100% - var(--deck-anim-t)*50%), '
-              + '#000 calc(100% - var(--deck-anim-t)*50%) 100%)';
-          } else if (e.effect.indexOf('wheel') === 0) {
-            // Pie wedge sweeping clockwise from 12 o'clock.
-            G = 'conic-gradient(#000 0deg calc(var(--deck-anim-t)*1turn), '
-              + 'transparent calc(var(--deck-anim-t)*1turn) 1turn)';
-          } else {
-            // Two stripe families with co-prime periods growing at different
-            // rates — a cheap stand-in for random bars ("horizontal" = full-
-            // width rows, so the gradient axis runs vertically).
-            const ang = e.dir === 'vertical' ? '90deg' : '180deg';
-            G = 'repeating-linear-gradient(' + ang + ', #000 0 calc(var(--deck-anim-t)*11px), '
-              + 'transparent calc(var(--deck-anim-t)*11px) 11px), '
-              + 'repeating-linear-gradient(' + ang + ', transparent 0 7px, '
-              + '#000 7px calc(7px + var(--deck-anim-t)*10px), '
-              + 'transparent calc(7px + var(--deck-anim-t)*10px) 17px)';
-          }
-          const hidden = { '--deck-anim-t': 0, maskImage: G, visibility: 'hidden' };
-          const shown = { '--deck-anim-t': 1, maskImage: G, visibility: 'visible' };
-          return isIn ? [hidden, shown] : [shown, hidden];
-        }
+        case 'random-bars-out':
+        case 'blinds-in':
+        case 'blinds-out':
+        case 'checkerboard-in':
+        case 'checkerboard-out':
+        case 'dissolve-in':
+        case 'dissolve-out':
+        case 'circle-in':
+        case 'circle-out':
+        case 'plus-in':
+        case 'plus-out':
+        case 'strips-in':
+        case 'strips-out':
+          return this._animMaskFrames(e);
         case 'bounce-in': {
           // Damped hops matching the exporter's motion path: in from the
           // left quarter, drop 1/3 of the slide, rebounds of 1/9, 1/27,
@@ -1023,8 +1183,9 @@ Two one-line inserts. **Anchor A** (the noscale branch):
         case 'shrink':
           return [{ scale: '1' }, { scale: String(e.scale) }];
         case 'pulse':
-          // Scale to the peak and back with a mid-effect opacity dip —
-          // PowerPoint's tmFilter curve baked into offsets.
+          // Exactly the curve the exporter writes (and PowerPoint plays):
+          // linear scale to the peak at the midpoint and back, opacity
+          // dipping to 50% over the 20–80% window (the native tmFilter).
           return [
             { offset: 0, scale: '1', opacity: e.baseOpacity },
             { offset: 0.2, opacity: 0.5 * e.baseOpacity },
@@ -1034,16 +1195,37 @@ Two one-line inserts. **Anchor A** (the noscale branch):
           ];
         case 'teeter': {
           // Rock +A −A +A −A and settle, holding the first tilt briefly —
-          // the same five-step schedule the exporter writes.
+          // the same five-step schedule the exporter writes, at the same
+          // constant rate PowerPoint plays each rock.
           const A = e.rotate;
           const offs = [0, 0.1, 0.2, 0.4, 0.6, 0.8, 1];
           const rots = [0, A, A, -A, A, -A, 0];
-          return offs.map((off, k) => ({ offset: off, rotate: rots[k] + 'deg', easing: 'ease-in-out' }));
+          return offs.map((off, k) => ({ offset: off, rotate: rots[k] + 'deg' }));
         }
         case 'path':
           return e.path.map((p) => ({ translate: p.x + 'px ' + p.y + 'px' }));
       }
       return [{}, {}];
+    }
+
+    /** Shared frames for the gradient-mask effects (wheel/wedge/split/
+     *  random-bars/blinds/checkerboard/dissolve/circle/plus/strips and the
+     *  dir=in box/diamond variants). The gradient itself lives in the
+     *  injected stylesheet, keyed by the data-deck-anim-mask attr _animRun
+     *  sets — a var() inside a keyframe value would be substituted against
+     *  the base style (t=0) at parse time and never sweep. Keyframes drive
+     *  only the registered --deck-anim-t: 0 = fully hidden, 1 = fully
+     *  shown. No @property support → honest fade at the same duration. */
+    _animMaskFrames(e) {
+      const isIn = e.kind === 'entr';
+      if (!e.mask) {
+        return isIn
+          ? [{ opacity: 0, visibility: 'hidden' }, { opacity: e.baseOpacity, visibility: 'visible' }]
+          : [{ opacity: e.baseOpacity, visibility: 'visible' }, { opacity: 0, visibility: 'hidden' }];
+      }
+      const hidden = { '--deck-anim-t': 0, visibility: 'hidden' };
+      const shown = { '--deck-anim-t': 1, visibility: 'visible' };
+      return isIn ? [hidden, shown] : [shown, hidden];
     }
 
     /** Design-space canvas size (viewport rects are scaled; divide it out). */
@@ -1093,10 +1275,12 @@ Two one-line inserts. **Anchor A** (the noscale branch):
     /** Remove every data-deck-anim-* runtime attr in a subtree — used by
      *  _animClear and as clone hygiene in _materialize/_duplicateSlide. */
     _stripAnimAttrs(root) {
-      if (root.removeAttribute) root.removeAttribute(ANIM_HIDDEN_ATTR);
-      if (root.querySelectorAll) {
-        root.querySelectorAll('[' + ANIM_HIDDEN_ATTR + ']').forEach((el) => el.removeAttribute(ANIM_HIDDEN_ATTR));
-      }
+      [ANIM_HIDDEN_ATTR, ANIM_MASK_ATTR].forEach((attr) => {
+        if (root.removeAttribute) root.removeAttribute(attr);
+        if (root.querySelectorAll) {
+          root.querySelectorAll('[' + attr + ']').forEach((el) => el.removeAttribute(attr));
+        }
+      });
     }
 ```
 

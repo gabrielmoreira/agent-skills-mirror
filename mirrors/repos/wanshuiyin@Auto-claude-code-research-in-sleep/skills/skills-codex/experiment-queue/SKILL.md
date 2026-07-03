@@ -38,6 +38,12 @@ All of these are pure engineering friction that can be orchestrated.
 
 ## Core Concepts
 
+> **Environment contract**: queue jobs assume the target env is already built
+> and validated per `../shared-references/compute-env-contract.md` (spec-hash
+> ledger + kernel witness). A wave of jobs dying at import time = the env
+> contract was skipped, not a queue bug; check the provider's
+> `.aris/compute/<provider>.md` ledger before re-queueing.
+
 ### Job Manifest
 
 A manifest lists jobs with explicit state:
@@ -83,6 +89,16 @@ pending → running → completed
                  ↘ failed_other → stuck (needs manual inspection)
 stale_screen_detected → cleaned → pending
 ```
+
+> **Operator note on `stuck` (the agent's move, not the queue's):** the queue
+> deterministically parks `failed_other` jobs as `stuck` — that part is code and
+> unchanged. Before handing a `stuck` batch to the human, the OPERATING AGENT
+> should check: if the same failure repeats across jobs, try ONE clean
+> reimplement of the **agent-generated wrapper/attempt script only** — never
+> user/project source, the manifest, queue state, logs, or results (per mainline
+> `external-cadence.md`, "Let a broken attempt restart, not just patch").
+> Reserve the human handoff for contract/environment doubts, not merely broken
+> attempt code.
 
 ### Wave Orchestration
 

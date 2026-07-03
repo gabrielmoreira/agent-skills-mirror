@@ -44,6 +44,13 @@ Ask the user for these if not provided:
 **Suggested Experiment for Next Sprint:**
 [One concrete, testable process change — with a specific success metric]
 
+## Deeper Materials
+
+This skill ships with support files — use them when they are available:
+
+- **`references/root-cause-vs-symptom.md`** — Retros That Change Things: Root Causes vs Symptoms. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
+- **`templates/retro-board.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
 ## Quality Checks
 
 - [ ] Each Start/Stop/Continue prompt names a specific behaviour, not a vague category

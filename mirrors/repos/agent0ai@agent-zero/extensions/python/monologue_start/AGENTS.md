@@ -12,10 +12,11 @@
 
 - Keep automatic rename behavior bounded and non-destructive.
 - Do not override explicit user chat names without the intended guard conditions.
+- Surface Utility Model rename failures with one scoped error notification per chat.
 
 ## Work Guidance
 
-- Coordinate rename behavior with chat persistence and WebUI refresh.
+- Coordinate rename behavior with chat persistence and WebUI refresh after successful saves.
 
 ## Verification
 

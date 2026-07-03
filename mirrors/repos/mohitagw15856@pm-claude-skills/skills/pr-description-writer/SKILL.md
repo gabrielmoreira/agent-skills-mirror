@@ -74,6 +74,13 @@ Flag anything that warrants extra attention:
 - Closes #[issue number] (if applicable)
 - Related to #[PR/issue number]
 
+## Deeper Materials
+
+This skill ships with support files — use them when they are available:
+
+- **`references/reviewer-empathy.md`** — PR Descriptions as Review Navigation. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
+- **`templates/pr-template.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
 ## Quality Checks
 - [ ] Title is imperative mood and under 72 characters
 - [ ] Summary explains what AND why (not just what)

@@ -38,23 +38,24 @@
 [![Validate catalog](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml/badge.svg)](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/brycewang-stanford/Auto-Empirical-Research-Skills/badge)](https://scorecard.dev/viewer/?uri=github.com/brycewang-stanford/Auto-Empirical-Research-Skills)
 [![Security audit: 52/52 CLEAN](https://img.shields.io/badge/security%20audit-52%2F52%20CLEAN-brightgreen)](SECURITY-SCAN-REPORT.md)
+[![Rigor coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbrycewang-stanford%2FAuto-Empirical-Research-Skills%2Fmain%2Fdocs%2Fbadges%2Frigor-coverage.json)](docs/RIGOR_COVERAGE.md)
 [![Powered by StatsPAI](https://img.shields.io/badge/powered%20by-StatsPAI-orange)](https://github.com/brycewang-stanford/StatsPAI)
 
 ---
 
 ## 最初に読む: リポジトリ全体は 1 つの AERS Router Skill
 
-このリポジトリは、ルートディレクトリを Codex、CodeBuddy、Claude Code、または類似 IDE に 1 つの skill として取り込めます。ルートの [`SKILL.md`](SKILL.md) は `auto-empirical-research-skills` を登録し、69 コレクション・1,145 スキルを一度にコンテキストへ読み込むのではなく、実証研究タスクに合う vendored 子 skill へルーティングします。
+このリポジトリは、ルートディレクトリを Codex、CodeBuddy、Claude Code、または類似 IDE に 1 つの skill として取り込めます。ルートの [`SKILL.md`](SKILL.md) は `auto-empirical-research-skills` を登録し、69 コレクション・1,150 スキルを一度にコンテキストへ読み込むのではなく、実証研究タスクに合う vendored 子 skill へルーティングします。
 
 - **リポジトリ全体を取り込む場合**: リポジトリルートを選び、[`agents/openai.yaml`](agents/openai.yaml) とルート [`SKILL.md`](SKILL.md) で 1 つの catalog router を登録します。agent は [`catalog/skills.json`](catalog/skills.json) または [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) を確認してから、選んだ子 skill だけを読みます。
-- **単一 skill を取り込む場合**: IDE が「1 フォルダ = 1 skill」を期待するなら、対象の `SKILL.md` を直接含む子フォルダをコピーしてください。例: `skills/50-brycewang-aer-skills/skills/aer-workflow/`。IDE が明示的に再帰 discovery をサポートしない限り、ルート取り込みで 1,145 個の個別 skill が登録されるとは想定しないでください。
+- **単一 skill を取り込む場合**: IDE が「1 フォルダ = 1 skill」を期待するなら、対象の `SKILL.md` を直接含む子フォルダをコピーしてください。例: `skills/50-brycewang-aer-skills/skills/aer-workflow/`。IDE が明示的に再帰 discovery をサポートしない限り、ルート取り込みで 1,150 個の個別 skill が登録されるとは想定しないでください。
 - **インストール詳細**: [`docs/INSTALL.md`](docs/INSTALL.md) を参照してください。デフォルト README は簡体中文の [`README.md`](README.md) で、英語版は [`README-en.md`](README-en.md) です。
 
 ---
 
 ## 全 69 スキルコレクション一覧
 
-> **リポジトリを開けば、ライブラリ全体が見渡せます。** **69 コレクション · 1,145 スキル**のすべてに `00 → 69` の番号が付き、いずれも（外部リンクではなく）**本リポジトリに取り込み（vendored）**、[`catalog/skills.json`](catalog/skills.json) で追跡されています。**どの行をクリックしてもそのフォルダが開きます。** **⭐ = Stanford REAP × CoPaper.AI チームが構築したファーストパーティスキル**。それ以外はすべて精選・セキュリティ監査済みのコミュニティ成果です。
+> **リポジトリを開けば、ライブラリ全体が見渡せます。** **69 コレクション · 1,150 スキル**のすべてに `00 → 69` の番号が付き、いずれも（外部リンクではなく）**本リポジトリに取り込み（vendored）**、[`catalog/skills.json`](catalog/skills.json) で追跡されています。**どの行をクリックしてもそのフォルダが開きます。** **⭐ = Stanford REAP × CoPaper.AI チームが構築したファーストパーティスキル**。それ以外はすべて精選・セキュリティ監査済みのコミュニティ成果です。
 >
 > **テーマ凡例 —** 🚀 全パイプライン & オーケストレーター · 🎯 因果推論 & 計量経済学 · 📚 文献 & 研究設計 · ✍️ 執筆・編集 & 脱 AIGC · 📑 引用・レプリケーション & 査読 · 🛠️ データ・ツール & インフラ
 
@@ -132,7 +133,7 @@
 
 > ⭐ **私たち自身が構築した背骨:** [StatsPAI](skills/00-Full-empirical-analysis-skill_StatsPAI/)（因果エンジン）· 明示的な [Python](skills/00.1-Full-empirical-analysis-skill_Python/) / [Stata](skills/00.2-Full-empirical-analysis-skill_Stata/) / [R](skills/00.3-Full-empirical-analysis-skill_R/) の全パイプライン移植版 · [AER-skills](skills/50-brycewang-aer-skills/)（トップ 5 投稿スタック）· [chinese-de-aigc](skills/48-copaper-ai-chinese-de-aigc/) · [Paper-WorkFlow](skills/69-Paper-WorkFlow/)（メタオーケストレーター）。これらが AERS の背骨です —— 完全な比較は [旗艦パイプライン skills ↓](#旗艦パイプライン-skills) を参照。用途別に閲覧したいですか? [同じ 69 を用途別に整理したもの ↓](#69-コレクションを用途別に) をご覧ください。
 
-**実証研究の専門家のための agent-skills ディストリビューション。** マーケティング用のリストではありません —— 本リポジトリには **1,145 個のスキルを取り込み（vendored）、カタログ化**したうえで、**数値ベンチマーク・評価ハーネス・セキュリティ監査・CI** で品質を固定し、さらに広域エコシステムの **119 リポジトリにまたがる 23,000+ スキル**を精選したマップを重ねています。
+**実証研究の専門家のための agent-skills ディストリビューション。** マーケティング用のリストではありません —— 本リポジトリには **1,150 個のスキルを取り込み（vendored）、カタログ化**したうえで、**数値ベンチマーク・評価ハーネス・セキュリティ監査・CI** で品質を固定し、さらに広域エコシステムの **119 リポジトリにまたがる 23,000+ スキル**を精選したマップを重ねています。
 
 AERS は同時に二つの性格を持ちます。(1) 完全な実証パイプライン — データクリーニング → 識別 → 推定 → 頑健性 → 表/図 → 投稿可能なドラフト — を回す、少数精鋭の**ファーストパーティ旗艦スキル**。そして (2) 実証研究スキルのエコシステムを、研究ワークフローの段階別に整理した**精選・セキュリティ配慮済みのカタログ**です。差別化の核心は数ではありません。旗艦の挙動が、口先で主張されたものではなく**既知の答えに対して検証されている**という点です。
 
@@ -168,7 +169,7 @@ AERS は同時に二つの性格を持ちます。(1) 完全な実証パイプ�
 
 ## 69 コレクションを用途別に
 
-> [冒頭の連番インデックス ↑](#全-69-スキルコレクション一覧) と同じ **69 コレクション · 1,145 スキル** を、ここでは**研究目的別**に並べ替えました。取り組んでいる段階までスキャンできます。**⭐ = ファーストパーティ**（Stanford REAP × CoPaper.AI）。それ以外はすべて精選・セキュリティ監査済みのコミュニティ成果です。
+> [冒頭の連番インデックス ↑](#全-69-スキルコレクション一覧) と同じ **69 コレクション · 1,150 スキル** を、ここでは**研究目的別**に並べ替えました。取り組んでいる段階までスキャンできます。**⭐ = ファーストパーティ**（Stanford REAP × CoPaper.AI）。それ以外はすべて精選・セキュリティ監査済みのコミュニティ成果です。
 
 **🚀 全パイプライン旗艦 & オーケストレーター** — *一度の呼び出しで、実証ループ全体*
 
@@ -277,14 +278,14 @@ AERS は同時に二つの性格を持ちます。(1) 完全な実証パイプ�
 
 | 内容 | 数 | 一次情報源 |
 |---|---:|---|
-| **本リポジトリに取り込み済み**でカタログ化されたスキル | **1,145** | [`catalog/skills.json`](catalog/skills.json) |
+| **本リポジトリに取り込み済み**でカタログ化されたスキル | **1,150** | [`catalog/skills.json`](catalog/skills.json) |
 | 取り込み済み **コレクション（collections）** | **69** | [`catalog/skills.json`](catalog/skills.json) · [全 69 を一覧 ↑](#全-69-スキルコレクション一覧) |
 | **ファーストパーティ旗艦**の全パイプラインスキル（StatsPAI DSL + 明示的な Python/Stata/R） | **4** | [`skills/00*`](skills/) |
-| 毎回データから gold 値を再計算する数値**ベンチマークタスク** | **5** | [`benchmark/`](benchmark/) |
-| 挙動レベルの**評価シナリオ / ルーブリック項目** | **17 / 95** | [`eval-harness/`](eval-harness/) |
+| 毎回データから gold 値を再計算する数値**ベンチマークタスク** | **16** | [`benchmark/`](benchmark/) |
+| 挙動レベルの**評価シナリオ / ルーブリック項目** | **29 / 153** | [`eval-harness/`](eval-harness/) |
 | **元のベースライン**のセキュリティ監査（コレクション / ファイル） | **52 / 2,940+**、52/52 CLEAN | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
 | **広域エコシステム**の精選マップ | **23,000+ スキル / 119 リポジトリ** | 本 README · [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
-| **ツールカタログ**（`tools/`）: 因果/計量ライブラリ、自律研究エージェント、MCP サーバー、因果探索、ベンチマークデータセット | **335 ツール / 6 カテゴリ** | [`tools/tools.json`](tools/tools.json) · [`tools/CATALOG.md`](tools/CATALOG.md) |
+| **ツールカタログ**（`tools/`）: 因果/計量ライブラリ、自律研究エージェント、MCP サーバー、因果探索、ベンチマークデータセット | **334 ツール / 6 カテゴリ** | [`tools/tools.json`](tools/tools.json) · [`tools/CATALOG.md`](tools/CATALOG.md) |
 
 > セキュリティ監査が対象としたのは、元の **52 コレクション / 2,940 ファイルのベースライン（52/52 CLEAN）**です。そのベースライン以降に取り込まれたスキルは [`catalog/provenance.json`](catalog/provenance.json)、[`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md)、[`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) で追跡しています。高信頼が求められる文脈で利用する前には `make audit` を実行してください。
 
@@ -338,6 +339,18 @@ make check        # repo validation + unit tests + eval lint + numeric benchmark
 
 > **なぜ DSL *と*明示的な移植版の両方が必要なのか?** ワンショットの DSL を信頼するときは StatsPAI を。教育・監査・各診断を手作業で差し替えなければならないときは 00.1/00.2/00.3 を選んでください。AER-skills はそのうえで、正しい分析を採択ラインまで押し上げます —— これらは*異なる*問題を解決し、互いに組み合わさります。
 
+### 百聞は一見にしかず —— 旗艦パイプラインの実際の出力
+
+以下の 3 つの図は、リポジトリにコミット済みの [Card 教育収益率の再現デモ](demo-StatsPAI-skill/)（StatsPAI パイプライン 1 回の実行: notebook・データ・表・再現パッケージ付き）からそのまま取ったものです。LaLonde の 4 スタック比較（Python/R/Stata/StatsPAI）は [`demo-notebooks/`](demo-notebooks/) にあります。
+
+| 主要係数プロット | スペシフィケーション・カーブ | 感度ダッシュボード |
+|---|---|---|
+| ![主要係数プロット](demo-StatsPAI-skill/figures/fig3_coefplot_main.png) | ![スペシフィケーション・カーブ](demo-StatsPAI-skill/figures/fig5_spec_curve.png) | ![感度ダッシュボード](demo-StatsPAI-skill/figures/fig6_sensitivity_dashboard.png) |
+
+> 🧪 **エンドツーエンド再現の実証**: 依存ゼロのコマンド 1 つで Card & Krueger (1994) の最低賃金 DiD を公式生データから再現 —— 波次平均は桁単位で一致、Table 4 の係数は完全一致、再現スコアラーの判定は **PERFECT**（3 段階すべて 100%）。[`demo-notebooks/card-krueger-1994/`](demo-notebooks/card-krueger-1994/) を参照。
+>
+> 🔎 オンラインカタログ（GitHub Pages、ビルド不要）: **[スキル検索](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/search.html)** · [ツール検索](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/docs/tools-search.html) · [サイトホーム](https://brycewang-stanford.github.io/Auto-Empirical-Research-Skills/)
+
 ---
 
 ## ここから始める — 30 秒でスキルを選ぶ
@@ -367,10 +380,10 @@ make check        # repo validation + unit tests + eval lint + numeric benchmark
 
 | 層 | 何を捕捉するか | 場所 |
 |---|---|---|
-| **数値ベンチマーク** | 実データから再計算された真値と一致しない報告数字 —— 素朴 DID の符号の罠、第一段階 F なしの弱 IV、staggered なタイミング下での TWFE バイアス、RDD のトレンド交絡、処置後のバッドコントロール | [`benchmark/`](benchmark/) · 5 タスク |
-| **評価ハーネス** | 文章レベルの失敗: 弱 IV の根拠なき安心、staggered-DID での TWFE 誤用、捏造引用、安全でない `curl \| bash` セットアップ、多重検定の濫用、AER 準拠のギャップ | [`eval-harness/`](eval-harness/) · 17 シナリオ / 95 ルーブリック項目 |
+| **数値ベンチマーク** | 実データから再計算された真値と一致しない報告数字 —— 素朴 DID の符号の罠、第一段階 F なしの弱 IV、staggered なタイミング下での TWFE バイアス、RDD のトレンド交絡、処置後のバッドコントロール、プールされた平均が隠す異質効果（CATE）、平均のみでは見逃す分位点効果、ローカルショックに交絡されたシフトシェア（Bartik）IV、媒介変数を統制して直接効果の符号が反転する罠、参照グループに依存する Oaxaca 分解 | [`benchmark/`](benchmark/) · 16 タスク |
+| **評価ハーネス** | 文章レベルの失敗: 弱 IV の根拠なき安心、staggered-DID での TWFE 誤用、捏造引用、安全でない `curl \| bash` セットアップ、多重検定の濫用、AER 準拠のギャップ | [`eval-harness/`](eval-harness/) · 29 シナリオ / 153 ルーブリック項目 |
 | **セキュリティ監査** | pipe-to-shell、リバースシェル、認証情報の流出、13 のリスクカテゴリにわたるプロンプトインジェクション —— 6 フェーズ、40+ フックスクリプトを手作業でレビュー | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
-| **来歴とライセンス** | 取り込まれていないソース、ライセンスリスク、1,145 個すべてのカタログ化スキルにわたる衛生のドリフト | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
+| **来歴とライセンス** | 取り込まれていないソース、ライセンスリスク、1,150 個すべてのカタログ化スキルにわたる衛生のドリフト | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
 | **CI と互換性** | カタログの鮮度、ローカルリンク切れ、GitHub Actions ポリシー、Python 3.9 **および** 3.12 の構文フロア | [`.github/workflows/`](.github/workflows/) · 6 ワークフロー |
 
 ```bash
@@ -542,6 +555,7 @@ Replication → Submission → Peer Review Response → Defense
 
 物語形式の変更履歴は [**CHANGELOG.md**](CHANGELOG.md) に移動しました。最近のハイライト:
 
+- **2026-07** — 初のタグ付きリリース **v2026.07** を公開; 厳密性カバレッジマップを **16 の手法ファミリー全閉環**に拡張（CATE、分位点効果、Bartik シフトシェア、因果媒介、Oaxaca 分解を追加 — 各ファミリーに評価シナリオと数値ベンチマークの両方）、ベンチマークは **16 タスク**、評価ハーネスは **29 シナリオ / 153 ルーブリック項目**に; 機械生成のリリーススナップショット、rigor カバレッジバッジ、6 言語 README 数値整合ゲートを導入。
 - **2026-05** — **AER-skills**（トップ 5 経済学投稿スタック、9 スキル）を週次の上流同期付きで取り込み; 数値ベンチマークを **5 つの因果回復タスク**に、評価ハーネスを **17 シナリオ / 95 ルーブリック項目**に拡張。
 - **2026-04** — **52/52 のセキュリティベースライン**を完了; 4 つの全パイプライン旗艦（**StatsPAI** + 明示的な **Python / Stata / R**）を出荷; オリジナルの **chinese-de-aigc** スキルをローンチ。
 - **それ以前** — 43 コレクションから **119 リポジトリ / 23,000+ スキル**の精選マップへ成長; バイリンガル README、学術データ MCP サーバー、マルチエージェントシステムを追加。

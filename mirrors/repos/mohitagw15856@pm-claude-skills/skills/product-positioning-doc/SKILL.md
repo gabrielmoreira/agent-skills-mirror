@@ -203,6 +203,13 @@ Positioning only works if it's implemented consistently:
 
 ---
 
+## Deeper Materials
+
+This skill ships with support files — use them when they are available:
+
+- **`references/category-choice.md`** — Choosing Your Category: the Highest-Leverage Positioning Decision. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
+- **`templates/positioning-canvas.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
 ## Quality Checks
 
 - [ ] Positioning statement has exactly one A — the product is accountable to exactly one primary differentiated claim

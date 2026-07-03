@@ -344,7 +344,7 @@ curl -X POST http://localhost:3030/connections/<id>/proxy/<upstream-api-path> \
 
 Do **not** call `https://api.github.com/...` directly from a pipe — use `/connections/github/proxy/...` instead. There is no `/connections/<id>/token` endpoint.
 
-If not connected, tell user to set up in Settings > Connections.
+If not connected, tell the user to set it up from the Connections page in the desktop app.
 
 ---
 

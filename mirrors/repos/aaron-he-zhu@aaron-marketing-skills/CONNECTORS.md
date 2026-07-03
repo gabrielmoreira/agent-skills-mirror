@@ -75,47 +75,51 @@ The fastest way to keep a skill zero-dependency is to feed it data from a free, 
 
 ## Tool Categories (placeholder → tools)
 
-| Category | Placeholder | Example paid tools | Free alternative (above) |
-|----------|-------------|--------------------|--------------------------|
-| SEO Platform | `~~SEO tool` | Ahrefs, Semrush, Moz, SISTRIX, SE Ranking | GSC + Google Suggest |
-| Analytics | `~~analytics` | GA, Adobe Analytics, Plausible, Matomo | GA4 Data API / self-host Plausible |
-| Search Console | `~~search console` | Google Search Console, Bing Webmaster | GSC + Bing WMT APIs |
-| AI Visibility | `~~AI monitor` | Otterly, Profound, Scrunch AI | manual prompt-testing |
-| Web Crawler | `~~web crawler` | Screaming Frog, Sitebulb, Lumar | advertools / Screaming Frog free / DIY fetch |
-| Link Database | `~~link database` | Ahrefs, Majestic, Moz | Open PageRank + Common Crawl + GSC Links |
-| Competitive Intel | `~~competitive intel` | SimilarWeb, SpyFu, Semrush | Wayback CDX + Common Crawl |
-| Page Speed | `~~page speed tool` | GTmetrix, WebPageTest | PSI / CrUX / Lighthouse |
-| Schema Validator | `~~schema validator` | — | validator.schema.org / Rich Results Test |
-| Knowledge Graph | `~~knowledge graph` | Google KG API, CrunchBase | Wikidata SPARQL |
-| Brand Monitor | `~~brand monitor` | Brand24, Mention, Brandwatch | Google Alerts / F5Bot |
-| CRM / Marketing | `~~CRM` | HubSpot, Salesforce, Marketo | — |
-| Content / CMS | `~~content platform` / `~~CMS` | WordPress, Webflow, Contentful, Sanity, Notion | — |
-| Communication | `~~team chat` | Slack, Teams, Discord | — |
-| Reporting | `~~reporting` | Looker Studio, Tableau, Power BI | — |
+`Discipline` = which discipline(s) use the category (search / influencer / paid / both / all). `Agent default` = what an agent should reach for first at Tier 1 (use the free/own-data path unless the team already pays for a listed tool).
+
+| Category | Placeholder | Discipline | Example paid tools | Free alternative (above) | Agent default |
+|----------|-------------|------------|--------------------|--------------------------|---------------|
+| SEO Platform | `~~SEO tool` | search | Ahrefs, Semrush, Moz, SISTRIX, SE Ranking | GSC + Google Suggest | GSC + Suggest (keyless) |
+| Analytics | `~~analytics` | all | GA, Adobe Analytics, Plausible, Matomo | GA4 Data API / self-host Plausible | GA4 own-data |
+| Search Console | `~~search console` | search | Google Search Console, Bing Webmaster | GSC + Bing WMT APIs | GSC (own) |
+| AI Visibility | `~~AI monitor` | search | Otterly, Profound, Scrunch AI | manual prompt-testing | manual prompt set |
+| Web Crawler | `~~web crawler` | search | Screaming Frog, Sitebulb, Lumar | advertools / Screaming Frog free / DIY fetch | DIY fetch (`crawl.py`) |
+| Link Database | `~~link database` | search | Ahrefs, Majestic, Moz | Open PageRank + Common Crawl + GSC Links | Open PageRank + GSC |
+| Competitive Intel | `~~competitive intel` | search | SimilarWeb, SpyFu, Semrush | Wayback CDX + Common Crawl | Wayback CDX |
+| Page Speed | `~~page speed tool` | search | GTmetrix, WebPageTest | PSI / CrUX / Lighthouse | PSI (keyless) |
+| CDN | `~~CDN` | search | Cloudflare, Fastly, Akamai, CloudFront | response-header inspection (`curl -sI URL` → `cf-ray` / `x-served-by` / `x-cache` / `server`) + `dig CNAME host` for edge mapping + CrUX/PSI TTFB as the performance signal | header + DNS inspection (keyless) |
+| Schema Validator | `~~schema validator` | search | — | validator.schema.org / Rich Results Test | Rich Results Test |
+| Knowledge Graph | `~~knowledge graph` | both | Google KG API, CrunchBase | Wikidata SPARQL | Wikidata SPARQL |
+| Local Listings | `~~local listings` | search | Google Business Profile, Yext, BrightLocal, Whitespark | GBP dashboard (own data, manual export) + manual NAP/citation check | GBP own data (keyless) |
+| Brand Monitor | `~~brand monitor` | both | Brand24, Mention, Brandwatch | Google Alerts / F5Bot | Google Alerts |
+| CRM / Marketing | `~~CRM` | all | HubSpot, Salesforce, Marketo | — | manual CSV |
+| Content / CMS | `~~content platform` / `~~CMS` | all | WordPress, Webflow, Contentful, Sanity, Notion | — | existing CMS |
+| Communication | `~~team chat` | all | Slack, Teams, Discord | — | manual paste |
+| Reporting | `~~reporting` | all | Looker Studio, Tableau, Power BI | — | Markdown report |
 
 ### Influencer / IMPACT categories
 
-The 18 influencer-marketing skills use these additional placeholders (plus `~~CRM`, `~~content platform`/`~~CMS`, `~~team chat`, and `~~reporting` shared with the table above). Every one works at Tier 1 — paste the data manually; the right-hand column is the keyless / own-data path.
+The influencer-marketing skills use these additional placeholders (plus `~~CRM`, `~~content platform`/`~~CMS`, `~~team chat`, and `~~reporting` shared with the table above). Every one works at Tier 1 — paste the data manually; the right-hand column is the keyless / own-data path. Categories marked Discipline=**both** are also used by the **paid** (Paid Ads) discipline — notably `~~ad platform`, `~~web analytics`, `~~ecommerce`, which paid scores from **own-account manual export** (keyed ad-platform APIs are opt-in Tier-2/3 MCP, never required).
 
-| Category | Placeholder | Example paid tools | Free / own-data path |
-|----------|-------------|--------------------|----------------------|
-| Influencer Database | `~~influencer database` | Modash, HypeAuditor, Upfluence, GRIN | manual creator CSV (handles + public metrics) |
-| Social Platform Analytics | `~~social platform analytics` | IG/TikTok/YouTube creator APIs, Dash Hudson | native creator dashboards (manual export of own/partner data) |
-| Social Listening | `~~social listening` | Brandwatch, Sprout Social, Talkwalker | Google Alerts / F5Bot / platform search |
-| Audience Intelligence | `~~audience intelligence` | HypeAuditor, Audiense, SparkToro | platform audience demographics (own/manual) |
-| Audience Overlap | `~~audience overlap` | Audiense, SparkToro | manual follower-sample comparison |
-| Trend Database | `~~trend database` | Exploding Topics, TrendTok | Google Trends / platform trending pages |
-| Ad Platform | `~~ad platform` | Meta Ads, TikTok Ads, Google Ads | native ad manager (own data, manual export) |
-| Web Analytics | `~~web analytics` | GA4, Adobe Analytics, Plausible | GA4 Data API (own data) |
-| E-commerce / Sales | `~~ecommerce / sales platform` / `~~ecommerce / analytics` | Shopify, WooCommerce, Stripe | platform order export (own data) |
-| A/B Testing | `~~A/B testing platform` | Optimizely, VWO | server-side split / manual variant test |
-| Landing / Page Builder | `~~CMS / landing page builder` | Webflow, Unbounce, Instapage | static HTML / existing CMS |
-| DAM / Asset Library | `~~DAM / asset library` | Bynder, Brandfolder | shared Drive / Dropbox folder |
-| Email / DM | `~~email/DM tool` | Klaviyo, Mailchimp, native DMs | native DM + manual email |
-| Compliance Reference | `~~compliance reference` | platform policy portals | FTC 16 CFR §255 / Part 465 (public) |
-| Competitor Tracking | `~~competitor tracking` | Social Blade, BuzzSumo | manual competitor profile review |
-| Customer Survey | `~~customer survey data` | Typeform, SurveyMonkey, Qualtrics | Google Forms |
-| E-signature | `~~e-signature` | DocuSign, Dropbox Sign, PandaDoc | PDF + manual signature |
+| Category | Placeholder | Discipline | Example paid tools | Free / own-data path | Agent default |
+|----------|-------------|------------|--------------------|----------------------|---------------|
+| Influencer Database | `~~influencer database` | influencer | Modash, HypeAuditor, Upfluence, GRIN | manual creator CSV (handles + public metrics) | manual CSV (no public API) |
+| Social Platform Analytics | `~~social platform analytics` | influencer | IG/TikTok/YouTube creator APIs, Dash Hudson | native creator dashboards (manual export of own/partner data) | manual export (no public API) |
+| Social Listening | `~~social listening` | both | Brandwatch, Sprout Social, Talkwalker | Google Alerts / F5Bot / platform search | Google Alerts |
+| Audience Intelligence | `~~audience intelligence` | influencer | HypeAuditor, Audiense, SparkToro | platform audience demographics (own/manual) | platform native (own) |
+| Audience Overlap | `~~audience overlap` | influencer | Audiense, SparkToro | manual follower-sample comparison | manual sample |
+| Trend Database | `~~trend database` | both | Exploding Topics, TrendTok | Google Trends / platform trending pages | Google Trends RSS (`rss_monitor.py`) |
+| Ad Platform | `~~ad platform` | both (influencer + paid) | Meta Ads, TikTok Ads, Google Ads | native ad manager (own data, manual export) | manual export (own); keyed API = opt-in MCP |
+| Web Analytics | `~~web analytics` | both | GA4, Adobe Analytics, Plausible | GA4 Data API (own data) | GA4 own-data |
+| E-commerce / Sales | `~~ecommerce` (bare alias covering both `~~ecommerce / sales platform` and `~~ecommerce / analytics`) | both | Shopify, WooCommerce, Stripe | platform order export (own data) | order CSV (own) |
+| A/B Testing | `~~A/B testing platform` | both | Optimizely, VWO | server-side split / manual variant test | manual variant |
+| Landing / Page Builder | `~~CMS / landing page builder` | both | Webflow, Unbounce, Instapage | static HTML / existing CMS | existing CMS |
+| DAM / Asset Library | `~~DAM / asset library` | influencer | Bynder, Brandfolder | shared Drive / Dropbox folder | shared folder |
+| Email / DM | `~~email/DM tool` | influencer | Klaviyo, Mailchimp, native DMs | native DM + manual email | manual DM |
+| Compliance Reference | `~~compliance reference` | both | platform policy portals | FTC 16 CFR §255 / Part 465 (public) | FTC public rule |
+| Competitor Tracking | `~~competitor tracking` | influencer | Social Blade, BuzzSumo | manual competitor profile review | manual review |
+| Customer Survey | `~~customer survey data` | influencer | Typeform, SurveyMonkey, Qualtrics | Google Forms | Google Forms |
+| E-signature | `~~e-signature` | influencer | DocuSign, Dropbox Sign, PandaDoc | PDF + manual signature | manual PDF sign |
 
 ## How placeholders work
 
@@ -123,22 +127,22 @@ A skill might say: *"Pull keyword rankings from `~~SEO tool` and cross-reference
 
 ## Optional MCP servers (Tier 2/3 automation)
 
-`.mcp.json` is a **copy-paste reference** of official remote HTTP MCP endpoints (plus one self-hosted entry, OpenSEO) — it is **opt-in, not auto-registered**. The plugin no longer wires `.mcp.json` into `plugin.json`, so installing the plugin does NOT add 15 servers to your `/mcp` list or trigger any auth prompts. To enable any of these, copy the entries you want into your own host/user MCP config; auth happens interactively on first use. MCP automates retrieval but is never required — the free sources above cover the same data.
+[`docs/mcp-catalog.json`](docs/mcp-catalog.json) is a **copy-paste reference** of official remote HTTP MCP endpoints (plus one self-hosted entry, OpenSEO) — it is **opt-in, not auto-registered**. The catalog is deliberately kept outside the plugin-root `.mcp.json` path that Claude Code auto-discovers (and `plugin.json` carries no `mcpServers` key), so installing the plugin does NOT add 15 servers to your `/mcp` list or trigger any auth prompts. To enable any of these, copy the entries you want into your own host/user MCP config; auth happens interactively on first use. MCP automates retrieval but is never required — the free sources above cover the same data.
 
 **SEO data** (endpoints verified 2026-05):
 
-| Vendor | Endpoint (`.mcp.json`) | Transport | Auth | Cost model | Sample tools |
+| Vendor | Endpoint (`docs/mcp-catalog.json`) | Transport | Auth | Cost model | Sample tools |
 |--------|------------------------|-----------|------|------------|--------------|
 | Ahrefs | `https://api.ahrefs.com/mcp/mcp` | streamable HTTP | API key (MCP scope; Lite+ plan) | subscription | keyword & backlink data, site audit |
 | Semrush | `https://mcp.semrush.com/v1/mcp` | streamable HTTP | OAuth, or `Authorization: Apikey KEY` | subscription | `organic_research`, `keyword_research`, `backlink_research` |
 | SE Ranking | `https://api.seranking.com/mcp` | streamable HTTP | OAuth or API key (`X-Api-Key`) | subscription | keyword/backlink/domain, AI-search visibility (160+ tools) |
 | SISTRIX | `https://api.sistrix.com/mcp` | HTTP | OAuth / Bearer / `X-API-Key` | subscription | `domain`, `keyword`, `links`, `ai` modules |
 | SimilarWeb | `https://mcp.similarweb.com` | HTTP | OAuth / key | subscription | traffic estimates, competitive intel |
-| OpenSEO (self-hosted) | `https://<your-host>/mcp` (edit `.mcp.json`) | streamable HTTP | none (local Docker) / OAuth (Cloudflare) | **free app + pay-as-you-go data** | `research_keywords`, `get_ranked_keywords`, `get_serp_results`, `find_serp_competitors`, `get_domain_overview`, `get_backlinks_overview`, `get_search_console_performance`, local-SERP/Maps tools |
+| OpenSEO (self-hosted) | `https://<your-host>/mcp` (edit your copied entry) | streamable HTTP | none (local Docker) / OAuth (Cloudflare) | **free app + pay-as-you-go data** | `research_keywords`, `get_ranked_keywords`, `get_serp_results`, `find_serp_competitors`, `get_domain_overview`, `get_backlinks_overview`, `get_search_console_performance`, local-SERP/Maps tools |
 
 **Cost model — read before enabling.** The five vendors above are **subscription** (flat monthly fee for plan-gated API access). OpenSEO is the one **pay-as-you-go** option: the app is free and self-hosted, and it bills only the underlying [DataForSEO](https://dataforseo.com) API calls you actually make — so it fits the free/keyless-first ethos better than a subscription suite while still returning real SERP/keyword/backlink data.
 
-**OpenSEO — self-hosted full SEO suite ([github.com/every-app/open-seo](https://github.com/every-app/open-seo), open source).** Run it via Docker (single-user, no auth — local only) or Cloudflare Workers (OAuth, team-ready, free plan compatible), connect your own DataForSEO key, and the app exposes an MCP server at `/<host>/mcp`. Set the host in your `.mcp.json` `openseo` entry (placeholder ships as `your-openseo-host.example`). It natively reads Google Search Console (`get_search_console_performance`), which makes the [keyword-research](research/keyword-research/SKILL.md) striking-distance loop and rank tracking first-party. Indicative DataForSEO spend (vendor pay-as-you-go pricing, verify current rates — $1 free starter credit, $50 min top-up as of early 2026):
+**OpenSEO — self-hosted full SEO suite ([github.com/every-app/open-seo](https://github.com/every-app/open-seo), open source).** Run it via Docker (single-user, no auth — local only) or Cloudflare Workers (OAuth, team-ready, free plan compatible), connect your own DataForSEO key, and the app exposes an MCP server at `/<host>/mcp`. Set the host in the `openseo` entry you copied from `docs/mcp-catalog.json` into your MCP config (placeholder ships as `your-openseo-host.example`). It natively reads Google Search Console (`get_search_console_performance`), which makes the [keyword-research](research/keyword-research/SKILL.md) striking-distance loop and rank tracking first-party. Indicative DataForSEO spend (vendor pay-as-you-go pricing, verify current rates — $1 free starter credit, $50 min top-up as of early 2026):
 
 | Task (×100 requests) | Approx. cost |
 |---|---|
@@ -148,14 +152,14 @@ A skill might say: *"Pull keyword rankings from `~~SEO tool` and cross-reference
 | Backlinks domain search | ~$6.34 |
 | Track 100 keywords weekly at depth 50 | ~$1.20 / month |
 
-**Free Google data via MCP** (not shipped in `.mcp.json` — these run locally and need your own Google credentials):
+**Free Google data via MCP** (not shipped in `docs/mcp-catalog.json` — these run locally and need your own Google credentials):
 
 - **Google Analytics** — official ([github.com/googleanalytics/google-analytics-mcp](https://github.com/googleanalytics/google-analytics-mcp)): `pipx run analytics-mcp`, stdio, ADC scope `analytics.readonly`; tools `run_report`, `run_realtime_report`, `get_account_summaries`.
 - **Google Search Console** — community ([github.com/AminForou/mcp-gsc](https://github.com/AminForou/mcp-gsc), MIT): `uvx mcp-search-console`, stdio, OAuth or service account; tools `get_search_analytics`, `inspect_url_enhanced`, `list_properties`.
 
-**Infra / CMS / CRM / comms** (listed in `.mcp.json` as opt-in references, official remote endpoints, OAuth on first use): Cloudflare, Vercel, HubSpot, Amplitude, Notion, Webflow, Sanity, Contentful, Slack. See each vendor's MCP docs for its current tool list.
+**Infra / CMS / CRM / comms** (listed in `docs/mcp-catalog.json` as opt-in references, official remote endpoints, OAuth on first use): Cloudflare, Vercel, HubSpot, Amplitude, Notion, Webflow, Sanity, Contentful, Slack. See each vendor's MCP docs for its current tool list.
 
-To enable a server, copy its `.mcp.json` entry into your host/user MCP config. The project `.mcp.json` is a curated catalog, not an active registration — keep it in sync only when contributing a new default endpoint.
+To enable a server, copy its entry from `docs/mcp-catalog.json` into your host/user MCP config. The catalog is a curated reference, not an active registration — it deliberately does not live at the plugin root as `.mcp.json` (which Claude Code would auto-register); keep it in sync only when contributing a new default endpoint.
 
 ## Progressive enhancement tiers
 

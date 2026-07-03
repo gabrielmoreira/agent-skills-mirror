@@ -6,11 +6,11 @@ Curated, license- and maintenance-aware index of **software tools** for automate
 
 ## Summary
 
-**335 tools** across 6 categories.
+**334 tools** across 6 categories.
 
 | Category | Count |
 |---|---:|
-| Causal-inference & treatment-effect libraries | 32 |
+| Causal-inference & treatment-effect libraries | 31 |
 | Econometrics & quasi-experimental libraries | 170 |
 | Causal discovery / structure learning | 25 |
 | Autonomous research & data-science agents | 51 |
@@ -19,8 +19,8 @@ Curated, license- and maintenance-aware index of **software tools** for automate
 
 | By language | Tools | | By maintenance | Tools | | By license | Tools |
 |---|---:|:-:|---|---:|:-:|---|---:|
-| Python | 165 |  | 🟢 active | 181 |  | permissive (MIT/BSD/Apache/…) | 184 |
-| R | 109 |  | 🟡 maintained | 95 |  | copyleft (GPL/AGPL/LGPL/CeCILL) | 104 |
+| Python | 164 |  | 🟢 active | 181 |  | permissive (MIT/BSD/Apache/…) | 183 |
+| R | 109 |  | 🟡 maintained | 94 |  | copyleft (GPL/AGPL/LGPL/CeCILL) | 104 |
 | Stata | 53 |  | 🔴 dormant | 59 |  | unverified / unmapped | 39 |
 | TypeScript | 16 |  |  |  |  | proprietary / non-OSI / custom | 8 |
 | Julia | 11 |  |  |  |  |  |  |
@@ -30,7 +30,7 @@ Curated, license- and maintenance-aware index of **software tools** for automate
 
 > `last_activity` and `stars_approx` are point-in-time snapshots from the curation pass (see [`README.md`](README.md) for caveats). Status: 🟢 active ≈ commit within ~6 months · 🟡 maintained ≈ within ~2 years · 🔴 dormant ≈ older.
 
-## Causal-inference & treatment-effect libraries (32)
+## Causal-inference & treatment-effect libraries (31)
 
 | Tool | Lang | License | Status | What it does |
 |---|---|---|---|---|
@@ -40,7 +40,6 @@ Curated, license- and maintenance-aware index of **software tools** for automate
 | [CATENets](https://github.com/AliciaCurth/CATENets) | Python | BSD-3-Clause | 🟡 maintained · 2023-08 | sklearn-style JAX/PyTorch implementations of neural-network CATE estimators including TARNet, CFRNet, DragonNet, SNet, FlexTENet, and NN meta-learners. |
 | [causal-curve](https://github.com/ronikobrosly/causal-curve) | Python | MIT | 🟡 maintained · 2024-05 | Python package for estimating causal dose-response curves (continuous-treatment effects) from observational data with confidence intervals. |
 | [CausalImpact](https://github.com/google/CausalImpact) | R | Apache-2.0 | 🟢 active · 2026-03 | Google's R package estimating the causal effect of an intervention on a time series using a Bayesian structural time-series counterfactual model. |
-| [causalimpact (Python)](https://github.com/jamalsenouci/causalimpact) | Python | MIT | 🟡 maintained · 2023-01 | Pure-Python port of Google's CausalImpact (statsmodels-based BSTS) for estimating intervention effects on time series. |
 | [Causalinference](https://github.com/laurencium/Causalinference) | Python | BSD-3-Clause | 🟡 maintained · 2025-06 | Classic Python package for treatment-effect estimation via propensity-score estimation, trimming, subclassification, matching, weighting, and least-squares. |
 | [causallib](https://github.com/BiomedSciAI/causallib) | Python | Apache-2.0 | 🟢 active · 2026-05 | IBM's scikit-learn-style package for estimating causal effects from observational data via IPW, standardization, doubly-robust (AIPW), and matching estimators. |
 | [CausalLift](https://github.com/Minyus/causallift) | Python | BSD-2-Clause | 🔴 dormant · 2019-08 | Uplift modeling package based on the T-learner targeting which customers to treat, usable with both A/B-test and observational data. |

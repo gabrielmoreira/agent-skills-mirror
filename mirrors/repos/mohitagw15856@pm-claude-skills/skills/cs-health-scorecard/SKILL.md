@@ -153,6 +153,13 @@ It returns the per-dimension weighted points, the **total out of 100**, and the 
 
 ---
 
+## Deeper Materials
+
+This skill ships with support files — use them when they are available:
+
+- **`references/leading-signals.md`** — Health Signals That Lead (Instead of Eulogise). Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
+- **`templates/account-scorecard.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
 ## Quality Checks
 
 - [ ] Score is based on data, not gut feel — each dimension has evidence

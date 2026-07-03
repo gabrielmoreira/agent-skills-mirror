@@ -51,8 +51,8 @@ Mirror of `kurone-kito/idd-skill` — 26 default patterns, 2 followed patterns, 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `docs/idd-workflow.md`
 - `docs/typescript-sources.md`
+- `docs/idd-workflow.md`
 
 ## File Index
 

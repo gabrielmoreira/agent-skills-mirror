@@ -19,7 +19,7 @@ All handlers self-gate on `ELIZA_LOCAL_LLAMA=1` and are no-ops on non-AOSP platf
 
 - **Local LLM inference** — in-process llama.cpp via `bun:ffi`; no HTTP server subprocess.
 - **Speculative decoding (MTP)** — optional in-process MTP drafter via `libeliza-llama-speculative-shim.so`; auto-paired when a `mtp/` drafter GGUF is found in the active model bundle.
-- **Custom KV-cache quantization** — supports `tbq3_0`, `tbq4_0`, `qjl1_256`, `q4_polar` quant types from the elizaOS/llama.cpp fork (default: K=`qjl1_256`, V=`q4_polar` for chat).
+- **Custom KV-cache quantization** — supports `q8_0`, `tbq3_0`, `tbq4_0`, `qjl1_256`, `q4_polar` quant types from the elizaOS/llama.cpp fork (default: K=`q8_0`, V=`f16` for chat).
 - **Text-to-speech** — Kokoro synthesis via `libelizainference.so` (`eliza_inference_kokoro_*`); pre-warm support to amortize first-request latency.
 - **Transcription** — ASR via `libelizainference.so` from PCM WAV input or `{ pcm, sampleRateHz }` params.
 - **Model auto-download** — if no bundled GGUF is found, downloads `elizaos/eliza-1` from HuggingFace (opt-out: `ELIZA_DISABLE_MODEL_AUTO_DOWNLOAD=1`).
@@ -69,7 +69,7 @@ Default models auto-downloaded from `elizaos/eliza-1` on HuggingFace when not st
 | `ELIZA_LLAMA_THREADS` | `os.cpus().length` | CPU thread count |
 | `ELIZA_LLAMA_N_CTX` | `4096` | Chat context window |
 | `ELIZA_LOCAL_EMBEDDING_ENABLED` | `"0"` | Set `"1"` to load embedding GGUF |
-| `ELIZA_LLAMA_CACHE_TYPE_K` / `_V` | `qjl1_256` / `q4_polar` | KV-cache quant type |
+| `ELIZA_LLAMA_KV_TYPE_K` / `_V` | `q8_0` / `f16` | KV-cache quant type |
 | `ELIZA_MTP` | — | Set `"1"` for MTP speculative decoding |
 | `ELIZA_AOSP_TTS_PREWARM` | — | Set `"true"` to pre-warm TTS at boot |
 | `ELIZA_DISABLE_MODEL_AUTO_DOWNLOAD` | — | Set `"1"` to skip HuggingFace download |

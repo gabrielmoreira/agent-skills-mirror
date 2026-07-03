@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JimLiu/baoyu-design` — 26 default patterns, 0 followed patterns, 150 file(s) materialized.
+Mirror of `JimLiu/baoyu-design` — 26 default patterns, 0 followed patterns, 151 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JimLiu/baoyu-design` — 26 default patterns, 0 followed patterns, 15
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 150 |
+| Files         | 151 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -199,16 +199,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 138 | ✓ | [`skills/baoyu-design/references/cursor.md`](skills/baoyu-design/references/cursor.md) |
 | 139 | ✓ | [`skills/baoyu-design/SKILL.md`](skills/baoyu-design/SKILL.md) |
 | 140 | ✓ | [`skills/baoyu-design/starter-components/android-frame.jsx`](skills/baoyu-design/starter-components/android-frame.jsx) |
-| 141 | ✓ | [`skills/baoyu-design/starter-components/animations.jsx`](skills/baoyu-design/starter-components/animations.jsx) |
-| 142 | ✓ | [`skills/baoyu-design/starter-components/browser-window.jsx`](skills/baoyu-design/starter-components/browser-window.jsx) |
-| 143 | ✓ | [`skills/baoyu-design/starter-components/deck-stage-patch.md`](skills/baoyu-design/starter-components/deck-stage-patch.md) |
-| 144 | ✓ | [`skills/baoyu-design/starter-components/deck-stage.js`](skills/baoyu-design/starter-components/deck-stage.js) |
-| 145 | ✓ | [`skills/baoyu-design/starter-components/design-canvas.jsx`](skills/baoyu-design/starter-components/design-canvas.jsx) |
-| 146 | ✓ | [`skills/baoyu-design/starter-components/image-slot.js`](skills/baoyu-design/starter-components/image-slot.js) |
-| 147 | ✓ | [`skills/baoyu-design/starter-components/ios-frame.jsx`](skills/baoyu-design/starter-components/ios-frame.jsx) |
-| 148 | ✓ | [`skills/baoyu-design/starter-components/macos-window.jsx`](skills/baoyu-design/starter-components/macos-window.jsx) |
-| 149 | ✓ | [`skills/baoyu-design/starter-components/tweaks-panel.jsx`](skills/baoyu-design/starter-components/tweaks-panel.jsx) |
-| 150 | ✓ | [`skills/baoyu-design/system-prompt.md`](skills/baoyu-design/system-prompt.md) |
+| 141 | ✓ | [`skills/baoyu-design/starter-components/anim-demo.html`](skills/baoyu-design/starter-components/anim-demo.html) |
+| 142 | ✓ | [`skills/baoyu-design/starter-components/animations.jsx`](skills/baoyu-design/starter-components/animations.jsx) |
+| 143 | ✓ | [`skills/baoyu-design/starter-components/browser-window.jsx`](skills/baoyu-design/starter-components/browser-window.jsx) |
+| 144 | ✓ | [`skills/baoyu-design/starter-components/deck-stage-patch.md`](skills/baoyu-design/starter-components/deck-stage-patch.md) |
+| 145 | ✓ | [`skills/baoyu-design/starter-components/deck-stage.js`](skills/baoyu-design/starter-components/deck-stage.js) |
+| 146 | ✓ | [`skills/baoyu-design/starter-components/design-canvas.jsx`](skills/baoyu-design/starter-components/design-canvas.jsx) |
+| 147 | ✓ | [`skills/baoyu-design/starter-components/image-slot.js`](skills/baoyu-design/starter-components/image-slot.js) |
+| 148 | ✓ | [`skills/baoyu-design/starter-components/ios-frame.jsx`](skills/baoyu-design/starter-components/ios-frame.jsx) |
+| 149 | ✓ | [`skills/baoyu-design/starter-components/macos-window.jsx`](skills/baoyu-design/starter-components/macos-window.jsx) |
+| 150 | ✓ | [`skills/baoyu-design/starter-components/tweaks-panel.jsx`](skills/baoyu-design/starter-components/tweaks-panel.jsx) |
+| 151 | ✓ | [`skills/baoyu-design/system-prompt.md`](skills/baoyu-design/system-prompt.md) |
 
 ---
 

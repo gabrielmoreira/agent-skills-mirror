@@ -209,6 +209,13 @@ Prompt questions:
 - [ ] Executive sponsor briefed on any sensitive topics before the call
 - [ ] Actions from previous QBR reviewed — any outstanding items addressed
 
+## Deeper Materials
+
+This skill ships with support files — use them when they are available:
+
+- **`references/value-narrative.md`** — The QBR Value Narrative: Their Numbers, Not Your Features. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
+- **`templates/qbr-outline.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
 ## Quality Checks
 
 - [ ] Every slide has a talking point, not just a title

@@ -1,7 +1,7 @@
 ---
 name: roi-calculator
 description: 'Use when the user asks to "calculate influencer ROI", "prove campaign value", or "what was our ROAS"; produces direct ROI/ROAS, earned media value, attribution-modeled revenue, LTV-based ROI, and a stakeholder-ready summary. Not for building the full slide/written report — use report-generator.'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -9,7 +9,9 @@ when_to_use: "Use when measuring or projecting influencer campaign ROI, justifyi
 argument-hint: "<campaign name or spend> [revenue] [results data]"
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: influencer
+  phase: track
   family: influencer-marketing
   impact-phase: Track
 ---
@@ -17,6 +19,8 @@ metadata:
 # ROI Calculator
 
 This skill helps you calculate and communicate the return on investment for influencer marketing campaigns using various methodologies appropriate for your goals and available data.
+
+> **Cross-discipline (paid ads):** this is the shared **return-math engine** for paid ads — [paid-measurement-loop](../../paid/scale/paid-measurement-loop/SKILL.md), [attribution-reconciler](../../paid/scale/attribution-reconciler/SKILL.md), and budget-optimizer delegate ROAS/CPA/payback ratios here rather than recomputing them. Save paid runs under `memory/paid-ads/roi-calculator/`.
 
 ## Quick Start
 
@@ -60,382 +64,23 @@ With zero integrations, supply the investment and results tables by hand and the
 
 ## Instructions
 
-When a user requests ROI calculation:
+When a user requests ROI calculation, work the steps below. Each step has a fill-in template in [references/roi-templates.md](references/roi-templates.md) — link the step number to its block there.
 
-1. **Gather ROI Inputs**
+1. **Gather ROI inputs** — campaign details, the investment (total spend) table, and the results-data table. ([template](references/roi-templates.md#step-1--roi-calculation-inputs))
 
-   ```markdown
-   ### ROI Calculation Inputs
-   
-   **Campaign Details**:
-   - Campaign: [name]
-   - Duration: [dates]
-   - Objective: [awareness/consideration/conversion]
-   
-   **Investment (Total Spend)**:
-   | Category | Amount |
-   |----------|--------|
-   | Influencer fees | $[X] |
-   | Product/Gifting | $[X] |
-   | Production costs | $[X] |
-   | Paid amplification | $[X] |
-   | Agency/Tools | $[X] |
-   | **Total Investment** | **$[X]** |
-   
-   **Results Data**:
-   | Metric | Value |
-   |--------|-------|
-   | Total Reach | [X] |
-   | Total Impressions | [X] |
-   | Total Engagements | [X] |
-   | Video Views | [X] |
-   | Link Clicks | [X] |
-   | Conversions/Sales | [X] |
-   | Revenue | $[X] |
-   | New Customers | [X] |
-   ```
+2. **Calculate direct ROI** — Simple ROI = (Revenue − Investment) / Investment × 100; ROAS = Revenue / Investment. State profit and a Profitable/Break-even/Loss assessment. ([template](references/roi-templates.md#step-2--direct-roi-calculation))
 
-2. **Calculate Direct ROI**
+3. **Calculate Earned Media Value (EMV)** — impression-based (Impressions × CPM / 1000) and engagement-based (Engagements × CPE), then average. Flag EMV as directional, not absolute. ([template](references/roi-templates.md#step-3--earned-media-value-emv))
 
-   ```markdown
-   ## Direct ROI Calculation
-   
-   ### Simple ROI
-   
-   **Formula**: (Revenue - Investment) / Investment × 100
-   
-   ```
-   Revenue:     $[X]
-   Investment:  $[X]
-   Profit:      $[X]
-   
-   ROI = ($[Revenue] - $[Investment]) / $[Investment] × 100
-   ROI = [X]%
-   ```
-   
-   ### Return on Ad Spend (ROAS)
-   
-   **Formula**: Revenue / Investment
-   
-   ```
-   ROAS = $[Revenue] / $[Investment]
-   ROAS = [X]:1
-   
-   Interpretation: For every $1 spent, generated $[X] in revenue
-   ```
-   
-   ### Direct ROI Summary
-   
-   | Metric | Value | Benchmark | Status |
-   |--------|-------|-----------|--------|
-   | ROI % | [X]% | [X]% | ✅/❌ |
-   | ROAS | [X]:1 | [X]:1 | ✅/❌ |
-   | Profit | $[X] | - | |
-   
-   **Assessment**: [Profitable/Break-even/Loss]
-   ```
+4. **Calculate cost-efficiency metrics** — CPM, CPR, CPE, CPV, CPC, CPA, CAC, each against a benchmark; rate the campaign and compare CPA to other channels. ([template](references/roi-templates.md#step-4--cost-efficiency-analysis))
 
-3. **Calculate Earned Media Value (EMV)**
+5. **Apply attribution modeling** — run first-touch, last-touch, linear, time-decay, and position-based; recommend the model that fits the customer journey. ([template](references/roi-templates.md#step-5--attribution-analysis))
 
-   ```markdown
-   ## Earned Media Value Calculation
-   
-   ### EMV Methodology
-   
-   EMV estimates the equivalent paid media cost to achieve the same results.
-   
-   ### Impression-Based EMV
-   
-   **Formula**: Impressions × Industry CPM / 1000
-   
-   | Platform | Impressions | CPM | EMV |
-   |----------|-------------|-----|-----|
-   | Instagram | [X] | $[X] | $[X] |
-   | TikTok | [X] | $[X] | $[X] |
-   | YouTube | [X] | $[X] | $[X] |
-   | **Total** | **[X]** | - | **$[X]** |
-   
-   ### Engagement-Based EMV
-   
-   **Formula**: Engagements × Cost per Engagement
-   
-   | Engagement Type | Volume | CPE | EMV |
-   |-----------------|--------|-----|-----|
-   | Likes | [X] | $[X] | $[X] |
-   | Comments | [X] | $[X] | $[X] |
-   | Shares | [X] | $[X] | $[X] |
-   | Saves | [X] | $[X] | $[X] |
-   | Video Views | [X] | $[X] | $[X] |
-   | **Total** | - | - | **$[X]** |
-   
-   ### Combined EMV
-   
-   | Method | Value |
-   |--------|-------|
-   | Impression EMV | $[X] |
-   | Engagement EMV | $[X] |
-   | **Average EMV** | **$[X]** |
-   
-   ### EMV ROI
-   
-   ```
-   EMV Generated: $[X]
-   Investment:    $[X]
-   EMV Multiple:  [X]x
-   
-   For every $1 spent, earned $[X] in equivalent media value
-   ```
-   
-   ### EMV Caveats
-   
-   ⚠️ **Note**: EMV is an estimate and varies by methodology. Use for directional comparison, not absolute measurement.
-   ```
+6. **Calculate customer lifetime value impact** — LTV-Based ROI = (New Customers × Avg LTV − Investment) / Investment; project short- vs. long-term and compare customer quality to organic/paid. ([template](references/roi-templates.md#step-6--lifetime-value-analysis))
 
-4. **Calculate Cost Efficiency Metrics**
+7. **Calculate by-influencer ROI** — per-influencer ROI/ROAS rank, investment efficiency, and ROI by tier (macro/micro/nano). ([template](references/roi-templates.md#step-7--influencer-level-roi))
 
-   ```markdown
-   ## Cost Efficiency Analysis
-   
-   ### Cost Per Metrics
-   
-   | Metric | Formula | Result | Benchmark | Status |
-   |--------|---------|--------|-----------|--------|
-   | CPM | Spend ÷ (Impressions/1000) | $[X] | $[X] | ✅/❌ |
-   | CPR (Reach) | Spend ÷ (Reach/1000) | $[X] | $[X] | ✅/❌ |
-   | CPE | Spend ÷ Engagements | $[X] | $[X] | ✅/❌ |
-   | CPV (Video) | Spend ÷ Views | $[X] | $[X] | ✅/❌ |
-   | CPC | Spend ÷ Clicks | $[X] | $[X] | ✅/❌ |
-   | CPA | Spend ÷ Acquisitions | $[X] | $[X] | ✅/❌ |
-   | CAC | Total Spend ÷ New Customers | $[X] | $[X] | ✅/❌ |
-   
-   ### Efficiency Score
-   
-   | Rating | CPM Range | CPC Range | CPA Range |
-   |--------|-----------|-----------|-----------|
-   | Excellent | <$[X] | <$[X] | <$[X] |
-   | Good | $[X]-$[X] | $[X]-$[X] | $[X]-$[X] |
-   | Average | $[X]-$[X] | $[X]-$[X] | $[X]-$[X] |
-   | Below Avg | $[X]-$[X] | $[X]-$[X] | $[X]-$[X] |
-   | Poor | >$[X] | >$[X] | >$[X] |
-   
-   **Your Campaign**: [Rating]
-   
-   ### vs. Other Channels
-   
-   | Channel | CPA | vs. Influencer |
-   |---------|-----|----------------|
-   | Influencer Marketing | $[X] | - |
-   | Paid Social | $[X] | [+/-X%] |
-   | Paid Search | $[X] | [+/-X%] |
-   | Display Ads | $[X] | [+/-X%] |
-   | Email Marketing | $[X] | [+/-X%] |
-   ```
-
-5. **Apply Attribution Modeling**
-
-   ```markdown
-   ## Attribution Analysis
-   
-   ### Attribution Methods
-   
-   | Method | Description | Result | Notes |
-   |--------|-------------|--------|-------|
-   | First Touch | All credit to first interaction | $[X] | Awareness focus |
-   | Last Touch | All credit to last interaction | $[X] | Conversion focus |
-   | Linear | Equal credit across touchpoints | $[X] | Balanced view |
-   | Time Decay | More credit to recent touches | $[X] | Recency bias |
-   | Position Based | 40/20/40 first/middle/last | $[X] | Common B2C model |
-   
-   ### Attributed Revenue by Model
-   
-   | Model | Attributed Revenue | ROI |
-   |-------|-------------------|-----|
-   | First Touch | $[X] | [X]% |
-   | Last Touch | $[X] | [X]% |
-   | Linear | $[X] | [X]% |
-   | Time Decay | $[X] | [X]% |
-   | Position Based | $[X] | [X]% |
-   
-   ### Recommended Model for Your Business
-   
-   **Recommended**: [Model]
-   **Rationale**: [Why this model fits your customer journey]
-   
-   ### Multi-Touch Journey Example
-   
-   ```
-   Customer Journey:
-   
-   Day 1: Sees @creator1 TikTok (Awareness) ─────┐
-   Day 3: Sees @creator2 Instagram Reel ─────────┤
-   Day 5: Clicks @creator1's link (Consideration)┼── Purchase Day 7
-   Day 7: Uses @creator2's code (Conversion) ────┘
-   
-   Attribution:
-   Last Touch:     100% to @creator2
-   First Touch:    100% to @creator1
-   Linear:         50% each
-   Position Based: 40% @creator1, 40% @creator2, 20% repeat exposure
-   ```
-   ```
-
-6. **Calculate Customer Lifetime Value Impact**
-
-   ```markdown
-   ## Lifetime Value Analysis
-   
-   ### New Customer Metrics
-   
-   | Metric | Influencer Acquired | Overall Average |
-   |--------|--------------------|--------------------|
-   | New customers | [X] | - |
-   | First order AOV | $[X] | $[X] |
-   | Repeat purchase rate | [%] | [%] |
-   | Customer lifetime value | $[X] | $[X] |
-   
-   ### LTV-Based ROI
-   
-   **Formula**: (New Customers × Avg LTV) - Investment / Investment
-   
-   ```
-   New Customers:     [X]
-   Average LTV:       $[X]
-   Total LTV:         $[X]
-   Investment:        $[X]
-   
-   LTV-Based ROI = ($[X] - $[X]) / $[X] × 100
-   LTV-Based ROI = [X]%
-   ```
-   
-   ### Short-term vs. Long-term View
-   
-   | Timeframe | Revenue | ROI |
-   |-----------|---------|-----|
-   | Immediate (this campaign) | $[X] | [X]% |
-   | 6-month projected | $[X] | [X]% |
-   | 12-month projected | $[X] | [X]% |
-   | Lifetime projected | $[X] | [X]% |
-   
-   ### Customer Quality Indicators
-   
-   | Indicator | Influencer-Acquired | Organic | Paid Ads |
-   |-----------|--------------------|---------| ---------|
-   | AOV | $[X] | $[X] | $[X] |
-   | Return rate | [%] | [%] | [%] |
-   | Repeat rate | [%] | [%] | [%] |
-   | NPS/Satisfaction | [X] | [X] | [X] |
-   ```
-
-7. **Calculate By-Influencer ROI**
-
-   ```markdown
-   ## Influencer-Level ROI
-   
-   ### Individual Influencer Performance
-   
-   | Influencer | Investment | Revenue | ROI | ROAS | Rank |
-   |------------|------------|---------|-----|------|------|
-   | @[handle1] | $[X] | $[X] | [X]% | [X]:1 | 1 |
-   | @[handle2] | $[X] | $[X] | [X]% | [X]:1 | 2 |
-   | @[handle3] | $[X] | $[X] | [X]% | [X]:1 | 3 |
-   | @[handle4] | $[X] | $[X] | [X]% | [X]:1 | 4 |
-   | @[handle5] | $[X] | $[X] | [X]% | [X]:1 | 5 |
-   
-   ### ROI Distribution
-   
-   ```
-   Influencer ROI Distribution:
-   
-   @handle1  |████████████████████| 320%
-   @handle2  |██████████████      | 180%
-   @handle3  |████████████        | 150%
-   @handle4  |██████              | 75%
-   @handle5  |████                | 45%
-   
-   Campaign Average: 180%
-   ```
-   
-   ### Investment Efficiency
-   
-   | Influencer | % of Budget | % of Revenue | Efficiency |
-   |------------|-------------|--------------|------------|
-   | @[handle1] | [%] | [%] | [X]x |
-   | @[handle2] | [%] | [%] | [X]x |
-   
-   ### ROI by Tier
-   
-   | Tier | Investment | Revenue | ROI | Avg ROAS |
-   |------|------------|---------|-----|----------|
-   | Macro | $[X] | $[X] | [%] | [X]:1 |
-   | Micro | $[X] | $[X] | [%] | [X]:1 |
-   | Nano | $[X] | $[X] | [%] | [X]:1 |
-   ```
-
-8. **Generate ROI Report Summary**
-
-   ```markdown
-   # ROI Summary Report
-   
-   ## Campaign: [Name]
-   ## Period: [Dates]
-   
-   ---
-   
-   ## Investment Summary
-   
-   | Category | Amount | % of Total |
-   |----------|--------|------------|
-   | Influencer Fees | $[X] | [%] |
-   | Product/Gifts | $[X] | [%] |
-   | Amplification | $[X] | [%] |
-   | Other | $[X] | [%] |
-   | **Total Investment** | **$[X]** | **100%** |
-   
-   ## Returns Summary
-   
-   | Return Type | Value |
-   |-------------|-------|
-   | Direct Revenue | $[X] |
-   | Earned Media Value | $[X] |
-   | New Customers | [X] |
-   | Projected LTV | $[X] |
-   
-   ## ROI by Methodology
-   
-   | Methodology | ROI | Notes |
-   |-------------|-----|-------|
-   | Direct Revenue ROI | [X]% | Hard returns |
-   | ROAS | [X]:1 | Revenue per dollar |
-   | EMV Multiple | [X]x | Media value generated |
-   | LTV-Based ROI | [X]% | Long-term value |
-   
-   ## Key Metrics
-   
-   | Metric | Result | Benchmark | Status |
-   |--------|--------|-----------|--------|
-   | CPM | $[X] | $[X] | ✅/❌ |
-   | CPA | $[X] | $[X] | ✅/❌ |
-   | ROAS | [X]:1 | [X]:1 | ✅/❌ |
-   
-   ## Bottom Line
-   
-   **Investment**: $[X]
-   **Return**: $[X]
-   **Net Profit**: $[X]
-   **ROI**: [X]%
-   
-   **Assessment**: [Campaign was profitable/broke even/lost money]
-   
-   ## Recommendations
-   
-   1. [Key recommendation 1]
-   2. [Key recommendation 2]
-   3. [Key recommendation 3]
-   
-   ---
-   
-   *Report Generated: [Date]*
-   ```
+8. **Generate the ROI report summary** — investment, returns, ROI by methodology, key metrics vs. benchmark, bottom line, and 1-3 recommendations. ([template](references/roi-templates.md#step-8--roi-summary-report))
 
 9. **Roll up into the C³ Campaign Value Index (CVI)**
 
@@ -486,18 +131,12 @@ For every $1 spent, you generated $2.88 in revenue.
 This campaign outperformed the typical 2:1 ROAS benchmark for influencer marketing. Recommend increasing investment in similar campaigns.
 ```
 
-## Industry ROI Benchmarks
-
-| Industry | Avg ROAS | Good ROAS | Excellent ROAS |
-|----------|----------|-----------|----------------|
-| Beauty/Skincare | 3:1 | 5:1 | 8:1 |
-| Fashion | 2.5:1 | 4:1 | 6:1 |
-| Food & Beverage | 2:1 | 3.5:1 | 5:1 |
-| Tech/Electronics | 2:1 | 3:1 | 4:1 |
-| Health/Fitness | 2.5:1 | 4:1 | 6:1 |
+Industry ROAS benchmarks (Beauty, Fashion, Food & Beverage, Tech, Health) live in [references/roi-templates.md#industry-roi-benchmarks](references/roi-templates.md#industry-roi-benchmarks).
 
 ## Reference Materials
 
+- [references/roi-templates.md](references/roi-templates.md) — fill-in templates for every Instructions step, the worked example, and industry ROAS benchmarks.
+- [measurement-protocol.md](../../references/measurement-protocol.md) — read ROI/CVI deltas against a control over the readback window; do not over-claim attribution.
 - [skill-contract.md](../../references/skill-contract.md) — shared contract and Handoff Summary format.
 - [state-model.md](../../references/state-model.md) — memory tiers and save-path conventions.
 - [CONNECTORS.md](../../CONNECTORS.md) — free/keyless data recipe per connector category.

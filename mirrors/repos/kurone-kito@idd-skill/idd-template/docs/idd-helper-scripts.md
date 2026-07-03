@@ -60,6 +60,14 @@ In the idd-skill source repository, the following optional helpers were adopted:
   synchronization state classification; used by D/E/F routing to decide
   whether `merge-main`, `hold-unknown`, or no action is needed without
   mutating the worktree or PR branch (added in 0.2.0)
+- `scripts/verify-install-deps.mjs` for B1 Step 3 `install-deps`: runs
+  the underlying install command, verifies a key post-install binary
+  exists, retries the install exactly once if it does not, and fails
+  loudly rather than continuing in a silently under-installed state
+  (referenced in
+  [kurone-kito/idd-skill#1237](https://github.com/kurone-kito/idd-skill/issues/1237)).
+  Source-repo internal helper; not distributed via the package-manager
+  / ephemeral-npx profiles.
 
 **Review & Merge Phase Helpers:**
 
@@ -1193,7 +1201,7 @@ The workflow areas most likely to benefit from optional helpers are:
 
 | Candidate                       | Status             | Helper level                       | Mutation risk | Canonical fallback path                                                 | Drift risk                                                                               | Estimated payoff / byte reduction                                       |
 | ------------------------------- | ------------------ | ---------------------------------- | ------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| A4 viability gate               | Adopted helper     | Read-only evaluator                | Low           | A4 viability criteria table in `idd-discover.instructions.md`           | Low — criteria are deterministic pattern matches against issue body text                 | Low to medium — roughly 100 to 200 bytes of repeated A4 criterion prose |
+| A4 viability gate               | Adopted helper     | Read-only evaluator                | Low           | A4 viability criteria list in `idd-discover.instructions.md`            | Low — criteria are deterministic pattern matches against issue body text                 | Low to medium — roughly 100 to 200 bytes of repeated A4 criterion prose |
 | Claim-state parsing             | Reserve candidate  | Read-only parser                   | Low           | Claim rules in `.github/instructions/idd-overview-core.instructions.md` | High — claim parsing is subtle and any divergence would create false ownership decisions | Medium — roughly 200 to 400 bytes of repeated marker-parsing prose      |
 | Review activity snapshots       | Adopted helper     | Read-only evidence collector       | Low           | E1/F2/F3 activity-universe fetches via `gh` / GitHub API                | Medium — helper output must keep matching the review-currency rules exactly              | High — roughly 600 to 900 bytes of repeated multi-surface fetch prose   |
 | Live status digest edits        | Adopted helper     | Dry-run by default, explicit apply | Medium        | Phase-specific digest discovery and update flow                         | Medium — digest text must remain UI-only and never look authoritative                    | Medium — roughly 300 to 500 bytes of repeated digest-upsert prose       |

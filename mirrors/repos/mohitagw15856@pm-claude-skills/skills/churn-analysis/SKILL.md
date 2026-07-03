@@ -184,6 +184,13 @@ Ranked by estimated impact × feasibility.
 - [ ] Do not recommend interventions without linking them to a specific churn reason — interventions disconnected from root causes will not move retention
 - [ ] Do not report only gross revenue churn — without net revenue retention (NRR), a healthy-looking retention number can hide a shrinking revenue base
 
+## Deeper Materials
+
+This skill ships with support files — use them when they are available:
+
+- **`references/avoidability-calls.md`** — Avoidable or Not? The Judgment Calls in Churn Classification. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
+- **`templates/churn-report.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
 ## Quality Checks
 
 - [ ] Churn rate is correctly calculated (churned ÷ starting cohort, not end-of-period total)

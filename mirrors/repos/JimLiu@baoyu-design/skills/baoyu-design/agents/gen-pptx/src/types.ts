@@ -60,6 +60,24 @@ export type AnimEffect =
   | "wheel-out"
   | "random-bars-in"
   | "random-bars-out"
+  | "blinds-in"
+  | "blinds-out"
+  | "checkerboard-in"
+  | "checkerboard-out"
+  | "dissolve-in"
+  | "dissolve-out"
+  | "box-in"
+  | "box-out"
+  | "circle-in"
+  | "circle-out"
+  | "diamond-in"
+  | "diamond-out"
+  | "plus-in"
+  | "plus-out"
+  | "strips-in"
+  | "strips-out"
+  | "wedge-in"
+  | "wedge-out"
   | "spin"
   | "grow"
   | "shrink"
@@ -69,8 +87,23 @@ export type AnimEffect =
 
 export type AnimTrigger = "click" | "with" | "after";
 /** Edge dirs (fly/wipe: the side the element enters from / exits toward; float:
- *  top|bottom only) plus axis dirs (split/random-bars: the bar/seam axis). */
-export type AnimDir = "left" | "right" | "top" | "bottom" | "horizontal" | "vertical";
+ *  top|bottom only), axis dirs (split/random-bars/blinds/checkerboard: the
+ *  bar/seam axis), shape dirs (box/circle/diamond/plus: whether the pattern
+ *  closes in on the center or grows out of it), and corner dirs (strips: the
+ *  corner the diagonal sweep travels toward). */
+export type AnimDir =
+  | "left"
+  | "right"
+  | "top"
+  | "bottom"
+  | "horizontal"
+  | "vertical"
+  | "in"
+  | "out"
+  | "down-right"
+  | "down-left"
+  | "up-right"
+  | "up-left";
 
 /** One motion-path segment, px offsets re-based so the path starts at (0,0). */
 export interface AnimPathSeg {

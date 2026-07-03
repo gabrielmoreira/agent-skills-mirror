@@ -40,7 +40,7 @@ This pipeline accepts one of:
 
 1. **`NARRATIVE_REPORT.md`** (best) — structured research narrative with claims, experiments, results, figures
 2. **Research direction + experiment results** — the skill will help draft the narrative first
-3. **Existing `PAPER_PLAN.md`** — skip Phase 1, start from Phase 2
+3. **Existing `PAPER_PLAN.md`** — skip Phase 1, start from **Phase 1.5** (the contract negotiation still runs; only resuming a genuine pre-1.5 legacy run may skip it, and then Phase 6.0's row 0 records "no contract")
 
 The more detailed the input (especially figure descriptions and quantitative results), the better the output.
 
@@ -169,8 +169,77 @@ If `— style-ref: <source>` was passed in `$ARGUMENTS` and the helper succeeded
 Shall I proceed with figure generation?
 ```
 
-- **User approves** (or AUTO_PROCEED=true) → proceed to Phase 2.
+- **User approves** (or AUTO_PROCEED=true) → proceed to Phase 1.5.
 - **User requests changes** → adjust plan and re-present.
+
+### Phase 1.5: Negotiated Acceptance Contract (before any writing)
+
+The plan says what the paper will contain; the CONTRACT says what "done" means
+— a checklist of testable assertions, negotiated ADVERSARIALLY before the first
+section is written, and graded at the end. (The plan is the boundary; the
+contract is what gets graded.)
+
+1. **Executor proposes.** From `PAPER_PLAN.md` + `NARRATIVE_REPORT.md`, draft
+   `PAPER_ACCEPTANCE_CONTRACT.md`: **10–20 testable assertions** covering —
+   every headline claim has a named evidence source (file/table); every
+   number in the abstract traces to a results file; scope qualifiers the title
+   /abstract must carry; figures that must exist and what each must show;
+   section-level completeness (e.g. "limitations names ≥2 real limitations,
+   not hedges"); venue constraints (page limit, anonymization). Each assertion
+   must be CHECKABLE by reading the final PDF + results files — no vibes
+   ("writing is clear" is not an assertion; "every acronym is defined at first
+   use" is). Fewer than ~10 assertions and the gate rubber-stamps; beyond ~20
+   the negotiation stalls on trivia.
+
+2. **Reviewer pushes back** (fresh thread — the negotiation is adversarial):
+
+   ```
+   mcp__codex__codex:
+     config: {"model_reasoning_effort": "xhigh"}
+     prompt: |
+       You are negotiating the acceptance contract for a paper BEFORE it is
+       written. Read these files directly:
+       - Plan: <abs path>/PAPER_PLAN.md
+       - Proposed contract: <abs path>/PAPER_ACCEPTANCE_CONTRACT.md
+       - Evidence inventory: <abs path>/NARRATIVE_REPORT.md (+ results/ paths)
+
+       Push back on the contract, not the plan: (a) assertions that are
+       untestable or vibes — demand a checkable rewrite; (b) missing
+       assertions — claims in the plan that no assertion covers, numbers with
+       no traceability assertion, foreseeable overclaim risks with no scope
+       assertion; (c) assertions the evidence inventory cannot possibly
+       satisfy — flag now, not after writing. End with exactly one line:
+       CONTRACT_ACCEPTED: yes    or    CONTRACT_ACCEPTED: no
+       followed by your numbered revision demands if no.
+   ```
+
+   A reply with a missing or malformed `CONTRACT_ACCEPTED:` line is treated as
+   `no`; request a corrected verdict via `codex-reply` — that correction
+   exchange does not consume a negotiation round.
+
+3. **Iterate.** On `no`, revise the contract per the demands and resubmit via
+   `mcp__codex__codex-reply` (same thread — the negotiation is one
+   conversation). **Max 3 rounds.**
+
+4. **Fallback — never stall the pipeline.** If round 3 still ends in `no`:
+   record the unresolved demands verbatim in a "## Disputed" section of the
+   contract and mark it `status: contested`. A contested contract is precisely
+   the "insert a human when the CONTRACT is wrong" trigger, so it OVERRIDES
+   `AUTO_PROCEED` for this one decision: pause and present the dispute for a
+   human tie-break. If no human responds (unattended/overnight run), proceed —
+   but a contested contract caps the outcome: Phase 6.0 gates on the UNDISPUTED
+   assertions and the Final Report must set `Submission-ready: no` with the
+   dispute reproduced verbatim; the tie-break happens when the human returns.
+
+**Output:** `PAPER_ACCEPTANCE_CONTRACT.md` (`status: accepted | contested`,
+round count, reviewer thread id). The contract is FROZEN once accepted —
+Phases 2–5 implement against it; they do not edit it. If writing reveals an
+assertion is genuinely wrong (not merely inconvenient), that is a contract
+question: surface it at a checkpoint, don't silently rewrite.
+
+**Boundary:** `/paper-claim-audit` (Phases 4.7, 5.5) stays zero-context — the
+contract is a WRITER-side gate and is never passed to the claim auditor (its
+independence is the point; two different nets).
 
 ### Phase 2: Figure Generation
 
@@ -531,12 +600,21 @@ skipping audits while claiming to have run them.
 
 ```
 📋 Submission audits required before Final Report:
+   [ ] 0. PAPER_ACCEPTANCE_CONTRACT.md (Phase 1.5): re-read every assertion
+          against the final PDF + results files; each → satisfied / violated /
+          disputed-at-negotiation. ANY violated undisputed assertion blocks the
+          Final Report until fixed or the human explicitly waives it (waivers
+          recorded in the contract file). Contract absent (pre-1.5 run) → mark
+          "no contract" and continue.
    [ ] 1. /proof-checker        → paper/PROOF_AUDIT.json
    [ ] 2. /paper-claim-audit    → paper/PAPER_CLAIM_AUDIT.json
    [ ] 3. /citation-audit       → paper/CITATION_AUDIT.json
    [ ] 4. Resolve $AUDIT_VERIFIER per integration-contract.md §2 (Policy A),
           then: bash "$AUDIT_VERIFIER" paper/ --assurance submission
-   [ ] 5. Block Final Report iff verifier exit code != 0
+   [ ] 5. Block Final Report iff verifier exit code != 0 OR row 0 found a
+          violated undisputed assertion. (TWO separate gates: row 0 is graded
+          by instruction against the contract; the verifier checks audit JSONs
+          only — verify_paper_audits.sh does NOT read the contract.)
 ```
 
 > The resolver in "Running the verifier" below tries
@@ -648,6 +726,7 @@ or directly if `assurance=draft`)
 |-------|--------|--------|
 | 0. Assurance Setup | ✅ | paper/.aris/assurance.txt = [draft\|submission] |
 | 1. Paper Plan | ✅ | PAPER_PLAN.md |
+| 1.5 Acceptance Contract | [accepted\|contested\|no contract] ([N] rounds) | PAPER_ACCEPTANCE_CONTRACT.md |
 | 2. Figures | ✅ | figures/ ([N] auto + [M] manual) |
 | 3. LaTeX Writing | ✅ | paper/sections/*.tex ([N] sections, [M] citations) |
 | 4. Compilation | ✅ | paper/main.pdf ([X] pages) |

@@ -14,7 +14,7 @@ Before any UI, design, copy, or marketing/visual change, **read `.impeccable.md`
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **DashClaw** (23754 symbols, 47905 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **DashClaw** (25844 symbols, 51815 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 
@@ -23,8 +23,9 @@ This project is indexed by GitNexus as **DashClaw** (23754 symbols, 47905 relati
 - **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
 - **MUST run `detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows. For regression review, compare against the default branch: `detect_changes({scope: "compare", base_ref: "main"})`.
 - **MUST warn the user** if impact analysis returns HIGH or CRITICAL risk before proceeding with edits.
-- When exploring unfamiliar code, use `query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
+- When exploring unfamiliar code, use `query({search_query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
 - When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `context({name: "symbolName"})`.
+- For security review, `explain({target: "fileOrSymbol"})` lists taint findings (source→sink flows; needs `analyze --pdg`).
 
 ## Never Do
 
@@ -72,16 +73,16 @@ The global `~/.codex/AGENTS.md` covers core behavior; these are DashClaw-specifi
 
 This repository is indexed by Repowise. Use the Repowise MCP tools for codebase orientation, discovery, implementation context, modification risk, design rationale, and cleanup planning. MCP data reflects the last index run; verify against source files before editing.
 
-Last indexed: 2026-06-11 (commit 41f18c0a). Confidence: 100%.
+Last indexed: 2026-07-03 (commit 4e5d321d). Confidence: 100%.
 ### Architecture
-This repository is a governed code-assistant platform that ingests repository content (source files, contracts, and policy/rules), transforms it through policy-aware agent orchestration and optional MCP tool execution, and outputs governance-ready agent behaviors plus generated artifacts such as review/deployment workflows and an MCP-served tool surface for downstream UIs and agents.
+repo is a codebase documentation and governed-agent platform that ingests a target repository (source files + contracts/config), traverses and parses code into structured representations, analyzes dependencies and policies, and then generates LLM-synthesised wiki artifacts served through an MCP server and a web UI, while also providing example governed agents and SDKs for automation.
 ### Key Modules
 | Module | Purpose | Owner |
 |--------|---------|-------|
 | `app` | The **app** module is the **front-end application layer** of repowise’s… | - |
 | `__tests__/unit` | The __tests__/unit module is the unit-testing entry stage of repowise’s quality… | - |
-| `app/components` | The app/components module is the UI-layer component library and layout… | - |
-| `app/lib` | The **app/lib** module is the service-layer edge connector for repowise’s… | - |
+| `app/components` | The app/components module is the UI component layer of repowise’s web… | - |
+| `app/lib` | The app/lib module is the core service-layer “brain” of repowise’s policy… | - |
 | `application` | The **Application (top-level)** module is the entry-stage web application layer… | - |
 | `app/api/_archive` | The **api/_archive** module is the **archival API layer** in repowise’s larger… | - |
 | `scripts` | The **scripts** module is the **application-layer orchestration toolkit** for… | - |
@@ -90,8 +91,8 @@ This repository is a governed code-assistant platform that ingests repository co
 | `examples` | The **examples** module is the entry-stage “application-layer” showcase in… | - |
 ### Entry Points
 - `scripts/_db.mjs`
-- `app/lib/notification-adapters/index.ts`
 - `mcp-server/server.json`
+- `app/lib/notification-adapters/index.ts`
 - `scripts/_load-env.mjs`
 - `scripts/living-merge/manifest.ts`
 - `mcp-server/test/helpers.ts`
@@ -102,11 +103,11 @@ This repository is a governed code-assistant platform that ingests repository co
 ### Risk Hotspots
 | File | Churn | 90d Commits | Owner |
 |------|-------|-------------|-------|
-| `app/lib/doctor/generated/last-snapshot.json` | 100.0th percentile | 67 | Wes Sander |
-| `app/lib/doctor/generated/shape.json` | 100.0th percentile | 67 | Wes Sander |
-| `mcp-server/lib/routes-inventory.generated.json` | 99.9th percentile | 30 | Wes Sander |
-| `public/livingcode/index.html` | 99.9th percentile | 70 | Wes Sander |
-| `plugins/dashclaw/hooks/dashclaw_stop.py` | 99.8th percentile | 7 | Wes Sander |
+| `package-lock.json` | 100.0th percentile | 69 | Wes Sander |
+| `app/lib/guard.ts` | 100.0th percentile | 22 | Wes Sander |
+| `app/lib/doctor/generated/last-snapshot.json` | 99.9th percentile | 65 | Wes Sander |
+| `app/lib/doctor/generated/shape.json` | 99.9th percentile | 65 | Wes Sander |
+| `public/livingcode/index.html` | 99.8th percentile | 68 | Wes Sander |
 
 ### Repowise MCP Workflow
 

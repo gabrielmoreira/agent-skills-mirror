@@ -105,6 +105,13 @@ Rate each job story on:
 
 ---
 
+## Deeper Materials
+
+This skill ships with support files — use them when they are available:
+
+- **`references/situation-mining.md`** — Situation Mining — the "When" Is the Whole Method. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
+- **`templates/job-story-canvas.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
 ## Quality Checks
 
 - [ ] Job stories use the "When / I want to / So I can" format (not user story format)

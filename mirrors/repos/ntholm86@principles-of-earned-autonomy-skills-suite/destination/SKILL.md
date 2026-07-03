@@ -1,4 +1,4 @@
-﻿---
+---
 name: destination
 version: 2.1.0
 description: 'Surface the agent''s in-progress guesses about where the operator is heading — what they care about, what they are circling, what the implicit destination might be — and turn those guesses into questions the operator can confirm, correct, or reject. Closes the gap between the destination the operator has explicitly stated and what the agent has picked up from their conversation, reactions, and emphasis. USE WHEN: the destination feels thin or stale, the operator is exploring rather than executing, the agent suspects it is missing implicit direction, or before a long autonomous run that will drift if the destination is unclear.'
@@ -23,7 +23,7 @@ The mechanism is not autonomous; it is conversational. The agent forms guesses, 
 
 Destination enacts the same three principles as the rest of the suite, with one specific emphasis:
 
-1. **Commander's Intent** — Destination's job is *only* to make the destination clearer, never to commit to a route. A destination-hunch must be stated as a guess to be confirmed, not as an assumption to act on.
+1. **Operator's Intent** — Destination's job is *only* to make the destination clearer, never to commit to a route. A destination-hunch must be stated as a guess to be confirmed, not as an assumption to act on.
 2. **Observable Autonomy** — every destination-hunch surfaced and every operator response is recorded, so a future run can see what was guessed, what was confirmed, what was rejected, and what is still open.
 3. **Convergence Is Silence** — when the agent has no genuine destination-hunch to offer, it must say so. A skill that manufactures hunches to justify itself is worse than a skill that stays quiet.
 

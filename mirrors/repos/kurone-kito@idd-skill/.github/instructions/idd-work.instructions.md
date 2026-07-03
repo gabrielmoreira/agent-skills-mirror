@@ -109,12 +109,14 @@ a WorkTrunk version.
 
 If WorkTrunk is not available, choose the correct case:
 
-| Case                                       | Command                                                                             |
-| ------------------------------------------ | ----------------------------------------------------------------------------------- |
-| Fresh claim                                | `git worktree add <path> -b <branch-name> origin/main`                              |
-| Takeover — local branch exists             | `git worktree add <path> <branch-name>`                                             |
-| Takeover — remote branch only              | `git fetch origin && git worktree add <path> -b <branch-name> origin/<branch-name>` |
-| Takeover — neither local nor remote (rare) | treat as fresh claim; preserve the inherited branch name                            |
+<!-- dprint-ignore-start -->
+| Case | Command |
+| --- | --- |
+| Fresh claim | `git worktree add <path> -b <branch-name> origin/main` |
+| Takeover — local branch exists | `git worktree add <path> <branch-name>` |
+| Takeover — remote branch only | `git fetch origin && git worktree add <path> -b <branch-name> origin/<branch-name>` |
+| Takeover — neither local nor remote (rare) | treat as fresh claim; preserve the inherited branch name |
+<!-- dprint-ignore-end -->
 
 **Step 3 — Install deps**: after worktree creation, ensure dependencies
 are installed:
@@ -127,6 +129,14 @@ are installed:
 
 `install-deps` must remain safe to rerun during retries, takeovers, and
 recreated worktrees without manual cleanup.
+
+A fresh worktree can report `install-deps` success while a package
+manager silently under-installs (a real dependency binary missing
+despite a clean exit). If a repository has observed this, its
+`install-deps` command should verify a key post-install artifact
+(e.g. a package's CLI binary) and retry the install exactly once
+before failing loudly — see the `verify-install-deps` helper in
+`docs/idd-helper-scripts.md` for one implementation.
 
 ### B1 self-check
 
@@ -199,6 +209,12 @@ plan comment and verified claim.
 Implement the plan. Before each commit, run **fix-validate**.
 
 Keep commits atomic — one logical change per commit.
+
+**De-duplication refactors**: when consolidating a wrapper function used
+at multiple call sites into one shared function, check whether any call
+site's old delegate path added options or behavior (timeouts, stdio
+handling, error translation, etc.) that the new shared function does not
+replicate — not just whether the function bodies look equivalent.
 
 If B3 or C must stop for a hold, use the shared Hold / suspend rules in
 `idd-overview-appendix.instructions.md` and update the issue digest with the

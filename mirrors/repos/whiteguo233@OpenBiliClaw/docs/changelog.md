@@ -10,6 +10,10 @@
 
 - **LLM 探测诊断补强**：配置页和 CLI 探测延续 `v0.3.150` 的 reasoning-only 诊断语义，并补充更清晰的 probe 失败信息，方便用户区分模型仅返回思考内容、最终内容为空和真实服务不可用。
 - **发布渠道版本号对齐**：浏览器插件、后端源码和桌面安装包统一提升到 `0.3.151`，GitHub Release 聚合页、插件包和桌面安装包使用同一版本号，减少用户在手动插件包、Chrome Web Store 与桌面安装包之间比对版本的成本。
+- **macOS 安全阻挡提示收敛**：README、官网首页、desktop Release notes 和 DMG 内 `首次打开说明 First Launch.html` 统一改成“右键 / Control-click 打开 → 隐私与安全性仍要打开 → 已损坏时清除 quarantine”的顺序；用户侧不再被提示执行额外 `codesign` 命令，下载后安装包内也能直接看到同一段说明。
+- **插件更新失败原因可见**：side panel 设置页点击“立即应用”后，如果后端自动更新被 `dirty_worktree`、`untrusted_remote`、`branch_not_fast_forwardable` 等安全守卫拒绝，插件会展示本地化原因并刷新状态卡，不再只提示“后端更新未能开始”。
+- **更新入口严格区分安装渠道**：side panel 和桌面 Web 的版本面板现在只有在后端明确报告 `install_mode="git"` 且存在 `backend-v*` 更新时才显示“立即应用”；`install_mode="frozen"` 或最新 tag 为 `desktop-v*` 时只显示 Release 下载入口，空 / 未知安装方式不再误入源码自动更新分支。
+- **惊喜推荐改为池内 Top 10% 动态阈值**：`precompute_delight_scores()`、runtime 主动推送、pending-batch、CLI 和普通推荐池的 delight 占位排除都改用动态门槛。默认底线仍是 `0.70`，低探索开放度用户底线仍是 `0.80`；正式候选池样本不少于 20 条时，会取 `max(profile floor, 当前池内 Top 10% 分数边界)`，避免普通高分内容被过早包装成“惊喜推荐”。生产库副本验证还暴露了旧版 `delight_score` 标尺残留，因此 backfill 现在会重新领取并同步 `delight_score != relevance_score` 的历史行，包括 `shown` 且已有普通推荐历史的行。
 - **发布流程文档同步**：收紧平台来源发布 checklist，并刷新 README / 文档索引中的当前版本标识，确保本轮插件包、后端源码 tag 和桌面安装包 tag 对外一致。
 
 ## v0.3.150 / extension v0.3.101 / desktop v0.3.150: Reddit rdt-cli 默认后端与发布包同步（2026-06-30）
@@ -45,7 +49,7 @@
 - **Discovery evaluator 去掉 text-first 重复正文**：知乎 / X 等文字优先来源如果 `description` 与 `body_text` 来自同一段文本，`discovery.evaluate_batch` 和单条 fallback 评估 prompt 会省略重复的 `description`，只保留 `body_text` 作为正文输入，降低旧知乎候选里摘要 / 正文重复造成的 prompt 膨胀。
 - **Discovery interest 丰富度保护**：query / domain / keyword planner 的 compact profile summary 不再只是截取权重前 64 个兴趣；现在先取最多 128 个 interest 候选，再用 cache-only embedding 做 MMR 风格选择，在保留强兴趣的同时覆盖更多语义簇，并对贴近 `disliked_topics` 的 interest 降权。`disliked_topics` 自身也用同一缓存向量做多样性去重。真实 embedding cache 命中时，选择器预计算 dislike 相似度并增量维护“距已选最近相似度”，避免 prompt 构建阶段重复计算大量 bge-m3 cosine。没有 cached embedding 时保持原权重顺序，不新增热路径 embedding 调用。
 - **推荐出口增加 dislike 硬过滤兜底**：`RecommendationEngine.serve()` 从 discovery pool 读出候选后，会按当前 `profile.preferences.disliked_topics` 再过滤一次；主题字段精确命中，或标题 / 标签 / 简介 / 作者 / 短正文包含避雷 term 的候选不会进入排序，覆盖异步清池尚未完成或清池失败的窗口。
-- **Delight Score 复用 Evo 结果并清理旧 LLM 入口**：`precompute_delight_scores()` 不再为惊喜候选额外调用 Delight LLM；现在直接复用 Evo 已写入 `content_cache` 的 `relevance_score` 作为 `delight_score`，并优先用面向用户的 `pool_expression` 作为卡片展示的 `delight_reason`（缺失时 fallback 到 `relevance_reason/topic`），再用 `pool_topic_label/topic_group/topic_key/style_key` 生成 `delight_hook`。低于当前 delight 阈值（默认 0.70，低探索开放度 0.80）的候选只落分不落文案，避免下轮重复处理；旧 `LLMDelightScorer`、Delight prompt builder 和 LLMService 中的 Delight caller 路由特例已移除。
+- **Delight Score 复用 Evo 结果并清理旧 LLM 入口**：`precompute_delight_scores()` 不再为惊喜候选额外调用 Delight LLM；现在直接复用 Evo 已写入 `content_cache` 的 `relevance_score` 作为 `delight_score`，并优先用面向用户的 `pool_expression` 作为卡片展示的 `delight_reason`（缺失时 fallback 到 `relevance_reason/topic`），再用 `pool_topic_label/topic_group/topic_key/style_key` 生成 `delight_hook`。低于当前动态 delight 阈值（profile floor 与正式候选池 Top 10% 边界取高）的候选只落分不落文案，避免下轮重复处理；旧 `LLMDelightScorer`、Delight prompt builder 和 LLMService 中的 Delight caller 路由特例已移除。
 - **统一关键词 planner 切断 B 站旧搜索词 LLM 兜底**：`[discovery].unified_keyword_planner_enabled=true` 时，B 站主 refresh 若暂时 claim 不到 `discovery_keywords` 里的 pending 词，会只移除本轮 `search` 子策略并保留 `related_chain/trending/explore`，不再把 `queries=None` 传给 `SearchStrategy` 触发 `discovery.search.queries`，避免 planner 与旧搜索词生成同时烧 token。
 - **插件与桌面安装包同步发布**：浏览器插件版本提升到 `extension-v0.3.99`，用于 GitHub Release 与 Chrome Web Store 同步分发；桌面安装包提升到 `desktop-v0.3.148`，让冻结包用户直接获得本轮 LLM 费用控制、dislike 兜底和关键词 planner 修复。
 - **插件连接空态实时同步**：side panel 首次打开时如果 `/api/ping` 瞬时失败但 `/api/runtime-stream` 随后连上，现在会立刻把推荐页从“后端还没开张”离线空态切回在线刷新流程，不再只更新顶部“已连接”徽标；popup 离线期间会每 1 秒轻量重探测 `/api/ping`，runtime-stream 自身也改为固定 1 秒重连，后端启动后自动更新徽标并刷新推荐。

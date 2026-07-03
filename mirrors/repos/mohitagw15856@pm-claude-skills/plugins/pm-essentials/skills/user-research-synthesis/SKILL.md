@@ -130,6 +130,13 @@ Research gaps identified:
 - Quantify when possible ("7 out of 10 users...")
 - Connect themes to business objectives
 
+## Deeper Materials
+
+This skill ships with support files — use them when they are available:
+
+- **`references/theme-validity.md`** — When Is a Theme Real? Synthesis Validity Rules. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
+- **`templates/synthesis-report.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
 ## Quality Checks
 
 - [ ] Themes identify patterns across multiple participants, not individual responses

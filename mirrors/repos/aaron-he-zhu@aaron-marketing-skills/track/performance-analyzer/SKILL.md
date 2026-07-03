@@ -1,7 +1,7 @@
 ---
 name: performance-analyzer
 description: 'Use when the user asks to "analyze influencer campaign performance", "compare influencers", or "find what content worked"; produces metric scorecards vs target and benchmark, platform/influencer/content rankings, engagement-quality and sentiment reads, conversion-attribution breakdowns, and ranked learnings. Not for dollar-level return math — use roi-calculator.'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -9,24 +9,26 @@ when_to_use: "Use mid-flight or post-campaign when a user wants to evaluate infl
 argument-hint: "<campaign name> [platform or influencer handles]"
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: influencer
+  phase: track
   family: influencer-marketing
   impact-phase: Track
 ---
 
 # Performance Analyzer
 
-This skill helps you analyze influencer marketing campaign performance comprehensively. It goes beyond surface metrics to understand what truly worked and why.
+Analyze influencer campaign performance past surface metrics — score results vs target/benchmark, rank platforms/creators/content, read engagement quality and sentiment, attribute conversions, and write ranked learnings.
+
+> **Cross-discipline (paid ads):** this is also the cross-channel **paid-ads** scorecard/anomaly lens — account-wide metric rollups vs target/benchmark that feed [ad-test-designer](../../paid/orchestrate/ad-test-designer/SKILL.md) (what to test) and [paid-measurement-loop](../../paid/scale/paid-measurement-loop/SKILL.md) (what to read back). Save paid runs under `memory/paid-ads/performance-analyzer/`.
 
 ## Quick Start
-
-Shortest invocation:
 
 ```
 Analyze performance of [campaign name] influencer campaign
 ```
 
-Common scenario — compare creators within one campaign:
+Compare creators within one campaign:
 
 ```
 Compare performance of these influencers from [campaign]: @handle1, @handle2, @handle3
@@ -34,7 +36,7 @@ Compare performance of these influencers from [campaign]: @handle1, @handle2, @h
 
 ## Skill Contract
 
-- **Reads**: campaign name and date range; native platform analytics (reach, views, engagement); influencer-supplied reports or screenshots; website/GA traffic and conversion data; sales and promo-code redemption data; targets and benchmarks if the user has them.
+- **Reads**: campaign name and date range; native platform analytics (reach, views, engagement); influencer-supplied reports or screenshots; website/GA traffic and conversion data; sales and promo-code redemption data; targets and benchmarks if the user has them; per-creator performance baselines from `memory/creators/<handle-slug>.md` ([creator-registry](../../protocol/creator-registry/SKILL.md) roster records) when present.
 - **Writes**: a performance analysis to `memory/influencer/performance-analyzer/YYYY-MM-DD-<campaign>.md` covering core-metric scorecards, platform/influencer/content rankings, engagement-quality and sentiment reads, conversion attribution, and ranked learnings.
 - **Promotes**: durable facts (top-performing creators, winning formats, platform ROI splits, roster renew/drop calls) to `memory/hot-cache.md`.
 - **Done when**:
@@ -62,370 +64,27 @@ No placeholder is required to run. See [CONNECTORS.md](../../CONNECTORS.md) for 
 
 ## Instructions
 
-When a user requests performance analysis:
+Work the steps in order. Each fill-in template lives in [references/analysis-templates.md](references/analysis-templates.md) — copy the matching block and populate it.
 
-1. **Gather Performance Data**
+1. **Gather performance data** — log campaign/period/influencers/platforms and the available sources (native analytics, influencer reports, web analytics, sales, promo codes). Template: step 1.
+2. **Analyze core metrics** — score reach, impressions, engagements, ER, video views, clicks, promo uses, conversions, and revenue against target and benchmark; assign a performance verdict and call out over/underperformers. Template: step 2.
+3. **Analyze by platform** — compare platforms on reach/ER/clicks/conversions/CPA, name the best and worst with reasons, and break out platform-specific formats (IG feed/Reels/Stories, TikTok watch time/completion). Template: step 3.
+4. **Analyze by influencer** — rank creators on reach/ER/conversions/ROI, deep-dive top performers (why they won, content anatomy, renew call), and explain underperformers. Template: step 4.
+5. **Content performance analysis** — rank top content, compare formats and themes, and name the winning hook/messaging/visual patterns. Template: step 5.
+6. **Engagement quality analysis** — break engagement by type and intent, run comment sentiment, surface purchase-intent signals, and score quality /10. Template: step 6.
+7. **Conversion & attribution analysis** — draw the funnel, score conversion metrics vs benchmark, attribute by method (promo / UTM / direct / estimated), and table promo-code performance. Template: step 7.
+8. **Generate insights & recommendations** — write the top-5 learnings, what worked / what didn't, optimization opportunities, roster renew/drop calls, and future-campaign guidance. Template: step 8.
 
-   ```markdown
-   ### Performance Data Collection
-   
-   **Campaign**: [name]
-   **Period**: [start] - [end]
-   **Influencers**: [count]
-   **Platforms**: [platforms]
-   
-   ### Data Sources
-   
-   | Source | Metrics Available | Collection Method |
-   |--------|-------------------|-------------------|
-   | Native analytics | Reach, views, engagement | Platform export |
-   | Influencer reports | Screenshots/exports | From creators |
-   | Website analytics | Traffic, conversions | GA/tracking |
-   | Sales data | Revenue, orders | E-commerce platform |
-   | Promo code data | Redemptions | Sales system |
-   ```
-
-2. **Analyze Core Metrics**
-
-   ```markdown
-   ## Campaign Performance Overview
-   
-   ### Summary Metrics
-   
-   | Metric | Result | Target | vs. Target | vs. Benchmark |
-   |--------|--------|--------|------------|---------------|
-   | Total Reach | [X] | [X] | [+/-X%] | [+/-X%] |
-   | Total Impressions | [X] | [X] | [+/-X%] | [+/-X%] |
-   | Total Engagements | [X] | [X] | [+/-X%] | [+/-X%] |
-   | Engagement Rate | [X%] | [X%] | [+/-X%] | [+/-X%] |
-   | Total Video Views | [X] | [X] | [+/-X%] | [+/-X%] |
-   | Link Clicks | [X] | [X] | [+/-X%] | [+/-X%] |
-   | Promo Code Uses | [X] | [X] | [+/-X%] | N/A |
-   | Conversions | [X] | [X] | [+/-X%] | [+/-X%] |
-   | Revenue | $[X] | $[X] | [+/-X%] | N/A |
-   
-   ### Performance Score: [X/10]
-   
-   **Assessment**: [Excellent/Good/Average/Below Average/Poor]
-   
-   ### Key Highlights
-   
-   ✅ **What Exceeded Expectations**:
-   - [Highlight 1]
-   - [Highlight 2]
-   
-   ⚠️ **What Underperformed**:
-   - [Issue 1]
-   - [Issue 2]
-   ```
-
-3. **Analyze by Platform**
-
-   ```markdown
-   ## Platform Performance
-   
-   ### Platform Comparison
-   
-   | Platform | Reach | Engagements | ER | Clicks | Conversions | CPA |
-   |----------|-------|-------------|-------|--------|-------------|-----|
-   | Instagram | [X] | [X] | [%] | [X] | [X] | $[X] |
-   | TikTok | [X] | [X] | [%] | [X] | [X] | $[X] |
-   | YouTube | [X] | [X] | [%] | [X] | [X] | $[X] |
-   | **Total** | **[X]** | **[X]** | **[%]** | **[X]** | **[X]** | **$[X]** |
-   
-   ### Platform Insights
-   
-   **Best Performing Platform**: [Platform]
-   - Why: [analysis]
-   - Key content: [what worked]
-   
-   **Underperforming Platform**: [Platform]
-   - Why: [analysis]
-   - Improvement opportunity: [suggestion]
-   
-   ### Platform-Specific Metrics
-   
-   #### Instagram
-   
-   | Metric | Feed Posts | Reels | Stories |
-   |--------|------------|-------|---------|
-   | Reach | [X] | [X] | [X] |
-   | Engagements | [X] | [X] | [X] |
-   | ER | [%] | [%] | [%] |
-   | Saves | [X] | [X] | N/A |
-   | Shares | [X] | [X] | [X] |
-   
-   #### TikTok
-   
-   | Metric | Result | Benchmark |
-   |--------|--------|-----------|
-   | Views | [X] | |
-   | Likes | [X] | |
-   | Comments | [X] | |
-   | Shares | [X] | |
-   | Average Watch Time | [X]s | |
-   | Completion Rate | [%] | |
-   ```
-
-4. **Analyze by Influencer**
-
-   ```markdown
-   ## Influencer Performance
-   
-   ### Influencer Ranking
-   
-   | Rank | Influencer | Reach | ER | Conversions | ROI | Score |
-   |------|------------|-------|-------|-------------|-----|-------|
-   | 1 | @[handle] | [X] | [%] | [X] | [X]:1 | ⭐⭐⭐⭐⭐ |
-   | 2 | @[handle] | [X] | [%] | [X] | [X]:1 | ⭐⭐⭐⭐ |
-   | 3 | @[handle] | [X] | [%] | [X] | [X]:1 | ⭐⭐⭐⭐ |
-   | 4 | @[handle] | [X] | [%] | [X] | [X]:1 | ⭐⭐⭐ |
-   | 5 | @[handle] | [X] | [%] | [X] | [X]:1 | ⭐⭐ |
-   
-   ### Top Performers Deep Dive
-   
-   #### #1: @[handle]
-   
-   | Metric | Result | vs. Campaign Avg |
-   |--------|--------|------------------|
-   | Reach | [X] | [+/-X%] |
-   | Engagement Rate | [%] | [+/-X%] |
-   | Video Completion | [%] | [+/-X%] |
-   | Click-through Rate | [%] | [+/-X%] |
-   | Conversion Rate | [%] | [+/-X%] |
-   | Cost per Conversion | $[X] | [+/-X%] |
-   
-   **Why They Performed Well**:
-   - [Reason 1]
-   - [Reason 2]
-   - [Reason 3]
-   
-   **Content Analysis**:
-   - Format: [what they posted]
-   - Hook: [how they opened]
-   - Message: [how they communicated]
-   - CTA: [what they asked viewers to do]
-   
-   **Recommendation**: [Renew/Expand/Ambassador potential]
-   
-   ### Underperformers Analysis
-   
-   #### @[handle]
-   
-   **Results**: [summary]
-   **Why Underperformed**: [analysis]
-   **Learning**: [what to do differently]
-   ```
-
-5. **Content Performance Analysis**
-
-   ```markdown
-   ## Content Performance
-   
-   ### Top Performing Content
-   
-   | Rank | Creator | Platform | Format | Reach | ER | Key Feature |
-   |------|---------|----------|--------|-------|-------|-------------|
-   | 1 | @[handle] | [platform] | [format] | [X] | [%] | [why it worked] |
-   | 2 | @[handle] | [platform] | [format] | [X] | [%] | [why it worked] |
-   | 3 | @[handle] | [platform] | [format] | [X] | [%] | [why it worked] |
-   
-   ### Content Format Analysis
-   
-   | Format | Pieces | Avg Reach | Avg ER | Best Performer |
-   |--------|--------|-----------|--------|----------------|
-   | Video (Reels/TikTok) | [#] | [X] | [%] | @[handle] |
-   | Static Images | [#] | [X] | [%] | @[handle] |
-   | Carousels | [#] | [X] | [%] | @[handle] |
-   | Stories | [#] | [X] | [%] | @[handle] |
-   | YouTube Videos | [#] | [X] | [%] | @[handle] |
-   
-   ### Content Theme Analysis
-   
-   | Theme | Pieces | Avg ER | Conversion Rate | Notes |
-   |-------|--------|--------|-----------------|-------|
-   | Product demo | [#] | [%] | [%] | [notes] |
-   | Lifestyle | [#] | [%] | [%] | [notes] |
-   | Tutorial | [#] | [%] | [%] | [notes] |
-   | Review | [#] | [%] | [%] | [notes] |
-   | Unboxing | [#] | [%] | [%] | [notes] |
-   
-   ### Winning Content Patterns
-   
-   **Hook Patterns That Worked**:
-   - [Pattern 1]: [examples]
-   - [Pattern 2]: [examples]
-   
-   **Messaging That Resonated**:
-   - [Message type 1]: [why it worked]
-   - [Message type 2]: [why it worked]
-   
-   **Visual Elements That Performed**:
-   - [Element 1]
-   - [Element 2]
-   ```
-
-6. **Engagement Quality Analysis**
-
-   ```markdown
-   ## Engagement Quality
-   
-   ### Engagement Breakdown
-   
-   | Type | Volume | % of Total | Quality Assessment |
-   |------|--------|------------|-------------------|
-   | Likes | [X] | [%] | Passive |
-   | Comments | [X] | [%] | [quality] |
-   | Saves | [X] | [%] | High intent |
-   | Shares | [X] | [%] | High value |
-   | Link clicks | [X] | [%] | Direct action |
-   
-   ### Comment Sentiment Analysis
-   
-   | Sentiment | % | Examples |
-   |-----------|---|----------|
-   | Positive | [%] | "[example]", "[example]" |
-   | Neutral/Questions | [%] | "[example]", "[example]" |
-   | Negative | [%] | "[example]", "[example]" |
-   
-   **Key Themes in Comments**:
-   - [Theme 1]: [frequency] mentions
-   - [Theme 2]: [frequency] mentions
-   - [Theme 3]: [frequency] mentions
-   
-   ### Purchase Intent Signals
-   
-   | Signal | Count | Examples |
-   |--------|-------|----------|
-   | "Where to buy" questions | [#] | |
-   | Price questions | [#] | |
-   | Code requests | [#] | |
-   | "Just ordered" | [#] | |
-   | Tagged friends | [#] | |
-   
-   ### Engagement Quality Score: [X/10]
-   ```
-
-7. **Conversion & Attribution Analysis**
-
-   ```markdown
-   ## Conversion Analysis
-   
-   ### Conversion Funnel
-   
-   ```
-   Reach        [XXXXXXXXXX] 1,000,000  (100%)
-                     ↓
-   Engagements  [XXXXXXX   ]   150,000  (15%)
-                     ↓
-   Link Clicks  [XXX       ]    25,000  (2.5%)
-                     ↓
-   Site Visits  [XX        ]    20,000  (2%)
-                     ↓
-   Add to Cart  [X         ]     5,000  (0.5%)
-                     ↓
-   Purchases    [X         ]     2,000  (0.2%)
-   ```
-   
-   ### Conversion Metrics
-   
-   | Metric | Result | Benchmark | Status |
-   |--------|--------|-----------|--------|
-   | Click-through Rate | [%] | [%] | ✅/❌ |
-   | Landing Page CVR | [%] | [%] | ✅/❌ |
-   | Overall CVR | [%] | [%] | ✅/❌ |
-   | Cost per Click | $[X] | $[X] | ✅/❌ |
-   | Cost per Conversion | $[X] | $[X] | ✅/❌ |
-   
-   ### Attribution by Method
-   
-   | Method | Conversions | Revenue | % of Total |
-   |--------|-------------|---------|------------|
-   | Promo codes | [X] | $[X] | [%] |
-   | UTM tracking | [X] | $[X] | [%] |
-   | Direct attribution | [X] | $[X] | [%] |
-   | Estimated influence | [X] | $[X] | [%] |
-   
-   ### Promo Code Performance
-   
-   | Code | Influencer | Uses | Revenue | AOV |
-   |------|------------|------|---------|-----|
-   | [CODE1] | @[handle] | [X] | $[X] | $[X] |
-   | [CODE2] | @[handle] | [X] | $[X] | $[X] |
-   | [CODE3] | @[handle] | [X] | $[X] | $[X] |
-   ```
-
-8. **Generate Insights & Recommendations**
-
-   ```markdown
-   ## Insights & Recommendations
-   
-   ### Top 5 Learnings
-   
-   1. **[Learning 1]**
-      - What we observed: [data]
-      - Why it matters: [significance]
-      - Future application: [how to use this]
-   
-   2. **[Learning 2]**
-      - What we observed: [data]
-      - Why it matters: [significance]
-      - Future application: [how to use this]
-   
-   [Continue for top 5]
-   
-   ### What Worked
-   
-   | Element | Performance | Recommendation |
-   |---------|-------------|----------------|
-   | [Element 1] | [metric] | Do more of this |
-   | [Element 2] | [metric] | Expand this approach |
-   
-   ### What Didn't Work
-   
-   | Element | Performance | Recommendation |
-   |---------|-------------|----------------|
-   | [Element 1] | [metric] | Adjust or eliminate |
-   | [Element 2] | [metric] | Test alternatives |
-   
-   ### Optimization Opportunities
-   
-   | Opportunity | Expected Impact | Effort | Priority |
-   |-------------|-----------------|--------|----------|
-   | [Opportunity 1] | [impact] | [effort] | High |
-   | [Opportunity 2] | [impact] | [effort] | Medium |
-   | [Opportunity 3] | [impact] | [effort] | Low |
-   
-   ### Influencer Roster Recommendations
-   
-   | Influencer | Recommendation | Rationale |
-   |------------|----------------|-----------|
-   | @[handle1] | Renew/Ambassador | Top performer |
-   | @[handle2] | Renew at same level | Solid results |
-   | @[handle3] | Don't renew | Below expectations |
-   | @[handle4] | Increase investment | High potential |
-   
-   ### Future Campaign Recommendations
-   
-   1. **Platform Mix**: [recommendation]
-   2. **Influencer Tier**: [recommendation]
-   3. **Content Format**: [recommendation]
-   4. **Messaging**: [recommendation]
-   5. **Budget Allocation**: [recommendation]
-   ```
+Before naming any creator/format/platform a real winner, clear the significance bar in [measurement-protocol.md](../../references/measurement-protocol.md) — otherwise mark it Keep-testing. When a structured score is needed, apply per-dimension C3 analysis (ACE/ART scope scores) from [c3/scoring-architecture.md](../../references/c3/scoring-architecture.md), and hand the measured inputs to [roi-calculator](../../track/roi-calculator/SKILL.md) for the ROI score and CVI rollup — this skill contributes the inputs but does not compute the rollup.
 
 ## Example
 
 **User**: "Analyze performance of our summer skincare campaign with 10 influencers"
 
-**Output**:
+**Output** (abridged — full version in [references/analysis-templates.md](references/analysis-templates.md)):
 
 ```markdown
-# Summer Skincare Campaign Performance Analysis
-
-## Executive Summary
-
-**Campaign Performance**: Above Average (7.5/10)
+# Summer Skincare Campaign Performance Analysis — Above Average (7.5/10)
 
 | Metric | Result | Target | Status |
 |--------|--------|--------|--------|
@@ -435,26 +94,18 @@ When a user requests performance analysis:
 | Revenue | $142,500 | $150,000 | ⚠️ -5% |
 | ROI | 2.8:1 | 3:1 | ⚠️ -7% |
 
-## Top 3 Performers
-
-1. **@skincaresarah** - ROI 4.2:1, highest conversions
-2. **@glowwithgrace** - Best engagement (6.8%)
-3. **@beautyreview** - Highest reach per dollar
-
-## Key Learning
-
-TikTok outperformed Instagram significantly (3.5:1 ROI vs 2.1:1). Recommend shifting 20% of Instagram budget to TikTok for future campaigns.
-
-## Recommendation
-
-Renew partnerships with top 5 performers. Replace bottom 2 with TikTok-native creators.
+**Top 3**: @skincaresarah (ROI 4.2:1), @glowwithgrace (ER 6.8%), @beautyreview (reach/$).
+**Key learning**: TikTok beat Instagram (3.5:1 vs 2.1:1 ROI) — shift 20% of IG budget to TikTok.
+**Recommendation**: Renew top 5; replace bottom 2 with TikTok-native creators.
 ```
 
 ## Reference Materials
 
+- [references/analysis-templates.md](references/analysis-templates.md) — the eight fill-in step templates plus the full worked example.
 - [skill-contract.md](../../references/skill-contract.md) — shared contract and handoff format.
 - [state-model.md](../../references/state-model.md) — memory tiers and save-path conventions.
 - [CONNECTORS.md](../../CONNECTORS.md) — verified free/keyless data recipes per connector category.
+- [measurement-protocol.md](../../references/measurement-protocol.md) — readback windows and promote/keep-testing/rollback rule. Call a creator/format/platform a real winner only when it clears the documented significance bar: Mann-Whitney U at p < 0.05 **and** ≥ 15% relative lift over control, with a bootstrap confidence interval on the lift that excludes zero. Below the sample floor, stay Keep-testing. Method only — compute by hand or in a notebook, no scipy or stats dependency.
 - The C3 benchmark at [references/c3/scoring-architecture.md](../../references/c3/scoring-architecture.md) — scoring architecture when a structured score is needed.
 - Sibling skills: [roi-calculator](../../track/roi-calculator/SKILL.md), [report-generator](../../track/report-generator/SKILL.md), [fit-scorer](../../map/fit-scorer/SKILL.md), [campaign-planner](../../plan/campaign-planner/SKILL.md).
 

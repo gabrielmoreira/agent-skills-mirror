@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `micro/go-micro` — 26 default patterns, 9 followed patterns, 14 file(s) materialized.
+Mirror of `micro/go-micro` — 26 default patterns, 9 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `micro/go-micro` — 26 default patterns, 9 followed patterns, 14 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 9 |
-| Files         | 14 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,17 +70,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`contrib/langchain-go-micro/CONTRIBUTING.md`](contrib/langchain-go-micro/CONTRIBUTING.md) |
-| 4 | ✓ | [`internal/docs/PRIORITIES.md`](internal/docs/PRIORITIES.md) |
-| 5 | ✓ | [`internal/docs/THESIS.md`](internal/docs/THESIS.md) |
-| 6 | → | [`.github/ISSUE_TEMPLATE/question.md`](.github/ISSUE_TEMPLATE/question.md) |
-| 7 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 8 | → | [`CODEX.md`](CODEX.md) |
-| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 10 | → | [`internal/docs/CONTINUOUS_IMPROVEMENT.md`](internal/docs/CONTINUOUS_IMPROVEMENT.md) |
-| 11 | → | [`internal/docs/IMPLEMENTATION_SUMMARY.md`](internal/docs/IMPLEMENTATION_SUMMARY.md) |
-| 12 | → | [`internal/website/docs/guides/migration/v5-to-v6.md`](internal/website/docs/guides/migration/v5-to-v6.md) |
-| 13 | → | [`internal/website/docs/roadmap.md`](internal/website/docs/roadmap.md) |
-| 14 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 4 | ✓ | [`internal/docs/THESIS.md`](internal/docs/THESIS.md) |
+| 5 | → | [`.github/ISSUE_TEMPLATE/question.md`](.github/ISSUE_TEMPLATE/question.md) |
+| 6 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 7 | → | [`CODEX.md`](CODEX.md) |
+| 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 9 | → | [`internal/docs/CONTINUOUS_IMPROVEMENT.md`](internal/docs/CONTINUOUS_IMPROVEMENT.md) |
+| 10 | → | [`internal/docs/IMPLEMENTATION_SUMMARY.md`](internal/docs/IMPLEMENTATION_SUMMARY.md) |
+| 11 | → | [`internal/website/docs/guides/migration/v5-to-v6.md`](internal/website/docs/guides/migration/v5-to-v6.md) |
+| 12 | → | [`internal/website/docs/roadmap.md`](internal/website/docs/roadmap.md) |
+| 13 | → | [`ROADMAP.md`](ROADMAP.md) |
 
 ---
 

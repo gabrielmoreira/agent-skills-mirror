@@ -1,7 +1,7 @@
 ---
 name: performance-reporter
 description: 'Use when the user asks to "generate an SEO report" or "出月报"; builds multi-metric stakeholder reports and dashboards spanning traffic, rankings, authority, and content progress. Not for raw ranking deltas — use rank-tracker. SEO报告/绩效仪表盘'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -9,7 +9,9 @@ when_to_use: "Use when generating multi-metric SEO/GEO performance reports, traf
 argument-hint: "<domain> [date range]"
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: seo-geo
+  phase: monitor
   geo-relevance: "medium"
 ---
 
@@ -73,6 +75,14 @@ When a user requests a performance report, use [Report Output Templates](referen
 
 Label every metric **Measured** (tool/export), **User-provided**, or **Estimated** (model inference); never present an estimate as measured; if a required metric is unavailable, mark it N/A — do not invent it. Likewise separate an **observed change** from a **plausible explanation** (corroborate before stating it as the cause), an **optimization opportunity**, and **follow-up** needing crawl/SERP/rank/audit — never report an unverified explanation as a confirmed cause.
 
+## Reading Deltas Against a Control
+
+A reported delta is only evidence if it beats a control over a **fixed readback window** set before the change — a raw before/after on a confounded outcome is a story, not proof. When a report attributes movement to a specific change, attach the decision protocol from [references/measurement-protocol.md §Cross-discipline decision protocol](../../references/measurement-protocol.md):
+
+- **Readback window** — pick the window for the change type up front (content refresh 7/14/28/56 days; new content 14/28/56/90; technical fix daily ×7 then 28; AEO/GEO surfacing weekly; influencer per post + 7/30; paid 7/14 after learning phase) and do not react to noise inside it.
+- **Required readback fields** — record: change · owner · baseline window · candidate window · sources · primary + secondary metric · winner · caveats · decision · next-patch · next-readback date.
+- **Decision** — mark each change **Promote** (beats control on the primary metric past the bar), **Keep-testing** (trending, not yet significant), **Rollback** (loses by the same bar), or **Unproven** (everything else). Report delta-vs-control, not raw delta.
+
 ## Example
 
 Sample output: an executive summary with overall status, metrics-at-a-glance for traffic/rankings/conversions/authority/AI citations, SEO ROI, and immediate/month/quarter actions with owners and dates.
@@ -86,6 +96,7 @@ Ask "Save these results?" If yes, write to `memory/monitoring/` — see [Skill C
 - [Report Output Templates](references/report-output-templates.md) — Compact starter blocks for all 11 report sections
 - [KPI Definitions](references/kpi-definitions.md) — SEO/GEO metric definitions with benchmarks, thresholds, trend analysis, and attribution guidance
 - [Report Templates by Audience](references/report-templates.md) — Copy-ready templates for executive, marketing, technical, and client audiences
+- [Measurement & Attribution Protocol](../../references/measurement-protocol.md) — Readback windows, required readback fields, and the promote / keep-testing / rollback / unproven decision rule for attributing reported deltas against a control
 
 ## Next Best Skill
 

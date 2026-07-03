@@ -98,6 +98,13 @@ Position competitors on two key dimensions relevant to the market:
 - [ ] Do not treat all buyers as identical — the same product may win against Competitor A in the enterprise segment and lose in SMB; segment-specific win/loss matters
 - [ ] Do not soften weaknesses and threats in the SWOT to avoid internal discomfort — an honest SWOT is only useful if the negatives are real
 
+## Deeper Materials
+
+This skill ships with support files — use them when they are available:
+
+- **`references/feature-matrix-honesty.md`** — Feature Matrices That Don't Lie. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
+- **`templates/landscape-doc.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
 ## Quality Checks
 
 - [ ] All competitor claims cite a source or are flagged as assumptions

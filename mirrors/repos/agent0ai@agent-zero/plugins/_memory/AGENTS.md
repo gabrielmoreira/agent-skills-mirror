@@ -16,6 +16,7 @@
 
 - Keep memory scoped by configured subdirectory/context.
 - Preserve embedding metadata needed to rebuild indexes safely.
+- `memory_load` accepts numeric `threshold` and `limit` values as native numbers or numeric strings and coerces them before vector search.
 - Avoid storing transient action-history noise as durable memory.
 
 ## Work Guidance

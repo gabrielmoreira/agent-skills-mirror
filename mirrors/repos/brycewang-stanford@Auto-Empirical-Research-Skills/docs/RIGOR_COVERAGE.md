@@ -15,21 +15,27 @@ A family is **covered** when it has both an eval scenario and a benchmark task, 
 
 | Method family | Skills tagged | Eval scenarios (severity) | Benchmark tasks | Status |
 |---|---:|---|---|---|
-| Instrumental variables (IV / 2SLS) | 28 | `statspai-weak-iv` (critical) | `card-iv-recovery` | covered |
-| Regression discontinuity (RDD) | 26 | `statspai-rdd-diagnostics` (high) | `rdd-recovery` | covered |
+| Instrumental variables (IV / 2SLS) | 27 | `statspai-weak-iv` (critical) | `card-iv-recovery` | covered |
+| Regression discontinuity (RDD) | 25 | `statspai-rdd-diagnostics` (high) | `rdd-recovery` | covered |
 | Difference-in-differences (2x2) | 10 | — | — | indirect |
 | Staggered DiD / TWFE | 17 | `aer-identification-staggered` (critical)<br>`causal-inference-twfe-trap` (high)<br>`statspai-staggered-did` (critical) | `did-staggered-recovery` | covered |
 | Event study / pre-trends | 10 | `statspai-pretrends-eventstudy` (high) | `event-study-recovery` | covered |
 | Panel fixed effects | 19 | `pyfixest-panel-clustering` (high) | `panel-fe-recovery` | covered |
-| Synthetic control | 11 | `statspai-synthetic-control` (high) | `synthetic-control-recovery` | covered |
+| Synthetic control | 10 | `statspai-synthetic-control` (high) | `synthetic-control-recovery` | covered |
 | Matching / propensity scores | 10 | `statspai-matching-overlap` (high) | `lalonde-recovery` | covered |
-| Double/debiased ML | 10 | `statspai-dml-crossfit` (high) | `dml-recovery` | covered |
+| Double/debiased ML | 8 | `statspai-dml-crossfit` (high) | `dml-recovery` | covered |
+| Heterogeneous effects (CATE) | 8 | `statspai-heterogeneous-effects` (high) | `cate-recovery` | covered |
+| Quantile / distributional effects | 2 | `statspai-quantile-effects` (high) | `qte-recovery` | covered |
+| Shift-share / Bartik IV | 1 | `aer-shiftshare-identification` (high) | `bartik-recovery` | covered |
+| Causal mediation | 8 | `statspai-mediation-assumptions` (high) | `mediation-recovery` | covered |
+| Decomposition (Oaxaca-Blinder) | 0 | `statspai-decomposition` (high) | `decomposition-recovery` | covered |
 | Bayesian methods | 13 | `baygent-bayesian-diagnostics` (high) | `bayesian-recovery` | covered |
 | Survival / duration | 3 | `statspai-survival-assumptions` (high) | `survival-recovery` | covered |
 
 Notes:
 
 - **Difference-in-differences (2x2)** — 2x2 base case; the parallel-trends/pre-trends check lives under Event study, and staggered identification under Staggered DiD.
+- **Decomposition (Oaxaca-Blinder)** — Estimators (oaxaca, kitagawa_decompose, dfl_decompose, gelbach) ship in the StatsPAI runtime, but no vendored skill *description* advertises the family yet, so the tagged-skill count reads 0; the eval scenario and benchmark task still gate the method.
 
 ## Open gaps (skills exist, rigor check missing)
 
@@ -60,4 +66,4 @@ Non-method checks that gate the rest of the workflow (writing, citations, reprod
 
 ---
 
-_24 eval scenarios and 11 benchmark tasks across 11 method families; 10 families fully covered, 0 open gaps. Regenerate with `make catalog`._
+_29 eval scenarios and 16 benchmark tasks across 16 method families; 15 families fully covered, 0 open gaps. Regenerate with `make catalog`._

@@ -1,4 +1,4 @@
-﻿---
+---
 name: improve
 version: 3.10.0
 description: 'The improvement skill. Understand the ask, examine the target, challenge the first read, decide on one change (or argue for redesign, or declare silence), act, reflect on the target, and record. Combines incremental refinement, structural rethinking, and reflection on the target itself. USE WHEN: improve, audit, review, fix, refactor, redesign, evaluate, what would make this better, am I missing something.'
@@ -17,7 +17,7 @@ This is the only skill you need for most autonomous work. It combines what v2 sp
 
 This skill exists to enact three principles:
 
-1. **Commander's Intent** — *what + why, not how.* You are given a destination, not a route. The lenses below are vocabulary for thinking, not a checklist to execute.
+1. **Operator's Intent** — *what + why, not how.* You are given a destination, not a route. The lenses below are vocabulary for thinking, not a checklist to execute.
 2. **Observable Autonomy** — *every reasoning step is recorded as it happens.* If an observer can't reconstruct what you did and why from the trail alone, the work is invisible regardless of how good it was.
 3. **Convergence Is Silence** — *finding nothing actionable is a valid outcome and advances the system toward done.* Do not manufacture findings to justify the run.
 

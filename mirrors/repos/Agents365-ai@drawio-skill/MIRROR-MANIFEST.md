@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Agents365-ai/drawio-skill` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
+Mirror of `Agents365-ai/drawio-skill` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Agents365-ai/drawio-skill` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 25 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,26 +64,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`skills/drawio-skill/data/shape-index.json.gz`](skills/drawio-skill/data/shape-index.json.gz) |
 | 4 | ✓ | [`skills/drawio-skill/references/autolayout.md`](skills/drawio-skill/references/autolayout.md) |
 | 5 | ✓ | [`skills/drawio-skill/references/diagram-types.md`](skills/drawio-skill/references/diagram-types.md) |
-| 6 | ✓ | [`skills/drawio-skill/references/shapes.md`](skills/drawio-skill/references/shapes.md) |
-| 7 | ✓ | [`skills/drawio-skill/references/style-extraction.md`](skills/drawio-skill/references/style-extraction.md) |
-| 8 | ✓ | [`skills/drawio-skill/references/style-presets.md`](skills/drawio-skill/references/style-presets.md) |
-| 9 | ✓ | [`skills/drawio-skill/references/troubleshooting.md`](skills/drawio-skill/references/troubleshooting.md) |
-| 10 | ✓ | [`skills/drawio-skill/scripts/aiicons.py`](skills/drawio-skill/scripts/aiicons.py) |
-| 11 | ✓ | [`skills/drawio-skill/scripts/autolayout.py`](skills/drawio-skill/scripts/autolayout.py) |
-| 12 | ✓ | [`skills/drawio-skill/scripts/encode_drawio_url.py`](skills/drawio-skill/scripts/encode_drawio_url.py) |
-| 13 | ✓ | [`skills/drawio-skill/scripts/goimports.py`](skills/drawio-skill/scripts/goimports.py) |
-| 14 | ✓ | [`skills/drawio-skill/scripts/jsimports.py`](skills/drawio-skill/scripts/jsimports.py) |
-| 15 | ✓ | [`skills/drawio-skill/scripts/pyclasses.py`](skills/drawio-skill/scripts/pyclasses.py) |
-| 16 | ✓ | [`skills/drawio-skill/scripts/pyimports.py`](skills/drawio-skill/scripts/pyimports.py) |
-| 17 | ✓ | [`skills/drawio-skill/scripts/repair_png.py`](skills/drawio-skill/scripts/repair_png.py) |
-| 18 | ✓ | [`skills/drawio-skill/scripts/rustimports.py`](skills/drawio-skill/scripts/rustimports.py) |
-| 19 | ✓ | [`skills/drawio-skill/scripts/shapesearch.py`](skills/drawio-skill/scripts/shapesearch.py) |
-| 20 | ✓ | [`skills/drawio-skill/scripts/validate.py`](skills/drawio-skill/scripts/validate.py) |
-| 21 | ✓ | [`skills/drawio-skill/SKILL.md`](skills/drawio-skill/SKILL.md) |
-| 22 | ✓ | [`skills/drawio-skill/styles/built-in/corporate.json`](skills/drawio-skill/styles/built-in/corporate.json) |
-| 23 | ✓ | [`skills/drawio-skill/styles/built-in/default.json`](skills/drawio-skill/styles/built-in/default.json) |
-| 24 | ✓ | [`skills/drawio-skill/styles/built-in/handdrawn.json`](skills/drawio-skill/styles/built-in/handdrawn.json) |
-| 25 | ✓ | [`skills/drawio-skill/styles/schema.json`](skills/drawio-skill/styles/schema.json) |
+| 6 | ✓ | [`skills/drawio-skill/references/mermaid-authoring.md`](skills/drawio-skill/references/mermaid-authoring.md) |
+| 7 | ✓ | [`skills/drawio-skill/references/shapes.md`](skills/drawio-skill/references/shapes.md) |
+| 8 | ✓ | [`skills/drawio-skill/references/style-extraction.md`](skills/drawio-skill/references/style-extraction.md) |
+| 9 | ✓ | [`skills/drawio-skill/references/style-presets.md`](skills/drawio-skill/references/style-presets.md) |
+| 10 | ✓ | [`skills/drawio-skill/references/troubleshooting.md`](skills/drawio-skill/references/troubleshooting.md) |
+| 11 | ✓ | [`skills/drawio-skill/references/xml-authoring.md`](skills/drawio-skill/references/xml-authoring.md) |
+| 12 | ✓ | [`skills/drawio-skill/scripts/aiicons.py`](skills/drawio-skill/scripts/aiicons.py) |
+| 13 | ✓ | [`skills/drawio-skill/scripts/autolayout.py`](skills/drawio-skill/scripts/autolayout.py) |
+| 14 | ✓ | [`skills/drawio-skill/scripts/c4.py`](skills/drawio-skill/scripts/c4.py) |
+| 15 | ✓ | [`skills/drawio-skill/scripts/composeimports.py`](skills/drawio-skill/scripts/composeimports.py) |
+| 16 | ✓ | [`skills/drawio-skill/scripts/encode_drawio_url.py`](skills/drawio-skill/scripts/encode_drawio_url.py) |
+| 17 | ✓ | [`skills/drawio-skill/scripts/goimports.py`](skills/drawio-skill/scripts/goimports.py) |
+| 18 | ✓ | [`skills/drawio-skill/scripts/jsimports.py`](skills/drawio-skill/scripts/jsimports.py) |
+| 19 | ✓ | [`skills/drawio-skill/scripts/k8simports.py`](skills/drawio-skill/scripts/k8simports.py) |
+| 20 | ✓ | [`skills/drawio-skill/scripts/pyclasses.py`](skills/drawio-skill/scripts/pyclasses.py) |
+| 21 | ✓ | [`skills/drawio-skill/scripts/pyimports.py`](skills/drawio-skill/scripts/pyimports.py) |
+| 22 | ✓ | [`skills/drawio-skill/scripts/repair_png.py`](skills/drawio-skill/scripts/repair_png.py) |
+| 23 | ✓ | [`skills/drawio-skill/scripts/rustimports.py`](skills/drawio-skill/scripts/rustimports.py) |
+| 24 | ✓ | [`skills/drawio-skill/scripts/seqlayout.py`](skills/drawio-skill/scripts/seqlayout.py) |
+| 25 | ✓ | [`skills/drawio-skill/scripts/shapesearch.py`](skills/drawio-skill/scripts/shapesearch.py) |
+| 26 | ✓ | [`skills/drawio-skill/scripts/sqlerd.py`](skills/drawio-skill/scripts/sqlerd.py) |
+| 27 | ✓ | [`skills/drawio-skill/scripts/tfimports.py`](skills/drawio-skill/scripts/tfimports.py) |
+| 28 | ✓ | [`skills/drawio-skill/scripts/validate.py`](skills/drawio-skill/scripts/validate.py) |
+| 29 | ✓ | [`skills/drawio-skill/SKILL.md`](skills/drawio-skill/SKILL.md) |
+| 30 | ✓ | [`skills/drawio-skill/styles/built-in/colorblind-safe.json`](skills/drawio-skill/styles/built-in/colorblind-safe.json) |
+| 31 | ✓ | [`skills/drawio-skill/styles/built-in/corporate.json`](skills/drawio-skill/styles/built-in/corporate.json) |
+| 32 | ✓ | [`skills/drawio-skill/styles/built-in/dark.json`](skills/drawio-skill/styles/built-in/dark.json) |
+| 33 | ✓ | [`skills/drawio-skill/styles/built-in/default.json`](skills/drawio-skill/styles/built-in/default.json) |
+| 34 | ✓ | [`skills/drawio-skill/styles/built-in/handdrawn.json`](skills/drawio-skill/styles/built-in/handdrawn.json) |
+| 35 | ✓ | [`skills/drawio-skill/styles/schema.json`](skills/drawio-skill/styles/schema.json) |
 
 ---
 

@@ -2,7 +2,7 @@
 
 > Adapted from the [CORE-EEAT Content Benchmark](https://github.com/aaron-he-zhu/core-eeat-content-benchmark) (see that repo for the upstream version and changelog)
 >
-> This file is a reference adaptation for the SEO & GEO Skills Library. For the full benchmark with detailed examples, see the source repository.
+> This file is a reference adaptation for Aaron Marketing Skills. For the full benchmark with detailed examples, see the source repository.
 >
 > **Version sync**: When the source spec updates, check: item count references in README (currently "80 items"), skill validation checkpoints, and Sections 2, 3, 7 below.
 
@@ -189,7 +189,7 @@ Failing any veto item activates the Critical Fail Cap. The cap arithmetic and th
 
 **Single veto fail**: cap applies per [Runbook §2 decision table](auditor-runbook.md).
 
-**2+ veto fails**: audit returns `status: BLOCKED` per [Runbook §2 Worked Example 3](auditor-runbook.md). Calibration for a numeric multi-veto cap is pending v7.3, gated on 30+ real multi-veto audits in `memory/audits/`.
+**2+ veto fails**: audit returns `status: BLOCKED` per [§2 Worked example 3 in content-quality-auditor](../optimize/content-quality-auditor/SKILL.md). Calibration for a numeric multi-veto cap is pending v7.3, gated on 30+ real multi-veto audits in `memory/audits/`.
 
 Rationale: prevents "79 items pass + 1 veto fails" from producing a misleadingly high overall score.
 

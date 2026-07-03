@@ -1,7 +1,7 @@
 ---
 name: competitor-analysis
 description: 'Use when the user asks to "analyze competitors" or "竞品分析"; benchmarks competitor keywords, content, backlinks, AI citations, and traffic share into strengths, weaknesses, and an action plan. Not for a pairwise topic-coverage gap map — use content-gap-analysis. 竞品分析/竞争对手'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -9,7 +9,9 @@ when_to_use: "Use when analyzing competitor SEO strategy, comparing domains, ben
 argument-hint: "<competitor URL or domain>"
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: seo-geo
+  phase: research
   geo-relevance: "medium"
 ---
 
@@ -82,6 +84,10 @@ See [references/example-report.md](references/example-report.md) for a full samp
 
 For a pairwise topic-coverage gap map ("content [competitor] has that I don't, sorted by traffic potential"), hand off to [content-gap-analysis](../content-gap-analysis/SKILL.md) — that is its dedicated job.
 
+### Video Benchmarking
+
+When a competitor invests in video, benchmark their YouTube outliers (views >=2x their channel average) and the title/thumbnail packaging that drives those wins — those patterns show what topics and framing earn reach. See [platforms/youtube.md](../../references/platforms/youtube.md).
+
 ### Link Intersection
 
 ```
@@ -110,7 +116,8 @@ Write path: `memory/research/competitor-analysis/YYYY-MM-DD-<topic>.md`; promote
 - [Battlecard Template](references/battlecard-template.md) — Quick-reference battlecard format
 - [Positioning Frameworks](references/positioning-frameworks.md) — Positioning and differentiation frameworks
 - [Example Report](references/example-report.md) — Worked sample
+- [platforms/youtube.md](../../references/platforms/youtube.md) — YouTube outlier and title-packaging benchmarks for video-heavy competitors
 
 ## Next Best Skill
 
-Primary: [content-gap-analysis](../content-gap-analysis/SKILL.md). Also: [serp-analysis](../serp-analysis/SKILL.md) and [backlink-analyzer](../../monitor/backlink-analyzer/SKILL.md).
+Primary: [content-gap-analysis](../content-gap-analysis/SKILL.md). Also: [serp-analysis](../serp-analysis/SKILL.md) and [backlink-analyzer](../../monitor/backlink-analyzer/SKILL.md). If the goal is a head-to-head "us vs them" page, hand the vetted competitor set to [comparison-page-builder](../../build/comparison-page-builder/SKILL.md).

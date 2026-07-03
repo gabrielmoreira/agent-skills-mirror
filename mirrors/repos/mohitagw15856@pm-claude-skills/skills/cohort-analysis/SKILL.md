@@ -183,6 +183,13 @@ ORDER BY 1, 3;
 
 ---
 
+## Deeper Materials
+
+This skill ships with support files — use them when they are available:
+
+- **`references/cohort-design.md`** — Cohort Design: the Decisions Before the Query. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
+- **`templates/cohort-readout.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
 ## Quality Checks
 
 - [ ] Cohort definition is unambiguous — the same user cannot appear in two cohorts

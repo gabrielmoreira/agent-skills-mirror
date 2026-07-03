@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mattpocock/skills` — 26 default patterns, 0 followed patterns, 70 file(s) materialized.
+Mirror of `mattpocock/skills` — 26 default patterns, 0 followed patterns, 72 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mattpocock/skills` — 26 default patterns, 0 followed patterns, 70 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 70 |
+| Files         | 72 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -86,49 +86,51 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`skills/engineering/prototype/SKILL.md`](skills/engineering/prototype/SKILL.md) |
 | 26 | ✓ | [`skills/engineering/prototype/UI.md`](skills/engineering/prototype/UI.md) |
 | 27 | ✓ | [`skills/engineering/README.md`](skills/engineering/README.md) |
-| 28 | ✓ | [`skills/engineering/resolving-merge-conflicts/SKILL.md`](skills/engineering/resolving-merge-conflicts/SKILL.md) |
-| 29 | ✓ | [`skills/engineering/setup-matt-pocock-skills/domain.md`](skills/engineering/setup-matt-pocock-skills/domain.md) |
-| 30 | ✓ | [`skills/engineering/setup-matt-pocock-skills/issue-tracker-github.md`](skills/engineering/setup-matt-pocock-skills/issue-tracker-github.md) |
-| 31 | ✓ | [`skills/engineering/setup-matt-pocock-skills/issue-tracker-gitlab.md`](skills/engineering/setup-matt-pocock-skills/issue-tracker-gitlab.md) |
-| 32 | ✓ | [`skills/engineering/setup-matt-pocock-skills/issue-tracker-local.md`](skills/engineering/setup-matt-pocock-skills/issue-tracker-local.md) |
-| 33 | ✓ | [`skills/engineering/setup-matt-pocock-skills/SKILL.md`](skills/engineering/setup-matt-pocock-skills/SKILL.md) |
-| 34 | ✓ | [`skills/engineering/setup-matt-pocock-skills/triage-labels.md`](skills/engineering/setup-matt-pocock-skills/triage-labels.md) |
-| 35 | ✓ | [`skills/engineering/tdd/mocking.md`](skills/engineering/tdd/mocking.md) |
-| 36 | ✓ | [`skills/engineering/tdd/SKILL.md`](skills/engineering/tdd/SKILL.md) |
-| 37 | ✓ | [`skills/engineering/tdd/tests.md`](skills/engineering/tdd/tests.md) |
-| 38 | ✓ | [`skills/engineering/to-issues/SKILL.md`](skills/engineering/to-issues/SKILL.md) |
-| 39 | ✓ | [`skills/engineering/to-prd/SKILL.md`](skills/engineering/to-prd/SKILL.md) |
-| 40 | ✓ | [`skills/engineering/triage/AGENT-BRIEF.md`](skills/engineering/triage/AGENT-BRIEF.md) |
-| 41 | ✓ | [`skills/engineering/triage/OUT-OF-SCOPE.md`](skills/engineering/triage/OUT-OF-SCOPE.md) |
-| 42 | ✓ | [`skills/engineering/triage/SKILL.md`](skills/engineering/triage/SKILL.md) |
-| 43 | ✓ | [`skills/in-progress/loop-me/SKILL.md`](skills/in-progress/loop-me/SKILL.md) |
-| 44 | ✓ | [`skills/in-progress/README.md`](skills/in-progress/README.md) |
-| 45 | ✓ | [`skills/in-progress/wayfinder/SKILL.md`](skills/in-progress/wayfinder/SKILL.md) |
-| 46 | ✓ | [`skills/in-progress/wizard/SKILL.md`](skills/in-progress/wizard/SKILL.md) |
-| 47 | ✓ | [`skills/in-progress/wizard/template.sh`](skills/in-progress/wizard/template.sh) |
-| 48 | ✓ | [`skills/in-progress/writing-beats/SKILL.md`](skills/in-progress/writing-beats/SKILL.md) |
-| 49 | ✓ | [`skills/in-progress/writing-fragments/SKILL.md`](skills/in-progress/writing-fragments/SKILL.md) |
-| 50 | ✓ | [`skills/in-progress/writing-shape/SKILL.md`](skills/in-progress/writing-shape/SKILL.md) |
-| 51 | ✓ | [`skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh`](skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh) |
-| 52 | ✓ | [`skills/misc/git-guardrails-claude-code/SKILL.md`](skills/misc/git-guardrails-claude-code/SKILL.md) |
-| 53 | ✓ | [`skills/misc/migrate-to-shoehorn/SKILL.md`](skills/misc/migrate-to-shoehorn/SKILL.md) |
-| 54 | ✓ | [`skills/misc/README.md`](skills/misc/README.md) |
-| 55 | ✓ | [`skills/misc/scaffold-exercises/SKILL.md`](skills/misc/scaffold-exercises/SKILL.md) |
-| 56 | ✓ | [`skills/misc/setup-pre-commit/SKILL.md`](skills/misc/setup-pre-commit/SKILL.md) |
-| 57 | ✓ | [`skills/personal/edit-article/SKILL.md`](skills/personal/edit-article/SKILL.md) |
-| 58 | ✓ | [`skills/personal/obsidian-vault/SKILL.md`](skills/personal/obsidian-vault/SKILL.md) |
-| 59 | ✓ | [`skills/personal/README.md`](skills/personal/README.md) |
-| 60 | ✓ | [`skills/productivity/grill-me/SKILL.md`](skills/productivity/grill-me/SKILL.md) |
-| 61 | ✓ | [`skills/productivity/grilling/SKILL.md`](skills/productivity/grilling/SKILL.md) |
-| 62 | ✓ | [`skills/productivity/handoff/SKILL.md`](skills/productivity/handoff/SKILL.md) |
-| 63 | ✓ | [`skills/productivity/README.md`](skills/productivity/README.md) |
-| 64 | ✓ | [`skills/productivity/teach/GLOSSARY-FORMAT.md`](skills/productivity/teach/GLOSSARY-FORMAT.md) |
-| 65 | ✓ | [`skills/productivity/teach/LEARNING-RECORD-FORMAT.md`](skills/productivity/teach/LEARNING-RECORD-FORMAT.md) |
-| 66 | ✓ | [`skills/productivity/teach/MISSION-FORMAT.md`](skills/productivity/teach/MISSION-FORMAT.md) |
-| 67 | ✓ | [`skills/productivity/teach/RESOURCES-FORMAT.md`](skills/productivity/teach/RESOURCES-FORMAT.md) |
-| 68 | ✓ | [`skills/productivity/teach/SKILL.md`](skills/productivity/teach/SKILL.md) |
-| 69 | ✓ | [`skills/productivity/writing-great-skills/GLOSSARY.md`](skills/productivity/writing-great-skills/GLOSSARY.md) |
-| 70 | ✓ | [`skills/productivity/writing-great-skills/SKILL.md`](skills/productivity/writing-great-skills/SKILL.md) |
+| 28 | ✓ | [`skills/engineering/research/SKILL.md`](skills/engineering/research/SKILL.md) |
+| 29 | ✓ | [`skills/engineering/resolving-merge-conflicts/SKILL.md`](skills/engineering/resolving-merge-conflicts/SKILL.md) |
+| 30 | ✓ | [`skills/engineering/setup-matt-pocock-skills/domain.md`](skills/engineering/setup-matt-pocock-skills/domain.md) |
+| 31 | ✓ | [`skills/engineering/setup-matt-pocock-skills/issue-tracker-github.md`](skills/engineering/setup-matt-pocock-skills/issue-tracker-github.md) |
+| 32 | ✓ | [`skills/engineering/setup-matt-pocock-skills/issue-tracker-gitlab.md`](skills/engineering/setup-matt-pocock-skills/issue-tracker-gitlab.md) |
+| 33 | ✓ | [`skills/engineering/setup-matt-pocock-skills/issue-tracker-local.md`](skills/engineering/setup-matt-pocock-skills/issue-tracker-local.md) |
+| 34 | ✓ | [`skills/engineering/setup-matt-pocock-skills/SKILL.md`](skills/engineering/setup-matt-pocock-skills/SKILL.md) |
+| 35 | ✓ | [`skills/engineering/setup-matt-pocock-skills/triage-labels.md`](skills/engineering/setup-matt-pocock-skills/triage-labels.md) |
+| 36 | ✓ | [`skills/engineering/tdd/mocking.md`](skills/engineering/tdd/mocking.md) |
+| 37 | ✓ | [`skills/engineering/tdd/SKILL.md`](skills/engineering/tdd/SKILL.md) |
+| 38 | ✓ | [`skills/engineering/tdd/tests.md`](skills/engineering/tdd/tests.md) |
+| 39 | ✓ | [`skills/engineering/to-issues/SKILL.md`](skills/engineering/to-issues/SKILL.md) |
+| 40 | ✓ | [`skills/engineering/to-prd/SKILL.md`](skills/engineering/to-prd/SKILL.md) |
+| 41 | ✓ | [`skills/engineering/triage/AGENT-BRIEF.md`](skills/engineering/triage/AGENT-BRIEF.md) |
+| 42 | ✓ | [`skills/engineering/triage/OUT-OF-SCOPE.md`](skills/engineering/triage/OUT-OF-SCOPE.md) |
+| 43 | ✓ | [`skills/engineering/triage/SKILL.md`](skills/engineering/triage/SKILL.md) |
+| 44 | ✓ | [`skills/in-progress/claude-handoff/SKILL.md`](skills/in-progress/claude-handoff/SKILL.md) |
+| 45 | ✓ | [`skills/in-progress/loop-me/SKILL.md`](skills/in-progress/loop-me/SKILL.md) |
+| 46 | ✓ | [`skills/in-progress/README.md`](skills/in-progress/README.md) |
+| 47 | ✓ | [`skills/in-progress/wayfinder/SKILL.md`](skills/in-progress/wayfinder/SKILL.md) |
+| 48 | ✓ | [`skills/in-progress/wizard/SKILL.md`](skills/in-progress/wizard/SKILL.md) |
+| 49 | ✓ | [`skills/in-progress/wizard/template.sh`](skills/in-progress/wizard/template.sh) |
+| 50 | ✓ | [`skills/in-progress/writing-beats/SKILL.md`](skills/in-progress/writing-beats/SKILL.md) |
+| 51 | ✓ | [`skills/in-progress/writing-fragments/SKILL.md`](skills/in-progress/writing-fragments/SKILL.md) |
+| 52 | ✓ | [`skills/in-progress/writing-shape/SKILL.md`](skills/in-progress/writing-shape/SKILL.md) |
+| 53 | ✓ | [`skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh`](skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh) |
+| 54 | ✓ | [`skills/misc/git-guardrails-claude-code/SKILL.md`](skills/misc/git-guardrails-claude-code/SKILL.md) |
+| 55 | ✓ | [`skills/misc/migrate-to-shoehorn/SKILL.md`](skills/misc/migrate-to-shoehorn/SKILL.md) |
+| 56 | ✓ | [`skills/misc/README.md`](skills/misc/README.md) |
+| 57 | ✓ | [`skills/misc/scaffold-exercises/SKILL.md`](skills/misc/scaffold-exercises/SKILL.md) |
+| 58 | ✓ | [`skills/misc/setup-pre-commit/SKILL.md`](skills/misc/setup-pre-commit/SKILL.md) |
+| 59 | ✓ | [`skills/personal/edit-article/SKILL.md`](skills/personal/edit-article/SKILL.md) |
+| 60 | ✓ | [`skills/personal/obsidian-vault/SKILL.md`](skills/personal/obsidian-vault/SKILL.md) |
+| 61 | ✓ | [`skills/personal/README.md`](skills/personal/README.md) |
+| 62 | ✓ | [`skills/productivity/grill-me/SKILL.md`](skills/productivity/grill-me/SKILL.md) |
+| 63 | ✓ | [`skills/productivity/grilling/SKILL.md`](skills/productivity/grilling/SKILL.md) |
+| 64 | ✓ | [`skills/productivity/handoff/SKILL.md`](skills/productivity/handoff/SKILL.md) |
+| 65 | ✓ | [`skills/productivity/README.md`](skills/productivity/README.md) |
+| 66 | ✓ | [`skills/productivity/teach/GLOSSARY-FORMAT.md`](skills/productivity/teach/GLOSSARY-FORMAT.md) |
+| 67 | ✓ | [`skills/productivity/teach/LEARNING-RECORD-FORMAT.md`](skills/productivity/teach/LEARNING-RECORD-FORMAT.md) |
+| 68 | ✓ | [`skills/productivity/teach/MISSION-FORMAT.md`](skills/productivity/teach/MISSION-FORMAT.md) |
+| 69 | ✓ | [`skills/productivity/teach/RESOURCES-FORMAT.md`](skills/productivity/teach/RESOURCES-FORMAT.md) |
+| 70 | ✓ | [`skills/productivity/teach/SKILL.md`](skills/productivity/teach/SKILL.md) |
+| 71 | ✓ | [`skills/productivity/writing-great-skills/GLOSSARY.md`](skills/productivity/writing-great-skills/GLOSSARY.md) |
+| 72 | ✓ | [`skills/productivity/writing-great-skills/SKILL.md`](skills/productivity/writing-great-skills/SKILL.md) |
 
 ---
 

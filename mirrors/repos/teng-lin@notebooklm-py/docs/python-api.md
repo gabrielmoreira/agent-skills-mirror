@@ -508,6 +508,12 @@ cancellation:
   underlying `httpx.AsyncClient`.
 - **`refresh_auth()`** runs the shared refresh task under `asyncio.shield`;
   cancelling a waiter does not kill the shared refresh.
+- **`get_account_email(live_fallback=True)`** returns the signed-in Google account
+  email (or `None`): the in-memory `AuthTokens` / persisted profile metadata first
+  (network-free), then — when `live_fallback` and the client is open — a single
+  `WIZ_global_data` page probe that's persisted back for next time. Never raises for
+  network/on-disk faults. `get_account_authuser()` returns the matching account
+  index (0 = default), network-free.
 - **Upload finalize** is shielded; on cancel signal we issue a best-effort
   Scotty (Google's internal resumable upload service) cancel to release the
   server-side upload slot.
@@ -850,6 +856,10 @@ class NotebookLMClient:
     ):
 
     async def refresh_auth(self, *, allow_headless: bool = False) -> AuthTokens:
+
+    async def get_account_email(self, *, live_fallback: bool = True) -> str | None:
+
+    def get_account_authuser(self) -> int:
 
     async def rpc_call(
         self,
@@ -1751,13 +1761,13 @@ await client.notes.delete_mind_map(nb_id, mind_map_id)
 
 ### SettingsAPI (`client.settings`)
 
-**CLI equivalent:** [Language Commands](cli-reference.md#language-commands-notebooklm-language-cmd) — `notebooklm language get`, `set`, `list`. Account limits and tier do not yet have a dedicated CLI surface; use `notebooklm status` for context.
+**CLI equivalent:** [Language Commands](cli-reference.md#language-commands-notebooklm-language-cmd) — `notebooklm language get`, `set`, `list`. Account limits do not yet have a dedicated CLI surface; use `notebooklm status` for context.
 
 | Method | Parameters | Returns | Description |
 |--------|------------|---------|-------------|
 | `get_output_language()` | none | `Optional[str]` | Get current output language setting |
 | `get_account_limits()` | none | `AccountLimits` | Get account-level limits such as max notebooks and sources per notebook |
-| `get_account_tier()` | none | `AccountTier` | Get current NotebookLM subscription tier |
+| `get_user_settings()` | none | `UserSettings` | Get account limits **and** output language in a single request (both share one server call) |
 | `set_output_language(language)` | `str` | `Optional[str]` | Set output language for artifact generation |
 
 **Example:**
@@ -1770,16 +1780,16 @@ print(f"Current language: {lang}")  # e.g., "en", "ja", "zh_Hans"
 limits = await client.settings.get_account_limits()
 print(f"Notebook limit: {limits.notebook_limit}")
 
-# Get current NotebookLM subscription tier
-tier = await client.settings.get_account_tier()
-print(f"Account tier: {tier.plan_name or tier.tier}")
+# Need both limits and language? One request instead of two:
+settings = await client.settings.get_user_settings()
+print(settings.limits.notebook_limit, settings.output_language)
 
 # Set language for artifact generation
 result = await client.settings.set_output_language("ja")  # Japanese
 print(f"Language set to: {result}")
 ```
 
-**Important:** Language is a **GLOBAL setting** that affects all notebooks in your account. The tier string is internal NotebookLM metadata; use `get_account_limits()` for quota decisions because the raw tier name may not match the active notebook/source limits. Supported languages include:
+**Important:** Language is a **GLOBAL setting** that affects all notebooks in your account. Use `get_account_limits()` for quota decisions. Supported languages include:
 - `en` (English), `ja` (日本語), `zh_Hans` (中文简体), `zh_Hant` (中文繁體)
 - `ko` (한국어), `es` (Español), `fr` (Français), `de` (Deutsch), `pt_BR` (Português)
 - And [over 70 other languages](cli-reference.md#language-commands-notebooklm-language-cmd)
@@ -2237,8 +2247,8 @@ class SharedUser:
 ### AccountLimits
 
 Returned by `client.settings.get_account_limits()`. Use these fields for
-quota decisions in preference to the raw tier string — the server-reported
-limits are what NotebookLM actually enforces.
+quota decisions — the server-reported limits are what NotebookLM actually
+enforces.
 
 ```python
 @dataclass(frozen=True)
@@ -2248,23 +2258,18 @@ class AccountLimits:
     raw_limits: tuple[Any, ...] = ()   # Untouched RPC payload for forensic use
 ```
 
-### AccountTier
+### UserSettings
 
-Returned by `client.settings.get_account_tier()`. Raw tier metadata from
-NotebookLM's homepage tier RPC. `plan_name` is the user-facing label when
-available (e.g. `"Google AI Pro"`); `tier` is the internal identifier
-(`"NOTEBOOKLM_TIER_STANDARD"`, `"NOTEBOOKLM_TIER_PLUS"`, `"NOTEBOOKLM_TIER_PRO"`, `"NOTEBOOKLM_TIER_PRO_DASHER_END_USER"`, `"NOTEBOOKLM_TIER_ULTRA"`).
+Returned by `client.settings.get_user_settings()`. A single account-settings
+request carries both the account limits and the output language, so this is the
+one-call path when you need both (`get_account_limits()` and
+`get_output_language()` each make their own request).
 
 ```python
 @dataclass(frozen=True)
-class AccountTier:
-    tier: str | None = None        # Internal tier identifier
-    plan_name: str | None = None   # User-facing plan label
-```
-
-```python
-tier = await client.settings.get_account_tier()
-label = tier.plan_name or tier.tier or "unknown"
+class UserSettings:
+    limits: AccountLimits = AccountLimits()  # Account-level quota limits
+    output_language: str | None = None       # Global output language, or None
 ```
 
 ### SourceFulltext

@@ -1,7 +1,7 @@
 ---
 name: rank-tracker
 description: 'Use when the user asks to "track rankings" or "查排名"; measures keyword and SERP-position deltas over time from provided exports or connected tools, including AI-response checks. Not for multi-metric stakeholder reports — use performance-reporter; not for setting alerts — use alert-manager. 排名追踪/SERP监控'
-version: "10.0.1"
+version: "11.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -10,7 +10,9 @@ argument-hint: "<domain> [keyword list]"
 allowed-tools: WebFetch
 metadata:
   author: aaron-he-zhu
-  version: "10.0.1"
+  version: "11.0.0"
+  discipline: seo-geo
+  phase: monitor
   geo-relevance: "medium"
 ---
 

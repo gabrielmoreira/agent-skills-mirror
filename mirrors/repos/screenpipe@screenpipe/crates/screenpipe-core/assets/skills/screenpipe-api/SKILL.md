@@ -193,7 +193,7 @@ curl http://localhost:3030/connections            # list all integrations (40+)
 curl http://localhost:3030/connections/telegram   # saved creds for a webhook/token integration
 ```
 
-Each entry's `description` is self-describing — for control surfaces (browsers, gateways, OAuth proxies) it includes the exact endpoint + body shape. Read it before guessing. If not connected, tell the user to set it up in Settings > Connections.
+Each entry's `description` is self-describing — for control surfaces (browsers, gateways, OAuth proxies) it includes the exact endpoint + body shape. Read it before guessing. If not connected, tell the user to set it up from the Connections page in the desktop app.
 
 **Credential integrations** — `GET /connections/<id>` returns fields to call the service directly:
 - **Telegram**: `bot_token`+`chat_id` → `POST https://api.telegram.org/bot{token}/sendMessage`

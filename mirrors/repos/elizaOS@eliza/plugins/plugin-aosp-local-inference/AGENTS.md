@@ -66,7 +66,7 @@ All env vars are read at call time (no module-load side effects).
 | `ELIZA_LLAMA_EMBEDDING_N_CTX` | No | Context window size for embedding model (default 512). |
 | `ELIZA_LLAMA_N_GPU_LAYERS` | No | Explicit GPU layer count. Overrides `ELIZA_AOSP_LLAMA_USE_GPU`. |
 | `ELIZA_AOSP_LLAMA_USE_GPU` | No | Boolean flag — if `"true"`, uses 99 GPU layers; default 0 (CPU only). |
-| `ELIZA_LLAMA_CACHE_TYPE_K` / `ELIZA_LLAMA_CACHE_TYPE_V` | No | KV-cache type: `f16`, `tbq3_0`, `tbq4_0`, `qjl1_256`, `q4_polar`. Chat defaults: K=`qjl1_256`, V=`q4_polar`. |
+| `ELIZA_LLAMA_KV_TYPE_K` / `ELIZA_LLAMA_KV_TYPE_V` | No | KV-cache type: `f16`, `q8_0`, `tbq3_0`, `tbq4_0`, `qjl1_256`, `q4_polar`. Chat defaults: K=`q8_0`, V=`f16`. |
 | `ELIZA_LLAMA_DEFAULT_MAX_TOKENS` | No | Default max output tokens (default 512). |
 | `ELIZA_LLAMA_MAX_OUTPUT_TOKENS` | No | Hard cap on output tokens (default 256; capped against context). |
 | `ELIZA_LOCAL_EMBEDDING_ENABLED` | No | Set to `"1"` to load the embedding GGUF. Default: disabled (zero-vector returned). |

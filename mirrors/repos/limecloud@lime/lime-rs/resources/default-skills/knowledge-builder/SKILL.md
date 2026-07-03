@@ -6,7 +6,7 @@ metadata:
   lime_when_to_use: 内容工厂 App 需要整理三层知识库、生成场景地图或补齐内容生产依据时使用。
   lime_version: 0.1.1
   lime_execution_mode: prompt
-  lime_surface: agent_app
+  lime_surface: plugin
   lime_category: content_factory
 ---
 
