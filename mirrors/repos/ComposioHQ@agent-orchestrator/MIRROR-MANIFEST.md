@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 1 followed patterns, 4 file(s) materialized.
+Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 1 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 1 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 4 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,9 +60,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`skills/bug-triage/SKILL.md`](skills/bug-triage/SKILL.md) |
-| 4 | → | [`DESIGN.md`](DESIGN.md) |
+| 2 | ✓ | [`backend/internal/skillassets/using-ao/references.md`](backend/internal/skillassets/using-ao/references.md) |
+| 3 | ✓ | [`backend/internal/skillassets/using-ao/SKILL.md`](backend/internal/skillassets/using-ao/SKILL.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`skills/bug-triage/SKILL.md`](skills/bug-triage/SKILL.md) |
+| 6 | → | [`DESIGN.md`](DESIGN.md) |
 
 ---
 

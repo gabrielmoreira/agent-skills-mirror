@@ -196,16 +196,27 @@ directory that exists. Auto-approval field is `alwaysAllow` (not
 
 OpenAI Codex CLI stores config in `~/.codex/config.toml`. We
 upsert a `[mcp_servers.gortex]` table there. When hooks are enabled
-(the default), we also add one user-level `SessionStart` hook matching
-`startup|resume|clear|compact`. It emits a short graph-tools
-orientation so new, resumed, cleared, and compacted Codex sessions see
-the same nudge. Codex also gets a Bash `PreToolUse` hook in soft-enrich
-mode for shell search/read/list shapes, plus a separate Gortex MCP
-read-tool `PreToolUse` hook for `read_file` and `get_editing_context`
-compress-bodies guidance. A Bash-only `PostToolUse` hook adds graph
-context for grep/rg/ag-style search output by reusing the existing
-post-tool enrichment path. Codex hooks do not deny, rewrite input,
-suppress output, or handle `apply_patch`.
+(the default), Codex receives user-level hooks that keep the integration
+soft-only: they add graph context or read-shaping guidance without
+denying tools, rewriting input, or suppressing output.
+
+Current Codex hook coverage:
+
+| Surface | Coverage |
+| ------- | -------- |
+| `SessionStart` | Matches `startup|resume|clear|compact` and emits graph-tools orientation for new, resumed, cleared, and compacted sessions. |
+| Bash `PreToolUse` | Soft graph guidance for shell search/read/list shapes. |
+| Gortex MCP read-tool `PreToolUse` | `read_file` and `get_editing_context` guidance that nudges source reads toward `compress_bodies`. |
+| Bash `PostToolUse` | Output graph enrichment for Bash-wrapped grep/search, source-read, and file-list shapes. |
+| `gortex init --hooks-only` | Refreshes Codex hooks without rewriting the MCP server config, `AGENTS.md`, or other adapter surfaces. |
+
+We do not install separate Codex `PreCompact` or `PostCompact` hooks
+today: Codex ignores plain text stdout for those events, while the
+`SessionStart` `compact` source already provides the orientation path
+after compaction. We also intentionally do not install `Stop`; Codex
+`Stop` can continue a turn, which expands the behavior surface and
+should be tracked separately if needed. `apply_patch` remains out of
+scope for Codex hooks and should be handled by a dedicated follow-up.
 
 ### continue
 

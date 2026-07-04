@@ -7,7 +7,7 @@ This guide is for AI agents working in this repository. It collects the project 
 - This is an `Electron + React + TypeScript` desktop app. The product name is `Kun`; the top-level build entries are `package.json`, `electron.vite.config.ts`, and `electron-builder.config.cjs`.
 - The only active agent runtime is the bundled `kun/` TypeScript package. The GUI talks to `kun serve` over local `HTTP + SSE`; the renderer does not run the agent loop directly.
 - The main data path is `Renderer -> preload -> main -> Kun runtime`:
-  - `src/renderer/src`: React workbench, Code/Write/Connect phone UI, and Zustand state.
+  - `src/renderer/src`: React workbench, Code/Design/Write/Connect phone UI, and Zustand state.
   - `src/preload`: the constrained IPC bridge exposed to the renderer as `window.kunGui`.
   - `src/main`: Electron main process, windows, system services, settings, runtime host, and IPC handlers.
   - `src/shared`: cross-layer types, settings normalizers, and provider contracts.

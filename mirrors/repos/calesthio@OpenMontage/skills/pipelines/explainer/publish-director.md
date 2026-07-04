@@ -162,3 +162,12 @@ Validate the publish_log against the schema and persist via checkpoint.
 - **Description keyword stuffing**: Write for humans first, search engines second. Natural language with keywords woven in.
 - **Forgetting the CTA**: Every description should end with a call to action.
 - **Wrong platform format**: YouTube descriptions differ from TikTok captions. Tailor to the target platform.
+
+---
+
+## Gate Reminder (Binding)
+
+This stage gates on human approval (`human_approval_default: true`). After review passes:
+checkpoint with `status="awaiting_human"`, present the summary (the Backlot board renders
+the artifact), and **END YOUR TURN**. Do not start the next stage in the same response.
+Approval is per-gate — an earlier "go ahead" does not cover this gate.

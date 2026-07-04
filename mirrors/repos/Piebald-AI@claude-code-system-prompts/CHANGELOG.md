@@ -4,6 +4,27 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+#### [2.1.201](https://github.com/Piebald-AI/claude-code-system-prompts/commit/7fabe9a)
+
+<sub>_No changes to the system prompts in v2.1.201._</sub>
+
+# [2.1.200](https://github.com/Piebald-AI/claude-code-system-prompts/commit/2286850)
+
+_+6,194 tokens_
+
+- **NEW:** Data: Claude Tag (Claude in Slack) reference — Adds an offline reference for Claude Tag, Claude Code's org-managed shared Slack surface, covering what it is, availability, org-owner setup and configuration, the thread-equals-session and configuration-snapshot model, and how it replaces the earlier per-user "Claude in Slack" app.
+- **NEW:** Tool Description: ListAgents — Adds a tool for listing agents you can message — in-process subagents, other local and cloud Claude sessions, and reply-only remote bridge sessions — instructing agents to address a row by its exact name and append its `[ref]` only when the bare name is ambiguous.
+- **NEW:** Tool Parameter: set_cwd needs_trust directory — Documents the canonical target directory returned by a `set_cwd` `needs_trust` response, which the host shows in a trust dialog and echoes back verbatim with `trust_accepted: true`, noting that paths containing control, format, default-ignorable, separator, or non-ASCII-space code points are rejected as `unsafe_path` before this arm can carry them.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Reworks the exfiltration rules to fail open on unknown repository visibility and judge content on its own terms; defines three protected-content classes (secrets, personal sensitive data, and confidential internal work); treats staging/pushing an untracked file or dotfile as the exposure event and a same-session `git remote set-url`/`add` repoint as severing trust; and adds soft-block rules for security-test removal, general irreversible deletion, traffic redirection, remote repointing, out-of-place publication to public repos, and cross-repo/fork/upstream PR publishing.
+- Skill: Claude Code configuration guide — Adds Claude Tag (Claude in Slack) coverage, routing any question about Claude Tag, `@Claude`, or `/install-slack-app` to `references/claude-tag.md` first and never answering from memory before fetching the docs.
+- Data: Claude Code live documentation sources — Adds a Claude in Slack (Claude Tag) section with documentation URLs and extraction prompts, pointing to `references/claude-tag.md` as the offline floor.
+- Data: Claude Code recent changes reference — Adds a row noting Claude Tag replaces the earlier "Claude in Slack" app and is backed by remote Claude Code sessions.
+- Skill: Verify skill — Now bootstraps a project verify skill: after getting through a cold-start verification, persist the working build/launch/drive recipe to `.claude/skills/verify/SKILL.md` at the right scope (repo root, or the touched package/app directory in a monorepo), or fold new learnings into an existing verify skill instead of duplicating.
+- System Prompt: Project skill upkeep for feedback memory — Clarifies to only edit existing project skills and never create one (a new skill shadows a same-named built-in), with `verify` as the sole exception, and to place a verify correction in the closest-scoped `.claude/skills/verify/SKILL.md`, never duplicated at broader scopes.
+- System Prompt: Executing actions with care and System Reminder: Auto mode clarification bias — Add guidance that when staging or committing, review what a broad `git add` included (via `git status`) and double-check suspicious files' contents for secrets before pushing, even when the filename looks innocuous.
+- Skill: Auto mode setup — Updates trusted-repo environment guidance so a repo's known public/private visibility scopes what is OK to commit or push there, with the worked example now marking a repo private and OK for the team's own work.
+- Tool Description: claude.ai Project — Documents a `present_to_user: true` option on `project_write`, to be set only when the doc is the deliverable the user needs to see and left unset (default false) for routine, note, and bulk saves.
+
 # [2.1.199](https://github.com/Piebald-AI/claude-code-system-prompts/commit/1c1bf59)
 
 _+25,167 tokens_

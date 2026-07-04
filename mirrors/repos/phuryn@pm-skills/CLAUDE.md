@@ -16,12 +16,15 @@ pm-skills/                           <- repo root
 ├── .docs/images/                    <- images used by README (webp, gif)
 ├── .gitattributes
 ├── .gitignore
+├── .github/workflows/               <- CI: tests.yml (every PR/push), tag-on-merge.yml (auto-release)
+├── CHANGELOG.md                     <- release source of truth (new ## vX.Y.Z heading on main = release)
 ├── CLAUDE.md                        <- this file (agent guidance, single source of truth)
 ├── AGENTS.md                        <- pointer to CLAUDE.md (for non-Claude agents)
 ├── CONTRIBUTING.md                  <- contributor guidelines
 ├── README.md                        <- public documentation (GitHub)
 ├── LICENSE                          <- MIT
 ├── validate_plugins.py              <- plugin validator
+├── tests/                           <- unit + docs-consistency tests (unittest)
 └── pm-{name}/                       <- 9 plugin directories
     ├── .claude-plugin/plugin.json   <- per-plugin manifest
     ├── skills/{skill}/SKILL.md      <- one folder per skill
@@ -67,11 +70,12 @@ pm-skills/                           <- repo root
 
 Descriptions in `plugin.json` and the repo `README.md` should stay aligned (identical text).
 
-## Versioning
+## Versioning & Releases
 
-- All versions are currently **2.0.0** — `marketplace.json` and all 9 `plugin.json` files.
-- **Keep every version in sync.** There is no independent per-plugin versioning.
-- Bump any `plugin.json` → also bump `marketplace.json`, and vice-versa (bump all 9 to match).
+- **`CHANGELOG.md` is the source of truth.** The newest `## vX.Y.Z — YYYY-MM-DD` heading is the released version. Pushing a commit to `main` that adds a new heading makes CI (`.github/workflows/tag-on-merge.yml`) verify the version sync and test suite, tag `vX.Y.Z`, and publish a GitHub Release with that section as notes.
+- **Keep every version in sync.** `marketplace.json`, all 9 `plugin.json` files, and the newest CHANGELOG heading always carry the same version (enforced by `tests/test_consistency.py`). There is no independent per-plugin versioning.
+- Every user-facing change gets a CHANGELOG bullet under `## Unreleased`; contributors are credited inline (`#PR, thanks @handle`). Full procedure: CONTRIBUTING.md § Releases.
+- Semver: breaking = major; new skills/commands or changed behavior = minor; fixes/docs = patch.
 
 ## Article Links in Skills (Further Reading)
 
@@ -83,10 +87,11 @@ Descriptions in `plugin.json` and the repo `README.md` should stay aligned (iden
 ## Operational Procedures
 
 ### After any skill/command change
-1. Run `python3 validate_plugins.py` from the repo root to check all plugins.
-2. If skills/commands were added or removed, update the counts in `README.md`.
+1. Run `python3 validate_plugins.py` and `python3 -m unittest discover -s tests` from the repo root.
+2. If skills/commands were added or removed, update the counts in `README.md` (headline + per-plugin summary + plugin README section headers — the tests check all three).
 3. If totals changed, update the count in the `marketplace.json` description.
-4. Bump versions across all manifests (see Versioning).
+4. Add a `CHANGELOG.md` bullet under `## Unreleased` for any user-facing change.
+5. Bump versions across all manifests at release time (see Versioning & Releases).
 
 ### After a description change
 - A `plugin.json` description changed → check whether `README.md` needs the same edit (they stay aligned).
@@ -96,8 +101,11 @@ Descriptions in `plugin.json` and the repo `README.md` should stay aligned (iden
 
 `validate_plugins.py` checks: `plugin.json` required fields / name match / semver / author / keywords; skill frontmatter and name-matches-directory; command frontmatter (`description` + `argument-hint`); README presence; and intra-plugin command→skill references.
 
+`tests/` adds the consistency layer: README counts vs. disk, marketplace plugin list vs. directories, version sync across all manifests + CHANGELOG, CHANGELOG heading format, and `/plugin:command` references in plugin READMEs. Both run in CI on every PR and push to `main`, and gate releases.
+
 ```
 python3 validate_plugins.py
+python3 -m unittest discover -s tests
 ```
 
 ## What to Suggest After Completing Work

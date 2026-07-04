@@ -31,7 +31,7 @@
 | 触发 | 技能 |
 |------|------|
 | 报错 / 崩溃 / 测试失败 / 行为异常 / "为什么不工作" / 以前是好的 / 回归 / 截图回归 / 反复修不好 / stale cache / 队列或生成物边界 | `skills/hunt/SKILL.md` |
-| Claude/Codex 忽略指令 / hook 失灵 / MCP 异常 / Codex 配置 / AGENTS.md / config.toml / agent instructions / 配置审计 / health 消耗 token / AI coding 腐化 / 代码变烂 / 维护性 / hotspot ownership / 上下文混乱 / 验证缺失 / 验证命令失真 | `skills/health/SKILL.md` |
+| Claude/Codex/Pi 忽略指令 / hook 失灵 / MCP 异常 / Codex 配置 / Pi 配置 / AGENTS.md / config.toml / agent instructions / 配置审计 / health 消耗 token / AI coding 腐化 / 代码变烂 / 维护性 / hotspot ownership / 上下文混乱 / 验证缺失 / 验证命令失真 | `skills/health/SKILL.md` |
 
 ### Content（内容进出）
 

@@ -35,6 +35,9 @@ src/
                          persist/find/deleteCloudAppConfirmation (task-backed, room-scoped),
                          CONFIRM_TTL_MS + pendingExpired (shared 15-min pending TTL; expired
                          pendings refuse the bare confirm and are re-stated/re-quoted),
+                         conflictingConfirmTarget/Amount/Domain (frozen-target guard: a confirm
+                         whose own params name a different target/amount refuses + clears the
+                         pending instead of executing the frozen snapshot),
                          confirmationPrompt, buildConnectorCta (label+https URL only — never a
                          secret/amount). CloudAppConfirmationAction is the gated-action union.
   deploy-gate.ts         runDeployGate: poll deploy status → READY, then reachability-probe the
@@ -112,6 +115,17 @@ bun run --cwd plugins/plugin-cloud-apps build       # bun build.ts
   planner's structured `confirm: true` for that pending task, using the params
   FROZEN at the first ask — never re-parsed from the follow-up text, never from
   English keyword matching (so non-English confirmations work).
+- **A confirm that names a DIFFERENT target/amount refuses (frozen-target
+  guard).** When the confirm turn's own structured params clearly name another
+  target than the frozen snapshot ("yes — delete Beta Dashboard" while the
+  pending delete is for Acme Bot; a different domain, influencer, or a
+  different structured amount), the gated action refuses, clears the pending,
+  and asks the user to re-state — it never executes the frozen target the user
+  is no longer talking about, and never silently switches to the new one.
+  Helpers: `conflictingConfirmTarget` / `conflictingConfirmAmount` /
+  `conflictingConfirmDomain` (safety.ts). Deliberately lenient: bare confirms,
+  partial names of the SAME target, and generic filler ("my app") never block,
+  and prose is never parsed.
 - **Secrets/money never transit the connector.** CTAs (`buildConnectorCta`) carry
   a label + an https URL only. Created/rotated API keys are surfaced once and
   never logged.

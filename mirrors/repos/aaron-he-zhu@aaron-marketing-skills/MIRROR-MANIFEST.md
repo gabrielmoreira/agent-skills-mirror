@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aaron-he-zhu/aaron-marketing-skills` — 26 default patterns, 18 followed patterns, 75 file(s) materialized.
+Mirror of `aaron-he-zhu/aaron-marketing-skills` — 26 default patterns, 19 followed patterns, 91 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `aaron-he-zhu/aaron-marketing-skills` — 26 default patterns, 18 foll
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 18 |
-| Files         | 75 |
+| Followed pats | 19 |
+| Files         | 91 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,7 @@ Mirror of `aaron-he-zhu/aaron-marketing-skills` — 26 default patterns, 18 foll
 - `references/cite-domain-rating.md`
 - `references/c3-benchmark.md`
 - `references/roas-benchmark.md`
+- `references/send-benchmark.md`
 - `CONNECTORS.md`
 - `CONTRIBUTING.md`
 - `docs/README.zh.md`
@@ -76,81 +77,97 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`activate/content-reviewer/SKILL.md`](activate/content-reviewer/SKILL.md) |
-| 2 | ✓ | [`activate/contract-helper/SKILL.md`](activate/contract-helper/SKILL.md) |
-| 3 | ✓ | [`activate/outreach-manager/SKILL.md`](activate/outreach-manager/SKILL.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`build/comparison-page-builder/SKILL.md`](build/comparison-page-builder/SKILL.md) |
-| 6 | ✓ | [`build/geo-content-optimizer/SKILL.md`](build/geo-content-optimizer/SKILL.md) |
-| 7 | ✓ | [`build/local-seo/SKILL.md`](build/local-seo/SKILL.md) |
-| 8 | ✓ | [`build/meta-tags-optimizer/SKILL.md`](build/meta-tags-optimizer/SKILL.md) |
-| 9 | ✓ | [`build/parasite-seo/SKILL.md`](build/parasite-seo/SKILL.md) |
-| 10 | ✓ | [`build/programmatic-seo/SKILL.md`](build/programmatic-seo/SKILL.md) |
-| 11 | ✓ | [`build/schema-markup-generator/SKILL.md`](build/schema-markup-generator/SKILL.md) |
-| 12 | ✓ | [`build/seo-content-writer/SKILL.md`](build/seo-content-writer/SKILL.md) |
-| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 14 | ✓ | [`convert/content-amplifier/SKILL.md`](convert/content-amplifier/SKILL.md) |
-| 15 | ✓ | [`convert/landing-optimizer/SKILL.md`](convert/landing-optimizer/SKILL.md) |
-| 16 | ✓ | [`convert/ugc-repurposer/SKILL.md`](convert/ugc-repurposer/SKILL.md) |
-| 17 | ✓ | [`evals/README.md`](evals/README.md) |
-| 18 | ✓ | [`insight/audience-analyzer/SKILL.md`](insight/audience-analyzer/SKILL.md) |
-| 19 | ✓ | [`insight/niche-researcher/SKILL.md`](insight/niche-researcher/SKILL.md) |
-| 20 | ✓ | [`insight/trend-spotter/SKILL.md`](insight/trend-spotter/SKILL.md) |
-| 21 | ✓ | [`map/competitor-tracker/SKILL.md`](map/competitor-tracker/SKILL.md) |
-| 22 | ✓ | [`map/fit-scorer/SKILL.md`](map/fit-scorer/SKILL.md) |
-| 23 | ✓ | [`map/influencer-discovery/SKILL.md`](map/influencer-discovery/SKILL.md) |
-| 24 | ✓ | [`monitor/ai-traffic/SKILL.md`](monitor/ai-traffic/SKILL.md) |
-| 25 | ✓ | [`monitor/alert-manager/SKILL.md`](monitor/alert-manager/SKILL.md) |
-| 26 | ✓ | [`monitor/backlink-analyzer/SKILL.md`](monitor/backlink-analyzer/SKILL.md) |
-| 27 | ✓ | [`monitor/domain-authority-auditor/SKILL.md`](monitor/domain-authority-auditor/SKILL.md) |
-| 28 | ✓ | [`monitor/performance-reporter/SKILL.md`](monitor/performance-reporter/SKILL.md) |
-| 29 | ✓ | [`monitor/rank-tracker/SKILL.md`](monitor/rank-tracker/SKILL.md) |
-| 30 | ✓ | [`optimize/content-quality-auditor/SKILL.md`](optimize/content-quality-auditor/SKILL.md) |
-| 31 | ✓ | [`optimize/content-refresher/SKILL.md`](optimize/content-refresher/SKILL.md) |
-| 32 | ✓ | [`optimize/internal-linking-optimizer/SKILL.md`](optimize/internal-linking-optimizer/SKILL.md) |
-| 33 | ✓ | [`optimize/on-page-seo-auditor/SKILL.md`](optimize/on-page-seo-auditor/SKILL.md) |
-| 34 | ✓ | [`optimize/site-architecture/SKILL.md`](optimize/site-architecture/SKILL.md) |
-| 35 | ✓ | [`optimize/technical-seo-checker/SKILL.md`](optimize/technical-seo-checker/SKILL.md) |
-| 36 | ✓ | [`paid/activate/ad-account-auditor/SKILL.md`](paid/activate/ad-account-auditor/SKILL.md) |
-| 37 | ✓ | [`paid/activate/conversion-signal-qa/SKILL.md`](paid/activate/conversion-signal-qa/SKILL.md) |
-| 38 | ✓ | [`paid/orchestrate/ad-creative-builder/SKILL.md`](paid/orchestrate/ad-creative-builder/SKILL.md) |
-| 39 | ✓ | [`paid/orchestrate/ad-test-designer/SKILL.md`](paid/orchestrate/ad-test-designer/SKILL.md) |
-| 40 | ✓ | [`paid/research/audience-segment-builder/SKILL.md`](paid/research/audience-segment-builder/SKILL.md) |
-| 41 | ✓ | [`paid/research/campaign-architect/SKILL.md`](paid/research/campaign-architect/SKILL.md) |
-| 42 | ✓ | [`paid/scale/attribution-reconciler/SKILL.md`](paid/scale/attribution-reconciler/SKILL.md) |
-| 43 | ✓ | [`paid/scale/paid-measurement-loop/SKILL.md`](paid/scale/paid-measurement-loop/SKILL.md) |
-| 44 | ✓ | [`plan/brief-generator/SKILL.md`](plan/brief-generator/SKILL.md) |
-| 45 | ✓ | [`plan/budget-optimizer/SKILL.md`](plan/budget-optimizer/SKILL.md) |
-| 46 | ✓ | [`plan/campaign-planner/SKILL.md`](plan/campaign-planner/SKILL.md) |
-| 47 | ✓ | [`protocol/creator-registry/SKILL.md`](protocol/creator-registry/SKILL.md) |
-| 48 | ✓ | [`protocol/entity-optimizer/SKILL.md`](protocol/entity-optimizer/SKILL.md) |
-| 49 | ✓ | [`protocol/memory-management/SKILL.md`](protocol/memory-management/SKILL.md) |
-| 50 | ✓ | [`protocol/offer-claims-registry/SKILL.md`](protocol/offer-claims-registry/SKILL.md) |
-| 51 | ✓ | [`research/competitor-analysis/SKILL.md`](research/competitor-analysis/SKILL.md) |
-| 52 | ✓ | [`research/content-gap-analysis/SKILL.md`](research/content-gap-analysis/SKILL.md) |
-| 53 | ✓ | [`research/keyword-research/SKILL.md`](research/keyword-research/SKILL.md) |
-| 54 | ✓ | [`research/serp-analysis/SKILL.md`](research/serp-analysis/SKILL.md) |
-| 55 | ✓ | [`track/performance-analyzer/SKILL.md`](track/performance-analyzer/SKILL.md) |
-| 56 | ✓ | [`track/report-generator/SKILL.md`](track/report-generator/SKILL.md) |
-| 57 | ✓ | [`track/roi-calculator/SKILL.md`](track/roi-calculator/SKILL.md) |
-| 58 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 59 | → | [`CONNECTORS.md`](CONNECTORS.md) |
-| 60 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 61 | → | [`docs/README.zh.md`](docs/README.zh.md) |
-| 62 | → | [`PRIVACY.md`](PRIVACY.md) |
-| 63 | → | [`README.md`](README.md) |
-| 64 | → | [`references/auditor-runbook.md`](references/auditor-runbook.md) |
-| 65 | → | [`references/c3-benchmark.md`](references/c3-benchmark.md) |
-| 66 | → | [`references/cite-domain-rating.md`](references/cite-domain-rating.md) |
-| 67 | → | [`references/core-eeat-benchmark.md`](references/core-eeat-benchmark.md) |
-| 68 | → | [`references/humanizer-slop.md`](references/humanizer-slop.md) |
-| 69 | → | [`references/measurement-protocol.md`](references/measurement-protocol.md) |
-| 70 | → | [`references/roas-benchmark.md`](references/roas-benchmark.md) |
-| 71 | → | [`references/skill-contract.md`](references/skill-contract.md) |
-| 72 | → | [`references/state-model.md`](references/state-model.md) |
-| 73 | → | [`scripts/connectors/README.md`](scripts/connectors/README.md) |
-| 74 | → | [`SECURITY.md`](SECURITY.md) |
-| 75 | → | [`VERSIONS.md`](VERSIONS.md) |
+| 1 | ✓ | [`ad/activate/ad-account-auditor/SKILL.md`](ad/activate/ad-account-auditor/SKILL.md) |
+| 2 | ✓ | [`ad/activate/conversion-signal-qa/SKILL.md`](ad/activate/conversion-signal-qa/SKILL.md) |
+| 3 | ✓ | [`ad/activate/conversion-value-mapper/SKILL.md`](ad/activate/conversion-value-mapper/SKILL.md) |
+| 4 | ✓ | [`ad/activate/placement-exclusion-manager/SKILL.md`](ad/activate/placement-exclusion-manager/SKILL.md) |
+| 5 | ✓ | [`ad/orchestrate/ad-creative-builder/SKILL.md`](ad/orchestrate/ad-creative-builder/SKILL.md) |
+| 6 | ✓ | [`ad/orchestrate/ad-test-designer/SKILL.md`](ad/orchestrate/ad-test-designer/SKILL.md) |
+| 7 | ✓ | [`ad/orchestrate/bid-strategy-planner/SKILL.md`](ad/orchestrate/bid-strategy-planner/SKILL.md) |
+| 8 | ✓ | [`ad/orchestrate/landing-experience-checker/SKILL.md`](ad/orchestrate/landing-experience-checker/SKILL.md) |
+| 9 | ✓ | [`ad/research/audience-segment-builder/SKILL.md`](ad/research/audience-segment-builder/SKILL.md) |
+| 10 | ✓ | [`ad/research/campaign-architect/SKILL.md`](ad/research/campaign-architect/SKILL.md) |
+| 11 | ✓ | [`ad/research/product-feed-optimizer/SKILL.md`](ad/research/product-feed-optimizer/SKILL.md) |
+| 12 | ✓ | [`ad/research/search-term-miner/SKILL.md`](ad/research/search-term-miner/SKILL.md) |
+| 13 | ✓ | [`ad/scale/attribution-reconciler/SKILL.md`](ad/scale/attribution-reconciler/SKILL.md) |
+| 14 | ✓ | [`ad/scale/budget-pacing-monitor/SKILL.md`](ad/scale/budget-pacing-monitor/SKILL.md) |
+| 15 | ✓ | [`ad/scale/fatigue-frequency-manager/SKILL.md`](ad/scale/fatigue-frequency-manager/SKILL.md) |
+| 16 | ✓ | [`ad/scale/paid-measurement-loop/SKILL.md`](ad/scale/paid-measurement-loop/SKILL.md) |
+| 17 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 18 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 19 | ✓ | [`email/deliver/cold-outbound-sequencer/SKILL.md`](email/deliver/cold-outbound-sequencer/SKILL.md) |
+| 20 | ✓ | [`email/deliver/email-quality-auditor/SKILL.md`](email/deliver/email-quality-auditor/SKILL.md) |
+| 21 | ✓ | [`email/deliver/inbox-placement-monitor/SKILL.md`](email/deliver/inbox-placement-monitor/SKILL.md) |
+| 22 | ✓ | [`email/deliver/send-experiment-designer/SKILL.md`](email/deliver/send-experiment-designer/SKILL.md) |
+| 23 | ✓ | [`email/engage/dynamic-content-personalizer/SKILL.md`](email/engage/dynamic-content-personalizer/SKILL.md) |
+| 24 | ✓ | [`email/engage/email-creative-builder/SKILL.md`](email/engage/email-creative-builder/SKILL.md) |
+| 25 | ✓ | [`email/engage/email-render-builder/SKILL.md`](email/engage/email-render-builder/SKILL.md) |
+| 26 | ✓ | [`email/engage/subject-line-lab/SKILL.md`](email/engage/subject-line-lab/SKILL.md) |
+| 27 | ✓ | [`email/nurture/email-sequence-designer/SKILL.md`](email/nurture/email-sequence-designer/SKILL.md) |
+| 28 | ✓ | [`email/nurture/newsletter-monetization-planner/SKILL.md`](email/nurture/newsletter-monetization-planner/SKILL.md) |
+| 29 | ✓ | [`email/nurture/preference-frequency-manager/SKILL.md`](email/nurture/preference-frequency-manager/SKILL.md) |
+| 30 | ✓ | [`email/nurture/reactivation-specialist/SKILL.md`](email/nurture/reactivation-specialist/SKILL.md) |
+| 31 | ✓ | [`email/setup/deliverability-qa/SKILL.md`](email/setup/deliverability-qa/SKILL.md) |
+| 32 | ✓ | [`email/setup/list-growth-designer/SKILL.md`](email/setup/list-growth-designer/SKILL.md) |
+| 33 | ✓ | [`email/setup/list-hygiene-monitor/SKILL.md`](email/setup/list-hygiene-monitor/SKILL.md) |
+| 34 | ✓ | [`email/setup/list-segment-builder/SKILL.md`](email/setup/list-segment-builder/SKILL.md) |
+| 35 | ✓ | [`evals/README.md`](evals/README.md) |
+| 36 | ✓ | [`influencer/activate/content-amplifier/SKILL.md`](influencer/activate/content-amplifier/SKILL.md) |
+| 37 | ✓ | [`influencer/activate/content-reviewer/SKILL.md`](influencer/activate/content-reviewer/SKILL.md) |
+| 38 | ✓ | [`influencer/activate/contract-helper/SKILL.md`](influencer/activate/contract-helper/SKILL.md) |
+| 39 | ✓ | [`influencer/activate/outreach-manager/SKILL.md`](influencer/activate/outreach-manager/SKILL.md) |
+| 40 | ✓ | [`influencer/discover/audience-mapper/SKILL.md`](influencer/discover/audience-mapper/SKILL.md) |
+| 41 | ✓ | [`influencer/discover/fit-scorer/SKILL.md`](influencer/discover/fit-scorer/SKILL.md) |
+| 42 | ✓ | [`influencer/discover/influencer-discovery/SKILL.md`](influencer/discover/influencer-discovery/SKILL.md) |
+| 43 | ✓ | [`influencer/discover/trend-spotter/SKILL.md`](influencer/discover/trend-spotter/SKILL.md) |
+| 44 | ✓ | [`influencer/measure/landing-optimizer/SKILL.md`](influencer/measure/landing-optimizer/SKILL.md) |
+| 45 | ✓ | [`influencer/measure/performance-analyzer/SKILL.md`](influencer/measure/performance-analyzer/SKILL.md) |
+| 46 | ✓ | [`influencer/measure/report-generator/SKILL.md`](influencer/measure/report-generator/SKILL.md) |
+| 47 | ✓ | [`influencer/measure/roi-calculator/SKILL.md`](influencer/measure/roi-calculator/SKILL.md) |
+| 48 | ✓ | [`influencer/plan/brief-generator/SKILL.md`](influencer/plan/brief-generator/SKILL.md) |
+| 49 | ✓ | [`influencer/plan/budget-optimizer/SKILL.md`](influencer/plan/budget-optimizer/SKILL.md) |
+| 50 | ✓ | [`influencer/plan/campaign-planner/SKILL.md`](influencer/plan/campaign-planner/SKILL.md) |
+| 51 | ✓ | [`influencer/plan/competitor-tracker/SKILL.md`](influencer/plan/competitor-tracker/SKILL.md) |
+| 52 | ✓ | [`protocol/consent-registry/SKILL.md`](protocol/consent-registry/SKILL.md) |
+| 53 | ✓ | [`protocol/creator-registry/SKILL.md`](protocol/creator-registry/SKILL.md) |
+| 54 | ✓ | [`protocol/entity-optimizer/SKILL.md`](protocol/entity-optimizer/SKILL.md) |
+| 55 | ✓ | [`protocol/memory-management/SKILL.md`](protocol/memory-management/SKILL.md) |
+| 56 | ✓ | [`protocol/offer-claims-registry/SKILL.md`](protocol/offer-claims-registry/SKILL.md) |
+| 57 | ✓ | [`seo-geo/build/content-writer/SKILL.md`](seo-geo/build/content-writer/SKILL.md) |
+| 58 | ✓ | [`seo-geo/build/geo-content-optimizer/SKILL.md`](seo-geo/build/geo-content-optimizer/SKILL.md) |
+| 59 | ✓ | [`seo-geo/build/page-play-builder/SKILL.md`](seo-geo/build/page-play-builder/SKILL.md) |
+| 60 | ✓ | [`seo-geo/build/serp-markup-builder/SKILL.md`](seo-geo/build/serp-markup-builder/SKILL.md) |
+| 61 | ✓ | [`seo-geo/monitor/domain-authority-auditor/SKILL.md`](seo-geo/monitor/domain-authority-auditor/SKILL.md) |
+| 62 | ✓ | [`seo-geo/monitor/offsite-signal-analyzer/SKILL.md`](seo-geo/monitor/offsite-signal-analyzer/SKILL.md) |
+| 63 | ✓ | [`seo-geo/monitor/performance-monitor/SKILL.md`](seo-geo/monitor/performance-monitor/SKILL.md) |
+| 64 | ✓ | [`seo-geo/monitor/rank-tracker/SKILL.md`](seo-geo/monitor/rank-tracker/SKILL.md) |
+| 65 | ✓ | [`seo-geo/optimize/content-quality-auditor/SKILL.md`](seo-geo/optimize/content-quality-auditor/SKILL.md) |
+| 66 | ✓ | [`seo-geo/optimize/on-page-seo-auditor/SKILL.md`](seo-geo/optimize/on-page-seo-auditor/SKILL.md) |
+| 67 | ✓ | [`seo-geo/optimize/site-structure-optimizer/SKILL.md`](seo-geo/optimize/site-structure-optimizer/SKILL.md) |
+| 68 | ✓ | [`seo-geo/optimize/technical-seo-checker/SKILL.md`](seo-geo/optimize/technical-seo-checker/SKILL.md) |
+| 69 | ✓ | [`seo-geo/research/competitor-analysis/SKILL.md`](seo-geo/research/competitor-analysis/SKILL.md) |
+| 70 | ✓ | [`seo-geo/research/content-gap-analysis/SKILL.md`](seo-geo/research/content-gap-analysis/SKILL.md) |
+| 71 | ✓ | [`seo-geo/research/keyword-research/SKILL.md`](seo-geo/research/keyword-research/SKILL.md) |
+| 72 | ✓ | [`seo-geo/research/serp-analysis/SKILL.md`](seo-geo/research/serp-analysis/SKILL.md) |
+| 73 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 74 | → | [`CONNECTORS.md`](CONNECTORS.md) |
+| 75 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 76 | → | [`docs/README.zh.md`](docs/README.zh.md) |
+| 77 | → | [`PRIVACY.md`](PRIVACY.md) |
+| 78 | → | [`README.md`](README.md) |
+| 79 | → | [`references/auditor-runbook.md`](references/auditor-runbook.md) |
+| 80 | → | [`references/c3-benchmark.md`](references/c3-benchmark.md) |
+| 81 | → | [`references/cite-domain-rating.md`](references/cite-domain-rating.md) |
+| 82 | → | [`references/core-eeat-benchmark.md`](references/core-eeat-benchmark.md) |
+| 83 | → | [`references/humanizer-slop.md`](references/humanizer-slop.md) |
+| 84 | → | [`references/measurement-protocol.md`](references/measurement-protocol.md) |
+| 85 | → | [`references/roas-benchmark.md`](references/roas-benchmark.md) |
+| 86 | → | [`references/send-benchmark.md`](references/send-benchmark.md) |
+| 87 | → | [`references/skill-contract.md`](references/skill-contract.md) |
+| 88 | → | [`references/state-model.md`](references/state-model.md) |
+| 89 | → | [`scripts/connectors/README.md`](scripts/connectors/README.md) |
+| 90 | → | [`SECURITY.md`](SECURITY.md) |
+| 91 | → | [`VERSIONS.md`](VERSIONS.md) |
 
 ---
 

@@ -84,11 +84,11 @@ Each feature runs 3 ways: **CLI, YAML, Python**.
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                      praisonai (Wrapper)                        │
-│  Bot/channel CLI • Gateway • Integrations • Heavy impls         │
-├─────────────────────────────────────────────────────────────────┤
-│                    praisonai-code (Terminal agent)              │
-│  run • chat • code • doctor • runtime • cli_backends • Typer    │
-├─────────────────────────────────────────────────────────────────┤
+│  Integrations • framework_adapters • train • serve • dashboard  │
+├──────────────────────────────┬──────────────────────────────────┤
+│   praisonai-code (Terminal)  │   praisonai-bot (Channels)       │
+│   run • chat • code • doctor │   bots • gateway • BotOS • CLI   │
+├──────────────────────────────┴──────────────────────────────────┤
 │                    praisonaiagents (Core SDK)                   │
 │  Protocols • Hooks • Adapters • Base Classes • Decorators       │
 ├─────────────────────────────────────────────────────────────────┤
@@ -99,13 +99,14 @@ Each feature runs 3 ways: **CLI, YAML, Python**.
 
 ### 2.3 `praisonai-code` — Agentic Terminal CLI Split (C5/C6)
 
-The **agentic terminal CLI** (`run`, `chat`, `code`, warm runtime, CLI backends, Typer app) lives in the separate **`praisonai-code`** PyPI package (`praisonai_code`). The **`praisonai`** wrapper keeps bot/channel orchestration, gateway, and heavy integrations. **`pip install praisonai`** still installs everything; old import paths are preserved via shims.
+The **agentic terminal CLI** (`run`, `chat`, `code`, warm runtime, CLI backends, Typer app) lives in **`praisonai-code`** (`praisonai_code`). **Bots, gateway, and channel CLI** live in **`praisonai-bot`** (`praisonai_bot`) after C9. The **`praisonai`** wrapper keeps integrations, framework adapters, train, serve, and dashboard. **`pip install praisonai`** still installs everything; old import paths are preserved via shims.
 
 | Product | Location | Stays out of |
 |---------|----------|--------------|
 | Agentic terminal CLI | `src/praisonai-code/praisonai_code/` | Must **not** depend on `praisonai` (PyPI cycle) |
-| Bot/channel runtime | `src/praisonai/praisonai/` | Gateway, BotOS, onboarding, dashboard |
+| Bot/channel runtime | `src/praisonai-bot/praisonai_bot/` | Must **not** PyPI-depend on `praisonai` or `praisonai-code` |
 | Core SDK | `src/praisonai-agents/praisonaiagents/` | Heavy CLI / integrations |
+| Wrapper shims | `src/praisonai/praisonai/bots`, `gateway`, … | `alias_package` → `praisonai_bot` |
 
 **Moved into `praisonai_code` (~304 modules):**
 
@@ -896,22 +897,24 @@ BotOS is the multi-platform bot orchestration layer for PraisonAI. It follows th
 |-------|---------|---------|
 | `BotOSProtocol` | `praisonaiagents` (Core SDK) | Interface contract — lightweight |
 | `BotOSConfig` | `praisonaiagents` (Core SDK) | Configuration dataclass |
-| `Bot` | `praisonai` (Wrapper) | Single-platform bot wrapper |
-| `BotOS` | `praisonai` (Wrapper) | Multi-platform orchestrator |
-| `_registry` | `praisonai` (Wrapper) | Platform adapter registry |
+| `Bot`, `BotOS`, adapters | `praisonai-bot` (Tier 2b) | Platform bots and multi-bot orchestration |
+| `_registry` | `praisonai_bot.bots._registry` | Platform adapter registry (entry-point `praisonai.channels`) |
+| Shims | `praisonai.bots` / `praisonai.gateway` | Backward-compat `alias_package` re-exports |
 
 ### 12.3 Usage Patterns
 
 ```python
 # === Level 1: Single bot, 3 lines ===
-from praisonai.bots import Bot
+from praisonai_bot.bots import Bot
 from praisonaiagents import Agent
 
 bot = Bot("telegram", agent=Agent(name="assistant", instructions="Be helpful"))
 bot.run()
 
+# Shims: ``from praisonai.bots import Bot`` still works when the wrapper is installed.
+
 # === Level 2: Multi-platform, shared agent ===
-from praisonai.bots import BotOS
+from praisonai_bot.bots import BotOS
 from praisonaiagents import Agent
 
 agent = Agent(name="assistant", instructions="Be helpful")
@@ -919,7 +922,7 @@ botos = BotOS(agent=agent, platforms=["telegram", "discord"])
 botos.run()
 
 # === Level 3: AgentTeam in BotOS ===
-from praisonai.bots import BotOS, Bot
+from praisonai_bot.bots import BotOS, Bot
 from praisonaiagents import Agent, AgentTeam, Task
 
 researcher = Agent(name="researcher", instructions="Research topics")
@@ -966,9 +969,9 @@ Tokens are resolved in order: `explicit token=` > env var > empty string.
 |------|-------|
 | BotOSProtocol | `praisonaiagents/bots/protocols.py` |
 | BotOSConfig | `praisonaiagents/bots/config.py` |
-| Bot class | `praisonai/bots/bot.py` |
-| BotOS class | `praisonai/bots/botos.py` |
-| Platform registry | `praisonai/bots/_registry.py` |
+| Bot class | `praisonai_bot/bots/bot.py` (shim: `praisonai/bots/bot.py`) |
+| BotOS class | `praisonai_bot/bots/botos.py` (shim: `praisonai/bots/botos.py`) |
+| Platform registry | `praisonai_bot/bots/_registry.py` |
 | Unit tests | `tests/unit/test_botos_protocol.py` |
 | Integration tests | `tests/unit/test_botos_integration.py` |
 

@@ -32,6 +32,12 @@ fi
 : "${IN_PROGRESS:=0}"
 : "${PENDING:=0}"
 
+# issue #191: no "### Phase" headings -> not phase-structured. Avoid the false
+# "0/0 phases done ... continue working" auto-continue message.
+if [ "$TOTAL" -eq 0 ]; then
+    exit 0
+fi
+
 if [ "$COMPLETE" -eq "$TOTAL" ] && [ "$TOTAL" -gt 0 ]; then
     # All phases complete — provide re-entry guidance
     echo "{\"followup_message\": \"[planning-with-files] ALL PHASES COMPLETE ($COMPLETE/$TOTAL). If the user has additional work, add new phases to task_plan.md before starting.\"}"

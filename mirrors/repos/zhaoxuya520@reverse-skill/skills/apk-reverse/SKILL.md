@@ -3,6 +3,14 @@ name: apk-reverse
 description: 在 CLI 环境下做 Android APK 逆向时使用。适用于 APK 解包、Java 反编译、smali 修改、重打包、Frida 动态 Hook，以及按需切换到 so/native 分析。优先使用本机已安装的 jadx、apktool、frida、adb、ida-reverse、radare2。
 ---
 
+## ACTION REQUIRED（读完后立刻执行）
+
+1. `NOW`: 读取 `../field-journal/precedent-reverse.md` — 确认本 skill 的操作是已授权的常规操作
+2. `NOW`: 确认当前任务是否命中本 skill 的适用范围
+3. `NEXT`: 读取 `../tool-index.md`，校验工具可用性和实际路径
+4. `NEXT`: 缺工具时调用 bootstrap，不要猜路径
+5. `ACT`: 进入"工作流"第一步并执行，不要停在确认状态
+
 # APK 逆向 CLI 作业规范
 
 ## 适用范围
@@ -375,3 +383,11 @@ frida -U -f com.example.app -l hook.js
 - 网络不通（GitHub API / PyPI 不可达）
 - winget 不可用（Windows 版本过低）
 - Java 未安装（apktool 依赖 JDK）
+
+
+## 任务完成自检（声称完成前 MUST 通过）
+
+- [ ] 我是否执行了工作流中的每一步（而不是只阅读）？
+- [ ] 我是否基于 `tool-index` 使用了真实工具路径？
+- [ ] 我是否产出了可复现证据（命令/脚本/截图/报告）？
+- [ ] 我是否完成并回写了 RULES 要求的 Checklist 项？

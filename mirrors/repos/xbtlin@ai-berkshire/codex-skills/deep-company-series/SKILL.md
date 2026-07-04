@@ -9,7 +9,8 @@ This skill is generated from `skills/deep-company-series.md` so Claude Code and 
 
 - Treat `$ARGUMENTS` as the user's request in the current Codex thread.
 - When the source mentions Claude-only surfaces such as Task, Agent, WebSearch, Bash, Read, or Write, use the closest Codex capability available in this session: subagents when available, web search when needed, shell commands for local tools, and normal file edits for workspace files.
-- Use shared project tools from `tools/` in this repository. Commands that reference `~/ai-berkshire/tools/...` assume the repo is checked out at `~/ai-berkshire`; if needed, prefer the current workspace path.
+- Use shared project tools from `tools/` in this repository. Prefer running commands from the repository root with paths like `python3 tools/financial_rigor.py ...`; if the current thread starts outside the repo, locate the actual checkout path first instead of assuming a fixed home-directory path.
+- Before starting research, run the `date` command to confirm today's date; treat it as the baseline for "latest" data and state the data cutoff date in the report header. Never assume the current date from training data.
 - Preserve the research quality rules from `AGENTS.md`: cross-check financial data, use exact arithmetic tools for valuation/math, and clearly label uncertainty and source gaps.
 
 # 深度公司系列：8 篇长文拆一家公司
@@ -137,7 +138,7 @@ This skill is generated from `skills/deep-company-series.md` so Claude Code and 
 
 ```bash
 # 推送前必须本地 grep 一次（按 ai-berkshire 隐私规则）
-grep -r "linxuan\|/Users/\|<用户公司花名>" reports/ | head
+grep -r "<本机用户名>\|/Users/\|<个人身份信息>" reports/ | head
 ```
 
 确认无误后才 `git pull --rebase && git commit && git push`。
@@ -199,7 +200,7 @@ grep -r "linxuan\|/Users/\|<用户公司花名>" reports/ | head
 
 - 所有公开报告**只用公开信息**（财报、官方披露、券商研报、知名第三方机构）
 - 不用任何**用户个人信息**（公司花名、内部 IM、未公开持仓信息）
-- 推送前必须用 grep 扫描 `linxuan` / `/Users/` / 用户公司花名 等隐私字段（参见 `~/.claude/projects/-Users-linxuan/memory/feedback_privacy_upload.md`）
+- 推送前必须用 grep 扫描 本机用户名 / `/Users/` / 真实姓名 等隐私字段
 - 公开署名按用户多层身份策略，不混用
 
 ---

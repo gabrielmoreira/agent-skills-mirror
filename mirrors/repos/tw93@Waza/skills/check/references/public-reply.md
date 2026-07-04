@@ -8,7 +8,8 @@ Reusable by both Triage Mode and Ship / Release Follow-through. Default to this 
 4. One or two short paragraphs: factual reason, what shipped or what is blocked, no ceremony.
 5. Name the exact boundary: already released, fixed on `main` but unreleased, available in nightly/beta/preview, next release, not planned, duplicate, or still needs evidence. Do not write "shipped", "released", or "verified" unless that state was checked in the current turn.
 6. Always give a **next step tied to releases or verification**: next App Store or GitHub release, nightly upgrade command, cache path to clear once, or exactly what info is still needed.
-7. Prefer **editing** an existing maintainer comment (`PATCH /repos/{owner}/{repo}/issues/comments/{comment_id}`) when updating wording; avoid delete plus repost unless the old text must disappear from history.
+7. For diagnostic bundles, logs, crash dumps, screenshots, or local-state archives, do not ask reporters to paste or attach sensitive material publicly. Ask for the minimum public facts, then use the project's private support channel only when public project context provides one.
+8. Prefer **editing** an existing maintainer comment (`PATCH /repos/{owner}/{repo}/issues/comments/{comment_id}`) when updating wording; avoid delete plus repost unless the old text must disappear from history.
 
 ## When closing
 

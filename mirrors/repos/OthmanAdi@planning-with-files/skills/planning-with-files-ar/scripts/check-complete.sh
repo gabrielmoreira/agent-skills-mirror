@@ -32,6 +32,11 @@ fi
 : "${PENDING:=0}"
 
 # الإبلاغ عن الحالة (ينهي دائمًا برمز خروج 0 — المهام غير المكتملة حالة طبيعية)
+# issue #191: TOTAL=0 -> not phase-structured, stay silent
+if [ "$TOTAL" -eq 0 ]; then
+    exit 0
+fi
+
 if [ "$COMPLETE" -eq "$TOTAL" ] && [ "$TOTAL" -gt 0 ]; then
     echo "[planning-with-files-ar] اكتملت جميع المراحل ($COMPLETE/$TOTAL). إذا كان لدى المستخدم عمل إضافي، أضف مراحل في task_plan.md قبل البدء."
 else

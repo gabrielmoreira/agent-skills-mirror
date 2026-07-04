@@ -32,6 +32,11 @@ fi
 : "${PENDING:=0}"
 
 # Status melden (immer mit Exit-Code 0 beenden — unvollständige Aufgaben sind normaler Zustand)
+# issue #191: TOTAL=0 -> not phase-structured, stay silent
+if [ "$TOTAL" -eq 0 ]; then
+    exit 0
+fi
+
 if [ "$COMPLETE" -eq "$TOTAL" ] && [ "$TOTAL" -gt 0 ]; then
     echo "[planning-with-files-de] Alle Phasen abgeschlossen ($COMPLETE/$TOTAL). Wenn der Benutzer zusätzliche Arbeit hat, neue Phasen in task_plan.md hinzufügen, bevor du beginnst."
 else

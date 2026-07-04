@@ -2,15 +2,15 @@
 
 本文记录 Kun 桌面应用现在应该如何围绕一个专门服务 GUI 的
 Kun 改造。结论先说清楚：GUI 只保留一个 agent，唯一 ID 是
-`kun`；Code、Write、连接手机都通过同一条 `kun serve`
-HTTP/SSE 边界工作；历史运行时、绘画/设计类入口、运行时诊断面板、
+`kun`；Code、Design、Write、连接手机都通过同一条 `kun serve`
+HTTP/SSE 边界工作；历史运行时、旧绘画/设计 starter、运行时诊断面板、
 agent 切换都不再是产品表面。
 
 ## 目标边界
 
 ```text
 Renderer (React + Zustand)
-  Code / Write / Connect phone UI
+  Code / Design / Write / Connect phone UI
         |
         | window.kunGui.runtimeRequest(path, method, body)
         | window.kunGui.startSse(threadId, sinceSeq)
@@ -112,8 +112,8 @@ Renderer 只应展示 Kun。需要删除或保持删除的 UI 面包括：
 - 设置页 provider selector：Settings -> Agents 直接展示 Kun 配置，
   包含 binary path、port、autoStart、API key、base URL、runtime token、
   data dir、model、approval policy、sandbox mode、insecure。
-- 绘画/设计 starter：GUI 首页不再放设计/绘画入口，只保留 Code、Write、
-  连接手机相关核心流。
+- 旧绘画/设计 starter：不恢复与当前 Design 模式并行的旧入口。核心工作区入口是
+  Code、Design、Write，连接手机和自动化仍走各自入口。
 
 ## Main / Preload 要拆的东西
 
@@ -146,7 +146,7 @@ Renderer 只应展示 Kun。需要删除或保持删除的 UI 面包括：
       "autoStart": true,
       "apiKey": "",
       "baseUrl": "https://api.deepseek.com/beta",
-      "runtimeToken": "",
+      "runtimeToken": "<generated-local-token>",
       "dataDir": "~/.kun/data",
       "model": "deepseek-v4-pro",
       "approvalPolicy": "auto",
@@ -167,11 +167,14 @@ Renderer 只应展示 Kun。需要删除或保持删除的 UI 面包括：
 - 连接手机（内部旧名 Claw）的历史 `agentThreadIds` 只折叠成
   `agentThreadIds.kun`，不保留 per-agent map。
 
-## Code / Write / 连接手机如何走 Kun
+## Code / Design / Write / 连接手机如何走 Kun
 
 - Code：`KunRuntimeProvider` 负责 list/create thread、send turn、
   steer、interrupt、compact、approval、SSE 映射。Chat UI 不知道旧
   provider。
+- Design：设计工作区创建/复用 Kun thread，设计稿、原型和设计流程图落在
+  `.kun-design/`，通过画布预览和版本记录迭代；确认后的设计可以发布
+  `DESIGN_SYSTEM.md`，再打开新的 Code thread 执行实现。
 - Write：写作助手和 inline completion 读取同一份 Kun API key /
   base URL 配置。Write thread registry 只把写作线程识别为 Kun
   thread，不再区分旧运行时会话。
@@ -219,9 +222,9 @@ Renderer 只应展示 Kun。需要删除或保持删除的 UI 面包括：
 - `ConnectionStatusBar`
 - `RuntimeDiagnosticsDialog`
 - `RuntimeInsightsPanel`
-- 设计/绘画 starter card
+- 旧设计/绘画 starter card（独立于 Design 模式的入口）
 
-## 设计模式约束
+## 架构设计约束
 
 Kun 包按 ports & adapters 组织：
 
@@ -252,11 +255,13 @@ npm run build
 
 1. 打开 Kun 桌面应用。
 2. Code 新建会话，能创建 thread、发送消息、流式返回、审批/中断可用。
-3. Write 打开写作空间，inline completion 和选中文本助手能用同一个 API key。
-4. 连接手机能保存设置、运行手动 task、把 thread id 写回 Kun mapping。
-5. Settings -> Agents 只看得到 Kun，没有 provider switch、runtime
+3. Design 打开画布，能创建或迭代设计稿、预览/导出原型，并把设计交给新的
+   Code thread 实现。
+4. Write 打开写作空间，inline completion 和选中文本助手能用同一个 API key。
+5. 连接手机能保存设置、运行手动 task、把 thread id 写回 Kun mapping。
+6. Settings -> Agents 只看得到 Kun，没有 provider switch、runtime
    diagnostics、历史 provider 配置块。
-6. `GET /v1/usage?group_by=thread` 有历史 usage 时，GUI 首页/底部不显示
+7. `GET /v1/usage?group_by=thread` 有历史 usage 时，GUI 首页/底部不显示
    “暂无用量”，而显示 token、回合、缓存命中等指标。
-7. 线程搜索、归档视图、fork、resume session、request_user_input 回答/取消
+8. 线程搜索、归档视图、fork、resume session、request_user_input 回答/取消
    都能通过 Kun HTTP 路径完成。

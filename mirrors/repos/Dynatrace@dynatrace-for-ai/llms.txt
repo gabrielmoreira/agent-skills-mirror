@@ -51,10 +51,20 @@ Observability:
 - dt-obs-predictive-analytics: Time series forecasting, capacity saturation, trend and anomaly detection.
 - dt-alerting: Alerting lifecycle — anomaly detectors, alert events in Grail, problem grouping, workflow notifications.
 
+Security:
+- dt-sec-insights: Query security.events — Runtime Vulnerability Analytics, Runtime Application Protection, Automated Detections (MITRE ATT&CK), Security Posture Management (KSPM/CSPM/VSPM).
+
+Mobile Instrumentation:
+- dt-obs-android: Instrument Android (Kotlin/Java) with the Dynatrace Mobile Agent via Gradle plugin.
+- dt-obs-flutter: Integrate the Dynatrace Flutter Plugin — dependency setup, SDK bootstrap, navigation tracking.
+- dt-obs-ios-sdk: Set up the Dynatrace iOS SDK via Swift Package Manager — Dynatrace.plist, privacy opt-in, Xcode verification.
+- dt-obs-react-native: Integrate the Dynatrace React Native Plugin for bare RN and Expo — dynatrace.config.js, Babel registration, navigation tracking.
+
 Dynatrace Apps:
 - dt-app-dashboards: Dashboard JSON, tiles, layouts, DQL queries, variables.
 - dt-app-notebooks: Notebook JSON, sections, analytics workflows.
 - dt-js-runtime: Server-side JavaScript runtime — function contract, runtime limits, Web APIs, Node.js modules, @dynatrace-sdk/* catalog.
+- dt-platform-costs: Query dt.system.events for DPS consumption, cost-normalized spend ranking, chargeback/showback, cost drivers, entity-level drill-down.
 
 Migration:
 - dt-migration: Migrate classic entities to Smartscape.

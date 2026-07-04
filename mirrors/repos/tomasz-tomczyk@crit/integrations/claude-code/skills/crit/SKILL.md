@@ -1,6 +1,6 @@
 ---
 name: crit
-description: "Review code changes, a plan, a live page (running dev server), or a local HTML file with crit inline comments"
+description: "Review code changes, a plan, a live page (running dev server), or a local HTML file with crit inline comments. Use when asked to review code, a plan, a diff, a running web app, or when you want structured human feedback on your work."
 allowed-tools: Bash(crit:*), Bash(command ls:*), Read, Edit, Glob
 argument-hint: "[file|url]"
 ---

@@ -39,6 +39,10 @@ validation tools. Keep compatibility with both Claude Code and Codex users.
 
 ## Research Quality Rules
 
+- Before starting any research, run the `date` command to confirm today's
+  date. Treat that date as the baseline for "latest" data (prices, market cap,
+  most recent filings), and state the data cutoff date in the report header.
+  Never assume the current date from training data.
 - Financial data must come from at least two independent sources when the skill
   requires verification.
 - Use exact arithmetic tools for market cap, valuation, cross-source checks, and

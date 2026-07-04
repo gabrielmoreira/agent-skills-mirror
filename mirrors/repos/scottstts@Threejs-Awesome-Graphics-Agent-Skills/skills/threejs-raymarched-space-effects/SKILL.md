@@ -26,6 +26,12 @@ Read the
 for the inverse-square steering loop, thin disk density, front-to-back
 accumulation, deterministic star environment, and integrator diagnostics.
 
+Read the
+[Schwarzschild geodesic black-hole effect](examples/schwarzschild-geodesic-black-hole/geodesic-black-hole-effect.js)
+for RK2 null-geodesic integration, interpolated equatorial disk crossings,
+Doppler/redshift disk emission, lensed procedural deep field, and HDR bloom
+composition.
+
 ## Constraints
 
 - Do not call a UV swirl “gravitational lensing.”

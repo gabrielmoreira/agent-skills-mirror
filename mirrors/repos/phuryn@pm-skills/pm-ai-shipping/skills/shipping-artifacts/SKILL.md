@@ -9,7 +9,7 @@ description: "The durable documentation set that makes an AI-built (vibe-coded) 
 
 AI agents write code fast, but they leave no durable record of *intent* — what the system is supposed to do, who is allowed to do what, where the secrets live, which rules are actually verified. Without that record, no human (and no auditing agent) can tell whether the code is safe to ship. This skill defines the small set of documents that restore reviewability.
 
-These docs live in `/documentation/` and are written for two readers: a human reviewer and the next AI coding agent. They are the **intended-state** half of every later audit — a security or performance review is only as good as the intent it can compare the code against.
+These docs live in `documentation/` at the repo root and are written for two readers: a human reviewer and the next AI coding agent. They are the **intended-state** half of every later audit — a security or performance review is only as good as the intent it can compare the code against.
 
 ## How the set is organized
 

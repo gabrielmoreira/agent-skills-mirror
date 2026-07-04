@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tech-leads-club/agent-skills` — 26 default patterns, 0 followed patterns, 90 file(s) materialized.
+Mirror of `tech-leads-club/agent-skills` — 26 default patterns, 0 followed patterns, 92 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tech-leads-club/agent-skills` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 90 |
+| Files         | 92 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -133,22 +133,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 72 | ✓ | [`packages/skills-catalog/skills/(quality)/react-best-practices/AGENTS.md`](packages/skills-catalog/skills/(quality)/react-best-practices/AGENTS.md) |
 | 73 | ✓ | [`packages/skills-catalog/skills/(quality)/react-best-practices/SKILL.md`](packages/skills-catalog/skills/(quality)/react-best-practices/SKILL.md) |
 | 74 | ✓ | [`packages/skills-catalog/skills/(quality)/seo/SKILL.md`](packages/skills-catalog/skills/(quality)/seo/SKILL.md) |
-| 75 | ✓ | [`packages/skills-catalog/skills/(quality)/web-accessibility/SKILL.md`](packages/skills-catalog/skills/(quality)/web-accessibility/SKILL.md) |
-| 76 | ✓ | [`packages/skills-catalog/skills/(quality)/web-best-practices/SKILL.md`](packages/skills-catalog/skills/(quality)/web-best-practices/SKILL.md) |
-| 77 | ✓ | [`packages/skills-catalog/skills/(quality)/web-quality-audit/SKILL.md`](packages/skills-catalog/skills/(quality)/web-quality-audit/SKILL.md) |
-| 78 | ✓ | [`packages/skills-catalog/skills/(security)/security-best-practices/SKILL.md`](packages/skills-catalog/skills/(security)/security-best-practices/SKILL.md) |
-| 79 | ✓ | [`packages/skills-catalog/skills/(security)/security-ownership-map/SKILL.md`](packages/skills-catalog/skills/(security)/security-ownership-map/SKILL.md) |
-| 80 | ✓ | [`packages/skills-catalog/skills/(security)/security-threat-model/SKILL.md`](packages/skills-catalog/skills/(security)/security-threat-model/SKILL.md) |
-| 81 | ✓ | [`packages/skills-catalog/skills/(tooling)/chrome-devtools/SKILL.md`](packages/skills-catalog/skills/(tooling)/chrome-devtools/SKILL.md) |
-| 82 | ✓ | [`packages/skills-catalog/skills/(tooling)/excalidraw-studio/SKILL.md`](packages/skills-catalog/skills/(tooling)/excalidraw-studio/SKILL.md) |
-| 83 | ✓ | [`packages/skills-catalog/skills/(tooling)/gh-fix-ci/SKILL.md`](packages/skills-catalog/skills/(tooling)/gh-fix-ci/SKILL.md) |
-| 84 | ✓ | [`packages/skills-catalog/skills/(tooling)/mermaid-studio/SKILL.md`](packages/skills-catalog/skills/(tooling)/mermaid-studio/SKILL.md) |
-| 85 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-ci-monitor/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-ci-monitor/SKILL.md) |
-| 86 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-generate/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-generate/SKILL.md) |
-| 87 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-run-tasks/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-run-tasks/SKILL.md) |
-| 88 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-workspace/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-workspace/SKILL.md) |
-| 89 | ✓ | [`packages/skills-catalog/skills/(web-automation)/playwright-skill/API_REFERENCE.md`](packages/skills-catalog/skills/(web-automation)/playwright-skill/API_REFERENCE.md) |
-| 90 | ✓ | [`packages/skills-catalog/skills/(web-automation)/playwright-skill/SKILL.md`](packages/skills-catalog/skills/(web-automation)/playwright-skill/SKILL.md) |
+| 75 | ✓ | [`packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/SKILL.md`](packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/SKILL.md) |
+| 76 | ✓ | [`packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/templates/llms.txt`](packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/templates/llms.txt) |
+| 77 | ✓ | [`packages/skills-catalog/skills/(quality)/web-accessibility/SKILL.md`](packages/skills-catalog/skills/(quality)/web-accessibility/SKILL.md) |
+| 78 | ✓ | [`packages/skills-catalog/skills/(quality)/web-best-practices/SKILL.md`](packages/skills-catalog/skills/(quality)/web-best-practices/SKILL.md) |
+| 79 | ✓ | [`packages/skills-catalog/skills/(quality)/web-quality-audit/SKILL.md`](packages/skills-catalog/skills/(quality)/web-quality-audit/SKILL.md) |
+| 80 | ✓ | [`packages/skills-catalog/skills/(security)/security-best-practices/SKILL.md`](packages/skills-catalog/skills/(security)/security-best-practices/SKILL.md) |
+| 81 | ✓ | [`packages/skills-catalog/skills/(security)/security-ownership-map/SKILL.md`](packages/skills-catalog/skills/(security)/security-ownership-map/SKILL.md) |
+| 82 | ✓ | [`packages/skills-catalog/skills/(security)/security-threat-model/SKILL.md`](packages/skills-catalog/skills/(security)/security-threat-model/SKILL.md) |
+| 83 | ✓ | [`packages/skills-catalog/skills/(tooling)/chrome-devtools/SKILL.md`](packages/skills-catalog/skills/(tooling)/chrome-devtools/SKILL.md) |
+| 84 | ✓ | [`packages/skills-catalog/skills/(tooling)/excalidraw-studio/SKILL.md`](packages/skills-catalog/skills/(tooling)/excalidraw-studio/SKILL.md) |
+| 85 | ✓ | [`packages/skills-catalog/skills/(tooling)/gh-fix-ci/SKILL.md`](packages/skills-catalog/skills/(tooling)/gh-fix-ci/SKILL.md) |
+| 86 | ✓ | [`packages/skills-catalog/skills/(tooling)/mermaid-studio/SKILL.md`](packages/skills-catalog/skills/(tooling)/mermaid-studio/SKILL.md) |
+| 87 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-ci-monitor/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-ci-monitor/SKILL.md) |
+| 88 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-generate/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-generate/SKILL.md) |
+| 89 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-run-tasks/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-run-tasks/SKILL.md) |
+| 90 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-workspace/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-workspace/SKILL.md) |
+| 91 | ✓ | [`packages/skills-catalog/skills/(web-automation)/playwright-skill/API_REFERENCE.md`](packages/skills-catalog/skills/(web-automation)/playwright-skill/API_REFERENCE.md) |
+| 92 | ✓ | [`packages/skills-catalog/skills/(web-automation)/playwright-skill/SKILL.md`](packages/skills-catalog/skills/(web-automation)/playwright-skill/SKILL.md) |
 
 ---
 

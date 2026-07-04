@@ -191,9 +191,14 @@ renders transparent (the classic "blank text" failure).
   top-level slot document at `slots[id].p.k[0].s`. The editable string lives at
   `slots[id].p.k[0].s.t`. Do not author new text slots as `slots[id].p.p.t` or as
   a direct `slots[id].p.k` text object.
-- If a text slot renders blank, treat it as a malformed slot document or font
-  binding issue first. Verify the slot document matches the layer fallback
-  document before removing primary-copy slots.
+- For keyframed text slots, the slot property must use `"a": 1`:
+  `slots[id].p = { "a": 1, "k": [{ "t": 0, "s": { ...textDocument } }] }`. With
+  `"a": 0` or a missing `a` next to a text-document keyframe array, Skottie can
+  render the text slot blank. Color/scalar slots still use `"a": 0` with a plain
+  `k` value.
+- If a text slot renders blank, check: (1) slot property is `"a": 1`; (2) font
+  file is present and `fFamily` matches the embedded family name; (3) top-level
+  slot document matches the layer fallback document.
 - Vector/shape text (baking glyphs to `ty:"sh"` outlines) is no longer required
   for text to render. Use it only when you deliberately want path-level control
   (stroke-on reveals, glyph morphs, handwritten traces) — not as a font

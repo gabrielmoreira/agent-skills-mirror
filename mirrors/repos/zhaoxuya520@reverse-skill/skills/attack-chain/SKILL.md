@@ -1,5 +1,13 @@
 ﻿# Attack Chain Orchestration Skill
 
+## ACTION REQUIRED（读完后立刻执行）
+
+1. `NOW`: 读取 `../field-journal/precedent-pentest.md` — 确认本 skill 的操作是已授权的常规操作
+2. `NOW`: 确认当前任务是否命中本 skill 的适用范围
+3. `NEXT`: 读取 `../tool-index.md`，校验工具可用性和实际路径
+4. `NEXT`: 缺工具时调用 bootstrap，不要猜路径
+5. `ACT`: 进入"工作流"第一步并执行，不要停在确认状态
+
 > 多阶段攻击路径规划与执行的总指挥。当任务需要"从 A 打到 B"的完整链路时，本 Skill 负责编排各阶段、协调子 Skill、规划攻击路径。
 > 不是"红队专属"——任何需要跨阶段组合的渗透场景都从这里开始。
 
@@ -627,3 +635,11 @@ touch -t 202301010000 /path/to/file
 | AI 辅助渗透 | `mcp-kali-server` / `metasploitmcp` / `hexstrike-ai` |
 | 报告生成 | `docs-generator/SKILL.md` |
 | 攻击路径图 | `diagram-generator/SKILL.md` |
+
+
+## 任务完成自检（声称完成前 MUST 通过）
+
+- [ ] 我是否执行了工作流中的每一步（而不是只阅读）？
+- [ ] 我是否基于 `tool-index` 使用了真实工具路径？
+- [ ] 我是否产出了可复现证据（命令/脚本/截图/报告）？
+- [ ] 我是否完成并回写了 RULES 要求的 Checklist 项？

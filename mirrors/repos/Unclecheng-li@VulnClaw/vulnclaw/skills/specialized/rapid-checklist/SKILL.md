@@ -68,5 +68,4 @@ description: 渗透速查与Payload — 快速Payload家族、绕过提醒、验
 ## 参考文档
 
 - `references/08-rapid-checklists-and-payloads.md` — 速查与 Payload 整合参考
-- `references/payloads.md` — Payload 详细集合
 - `references/testing-methodology.md` — 测试方法论

@@ -32,6 +32,11 @@ fi
 : "${PENDING:=0}"
 
 # 回報狀態（始終以退出碼 0 結束 — 未完成的任務是正常狀態）
+# issue #191: TOTAL=0 -> not phase-structured, stay silent
+if [ "$TOTAL" -eq 0 ]; then
+    exit 0
+fi
+
 if [ "$COMPLETE" -eq "$TOTAL" ] && [ "$TOTAL" -gt 0 ]; then
     echo "[planning-with-files] 所有階段已完成（$COMPLETE/$TOTAL）。如果使用者有額外工作，請在開始前於 task_plan.md 中新增階段。"
 else

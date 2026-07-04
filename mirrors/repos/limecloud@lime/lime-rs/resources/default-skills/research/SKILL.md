@@ -1,7 +1,7 @@
 ---
 name: research
 description: 联网信息检索与趋势调研（优先产出可引用结论，而非原始片段堆砌）。
-allowed-tools: search_query
+allowed-tools: WebSearch, WebFetch
 metadata:
   lime_argument_hint: 输入调研主题、目标平台、时间范围、输出深度与关注维度。
   lime_when_to_use: 用户需要事实核验、最新信息补充、行业/平台趋势调研时使用。

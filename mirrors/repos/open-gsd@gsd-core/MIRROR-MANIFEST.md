@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `open-gsd/gsd-core` — 26 default patterns, 0 followed patterns, 120 file(s) materialized.
+Mirror of `open-gsd/gsd-core` — 26 default patterns, 0 followed patterns, 121 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `open-gsd/gsd-core` — 26 default patterns, 0 followed patterns, 120 
 | Ref           | `next` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 120 |
+| Files         | 121 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -144,41 +144,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 83 | ✓ | [`skills/gsd-mvp-phase/SKILL.md`](skills/gsd-mvp-phase/SKILL.md) |
 | 84 | ✓ | [`skills/gsd-new-milestone/SKILL.md`](skills/gsd-new-milestone/SKILL.md) |
 | 85 | ✓ | [`skills/gsd-new-project/SKILL.md`](skills/gsd-new-project/SKILL.md) |
-| 86 | ✓ | [`skills/gsd-ns-context/SKILL.md`](skills/gsd-ns-context/SKILL.md) |
-| 87 | ✓ | [`skills/gsd-ns-ideate/SKILL.md`](skills/gsd-ns-ideate/SKILL.md) |
-| 88 | ✓ | [`skills/gsd-ns-manage/SKILL.md`](skills/gsd-ns-manage/SKILL.md) |
-| 89 | ✓ | [`skills/gsd-ns-project/SKILL.md`](skills/gsd-ns-project/SKILL.md) |
-| 90 | ✓ | [`skills/gsd-ns-review/SKILL.md`](skills/gsd-ns-review/SKILL.md) |
-| 91 | ✓ | [`skills/gsd-ns-workflow/SKILL.md`](skills/gsd-ns-workflow/SKILL.md) |
-| 92 | ✓ | [`skills/gsd-pause-work/SKILL.md`](skills/gsd-pause-work/SKILL.md) |
-| 93 | ✓ | [`skills/gsd-phase/SKILL.md`](skills/gsd-phase/SKILL.md) |
-| 94 | ✓ | [`skills/gsd-plan-phase/SKILL.md`](skills/gsd-plan-phase/SKILL.md) |
-| 95 | ✓ | [`skills/gsd-plan-review-convergence/SKILL.md`](skills/gsd-plan-review-convergence/SKILL.md) |
-| 96 | ✓ | [`skills/gsd-pr-branch/SKILL.md`](skills/gsd-pr-branch/SKILL.md) |
-| 97 | ✓ | [`skills/gsd-profile-user/SKILL.md`](skills/gsd-profile-user/SKILL.md) |
-| 98 | ✓ | [`skills/gsd-progress/SKILL.md`](skills/gsd-progress/SKILL.md) |
-| 99 | ✓ | [`skills/gsd-quick/SKILL.md`](skills/gsd-quick/SKILL.md) |
-| 100 | ✓ | [`skills/gsd-resume-work/SKILL.md`](skills/gsd-resume-work/SKILL.md) |
-| 101 | ✓ | [`skills/gsd-review-backlog/SKILL.md`](skills/gsd-review-backlog/SKILL.md) |
-| 102 | ✓ | [`skills/gsd-review/SKILL.md`](skills/gsd-review/SKILL.md) |
-| 103 | ✓ | [`skills/gsd-secure-phase/SKILL.md`](skills/gsd-secure-phase/SKILL.md) |
-| 104 | ✓ | [`skills/gsd-settings/SKILL.md`](skills/gsd-settings/SKILL.md) |
-| 105 | ✓ | [`skills/gsd-ship/SKILL.md`](skills/gsd-ship/SKILL.md) |
-| 106 | ✓ | [`skills/gsd-sketch/SKILL.md`](skills/gsd-sketch/SKILL.md) |
-| 107 | ✓ | [`skills/gsd-spec-phase/SKILL.md`](skills/gsd-spec-phase/SKILL.md) |
-| 108 | ✓ | [`skills/gsd-spike/SKILL.md`](skills/gsd-spike/SKILL.md) |
-| 109 | ✓ | [`skills/gsd-stats/SKILL.md`](skills/gsd-stats/SKILL.md) |
-| 110 | ✓ | [`skills/gsd-surface/SKILL.md`](skills/gsd-surface/SKILL.md) |
-| 111 | ✓ | [`skills/gsd-thread/SKILL.md`](skills/gsd-thread/SKILL.md) |
-| 112 | ✓ | [`skills/gsd-ui-phase/SKILL.md`](skills/gsd-ui-phase/SKILL.md) |
-| 113 | ✓ | [`skills/gsd-ui-review/SKILL.md`](skills/gsd-ui-review/SKILL.md) |
-| 114 | ✓ | [`skills/gsd-ultraplan-phase/SKILL.md`](skills/gsd-ultraplan-phase/SKILL.md) |
-| 115 | ✓ | [`skills/gsd-undo/SKILL.md`](skills/gsd-undo/SKILL.md) |
-| 116 | ✓ | [`skills/gsd-update/SKILL.md`](skills/gsd-update/SKILL.md) |
-| 117 | ✓ | [`skills/gsd-validate-phase/SKILL.md`](skills/gsd-validate-phase/SKILL.md) |
-| 118 | ✓ | [`skills/gsd-verify-work/SKILL.md`](skills/gsd-verify-work/SKILL.md) |
-| 119 | ✓ | [`skills/gsd-workspace/SKILL.md`](skills/gsd-workspace/SKILL.md) |
-| 120 | ✓ | [`skills/gsd-workstreams/SKILL.md`](skills/gsd-workstreams/SKILL.md) |
+| 86 | ✓ | [`skills/gsd-next/SKILL.md`](skills/gsd-next/SKILL.md) |
+| 87 | ✓ | [`skills/gsd-ns-context/SKILL.md`](skills/gsd-ns-context/SKILL.md) |
+| 88 | ✓ | [`skills/gsd-ns-ideate/SKILL.md`](skills/gsd-ns-ideate/SKILL.md) |
+| 89 | ✓ | [`skills/gsd-ns-manage/SKILL.md`](skills/gsd-ns-manage/SKILL.md) |
+| 90 | ✓ | [`skills/gsd-ns-project/SKILL.md`](skills/gsd-ns-project/SKILL.md) |
+| 91 | ✓ | [`skills/gsd-ns-review/SKILL.md`](skills/gsd-ns-review/SKILL.md) |
+| 92 | ✓ | [`skills/gsd-ns-workflow/SKILL.md`](skills/gsd-ns-workflow/SKILL.md) |
+| 93 | ✓ | [`skills/gsd-pause-work/SKILL.md`](skills/gsd-pause-work/SKILL.md) |
+| 94 | ✓ | [`skills/gsd-phase/SKILL.md`](skills/gsd-phase/SKILL.md) |
+| 95 | ✓ | [`skills/gsd-plan-phase/SKILL.md`](skills/gsd-plan-phase/SKILL.md) |
+| 96 | ✓ | [`skills/gsd-plan-review-convergence/SKILL.md`](skills/gsd-plan-review-convergence/SKILL.md) |
+| 97 | ✓ | [`skills/gsd-pr-branch/SKILL.md`](skills/gsd-pr-branch/SKILL.md) |
+| 98 | ✓ | [`skills/gsd-profile-user/SKILL.md`](skills/gsd-profile-user/SKILL.md) |
+| 99 | ✓ | [`skills/gsd-progress/SKILL.md`](skills/gsd-progress/SKILL.md) |
+| 100 | ✓ | [`skills/gsd-quick/SKILL.md`](skills/gsd-quick/SKILL.md) |
+| 101 | ✓ | [`skills/gsd-resume-work/SKILL.md`](skills/gsd-resume-work/SKILL.md) |
+| 102 | ✓ | [`skills/gsd-review-backlog/SKILL.md`](skills/gsd-review-backlog/SKILL.md) |
+| 103 | ✓ | [`skills/gsd-review/SKILL.md`](skills/gsd-review/SKILL.md) |
+| 104 | ✓ | [`skills/gsd-secure-phase/SKILL.md`](skills/gsd-secure-phase/SKILL.md) |
+| 105 | ✓ | [`skills/gsd-settings/SKILL.md`](skills/gsd-settings/SKILL.md) |
+| 106 | ✓ | [`skills/gsd-ship/SKILL.md`](skills/gsd-ship/SKILL.md) |
+| 107 | ✓ | [`skills/gsd-sketch/SKILL.md`](skills/gsd-sketch/SKILL.md) |
+| 108 | ✓ | [`skills/gsd-spec-phase/SKILL.md`](skills/gsd-spec-phase/SKILL.md) |
+| 109 | ✓ | [`skills/gsd-spike/SKILL.md`](skills/gsd-spike/SKILL.md) |
+| 110 | ✓ | [`skills/gsd-stats/SKILL.md`](skills/gsd-stats/SKILL.md) |
+| 111 | ✓ | [`skills/gsd-surface/SKILL.md`](skills/gsd-surface/SKILL.md) |
+| 112 | ✓ | [`skills/gsd-thread/SKILL.md`](skills/gsd-thread/SKILL.md) |
+| 113 | ✓ | [`skills/gsd-ui-phase/SKILL.md`](skills/gsd-ui-phase/SKILL.md) |
+| 114 | ✓ | [`skills/gsd-ui-review/SKILL.md`](skills/gsd-ui-review/SKILL.md) |
+| 115 | ✓ | [`skills/gsd-ultraplan-phase/SKILL.md`](skills/gsd-ultraplan-phase/SKILL.md) |
+| 116 | ✓ | [`skills/gsd-undo/SKILL.md`](skills/gsd-undo/SKILL.md) |
+| 117 | ✓ | [`skills/gsd-update/SKILL.md`](skills/gsd-update/SKILL.md) |
+| 118 | ✓ | [`skills/gsd-validate-phase/SKILL.md`](skills/gsd-validate-phase/SKILL.md) |
+| 119 | ✓ | [`skills/gsd-verify-work/SKILL.md`](skills/gsd-verify-work/SKILL.md) |
+| 120 | ✓ | [`skills/gsd-workspace/SKILL.md`](skills/gsd-workspace/SKILL.md) |
+| 121 | ✓ | [`skills/gsd-workstreams/SKILL.md`](skills/gsd-workstreams/SKILL.md) |
 
 ---
 

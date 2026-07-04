@@ -1,7 +1,7 @@
 ---
 name: offer-claims-registry
 description: 'Use when the user asks to "register this claim", "log our current offers", or "where is the proof for this figure"; curates the canonical claims ledger and live-offers table under memory/claims/ — exact claim text, evidence provenance, approved wording, claim-level disclaimers, and offer terms — and resolves "[needs source]" flags from ad and content drafts. Not for scoring O1/O2 vetoes or issuing SHIP/FIX/BLOCK verdicts — use ad-account-auditor; not for gating creator content — use content-reviewer. 广告声明台账/优惠信息登记/证据溯源'
-version: "11.0.0"
+version: "12.1.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
@@ -9,7 +9,7 @@ when_to_use: "Use when registering, updating, or expiring marketing claims and o
 argument-hint: "<claim text, offer, or 'sweep candidates'>"
 metadata:
   author: aaron-he-zhu
-  version: "11.0.0"
+  version: "12.1.0"
   discipline: protocol
   phase: protocol
   geo-relevance: "low"
@@ -89,4 +89,4 @@ Registry files carry ordinary WARM frontmatter — never `class: auditor-output`
 
 ## Next Best Skill
 
-Primary: [ad-account-auditor](../../paid/activate/ad-account-auditor/SKILL.md) — score O1/O2 against the freshly curated ledger (the register-then-judge loop). Verdict-conditional alternates: [ad-creative-builder](../../paid/orchestrate/ad-creative-builder/SKILL.md) when newly approved wording should replace flagged units; [brief-generator](../../plan/brief-generator/SKILL.md) when registered claims feed a creator brief; [content-reviewer](../../activate/content-reviewer/SKILL.md) when registered claims gate creator content already in review. Global visited-set and max-depth termination from [skill-contract.md](../../references/skill-contract.md) applies — if the target was already run this chain, stop and report chain-complete.
+Primary: [ad-account-auditor](../../ad/activate/ad-account-auditor/SKILL.md) — score O1/O2 against the freshly curated ledger (the register-then-judge loop). Verdict-conditional alternates: [ad-creative-builder](../../ad/orchestrate/ad-creative-builder/SKILL.md) when newly approved wording should replace flagged units; [brief-generator](../../influencer/plan/brief-generator/SKILL.md) when registered claims feed a creator brief; [content-reviewer](../../influencer/activate/content-reviewer/SKILL.md) when registered claims gate creator content already in review. Global visited-set and max-depth termination from [skill-contract.md](../../references/skill-contract.md) applies — if the target was already run this chain, stop and report chain-complete.

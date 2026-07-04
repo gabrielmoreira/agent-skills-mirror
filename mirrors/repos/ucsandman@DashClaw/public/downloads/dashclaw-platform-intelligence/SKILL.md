@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:1499ffc8bd988cc4a9f51e32d26fe40f728f8408`
+**Shape snapshot:** `sha1:f46144912ae94cb362ef1d9593ce5355c6874173`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -45,9 +45,9 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ## At a Glance
 
-- **277** active API routes across **68** categories (325 total including archived)
-- **4** required + **185** optional environment variables
-- **101** database tables
+- **279** active API routes across **68** categories (327 total including archived)
+- **4** required + **186** optional environment variables
+- **105** database tables
 
 ## API Surface
 
@@ -377,6 +377,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `GET` `/api/policies/summary`
 - `GET` `/api/policies/templates`
 - `POST` `/api/policies/test`
+- `GET, POST` `/api/policies/tightening`
 
 ### `posture`
 
@@ -528,6 +529,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ### `x402`
 
+- `GET` `/api/x402/budget`
 - `GET, POST` `/api/x402/providers`
 - `GET, PATCH` `/api/x402/providers/[id]`
 - `GET, POST` `/api/x402/providers/[id]/endpoints`
@@ -538,7 +540,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 These must be set — DashClaw will fail to start without them.
 
 - **`DASHCLAW_API_KEY`** - referenced in 81 file(s)
-- **`DATABASE_URL`** - referenced in 104 file(s)
+- **`DATABASE_URL`** - referenced in 106 file(s)
 - **`ENCRYPTION_KEY`** - referenced in 8 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 5 file(s)
 
@@ -656,6 +658,7 @@ These have fallbacks or only activate specific features.
 - `NEXT_PUBLIC_DASHCLAW_MODE` *(undocumented)*
 - `NEXT_PUBLIC_DASHCLAW_VERSION` *(undocumented)*
 - `NEXT_PUBLIC_ENABLE_VERCEL_ANALYTICS` *(undocumented)*
+- `NEXT_PUBLIC_HOSTED_TRIAL_URL` *(undocumented)*
 - `NEXT_PUBLIC_PLUGIN_MANIFEST_VERSION` *(undocumented)*
 - `NEXT_PUBLIC_SDK_NODE_VERSION` *(undocumented)*
 - `NEXT_PUBLIC_SDK_PYTHON_VERSION` *(undocumented)*
@@ -734,7 +737,7 @@ These have fallbacks or only activate specific features.
 
 ## Database Tables
 
-All 101 tables defined in `schema/schema.js` (Drizzle ORM):
+All 105 tables defined in `schema/schema.js` (Drizzle ORM):
 
 - `action_embeddings`
 - `action_records`
@@ -821,6 +824,7 @@ All 101 tables defined in `schema/schema.js` (Drizzle ORM):
 - `shared_docs`
 - `skill_scan_results`
 - `snippets`
+- `tightening_proposal_decisions`
 - `token_budgets`
 - `token_snapshots`
 - `topics`
@@ -837,6 +841,9 @@ All 101 tables defined in `schema/schema.js` (Drizzle ORM):
 - `work_order_types`
 - `work_orders`
 - `workflows`
+- `x402_endpoints`
+- `x402_providers`
+- `x402_purchases`
 
 ## Signal Types
 

@@ -1,7 +1,7 @@
 ---
 name: content_post_with_cover
 description: 生成可直接发布的内容主稿（默认公众号长文风格）并自动生成 1 张头图，最终以 write_file 落盘。
-allowed-tools: social_generate_cover_image, search_query
+allowed-tools: social_generate_cover_image, WebSearch, WebFetch
 metadata:
   lime_argument_hint: 输入主题、平台（如公众号/小红书）、目标受众、语气、字数、转化目标和已知素材。
   lime_when_to_use: 用户需要“内容主稿 + 封面图”一体化输出，且希望直接复制发布。
@@ -29,7 +29,7 @@ metadata:
 
 - 优先吸收并使用用户输入中的上下文（例如 `[生效上下文]`、`[历史内容]`、素材、链接、摘要）。
 - 如果已有上下文足够，直接基于上下文写作，不要忽略用户提供信息。
-- 如果上下文不足且工具可用，优先调用 `search_query` 进行 2-4 次检索，再融合关键信息写作。
+- 如果上下文不足且工具可用，优先调用 `WebSearch` 进行 2-4 次检索，再融合关键信息写作。
 - 检索信息必须“去噪整合”，不要原样堆砌搜索片段。
 - 未检索到可靠信息时，明确“基于现有上下文与通用经验”输出，不得编造具体来源。
 

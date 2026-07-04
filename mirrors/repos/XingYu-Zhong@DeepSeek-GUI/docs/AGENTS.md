@@ -3,9 +3,9 @@
 The Kun desktop app has one live agent runtime: the bundled **Kun** runtime.
 
 Do not add a second live provider, provider switcher, runtime diagnostics panel,
-or legacy CodeWhale/Reasonix process path. Code, Write, and Connect phone all
-enter the same Kun HTTP/SSE boundary. Connect phone still uses the internal
-`claw` name in code for compatibility.
+or legacy CodeWhale/Reasonix process path. Code, Design, Write, and Connect
+phone all enter the same Kun HTTP/SSE boundary. Connect phone still uses the
+internal `claw` name in code for compatibility.
 
 ## Allowed Extension Path
 
@@ -24,7 +24,7 @@ enter the same Kun HTTP/SSE boundary. Connect phone still uses the internal
 - No `RuntimeDiagnosticsDialog` or runtime self-check UI.
 - No CodeWhale/Reasonix adapter, process manager, RPC bridge, updater, or
   importer.
-- No drawing/design starter card in the core workbench.
+- No legacy drawing/painting starter card outside the current Design mode.
 - No `/usage` or `/runtime` slash command that opens a runtime control panel.
 
 ## Legacy Data Rule
@@ -59,6 +59,8 @@ Manual smoke:
   hit after the stable prefix is warm.
 - Immutable prefix drift and malformed tool-call/tool-result history must be
   caught before a request reaches DeepSeek.
+- Design can open the canvas, create or iterate an artifact, preview/export it,
+  and hand the approved design to a fresh Code thread.
 - Write can open the workspace, request inline completion, and use selected-text
   assistant actions.
 - Connect phone can save settings and run a manual task through a Kun thread.

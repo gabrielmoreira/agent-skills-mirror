@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JuliusBrussee/caveman` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `JuliusBrussee/caveman` — 26 default patterns, 1 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `JuliusBrussee/caveman` — 26 default patterns, 0 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 32 |
+| Followed pats | 1 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `JuliusBrussee/caveman` — 26 default patterns, 0 followed patterns, 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `SECURITY.md`
 
 ## File Index
 
@@ -91,6 +91,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`skills/caveman-stats/SKILL.md`](skills/caveman-stats/SKILL.md) |
 | 31 | ✓ | [`skills/caveman/README.md`](skills/caveman/README.md) |
 | 32 | ✓ | [`skills/caveman/SKILL.md`](skills/caveman/SKILL.md) |
+| 33 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

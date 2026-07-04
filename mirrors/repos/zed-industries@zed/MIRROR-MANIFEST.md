@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zed-industries/zed` — 26 default patterns, 0 followed patterns, 10 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,15 +60,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/gpui-test/SKILL.md`](.agents/skills/gpui-test/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/zed-cherry-pick/SKILL.md`](.agents/skills/zed-cherry-pick/SKILL.md) |
-| 3 | ✓ | [`.factory/skills/brand-writer/SKILL.md`](.factory/skills/brand-writer/SKILL.md) |
-| 4 | ✓ | [`.factory/skills/humanizer/SKILL.md`](.factory/skills/humanizer/SKILL.md) |
-| 5 | ✓ | [`crates/agent_skills/builtin/create-skill/SKILL.md`](crates/agent_skills/builtin/create-skill/SKILL.md) |
-| 6 | ✓ | [`docs/.conventions/brand-voice/SKILL.md`](docs/.conventions/brand-voice/SKILL.md) |
-| 7 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 8 | ✓ | [`docs/src/ai/agent-panel.md`](docs/src/ai/agent-panel.md) |
-| 9 | ✓ | [`docs/src/ai/skills.md`](docs/src/ai/skills.md) |
-| 10 | ✓ | [`docs/src/ai/tool-permissions.md`](docs/src/ai/tool-permissions.md) |
+| 2 | ✓ | [`.agents/skills/lint-creator/SKILL.md`](.agents/skills/lint-creator/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/zed-cherry-pick/SKILL.md`](.agents/skills/zed-cherry-pick/SKILL.md) |
+| 4 | ✓ | [`.factory/skills/brand-writer/SKILL.md`](.factory/skills/brand-writer/SKILL.md) |
+| 5 | ✓ | [`.factory/skills/humanizer/SKILL.md`](.factory/skills/humanizer/SKILL.md) |
+| 6 | ✓ | [`crates/agent_skills/builtin/create-skill/SKILL.md`](crates/agent_skills/builtin/create-skill/SKILL.md) |
+| 7 | ✓ | [`docs/.conventions/brand-voice/SKILL.md`](docs/.conventions/brand-voice/SKILL.md) |
+| 8 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 9 | ✓ | [`docs/src/ai/agent-panel.md`](docs/src/ai/agent-panel.md) |
+| 10 | ✓ | [`docs/src/ai/skills.md`](docs/src/ai/skills.md) |
+| 11 | ✓ | [`docs/src/ai/tool-permissions.md`](docs/src/ai/tool-permissions.md) |
 
 ---
 

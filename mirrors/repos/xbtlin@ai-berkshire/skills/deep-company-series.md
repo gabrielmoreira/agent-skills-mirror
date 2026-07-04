@@ -123,7 +123,7 @@
 
 ```bash
 # 推送前必须本地 grep 一次（按 ai-berkshire 隐私规则）
-grep -r "linxuan\|/Users/\|<用户公司花名>" reports/ | head
+grep -r "<本机用户名>\|/Users/\|<个人身份信息>" reports/ | head
 ```
 
 确认无误后才 `git pull --rebase && git commit && git push`。
@@ -185,7 +185,7 @@ grep -r "linxuan\|/Users/\|<用户公司花名>" reports/ | head
 
 - 所有公开报告**只用公开信息**（财报、官方披露、券商研报、知名第三方机构）
 - 不用任何**用户个人信息**（公司花名、内部 IM、未公开持仓信息）
-- 推送前必须用 grep 扫描 `linxuan` / `/Users/` / 用户公司花名 等隐私字段（参见 `~/.claude/projects/-Users-linxuan/memory/feedback_privacy_upload.md`）
+- 推送前必须用 grep 扫描 本机用户名 / `/Users/` / 真实姓名 等隐私字段
 - 公开署名按用户多层身份策略，不混用
 
 ---

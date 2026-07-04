@@ -1,6 +1,6 @@
 # Auditor Runbook — single source of truth (SSOT)
 
-> **Runbook version**: 2.1 · **Last updated**: 2026-06-29
+> **Runbook version**: 2.2 · **Last updated**: 2026-07-03
 
 This file is the **authoritative, framework-agnostic** procedure for every auditor-class
 skill: §1 Handoff Schema, §2 Critical Fail Cap method, §4 Artifact Gate, §5 User-Facing
@@ -77,10 +77,11 @@ as-is. Cap-related fields do not apply; non-auditors never emit `cap_applied` /
 `raw_overall_score` / `final_overall_score`, and MUST NOT use the `class: auditor-output` marker.
 
 **Auditor-class consumers are the exception**: `content-quality-auditor` (CORE-EEAT),
-`domain-authority-auditor` (CITE), `content-reviewer` (C³ ART), and `ad-account-auditor` (ROAS)
+`domain-authority-auditor` (CITE), `content-reviewer` (C³ ART), `ad-account-auditor` (ROAS), and
+`email-quality-auditor` (SEND)
 DO emit `class: auditor-output` plus the full cap schema for their gated artifacts under
 `memory/audits/<role>/` (`content-reviewer` → `memory/audits/influencer/`, `ad-account-auditor`
-→ `memory/audits/paid/`). content-reviewer maps its C³ ART verdict to
+→ `memory/audits/ad/`, `email-quality-auditor` → `memory/audits/email/`). content-reviewer maps its C³ ART verdict to
 the status enum (Approved→DONE, Minor→DONE_WITH_CONCERNS, Revisions→NEEDS_INPUT, Rejected→BLOCKED);
 a T1/T2 veto forces `status: BLOCKED` per §2.
 
@@ -100,7 +101,8 @@ score at **60/100**. Show raw and capped side by side in the internal report. Se
 - CORE-EEAT: T04, C01, R10 — see [core-eeat-benchmark.md](core-eeat-benchmark.md)
 - CITE: T03, T05, T09 — see [cite-domain-rating.md](cite-domain-rating.md)
 - C³ (influencer): ACE A2/C1/E2, ART T1/T2 — see [c3-benchmark.md](c3-benchmark.md) (the ROI/Campaign scope has no veto). `content-reviewer` is the ART-gate consumer.
-- ROAS (paid ads): R1/R2 (Return — tracking-broken / attribution-double-count), O1/O2 (Offer — claim integrity / platform-policy), A1 (Audience — brand/placement safety) — see [roas-benchmark.md](roas-benchmark.md). `ad-account-auditor` is the consumer; artifacts at `memory/audits/paid/`. (Premature scaling is a guardrail under S, not a veto.)
+- ROAS (paid ads): R1/R2 (Return — tracking-broken / attribution-double-count), O1/O2 (Offer — claim integrity / platform-policy), A1 (Audience — brand/placement safety) — see [roas-benchmark.md](roas-benchmark.md). `ad-account-auditor` is the consumer; artifacts at `memory/audits/ad/`. (Premature scaling is a guardrail under S, not a veto.)
+- SEND (email): S1/S2 (Sender-integrity — authentication broken / non-consented list), N1 (Nurture — unsubscribe broken or absent), D1 (Direct-response — claim integrity) — see [send-benchmark.md](send-benchmark.md). `email-quality-auditor` is the consumer; artifacts at `memory/audits/email/`. (Over-frequency / list fatigue is a guardrail under E, not a veto.)
 
 ### Decision table
 
@@ -252,13 +254,14 @@ highlight reel.
 Auditor-emitted audit files MUST satisfy these invariants for the PostToolUse Artifact Gate hook
 (`hooks/hooks.json`) to validate them:
 
-1. **Location**: under `memory/audits/` — the per-role subdir `memory/audits/content/<YYYY-MM-DD>-<topic>.md` (content-quality-auditor), `memory/audits/domain/<YYYY-MM-DD>-<topic>.md` (domain-authority-auditor), `memory/audits/influencer/<YYYY-MM-DD>-<topic>.md` (content-reviewer), or `memory/audits/paid/<YYYY-MM-DD>-<topic>.md` (ad-account-auditor), or the monthly aggregate `memory/audits/YYYY-MM.md`. The gate validates anything matching `memory/audits/*.md`, subdirectories included.
+1. **Location**: under `memory/audits/` — the per-role subdir `memory/audits/content/<YYYY-MM-DD>-<topic>.md` (content-quality-auditor), `memory/audits/domain/<YYYY-MM-DD>-<topic>.md` (domain-authority-auditor), `memory/audits/influencer/<YYYY-MM-DD>-<topic>.md` (content-reviewer), `memory/audits/ad/<YYYY-MM-DD>-<topic>.md` (ad-account-auditor), or `memory/audits/email/<YYYY-MM-DD>-<topic>.md` (email-quality-auditor), or the monthly aggregate `memory/audits/YYYY-MM.md`. The gate validates anything matching `memory/audits/*.md`, subdirectories included.
 2. **Frontmatter**: include `class: auditor-output` (enforced by §1)
 3. **Scope**: YAML handoff blocks elsewhere (blog posts, README examples, skill docs) are NOT audit
    artifacts — the path + frontmatter combination is the authoritative filter.
 
 ## Changelog
 
+- **2.2** (2026-07-03): admitted **SEND (email)** (§2 list: S1/S2 Sender-integrity, N1 Nurture, D1 Direct-response) as the fifth framework veto-set, consumed by `email-quality-auditor` with gated artifacts at `memory/audits/email/`. Over-frequency / list fatigue is a guardrail under E, not a veto (mirrors ROAS premature-scaling). The golden-math SEND assertion locks the `S=80 E=75 N=70 D=78` fixture across all three goal-weight columns. Cap method, handoff schema, and Artifact Gate are unchanged — SEND uses the shared `min(raw, 60)` single-veto cap and 2+-veto `BLOCKED` rule like the other arithmetic-rollup frameworks (CITE / ROAS). **No rubric numbers change.**
 - **2.1** (2026-06-29): admitted **C³ (influencer)** (§2 list: ACE A2/C1/E2, ART T1/T2) and **ROAS (paid ads)** (§2 list: R1/R2/O1/O2/A1, consumed by `ad-account-auditor`) as the third and fourth framework veto-sets, making the runbook four-framework. **Cap reconciliation**: C³ caps a vetoed scope at its Low-band ceiling **≤59**, while this runbook caps the weighted overall at **`min(raw, 60)` = 60**. These are **band-aligned**: they differ by at most 1 point only at the exact `raw == 60 + single-veto` boundary (C³'s Low band tops at 59 by definition). The runbook's `min(raw, 60)` is authoritative for the gate; fit-scorer / roi-calculator apply that same cap value, while content-reviewer maps a T1/T2 veto to `status: BLOCKED` (no `final_overall_score`) per §2 rather than emitting a numeric cap. The golden-math C³ assertion locks the `raw == 60 + 1-veto` boundary. **No rubric numbers change.** (`content-reviewer` admission as a gated Artifact-Gate consumer is a separate hook change — it is NOT additive; see the unified roadmap Wave 5.)
 - **2.0** (2026-06-10): runbook restored as the real SSOT. Framework-agnostic procedure (§1, §2
   method, §4, §5 format + shared rows, security boundary) lives here and is `Read` at activation via

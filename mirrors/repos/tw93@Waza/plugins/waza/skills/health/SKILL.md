@@ -9,7 +9,7 @@ dispatch_intent: "Codex/Claude/Pi ignoring instructions, agent config audit, hoo
 
 Prefix your first line with 🥷 inline, not as its own paragraph.
 
-**Update check (non-blocking).** Before starting, run `bash scripts/check-update.sh` once; if it prints a line, relay it to the user, then continue. It runs at most once a day, only reads a public version file, sends no data, and fails silently.
+**Update check (non-blocking).** Once per conversation, run `bash <skill-base-dir>/scripts/check-update.sh` with `<skill-base-dir>` replaced by this skill's base directory; if it prints a line, relay it to the user, then continue. If it already ran in this conversation, or the script is missing or errors, skip silently without retrying or mentioning it. It checks at most once a day, only reads a public version file, and sends no data.
 
 Audit the current project's agent setup and AI coding maintainability against this framework:
 `agent config → instruction surfaces → tools/runtime → verifiers → maintainability`
@@ -34,7 +34,7 @@ Two lanes share one report:
 
 ## Durable Context Preflight
 
-See [rules/durable-context.md](../../rules/durable-context.md) for when to read durable context, the read-order budget, and the memory-type mapping.
+See [references/durable-context.md](references/durable-context.md) for when to read durable context, the read-order budget, and the memory-type mapping.
 
 For `/health`, audit expectations are `decision`, `preference`, and `principle` entries; checks for repeated failures are `pattern` and `learning`. Current CLAUDE.md, installed skills, hooks, MCP config, command output, and live probes override memory. Also flag durable memory problems when they affect behavior: oversized injected summaries, stale or contradictory entries, missing project entrypoint references, or private paths copied into public instructions. Keep these as context findings, not code-review findings.
 
@@ -163,10 +163,10 @@ Agent instructions in the wrong layer, missing hooks, oversized descriptions, ve
 
 **Codex/Claude/Pi instruction drift.** Use `AGENT CONFIG SUMMARY` first. Report a Structural finding when `AGENTS.md` and runtime-specific files both contain substantial guidance without delegation, when Codex `config.toml` lacks trust for the current project, when Pi settings or package metadata point at missing skill roots, when project agent instructions are missing, or when runtime-specific instructions contradict the shared project source of truth. Also report when important rules live only in ignored or private local instruction overlays but the tracked/public docs lack them; those overlays are private context, not durable project source of truth. Do not print raw config values. Secrets, tokens, keys, and passwords must appear only as `[REDACTED]`.
 
-Quick check from the project root:
+Quick check from the project root, reusing `$HEALTH_SCRIPT` resolved in Step 1:
 
 ```bash
-bash skills/health/scripts/check-agent-context.sh . summary
+bash "$(dirname "$HEALTH_SCRIPT")/check-agent-context.sh" . summary
 ```
 
 **AI-maintainability gaps.** Use `AI MAINTAINABILITY SUMMARY` in summary mode and `AI MAINTAINABILITY DETAIL` in deep mode. Report `FAIL` when the project has no executable verification command, no agent instruction surface for a non-trivial repo, or broken doc references. Report `WARN` when instructions exist but lack a project map, verification guidance, boundary/non-goal language, when TODO/HACK markers are concentrated, when large source hotspots lack ownership/boundary and verification guidance, or when durable docs contain raw one-off review reports, scorecards, dated line references, or diagnostic dumps instead of stable invariants. Treat missing `docs/`, `specs/`, `.specify/`, `HANDOFF.md`, `CHANGELOG`, issue templates, and PR templates as informational unless project complexity makes them necessary for handoff. The action for stale reports is to extract stable rules into public instructions, rules, references, or verifier scripts, then remove or archive the transient report.
@@ -189,16 +189,16 @@ Layering rule: project-specific commands, app names, artifact names, and release
 
 **Missing stable verifier wrapper.** If the repo exposes multiple verification commands through CI, scripts, or manifests but `Makefile` has no `check`, `test`, or `verify` target, report a Structural `WARN`. This is an AI-maintainability gap because agents need one stable default entrypoint, not because the project is broken.
 
-Quick check from the project root:
+Quick check from the project root, reusing `$HEALTH_SCRIPT` resolved in Step 1:
 
 ```bash
-bash skills/health/scripts/check-maintainability.sh . summary
+bash "$(dirname "$HEALTH_SCRIPT")/check-maintainability.sh" . summary
 ```
 
 For deep audits:
 
 ```bash
-bash skills/health/scripts/check-maintainability.sh . deep
+bash "$(dirname "$HEALTH_SCRIPT")/check-maintainability.sh" . deep
 ```
 
 Keep actions concrete and non-invasive: add or fix the smallest useful instruction surface, add one executable validation command, document hotspot ownership and tests, split only when the boundary is already clear, or repair the broken reference. Do not propose broad rewrites from the script output alone.
@@ -211,10 +211,10 @@ Common offenders:
 - A skill body references `references/<name>.md` but only `references/<name>-v2.md` exists.
 - A rule file references a deleted skill path.
 
-Quick check from the project root:
+Quick check from the project root, reusing `$HEALTH_SCRIPT` resolved in Step 1:
 
 ```bash
-bash skills/health/scripts/check-doc-refs.sh .
+bash "$(dirname "$HEALTH_SCRIPT")/check-doc-refs.sh" .
 ```
 
 The checker resolves `@...` and `docs/...` from the project root, expands `~`, resolves `references/...` from each `.claude/skills/<name>/SKILL.md` directory, checks every reference on a line, skips fenced code examples, and exits non-zero when any target is missing.
@@ -226,7 +226,7 @@ Report missing references as Structural findings, not Critical, unless the missi
 **Stale verifier cache output.** If validation output points at a deleted temp worktree or non-existent `/tmp` / `/private/tmp` file, parse the captured log with:
 
 ```bash
-bash skills/health/scripts/check-verifier-output.sh . <log-file>
+bash "$(dirname "$HEALTH_SCRIPT")/check-verifier-output.sh" . <log-file>
 ```
 
 Only use this script for existing command output supplied by the user or generated during the current audit. Do not run project tests just to feed this checker. Known actions include `golangci-lint cache clean`, `go clean -cache -testcache`, and `npm cache verify`; unknown tools get a diagnostic rerun action.

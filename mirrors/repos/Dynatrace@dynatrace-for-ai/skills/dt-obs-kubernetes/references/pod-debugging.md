@@ -75,11 +75,11 @@ container blocks the entire pod indefinitely.
 ```dql
 smartscapeNodes K8S_POD
 | parse k8s.object, "JSON:config"
-| expand init = config[`status`][`initContainerStatuses`]
+| expand init_container = config[`status`][`initContainerStatuses`]
 | fieldsAdd
-    init_name = init[`name`],
-    init_ready = init[`ready`],
-    init_exit = coalesce(init[`state`][`terminated`][`exitCode`], init[`state`][`waiting`][`exitCode`], init[`state`][`terminated`][`running`])
+    init_name = init_container[`name`],
+    init_ready = init_container[`ready`],
+    init_exit = coalesce(init_container[`state`][`terminated`][`exitCode`], init_container[`state`][`waiting`][`exitCode`], init_container[`state`][`terminated`][`running`])
 | filter init_ready == false
 | fields k8s.cluster.name, k8s.namespace.name, k8s.pod.name, init_name, init_exit
 ```

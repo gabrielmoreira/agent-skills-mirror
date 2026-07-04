@@ -72,7 +72,7 @@ description: Govern legacy cleanup and fact-source convergence. Use when Codex n
 - 硬编码策略：浏览器要求、插件触发、@ 命令、技能路由、artifact 类型判断、内置应用列表等硬编码已经有 registry / manifest / catalog 事实源时，直接删硬编码分支。
 - 重复组件 / Hook / ViewModel：新旧组件表达同一业务对象，且没有真实外部消费者时，直接把调用迁到 current 组件并删除旧组件；不要让父层同时支持两套 props。
 - 旧命名阻碍产品语义：旧命名暴露实现词、历史品牌、内部协议或错误业务概念时，直接改到 current 领域命名；只有外部协议或数据迁移需要时才保留映射层。
-- 插件 / Agent App 标准变更：manifest、skills、子 Agent、renderer contract、workflow schema 已确定新标准时，旧 `app.md`、旧本地包结构、旧安装入口、旧 renderer 占位直接删除或迁移，不做双标准。
+- 插件 / Plugin 标准变更：manifest、skills、子 Agent、renderer contract、workflow schema 已确定新标准时，旧 `app.md`、旧本地包结构、旧安装入口、旧 renderer 占位直接删除或迁移，不做双标准。
 - 命令 / API 无外部兼容者：旧 Electron IPC、legacy command、前端 API 网关、App Server 方法如果没有外部调用契约，直接替换到 current JSON-RPC / gateway；旧命令只允许 retired guard / negative test。
 - 数据结构无存量或可一次迁移：本地表、缓存、artifact payload、profile schema 若无真实存量，或能在启动 / 读取边界一次迁完，直接替换 schema；不要长期双读双写。
 - 路由 / 页面入口换代：旧页面、旧导航、旧插件中心、旧工作台入口已经和 current 产品路径冲突时，直接从导航、路由、测试和文档中移除。
