@@ -1,5 +1,6 @@
 ---
 name: saas-economics-efficiency-metrics
+argument-hint: "[metrics or question]"
 description: Evaluate SaaS unit economics and capital efficiency. Use when deciding whether the business can scale efficiently or needs correction.
 intent: >-
   Determine whether your SaaS business model is fundamentally viable and capital-efficient. Use this to calculate unit economics, assess profitability, manage cash runway, and decide when to scale vs. optimize. Essential for fundraising, board reporting, and making smart investment trade-offs.
@@ -20,6 +21,17 @@ scenarios:
 Determine whether your SaaS business model is fundamentally viable and capital-efficient. Use this to calculate unit economics, assess profitability, manage cash runway, and decide when to scale vs. optimize. Essential for fundraising, board reporting, and making smart investment trade-offs.
 
 This is not a finance reporting tool—it's a framework for PMs to understand whether the business can sustain growth, when to prioritize efficiency over growth, and which investments have positive returns.
+
+## Input
+
+**Works best with:** The question you're answering (can we scale? raise? extend runway?) or the metrics you want evaluated.
+**Also useful:** Your numbers — CAC, gross margin, burn, runway, magic number — partial data is workable.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** Use it as a reference: read the metric sections relevant to your stage and decision.
+
+**Example invocation:** `Are we efficient enough to scale? CAC $9K, gross margin 72%, burn multiple 2.1, magic number 0.6.`
 
 ## Key Concepts
 

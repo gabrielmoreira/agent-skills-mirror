@@ -1,19 +1,16 @@
 ---
 name: campaign-planner
+slug: aaron-campaign-planner
+displayName: "Campaign Planner · 活动规划"
+summary: "红人活动整体规划:目标、阶段、创作者组合、时间线与风险预案"
 description: 'Use when the user asks to "plan an influencer campaign", "build a campaign blueprint", or "launch a product with creators"; produces campaign objectives, platform and influencer-tier strategy, content requirements, a phased timeline, budget allocation, and KPI targets. Not for writing individual creator briefs — use brief-generator.'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when planning a new influencer campaign, launching a product with influencer support, building seasonal or tentpole activations, designing always-on creator programs, restructuring an underperforming campaign, or preparing a campaign plan to present to stakeholders. Activate when the user gives a brand, budget, audience, or timeframe and wants the full strategy-to-execution blueprint before briefs or outreach begin."
 argument-hint: "<brand or product> [budget] [platform] [timeframe]"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: influencer
-  phase: plan
-  family: influencer-marketing
-  impact-phase: Plan
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "influencer", "phase": "plan", "family": "influencer-marketing", "impact-phase": "Plan", "hermes": {"tags": ["marketing", "influencer", "plan"], "category": "influencer"}, "openclaw": {"emoji": "📣", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Campaign Planner

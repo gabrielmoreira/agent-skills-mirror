@@ -157,12 +157,54 @@ user's resident 9222 app — use a pool id. Also: `agent-browser open` mangles
 `app://` → `https://app//…` (ERR\_CONNECTION\_CLOSED); navigate inside the SPA by
 clicking its own `<a href>` links, not `open`.
 
-## Case 7 — (placeholder) append the user's next negative feedback below
+## Case 7 — Embedding a local-path screenshot in the chat reply (broken-image placeholder)
 
-<!-- New case template:
-## Case N — one-line summary of the mistake
-**Wrong approach**: …
-**Why it's wrong**: …
-**What it breaks**: …
-**Correct approach**: …
--->
+**Wrong approach**: ending the final reply with an inline image embed pointing at
+the report dir — `![caption](.records/reports/<ts>-<slug>/assets/06-foo.png)` —
+believing a leading `!` makes it render as a picture in chat.
+
+**Why it's wrong**: the chat UI can't load a local filesystem path. The embed
+renders as an empty grey broken-image box (the user sees a placeholder + " 完全
+看不了图内容 "), and the plain-link form `[Image](…local…png)` is an un-openable
+dead link. Local report paths only resolve on the machine, never inside the
+message. The earlier guidance that said "if a visual helps, embed it as an image,
+not a link" was itself wrong and has been removed.
+
+**What it breaks**: the reply looks like it has evidence but shows nothing —
+the user gets a broken box instead of the screenshot, and has to go find the
+verify link anyway.
+
+**Correct approach**: put NO images and NO local-file links in the chat reply.
+The published `https://app.lobehub.com/verify/<id>` page already renders every
+screenshot inline — that URL is the only visual deliverable. Describe key visual
+outcomes in prose; mention the local report dir as a plain string (not a
+markdown link) if a reference is useful.
+
+## Case 8 — Asking the user "how should I run this?" instead of defaulting to an isolated full run
+
+**Wrong approach**: when a visual/screenshot request needs an isolated env (app
+must run the feature branch, not the working dir's current branch; a background
+process owns the shared checkout; the surface needs fixture data like a git repo
+with 2 worktrees), stopping to ask the user which approach to take — full
+isolated run vs a lighter HMR shot vs a static prototype — via a plan-approval
+question.
+
+**Why it's wrong**: the user's standing preference is that **agent-testing
+DEFAULTS to a full isolated-environment screenshot/recording run that ends in a
+published verify report** — "time is not a concern; solve the env problems
+yourself." Presenting environment difficulty as a menu of shortcuts pushes setup
+decisions back onto the user that the skill is supposed to own.
+
+**What it breaks**: wastes a round on a question the user doesn't want, and
+signals the agent will cut corners on fidelity when the env is inconvenient.
+
+**Correct approach**: for any "run it and show me" request, go straight to the
+**isolated full run** by default — spin up a dedicated worktree + dev instance on
+the feature branch (never disturb the user's running app or the branch a
+background process holds), build whatever fixture data the surface needs (create a
+throwaway git repo, `git worktree add` a second tree, point a fresh conversation's
+working directory at it, etc.), capture the real rendered screenshot/GIF, verify
+it by opening the PNG, and publish the `/verify` report. Only surface a
+plan-approval question when the *product decision* is ambiguous (what to test),
+never for *environment mechanics* (how to render it). Env obstacles are the
+skill's job to solve and then iterate back into these logs.

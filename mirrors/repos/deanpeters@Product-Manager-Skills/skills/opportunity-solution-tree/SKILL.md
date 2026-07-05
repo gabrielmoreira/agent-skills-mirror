@@ -1,5 +1,6 @@
 ---
 name: opportunity-solution-tree
+argument-hint: "[stakeholder request or outcome]"
 description: Build an Opportunity Solution Tree from outcomes to opportunities, solutions, and tests. Use when a stakeholder request needs problem framing before you decide what to build.
 intent: >-
   Guide product managers through creating an Opportunity Solution Tree (OST) by extracting target outcomes from stakeholder requests, generating opportunity options (problems to solve), mapping potential solutions, and selecting the best proof-of-concept (POC) based on feasibility, impact, and market fit. Use this to move from vague product requests to structured discovery, ensuring teams solve the right problems before jumping to solutions—avoiding "feature factory" syndrome and premature convergence on ideas.
@@ -11,6 +12,17 @@ type: interactive
 Guide product managers through creating an Opportunity Solution Tree (OST) by extracting target outcomes from stakeholder requests, generating opportunity options (problems to solve), mapping potential solutions, and selecting the best proof-of-concept (POC) based on feasibility, impact, and market fit. Use this to move from vague product requests to structured discovery, ensuring teams solve the right problems before jumping to solutions—avoiding "feature factory" syndrome and premature convergence on ideas.
 
 This is not a roadmap generator—it's a structured discovery process that outputs validated opportunities with testable solution hypotheses.
+
+## Input
+
+**Works best with:** The stakeholder request or the target outcome you're starting from.
+**Also useful:** Customer evidence you already have, constraints, and solutions already being pushed.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill opens by asking for the request or desired outcome, then extracts the measurable target outcome from it.
+
+**Example invocation:** `Build an OST from this request: 'Sales says we need a mobile app because competitors have one.'`
 
 ## Key Concepts
 

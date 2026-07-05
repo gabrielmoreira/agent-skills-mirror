@@ -1,18 +1,16 @@
 ---
 name: consent-registry
+slug: aaron-consent-registry
+displayName: "Consent Registry · 订阅同意台账"
+summary: "订阅同意台账/退订抑制记录/合法性依据登记"
 description: 'Use when the user asks to "log this subscriber''s opt-in", "record our unsubscribes and complaints", or "what lawful basis do we have to email this list"; maintains one durable record per subscriber under memory/consent/ — subscription status, opt-in timestamp + lawful basis, double-opt-in proof, acquisition source, and an append-only unsubscribe/bounce/complaint history — and resolves consent candidates from list imports. Not for scoring the S2 consent or N1 opt-out vetoes or issuing an EQS verdict — use email-quality-auditor; not for building suppression segments — use list-segment-builder. 订阅同意台账/退订抑制记录/合法性依据登记'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when recording or updating a subscriber's consent status, logging opt-in timestamp and lawful basis, filing double-opt-in proof, appending unsubscribe/bounce/complaint events, reconciling consent candidates from a list import, or answering whether a lawful basis is on file before an email send."
 argument-hint: "<subscriber email/id, 'record opt-in', or 'reconcile candidates'>"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: protocol
-  phase: protocol
-  geo-relevance: "low"
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "protocol", "phase": "protocol", "geo-relevance": "low", "hermes": {"tags": ["marketing", "protocol"], "category": "protocol"}, "openclaw": {"emoji": "🗂️", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Consent Registry
@@ -65,6 +63,8 @@ This skill is the **sole writer** of `memory/consent/` — canonical per-subject
 ## Data Sources
 
 Keyless Tier-1 by construction — built from the user's OWN records: opt-in form / checkout / event captures pasted or exported, double-opt-in confirmation logs, and the ESP suppression / unsubscribe / bounce / complaint export from the `~~email platform` category (own-data manual export). Keyed ESP APIs (Klaviyo, Mailchimp, HubSpot, Customer.io) are an optional Tier-2/3 convenience for pulling the same suppression list, never a Tier-1 precondition — see [CONNECTORS.md](../../CONNECTORS.md). Optional sharpener: `~~CRM` for contact dedup. No APIs are needed; everything works from pasted text.
+
+**Zero-dependency downstream sync (when Resend is the ESP)**: after an opt-out is recorded here, `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/resend.py" suppress <id-or-email> --live` mirrors it to the platform (`unsubscribed: true`), and `resend.py contacts` audits that every recorded suppression is actually honored on the live roster. Direction is one-way — this registry is the SSOT and Resend a downstream mirror; never import Resend contact state as a consent fact without its own provenance (a platform flag is Measured suppression evidence, not an opt-in record). Mutating subcommands are dry-run by default (`--live` to execute). Inbound automation: the optional Resend **webhook event log** ([CONNECTORS.md §Event-driven bounce/complaint loop](../../CONNECTORS.md)) drops dated bounce/complaint events into `memory/consent/candidates.md` as ordinary intake — this registry still reconciles and writes every record itself. See [scripts/connectors/README.md](../../scripts/connectors/README.md).
 
 Every consent fact carries a source and a date, labeled Measured / User-provided / Estimated per the contract. Consent and lawful basis are always User-provided (they come from the user's own capture); a bounce or complaint pulled from an export is Measured. Identity links that cannot be confirmed are marked `unconfirmed`, never guessed.
 

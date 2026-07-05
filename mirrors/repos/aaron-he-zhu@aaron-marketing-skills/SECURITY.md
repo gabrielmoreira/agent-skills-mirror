@@ -45,11 +45,20 @@ Python-stdlib connectors** under `scripts/connectors/` that make outbound networ
 ## Security Design Principles
 
 - **Zero third-party dependencies**: connectors use only the Python standard library — no PyPI packages to compromise via supply chain attacks
-- **No credential storage**: Skills and connectors never store API keys; `docs/mcp-catalog.json` declares endpoints only, and the optional connector API keys (Open PageRank, PageSpeed) are read from the user's environment at call time and never written to disk
+- **No credential storage**: Skills and connectors never store API keys; `docs/mcp-catalog.json` declares endpoints only, and the optional connector API keys (Open PageRank, PageSpeed, Resend) are read from the user's environment at call time and never written to disk
 - **Tool-agnostic placeholders**: Skills reference tools by category (`~~SEO tool`), never by hardcoded API endpoints
 - **Apache 2.0 license**: Full source available for security review
 
 ## Connector network behavior
+
+Every bundled connector falls into one of three **safety classes**; the class dictates which
+gates it must implement (enforced by review against [docs/connector-playbook.md](docs/connector-playbook.md)):
+
+| Class | Connectors | Required gates (cumulative) |
+|-------|------------|------------------------------|
+| **Read-only public fetch** | `crawl.py`, `onpage.py`, `robots.py`, `sitemap.py`, `psi.py`, `schema_lint.py`, `kg.py`, `wayback.py`, `openpagerank.py`, `suggest.py`, `rss_monitor.py`, `doh.py`, `pageviews.py`, `gdelt.py`, `youtube.py` | the shared `_http.py` contract below; robots.txt enforcement where the helper crawls |
+| **Delegated fetch** (third-party fetcher) | `firecrawl.py`, `tavily.py` | + data-egress notice in the docstring; local robots.txt pre-flight before any site fetch (refuse on Disallow, exit 4); `--own-site` explicit owner override; `search` (no target site) exempt |
+| **External-state mutation** | `resend.py`, `indexpush.py` | + dry-run by default with an explicit `--live` flag; `Idempotency-Key` on endpoints that support it; `retries=1` (never auto-retry) on those that don't. `indexpush.py`'s ownership proof is inherent to its protocols (hosted IndexNow key file, site-bound Baidu token), so it needs no robots pre-flight |
 
 The `scripts/connectors/*.py` helpers make outbound HTTP(S) requests through one shared client
 (`_http.py`). Its safety contract:
@@ -63,8 +72,26 @@ The `scripts/connectors/*.py` helpers make outbound HTTP(S) requests through one
 - **robots.txt**: `crawl.py` enforces `/robots.txt` (Allow/Disallow precedence, `*`/`$` wildcards,
   per-agent group selection) via `robots.py` before fetching each URL.
 - **Untrusted content**: responses are DATA, never instructions (see the section above).
-- **API keys**: `openpagerank.py` and `psi.py` read an optional key from the environment and send
-  it to the official vendor endpoint only; keys are never logged or persisted.
+- **API keys**: `openpagerank.py`, `psi.py`, `resend.py`, `firecrawl.py`, and `tavily.py` read an
+  optional key from the environment and send it to the official vendor endpoint only; keys are
+  never logged or persisted.
+- **Delegated fetching / data egress**: `firecrawl.py` and `tavily.py` send target URLs and search
+  queries to a third-party hosted fetcher (Firecrawl / Tavily) instead of fetching locally — do
+  not point them at URLs whose existence is itself confidential. Before delegating a fetch of a
+  specific site (`scrape`/`crawl`/`map` on Firecrawl, `extract` on Tavily), they evaluate the
+  target's robots.txt **locally** (vendor UA token with `*` fallback) and refuse on an applicable
+  `Disallow` (see §Scraping Boundaries); `--own-site` is an explicit owner assertion that skips
+  the pre-flight for hosts the user operates. `search` has no target site and is exempt. All
+  subcommands on both helpers are read-only.
+- **Mutation gate**: `resend.py` is the sole connector that can change external state (send real
+  email, suppress a contact, schedule a broadcast). Its mutating subcommands are **dry-run by
+  default** — they print the exact request and touch no network — and execute only with an
+  explicit `--live` flag. Double-send protection: `send`/`seed`/`batch` attach an
+  `Idempotency-Key` (Resend replays return the original email id for 24h), so their retries can
+  never duplicate a send; mutating endpoints without idempotency support (broadcasts, contacts,
+  verify/cancel) use `retries=1` and never auto-retry. This keeps a prompt-injected instruction
+  inside fetched content from ever triggering an outbound send on its own: the `--live`
+  escalation is a deliberate, visible step.
 
 ## Fetched content is untrusted data, not instructions
 

@@ -1,7 +1,7 @@
 # Contributing Guide
 
 **Status:** Active
-**Last Updated:** 2026-06-11
+**Last Updated:** 2026-07-04
 
 This guide covers everything you need to contribute to `notebooklm-py`: architecture overview, testing, and releasing.
 
@@ -302,6 +302,12 @@ lock sibling and the two invocations never contend.
    several unit tests import and patch `playwright.sync_api`. The command
    `uv sync --frozen --extra dev` installs the test tools, but not Playwright.
 
+   **Adapter tests need their extras.** The MCP unit tests (`tests/unit/mcp/`)
+   and REST suite (`tests/server/`) `importorskip` `fastmcp` / `fastapi`, so
+   without `--extra mcp --extra server` they **silently skip** — you'll see a
+   green run that never exercised the adapter surface. Add both extras
+   (CI installs `--extra mcp --extra server --extra impersonate`) to run them.
+
    CI runs the same lint gate with `uv run pre-commit run --all-files`, so local hook results should match the `quality` job.
 
 2. **Authenticate:**
@@ -320,6 +326,12 @@ lock sibling and the two invocations never contend.
 ```bash
 # Unit + integration tests (no auth needed)
 uv run pytest
+
+# Same suite in parallel — the full suite is ~10.6k tests and runs single-process
+# by default (slow). pytest-xdist (a dev dep) cuts wall-clock to ~1–2 min. CI runs
+# `-n auto --dist loadgroup`; loadgroup keeps @pytest.mark.xdist_group tests pinned
+# to one worker. Mirror it locally when running the whole suite.
+uv run pytest -n auto --dist loadgroup
 
 # Fast local loop — skip repo-wide audit / release-gate checks (~40s saved).
 # CI still runs these; the marker just lets you iterate quickly.
@@ -376,6 +388,10 @@ NOTEBOOKLM_READ_ONLY_NOTEBOOK_ID=<work-nb-id> \
 ```
 tests/
 ├── unit/                            # No network, fast, mock everything
+│   ├── app/                         # _app/ transport-neutral core
+│   ├── cli/                         # CLI command tests
+│   └── mcp/                         # MCP adapter unit tests (importorskip fastmcp)
+├── server/                          # REST adapter suite — FastAPI routes (importorskip fastapi)
 ├── _guardrails/                     # Architecture/invariant gates (custom AST + filesystem lint)
 ├── _baselines/                      # Regenerable-baseline registry (ADR-0022): derive/store/compare
 ├── fixtures/
@@ -410,8 +426,9 @@ tests/
 │   ├── test_vcr_example.py          # VCR pattern reference
 │   ├── test_vcr_real_api.py         # VCR against real-API cassettes
 │   ├── cli_vcr/                     # CLI → Client → RPC VCR tests
+│   ├── mcp_vcr/                     # MCP adapter VCR tier (replays CLI cassettes)
 │   └── concurrency/                 # Cross-process / asyncio races
-└── e2e/                             # Real API calls (requires auth)
+└── e2e/                             # Real API calls (requires auth; incl. test_mcp*.py, test_cli_live.py)
 ```
 
 The `*_drift.py` tests are payload-shape canaries: they decode a recorded

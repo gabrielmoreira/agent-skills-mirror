@@ -1,5 +1,6 @@
 ---
 name: pol-probe
+argument-hint: "[hypothesis to test]"
 description: Define a Proof of Life probe to test a risky hypothesis cheaply. Use when you need harsh truth before building real product.
 intent: >-
   Define and document a **Proof of Life (PoL) probe**—a lightweight, disposable validation artifact designed to surface harsh truths before expensive development. Use this when you need to eliminate a specific risk or test a narrow hypothesis **without building production-quality software**. PoL probes are reconnaissance missions, not MVPs—they're meant to be deleted, not scaled.
@@ -19,6 +20,17 @@ scenarios:
 Define and document a **Proof of Life (PoL) probe**—a lightweight, disposable validation artifact designed to surface harsh truths before expensive development. Use this when you need to eliminate a specific risk or test a narrow hypothesis **without building production-quality software**. PoL probes are reconnaissance missions, not MVPs—they're meant to be deleted, not scaled.
 
 This framework prevents prototype theater (expensive demos that impress stakeholders but teach nothing) and forces you to match validation method to actual learning goal.
+
+## Input
+
+**Works best with:** The hypothesis or risk you need to test.
+**Also useful:** What evidence would change your mind, available time/resources, and what you've validated already.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks for the hypothesis and the riskiest assumption inside it before designing the probe.
+
+**Example invocation:** `Define a PoL probe: we believe restaurant managers will photograph invoices daily if it auto-updates food costs.`
 
 ## Key Concepts
 

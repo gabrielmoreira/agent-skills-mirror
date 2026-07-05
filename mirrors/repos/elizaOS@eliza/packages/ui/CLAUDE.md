@@ -138,9 +138,9 @@ bun run --cwd packages/ui test:agent-surface-e2e   # agent-surface __e2e__ runne
 bun run --cwd packages/ui test:chat-sheet-e2e      # continuous-chat pull-sheet drag-gesture __e2e__ runner
 bun run --cwd packages/ui test:home-screen-e2e     # home-screen __e2e__ runner
 bun run --cwd packages/ui test:chat-ambient-e2e    # /chat ambient orange-pulse background screenshot __e2e__ runner
-bun run --cwd packages/ui lint                # biome check src
-bun run --cwd packages/ui lint:fix            # biome check --write src
-bun run --cwd packages/ui format / format:fix # biome format
+bun run --cwd packages/ui lint                # biome check --write src
+bun run --cwd packages/ui lint:check          # biome check src (read-only)
+bun run --cwd packages/ui format / format:check # biome format write / read-only
 bun run --cwd packages/ui stories:dev         # Vite stories (stories/vite.config.ts)
 bun run --cwd packages/ui storybook           # Storybook dev server (port 6006)
 bun run --cwd packages/ui build-storybook     # Storybook static build
@@ -176,8 +176,9 @@ given class of bug; reach for the heavier ones when behaviour or pixels matter.
    `needs-runtime` (covered live by `audit:app`), not failed. Build the catalog
    first (`build-storybook --output-dir storybook-static`), then run the gate;
    the dedicated `.github/workflows/ui-story-gate.yml` does both on `packages/ui`
-   changes. Reusable helpers: `determinism-shim.mjs`, `log-capture.mjs`
-   (durable frontend console/network artifact), `backend-log-capture.mjs`.
+   changes. Reusable helpers: `determinism-shim.mjs` and `log-capture.mjs`
+   (durable frontend console/network artifact, wired per story into
+   `output/frontend-logs.json`).
 
 4. **Isolated browser e2e (`test:*-e2e`, `src/**/__e2e__/`).** esbuild-bundle a
    fixture → headless Chromium for gesture/animation/flow coverage no jsdom can
@@ -232,6 +233,16 @@ This package mostly reads config injected by the host, not raw env vars:
 - The build (`build:dist:unlocked`) is a multi-step `tsc --noCheck` +
   flatten/copy/rewrite pipeline driven by scripts in `../scripts/`; use
   `bun run build`, don't invoke `tsc` directly.
+- **Toasts & notifications — one system per surface.** The app shell's only
+  transient toast is `setActionNotice` (`state/action-notice.ts`, rendered by
+  `ShellOverlays`); cloud-ui's only toast is its themed `sonner` wrapper
+  (`cloud-ui/components/sonner.tsx`). Never mount both in one tree, and never
+  add a third toast library. Persistent notifications are the notification
+  store (`state/notifications/notification-store.ts`) rendered by the pinned
+  dashboard center (`components/shell/NotificationsHomeCenter.tsx`) — the one
+  in-app inbox surface; interrupt-worthy items reach the user through the
+  store's toast sink + the native/desktop bridges, not through a bespoke
+  banner.
 - `ConnectionStatus` exists twice (cloud-ui string union vs. the composite
   component) — the cloud-ui one is intentionally NOT re-exported from the root
   barrel to avoid the collision (see comment in `index.ts`).

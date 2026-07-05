@@ -1,5 +1,6 @@
 ---
 name: jobs-to-be-done
+argument-hint: "[customer segment or product]"
 description: Uncover customer jobs, pains, and gains in a structured JTBD format. Use when clarifying unmet needs, repositioning a product, or improving discovery and messaging.
 intent: >-
   Systematically explore what customers are trying to accomplish (functional, social, emotional jobs), the pains they experience, and the gains they seek. Use this framework to uncover unmet needs, validate product ideas, and ensure your solution addresses real motivations—not just surface-level feature requests.
@@ -11,6 +12,17 @@ type: component
 Systematically explore what customers are trying to accomplish (functional, social, emotional jobs), the pains they experience, and the gains they seek. Use this framework to uncover unmet needs, validate product ideas, and ensure your solution addresses real motivations—not just surface-level feature requests.
 
 This is not a survey—it's a structured lens for understanding *why* customers "hire" your product and what would make them "fire" it.
+
+## Input
+
+**Works best with:** The customer segment (or product whose customers) you're analyzing.
+**Also useful:** Interview notes, support tickets, or research to mine for jobs, pains, and gains; the situation or trigger you care about.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks who the customer is and what progress they're trying to make before structuring the JTBD breakdown.
+
+**Example invocation:** `Run JTBD for freelance designers using our invoicing tool — here are 6 interview summaries.`
 
 ## Key Concepts
 

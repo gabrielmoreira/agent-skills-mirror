@@ -1,0 +1,41 @@
+## Server runtime concurrency
+
+The server runtime uses **one session actor per session**. Durable session state lives in `SessionActorState`, owned exclusively by that actor's mailbox loop (`run_session_actor`). Cross-session coordination and in-flight turn execution handles live on `ServerRuntime`.
+
+### Ownership and actor boundaries
+
+- **Mutate durable session state only through `SessionHandle` → `SessionCommand`.** Do not reach into `SessionActorState` from handlers, turn tasks, or research code except inside the actor loop or via explicit snapshot/command APIs.
+- **`ActiveTurnRegistry` is the single source for in-flight turn execution handles** (cancel tokens, abort handles, connection routing, spawn snapshots, active stream state). Register on turn start. Use `clear_active_turn_interrupt_handles` during in-actor finalization so stream/spawn mirrors stay available until inline state merges; use `clear_active_turn_runtime_handles` for full teardown (interrupt handlers, session stop, out-of-actor turns).
+- **Use `turn_lifecycle` helpers** (`register_active_turn_execution`, `spawn_active_turn_task`, `signal_active_turn_interrupt`) instead of touching `ActiveTurnRegistry` fields ad hoc from handlers.
+- **Two turn execution paths:**
+  - **In-actor:** normal turns via `SessionCommand::ExecuteTurn`.
+  - **Out-of-actor:** research and similar work on a spawned task; use paired `BeginInlineTurn` / `EndInlineTurn` to install and merge `SessionStreamState` / inline mutations.
+- **Interactive waits (approval, `request_user_input`) live in `SessionInteractiveLanes`, not the session actor.** The actor must not block the mailbox waiting on client responses.
+- **Post-turn scheduling runs outside the actor.** After `ExecuteTurn` replies, continuation (queued follow-ups, goal continuation) is spawned in a background task—never inline in the mailbox handler when interrupts may still be in flight.
+
+### Lock usage
+
+- **Never hold `ServerRuntime.sessions` (or other runtime `Mutex` maps) across `.await`.** Look up the `SessionHandle`, drop the lock, then call handle methods.
+- **Mutate `pending_turn_queue` only through actor commands** (`EnqueuePendingTurnInput`, `RemoveQueuedTurnInput`, `TakeQueuedTurnInputForSteer`, `PopQueuedTurnInput`). Handlers must not lock the queue directly while a session actor is running.
+- **`SessionStreamState` uses `Arc<tokio::sync::Mutex<…>>`** and is shared with the turn event stream task. Prefer actor commands for durable merges; use the stream lock only for streaming-era fields (deferred assistant/reasoning, inline turn scratch state).
+- **From turn event streams, use `try_send` on the session mailbox** for fire-and-forget updates (`SetActiveGoal`, `ApplyParentUsageSnapshot`, `TouchLastActivity`). Blocking `send().await` from a stream the actor is waiting on can deadlock.
+- **Interrupt/cancel:** call `signal_active_turn_interrupt` before relying on mailbox round-trips—the actor may be blocked in permission wait.
+
+### Turn lifecycle
+
+- **Reservation:** use `TryBeginActiveTurn` (idle session + empty pending queue) or turn-reservation snapshots when starting turns from handlers.
+- **Terminal status:** in-actor turns finalize via `finalize_executed_turn` when the cancel token fires; out-of-actor turns must claim `active_turn` via `InterruptActiveTurn` and finalize explicitly.
+- **Always record terminal turn status** (`record_terminal_turn_status`) and clear runtime handles when a turn ends or is interrupted.
+- **Subagent usage:** only root sessions own a parent usage ledger; child turns publish into the parent's ledger.
+
+### Queues
+
+- **`pending_turn_queue`:** user-visible queued turns while a session is busy. Enqueue via `SessionHandle::enqueue_pending_turn_input`; pop/remove/steer via actor commands only.
+- **`btw_input_queue`:** steer / between-turn input during an active turn. Enqueue only via `EnqueueBtwInput` (mailbox); clear at turn finalize.
+- **After dequeuing,** broadcast queue updates and start the next turn from a spawned task (`chain_queued_followup_turn` / `spawn_next_turn_from_queue`).
+
+### Tests
+
+- **Runtime concurrency changes need integration coverage** in `crates/server/tests/`: interrupt mid-stream, queued follow-ups, goal lifecycle interrupts, persistence/resume, research.
+- **Prefer waiting on observable protocol outcomes** (notifications, terminal status) over sleeping or polling internal maps.
+- Follow existing test conventions: `pretty_assertions::assert_eq`, compare whole objects where possible, platform-aware paths when touching filesystem behavior.

@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:f46144912ae94cb362ef1d9593ce5355c6874173`
+**Shape snapshot:** `sha1:d7e2ddf96c7b9a7b88858e8a53ba1876cb5f3eb3`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -45,9 +45,9 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ## At a Glance
 
-- **279** active API routes across **68** categories (327 total including archived)
-- **4** required + **186** optional environment variables
-- **105** database tables
+- **283** active API routes across **70** categories (331 total including archived)
+- **4** required + **193** optional environment variables
+- **108** database tables
 
 ## API Surface
 
@@ -79,6 +79,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `GET` `/api/agents/[agentId]`
 - `GET` `/api/agents/[agentId]/profile`
 - `GET, POST` `/api/agents/connections`
+- `GET` `/api/agents/fanouts`
 - `POST` `/api/agents/heartbeat`
 - `POST` `/api/agents/invoke`
 - `GET, POST` `/api/agents/registry`
@@ -176,6 +177,10 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `GET, POST` `/api/compliance/schedules`
 - `DELETE, PATCH` `/api/compliance/schedules/[scheduleId]`
 - `GET` `/api/compliance/trends`
+
+### `coverage`
+
+- `GET, POST` `/api/coverage`
 
 ### `cron`
 
@@ -314,6 +319,10 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `GET` `/api/learning/recommendations/metrics`
 - `GET, POST` `/api/learning/suggestions`
 
+### `live-canary`
+
+- `GET, POST` `/api/live-canary`
+
 ### `marketing`
 
 - `POST` `/api/marketing/event`
@@ -366,6 +375,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `GET` `/api/policies/contract`
 - `POST` `/api/policies/generate`
 - `POST` `/api/policies/import`
+- `GET, POST` `/api/policies/loosening`
 - `GET` `/api/policies/modes`
 - `POST` `/api/policies/modes/import`
 - `POST` `/api/policies/modes/preview`
@@ -539,8 +549,8 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 These must be set — DashClaw will fail to start without them.
 
-- **`DASHCLAW_API_KEY`** - referenced in 81 file(s)
-- **`DATABASE_URL`** - referenced in 106 file(s)
+- **`DASHCLAW_API_KEY`** - referenced in 82 file(s)
+- **`DATABASE_URL`** - referenced in 108 file(s)
 - **`ENCRYPTION_KEY`** - referenced in 8 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 5 file(s)
 
@@ -590,6 +600,7 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_DB_DRIVER` *(undocumented)*
 - `DASHCLAW_DB_POOL_MAX` *(undocumented)*
 - `DASHCLAW_DISABLE_RATE_LIMIT` *(undocumented)*
+- `DASHCLAW_EXPOSE_ERROR_DETAIL` *(undocumented)*
 - `DASHCLAW_GUARD_DEADLINE_MS` *(undocumented)*
 - `DASHCLAW_GUARD_FALLBACK` *(undocumented)*
 - `DASHCLAW_GUARD_UNAVAILABLE_POLICY` *(undocumented)*
@@ -616,6 +627,7 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_SUPPRESS_LEGACY_WARNING` *(undocumented)*
 - `DASHCLAW_TIMEOUT_MS` *(undocumented)*
 - `DASHCLAW_URL` *(undocumented)*
+- `DASHCLAW_X402_CURRENCIES` *(undocumented)*
 - `DISABLE_PROMPT_INJECTION_SCAN` *(undocumented)*
 - `DISCORD_APPROVER_ORG_ID` *(undocumented)*
 - `DISCORD_APPROVER_USER_ID` *(undocumented)*
@@ -628,6 +640,7 @@ These have fallbacks or only activate specific features.
 - `GITHUB_REPO_NAME` *(undocumented)*
 - `GITHUB_REPO_OWNER` *(undocumented)*
 - `GITHUB_SECRET` *(undocumented)*
+- `GITHUB_STEP_SUMMARY` *(undocumented)*
 - `GITHUB_TOKEN` *(undocumented)*
 - `GOOGLE_AI_API_KEY` *(undocumented)*
 - `GOOGLE_CLIENT_ID` *(undocumented)*
@@ -645,6 +658,8 @@ These have fallbacks or only activate specific features.
 - `HOSTED_TRIAL_ACTION_CAP` *(undocumented)*
 - `HOSTED_TRIAL_DAYS` *(undocumented)*
 - `INTEGRATION_DATABASE_URL` *(undocumented)*
+- `LIVE_CANARY_HOSTED_ORIGIN` *(undocumented)*
+- `LIVE_CANARY_MARKETING_ORIGIN` *(undocumented)*
 - `MODEL` *(undocumented)*
 - `MOONSHOT_API_KEY` *(undocumented)*
 - `NAMECHEAP_API_KEY` *(undocumented)*
@@ -702,6 +717,8 @@ These have fallbacks or only activate specific features.
 - `SQL_CAPTURE_FILE` *(undocumented)*
 - `STARTUP_SMOKE_BASE_URL` *(undocumented)*
 - `STARTUP_SMOKE_INTERVAL_MS` *(undocumented)*
+- `STARTUP_SMOKE_SKIP_CANARY` *(undocumented)*
+- `STARTUP_SMOKE_SKIP_CROSS_ORG` *(undocumented)*
 - `STARTUP_SMOKE_SKIP_POLICY` *(undocumented)*
 - `STARTUP_SMOKE_TIMEOUT_MS` *(undocumented)*
 - `STRIPE_LIVE_SECRET_KEY` *(undocumented)*
@@ -737,7 +754,7 @@ These have fallbacks or only activate specific features.
 
 ## Database Tables
 
-All 105 tables defined in `schema/schema.js` (Drizzle ORM):
+All 108 tables defined in `schema/schema.js` (Drizzle ORM):
 
 - `action_embeddings`
 - `action_records`
@@ -772,6 +789,7 @@ All 105 tables defined in `schema/schema.js` (Drizzle ORM):
 - `content`
 - `context_entries`
 - `context_points`
+- `coverage_reports`
 - `daily_totals`
 - `decisions`
 - `drift_alerts`
@@ -797,6 +815,8 @@ All 105 tables defined in `schema/schema.js` (Drizzle ORM):
 - `learning_recommendation_events`
 - `learning_recommendations`
 - `learning_velocity`
+- `live_canary_runs`
+- `loosening_proposal_decisions`
 - `message_threads`
 - `milestones`
 - `notification_preferences`

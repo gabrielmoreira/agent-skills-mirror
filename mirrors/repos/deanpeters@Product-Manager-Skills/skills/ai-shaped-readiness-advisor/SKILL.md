@@ -1,5 +1,6 @@
 ---
 name: ai-shaped-readiness-advisor
+argument-hint: "[team or workflow context]"
 description: Assess whether your product work is AI-first or AI-shaped. Use when evaluating AI maturity and choosing the next team capability to build.
 intent: >-
   Assess whether your product work is **"AI-first"** (using AI to automate existing tasks faster) or **"AI-shaped"** (fundamentally redesigning how product teams operate around AI capabilities). Use this to evaluate your readiness across **5 essential PM competencies for 2026**, identify gaps, and get concrete recommendations on which capability to build first.
@@ -22,6 +23,17 @@ Assess whether your product work is **"AI-first"** (using AI to automate existin
 **Key Distinction:** AI-first is cute (using Copilot to write PRDs faster). AI-shaped is survival (building a durable "reality layer" that both humans and AI trust, orchestrating AI workflows, compressing learning cycles).
 
 This is not about AI tools—it's about **organizational redesign around AI as co-intelligence**. The interactive skill guides you through a maturity assessment, then recommends your next move.
+
+## Input
+
+**Works best with:** A description of how your team currently uses AI in its product work — even 'barely' is a valid answer.
+**Also useful:** Team size, product domain, and which of the 5 competencies you suspect is weakest.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The advisor opens by asking how AI currently shows up in your team's day-to-day product work.
+
+**Example invocation:** `Assess my team: 6 PMs, we use ChatGPT for PRD drafts and meeting summaries but nothing in our discovery or delivery process has changed.`
 
 ## Key Concepts
 

@@ -8,7 +8,8 @@ Guidelines for AI agents working in this repository. For full runtime context, s
 - **Repository**: https://github.com/aaron-he-zhu/aaron-marketing-skills
 - **Author**: Aaron He Zhu | **License**: Apache 2.0
 - **Specs**: [Agent Skills](https://agentskills.io/specification.md)
-Content-first repository: skills and commands are Markdown; Claude Code hooks use a small Bash runner; `scripts/connectors/` holds zero-dependency Python-stdlib data helpers (no pip deps). Primary directories: SEO/GEO `seo-geo/research/`, `seo-geo/build/`, `seo-geo/optimize/`, `seo-geo/monitor/`; protocol layer `protocol/`; influencer/IMPACT `influencer/discover/`, `influencer/plan/`, `influencer/activate/`, `influencer/measure/`; paid ads `ad/research`, `ad/orchestrate`, `ad/activate`, `ad/scale`; email `email/setup`, `email/engage`, `email/nurture`, `email/deliver`; plus `commands/`, `references/`, `scripts/connectors/`.
+- **Cross-agent compatibility**: all 69 skills install on the 70+ SKILL.md hosts served by `npx skills` (which reads the skill declarations from `.claude-plugin/plugin.json` — no mirror directory needed, never add one). Per-agent matrix + degradation rules: [docs/agent-compatibility.md](docs/agent-compatibility.md); CI enforces the discovery count. New/renamed skills must also be added to a grouping in the repo-root `skills.sh.json` (lays out the [skills.sh page](https://skills.sh/aaron-he-zhu/aaron-marketing-skills); CI-enforced coverage).
+Content-first repository: skills and commands are Markdown; Claude Code hooks use a small Bash runner; `scripts/connectors/` holds zero-dependency Python-stdlib helpers (no pip deps) — data pullers (including the keyless hosted fetchers `firecrawl.py` and `tavily.py`, which robots-pre-flight every delegated site fetch) plus one ESP-automation helper (`resend.py`, whose mutating subcommands dry-run by default and require `--live`). Primary directories: SEO/GEO `seo-geo/research/`, `seo-geo/build/`, `seo-geo/optimize/`, `seo-geo/monitor/`; protocol layer `protocol/`; influencer/IMPACT `influencer/discover/`, `influencer/plan/`, `influencer/activate/`, `influencer/measure/`; paid ads `ad/research`, `ad/orchestrate`, `ad/activate`, `ad/scale`; email `email/setup`, `email/engage`, `email/nurture`, `email/deliver`; plus `commands/`, `references/`, `scripts/connectors/`.
 
 Install instructions live in [README.md](README.md). Keep this file focused on authoring and maintenance rules.
 
@@ -64,8 +65,13 @@ Sixteen skills added across the 38 → 54 expansion (six SEO/GEO + four paid in 
 | `license` | License name (default: Apache-2.0) |
 | `compatibility` | Platform list |
 | `allowed-tools` | Pre-approved tools (e.g., `WebFetch`) |
-| `metadata.author/version/geo-relevance/tags/triggers` | Discovery and categorization. `metadata.version` must match top-level `version`. |
-| `metadata.discipline` + `metadata.phase` | On every skill (69/69): `discipline` = seo-geo/influencer/ad/email/protocol; `phase` = lifecycle phase. Uniform routing/clustering tags. |
+| `metadata` | **Single-line strict-JSON object** — OpenClaw's parser reads single-line keys only; the validator fails a YAML block map. `metadata.version` must match top-level `version`. |
+| `metadata.author/geo-relevance` | Discovery and categorization. |
+| `metadata.discipline` + `metadata.phase` | On every skill (69/69): `discipline` = seo-geo/influencer/paid/email/protocol; `phase` = lifecycle phase. Uniform routing/clustering tags. |
+| `metadata.hermes` | Hermes Agent extension: `{"tags": ["marketing", <discipline>, <phase>], "category": <discipline>}` for `hermes skills browse` filtering. |
+| `metadata.openclaw` | OpenClaw extension: `{"emoji": <discipline emoji>, "homepage": <repo URL>}` for the macOS UI. |
+| `slug` | SkillHub.cn publishing identity — must be `aaron-<skill-name>` (validator-enforced). |
+| `displayName` + `summary` | SkillHub.cn listing card: bilingual display name + Chinese one-liner. |
 | `when_to_use` | Trigger scenarios for auto-invocation (underscores, not hyphens) |
 | `argument-hint` | Argument format hint in command picker |
 
@@ -97,7 +103,8 @@ Auditor-class gates: `content-quality-auditor` (CORE-EEAT publish gate), `domain
 
 - **Branch naming**: `feature/skill-name`, `fix/skill-name`, `docs/description`
 - **Conventional Commits**: `feat:`, `fix:`, `docs:`
-- **After skill changes**: update the tracking files — the authoritative 8-file list is in [CONTRIBUTING.md §6](CONTRIBUTING.md) (VERSIONS.md, `.claude-plugin/plugin.json`, root `marketplace.json` + its `.claude-plugin/marketplace.json` mirror, README.md, CLAUDE.md, AGENTS.md, docs/README.zh.md). For release bumps, also sync localized README badges.
+- **After skill changes**: update the tracking files — the authoritative 8-file list is in [CONTRIBUTING.md §6](CONTRIBUTING.md) (VERSIONS.md, `.claude-plugin/plugin.json`, root `marketplace.json` + its `.claude-plugin/marketplace.json` mirror, README.md, CLAUDE.md, AGENTS.md, docs/README.zh.md). For release bumps, also sync localized README badges. `scripts/check-versions.sh` (CI) fails on any drift — run it locally after syncing.
+- **Adding a connector**: follow [docs/connector-playbook.md](docs/connector-playbook.md) end to end — qualify (category / connector-vs-recipe / safety class), verify against primary docs + a live call, implement to house style, offline-test the pure builders, wire skills by the differentiation rule, hit the six doc touchpoints, track, regress, record.
 - **Use `references/` for detail** — keep `SKILL.md` focused. Auditor-class skills `Read references/auditor-runbook.md` at activation (the framework-agnostic SSOT) and keep only their framework-specific §2 worked examples, §3 guardrails, and §5 veto-ID rows inline.
 - **Validate**: `./scripts/validate-skill.sh <category>/<skill-name>` before release PRs. CI guards: `golden-math` (5 frameworks), `check-evals`, `check-pii`, `check-stdlib-only` (incl. the Paid-Ads keyed-API red line).
 

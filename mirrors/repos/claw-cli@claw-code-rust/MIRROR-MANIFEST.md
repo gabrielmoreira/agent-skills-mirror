@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `claw-cli/claw-code-rust` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `claw-cli/claw-code-rust` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `claw-cli/claw-code-rust` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,13 +61,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`apps/desktop/AGENTS.md`](apps/desktop/AGENTS.md) |
-| 3 | ✓ | [`crates/server/skills/.system/skill-creator/SKILL.md`](crates/server/skills/.system/skill-creator/SKILL.md) |
-| 4 | ✓ | [`crates/server/skills/.system/skill-installer/SKILL.md`](crates/server/skills/.system/skill-installer/SKILL.md) |
-| 5 | ✓ | [`crates/skills/src/assets/samples/skill-creator/SKILL.md`](crates/skills/src/assets/samples/skill-creator/SKILL.md) |
-| 6 | ✓ | [`crates/skills/src/assets/samples/skill-installer/SKILL.md`](crates/skills/src/assets/samples/skill-installer/SKILL.md) |
-| 7 | ✓ | [`crates/tui/AGENTS.md`](crates/tui/AGENTS.md) |
-| 8 | ✓ | [`crates/tui/src/bottom_pane/AGENTS.md`](crates/tui/src/bottom_pane/AGENTS.md) |
-| 9 | ✓ | [`specs/AGENTS.md`](specs/AGENTS.md) |
+| 3 | ✓ | [`crates/server/AGENTS.md`](crates/server/AGENTS.md) |
+| 4 | ✓ | [`crates/server/skills/.system/skill-creator/SKILL.md`](crates/server/skills/.system/skill-creator/SKILL.md) |
+| 5 | ✓ | [`crates/server/skills/.system/skill-installer/SKILL.md`](crates/server/skills/.system/skill-installer/SKILL.md) |
+| 6 | ✓ | [`crates/skills/src/assets/samples/skill-creator/SKILL.md`](crates/skills/src/assets/samples/skill-creator/SKILL.md) |
+| 7 | ✓ | [`crates/skills/src/assets/samples/skill-installer/SKILL.md`](crates/skills/src/assets/samples/skill-installer/SKILL.md) |
+| 8 | ✓ | [`crates/tui/AGENTS.md`](crates/tui/AGENTS.md) |
+| 9 | ✓ | [`crates/tui/src/bottom_pane/AGENTS.md`](crates/tui/src/bottom_pane/AGENTS.md) |
+| 10 | ✓ | [`specs/AGENTS.md`](specs/AGENTS.md) |
 
 ---
 

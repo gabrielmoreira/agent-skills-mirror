@@ -1,7 +1,7 @@
 # Troubleshooting
 
 **Status:** Active
-**Last Updated:** 2026-06-11
+**Last Updated:** 2026-07-04
 
 Common issues, known limitations, and workarounds for `notebooklm-py`.
 
@@ -53,7 +53,7 @@ Google rotates `__Secure-1PSIDTS` (the freshness partner of `__Secure-1PSID`) on
 > - **Attach to your own Chrome (recommended):** quit Chrome, relaunch it with `--remote-debugging-port=9222`, then `notebooklm login --master-token --account you@gmail.com --cdp-url http://127.0.0.1:9222`. It opens an EmbeddedSetup tab in your real (non-automated) browser, so Google allows sign-in, and scrapes the `oauth_token`.
 > - **Capture the token manually:** in a normal browser sign in at `accounts.google.com/EmbeddedSetup`, copy the `oauth_token` cookie (DevTools → Application → Cookies → accounts.google.com), then `notebooklm login --master-token --account you@gmail.com --oauth-token <value>`. The `oauth_token` is single-use and short-lived — use it immediately.
 
-Most users only need layer 1 — it's on by default and requires no configuration. For the full strategy (trade-offs between layers, including Python kwargs like `keepalive_min_interval` and environment variables like `NOTEBOOKLM_REFRESH_CMD_USE_SHELL`, and ready-to-paste launchd / systemd / cron / Task Scheduler / k8s CronJob recipes), see **[docs/auth-cookie-lifecycle.md#tldr](auth-cookie-lifecycle.md#tldr)** for a quick orientation, then [§4 The architecture](auth-cookie-lifecycle.md#4-the-architecture) for the per-layer deep dive.
+Most users only need layer 1 — it's on by default and requires no configuration. For the full strategy (trade-offs between layers, including Python kwargs like `keepalive_min_interval` and environment variables like `NOTEBOOKLM_REFRESH_CMD_USE_SHELL`, and ready-to-paste launchd / systemd / cron / Task Scheduler / k8s CronJob recipes), see **[docs/auth-cookie-lifecycle.md#tldr](auth-cookie-lifecycle.md#tldr)** for a quick orientation, then [§4 The recovery ladder](auth-cookie-lifecycle.md#4--the-recovery-ladder) for the per-layer deep dive.
 
 #### macOS: `--browser-cookies` prompts for your password
 
@@ -163,7 +163,7 @@ Or re-run `notebooklm login` if session cookies are also expired. If the failure
 
 **Confirm:** open `https://notebooklm.google.com` in a normal browser, signed in to the same account, on the same network. If it also redirects to `notebooklm.google/?location=unsupported`, the gate is environmental.
 
-**Solution:** access from a **residential connection in a supported region**, keep your system **timezone/language consistent** with the IP's country, and avoid shared/datacenter VPN exit IPs. (See issue [#1630](https://github.com/teng-lin/notebooklm-py/issues/1630).)
+**Solution:** access from a **residential connection in a supported region**, keep your system **timezone/language consistent** with the IP's country, and avoid shared/datacenter VPN exit IPs. When the trigger is the **non-browser fingerprint** (a raw HTTP client) rather than the IP, the opt-in browser-TLS-impersonation transport can help: set `NOTEBOOKLM_TRANSPORT=curl_cffi` (requires the `curl_cffi` package) so requests carry a real browser's TLS fingerprint. (See issue [#1630](https://github.com/teng-lin/notebooklm-py/issues/1630).)
 
 #### Browser opens but login fails
 
@@ -810,6 +810,20 @@ async with httpx.AsyncClient() as client:
 ```
 
 ---
+
+## Adapter-specific issues (MCP server, REST server)
+
+The MCP and REST servers have their own setup and failure modes documented with
+the features:
+
+- **MCP server / remote connector** (stdio & HTTP transports, self-hosted OAuth,
+  Cloudflare / Tailscale tunnels): see [mcp-guide.md#troubleshooting](mcp-guide.md#troubleshooting)
+  and [deploy/README.md](../deploy/README.md).
+- **REST server** (`notebooklm-server`): a non-loopback bind refuses to start
+  without `NOTEBOOKLM_SERVER_TOKEN`; every `/v1` request needs the bearer (401
+  otherwise). See [installation.md#rest-api-server](installation.md#rest-api-server).
+- **`curl_cffi` transport**: `NOTEBOOKLM_TRANSPORT=curl_cffi` requires the
+  `curl_cffi` package; see the region / anti-abuse gate section above.
 
 ## Getting Help
 

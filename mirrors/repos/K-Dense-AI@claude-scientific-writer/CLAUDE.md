@@ -36,7 +36,7 @@ Your context window will be automatically compacted as it approaches its limit, 
 - ✅ **Verify every citation** exists and is correctly attributed before adding it to `references.bib`.
 
 **Research-Lookup First Approach:**
-1. Before writing ANY section, perform extensive research-lookup to search for real papers (routes to Perplexity).
+1. Before writing ANY section, perform extensive research-lookup to search for real papers (routes to Parallel).
 2. Find 6-10 real, diverse papers per major section.
 3. Integrate ONLY the real papers found into the text, using their exact details.
 4. If more citations are needed to support specific claims, pause and perform more research-lookup first.
@@ -55,7 +55,7 @@ Parallel is the **primary tool for all web-related operations**. Do NOT use the 
 | Web search (any) | `parallel-web` skill | `python scripts/parallel_web.py search "query" -o sources/search_<topic>.md` |
 | Extract URL content | `parallel-web` skill | `python scripts/parallel_web.py extract "url" -o sources/extract_<source>.md` |
 | Deep research | `parallel-web` skill | `python scripts/parallel_web.py research "query" --processor pro-fast -o sources/research_<topic>.md` |
-| Academic paper search | `research-lookup` skill | `python research_lookup.py "find papers on..." -o sources/papers_<topic>.md` (routes to Perplexity) |
+| Academic paper search | `research-lookup` skill | `python research_lookup.py "find papers on..." -o sources/papers_<topic>.md` (routes to Parallel) |
 | DOI/metadata verification | `parallel-web` skill | `python scripts/parallel_web.py search -o sources/search_<topic>.md` or `extract` |
 | Current events/news | `parallel-web` skill | `python scripts/parallel_web.py search "news query" -o sources/search_<topic>.md` |
 

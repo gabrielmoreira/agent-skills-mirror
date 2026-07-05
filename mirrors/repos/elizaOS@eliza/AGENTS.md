@@ -46,13 +46,53 @@ bun run test:server    # core/agent/app-core/shared/vault/elizaos/skills/scenari
 bun run test:client    # app/ui + lifeops/training plugins
 bun run test:e2e       # end-to-end lane
 bun run start          # run an agent (packages/agent start)
-bun run clean          # nuke dist/.turbo/node_modules, reinstall, rebuild
+bun run clean          # nuke dist/.turbo/node_modules and local state
+bun run reset          # clean, reinstall, rebuild
 bun run cloud:mock     # boot the full local cloud stack with mocks
 ```
 
 Scope any command to one package with `--cwd`:
-`bun run --cwd packages/core test`. The repo has ~200 root scripts; the list
+`bun run --cwd packages/core test`. The repo has 188 root scripts; the list
 above is the day-to-day set. Use `bun run` with no args to print them all.
+
+### Removed Root Command Migrations
+
+| Removed command | Use instead |
+| --- | --- |
+| `bun run test:ci` | `bun run test` |
+| `bun run test:cloud:playwright` | `bun run --cwd packages/app test:e2e` |
+| `bun run test:ui:playwright` | `bun run --cwd packages/app test:e2e` |
+| `bun run test:lifeops` | `bun run test:plugin 'plugin-personal-assistant'` |
+| `bun run trajectory:inspect:test` | `bun test packages/scripts/__tests__/trajectory-validate.test.ts` |
+| `bun run audit:e2e-coverage:test` | `bun test packages/scripts/e2e-coverage/check-e2e-coverage.test.ts` |
+| `bun run test:browser-bridge` | `bun run --cwd packages/browser-extension test` |
+| `bun run test:browser-bridge:safari` | `bun run --cwd packages/browser-extension test:smoke:safari` |
+| `bun run voice:latency-report` | `bun run --cwd packages/app-core voice:latency-report` |
+| `bun run voice:interactive` | `bun run --cwd packages/app-core voice:interactive` |
+| `bun run voice:duet` | `bun run --cwd packages/app-core voice:duet` |
+| `bun run voice:create-profile` | `bun run --cwd packages/app-core voice:create-profile` |
+| `bun run smartglasses:hardware:doctor` | `bun run --cwd packages/examples/smartglasses hardware:doctor` |
+| `bun run smartglasses:hardware:status` | `bun run --cwd packages/examples/smartglasses hardware:status-latest` |
+| `bun run smartglasses:hardware:validate` | `bun run --cwd packages/examples/smartglasses hardware:validate-latest` |
+| `bun run smartglasses:hardware:prove` | `bun run --cwd packages/examples/smartglasses hardware:prove:bleak` |
+| `bun run smartglasses:hardware:prove:watch` | `bun run --cwd packages/examples/smartglasses hardware:prove:bleak:watch` |
+| `bun run smartglasses:hardware:prove:noble` | `bun run --cwd packages/examples/smartglasses hardware:prove:noble` |
+| `bun run smartglasses:hardware:prove:noble:watch` | `bun run --cwd packages/examples/smartglasses hardware:prove:noble:watch` |
+| `bun run smartglasses:dev:hardware` | `bun run --cwd packages/examples/smartglasses dev:hardware` |
+| `bun run smartglasses:dev:simulator` | `bun run --cwd packages/examples/smartglasses dev:simulator` |
+| `bun run smartglasses:simulator` | `bun run --cwd packages/examples/smartglasses simulator` |
+| `bun run smartglasses:smoke:simulator` | `bun run --cwd packages/examples/smartglasses smoke:simulator` |
+| `bun run test:ci:live` | `bun run test:live` |
+| `bun run test:lint` | `bun run audit:test-integrity:all` |
+| `bun run test:lint:no-vi-mocks` | `bun run audit:test-integrity:no-vi-mocks` |
+| `bun run test:lint:lane-coverage` | `bun run audit:test-integrity:lane-coverage` |
+| `bun run test:lint:test-integrity` | `bun run audit:test-integrity` |
+| `bun run test:lint:test-integrity:self-test` | `bun run audit:test-integrity:self-test` |
+| `bun run verify:smartglasses-software` | `bun run audit:smartglasses-software` |
+| `bun run personality:judge` | `bun run bench:personality` |
+| `bun run personality:bench:calibrate` | `bun run bench:personality:calibrate` |
+| `bun run lint:all` | `bun run verify` |
+| `bun run build:typescript` | `node packages/scripts/run-turbo.mjs run build` |
 
 ## Repo map — where to find what
 
@@ -60,25 +100,25 @@ above is the day-to-day set. Use `bun run` with no args to print them all.
 packages/        framework, shared libraries, and product surfaces
   core/          @elizaos/core — runtime, types, agent loop, memory/state, model layer
   agent/         @elizaos/agent — AgentRuntime, plugin loader, default plugin map
-  app-core/      API + dashboard host; dev/build orchestration (dev-ui.mjs)
+  app-core/      API + dashboard host; dev/build orchestration (scripts/dev-ui.mjs)
   elizaos/       the `elizaos` CLI — create / info / upgrade / version; project + plugin templates
   prompts/       shared prompt scaffolding
   shared/        cross-package utilities + brand assets
   ui/            shared React component library
-  app/           web + desktop dashboard (Vite + React; desktop shell)
+  app/           web + desktop dashboard, desktop shell, and current cloud apex UI
   tui/           terminal UI
   skills/        runtime skills knowledge base (USE_SKILL)
   scenario-runner/ scenario + eval harness
   cloud/api/     managed backend API (Hono on Cloudflare Workers)
-  app/           web + desktop dashboard; also hosts the current cloud apex UI
+  cloud/docs-redirect/ Eliza Cloud docs redirects
   cloud/shared/  shared cloud backend: db (Drizzle), billing, services, types
   cloud/sdk/ cloud/routing/ cloud/infra/  cloud client SDK, model routing, IaC
   contracts/     on-chain contracts + ABIs
-  security/ vault/ soc2-verify/  secrets, key management, compliance tooling
+  security/ security/soc2-verify/ vault/  secrets, key management, compliance tooling
   os/ robot/                     device/OS images, OS landing, robotics
   plugin-remote-manifest/ plugin-worker-runtime/
                  remote plugin manifests, host shims, and worker runtime support
-  homepage/ docs/ docs-elizacloud-redirect/  marketing site, docs site, redirects
+  homepage/ docs/  marketing site and docs site
   examples/      30+ standalone runnable examples (each has its own README)
   benchmarks/    30+ evaluation suites (each has its own README + harness)
 
@@ -88,10 +128,10 @@ plugins/         runtime plugins and app plugins
   plugin-native-*/     native device bridges (camera, contacts, calendar, location, …)
   plugin-local-inference/  on-device llama.cpp (Kokoro TTS folded in) / whisper (git submodules under native/)
   plugin-sql/ plugin-localdb/ plugin-inmemorydb/  storage adapters
-  plugin-documents/ plugin-lifeops/ plugin-health/ …  app plugins
+  plugin-documents/ plugin-personal-assistant/ plugin-health/ …  app plugins
 
 scripts/         repo automation        patches/   dependency patches
-skills/          runtime skill packages turbo.json knip.json  build + dead-code config
+turbo.json knip.json  build + dead-code config
 ```
 
 Every package and plugin carries its own `CLAUDE.md` / `AGENTS.md` (identical)
@@ -282,11 +322,13 @@ bun run --cwd packages/app audit:app
 
 This walks the app views (desktop + mobile, rest + hover), captures the
 populated UI, and auto-stubs `aesthetic-audit-output/manual-review/<slug>.md`
-per view. Fill in the verdict (`good` · `needs-work` · `needs-eyeball` ·
-`broken`) for every page you touched or can reach via shared
+per view. Use those Markdown files for human notes and eyeballing; CI enforces
+the computed verdicts in `report.json` / the Playwright run, not edited
+manual-review Markdown. Review every page you touched or can reach via shared
 layout/theme/components.
 
-- No page may stay `needs-work` / `broken` when a UI task is declared done.
+- No computed page verdict may stay `needs-work` / `broken` when a UI task is
+  declared done.
 - Iterate the loop ≥5× for any meaningful redesign.
 - Orange is accent only; no blue anywhere; orange-resting → darker-orange hover
   (never orange→black). Full package rules: `packages/app/AGENTS.md`.

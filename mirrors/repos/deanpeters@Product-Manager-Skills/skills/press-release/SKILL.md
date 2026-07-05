@@ -1,5 +1,6 @@
 ---
 name: press-release
+argument-hint: "[product or feature idea]"
 description: Write an Amazon-style press release that defines customer value before building. Use when aligning stakeholders on a new product, feature, or strategic bet.
 intent: >-
   Create a visionary press release following Amazon's "Working Backwards" methodology to define and communicate a product or feature before building it. Use this to align stakeholders on the customer value proposition, clarify the problem being solved, and test if the product story resonates—treating the press release as a forcing function for clarity and customer-centricity.
@@ -11,6 +12,17 @@ type: component
 Create a visionary press release following Amazon's "Working Backwards" methodology to define and communicate a product or feature before building it. Use this to align stakeholders on the customer value proposition, clarify the problem being solved, and test if the product story resonates—treating the press release as a forcing function for clarity and customer-centricity.
 
 This is not a marketing artifact for launch day—it's a planning tool that asks "If we shipped this perfectly, how would we explain it to the world?"
+
+## Input
+
+**Works best with:** The product or feature idea, plus who it's for.
+**Also useful:** The customer problem, the headline benefit, and an internal quote-worthy point of view.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks who the customer is and what changes for them on launch day — the two things a working-backwards press release cannot fake.
+
+**Example invocation:** `Amazon-style press release: instant expense approval for field technicians, launching Q3.`
 
 ## Key Concepts
 

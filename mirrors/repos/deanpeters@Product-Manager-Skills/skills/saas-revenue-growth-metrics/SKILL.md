@@ -1,5 +1,6 @@
 ---
 name: saas-revenue-growth-metrics
+argument-hint: "[metrics or question]"
 description: Calculate SaaS revenue, retention, and growth metrics. Use when diagnosing momentum, churn, expansion, or product-market-fit signals.
 intent: >-
   Master revenue and retention metrics to understand SaaS business momentum, evaluate product-market fit, and make data-driven decisions about growth investments. Use this to calculate key metrics, interpret trends, identify problems early, and communicate business health to stakeholders.
@@ -21,6 +22,17 @@ estimated_time: "10-15 min"
 Master revenue and retention metrics to understand SaaS business momentum, evaluate product-market fit, and make data-driven decisions about growth investments. Use this to calculate key metrics, interpret trends, identify problems early, and communicate business health to stakeholders.
 
 This is not a business intelligence tool—it's a framework for PMs to understand which metrics matter, how to calculate them correctly, and what actions to take based on the numbers.
+
+## Input
+
+**Works best with:** The question you're answering (is growth healthy? is churn a fire?) or the metrics you want interpreted.
+**Also useful:** Your numbers — MRR/ARR, growth rate, GRR/NRR, expansion, cohort data — partial data is workable.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** Use it as a reference: read the metric sections relevant to your diagnosis.
+
+**Example invocation:** `Interpret these: $4M ARR, 8% MoM growth, GRR 88%, NRR 103% — is the growth masking a churn problem?`
 
 ## Key Concepts
 

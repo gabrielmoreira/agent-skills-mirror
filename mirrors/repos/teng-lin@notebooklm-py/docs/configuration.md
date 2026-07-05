@@ -1,7 +1,7 @@
 # Configuration
 
 **Status:** Active
-**Last Updated:** 2026-05-29
+**Last Updated:** 2026-07-04
 
 This guide covers storage locations, environment settings, and configuration options for `notebooklm-py`.
 
@@ -146,6 +146,7 @@ automatically.
 | `NOTEBOOKLM_HL` | Default interface/output language code (e.g. `en`, `ja`, `zh_Hans`) | `en` |
 | `NOTEBOOKLM_BASE_URL` | NotebookLM base URL. Constrained to `https://notebooklm.google.com` (personal) or `https://notebooklm.cloud.google.com` (enterprise) | `https://notebooklm.google.com` |
 | `NOTEBOOKLM_BL` | `bl` (build label) URL parameter for the chat streaming endpoint; override when chasing a regression tied to a specific frontend build snapshot | built-in default in `_env.DEFAULT_BL` |
+| `NOTEBOOKLM_TRANSPORT` | HTTP transport backend: `httpx` (default) or `curl_cffi` (opt-in browser-TLS impersonation; requires the `curl_cffi` package). Use `curl_cffi` where the default transport is TLS-fingerprint-blocked. | `httpx` |
 | `NOTEBOOKLM_LOG_LEVEL` | Logging level: `DEBUG`, `INFO`, `WARNING`, `ERROR` | `WARNING` |
 | `NOTEBOOKLM_DEBUG_RPC` | Legacy: Enable RPC debug logging (use `LOG_LEVEL=DEBUG` instead) | `false` |
 | `NOTEBOOKLM_DEBUG` | Show untruncated RPC response bodies in error messages instead of the default 80-char preview (verbose; intended for deep debugging) | `0` |
@@ -162,6 +163,9 @@ automatically.
 | `NOTEBOOKLM_MCP_HOST` | MCP HTTP transport bind host; non-loopback refused unless `NOTEBOOKLM_MCP_ALLOW_EXTERNAL_BIND=1` | `127.0.0.1` |
 | `NOTEBOOKLM_MCP_PORT` | MCP HTTP transport bind port | `9420` |
 | `NOTEBOOKLM_MCP_ALLOW_EXTERNAL_BIND` | Allow MCP HTTP transport to bind a non-loopback host. Use only behind a trusted proxy. | `0` |
+| `NOTEBOOKLM_MCP_OAUTH_PASSWORD` | Password gating the self-hosted OAuth authorization server that lets claude.ai connect to the remote MCP server (≥16 chars). Set together with `NOTEBOOKLM_MCP_OAUTH_BASE_URL`; both unset → bearer-only. | - |
+| `NOTEBOOKLM_MCP_OAUTH_BASE_URL` | Bare public HTTPS origin (no path) the self-hosted OAuth endpoints (`/authorize`, `/token`, `/.well-known/*`) mount under. Required with `NOTEBOOKLM_MCP_OAUTH_PASSWORD`; partial/weak/non-HTTPS config refuses to start. | - |
+| `NOTEBOOKLM_MCP_PUBLIC_URL` | Public base URL for the remote MCP file upload/download signed-URL side-channel (falls back to `NOTEBOOKLM_MCP_OAUTH_BASE_URL`). Unset → `source_add type=file` / `artifact_download` return a "not configured" error. | - |
 | `NOTEBOOKLM_MCP_TRUST_PROXY` | Trust the proxy-set `CF-Connecting-IP` header as the self-hosted-OAuth login-throttle key. Only enable behind a trusted proxy (e.g. the Cloudflare tunnel); default off keys on the socket peer. | `0` |
 | `NOTEBOOKLM_SERVER_TOKEN` | Bearer token required by every REST `/v1` request. The REST server refuses to start without it. | - |
 | `NOTEBOOKLM_SERVER_HOST` | REST server bind host; non-loopback refused unless `NOTEBOOKLM_SERVER_ALLOW_EXTERNAL_BIND=1` | `127.0.0.1` |

@@ -1,19 +1,17 @@
 ---
 name: offsite-signal-analyzer
+slug: aaron-offsite-signal-analyzer
+displayName: "Offsite Signal Analyzer · 外链分析"
+summary: "外链分析/反向链接/AI流量/AI引荐/ChatGPT流量/AI转化"
 description: 'Use when the user asks to "analyze backlinks", "analyze my off-site signals", or "track AI traffic / ChatGPT / Perplexity referrals"; profiles referring domains, anchor-text mix, toxic links, and disavow candidates (backlinks mode) or isolates AI-assistant referral sessions in GA4/GSC/logs and reports their trend, landing pages, and AI-vs-organic conversion (ai-referrals mode). Not for internal links — use site-structure-optimizer; not for keyword positions — use rank-tracker; not for multi-metric stakeholder reports — use performance-monitor. 外链分析/反向链接/AI流量/AI引荐/ChatGPT流量/AI转化'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when analyzing off-site signals for a domain. Two modes: mode=backlinks for backlink profiles, referring-domain quality, anchor-text distribution, toxic-link and disavow review, and competitor link gaps; mode=ai-referrals for isolating AI-assistant referral sessions (ChatGPT, Perplexity, Gemini, Copilot, Claude) in the user's own GA4, Search Console, or server logs and reporting their trend, top landing pages, and AI-vs-organic conversion. Also triggers on 外链分析, 反向链接, AI流量, AI引荐流量, ChatGPT/Perplexity referral sessions. Not for internal links (site-structure-optimizer), keyword positions (rank-tracker), or full stakeholder reports (performance-monitor)."
 argument-hint: "<domain or URL> [--mode backlinks|ai-referrals] [date range]"
 allowed-tools: WebFetch
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: seo-geo
-  phase: monitor
-  geo-relevance: "medium"
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "seo-geo", "phase": "monitor", "geo-relevance": "medium", "hermes": {"tags": ["marketing", "seo-geo", "monitor"], "category": "seo-geo"}, "openclaw": {"emoji": "🔍", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Off-Site Signal Analyzer
@@ -68,7 +66,13 @@ All integrations optional and keyless on your own data (see [CONNECTORS.md](../.
 
 **backlinks mode** — pull backlink profiles from `~~link database` and competitor data from `~~SEO tool`. Without tools, ask for backlink CSVs, referring domains, competitor domains, and link changes.
 
+**Keyless unlinked-mention read (backlinks mode)**: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/gdelt.py" '"<brand>"' --days 30` lists global news articles mentioning the brand and `--mode timelinevol --days 90` returns the mention-volume trend — the **unlinked-citation** complement to the link profile (news media only, not social/forums; GDELT asks ≥5s between calls). Trend it: `… | python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/ledger.py" record <domain> --source mentions`, then `ledger.py diff` between runs.
+
 **ai-referrals mode** — pull referral source/medium and conversions from `~~web analytics` (GA4 own property), AI-related query and click data from `~~search console` (own property), and raw referrer/User-Agent rows from server logs. Without any tool, ask for a GA4 source/medium export, a Search Console export, or an access-log slice — the same regex and steps work on a pasted CSV.
+
+**Keyless upstream AI-citation spot-check (ai-referrals mode)**: referral logs only show clicks *after* an AI engine cited you; `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/tavily.py" search "<money query>" --answer --limit 10` reads the *upstream* signal — whether an AI answer engine's synthesized answer cites your domain today, and at what relevance score vs competitors. **Measured** for Tavily's layer, an **Estimated proxy** for other engines. Trend it like everything else: `… | python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/ledger.py" record <domain> --source ai-citations` per query set, then `ledger.py diff` between runs.
+
+**Industry baseline for AI-crawler traffic (keyless)**: [Cloudflare Radar AI Insights](https://radar.cloudflare.com/ai-insights) publishes network-wide AI-crawler traffic shares and crawl-to-refer ratios with no account — the benchmark to set your own log-derived AI-referral numbers against ("is my AI-crawl share unusual, or is that just the web right now?"). Per-domain bot analytics need your own Cloudflare account; label the Radar read Industry-benchmark, never your-site Measured.
 
 **AI source match (starter regex, adapt to observed sources):**
 

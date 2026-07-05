@@ -1,5 +1,6 @@
 ---
 name: epic-hypothesis
+argument-hint: "[initiative or epic idea]"
 description: Frame an epic as a testable hypothesis with target user, expected outcome, and validation method. Use when defining a major initiative before roadmap, discovery, or delivery planning.
 intent: >-
   Frame epics as testable hypotheses using an if/then structure that articulates the action or solution, the target beneficiary, the expected outcome, and how you'll validate success. Use this to manage uncertainty in product development by making assumptions explicit, defining lightweight experiments ("tiny acts of discovery"), and establishing measurable success criteria before committing to full build-out.
@@ -11,6 +12,17 @@ type: component
 Frame epics as testable hypotheses using an if/then structure that articulates the action or solution, the target beneficiary, the expected outcome, and how you'll validate success. Use this to manage uncertainty in product development by making assumptions explicit, defining lightweight experiments ("tiny acts of discovery"), and establishing measurable success criteria before committing to full build-out.
 
 This is not a requirements spec—it's a hypothesis you're testing, not a feature you're committed to shipping.
+
+## Input
+
+**Works best with:** The initiative or epic idea, in whatever form it currently exists — a sentence is enough.
+**Also useful:** The target user, the outcome you expect, and how you might measure it (the skill helps you sharpen all three).
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks what the initiative is and who it's for, then builds the if/then hypothesis with you.
+
+**Example invocation:** `Frame as an epic hypothesis: adding usage-based alerts so account admins catch overages before invoice shock.`
 
 ## Key Concepts
 

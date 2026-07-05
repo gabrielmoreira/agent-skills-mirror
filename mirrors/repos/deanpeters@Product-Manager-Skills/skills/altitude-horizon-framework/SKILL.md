@@ -22,6 +22,17 @@ Defines the two-axis mental model that distinguishes Director-level thinking fro
 
 This is not a seniority hierarchy. A PM operating at the right altitude for their role is doing excellent work. A Director operating at PM altitude is leaving their actual job undone.
 
+## Input
+
+**Nothing required** — this is a reference framework you can read start to finish.
+**Also useful:** Your current situation (role, the transition friction you're feeling, a decision you're weighing). With that, the framework can be applied directly to diagnose which transition zone you're in.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** Read it as a mental model; pair it with `director-readiness-advisor` for guided coaching.
+
+**Example invocation:** `Apply the altitude-horizon framework to my situation: senior PM, just inherited two more teams, drowning in delivery detail.`
+
 ## Key Concepts
 
 ### The Two Axes

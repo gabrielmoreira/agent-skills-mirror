@@ -1,5 +1,6 @@
 ---
 name: discovery-interview-prep
+argument-hint: "[research goal]"
 description: Plan customer discovery interviews with the right goal, segment, constraints, and method. Use when preparing interviews for problem validation, churn research, or new product ideas.
 intent: >-
   Guide product managers through preparing for customer discovery interviews by asking adaptive questions about research goals, customer segments, constraints, and methodologies. Use this to design effective interview plans, craft targeted questions, avoid common biases, and maximize learning from limited customer access—ensuring discovery interviews yield actionable insights rather than confirmation bias or surface-level feedback.
@@ -21,6 +22,17 @@ estimated_time: "15-20 min"
 Guide product managers through preparing for customer discovery interviews by asking adaptive questions about research goals, customer segments, constraints, and methodologies. Use this to design effective interview plans, craft targeted questions, avoid common biases, and maximize learning from limited customer access—ensuring discovery interviews yield actionable insights rather than confirmation bias or surface-level feedback.
 
 This is not a script generator—it's a strategic prep process that outputs a tailored interview plan with methodology, question framework, and success criteria.
+
+## Input
+
+**Works best with:** Your research goal — what you need to learn from customers.
+**Also useful:** Customer segment, access constraints (how many interviews, by when), and any hypotheses you're carrying in.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill opens by asking your primary goal for the interviews, then narrows with follow-ups.
+
+**Example invocation:** `Prep interviews to understand why enterprise customers churn after 6 months — I can get 5 interviews in 2 weeks.`
 
 ## Key Concepts
 

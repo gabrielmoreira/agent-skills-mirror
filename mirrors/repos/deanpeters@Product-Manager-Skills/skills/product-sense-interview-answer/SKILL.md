@@ -1,5 +1,6 @@
 ---
 name: product-sense-interview-answer
+argument-hint: "[interview prompt]"
 description: Structure a spoken PM product-sense answer with assumptions, segmentation, pain-point prioritization, and MVP tradeoffs. Use when practicing design, improve, or build-next interview questions.
 intent: >-
   Coach PM candidates through open-ended product-sense interviews using a repeatable
@@ -25,6 +26,17 @@ estimated_time: "20-30 min"
 Help PM candidates and interview coaches structure product-sense answers that sound strong out loud, not just on paper. Use this when practicing prompts like "How would you improve X?", "Design a product for Y", or "What would you build next for Z?"
 
 This is not a memorize-and-recite script. It is a reasoning scaffold that prevents solution-jumping, forces real prioritization, and leaves the interviewer with a clean story they can follow.
+
+## Input
+
+**Works best with:** The interview prompt you're practicing (e.g., 'How would you improve X?', 'Design a product for Y').
+**Also useful:** The company/role you're interviewing for and how much time the answer gets.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks for the prompt, then walks the reasoning scaffold with you out loud.
+
+**Example invocation:** `Practice this: 'How would you improve Google Maps for commuters?' — 25-minute answer, L5 PM loop.`
 
 ## Key Concepts
 

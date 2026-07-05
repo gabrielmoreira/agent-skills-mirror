@@ -45,7 +45,7 @@ Then:
 opentag start
 ```
 
-Keep it running while testing a real mention from Slack, GitHub, or Lark / Feishu.
+Keep it running while testing a real mention from Slack, GitHub, GitLab, Lark / Feishu, Telegram, or Discord.
 
 ## Working Tree Rule
 

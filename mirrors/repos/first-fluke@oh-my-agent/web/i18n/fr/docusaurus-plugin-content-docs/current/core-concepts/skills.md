@@ -339,17 +339,17 @@ Les agents QA s'améliorent grâce au suivi des erreurs de jugement. Contraireme
 |-----------|--------|----------------------|
 | `false_negative` | +30 | Session suivante ou en production — bug que la QA a manqué |
 | `false_positive` | +15 | En cours de session — l'agent d'implémentation conteste avec succès une remarque QA |
-| `severity_mismatch` | +10 | En cours de session ou en rétrospective — mauvaise sévérité attribuée |
+| `severity_mismatch` | +10 | En cours de session ou lors de la revue de la session suivante — mauvaise sévérité attribuée |
 | `missed_stub` | +20 | La vérification d'exécution détecte une fonctionnalité purement visuelle |
 | `good_catch` | -10 | La QA a détecté un bug non évident (signal de récompense positif) |
 
 **L'EA est calculée sur une fenêtre glissante de 3 sessions.** Seuils :
-- **EA ≥ 30** → `oma retro` signale les schémas QA pour revue (ajustement suggéré)
+- **EA ≥ 30** → Ajustement suggéré : passer en revue les événements EA accumulés pour repérer les erreurs de jugement QA récurrentes
 - **EA ≥ 50** → ajustement requis : mettre à jour `execution-protocol.md` de la QA
 - **`false_negative` ≥ 3** sur la fenêtre → ajouter un schéma de détection à `checklist.md` de la QA
-- **`good_catch` ≥ 5** sur la fenêtre → documenter et propager le schéma efficace
+- **`good_catch` ≥ 5** sur la fenêtre → généraliser le schéma efficace dans `common-checklist.md`
 
-La boucle complète d'ajustement est définie dans `evaluator-tuning.md` : les sessions accumulent des événements EA → un seuil déclenche `oma retro` → le rapport classe les erreurs et propose des correctifs → l'utilisateur revoit et approuve → les correctifs sont appliqués à `checklist.md` ou au protocole de la QA → validation sur les 3 sessions suivantes.
+Lorsqu'un seuil est franchi, passez en revue les événements EA accumulés, classez les erreurs, appliquez les correctifs à la checklist / au protocole d'exécution de la QA, puis validez sur les 3 sessions suivantes.
 
 ---
 

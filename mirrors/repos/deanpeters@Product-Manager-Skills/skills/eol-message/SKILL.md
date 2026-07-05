@@ -1,5 +1,6 @@
 ---
 name: eol-message
+argument-hint: "[product or feature being retired]"
 description: Write a clear, empathetic EOL announcement with rationale, customer impact, and next steps. Use when retiring a product, feature, or plan without creating avoidable confusion.
 intent: >-
   Craft a clear, empathetic End-of-Life (EOL) message that communicates product or feature discontinuation, explains the rationale, addresses customer impact, provides transition support, and positions the replacement solution. Use this to maintain customer trust during difficult transitions and reduce churn by demonstrating care and offering a clear path forward.
@@ -11,6 +12,17 @@ type: component
 Craft a clear, empathetic End-of-Life (EOL) message that communicates product or feature discontinuation, explains the rationale, addresses customer impact, provides transition support, and positions the replacement solution. Use this to maintain customer trust during difficult transitions and reduce churn by demonstrating care and offering a clear path forward.
 
 This is not a generic sunset announcement—it's a customer-centric communication that acknowledges loss while framing the change as progress.
+
+## Input
+
+**Works best with:** What's being retired (product, feature, or plan) and roughly when.
+**Also useful:** The rationale, affected customer segments, migration or replacement path, and support commitments.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks for the what/when/why before drafting — an EOL message without a stated rationale and next step reads as abandonment.
+
+**Example invocation:** `Draft an EOL message: retiring our legacy reporting module Dec 31, replaced by the new analytics dashboard; 400 accounts affected.`
 
 ## Key Concepts
 

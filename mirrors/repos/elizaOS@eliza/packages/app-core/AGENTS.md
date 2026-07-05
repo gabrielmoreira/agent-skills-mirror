@@ -34,7 +34,6 @@ src/
     eliza.ts                Eliza agent loader — boots AgentRuntime, loads plugins, starts API server
     dev-server.ts           Dev orchestration entry + startup timing
     desktop/                Electrobun tray/window React runtimes (AppWindowRenderer, DesktopTrayRuntime, …)
-    mode/                   runtime-mode (local vs remote), route-mode-guard, remote-forwarder
     build-character-from-config.ts, channel-plugin-map.ts, autonomy-policy.ts, sandbox-policy.ts
   registry/index.ts         Back-compat shim: re-exports `@elizaos/registry/first-party`.
                             The curated app/plugin/connector registry (schema,
@@ -64,7 +63,7 @@ Run from repo root with `--cwd packages/app-core`:
 - `bun run --cwd packages/app-core typecheck` — `tsgo --noEmit -p tsconfig.json`
 - `bun run --cwd packages/app-core test` — vitest (config `vitest.config.ts`)
 - `bun run --cwd packages/app-core test:auth` — auth/auth-bootstrap/auth-store suites, no file parallelism
-- `bun run --cwd packages/app-core lint` / `lint:fix` / `format` / `format:fix` — Biome
+- `bun run --cwd packages/app-core lint` / `lint:check` / `format` / `format:check` — Biome
 - `bun run --cwd packages/app-core benchmark:server` — action benchmark harness
 - SMS-gateway, flatpak, codesign, and voice scripts are namespaced (`sms-gateway:*`, `build:flatpak*`, `codesign:mas*`, `voice:*`) — see `package.json`.
 

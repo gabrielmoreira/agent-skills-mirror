@@ -1,5 +1,6 @@
 ---
 name: proto-persona
+argument-hint: "[target user or segment]"
 description: Create a proto-persona from current research, market signals, and team knowledge. Use when you need a working customer profile before deeper validation.
 intent: >-
   Create an initial, assumption-based persona profile that synthesizes available user research, market data, and stakeholder knowledge into a working hypothesis about your target user. Use this to align teams early in product development, guide initial design decisions, and identify gaps in understanding that require validation through research.
@@ -11,6 +12,17 @@ type: component
 Create an initial, assumption-based persona profile that synthesizes available user research, market data, and stakeholder knowledge into a working hypothesis about your target user. Use this to align teams early in product development, guide initial design decisions, and identify gaps in understanding that require validation through research.
 
 This is not a validated persona—it's a "proto" (prototype) persona that evolves as you learn more. Think of it as a structured placeholder that prevents design-by-committee while acknowledging you don't have all the answers yet.
+
+## Input
+
+**Works best with:** The target user or segment you need a working profile for.
+**Also useful:** Whatever signal exists — support themes, sales anecdotes, analytics, prior research — plus the decision the persona will guide.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks who you think the user is and what you already know, then structures it and flags the assumptions needing validation.
+
+**Example invocation:** `Proto-persona for solo bookkeepers adopting our receipt-scanning app — signal: 30 support tickets and 4 sales call notes.`
 
 ## Key Concepts
 

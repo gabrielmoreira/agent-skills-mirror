@@ -37,20 +37,18 @@ Directory name: 1-64 chars, lowercase `a-z`, numbers, hyphens only. No leading/t
 ```yaml
 ---
 name: your-skill-name
+slug: aaron-your-skill-name
+displayName: "Your Skill Name · 中文名"
+summary: "一句话中文简介(SkillHub.cn 列表卡片)"
 version: "1.0.0"
 description: 'Use when the user asks to "[trigger]". [What it does]. For [related task], see [other-skill].'
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
-metadata:
-  author: your-github-username
-  version: "1.0.0"
-  geo-relevance: "high|medium|low"
-  tags: [seo, your-tags]
-  triggers: ["trigger phrase 1", "trigger phrase 2"]
+metadata: {"author": "your-github-username", "version": "1.0.0", "discipline": "seo-geo", "phase": "research", "geo-relevance": "high|medium|low", "hermes": {"tags": ["marketing", "seo-geo", "research"], "category": "seo-geo"}, "openclaw": {"emoji": "🔍", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 ```
 
-The `name` field must match the directory name exactly.
+The `name` field must match the directory name exactly. `metadata` must be a **single-line strict-JSON object** (valid YAML flow mapping) — OpenClaw's frontmatter parser reads single-line keys only, and the validator fails a YAML block map. In single-quoted scalars, double any literal apostrophe (`designer''s`). Keep the `hermes` (tags/category) and `openclaw` (emoji/homepage) host extensions in step with the skill's discipline. The `slug`/`displayName`/`summary` trio is the [SkillHub.cn](https://skillhub.cn) publishing contract — `slug` must be `aaron-<skill-name>` (validator-enforced, globally unique on that registry), `displayName` bilingual, `summary` a Chinese one-liner.
 
 ### 4. Write effective instructions
 
@@ -93,6 +91,12 @@ After adding or updating a skill, keep these **8 tracking files** in sync. **Thi
 - `docs/README.zh.md` — Chinese README: the 69 · 16 / 16 / 16 / 16 / 5 counts (skills / SEO-GEO / influencer / paid ads / email / protocol) + 5 commands + version badge
 
 For release bumps, also sync README badges and localized README badges.
+
+**Adding or renaming a skill?** Also add its slug to a grouping in the repo-root `skills.sh.json` — the [skills.sh registry page](https://skills.sh/aaron-he-zhu/aaron-marketing-skills) renders those sections, and CI fails when the groupings don't cover exactly the plugin.json skill set (an ungrouped skill would render below the legacy names at the bottom of the page).
+
+**CI enforces this list**: `scripts/check-versions.sh` fails the build when the bundle version drifts across plugin.json / the marketplace mirrors / the README badges / CLAUDE.md / VERSIONS.md, or when any SKILL.md version disagrees with its VERSIONS.md row — so a missed file surfaces in the PR, not in a user's session. Run it locally before pushing: `bash scripts/check-versions.sh`.
+
+**Adding a connector?** Follow [docs/connector-playbook.md](docs/connector-playbook.md) — the end-to-end pipeline (qualify → verify → implement → test → wire → document → track → regress → record) with the safety-class gate table and the connector-vs-recipe decision rule.
 
 ## Improving Existing Skills
 

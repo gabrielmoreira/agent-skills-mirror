@@ -1,20 +1,17 @@
 ---
 name: content-reviewer
+slug: aaron-content-reviewer
+displayName: "Content Reviewer · 红人内容审核"
+summary: "C³ ART 门:品牌契合、信息准确、FTC 披露合规的门控判定与创作者修改反馈"
 description: 'Use when the user asks to "review this influencer content" or "check if this post meets brand guidelines"; produces a structured review (brand alignment, message accuracy, compliance, quality, technical specs), an approve/revise/reject decision, and a constructive feedback message for the creator. Not for drafting the brief that sets the criteria — use brief-generator; not for the partnership agreement — use contract-helper.'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Activate when the user has an influencer content submission (draft post, video, image, caption) and needs a gate decision before it goes live. Triggers include reviewing content against a brief, checking FTC/disclosure compliance, scoring creative quality, building a review checklist, or writing revision feedback for a creator. Use after the brief exists and before the content is published or amplified."
 argument-hint: "<content submission or link> [platform] [campaign]"
 class: auditor
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: influencer
-  phase: activate
-  family: influencer-marketing
-  impact-phase: Activate
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "influencer", "phase": "activate", "family": "influencer-marketing", "impact-phase": "Activate", "hermes": {"tags": ["marketing", "influencer", "activate"], "category": "influencer"}, "openclaw": {"emoji": "📣", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Content Reviewer
@@ -78,7 +75,9 @@ With no connector configured, ask the user for the missing inputs and proceed. S
 
 ## Instructions
 
-**Before scoring, `Read ../../references/auditor-runbook.md` and `../../references/c3/art-content-benchmark.md`.** The runbook is the framework-agnostic SSOT (§1 handoff schema, §2 cap method, §4 Artifact Gate, §5 veto-ID translation); the ART benchmark owns the Content dimensions and the T1/T2 veto definitions this gate enforces.
+**Before scoring, `Read ../../../references/auditor-runbook.md` and `../../../references/c3/art-content-benchmark.md`.** The runbook is the framework-agnostic SSOT (§1 handoff schema, §2 cap method, §4 Artifact Gate, §5 veto-ID translation); the ART benchmark owns the Content dimensions and the T1/T2 veto definitions this gate enforces.
+
+*Standalone install fallback*: if that relative path does not exist, this skill was installed standalone (e.g. via `npx skills` into an `.agents/skills/` host), which bundles only this skill folder — fetch the runbook and any other `../../../references/...` file this skill names from `https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/references/<same filename>`, or ask the user for a clone of the repo. Do not score without the runbook.
 
 Run the review steps in order. Each step has a fill-in template in [references/review-templates.md](references/review-templates.md).
 

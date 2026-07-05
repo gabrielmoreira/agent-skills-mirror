@@ -50,6 +50,26 @@ host dispatcher answers 401 for unauthenticated callers.
 | Zoom | `zoom.us/j/<id>`, `app.zoom.us/wc/<id>/join` | Web client guest | `?pwd=` preserved |
 | Discord | — | **Not supported here** | Discord "meetings" are voice channels owned by the Discord connector; `requestJoin` rejects with a clear `unsupported_platform` error |
 
+## Zoom cloud/bot artifact contract
+
+Zoom cloud recording imports and bot/raw-data captures normalize through
+`src/platforms/zoom/artifacts.ts`. `buildZoomCanonicalArtifact()` maps saved Zoom
+cloud meeting metadata, participant lists, recording/transcript files, transcript
+entries, and live capture events into `schemaVersion:
+"elizaos.meeting_artifact.v1"`. The mapper preserves native Zoom participant
+ids (`zoomParticipantId`, `userId`, `userGuid`) separately from diarized speaker
+ids, emits per-participant streams when Meeting SDK/raw-data capture has them,
+and emits mixed-audio source-loss metadata when only a bot/web-client or
+bot-free mixed stream is available.
+
+`classifyZoomImportError()` maps credential/import/capture failures into the
+same missing-artifact vocabulary used by the canonical artifact: revoked access,
+permission denied, missing meeting, expired media URL, waiting-room timeout,
+denied entry, host removal, muted participants, recording disabled, transcript
+unavailable, network loss, and host-ended meeting. The deterministic tests use
+saved response-shaped objects only; live Zoom account/API proof still belongs in
+issue evidence.
+
 ## Transcript persistence
 
 Each session creates one record in the runtime `"transcripts"` memories

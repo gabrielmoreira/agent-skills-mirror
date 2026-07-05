@@ -764,12 +764,13 @@ def is_ytdlp_available() -> bool:
 def is_youtube_comments_available(config: dict[str, Any]) -> bool:
     """Check if YouTube comment enrichment is available.
 
-    Opt-in: requires SCRAPECREATORS_API_KEY AND ``youtube_comments`` in
+    Requires SCRAPECREATORS_API_KEY AND ``youtube_comments`` in
     ``INCLUDE_SOURCES`` (mirrors ``is_tiktok_comments_available``). Cost is
     bounded by ``enrich_with_comments(max_videos=3)`` (~3 credits per run).
 
-    Part of the onboarding "Everything" tier — the "Recommended" tier
-    (TikTok/Instagram, no INCLUDE_SOURCES) does not fetch comments.
+    In the default onboarding tier: the Recommended tier now enables comments
+    (posts on -> comments on for TikTok/Instagram/YouTube), writing
+    ``youtube_comments`` into INCLUDE_SOURCES.
     """
     if not config.get('SCRAPECREATORS_API_KEY'):
         return False
@@ -786,6 +787,20 @@ def is_tiktok_comments_available(config: dict[str, Any]) -> bool:
         return False
     include = _parse_include_sources(config)
     return 'tiktok_comments' in include
+
+
+def is_instagram_comments_available(config: dict[str, Any]) -> bool:
+    """Check if Instagram comment enrichment is available.
+
+    Requires SCRAPECREATORS_API_KEY AND instagram_comments in INCLUDE_SOURCES.
+    Mirrors the youtube_comments / tiktok_comments opt-in pattern. Comments are
+    fetched via ScrapeCreators (GET /v2/instagram/post/comments) with each
+    comment's ``comment_like_count`` used as its vote for ranking. Part of the
+    default onboarding tier (posts on -> comments on for TikTok/Instagram/YouTube).
+    """
+    if not config.get('SCRAPECREATORS_API_KEY'):
+        return False
+    return 'instagram_comments' in _parse_include_sources(config)
 
 
 def is_youtube_sc_available(config: dict[str, Any]) -> bool:

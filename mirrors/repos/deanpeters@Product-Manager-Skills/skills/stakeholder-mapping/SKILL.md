@@ -1,5 +1,6 @@
 ---
 name: stakeholder-mapping
+argument-hint: "[stakeholder list or initiative]"
 description: Prioritize stakeholders using two complementary grids. Use when setting engagement strategy and surfacing whose voice needs elevating after stakeholder identification.
 intent: >-
   Run two complementary 2x2 grids — Power × Interest (sets engagement strategy per
@@ -38,6 +39,17 @@ Prioritize stakeholders and set engagement strategy. This skill runs two complem
 Running only the first grid optimizes for managing relationships with the powerful. Running only the second produces an equity analysis without an engagement plan. The insight lives in comparing them: a stakeholder who appears in "keep informed" on the first grid and "high impact, low power" on the second is someone you've been under-engaging with consequences that fall entirely on them. That's a product risk.
 
 Use this after stakeholder-identification (which builds the full list) and before stakeholder-engagement-advisor (which plans per-stakeholder outreach).
+
+## Input
+
+**Works best with:** Your identified stakeholder list (ideally from `stakeholder-identification`).
+**Also useful:** What you know about each person's power, interest, and current stance, plus the engagement decisions the map must drive.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks for the stakeholder set first — mapping unidentified stakeholders just formalizes your blind spots.
+
+**Example invocation:** `Map these 14 stakeholders for the billing migration on both grids — list attached with role notes.`
 
 ## Key Concepts
 

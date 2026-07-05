@@ -1,19 +1,16 @@
 ---
 name: performance-analyzer
+slug: aaron-performance-analyzer
+displayName: "Performance Analyzer · 效果分析"
+summary: "活动效果分析:达成 vs 目标、平台与创作者维度拆解、优化建议"
 description: 'Use when the user asks to "analyze influencer campaign performance", "compare influencers", or "find what content worked"; produces metric scorecards vs target and benchmark, platform/influencer/content rankings, engagement-quality and sentiment reads, conversion-attribution breakdowns, and ranked learnings. Not for dollar-level return math — use roi-calculator.'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use mid-flight or post-campaign when a user wants to evaluate influencer results, compare creators against each other, find top-performing content or formats, judge engagement quality and comment sentiment, connect influencer activity to conversions, or build performance benchmarks for future planning."
 argument-hint: "<campaign name> [platform or influencer handles]"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: influencer
-  phase: measure
-  family: influencer-marketing
-  impact-phase: Track
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "influencer", "phase": "measure", "family": "influencer-marketing", "impact-phase": "Track", "hermes": {"tags": ["marketing", "influencer", "measure"], "category": "influencer"}, "openclaw": {"emoji": "📣", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Performance Analyzer
@@ -57,6 +54,8 @@ Where a connector could speed the work, the skill marks it with a `~~` placehold
 
 - `~~social platform analytics` — native reach/engagement/video metrics per post.
 - `~~web analytics` — site traffic, click-through, and on-site conversion data.
+
+**Measured YouTube post-performance (free key)**: when campaign content lives on YouTube, `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/youtube.py" videos @creator --limit 20` pulls the actual per-video views/likes/comments for the campaign window — **Measured** platform metrics without waiting for the creator's screenshot export. Keep both labels honest: API numbers are Measured, creator-supplied numbers are User-provided, and the two can legitimately disagree (display rounding, timing). Free `YOUTUBE_API_KEY`. See [scripts/connectors/README.md](../../../scripts/connectors/README.md).
 - `~~ecommerce / sales platform` — revenue, orders, AOV, promo-code redemptions.
 - `~~influencer database` — historical creator benchmarks for comparison.
 

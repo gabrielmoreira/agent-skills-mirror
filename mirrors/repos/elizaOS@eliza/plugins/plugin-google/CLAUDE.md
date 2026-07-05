@@ -40,9 +40,10 @@ Drive (`src/drive.ts` via `GoogleDriveClient`):
 
 Meet (`src/meet.ts` via `GoogleMeetClient`):
 - `createMeeting` / `getMeeting` / `getMeetingSpace` — space management.
-- `getConferenceRecord` / `listMeetingParticipants` / `listMeetingTranscripts` / `getMeetingTranscript` / `listMeetingRecordings` / `getMeetingRecordingUrl` — conference artifacts.
+- `getConferenceRecord` / `listMeetingParticipants` / `listMeetingParticipantSessions` / `listMeetingTranscripts` / `getMeetingTranscript` / `listMeetingRecordings` / `getMeetingRecordingUrl` — conference artifacts.
 - `endMeeting` — ends an active conference.
-- `generateReport` — builds a structured `GoogleMeetReport` from transcript + recording artifacts.
+- `generateReport` — builds a structured `GoogleMeetReport` from transcript + recording artifacts and includes a canonical `elizaos.meeting_artifact.v1` artifact.
+- `buildGoogleMeetCanonicalArtifact` / `classifyGoogleMeetImportError` — deterministic fixture helpers for saved Google API responses, Google Docs transcript mismatch warnings, missing-artifact classifications, and bot-free capture mapping.
 
 OAuth helpers (`src/auth.ts`):
 - `getGoogleOAuthProviderMetadata()` / `getGoogleOAuthProviderConfig(capabilities)` — returns the OAuth provider metadata and a capability-scoped config for the connector manager.
@@ -67,6 +68,19 @@ src/
   drive.ts                     GoogleDriveClient — Drive/Docs/Sheets operations
   meet.ts                      GoogleMeetClient — Meet space/conference/artifact operations
 ```
+
+## Meet Artifact Contract
+
+The Google Meet import path maps native Meet conference records, participants,
+participant sessions, transcript artifacts/entries, Google Docs transcript text,
+recordings, and optional bot-free capture artifacts into
+`GoogleMeetCanonicalArtifact` (`schemaVersion: "elizaos.meeting_artifact.v1"`).
+The canonical artifact preserves streams, participants, participant sessions,
+transcript spans, generated summary/key-point/action-item notes, warnings, and
+missing-artifact classifications for no transcript, delayed transcript, missing
+recording, revoked access, permission denied, meeting not found,
+organizer-only artifacts, and expired media URLs. Live sandbox evidence still
+requires real Google account access and belongs in `.github/issue-evidence/`.
 
 ## Commands
 

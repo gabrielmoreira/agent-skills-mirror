@@ -1,18 +1,16 @@
 ---
 name: ad-creative-builder
+slug: aaron-ad-creative-builder
+displayName: "Ad Creative Builder · 广告创意"
+summary: "广告创意/广告文案/RSA标题"
 description: 'Use when the user asks to "write ad copy", "generate RSA headlines", or "build ad creative at volume"; produces ad units — RSA headlines/descriptions, hooks, and an angle matrix — message-matched to the destination landing page. Not for scoring an ad account — use ad-account-auditor; not for the post-click page — use landing-optimizer; not for organic articles — use content-writer. 广告创意/广告文案/RSA标题'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when generating or iterating paid-ad creative: RSA headlines and descriptions, hooks, and an angle matrix for Search/Social campaigns, kept message-matched to a destination URL. Also when the user wants creative variants to test."
 argument-hint: "<product/offer> <destination URL> [platform: google|meta|...]"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: ad
-  phase: orchestrate
-  geo-relevance: "low"
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "ad", "phase": "orchestrate", "geo-relevance": "low", "hermes": {"tags": ["marketing", "ad", "orchestrate"], "category": "ad"}, "openclaw": {"emoji": "🎯", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Ad Creative Builder
@@ -50,6 +48,8 @@ Iterate on these losing headlines: [paste]. Keep the winners, replace the rest, 
 ## Data Sources
 
 Use `~~ad platform` (own-data manual export — native ad-manager CSV of existing creative/performance) when the user has it, to learn which angles already win; otherwise ask for the offer, destination URL, platform, and audience. Keyed ad-platform APIs (Google Ads SDK, Meta Marketing API) are an optional Tier-2/3 MCP convenience, never required. See [CONNECTORS.md](../../../CONNECTORS.md).
+
+**Competitive creative research (keyless/manual)**: the official ad-transparency libraries show what rivals actually run — the [Meta Ad Library](https://www.facebook.com/ads/library/) (all active commercial ads via the web UI, keyless; the API tier covers only political/EU-scoped ads), the [Google Ads Transparency Center](https://adstransparency.google.com) (web, no API), and TikTok's [Commercial Content Library](https://developers.tiktok.com/products/commercial-content-api) (application-gated API, EU data only for now). Use them to seed the angle matrix with observed competitor hooks and formats — label such inputs **Measured-from-library**, and study angles, never copy creative.
 
 ## Instructions
 

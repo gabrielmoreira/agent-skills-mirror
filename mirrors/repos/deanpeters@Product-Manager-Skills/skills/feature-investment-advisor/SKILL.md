@@ -1,5 +1,6 @@
 ---
 name: feature-investment-advisor
+argument-hint: "[feature to evaluate]"
 description: Evaluate feature investments using revenue impact, cost structure, ROI, and strategy. Use when deciding whether a feature deserves investment.
 intent: >-
   Guide product managers through evaluating whether to build a feature based on financial impact analysis. Use this to make data-driven prioritization decisions by assessing revenue connection (direct or indirect), cost structure (dev + COGS + OpEx), ROI calculation, and strategic value—then deliver actionable build/don't build recommendations with supporting math.
@@ -20,6 +21,17 @@ scenarios:
 Guide product managers through evaluating whether to build a feature based on financial impact analysis. Use this to make data-driven prioritization decisions by assessing revenue connection (direct or indirect), cost structure (dev + COGS + OpEx), ROI calculation, and strategic value—then deliver actionable build/don't build recommendations with supporting math.
 
 This is not a generic prioritization framework—it's a financial lens for feature decisions that complements other prioritization methods (RICE, value vs. effort, user research). Use when financial impact is a key decision factor.
+
+## Input
+
+**Works best with:** The feature you're deciding on, in a sentence or two.
+**Also useful:** Revenue connection (direct or indirect), rough cost inputs (dev time, COGS, ongoing OpEx), and the strategic argument being made for it.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The advisor opens by asking what the feature is and how it's supposed to make or save money.
+
+**Example invocation:** `Should we build SSO/SAML? Enterprise deals keep stalling on it; est. 2 engineer-months plus ongoing support burden.`
 
 ## Key Concepts
 

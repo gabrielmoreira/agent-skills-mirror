@@ -1,5 +1,6 @@
 ---
 name: skill-authoring-workflow
+argument-hint: "[source content or skill to update]"
 description: Turn raw PM content into a compliant, publish-ready skill. Use when creating or updating a repo skill without breaking standards.
 intent: >-
   Create or update PM skills without chaos. This workflow turns rough notes, workshop content, or half-baked prompt dumps into compliant `skills/<skill-name>/SKILL.md` assets that actually pass validation and belong in this repo.
@@ -19,6 +20,16 @@ scenarios:
 Create or update PM skills without chaos. This workflow turns rough notes, workshop content, or half-baked prompt dumps into compliant `skills/<skill-name>/SKILL.md` assets that actually pass validation and belong in this repo.
 
 Use it when you want to ship a new skill without "looks good to me" roulette.
+
+## Input
+
+Bring the raw material and the intent — rough is fine; the workflow exists to get it the rest of the way:
+- **Works best with:** the source content (notes, transcript, framework, prompt sequence) or the existing skill you want to update
+- **Also useful:** the intended skill type (component/interactive/workflow), target audience, and any naming preference
+
+If you supply this inline with your request (e.g., "turn `research/pricing-workshop-notes.md` into an interactive advisor"), the workflow starts at Phase 1 with that context — it won't re-ask for what you already gave. If you provide nothing, it opens by asking what content you want to turn into a skill and offers the entry modes from the facilitation protocol.
+
+Example: `Use skill-authoring-workflow: convert research/pricing-workshop-notes.md into an interactive pricing advisor.`
 
 ## Key Concepts
 
@@ -41,12 +52,13 @@ Use repo-native tools and standards before inventing a custom process:
 
 A skill is done only when:
 1. Frontmatter is valid (`name`, `description`, `intent`, `type`)
-2. Section order is compliant
+2. Section order is compliant (Purpose, Input, Key Concepts, Application, Examples, Common Pitfalls, References)
 3. Metadata limits are respected (`name` <= 64 chars, `description` <= 200 chars)
 4. Description says both what the skill does and when to use it
-5. Intent carries the fuller repo-facing summary without replacing the trigger-oriented description
-6. Cross-references resolve
-7. README catalog counts and tables are updated (if adding/removing skills)
+5. The Input section says what the user can bring, shows an example invocation, tells the agent to use inline input instead of re-asking, and makes clear that arriving with partial or zero input is fine — in plain language, never runtime template syntax like `$ARGUMENTS` (rationale: CONTRIBUTING.md, "Why We Don't Use `$ARGUMENTS`")
+6. Intent carries the fuller repo-facing summary without replacing the trigger-oriented description
+7. Cross-references resolve
+8. README catalog counts and tables are updated (if adding/removing skills)
 
 ### Facilitation Source of Truth
 

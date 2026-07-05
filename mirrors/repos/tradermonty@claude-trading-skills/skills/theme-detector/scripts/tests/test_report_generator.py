@@ -154,6 +154,7 @@ def sample_metadata():
         "data_sources": {
             "finviz": "ok",
             "uptrend": "ok",
+            "scan_hits": {"path": "scan_hits.json", "rows": 3, "hits": 3, "skipped_rows": 0},
         },
     }
 
@@ -185,6 +186,8 @@ class TestGenerateJsonReport:
             "themes",
             "industry_rankings",
             "sector_uptrend",
+            "what_changed_today",
+            "leadership_evidence",
             "data_quality",
         ]
         for key in required_keys:
@@ -206,6 +209,7 @@ class TestGenerateJsonReport:
         assert "all" in themes
         assert "bullish" in themes
         assert "bearish" in themes
+        assert "match_ranked" in themes
         assert len(themes["all"]) == 3
         assert len(themes["bullish"]) == 2
         assert len(themes["bearish"]) == 1
@@ -214,6 +218,32 @@ class TestGenerateJsonReport:
         bullish = sample_json_report["themes"]["bullish"]
         heats = [t["heat"] for t in bullish]
         assert heats == sorted(heats, reverse=True)
+
+    def test_match_ranked_preserves_separate_consumer_rank(self, sample_industry_rankings):
+        themes = [
+            {
+                "name": "Higher Heat",
+                "direction": "bullish",
+                "heat": 90.0,
+                "theme_match_score": 40.0,
+            },
+            {
+                "name": "Higher Match",
+                "direction": "bullish",
+                "heat": 70.0,
+                "theme_match_score": 95.0,
+            },
+        ]
+        report = generate_json_report(themes, sample_industry_rankings, {}, {"data_sources": {}})
+
+        assert [theme["name"] for theme in report["themes"]["all"]] == [
+            "Higher Heat",
+            "Higher Match",
+        ]
+        assert [theme["name"] for theme in report["themes"]["match_ranked"]] == [
+            "Higher Match",
+            "Higher Heat",
+        ]
 
     def test_data_quality_ok(self, sample_json_report):
         dq = sample_json_report["data_quality"]
@@ -245,15 +275,17 @@ class TestGenerateJsonReport:
 
 class TestGenerateMarkdownReport:
     def test_contains_all_sections(self, sample_json_report):
-        """Markdown contains all 7 required sections."""
+        """Markdown contains all required sections."""
         md = generate_markdown_report(sample_json_report)
         assert "## 1. Theme Dashboard" in md
-        assert "## 2. Leading Themes (Top 3)" in md
-        assert "## 3. Lagging Themes (Top 3)" in md
-        assert "## 4. All Themes Summary" in md
-        assert "## 5. Industry Rankings" in md
-        assert "## 6. Sector Uptrend Ratios" in md
-        assert "## 7. Methodology & Data Quality" in md
+        assert "## 2. What Changed Today" in md
+        assert "## 3. Leadership Evidence" in md
+        assert "## 4. Leading Themes (Top 3)" in md
+        assert "## 5. Lagging Themes (Top 3)" in md
+        assert "## 6. All Themes Summary" in md
+        assert "## 7. Industry Rankings" in md
+        assert "## 8. Sector Uptrend Ratios" in md
+        assert "## 9. Methodology & Data Quality" in md
 
     def test_header_info(self, sample_json_report):
         md = generate_markdown_report(sample_json_report)
@@ -311,25 +343,25 @@ class TestGenerateMarkdownReport:
             sample_metadata,
         )
         md = generate_markdown_report(report)
-        assert "## 5. Industry Rankings" in md
+        assert "## 7. Industry Rankings" in md
         assert "unavailable" in md.lower() or "Industry" in md
 
     def test_top_n_detail_default_3(self, sample_json_report):
         """Default top_n_detail=3 shows 'Top 3' in section headers."""
         md = generate_markdown_report(sample_json_report)
-        assert "## 2. Leading Themes (Top 3)" in md
-        assert "## 3. Lagging Themes (Top 3)" in md
+        assert "## 4. Leading Themes (Top 3)" in md
+        assert "## 5. Lagging Themes (Top 3)" in md
 
     def test_top_n_detail_custom(self, sample_json_report):
         """Custom top_n_detail changes section headers and limits themes."""
         md = generate_markdown_report(sample_json_report, top_n_detail=5)
-        assert "## 2. Leading Themes (Top 5)" in md
-        assert "## 3. Lagging Themes (Top 5)" in md
+        assert "## 4. Leading Themes (Top 5)" in md
+        assert "## 5. Lagging Themes (Top 5)" in md
 
     def test_top_n_detail_1(self, sample_json_report):
         """top_n_detail=1 only shows 1 theme per direction."""
         md = generate_markdown_report(sample_json_report, top_n_detail=1)
-        assert "## 2. Leading Themes (Top 1)" in md
+        assert "## 4. Leading Themes (Top 1)" in md
         # Only the top bullish theme detail section should appear
         # AI / Semiconductors (heat 85) should appear, Energy Transition (heat 63) should not
         assert "### AI / Semiconductors" in md

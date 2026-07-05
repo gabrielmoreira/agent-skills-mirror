@@ -72,59 +72,51 @@ final class BLEViewModel: NSObject {
 }
 
 extension BLEViewModel: CBCentralManagerDelegate {
-    nonisolated func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        Task { @MainActor in
-            isBluetoothOn = central.state == .poweredOn
-        }
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        isBluetoothOn = central.state == .poweredOn
     }
 
-    nonisolated func centralManager(
+    func centralManager(
         _ central: CBCentralManager,
         didDiscover peripheral: CBPeripheral,
         advertisementData: [String: Any],
         rssi RSSI: NSNumber
     ) {
-        Task { @MainActor in
-            let name = peripheral.name ?? "Unknown"
-            let device = DiscoveredDevice(
-                id: peripheral.identifier,
-                name: name,
-                rssi: RSSI.intValue,
-                peripheral: peripheral
-            )
-            if !discoveredDevices.contains(where: { $0.id == device.id }) {
-                discoveredDevices.append(device)
-            }
+        let name = peripheral.name ?? "Unknown"
+        let device = DiscoveredDevice(
+            id: peripheral.identifier,
+            name: name,
+            rssi: RSSI.intValue,
+            peripheral: peripheral
+        )
+        if !discoveredDevices.contains(where: { $0.id == device.id }) {
+            discoveredDevices.append(device)
         }
     }
 
-    nonisolated func centralManager(
+    func centralManager(
         _ central: CBCentralManager,
         didConnect peripheral: CBPeripheral
     ) {
-        Task { @MainActor in
-            isConnected = true
-            peripheral.delegate = self
-            peripheral.discoverServices([CBUUID(string: "180D")])
-        }
+        isConnected = true
+        peripheral.delegate = self
+        peripheral.discoverServices([CBUUID(string: "180D")])
     }
 
-    nonisolated func centralManager(
+    func centralManager(
         _ central: CBCentralManager,
         didDisconnectPeripheral peripheral: CBPeripheral,
         timestamp: CFAbsoluteTime,
         isReconnecting: Bool,
         error: Error?
     ) {
-        Task { @MainActor in
-            isConnected = false
-            connectedPeripheral = nil
-        }
+        isConnected = false
+        connectedPeripheral = nil
     }
 }
 
 extension BLEViewModel: CBPeripheralDelegate {
-    nonisolated func peripheral(
+    func peripheral(
         _ peripheral: CBPeripheral,
         didDiscoverServices error: Error?
     ) {
@@ -137,7 +129,7 @@ extension BLEViewModel: CBPeripheralDelegate {
         }
     }
 
-    nonisolated func peripheral(
+    func peripheral(
         _ peripheral: CBPeripheral,
         didDiscoverCharacteristicsFor service: CBService,
         error: Error?
@@ -148,7 +140,7 @@ extension BLEViewModel: CBPeripheralDelegate {
         }
     }
 
-    nonisolated func peripheral(
+    func peripheral(
         _ peripheral: CBPeripheral,
         didUpdateValueFor characteristic: CBCharacteristic,
         error: Error?
@@ -162,9 +154,7 @@ extension BLEViewModel: CBPeripheralDelegate {
         } else {
             bpm = Int(data[1])
         }
-        Task { @MainActor in
-            heartRate = bpm
-        }
+        heartRate = bpm
     }
 }
 ```

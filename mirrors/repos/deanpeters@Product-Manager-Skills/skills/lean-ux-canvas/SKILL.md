@@ -1,5 +1,6 @@
 ---
 name: lean-ux-canvas
+argument-hint: "[business problem]"
 description: Guide teams through Lean UX Canvas v2. Use when framing a business problem, surfacing assumptions, and defining what to learn next.
 intent: >-
   Guide product managers through creating **Jeff Gothelf's Lean UX Canvas (v2)**—a one-page facilitation tool that frames work around a **business problem to solve**, not a **solution to implement**. Use this to align cross-functional teams around core assumptions, craft testable hypotheses, and ensure learning happens every sprint by exposing gaps in understanding (problem, users, value, and why the solution should work).
@@ -19,6 +20,17 @@ scenarios:
 Guide product managers through creating **Jeff Gothelf's Lean UX Canvas (v2)**—a one-page facilitation tool that frames work around a **business problem to solve**, not a **solution to implement**. Use this to align cross-functional teams around core assumptions, craft testable hypotheses, and ensure learning happens every sprint by exposing gaps in understanding (problem, users, value, and why the solution should work).
 
 This is not a roadmap or feature list—it's an **"insurance policy"** that turns assumptions into experiments before committing to full development. The canvas shifts conversations from **outputs** to **outcomes** and ensures teams build the right thing, not just build things right.
+
+## Input
+
+**Works best with:** The business problem you're framing — or the solution idea you're being handed, which the canvas will reframe as a problem.
+**Also useful:** Known users, evidence so far, and what the team already believes (assumptions to surface).
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill opens with Box 1: what business problem are you trying to solve?
+
+**Example invocation:** `Fill a Lean UX canvas: leadership wants 'an AI chatbot' — underlying problem seems to be support ticket volume growing 3x faster than the team.`
 
 ## Key Concepts
 

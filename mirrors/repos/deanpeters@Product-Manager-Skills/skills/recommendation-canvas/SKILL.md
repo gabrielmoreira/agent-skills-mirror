@@ -1,5 +1,6 @@
 ---
 name: recommendation-canvas
+argument-hint: "[AI product idea]"
 description: Evaluate an AI product idea across outcomes, hypotheses, risks, and positioning. Use when deciding whether an AI solution deserves investment or recommendation.
 intent: >-
   Evaluate and propose AI product solutions using a structured canvas that assesses business outcomes, customer outcomes, problem framing, solution hypotheses, positioning, risks, and value justification. Use this to build a comprehensive, defensible recommendation for stakeholders and decision-makers—especially when proposing AI-powered features or products that carry higher uncertainty and risk.
@@ -11,6 +12,17 @@ type: component
 Evaluate and propose AI product solutions using a structured canvas that assesses business outcomes, customer outcomes, problem framing, solution hypotheses, positioning, risks, and value justification. Use this to build a comprehensive, defensible recommendation for stakeholders and decision-makers—especially when proposing AI-powered features or products that carry higher uncertainty and risk.
 
 This is not a feature spec—it's a strategic proposal that articulates *why* this AI solution is worth building, *what* assumptions need validating, and *how* you'll measure success.
+
+## Input
+
+**Works best with:** The AI product or feature idea being evaluated.
+**Also useful:** Target customer, expected business outcome, known risks, and who the recommendation must convince.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks for the idea and the decision-maker, then works through the canvas boxes.
+
+**Example invocation:** `Recommendation canvas: AI-suggested reorder quantities for warehouse managers — VP Ops wants a go/no-go next month.`
 
 ## Key Concepts
 

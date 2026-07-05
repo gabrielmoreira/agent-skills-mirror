@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-07-03T08:28:21.000Z
+Generated at: 2026-07-04T15:00:26.000Z
 
-Total skills: 1896
+Total skills: 1898
 
 ## architecture (113)
 
@@ -869,7 +869,7 @@ Total skills: 1896
 | `yann-lecun-filosofia` | Sub-skill filosófica e pedagógica de Yann LeCun. | persona, ai-philosophy, open-source, education | persona, ai-philosophy, open-source, education, yann, lecun, filosofia, sub, skill, filos, fica, pedag |
 | `youtube-notetaker` | Turn YouTube talks into local study notes with slides, transcripts, editable annotations, and a markdown-backed viewer. | dair-academy, ai, workflow | dair-academy, ai, workflow, youtube, notetaker, turn, talks, local, study, notes, slides, transcripts |
 
-## general (510)
+## general (511)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -972,6 +972,7 @@ Total skills: 1896
 | `context-compression` | When agent sessions generate millions of tokens of conversation history, compression becomes mandatory. The naive approach is aggressive compression to minim... | compression | compression, context, agent, sessions, generate, millions, tokens, conversation, history, becomes, mandatory, naive |
 | `context-engineering` | Optimizes agent context setup. Use when starting a new session, when agent output quality degrades, when switching between tasks, or when you need to configu... | engineering | engineering, context, optimizes, agent, setup, starting, new, session, output, quality, degrades, switching |
 | `context-fundamentals` | Context is the complete state available to a language model at inference time. It includes everything the model can attend to when generating responses: syst... | fundamentals | fundamentals, context, complete, state, available, language, model, inference, time, includes, everything, attend |
+| `context-kit` | Evaluate, adapt, and safely install Context Kit personal context artifacts for Claude Code or adjacent agent workflows. | personal-context, claude-code, memory, knowledge-management, agent-workflows | personal-context, claude-code, memory, knowledge-management, agent-workflows, context, kit, evaluate, adapt, safely, install, personal |
 | `context-management-context-restore` | Use when working with context management context restore | restore | restore, context, working |
 | `context-management-context-save` | Use when working with context management context save | save | save, context, working |
 | `context-optimization` | Context optimization extends the effective capacity of limited context windows through strategic compression, masking, caching, and partitioning. The goal is... | optimization | optimization, context, extends, effective, capacity, limited, windows, through, strategic, compression, masking, caching |
@@ -1571,7 +1572,7 @@ Total skills: 1896
 | `workflow-automation` | Workflow automation is the infrastructure that makes AI agents reliable. Without durable execution, a network hiccup during a 10-step payment flow means lost... |  | automation, infrastructure, makes, ai, agents, reliable, without, durable, execution, network, hiccup, during |
 | `youtube-full` | Fetch YouTube transcripts, search videos, browse channels, and extract playlists via TranscriptAPI — no yt-dlp, no Google API key, works from any cloud server. | youtube, transcripts, video-search, channels, playlists, api, transcriptapi | youtube, transcripts, video-search, channels, playlists, api, transcriptapi, full, fetch, search, videos, browse |
 
-## security (200)
+## security (201)
 
 | Skill | Description | Tags | Triggers |
 | --- | --- | --- | --- |
@@ -1772,6 +1773,7 @@ Total skills: 1896
 | `wordpress` | Complete WordPress development workflow covering theme development, plugin creation, WooCommerce integration, performance optimization, and security hardenin... | wordpress | wordpress, complete, development, covering, theme, plugin, creation, woocommerce, integration, performance, optimization, security |
 | `wordpress-penetration-testing` | Assess WordPress installations for common vulnerabilities and WordPress 7.0 attack surfaces. | wordpress, penetration | wordpress, penetration, testing, assess, installations, common, vulnerabilities, attack, surfaces |
 | `wordpress-plugin-development` | WordPress plugin development workflow covering plugin architecture, hooks, admin interfaces, REST API, security best practices, and WordPress 7.0 features: R... | wordpress, plugin | wordpress, plugin, development, covering, architecture, hooks, admin, interfaces, rest, api, security, features |
+| `wp-site-health-auditor` | Turns a WordPress Site Health report into a risk-tiered, backup-first fix plan with exact WP-CLI/PHP snippets. Use for site health, recommended improvements,... | wordpress, site-health, wp-cli, seo, performance, security, hardening | wordpress, site-health, wp-cli, seo, performance, security, hardening, wp, site, health, auditor, turns |
 | `xss-html-injection` | Execute comprehensive client-side injection vulnerability assessments on web applications to identify XSS and HTML injection flaws, demonstrate exploitation ... | xss, html, injection | xss, html, injection, execute, client, side, vulnerability, assessments, web, applications, identify, flaws |
 | `yield-intelligence` | Passive income portfolio analysis — activate when user asks about dividend yields, Treasury rates, REIT income, monthly passive income goals, or portfolio yi... | yield, intelligence | yield, intelligence, passive, income, portfolio, analysis, activate, user, asks, about, dividend, yields |
 | `zeroize-audit` | Detects missing zeroization of sensitive data in source code and identifies zeroization removed by compiler optimizations, with assembly-level analysis, and ... | zeroize, audit | zeroize, audit, detects, missing, zeroization, sensitive, data, source, code, identifies, removed, compiler |

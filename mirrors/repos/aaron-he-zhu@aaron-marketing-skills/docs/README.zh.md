@@ -3,10 +3,13 @@
 **69 个技能。5 个命令。四个营销学科 —— SEO/GEO、红人、付费广告、邮件营销 —— 共享同一套运行契约。**
 
 [![GitHub Stars](https://img.shields.io/github/stars/aaron-he-zhu/aaron-marketing-skills?style=flat)](https://github.com/aaron-he-zhu/aaron-marketing-skills)
-[![Version](https://img.shields.io/badge/version-12.1.0-orange)](https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md)
+[![Version](https://img.shields.io/badge/version-13.0.0-orange)](https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/LICENSE)
 [![Last Commit](https://img.shields.io/github/last-commit/aaron-he-zhu/aaron-marketing-skills)](https://github.com/aaron-he-zhu/aaron-marketing-skills/commits/main)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-compatible-purple)](https://claude.ai/download)
+[![skills.sh](https://skills.sh/b/aaron-he-zhu/aaron-marketing-skills)](https://skills.sh/aaron-he-zhu/aaron-marketing-skills)
+[![ClawHub downloads](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/badges/clawhub.json)](https://clawhub.ai/aaron-he-zhu)
+[![SkillHub downloads](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/badges/skillhub.json)](https://skillhub.cn/user/user_2c0f1e77)
 
 [English](../README.md) | **中文**
 
@@ -76,10 +79,11 @@
 | 宿主 | 安装 |
 |------|------|
 | **Claude Code** | `/plugin marketplace add aaron-he-zhu/aaron-marketing-skills` 然后 `/plugin install aaron-marketing@aaron` |
-| **skills.sh / 通用 Agent Skills 宿主** | `npx skills add aaron-he-zhu/aaron-marketing-skills` |
+| **Codex · Cursor · OpenCode · Antigravity · Gemini CLI · Copilot CLI · OpenClaw · Hermes · [70+ 宿主](https://github.com/vercel-labs/skills#supported-agents)** | `npx skills add aaron-he-zhu/aaron-marketing-skills` |
+| **[SkillHub.cn](https://skillhub.cn)(中文社区)** | `skillhub install aaron-<技能名>`(如 `aaron-keyword-research`) |
 | **任意宿主** | `git clone https://github.com/aaron-he-zhu/aaron-marketing-skills` |
 
-在 Claude Code 中，`marketplace add` 只是注册目录——还需运行 `/plugin install aaron-marketing@aaron`（或在 `/plugin` 中选择）才能真正启用技能与命令。通用宿主单技能安装：`npx skills add aaron-he-zhu/aaron-marketing-skills -s keyword-research`。
+在 Claude Code 中，`marketplace add` 只是注册目录——还需运行 `/plugin install aaron-marketing@aaron`（或在 `/plugin` 中选择）才能真正启用技能与命令。通用宿主单技能安装：`npx skills add aaron-he-zhu/aaron-marketing-skills -s keyword-research`。可在 [skills.sh 注册表](https://skills.sh/aaron-he-zhu/aaron-marketing-skills)浏览本技能库。各宿主的技能目录、frontmatter 兼容细节、以及脱离插件安装时的降级行为见 [docs/agent-compatibility.md](agent-compatibility.md)（2026-07 实测 69/69 可安装）。
 
 安装插件**不会**往你的 `/mcp` 列表添加任何东西——MCP 目录位于 [`docs/mcp-catalog.json`](mcp-catalog.json)，刻意放在 Claude Code 会自动注册的插件根 `.mcp.json` 路径之外，仅作复制粘贴参考（见[连接器与层级](#连接器与层级)）。
 
@@ -390,17 +394,34 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 
 技能用 `~~category` 占位符（`~~SEO tool`、`~~web analytics`、`~~ad platform` 等）而非具体厂商命名，且每个类别都有 **keyless 的 Tier-1 路径**。完整配方（含每个类别的免费/第一方端点）见 [CONNECTORS.md](../CONNECTORS.md)。
 
+### 连接器层本身就是一件产品
+
+**100+ 条记录在案的集成路径**，分三个精心设计的层——每一条都名副其实：
+
+| 层 | 你得到什么 |
+|----|------------|
+| **21 个内置零依赖连接器** | 纯 Python 标准库——无 `pip`、无构建。keyless 实时 SERP + JS 渲染抓取（Firecrawl、Tavily）、AI 答案引用探针、DNS-over-HTTPS 邮件认证拉取、维基百科关注度序列、GDELT 新闻提及、真实 YouTube 创作者指标、IndexNow + 百度收录推送、Resend ESP 自动化，以及能把任何数据源变成前后对比时间序列的 git 可差分测量台账。 |
+| **60+ 个记录在案的官方/免费 API** | 每一行都链接厂商**官方文档**、带核验日期，且每条链接入库前都经过 HTTP 实测。包含多数工具清单遗漏的路径：GSC URL Inspection、CrUX History（40 周真实用户 CWV）、Gmail Postmaster Tools API、Meta 广告库、微软 Clarity 数据导出 API。 |
+| **厂商 MCP 服务器** | 18 个远程端点入目录（绝不自动注册——你的 `/mcp` 列表保持干净），外加 Google Analytics、Search Console、**Google Ads**、**微软 Clarity** 的官方自托管服务器。其中两个远程 MCP 完全免鉴权（Firecrawl、Tavily）。 |
+
+让它们可信而不只是数量多的四个理由：
+
+- **三类安全等级、工程化门控**（[SECURITY.md](../SECURITY.md)）：托管抓取器在每次委托抓取前**本地预检 robots.txt**、遇 Disallow 拒绝执行；一切改变外部状态的操作（发邮件、推送收录）**默认 dry-run**，必须显式 `--live` 才执行，厂商支持幂等键就用、不支持就绝不自动重试。
+- **核验，然后再核验**：端点对照厂商一手文档带日期核实、keyless 路径经过真实调用测试、CI 守卫强制版本/跟踪同步、发版前的 live 冒烟专抓端点漂移（它已经两次抓到真实的 API 变更）。
+- **只报事实、不下判定**：连接器输出记录存在性、解析标签和原始序列；裁决交给 auditor 门，技能给每个数字标注 **Measured / User-provided / Estimated**。
+- **成文的 playbook**（[docs/connector-playbook.md](connector-playbook.md)）管辖每一次新增——定性、验证、实现、测试、接线、文档、跟踪、回归、归档——目录再增长，质量不滑坡。
+
 | 层级 | 需要 | 你获得 |
 |------|------|--------|
 | **Tier 1**（默认） | 无 | 粘贴数据，或从免费/公开来源拉取。分析框架照常运行。 |
 | **Tier 2** | 一个免费第一方 API 或 MCP | 自动取你自己的 GSC / GA4 / Core Web Vitals 数据。 |
 | **Tier 3** | 更完整的 MCP 集 | 全自动多源工作流。 |
 
-- **内置零依赖助手** 位于 `scripts/connectors/`（仅 Python 标准库），在本地拉取公开/自有数据——如 PageSpeed/CrUX、Open PageRank、页面抓取、Wayback CDX、Wikidata SPARQL、Common Crawl、advertools 配方。
-- **免费/keyless 来源** 按类别记录：Google Search Console 与 GA4（自有数据）、PageSpeed/CrUX、Wikidata、Common Crawl、Open PageRank 等。
-- **可选 MCP 服务器**（Ahrefs、Semrush、SE Ranking、SISTRIX、SimilarWeb、自托管免费的 **OpenSEO** 套件、Cloudflare、Vercel、HubSpot、Amplitude、Notion、Webflow、Sanity、Contentful、Slack）在 [`docs/mcp-catalog.json`](mcp-catalog.json) 中作为**仅复制粘贴参考**——目录位于会被自动注册的插件根 `.mcp.json` 路径之外，不会为你注册任何东西。把你想要的条目复制进自己的 MCP 配置即可。
+- **内置零依赖助手** 位于 `scripts/connectors/`（仅 Python 标准库），在本地拉取公开/自有数据——如 PageSpeed/CrUX、Open PageRank、页面抓取、Wayback CDX、Wikidata SPARQL、Common Crawl、advertools 配方——外加 **`resend.py`**：邮件技能直连 Resend ESP 的自动化（免费档 key：发件域认证状态、种子测试投递、抑制名单同步、广播定时发送；变更类子命令默认 dry-run，需 `--live` 才执行）；以及 **`firecrawl.py`** + **`tavily.py`**：研究类技能直连托管抓取器的 keyless 自动化（Firecrawl：实时搜索结果 + JS 渲染页 markdown + 站点 URL 清单；Tavily：带评分的搜索 + AI 答案引擎引用来源探针（GEO 用）+ URL 提取——两者完全无需 key，均内置本地 robots.txt 预检）。
+- **免费/keyless 来源** 按类别记录：Google Search Console 与 GA4（自有数据）、PageSpeed/CrUX、Wikidata、Common Crawl、Open PageRank、Firecrawl keyless SERP/抓取、Tavily keyless AI 搜索、DNS-over-HTTPS 邮件认证记录（`doh.py`）、维基百科关注度序列（`pageviews.py`）、GDELT 新闻提及（`gdelt.py`）、免费 key 的 YouTube 创作者指标（`youtube.py`）、IndexNow + 百度收录推送（`indexpush.py`，dry-run 门控）、广告透明库（Meta/Google/TikTok），以及 crt.sh、W3C 校验器、oEmbed、HN Algolia 的配方行。
+- **可选 MCP 服务器**（Ahrefs、Semrush、SE Ranking、SISTRIX、SimilarWeb、自托管免费的 **OpenSEO** 套件、Cloudflare、Vercel、HubSpot、Amplitude、Notion、Webflow、Sanity、Contentful、Slack、Resend、keyless 的 Firecrawl 与 Tavily）在 [`docs/mcp-catalog.json`](mcp-catalog.json) 中作为**仅复制粘贴参考**——目录位于会被自动注册的插件根 `.mcp.json` 路径之外，不会为你注册任何东西。把你想要的条目复制进自己的 MCP 配置即可。
 
-付费广告技能基于你的**自有账户手动导出**（原生广告管理后台 CSV、GA4、电商）评分。带密钥的广告 API（Google Ads SDK、Meta Marketing API）仅是 opt-in Tier-2/3，**绝不**作为 Tier-1 要求。
+付费广告技能基于你的**自有账户手动导出**（原生广告管理后台 CSV、GA4、电商）评分。带密钥的广告 API（Google Ads SDK、Meta Marketing API）仅是 opt-in Tier-2/3，**绝不**作为 Tier-1 要求。邮件技能同理——基于你**自己的 ESP 导出**评分，所有送达率信号均 keyless（DNS 查询、DMARC RUA 报告、种子收件测试），带密钥的 ESP API 也绝不是 Tier-1 要求；若你的 ESP 是 Resend，内置的 `resend.py` 可在免费档上自动化同一闭环。
 
 ---
 
@@ -475,14 +496,18 @@ docs/            # 本地化 README(zh)
 | `check-evals.py` | eval 结构 lint + `structure-manifest.json`（69/69 技能均带 eval 用例）。 |
 | `check-pii.py` | 拦截提交的密钥 / PII（token 级允许名单，fail-closed）。 |
 | `check-stdlib-only.sh` | 依赖蔓延守卫 + 付费广告带密钥 API 红线。 |
+| `check-versions.sh` | 版本同步守卫：束版本在 plugin.json / 两个 marketplace 镜像 / 双语 README 徽章 / CLAUDE.md / VERSIONS.md 发布行 + changelog 条目间完全一致，且每个 SKILL.md 版本与其 VERSIONS.md 行匹配。 |
+| `tests/test_connectors_local.py` | 全部连接器纯请求构建函数的离线单测（CI 不联网）。 |
 | `tests/test_hook_artifact_gate.sh` | hook 的 Artifact Gate + SessionStart 净化的行为测试。 |
+
+线上端点漂移由**手动**的 [`scripts/connectors/smoke-live.sh`](../scripts/connectors/smoke-live.sh) 单独覆盖——每个托管连接器一次最小真实调用 + 响应形状断言（限速应答记 SKIP）；发版前手动跑，绝不进 CI。
 
 ---
 
 ## 贡献与文档
 
 - **[CONTRIBUTING.md](../CONTRIBUTING.md)** —— 撰写规则、贡献清单、权威的 8 文件追踪列表。
-- **[VERSIONS.md](../VERSIONS.md)** —— 各技能版本 + 变更日志（当前包：`12.1.0`）。
+- **[VERSIONS.md](../VERSIONS.md)** —— 各技能版本 + 变更日志（当前包：`13.0.0`）。
 - **[SECURITY.md](../SECURITY.md)** · **[PRIVACY.md](../PRIVACY.md)** · **[CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md)** —— 安全、隐私、社区政策。
 - **[CLAUDE.md](../CLAUDE.md)** / **[AGENTS.md](../AGENTS.md)** —— 面向 Agent 的本仓库上下文。
 
@@ -496,7 +521,7 @@ docs/            # 本地化 README(zh)
 
 Apache License 2.0 —— 见 [LICENSE](../LICENSE)。
 
-*最后同步英文 README：v12.1.0*
+*最后同步英文 README：v12.6.0*
 
 ## Star History
 

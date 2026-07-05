@@ -70,6 +70,7 @@ DeerFlow has newly integrated the intelligent search and crawling toolset indepe
     - [Long-Term Memory](#long-term-memory)
   - [Recommended Models](#recommended-models)
   - [Embedded Python Client](#embedded-python-client)
+  - [Scheduled Tasks](#scheduled-tasks)
   - [Terminal Workbench (TUI)](#terminal-workbench-tui)
   - [Documentation](#documentation)
   - [⚠️ Security Notice](#️-security-notice)
@@ -262,7 +263,7 @@ section, when present, overrides the first two for backward compatibility.
 The unified nginx endpoint is same-origin by default and does not emit browser CORS headers. If you run a split-origin or port-forwarded browser client, set `GATEWAY_CORS_ORIGINS` to comma-separated exact origins such as `http://localhost:3000`; the Gateway then applies the CORS allowlist and matching CSRF origin checks.
 
 > [!IMPORTANT]
-> The Gateway holds run state (RunManager and the stream bridge) in process, so production defaults to a single Gateway worker (`GATEWAY_WORKERS=1`). Raising the worker count without a shared cross-worker stream bridge — which is not yet available — breaks run cancellation, SSE reconnects, request de-duplication, and IM channels, because nginx uses no sticky sessions and each worker keeps its own run state. Scale a single worker up with more CPU/RAM (or move the database and sandbox onto dedicated tiers) instead of raising `GATEWAY_WORKERS`.
+> The Gateway still owns active run tasks in process, so production defaults to a single Gateway worker (`GATEWAY_WORKERS=1`). The Redis stream bridge (`stream_bridge.type: redis`) shares SSE delivery and `Last-Event-ID` replay across workers, with a rolling retained-buffer TTL (`stream_ttl_seconds`) as a cleanup safety net. It does not make run cancellation, request de-duplication, or IM channel state fully cross-worker by itself; use single-worker Gateway or explicit sticky routing/ownership before raising `GATEWAY_WORKERS`.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed Docker development guide.
 
@@ -766,6 +767,29 @@ client.clear_goal("thread-1")
 ```
 
 All dict-returning methods are validated against Gateway Pydantic response models in CI (`TestGatewayConformance`), ensuring the embedded client stays in sync with the HTTP API schemas. See `backend/packages/harness/deerflow/client.py` for full API documentation.
+
+## Scheduled Tasks
+
+DeerFlow now includes a first-class scheduled-task MVP in the workspace.
+
+Current MVP capabilities:
+
+- Manage tasks at `/workspace/scheduled-tasks`
+- Choose whether each scheduled task reuses a thread or creates a fresh thread per run
+- Support `once` and `cron` schedules
+- Run background scheduled executions as non-interactive DeerFlow runs (`ask_clarification` is not exposed there)
+- Use `skip` overlap behavior for due cron executions that collide with an active run on the same reused thread
+- Pause, resume, trigger, inspect history, and delete tasks
+- Execute scheduled work through the normal DeerFlow run lifecycle
+
+Current MVP limits:
+
+- No conversation-created `schedule_task` tool yet
+- No text-only notification jobs
+- No channel or GitHub dispatch targets
+- No `interval` schedule type in this first cut
+
+Enable background polling with `config.yaml -> scheduler.enabled`. Manual trigger uses the same scheduled-task resource and execution path.
 
 ## Terminal Workbench (TUI)
 

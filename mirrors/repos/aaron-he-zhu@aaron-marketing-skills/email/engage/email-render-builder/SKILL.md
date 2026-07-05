@@ -1,18 +1,16 @@
 ---
 name: email-render-builder
+slug: aaron-email-render-builder
+displayName: "Email Render Builder · 邮件HTML"
+summary: "邮件HTML/响应式邮件/暗色模式渲染"
 description: 'Use when the user asks to "build the email HTML", "make this email responsive", "fix dark-mode rendering", or "QA the email across clients"; produces the coded HTML build — a responsive table layout, dark-mode + accessibility pass, a client-render matrix, image-block fallbacks, and a plain-text parity check. Not for writing the copy — use email-creative-builder; not for scoring the email or computing EQS — use email-quality-auditor. 邮件HTML/响应式邮件/暗色模式渲染'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when coding or QA-ing the HTML build of an email that copy is already written for: converting approved creative into a responsive table-based layout, checking dark-mode color inversion, running an accessibility pass (alt text, semantic order, contrast, font-size), producing a client-render matrix (Gmail/Outlook/Apple Mail/mobile), specifying image-off fallbacks and bulletproof buttons, and verifying the plain-text alternate matches the HTML. Covers B2C promo, B2B, and newsletter builds. Not for authoring the words, and not for the EQS gate."
 argument-hint: "<email creative or HTML> [target clients] [mode: promo|cold|newsletter]"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: email
-  phase: engage
-  geo-relevance: "low"
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "email", "phase": "engage", "geo-relevance": "low", "hermes": {"tags": ["marketing", "email", "engage"], "category": "email"}, "openclaw": {"emoji": "✉️", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Email Render Builder
@@ -52,6 +50,8 @@ This renders broken in Outlook and images-off — fix the layout and add fallbac
 ## Data Sources
 
 This skill is build-and-QA, not analytics — its primary inputs are the approved creative and any raw HTML, both supplied by the user. Use `~~email platform` (own-data manual export — the native ESP template/HTML export, plus a seed-list or inbox-preview render if the user has one) when available to confirm how the account's real template renders; a seed/render test is the only Measured render source. Reuse `~~web analytics` (GA4) only to confirm the destination URL for message-match, not for render facts. Keyed ESP APIs and paid render-preview services (Litmus, Email on Acid) are an optional Tier-2/3 convenience, never a Tier-1 precondition — without them, render calls are Estimated from the client-support matrix in [references/client-render-matrix.md](references/client-render-matrix.md). See [CONNECTORS.md](../../../CONNECTORS.md).
+
+**Zero-dependency render-test send (when Resend is the ESP)**: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/resend.py" send --from <verified sender> --to <your own test inboxes> --subject "[render test] …" --html build.html --live` delivers the built HTML to the user's own Gmail/Outlook/Apple Mail accounts, upgrading those client-render matrix rows from **Estimated** to **Measured**. Own test inboxes only — this is a render test, not a campaign. Dry-run by default; `--live` to send. See [scripts/connectors/README.md](../../../scripts/connectors/README.md).
 
 ## Instructions
 

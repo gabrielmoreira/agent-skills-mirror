@@ -1,5 +1,6 @@
 ---
 name: discovery-process
+argument-hint: "[problem hypothesis]"
 description: Run a full discovery cycle from problem hypothesis to validated solution. Use when a team needs a structured path through framing, interviews, synthesis, and experiments.
 intent: >-
   Guide product managers through a complete discovery cycle—from initial problem hypothesis to validated solution—by orchestrating problem framing, customer interviews, synthesis, and experimentation skills into a structured process. Use this to systematically explore problem spaces, validate assumptions, and build confidence before committing to full development—avoiding "build it and they will come" syndrome and ensuring you're solving real customer problems.
@@ -20,6 +21,17 @@ estimated_time: "30-60 min"
 Guide product managers through a complete discovery cycle—from initial problem hypothesis to validated solution—by orchestrating problem framing, customer interviews, synthesis, and experimentation skills into a structured process. Use this to systematically explore problem spaces, validate assumptions, and build confidence before committing to full development—avoiding "build it and they will come" syndrome and ensuring you're solving real customer problems.
 
 This is not a one-time research project—it's a continuous discovery practice that runs in parallel with delivery, typically 1-2 discovery cycles per quarter.
+
+## Input
+
+**Works best with:** Your starting problem hypothesis — even a rough one.
+**Also useful:** Prior research, customer access, timeline, and what decision the discovery must inform.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The workflow starts at problem framing and helps you construct the hypothesis first.
+
+**Example invocation:** `Run discovery on this hypothesis: SMB admins abandon onboarding because the data-import step requires IT help they don't have.`
 
 ## Key Concepts
 

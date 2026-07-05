@@ -1,5 +1,6 @@
 ---
 name: stakeholder-identification
+argument-hint: "[initiative]"
 description: Map every stakeholder before engaging anyone. Use when launching an initiative, scoping discovery, or building an engagement plan from scratch.
 intent: >-
   Produce a comprehensive, equity-aware stakeholder set before any engagement begins.
@@ -33,6 +34,17 @@ Map every stakeholder before engaging anyone. This skill produces a comprehensiv
 Most PM stakeholder lists are written from memory in five minutes. They reliably capture executives, product peers, and the most vocal users. They reliably miss the marginalized user groups who bear the product's consequences without having the organizational power to shape its decisions. This skill forces a slower, more structured brainstorm that builds the foundation for every engagement decision that follows.
 
 Use this before stakeholder-mapping (which prioritizes) and before stakeholder-engagement-advisor (which plans per-stakeholder outreach). Identification comes first — you cannot prioritize people you haven't named.
+
+## Input
+
+**Works best with:** The initiative, product, or decision you're mapping stakeholders for.
+**Also useful:** Stakeholders already on your list (the skill's job is to find who's missing), org context, and affected communities.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks what the initiative is and who it touches, then runs the equity-aware sweep.
+
+**Example invocation:** `Identify stakeholders for migrating all customers to the new billing system by Q4.`
 
 ## Key Concepts
 

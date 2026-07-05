@@ -1,5 +1,6 @@
 ---
 name: positioning-statement
+argument-hint: "[product] [target customer]"
 description: Create a Geoffrey Moore-style positioning statement. Use when clarifying who you serve, what problem you solve, your category, and why you're different from alternatives.
 intent: >-
   Create a Geoffrey Moore-style positioning statement that clearly articulates who your product serves, what need it addresses, how it's categorized, what benefit it delivers, and how it differs from alternatives. Use this when you need to align stakeholders on product strategy, guide messaging, or test if your value proposition is crisp and defensible.
@@ -20,6 +21,17 @@ estimated_time: "10-15 min"
 Create a Geoffrey Moore-style positioning statement that clearly articulates who your product serves, what need it addresses, how it's categorized, what benefit it delivers, and how it differs from alternatives. Use this when you need to align stakeholders on product strategy, guide messaging, or test if your value proposition is crisp and defensible.
 
 This is not a tagline or elevator pitch—it's a strategic clarity tool that forces you to make hard choices about target, need, and differentiation.
+
+## Input
+
+**Works best with:** The product and its target customer.
+**Also useful:** The unmet need, product category, primary benefit, and nearest alternative — the skill drafts from what you give and asks only for what's missing.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks for product and target customer first, then works through the Moore template slots.
+
+**Example invocation:** `Positioning statement for LaunchDarkly-style feature flags aimed at platform engineering leads at 200+ eng orgs.`
 
 ## Key Concepts
 

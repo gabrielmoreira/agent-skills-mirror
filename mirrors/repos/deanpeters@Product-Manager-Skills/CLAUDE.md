@@ -4,14 +4,14 @@
 
 ---
 
-## Project Status (Last updated: Sun May 17 2026)
+## Project Status (Last updated: Sat Jul 4 2026)
 
-### Current State: v0.79 + organic-growth-advisor (49 skills)
+### Current State: v0.81 (55 skills)
 
-**Released: 49 Skills**
-- 21 Component Skills (templates/artifacts + finance metrics + career frameworks)
-- 22 Interactive Skills (guided discovery + finance advisors + career advisors + growth)
-- 6 Workflow Skills (end-to-end processes + meta skill-authoring + executive onboarding)
+**Released: 55 Skills**
+- 23 Component Skills (templates/artifacts + finance metrics + career frameworks + stakeholder tools)
+- 25 Interactive Skills (guided discovery + finance advisors + career advisors + growth + stakeholder engagement)
+- 7 Workflow Skills (end-to-end processes + meta skill-authoring + executive onboarding + company intel)
 - License: CC BY-NC-SA 4.0
 - All skills restructured to Anthropic-compliant format (`skills/skill-name/SKILL.md`)
 
@@ -51,6 +51,14 @@
   - See `docs/Finance Suite Summary.md` for complete overview
 
 **Recent Updates:**
+- ✅ **v0.81 Released (Jul 4, 2026):** Required `## Input` section across all 55 skills + the `$ARGUMENTS` stance
+  - Every skill now declares inputs in plain language: works-best-with, also-useful, inline-input rule (invocation context counts as answers already given — skip, don't re-ask), empty-handed fallback ("invitation, not gate"), and an example invocation
+  - Skill anatomy is now: Purpose, **Input**, Key Concepts, Application, Examples, Common Pitfalls, References — enforced by `check-skill-metadata.py`; smoke checks warn on missing example invocation or empty-handed language
+  - Bare `$ARGUMENTS` in skill bodies now fails validation — rationale (portability, pedagogy, unnecessary) documented in CONTRIBUTING.md "Why We Don't Use `$ARGUMENTS`"; `argument-hint` frontmatter is the sanctioned Claude Code autocomplete exception (53 skills)
+  - Streamlit skill pages render the skill's own Input section in a "What to bring (all optional)" pre-flight expander
+  - Added `workshop-facilitation/examples/inline-input-flow.md` — transcript of inline input skipping answered questions, with the re-asking anti-pattern
+  - Restored `skills/agent-orchestration-advisor/` — the Phase 6 skill #34 had only ever existed on orphaned commit `a41415c` (never merged to main) while docs claimed it shipped; recovered and upgraded to current standards
+  - Release note: `docs/announcements/2026-07-04-v0-81-input-sections.md`
 - ✅ **organic-growth-advisor Added (May 17, 2026):** Interactive skill for McKinsey Growth Pyramid L2-L5 triage
   - 3-question flow diagnoses growth constraint via Growth Path Matrix (customer/market context × degree of product change)
   - Path-specific diagnostics, first experiments, and watch-outs for L2 (New Segments), L3 (New Geographies), L4 (New Distribution), L5 (New Products)
@@ -148,7 +156,7 @@
 - For facilitation behavior changes, update `skills/workshop-facilitation/SKILL.md` first, then use `docs/maintenance/facilitation-scope.md` to find and patch all linked skills
 - For category decisions (Component vs Interactive vs Workflow), anchor to criteria in this file and `README.md` before giving an answer
 - Prefer evidence from local tools (`scripts/find-a-skill.sh`, `scripts/test-a-skill.sh`, `scripts/check-skill-metadata.py`) over subjective preference
-- Skills must follow standard anatomy: Purpose, Key Concepts, Application, Examples, Common Pitfalls, References
+- Skills must follow standard anatomy: Purpose, Input, Key Concepts, Application, Examples, Common Pitfalls, References
 - Interactive skills require 3-5 adaptive questions, enumerated options (3-5 choices), handle single/multi-selection
 - All skills include YAML frontmatter: `name`, `description`, `intent`, `type`
 - Cross-reference related skills in References section
@@ -307,6 +315,14 @@ Every skill follows this format:
 ## Purpose
 One paragraph. What this skill does and when to use it.
 - Keep it outcome-focused (not "learn about roadmaps" but "build a roadmap that survives exec review")
+
+## Input
+What the user can bring, in plain language — never runtime-specific template syntax like `$ARGUMENTS` (portability + pedagogy; rationale in CONTRIBUTING.md Design Philosophy). Frame as invitation, not gate — nothing is a prerequisite.
+- **Works best with:** the subject the skill operates on
+- **Also useful:** context that sharpens the output (constraints, audience, prior research)
+- Instruct the agent: input supplied inline with the request (text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line) counts as answers already given — use it, don't re-ask
+- **Arriving empty-handed?** Say what the skill does instead (opening question, entry modes) — the reader must know the skill walks them through what they don't have
+- Show 1–2 example invocations so the human learns what a well-formed request looks like
 
 ## Key Concepts
 Core frameworks, definitions, mental models.

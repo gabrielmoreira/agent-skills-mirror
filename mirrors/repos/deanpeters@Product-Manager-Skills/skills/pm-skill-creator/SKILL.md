@@ -1,5 +1,6 @@
 ---
 name: pm-skill-creator
+argument-hint: "[idea or raw content]"
 description: Design a new PM skill through guided conversation. Use when you have raw content or an idea and want to shape it into a compliant skill.
 intent: >-
   Walk through the full skill design process interactively — from raw idea or content to a structured, repo-compliant SKILL.md draft. Asks adaptive questions to determine skill type, scope, structure, and content, then generates a ready-to-validate draft.
@@ -22,6 +23,16 @@ Walk through the full skill design process interactively — from raw idea or co
 
 This skill is the conversational complement to `skill-authoring-workflow`. That skill defines the process and validation gates. This one sits with you and figures out what to build before you build it.
 
+## Input
+
+Bring the seed for the skill you want to design — half-formed is fine; shaping it is this skill's job:
+- **Works best with:** the idea, framework, or raw content (notes, prompt sequence, article) the skill should capture
+- **Also useful:** the skill type you suspect it is, who it's for, and any existing skills it should relate to
+
+If you supply this inline with your request (e.g., "help me design a skill from my pricing-tiers framework"), the conversation uses that as the answer to Q1 and moves on — it won't re-ask. With no input, it opens by asking what you want the skill to help someone do.
+
+Example: `Use pm-skill-creator: I have a decision tree for choosing north-star metrics — help me shape it into a skill.`
+
 ## Key Concepts
 
 ### When to Use This vs. Other Authoring Tools
@@ -43,11 +54,12 @@ This skill is the conversational complement to `skill-authoring-workflow`. That 
 
 Every skill requires these sections in order:
 1. **Purpose** — What it does + when to use it (outcome-focused)
-2. **Key Concepts** — Frameworks, definitions, mental models
-3. **Application** — Step-by-step instructions an agent can follow
-4. **Examples** — At least one concrete, specific example
-5. **Common Pitfalls** — Named failure modes with consequences and fixes
-6. **References** — Related skills, external frameworks, source material
+2. **Input** — What the user can bring (subject, optional context), an example invocation, and the rule that inline input counts as answers already given. Must read as an invitation: zero input is fine, the guided flow covers it. Plain language only — no runtime template syntax like `$ARGUMENTS`
+3. **Key Concepts** — Frameworks, definitions, mental models
+4. **Application** — Step-by-step instructions an agent can follow
+5. **Examples** — At least one concrete, specific example
+6. **Common Pitfalls** — Named failure modes with consequences and fixes
+7. **References** — Related skills, external frameworks, source material
 
 ### Metadata Constraints
 
@@ -205,11 +217,12 @@ After collecting answers to Q1-Q5, the agent generates a complete SKILL.md draft
 
 1. **YAML frontmatter** — `name`, `description`, `intent`, `type`, `best_for`, `scenarios`, `estimated_time`
 2. **Purpose** — Synthesized from Q1 + Q3
-3. **Key Concepts** — Structured from Q4 content
-4. **Application** — Step-by-step instructions derived from Q4
-5. **Examples** — Concrete example from Q4 (or generated if not provided)
-6. **Common Pitfalls** — Structured from Q5
-7. **References** — Related skills identified during conversation + source material
+3. **Input** — Derived from Q2/Q3: what the user provides, an example invocation, and the inline-input rule (use what's supplied, don't re-ask)
+4. **Key Concepts** — Structured from Q4 content
+5. **Application** — Step-by-step instructions derived from Q4
+6. **Examples** — Concrete example from Q4 (or generated if not provided)
+7. **Common Pitfalls** — Structured from Q5
+8. **References** — Related skills identified during conversation + source material
 
 **Agent says after generating:**
 

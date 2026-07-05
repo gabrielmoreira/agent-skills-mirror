@@ -1,5 +1,6 @@
 ---
 name: tam-sam-som-calculator
+argument-hint: "[product idea] [market constraints]"
 description: Calculate TAM, SAM, and SOM with explicit assumptions, methods, and caveats. Use when sizing a market for a product idea, business case, or executive review.
 intent: >-
   Guide product managers through calculating Total Addressable Market (TAM), Serviceable Available Market (SAM), and Serviceable Obtainable Market (SOM) for a product idea by asking adaptive, contextually relevant questions. Use this to build defensible market size estimates backed by real-world citations, economic projections, and population data—essential for pitching to investors, securing budget, or validating product-market fit.
@@ -11,6 +12,17 @@ type: interactive
 Guide product managers through calculating Total Addressable Market (TAM), Serviceable Available Market (SAM), and Serviceable Obtainable Market (SOM) for a product idea by asking adaptive, contextually relevant questions. Use this to build defensible market size estimates backed by real-world citations, economic projections, and population data—essential for pitching to investors, securing budget, or validating product-market fit.
 
 This is not a back-of-napkin guess—it's a structured, citation-backed analysis that withstands scrutiny.
+
+## Input
+
+**Works best with:** The product or idea being sized, and any market constraints you already know (geography, vertical, customer type).
+**Also useful:** Pricing assumptions, comparable companies, and the audience for the numbers (investors, execs, business case).
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The calculator opens by asking what you're sizing and for whom, then works through method and assumptions.
+
+**Example invocation:** `Size the market: AI scheduling assistant for independent dental practices, US only, $99/mo price point.`
 
 ## Key Concepts
 

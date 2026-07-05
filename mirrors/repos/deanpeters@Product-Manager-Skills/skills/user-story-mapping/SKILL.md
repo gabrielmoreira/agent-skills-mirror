@@ -1,5 +1,6 @@
 ---
 name: user-story-mapping
+argument-hint: "[product or workflow]"
 description: Create a user story map that lays out activities, steps, tasks, and release slices. Use when planning a workflow, backlog, or MVP around the user journey.
 intent: >-
   Visualize the user journey by creating a hierarchical map that breaks down high-level activities into steps and tasks, organized left-to-right as a narrative flow. Use this to build shared understanding across product, design, and engineering, prioritize features based on user workflows, and identify gaps or opportunities in the user experience.
@@ -11,6 +12,17 @@ type: component
 Visualize the user journey by creating a hierarchical map that breaks down high-level activities into steps and tasks, organized left-to-right as a narrative flow. Use this to build shared understanding across product, design, and engineering, prioritize features based on user workflows, and identify gaps or opportunities in the user experience.
 
 This is not a backlog—it's a strategic artifact that shows *how* users accomplish their goals, which then informs *what* to build.
+
+## Input
+
+**Works best with:** The product or user workflow being mapped.
+**Also useful:** The primary user, the end-to-end narrative as you understand it, existing backlog items to place, and release goals.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks whose journey you're mapping and what they're trying to get done, then builds backbone → tasks → slices.
+
+**Example invocation:** `Story map for our expense-reporting flow, from receipt capture to reimbursement, with an MVP slice for the pilot.`
 
 ## Key Concepts
 

@@ -1,5 +1,6 @@
 ---
 name: prioritization-advisor
+argument-hint: "[decision context]"
 description: Choose a prioritization framework based on stage, team context, and stakeholder needs. Use when deciding between RICE, ICE, value/effort, or another scoring approach.
 intent: >-
   Guide product managers in choosing the right prioritization framework by asking adaptive questions about product stage, team context, decision-making needs, and stakeholder dynamics. Use this to avoid "framework whiplash" (switching frameworks constantly) or applying the wrong framework (e.g., using RICE for strategic bets or ICE for data-driven decisions). Outputs a recommended framework with implementation guidance tailored to your context.
@@ -19,6 +20,17 @@ scenarios:
 Guide product managers in choosing the right prioritization framework by asking adaptive questions about product stage, team context, decision-making needs, and stakeholder dynamics. Use this to avoid "framework whiplash" (switching frameworks constantly) or applying the wrong framework (e.g., using RICE for strategic bets or ICE for data-driven decisions). Outputs a recommended framework with implementation guidance tailored to your context.
 
 This is not a scoring calculator—it's a decision guide that matches prioritization frameworks to your specific situation.
+
+## Input
+
+**Works best with:** What you're trying to prioritize and why now (sprint planning, roadmap, stakeholder fight).
+**Also useful:** Product stage, team size, data availability, and frameworks you've tried that failed.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The advisor opens by asking about your product stage and the decision you need the framework to make.
+
+**Example invocation:** `Help me pick a framework: seed-stage B2B startup, 40-item backlog, zero usage data, loud enterprise prospect.`
 
 ## Key Concepts
 

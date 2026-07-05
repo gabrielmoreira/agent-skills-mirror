@@ -61,17 +61,20 @@ npx @keygraph/shannon setup
 ./shannon workspaces                                 # List all workspaces
 
 # Monitor
-./shannon logs <workspace>            # Tail workflow log
-./shannon status                      # Show running workers
-# Temporal Web UI: http://localhost:8233
+./shannon logs <workspace>            # Show a scan's live log
+./shannon status                      # Show running scans
+# Dashboard: http://localhost:8233
 
 # Stop
-./shannon stop                        # Preserves workflow data
-./shannon stop --clean                # Full cleanup including volumes (confirms first)
+./shannon stop                        # Preserves scan data
+./shannon stop --clean                # Full cleanup including volumes (confirms first; --yes/-y to skip)
+
+# Version
+./shannon version                     # npx: package version; local: git SHA
 
 # Image management
 ./shannon build [--no-cache]          # Local mode: build worker image
-npx @keygraph/shannon uninstall             # npx mode: remove ~/.shannon/ (confirms first)
+npx @keygraph/shannon uninstall             # npx mode: remove ~/.shannon/ (confirms first; --yes/-y to skip)
 
 # Build TypeScript (development)
 pnpm run build                       # Build all packages via Turborepo
@@ -82,7 +85,7 @@ pnpm biome:fix                       # Auto-fix lint, format, and import sorting
 
 **Monorepo tooling:** pnpm workspaces, Turborepo for task orchestration, Biome for linting/formatting. TypeScript compiler options shared via `tsconfig.base.json` at the root. All packages extend it, overriding only `rootDir` and `outDir`. Shared devDependencies (`typescript`, `@types/node`, `turbo`, `@biomejs/biome`) are hoisted to the root workspace.
 
-**Options:** `-c <file>` (YAML config), `-o <path>` (output directory), `-w <name>` (named workspace; auto-resumes if exists), `--pipeline-testing` (minimal prompts, 10s retries), `--debug` (preserve worker container after exit for log inspection)
+**Options:** `-c <file>` (YAML config), `-o <path>` (output directory), `-w <name>` (named workspace; auto-resumes if exists), `--pipeline-testing` (minimal prompts, 10s retries), `--debug` (preserve worker container after exit for log inspection), `--yes`/`-y` (skip the confirmation prompt on `stop --clean`/`uninstall`; required for non-interactive use)
 
 ## Architecture
 
@@ -96,7 +99,7 @@ apps/worker/     — @shannon/worker (private, Temporal worker + pipeline logic)
 ### CLI Package (`apps/cli/`)
 Published as `@keygraph/shannon` on npm. Contains only Docker orchestration logic — no Temporal SDK, business logic, or prompts. Bundled with tsdown for single-file ESM output.
 
-- `apps/cli/src/index.ts` — CLI dispatcher (`setup`, `start`, `stop`, `logs`, `workspaces`, `status`, `build`, `uninstall`, `info`)
+- `apps/cli/src/index.ts` — CLI dispatcher (`setup`, `start`, `stop`, `logs`, `workspaces`, `status`, `build`, `uninstall`, `version`)
 - `apps/cli/src/mode.ts` — Auto-detection: local mode if `SHANNON_LOCAL=1` env var is set
 - `apps/cli/src/docker.ts` — Compose lifecycle, image pull/build, ephemeral `docker run` worker spawning
 - `apps/cli/src/home.ts` — State directory management (`~/.shannon/` for npx, `./` for local)
@@ -105,6 +108,8 @@ Published as `@keygraph/shannon` on npm. Contains only Docker orchestration logi
 - `apps/cli/src/config/writer.ts` — TOML serialization and secure file persistence (0o600)
 - `apps/cli/src/commands/setup.ts` — Interactive TUI wizard (`@clack/prompts`) for provider credential setup (npx only)
 - `apps/cli/src/paths.ts` — Repo/config path resolution (bare name → `./repos/<name>`, or any absolute/relative path)
+- `apps/cli/src/version.ts` — Version reporting (npx: `package.json` version; local: `git-<sha>`)
+- `apps/cli/src/tty.ts` — Terminal capability detection: `requireInteractive` guard (fails fast off-TTY instead of hanging on a prompt), `supportsColor` color gating (`NO_COLOR`/`FORCE_COLOR`), and `stdoutIsTerminal` for spinner/cursor output
 - `apps/cli/src/commands/` — Command handlers
 - `apps/cli/infra/compose.yml` — Bundled Temporal compose file for npx mode
 - `apps/cli/tsdown.config.ts` — tsdown bundler config
@@ -148,8 +153,8 @@ Durable workflow orchestration with crash recovery, queryable progress, intellig
 - **Configuration** — YAML configs in `apps/worker/configs/` with JSON Schema validation (`config-schema.json`). Supports auth settings (MFA/TOTP), URL/code rule scoping (`rules.avoid`/`rules.focus`), run-scope steering (`vuln_classes`, `exploit`), free-form `rules_of_engagement`, and post-hoc `report` filters (`min_severity`, `min_confidence`, `guidance`). `code_path` avoid rules are written into `~/.claude/settings.json` `permissions.deny` (`Read`/`Edit`) once per workflow by `apps/worker/src/temporal/activities.ts:syncCodePathDenyRules` so the SDK enforces them at the tool layer even in `bypassPermissions` mode. `vuln_classes`/`exploit` scope is locked into `session.json` on first run; resumes with a different scope fail fast (`persistOrValidateRunScope`). Credential resolution — local mode: env vars → `./.env`; npx mode: env vars → `~/.shannon/config.toml` (via `npx @keygraph/shannon setup`)
 - **Prompts** — Per-phase templates in `apps/worker/prompts/` with variable substitution (`{{TARGET_URL}}`, `{{CONFIG_CONTEXT}}`). Shared partials in `apps/worker/prompts/shared/` via `apps/worker/src/services/prompt-manager.ts`, including `_code-path-rules.txt` (focus/avoid `[FILE]`/`[GLOB]` routing) and `_rules-of-engagement.txt` (free-text engagement rules). When `exploit: false`, `apps/worker/src/services/findings-renderer.ts` deterministically converts each `*_exploitation_queue.json` into a `*_findings.md` for report assembly — no LLM in the loop
 - **SDK Integration** — Uses `@anthropic-ai/claude-agent-sdk` with `maxTurns: 10_000` and `bypassPermissions` mode. Adaptive thinking is enabled by default on Opus 4.6/4.7/4.8 (`supportsAdaptiveThinking` in `apps/worker/src/ai/models.ts`); disable per-scan via `CLAUDE_ADAPTIVE_THINKING=false` (env) or `core.adaptive_thinking = false` (npx TOML). Browser automation via `playwright-cli` with session isolation (`-s=<session>`). TOTP generation via `generate-totp` CLI tool. Login flow template at `apps/worker/prompts/shared/login-instructions.txt` supports form, SSO, API, and basic auth. On authenticated whitebox scans, the `validate-authentication` preflight performs the single real login and saves the browser session to `auth-state.json` in the per-session audit directory (path from `authStateFile()` in `apps/worker/src/audit/utils.ts`, derived from `generateAuditPath()`). The validation activity (`apps/worker/src/services/validate-authentication.ts`) removes any stale file from a prior run before the agent runs and verifies the file parses and contains cookies or storage before the preflight is marked complete; `logWorkflowComplete` deletes it when the workflow ends so authenticated cookies don't sit on disk between scans. Agent prompts opt in to session reuse by `@include(shared/_shared-session.txt)` before their `<login_instructions>` block — the partial restores the session and falls through to the full login flow if verification fails. `vuln-auth`/`exploit-auth` omit the include and own their own login
-- **Audit System** — Crash-safe append-only logging in `workspaces/{hostname}_{sessionId}/`. Tracks session metrics, per-agent logs, prompts, and deliverables. WorkflowLogger (`apps/worker/src/audit/workflow-logger.ts`) provides unified human-readable per-workflow logs, backed by LogStream (`apps/worker/src/audit/log-stream.ts`) shared stream primitive
-- **Deliverables** — Saved to `deliverables/` in the target repo via the `save-deliverable` CLI script (`apps/worker/src/scripts/save-deliverable.ts`)
+- **Audit System** — Crash-safe append-only logging in `workspaces/{hostname}_{sessionId}/`. The run directory's top level holds only the human-facing report (`Security-Assessment-Report.md`, `FINAL_REPORT_FILENAME` in `apps/worker/src/paths.ts`); everything else — deliverables, per-agent logs, prompts, `session.json`, `workflow.log`, and browser artifacts — is nested under a hidden `.shannon/` internals dir (`INTERNAL_DIR`) so a customer sees only the report. Audit path helpers route through `generateInternalPath` (`apps/worker/src/audit/utils.ts`); the CLI nests the overlay backing dirs under the same `.shannon/` (`apps/cli/src/docker.ts`, `start.ts`). `session.json`/`workflow.log` reads use dual-read resolvers (`resolveSessionJsonPath`, `resolveRunFile`) that prefer `.shannon/` and fall back to the legacy run-root layout, so pre-restructure workspaces stay listable (`workspaces`/`logs`) without migration. Resuming a pre-restructure workspace upgrades it in place first: `migrateLegacyWorkspaceLayout` (`apps/cli/src/commands/start.ts`) renames the flat deliverables/logs/session entries into `.shannon/` (carrying the deliverables `.git` along) before the overlay dirs are mounted, so resume finds the old checkpoints instead of re-running every agent. The report is surfaced by copying the assembled `comprehensive_security_assessment_report.md` from the deliverables dir to the run root (`copyReportToRunRoot` in `apps/worker/src/services/reporting.ts`). WorkflowLogger (`apps/worker/src/audit/workflow-logger.ts`) provides unified human-readable per-workflow logs, backed by LogStream (`apps/worker/src/audit/log-stream.ts`) shared stream primitive
+- **Deliverables** — Saved to `.shannon/deliverables/` in the target repo via the `save-deliverable` CLI script (`apps/worker/src/scripts/save-deliverable.ts`)
 - **Workspaces & Resume** — Named workspaces via `-w <name>` or auto-named from URL+timestamp. Resume detects completed agents via `session.json`. `loadResumeState()` in `apps/worker/src/temporal/activities.ts` validates deliverable existence, restores git checkpoints, and cleans up incomplete deliverables. Workspace listing via `apps/worker/src/temporal/workspaces.ts`
 
 ## Development Notes

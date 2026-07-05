@@ -65,8 +65,11 @@ It writes a block that launches the server via `uvx` (so only `uv` needs to be o
 }
 ```
 
-Restart the client after installing. For a one-click Claude Desktop bundle, see
-[`desktop-extension/README.md`](../desktop-extension/README.md).
+Restart the client after installing. For a one-click Claude Desktop bundle,
+download `notebooklm-mcp.mcpb` from the
+[latest release](https://github.com/teng-lin/notebooklm-py/releases/latest)
+(**Assets**) and use "Install Extension"; see
+[`desktop-extension/README.md`](../desktop-extension/README.md) for details.
 
 ## Run it directly
 
@@ -100,74 +103,27 @@ token, since it fronts a full Google account.
 ## Remote deployment (Docker + a tunnel)
 
 Because master-token auth keeps the session alive unattended (no browser), the HTTP transport can
-run as a **remote connector** reachable from Claude Code, Claude Desktop, claude.ai, and mobile.
+run as a **remote connector** reachable from Claude Code, Claude Desktop, claude.ai, mobile, and ChatGPT.
 The [`deploy/`](../deploy/) directory ships a turn-key Docker + Compose stack with a **tunnel
 sidecar** — pick one via a Compose profile — so you get HTTPS with **no public IP, no open ports,
 and no TLS certificate to manage** (the tunnel terminates TLS at its edge).
 
-**Common setup (both tunnels):**
-```bash
-# 1. bootstrap the master token once (a machine with a browser):
-notebooklm login --master-token --account you@example.com      # writes ~/.notebooklm/profiles/default
-# 2. secrets:
-cp deploy/.env.example deploy/.env                              # edit per the steps below
-#    NOTEBOOKLM_PROFILE_DIR defaults to ~/.notebooklm/profiles/default (override for a throwaway profile)
-```
+**→ The full step-by-step lives in [`deploy/README.md`](../deploy/README.md)** — run it from
+inside `deploy/` (`make setup` → finish the one manual tunnel step → `make up`), where the Compose
+stack, `Makefile`, and `.env.example` it references sit. It walks both tunnels end to end:
+**Cloudflare** (needs a domain in your Cloudflare account) and **Tailscale Funnel** (no domain — a
+free, stable `*.ts.net` HTTPS hostname). The rest of this section is the two things worth knowing
+before you start: the auth model and remote file transfer.
 
 **Two auth methods coexist on one `/mcp`** (FastMCP `MultiAuth`):
 - **Claude Code / Desktop** → the static `NOTEBOOKLM_MCP_TOKEN` bearer (an `Authorization` header).
-- **claude.ai (web/mobile)** → optional **self-hosted OAuth** (one password, no external IdP):
-  set `NOTEBOOKLM_MCP_OAUTH_PASSWORD` (≥16 random chars) + `NOTEBOOKLM_MCP_OAUTH_BASE_URL`
-  (the **bare public origin**, no `/mcp`). Unset → bearer-only.
+- **claude.ai (web/mobile) and ChatGPT** (Developer Mode) → optional **self-hosted OAuth** (one
+  password, no external IdP): set `NOTEBOOKLM_MCP_OAUTH_PASSWORD` (≥16 random chars) +
+  `NOTEBOOKLM_MCP_OAUTH_BASE_URL` (the **bare public origin**, no `/mcp`). Both connector UIs are
+  OAuth-only (no bearer field). Unset → bearer-only (Claude Code/Desktop still work).
 
-### Tunnel A — Cloudflare (needs a domain in your Cloudflare account)
-1. Cloudflare **Zero Trust → Networks → Tunnels**: create a tunnel; copy its token to
-   `CF_TUNNEL_TOKEN` in `.env`.
-2. Add a **Public Hostname** (e.g. `notebooklm.yourdomain.com`) → **Service**
-   `http://notebooklm-mcp:9420` — the **docker service name**, not `localhost`; route the **whole
-   host** (`/`), not a `/mcp`-scoped ingress (the OAuth routes live at the root). Cloudflare
-   auto-creates the proxied DNS record and serves a valid cert.
-3. `.env`: `NOTEBOOKLM_MCP_OAUTH_BASE_URL=https://notebooklm.yourdomain.com` (bare origin).
-4. Run: `cd deploy && make dev` (Cloudflare is the default profile).
-
-> Optional: set `NOTEBOOKLM_MCP_TRUST_PROXY=1` to key the per-IP login throttle on the
-> tunnel's `CF-Connecting-IP` header. Default off keys on the socket peer (the tunnel
-> egress) — one global throttle bucket. Only enable it behind a trusted proxy that sets the
-> header; an exposed-directly origin could forge it to dodge the throttle.
-
-### Tunnel B — Tailscale Funnel (no domain — free, stable `*.ts.net` HTTPS)
-Best when you don't own a domain: Tailscale Funnel gives a stable public HTTPS hostname on
-Tailscale's domain, free on the personal plan, no DNS to manage. **One-time tailnet setup in
-the admin console** (these are policy/feature prerequisites, not per-machine toggles):
-1. Enable **MagicDNS** and **HTTPS certificates** (admin console → DNS; → HTTPS Certificates).
-2. Grant the **`funnel` node attribute**: admin console → **Settings → General → Funnel →
-   Manage → Node attributes → Add node attribute** → `funnel` (JSON preview:
-   `{"target": ["*"], "attr": ["funnel"]}`).
-3. Create a **normal auth key** (Settings → Keys) → `.env` `TS_AUTHKEY` (there's no
-   "Funnel-capable" key type; Funnel comes from the policy in step 2).
-
-Then:
-4. `.env`: `NOTEBOOKLM_MCP_OAUTH_BASE_URL=https://notebooklm-mcp.<your-tailnet>.ts.net` (bare origin).
-   Find `<your-tailnet>` on the admin console **DNS** page (the **"Tailnet name"**, e.g.
-   `tailXXXXXX.ts.net`).
-5. Run: `cd deploy && make dev TUNNEL=tailscale`. The sidecar (`deploy/tailscale/funnel.json` via
-   `TS_SERVE_CONFIG`, mounted as a directory) funnels public `:443 /` → `notebooklm-mcp:9420`;
-   the node is `TS_HOSTNAME=notebooklm-mcp`, so the origin is `https://notebooklm-mcp.<tailnet>.ts.net`.
-   Confirm the served URL with `docker compose --profile tailscale exec tailscale tailscale serve status`.
-
-**Verify** either tunnel (the OAuth metadata must serve at the root over a valid cert):
-```bash
-curl https://<host>/.well-known/oauth-authorization-server     # 200 JSON; issuer == your base URL
-```
-
-**Connect:**
-- **Claude Code:** `claude mcp add --transport http notebooklm https://<host>/mcp --header "Authorization: Bearer $NOTEBOOKLM_MCP_TOKEN"`
-- **claude.ai:** Settings → Connectors → **Add custom connector** → `https://<host>/mcp` (the URL
-  **with** `/mcp`) → it registers (DCR) and opens the server's password page.
-
-Full step-by-step + security model: [`deploy/README.md`](../deploy/README.md). Use a
-**dedicated/throwaway Google account** — the mounted `master_token.json` is a durable full-account
-credential. Multi-tenant hosting is out of scope for this single-tenant setup.
+Use a **dedicated/throwaway Google account** — the mounted `master_token.json` is a durable
+full-account credential. Multi-tenant hosting is out of scope for this single-tenant setup.
 
 ### File upload & download (remote)
 
@@ -201,8 +157,15 @@ bearer-only deploy → the two file tools return a clear "not configured" error
 These conventions hold across every tool:
 
 - **Name *or* ID.** Every `notebook`/`source`/`note`/`artifact` argument accepts a human title **or**
-  an ID (full, or a unique prefix). Use the matching `*_list` tool to discover them. An ambiguous name
-  or prefix returns a `VALIDATION` error listing the candidates so you can retry with an exact ID.
+  an ID. Both resolve by prefix: an exact title wins, otherwise a **unique title prefix** matches
+  (so `"Scientific"` finds `"Scientific PDF Parsing — …"`), and likewise a full ID or a unique ID
+  prefix. Use the matching `*_list` tool to discover them. An ambiguous name or prefix returns a
+  `VALIDATION` error listing the candidates so you can retry with an exact title or ID. When a name
+  lookup *fails* but is close to a real title — a punctuation-only slip such as a hyphen typed for an
+  em-dash (`—`) or a normal space for a non-breaking one — the error's `Did you mean: …` hint names
+  up to three near-miss candidates, each with its **title and id** inline, so you can retry with the
+  full title or id instead of guessing (a label near-miss reached via `source_list(label=…)` gets the
+  same enrichment on its `VALIDATION` error).
 - **Destructive tools need confirmation.** `notebook_delete`, `source_delete`,
   `studio_delete`, and `share_remove_user` take `confirm` (default `false`). Called without it, they return a `needs_confirmation` preview
   (with the resolved title) and delete **nothing**; call again with `confirm=true` to execute.
@@ -231,7 +194,9 @@ These conventions hold across every tool:
   `AUTH`, `RATE_LIMITED`, `NOT_FOUND`, `VALIDATION`, `TIMEOUT`, `NETWORK`, `SERVER`, `RPC`,
   `CONFIG`, `NOTEBOOK_LIMIT`, `ARTIFACT_TIMEOUT`, `SOURCE_MUTATION`, `ERROR`, or `UNEXPECTED`. The
   `retriable` flag tells an agent whether a retry could succeed (e.g. `RATE_LIMITED`, `TIMEOUT`,
-  `NETWORK`). Many errors also carry an actionable `hint` (e.g. `AUTH → run notebooklm login`).
+  `NETWORK`). Many errors also carry an actionable `hint` (e.g. `AUTH → run notebooklm login`); a
+  near-miss name lookup puts its `Did you mean: …` candidates (title + id) in that hint (see
+  **Name *or* ID** above).
 
 ## Workflows
 
@@ -272,6 +237,51 @@ error, never added as text); `source_type`/`url`/`text`/`title`/`path`/
 `document_id`/`mime_type` are not valid with `urls`, but `allow_internal`
 applies to every entry.
 
+### Content-sanity warnings on ready web pages
+
+A dead link, [soft-404](https://en.wikipedia.org/wiki/HTTP_404#Soft_404), or
+paywalled page frequently ingests as a **READY** source with little-to-no
+extractable text — a "ghost source" that add-time status can't catch because a
+soft-404 serves HTTP 200. `source_wait` — and batch `source_add(urls=[...])` for
+an item that is *already* READY the moment it returns (single-mode `source_add`
+adds asynchronously, so it never runs this check) — attaches a non-blocking,
+advisory `warning` to such a source. The check is **best-effort and never
+rejects**: the source stays READY, `ok` stays `true`, and any fetch failure
+(including a >5s slow `source_read`) degrades to no warning rather than breaking
+the wait.
+
+It fires on a **web-page source only** (`kind == "web_page"`) via two body-only
+signals — the title is never scanned:
+
+| Signal | Threshold | Warning contains |
+|--------|-----------|------------------|
+| **char-thin** | indexed text shorter than **100 characters** | `"little/no text extracted (N chars) …"` |
+| **dead-link boilerplate** | **indexed text** shorter than **2000 characters** that (casefolded) contains any of the phrases below | `"ingested as ready (N chars) but the body matches a dead-link / error-page pattern …"` |
+
+The full dead-link phrase set (the complete list, so you can build a fixture that
+trips it): `broken link`, `page not found`, `page isn't available`, `page does
+not exist`, `page no longer available`, `no longer available`, `error 404`, `404
+not found`, `whoops!`.
+
+Both gates measure the source's **indexed text** length (`char_count` from a
+`source_read` with `detail="full"`), not the raw HTTP response — a large HTML
+page that indexes to little text is still caught. The 2000-char gate is what
+keeps the weaker phrases safe: a page whose indexed text is 2000 chars or longer
+is never phrase-scanned (so `broken link` in a real article about broken links,
+or a shop's `no longer available`, does not false-positive), and the phrases are
+all multi-word / anchored — no bare `404` or `not found`. Every warning ends with
+`verify with source_read (detail="full").` (trailing period included).
+
+**To exercise the warning branch** (the reason this is documented): note that a
+`text` source — even an empty one — is *never* flagged; only a `web_page` under
+the thresholds above is. So the reliable trigger is a URL that resolves to a
+near-empty or soft-404 page. To unit-test your own handling of the branch
+without a live URL, mock the source's fetched body under the threshold and assert
+the warning shape — copy the pattern from
+[`tests/unit/mcp/test_sources.py`](../tests/unit/mcp/test_sources.py) (see
+`test_source_wait_thin_web_page_warns`, `test_source_wait_soft_404_body_phrase_warns`,
+and the `_THIN_SOURCE_CHAR_THRESHOLD` boundary test).
+
 ### Generate and download a studio artifact
 
 ```text
@@ -300,18 +310,25 @@ validation error, not a silent no-op.
 
 ```text
 task = research_start(notebook="Quantum Computing", query="post-quantum cryptography", source="web", mode="deep")
-research_status(notebook="Quantum Computing", task_id=task["poll_task_id"])
-research_import(notebook="Quantum Computing", task_id=task["poll_task_id"])
+research_status(notebook="Quantum Computing", poll_task_id=task["poll_task_id"])
+research_import(notebook="Quantum Computing", poll_task_id=task["poll_task_id"])
 ```
 
 `source` is `web` or `drive`; `mode` is `fast` or `deep`. Pass the
-`poll_task_id` returned by `research_start` when polling, importing, or
-cancelling so the request is pinned to the intended research task — it is the
-one id that drives polling (for a **deep** run it is the `report_id`; the raw
+`poll_task_id` returned by `research_start` — under the **same** parameter name,
+`poll_task_id` — when polling, importing, or cancelling, so the value copies
+verbatim from one tool's output into the next and the request is pinned to the
+intended research task (for a **deep** run it is the `report_id`; the raw
 `task_id` is an unpollable sessionId). Omitting the pin on `research_status` is
 allowed only when the notebook has a single in-flight task. `research_status`
 omits the large report by default — pass `include_report=true` to fetch it once
 `completed`.
+
+> **Deprecated (removed in v0.9.0):** `research_status`/`research_import` also
+> accept the old `task_id` name and `research_cancel` the old `run_id` name as
+> aliases for `poll_task_id`. Passing an alias still works but emits a
+> `DeprecationWarning` and adds a `deprecation` note to the result — switch to
+> `poll_task_id`. See [docs/deprecations.md](deprecations.md).
 
 ## Tool reference
 
@@ -322,7 +339,7 @@ omits the large report by default — pass `include_report=true` to fetch it onc
 | **Chat** | `chat_ask(notebook, question?, conversation_id?, references?, source_ids?, history?, suggest_followups?)` (`references`: lite\|full; never returns the raw debug blob; `source_ids` scopes to specific sources — list, JSON-array string, or comma string; omit for all; `history`>0 also returns up to N prior `{question, answer}` pairs — omit `question` to recall only; `suggest_followups=true` also returns `suggested_prompts` (3 questions to ask — works question-less too)) · `chat_configure(notebook, chat_mode?, goal?, response_length?)` (`chat_mode`: default\|learning-guide\|concise\|detailed — a preset, mutually exclusive with `goal`/`response_length`; a **partial** custom call sets just `goal` or just `response_length` and **merges** with the current settings — the omitted field is preserved, not reset; only a bare call, no preset and neither field, is rejected) · `suggest_prompts(notebook, surface?, source_ids?, query?)` (READ_ONLY; `surface`: ask\|audio-deep-dive\|audio-brief\|audio-critique\|audio-debate\|video-explainer\|video-short\|quiz\|flashcards — returns `{title, prompt}` suggestions to steer that studio surface; `ask` (default) = chat questions) |
 | **Notes** | `note_save(notebook, note?, title?, content?)` (upsert: omit `note` to **create** — `title` AND `content` required; pass a `note` ref to **update** — `title` and/or `content`, title-only = rename). Reading and deleting notes fold into the Studio row below. |
 | **Studio** | `studio_list(notebook, item?, kind?, detail?, limit?, offset?)` (the unified Studio panel — **notes AND artifacts** merged into one `items` list; each item has `id`/`title`/`type` where `type` is `note` or a hyphenated artifact kind; artifacts add `status_label`/`url`; `detail=summary` (default) gives each note a bounded `content_preview` + full-body `char_count` to keep a discovery listing low-token, `detail=full` returns the whole note `content`; `kind` filters to one `type`; `item` fetches one note-or-artifact by ref as a 1-element list, always with the note's full `content`) · `studio_generate(notebook, artifact_type, …)` · `studio_status(notebook, task_id)` · `studio_get_prompt(notebook, artifact)` (the free-text prompt an artifact was generated from; `null` if none) · `studio_download(notebook, artifact? \| artifact_type?, path?, output_format?, artifact_id?)` (target by `artifact` name-or-id ref **or** by `artifact_type` [+ `artifact_id` for a specific one, else latest]) · `studio_rename(notebook, item, new_title)` (cross-type: renames a note OR an artifact resolved from the merged list) · `studio_retry(notebook, artifact)` (re-run a failed artifact in place; task_id == artifact_id) · `studio_delete(notebook, item, confirm)` (cross-type: deletes a note OR an artifact resolved from the merged list) |
-| **Research** | `research_start(notebook, query, source, mode)` (returns `poll_task_id` — the one id status/import/cancel drive off) · `research_status(notebook, task_id?, include_report?, report_max_chars?, source_limit?, source_offset?)` (report + per-source `report_markdown` omitted unless `include_report`) · `research_import(notebook, task_id)` · `research_cancel(notebook, run_id)` (sends the cancel unless the run is already terminal → `cancel_requested`) |
+| **Research** | `research_start(notebook, query, source, mode)` (returns `poll_task_id` — the one id status/import/cancel drive off) · `research_status(notebook, poll_task_id?, include_report?, report_max_chars?, source_limit?, source_offset?)` (report + per-source `report_markdown` omitted unless `include_report`) · `research_import(notebook, poll_task_id)` · `research_cancel(notebook, poll_task_id)` (sends the cancel unless the run is already terminal → `cancel_requested`). The old `task_id` / `run_id` param names are deprecated aliases for `poll_task_id`, removed in v0.9.0 |
 | **Sharing** | `share_status(notebook)` (is_public/access/share_url/shared_users; enums as string labels; `view_level` omitted — the read API can't report it) · `share_set_access(notebook, public?, view_level?, confirm)` (link settings; `view_level`: full\|chat, echoed back only when set; `confirm` gates public widening restricted→public) · `share_set_user(notebook, email, permission?, notify?, message?, confirm)` (upsert grant; `permission`: editor\|viewer; `notify` defaults `false`; `confirm` gates every grant) · `share_remove_user(notebook, email, confirm)` |
 | **Server** | `server_info(include_account?)` — version + local auth health; `include_account=true` adds an `account` block: signed-in identity (`email`, `authuser`) plus notebook/source limits and global `output_language` for quota pacing + language context (best-effort; identity is network-free from the profile, the quota fields need a live session). `email` is real account PII, returned only under this opt-in flag |
 
@@ -347,6 +364,6 @@ gate the destructive ones.
 ## See also
 
 - [installation.md](installation.md#running-the-mcp-server-mcp-extra) — the `mcp` extra + run/connect summary
-- [`desktop-extension/README.md`](../desktop-extension/README.md) — one-click Claude Desktop `.mcpb` bundle
+- [`desktop-extension/README.md`](../desktop-extension/README.md) — one-click Claude Desktop `.mcpb` bundle (prebuilt, attached to each stable release)
 - [configuration.md](configuration.md) — profiles, multi-account, storage
 - [cli-reference.md](cli-reference.md) — the equivalent CLI commands

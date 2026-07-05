@@ -53,16 +53,16 @@ telemetry: false
 # `bridge_host` vendor receives `{url: bridge_url}` in its MCP config instead
 # of stdio; you must run `oma bridge` separately so the HTTP server is up.
 #
-# `auto_update` is opt-in (default false). When true, `oma update` runs
-# `uv tool upgrade serena-agent --prerelease=allow` after vendor reconcile.
-# Failures (uv missing, network) are warned-only — the previously installed
-# serena keeps working.
+# `auto_update` is opt-out (default true): `oma update` runs
+# `uv tool upgrade serena-agent --prerelease=allow` after vendor reconcile
+# unless set to false. Failures (uv missing, network) are warned-only — the
+# previously installed serena keeps working.
 #
 # serena:
 #   mode: bridge
 #   bridge_host: claude             # the CLI that connects via URL
 #   bridge_url: http://localhost:12341/mcp  # default; override if needed
-#   auto_update: true               # upgrade serena-agent on every `oma update`
+#   auto_update: false              # skip serena-agent upgrade on `oma update`
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Serena memory reaper

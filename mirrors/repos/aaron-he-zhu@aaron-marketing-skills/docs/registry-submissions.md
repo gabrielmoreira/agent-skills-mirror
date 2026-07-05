@@ -1,0 +1,135 @@
+# Registry Submissions — listing playbook
+
+Operational dossier for getting the bundle listed on every skills marketplace, directory, and awesome-list. Status matrix + per-platform routes below; reusable submission copy first. Companion doc: [agent-compatibility.md](agent-compatibility.md) (how the skills *run* everywhere; this file is about being *found* everywhere).
+
+**Rule**: submissions and registry publishes are owner-run actions — prepare everything here, submit manually. Never automate registry publishing in CI.
+
+## Submission kit (copy-paste)
+
+**Repo**: <https://github.com/aaron-he-zhu/aaron-marketing-skills> · Apache-2.0 · v12.7.0 · 69 skills + 5 commands
+**Install (universal)**: `npx skills add aaron-he-zhu/aaron-marketing-skills` — 70+ hosts (Codex, Cursor, OpenCode, Antigravity, Gemini CLI, Copilot CLI, OpenClaw, Hermes, …)
+**Install (Claude Code plugin, full suite)**: `/plugin marketplace add aaron-he-zhu/aaron-marketing-skills` → `/plugin install aaron-marketing@aaron`
+**Live registry pages**: [skills.sh](https://skills.sh/aaron-he-zhu/aaron-marketing-skills) · ClawHub (`@aaron-he-zhu/<skill>`) · SkillHub.cn (slugs `aaron-<skill>`, publish pending)
+**Topics/tags**: marketing, seo, geo, influencer-marketing, paid-ads, email-marketing, agent-skills, claude-code, skill-md
+
+**One-liner (EN, ~120 chars)**
+> 69 marketing skills on one operating contract — SEO/GEO, influencer, paid ads, email — with 5 auditor gates and keyless data connectors.
+
+**One-liner (中文, ~60 字)**
+> 69 个营销技能,同一套运行契约:SEO/GEO、红人、付费广告、邮件营销,内置 5 个审计门与免密钥数据连接器。
+
+**Short blurb (EN, ~350 chars)**
+> A marketing operator for AI agents: 69 SKILL.md skills across SEO/GEO, influencer (IMPACT), paid ads (ROAS) and email (SEND), sharing one contract — trigger, quick start, handoff, next-best-skill. Five benchmark-driven auditor gates (CORE-EEAT, CITE, C³, ROAS, SEND) emit machine-checkable verdicts. Every skill runs Tier-1 on pasted data; zero-dependency Python connectors pull free/own data. Works on Claude Code (full plugin) and 70+ SKILL.md hosts.
+
+**Short blurb (中文, ~200 字)**
+> 把聊天 Agent 变成营销操作员的技能库:69 个 SKILL.md 技能覆盖 SEO/GEO、红人营销(IMPACT)、付费广告(ROAS)、邮件营销(SEND)四个学科,共享同一套契约(触发→快速开始→交棒→下一技能)。五套基准驱动五个审计门(CORE-EEAT/CITE/C³/ROAS/SEND),产出可机器校验的判定。每个技能都能仅凭粘贴的数据运行;零依赖 Python 连接器可拉取免费/自有数据。支持 Claude Code 完整插件与 70+ SKILL.md 宿主。
+
+**Awesome-list entry line (EN, generic)**
+```markdown
+- [Aaron Marketing Skills](https://github.com/aaron-he-zhu/aaron-marketing-skills) - 69 marketing skills (SEO/GEO, influencer, paid ads, email) on one shared contract, with 5 benchmark-driven auditor gates and keyless data connectors.
+```
+
+**Awesome-list entry line (中文, generic)**
+```markdown
+- [Aaron Marketing Skills](https://github.com/aaron-he-zhu/aaron-marketing-skills) - 69 个营销技能(SEO/GEO、红人、付费广告、邮件),同一套运行契约 + 5 个审计门 + 免密钥数据连接器。
+```
+
+## Status matrix
+
+> Legend — ✅ live · 🟡 prepared, owner action pending · 🔬 researched, route below · ⬜ not applicable / not worth it
+
+| # | Platform | Type | Status |
+|---|----------|------|--------|
+| 1 | [skills.sh](https://skills.sh/aaron-he-zhu/aaron-marketing-skills) | registry (telemetry) | ✅ live — `skills.sh.json` groupings shipped |
+| 2 | [SkillHub.cn](https://skillhub.cn) | registry (publish) | 🟡 69/69 dry-run passed — `bash scripts/publish-skillhub.sh` |
+| 3 | [ClawHub](https://clawhub.ai) | registry (publish) | 🟡 2/69 published — `bash scripts/publish-clawhub.sh --i-accept-mit0` for the rest |
+| 4 | [Anthropic official plugins](https://github.com/anthropics/claude-plugins-official) | curated directory | 🔬 form: clau.de/plugin-directory-submission — *highest value* |
+| 5 | [Skills Directory](https://www.skillsdirectory.com) | directory + security scan | 🔬 form: /submit (GitHub sign-in) |
+| 6 | [askill.sh](https://askill.sh) | registry | 🔬 form: /submit |
+| 7 | [SkillsMP](https://skillsmp.com) | auto-crawl | 🟡 indexed but **stale (38/69 pre-v12)** — nudge maintainer (Reddit/X) to re-crawl |
+| 8 | [LobeHub Skills](https://lobehub.com/skills) | auto-crawl (topics) | ✅ crawl conditions met (topics verified) |
+| 9 | [agentskill.sh](https://agentskill.sh) / [skill0.io](https://skill0.io) / [crossaitools](https://crossaitools.com) | auto-crawl | ✅ passive — no lever beyond topics/stars |
+| 10 | `gh skill` (GitHub CLI) | decentralized channel | 🔴 layout unsupported — upstream FR drafted below |
+| 11 | [Qoder Community](https://qoder.com/marketplace) | catalog repo (PR) | 🔬 PR entry drafted below (marketing category exists) |
+| 12 | [AgentUse / Zerone Skill Market](https://www.zerone.market) | catalog repo (PR, bilingual) | 🔬 PR route below (`agentuse-share` fast-track available) |
+| 13 | [Skillstore](https://skillstore.io) | form + security audit | 🔬 submit flagship skill dirs (no root SKILL.md — note plugin structure) |
+| 14 | [Agent Skills Me](https://agentskills.me) | editor-curated aggregator | 🔬 /submit after login, or email hi@evergreenai.cn |
+| 15 | [虾评Skill](https://xiaping.coze.com) | ZIP upload + points economy | ⬜ poor fit — per-skill ZIP repack + 虾米 quota grind; revisit only on demand |
+| 16 | [VoltAgent/awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills) + siblings | awesome lists (PR) | 🔬 entries drafted below |
+| 17 | [awesome-openclaw-skills](https://github.com/VoltAgent/awesome-openclaw-skills) | awesome list (PR) | ⬜ gated on full ClawHub publish first |
+| 18 | Personal collections (anthropics, vercel-labs, antfu, obra, steipete, baoyu, …) | collections | ⬜ not venues |
+
+## Per-platform playbooks
+
+*(each entry: URL · operator · listing mechanism · exact submission route · prepared content · caveats)*
+
+### English-language directories & registries (researched 2026-07)
+
+**Concrete submission targets (owner-run, in value order):**
+
+1. **Anthropic official plugin directory** — [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) (curated; third-party plugins in `/external_plugins`; installs as `/plugin install <name>@claude-plugins-official`). **Submission form: <https://clau.de/plugin-directory-submission>** — "external plugins must meet quality and security standards." We are a spec-compliant plugin with CI guards, evals, and security docs — the strongest single listing available. Use the EN short blurb from the kit.
+2. **Skills Directory** — <https://www.skillsdirectory.com> (~97k skills scanned, 50-rule security scan, grade badges). **Submit at <https://www.skillsdirectory.com/submit>** (GitHub sign-in → submit repo → automated scan). Whether one submission covers all 69 nested skills is undocumented — check after sign-in.
+3. **askill.sh** — <https://askill.sh> ("The Agent Skills Registry", 261k+ entries, 40+ agents). GitHub-sourced **plus explicit submit page <https://askill.sh/submit>**.
+
+**Auto-crawl (passive — no submission exists; discovery levers below):** [SkillsMP](https://skillsmp.com) (2M+ skills, ~2-star minimum), [LobeHub Skills](https://lobehub.com/skills) (169k+, scrapes GitHub topics `claude-skills`/`agent-skills` + SKILL.md code search), [agentskill.sh](https://agentskill.sh) (`ags` CLI, 100k+ indexed, security-vetted), [skill0.io](https://skill0.io) (small curated crawl, no submit lever), [crossaitools.com](https://crossaitools.com) (ex-claudemarketplaces.com; ranked by installs/stars/votes). **Discovery levers, all already satisfied**: GitHub topics (`agent-skills`, `claude-skills`, `ai-skills`, `claude-code` — verified present, 20-topic cap reached), public SKILL.md files, stars/install velocity.
+
+**GitHub `gh skill` CLI — the one hard gap (verified 2026-07):** `gh skill install aaron-he-zhu/aaron-marketing-skills` fails with "no skills found" — the preview CLI only discovers `skills/*/SKILL.md`, `skills/{scope}/*/SKILL.md`, `{prefix}/skills/*/SKILL.md`, `*/SKILL.md`, or `plugins/*/skills/*/SKILL.md`, and (unlike `npx skills`) does **not** read `.claude-plugin/plugin.json` manifests. It also serves the **latest semver tag** (resolved `v12.1.0`), not `main` — cut releases to keep any future gh-skill content fresh. Prepared actions: (a) upstream feature request to [cli/cli](https://github.com/cli/cli/issues) asking for Claude-plugin-manifest discovery (precedent: vercel-labs/skills reads it, quote their plugin-manifest support); (b) fallback option, only if the user wants it: a flat auto-generated mirror repo (`skills/<name>/` layout, synced by Actions) — real maintenance cost, splits identity; not recommended while (a) is open.
+
+**Not targetable now:** Smithery skills (no publish route documented), Agensi (paid/monetized marketplace, creator-contact onboarding — only if we want a commercial listing), ClaudeSkills.info / MCP Market / claudecodemarketplace.net / mcpservers.org (minor reach, mechanisms unverified).
+
+<details><summary>Ready-to-paste: cli/cli feature-request draft (gh skill manifest discovery)</summary>
+
+> **Title**: `gh skill`: discover skills declared in Claude Code plugin manifests (`.claude-plugin/plugin.json`)
+>
+> `gh skill install <owner>/<repo>` currently discovers only fixed layouts (`skills/*/SKILL.md`, `{prefix}/skills/*/SKILL.md`, `*/SKILL.md`, …). Repos organized as Claude Code plugins declare their skill directories in `.claude-plugin/plugin.json` (`"skills": ["./<path>", …]`) and often use domain-oriented trees that don't match those globs. The `npx skills` installer (vercel-labs/skills) already reads these manifests for exactly this reason, so the same repos install fine there but fail under `gh skill` with "no skills found … may be a curated list rather than a skills publisher".
+>
+> Example: `gh skill install aaron-he-zhu/aaron-marketing-skills` → 0 found, while the manifest declares 69 skills, each a spec-compliant `<dir>/SKILL.md`.
+>
+> Request: when the fixed globs find nothing (or additionally), read `.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` skill declarations, mirroring vercel-labs/skills' `plugin-manifest` support.
+
+</details>
+
+### Chinese-language platforms (researched 2026-07)
+
+1. **Qoder Community** — [qoder.com/marketplace](https://qoder.com/marketplace), catalog repo [`Qoder-AI/qoder-community`](https://github.com/Qoder-AI/qoder-community) (Alibaba's Qoder; entries reference external GitHub repos; review = build + schema check). **PR-ready entry** — add `src/content/skills/aaron-marketing-skills.md` (+ optional `src/content/skills-zh/` mirror with the kit's Chinese blurb):
+   ```yaml
+   ---
+   name: aaron-marketing-skills
+   title: Aaron Marketing Skills
+   description: 69 marketing skills on one operating contract — SEO/GEO, influencer, paid ads, email — with 5 auditor gates and keyless data connectors.
+   source: community
+   author: aaron-he-zhu
+   githubUrl: https://github.com/aaron-he-zhu/aaron-marketing-skills
+   docsUrl: https://github.com/aaron-he-zhu/aaron-marketing-skills#readme
+   category: marketing
+   tags: [seo, geo, influencer, paid-ads, email-marketing]
+   roles: [marketer, growth, seo-specialist]
+   date: <PR date>
+   installCommand: npx skills add aaron-he-zhu/aaron-marketing-skills
+   ---
+   ```
+   (Confirm exact schema against their `CONTRIBUTING.md` at PR time — field set verified 2026-07.) Qoder the IDE already installs us via skills.sh: `npx skills add aaron-he-zhu/aaron-marketing-skills -a qoder` works today.
+2. **AgentUse / Zerone Skill Market** — [zerone.market](https://www.zerone.market), catalog repo [`Zerone-Agent/agent-use-skills`](https://github.com/Zerone-Agent/agent-use-skills). Two routes: *fast-track* — tell any agent 「请使用 `agentuse-share` 技能, 根据以下仓库链接完成贡献: https://github.com/aaron-he-zhu/aaron-marketing-skills」 and it generates the files; *manual* — fork + add `awesome-skills/introductions/{zh,en}/aaron-marketing-skills.md` (use both kit blurbs) + per-platform `INSTALL-*.md` guides. **Bilingual zh+en mandatory**; must be verified on ≥1 mainstream framework (we have several).
+3. **Skillstore** — [skillstore.io/submit](https://skillstore.io/submit) (sign-in; accepts a repo URL **or a specific directory**; they run a security audit then open their own review PR). Repo root has no SKILL.md, so submit **flagship skill directory URLs** with a note about the plugin structure. Suggested flagship 8 (one per discipline pillar + gates): `seo-geo/research/keyword-research`, `seo-geo/optimize/content-quality-auditor`, `seo-geo/monitor/domain-authority-auditor`, `influencer/discover/influencer-discovery`, `influencer/activate/content-reviewer`, `ad/activate/ad-account-auditor`, `email/setup/deliverability-qa`, `email/deliver/email-quality-auditor`.
+4. **Agent Skills Me** — [agentskills.me](https://agentskills.me) (EvergreenAI/Jimmy Lv; editor-curated aggregator of known GitHub skill repos). Register (GitHub login) → `/submit`; fallback email hi@evergreenai.cn with the kit's Chinese blurb asking to add the repo to indexed sources.
+5. **SkillsMP** — [skillsmp.com](https://skillsmp.com) auto-crawl; **already indexed but stale**: `skillsmp.com/creators/aaron-he-zhu/aaron-marketing-skills` shows 38 pre-v12 skills (old names like `performance-reporter`), and the old `seo-geo-claude-skills` repo is indexed separately. No submit route — nudge the maintainer (Reddit/X, solo dev) for a re-crawl; pushing the current branch + a fresh release is the strongest re-crawl signal.
+6. **虾评Skill** — [xiaping.coze.com](https://xiaping.coze.com) (Coze-hosted; per-skill ZIP ≤10MB with Chinese 50–300-char descriptions via agent API; upload quota gated by 虾米 points — A1 level = 0 uploads; promotion to 正式版 needs 5 reviews ≥4分). **Poor fit** for a 69-skill bundle — revisit only if the user specifically wants presence there.
+
+### Open-source lists & collections (researched 2026-07)
+
+**PR targets — curated link lists (submit the repo as one entry):**
+
+1. **VoltAgent/awesome-agent-skills** (~27k★) — *top target*. Links-only curated list with an existing **Community Skills → Marketing** subcategory (marketing precedent: Corey Haines' skills already listed). Requirements per its CONTRIBUTING: public repo, working skill, SKILL.md docs, ≤10-word description, and *demonstrated community adoption* (brand-new repos get declined — our star count and skills.sh installs are the evidence). PR-ready entry (title `Add skill: aaron-he-zhu/aaron-marketing-skills`):
+   ```markdown
+   - **[aaron-he-zhu/aaron-marketing-skills](https://github.com/aaron-he-zhu/aaron-marketing-skills)** - 69 marketing skills: SEO/GEO, influencer, paid ads, email
+   ```
+2. **Sibling awesome lists** (same entry line, adjust format to each list's style): `travisvn/awesome-claude-skills`, `heilcheng/awesome-agent-skills`, `kodustech/awesome-agent-skills`, `ComposioHQ/awesome-claude-skills`, and the Chinese-maintained `libukai/awesome-agent-skills`, `JackyST0/awesome-agent-skills`.
+3. **VoltAgent/awesome-openclaw-skills** (5,400+ entries) — hard gate: entry must link `clawhub.ai/<author>/<skill>` for skills **already on ClawHub** with clean scan + adoption. Second wave after `scripts/publish-clawhub.sh` runs for real. Entry format: `- [skill-name](https://clawhub.ai/aaron-he-zhu/<skill>) - <≤10-word description>.`
+
+**Not venues (watch-and-learn only):** `anthropics/skills` (1st-party showcase + the spec's authoring `template/`), `vercel-labs/agent-skills` (Vercel-authored only), `antfu/skills` (personal prefs), `obra/superpowers` ("we don't generally accept new skills"), `steipete/agent-scripts`, `JimLiu/baoyu-skills` (personal, no contribution path), `jinghan23/codex-export` + `alchaincyf/nuwa-skill` (single-skill repos), `titanwings/colleague-skill` (persona-skill gallery only — wrong domain).
+
+**Optional upstreaming (content donation, not listing):** `affaan-m/everything-claude-code` (~212k★, accepts skills into its bundle — worth donating 1–2 flagship skills with a backlink if we want that audience); `ZhanlinCui/Ultimate-Agent-Skills-Collection` (166★, copies implementations in-tree — low value).
+
+**Resolved (2026-07)**: the "skills (悟鸣)" card is [chujianyun/skills](https://github.com/chujianyun/skills) — WuMing's personal collection (669★, prompt/config-advisor/P7-P9/mermaid skills, CC-BY-NC-SA, no CONTRIBUTING) → same "not a venue" category as the other personal collections.
+
+**Source directory**: the screenshot's catalog is [xia345.com](https://xia345.com) ("AI Agent 生态导航", 7,000+ skills/tools tracked) — no public submission route found; it curates editorially, so presence on the platforms above is the way in.

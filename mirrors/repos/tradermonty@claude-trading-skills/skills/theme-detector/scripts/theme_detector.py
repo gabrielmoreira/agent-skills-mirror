@@ -14,27 +14,28 @@ Usage:
     python3 theme_detector.py --fmp-api-key $FMP_API_KEY --finviz-api-key $FINVIZ_API_KEY
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import os
 import sys
 import time
 from datetime import datetime
-from typing import Optional
 
 # Ensure scripts directory is on the path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from calculators.heat_calculator import (
     breadth_signal_score,
-    calculate_theme_heat,
+    calculate_theme_heat_detailed,
     momentum_strength_score,
     uptrend_signal_score,
     volume_intensity_score,
 )
 from calculators.industry_ranker import get_top_bottom_industries, rank_industries
 from calculators.lifecycle_calculator import (
-    calculate_lifecycle_maturity,
+    calculate_lifecycle_maturity_detailed,
     classify_stage,
     estimate_duration_score,
     etf_proliferation_score,
@@ -43,12 +44,22 @@ from calculators.lifecycle_calculator import (
     valuation_premium_score,
 )
 from calculators.theme_classifier import classify_themes
+from leadership import aggregate_leadership, blend_theme_heat, load_scan_hits
 from report_generator import generate_json_report, generate_markdown_report, save_reports
 from scorer import (
     calculate_confidence,
     determine_data_mode,
     score_theme,
 )
+from theme_history import (
+    append_observations,
+    build_observation,
+    compute_history_metrics,
+    load_history,
+    resolve_run_date,
+    save_history,
+)
+from theme_matcher import calculate_theme_match, load_narrative_scores
 
 # Heavy-dependency modules (pandas/numpy/yfinance/finvizfinance) are imported
 # lazily inside main() to allow lightweight helpers like _get_representative_stocks
@@ -292,6 +303,32 @@ def parse_args() -> argparse.Namespace:
         default="small",
         help="Minimum market cap for dynamic stock selection (default: small=$300mln+)",
     )
+    parser.add_argument(
+        "--scan-hits",
+        default=None,
+        help="Optional JSON/JSONL/CSV stock leadership scan rows or hits",
+    )
+    parser.add_argument(
+        "--narrative-scores",
+        default=None,
+        help="Optional JSON map of theme names to offline narrative scores",
+    )
+    parser.add_argument(
+        "--history-file",
+        default=None,
+        help="Theme history JSON path (default: <output-dir>/theme_detector_history.json)",
+    )
+    parser.add_argument(
+        "--no-history-update",
+        action="store_true",
+        default=False,
+        help="Read history metrics without writing the current run",
+    )
+    parser.add_argument(
+        "--as-of-date",
+        default=None,
+        help="Run date for deterministic history/scan processing (YYYY-MM-DD)",
+    )
     return parser.parse_args()
 
 
@@ -359,8 +396,10 @@ def _get_representative_stocks(
 
 def detect_divergence(heat_breakdown: dict, direction: str) -> dict | None:
     """Detect divergence between price momentum and breadth signals."""
-    momentum = heat_breakdown.get("momentum_strength", 50)
-    uptrend = heat_breakdown.get("uptrend_signal", 50)
+    momentum = heat_breakdown.get("momentum_strength")
+    uptrend = heat_breakdown.get("uptrend_signal")
+    if momentum is None or uptrend is None:
+        return None
     gap = momentum - uptrend
     if abs(gap) < 25:
         return None
@@ -383,7 +422,7 @@ def detect_divergence(heat_breakdown: dict, direction: str) -> dict | None:
         }
 
 
-def _calculate_breadth_ratio(theme: dict) -> Optional[float]:
+def _calculate_breadth_ratio(theme: dict) -> float | None:
     """Estimate breadth ratio from theme's matching industries.
 
     For bullish: ratio of industries with positive weighted_return.
@@ -438,6 +477,60 @@ def _get_theme_weighted_return(theme: dict) -> float:
     return sum(returns) / len(returns)
 
 
+def _resolve_output_dir(output_dir: str) -> str:
+    """Resolve output directory relative to repo root if needed."""
+    if os.path.isabs(output_dir):
+        return output_dir
+    repo_root = os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    )
+    return os.path.join(repo_root, output_dir)
+
+
+def _round_optional(value: float | None) -> float | None:
+    return None if value is None else round(value, 2)
+
+
+def _coverage_penalties(
+    heat_detail: dict, maturity_detail: dict, scan_hits_available: bool
+) -> list[str]:
+    penalties = []
+    if heat_detail.get("coverage", 0.0) < 0.75:
+        penalties.append("heat_low_coverage")
+    if maturity_detail.get("coverage", 0.0) < 0.60:
+        penalties.append("lifecycle_low_coverage")
+    if not scan_hits_available:
+        penalties.append("leadership_scan_hits_missing")
+    return penalties
+
+
+def _legacy_theme_priority(theme: dict) -> float:
+    """Legacy max-themes priority from theme size and industry strength."""
+    industries = theme.get("matching_industries", [])
+    n_industries = len(industries)
+    avg_strength = sum(abs(ind.get("weighted_return", 0)) for ind in industries) / max(
+        len(industries), 1
+    )
+    size_norm = min(n_industries / 10.0, 1.0)
+    strength_norm = min(avg_strength / 30.0, 1.0)
+    return size_norm * 0.5 + strength_norm * 0.5
+
+
+def _theme_selection_priority(theme: dict, match_detail: dict | None = None) -> float:
+    """Select max-themes candidates without dropping high-quality matches."""
+    legacy_priority = _legacy_theme_priority(theme)
+    if not match_detail:
+        return legacy_priority
+
+    match_score = match_detail.get("theme_match_score")
+    match_coverage = match_detail.get("theme_match_coverage", 0.0) or 0.0
+    if match_score is None or match_coverage < 0.50:
+        return legacy_priority
+
+    match_priority = max(0.0, min(float(match_score) / 100.0, 1.0))
+    return max(legacy_priority, match_priority)
+
+
 # ---------------------------------------------------------------------------
 # Main orchestrator
 # ---------------------------------------------------------------------------
@@ -451,6 +544,10 @@ def main():
     from uptrend_client import fetch_sector_uptrend_data, is_data_stale
 
     args = parse_args()
+    run_date = resolve_run_date(args.as_of_date)
+    output_dir = _resolve_output_dir(args.output_dir)
+    history_file = args.history_file or os.path.join(output_dir, "theme_detector_history.json")
+    history = load_history(history_file)
 
     # -----------------------------------------------------------------------
     # Step 0: Load theme configuration (YAML or inline fallback)
@@ -474,11 +571,14 @@ def main():
 
     metadata = {
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "run_date": run_date,
         "data_mode": data_mode,
         "finviz_mode": finviz_mode,
         "fmp_available": fmp_available,
         "max_themes": args.max_themes,
         "max_stocks_per_theme": args.max_stocks_per_theme,
+        "history_file": history_file,
+        "history_update": not args.no_history_update,
         "data_sources": {},
     }
 
@@ -536,17 +636,73 @@ def main():
         metadata["data_sources"]["discovered_themes"] = len(discovered)
         print(f"  Discovered {len(discovered)} new themes", file=sys.stderr)
 
-    # Step 3.9: Limit to max_themes using composite priority (size + strength)
-    def _theme_priority(t):
-        inds = t.get("matching_industries", [])
-        n_industries = len(inds)
-        avg_strength = sum(abs(ind.get("weighted_return", 0)) for ind in inds) / max(len(inds), 1)
-        size_norm = min(n_industries / 10.0, 1.0)
-        strength_norm = min(avg_strength / 30.0, 1.0)
-        return size_norm * 0.5 + strength_norm * 0.5
+    # -----------------------------------------------------------------------
+    # Step 3.8: Load stock leadership and narrative evidence before truncation
+    # -----------------------------------------------------------------------
+    scan_hits = []
+    scan_hits_available = args.scan_hits is not None
+    if args.scan_hits:
+        print(f"Loading leadership scan hits from {args.scan_hits}...", file=sys.stderr)
+        scan_hits, scan_summary = load_scan_hits(args.scan_hits, run_date)
+        metadata["data_sources"]["scan_hits"] = scan_summary
+        print(
+            f"  Scan rows: {scan_summary['rows']}, hits: {scan_summary['hits']}",
+            file=sys.stderr,
+        )
+    else:
+        metadata["data_sources"]["scan_hits"] = {
+            "path": None,
+            "rows": 0,
+            "hits": 0,
+            "skipped_rows": 0,
+            "skipped_date_rows": 0,
+        }
 
-    themes.sort(key=_theme_priority, reverse=True)
+    narrative_scores = None
+    if args.narrative_scores:
+        print(f"Loading narrative scores from {args.narrative_scores}...", file=sys.stderr)
+        narrative_scores = load_narrative_scores(args.narrative_scores)
+        metadata["data_sources"]["narrative_scores"] = {
+            "path": args.narrative_scores,
+            "themes": len(narrative_scores),
+        }
+    else:
+        metadata["data_sources"]["narrative_scores"] = {"path": None, "themes": 0}
+
+    scanner = ETFScanner(fmp_api_key=args.fmp_api_key)
+
+    preselection_etfs = sorted(
+        {etf for theme in themes for etf in theme.get("proxy_etfs", []) if etf}
+    )
+    print("Fetching preliminary ETF volume data for theme selection...", file=sys.stderr)
+    etf_volume_map: dict[str, dict] = scanner.batch_etf_volume_ratios(preselection_etfs)
+    metadata["data_sources"]["preselection_etf_volume"] = len(etf_volume_map)
+
+    preselection_matches = {
+        id(theme): calculate_theme_match(
+            theme,
+            scan_hits,
+            etf_volume_map,
+            scan_hits_available,
+            narrative_scores=narrative_scores,
+        )
+        for theme in themes
+    }
+
+    # Step 3.9: Limit to max_themes using legacy priority plus match evidence.
+    candidate_theme_count = len(themes)
+    themes.sort(
+        key=lambda theme: _theme_selection_priority(theme, preselection_matches.get(id(theme))),
+        reverse=True,
+    )
     themes = themes[: args.max_themes]
+    metadata["data_sources"]["theme_selection"] = {
+        "candidate_themes": candidate_theme_count,
+        "selected_themes": len(themes),
+        "uses_match_evidence": True,
+    }
+
+    leadership_by_theme = aggregate_leadership(themes, scan_hits, history)
 
     # -----------------------------------------------------------------------
     # Step 4: Collect all stock symbols for batch download
@@ -601,7 +757,6 @@ def main():
     # Step 5: Batch fetch stock metrics (yfinance)
     # -----------------------------------------------------------------------
     stock_metrics_map: dict[str, dict] = {}
-    scanner = ETFScanner(fmp_api_key=args.fmp_api_key)
 
     if all_symbols_list:
         print(f"Batch downloading {len(all_symbols_list)} stocks...", file=sys.stderr)
@@ -615,14 +770,15 @@ def main():
     # -----------------------------------------------------------------------
     # Step 6: Fetch ETF volume ratios for each theme's proxy ETFs
     # -----------------------------------------------------------------------
-    print("Fetching ETF volume data...", file=sys.stderr)
-    etf_volume_map: dict[str, dict] = {}
     all_etfs = set()
     for theme in themes:
         for etf in theme.get("proxy_etfs", []):
             all_etfs.add(etf)
 
-    etf_volume_map = scanner.batch_etf_volume_ratios(sorted(all_etfs))
+    missing_etfs = sorted(etf for etf in all_etfs if etf not in etf_volume_map)
+    if missing_etfs:
+        print("Fetching ETF volume data...", file=sys.stderr)
+        etf_volume_map.update(scanner.batch_etf_volume_ratios(missing_etfs))
 
     metadata["data_sources"]["etf_volume"] = len(etf_volume_map)
 
@@ -695,27 +851,47 @@ def main():
             avg_60d = sum(r[1] for r in etf_vol_ratios) / len(etf_vol_ratios)
             volume = volume_intensity_score(avg_20d, avg_60d)
         else:
-            volume = None  # defaults to 50
+            volume = None
 
         # Uptrend signal
         sector_data = _get_theme_uptrend_data(theme, sector_uptrend)
         if sector_data:
             uptrend = uptrend_signal_score(sector_data, is_bearish)
         else:
-            uptrend = None  # defaults to 50
+            uptrend = None
 
         # Breadth signal
         breadth_ratio = _calculate_breadth_ratio(theme)
         n_industries = len(theme.get("matching_industries", []))
         breadth = breadth_signal_score(breadth_ratio, industry_count=n_industries)
 
-        heat = calculate_theme_heat(momentum, volume, uptrend, breadth)
+        heat_detail = calculate_theme_heat_detailed(momentum, volume, uptrend, breadth)
+        base_heat = round(heat_detail["score"] or 0.0, 2)
+
+        leadership = leadership_by_theme.get(theme_name, {})
+        leadership_score = leadership.get("leadership_score")
+        heat = blend_theme_heat(base_heat, leadership_score)
+        history_metrics = compute_history_metrics(history, theme_name, run_date, heat)
+        theme_match = calculate_theme_match(
+            theme,
+            scan_hits,
+            etf_volume_map,
+            scan_hits_available,
+            narrative_scores=narrative_scores,
+        )
+        theme_match_score = theme_match.get("theme_match_score")
+        theme_rank_score = (
+            round(0.75 * heat + 0.25 * theme_match_score, 2)
+            if theme_match_score is not None
+            else round(heat, 2)
+        )
 
         heat_breakdown = {
-            "momentum_strength": round(momentum, 2),
-            "volume_intensity": round(volume, 2) if volume is not None else 50.0,
-            "uptrend_signal": round(uptrend, 2) if uptrend is not None else 50.0,
-            "breadth_signal": round(breadth, 2),
+            "momentum_strength": _round_optional(momentum),
+            "volume_intensity": _round_optional(volume),
+            "uptrend_signal": _round_optional(uptrend),
+            "breadth_signal": _round_optional(breadth),
+            "leadership_score": _round_optional(leadership_score),
         }
 
         # --- Divergence detection ---
@@ -730,15 +906,17 @@ def main():
             if "rsi_14" in sm:
                 sm["rsi"] = sm["rsi_14"]
 
-        # Duration: from industry performance timeframes
+        # Duration: prefer actual theme history, fall back to performance horizons
         avg_perfs = _average_industry_perfs(theme.get("matching_industries", []))
-        duration = estimate_duration_score(
-            avg_perfs.get("perf_1m"),
-            avg_perfs.get("perf_3m"),
-            avg_perfs.get("perf_6m"),
-            avg_perfs.get("perf_1y"),
-            is_bearish,
-        )
+        duration = history_metrics["duration_score"]
+        if not history_metrics["prior_observations"] and duration == 0:
+            duration = estimate_duration_score(
+                avg_perfs.get("perf_1m"),
+                avg_perfs.get("perf_3m"),
+                avg_perfs.get("perf_6m"),
+                avg_perfs.get("perf_1y"),
+                is_bearish,
+            )
 
         # Extremity clustering
         extremity = extremity_clustering_score(theme_stock_metrics, is_bearish)
@@ -753,25 +931,33 @@ def main():
         etf_count = etf_catalog.get(theme_name, 0)
         etf_prolif = etf_proliferation_score(etf_count)
 
-        maturity = calculate_lifecycle_maturity(
+        maturity_detail = calculate_lifecycle_maturity_detailed(
             duration, extremity, price_extreme, valuation, etf_prolif
         )
+        maturity = round(maturity_detail["score"] or 0.0, 2)
         stage = classify_stage(maturity)
 
         maturity_breakdown = {
-            "duration_estimate": round(duration, 2),
-            "extremity_clustering": round(extremity, 2),
-            "price_extreme_saturation": round(price_extreme, 2),
-            "valuation_premium": round(valuation, 2),
-            "etf_proliferation": round(etf_prolif, 2),
+            "duration_score": _round_optional(duration),
+            "extremity_clustering": _round_optional(extremity),
+            "price_extreme_saturation": _round_optional(price_extreme),
+            "valuation_premium": _round_optional(valuation),
+            "etf_proliferation": _round_optional(etf_prolif),
         }
 
         # --- Confidence ---
         quant_confirmed = momentum > 50
         breadth_confirmed = (uptrend is not None and uptrend > 55) if uptrend else False
         narrative_confirmed = False  # Pending Claude WebSearch
+        confidence_penalties = _coverage_penalties(
+            heat_detail, maturity_detail, scan_hits_available
+        )
         confidence = calculate_confidence(
-            quant_confirmed, breadth_confirmed, narrative_confirmed, stale_data
+            quant_confirmed,
+            breadth_confirmed,
+            narrative_confirmed,
+            stale_data,
+            coverage_penalty_count=len(confidence_penalties),
         )
 
         # --- Score theme ---
@@ -792,12 +978,17 @@ def main():
             "name": theme_name,
             "direction": direction,
             "heat": round(heat, 2),
+            "base_heat": base_heat,
             "maturity": round(maturity, 2),
             "stage": stage,
             "confidence": confidence,
             "heat_label": score["heat_label"],
             "heat_breakdown": heat_breakdown,
+            "heat_coverage": round(heat_detail["coverage"], 4),
+            "heat_missing_components": heat_detail["missing_components"],
             "maturity_breakdown": maturity_breakdown,
+            "maturity_coverage": round(maturity_detail["coverage"], 4),
+            "maturity_missing_components": maturity_detail["missing_components"],
             "lifecycle_data_quality": lifecycle_quality,
             "representative_stocks": stocks,
             "stock_details": theme_stock_details.get(idx, []),
@@ -807,14 +998,46 @@ def main():
             "stock_data": "available" if theme_stock_metrics else "unavailable",
             "data_mode": data_mode,
             "stale_data_penalty": stale_data,
+            "confidence_penalties": confidence_penalties,
             "theme_origin": theme.get("theme_origin", "seed"),
             "name_confidence": theme.get("name_confidence", "high"),
             "divergence": divergence,
+            "leadership_score": leadership_score,
+            "leadership_coverage": leadership.get("leadership_coverage", 0.0),
+            "leadership_counts": leadership.get("leadership_counts", {}),
+            "leader_symbols": leadership.get("leader_symbols", []),
+            "leader_candidates": leadership.get("leader_candidates", []),
+            "fresh_leadership_symbols": leadership.get("fresh_leadership_symbols", []),
+            "extended_symbols": leadership.get("extended_symbols", []),
+            "theme_match_score": theme_match_score,
+            "theme_match_components": theme_match.get("theme_match_components", {}),
+            "theme_match_coverage": theme_match.get("theme_match_coverage", 0.0),
+            "theme_match_missing_components": theme_match.get("theme_match_missing_components", []),
+            "static_stock_confirmation": theme_match.get("static_stock_confirmation", {}),
+            "proxy_etf_confirmation": theme_match.get("proxy_etf_confirmation", {}),
+            "theme_rank_score": theme_rank_score,
+            "history_metrics": history_metrics,
         }
         scored_themes.append(scored_theme)
 
-    # Sort by heat descending
-    scored_themes.sort(key=lambda t: t["heat"], reverse=True)
+    # Preserve legacy heat ordering while exposing explicit match-quality ranks.
+    heat_sorted = sorted(scored_themes, key=lambda t: t["heat"], reverse=True)
+    for rank, theme in enumerate(heat_sorted, start=1):
+        theme["heat_rank"] = rank
+
+    match_sorted = sorted(
+        scored_themes,
+        key=lambda t: (
+            t.get("theme_match_score") is not None,
+            t.get("theme_match_score") or -1.0,
+            t.get("theme_rank_score", t.get("heat", 0)),
+        ),
+        reverse=True,
+    )
+    for rank, theme in enumerate(match_sorted, start=1):
+        theme["theme_match_rank"] = rank
+
+    scored_themes = heat_sorted
 
     # -----------------------------------------------------------------------
     # Step 9: Generate reports
@@ -824,16 +1047,11 @@ def main():
     json_report = generate_json_report(scored_themes, industry_rankings, sector_uptrend, metadata)
     md_report = generate_markdown_report(json_report, top_n_detail=args.top)
 
-    # Resolve output directory relative to repo root if relative
-    output_dir = args.output_dir
-    if not os.path.isabs(output_dir):
-        # Look for reports/ relative to repo root
-        repo_root = os.path.dirname(
-            os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        )
-        output_dir = os.path.join(repo_root, output_dir)
-
     paths = save_reports(json_report, md_report, output_dir)
+
+    if not args.no_history_update:
+        observations = [build_observation(theme, run_date) for theme in scored_themes]
+        save_history(history_file, append_observations(history, observations))
 
     elapsed = time.time() - start_time
     print(f"\nDone in {elapsed:.1f}s", file=sys.stderr)

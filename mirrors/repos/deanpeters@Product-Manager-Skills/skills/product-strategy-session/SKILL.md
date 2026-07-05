@@ -1,5 +1,6 @@
 ---
 name: product-strategy-session
+argument-hint: "[product or strategic question]"
 description: Run an end-to-end product strategy session across positioning, discovery, and roadmap planning. Use when a team needs validated direction before committing to execution.
 intent: >-
   Guide product managers through a comprehensive product strategy session by orchestrating positioning, problem framing, customer discovery, and roadmap planning skills into a cohesive end-to-end process. Use this to move from vague strategic direction to concrete, validated product strategy with clear positioning, target customers, problem statements, and prioritized roadmap—ensuring alignment across stakeholders before committing to execution.
@@ -11,6 +12,17 @@ type: workflow
 Guide product managers through a comprehensive product strategy session by orchestrating positioning, problem framing, customer discovery, and roadmap planning skills into a cohesive end-to-end process. Use this to move from vague strategic direction to concrete, validated product strategy with clear positioning, target customers, problem statements, and prioritized roadmap—ensuring alignment across stakeholders before committing to execution.
 
 This is not a one-time workshop—it's a repeatable process for establishing or refreshing product strategy, typically spanning 2-4 weeks with multiple touchpoints.
+
+## Input
+
+**Works best with:** The product (or product line) and the strategic question forcing the session.
+**Also useful:** Existing positioning, discovery artifacts, roadmap drafts, and who needs to align on the outcome.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The workflow starts at positioning and orchestrates the phases from there — supplied artifacts let it skip ahead.
+
+**Example invocation:** `Run a strategy session for our analytics add-on: flat adoption, two competing roadmap visions, exec review in 4 weeks.`
 
 ## Key Concepts
 

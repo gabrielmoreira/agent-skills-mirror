@@ -1,5 +1,6 @@
 ---
 name: company-intel
+argument-hint: "[company, industry, or competitor set]"
 description: Research a company, industry, or competitor set using web search and seven analytical lenses. Use when you need structured intel that feeds downstream PM skills.
 intent: >-
   Act as a research engine that builds deep, structured understanding of companies, industries,
@@ -29,6 +30,17 @@ scenarios:
 Research engine that builds deep, structured understanding of companies, industries, and competitor sets. Produces a stable output format that you can hand off to other skills and agents to generate battlecards, SWOT analyses, positioning statements, PESTEL assessments, market sizing, and workshop content.
 
 This is not a generic encyclopedia lookup. Every section pushes toward commercial understanding, product implications, and actionable intelligence. The output is a research primitive — structured data other skills consume — not a final deliverable.
+
+## Input
+
+**Works best with:** The research target: a company, an industry, or a set of competitors.
+**Also useful:** The downstream use (battlecard, SWOT, positioning, market sizing) so the research emphasizes the right lenses, plus any constraints on depth or recency.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The workflow opens by asking for the target and what the intel will feed.
+
+**Example invocation:** `Research Figma and its top 3 competitors — output feeds a positioning workshop next week.`
 
 ## Key Concepts
 

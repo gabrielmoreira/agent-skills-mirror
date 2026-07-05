@@ -1,18 +1,16 @@
 ---
 name: email-sequence-designer
+slug: aaron-email-sequence-designer
+displayName: "Email Sequence Designer · 邮件自动化流程设计"
+summary: "邮件自动化流程设计/购物车挽回/流失召回序列"
 description: 'Use when the user asks to "design a welcome flow", "set up an abandoned-cart sequence", "build a light re-engagement branch inside a lifecycle flow", or "plan a cold-outbound sequence"; produces general lifecycle automation flows (welcome, cart, browse-abandon, post-purchase, in-flow re-engagement, B2B cold outbound) with trigger, step timing, branch/exit conditions, goal, frequency governance (send caps, quiet hours, fatigue guardrail), a sunset path, and a SEND N-dimension score. Not for the closed-loop win-back / re-consent (re-permission) program on a lapsed cohort — use reactivation-specialist; not for writing each email''s copy — use email-creative-builder; not for computing EQS or the N1 unsubscribe veto — use email-quality-auditor. 邮件自动化流程设计/购物车挽回/流失召回序列'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when designing or restructuring general email lifecycle automation before writing the individual emails: a welcome onboarding series, an abandoned-cart or browse-abandon flow, a post-purchase / replenishment sequence, a light in-flow re-engagement branch, a B2B cold-outbound multi-step sequence, or the program's overall frequency governance and sunset policy. Activate when the user has a lifecycle stage, trigger event, or list-fatigue problem and wants the flow map, cadence, and branch/exit logic before creative or send-testing begins. Not for the closed-loop win-back / re-consent (re-permission) program on a defined lapsed cohort — that self-contained recovery-or-retire program is reactivation-specialist's."
 argument-hint: "<flow type or lifecycle goal> [platform/ESP] [trigger event] [audience/segment]"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: email
-  phase: nurture
-  geo-relevance: "low"
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "email", "phase": "nurture", "geo-relevance": "low", "hermes": {"tags": ["marketing", "email", "nurture"], "category": "email"}, "openclaw": {"emoji": "✉️", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Email Sequence Designer
@@ -50,6 +48,8 @@ My unengaged segment is [X]% of the list and complaints are rising. Design a win
 ## Data Sources
 
 Tier 1 works from the user's own inputs: the flow type, trigger event, and target segment pasted directly, plus a manual `~~email platform` (ESP) flow/automation export for current cadence, step timing, and complaint/unsubscribe signals when available. Reuse `~~web analytics` (GA4) for on-site behavior that seeds triggers (cart, browse, post-purchase) and `~~ecommerce` for order/replenishment timing. Keyed ESP APIs (Klaviyo, Mailchimp, HubSpot, Customer.io) are an optional Tier-2/3 MCP convenience, never a Tier-1 precondition. Consent and suppression facts come from [consent-registry](../../../protocol/consent-registry/SKILL.md), not from this skill. See [CONNECTORS.md](../../../CONNECTORS.md).
+
+**Zero-dependency flow activation (when Resend is the ESP)**: once a flow step's creative is approved, `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/resend.py" broadcast-create --segment <segment-id> --from … --subject … --html step.html` then `resend.py broadcast-send <id> --at "<ISO 8601>"` schedules the step against its segment (`resend.py segments` lists the ids; one-off timed sends use `resend.py send --scheduled-at …`). Every mutating subcommand is dry-run by default — show the user the previewed request, then re-run with `--live`. Never enroll a suppressed or non-consented subject: the [consent-registry](../../../protocol/consent-registry/SKILL.md) check comes first. See [scripts/connectors/README.md](../../../scripts/connectors/README.md).
 
 ## Instructions
 

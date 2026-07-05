@@ -1,5 +1,6 @@
 ---
 name: user-story-splitting
+argument-hint: "[story or epic to split]"
 description: Break a large story or epic into smaller deliverable stories using proven split patterns. Use when backlog items are too big for estimation, sequencing, or independent release.
 intent: >-
   Break down large user stories, epics, or features into smaller, independently deliverable stories using systematic splitting patterns. Use this to make work more manageable, reduce risk, enable faster feedback cycles, and maintain flow in agile development. This skill applies to user stories, epics, and any work that's too large to complete in a single sprint.
@@ -11,6 +12,17 @@ type: component
 Break down large user stories, epics, or features into smaller, independently deliverable stories using systematic splitting patterns. Use this to make work more manageable, reduce risk, enable faster feedback cycles, and maintain flow in agile development. This skill applies to user stories, epics, and any work that's too large to complete in a single sprint.
 
 This is not arbitrary slicing—it's strategic decomposition that preserves user value while reducing complexity.
+
+## Input
+
+**Works best with:** The story or epic that's too big — paste it as written.
+**Also useful:** Why it's too big (can't estimate, can't finish in a sprint, can't release independently) and your team's sizing ceiling.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks for the story text, then walks the split patterns against it.
+
+**Example invocation:** `Split this: 'As an admin, I can bulk-import users from CSV, Excel, or our HR system with field mapping and error handling.'`
 
 ## Key Concepts
 

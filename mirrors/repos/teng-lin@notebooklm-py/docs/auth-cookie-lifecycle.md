@@ -1,931 +1,447 @@
 # Auth cookie lifecycle — design notes and field findings
 
-**Last Updated:** 2026-06-11
+**Last Updated:** 2026-07-04
 
 > **Status:** current design notes for the auth refresh stack in `main`.
-> The numbered layer taxonomy below matches `docs/troubleshooting.md`: L1
-> per-call `RotateCookies`, L2 background keepalive, L3 headless re-auth/CDP,
-> L4 external refresh command, L5 manual login, and L6 external scheduling via
-> `notebooklm auth refresh`. Older sections that discuss "L5 CDP" or "L6
-> CookieCloud" are historical threat-model notes; CDP attach is now part of L3,
-> while CookieCloud remains an operator-provided refresh-command pattern rather
-> than an in-tree client. Reflects empirical observations from a multi-hour
-> A/B/C field experiment in May 2026 and cross-project review of two ecosystem
-> peers ([HanaokaYuzu/Gemini-API](https://github.com/HanaokaYuzu/Gemini-API)
-> and [easychen/CookieCloud](https://github.com/easychen/CookieCloud)).
-> Update as the threat model evolves; flag stale claims with
-> `<!-- stale: <date> -->`.
+> The numbered recovery ladder below is the canonical taxonomy, shared with
+> [docs/troubleshooting.md](troubleshooting.md#authentication-errors):
+>
+> - **L1** — per-call `RotateCookies` POST (default ON)
+> - **L2** — periodic background keepalive (`keepalive=N` client kwarg)
+> - **L3** — headless re-auth from a persisted browser profile / loopback CDP
+> - **L4** — **master-token re-mint** (`[headless]` extra; no browser, fully automatic)
+> - **L5** — `NOTEBOOKLM_REFRESH_CMD` external recovery script
+> - **L6** — manual `notebooklm login`
+> - **L7** — OS-scheduled `notebooklm auth refresh` (cron / launchd / systemd)
+>
+> For long-lived, unattended, headless, server, or CI use, **L4 master-token
+> re-mint is the recommended path** — see [Recommended setup](#recommended-setup).
+> Deep field notes, ruled-out experiments, and the internal-persistence hazard
+> log have been moved to the [Appendix](#appendix-field-notes--historical-findings)
+> so the body stays focused on durable mechanics.
 
 ## TL;DR
 
 NotebookLM has no public OAuth surface. The library authenticates by carrying
-Google session cookies (`SID`, `__Secure-1PSID`, `__Secure-1PSIDTS`, `OSID`,
-and friends) extracted from a real browser sign-in. Two clocks govern how long
-those cookies stay valid:
+Google session cookies (`SID`, `__Secure-1PSID`, `__Secure-1PSIDTS`, `OSID`, and
+friends) extracted from a real browser sign-in. Two clocks govern their validity:
 
-- **`__Secure-1PSIDTS` has a *recommended* rotation cadence of ~600 s** (self-reported by Google as `["identity.hfcr",600]` on the `RotateCookies` response), but the **prior value remains valid for far longer than 600 s**. Empirical observation on a stable IP, non-Workspace account: a frozen `__Secure-1PSIDTS` continued authenticating for **32+ hours** without any client-side rotation, and Google naturally rotated it only **once** in 29 hours of continuous probing. The "10-minute server-side TTL" framing earlier in this project's history was too strong; 600 s is what active clients are *expected* to do, not what gets enforced. Worst-case profiles (datacenter egress, cross-IP, Workspace policy, incomplete extraction) can collapse this to hours or less.
-- **`SID` and `__Secure-1PSID`** have very long server-side lifetimes (months
-  to years for daily-active accounts) and effectively don't expire under
-  normal usage as long as Google sees periodic activity.
-- **Cookie set completeness matters more than freshness.** Pair-wise ablation showed Google rejects any cookie set where `__Secure-1PSIDTS` is missing along with any one other cookie, even though removing `__Secure-1PSIDTS` alone is recoverable. See §3.5 for the full accept-rule model.
+- **`__Secure-1PSIDTS` has a *recommended* rotation cadence of ~600 s**
+  (self-reported by Google as `["identity.hfcr",600]` on the `RotateCookies`
+  response). This is a *hint*, not a hard rejection TTL: the prior value keeps
+  authenticating far longer — commonly hours to days on a stable IP / non-Workspace
+  account. Worst-case profiles (datacenter egress, cross-IP, Workspace policy,
+  incomplete extraction) can collapse that to hours or less.
+- **`SID` and `__Secure-1PSID`** have very long server-side lifetimes (months to
+  years) and effectively don't expire under normal usage.
+- **Cookie set completeness matters more than freshness.** Google rejects cookie
+  sets missing `__Secure-1PSIDTS` together with any one other cookie, even though
+  removing `__Secure-1PSIDTS` alone is recoverable — see
+  [§3.3](#33-empirical-cookie-requirements).
 
-A long-lived client must therefore drive `*PSIDTS` rotation itself. Empirically
-the cleanest mechanism is a direct `POST` to
-`https://accounts.google.com/RotateCookies` — Google's dedicated unsigned
-rotation endpoint. This is the L1 primitive at the bottom of a tiered
-recovery design that escalates progressively as failure modes get harder.
+A long-lived client must therefore drive `*PSIDTS` rotation itself. The cleanest
+mechanism is a direct `POST` to `https://accounts.google.com/RotateCookies` —
+Google's dedicated unsigned rotation endpoint, the **L1** primitive at the bottom
+of a tiered recovery design that escalates as failure modes get harder.
 
-The current in-tree recovery layers, ordered cheapest to heaviest (this ladder
-mirrors the one in [troubleshooting.md](troubleshooting.md#authentication-errors)):
+The recovery ladder runs cheapest-to-heaviest — **L1** per-call `RotateCookies`
+POST, **L2** background keepalive, **L3** headless re-auth / loopback CDP, **L4**
+master-token re-mint, **L5** `NOTEBOOKLM_REFRESH_CMD`, **L6** manual `notebooklm
+login`, **L7** scheduled `notebooklm auth refresh` (the same taxonomy as
+[troubleshooting.md](troubleshooting.md#authentication-errors); per-layer detail in
+[§4](#4--the-recovery-ladder)). L1/L2 keep a live session fresh but can't revive a
+dead one; L3 needs the profile's browser session still alive; **L4 is the only
+fully-automatic layer that revives a fully-expired session with no browser.**
 
-| Layer | Mechanism | Cost | Survives DBSC? | Ship status |
-|---|---|---|---|---|
-| **L1** | Per-call `RotateCookies` POST + mtime / in-process throttle | ~150 ms / token fetch, skipped when recently rotated | No, but DBSC is not enforced on this path today | Default ON |
-| **L2** | Background `NotebookLMClient(keepalive=N)` task | One POST every N s | Same as L1 | Opt-in client kwarg |
-| **L3** | Headless re-auth from the persisted browser profile, optionally CDP-attaching to loopback Chrome | Browser launch/attach only after first-party cookies are dead | CDP arm inherits Chrome's DBSC enrollment | Opt-in via `refresh_auth(allow_headless=True)` or `NOTEBOOKLM_HEADLESS_REAUTH=1`; CDP via `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL` |
-| **L4** | **Master-token re-mint** — re-mint a fresh session from a durable Google master token, **no browser** ([§4.5](#45-l4-master-token-re-mint)) | Two Google round-trips on full expiry; fully automatic | Server-minted cookies; rejected only if/when DBSC is enforced — re-mint is the mitigation | Opt-in via the `[headless]` extra + `notebooklm login --master-token` |
-| **L5** | `NOTEBOOKLM_REFRESH_CMD` external recovery script | One subprocess on auth-expiry signal | Depends on the script; common case is browser-cookie re-extract | Merged, same-loop single-flight and cancel-safe |
-| **L6** | Manual `notebooklm login` | Human sign-in | Yes | Baseline recovery |
-| **L7** | OS-scheduled `notebooklm auth refresh` | One token-fetch per cron / launchd / systemd / Task Scheduler tick | Same as L1 | Recommended for idle profiles; 15-20 min cadence |
-
-**L4 (master-token re-mint) is the standout for headless/unattended use:** unlike
+**L4 (master-token re-mint) is the standout for headless/unattended use.** Unlike
 L3 it needs no browser at refresh time, and unlike L5/L6 it is fully automatic.
-One durable master token (one human sign-in, then good for months) re-mints web
-cookies on demand and self-heals an expired session in-process. See
-[§4.5](#45-l4-master-token-re-mint).
+One durable master token — one human sign-in, then good for months — re-mints web
+cookies on demand and self-heals an expired session in-process, coalesced through
+the `AuthRefreshCoordinator` single-flight. See [§4.4](#44-l4--master-token-re-mint)
+and [ADR-0023](adr/0023-master-token-headless-auth.md).
 
-A separate, complementary refresh hook also lives in the codebase:
-``NOTEBOOKLM_REFRESH_CMD`` ([#336](https://github.com/teng-lin/notebooklm-py/pull/336))
-runs a user-supplied recovery command on auth-expiry signals (the
-"`Authentication expired`" redirect), then retries token fetch once. The
-command string is parsed with :func:`shlex.split` and executed with
-``shell=False`` by default; set ``NOTEBOOKLM_REFRESH_CMD_USE_SHELL=1`` to
-opt back into the legacy ``shell=True`` behavior when the command needs
-shell features (pipes, redirection, ``$VAR`` expansion). It's
-orthogonal to L1–L3 — those proactively keep `*PSIDTS` fresh, while
-`NOTEBOOKLM_REFRESH_CMD` is the reactive "we lost the session anyway, run
-my recovery script" lever. See §9 below.
+`NOTEBOOKLM_REFRESH_CMD` ([#336](https://github.com/teng-lin/notebooklm-py/pull/336))
+is a complementary, reactive hook: it runs a user-supplied recovery command on
+auth-expiry signals, then retries the token fetch once. It is **orthogonal to
+L1–L4** — those proactively keep the session fresh or re-mint it in-process, while
+`NOTEBOOKLM_REFRESH_CMD` is the "we lost the session anyway, run my recovery
+script" lever. See [§6.2](#62-notebooklm_refresh_cmdcommand-line-l5).
 
-L1 is empirically working today on every account type tested. Long-running
-Python workers should add L2; idle profiles should add L6; operators who can
-keep a local Chrome open may opt into L3 CDP attach. If Google extends DBSC
-enforcement to non-Chrome cookie paths, the CDP arm becomes the primary
-unattended recovery path.
+L1 works today on every account type tested. Long-running Python workers should
+add L2; unattended/headless/server/CI deployments should adopt L4; idle profiles
+between processes can add L7. If Google extends DBSC enforcement to non-Chrome
+cookie paths, L3's CDP arm becomes the primary browser-backed recovery path.
+
+---
+
+## Available auth methods
+
+There are five ways to give the library credentials. Pick by deployment shape;
+they compose (e.g. `--master-token` for the durable credential plus
+`NOTEBOOKLM_REFRESH_CMD` as a belt-and-suspenders reactive hook).
+
+| Method | Command / env | Best for | Survives cookie expiry unattended? | Setup cost |
+|---|---|---|:-:|---|
+| **(a) Interactive login** | `notebooklm login` (Playwright Google sign-in into a private Chromium profile) | Desktop / interactive use | No — re-login when prompted | Low (one browser sign-in) |
+| **(b) Browser-cookie reuse** | `notebooklm login --browser-cookies <browser>` (rookiepy extraction from an existing profile) | Reusing a browser you already sign into | Only while the source browser session stays alive; pairs with L7 cron | Low (no interaction) |
+| **(c) Master token** ⭐ | `notebooklm login --master-token` (`[headless]` extra; durable token, headless L4 re-mint) | **Servers / CI / unattended / headless** | **Yes** — re-mints automatically, no browser | Medium (one bootstrap sign-in, ship `master_token.json`) |
+| **(d) Inline auth JSON** | `NOTEBOOKLM_AUTH_JSON=<storage_state payload>` | CI / ephemeral containers with no on-disk profile | No — env-var auth has no writeable file, so L3/L4 decline | Low (paste a secret) |
+| **(e) External refresh hook** | `NOTEBOOKLM_REFRESH_CMD=<command>` | Custom recovery (CookieCloud pull, browser re-extract) layered on any of the above | Depends on the script | Medium (write + secure a script) |
+
+Notes: **(c) is the recommended default for long-lived headless use** — the only
+method that both survives full cookie expiry *and* needs no browser at refresh
+time. **(d) `NOTEBOOKLM_AUTH_JSON`** carries a full `storage_state.json` payload
+inline (credential-equivalent) with no backing file, so the file-backed recovery
+layers (L3/L4) decline — good for short-lived CI jobs, but pair with (c) or (e) for
+anything long-running. **(e) `NOTEBOOKLM_REFRESH_CMD`** is not a credential source
+on its own; it is the reactive hook that fires after auth has already expired
+([§6.2](#62-notebooklm_refresh_cmdcommand-line-l5)).
+
+---
+
+## Recommended setup
+
+### Interactive desktop user
+
+Just `notebooklm login`. The Playwright Chromium flow handles it; re-login when
+prompted (typically days to weeks between prompts).
+
+### Long-lived in-process client (agent, MCP server, worker)
+
+```python
+async with NotebookLMClient.from_storage(keepalive=600) as client:
+    ...
+```
+
+L1 fires on `from_storage()`; L2 fires every 600 s while the client is open. This
+keeps `*PSIDTS` rotating for as long as the process lives.
+
+### Unattended / headless / server / CI — use the master token (L4)
+
+This is the recommended path. No browser at refresh time, survives full cookie
+expiry, and no `storage_state.json` to keep re-shipping.
+
+1. `pip install "notebooklm-py[headless]"`.
+2. One-time, on a machine with a browser (dedicated / throwaway account):
+   `notebooklm -p <profile> login --master-token --account you@gmail.com`.
+3. Ship the bootstrapped profile — **both** `master_token.json` and the
+   `storage_state.json` the bootstrap just minted (each `0600`) — to the server.
+   (A clean server with *only* `master_token.json` and no `storage_state.json`
+   needs one `notebooklm -p <profile> login --master-token-refresh` to mint the
+   initial cookies first; shipping both skips that step.)
+4. Run commands normally. Cookies are minted on bootstrap and **re-minted
+   automatically** when the session dies (L4, [§4.4](#44-l4--master-token-re-mint));
+   force one by hand with `notebooklm -p <profile> login --master-token-refresh`.
+
+Caveats: the master token is a full-account, infostealer-grade credential — use a
+dedicated account, keep the file `0600`, never log or commit it. One account is
+**single-consumer**: N workers re-minting concurrently can invalidate each other's
+`SID`. The master token inherits the standing DBSC risk (server-minted cookies
+could be rejected if enforcement extends to this path), but re-mint is itself the
+mitigation while it isn't enforced. See
+[ADR-0023](adr/0023-master-token-headless-auth.md) and
+[installation.md#d-headless-server-or-ci](installation.md#d-headless-server-or-ci).
+
+### Unattended without the `[headless]` extra — browser-cookie extract + cron
+
+If you can't or won't use a master token, extract from a real browser and refresh
+on a schedule:
+
+1. Sign in to NotebookLM once in Firefox (or any rookiepy-supported browser).
+2. `notebooklm -p <profile> login --browser-cookies firefox`.
+3. Schedule L7: `7,27,47 */1 * * * notebooklm --profile <profile> auth refresh`
+   (off-minute schedule avoids fleet collision).
+4. Keeping the source browser running with a Google tab adds resilience, but even
+   a closed browser works for hours-to-days while `RotateCookies` keeps
+   succeeding from `SID` alone.
+
+> **Browser support:** `--browser-cookies` accepts any of the ~16 browsers rookiepy
+> reads on the host (`arc`, `brave`, `chrome`, `edge`, `firefox`, `opera`, `safari`,
+> `vivaldi`, …; see `_ROOKIEPY_BROWSER_ALIASES` in
+> `cli/services/login/cookie_jar.py`). **Firefox is the recommended path on
+> Windows** because Chrome 127+ App-Bound Encryption makes Chrome reads
+> admin-or-bust. Scope a Firefox Multi-Account Container with
+> `firefox::<container-name>` (unscoped extraction merges every container and can
+> pick the wrong session); scope a Chromium profile with `chrome::<profile>`.
+
+### Workspace / Enterprise with admin session-binding
+
+Currently **not supported.** Admin-policy session binding is a Workspace beta that
+requires DBSC-compatible flows. Request an exemption from your admin or use a
+personal Google account for automation.
 
 ---
 
 ## 1 · Problem statement
 
-NotebookLM uses Google's internal `batchexecute` RPC. There is no documented
-API key, no OAuth scope, no service account path. Every project that
-automates NotebookLM does so with **scraped session cookies** from a logged-in
-browser. The library exposes those via `notebooklm login` (Playwright-driven
-Google sign-in into a private Chromium profile) and
-`notebooklm login --browser-cookies <browser>` (rookiepy-driven extraction
-from an existing Chrome/Firefox/Edge profile).
+NotebookLM uses Google's internal `batchexecute` RPC. There is no documented API
+key, no OAuth scope, no service account path. Every project that automates
+NotebookLM does so with **scraped session cookies** from a logged-in browser. The
+library exposes those via `notebooklm login` (Playwright-driven Google sign-in
+into a private Chromium profile) and `notebooklm login --browser-cookies <browser>`
+(rookiepy-driven extraction from an existing profile). Both produce a
+`storage_state.json` that authenticates every subsequent RPC.
 
-Both produce a `storage_state.json` file with the cookie set the library uses
-to authenticate every subsequent RPC. The keepalive question is: **what
-keeps `storage_state.json` valid as time passes between user-driven
-re-authentications?**
-
-The naïve answer ("cookies have expiry timestamps; trust them") is wrong on
-two counts:
-
-1. The most consequential auth cookie (`__Secure-1PSIDTS`) has a **server-side
-   recommended rotation cadence of ~600 s** (Google's own self-report) that's
-   not encoded in the cookie's `Expires` attribute. The on-disk `Expires` field
-   is irrelevant to its server-side validity. The *recommended* cadence is
-   distinct from the *actual* validity window — empirically the prior value
-   keeps working for hours-to-days on stable network identities. See §3.5 for
-   ablation data.
-2. Even cookies with a year-long `Expires` will be **revoked early by Google's
-   risk model** if the access pattern looks unusual (no JS execution, no
-   browser fingerprint, IP changes, long inactivity gaps).
-
-So the library must actively refresh.
+The keepalive question is: **what keeps `storage_state.json` valid between
+user-driven re-authentications?** The naïve "cookies have expiry timestamps; trust
+them" answer is wrong on two counts: the most consequential cookie
+(`__Secure-1PSIDTS`) has a server-side recommended rotation cadence not encoded in
+its `Expires` attribute (the on-disk `Expires` is irrelevant to server-side
+validity), and even cookies with a year-long `Expires` are **revoked early by
+Google's risk model** when the access pattern looks unusual (no JS, no fingerprint,
+IP changes, long idle gaps). So the library must actively refresh.
 
 ---
 
 ## 2 · Background: Google session auth, rotation, and DBSC
 
-This section establishes the vocabulary the rest of the doc uses. Skip
-ahead to §3 if you've already spent time inside Google's identity surface.
+Vocabulary the rest of the doc uses. Skip to [§3](#3--threat-model) if you've
+already spent time inside Google's identity surface.
 
 ### 2.1 The cookie taxonomy
 
-Google authenticates a browser session with a **family of ~15 cookies**,
-not a single bearer token. Each cookie has a distinct role; the family
-is designed so revoking or rotating any one slot doesn't invalidate the
-others. The cookie set is shared across `*.google.com` properties —
-Search, Drive, Gmail, NotebookLM, YouTube, Workspace — which is why a
-sign-in to any one of them produces auth artifacts the rest of the
-ecosystem will accept.
+Google authenticates a browser session with a **family of ~15 cookies**, not a
+single bearer token. Each cookie has a distinct role; the family is designed so
+revoking or rotating any one slot doesn't invalidate the others. The set is shared
+across `*.google.com` properties — Search, Drive, Gmail, NotebookLM, YouTube,
+Workspace — which is why a sign-in to any one produces auth artifacts the rest of
+the ecosystem accepts.
 
 Naming conventions:
 
-- **`__Secure-` prefix.** A browser-enforced rule: the cookie's `Secure`
-  attribute must be set, so it's never transmitted over plaintext HTTP.
-  Google sets this on every meaningful auth cookie.
-- **`__Host-` prefix.** Stricter than `__Secure-`. The cookie must also
-  set `Path=/`, must not set `Domain=` (so it's pinned to the exact
-  origin that issued it), and must be `Secure`. Used for the most
-  scope-sensitive cookies (`__Host-GAPS`, `__Host-1PLSID`, …).
-- **`1P` vs `3P`.** First-party vs third-party context. `__Secure-1PSID`
-  is the SID Google uses when the request originates from a
-  `*.google.com` page; `__Secure-3PSID` is the variant Google sends on
-  third-party pages that embed Google content (sign-in widgets, fonts
-  referers, …). They rotate independently and have slightly different
-  scopes. We typically need both because intermediate redirects during
-  rotation cross the 1P/3P boundary.
-- **`*SID` / `*SIDTS` / `*SIDCC`.** Three different cookie *families*,
-  not variants of one cookie. They cooperate to separate **identity** —
-  who you are, slow to change — from **freshness** — you're using the
-  session right now, fast to expire:
+- **`__Secure-` prefix.** The cookie's `Secure` attribute must be set, so it's
+  never sent over plaintext HTTP. Google sets this on every meaningful auth cookie.
+- **`__Host-` prefix.** Stricter: the cookie must also set `Path=/`, must not set
+  `Domain=` (pinned to the exact issuing origin), and must be `Secure`. Used for
+  the most scope-sensitive cookies (`__Host-GAPS`, `__Host-1PLSID`, …).
+- **`1P` vs `3P`.** First-party vs third-party context. `__Secure-1PSID` is used
+  when the request originates from a `*.google.com` page; `__Secure-3PSID` is the
+  variant Google sends on third-party pages that embed Google content. They rotate
+  independently. We typically need both because intermediate rotation redirects
+  cross the 1P/3P boundary.
+- **`*SID` / `*SIDTS` / `*SIDCC`.** Three cookie *families* that separate
+  **identity** (who you are, slow to change) from **freshness** (you're using the
+  session right now, fast to expire):
 
-  | Family | Role | Recommended rotation cadence | Empirical validity of a stale value |
+  | Family | Role | Recommended rotation cadence | Stale-value validity |
   |---|---|---|---|
-  | `*SID` (also `HSID`, `SSID`, `APISID`, `SAPISID`, …) | Long-lived identity ("user X, session Y") | Months → ~1 year | Same — practically never expires for active accounts |
-  | `*SIDTS` (`__Secure-1PSIDTS`, `__Secure-3PSIDTS`) | Rotating freshness partner of `*SID` | **~600 s** (Google's self-report) | **Hours-to-days** on stable IP / non-Workspace (measured: 32+ h frozen still authenticating) |
-  | `*SIDCC` (`SIDCC`, `__Secure-1PSIDCC`, `__Secure-3PSIDCC`) | Per-request "session continuity check" | Issued on every request | Not enforced for accept/reject — Google reissues but doesn't validate freshness |
+  | `*SID` (`SID`, `HSID`, `SSID`, `APISID`, `SAPISID`, …) | Long-lived identity | Months → ~1 year | Practically never expires for active accounts |
+  | `*SIDTS` (`__Secure-1PSIDTS`, `__Secure-3PSIDTS`) | Rotating freshness partner of `*SID` | **~600 s** (Google's self-report) | Hours-to-days on a stable IP / non-Workspace profile |
+  | `*SIDCC` (`SIDCC`, `__Secure-1PSIDCC`, …) | Per-request "session continuity check" | Issued on every request | Not enforced for accept/reject |
 
 A few cookies sit outside this taxonomy:
 
-- **`OSID`, `__Secure-OSID`** — per-product session, set on
-  `notebooklm.google.com` and `myaccount.google.com`. Re-issued on each
-  sign-in; refreshes during normal product use.
-- **`LSID`, `__Host-1PLSID`, `__Host-3PLSID`** — identity-service
-  cookies on `accounts.google.com` itself. Long-lived.
-- **`__Host-GAPS`** — anti-takeover binding cookie. Long-lived; presence
-  is part of how Google detects suspicious cross-device session reuse.
+- **`OSID`, `__Secure-OSID`** — per-product session, set on `notebooklm.google.com`
+  and `myaccount.google.com`. Re-issued on each sign-in.
+- **`LSID`, `__Host-1PLSID`, `__Host-3PLSID`** — identity-service cookies on
+  `accounts.google.com`. Long-lived.
+- **`__Host-GAPS`** — anti-takeover binding cookie. Long-lived; part of how Google
+  detects suspicious cross-device reuse.
 
-The library treats all of these uniformly: extract the full set at
-sign-in, persist them in `storage_state.json`, replay them on every
-RPC. `_is_allowed_cookie_domain` (in `_auth/cookie_policy.py`, re-exported
-through `auth.py`) is the gate that decides
-which Set-Cookie headers from a redirect chain are worth keeping; it
-matches against `ALLOWED_COOKIE_DOMAINS` plus the regional
+The library treats these uniformly: extract the full set at sign-in, persist them
+in `storage_state.json`, replay them on every RPC.
+`_is_allowed_cookie_domain` (in `_auth/cookie_policy.py`, re-exported through
+`auth.py`) gates which `Set-Cookie` headers from a redirect chain are worth
+keeping, matching against `ALLOWED_COOKIE_DOMAINS` plus the regional
 `google.<cctld>` set.
 
 ### 2.2 How cookie rotation works
 
-"Rotation" here means: the server periodically issues a new value for a
-short-lived cookie (`Set-Cookie: __Secure-1PSIDTS=<fresh>; …`), and the
-browser is expected to overwrite its on-disk copy. If the browser falls
-behind, the server eventually stops accepting the old value and the
-session is dead until the user signs in again.
+"Rotation" means: the server periodically issues a new value for a short-lived
+cookie (`Set-Cookie: __Secure-1PSIDTS=<fresh>; …`), and the browser is expected to
+overwrite its on-disk copy. If the client falls behind, the server eventually
+stops accepting the old value and the session is dead until re-auth.
 
 Two clocks run in parallel:
 
-- The **identity clock** (`*SID`) ticks in months. Google extends it
-  silently as long as it sees activity; for a daily-active user it
-  effectively never expires.
-- The **freshness clock** (`*PSIDTS`) has a recommended rotation cadence
-  of about **10 minutes**. The server self-reports the cadence in the
-  `RotateCookies` response body as `["identity.hfcr",600]` (`hfcr` =
-  "high-frequency cookie rotation"; `600` = seconds). This is a
-  rotation hint, not a hard expiration time: stale values can keep
-  working for hours or days depending on server-side state, but
-  long-idle sessions eventually drift into sign-in redirects.
+- The **identity clock** (`*SID`) ticks in months. Google extends it silently as
+  long as it sees activity; for a daily-active user it effectively never expires.
+- The **freshness clock** (`*PSIDTS`) has a recommended rotation cadence of ~600 s,
+  self-reported in the `RotateCookies` response body as `["identity.hfcr",600]`
+  (`hfcr` = "high-frequency cookie rotation"; `600` = seconds). This is a rotation
+  *hint*, not a hard expiration: stale values keep working for hours or days
+  depending on server-side state, but long-idle sessions eventually drift into
+  sign-in redirects.
 
-Server-driven, not client-driven: the client posts to a rotation
-endpoint, the server inspects the existing `*SID` (and optionally a
-DBSC proof — see §2.3), and if everything checks out it returns a fresh
-`*PSIDTS` in `Set-Cookie`. The client only chooses *when* to fire the
-rotation; the cadence is the server's call.
+Rotation is **server-driven**: the client posts to a rotation endpoint; the server
+inspects the existing `*SID` (and optionally a DBSC proof — see §2.3) and returns a
+fresh `*PSIDTS`. The client only chooses *when* to fire.
 
-> **Has Google shortened the 600 s cadence?** As of May 2026, no public
-> evidence suggests so. Gemini-API still defaults
-> `refresh_interval=600` ([source](https://github.com/HanaokaYuzu/Gemini-API/blob/master/src/gemini_webapi/utils/rotate_1psidts.py)),
-> the `["identity.hfcr",600]` self-report is unchanged in field
-> captures, and recent
-> [Gemini-API#319](https://github.com/HanaokaYuzu/Gemini-API/issues/319) /
-> [#203](https://github.com/HanaokaYuzu/Gemini-API/issues/203) reports
-> attribute "cookies expire after a few hours" to refresh-mechanism
-> failure (SID-class aging out once freshness rotation has stalled
-> entirely), not to a hard rejection TTL reduction.
-
-**Crucially: pure RPC traffic against `notebooklm.google.com` does not
-trigger rotation.** NotebookLM's `batchexecute` endpoint accepts the
-existing cookies and serves the request, but Google only mints a fresh
-`*PSIDTS` when something talks to the *identity* surface
-(`accounts.google.com`, `accounts.youtube.com/SetSID`, the NotebookLM
-homepage GET). A long-lived client that only calls `batchexecute` will
-silently drift past the rotation window and start failing. This is
-exactly the failure mode that motivates L1/L2/L3.
-
-Several identity surfaces *can* trigger rotation when touched:
-`accounts.google.com/CheckCookie`, `accounts.youtube.com/SetSID`, the
-NotebookLM homepage redirect chain, and the dedicated `RotateCookies`
-POST. We picked `RotateCookies` because it's the only one that rotates
-deterministically for both browser-bound and Firefox-extracted sessions
-(see §5.4).
+**Crucially: pure RPC traffic against `notebooklm.google.com` does not trigger
+rotation.** `batchexecute` accepts the existing cookies, but Google only mints a
+fresh `*PSIDTS` when something talks to the *identity* surface (`accounts.google.com`,
+the NotebookLM homepage GET, the `RotateCookies` POST). A client that only calls
+`batchexecute` silently drifts past the rotation window and starts failing — exactly
+what L1/L2 target. We use `RotateCookies` because it rotates deterministically for
+both browser-bound and Firefox-extracted sessions (see
+[Appendix](#appendix-field-notes--historical-findings)).
 
 ### 2.3 Device-Bound Session Credentials (DBSC)
 
-DBSC is Google's response to **infostealer cookie theft**: malware
-exfiltrates the cookie jar from a victim's machine, ships it to a
-remote attacker, who then replays the cookies from a different machine
-and inherits the victim's session. Until DBSC, the only practical
-defenses were Google's risk heuristics (new IP, no fingerprint,
-suspicious cadence) — useful but fundamentally guess-work.
+DBSC is Google's response to **infostealer cookie theft**: malware exfiltrates the
+cookie jar and an attacker replays it from another machine. DBSC binds a session to
+**a private key in tamper-resistant hardware** (TPM / Secure Enclave / Strongbox) on
+the original device — the browser generates a non-extractable keypair at sign-in and
+registers the public key, then signs a server nonce on every rotation. The enforcing
+endpoint is **`accounts.google.com/RotateBoundCookies`**, the bound-cookie analog of
+the unsigned `RotateCookies` we use; an attacker who steals the jar can't sign the
+next bound rotation, so the stolen session dies instead of renewing. The
+[W3C spec](https://w3c.github.io/webappsec-dbsc/) is deliberately structured so only
+hardware-attesting browsers can implement it — no Python HTTP client can, and no
+public OSS DBSC client exists outside Chrome (see [A3](#a3--ruled-out-experiments)).
 
-DBSC binds a session to **a private key that lives in tamper-resistant
-hardware** on the original device. The shape of the protocol:
+**Current enforcement state.** DBSC is rolling out. Enforcement currently targets
+**Chrome itself** — Chrome refuses to use cookies that weren't bound at sign-in,
+even on the same machine. Non-Chrome HTTP clients (httpx, curl, Firefox) can still
+hit the legacy unsigned `RotateCookies` endpoint without a DBSC proof, so every
+HTTP-only strategy in this document works today. The day Google extends enforcement
+to that endpoint, they break together; the in-tree escape is to parasitize a real
+DBSC-enrolled Chrome session through the L3 CDP attach arm, or to source cookies
+via an operator-provided `NOTEBOOKLM_REFRESH_CMD` (e.g. CookieCloud federation).
+See [§7 canaries](#7--canaries-and-signals) for the tripwires that would signal the
+transition.
 
-1. **At sign-in**, the browser generates a keypair *inside* a TPM (on
-   Windows) or the platform-attestation chain equivalent (Secure
-   Enclave on macOS, Strongbox on Android). The private key is
-   non-extractable by design — the OS will only sign things with it on
-   behalf of the calling process.
-2. The browser **registers the public key** with Google as part of the
-   sign-in flow. Google associates the public key with the new session.
-3. On every subsequent rotation, Google issues a **server-generated
-   nonce**. The browser **signs the nonce** with the TPM-bound private
-   key and sends the signature alongside the rotation request.
-4. Google validates the signature against the registered public key
-   before issuing fresh cookies. No valid signature → no rotation.
+### 2.4 How browser-cookie extraction works
 
-The endpoint that enforces this is
-**`accounts.google.com/RotateBoundCookies`** — the bound-cookie analog
-of the unsigned `RotateCookies` we currently use. It returns rotated
-cookies only if the signature checks out.
+`notebooklm login --browser-cookies <browser>` reads cookies directly out of an
+installed browser's profile rather than minting fresh ones via Playwright. It is a
+**variant of manual login (L6)** and a common backing command for
+`NOTEBOOKLM_REFRESH_CMD` (L5) — it is **not** a recovery layer of its own, and in
+particular it is not L4 (L4 is the master token).
 
-The protective property: an attacker who exfiltrates the cookie jar gets
-nothing they can refresh indefinitely. Once Google requires the next
-bound-cookie rotation, the attacker cannot sign it, and the stolen
-session dies instead of being renewed.
-
-The [W3C DBSC spec](https://w3c.github.io/webappsec-dbsc/) is
-**deliberately structured** so that only browsers with hardware key
-attestation can implement it. There's no extension point a Python HTTP
-client could fulfill: even with TPM access (which Python doesn't have
-on any platform out of the box), Chrome additionally proves *integrity
-of the calling process* via platform attestation chains. This is why
-§7.4 calls a client-side DBSC implementation impossible.
-
-The current rollout (April 2026, Chrome 146 GA Windows) only enforces
-DBSC against **Chrome itself** — i.e. Chrome refuses to use cookies
-that weren't bound at sign-in, even on the same machine. Non-Chrome
-HTTP clients (httpx, curl, Firefox) can still hit the legacy unsigned
-`RotateCookies` endpoint without a DBSC proof. The day Google extends
-enforcement to that endpoint, every HTTP-only strategy in this document
-breaks at the same time, and the in-tree escape is to parasitize a real
-DBSC-enrolled Chrome session through the L3 CDP attach arm. CookieCloud-style
-federation remains an operator-provided `NOTEBOOKLM_REFRESH_CMD` pattern.
-
-### 2.4 How browser cookie extraction works (the L4 dependency)
-
-L4 (`notebooklm login --browser-cookies <browser>`) reads cookies
-directly out of an installed browser's profile rather than minting
-fresh ones via Playwright. Faster, doesn't require user interaction,
-and — for Firefox — produces a cookie set the unsigned `RotateCookies`
-endpoint accepts indefinitely. Some background on why this is harder
-than it sounds:
-
-- **Browsers store cookies in encrypted SQLite databases.** Chrome
-  keeps them in
-  `~/Library/Application Support/Google/Chrome/Default/Network/Cookies`
-  (macOS) and equivalents on other OSes; Firefox uses `cookies.sqlite`.
-  The schema is straightforward, but cookie *values* are encrypted at
-  rest.
-- **The encryption key lives in the OS credential store.** Chrome's
-  cookie key is held in Keychain under "Chrome Safe Storage" on macOS,
-  protected by DPAPI on Windows, and stored via libsecret/kwallet on
-  Linux. Reading cookies = reading the key from the OS store +
-  decrypting with AES-GCM.
-- **Chrome 127+ adds App-Bound Encryption (ABE).** A second layer where
-  the *value* is re-encrypted with a key bound to Chrome's signed
-  binary, rotated at every Chrome launch. This was added specifically
-  to defeat infostealers reading the SQLite + keychain in user space.
-  Reading ABE-encrypted cookies requires either (a) running as the
-  same signed binary, or (b) a Windows-admin / kernel-level bypass.
-- **`browser_cookie3` (the ecosystem default) does not handle ABE.**
-  As of May 2026, it returns garbage for Chrome cookies on Windows and
-  silently-incomplete data on macOS.
-- **`rookiepy` claims ABE support** but in practice requires admin
-  privileges from Chrome 130+ on Windows
-  ([rookie#50](https://github.com/thewh1teagle/rookie/issues/50)).
-- **Firefox doesn't have ABE.** Mozilla's threat model treats local
-  attackers (anything reading the user's home dir) as out-of-scope, so
-  Firefox cookies remain readable by any user-space process with file
-  access. This is what makes Firefox the recommended unattended option
-  in §8.3.
-
-The library uses `rookiepy` (Rust extension with a Python binding)
-rather than implementing extraction itself. `rookiepy` covers ~16
-browsers across all three platforms; the login service maps user-facing names
-(`firefox`, `arc`, `vivaldi`, …) to its functions, and
-`_auth/cookies.py::convert_rookiepy_cookies_to_storage_state` reshapes the
-result into a Playwright-compatible
-`storage_state.json`. From the rest of the codebase's perspective,
-browser-extracted cookies are indistinguishable from Playwright-minted
-ones.
-
-A note on cookie-jar fidelity: Google's set spans multiple domains
-(`.google.com`, `.accounts.google.com`, regional ccTLDs like
-`.google.co.uk`, plus `.notebooklm.google.com`). When extracting we ask
-for all of them — `_login_with_browser_cookies` builds the `domains`
-list from `ALLOWED_COOKIE_DOMAINS + GOOGLE_REGIONAL_CCTLDS` — because
-dropping any one silently breaks specific code paths (e.g. losing
-`.notebooklm.google.com`-scoped cookies breaks artifact downloads).
-
-#### Firefox Multi-Account Containers
-
-`rookiepy` 0.5.6 issues `SELECT host, path, isSecure, expiry, name,
-value, isHttpOnly, sameSite FROM moz_cookies` with no filter on the
-`originAttributes` column ([investigation in #366](https://github.com/teng-lin/notebooklm-py/issues/366)).
-Firefox stores per-container cookies with `originAttributes =
-'^userContextId=N…'`, so cookies from every Multi-Account Container
-(plus the no-container default) get merged into a single jar. The
-`moz_cookies` UNIQUE constraint is `(name, host, path, originAttributes)`,
-so duplicate `(host, name, path)` rows across containers really exist;
-which one wins after merging is arbitrary. For users who isolate their
-Google session in a container (a common privacy practice), unscoped
-`--browser-cookies firefox` silently produces an inconsistent or wrong
-session.
-
-To target a specific container, use the `firefox::<container-name>`
-syntax (ported from yt-dlp's [container-aware extractor](https://github.com/yt-dlp/yt-dlp/blob/c8695f52a91f0d2aabbba7b7200c1099bfa9a3e5/yt_dlp/cookies.py#L149-L177)):
-
-```bash
-# Read cookies only from the named container:
-notebooklm login --browser-cookies 'firefox::Work'
-
-# Read cookies only from the no-container default:
-notebooklm login --browser-cookies 'firefox::none'
-
-# Unscoped (back-compat): merges every container. Emits a yellow warning
-# if the profile is actually using containers.
-notebooklm login --browser-cookies firefox
-```
-
-Container names match against `containers.json` adjacent to
-`cookies.sqlite`. Both user-defined `name` fields and built-in
-`l10nID`-derived labels are recognised (e.g. `firefox::Personal`
-matches the stock `userContextPersonal.label`). The extractor bypasses
-`rookiepy` entirely and talks to `cookies.sqlite` directly via
-`sqlite3` (the DB is copied to a temp dir first, so a running Firefox
-doesn't lock us out). See `src/notebooklm/cli/_firefox_containers.py` for
-the implementation.
+Browsers store cookies in encrypted SQLite databases, with the decryption key in the
+OS credential store (Keychain / DPAPI / libsecret). **Chrome 127+ adds App-Bound
+Encryption (ABE)** — a second layer bound to Chrome's signed binary that defeats
+user-space readers; `browser_cookie3` doesn't handle it and `rookiepy` needs admin
+from Chrome 130+ ([rookie#50](https://github.com/thewh1teagle/rookie/issues/50)).
+**Firefox has no ABE** (Mozilla treats local file-access attackers as out-of-scope),
+so its cookies stay readable by any user-space process — hence the Windows Firefox
+recommendation. The library uses `rookiepy` (~16 browsers) and reshapes the result
+via `_auth/cookies.py::convert_rookiepy_cookies_to_storage_state` into a
+Playwright-compatible `storage_state.json`, indistinguishable downstream from a
+Playwright-minted one. Extraction asks for the full multi-domain set
+(`ALLOWED_COOKIE_DOMAINS + GOOGLE_REGIONAL_CCTLDS`) because dropping any one breaks
+specific paths (e.g. losing `.notebooklm.google.com` cookies breaks artifact
+downloads).
 
 ### 2.5 Three timers people confuse
 
-When reading code or issue threads, distinguish:
-
 | Timer | Magnitude | Lives in | Meaning |
 |---|---|---|---|
-| **`*PSIDTS` rotation cadence** | ~600 s (10 min) | Google's identity surface | Recommended active-client refresh interval, self-reported as `["identity.hfcr",600]`. This is not a hard rejection TTL; prior values can remain valid much longer on stable profiles. |
-| **`*SIDCC` sliding window** | ~5 min | Google's RPC surface | Different cookie family. Rotates on nearly every request; not load-bearing for our auth. |
-| **Client-side rotation throttle** | 60 s | Our `_auth/keepalive.py` and Gemini-API's `rotate_1psidts.py` | Don't fire two `RotateCookies` POSTs within a minute. Avoids 429. Has nothing to do with how often Google *requires* rotation. |
+| **`*PSIDTS` rotation cadence** | ~600 s | Google's identity surface | Recommended active-client refresh interval (`["identity.hfcr",600]`). Not a hard rejection TTL — prior values stay valid much longer on stable profiles. |
+| **`*SIDCC` sliding window** | ~5 min | Google's RPC surface | A different cookie family; rotates on nearly every request; not load-bearing for our auth. |
+| **Client-side rotation throttle** | 60 s | `_auth/keepalive.py` | Don't fire two `RotateCookies` POSTs within a minute (avoids 429). Unrelated to how often Google *requires* rotation. |
 
-Reports that "cookies are expiring faster" usually trace to either the
-session entering a risk-flagged state (§3.2) or to the rotation
-mechanism failing for hours and `*SID` finally aging out — not to a
-shorter hard rejection TTL.
+Reports that "cookies are expiring faster" usually trace to the session entering a
+risk-flagged state (§3.1) or to the rotation mechanism failing until `*SID` finally
+ages out — not to a shorter hard rejection TTL.
 
 ### 2.6 Domain tiering: REQUIRED vs OPTIONAL cookie domains
 
-Not every Google cookie a logged-in browser holds is load-bearing for
-NotebookLM automation. The library splits the cookie-source domain list
-into two tiers (`src/notebooklm/_auth/cookie_policy.py`):
+Not every Google cookie a logged-in browser holds is load-bearing for NotebookLM.
+The library splits the cookie-source domain list into two tiers
+(`_auth/cookie_policy.py`):
 
-| Tier | Constant | Domains | Extracted by default | Opt-in via |
-|---|---|---|---|---|
-| **REQUIRED** | `REQUIRED_COOKIE_DOMAINS` | `.google.com`, `notebooklm.google.com` (+ regional ccTLDs), `accounts.google.com`, `.googleusercontent.com`, `drive.google.com` | ✅ | — (always extracted) |
-| **OPTIONAL** | `OPTIONAL_COOKIE_DOMAINS_BY_LABEL` | `youtube` (`.youtube.com` + `accounts.youtube.com`), `docs` (`docs.google.com`), `myaccount` (`myaccount.google.com`), `mail` (`mail.google.com`) | ❌ | `notebooklm login --include-domains=<label>[,<label>...]` (or `=all`) |
+| Tier | Constant | Domains | Extracted by default |
+|---|---|---|:-:|
+| **REQUIRED** | `REQUIRED_COOKIE_DOMAINS` | `.google.com`, `notebooklm.google.com` (+ regional ccTLDs), `accounts.google.com`, `.googleusercontent.com`, `drive.google.com` | ✅ |
+| **OPTIONAL** | `OPTIONAL_COOKIE_DOMAINS_BY_LABEL` | `youtube`, `docs`, `myaccount`, `mail` | ❌ (opt-in via `--include-domains=<label>[,…]` or `=all`) |
 
-The REQUIRED tier is precisely the set traced through every exercised
-code path: the API host (`notebooklm.google.com`), the identity carriers
-(`.google.com`, `accounts.google.com`), authenticated media downloads
-(`.googleusercontent.com`), and Drive-source ingest (`drive.google.com`).
-Removing any one of these breaks an observed flow.
-
-The OPTIONAL tier is the historical "extract everything a logged-in
-browser would have, for symmetry" set ([#360](https://github.com/teng-lin/notebooklm-py/issues/360)).
-None of these domains is exercised by current `notebooklm-py` traffic;
-they're available to opt into only because users with non-standard
-flows or future protocol shifts may need them.
-
-#### Why two tiers — the "why" rationale
-
-**Data minimization, applied to a session-cookie file.** `storage_state.json`
-is a high-value target: anyone who exfiltrates it inherits the user's
-Google session. The smaller the cookie set we persist, the less
-authority a leaked file confers. The `--include-domains` opt-in is the
-data minimization control: by default the file holds only what the
-REQUIRED tier needs, and broader sibling-product access is added only
-when the operator asks for it.
-
-Concretely, the REQUIRED tier carries enough cookies to authenticate to
-NotebookLM and the auth surfaces NotebookLM transitively touches. The
-OPTIONAL tier additionally carries cookies that would let an attacker
-read the user's Gmail, Drive contents, YouTube history, and account
-settings. There is no NotebookLM code path that needs those cookies, so
-extracting them by default would broaden the post-leak attack surface
-without any functional benefit.
-
-The control is enforced at **extraction time** (what
-`rookiepy.load(domains=...)` is asked for), not at the runtime
-allow-list. This matters because:
-
-- Once a cookie is in `storage_state.json`, every subsequent process
-  that reads the file sees it. Filtering it out at runtime would still
-  leave the leaked-file attack surface.
-- Filtering at extraction means the cookie is never written to disk in
-  the first place — the smallest set that lets all known flows succeed
-  is the set we persist.
-- The runtime filter (`_is_allowed_cookie_domain` in
-  `_auth/cookie_policy.py`) stays permissive over the REQUIRED ∪ OPTIONAL
-  union so that opted-in domains survive downstream filters — but it's
-  not the load-bearing security control. The extraction-time filter is.
-
-This is the **single cookie-domain narrowing security control**
-([#483](https://github.com/teng-lin/notebooklm-py/pull/483)): narrow
-the extraction list to REQUIRED by default, expose OPTIONAL behind an
-explicit opt-in flag, and document the trade-off so users with sibling-
-product flows know what to ask for.
-
-#### When sibling cookies matter
-
-Two practical cases where opting into OPTIONAL is the right call:
-
-- **YouTube-source automation at scale.** `notebooklm-py` parses
-  YouTube URLs locally and delegates the fetch to NotebookLM's backend,
-  so YouTube cookies are not strictly required for source-add. But
-  workflows that mix YouTube source-adds with cross-tool YouTube
-  scraping (e.g. a parallel `yt-dlp` pipeline reading the same
-  `storage_state.json`) benefit from `--include-domains=youtube`.
-- **Drive-picker / Docs-picker flows.** If a future code path needs to
-  authenticate against `docs.google.com` directly (rather than via the
-  current `drive.google.com` redirect chain), `--include-domains=docs`
-  is the future-proofing knob.
-
-In both cases the operator opts in explicitly — `notebooklm login
---browser-cookies firefox --include-domains=youtube,docs` — and the
-broader cookie set lands in `storage_state.json` only for accounts
-where it's needed.
+The REQUIRED tier is exactly the set traced through every exercised code path (API
+host, identity carriers, authenticated media downloads, Drive-source ingest);
+removing any one breaks an observed flow. **Data minimization** motivates the split:
+`storage_state.json` is a high-value target, and the OPTIONAL tier carries cookies
+that would let an attacker read Gmail / Drive / YouTube — none of which any
+NotebookLM path needs. The control is enforced at **extraction time** (what
+`rookiepy.load(domains=...)` is asked for), so excluded cookies are never written to
+disk ([#483](https://github.com/teng-lin/notebooklm-py/pull/483)). Opt in only when a
+sibling flow needs it — e.g.
+`notebooklm login --browser-cookies firefox --include-domains=youtube,docs`.
 
 ---
 
 ## 3 · Threat model
 
-### 3.1 Cookie classes and their decay clocks
-
-| Cookie | Rotation / expiry signal | Lifecycle |
-|---|---|---|
-| `__Secure-1PSIDTS` (and `*-3PSIDTS`) | Recommended rotation cadence ~10 min, declared by Google in `RotateCookies` response body as `[["identity.hfcr",600],...]`; not a hard TTL | Designed to be refreshed opportunistically; stale values can keep working for hours or days, but long-idle sessions eventually drift into sign-in redirects |
-| `SIDCC`, `__Secure-1PSIDCC`, `__Secure-3PSIDCC` | ~5 min sliding window | Rotates on nearly every request to Google; ephemeral, generally not load-bearing for auth |
-| `SID`, `HSID`, `SSID`, `APISID`, `SAPISID` | Months to ~1 year (issued `Max-Age`) | Long-lived identity; rotated by Chrome periodically through normal browsing but not by us |
-| `__Secure-1PSID`, `__Secure-3PSID`, `__Secure-1PAPISID`, `__Secure-3PAPISID` | Same as above, "Secure" cousins | Same lifecycle |
-| `OSID`, `__Secure-OSID` | Per-product session cookie set on `notebooklm.google.com` and `myaccount.google.com` | Re-issued on each sign-in; refreshes during normal product use |
-| `LSID`, `__Host-1PLSID`, `__Host-3PLSID` | Long-lived | Identity service cookies on `accounts.google.com` |
-| `__Host-GAPS` | Long-lived | Anti-takeover binding cookie |
-
-### 3.2 What kills a session in practice
+### 3.1 What kills a session in practice
 
 In rough order of likelihood:
 
-1. **`*PSIDTS` rotation drift.** Cookies on disk become stale because nothing
-   rotates them. Any RPC after the ~10–30 min grace period fails with a
-   redirect to `accounts.google.com/v3/signin/...`. **This is the dominant
-   failure mode for unattended use.**
-2. **Risk-scored revalidation.** Google flags the access pattern (new IP,
-   no fingerprint, suspicious cadence, geography mismatch) and forces full
-   re-auth. Less predictable; happens days-to-weeks into a long-running
-   deployment.
-3. **Password change or manual sign-out** anywhere — invalidates all
-   sessions instantly.
-4. **Workspace policy timeouts.** Some org admins enforce 8h/30d re-auth
-   intervals; varies by tenant.
-5. **DBSC enforcement (emerging).** Google is rolling out Device-Bound
-   Session Credentials. As of the GA on Chrome 146 Windows (April 9, 2026),
-   *Chrome* clients without a TPM-signed proof can't refresh `*PSIDTS`.
-   Currently does not affect non-Chrome HTTP clients (us); the legacy
-   unsigned `RotateCookies` path remains open. This is **the long-term
-   threat**.
+1. **`*PSIDTS` rotation drift.** Cookies on disk go stale because nothing rotates
+   them. Any RPC after the grace period fails with a redirect to
+   `accounts.google.com/v3/signin/…`. **The dominant failure mode for unattended
+   use** — and the one the recovery ladder exists to defeat.
+2. **Risk-scored revalidation.** Google flags the access pattern (new IP, no
+   fingerprint, suspicious cadence, geography mismatch) and forces full re-auth.
+   Less predictable; days-to-weeks into a long-running deployment.
+3. **Password change or manual sign-out** anywhere — invalidates all sessions
+   instantly.
+4. **Workspace policy timeouts.** Some org admins enforce re-auth intervals; varies
+   by tenant.
+5. **DBSC enforcement (emerging).** See §2.3. Does not affect non-Chrome HTTP
+   clients today; the long-term threat.
 
-### 3.3 The DBSC timeline (as of May 2026)
+Cookie decay clocks by class:
 
-- **Apr 9, 2026:** Chrome 146 GA on Windows includes consumer-account DBSC
-  enforcement against Chrome clients ([blog.google
-  security](https://blog.google/security/protecting-cookies-with-device-bound-session-credentials/),
-  [Chrome dev blog](https://developer.chrome.com/blog/dbsc-windows-announcement)).
-  ~85% of active Windows Chrome installs are TPM 2.0 capable, per Google's
-  own telemetry.
-- **macOS:** "Upcoming Chrome release," no firm date.
-- **Linux:** Explicitly deferred. No timeline.
-- **Workspace:** Session-binding policy is admin-opt-in beta
-  ([Workspace admin docs](https://knowledge.workspace.google.com/admin/security/prevent-cookie-theft-with-session-binding)),
-  not enforced by default.
-- **Non-Chrome HTTP clients (us):** Not currently enforced. The unsigned
-  `RotateCookies` endpoint accepts our POSTs without DBSC challenge.
-
-`RotateBoundCookies` (the DBSC analog of `RotateCookies`) requires a
-TPM-bound private key registered with Google at sign-in. The
-[W3C DBSC spec](https://w3c.github.io/webappsec-dbsc/) is
-deliberately structured to prevent non-browser implementation. **There is no
-public OSS DBSC client outside Chrome itself, and there cannot be one
-without TPM access.**
-
-### 3.4 Internal threats: cookie-jar fidelity in the persistence pipeline
-
-A separate failure mode that's easy to misattribute to Google: the
-library can corrupt its own cookie state during the read-merge-write
-cycle. **If users report cookies "expiring fast" or "dying after a few
-hours", before assuming Google has changed something, walk this section
-first.** None of these are theoretical — they come straight from
-reading `_auth/refresh.py`, `_auth/storage.py`, and the lifecycle of
-`NotebookLMClient` / `fetch_tokens_with_domains` / `save_cookies_to_storage`.
-
-#### 3.4.1 Stale in-memory clobbers fresh disk (the "few-hours" pattern)
-
-> **Resolved in #361.** ``CookiePersistence`` (see
-> ``src/notebooklm/_cookie_persistence.py``; driven by ``ClientLifecycle``
-> at open-time, ``src/notebooklm/_runtime/lifecycle.py``) now captures an
-> open-time ``CookieSnapshotKey -> CookieSnapshotValue`` snapshot of its jar;
-> ``save_cookies_to_storage``
-> accepts an ``original_snapshot=...`` kwarg and, when provided, writes only
-> the deltas (cookies whose persisted tuple differs from the snapshot) plus deletions
-> (cookies present in the snapshot but absent from the jar) — both arms
-> CAS-guarded against the current on-disk cookie value so a sibling-process
-> value write on the same key is never clobbered. Cookies the in-process code never
-> touched are left to whatever a sibling process may have written, so the
-> stale-overwrite-fresh race below cannot fire. The
-> ``original_snapshot=None`` form remains as a *permanent* public-API
-> back-compat shim — not a scheduled deprecation — but emits a
-> ``RuntimeWarning`` (a runtime safety advisory about this race, not a
-> "will be removed" signal); every in-tree caller passes a
-> snapshot. See ``tests/unit/test_auth_cookie_save_race.py`` for the
-> canonical timeline test plus value-update CAS and refresh-cmd
-> re-snapshot coverage.
-
-The original failure timeline (historical — the resolution box above
-describes the in-tree fix):
-
-| t | Process A (long-lived, `keepalive=None`) | Process B (CLI invocation) | Disk state |
-|---|---|---|---|
-| 0 | `from_storage()` → reads `*PSIDTS=OLD` | — | `OLD` |
-| +5 m | working (batchexecute traffic only; never touches identity surface) | `from_storage()` rotates → `*PSIDTS=NEW` → saves under flock | `NEW` |
-| +10 m | `close()` → save runs under flock → reads disk (`NEW`) → A's in-memory (`OLD`) differs → **A writes `OLD`** (pre-#361 only) | done | **`OLD` (clobbered)** |
-| +60 m+ | next request to `notebooklm.google.com` fails — rotation never effectively landed | | |
-
-The cross-process flock added in
-[#344](https://github.com/teng-lin/notebooklm-py/pull/344) prevents
-interleaved writes but not stale-overwrites-fresh. #361 added the
-snapshot/delta machinery on top to close the remaining gap.
-
-**Defensive comparison across the ecosystem.** This codebase is, as far
-as a survey can establish, the *most defensive* OSS implementation:
-
-| Project | Atomic temp-replace | Flock | Per-cookie merge | Stale-overwrite-fresh |
-|---|---|---|---|---|
-| `notebooklm-py` (us) | ✅ | ✅ (post-#344) | ✅ path-aware snapshot/delta CAS (post-#361) | ✅ closed |
-| HanaokaYuzu/Gemini-API | ❌ | ❌ | ❌ (full-jar overwrite) | ❌ |
-| yt-dlp ([cookies.py#L1333-L1352](https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/cookies.py#L1333-L1352)) | ❌ (`f.truncate(0)` then write) | ❌ | ❌ (full-jar overwrite) | ❌ |
-| Bard-API, ytmusicapi, gpsoauth, browser_cookie3, rookiepy | n/a (read-only) | n/a | n/a | n/a |
-| easychen/CookieCloud | ❌ | ❌ | ❌ | ❌ (by design) |
-
-yt-dlp's design is read-mostly — cookies extracted fresh from the
-browser per invocation, no long-lived process mutating shared state —
-so it gets away with full-overwrite-no-flock-no-temp-replace. Our
-threat model (long-lived clients + cron-driven `auth refresh` +
-parallel CLI invocations all writing the same `storage_state.json`)
-genuinely needs the defenses we have. The peer-ecosystem state of the
-art is "last writer wins, hope for the best."
-
-Fix shipped in #361 (write-only-deltas + dirty-flag against open-time
-snapshot, with value-CAS guards against the live on-disk value on both
-write and deletion). Attribute-only refreshes are still detected and
-persisted as deltas, but attribute-only sibling drift does not block later
-value rotations; the stale-overwrite hazard is about cookie values. The
-two alternatives considered and rejected:
-
-- **Generation counter** stamped on every cookie write — would require
-  every external writer to opt in to the new format and breaks
-  compatibility with Playwright's `storage_state.json` schema.
-- **Full bidirectional sync** — overkill for a session-token store;
-  the snapshot/delta CAS shape converges to the same correctness without
-  a schema change.
-
-Mitigations available today (still useful even with the fix in place):
-
-- Pass `keepalive=N` to long-lived `NotebookLMClient` instances so
-  rotation actually fires in-process (in-memory stays fresh, save is
-  always correct).
-- Or, run a single rotator (cron-driven `notebooklm auth refresh`) and
-  ensure no parallel long-lived processes write to the same
-  `storage_state.json`.
-
-#### 3.4.2 Historical: the `(name, domain)` collapse — resolved end-to-end
-
-> **Resolved in #361 + #369.** The persistence-merge hot path that
-> originally fired this hazard is now fully path-aware. ``CookieKey`` /
-> ``DomainCookieMap`` are ``(name, domain, path)`` tuples
-> (defined as `CookieKey` in `_auth/cookies.py:23-31`); ``extract_cookies_with_domains`` returns path-keyed
-> entries (`_auth/cookies.py:356-380`); the save merge in
-> ``save_cookies_to_storage`` builds its merge key as
-> ``(name, domain, path)`` (`_auth/storage.py:432-458`); ``_cookie_map_from_jar``
-> preserves ``path`` on the way out of httpx (`_auth/cookies.py:592-606`); and
-> ``build_httpx_cookies_from_storage`` loads all path variants into the
-> live jar. Two storage entries that share ``(name, domain)`` at distinct
-> paths survive a load → save round trip as independent rows.
-
-Section retained for historical context so triage of older bug reports
-makes sense. Current state of each former collapse site:
-
-| Site | Identity key today | Notes |
+| Cookie | Rotation / expiry signal | Lifecycle |
 |---|---|---|
-| `extract_cookies_with_domains` (`_auth/cookies.py:356-380`) | `(name, domain, path)` | Path-aware since #369; per-path entries survive extraction. |
-| `_cookie_map_from_jar` (`_auth/cookies.py:592-606`) | `(name, domain, path)` | Path-aware on the way out of httpx. |
-| `cookies_by_key` in `save_cookies_to_storage` (`_auth/storage.py:432-458`) | `(name, domain, path)` | Merge keyed by full triple; previously-shadowed variants are now refreshed independently. |
-| `AuthTokens.cookies` | `DomainCookieMap` / `(name, domain, path)` | Path-aware type since refactoring. Backed by `DomainCookieMap` (maps `(name, domain, path)` to value). Normalizes legacy 2-tuple keys in `__post_init__` for compatibility (`_auth/tokens.py` and `_auth/cookies.py`). |
+| `__Secure-1PSIDTS` / `*-3PSIDTS` | Recommended cadence ~600 s (`["identity.hfcr",600]`); not a hard TTL | Refreshed opportunistically; stale values work for hours-to-days, then drift into sign-in redirects |
+| `SIDCC` / `__Secure-*SIDCC` | ~5 min sliding window | Ephemeral; generally not load-bearing for auth |
+| `SID`, `HSID`, `SSID`, `APISID`, `SAPISID` (+ `__Secure-` cousins) | Months → ~1 year | Long-lived identity; not rotated by us |
+| `OSID`, `__Secure-OSID` | Per-product session | Re-issued on each sign-in |
+| `LSID`, `__Host-*LSID`, `__Host-GAPS` | Long-lived | Identity-service / anti-takeover cookies |
 
-RFC 6265 treats `path` as part of cookie identity. If Google ever
-path-scopes a rotation target — `OSID` for a per-product path is the
-likely candidate, since it's already per-product — the persistence-
-merge hot path now keeps each variant on its own identity key, so the
-"first variant wins, others silently shadowed" failure mode is closed.
-The lossy public-API surfaces still flatten on the way out, but a
-caller that hits one of them and round-trips the result back through
-the save path will still keep on-disk per-path rows distinct (the save
-machinery rebuilds keys from the in-memory httpx jar, which preserves
-``path``).
+### 3.2 Internal persistence hazards (pointer)
 
-Worst-case framing of the historical bug, retained because the
-diagnostic pattern in §3.4.8 still points at it: the iteration order
-of the pre-#369 `cookies_by_key` dict-comprehension over
-`cookie_jar.jar` was **not specified by `http.cookiejar`** — which
-variant survived the collapse depended on insertion order, which
-depended on the order Google sent its `Set-Cookie` headers. The bug
-was not just "we lose a variant" but "we non-deterministically lose a
-variant", which made historical failures hard to reproduce. The
-current path-aware code path eliminates the non-determinism by keying
-on the full triple.
+A separate failure class is easy to misattribute to Google: the library corrupting
+its own cookie state during the read-merge-write cycle. Historically several such
+hazards existed (a stale-in-memory-clobbers-fresh-disk race, `(name, domain)`
+path-collapse, sibling-domain allow-list asymmetry, round-trip attribute erosion).
+**All of them are resolved in-tree** — the persistence path is now snapshot/delta,
+CAS-guarded, cross-process flocked, and fully `(name, domain, path)`-aware. If users
+report cookies "expiring fast", walk the
+[diagnostic checklist](#a2--diagnosing-cookies-expire-fast) in the Appendix (which
+also records the historical hazards and their fixes) before assuming Google changed
+anything.
 
-#### 3.4.3 Sibling Google products in the cookie allowlist
+### 3.3 Empirical cookie requirements
 
-> **Resolved in [#360](https://github.com/teng-lin/notebooklm-py/issues/360).**
-> `ALLOWED_COOKIE_DOMAINS` now covers sibling Google products
-> (`.youtube.com`, `accounts.youtube.com`, `drive.google.com`,
-> `docs.google.com`, `myaccount.google.com`, `mail.google.com`), and
-> the previously-split `_is_allowed_auth_domain` / `_is_allowed_cookie_domain`
-> filters have been collapsed into a single canonical policy
-> (`_is_allowed_cookie_domain`); the auth-side function is now a thin
-> alias. `_login_with_browser_cookies` automatically widens its rookiepy
-> `domains` list because it constructs it from `ALLOWED_COOKIE_DOMAINS`.
-
-**Original problem.** `ALLOWED_COOKIE_DOMAINS` (now in
-`_auth/cookie_policy.py`) was
-narrowly NotebookLM-shaped. Two layered issues:
-
-1. **The extraction gap.** `_login_with_browser_cookies`
-   (`cli/session.py:165-172`) passes `ALLOWED_COOKIE_DOMAINS +
-   regional ccTLDs` as the `domains` list to `rookiepy.load()`.
-   rookiepy was never asked for `.youtube.com`, `accounts.youtube.com`,
-   `drive.google.com`, `myaccount.google.com`, `mail.google.com`, or any
-   other sibling-product domain. They were absent from
-   `storage_state.json` from the moment of extraction. The Playwright
-   login path captured whatever the browser context touched, but
-   `extract_cookies_with_domains` (strict filter) dropped them at load
-   time. Either way, the runtime auth jar had nothing for those domains.
-
-2. **The strict-vs-broad filter asymmetry.** Two filters with different
-   policies — `_is_allowed_auth_domain` (exact match against
-   `ALLOWED_COOKIE_DOMAINS` ∪ regional ccTLDs) and
-   `_is_allowed_cookie_domain` (suffix-matches `.google.com`,
-   `.googleusercontent.com`, `.usercontent.google.com`). Auth-jar
-   building used the strict filter; persistence
-   (`save_cookies_to_storage`'s `cookies_by_key`) used the broad one.
-   The asymmetry zone — host-only cookies on subdomains like
-   `mail.google.com`, `myaccount.google.com`, `chat.google.com`,
-   `lh3.google.com` — got saved by the broad filter and dropped on
-   next reload by the strict one. Residue of the incomplete fix in
-   [#334 / `fea8315`](https://github.com/teng-lin/notebooklm-py/commit/fea8315)
-   that broadened persistence without symmetrically broadening extraction.
-
-**Why it didn't break in observed traffic.** Walking the cookies
-actually exercised today:
-
-- `batchexecute` RPC needs only `.google.com` / `accounts.google.com` /
-  `notebooklm.google.com` — strict-allowed.
-- YouTube/Drive source ingestion: `_sources.py` parses URLs locally;
-  the fetch happens server-side on NotebookLM's backend.
-- Artifact downloads: hit `*.googleusercontent.com` plus
-  `.google.com`-scoped auth cookies. Both strict-allowed.
-- Rotation: empirical capture (§5.3) shows `RotateCookies` returns 200
-  directly with `Set-Cookie: __Secure-*PSIDTS=…; Domain=.google.com`.
-  No traversal of `accounts.youtube.com` is required for the L1 path.
-
-So no auth-relevant cookie was dropped in current flows. The fix is
-defensive — symmetric extraction/save policy with sibling domains
-covered, so future protocol shifts (signed Drive URLs, `CheckCookie`
-chains, Drive-picker flows, YouTube-side rotation) don't turn the
-asymmetry into a hot bug.
-
-#### 3.4.4 The "differing-value-wins" merge heuristic
-
-`_auth/storage.py::_find_cookie_for_storage` handles the case where
-`http.cookiejar` has normalized `Domain=accounts.google.com` to
-`.accounts.google.com`. It walks variant keys and returns the first
-candidate whose value differs from disk:
-
-```python
-for cookie in candidates:
-    if cookie.value != stored_value:
-        return cookie
-return candidates[0]
-```
-
-Two failure shapes:
-
-1. If multiple variants legitimately differ from disk after a
-   rotation, **set iteration order picks the winner.** Python set
-   iteration is implementation-defined (insertion-adjacent but not
-   guaranteed); the "right" variant is not specified anywhere.
-2. The fallback `return candidates[0]` after the loop is unreachable
-   in correct flows but inherits the same ordering ambiguity if it
-   ever fires.
-
-Low-priority hazard but worth flagging: when this gets it wrong, the
-symptom is "cookies look right on disk but fail when replayed."
-
-#### 3.4.5 `expires=-1` flattens age information
-
-`*PSIDTS` rotations come back from `RotateCookies` without `Max-Age` —
-they're "browser session" cookies. `_auth/storage.py::_cookie_to_storage_state`
-and `_auth/cookies.py::convert_rookiepy_cookies_to_storage_state`
-write them as `expires=-1` (Playwright session-cookie
-convention) and persist them indefinitely. This means:
-
-- A `*PSIDTS` rotated 30 seconds ago is indistinguishable on disk from
-  one rotated 30 hours ago.
-- We can't write a "stale on-disk" detector based on cookie metadata —
-  the only timestamp we have is the file's `mtime`.
-- Diagnostics that print `expires` for debugging show `-1` for the
-  cookie that matters most. Use file mtime instead.
-
-#### 3.4.6 `__Host-` invariants are not enforced
-
-> **Mitigated in #365** as a side benefit of fixing §3.4.7. Faithful
-> `path`/`secure` preservation on load means `__Host-` cookies survive
-> the round-trip without losing the prefix-mandated attributes; the
-> remaining gap is `cookie.domain` normalization on the save side.
-
-`__Host-` prefix cookies (`__Host-GAPS`, `__Host-1PLSID`,
-`__Host-3PLSID`) **must** have empty `Domain` and `Path=/` per the
-prefix rule. `_cookie_to_storage_state` writes whatever
-`cookie.domain` happens to be at that point, so any normalization pass
-that adds a leading dot to a `__Host-` cookie produces an invalid
-shape. Browsers and well-behaved cookie jars discard these on load;
-silent drops would manifest as occasional auth-flow flakes.
-
-#### 3.4.7 Load-side attribute loss (round-trip erosion)
-
-> **Resolved in #365.** Both load paths now construct a faithful
-> `http.cookiejar.Cookie` via the `_storage_entry_to_cookie` helper,
-> preserving `path`, `secure`, and `httpOnly` across load+save cycles.
-> The analysis below is retained for historical context.
-
-Every load path uses `cookies.set(name, value, domain=domain)` —
-`_auth/cookies.py::build_httpx_cookies_from_storage` and
-`_auth/cookies.py::load_httpx_cookies` both. httpx's `Cookies.set`
-accepts only `name`, `value`, `domain`, and `path`; we pass none of
-the other attributes we faithfully wrote out via
-`_cookie_to_storage_state` (`secure`, `httpOnly`, `sameSite`,
-non-default `path`).
-
-Concretely, after one load:
-
-| Attribute | On disk | After load (in-memory) |
-|---|---|---|
-| `path` | whatever was written | always `/` (httpx default) |
-| `secure` | preserved on save | `False` (Cookie ctor default) |
-| `httpOnly` | preserved on save | `False` |
-| `sameSite` | always `"None"` (already hardcoded — see below) | not represented |
-
-If we save back without intervening Set-Cookie observations to refill
-the attributes, `_auth/storage.py::_cookie_to_storage_state` re-derives
-all of these from the in-memory cookie object, which now reflects the
-defaults. Each load+save cycle erodes attribute fidelity until disk
-stabilizes at `Path=/`, `secure=false`, `httpOnly=false`,
-`sameSite="None"`.
-
-For `__Host-`-prefixed cookies this is a logical violation
-(§3.4.6). For `__Secure-`-prefixed cookies the `Secure` attribute is
-client-side enforcement; Google's server doesn't reject the cookie
-just because we send it without a `Secure` assertion, so this is
-mostly latent. But the round-trip erosion is real and would bite any
-future cookie shape that does enforce attributes server-side.
-
-Related: `convert_rookiepy_cookies_to_storage_state` and
-`_cookie_to_storage_state` both **hardcode `sameSite: "None"`**
-(`_auth/cookies.py`, `_auth/storage.py`). Real Google cookies are a mix of
-`Lax` and `None`; we flatten them all to `None` on the way to disk.
-Probably benign for our cross-site flow but it's another cell of the
-fidelity table that's wrong.
-
-#### 3.4.8 Diagnostic checklist for "cookies expire fast"
-
-Before assuming Google has changed anything:
-
-1. **Compare the `__Secure-1PSIDTS` value on disk before and after a
-   `notebooklm` invocation.** If it doesn't change between calls
-   spaced > 60 s apart and there's no other process writing the file,
-   rotation isn't firing — check `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE`
-   and the mtime guard.
-2. **If multiple processes share the storage file**, run them with
-   `NOTEBOOKLM_LOG_LEVEL=DEBUG` and look for "Keepalive RotateCookies
-   skipped: storage refreshed before flock acquired" — that means the
-   guards are working. If you see fresh saves immediately followed by
-   sibling saves with stale values, you're likely on the legacy
-   `original_snapshot=None` save path or a pre-#361 build.
-3. **Check storage_state.json `mtime` cadence** — should be ≤ a few
-   minutes after each active session if rotation is landing. Hours-old
-   mtime means rotation isn't sticking.
-4. **Diff the cookie set across two invocations**. Cookies appearing
-   in one run and missing in the next: the §3.4.2 path-collapse and
-   §3.4.3 whitelist-asymmetry shapes were closed by
-   [#361](https://github.com/teng-lin/notebooklm-py/pull/363) and
-   [#360](https://github.com/teng-lin/notebooklm-py/pull/362)
-   respectively. New cookie-set drift is more likely to point at
-   §3.4.7 round-trip attribute erosion.
-5. **Only after the above all check out**, investigate Google-side
-   causes (risk-scoring, Workspace policy, DBSC).
-
-### 3.5 Empirical cookie requirements (single- and pair-wise ablation)
-
-Tracked separately from §3.4: which cookies does Google *actually* require?
-This section documents the empirical accept-rule that backs the library's
-two-tier `_validate_required_cookies()` pre-flight (see `_auth/cookies.py` —
+Which cookies does Google *actually* require? This backs the library's two-tier
+`_validate_required_cookies()` pre-flight (see `_auth/cookies.py` —
 `MINIMUM_REQUIRED_COOKIES` and `_has_valid_secondary_binding()` for the
-authoritative values; the historical permissive `{"SID"}` check was
-replaced in [#371](https://github.com/teng-lin/notebooklm-py/issues/371)).
+authoritative values; the historical permissive `{"SID"}` check was replaced in
+[#371](https://github.com/teng-lin/notebooklm-py/issues/371)).
 
-**Methodology.** Take a known-good `storage_state.json`, drop one or two
-cookies at a time, run `notebooklm --storage <variant> list`, record whether
-Google accepts the call (200 + RPC succeeds) or redirects to login
-(`accounts.google.com/v3/signin`). Tested on the `teng-lin-9414` profile, a
-non-Workspace consumer account on stable home IP.
+Method: take a known-good `storage_state.json`, drop one or two cookies at a time,
+run `notebooklm list`, and record whether Google accepts the call or redirects to
+login. Single-cookie removal is highly recoverable — every cookie except `SID` can
+be dropped individually with the call still succeeding (Google reissues most of
+them mid-call). Pair-wise removal exposes a precise accept-rule.
 
-**Singleton ablation (16 candidate cookies, drop one at a time):** every
-cookie *except* `SID` could be removed individually with `notebooks.list` still
-succeeding. For most of them Google reissued the missing cookie via
-`Set-Cookie` during the call and the library wrote it back automatically.
-A handful (`HSID`, `SSID`, `APISID`, `SAPISID`, `__Secure-1PSIDTS`,
-`__Host-GAPS`) were not reissued — yet the call still succeeded. The library
-is highly resilient to single-cookie absence in this regime.
+**The accept-rule model.** Google accepts the NotebookLM homepage GET when both
+hold:
 
-**Pair-wise ablation (105 pairs of those 16 cookies, drop two at a time,
-excluding pairs containing `SID`):** **16 of 105 pairs failed** with
-`Authentication expired or invalid` → redirect to signin. The failure pattern
-is precise:
+1. **Identity present:** `SID` is valid, and `__Secure-1PSIDTS` is either directly
+   present or recoverable via a `RotateCookies` POST — which itself requires the
+   full ambient cookie set to authenticate.
+2. **At least one secondary binding present:** `OSID`, OR both `APISID` and
+   `SAPISID`.
 
-- **14 failures involve `__Secure-1PSIDTS`** paired with any one of the
-  remaining cookies. Although `__Secure-1PSIDTS` is individually removable
-  (Google mints a fresh one via `RotateCookies`), that mint POST requires the
-  rest of the cookie set to authenticate. Drop `__Secure-1PSIDTS` + anything
-  else → recovery breaks.
-- **2 failures don't involve `__Secure-1PSIDTS`:**
-  - `APISID` + `OSID` removed
-  - `SAPISID` + `OSID` removed
+| Variant | `SID` | `OSID` | `APISID+SAPISID` | `__Secure-1PSIDTS` (or recoverable) | Result |
+|---|:-:|:-:|:-:|:-:|:-:|
+| Baseline | ✓ | ✓ | ✓ | ✓ | OK |
+| Drop `__Secure-1PSIDTS` only | ✓ | ✓ | ✓ | recoverable | OK |
+| Drop `__Secure-1PSIDTS` + any one other | ✓ | ✓ | ✓ | broken (mint POST fails) | FAIL |
+| Drop `OSID` only | ✓ | ✗ | ✓ | ✓ | OK (AP\*SID path) |
+| Drop `APISID + SAPISID` | ✓ | ✓ | ✗ | ✓ | OK (OSID path) |
+| Drop `APISID + OSID` | ✓ | ✗ | ✗ | ✓ | FAIL |
+| Drop `SAPISID + OSID` | ✓ | ✗ | ✗ | ✓ | FAIL |
 
-The two non-`__Secure-1PSIDTS` failures expose a separate accept-rule.
-
-**The accept-rule model that fits 100% of observed outcomes.** Google accepts
-the NotebookLM homepage GET when both hold:
-
-1. **Identity present:** `SID` is valid (and `__Secure-1PSIDTS` is either
-   directly present, or recoverable via `RotateCookies` POST — which means
-   the full ambient cookie set must be present).
-2. **At least one secondary binding present:**
-   - Either `OSID` is present, OR
-   - Both `APISID` *and* `SAPISID` are present.
-
-Confirmation test (pair 28/105): dropping `APISID + SAPISID` together while
-`OSID` remains → call succeeds. Model predicts OK; observed OK.
-
-| Variant | `SID` | `OSID` | `APISID+SAPISID` pair | `__Secure-1PSIDTS` (or recoverable) | Predicted | Observed |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|
-| Baseline | ✓ | ✓ | ✓ | ✓ | OK | OK |
-| Drop `__Secure-1PSIDTS` only | ✓ | ✓ | ✓ | recoverable | OK | OK |
-| Drop `__Secure-1PSIDTS` + any one other | ✓ | ✓ | ✓ | broken (mint POST fails) | FAIL | FAIL |
-| Drop `OSID` only | ✓ | ✗ | ✓ | ✓ | OK (AP*SID path) | OK |
-| Drop `APISID + SAPISID` | ✓ | ✓ | ✗ | ✓ | OK (OSID path) | OK |
-| Drop `APISID + OSID` | ✓ | ✗ | ✗ | ✓ | FAIL | FAIL |
-| Drop `SAPISID + OSID` | ✓ | ✗ | ✗ | ✓ | FAIL | FAIL |
-
-The model fits all 105 + 16 = 121 data points without exception.
-
-**Why this matters for `MINIMUM_REQUIRED_COOKIES`.** Before #371 the library
-trusted any storage with `SID` present, which permitted Google-rejected cookie
-sets to reach the wire. The result was the user-facing "auth expires
-immediately after `notebooklm login`" pattern reported in
-[#133](https://github.com/teng-lin/notebooklm-py/issues/133),
-[#332](https://github.com/teng-lin/notebooklm-py/issues/332), and others.
-
-The pre-flight now catches all 16 ablation failures via a two-tier check in
-`_validate_required_cookies()`:
+Before #371 the library trusted any storage with `SID` present, which let
+Google-rejected cookie sets reach the wire — the "auth expires immediately after
+`notebooklm login`" pattern
+([#133](https://github.com/teng-lin/notebooklm-py/issues/133),
+[#332](https://github.com/teng-lin/notebooklm-py/issues/332)). The pre-flight now
+catches it with a two-tier check:
 
 ```python
 MINIMUM_REQUIRED_COOKIES = {"SID", "__Secure-1PSIDTS"}  # Tier 1: raise
@@ -936,138 +452,112 @@ def _has_valid_secondary_binding(cookie_names: set[str]) -> bool:  # Tier 2: war
     return {"APISID", "SAPISID"} <= cookie_names
 ```
 
-Hybrid rollout: Tier 1 raises (unambiguous evidence); Tier 2 logs a warning
-once per process so partial extractions surface without breaking edge-case
-flows (e.g. Workspace SSO) that we haven't ablated. See
-[#371](https://github.com/teng-lin/notebooklm-py/issues/371).
+Tier 1 raises on unambiguous evidence; Tier 2 warns once per process so partial
+extractions surface without breaking edge-case flows (e.g. Workspace SSO) that
+haven't been ablated.
 
-**Caveats.**
-
-- All 121 ablation runs were on a single profile (non-Workspace, stable IP).
-  Workspace accounts may have different accept-rules; we haven't tested.
-- We tested `notebooks.list` only. Other code paths (chat, generate, download)
-  share the same auth machinery but theoretically could have different
-  sensitivities — though we haven't observed any.
-- This is a *model fit* to 121 data points, not a confirmed mechanism. The
-  exact server-side logic would require capturing the precise HTTP request
-  on success vs failure and identifying the missing signal.
-- The accept-rule is what governs *acceptance*. The freshness clock (§3.1)
-  still applies on top of it — a session with a valid accept-tuple can still
-  be killed by Google's risk model independent of which cookies are present.
-
-**Reproducer.** The keepalive implementation in `src/notebooklm/_auth/keepalive.py` (which preserves and refreshes the cookie set against Google's rotation cadence).
-
+**Caveats.** These observations came from a single non-Workspace, stable-IP
+profile, testing `notebooks.list`. Workspace accounts may have different
+accept-rules. This is a model fit, not a confirmed server mechanism, and the
+freshness clock (§3.1) still applies on top of it — a session with a valid
+accept-tuple can still be killed by Google's risk model.
 
 ---
 
-<a id="4-the-architecture"></a>
+## 4 · The recovery ladder
 
-## 4 · The architecture
+The library escalates progressively as cheaper mechanisms fail (see the ladder
+table in the [TL;DR](#tldr)). Each layer is a fallback for the one below it: L1/L2
+are HTTP-only and cheap; L3 drives a browser and only helps if the profile's Google
+session is still alive; **L4 re-mints from a durable master token with no browser —
+the best unattended recovery**; L5 delegates policy to the operator; L6 is manual;
+L7 is proactive scheduling for idle profiles.
 
-The library uses a tiered design that progressively escalates as cheaper
-mechanisms fail. Each layer has a distinct trigger and target failure mode.
+### 4.1 L1 — per-call `RotateCookies` POST
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│ L1: per-call RotateCookies POST                              │
-│   - fires inside _auth.refresh._fetch_tokens_with_jar        │
-│   - cost: ~150ms per token fetch                             │
-│   - covers: short interactive use, every CLI invocation      │
-└──────────────────────────────────────────────────────────────┘
-                          │
-                          ▼ (long-lived clients also do)
-┌──────────────────────────────────────────────────────────────┐
-│ L2: NotebookLMClient(keepalive=N) background task            │
-│   - asyncio.Task, fires _auth.keepalive._poke_session        │
-│   - opt-in via parameter; floor 60s                          │
-│   - covers: agents, MCP servers, long-running workers        │
-└──────────────────────────────────────────────────────────────┘
-                          │
-                          ▼ (idle profiles between processes)
-┌──────────────────────────────────────────────────────────────┐
-│ L3: headless re-auth / CDP attach                            │
-│   - refresh_auth(allow_headless=True) or env-gated mid-RPC   │
-│   - launches the persisted browser_profile or attaches to    │
-│     NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL on loopback only      │
-│   - covers: dead first-party cookies when the browser        │
-│     profile can silently mint a fresh session                │
-└──────────────────────────────────────────────────────────────┘
-                          │
-                          ▼ (first-party cookies dead AND master_token.json present)
-┌──────────────────────────────────────────────────────────────┐
-│ L4: master-token re-mint (headless, no browser) [§4.5]       │
-│   - _auth.session._try_master_token_reauth, after L1/L2/L3   │
-│   - mints a fresh session from the durable aas_et/ token,    │
-│     reloads cookies, retries the homepage GET once           │
-│   - covers: dead session on a headless box with no browser   │
-└──────────────────────────────────────────────────────────────┘
-                          │
-                          ▼ (auth-expiry signal survives in-process refresh)
-┌──────────────────────────────────────────────────────────────┐
-│ L5: NOTEBOOKLM_REFRESH_CMD external recovery script          │
-│   - same-loop callers coalesce on one subprocess             │
-│   - cancellation of one waiter does not cancel the command   │
-│   - common command: notebooklm login --browser-cookies ...   │
-└──────────────────────────────────────────────────────────────┘
-                          │
-                          ▼ (operator intervention)
-┌──────────────────────────────────────────────────────────────┐
-│ L6: notebooklm login                                         │
-│   - human browser sign-in or --browser-cookies extraction    │
-│   - baseline recovery when all automatic paths fail          │
-└──────────────────────────────────────────────────────────────┘
-                          │
-                          ▼ (idle profiles between processes)
-┌──────────────────────────────────────────────────────────────┐
-│ L7: notebooklm auth refresh (OS-scheduled)                   │
-│   - cron / launchd / systemd / Task Scheduler / k8s          │
-│   - calls _auth.refresh.fetch_tokens_with_domains, exits 0/1 │
-│   - covers: profiles idle > SIDTS window between Python runs │
-└──────────────────────────────────────────────────────────────┘
-```
+Fires inside the token-fetch path on every CLI invocation and client open. A best-
+effort `POST https://accounts.google.com/RotateCookies` that mints a fresh
+`*PSIDTS`. Default ON; disable with `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE=1`. Wrapped
+in three concentric guards (disk-mtime fast-path → in-process `asyncio.Lock` +
+per-profile monotonic timestamp → cross-process non-blocking flock) so an L1 caller,
+an L2 loop, and a fan-out of parallel CLI invocations keyed to the same
+`storage_state.json` don't stampede the endpoint into a 429. Mechanics in
+[§5](#5--the-rotatecookies-primitive).
 
-Each layer is a fallback for the next one above. L1/L2 are HTTP-only and cheap;
-L3 drives a browser; **L4 re-mints from a durable master token with no browser
-(headless's best recovery — [§4.5](#45-l4-master-token-re-mint))**; L5 delegates
-policy to the operator; L6 is manual; L7 is proactive scheduling for profiles
-that sit idle between Python runs.
+### 4.2 L2 — background keepalive task
 
-### 4.5 · L4 master-token re-mint
+`NotebookLMClient(keepalive=N)` starts an `asyncio.Task` that pokes
+`RotateCookies` every N seconds (floor 60 s) while the client is open. Self-paced,
+so it bypasses the L1 fast-path guards but still performs the atomic per-profile
+claim, so a sibling L1 poke sees the in-flight rotation and skips. Covers agents,
+MCP servers, and long-running workers.
 
-When the profile holds a `master_token.json` (written by `notebooklm login
---master-token`, the `[headless]` extra), a fully-expired session re-mints **in
-process, with no browser** — the recovery the `RotateCookies`/headless-browser
-ladder can't provide off-device.
+### 4.3 L3 — headless re-auth / CDP attach
 
-- **Credential.** A durable Google **master token** (`aas_et/…`), obtained once
-  from `accounts.google.com/EmbeddedSetup` and stored `0600`. It mints fresh web
-  cookies on demand (`perform_oauth → OAuthLogin?issueuberauth=1 → MergeSession`)
-  and survives password changes until explicitly revoked. The same token also
-  bootstraps the initial `storage_state.json`.
-- **Where it fires.** `_auth/session.py::_try_master_token_reauth`, as **layer-4
-  of `refresh_auth_session`** — only after L1 (homepage), L2 (`RotateCookies`),
-  and L3 (headless browser) are exhausted (fallback-after-ladder). It mints a new
-  session, persists it (replacing the dead cookies under the storage lock),
-  reloads the jar into the live HTTP client, and retries the homepage GET once.
-  Reached through the `AuthRefreshCoordinator` single-flight, so concurrent RPCs
-  coalesce **one** re-mint.
-- **Cold start.** A session that is already dead at process start is recovered by
+When the homepage GET 302s to the Google login page, the first-party cookies are
+fully dead and neither L1 nor L2 can help. `refresh_auth(allow_headless=True)` (or
+`NOTEBOOKLM_HEADLESS_REAUTH=1` for automatic mid-RPC opt-in) drives an unattended
+headless browser against the **persisted profile that is a sibling of this client's
+`storage_state.json`** (`<storage_path>/../browser_profile`) — never the ambient
+profile — to silently re-mint cookies, then reloads them and retries the homepage
+GET once. Set `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL=http://127.0.0.1:9222` to attach
+to an already-running local Chrome instead; non-loopback hosts are refused because
+a CDP endpoint is account-equivalent. If the profile is missing, Playwright is
+unavailable, env-var auth has no writeable file, or the browser session is also
+dead, the original auth-expiry error stands. Owner:
+`_auth/headless_reauth.py`; integration point:
+`_auth/session.py::refresh_auth_session`.
+
+### 4.4 L4 — master-token re-mint
+
+When the profile holds a `master_token.json` (written by
+`notebooklm login --master-token`, the `[headless]` extra), a fully-expired session
+re-mints **in process, with no browser** — the recovery the `RotateCookies` /
+headless-browser ladder can't provide off-device.
+
+- **Credential.** A durable Google **master token** (`aas_et/…`), obtained once from
+  `accounts.google.com/EmbeddedSetup` and stored `0600`. It mints fresh web cookies
+  on demand (`perform_oauth → OAuthLogin?issueuberauth=1 → MergeSession`) and
+  survives password changes until explicitly revoked. It also bootstraps the initial
+  `storage_state.json`.
+- **Where it fires.** `_auth/session.py::_try_master_token_reauth`, as **layer 4 of
+  `refresh_auth_session`** — only after L1 (homepage), L2 (`RotateCookies`), and L3
+  (headless browser) are exhausted. It mints a new session, persists it (replacing
+  the dead cookies under the storage lock), reloads the jar into the live HTTP
+  client, and retries the homepage GET once. Reached through the
+  `AuthRefreshCoordinator` single-flight, so concurrent RPCs coalesce **one**
+  re-mint.
+- **Cold start.** A session already dead at process start is recovered by
   `notebooklm login --master-token-refresh` (or the next bootstrap); the in-process
-  layer-4 covers the mid-session case that long-lived workers hit.
+  layer-4 covers the mid-session case long-lived workers hit.
 - **PSIDTS interaction.** A re-mint yields `SID`+`APISID`+`SAPISID` but not
-  `__Secure-1PSIDTS`; the existing inline recovery ([§5.7](#57-inline-__secure-1psidts-cold-start-recovery))
-  mints PSIDTS from that secondary binding on the reload — so L1 keepalive then
-  proceeds normally on the fresh session.
-- **Security & limits.** The master token is full-account and infostealer-grade
-  — dedicated/throwaway account only; never logged or committed. Each re-mint is
-  a new session, so one account is **single-consumer**: N workers re-minting
-  concurrently can invalidate each other's `SID`. DBSC is the standing risk
-  (server-minted cookies could be rejected if enforced); re-mint is itself the
-  mitigation while it isn't. See [ADR-0023](adr/0023-master-token-headless-auth.md).
+  `__Secure-1PSIDTS`; the mint itself fires one best-effort `RotateCookies` POST to
+  add it, and the inline PSIDTS recovery
+  ([§5.4](#54-inline-__secure-1psidts-cold-start-recovery)) mints it from the
+  secondary binding on reload if Google withheld it — so L1 keepalive then proceeds
+  normally on the fresh session.
+- **Security & limits.** The master token is full-account and infostealer-grade —
+  dedicated/throwaway account only, never logged or committed. Each re-mint is a new
+  session, so one account is **single-consumer**: concurrent re-mints can invalidate
+  each other's `SID`. DBSC is the standing risk; re-mint is itself the mitigation
+  while it isn't enforced. See [ADR-0023](adr/0023-master-token-headless-auth.md).
+
+### 4.5 L5–L7
+
+- **L5 — `NOTEBOOKLM_REFRESH_CMD`.** An operator-supplied recovery command run on
+  an auth-expiry signal, with one retry. Same-loop callers coalesce on one
+  subprocess and cancellation-safe. See [§6.2](#62-notebooklm_refresh_cmdcommand-line-l5).
+- **L6 — `notebooklm login`.** Baseline manual recovery: interactive browser
+  sign-in, or `--browser-cookies <browser>` extraction (§2.4).
+- **L7 — `notebooklm auth refresh`.** A one-shot token fetch driven by cron /
+  launchd / systemd / Task Scheduler / k8s CronJob, for profiles idle between Python
+  runs. Recommended cadence 15–20 min.
 
 ---
 
-## 5 · L1 deep dive — the `RotateCookies` primitive
+## 5 · The `RotateCookies` primitive
+
+The L1/L2 rotation POST and the L4 re-mint's PSIDTS top-up all share one endpoint.
 
 ### 5.1 The endpoint
 
@@ -1079,407 +569,301 @@ Origin: https://accounts.google.com
 [000,"-0000000000000000000"]
 ```
 
-The body is a **JSPB (JavaScript Protocol Buffers) sentinel**. JSPB is
-Google's array-shaped serialization format used by `batchexecute`,
-`RotateCookies`, and similar internal endpoints. The two-element body
-decomposes as:
-
-- `000` — an integer literal `0` written with leading zeros. Invalid in
-  strict JSON, valid in Google's JSPB parser. Probably a version or
-  operation tag in slot 0.
-- `"-0000000000000000000"` — a string of 19 zeros prefixed with `-`. This is
-  a **sentinel value** that means "I don't have a prior `__Secure-1PSIDTS`,
-  please mint a fresh one based on the persistent identity (`SID`/`PSID`)
-  alone." Without this sentinel the endpoint requires the client's current
-  `*PSIDTS` value as input.
-
-The pattern is borrowed from
+The body is a JSPB (array-shaped) sentinel. `000` is `0` written with leading zeros
+(valid in Google's JSPB parser, invalid in strict JSON); `"-0000000000000000000"`
+is a sentinel meaning "I have no prior `__Secure-1PSIDTS`, mint a fresh one from the
+persistent identity (`SID`/`PSID`) alone." The pattern is borrowed from
 [`HanaokaYuzu/Gemini-API`](https://github.com/HanaokaYuzu/Gemini-API/blob/master/src/gemini_webapi/utils/rotate_1psidts.py),
-which has been using it in production with a sizable user base.
+which has run it in production at scale.
 
 ### 5.2 The successful response
 
 ```
 HTTP/1.1 200 OK
-Set-Cookie: __Secure-1PSIDTS=<new_value>; Domain=.google.com; Secure; HttpOnly
-Set-Cookie: __Secure-3PSIDTS=<new_value>; Domain=.google.com; Secure; HttpOnly
-Set-Cookie: SIDCC=<new_value>; Domain=.google.com; Secure
-Set-Cookie: __Secure-1PSIDCC=<new_value>; Domain=.google.com; Secure
-Set-Cookie: __Secure-3PSIDCC=<new_value>; Domain=.google.com; Secure
+Set-Cookie: __Secure-1PSIDTS=<new>; Domain=.google.com; Secure; HttpOnly
+Set-Cookie: __Secure-3PSIDTS=<new>; Domain=.google.com; Secure; HttpOnly
+Set-Cookie: SIDCC=<new>; Domain=.google.com; Secure
+…
 
 )]}'  [["identity.hfcr",600],["di",<integer>]]
 ```
 
-The `)]}'` prefix is Google's standard anti-XSSI token. The JSPB body
-(`[["identity.hfcr",600],["di",N]]`) appears to encode:
+`)]}'` is Google's anti-XSSI prefix. `["identity.hfcr",600]` declares the
+recommended next-rotation interval (600 s); `["di",N]` is an opaque session counter.
+`_auth/storage.py::save_cookies_to_storage` captures the rotated `Set-Cookie`
+headers and persists them atomically.
 
-- `["identity.hfcr",600]` — `identity.hfcr` likely "high-frequency cookie
-  rotation"; `600` is the recommended next-rotation interval in seconds
-  (10 minutes). **This validates the documented `*PSIDTS` rotation cadence
-  directly.**
-- `["di",N]` — opaque session/rotation counter (varies by profile).
+Why `RotateCookies` and not the older `CheckCookie` GET: `RotateCookies` rotates
+`*PSIDTS` unconditionally for **both** browser-bound (Playwright) and unbound
+(Firefox-extracted) sessions, whereas `CheckCookie` only rotated for unbound ones.
+Historical detail in the [Appendix](#a1--rotatecookies-vs-checkcookie).
 
-The library's [`save_cookies_to_storage`](../src/notebooklm/_auth/storage.py)
-captures the rotated `Set-Cookie` headers and persists them atomically to
-`storage_state.json`.
+### 5.3 Rate limiting and the three-guard throttle
 
-### 5.3 Empirical validation (May 2026)
+Hammering `RotateCookies` triggers HTTP 429. The mitigation is a 60-second floor,
+enforced by three concentric guards (`_auth/keepalive.py`,
+[#346](https://github.com/teng-lin/notebooklm-py/pull/346) +
+[#348](https://github.com/teng-lin/notebooklm-py/pull/348)):
 
-Field experiment configuration:
+1. **Disk-mtime fast-path** — skip without any lock if `storage_state.json` was
+   rewritten within `_KEEPALIVE_RATE_LIMIT_SECONDS` (60 s). A 2 s tolerance absorbs
+   filesystem mtime granularity; a far-future mtime is treated as not-recent.
+2. **In-process throttle** — inside an `asyncio.Lock` keyed by
+   `(running loop, storage_path)`, re-check mtime plus a per-profile monotonic
+   timestamp stamped under a `threading.Lock`. Deduplicates an `asyncio.gather`
+   fan-out; the timestamp is bumped *before* the network await so a hung
+   `accounts.google.com` doesn't make N callers each wait the full timeout.
+3. **Cross-process non-blocking flock** (`.storage_state.json.rotate.lock` via
+   `LOCK_NB`) — if another process holds it, skip; they're rotating now. Distinct
+   from the save-path lock so a long save never blocks rotations. Locks **fail
+   open** on read-only / NFS filesystems: rotation proceeds rather than wedging.
 
-- **Probe A** (control): main code, no L1 poke, Playwright-extracted cookies.
-- **Probe B**: background-task branch, L1 `CheckCookie` poke, Playwright-extracted
-  cookies.
-- **Probe C**: re-extracts Firefox cookies every cycle, main code.
-- All probes run on a 5-minute cadence, instrumented to log redirect chains
-  and `Set-Cookie` headers from each endpoint.
+Together the three guards cover sequential CLI invocations (mtime fast-path), an
+`asyncio.gather` fan-out from one process (in-process lock + stamp), an L1 caller
+racing the L2 loop (per-profile monotonic stamp), and simultaneous processes
+(cross-process flock). The per-`(loop, profile)` lock dict is a `WeakKeyDictionary`
+keyed on the loop object, so a short-lived `asyncio.run()` loop's inner dict is
+reclaimed on GC.
 
-Results:
+### 5.4 Inline `__Secure-1PSIDTS` cold-start recovery
 
-| | Probes | OK | Failures | First failure | `*PSIDTS` rotated via |
-|---|---|---|---|---|---|
-| **A (control)** | 33 | 4 | 29 | T+20m | never (died) |
-| **B (CheckCookie L1)** | 35+ | 35+ | 0 | — | only via observation, not via the L1 GET (CheckCookie chain stops at 2 hops, no `SetSID`, no `*PSIDTS` in response) |
-| **C (Firefox re-extract)** | 22+ | 22+ | 0 | — | every probe (CheckCookie chain has 3 hops including `accounts.youtube.com/SetSID`) |
-
-Then we instrumented all probes to additionally hit `RotateCookies` directly
-as a measurement (no production code change yet):
-
-| | RotateCookies POST attempts | 200 + `*PSIDTS` in `Set-Cookie` | 401s |
-|---|---|---|---|
-| **B (Playwright/bound session)** | 6+ | **6+/6+** | 0 |
-| **C (Firefox/unbound session)** | 7+ | **7+/7+** | 0 |
-
-**100% rotation success rate across both session types.** No 401s, no
-DBSC challenges, no `Sec-Session-*` headers in any response. The unsigned
-`RotateCookies` POST is empirically the cleanest available rotation
-primitive for both bound and unbound sessions today.
-
-### 5.4 Why it's better than `CheckCookie`
-
-The previous L1 mechanism (commits `eae3eaf` through `8047718`) used
-`GET https://accounts.google.com/CheckCookie?continue=...notebooklm.google.com/`,
-relying on Google to issue a redirect chain that *might* go through
-`accounts.youtube.com/SetSID`, which *might* set fresh `*PSIDTS` cookies.
-Empirically:
-
-- **For Firefox-extracted (unbound) profiles:** the chain is 3 hops and
-  `SetSID` does set fresh `*PSIDTS`. Works.
-- **For Playwright-extracted (bound) profiles:** the chain is 2 hops, no
-  `SetSID` step, no `*PSIDTS` in any `Set-Cookie`. The poke touches the
-  identity surface (and, observably, extends server-side session validity
-  through some untracked mechanism — B's session lived hours longer than A
-  despite identical underlying cookies) but **does not rotate `*PSIDTS`**.
-
-This is why the L1 docstring was originally inaccurate: "elicits
-`__Secure-1PSIDTS` rotation" is true for unbound sessions and false for
-bound ones.
-
-`RotateCookies` POST removes the discretion: **direct rotation request,
-unconditional response, both session types.**
-
-### 5.5 Rate limiting and concurrency throttle
-
-Gemini-API observed that hammering `RotateCookies` triggers HTTP 429. The
-naïve mitigation is a **60-second cache-file mtime guard**: skip the POST if
-the storage state was rewritten within the last minute. The
-`[["identity.hfcr",600], ...]` self-reported interval is 600 s, so a 60 s
-floor leaves a comfortable order of magnitude of headroom.
-
-The merged implementation (`_auth/keepalive.py::_poke_session` and
-`_auth/keepalive.py::_rotate_cookies`,
-[#346](https://github.com/teng-lin/notebooklm-py/pull/346)
-+ [#348](https://github.com/teng-lin/notebooklm-py/pull/348)) wraps the POST
-in **three concentric guards**, because a single mtime check is not enough
-once you have an L1 caller, an L2 background loop, and a fan-out of
-parallel CLI invocations all keyed to the same `storage_state.json`:
-
-1. **Disk mtime fast-path** (`_is_recently_rotated`). If
-   `storage_state.json` was rewritten within `_KEEPALIVE_RATE_LIMIT_SECONDS`
-   (60 s), skip without acquiring any lock. A `_KEEPALIVE_PRECISION_TOLERANCE`
-   of 2 s absorbs sub-second drift between `time.time()` and filesystem
-   mtime resolution (notably Windows NTFS at lower clock granularity).
-   A meaningfully-future mtime is treated as **not recent** — better to fire
-   one extra rotation than wedge the guard until wall time catches up.
-2. **In-process throttle** (`_get_poke_lock` + `_try_claim_rotation`).
-   Inside an `asyncio.Lock` keyed by `(running event loop, storage_path)`,
-   re-check the mtime *and* a per-profile monotonic timestamp stamped under
-   a `threading.Lock`. The atomic check-and-stamp deduplicates an
-   `asyncio.gather` fan-out so only one POST fires per process per
-   rate-limit window. The timestamp is bumped **before** the network await
-   so a 15 s timeout against a hung `accounts.google.com` does not let 10
-   fanned-out callers each wait the full timeout.
-3. **Cross-process non-blocking flock**
-   (`.storage_state.json.rotate.lock` via `LOCK_NB`). When `storage_path`
-   is set, try to take an exclusive flock; if another process holds it,
-   skip — they're rotating right now. This handles `xargs -P`, parallel
-   MCP workers, and similar parallel launches without queueing. The
-   rotation lock is intentionally distinct from the
-   `.storage_state.json.lock` used by `save_cookies_to_storage`, so a
-   long-running save doesn't block rotations or vice versa.
-
-The L2 background loop bypasses guards 1 and 2 (it's already self-paced via
-`keepalive_min_interval`) and calls `_auth.keepalive._rotate_cookies`
-directly, which still performs the atomic per-profile claim — so a layer-1
-`_auth.keepalive._poke_session` on a sibling event loop sees the in-flight
-rotation and skips.
-
-### 5.6 Concurrency model: why three guards instead of one
-
-| Failure mode | Caught by |
-|---|---|
-| User runs 10 sequential `notebooklm` CLI invocations | Disk mtime fast-path |
-| `asyncio.gather([client.rpc(...) for _ in range(N)])` from one process | In-process `asyncio.Lock` + monotonic timestamp |
-| L1 caller racing the L2 keepalive loop on the same profile | Per-profile monotonic timestamp under `threading.Lock` |
-| Two CLI invocations or worker processes started simultaneously | Cross-process flock (`LOCK_NB`) |
-| Hung `accounts.google.com` causing 15 s-per-caller fan-out | Stamp-before-await: timestamp claimed before the network call |
-| Read-only filesystem / NFS without flock | Locks **fail open**: rotation proceeds rather than wedge forever |
-
-The per-`(loop, profile)` lock dictionary is held in a
-`WeakKeyDictionary` keyed on the loop *object*, so when a short-lived
-`asyncio.run()` loop is garbage-collected its inner dict is reclaimed
-automatically — bounded cache without an `id()`-reuse hazard.
-
-### 5.7 Inline `__Secure-1PSIDTS` cold-start recovery
-
-Introduced in PR #872 (resolving issue #865) to handle cold-start scenarios where the local cookie store exists but lacks the transient `__Secure-1PSIDTS` cookie entirely.
-
-Under normal operation, `__Secure-1PSIDTS` is transient and can be absent from a cold local profile snapshot. If a new client runtime starts and reads a profile storage state that has the persistent `__Secure-1PSID` but no `__Secure-1PSIDTS`, a standard request would fail with an authentication error.
-
-To heal this proactively, `_recover_psidts_inline` (implemented in `src/notebooklm/_auth/psidts_recovery.py`) acts as a preflight healing step before session initialization:
-- **When it fires**: During client startup (inside `NotebookLMClient.from_storage()` / client initialization).
-- **Conditions & Gates**:
-  1. It only runs if `__Secure-1PSID` is present but `__Secure-1PSIDTS` is missing.
-  2. It respects `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE=1` or other environment/auth skip configurations.
-  3. It uses a cross-process flock protection file lock (`psidts_recovery.lock`) to prevent concurrent cold-start processes from fanning out identical recovery calls.
-- **Mechanism**: It makes a preflight HTTP call to `accounts.google.com/RotateCookies` using `__Secure-1PSID`, which proactively mints a valid `__Secure-1PSIDTS` and writes it to the cookie jar and local storage before the primary session handshake begins.
-
-See [ADR-0013 Consequences](./adr/0013-composable-session-capabilities.md#consequences) for architectural context on the cold-start preflight design.
+When a profile has the persistent `__Secure-1PSID` but no transient
+`__Secure-1PSIDTS` (a common cold-start snapshot), `_recover_psidts_inline`
+(`_auth/psidts_recovery.py`) makes a preflight `RotateCookies` POST during client
+startup to mint the missing cookie before the first RPC. It fires only when
+`__Secure-1PSID` is present and `__Secure-1PSIDTS` is missing, honors
+`NOTEBOOKLM_DISABLE_KEEPALIVE_POKE=1`, and uses a cross-process flock
+(`psidts_recovery.lock`) so concurrent cold-start processes don't fan out identical
+recovery calls. This is what lets the L4 re-mint (which produces `SID` +
+`APISID`/`SAPISID` but not `*PSIDTS`) heal into a complete jar on reload. See
+[ADR-0013](adr/0013-composable-session-capabilities.md#consequences).
 
 ---
 
-## 6 · Comparison with related projects
+## 6 · Operational levers (environment variables)
 
-The auth surface (same `*.google.com` cookies, same `RotateCookies` endpoint) is
-shared with other Google-web-UI clients; what differs is the recovery design.
+Auth-refresh env vars live under `src/notebooklm/_auth/` and are re-exported through
+the public `notebooklm.auth` facade where compatibility requires it. See also
+[configuration.md#environment-variables](configuration.md#environment-variables).
 
-| Project | Refresh model | Takeaway for us |
+### 6.1 `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE=1`
+
+Disables the `RotateCookies` POST entirely. Both L1 and L2 honor it (the L2 task
+still wakes on its interval — only the network call becomes a no-op; pass
+`keepalive=None` to stop the loop itself). Set it on restricted networks that block
+outbound POSTs to `accounts.google.com`, for regression triage, or in test
+environments that mock the auth surface.
+
+### 6.2 `NOTEBOOKLM_REFRESH_CMD=<command-line>` (L5)
+
+Reactive recovery hook (merged in
+[#336](https://github.com/teng-lin/notebooklm-py/pull/336), hardened to
+`shell=False` by default in
+[#475](https://github.com/teng-lin/notebooklm-py/pull/475); owner
+`_auth/refresh.py`). When token fetch fails with an auth-expiry signal (the
+"`Authentication expired or invalid`" / `accounts.google.com` redirect), the
+library:
+
+1. Parses the command with `shlex.split` (POSIX) / `CommandLineToArgvW` (Windows)
+   and runs it via `subprocess.run(argv, shell=False, …)` with a 60 s timeout. Set
+   `NOTEBOOKLM_REFRESH_CMD_USE_SHELL=1` to opt back into `shell=True` (a `WARNING`
+   is logged each invocation).
+2. Sets `NOTEBOOKLM_REFRESH_PROFILE` / `NOTEBOOKLM_REFRESH_STORAGE_PATH` in the
+   child env so the script knows which profile to refresh.
+3. Sets `_NOTEBOOKLM_REFRESH_ATTEMPTED=1` to prevent recursive refresh loops.
+4. Scrubs `NOTEBOOKLM_AUTH_JSON` from the child env (credential-equivalent; the
+   script gets the on-disk path via step 2 instead).
+5. Reloads cookies from `storage_state.json` and replays the token fetch once.
+
+> **SECURITY — inherited environment.** The refresh command inherits the **full
+> parent environment** (minus the `NOTEBOOKLM_AUTH_JSON` scrub) so it can find
+> `PATH`/`HOME`/proxy settings and re-invoke this library. There is deliberately no
+> allowlist. Any other secret in the launching shell is inherited by the command and
+> every grandchild, and is visible via `/proc/<pid>/environ` to the same UID.
+> Operators MUST NOT keep unrelated secrets in the launching environment
+> ([#1274](https://github.com/teng-lin/notebooklm-py/issues/1274)).
+
+Same-loop fan-out coalesces on one shielded in-flight subprocess, so cancellation of
+one caller doesn't cancel the shared command; cross-loop coalescing is best-effort
+(cross-loop client reuse is unsupported per
+[ADR-0004](adr/0004-loop-affinity-contract.md)).
+
+This is **orthogonal to L1–L4**: those proactively keep the session fresh (L1/L2) or
+re-mint it in-process (L3/L4), while `NOTEBOOKLM_REFRESH_CMD` runs only after auth
+has already fully expired — useful for password-change / manual-sign-out recovery or
+a custom CookieCloud / browser-cookie re-extract flow. Common shapes:
+
+```bash
+export NOTEBOOKLM_REFRESH_CMD='notebooklm login --browser-cookies firefox'
+export NOTEBOOKLM_REFRESH_CMD='/opt/scripts/pull-cookies-from-cloud.sh'
+```
+
+The library does not validate the command's output; the operator must ensure it
+produces a valid `storage_state.json`.
+
+### 6.3 `NOTEBOOKLM_HEADLESS_REAUTH=1` and `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL` (L3)
+
+Opt into automatic L3 headless re-auth during mid-RPC refresh (explicit
+`await client.refresh_auth(allow_headless=True)` needs no env var). The CDP URL, if
+set, attaches to an already-running loopback Chrome instead of launching the stored
+profile; non-loopback hosts are refused. Details in [§4.3](#43-l3--headless-re-auth--cdp-attach).
+
+---
+
+## 7 · Canaries and signals
+
+Tripwires that would signal the threat model shifting:
+
+| Signal | What it means | Action |
 |---|---|---|
-| [`HanaokaYuzu/Gemini-API`](https://github.com/HanaokaYuzu/Gemini-API) | Default-on `RotateCookies` rotation (our **L1** mirrors it, in `_auth/keepalive.py`); `__Secure-1PSID`-keyed cache; **no reactive recovery** | The reference for L1. Its lack of any fallback is exactly the gap our L3/L4/L5 close. Uses curl_cffi TLS impersonation (cf. our optional `[impersonate]`); canaries [#310](https://github.com/HanaokaYuzu/Gemini-API/pull/310)/[#319](https://github.com/HanaokaYuzu/Gemini-API/issues/319) show the bare sentinel pattern decaying under DBSC. |
-| [`easychen/CookieCloud`](https://github.com/easychen/CookieCloud) | Browser-extension cookie federation, E2E-encrypted, self-hosted | DBSC-immune (cookies sourced from the user's daily Chrome via the extension API, sidestepping Chrome 127+ App-Bound Encryption). A viable `NOTEBOOKLM_REFRESH_CMD` source via [`PyCookieCloud`](https://github.com/lupohan44/PyCookieCloud); no in-tree client. |
-| [`dsdanielpark/Bard-API`](https://github.com/dsdanielpark/Bard-API) (archived 2024) | Manual cookie re-paste, no automated refresh | The cautionary tale — reactive/manual-only management proved untenable and the project archived; why proactive L1/L2 matters. |
-
-Recurring lessons: docstring rot is universal (be defensive about overpromising
-what refresh actually does); `SID`-keyed caches scope cleanly by account; and
-reactive-only recovery is insufficient on its own.
+| `RotateCookies` returns 401 in production | DBSC extended to non-Chrome paths for some accounts | Harden the L3 CDP arm; steer users to `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL` or an L5 CookieCloud flow |
+| `RotateCookies` returns 200 but no `*PSIDTS` in `Set-Cookie` | Silent failure — cookies on disk aren't rotating | WARN + alert; manual re-auth required |
+| Gemini-API's bare-sentinel rotation reported decaying under DBSC | Upstream canary for the shared primitive | Assess whether our user base is affected; plan a mitigation |
+| Chrome macOS DBSC GA announced | macOS users start getting DBSC enrollment | Several months' warning before consumer accounts may be enforced |
+| Workspace session-binding leaves beta | More org admins will enable it | Document explicit non-support more clearly |
 
 ---
 
-## 7 · What we tried and ruled out
+## 8 · References
 
-These approaches were investigated and rejected; documented here so future
-contributors don't re-investigate them.
+**Project peers**
 
-### 7.1 `undetected-chromedriver` / `selenium-stealth`
+- [HanaokaYuzu/Gemini-API](https://github.com/HanaokaYuzu/Gemini-API) — reference
+  for `RotateCookies` rotation
+  ([source](https://github.com/HanaokaYuzu/Gemini-API/blob/master/src/gemini_webapi/utils/rotate_1psidts.py)).
+  Our L1 mirrors it; its lack of any reactive fallback is the gap our L3/L4/L5 close.
+- [easychen/CookieCloud](https://github.com/easychen/CookieCloud) +
+  [PyCookieCloud](https://github.com/lupohan44/PyCookieCloud) — DBSC-immune cookie
+  federation, a viable `NOTEBOOKLM_REFRESH_CMD` source; no in-tree client.
+- [dsdanielpark/Bard-API](https://github.com/dsdanielpark/Bard-API) (archived) — the
+  cautionary tale: reactive/manual-only cookie management proved untenable.
 
-**Verdict: Don't use for Google login.**
+**Cookie extraction**
 
-- `ultrafunkamsterdam/undetected-chromedriver` — author has effectively
-  migrated to `nodriver`. Google login broken since Chrome 110, re-broken
-  on each major Chrome bump. Active issues against Chrome 142 in Jan 2026.
-- `diprajpatra/selenium-stealth` — no meaningful release in years.
-- The 2026 fork `praise2112/selenium-stealth` is more current but still
-  loses to Google's signal-fusion model (TLS, behavioral, fingerprint).
+- [`thewh1teagle/rookie`](https://github.com/thewh1teagle/rookie) (rookiepy),
+  [`borisbabic/browser_cookie3`](https://github.com/borisbabic/browser_cookie3),
+  [`n8henrie/pycookiecheat`](https://github.com/n8henrie/pycookiecheat)
 
-Consensus across multiple 2026 guides: stop using WebDriver-based stealth
-for Google flows.
+**DBSC**
 
-### 7.2 `puppeteer-extra-plugin-stealth` / `playwright-stealth`
+- [Google DBSC announcement](https://blog.google/security/protecting-cookies-with-device-bound-session-credentials/),
+  [Chrome DBSC Windows GA](https://developer.chrome.com/blog/dbsc-windows-announcement),
+  [W3C DBSC spec](https://w3c.github.io/webappsec-dbsc/),
+  [Workspace session-binding](https://knowledge.workspace.google.com/admin/security/prevent-cookie-theft-with-session-binding)
 
-**Verdict: Don't use for `accounts.google.com` flows.**
+**In-repo**
 
-Long-standing Google-login bugs:
-[`berstend/puppeteer-extra#588`](https://github.com/berstend/puppeteer-extra/issues/588)
-(2022, unfixed),
-[`#898`](https://github.com/berstend/puppeteer-extra/issues/898)
-(Chrome 122 broke meet.google.com).
-
-Python `playwright-stealth` (v2.x) is the most active variant but Scrapfly
-and AlterLab guides explicitly warn it patches *fingerprint leaks only*, not
-TLS, IP reputation, or behavioral signals. Effective for resumed sessions
-where cookies are already present, fails for fresh sign-in.
-
-### 7.3 Persistent Playwright headless context as keepalive daemon
-
-**Verdict: Don't ship.**
-
-Two unresolved Playwright bugs make this fragile:
-
-- [`microsoft/playwright#36139`](https://github.com/microsoft/playwright/issues/36139)
-  — cookies missing in headless `launch_persistent_context`.
-- [`microsoft/playwright#35466`](https://github.com/microsoft/playwright/issues/35466)
-  — profile DB corruption in long-lived contexts.
-
-If a headless-Playwright option is needed, prefer **CDP-attach** (Playwright
-`connect_over_cdp` to user's running Chrome) — different code path, not
-exposed to either bug.
-
-### 7.4 Client-side DBSC implementation
-
-**Verdict: Impossible from Python.**
-
-The W3C DBSC spec is structured around a TPM-bound private key that signs
-nonces from the server. Without TPM access (which isn't directly exposed
-through Python on any platform) and the platform attestation chain Chrome
-implements, no non-Chrome client can satisfy `RotateBoundCookies`. No
-public OSS DBSC client exists; the spec is deliberately designed to prevent
-one.
-
-If/when DBSC extends to non-Chrome cookie paths, the in-tree escape is to
-parasitize a real DBSC-enrolled Chrome session via the current L3 CDP attach
-arm. CookieCloud-style federation remains possible as an operator-provided
-`NOTEBOOKLM_REFRESH_CMD` flow.
-
-### 7.5 Cookie database read on Chrome 127+
-
-**Verdict: Increasingly unreliable; prefer Firefox.**
-
-Chrome 127 introduced **App-Bound Encryption** for cookies on Windows.
-`browser_cookie3` (latest v0.20.1) does **not** handle ABE; rookiepy claims
-to but requires admin from Chrome 130+
-([rookie#50](https://github.com/thewh1teagle/rookie/issues/50)). The
-yt-dlp ecosystem has converged on
-"[only Firefox `--cookies-from-browser` reliably works in 2026](https://dev.to/osovsky/6-ways-to-get-youtube-cookies-for-yt-dlp-in-2026-only-1-works-2cnb)."
-
-Pragmatic forks for ABE bypass exist (CyberArk's "C4 Bomb",
-xaitax/Chrome-App-Bound-Encryption-Decryption) but are infostealer-adjacent
-and inappropriate for shipping in a legitimate CLI.
-
-**Library recommendation:** Document `--browser-cookies firefox` as the
-recommended path on Windows. Keep `--browser-cookies chrome` working but
-note it may require admin or Keychain prompts.
+- [ADR-0023 — master-token headless auth](adr/0023-master-token-headless-auth.md)
+- [ADR-0013 — composable session capabilities](adr/0013-composable-session-capabilities.md)
+- [ADR-0004 — loop-affinity contract](adr/0004-loop-affinity-contract.md)
+- [troubleshooting.md#authentication-errors](troubleshooting.md#authentication-errors),
+  [installation.md#d-headless-server-or-ci](installation.md#d-headless-server-or-ci),
+  [configuration.md#environment-variables](configuration.md#environment-variables)
 
 ---
 
-## 8 · Recommendations by use case
+## Appendix: field notes & historical findings
 
-### 8.1 Interactive desktop user
+Condensed war-stories and ruled-out experiments, kept for triage context. None of
+this is required to operate the library.
 
-Just `notebooklm login`. The Playwright Chromium flow handles it. Re-login
-when prompted (typically days to weeks between prompts).
+### A1 · `RotateCookies` vs `CheckCookie`
 
-### 8.2 Long-lived in-process client (agent, MCP server, worker)
+The original L1 mechanism used
+`GET accounts.google.com/CheckCookie?continue=…notebooklm.google.com/`, relying on
+a redirect chain that *might* pass through `accounts.youtube.com/SetSID` and set a
+fresh `*PSIDTS`. Field probing showed this rotates `*PSIDTS` only for
+Firefox-extracted (unbound) profiles — a 3-hop chain including `SetSID` — and **not**
+for Playwright-extracted (bound) profiles, whose 2-hop chain has no `SetSID` step
+and no `*PSIDTS` in any `Set-Cookie`. The bound-session poke still touched the
+identity surface and observably extended server-side session validity, but did not
+rotate the cookie. A direct `RotateCookies` POST removes the discretion: it rotates
+unconditionally for both session types, at a ~100% success rate in all field
+captures, with no DBSC challenge on the unsigned endpoint.
 
-```python
-async with NotebookLMClient.from_storage(keepalive=600) as client:
-    ...
-```
+### A2 · Diagnosing "cookies expire fast"
 
-L1 fires on `from_storage()`, L2 fires every 600s while the client is open.
-This was sufficient through the entire 24h+ window of our experiment.
+The persistence pipeline could historically corrupt its own cookie state. Before
+assuming Google changed anything:
 
-### 8.3 Unattended / headless / CI / cron
+1. **Compare `__Secure-1PSIDTS` on disk before/after a `notebooklm` call** spaced
+   > 60 s apart with no other writer. No change ⇒ rotation isn't firing — check
+   `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE` and the mtime guard.
+2. **With multiple processes sharing the file**, run at `NOTEBOOKLM_LOG_LEVEL=DEBUG`
+   and look for "Keepalive RotateCookies skipped: storage refreshed before flock
+   acquired" — that means the guards are working.
+3. **Check `storage_state.json` mtime cadence** — hours-old mtime after active
+   sessions means rotation isn't sticking.
+4. **Only after the above**, investigate Google-side causes (risk-scoring, Workspace
+   policy, DBSC).
 
-Three stacks, in order of preference:
+**Historical persistence hazards (all resolved in-tree)** — recorded so older bug
+reports still make sense:
 
-**Preferred for true headless (master token — no browser after bootstrap):**
+- **Stale-in-memory clobbers fresh-disk ("few-hours" pattern).** A `keepalive=None`
+  process could write its stale in-memory `*PSIDTS` over a fresher value a sibling
+  rotated. Resolved by open-time snapshot + write-only-deltas with value-CAS guards
+  (`_cookie_persistence.py`), on top of the cross-process flock
+  ([#344](https://github.com/teng-lin/notebooklm-py/pull/344) +
+  [#361](https://github.com/teng-lin/notebooklm-py/pull/361)). Still, prefer
+  `keepalive=N` or a single cron-driven rotator.
+- **`(name, domain)` path-collapse.** The persistence merge is now fully
+  `(name, domain, path)`-aware end-to-end, so path-scoped variants survive a
+  load→save round-trip ([#369](https://github.com/teng-lin/notebooklm-py/pull/369)).
+- **Sibling-domain allow-list asymmetry.** The auth-jar and persistence filters were
+  collapsed into one canonical `_is_allowed_cookie_domain` with siblings covered
+  symmetrically ([#360](https://github.com/teng-lin/notebooklm-py/issues/360)).
+- **Round-trip attribute erosion.** Both load paths now build a faithful
+  `http.cookiejar.Cookie` preserving `path` / `secure` / `httpOnly` across cycles
+  ([#365](https://github.com/teng-lin/notebooklm-py/pull/365)), keeping `__Host-`
+  invariants intact.
+- **`expires=-1` flattens age.** `*PSIDTS` rotations arrive without `Max-Age` and are
+  stored as session cookies, so on-disk age is unknowable — the only staleness signal
+  is the file mtime. By design, not a bug.
 
-1. `pip install "notebooklm-py[headless]"`.
-2. One-time, on a machine with a browser: `notebooklm -p <profile> login
-   --master-token --account you@gmail.com` (dedicated/throwaway account).
-3. Ship `master_token.json` to the server (sibling of `storage_state.json`).
-4. Run commands normally — cookies are minted on bootstrap and **re-minted
-   automatically** when the session dies (L4, [§4.5](#45-l4-master-token-re-mint));
-   force one by hand with `notebooklm -p <profile> login --master-token-refresh`.
+Across the OSS ecosystem this is the most defensive cookie-persistence implementation
+surveyed: peers (Gemini-API, yt-dlp, CookieCloud) are "last writer wins" with no
+flock, no atomic replace, and full-jar overwrite. Our threat model (long-lived
+clients + cron `auth refresh` + parallel CLI invocations on one file) genuinely needs
+the snapshot/delta/CAS/flock defenses.
 
-This beats the cookie-extract stacks below for unattended use: no browser at
-refresh time, survives full cookie expiry, and no `storage_state` to keep
-re-shipping. Caveats: full-account credential (dedicated account, `0600`), one
-account is single-consumer, and it inherits the standing DBSC risk.
+### A3 · Ruled-out experiments
 
-**Cookie extraction (no extra dependency, browser at bootstrap):**
+Investigated and rejected; documented so contributors don't re-investigate:
 
-1. Sign in to NotebookLM **once** in Firefox (or any rookiepy-supported
-   browser — see note below).
-2. `notebooklm -p <profile> login --browser-cookies firefox`.
-3. Schedule a cron / launchd / systemd job:
-   ```
-   7,27,47 */1 * * * notebooklm --profile <profile> auth refresh
-   ```
-   (Off-minute schedule avoids fleet collision.)
-4. Keep Firefox running with at least one Google tab. Even closed-Firefox
-   works for hours-to-days as long as `RotateCookies` keeps succeeding from
-   `SID` alone, but a running Firefox is an extra layer of resilience.
+- **`undetected-chromedriver` / `selenium-stealth` for Google login** — WebDriver
+  stealth loses to Google's signal-fusion model; login has been repeatedly broken
+  across Chrome bumps. Don't use for Google flows.
+- **`puppeteer-extra-plugin-stealth` / `playwright-stealth`** — patches fingerprint
+  leaks only, not TLS / IP reputation / behavioral signals; works for resumed
+  sessions, fails for fresh `accounts.google.com` sign-in.
+- **Persistent Playwright headless context as a keepalive daemon** — fragile against
+  known Playwright bugs (cookies missing in `launch_persistent_context`, profile-DB
+  corruption in long-lived contexts). Prefer CDP-attach (the L3 arm) if a
+  headless-browser path is needed.
+- **Client-side DBSC implementation** — impossible from Python: the W3C spec is
+  built around a TPM-bound key and platform attestation Chrome implements, with no
+  extension point for a non-browser client. If DBSC extends to non-Chrome paths, the
+  escape is to parasitize a DBSC-enrolled Chrome via the L3 CDP arm, or source
+  cookies via an operator-provided `NOTEBOOKLM_REFRESH_CMD`.
+- **Reading the Chrome cookie DB on Chrome 127+** — App-Bound Encryption makes this
+  admin-or-bust on Windows; the yt-dlp ecosystem has converged on Firefox as the
+  only reliable `--cookies-from-browser` source. Infostealer-adjacent ABE-bypass
+  forks are inappropriate to ship. Document `--browser-cookies firefox` as the
+  Windows path.
 
-> **Browser support:** `--browser-cookies` accepts any of the ~16 browsers
-> rookiepy can read on the host platform — `arc`, `brave`, `chrome`,
-> `chromium`, `edge`, `firefox`, `ie`, `librewolf`, `octo`, `opera`,
-> `opera-gx`, `safari`, `vivaldi`, `zen`. **Firefox is the recommended
-> path on Windows** specifically because Chrome 127+ App-Bound Encryption
-> makes Chrome cookie reads admin-or-bust (see §7.5). On macOS and Linux,
-> any of the listed browsers work; Firefox just sidesteps the Keychain
-> prompt that Chrome / Brave / Edge trigger on first read. See
-> `_ROOKIEPY_BROWSER_ALIASES` in `cli/services/login/cookie_jar.py` for the canonical list.
-> Chromium-family browsers also accept `chrome::<profile-name-or-directory>`
-> (for example `chrome::Profile 1` or `brave::Work`) to refresh from one
-> user-profile instead of relying on fan-out/account matching.
+### A4 · Anti-pattern — persisting `storage_state` on a redirect-to-login
 
-**With cookie federation (best UX, requires self-hosting):**
-
-1. Self-host CookieCloud server.
-2. Install CookieCloud browser extension in your daily Chrome, configure to
-   sync `*.google.com`.
-3. Use `PyCookieCloud` to pull cookies on demand from a custom
-   `NOTEBOOKLM_REFRESH_CMD` script. There is no in-tree CookieCloud client.
-
-#### 8.3.1 Anti-pattern: persisting `storage_state` on a redirect-to-login
-
-If you wrap the library in your own Playwright-based keepalive — instead
-of using `notebooklm auth refresh` or the in-process `keepalive=N` option
-— the most damaging mistake is to call `context.storage_state(path=...)`
-unconditionally at the end of each cycle. The corruption sequence
-(originally reported in
-[#312](https://github.com/teng-lin/notebooklm-py/issues/312)):
-
-1. Session has aged out — common on cloud-VPS IPs, where Google
-   force-logs-out more aggressively than on residential IPs.
-2. `await page.goto("https://notebooklm.google.com/")` 302s through
-   `accounts.google.com/v3/signin/.../flowName=*SignIn`.
-3. The login page sets six anonymous cookies — `NID`, `OTZ`,
-   `__Host-GAPS`, `_ga`, `_ga_*`, `_gcl_au` — and a subsequent
-   `context.storage_state(path=...)` serializes **only those**, dropping
-   `SID`, `HSID`, `__Secure-1PSID`, `__Secure-3PSID`, `SAPISID`,
-   `APISID`, and any `*PSIDTS`.
-4. The next cold start finds a six-cookie storage file, fails every RPC,
-   and the persistent Chrome profile takes the same Set-Cookie hit on
-   each retry — the profile fallback dies along with the storage file.
-
-**Recovery requires fresh interactive login.** No `auth refresh`, no
-profile copy, no on-disk backup short of one you took yourself. This is
-the same class of failure that `c7d7b0d` (#334, "keep NotebookLM
-subdomain cookies") and `fea8315` ("preserve cross-domain cookies")
-guard against on the library's *own* write path — but those guards live
-inside `_auth/storage.py`'s save pipeline and don't help code that calls
-Playwright directly.
-
-The rule, for any wrapper that owns its own `context.storage_state`
-call: gate persistence on a confirmed-authed page URL.
-
-```python
-SAFE_HOSTS = ("notebooklm.google.com",)  # extend if you legitimately
-                                         # land on other authed surfaces
-
-if any(h in page.url for h in SAFE_HOSTS):
-    await context.storage_state(path=STORAGE)
-else:
-    logger.warning("skipping storage_state persist: page on %s", page.url)
-    # treat as a no-op; let the next cycle retry, or raise an alert
-    # for interactive re-login
-```
-
-Equivalently — and more robust, since URL-substring checks miss
-edge cases like in-page JS-driven sign-in prompts — gate persistence on
-a successful library API call rather than the URL:
+If you write your own Playwright keepalive instead of using `notebooklm auth
+refresh` or `keepalive=N`, the most damaging mistake is calling
+`context.storage_state(path=…)` unconditionally at the end of each cycle. When the
+session has aged out, `page.goto("https://notebooklm.google.com/")` 302s to
+`accounts.google.com/…/SignIn`, the login page sets a handful of anonymous cookies
+(`NID`, `OTZ`, `__Host-GAPS`, `_ga`, …), and an unconditional `storage_state`
+serializes **only those**, dropping every real auth cookie. The next cold start
+finds a useless file and recovery requires a fresh interactive login. The rule for
+any wrapper that owns its own persistence: **gate the write on a confirmed-authed
+page URL, or better, on a successful library API call.**
 
 ```python
 from notebooklm import NotebookLMClient, AuthError
@@ -1489,305 +873,47 @@ async def verify_and_save(context, STORAGE):
         async with NotebookLMClient.from_storage() as client:
             await client.notebooks.list()  # confirms auth
     except (AuthError, ValueError):
-        # ValueError: from_storage()'s CSRF / session-id extraction
-        #   detected a redirect to accounts.google.com during fetch_tokens
-        #   (see _auth/extraction.py token extraction helpers)
-        # AuthError: a subsequent RPC call decoded an auth-class failure
         return  # don't overwrite a good file with a bad jar
     await context.storage_state(path=STORAGE)
 ```
 
-If you don't actually need a custom wrapper, prefer the supported
-keepalive surface — `notebooklm auth refresh` from cron (see the two
-stacks above) or `NotebookLMClient(keepalive=N)` for in-process
-clients. Both already gate their writes correctly under §3.4's
-fidelity rules.
+The supported keepalive surfaces (`notebooklm auth refresh`, `keepalive=N`) already
+gate their writes correctly.
 
-### 8.4 Workspace / Enterprise account with admin session-binding
+### A5 · Open questions
 
-Currently **not supported.** Document as such. The admin-policy session
-binding is a Workspace-only beta and requires DBSC-compatible flows.
-Library users should request an exemption from their admin or use a
-personal Google account for automation.
-
----
-
-## 9 · Operational levers (environment variables)
-
-Auth refresh env vars live under `src/notebooklm/_auth/` and are re-exported
-through the public `notebooklm.auth` facade where compatibility requires it.
-Documented here so operators don't have to grep for them.
-
-### 9.1 `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE=1`
-
-Disables the `RotateCookies` POST entirely. Both L1
-(`_auth.refresh._fetch_tokens_with_jar` calling `_auth.keepalive._poke_session`)
-and L2 (the keepalive background task) honour this. The L2 task still wakes on
-its interval — only the network call becomes
-a no-op — so to disable the loop *itself* pass `keepalive=None` to
-`NotebookLMClient`.
-
-When to set it:
-
-- **Restricted networks** where outbound POSTs to `accounts.google.com` are
-  blocked or rate-limited at the egress layer.
-- **Regression triage** — if a user reports auth failures, asking them to
-  re-run with this flag isolates whether the rotation poke is the cause.
-- **Test environments** that mock the auth surface and don't want real
-  POSTs leaking out.
-
-### 9.2 `NOTEBOOKLM_REFRESH_CMD=<command-line>`
-
-Reactive recovery hook (merged in
-[#336](https://github.com/teng-lin/notebooklm-py/pull/336), hardened to
-`shell=False` by default in
-[#475](https://github.com/teng-lin/notebooklm-py/pull/475);
-current owner: `src/notebooklm/_auth/refresh.py`). When token fetch fails with
-an auth-expiry signal (the
-"`Authentication expired or invalid`" / `accounts.google.com` redirect),
-the library:
-
-1. Parses the configured command with :func:`shlex.split` (POSIX) or
-   `CommandLineToArgvW` (Windows) and runs it via
-   `subprocess.run(argv, shell=False, ...)` with a 60 s timeout. To opt
-   back into the legacy `shell=True` semantics (when the command needs
-   pipes, redirection, or `$VAR` expansion), set
-   `NOTEBOOKLM_REFRESH_CMD_USE_SHELL=1` — a `WARNING` is logged on each
-   invocation in this mode so the security trade-off stays visible.
-2. Sets `NOTEBOOKLM_REFRESH_PROFILE` and `NOTEBOOKLM_REFRESH_STORAGE_PATH`
-   in the child env so the script knows which profile to refresh.
-3. Sets `_NOTEBOOKLM_REFRESH_ATTEMPTED=1` in the child env to prevent
-   recursive refresh loops if the script itself invokes `notebooklm`.
-4. Scrubs `NOTEBOOKLM_AUTH_JSON` from the child env — it is a
-   credential-equivalent storage_state payload the command never needs (it
-   receives the on-disk path via step 2 instead, when present). It is the
-   only first-party storage_state credential payload forwarded, so it is the
-   one var that can be scrubbed without risking the refresh contract.
-5. Reloads cookies from `storage_state.json`, replays token fetch once.
-
-> **SECURITY — inherited environment.** The refresh command inherits the
-> **full parent environment** (so it can find `PATH`/`HOME`/proxy settings
-> and re-invoke this library), minus the `NOTEBOOKLM_AUTH_JSON` scrub in
-> step 4. We deliberately do **not** impose an allowlist, because a refresh
-> command commonly re-invokes `notebooklm` and legitimately needs much of
-> the inherited env. As a result, **any other secret in the launching
-> shell** (e.g. `GOOGLE_*` tokens, CI secrets, API keys — and any token the
-> operator embeds in `NOTEBOOKLM_REFRESH_CMD` itself) is inherited by the
-> refresh command and every grandchild it spawns, and is visible via
-> `/proc/<pid>/environ` to the same UID. Operators MUST NOT keep unrelated
-> secrets in the environment that launches the refresh command; scope
-> secrets to the processes that need them
-> ([#1274](https://github.com/teng-lin/notebooklm-py/issues/1274)).
-
-A `ContextVar` (`_REFRESH_ATTEMPTED_CONTEXT`) gates same-task retries in the
-parent process. For same-loop fan-out, `_coalesced_run_refresh_cmd` stores a
-per-loop / per-resolved-storage-path in-flight `asyncio.Future`; concurrent
-callers await that same future rather than spawning duplicate subprocesses.
-Each awaiter wraps the future in `asyncio.shield`, and the subprocess task is
-held in `_REFRESH_INFLIGHT_TASKS`, so cancellation of one caller does not
-cancel the shared command. The caller keeps re-awaiting the shielded future
-under the per-loop lock until the subprocess settles, preventing a second
-caller from slipping in while the first caller is being cancelled.
-
-Across event loops, `_REFRESH_GENERATIONS` guarded by `_REFRESH_STATE_LOCK`
-still provides best-effort coalescing. Cross-loop client reuse is unsupported
-per [ADR-0004](adr/0004-loop-affinity-contract.md); two independently
-constructed clients in different loops can still race into two refresh
-commands against the same storage path, but the common same-loop cascade is a
-strict single-flight.
-
-This is **orthogonal** to L1-L3:
-
-- L1/L2 keep `*PSIDTS` fresh proactively, and L3 tries to re-mint cookies
-  through a local browser profile when first-party cookies are already dead.
-- `NOTEBOOKLM_REFRESH_CMD` runs only on auth-expiry failure; it is useful when
-  the upstream refresh has already failed (e.g. password change, manual
-  sign-out, or a custom CookieCloud/browser-cookie re-extract flow). Common
-  shapes:
-
-  ```bash
-  # Re-extract from running Firefox
-  export NOTEBOOKLM_REFRESH_CMD='notebooklm login --browser-cookies firefox'
-
-  # Sync from a CookieCloud server
-  export NOTEBOOKLM_REFRESH_CMD='/opt/scripts/pull-cookies-from-cloud.sh'
-  ```
-
-  The library does not validate the command's contents; the operator is
-  responsible for ensuring it produces a valid `storage_state.json`.
-
-### 9.3 `NOTEBOOKLM_HEADLESS_REAUTH=1`
-
-Opt into automatic L3 headless re-auth during mid-RPC auth refresh. Explicit
-Python calls to `await client.refresh_auth(allow_headless=True)` do not require
-the env var. The owner is `src/notebooklm/_auth/headless_reauth.py`; the
-integration point is `src/notebooklm/_auth/session.py::refresh_auth_session`.
-
-The L3 path runs only after the homepage token refresh sees dead first-party
-cookies. It launches the persisted `browser_profile` sibling of the active
-`storage_state.json`, re-mints cookies into the same profile storage, reloads
-the live HTTP client's cookie jar, and retries the homepage token fetch once.
-If the profile is missing, Playwright is unavailable, or the browser session is
-also dead, the original auth-expiry error stands.
-
-### 9.4 `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL=http://127.0.0.1:9222`
-
-Optional CDP endpoint for L3. When set, L3 attaches to an already-running local
-Chrome instead of launching the stored browser profile. The endpoint is
-operator-provided and never auto-discovered. Non-loopback hosts are refused
-(`127.0.0.0/8`, `::1`, and `localhost` are allowed) because a CDP endpoint is
-account-equivalent: remote or LAN CDP would expose the user's live browser
-session to the process.
-
----
-
-## 10 · Canaries and signals
-
-When to panic:
-
-| Signal | Source | What it means | Action |
-|---|---|---|---|
-| `RotateCookies` returns 401 in production | Library logs | DBSC has been extended to non-Chrome paths for at least some accounts | Turn on / harden the L3 CDP arm; direct users to `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL` |
-| `RotateCookies` returns 200 but no `*PSIDTS` in `Set-Cookie` | Library logs | Silent failure mode — cookies on disk are not being rotated | Add WARN log and alert on this; manual re-auth required |
-| [HanaokaYuzu/Gemini-API#310](https://github.com/HanaokaYuzu/Gemini-API/pull/310) merges as default | GitHub | Activity-warmup workaround needed in production for the broader Gemini-API user base | Plan to mirror their approach within 4 weeks |
-| [HanaokaYuzu/Gemini-API#319](https://github.com/HanaokaYuzu/Gemini-API/issues/319) gets "me too" reports | GitHub | Account-specific failures spreading | Investigate whether our user base is affected |
-| Chrome macOS DBSC GA announced | [Chrome dev blog](https://developer.chrome.com/) | macOS users will start getting DBSC enrollment | 3–6 months warning before consumer accounts may be enforced |
-| Workspace session-binding moves out of beta | [Workspace admin docs](https://knowledge.workspace.google.com/admin/security/) | More org admins will enable it | Document explicit non-support clearer |
-
----
-
-## 11 · Open questions
-
-Things we don't know that would inform future iterations:
-
-- **Exact `*PSIDTS` stale-value acceptance distribution.** We've seen the
-  `["identity.hfcr",600]` declared interval, and local probes show stale
-  values can keep authenticating far beyond that cadence. Anecdotal data from
-  Gemini-API/Bard-API issue threads suggests acceptance still varies by
-  account, IP, Workspace policy, and extraction quality. Real longitudinal
-  data would let us tune L2's 60s floor more precisely.
-- **What kept Probe B alive past T+20m without `*PSIDTS` rotation?** B used
-  `CheckCookie` GET as L1, which observably did *not* rotate `*PSIDTS`.
-  Yet B's session survived hours past A's death (same cookies, no L1).
-  Most likely: server-side "session touched" extension via the unsigned
-  rotation endpoint or identity-surface hit. Untested hypothesis.
-- **DBSC enrollment status for Playwright-launched Chromium.** We assumed
-  Playwright Chromium's session is non-DBSC-bound on macOS/Linux (no TPM)
-  but might be bound on Windows. Untested. If Playwright Chromium can
-  register a DBSC key, L5-A becomes more viable than current research
-  suggests.
-- **Whether `RotateBoundCookies` returns interpretable error codes** for
-  unsigned attempts. Could let us detect DBSC enforcement transition
-  proactively rather than reactively.
-
----
-
-## 12 · References
-
-### Project peers
-
-- [HanaokaYuzu/Gemini-API](https://github.com/HanaokaYuzu/Gemini-API) —
-  reference for `RotateCookies` rotation
-  ([source](https://github.com/HanaokaYuzu/Gemini-API/blob/master/src/gemini_webapi/utils/rotate_1psidts.py))
-- [easychen/CookieCloud](https://github.com/easychen/CookieCloud) +
-  [PyCookieCloud](https://github.com/lupohan44/PyCookieCloud)
-- [dsdanielpark/Bard-API](https://github.com/dsdanielpark/Bard-API) (archived)
-
-### Cookie extraction libraries
-
-- [`borisbabic/browser_cookie3`](https://github.com/borisbabic/browser_cookie3)
-- [`thewh1teagle/rookie`](https://github.com/thewh1teagle/rookie) (rookiepy)
-- [`n8henrie/pycookiecheat`](https://github.com/n8henrie/pycookiecheat)
-
-### DBSC
-
-- [Google's DBSC GA announcement (Apr 2026)](https://blog.google/security/protecting-cookies-with-device-bound-session-credentials/)
-- [Chrome DBSC Windows GA blog](https://developer.chrome.com/blog/dbsc-windows-announcement)
-- [W3C DBSC spec](https://w3c.github.io/webappsec-dbsc/)
-- [Google Workspace session-binding (beta)](https://knowledge.workspace.google.com/admin/security/prevent-cookie-theft-with-session-binding)
-
-### Internal references
-
-- [#312 — `*PSIDTS` rotation requires `accounts.google.com` touch](https://github.com/teng-lin/notebooklm-py/issues/312)
-- [#297 — `NOTEBOOKLM_REFRESH_CMD` proposal](https://github.com/teng-lin/notebooklm-py/issues/297) /
-  [#336 — implementation merged](https://github.com/teng-lin/notebooklm-py/pull/336)
-- [#341 — L2 background keepalive task](https://github.com/teng-lin/notebooklm-py/pull/341)
-- [#342 / #343 / #344 — keepalive race fixes](https://github.com/teng-lin/notebooklm-py/pull/342)
-- [#345 — Auth cookie lifecycle umbrella issue](https://github.com/teng-lin/notebooklm-py/issues/345) /
-  [#346 — L1 RotateCookies POST + 60 s mtime guard merged](https://github.com/teng-lin/notebooklm-py/pull/346)
-- [#347 / #348 — concurrent-poke throttle (three-guard model)](https://github.com/teng-lin/notebooklm-py/pull/348)
+- **Exact `*PSIDTS` stale-value acceptance distribution.** Acceptance varies by
+  account, IP, Workspace policy, and extraction quality; longitudinal data would let
+  us tune L2's 60 s floor more precisely.
+- **DBSC enrollment status for Playwright-launched Chromium.** Assumed non-bound on
+  macOS/Linux (no TPM), possibly bound on Windows; untested.
+- **Whether `RotateBoundCookies` returns interpretable errors for unsigned
+  attempts** — could let us detect a DBSC enforcement transition proactively rather
+  than reactively.
 
 ---
 
 ## Changelog
 
-- **2026-05-09** — Initial writeup. Captures the field experiment results,
-  cross-project review, RotateCookies-vs-CheckCookie finding, and the
-  L1–L6 tiered architecture. DBSC threat model reflects rollout state as
-  of Chrome 146 GA Windows.
-- **2026-05-09 (rev 2)** — Synced doc to merged code state.
-  - L1 (`RotateCookies` POST) is now merged via #346, not "proposed in
-    #345"; concurrent-poke throttle merged via #348.
-  - Section 5.5 rewritten to describe the **three concentric guards**
-    actually implemented (disk mtime fast-path → in-process
-    `asyncio.Lock` + per-profile monotonic timestamp under
-    `threading.Lock` → cross-process non-blocking flock on
-    `.storage_state.json.rotate.lock`). New §5.6 maps each failure mode to
-    the guard that catches it.
-  - New §9 documents `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE=1` and
-    `NOTEBOOKLM_REFRESH_CMD` (the latter merged in #336 — proactive
-    L1/L2/L3 vs reactive `REFRESH_CMD` distinction made explicit).
-    Subsequent sections renumbered (Canaries → §10, Open questions → §11,
-    References → §12).
-  - §8.3 clarifies that `--browser-cookies` accepts any of the ~16
-    rookiepy-supported browsers (Firefox is the *Windows* recommendation,
-    not a global one) and points at `_ROOKIEPY_BROWSER_ALIASES`.
-- **2026-05-09 (rev 3)** — Added §2 *Background* covering the cookie
-  taxonomy (`__Secure-` / `__Host-` prefixes, 1P vs 3P, the
-  `*SID`/`*SIDTS`/`*SIDCC` family split), the rotation model (the
-  identity vs freshness clocks, why `batchexecute` traffic doesn't
-  rotate), the DBSC protocol (TPM-bound nonce signing,
-  `RotateBoundCookies`, why no Python client can implement it), and how
-  `rookiepy` extracts cookies from encrypted browser stores
-  (Keychain/DPAPI/libsecret + Chrome 127+ App-Bound Encryption). New
-  §2.5 disambiguates the three timers people confuse (server-side
-  `*PSIDTS` TTL, `*SIDCC` window, client-side throttle). Verified via
-  web search that no public evidence (as of 2026-05-09) suggests Google
-  has shortened `*PSIDTS` rotation below the historical 600 s cadence;
-  that note is captured inline in §2.2. Renumbered all sections from
-  the old §2 onward (§2 → §3, …, §11 → §12), and updated the few §-
-  cross-references in body text. No semantic changes to §3–§12 content.
-- **2026-05-09 (rev 4)** — Added §3.4 *Internal threats: cookie-jar
-  fidelity in the persistence pipeline*. Documents six fidelity hazards
-  in the auth persistence code with file:line references, the most important being
-  §3.4.1 — a stale-overwrites-fresh race that the post-#344 cross-
-  process flock does **not** cover. Verified via librarian survey of
-  peer projects (Gemini-API, Bard-API, ytmusicapi, gpsoauth,
-  CookieCloud, browser_cookie3, rookiepy) that none of them defend
-  against this pattern either; HanaokaYuzu/Gemini-API
-  ([client.py#L275-L306](https://github.com/HanaokaYuzu/Gemini-API/blob/fbe0790599ac8ee77692dabdce88a96110a33294/src/gemini_webapi/client.py#L275-L306))
-  is more vulnerable than us (no flock, full overwrite on `close()`).
-  §3.4.7 adds a diagnostic checklist for "cookies expire fast" reports
-  that walks internal-causes-first before assuming Google changed
-  anything — relevant to triaging the hour-scale-survival pattern in
-  Gemini-API [#203](https://github.com/HanaokaYuzu/Gemini-API/issues/203)
-  and similar reports.
-- **2026-05-14** — Documentation consistency pass. Added
-  `**Last Updated:**` header. New §2.6 *Domain tiering: REQUIRED vs
-  OPTIONAL cookie domains* documents the cookie-domain split
-  ([#483](https://github.com/teng-lin/notebooklm-py/pull/483)) between
-  `REQUIRED_COOKIE_DOMAINS` (always extracted) and
-  `OPTIONAL_COOKIE_DOMAINS_BY_LABEL` (opt-in via
-  `--include-domains=<label>`), with the data-minimization /
-  blast-radius rationale for why the split is enforced at extraction
-  time rather than at the runtime allow-list. Rewrote §3.4.2 to
-  reflect end-to-end path-awareness of the persistence-merge hot path
-  ([#369](https://github.com/teng-lin/notebooklm-py/pull/369)
-  follow-up to #361) — `CookieKey`, `extract_cookies_with_domains`,
-  `_cookie_map_from_jar`, and the `cookies_by_key` merge in
-  `save_cookies_to_storage` all key on `(name, domain, path)` now, so
-  the historical "`(name, domain)` collapse drops `path`" claim was
-  removed. The lossy public-API surfaces (`AuthTokens.cookies`,
-  `AuthTokens.cookie_header`) are called out explicitly as
-  compatibility-bound, not load-bearing for persistence. Verified both
-  Google Workspace admin URLs (§3.3, §10) still resolve.
+- **2026-07-04 (v0.8.0 rewrite)** — Restructured and trimmed for the v0.8.0
+  release. Now leads with the master-token headless path (L4) as the recommended
+  approach for unattended / headless / server / CI use, adds an early
+  [Available auth methods](#available-auth-methods) comparison and a
+  [Recommended setup](#recommended-setup) section, and consolidates the recovery
+  ladder onto the single canonical **L1–L7** taxonomy shared with
+  troubleshooting.md — reflecting the integrated L3 headless re-auth and L4
+  master-token re-mint. Corrected the prior status blockquote, relabeled
+  browser-cookie extraction (a variant of L6 / a common L5 command, **not** L4),
+  removed the obsolete "L5-A" label, and updated the `NOTEBOOKLM_REFRESH_CMD`
+  scope note to "orthogonal to L1–L4". Dated empirical claims (specific probe
+  runs, hour-counts, month-stamped DBSC timeline) were replaced with durable,
+  timeless statements. The internal cookie-jar-fidelity hazard log, the
+  `RotateCookies`-vs-`CheckCookie` deep dive, the ruled-out experiments, and the
+  ecosystem comparison were compressed into the
+  [Appendix](#appendix-field-notes--historical-findings).
+- **Earlier revisions (2026-05 → 2026-06)** — initial writeup and field experiment;
+  merged-code sync (L1 `RotateCookies` POST, three-guard throttle); §2 background
+  (cookie taxonomy, rotation model, DBSC, extraction); internal-threat
+  cookie-jar-fidelity analysis; domain tiering (REQUIRED vs OPTIONAL); path-aware
+  persistence follow-ups. Superseded by the v0.8.0 rewrite above; see git history
+  for the full detail.

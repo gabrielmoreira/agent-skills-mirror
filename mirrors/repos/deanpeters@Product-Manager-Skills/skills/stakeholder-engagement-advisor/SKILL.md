@@ -1,5 +1,6 @@
 ---
 name: stakeholder-engagement-advisor
+argument-hint: "[stakeholder and situation]"
 description: Plan engagement for a specific stakeholder. Use when preparing an outreach, navigating resistance, or aligning a critical relationship before a key milestone.
 intent: >-
   Guide per-stakeholder engagement planning through the Adaptive Decision Ladder:
@@ -32,6 +33,17 @@ sources:
 Plan how to engage a specific stakeholder — before a critical conversation, milestone, or relationship repair. Generic stakeholder engagement fails because it treats all stakeholders with the same message, medium, and cadence. An executive sponsor who privately disagrees with your direction needs different handling than an impacted frontline user who's never been consulted. This skill diagnoses the specific stakeholder relationship you're managing and delivers a tailored engagement approach that accounts for both sides of the conversation — their motivations and yours.
 
 Run this skill once per priority stakeholder. Priority stakeholders are those in the "manage closely" quadrant from stakeholder-mapping, every Q1 (high-impact, low-power) stakeholder regardless of Power × Interest placement, and anyone who has the potential to block, delay, or fundamentally reshape your initiative.
+
+## Input
+
+**Works best with:** The specific stakeholder and the situation — the conversation, milestone, or tension you're preparing for.
+**Also useful:** Their power/interest read, history with you or the initiative, and what a good outcome looks like.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The advisor opens by asking who the stakeholder is and what's coming up with them.
+
+**Example invocation:** `Plan engagement: our VP Sales publicly supports the replatform but keeps escalating exceptions — QBR in 2 weeks.`
 
 ## Key Concepts
 

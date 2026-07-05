@@ -1,7 +1,7 @@
 # CLI Exit-Code Convention
 
 **Status:** Active
-**Last Updated:** 2026-06-11
+**Last Updated:** 2026-07-04
 
 This document defines the exit-code policy for the `notebooklm` CLI. Shell
 scripts, CI pipelines, and AI-agent automations should rely on these codes for
@@ -53,6 +53,8 @@ mapping in `error_handler.py`:
 | `ConfigurationError`    | `CONFIG_ERROR`      | `1` |
 | `NetworkError`          | `NETWORK_ERROR`     | `1` |
 | `NotebookLimitError`    | `NOTEBOOK_LIMIT`    | `1` |
+| `NotFoundError` (and domain `*NotFoundError`) | `NOT_FOUND` | `1` |
+| `ArtifactTimeoutError` (and its subclasses) | `ARTIFACT_TIMEOUT` | `1` |
 | `NotebookLMError` (other) | `NOTEBOOKLM_ERROR` | `1` |
 | `KeyboardInterrupt`     | `CANCELLED`         | `130` |
 | Anything else (`Exception`) | `UNEXPECTED_ERROR` | `2` |

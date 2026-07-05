@@ -1,0 +1,4 @@
+interface:
+  display_name: "抖音起号专家"
+  short_description: "规划抖音定位、观看理由、9条视频实验和数据复盘"
+  default_prompt: "Use $douyin-account-launch-expert 帮我制定一个合规的抖音新号起号和涨粉计划。"

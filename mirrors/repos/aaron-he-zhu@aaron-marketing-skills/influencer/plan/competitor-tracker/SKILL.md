@@ -1,19 +1,16 @@
 ---
 name: competitor-tracker
+slug: aaron-competitor-tracker
+displayName: "Competitor Tracker · 竞对红人追踪"
+summary: "竞品创作者合作动向:合作名单、投放节奏与策略启示"
 description: 'Use when the user asks to "track competitor influencer marketing", "see who my rivals partner with", or "benchmark my influencer program"; produces a competitor partnership roster, campaign and content-strategy breakdown, performance estimates, and a gap/opportunity list. Not for finding your own new creators — use influencer-discovery.'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when the user wants to understand a competitor's influencer marketing: which creators they partner with, what campaigns and content formats they run, estimated reach and spend, and where they leave gaps. Activate for competitive benchmarking, finding untapped or former-competitor creators, and spotting strategy shifts over time."
 argument-hint: "<your brand> [competitor names] [platform]"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: influencer
-  phase: plan
-  family: influencer-marketing
-  impact-phase: Map
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "influencer", "phase": "plan", "family": "influencer-marketing", "impact-phase": "Map", "hermes": {"tags": ["marketing", "influencer", "plan"], "category": "influencer"}, "openclaw": {"emoji": "📣", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Competitor Tracker
@@ -58,6 +55,10 @@ Where a tool could speed things up, use `~~` connector placeholders:
 - `~~influencer database` — pull a competitor's known partner roster and tier mix.
 - `~~social platform analytics` — estimate reach, engagement rate, and post cadence per creator.
 - `~~CRM` — cross-check whether a former competitor partner has already touched your pipeline.
+
+**Keyless news read on rivals**: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/gdelt.py" '"<competitor>"' --days 30` lists a rival's global news coverage with no key — campaign launches, partnership announcements, PR pushes — **Measured** from GDELT's news index (news media only, not social posts; ≥5s between calls). See [scripts/connectors/README.md](../../../scripts/connectors/README.md).
+
+**Rival-partner channel watch (free key / keyless)**: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/youtube.py" channel <partner-handle>` reads a competitor partner's real subscriber/view counts (free `YOUTUBE_API_KEY`), and every YouTube channel also has a **keyless RSS feed** — `https://www.youtube.com/feeds/videos.xml?channel_id=UC…` piped into `rss_monitor.py` — for tracking partner posting cadence and spotting a burst of sponsored content without any API at all.
 
 Label every estimate as an estimate. See [CONNECTORS.md](../../../CONNECTORS.md) for the keyless/free recipe per category.
 

@@ -2,7 +2,7 @@
 
 > [根目录](../CLAUDE.md) > **skills-v2**
 
-**Last Updated**: 2026-06-18 (v3.1.6)
+**Last Updated**: 2026-07-04 (v3.1.9)
 
 > ⚠ 本文档主体仍停留在 v2.1.16 架构描述（v3.0 引擎重构后未全量同步）。下方变更记录保留 v3.x 修复轨迹，完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
@@ -11,6 +11,10 @@
 ## 变更记录 (Changelog)
 
 > 完整变更历史请查看 [CHANGELOG.md](./CHANGELOG.md)
+
+### 2026-07-04 (v3.1.9)
+- ✨ **非交互 CLI 命令**：新增 `ccg codex-mode install`/`uninstall` 和 `ccg uninstall`，支持脚本/CI 无交互调用。
+- 🐛 **质量关卡 rule 用了错误的 skill 名（#148）**：`ccg-skills.md` 指示 AI 调用不带 `ccg:` 前缀的命令名，但实际注册的命令是 `/ccg:verify-security` 等。AI 按 rule 调用失败后跳过质量关卡。修复：所有引用改为带 `/ccg:` 前缀。
 
 ### 2026-06-18 (v3.1.6)
 - ✨ **CodeGraph MCP 可选安装（#145）**：init Step 3 新增 `codegraph` 选项，本地代码知识图谱（调用链/影响范围/架构查询）。安装 MCP（`npx @colbymchenry/codegraph serve --mcp`）+ 写入 `ccg-codegraph.md` 使用规则。规则指示 AI 在无 `.codegraph/` 时自动 `codegraph init` 建索引，优先 `codegraph_explore` 查结构、`fast_context_search` 查语义、grep 查精确文本。

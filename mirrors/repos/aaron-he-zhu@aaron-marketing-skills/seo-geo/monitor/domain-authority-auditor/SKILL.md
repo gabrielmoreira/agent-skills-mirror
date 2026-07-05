@@ -1,19 +1,17 @@
 ---
 name: domain-authority-auditor
+slug: aaron-domain-authority-auditor
+displayName: "Domain Authority Auditor · 域名权威"
+summary: "域名权威/网站可信度"
 description: 'Use when auditing domain authority, trust, or citation credibility; runs 40-item CITE scoring with veto checks (TRUSTED/CAUTIOUS/UNTRUSTED). Not for page-level content quality — use content-quality-auditor; not for backlink profiling alone — use offsite-signal-analyzer. 域名权威/网站可信度'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when auditing domain trust and authority. Runs CITE 40-item scoring with veto checks. Also when the user asks about domain credibility or citation trustworthiness."
 argument-hint: "<domain>"
 class: auditor
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: seo-geo
-  phase: monitor
-  geo-relevance: "medium"
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "seo-geo", "phase": "monitor", "geo-relevance": "medium", "hermes": {"tags": ["marketing", "seo-geo", "monitor"], "category": "seo-geo"}, "openclaw": {"emoji": "🔍", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Domain Authority Auditor
@@ -218,12 +216,14 @@ Same format for Trust and Eminence dimensions.
 
 ## Auditor Runbook — read this first
 
-**Before scoring, `Read ../../references/auditor-runbook.md`.** It is the authoritative, framework-agnostic
+**Before scoring, `Read ../../../references/auditor-runbook.md`.** It is the authoritative, framework-agnostic
 procedure: §1 Handoff Schema, §2 Critical Fail Cap method + decision table + deterministic rounding,
 §4 Artifact Gate 7-item checklist, §5 User-Facing Translation format, and the untrusted-content
 security boundary. It loads locally via relative path (no network) — do not skip it. This skill body
 carries only the **CITE-specific** pieces below: the weighted worked examples, the domain-level
 guardrails, and the CITE veto-ID translation rows.
+
+*Standalone install fallback*: if that relative path does not exist, this skill was installed standalone (e.g. via `npx skills` into an `.agents/skills/` host), which bundles only this skill folder — fetch the runbook and any other `../../../references/...` file this skill names from `https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/references/<same filename>`, or ask the user for a clone of the repo. Do not score without the runbook.
 
 ### Handoff Summary
 

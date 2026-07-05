@@ -1,5 +1,6 @@
 ---
 name: acquisition-channel-advisor
+argument-hint: "[channel to evaluate]"
 description: Evaluate acquisition channels using unit economics, customer quality, and scalability. Use when deciding whether to scale, test, or kill a growth channel.
 intent: >-
   Guide product managers through evaluating whether to scale, test, or kill an acquisition channel based on unit economics (CAC, LTV, payback), customer quality (retention, NRR), and scalability (magic number, volume potential). Use this to make data-driven go-to-market decisions and optimize channel mix for sustainable growth.
@@ -20,6 +21,17 @@ scenarios:
 Guide product managers through evaluating whether to scale, test, or kill an acquisition channel based on unit economics (CAC, LTV, payback), customer quality (retention, NRR), and scalability (magic number, volume potential). Use this to make data-driven go-to-market decisions and optimize channel mix for sustainable growth.
 
 This is not a channel strategy framework—it's a financial lens for channel evaluation that helps you avoid scaling unprofitable channels or killing channels with fixable problems. Use when deciding how to allocate marketing budget across channels.
+
+## Input
+
+**Works best with:** The acquisition channel you're evaluating (e.g., paid search, outbound SDR, partner referrals).
+**Also useful:** Any metrics you already have — CAC, LTV, payback period, retention/NRR by channel — plus company stage and the decision on the table (scale, test, or kill).
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The advisor opens by asking which channel you're evaluating and what data you have.
+
+**Example invocation:** `Evaluate our paid LinkedIn channel: CAC $2,400, LTV $9,000, 14-month payback, flat retention vs. organic.`
 
 ## Key Concepts
 

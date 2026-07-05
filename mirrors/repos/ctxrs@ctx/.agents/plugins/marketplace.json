@@ -1,0 +1,20 @@
+{
+  "name": "ctx",
+  "interface": {
+    "displayName": "ctx"
+  },
+  "plugins": [
+    {
+      "name": "ctx-agent-history-search",
+      "source": {
+        "source": "local",
+        "path": "./plugins/ctx-agent-history-search"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

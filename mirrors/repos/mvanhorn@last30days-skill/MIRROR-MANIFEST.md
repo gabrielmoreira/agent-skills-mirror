@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mvanhorn/last30days-skill` — 26 default patterns, 0 followed patterns, 132 file(s) materialized.
+Mirror of `mvanhorn/last30days-skill` — 26 default patterns, 0 followed patterns, 133 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mvanhorn/last30days-skill` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 132 |
+| Files         | 133 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -116,81 +116,82 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 55 | ✓ | [`skills/last30days/scripts/lib/hackernews.py`](skills/last30days/scripts/lib/hackernews.py) |
 | 56 | ✓ | [`skills/last30days/scripts/lib/health.py`](skills/last30days/scripts/lib/health.py) |
 | 57 | ✓ | [`skills/last30days/scripts/lib/hiring_signals.py`](skills/last30days/scripts/lib/hiring_signals.py) |
-| 58 | ✓ | [`skills/last30days/scripts/lib/html_publish.py`](skills/last30days/scripts/lib/html_publish.py) |
-| 59 | ✓ | [`skills/last30days/scripts/lib/html_render.py`](skills/last30days/scripts/lib/html_render.py) |
-| 60 | ✓ | [`skills/last30days/scripts/lib/http.py`](skills/last30days/scripts/lib/http.py) |
-| 61 | ✓ | [`skills/last30days/scripts/lib/instagram.py`](skills/last30days/scripts/lib/instagram.py) |
-| 62 | ✓ | [`skills/last30days/scripts/lib/jobs.py`](skills/last30days/scripts/lib/jobs.py) |
-| 63 | ✓ | [`skills/last30days/scripts/lib/linkedin.py`](skills/last30days/scripts/lib/linkedin.py) |
-| 64 | ✓ | [`skills/last30days/scripts/lib/log.py`](skills/last30days/scripts/lib/log.py) |
-| 65 | ✓ | [`skills/last30days/scripts/lib/normalize.py`](skills/last30days/scripts/lib/normalize.py) |
-| 66 | ✓ | [`skills/last30days/scripts/lib/permission_preflight.py`](skills/last30days/scripts/lib/permission_preflight.py) |
-| 67 | ✓ | [`skills/last30days/scripts/lib/perplexity.py`](skills/last30days/scripts/lib/perplexity.py) |
-| 68 | ✓ | [`skills/last30days/scripts/lib/pinterest.py`](skills/last30days/scripts/lib/pinterest.py) |
-| 69 | ✓ | [`skills/last30days/scripts/lib/pipeline.py`](skills/last30days/scripts/lib/pipeline.py) |
-| 70 | ✓ | [`skills/last30days/scripts/lib/planner.py`](skills/last30days/scripts/lib/planner.py) |
-| 71 | ✓ | [`skills/last30days/scripts/lib/polymarket.py`](skills/last30days/scripts/lib/polymarket.py) |
-| 72 | ✓ | [`skills/last30days/scripts/lib/preflight.py`](skills/last30days/scripts/lib/preflight.py) |
-| 73 | ✓ | [`skills/last30days/scripts/lib/providers.py`](skills/last30days/scripts/lib/providers.py) |
-| 74 | ✓ | [`skills/last30days/scripts/lib/quality_nudge.py`](skills/last30days/scripts/lib/quality_nudge.py) |
-| 75 | ✓ | [`skills/last30days/scripts/lib/query.py`](skills/last30days/scripts/lib/query.py) |
-| 76 | ✓ | [`skills/last30days/scripts/lib/reddit_arctic.py`](skills/last30days/scripts/lib/reddit_arctic.py) |
-| 77 | ✓ | [`skills/last30days/scripts/lib/reddit_enrich.py`](skills/last30days/scripts/lib/reddit_enrich.py) |
-| 78 | ✓ | [`skills/last30days/scripts/lib/reddit_keyless.py`](skills/last30days/scripts/lib/reddit_keyless.py) |
-| 79 | ✓ | [`skills/last30days/scripts/lib/reddit_listing.py`](skills/last30days/scripts/lib/reddit_listing.py) |
-| 80 | ✓ | [`skills/last30days/scripts/lib/reddit_public.py`](skills/last30days/scripts/lib/reddit_public.py) |
-| 81 | ✓ | [`skills/last30days/scripts/lib/reddit_rss.py`](skills/last30days/scripts/lib/reddit_rss.py) |
-| 82 | ✓ | [`skills/last30days/scripts/lib/reddit_shreddit.py`](skills/last30days/scripts/lib/reddit_shreddit.py) |
-| 83 | ✓ | [`skills/last30days/scripts/lib/reddit.py`](skills/last30days/scripts/lib/reddit.py) |
-| 84 | ✓ | [`skills/last30days/scripts/lib/relevance.py`](skills/last30days/scripts/lib/relevance.py) |
-| 85 | ✓ | [`skills/last30days/scripts/lib/render.py`](skills/last30days/scripts/lib/render.py) |
-| 86 | ✓ | [`skills/last30days/scripts/lib/rerank.py`](skills/last30days/scripts/lib/rerank.py) |
-| 87 | ✓ | [`skills/last30days/scripts/lib/resolve.py`](skills/last30days/scripts/lib/resolve.py) |
-| 88 | ✓ | [`skills/last30days/scripts/lib/safari_cookies.py`](skills/last30days/scripts/lib/safari_cookies.py) |
-| 89 | ✓ | [`skills/last30days/scripts/lib/schema.py`](skills/last30days/scripts/lib/schema.py) |
-| 90 | ✓ | [`skills/last30days/scripts/lib/setup_wizard.py`](skills/last30days/scripts/lib/setup_wizard.py) |
-| 91 | ✓ | [`skills/last30days/scripts/lib/signals.py`](skills/last30days/scripts/lib/signals.py) |
-| 92 | ✓ | [`skills/last30days/scripts/lib/skill_meta.py`](skills/last30days/scripts/lib/skill_meta.py) |
-| 93 | ✓ | [`skills/last30days/scripts/lib/snippet.py`](skills/last30days/scripts/lib/snippet.py) |
-| 94 | ✓ | [`skills/last30days/scripts/lib/stocktwits.py`](skills/last30days/scripts/lib/stocktwits.py) |
-| 95 | ✓ | [`skills/last30days/scripts/lib/subproc.py`](skills/last30days/scripts/lib/subproc.py) |
-| 96 | ✓ | [`skills/last30days/scripts/lib/techmeme.py`](skills/last30days/scripts/lib/techmeme.py) |
-| 97 | ✓ | [`skills/last30days/scripts/lib/threads.py`](skills/last30days/scripts/lib/threads.py) |
-| 98 | ✓ | [`skills/last30days/scripts/lib/tiktok.py`](skills/last30days/scripts/lib/tiktok.py) |
-| 99 | ✓ | [`skills/last30days/scripts/lib/transcribe.py`](skills/last30days/scripts/lib/transcribe.py) |
-| 100 | ✓ | [`skills/last30days/scripts/lib/trustpilot.py`](skills/last30days/scripts/lib/trustpilot.py) |
-| 101 | ✓ | [`skills/last30days/scripts/lib/truthsocial.py`](skills/last30days/scripts/lib/truthsocial.py) |
-| 102 | ✓ | [`skills/last30days/scripts/lib/ui.py`](skills/last30days/scripts/lib/ui.py) |
-| 103 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/bird-search.mjs`](skills/last30days/scripts/lib/vendor/bird-search/bird-search.mjs) |
-| 104 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/cookies.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/cookies.js) |
-| 105 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/features.json`](skills/last30days/scripts/lib/vendor/bird-search/lib/features.json) |
-| 106 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/paginate-cursor.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/paginate-cursor.js) |
-| 107 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/query-ids.json`](skills/last30days/scripts/lib/vendor/bird-search/lib/query-ids.json) |
-| 108 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/runtime-features.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/runtime-features.js) |
-| 109 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/runtime-query-ids.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/runtime-query-ids.js) |
-| 110 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-base.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-base.js) |
-| 111 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-constants.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-constants.js) |
-| 112 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-features.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-features.js) |
-| 113 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-search.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-search.js) |
-| 114 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-types.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-types.js) |
-| 115 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-utils.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-utils.js) |
-| 116 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/LICENSE`](skills/last30days/scripts/lib/vendor/bird-search/LICENSE) |
-| 117 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/package.json`](skills/last30days/scripts/lib/vendor/bird-search/package.json) |
-| 118 | ✓ | [`skills/last30days/scripts/lib/web_fetch_keyless.py`](skills/last30days/scripts/lib/web_fetch_keyless.py) |
-| 119 | ✓ | [`skills/last30days/scripts/lib/web_search_keyless.py`](skills/last30days/scripts/lib/web_search_keyless.py) |
-| 120 | ✓ | [`skills/last30days/scripts/lib/xai_x.py`](skills/last30days/scripts/lib/xai_x.py) |
-| 121 | ✓ | [`skills/last30days/scripts/lib/xiaohongshu_api.py`](skills/last30days/scripts/lib/xiaohongshu_api.py) |
-| 122 | ✓ | [`skills/last30days/scripts/lib/xquik.py`](skills/last30days/scripts/lib/xquik.py) |
-| 123 | ✓ | [`skills/last30days/scripts/lib/xurl_x.py`](skills/last30days/scripts/lib/xurl_x.py) |
-| 124 | ✓ | [`skills/last30days/scripts/lib/youtube_yt.py`](skills/last30days/scripts/lib/youtube_yt.py) |
-| 125 | ✓ | [`skills/last30days/scripts/setup-keychain.sh`](skills/last30days/scripts/setup-keychain.sh) |
-| 126 | ✓ | [`skills/last30days/scripts/setup-pass.sh`](skills/last30days/scripts/setup-pass.sh) |
-| 127 | ✓ | [`skills/last30days/scripts/store.py`](skills/last30days/scripts/store.py) |
-| 128 | ✓ | [`skills/last30days/scripts/test_device_auth.py`](skills/last30days/scripts/test_device_auth.py) |
-| 129 | ✓ | [`skills/last30days/scripts/test-v1-vs-v2.sh`](skills/last30days/scripts/test-v1-vs-v2.sh) |
-| 130 | ✓ | [`skills/last30days/scripts/verify_v3.py`](skills/last30days/scripts/verify_v3.py) |
-| 131 | ✓ | [`skills/last30days/scripts/watchlist.py`](skills/last30days/scripts/watchlist.py) |
-| 132 | ✓ | [`skills/last30days/SKILL.md`](skills/last30days/SKILL.md) |
+| 58 | ✓ | [`skills/last30days/scripts/lib/hosted.py`](skills/last30days/scripts/lib/hosted.py) |
+| 59 | ✓ | [`skills/last30days/scripts/lib/html_publish.py`](skills/last30days/scripts/lib/html_publish.py) |
+| 60 | ✓ | [`skills/last30days/scripts/lib/html_render.py`](skills/last30days/scripts/lib/html_render.py) |
+| 61 | ✓ | [`skills/last30days/scripts/lib/http.py`](skills/last30days/scripts/lib/http.py) |
+| 62 | ✓ | [`skills/last30days/scripts/lib/instagram.py`](skills/last30days/scripts/lib/instagram.py) |
+| 63 | ✓ | [`skills/last30days/scripts/lib/jobs.py`](skills/last30days/scripts/lib/jobs.py) |
+| 64 | ✓ | [`skills/last30days/scripts/lib/linkedin.py`](skills/last30days/scripts/lib/linkedin.py) |
+| 65 | ✓ | [`skills/last30days/scripts/lib/log.py`](skills/last30days/scripts/lib/log.py) |
+| 66 | ✓ | [`skills/last30days/scripts/lib/normalize.py`](skills/last30days/scripts/lib/normalize.py) |
+| 67 | ✓ | [`skills/last30days/scripts/lib/permission_preflight.py`](skills/last30days/scripts/lib/permission_preflight.py) |
+| 68 | ✓ | [`skills/last30days/scripts/lib/perplexity.py`](skills/last30days/scripts/lib/perplexity.py) |
+| 69 | ✓ | [`skills/last30days/scripts/lib/pinterest.py`](skills/last30days/scripts/lib/pinterest.py) |
+| 70 | ✓ | [`skills/last30days/scripts/lib/pipeline.py`](skills/last30days/scripts/lib/pipeline.py) |
+| 71 | ✓ | [`skills/last30days/scripts/lib/planner.py`](skills/last30days/scripts/lib/planner.py) |
+| 72 | ✓ | [`skills/last30days/scripts/lib/polymarket.py`](skills/last30days/scripts/lib/polymarket.py) |
+| 73 | ✓ | [`skills/last30days/scripts/lib/preflight.py`](skills/last30days/scripts/lib/preflight.py) |
+| 74 | ✓ | [`skills/last30days/scripts/lib/providers.py`](skills/last30days/scripts/lib/providers.py) |
+| 75 | ✓ | [`skills/last30days/scripts/lib/quality_nudge.py`](skills/last30days/scripts/lib/quality_nudge.py) |
+| 76 | ✓ | [`skills/last30days/scripts/lib/query.py`](skills/last30days/scripts/lib/query.py) |
+| 77 | ✓ | [`skills/last30days/scripts/lib/reddit_arctic.py`](skills/last30days/scripts/lib/reddit_arctic.py) |
+| 78 | ✓ | [`skills/last30days/scripts/lib/reddit_enrich.py`](skills/last30days/scripts/lib/reddit_enrich.py) |
+| 79 | ✓ | [`skills/last30days/scripts/lib/reddit_keyless.py`](skills/last30days/scripts/lib/reddit_keyless.py) |
+| 80 | ✓ | [`skills/last30days/scripts/lib/reddit_listing.py`](skills/last30days/scripts/lib/reddit_listing.py) |
+| 81 | ✓ | [`skills/last30days/scripts/lib/reddit_public.py`](skills/last30days/scripts/lib/reddit_public.py) |
+| 82 | ✓ | [`skills/last30days/scripts/lib/reddit_rss.py`](skills/last30days/scripts/lib/reddit_rss.py) |
+| 83 | ✓ | [`skills/last30days/scripts/lib/reddit_shreddit.py`](skills/last30days/scripts/lib/reddit_shreddit.py) |
+| 84 | ✓ | [`skills/last30days/scripts/lib/reddit.py`](skills/last30days/scripts/lib/reddit.py) |
+| 85 | ✓ | [`skills/last30days/scripts/lib/relevance.py`](skills/last30days/scripts/lib/relevance.py) |
+| 86 | ✓ | [`skills/last30days/scripts/lib/render.py`](skills/last30days/scripts/lib/render.py) |
+| 87 | ✓ | [`skills/last30days/scripts/lib/rerank.py`](skills/last30days/scripts/lib/rerank.py) |
+| 88 | ✓ | [`skills/last30days/scripts/lib/resolve.py`](skills/last30days/scripts/lib/resolve.py) |
+| 89 | ✓ | [`skills/last30days/scripts/lib/safari_cookies.py`](skills/last30days/scripts/lib/safari_cookies.py) |
+| 90 | ✓ | [`skills/last30days/scripts/lib/schema.py`](skills/last30days/scripts/lib/schema.py) |
+| 91 | ✓ | [`skills/last30days/scripts/lib/setup_wizard.py`](skills/last30days/scripts/lib/setup_wizard.py) |
+| 92 | ✓ | [`skills/last30days/scripts/lib/signals.py`](skills/last30days/scripts/lib/signals.py) |
+| 93 | ✓ | [`skills/last30days/scripts/lib/skill_meta.py`](skills/last30days/scripts/lib/skill_meta.py) |
+| 94 | ✓ | [`skills/last30days/scripts/lib/snippet.py`](skills/last30days/scripts/lib/snippet.py) |
+| 95 | ✓ | [`skills/last30days/scripts/lib/stocktwits.py`](skills/last30days/scripts/lib/stocktwits.py) |
+| 96 | ✓ | [`skills/last30days/scripts/lib/subproc.py`](skills/last30days/scripts/lib/subproc.py) |
+| 97 | ✓ | [`skills/last30days/scripts/lib/techmeme.py`](skills/last30days/scripts/lib/techmeme.py) |
+| 98 | ✓ | [`skills/last30days/scripts/lib/threads.py`](skills/last30days/scripts/lib/threads.py) |
+| 99 | ✓ | [`skills/last30days/scripts/lib/tiktok.py`](skills/last30days/scripts/lib/tiktok.py) |
+| 100 | ✓ | [`skills/last30days/scripts/lib/transcribe.py`](skills/last30days/scripts/lib/transcribe.py) |
+| 101 | ✓ | [`skills/last30days/scripts/lib/trustpilot.py`](skills/last30days/scripts/lib/trustpilot.py) |
+| 102 | ✓ | [`skills/last30days/scripts/lib/truthsocial.py`](skills/last30days/scripts/lib/truthsocial.py) |
+| 103 | ✓ | [`skills/last30days/scripts/lib/ui.py`](skills/last30days/scripts/lib/ui.py) |
+| 104 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/bird-search.mjs`](skills/last30days/scripts/lib/vendor/bird-search/bird-search.mjs) |
+| 105 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/cookies.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/cookies.js) |
+| 106 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/features.json`](skills/last30days/scripts/lib/vendor/bird-search/lib/features.json) |
+| 107 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/paginate-cursor.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/paginate-cursor.js) |
+| 108 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/query-ids.json`](skills/last30days/scripts/lib/vendor/bird-search/lib/query-ids.json) |
+| 109 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/runtime-features.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/runtime-features.js) |
+| 110 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/runtime-query-ids.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/runtime-query-ids.js) |
+| 111 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-base.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-base.js) |
+| 112 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-constants.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-constants.js) |
+| 113 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-features.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-features.js) |
+| 114 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-search.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-search.js) |
+| 115 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-types.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-types.js) |
+| 116 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-utils.js`](skills/last30days/scripts/lib/vendor/bird-search/lib/twitter-client-utils.js) |
+| 117 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/LICENSE`](skills/last30days/scripts/lib/vendor/bird-search/LICENSE) |
+| 118 | ✓ | [`skills/last30days/scripts/lib/vendor/bird-search/package.json`](skills/last30days/scripts/lib/vendor/bird-search/package.json) |
+| 119 | ✓ | [`skills/last30days/scripts/lib/web_fetch_keyless.py`](skills/last30days/scripts/lib/web_fetch_keyless.py) |
+| 120 | ✓ | [`skills/last30days/scripts/lib/web_search_keyless.py`](skills/last30days/scripts/lib/web_search_keyless.py) |
+| 121 | ✓ | [`skills/last30days/scripts/lib/xai_x.py`](skills/last30days/scripts/lib/xai_x.py) |
+| 122 | ✓ | [`skills/last30days/scripts/lib/xiaohongshu_api.py`](skills/last30days/scripts/lib/xiaohongshu_api.py) |
+| 123 | ✓ | [`skills/last30days/scripts/lib/xquik.py`](skills/last30days/scripts/lib/xquik.py) |
+| 124 | ✓ | [`skills/last30days/scripts/lib/xurl_x.py`](skills/last30days/scripts/lib/xurl_x.py) |
+| 125 | ✓ | [`skills/last30days/scripts/lib/youtube_yt.py`](skills/last30days/scripts/lib/youtube_yt.py) |
+| 126 | ✓ | [`skills/last30days/scripts/setup-keychain.sh`](skills/last30days/scripts/setup-keychain.sh) |
+| 127 | ✓ | [`skills/last30days/scripts/setup-pass.sh`](skills/last30days/scripts/setup-pass.sh) |
+| 128 | ✓ | [`skills/last30days/scripts/store.py`](skills/last30days/scripts/store.py) |
+| 129 | ✓ | [`skills/last30days/scripts/test_device_auth.py`](skills/last30days/scripts/test_device_auth.py) |
+| 130 | ✓ | [`skills/last30days/scripts/test-v1-vs-v2.sh`](skills/last30days/scripts/test-v1-vs-v2.sh) |
+| 131 | ✓ | [`skills/last30days/scripts/verify_v3.py`](skills/last30days/scripts/verify_v3.py) |
+| 132 | ✓ | [`skills/last30days/scripts/watchlist.py`](skills/last30days/scripts/watchlist.py) |
+| 133 | ✓ | [`skills/last30days/SKILL.md`](skills/last30days/SKILL.md) |
 
 ---
 

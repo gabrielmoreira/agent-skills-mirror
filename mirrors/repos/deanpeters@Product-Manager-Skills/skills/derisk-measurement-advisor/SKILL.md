@@ -1,5 +1,6 @@
 ---
 name: derisk-measurement-advisor
+argument-hint: "[product or AI idea]"
 description: Identify what to measure, test, or track to de-risk a product or AI idea. Use when stress-testing an idea across internal (DUFV) and external (PESTEL) dimensions.
 intent: >-
   Guide product managers through a structured risk scan across **10 dimensions** — 4 internal
@@ -27,6 +28,17 @@ estimated_time: "15-20 min"
 Guide product managers through identifying the most important things to measure, test, or track across 10 risk dimensions — 4 internal and 6 external — then triage each into **act on immediately** or **start tracking**. The output is a prioritized risk register that tells you what to do first, not just what could go wrong.
 
 This is not a generic risk list. It's a guided scan tied to *your* specific product, customer, and market context. The question it answers: **is the orange worth the squeeze?**
+
+## Input
+
+**Works best with:** The product or AI idea you want to stress-test.
+**Also useful:** Its stage (concept, prototype, in-market), what you've already validated, and any dimensions you already know are risky.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The advisor opens by asking for the idea in a sentence or two, then scans the 10 risk dimensions against it.
+
+**Example invocation:** `De-risk this: an AI agent that auto-drafts insurance claim responses for adjusters — prototype stage, no compliance review yet.`
 
 ## Key Concepts
 

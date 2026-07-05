@@ -1,4 +1,4 @@
 interface:
   display_name: "OpenTag"
   short_description: "Set up OpenTag with the CLI"
-  default_prompt: "Use $opentag to set up OpenTag with the published CLI for Slack, GitHub, or Lark / Feishu."
+  default_prompt: "Use $opentag to set up OpenTag with the published CLI for Slack, GitHub, GitLab, Lark / Feishu, Telegram, or Discord."

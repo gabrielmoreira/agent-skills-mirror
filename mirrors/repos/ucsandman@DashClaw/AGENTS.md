@@ -14,7 +14,7 @@ Before any UI, design, copy, or marketing/visual change, **read `.impeccable.md`
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **DashClaw** (26004 symbols, 52165 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **DashClaw** (26490 symbols, 53113 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 
@@ -73,17 +73,17 @@ The global `~/.codex/AGENTS.md` covers core behavior; these are DashClaw-specifi
 
 This repository is indexed by Repowise. Use the Repowise MCP tools for codebase orientation, discovery, implementation context, modification risk, design rationale, and cleanup planning. MCP data reflects the last index run; verify against source files before editing.
 
-Last indexed: 2026-07-04 (commit 25760d7d). Confidence: 100%.
+Last indexed: 2026-07-05 (commit 3e1fd2a1). Confidence: 100%.
 ### Architecture
-This repository is an agent-governance and documentation platform that ingests source code and policy/rules inputs, transforms them through indexing, governance/policy enforcement, and (optionally) media/tooling pipelines, and outputs runnable governed agents plus an MCP-exposed tool surface and SDKs for downstream integrations.
+This repository is an end-to-end codebase documentation and governed-agent platform: it ingests a target repository (source files + optional policy/rules inputs), builds an internal representation via parsing and dependency analysis, generates LLM-synthesised wiki/wiki-like artifacts, and exposes them through an MCP server and supporting CLI/web-facing tooling.
 ### Key Modules
 | Module | Purpose | Owner |
 |--------|---------|-------|
 | `app` | The **app** module is the **front-end application layer** of repowise’s overall… | - |
 | `__tests__/unit` | The __tests__/unit module is the unit-test stage of repowise’s quality gate for… | - |
-| `app/components` | The app/components module is the UI-layer composition library in repowise’s… | - |
-| `app/lib` | The app/lib subsystem is the Core Service Layer’s orchestration tier in… | - |
-| `application` | The **Application (top-level)** module is the entry-stage web application layer… | - |
+| `app/components` | The app/components module is the UI-layer component library for repowise’s web… | - |
+| `app/lib` | The **app/lib module** is the core service-layer subsystem in repowise’s… | - |
+| `application` | The **Application (top-level)** module is the entry-stage of repowise’s **web… | - |
 | `app/api/_archive` | The **api/_archive** module is the **archival API layer** in repowise’s larger… | - |
 | `scripts` | The **scripts** module is the **application-layer orchestration toolkit** for… | - |
 | `.claude` | The **.claude module** is a **repository intelligence and command-safety… | - |
@@ -103,11 +103,11 @@ This repository is an agent-governance and documentation platform that ingests s
 ### Risk Hotspots
 | File | Churn | 90d Commits | Owner |
 |------|-------|-------------|-------|
-| `package-lock.json` | 100.0th percentile | 76 | Wes Sander |
-| `docs/maintainer-log.md` | 100.0th percentile | 35 | Wes Sander |
-| `app/lib/guard.ts` | 99.9th percentile | 22 | Wes Sander |
-| `public/livingcode/index.html` | 99.9th percentile | 70 | Wes Sander |
-| `app/lib/doctor/generated/last-snapshot.json` | 99.8th percentile | 67 | Wes Sander |
+| `docs/maintainer-log.md` | 100.0th percentile | 49 | Wes Sander |
+| `CHANGELOG.md` | 100.0th percentile | 84 | Wes Sander |
+| `app/lib/guard.ts` | 99.9th percentile | 27 | Wes Sander |
+| `scripts/policy-smoke.mjs` | 99.9th percentile | 23 | Wes Sander |
+| `package-lock.json` | 99.8th percentile | 86 | Wes Sander |
 
 ### Repowise MCP Workflow
 

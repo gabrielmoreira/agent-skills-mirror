@@ -1,5 +1,6 @@
 ---
 name: director-readiness-advisor
+argument-hint: "[where you are: preparing | interviewing | landed | recalibrating]"
 description: Guide the PM-to-Director transition across preparing, interviewing, landing, and recalibrating. Use when leadership scope is changing and you need practical coaching.
 intent: >-
   Guide PMs and Directors through the specific challenges of the PM-to-Director transition using adaptive questions and targeted coaching. Diagnoses where you are in the journey and delivers practical, war-story-backed guidance calibrated to your situation — not generic leadership advice.
@@ -21,6 +22,17 @@ estimated_time: "10-15 min"
 Guide PMs and Directors through the specific challenges of the PM-to-Director transition using adaptive questions and targeted coaching. Diagnoses where you are in the journey and delivers practical, war-story-backed guidance calibrated to your situation — not generic leadership advice.
 
 This is not a readiness checklist. It's a coaching conversation that names what's actually hard, why it's hard, and what to do about it.
+
+## Input
+
+**Works best with:** Where you are in the PM-to-Director journey: preparing for the jump, interviewing, newly landed, or recalibrating after a rough start.
+**Also useful:** Your org context (team size, who you'd report to) and the specific friction you're feeling.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The advisor opens by asking which of the four situations describes you, then branches.
+
+**Example invocation:** `I'm 60 days into a Director role and my old peers now report to me — it's awkward and I'm still doing PM work. Coach me.`
 
 ## Key Concepts
 

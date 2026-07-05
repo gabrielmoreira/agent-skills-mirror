@@ -1,5 +1,6 @@
 ---
 name: finance-based-pricing-advisor
+argument-hint: "[pricing change to evaluate]"
 description: Evaluate pricing changes using ARPU, conversion, churn risk, NRR, and payback. Use when deciding whether a pricing move should ship.
 intent: >-
   Evaluate the **financial impact** of pricing changes (price increases, new tiers, add-ons, discounts) using ARPU/ARPA analysis, conversion impact, churn risk, NRR effects, and CAC payback implications. Use this to make data-driven go/no-go decisions on proposed pricing changes with supporting math and risk assessment.
@@ -24,6 +25,17 @@ Evaluate the **financial impact** of pricing changes (price increases, new tiers
 **What this is NOT:** Comprehensive pricing strategy design, value-based pricing frameworks, willingness-to-pay research, competitive positioning, psychological pricing, packaging architecture, or monetization model selection. For those topics, see the future `pricing-strategy-suite` skills.
 
 This skill assumes you have a specific pricing change in mind and need to evaluate its financial viability.
+
+## Input
+
+**Works best with:** The pricing change on the table — increase, new tier, add-on, or discount — and current pricing.
+**Also useful:** Current ARPU/ARPA, conversion and churn baselines, NRR, and who's pushing for the change.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The advisor opens by asking what change is proposed and what today's pricing looks like.
+
+**Example invocation:** `Evaluate raising our Pro plan from $49 to $59/seat; ARPU $52, monthly logo churn 1.8%, NRR 108%.`
 
 ## Key Concepts
 

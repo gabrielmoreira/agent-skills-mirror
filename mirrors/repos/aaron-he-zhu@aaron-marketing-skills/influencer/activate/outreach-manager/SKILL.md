@@ -1,19 +1,16 @@
 ---
 name: outreach-manager
+slug: aaron-outreach-manager
+displayName: "Outreach Manager · 建联外联管理"
+summary: "红人建联:分层触达序列、跟进节奏与回复率优化"
 description: 'Use when the user asks to "write influencer outreach", "follow up with a creator", or "negotiate partnership terms"; produces personalized pitches, multi-touch follow-up sequences, negotiation scripts with objection handling, and a status pipeline tracker. Not for finalizing signed agreements — use contract-helper.'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Activate the skill when the user wants to contact a creator, draft or personalize a pitch message, build a follow-up cadence for non-responders, re-engage a past partner, negotiate rate or scope, handle pricing objections, or track outreach status across a list of influencers."
 argument-hint: "<influencer handle or list> [platform] [budget]"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: influencer
-  phase: activate
-  family: influencer-marketing
-  impact-phase: Activate
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "influencer", "phase": "activate", "family": "influencer-marketing", "impact-phase": "Activate", "hermes": {"tags": ["marketing", "influencer", "activate"], "category": "influencer"}, "openclaw": {"emoji": "📣", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Outreach Manager

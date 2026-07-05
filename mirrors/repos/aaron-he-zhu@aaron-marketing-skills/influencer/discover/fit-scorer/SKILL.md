@@ -1,19 +1,16 @@
 ---
 name: fit-scorer
+slug: aaron-fit-scorer
+displayName: "Fit Scorer · 红人适配评分"
+summary: "对候选红人做加权适配评分(受众匹配/内容质量/品牌契合/互动真实性)并给出 go/pass 判定"
 description: 'Use when the user asks to "score this influencer", "rank these creators for our campaign", or "tell me which influencer is the best fit"; produces weighted fit scores across audience match, content quality, brand alignment, engagement authenticity, and partnership potential, plus a ranked comparison and a go/pass verdict. Not for finding new influencers — use influencer-discovery; not for sending outreach — use outreach-manager.'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when a user has a shortlist of influencers and needs an objective, weighted score to prioritize outreach, choose between candidates, justify a selection to stakeholders, set consistent evaluation standards, compare creators across niches or platforms, or build long-term partner tiers. Activates on requests like score @handle for our brand, compare and rank these creators, or which of these is the best fit."
 argument-hint: "<brand or campaign> <influencer handle(s)> [campaign goal: awareness|engagement|conversion]"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: influencer
-  phase: discover
-  family: influencer-marketing
-  impact-phase: Map
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "influencer", "phase": "discover", "family": "influencer-marketing", "impact-phase": "Map", "hermes": {"tags": ["marketing", "influencer", "discover"], "category": "influencer"}, "openclaw": {"emoji": "📣", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Fit Scorer
@@ -57,6 +54,8 @@ This family needs no live integrations (Tier 1). Fit Scorer works end to end by 
 - `~~social platform analytics` — engagement rate, comment quality samples, posting cadence, growth trend.
 - `~~audience intelligence` — real-vs-bot follower estimates and audience overlap with your target.
 - **Roster record (keyless Tier 1)** — prior contact, response reputation, and delivery history come from `memory/creators/<handle-slug>.md` when the creator is rostered ([creator-registry](../../../protocol/creator-registry/SKILL.md) curates it); `~~CRM` is an optional Tier-2 sharpener for the same history when no roster record exists.
+
+**Measured YouTube inputs (free key)**: for YouTube candidates, `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/youtube.py" videos @handle --limit 10` supplies the engagement-authenticity inputs directly — per-video views/likes/comments against the displayed subscriber base (views-to-subs consistency, comment rate, cadence) — so those sub-scores come from **Measured** numbers instead of screenshots. Free `YOUTUBE_API_KEY`; shortlist vetting only (ToS refuses bulk-harvesting quota). See [scripts/connectors/README.md](../../../scripts/connectors/README.md).
 
 With zero integrations, ask the user to supply each value the scoring tables request; the framework and weighting still produce a defensible ranking. See [CONNECTORS.md](../../../CONNECTORS.md) for the free/keyless recipe per category.
 

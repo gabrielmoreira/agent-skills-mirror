@@ -15,10 +15,12 @@ validation tools. Keep compatibility with both Claude Code and Codex users.
 - `reports/`: research outputs. Do not rewrite unrelated reports while changing
   tooling or skills.
 - `scripts/sync-codex-skills.py`: regenerates Codex skills from `skills/*.md`.
-- `scripts/install-codex-skills.sh`: installs Codex skills locally.
-- `scripts/install-codex-prompts.sh`: installs generated Codex slash prompts
-  locally.
-- `scripts/install-claude-commands.sh`: installs Claude Code commands locally.
+- `scripts/install-codex-skills.sh` / `scripts/install-codex-skills.bat`:
+  installs Codex skills locally.
+- `scripts/install-codex-prompts.sh` / `scripts/install-codex-prompts.bat`:
+  installs generated Codex slash prompts locally.
+- `scripts/install-claude-commands.sh` / `scripts/install-claude-commands.bat`:
+  installs Claude Code commands locally.
 
 ## Compatibility Rules
 

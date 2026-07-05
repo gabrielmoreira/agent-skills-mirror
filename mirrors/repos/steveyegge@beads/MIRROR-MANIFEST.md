@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `steveyegge/beads` — 26 default patterns, 23 followed patterns, 83 file(s) materialized.
+Mirror of `steveyegge/beads` — 26 default patterns, 23 followed patterns, 84 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `steveyegge/beads` — 26 default patterns, 23 followed patterns, 83 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 23 |
-| Files         | 83 |
+| Files         | 84 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -140,30 +140,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 57 | ✓ | [`website/static/llms.txt`](website/static/llms.txt) |
 | 58 | ✓ | [`website/versioned_docs/version-1.0.4/integrations/gemini.md`](website/versioned_docs/version-1.0.4/integrations/gemini.md) |
 | 59 | ✓ | [`website/versioned_docs/version-1.0.5/integrations/gemini.md`](website/versioned_docs/version-1.0.5/integrations/gemini.md) |
-| 60 | ✓ | [`winget/README.md`](winget/README.md) |
-| 61 | → | [`AGENT_INSTRUCTIONS.md`](AGENT_INSTRUCTIONS.md) |
-| 62 | → | [`ARTICLES.md`](ARTICLES.md) |
-| 63 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 64 | → | [`docs/ADVANCED.md`](docs/ADVANCED.md) |
-| 65 | → | [`docs/AGENT_SIGNING.md`](docs/AGENT_SIGNING.md) |
-| 66 | → | [`docs/ANTIVIRUS.md`](docs/ANTIVIRUS.md) |
-| 67 | → | [`docs/COMMUNITY_TOOLS.md`](docs/COMMUNITY_TOOLS.md) |
-| 68 | → | [`docs/COPILOT_CLI_INTEGRATION.md`](docs/COPILOT_CLI_INTEGRATION.md) |
-| 69 | → | [`docs/COPILOT_INTEGRATION.md`](docs/COPILOT_INTEGRATION.md) |
-| 70 | → | [`docs/FAQ.md`](docs/FAQ.md) |
-| 71 | → | [`docs/ICU-POLICY.md`](docs/ICU-POLICY.md) |
-| 72 | → | [`docs/INSTALLING.md`](docs/INSTALLING.md) |
-| 73 | → | [`docs/LINTING.md`](docs/LINTING.md) |
-| 74 | → | [`docs/PROJECT_CHARTER.md`](docs/PROJECT_CHARTER.md) |
-| 75 | → | [`docs/PROTECTED_BRANCHES.md`](docs/PROTECTED_BRANCHES.md) |
-| 76 | → | [`docs/RELEASE-STABILITY-GATE.md`](docs/RELEASE-STABILITY-GATE.md) |
-| 77 | → | [`docs/SETUP.md`](docs/SETUP.md) |
-| 78 | → | [`docs/SYNC_CONCEPTS.md`](docs/SYNC_CONCEPTS.md) |
-| 79 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
-| 80 | → | [`PR_MAINTAINER_GUIDELINES.md`](PR_MAINTAINER_GUIDELINES.md) |
-| 81 | → | [`README.md`](README.md) |
-| 82 | → | [`RELEASING.md`](RELEASING.md) |
-| 83 | → | [`scripts/README.md`](scripts/README.md) |
+| 60 | ✓ | [`website/versioned_docs/version-1.1.0/integrations/gemini.md`](website/versioned_docs/version-1.1.0/integrations/gemini.md) |
+| 61 | ✓ | [`winget/README.md`](winget/README.md) |
+| 62 | → | [`AGENT_INSTRUCTIONS.md`](AGENT_INSTRUCTIONS.md) |
+| 63 | → | [`ARTICLES.md`](ARTICLES.md) |
+| 64 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 65 | → | [`docs/ADVANCED.md`](docs/ADVANCED.md) |
+| 66 | → | [`docs/AGENT_SIGNING.md`](docs/AGENT_SIGNING.md) |
+| 67 | → | [`docs/ANTIVIRUS.md`](docs/ANTIVIRUS.md) |
+| 68 | → | [`docs/COMMUNITY_TOOLS.md`](docs/COMMUNITY_TOOLS.md) |
+| 69 | → | [`docs/COPILOT_CLI_INTEGRATION.md`](docs/COPILOT_CLI_INTEGRATION.md) |
+| 70 | → | [`docs/COPILOT_INTEGRATION.md`](docs/COPILOT_INTEGRATION.md) |
+| 71 | → | [`docs/FAQ.md`](docs/FAQ.md) |
+| 72 | → | [`docs/ICU-POLICY.md`](docs/ICU-POLICY.md) |
+| 73 | → | [`docs/INSTALLING.md`](docs/INSTALLING.md) |
+| 74 | → | [`docs/LINTING.md`](docs/LINTING.md) |
+| 75 | → | [`docs/PROJECT_CHARTER.md`](docs/PROJECT_CHARTER.md) |
+| 76 | → | [`docs/PROTECTED_BRANCHES.md`](docs/PROTECTED_BRANCHES.md) |
+| 77 | → | [`docs/RELEASE-STABILITY-GATE.md`](docs/RELEASE-STABILITY-GATE.md) |
+| 78 | → | [`docs/SETUP.md`](docs/SETUP.md) |
+| 79 | → | [`docs/SYNC_CONCEPTS.md`](docs/SYNC_CONCEPTS.md) |
+| 80 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
+| 81 | → | [`PR_MAINTAINER_GUIDELINES.md`](PR_MAINTAINER_GUIDELINES.md) |
+| 82 | → | [`README.md`](README.md) |
+| 83 | → | [`RELEASING.md`](RELEASING.md) |
+| 84 | → | [`scripts/README.md`](scripts/README.md) |
 
 ---
 

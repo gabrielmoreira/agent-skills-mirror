@@ -1,5 +1,6 @@
 ---
 name: vp-cpo-readiness-advisor
+argument-hint: "[where you are in the transition]"
 description: Guide the transition to VP or CPO across preparing, interviewing, landing, and recalibrating. Use when executive product scope is changing fast.
 intent: >-
   Guide Directors and senior product leaders through the specific challenges of the transition to VP or CPO using adaptive questions and targeted coaching. Diagnoses where you are in the journey and delivers practical, lived-experience coaching calibrated to your situation — not generic executive advice.
@@ -21,6 +22,17 @@ estimated_time: "15-20 min"
 Guide Directors and senior product leaders through the specific challenges of the transition to VP or CPO using adaptive questions and targeted coaching. Diagnoses where you are in the journey and delivers practical, lived-experience coaching calibrated to your situation — not generic executive advice.
 
 The VP/CPO transition is not a continuation of the Director transition. The landscape changes. Strategy becomes largely unwritten. Your primary customer may shift. You stop using product language with executives. Constraints don't disappear — the Rubik's Cube just goes from 3×3 to 9×9. This advisor names what's actually hard at this level and what to do about it.
+
+## Input
+
+**Works best with:** Where you are in the Director-to-VP/CPO journey: preparing, interviewing, newly landed, or recalibrating.
+**Also useful:** Company stage, whether you'd be (or are) the first product executive, and your relationship with the CEO.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The advisor opens by asking which of the four situations describes you, then branches.
+
+**Example invocation:** `I have a CPO final-round interview with a founder-CEO who has strong product opinions — help me prepare.`
 
 ## Key Concepts
 

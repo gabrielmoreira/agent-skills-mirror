@@ -42,7 +42,8 @@ This is a Markdown-first repository with lightweight validation and packaging sc
 
 ## Coding Style & Naming Conventions
 - Write in Markdown with clear headings and short paragraphs.
-- Skills must follow the standard sections: Purpose, Key Concepts, Application, Examples, Common Pitfalls, References.
+- Skills must follow the standard sections: Purpose, Input, Key Concepts, Application, Examples, Common Pitfalls, References.
+- The Input section states what the user can bring (subject, optional context) in plain language, shows an example invocation, and instructs the agent to treat input supplied inline with the request as answers already given. It must read as an invitation, not a gate: partial or zero input is fine, and the section says how the guided flow covers what's missing. No runtime-specific template syntax such as `$ARGUMENTS` — it doesn't expand outside Claude Code and confuses human readers (full rationale: CONTRIBUTING.md, "Why We Don't Use `$ARGUMENTS`").
 - Include frontmatter fields (`name`, `description`, `type`) at the top of each skill file.
 - Keep `name` <= 64 characters and `description` <= 200 characters for Claude web upload compatibility.
 - Ensure the skill folder name matches the frontmatter `name` exactly (lowercase kebab-case).

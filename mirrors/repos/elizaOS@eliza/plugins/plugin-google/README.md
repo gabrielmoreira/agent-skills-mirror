@@ -43,10 +43,15 @@ The plugin also registers with the elizaOS `ConnectorAccountManager` so the buil
 
 - Create meeting spaces
 - Get space details and active conference records
-- List participants, transcripts, and recordings
+- List participants, participant sessions, transcripts, and recordings
 - Fetch full transcript entries
 - End an active conference
 - Generate a structured meeting report (summary, key points, action items, full transcript)
+- Build a canonical `elizaos.meeting_artifact.v1` artifact from Google Meet API
+  responses, Google Docs transcript text, recordings, and bot-free capture
+  artifacts. The canonical artifact preserves streams, participants, participant
+  sessions, transcript spans, generated notes, mismatch warnings, missing
+  artifact classifications, and import metrics.
 
 ## Requirements
 

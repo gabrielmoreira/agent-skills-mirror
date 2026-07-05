@@ -1,5 +1,6 @@
 ---
 name: customer-journey-mapping-workshop
+argument-hint: "[persona] [scenario]"
 description: Run a customer journey mapping workshop with adaptive questions and outputs. Use when you need to map stages, actions, emotions, pain points, and opportunities for a persona and scenario.
 intent: >-
   Guide product managers through creating a customer journey map by asking adaptive questions about the actor (persona), scenario/goal, journey phases, actions/emotions, and opportunities for improvement. Use this to visualize the end-to-end customer experience, identify pain points, and create a shared mental model across teams—avoiding surface-level feature lists and ensuring discovery work focuses on real customer problems, not assumed solutions.
@@ -19,6 +20,17 @@ scenarios:
 Guide product managers through creating a customer journey map by asking adaptive questions about the actor (persona), scenario/goal, journey phases, actions/emotions, and opportunities for improvement. Use this to visualize the end-to-end customer experience, identify pain points, and create a shared mental model across teams—avoiding surface-level feature lists and ensuring discovery work focuses on real customer problems, not assumed solutions.
 
 This is not a feature roadmap—it's a discovery and alignment tool that uncovers where the experience breaks down and where improvements will have the greatest impact.
+
+## Input
+
+**Works best with:** The persona (actor) and the scenario or goal to map.
+**Also useful:** Journey phases you already know, research artifacts, and where you suspect the experience breaks.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The workshop opens with the actor question (Q1) and proceeds one question at a time per the facilitation protocol.
+
+**Example invocation:** `Run a journey mapping workshop: persona is a first-time landlord, scenario is listing and leasing their first property through our app.`
 
 ## Key Concepts
 

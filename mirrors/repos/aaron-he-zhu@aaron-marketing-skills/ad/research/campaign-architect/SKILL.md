@@ -1,18 +1,16 @@
 ---
 name: campaign-architect
+slug: aaron-campaign-architect
+displayName: "Campaign Architect · 付费广告账户结构"
+summary: "付费广告账户结构/广告系列规划/否定关键词"
 description: 'Use when the user asks to "plan my paid account structure", "pick Search vs PMax", "lay out ad groups / asset groups", or "audit paid-vs-organic cannibalization"; designs campaign-type selection, ad-group/asset-group layout, targeting + match types, negative/exclusion hygiene, and a paid↔organic overlap audit, and scores the ROAS A (Audience) dimension + structure. Not for computing the final RQS — use ad-account-auditor; not for budget split — use budget-optimizer; not for organic site architecture — use site-structure-optimizer. 付费广告账户结构/广告系列规划/否定关键词'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when designing or restructuring a paid-ads account before launch: choosing campaign types (Search/PMax/broad), grouping ad groups or asset groups, setting targeting and match types, building negative-keyword and exclusion lists, or checking whether paid and organic are bidding against the same intent."
 argument-hint: "<account/campaign goal> [platforms] [target keywords or themes]"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: ad
-  phase: research
-  geo-relevance: "low"
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "ad", "phase": "research", "geo-relevance": "low", "hermes": {"tags": ["marketing", "ad", "research"], "category": "ad"}, "openclaw": {"emoji": "🎯", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Campaign Architect
@@ -49,7 +47,9 @@ Audit paid↔organic cannibalization: here is my GA4 traffic-acquisition export 
 
 ## Data Sources
 
-Use `~~ad platform` (own-account manual export — native ad-manager campaign + search-terms CSV) and `~~web analytics` (GA4 traffic-acquisition export) when available; otherwise ask the user to paste the goal, themes, and current structure. Keyed ad-platform APIs (Google Ads SDK, Meta Marketing API) are an optional Tier-2/3 MCP convenience, never required. See [CONNECTORS.md](../../../CONNECTORS.md).
+Use `~~ad platform` (own-account manual export — native ad-manager campaign + search-terms CSV) and `~~web analytics` (GA4 traffic-acquisition export) when available; otherwise ask the user to paste the goal, themes, and current structure. Keyed ad-platform APIs (Google Ads SDK, Meta Marketing API) are an optional Tier-2/3 MCP convenience, never required — for Google Ads specifically, the **official read-only [Google Ads MCP](https://developers.google.com/google-ads/api/docs/developer-toolkit/mcp-server)** (self-hosted, GAQL over your own account) is the sanctioned Tier-2/3 path. See [CONNECTORS.md](../../../CONNECTORS.md).
+
+**Competitive structure signals (keyless/manual)**: the ad-transparency libraries — [Meta Ad Library](https://www.facebook.com/ads/library/) · [Google Ads Transparency Center](https://adstransparency.google.com) · TikTok Commercial Content Library — reveal a rival's active ad volume, formats, and messaging themes: useful evidence for campaign-type selection and theme grouping. Web-UI manual reads (no commercial-ads API); label eyeballed volumes **Estimated**.
 
 ## Instructions
 

@@ -1,5 +1,6 @@
 ---
 name: customer-journey-map
+argument-hint: "[persona] [scenario]"
 description: Create a customer journey map across stages, touchpoints, actions, emotions, and metrics. Use when diagnosing a broken experience or aligning a team on the full customer flow.
 intent: >-
   Create a comprehensive customer journey map that visualizes how customers interact with your brand across all stages—from awareness to loyalty—documenting their actions, touchpoints, emotions, KPIs, business goals, and teams involved at each stage. Use this to identify pain points, align cross-functional teams, and systematically improve the customer experience to achieve business objectives.
@@ -20,6 +21,17 @@ estimated_time: "20-30 min"
 Create a comprehensive customer journey map that visualizes how customers interact with your brand across all stages—from awareness to loyalty—documenting their actions, touchpoints, emotions, KPIs, business goals, and teams involved at each stage. Use this to identify pain points, align cross-functional teams, and systematically improve the customer experience to achieve business objectives.
 
 This is not a user flow diagram—it's a strategic artifact that combines customer empathy with business metrics to drive actionable improvements.
+
+## Input
+
+**Works best with:** The customer (persona or segment) and the scenario or goal the journey covers.
+**Also useful:** Known stages, touchpoints, pain points, supporting research, and the business objective behind the map.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks for persona and scenario first — a journey map without a specific actor and goal turns into a generic funnel diagram.
+
+**Example invocation:** `Map the journey for a mid-market ops manager going from free trial to paid rollout across their team.`
 
 ## Key Concepts
 

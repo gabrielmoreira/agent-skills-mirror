@@ -165,7 +165,7 @@ python tests/benchmark/mock_api_server.py &
 
 These are non-negotiable constraints:
 
-1. **Local-first**: Genetic data never leaves the machine. No cloud uploads, no external API calls with patient data.
+1. **Local-first**: Genetic data never leaves the machine. No cloud uploads, no external API calls with patient data. (This governs *user/patient data*. The nf-core wrapper skills' `--demo` mode *downloads* nf-core's **public test data** from GitHub to exercise the upstream `-profile test` — it uploads no patient data and is compatible with this rule. A real run with your own `--input` is fully local; an offline host should set `NXF_OFFLINE`, which the wrappers detect and report clearly via `DEMO_REQUIRES_NETWORK`.)
 2. **Disclaimer required**: Every report must include: *"ClawBio is a research and educational tool. It is not a medical device and does not provide clinical diagnoses. Consult a healthcare professional before making any medical decisions."*
 3. **No hallucinated science**: Gene-drug associations, thresholds, and parameters must trace back to SKILL.md methodology or cited databases (CPIC, PharmGKB, ClinVar, etc.). Never invent bioinformatics values.
 4. **Security filtering**: `clawbio.py` enforces per-skill `allowed_extra_flags` whitelists (INT-001). Do not bypass this.

@@ -1,5 +1,6 @@
 ---
 name: storyboard
+argument-hint: "[user and problem]"
 description: Create a six-frame storyboard that shows a user's journey from problem to solution. Use when you need a fast narrative for alignment, concept reviews, or demos.
 intent: >-
   Create a 6-frame visual narrative that tells the story of a user's journey from problem to solution, using the classic storytelling arc to build empathy, illustrate value, and make abstract product concepts concrete. Use this to align stakeholders, pitch features, communicate vision, or test if your solution resonates emotionally before building it.
@@ -11,6 +12,17 @@ type: component
 Create a 6-frame visual narrative that tells the story of a user's journey from problem to solution, using the classic storytelling arc to build empathy, illustrate value, and make abstract product concepts concrete. Use this to align stakeholders, pitch features, communicate vision, or test if your solution resonates emotionally before building it.
 
 This is not a UI mockup—it's a storytelling tool that brings the human side of your product to life.
+
+## Input
+
+**Works best with:** The user and the problem-to-solution story you want told.
+**Also useful:** The emotional arc, key moments you know must appear, and the audience for the storyboard (execs, design review, sales).
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks who the user is and what changes for them, then builds the six frames.
+
+**Example invocation:** `Storyboard: overwhelmed pharmacy tech discovers our auto-refill queue and ends the day on time — for next week's concept review.`
 
 ## Key Concepts
 

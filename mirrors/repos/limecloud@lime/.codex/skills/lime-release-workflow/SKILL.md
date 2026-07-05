@@ -71,6 +71,7 @@ npm run verify:app-version
 
 - `RELEASE_NOTES.md`：中文 primary
 - `RELEASE_NOTES.en.md`：英文 companion
+- Release Notes 采用“当前版本单页”策略：每次发布都必须替换整份 `RELEASE_NOTES*.md`，只保留目标版本内容；不得把旧版本历史继续追加或保留在文件里。历史版本只从 git history / tag / GitHub Release 查。
 
 生成内容时同时参考：
 
@@ -78,7 +79,7 @@ npm run verify:app-version
 - release candidate 的 `git diff --stat`、`git diff --name-only`、关键文件 diff、未跟踪文件清单
 - 用户明确要求删除或替换的旧 artifact
 
-格式保持：
+整文件格式保持：
 
 ```markdown
 ## Lime vX.Y.Z
@@ -98,12 +99,12 @@ npm run verify:app-version
 **完整变更**: `vA.B.C` -> `vX.Y.Z`
 ```
 
-英文 companion 使用对应英文标题，保留 “Simplified Chinese release notes are the primary version” 说明。不要把内部 commit message 逐条照搬成 release note；要合并成面向发布的可读条目。
+英文 companion 使用对应英文标题，保留 “Simplified Chinese release notes are the primary version” 说明。不要把内部 commit message 逐条照搬成 release note；要合并成面向发布的可读条目。写完后用 `sed -n '1,120p' RELEASE_NOTES*.md` 或等价方式确认文件内没有旧版本标题。
 
 ## 删除旧内容
 
 - “删除旧的”必须先确认对象：旧 release note 内容、旧 artifact 文件、旧 tag、旧 release asset 是不同风险级别。
-- 覆盖 `RELEASE_NOTES*.md` 的旧内容不需要额外确认；删除文件、删除本地/远端 tag、移除 release asset 必须确认。
+- 替换 `RELEASE_NOTES*.md` 并移除旧版本 release note 历史是发版默认行为，不需要额外确认；删除文件、删除本地/远端 tag、移除 release asset 必须确认。
 - 删除前用 `git status --short` 与 `git diff -- <path>` 确认目标不是用户未说明的新改动。
 
 ## 验证矩阵

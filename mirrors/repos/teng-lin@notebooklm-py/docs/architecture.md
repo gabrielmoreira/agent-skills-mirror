@@ -99,7 +99,7 @@ Most public methods (`client.notebooks.list()`, `client.sources.rename()`,
                                  v
 +----------------------------------------------------------------+
 | NotebookLMClient.<feature>.<method>()                          |
-|   feature API / service builds params and chooses RPCMethod   |
+|   feature API / service builds params and chooses RPCMethod    |
 +----------------------------------------------------------------+
                                  |
                                  v
@@ -125,7 +125,7 @@ Most public methods (`client.notebooks.list()`, `client.sources.rename()`,
                                  |
                                  v
 +----------------------------------------------------------------+
-| ADR-0009 middleware chain                                       |
+| ADR-0009 middleware chain                                      |
 |   Drain -> Metrics -> Sema -> Retry -> AuthRefresh             |
 |   -> ErrInj -> Tracing                                         |
 +----------------------------------------------------------------+
@@ -133,7 +133,7 @@ Most public methods (`client.notebooks.list()`, `client.sources.rename()`,
                                  v
 +----------------------------------------------------------------+
 | MiddlewareChainHost._authed_post_chain_terminal(...)           |
-|   chain leaf — ADR-0014 Rule 4                                  |
+|   chain leaf — ADR-0014 Rule 4                                 |
 +----------------------------------------------------------------+
                                  |
                                  v
@@ -191,7 +191,7 @@ error mapping, so the first ask POST goes through:
                                  |
                                  v
 +----------------------------------------------------------------+
-| ADR-0009 middleware chain                                       |
+| ADR-0009 middleware chain                                      |
 +----------------------------------------------------------------+
                                  |
                                  v
@@ -1324,7 +1324,17 @@ src/notebooklm/
 - [ADR-0013](./adr/0013-composable-session-capabilities.md) — Composable Session Capabilities (the composable session-capability model).
 - [ADR-0014](./adr/0014-feature-local-runtime-adapters.md) — Feature-local runtime adapters (Accepted; features receive direct collaborators instead of `Session`).
 - [ADR-0015](./adr/0015-json-envelope-contract-for-post-parse-click-exceptions.md) — Typed JSON error envelope for post-parse CLI failures (Accepted).
+- [ADR-0016](./adr/0016-auth-identity-and-core-logger-compatibility.md) — Auth identity + core logger compatibility (Accepted).
+- [ADR-0017](./adr/0017-public-facade-private-implementation.md) — Public-facade / private-implementation re-export convention (Accepted).
+- [ADR-0018](./adr/0018-deprecation-strategy.md) — Deprecation strategy (Accepted).
+- [ADR-0019](./adr/0019-error-and-return-contract.md) — Error-and-return contract for the public API (Accepted; the breaking half shipped in v0.8.0).
+- [ADR-0020](./adr/0020-sealed-async-result-types.md) — Sealed async result types for artifact generation (Accepted).
 - [ADR-0021](./adr/0021-transport-neutral-app-layer.md) — Transport-neutral application layer (`_app/`) (Accepted; boundary enforced by `tests/_guardrails/test_app_boundary.py`, classify↔error_handler agreement by `tests/_guardrails/test_classify_error_handler_consistency.py`).
+- [ADR-0022](./adr/0022-regenerable-baselines.md) — Regenerable test baselines (Accepted).
+- [ADR-0023](./adr/0023-master-token-headless-auth.md) — Master-token headless auth (Accepted; the L4 unattended re-mint path, `[headless]` extra).
+- [ADR-0024](./adr/0024-mcp-remote-file-transfer.md) — Remote-MCP file transfer via signed-URL side-channel (Accepted).
+- [ADR-0025](./adr/0025-mcp-tool-granularity.md) — MCP tool granularity (Accepted).
+- [ADR-0026](./adr/0026-mcp-studio-surface.md) — MCP Studio surface — notes + artifacts unified (Accepted).
 
 ## See also
 

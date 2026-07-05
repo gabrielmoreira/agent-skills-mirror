@@ -1,5 +1,6 @@
 ---
 name: problem-framing-canvas
+argument-hint: "[problem area]"
 description: Guide teams through MITRE's Problem Framing Canvas. Use when you need a clearer problem statement before jumping to solutions.
 intent: >-
   Guide product managers through the MITRE Problem Framing Canvas process by asking structured questions across three phases: Look Inward (examine your own assumptions and biases), Look Outward (understand who experiences the problem and who doesn't), and Reframe (synthesize insights into an actionable problem statement and "How Might We" question). Use this to ensure you're solving the right problem before jumping to solutions—avoiding confirmation bias, overlooked stakeholders, and solution-first thinking.
@@ -19,6 +20,17 @@ scenarios:
 Guide product managers through the MITRE Problem Framing Canvas process by asking structured questions across three phases: Look Inward (examine your own assumptions and biases), Look Outward (understand who experiences the problem and who doesn't), and Reframe (synthesize insights into an actionable problem statement and "How Might We" question). Use this to ensure you're solving the right problem before jumping to solutions—avoiding confirmation bias, overlooked stakeholders, and solution-first thinking.
 
 This is not a solution brainstorm—it's a problem framing tool that broadens perspective, challenges assumptions, and produces a clear, equity-driven problem statement.
+
+## Input
+
+**Works best with:** The problem area — however roughly you currently understand it.
+**Also useful:** Who you believe experiences it, evidence so far, and the solution everyone is already anchored on (naming it helps the canvas de-bias it).
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill opens with the Look Inward phase: what do you assume about this problem?
+
+**Example invocation:** `Frame this problem: field sales reps 'don't use the CRM' and leadership wants gamification.`
 
 ## Key Concepts
 

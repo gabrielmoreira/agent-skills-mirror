@@ -30,6 +30,7 @@ commands accept `--agents=<csv>` to constrain setup and
 | `gemini`        | `.gemini/settings.json` or `~/.gemini/settings.json`, `GEMINI.md` communities block             | both       | https://geminicli.com/docs/tools/mcp-server/                        |
 | `hermes`        | `~/.hermes/config.yaml` + `profiles/*/config.yaml` (`mcp_servers`), hooks, `~/.hermes/skills/gortex/SKILL.md` | user       | https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp  |
 | `kilocode`      | `mcp_settings.json` + `.kilocode/mcp.json`, `.kilocoderules` communities block                  | both       | https://kilo.ai/docs/features/mcp/using-mcp-in-kilo-code            |
+| `kimi`          | `.kimi-code/mcp.json` (project) or `~/.kimi-code/mcp.json` + `~/.kimi-code/config.toml` (`UserPromptSubmit` / `PreToolUse` / `Stop` / `SubagentStart` hooks) | both       | https://www.kimi.com/code/docs/en/kimi-code-cli/customization/hooks.html |
 | `kiro`          | `.kiro/settings/mcp.json` + steering/hooks or user-level                                        | both       | https://kiro.dev/docs/mcp/configuration                             |
 | `oh-my-pi`      | `.omp/mcp.json`                                                                                 | project    | https://github.com/can1357/oh-my-pi/blob/main/docs/mcp-config.md   |
 | `opencode`      | `opencode.json` (or existing `opencode.jsonc`), `AGENTS.md` communities block                   | project    | https://opencode.ai/docs/mcp                                        |
@@ -246,6 +247,33 @@ Kilo Code is a Cline fork with its own globalStorage key
 (`kilocode.kilo`). We write to every candidate globalStorage path
 (VS Code + Cursor + Insiders variants) plus `.kilocode/mcp.json`
 when a project-level directory exists.
+
+### kimi
+
+Kimi Code CLI keeps MCP servers in `.kimi-code/mcp.json` (project, via
+`gortex init`) or `~/.kimi-code/mcp.json` (user, via `gortex install`),
+and user-level lifecycle hooks in `~/.kimi-code/config.toml` as a
+`[[hooks]]` array. Kimi appends a hook's plain stdout to the model
+context on exit 0, so Gortex sends soft guidance as plain text and uses
+the documented `hookSpecificOutput.permissionDecision = "deny"` shape
+only to block an indexed whole-file read.
+
+Current Kimi hook coverage (all gated to Gortex-enabled projects so the
+machine-wide user hook stays inert elsewhere):
+
+| Surface | Coverage |
+| ------- | -------- |
+| `UserPromptSubmit` | Injects graph symbols relevant to the prompt before the model runs. |
+| `PreToolUse` | Redirects native `Read`/`Grep`/`Glob`/`Bash` to graph tools — a hard `deny` for an indexed whole-file read, soft plain-stdout guidance otherwise — plus the `read_file`/`get_editing_context` `compress_bodies` nudge. |
+| `Stop` | Runs post-turn diagnostics (changed symbols → test targets, guards, dead code, coverage, contracts) and feeds them back so the agent self-corrects before handoff. |
+| `SubagentStart` | Briefs a spawned subagent with `smart_context` results and the tool-swap table so it doesn't default to raw `Read`/`Grep`. |
+
+The diagnostics and briefing hooks reach the daemon over its unix
+socket (the hook port's HTTP surface is served only under
+`--http-addr`), and every path degrades to a silent no-op when the
+payload is malformed, the cwd is outside a Gortex project, or the
+daemon is unreachable — so normal Kimi flow is never blocked by the
+integration.
 
 ### kiro
 

@@ -1,5 +1,6 @@
 ---
 name: roadmap-planning
+argument-hint: "[product and planning horizon]"
 description: Plan a strategic roadmap across prioritization, epic definition, stakeholder alignment, and sequencing. Use when turning strategy into a release plan that teams can execute.
 intent: >-
   Guide product managers through strategic roadmap planning by orchestrating prioritization, epic definition, stakeholder alignment, and release sequencing skills into a structured process. Use this to move from disconnected feature requests to a cohesive, outcome-driven roadmap that aligns stakeholders, sequences work logically, and communicates strategic intent—avoiding "feature factory" roadmaps that lack strategic narrative or customer-centric framing.
@@ -20,6 +21,17 @@ estimated_time: "45-90 min"
 Guide product managers through strategic roadmap planning by orchestrating prioritization, epic definition, stakeholder alignment, and release sequencing skills into a structured process. Use this to move from disconnected feature requests to a cohesive, outcome-driven roadmap that aligns stakeholders, sequences work logically, and communicates strategic intent—avoiding "feature factory" roadmaps that lack strategic narrative or customer-centric framing.
 
 This is not a Gantt chart—it's a strategic communication tool that shows what you're building, why it matters, and how it ladders up to business outcomes.
+
+## Input
+
+**Works best with:** The product and planning horizon (next quarter, next year).
+**Also useful:** Strategy or OKRs to ladder to, the candidate initiative list, team capacity, and known stakeholder pressures.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The workflow starts by establishing strategic context, then moves through prioritization, epic definition, and sequencing.
+
+**Example invocation:** `Plan a 2-quarter roadmap for our mobile app: here are our 3 OKRs and a list of 12 candidate initiatives.`
 
 ## Key Concepts
 

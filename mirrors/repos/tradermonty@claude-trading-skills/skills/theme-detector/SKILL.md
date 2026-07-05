@@ -13,6 +13,8 @@ This skill detects and ranks trending market themes by analyzing cross-sector mo
 1. **Theme Heat** (0-100): Direction-neutral strength of the theme (momentum, volume, uptrend ratio, breadth)
 2. **Lifecycle Maturity**: Stage classification (Emerging / Accelerating / Trending / Mature / Exhausting) based on duration, extremity clustering, valuation, and ETF proliferation
 3. **Confidence** (Low / Medium / High): Reliability of the detection, combining quantitative breadth with narrative confirmation. Script output is capped at Medium; Claude's WebSearch narrative confirmation step can elevate to High.
+4. **Stock Leadership**: Optional daily scan-hit evidence from 5D+20%, EP9M, range expansion, new highs, and high-RS stocks. When supplied, this is blended into Theme Heat v2; when absent, it lowers confidence coverage but does not force leadership to zero.
+5. **Theme Match Quality**: Specificity of the theme match from industry participation, explicit stock-basket hits, proxy ETF confirmation, and optional offline narrative scores. This is evidence quality, not a trade recommendation.
 
 **Key Features:**
 - Cross-sector theme detection using FINVIZ industry data
@@ -20,6 +22,10 @@ This skill detects and ranks trending market themes by analyzing cross-sector mo
 - Lifecycle maturity assessment to identify crowded vs. emerging trades
 - ETF proliferation scoring (more ETFs = more mature/crowded theme)
 - Integration with uptrend-dashboard for 3-point evaluation
+- Stock-level leadership evidence via `--scan-hits`
+- Theme match quality via explicit stock baskets and proxy ETF confirmation
+- Leader candidate evidence ranked by abnormal move/volume/range/RS metrics, with market cap shown only as a risk bucket
+- Theme history and acceleration metrics via `--history-file`
 - Dual-mode operation: FINVIZ Elite (fast) or public scraping (slower, limited)
 - WebSearch-based narrative confirmation for top themes
 
@@ -53,7 +59,7 @@ This skill detects and ranks trending market themes by analyzing cross-sector mo
 ## Prerequisites
 
 **Required:**
-- Python 3.10+ with core dependencies. The scripts use modern type-hint syntax such as `dict | None`, so Python 3.9 and older can fail at import time even when dependencies are installed.
+- Python 3.9+ with core dependencies.
   ```bash
   pip install requests beautifulsoup4 lxml pandas numpy yfinance
   ```
@@ -140,7 +146,26 @@ python3 skills/theme-detector/scripts/theme_detector.py \
 python3 skills/theme-detector/scripts/theme_detector.py \
   --finviz-mode public \
   --output-dir reports/
+
+# Add Stockbee/Pradeep-style leadership evidence
+python3 skills/theme-detector/scripts/theme_detector.py \
+  --scan-hits data/theme_scan_hits_YYYY-MM-DD.json \
+  --narrative-scores data/theme_narrative_scores_YYYY-MM-DD.json \
+  --history-file reports/theme_detector_history.json \
+  --as-of-date YYYY-MM-DD \
+  --output-dir reports/
 ```
+
+**Scan-hit input contract:** `--scan-hits` accepts JSON, JSONL, or CSV. Rows may be pre-labeled with `scan_type` / `scan_types`, or raw rows with fields such as `symbol`, `return_5d`, `change_pct`, `volume`, `avg_volume_50d`, `relative_volume`, `true_range`, `atr_20`, `atr_expansion`, `close_location`, `industry`, `sector`, and `theme_guess`. A raw row can expand into multiple hits when it satisfies multiple rules.
+
+Initial scan rules:
+- `five_day_20pct`: `return_5d >= 20`
+- `ep9m`: `volume >= 9,000,000`, `relative_volume >= 2.0`, and `change_pct >= 4`
+- `range_expansion`: `change_pct >= 4`, `true_range / atr_20 >= 1.5` or `atr_expansion >= 1.5`, and `close_location >= 0.75`
+- `new_high`: explicit `new_high` / `is_new_high`, or 52-week high evidence
+- `high_rs`: `rs_rating >= 90` or normalized `relative_strength >= 0.90`
+
+**Narrative-score input contract:** `--narrative-scores` is an offline JSON input, not a live WebSearch call. It accepts either `{"Theme Name": 82}` or `{"themes": {"Theme Name": {"narrative_keyword_score": 82}}}`. Missing narrative input leaves `narrative_keyword_score` as `null` and reduces `theme_match_coverage`; it does not fail the run.
 
 **Expected Execution Time:**
 - FINVIZ Elite mode: ~2-3 minutes (14+ themes)
@@ -231,6 +256,12 @@ Present the final report to the user using the report template structure:
 ## Theme Dashboard
 [Top themes table with Heat, Direction, Lifecycle, Confidence]
 
+## What Changed Today
+[Newly emerging themes, largest heat acceleration, new EP9M clusters, fading themes]
+
+## Leadership Evidence
+[5D+20%, EP9M, range expansion, new highs, high-RS counts and leader symbols]
+
 ## Bullish Themes Detail
 [Detailed analysis of bullish themes sorted by Heat]
 
@@ -294,13 +325,30 @@ The skill generates two output files in the `reports/` directory:
         "confidence": "Medium",
         "heat_label": "Hot",
         "industries": ["Software - Infrastructure", "Semiconductors"],
-        "representative_stocks": [{"symbol": "NVDA"}, {"symbol": "MSFT"}],
+        "representative_stocks": ["NVDA", "MSFT"],
+        "stock_details": [{"symbol": "NVDA"}, {"symbol": "MSFT"}],
         "proxy_etfs": ["BOTZ", "ROBO"],
+        "theme_match_score": 78.4,
+        "theme_match_components": {
+          "industry_match_score": 84.2,
+          "static_stock_hit_score": 80.0,
+          "proxy_etf_momentum_score": 70.0,
+          "narrative_keyword_score": null
+        },
+        "leader_candidates": [
+          {
+            "symbol": "NVDA",
+            "leader_score": 91.2,
+            "scan_types": ["ep9m", "range_expansion"],
+            "risk_bucket": "mega"
+          }
+        ],
         "theme_origin": "seed"
       }
     ],
     "bullish": [...],
-    "bearish": [...]
+    "bearish": [...],
+    "match_ranked": [...]
   },
   "industry_rankings": {
     "top": [...],
@@ -325,8 +373,14 @@ The skill generates two output files in the `reports/` directory:
 | `direction` | `"bullish"` (LEAD) or `"bearish"` (LAG) |
 | `stage` | Emerging / Accelerating / Trending / Mature / Exhausting |
 | `confidence` | Low / Medium / High (script caps at Medium; WebSearch can elevate) |
-| `representative_stocks` | Top stocks for the theme (list of objects with `symbol` and metrics) |
+| `representative_stocks` | Top ticker symbols for the theme |
+| `stock_details` | Optional stock metric objects for the selected representatives |
 | `proxy_etfs` | Thematic ETF tickers (length = ETF count; higher = more crowded) |
+| `theme_match_score` | 0-100 evidence-quality score from industries, stock basket hits, proxy ETF confirmation, and optional narrative input |
+| `theme_match_components` | Inspectable sub-scores explaining the theme match |
+| `leader_candidates` | Evidence-ranked symbols for the theme; not entry/stop/invalidation guidance |
+| `fresh_leadership_symbols` | Current-run symbols with EP9M, range expansion, or new-high evidence |
+| `extended_symbols` | Current-run symbols with 5D+20% evidence; used as overextension evidence only |
 | `theme_origin` | `"seed"` (from YAML config) or `"discovered"` (auto-clustered) |
 
 ---

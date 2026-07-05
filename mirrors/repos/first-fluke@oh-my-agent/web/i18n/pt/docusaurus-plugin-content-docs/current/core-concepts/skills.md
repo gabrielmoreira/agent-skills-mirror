@@ -136,7 +136,6 @@ Todos os agentes compartilham fundamentos comuns de `.agents/skills/_shared/`. E
 | **`session-metrics.md`** | Pontuação de Dívida de Clarificação (CD) e rastreamento de métricas de sessão. Define tipos de eventos (clarify +10, correct +25, redo +40), limiares (CD >= 50 = RCA, CD >= 80 = pausa) e pontos de integração. | Durante sessões de orquestração |
 | **`common-checklist.md`** | Checklist universal de qualidade aplicado na verificação final de tarefas Complexas (além dos checklists específicos do agente). | Etapa de Verificação de tarefas Complexas |
 | **`lessons-learned.md`** | Repositório de aprendizados de sessões passadas, auto-gerado a partir de violações de Dívida de Clarificação e experimentos descartados. Organizado por seção de domínio. Inclui Lições de Avaliação de QA para rastrear pontos cegos do avaliador. | Referenciado após erros e no fim da sessão |
-| **`evaluator-tuning.md`** | Protocolo semi-automatizado de tuning de prompt de QA. Rastreia eventos de Evaluation Accuracy (EA), aciona tuning quando EA >= 30, gera sugestões de patch para checklists e protocolos de execução de QA. Inclui log de tuning e reforço positivo a partir de eventos `good_catch`. | Quando `oma retro` detecta violação do limiar de EA |
 | **`api-contracts/`** | Diretório contendo template de contrato de API e contratos gerados. `template.md` define o formato por endpoint (method, path, schemas de request/response, auth, erros). | Quando trabalho cross-boundary é planejado |
 
 ### Recursos de runtime (`.agents/skills/_shared/runtime/`)
@@ -340,17 +339,17 @@ Agentes de QA melhoram através de erros de julgamento rastreados. Diferente de 
 |--------|--------|-------------------|
 | `false_negative` | +30 | Próxima sessão ou produção — bug que QA perdeu |
 | `false_positive` | +15 | Durante a sessão — agente de implementação refuta com sucesso o achado de QA |
-| `severity_mismatch` | +10 | Durante a sessão ou retro — severidade errada atribuída |
+| `severity_mismatch` | +10 | Durante a sessão ou na revisão da próxima sessão — severidade errada atribuída |
 | `missed_stub` | +20 | Verificação em runtime captura feature apenas de display |
 | `good_catch` | -10 | QA capturou um bug não óbvio (sinal de recompensa positiva) |
 
 **EA é calculado em uma janela móvel de 3 sessões.** Limiares:
-- **EA >= 30** → `oma retro` sinaliza padrões de QA para revisão (tuning sugerido)
+- **EA >= 30** → Tuning sugerido: revisar os eventos EA acumulados em busca de erros recorrentes de julgamento do QA
 - **EA >= 50** → Tuning obrigatório: atualizar `execution-protocol.md` do QA
 - **`false_negative` >= 3** na janela → Adicionar padrão de detecção a `checklist.md` do QA
-- **`good_catch` >= 5** na janela → Documentar e propagar padrão bem-sucedido
+- **`good_catch` >= 5** na janela → Generalizar o padrão bem-sucedido em `common-checklist.md`
 
-O loop completo de tuning é definido em `evaluator-tuning.md`: sessões acumulam eventos EA → limiar aciona `oma retro` → relatório categoriza erros e sugere patches → usuário revisa e aprova → patches aplicados ao checklist/protocolo do QA → validação ao longo das próximas 3 sessões.
+Quando um limiar é violado, revise os eventos EA acumulados, categorize os erros, aplique patches ao checklist/protocolo de execução do QA e valide ao longo das próximas 3 sessões.
 
 ---
 

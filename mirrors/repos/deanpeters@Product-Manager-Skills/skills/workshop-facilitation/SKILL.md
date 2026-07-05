@@ -18,6 +18,17 @@ estimated_time: "varies by workshop"
 ## Purpose
 Provide the canonical facilitation pattern for interactive skills: one step at a time, with clear progress, adaptive recommendations at decision points, and predictable interruption handling.
 
+## Input
+
+**Nothing required** — this skill defines the facilitation protocol other interactive skills follow.
+**Also useful:** If invoked standalone, name the session you want facilitated and any context for it; that context carries into the session as answers already given.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** When another skill references this protocol, that skill's Input section governs what to provide.
+
+**Example invocation:** `Facilitate a 45-minute retro on our failed beta launch using this protocol.`
+
 ## Key Concepts
 - **One-step-at-a-time:** Ask a single targeted question per turn.
 - **Session heads-up + entry mode:** Start by setting expectations and offering `Guided`, `Context dump`, or `Best guess` mode.
@@ -73,6 +84,8 @@ Provide the canonical facilitation pattern for interactive skills: one step at a
 **User:** "1 and 3"
 
 **Facilitator:** "Great. We’ll run Context Design first, with Team-AI Facilitation in parallel."
+
+**Inline input at invocation:** when the user supplies context with the invocation itself, credit it as answers, open at the first unanswered question, and keep progress labels honest (start at `Context Q2/6` if Q1 was covered). Full transcript, including the re-asking anti-pattern: [examples/inline-input-flow.md](examples/inline-input-flow.md).
 
 ## Common Pitfalls
 - Asking multiple questions in the same turn.

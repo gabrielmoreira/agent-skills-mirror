@@ -1,5 +1,6 @@
 ---
 name: problem-statement
+argument-hint: "[user and their struggle]"
 description: Write a user-centered problem statement with who is blocked, what they are trying to do, why it matters, and how it feels. Use when framing discovery, prioritization, or a PRD.
 intent: >-
   Articulate a problem from the user's perspective using an empathy-driven framework that captures who they are, what they're trying to do, what's blocking them, why, and how it makes them feel. Use this to align stakeholders on the problem before jumping to solutions, and to frame product work around user outcomes rather than feature requests.
@@ -11,6 +12,17 @@ type: component
 Articulate a problem from the user's perspective using an empathy-driven framework that captures who they are, what they're trying to do, what's blocking them, why, and how it makes them feel. Use this to align stakeholders on the problem before jumping to solutions, and to frame product work around user outcomes rather than feature requests.
 
 This is not a requirements doc—it's a human-centered problem narrative that ensures you're solving a problem worth solving.
+
+## Input
+
+**Works best with:** Who the user is and what they're struggling to do.
+**Also useful:** What's blocking them, why it matters, how it feels, and supporting evidence.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks for the user and their goal first — a problem statement without a specific 'who' is a solution looking for cover.
+
+**Example invocation:** `Problem statement: clinic schedulers double-book exam rooms because the calendar doesn't show equipment availability.`
 
 ## Key Concepts
 

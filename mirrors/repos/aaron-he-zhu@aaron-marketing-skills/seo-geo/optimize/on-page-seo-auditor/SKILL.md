@@ -1,19 +1,17 @@
 ---
 name: on-page-seo-auditor
+slug: aaron-on-page-seo-auditor
+displayName: "On Page SEO Auditor · 页面SEO审计"
+summary: "页面SEO审计/排名诊断"
 description: 'Use when the user asks to "audit on-page SEO" or "diagnose why a single page dropped"; scores titles, meta, header structure, keyword placement, links, and images with prioritized fixes. Not for E-E-A-T / publish-readiness scoring — use content-quality-auditor; not for crawl / CWV / indexing — use technical-seo-checker. 页面SEO审计/排名诊断'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when auditing a page's on-page SEO health, checking heading structure, keyword placement, image optimization, or content quality signals."
 argument-hint: "<URL> [keyword]"
 allowed-tools: WebFetch
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: seo-geo
-  phase: optimize
-  geo-relevance: "medium"
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "seo-geo", "phase": "optimize", "geo-relevance": "medium", "hermes": {"tags": ["marketing", "seo-geo", "optimize"], "category": "seo-geo"}, "openclaw": {"emoji": "🔍", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # On-Page SEO Auditor
@@ -84,6 +82,8 @@ See [references/bulk-audit-playbook.md](references/bulk-audit-playbook.md) for t
 Use ~~web crawler, ~~SEO tool, and ~~search console when connected; otherwise ask for page URL/HTML, target keywords, and competitor URLs. See [CONNECTORS.md](../../../CONNECTORS.md) and [SECURITY.md §Scraping Boundaries](../../../SECURITY.md).
 
 **Zero-dependency local helpers** (no tool needed): `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/onpage.py" <url>` (title/meta/headings/canonical/JSON-LD/redirects) and `schema_lint.py <url>` (structured-data validation). See [scripts/connectors/README.md](../../../scripts/connectors/README.md).
+
+**JS-rendering fallback (keyless)**: if `onpage.py` returns a near-empty body (client-side rendering), `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/firecrawl.py" scrape <url> --formats markdown,html` supplies the rendered content so heading/keyword/word-count checks audit what crawlers actually index, not the unhydrated shell. robots.txt is pre-flighted locally (Disallow refused); `--own-site` for your own staging hosts. Firecrawl keyless free tier.
 
 ## Instructions
 

@@ -1,5 +1,6 @@
 ---
 name: company-research
+argument-hint: "[company name] [purpose]"
 description: Create a company research brief with executive quotes, product strategy, and org context. Use when preparing for interviews, competitive analysis, partnerships, or market-entry work.
 intent: >-
   Create a comprehensive company profile that extracts executive insights, product strategy, transformation initiatives, and organizational dynamics from publicly available sources. Use this to understand competitive landscape, evaluate partnership opportunities, benchmark best practices, prepare for interviews, or inform market entry decisions by understanding how successful companies think about product management and strategy.
@@ -11,6 +12,17 @@ type: component
 Create a comprehensive company profile that extracts executive insights, product strategy, transformation initiatives, and organizational dynamics from publicly available sources. Use this to understand competitive landscape, evaluate partnership opportunities, benchmark best practices, prepare for interviews, or inform market entry decisions by understanding how successful companies think about product management and strategy.
 
 This is not surface-level research—it's strategic intelligence gathering focused on product management perspectives and executive vision.
+
+## Input
+
+**Works best with:** The company to profile.
+**Also useful:** Why you're researching it (interview prep, competitive analysis, partnership, market entry) — this changes what the brief emphasizes.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks for the company and the purpose before drafting the brief.
+
+**Example invocation:** `Build a company research brief on Datadog — I interview with their platform PM team Friday.`
 
 ## Key Concepts
 

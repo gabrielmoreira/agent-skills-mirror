@@ -1,5 +1,6 @@
 ---
 name: positioning-workshop
+argument-hint: "[product]"
 description: Run a positioning workshop that surfaces target customer, unmet need, category, benefits, and differentiation. Use when your product messaging feels fuzzy, generic, or misaligned.
 intent: >-
   Guide product managers through discovering and articulating product positioning by asking adaptive questions about target customers, unmet needs, product category, benefits, and competitive differentiation. Use this to align stakeholders on strategic positioning before writing PRDs, launch plans, or marketing materials—ensuring you've made deliberate choices about who you serve, what need you address, and how you differ from alternatives.
@@ -19,6 +20,17 @@ scenarios:
 Guide product managers through discovering and articulating product positioning by asking adaptive questions about target customers, unmet needs, product category, benefits, and competitive differentiation. Use this to align stakeholders on strategic positioning before writing PRDs, launch plans, or marketing materials—ensuring you've made deliberate choices about who you serve, what need you address, and how you differ from alternatives.
 
 This is not a brainstorming session—it's a structured discovery process that outputs a Geoffrey Moore positioning statement backed by evidence and strategic choices.
+
+## Input
+
+**Works best with:** The product (or feature) whose positioning feels fuzzy.
+**Also useful:** Current messaging, who you think the customer is, competitors, and where positioning breaks down today (sales calls, website, launch).
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The workshop opens by asking about your target customer and proceeds one question at a time.
+
+**Example invocation:** `Run a positioning workshop for our API monitoring tool — we keep getting compared to Datadog and losing.`
 
 ## Key Concepts
 

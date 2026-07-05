@@ -2,83 +2,152 @@
 
 Current versions for the plugin and all 69 skills. Agents can fetch this file from `https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/VERSIONS.md` once per session.
 
-**Current release**: `12.1.0` (2026-07-04). Folder-symmetry refactor — every discipline lives under its own top-level folder (`seo-geo/` · `influencer/` · `ad/` · `email/` · `protocol/`), completing 4×4 symmetry; **69 skills**, all at `12.1.0`. (v12.0.0 below added the email discipline + 4×4.)
+**Current release**: `13.0.0` (2026-07-04). Cross-agent compatibility wave — the 69 skills are now verified installable on the 70+ SKILL.md hosts served by `npx skills` (Claude Code, Codex, Cursor, OpenCode, Antigravity, Gemini CLI, Copilot CLI, OpenClaw, Hermes, …), first-class on the skills.sh registry (`skills.sh.json` page groupings), OpenClaw-native (every `metadata` block converted to the single-line JSON object its parser requires, with `metadata.openclaw` + `metadata.hermes` extensions), and ClawHub-publishable (`scripts/publish-clawhub.sh`): frontmatter YAML repair that had made `reactivation-specialist` invisible to spec-compliant parsers, wrong-depth relative-path fixes in three auditor gates + one reference pack, a standalone-install fallback line in all five gates, a per-agent compatibility matrix at `docs/agent-compatibility.md`, and new validator checks plus CI discovery-count and grouping-coverage guards. Promoted to a major version to mark the milestone: the whole bundle — all **69 skills** — is at `13.0.0`.
 
 ## Skills
 
 | Skill | Category | Version | Last Updated |
 |-------|----------|---------|--------------|
-| competitor-analysis | research | 12.1.0 | 2026-07-03 |
-| content-gap-analysis | research | 12.1.0 | 2026-07-03 |
-| keyword-research | research | 12.1.0 | 2026-07-03 |
-| serp-analysis | research | 12.1.0 | 2026-07-03 |
-| content-writer | build | 12.1.0 | 2026-07-03 |
-| geo-content-optimizer | build | 12.1.0 | 2026-07-03 |
-| page-play-builder | build | 12.1.0 | 2026-07-03 |
-| serp-markup-builder | build | 12.1.0 | 2026-07-03 |
-| content-quality-auditor | optimize | 12.1.0 | 2026-07-03 |
-| on-page-seo-auditor | optimize | 12.1.0 | 2026-07-03 |
-| site-structure-optimizer | optimize | 12.1.0 | 2026-07-03 |
-| technical-seo-checker | optimize | 12.1.0 | 2026-07-03 |
-| domain-authority-auditor | monitor | 12.1.0 | 2026-07-03 |
-| offsite-signal-analyzer | monitor | 12.1.0 | 2026-07-03 |
-| performance-monitor | monitor | 12.1.0 | 2026-07-03 |
-| rank-tracker | monitor | 12.1.0 | 2026-07-03 |
-| audience-mapper | discover | 12.1.0 | 2026-07-03 |
-| fit-scorer | discover | 12.1.0 | 2026-07-03 |
-| influencer-discovery | discover | 12.1.0 | 2026-07-03 |
-| trend-spotter | discover | 12.1.0 | 2026-07-03 |
-| brief-generator | plan | 12.1.0 | 2026-07-03 |
-| budget-optimizer | plan | 12.1.0 | 2026-07-03 |
-| campaign-planner | plan | 12.1.0 | 2026-07-03 |
-| competitor-tracker | plan | 12.1.0 | 2026-07-03 |
-| content-amplifier | activate | 12.1.0 | 2026-07-03 |
-| content-reviewer | activate | 12.1.0 | 2026-07-03 |
-| contract-helper | activate | 12.1.0 | 2026-07-03 |
-| outreach-manager | activate | 12.1.0 | 2026-07-03 |
-| landing-optimizer | measure | 12.1.0 | 2026-07-03 |
-| performance-analyzer | measure | 12.1.0 | 2026-07-03 |
-| report-generator | measure | 12.1.0 | 2026-07-03 |
-| roi-calculator | measure | 12.1.0 | 2026-07-03 |
-| audience-segment-builder | paid | 12.1.0 | 2026-07-03 |
-| campaign-architect | paid | 12.1.0 | 2026-07-03 |
-| product-feed-optimizer | paid | 12.1.0 | 2026-07-03 |
-| search-term-miner | paid | 12.1.0 | 2026-07-03 |
-| ad-creative-builder | paid | 12.1.0 | 2026-07-03 |
-| ad-test-designer | paid | 12.1.0 | 2026-07-03 |
-| bid-strategy-planner | paid | 12.1.0 | 2026-07-03 |
-| landing-experience-checker | paid | 12.1.0 | 2026-07-03 |
-| ad-account-auditor | paid | 12.1.0 | 2026-07-03 |
-| conversion-signal-qa | paid | 12.1.0 | 2026-07-03 |
-| conversion-value-mapper | paid | 12.1.0 | 2026-07-03 |
-| placement-exclusion-manager | paid | 12.1.0 | 2026-07-03 |
-| attribution-reconciler | paid | 12.1.0 | 2026-07-03 |
-| budget-pacing-monitor | paid | 12.1.0 | 2026-07-03 |
-| fatigue-frequency-manager | paid | 12.1.0 | 2026-07-03 |
-| paid-measurement-loop | paid | 12.1.0 | 2026-07-03 |
-| deliverability-qa | email | 12.1.0 | 2026-07-03 |
-| list-growth-designer | email | 12.1.0 | 2026-07-03 |
-| list-hygiene-monitor | email | 12.1.0 | 2026-07-03 |
-| list-segment-builder | email | 12.1.0 | 2026-07-03 |
-| dynamic-content-personalizer | email | 12.1.0 | 2026-07-03 |
-| email-creative-builder | email | 12.1.0 | 2026-07-03 |
-| email-render-builder | email | 12.1.0 | 2026-07-03 |
-| subject-line-lab | email | 12.1.0 | 2026-07-03 |
-| email-sequence-designer | email | 12.1.0 | 2026-07-03 |
-| newsletter-monetization-planner | email | 12.1.0 | 2026-07-03 |
-| preference-frequency-manager | email | 12.1.0 | 2026-07-03 |
-| reactivation-specialist | email | 12.1.0 | 2026-07-03 |
-| cold-outbound-sequencer | email | 12.1.0 | 2026-07-03 |
-| email-quality-auditor | email | 12.1.0 | 2026-07-03 |
-| inbox-placement-monitor | email | 12.1.0 | 2026-07-03 |
-| send-experiment-designer | email | 12.1.0 | 2026-07-03 |
-| consent-registry | protocol | 12.1.0 | 2026-07-03 |
-| creator-registry | protocol | 12.1.0 | 2026-07-03 |
-| entity-optimizer | protocol | 12.1.0 | 2026-07-03 |
-| memory-management | protocol | 12.1.0 | 2026-07-03 |
-| offer-claims-registry | protocol | 12.1.0 | 2026-07-03 |
+| competitor-analysis | research | 13.0.0 | 2026-07-04 |
+| content-gap-analysis | research | 13.0.0 | 2026-07-04 |
+| keyword-research | research | 13.0.0 | 2026-07-04 |
+| serp-analysis | research | 13.0.0 | 2026-07-04 |
+| content-writer | build | 13.0.0 | 2026-07-04 |
+| geo-content-optimizer | build | 13.0.0 | 2026-07-04 |
+| page-play-builder | build | 13.0.0 | 2026-07-04 |
+| serp-markup-builder | build | 13.0.0 | 2026-07-04 |
+| content-quality-auditor | optimize | 13.0.0 | 2026-07-04 |
+| on-page-seo-auditor | optimize | 13.0.0 | 2026-07-04 |
+| site-structure-optimizer | optimize | 13.0.0 | 2026-07-04 |
+| technical-seo-checker | optimize | 13.0.0 | 2026-07-04 |
+| domain-authority-auditor | monitor | 13.0.0 | 2026-07-04 |
+| offsite-signal-analyzer | monitor | 13.0.0 | 2026-07-04 |
+| performance-monitor | monitor | 13.0.0 | 2026-07-04 |
+| rank-tracker | monitor | 13.0.0 | 2026-07-04 |
+| audience-mapper | discover | 13.0.0 | 2026-07-04 |
+| fit-scorer | discover | 13.0.0 | 2026-07-04 |
+| influencer-discovery | discover | 13.0.0 | 2026-07-04 |
+| trend-spotter | discover | 13.0.0 | 2026-07-04 |
+| brief-generator | plan | 13.0.0 | 2026-07-04 |
+| budget-optimizer | plan | 13.0.0 | 2026-07-04 |
+| campaign-planner | plan | 13.0.0 | 2026-07-04 |
+| competitor-tracker | plan | 13.0.0 | 2026-07-04 |
+| content-amplifier | activate | 13.0.0 | 2026-07-04 |
+| content-reviewer | activate | 13.0.0 | 2026-07-04 |
+| contract-helper | activate | 13.0.0 | 2026-07-04 |
+| outreach-manager | activate | 13.0.0 | 2026-07-04 |
+| landing-optimizer | measure | 13.0.0 | 2026-07-04 |
+| performance-analyzer | measure | 13.0.0 | 2026-07-04 |
+| report-generator | measure | 13.0.0 | 2026-07-04 |
+| roi-calculator | measure | 13.0.0 | 2026-07-04 |
+| audience-segment-builder | paid | 13.0.0 | 2026-07-04 |
+| campaign-architect | paid | 13.0.0 | 2026-07-04 |
+| product-feed-optimizer | paid | 13.0.0 | 2026-07-04 |
+| search-term-miner | paid | 13.0.0 | 2026-07-04 |
+| ad-creative-builder | paid | 13.0.0 | 2026-07-04 |
+| ad-test-designer | paid | 13.0.0 | 2026-07-04 |
+| bid-strategy-planner | paid | 13.0.0 | 2026-07-04 |
+| landing-experience-checker | paid | 13.0.0 | 2026-07-04 |
+| ad-account-auditor | paid | 13.0.0 | 2026-07-04 |
+| conversion-signal-qa | paid | 13.0.0 | 2026-07-04 |
+| conversion-value-mapper | paid | 13.0.0 | 2026-07-04 |
+| placement-exclusion-manager | paid | 13.0.0 | 2026-07-04 |
+| attribution-reconciler | paid | 13.0.0 | 2026-07-04 |
+| budget-pacing-monitor | paid | 13.0.0 | 2026-07-04 |
+| fatigue-frequency-manager | paid | 13.0.0 | 2026-07-04 |
+| paid-measurement-loop | paid | 13.0.0 | 2026-07-04 |
+| deliverability-qa | email | 13.0.0 | 2026-07-04 |
+| list-growth-designer | email | 13.0.0 | 2026-07-04 |
+| list-hygiene-monitor | email | 13.0.0 | 2026-07-04 |
+| list-segment-builder | email | 13.0.0 | 2026-07-04 |
+| dynamic-content-personalizer | email | 13.0.0 | 2026-07-04 |
+| email-creative-builder | email | 13.0.0 | 2026-07-04 |
+| email-render-builder | email | 13.0.0 | 2026-07-04 |
+| subject-line-lab | email | 13.0.0 | 2026-07-04 |
+| email-sequence-designer | email | 13.0.0 | 2026-07-04 |
+| newsletter-monetization-planner | email | 13.0.0 | 2026-07-04 |
+| preference-frequency-manager | email | 13.0.0 | 2026-07-04 |
+| reactivation-specialist | email | 13.0.0 | 2026-07-04 |
+| cold-outbound-sequencer | email | 13.0.0 | 2026-07-04 |
+| email-quality-auditor | email | 13.0.0 | 2026-07-04 |
+| inbox-placement-monitor | email | 13.0.0 | 2026-07-04 |
+| send-experiment-designer | email | 13.0.0 | 2026-07-04 |
+| consent-registry | protocol | 13.0.0 | 2026-07-04 |
+| creator-registry | protocol | 13.0.0 | 2026-07-04 |
+| entity-optimizer | protocol | 13.0.0 | 2026-07-04 |
+| memory-management | protocol | 13.0.0 | 2026-07-04 |
+| offer-claims-registry | protocol | 13.0.0 | 2026-07-04 |
 
 ## Changelog
+
+### v13.0.0 — Cross-agent compatibility wave: 70+ SKILL.md hosts verified (2026-07-04)
+
+Major release (12.7.0 was version-promoted to 13.0.0 before tagging; no 12.7.0 tag exists): the bundle is now systematically verified against the [Agent Skills](https://agentskills.io) ecosystem — every host the [`npx skills` installer](https://github.com/vercel-labs/skills) serves (Claude Code, OpenAI Codex, Google Antigravity, OpenCode, Cursor, OpenClaw, Hermes Agent, Gemini CLI, GitHub Copilot CLI, Amp, Goose, Windsurf, Cline, Roo Code, and 50+ more), which reads the skill declarations straight from `.claude-plugin/plugin.json`/`marketplace.json`. End-to-end smoke test: 69/69 skills discovered and installed from both a local clone and the GitHub remote.
+
+- **Frontmatter YAML repair** (`reactivation-specialist` → `13.0.0`): the `description` was single-quote-wrapped with two unescaped apostrophes — invalid YAML that made the skill silently invisible to every spec-compliant parser (discovered when the installer found 68/69). Apostrophes now doubled per YAML single-quote escaping.
+- **Wrong-depth relative paths fixed** (4 links): the `Read …/references/auditor-runbook.md` instruction in `content-quality-auditor`, `domain-authority-auditor`, and `content-reviewer` (runbook + ART benchmark) used `../../` where the 3-level discipline layout needs `../../../`; `geo-content-optimizer`'s `medium-github-surfaces.md` pointed one level short of `protocol/entity-optimizer`. All five gates + the pack now resolve (verified by a full-repo link scan).
+- **Standalone-install fallback in all 5 auditor gates** (`content-quality-auditor`, `domain-authority-auditor`, `content-reviewer`, `ad-account-auditor`, `email-quality-auditor` → `13.0.0`): standalone installs bundle only the skill folder, so the shared `references/` tree is absent — each gate now instructs the agent to fetch the runbook/benchmark from the canonical raw URL (or ask for a repo clone) and to never score without the runbook. Plugin installs are unaffected (relative path still loads first, offline).
+- **New doc `docs/agent-compatibility.md`**: per-agent matrix (skill dirs, frontmatter quirks, what each host reads), the two-tier positioning (Claude Code plugin = full suite with commands/hooks/memory/connectors; standalone skills = any host), and the degradation table for shared resources.
+- **Validator + CI hardening**: `validate-skill.sh` gains a single-quoted-scalar apostrophe check (the exact failure class above) and a relative-link resolution check; CI gains a discovery-count guard asserting the manifest-declared skill count stays installable.
+- **skills.sh registry, first-class**: new repo-root `skills.sh.json` ([official schema](https://skills.sh/schemas/skills.sh.schema.json)) lays out the [registry page](https://skills.sh/aaron-he-zhu/aaron-marketing-skills) as the five discipline sections and sinks the ten undeletable pre-v12 legacy skill names (merged away in the 4×4 refactor) below the current catalog via `notGrouped: "bottom"`; CI asserts the groupings cover exactly the plugin.json skill set.
+- **OpenClaw-native frontmatter** (all 69 skills → `13.0.0`): OpenClaw's frontmatter parser reads **single-line keys only** — a YAML block map under `metadata:` is invisible to it — so every skill's `metadata` is now a single-line strict-JSON object (identical semantics for every other host: strict JSON is valid YAML flow mapping). Each object also gains the two documented host extensions: `metadata.openclaw` (discipline emoji + homepage for the macOS UI) and `metadata.hermes` (`tags: [marketing, <discipline>, <phase>]`, `category: <discipline>` for Hermes browse/filter). `validate-skill.sh` now fails on block-map metadata; `check-versions.sh` reads `metadata."version"` from the JSON line.
+- **ClawHub publishable**: new `scripts/publish-clawhub.sh` publishes all 69 skills (or `--dry-run` previews) to OpenClaw's [ClawHub registry](https://clawhub.ai) via the `clawhub` CLI, passing each skill's real version — after `clawhub login`. ⚠️ ClawHub relicenses published copies as **MIT-0** (attribution-free) — the script requires an explicit `--i-accept-mit0` acknowledgement.
+- **Hermes Agent, three install routes documented**: `hermes skills install skills-sh/aaron-he-zhu/aaron-marketing-skills/<skill>` (skills.sh source — works today), `--source clawhub` once published, and direct raw-URL single-file installs; Hermes tap limitation recorded (taps assume a single `skills/` root, which this multi-discipline layout deliberately doesn't have).
+- **Registry-submission dossier** (`docs/registry-submissions.md`): 26+ marketplaces/directories/awesome-lists researched and mapped — status matrix, per-platform submission routes (Anthropic official plugin directory form, skillsdirectory.com, askill.sh, Skillstore, Agent Skills Me, Qoder Community PR + drafted entry, AgentUse bilingual PR, awesome-list entry lines), reusable bilingual submission kit, and the one hard gap on record: GitHub's `gh skill` CLI doesn't read plugin manifests (upstream feature-request draft included). SkillsMP found stale (38 pre-v12 skills) — re-crawl needed after push.
+- **SkillHub.cn (中文社区) publishable**: every SKILL.md now carries the SkillHub frontmatter contract alongside the Agent Skills fields — `slug: aaron-<skill-name>` (globally unique, validator-enforced), bilingual `displayName` (e.g. "Keyword Research · 关键词研究"), Chinese `summary` — so the repo folders publish as-is via the new `scripts/publish-skillhub.sh` (`skillhub publish` per manifest-declared skill; local pre-check verified `✓ Dry-run passed` for 69/69). Publishing is owner-run (real-name-verified account + `$SKILLHUB_KEY`), enters platform review, and consumers install with `skillhub install aaron-<skill-name>`.
+
+### v12.6.0 — Coverage-audit wave: creator metrics, index push, ad transparency (2026-07-04)
+
+Feature minor release closing the gaps a four-discipline coverage audit found (all vendor facts verified against official docs 2026-07).
+
+- **New connector `youtube.py`** — YouTube Data API v3 (free key, 10,000 units/day; `channel` ≈ 1 unit, `videos` ≈ 3): real displayed subscriber counts, total views, and per-video views/likes/comments — the influencer discipline's first official free metrics API, replacing the stale "no public metrics API" claim. **ToS scope stated everywhere: named-shortlist vetting and own-campaign measurement, never bulk harvesting** (quota extensions refuse it). Keyless companion: every channel's RSS feed (`/feeds/videos.xml?channel_id=…`) for cadence tracking via `rss_monitor.py`.
+- **New connector `indexpush.py`** — the second **mutation-class** helper (dry-run default, `--live`, `retries=1`): `indexnow` (one call notifies Bing/DuckDuckGo/Yandex/Seznam/Naver, ≤10,000 URLs/host, self-minted hosted key = inherent ownership proof) · `baidu` (百度普通收录 site-token push). The bundle's first white-hat *write* channel for SEO; Google has no open equivalent (its Indexing API is job-posting/broadcast-only — noted inline).
+- **10 skills wired** (→ `12.6.0`): `influencer-discovery` + `fit-scorer` (Measured YouTube candidate metrics / engagement-authenticity inputs), `competitor-tracker` (rival-partner channel stats + keyless RSS cadence watch), `performance-analyzer` (Measured campaign-video performance), `technical-seo-checker` (index-push after fixes), `content-writer` (publish-time push), `page-play-builder` (batch push gated on the thin/duplicate guardrail), `ad-creative-builder` + `campaign-architect` (ad-transparency-library competitive research + official Google Ads MCP pointer), `offsite-signal-analyzer` (Cloudflare Radar AI-crawler industry benchmark).
+- **Paid competitive-intel recipes**: Meta Ad Library (web UI = all commercial ads, keyless; API tier = political/EU only, ~200 calls/hr) · Google Ads Transparency Center (web, no API) · TikTok Commercial Content API (application-gated, EU data) — plus the **official self-hosted [Google Ads MCP](https://developers.google.com/google-ads/api/docs/developer-toolkit/mcp-server)** (read-only GAQL, 2026) documented as the sanctioned `~~ad platform` Tier-2/3 path.
+- **Email fixes from the audit**: the official **Gmail Postmaster Tools API** row (`gmailpostmastertools.googleapis.com`, OAuth own-domain — spam-rate/reputation programmatically, ledger-ready) and a **Microsoft SNDS migration warning** (legacy automated-access URLs deprecated 2026-06-22 → `postmaster.live.com/snds`, 30-day expiring links).
+- Also recorded: IG Graph **Business Discovery** (other Business/Creator accounts' public counts via your own app), **Google Trends API** = official but application-gated alpha, Cloudflare Radar AI Insights benchmark row. Evaluated and **not** adopted: X/Twitter API (free tier gone), TikTok Research API (academic gate), Twitch (deferred), community Meta-ads MCPs (no official server).
+
+### v12.5.0 — Keyless public-API wave: email-auth DNS, attention series, news mentions (2026-07-04)
+
+Feature minor release. After the hosted-fetcher waves (Firecrawl v12.3, Tavily v12.4), this wave adopts the best **keyless public APIs** — all live-tested 2026-07 — as three new stdlib connectors plus seven recipe-level rows in CONNECTORS.md.
+
+- **New connector `doh.py`** — DNS-over-HTTPS (Google resolver, Cloudflare auto-fallback, both keyless): `auth <domain>` fetches the live SPF / DMARC (policy, rua, alignment tags) / BIMI / MX records and probes common DKIM selectors — the email discipline's "paste a DNS export" step becomes a **Measured** record read for the SEND S1 pre-flight, for **any** ESP. **Facts only, no verdicts** (two record-level flags excepted: multiple SPF records = RFC 7208 permerror, and no `all`/`redirect` terminator); a record shows *setup*, not *passing mail* — the DMARC RUA report stays required, and an unfound DKIM selector is NEEDS_INPUT, never a fail.
+- **New connector `pageviews.py`** — Wikimedia Pageviews (keyless, UA required): real per-article view series = a Measured public-attention trend for an entity or topic (pair with `kg.py reconcile` for the exact title). Attention is a demand *proxy*, not search volume.
+- **New connector `gdelt.py`** — GDELT DOC 2.0 (keyless): `artlist` news articles + `timelinevol` mention-volume trend — the first keyless automation for `~~brand monitor` (previously manual Google-Alerts RSS only). Surfaces GDELT's plain-text throttle notice as `rate_limited` (⚠️ ≥5s between calls; news media only, not social).
+- **9 skills wired** (→ `12.5.0`): `deliverability-qa` + `email-quality-auditor` (keyless any-ESP S1 record pull), `entity-optimizer` (attention + mention series on the canonical entity), `keyword-research` (topic-demand proxy), `trend-spotter` (Wikipedia momentum + HN Algolia heat score), `offsite-signal-analyzer` (unlinked-mention read + `ledger --source mentions` trend), `competitor-tracker` (rival news coverage), `technical-seo-checker` (crt.sh subdomain inventory + W3C Nu validity recipes), `influencer-discovery` (keyless oEmbed candidate-card metadata — YouTube/TikTok/X, metadata only).
+- **CONNECTORS.md recipe rows** for the no-connector-needed tier: crt.sh (certificate-transparency subdomains), W3C Nu validator (HTML validity), oEmbed (post metadata; Instagram needs a token), HN Algolia (tech/forum heat), Nominatim/OSM (local-SEO geocoding, 1 req/s), self-host RSSHub (platform→RSS bridge for `rss_monitor.py`) + SearXNG (own metasearch), and Jina Reader (`r.jina.ai`, keyless ~20 RPM) positioned as the deliberately-unbundled **third** URL-to-markdown fallback behind Firecrawl/Tavily.
+- Category-row updates: `~~brand monitor` agent default now `gdelt.py`; `~~trend database` adds `pageviews.py`; Email Authentication row's agent default is now `doh.py auth` + RUA report; `~~social platform analytics` and `~~local listings` note their keyless partial paths. Evaluated and **not** adopted: SSL Labs (multi-minute assessments), Brave/Exa/Serper (key-required), Spamhaus DNSBL (rejects public resolvers).
+- **CONNECTORS.md official-docs pass** (same release, follow-up commit): every product row now links its **official documentation** (all links HTTP-checked); two new capability rows — **GSC URL Inspection API** (`searchconsole.googleapis.com/v1` — per-URL index status, 2,000/day per property) and **CrUX History API** (40 weekly field-CWV points — a ready-made `ledger.py` baseline series); corrections from re-verification: SISTRIX MCP is now **OAuth, no API key** (2026 rollout), GDELT throttles via plain-text notice *or* 429, CrUX History updates Mondays (align ledger comparisons to weekday).
+- **Process hardening** (same release, follow-up commit): `scripts/check-versions.sh` — a CI **version-sync guard** over the 8-file tracking contract (bundle version across plugin.json / marketplace mirrors / README badges / CLAUDE.md / VERSIONS.md release line + changelog, and every SKILL.md ↔ VERSIONS.md row); [docs/connector-playbook.md](docs/connector-playbook.md) — the connector-integration pipeline distilled from the four waves (qualify / verify / implement / test / wire / document / track / regress / record, with the safety-class gate table and connector-vs-recipe rule); `scripts/connectors/smoke-live.sh` — a manual pre-release live smoke (its first run caught GDELT's second throttle shape: a real HTTP 429 alongside the plain-text-on-200 notice — `gdelt.py` now maps both to `rate_limited`); SECURITY.md gains the three-row safety-class table.
+
+### v12.4.0 — Tavily AI-search connector: keyless answer-citation probe (2026-07-04)
+
+Feature minor release. A second **keyless** engine joins the bundle: **Tavily ([tavily.com](https://tavily.com))**, whose documented keyless mode (`X-Tavily-Access-Mode: keyless`, free rate-limited; a free `TAVILY_API_KEY` = 1,000 credits/mo lifts it) covers `/search` and `/extract`. Endpoints verified against docs.tavily.com 2026-07 **and live-tested keyless** (search-with-answer + extract both 200 with no key). The differentiator vs Firecrawl: `--answer` makes Tavily itself an **AI answer engine**, so "does the answer cite my domain?" becomes a keyless, Measured **AI-citation signal** — for Tavily's layer; an Estimated proxy for ChatGPT/Perplexity/AI Overviews.
+
+- **New connector `scripts/connectors/tavily.py`** (Python stdlib): `search` (scored web/news results; `--answer [basic|advanced]`, `--topic news --time-range w`, include/exclude domains, `--country`, `--raw`) · `extract` (URL(s) → markdown). `/crawl`/`/map`/`/research` are key-only per vendor docs and duplicate firecrawl.py, so deliberately skipped. **Safety: read-only; same delegated-fetcher rules as firecrawl.py — data-egress note + local robots.txt pre-flight on `extract` (UA `Tavily`, `*` fallback; refuses if ANY URL is disallowed, exit 4; `--own-site` override).**
+- **4 skills wired** (→ `12.4.0`): `serp-analysis` (second keyless engine — Firecrawl/Tavily disagreement feeds the SERP-stability input of True Difficulty), `geo-content-optimizer` (minutes-scale keyless citability probe against a real AI answer engine), `offsite-signal-analyzer` (upstream AI-citation spot-check for ai-referrals mode + `ledger.py --source ai-citations` trend), `trend-spotter` (recency-filtered keyless news pulse corroborating RSS spikes).
+- **Official Tavily MCP** (`https://mcp.tavily.com/mcp/`) added to `docs/mcp-catalog.json` and CONNECTORS.md — the catalog's second keyless MCP (`tavily-search` + `tavily-extract`, no auth required).
+- CONNECTORS.md: `~~AI monitor` finally has a keyless (proxy) automation path — the category row, the DIY AI-citation row, and the `~~trend database` row now name `tavily.py`; SECURITY.md's delegated-fetching clause generalized to cover both hosted fetchers.
+
+### v12.3.0 — Firecrawl crawl/SERP connector: keyless research automation (2026-07-04)
+
+Feature minor release. The crawl/scrape surface gets a **direct Firecrawl ([firecrawl.dev](https://firecrawl.dev)) integration** — the first **keyless** hosted connector (per the 2026 keyless launch: `scrape`/`search` need no key at all, ~1,000 free credits/mo; optional `FIRECRAWL_API_KEY` raises limits). Endpoints verified against docs.firecrawl.dev 2026-07 **and live-tested keyless** (scrape + SERP both returned 200 with no auth header).
+
+- **New connector `scripts/connectors/firecrawl.py`** (Python stdlib): `search` (live web SERP — the bundle's first keyless SERP source; `--scrape` adds per-result markdown, `--country`/`--tbs` locale + freshness) · `scrape` (rendered, LLM-ready markdown for JS-heavy pages `crawl.py`/`onpage.py` cannot render; `--mobile`, `--wait`) · `map` (fast site URL inventory, `--search` relevance ordering) · async `crawl`/`crawl-status`/`crawl-cancel`. **Safety: read-only (no `--live` gate needed), but delegated fetching = data egress to a third party — and `scrape`/`crawl`/`map` run a local robots.txt pre-flight (via `robots.py`, UA `FirecrawlAgent`) and refuse on Disallow (exit 4), with `--own-site` as the explicit owner-assertion override** (SECURITY.md §Connector network behavior + §Scraping Boundaries).
+- **8 skills wired** (→ `12.3.0`): `serp-analysis` (keyless live SERP — organic list, with the feature-composition caveat), `keyword-research` (live-SERP intent/difficulty sampling), `competitor-analysis` (rendered competitor fetch + URL-surface map + fresh-coverage search), `content-gap-analysis` (relevance-ordered competitor-coverage inventory), `technical-seo-checker` + `on-page-seo-auditor` (JS-rendering fallback: rendered-vs-raw diff), `content-quality-auditor` (rendered fetch for the 80-item audit), `landing-experience-checker` (rendered + mobile-emulated landing-page read).
+- **Official Firecrawl MCP** (`https://mcp.firecrawl.dev/v2/mcp`) added to `docs/mcp-catalog.json` and CONNECTORS.md — the catalog's first **keyless** MCP; the bundled CLI's advantage over it is the local robots pre-flight.
+- CONNECTORS.md category rows updated: `~~SEO tool` agent default now includes `firecrawl.py search`; `~~web crawler` default stays `crawl.py` with Firecrawl as the JS-pages path; `~~competitive intel` adds `firecrawl.py map`.
+
+### v12.2.0 — Resend ESP connector: direct email automation (2026-07-04)
+
+Feature minor release. The email/SEND discipline gets a **direct Resend ([resend.com](https://resend.com)) integration** — the first bundled `~~email platform` automation path (free-tier key, zero third-party dependencies). Endpoints verified against the Resend docs 2026-07 (audiences are deprecated in favor of segments; contacts are top-level).
+
+- **New connector `scripts/connectors/resend.py`** (Python stdlib, `RESEND_API_KEY`): `domains`/`verify-domain` (per-domain SPF/DKIM record status — Measured S1 evidence) · `send` / `seed` (per-recipient seed-list test via the batch endpoint) / `batch` / `cancel-email` (`--scheduled-at` for timed sends) · `contacts`/`add-contact`/`suppress` (suppression sync mirroring the consent-registry) · `segments` · `broadcast-create`/`broadcast-send --at` (segment campaigns + scheduling). **Safety: the one connector that mutates external state — every mutating subcommand is dry-run by default and executes only with `--live`; `send`/`seed`/`batch` attach an `Idempotency-Key` (auto-UUID, or `--idempotency-key` for cross-run dedup; Resend replays return the original id for 24h) so retries can never double-send, and non-idempotent mutating endpoints never auto-retry** (see SECURITY.md §Connector network behavior). `_http.py` gained a backward-compatible `method=` param for PATCH/DELETE.
+- **8 skills wired** (→ `12.2.0`): `deliverability-qa` (account-side domain-auth evidence), `list-segment-builder` (roster read + suppression push), `list-hygiene-monitor` (roster read + `ledger.py` hygiene trend loop), `email-render-builder` (Measured render-test send to own inboxes), `email-sequence-designer` (broadcast create/schedule per segment), `inbox-placement-monitor` (automated per-seed test send), `email-quality-auditor` (S1/N1 corroborating evidence pull), `consent-registry` (one-way downstream suppression mirror).
+- **Official Resend MCP** (`https://mcp.resend.com`) added to `docs/mcp-catalog.json` and CONNECTORS.md as the opt-in Tier-2/3 twin of the CLI.
+- **Resend AI-surface mapped** (per [resend.com/docs/ai-onboarding](https://resend.com/docs/ai-onboarding)): CONNECTORS.md documents the agent-readable docs recipes (`.md` URLs · `llms-full.txt` · vendor docs MCP), positions the three official Resend agent skills as optional companions with explicit overlap guidance (vs `resend.py`, `email-render-builder`, and the SEND gates), notes the official CLI as a keyed alternative, and scopes out the chat-SDK/AI-builder surface.
+- **Borrowed from Resend's `email-best-practices` skill**: (1) the **Idempotency-Key send pattern** above (replaces the earlier blunt no-retry policy); (2) an optional **event-driven bounce/complaint webhook recipe** in CONNECTORS.md — `email.bounced`/`email.complained` → a Svix-signature-verified user endpoint → an event log the bundle only reads: suppression events flow into `memory/consent/candidates.md` (consent-registry stays sole writer) and the same rows are the Measured hygiene feed for list-hygiene-monitor/deliverability-qa; (3) the auditor's go/no-go now words the suppression check as a **send-pipeline stage** (enforced in the executed segment/flow, platform-verifiable), not a manual recipient-list glance.
+- **Consent boundary stated at every touchpoint**: Resend's acceptable use is opted-in mail only — no purchased/scraped lists, no cold outbound (`cold-outbound-sequencer` deliberately not wired); the consent-registry stays the SSOT, Resend a downstream mirror.
 
 ### v12.1.0 — Folder symmetry: one folder per discipline (2026-07-04)
 

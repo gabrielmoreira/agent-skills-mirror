@@ -1,0 +1,4 @@
+interface:
+  display_name: "X 推特起号专家"
+  short_description: "把普通人X冷启动拆成定位、互动、复盘的7天执行系统"
+  default_prompt: "使用 $x-twitter-cold-start-expert 诊断我的 X/Twitter 账号冷启动方案，并整理成 7 天执行清单。"

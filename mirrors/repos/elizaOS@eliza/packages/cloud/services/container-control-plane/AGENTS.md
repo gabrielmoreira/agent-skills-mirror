@@ -60,10 +60,18 @@ There are no tests in this package.
   `CONTAINER_CONTROL_PLANE_TOKEN` is set, the request must carry a matching
   `x-container-control-plane-token` or it's rejected 401. Errors are thrown as
   `Response` objects and caught by `handle` / `handleInternal`.
-- **Per-request DB binding.** If a request sends `x-eliza-cloud-database-url`,
-  the handler runs inside `runWithCloudBindingsAsync({ DATABASE_URL })` and
-  first mirrors Docker-node rows via `mirrorControlPlaneNodes`. Without that
-  header the sidecar relies on its own configured `DATABASE_URL`.
+- **Per-request DB binding (pinned, fail-closed, H4/#12882).** If a request
+  sends `x-eliza-cloud-database-url`, the handler runs inside
+  `runWithCloudBindingsAsync({ DATABASE_URL })` and first mirrors Docker-node
+  rows via `mirrorControlPlaneNodes`. The forwarded URL is NOT trusted blindly:
+  `resolveForwardedDatabaseUrl` runs it through `evaluateForwardedDatabaseUrl`
+  (`cloud-shared/.../forwarded-database-url-guard`), which only honors a URL
+  whose whole identity (scheme, credentials, host, port, database, query)
+  matches the sidecar's own configured `DATABASE_URL` or the
+  `CONTAINER_CONTROL_PLANE_DATABASE_URL_ALLOWLIST`. Any other/malformed identity
+  (including a different db/user or a `?host=`-override on the same host) is
+  rejected 403. Without the header the sidecar relies on its own configured
+  `DATABASE_URL`.
 - **`@elizaos/cloud-shared` is the brain.** This package adds HTTP plumbing,
   validation, and error/status mapping only — container logic, SSH, warm pool,
   autoscaling, and provisioning all live in `cloud-shared`. Behavioral changes

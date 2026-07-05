@@ -1,5 +1,6 @@
 ---
 name: user-story-mapping-workshop
+argument-hint: "[system or workflow]"
 description: Run a user story mapping workshop with adaptive questions and a structured map output. Use when you need backbone activities, tasks, and release slices for a workflow.
 intent: >-
   Guide product managers through creating a user story map by asking adaptive questions about the system, users, workflow, and priorities—then generating a two-dimensional map with backbone (activities), user tasks, and release slices. Use this to move from flat backlogs to visual story maps that communicate the big picture, identify missing functionality, and enable meaningful release planning—avoiding "context-free mulch" where stories lose connection to the overall system narrative.
@@ -11,6 +12,17 @@ type: interactive
 Guide product managers through creating a user story map by asking adaptive questions about the system, users, workflow, and priorities—then generating a two-dimensional map with backbone (activities), user tasks, and release slices. Use this to move from flat backlogs to visual story maps that communicate the big picture, identify missing functionality, and enable meaningful release planning—avoiding "context-free mulch" where stories lose connection to the overall system narrative.
 
 This is not a backlog generator—it's a visual communication framework that organizes work by user workflow (horizontal) and priority (vertical).
+
+## Input
+
+**Works best with:** The system or workflow to map.
+**Also useful:** The primary users, workflow steps you already know, and what the map must decide (MVP scope, release plan).
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The workshop opens by asking about the system and its users (Q1), then proceeds per the facilitation protocol.
+
+**Example invocation:** `Run a story mapping workshop for our vendor onboarding portal — output should give us a first release slice.`
 
 ## Key Concepts
 

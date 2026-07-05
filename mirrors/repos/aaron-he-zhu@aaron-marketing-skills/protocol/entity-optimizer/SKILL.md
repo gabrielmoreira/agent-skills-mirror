@@ -1,18 +1,16 @@
 ---
 name: entity-optimizer
+slug: aaron-entity-optimizer
+displayName: "Entity Optimizer · 实体优化"
+summary: "实体优化/知识图谱"
 description: 'Use when the user asks to "optimize entity presence"; builds Knowledge Graph, Wikidata, sameAs, and AI recognition signals for a canonical entity identity. Not for page-level AI-citation readiness — use geo-content-optimizer. 实体优化/知识图谱'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when optimizing entity presence for Knowledge Graph, Wikidata, or AI engine disambiguation. Also for brand entity canonicalization."
 argument-hint: "<entity name or brand>"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: protocol
-  phase: protocol
-  geo-relevance: "high"
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "protocol", "phase": "protocol", "geo-relevance": "high", "hermes": {"tags": ["marketing", "protocol"], "category": "protocol"}, "openclaw": {"emoji": "🗂️", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Entity Optimizer
@@ -86,6 +84,8 @@ This skill is the sole writer of canonical entity profiles at `memory/entities/<
 With tools: query Knowledge Graph API, ~~SEO tool, ~~AI monitor, ~~brand monitor. Without tools: ask the user for entity name/type, domain, profiles, topics, and disambiguation context. See [CONNECTORS.md](../../CONNECTORS.md).
 
 **Zero-dependency local helper** (keyless): `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/kg.py" reconcile "<entity>"` resolves the name to a Wikidata QID with a confidence score (does the open KG that feeds Knowledge Panels & AI answers recognize it?); `kg.py entity <QID>` returns claims + sameAs. See [scripts/connectors/README.md](../../scripts/connectors/README.md).
+
+**Keyless attention + mention series**: once `kg.py reconcile` names the exact Wikipedia article, `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/pageviews.py" "<Article_Title>" --months 12` returns the entity's real view series — a **Measured** public-attention trend (is recognition growing or fading?) — and `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/gdelt.py" '"<entity name>"' --days 30` reads global news mentions (the keyless `~~brand monitor` path; GDELT asks ≥5s between calls). Attention and mention volume are demand/recognition proxies, not authority scores — record them as trend evidence in the entity profile, not as CITE inputs.
 
 ## Decision Gates
 

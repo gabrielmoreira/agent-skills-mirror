@@ -83,14 +83,19 @@ All scripts are run from the package directory:
 bun run --cwd packages/browser-extension build                   # Chrome (default)
 bun run --cwd packages/browser-extension build:chrome
 bun run --cwd packages/browser-extension build:safari-webextension
+bun run --cwd packages/browser-extension clean                   # remove dist/
+bun run --cwd packages/browser-extension lint                    # Biome check --write --unsafe
+bun run --cwd packages/browser-extension lint:check              # Biome check (read-only)
+bun run --cwd packages/browser-extension format                  # Biome format --write
+bun run --cwd packages/browser-extension format:check            # Biome format (read-only)
 bun run --cwd packages/browser-extension package:chrome          # .zip for Chrome Web Store
 bun run --cwd packages/browser-extension package:safari
 bun run --cwd packages/browser-extension package:stores
 bun run --cwd packages/browser-extension package:release
-bun run --cwd packages/browser-extension test                    # vitest unit tests (src/)
+bun run --cwd packages/browser-extension test                    # unit tests + Chrome dist smoke
+bun run --cwd packages/browser-extension test:unit               # vitest unit tests (src/)
 bun run --cwd packages/browser-extension test:smoke              # smoke-checks Chrome dist artifacts
 bun run --cwd packages/browser-extension test:smoke:safari
-bun run --cwd packages/browser-extension test:ci                 # test + test:smoke
 ```
 
 Output lands in `dist/chrome/` or `dist/safari/`. Load `dist/chrome/` as an unpacked extension in Chrome DevTools for local dev.

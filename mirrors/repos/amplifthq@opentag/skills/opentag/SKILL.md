@@ -91,7 +91,7 @@ Only use a proxy URL the user provides or that is already active in the environm
 
 When helping a Codex user install or configure OpenTag, collect these non-secret choices with `request_user_input` / askhuman only when the current Codex host is actually in Plan mode and the tool is available:
 
-- Platform: Slack, GitHub, or Lark / Feishu.
+- Platform: Slack, GitHub, GitLab, Lark / Feishu, Telegram, or Discord.
 - Coding agent: Codex, Claude Code, or Echo, using local detection from `opentag executors` when available.
 - Local project: the current working directory as the recommended option, plus a free-form path option inside askhuman for another path.
 - Platform mode choices that are not credentials, such as Slack Socket Mode vs Events API, Lark / Feishu tenant for manual app setup, Lark scan vs manual setup, and default project binding vs bind later.

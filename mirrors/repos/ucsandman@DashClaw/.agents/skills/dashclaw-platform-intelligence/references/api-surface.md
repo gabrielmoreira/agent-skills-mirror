@@ -1,6 +1,6 @@
 # DashClaw API Surface
 
-**327 active routes** (verified 2026-07-03 against `docs/api-inventory.json`): 56 stable, 24 beta, 247 experimental. Node SDK uses camelCase, Python SDK uses snake_case.
+**331 active routes** (verified 2026-07-05 against `docs/api-inventory.json`): 57 stable, 24 beta, 250 experimental. Node SDK uses camelCase, Python SDK uses snake_case.
 
 > ⚠️ **Authoritative source:** `SKILL.md` (regenerated from the livingcode shape) and `docs/api-inventory.md`. This file is a curated narrative for the most commonly consumed surfaces plus anything new that doesn't yet have an SDK mapping. Some sections below describe legacy v1 endpoints that may not exist in the current build (e.g. `/api/context/*`, `/api/snippets/*`, `/api/decisions`, `/api/feedback/*`) — cross-check against `docs/api-inventory.md` before integrating.
 
@@ -12,6 +12,8 @@
 - [Action Recording](#action-recording)
 - [Approvals](#approvals)
 - [Agent Fleet and Profile](#agent-fleet-and-profile)
+- [Coverage](#coverage)
+- [Fan-outs](#fan-outs)
 - [Loops and Assumptions](#loops-and-assumptions)
 - [Signals](#signals)
 - [Behavior Guard](#behavior-guard)
@@ -97,6 +99,29 @@ Tool route mapping lives in `mcp-server/lib/routes-inventory.generated.json` —
 | `/api/agents/connections` | GET, POST | `getAgentConnections`, `reportConnections` |
 | `/api/agents/heartbeat` | POST | `heartbeat` — auto-updates `agent_presence` on action submission (`418fc872`) |
 
+## Coverage
+
+**Maturity:** New (v4.2, 2026-07)
+
+Event coverage — orthogonal to posture's *policy* coverage (`coveredUnits`). Answers "did the ledger actually see everything that happened," not "is it governed."
+
+| Endpoint | Methods | Purpose |
+|---|---|---|
+| `/api/coverage` | POST | The Claude Code Stop hook's per-turn evidence: `{ agent_id, harness, harness_session_id, expected, recorded }`, where `expected`/`recorded` come from the turn's transcript `tool_use` ground truth vs the session's action map. One fail-silent report per turn; append-only `coverage_reports` table. |
+| `/api/coverage` | GET | Per-agent record coverage (`sum(recorded)/sum(expected)`, 24h window) and outcome coverage (share of hook-recorded actions closed with a real outcome vs Stop-hook auto-close, via `close_source` on `action_records`). `?include_synthetic=1` is a diagnostics view; real views and posture exclude synthetic/loadtest agents. Powers the Coverage column on `/agents`. |
+
+Outcome coverage depends on `close_source` (`outcome` \| `stop_autoclose` \| `direct`), stamped server-side on every action close — see [Action Recording](#action-recording). A posture finding fires when either coverage figure drops below 90% for a real agent (min 20 sampled), deep-linking to `/agents`.
+
+## Fan-outs
+
+**Maturity:** New (v4.3, 2026-07)
+
+Multi-agent lineage as persisted evidence, not a client-side guess — see [Action Recording](#action-recording) for the fields.
+
+| Endpoint | Methods | Purpose |
+|---|---|---|
+| `/api/agents/fanouts` | GET | Recent harness sessions (grouped by `harness_session_id`, synthetic excluded): `{ fanouts: [{ harness_session_id, parent_agent_id, agents, agent_count, spawn_count, action_count, linked_leaf_count, first_at, last_at }], window_hours, lastUpdated }`. `linked_leaf_count` is the read-time join count of leaves whose `subagent_uuid` matches a spawn's `outcome_metadata.spawned_agent_uuid` in the same session. Params: `window_hours` (1-168, default 24), `limit` (1-100, default 20), `?include_synthetic=1` diagnostics-only. Powers the Fan-outs panel on `/agents`, each row deep-linking to `/swarm?swarm_id=<harness_session_id>`. |
+
 ## Guard Decisions Audit Log
 
 **Maturity:** New (April 2026)
@@ -161,8 +186,9 @@ Govern-the-governance: a gaming-resistant org governance posture score over 6 di
 | `/api/posture/findings/[key]/resolve` | POST | Human-gated finding resolution: `create_draft` \| `snooze` \| `accept_risk` (DRAFT-ONLY — never auto-applies) |
 | `/api/posture/scan` | POST | Recompute the score and persist a trend snapshot |
 | `/api/policies/tightening` | GET, POST | Tightening proposals (findings → proposals): GET computes proposals on read from ungoverned-allow decisions, mirroring posture's `review_incident` findings one-to-one (content-stable `tp_` ids); POST (admin) `ratify` creates the ACTIVE `require_approval` policy + resolves the mirrored finding, `dismiss` records why and stops re-proposing, `undo` removes the judgment but keeps a created policy |
+| `/api/policies/loosening` | GET, POST | Loosening proposals (the tightening mirror, v4.5): GET computes proposals on read from interrupt-approval outcomes — an envelope action type approved ~100% of the time proposes a scope carve-out (`relax_policy_scope`), a policy always overridden with no surgical fix proposes deactivation (`deactivate_policy`); content-stable `lp_` ids; POST (admin) `ratify` applies the relaxation server-side (self-suppresses via the policy's evidence-window reset), `dismiss` records why, `undo` removes the judgment but keeps the change (`change_kept`) |
 
-UI: `/posture`, plus the `/policies` "Tightening proposals" section (ratify/dismiss/undo are buttons). MCP (read-only): `dashclaw_posture`, `dashclaw_posture_next`. CLI: `dashclaw posture`, `dashclaw next`, `dashclaw posture resolve <key>`. Tables: `posture_findings_state`, `posture_snapshots`, `tightening_proposal_decisions`.
+UI: `/posture`, plus the `/policies` judgment spine (Tightening and Loosening groups; ratify/dismiss/undo are buttons). MCP (read-only): `dashclaw_posture`, `dashclaw_posture_next`. CLI: `dashclaw posture`, `dashclaw next`, `dashclaw posture resolve <key>`. Tables: `posture_findings_state`, `posture_snapshots`, `tightening_proposal_decisions`, `loosening_proposal_decisions`.
 
 ## Workflows
 
@@ -193,6 +219,10 @@ Template variables serialize objects and preserve arrays (`c4164311`); `prompt_t
 **PATCH outcome fields (v2.13.1+):** `status`, `output_summary`, `side_effects`, `artifacts_created`, `error_message`, `timestamp_end`, `duration_ms`, `cost_estimate`, `tokens_in`, `tokens_out`, `model`. When `tokens_in` / `tokens_out` are reported without an explicit `cost_estimate`, the server derives cost from the configured pricing table (see `app/lib/billing.js`) using `model` to pick the right pricing row. The `model` column was added to `action_records` on 2026-04-14 — run `node scripts/_run-with-env.mjs scripts/migrate-action-model-column.mjs` against existing instances before deploying the matching server build.
 
 **Token capture pipeline (Claude Code):** the `Stop` hook (`hooks/dashclaw_stop.py`) reads the session transcript at turn end, sums LLM token usage across that turn's assistant messages (cache_read tokens weighted at 0.1× to match Anthropic billing), and PATCHes the per-turn share onto every action_id the pretool opened during the turn. Same idea for the OpenClaw plugin (v1.2.1+) via the `llm_output` and `agent_end` hooks.
+
+**Closure provenance (v4.2):** every closed row is stamped server-side with `close_source` — `outcome` (a real PATCH/outcome write), `stop_autoclose` (a `close_if_running: true` PATCH won the close), or `direct` (created already terminal). Null means pre-v4.2. This is the durable data behind outcome coverage; see [Coverage](#coverage).
+
+**Fleet attribution (v4.3):** `POST /api/actions` (and the guard `?record=true` payload) accepts `harness_session_id` and `subagent_uuid` on every record — the harness session groups a multi-agent fan-out; `subagent_uuid` is the subagent instance uuid on a leaf call. Spawn (`Agent`/`Task`/`Workflow`) rows carry the spawned agent's uuid via `outcome_metadata.spawned_agent_uuid` on the outcome PATCH — the one `outcome_metadata` key the server persists (into `outcome_progress`); every other key is still dropped. Lineage is a read-time join, never a client guess; see [Fan-outs](#fan-outs).
 
 | `/api/actions/[actionId]/artifacts` | GET | `getActionArtifacts` | `get_action_artifacts` |
 | `/api/actions/[actionId]/graph` | GET | `getActionGraph` | `get_action_graph` |

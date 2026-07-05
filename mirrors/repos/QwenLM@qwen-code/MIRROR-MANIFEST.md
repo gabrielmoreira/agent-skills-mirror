@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
+Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `QwenLM/qwen-code` — 26 default patterns, 0 followed patterns, 43 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 43 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -102,6 +102,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 41 | ✓ | [`packages/desktop/apps/electron/resources/AGENTS.md`](packages/desktop/apps/electron/resources/AGENTS.md) |
 | 42 | ✓ | [`packages/desktop/apps/electron/resources/docs/craft-cli.md`](packages/desktop/apps/electron/resources/docs/craft-cli.md) |
 | 43 | ✓ | [`packages/desktop/apps/electron/resources/docs/skills.md`](packages/desktop/apps/electron/resources/docs/skills.md) |
+| 44 | ✓ | [`packages/web-shell/docs/examples/qwencode-viz/SKILL.md`](packages/web-shell/docs/examples/qwencode-viz/SKILL.md) |
 
 ---
 

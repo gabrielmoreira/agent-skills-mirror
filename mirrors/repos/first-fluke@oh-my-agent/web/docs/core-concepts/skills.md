@@ -154,7 +154,6 @@ All agents share common foundations from `.agents/skills/_shared/`. These are or
 | **`session-metrics.md`** | Clarification Debt (CD) scoring and session metrics tracking. Defines event types (clarify +10, correct +25, redo +40), thresholds (CD >= 50 = RCA, CD >= 80 = pause), and integration points. | During orchestration sessions |
 | **`common-checklist.md`** | Universal quality checklist applied at final verification of Complex tasks (in addition to agent-specific checklists). | Verify step of Complex tasks |
 | **`lessons-learned.md`** | Repository of past session learnings, auto-generated from Clarification Debt breaches and discarded experiments. Organized by domain section. Includes QA Evaluation Lessons for tracking evaluator blind spots. | Referenced after errors and at session end |
-| **`evaluator-tuning.md`** | Semi-automated QA prompt tuning protocol. Tracks Evaluation Accuracy (EA) events, triggers tuning when EA >= 30, generates patch suggestions for QA checklists and execution protocols. Includes tuning log and positive reinforcement from `good_catch` events. | When `oma retro` detects EA threshold breach |
 | **`api-contracts/`** | Directory containing API contract template and generated contracts. `template.md` defines the per-endpoint format (method, path, request/response schemas, auth, errors). | When cross-boundary work is planned |
 
 ### Runtime resources (`.agents/skills/_shared/runtime/`)
@@ -358,17 +357,17 @@ QA agents improve through tracked judgment errors. Unlike CD (real-time), Evalua
 |-------|--------|-----------------|
 | `false_negative` | +30 | Next session or production (bug that QA missed) |
 | `false_positive` | +15 | During session (impl agent successfully disputes QA finding) |
-| `severity_mismatch` | +10 | During session or retro (wrong severity assigned) |
+| `severity_mismatch` | +10 | During session or next-session review (wrong severity assigned) |
 | `missed_stub` | +20 | Runtime verification catches display-only feature |
 | `good_catch` | -10 | QA caught a non-obvious bug (positive reward signal) |
 
 **EA is calculated on a rolling 3-session window.** Thresholds:
-- **EA >= 30** → `oma retro` flags QA patterns for review (tuning suggested)
+- **EA >= 30** → Tuning suggested: review accumulated EA events for recurring QA judgment errors
 - **EA >= 50** → Tuning required: update QA execution-protocol.md
 - **`false_negative` >= 3** across window → Add detection pattern to QA checklist.md
-- **`good_catch` >= 5** across window → Document and propagate successful pattern
+- **`good_catch` >= 5** across window → Generalize the successful pattern into `common-checklist.md`
 
-The full tuning loop is defined in `evaluator-tuning.md`: sessions accumulate EA events → threshold triggers `oma retro` → report categorizes errors and suggests patches → user reviews and approves → patches applied to QA checklist/protocol → validation over next 3 sessions.
+When a threshold is breached, review the accumulated EA events, categorize the errors, patch the QA checklist/execution protocol accordingly, and validate over the next 3 sessions.
 
 ---
 

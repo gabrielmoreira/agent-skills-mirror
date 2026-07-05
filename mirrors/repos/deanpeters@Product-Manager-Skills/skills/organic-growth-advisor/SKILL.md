@@ -1,5 +1,6 @@
 ---
 name: organic-growth-advisor
+argument-hint: "[product and growth context]"
 description: "Identify which organic growth path to pursue — new segments, geographies, channels, or products. Use when diagnosing where a growth constraint lives and which McKinsey growth level to act on next."
 intent: >-
   Guide product managers through a fast triage to identify which of four organic growth paths fits their current constraint: new customer segments (L2), new geographies (L3), new distribution channels (L4), or new products or services (L5). Uses a 2x2 diagnostic based on customer/market context familiarity and degree of product change required. Outputs a growth path recommendation with rationale and immediate next steps.
@@ -49,6 +50,17 @@ This skill does three things and nothing more:
 - You lack basic context about your current customers and their problems (gather that first)
 
 ---
+
+## Input
+
+**Works best with:** Your product and where growth feels stuck, in a sentence or two.
+**Also useful:** Which customers/markets you serve today, what you've already tried, and any paths leadership is pushing (new segments, geos, channels, products).
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The advisor opens with Q1 of the 3-question triage to place you on the Growth Path Matrix.
+
+**Example invocation:** `Growth triage: B2B payroll tool, strong in US mid-market, plateaued — CEO wants Europe, sales wants an SMB tier.`
 
 ## Key Concepts
 

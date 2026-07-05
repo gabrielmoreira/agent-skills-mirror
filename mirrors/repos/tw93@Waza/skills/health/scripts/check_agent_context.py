@@ -375,10 +375,9 @@ def main() -> int:
     if (
         'sandbox_mode = "danger-full-access"' in codex_config_text
         and 'approval_policy = "never"' in codex_config_text
-        and "deny" not in codex_config_text.lower()
     ):
         codex_findings.append(
-            "Codex high-permission mode lacks a deny floor; add denies for secrets, credentials, pipe-to-shell installers, and outbound shells"
+            "Codex runs danger-full-access with approval_policy=never; Codex has no command-level deny mechanism, so the only levers are sandbox_mode and approval_policy -- surface once as a user tradeoff, not a per-project fix"
         )
 
     conflict_findings: list[str] = []

@@ -1,5 +1,6 @@
 ---
 name: finance-metrics-quickref
+argument-hint: "[metric name]"
 description: Look up SaaS finance metrics, formulas, and benchmarks fast. Use when you need a quick metric definition, formula, or benchmark during analysis.
 intent: >-
   Quick reference for any SaaS finance metric without deep teaching. Use this when you need a fast formula lookup, benchmark check, or decision framework reminder. For detailed explanations, calculations, and examples, see the related deep-dive skills.
@@ -20,6 +21,17 @@ scenarios:
 Quick reference for any SaaS finance metric without deep teaching. Use this when you need a fast formula lookup, benchmark check, or decision framework reminder. For detailed explanations, calculations, and examples, see the related deep-dive skills.
 
 This is not a teaching tool—it's a cheat sheet optimized for speed. Scan, find, apply.
+
+## Input
+
+**Works best with:** The metric you need — name it and get the formula, benchmark, and decision context.
+**Also useful:** Your numbers, if you want the formula applied on the spot.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** Ask for the metric family you're working in (revenue, retention, efficiency, capital) and scan from there.
+
+**Example invocation:** `Quick ref: burn multiple — formula, benchmark, and whether 1.7 is bad for Series B.`
 
 ## Key Concepts
 

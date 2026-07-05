@@ -132,7 +132,23 @@ The reference implementations in
 floor, not the ceiling: they are deliberately simple stdlib pipelines that any
 competent agent should match exactly on the deterministic tasks.
 
+## Live scoreboard
+
+The same harness that grades *your* agent grades the reference pipeline and a
+constructed "naive baseline" (the folk move on each task) every time the
+catalog regenerates:
+
+- [`BENCHMARK_SCOREBOARD.md`](BENCHMARK_SCOREBOARD.md) — per-task
+  required-gold counts for reference vs naive, with the naive move each
+  task is designed to catch.
+
+  Latest commit on `main`: reference 16/16 tasks pass every required gold;
+  the naive baseline fails required golds on 16/16 tasks. That is the gap
+  your agent is expected to stay inside (or close further).
+
 ## MCP wiring note
+
+
 
 [Open Deep Research](https://github.com/langchain-ai/open_deep_research) has full MCP
 support, and several AERS data sources are exposed as MCP servers (e.g. FRED, OpenAlex via

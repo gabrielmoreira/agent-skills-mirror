@@ -1,5 +1,6 @@
 ---
 name: user-story
+argument-hint: "[feature or user need]"
 description: Create user stories with Mike Cohn format and Gherkin acceptance criteria. Use when turning user needs into development-ready work with clear outcomes and testable conditions.
 intent: >-
   Create clear, concise user stories that combine Mike Cohn's user story format with Gherkin-style acceptance criteria. Use this to translate user needs into actionable development work that focuses on outcomes, ensures shared understanding between product and engineering, and provides testable success criteria.
@@ -20,6 +21,17 @@ estimated_time: "5-10 min"
 Create clear, concise user stories that combine Mike Cohn's user story format with Gherkin-style acceptance criteria. Use this to translate user needs into actionable development work that focuses on outcomes, ensures shared understanding between product and engineering, and provides testable success criteria.
 
 This is not a feature spec—it's a conversation starter that captures *who* benefits, *what* they're trying to do, *why* it matters, and *how* you'll know it works.
+
+## Input
+
+**Works best with:** The feature or user need the story captures.
+**Also useful:** The user role, the outcome they want, and edge cases the acceptance criteria must cover.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The skill asks who the user is and what they're trying to accomplish before drafting story and Gherkin criteria.
+
+**Example invocation:** `Write user stories for password reset via SMS for our banking app — include the lockout edge case.`
 
 ## Key Concepts
 

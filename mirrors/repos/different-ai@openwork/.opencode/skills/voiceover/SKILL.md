@@ -1,17 +1,17 @@
 ---
 name: voiceover
-description: write the voice-over, demo script first, voiceover instead of PRD, align on the demo, script the demo, demo-driven development intake. The alignment phase of demo-driven development — draft and approve the demo narration BEFORE any code, land it as evals/voiceovers/<id>.md, then scaffold the flow from it. Use when a feature request arrives, or when the user runs /voiceover.
+description: write the voice-over, demo script first, voiceover instead of PRD, voiceover-first development, align on the demo, script the demo, ship a feature demo-first. The whole demo-driven journey — approve the narration BEFORE any code, then build on a fresh worktree until the demo holds and open the PR with the proof on it. Use when a feature request arrives, or when the user runs /voiceover.
 ---
 
 # Skill: voiceover
 
 The voice-over is the spec. Instead of a PRD, a feature starts as the demo
 narration the user would record if the feature had already shipped. This skill
-owns the alignment phase that precedes all implementation.
+owns the whole journey: **script → worktree → build → fraimz → PR.**
 
 **The contract: no code until the script is approved.**
 
-## The loop
+## Phase 1 — Align on words (no code)
 
 1. **Take the feature in a sentence.** Ask only what you need to narrate a
    demo of it.
@@ -23,18 +23,47 @@ owns the alignment phase that precedes all implementation.
 3. **Iterate on words, not code.** State the script back and revise with the
    user until they would actually record it. This conversation is the review
    that used to happen on a PRD.
-4. **Land the script.** Write it to `evals/voiceovers/<flow-id>.md`:
-   a title, optional context prose, then the numbered frame paragraphs. From
-   this point the file is what the code gets held to — the runner fails any
-   flow whose narration drifts from it.
+
+## Phase 2 — Start clean (fresh worktree)
+
+On approval, set up an isolated workspace so the user's checkout stays
+untouched:
+
+```bash
+git fetch origin dev
+git worktree add ../_worktrees/openwork-<flow-id> -b feat/<flow-id> origin/dev
+```
+
+Then, inside the worktree:
+
+4. **Land the script** at `evals/voiceovers/<flow-id>.md`: a title, optional
+   context prose, then the numbered frame paragraphs. From this point the file
+   is what the code gets held to — the runner fails any flow whose narration
+   drifts from it.
 5. **Scaffold the flow.** `pnpm fraimz scaffold <flow-id>` generates
    `evals/flows/<flow-id>.flow.mjs` with one `ctx.prove` stub per paragraph,
    narration pre-wired via `loadVoiceoverParagraphs`. Do not renumber or
    reword paragraphs after this without re-approval.
-6. **Hand off to the fraimz skill.** Build the feature and drive the demo
-   (sandbox preferred, local Electron fallback) until every frame holds; the
-   fraimz loop owns validate/repair/verdict and posting the proof on the PR
-   (`pnpm fraimz --flow <id> --pr`).
+
+## Phase 3 — Build until the demo holds
+
+6. **Build the feature.** The orchestrator decomposes the work and delegates
+   the coding to the `executor` subagent; the fraimz loop (see the `fraimz`
+   skill) is how the orchestrator verifies each round — drive the demo
+   against the real app, repair, and re-run until every frame passes.
+
+## Phase 4 — Ship (PR with the proof on it)
+
+7. **Open the PR and post the proof.** From the worktree:
+
+```bash
+git push -u origin feat/<flow-id>
+gh pr create --base dev --fill
+pnpm fraimz --flow <flow-id> --pr   # posts the frame-by-frame proof as a PR comment
+```
+
+The PR review is the demo review: verdict, claims, voiceovers, and assertions,
+frame by frame.
 
 ## Script format
 
@@ -55,5 +84,5 @@ human could speak over the screen while it shows exactly that state.
 
 - `evals/runner/voiceover.mjs` — parser, drift check, scaffolder.
 - `evals/voiceovers/voiceover-first-dx.md` — the reference script (this
-  workflow demoing itself).
-- The `fraimz` skill — everything after the script is approved.
+  workflow demoing itself, worktree and PR included).
+- The `fraimz` skill — the validate/repair/verdict loop inside Phase 3.

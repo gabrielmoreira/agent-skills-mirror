@@ -1,5 +1,6 @@
 ---
 name: epic-breakdown-advisor
+argument-hint: "[epic to split]"
 description: Break down epics into user stories with Humanizing Work split patterns. Use when a backlog item is too large to estimate, sequence, or deliver safely.
 intent: >-
   Guide product managers through breaking down epics into user stories using Richard Lawrence's complete Humanizing Work methodology—a systematic, flowchart-driven approach that applies 9 splitting patterns sequentially. Use this to identify which pattern applies, split while preserving user value, and evaluate splits based on what they reveal about low-value work you can eliminate. This ensures vertical slicing (end-to-end value) rather than horizontal slicing (technical layers).
@@ -19,6 +20,17 @@ scenarios:
 Guide product managers through breaking down epics into user stories using Richard Lawrence's complete Humanizing Work methodology—a systematic, flowchart-driven approach that applies 9 splitting patterns sequentially. Use this to identify which pattern applies, split while preserving user value, and evaluate splits based on what they reveal about low-value work you can eliminate. This ensures vertical slicing (end-to-end value) rather than horizontal slicing (technical layers).
 
 This is not arbitrary slicing—it's a proven, methodical process that starts with validation, walks through patterns in order, and evaluates results strategically.
+
+## Input
+
+**Works best with:** The epic or large story you need to break down — paste it as written in your backlog.
+**Also useful:** Team context (sprint length, estimation ceiling) and what's blocking delivery (too big to estimate, sequence, or release).
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The advisor opens by asking for the epic text, then walks the Humanizing Work pattern flowchart against it.
+
+**Example invocation:** `Break this down: 'As a finance admin, I can export any report to Excel, PDF, or CSV with custom date ranges and saved templates.'`
 
 ## Key Concepts
 

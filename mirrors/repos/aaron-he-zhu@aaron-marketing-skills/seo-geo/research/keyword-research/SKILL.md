@@ -1,18 +1,16 @@
 ---
 name: keyword-research
+slug: aaron-keyword-research
+displayName: "Keyword Research · 关键词研究"
+summary: "关键词研究/内容选题"
 description: 'Use when the user asks to "find keywords", "挖词", or "搜什么词"; prioritizes search volume, keyword difficulty, intent, and topic clusters from provided or connected data. Not for competitor-relative coverage gaps — use content-gap-analysis. 关键词研究/内容选题'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when starting keyword research for a new page, topic, or campaign. Also when the user asks about search volume, keyword difficulty, topic clusters, long-tail keywords, what to write about, 关键词研究, 挖词, 内容选题, or 搜什么词."
 argument-hint: "<topic or seed keyword> [market/language]"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: seo-geo
-  phase: research
-  geo-relevance: "medium"
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "seo-geo", "phase": "research", "geo-relevance": "medium", "hermes": {"tags": ["marketing", "seo-geo", "research"], "category": "seo-geo"}, "openclaw": {"emoji": "🔍", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Keyword Research
@@ -48,6 +46,10 @@ What keywords is [competitor URL] ranking for that I should target?
 Optional integrations: ~~SEO tool, ~~search console. Without tools, ask for seed keywords, audience, goals, and any known metrics. See [CONNECTORS.md](../../../CONNECTORS.md).
 
 **Zero-dependency local helper** (no tool needed): `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/suggest.py" "<seed>" --expand` harvests free keyword ideas from Google Autocomplete (⚠️ unofficial endpoint). Search *volume / difficulty* still needs `~~SEO tool` or own Search Console data. See [scripts/connectors/README.md](../../../scripts/connectors/README.md).
+
+**Keyless live-SERP sampling**: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/firecrawl.py" search "<candidate keyword>" --limit 10` (Firecrawl keyless free tier, ~1,000 credits/mo, no key needed) shows who actually ranks for a candidate — feed the top-10 domains and formats into the intent check and the difficulty read as **Measured** evidence instead of guessing. Volume still needs `~~SEO tool` or GSC.
+
+**Keyless topic-demand proxy**: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/pageviews.py" "<Topic_Article>" --months 12` returns a topic's real Wikipedia-attention series — Measured direction and seasonality evidence when no volume tool is connected. It is *attention, not search volume*: use it to rank topics against each other and time them, never to quote a volume number.
 
 **Striking-distance shortcut** (when `~~search console` is connected): before broad discovery, mine your own GSC query data for terms already ranking in positions ~5–20 — page-one tail and page two. These are proven demand a small push can convert, so they are the fastest opportunity set. The Search Analytics API sorts by clicks and has **no position filter**, so request a high `rowLimit` and filter the 5–20 window client-side, then attach volume / difficulty / intent to that shortlist. Work this set first; treat its metrics as **Measured**.
 

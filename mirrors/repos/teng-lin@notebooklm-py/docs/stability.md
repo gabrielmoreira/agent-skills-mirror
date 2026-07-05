@@ -1,7 +1,7 @@
 # API Stability and Versioning
 
 **Status:** Active
-**Last Updated:** 2026-06-11
+**Last Updated:** 2026-07-04
 
 This document describes the stability guarantees and versioning policy for `notebooklm-py`.
 
@@ -177,6 +177,18 @@ For raw-RPC power-user calls, import the documented RPC helpers explicitly:
 ```python
 from notebooklm.rpc import RPCMethod, resolve_rpc_id
 ```
+
+### Adapter surfaces: MCP server and REST API (experimental)
+
+The **MCP tool surface** (`mcp` extra, `notebooklm-mcp`) and the **single-tenant
+REST API** (`server` extra, `notebooklm-server`) are transport adapters over the
+same `_app/` business logic as the CLI. They are **experimental and not covered
+by the semver guarantees above** — tool/route names, parameters, and response
+shapes may change between releases without a major-version bump. The underlying
+Python client API they call is still governed by the stability policy; only the
+adapter surfaces are exempt. The remote-MCP connector (HTTP transport,
+self-hosted OAuth, Docker/Cloudflare/Tailscale deployment) is likewise
+experimental.
 
 ### Strict decoding (the only mode since v0.7.0)
 

@@ -1,18 +1,16 @@
 ---
 name: content-writer
+slug: aaron-content-writer
+displayName: "Content Writer · SEO文章写作"
+summary: "SEO文章写作/内容更新/排名恢复"
 description: 'Use when the user asks to "write SEO content", "draft a blog post / landing page", "update outdated content", or "fix traffic/ranking decay"; two modes — new drafts pages with keywords, headers, snippets, and evidence boundaries; refresh scores decay, prioritizes update work, and produces a republish plan with GEO guidance. Not for AI-citation/GEO readiness scoring — use geo-content-optimizer; not for publish-gate scoring — use content-quality-auditor. SEO文章写作/内容更新/排名恢复'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when writing SEO articles, blog posts, landing pages, or product descriptions targeting a keyword (mode: new), OR when updating outdated content, refreshing old articles, or recovering pages that lost traffic/rankings (mode: refresh)."
 argument-hint: "[--mode new|refresh] <topic/keyword or URL of existing content>"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: seo-geo
-  phase: build
-  geo-relevance: "high"
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "seo-geo", "phase": "build", "geo-relevance": "high", "hermes": {"tags": ["marketing", "seo-geo", "build"], "category": "seo-geo"}, "openclaw": {"emoji": "🔍", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Content Writer
@@ -62,6 +60,8 @@ Update this content to outrank [competitor URL]: [your URL]
 ## Data Sources
 
 Keyless Tier-1 first: ask for the brief, keywords, intent, and competitors (new); ask for traffic data, ranking history, publish dates, candidate URLs, and competitor examples (refresh). Use `~~SEO tool`, `~~search console`, and `~~analytics` when connected — keyed APIs are opt-in Tier-2/3 only, never required. See [CONNECTORS.md](../../../CONNECTORS.md).
+
+**Publish-time index push (write channel, gated)**: after a new or refreshed page is actually live, `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/indexpush.py" indexnow <url> --key $INDEXNOW_KEY --live` (Bing/DuckDuckGo/Yandex/…) and `indexpush.py baidu <url> --site <site> --token $BAIDU_PUSH_TOKEN --live` (百度) tell engines to fetch it now instead of waiting for a recrawl — minutes-scale discovery, especially valuable for refresh-mode republishing. Dry-run by default; push only URLs that are live and final.
 
 Label every metric **Measured** (tool/export), **User-provided**, or **Estimated** (model inference); never present an estimate as measured. If a required metric is unavailable, mark it N/A — do not invent it. Never invent figures, studies, dates, or attributions to fill a gap; cite the source or flag `[needs source]`.
 

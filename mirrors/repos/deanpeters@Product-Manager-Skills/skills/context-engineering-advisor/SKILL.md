@@ -1,5 +1,6 @@
 ---
 name: context-engineering-advisor
+argument-hint: "[AI workflow to diagnose]"
 description: Diagnose context stuffing vs. context engineering. Use when an AI workflow feels bloated, brittle, or hard to steer reliably.
 intent: >-
   Guide product managers through diagnosing whether they're doing **context stuffing** (jamming volume without intent) or **context engineering** (shaping structure for attention). Use this to identify context boundaries, fix "Context Hoarding Disorder," and implement tactical practices like bounded domains, episodic retrieval, and the Research→Plan→Reset→Implement cycle.
@@ -22,6 +23,17 @@ Guide product managers through diagnosing whether they're doing **context stuffi
 **Key Distinction:** Context stuffing assumes volume = quality ("paste the entire PRD"). Context engineering treats AI attention as a scarce resource and allocates it deliberately.
 
 This is not about prompt writing—it's about **designing the information architecture** that grounds AI in reality without overwhelming it with noise.
+
+## Input
+
+**Works best with:** A description of the AI workflow, agent, or prompt setup that feels bloated, brittle, or hard to steer.
+**Also useful:** What you've already stuffed into context (docs, transcripts, schemas) and where outputs go wrong.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The advisor opens by asking what you're feeding the model today and what breaks.
+
+**Example invocation:** `Diagnose my setup: our support-triage agent gets the full 40-page policy manual per ticket and still misroutes edge cases.`
 
 ## Key Concepts
 

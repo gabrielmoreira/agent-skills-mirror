@@ -1,18 +1,16 @@
 ---
 name: competitor-analysis
+slug: aaron-competitor-analysis
+displayName: "Competitor Analysis · 竞品分析"
+summary: "竞品分析/竞争对手"
 description: 'Use when the user asks to "analyze competitors" or "竞品分析"; benchmarks competitor keywords, content, backlinks, AI citations, and traffic share into strengths, weaknesses, and an action plan. Not for a pairwise topic-coverage gap map — use content-gap-analysis. 竞品分析/竞争对手'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when analyzing competitor SEO strategy, comparing domains, benchmarking against competitors, or finding competitor keywords and content gaps."
 argument-hint: "<competitor URL or domain>"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: seo-geo
-  phase: research
-  geo-relevance: "medium"
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "seo-geo", "phase": "research", "geo-relevance": "medium", "hermes": {"tags": ["marketing", "seo-geo", "research"], "category": "seo-geo"}, "openclaw": {"emoji": "🔍", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Competitor Analysis
@@ -46,6 +44,8 @@ Compare my site [URL] against [competitor 1], [competitor 2], [competitor 3]
 ## Data Sources
 
 Optional integrations: ~~SEO tool, ~~analytics, ~~AI monitor. Without tools, ask for competitor URLs, your site metrics, and industry context. See [CONNECTORS.md](../../../CONNECTORS.md).
+
+**Zero-dependency competitor fetch (keyless)**: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/firecrawl.py" scrape <competitor-url>` returns the rendered page as LLM-ready markdown (JavaScript-heavy pages included), `firecrawl.py map <competitor-domain> --limit 500` inventories their URL surface fast, and `firecrawl.py search "<brand or topic>" --tbs qdr:m` finds their fresh coverage — all on Firecrawl's keyless free tier (~1,000 credits/mo). The connector pre-flights the target's robots.txt locally and refuses on a Disallow per [SECURITY.md §Scraping Boundaries](../../../SECURITY.md). See [scripts/connectors/README.md](../../../scripts/connectors/README.md).
 
 ## Decision Gates
 

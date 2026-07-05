@@ -1,5 +1,6 @@
 ---
 name: business-health-diagnostic
+argument-hint: "[metrics or business context]"
 description: Diagnose SaaS business health across growth, retention, efficiency, and capital. Use when preparing a business review or prioritizing urgent fixes.
 intent: >-
   Diagnose overall SaaS business health by analyzing growth, retention, unit economics, and capital efficiency metrics together. Use this to identify problems early, prioritize actions by urgency, and deliver a comprehensive health scorecard for board meetings, quarterly reviews, or fundraising preparation.
@@ -21,6 +22,17 @@ estimated_time: "20-30 min"
 Diagnose overall SaaS business health by analyzing growth, retention, unit economics, and capital efficiency metrics together. Use this to identify problems early, prioritize actions by urgency, and deliver a comprehensive health scorecard for board meetings, quarterly reviews, or fundraising preparation.
 
 This is not a single-metric check—it's a holistic diagnostic that connects revenue, retention, economics, and efficiency to reveal systemic issues and opportunities.
+
+## Input
+
+**Works best with:** Whatever business metrics you have access to — growth rate, NRR/GRR, CAC payback, burn multiple, runway. Partial data is fine; the diagnostic flags what's missing.
+**Also useful:** The occasion (board meeting, quarterly review, fundraise prep) and what you already suspect is wrong.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The diagnostic opens by asking your company stage and which metric families you can pull.
+
+**Example invocation:** `Run a health check: $8M ARR, 60% YoY growth, NRR 96%, CAC payback 21 months, 14 months runway — board meeting in 3 weeks.`
 
 ## Key Concepts
 

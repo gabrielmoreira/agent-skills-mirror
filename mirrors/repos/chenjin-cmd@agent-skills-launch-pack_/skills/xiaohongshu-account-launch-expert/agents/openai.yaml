@@ -1,0 +1,4 @@
+interface:
+  display_name: "小红书起号专家"
+  short_description: "中文小红书起号、定位、选题、复盘与合规转化顾问"
+  default_prompt: "使用 $xiaohongshu-account-launch-expert 帮我为一个赛道设计合规的小红书起号计划。"

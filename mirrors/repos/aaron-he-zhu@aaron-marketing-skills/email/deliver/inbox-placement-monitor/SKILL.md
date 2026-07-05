@@ -1,18 +1,16 @@
 ---
 name: inbox-placement-monitor
+slug: aaron-inbox-placement-monitor
+displayName: "Inbox Placement Monitor · 邮件收件箱落点监测"
+summary: "邮件收件箱落点监测/收件箱vs垃圾邮件/Postmaster声誉趋势"
 description: 'Use when the user asks to "track where my emails are actually landing after I send", "read my seed-list inbox vs spam vs promotions results", "trend my Gmail Postmaster / Microsoft SNDS reputation", or "did placement drop after my last send"; produces a per-provider inbox/spam/promotions placement read, a domain/IP reputation trend from Postmaster + SNDS, a send-over-send delta with named regressions, and a reusable SEND-S placement snapshot on your own exported telemetry. Not for the pre-send SPF/DKIM/DMARC auth pre-flight — use deliverability-qa; not for computing the EQS or running the vetoes — use email-quality-auditor. 邮件收件箱落点监测/收件箱vs垃圾邮件/Postmaster声誉趋势'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use AFTER a send, to track where mail actually landed and how reputation is trending over time: seed-list inbox vs spam vs promotions placement per mailbox provider (Gmail, Outlook/Microsoft, Yahoo, Apple), Gmail Postmaster Tools + Microsoft SNDS domain/IP reputation trend, and the send-over-send placement delta with named regressions. Run it to BUILD and TREND the post-send SEND S placement signal; run deliverability-qa for the pre-send auth/reputation pre-flight and email-quality-auditor to SCORE the full EQS and enforce S1/S2/N1/D1."
 argument-hint: "<sending domain / program> [seed-list placement test + Postmaster/SNDS export] [prior send baseline] [goal: promo|retention|cold]"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: email
-  phase: deliver
-  geo-relevance: "low"
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "email", "phase": "deliver", "geo-relevance": "low", "hermes": {"tags": ["marketing", "email", "deliver"], "category": "email"}, "openclaw": {"emoji": "✉️", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Inbox Placement Monitor
@@ -50,6 +48,8 @@ Did placement drop after my last campaign? Compare this seed test against the pr
 ## Data Sources
 
 Use `~~email platform` (ESP own-data manual export — bounce/complaint and send-level deliverability) plus three keyless post-send telemetry sources, all from the user's own account or a hand-run test: a **seed-list / inbox-placement test** (inbox vs spam vs promotions per provider), the **Gmail Postmaster Tools** export (domain + IP reputation, spam-rate, feedback-loop), and the **Microsoft SNDS** export (IP status, complaint rate, trap hits). Postmaster and SNDS are free own-domain dashboards — no key, no vendor. Keyed ESP APIs (Klaviyo, Mailchimp, HubSpot, Customer.io) and paid inbox-placement vendors (seed-network monitors) are an optional Tier-2/3 MCP convenience for automating the seed test, **never required** — every Tier-1 input is a keyless own-account export or a manual seed check. Do **not** invent a `~~deliverability` category. See [CONNECTORS.md](../../../CONNECTORS.md).
+
+**Zero-dependency seed-send automation (when Resend is the ESP)**: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/resend.py" seed --from <verified sender> --to seed1@gmail.com,seed2@outlook.com,… --subject … --html campaign.html --live` fires the seed test as one message **per** seed inbox (via the batch endpoint — the shape a placement test expects), and `resend.py emails --id <id>` reads each message's delivery event afterward. The inbox-vs-spam-vs-promotions **placement** itself is still read manually in each seed inbox — the helper automates the send, not the verdict. Dry-run by default; `--live` to send. See [scripts/connectors/README.md](../../../scripts/connectors/README.md).
 
 ## Instructions
 

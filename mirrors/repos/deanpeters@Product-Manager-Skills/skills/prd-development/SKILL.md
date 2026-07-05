@@ -1,5 +1,6 @@
 ---
 name: prd-development
+argument-hint: "[feature or initiative]"
 description: Build a structured PRD that connects problem, users, solution, and success criteria. Use when turning discovery notes into an engineering-ready document for a major initiative.
 intent: >-
   Guide product managers through structured PRD (Product Requirements Document) creation by orchestrating problem framing, user research synthesis, solution definition, and success criteria into a cohesive document. Use this to move from scattered notes and Slack threads to a clear, comprehensive PRD that aligns stakeholders, provides engineering context, and serves as a source of truth—avoiding ambiguity, scope creep, and the "build what's in my head" trap.
@@ -20,6 +21,17 @@ estimated_time: "60-120 min"
 Guide product managers through structured PRD (Product Requirements Document) creation by orchestrating problem framing, user research synthesis, solution definition, and success criteria into a cohesive document. Use this to move from scattered notes and Slack threads to a clear, comprehensive PRD that aligns stakeholders, provides engineering context, and serves as a source of truth—avoiding ambiguity, scope creep, and the "build what's in my head" trap.
 
 This is not a waterfall spec—it's a living document that captures strategic context, customer problems, proposed solutions, and success criteria, evolving as you learn through delivery.
+
+## Input
+
+**Works best with:** The feature or initiative the PRD covers.
+**Also useful:** Discovery notes, problem statements, user research, success metrics, and constraints — paste whatever exists; the workflow slots it into the right phases and skips what's already answered.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The workflow starts at problem definition and builds up from there.
+
+**Example invocation:** `Build a PRD for self-serve workspace provisioning — here are my discovery notes and the OKR it ladders to.`
 
 ## Key Concepts
 

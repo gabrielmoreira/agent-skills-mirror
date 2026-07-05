@@ -1,18 +1,16 @@
 ---
 name: content-gap-analysis
+slug: aaron-content-gap-analysis
+displayName: "Content Gap Analysis · 内容缺口"
+summary: "内容缺口/选题规划"
 description: 'Use when the user asks to "find content gaps", "竞品写了什么", or "还应该写什么"; builds a competitor-relative coverage map of missing topics, keyword gaps, and editorial-calendar opportunities. Not for raw keyword demand discovery — use keyword-research. 内容缺口/选题规划'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when finding content gaps between two domains, discovering missing topics, or identifying coverage holes versus competitors."
 argument-hint: "<your domain> <competitor domain>"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: seo-geo
-  phase: research
-  geo-relevance: "medium"
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "seo-geo", "phase": "research", "geo-relevance": "medium", "hermes": {"tags": ["marketing", "seo-geo", "research"], "category": "seo-geo"}, "openclaw": {"emoji": "🔍", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Content Gap Analysis
@@ -48,6 +46,8 @@ What content am I missing compared to my top 3 competitors?
 Optional integrations: ~~SEO tool, ~~search console, ~~analytics, ~~AI monitor. Without tools, ask for site URL, content inventory, competitor URLs, and business goals. See [CONNECTORS.md](../../../CONNECTORS.md).
 
 **Trend-scout as a gap-discovery input (keyless)**: feed the multi-source trend scout — Google Trends RSS plus Hacker News and Reddit, via [`scripts/connectors/rss_monitor.py`](../../../scripts/connectors/rss_monitor.py) — to surface rising topics your competitors and you may both miss. Treat each hit as a candidate gap, then check it against your and competitor coverage in steps 5-7. Mark these signals **Estimated**. See [CONNECTORS.md](../../../CONNECTORS.md) `~~trend database`.
+
+**Keyless competitor-coverage inventory**: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/firecrawl.py" map <competitor-domain> --search "<topic>" --limit 1000` lists a competitor's URLs ordered by relevance to the topic — a fast **Measured** coverage inventory for steps 5-7 — and `firecrawl.py scrape <url>` reads any candidate page as rendered markdown. robots.txt is pre-flighted locally; a Disallow is refused per [SECURITY.md §Scraping Boundaries](../../../SECURITY.md). Firecrawl keyless free tier (~1,000 credits/mo). See [scripts/connectors/README.md](../../../scripts/connectors/README.md).
 
 ## Decision Gates
 

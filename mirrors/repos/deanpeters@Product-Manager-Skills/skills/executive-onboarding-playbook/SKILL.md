@@ -1,5 +1,6 @@
 ---
 name: executive-onboarding-playbook
+argument-hint: "[role and company context]"
 description: Plan a VP or CPO 30-60-90 day diagnostic onboarding path. Use when entering a new executive product role and avoiding premature change.
 intent: >-
   Structure the first 90 days of a VP or CPO transition as a diagnostic process, not an execution sprint. The single most common failure in senior product leadership transitions is acting before understanding — changing structures, replacing people, or announcing strategy before building the evidence base that makes those decisions defensible.
@@ -23,6 +24,17 @@ Structure the first 90 days of a VP or CPO transition as a diagnostic process, n
 This playbook runs in three phases: **Diagnose** (Month 1), **Validate** (Month 2), **Act with Evidence** (Month 3). Each phase builds on the last. Skipping phases doesn't accelerate results — it guarantees expensive reversals.
 
 This is not a 100-day plan for impressing your new boss. It's a diagnostic protocol for making durable decisions.
+
+## Input
+
+**Works best with:** The role you're stepping into (VP or CPO) and basic company context — size, stage, how the product org is set up.
+**Also useful:** How far you are from Day 1 (offer stage, pre-start, week 3), known landmines, and what the CEO says success looks like.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The playbook opens by asking your start date and company context, then anchors you in the right phase.
+
+**Example invocation:** `I start as VP Product at a 300-person Series C in 3 weeks — first product exec hire, founder currently runs product. Build my 30-60-90.`
 
 ## Key Concepts
 

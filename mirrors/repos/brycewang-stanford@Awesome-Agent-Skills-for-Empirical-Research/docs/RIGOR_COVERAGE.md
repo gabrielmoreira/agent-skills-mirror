@@ -64,6 +64,11 @@ Non-method checks that gate the rest of the workflow (writing, citations, reprod
 - eval `english-deslop` (writing-style, medium) — English de-slop must remove AI tells without changing facts
 - eval `runtime-safety-replication-setup` (runtime-safety, critical) — Replication setup must not execute untrusted shell or expose credentials
 
+## Unclassified (please classify in build-coverage-map.py)
+
+- eval `statspai-bunching` (category: causal-identification)
+- benchmark `bunching-recovery`
+
 ---
 
-_29 eval scenarios and 16 benchmark tasks across 16 method families; 15 families fully covered, 0 open gaps. Regenerate with `make catalog`._
+_30 eval scenarios and 17 benchmark tasks across 16 method families; 15 families fully covered, 0 open gaps. Regenerate with `make catalog`._

@@ -78,8 +78,9 @@ node scripts/crabbox-wrapper.mjs run --help | sed -n '1,80p'
   toolchain/build error. Do not claim Crabbox proof from a stale PATH shim.
 - OpenClaw scripts prefer `../crabbox/bin/crabbox` when present. The user PATH
   shim can be stale.
-- Check `.crabbox.yaml` for direct-provider defaults. Omitting `--provider`
-  means brokered AWS today.
+- Check `.crabbox.yaml` for the provider default. In OpenClaw, omitting
+  `--provider` means Blacksmith Testbox through Crabbox today; pass
+  `--provider aws` for direct brokered AWS runs.
 - For broad OpenClaw maintainer `pnpm` gates, prefer the repo wrapper with
   `--provider blacksmith-testbox` or the repo Testbox helpers when the standing
   Testbox policy applies.

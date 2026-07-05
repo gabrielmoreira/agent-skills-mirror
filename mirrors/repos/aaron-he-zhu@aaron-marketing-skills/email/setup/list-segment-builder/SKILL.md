@@ -1,18 +1,16 @@
 ---
 name: list-segment-builder
+slug: aaron-list-segment-builder
+displayName: "List Segment Builder · 邮件列表分群"
+summary: "邮件列表分群/生命周期分群/抑制名单/流失召回"
 description: 'Use when the user asks to "build email segments from my list", "make engaged / lapsed / RFM segments", "set up cart-abandoner or lifecycle-stage audiences", or "build a suppression list of unsubscribes and bounces"; turns the user''s OWN list/CRM/GA4/ecommerce export into behavioral, attribute, and lifecycle-stage segments plus a suppression list, with per-segment sizes labeled Measured/Estimated, informing the SEND E (Engagement/targeting) dimension. Not for scoring EQS or running vetoes — use email-quality-auditor; not for authentication or spam-content checks — use deliverability-qa. 邮件列表分群/生命周期分群/抑制名单/流失召回'
-version: "12.1.0"
+version: "13.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when preparing WHO to email before any send is designed: segmenting an exported list/CRM/GA4/ecommerce export into behavioral segments (engaged-90d, cart-abandoners), RFM tiers, and lifecycle stages (new, active, lapsed, win-back), and building the suppression list (unsubscribed, hard-bounced, spam-complained, consent-withdrawn) by reading the consent-registry as the source of truth for consent and suppression facts."
 argument-hint: "<list/CRM CSV or GA4/ecommerce export> [goal: promo|retention|cold] [ESP]"
-metadata:
-  author: aaron-he-zhu
-  version: "12.1.0"
-  discipline: email
-  phase: setup
-  geo-relevance: "low"
+metadata: {"author": "aaron-he-zhu", "version": "13.0.0", "discipline": "email", "phase": "setup", "geo-relevance": "low", "hermes": {"tags": ["marketing", "email", "setup"], "category": "email"}, "openclaw": {"emoji": "✉️", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # List Segment Builder
@@ -50,6 +48,8 @@ Map my list to RFM tiers and lifecycle stages so I can reuse the same audiences 
 ## Data Sources
 
 Use `~~email platform` only as an **own-data manual export** (the ESP campaign/subscriber CSV you exported — opens, clicks, opt-in status, bounce/complaint flags), and lean on `~~web analytics` (GA4 engagement/traffic export) and `~~ecommerce` (own order history: recency, frequency, order value) for the behavioral and RFM buckets; otherwise ask the user to paste the columns. Consent and suppression facts come from the [consent-registry](../../../protocol/consent-registry/SKILL.md) SSOT — this skill **reads** `memory/consent/`, never writes it. Keyed ESP APIs (Klaviyo, Mailchimp, HubSpot, Customer.io) are an optional Tier-2/3 MCP convenience for *syncing* finished segments back, never required to build them. See [CONNECTORS.md](../../../CONNECTORS.md).
+
+**Zero-dependency ESP sync (when Resend is the ESP)**: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/resend.py" contacts` / `segments` reads the live roster and segment list, and — after the suppression is recorded in the consent-registry — `resend.py suppress <id-or-email> --live` pushes it to the platform (`unsubscribed: true`). The registry stays the SSOT; Resend is a downstream mirror. Mutating subcommands are dry-run by default (`--live` to execute). See [scripts/connectors/README.md](../../../scripts/connectors/README.md).
 
 ## Instructions
 

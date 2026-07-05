@@ -1,5 +1,6 @@
 ---
 name: pol-probe-advisor
+argument-hint: "[hypothesis or risk]"
 description: Select the right Proof of Life (PoL) probe based on hypothesis, risk, and resources. Use this to match the validation method to the real learning goal, not tooling comfort.
 intent: >-
   Guide product managers through selecting the right **Proof of Life (PoL) probe** type (of 5 flavors) based on their hypothesis, risk, and available resources. Use this when you need to eliminate a specific risk or test a narrow hypothesis, but aren't sure which validation method to use. This interactive skill ensures you match the cheapest prototype to the harshest truth—not the prototype you're most comfortable building.
@@ -19,6 +20,17 @@ scenarios:
 Guide product managers through selecting the right **Proof of Life (PoL) probe** type (of 5 flavors) based on their hypothesis, risk, and available resources. Use this when you need to eliminate a specific risk or test a narrow hypothesis, but aren't sure which validation method to use. This interactive skill ensures you match the cheapest prototype to the harshest truth—not the prototype you're most comfortable building.
 
 This is **not** a tool for deciding *if* you should validate (you should). It's a decision framework for choosing *how* to validate most effectively.
+
+## Input
+
+**Works best with:** The hypothesis you want to validate or the risk you want to eliminate.
+**Also useful:** Your resources (time, budget, engineering access), audience access, and what failure would cost.
+
+Anything supplied with the invocation itself — text after the skill name, a pasted context dump, or an appended `ARGUMENTS:` line — counts as answers already given. Use it and skip whatever it covers; don't re-ask.
+
+**Arriving empty-handed? That works too.** The advisor opens by asking what you're trying to learn, then matches you to one of the 5 probe flavors.
+
+**Example invocation:** `Which probe fits? Hypothesis: mid-market HR teams will trust AI-drafted job descriptions enough to publish them; 2 weeks, no eng support.`
 
 ## Key Concepts
 

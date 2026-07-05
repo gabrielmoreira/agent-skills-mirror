@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.9] - 2026-07-04
+
+### ✨ Features
+
+- **Non-interactive CLI commands** — New scriptable commands for CI/automation: `ccg codex-mode install`, `ccg codex-mode uninstall`, and `ccg uninstall`. No interactive prompts; exit codes and stdout suitable for scripting.
+
+---
+
+## [3.1.8] - 2026-07-04
+
+### 🐛 Fixes
+
+- **Quality gate rule used wrong skill names without `ccg:` prefix (#148)** — `ccg-skills.md` told AI to call `verify-security` (no prefix), but the actual installed commands are `/ccg:verify-security`. AI followed the rule, got "Unknown skill", and skipped quality gates. All references now use the correct `/ccg:` prefixed names.
+
+---
+
 ## [3.1.6] - 2026-06-18
 
 ### ✨ Features
