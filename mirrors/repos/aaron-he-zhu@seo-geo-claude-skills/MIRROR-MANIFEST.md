@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aaron-he-zhu/seo-geo-claude-skills` — 26 default patterns, 7 followed patterns, 32 file(s) materialized.
+Mirror of `aaron-he-zhu/seo-geo-claude-skills` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `aaron-he-zhu/seo-geo-claude-skills` — 26 default patterns, 7 follow
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 32 |
+| Followed pats | 0 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,13 +51,7 @@ Mirror of `aaron-he-zhu/seo-geo-claude-skills` — 26 default patterns, 7 follow
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `README.md`
-- `references/core-eeat-benchmark.md`
-- `references/cite-domain-rating.md`
-- `CONNECTORS.md`
-- `docs/README.zh.md`
-- `scripts/connectors/README.md`
-- `references/measurement-protocol.md`
+_None._
 
 ## File Index
 
@@ -65,38 +59,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`build/geo-content-optimizer/SKILL.md`](build/geo-content-optimizer/SKILL.md) |
-| 3 | ✓ | [`build/meta-tags-optimizer/SKILL.md`](build/meta-tags-optimizer/SKILL.md) |
-| 4 | ✓ | [`build/schema-markup-generator/SKILL.md`](build/schema-markup-generator/SKILL.md) |
-| 5 | ✓ | [`build/seo-content-writer/SKILL.md`](build/seo-content-writer/SKILL.md) |
-| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 7 | ✓ | [`cross-cutting/content-quality-auditor/SKILL.md`](cross-cutting/content-quality-auditor/SKILL.md) |
-| 8 | ✓ | [`cross-cutting/domain-authority-auditor/SKILL.md`](cross-cutting/domain-authority-auditor/SKILL.md) |
-| 9 | ✓ | [`cross-cutting/entity-optimizer/SKILL.md`](cross-cutting/entity-optimizer/SKILL.md) |
-| 10 | ✓ | [`cross-cutting/memory-management/SKILL.md`](cross-cutting/memory-management/SKILL.md) |
-| 11 | ✓ | [`evals/README.md`](evals/README.md) |
-| 12 | ✓ | [`monitor/alert-manager/SKILL.md`](monitor/alert-manager/SKILL.md) |
-| 13 | ✓ | [`monitor/backlink-analyzer/SKILL.md`](monitor/backlink-analyzer/SKILL.md) |
-| 14 | ✓ | [`monitor/performance-reporter/SKILL.md`](monitor/performance-reporter/SKILL.md) |
-| 15 | ✓ | [`monitor/rank-tracker/SKILL.md`](monitor/rank-tracker/SKILL.md) |
-| 16 | ✓ | [`optimize/content-refresher/SKILL.md`](optimize/content-refresher/SKILL.md) |
-| 17 | ✓ | [`optimize/internal-linking-optimizer/SKILL.md`](optimize/internal-linking-optimizer/SKILL.md) |
-| 18 | ✓ | [`optimize/on-page-seo-auditor/SKILL.md`](optimize/on-page-seo-auditor/SKILL.md) |
-| 19 | ✓ | [`optimize/technical-seo-checker/SKILL.md`](optimize/technical-seo-checker/SKILL.md) |
-| 20 | ✓ | [`references/auditor-runbook.md`](references/auditor-runbook.md) |
-| 21 | ✓ | [`references/state-model.md`](references/state-model.md) |
-| 22 | ✓ | [`research/competitor-analysis/SKILL.md`](research/competitor-analysis/SKILL.md) |
-| 23 | ✓ | [`research/content-gap-analysis/SKILL.md`](research/content-gap-analysis/SKILL.md) |
-| 24 | ✓ | [`research/keyword-research/SKILL.md`](research/keyword-research/SKILL.md) |
-| 25 | ✓ | [`research/serp-analysis/SKILL.md`](research/serp-analysis/SKILL.md) |
-| 26 | → | [`CONNECTORS.md`](CONNECTORS.md) |
-| 27 | → | [`docs/README.zh.md`](docs/README.zh.md) |
-| 28 | → | [`README.md`](README.md) |
-| 29 | → | [`references/cite-domain-rating.md`](references/cite-domain-rating.md) |
-| 30 | → | [`references/core-eeat-benchmark.md`](references/core-eeat-benchmark.md) |
-| 31 | → | [`references/measurement-protocol.md`](references/measurement-protocol.md) |
-| 32 | → | [`scripts/connectors/README.md`](scripts/connectors/README.md) |
+| 1 | ✓ | [`build/geo-content-optimizer/SKILL.md`](build/geo-content-optimizer/SKILL.md) |
+| 2 | ✓ | [`build/meta-tags-optimizer/SKILL.md`](build/meta-tags-optimizer/SKILL.md) |
+| 3 | ✓ | [`build/schema-markup-generator/SKILL.md`](build/schema-markup-generator/SKILL.md) |
+| 4 | ✓ | [`build/seo-content-writer/SKILL.md`](build/seo-content-writer/SKILL.md) |
+| 5 | ✓ | [`cross-cutting/content-quality-auditor/SKILL.md`](cross-cutting/content-quality-auditor/SKILL.md) |
+| 6 | ✓ | [`cross-cutting/domain-authority-auditor/SKILL.md`](cross-cutting/domain-authority-auditor/SKILL.md) |
+| 7 | ✓ | [`cross-cutting/entity-optimizer/SKILL.md`](cross-cutting/entity-optimizer/SKILL.md) |
+| 8 | ✓ | [`cross-cutting/memory-management/SKILL.md`](cross-cutting/memory-management/SKILL.md) |
+| 9 | ✓ | [`monitor/alert-manager/SKILL.md`](monitor/alert-manager/SKILL.md) |
+| 10 | ✓ | [`monitor/backlink-analyzer/SKILL.md`](monitor/backlink-analyzer/SKILL.md) |
+| 11 | ✓ | [`monitor/performance-reporter/SKILL.md`](monitor/performance-reporter/SKILL.md) |
+| 12 | ✓ | [`monitor/rank-tracker/SKILL.md`](monitor/rank-tracker/SKILL.md) |
+| 13 | ✓ | [`optimize/content-refresher/SKILL.md`](optimize/content-refresher/SKILL.md) |
+| 14 | ✓ | [`optimize/internal-linking-optimizer/SKILL.md`](optimize/internal-linking-optimizer/SKILL.md) |
+| 15 | ✓ | [`optimize/on-page-seo-auditor/SKILL.md`](optimize/on-page-seo-auditor/SKILL.md) |
+| 16 | ✓ | [`optimize/technical-seo-checker/SKILL.md`](optimize/technical-seo-checker/SKILL.md) |
+| 17 | ✓ | [`research/competitor-analysis/SKILL.md`](research/competitor-analysis/SKILL.md) |
+| 18 | ✓ | [`research/content-gap-analysis/SKILL.md`](research/content-gap-analysis/SKILL.md) |
+| 19 | ✓ | [`research/keyword-research/SKILL.md`](research/keyword-research/SKILL.md) |
+| 20 | ✓ | [`research/serp-analysis/SKILL.md`](research/serp-analysis/SKILL.md) |
 
 ---
 

@@ -50,7 +50,7 @@ notes for Stage 2.
 ## Harvest layout (what Stage 2 writes)
 
 ```
-<repo>/.github/issue-evidence/gpt55-training-pipeline/harvest/
+<repo>/reports/training-harvest/gpt55/harvest/
   <family>/<dir-slug>/<item-slug>/
       report.json                 scenario aggregate report (per-scenario status)
       native.jsonl                eliza_native_v1 rows (scenarioStatus + judgeScore)

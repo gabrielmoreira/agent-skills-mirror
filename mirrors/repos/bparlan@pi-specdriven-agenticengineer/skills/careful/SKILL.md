@@ -2,7 +2,7 @@
 name: careful
 description: High-risk operation pre-flight checklist. 
 use when: mass-refactoring, configuration changes, destructive operations, or any task where the "undo" cost is high.
-allowed-tools: bash, read, write, AskUserQuestion
+tools: bash, read, write, ask
 ---
 
 # Careful: High-Risk Pre-flight
@@ -23,7 +23,7 @@ Draft a plan:
 - How will we verify success *immediately* after the change?
 
 ## Phase 3: Sign-off
-Use `AskUserQuestion` to present the plan:
+Use `ask` to present the plan:
 - "The following operation is high-risk. Proceed?"
 - Present the Blast Radius and Rollback strategy clearly.
 - **Do not proceed until you have confirmation.**
@@ -46,5 +46,5 @@ Outcome:         SUCCESS | FAILURE | PARTIAL
 
 ## Rules
 - If you cannot define a rollback strategy, **do not execute**.
-- If the blast radius is larger than you anticipated, **STOP** and AskUserQuestion for guidance.
-- For high-stakes changes, always require human sign-off via AskUserQuestion.
+- If the blast radius is larger than you anticipated, **STOP** and ask for guidance.
+- For high-stakes changes, always require human sign-off via ask.

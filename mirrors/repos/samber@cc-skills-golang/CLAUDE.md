@@ -156,6 +156,7 @@ Read Edit Write Glob Grep Bash(go:*) Bash(golangci-lint:*) Bash(git:*) Agent
 | `WebFetch` | Library-specific skills, skills requiring deep research/analysis, skills fetching external docs or resources |
 | `WebSearch` | Skills requiring deep research or analysis (security, benchmarking, performance, troubleshooting, observability) and skills that discover resources or track updates |
 | `AskUserQuestion` | Skills that benefit from clarifying user intent, confirming assumptions, or gathering context before proceeding — useful for audit/review modes, architecture decisions, ambiguous requirements, or any skill where acting on wrong assumptions is costly |
+| `EnterWorktree ExitWorktree` | Skills whose workflow spawns **mutating** parallel sub-agents (doc generation, modernization sweeps), compares code variants (benchmarks/perf), or applies each fix on its own branch (large security audits). Not for read-only parallel audits — concurrent reads need no isolation. |
 
 When creating a new skill, suggest a tailored `allowed-tools` list based on the skill's purpose.
 
@@ -188,10 +189,11 @@ Place these directives at the very top of the body, before the first heading, in
 | --- | --- | --- | --- |
 | **Persona** | Optional | `**Persona:** You are a <role>. <mindset or goal>.` | Analytical/generative/multi-mode skills |
 | **Thinking mode** | Optional | `**Thinking mode:** Use \`ultrathink\` for <task>. <Why deep reasoning matters>.` | Deep analysis: profiling, security auditing, root cause analysis |
+| **Orchestration mode** | Optional | `**Orchestration mode:** Use \`ultracode\` for <task>. <Why fan-out orchestration helps here>.` | Skills with a parallel fan-out audit/scan/cleanup mode (up to N sub-agents) |
 | **Modes** | Optional | `**Modes:**` section listing each invocation mode and its sub-agent strategy | Skills invoked in distinct contexts (audit, coding, review, code understanding...) |
 | **Dependencies** | Optional | `**Dependencies:**` list of required binaries with install commands | Skills that require external tools beyond `go` (e.g. `benchstat`, `dlv`, `golangci-lint`) |
 
-All four are optional. A short procedural skill may have none. A complex orchestrating skill may have all four.
+All five are optional. A short procedural skill may have none. A complex orchestrating skill may have all five.
 
 The **Dependencies** block lists only non-trivial developer tools — skip universal system utilities (e.g. `curl`, `git`). Prefer `go install` over `brew install` when the tool provides a Go install path; use `brew install` only for tools without one (e.g. `protoc`). Place this block last among the top-of-body directives, just before the first `#` heading.
 
@@ -271,6 +273,18 @@ When creating or modifying a skill that involves deep analysis, profiling, debug
 ```
 
 Update the README.md Ultrathink column (🧠 emoji) to keep track of skills requiring ultrathink mode.
+
+### Ultracode policy
+
+Skills that already describe a full-codebase audit/scan/cleanup mode with several parallel sub-agents (e.g. "launch up to 5 parallel sub-agents") include an **Orchestration mode:** `ultracode` instruction in their SKILL.md body. When you encounter this instruction and the user is requesting a broad, codebase-wide sweep, escalate to multi-agent fan-out orchestration instead of a single sequential pass.
+
+When creating or modifying a skill whose audit/scan/cleanup mode already fans out to parallel sub-agents, add this line in the top-of-body directives block, after **Thinking mode** (if present, otherwise after **Persona**) and before **Modes**:
+
+```
+**Orchestration mode:** Use `ultracode` for <full-codebase audit/scan/cleanup task>. <Why fan-out orchestration helps here>.
+```
+
+Update the README.md Ultracode column (🤖 emoji) to keep track of skills requiring ultracode mode.
 
 ### Tool reference sections
 
@@ -575,8 +589,9 @@ For initial evaluation of skills, use Human-as-Judge.
 
 After writing a new skill body, run the description optimization loop before marking it ready:
 
-1. Verify the description against quality criteria: contains "Golang", has "Use when"/"Apply when" trigger clause with specific scenarios, no broad anti-patterns (`whenever writing Go code`, `Essential for ANY`, `proactively`), FQN cross-refs for competing skills (`samber/cc-skills-golang@<skill>`), library skills use `Apply when the codebase imports github.com/...` pattern. Description must stay ≤ 1,000 characters.
-2. Follow the [After updating a skill](#after-updating-a-skill) checklist.
+1. Check whether any existing skill should reference the new skill: dispatch parallel sub-agents (via the Agent tool, split by scope — e.g. one per group of `skills/*/SKILL.md`) to read the other skills in full and judge whether the new skill's topic, adjacent concepts, or libraries overlap with what they already cover. Where an existing skill touches the same ground, add a `→ See samber/cc-skills-golang@<new-skill>` cross-reference (in its description and/or body) instead of leaving the two skills to drift apart — see [Atomic skills and deduplication](#atomic-skills-and-deduplication). Bump the `metadata.version` of every skill file edited this way.
+2. Verify the description against quality criteria: contains "Golang", has "Use when"/"Apply when" trigger clause with specific scenarios, no broad anti-patterns (`whenever writing Go code`, `Essential for ANY`, `proactively`), FQN cross-refs for competing skills (`samber/cc-skills-golang@<skill>`), library skills use `Apply when the codebase imports github.com/...` pattern. Description must stay ≤ 1,000 characters.
+3. Follow the [After updating a skill](#after-updating-a-skill) checklist.
 
 ### Checking for outdated skills
 

@@ -6,18 +6,24 @@ license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents. Requires git.
 metadata:
   author: samber
-  version: "1.0.1"
+  version: "1.1.0"
   openclaw:
     emoji: "🧭"
     homepage: https://github.com/samber/cc-skills-golang
     requires:
       bins:
         - go
-    install: []
-allowed-tools: Read Edit Write Glob Grep Bash(git:*) Agent AskUserQuestion
+        - gopls
+    install:
+      - kind: go
+        package: golang.org/x/tools/gopls@latest
+        bins: [gopls]
+allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(git:*) Agent AskUserQuestion LSP Bash(gopls:*) mcp__gopls__*
 ---
 
 **Persona:** You are a Go skills orchestrator. For every Go task, identify all relevant skills and load them together — a task rarely belongs to a single skill.
+
+**Dependencies:** `gopls` — `go install golang.org/x/tools/gopls@latest`; the built-in `LSP` tool also needs `ENABLE_LSP_TOOL=1` and a Go language server wired (see [Code navigation with gopls](#code-navigation-with-gopls)).
 
 **Modes:**
 
@@ -62,6 +68,51 @@ For each task, load the **primary skill** and all applicable **secondary skills*
 | Use dependency injection | `golang-dependency-injection` | `golang-google-wire` or `golang-uber-dig` or `golang-uber-fx` or `golang-samber-do` |
 
 All skill identifiers above are short forms of `samber/cc-skills-golang@<name>`.
+
+## Code navigation with gopls
+
+`gopls` gives semantic code intelligence for Go — go-to-definition, find references, diagnostics, package API, symbol search. It reaches an agent through two different mechanisms; they solve different problems and are worth wiring both.
+
+**gopls's own MCP server** — built for AI agents specifically, and the default choice for most tasks. Register it with `claude mcp add gopls -- gopls mcp` (requires `gopls` v0.20+ on PATH; the detached `gopls mcp` mode only sees saved files, which is fine for an agent-only workflow with no attached editor). Its tools take names, paths, and queries rather than raw cursor positions, so they fit how an agent naturally asks questions. Two workflows:
+
+- **Read** — `go_workspace` first, to learn the workspace layout (module/workspace/GOPATH). `go_search` fuzzy-finds a symbol by name. `go_file_context` shows a file's intra-package dependencies — use it right after reading any Go file for the first time. `go_package_api` shows a package's public API — most useful for third-party dependencies or other packages in a monorepo.
+- **Edit** — before touching a symbol's definition, `go_symbol_references` finds every call site so you can judge the blast radius. After every edit, `go_diagnostics` on the changed files is mandatory — fix what it reports, then re-run it. If the edit touched `go.mod` dependencies, `go_vulncheck` afterwards checks the whole workspace for reachable vulnerabilities in the new dependency graph. Then run `go test <packagePath>` for the changed packages — not `./...` unless asked, since a full-repo run slows down the iteration loop.
+
+**The native `LSP` tool** — Claude Code's built-in editor-style integration. It is **not enabled by default**: set `ENABLE_LSP_TOOL=1`, install `gopls`, and wire it as the Go language server by installing the official `gopls-lsp@claude-plugins-official` marketplace plugin. Its operations (`goToDefinition`, `findReferences`, `hover`, `documentSymbol`, `workspaceSymbol`, `goToImplementation`, call hierarchy) are keyed by `line`/`character`, so they're most useful once you already have a location — typically right after a grep or read — rather than as a first search. Its unique value the MCP server doesn't replicate: compiler diagnostics get pushed into context automatically after every edit, with no explicit `go_diagnostics` call needed.
+
+Either way, `gopls` only reasons about code that is present and resolvable in the local build: your workspace plus every dependency exactly as pinned in `go.sum` (including `replace` directives). `go_vulncheck` only flags what your _current_ build actually reaches — for a specific published package/version you haven't added yet, or for a comprehensive whole-tree `govulncheck` audit, see `samber/cc-skills-golang@golang-pkg-go-dev` and `samber/cc-skills-golang@golang-security` respectively. For any fact that isn't tied to your local build — version history, licenses, ecosystem-wide importers — use `golang-pkg-go-dev` (`godig`). See the `godig` vs gopls vs Context7 vs govulncheck section below for the full boundary.
+
+## `godig` vs gopls vs Context7 vs govulncheck
+
+Four tools can answer "is this dependency OK to use," and they don't overlap as much as they look:
+
+- **Context7** is a general-purpose, cross-language documentation fetcher — useful when no more specific source exists. For a Go package or module, `godig` is almost always the better choice: it pulls **structured, Go-specific data** straight from pkg.go.dev — exact versions, exported symbols with signatures, runnable examples, `imported-by`, and known vulnerabilities — rather than Context7's generic scraped/curated docs, which don't expose that structure and can lag or miss lesser-known Go modules. Reach for Context7 only when a dependency's documentation genuinely doesn't exist or isn't indexed on pkg.go.dev.
+- **`godig`** answers questions about the **published ecosystem**: any Go package or module, whether or not it's in your `go.mod` yet — it calls the remote pkg.go.dev API and never touches your local checkout. Its `vulns` command reports CVEs known for a package/version in isolation, regardless of whether your build actually reaches the vulnerable code path.
+- **`gopls`** (via its MCP server, or the native `LSP` tool) answers questions about **your specific build**: your code plus every dependency exactly as pinned in `go.sum`, including `replace` directives pointing at forks or local paths — neither `godig` nor Context7 can see that. Its `go_vulncheck` operation runs a single, on-demand reachability check against the workspace as it stands right now.
+- **`govulncheck`** (the standalone CLI, wrapped by the `samber/cc-skills-golang@golang-security` skill) is the whole-tree audit: it walks the entire module's call graph to confirm which known vulnerabilities are actually reachable, and is the tool of record for CI gates and periodic security sweeps — `gopls`'s `go_vulncheck` is a lighter-weight, single-shot version of the same analysis for use mid-edit.
+
+Pick by task:
+
+| Task | Tool | How |
+| --- | --- | --- |
+| Find where a symbol is defined in your own repo | `gopls` | `go_search`, then `go_file_context` |
+| Understand a file's intra-package dependencies | `gopls` | `go_file_context` |
+| Jump into a dependency's exact resolved source (incl. forks/`replace`d versions) | `gopls` | `go_package_api`, or the native `LSP` tool's `goToDefinition` |
+| Find every call site in your own code that references a dependency's symbol | `gopls` | `go_symbol_references` — `godig`'s `imported-by` only lists public _packages_, not call sites in your repo |
+| Get compiler diagnostics right after an edit | `gopls` | `go_diagnostics` (MCP), or automatic with the native `LSP` tool |
+| Check whether your current build can reach a known vulnerability, mid-edit | `gopls` | `go_vulncheck` |
+| Whole-tree vulnerability audit across the module (CI, periodic sweep) | `govulncheck` | `samber/cc-skills-golang@golang-security` skill — `govulncheck ./...` |
+| List available versions of a published package | `godig` | `godig versions <path>` |
+| Check known CVEs for a package/version you haven't added yet | `godig` | `godig vulns <path>` |
+| See exported symbols/signatures of a published package | `godig` | `godig symbols` / `symbol doc` |
+| Get runnable code examples for a symbol | `godig` | `godig symbol examples` |
+| Read a package's rendered README/docs | `godig` | `godig module readme` / `package doc` |
+| See who imports a package across the whole public ecosystem | `godig` | `godig imported-by` |
+| Search for a package or library candidate | `godig` | `godig search` |
+| Check a package's or module's license | `godig` | `godig package licenses` / `module licenses` |
+| Get docs for a non-Go library, or a Go module not indexed on pkg.go.dev | Context7 | `resolve-library-id` / `query-docs` |
+
+See the `samber/cc-skills-golang@golang-pkg-go-dev` skill for the full `godig` command reference, and the `samber/cc-skills-golang@golang-security` skill for the whole-tree `govulncheck` remediation workflow.
 
 ## Categories at a glance
 

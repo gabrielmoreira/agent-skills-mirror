@@ -686,20 +686,7 @@ def _report_cache_ttl_seconds(config: dict[str, object]) -> int:
 
 
 def _is_report_cache_fresh(timestamp: object, ttl_seconds: int) -> bool:
-    if ttl_seconds <= 0:
-        return False
-    if not isinstance(timestamp, str) or not timestamp:
-        return False
-    try:
-        created_at = datetime.datetime.fromisoformat(timestamp)
-    except ValueError:
-        return False
-    if created_at.tzinfo is None:
-        created_at = created_at.replace(tzinfo=datetime.timezone.utc)
-    age = datetime.datetime.now(datetime.timezone.utc) - created_at.astimezone(
-        datetime.timezone.utc
-    )
-    return age.total_seconds() <= ttl_seconds
+    return env.is_timestamp_fresh(timestamp, ttl_seconds)
 
 
 def _write_last_run(
@@ -910,6 +897,15 @@ SKILL_ONLY_FLAGS = {
     "--agent",
 }
 
+# Doctor passthrough: `doctor --json` / `doctor --cached` mirror the setup
+# passthrough pattern (neither is a global parser flag; they only mean
+# something to doctor). `--cached` serves the stored doctor-cache.json report
+# within its TTL and falls through to a live run otherwise.
+DOCTOR_PASSTHROUGH_FLAGS = {
+    "--json",
+    "--cached",
+}
+
 
 def _validate_extra_argv(parser: argparse.ArgumentParser, topic: str, extra_argv: list[str]) -> None:
     if not extra_argv:
@@ -921,6 +917,15 @@ def _validate_extra_argv(parser: argparse.ArgumentParser, topic: str, extra_argv
                 "unsupported setup argument(s): "
                 + ", ".join(unsupported)
                 + f"; supported setup passthrough flags are {', '.join(sorted(SETUP_PASSTHROUGH_FLAGS))}"
+            )
+        return
+    if topic.lower() == "doctor":
+        unsupported = [arg for arg in extra_argv if arg not in DOCTOR_PASSTHROUGH_FLAGS]
+        if unsupported:
+            parser.error(
+                "unsupported doctor argument(s): "
+                + ", ".join(unsupported)
+                + f"; supported doctor passthrough flags are {', '.join(sorted(DOCTOR_PASSTHROUGH_FLAGS))}"
             )
         return
     skill_only = [arg for arg in extra_argv if arg in SKILL_ONLY_FLAGS]
@@ -940,7 +945,8 @@ def _validate_extra_argv(parser: argparse.ArgumentParser, topic: str, extra_argv
 def _config_policy_for_args(args: argparse.Namespace, topic: str, extra_argv: list[str]) -> env.ConfigLoadPolicy:
     if args.no_browser_cookies:
         browser_mode = "off"
-    elif args.diagnose or args.preflight:
+    elif args.diagnose or args.preflight or topic.lower() == "doctor":
+        # doctor is plan-only like --diagnose: it must never read cookies.
         browser_mode = "plan_only"
     elif topic.lower() == "setup":
         browser_mode = "read" if _setup_allows_browser_cookies(args, extra_argv) else "off"
@@ -948,7 +954,7 @@ def _config_policy_for_args(args: argparse.Namespace, topic: str, extra_argv: li
         browser_mode = "read"
     return env.ConfigLoadPolicy(
         browser_cookies=browser_mode,
-        inspect_ignored_project_config=args.diagnose or args.preflight,
+        inspect_ignored_project_config=args.diagnose or args.preflight or topic.lower() == "doctor",
     )
 
 
@@ -1004,6 +1010,18 @@ def main() -> int:
         else:
             print(permission_preflight.render_text(preflight), end="")
         return 0
+
+    # Handle doctor subcommand: topic-word dispatch mirroring setup (exact
+    # match only, so multi-word research topics containing "doctor" still
+    # research normally). Aggregates probes/descriptors/prescriptions into
+    # one grouped health surface; always exits 0.
+    if topic.lower() == "doctor":
+        from lib import doctor
+        return doctor.run(
+            config,
+            emit_json=(args.emit == "json" or "--json" in extra_argv),
+            cached="--cached" in extra_argv,
+        )
 
     # Handle setup subcommand
     if topic.lower() == "setup":

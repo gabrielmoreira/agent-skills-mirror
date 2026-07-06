@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hackerai-tech/hackerai` — 26 default patterns, 0 followed patterns, 98 file(s) materialized.
+Mirror of `hackerai-tech/hackerai` — 26 default patterns, 0 followed patterns, 99 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hackerai-tech/hackerai` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 98 |
+| Files         | 99 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -157,6 +157,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 96 | ✓ | [`.github/skills/vercel-react-best-practices/AGENTS.md`](.github/skills/vercel-react-best-practices/AGENTS.md) |
 | 97 | ✓ | [`.github/skills/vercel-react-best-practices/SKILL.md`](.github/skills/vercel-react-best-practices/SKILL.md) |
 | 98 | ✓ | [`.github/skills/web-design-guidelines/SKILL.md`](.github/skills/web-design-guidelines/SKILL.md) |
+| 99 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

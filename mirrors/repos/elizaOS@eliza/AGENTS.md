@@ -55,6 +55,24 @@ Scope any command to one package with `--cwd`:
 `bun run --cwd packages/core test`. The repo has 188 root scripts; the list
 above is the day-to-day set. Use `bun run` with no args to print them all.
 
+### Shared dev server for parallel lanes
+
+When several worktrees are active on the same VPS, do **not** have every lane bind
+the default app UI port (`2138`). `packages/app` keeps `bun run dev` unchanged
+for single-lane local work, but concurrent agents should use the shared scripts:
+
+```bash
+cd packages/app
+bun run dev:shared   # long-lived Vite server on a deterministic worktree port
+bun run dev:status   # list running shared dev servers (port, worktree, pid)
+bun run dev:rebuild  # explicit Vite full-reload trigger for this worktree
+```
+
+Ports are reserved in `~/.eliza/dev-server-registry.json` (override with
+`ELIZA_DEV_SERVER_REGISTRY`) from the normalized worktree path, with registry
+locking and linear probing so active lanes do not collide. See
+[`packages/docs/development/shared-dev-server.md`](packages/docs/development/shared-dev-server.md).
+
 ### Removed Root Command Migrations
 
 | Removed command | Use instead |
@@ -172,6 +190,44 @@ To build on the runtime from your own TypeScript with no CLI/UI, import
   with `?? 0` or `as` casts.
 - Keep weak types (`any` / `unknown` / unsafe casts) out; validate at runtime
   boundaries and type the validated result.
+
+## GitHub project coordination
+
+For agent/human work coordinated through GitHub Projects, read
+[`docs/AGENT_COORDINATION.md`](docs/AGENT_COORDINATION.md) before claiming work.
+Permanent process lives in that doc, not in a long issue-comment thread.
+
+- Issues are scoped work cards with acceptance criteria and evidence.
+- GitHub Projects are the live kanban state: `Todo` -> `Claimed` ->
+  `In progress` -> `Needs-agent-verify` -> `needs-human-verify` -> `Done`.
+- Set the Project `Claimed by` field to your lane/agent tag when you claim a
+  card, and keep `Status` accurate.
+- Discussions are for coordination, handoffs, and noisy multi-card chat; roll
+  durable decisions back into docs, issue bodies, or Project readmes.
+- PRs carry the code and the proof required by `PR_EVIDENCE.md`; link the issue
+  or Project card they resolve.
+- Do not move cards to `Done` unless the board explicitly grants that authority
+  to your role. Human verification owns final done for launch/QA boards.
+
+Current Launch QA routing: Project
+<https://github.com/orgs/elizaOS/projects/12>, Discussion
+<https://github.com/orgs/elizaOS/discussions/14292>, tracker/history
+<https://github.com/elizaOS/eliza/issues/13406>.
+
+LifeOps Personal Assistant MVP routing: Project
+<https://github.com/orgs/elizaOS/projects/15>. Product scope, the seven
+personas, and the per-workstream acceptance bar live in
+[`packages/docs/ongoing-development/mvp/MVP.md`](packages/docs/ongoing-development/mvp/MVP.md);
+in-flight design docs (per-workstream research + status snapshots) live under
+[`packages/docs/ongoing-development/`](packages/docs/ongoing-development/README.md).
+This folder adds a **design-doc layer** to the workflow above: discussion →
+design doc here → issues on the board → PR with evidence → doc updated on merge.
+
+Evidence attaches **inline in the issue/PR**, not committed to the repo: MP4
+video (renders inline in GitHub), JPG over PNG for screenshots, logs in a
+`<details>` block. Bug reports include a screenshot or recording of the *wrong*
+behavior. `.github/issue-evidence/` is retired; the full standard is
+`PR_EVIDENCE.md`.
 
 ## Error-Handling Simplification
 
@@ -427,8 +483,10 @@ The non-negotiables in practice:
   - **Backend logs** (structured `[ClassName] …`) and **frontend logs**
     (console + network) showing the actual code path firing.
   - **Before/after full-page screenshots** (desktop + mobile) + a **video
-    walkthrough** of the whole flow — `bun run test:e2e:record`; for app UI,
-    `bun run --cwd packages/app audit:app`.
+    walkthrough** of the whole flow — default to `bun run test:matrix:review`
+    so the full matrix writes `evidence/matrix-run.json` and opens the unified
+    reviewer. For scoped UI evidence, use `bun run test:e2e:record:review`;
+    for app UI, use `bun run --cwd packages/app audit:app`.
   - **Per-platform capture** (screenshot + recording + logs) for native/mobile/
     desktop changes — `bun run --cwd packages/app capture:ios-sim` /
     `capture:android-emu` / `capture:linux-desktop` / `capture:windows-desktop`,
@@ -447,10 +505,14 @@ The non-negotiables in practice:
   - **Domain artifacts** — the things the change produced (memory/knowledge/DB
     rows, scheduled tasks, wallet balance before/after, on-chain tx hashes,
     generated files, device output) — inspected by hand and shown.
-  - Artifacts land in `.github/issue-evidence/<issue#>-<slug>.<ext>` (see that
-    dir's `README.md`). Each evidence type is attached **or** explicitly marked
-    N/A with a reason — never left blank. If `develop` moved and changed
-    behavior, **re-capture** evidence; stale proof is worse than none.
+  - Evidence is posted **inline in the issue/PR itself** (drag-and-drop):
+    videos as **MP4** (GitHub renders MP4 inline — convert `.mov`/`.webm`),
+    screenshots as **JPG** rather than PNG where possible, long logs in a
+    `<details>` block. Do not commit evidence files to the repo
+    (`.github/issue-evidence/` is retired). Each evidence type is attached
+    **or** explicitly marked N/A with a reason — never left blank. If `develop`
+    moved and changed behavior, **re-capture** evidence; stale proof is worse
+    than none.
 
 ## Contributing
 

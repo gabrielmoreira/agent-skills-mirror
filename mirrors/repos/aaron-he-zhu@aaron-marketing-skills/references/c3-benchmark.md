@@ -71,7 +71,7 @@ Influencer metrics are platform/tier/niche-relative — never hard-code platform
 
 ## Where it is used
 
-The influencer-marketing skills (IMPACT phases: Discover · Plan · Activate · Measure) apply C³:
+The influencer-marketing skills (phases: Discover · Plan · Activate · Measure) apply C³:
 
 Three skills apply C³ scoring directly (they emit the rubric scores and enforce the veto items); two more inform those scores without computing them.
 

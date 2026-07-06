@@ -85,6 +85,18 @@ one short sentence for `changeSummary`, `workReason`, `bestSolution`, and
 `changeSummary` or `workReason` into an automerge/autofix status update; merge
 automation is reported by the command/status comment and hidden markers.
 
+Put maintainer-intent reasoning in `maintainerDecision`; do not expect labels,
+report prose, or deterministic code to reconstruct it later. Set `required:
+true` only when automation should pause for a real human choice. State the
+exact item-specific question, why maintainer intent is required, one to three
+concrete options, exactly one recommended option, and the most likely decision
+owner. `likelyOwner.person` must exactly match a person in `likelyOwners`.
+Choose the recommendation from the evidence even when the final authority stays
+human. Use `kind: "none"`, empty question/rationale, `options: []`, and an empty
+owner with low confidence when no maintainer decision is required. Do not use a
+generic question such as “What should happen next?” and do not create a packet
+for routine contributor follow-up that the review already specifies.
+
 For PRs, do not let labels be the only place that merger risk is visible. If a
 merge can intentionally make an existing user's setup stop working, fail closed,
 lose a fallback path, require a migration, or require operator action, state that
@@ -772,12 +784,23 @@ that is not usefully visible in that recording.
 
 Always fill `mantisRecommendation`. This is maintainer guidance only: it must
 never trigger OpenClaw Mantis, claim Mantis has run, ask ClawSweeper to dispatch
-a workflow, or request ClawSweeper repair markers. Recommend Mantis only when a
-PR changes behavior that is best verified in a real transport or visible UI.
+a workflow, or request ClawSweeper repair markers. Recommend Mantis only for
+Telegram, Discord, or web UI chat behavior that Mantis can currently prove.
+Mantis is proof-only: it may reproduce or inspect those surfaces and return
+redacted screenshots, transcripts, logs, or interaction results. Never
+recommend Mantis to edit code, fix CI, update a branch, push commits, repair a
+pull request, change labels or comments, close an item, or perform another
+GitHub mutation. Those actions belong to ClawSweeper's repair, apply, and
+automerge lanes. When the next useful step is mutation rather than proof, use
+`not_recommended`.
 Use `status: "not_recommended"`, `scenario: "none"`, and an empty
 `maintainerComment` for issues, docs-only/test-only/internal refactors, CI-only
-work, pure schema/type changes, or behavior where unit tests are the better
-proof.
+work, pure schema/type changes, unsupported native app/page proof such as WinUI,
+or behavior where unit tests, maintainer screenshot/manual proof,
+browser/Playwright proof, Crabbox, or normal local artifact proof is the better
+path. Put that non-Mantis proof path in the real behavior proof summary,
+PR-rating next step, best solution, or public next step instead of creating a
+Mantis command.
 
 Known Mantis lanes:
 
@@ -791,14 +814,21 @@ Known Mantis lanes:
   reaction proof. Use only for status reaction behavior.
 - `discord_thread_attachment`: before/after Discord thread reply filePath
   attachment proof. Use only for thread attachment behavior.
-- `slack_desktop_smoke`: Slack desktop/VNC proof. Use for Slack desktop or
-  gateway-visible behavior.
-- `visual_task`: generic visible browser/desktop proof. Use only when no
-  dedicated transport scenario fits and the proof can be described concretely.
+- `web_ui_chat_proof`: before/after web UI chat transcript or chat interaction
+  proof. Use only for OpenClaw web UI chat behavior, not generic browser pages,
+  settings panes, dashboards, WinUI screens, or other non-chat visual proof.
+
+Do not recommend Mantis for Slack desktop, WinUI, generic browser screenshots,
+settings pages, dashboards, terminal-only behavior, local file artifacts, or
+other non-chat UI proof. For those surfaces, use `not_recommended` and suggest
+the more appropriate proof path outside `mantisRecommendation`.
 
 When `mantisRecommendation.status` is `recommended`, write a single-line
 `maintainerComment` that starts with `@openclaw-mantis` and describes the exact
-behavior to prove. Do not use any shorter or ambiguous Mantis account mention.
+behavior to prove. Include an explicit proof action such as `verify`,
+`reproduce`, `capture`, `inspect`, `record`, or `test`; ambiguous requests
+without proof intent fail closed. Do not use any shorter or ambiguous Mantis
+account mention.
 ClawSweeper validates the account mention and renders it in a fenced text block
 so maintainers can copy the exact PR comment without accidentally starting a
 Mantis workflow from the ClawSweeper review comment. Example:

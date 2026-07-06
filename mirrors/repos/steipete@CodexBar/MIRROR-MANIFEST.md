@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `steipete/CodexBar` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `steipete/CodexBar` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `steipete/CodexBar` — 26 default patterns, 0 followed patterns, 12 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,9 +68,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`.agents/skills/qa-test/SKILL.md`](.agents/skills/qa-test/SKILL.md) |
 | 8 | ✓ | [`.agents/skills/release-codexbar/SKILL.md`](.agents/skills/release-codexbar/SKILL.md) |
 | 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 10 | ✓ | [`docs/claude.md`](docs/claude.md) |
-| 11 | ✓ | [`docs/gemini.md`](docs/gemini.md) |
-| 12 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
+| 10 | ✓ | [`docs/claude-multi-account-and-status-items.md`](docs/claude-multi-account-and-status-items.md) |
+| 11 | ✓ | [`docs/claude.md`](docs/claude.md) |
+| 12 | ✓ | [`docs/gemini.md`](docs/gemini.md) |
+| 13 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
 
 ---
 

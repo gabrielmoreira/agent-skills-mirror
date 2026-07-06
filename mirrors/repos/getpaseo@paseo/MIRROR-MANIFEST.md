@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 27 followed patterns, 41 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 28 followed patterns, 42 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 27 followed patterns, 41 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 27 |
-| Files         | 41 |
+| Followed pats | 28 |
+| Files         | 42 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,6 +68,7 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 27 followed patterns, 41 fil
 - `docs/service-proxy.md`
 - `docs/development.md`
 - `docs/rpc-namespacing.md`
+- `docs/protocol-validation.md`
 - `docs/terminal-performance.md`
 - `docs/testing.md`
 - `docs/mobile-testing.md`
@@ -117,15 +118,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | → | [`docs/hover.md`](docs/hover.md) |
 | 31 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
 | 32 | → | [`docs/product.md`](docs/product.md) |
-| 33 | → | [`docs/providers.md`](docs/providers.md) |
-| 34 | → | [`docs/release.md`](docs/release.md) |
-| 35 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
-| 36 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
-| 37 | → | [`docs/terminal-activity.md`](docs/terminal-activity.md) |
-| 38 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
-| 39 | → | [`docs/testing.md`](docs/testing.md) |
-| 40 | → | [`docs/unistyles.md`](docs/unistyles.md) |
-| 41 | → | [`SECURITY.md`](SECURITY.md) |
+| 33 | → | [`docs/protocol-validation.md`](docs/protocol-validation.md) |
+| 34 | → | [`docs/providers.md`](docs/providers.md) |
+| 35 | → | [`docs/release.md`](docs/release.md) |
+| 36 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
+| 37 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
+| 38 | → | [`docs/terminal-activity.md`](docs/terminal-activity.md) |
+| 39 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
+| 40 | → | [`docs/testing.md`](docs/testing.md) |
+| 41 | → | [`docs/unistyles.md`](docs/unistyles.md) |
+| 42 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

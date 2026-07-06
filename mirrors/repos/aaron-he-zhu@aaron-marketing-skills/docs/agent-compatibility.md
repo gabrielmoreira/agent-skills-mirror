@@ -1,8 +1,8 @@
 # Agent Compatibility — 70+ SKILL.md Hosts
 
-All 69 skills follow the [Agent Skills](https://agentskills.io) open standard (`SKILL.md` + YAML frontmatter), so they run on every host that reads the format — natively or via the [`npx skills` installer](https://github.com/vercel-labs/skills). This page is the per-agent reference: how to install, what each host reads, and what degrades outside the Claude Code plugin. For getting *listed* on marketplaces, directories, and awesome-lists, see [registry-submissions.md](registry-submissions.md).
+All 120 skills follow the [Agent Skills](https://agentskills.io) open standard (`SKILL.md` + YAML frontmatter), so they run on every host that reads the format — natively or via the [`npx skills` installer](https://github.com/vercel-labs/skills). This page is the per-agent reference: how to install, what each host reads, and what degrades outside the Claude Code plugin. For getting *listed* on marketplaces, directories, and awesome-lists, see [registry-submissions.md](registry-submissions.md).
 
-**Verified 2026-07** (end-to-end): `npx skills add` discovers and installs **69/69** skills from both a local clone and the GitHub remote. The installer reads the skill declarations straight from `.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` — an official installer feature for Claude Code plugin repos — so the discipline-folder layout (`seo-geo/<phase>/<skill>/`) needs no mirror directory.
+**Verified 2026-07** (end-to-end): `npx skills add` discovers and installs **120/120** skills from both a local clone and the GitHub remote. The installer reads the skill declarations straight from `.claude-plugin/plugin.json` / `.claude-plugin/marketplace.json` — an official installer feature for Claude Code plugin repos — so the discipline-folder layout (`seo-geo/<phase>/<skill>/`) needs no mirror directory.
 
 ## Install
 
@@ -21,7 +21,7 @@ All 69 skills follow the [Agent Skills](https://agentskills.io) open standard (`
 [skills.sh](https://skills.sh) is the public registry + leaderboard behind the `npx skills` CLI. This bundle's live page: **<https://skills.sh/aaron-he-zhu/aaron-marketing-skills>**.
 
 - **Listing is automatic**: skills appear and rank via the CLI's anonymous install telemetry (skill name, files, timestamp — nothing personal; opt out with `DISABLE_TELEMETRY=1`). There is no submission step — being installable *is* being listed, which is what CI's discovery-count guard protects.
-- **Page layout is ours to define**: the repo-root [`skills.sh.json`](../skills.sh.json) ([official schema](https://skills.sh/schemas/skills.sh.schema.json)) groups the 69 skills into the five discipline sections. Registry entries for pre-v12 skill names that were merged away (e.g. `seo-content-writer`, `meta-tags-optimizer`) persist from historical installs and cannot be deleted — `notGrouped: "bottom"` sinks them below the current catalog. CI asserts the groupings cover exactly the manifest-declared skill set, so a new skill can't ship ungrouped.
+- **Page layout is ours to define**: the repo-root [`skills.sh.json`](../skills.sh.json) ([official schema](https://skills.sh/schemas/skills.sh.schema.json)) groups the 120 skills into the eight discipline sections. Registry entries for pre-v12 skill names that were merged away (e.g. `seo-content-writer`, `meta-tags-optimizer`) persist from historical installs and cannot be deleted — `notGrouped: "bottom"` sinks them below the current catalog. CI asserts the groupings cover exactly the manifest-declared skill set, so a new skill can't ship ungrouped.
 - **Search**: `npx skills find <query>` and `GET /api/v1/skills/search` match on name + description — every skill's `description` frontmatter is written with trigger phrases for this (see AGENTS.md authoring rules). The wider API (`/api/v1/…`, leaderboard/detail/audit endpoints) requires a Vercel OIDC token.
 - **Well-known hosting** (`/.well-known/agent-skills/index.json`, RFC 8615) is the registry's alternative to GitHub sources for skills served from your own domain — not applicable to this GitHub-hosted repo.
 
@@ -31,7 +31,7 @@ All 69 skills follow the [Agent Skills](https://agentskills.io) open standard (`
 
 ```bash
 npm i -g clawhub && clawhub login          # one-time; GitHub account required
-bash scripts/publish-clawhub.sh --dry-run  # preview all 69 (verified: 69/69 resolve)
+bash scripts/publish-clawhub.sh --dry-run  # preview all 120 (verified: 120/120 resolve)
 bash scripts/publish-clawhub.sh --i-accept-mit0   # publish, real versions from VERSIONS.md
 ```
 
@@ -67,7 +67,7 @@ Publish flow (owner-run; machine spec at <https://skillhub.cn/ai/release.md>):
 ```bash
 curl -fsSL https://skillhub.cn/install/install.sh | bash -s -- --cli-only   # one-time
 skillhub login --key "$SKILLHUB_KEY" --host https://api.skillhub.cn         # key: 个人中心 → API keys
-bash scripts/publish-skillhub.sh --dry-run     # local pre-check, all 69 (verified: 69/69 pass)
+bash scripts/publish-skillhub.sh --dry-run     # local pre-check, all 120 (verified: 120/120 pass)
 bash scripts/publish-skillhub.sh               # publish all → platform review (pending_review)
 ```
 
@@ -79,7 +79,7 @@ Paths below are each host's **native** skill directories (docs verified 2026-07;
 
 | Agent | Project dir | Global dir | Notes |
 |-------|-------------|------------|-------|
-| **Claude Code** | `.claude/skills/` (+ plugin skills) | `~/.claude/skills/` | Prefer the plugin — it adds the 5 commands, hooks, memory, connectors. Does **not** read `.agents/skills/`; `npx skills` handles the mapping. |
+| **Claude Code** | `.claude/skills/` (+ plugin skills) | `~/.claude/skills/` | Prefer the plugin — it adds the 7 commands, hooks, memory, connectors. Does **not** read `.agents/skills/`; `npx skills` handles the mapping. |
 | **OpenAI Codex** ✦ | `.agents/skills/` (CWD → repo root) | `~/.agents/skills/`, `/etc/codex/skills` | `AGENTS.md` context file supported. Launch-era `~/.codex/skills` no longer in current docs. |
 | **Google Antigravity** ✦ | `.agents/skills/` | `~/.gemini/config/skills/` (CLI: `~/.gemini/antigravity-cli/skills/`) | `description` drives activation; global `~/.agents/skills` **not** read. |
 | **OpenCode** ✦ | `.opencode/skills/`, `.claude/skills/` | `~/.config/opencode/skills/`, `~/.claude/skills/`, `~/.agents/skills/` | Unknown frontmatter ignored; per-skill permissions in `opencode.json`. |
@@ -109,13 +109,13 @@ A standalone install bundles **only each skill's folder** (its `SKILL.md` + own 
 
 | Shared resource | Standalone behavior |
 |-----------------|---------------------|
-| Repo-root `references/` (auditor runbook, CORE-EEAT / CITE / C³ / ROAS / SEND benchmarks, skill contract, state model) | Relative links break. The 5 auditor gates carry an explicit fallback: fetch the file from `https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/references/<filename>` or ask for a repo clone — they never score without the runbook. Non-gate skills inline their essential rules, so broken links are cosmetic. |
+| Repo-root `references/` (auditor runbook, CORE-EEAT / CITE / C³ / ROAS / SEND / RAMP / ECHO benchmarks, skill contract, state model) | Relative links break. The 7 auditor gates carry an explicit fallback: fetch the file from `https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/references/<filename>` or ask for a repo clone — they never score without the runbook. `social-quality-auditor` follows the same pattern, reading `auditor-runbook.md` + `echo-benchmark.md` with a raw.githubusercontent fallback. Non-gate skills inline their essential rules, so broken links are cosmetic. |
 | `scripts/connectors/*.py` (keyless data helpers) | Not bundled. Every skill is designed Tier-1: it runs on user-provided data with no connector. Clone the repo to use the connectors. |
-| The 5 `/aaron-marketing:*` commands | Claude Code plugin only. On other hosts, describe the goal — skill descriptions carry the routing triggers. |
+| The 7 `/aaron-marketing:*` commands | Claude Code plugin only. On other hosts, describe the goal — skill descriptions carry the routing triggers. |
 | Hooks (session hot-cache injection, Artifact Gate) + temperature memory | Claude Code plugin only. Gates still emit the full handoff schema; it just isn't machine-validated. |
 | Cross-skill handoffs (`../<skill>/SKILL.md` links) | Literal paths may break, but handoffs reference skills **by name** — any host with the sibling skill installed routes fine. Install the full bundle rather than single skills to keep chains intact. |
 
-**Positioning in one line**: Claude Code plugin = the operated product (gates enforced, memory persisted, connectors wired); any other host = the same 69 skill procedures, self-contained.
+**Positioning in one line**: Claude Code plugin = the operated product (gates enforced, memory persisted, connectors wired); any other host = the same 120 skill procedures, self-contained.
 
 ## For contributors
 

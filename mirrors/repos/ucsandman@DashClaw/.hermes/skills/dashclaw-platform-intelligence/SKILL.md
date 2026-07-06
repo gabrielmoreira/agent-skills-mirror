@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:d7e2ddf96c7b9a7b88858e8a53ba1876cb5f3eb3`
+**Shape snapshot:** `sha1:9b714984daa0f0541dd2875133dd70e4b8a53308`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -45,9 +45,9 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ## At a Glance
 
-- **283** active API routes across **70** categories (331 total including archived)
-- **4** required + **193** optional environment variables
-- **108** database tables
+- **287** active API routes across **72** categories (335 total including archived)
+- **4** required + **194** optional environment variables
+- **109** database tables
 
 ## API Surface
 
@@ -264,6 +264,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 - `GET` `/api/hosted/capacity`
 - `POST` `/api/hosted/cleanup`
+- `GET` `/api/hosted/funnel`
 - `GET, POST` `/api/hosted/workspaces`
 - `DELETE, GET` `/api/hosted/workspaces/[workspaceId]`
 
@@ -444,6 +445,10 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `POST` `/api/security/scan`
 - `GET` `/api/security/status`
 
+### `self-governance`
+
+- `GET` `/api/self-governance`
+
 ### `session`
 
 - `GET` `/api/session/effective`
@@ -537,6 +542,11 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `POST` `/api/workflows/templates/[templateId]/runs/[runActionId]/cancel`
 - `POST` `/api/workflows/templates/[templateId]/runs/[runActionId]/resume`
 
+### `workspace`
+
+- `GET` `/api/workspace/export`
+- `POST` `/api/workspace/import`
+
 ### `x402`
 
 - `GET` `/api/x402/budget`
@@ -549,10 +559,10 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 These must be set — DashClaw will fail to start without them.
 
-- **`DASHCLAW_API_KEY`** - referenced in 82 file(s)
-- **`DATABASE_URL`** - referenced in 108 file(s)
+- **`DASHCLAW_API_KEY`** - referenced in 84 file(s)
+- **`DATABASE_URL`** - referenced in 109 file(s)
 - **`ENCRYPTION_KEY`** - referenced in 8 file(s)
-- **`NEXTAUTH_SECRET`** - referenced in 5 file(s)
+- **`NEXTAUTH_SECRET`** - referenced in 6 file(s)
 
 ## Optional Environment Variables
 
@@ -560,7 +570,6 @@ These have fallbacks or only activate specific features.
 
 - `AGENT_ONLINE_WINDOW_MS` *(undocumented)*
 - `AGENT_PRIVATE_KEY` *(undocumented)*
-- `AGENT_PRIVATE_KEY_JWK` *(undocumented)*
 - `ALERT_FROM_EMAIL` *(undocumented)*
 - `ALLOWED_ORIGIN` *(undocumented)*
 - `ANTHROPIC_API_KEY` *(undocumented)*
@@ -623,6 +632,7 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_PAIRING_TTL_MINUTES` *(undocumented)*
 - `DASHCLAW_RATE_LIMIT_MAX` *(undocumented)*
 - `DASHCLAW_RATE_LIMIT_WINDOW_MS` *(undocumented)*
+- `DASHCLAW_SELF_GOVERNANCE_PUBLIC` *(undocumented)*
 - `DASHCLAW_SIGNING_KEY_JWK` *(undocumented)*
 - `DASHCLAW_SUPPRESS_LEGACY_WARNING` *(undocumented)*
 - `DASHCLAW_TIMEOUT_MS` *(undocumented)*
@@ -712,6 +722,7 @@ These have fallbacks or only activate specific features.
 - `RESEARCH_API_URL` *(undocumented)*
 - `RESEND_API_KEY` *(undocumented)*
 - `S` *(undocumented)*
+- `SELF_GOVERNANCE_SOURCE_URL` *(undocumented)*
 - `SENTRY_AUTH_TOKEN` *(undocumented)*
 - `SERVICE_NAME` *(undocumented)*
 - `SQL_CAPTURE_FILE` *(undocumented)*
@@ -754,7 +765,7 @@ These have fallbacks or only activate specific features.
 
 ## Database Tables
 
-All 108 tables defined in `schema/schema.js` (Drizzle ORM):
+All 109 tables defined in `schema/schema.js` (Drizzle ORM):
 
 - `action_embeddings`
 - `action_records`
@@ -807,6 +818,7 @@ All 108 tables defined in `schema/schema.js` (Drizzle ORM):
 - `guard_policies`
 - `guardrails_test_runs`
 - `health_snapshots`
+- `hosted_trial_snapshots`
 - `ideas`
 - `interactions`
 - `jwt_replay_log`

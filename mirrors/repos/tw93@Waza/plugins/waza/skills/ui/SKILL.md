@@ -135,7 +135,7 @@ Give at least 3 variations across genuinely different dimensions (density, typog
 
 ## Hard Rules
 
-`references/design-reference.md` (already loaded during direction lock) owns the full rules: typography, OKLCH color, motion timings, layout defaults, CSS-pattern bans, accessibility baseline, and complexity matching. Apply them.
+`references/design-reference.md` (already loaded during direction lock) owns the full rules: typography, OKLCH color, motion timings, layout defaults, CSS-pattern bans, accessibility baseline, and complexity matching. They exist to keep the output off the generic default, not to run as a lint pass: when the committed direction genuinely calls for breaking one, break it deliberately and name the tradeoff in the handoff. The accessibility baseline and the CSS-pattern bans stay non-negotiable.
 
 ## Gotchas
 

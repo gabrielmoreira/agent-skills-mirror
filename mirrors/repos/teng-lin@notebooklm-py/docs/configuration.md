@@ -167,6 +167,7 @@ automatically.
 | `NOTEBOOKLM_MCP_OAUTH_BASE_URL` | Bare public HTTPS origin (no path) the self-hosted OAuth endpoints (`/authorize`, `/token`, `/.well-known/*`) mount under. Required with `NOTEBOOKLM_MCP_OAUTH_PASSWORD`; partial/weak/non-HTTPS config refuses to start. | - |
 | `NOTEBOOKLM_MCP_PUBLIC_URL` | Public base URL for the remote MCP file upload/download signed-URL side-channel (falls back to `NOTEBOOKLM_MCP_OAUTH_BASE_URL`). Unset → `source_add type=file` / `artifact_download` return a "not configured" error. | - |
 | `NOTEBOOKLM_MCP_TRUST_PROXY` | Trust the proxy-set `CF-Connecting-IP` header as the self-hosted-OAuth login-throttle key. Only enable behind a trusted proxy (e.g. the Cloudflare tunnel); default off keys on the socket peer. | `0` |
+| `NOTEBOOKLM_MCP_STRICT_IDS` | Strict IDs-only mode for MCP tools: require a full canonical id for every `notebook`/`source`/`note`/`artifact` reference and reject names, titles, and short id prefixes (fail-fast, deterministic automation). | `0` |
 | `NOTEBOOKLM_SERVER_TOKEN` | Bearer token required by every REST `/v1` request. The REST server refuses to start without it. | - |
 | `NOTEBOOKLM_SERVER_HOST` | REST server bind host; non-loopback refused unless `NOTEBOOKLM_SERVER_ALLOW_EXTERNAL_BIND=1` | `127.0.0.1` |
 | `NOTEBOOKLM_SERVER_PORT` | REST server bind port | `8000` |
@@ -224,6 +225,7 @@ be audited from one location.
 | `NOTEBOOKLM_MCP_PORT` | HTTP bind port for `notebooklm-mcp --transport http`. | `--port` flag → env var → `9420` | `mcp.__main__._build_parser` / `_resolve_port` |
 | `NOTEBOOKLM_MCP_ALLOW_EXTERNAL_BIND` | Allow MCP HTTP transport to bind a non-loopback host. Use only behind a trusted proxy. | Literal `1` enables; all other values disabled. | `mcp.__main__._check_http_bind_allowed` → `_serving.check_bind_allowed` |
 | `NOTEBOOKLM_MCP_TRUST_PROXY` | Trust the proxy-set `CF-Connecting-IP` header as the self-hosted-OAuth login-throttle key. Enable only behind a trusted proxy (e.g. the Cloudflare tunnel); default off keys the throttle on the socket peer. | Literal `1` enables; all other values disabled. | `mcp._oauth.get_oauth_config` / `_client_ip` |
+| `NOTEBOOKLM_MCP_STRICT_IDS` | Strict IDs-only mode: MCP `notebook`/`source`/`note`/`artifact` references must be a full canonical id; names, titles, and short id prefixes are rejected before any list call (deterministic automation). Off by default → default name/prefix/title resolution is unchanged. | Literal `1` enables; all other values disabled. | `mcp._resolve._strict_ids_enabled` |
 | `NOTEBOOKLM_SERVER_TOKEN` | Bearer token required by every REST `/v1` request. The server refuses to start when unset/empty. | `--token` flag → env var → startup failure | `server.__main__._check_token_configured` / `server._auth.require_auth` |
 | `NOTEBOOKLM_SERVER_HOST` | REST server bind host. Non-loopback refused unless `NOTEBOOKLM_SERVER_ALLOW_EXTERNAL_BIND=1`. | `--host` flag → env var → `127.0.0.1` | `server.__main__._build_parser` / `_serving.check_bind_allowed` |
 | `NOTEBOOKLM_SERVER_PORT` | REST server bind port. | `--port` flag → env var → `8000` | `server.__main__._build_parser` / `_resolve_port` |

@@ -19,7 +19,7 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | JavaScript / Web frontend | `js-reverse/` — 5-stage workflow | anything-analyzer MCP browser tools, or jshookmcp CDP/Hook |
 | HTTP capture / browser sampling / request replay | anything-analyzer MCP (23816) | `js-reverse/`, jshookmcp, or `competition-web-runtime/` |
 | Firmware / IoT | `reverse-engineering/platforms.md` — binwalk/ARM/MIPS | `reverse-engineering/tools.md` — Ghidra headless |
-| WASM / Python bytecode / .NET | `reverse-engineering/languages.md` | Check specific language section |
+| WASM / Python bytecode / .NET / **DSL VM / 自定义虚拟机** | `dsl-vm-reverse/SKILL.md` — 分析 IIFE + 单字母变量 + switch-case opcode 的 JS 型自定义虚拟机 | `reverse-engineering/languages.md` — 标准 WASM 二进制用 `languages.md` 处理 |
 | macOS / iOS | `reverse-engineering/platforms.md` — Mach-O/ObjC/Swift | `mobile-reverse/` for iOS-specific |
 | Game (Unity) | `reverse-engineering/` — engine reverse, anti-cheat, IL2CPP/Mono (see seed-014) | `ida-reverse/` deep analysis |
 | Memory dump / PCAP | `reverse-engineering/platforms.md` | `reverse-engineering/patterns*.md` |
@@ -45,6 +45,9 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 
 | User Says | Route To |
 |-----------|----------|
+| "DSL VM / 自定义指令集 / 风控引擎逆向" | `dsl-vm-reverse/SKILL.md` — 自定义 VM 逆向（IIFE + switch-case opcode） |
+| "fireye / fireyejs / getToken 逆向" | `dsl-vm-reverse/SKILL.md` — DSL VM 运行时捕获 |
+| "582KB JS 文件不是 WASM / 大 JS 文件逆向" | `dsl-vm-reverse/SKILL.md` — 先识别是否为 DSL VM |
 | "decompile / IDA analyze" | `ida-reverse/SKILL.md` — IDA MCP workflow |
 | "recover source / disassemble" | `reverse-engineering/SKILL.md` + `ida-reverse/` |
 | "Frida hook / dynamic inject" | `reverse-engineering/tools-dynamic.md` — Frida section |
@@ -254,12 +257,14 @@ Frontend JS Reverse Path:
   ↓ Need environment patching
   js-reverse/references/env-patching.md
 
-Binary Reverse Path:
-  radare2/recon.ps1 → quick reconnaissance
-  ↓ Deep analysis
-  ida-reverse/ → IDA decompile
-  ↓ Dynamic verification
-  reverse-engineering/tools-dynamic.md → Frida/GDB
+DSL VM Reverse Path:
+  dsl-vm-reverse/SKILL.md → identify DSL VM (IIFE + single-letter vars + DG() switch-case)
+  ↓ Extract opcode table & constant table
+  dsl-vm-reverse/SKILL.md Phase 2-4 → opcode classification, C[9] constant analysis
+  ↓ If runtime capture needed
+  browser-automation/ → Playwright/Selenium CDP injection
+  ↓ If pure API protocol needed
+  js-reverse/ → Observe→Capture→Rebuild (API layer only)
 
 CTF Competition Path (via CTF-Sandbox-Orchestrator):
   ctf-sandbox-orchestrator/SKILL.md → build sandbox model

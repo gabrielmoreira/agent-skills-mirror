@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""last30days helper for pi - research recent conversation about a topic."""
+"""last30days helper for Oh My Pi - research recent conversation about a topic."""
 
 import argparse
 import json
@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 # Import brave-search as module or run as subprocess
-SKILL_DIR = Path(__file__).parent.parent  # ~/.pi/agent/skills/last30days
+SKILL_DIR = Path(__file__).parent.parent  # ~/.omp/agent/skills/last30days
 BRAVE_SCRIPT = SKILL_DIR.parent / "brave-search" / "scripts" / "brave-search.py"
 
 # Search sources with recency bias

@@ -1,0 +1,1 @@
+cache/repos/github.com/0xNyk@council-of-high-intelligence/skills/council/../../SKILL.md

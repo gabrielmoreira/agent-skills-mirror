@@ -40,6 +40,7 @@ A `render_runtime_selection` decision with only one option considered when both 
 | Tool registry | `support_envelope()` output | What's actually available right now |
 | Cost tracker | `tools/cost_tracker.py` | Cost estimation data |
 | Style playbooks | `styles/*.yaml` | Available visual styles |
+| Meta skill | `skills/meta/taste-direction.md` | Design read, taste dials, reference strategy |
 | User input | Topic, any preferences expressed | Creative direction |
 
 ## Process
@@ -175,6 +176,8 @@ Choose the structure that best fits the research findings:
 
 The existing playbooks (`clean-professional`, `flat-motion-graphics`, `minimalist-diagram`) are starting points, not destinations. Most videos should get a **custom visual identity** derived from the subject matter, audience, and tone. A video about coffee should feel warm and tactile. A video about cybersecurity should feel technical and urgent. A video about marine biology should feel deep and fluid.
 
+Before choosing or generating a playbook, read `skills/meta/taste-direction.md` and write a compact `production_plan.taste_profile`. The taste profile records the design read, `visual_variance`, `motion_intensity`, `information_density`, reference strategy, and anti-patterns. Use it to explain why the selected playbook, `composition_mode`, and asset strategy fit the brief.
+
 **How to design visual identity:**
 
 1. **Start from the content.** What colors does the subject naturally evoke? What textures, materials, lighting? A video about volcanoes should feel different from a video about meditation — in colors, motion speed, typography weight, and transition style.
@@ -194,6 +197,7 @@ The existing playbooks (`clean-professional`, `flat-motion-graphics`, `minimalis
 
 **Record your visual identity choices in the proposal_packet:**
 - `production_plan.playbook`: name of preset OR "custom"
+- `production_plan.taste_profile`: design read, taste dials, reference strategy, and anti-patterns
 - If custom, include color choices and font choices in the concept's `visual_approach`
 - Include the reasoning: "Warm amber palette because the subject is coffee craftsmanship"
 - Log as decision: `category: "playbook_selection"`

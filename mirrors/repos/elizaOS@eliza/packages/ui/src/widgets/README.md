@@ -13,7 +13,7 @@ grid (used by the home), or the default `"stack"`.
 
 ## Registering a widget
 
-A widget needs **two** things — a registered component and a declaration:
+A widget needs **two** things - a registered component and a declaration:
 
 ```ts
 import { registerWidgetComponent } from "@elizaos/ui/widgets";
@@ -55,39 +55,30 @@ being enabled (`isWidgetEnabled`), and resolves the component by
 ## The `home` / frontpage surface (#9143)
 
 The Home/Launcher surface mounts `<WidgetHost slot="home" layout="grid" …>`
-on the home page next to the launcher. Ships with shared **default widgets** any
-install gets out of the box — the orchestrator **Activity** + **Apps** — so the
-frontpage shows real activity, not just app icons. The notification inbox is NOT
-a host widget: HomeScreen pins the dashboard notification center
+on the home page next to the launcher. Home is intentionally sparse: the
+ambient time/weather base and pinned notification center carry resting state,
+while only essential self-hiding cards live in the ranked widget host. The
+binding north-star is `docs/design/NOTIFICATIONS-WIDGETS-SYSTEM.md` §B: ambient
+base + pinned notifications + at most five ranked residents + chat bar. The
+notification inbox is NOT a host widget: HomeScreen pins the dashboard
+notification center
 (`components/shell/NotificationsHomeCenter.tsx`) directly below the
 time/weather base, so a registry declaration would double-render it.
 
-**To put a plugin on the frontpage:** declare a widget with `slot: "home"` (as
-above). Read your own store/API in the component; it receives `WidgetProps`
-(`pluginId`, `events?`, …). Keep it compact — the home is a summary surface.
-
-If a plugin has live state but no bundled React card, opt into a shared default
-sink instead of shipping a component:
-
-```ts
-{
-  id: "my-plugin.default-home",
-  pluginId: "my-plugin",
-  slot: "home",
-  label: "My Plugin",
-  defaultWidget: "activity", // "notifications" | "messages" | "activity"
-  signalKinds: ["workflow", "activity"],
-}
-```
-
-Default-sink declarations are participation records: the shared Activity card
-renders once and aggregates the sink data, while the declaration lets coverage
-prove the plugin is frontpage-aware. The `notifications` / `messages` sink
-kinds yield no home tile — that content already surfaces through the pinned
-notification center, which aggregates the notification store regardless of
-producer.
+**Frontpage presence is opt-in and curated, not mandated (#14349).** A plugin
+appears on home only by declaring a widget with `slot: "home"` that resolves to a
+bundled React component or a `uiSpec` - there is no breadth mandate that every
+app-manifest plugin be "frontpage-aware", and no shared default-sink
+participation record. Declare a home widget only when it is a keeper for the
+sparse home surface. Read your own store/API in the component; it receives
+`WidgetProps` (`pluginId`, `events?`, …). Keep it compact and self-hiding -
+domain dashboards belong in launcher/routed views, not resident home cards. A
+declaration with no registered component and no `uiSpec` simply does not render.
 
 The home is **priority-ranked**, not all-or-nothing: `home-priority.ts`
 (`rankHomeWidgets`) scores each home widget by base `order` plus decayed
-attention signals and returns the top-N, so the most important widgets bubble up
-the way a phone home screen does. Declare your widget; ranking decides placement.
+attention signals and returns the top-N, currently capped at five by
+`HOME_RENDER_CAP` in `WidgetHost.tsx`, so the most important widgets bubble up
+the way a phone home screen does. Declare your widget only if it matches the
+spec's resident bar; ranking decides placement. Onboarding/tutorial CTAs should
+stay in first-run or chat-native flows, not as resident home cards.

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime
 import json
 import os
 import sys
@@ -95,6 +96,31 @@ def _truthy(value: Any) -> bool:
     if value is None:
         return False
     return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def is_timestamp_fresh(timestamp_value: Any, ttl_seconds: int) -> bool:
+    """True when ``timestamp_value`` (ISO-8601 string) is within ``ttl_seconds``.
+
+    Shared freshness gate for the doctor cache and the report cache. The guard
+    order is load-bearing: a non-positive TTL disables caching entirely, a
+    non-string or empty timestamp is stale, a malformed timestamp is stale,
+    naive timestamps are treated as UTC, and a future timestamp (negative age)
+    counts as fresh.
+    """
+    if ttl_seconds <= 0:
+        return False
+    if not isinstance(timestamp_value, str) or not timestamp_value:
+        return False
+    try:
+        created_at = datetime.datetime.fromisoformat(timestamp_value)
+    except ValueError:
+        return False
+    if created_at.tzinfo is None:
+        created_at = created_at.replace(tzinfo=datetime.timezone.utc)
+    age = datetime.datetime.now(datetime.timezone.utc) - created_at.astimezone(
+        datetime.timezone.utc
+    )
+    return age.total_seconds() <= ttl_seconds
 
 
 def _project_config_trusted(policy: ConfigLoadPolicy, file_env: dict[str, Any]) -> bool:
@@ -413,6 +439,8 @@ def get_config(policy: ConfigLoadPolicy | None = None) -> dict[str, Any]:
         ('LAST30DAYS_X_MODEL', None),
         ('LAST30DAYS_X_BACKEND', None),
         ('LAST30DAYS_REDDIT_BACKEND', None),
+        # Doctor cache freshness window in seconds (doctor --cached).
+        ('LAST30DAYS_DOCTOR_TTL', None),
         ('LAST30DAYS_REDDIT_SC_MIN_ITEMS', None),
         ('LAST30DAYS_STORE', None),
         ('LAST30DAYS_MEMORY_DIR', None),
@@ -673,8 +701,22 @@ def get_reddit_source(config: dict[str, Any]) -> str | None:
 #   xquik — key-based REST X search (XQUIK_API_KEY); keyless of browser cookies
 _X_BACKEND_ORDER = ("xai", "bird", "xurl", "xquik")
 
+# Public routing definitions for the doctor/backend-descriptor layer
+# (lib/backends.py). These are aliases for knowledge this module already
+# owns — the declared X chain order and the pin/floor env var names — so
+# descriptors import one source of truth instead of restating it.
+X_BACKEND_ORDER = _X_BACKEND_ORDER
+X_BACKEND_PIN_VAR = 'LAST30DAYS_X_BACKEND'
+REDDIT_BACKEND_PIN_VAR = 'LAST30DAYS_REDDIT_BACKEND'
+REDDIT_SC_MIN_ITEMS_VAR = 'LAST30DAYS_REDDIT_SC_MIN_ITEMS'
 
-def _x_backend_available(backend: str, config: dict[str, Any], has_bird_creds: bool) -> bool:
+
+def _x_backend_available(
+    backend: str,
+    config: dict[str, Any],
+    has_bird_creds: bool,
+    local_only: bool = False,
+) -> bool:
     if backend == 'xai':
         return bool(config.get('XAI_API_KEY'))
     if backend == 'bird':
@@ -682,13 +724,17 @@ def _x_backend_available(backend: str, config: dict[str, Any], has_bird_creds: b
         return has_bird_creds and bird_x.is_bird_installed()
     if backend == 'xurl':
         from . import xurl_x
+        if local_only:
+            # Doctor/safe-diagnose path: local evidence only (PATH lookup +
+            # token store) — never the live `xurl whoami` network call.
+            return xurl_x.has_stored_auth()
         return xurl_x.is_available()
     if backend == 'xquik':
         return is_xquik_available(config)
     return False
 
 
-def x_backend_chain(config: dict[str, Any]) -> list[str]:
+def x_backend_chain(config: dict[str, Any], local_only: bool = False) -> list[str]:
     """Ordered list of available X backends.
 
     ``chain[0]`` is the default X source; the remaining entries are failover
@@ -699,30 +745,41 @@ def x_backend_chain(config: dict[str, Any]) -> list[str]:
     user explicitly chose it. Browser-cookie probing is intentionally avoided
     (automatic Keychain access causes popups); bird counts as available only
     when AUTH_TOKEN and CT0 are present explicitly.
+
+    ``local_only=True`` is the doctor/safe-diagnose flavor: availability is
+    answered from local evidence only (no subprocess spawns that reach the
+    network — xurl's live `whoami` check is replaced by its on-disk token
+    store). Research-time callers keep the default live semantics.
     """
     from . import bird_x
     has_bird_creds = bool(config.get('AUTH_TOKEN') and config.get('CT0'))
     if has_bird_creds:
         bird_x.set_credentials(config.get('AUTH_TOKEN'), config.get('CT0'))
 
-    preferred = (config.get('LAST30DAYS_X_BACKEND') or '').lower()
+    preferred = (config.get(X_BACKEND_PIN_VAR) or '').lower()
     if preferred in _X_BACKEND_ORDER:
-        return [preferred] if _x_backend_available(preferred, config, has_bird_creds) else []
+        if _x_backend_available(preferred, config, has_bird_creds, local_only):
+            return [preferred]
+        return []
 
-    return [b for b in _X_BACKEND_ORDER if _x_backend_available(b, config, has_bird_creds)]
+    return [
+        b for b in _X_BACKEND_ORDER
+        if _x_backend_available(b, config, has_bird_creds, local_only)
+    ]
 
 
-def get_x_source(config: dict[str, Any]) -> str | None:
+def get_x_source(config: dict[str, Any], local_only: bool = False) -> str | None:
     """The default (primary) X backend, or None if no X source is available.
 
     Thin wrapper over ``x_backend_chain`` returning the first/primary backend;
     callers that want failover should use ``x_backend_chain`` directly.
+    ``local_only`` is forwarded (see ``x_backend_chain``).
     """
-    chain = x_backend_chain(config)
+    chain = x_backend_chain(config, local_only=local_only)
     return chain[0] if chain else None
 
 
-def x_pending_browser_auth(config: dict[str, Any]) -> bool:
+def x_pending_browser_auth(config: dict[str, Any], local_only: bool = False) -> bool:
     """True when X is not available now but ``FROM_BROWSER`` will authenticate it at run time.
 
     ``--diagnose`` / ``--preflight`` load config in ``plan_only`` mode, which
@@ -741,7 +798,9 @@ def x_pending_browser_auth(config: dict[str, Any]) -> bool:
     extracted creds, so its status must be unchanged — never "pending").
     """
     # Already available via a static backend (bird creds, xAI, xurl, xquik).
-    if get_x_source(config):
+    # local_only (doctor/safe-diagnose) answers the xurl leg from the token
+    # store instead of the live `xurl whoami` network call.
+    if get_x_source(config, local_only=local_only):
         return False
     # Only meaningful in inspection modes that skip extraction; a real ``read``
     # run has already attempted extraction and must report its true state.
@@ -908,6 +967,24 @@ def _parse_exclude_sources(config: dict[str, Any]) -> set[str]:
     return {s.strip().lower() for s in raw.split(',') if s.strip()}
 
 
+def include_sources(config: dict[str, Any]) -> set[str]:
+    """Public view of the parsed INCLUDE_SOURCES set.
+
+    Thin wrapper over ``_parse_include_sources`` so other modules (doctor,
+    etc.) don't reach into env's privates.
+    """
+    return _parse_include_sources(config)
+
+
+def is_setup_complete(config: dict[str, Any]) -> bool:
+    """Whether guided setup marked this config complete (SETUP_COMPLETE truthy).
+
+    Thin wrapper over ``_truthy`` so other modules don't reach into env's
+    privates.
+    """
+    return _truthy(config.get('SETUP_COMPLETE'))
+
+
 def is_threads_available(config: dict[str, Any]) -> bool:
     """Check if the Threads credential is available.
 
@@ -986,7 +1063,10 @@ def get_x_source_status(config: dict[str, Any], probe: bool = False) -> dict[str
             ``bird_authenticated`` to False when X clearly returns nothing,
             so ``--diagnose`` reflects runtime reality instead of static
             credential presence. A transient timeout leaves the status
-            unchanged (fail open).
+            unchanged (fail open). When False (the safe/diagnose path that
+            doctor uses), NO network is touched: xurl availability comes
+            from local evidence (``xurl_x.has_stored_auth``), never the
+            live ``xurl whoami`` call.
 
     Returns:
         Dict with keys: source, bird_installed, bird_authenticated,
@@ -1026,6 +1106,13 @@ def get_x_source_status(config: dict[str, Any], probe: bool = False) -> dict[str
         else:
             xquik_status = "configured (not probed)"
 
+    # Xurl availability, computed ONCE. probe=True (a live diagnose) may run
+    # the real `xurl whoami`; probe=False is the safe path (doctor,
+    # --diagnose, --preflight) and must stay local-only — the live check is
+    # an authenticated X API network call.
+    from . import xurl_x as _xurl_x
+    xurl_available = _xurl_x.is_available() if probe else _xurl_x.has_stored_auth()
+
     # Determine active source. bird (browser cookies) and xAI win when present;
     # when neither is available, xquik is the active X source. A probe that
     # clearly failed (False) means xquik is not actually usable.
@@ -1034,22 +1121,20 @@ def get_x_source_status(config: dict[str, Any], probe: bool = False) -> dict[str
     elif xai_available:
         source = 'xai'
     else:
-        from . import xurl_x as _xurl_check
-        if _xurl_check.is_available():
+        if xurl_available:
             source = 'xurl'
         elif xquik_available and xquik_working is not False:
             source = 'xquik'
         else:
             source = None
 
-    from . import xurl_x as _xurl_x
     return {
         "source": source,
         "bird_installed": bird_status["installed"],
         "bird_authenticated": bird_status["authenticated"],
         "bird_username": bird_status["username"],
         "xai_available": xai_available,
-        "xurl_available": _xurl_x.is_available(),
+        "xurl_available": xurl_available,
         "xquik_available": xquik_available,
         "xquik_working": xquik_working,
         "xquik_status": xquik_status,

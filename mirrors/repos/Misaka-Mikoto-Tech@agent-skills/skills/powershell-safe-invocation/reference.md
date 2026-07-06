@@ -28,6 +28,26 @@ Do not change it to `Legacy` without a demonstrated compatibility requirement.
 
 A command that reports PowerShell 7 once does not prove every later agent invocation uses `pwsh.exe`. Wrappers may invoke different shells.
 
+PowerShell 5.1 and PowerShell 7 can expose the same command with different parameter sets. Check syntax in the active shell before relying on a specific parameter:
+
+```powershell
+Get-Command Format-Hex -Syntax
+Get-Command Get-FileHash -Syntax
+```
+
+For example, `Format-Hex -Count` is available in PowerShell 7 but not in Windows PowerShell 5.1. In 5.1, limit the pipeline instead:
+
+```powershell
+Format-Hex -LiteralPath 'C:\Data\buffer.bin' | Select-Object -First 2
+```
+
+If a normally available command is not discovered, inspect module search state before assuming it is absent:
+
+```powershell
+$env:PSModulePath -split [IO.Path]::PathSeparator
+Get-Module -ListAvailable Microsoft.PowerShell.Utility
+```
+
 ## 2. Why Nested Command Strings Fail
 
 A generated command can pass through several parsers:
@@ -79,6 +99,14 @@ Run it with:
 pwsh.exe -NoLogo -NoProfile -NonInteractive -File script.ps1
 ```
 
+If an outer PowerShell process invokes another PowerShell process with `-Command`, the outer process expands `$variables` before the child process sees the script. This breaks inner snippets such as `$p = '...'` unless the outer command string is single-quoted:
+
+```powershell
+pwsh.exe -NoLogo -NoProfile -Command '$p = "C:\Data Folder\input.txt"; Test-Path -LiteralPath $p'
+```
+
+Use a script file instead when both the outer and inner command need variables, paths, JSON, or pipelines.
+
 ## 3. Native Argument Arrays
 
 Correct:
@@ -86,7 +114,7 @@ Correct:
 ```powershell
 $exe = 'C:\Program Files\App\tool.exe'
 
-$args = @(
+$argList = @(
     '--input'
     'C:\Data Folder\input.json'
     '--name'
@@ -95,9 +123,11 @@ $args = @(
     ''
 )
 
-& $exe @args
+& $exe @argList
 $exitCode = $LASTEXITCODE
 ```
+
+Do not use `$args` as your own variable name. It is a PowerShell automatic variable populated with unbound function or script arguments, so reusing it makes examples fragile when copied into functions, scripts, or nested invocations.
 
 The following are distinct:
 
@@ -110,7 +140,7 @@ Do not silently remove empty arguments.
 Inspect arguments during debugging:
 
 ```powershell
-$args | ForEach-Object {
+$argList | ForEach-Object {
     '[{0}] Length={1}' -f $_, $_.Length
 }
 ```
@@ -118,7 +148,7 @@ $args | ForEach-Object {
 Capture `$LASTEXITCODE` before another native program can overwrite it:
 
 ```powershell
-& $exe @args
+& $exe @argList
 $exitCode = $LASTEXITCODE
 
 if ($exitCode -ne 0) {
@@ -157,6 +187,63 @@ catch {
 ```
 
 `$LASTEXITCODE` is for native commands and script exit codes, not normal cmdlet success.
+
+### Parameter values that are expressions
+
+PowerShell command arguments are parsed in argument mode. A range or arithmetic expression after a parameter name may be treated as a literal argument instead of the expression you intended.
+
+Avoid:
+
+```powershell
+Get-Content -LiteralPath $path | Select-Object -Index 100..120
+```
+
+Use parentheses or assign first:
+
+```powershell
+Get-Content -LiteralPath $path | Select-Object -Index (100..120)
+
+$lineRange = 100..120
+Get-Content -LiteralPath $path | Select-Object -Index $lineRange
+```
+
+The same habit helps with arithmetic and other computed values:
+
+```powershell
+Get-ChildItem -LiteralPath $root | Select-Object -First ($count + 1)
+```
+
+### Statement output and pipelines
+
+PowerShell statements such as `foreach (...) { ... }` are not pipeline expressions. A pipe immediately after the closing brace can be parsed as an empty pipeline element.
+
+Avoid:
+
+```powershell
+foreach ($file in $files) {
+    [pscustomobject]@{ File = $file }
+} | Format-Table -AutoSize
+```
+
+Use a variable when the loop is naturally statement-shaped:
+
+```powershell
+$rows = foreach ($file in $files) {
+    [pscustomobject]@{ File = $file }
+}
+
+$rows | Format-Table -AutoSize
+```
+
+Or use `ForEach-Object` when the input is already a pipeline:
+
+```powershell
+$files |
+    ForEach-Object {
+        [pscustomobject]@{ File = $_ }
+    } |
+    Format-Table -AutoSize
+```
 
 ## 5. String And Escape Rules
 
@@ -220,14 +307,14 @@ A trailing space after a backtick can silently break continuation.
 Prefer:
 
 ```powershell
-$args = @(
+$argList = @(
     '--input'
     $inputPath
     '--output'
     $outputPath
 )
 
-& $exe @args
+& $exe @argList
 ```
 
 Natural line breaks are also safe after pipes, commas, operators, and opening delimiters.
@@ -252,7 +339,22 @@ Name: $name
 "@
 ```
 
-The closing terminator must appear alone at the start of a line.
+The opening `@'` or `@"` must be the last tokens on its line, and the closing terminator must appear alone at the start of a line.
+
+Do not use Bash heredocs in PowerShell:
+
+```powershell
+# Wrong in PowerShell
+python - <<'PY'
+```
+
+Use a temporary `.py` file or a PowerShell here-string piped to the program instead.
+
+```powershell
+@'
+print("hello from stdin")
+'@ | python -
+```
 
 For JSON, prefer serialization:
 
@@ -283,11 +385,14 @@ Use `Start-Process` only when you need:
 Simple example:
 
 ```powershell
-$process = Start-Process `
-    -FilePath $exe `
-    -ArgumentList '--mode test' `
-    -Wait `
-    -PassThru
+$startParams = @{
+    FilePath     = $exe
+    ArgumentList = '--mode test'
+    Wait         = $true
+    PassThru     = $true
+}
+
+$process = Start-Process @startParams
 
 if ($process.ExitCode -ne 0) {
     throw "Process failed with exit code $($process.ExitCode)"
@@ -327,7 +432,7 @@ $psi.UseShellExecute = $false
 $psi.RedirectStandardOutput = $true
 $psi.RedirectStandardError = $true
 
-foreach ($arg in $args) {
+foreach ($arg in $argList) {
     $psi.ArgumentList.Add($arg)
 }
 
@@ -417,6 +522,22 @@ $path = [System.IO.Path]::Combine($root, 'subdir', 'file.txt')
 Use `Resolve-Path -LiteralPath` for existing paths.
 
 Use `[System.IO.Path]::GetFullPath()` for normalization when a target may not exist yet.
+
+### Mapped drives and automation accounts
+
+Mapped drives such as `X:\` are scoped to a user logon session. A path can work in an interactive desktop PowerShell and fail in an automation, service, elevated process, sandbox, or scheduled task running as another identity.
+
+When a mapped-drive path unexpectedly fails:
+
+```powershell
+whoami
+Get-PSDrive -Name X -ErrorAction SilentlyContinue
+Test-Path -LiteralPath 'X:\Expected\file.rdc'
+```
+
+If the drive is missing, either use a UNC path that is verified under the same account or create the mapping in that same process/session. Do not assume the interactive user's mapped drives exist for another identity.
+
+If the automation cannot see the mapped drive and cannot discover its `DisplayRoot`, ask the user for the real UNC path instead of guessing. When the task must use the user's existing drive mappings or network credentials, ask the user to run the task in a current-user or full-access mode if the host platform provides one. After switching modes, re-check `whoami`, `Get-PSDrive`, and `Test-Path` before proceeding.
 
 ### Recursive mutation validation
 
@@ -508,6 +629,19 @@ Changes made by a child process do not propagate back to its parent PowerShell p
 
 ## 16. Diagnostic Checklist
 
+Common symptoms:
+
+| Symptom | Likely cause | First check |
+| --- | --- | --- |
+| `$p` or `$env:NAME` disappears in an inner `-Command` | Outer PowerShell expanded the variable first | Use an outer single-quoted command or a `.ps1` file |
+| `python - <<'PY'` fails with parser errors | Bash heredoc syntax was used in PowerShell | Use a temporary script or PowerShell here-string |
+| `-Index 100..120` fails to bind or behaves literally | Parameter value expression was not grouped | Use `-Index (100..120)` or assign the range first |
+| `foreach (...) { ... } | ...` reports an empty pipe element | Statement syntax was piped directly | Assign the loop output first or use `ForEach-Object` |
+| `X:\...` works interactively but not in automation | Mapped drive is not visible to this user/session | `whoami`, `Get-PSDrive`, ask for UNC or switch execution mode |
+| A known cmdlet is missing | Module path or active shell differs from expectation | `$PSVersionTable`, `$env:PSModulePath`, `Get-Module -ListAvailable` |
+| A cmdlet parameter is rejected | PowerShell 5.1/7 parameter-set difference | `Get-Command <cmdlet> -Syntax` |
+| Native arguments with spaces/empty strings break | Arguments were flattened into one string | Use `& $exe @argList` or `ProcessStartInfo.ArgumentList` |
+
 When argument corruption occurs:
 
 ```powershell
@@ -525,7 +659,7 @@ Then simplify the invocation:
 3. Remove `Invoke-Expression`.
 4. Remove manually nested quotes.
 5. Put code in a minimal `.ps1` file.
-6. Invoke the native executable directly with `& $exe @args`.
+6. Invoke the native executable directly with `& $exe @argList`.
 7. Print each argument and its length.
 8. Capture `$LASTEXITCODE` immediately.
 

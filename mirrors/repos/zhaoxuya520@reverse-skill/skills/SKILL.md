@@ -45,7 +45,7 @@
 | **API 安全测试** | `api-security/` | REST/GraphQL/WebSocket 全协议：BOLA/IDOR、JWT/OAuth 攻击、10 阶段方法论 |
 | **供应链安全** | `supply-chain-security/` | SBOM/SCA/CI-CD 管道：依赖扫描、容器安全、构建完整性、漏洞可达性验证 |
 | **移动逆向工程** | `mobile-reverse/` | Android + iOS：Frida/Objection 动态插桩、SSL Pinning/Root/越狱检测绕过、OWASP MASTG |
-| **恶意软件分析** | `malware-analysis/` | YARA/Sigma 规则、CAPE/Azul 沙箱编排、IOC 提取、94 种反分析技术、多 Agent 自动化 |
+| **DSL 虚拟机逆向** | `dsl-vm-reverse/` | 分析 JavaScript 实现的自定义指令集虚拟机（IIFE + 单字母变量 + switch-case 解释器 + opcode 控制流），适用于风控引擎、自定义验证码 VM 等非标准 WASM 的 JS 虚拟机逆向 |
 
 ## 统一入口
 

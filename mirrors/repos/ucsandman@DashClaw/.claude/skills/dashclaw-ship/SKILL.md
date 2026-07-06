@@ -154,11 +154,13 @@ optional extra. It drifts in a way the count checker can't see: a shipped featur
    omits a shipped major subsystem is a gap; a page where the feature is genuinely
    out of scope (e.g. a framework guide) is fine.
 2. **The dead-array trap (burned us once; arrays removed in v2.6d):** `app/landingData.js`
-   now exports ONLY the three arrays `app/page.tsx` actually renders
-   (`corePrimitives`/`frameworkQuickstarts`/`signals`). All other landing feature
-   lists are **inline arrays inside `app/page.tsx` itself** (the operations-section
-   cards) — put new capability copy there, never in a new landingData export. After any
-   landing edit, verify with a grep that the feature name now appears in `app/page.tsx`.
+   now exports ONLY the two rendered arrays (`frameworkQuickstarts` via
+   `app/components/StackQuickstarts.tsx`, `signals` via `app/page.tsx`;
+   `corePrimitives` was removed in the v4.57.1 landing redesign). All other landing
+   feature lists are **inline arrays inside `app/page.tsx` itself** (e.g. the
+   OPERATE_SURFACES control-room index) — put new capability copy there, never in a
+   new landingData export. After any landing edit, verify with a grep that the
+   feature name now appears in `app/page.tsx`.
 3. **`/self-host` is NOT optional:** its "What you just deployed" grid says "the full
    governance API surface — every feature works out of the box," so a missing category
    card there is a false completeness claim. Add a card for any major new subsystem.
@@ -173,7 +175,7 @@ optional extra. It drifts in a way the count checker can't see: a shipped featur
 The user's standing rule is *no old dates anywhere* — but that means the dates that are **supposed to track now**, not the ones that anchor history. Get this backwards and you corrupt the record.
 
 - **Advance to today** (only if you actually touched the doc this sweep): freshness stamps that assert "current as of." These are `last-verified:` front-matter (`PROJECT_DETAILS.md`, `docs/sdk-reference.md`, `docs/sdk-parity.md`), the `**N active routes** (verified <date>)` line in `references/api-surface.md`, and any "Last updated …" footer on a living doc (`.impeccable.md`, brand files). Pull the date from Phase 1 — a real current date, not a remembered one.
-- **Never touch — these are historical anchors:** `CHANGELOG.md` release dates (`## [x.y.z] — <date>`), "shipped/landed on <date>" notes, git-history references, dates inside `.supergoal/`, `.organism/`, `AUDIT_FINDINGS.md`, memory, and other scratch/working files. A past date here is *correct*; rewriting it is the bug.
+- **Never touch — these are historical anchors:** `CHANGELOG.md` release dates (`## [x.y.z] — <date>`), "shipped/landed on <date>" notes, git-history references, dates inside `.supergoal/`, `.organism/`, `docs/archive/AUDIT_FINDINGS.md`, memory, and other scratch/working files. A past date here is *correct*; rewriting it is the bug.
 - **Code-level frozen clocks are a real bug, not a doc stamp:** a hardcoded `new Date('2026-..')` in app code (instead of `new Date()`) freezes countdowns/filters to that day. If your feature touched such a file, flag it — but it's a code fix, not part of the doc sweep.
 
 When in doubt, ask: *does this date claim to describe the present, or to record the past?* Present → advance it. Past → leave it.
@@ -267,6 +269,8 @@ A push is its own step — run and **read the output**, don't assert success:
 Then commit + push to `main` with an **explicit pathspec — never `git add -A`**. Include the bumped manifests, `package-lock.json`, `contracts/sdk/release-plan.json`, and `CHANGELOG.md` in the same commit as the doc updates. Long-standing other-session files live uncommitted in the working tree (`.impeccable.md`, `DESIGN.md`, `PRODUCT.md`, stray `docs/` specs); sweeping them in is a hygiene violation. The pre-commit hook will re-run `livingcode:refresh` and stage generated artifacts — that's expected; let it ride.
 
 **Then land it on main — this is the point, not a follow-up.** If the commit went onto a feature branch, get it to `main` now: rebase the branch onto the latest `origin/main` (generated files won't conflict once living-merge is installed; resolve any *authored* conflict), re-run the gates if the rebase pulled in new commits, then fast-forward/merge the branch into `main` and `git push origin main`. A push to `main` is what fires the Vercel production build (`vercel.json` buildCommand), so **confirm the deploy goes green** rather than assuming — watch it, or ask the user to — and only then is it live. Never end with a "here's how to land it" checklist; stopping at the branch is the exact failure mode this skill exists to kill.
+
+**Then cut the GitHub Release — every ship, no exceptions (v6.1 rule, 2026-07-05).** Releases silently stopped between v4.20.1 and v4.59.0 and the public repo looked dormant through the project's fastest era; this step exists so that can't recur. After the push lands: `git tag -a v<x.y.z> <release-commit-sha> -m "v<x.y.z> — <title>"`, `git push origin v<x.y.z>`, then `gh release create v<x.y.z> --title "v<x.y.z> — <title>" --notes-file <notes> --latest`. Notes come from the CHANGELOG entry for the version (plus links to the maintainer log / spec when the ship warrants), and per the charter's outward-acts clause they identify the AI maintainer honestly. Use the real SHA from `git rev-parse` — never reconstruct one from a short hash.
 
 **Finally, the SDK publish — conditional on the Phase 5 diff.** `npm run release:sdks` builds and uploads both packages to npm + PyPI and needs the owner's `npm login` + a PyPI token, so it's outside this skill's reach either way. Whether you prompt it depends on whether the SDK source changed this release:
 

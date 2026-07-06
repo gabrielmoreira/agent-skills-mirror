@@ -43,7 +43,9 @@ Author in this order. Each step routes you to existing knowledge — do not skip
 
 ### 1. Commit to an art direction *for this subject* — the divergence engine
 Before writing any component, decide a visual language that fits **this** topic and no other.
-Use the **`visual-style`** Layer 3 skill (CREATE mode) to lock: palette, type personality,
+Read **`skills/meta/taste-direction.md`** first and write the `taste_profile`: the design read,
+`visual_variance`, `motion_intensity`, `information_density`, reference strategy, and
+anti-patterns. Then use the **`visual-style`** Layer 3 skill (CREATE mode) to lock: palette, type personality,
 motion character, layout system, and **one signature device** unique to this piece. Difference
 between videos is guaranteed here — not by withholding components, but by forcing a fresh
 direction each time. Write it down (a short `art-direction.md` in the project) and build to it.

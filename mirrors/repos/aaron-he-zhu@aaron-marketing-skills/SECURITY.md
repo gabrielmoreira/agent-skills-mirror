@@ -56,7 +56,7 @@ gates it must implement (enforced by review against [docs/connector-playbook.md]
 
 | Class | Connectors | Required gates (cumulative) |
 |-------|------------|------------------------------|
-| **Read-only public fetch** | `crawl.py`, `onpage.py`, `robots.py`, `sitemap.py`, `psi.py`, `schema_lint.py`, `kg.py`, `wayback.py`, `openpagerank.py`, `suggest.py`, `rss_monitor.py`, `doh.py`, `pageviews.py`, `gdelt.py`, `youtube.py` | the shared `_http.py` contract below; robots.txt enforcement where the helper crawls |
+| **Read-only public fetch** | `crawl.py`, `onpage.py`, `robots.py`, `sitemap.py`, `psi.py`, `schema_lint.py`, `kg.py`, `wayback.py`, `openpagerank.py`, `suggest.py`, `rss_monitor.py`, `doh.py`, `pageviews.py`, `gdelt.py`, `youtube.py`, `hn.py`, `producthunt.py`, `appstore.py` | the shared `_http.py` contract below; robots.txt enforcement where the helper crawls |
 | **Delegated fetch** (third-party fetcher) | `firecrawl.py`, `tavily.py` | + data-egress notice in the docstring; local robots.txt pre-flight before any site fetch (refuse on Disallow, exit 4); `--own-site` explicit owner override; `search` (no target site) exempt |
 | **External-state mutation** | `resend.py`, `indexpush.py` | + dry-run by default with an explicit `--live` flag; `Idempotency-Key` on endpoints that support it; `retries=1` (never auto-retry) on those that don't. `indexpush.py`'s ownership proof is inherent to its protocols (hosted IndexNow key file, site-bound Baidu token), so it needs no robots pre-flight |
 

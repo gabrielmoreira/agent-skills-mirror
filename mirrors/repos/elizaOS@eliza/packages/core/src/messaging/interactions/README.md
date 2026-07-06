@@ -44,7 +44,9 @@ text. Secrets must never transit a chat transport as text.
 [TASK:<threadId>]<title>[/TASK]                                          # threadId: lowercase hex/uuid, 8–64 chars
 ```
 
-`field.type`: `text | number | select | checkbox | secret`. Parsing is strict —
+`field.type`: `text | number | select | checkbox | secret | image | file |
+date | time | datetime`. Date/time fields submit the native input string
+(`YYYY-MM-DD`, `HH:mm`, `YYYY-MM-DDTHH:mm`). Parsing is strict —
 a malformed block is left as plain text, never a broken control.
 
 ## Module API (`@elizaos/core`)
@@ -54,13 +56,18 @@ a malformed block is left as plain text, never a broken control.
 - `findInteractionRegions(text)` → regions with char bounds (for interleaved rendering).
 - `serializeInteractionBlock(block)` / `appendInteractionBlock(text, block)` — build
   markers programmatically (inverse of parse for the text-borne blocks).
-- `toNeutralLayout(block, { resolveUrl, maxButtonsPerRow })` → `NeutralLayout`
-  (rows of buttons / a select) — the shared projection each connector maps to its
-  native primitive. A button carries exactly one of `callbackData` (round-trip) or
-  `url` (link-out).
-- `encodeReplyCallback(value)` / `decodeCallback(data)` — 64-byte-safe codec
-  (Telegram's `callback_data` limit). Returns null when the answer is too big →
-  caller links out or accepts a free-text reply.
+- `toNeutralLayout(block, { resolveUrl, maxButtonsPerRow, maxCallbackBytes })` →
+  `NeutralLayout`
+  (rows of buttons) — the shared projection each connector maps to its native
+  primitive. A button carries exactly one of `callbackData` (round-trip) or `url`
+  (link-out).
+- `toPlainTextFallback(block, { resolveUrl })` → concise prose for text-only
+  transports such as SMS/iMessage, where there is no native control surface.
+- `encodeReplyCallback(value, { maxBytes })` / `decodeCallback(data)` —
+  callback codec that defaults to Telegram's 64-byte `callback_data` limit.
+  Connectors with a larger native budget, such as Discord custom IDs, pass their
+  own limit. Returns null when the answer is too big → caller links out or
+  accepts a free-text reply.
 - `normalizeContentInteractions(content)` — attach parsed blocks to
   `Content.interactions` **without** mutating `text` (so the dashboard's own
   segment renderer keeps interleaving). `stripInteractionMarkers(text)` for prose.
@@ -71,23 +78,31 @@ FollowupsInteraction | TaskInteraction | SecretInteraction`) in
 
 ## Per-surface rendering matrix
 
-| Block | Dashboard | Telegram | Discord |
-|---|---|---|---|
-| choice | `ChoiceWidget` ✅ | inline-keyboard callback buttons ✅ | button action row ✅ |
-| followups | `FollowupsWidget` ✅ | callback buttons ✅ | button action row ✅ |
-| form | `FormRequest` ✅ | link-out (multi-field is awkward as a keyboard) ⏳ | link-out ⏳ |
-| task | `TaskWidget` (live poll) ✅ | link button + title ✅ (live status ⏳) | link button + title ✅ |
-| secret/oauth | `SensitiveRequestBlock` ✅ | DM link via `sensitive-request-adapter` ✅ | DM link via `sensitive-request-adapter` ✅ |
+| Block | Dashboard | Telegram | Discord | Text-only (SMS/iMessage) |
+|---|---|---|---|---|
+| choice | `ChoiceWidget` ✅ | inline-keyboard callback buttons ✅ | button action row ✅ | numbered reply list ✅ |
+| followups | `FollowupsWidget` ✅ | callback buttons ✅ | button action row ✅ | suggestions line ✅ |
+| form | `FormRequest` ✅ | free-text fallback (by design) ✅ | free-text fallback (by design) ✅ | title/description + free-text invite ✅ |
+| task | `TaskWidget` (live poll) ✅ | link button + title ✅ (live status ⏳) | link button + title ✅ | title + `/orchestrator?taskId=…` link ✅ |
+| secret/oauth | `SensitiveRequestBlock` ✅ | DM link via `sensitive-request-adapter` ✅ | DM link via `sensitive-request-adapter` ✅ | not inlined; requires secure adapter/failure surface |
 
-✅ implemented · ⏳ remaining (seams below). Choice/followups round-trip works on
-**both** connectors:
+✅ implemented · ⏳ remaining (seams below). Forms never link out on
+connectors **by design** (#14321): no hosted `/forms/:id` page exists (form
+specs are not persisted server-side), so `buildInteractionUrlResolver` resolves
+no URL for them and the layout degrades to the form's title/description plus a
+"Reply with your answer." invite. Secret-bearing input must never use a form —
+it goes through the sensitive-request flow, which has a real hosted page.
+Choice/followups round-trip works on **both** connectors:
 - **Telegram**: `handleCallbackQuery` decodes the tap and replays it through
   `handleMessage` as a user turn (`plugin-telegram/src/messageManager.ts`).
 - **Discord**: the `isButton` handler in `discord-interactions.ts` decodes the
   `customId` with `decodeCallback` and dispatches via `messageService.handleMessage`.
 
-The floating chat overlay (`ContinuousChatOverlay`) also renders these widgets
-(it routes assistant turns with blocks through `MessageContent`).
+The floating chat overlay (`ContinuousChatOverlay`) also renders these widgets.
+It does **not** route through `MessageContent`: it renders assistant turns via
+`InlineWidgetText` (which shares the same segment parser + inline registry and
+reuses `MessageContent`'s `[CONFIG]` / permission / UiSpec / code renderers), and
+mounts `SensitiveRequestBlock` itself for the secret/OAuth card.
 
 ## Shipped
 

@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated_by": "scripts/generate_catalog.py",
-  "skill_count": 90,
+  "skill_count": 91,
   "galaxy_tool_count": 8182,
   "skills": [
     {
@@ -2759,6 +2759,50 @@
         "target triage",
         "omics evidence",
         "gene disease mapper"
+      ],
+      "chaining_partners": []
+    },
+    {
+      "name": "organ-aging-studio",
+      "cli_alias": null,
+      "description": "Interactive Goeminne proteomic aging clock with organ filters and per-protein contribution breakdown (protein NPX × coefficient). Agent- and demo-friendly.",
+      "version": "0.1.0",
+      "status": "planned",
+      "maturity_tier": "tested",
+      "maturity_evidence": {
+        "has_skill_md": true,
+        "has_script": true,
+        "has_tests": true,
+        "has_demo": true,
+        "cli_registered": false,
+        "ci_tested": false,
+        "benchmark_validated": false
+      },
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/organ-aging-studio/organ_aging_studio.py --demo",
+      "dependencies": [
+        "python>=3.11",
+        "pandas>=2.0",
+        "numpy>=1.24",
+        "requests>=2.28"
+      ],
+      "tags": [
+        "aging",
+        "longevity",
+        "proteomics",
+        "biological age",
+        "organ clock",
+        "Goeminne",
+        "interpretability"
+      ],
+      "trigger_keywords": [
+        "organ aging studio",
+        "proteomic clock breakdown",
+        "protein coefficient aging",
+        "Goeminne clock explain",
+        "which proteins drive organ age"
       ],
       "chaining_partners": []
     },

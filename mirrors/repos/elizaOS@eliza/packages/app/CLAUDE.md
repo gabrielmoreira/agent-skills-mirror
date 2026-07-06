@@ -75,6 +75,9 @@ All scripts from this package's `package.json`:
 
 ```bash
 bun run --cwd packages/app dev                        # Vite dev server (renderer only; UI port from ELIZA_UI_PORT, default 2138)
+bun run --cwd packages/app dev:shared                 # Shared long-lived Vite server on deterministic worktree port
+bun run --cwd packages/app dev:status                 # List running shared dev servers (port, worktree, pid)
+bun run --cwd packages/app dev:rebuild                # Trigger explicit Vite full reload for this worktree
 bun run --cwd packages/app build                      # Full app build (scripts/build.mjs)
 bun run --cwd packages/app build:web                  # Vite build only (no capacitor sync)
 bun run --cwd packages/app plugin:build               # Plugin-only build
@@ -120,8 +123,12 @@ bun run --cwd packages/app install:android:adb
 ### iOS device automation (one command each — no Xcode UI, no manual signing)
 
 Agent-drivable pipeline for physical-device work (codifies the proven #11030
-device-boot recipe in `.github/issue-evidence/11030-ios-boot-fix/device-boot-README.md`).
+device-boot recipe).
 Device id comes from `--device <devicectl-id|udid|name>` or `ELIZA_IOS_DEVICE_ID`.
+Lane phones must stay on power with Settings > Display & Brightness > Auto-Lock
+set to Never. The device scripts probe `devicectl device info lockState` before
+deploy/log/capture work and wait up to `ELIZA_IOS_DEVICE_UNLOCK_WAIT_SECONDS`
+(default 120 s), but the durable lane prerequisite is preventing idle lock.
 
 ```bash
 # Build (unsigned, run-mobile-build ios-local lane) → auto-discover a matching
@@ -147,6 +154,10 @@ bun run --cwd packages/app ios:device:logs -- --device <id> --no-console --pull-
 # Pass --only-testing AppUITests/<Class>[/test] for a single narrow shard.
 bun run --cwd packages/app capture:ios-sim:boot                  # simulator (booted sim auto-detected)
 bun run --cwd packages/app ios:device:capture -- --device <id> --app-path <signed App.app>  # physical device
+
+# Strict simulator boot/chat health gate: same harness, but error-card,
+# no-reply, all-skipped, and zero-passed summaries are hard failures.
+bun run --cwd packages/app test:e2e:ios:boot-gate
 ```
 
 Produced artifacts: deploy stages into `ios/build/device-deploy-stage/`; logs
@@ -159,7 +170,7 @@ aggregate `test-summary.json` naming each shard/container reset) unless
 target/scheme in the template Xcode project) and is
 materialized into the gitignored `packages/app/ios` by cap sync. Pure decision
 logic (profile matching/selection, entitlement derivation, plist/xctestrun
-handling) is in `scripts/ios-device-lib.mjs`, unit-tested by
+handling, lock-state polling decisions) is in `scripts/ios-device-lib.mjs`, unit-tested by
 `scripts/ios-device-lib.test.mjs` in the package vitest suite. Boot-trace pull
 path defaults to `Documents/eliza-boot-trace.jsonl` (+ best-effort rotated
 `eliza-boot-trace.prev.jsonl` sibling; the renderer appends into the same
@@ -300,7 +311,7 @@ bun run --cwd packages/app test:e2e
   "follow-up." When unsure, research thoroughly, weigh the options, and ship the best,
   highest-effort, production-ready version. Keep going until every possibility is exhausted.
 
-Artifacts → `.github/issue-evidence/<issue#>-<slug>.<ext>`; attach each evidence type **or**
+Artifacts → attached inline in the PR (MP4 video, JPG screenshots, logs in `<details>`); attach each evidence type **or**
 explicitly mark it N/A with a reason — never leave it blank. If `develop` moved and changed
 behavior, **re-capture** evidence; stale proof is worse than none.
 

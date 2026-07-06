@@ -1,0 +1,4 @@
+interface:
+  display_name: "PinMe UniwebPay"
+  short_description: "Worker TS code for UniwebPay SDK payments"
+  default_prompt: "Use $pinme-uniwebpay to add UniwebPay SDK payments to a PinMe Worker TypeScript project."
