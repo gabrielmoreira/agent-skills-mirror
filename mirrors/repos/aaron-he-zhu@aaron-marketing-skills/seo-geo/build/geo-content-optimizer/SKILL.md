@@ -4,13 +4,13 @@ slug: geo-content-optimizer
 displayName: "GEO Content Optimizer · AI引用优化"
 summary: "AI引用优化/GEO优化/AI搜索"
 description: 'Use when the user asks to "optimize for AI citations"; improves citation readiness for ChatGPT, Perplexity, AI Overviews, Gemini, and Claude. Not for structural on-page SEO — use on-page-seo-auditor; not for net-new drafting — use content-writer. AI引用优化/GEO优化/AI搜索'
-version: "16.0.0"
+version: "16.0.1"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when optimizing content for AI engines like ChatGPT, Perplexity, AI Overviews, Gemini, Claude, or Copilot. Also for AI citation optimization, generative engine visibility, AI引用优化, AI搜索优化, GEO优化, or 让AI引用我."
 argument-hint: "<content URL or text> [target AI engine]"
-metadata: {"author": "aaron-he-zhu", "version": "16.0.0", "discipline": "seo-geo", "phase": "build", "geo-relevance": "high", "hermes": {"tags": ["marketing", "seo-geo", "build"], "category": "seo-geo"}, "openclaw": {"emoji": "🔍", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
+metadata: {"author": "aaron-he-zhu", "version": "16.0.1", "discipline": "seo-geo", "phase": "build", "geo-relevance": "high", "hermes": {"tags": ["marketing", "seo-geo", "build"], "category": "seo-geo"}, "openclaw": {"emoji": "🔍", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # GEO Content Optimizer
@@ -98,3 +98,5 @@ On user confirmation, save to `memory/content/YYYY-MM-DD-<topic>.md` — see [Sk
 ## Next Best Skill
 
 - **Primary**: [content-quality-auditor](../../optimize/content-quality-auditor/SKILL.md) — verify the optimized content is strong enough to ship and cite.
+
+**Termination note**: keep a visited-set this session; if the recommended skill was already invoked, stop and report the chain complete rather than re-running it. Honor a max handoff depth of 3 to avoid loops (per [skill-contract.md §Termination rules](../../../references/skill-contract.md)).

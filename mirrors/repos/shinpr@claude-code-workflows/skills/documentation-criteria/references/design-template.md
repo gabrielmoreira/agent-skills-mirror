@@ -60,6 +60,11 @@ Lists each external resource this feature depends on with its feature-specific i
 - [ ] [Standard/convention] `[explicit]` - Source: [config / rule file / documentation path]
 - [ ] [Observed pattern] `[implicit]` - Evidence: [file paths] - Confirmed: [Yes/No]
 
+#### Assumed Behaviors
+Behavioral or factual claims the design relies on (framework/library defaults, capabilities assumed already provided, features assumed already implemented). Each claim carries evidence with Confirmed: Yes, or Confirmed: No with a matching Risks and Mitigation row — one that restates the claim as its Risk (the shared lookup key) and names how it will be verified or guarded. Mark the subsection N/A when the design relies on no such claims.
+
+- [ ] [Claim — e.g., "framework X defaults to Y", "service already returns Z"] - Evidence: [file:line / command output / doc URL] - Confirmed: [Yes/No]
+
 #### Quality Assurance Mechanisms
 How quality is enforced in the change area. Each item is either adopted (will be enforced during implementation) or noted (observed but not adopted, with reason).
 

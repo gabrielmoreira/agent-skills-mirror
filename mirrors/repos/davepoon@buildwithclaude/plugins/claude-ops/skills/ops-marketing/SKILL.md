@@ -464,8 +464,12 @@ curl -s -X POST "https://graph.facebook.com/v20.0/${META_ACCOUNT}/adrules_librar
 ```
 
 For "Scale winners":
+
+> ⚠️ **Scope this to prospecting ad sets.** A bare `purchase_roas > 3` filter auto-scales *retargeting* ad sets too — whose ROAS is inflated by warm-audience demand capture (conversions that would have happened anyway), not incremental growth. Blanket-scaling them pours budget into demand you already own while starving prospecting, and the funnel contracts a month later. Add an ad-set-name/audience filter that excludes retargeting/remarketing (or restrict the rule to your prospecting ad sets), and confirm a winner's lift with a holdout before scaling on ROAS alone.
+
 ```bash
 # Increase budget 20% for ad sets with ROAS > 3x in last 7 days
+# NOTE: restrict to prospecting ad sets — see caveat above
 curl -s -X POST "https://graph.facebook.com/v20.0/${META_ACCOUNT}/adrules_library" \
   -H "Authorization: Bearer ${META_TOKEN}" \
   -H "Content-Type: application/json" \

@@ -383,7 +383,7 @@ make check        # repo validation + unit tests + eval lint + numeric benchmark
 | **数値ベンチマーク** | 実データから再計算された真値と一致しない報告数字 —— 素朴 DID の符号の罠、第一段階 F なしの弱 IV、staggered なタイミング下での TWFE バイアス、RDD のトレンド交絡、処置後のバッドコントロール、プールされた平均が隠す異質効果（CATE）、平均のみでは見逃す分位点効果、ローカルショックに交絡されたシフトシェア（Bartik）IV、媒介変数を統制して直接効果の符号が反転する罠、参照グループに依存する Oaxaca 分解、kink での超過質量を素朴密度が隠す bunching | [`benchmark/`](benchmark/) · 17 タスク |
 | **評価ハーネス** | 文章レベルの失敗: 弱 IV の根拠なき安心、staggered-DID での TWFE 誤用、捏造引用、安全でない `curl \| bash` セットアップ、多重検定の濫用、AER 準拠のギャップ | [`eval-harness/`](eval-harness/) · 30 シナリオ / 159 ルーブリック項目 |
 | **セキュリティ監査** | pipe-to-shell、リバースシェル、認証情報の流出、13 のリスクカテゴリにわたるプロンプトインジェクション —— 6 フェーズ、40+ フックスクリプトを手作業でレビュー | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
-| **来歴とライセンス** | 取り込まれていないソース、ライセンスリスク、1,150 個すべてのカタログ化スキルにわたる衛生のドリフト | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
+| **来歴とライセンス** | 取り込まれていないソース、ライセンスリスク、1,150 個すべてのカタログ化スキルにわたる衛生のドリフト | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_HYGIENE.md`](docs/SKILL_HYGIENE.md) |
 | **CI と互換性** | カタログの鮮度、ローカルリンク切れ、GitHub Actions ポリシー、Python 3.9 **および** 3.12 の構文フロア | [`.github/workflows/`](.github/workflows/) · 6 ワークフロー |
 
 ```bash

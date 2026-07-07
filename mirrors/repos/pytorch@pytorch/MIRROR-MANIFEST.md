@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pytorch/pytorch` — 26 default patterns, 0 followed patterns, 24 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,26 +63,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.claude/skills/aoti-debug/SKILL.md`](.claude/skills/aoti-debug/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/at-dispatch-v2/SKILL.md`](.claude/skills/at-dispatch-v2/SKILL.md) |
 | 4 | ✓ | [`.claude/skills/ci-metrics/SKILL.md`](.claude/skills/ci-metrics/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/distributed-triage/distributed-rubric.md`](.claude/skills/distributed-triage/distributed-rubric.md) |
-| 6 | ✓ | [`.claude/skills/distributed-triage/SKILL.md`](.claude/skills/distributed-triage/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/docstring/SKILL.md`](.claude/skills/docstring/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/document-public-apis/SKILL.md`](.claude/skills/document-public-apis/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/fix-issue/SKILL.md`](.claude/skills/fix-issue/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/metal-kernel/SKILL.md`](.claude/skills/metal-kernel/SKILL.md) |
-| 11 | ✓ | [`.claude/skills/pr-review/bc-guidelines.md`](.claude/skills/pr-review/bc-guidelines.md) |
-| 12 | ✓ | [`.claude/skills/pr-review/review-checklist.md`](.claude/skills/pr-review/review-checklist.md) |
-| 13 | ✓ | [`.claude/skills/pr-review/SKILL.md`](.claude/skills/pr-review/SKILL.md) |
-| 14 | ✓ | [`.claude/skills/pt2-bug-basher/SKILL.md`](.claude/skills/pt2-bug-basher/SKILL.md) |
-| 15 | ✓ | [`.claude/skills/pyrefly-type-coverage/SKILL.md`](.claude/skills/pyrefly-type-coverage/SKILL.md) |
-| 16 | ✓ | [`.claude/skills/scrub-issue/SKILL.md`](.claude/skills/scrub-issue/SKILL.md) |
-| 17 | ✓ | [`.claude/skills/skill-writer/SKILL.md`](.claude/skills/skill-writer/SKILL.md) |
-| 18 | ✓ | [`.claude/skills/triaging-issues/pt2-triage-rubric.md`](.claude/skills/triaging-issues/pt2-triage-rubric.md) |
-| 19 | ✓ | [`.claude/skills/triaging-issues/SKILL.md`](.claude/skills/triaging-issues/SKILL.md) |
-| 20 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 21 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 22 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 23 | ✓ | [`docs/source/elastic/examples.md`](docs/source/elastic/examples.md) |
-| 24 | ✓ | [`torch/_dynamo/CLAUDE.md`](torch/_dynamo/CLAUDE.md) |
+| 5 | ✓ | [`.claude/skills/cuda-index-width/SKILL.md`](.claude/skills/cuda-index-width/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/distributed-triage/distributed-rubric.md`](.claude/skills/distributed-triage/distributed-rubric.md) |
+| 7 | ✓ | [`.claude/skills/distributed-triage/SKILL.md`](.claude/skills/distributed-triage/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/docstring/SKILL.md`](.claude/skills/docstring/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/document-public-apis/SKILL.md`](.claude/skills/document-public-apis/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/fix-issue/SKILL.md`](.claude/skills/fix-issue/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/metal-kernel/SKILL.md`](.claude/skills/metal-kernel/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/pr-review/bc-guidelines.md`](.claude/skills/pr-review/bc-guidelines.md) |
+| 13 | ✓ | [`.claude/skills/pr-review/review-checklist.md`](.claude/skills/pr-review/review-checklist.md) |
+| 14 | ✓ | [`.claude/skills/pr-review/SKILL.md`](.claude/skills/pr-review/SKILL.md) |
+| 15 | ✓ | [`.claude/skills/pt2-bug-basher/SKILL.md`](.claude/skills/pt2-bug-basher/SKILL.md) |
+| 16 | ✓ | [`.claude/skills/pyrefly-type-coverage/SKILL.md`](.claude/skills/pyrefly-type-coverage/SKILL.md) |
+| 17 | ✓ | [`.claude/skills/scrub-issue/SKILL.md`](.claude/skills/scrub-issue/SKILL.md) |
+| 18 | ✓ | [`.claude/skills/skill-writer/SKILL.md`](.claude/skills/skill-writer/SKILL.md) |
+| 19 | ✓ | [`.claude/skills/triaging-issues/pt2-triage-rubric.md`](.claude/skills/triaging-issues/pt2-triage-rubric.md) |
+| 20 | ✓ | [`.claude/skills/triaging-issues/SKILL.md`](.claude/skills/triaging-issues/SKILL.md) |
+| 21 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 23 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 24 | ✓ | [`docs/source/elastic/examples.md`](docs/source/elastic/examples.md) |
+| 25 | ✓ | [`torch/_dynamo/CLAUDE.md`](torch/_dynamo/CLAUDE.md) |
 
 ---
 

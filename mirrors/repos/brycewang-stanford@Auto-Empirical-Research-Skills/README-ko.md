@@ -383,7 +383,7 @@ make check        # repo validation + unit tests + eval lint + numeric benchmark
 | **수치 벤치마크** | 실제 데이터에서 재계산한 진실과 일치하지 않는 보고 숫자 — 순진한 DID 부호 함정, 1단계 F 없는 약한 IV, staggered 타이밍 하의 TWFE 편향, RDD 추세 교란, 처치 후 나쁜 통제, 통합 평균이 숨기는 이질적 효과(CATE), 평균만 보면 놓치는 분위수 효과, 지역 충격에 교란된 시프트-셰어(Bartik) IV, 매개변수를 통제해 직접효과 부호가 뒤집히는 함정, 준거집단에 따라 달라지는 Oaxaca 분해, kink에서 잉여질량을 무보정 밀도가 숨기는 bunching | [`benchmark/`](benchmark/) · 17개 과제 |
 | **Eval 하니스** | 산문 수준 실패: 약한 IV의 거짓 안심, staggered-DID의 TWFE 오용, 조작된 인용, 안전하지 않은 `curl \| bash` 설치, 다중 검정 남용, AER 준수 누락 | [`eval-harness/`](eval-harness/) · 30개 시나리오 / 159개 루브릭 항목 |
 | **보안 감사** | pipe-to-shell, 리버스 셸, 자격증명 유출, 프롬프트 인젝션을 13개 위험 카테고리에 걸쳐 점검 — 6단계, 40개 이상의 hook 스크립트를 손으로 검토 | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
-| **출처 & 라이선스** | 벤더링되지 않은 출처, 라이선스 위험, 1,150개 카탈로그 스킬 전반의 위생 드리프트 | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_QUALITY.md`](docs/SKILL_QUALITY.md) |
+| **출처 & 라이선스** | 벤더링되지 않은 출처, 라이선스 위험, 1,150개 카탈로그 스킬 전반의 위생 드리프트 | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) · [`docs/SKILL_HYGIENE.md`](docs/SKILL_HYGIENE.md) |
 | **CI & 호환성** | 카탈로그 신선도, 깨진 로컬 링크, GitHub Actions 정책, Python 3.9 **및** 3.12 문법 하한선 | [`.github/workflows/`](.github/workflows/) · 6개 워크플로 |
 
 ```bash

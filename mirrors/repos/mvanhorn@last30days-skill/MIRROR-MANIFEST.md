@@ -2,7 +2,7 @@
 repo: mvanhorn/last30days-skill
 repoUrl: https://github.com/mvanhorn/last30days-skill.git
 refType: branch
-ref: main
+ref: fix/hermes-scan-safe-verdict
 ---
 
 # Mirror Manifest
@@ -15,7 +15,7 @@ Mirror of `mvanhorn/last30days-skill` — 26 default patterns, 0 followed patter
 |---------------|-------|
 | Repo          | `mvanhorn/last30days-skill` |
 | Ref Type      | `branch` |
-| Ref           | `main` |
+| Ref           | `fix/hermes-scan-safe-verdict` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 136 |

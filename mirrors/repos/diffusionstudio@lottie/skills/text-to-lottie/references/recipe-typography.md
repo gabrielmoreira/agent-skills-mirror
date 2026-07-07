@@ -27,6 +27,12 @@ handwritten/path reveals, text morphs, counters, and short message-led scenes.
   the player-contract reference. Fall back to vector/shape text only for
   deliberate path-level effects (stroke-on reveals, glyph morphs, handwriting),
   not as a font workaround.
+- For **editable multi-word slots** (headlines, subtitles, quotes, CTAs), author the
+  text document as **box text** — add `sz: [w, h]` and `ps: [x, y]` so a longer edit
+  wraps at a fixed width instead of overflowing. Keep **point text** (no `sz`) for
+  single glyphs, numeric/tile scenes, logos, and choreographed type. Box text is
+  top-aligned and does not clip to its height; see the "Point Text vs Box Text"
+  section of the player-contract reference.
 
 ## Category Distinctions
 

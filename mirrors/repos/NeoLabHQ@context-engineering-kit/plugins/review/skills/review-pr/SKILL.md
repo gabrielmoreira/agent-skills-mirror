@@ -126,6 +126,8 @@ Based on changes summary from phase 1 and their complexity, determine which revi
 - Provide to them full list of modified files and summary of the PR as a context, explicitly highlight which PR they are reviewing, also provide list of files with project guidelines and standards, including README.md, CLAUDE.md and consitution.md if they exist.
 - Results should come back together
 
+CRITICAL: **Use foreground agents only**: Do not use background agents. Launch parallel agents when possible. Background agents constantly run in permissions issues and other errors.
+
 ### Phase 3: Confidence & Impact Scoring
 
 1. For each issue found in Phase 2, launch a parallel Haiku agent that takes the PR, issue description, and list of CLAUDE.md files (from step 2), and returns TWO scores:

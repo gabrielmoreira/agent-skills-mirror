@@ -6,7 +6,7 @@ use [`search.html`](search.html); for the full tag index see
 [`TAXONOMY.md`](TAXONOMY.md); for copy-paste end-to-end runs see
 [`GOLDEN_WORKFLOWS.md`](GOLDEN_WORKFLOWS.md).
 
-> Trust note: a green hygiene score in [`SKILL_QUALITY.md`](SKILL_QUALITY.md)
+> Trust note: a green hygiene score in [`SKILL_HYGIENE.md`](SKILL_HYGIENE.md)
 > means a skill is *well-formed*. Whether it makes an agent produce *correct*
 > econometrics is what [`eval-harness/`](../eval-harness/) and [`benchmark/`](../benchmark/)
 > measure. Prefer skills whose behavior is covered by an eval scenario.

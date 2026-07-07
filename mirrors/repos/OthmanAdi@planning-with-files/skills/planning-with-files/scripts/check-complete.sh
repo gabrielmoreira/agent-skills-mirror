@@ -30,6 +30,10 @@
 # interactive terminal (TTY) is skipped entirely. No data on stdin is treated
 # as stop_hook_active=false.
 
+# issue #195: per-invocation opt-out (PLANNING_DISABLED=1) for one-shot/CI
+# sessions that share a cwd with a plan but never opted into it.
+[ "${PLANNING_DISABLED:-}" = "1" ] && exit 0
+
 GATE=0
 PLAN_FILE=""
 for _arg in "$@"; do

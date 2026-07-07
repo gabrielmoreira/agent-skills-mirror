@@ -52,7 +52,7 @@ plugins/plugin-discord/
   setup-routes.ts             HTTP routes for connector setup state machine (/api/setup/discord/*)
   data-routes.ts              HTTP routes for post-auth data (/api/discord/guilds, channels, subscriptions)
   slash-commands.ts           Slash command registry and dispatcher
-  native-commands.ts          Utilities for building Discord slash commands with button/menu components
+  native-commands.ts          Utilities for building Discord slash commands with button-based argument menus
   catalog-commands.ts         Registers connector-neutral catalog commands (think, reasoning, views, knowledge, plugins, ...) into the slash-command registry, deduplicating against hand-written built-ins
   interactions.ts             Maps neutral agent InteractionBlock output to Discord ActionRow/button components; decodes callback custom_id on button click
   messaging.ts                Text helpers: chunkDiscordText, escapeDiscordMarkdown, extractAllUserMentions, etc.
@@ -131,7 +131,7 @@ bun run --cwd plugins/plugin-discord clean       # rm dist + .turbo + generated 
 | `DISCORD_SHOULD_RESPOND_ONLY_TO_MENTIONS` | No | `"false"` to reply without an @-mention (default: `true`) |
 | `DISCORD_DM_POLICY` | No | DM access policy: `open` / `allowlist` / `pairing` / `disabled` (default: `pairing`) |
 | `DISCORD_ALLOW_FROM` | No | Comma-separated Discord user IDs allowed under the `allowlist` DM policy |
-| `ELIZA_DISCORD_OWNER_USER_IDS_JSON` | No | JSON array of Discord user IDs that should alias to the canonical Eliza owner entity. Use only for the actual owner or deliberate owner aliases; Discord application team members are kept as separate entities and may be connector admins via `ELIZA_ROLES_CONNECTOR_ADMINS_JSON`. |
+| `ELIZA_DISCORD_OWNER_USER_IDS_JSON` | No | JSON array of Discord user IDs that should alias to the canonical Eliza owner entity. Use only for the actual owner or deliberate owner aliases; Discord application team members are kept as separate entities; accepted, non-read-only members are seeded as connector admins (pending invitees and `read_only` members get no standing), and more can be added via `ELIZA_ROLES_CONNECTOR_ADMINS_JSON`. |
 | `DISCORD_AUTO_REPLY` | No | `"true"` to auto-generate replies; default `false` (messages are ingested but not answered) |
 | `DISCORD_SYNC_PROFILE` | No | `"false"` to skip bot profile sync on startup (default: `true`) |
 | `DISCORD_IPC_DIR` | No | Override the IPC socket directory searched by `DiscordLocalService` when connecting to the Discord desktop app |
@@ -161,10 +161,10 @@ All settings can also be provided in the character file under `settings.discord`
 - **`autoReply` is false by default** in `DiscordSettings` — messages are ingested but the agent does not auto-reply unless explicitly enabled.
 - See root `AGENTS.md` for repo-wide architecture rules, logger-only logging, ESM conventions, and naming standards.
 
-<!-- BEGIN: evidence-and-e2e-mandate (managed; canonical standard = repo-root PR_EVIDENCE.md) -->
+<!-- BEGIN: evidence-and-e2e-mandate (managed; canonical standard = repo-root AGENTS.md) -->
 ## ⛔ NON-NEGOTIABLE — evidence, trajectories & real end-to-end tests
 
-> The binding, repo-wide standard is **[PR_EVIDENCE.md](../../PR_EVIDENCE.md)**. Read it.
+> The binding, repo-wide standard is **[AGENTS.md](../../AGENTS.md)**. Read it.
 > Nothing in this package is *done* until it is *proven* done — a reviewer must confirm it
 > works **without reading the code**, from the artifacts you attach. This applies to **every**
 > feature, fix, refactor, and chore here. "Tests pass" is not proof; "CI is green" is not proof.

@@ -6,6 +6,10 @@ param(
     [string]$PlanFile = "task_plan.md"
 )
 
+# issue #195: per-invocation opt-out (PLANNING_DISABLED=1) for one-shot/CI
+# sessions that share a cwd with a plan but never opted into it.
+if ($env:PLANNING_DISABLED -eq '1') { exit 0 }
+
 if (-not (Test-Path $PlanFile)) {
     Write-Host '[planning-with-files-es] No se encontró task_plan.md — no hay sesión de planificación activa.'
     exit 0

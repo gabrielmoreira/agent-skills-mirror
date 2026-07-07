@@ -12,8 +12,8 @@ description: >
 user-invocable: true
 metadata:
   tags: [higgsfield, video, image, prompt, cinematic, AI, filmmaking, motion, camera]
-  version: 3.18.0
-  updated: 2026-06-30
+  version: 3.20.1
+  updated: 2026-07-06
   author: O-Side Media
   license: MIT
 ---
@@ -54,7 +54,7 @@ These rules apply to every Higgsfield response. They are written as a pre-delive
 
 Higgsfield is a cinematic AI video and image generation platform built for filmmakers and
 creators. Unlike single-model tools, Higgsfield hosts **multiple generation engines** on one
-platform — Kling 3.0/3.0 Omni/3.0 Motion Control, Sora 2, Google Veo 3.1/3.1 Lite, Wan 2.7/2.6/2.5,
+platform — Kling 3.0/3.0 Omni/3.0 Motion Control, Sora 2 incl. Pro/Max/Pro Max tiers (UI-only — confirmed in the UI 2026-07-06, absent from the API/MCP catalog), Google Veo 3.1/3.1 Lite, Wan 2.7/2.6/2.5,
 Seedance 2.0/Pro, Minimax Hailuo 2.3/02, Higgsfield DoP (Lite/Standard/Turbo) for video; Soul 2.0, Soul Cinema Preview,
 Soul Cast, Nano Banana Pro/2, Kling Image 3.0/Omni, Seedream 4.0, GPT Image 2.0,
 Flux 2/Kontext for images — plus a library of 100+ named **Motion Presets**, a **Soul ID**
@@ -92,7 +92,7 @@ with no specific constraints, **generate immediately** using these sensible defa
 | Aspect ratio | 16:9 |
 | Duration | 8s |
 | Style | Cinematic |
-| Video model | Kling 3.0 (character-focused) or Sora 2 (action/scale) |
+| Video model | Kling 3.0 (character-focused) or Seedance 2.0 (action/scale/references) |
 | Image model | Soul 2.0 (portrait) or Nano Banana 2 (everything else) |
 
 Do not ask clarifying questions. Deliver a ready-to-paste prompt. Mention the defaults
@@ -135,6 +135,7 @@ budget constraints, client work), **confirm before generating:**
 | Named motion preset (Explosion, Werewolf, etc.) | `higgsfield-motion` |
 | Visual style selection | `higgsfield-style` |
 | Character consistency across shots | `higgsfield-soul` |
+| **Consistency tie-break:** character consistency via a live Soul ID / reference images inside Higgsfield → `higgsfield-soul`; developing WHO the character is first (sheet, story bible, visual DNA) → `higgsfield-character-design`. Both may apply in sequence: design first, then lock with Soul. | — |
 | VFX presets (Air Bending, Plasma, etc.) | `higgsfield-motion` |
 | One-click App workflow | `higgsfield-apps` |
 | Genre recipe (action, horror, ad, etc.) | `higgsfield-recipes` |
@@ -166,6 +167,10 @@ budget constraints, client work), **confirm before generating:**
 | User reports a generation result (kept/rejected/flagged) — log it to the ledger | `higgsfield-recall` |
 | Takes-per-kept ratios, credit budgeting from logged data | `higgsfield-assist` |
 | Audio design, dialogue cues, SFX, ambient sound | `higgsfield-audio` |
+| **Standalone audio generation** — soundtrack, ambience bed, multi-speaker scene audio, Seed Audio 1.0 (`seed_audio`), TTS voiceover / narration as its own deliverable | `higgsfield-audio` |
+| **Extend / continue an existing clip** — "make it longer", "what happens next / before", prequel, last-frame handoff, extension chains | `higgsfield-seedance` (§ Extension Prompting) + `higgsfield-pipeline` (§ Continuation & Extension Handoff) |
+| **Prep assets / reference sheets before video** — character sheet, prop three-view, location plate, "build my elements", variety sheet for crowds | `templates/ad-asset-prep.md` + `higgsfield-gpt-image-2` (props) + `higgsfield-soul` (people & crowds) |
+| Audition / screen-test a designed character (how they move, speak, react) before scene generation | `higgsfield-character-design` (§ Screen Test / Audition) |
 | Seedance 2.0 / Pro prompt, flagged prompt, credit waste on Seedance | `higgsfield-seedance` |
 | **Transform footage the user already has** (video-to-video): "make a Seedance prompt for this video/clip", add a VFX element (set my head/hair on fire, transform my hand, make a limb invisible), swap the world/background around a preserved subject (desert, clouds, lava, neon city), put a giant creature behind me or on a landmark, relight/regrade to match, sync a crash-zoom/push-in to a line — a **real source clip** is the starting point | `higgsfield-seedance-vfx` |
 | Precise facial expression / FACS / Action Unit codes (AU12, AU6…), forced or uncanny or mixed expression, close-up micro-performance, monologue/dialogue facial acting, "which AU code for anger/fear", FACS reference sheet | `higgsfield-facs` |
@@ -175,6 +180,20 @@ budget constraints, client work), **confirm before generating:**
 | User asks where the prompt construction ends and the CLI/MCP execution begins (handoff questions) | `higgsfield-stack` |
 
 ---
+
+### Load Map — how much to read
+
+The routing table says *where*; this says *how much*. Loads are cumulative — every path starts from HARD RULE 2's mandatory reads.
+
+| Situation | Load |
+|-----------|------|
+| Simple creative prompt (Fast Path) | root `SKILL.md` + `skills/higgsfield-prompt/SKILL.md` — nothing else |
+| Any Seedance prompt | + `skills/higgsfield-seedance/SKILL.md` (+ the matching `templates/seedance/` file when the request is technique-shaped) |
+| Multi-scene / sequence / script breakdown | + `higgsfield-shotlist-director` + `higgsfield-pipeline` |
+| Model choice unclear or contested | + `higgsfield-models` + `specs/` (the generated spec for the output type) |
+| User reports a generation result | + `higgsfield-recall` (ledger write) |
+| Budget / credits / plan question | + `higgsfield-assist` |
+| Anything else | one routing-table row → that sub-skill; resist loading more than the row names |
 
 ### Check Templates for Genre Match
 
@@ -278,7 +297,7 @@ and credit budgets.
 
 **The 5-second rule:** when the user reports a result, ask at most ONE
 question ("keep or reject — what failed?") and write the row yourself with
-one `higgsfield_memory.py log-gen` command. Never ask twice; never present a
+one `scripts/higgsfield_memory.py log-gen` command. Never ask twice; never present a
 form. Full workflow: `skills/higgsfield-recall/SKILL.md` § Log the Generation
 Result. Ratios and budgeting: `skills/higgsfield-assist/SKILL.md`.
 
@@ -300,7 +319,9 @@ Result. Ratios and budgeting: `skills/higgsfield-assist/SKILL.md`.
 |----------|-----------------|-------------|
 | `skills/shared/negative-constraints.md` | All generation artifacts + prevention phrases, by category | Check before every prompt — append relevant constraints |
 | `templates/` | 10 annotated genre templates with examples, models, annotations, variations | When user request matches a common genre — use as starting point |
-| `templates/seedance/` | 5 Seedance technique templates: top-down-map, multi-character-anchor, single-character-position, worked-example-two-character, anime-animation | When Seedance request is technique-shaped (spatial blocking, multi-character anchoring, anime/stylized-2D) |
+| `templates/ad-asset-prep.md` | Ad asset preparation: product sheets, hero-character sheets, location plates — generate-many → test-in-motion → lock-the-winner | When an ad/product request needs reference assets built before video |
+| `templates/character-design/` | 6 character-design worksheets (9-question sheet, story bible, visual DNA) | With `higgsfield-character-design` when developing characters before prompting |
+| `templates/seedance/` | 8 Seedance technique templates: top-down-map, multi-character-anchor, single-character-position, worked-example-two-character, anime-animation, facs-expression-beats, footage-vfx-transform, global-style-prefix | When Seedance request is technique-shaped (spatial blocking, multi-character anchoring, anime/stylized-2D, FACS acting, footage VFX, style prefix) |
 | `templates/text-overlays/` | 3 text-rendering templates: slogan, subtitle, speech-bubble | When user request includes on-screen text rendering |
 
 ---

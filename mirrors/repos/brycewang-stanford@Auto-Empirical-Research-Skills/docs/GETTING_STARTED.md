@@ -107,7 +107,7 @@ Use the matching first-party skill to pressure-test the output before you rely o
 - **Find the right skill:** [`CHOOSING_A_SKILL.md`](CHOOSING_A_SKILL.md) · [`TAXONOMY.md`](TAXONOMY.md) · [`search.html`](search.html)
 - **Copy a full workflow:** [`GOLDEN_WORKFLOWS.md`](GOLDEN_WORKFLOWS.md)
 - **Understand the guarantees:** `docs/TRUST.md` · [`QUALITY_GATE.md`](QUALITY_GATE.md)
-- **Check what each skill is worth:** [`SKILL_QUALITY.md`](SKILL_QUALITY.md) (hygiene) + [`eval-harness/`](../eval-harness/) (behavior) + [`benchmark/`](../benchmark/) (numbers)
+- **Check what each skill is worth:** [`SKILL_HYGIENE.md`](SKILL_HYGIENE.md) (hygiene) + [`eval-harness/`](../eval-harness/) (behavior) + [`benchmark/`](../benchmark/) (numbers)
 - **Contribute a skill:** [`SKILL_SUBMISSION_GUIDE.md`](SKILL_SUBMISSION_GUIDE.md) · [`../CONTRIBUTING.md`](../CONTRIBUTING.md)
 
 > Workflow-stage notes (中文): from [`01-选题与研究设计`](01-选题与研究设计.md) through

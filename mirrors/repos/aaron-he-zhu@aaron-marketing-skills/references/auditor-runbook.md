@@ -163,7 +163,7 @@ jargon in user output.
 
 ### Forbidden in user-visible output
 
-- Veto item IDs (T04, C01, R10, T03, T05, T09, and any future IDs)
+- Veto item IDs — any framework's (CORE-EEAT T04/C01/R10, CITE T03/T05/T09, plus the C³ ART, ROAS, SEND, RAMP, ECHO, and TALE veto IDs, and any future IDs)
 - Phrases combining "dimension" or "capped at" with raw numbers
 - Internal field names: `cap_applied`, `raw_overall_score`, `final_overall_score`, `gap_type`
 - Internal severity labels: `P0`, `P1`, `P2`, `severity: veto/high/medium/low` — translate via
@@ -235,8 +235,9 @@ rendering. The raw `open_loops` array never reaches a user's screen.
 | "P1" / "severity: high" | "should-fix" |
 | "P2" / "severity: medium" / "severity: low" | "nice-to-have" |
 
-The **veto-ID rows** (`T04`/`C01`/`R10` for CORE-EEAT; `T03`/`T05`/`T09` for CITE) are defined in
-each auditor's own body, because the same ID means different things in each framework.
+The **veto-ID rows** (`T04`/`C01`/`R10` for CORE-EEAT; `T03`/`T05`/`T09` for CITE; and likewise the
+C³ ART, ROAS, SEND, RAMP, ECHO, and TALE veto IDs) are defined in each auditor's own body, because
+the same ID means different things in each framework — always qualify a veto ID with its framework.
 
 ### Severity tier routing (internal)
 
@@ -260,7 +261,7 @@ highlight reel.
 Auditor-emitted audit files MUST satisfy these invariants for the PostToolUse Artifact Gate hook
 (`hooks/hooks.json`) to validate them:
 
-1. **Location**: under `memory/audits/` — the per-role subdir `memory/audits/content/<YYYY-MM-DD>-<topic>.md` (content-quality-auditor), `memory/audits/domain/<YYYY-MM-DD>-<topic>.md` (domain-authority-auditor), `memory/audits/influencer/<YYYY-MM-DD>-<topic>.md` (content-reviewer), `memory/audits/ad/<YYYY-MM-DD>-<topic>.md` (ad-account-auditor), `memory/audits/email/<YYYY-MM-DD>-<topic>.md` (email-quality-auditor), `memory/audits/launch/<YYYY-MM-DD>-<topic>.md` (launch-readiness-auditor), or `memory/audits/social/<YYYY-MM-DD>-<topic>.md` (social-quality-auditor), or the monthly aggregate `memory/audits/YYYY-MM.md`. The gate validates anything matching `memory/audits/*.md`, subdirectories included.
+1. **Location**: under `memory/audits/` — the per-role subdir `memory/audits/content/<YYYY-MM-DD>-<topic>.md` (content-quality-auditor), `memory/audits/domain/<YYYY-MM-DD>-<topic>.md` (domain-authority-auditor), `memory/audits/influencer/<YYYY-MM-DD>-<topic>.md` (content-reviewer), `memory/audits/ad/<YYYY-MM-DD>-<topic>.md` (ad-account-auditor), `memory/audits/email/<YYYY-MM-DD>-<topic>.md` (email-quality-auditor), `memory/audits/launch/<YYYY-MM-DD>-<topic>.md` (launch-readiness-auditor), or `memory/audits/social/<YYYY-MM-DD>-<topic>.md` (social-quality-auditor), or `memory/audits/narrative/<YYYY-MM-DD>-<topic>.md` (narrative-quality-auditor), or the monthly aggregate `memory/audits/YYYY-MM.md`. The gate validates anything matching `memory/audits/*.md`, subdirectories included.
 2. **Frontmatter**: include `class: auditor-output` (enforced by §1)
 3. **Scope**: YAML handoff blocks elsewhere (blog posts, README examples, skill docs) are NOT audit
    artifacts — the path + frontmatter combination is the authoritative filter.

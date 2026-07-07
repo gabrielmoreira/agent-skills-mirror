@@ -1,6 +1,6 @@
 ---
 name: qa
-description: Systematic QA testing of a web application: diff-aware, tiered, with fix-and-verify loop
+description: "Systematic QA testing of a web application: diff-aware, tiered, with fix-and-verify loop"
 argument-hint: "[path] [--thorough]"
 effort: high
 disable-model-invocation: true

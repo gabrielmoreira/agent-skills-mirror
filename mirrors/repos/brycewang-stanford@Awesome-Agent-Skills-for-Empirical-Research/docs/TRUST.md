@@ -1,8 +1,25 @@
 # AERS Trust Surface
 
+> **New here?** Start at the **[one-page scoreboard](SCOREBOARD.md)** — it
+> links out to the four canonical trust signals (hygiene, rigor coverage,
+> numeric benchmark, runtime trust) and is the fastest way to decide
+> whether AERS is safe to embed in your workflow.
+
 This page summarizes the always-on checks that make AERS more than a large skill
 catalog. The goal is to catch wrong empirical work, fabricated citations, and
 unsafe runtime advice before a skill answer reaches a researcher.
+
+## Trust signal hierarchy
+
+AERS reports trust on **four canonical axes**. They answer different
+questions and *do not* substitute for each other:
+
+1. **Hygiene** — *is each skill well-formed?* → [`SKILL_HYGIENE.md`](SKILL_HYGIENE.md)
+2. **Rigor coverage** — *is every methodological family defended by an eval + a numeric benchmark?* → [`RIGOR_COVERAGE.md`](RIGOR_COVERAGE.md)
+3. **Numeric benchmark** — *does the reference pipeline actually recover the gold values?* → [`BENCHMARK_SCOREBOARD.md`](BENCHMARK_SCOREBOARD.md)
+4. **Runtime trust** — *do the workflows, scripts, and security scans stay clean?* → this page and [`SECURITY-SCAN-REPORT.md`](../SECURITY-SCAN-REPORT.md)
+
+For a one-page overview see [`SCOREBOARD.md`](SCOREBOARD.md).
 
 ## Quality Layers
 

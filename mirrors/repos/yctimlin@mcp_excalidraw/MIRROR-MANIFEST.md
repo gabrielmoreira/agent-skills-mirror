@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `yctimlin/mcp_excalidraw` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `yctimlin/mcp_excalidraw` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `yctimlin/mcp_excalidraw` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,14 +61,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`skills/excalidraw-skill/evals/evals.json`](skills/excalidraw-skill/evals/evals.json) |
 | 2 | ✓ | [`skills/excalidraw-skill/references/cheatsheet.md`](skills/excalidraw-skill/references/cheatsheet.md) |
-| 3 | ✓ | [`skills/excalidraw-skill/scripts/clear-canvas.cjs`](skills/excalidraw-skill/scripts/clear-canvas.cjs) |
-| 4 | ✓ | [`skills/excalidraw-skill/scripts/create-element.cjs`](skills/excalidraw-skill/scripts/create-element.cjs) |
-| 5 | ✓ | [`skills/excalidraw-skill/scripts/delete-element.cjs`](skills/excalidraw-skill/scripts/delete-element.cjs) |
-| 6 | ✓ | [`skills/excalidraw-skill/scripts/export-elements.cjs`](skills/excalidraw-skill/scripts/export-elements.cjs) |
-| 7 | ✓ | [`skills/excalidraw-skill/scripts/healthcheck.cjs`](skills/excalidraw-skill/scripts/healthcheck.cjs) |
-| 8 | ✓ | [`skills/excalidraw-skill/scripts/import-elements.cjs`](skills/excalidraw-skill/scripts/import-elements.cjs) |
-| 9 | ✓ | [`skills/excalidraw-skill/scripts/update-element.cjs`](skills/excalidraw-skill/scripts/update-element.cjs) |
-| 10 | ✓ | [`skills/excalidraw-skill/SKILL.md`](skills/excalidraw-skill/SKILL.md) |
+| 3 | ✓ | [`skills/excalidraw-skill/SKILL.md`](skills/excalidraw-skill/SKILL.md) |
 
 ---
 

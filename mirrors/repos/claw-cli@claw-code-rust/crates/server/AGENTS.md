@@ -39,3 +39,12 @@ The server runtime uses **one session actor per session**. Durable session state
 - **Runtime concurrency changes need integration coverage** in `crates/server/tests/`: interrupt mid-stream, queued follow-ups, goal lifecycle interrupts, persistence/resume, research.
 - **Prefer waiting on observable protocol outcomes** (notifications, terminal status) over sleeping or polling internal maps.
 - Follow existing test conventions: `pretty_assertions::assert_eq`, compare whole objects where possible, platform-aware paths when touching filesystem behavior.
+
+### Session persistence layers
+
+- **Rollout JSONL** under `~/.devo/sessions/` is the canonical conversation history.
+- **SQLite** (`devo.db` `sessions` table) stores a lightweight index (`rollout_path`, `parent_session_id`, title, cwd, timestamps) used by `session/list` and resume decisions.
+- **In-memory session actors** are loaded on demand via `get_or_load_parent_session`; root sessions are LRU-evicted (capacity 16) when unpinned.
+- **`session/list`** returns durable user-visible sessions only (non-ephemeral, no `agent_path`; includes forks with `parent_session_id`); subagent rows are indexed but hidden from list.
+- **`session/resume`** loads parent sessions lazily from rollout files. Subagent session ids cannot be resumed directly; missing rollout files fail with an explicit restore error.
+- **Startup** runs `index_rollout_metadata` in the background instead of replaying every rollout into memory.

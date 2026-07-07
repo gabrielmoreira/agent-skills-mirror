@@ -19,6 +19,7 @@ That's it — all 174 skills and 5 workflow recipes are now available in every C
 | `get_skill` | Return the full instructions for one skill by name, ready to apply. |
 | `list_workflows` | List workflow recipes — named chains of skills (e.g. ship-a-feature). |
 | `get_workflow` | Return one recipe: the ordered skills to run and what each produces. |
+| `run_skill` | **Execute a skill with zero API key** — via [MCP sampling](https://modelcontextprotocol.io/docs/concepts/sampling), the generation runs on *your client's* model. Pass `name` + `input`, get the finished artifact back. If your client doesn't support sampling yet, the tool says so and points you at `get_skill`. |
 
 ## Configure it
 
@@ -67,3 +68,7 @@ The skill supplies the *structure*; the other server supplies the *facts*. In th
 ## How it works
 
 Pure Node standard library, MCP stdio transport (newline-delimited JSON-RPC 2.0). It reads the bundled `skills/` at startup and serves them in-memory; all logging goes to stderr so it never corrupts the protocol stream. No network, no data leaves your machine.
+
+## Frontier: MCP Apps
+
+The MCP spec is gaining **interactive UI resources** (MCP Apps): servers returning live components, not just text. When it stabilizes across clients, `run_skill` outputs here will upgrade to interactive artifacts — an editable scorecard, a living model — inside Claude Desktop itself. Tracked; not shipped until the spec settles.

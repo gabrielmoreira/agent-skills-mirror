@@ -34,9 +34,11 @@ head:
 
 用户说一句“帮我分析这份报表”，这是 **Prompt**。模型判断需要调用 `read_file`，并生成结构化参数，这是 **Function Calling**。`read_file` 这个能力如果来自 MCP Server，那 **MCP** 负责的是连接和协议。至于“分析报表时先看字段含义，再看异常值，最后给业务结论，不要直接堆统计指标”，这才是 **Skill** 适合放的东西。
 
+![ Skill 和 Prompt、MCP、Function Calling 对比](https://oss.javaguide.cn/github/javaguide/ai/skills/skill-prompt-function-calling-mcp-comparison.webp)
+
 放在一个真实链路里，大概是这样：
 
-![Agent 执行链路](https://oss.javaguide.cn/github/javaguide/ai/skills/skills-agent-execution-link.png)
+![Agent 执行链路](https://oss.javaguide.cn/github/javaguide/ai/skills/skill-agent-execution-link.webp)
 
 1. 用户提出任务（Prompt）
 2. 宿主把可用 Skills 的简短描述放进上下文（Skill 元数据）

@@ -146,6 +146,8 @@ Based on changes summary from phase 1 and their complexity, determine which revi
 - Provide to them full list of modified files and summary of changes as context, explicitly highlight what local changes they are reviewing, also provide list of files with project guidelines and standards, including README.md, CLAUDE.md and constitution.md if they exist.
 - Results should come back together
 
+CRITICAL: **Use foreground agents only**: Do not use background agents. Launch parallel agents when possible. Background agents constantly run in permissions issues and other errors.
+
 ### Phase 3: Confidence & Impact Scoring
 
 This phase uses `MIN_IMPACT_SCORE` resolved in the Configuration Resolution block of Command Arguments above (default: 61 for `high`).

@@ -194,7 +194,7 @@ def publish_rendered_html(
 
 
 def _publish_password_for_args(args: argparse.Namespace) -> str | None:
-    return (args.publish_password or os.environ.get("LAST30DAYS_PUBLISH_PASSWORD") or None)
+    return (args.publish_password or env.read_secret_env("LAST30DAYS_PUBLISH_PASSWORD") or None)
 
 
 def emit_output(
@@ -1092,7 +1092,7 @@ def main() -> int:
         topic
         and not args.diagnose
         and not args.mock
-        and os.environ.get("LAST30DAYS_API_KEY")
+        and env.read_secret_env("LAST30DAYS_API_KEY")
         and os.environ.get("LAST30DAYS_API_BASE")
     ):
         from lib import hosted

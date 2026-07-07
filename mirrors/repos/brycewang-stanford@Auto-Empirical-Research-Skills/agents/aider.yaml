@@ -1,0 +1,82 @@
+# Aider CLI entry point for the AERS catalog.
+#
+# Aider does not have a concept of "skills" the way Claude Code / Codex /
+# Cursor do. The conventional install path is:
+#
+#   1. Concatenate SKILL.md into a "context file" passed via `--read` /
+#      `--file` so it is included in every chat.
+#   2. Or symlink a wrapper doc into `~/.aider.conf.yml` via `read:` so the
+#      router is automatically loaded.
+#
+# This entry point is *documentation*, not a script. It describes the exact
+# commands to run to wire AERS into Aider. Aider does not natively understand
+# nested SKILL.md folders, so the easiest path is to point it at the root
+# `SKILL.md` and treat it as a long context file.
+
+interface:
+  display_name: "AERS Empirical Research Router"
+  short_description: "Route 1,150+ empirical-research skills from AERS"
+  default_prompt: |
+    Use $auto-empirical-research-skills to pick the right skill for my empirical-research task.
+    Start by reading SKILL.md (pointed at by `--read`), follow its routing
+    protocol, then read only the targeted child SKILL.md. Treat progressive
+    disclosure as a hard requirement — never load the whole `skills/`
+    directory at once.
+
+  install_methods:
+    - aider_cli_read:
+        description: "Recommended: pass SKILL.md (and any active child SKILL.md) as a context file."
+        command: |
+          aider --read <repo-root>/SKILL.md \\
+                --model claude-3-7-sonnet-20250219 \\
+                --no-auto-commits
+        notes: |
+          `--read` injects the file into the chat context. The first turn
+          should invoke the AERS router protocol from `SKILL.md`.
+
+    - aider_persistent_conventions:
+        description: "Pin the router to `~/.aider.conf.yml` so every Aider session in this repo sees it."
+        files_to_modify:
+          - path: "~/.aider.conf.yml"
+            contents: |
+              read:
+                - <repo-root>/SKILL.md
+              # Optional: when actively working on a specific skill, pin its
+              # SKILL.md here too so it loads automatically (one at a time).
+              # read:
+              #   - <repo-root>/skills/00.1-Full-empirical-analysis-skill_Python/SKILL.md
+              model: claude-3-7-sonnet-20250219
+              auto-commits: false
+              dirty-commits: true
+              attribute-author: false
+        notes: |
+          Pinning `read` in `~/.aider.conf.yml` is the closest analogue to
+          "always-on context" in Aider. Aider will continue to call out for
+          any other file the model needs (e.g. specific child SKILL.md,
+          reference docs).
+
+    - aider_subagent:
+        description: "Use Aider's `/read` slash command to load additional SKILL.md files on demand."
+        usage: |
+          /read <repo-root>/skills/00.1-Full-empirical-analysis-skill_Python/SKILL.md
+        notes: |
+          Aider's `/read` slash command loads a file into the conversation
+          immediately without re-launching the CLI. Use this to pull a
+          specific child SKILL.md into the conversation once the catalog
+          router has chosen it.
+
+    - aider_conventions_block:
+        description: "Compact: dump SKILL.md into the chat as conventions without using --read."
+        usage: |
+          Aider chat conventions:
+            - Always read <repo-root>/SKILL.md before answering.
+            - The file is a router: pick a child skill by name, then read only
+              that child's SKILL.md.
+            - Never load the whole `skills/` directory at once.
+
+  routes:
+    catalog_router: SKILL.md
+    search_ui: docs/search.html
+    quickstart: make quickstart
+    install_docs: INSTALL.md
+    persistent_config: "~/.aider.conf.yml (entry under `read:`)"

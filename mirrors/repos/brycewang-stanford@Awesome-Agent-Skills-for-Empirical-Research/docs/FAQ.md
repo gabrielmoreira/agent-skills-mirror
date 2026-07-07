@@ -41,7 +41,7 @@ with `make audit` before high-trust use. Report concerns via
 
 **Q: How do I know a skill actually produces correct econometrics?**
 You don't, by default — you *verify*. The hygiene score in
-[`SKILL_QUALITY.md`](SKILL_QUALITY.md) only says a skill is well-formed. Whether an
+[`SKILL_HYGIENE.md`](SKILL_HYGIENE.md) only says a skill is well-formed. Whether an
 agent using it produces referee-proof work is what [`eval-harness/`](../eval-harness/)
 (behavioral) and [`benchmark/`](../benchmark/) (numeric) measure. The full overview
 is in `docs/TRUST.md`.

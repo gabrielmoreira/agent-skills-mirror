@@ -111,13 +111,18 @@ Fill the Design Doc's "External Resources Used" subsection (under Background and
    - If found outside codebase (external API, separate repository, generated artifact): record the authoritative source and mark as "external dependency"
    - If not found anywhere: mark as "requires new creation" in the Design Doc and reflect in implementation order dependencies
 
-5. **Include in Design Doc**
+5. **Behavioral Claim Verification**
+   - For each factual claim the design relies on about behavior or current state — framework/library default behavior ("X defaults to Y"), a capability assumed already provided ("the service already returns Z", "the endpoint already validates W"), or a feature assumed already implemented ("already handled upstream") — attach one evidence source at design time: a codebase reference (file:line from Grep/Read), an executed command result, or an authoritative doc/spec URL.
+   - Claim supported by evidence → record it in the Design Doc's Agreement Checklist "Assumed Behaviors" slot with the evidence and Confirmed: Yes.
+   - Claim without locatable evidence → record it in the same slot with Confirmed: No, and add a matching Risks and Mitigation row that restates the claim (the shared lookup key) and states how it will be resolved: verified during implementation by a named method (command, test, or code-inspection point), or guarded by a fallback. This binds the unverified assumption to a follow-up rather than letting it pass silently.
+
+6. **Include in Design Doc**
    - Always include investigation results in "## Existing Codebase Analysis" section
    - Clearly document similar functionality search results (found implementations or "none")
    - Include dependency existence verification results (verified existing / requires new creation)
    - Record adopted decision (use existing/improvement proposal/new implementation) and rationale
 
-6. **Code Inspection Evidence**
+7. **Code Inspection Evidence**
    - Record all inspected files and key functions in "Code Inspection Evidence" section of Design Doc
    - Each entry must state relevance (similar functionality / integration point / pattern reference)
 

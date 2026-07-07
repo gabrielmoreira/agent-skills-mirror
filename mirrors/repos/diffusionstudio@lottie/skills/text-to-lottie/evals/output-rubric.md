@@ -38,6 +38,11 @@ normal animation work.
   text; vector/shape text appears only for deliberate path effects.
 - Text slots are used for copy that should be user-editable, with the font
   present so it renders.
+- Editable multi-word text slots (headlines, subtitles, quotes, CTAs) use box text
+  (`sz`/`ps` on the text document) so a longer edit wraps inside a fixed width
+  instead of overflowing; single glyphs, numeric/tile scenes, and choreographed type
+  stay point text. Box text is authored top-aligned (it does not vertically center or
+  clip to its height).
 
 ## Motion And Design Quality
 

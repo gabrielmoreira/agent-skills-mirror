@@ -1,6 +1,6 @@
 ---
 name: plan-pipeline-eng-review
-description: Engineering architecture gate: lock architecture, diagrams, edge cases, and test matrix before writing implementation code
+description: "Engineering architecture gate: lock architecture, diagrams, edge cases, and test matrix before writing implementation code"
 effort: medium
 disable-model-invocation: true
 ---

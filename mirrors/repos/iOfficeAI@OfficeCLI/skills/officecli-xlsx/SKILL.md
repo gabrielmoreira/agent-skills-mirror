@@ -203,6 +203,14 @@ officecli view "$FILE" text --start 1 --end 50 --cols A,B,C
 
 Other `view` modes worth knowing: `annotated` (cell values + types/formulas + warnings), `stats` (numeric summaries), `issues` (broken formulas, empty sheets, missing refs).
 
+**Round-trip dump.** `officecli dump "$FILE" [path]` serializes the workbook — or one worksheet (`/Sheet1`, `/sheet[N]`) — into a replayable batch JSON; `officecli batch new.xlsx --input dump.json` replays it. Use it to learn from an existing workbook's structure or clone/adapt a template instead of reading raw OOXML. Coverage per `dump --help`; subtree dumps don't carry workbook-level resources (settings, named ranges) — the replay target must already define them.
+
+```bash
+officecli dump "$FILE" -o blueprint.json            # whole workbook
+officecli dump "$FILE" /Sheet1 -o sheet.json        # one worksheet
+officecli batch new.xlsx --input blueprint.json
+```
+
 **Inspect one element.** Use XPath-style paths. Always quote — shells glob `[N]`.
 
 ```bash

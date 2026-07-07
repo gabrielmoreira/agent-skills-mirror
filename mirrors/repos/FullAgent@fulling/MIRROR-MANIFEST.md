@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `FullAgent/fulling` — 26 default patterns, 4 followed patterns, 7 file(s) materialized.
+Mirror of `FullAgent/fulling` — 26 default patterns, 1 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `FullAgent/fulling` — 26 default patterns, 4 followed patterns, 7 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 7 |
+| Followed pats | 1 |
+| Files         | 2 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,9 +52,6 @@ Mirror of `FullAgent/fulling` — 26 default patterns, 4 followed patterns, 7 fi
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/architecture.md`
-- `docs/development.md`
-- `docs/operations.md`
-- `docs/troubleshooting.md`
 
 ## File Index
 
@@ -63,12 +60,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`docs/wiki/architecture.md`](docs/wiki/architecture.md) |
-| 4 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 5 | → | [`docs/development.md`](docs/development.md) |
-| 6 | → | [`docs/operations.md`](docs/operations.md) |
-| 7 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| 2 | → | [`docs/architecture.md`](docs/architecture.md) |
 
 ---
 

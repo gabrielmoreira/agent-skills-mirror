@@ -1,0 +1,105 @@
+# Cursor IDE entry point for the AERS catalog.
+#
+# Cursor rules / skills can be loaded two ways:
+#
+#   1. Project-scoped rules:
+#      - Drop a `.cursorrules` (legacy) or `.cursor/rules/*.{mdc,md}` file in the
+#        project root.
+#      - Use the rule body to teach Cursor how to find and read SKILL.md.
+#
+#   2. Project-context via @Docs / long-context files:
+#      - Use `Cursor Settings -> Features -> Codebase Indexing` and add the AERS
+#        repo root, then reference `@AERS` or `@SKILL` in chat.
+#
+# This file is *not* itself a Cursor rule (Cursor expects markdown under
+# `.cursor/rules/`); it documents the install path. The actual rule that gets
+# installed in `.cursor/rules/aers.mdc` should defer to this entry point.
+
+interface:
+  display_name: "AERS Empirical Research Router"
+  short_description: "Route 1,150+ empirical-research skills from AERS"
+  default_prompt: |
+    Use $auto-empirical-research-skills to pick the right skill for my empirical-research task.
+    Start by reading SKILL.md at the repo root, follow its routing protocol, then
+    read only the targeted child SKILL.md (progressive disclosure). Never load
+    the whole `skills/` directory at once.
+
+  install_methods:
+    - cursor_project_rules:
+        description: "Recommended: drop a `.cursor/rules/aers.mdc` file that points Cursor at the AERS SKILL.md."
+        files_to_create:
+          - path: ".cursor/rules/aers.mdc"
+            contents: |
+              ---
+              description: "AERS empirical-research router — read SKILL.md first to dispatch to the right vendored child skill."
+              globs: ["**/*"]
+              alwaysApply: false
+              ---
+              # AERS Empirical Research Router
+
+              When the user asks for **empirical research, causal inference,
+              econometrics, replication, manuscript writing, citation checking,
+              or full AER-style paper workflows**, first read the router at
+              `${workspaceFolder}` or the file path in `auto-empirical-research-skills.install_path`.
+
+              # Routing protocol
+              1. Read `${AERS_ROOT}/SKILL.md` to choose the right child skill.
+              2. Open only the chosen child `SKILL.md`.
+              3. Follow the child skill's progressive-disclosure instructions —
+                 read `references/` only when the SKILL.md points you there.
+
+              # Constraints
+              - DO NOT recursively read every vendored SKILL.md.
+              - DO NOT import the whole repo into context; load SKILL.md first
+                 and follow it.
+
+              # Configuration
+              The AERS root is set when the project is opened. Override with the
+              `AERS_ROOT` env var if the IDE is launched from a different cwd.
+
+        notes: |
+          Cursor's rule format is front-matter + markdown body. The MDC file
+          above is a thin dispatcher — Cursor reads SKILL.md as the routing brain
+          and you preserve token economy.
+
+    - cursor_cursorrules_legacy:
+        description: "Legacy `.cursorrules` file (single project-wide rule blob)."
+        files_to_create:
+          - path: ".cursorrules"
+            contents: |
+              Follow the AERS empirical-research router:
+                1. Read `SKILL.md` first (lives at the repo root).
+                2. Follow its routing protocol to pick a child skill.
+                3. Read only the chosen child skill's SKILL.md.
+                4. Use progressive disclosure — DO NOT load every skill.
+
+              Treat the AERS root as your catalog and always read SKILL.md
+              before doing any empirical-research work.
+
+    - cursor_codebase_indexing:
+        description: "Use Cursor's codebase indexing to @-reference SKILL.md from chat."
+        steps:
+          - "Open Cursor Settings -> Features -> Codebase Indexing."
+          - "Add the AERS repo root as an indexed codebase."
+          - "In chat, reference `@SKILL` or type `@<path-to>/SKILL.md` to load the router."
+        notes: |
+          Best for sparse use: skill is loaded only when explicitly referenced.
+
+    - cursor_skills_cli:
+        description: "If the workspace ships `.cursor/skills/` (Cursor 0.45+), symlink AERS into it."
+        command: |
+          mkdir -p .cursor/skills
+          ln -s <repo-root> .cursor/skills/auto-empirical-research-skills
+        notes: |
+          Cursor 0.45+ added a `.cursor/skills/` directory analogous to
+          `.claude/skills/`. Symlinking the repo root exposes the catalog router
+          as one skill name. Nested `skills/<name>/SKILL.md` will not be
+          registered automatically; ship them as separate top-level folders
+          if you want them surfaced individually.
+
+  routes:
+    catalog_router: SKILL.md
+    search_ui: docs/search.html
+    quickstart: make quickstart
+    install_docs: INSTALL.md
+    rule_template: ".cursor/rules/aers.mdc (created by this entry point)"

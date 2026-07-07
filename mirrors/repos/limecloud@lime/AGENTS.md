@@ -12,6 +12,7 @@
 4. **计划是一等工件** - 执行计划带进度日志，集中存放于 `internal/exec-plans/`
 5. **持续垃圾回收** - 技术债按小额、持续方式偿还；差距追踪见 `internal/exec-plans/tech-debt-tracker.md`
 6. **卡住时修环境，不是更用力** - 先补上下文、工具、约束，再继续实现；缺口也要写回 repo
+7. **Codex-first 是 Agent 重构最高准则** - 除多模型 / 多模态的 provider、capability、media part 和 lowering 参考 opencode 外，Agent runtime、Thread / Turn / Item、App Server、状态机、工具生命周期、MCP、Skills、Multi-Agent、history hydrate、projection、TUI/GUI 测试护栏和命名默认对齐 `/Users/coso/Documents/dev/rust/codex`；Lime 现有不合理命名或旧实现不能作为 current 续命理由，旧 `Aster` / `agent_runtime_*` / 临时 UI 语义按 `compat` / `deprecated` / `dead` 分类后陆续替换或删除
 
 ## 工程协作方式
 

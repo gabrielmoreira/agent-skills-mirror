@@ -320,7 +320,7 @@ runtime.registerEvent({
 
 ### Handling Modal and Component Interactions
 
-Modal submits and message components (buttons, select menus) bypass channel whitelists to support multi-step UI flows:
+Modal submits and button components bypass channel whitelists to support multi-step UI flows:
 
 ```typescript
 // Listen for modal submissions

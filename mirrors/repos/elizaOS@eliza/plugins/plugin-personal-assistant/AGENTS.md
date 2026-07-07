@@ -54,6 +54,7 @@ The plugin is opt-in; add `@elizaos/plugin-personal-assistant` to the agent's pl
 | `websiteBlocker` | `src/providers/website-blocker.ts` | Current website-blocker status |
 | `appBlocker` | `src/providers/app-blocker.ts` | Current app-blocker status |
 | `firstRun` | `src/providers/first-run.ts` | First-run completion state and affordances |
+| `ftuGoal` | `src/providers/ftu-goal.ts` | Post-first-run goal-discovery affordance; silent once the owner's primary goal is known |
 | `roomPolicy` | `src/providers/room-policy.ts` | Per-room handoff/policy state |
 | `lifeops` | `src/providers/lifeops.ts` | Aggregated owner context for assistant planning |
 | `pendingPrompts` | `src/providers/pending-prompts.ts` | Pending questions waiting for owner input |
@@ -81,6 +82,8 @@ The `lifeops_scheduled_task_runner` service (`ScheduledTaskRunnerService`) is no
 |---|---|---|
 | `owner.profile_extraction` (response handler) | `src/lifeops/owner/profile-extraction-evaluator.ts` | Extracts owner facts from agent responses |
 | `threadOps` (response handler field) | `src/lifeops/work-threads/field-evaluator-thread-ops.ts` | Propagates work-thread field ops from responses |
+| `ftu_goal_discovery` (post-turn, merged call) | `src/lifeops/ftu-goal/evaluator.ts` | Extracts the owner's primary goal after first-run; persists the `primaryGoal` owner fact and closes discovery once confident |
+| `anticipation_feedback` (post-turn, merged call) | `src/lifeops/anticipation/evaluator.ts` | Classifies the owner's reaction to proactive dispatches (accepted / rejected / ignored) into durable rolling stats |
 
 ### Views
 
@@ -273,10 +276,10 @@ bun run --cwd plugins/plugin-personal-assistant verify:live-schedule          # 
 - **plugin-google is auto-registered.** If `@elizaos/plugin-google` is not already in the runtime's plugin list, `init()` dynamically imports and registers it. Ensure it is installed in the workspace.
 - See root `AGENTS.md` for repo-wide architecture commandments, logger conventions, ESM rules, and naming.
 
-<!-- BEGIN: evidence-and-e2e-mandate (managed; canonical standard = repo-root PR_EVIDENCE.md) -->
+<!-- BEGIN: evidence-and-e2e-mandate (managed; canonical standard = repo-root AGENTS.md) -->
 ## ⛔ NON-NEGOTIABLE — evidence, trajectories & real end-to-end tests
 
-> The binding, repo-wide standard is **[PR_EVIDENCE.md](../../PR_EVIDENCE.md)**. Read it.
+> The binding, repo-wide standard is **[AGENTS.md](../../AGENTS.md)**. Read it.
 > Nothing in this package is *done* until it is *proven* done — a reviewer must confirm it
 > works **without reading the code**, from the artifacts you attach. This applies to **every**
 > feature, fix, refactor, and chore here. "Tests pass" is not proof; "CI is green" is not proof.

@@ -97,6 +97,22 @@ const READONLY = { readOnlyHint: true, destructiveHint: false, idempotentHint: t
 
 const TOOLS = [
   {
+    name: 'run_skill',
+    title: 'Run a skill (no API key — uses YOUR model via MCP sampling)',
+    description:
+      'Execute a skill on the given input and return the finished artifact. Uses MCP sampling: the generation runs on the CLIENT\'s own model, so no API key is needed by this server. Falls back with a clear message if the client does not support sampling (use get_skill and apply it yourself instead).',
+    inputSchema: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        name: { type: 'string', description: 'The skill to run (from list_skills / search_skills).' },
+        input: { type: 'string', description: 'The user\'s input for the skill — the raw notes, brief, or task.' },
+      },
+      required: ['name', 'input'],
+    },
+    annotations: { title: 'Run a skill', readOnlyHint: true, openWorldHint: false },
+  },
+  {
     name: 'list_skills',
     title: 'List skills',
     description: 'List available professional skills (name, title, tier, one-line description). Optionally filter by maturity tier.',
@@ -263,6 +279,44 @@ function runTool(name, args = {}) {
 
 // ── JSON-RPC plumbing ────────────────────────────────────────────────────────
 function send(msg) { process.stdout.write(JSON.stringify(msg) + '\n'); }
+
+// ── Server→client requests (MCP sampling) ───────────────────────────────────
+// The server can ask the CLIENT's model to generate (sampling/createMessage) —
+// that's how run_skill works with zero API key. Track our outgoing request ids
+// and resolve them when the client's response arrives.
+let clientCapabilities = {};
+let outId = 0;
+const pending = new Map();
+function requestClient(method, params, timeoutMs = 180000) {
+  const id = 'srv-' + (++outId);
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => { pending.delete(id); reject(new Error('client did not respond in time')); }, timeoutMs);
+    pending.set(id, { resolve: (v) => { clearTimeout(timer); resolve(v); }, reject: (e) => { clearTimeout(timer); reject(e); } });
+    send({ jsonrpc: '2.0', id, method, params });
+  });
+}
+
+const RUN_SUFFIX =
+  '\n\n---\nThe user has provided their input below. Execute this skill now and produce the ' +
+  'complete output. Do not ask follow-up questions — work with what is given and note any reasonable assumptions.';
+async function runSkillViaSampling(args) {
+  const s = byName.get(String(args.name || '').trim());
+  if (!s) throw new Error(`Unknown skill "${args.name}". Use search_skills or list_skills to find one.`);
+  if (!clientCapabilities.sampling) {
+    throw new Error(
+      'This MCP client does not support sampling, so the server cannot run the skill for you. ' +
+      `Instead: call get_skill("${s.name}") and apply its instructions to the input yourself.`);
+  }
+  const result = await requestClient('sampling/createMessage', {
+    messages: [{ role: 'user', content: { type: 'text', text: String(args.input || '') } }],
+    systemPrompt: s.body + RUN_SUFFIX,
+    includeContext: 'none',
+    maxTokens: 8192,
+    modelPreferences: { intelligencePriority: 0.8, hints: [{ name: 'claude' }] },
+  });
+  const text = result && result.content && result.content.type === 'text' ? result.content.text : JSON.stringify(result && result.content || '');
+  return { text, structured: { name: s.name, model: (result && result.model) || null, output: text } };
+}
 function reply(id, result) { send({ jsonrpc: '2.0', id, result }); }
 function fail(id, code, message) { send({ jsonrpc: '2.0', id, error: { code, message } }); }
 
@@ -270,8 +324,17 @@ function handle(msg) {
   const { id, method, params } = msg;
   const isRequest = id !== undefined && id !== null;
 
+  // A message with no method is the client's RESPONSE to one of our requests.
+  if (!method && isRequest && pending.has(id)) {
+    const p = pending.get(id); pending.delete(id);
+    if (msg.error) p.reject(new Error(msg.error.message || 'client error'));
+    else p.resolve(msg.result);
+    return;
+  }
+
   switch (method) {
     case 'initialize':
+      clientCapabilities = (params && params.capabilities) || {};
       return reply(id, {
         protocolVersion: (params && params.protocolVersion) || '2024-11-05',
         capabilities: { tools: {}, prompts: {}, resources: {} },
@@ -320,6 +383,12 @@ function handle(msg) {
     }
     case 'tools/call': {
       const toolName = params && params.name;
+      if (toolName === 'run_skill') {
+        runSkillViaSampling((params && params.arguments) || {})
+          .then(({ text, structured }) => reply(id, { content: [{ type: 'text', text }], structuredContent: structured }))
+          .catch((e) => reply(id, { content: [{ type: 'text', text: `Error: ${e.message}` }], isError: true }));
+        return;
+      }
       try {
         const { text, structured } = runTool(toolName, (params && params.arguments) || {});
         return reply(id, { content: [{ type: 'text', text }], structuredContent: structured });

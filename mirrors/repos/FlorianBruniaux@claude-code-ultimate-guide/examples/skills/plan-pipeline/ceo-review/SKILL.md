@@ -1,6 +1,6 @@
 ---
 name: plan-pipeline-ceo-review
-description: Strategic product gate: challenge the brief, find the 10-star product hiding inside the request, before writing any code
+description: "Strategic product gate: challenge the brief, find the 10-star product hiding inside the request, before writing any code"
 effort: medium
 disable-model-invocation: true
 ---

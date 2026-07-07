@@ -1,0 +1,70 @@
+# Tencent CodeBuddy entry point for the AERS catalog.
+#
+# CodeBuddy (腾讯云 AI IDE / 通义灵码 IDE) discovers skills from `.codebuddy/`
+# directories. To install AERS as a single catalog router skill:
+#
+#   # Project-local install
+#   mkdir -p .codebuddy/skills/auto-empirical-research-skills
+#   rsync -a --exclude .git --exclude .pytest_cache --exclude __pycache__ \
+#       --exclude '*.pyc' <repo-root>/ .codebuddy/skills/auto-empirical-research-skills/
+#
+#   # Global install
+#   mkdir -p ~/.codebuddy/skills/auto-empirical-research-skills
+#   rsync -a --exclude .git --exclude .pytest_cache --exclude __pycache__ \
+#       --exclude '*.pyc' <repo-root>/ ~/.codebuddy/skills/auto-empirical-research-skills/
+#
+# CodeBuddy treats each `SKILL.md` as a separate entry. To get *one* catalog
+# router skill that dispatches to vendored children, copy the repo root and
+# rely on the root `SKILL.md` as the entrypoint. To get N independent skills,
+# copy each vendored `skills/<name>/SKILL.md` separately into `.codebuddy/skills/`.
+
+interface:
+  display_name: "AERS Empirical Research Router"
+  short_description: "Route 1,150+ empirical-research skills from AERS"
+  default_prompt: |
+    Use $auto-empirical-research-skills to pick the right skill for my empirical-research task.
+    Start with SKILL.md, follow its routing protocol, then read only the targeted
+    child SKILL.md.
+
+  install_methods:
+    - codebuddy_project_local:
+        description: "Project-local copy so the AERS catalog is available only inside this project."
+        command: |
+          mkdir -p .codebuddy/skills/auto-empirical-research-skills
+          rsync -a --exclude .git --exclude .pytest_cache --exclude __pycache__ \
+              --exclude '*.pyc' <repo-root>/ .codebuddy/skills/auto-empirical-research-skills/
+        notes: |
+          CodeBuddy only registers one skill per directory, so this copy surfaces
+          the catalog router. Vendored child skills are *not* exposed individually
+          unless you copy each `skills/<name>/SKILL.md` into its own folder.
+
+    - codebuddy_global:
+        description: "Global install so all CodeBuddy projects on this machine see AERS."
+        command: |
+          mkdir -p ~/.codebuddy/skills/auto-empirical-research-skills
+          rsync -a --exclude .git --exclude .pytest_cache --exclude __pycache__ \
+              --exclude '*.pyc' <repo-root>/ ~/.codebuddy/skills/auto-empirical-research-skills/
+
+    - codebuddy_individual_skills:
+        description: "Per-skill copies when the runtime ignores nested SKILL.md files."
+        command: |
+          for d in <repo-root>/skills/*/; do
+              name=$(basename "$d")
+              mkdir -p ".codebuddy/skills/$name"
+              cp -R "$d" ".codebuddy/skills/$name/"
+          done
+        notes: |
+          Use this when the IDE only registers a directory that *directly*
+          contains `SKILL.md`. The loop preserves nested `references/` and
+          `scripts/` subfolders.
+
+    - codebuddy_url_import:
+        description: "If CodeBuddy exposes a GitHub-URL import flow, point it at the repo root."
+        github_path: "."
+        skill_name: "auto-empirical-research-skills"
+
+  routes:
+    catalog_router: SKILL.md
+    search_ui: docs/search.html
+    quickstart: make quickstart
+    install_docs: docs/INSTALL.md

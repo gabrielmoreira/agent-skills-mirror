@@ -20,11 +20,11 @@
 
 **智能体**
 - [ ] 修复不同用户安装相同 Skill 时，因目前 Skill slug 全局唯一导致无法安装、会自动新增 versiontag 的问题，排查其对安装流程 and 版本管理的影响
-- [x] 子智能体缺少异步的机制 <Badge text="v0.7.1" /> <Badge type="warning" text="开发中" />
+- [x] 子智能体缺少异步的机制 <Badge text="v0.7.1" />
 - [ ] 子智能体缺少 steer 机制 <Badge text="v0.7.1" />
 - [ ] 子智能体的双向通信，缺少 ask_for_main_agent 的机制
 - [ ] 子智能体与子智能体的通信机制
-- [ ] 优化 Agent `read_file` 工具：至少对齐 DeepAgents 的读取行为
+- [x] 优化 Agent `read_file` 工具：至少对齐 DeepAgents 的读取行为 <Badge text="v0.7.1" />
 - [ ] Skill 详情页增强绑定能力展示：内置 Skill 也应清晰展示只读的工具/MCP/Skill 依赖说明
 - [x] 添加 Agent 独立调用接口，方便后续评估使用
 - [ ] 任务队列：调研是否可以通过修改 state 实现，添加一个中间件（after agents 钩子），并支持通过 after model 触发的引导模式。 <Badge text="v0.7.2" />

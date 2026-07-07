@@ -20,6 +20,10 @@ param(
     [switch]$Gate
 )
 
+# issue #195: per-invocation opt-out (PLANNING_DISABLED=1) for one-shot/CI
+# sessions that share a cwd with a plan but never opted into it.
+if ($env:PLANNING_DISABLED -eq '1') { exit 0 }
+
 if ($PlanFile -ne "") {
     $PlanDir = Split-Path -Parent $PlanFile
     if ($PlanDir -eq "") { $PlanDir = "." }

@@ -4,6 +4,18 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.202](https://github.com/Piebald-AI/claude-code-system-prompts/commit/1398a62)
+
+_+3,217 tokens_
+
+- **NEW:** Agent Prompt: /code-review part 2 low effort minimum findings mode — Adds a low-effort `/code-review` mode that reads the diff once, skips test and fixture hunks, avoids subagents and full-file reads, and targets hunk-visible runtime-correctness findings with one extra pass before returning `(none)`.
+- **NEW:** Data: Governed GitHub CLI shim header and routing — Adds the per-session governed `gh` shim text that routes github.com requests without customer credentials through the agent proxy while letting customer-token and GitHub Enterprise invocations use the real `gh`, including host/repo/origin detection, proxy/CA setup, and proxy-injected tokens.
+- Agent Prompt: /review slash command — Replaces the medium-effort JSON-findings review flow with a concise, sectioned PR review covering overview, code quality/style, improvement suggestions, risks, correctness, project conventions, performance, tests, and security.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Clarifies that unknown repository visibility is not itself a blocking reason for data exfiltration or out-of-place publication checks, while keeping content sensitivity and same-session remote repoints as separate risk signals.
+- Data: Claude Code live documentation sources; Data: Claude Tag (Claude in Slack) reference; and Skill: Claude Code configuration guide — Clarify that `.md` Claude docs URLs are for fetching only and user-facing links should drop the trailing `.md` so they open the rendered docs page.
+- Skill: Dynamic pacing loop execution; Skill: /loop self-pacing mode; System Prompt: Monitor fallback heartbeat guidance; and Tool Description: Snooze (delay and reason guidance) — Make loop re-arming an explicit per-turn decision, handle task notifications before deciding whether to continue, and end loops by calling the wakeup tool with `stop: true` instead of omitting the wakeup call.
+- Skill: PR explainer — Requires PR walkthrough artifacts to answer what problem the PR solves, why it matters, how the PR solves it, what alternatives were considered, and why the chosen approach is better, or state plainly when the PR materials do not provide that evidence.
+
 #### [2.1.201](https://github.com/Piebald-AI/claude-code-system-prompts/commit/7fabe9a)
 
 <sub>_No changes to the system prompts in v2.1.201._</sub>

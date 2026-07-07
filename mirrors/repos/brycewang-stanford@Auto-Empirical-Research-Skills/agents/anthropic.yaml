@@ -1,0 +1,102 @@
+# Anthropic Claude Code / Claude API entry point for the AERS catalog.
+#
+# Claude Code loads skills from the directories listed in its `settings.json`
+# under `additionalDirectories` (or via `--add-dir` on the CLI). To install:
+#
+#   claude --add-dir /Users/you/path/to/Auto-Empirical-Research-Skills \
+#          --add-dir /Users/you/path/to/Auto-Empirical-Research-Skills/skills
+#
+# Or in `~/.claude/settings.json`:
+#
+#   {
+#     "additionalDirectories": [
+#       "/Users/you/path/to/Auto-Empirical-Research-Skills",
+#       "/Users/you/path/to/Auto-Empirical-Research-Skills/skills"
+#     ]
+#   }
+#
+# The Claude API and Anthropic SDK clients reach individual skills via the
+# registry function `resolve_skill("skill-name")`. Point it at the SKILL.md files
+# in this repo's `skills/` tree.
+#
+# The root `SKILL.md` is registered as `auto-empirical-research-skills` and
+# routes to vendored children. See SKILL.md for the routing protocol.
+
+interface:
+  display_name: "AERS Empirical Research Router"
+  short_description: "Route 1,150+ empirical-research skills from AERS"
+  default_prompt: |
+    Use $auto-empirical-research-skills to pick the right skill for my empirical-research task.
+    Always start with the catalog router at SKILL.md, then read only the targeted
+    child SKILL.md (progressive disclosure). Never load the whole `skills/`
+    directory at once.
+
+  install_methods:
+    - claude_code_cli:
+        description: "Launch Claude Code with AERS as an additional skill directory."
+        command: |
+          claude --add-dir <repo-root> \
+                 --add-dir <repo-root>/skills
+        notes: |
+          Claude Code v2.1+ reads every folder passed to `--add-dir` and surfaces
+          each `SKILL.md` it finds. The root registration surfaces the catalog
+          router; `<repo-root>/skills` surfaces individual vendored skills.
+        requirements:
+          - "Claude Code v2.1+ (`/plugin` is a v2.1 feature; marketplace install is recommended)"
+          - "`claude` CLI on PATH"
+
+    - claude_marketplace_recommended:
+        description: "Recommended path for first-party plugins shipped from this marketplace."
+        command: |
+          claude plugin marketplace add brycewang-stanford/Auto-Empirical-Research-Skills
+          claude plugin install aer-skills@auto-empirical-research-skills
+          claude plugin install empirical-analysis-python@auto-empirical-research-skills
+          claude plugin install empirical-analysis-stata@auto-empirical-research-skills
+          claude plugin install empirical-analysis-r@auto-empirical-research-skills
+        notes: |
+          Plugins installed from the marketplace are versioned and auto-updated.
+          The `aer-skills` plugin is the AER manuscript lifecycle bundle;
+          `empirical-analysis-{python,stata,r}` are language-specific 8-step
+          pipeline plugins generated from `skills/00.*`.
+        requirements:
+          - "Claude Code v2.1+"
+
+    - claude_settings_json:
+        description: "Persistent install via `~/.claude/settings.json`."
+        example: |
+          {
+            "additionalDirectories": [
+              "<repo-root>",
+              "<repo-root>/skills"
+            ]
+          }
+        notes: |
+          Use this path when you cannot launch with `--add-dir` (server side,
+          remote sandbox, etc.). Restart Claude Code after editing settings.
+
+    - claude_api_sdk:
+        description: "Direct Claude API + Anthropic SDK use of the router skill."
+        pattern: |
+          from anthropic import Anthropic
+          client = Anthropic()
+
+          # Provide the entire repo (or just SKILL.md) in the system-prompt
+          # context, then call `messages.create()` asking the model to first
+          # read SKILL.md, dispatch to the right child SKILL.md, and finally
+          # follow that skill's progressive-disclosure instructions.
+          resp = client.messages.create(
+              model="claude-3-7-sonnet-latest",
+              system=open("<repo-root>/SKILL.md").read(),
+              tools=[...],   # the model will read child SKILL.md via filesystem
+              messages=[{"role": "user", "content": user_request}],
+          )
+        notes: |
+          For programmatic SDK use, register each `SKILL.md` as a tool whose
+          implementation reads the file off disk. The Anthropic tool-use
+          sampling spec covers this path under "skills" in the Claude API docs.
+
+  routes:
+    catalog_router: SKILL.md
+    search_ui: docs/search.html
+    quickstart: make quickstart
+    install_docs: INSTALL.md

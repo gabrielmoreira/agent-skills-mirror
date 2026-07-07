@@ -217,4 +217,6 @@ git clone https://github.com/zhaoxuya520/reverse-skill.git
 
 ## 联系方式
 - **邮箱**：`ww7517437@gmail.com`
+- **telegram群组**:
+(https://t.me/AI_And_Security)
 - **X (Twitter)**：[@apivixtls](https://x.com/apivixtls)

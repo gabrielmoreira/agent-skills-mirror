@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `generalaction/emdash` — 26 default patterns, 3 followed patterns, 30 file(s) materialized.
+Mirror of `generalaction/emdash` — 26 default patterns, 3 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `generalaction/emdash` — 26 default patterns, 3 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 30 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,35 +62,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`agents/architecture/main-process.md`](agents/architecture/main-process.md) |
-| 3 | ✓ | [`agents/architecture/overview.md`](agents/architecture/overview.md) |
-| 4 | ✓ | [`agents/architecture/renderer.md`](agents/architecture/renderer.md) |
-| 5 | ✓ | [`agents/architecture/shared.md`](agents/architecture/shared.md) |
-| 6 | ✓ | [`agents/architecture/workspace-server.md`](agents/architecture/workspace-server.md) |
-| 7 | ✓ | [`agents/conventions/config-files.md`](agents/conventions/config-files.md) |
-| 8 | ✓ | [`agents/conventions/ipc.md`](agents/conventions/ipc.md) |
-| 9 | ✓ | [`agents/conventions/main-patterns.md`](agents/conventions/main-patterns.md) |
-| 10 | ✓ | [`agents/conventions/renderer-patterns.md`](agents/conventions/renderer-patterns.md) |
-| 11 | ✓ | [`agents/conventions/typescript.md`](agents/conventions/typescript.md) |
-| 12 | ✓ | [`agents/conventions/ui-styling.md`](agents/conventions/ui-styling.md) |
-| 13 | ✓ | [`agents/conventions/versioned-schemas.md`](agents/conventions/versioned-schemas.md) |
-| 14 | ✓ | [`agents/integrations/mcp.md`](agents/integrations/mcp.md) |
-| 15 | ✓ | [`agents/integrations/providers.md`](agents/integrations/providers.md) |
-| 16 | ✓ | [`agents/quickstart.md`](agents/quickstart.md) |
-| 17 | ✓ | [`agents/README.md`](agents/README.md) |
-| 18 | ✓ | [`agents/risky-areas/database.md`](agents/risky-areas/database.md) |
-| 19 | ✓ | [`agents/risky-areas/pty.md`](agents/risky-areas/pty.md) |
-| 20 | ✓ | [`agents/risky-areas/ssh.md`](agents/risky-areas/ssh.md) |
-| 21 | ✓ | [`agents/risky-areas/updater.md`](agents/risky-areas/updater.md) |
-| 22 | ✓ | [`agents/workflows/nx.md`](agents/workflows/nx.md) |
-| 23 | ✓ | [`agents/workflows/remote-development.md`](agents/workflows/remote-development.md) |
-| 24 | ✓ | [`agents/workflows/testing.md`](agents/workflows/testing.md) |
-| 25 | ✓ | [`agents/workflows/worktrees.md`](agents/workflows/worktrees.md) |
-| 26 | ✓ | [`apps/emdash-desktop/tooling/byoi/README.md`](apps/emdash-desktop/tooling/byoi/README.md) |
-| 27 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 28 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 29 | → | [`LICENSE.md`](LICENSE.md) |
-| 30 | → | [`README.md`](README.md) |
+| 2 | ✓ | [`agents/architecture/acp-runtime.md`](agents/architecture/acp-runtime.md) |
+| 3 | ✓ | [`agents/architecture/main-process.md`](agents/architecture/main-process.md) |
+| 4 | ✓ | [`agents/architecture/overview.md`](agents/architecture/overview.md) |
+| 5 | ✓ | [`agents/architecture/renderer.md`](agents/architecture/renderer.md) |
+| 6 | ✓ | [`agents/architecture/shared.md`](agents/architecture/shared.md) |
+| 7 | ✓ | [`agents/architecture/workspace-server.md`](agents/architecture/workspace-server.md) |
+| 8 | ✓ | [`agents/conventions/config-files.md`](agents/conventions/config-files.md) |
+| 9 | ✓ | [`agents/conventions/ipc.md`](agents/conventions/ipc.md) |
+| 10 | ✓ | [`agents/conventions/main-patterns.md`](agents/conventions/main-patterns.md) |
+| 11 | ✓ | [`agents/conventions/renderer-patterns.md`](agents/conventions/renderer-patterns.md) |
+| 12 | ✓ | [`agents/conventions/typescript.md`](agents/conventions/typescript.md) |
+| 13 | ✓ | [`agents/conventions/ui-styling.md`](agents/conventions/ui-styling.md) |
+| 14 | ✓ | [`agents/conventions/versioned-schemas.md`](agents/conventions/versioned-schemas.md) |
+| 15 | ✓ | [`agents/integrations/mcp.md`](agents/integrations/mcp.md) |
+| 16 | ✓ | [`agents/integrations/providers.md`](agents/integrations/providers.md) |
+| 17 | ✓ | [`agents/quickstart.md`](agents/quickstart.md) |
+| 18 | ✓ | [`agents/README.md`](agents/README.md) |
+| 19 | ✓ | [`agents/risky-areas/database.md`](agents/risky-areas/database.md) |
+| 20 | ✓ | [`agents/risky-areas/pty.md`](agents/risky-areas/pty.md) |
+| 21 | ✓ | [`agents/risky-areas/ssh.md`](agents/risky-areas/ssh.md) |
+| 22 | ✓ | [`agents/risky-areas/updater.md`](agents/risky-areas/updater.md) |
+| 23 | ✓ | [`agents/workflows/nx.md`](agents/workflows/nx.md) |
+| 24 | ✓ | [`agents/workflows/remote-development.md`](agents/workflows/remote-development.md) |
+| 25 | ✓ | [`agents/workflows/testing.md`](agents/workflows/testing.md) |
+| 26 | ✓ | [`agents/workflows/worktrees.md`](agents/workflows/worktrees.md) |
+| 27 | ✓ | [`apps/emdash-desktop/tooling/byoi/README.md`](apps/emdash-desktop/tooling/byoi/README.md) |
+| 28 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 29 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 30 | → | [`LICENSE.md`](LICENSE.md) |
+| 31 | → | [`README.md`](README.md) |
 
 ---
 

@@ -2,7 +2,7 @@
 repo: docmd-io/docmd
 repoUrl: https://github.com/docmd-io/docmd.git
 refType: branch
-ref: main
+ref: dev-0.8.10
 ---
 
 # Mirror Manifest
@@ -15,7 +15,7 @@ Mirror of `docmd-io/docmd` — 26 default patterns, 0 followed patterns, 1 file(
 |---------------|-------|
 | Repo          | `docmd-io/docmd` |
 | Ref Type      | `branch` |
-| Ref           | `main` |
+| Ref           | `dev-0.8.10` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 1 |

@@ -2,6 +2,32 @@
 
 We welcome contributions! Here's how you can help.
 
+## Development prerequisites
+
+Before opening a PR, run:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+The pre-commit hooks run the same `python-compat`, `link-check`, and `frontmatter-format` checks as `make check` does in CI, so a clean local run is what reviewers will see.
+
+## Local quality gate (one command)
+
+```bash
+make check-fast    # catalog + validate + python-compat + unit tests (~30s)
+make check-full    # adds eval-harness + benchmark lanes (~5 min on warm cache)
+make quickstart    # 5-minute tour of what's in this repo and where to start
+```
+
+## Skill hygiene vs. correctness
+
+The repo reports **two columns** in [`SKILL_HYGIENE.md`](docs/SKILL_HYGIENE.md): a structural hygiene score and an eval-coverage count. The mean hygiene score is a **structural** signal (frontmatter, description, length), not a claim about whether the skill produces correct econometrics. For correctness see [`benchmark/`](benchmark/) and [`eval-harness/`](eval-harness/). When adding or modifying a skill:
+
+- **Adding a new skill?** Update `catalog/skills.json` (run `make catalog`) and consider adding an eval scenario in `eval-harness/scenarios/`.
+- **Fixing a low-hygiene skill?** Split it into `references/` (see [`LONG_SKILL_STATUS.md`](docs/LONG_SKILL_STATUS.md)) and add a one-line top-level summary.
+
 ## How to Contribute
 
 ### Recommend a New Skill

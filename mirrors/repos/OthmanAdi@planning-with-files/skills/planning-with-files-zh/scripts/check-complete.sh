@@ -3,6 +3,10 @@
 # 始终以退出码 0 结束 — 使用标准输出报告状态
 # 由 Stop 钩子调用以报告任务完成状态
 
+# issue #195: per-invocation opt-out (PLANNING_DISABLED=1) for one-shot/CI
+# sessions that share a cwd with a plan but never opted into it.
+[ "${PLANNING_DISABLED:-}" = "1" ] && exit 0
+
 PLAN_FILE="${1:-task_plan.md}"
 
 if [ ! -f "$PLAN_FILE" ]; then

@@ -1,0 +1,729 @@
+#!/usr/bin/env bash
+# agent-chat — local peer-to-peer chat between Claude Code sessions on this machine.
+#
+# No server: rooms are append-only JSONL files under ~/.claude/agent-chat/rooms/,
+# with per-agent read cursors. Registered sessions get unread messages
+# auto-delivered via Claude Code hooks (UserPromptSubmit, PostToolUse, Stop).
+# `nudge` wakes an idle session by typing into its iTerm window (AppleScript).
+#
+# Rooms (mIRC-style): every agent is a member of its project room (derived from
+# the cwd it registered in, like Claude Code's per-folder session storage) and
+# of #general. Agents can join/leave/peek other rooms.
+#
+# Identity is the NAME, not the session: re-registering an existing name from a
+# new session (after a fork, strip, or fresh start) silently rebinds it — read
+# cursors are kept and no join announcement is made, so to other agents it is
+# seamlessly the same agent.
+#
+# Usage:
+#   agent-chat register <name>              join (or silently rebind) as <name>
+#   agent-chat send "<msg>" [--room <room>] [--to <name>] [--nudge]
+#                                           default room: your project room;
+#                                           --to = DM (delivered via #general);
+#                                           --nudge wakes recipient(s)
+#   agent-chat read                         print + consume unread from all your rooms
+#   agent-chat log [N] [--room <room>]      last N messages of a room (default: project room)
+#   agent-chat rooms                        list all rooms (* = joined)
+#   agent-chat join <room> / leave <room>   manage room membership
+#   agent-chat peek <room> [N]              read any room without joining (no cursor change)
+#   agent-chat who                          list registered agents and their rooms
+#   agent-chat nudge <name> [text]          type a wake-up line + Enter into that agent's iTerm window
+#   agent-chat type <name> "text"           type into that agent's input box WITHOUT submitting
+#   agent-chat screen <name> [N]            snapshot of that agent's visible terminal (what it is
+#                                           doing right now: spinner, running tool, stuck prompt)
+#   agent-chat key <name> <key...>          send keys/shortcuts: escape (stop current work), enter,
+#                                           ctrl-c, tab, shift-tab, up/down/left/right, ctrl-b/o/r/t/v...
+#                                           e.g. remote slash command: type <n> "/compact" + key <n> enter
+#   agent-chat spawn <name> [--dir <path>] [--prompt "task"] [--cmd "claude ..."] [--tab|--pane] [--tmux]
+#                                           launch a NEW agent: new iTerm window, --tab = tab in your window,
+#                                           --pane = split next to you (or tmux with --tmux / headless),
+#                                           reusing this session CLI flags; it registers itself as <name>
+#   agent-chat unregister [<name>]          leave the chat (default: self)
+#   agent-chat hook <EventName>             internal: called by Claude Code hooks (stdin = hook JSON)
+#
+# Identity resolves from $CLAUDE_CODE_SESSION_ID; --as <name> overrides (humans/testing).
+
+BASE="$HOME/.claude/agent-chat"
+ROOMS="$BASE/rooms"
+REG="$BASE/registry"
+CUR="$BASE/cursors"
+JQ="/usr/bin/jq"
+
+mkdir -p "$ROOMS" "$REG" "$CUR"
+# migrate pre-rooms layout: the old single chat.jsonl becomes #general
+if [ -s "$BASE/chat.jsonl" ] && [ ! -e "$ROOMS/general.jsonl" ]; then
+  mv "$BASE/chat.jsonl" "$ROOMS/general.jsonl"
+fi
+touch "$ROOMS/general.jsonl"
+
+die() { echo "agent-chat: $*" >&2; exit 1; }
+now() { date +"%Y-%m-%dT%H:%M:%S%z"; }
+
+proj_room() { printf '%s' "$PWD" | sed 's/[^a-zA-Z0-9]/-/g'; }
+
+# terminal backend for this process: "tmux <pane-id>" | "iterm <uuid>" | "none -"
+detect_term() {
+  if [ -n "${TMUX:-}" ] && [ -n "${TMUX_PANE:-}" ]; then
+    echo "tmux ${TMUX_PANE}"
+  elif [ -n "${ITERM_SESSION_ID:-}" ]; then
+    echo "iterm ${ITERM_SESSION_ID#*:}"
+  else
+    echo "none -"
+  fi
+}
+
+valid_room() { printf '%s' "$1" | grep -Eq '^-?[A-Za-z0-9][A-Za-z0-9_-]{0,128}$'; }
+
+# ---------- identity ----------
+
+resolve_name() { # [session_id] -> registered name, rc=1 if not registered
+  local sid="${1:-${CLAUDE_CODE_SESSION_ID:-}}"
+  [ -n "$AS_NAME" ] && { echo "$AS_NAME"; return 0; }
+  [ -z "$sid" ] && return 1
+  local files=("$REG"/*.json)
+  [ -e "${files[0]}" ] || return 1
+  local name
+  name=$($JQ -r --arg sid "$sid" 'select(.session_id == $sid) | .name' "${files[@]}" 2>/dev/null | head -n1)
+  [ -n "$name" ] || return 1
+  echo "$name"
+}
+
+require_name() {
+  local name
+  name=$(resolve_name) || die "this session is not registered. Run: agent-chat register <short-name>"
+  echo "$name"
+}
+
+my_rooms() { $JQ -r '.rooms[]' "$REG/$1.json" 2>/dev/null; }
+home_room() { $JQ -r '.home_room' "$REG/$1.json" 2>/dev/null; }
+
+# ---------- core ----------
+
+append_msg() { # room from to msg
+  local line
+  line=$($JQ -cn --arg ts "$(now)" --arg from "$2" --arg to "$3" --arg msg "$4" \
+    '{ts:$ts,from:$from,to:$to,msg:$msg}') || die "failed to encode message"
+  touch "$ROOMS/$1.jsonl"
+  printf '%s\n' "$line" >> "$ROOMS/$1.jsonl"
+}
+
+FMT_ADDRESSED='select(.from != $me and (.to == "*" or .to == $me))
+  | "[#\($room)] [\(.ts | sub("T"; " ") | .[0:16])] \(.from)\(if .to != "*" then " → you" else "" end): \(.msg)"'
+FMT_PLAIN='"[\(.ts | sub("T"; " ") | .[0:16])] \(.from)\(if .to != "*" then " → \(.to)" else "" end): \(.msg)"'
+
+# deliver <name>: print unread addressed to <name> across all joined rooms; advance cursors
+deliver() {
+  local name="$1" room f total cursor curfile chunk out=""
+  while IFS= read -r room; do
+    [ -n "$room" ] || continue
+    f="$ROOMS/$room.jsonl"; [ -e "$f" ] || continue
+    total=$(wc -l < "$f" | tr -d ' ')
+    curfile="$CUR/$name@$room"
+    cursor=$(cat "$curfile" 2>/dev/null || echo 0)
+    case "$cursor" in (*[!0-9]*|'') cursor=0;; esac
+    [ "$total" -le "$cursor" ] && continue
+    chunk=$(tail -n +"$((cursor + 1))" "$f" | $JQ -r --arg me "$name" --arg room "$room" "$FMT_ADDRESSED")
+    echo "$total" > "$curfile"
+    [ -n "$chunk" ] && out="${out}${chunk}"$'\n'
+  done <<< "$(my_rooms "$name")"
+  printf '%s' "$out"
+}
+
+set_cursor_eof() { # name room
+  local f="$ROOMS/$2.jsonl"
+  if [ -e "$f" ]; then wc -l < "$f" | tr -d ' ' > "$CUR/$1@$2"; else echo 0 > "$CUR/$1@$2"; fi
+}
+
+# ---------- commands ----------
+
+cmd_register() {
+  local name="$1"
+  [ -n "$name" ] || die "usage: agent-chat register <name>"
+  printf '%s' "$name" | grep -Eq '^[a-z0-9][a-z0-9_-]{0,31}$' \
+    || die "name must be short lowercase [a-z0-9_-], e.g. 'summarizer'"
+  local sid="${CLAUDE_CODE_SESSION_ID:-manual-$$}" proom rooms_json
+  proom=$(proj_room)
+  # drop stale entries binding this same session to a different name
+  local f oldname
+  for f in "$REG"/*.json; do
+    [ -e "$f" ] || break
+    oldname=$($JQ -r --arg sid "$sid" 'select(.session_id == $sid) | .name' "$f")
+    if [ -n "$oldname" ] && [ "$oldname" != "$name" ]; then rm -f "$f" "$CUR/$oldname"@*; fi
+  done
+  local tb ta
+  read -r tb ta <<< "$(detect_term)"
+  if [ -e "$REG/$name.json" ]; then
+    # existing identity: silent rebind (new session/window/cwd), keep rooms + cursors
+    rooms_json=$($JQ -c --arg hr "$proom" '(.rooms + [$hr]) | unique' "$REG/$name.json")
+    $JQ -n --arg name "$name" --arg sid "$sid" --arg tb "$tb" --arg ta "$ta" \
+          --arg cwd "$PWD" --arg ts "$(now)" --arg hr "$proom" --argjson rooms "$rooms_json" \
+          '{name:$name, session_id:$sid, term_backend:$tb, term_addr:$ta, cwd:$cwd, home_room:$hr, rooms:$rooms, registered_at:$ts}' \
+          > "$REG/$name.json.tmp" && mv "$REG/$name.json.tmp" "$REG/$name.json"
+    local r
+    while IFS= read -r r; do
+      [ -n "$r" ] && [ ! -f "$CUR/$name@$r" ] && set_cursor_eof "$name" "$r"
+    done <<< "$(my_rooms "$name")"
+    echo "Rebound '$name' to this session (silent — no join announcement, cursors kept)."
+  else
+    $JQ -n --arg name "$name" --arg sid "$sid" --arg tb "$tb" --arg ta "$ta" \
+          --arg cwd "$PWD" --arg ts "$(now)" --arg hr "$proom" \
+          '{name:$name, session_id:$sid, term_backend:$tb, term_addr:$ta, cwd:$cwd, home_room:$hr, rooms:([$hr,"general"] | unique), registered_at:$ts}' \
+          > "$REG/$name.json"
+    append_msg "$proom" "system" "*" "$name joined (cwd: $PWD)"
+    set_cursor_eof "$name" "$proom"
+    set_cursor_eof "$name" "general"
+    echo "Registered as '$name' (project room: #$proom, also in #general)."
+  fi
+  echo "Agents currently registered:"
+  cmd_who
+}
+
+cmd_unregister() {
+  local name="${1:-}"
+  [ -n "$name" ] || name=$(require_name)
+  local hr; hr=$(home_room "$name")
+  rm -f "$REG/$name.json" "$CUR/$name"@*
+  [ -n "$hr" ] && append_msg "$hr" "system" "*" "$name left the chat"
+  echo "Unregistered '$name'."
+}
+
+cmd_send() {
+  local room="" to="*" nudge=0 msg=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --room) room="$2"; shift 2;;
+      --to) to="$2"; shift 2;;
+      --nudge) nudge=1; shift;;
+      *) [ -n "$msg" ] && die "one message per send (quote it)"; msg="$1"; shift;;
+    esac
+  done
+  [ -n "$msg" ] || die 'usage: agent-chat send "<message>" [--room <room>] [--to <name>] [--nudge]'
+  local from
+  from=$(require_name)
+  if [ -z "$room" ]; then
+    # DMs default to #general (every agent is a member — guaranteed delivery);
+    # broadcasts default to the sender's project room
+    if [ "$to" != "*" ]; then room="general"; else room=$(home_room "$from"); fi
+  fi
+  valid_room "$room" || die "invalid room name '$room'"
+  if [ "$to" != "*" ] && [ ! -e "$REG/$to.json" ]; then
+    echo "warning: no agent named '$to' is registered (sending anyway)" >&2
+  fi
+  # sending to a room auto-joins it (so replies come back to you)
+  if ! my_rooms "$from" | grep -qxF -- "$room"; then
+    $JQ --arg r "$room" '.rooms = ((.rooms + [$r]) | unique)' "$REG/$from.json" > "$REG/$from.json.tmp" \
+      && mv "$REG/$from.json.tmp" "$REG/$from.json"
+    set_cursor_eof "$from" "$room"
+    echo "(auto-joined #$room)"
+  fi
+  append_msg "$room" "$from" "$to" "$msg"
+  echo "sent to #$room."
+  if [ "$nudge" = 1 ]; then
+    local f name
+    for f in "$REG"/*.json; do
+      [ -e "$f" ] || break
+      name=$($JQ -r .name "$f")
+      [ "$name" = "$from" ] && continue
+      [ "$to" != "*" ] && [ "$name" != "$to" ] && continue
+      if [ "$to" = "*" ] && ! $JQ -e --arg r "$room" '.rooms | index($r)' "$f" >/dev/null; then continue; fi
+      do_nudge "$name" "[agent-chat] new message from $from in #$room — run: agent-chat read" || true
+    done
+  fi
+}
+
+cmd_read() {
+  local name out
+  name=$(require_name)
+  out=$(deliver "$name")
+  if [ -n "$out" ]; then printf '%s\n' "$out"; else echo "No new messages."; fi
+}
+
+cmd_log() {
+  local n=20 room=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --room) room="$2"; shift 2;;
+      *) n="$1"; shift;;
+    esac
+  done
+  if [ -z "$room" ]; then
+    local name; name=$(resolve_name) || die "not registered — specify --room <room>"
+    room=$(home_room "$name")
+  fi
+  [ -e "$ROOMS/$room.jsonl" ] || die "no room '#$room'"
+  tail -n "$n" "$ROOMS/$room.jsonl" | $JQ -r "$FMT_PLAIN"
+}
+
+cmd_peek() {
+  local room="${1:-}" n="${2:-20}"
+  [ -n "$room" ] || die "usage: agent-chat peek <room> [N]"
+  [ -e "$ROOMS/$room.jsonl" ] || die "no room '#$room' (agent-chat rooms to list)"
+  tail -n "$n" "$ROOMS/$room.jsonl" | $JQ -r "$FMT_PLAIN"
+}
+
+cmd_rooms() {
+  local name="" f room count last mark
+  name=$(resolve_name) || true
+  for f in "$ROOMS"/*.jsonl; do
+    [ -e "$f" ] || break
+    room=$(basename "$f" .jsonl)
+    count=$(wc -l < "$f" | tr -d ' ')
+    last=$(tail -n 1 "$f" 2>/dev/null | $JQ -r '.ts | sub("T"; " ") | .[0:16]' 2>/dev/null)
+    mark=" "
+    if [ -n "$name" ] && my_rooms "$name" | grep -qxF -- "$room"; then mark="*"; fi
+    printf '%s #%s\t%s msgs\tlast: %s\n' "$mark" "$room" "$count" "${last:-—}"
+  done
+}
+
+cmd_join() {
+  local room="${1:-}" name
+  [ -n "$room" ] || die "usage: agent-chat join <room>"
+  valid_room "$room" || die "invalid room name '$room'"
+  name=$(require_name)
+  my_rooms "$name" | grep -qxF -- "$room" && { echo "already in #$room"; return; }
+  $JQ --arg r "$room" '.rooms = ((.rooms + [$r]) | unique)' "$REG/$name.json" > "$REG/$name.json.tmp" \
+    && mv "$REG/$name.json.tmp" "$REG/$name.json"
+  set_cursor_eof "$name" "$room"
+  echo "Joined #$room (you'll receive messages posted from now on; agent-chat peek $room for history)."
+}
+
+cmd_leave() {
+  local room="${1:-}" name
+  [ -n "$room" ] || die "usage: agent-chat leave <room>"
+  name=$(require_name)
+  [ "$room" = "general" ] && die "#general membership is fixed (DM delivery depends on it)"
+  [ "$room" = "$(home_room "$name")" ] && die "cannot leave your project room"
+  $JQ --arg r "$room" '.rooms = (.rooms - [$r])' "$REG/$name.json" > "$REG/$name.json.tmp" \
+    && mv "$REG/$name.json.tmp" "$REG/$name.json"
+  rm -f "$CUR/$name@$room"
+  echo "Left #$room."
+}
+
+cmd_who() {
+  local f found=0
+  for f in "$REG"/*.json; do
+    [ -e "$f" ] || break
+    found=1
+    $JQ -r '"  \(.name)\thome: #\(.home_room)\trooms: \(.rooms | map("#" + .) | join(", "))\tcwd: \(.cwd)"' "$f"
+  done
+  [ "$found" = 1 ] || echo "  (nobody registered)"
+}
+
+agent_term() { # name -> "backend addr" from the registry (legacy entries fall back to iterm)
+  local f="$REG/$1.json"
+  [ -e "$f" ] || die "no agent named '$1' is registered"
+  local tb ta
+  tb=$($JQ -r '.term_backend // empty' "$f")
+  ta=$($JQ -r '.term_addr // empty' "$f")
+  if [ -z "$tb" ]; then
+    ta=$($JQ -r '.iterm_session_id // empty' "$f"); ta="${ta#*:}"
+    [ -n "$ta" ] && tb="iterm"
+  fi
+  { [ -n "$tb" ] && [ "$tb" != "none" ]; } || die "'$1' has no terminal recorded (registered outside iTerm/tmux?)"
+  printf '%s %s' "$tb" "$ta"
+}
+
+iterm_write() { # uuid raw-bytes — write into the iTerm session verbatim, no auto-newline
+  osascript - "$1" "$2" <<'APPLESCRIPT'
+on run argv
+  set targetId to item 1 of argv
+  set payload to item 2 of argv
+  tell application "iTerm2"
+    repeat with w in windows
+      repeat with t in tabs of w
+        repeat with s in sessions of t
+          if (id of s as text) is equal to targetId then
+            tell s to write text payload newline NO
+            return "ok"
+          end if
+        end repeat
+      end repeat
+    end repeat
+  end tell
+  return "session not found (window closed?)"
+end run
+APPLESCRIPT
+}
+
+# terminal I/O primitives — dispatch on backend ("iterm" uuid | "tmux" pane-id)
+term_type() { # backend addr text — type WITHOUT submitting
+  case "$1" in
+    iterm) iterm_write "$2" "$3";;
+    tmux)  tmux send-keys -t "$2" -l -- "$3" && echo ok;;
+    *) die "unsupported terminal backend '$1'";;
+  esac
+}
+
+term_enter() { # backend addr — a real Enter keypress (separate from the text: bracketed paste)
+  case "$1" in
+    iterm) iterm_write "$2" $'\r';;
+    tmux)  tmux send-keys -t "$2" Enter && echo ok;;
+    *) die "unsupported terminal backend '$1'";;
+  esac
+}
+
+term_key() { # backend addr keyname
+  local b="$1" a="$2" k="$3"
+  case "$b" in
+    iterm)
+      local seq
+      case "$k" in
+        esc|escape)      seq=$'\033';;
+        enter|return|cr) seq=$'\r';;
+        ctrl-c) seq=$'\003';; ctrl-d) seq=$'\004';; ctrl-b) seq=$'\002';;
+        ctrl-o) seq=$'\017';; ctrl-r) seq=$'\022';; ctrl-t) seq=$'\024';;
+        ctrl-v) seq=$'\026';; ctrl-z) seq=$'\032';;
+        tab) seq=$'\t';; shift-tab) seq=$'\033[Z';;
+        up) seq=$'\033[A';; down) seq=$'\033[B';; right) seq=$'\033[C';; left) seq=$'\033[D';;
+        space) seq=' ';; backspace) seq=$'\177';;
+        *) die "unknown key '$k'";;
+      esac
+      iterm_write "$a" "$seq"
+      ;;
+    tmux)
+      local tk
+      case "$k" in
+        esc|escape) tk="Escape";;
+        enter|return|cr) tk="Enter";;
+        ctrl-c) tk="C-c";; ctrl-d) tk="C-d";; ctrl-b) tk="C-b";;
+        ctrl-o) tk="C-o";; ctrl-r) tk="C-r";; ctrl-t) tk="C-t";;
+        ctrl-v) tk="C-v";; ctrl-z) tk="C-z";;
+        tab) tk="Tab";; shift-tab) tk="BTab";;
+        up) tk="Up";; down) tk="Down";; right) tk="Right";; left) tk="Left";;
+        space) tk="Space";; backspace) tk="BSpace";;
+        *) die "unknown key '$k'";;
+      esac
+      tmux send-keys -t "$a" "$tk" && echo ok
+      ;;
+    *) die "unsupported terminal backend '$b'";;
+  esac
+}
+
+term_screen() { # backend addr — visible terminal contents
+  case "$1" in
+    iterm)
+      osascript - "$2" <<'APPLESCRIPT'
+on run argv
+  set targetId to item 1 of argv
+  tell application "iTerm2"
+    repeat with w in windows
+      repeat with t in tabs of w
+        repeat with s in sessions of t
+          if (id of s as text) is equal to targetId then return (contents of s)
+        end repeat
+      end repeat
+    end repeat
+  end tell
+  return "agent-chat: session not found (window closed?)"
+end run
+APPLESCRIPT
+      ;;
+    tmux) tmux capture-pane -p -t "$2";;
+    *) die "unsupported terminal backend '$1'";;
+  esac
+}
+
+do_nudge() { # name [text] — type text, then Enter as a SEPARATE keystroke (submits as a prompt).
+  # The separation is deliberate: TUIs run with bracketed paste on, so a \r inside
+  # the same payload is pasted as a literal newline into the input box instead of
+  # submitting. A lone Enter in its own call acts as a real keypress.
+  local name="$1"
+  local text="${2:-[agent-chat] you have new messages — run: agent-chat read}"
+  text=$(printf '%s' "$text" | tr -d '"\\')
+  local tb ta
+  read -r tb ta <<< "$(agent_term "$name")"
+  term_type "$tb" "$ta" "$text"
+  term_enter "$tb" "$ta"
+}
+
+cmd_type() { # name text — type into the input box WITHOUT submitting
+  local name="${1:-}" text="${2:-}"
+  [ -n "$name" ] && [ -n "$text" ] || die 'usage: agent-chat type <name> "text"'
+  local tb ta
+  read -r tb ta <<< "$(agent_term "$name")"
+  term_type "$tb" "$ta" "$text"
+}
+
+cmd_screen() { # name [N] — snapshot of the agent's visible terminal (last N lines)
+  local name="${1:-}" n="${2:-0}"
+  [ -n "$name" ] || die "usage: agent-chat screen <name> [N]"
+  local tb ta out
+  read -r tb ta <<< "$(agent_term "$name")"
+  out=$(term_screen "$tb" "$ta")
+  # drop trailing blank lines; optionally keep only the last N
+  out=$(printf '%s\n' "$out" | sed -e :a -e '/^[[:space:]]*$/{$d;N;ba' -e '}')
+  if [ "$n" -gt 0 ] 2>/dev/null; then printf '%s\n' "$out" | tail -n "$n"; else printf '%s\n' "$out"; fi
+}
+
+cmd_key() { # name key... — send special keys / Claude Code shortcuts
+  local name="${1:-}"; shift 2>/dev/null || true
+  [ -n "$name" ] && [ $# -gt 0 ] || die "usage: agent-chat key <name> <key...>  (keys: escape enter ctrl-c ctrl-d ctrl-b ctrl-o ctrl-r ctrl-t ctrl-v tab shift-tab up down left right space backspace)"
+  local tb ta k
+  read -r tb ta <<< "$(agent_term "$name")"
+  for k in "$@"; do
+    term_key "$tb" "$ta" "$k" >/dev/null
+  done
+  echo ok
+}
+
+cmd_spawn() { # <name> [--dir d] [--cmd "claude ..."] [--prompt "task"] [--tab|--pane] [--tmux]
+  local name="" dir="$PWD" cmd="" task="" force_tmux=0 place="window"
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --dir) dir="$2"; shift 2;;
+      --cmd) cmd="$2"; shift 2;;
+      --prompt) task="$2"; shift 2;;
+      --tab) place="tab"; shift;;
+      --pane) place="pane"; shift;;
+      --tmux) force_tmux=1; shift;;
+      -*) die "spawn: unknown arg '$1'";;
+      *) [ -n "$name" ] && die "spawn: one name only"; name="$1"; shift;;
+    esac
+  done
+  [ -n "$name" ] || die 'usage: agent-chat spawn <name> [--dir <path>] [--prompt "task"] [--cmd "claude ..."] [--tab|--pane] [--tmux]'
+  printf '%s' "$name" | grep -Eq '^[a-z0-9][a-z0-9_-]{0,31}$' || die "invalid agent name '$name'"
+  [ -d "$dir" ] || die "no such directory: $dir"
+
+  # default launch command: reuse this session's own CLI flags (minus session
+  # selectors), so e.g. --dangerously-skip-permissions carries over
+  if [ -z "$cmd" ]; then
+    local tb ta ttypath
+    read -r tb ta <<< "$(detect_term)"
+    ttypath=""
+    case "$tb" in
+      tmux)  ttypath=$(tmux display -p -t "$ta" '#{pane_tty}' 2>/dev/null);;
+      iterm) ttypath=$(osascript - "$ta" <<'APPLESCRIPT'
+on run argv
+  set targetId to item 1 of argv
+  tell application "iTerm2"
+    repeat with w in windows
+      repeat with t in tabs of w
+        repeat with s in sessions of t
+          if (id of s as text) is equal to targetId then return (tty of s)
+        end repeat
+      end repeat
+    end repeat
+  end tell
+  return ""
+end run
+APPLESCRIPT
+);;
+    esac
+    if [ -n "$ttypath" ]; then
+      cmd=$(ps -t "${ttypath#/dev/}" -o command= 2>/dev/null | grep -E '^(\S*/)?claude( |$)' | head -n1 \
+            | sed -E 's/ (--resume|-r|--session-id|--from-pr) [^ ]+//g; s/ (--resume|-r|--continue|-c|--fork-session|--from-pr)( |$)/ /g')
+    fi
+    [ -n "$cmd" ] || cmd="claude"
+  fi
+
+  local kickoff="You are a fresh agent. First, register on the local agent chat: agent-chat register $name — then check in with: agent-chat read."
+  [ -n "$task" ] && kickoff="$kickoff Your task: $task"
+
+  local sb sa   # spawned backend + addr
+  if [ "$force_tmux" = 1 ] || ! osascript -e 'tell application "iTerm2" to count windows' >/dev/null 2>&1; then
+    command -v tmux >/dev/null || die "tmux not available and iTerm unreachable"
+    sb="tmux"
+    if [ -n "${TMUX:-}" ]; then
+      if [ "$place" = "pane" ]; then
+        sa=$(tmux split-window -P -F '#{pane_id}' -t "${TMUX_PANE:-}" -c "$dir")
+      else
+        sa=$(tmux new-window -P -F '#{pane_id}' -c "$dir")
+      fi
+    else
+      sa=$(tmux new-session -d -P -F '#{pane_id}' -s "agent-$name" -c "$dir" 2>/dev/null) \
+        || sa=$(tmux new-session -d -P -F '#{pane_id}' -c "$dir")
+    fi
+  else
+    sb="iterm"
+    # SAFETY: snapshot existing session ids — the id we get back for the new
+    # tab/pane/window must be brand-new, or we'd type into a live session
+    local existing myid
+    existing=$(osascript <<'APPLESCRIPT'
+set out to ""
+tell application "iTerm2"
+  repeat with w in windows
+    repeat with t in tabs of w
+      repeat with s in sessions of t
+        set out to out & (id of s as text) & linefeed
+      end repeat
+    end repeat
+  end repeat
+end tell
+return out
+APPLESCRIPT
+)
+    myid="${ITERM_SESSION_ID:-}"; myid="${myid#*:}"
+    case "$place" in
+      pane)
+        # split the spawner's own pane (object-based: no positional window refs)
+        sa=$(osascript - "$myid" <<'APPLESCRIPT'
+on run argv
+  set myId to item 1 of argv
+  tell application "iTerm2"
+    repeat with w in windows
+      repeat with t in tabs of w
+        repeat with s in sessions of t
+          if (id of s as text) is equal to myId then
+            tell s to set newSess to (split vertically with default profile)
+            return id of newSess
+          end if
+        end repeat
+      end repeat
+    end repeat
+  end tell
+  return ""
+end run
+APPLESCRIPT
+)
+        ;;
+      tab)
+        # new tab in the spawner's own window (fallback: frontmost window);
+        # uses the returned tab OBJECT — a positional window reference can
+        # re-resolve to a different window after z-order changes
+        sa=$(osascript - "$myid" <<'APPLESCRIPT'
+on run argv
+  set myId to item 1 of argv
+  tell application "iTerm2"
+    repeat with w in windows
+      repeat with t in tabs of w
+        repeat with s in sessions of t
+          if (id of s as text) is equal to myId then
+            tell w to set newTab to (create tab with default profile)
+            return id of current session of newTab
+          end if
+        end repeat
+      end repeat
+    end repeat
+    tell current window to set newTab to (create tab with default profile)
+    return id of current session of newTab
+  end tell
+end run
+APPLESCRIPT
+)
+        ;;
+      *)
+        sa=$(osascript <<'APPLESCRIPT'
+tell application "iTerm2"
+  set newWin to (create window with default profile)
+  delay 1
+  return id of current session of newWin
+end tell
+APPLESCRIPT
+)
+        ;;
+    esac
+    [ -n "$sa" ] || die "failed to create iTerm $place"
+    printf '%s\n' "$existing" | grep -qxF "$sa" \
+      && die "SAFETY ABORT: '$sa' is a pre-existing session, not the new $place — refusing to type into it"
+    sleep 1
+    term_type "$sb" "$sa" "cd '$dir'" >/dev/null
+    term_enter "$sb" "$sa" >/dev/null
+  fi
+
+  term_type "$sb" "$sa" "$cmd" >/dev/null
+  term_enter "$sb" "$sa" >/dev/null
+
+  # wait for the CLI process, then deliver the kickoff with verify-and-retry:
+  # input typed during TUI startup (MCP servers still loading) gets swallowed
+  local ttypath deadline try landed=0
+  case "$sb" in
+    tmux)  ttypath=$(tmux display -p -t "$sa" '#{pane_tty}');;
+    iterm) ttypath="";;
+  esac
+  deadline=$((SECONDS + 45))
+  while [ "$SECONDS" -lt "$deadline" ]; do
+    if [ -n "$ttypath" ] && ps -t "${ttypath#/dev/}" -o command= 2>/dev/null | grep -qE '^(\S*/)?claude( |$)'; then break; fi
+    [ -z "$ttypath" ] && [ "$SECONDS" -ge $((deadline - 37)) ] && break   # iterm: fixed ~8s boot wait
+    sleep 2
+  done
+  local scr
+  for try in 1 2 3 4; do
+    sleep $((try * 4))
+    scr=$(term_screen "$sb" "$sa" 2>/dev/null | tr -d '\n')
+    # first-launch gate prompts appear before the input box exists and must be
+    # cleared with Enter (accept default), NOT by typing the kickoff into them:
+    #   "trust this folder" (new dir), "Yes, I trust", theme picker, etc.
+    if printf '%s' "$scr" | grep -qiE "trust this folder|do you trust|Yes, I trust|Choose the text style|Select your theme"; then
+      term_enter "$sb" "$sa" >/dev/null
+      sleep 3
+      continue   # re-inspect next iteration before sending the kickoff
+    fi
+    term_type "$sb" "$sa" "$kickoff" >/dev/null
+    term_enter "$sb" "$sa" >/dev/null
+    sleep 4
+    # verify the prompt landed: its text must be on screen (joined against line wrap)
+    if term_screen "$sb" "$sa" 2>/dev/null | tr -d '\n' | grep -qE "fresh +agent"; then landed=1; break; fi
+  done
+
+  echo "Spawned '$name' ($sb: $sa, dir: $dir)"
+  echo "Launch: $cmd"
+  if [ "$landed" = 1 ]; then
+    echo "Kickoff delivered — it will register itself as '$name' (check: agent-chat who)"
+  else
+    echo "WARNING: kickoff prompt may not have landed — check: agent-chat screen $name"
+  fi
+}
+
+# ---------- hook mode ----------
+
+cmd_hook() {
+  local event="$1" input sid name text payload
+  input=$(cat)
+  local files=("$REG"/*.json)
+  [ -e "${files[0]}" ] || exit 0
+  sid=$(printf '%s' "$input" | $JQ -r '.session_id // empty' 2>/dev/null)
+  [ -n "$sid" ] || exit 0
+  name=$(resolve_name "$sid") || exit 0
+  text=$(deliver "$name")
+  [ -n "$text" ] || exit 0
+  payload="📨 agent-chat — new message(s) for you ('$name'):
+$text
+
+If a reply or coordination is needed, respond with: agent-chat send \"...\" (add --to <sender> for a DM, --room <room> to answer in that room). If purely informational, take note and continue."
+  case "$event" in
+    Stop)
+      $JQ -n --arg r "$payload
+If nothing is actionable, acknowledge briefly and stop." '{decision:"block", reason:$r}'
+      ;;
+    UserPromptSubmit|PostToolUse)
+      $JQ -n --arg e "$event" --arg t "$payload" \
+        '{hookSpecificOutput:{hookEventName:$e, additionalContext:$t}}'
+      ;;
+    *) exit 0;;
+  esac
+}
+
+# ---------- main ----------
+
+AS_NAME=""
+ARGS=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --as) AS_NAME="$2"; shift 2;;
+    *) ARGS+=("$1"); shift;;
+  esac
+done
+set -- "${ARGS[@]}"
+
+cmd="${1:-help}"; shift 2>/dev/null || true
+case "$cmd" in
+  register)   cmd_register "$@";;
+  unregister) cmd_unregister "$@";;
+  send)       cmd_send "$@";;
+  read)       cmd_read "$@";;
+  log)        cmd_log "$@";;
+  rooms)      cmd_rooms "$@";;
+  join)       cmd_join "$@";;
+  leave)      cmd_leave "$@";;
+  peek)       cmd_peek "$@";;
+  who)        cmd_who "$@";;
+  nudge)      do_nudge "$@";;
+  type)       cmd_type "$@";;
+  key)        cmd_key "$@";;
+  screen)     cmd_screen "$@";;
+  spawn)      cmd_spawn "$@";;
+  hook)       cmd_hook "$@";;
+  help|--help|-h)
+    sed -n '2,46p' "$0" | sed 's/^# \{0,1\}//';;
+  *) die "unknown command '$cmd' (try: agent-chat help)";;
+esac

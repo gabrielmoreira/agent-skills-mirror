@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:9b714984daa0f0541dd2875133dd70e4b8a53308`
+**Shape snapshot:** `sha1:0501a40e8d79224905d6082ddea82dfd72528da0`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -45,9 +45,9 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ## At a Glance
 
-- **287** active API routes across **72** categories (335 total including archived)
-- **4** required + **194** optional environment variables
-- **109** database tables
+- **289** active API routes across **73** categories (337 total including archived)
+- **4** required + **201** optional environment variables
+- **112** database tables
 
 ## API Surface
 
@@ -129,6 +129,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ### `calibration`
 
+- `GET, POST` `/api/calibration/controller`
 - `GET, POST` `/api/calibration/proposals`
 
 ### `capabilities`
@@ -225,6 +226,10 @@ neither exists. When you cannot run the queries above, fall back **in this order
 ### `echo`
 
 - `GET, POST` `/api/echo`
+
+### `enforcement-liveness`
+
+- `GET, POST` `/api/enforcement-liveness`
 
 ### `evaluations`
 
@@ -559,7 +564,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 These must be set — DashClaw will fail to start without them.
 
-- **`DASHCLAW_API_KEY`** - referenced in 84 file(s)
+- **`DASHCLAW_API_KEY`** - referenced in 86 file(s)
 - **`DATABASE_URL`** - referenced in 109 file(s)
 - **`ENCRYPTION_KEY`** - referenced in 8 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 6 file(s)
@@ -575,6 +580,7 @@ These have fallbacks or only activate specific features.
 - `ANTHROPIC_API_KEY` *(undocumented)*
 - `ANTHROPIC_MODEL` *(undocumented)*
 - `API_INVENTORY_VERIFIED_DATE` *(undocumented)*
+- `API_KEY` *(undocumented)*
 - `API_SECRET` *(undocumented)*
 - `BASE_URL` *(undocumented)*
 - `CI` *(undocumented)*
@@ -613,6 +619,7 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_GUARD_DEADLINE_MS` *(undocumented)*
 - `DASHCLAW_GUARD_FALLBACK` *(undocumented)*
 - `DASHCLAW_GUARD_UNAVAILABLE_POLICY` *(undocumented)*
+- `DASHCLAW_HOOK_MODE` *(undocumented)*
 - `DASHCLAW_HOSTED` *(undocumented)*
 - `DASHCLAW_HTTP_RETRIES` *(undocumented)*
 - `DASHCLAW_HTTP_RETRY_BASE_MS` *(undocumented)*
@@ -643,6 +650,8 @@ These have fallbacks or only activate specific features.
 - `DISCORD_APPROVER_USER_ID` *(undocumented)*
 - `DISCORD_BOT_TOKEN` *(undocumented)*
 - `DISCORD_PUBLIC_KEY` *(undocumented)*
+- `DRILL_IMPORT_API_KEY` *(undocumented)*
+- `DRILL_IMPORT_BASE_URL` *(undocumented)*
 - `ENFORCE_AGENT_SIGNATURES` *(undocumented)*
 - `GITHUB_CLIENT_ID` *(undocumented)*
 - `GITHUB_CLIENT_SECRET` *(undocumented)*
@@ -661,7 +670,10 @@ These have fallbacks or only activate specific features.
 - `GUARD_LLM_KEY` *(undocumented)*
 - `GUARD_LLM_MODEL` *(undocumented)*
 - `GUARD_WEBHOOK_SECRET` *(undocumented)*
+- `HOSTED_ADMIN_API_KEY` *(undocumented)*
 - `HOSTED_CLEANUP_SECRET` *(undocumented)*
+- `HOSTED_DRILL_BASE_URL` *(undocumented)*
+- `HOSTED_DRILL_TOKEN` *(undocumented)*
 - `HOSTED_MAX_ACTIVE_TRIALS` *(undocumented)*
 - `HOSTED_PROVISION_MAX_PER_IP_PER_DAY` *(undocumented)*
 - `HOSTED_SMOKE_BASE_URL` *(undocumented)*
@@ -765,7 +777,7 @@ These have fallbacks or only activate specific features.
 
 ## Database Tables
 
-All 109 tables defined in `schema/schema.js` (Drizzle ORM):
+All 112 tables defined in `schema/schema.js` (Drizzle ORM):
 
 - `action_embeddings`
 - `action_records`
@@ -806,6 +818,7 @@ All 109 tables defined in `schema/schema.js` (Drizzle ORM):
 - `drift_alerts`
 - `drift_baselines`
 - `drift_snapshots`
+- `enforcement_liveness_runs`
 - `entities`
 - `eval_runs`
 - `eval_scorers`
@@ -814,6 +827,8 @@ All 109 tables defined in `schema/schema.js` (Drizzle ORM):
 - `feedback`
 - `goals`
 - `governed_secrets`
+- `guard_calibration_events`
+- `guard_calibration_state`
 - `guard_decisions`
 - `guard_policies`
 - `guardrails_test_runs`
@@ -892,6 +907,7 @@ These are the `type` strings emitted through `fireWebhooksForOrg` and `deliverNa
 - `lost_confirmation`
 - `mcp_degraded`
 - `message`
+- `observe_mode`
 - `stale_action`
 - `test`
 
