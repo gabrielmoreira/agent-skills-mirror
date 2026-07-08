@@ -27,7 +27,7 @@ Track active user sessions, unique users, engagement patterns, and leverage cust
 
 `user.sessions` contains session-level aggregates produced by the session aggregation service from `user.events`. **Field names differ from `user.events`** — sessions use underscores where events use dots.
 
-> Note: there is no limit on the number of user actions per session in the New RUM Experience — this differs from RUM Classic.
+> Note: there is no limit on the number of user actions per session in RUM on the latest Dynatrace — this differs from RUM Classic.
 
 **Session identity and context:**
 - `dt.rum.session.id` — Session ID (NOT `dt.rum.session_id`)

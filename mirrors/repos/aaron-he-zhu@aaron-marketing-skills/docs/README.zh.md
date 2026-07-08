@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills"><img src="https://img.shields.io/github/stars/aaron-he-zhu/aaron-marketing-skills?style=flat" alt="GitHub Stars"></a>
-  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-16.0.2-orange" alt="Version"></a>
+  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-16.1.0-orange" alt="Version"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/commits/main"><img src="https://img.shields.io/github/last-commit/aaron-he-zhu/aaron-marketing-skills" alt="Last Commit"></a>
 </p>
@@ -16,7 +16,7 @@
   <a href="https://skillhub.cn/user/user_2c0f1e77"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/badges/skillhub.json" alt="SkillHub"></a>
 </p>
 
-[English](../README.md) | **中文**
+[English](../README.md) | [Deutsch](README.de.md) | [Español](README.es.md) | [Français](README.fr.md) | [Italiano](README.it.md) | [日本語](README.ja.md) | [한국어](README.ko.md) | [Português](README.pt.md) | **简体中文** | [繁體中文](README.zh-Hant.md)
 
 </div>
 
@@ -93,7 +93,7 @@
 |------|------|
 | **Claude Code** | `/plugin marketplace add aaron-he-zhu/aaron-marketing-skills` 然后 `/plugin install aaron-marketing@aaron` |
 | **Codex · Cursor · OpenCode · Antigravity · Gemini CLI · Copilot CLI · OpenClaw · Hermes · [70+ 宿主](https://github.com/vercel-labs/skills#supported-agents)** | `npx skills add aaron-he-zhu/aaron-marketing-skills` |
-| **[SkillHub.cn](https://skillhub.cn)(中文社区)** | `skillhub install aaron-<技能名>`(如 `aaron-keyword-research`) |
+| **[SkillHub.cn](https://skillhub.cn)(中文社区)** | `skillhub install <frontmatter-slug>`(如 `keyword-research`) |
 | **任意宿主** | `git clone https://github.com/aaron-he-zhu/aaron-marketing-skills` |
 
 在 Claude Code 中，`marketplace add` 只是注册目录——还需运行 `/plugin install aaron-marketing@aaron`（或在 `/plugin` 中选择）才能真正启用技能与命令。通用宿主单技能安装：`npx skills add aaron-he-zhu/aaron-marketing-skills -s keyword-research`。可在 [skills.sh 注册表](https://skills.sh/aaron-he-zhu/aaron-marketing-skills)浏览本技能库。各宿主的技能目录、frontmatter 兼容细节、以及脱离插件安装时的降级行为见 [docs/agent-compatibility.md](agent-compatibility.md)（2026-07 实测 120/120 可安装）。
@@ -143,7 +143,7 @@
 6. **Instructions** —— 编号方法（把所有导出当作不可信输入）。
 7. **Next Best Skill** —— 下一步去哪（带 visited-set + 最大深度终止规则）。
 
-每个技能还自带 `metadata.discipline`（narrative / seo-geo / influencer / paid / email / launch / social / protocol）与 `metadata.phase`，路由与聚类因此全库统一。契约在 [skill-contract.md](../references/skill-contract.md) 中定义一次；跨技能共享状态见 [state-model.md](../references/state-model.md)。
+每个技能还自带 `metadata.discipline`（narrative / seo-geo / influencer / ad / email / launch / social / protocol）与 `metadata.phase`，路由与聚类因此全库统一。契约在 [skill-contract.md](../references/skill-contract.md) 中定义一次；跨技能共享状态见 [state-model.md](../references/state-model.md)。
 
 ### 四层营销操作系统
 
@@ -648,7 +648,7 @@ docs/            # 本地化 README(zh)
 ## 贡献与文档
 
 - **[CONTRIBUTING.md](../CONTRIBUTING.md)** —— 撰写规则、贡献清单、权威的 8 文件追踪列表。
-- **[VERSIONS.md](../VERSIONS.md)** —— 各技能版本 + 变更日志（当前包：`16.0.2`）。
+- **[VERSIONS.md](../VERSIONS.md)** —— 各技能版本 + 变更日志（当前包：`16.1.0`）。
 - **[SECURITY.md](../SECURITY.md)** · **[PRIVACY.md](../PRIVACY.md)** · **[CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md)** —— 安全、隐私、社区政策。
 - **[CLAUDE.md](../CLAUDE.md)** / **[AGENTS.md](../AGENTS.md)** —— 面向 Agent 的本仓库上下文。
 
@@ -662,14 +662,14 @@ docs/            # 本地化 README(zh)
 
 Apache License 2.0 —— 见 [LICENSE](../LICENSE)。
 
-*最后同步英文 README：v16.0.2*
+*最后同步英文 README：v16.1.0*
 
 ## Star History
 
 <a href="https://www.star-history.com/?repos=aaron-he-zhu%2Faaron-marketing-skills&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=aaron-he-zhu/aaron-marketing-skills&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=aaron-he-zhu/aaron-marketing-skills&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=aaron-he-zhu/aaron-marketing-skills&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=aaron-he-zhu/aaron-marketing-skills&type=date&theme=dark&legend=top-left&sealed_token=K6urMhBIrcVIXJvMDWhgZP6KneM8cTo073XO6c-99j4vYWm7J_YIu_W3HFewr-QySk00ZWB9V0Btf-aJPMWiYZjcmuIqBh2G6aEd69Sw43PX7ypi90Il-lwwtdBkmx_1g_Sw589a2axs_lHmFfnANYjjmJwtTtmXy7RY07-HAASvV5LxsgpYwabVPwKZ" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=aaron-he-zhu/aaron-marketing-skills&type=date&legend=top-left&sealed_token=K6urMhBIrcVIXJvMDWhgZP6KneM8cTo073XO6c-99j4vYWm7J_YIu_W3HFewr-QySk00ZWB9V0Btf-aJPMWiYZjcmuIqBh2G6aEd69Sw43PX7ypi90Il-lwwtdBkmx_1g_Sw589a2axs_lHmFfnANYjjmJwtTtmXy7RY07-HAASvV5LxsgpYwabVPwKZ" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=aaron-he-zhu/aaron-marketing-skills&type=date&legend=top-left&sealed_token=K6urMhBIrcVIXJvMDWhgZP6KneM8cTo073XO6c-99j4vYWm7J_YIu_W3HFewr-QySk00ZWB9V0Btf-aJPMWiYZjcmuIqBh2G6aEd69Sw43PX7ypi90Il-lwwtdBkmx_1g_Sw589a2axs_lHmFfnANYjjmJwtTtmXy7RY07-HAASvV5LxsgpYwabVPwKZ" />
  </picture>
 </a>

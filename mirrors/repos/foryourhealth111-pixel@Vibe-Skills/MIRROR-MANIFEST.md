@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `foryourhealth111-pixel/Vibe-Skills` — 26 default patterns, 1 followed patterns, 309 file(s) materialized.
+Mirror of `foryourhealth111-pixel/Vibe-Skills` — 26 default patterns, 1 followed patterns, 306 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `foryourhealth111-pixel/Vibe-Skills` — 26 default patterns, 1 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 309 |
+| Files         | 306 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -346,28 +346,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 285 | ✓ | [`bundled/skills/xlsx/SKILL.md`](bundled/skills/xlsx/SKILL.md) |
 | 286 | ✓ | [`bundled/skills/yeet/SKILL.md`](bundled/skills/yeet/SKILL.md) |
 | 287 | ✓ | [`bundled/skills/zarr-python/SKILL.md`](bundled/skills/zarr-python/SKILL.md) |
-| 288 | ✓ | [`mcp/profiles/full.json`](mcp/profiles/full.json) |
-| 289 | ✓ | [`mcp/profiles/minimal.json`](mcp/profiles/minimal.json) |
-| 290 | ✓ | [`mcp/servers.template.json`](mcp/servers.template.json) |
-| 291 | ✓ | [`references/capability-catalog.md`](references/capability-catalog.md) |
-| 292 | ✓ | [`references/changelog.md`](references/changelog.md) |
-| 293 | ✓ | [`references/connector-action-ledger.md`](references/connector-action-ledger.md) |
-| 294 | ✓ | [`references/connector-capability-matrix.md`](references/connector-capability-matrix.md) |
-| 295 | ✓ | [`references/cross-plane-replay-ledger.md`](references/cross-plane-replay-ledger.md) |
-| 296 | ✓ | [`references/document-golden-corpus.md`](references/document-golden-corpus.md) |
-| 297 | ✓ | [`references/memory-eval-scenarios.md`](references/memory-eval-scenarios.md) |
-| 298 | ✓ | [`references/mirror-topology.md`](references/mirror-topology.md) |
-| 299 | ✓ | [`references/prompt-eval-scenarios.md`](references/prompt-eval-scenarios.md) |
-| 300 | ✓ | [`references/reference-asset-taxonomy.md`](references/reference-asset-taxonomy.md) |
-| 301 | ✓ | [`references/release-evidence-bundle-contract.md`](references/release-evidence-bundle-contract.md) |
-| 302 | ✓ | [`references/role-pack-catalog-v2.md`](references/role-pack-catalog-v2.md) |
-| 303 | ✓ | [`references/runtime-contract-field-contract.md`](references/runtime-contract-field-contract.md) |
-| 304 | ✓ | [`references/tool-registry.md`](references/tool-registry.md) |
-| 305 | ✓ | [`references/tool-rule-contract.md`](references/tool-rule-contract.md) |
-| 306 | ✓ | [`references/unified-task-contract.md`](references/unified-task-contract.md) |
-| 307 | ✓ | [`references/upstream-value-ledger.md`](references/upstream-value-ledger.md) |
-| 308 | ✓ | [`SKILL.md`](SKILL.md) |
-| 309 | → | [`references/index.md`](references/index.md) |
+| 288 | ✓ | [`references/capability-catalog.md`](references/capability-catalog.md) |
+| 289 | ✓ | [`references/changelog.md`](references/changelog.md) |
+| 290 | ✓ | [`references/connector-action-ledger.md`](references/connector-action-ledger.md) |
+| 291 | ✓ | [`references/connector-capability-matrix.md`](references/connector-capability-matrix.md) |
+| 292 | ✓ | [`references/cross-plane-replay-ledger.md`](references/cross-plane-replay-ledger.md) |
+| 293 | ✓ | [`references/document-golden-corpus.md`](references/document-golden-corpus.md) |
+| 294 | ✓ | [`references/memory-eval-scenarios.md`](references/memory-eval-scenarios.md) |
+| 295 | ✓ | [`references/mirror-topology.md`](references/mirror-topology.md) |
+| 296 | ✓ | [`references/prompt-eval-scenarios.md`](references/prompt-eval-scenarios.md) |
+| 297 | ✓ | [`references/reference-asset-taxonomy.md`](references/reference-asset-taxonomy.md) |
+| 298 | ✓ | [`references/release-evidence-bundle-contract.md`](references/release-evidence-bundle-contract.md) |
+| 299 | ✓ | [`references/role-pack-catalog-v2.md`](references/role-pack-catalog-v2.md) |
+| 300 | ✓ | [`references/runtime-contract-field-contract.md`](references/runtime-contract-field-contract.md) |
+| 301 | ✓ | [`references/tool-registry.md`](references/tool-registry.md) |
+| 302 | ✓ | [`references/tool-rule-contract.md`](references/tool-rule-contract.md) |
+| 303 | ✓ | [`references/unified-task-contract.md`](references/unified-task-contract.md) |
+| 304 | ✓ | [`references/upstream-value-ledger.md`](references/upstream-value-ledger.md) |
+| 305 | ✓ | [`SKILL.md`](SKILL.md) |
+| 306 | → | [`references/index.md`](references/index.md) |
 
 ---
 

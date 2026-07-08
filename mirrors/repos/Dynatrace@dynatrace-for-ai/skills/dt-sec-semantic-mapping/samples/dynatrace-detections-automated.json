@@ -1,0 +1,89 @@
+[{
+      "timestamp": "2026-04-24T13:28:25.727566720Z",
+      "event.id": "c84a760f-985b-446a-a93e-2c07b83f1701",
+      "event.kind": "SECURITY_EVENT",
+      "event.type": "DETECTION_FINDING",
+      "event.name": "Always triggered detection was triggered on 'PROCESS_GROUP-1234567890ABCDEF'",
+      "event.description": "For health check, event should be always triggered",
+      "event.provider": "Dynatrace Automated Detections",
+      "finding.id": "78c3a041-197e-422b-b89c-176cbcc91909",
+      "finding.title": "Always triggered detection was triggered on 'PROCESS_GROUP-1234567890ABCDEF'",
+      "finding.description": "For health check, event should be always triggered",
+      "finding.severity": "CRITICAL",
+      "finding.type": "Automated Detections",
+      "finding.score": 10,
+      "finding.time.created": "2026-04-24T13:28:25.727566720Z",
+      "object.id": "PROCESS_GROUP-1234567890ABCDEF",
+      "object.type": "PROCESS_GROUP",
+      "object.name": "PROCESS_GROUP-1234567890ABCDEF",
+      "dt.security.risk.level": "CRITICAL",
+      "dt.security.risk.score": 10,
+      "dt.security.evidence.query": "data json:\"{\\\"dt.entity.process_group\\\": \\\"PROCESS_GROUP-1234567890ABCDEF\\\"}\"",
+      "dt.security.evidence.query.from": "2026-04-24T13:21:18.897492000Z",
+      "dt.security.evidence.query.to": "2026-04-24T13:28:18.897492000Z",
+      "dt.security.evidence.query.filter": "filter dt.entity.process_group == \"PROCESS_GROUP-1234567890ABCDEF\"",
+      "dt.security.evidence.query.queryParams": "{\"defaultScanLimitGBytes\":1000,\"maxResultRecords\":1000,\"maxResultBytes\":171798400}",
+      "dt.security.evidence.query.compiledQuery": "data json:\"{\\\"dt.entity.process_group\\\": \\\"PROCESS_GROUP-1234567890ABCDEF\\\"}\"\n| filter dt.entity.process_group == \"PROCESS_GROUP-1234567890ABCDEF\"",
+      "product.name": "Automated Detections",
+      "product.vendor": "Dynatrace",
+      "detection.id": "9b9373aa-82d6-43fa-b12f-b94bffe7f289",
+      "detection.title": "Always triggered detection",
+      "detection.description": "For health check, event should be always triggered",
+      "detection.owner.id": "61a465ec-d4c0-4909-aa47-9e2d3f924e6c",
+      "detection.mitre.ids": [],
+      "execution.id": "8bcbe0af-cb57-4a61-8042-68f2b36735b8",
+      "execution.actor.id": "147bb4cc-9909-4b0e-bbe9-aa3f1e010fab",
+      "dt.openpipeline.source": "/platform/ingest/v1/security.events",
+      "dt.openpipeline.pipelines": [
+        "security.events:default"
+      ]
+},
+{
+      "timestamp": "2026-04-24T13:27:04.400000000Z",
+      "event.id": "183d91b9-1635-49d9-bacc-0b738aec844a",
+      "actor.ips": [
+        "10.178.54.59"
+      ],
+      "object.id": "36da4984-aadd-494c-8b52-018194cb4ce0",
+      "event.kind": "SECURITY_EVENT",
+      "event.type": "DETECTION_FINDING",
+      "finding.id": "e0cc877fe82426172005798928d457304b9b34053b0c559c6cc945e9d880bd09",
+      "k8s.pod.uid": "dce52e95-ec4b-4c0d-bb0e-00ddce1a739a",
+      "object.name": "unguard-backend-68b329da98",
+      "object.type": "K8S_POD",
+      "finding.type": "DQL",
+      "k8s.pod.name": "unguard-user-simulator-29617164-dpjpk",
+      "product.name": "AutomationEngine",
+      "finding.title": "FAKE: Kubernetes workload name mimicry by standalone pod",
+      "event.provider": "AutomationEngine",
+      "finding.action": "OBSERVED",
+      "product.vendor": "Dynatrace",
+      "k8s.cluster.uid": "1c7a24c7-ff51-46e0-bcc9-c52637ceec57",
+      "finding.severity": "MEDIUM",
+      "k8s.cluster.name": "unguard-dev",
+      "event.description": "The standalone pod unguard-backend-68b329da98 shows a name similarity with another workload",
+      "k8s.namespace.name": "unguard",
+      "finding.time.created": "2026-04-24T13:27:03.772000000Z",
+      "dt.security.risk.level": "MEDIUM",
+      "threat.attack.tactic.ids": [
+        "TA0005"
+      ],
+      "threat.attack.technique.ids": [
+        "T1036",
+        "T1610"
+      ],
+      "threat.attack.subtechnique.ids": [
+        "T1036.005"
+      ],
+      "dt.openpipeline.source": "/platform/ingest/v1/security.events",
+      "dt.security.risk.score": 6.9,
+      "dt.openpipeline.pipelines": [
+        "security.events:default"
+      ],
+      "dt.smartscape.k8s_cluster": "K8S_CLUSTER-36D514F49B5D13DD",
+      "dt.smartscape.k8s_namespace": "K8S_NAMESPACE-292B248B89ED3FF6",
+      "dt.smartscape_source.id": "K8S_POD-03F5D38C4F2DE843",
+      "dt.smartscape_source.type": "K8S_POD",
+      "dt.smartscape.k8s_pod": "K8S_POD-03F5D38C4F2DE843"
+}
+]

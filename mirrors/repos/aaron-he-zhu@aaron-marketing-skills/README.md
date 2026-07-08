@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills"><img src="https://img.shields.io/github/stars/aaron-he-zhu/aaron-marketing-skills?style=flat" alt="GitHub Stars"></a>
-  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-16.0.2-orange" alt="Version"></a>
+  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-16.1.0-orange" alt="Version"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/commits/main"><img src="https://img.shields.io/github/last-commit/aaron-he-zhu/aaron-marketing-skills" alt="Last Commit"></a>
 </p>
@@ -16,7 +16,7 @@
   <a href="https://skillhub.cn/user/user_2c0f1e77"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/badges/skillhub.json" alt="SkillHub"></a>
 </p>
 
-[English](README.md) | [中文](docs/README.zh.md)
+**English** | [Deutsch](docs/README.de.md) | [Español](docs/README.es.md) | [Français](docs/README.fr.md) | [Italiano](docs/README.it.md) | [日本語](docs/README.ja.md) | [한국어](docs/README.ko.md) | [Português](docs/README.pt.md) | [简体中文](docs/README.zh.md) | [繁體中文](docs/README.zh-Hant.md)
 
 </div>
 
@@ -93,7 +93,7 @@ Use it with Claude Code, any Agent Skills-compatible host, or a plain `git clone
 |------|---------|
 | **Claude Code** | `/plugin marketplace add aaron-he-zhu/aaron-marketing-skills` then `/plugin install aaron-marketing@aaron` |
 | **Codex · Cursor · OpenCode · Antigravity · Gemini CLI · Copilot CLI · OpenClaw · Hermes · [70+ hosts](https://github.com/vercel-labs/skills#supported-agents)** | `npx skills add aaron-he-zhu/aaron-marketing-skills` |
-| **[SkillHub.cn](https://skillhub.cn) (中文社区)** | `skillhub install aaron-<skill-name>` (e.g. `aaron-keyword-research`) |
+| **[SkillHub.cn](https://skillhub.cn) (中文社区)** | `skillhub install <frontmatter-slug>` (e.g. `aaron-campaign-architect` or legacy unprefixed slugs like `keyword-research`) |
 | **Any host** | `git clone https://github.com/aaron-he-zhu/aaron-marketing-skills` |
 
 In Claude Code, `marketplace add` only registers the catalog — run `/plugin install aaron-marketing@aaron` (or pick it from `/plugin`) to actually enable the skills and commands. To pull a **single** skill on a generic host: `npx skills add aaron-he-zhu/aaron-marketing-skills -s keyword-research`. Browse the bundle on the [skills.sh registry](https://skills.sh/aaron-he-zhu/aaron-marketing-skills). Per-agent directories, frontmatter quirks, and what degrades outside the plugin: [docs/agent-compatibility.md](docs/agent-compatibility.md) (verified 120/120 installable, 2026-07).
@@ -143,7 +143,7 @@ Every skill follows the **same activation contract** — seven sections in a fix
 6. **Instructions** — the numbered method (treats all exports as untrusted input).
 7. **Next Best Skill** — where to go next (with visited-set + max-depth termination rules).
 
-Every skill also self-declares `metadata.discipline` (narrative / seo-geo / influencer / paid / email / launch / social / protocol) and `metadata.phase`, so routing and clustering work uniformly. The contract is documented once in [skill-contract.md](references/skill-contract.md); the shared cross-skill state lives in [state-model.md](references/state-model.md).
+Every skill also self-declares `metadata.discipline` (narrative / seo-geo / influencer / ad / email / launch / social / protocol, where `ad` is Paid Ads/ROAS) and `metadata.phase`, so routing and clustering work uniformly. The contract is documented once in [skill-contract.md](references/skill-contract.md); the shared cross-skill state lives in [state-model.md](references/state-model.md).
 
 ### The system: a four-layer marketing operating system
 
@@ -221,7 +221,7 @@ The registries follow a **sole-writer rule** (other skills submit via `candidate
 
 | Event | Matcher | What it does |
 |-------|---------|--------------|
-| `SessionStart` | `startup\|resume\|clear\|compact` | Injects the **sanitized** hot-cache + an open-loops pointer (prompt-injection lines are redacted; symlinked caches are rejected). |
+| `SessionStart` | `startup\|resume\|clear\|compact` | Injects the **sanitized** hot-cache + load-time over-limit & oldest-dated-entry staleness signals + an open-loops pointer (prompt-injection lines are redacted; symlinked caches are rejected). |
 | `UserPromptSubmit` | (all) | Lightweight per-prompt context hook. |
 | `PostToolUse` | `Write\|Edit` | Hot-cache size warning **+ the Artifact Gate**: any file under `memory/audits/` that declares `class: auditor-output` is validated against the handoff schema and cap fields, or the write is blocked. The eight auditor-class gates must declare that marker by contract; unmarked files are not auditor artifacts and pass through. |
 | `Stop` | (all) | No-op (exits silently). |
@@ -648,7 +648,7 @@ Live endpoint drift is covered separately by the **manual** [`scripts/connectors
 ## Contributing & project docs
 
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** — authoring rules, the contribution checklist, and the authoritative 8-file tracking list.
-- **[VERSIONS.md](VERSIONS.md)** — per-skill versions + changelog (current bundle: `16.0.2`).
+- **[VERSIONS.md](VERSIONS.md)** — per-skill versions + changelog (current bundle: `16.1.0`).
 - **[SECURITY.md](SECURITY.md)** · **[PRIVACY.md](PRIVACY.md)** · **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** — security, privacy, and community policy.
 - **[CLAUDE.md](CLAUDE.md)** / **[AGENTS.md](AGENTS.md)** — agent-facing context for this repo.
 
@@ -666,8 +666,8 @@ Apache License 2.0 — see [LICENSE](LICENSE).
 
 <a href="https://www.star-history.com/?repos=aaron-he-zhu%2Faaron-marketing-skills&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=aaron-he-zhu/aaron-marketing-skills&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=aaron-he-zhu/aaron-marketing-skills&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=aaron-he-zhu/aaron-marketing-skills&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=aaron-he-zhu/aaron-marketing-skills&type=date&theme=dark&legend=top-left&sealed_token=K6urMhBIrcVIXJvMDWhgZP6KneM8cTo073XO6c-99j4vYWm7J_YIu_W3HFewr-QySk00ZWB9V0Btf-aJPMWiYZjcmuIqBh2G6aEd69Sw43PX7ypi90Il-lwwtdBkmx_1g_Sw589a2axs_lHmFfnANYjjmJwtTtmXy7RY07-HAASvV5LxsgpYwabVPwKZ" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=aaron-he-zhu/aaron-marketing-skills&type=date&legend=top-left&sealed_token=K6urMhBIrcVIXJvMDWhgZP6KneM8cTo073XO6c-99j4vYWm7J_YIu_W3HFewr-QySk00ZWB9V0Btf-aJPMWiYZjcmuIqBh2G6aEd69Sw43PX7ypi90Il-lwwtdBkmx_1g_Sw589a2axs_lHmFfnANYjjmJwtTtmXy7RY07-HAASvV5LxsgpYwabVPwKZ" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=aaron-he-zhu/aaron-marketing-skills&type=date&legend=top-left&sealed_token=K6urMhBIrcVIXJvMDWhgZP6KneM8cTo073XO6c-99j4vYWm7J_YIu_W3HFewr-QySk00ZWB9V0Btf-aJPMWiYZjcmuIqBh2G6aEd69Sw43PX7ypi90Il-lwwtdBkmx_1g_Sw589a2axs_lHmFfnANYjjmJwtTtmXy7RY07-HAASvV5LxsgpYwabVPwKZ" />
  </picture>
 </a>

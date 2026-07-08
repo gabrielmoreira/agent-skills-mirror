@@ -4,13 +4,13 @@ slug: aaron-social-measurement-loop
 displayName: "Social Measurement Loop · 社媒度量闭环"
 summary: "社媒周度复盘/指标字典/互动率分母锁定/中位数汇总/学习回写"
 description: 'Use when the user asks to "run the weekly social readout", "which denominator does our engagement rate use", or "which posts won this week and what changes next cycle"; produces the organic-social metric dictionary (every rate names its denominator — ERR engagement-by-reach vs ERI by-impressions vs ER-by-follower — locked across periods), median-not-mean per-post rollups with organic and boosted separated, EMV as labeled exec-translation only (never inside any score), an attributed CHAOSS/Orbit-style community-health readout with employees excluded, and the best/worst-performer write-back the next calendar cycle consumes. Not for dollar-ROI math or the SQS gate verdict — use roi-calculator and social-quality-auditor. 社媒周报/互动率分母/指标字典/复盘回写'
-version: "16.0.0"
+version: "16.0.3"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when running the weekly organic-social measurement loop: building or applying the metric dictionary (declared, period-locked denominators on every reported rate), rolling up per-post performance with medians and an organic/boosted split, translating results to EMV for executives (labeled, never scored), running the attributed CHAOSS/Orbit-style community-health readout on an owned community, or compiling the best/worst-performer write-back for the next calendar cycle. Not the dollar-ROI math (roi-calculator) and never the SQS verdict (social-quality-auditor)."
 argument-hint: "<period, e.g. 'week of 2026-06-29'> [channels] [exports]"
-metadata: {"author": "aaron-he-zhu", "version": "16.0.0", "discipline": "social", "phase": "observe", "geo-relevance": "low", "hermes": {"tags": ["marketing", "social", "observe"], "category": "social"}, "openclaw": {"emoji": "📣", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
+metadata: {"author": "aaron-he-zhu", "version": "16.0.3", "discipline": "social", "phase": "observe", "geo-relevance": "low", "hermes": {"tags": ["marketing", "social", "observe"], "category": "social"}, "openclaw": {"emoji": "📣", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Social Measurement Loop
@@ -50,6 +50,8 @@ Community-health mode on our Discourse forum: orbit-level distribution, time-to-
 ## Data Sources
 
 Keyless Tier-1 by construction: the loop runs entirely on the user's own exports and public keyless surfaces. Closed platforms (X/Instagram/TikTok/LinkedIn/小红书/微信公众号/视频号/抖音) have no compliant keyless read — their numbers enter as user-exported native analytics (Measured, as-of date) or manual-package screenshots (User-provided); scraping or automating them is a hard red line (平台风控/封号). Open surfaces come through `scripts/connectors/` — `discourse.py` (public forum JSON), `bluesky.py`, `fediverse.py`, `hn.py`, `pageviews.py` — and `gdelt.py`/`tavily.py` reads are **labeled proxy, never Measured**. GA4/GSC exports with the UTM truth set anchor own-surface outcomes. See [CONNECTORS.md](../../../CONNECTORS.md).
+
+> **Significance on the period rollup (keyless):** before calling a content variant or a period-over-period move a real change, `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/connectors/experiment.py" proportion --control <conv> <n> --variant <conv> <n>` (rates) or `experiment.py continuous` (engagement/reach distributions) tests it (z-test/Mann-Whitney + CI) so noise is not promoted as a learning. Pure stdlib, no key — label the verdict Measured.
 
 ## Instructions
 

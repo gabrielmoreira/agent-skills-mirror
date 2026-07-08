@@ -5,7 +5,7 @@ description: DashClaw platform expert for integration, troubleshooting, and gove
 
 # DashClaw Platform Intelligence
 
-**Shape snapshot:** `sha1:0501a40e8d79224905d6082ddea82dfd72528da0`
+**Shape snapshot:** `sha1:8661937dd4bf18d786203dbdd84b2c347b6a0aed`
 **This file is auto-generated.** Do not edit by hand — regenerate with:
 
 ```bash
@@ -45,8 +45,8 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ## At a Glance
 
-- **289** active API routes across **73** categories (337 total including archived)
-- **4** required + **201** optional environment variables
+- **117** active API routes across **47** categories (117 total including archived)
+- **4** required + **143** optional environment variables
 - **112** database tables
 
 ## API Surface
@@ -57,12 +57,8 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `GET, PATCH` `/api/actions/[actionId]`
 - `GET` `/api/actions/[actionId]/artifacts`
 - `GET` `/api/actions/[actionId]/graph`
-- `GET` `/api/actions/[actionId]/messages`
 - `GET, POST` `/api/actions/[actionId]/outcome`
 - `GET` `/api/actions/[actionId]/trace`
-- `GET` `/api/actions/costs`
-- `GET, POST` `/api/actions/loops`
-- `GET, PATCH` `/api/actions/loops/[loopId]`
 - `GET` `/api/actions/stats`
 
 ### `activity`
@@ -76,19 +72,7 @@ neither exists. When you cannot run the queries above, fall back **in this order
 ### `agents`
 
 - `GET` `/api/agents`
-- `GET` `/api/agents/[agentId]`
-- `GET` `/api/agents/[agentId]/profile`
-- `GET, POST` `/api/agents/connections`
 - `GET` `/api/agents/fanouts`
-- `POST` `/api/agents/heartbeat`
-- `POST` `/api/agents/invoke`
-- `GET, POST` `/api/agents/registry`
-- `GET, PATCH` `/api/agents/registry/[id]`
-- `GET, POST` `/api/agents/registry/[id]/capabilities`
-
-### `analytics`
-
-- `GET` `/api/analytics`
 
 ### `approvals`
 
@@ -113,20 +97,6 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `GET` `/api/auth/config`
 - `DELETE, POST` `/api/auth/local`
 
-### `behavior`
-
-- `GET, POST` `/api/behavior/insights`
-- `GET, POST` `/api/behavior/recorder`
-- `GET` `/api/behavior/samples`
-- `POST` `/api/behavior/samples/ingest`
-- `POST` `/api/behavior/simulate`
-- `GET, POST` `/api/behavior/suggestions`
-
-### `billing`
-
-- `POST` `/api/billing/checkout`
-- `GET` `/api/billing/portal`
-
 ### `calibration`
 
 - `GET, POST` `/api/calibration/controller`
@@ -134,50 +104,9 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ### `capabilities`
 
-- `GET, POST` `/api/capabilities`
-- `DELETE, GET, PATCH` `/api/capabilities/[capabilityId]`
-- `GET, POST` `/api/capabilities/[capabilityId]/access`
-- `DELETE` `/api/capabilities/[capabilityId]/access/[ruleId]`
+- `GET` `/api/capabilities`
 - `GET` `/api/capabilities/[capabilityId]/access/check`
-- `GET` `/api/capabilities/[capabilityId]/health`
-- `GET` `/api/capabilities/[capabilityId]/history`
 - `POST` `/api/capabilities/[capabilityId]/invoke`
-- `POST` `/api/capabilities/[capabilityId]/test`
-- `GET` `/api/capabilities/health`
-
-### `code-sessions`
-
-- `GET` `/api/code-sessions/alerts`
-- `POST` `/api/code-sessions/alerts/read-all`
-- `POST` `/api/code-sessions/ingest-jsonl`
-- `POST` `/api/code-sessions/ingest-live`
-- `GET` `/api/code-sessions/manifests/[manifestId]`
-- `GET` `/api/code-sessions/memos`
-- `POST` `/api/code-sessions/memos/regenerate`
-- `DELETE, GET` `/api/code-sessions/projects`
-- `DELETE, GET` `/api/code-sessions/projects/[projectId]`
-- `GET` `/api/code-sessions/projects/[projectId]/sessions`
-- `DELETE, GET` `/api/code-sessions/sessions/[sessionId]`
-- `GET` `/api/code-sessions/sessions/[sessionId]/autopsy`
-- `GET` `/api/code-sessions/sessions/[sessionId]/insights`
-- `POST` `/api/code-sessions/sessions/[sessionId]/optimal-files/manifest`
-- `POST` `/api/code-sessions/sessions/[sessionId]/optimal-files/merge-preview`
-- `POST` `/api/code-sessions/sessions/[sessionId]/optimal-files/preview`
-- `GET` `/api/code-sessions/subagent-roi`
-
-### `compliance`
-
-- `GET` `/api/compliance/evidence`
-- `GET, POST` `/api/compliance/exports`
-- `DELETE, GET` `/api/compliance/exports/[exportId]`
-- `GET` `/api/compliance/exports/[exportId]/download`
-- `GET` `/api/compliance/frameworks`
-- `GET` `/api/compliance/gaps`
-- `GET` `/api/compliance/map`
-- `GET` `/api/compliance/report`
-- `GET, POST` `/api/compliance/schedules`
-- `DELETE, PATCH` `/api/compliance/schedules/[scheduleId]`
-- `GET` `/api/compliance/trends`
 
 ### `coverage`
 
@@ -185,22 +114,12 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ### `cron`
 
-- `GET` `/api/cron/code-session-cache-crater`
-- `GET` `/api/cron/code-session-weekly-memo`
 - `GET` `/api/cron/integration-health`
 - `GET` `/api/cron/jti-sweep`
-- `GET` `/api/cron/learning-episodes-backfill`
-- `GET` `/api/cron/learning-recommendations`
 - `GET` `/api/cron/memory-maintenance`
 - `GET` `/api/cron/outcome-sweep`
 - `GET` `/api/cron/policy-suggestions`
-- `GET` `/api/cron/reset-meters`
-- `POST` `/api/cron/routing-maintenance`
 - `GET` `/api/cron/signals`
-
-### `digest`
-
-- `GET` `/api/digest/fleet`
 
 ### `discord`
 
@@ -215,14 +134,6 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `GET` `/api/doctor`
 - `POST` `/api/doctor/fix`
 
-### `drift`
-
-- `GET, POST` `/api/drift/alerts`
-- `DELETE, PATCH` `/api/drift/alerts/[alertId]`
-- `GET` `/api/drift/metrics`
-- `GET` `/api/drift/snapshots`
-- `GET` `/api/drift/stats`
-
 ### `echo`
 
 - `GET, POST` `/api/echo`
@@ -230,20 +141,6 @@ neither exists. When you cannot run the queries above, fall back **in this order
 ### `enforcement-liveness`
 
 - `GET, POST` `/api/enforcement-liveness`
-
-### `evaluations`
-
-- `GET, POST` `/api/evaluations`
-- `GET, POST` `/api/evaluations/runs`
-- `GET, PATCH` `/api/evaluations/runs/[runId]`
-- `GET, POST` `/api/evaluations/scorers`
-- `DELETE, PATCH` `/api/evaluations/scorers/[scorerId]`
-- `POST` `/api/evaluations/scorers/preview`
-- `GET` `/api/evaluations/stats`
-
-### `finops`
-
-- `GET` `/api/finops/spend`
 
 ### `guard`
 
@@ -253,13 +150,6 @@ neither exists. When you cannot run the queries above, fall back **in this order
 ### `halt`
 
 - `GET, POST` `/api/halt`
-
-### `handoffs`
-
-- `GET, POST` `/api/handoffs`
-- `GET` `/api/handoffs/[id]`
-- `POST` `/api/handoffs/[id]/consume`
-- `GET` `/api/handoffs/latest`
 
 ### `health`
 
@@ -292,38 +182,10 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 - `POST` `/api/internal/resolve-key`
 
-### `invite`
-
-- `GET, POST` `/api/invite/[token]`
-
 ### `keys`
 
 - `DELETE, GET, POST` `/api/keys`
 - `GET` `/api/keys/reveal`
-
-### `knowledge`
-
-- `GET, POST` `/api/knowledge/collections`
-- `DELETE, GET, PATCH` `/api/knowledge/collections/[collectionId]`
-- `GET, POST` `/api/knowledge/collections/[collectionId]/items`
-- `POST` `/api/knowledge/collections/[collectionId]/search`
-- `POST` `/api/knowledge/collections/[collectionId]/sync`
-
-### `learning`
-
-- `GET, POST` `/api/learning`
-- `GET, POST` `/api/learning/analytics/curves`
-- `GET` `/api/learning/analytics/maturity`
-- `GET` `/api/learning/analytics/summary`
-- `GET, POST` `/api/learning/analytics/velocity`
-- `GET` `/api/learning/code-signals`
-- `GET` `/api/learning/export`
-- `GET` `/api/learning/lessons`
-- `GET, POST` `/api/learning/recommendations`
-- `PATCH` `/api/learning/recommendations/[recommendationId]`
-- `POST` `/api/learning/recommendations/events`
-- `GET` `/api/learning/recommendations/metrics`
-- `GET, POST` `/api/learning/suggestions`
 
 ### `live-canary`
 
@@ -340,15 +202,6 @@ neither exists. When you cannot run the queries above, fall back **in this order
 ### `messages`
 
 - `GET, PATCH, POST` `/api/messages`
-- `GET` `/api/messages/attachments`
-- `GET, PATCH, POST` `/api/messages/threads`
-- `GET` `/api/messages/threads/[threadId]`
-
-### `model-strategies`
-
-- `GET, POST` `/api/model-strategies`
-- `DELETE, GET, PATCH` `/api/model-strategies/[strategyId]`
-- `POST` `/api/model-strategies/[strategyId]/complete`
 
 ### `oauth`
 
@@ -360,7 +213,6 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 ### `operations`
 
-- `GET` `/api/operations/feed`
 - `GET` `/api/operations/summary`
 
 ### `orgs`
@@ -395,59 +247,15 @@ neither exists. When you cannot run the queries above, fall back **in this order
 - `POST` `/api/policies/test`
 - `GET, POST` `/api/policies/tightening`
 
-### `posture`
-
-- `GET` `/api/posture`
-- `GET` `/api/posture/findings`
-- `POST` `/api/posture/findings/[key]/resolve`
-- `POST` `/api/posture/scan`
-
 ### `prompts`
 
 - `GET` `/api/prompts/agent-connect/raw`
-- `POST` `/api/prompts/render`
-- `GET` `/api/prompts/runs`
 - `GET` `/api/prompts/sdk-coverage/raw`
 - `GET` `/api/prompts/server-setup/raw`
-- `GET` `/api/prompts/stats`
-- `GET, POST` `/api/prompts/templates`
-- `DELETE, GET, PATCH` `/api/prompts/templates/[templateId]`
-- `GET, POST` `/api/prompts/templates/[templateId]/versions`
-- `GET, POST` `/api/prompts/templates/[templateId]/versions/[versionId]`
-
-### `reputation`
-
-- `GET` `/api/reputation/agents/[agentId]`
-- `GET` `/api/reputation/agents/[agentId]/events`
-- `GET` `/api/reputation/agents/[agentId]/receipt`
-- `POST` `/api/reputation/agents/[agentId]/recompute`
-- `GET` `/api/reputation/agents/[agentId]/summary`
-- `GET` `/api/reputation/leaderboard`
-- `POST` `/api/reputation/verify`
-
-### `scoring`
-
-- `POST` `/api/scoring/calibrate`
-- `GET, POST` `/api/scoring/profiles`
-- `DELETE, GET, PATCH` `/api/scoring/profiles/[profileId]`
-- `POST` `/api/scoring/profiles/[profileId]/dimensions`
-- `DELETE, PATCH` `/api/scoring/profiles/[profileId]/dimensions/[dimensionId]`
-- `GET, POST` `/api/scoring/risk-templates`
-- `DELETE, PATCH` `/api/scoring/risk-templates/[templateId]`
-- `GET, POST` `/api/scoring/score`
-
-### `secrets`
-
-- `GET, POST` `/api/secrets`
-- `DELETE, PATCH` `/api/secrets/[id]`
-- `POST` `/api/secrets/[id]/value`
-- `GET` `/api/secrets/env`
-- `GET` `/api/secrets/rotation-due`
 
 ### `security`
 
 - `GET, POST` `/api/security/prompt-injection`
-- `POST` `/api/security/scan`
 - `GET` `/api/security/status`
 
 ### `self-governance`
@@ -469,7 +277,6 @@ neither exists. When you cannot run the queries above, fall back **in this order
 ### `settings`
 
 - `DELETE, GET, POST` `/api/settings`
-- `GET` `/api/settings/llm-status`
 - `POST` `/api/settings/test`
 
 ### `setup`
@@ -484,89 +291,32 @@ neither exists. When you cannot run the queries above, fall back **in this order
 
 - `GET` `/api/signals`
 
-### `skills`
-
-- `POST` `/api/skills/scan`
-- `GET` `/api/skills/scans/[id]`
-
 ### `stream`
 
 - `GET` `/api/stream`
 
-### `swarm`
-
-- `GET` `/api/swarm/graph`
-- `GET` `/api/swarm/link`
-
-### `team`
-
-- `GET` `/api/team`
-- `DELETE, PATCH` `/api/team/[userId]`
-- `DELETE, GET, POST` `/api/team/invite`
-
 ### `telegram`
 
 - `POST` `/api/telegram/webhook`
-
-### `usage`
-
-- `GET` `/api/usage`
-- `GET` `/api/usage/costs`
 
 ### `webhooks`
 
 - `DELETE, GET, POST` `/api/webhooks`
 - `GET` `/api/webhooks/[webhookId]/deliveries`
 - `POST` `/api/webhooks/[webhookId]/test`
-- `POST` `/api/webhooks/stripe`
-
-### `widget`
-
-- `GET` `/api/widget/summary`
-
-### `work-orders`
-
-- `GET, POST` `/api/work-orders`
-- `DELETE, GET` `/api/work-orders/[workOrderId]`
-- `GET` `/api/work-orders/[workOrderId]/artifacts`
-- `POST` `/api/work-orders/[workOrderId]/complete`
-- `POST` `/api/work-orders/claim`
-- `GET, POST` `/api/work-orders/types`
-- `DELETE, GET, PUT` `/api/work-orders/types/[type]`
-
-### `workflows`
-
-- `POST` `/api/workflows/draft`
-- `GET, POST` `/api/workflows/templates`
-- `DELETE, GET, PATCH` `/api/workflows/templates/[templateId]`
-- `POST` `/api/workflows/templates/[templateId]/duplicate`
-- `POST` `/api/workflows/templates/[templateId]/execute`
-- `POST` `/api/workflows/templates/[templateId]/launch`
-- `GET` `/api/workflows/templates/[templateId]/runs`
-- `GET` `/api/workflows/templates/[templateId]/runs/[runActionId]`
-- `POST` `/api/workflows/templates/[templateId]/runs/[runActionId]/cancel`
-- `POST` `/api/workflows/templates/[templateId]/runs/[runActionId]/resume`
 
 ### `workspace`
 
 - `GET` `/api/workspace/export`
 - `POST` `/api/workspace/import`
 
-### `x402`
-
-- `GET` `/api/x402/budget`
-- `GET, POST` `/api/x402/providers`
-- `GET, PATCH` `/api/x402/providers/[id]`
-- `GET, POST` `/api/x402/providers/[id]/endpoints`
-- `GET, POST` `/api/x402/purchases`
-
 ## Required Environment Variables
 
 These must be set — DashClaw will fail to start without them.
 
-- **`DASHCLAW_API_KEY`** - referenced in 86 file(s)
-- **`DATABASE_URL`** - referenced in 109 file(s)
-- **`ENCRYPTION_KEY`** - referenced in 8 file(s)
+- **`DASHCLAW_API_KEY`** - referenced in 71 file(s)
+- **`DATABASE_URL`** - referenced in 74 file(s)
+- **`ENCRYPTION_KEY`** - referenced in 4 file(s)
 - **`NEXTAUTH_SECRET`** - referenced in 6 file(s)
 
 ## Optional Environment Variables
@@ -584,22 +334,7 @@ These have fallbacks or only activate specific features.
 - `API_SECRET` *(undocumented)*
 - `BASE_URL` *(undocumented)*
 - `CI` *(undocumented)*
-- `CLERK_SECRET_KEY` *(undocumented)*
-- `CLOUDFLARE_API_TOKEN` *(undocumented)*
-- `CONVERGENCE_BENCH_CONCURRENCY` *(undocumented)*
-- `CONVERGENCE_BENCH_ITERATIONS` *(undocumented)*
-- `CONVERGENCE_REPLAY_CONNECT_TIMEOUT_MS` *(undocumented)*
-- `CONVERGENCE_RETRY_429_MAX` *(undocumented)*
-- `CONVERGENCE_RETRY_429_WAIT_MS` *(undocumented)*
-- `CONVERGENCE_SSE_SEND_COUNT` *(undocumented)*
-- `CONVERGENCE_VERBOSE` *(undocumented)*
 - `CRON_SECRET` *(undocumented)*
-- `CUSTOM_GITHUB_TOKEN` *(undocumented)*
-- `CUSTOM_SENTRY_A_TOKEN` *(undocumented)*
-- `CUSTOM_SENTRY_B_TOKEN` *(undocumented)*
-- `CUSTOM_SENTRY_TOKEN` *(undocumented)*
-- `CUSTOM_STRIPE_TEST_KEY` *(undocumented)*
-- `CUSTOM_VERCEL_TOKEN` *(undocumented)*
 - `DASHCLAW_ACT_BINDING` *(undocumented)*
 - `DASHCLAW_ACT_BINDING_TYP` *(undocumented)*
 - `DASHCLAW_AGENT_ID` *(undocumented)*
@@ -609,8 +344,6 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_API_KEY_ORG` *(undocumented)*
 - `DASHCLAW_AUDIT_MAX_ENTRIES` *(undocumented)*
 - `DASHCLAW_BASE_URL` *(undocumented)*
-- `DASHCLAW_BEHAVIOR_SAMPLES_DIR` *(undocumented)*
-- `DASHCLAW_BEHAVIOR_SAMPLES_ENABLED` *(undocumented)*
 - `DASHCLAW_CLOSED_ENROLLMENT` *(undocumented)*
 - `DASHCLAW_DB_DRIVER` *(undocumented)*
 - `DASHCLAW_DB_POOL_MAX` *(undocumented)*
@@ -621,8 +354,6 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_GUARD_UNAVAILABLE_POLICY` *(undocumented)*
 - `DASHCLAW_HOOK_MODE` *(undocumented)*
 - `DASHCLAW_HOSTED` *(undocumented)*
-- `DASHCLAW_HTTP_RETRIES` *(undocumented)*
-- `DASHCLAW_HTTP_RETRY_BASE_MS` *(undocumented)*
 - `DASHCLAW_HTTP_TIMEOUT_MS` *(undocumented)*
 - `DASHCLAW_INTERNAL_BASE_URL` *(undocumented)*
 - `DASHCLAW_JTI_MAX_TTL_SECONDS` *(undocumented)*
@@ -631,8 +362,8 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_LOCAL_ADMIN_PASSWORD` *(undocumented)*
 - `DASHCLAW_LOCAL_HOME` *(undocumented)*
 - `DASHCLAW_LOCK_STALE_MS` *(undocumented)*
+- `DASHCLAW_LOGIN_OTT` *(undocumented)*
 - `DASHCLAW_LOG_STARTUP` *(undocumented)*
-- `DASHCLAW_MAX_ORG_ATTACHMENT_BYTES` *(undocumented)*
 - `DASHCLAW_MEMORY_MAX_ENTRIES` *(undocumented)*
 - `DASHCLAW_MODE` *(undocumented)*
 - `DASHCLAW_NEW_CONNECT_WEBHOOK` *(undocumented)*
@@ -641,10 +372,8 @@ These have fallbacks or only activate specific features.
 - `DASHCLAW_RATE_LIMIT_WINDOW_MS` *(undocumented)*
 - `DASHCLAW_SELF_GOVERNANCE_PUBLIC` *(undocumented)*
 - `DASHCLAW_SIGNING_KEY_JWK` *(undocumented)*
-- `DASHCLAW_SUPPRESS_LEGACY_WARNING` *(undocumented)*
 - `DASHCLAW_TIMEOUT_MS` *(undocumented)*
 - `DASHCLAW_URL` *(undocumented)*
-- `DASHCLAW_X402_CURRENCIES` *(undocumented)*
 - `DISABLE_PROMPT_INJECTION_SCAN` *(undocumented)*
 - `DISCORD_APPROVER_ORG_ID` *(undocumented)*
 - `DISCORD_APPROVER_USER_ID` *(undocumented)*
@@ -656,19 +385,13 @@ These have fallbacks or only activate specific features.
 - `GITHUB_CLIENT_ID` *(undocumented)*
 - `GITHUB_CLIENT_SECRET` *(undocumented)*
 - `GITHUB_ID` *(undocumented)*
-- `GITHUB_REPO_NAME` *(undocumented)*
-- `GITHUB_REPO_OWNER` *(undocumented)*
 - `GITHUB_SECRET` *(undocumented)*
 - `GITHUB_STEP_SUMMARY` *(undocumented)*
-- `GITHUB_TOKEN` *(undocumented)*
-- `GOOGLE_AI_API_KEY` *(undocumented)*
 - `GOOGLE_CLIENT_ID` *(undocumented)*
 - `GOOGLE_CLIENT_SECRET` *(undocumented)*
 - `GOOGLE_ID` *(undocumented)*
 - `GOOGLE_SECRET` *(undocumented)*
-- `GUARD_LLM_BASE_URL` *(undocumented)*
 - `GUARD_LLM_KEY` *(undocumented)*
-- `GUARD_LLM_MODEL` *(undocumented)*
 - `GUARD_WEBHOOK_SECRET` *(undocumented)*
 - `HOSTED_ADMIN_API_KEY` *(undocumented)*
 - `HOSTED_CLEANUP_SECRET` *(undocumented)*
@@ -682,16 +405,9 @@ These have fallbacks or only activate specific features.
 - `INTEGRATION_DATABASE_URL` *(undocumented)*
 - `LIVE_CANARY_HOSTED_ORIGIN` *(undocumented)*
 - `LIVE_CANARY_MARKETING_ORIGIN` *(undocumented)*
-- `MODEL` *(undocumented)*
 - `MOONSHOT_API_KEY` *(undocumented)*
-- `NAMECHEAP_API_KEY` *(undocumented)*
-- `NAMECHEAP_API_USER` *(undocumented)*
-- `NAMECHEAP_CLIENT_IP` *(undocumented)*
-- `NAMECHEAP_SANDBOX` *(undocumented)*
-- `NEON_API_KEY` *(undocumented)*
 - `NEXTAUTH_URL`
 - `NEXT_PUBLIC_` *(undocumented)*
-- `NEXT_PUBLIC_APP_URL` *(undocumented)*
 - `NEXT_PUBLIC_DASHCLAW_MODE` *(undocumented)*
 - `NEXT_PUBLIC_DASHCLAW_VERSION` *(undocumented)*
 - `NEXT_PUBLIC_ENABLE_VERCEL_ANALYTICS` *(undocumented)*
@@ -709,19 +425,11 @@ These have fallbacks or only activate specific features.
 - `OIDC_TOKEN_URL` *(undocumented)*
 - `OIDC_USERINFO_URL` *(undocumented)*
 - `OPENAI_API_KEY` *(undocumented)*
-- `ORG_ID` *(undocumented)*
 - `PORT` *(undocumented)*
-- `POSTHOG_PERSONAL_API_KEY` *(undocumented)*
 - `PW_BASE_URL` *(undocumented)*
 - `PW_SMOKE_PORT` *(undocumented)*
 - `PYTHON` *(undocumented)*
 - `PYTHONPATH` *(undocumented)*
-- `QSTASH_CURRENT_SIGNING_KEY` *(undocumented)*
-- `QSTASH_NEXT_SIGNING_KEY` *(undocumented)*
-- `QSTASH_TOKEN` *(undocumented)*
-- `R2_ACCESS_KEY_ID` *(undocumented)*
-- `R2_SECRET_ACCESS_KEY` *(undocumented)*
-- `RAILWAY_TOKEN` *(undocumented)*
 - `REALTIME_BACKEND` *(undocumented)*
 - `REALTIME_ENFORCE_REDIS` *(undocumented)*
 - `REALTIME_MAX_LISTENERS` *(undocumented)*
@@ -730,12 +438,9 @@ These have fallbacks or only activate specific features.
 - `REALTIME_REPLAY_MAX_EVENTS` *(undocumented)*
 - `REALTIME_REPLAY_WINDOW_SECONDS` *(undocumented)*
 - `REDIS_URL` *(undocumented)*
-- `RESEARCH_API_KEY` *(undocumented)*
-- `RESEARCH_API_URL` *(undocumented)*
 - `RESEND_API_KEY` *(undocumented)*
 - `S` *(undocumented)*
 - `SELF_GOVERNANCE_SOURCE_URL` *(undocumented)*
-- `SENTRY_AUTH_TOKEN` *(undocumented)*
 - `SERVICE_NAME` *(undocumented)*
 - `SQL_CAPTURE_FILE` *(undocumented)*
 - `STARTUP_SMOKE_BASE_URL` *(undocumented)*
@@ -744,14 +449,7 @@ These have fallbacks or only activate specific features.
 - `STARTUP_SMOKE_SKIP_CROSS_ORG` *(undocumented)*
 - `STARTUP_SMOKE_SKIP_POLICY` *(undocumented)*
 - `STARTUP_SMOKE_TIMEOUT_MS` *(undocumented)*
-- `STRIPE_LIVE_SECRET_KEY` *(undocumented)*
-- `STRIPE_PRICE_BUSINESS` *(undocumented)*
-- `STRIPE_PRICE_PRO` *(undocumented)*
-- `STRIPE_SECRET_KEY` *(undocumented)*
-- `STRIPE_TEST_SECRET_KEY` *(undocumented)*
-- `STRIPE_WEBHOOK_SECRET` *(undocumented)*
 - `STUB_FAIL_CREATES` *(undocumented)*
-- `SUPABASE_ACCESS_TOKEN` *(undocumented)*
 - `TARGET_ENV` *(undocumented)*
 - `TELEGRAM_ADMIN_CHAT_ID` *(undocumented)*
 - `TELEGRAM_APPROVER_ORG_ID` *(undocumented)*
@@ -760,19 +458,13 @@ These have fallbacks or only activate specific features.
 - `TEST_BASE_URL` *(undocumented)*
 - `TRUST_PROXY` *(undocumented)*
 - `TURNSTILE_SECRET_KEY` *(undocumented)*
-- `TWILIO_AUTH_TOKEN` *(undocumented)*
-- `UPSTASH_API_KEY` *(undocumented)*
-- `UPSTASH_EMAIL` *(undocumented)*
 - `UPSTASH_REDIS_REST_TOKEN` *(undocumented)*
 - `UPSTASH_REDIS_REST_URL` *(undocumented)*
 - `VERCEL` *(undocumented)*
 - `VERCEL_ENV` *(undocumented)*
 - `VERCEL_PROJECT_PRODUCTION_URL` *(undocumented)*
-- `VERCEL_TEAM_ID` *(undocumented)*
-- `VERCEL_TOKEN` *(undocumented)*
 - `VERCEL_URL` *(undocumented)*
 - `WEBHOOK_ALLOWED_DOMAINS` *(undocumented)*
-- `WORKER_AGENT_ID` *(undocumented)*
 - `X` *(undocumented)*
 
 ## Database Tables
@@ -898,14 +590,11 @@ These are the `type` strings emitted through `fireWebhooksForOrg` and `deliverNa
 
 - `approval_flood`
 - `autonomy_spike`
-- `branch_stale`
 - `cost_exceeded`
-- `coverage_drop`
 - `green_insufficient`
 - `integration_health_changed`
 - `integration_mismatch`
 - `lost_confirmation`
-- `mcp_degraded`
 - `message`
 - `observe_mode`
 - `stale_action`

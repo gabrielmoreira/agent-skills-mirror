@@ -4,7 +4,7 @@ Adds Polymarket prediction-market discovery, orderbook reading, position viewing
 
 ## Purpose / role
 
-Opt-in elizaOS plugin. Load it by adding `@elizaos/plugin-polymarket` to the agent's plugin list. It registers one action, one provider, one service, seven REST routes, and one adaptive UI view (a single spatial component that renders as DOM in GUI, scaled DOM in XR, and terminal lines in TUI). Public market reads are always available; signed CLOB order placement is disabled in this app integration and exposed only as readiness reporting.
+Opt-in elizaOS plugin. Load it by adding `@elizaos/plugin-polymarket` to the agent's plugin list. It registers one action, one provider, one service, seven REST routes, and one GUI view. Public market reads are always available; signed CLOB order placement is disabled in this app integration and exposed only as readiness reporting.
 
 ## Plugin surface
 
@@ -37,11 +37,11 @@ Opt-in elizaOS plugin. Load it by adding `@elizaos/plugin-polymarket` to the age
 
 ### Views
 
-One declaration in `plugin.ts` (`modalities: ["gui", "xr", "tui"]`, `componentExport: "PolymarketView"`, path `/polymarket`) drives all three surfaces from a single source — no per-modality duplicate component:
+One declaration in `plugin.ts` (`modalities: ["gui"]`, `componentExport: "PolymarketView"`, path `/polymarket`) ships the GUI surface:
 
-- **`PolymarketSpatialView`** (`src/components/PolymarketSpatialView.tsx`) — the one presentational component, authored with `@elizaos/ui/spatial` primitives. Renders DOM in GUI, scaled DOM in XR, and real terminal lines in TUI. Purely a snapshot + action-callback in, primitives out.
+- **`PolymarketSpatialView`** (`src/components/PolymarketSpatialView.tsx`) — the presentational component, authored with `@elizaos/ui/spatial` primitives. Purely a snapshot + action-callback in, primitives out.
 - **`PolymarketView`** (`src/PolymarketView.tsx`) — the thin data wrapper that owns live state (`usePolymarketState`) and renders `<SpatialSurface><PolymarketSpatialView/></SpatialSurface>`. This is the view-registry `componentExport`, bundled into `dist/views/bundle.js` via `polymarket-view-bundle.ts`.
-- **TUI** — `register-terminal-view.tsx` registers the same `PolymarketSpatialView` in the agent terminal registry. The bundle also re-exports the `interact` capability handler (`polymarket-view.interact.ts`) for agent-facing terminal capabilities.
+- **`interact`** — `polymarket-view.interact.ts` exposes programmatic view capabilities for state, market, orderbook, positions, and trading-readiness checks.
 
 ## Layout
 
@@ -56,21 +56,20 @@ src/
   polymarket-contracts.ts     All shared interfaces and API base URL constants
   orderbook.ts                derivePolymarketTopOfBook() — best-bid/ask derivation from raw CLOB levels
   client.ts                   PolymarketClient — type intersection of ElizaClient with typed fetch helpers for each route (methods patched onto ElizaClient.prototype)
-  register.ts                 appRegister entry: registers the PolymarketView app-shell page (native) + the terminal view
+  register.ts                 appRegister entry: registers the PolymarketView app-shell page (native)
   register-routes.ts          registerAppRoutePluginLoader() — lazy-loads polymarketPlugin for app-route mounting
-  register-terminal-view.tsx  registerPolymarketTerminalView() + setPolymarketTerminalSnapshot() — mounts PolymarketSpatialView in the terminal
-  PolymarketView.tsx          PolymarketView — the single GUI/XR data wrapper; owns live state, renders <SpatialSurface><PolymarketSpatialView/>
-  polymarket-view.helpers.ts  loadPolymarketTuiState() and postPolymarketCommand() — async helpers used by the interact handler
-  polymarket-view.interact.ts interact() — terminal capability handler; re-exported by polymarket-view-bundle
+  PolymarketView.tsx          PolymarketView — GUI data wrapper; owns live state, renders <SpatialSurface><PolymarketSpatialView/>
+  polymarket-view.helpers.ts  loadPolymarketViewState() and postPolymarketCommand() — async helpers used by the interact handler
+  polymarket-view.interact.ts interact() view capability handler; re-exported by polymarket-view-bundle
   polymarket-view-bundle.ts   Vite view-bundle entry: re-exports PolymarketView + interact
   usePolymarketState.ts       usePolymarketState() React hook for view state
   components/
-    PolymarketSpatialView.tsx  The single spatial/terminal view component (PolymarketSpatialView, PolymarketSnapshot)
+    PolymarketSpatialView.tsx  Spatial-primitives view component (PolymarketSpatialView, PolymarketSnapshot)
   __fixtures__/
     contract.ts               Test fixture contracts
     polymarket-real.recorded.json  Recorded API responses for tests
   actions.test.ts             Unit tests for actions
-  PolymarketView.test.tsx     Render + interact tests for the unified PolymarketView (gui/xr/tui)
+  PolymarketView.test.tsx     Render + interact tests for PolymarketView
   routes.contract.test.ts     Contract tests for routes
   routes.real.test.ts         Live API integration tests (gated on POLYMARKET_LIVE_TEST=1)
   routes.test.ts              Unit tests for routes
@@ -122,7 +121,7 @@ Public reads (markets, orderbook, positions) require no credentials. The `GET /a
 
 - **Orderbook token id vs condition id.** Use the CLOB `token_id` for orderbook queries, not the Gamma `conditionId`. A market has one condition id but one or more CLOB token ids (one per outcome).
 - **Signed trading is disabled.** `POST /api/polymarket/orders` returns 501. The `place_order` action reports readiness only; it does not place trades.
-- **One adaptive view, no rich-DOM duplicate.** The single `PolymarketSpatialView` (spatial primitives) is the only view component — there is no separate desktop/operator/`*AppView` DOM copy. The wrapper `PolymarketView` is the `componentExport`; `register-terminal-view.tsx` registers the same spatial component for TUI. Do not reintroduce a parallel DOM-only view.
+- **One GUI view, no rich-DOM duplicate.** The single `PolymarketSpatialView` (spatial primitives) is the presentational view component. The wrapper `PolymarketView` is the `componentExport`. Do not reintroduce a parallel DOM-only view.
 - **Views use a separate Vite build.** `build:js` (tsup) produces the runtime entry; `build:views` (Vite) produces `dist/views/bundle.js` consumed by the view registry. Both must run for a complete build. The Vite entry is `src/polymarket-view-bundle.ts` (not `PolymarketView.tsx` directly); `interact` is re-exported from `polymarket-view.interact.ts` through that bundle.
 - **Route handler receives Node `http.IncomingMessage` / `ServerResponse`.** The plugin.ts adapter casts `RouteRequest` / `RouteResponse` to Node types; routes.ts depends on real Node HTTP objects.
 - **Context gating.** The action fires only when structured routing selects `finance`, `crypto`, `prediction-market`, or `payments` (canonical `__contextRouting` plus legacy `selectedContexts`). It does not keyword-scan raw user text. Outside those contexts the action is skipped.

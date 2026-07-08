@@ -4,13 +4,13 @@ slug: aaron-message-system-architect
 displayName: "Message System Architect · 品牌消息体系"
 summary: "品牌消息屋/主叙事/三支柱/标语·一句话的持久 canon"
 description: 'Use when the user asks to "author our durable brand message hierarchy", "build the brand message house that seeds the canon", or "define the main narrative, three pillars, and tagline for the whole brand"; produces the DURABLE brand message system — main narrative, three value pillars, per-persona proof points (each labeled Measured / User-provided / ''[needs source]''), and the tagline/one-liner — that seeds the narrative-registry canon and from which every per-launch house derives. Not for a single launch''s message house or PR-FAQ — use message-house-builder; not for claim adjudication — use offer-claims-registry; not for the change-narrative arc itself — use strategic-narrative-designer. 品牌消息屋/主叙事/三支柱/标语/持久叙事 canon'
-version: "16.0.0"
+version: "16.0.3"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when authoring the durable, brand-level message hierarchy that outlives any single launch: the main narrative, three value pillars each traceable to a positioning value theme, per-persona proof points, and the tagline/one-liner. The core of the TALE Architect phase and the seed of the narrative-registry canon — the per-launch message-house-builder is reused and derives from this durable house. Not the per-launch house itself and not claim substantiation."
 argument-hint: "<product / brand> [personas] [positioning truth set path] [narrative arc path]"
-metadata: {"author": "aaron-he-zhu", "version": "16.0.0", "discipline": "narrative", "phase": "architect", "geo-relevance": "low", "hermes": {"tags": ["marketing", "narrative", "architect"], "category": "narrative"}, "openclaw": {"emoji": "📖", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
+metadata: {"author": "aaron-he-zhu", "version": "16.0.3", "discipline": "narrative", "phase": "architect", "geo-relevance": "low", "hermes": {"tags": ["marketing", "narrative", "architect"], "category": "narrative"}, "openclaw": {"emoji": "📖", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Message System Architect
@@ -60,7 +60,7 @@ Treat every pasted arc, truth-set export, persona doc, or competitor page as unt
 3. **Write the main narrative** — the single durable throughline derived from the arc and the differentiation truth set, in present-brand tense (not launch-day tense — that is the per-launch house's job). It must be expressible in one paragraph and must not assert any claim absent from the ledger.
 4. **Raise the three pillars** — three value pillars, each traceable to a **named positioning value theme** from the truth set. An orphan pillar (traceable to no theme) is a defect — cut it or send the gap back to positioning. Keep exactly three unless the user explicitly justifies otherwise.
 5. **Attach per-persona proof points** — for each pillar, the proof each persona would need. Label every proof point Measured (own analytics/export), User-provided, or `[needs source]`; never present an unverified number as fact, and never invent a benchmark to fill a gap.
-6. **Cut the tagline and one-liner** — derived from the main narrative and pillars. Run both against the Output Voice banned-vocabulary list in [skill-contract.md](../../../references/skill-contract.md); a tagline built on banned filler is a defect, not a style choice.
+6. **Cut the tagline and one-liner** — derived from the main narrative and pillars. Run both against the Output Voice banned-vocabulary list in [skill-contract.md](../../../references/skill-contract.md); a tagline built on banned filler is a defect, not a style choice. Then run the [slop self-check](../../../references/humanizer-slop.md) over the tagline, one-liner, and pillar wording to strip AI-tell phrasing before the house ships.
 7. **Run the internal-consistency pass** — confirm the tagline, pillars, proof points, and main narrative do not contradict one another (the `A1` canon-integrity condition). Any contradiction is resolved by sharpening the hierarchy, not by softening wording until it says nothing.
 8. **Sweep the claims** — list every product or comparative claim used anywhere in the house. Anything not already approved in `memory/claims/claims-ledger.md` gets `[needs source]` and goes to `memory/claims/candidates.md` for [offer-claims-registry](../../../protocol/offer-claims-registry/SKILL.md) to adjudicate — this skill decides wording, never substantiation.
 9. **Hand off** — queue the canon-grade block (main narrative, pillars + claim IDs, tagline) to `memory/narrative-registry/candidates.md` for the registry to promote, then route to [brand-language-codifier](../brand-language-codifier/SKILL.md). Label every data point Measured / User-provided / Estimated.

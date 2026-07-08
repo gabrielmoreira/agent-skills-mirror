@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `gokapso/agent-skills` — 26 default patterns, 0 followed patterns, 161 file(s) materialized.
+Mirror of `gokapso/agent-skills` — 26 default patterns, 0 followed patterns, 162 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `gokapso/agent-skills` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 161 |
+| Files         | 162 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -212,14 +212,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 151 | ✓ | [`skills/observe-whatsapp/scripts/lib/status/kapso-api.js`](skills/observe-whatsapp/scripts/lib/status/kapso-api.js) |
 | 152 | ✓ | [`skills/observe-whatsapp/scripts/lib/triage/args.js`](skills/observe-whatsapp/scripts/lib/triage/args.js) |
 | 153 | ✓ | [`skills/observe-whatsapp/scripts/lib/triage/kapso-api.js`](skills/observe-whatsapp/scripts/lib/triage/kapso-api.js) |
-| 154 | ✓ | [`skills/observe-whatsapp/scripts/lookup-conversation.js`](skills/observe-whatsapp/scripts/lookup-conversation.js) |
-| 155 | ✓ | [`skills/observe-whatsapp/scripts/message-details.js`](skills/observe-whatsapp/scripts/message-details.js) |
-| 156 | ✓ | [`skills/observe-whatsapp/scripts/messages.js`](skills/observe-whatsapp/scripts/messages.js) |
-| 157 | ✓ | [`skills/observe-whatsapp/scripts/openapi-explore.mjs`](skills/observe-whatsapp/scripts/openapi-explore.mjs) |
-| 158 | ✓ | [`skills/observe-whatsapp/scripts/overview.js`](skills/observe-whatsapp/scripts/overview.js) |
-| 159 | ✓ | [`skills/observe-whatsapp/scripts/webhook-deliveries.js`](skills/observe-whatsapp/scripts/webhook-deliveries.js) |
-| 160 | ✓ | [`skills/observe-whatsapp/scripts/whatsapp-health.js`](skills/observe-whatsapp/scripts/whatsapp-health.js) |
-| 161 | ✓ | [`skills/observe-whatsapp/SKILL.md`](skills/observe-whatsapp/SKILL.md) |
+| 154 | ✓ | [`skills/observe-whatsapp/scripts/log-search.js`](skills/observe-whatsapp/scripts/log-search.js) |
+| 155 | ✓ | [`skills/observe-whatsapp/scripts/lookup-conversation.js`](skills/observe-whatsapp/scripts/lookup-conversation.js) |
+| 156 | ✓ | [`skills/observe-whatsapp/scripts/message-details.js`](skills/observe-whatsapp/scripts/message-details.js) |
+| 157 | ✓ | [`skills/observe-whatsapp/scripts/messages.js`](skills/observe-whatsapp/scripts/messages.js) |
+| 158 | ✓ | [`skills/observe-whatsapp/scripts/openapi-explore.mjs`](skills/observe-whatsapp/scripts/openapi-explore.mjs) |
+| 159 | ✓ | [`skills/observe-whatsapp/scripts/overview.js`](skills/observe-whatsapp/scripts/overview.js) |
+| 160 | ✓ | [`skills/observe-whatsapp/scripts/webhook-deliveries.js`](skills/observe-whatsapp/scripts/webhook-deliveries.js) |
+| 161 | ✓ | [`skills/observe-whatsapp/scripts/whatsapp-health.js`](skills/observe-whatsapp/scripts/whatsapp-health.js) |
+| 162 | ✓ | [`skills/observe-whatsapp/SKILL.md`](skills/observe-whatsapp/SKILL.md) |
 
 ---
 

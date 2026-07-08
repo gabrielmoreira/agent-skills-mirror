@@ -8,15 +8,15 @@ Non-custodial wallet inventory UI for elizaOS agents. Adds a full wallet surface
 - Shows portfolio value, per-chain allocation, P&L chart, recent swaps, and top movers from the agent's trading profile.
 - Renders a market overview (spot prices, top movers, prediction market data) when the wallet has no balance history yet.
 - Provides a compact wallet-status sidebar widget in the chat rail with live balance totals and one-click address copy.
-- Serves the inventory in three view types: standard (web/desktop), XR, and TUI (terminal).
+- Serves the inventory as a dashboard GUI view while keeping the standard view contract available for future adapters.
 
 ## Capabilities added
 
 | Surface | Description |
 |---|---|
 | Shell page `/inventory` | Full wallet inventory page registered in the agent shell nav |
-| Standalone view `/wallet` | Bundled `InventoryView` (standard and XR) loadable by the view manager |
-| TUI view `/wallet/tui` | Terminal-friendly `InventoryTuiView` |
+| Standalone view `/wallet` | Bundled `InventoryView` loadable by the view manager |
+| GUI view `/wallet` | Bundled `InventoryView` |
 | Chat sidebar widget | `wallet.status` — compact balance summary with chain badges and address copy |
 
 No new elizaOS actions, providers, or server-side services are added. All data is fetched from `@elizaos/plugin-wallet` through the shared `client` API.

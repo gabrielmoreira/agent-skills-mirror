@@ -2,7 +2,7 @@
 
 Current versions for the plugin and all 120 skills. Agents can fetch this file from `https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/VERSIONS.md` once per session.
 
-**Current release**: `16.0.2` (2026-07-07). Connector-robustness tail — clears the deferred LOW/NIT connector/toolchain robustness findings from the v16 review (51 edge-case fixes across 30 files), each independently adversarially accepted (the acceptance pass caught + fixed 3 regressions the fix pass introduced). **No skills changed** — all 120 keep their prior versions; connector/guard code only.
+**Current release**: `16.1.0` (2026-07-08). **Memory-system consolidation upgrade** — adds the two levers the HOT/WARM/COLD memory lacked (Merge + Decay-enforcement) with no new dependency. A new **supersession rule** (`superseded_by:` — recency-wins with explicit invalidation) resolves contradicting facts instead of letting stale and current values coexist; the **SessionStart hook** now surfaces over-limit and >30-day-stale hot-cache signals **at load** (not only on Write/Edit); and `memory-management` gains a **`consolidate` (reflection) mode** (dedup + conflict-resolution + distill + prune). All markdown-only, keyless, observable-by-date — no reference-frequency counting, no external store. Also fixes stale "unreferenced"/per-category-archive wording. **No skills added/removed** (still 120); `memory-management` bumped to `16.1.0` (+7 hook tests, 20 passing).
 
 ## Skills
 
@@ -45,14 +45,14 @@ Current versions for the plugin and all 120 skills. Agents can fetch this file f
 | search-term-miner | paid | 16.0.0 | 2026-07-05 |
 | product-feed-optimizer | paid | 16.0.0 | 2026-07-05 |
 | ad-creative-builder | paid | 16.0.0 | 2026-07-05 |
-| ad-test-designer | paid | 16.0.0 | 2026-07-05 |
+| ad-test-designer | paid | 16.0.3 | 2026-07-07 |
 | bid-strategy-planner | paid | 16.0.0 | 2026-07-05 |
 | landing-experience-checker | paid | 16.0.0 | 2026-07-05 |
 | ad-account-auditor | paid | 16.0.0 | 2026-07-05 |
 | conversion-signal-qa | paid | 16.0.0 | 2026-07-05 |
 | placement-exclusion-manager | paid | 16.0.0 | 2026-07-05 |
 | conversion-value-mapper | paid | 16.0.0 | 2026-07-05 |
-| paid-measurement-loop | paid | 16.0.0 | 2026-07-05 |
+| paid-measurement-loop | paid | 16.0.3 | 2026-07-07 |
 | attribution-reconciler | paid | 16.0.0 | 2026-07-05 |
 | budget-pacing-monitor | paid | 16.0.0 | 2026-07-05 |
 | fatigue-frequency-manager | paid | 16.0.0 | 2026-07-05 |
@@ -69,7 +69,7 @@ Current versions for the plugin and all 120 skills. Agents can fetch this file f
 | preference-frequency-manager | email | 16.0.0 | 2026-07-05 |
 | reactivation-specialist | email | 16.0.0 | 2026-07-05 |
 | email-quality-auditor | email | 16.0.0 | 2026-07-05 |
-| send-experiment-designer | email | 16.0.0 | 2026-07-05 |
+| send-experiment-designer | email | 16.0.3 | 2026-07-07 |
 | inbox-placement-monitor | email | 16.0.0 | 2026-07-05 |
 | cold-outbound-sequencer | email | 16.0.0 | 2026-07-05 |
 | positioning-mapper | launch | 16.0.0 | 2026-07-05 |
@@ -94,7 +94,7 @@ Current versions for the plugin and all 120 skills. Agents can fetch this file f
 | participation-warmup-planner | explore | 16.0.0 | 2026-07-05 |
 | social-calendar-builder | craft | 16.0.0 | 2026-07-05 |
 | social-creative-builder | craft | 16.0.0 | 2026-07-05 |
-| short-video-scripter | craft | 16.0.0 | 2026-07-05 |
+| short-video-scripter | craft | 16.0.3 | 2026-07-07 |
 | advocacy-program-designer | craft | 16.0.0 | 2026-07-05 |
 | social-quality-auditor | host | 16.0.0 | 2026-07-05 |
 | engagement-inbox-manager | host | 16.0.0 | 2026-07-05 |
@@ -103,33 +103,51 @@ Current versions for the plugin and all 120 skills. Agents can fetch this file f
 | social-pulse-monitor | observe | 16.0.0 | 2026-07-05 |
 | share-of-voice-tracker | observe | 16.0.0 | 2026-07-05 |
 | dark-social-attributor | observe | 16.0.0 | 2026-07-05 |
-| social-measurement-loop | observe | 16.0.0 | 2026-07-05 |
+| social-measurement-loop | observe | 16.0.3 | 2026-07-07 |
 | entity-optimizer | protocol | 16.0.1 | 2026-07-07 |
 | creator-registry | protocol | 16.0.0 | 2026-07-05 |
 | offer-claims-registry | protocol | 16.0.0 | 2026-07-05 |
 | consent-registry | protocol | 16.0.0 | 2026-07-05 |
 | launch-registry | protocol | 16.0.0 | 2026-07-05 |
 | channel-registry | protocol | 16.0.0 | 2026-07-05 |
-| memory-management | protocol | 16.0.1 | 2026-07-07 |
+| memory-management | protocol | 16.1.0 | 2026-07-08 |
 | narrative-baseline-mapper | trace | 16.0.0 | 2026-07-05 |
 | category-narrative-mapper | trace | 16.0.0 | 2026-07-05 |
 | audience-belief-mapper | trace | 16.0.0 | 2026-07-05 |
 | positioning-truth-tracer | trace | 16.0.0 | 2026-07-05 |
 | strategic-narrative-designer | architect | 16.0.0 | 2026-07-05 |
-| message-system-architect | architect | 16.0.0 | 2026-07-05 |
+| message-system-architect | architect | 16.0.3 | 2026-07-07 |
 | brand-language-codifier | architect | 16.0.0 | 2026-07-05 |
 | story-bank-builder | architect | 16.0.0 | 2026-07-05 |
 | narrative-cascade-planner | land | 16.0.0 | 2026-07-05 |
-| pitch-narrative-builder | land | 16.0.0 | 2026-07-05 |
+| pitch-narrative-builder | land | 16.0.3 | 2026-07-07 |
 | narrative-enablement-kit | land | 16.0.0 | 2026-07-05 |
 | proof-point-packager | land | 16.0.0 | 2026-07-05 |
 | narrative-quality-auditor | evaluate | 16.0.0 | 2026-07-05 |
-| message-test-designer | evaluate | 16.0.0 | 2026-07-05 |
+| message-test-designer | evaluate | 16.0.3 | 2026-07-07 |
 | narrative-resonance-monitor | evaluate | 16.0.0 | 2026-07-05 |
 | narrative-drift-monitor | evaluate | 16.0.0 | 2026-07-05 |
 | narrative-registry | protocol | 16.0.0 | 2026-07-05 |
 
 ## Changelog
+
+### v16.1.0 — Memory consolidation upgrade: Merge + Decay levers (2026-07-08)
+
+Research-driven upgrade of the HOT/WARM/COLD memory (benchmarked against Anthropic's memory tool, Letta/MemGPT, and the agent-memory "consolidation" literature). The file-based, agent-driven, keyless architecture was already sound; this closes the two levers it lacked — **Merge** (conflict/dedup) and **Decay-enforcement** — with no new dependency.
+
+- **Supersession rule (Merge).** New observable, date-based conflict-resolution convention: when a new fact contradicts an existing one (same entity + field), mark the old line `superseded_by: YYYY-MM-DD` (recency-wins with explicit invalidation) — never silent coexistence, never silent hard-delete. Genuine ambiguity routes to `open-loops.md`; registry facts supersede only via their candidate flow. Added to `references/state-model.md`, `promotion-demotion-rules.md`, and the skill's decision-gates/contract.
+- **Load-time decay signals (Decay).** The SessionStart hook now warns **at load** when the committed hot-cache is over the 80-line/25KB limit (previously only on Write/Edit) and surfaces the oldest `YYYY-MM-DD` dated entry as a >30-day staleness nudge — both computed from disk via portable Julian-day awk, no reference-frequency counting. +7 regression tests (`tests/test_hook_artifact_gate.sh`, now 20 passing).
+- **`consolidate` reflection mode.** `memory-management` gains a fourth mode (`review|archive|cleanup|consolidate`) + `references/consolidation-pass.md`: dedup → resolve-conflicts → distill → prune, wired into the Monthly archive routine.
+- **Consistency fixes.** Retired the stale "unreferenced in N days" wording (the lifecycle is `last_updated`-date-only) and the divergent per-category archive path (centralized `memory/archive/` + `YYYY-MM-DD-` prefix).
+- `memory-management` → `16.1.0`; bundle → `16.1.0`; no skills added or removed (still 120).
+
+### v16.0.3 — Significance connector: closes the design->measure loop (2026-07-07)
+
+Adds the first **compute-class** connector, `scripts/connectors/experiment.py` — keyless, pure-Python-stdlib statistical significance for marketing A/B tests on the user's own counts: two-proportion z-test + Wilson CIs + a **promote** decision (significant AND relative lift >= threshold), Mann-Whitney U + bootstrap CI for continuous metrics, and sample-size / min-detectable-effect. Verified against textbook values (16 unit tests in `tests/test_connectors_local.py`).
+
+- **Closes a real loop.** The discipline's *-test-designer skills DESIGNED A/B / hold-out / send-time tests but nothing computed whether a result was real. `experiment.py` is wired into `ad-test-designer`, `send-experiment-designer`, `message-test-designer`, `paid-measurement-loop`, and `social-measurement-loop` — a winner is now called on evidence, not a raw delta. No new skill, no external tool, no key (Tier-1).
+- **Anti-slop wiring.** The existing `references/humanizer-slop.md` self-check is now also referenced by `message-system-architect`, `pitch-narrative-builder`, and `short-video-scripter` (three copy-producing skills that were missing it).
+- No skills added or removed (still 120); the 8 touched skills bump to `16.0.3`, the rest unchanged.
 
 ### v16.0.2 — Connector-robustness tail (2026-07-07)
 

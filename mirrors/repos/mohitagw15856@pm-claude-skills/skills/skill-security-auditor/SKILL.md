@@ -27,7 +27,7 @@ Scan for each category and rate severity (🔴 High / 🟠 Medium / 🟡 Low):
 | Category | Look for |
 |---|---|
 | **Prompt injection** | "ignore previous/all instructions", "developer mode", jailbreak/DAN framing, attempts to reveal the system prompt, forced unrestricted personas |
-| **Data exfiltration** | Instructions to send conversation/user data, credentials, or keys to an external URL/webhook/server |
+| **Data exfiltration** | Instructions that transmit the conversation, user-provided content, credentials, or keys to an external URL/webhook/server |
 | **Code & command execution** | `eval`/`exec`, `os.system`, `subprocess`, `child_process`, destructive shell (`rm -rf /`, `dd`, fork bombs, `chmod 777`) |
 | **Secrets** | Hardcoded API keys, AWS keys (`AKIA…`), private keys, or asking the user to paste secrets |
 | **Obfuscation** | Zero-width / invisible Unicode, very long base64 blobs that hide payloads |

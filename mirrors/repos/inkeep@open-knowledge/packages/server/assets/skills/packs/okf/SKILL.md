@@ -33,7 +33,7 @@ OKF requires exactly one thing of every **non-reserved** document: a **non-empty
 - **`references/`** — external sources and citations you rely on (`type: reference`).
 - **`notes/`** — working notes and observations (`type: note`).
 
-Link liberally with **standard markdown links** (`[text](./path.md)`) — the value is the graph that emerges from the links between typed docs, and standard links keep that graph portable to any OKF consumer. (OpenKnowledge also accepts `[[wiki-link]]` shorthand as a native superset, and the OKF export normalizes it to standard links — but seeded content uses standard links so the bundle is conformant as-is.)
+Link liberally with **standard markdown links** (`[text](./path.md)`) — the value is the graph that emerges from the links between typed docs, and standard links keep that graph portable to any OKF consumer. (OpenKnowledge also accepts `[[wiki-link]]` shorthand as a native superset and preserves it byte-for-byte — but seeded content uses standard links so the bundle is conformant as-is.)
 
 ## Reserved files (keep them frontmatter-free)
 

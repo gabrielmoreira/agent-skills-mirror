@@ -43,7 +43,7 @@ For every action you consider, assess risk and follow this protocol:
 | Risk Level | Score | Examples | Protocol |
 |---|---|---|---|
 | Safe | 0-29 | Reading files, web search, analysis | Proceed. Record outcome after. |
-| Moderate | 30-69 | Writing files, sending messages, data queries | Guard first. Proceed on allow/warn. |
+| Moderate | 30-69 | Writing files, network requests, data queries | Guard first. Proceed on allow/warn. |
 | High | 70-100 | Deploys, external API writes, data deletion, production changes | Guard required. Expect approval or block. |
 
 ### Guard Decision Handling
@@ -145,50 +145,6 @@ Include a `summary` in `dashclaw_session_end` describing what was accomplished.
 
 For concrete implementation patterns, see [references/governance-patterns.md](references/governance-patterns.md).
 
-## Session Continuity
-
-### After concluding a session
-Call `dashclaw_handoff_create` with a bundle containing your 1-2 sentence summary,
-any open loops you opened (action-scoped, via `dashclaw_loop_add`), and decisions
-you made (or references via `dashclaw_learning_log`). The next session of yours
-will pick this up automatically via `dashclaw_handoff_latest` in pre_llm_call
-context injection (when running under Hermes Agent — Claude Code and Codex pick
-it up on first turn via the governance protocol).
-
-### On session start (Claude Code / Codex only)
-On your first turn, call `dashclaw_handoff_latest` with your agent_id. If a
-bundle is returned, summarize it for the operator, then call
-`dashclaw_handoff_consume` to mark it claimed so it isn't read twice.
-
-## Skill Safety
-
-### Before loading an unknown skill
-Call `dashclaw_skill_scan` with the skill's file contents (map of filename →
-content). If `passed=false`, do NOT load the skill — show the findings to the
-operator with their severities and let them decide. Scans of identical content
-are cached.
-
-## Credential Hygiene
-
-### Before acting on credentials
-Call `dashclaw_secret_due` to surface any tracked credentials overdue for
-rotation. If an action would use an overdue credential, record the action with
-status='pending_approval' and flag it to the operator. Registering new
-credentials for tracking is an operator task — agents don't add secrets
-themselves (that would be an authorization-creep risk).
-
-## Commitment Tracking
-
-### When you say "I will X later"
-Open loops are **action-scoped**, not standalone. After recording an action via
-`dashclaw_record`, you can attach an open loop to it via
-`dashclaw_loop_add({ action_id, loop_type, description })` — pass the parent
-`action_id`, a `loop_type` (e.g. `followup`, `verification`, `pending_input`),
-and a `description` of the commitment. On session start, call
-`dashclaw_loop_list` to see what you owe. Call `dashclaw_loop_close({ id })`
-when you complete one — close maps to "resolve" semantically (the route
-accepts `status: 'resolved'`).
-
 ## Assumption Tracking
 
 ### Before acting on an unverified premise
@@ -215,16 +171,6 @@ ASSUMPTIONS I'M MAKING:
 
 Record the beliefs that would change the decision if they turned out false —
 not certainties or trivia.
-
-## Learning From Prior Sessions
-
-### Before making a non-obvious decision
-Call `dashclaw_learning_query` with a search string. If a prior session made a
-similar decision, surface its outcome before making yours.
-
-### After making a non-obvious decision
-Call `dashclaw_learning_log` with the decision + context (+ outcome if known).
-Future sessions querying for this pattern will see your reasoning.
 
 ## In-Session Retrospection
 

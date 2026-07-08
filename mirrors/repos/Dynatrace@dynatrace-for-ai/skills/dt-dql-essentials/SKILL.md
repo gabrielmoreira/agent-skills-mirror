@@ -1,15 +1,6 @@
 ---
 name: dt-dql-essentials
-description: >-
-  Core DQL syntax rules, common pitfalls, and query patterns. Load this skill when you need
-  to write, build, or fix a DQL query — it prevents syntax errors and guides correct usage.
-  Covers fetch commands, data models, field namespaces, time alignment, entity patterns,
-  metric discovery, and smartscape topology navigation.
-  Trigger: "write a DQL query", "build me a query", "DQL syntax", "how do I query
-  logs/spans/metrics in Dynatrace", "create a timeseries", "fix my DQL",
-  "fetch logs", "smartscapeNodes", "query optimization".
-  Do NOT use for explaining an existing query or answering Dynatrace product questions —
-  those do not require query-construction guidance.
+description: "Core DQL syntax, pitfalls, query patterns, and query optimization. Load to write, build, fix, or OPTIMIZE a DQL query — prevents syntax errors and makes queries faster, more efficient, and cheaper (less data scanned = lower query consumption/cost per run). Covers fetch commands, data models, field namespaces, time alignment, entity/smartscape patterns, metric discovery, and performance/cost optimization (filter early, bucket filters, short time ranges, field selection, sampling, cardinality). Trigger: \"write/build/fix a DQL query\", \"DQL syntax\", \"query logs/spans/metrics\", \"create a timeseries\", \"optimize my DQL\", \"make my query faster/cheaper\", \"reduce DQL cost/consumption/scanned data\", \"keep DQL cost under control\". Do NOT use to explain an existing query or answer product questions. For MONITORING a tenant's ACTUAL query consumption/billing (how much queries cost, who scanned most, cost trends) use dt-platform-costs — this tunes the query text, not billing data."
 license: Apache-2.0
 ---
 
@@ -26,7 +17,7 @@ Before working on specific tasks, load the relevant reference:
 | Task                                                                          | Required Reading                                                                             |
 | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | Field names, namespaces, data models, stability levels, query patterns        | [references/semantic-dictionary.md](references/semantic-dictionary.md)                       |
-| Query optimization (filter early, time ranges, field selection, performance)  | [references/optimization.md](references/optimization.md)                                     |
+| Query optimization — make a query faster / more efficient / cheaper, reduce consumption & scanned data (filter early, bucket filters, time ranges, field selection, sampling, cardinality) | [references/optimization.md](references/optimization.md)                                     |
 | Smartscape topology navigation for discovering relationships between entities | [references/smartscape-topology-navigation.md](references/smartscape-topology-navigation.md) |
 | `summarize` and `makeTimeseries` patterns (bucketing, calendar months)        | [references/summarization.md](references/summarization.md)                                   |
 | Array and timeseries manipulation (`arrayFilter`, `collectArray`, iterative)  | [references/iterative-expressions.md](references/iterative-expressions.md)                   |
@@ -453,5 +444,5 @@ ______________________________________________________________________
 - **[references/summarization.md](references/summarization.md)** — Various applications of summarize and makeTimeseries commands
 - **[references/iterative-expressions.md](references/iterative-expressions.md)** — Array and timeseries manipulation (creation, modifications, use in filters) using DQL
 - **[references/smartscape-topology-navigation.md](references/smartscape-topology-navigation.md)** — Smartscape topology navigation syntax and patterns
-- **[references/optimization.md](references/optimization.md)** — DQL query optimization: filter placement, time ranges, field selection, and performance best practices
+- **[references/optimization.md](references/optimization.md)** — DQL query optimization: making queries faster, more efficient, and cheaper to run (lower consumption / scanned data per execution) — filter placement, bucket filters, time ranges, field selection, sampling, cardinality, and performance best practices
 - **[references/operators.md](references/operators.md)** — `in` operator (subquery syntax) and full `@` time alignment unit reference

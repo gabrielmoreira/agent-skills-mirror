@@ -27,7 +27,15 @@ findings.
 
 > **The entire `vulnerability.parent.*` namespace is deprecated** — derive every
 > vulnerability-level value from per-entity fields and per-entity status arrays in
-> Step 3 (`takeMin`/`takeMax`/`collectDistinct`; see Best Practices #12).
+> Step 3 (`takeMax`/`collectDistinct`; see Best Practices #12).
+
+> **`vulnerability.first_seen` is null on the RVA pipeline — do not use it.** The field is
+> commented out of the `entity.state` SD model, so it is null on every
+> `VULNERABILITY_STATE_REPORT_EVENT` / `VULNERABILITY_STATUS_CHANGE_EVENT`. To express
+> **how long a vulnerability has been open**, use `vulnerability.resolution.change_date`
+> (populated on every row). A resolution-time proxy (MTTR) **is** computable from
+> `resolution.change_date` without `first_seen` — see
+> [§ Resolution time (MTTR proxy)](#resolution-time-mttr-proxy--openresolved-per-affected-object).
 
 > **Vulnerability lifecycle (auto-resolution).** RVA does not require user action
 > to resolve a vulnerability — it auto-resolves when the underlying signal
@@ -35,9 +43,8 @@ findings.
 > process group reports the vulnerable component for >2 hours (library upgraded,
 > component unused, no traffic post-restart, process stopped). **Code-level
 > (`CODE`, CLV)**: resolved when a process restart followed by OneAgent
-> re-analysis finds no exploitable data flow. Re-opens (RESOLVED → OPEN) keep
-> the original `vulnerability.first_seen`; only `vulnerability.resolution.change_date`
-> updates. To find genuine re-opens, compare the two timestamps.
+> re-analysis finds no exploitable data flow. On a re-open (RESOLVED → OPEN), only
+> `vulnerability.resolution.change_date` updates (to the re-open transition).
 
 ## Contents
 
@@ -118,8 +125,8 @@ while tolerating scan-cycle or ingest drift.
 Report that the result is the "latest known state observed in the last 24h" when
 using this fallback. For lifecycle questions ("new in 7d", "resolved in 24h"),
 keep the snapshot/fallback fetch separate from the lifecycle predicate and apply
-the user's horizon to `vulnerability.first_seen` or
-`vulnerability.resolution.change_date` after the per-vulnerability summarize.
+the user's horizon to `vulnerability.resolution.change_date` after the
+per-vulnerability summarize.
 
 > **Raw-row listings of state reports.** If you stop after Step 1 (one row per `(vulnerability, entity)` without summarizing), use the RVA entity namespaces in the projection — `dt.smartscape*` / `dt.entity*` / `dt.source*` are **null** on these events:
 >
@@ -168,7 +175,6 @@ the user's horizon to `vulnerability.first_seen` or
   vulnerability.cvss.base_score=takeFirst(vulnerability.cvss.base_score),
   vulnerability.title=takeFirst(vulnerability.title),
   vulnerability.resolution.change_date=takeMax(vulnerability.resolution.change_date),
-  vulnerability.first_seen=takeMin(vulnerability.first_seen),
   vulnerability.references.cve=takeFirst(vulnerability.references.cve),
   vulnerability.risk.score=round(takeMax(if(vulnerability.mute.status!="MUTED",vulnerability.risk.score,else:0)),decimals:1),
   muteStatuses=collectDistinct(vulnerability.mute.status),
@@ -378,30 +384,106 @@ snapshot-vs-history rule at the top of this file). Apply **Steps 1 + 3**, then:
 | sort vulnerability.resolution.change_date desc
 ```
 
-To find vulnerabilities **first seen ever** within the window, swap the filter for
-`| filter vulnerability.first_seen >= now() - 7d` and sort by `vulnerability.first_seen`.
+### How long have open vulnerabilities been open
+
+`vulnerability.resolution.change_date` (epoch **nanoseconds**) marks the transition into the
+current state; for an OPEN vulnerability it is when it became open. Collect the **earliest**
+OPEN transition across the per-entity rows as "open since" via a **non-dotted alias** by casting
+in the Step-3 `summarize` (`open_since=toTimestamp(takeMin(if(vulnerability.resolution.status=="OPEN", vulnerability.resolution.change_date, else: null)))`),
+then compute the open duration **immediately after the `summarize`**, before the status-deriving `fieldsAdd`. Apply Steps 1 + 3
+(this snippet shows the full tail; `open_since` is added to the Step 3 `summarize`):
+
+```dql
+fetch security.events, from:now()-30m
+| filter event.provider=="Dynatrace"
+| filter in(event.type,{"VULNERABILITY_STATE_REPORT_EVENT","VULNERABILITY_STATUS_CHANGE_EVENT",
+                        "VULNERABILITY_TRACKING_LINK_CHANGE_EVENT"}) AND event.level=="ENTITY"
+| dedup {vulnerability.display_id, affected_entity.id}, sort:{timestamp desc}
+| summarize {
+    vulnerability.title=takeFirst(vulnerability.title),
+    open_since=toTimestamp(takeMin(if(vulnerability.resolution.status=="OPEN", vulnerability.resolution.change_date, else: null))),
+    resolutionStatuses=collectDistinct(vulnerability.resolution.status),
+    muteStatuses=collectDistinct(vulnerability.mute.status),
+    vulnerability.risk.score=round(takeMax(if(vulnerability.mute.status!="MUTED",vulnerability.risk.score,else:0)),decimals:1)
+  }, by:{vulnerability.display_id, vulnerability.id}
+| fieldsAdd open_duration = now() - open_since        // compute right after summarize
+| fieldsAdd vulnerability.resolution.status=if(in("OPEN",resolutionStatuses),"OPEN",else:"RESOLVED"),
+            vulnerability.mute.status=if(in("NOT_MUTED",muteStatuses),"NOT_MUTED",else:"MUTED"),
+            vulnerability.risk.level=if(vulnerability.risk.score>=9,"CRITICAL",else:if(vulnerability.risk.score>=7,"HIGH",else:if(vulnerability.risk.score>=4,"MEDIUM",else:if(vulnerability.risk.score>=0.1,"LOW",else:"NONE"))))
+| filter vulnerability.resolution.status=="OPEN" AND vulnerability.mute.status!="MUTED"
+| sort open_duration desc                             // longest-open first
+| fields open_since, open_duration, vulnerability.display_id, vulnerability.title, vulnerability.risk.level
+| limit 50
+```
 
 ### Recently resolved vulnerabilities
 
 ```dql-snippet
 | filter vulnerability.resolution.status=="RESOLVED"
-| filter vulnerability.resolution.change_date >= now() - 7d
+| filter toTimestamp(vulnerability.resolution.change_date) >= now() - 7d
 | sort vulnerability.resolution.change_date desc
 ```
 
-### MTTR (median + p90) for resolved critical vulnerabilities
+### Resolution time (MTTR proxy) — open→resolved per affected object
 
-```dql-snippet
-// Append after Step 3:
-| filter vulnerability.resolution.status=="RESOLVED"
-| filter vulnerability.risk.level=="CRITICAL"
-| fieldsAdd ttr_hours = (toLong(vulnerability.resolution.change_date) - toLong(vulnerability.first_seen)) / 1000000000 / 3600
-| summarize p50_h = percentile(ttr_hours, 50),
-            p90_h = percentile(ttr_hours, 90),
-            resolved = count()
+A resolution-time proxy **is** computable from `resolution.change_date` (OPEN→RESOLVED
+transition, both carried on `VULNERABILITY_STATUS_CHANGE_EVENT`), without `first_seen`. It equals
+true detection-to-resolution **only for vulnerabilities that never reopened**, counts
+**auto-resolutions** as resolutions, and is bounded by the change-event fetch window — so treat
+it as time-to-resolution-by-any-cause, not patch velocity.
+
+**Method:** per `(vulnerability.id, affected_entity.id)`, diff the OPEN-transition `change_date`
+and the RESOLVED-transition `change_date` from `VULNERABILITY_STATUS_CHANGE_EVENT`; average the
+diffs = MTTR. Both transitions are emitted as status-change events at transition time — no state
+reports needed.
+
+```dql
+// CHANGE-EVENT-ONLY — no state reports. Fetch window = OPEN-transition lookback:
+// widen it past your oldest open to reduce censoring (it caps measurable TTR).
+fetch security.events, from:now()-30d
+| filter event.provider=="Dynatrace"
+| filter event.type=="VULNERABILITY_STATUS_CHANGE_EVENT" AND event.level=="ENTITY"
+| fieldsAdd open_date     = if(vulnerability.resolution.status=="OPEN",     toTimestamp(vulnerability.resolution.change_date)),
+            resolved_date = if(vulnerability.resolution.status=="RESOLVED", toTimestamp(vulnerability.resolution.change_date))
+| summarize {
+    open_date     = takeMax(open_date),       // latest OPEN transition (most recent spell if reopened)
+    resolved_date = takeMax(resolved_date)    // latest RESOLVED transition
+  }, by: {vulnerability.id, affected_entity.id}
+| filter isNotNull(resolved_date)             // resolved pairs only
+// optional: report only resolutions within a shorter period, independent of the open lookback
+// | filter resolved_date > now()-7d
+| fieldsAdd ttr = resolved_date - open_date   // duration; open_date/resolved_date are timestamps
+| summarize {
+    resolved_pairs = count(),
+    censored       = countIf(isNull(open_date)),  // opened before the fetch window → MTTR is a LOWER BOUND
+    mttr           = avg(if(ttr>0s, ttr)),
+    median_hours   = median(if(ttr>0s, (resolved_date-open_date)/1h)),
+    p90_hours      = percentile(if(ttr>0s, (resolved_date-open_date)/1h), 90)
+  }
+// If censored > 0, widen the fetch window; if it then returns an incomplete-result
+// warning, you've hit the read-limit ceiling — report MTTR as a lower bound.
 ```
 
-Timestamps are nanoseconds; divide by 10⁹ for seconds, then 3600 for hours.
+**Caveats:**
+- **The fetch window is the OPEN lookback, not a snapshot window.** The 30m state-report rule
+  does not apply here — this query uses only change events. Widen it to capture long-lived opens
+  (open transitions are status-change events, so a wider window reaches them directly — no state
+  reports needed).
+- **Right-censored at the window** — if `censored > 0`, opens older than the fetch window were
+  missed; MTTR is a lower bound. Widen the fetch to reduce it. Verified on demo.live: 121/6,985
+  resolved pairs dropped at 30d (max open age 322 d); widening to 90d recovered 47 more but hit
+  the 10 s read limit (incomplete result).
+- **Performance ceiling** — on high-volume tenants a wide change-event window can still hit the
+  10 s read limit. Do not use `samplingRatio` — RESOLVED rows are one-per-pair and would be
+  dropped, undercounting. When the incomplete-result warning fires, treat MTTR as a lower bound.
+- **Auto-resolution counts** — RVA auto-resolves when the component is absent >2 h; those pairs
+  are indistinguishable from patched remediations. On auto-resolution-dominated tenants the
+  median will be near 2 h. Always show median + p90 next to the mean so the skew is visible.
+- **Entity-weighted** — each `(vuln, entity)` pair contributes one TTR; a vuln on N entities
+  counts N×. For per-vulnerability weighting, group `by:{vulnerability.id}` and use
+  `takeMin(open_date)` / `takeMax(resolved_date)` across entities.
+- Use `/24h` not `/1d` (`/1d` triggers a calendar-duration deprecation warning); `avg(ttr)`
+  returns a `duration` value.
 
 ---
 
@@ -904,10 +986,18 @@ anti-join, and the cross-provider view.
     vulnerability level. Mind the plural when filtering.
 12. **`vulnerability.parent.*` is deprecated — don't use any of it.** Derive
     every vulnerability-level value from per-entity fields and per-entity status
-    arrays: `vulnerability.first_seen = takeMin(vulnerability.first_seen)`,
-    resolution/mute verdicts from `collectDistinct(...)` of per-entity statuses
-    (see Stage 3). Older skill drafts and docs reference `parent.first_seen`,
-    `parent.resolution.status`, `parent.mute.status`, etc. — replace them all.
+    arrays: resolution/mute verdicts from `collectDistinct(...)` of per-entity
+    statuses, scalars via `takeMax`/`takeFirst` (see Stage 3). Older skill drafts and
+    docs reference `parent.first_seen`, `parent.resolution.status`, `parent.mute.status`,
+    etc. — replace them all. **Caveat on first-detection:** `vulnerability.first_seen`
+    is *not* a usable replacement for `vulnerability.parent.first_seen` on the RVA
+    pipeline — it is commented out of the `entity.state` SD model and null on every
+    state/change row. There is no first-detection field outside the deprecated
+    namespace, so do not aggregate `first_seen` (a `takeMin` over it collapses to
+    null); use `vulnerability.resolution.change_date` for "how long open". A
+    resolution-time proxy (MTTR) **is** computable without `first_seen` via
+    `VULNERABILITY_STATUS_CHANGE_EVENT` — see § Resolution time (MTTR proxy) in
+    [Lifecycle Workflows](vulnerabilities.md#resolution-time-mttr-proxy--openresolved-per-affected-object).
 13. **Mute metadata is per-entity** — `mute.reason`, `mute.user`, `mute.comment`,
     `mute.change_date` answer "who muted this entity, when, why". Don't collapse
     these to vulnerability-level; the audit only makes sense per-entity.

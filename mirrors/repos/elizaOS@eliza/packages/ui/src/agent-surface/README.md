@@ -127,8 +127,5 @@ the legacy ids remain only for the few callers that predate the registry.
 **`serverInteract` (kept, not dead).** `ViewDeclaration.serverInteract` lets a
 view answer a `ViewCapability` *without a mounted frontend* (the route in
 `views-routes.ts` calls it before any WS round-trip). It is a live extension
-point — see the reference implementation on `plugin-app-control`'s views-manager
-TUI view (`terminal-list-views` / `terminal-open-view` answered over loopback),
-which lets a headless terminal host list/open views with no responding frontend.
-Use it for headless/connector-driven capabilities; for ordinary in-view controls
+point for headless/connector-driven capabilities; for ordinary in-view controls
 prefer the universal agent-surface (layer 1).

@@ -1,0 +1,130 @@
+[
+    {
+      "timestamp": "2026-04-24T13:45:46.989352059Z",
+      "vulnerability.references.cve": [
+        "CVE-2018-18809"
+      ],
+      "component.name": "net.sf.jasperreports:jasperreports",
+      "component.version": "6.6.0",
+      "dt.security.risk.level": "HIGH",
+      "dt.entity.software_component": "SOFTWARE_COMPONENT-1C0A162C70656763",
+      "dt.source_entity": "PROCESS_GROUP_INSTANCE-C310E99C16CC79DD",
+      "dt.source_entity.type": "process_group_instance",
+      "event.description": "Vulnerability DTV-2018-JAVA-0000251 of component net.sf.jasperreports:jasperreports:6.6.0 was detected in BloatedJavaSoftwareGroup-IG-1",
+      "event.id": "cdf7c1a0-f38c-4a42-9d51-acf031d3eeb6",
+      "event.kind": "SECURITY_EVENT",
+      "event.name": "Vulnerability finding event",
+      "event.type": "VULNERABILITY_FINDING",
+      "finding.severity": "HIGH",
+      "finding.time.created": "2026-04-24T13:45:46.989352059Z",
+      "finding.title": "Vulnerability DTV-2018-JAVA-0000251 of component net.sf.jasperreports:jasperreports:6.6.0 was detected in BloatedJavaSoftwareGroup-IG-1",
+      "finding.id": "27975788-cad2-3d3c-9d0e-792a42a48f67",
+      "object.id": "PROCESS_GROUP_INSTANCE-C310E99C16CC79DD",
+      "object.mapping.resource.type": "process",
+      "object.name": "BloatedJavaSoftwareGroup-IG-1",
+      "object.type": "process_group_instance",
+      "product.name": "Runtime Vulnerability Analytics",
+      "product.vendor": "Dynatrace",
+      "product.feature": "Library Vulnerability Analytics",
+      "scan.id": "e44b63e7-e3a2-42e4-a132-4ab9a4d31a96",
+      "vulnerability.id": "DTV-2018-JAVA-0000251",
+      "vulnerability.remediation.status": "AVAILABLE",
+      "vulnerability.risk.level": "HIGH",
+      "vulnerability.title": "Directory Traversal",
+      "vulnerability.cvss.vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N",
+      "vulnerability.external_url": "https://security.snyk.io/vuln/SNYK-JAVA-NETSFJASPERREPORTS-7840299",
+      "software_component.type": "library",
+      "software_component.version": "6.6.0",
+      "software_component.purl": "pkg:maven/net.sf.jasperreports/jasperreports@6.6.0",
+      "dt.security.risk.score": 8.7,
+      "vulnerability.risk.score": 8.7,
+      "vulnerability.cvss.base_score": 8.7,
+      "dt.entity.process_group": "PROCESS_GROUP-A15E7F3CFFF5B15F",
+      "dt.entity.host": "HOST-C0CD8BC71913EC94",
+      "dt.entity.process_group_instance": "PROCESS_GROUP_INSTANCE-C310E99C16CC79DD",
+      "dt.openpipeline.source": "/platform/ingest/v1/security.events",
+      "dt.openpipeline.pipelines": [
+        "security.events.internal:default"
+      ]
+    },
+    {
+      "timestamp": "2026-04-24T05:19:07.990000000Z",
+      "event.id": "822bd366-fa78-4887-8dd5-935562c54669",
+      "event.category": "VULNERABILITY_MANAGEMENT",
+      "event.kind": "SECURITY_EVENT",
+      "event.provider": "OneAgent",
+      "event.version": "1.309",
+      "event.type": "VULNERABILITY_FINDING",
+      "event.name": "Vulnerability finding event",
+      "event.description": "Found a code-level vulnerability of type \"Command injection\" in BloatedDotNetSoftwareGroup-IG-1 at Dynatrace.Service.ProxyController.ProxyUrlWithCurl(String):140.",
+      "dt.agent.module.type": "DOTNET",
+      "dt.agent.module.version": "1.337.0.20260402-061700",
+      "dt.agent.module.version_short": "1.337",
+      "product.feature": "Code-level Vulnerability Analytics",
+      "product.name": "Runtime Vulnerability Analytics",
+      "product.vendor": "Dynatrace",
+      "dt.entity.host": "HOST-ABD42981B3D483AC",
+      "dt.entity.process_group": "PROCESS_GROUP-ED952C36B71A231A",
+      "dt.entity.process_group_instance": "PROCESS_GROUP_INSTANCE-5B3A71D1AF742ABC",
+      "dt.source_entity": "PROCESS_GROUP_INSTANCE-5B3A71D1AF742ABC",
+      "dt.source_entity.type": "process_group_instance",
+      "dt.smartscape_source.id": "PROCESS-5B3A71D1AF742ABC",
+      "dt.smartscape_source.type": "PROCESS",
+      "dt.smartscape.process": "PROCESS-5B3A71D1AF742ABC",
+      "dt.smartscape.host": "HOST-ABD42981B3D483AC",
+      "object.id": "PROCESS-5B3A71D1AF742ABC",
+      "object.mapping.resource.type": "process",
+      "object.type": "PROCESS",
+      "object.name": "BloatedDotNetSoftwareGroup-IG-1",
+      "host.name": "HOST-IG-1-5001",
+      "scan.id": "63b1447b-71fb-4f71-8f36-e548b2da342e",
+      "finding.id": "76f29f4e-5c0a-3c88-88ca-6f7f720b2966",
+      "finding.severity": "CRITICAL",
+      "finding.time.created": "2026-04-24T05:19:07.990000000Z",
+      "finding.title": "Found a code-level vulnerability of type \"Command injection\" in BloatedDotNetSoftwareGroup-IG-1 at Dynatrace.Service.ProxyController.ProxyUrlWithCurl(String):140.",
+      "vulnerability.id": "0000000000000002",
+      "vulnerability.references.cwe": [
+        "CWE-77"
+      ],
+      "vulnerability.risk.level": "CRITICAL",
+      "vulnerability.risk.score": 10,
+      "vulnerability.title": "Command injection",
+      "vulnerability.type": "Command injection",
+      "dt.security.risk.level": "CRITICAL",
+      "dt.security.risk.score": 10,
+      "sink.code.function": "Start",
+      "sink.code.namespace": "System.Diagnostics.Process",
+      "sink.code.parameter_types": [
+        "String",
+        "String"
+      ],
+      "code.function": "ProxyUrlWithCurl",
+      "code.line.number": "140",
+      "code.namespace": "Dynatrace.Service.ProxyController",
+      "code.parameter_types": [
+        "String"
+      ],
+      "entry_points": [
+        {
+          "entry_point.url.path": "customer/0/order/0",
+          "entry_point.payload": "/bin/sh -c curl -u ***** --silent -S image.com ; /bin/sh echo bar --max-time 10 --output /tmp/img-1657188712704.jpg",
+          "entry_point.user_controlled_inputs": [
+            {
+              "user_controlled_input.type": "HTTP_HEADER_VALUE",
+              "user_controlled_input.payload.start": "19",
+              "user_controlled_input.payload.end": "24"
+            },
+            {
+              "user_controlled_input.type": "HTTP_HEADER_VALUE",
+              "user_controlled_input.payload.start": "37",
+              "user_controlled_input.payload.end": "65"
+            }
+          ]
+        }
+      ],
+      "dt.openpipeline.source": "/platform/ingest/v1/security.events",
+      "dt.openpipeline.pipelines": [
+        "security.events.internal:default"
+      ]
+    }
+]

@@ -14,37 +14,62 @@ The boundary: the agent-runner decides **what** to send and **what to do** with 
 
 ## AgentProvider Interface
 
+Provider-wide settings (MCP servers, env, additional directories, model, effort,
+assistant name) are passed to the provider **constructor** via `ProviderOptions`, not
+per query. `QueryInput` carries only what changes turn to turn: the prompt, the
+continuation token to resume, the working directory, and system context to inject.
+
 ```typescript
 interface AgentProvider {
+  /** True if the SDK handles slash commands natively and wants them passed
+   *  through raw. When false, the poll-loop formats them like any chat message. */
+  readonly supportsNativeSlashCommands: boolean;
+
+  /** Opt-in: scaffold a persistent memory/ tree at boot. Providers with native
+   *  memory (Claude's CLAUDE.local.md) omit it. Never gated on a provider name. */
+  readonly usesMemoryScaffold?: boolean;
+
+  /** Optional. Called after each completed exchange so providers whose harness
+   *  keeps no on-disk transcript can persist it themselves. Claude (the SDK
+   *  writes its own .jsonl) omits this. */
+  onExchangeComplete?(exchange: ProviderExchange): void;
+
   /** Start a new query. Returns a handle for streaming input and output. */
   query(input: QueryInput): AgentQuery;
+
+  /** True if the error means the stored continuation is invalid (missing
+   *  transcript, unknown session) and should be cleared. */
+  isSessionInvalid(err: unknown): boolean;
+
+  /** Optional pre-resume maintenance: given the stored continuation, return a
+   *  reason string to drop it and start fresh (e.g. transcript too large/old to
+   *  cold-resume before the host idle ceiling), or null to keep resuming. */
+  maybeRotateContinuation?(continuation: string, cwd: string): string | null;
+}
+
+interface ProviderOptions {
+  assistantName?: string;
+  mcpServers?: Record<string, McpServerConfig>;
+  env?: Record<string, string | undefined>;
+  additionalDirectories?: string[];
+  model?: string;   // alias (sonnet/opus/haiku) or full model ID
+  effort?: string;  // low | medium | high | xhigh | max
 }
 
 interface QueryInput {
-  /** Initial prompt (already formatted by agent-runner).
-   *  String for text-only. ContentBlock[] for multimodal (images, PDFs, audio). */
-  prompt: string | ContentBlock[];
+  /** Initial prompt, already formatted by the agent-runner into a string. */
+  prompt: string;
 
-  /** Session ID to resume, if any */
-  sessionId?: string;
+  /** Opaque continuation token from a previous query. The provider decides
+   *  what it means (session ID, thread ID, or nothing). */
+  continuation?: string;
 
-  /** Resume from a specific point in the session (provider-specific, may be ignored) */
-  resumeAt?: string;
-
-  /** Working directory inside the container */
+  /** Working directory inside the container. */
   cwd: string;
 
-  /** MCP server configurations (normalized format — provider translates) */
-  mcpServers: Record<string, McpServerConfig>;
-
-  /** System prompt / developer instructions */
-  systemPrompt?: string;
-
-  /** Environment variables for the SDK process */
-  env: Record<string, string | undefined>;
-
-  /** Additional directories the agent can access */
-  additionalDirectories?: string[];
+  /** System context to inject; the provider translates it into whatever its
+   *  SDK expects (preset append, full system prompt, per-turn injection). */
+  systemContext?: { instructions?: string };
 }
 
 interface McpServerConfig {
@@ -54,40 +79,42 @@ interface McpServerConfig {
 }
 
 interface AgentQuery {
-  /** Push a follow-up message into the active query */
+  /** Push a follow-up message into the active query. */
   push(message: string): void;
 
-  /** Signal that no more input will be sent */
+  /** Signal that no more input will be sent. */
   end(): void;
 
-  /** Output event stream */
+  /** Output event stream. */
   events: AsyncIterable<ProviderEvent>;
 
-  /** Force-stop the query (e.g., container shutting down) */
+  /** Force-stop the query (e.g., container shutting down). */
   abort(): void;
 }
 
 type ProviderEvent =
-  | { type: 'init'; sessionId: string }
-  | { type: 'result'; text: string | null }
+  | { type: 'init'; continuation: string }
+  | { type: 'result'; text: string | null; isError?: boolean }
   | { type: 'error'; message: string; retryable: boolean; classification?: string }
-  | { type: 'progress'; message: string };
+  | { type: 'progress'; message: string }
+  | { type: 'activity' };
 ```
 
 ### What the interface does NOT include
 
 - **Message formatting** — the agent-runner formats messages before passing to the provider. The provider receives a ready-to-send prompt string.
-- **Hooks** — Claude-specific. The Claude provider registers hooks internally (PreCompact, PreToolUse, etc.). Other providers don't need them.
-- **Tool allowlists** — Claude uses `allowedTools`. Codex uses `approvalPolicy`. OpenCode uses `permission`. Each provider configures this internally based on the same intent: "allow everything, no prompting."
-- **Session persistence** — Claude persists sessions to disk automatically. Codex and OpenCode manage their own session state. The agent-runner doesn't control this — it just passes `sessionId` and `resumeAt`.
+- **Hooks** — Claude-specific. The Claude provider registers hooks internally (PreToolUse, PostToolUse, PreCompact). Other providers don't need them.
+- **Tool allowlists** — Claude uses `allowedTools` + `disallowedTools`. Other SDKs use their own equivalents. Each provider configures this internally.
+- **Session persistence** — the agent-runner stores one opaque `continuation` token per provider (see [Session Resume](#session-resume)) and passes it back as `QueryInput.continuation`. What it means is provider-private; Claude persists its own `.jsonl` transcript on disk keyed by the continuation (session ID).
 - **Sandbox configuration** — provider-specific. Each provider configures its own sandbox internally.
 
 ### Provider event semantics
 
-- **`init`** — emitted once per query when the provider establishes or resumes a session. The agent-runner captures `sessionId` for future resume.
-- **`result`** — emitted when the agent produces a complete response. May be emitted multiple times per query (e.g., Claude's multi-turn with subagents). The agent-runner writes each result to messages_out.
-- **`error`** — emitted on failure. `retryable` indicates whether the agent-runner should retry. `classification` is optional detail (e.g., 'quota', 'auth', 'transport').
+- **`init`** — emitted once per query when the provider establishes or resumes a session. The agent-runner captures `continuation` and persists it for future resume.
+- **`result`** — emitted when the agent produces a complete response. May be emitted multiple times per query (e.g., Claude's multi-turn with subagents). `isError` is set when the SDK flagged the turn as an error (e.g. a non-retryable billing error) so the poll-loop still surfaces the text instead of dropping it. The agent-runner writes each result to messages_out.
+- **`error`** — emitted on failure. `retryable` indicates whether the agent-runner should retry. `classification` is optional detail (e.g., 'quota').
 - **`progress`** — optional, for logging. The agent-runner logs these but doesn't act on them.
+- **`activity`** — a liveness signal. Providers MUST yield it on every underlying SDK event (tool call, thinking, partial message) so the poll-loop's idle timer stays honest during long tool runs.
 
 ## Provider Implementations
 
@@ -97,58 +124,82 @@ Only the `claude` provider ships in trunk. The Codex and OpenCode sections below
 
 Wraps `@anthropic-ai/claude-agent-sdk`'s `query()`.
 
+The provider takes its settings (`mcpServers`, `env`, `additionalDirectories`,
+`model`, `effort`, `assistantName`) in its constructor via `ProviderOptions`; `query()`
+only reads the per-turn `QueryInput`.
+
 ```typescript
 class ClaudeProvider implements AgentProvider {
+  readonly supportsNativeSlashCommands = true;
+  // ...constructor stores options.mcpServers, .env, .additionalDirectories,
+  //    .model, .effort, .assistantName...
+
   query(input: QueryInput): AgentQuery {
     const stream = new MessageStream();  // AsyncIterable<SDKUserMessage>
     stream.push(input.prompt);
 
-    const sdkQuery = query({
+    const sdkResult = sdkQuery({
       prompt: stream,
       options: {
         cwd: input.cwd,
-        resume: input.sessionId,
-        resumeSessionAt: input.resumeAt,
-        systemPrompt: input.systemPrompt
-          ? { type: 'preset', preset: 'claude_code', append: input.systemPrompt }
+        additionalDirectories: this.additionalDirectories,
+        resume: input.continuation,
+        pathToClaudeCodeExecutable: '/pnpm/claude',
+        systemPrompt: input.systemContext?.instructions
+          ? { type: 'preset', preset: 'claude_code', append: input.systemContext.instructions }
           : undefined,
-        mcpServers: input.mcpServers,  // already the right shape
-        additionalDirectories: input.additionalDirectories,
-        env: input.env,
-        allowedTools: NANOCLAW_TOOL_ALLOWLIST,
+        // Base tools plus one `mcp__<server>__*` pattern per registered MCP
+        // server — without the explicit MCP patterns the SDK's allowedTools
+        // filter silently drops every MCP namespace.
+        allowedTools: [...TOOL_ALLOWLIST, ...Object.keys(this.mcpServers).map(mcpAllowPattern)],
+        disallowedTools: SDK_DISALLOWED_TOOLS,
+        env: this.env,
+        model: this.model,
+        effort: this.effort,
         permissionMode: 'bypassPermissions',
         allowDangerouslySkipPermissions: true,
+        settingSources: ['project', 'user', 'local'],
+        mcpServers: this.mcpServers,
         hooks: {
-          PreCompact: [{ hooks: [preCompactHook] }],
-          PreToolUse: [{ matcher: 'Bash', hooks: [sanitizeBashHook] }],
+          PreToolUse: [{ hooks: [preToolUseHook] }],
+          PostToolUse: [{ hooks: [postToolUseHook] }],
+          PostToolUseFailure: [{ hooks: [postToolUseHook] }],
+          PreCompact: [{ hooks: [createPreCompactHook(this.assistantName)] }],
         },
       },
     });
 
+    let aborted = false;
     return {
       push: (msg) => stream.push(msg),
       end: () => stream.end(),
-      abort: () => sdkQuery.close(),
-      events: translateClaudeEvents(sdkQuery),
+      // Abort doesn't call into the SDK — it flips a flag the event generator
+      // checks and ends the input stream so the query drains and stops.
+      abort: () => { aborted = true; stream.end(); },
+      events: translateEvents(sdkResult, () => aborted),
     };
   }
 }
 ```
 
-`translateClaudeEvents` is an async generator that maps SDK messages to `ProviderEvent`:
-- `message.type === 'system' && message.subtype === 'init'` → `{ type: 'init', sessionId }`
-- `message.type === 'result'` → `{ type: 'result', text }`
-- `message.type === 'system' && message.subtype === 'api_retry'` → `{ type: 'error', retryable: true }`
-- `message.type === 'system' && message.subtype === 'rate_limit_event'` → `{ type: 'error', retryable: false, classification: 'quota' }`
-- `message.type === 'system' && message.subtype === 'task_notification'` → `{ type: 'progress', message }`
-- Everything else → logged, not emitted
+`translateEvents` is an async generator that yields `{ type: 'activity' }` for **every**
+SDK message (so the idle timer stays honest) and maps recognized messages to `ProviderEvent`:
+- `system`/`init` → `{ type: 'init', continuation: session_id }`
+- `result` → `{ type: 'result', text, isError }` — `text` is `result.result`, or the joined `result.errors[]` on error subtypes (billing/quota), so the notice still reaches the user
+- `system`/`api_retry` → `{ type: 'error', retryable: true }`
+- `system`/`rate_limit_event` → `{ type: 'error', retryable: false, classification: 'quota' }`
+- `system`/`compact_boundary` → `{ type: 'result', text: 'Context compacted…' }`
+- `system`/`task_notification` → `{ type: 'progress', message }`
+- when the `aborted` flag is set → the generator returns immediately
 
-**Claude-specific features preserved inside the provider:**
-- `MessageStream` for async iterable input (push-based)
-- `resumeSessionAt` for resume at specific message UUID
-- PreCompact hook for transcript archiving
-- PreToolUse hook for sanitizing bash env vars
-- Full tool allowlist
+**Claude-specific behavior inside the provider:**
+- `MessageStream` for async iterable input (push-based follow-ups)
+- Resume via the SDK `resume` option keyed on the stored `continuation` (the SDK session ID) — no separate resume-at cursor
+- `TOOL_ALLOWLIST` (Bash, Read, Write, Edit, Glob, Grep, WebSearch, WebFetch, Task, Skill, …) extended at the call site with a `mcp__<server>__*` pattern per registered MCP server; `SDK_DISALLOWED_TOOLS` blocks SDK builtins that collide with NanoClaw's own scheduling/interaction model (CronCreate/Delete/List, ScheduleWakeup, AskUserQuestion, Enter/ExitPlanMode, Enter/ExitWorktree)
+- **PreToolUse hook** records the current tool + its declared timeout to `container_state` (so the host sweep widens its stuck tolerance while a long Bash runs) and, as defense-in-depth, blocks any `SDK_DISALLOWED_TOOLS` call that slips through. It does **not** sanitize bash env vars — there is no such hook.
+- **PostToolUse / PostToolUseFailure** hooks clear the in-flight tool
+- **PreCompact** hook archives the transcript to `conversations/` before compaction
+- `maybeRotateContinuation` drops an oversized/aged transcript (default caps 12 MB / 14 days, both operator-overridable) so a cold container isn't killed reloading days of `.jsonl` before the host idle ceiling; `isSessionInvalid` clears a continuation whose transcript is gone
 - `additionalDirectories` for multi-directory access
 
 ### Codex Provider
@@ -159,8 +210,8 @@ Wraps `@openai/codex-sdk`.
 class CodexProvider implements AgentProvider {
   query(input: QueryInput): AgentQuery {
     const codex = new Codex(this.buildOptions(input));
-    const thread = input.sessionId
-      ? codex.resumeThread(input.sessionId, this.threadOptions(input))
+    const thread = input.continuation
+      ? codex.resumeThread(input.continuation, this.threadOptions(input))
       : codex.startThread(this.threadOptions(input));
 
     const abortController = new AbortController();
@@ -188,13 +239,13 @@ class CodexProvider implements AgentProvider {
           signal: abortController.signal,
         });
 
-        let sessionId: string | undefined;
+        let continuation: string | undefined;
         let resultText = '';
 
         for await (const event of streamed.events) {
           if (event.type === 'thread.started') {
-            sessionId = event.thread_id;
-            yield { type: 'init', sessionId };
+            continuation = event.thread_id;
+            yield { type: 'init', continuation };
           }
           if (event.type === 'item.completed' && event.item.type === 'agent_message') {
             resultText = event.item.text || resultText;
@@ -264,7 +315,7 @@ class OpenCodeProvider implements AgentProvider {
 
   private async *run(client, server, stream, input, getPendingFollowUp): AsyncIterable<ProviderEvent> {
     const session = await client.session.create();
-    yield { type: 'init', sessionId: session.data.id };
+    yield { type: 'init', continuation: session.data.id };
 
     await client.session.promptAsync({
       path: { id: session.data.id },
@@ -356,62 +407,58 @@ The agent-runner transforms messages_in rows into a prompt string. The provider 
 
 **Routing field stripping:** `platform_id`, `channel_type`, `thread_id` are never included in the prompt. They're stored as context for writing messages_out.
 
-**Single message formatting by kind:**
+Every kind renders to a single self-contained XML element. The `id` attribute is the
+message's `seq` (the agent-facing message ID it passes to `edit_message` / `add_reaction`).
+The `from` attribute is the origin destination name (resolved from the routing fields via
+the destination map), so the agent always knows where a message came from — routing fields
+themselves are never shown.
 
-- **`chat`** — format into message XML:
+- **`chat`** — one `<message>` per row:
   ```xml
-  <message sender="John" time="2024-01-01 10:00">
-    Check this PR
-  </message>
+  <message id="5" from="family" sender="John" time="Jan 1, 10:00 AM">Check this PR</message>
   ```
+  A reply carries a `reply_to` attribute and an inline `<quoted_message from="…">…</quoted_message>`.
 
-- **`chat-sdk`** — extract fields from serialized Chat SDK message:
+- **`chat-sdk`** — same `<message>` shape, fields extracted from the serialized Chat SDK
+  message. Attachments are appended inline: `[image: screenshot.png — saved to /workspace/…]`
+  or `[image: screenshot.png (https://signed-url…)]`. Images/PDFs that Claude handles
+  natively are also passed as content blocks (see Media Handling below).
+
+- **`task`** — a `<task>` element, script output first when present:
   ```xml
-  <message sender="John (john@slack)" time="2024-01-01 10:00">
-    Check this PR
-    [image: screenshot.png — https://signed-url...]
-  </message>
-  ```
-  Attachments are listed inline. Images/PDFs that Claude handles natively are passed as content blocks (see Media Handling below).
-
-- **`task`** — task prompt, optionally with script output:
-  ```
-  [SCHEDULED TASK]
-
-  Script output:
-  {"data": ...}
+  <task from="scheduler" time="Jan 1, 9:00 AM">Script output:
+  {"data": …}
 
   Instructions:
-  Review open PRs
+  Review open PRs</task>
   ```
 
-- **`webhook`** — webhook payload:
-  ```
-  [WEBHOOK: github/pull_request]
-
-  {"action": "opened", "pull_request": {...}}
+- **`webhook`** — a `<webhook>` element wrapping the JSON payload:
+  ```xml
+  <webhook from="github" source="github" event="pull_request">{"action": "opened", …}</webhook>
   ```
 
-- **`system`** — host action result (response to an earlier system request):
-  ```
-  [SYSTEM RESPONSE]
-
-  Action: register_agent_group
-  Status: success
-  Result: {"agent_group_id": "ag-456"}
+- **`system`** — host action result, rendered as `<system_response>`:
+  ```xml
+  <system_response from="host" action="create_agent" status="success">{"agent_group_id": "ag-456"}</system_response>
   ```
 
-**Batch formatting:** Multiple pending messages are combined into one prompt:
+**Batch formatting:** All pending messages are combined into one prompt. The prompt opens
+with a self-closing `<context timezone="<IANA>" />` header (so the agent interprets every
+timestamp — and every time it schedules — in the user's zone), then the chat messages
+concatenated as consecutive `<message>` blocks, then any task/webhook/system elements,
+joined by blank lines:
 
 ```xml
-<context timezone="America/Los_Angeles">
-<messages>
-<message sender="John" time="10:00">Check this PR</message>
-<message sender="Jane" time="10:01">Already on it</message>
-</messages>
+<context timezone="America/Los_Angeles" />
+<message id="2" from="family" sender="John" time="10:00">Check this PR</message>
+<message id="4" from="family" sender="Jane" time="10:01">Already on it</message>
 ```
 
-Mixed kinds (e.g., a chat message + a system response) are combined with clear delimiters. Each section is labeled by kind.
+There is **no** outer `<messages>` envelope — an earlier revision wrapped multi-message
+batches that way, but the Claude Agent SDK answered the wrapped shape with a synthetic
+"No response requested." stub instead of calling the API (#2555). Dropping the wrapper made
+the single-message path just the N=1 case of the same concatenation.
 
 **Command detection:** Messages starting with `/` are checked against a command list. Recognized commands bypass formatting and are passed raw to the provider (for Claude's slash command handling) or intercepted by the agent-runner (for NanoClaw-level commands like session reset).
 
@@ -430,54 +477,70 @@ interface RoutingContext {
 
 When writing messages_out (either from provider results or MCP tool calls), the agent-runner copies this routing context by default. The agent never sees routing fields — it just produces text. The routing is implicit: "respond to whoever sent the message."
 
-MCP tools that target a different destination (e.g., `send_to_agent`, `send_message` with explicit channel) override the routing context for that specific messages_out row.
+MCP tools that target a named destination (`send_message` / `send_file` with a `to`
+argument) resolve routing through the session's destination map instead of the default
+reply context — including agent-to-agent sends, which are just a `to` pointing at an
+`agent`-type destination.
 
 ### Status Management
 
-The agent-runner manages the `status` and `status_changed` fields on messages_in:
+`inbound.db` is a read-only mount inside the container, so the agent-runner never writes
+`messages_in`. It tracks processing status in the `processing_ack` table in the
+container-owned `outbound.db`; the host reads `processing_ack` and mirrors completion
+back onto `messages_in.status`.
 
 ```
-pending → processing → completed
-                    → failed (if provider returns error and max retries exhausted)
+processing_ack: (no row) → processing → completed
 ```
 
-- **Pick up:** `UPDATE messages_in SET status = 'processing', status_changed = now(), tries = tries + 1 WHERE id IN (...)`
-- **Complete:** `UPDATE messages_in SET status = 'completed', status_changed = now() WHERE id IN (...)`
-- **Error:** Agent-runner does NOT set `failed` — it leaves the message as `processing`. The host detects stale processing via `status_changed` and handles retry logic (reset to pending with backoff). This keeps retry policy on the host side.
+- **Pick up:** `INSERT OR REPLACE INTO processing_ack (message_id, status, status_changed) VALUES (?, 'processing', now())` for each claimed row (`markProcessing`). Pending queries skip any row already present in `processing_ack`.
+- **Complete:** same upsert with `status = 'completed'` (`markCompleted`). Every consumed batch ends here — error outcomes included. On a provider error the poll-loop writes an error **chat message** to `messages_out` (so the user sees it), then still acks the batch completed; errors surface as messages, not as an ack status. (A `markFailed` helper exists in `messages-in.ts` but currently has no callers.)
+- The host's `syncProcessingAcks` mirrors acked ids onto `messages_in.status = 'completed'`. Its stale/retry policy is driven off the `.heartbeat` file mtime and the `processing_ack` claim timestamps. On startup the agent-runner clears leftover `processing` acks (crash recovery) so orphaned claims re-process.
 
 ### MCP Tools
 
-The agent-runner runs an MCP server that exposes NanoClaw tools to the agent. All tools write to the session DB.
-
-**DB path:** The MCP server receives the session DB path via environment variable. It opens a second connection to the same SQLite file (WAL mode allows concurrent access).
+The agent-runner runs an MCP server (stdio) that exposes NanoClaw tools to the agent. The
+tool modules use the same two-DB connection layer as the rest of the runner
+(`container/agent-runner/src/db/connection.ts`): they read the host-written `inbound.db`
+at `/workspace/inbound.db` **read-only** (destinations, session routing, question
+responses, task lists) and write to the container-owned `outbound.db` at
+`/workspace/outbound.db`. There is no shared single-file connection and no WAL — both files
+are `journal_mode=DELETE` because WAL's memory-mapped `-shm` file does not stay coherent
+across the VirtioFS host↔container mount.
 
 #### send_message
 
-Send a chat message to the current conversation (or a specified destination).
+Send a chat message to a named destination. Agents address destinations by name, never by
+raw platform/channel/thread IDs — the destination map (`destinations` table in `inbound.db`,
+written by the host) resolves the name to routing fields.
 
 ```typescript
 {
   name: 'send_message',
   params: {
-    text: string,          // message content
-    channel?: string,      // optional: target channel type (default: reply to origin)
-    platformId?: string,   // optional: target platform ID
-    threadId?: string,     // optional: target thread ID
+    text: string,    // message content (required)
+    to?: string,     // destination name (e.g. "family", "worker-1").
+                     // Optional when the agent has exactly one destination.
   }
 }
 ```
 
-Implementation: write a `messages_out` row with `kind: 'chat'`. If channel/platformId/threadId are provided, use those as routing. Otherwise, copy from the current routing context.
+Implementation: `resolveRouting(to)` looks up the destination. With no `to`, it defaults to
+the session's own reply routing (`session_routing`); if the destination resolves to the same
+channel the session is bound to, the session's `thread_id` is preserved so the reply lands
+in-thread, otherwise `thread_id` is null. The tool then writes a `messages_out` row with
+`kind: 'chat'` and content `{ text }`, and returns the new `seq` as the message id.
 
 #### send_file
 
-Send a file to the current conversation.
+Send a file to a named destination (same destination model as `send_message`).
 
 ```typescript
 {
   name: 'send_file',
   params: {
-    path: string,          // file path (relative to /workspace/agent/ or absolute)
+    path: string,          // file path (relative to /workspace/agent/ or absolute) (required)
+    to?: string,           // destination name; optional if the agent has one destination
     text?: string,         // optional accompanying message
     filename?: string,     // display name (default: basename of path)
   }
@@ -485,10 +548,10 @@ Send a file to the current conversation.
 ```
 
 Implementation:
-1. Generate a message ID
-2. Create `outbox/{messageId}/` directory
-3. Copy the file into the outbox directory
-4. Write a `messages_out` row with `files: [filename]` in the content
+1. Resolve routing via `resolveRouting(to)` (as `send_message`)
+2. Generate a message ID and create `/workspace/outbox/{messageId}/`
+3. Copy the file into that outbox directory
+4. Write a `messages_out` row (`kind: 'chat'`) with content `{ text, files: [filename] }`
 
 #### send_card
 
@@ -523,11 +586,11 @@ Send an interactive question and wait for the user's response. This is a **block
 ```
 
 Implementation:
-1. Generate a `questionId`
-2. Write a `messages_out` row with `operation: 'ask_question'`, the question, options, and questionId
-3. Poll `messages_in` for a row with matching `questionId` in content
-4. When found, return the `selectedOption` as the tool result
-5. If timeout expires, return a timeout error as the tool result
+1. Generate a `questionId` and normalize each option to `{ label, selectedLabel, value }`
+2. Write a `messages_out` row with `kind: 'chat-sdk'` and content `{ type: 'ask_question', questionId, title, question, options }`
+3. Poll `inbound.db` (read-only) for a pending `messages_in` row whose content carries the matching `questionId` (`findQuestionResponse`), skipping any already in `processing_ack`
+4. When found, `markCompleted` the response row (a `processing_ack` write in `outbound.db`) and return its `selectedOption` as the tool result
+5. If the deadline passes, return a timeout error as the tool result
 
 The agent's execution is paused at this tool call. The provider's query keeps running (Claude holds the tool call open). The agent-runner polls for the response in a separate loop.
 
@@ -563,22 +626,13 @@ Add an emoji reaction to a message.
 
 Implementation: write a `messages_out` row with `operation: 'reaction'`.
 
-#### send_to_agent
+#### Agent-to-agent sends (no dedicated tool)
 
-Send a message to another agent group.
-
-```typescript
-{
-  name: 'send_to_agent',
-  params: {
-    agentGroupId: string,  // target agent group
-    text: string,          // message content
-    sessionId?: string,    // optional: target specific session
-  }
-}
-```
-
-Implementation: write a `messages_out` row with `channel_type: 'agent'`, `platform_id: agentGroupId`, `thread_id: sessionId`.
+There is no `send_to_agent` tool. Agents and channels share one destination namespace, so
+messaging another agent is just `send_message(to="<agent-name>")` where the named
+destination is of type `agent`. `resolveRouting` maps it to a `messages_out` row with
+`channel_type: 'agent'` and `platform_id` set to the target agent group id; the host
+validates the send and routes it into the target session's `inbound.db`.
 
 #### schedule_task
 
@@ -627,25 +681,42 @@ Modify a scheduled task.
 
 Implementation: all four are sent as system actions (`messages_out`, `kind: 'system'`, `action: 'cancel_task' | 'pause_task' | 'resume_task' | 'update_task'`) — the container never writes `inbound.db`. The host's handlers in `src/modules/scheduling/actions.ts` apply the change against `inbound.db` via `src/modules/scheduling/db.ts`: cancel/pause/resume flip status on the live row(s); update_task reads current content, merges supplied fields, and writes back. All four match by `(id = ? OR series_id = ?) AND kind='task' AND status IN ('pending','paused')`, so they reach the live next occurrence of a recurring task even when the agent passes the original (now-completed) id.
 
-#### register_agent_group
+#### create_agent
 
-Register a new agent group (admin only).
+Create a long-lived companion sub-agent. The `name` becomes a destination the creating
+agent can address. (There is no `register_agent_group` tool — this replaced it.)
 
 ```typescript
 {
-  name: 'register_agent_group',
+  name: 'create_agent',
   params: {
-    name: string,
-    folder: string,
-    platformId: string,        // messaging group to wire to
-    channelType: string,
-    triggerRules?: object,
-    sessionMode?: 'shared' | 'per-thread',
+    name: string,           // human-readable name; also the destination name (required)
+    instructions?: string,  // CLAUDE.md content for the new agent (role, personality)
   }
 }
 ```
 
-Implementation: write a `messages_out` row with `kind: 'system'`, `action: 'register_agent_group'`. The host reads, validates admin permission, creates the entity rows in the central DB, and writes a `system` messages_in response.
+Implementation: fire-and-forget. Writes a `messages_out` row with `kind: 'system'`,
+`action: 'create_agent'`, `requestId`, `name`, and `instructions`. The container is
+untrusted and does not gate itself; the host authorizes by CLI scope — trusted owner groups
+(scope `global`) create directly, confined groups require admin approval
+(`src/modules/agent-to-agent/create-agent.ts`) — then creates the entity rows and notifies
+the agent via a chat message when the agent is ready.
+
+#### Self-modification: install_packages, add_mcp_server
+
+Two fire-and-forget system-action tools let an agent extend its own runtime (both require
+admin approval, applied host-side):
+
+- **`install_packages`** — `{ apt?: string[], npm?: string[], reason?: string }`. Package
+  names are validated at the tool boundary and re-validated on the host. On approval the
+  host rebuilds the per-agent image and restarts the container.
+- **`add_mcp_server`** — `{ name, command, args?, env? }`. Wires an existing third-party MCP
+  server into the agent's `container.json`; on approval the host updates the config and
+  restarts (no rebuild — Bun runs the TS directly).
+
+Both write a `messages_out` row with `kind: 'system'` and the matching `action`, then return
+immediately; the host notifies the agent when approval resolves.
 
 ### Media Handling
 
@@ -701,12 +772,20 @@ Archive location: `/workspace/agent/conversations/{date}-{summary}.md`
 
 ### Session Resume
 
-The agent-runner tracks `sessionId` and `resumeAt` across queries:
+The agent-runner tracks a single opaque `continuation` token per provider:
 
-- `sessionId` — captured from `ProviderEvent { type: 'init' }`. Passed back to `QueryInput.sessionId` on the next query.
-- `resumeAt` — Claude-specific (last assistant message UUID). Stored by the agent-runner, passed to `QueryInput.resumeAt`. Providers that don't support this ignore it.
+- Captured from `ProviderEvent { type: 'init', continuation }` and persisted to the
+  `session_state` table in `outbound.db` under the key `continuation:<provider>` (keyed per
+  provider because a continuation is provider-private — a Claude session id is meaningless to
+  another provider).
+- Passed back as `QueryInput.continuation` on the next query. For Claude that becomes the
+  SDK `resume` option; the SDK reloads its on-disk `.jsonl` transcript for that session id.
 
-These are ephemeral to the container's lifetime. When the container is killed and restarted, the host passes the stored `sessionId` from the central DB's sessions table. `resumeAt` is lost on container restart (the provider resumes from the end of the session).
+Because it lives in the session folder's `outbound.db`, the continuation survives container
+teardown and restart — a fresh container reads it back and resumes. `/clear` deletes the row
+to start a clean session. Before resuming, `maybeRotateContinuation` may archive and drop an
+oversized/aged transcript (so a cold container isn't killed reloading it), and
+`isSessionInvalid` clears a continuation whose backing transcript has gone missing.
 
 ### Container Startup
 
@@ -714,7 +793,7 @@ The agent-runner receives configuration via:
 
 - **`container.json`:** The provider name, model, assistant name, MCP servers, and other NanoClaw config are read from `/workspace/agent/container.json` (materialized by the host from the `container_configs` table), not from environment variables. See `container/agent-runner/src/config.ts`.
 - **Environment variables:** provider-specific vars only (API keys, model overrides), `TZ`.
-- **Fixed mount paths:** Session DB at `/workspace/session.db`. Agent group folder at `/workspace/agent/`. System prompt from `/workspace/agent/CLAUDE.md` and `/workspace/global/CLAUDE.md`.
+- **Fixed mount paths:** Host-written `inbound.db` (read-only) at `/workspace/inbound.db` and container-owned `outbound.db` at `/workspace/outbound.db`. Agent group folder at `/workspace/agent/`. System prompt from `/workspace/agent/CLAUDE.md` and `/workspace/global/CLAUDE.md`.
 
 The agent-runner reads config, creates the provider, and enters the poll loop. No stdin, no initial prompt — messages are already in the session DB.
 

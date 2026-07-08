@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `salmanashraf/mobile-agency` — 26 default patterns, 0 followed patterns, 182 file(s) materialized.
+Mirror of `salmanashraf/mobile-agency` — 26 default patterns, 0 followed patterns, 183 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `salmanashraf/mobile-agency` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 182 |
+| Files         | 183 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -204,43 +204,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 143 | ✓ | [`skills/cross-platform/mrecall-graph.md`](skills/cross-platform/mrecall-graph.md) |
 | 144 | ✓ | [`skills/cross-platform/mrecall-save.md`](skills/cross-platform/mrecall-save.md) |
 | 145 | ✓ | [`skills/cross-platform/perf-audit.md`](skills/cross-platform/perf-audit.md) |
-| 146 | ✓ | [`skills/cross-platform/release-prep.md`](skills/cross-platform/release-prep.md) |
-| 147 | ✓ | [`skills/cross-platform/security-audit.md`](skills/cross-platform/security-audit.md) |
-| 148 | ✓ | [`skills/cross-platform/store-listing.md`](skills/cross-platform/store-listing.md) |
-| 149 | ✓ | [`skills/flutter/dart-modernize.md`](skills/flutter/dart-modernize.md) |
-| 150 | ✓ | [`skills/flutter/flutter-review.md`](skills/flutter/flutter-review.md) |
-| 151 | ✓ | [`skills/flutter/flutter-tdd.md`](skills/flutter/flutter-tdd.md) |
-| 152 | ✓ | [`skills/flutter/README.md`](skills/flutter/README.md) |
-| 153 | ✓ | [`skills/flutter/widget-extract.md`](skills/flutter/widget-extract.md) |
-| 154 | ✓ | [`skills/flutter/widget-gen.md`](skills/flutter/widget-gen.md) |
-| 155 | ✓ | [`skills/gaming/blueprint-to-cpp.md`](skills/gaming/blueprint-to-cpp.md) |
-| 156 | ✓ | [`skills/gaming/game-perf.md`](skills/gaming/game-perf.md) |
-| 157 | ✓ | [`skills/gaming/shader-gen.md`](skills/gaming/shader-gen.md) |
-| 158 | ✓ | [`skills/gaming/unity-tdd.md`](skills/gaming/unity-tdd.md) |
-| 159 | ✓ | [`skills/ios/data-persistence.md`](skills/ios/data-persistence.md) |
-| 160 | ✓ | [`skills/ios/ios-tdd.md`](skills/ios/ios-tdd.md) |
-| 161 | ✓ | [`skills/ios/networking.md`](skills/ios/networking.md) |
-| 162 | ✓ | [`skills/ios/performance.md`](skills/ios/performance.md) |
-| 163 | ✓ | [`skills/ios/README.md`](skills/ios/README.md) |
-| 164 | ✓ | [`skills/ios/swift-concurrency.md`](skills/ios/swift-concurrency.md) |
-| 165 | ✓ | [`skills/ios/swift-review.md`](skills/ios/swift-review.md) |
-| 166 | ✓ | [`skills/ios/swiftui-review.md`](skills/ios/swiftui-review.md) |
-| 167 | ✓ | [`skills/ios/swiftui-state.md`](skills/ios/swiftui-state.md) |
-| 168 | ✓ | [`skills/ios/unit-testing.md`](skills/ios/unit-testing.md) |
-| 169 | ✓ | [`skills/ios/xcode-warnings.md`](skills/ios/xcode-warnings.md) |
-| 170 | ✓ | [`skills/react-native/bridge-audit.md`](skills/react-native/bridge-audit.md) |
-| 171 | ✓ | [`skills/react-native/expo-optimize.md`](skills/react-native/expo-optimize.md) |
-| 172 | ✓ | [`skills/react-native/new-arch-migrate.md`](skills/react-native/new-arch-migrate.md) |
-| 173 | ✓ | [`skills/react-native/performance.md`](skills/react-native/performance.md) |
-| 174 | ✓ | [`skills/react-native/README.md`](skills/react-native/README.md) |
-| 175 | ✓ | [`skills/react-native/rn-review.md`](skills/react-native/rn-review.md) |
-| 176 | ✓ | [`skills/react-native/rn-tdd.md`](skills/react-native/rn-tdd.md) |
-| 177 | ✓ | [`skills/shared/accessibility-audit.md`](skills/shared/accessibility-audit.md) |
-| 178 | ✓ | [`skills/shared/crash-analysis.md`](skills/shared/crash-analysis.md) |
-| 179 | ✓ | [`skills/shared/README.md`](skills/shared/README.md) |
-| 180 | ✓ | [`skills/shared/security-scan.md`](skills/shared/security-scan.md) |
-| 181 | ✓ | [`skills/unity/README.md`](skills/unity/README.md) |
-| 182 | ✓ | [`skills/unity/shader-review.md`](skills/unity/shader-review.md) |
+| 146 | ✓ | [`skills/cross-platform/prd-verification.md`](skills/cross-platform/prd-verification.md) |
+| 147 | ✓ | [`skills/cross-platform/release-prep.md`](skills/cross-platform/release-prep.md) |
+| 148 | ✓ | [`skills/cross-platform/security-audit.md`](skills/cross-platform/security-audit.md) |
+| 149 | ✓ | [`skills/cross-platform/store-listing.md`](skills/cross-platform/store-listing.md) |
+| 150 | ✓ | [`skills/flutter/dart-modernize.md`](skills/flutter/dart-modernize.md) |
+| 151 | ✓ | [`skills/flutter/flutter-review.md`](skills/flutter/flutter-review.md) |
+| 152 | ✓ | [`skills/flutter/flutter-tdd.md`](skills/flutter/flutter-tdd.md) |
+| 153 | ✓ | [`skills/flutter/README.md`](skills/flutter/README.md) |
+| 154 | ✓ | [`skills/flutter/widget-extract.md`](skills/flutter/widget-extract.md) |
+| 155 | ✓ | [`skills/flutter/widget-gen.md`](skills/flutter/widget-gen.md) |
+| 156 | ✓ | [`skills/gaming/blueprint-to-cpp.md`](skills/gaming/blueprint-to-cpp.md) |
+| 157 | ✓ | [`skills/gaming/game-perf.md`](skills/gaming/game-perf.md) |
+| 158 | ✓ | [`skills/gaming/shader-gen.md`](skills/gaming/shader-gen.md) |
+| 159 | ✓ | [`skills/gaming/unity-tdd.md`](skills/gaming/unity-tdd.md) |
+| 160 | ✓ | [`skills/ios/data-persistence.md`](skills/ios/data-persistence.md) |
+| 161 | ✓ | [`skills/ios/ios-tdd.md`](skills/ios/ios-tdd.md) |
+| 162 | ✓ | [`skills/ios/networking.md`](skills/ios/networking.md) |
+| 163 | ✓ | [`skills/ios/performance.md`](skills/ios/performance.md) |
+| 164 | ✓ | [`skills/ios/README.md`](skills/ios/README.md) |
+| 165 | ✓ | [`skills/ios/swift-concurrency.md`](skills/ios/swift-concurrency.md) |
+| 166 | ✓ | [`skills/ios/swift-review.md`](skills/ios/swift-review.md) |
+| 167 | ✓ | [`skills/ios/swiftui-review.md`](skills/ios/swiftui-review.md) |
+| 168 | ✓ | [`skills/ios/swiftui-state.md`](skills/ios/swiftui-state.md) |
+| 169 | ✓ | [`skills/ios/unit-testing.md`](skills/ios/unit-testing.md) |
+| 170 | ✓ | [`skills/ios/xcode-warnings.md`](skills/ios/xcode-warnings.md) |
+| 171 | ✓ | [`skills/react-native/bridge-audit.md`](skills/react-native/bridge-audit.md) |
+| 172 | ✓ | [`skills/react-native/expo-optimize.md`](skills/react-native/expo-optimize.md) |
+| 173 | ✓ | [`skills/react-native/new-arch-migrate.md`](skills/react-native/new-arch-migrate.md) |
+| 174 | ✓ | [`skills/react-native/performance.md`](skills/react-native/performance.md) |
+| 175 | ✓ | [`skills/react-native/README.md`](skills/react-native/README.md) |
+| 176 | ✓ | [`skills/react-native/rn-review.md`](skills/react-native/rn-review.md) |
+| 177 | ✓ | [`skills/react-native/rn-tdd.md`](skills/react-native/rn-tdd.md) |
+| 178 | ✓ | [`skills/shared/accessibility-audit.md`](skills/shared/accessibility-audit.md) |
+| 179 | ✓ | [`skills/shared/crash-analysis.md`](skills/shared/crash-analysis.md) |
+| 180 | ✓ | [`skills/shared/README.md`](skills/shared/README.md) |
+| 181 | ✓ | [`skills/shared/security-scan.md`](skills/shared/security-scan.md) |
+| 182 | ✓ | [`skills/unity/README.md`](skills/unity/README.md) |
+| 183 | ✓ | [`skills/unity/shader-review.md`](skills/unity/shader-review.md) |
 
 ---
 

@@ -4,46 +4,46 @@ Send targeted notifications when Dynatrace detects a problem by configuring
 problem-triggered workflows. Workflows let you filter exactly which problems
 notify which channels, avoiding alert storms and routing incidents to the right team.
 
-## Simple Workflows vs. Normal Workflows
+## Simple Workflows vs. Standard Workflows
 
 Dynatrace distinguishes two tiers of workflows with different licensing and
 capability boundaries.
 
-| | Simple workflows | Normal workflows |
+| | Simple workflows | Standard workflows |
 |-|-----------------|-------------------|
 | **Included in license** | Yes — no additional consumption cost | No — billed according to the Dynatrace rate card |
-| **Action limit** | One action per workflow | Multiple actions, branching, loops |
-| **JavaScript actions** | Not available | Available for arbitrary automation logic |
+| **Task limit** | One task per workflow | Multiple tasks, branching, loops |
+| **Run JavaScript / Run workflow actions** | Not available | Available |
 | **Typical use case** | Problem notification to a single channel | Multi-step automation, cross-system orchestration |
-| **FaaS function execution** | Billed per rate card even for simple workflows | Billed per rate card |
+| **AppEngine function invocations** | One invocation billed per task execution | One invocation billed per task execution |
 
 ### Simple workflows
 
-A simple workflow consists of **exactly one trigger and one action**. Its primary
+A simple workflow consists of **exactly one trigger and one task**. Its primary
 purpose is alert notification: react to a problem event and send a message to a
 channel (Slack, email, ServiceNow, webhook, etc.). Because simple workflows are
 included in the Dynatrace license at no additional cost, they are the right choice
 for all standard notification use cases.
 
-**Note on FaaS billing:** Even though simple workflows are license-included,
-any execution that invokes a Function-as-a-Service (FaaS) action is billed
+**Note on AppEngine billing:** Even though simple workflows do not consume workflow hours,
+each task execution consumes one AppEngine function invocation, which is billed
 according to the Dynatrace rate card. This applies consistently across both
 workflow tiers.
 
-### Normal workflows
+### Standard workflows
 
-A normal workflow can contain **multiple actions**, conditional branching, loops,
-and **JavaScript code actions** that execute arbitrary logic. Normal workflows are
+A standard workflow can contain **multiple tasks**, conditional branching, loops,
+and **Run JavaScript / Run workflow actions** that execute arbitrary logic. Standard workflows are
 suited for automation scenarios that go beyond notification: creating and updating
 tickets, enriching problem context by calling external APIs, orchestrating
-remediation steps, or coordinating changes across multiple systems. Normal
+remediation steps, or coordinating changes across multiple systems. Standard
 workflow executions are billed according to the Dynatrace rate card.
 
 ---
 
 ## Contents
 
-- [Simple Workflows vs. Normal Workflows](#simple-workflows-vs-normal-workflows)
+- [Simple Workflows vs. Standard Workflows](#simple-workflows-vs-standard-workflows)
 - [How Problem Notifications Work](#how-problem-notifications-work)
 - [Trigger: Problem Events](#trigger-problem-events)
 - [Filtering Which Problems Notify](#filtering-which-problems-notify)
@@ -192,7 +192,7 @@ Recommended fields to include in the email body:
 - Start time: `{{event.start}}`
 - Root cause: `{{root_cause_entity_name}}`
 - Affected users: `{{dt.davis.affected_users_count}}`
-- Direct link: `https://<tenant>.apps.dynatrace.com/ui/problems/{{event.display_id}}`
+- Direct link: `{{ problem_link() }}`
 
 ### Slack
 
@@ -206,7 +206,7 @@ Structure the message for quick triage:
 Root cause: {{root_cause_entity_name}}
 Affected users: {{dt.davis.affected_users_count}}
 Started: {{event.start}}
-<https://<tenant>.apps.dynatrace.com/ui/problems/{{event.display_id}}|View in Dynatrace>
+<{{ problem_link() }}|View in Dynatrace>
 ```
 
 Use Slack `blocks` for richer formatting. Route to different channels by
@@ -226,8 +226,7 @@ Map fields:
 | `assignment_group` | Derived from `{{dt.alert_group}}` (use the group name that identifies the owning team) |
 | `work_notes` | Include Dynatrace problem URL |
 
-Add a **resolve** action triggered on `PROBLEM_RESOLVED` to automatically close
-or resolve the ServiceNow ticket.
+Add a separate workflow with the same problem trigger and condition `event.status == "CLOSED"` to automatically close or resolve the ServiceNow ticket on resolution.
 
 ### Webhook / HTTP Request
 
@@ -247,7 +246,7 @@ Content-Type: application/json
   "status": "{{event.status}}",
   "rootCause": "{{root_cause_entity_name}}",
   "affectedUsers": "{{dt.davis.affected_users_count}}",
-  "url": "https://<tenant>.apps.dynatrace.com/ui/problems/{{event.display_id}}"
+  "url": "{{ problem_link() }}"
 }
 ```
 
@@ -350,9 +349,8 @@ notification routing and makes both independently maintainable.
    filtering on their `dt.alert_group` value is easier to maintain and debug than
    one mega-workflow with complex branching.
 
-4. **Include the problem URL in every notification** — `{{event.display_id}}` is
-   not enough; include the direct deep link so recipients can navigate to the
-   problem in one click.
+4. **Include the problem URL in every notification** — use `{{ problem_link() }}`
+   so recipients can navigate to the problem in one click.
 
 5. **Handle the resolution event** — Always pair an open-notification workflow
    with a close-notification. Responders need to know when the incident is resolved,

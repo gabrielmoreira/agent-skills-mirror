@@ -8,7 +8,7 @@ Adds native [Hyperliquid](https://hyperliquid.xyz) perpetual-market integration 
 - **Account positions** — read open perp positions for a configured EVM address (size, entry price, unrealized PnL, leverage, liquidation price).
 - **Open orders** — read working limit orders for a configured account.
 - **Credential status** — inspect which credential mode is active (`managed_vault`, `local_key`, or `none`) and whether account reads are available.
-- **React UI views** — standard, XR, and terminal (TUI) views shipped in the plugin bundle and surfaced as agent app tabs.
+- **React UI view** — dashboard GUI view shipped in the plugin bundle and surfaced as an agent app tab.
 
 ## Actions
 

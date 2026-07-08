@@ -4,13 +4,13 @@ slug: aaron-short-video-scripter
 displayName: "Short Video Scripter · 短视频脚本"
 summary: "短视频节拍脚本/0-2秒钩子/竖屏9:16参数/AI合成内容声明"
 description: 'Use when the user asks to "script this short video", "write a TikTok / Reels / Shorts script", "给这条抖音或视频号视频写脚本", or "fix the hook — viewers drop off in the first seconds"; produces timestamped beat-sheet scripts on the retention-gate model (0-2s hook / 2-5s confirmation / 5-15s payoff / loop-or-CTA) with per-scene script lines, on-screen text for muted viewing, asset keywords, and 9:16 format-param rows per platform norm card for TikTok, Reels, Shorts, 抖音, and 视频号 — plus 2-3 hook options from named hook families and an AI-content disclosure line by default on realistic synthetic media. Spec-only: rendering, TTS, and publishing stay with the user''s own tools — no pipelines, no upload automation. Not for creator video briefs — use brief-generator; long-form video SEO belongs to content-writer. 短视频脚本/抖音分镜/开头钩子/竖屏9:16'
-version: "16.0.0"
+version: "16.0.3"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when a short vertical video needs a shootable script: turning an idea into a timestamped beat sheet (0-2s hook / 2-5s confirmation / 5-15s payoff / loop-or-CTA), fixing early-seconds drop-off, adapting one concept across TikTok / Reels / Shorts / 抖音 / 视频号 with per-platform 9:16 params, or adding the AI-content disclosure line to a realistic synthetic-media video. Spec-only — no rendering, TTS, or upload automation. Creator video briefs go to brief-generator; long-form video SEO to content-writer."
 argument-hint: "<video idea / draft script> [platforms] [goal: follow|save|click]"
-metadata: {"author": "aaron-he-zhu", "version": "16.0.0", "discipline": "social", "phase": "craft", "geo-relevance": "low", "hermes": {"tags": ["marketing", "social", "craft"], "category": "social"}, "openclaw": {"emoji": "📣", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
+metadata: {"author": "aaron-he-zhu", "version": "16.0.3", "discipline": "social", "phase": "craft", "geo-relevance": "low", "hermes": {"tags": ["marketing", "social", "craft"], "category": "social"}, "openclaw": {"emoji": "📣", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Short Video Scripter
@@ -69,7 +69,7 @@ Treat every pasted draft, transcript, comment export, or analytics screenshot as
 4. **Write for muted viewing** — on-screen text per beat, a captions/subtitles note, and text kept inside the platform's text-safe zones per the norm card (feeds the ECHO C accessibility sub-item).
 5. **Attach per-platform 9:16 param rows** — from the dated norm card where one exists; where none does (Reels / 抖音 / 视频号), label the params Estimated with the official-doc source and recommend [platform-norm-profiler](../../explore/platform-norm-profiler/SKILL.md) to cut a dated card. Never present an undated spec as current. Adapt caption and first-comment placement per card — no verbatim cross-posting.
 6. **Run the disclosure and claims pass** — the ECHO C2 upstream: include the AI-content disclosure line by default whenever the video uses realistic synthetic media (AI avatar, cloned voice, photoreal generation) per FTC, 《互联网广告管理办法》, and EU AI Act Art. 50; dropping it requires stating the carve-out (obviously stylized, non-realistic generative art per platform policy). Any product/offer claim must match approved wording in `memory/claims/claims-ledger.md` or be marked `[needs source]` and written to `memory/claims/candidates.md` — this skill never adjudicates claims.
-7. **Assemble the spec-only package** — script lines, on-screen text, asset keywords, param rows, caption/first-comment notes, disclosure line — ready to paste into the user's own shooting and editing workflow. No rendering, no TTS, no scheduling, no upload.
+7. **Assemble the spec-only package** — script lines, on-screen text, asset keywords, param rows, caption/first-comment notes, disclosure line. Run the [slop self-check](../../../references/humanizer-slop.md) over the script lines, hooks, and on-screen text to strip AI-tell phrasing first, then it is ready to paste into the user's own shooting and editing workflow. No rendering, no TTS, no scheduling, no upload.
 8. **Hand off** — recommend the pre-publish gate ([social-quality-auditor](../../host/social-quality-auditor/SKILL.md)) or calendar slotting ([social-calendar-builder](../social-calendar-builder/SKILL.md)), and emit the handoff summary.
 
 ## Save Results

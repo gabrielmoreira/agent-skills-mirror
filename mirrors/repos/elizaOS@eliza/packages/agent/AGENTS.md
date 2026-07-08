@@ -17,7 +17,7 @@ src/
   index.ts                Public barrel — re-exports api/runtime/services/config/auth/security/triggers
   version-resolver.ts     Resolves package version (__ELIZA_VERSION__ / package.json / build-info.json)
   cli/
-    index.ts              runAutonomousCli() — command dispatch: serve|start|tui|tui-smoke|runtime|ios-bridge|android-bridge|benchmark
+    index.ts              runAutonomousCli() — command dispatch: serve|start|runtime|ios-bridge|android-bridge|benchmark
     benchmark.ts          Headless benchmark runner (runBenchmark)
   runtime/
     eliza.ts              startEliza() / bootElizaRuntime() / startInCloudMode() — core boot orchestration
@@ -65,7 +65,6 @@ src/
   triggers/               runtime.ts (registerTriggerTaskWorker), scheduling.ts, types.ts
   auth/                   Credential storage + OAuth/Anthropic/OpenAI-Codex flows (account-storage, oauth-flow, refresh-mutex)
   security/               access.ts, audit-log.ts, network-policy.ts, mcp-server-config.ts (validateMcpServerConfig)
-  tui/                    agent-terminal-tui.ts, slash-commands.ts, tui-enabled.ts — terminal UI implementation
   awareness/              Re-exports AwarenessRegistry from @elizaos/shared
   hooks/                  loadHooks() / triggerHook() — workspace hook discovery + dispatch
   contracts/awareness.ts  Local-only awareness contract types
@@ -77,7 +76,7 @@ docs/                     capability-router-remote-plugins.md, e2b-capability-ro
 
 ## Key exports / surface
 
-- **Binary:** `eliza-autonomous` → `src/bin.ts` → `runAutonomousCli()`. Commands: `serve`/`start`, `runtime`, `tui`, `tui-smoke`, `ios-bridge`, `android-bridge`, `benchmark`.
+- **Binary:** `eliza-autonomous` → `src/bin.ts` → `runAutonomousCli()`. Commands: `serve`/`start`, `runtime`, `ios-bridge`, `android-bridge`, `benchmark`.
 - **Boot:** `startEliza()`, `bootElizaRuntime()`, `startInCloudMode()` (`runtime/eliza.ts`); `createElizaPlugin()` (`runtime/eliza-plugin.ts`) — the `Plugin` named `"eliza"` registering services (`AgentEventService`, `ElizaCharacterPersistenceService`, `AgentMediaGenerationService`, `PermissionRegistry`), workspace/session/rolodex providers, and the terminal/trigger/contact/settings/plugin/logs/runtime/database/memory/compact actions.
 - **HTTP:** `startApiServer()`, `dispatchRoute()`, route handlers (`@elizaos/agent/api`).
 - **Plugin sets:** `CORE_PLUGINS`, `BLOCKING_CORE_PLUGINS`, `DEFERRED_CORE_PLUGINS`, `OPTIONAL_CORE_PLUGINS`, `MOBILE_CORE_PLUGINS` (`runtime/core-plugins.ts`); `resolvePlugins()`, `collectPluginNames()`.

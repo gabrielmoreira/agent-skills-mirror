@@ -40,9 +40,9 @@ Both modes serve the same landing page. `/demo` sets a cookie and redirects to `
 - Auth: NextAuth v4 for UI (GitHub, Google, or OIDC), `x-api-key` header for agents/tools
 - **Version:** the platform and both SDKs share one version (Node + Python; see `CHANGELOG.md` / `package.json`).
 - SDKs:
-  - **Node v2 — governance runtime** (`sdk/dashclaw.js`, 149 methods across Core Governance, Scoring, Execution Studio, Messaging, Sessions, Work Orders, Drift Detection, and Capability Runtime). This is the SDK that ships as the `dashclaw` package.
-  - **Node v1 — DEPRECATED full platform legacy** (`sdk/legacy/dashclaw-v1.js`), re-exported as `dashclaw/legacy` for older integrations; removed in v5.0.0 (see `docs/sdk-parity.md`).
-  - **Python — full platform** (`sdk-python/dashclaw/client.py`, 234 methods).
+  - **Node — governance core** (`sdk/dashclaw.js`, 28 methods across Core Governance, Sessions, Assumptions, Signals, Security, Pairing, and durable finality). This is the SDK that ships as the `dashclaw` package.
+  - **Python — governance core + conveniences** (`sdk-python/dashclaw/client.py`, 51 methods).
+  - The deprecated `dashclaw/legacy` Node subpath was **removed in v5.0.0** (see `docs/sdk-parity.md`).
 - Node SDK naming: camelCase. Python SDK naming: snake_case.
 
 ## Auth Chain
@@ -157,7 +157,7 @@ Client request hits middleware.js
 | `/approvals` | Desktop approval queue |
 | `/decisions` | Visual causal chain ledger with inline message trails in expanded rows |
 | `/decisions/{actionId}` | Chronological decision timeline (guard decisions, messages, assumptions, actions, outcomes, open loops) |
-| `/agents` | Fleet roster (presence, health, recent actions) with a per-agent Coverage column — record + outcome coverage against transcript ground truth, explicit "no evidence" state when an agent has no reports. A Fan-outs panel below the roster lists recent multi-agent harness sessions and deep-links to `/swarm?swarm_id=<harness_session_id>` (scoped fan-out graph, `GET /api/agents/fanouts`) |
+| `/agents` | Fleet roster (presence, health, recent actions) with a per-agent Coverage column — record + outcome coverage against transcript ground truth, explicit "no evidence" state when an agent has no reports. A Fan-outs panel below the roster lists recent multi-agent harness sessions (`GET /api/agents/fanouts`) |
 | `/agents/{agentId}` | Agent governance profile — vitals strip, trust posture, policies, decisions, assumptions, signals |
 | `/policies` | Shields-first policy builder (ActivityTab + CustomTab, AI generator inline, agent-scope picker, risk explainer) |
 | `/policies/generate` | AI policy generator standalone page |
@@ -193,7 +193,7 @@ The left sidebar is organized into five groups (`app/components/Sidebar.js`). **
 | **Observe** | Security, Analytics, Activity, Compliance |
 | **Spend** | Overview, Purchases, Your Claude Code |
 | **Configure** | API Keys, Integrations, Webhooks, Identities, Settings |
-| **Labs** *(collapsible)* | Assumptions, Sessions, Drift, Learning, Quality, Prompts, Workflows, Model Strategies, Knowledge, Capabilities |
+| **Labs** *(collapsible)* | Assumptions, Sessions, Drift, Learning, Quality, Prompts, Model Strategies, Knowledge, Capabilities |
 
 ## CLI and Hooks Layer
 
@@ -230,21 +230,12 @@ These are optional packages published alongside the core runtime.
 - **stdio binary** — `npx @dashclaw/mcp-server --url ... --key ...` (Claude Desktop, Claude Code, MCP Inspector)
 - **Streamable HTTP** — `POST /api/mcp` on the DashClaw instance itself
 
-**33 tools across 12 groups:**
+**12 tools across 3 groups:**
 - *Core governance (9):* `dashclaw_guard`, `dashclaw_record`, `dashclaw_invoke`, `dashclaw_capabilities_list`, `dashclaw_policies_list`, `dashclaw_wait_for_approval`, `dashclaw_session_start`, `dashclaw_session_end`, `dashclaw_session_retro` — per-session defensibility retro (clean/review/flagged posture over injection flags, goal drift, spend anomalies, invalidated assumptions).
-- *Optimal files (2):* `dashclaw_optimal_files_preview`, `dashclaw_optimal_files_manifest`.
-- *Session continuity (3):* `dashclaw_handoff_create`, `dashclaw_handoff_latest`, `dashclaw_handoff_consume`.
-- *Credential hygiene (3):* `dashclaw_secret_list`, `dashclaw_secret_due`, `dashclaw_secret_mark_rotated`.
-- *Skill safety (1):* `dashclaw_skill_scan`.
-- *Open loops (3):* `dashclaw_loop_add`, `dashclaw_loop_list`, `dashclaw_loop_close`.
-- *Learning + retrospection (4):* `dashclaw_learning_log`, `dashclaw_learning_query`, `dashclaw_decisions_recent`, `dashclaw_assumption_record` — record an assumption an action rests on (validate/refute later).
-- *Agent inbox (2):* `dashclaw_inbox_list`, `dashclaw_messages_mark_read`.
+- *Retrospection (2):* `dashclaw_decisions_recent`, `dashclaw_assumption_record` — recent governed-action ledger; record an assumption an action rests on (validate/refute later).
 - *Agent identity (1):* `dashclaw_pair` — operator-approved pairing of an unidentified agent to a registered identity.
-- *Behavior learning (1):* `dashclaw_behavior_suggestions` — observe-only Policy Coach suggestions from recorded behavior.
-- *Governance posture (2, read-only):* `dashclaw_posture`, `dashclaw_posture_next` — org governance posture score + 6 dimensions + prioritized findings; read-only (remediation is human-gated).
-- *Work orders (2):* `dashclaw_work_order_submit`, `dashclaw_work_order_status` — submit a typed, budget-capped, guard-gated work order; check its lifecycle status and (when terminal) its self-verifying receipt.
 
-**6 resources:** `dashclaw://policies`, `dashclaw://capabilities`, `dashclaw://agent/{agent_id}/history`, `dashclaw://status`, `dashclaw://code-sessions/projects`, `dashclaw://code-sessions/sessions/{session_id}`.
+**4 resources:** `dashclaw://policies`, `dashclaw://capabilities`, `dashclaw://agent/{agent_id}/history`, `dashclaw://status`.
 
 Route inventory for tools is emitted from the shape to `mcp-server/lib/routes-inventory.generated.json` — keep tools and routes in sync.
 
@@ -256,7 +247,7 @@ Route inventory for tools is emitted from the shape to `mcp-server/lib/routes-in
 
 ## Signal Types
 
-DashClaw computes 18 signal types (`computeSignals` in `app/lib/signals.ts`). All are evaluated server-side without an LLM.
+DashClaw computes 17 signal types (`computeSignals` in `app/lib/signals.ts`). All are evaluated server-side without an LLM.
 
 | Signal Type | Trigger |
 |---|---|
@@ -269,7 +260,6 @@ DashClaw computes 18 signal types (`computeSignals` in `app/lib/signals.ts`). Al
 | `drift_alert` | Behavioral drift z-score exceeded threshold (open warning/critical drift alerts) |
 | `stale_assumption` | Assumption unverified for too long (red past 30 days) |
 | `stale_running_action` | Action stuck in `running` status (red past 24 hours) |
-| `workflow_stuck` | Workflow running without completing (red past 60 minutes) |
 | `approval_backlog` | Approval pending too long (red at 4+ hours) |
 | `integration_mismatch` | Agent reports using a provider whose credentials are missing or broken |
 | `session_stalled` | Session running with no tool activity for 2+ hours |
@@ -328,8 +318,7 @@ When you need current data from the codebase, read these:
 | OpenAPI spec (stable) | `docs/openapi/critical-stable.openapi.json` |
 | SDK parity matrix | `docs/sdk-parity.md` |
 | SDK README (copy-as-markdown source) | `sdk/README.md` |
-| Node v2 SDK source | `sdk/dashclaw.js` |
-| Node v1 legacy SDK source (DEPRECATED) | `sdk/legacy/dashclaw-v1.js` |
+| Node SDK source | `sdk/dashclaw.js` |
 | Python SDK source | `sdk-python/dashclaw/client.py` |
 | Middleware (auth chain) | `middleware.js` |
 | Sidebar navigation | `app/components/Sidebar.js` |
@@ -347,8 +336,6 @@ When you need current data from the codebase, read these:
 | Compliance exporter | `app/lib/compliance/exporter.js` |
 | Drift engine | `app/lib/drift.js` |
 | Learning analytics | `app/lib/learningAnalytics.js` |
-| Scoring profiles engine | `app/lib/scoringProfiles.js` |
-| LLM abstraction (optional) | `app/lib/llm.js` |
 | Doctor engine | `app/lib/doctor/` (+ generated `app/lib/doctor/generated/`) |
 | CLI entrypoint | `cli/bin/dashclaw.js` |
 | CLI doctor formatter | `cli/lib/doctor.js` |

@@ -6,10 +6,10 @@ Operational dossier for getting the bundle listed on every skills marketplace, d
 
 ## Submission kit (copy-paste)
 
-**Repo**: <https://github.com/aaron-he-zhu/aaron-marketing-skills> · Apache-2.0 · v16.0.0 · 120 skills + 8 commands
+**Repo**: <https://github.com/aaron-he-zhu/aaron-marketing-skills> · Apache-2.0 · v16.0.3 · 120 skills + 8 commands
 **Install (universal)**: `npx skills add aaron-he-zhu/aaron-marketing-skills` — 70+ hosts (Codex, Cursor, OpenCode, Antigravity, Gemini CLI, Copilot CLI, OpenClaw, Hermes, …)
 **Install (Claude Code plugin, full suite)**: `/plugin marketplace add aaron-he-zhu/aaron-marketing-skills` → `/plugin install aaron-marketing@aaron`
-**Live registry pages**: [skills.sh](https://skills.sh/aaron-he-zhu/aaron-marketing-skills) · ClawHub (`@aaron-he-zhu/<skill>`) · SkillHub.cn (slugs `aaron-<skill>`, publish pending)
+**Live registry pages**: [skills.sh](https://skills.sh/aaron-he-zhu/aaron-marketing-skills) · ClawHub (`@aaron-he-zhu/<skill>`) · SkillHub.cn (frontmatter slugs: `<skill>` when owned, otherwise `aaron-<skill>`)
 **Topics/tags**: marketing, seo, geo, influencer-marketing, paid-ads, email-marketing, organic-social, product-launch, go-to-market, brand-narrative, brand-messaging, agent-skills, claude-code, skill-md
 
 **One-liner (EN, ~120 chars)**
@@ -35,7 +35,7 @@ Example 6: "/aaron-marketing:auto turn our pricing page into an AI-citable compa
 ```
 
 **Reviewer/test notes (EN — for "submission details" fields)**
-> Validated with `claude plugin validate` (passes). 120 skills + 8 commands across seven disciplines; CI enforces frontmatter validity, 8-file version-sync, and install-discovery guards on every commit. Latest release: v16.0.0.
+> Validated with `claude plugin validate` (passes). 120 skills + 8 commands across seven disciplines; CI enforces frontmatter validity, 8-file version-sync, and install-discovery guards on every commit. Latest release: v16.0.3.
 
 **Awesome-list entry line (EN, generic)**
 ```markdown
@@ -54,8 +54,8 @@ Example 6: "/aaron-marketing:auto turn our pricing page into an AI-citable compa
 | # | Platform | Type | Status |
 |---|----------|------|--------|
 | 1 | [skills.sh](https://skills.sh/aaron-he-zhu/aaron-marketing-skills) | registry (telemetry) | ✅ live — `skills.sh.json` groupings shipped |
-| 2 | [SkillHub.cn](https://skillhub.cn) | registry (publish) | 🟡 **69/120 published (pre-v16 batch, 2026-07-04)** (skillIds 94980–95031+; platform review pending; publish needed 25s throttling — `--throttle`/`--resume-from` built into the script). Re-run for the 51 new social/narrative skills. |
-| 3 | [ClawHub](https://clawhub.ai) | registry (publish) | 🟡 2/120 published — `bash scripts/publish-clawhub.sh --i-accept-mit0` for the rest |
+| 2 | [SkillHub.cn](https://skillhub.cn) | registry (publish) | 🟡 owner-run publish tail in progress — verify the live dashboard before resuming; use `bash scripts/publish-skillhub.sh --dry-run` for local preflight and `bash scripts/finish-registry-publish.sh --live skillhub` for the known rate-limited tail |
+| 3 | [ClawHub](https://clawhub.ai) | registry (publish) | 🟡 owner-run publish tail in progress — verify live ClawHub before resuming; use `bash scripts/publish-clawhub.sh --dry-run` for local preflight and `bash scripts/finish-registry-publish.sh --live clawhub` for the known rate-limited tail |
 | 4 | [Anthropic community marketplace](https://github.com/anthropics/claude-plugins-community) | curated directory | 🟢 **submitted 2026-07-04, pending review** (Console form; surfaces: Claude Code + Cowork; watch the [community catalog](https://github.com/anthropics/claude-plugins-community/blob/main/.claude-plugin/marketplace.json) for `aaron-marketing`) |
 | 5 | [Skills Directory](https://www.skillsdirectory.com) | directory + security scan | 🟢 **submitted 2026-07-04** (owner, via /submit) |
 | 6 | [askill.sh](https://askill.sh) | registry | 🟡 CLI route times out from CN network (`askill login`/`submit` both) — use the **web form** askill.sh/submit instead; API token saved by owner |
@@ -86,7 +86,7 @@ Example 6: "/aaron-marketing:auto turn our pricing page into an AI-citable compa
 
 **Auto-crawl (passive — no submission exists; discovery levers below):** [SkillsMP](https://skillsmp.com) (2M+ skills, ~2-star minimum), [LobeHub Skills](https://lobehub.com/skills) (169k+, scrapes GitHub topics `claude-skills`/`agent-skills` + SKILL.md code search), [agentskill.sh](https://agentskill.sh) (`ags` CLI, 100k+ indexed, security-vetted), [skill0.io](https://skill0.io) (small curated crawl, no submit lever), [crossaitools.com](https://crossaitools.com) (ex-claudemarketplaces.com; ranked by installs/stars/votes). **Discovery levers, all already satisfied**: GitHub topics (`agent-skills`, `claude-skills`, `ai-skills`, `claude-code` — verified present, 20-topic cap reached), public SKILL.md files, stars/install velocity.
 
-**GitHub `gh skill` CLI — the one hard gap (verified 2026-07):** `gh skill install aaron-he-zhu/aaron-marketing-skills` fails with "no skills found" — the preview CLI only discovers `skills/*/SKILL.md`, `skills/{scope}/*/SKILL.md`, `{prefix}/skills/*/SKILL.md`, `*/SKILL.md`, or `plugins/*/skills/*/SKILL.md`, and (unlike `npx skills`) does **not** read `.claude-plugin/plugin.json` manifests. It also serves the **latest semver tag** (resolved `v16.0.0`), not `main` — cut releases to keep any future gh-skill content fresh. Prepared actions: (a) upstream feature request to [cli/cli](https://github.com/cli/cli/issues) asking for Claude-plugin-manifest discovery (precedent: vercel-labs/skills reads it, quote their plugin-manifest support); (b) fallback option, only if the user wants it: a flat auto-generated mirror repo (`skills/<name>/` layout, synced by Actions) — real maintenance cost, splits identity; not recommended while (a) is open.
+**GitHub `gh skill` CLI — the one hard gap (verified 2026-07):** `gh skill install aaron-he-zhu/aaron-marketing-skills` fails with "no skills found" — the preview CLI only discovers `skills/*/SKILL.md`, `skills/{scope}/*/SKILL.md`, `{prefix}/skills/*/SKILL.md`, `*/SKILL.md`, or `plugins/*/skills/*/SKILL.md`, and (unlike `npx skills`) does **not** read `.claude-plugin/plugin.json` manifests. It also serves the latest semver tag, not `main` — cut releases to keep any future gh-skill content fresh. Prepared actions: (a) upstream feature request to [cli/cli](https://github.com/cli/cli/issues) asking for Claude-plugin-manifest discovery (precedent: vercel-labs/skills reads it, quote their plugin-manifest support); (b) fallback option, only if the user wants it: a flat auto-generated mirror repo (`skills/<name>/` layout, synced by Actions) — real maintenance cost, splits identity; not recommended while (a) is open.
 
 **Not targetable now:** Smithery skills (no publish route documented), Agensi (paid/monetized marketplace, creator-contact onboarding — only if we want a commercial listing), ClaudeSkills.info / MCP Market / claudecodemarketplace.net / mcpservers.org (minor reach, mechanisms unverified).
 

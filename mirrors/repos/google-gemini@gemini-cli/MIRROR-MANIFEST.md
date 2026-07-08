@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google-gemini/gemini-cli` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
+Mirror of `google-gemini/gemini-cli` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google-gemini/gemini-cli` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 34 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,10 +89,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | ✓ | [`packages/sdk/test-data/skills/pirate-skill/SKILL.md`](packages/sdk/test-data/skills/pirate-skill/SKILL.md) |
 | 29 | ✓ | [`packages/test-utils/GEMINI.md`](packages/test-utils/GEMINI.md) |
 | 30 | ✓ | [`packages/vscode-ide-companion/GEMINI.md`](packages/vscode-ide-companion/GEMINI.md) |
-| 31 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/critique/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/critique/SKILL.md) |
-| 32 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/memory/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/memory/SKILL.md) |
-| 33 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/metrics/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/metrics/SKILL.md) |
-| 34 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/prs/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/prs/SKILL.md) |
+| 31 | ✓ | [`tools/caretaker-agent/cloudrun/triage-worker/.gemini/skills/effort/SKILL.md`](tools/caretaker-agent/cloudrun/triage-worker/.gemini/skills/effort/SKILL.md) |
+| 32 | ✓ | [`tools/caretaker-agent/cloudrun/triage-worker/.gemini/skills/quality/SKILL.md`](tools/caretaker-agent/cloudrun/triage-worker/.gemini/skills/quality/SKILL.md) |
+| 33 | ✓ | [`tools/caretaker-agent/cloudrun/triage-worker/.gemini/skills/spec_generator/SKILL.md`](tools/caretaker-agent/cloudrun/triage-worker/.gemini/skills/spec_generator/SKILL.md) |
+| 34 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/critique/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/critique/SKILL.md) |
+| 35 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/memory/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/memory/SKILL.md) |
+| 36 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/metrics/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/metrics/SKILL.md) |
+| 37 | ✓ | [`tools/gemini-cli-bot/.gemini/skills/prs/SKILL.md`](tools/gemini-cli-bot/.gemini/skills/prs/SKILL.md) |
 
 ---
 

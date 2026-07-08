@@ -1,10 +1,10 @@
 # @elizaos/plugin-facewear
 
-Unified facewear integration for XR headsets and smartglasses.
+Even Realities G1/G2 smartglasses integration for elizaOS.
 
-- View Manager pages at `/apps/facewear` and `/apps/smartglasses`.
-- Even Realities G1/G2 whole-headset pairing, display, microphone, side-tap, diagnostics, and bridge Wi-Fi setup.
-- XR session/view hosting for Meta Quest, XReal, Apple Vision Pro, simulator, and other WebXR clients.
+- Whole-headset BLE pairing through the native bridge, Web Bluetooth, or Noble.
+- Display, microphone, side-tap, Wi-Fi bridge, dashboard, and diagnostics actions.
+- Settings UI under Settings -> Wearables.
 
 Detailed Even Realities implementation notes and hardware proof workflow live in
 `docs/smartglasses.md`.

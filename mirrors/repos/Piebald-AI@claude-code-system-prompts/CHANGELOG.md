@@ -4,6 +4,41 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+#### [2.1.204](https://github.com/Piebald-AI/claude-code-system-prompts/commit/89ce9a7)
+
+<sub>_No changes to the system prompts in v2.1.204._</sub>
+
+# [2.1.203](https://github.com/Piebald-AI/claude-code-system-prompts/commit/d8b54c2)
+
+_+16,113 tokens_
+
+- **NEW:** Data: Background tasks changed event schema — Adds the `background_tasks_changed` level-event schema, including replace-set semantics, unspecified ordering relative to bookend events, id-only payloads, and per-process reset behavior.
+- **NEW:** Data: Context tip situation — subagent fan-out — Adds a context-tip situation for recognizing batches of similar independent subtasks that should fan out to subagents, while excluding broad investigations, staged workflows, and dependent steps.
+- **NEW:** System Reminder: Auto mode consent flow — Adds auto-mode guidance to try safe alternatives first, keep working when consent is blocked, batch remaining consent asks before ending the turn, and phrase each ask as one concise sentence with the consent-triggering item in bold.
+- **REMOVED:** Agent Prompt: Fleet agent suggestion scope personalization — Removes the prompt that generated three PR-personalized scope phrases for generic fleet coding tasks.
+- **REMOVED:** System Prompt: Tool execution denied — Removes the standalone tool-denial reminder that allowed reasonable alternate tools but prohibited malicious workarounds and asked the user for essential permissions.
+- Agent Prompt: Claude Code guide and Agent Prompt: Claude guide agent — Expands guide-agent routing to cover Claude Tag and a more precise Claude API surface, distinguishing the Claude Agent SDK, API Tool Runner, manual tool-use loops, and Managed Agents, while correcting which documentation map to fetch for each domain.
+- Agent Prompt: /code-review part 9 fix application — When the findings-reporting tool is available, requires `--fix` runs to report each finding outcome as `fixed`, `no_change_needed`, or `skipped`, avoid repeating findings as text, and only explain skipped findings afterward.
+- Agent Prompt: General purpose — Tells task-specific agents to do their assigned work directly and not re-delegate the entire assignment to another single subagent.
+- Agent Prompt: Security monitor for autonomous agent actions (first part) — Replaces broad high-severity user-intent checks with explicit soft-block consent bars, including `[named+specifics]`, rule-stated conditions, proposal-affirmation consent, and the rule that consent binds at the step that ships.
+- Agent Prompt: Security monitor for autonomous agent actions (first part) — Tightens user-intent interpretation by treating questions as non-consent, tool results and relayed agent instructions as untrusted for dangerous parameters, boundaries as active until clearly lifted, and post-block user reaffirmations as informed consent to the surfaced action.
+- Agent Prompt: Security monitor edit-removal guidance — Aligns hidden NotebookEdit delete/replace content with the UNSEEN TOOL RESULTS rule and keeps failed Edit removals from being treated as proof that prior risky content was sanitized.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Reworks environment and protected-content definitions around secrets, personal/entrusted sensitive data, confidential own work, regular working files, trusted repo/source-control scope, sensitive audiences, sensitive remote targets, protected IaC scopes, personal development environments, and Chrome-MCP browser control.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Adds per-rule `[named+specifics]` must-name requirements across soft blocks, narrows default-branch push blocking to flagged content or review bypass, and expands provenance/publication checks for sensitive-source content, public surfaces, live shared artifacts, sandbox callbacks, browser exfiltration, remote repoints, and public data-sharing uploads.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Refines allow exceptions so production actions only clear through named production intent or infrastructure-specific exceptions, transient retries are not auto-mode bypasses unless obfuscated, test artifacts must be authored placeholders, local operations stay within the session repo, and multi-agent coordination, memory-directory writes, benign `CLAUDE.md` edits, scheduling, and trusted browser navigation are allowed in scope.
+- Data: Live documentation sources; Data: Managed Agents endpoint reference; Data: Managed Agents overview; and Data: Managed Agents reference (Go, Java, PHP, Python, Ruby, TypeScript) — Promote `ant` CLI YAML as the recommended control-plane path for creating agents/environments, frame endpoints as the underlying API, and keep `agents.create()` in setup or guarded initialization rather than the request path.
+- Data: Managed Agents core concepts and Data: Managed Agents reference (cURL, Go, Java, PHP, Python, Ruby, TypeScript) — Correct Console trace URL guidance so `default` is used only for API keys in the Default workspace and non-default workspaces must substitute the workspace id instead of relying on auto-resolution.
+- Data: Managed Agents memory stores reference — Adds a warning not to store credentials, API keys, or tokens in memory stores because memories persist and replay into future sessions, pointing agents to vault `environment_variable` credentials and redaction for already-written secrets.
+- Data: Managed Agents tools and skills; Skill: Building LLM-powered applications with Claude — Clarify that vault `environment_variable` substitution only covers request headers and bodies on allowed hosts, not URL-path secrets, so path-secret endpoints such as Slack incoming webhooks need header-based auth instead.
+- Data: Managed Agents reference (Go, PHP) — Cleans up visible Markdown/code escaping so code fences, quotes, and apostrophes render as normal examples.
+- Data: Tool use concepts; Data: Tool use reference (Go, Python, TypeScript); Data: Streaming reference — Python; and Skill: Building LLM-powered applications with Claude — Make the SDK Tool Runner the default custom-tool agent path, documenting C# support, raw-schema helpers, approval/interception/result-modification/retry/streaming/compaction hooks, `pause_turn` caveats, and when a manual loop is still appropriate.
+- Skill: Building LLM-powered applications with Claude — Reworks agent-surface selection with a scheduled-deployments use case, a four-approach harness/deployment comparison, and explicit instructions to point Claude Agent SDK requests to the Code docs instead of generating API Tool Runner code.
+- Skill: Auto mode setup — Updates the worked consent example to avoid using `git push origin main` as the fallback, note that routine session-authored default-branch pushes can be outside the default-branch rule, and require chat consent examples to name what the block flagged.
+- Skill: Plugin eval authoring interview — Documents `files` as a newline-separated list of created file paths only, with `file_exists` checking the same created-files list and created-file contents graded via `{source: file, path}`.
+- Tool Description: Artifact — Adds `action: "list"` guidance for finding earlier-session artifacts and requires passing `url` whenever the user wants an existing artifact updated or its link kept, even if they did not paste the URL.
+- Tool Description: EnterWorktree — Allows `path` entry into registered worktrees belonging to nested repositories in multi-repo workspaces on first entry from the launch directory, while keeping same-repo requirements for later or pinned switches.
+- Tool Description: SendMessageTool — Updates cross-agent addressing so names keep working after completion and resume the transcript, using raw `agentId` only for unnamed agents or when a newer agent has taken the name.
+
 # [2.1.202](https://github.com/Piebald-AI/claude-code-system-prompts/commit/1398a62)
 
 _+3,217 tokens_

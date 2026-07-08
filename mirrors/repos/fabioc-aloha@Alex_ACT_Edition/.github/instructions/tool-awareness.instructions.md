@@ -1,7 +1,7 @@
 ---
 description: "Platform awareness for VS Code tool system: deferred tools require tool_search, external ingest provides context in remote workspaces, skill SKILL.md descriptions surface in the slash picker"
 applyTo: "**"
-lastReviewed: 2026-06-23
+lastReviewed: 2026-07-07
 ---
 
 # Tool Awareness
@@ -25,7 +25,7 @@ For common deferred tool categories and search-query patterns, see [tool-awarene
 
 In remote or virtual-filesystem workspaces (GitHub.dev, VS Code Remote, Codespaces), the editor provides codebase context automatically. `semantic_search` and file operations work transparently — no agent action needed.
 
-## VS Code 1.122–1.125 conveniences
+## VS Code 1.122–1.128 conveniences
 
 | Release | Capability | What it changes for me |
 |---|---|---|
@@ -41,6 +41,15 @@ In remote or virtual-filesystem workspaces (GitHub.dev, VS Code Remote, Codespac
 | 1.125 | `extensions.autoUpdateDelay` configurable | The 2-hour supply-chain delay introduced in 1.123 is now a configurable hour count. Edition does not pin a value — heirs ride the platform default — but the setting exists if a heir or org wants tighter / looser update windows. |
 | 1.125 | Forwarded-port URL rewriting for agents | When an agent in a remote workspace requests a port that has been forwarded, VS Code rewrites the URL and notifies the agent of the change. Reduces spurious browser-tool failures in Codespaces / Remote-SSH heir setups. No action needed; surface in fetch/browser diagnostics if a heir reports a port mismatch. |
 | 1.125 | Native MDM delivery for managed Copilot settings | On Windows/macOS, org admins can deliver Copilot settings via MDM channels in addition to the account-based enterprise file. Settings delivered via MDM appear as policy-enforced and cannot be overridden locally — heirs in MDM-managed orgs may see baseline `welcome-baseline.json` keys ignored if the MDM policy disagrees. |
+| 1.126 | Edit mode deprecated → Agent mode | `chat.editMode.hidden` also removed. Reinforces welcome-baseline `chat.agent.enabled: true` pin — user policy and platform default converged. Heirs with agent mode policy-disabled still see legacy Edit mode. |
+| 1.127 | macOS/Linux terminal sandboxing | Agent-invoked terminal commands run with network blocked + FS restricted; agent only prompts on elevation. Substantially reduces approval prompts on non-Windows heirs. Toggle in Permissions dropdown. Windows unaffected — Backtick Hazard + Output Capture rules still apply. |
+| 1.127 | `/troubleshoot` on agent host sessions | Adjacent to the brain's `ACT: Diagnose Fetch` pattern — platform-side diagnostic for agent behavior questions (custom instructions ignored, slow responses); not a replacement for our fetch diagnostics. |
+| 1.127 | Browser tools GA (`workbench.browser.enableChatTools`) | Agent can open pages, screenshot, click through to validate its own work. Org-managed setting. Enterprise policies `BrowserChatTools` + `ChatAgentNetworkFilter` (agent domain allow/deny lists) may block Mall/GitHub fetches for regulated heirs — surface a clear message rather than retrying when a fetch refuses. |
+| 1.127 | File-based managed Copilot settings | Extends 1.125 MDM channel: `managed-settings.json` at `%ProgramFiles%\GitHubCopilot\` (Win) / `/Library/Application Support/GitHubCopilot/` (mac) / `/etc/github-copilot/` (Linux). Same policy-lockout semantics as the MDM row — baseline keys may be ignored in policy-managed environments. |
+| 1.127 | Built-in Ollama provider deprecated | Official Ollama VS Code extension replaces it. Heirs using BYOK Ollama should install the extension and remove the built-in provider. No brain action; documents why `welcome-baseline.json` doesn't pin an Ollama provider. |
+| 1.128 | BYOK Claude via own Anthropic key | Heirs can run the Claude agent through their own Anthropic API credentials instead of consuming GitHub Copilot quota. Relevant to the Model Compatibility credit-economy discussion in Edition README. No baseline setting; user-opt-in via Claude harness auth. |
+| 1.128 | Custom endpoint model options for BYOK | Enables BYOK against strict-schema providers (Moonshot, Kimi, etc.) that reject non-standard params. `temperature` and provider-specific options now configurable. Unblocks heirs who reported provider-rejection errors before this. |
+| 1.128 | Claude agent → integrated browser DOM/tools | Feature parity with the Copilot agent's browser tools GA (1.127). Same `BrowserChatTools` + `ChatAgentNetworkFilter` enterprise policies apply. |
 
 ## Skill Picker Surfacing (VS Code 1.118+)
 

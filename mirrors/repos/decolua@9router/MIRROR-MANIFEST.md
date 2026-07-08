@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `decolua/9router` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `decolua/9router` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `decolua/9router` — 26 default patterns, 0 followed patterns, 11 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,17 +59,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`open-sse/AGENTS.md`](open-sse/AGENTS.md) |
-| 2 | ✓ | [`skills/9router-chat/SKILL.md`](skills/9router-chat/SKILL.md) |
-| 3 | ✓ | [`skills/9router-embeddings/SKILL.md`](skills/9router-embeddings/SKILL.md) |
-| 4 | ✓ | [`skills/9router-image/SKILL.md`](skills/9router-image/SKILL.md) |
-| 5 | ✓ | [`skills/9router-stt/SKILL.md`](skills/9router-stt/SKILL.md) |
-| 6 | ✓ | [`skills/9router-tts/SKILL.md`](skills/9router-tts/SKILL.md) |
-| 7 | ✓ | [`skills/9router-web-fetch/SKILL.md`](skills/9router-web-fetch/SKILL.md) |
-| 8 | ✓ | [`skills/9router-web-search/SKILL.md`](skills/9router-web-search/SKILL.md) |
-| 9 | ✓ | [`skills/9router/SKILL.md`](skills/9router/SKILL.md) |
-| 10 | ✓ | [`skills/README.md`](skills/README.md) |
-| 11 | ✓ | [`tests/translator/AGENTS.md`](tests/translator/AGENTS.md) |
+| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`open-sse/AGENTS.md`](open-sse/AGENTS.md) |
+| 3 | ✓ | [`skills/9router-chat/SKILL.md`](skills/9router-chat/SKILL.md) |
+| 4 | ✓ | [`skills/9router-embeddings/SKILL.md`](skills/9router-embeddings/SKILL.md) |
+| 5 | ✓ | [`skills/9router-image/SKILL.md`](skills/9router-image/SKILL.md) |
+| 6 | ✓ | [`skills/9router-stt/SKILL.md`](skills/9router-stt/SKILL.md) |
+| 7 | ✓ | [`skills/9router-tts/SKILL.md`](skills/9router-tts/SKILL.md) |
+| 8 | ✓ | [`skills/9router-web-fetch/SKILL.md`](skills/9router-web-fetch/SKILL.md) |
+| 9 | ✓ | [`skills/9router-web-search/SKILL.md`](skills/9router-web-search/SKILL.md) |
+| 10 | ✓ | [`skills/9router/SKILL.md`](skills/9router/SKILL.md) |
+| 11 | ✓ | [`skills/README.md`](skills/README.md) |
+| 12 | ✓ | [`tests/translator/AGENTS.md`](tests/translator/AGENTS.md) |
 
 ---
 

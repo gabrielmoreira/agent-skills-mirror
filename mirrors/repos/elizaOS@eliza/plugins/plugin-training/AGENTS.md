@@ -20,8 +20,6 @@ Adds data collection, trajectory export, prompt optimization, GPU training orche
 ### Views (registered on `trainingPlugin`)
 
 - `training` — Fine-tuning dashboard (`FineTuningView`). `developerOnly: true`.
-- `training` (xr) — Same view in XR surface.
-- `training/tui` — Terminal variant (`FineTuningTuiView`).
 
 ### Services
 

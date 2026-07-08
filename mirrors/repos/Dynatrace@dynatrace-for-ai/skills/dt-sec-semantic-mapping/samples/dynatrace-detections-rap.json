@@ -1,0 +1,63 @@
+[
+    {
+      "timestamp": "2026-04-24T13:31:12.506575082Z",
+      "event.id": "1777036984607_06020555807603002828",
+      "event.kind": "SECURITY_EVENT",
+      "event.provider": "OneAgent",
+      "event.type": "DETECTION_FINDING",
+      "actor.ips": [
+        "10.9.3.8"
+      ],
+      "finding.action": "Audited",
+      "finding.type": "SSRF",
+      "finding.id": "A-3T6EHMZG",
+      "finding.time.created": "2026-04-24T13:23:04.607000000Z",
+      "finding.title": "SSRF attempt at JndiManager.lookup():128",
+      "finding.severity": "CRITICAL",
+      "dt.source_entity": "PROCESS_GROUP_INSTANCE-C310E99C16CC79DD",
+      "dt.source_entity.type": "process_group_instance",
+      "dt.entity.host": "HOST-ABD42981B3D483AC",
+      "dt.smartscape_source.id": "PROCESS-C310E99C16CC79DD",
+      "dt.smartscape_source.type": "PROCESS",
+      "dt.smartscape.process": "PROCESS-C310E99C16CC79DD",
+      "dt.smartscape.host": "HOST-ABD42981B3D483AC",
+      "dt.entity.process_group": "PROCESS_GROUP-A15E7F3CFFF5B15F",
+      "dt.entity.process_group_instance": "PROCESS_GROUP_INSTANCE-C310E99C16CC79DD",
+      "dt.agent.module.version": "1.337.0.20260402-061700",
+      "dt.agent.module.version_short": "1.337",
+      "dt.agent.module.type": "JAVA",
+      "host.name": "HOST-IG-1-5001",
+      "object.id": "PROCESS-C310E99C16CC79DD",
+      "object.type": "PROCESS",
+      "object.name": "BloatedJavaSoftwareGroup-IG-1",
+      "span.id": "cfe66406cdcde7f7",
+      "trace.id": "3aa25645a7dc0dde5e9983654d1cac03",
+      "trace.is_sampled": true,
+      "vulnerability.code_location.name": "org.apache.logging.log4j.core.net.JndiManager.lookup(String):128",
+      "entry_point.payload": "http://some-server.net/some/path",
+      "entry_point.function.name": "sun.net.www.protocol.http.HttpURLConnection.plainConnect0()",
+      "entry_point.url.path": "/insecure-app?url=some-server.net",
+      "entry_point.user_controlled_inputs_json": "[{\"user_controlled_input.type\":\"HTTP_PARAMETER_VALUE\",\"user_controlled_input.key\":\"server\",\"user_controlled_input.value\":\"some-server.net\",\"user_controlled_input.is_malicious\":true,\"user_controlled_input.payload.start\":7,\"user_controlled_input.payload.end\":22}]",
+      "entry_point.user_controlled_inputs": [
+        {
+          "user_controlled_input.type": "HTTP_PARAMETER_VALUE",
+          "user_controlled_input.key": "server",
+          "user_controlled_input.value": "some-server.net",
+          "user_controlled_input.payload.start": "7",
+          "user_controlled_input.payload.end": "22",
+          "user_controlled_input.is_malicious": true
+        }
+      ],
+      "dt.security.rap.target.type": "host",
+      "dt.security.rap.target.name": "http://some-server.net/some/path",
+      "dt.security.risk.level": "CRITICAL",
+      "dt.security.risk.score": 10,
+      "http.request.method": "GET",
+      "product.name": "Runtime Application Protection",
+      "product.vendor": "Dynatrace",
+      "dt.openpipeline.source": "/platform/ingest/v1/security.events",
+      "dt.openpipeline.pipelines": [
+        "security.events.internal:default"
+      ]
+    }
+]

@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 10
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,12 +63,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-diagnostics.md`](.claude/skills/ha-integration-knowledge/platform-diagnostics.md) |
 | 3 | ✓ | [`.claude/skills/ha-integration-knowledge/platform-repairs.md`](.claude/skills/ha-integration-knowledge/platform-repairs.md) |
 | 4 | ✓ | [`.claude/skills/ha-integration-knowledge/SKILL.md`](.claude/skills/ha-integration-knowledge/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/ha-pr-reviewer/SKILL.md`](.claude/skills/ha-pr-reviewer/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/ha-review/SKILL.md`](.claude/skills/ha-review/SKILL.md) |
-| 7 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 8 | ✓ | [`.github/instructions/integrations.instructions.md`](.github/instructions/integrations.instructions.md) |
-| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`.claude/skills/ha-pr-comment-audit/SKILL.md`](.claude/skills/ha-pr-comment-audit/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/ha-pr-reviewer/SKILL.md`](.claude/skills/ha-pr-reviewer/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/ha-review/SKILL.md`](.claude/skills/ha-review/SKILL.md) |
+| 8 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 9 | ✓ | [`.github/instructions/integrations.instructions.md`](.github/instructions/integrations.instructions.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

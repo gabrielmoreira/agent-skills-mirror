@@ -47,6 +47,46 @@ Avoid generic AI copywriting cliches such as "Elevate", "Seamless", and
 - `lib/events/` + `lib/jobs/` — Reconciliation core
 - `instrumentation.ts` — Application startup
 
+## Image Tagging Policy
+
+Manual image publishing uses a single GHCR repository:
+
+```text
+ghcr.io/fullagent/fulling
+```
+
+For formal releases tagged `vX.Y.Z`, publish:
+
+```text
+ghcr.io/fullagent/fulling:vX.Y.Z
+ghcr.io/fullagent/fulling:sha-<short-sha>
+ghcr.io/fullagent/fulling:latest
+```
+
+For prereleases tagged `vX.Y.Z-alpha.N`, `vX.Y.Z-beta.N`, or `vX.Y.Z-rc.N`,
+publish:
+
+```text
+ghcr.io/fullagent/fulling:vX.Y.Z-alpha.N
+ghcr.io/fullagent/fulling:vX.Y.Z-beta.N
+ghcr.io/fullagent/fulling:vX.Y.Z-rc.N
+ghcr.io/fullagent/fulling:sha-<short-sha>
+```
+
+Prereleases must not update `latest`.
+
+For temporary validation images that are not releases, use purpose-prefixed SHA
+tags only:
+
+```text
+ghcr.io/fullagent/fulling:dev-<short-sha>
+ghcr.io/fullagent/fulling:test-<short-sha>
+ghcr.io/fullagent/fulling:debug-<short-sha>
+```
+
+Do not use ambiguous moving tags such as `main`, `stable`, `prod`, `release`,
+`v3`, or `v3.0`.
+
 ## Development Commands
 
 ```bash

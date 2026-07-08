@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ferminrp/agent-skills` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `ferminrp/agent-skills` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ferminrp/agent-skills` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,11 +77,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`skills/mapcn/references/api-cheatsheet.md`](skills/mapcn/references/api-cheatsheet.md) |
 | 17 | ✓ | [`skills/mapcn/references/docs-pages.md`](skills/mapcn/references/docs-pages.md) |
 | 18 | ✓ | [`skills/mapcn/SKILL.md`](skills/mapcn/SKILL.md) |
-| 19 | ✓ | [`skills/riesgo-pais-argentina/SKILL.md`](skills/riesgo-pais-argentina/SKILL.md) |
-| 20 | ✓ | [`skills/travel-promos-argentina/SKILL.md`](skills/travel-promos-argentina/SKILL.md) |
-| 21 | ✓ | [`skills/workflowy/references/api-reference.md`](skills/workflowy/references/api-reference.md) |
-| 22 | ✓ | [`skills/workflowy/SKILL.md`](skills/workflowy/SKILL.md) |
-| 23 | ✓ | [`skills/writing-well/SKILL.md`](skills/writing-well/SKILL.md) |
+| 19 | ✓ | [`skills/product-shaping/references/prototype-guide.md`](skills/product-shaping/references/prototype-guide.md) |
+| 20 | ✓ | [`skills/product-shaping/references/shaping-doc-template.md`](skills/product-shaping/references/shaping-doc-template.md) |
+| 21 | ✓ | [`skills/product-shaping/SKILL.md`](skills/product-shaping/SKILL.md) |
+| 22 | ✓ | [`skills/riesgo-pais-argentina/SKILL.md`](skills/riesgo-pais-argentina/SKILL.md) |
+| 23 | ✓ | [`skills/travel-promos-argentina/SKILL.md`](skills/travel-promos-argentina/SKILL.md) |
+| 24 | ✓ | [`skills/workflowy/references/api-reference.md`](skills/workflowy/references/api-reference.md) |
+| 25 | ✓ | [`skills/workflowy/SKILL.md`](skills/workflowy/SKILL.md) |
+| 26 | ✓ | [`skills/writing-well/SKILL.md`](skills/writing-well/SKILL.md) |
 
 ---
 

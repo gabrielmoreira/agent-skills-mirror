@@ -11,7 +11,7 @@ Adds Polymarket prediction-market capabilities to an Eliza agent:
 - **Orderbook quotes** — reads full CLOB bid/ask depth for a token ID and derives best bid, best ask, midpoint, and spread.
 - **Wallet positions** — returns open positions for a given wallet address from the Polymarket Data API.
 - **Trading readiness** — reports which credentials are configured and why signed order placement is currently disabled.
-- **UI views** — desktop, XR, and TUI views registered in the elizaOS view registry.
+- **UI view** — GUI view registered in the elizaOS view registry.
 
 ## Enabling the plugin
 
@@ -79,4 +79,4 @@ The `/api/polymarket/orderbook` route reads the full CLOB orderbook for a token 
 bun run --cwd plugins/plugin-polymarket build
 ```
 
-This runs tsup (runtime bundle), Vite (view bundle for desktop/TUI views), and tsc (type declarations).
+This runs tsup (runtime bundle), Vite (GUI view bundle), and tsc (type declarations).

@@ -35,7 +35,7 @@ CodePilot — Codex 的桌面 GUI 客户端，基于 Electron + Next.js。
 - `npm run test:smoke` — 冒烟测试（需要 dev server）
 - `npm run test:e2e` — 完整 E2E（需要 dev server）
 
-**pre-commit hook 实际只自动执行**：`lint-hooks` + `lint-staged`（含 docs-drift）+ `tsc --noEmit` + 单元测试（`CODEX_DISABLED=1`）。**不自动跑 `test:smoke` / `test:e2e`**——那两个需要 dev server，按风险手动触发，不是每次提交的门禁。
+**pre-commit hook 按改动分层**（`scripts/pre-commit-tier.mjs` 分类，fail-closed）：`lint-hooks` + `lint-staged`（含 docs-drift）**恒跑**；随后 **docs-only 改动跳过 `tsc` + 单测**，**代码/测试/依赖/构建脚本/配置/未知扩展名跑 `tsc --noEmit` + 单元测试（`CODEX_DISABLED=1`）**。**不自动跑 `test:smoke` / `test:e2e`**——那两个需要 dev server，按风险手动触发。
 
 ## Codex review 规则
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pulumi/agent-skills` — 26 default patterns, 2 followed patterns, 26 file(s) materialized.
+Mirror of `pulumi/agent-skills` — 26 default patterns, 2 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pulumi/agent-skills` — 26 default patterns, 2 followed patterns, 26
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 26 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -82,10 +82,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`pulumi/skills/pulumi-automation-api/SKILL.md`](pulumi/skills/pulumi-automation-api/SKILL.md) |
 | 21 | ✓ | [`pulumi/skills/pulumi-best-practices/SKILL.md`](pulumi/skills/pulumi-best-practices/SKILL.md) |
 | 22 | ✓ | [`pulumi/skills/pulumi-component/SKILL.md`](pulumi/skills/pulumi-component/SKILL.md) |
-| 23 | ✓ | [`pulumi/skills/pulumi-esc/SKILL.md`](pulumi/skills/pulumi-esc/SKILL.md) |
-| 24 | ✓ | [`pulumi/skills/pulumi-overview/SKILL.md`](pulumi/skills/pulumi-overview/SKILL.md) |
-| 25 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 26 | → | [`README.md`](README.md) |
+| 23 | ✓ | [`pulumi/skills/pulumi-debug-failed-operation/SKILL.md`](pulumi/skills/pulumi-debug-failed-operation/SKILL.md) |
+| 24 | ✓ | [`pulumi/skills/pulumi-esc/SKILL.md`](pulumi/skills/pulumi-esc/SKILL.md) |
+| 25 | ✓ | [`pulumi/skills/pulumi-overview/SKILL.md`](pulumi/skills/pulumi-overview/SKILL.md) |
+| 26 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 27 | → | [`README.md`](README.md) |
 
 ---
 

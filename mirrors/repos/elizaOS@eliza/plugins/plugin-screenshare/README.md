@@ -9,7 +9,6 @@ When loaded, the plugin:
 - Creates and manages **screen-share sessions** backed by the local machine's desktop.
 - Serves a **self-contained viewer** (`/api/apps/screenshare/viewer`) — a single HTML page that streams live screenshots and relays clicks, key presses, and scrolls back to the host.
 - Provides an **operator surface** inside the elizaOS dashboard (a React panel) where you can start, stop, copy, and open host sessions, and connect to a remote session by entering its server URL, session ID, and token.
-- Exposes a **TUI view** (`/screenshare/tui`) that renders session and capability state in a terminal-friendly layout.
 - All desktop capture and input dispatch is handled by `@elizaos/plugin-computeruse`, which supports macOS, Linux, and Windows.
 
 ## Capabilities

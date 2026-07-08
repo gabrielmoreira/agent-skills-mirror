@@ -9,7 +9,6 @@ Once loaded, the plugin mounts:
 - A standalone static HTML tester at `GET /model-tester` — works without any frontend build.
 - JSON API endpoints at `/api/model-tester/status` (model availability) and `/api/model-tester/run` (run a probe).
 - A React overlay app (`ModelTesterAppView`) registered in the elizaOS app shell, visible in the apps grid under the **system** category.
-- A TUI view at `/model-tester/tui` for terminal-based use.
 
 ## Probes
 

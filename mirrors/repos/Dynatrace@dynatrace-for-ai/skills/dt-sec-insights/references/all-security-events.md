@@ -283,6 +283,16 @@ To present the merged result, label each stream's rows by source (external provi
 name / `Dynatrace RVA` / `Dynatrace KSPM`) and concatenate — the three streams are
 disjoint by construction.
 
+> **Presentation order — lead with compliance (CIS).** When merging the streams for a
+> broad question, present **Stream C's KSPM compliance failed-rule count as the headline
+> summary**, with **CIS first** (CIS is the mandatory K8s baseline; sort it to the top via
+> [compliance.md § CIS-Primary Standard Summary](compliance.md)). List the other KSPM
+> standards (DORA / NIST / DISA STIG) immediately after as *additional* failed rules that
+> may overlap with CIS — never sum failed counts across standards. Then show Stream B (RVA
+> vulnerabilities) and Stream A (external + DT detections) beneath. This is a **presentation**
+> choice only — the streams stay disjoint by construction (a correctness property); leading
+> with compliance does not merge or re-weight the underlying counts.
+
 **Entity-scoped broad questions follow the same decomposition.** If the user asks
 for "security findings" on a specific entity (host, K8s node, workload, cluster,
 service), do not query only RVA/SPM. Run Stream A scoped to the entity with the
@@ -290,7 +300,17 @@ wide entity OR-chain (`dt.smartscape_source.id`, `dt.entity.*`, `object.*`,
 relevant `k8s.*`) and merge it with
 Stream B (RVA `affected_entity.*` / `related_entities.*`) and Stream C (SPM object
 scope). A 0-row Stream A result means **no external findings matched that entity**
-for the stated window — it is still part of the answer.
+for the stated window — it is still part of the answer. Apply the same CIS-led
+presentation order above.
+
+When the user explicitly asks about *compliance / misconfigurations* on the entity (rather
+than all findings), render Stream C as the **Entity Security-Tab View** — three tables
+mirroring the entity Security tab (CIS default, failed-only):
+**Table 1** Dynatrace CIS failed rules → **Table 2** other DT standards (DORA/NIST/STIG,
+overlap caveat) → **Table 3** the external `COMPLIANCE_FINDING` subset of Stream A (externally
+ingested misconfigurations) scoped to the entity. See
+[compliance.md § Entity Security-Tab View](compliance.md) (broad posture/count questions
+instead use § CIS-Primary Standard Summary).
 
 ---
 

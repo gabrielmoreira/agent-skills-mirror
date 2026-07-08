@@ -1,5 +1,7 @@
 # Dashboard Analysis & Information Extraction
 
+**Fetch the JSON first:** `dtctl get dashboard <id> -o json --plain` returns the full content (`.content.tiles`, `.content.variables`). `describe` returns metadata only — no tiles.
+
 ## Two Main Workflows
 
 1. **Look into dashboard** — read global context, then tiles top-to-bottom

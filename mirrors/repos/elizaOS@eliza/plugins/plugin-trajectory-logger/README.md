@@ -11,7 +11,7 @@ When installed, the plugin adds an overlay view to the elizaOS UI. The view poll
 
 Clicking any phase chip expands a drilldown showing LLM calls, provider accesses, tool events, or evaluator results depending on the phase.
 
-A **TUI variant** is also registered for terminal environments, supporting the `list-trajectories`, `open-latest`, `filter-phase`, and `refresh` capabilities.
+The view also exports an interact handler for agent-driven operations such as `list-trajectories`, `open-latest`, `filter-phase`, and `refresh`.
 
 ## Phases
 

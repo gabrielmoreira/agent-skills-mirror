@@ -19,7 +19,7 @@ Adds two distinct surfaces to elizaOS. The Android surface provides a full-scree
   future provider/action migration.
 
 **Views** (registered in `plugin.ts` under `plugin.views`)
-- `phone` — ONE declaration (`modalities: ["gui", "xr", "tui"]`, componentExport `PhoneView`), mounted at `/phone`. `PhoneView` owns the live Android data and renders the single presentational `PhoneSpatialView` inside a `SpatialSurface`; the same `PhoneSpatialView` drives the terminal surface via `register-terminal-view.tsx`. The address book is the separate Contacts view; a "Contacts" control links to it via the `eliza:navigate:view` bus.
+- `phone` — one shipped GUI declaration (`modalities: ["gui"]`, componentExport `PhoneView`), mounted at `/phone`. `PhoneView` owns the live Android data and renders the single presentational `PhoneSpatialView` inside a `SpatialSurface`. The address book is the separate Contacts view; a "Contacts" control links to it via the `eliza:navigate:view` bus.
 
 **App nav tab** (registered under `plugin.app.navTabs`)
 - `phone-companion` — Mounts `PhoneCompanionApp` at `/phone-companion`; declared for hosts that do not side-effect-import `register-companion-page.ts`.
@@ -30,10 +30,8 @@ Adds two distinct surfaces to elizaOS. The Android surface provides a full-scree
 src/
   index.ts                       Package barrel — public exports
   plugin.ts                      Plugin object (appPhonePlugin / default)
-  register.ts                    Side-effect entry: registers the companion page (all
-                                 hosts) + the terminal phone view (Node agent)
+  register.ts                    Side-effect entry: registers the companion page
   register-companion-page.ts     Registers PhoneCompanionApp with @elizaos/ui app-shell-registry
-  register-terminal-view.tsx     Registers PhoneSpatialView for the terminal/TUI surface
   ui.ts                          Re-exports all UI components under public names
   twilio.ts                      Twilio helpers: sendTwilioSms, sendTwilioVoiceCall,
                                  readTwilioCredentialsFromEnv, billing calc
@@ -41,11 +39,11 @@ src/
     call-log.ts                  phoneCallLog provider (dynamic, ADMIN-gated)
   components/
     phone-view-bundle.ts         View bundle entry: re-exports PhoneView + interact
-    PhoneView.tsx                Unified GUI/XR data wrapper (owns hooks/fetch),
+    PhoneView.tsx                GUI data wrapper (owns hooks/fetch),
                                  renders <SpatialSurface><PhoneSpatialView/></SpatialSurface>
-    PhoneSpatialView.tsx         Pure spatial-primitive phone surface (GUI/XR/TUI)
+    PhoneSpatialView.tsx         Pure spatial-primitive phone surface
     phone-view-helpers.ts        Pure data helpers (normalizeNumber, callLabelFor, loadPhoneState)
-    phone-interact.ts            interact() — TUI capability bridge
+    phone-interact.ts            interact() view capability handler
   companion/
     index.ts                     Companion barrel
     components/
@@ -102,11 +100,11 @@ The `phoneCallLog` provider reads no env vars; it calls `Phone.listRecentCalls` 
 
 **Add a companion view:** Add a React component under `src/companion/components/`. Add the view name to the `ViewName` union in `src/companion/services/navigation.ts`. Add the render branch in `PhoneCompanionApp.tsx`'s `renderView`.
 
-**Add a TUI capability:** Extend the `interact()` function in `src/components/phone-interact.ts` with a new `if (capability === "...")` branch.
+**Add a view capability:** Extend the `interact()` function in `src/components/phone-interact.ts` with a new `if (capability === "...")` branch.
 
 ## Conventions / gotchas
 
-- **One unified view, no overlay app.** The dialer + recent-calls surface ships only as the `phone` plugin view (`PhoneView` → `PhoneSpatialView`). There is no separate overlay-app registration; `src/register.ts` registers the companion page (all hosts) and the terminal phone view (Node agent) only.
+- **One GUI view, no overlay app.** The dialer + recent-calls surface ships only as the `phone` plugin view (`PhoneView` → `PhoneSpatialView`). There is no separate overlay-app registration; `src/register.ts` registers the companion page for hosts that mount it.
 - **VOICE_CALL is host-adapted.** Do not add a second phone action here unless
   the PA-hosted owner gating, approval queue flow, recipient policy, and Twilio
   dispatch move with parity tests.

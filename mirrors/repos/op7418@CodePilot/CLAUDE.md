@@ -89,13 +89,13 @@ CodePilot — 多模型 AI Agent 桌面客户端，基于 Electron + Next.js。
 - `npm run test:smoke` — 冒烟测试（需要 dev server）
 - `npm run test:e2e` — 完整 E2E（需要 dev server）
 
-**pre-commit hook 实际执行：**
-- `node scripts/lint-hooks.mjs`
-- `npx lint-staged`
-- `npx tsc --noEmit`
-- `CODEX_DISABLED=1 npx tsx --test src/__tests__/unit/*.test.ts`
+**pre-commit hook 实际执行（按改动分层，`scripts/pre-commit-tier.mjs` 判定，fail-closed）：**
+- 恒跑：`node scripts/lint-hooks.mjs` + `npx lint-staged`（含 docs-drift）
+- **docs-only**（全部暂存文件都是 `docs/**` / `*.md` / `*.txt` / `LICENSE` 等）：到此为止，**跳过 `tsc` + 单测**
+- **代码 / 测试 / 依赖 / 构建脚本 / 配置 / 未知扩展名**：追加 `npx tsc --noEmit` + `CODEX_DISABLED=1 npx tsx --test --import ./src/__tests__/db-isolation.setup.ts src/__tests__/unit/*.test.ts`
+- fail-closed：分类器出错 / 空暂存集 / 非 `docs` 判定一律走全量门禁（防「前置失败被静默放行」回归）
 
-提交前至少确保 `npm run test` 通过；`test:smoke` / `test:e2e` 按风险触发，不是每次提交的默认门禁。
+高风险 docs（release / security / runtime / provider / permission / DB schema）即便走 docs 快路，也应手动跑 `npm run test`（必要时 build / smoke）。`test:smoke` / `test:e2e` 按风险触发，不是每次提交的默认门禁。
 
 **验证分层：**
 - Tier 0：纯视觉 / 间距 / className 调整。迭代时做代码审查 + 浏览器视觉检查 + console 检查即可；不要把 commit 当作 spacing 调整的迭代循环，攒成一批后再跑提交门禁。

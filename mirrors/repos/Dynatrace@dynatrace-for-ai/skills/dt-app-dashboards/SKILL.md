@@ -35,6 +35,10 @@ tiles (content/visualizations), layouts (grid positioning), and variables
 
 **Optional content properties:** `settings`, `refreshRate`, `annotations`
 
+## Reading & Analyzing
+
+Fetch full content with `dtctl get dashboard <id> -o json --plain` (`describe` returns metadata only), then inspect the JSON to discover its available properties. Carefully read [references/analyzing.md](references/analyzing.md) before analyzing.
+
 ## Create/Update Workflow (Mandatory Order)
 
 Carefully follow the workflow described in [references/create-update.md](references/create-update.md).

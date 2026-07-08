@@ -403,7 +403,7 @@ If the query starts from the canonical RVA Stage 3 pipeline ([vulnerabilities.md
 | Family | "New" signal | "Resolved" signal |
 |---|---|---|
 | External findings (one-shot `*_FINDING`) | `toTimestamp(finding.time.created) > now()-Nd` | not modeled — compare presence across periods (anti-join; see the "new-not-in-prior-period" patterns in [vulnerabilities.md](vulnerabilities.md) / [compliance.md](compliance.md)) |
-| DT RVA vulnerabilities (snapshot) | newly **OPEN**: `toTimestamp(vulnerability.resolution.change_date) > now()-Nd`; first-ever-seen: `vulnerability.first_seen >= now()-Nd` | `vulnerability.resolution.status == "RESOLVED"` (use `resolution.change_date` for when) |
+| DT RVA vulnerabilities (snapshot) | newly **OPEN**: `toTimestamp(vulnerability.resolution.change_date) > now()-Nd` (no "first-ever-seen" variant — `vulnerability.first_seen` is null on this pipeline) | `vulnerability.resolution.status == "RESOLVED"` (use `resolution.change_date` for when) |
 | DT SPM compliance (per-rule/object snapshot) | rule-object pair absent in the prior scan period — period-over-period anti-join (see [compliance.md](compliance.md) § Week-over-Week Config Drift) | pair present in the prior period, absent now |
 
 Keep the RVA/SPM snapshot fetch window fixed (30m / 1h) — apply the "new" horizon as a

@@ -277,6 +277,112 @@ no-op:
 | sort passRate asc
 ```
 
+### CIS-Primary Standard Summary
+
+This is the **scorecard for broad posture / "main summary for counts" questions**
+("compliance posture overview", "what's our pass rate"). For compliance/misconfiguration
+questions scoped to a **specific entity**, use the [Entity Security-Tab View](#entity-security-tab-view-cis-led-failed-rules)
+below instead (failed-rules lists, not a scorecard).
+
+CIS is the **mandatory K8s baseline** (always enabled), so it leads the count summary. Reuse
+the per-standard rollup above and force CIS to the top with the numeric-priority sort idiom —
+a boolean `sort … == "CIS" desc` is invalid DQL:
+
+```dql-snippet
+// Step 1 + Step 2 (as above), then:
+| summarize {
+    Rules=count(),
+    Passed=countIf(compliance.result.status.level=="PASSED"),
+    Manual=countIf(compliance.result.status.level=="MANUAL"),
+    Failed=countIf(compliance.result.status.level=="FAILED")
+  }, by: {compliance.standard.short_name}
+| fieldsAdd passRate=round(Passed*100.0/Rules, decimals:0)
+| fieldsAdd standardPriority=if(compliance.standard.short_name=="CIS", 0, else: 1)
+| sort standardPriority asc, Failed desc
+```
+
+**Present the CIS row as the headline failed-rule count.** List DORA / NIST / DISA STIG rows
+immediately after as *additional* failed rules — phrase them as "additional failed rules from
+`<standard>`, which may overlap with CIS". **Do not sum failed counts across standards:** the
+standards overlap, so the same misconfiguration on the same object can fail a CIS rule *and* a
+DORA/NIST/STIG rule, and a cross-standard total double-counts the same underlying issues.
+
+### Entity Security-Tab View (CIS-led failed rules)
+
+Use this when the user asks about **compliance / misconfigurations on a specific entity**
+(host, K8s node, workload, cluster, …). It mirrors the **Security tab shown on an individual
+entity** in the Dynatrace UI: it **defaults to CIS** and **lists failed rules only**. Render
+**three tables in order** — it is the entity-scoped counterpart to the broad
+[CIS-Primary Standard Summary](#cis-primary-standard-summary) scorecard.
+
+Replace `${entityIdsOrNames}` with the target entity's id(s) / name(s). `NOT_RELEVANT` is
+already dropped by the Step-1 base filter, consistent with the tab's failed-only view.
+
+**Table 1 — Dynatrace CIS failed rules** (the headline; mirrors the Security tab):
+
+```dql-snippet
+// Step 1 + Step 2 (as above), then:
+| filter compliance.standard.short_name == "CIS"
+     AND compliance.result.status.level == "FAILED"
+// Scope to the entity (post-aggregation arrays — see common-patterns.md § 5)
+| filter ("${entityIdsOrNames}"=="ALL"
+      OR in(affected_entity.ids,    splitString("${entityIdsOrNames}",","))
+      OR in(affected_entity.names,  splitString("${entityIdsOrNames}",","))
+      OR in(related_entities.names, splitString("${entityIdsOrNames}",","))
+      OR in(related_entities.ids,   splitString("${entityIdsOrNames}",",")))
+| fieldsAdd sevPriority = if(compliance.rule.severity.level=="CRITICAL", 0,
+                          else: if(compliance.rule.severity.level=="HIGH",   1,
+                          else: if(compliance.rule.severity.level=="MEDIUM", 2,
+                          else: 3)))
+| sort sevPriority asc
+| fields Severity  = compliance.rule.severity.level,
+         Rule      = compliance.rule.title,
+         `Rule ID` = compliance.rule.id,
+         Status    = compliance.result.status.level
+```
+
+> The view is already scoped to one entity, so omit a per-rule affected-resource column —
+> it would carry the rule's full cluster-wide object list (huge and off-topic). The CIS
+> **recommendation section is already embedded in `compliance.rule.title`** (e.g.
+> "4.5.1 Prefer using secrets as files…"), so no `metadata_json` parse is needed for it.
+
+**Table 2 — additional failed rules from other Dynatrace standards** (DORA / NIST / DISA STIG).
+Same pipeline, `compliance.standard.short_name != "CIS"`, with a **Standard** column:
+
+```dql-snippet
+// Step 1 + Step 2 (as above), then:
+| filter compliance.standard.short_name != "CIS"
+     AND compliance.result.status.level == "FAILED"
+| filter ("${entityIdsOrNames}"=="ALL"
+      OR in(affected_entity.ids,    splitString("${entityIdsOrNames}",","))
+      OR in(affected_entity.names,  splitString("${entityIdsOrNames}",","))
+      OR in(related_entities.names, splitString("${entityIdsOrNames}",","))
+      OR in(related_entities.ids,   splitString("${entityIdsOrNames}",",")))
+| fieldsAdd sevPriority = if(compliance.rule.severity.level=="CRITICAL", 0,
+                          else: if(compliance.rule.severity.level=="HIGH",   1,
+                          else: if(compliance.rule.severity.level=="MEDIUM", 2,
+                          else: 3)))
+| sort sevPriority asc
+| fields Standard  = compliance.standard.short_name,
+         Severity  = compliance.rule.severity.level,
+         Rule      = compliance.rule.title,
+         `Rule ID` = compliance.rule.id,
+         Status    = compliance.result.status.level
+```
+
+> Label Table 2 as *additional* failed rules **that may overlap with CIS** — the standards
+> overlap, so the same misconfiguration on the entity can fail a CIS rule *and* a
+> DORA/NIST/STIG rule. **Never sum failed counts across Tables 1 and 2.**
+
+**Table 3 — externally ingested misconfigurations / compliance findings** (CSPM/VSPM and other
+external providers on the entity). Do **not** rebuild this — use the
+[External Compliance Queries](#external-compliance-queries-cspm--vspm--external-posture-tools)
+patterns below, scoping the
+**pre-aggregation** filter to the entity via `object.id` / `dt.smartscape_source.id` /
+`k8s.*` (external rows are raw per-finding; the KSPM `affected_entity.*` arrays do not apply).
+A 0-row result means no external posture tool reported on this entity — still state that
+explicitly.
+
 ### Grouped by Affected Systems with Pass Rate
 
 In Step 2, replace `affected_entity.ids` and `affected_entity.names` with a single
@@ -452,68 +558,6 @@ The evidence array carries `{type, description, value}` records where `type` is
 `AUTOMATIC` (analyzer evaluated the property) or `MANUAL` (requires human
 input — `value` is typically `"Unknown"`). Filter on `allFindings.type == "MANUAL"`
 to surface checks waiting on operator input.
-
----
-
-## DT SPM: Drilldown by Standard-Specific Metadata (`compliance.rule.metadata_json`)
-
-Each rule carries a JSON metadata blob with standard-specific keys (CIS
-recommendation ID, STIG vulnerability ID, DORA articles, NIST controls). Use
-this when the user asks "show me CIS recommendation 1.2.3" or "which DORA
-articles are we failing?"
-
-```dql-snippet
-// Step 1 + Step 2, then:
-| parse compliance.rule.metadata_json, "JSON:meta"
-| fieldsAdd recommendationId = meta[`CIS recommendation ID`],
-            recommendationSection = meta[`CIS recommendation section`],
-            cisLevel = meta[`CIS level`],
-            cisVersion = meta[`Version`]
-| filter compliance.standard.short_name == "CIS"
-     AND compliance.result.status.level == "FAILED"
-| fields recommendationId, recommendationSection, cisLevel, cisVersion,
-         compliance.rule.title, compliance.result.count.failed,
-         compliance.rule.severity.level
-| sort compliance.rule.severity.level == "CRITICAL" desc,
-       compliance.result.count.failed desc
-```
-
-Equivalent keys per standard:
-- **DISA STIG**: `meta[\`STIG ID\`]` (auditor-facing control, e.g. `CNTR-K8-001163`), `meta[\`STIG vulnerability ID\`]` (e.g. `V-274884`), `meta[\`STIG\`]` (full standard name), `meta[\`Version\`]`
-- **DORA**: `meta[\`DORA articles\`]`, `meta[\`Version\`]` — `DORA articles` is typically an array; `expand` it for per-article rollups
-- **NIST**: `meta[\`NIST controls\`]`, `meta[\`NIST revision\`]`, `meta[\`Version\`]`
-
-### "Which entities are affected by STIG control CNTR-K8-NNNNNN?"
-
-DISA STIG's auditor-facing control ID (`CNTR-K8-NNNNNN`) lives in `meta[\`STIG ID\`]`, not in `compliance.rule.id` (which is the internal `STIG-NNNNN` form). The standard's `compliance.standard.short_name` is `"DISA STIG"`, so filter with `contains(lower(...), "stig")` — not exact `== "STIG"`, which matches nothing.
-
-```dql-snippet
-// Step 1 + Step 2, then:
-| parse compliance.rule.metadata_json, "JSON:meta"
-| fieldsAdd stigId = meta[`STIG ID`]
-| filter contains(lower(compliance.standard.short_name), "stig")
-     AND stigId == "CNTR-K8-001163"
-     AND compliance.result.status.level == "FAILED"
-| fields stigId, compliance.rule.id, compliance.rule.title,
-         compliance.rule.severity.level, compliance.result.count.failed,
-         k8s.cluster.name, k8s.node.name
-```
-
-### "Which DORA articles are we failing?"
-
-```dql-snippet
-// Step 1 + Step 2, then:
-| parse compliance.rule.metadata_json, "JSON:meta"
-| filter compliance.standard.short_name == "DORA"
-     AND compliance.result.status.level == "FAILED"
-| fieldsAdd doraArticles = meta[`DORA articles`]
-| expand article = doraArticles
-| filter isNotNull(article)
-| summarize FailingRules = countDistinctExact(compliance.rule.id),
-            AffectedObjects = countDistinctExact(compliance.result.count.failed),
-            by: {DORAArticle = article}
-| sort FailingRules desc
-```
 
 ---
 
@@ -816,8 +860,8 @@ External standard names populate `compliance.standards` (not `compliance.standar
 
 External compliance findings use a **different** compliance namespace than KSPM. They do **not**
 populate the KSPM rule/standard fields (`compliance.rule.id`, `compliance.rule.title`,
-`compliance.rule.severity.level`, `compliance.standard.short_name` / `.name`,
-`compliance.rule.metadata_json`) — those will be null. Instead, external rows carry the
+`compliance.rule.severity.level`, `compliance.standard.short_name` / `.name`) — those will
+be null. Instead, external rows carry the
 **external taxonomy** documented above: `compliance.standards` (array), `compliance.control`,
 `compliance.policy`, `compliance.status`, `compliance.requirements`.
 
@@ -855,9 +899,11 @@ For a cross-provider compliance view (DT KSPM + external aggregated by
    precedence (or the per-rule verdict will silently disagree with the SPM app).
 6. **Severity is `CRITICAL / HIGH / MEDIUM / LOW`** — exactly four. KSPM does
    not emit `NONE` or `NOT_AVAILABLE`. CCSS-derived since 2026-03-10.
-7. **Use `compliance.rule.metadata_json` to drill** to the human-recognizable
-   benchmark identifier (CIS recommendation `1.2.3`, STIG vuln ID `V-242400`,
-   DORA article number) — that's what auditors and operators actually cite.
+7. **Never parse `compliance.rule.metadata_json`** — it is forbidden in this skill.
+   Use `compliance.rule.id` (already standard-prefixed and human-recognizable, e.g.
+   `CIS-2762`, `STIG-82824`, `DORA-67952`, `NIST-82827`) and `compliance.rule.title` as the
+   rule identifiers. The finer benchmark-section citation (CIS `1.2.3`) is intentionally
+   not surfaced.
 8. **Object identity has two fields on KSPM rows** — `object.type` (normalized
    Dynatrace entity type, uppercase: `KUBERNETES_CLUSTER`, `KUBERNETES_NODE`,
    …) and `compliance.result.object.type` (analyzer's lowercase code:

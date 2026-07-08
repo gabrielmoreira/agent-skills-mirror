@@ -39,6 +39,7 @@ For the bundle-able categories the repo ships small **Python-3-stdlib** helpers 
 | Index push — tell Bing/DuckDuckGo/Yandex (IndexNow) and Baidu your URLs changed | `indexpush.py indexnow <urls…> --key …` · `indexpush.py baidu … --site … --token …` (dry-run by default, `--live` to submit) | self-minted key / site token |
 | Email ESP automation — domain-auth status / seed-test send / suppression sync / broadcasts (Resend) | `resend.py domains` · `resend.py seed …` (mutating commands dry-run by default, `--live` to execute) | free key |
 | Before/after deltas (measurement loop) | `… \| ledger.py record <target> --source <name>` → `ledger.py diff <target> --source <name>` | — |
+| A/B **significance** on your own test counts — z-test / Mann-Whitney + CI + a **promote** decision, and sample-size / MDE (the design→measure loop, keyless) | `experiment.py proportion --control <c> <n> --variant <v> <n> [--min-lift 0.05]` · `experiment.py samplesize --baseline 0.1 --mde 0.02` | — |
 
 See [scripts/connectors/README.md](scripts/connectors/README.md) for the full list, the safety contract, and what intentionally stays external (proprietary / own-data → MCP/API).
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AI-Builder-Club/skills` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `AI-Builder-Club/skills` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AI-Builder-Club/skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,6 +76,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`skills/pr/ship-change.js`](skills/pr/ship-change.js) |
 | 16 | ✓ | [`skills/pr/SKILL.md`](skills/pr/SKILL.md) |
 | 17 | ✓ | [`skills/setup-codebase-harness/SKILL.md`](skills/setup-codebase-harness/SKILL.md) |
+| 18 | ✓ | [`skills/visual-flow-gif/assets/dark-spec.json`](skills/visual-flow-gif/assets/dark-spec.json) |
+| 19 | ✓ | [`skills/visual-flow-gif/assets/default-spec.json`](skills/visual-flow-gif/assets/default-spec.json) |
+| 20 | ✓ | [`skills/visual-flow-gif/references/spec-format.md`](skills/visual-flow-gif/references/spec-format.md) |
+| 21 | ✓ | [`skills/visual-flow-gif/requirements.txt`](skills/visual-flow-gif/requirements.txt) |
+| 22 | ✓ | [`skills/visual-flow-gif/scripts/render_animated_gif.py`](skills/visual-flow-gif/scripts/render_animated_gif.py) |
+| 23 | ✓ | [`skills/visual-flow-gif/SKILL.md`](skills/visual-flow-gif/SKILL.md) |
 
 ---
 

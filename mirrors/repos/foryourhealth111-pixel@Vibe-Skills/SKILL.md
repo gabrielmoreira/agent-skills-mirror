@@ -1,14 +1,12 @@
 ---
 name: vibe
-description: Vibe Code Orchestrator (VCO) is a governed runtime entry that freezes requirements, plans XL-first execution, and enforces verification and phase cleanup.
+description: Vibe Code Orchestrator (VCO) is a governed runtime entry that freezes requirements, bounds execution, and enforces verification and phase cleanup.
 ---
 
 # Vibe Governed Runtime Entry
 
 This file is the host-facing SOP for entering canonical `vibe`. Keep it small:
-runtime details belong in `protocols/runtime.md`, execution discipline belongs in
-`protocols/do.md`, and host wrapper recipes belong in installer-generated wrapper
-docs.
+runtime details belong in `protocols/runtime.md`, execution discipline belongs in `protocols/do.md`, and host wrapper recipes belong in installer-generated wrapper docs.
 
 ## Trigger Contract
 
@@ -20,31 +18,30 @@ Do not route every loosely related task into `vibe`. Lightweight questions,
 single-command checks, or tasks better served by another explicitly requested
 skill may proceed outside `vibe` unless the user explicitly invoked this entry.
 
-`vibe-upgrade` is a separate public skill for upgrading the installed
-Vibe-Skills project. Do not relaunch an upgrade request as `entry_id = vibe`;
-use the `vibe-upgrade` skill and its backend instead.
+Installed-copy upgrades stay on the command path. Use the repo's `update`
+entry with `--skills-dir` for the same managed skills directory instead of
+introducing a second public runtime skill.
 
 User instructions remain highest priority. If CLAUDE.md, GEMINI.md, AGENTS.md,
 or the direct user request narrows or forbids a workflow such as TDD, follow the
 user's instruction while preserving canonical launch and proof rules.
 
-## Canonical Launch SOP
+## Canonical Bootstrap
+
+`vibe` is a host-syntax-neutral skill contract.
 
 Before canonical launch, do only the minimum needed to launch:
 
-- Resolve `skill_root`: the directory containing this `SKILL.md`.
-- Resolve `workspace_root`: the task workspace where governed artifacts should
-  be written.
-- Resolve `host_id`: `codex`, `claude-code`, `cursor`, `windsurf`, `openclaw`,
-  or `opencode`.
-- Extract core intent as keyword text. Do not pass the raw prompt, full chat
-  history, or mixed-language filler to the router.
+- Resolve `skill_root`, `workspace_root`, and `host_id`.
+- Extract core intent as keyword text. Do not pass the raw prompt, full chat history, or mixed-language filler to the router.
 
-Do not inspect repository files, protocol docs, previous run outputs, or old
-proof artifacts before canonical launch returns. Reading this file, a wrapper,
-or an AGENTS/CLAUDE bootstrap block is not proof of canonical entry.
+Do not search the current workspace, repository, or install root for canonical proof files before launch.
+Do not inspect the repo, protocol docs, or prior run outputs before canonical launch returns.
+Do not simulate stages, claim canonical entry from reading this file or wrapper text, or treat wrapper or AGENTS text as proof.
+Do not manually create `outputs/runtime/vibe-sessions/<run-id>/`.
+Do not use the Vibe installation root as the governed artifact root.
 
-Internal specialist recommendation router: `scripts/router/resolve-pack-route.ps1`
+Local installed specialist recommender: semantic owner `packages/runtime-core/src/vgo_runtime/router_contract_runtime.py`; compatibility bridge `scripts/router/resolve-pack-route.ps1`
 
 Specialist recommender input rules:
 
@@ -52,9 +49,7 @@ This recommender runs inside canonical `vibe`; it may suggest specialist skills,
 
 - Include work type, domain/technology, deliverable, and explicit constraints.
 - Reuse verified frozen requirement/plan facts when continuing a run.
-- If the router returns `confirm_required`, surface the machine-readable route
-  contract and convert the user's natural-language reply into a structured route
-  decision.
+- If the router returns `confirm_required`, surface the machine-readable route contract and convert the user's natural-language reply into a structured route decision.
 - If the router fails, report `blocked` with the concrete failure reason.
 
 Canonical entry command shape:
@@ -69,13 +64,15 @@ py -3 -m vgo_cli.main canonical-entry `
   --prompt "<extracted keyword intent text>"
 ```
 
+For PowerShell, do not place `$env:PYTHONPATH=...` inside a double-quoted `-Command` string; host interpolation may corrupt it to `:PYTHONPATH`.
+
 Bash-like hosts, including Claude Code, should avoid Bash-wrapped PowerShell.
-Set `PYTHONPATH` in the outer shell and call Python directly:
+Set `PYTHONPATH` in the outer shell and call Python directly. If `py -3` is unavailable, try `python` instead. If `python` is unavailable, try `python3`.
 
 ```bash
 REPO_ROOT='<skill_root>'
 WORKSPACE_ROOT="${WORKSPACE_ROOT:-$PWD}"
-PYTHONPATH="$REPO_ROOT/apps/vgo-cli/src" py -3 -m vgo_cli.main canonical-entry \
+PYTHONPATH="$REPO_ROOT/apps/vgo-cli/src" python -m vgo_cli.main canonical-entry \
   --repo-root "$REPO_ROOT" \
   --artifact-root "$WORKSPACE_ROOT" \
   --host-id "<host_id>" \
@@ -83,15 +80,13 @@ PYTHONPATH="$REPO_ROOT/apps/vgo-cli/src" py -3 -m vgo_cli.main canonical-entry \
   --prompt "<extracted keyword intent text>"
 ```
 
-After canonical-entry returns a `session_root`, validate proof artifacts only
-inside that launched session:
+Only validate canonical proof artifacts after canonical-entry returns a `session_root`.
+`check` on an installed copy proves only `installed locally`.
+It does not prove `runtime coherent` or `delivery accepted`.
+Proof of canonical launch is post-launch and requires: `host-launch-receipt.json`, `runtime-input-packet.json`, `governance-capsule.json`, and `stage-lineage.json` under the returned `session_root`.
+`local-agent-kernel` follows the same proof rule. If it cannot produce those truth artifacts, it may produce local work scaffolds, but it must not be treated as `canonical verified`.
 
-- `host-launch-receipt.json`
-- `runtime-input-packet.json`
-- `governance-capsule.json`
-- `stage-lineage.json`
-
-## Bounded Stop And Re-entry
+## Hard Stop And Re-entry
 
 `vibe` uses progressive governed stops:
 
@@ -102,6 +97,13 @@ inside that launched session:
 When `bounded_return_control.explicit_user_reentry_required = true`, stop the
 current assistant turn. Do not consume re-entry credentials until a later user
 message approves or revises the current boundary.
+
+This is a hard runtime boundary, not a suggestion. It overrides ordinary host
+autonomy rules such as "continue until done." A detailed original request is not
+approval of the frozen requirement or frozen plan. After a hard stop, do not
+perform equivalent manual work outside governed re-entry: no plan writing, task
+execution, manual workaround delivery, or final artifact delivery in the same
+assistant turn.
 
 For re-entry, inspect `runtime-summary.json ->
 bounded_return_control.host_decision_contract`, infer the user's intent, and
@@ -133,7 +135,7 @@ PYTHONPATH="$REPO_ROOT/apps/vgo-cli/src" py -3 -m vgo_cli.main canonical-entry \
   --host-decision-json-file "$DECISION_JSON"
 ```
 
-A structured approval advances to the next progressive stop. A structured
+A structured approval from a later user message advances to the next progressive stop. A structured
 revision must include non-empty `revision_delta` and refreezes the same bounded
 stage without asking the user for a separate approval first:
 
@@ -152,7 +154,7 @@ stage without asking the user for a separate approval first:
 Route confirmations must stay inside surfaced confirm options. Bounded approvals
 or revisions must stay inside the surfaced bounded-stage action contract.
 
-## Runtime Contract Summary
+## Unified Runtime Contract
 
 Canonical `vibe` owns one runtime authority and one visible requirement/plan
 surface. The fixed state machine is:
@@ -166,13 +168,16 @@ surface. The fixed state machine is:
 
 These stages may be light for simple work, but they are not silently skipped.
 The full runtime contract, stage ownership, lineage rules, internal `M`/`L`/`XL`
-grades, cleanup rules, and output inventory are defined in
+grades, user-visible L/XL workflow confirmation, cleanup rules, and output inventory are defined in
 `protocols/runtime.md`.
 
 Public wrapper entries remain limited to:
 
 - `vibe`
-- `vibe-upgrade`
+
+Installed-copy updates remain a command-path action:
+
+- `update --skills-dir <skills-dir>`
 
 Compatibility stage IDs are non-public metadata and must not be materialized as
 host-visible command or skill wrappers:
@@ -190,6 +195,11 @@ The host must inspect surfaced candidates and make a structured skill execution
 decision when curation is needed. It may approve, defer, or reject only surfaced
 candidate ids. Unsuitable or noisy candidates should be rejected or deferred
 with a reason rather than forced into execution.
+
+For interactive L/XL work, surface the selected skill list before execution and
+ask the user: "我将会在接下来的工作中使用这些 skills，你觉得 OK 吗？" This approval
+only means the skills may be used; final material-use claims still require
+`skill_usage.used` and evidence files. `skill_usage.bound` only means a skill was attached to a work unit; it is not a material-use claim.
 
 Only selected skills become execution units. The host must not invent unsurfaced
 skills, bypass runtime validation, create hidden skill sub-sessions, or open a
@@ -211,6 +221,7 @@ Never claim success without evidence. Minimum invariants:
 - Emit cleanup receipts before claiming phase completion.
 - Expose failures, fallback, degraded status, or blocked state explicitly.
 - Do not add mock success paths, swallowed errors, or template-only pass results.
+- Treat scaffold or draft artifacts as `needs_execution` with `proof_ready = false`; do not call them completed work.
 - Do not use fallback or boundary behavior to bypass real execution,
   verification, or root-cause repair.
 
@@ -230,5 +241,5 @@ Read these references only after canonical launch or when maintaining the repo:
 - Runtime family: governed-runtime-first
 - Version: 3.1.1
 - Updated: 2026-05-06
-- Internal specialist recommendation router: `scripts/router/resolve-pack-route.ps1`
+- Local installed specialist recommender: semantic owner `packages/runtime-core/src/vgo_runtime/router_contract_runtime.py`; compatibility bridge `scripts/router/resolve-pack-route.ps1`
 - Primary contract metadata: `core/skill-contracts/v1/vibe.json`

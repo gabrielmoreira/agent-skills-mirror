@@ -15,13 +15,14 @@ Detect high-risk AI-flavor prose patterns that need human rewrite:
   - 微动作复读 (「了下/了一下」式轻量补语高密度，电报体指纹)
   - 抽象总结复读 (命运/棋局/这一刻终于明白/才刚刚开始，AI 结尾腔)
   - 套词密度过高 (仿佛/一丝/深吸一口气/平静无波等禁用词聚集)
+  - 比喻密度过高 (像/好像/仿佛/如同等比喻标记成片复现)
   - 解释链密度过高 (知道/明白/这意味着/必须/需要等判断链聚集)
   - 系统公告公文腔过密 (方括号系统/规则行里硬规则词聚集)
   - 过度精炼短段 (长文本里短叙述段过密且自然连接偏少)
   - 低连接密度 (引号外叙述功能词/白话连接偏少且中长句不足，像提纲/电报体)
 
 Each finding carries severity: blocking by default for generation/deslop cleanup (not-is-comparison / em-dash). This is a local style/readability gate, not an AIGC detector score; functional human text can be marked for review instead of hard-edited for a detector.
-或 advisory (period-stutter / long-paragraph / micro-action-tic / abstract-summary-tic / cliche-density-tic / reasoning-chain-tic / system-notice-formality-tic / overcompressed-prose-tic / low-connective-density-tic，是提示，justified 的长推理/氛围段可保留)。
+或 advisory (period-stutter / long-paragraph / micro-action-tic / abstract-summary-tic / cliche-density-tic / metaphor-density-tic / reasoning-chain-tic / system-notice-formality-tic / overcompressed-prose-tic / low-connective-density-tic，是提示，justified 的长推理/氛围段可保留)。
 --fail-on=blocking 只在出现 blocking finding 时退出 1；默认 --fail-on=all 有任何 finding 即退出 1。
 
 The script reports findings only. It never rewrites text, because the safe fix is
@@ -78,7 +79,15 @@ const CLICHE_PATTERNS = [
 const CLICHE_DENSITY_MIN_HITS = 8;
 const CLICHE_DENSITY_PER_KILO = 12;
 
-// 解释链密度：实验样本里常见“他知道/他明白/这意味着/必须需要”
+// 比喻密度：单个生活化比喻可服务画面；“像/好像/仿佛/如同”成片复现时，
+// 容易变成 AI 式修辞堆叠。只做 advisory，修法是删到必要数量并回到具体画面，
+// 不是把“像”换成另一组比喻词。
+const METAPHOR_MARKER_PATTERN = /好像|像是|仿佛|宛如|如同|犹如|(?<![不头图画影录摄肖])像(?![头像素])/g;
+const METAPHOR_LIKE_PHRASE_PATTERN = /(?:死|水|冰|火|潮水|石头|木头|机器|纸|铁|鬼|死人|刀|针|网|墙)一样/g;
+const METAPHOR_DENSITY_MIN_HITS = 7;
+const METAPHOR_DENSITY_PER_KILO = 3;
+
+// 解释链密度：常见“他知道/他明白/这意味着/必须需要”
 // 连续替读者推理，读感像报告。单个判断词可服务推理；高密度聚集才提示回到角色当下证据。
 const REASONING_CHAIN_PATTERNS = [
   { key: 'mental', core: true, pattern: /(?<![不没未无])(?:他|她|我)?(?:知道|明白|意识到|清楚|判断|确认|分析)/g },
@@ -106,7 +115,7 @@ const NOTICE_FORMAL_CORE_MIN_HITS = 5;
 const NOTICE_FORMAL_PER_KILO = 60;
 
 // 过度精炼短段：过度处理样本里常见大量 15 字以内叙述段，且“的/了/就/着/过/呢/吧/啊”等
-// 自然连接偏少；对照文本通常保留更多自然连接。此项只做 advisory，禁止按指标注水。
+// 自然连接偏少；对照文本通常保留更多自然连接。此项只做 advisory，禁止机械注水。
 const OVERCOMPRESSED_PROSE_PARTICLE_PATTERN = /[的了就着过呢吧啊呀嘛]/g;
 const OVERCOMPRESSED_PROSE_MIN_CHARS = 1200;
 const OVERCOMPRESSED_PROSE_MIN_PARAS = 45;
@@ -297,6 +306,7 @@ function scanProsePatterns(proseLines) {
   findings.push(...findMicroActionTic(proseLines));
   findings.push(...findAbstractSummaryTic(proseLines));
   findings.push(...findClicheDensityTic(proseLines));
+  findings.push(...findMetaphorDensityTic(proseLines));
   findings.push(...findReasoningChainTic(proseLines));
   findings.push(...findNoticeFormalityTic(proseLines));
   findings.push(...findOvercompressedProseTic(proseLines));
@@ -376,6 +386,54 @@ function findClicheDensityTic(proseLines) {
     severity: 'advisory',
     message: `套词密度过高：高危 AI 套词 ${hits} 处（${perKilo.toFixed(1)}/千字）；不要同义词轮换，改成角色当下可见的动作、物件、对话和具体后果。`,
     excerpt: compact(samples.join(' ')),
+  }];
+}
+
+// 比喻密度：统计引号外叙述中“像/好像/仿佛/如同”等比喻标记。
+// 单个比喻不是问题；高密度成片时才提示，避免把文本改成另一种修辞模板。
+function findMetaphorDensityTic(proseLines) {
+  let hits = 0;
+  let narrativeChars = 0;
+  let firstLine = null;
+  const samples = [];
+
+  for (const { text, lineNo } of proseLines) {
+    const trimmed = text.trim();
+    if (!trimmed || isDivider(trimmed) || isStructural(trimmed)) continue;
+    const narrative = stripQuoted(trimmed);
+    narrativeChars += visibleLength(narrative);
+
+    METAPHOR_MARKER_PATTERN.lastIndex = 0;
+    let match;
+    while ((match = METAPHOR_MARKER_PATTERN.exec(narrative)) !== null) {
+      hits += 1;
+      if (firstLine === null) firstLine = lineNo;
+      const sample = sentenceAround(narrative, match.index);
+      if (samples.length < 6 && sample && !samples.includes(sample)) samples.push(sample);
+    }
+
+    METAPHOR_LIKE_PHRASE_PATTERN.lastIndex = 0;
+    while ((match = METAPHOR_LIKE_PHRASE_PATTERN.exec(narrative)) !== null) {
+      const prefix = narrative.slice(Math.max(0, match.index - 8), match.index);
+      if (/好像|像是|像|仿佛|宛如|如同|犹如/.test(prefix)) continue;
+      hits += 1;
+      if (firstLine === null) firstLine = lineNo;
+      const sample = sentenceAround(narrative, match.index);
+      if (samples.length < 6 && sample && !samples.includes(sample)) samples.push(sample);
+    }
+  }
+
+  if (narrativeChars === 0 || hits < METAPHOR_DENSITY_MIN_HITS) return [];
+  const perKilo = (hits / narrativeChars) * 1000;
+  if (perKilo < METAPHOR_DENSITY_PER_KILO) return [];
+
+  return [{
+    line: firstLine,
+    column: 1,
+    type: 'metaphor-density-tic',
+    severity: 'advisory',
+    message: `比喻密度过高：像/好像/仿佛/如同等比喻标记 ${hits} 处（${perKilo.toFixed(1)}/千字）；保留最有叙事功能的少数比喻，其余回到具体动作、物件、声音或后果，不要换成新比喻。`,
+    excerpt: compact(samples.join(' | ')),
   }];
 }
 
@@ -464,7 +522,7 @@ function findNoticeFormalityTic(proseLines) {
     column: 1,
     type: 'system-notice-formality-tic',
     severity: 'advisory',
-    message: `系统公告公文腔过密：方括号规则行中硬规则词 ${hits} 处（${perKilo.toFixed(1)}/千字）；保留规则功能，但把部分提示改成白话、具体后果或角色当下能理解的说法，避免像 API 文档。`,
+    message: `系统公告公文腔过密：方括号规则行中硬规则词 ${hits} 处（${perKilo.toFixed(1)}/千字）；保留为角色看见的屏幕/公告/规则载体，只在载体内部白话化部分硬词，或补角色当场看懂的具体后果，不改成叙述者解释。`,
     excerpt: compact(samples.join(' | ')),
   }];
 }
@@ -509,7 +567,7 @@ function findOvercompressedProseTic(proseLines) {
     column: 1,
     type: 'overcompressed-prose-tic',
     severity: 'advisory',
-    message: `过度精炼短段：叙述段 ${narrativeParas} 个，其中 ${shortParas} 个≤${OVERCOMPRESSED_PROSE_SHORT_MAX_CHARS}字（${(shortRatio * 100).toFixed(0)}%），自然连接 ${particlePerKilo.toFixed(1)}/千字偏少；先通读判断，确有提纲感再补断裂处和必要结构虚词，有意短镜头可留，别按指标注水。`,
+    message: `过度精炼短段：叙述段 ${narrativeParas} 个，其中 ${shortParas} 个≤${OVERCOMPRESSED_PROSE_SHORT_MAX_CHARS}字（${(shortRatio * 100).toFixed(0)}%），自然连接 ${particlePerKilo.toFixed(1)}/千字偏少；先通读判断，确有提纲感再补断裂处和必要结构虚词，有意短镜头可留，别机械注水。`,
     excerpt: compact(samples.join(' | ')),
   }];
 
@@ -560,7 +618,7 @@ function findLowConnectiveDensityTic(proseLines) {
     column: 1,
     type: 'low-connective-density-tic',
     severity: 'advisory',
-    message: `低连接密度：引号外叙述功能词 ${functionPerKilo.toFixed(1)}/千字、白话连接 ${plainPerKilo.toFixed(1)}/千字，且≥${LOW_CONNECTIVE_LONG_SENTENCE_CHARS}字承接句仅 ${(longSentenceRatio * 100).toFixed(0)}%；容易像提纲/电报体。通读后补必要连接和中长句群，别按指标注水。`,
+    message: `低连接密度：引号外叙述功能词 ${functionPerKilo.toFixed(1)}/千字、白话连接 ${plainPerKilo.toFixed(1)}/千字，且≥${LOW_CONNECTIVE_LONG_SENTENCE_CHARS}字承接句仅 ${(longSentenceRatio * 100).toFixed(0)}%；容易像提纲/电报体。通读后补必要连接和中长句群，别机械注水。`,
     excerpt: compact(samples.join(' | ')),
   }];
 }
@@ -692,6 +750,14 @@ function splitSentences(trimmed) {
     .split(/[。！？!?]/)
     .map((s) => s.trim())
     .filter(Boolean);
+}
+
+function sentenceAround(text, index) {
+  let start = index;
+  while (start > 0 && !STOP_CHARS.has(text[start - 1])) start -= 1;
+  let end = index;
+  while (end < text.length && !STOP_CHARS.has(text[end])) end += 1;
+  return compact(text.slice(start, end).trim());
 }
 
 function visibleLength(sentence) {

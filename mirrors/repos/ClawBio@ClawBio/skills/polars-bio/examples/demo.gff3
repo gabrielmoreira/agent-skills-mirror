@@ -1,0 +1,6 @@
+##gff-version 3
+chr1	clawbio	gene	1	600	.	+	.	ID=gene1;Name=DEMOA
+chr1	clawbio	exon	1	200	.	+	.	ID=exon1;Parent=gene1
+chr1	clawbio	exon	400	600	.	+	.	ID=exon2;Parent=gene1
+chr2	clawbio	gene	1000	2000	.	-	.	ID=gene2;Name=DEMOB
+chr2	clawbio	exon	1000	1200	.	-	.	ID=exon3;Parent=gene2

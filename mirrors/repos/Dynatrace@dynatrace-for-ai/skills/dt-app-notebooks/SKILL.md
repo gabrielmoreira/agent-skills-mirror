@@ -47,6 +47,10 @@ Dynatrace notebooks are JSON documents stored in the Document Store containing a
 
 **Optional content properties:** `defaultSegments`.
 
+## Reading & Analyzing
+
+Fetch full content with `dtctl get notebook <id> -o json --plain` (`describe` returns metadata only), then inspect the JSON to discover its available properties. Carefully read [references/analyzing.md](references/analyzing.md) before analyzing.
+
 ## Create/Update Workflow (Mandatory Order)
 
 Carefully follow the workflow described in [references/create-update.md](references/create-update.md).

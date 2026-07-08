@@ -14,6 +14,7 @@ Analyze, compare, and document software architecture decisions with explicit tra
 - User asks for architecture, system design, module/service boundaries, ADRs, or design tradeoffs.
 - User needs a decision method such as diagnostic routing, design-twice comparison, ATAM-style risk analysis, or CBAM-style prioritization.
 - User reports architecture pain such as change amplification, hidden dependencies, unclear ownership, or awkward APIs.
+- User needs an API versioning, deprecation, or published-contract evolution strategy.
 
 ### When to use
 - Choosing or reviewing system architecture
@@ -22,6 +23,7 @@ Analyze, compare, and document software architecture decisions with explicit tra
 - Investigating architectural pain: change amplification, hidden dependencies, awkward APIs
 - Prioritizing architecture investments or refactors
 - Writing architecture recommendations or ADRs
+- Deciding API versioning, deprecation windows, and published-contract evolution strategy
 
 ### When NOT to use
 - Visual design, design systems, branding, or landing pages -> use oma-design
@@ -54,6 +56,7 @@ outputs:
 - `resources/methodology-selection.md` for method choice
 - `resources/stakeholder-synthesis.md` when cross-cutting stakeholder consultation is justified
 - `resources/output-templates.md` for final artifact shapes
+- `resources/api-evolution.md` for published-contract versioning/deprecation decisions (MAP evolution patterns)
 
 ### Control-flow features
 - Branches by request clarity, decision materiality, risk level, and need for stakeholder consultation
@@ -164,6 +167,7 @@ Before submitting, run `resources/checklist.md`.
 - Method selection: `resources/methodology-selection.md`
 - Stakeholder protocol: `resources/stakeholder-synthesis.md`
 - Output templates: `resources/output-templates.md`
+- API evolution patterns (versioning, deprecation, lifecycle guarantees): `resources/api-evolution.md`
 - Context loading: `../_shared/core/context-loading.md`
 - Difficulty guide: `../_shared/core/difficulty-guide.md`
 - Reasoning templates: `../_shared/core/reasoning-templates.md`

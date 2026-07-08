@@ -163,7 +163,7 @@ Replace `{USER_OPT_IN_VALUE}` with `<true/>` or `<false/>` based on the `DTXUser
 
 - `DTXUserOptIn` — when `true`, starts the agent with data collection OFF, requiring explicit opt-in via the privacy API (configured in step 5). When `false`, data collection starts immediately without requiring opt-in, and step 5 is skipped.
 - `DTXStartupLoadBalancing` — enables load balancing across cluster nodes on startup.
-- `DTXStartupWithGrailEnabled` — enables the New RUM Experience on the first app start before the cluster configuration is received. Once the cluster config is cached, this flag is permanently overridden.
+- `DTXStartupWithGrailEnabled` — enables RUM on the latest Dynatrace on the first app start before the cluster configuration is received. Once the cluster config is cached, this flag is permanently overridden.
 
 ### 5. Add user opt-in privacy configuration
 

@@ -1,10 +1,10 @@
 # @elizaos/plugin-feed
 
-An elizaOS plugin that connects an Eliza agent to the [Feed](https://feed.market) prediction market game. It adds an operator dashboard (standard, XR, and terminal views) and a full HTTP proxy layer so the elizaOS agent can read and write Feed markets, posts, chats, and team state.
+An elizaOS plugin that connects an Eliza agent to the [Feed](https://feed.market) prediction market game. It adds a GUI operator view and a full HTTP proxy layer so the elizaOS agent can read and write Feed markets, posts, chats, and team state.
 
 ## What it does
 
-- Embeds the Feed operator dashboard as a first-class elizaOS view (accessible in the agent manager, desktop tab, and terminal TUI).
+- Embeds the Feed operator dashboard as a first-class elizaOS GUI view.
 - Proxies requests between the elizaOS API surface and the Feed backend: agent status, market data, prediction trades, perpetual positions, social posts, chat messages, team management, and admin controls.
 - Handles Feed agent authentication automatically. Prefers the agent's existing Steward / Eliza Cloud session JWT (`STEWARD_AGENT_TOKEN`) — Feed verifies the shared-secret token inline, so the agent auto-logs in with no separate Feed credentials. Falls back to `FEED_AGENT_ID`/`FEED_AGENT_SECRET` session auth (token caching + auto-refresh on 401) when no Steward token is present.
 - In development, attempts to auto-provision credentials from a local Feed dev server.
@@ -14,9 +14,7 @@ An elizaOS plugin that connects an Eliza agent to the [Feed](https://feed.market
 
 | View | Type | Description |
 |------|------|-------------|
-| Feed | standard | Full operator dashboard |
-| Feed XR | xr | XR-compatible operator surface |
-| Feed TUI | tui | Terminal operator dashboard with commands: `get-state`, `refresh-agent-status`, `open-live-dashboard`, `send-team-message` |
+| Feed | gui | Full operator dashboard |
 
 ## Required configuration
 

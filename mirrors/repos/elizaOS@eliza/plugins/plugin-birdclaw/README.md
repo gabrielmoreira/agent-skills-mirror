@@ -9,7 +9,7 @@ plugin connects that archive to your Eliza agent:
 
 - **Birdclaw app** in the launcher — browse Timeline / Mentions / Posted /
   Likes / Bookmarks / Inbox, trigger live syncs, see who still needs a reply.
-  One spatial component renders the same view on GUI, XR, and the terminal.
+  One spatial component renders the shipped GUI view.
 - **`BIRDCLAW` agent action** — ask your agent things like *"search my tweets
   for that thread about sync engines"*, *"which mentions still need a reply?"*,
   *"pull my latest bookmarks"*, or *"what happened on Twitter today?"*

@@ -261,8 +261,8 @@ only one weight is involved.
 
 ### Estimated Query Cost by Source
 
-Attribute query scan costs to originating source. Uses `coalesce()` to combine
-`client.source` and `client.application_context` — see
+Attribute query scan costs to originating source. Uses `coalesce()` across all
+`client.*` attribution fields — see
 [query-cost-attribution.md → BUE Query Attribution Fields](query-cost-attribution.md#bue-query-attribution-fields).
 
 All Query types use `unitDivisor = 1073741824` (bytes → GiB scanned), so a
@@ -277,7 +277,7 @@ fetch dt.system.events, from: "<START>", to: "<END>"
     "Traces - Query",
     "Files - Query")
 | dedup {event.id, event.type}
-| fieldsAdd attribution = coalesce(client.source, client.application_context, "unknown")
+| fieldsAdd attribution = coalesce(client.source, client.application_context, client.internal_service_context, client.workflow_context, client.function_context, client.client_context, "unknown")
 | summarize total_bytes = sum(billed_bytes), by: {attribution, event.type}
 | fieldsAdd capability_usage = toDouble(total_bytes) / 1073741824
 | fields attribution, event.type, capability_usage

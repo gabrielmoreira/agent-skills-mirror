@@ -51,7 +51,7 @@ metadata: {"author": "your-github-username", "version": "1.0.0", "discipline": "
 ---
 ```
 
-The `name` field must match the directory name exactly. `metadata` must be a **single-line strict-JSON object** (valid YAML flow mapping) — OpenClaw's frontmatter parser reads single-line keys only, and the validator fails a YAML block map. In single-quoted scalars, double any literal apostrophe (`designer''s`). Keep the `hermes` (tags/category) and `openclaw` (emoji/homepage) host extensions in step with the skill's discipline. The `slug`/`displayName`/`summary` trio is the [SkillHub.cn](https://skillhub.cn) publishing contract — `slug` must be `aaron-<skill-name>` (validator-enforced, globally unique on that registry), `displayName` bilingual, `summary` a Chinese one-liner.
+The `name` field must match the directory name exactly. `metadata` must be a **single-line strict-JSON object** (valid YAML flow mapping) — OpenClaw's frontmatter parser reads single-line keys only, and the validator fails a YAML block map. In single-quoted scalars, double any literal apostrophe (`designer''s`). Keep the `hermes` (tags/category) and `openclaw` (emoji/homepage) host extensions in step with the skill's discipline. The `slug`/`displayName`/`summary` trio is the [SkillHub.cn](https://skillhub.cn) publishing contract — `slug` must be the platform-owned frontmatter slug (`<skill-name>` when available, otherwise `aaron-<skill-name>` as the conflict fallback; validator-enforced), `displayName` bilingual, `summary` a Chinese one-liner.
 
 ### 4. Write effective instructions
 
@@ -94,7 +94,7 @@ After adding or updating a skill, keep these **9 tracking surfaces** in sync. **
 - `README.md` — skills table + version badge
 - `CLAUDE.md` — category table + version
 - `AGENTS.md` — name/count line + framework item/dimension counts (CORE-EEAT / CITE / C³ / ROAS / SEND / RAMP / ECHO / TALE)
-- `docs/README.zh.md` — Chinese README: the 120 · 16 / 16 / 16 / 16 / 16 / 16 / 16 / 8 counts (skills / SEO-GEO / influencer / paid ads / email / launch / social / narrative / protocol) + 8 commands + version badge. The 8 additional localized READMEs (`docs/README.{de,es,fr,it,ja,ko,pt,zh-Hant}.md`) are now version-locked too — `check-versions.sh` asserts each carries the `version-16.0.0-orange` badge.
+- `docs/README.zh.md` — Chinese README: the 120 · 16 / 16 / 16 / 16 / 16 / 16 / 16 / 8 counts (skills / SEO-GEO / influencer / paid ads / email / launch / social / narrative / protocol) + 8 commands + version badge. The 8 additional localized READMEs (`docs/README.{de,es,fr,it,ja,ko,pt,zh-Hant}.md`) are now version-locked too — `check-versions.sh` asserts each carries the current `version-<bundle>-orange` badge (the bundle value is read from `plugin.json`, so this never goes stale on a bump).
 - `.github/repo-about.json` — the GitHub repo **About** SSOT (sidebar description + topics). The About is *not* read by GitHub directly and *not* editable by the CI token, so it silently drifted on the v13/v14 discipline bumps. Edit the count/disciplines/gates here, then project it onto GitHub with `bash scripts/sync-about.sh --live` (owner-run, needs admin auth). `check-versions.sh` asserts its skill count matches the tree; the weekly `about-drift.yml` sentinel fails red if GitHub drifts from it.
 
 For release bumps, also sync README badges and localized README badges.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xberg-io/xberg` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `xberg-io/xberg` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `xberg-io/xberg` — 26 default patterns, 0 followed patterns, 6 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,7 +64,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.ai-rulez/skills/extraction-pipeline-patterns/SKILL.md`](.ai-rulez/skills/extraction-pipeline-patterns/SKILL.md) |
 | 4 | ✓ | [`.ai-rulez/skills/format-specific-extraction/SKILL.md`](.ai-rulez/skills/format-specific-extraction/SKILL.md) |
 | 5 | ✓ | [`.ai-rulez/skills/plugin-architecture-patterns/SKILL.md`](.ai-rulez/skills/plugin-architecture-patterns/SKILL.md) |
-| 6 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
 
 ---
 

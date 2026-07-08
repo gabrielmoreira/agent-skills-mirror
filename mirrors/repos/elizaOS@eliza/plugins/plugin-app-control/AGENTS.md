@@ -49,10 +49,8 @@ This plugin registers three actions, one natural-language shortcut set, two eval
 | ID | Label | Path | Bundle component |
 |---|---|---|---|
 | `views-manager` | Views | `/views` | `ViewManagerView` (gui) |
-| `views-manager` | Views XR | `/views` | `ViewManagerView` (xr) |
-| `views-manager` | Views TUI | `/views/tui` | `ViewManagerTuiView` (tui) |
 
-View source lives in `src/views/ViewManagerView.tsx` (exports both `ViewManagerView` and `ViewManagerTuiView`). Bundled separately by `vite.config.views.ts` into `dist/views/bundle.js`.
+View source lives in `src/views/ViewManagerView.tsx`. Bundled separately by `vite.config.views.ts` into `dist/views/bundle.js`. The `viewType` contract still accepts future modality entries, but this plugin ships only the GUI declaration today.
 
 ## Layout
 
@@ -64,7 +62,6 @@ src/
   params.ts                       Option normalisation + verb/noun extraction helpers
   resolve.ts                      App/run name resolution (exact + substring match)
   protected-apps.ts               List of built-in apps that cannot be deleted
-  register-terminal-view.tsx      Registers the TUI view at runtime
   client/
     api.ts                        AppControlClient — loopback HTTP to /api/apps/*
   actions/
@@ -89,7 +86,7 @@ src/
     views-plugin-source.ts        resolve a view's on-disk plugin source dir
     views-delete.ts               delete sub-handler + confirmation flow
   components/
-    ViewManagerSpatialView.tsx    Spatial/XR variant of the view manager component
+    ViewManagerSpatialView.tsx    Presentational spatial view-manager component
   evaluators/
     view-followup-routing.ts      viewFollowupRoutingEvaluator — dispatches VIEWS on follow-up intent
     view-navigation-routing.ts    viewNavigationRoutingEvaluator — routes to view from agent response
@@ -103,7 +100,7 @@ src/
     verification-helpers.ts       Shared helpers: screenshot, diagnostics, package-manager detect
     index.ts                      Re-exports AppVerificationService + its public types
   views/
-    ViewManagerView.tsx           React view component; exports ViewManagerView + ViewManagerTuiView
+    ViewManagerView.tsx           React view component; exports ViewManagerView
     ViewManagerView.test.ts       Unit tests for the view component
     viewManagerData.ts            Data helpers for the view manager
     app-control-view-bundle.ts    View bundle registration entry point

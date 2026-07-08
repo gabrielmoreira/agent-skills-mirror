@@ -455,3 +455,119 @@
   - Byte-size is a reliable auto-flag for near-uniform frames (blank/loading), but two
     different near-uniform states (dark loading-screen vs blank) can both be small — always
     Read the frame to tell them apart (Case 1 rule).
+
+### E4. ✅ WORKS — keep Electron pool `LOBE_IPC_ID` short
+
+- **Situation**: manually starting an isolated Electron dev instance with a
+  descriptive `LOBE_IPC_ID` such as `lobehub-desktop-dev-manual-selection-2`.
+  The main process builds a Unix socket path under `$TMPDIR`, and macOS rejects
+  overlong socket paths.
+- **Doesn't work**: long IPC ids can crash Electron at bootstrap with
+  `listen EINVAL ... <id>-electron-ipc.sock`, before any renderer/CDP evidence is
+  available.
+- **Works**: use the numeric `electron-dev.sh start <id>` pool path, or keep
+  manual IPC ids very short, e.g. `LOBE_IPC_ID=lhmsel2`.
+
+### E5. ✅ WORKS — no-Docker fallback stack for the isolated no-.env env
+
+- **Situation**: `init-dev-env.sh setup-db` needs Docker (paradedb + redis images), but
+  Docker Desktop's VM can wedge indefinitely (`no route to host` to 192.168.65.x, empty
+  vm/console.log). Verified working substitute:
+  - **Postgres**: local brew Postgres 17 (pgvector available). The only paradedb-specific
+    migrations are `0090_enable_pg_search` / `0093_add_bm25_indexes_with_icu` — no-op them
+    in the worktree (`SELECT 1;`), everything else applies clean.
+  - **Redis is a hard dependency of Better Auth sign-in** — with a dead REDIS\_URL the seed
+    login 500s (`[Better Auth]: Error: Connection is closed`). `brew install redis`,
+    `redis-server --port 6380 --daemonize yes`.
+  - **S3**: `s3rver` (npm) on 29000 with a CORS config for the bucket. Its presigned-URL
+    validation only accepts key id `S3RVER` (secret `S3RVER`) — `allowMismatchedSignatures`
+    does NOT rescue an unknown access key id (403 on the browser preflight). Set the dev
+    server's `S3_ACCESS_KEY_ID/S3_SECRET_ACCESS_KEY=S3RVER`, `S3_ENABLE_PATH_STYLE=1`,
+    `S3_PUBLIC_DOMAIN=http://127.0.0.1:29000/<bucket>`.
+
+### E6. code-inspector-plugin breaks Turbopack compile of Next-served authed pages
+
+- **Situation**: the first AUTHENTICATED render of a Next-served (non-SPA) page whose client
+  graph pulls the chat store dies in `next dev` (Turbopack) with Build Error `Resource path
+"worker/browser/createWorker.ts" needs to be on project filesystem` (chain: layout →
+  GlobalProvider/Query → trpc client → image/chat store → python-interpreter worker).
+  Unauthenticated curl 302s BEFORE the client graph compiles, so it false-passes; a fresh
+  no-lockfile `pnpm install` can resolve a broken plugin version.
+- **Works**: `E2E=1` (or `TEST=1`) — `defineConfig`'s `isTest` skips `codeInspectorPlugin`,
+  the only thing it gates. Webpack mode (`next dev --webpack`) is NOT a viable fallback
+  (react version mismatch when two next versions are hoisted; `zlib-sync` unresolved for
+  discord.js).
+
+### D12. agent-browser daemon serializes commands — `open` queues behind a record-gif loop
+
+- **Situation**: `record-gif.sh` (a screenshot loop) running while you issue
+  `agent-browser open <url>` — the daemon socket serializes, the open lands late/out of
+  order, and your "during navigation" screenshot actually shows the PREVIOUS page (which can
+  look identical to the expected end state — false read).
+- **Works**: during any recording loop, navigate with
+  `agent-browser eval 'location.href="<url>"'` (fire-and-forget) instead of `open`. To hold
+  a streaming loading state on screen, inject a server-side `await sleep(8000)` before the
+  slow lookup in the page (\[AGENT-TEST], revert) — TTFB stays \~0.3s so loading.tsx renders
+  while the route hangs, giving a wide static-capture window.
+
+---
+
+## F. Running the OSS web surface inside the CLOUD checkout (submodule)
+
+### F1. ✅ WORKS — vite dev EMFILE on a shared machine: serve a BUILT SPA behind a fake vite origin
+
+- **Situation**: `bun run dev` / `vite` in the lobehub submodule dies instantly with
+  `EMFILE: too many open files, watch` (node FSWatcher), even with `ulimit -n 245760`
+  and `CHOKIDAR_USEPOLLING=1` — happens when another worktree's dev server already
+  holds a huge watch set on the same machine.
+- **Works**: skip vite dev entirely. `bun run build:spa && bun run build:spa:copy`
+  (no watchers), then `PORT=<p> VITE_DEV_PORT=<q> init-dev-env.sh dev-next` (Next dev
+  alone starts fine), plus a tiny static server on `<q>` that returns
+  `dist/desktop/index.html` for `/` (Next's `fetchViteDevTemplate` fetches the HTML
+  template from the vite origin in dev). `build:spa:copy` puts assets under
+  `public/_spa` so Next serves the chunks itself.
+- **Gotcha**: with the built template, the inline importmap boot script does NOT
+  auto-import the entry — after every `open`, boot manually:
+  `agent-browser eval 'import("/_spa/assets/index-<hash>.js")'` (find the hash in
+  `public/_spa/assets`). Re-run after each rebuild (hash changes).
+
+### F2. Cloud pnpm overrides leak into the submodule app; shim the missing cloud aliases
+
+- **Situation**: in the cloud checkout, `@lobechat/business-*` resolves to CLOUD
+  packages; running the OSS Next app then fails with
+  `Module not found: Can't resolve '@/libs/redis-client'` (cloud-only module).
+- **Works**: create a minimal stub at `lobehub/src/libs/redis-client.ts`
+  (`isRedisClientEnabled=()=>false; getRedisClient=async()=>null`), marked
+  `[AGENT-TEST] REMOVE`; restart Next (Turbopack won't pick up the new file without
+  a restart). Revert after the run.
+- Also: better-auth needs a reachable `REDIS_URL`; ioredis failed against a leftover
+  redis on 6380 that redis-cli could reach — starting a fresh `redis:7-alpine` on
+  6379 and passing `REDIS_URL=redis://127.0.0.1:6379` fixed `Failed to get session`.
+
+### F3. ✅ WORKS — drive workspace-scoped behavior in the OSS build (no cloud UI)
+
+- The workspace context is the `X-Workspace-Id` request header
+  (`packages/trpc/src/lambda/context.ts`); the OSS client never sets it and the
+  workspace UI hooks are empty business slots (`useActiveWorkspaceId` → null).
+- **Works, three layers**:
+  1. **API-level**: `fetch("/trpc/lambda/<proc>", {headers:{"X-Workspace-Id": ws}})`
+     from `agent-browser eval` (cookies included) hits the real router with real
+     RBAC checks.
+  2. **RBAC**: workspace member needs rbac rows — seed `rbac_permissions`
+     (`agent:create:all` etc.), one `rbac_roles`, `rbac_role_permissions`, and a
+     workspace-scoped `rbac_user_roles` row; a 403 "No write access to target
+     workspace" proves the check is live.
+  3. **UI-level**: patch the slot `src/business/client/hooks/useActiveWorkspaceId.ts`
+     to read `localStorage.AGENT_TEST_WS` (keep ALL original exports —
+     `getActiveWorkspaceId` too, or the build fails with MISSING\_EXPORT), rebuild the
+     SPA, and pre-patch `window.fetch` (BEFORE the manual entry import — the TRPC
+     client captures fetch at creation) to add the header. The sidebar then renders
+     the real Private/Workspace sections.
+- **Production SPA build exposes NO `window.__LOBE_STORES`** — store-action eval is
+  dev-build-only; use the TRPC fetch path instead.
+
+### F4. curl "502" on localhost with nothing listening = shell proxy env
+
+- With `http_proxy`/`HTTP_PROXY` set, `curl http://localhost:<port>` returns the
+  proxy's 502 instead of connection-refused, faking a "server up but broken" signal.
+  Always `curl --noproxy '*'` for local port probes.

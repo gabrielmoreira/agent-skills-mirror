@@ -80,10 +80,10 @@ Sixteen skills added across the 38 → 54 expansion (six SEO/GEO + four paid in 
 | `allowed-tools` | Pre-approved tools (e.g., `WebFetch`) |
 | `metadata` | **Single-line strict-JSON object** — OpenClaw's parser reads single-line keys only; the validator fails a YAML block map. `metadata.version` must match top-level `version`. |
 | `metadata.author/geo-relevance` | Discovery and categorization. |
-| `metadata.discipline` + `metadata.phase` | On every skill (120/120): `discipline` = seo-geo/influencer/paid/email/launch/social/narrative/protocol; `phase` = lifecycle phase. Uniform routing/clustering tags. |
+| `metadata.discipline` + `metadata.phase` | On every skill (120/120): `discipline` = narrative/seo-geo/influencer/ad/email/launch/social/protocol (`ad` is the Paid Ads/ROAS discipline value); `phase` = lifecycle phase. Uniform routing/clustering tags. |
 | `metadata.hermes` | Hermes Agent extension: `{"tags": ["marketing", <discipline>, <phase>], "category": <discipline>}` for `hermes skills browse` filtering. |
 | `metadata.openclaw` | OpenClaw extension: `{"emoji": <discipline emoji>, "homepage": <repo URL>}` for the macOS UI. |
-| `slug` | SkillHub.cn publishing identity — must be `aaron-<skill-name>` (validator-enforced). |
+| `slug` | SkillHub.cn publishing identity — must match the frontmatter value registered on the platform: prefer `<skill-name>` when owned, otherwise `aaron-<skill-name>` as the conflict fallback (validator-enforced). |
 | `displayName` + `summary` | SkillHub.cn listing card: bilingual display name + Chinese one-liner. |
 | `when_to_use` | Trigger scenarios for auto-invocation (underscores, not hyphens) |
 | `argument-hint` | Argument format hint in command picker |

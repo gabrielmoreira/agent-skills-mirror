@@ -13,7 +13,6 @@ This plugin adds two capabilities to an Eliza agent running on Android:
    - Viewing contact details (phone numbers, email addresses)
    - Creating new contacts (display name, phone, email)
    - Importing contacts from a `.vcf` vCard file
-   - A terminal (TUI) surface for agent-driven interaction
 
 The plugin is **Android-only**. On other platforms the overlay app is not registered and the provider returns an empty result set.
 
@@ -23,7 +22,6 @@ The plugin is **Android-only**. On other platforms the overlay app is not regist
 |---------|------|-------------|
 | Provider | `androidContacts` | Injects read-only address-book context (up to 50 contacts) into the planner for `contacts` and `messaging` conversation contexts. Requires ADMIN role session. |
 | Overlay app (UI) | Contacts | Full-screen address-book UI: list, detail, create, import vCard. |
-| Overlay app (TUI) | Contacts TUI | Terminal address-book surface for programmatic agent access. |
 
 Note: live dialling is not part of this plugin. Placing a call remains in the Phone app (`PLACE_CALL` action).
 

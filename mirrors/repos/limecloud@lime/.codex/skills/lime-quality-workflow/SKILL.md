@@ -1,6 +1,6 @@
 ---
 name: lime-quality-workflow
-description: Choose the right Lime validation path for GUI changes, command and bridge edits, config or version updates, and PR readiness. Use when Codex needs to decide what to run, prove a GUI change is actually deliverable, and keep local checks aligned with the repository quality workflow.
+description: Choose Lime validation commands for GUI, command/bridge, config, version, and PR-readiness changes.
 ---
 
 # Lime 工程质量

@@ -125,24 +125,22 @@ Charged per scan volume. Billed unit: `billed_bytes` (long).
 
 **Additional fields:** `usage.bucket`, `query_id`, `query_start`,
 `client.application_context`, `client.function_context`, `client.source`,
+`client.client_context`, `client.workflow_context`, `client.internal_service_context`,
 `action_type` (values: `"QUERY"`, `"DELETION"`), `user.id`, `user.email`
 
 #### Query Attribution
 
-Coverage of `client.source`, `client.application_context`, and
-`client.function_context` varies by event type and `event.version`. On
-Events - Query (v2.0), `client.application_context` is the primary attribution
-field; on Log/Traces/Files - Query (v1.0), `client.source` has higher coverage.
-Use `coalesce(client.source, client.application_context, "unknown")` for
+Coverage of `client.*` attribution fields depends on your tenant's query pool
+distribution, not on BUE event type. Use `coalesce(client.source, client.application_context, client.internal_service_context, client.workflow_context, client.function_context, client.client_context, "unknown")` for
 attribution. See
 [query-cost-attribution.md → BUE Query Attribution Fields](query-cost-attribution.md#bue-query-attribution-fields)
-for the full breakdown and
+for the per-pool breakdown and
 [query-cost-attribution.md → Step 1a](query-cost-attribution.md#step-1a--coverage-check)
 for the coverage check query.
 
-> **BUE Query events have NO workflow attribution fields** — `workflow.id` and
-> `client.workflow_context` are NOT available. To attribute query costs to a
-> workflow, use QEE AUTOMATION pool with `client.workflow_context`. See
+> **BUE Query events and workflow attribution fields** — 
+> The `client.workflow_context` field is available (contains the `workflow.id` value). To attribute query costs to a
+> workflow where no context is available (value is `null`) on the BUE, use QEE AUTOMATION pool with `client.workflow_context`. See
 > [workflow-total-cost.md → Cross-Event Field Reference](workflow-total-cost.md#cross-event-field-reference).
 
 **Events - Query subcategories** (via `event.billing.category`):
@@ -156,7 +154,9 @@ for the coverage check query.
   standard cost estimation queries but can be queried for volume tracking.
 - **Additional fields:** same as other Query types (`usage.bucket`, `query_id`,
   `query_start`, `client.source`, `client.application_context`,
-  `client.function_context`, `action_type`, `user.id`, `user.email`,
+  `client.function_context`, `client.client_context`,
+  `client.workflow_context`, `client.internal_service_context`,
+  `action_type`, `user.id`, `user.email`,
   `event.billing.category`)
 - **Subcategories** (via `event.billing.category`): `"Synthetic events"` and
   RUM-related subcategories

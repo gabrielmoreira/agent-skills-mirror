@@ -2,27 +2,21 @@
 
 A **template** is a reusable folder you stamp into a working agent group: it
 carries the agent's standing instructions, its MCP tool servers, and its skills,
-but **no secrets and no provider**. Point `ncl` (or the setup wizard) at one and
+but **no secrets and no provider**. Point `ncl` at one and
 you get a configured agent in seconds; you choose the runtime/provider
 separately.
 
-Templates are purely additive: no DB migration, no new dependency. **At runtime,
-templates are resolved only from a local directory**: `templates/` at the
+Templates are purely additive: no DB migration, no new dependency. **Templates
+are resolved only from a local directory**: `templates/` at the
 project root by default (committed but shipped empty), or whatever
-`NANOCLAW_TEMPLATES_DIR` points at (a local path only). The setup wizard can also
-discover templates from the public registry
+`NANOCLAW_TEMPLATES_DIR` points at (a local path only). The public registry
 ([`nanocoai/nanoclaw-templates`](https://github.com/nanocoai/nanoclaw-templates))
-and copy a chosen one into your local `templates/` before stamping.
+is a manual copy source — clone or download it yourself and copy the chosen
+template into your local `templates/` before stamping.
 
 ## Using a template
 
-**During install.** `bash nanoclaw.sh` opens the setup wizard. Choose **Template
-setup**, then either **NanoClaw template library** (clones the public registry,
-copies the template you pick into your local `templates/`) or **Local templates**
-(lists what's already in `templates/`). The normal auth step then picks the
-runtime, and the wizard stamps and wires your first agent.
-
-**Anytime, via the CLI:**
+**Via the CLI:**
 
 ```bash
 ncl groups create --template sales/sdr --name "SDR Agent"
@@ -40,8 +34,8 @@ e.g. `sales/sdr` → `templates/sales/sdr`.
 
 For safety the ref must stay inside the templates directory: absolute paths, a
 leading `~`, and `../` escapes are rejected. There is no `--source`, no git URL,
-and no remote fetch at `ncl` time. Populate `templates/` first (by hand, or via
-the setup wizard's library option), then stamp.
+and no remote fetch at `ncl` time. Populate `templates/` first (by hand, e.g.
+copying from the public registry), then stamp.
 
 `NANOCLAW_TEMPLATES_DIR` may point the library at another **local** directory; it
 is never a URL and never changes at runtime.

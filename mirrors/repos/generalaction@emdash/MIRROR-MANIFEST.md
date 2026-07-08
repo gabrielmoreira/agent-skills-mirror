@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `generalaction/emdash` — 26 default patterns, 3 followed patterns, 31 file(s) materialized.
+Mirror of `generalaction/emdash` — 26 default patterns, 3 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `generalaction/emdash` — 26 default patterns, 3 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 31 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,9 +89,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`agents/workflows/worktrees.md`](agents/workflows/worktrees.md) |
 | 27 | ✓ | [`apps/emdash-desktop/tooling/byoi/README.md`](apps/emdash-desktop/tooling/byoi/README.md) |
 | 28 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 29 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 30 | → | [`LICENSE.md`](LICENSE.md) |
-| 31 | → | [`README.md`](README.md) |
+| 29 | ✓ | [`packages/wire/docs/README.md`](packages/wire/docs/README.md) |
+| 30 | ✓ | [`packages/wire/examples/README.md`](packages/wire/examples/README.md) |
+| 31 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 32 | → | [`LICENSE.md`](LICENSE.md) |
+| 33 | → | [`README.md`](README.md) |
 
 ---
 

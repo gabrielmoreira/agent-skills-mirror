@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 9 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,9 +65,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`skills/engine-debugging/scripts/dagql-cache-analyzer.go`](skills/engine-debugging/scripts/dagql-cache-analyzer.go) |
 | 5 | ✓ | [`skills/engine-debugging/SKILL.md`](skills/engine-debugging/SKILL.md) |
 | 6 | ✓ | [`skills/telemetry-capture/SKILL.md`](skills/telemetry-capture/SKILL.md) |
-| 7 | ✓ | [`skills/tui-qa/agents/openai.yaml`](skills/tui-qa/agents/openai.yaml) |
-| 8 | ✓ | [`skills/tui-qa/scripts/tui_qa.py`](skills/tui-qa/scripts/tui_qa.py) |
-| 9 | ✓ | [`skills/tui-qa/SKILL.md`](skills/tui-qa/SKILL.md) |
+| 7 | ✓ | [`skills/tui-console/SKILL.md`](skills/tui-console/SKILL.md) |
+| 8 | ✓ | [`skills/tui-qa/agents/openai.yaml`](skills/tui-qa/agents/openai.yaml) |
+| 9 | ✓ | [`skills/tui-qa/scripts/tui_qa.py`](skills/tui-qa/scripts/tui_qa.py) |
+| 10 | ✓ | [`skills/tui-qa/SKILL.md`](skills/tui-qa/SKILL.md) |
 
 ---
 

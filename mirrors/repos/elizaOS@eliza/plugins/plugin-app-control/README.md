@@ -65,7 +65,7 @@ None are required for basic operation. The plugin auto-discovers the Eliza dashb
 
 ## Views registered
 
-The plugin contributes a **View Manager** view (GUI, XR, and TUI variants) at `/views` — a browser for all views contributed by loaded plugins.
+The plugin contributes a **View Manager** GUI view at `/views` — a browser for all views contributed by loaded plugins.
 
 ## For agent developers
 

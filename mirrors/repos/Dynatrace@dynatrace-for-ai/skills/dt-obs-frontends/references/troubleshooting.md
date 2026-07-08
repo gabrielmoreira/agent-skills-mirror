@@ -51,7 +51,7 @@ Check these before any query-level diagnostics — they are the most common root
 
 Ref: https://docs.dynatrace.com/docs/observe/digital-experience/new-rum-experience/web-frontends/initial-setup
 
-**JS injection check:** Look in the browser for a script element with `data-config`, `data-envconfig`, or `data-appconfig` attribute. If `data-dtconfig` is present instead, RUM Classic is active but the New RUM Experience is not yet enabled.
+**JS injection check:** Look in the browser for a script element with `data-config`, `data-envconfig`, or `data-appconfig` attribute. If `data-dtconfig` is present instead, RUM Classic is active but RUM on the latest Dynatrace is not yet enabled.
 
 **Monitoring code download:** Check for `ruxitagentjs_` or `ruxitagent_` files returning HTTP 200. A 404, 503, or CSP block here means the RUM agent never loads.
 
@@ -74,7 +74,7 @@ fetch user.events, from: now() - 1h
 
 Ref: https://docs.dynatrace.com/docs/shortlink/finalize-initial-setup-for-auto-injected-frontend
 
-**Beacon query string corruption:** If infrastructure (CDN, WAF, proxy, tag manager) modifies beacon URL query parameters, the New RUM Experience silently rejects the beacon → data gaps or zero results with no obvious cause. Check browser dev tools for requests to paths starting with `rb_`. Rejection error codes: `3014` (query string CRC mismatch) or `3001` (parameter `ty` missing).
+**Beacon query string corruption:** If infrastructure (CDN, WAF, proxy, tag manager) modifies beacon URL query parameters, RUM on the latest Dynatrace silently rejects the beacon → data gaps or zero results with no obvious cause. Check browser dev tools for requests to paths starting with `rb_`. Rejection error codes: `3014` (query string CRC mismatch) or `3001` (parameter `ty` missing).
 
 Ref: https://docs.dynatrace.com/docs/observe/digital-experience/new-rum-experience/transition-from-rum-classic
 
@@ -96,8 +96,8 @@ When query results seem unexpected or suspicious:
 
 **Inconsistent Data:**
 - **Metrics vs. Events mismatch**: Different aggregation methods are expected
-- **New RUM Experience vs. RUM Classic mismatch**: The New RUM Experience uses a different underlying data model — metrics are not direct equivalents of RUM Classic metrics. Users migrating from Classic may see different numbers; this is by design, not a data gap. Ref: https://docs.dynatrace.com/docs/observe/digital-experience/new-rum-experience/transition-from-rum-classic
-- **No limit on user actions per session**: The New RUM Experience has no limit on user actions per session, unlike RUM Classic. Sessions with many user actions are not truncated.
+- **RUM on the latest Dynatrace vs. RUM Classic mismatch**: The RUM on the latest Dynatrace uses a different underlying data model — metrics are not direct equivalents of RUM Classic metrics. Users migrating from Classic may see different numbers; this is by design, not a data gap. Ref: https://docs.dynatrace.com/docs/observe/digital-experience/new-rum-experience/transition-from-rum-classic
+- **No limit on user actions per session**: RUM on the latest Dynatrace has no limit on user actions per session, unlike RUM Classic. Sessions with many user actions are not truncated.
 - **Geographic anomalies**: Check timezone assumptions
 - **Device distribution skew**: May reflect actual user base
 - **Version mismatches**: Verify app version filtering logic

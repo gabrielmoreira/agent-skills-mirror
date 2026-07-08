@@ -151,14 +151,14 @@ Concrete workaround: stage Alpine `icu-data-full` for riscv64 and set
 `ICU_DATA` to its `usr/share/icu/74.2` directory, or place
 `icudt74l.dat` at ICU's default `/usr/share/icu/74.2` path in the image.
 With `ICU_DATA=/tmp/.../usr/share/icu/74.2`, the reduced `NFKC` repro and
-the direct qemu-user agent `tui-smoke` both pass. The staged loader wrapper
+the direct qemu-user agent health path both pass. The staged loader wrapper
 still takes about 50s under qemu-user, so
 `riscv64-agent-runtime-smoke` also needs an agent-entrypoint timeout above
 20s when testing the wrapped loader.
 
 Do not promote a riscv64 Debian image until the full agent path reaches the
-`elizaos-curl-health-ready`, `elizaos-agent-ready`, and `elizaos-tui-ready`
-markers under `make -C packages/os/linux/elizaos qemu-virt-smoke ARCH=riscv64`.
+`elizaos-curl-health-ready` and `elizaos-agent-ready` markers under
+`make -C packages/os/linux/elizaos qemu-virt-smoke ARCH=riscv64`.
 
 ## Hosting the artifact + wiring into Android staging
 

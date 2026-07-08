@@ -2919,6 +2919,58 @@
       ]
     },
     {
+      "name": "polars-bio",
+      "cli_alias": null,
+      "description": "Fast genomic interval operations (overlap, nearest, merge, coverage, cluster, complement, subtract, count-overlaps), multi-format bioinformatics I/O, DataFusion SQL, and pileup on Polars DataFrames via polars-bio. A scalable bioframe/bedtools alternative.",
+      "version": "0.1.0",
+      "status": "planned",
+      "maturity_tier": "tested",
+      "maturity_evidence": {
+        "has_skill_md": true,
+        "has_script": true,
+        "has_tests": true,
+        "has_demo": true,
+        "cli_registered": false,
+        "ci_tested": false,
+        "benchmark_validated": false
+      },
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/polars-bio/polars_bio_runner.py --demo",
+      "dependencies": [
+        "python>=3.11,<3.15",
+        "polars-bio",
+        "matplotlib"
+      ],
+      "tags": [
+        "genomic-intervals",
+        "interval-arithmetic",
+        "bioframe-alternative",
+        "file-io",
+        "datafusion-sql",
+        "polars"
+      ],
+      "trigger_keywords": [
+        "interval overlap",
+        "nearest interval",
+        "merge intervals",
+        "genomic coverage",
+        "BED intersect",
+        "bioframe",
+        "polars-bio",
+        "interval arithmetic",
+        "complement intervals",
+        "subtract intervals",
+        "count overlaps",
+        "DataFusion SQL genomic",
+        "BigWig",
+        "BigBed",
+        "genomic pileup depth"
+      ],
+      "chaining_partners": []
+    },
+    {
       "name": "profile-report",
       "cli_alias": "profile",
       "description": "Unified personal genomic profile report — reads a PatientProfile JSON and synthesizes all skill results into a single \"Your Genomic Profile\" document.",

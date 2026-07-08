@@ -1,7 +1,7 @@
 ---
 description: "Prevent terminal command failures from shell metacharacter interpretation, output capture issues, and hanging commands"
 applyTo: "**"
-lastReviewed: 2026-05-29
+lastReviewed: 2026-07-07
 ---
 
 # Terminal Command Safety
@@ -55,7 +55,7 @@ Terminal output can be silently lost or truncated.
 5. One command at a time — no chaining unrelated commands
 6. Kill stuck: `send_to_terminal` with Ctrl+C, or start fresh terminal
 
-## VS Code platform changes (1.117–1.121) — reduce manual capture
+## VS Code platform changes (1.117–1.127) — reduce manual capture
 
 Recent VS Code agentic-execution improvements reduce the need for some manual patterns above. Treat as additive shortcuts; the file-redirect fallback above remains the safe default when full unfiltered output matters.
 
@@ -64,7 +64,8 @@ Recent VS Code agentic-execution improvements reduce the need for some manual pa
 | 1.117 | Terminal output auto-included after `send_to_terminal`; async-completion notifications fire automatically | When you need exact byte-for-byte output for diagnostics |
 | 1.118 | Agentic execution sub-tool pre-filters terminal output (drops noise) | When parsing exact error strings, full test results, encoding-sensitive output |
 | 1.120–1.121 | `chat.tools.compressOutput.enabled` post-processes long output (diffs, test runners, builds); chat-agent background terminals auto-dispose after one-shot async commands | When you need raw lockfile diffs, full npm install logs, or output the compressor filters strip |
+| 1.127 | macOS/Linux terminal commands sandboxed by default | On mac/Linux, agent-invoked terminal commands run with network blocked + FS restricted; only elevation prompts for approval. Reduces the "approve every command" fatigue that Backtick Hazard mitigates on Windows. **On Windows, no change — all existing safety rules still apply.** |
 
 ## Falsifier — Backtick Hazard
 
-The Backtick Hazard rule is load-bearing because the underlying defect is unfixed in VS Code through 1.121 ([microsoft/vscode#295620](https://github.com/microsoft/vscode/issues/295620), open, milestone *On Deck*). Re-evaluate when #295620 closes; until then, the temp-file pattern is mandatory.
+The Backtick Hazard rule is load-bearing because the underlying defect is unfixed in VS Code through 1.128 ([microsoft/vscode#295620](https://github.com/microsoft/vscode/issues/295620), open, milestone *On Deck*). Re-evaluate when #295620 closes; until then, the temp-file pattern is mandatory.

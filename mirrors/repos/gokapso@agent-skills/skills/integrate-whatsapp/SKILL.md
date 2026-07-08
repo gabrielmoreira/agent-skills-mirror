@@ -281,6 +281,7 @@ async function handler(request, env) {
 
 ### Troubleshooting
 
+- Search Logs before drilling into per-resource endpoints: `kapso logs search --query "<wamid-flow-id-request-id-or-endpoint>" --period 7d --source all --limit 20 --output json`
 - Preview shows `"flow_token is missing"`: flow is dynamic without a data endpoint. Attach one and refresh.
 - Encryption setup errors: enable encryption in Settings for the phone number/WABA.
 - OAuthException 139000 (Integrity): WABA must be verified in Meta security center.

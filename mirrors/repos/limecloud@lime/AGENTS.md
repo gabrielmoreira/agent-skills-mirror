@@ -13,6 +13,7 @@
 5. **持续垃圾回收** - 技术债按小额、持续方式偿还；差距追踪见 `internal/exec-plans/tech-debt-tracker.md`
 6. **卡住时修环境，不是更用力** - 先补上下文、工具、约束，再继续实现；缺口也要写回 repo
 7. **Codex-first 是 Agent 重构最高准则** - 除多模型 / 多模态的 provider、capability、media part 和 lowering 参考 opencode 外，Agent runtime、Thread / Turn / Item、App Server、状态机、工具生命周期、MCP、Skills、Multi-Agent、history hydrate、projection、TUI/GUI 测试护栏和命名默认对齐 `/Users/coso/Documents/dev/rust/codex`；Lime 现有不合理命名或旧实现不能作为 current 续命理由，旧 `Aster` / `agent_runtime_*` / 临时 UI 语义按 `compat` / `deprecated` / `dead` 分类后陆续替换或删除
+8. **Aster 迁移按 Codex 有无判定** - 迁移 Aster 时先对照 `/Users/coso/Documents/dev/rust/codex` 的 current 工具面和 runtime 结构：Codex 有的能力必须迁入 Lime current owner 并让 App Server / 前端 / Evidence 至少一条真实主链用起来；Codex 没有的 Aster-only 能力默认 `dead / deleted / forbidden-to-restore`，不得因为“Aster 框架有用”继续保留 vendor 实现、前端展示、catalog alias 或 compat 包装
 
 ## 工程协作方式
 
@@ -34,7 +35,7 @@
 6. **禁止硬编码平台路径** - 用户数据、日志、缓存、凭证等目录必须走系统 API 或统一封装
 7. **优先平台无关入口** - 优先复用 `npm`、`cargo`、Electron / App Server 命令和仓库脚本，不新增只适用于 Bash/zsh 的流程
 8. **未验证的平台假设要显式说明** - 涉及文件系统、进程、终端、快捷键、窗口、托盘、权限时尤其如此
-9. **新增命名禁止品牌前缀** - 新程序、目录、crate/package、Electron IPC channel、App Server 方法、API 网关、类型、模块和脚本默认不得添加 `Lime` / `lime_` / `lime-` 品牌前缀；直接使用领域名，如 `app_server_*`、`app-server`。只有对外发布品牌标识、历史兼容或第三方生态已固定命名时才允许保留，并在执行计划说明原因
+9. **新增命名禁止品牌前缀** - 新程序、目录、crate/package、Electron IPC channel、App Server 方法、API 网关、类型、模块和脚本默认不得添加 `Lime` / `lime_` / `lime-` 品牌前缀；直接使用简洁领域名，如 `app_server_*`、`app-server`、`apply_patch`、`web_search`、`tool_search`、`view_image`。Aster 的简洁命名可以作为品味参考，但不能把 `aster_*`、旧 `agent_runtime_*` 或冗长品牌前缀带进 current API；`Tool` / `*Tool` 命名只允许作为历史 alias、测试夹具或退场 adapter，current API 优先使用动词\_对象或领域名。只有对外发布品牌标识、历史兼容或第三方生态已固定命名时才允许保留，并在执行计划说明原因
 10. **`scripts/` 目录冻结** - `scripts/` 根目录和一级领域目录都是受治理边界；新增可执行脚本默认放到已有 `scripts/<domain>/`、`scripts/lib/` 或所属 package，并通过 `npm run governance:scripts` 守住根目录与领域目录基线。只有公开稳定入口且无法归入已有领域目录时才允许例外，必须同步 `scripts/README.md`、`scripts/script-root-governance-baseline.json` 和执行计划退出条件
 11. **新增 Agent 逻辑默认走 App Server** - 新 AI Agent、runtime、host integration、跨 App 复用能力默认落到 `app-server` crates、JSON-RPC 协议、client 与 RuntimeCore；Electron 只作为 Desktop Host bridge，负责 IPC、窗口、托盘、Dock、updater 和 sidecar 生命周期，不是第二套后端或业务 adapter；旧 `agent_runtime_*` / Aster 命令只允许作为 retired guard、历史 evidence、test-only fixture 或受控迁移残留，不再作为生产 truth 或新增能力入口
 12. **`lime-rs/src/**`已物理删除** - 该目录是脱离 cargo 构建图的孤儿目录，2026-06-10 整目录删除（约 18.7 万行旧 Tauri command 宏标注代码）。新 Rust 后端能力一律进入`lime-rs/crates/\*\*`：App Server、RuntimeCore、services、core、agent、协议/client crate；桌面壳能力进入 Electron Desktop Host

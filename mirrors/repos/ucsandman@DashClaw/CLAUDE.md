@@ -14,7 +14,6 @@ DashClaw is AI agent decision infrastructure: a focused control plane for policy
 DashClaw is a **minimal governance runtime, not an agent platform**. We do not give agents tools to achieve goals (Calendar, Messaging, CRM); we provide the infrastructure to **govern** those goals.
 
 - **Core runtime**: `app/api/` (governance routes).
-- **Archived**: `app/api/_archive/` (legacy platform features; do not extend).
 
 ## Where to look first
 
@@ -27,7 +26,7 @@ Read these for depth instead of duplicating them here:
 
 ## Essential surfaces
 
-- `/mission-control` - fleet posture, interventions, live decision stream.
+- `/approvals` - THE hero surface: the live stream of what your agent just tried and the items waiting on your one-click approval.
 - `/decisions` - causal-chain ledger of every governed action.
 - `/setup` - readiness verification and instance health.
 - `/connect` - onboarding to the first governed action.

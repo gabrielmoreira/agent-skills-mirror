@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `typefully/agent-skills` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `typefully/agent-skills` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `typefully/agent-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,8 +62,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`skills/typefully/CHANGELOG.md`](skills/typefully/CHANGELOG.md) |
-| 4 | ✓ | [`skills/typefully/scripts/typefully.js`](skills/typefully/scripts/typefully.js) |
-| 5 | ✓ | [`skills/typefully/SKILL.md`](skills/typefully/SKILL.md) |
+| 4 | ✓ | [`skills/typefully/references/comments.md`](skills/typefully/references/comments.md) |
+| 5 | ✓ | [`skills/typefully/references/local-development.md`](skills/typefully/references/local-development.md) |
+| 6 | ✓ | [`skills/typefully/references/platforms/linkedin.md`](skills/typefully/references/platforms/linkedin.md) |
+| 7 | ✓ | [`skills/typefully/references/platforms/x-articles.md`](skills/typefully/references/platforms/x-articles.md) |
+| 8 | ✓ | [`skills/typefully/references/platforms/x.md`](skills/typefully/references/platforms/x.md) |
+| 9 | ✓ | [`skills/typefully/references/setup.md`](skills/typefully/references/setup.md) |
+| 10 | ✓ | [`skills/typefully/scripts/typefully.js`](skills/typefully/scripts/typefully.js) |
+| 11 | ✓ | [`skills/typefully/SKILL.md`](skills/typefully/SKILL.md) |
 
 ---
 

@@ -17,7 +17,7 @@ catalog with `SCENARIO_USE_LLM_PROXY=1` and
   real AppRegistryService and app-manager routes: registry persistence,
   catalog tile data, generated hero SVG, `/api/apps/:slug/*` package routing,
   run-scoped message/control dispatch, HTTP `load-from-directory`, and
-  app-control GUI/TUI view registration.
+  app-control GUI view registration plus compatibility-mode list fallback.
 - `deterministic-todos-actions` covers strict natural-language routing into
   `TODO`, then the real `TODO` action against real TodosService DB state and
   CURRENT_TODOS provider output for write, create, update, complete, cancel,
@@ -25,11 +25,6 @@ catalog with `SCENARIO_USE_LLM_PROXY=1` and
 - `deterministic-streaming-actions` covers the real `STREAM` action and stream
   route handler for start, status, stop, provider status rendering, exact
   loopback route responses, and stream destination lifecycle side effects.
-- `deterministic-xr-view-actions` covers the real plugin-facewear
-  XRSessionService WebSocket,
-  XR view catalog/route surface, `XR_LIST_VIEWS`, `XR_OPEN_VIEW`,
-  `XR_SWITCH_VIEW`, `XR_RESIZE_VIEW`, `XR_CLOSE_VIEW`, and `XR_QUERY_VISION`
-  with a deterministic image-description model and binary camera frame.
 - `deterministic-mcp-actions-routes` covers the real `@elizaos/plugin-mcp`
   service against a committed stdio MCP fixture, the parent `MCP` router,
   `MCP_READ_RESOURCE`, `MCP_CALL_TOOL`, `MCP_SEARCH_ACTIONS`,

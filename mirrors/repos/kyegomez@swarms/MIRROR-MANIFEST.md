@@ -61,9 +61,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`docs/swarms/examples/claude.md`](docs/swarms/examples/claude.md) |
-| 3 | ✓ | [`examples/single_agent/agent_skill_examples/code-review/SKILL.md`](examples/single_agent/agent_skill_examples/code-review/SKILL.md) |
-| 4 | ✓ | [`examples/single_agent/agent_skill_examples/data-visualization/SKILL.md`](examples/single_agent/agent_skill_examples/data-visualization/SKILL.md) |
-| 5 | ✓ | [`examples/single_agent/agent_skill_examples/financial-analysis/SKILL.md`](examples/single_agent/agent_skill_examples/financial-analysis/SKILL.md) |
+| 3 | ✓ | [`examples/single_agent/capabilities/skills/code-review/SKILL.md`](examples/single_agent/capabilities/skills/code-review/SKILL.md) |
+| 4 | ✓ | [`examples/single_agent/capabilities/skills/data-visualization/SKILL.md`](examples/single_agent/capabilities/skills/data-visualization/SKILL.md) |
+| 5 | ✓ | [`examples/single_agent/capabilities/skills/financial-analysis/SKILL.md`](examples/single_agent/capabilities/skills/financial-analysis/SKILL.md) |
 
 ---
 

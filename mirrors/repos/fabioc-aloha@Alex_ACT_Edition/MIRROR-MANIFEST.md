@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `fabioc-aloha/Alex_ACT_Edition` — 26 default patterns, 0 followed patterns, 105 file(s) materialized.
+Mirror of `fabioc-aloha/Alex_ACT_Edition` — 26 default patterns, 0 followed patterns, 106 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `fabioc-aloha/Alex_ACT_Edition` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 105 |
+| Files         | 106 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -131,39 +131,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 70 | ✓ | [`.github/skills/alex-banner-generation/SKILL.md`](.github/skills/alex-banner-generation/SKILL.md) |
 | 71 | ✓ | [`.github/skills/anti-hallucination/SKILL.md`](.github/skills/anti-hallucination/SKILL.md) |
 | 72 | ✓ | [`.github/skills/brain-audit/SKILL.md`](.github/skills/brain-audit/SKILL.md) |
-| 73 | ✓ | [`.github/skills/code-review/SKILL.md`](.github/skills/code-review/SKILL.md) |
-| 74 | ✓ | [`.github/skills/creative-writing/SKILL.md`](.github/skills/creative-writing/SKILL.md) |
-| 75 | ✓ | [`.github/skills/critical-thinking/SKILL.md`](.github/skills/critical-thinking/SKILL.md) |
-| 76 | ✓ | [`.github/skills/deep-review/SKILL.md`](.github/skills/deep-review/SKILL.md) |
-| 77 | ✓ | [`.github/skills/doc-hygiene/SKILL.md`](.github/skills/doc-hygiene/SKILL.md) |
-| 78 | ✓ | [`.github/skills/docx-to-md/SKILL.md`](.github/skills/docx-to-md/SKILL.md) |
-| 79 | ✓ | [`.github/skills/git-workflow/SKILL.md`](.github/skills/git-workflow/SKILL.md) |
-| 80 | ✓ | [`.github/skills/greeting-checkin/SKILL.md`](.github/skills/greeting-checkin/SKILL.md) |
-| 81 | ✓ | [`.github/skills/html-to-md/SKILL.md`](.github/skills/html-to-md/SKILL.md) |
-| 82 | ✓ | [`.github/skills/humanizer/SKILL.md`](.github/skills/humanizer/SKILL.md) |
-| 83 | ✓ | [`.github/skills/instruction-creator/SKILL.md`](.github/skills/instruction-creator/SKILL.md) |
-| 84 | ✓ | [`.github/skills/instruction-review/SKILL.md`](.github/skills/instruction-review/SKILL.md) |
-| 85 | ✓ | [`.github/skills/lint-clean-markdown/SKILL.md`](.github/skills/lint-clean-markdown/SKILL.md) |
-| 86 | ✓ | [`.github/skills/markdown-mermaid/SKILL.md`](.github/skills/markdown-mermaid/SKILL.md) |
-| 87 | ✓ | [`.github/skills/markdown-sanitization-chain/SKILL.md`](.github/skills/markdown-sanitization-chain/SKILL.md) |
-| 88 | ✓ | [`.github/skills/md-to-eml/SKILL.md`](.github/skills/md-to-eml/SKILL.md) |
-| 89 | ✓ | [`.github/skills/md-to-html/SKILL.md`](.github/skills/md-to-html/SKILL.md) |
-| 90 | ✓ | [`.github/skills/md-to-txt/SKILL.md`](.github/skills/md-to-txt/SKILL.md) |
-| 91 | ✓ | [`.github/skills/md-to-word/SKILL.md`](.github/skills/md-to-word/SKILL.md) |
-| 92 | ✓ | [`.github/skills/meditation/SKILL.md`](.github/skills/meditation/SKILL.md) |
-| 93 | ✓ | [`.github/skills/plan/SKILL.md`](.github/skills/plan/SKILL.md) |
-| 94 | ✓ | [`.github/skills/problem-framing-audit/SKILL.md`](.github/skills/problem-framing-audit/SKILL.md) |
-| 95 | ✓ | [`.github/skills/prompt-creator/SKILL.md`](.github/skills/prompt-creator/SKILL.md) |
-| 96 | ✓ | [`.github/skills/prompt-review/SKILL.md`](.github/skills/prompt-review/SKILL.md) |
-| 97 | ✓ | [`.github/skills/security-and-hardening/SKILL.md`](.github/skills/security-and-hardening/SKILL.md) |
-| 98 | ✓ | [`.github/skills/skill-creator/assets/skill-skeleton/SKILL.md`](.github/skills/skill-creator/assets/skill-skeleton/SKILL.md) |
-| 99 | ✓ | [`.github/skills/skill-creator/examples/minimal-skill/SKILL.md`](.github/skills/skill-creator/examples/minimal-skill/SKILL.md) |
-| 100 | ✓ | [`.github/skills/skill-creator/SKILL.md`](.github/skills/skill-creator/SKILL.md) |
-| 101 | ✓ | [`.github/skills/skill-review/SKILL.md`](.github/skills/skill-review/SKILL.md) |
-| 102 | ✓ | [`.github/skills/spike/SKILL.md`](.github/skills/spike/SKILL.md) |
-| 103 | ✓ | [`.github/skills/status-reporting/SKILL.md`](.github/skills/status-reporting/SKILL.md) |
-| 104 | ✓ | [`.github/skills/systematic-debugging/SKILL.md`](.github/skills/systematic-debugging/SKILL.md) |
-| 105 | ✓ | [`.github/skills/test-driven-development/SKILL.md`](.github/skills/test-driven-development/SKILL.md) |
+| 73 | ✓ | [`.github/skills/browser-tools/SKILL.md`](.github/skills/browser-tools/SKILL.md) |
+| 74 | ✓ | [`.github/skills/code-review/SKILL.md`](.github/skills/code-review/SKILL.md) |
+| 75 | ✓ | [`.github/skills/creative-writing/SKILL.md`](.github/skills/creative-writing/SKILL.md) |
+| 76 | ✓ | [`.github/skills/critical-thinking/SKILL.md`](.github/skills/critical-thinking/SKILL.md) |
+| 77 | ✓ | [`.github/skills/deep-review/SKILL.md`](.github/skills/deep-review/SKILL.md) |
+| 78 | ✓ | [`.github/skills/doc-hygiene/SKILL.md`](.github/skills/doc-hygiene/SKILL.md) |
+| 79 | ✓ | [`.github/skills/docx-to-md/SKILL.md`](.github/skills/docx-to-md/SKILL.md) |
+| 80 | ✓ | [`.github/skills/git-workflow/SKILL.md`](.github/skills/git-workflow/SKILL.md) |
+| 81 | ✓ | [`.github/skills/greeting-checkin/SKILL.md`](.github/skills/greeting-checkin/SKILL.md) |
+| 82 | ✓ | [`.github/skills/html-to-md/SKILL.md`](.github/skills/html-to-md/SKILL.md) |
+| 83 | ✓ | [`.github/skills/humanizer/SKILL.md`](.github/skills/humanizer/SKILL.md) |
+| 84 | ✓ | [`.github/skills/instruction-creator/SKILL.md`](.github/skills/instruction-creator/SKILL.md) |
+| 85 | ✓ | [`.github/skills/instruction-review/SKILL.md`](.github/skills/instruction-review/SKILL.md) |
+| 86 | ✓ | [`.github/skills/lint-clean-markdown/SKILL.md`](.github/skills/lint-clean-markdown/SKILL.md) |
+| 87 | ✓ | [`.github/skills/markdown-mermaid/SKILL.md`](.github/skills/markdown-mermaid/SKILL.md) |
+| 88 | ✓ | [`.github/skills/markdown-sanitization-chain/SKILL.md`](.github/skills/markdown-sanitization-chain/SKILL.md) |
+| 89 | ✓ | [`.github/skills/md-to-eml/SKILL.md`](.github/skills/md-to-eml/SKILL.md) |
+| 90 | ✓ | [`.github/skills/md-to-html/SKILL.md`](.github/skills/md-to-html/SKILL.md) |
+| 91 | ✓ | [`.github/skills/md-to-txt/SKILL.md`](.github/skills/md-to-txt/SKILL.md) |
+| 92 | ✓ | [`.github/skills/md-to-word/SKILL.md`](.github/skills/md-to-word/SKILL.md) |
+| 93 | ✓ | [`.github/skills/meditation/SKILL.md`](.github/skills/meditation/SKILL.md) |
+| 94 | ✓ | [`.github/skills/plan/SKILL.md`](.github/skills/plan/SKILL.md) |
+| 95 | ✓ | [`.github/skills/problem-framing-audit/SKILL.md`](.github/skills/problem-framing-audit/SKILL.md) |
+| 96 | ✓ | [`.github/skills/prompt-creator/SKILL.md`](.github/skills/prompt-creator/SKILL.md) |
+| 97 | ✓ | [`.github/skills/prompt-review/SKILL.md`](.github/skills/prompt-review/SKILL.md) |
+| 98 | ✓ | [`.github/skills/security-and-hardening/SKILL.md`](.github/skills/security-and-hardening/SKILL.md) |
+| 99 | ✓ | [`.github/skills/skill-creator/assets/skill-skeleton/SKILL.md`](.github/skills/skill-creator/assets/skill-skeleton/SKILL.md) |
+| 100 | ✓ | [`.github/skills/skill-creator/examples/minimal-skill/SKILL.md`](.github/skills/skill-creator/examples/minimal-skill/SKILL.md) |
+| 101 | ✓ | [`.github/skills/skill-creator/SKILL.md`](.github/skills/skill-creator/SKILL.md) |
+| 102 | ✓ | [`.github/skills/skill-review/SKILL.md`](.github/skills/skill-review/SKILL.md) |
+| 103 | ✓ | [`.github/skills/spike/SKILL.md`](.github/skills/spike/SKILL.md) |
+| 104 | ✓ | [`.github/skills/status-reporting/SKILL.md`](.github/skills/status-reporting/SKILL.md) |
+| 105 | ✓ | [`.github/skills/systematic-debugging/SKILL.md`](.github/skills/systematic-debugging/SKILL.md) |
+| 106 | ✓ | [`.github/skills/test-driven-development/SKILL.md`](.github/skills/test-driven-development/SKILL.md) |
 
 ---
 

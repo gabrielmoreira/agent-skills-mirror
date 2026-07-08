@@ -1,6 +1,6 @@
 ---
 name: lime-release-workflow
-description: 准备并执行 Lime 发版流程。适用于用户要求更新 Lime 版本号、同步 RELEASE_NOTES.md / RELEASE_NOTES.en.md、删除或替换旧发布产物、运行发版验证门禁、创建 commit 或 tag、推送 tag 到 GitHub，或从中断的发版流程恢复。
+description: 准备并执行 Lime 发版；覆盖版本号、发布说明、产物清理、验证门禁、commit、tag 和推送。
 ---
 
 # Lime 发版流程

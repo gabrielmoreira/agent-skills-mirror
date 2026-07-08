@@ -2,7 +2,13 @@
 
 Use E2E testing when you need to test a complete user flow for a feature.
 
-If you would need to mock a lot of things to unit test a feature, prefer to write an E2E test instead.
+If you would need to mock a lot of things to unit test a feature, consider a
+Vitest integration test first. Use `*.integration.test.ts` /
+`*.integration.test.tsx` when the behavior can be proven with real IPC handlers,
+sqlite, git, fake LLM/Engine routes, or the renderer+IPC harness without
+launching the packaged Electron app. Use Playwright E2E when the test needs the
+packaged app, native Electron/browser behavior, real click/focus/keyboard
+behavior, screenshots/visual layout, or a complete app-shell user journey.
 
 Do NOT write lots of e2e test cases for one feature. Each e2e test case adds a significant amount of overhead, so instead prefer just one or two E2E test cases that each have broad coverage of the feature in question.
 
@@ -11,6 +17,8 @@ Do NOT write lots of e2e test cases for one feature. Each e2e test case adds a s
 ```sh
 npm run build
 ```
+
+Use `npm run build` (alias of `pre:e2e`, which sets `E2E_TEST_BUILD=true`), NOT `npm run package`. Plain `package` attempts macOS code signing, fails without a signing identity, and leaves `out/` empty — every E2E test then fails at `findLatestBuild` in `electron-playwright-helpers` before the app even launches.
 
 To run e2e tests without opening the HTML report (which blocks the terminal), use:
 
@@ -103,6 +111,8 @@ If app-file snapshots unexpectedly include `dist/` assets after running `pnpm --
 When changing provider request model IDs, search all request-dump snapshots for the old model value. Local-agent snapshots can include the same engine model payloads as `engine.spec.ts`, so updating only the obvious engine snapshot may leave stale expected dumps.
 If CI shows E2E snapshot drift but a local `--update-snapshots` run produces no diff, rebuild the packaged app with `npm run build` and rerun the updater. A stale packaged Electron app can make local snapshot updates compare against old source behavior and hide required baseline changes.
 If a test-only E2E fix fails locally because a new source locator or UI element is missing, check whether the branch already had app-code changes that were never packaged. Rebuild with `npm run build` even if your current diff only touches tests.
+
+`engine.spec.ts` "smart auto should send message to engine" can fail locally even on a clean `main` build (snapshot expects an engine-routed `gpt-5.2` request but gets a `dyad/auto` gateway request). Before debugging it as part of an unrelated diff, stash your changes, rebuild, and rerun it on main — if it fails there too, treat it as a pre-existing local-environment failure.
 
 ## Accordion-wrapped settings in E2E tests
 

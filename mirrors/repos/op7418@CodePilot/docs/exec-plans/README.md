@@ -103,7 +103,6 @@
 |------|------|------|
 | [active/codebase-health-audit-2026-06.md](active/codebase-health-audit-2026-06.md) | **代码健康审计与修复计划（2026-06）**：6 路并行审计（流式核心 / Codex / DB+API / 前端 / Electron+构建 / 测试覆盖）产出 bug、性能、安全加固、测试补洞四个 Phase；关键发现已现场核验并逐条标注核验状态与验证分层；v2 已按 Codex 静态审查订正 7 处事实偏差与执行边界 | 🔄 Phase A 已完成（A1–A6），B/C/D 待实施（Codex 负责审查/用例设计） |
 | [active/v0.56.x-stability-trust.md](active/v0.56.x-stability-trust.md) | **v0.56.x Stability / Trust 总计划**：从 Notion GPT Pro 产品审查、当前 GitHub Issues / PR 治理状态、用户最新体验反馈汇总出的稳定性 umbrella plan；先收 codebase-health Phase A，再治理 session/context/stream/composer、文件引用安全、安装更新、CI 与 GitHub triage | 🚧 Phase 0/1 ✅ 已完成；Phase 2 进行中（Composer/Context 主链路 #1–#5 闭环；#629 已关闭 🟢、#635 代码层完成 🟡（待真实 smoke）、#632 假% 已修 item3 待续；stream 终态原因码 / 压缩回滚 / 诊断字段待续）；Phase 3 主问题 #628 已关闭 🟢；Phase 7 已细化为 GitHub 旧 issue 清库存 + 保守机器人治理批次，待 Claude Code 执行；Codex 持续核验 |
-| [active/agent-collaboration-loop-infrastructure.md](active/agent-collaboration-loop-infrastructure.md) | **Agent Collaboration Loop Infrastructure**：把 Claude Code / Codex 私有协作循环从 AI SDK 7 pilot 中拆出，管理 private run space、bot 身份、handoff/review、ledger 主从关系、通知 MVP、Project/Actions/Notion/Cloudflare 后续演进 | ✅ Phase 0-3 已完成；本地 runner / 双侧 launchd / fix loop 已跑通；Phase 4-6 待评估，终态 issue 自动关闭缺口见 tech-debt #51 |
 | [active/codex-stop-recovery.md](active/codex-stop-recovery.md) | **Codex Stop Recovery / 终止后恢复发送**：调研并修复 Codex Runtime 下 Stop 只切断前端 stream、未必调用 Codex app-server `turn/interrupt`，导致后台 collect / session lock / runtime status 未收口，下一条同会话指令无法拉起的问题；外部 Codex issues 只作症状旁证，不采信其根因推测 | 📋 待 Claude Code 接手修复 |
 | [active/development-harness-optimization.md](active/development-harness-optimization.md) | **开发流程 Harness 优化（v2 + 2026-06-28 对账）**：Codex 初稿 + ClaudeCode 按用户"可审核"约束重组。方向上 Skill 化暂缓、主推自动检查脚本（docs drift / hook 配置）+ guardrails 八类必读 + Smoke Ledger 模板 + 测试矩阵补洞；2026-06-28 新增 Step 0 规则体系瘦身（顶层规则分工 / Ruler-compatible / 测试分层 / 简化汇报协议），并对账校准各 Step 真实状态；每个 Step 以"用户能看到什么 / 不做什么 / 怎么验收"开头 | 🔄 进行中（2026-06-28 对账 + Step 0/5 落地 + Step 6 核实）：Step 0-3 ✅、Step 4 🔄 部分（on-touch）、Step 5 ✅、Step 6 ✅（核实已覆盖）；仅剩 Step 4 持续填充 |
 | [active/issue-tracker.md](active/issue-tracker.md) | **统一问题跟踪**：所有 Bug / Feature Request / Sentry 监控的活动看板 | 持续维护 |
@@ -140,7 +139,6 @@
 | [deferred/git-terminal-integration.md](deferred/git-terminal-integration.md) | Git + 终端集成 | 不在本轮 6 条主线 |
 
 ### Completed
-| [completed/ai-sdk-7-runtime-loop-adoption.md](completed/ai-sdk-7-runtime-loop-adoption.md) | **AI SDK 7 Runtime 接入 + 自动化 Loop 实践**：把 AI SDK 7 接入拆成 Node22/Provider request-shape/ToolLoopAgent parity/安全小能力/迁移决策五段，并把自动化 Loop 限定在可机械验证、可暂停、可回滚的范围内 | ✅ Pilot 五个 phase 已完成；用户批准 partial 采用，后续 open gate 为发版前官方 key smoke |
 
 > Refactor closeout 的 Phase 1-5 归档在 `completed/refactor-phase-*.md` + `completed/phase-4-markdown-artifact.md` + `completed/phase-5*.md`，由 active 总控板的"历史归档"列直接 link；下方按完成日期倒序排其它独立计划。
 

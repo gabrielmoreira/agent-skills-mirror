@@ -67,7 +67,7 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 2. Turn on your G1 glasses
 3. Open the app → tap **Scan for G1**
 4. The app will find `_L_` and `_R_` G1 lenses via BLE and connect both
-5. Enter your elizaOS agent WebSocket URL (e.g. `ws://192.168.1.100:31337/xr-ws`)
+5. Enter your elizaOS agent WebSocket URL (e.g. `ws://192.168.1.100:31337/smartglasses-ws`)
 6. Tap **Connect to Agent**
 7. Agent responses will appear on the G1 HUD display
 

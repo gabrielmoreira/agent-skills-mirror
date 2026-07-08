@@ -42,6 +42,7 @@ Common tool-level settings you can configure:
 |---------|------|---------------------|---------|-------------|
 | `json` | `--json` | `BD_JSON` | `false` | Output in JSON format |
 | `no-push` | `--no-push` | `BD_NO_PUSH` | `false` | Skip pushing to remote in `bd dolt push` |
+| `agent.profile` | - | `BD_AGENT_PROFILE` | `conservative` | Policy profile `bd prime` uses for git/commit authority wording: `conservative`, `minimal`, `team-maintainer` (see [SETUP.md](SETUP.md#policy-profiles)); invalid values fall back to `conservative` |
 | `federation.remote` | - | `BD_FEDERATION_REMOTE` | (none) | Dolt remote URL for federation |
 | `federation.sovereignty` | - | `BD_FEDERATION_SOVEREIGNTY` | (none) | Data sovereignty tier: `T1`, `T2`, `T3`, `T4` |
 | `dolt.auto-commit` | `--dolt-auto-commit` | `BD_DOLT_AUTO_COMMIT` | `on` | (Dolt backend) Automatically create a Dolt commit after successful write commands |
@@ -360,7 +361,7 @@ Configuration keys use dot-notation namespaces to organize settings:
 - `export.skip_encoding_errors` - Skip issues that fail JSON encoding (default: false)
 - `export.write_manifest` - Write .manifest.json with export metadata (default: false)
 - `auto_export.error_policy` - Override error policy for auto-exports (default: `best-effort`)
-- `import.auto` - Legacy hook fallback that imports JSONL after git merge/checkout only when no Dolt remote is configured (default: `true`)
+- `import.auto` - Master switch for automatic JSONL imports (default: `true`). Gates both the legacy hook fallback that imports JSONL after git merge/checkout when no Dolt remote is configured, and the empty-database recovery import that write commands run when `.beads/issues.jsonl` exists but the database is empty. Set to `false` to disable all auto-imports; explicit `bd import` always works.
 - `sync.branch` - Name of the dedicated sync branch for beads data (see docs/PROTECTED_BRANCHES.md)
 - `sync.require_confirmation_on_mass_delete` - Require interactive confirmation before pushing when >50% of issues vanish during a merge AND more than 5 issues existed before (default: `false`)
 

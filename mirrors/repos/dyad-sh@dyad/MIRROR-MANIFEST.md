@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dyad-sh/dyad` — 26 default patterns, 20 followed patterns, 50 file(s) materialized.
+Mirror of `dyad-sh/dyad` — 26 default patterns, 22 followed patterns, 52 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 20 followed patterns, 50 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 20 |
-| Files         | 50 |
+| Followed pats | 22 |
+| Files         | 52 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,7 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 20 followed patterns, 50 file(
 - `rules/dyad-errors.md`
 - `rules/local-agent-tools.md`
 - `rules/e2e-testing.md`
+- `rules/hybrid-testing.md`
 - `rules/git-workflow.md`
 - `rules/base-ui-components.md`
 - `rules/database-drizzle.md`
@@ -71,6 +72,7 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 20 followed patterns, 50 file(
 - `rules/jotai-state.md`
 - `rules/claude-github-workflows.md`
 - `rules/ui-styling.md`
+- `rules/auto-update.md`
 
 ## File Index
 
@@ -109,25 +111,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`.github/prompts/codex-pr-review.txt`](.github/prompts/codex-pr-review.txt) |
 | 30 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 31 | → | [`rules/adding-settings.md`](rules/adding-settings.md) |
-| 32 | → | [`rules/base-ui-components.md`](rules/base-ui-components.md) |
-| 33 | → | [`rules/chat-mentions.md`](rules/chat-mentions.md) |
-| 34 | → | [`rules/chat-message-indicators.md`](rules/chat-message-indicators.md) |
-| 35 | → | [`rules/claude-github-workflows.md`](rules/claude-github-workflows.md) |
-| 36 | → | [`rules/database-drizzle.md`](rules/database-drizzle.md) |
-| 37 | → | [`rules/dyad-errors.md`](rules/dyad-errors.md) |
-| 38 | → | [`rules/e2e-testing.md`](rules/e2e-testing.md) |
-| 39 | → | [`rules/electron-ipc.md`](rules/electron-ipc.md) |
-| 40 | → | [`rules/git-workflow.md`](rules/git-workflow.md) |
-| 41 | → | [`rules/jotai-state.md`](rules/jotai-state.md) |
-| 42 | → | [`rules/jotai-testing.md`](rules/jotai-testing.md) |
-| 43 | → | [`rules/local-agent-tools.md`](rules/local-agent-tools.md) |
-| 44 | → | [`rules/native-modules.md`](rules/native-modules.md) |
-| 45 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
-| 46 | → | [`rules/product-principles.md`](rules/product-principles.md) |
-| 47 | → | [`rules/prompt-guides.md`](rules/prompt-guides.md) |
-| 48 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
-| 49 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
-| 50 | → | [`rules/ui-styling.md`](rules/ui-styling.md) |
+| 32 | → | [`rules/auto-update.md`](rules/auto-update.md) |
+| 33 | → | [`rules/base-ui-components.md`](rules/base-ui-components.md) |
+| 34 | → | [`rules/chat-mentions.md`](rules/chat-mentions.md) |
+| 35 | → | [`rules/chat-message-indicators.md`](rules/chat-message-indicators.md) |
+| 36 | → | [`rules/claude-github-workflows.md`](rules/claude-github-workflows.md) |
+| 37 | → | [`rules/database-drizzle.md`](rules/database-drizzle.md) |
+| 38 | → | [`rules/dyad-errors.md`](rules/dyad-errors.md) |
+| 39 | → | [`rules/e2e-testing.md`](rules/e2e-testing.md) |
+| 40 | → | [`rules/electron-ipc.md`](rules/electron-ipc.md) |
+| 41 | → | [`rules/git-workflow.md`](rules/git-workflow.md) |
+| 42 | → | [`rules/hybrid-testing.md`](rules/hybrid-testing.md) |
+| 43 | → | [`rules/jotai-state.md`](rules/jotai-state.md) |
+| 44 | → | [`rules/jotai-testing.md`](rules/jotai-testing.md) |
+| 45 | → | [`rules/local-agent-tools.md`](rules/local-agent-tools.md) |
+| 46 | → | [`rules/native-modules.md`](rules/native-modules.md) |
+| 47 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
+| 48 | → | [`rules/product-principles.md`](rules/product-principles.md) |
+| 49 | → | [`rules/prompt-guides.md`](rules/prompt-guides.md) |
+| 50 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
+| 51 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
+| 52 | → | [`rules/ui-styling.md`](rules/ui-styling.md) |
 
 ---
 

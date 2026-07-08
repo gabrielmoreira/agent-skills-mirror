@@ -1,0 +1,22 @@
+[
+{
+      "timestamp": "2026-04-24T13:35:58.050606526Z",
+      "event.kind": "SECURITY_EVENT",
+      "event.type": "COMPLIANCE_SCAN_COMPLETED",
+      "scan.id": "07f58d6c-dc09-433f-92ea-6e5f76ad8391",
+      "scan.time.completed": "2026-04-24T13:35:58.050606526Z",
+      "product.vendor": "Dynatrace",
+      "product.name": "Security Posture Management",
+      "object.id": "KUBERNETES_CLUSTER-8D24AB8D4FBD47B8",
+      "object.type": "KUBERNETES_CLUSTER",
+      "object.name": "vulnerable-ghost-test-k8s",
+      "dt.entity.kubernetes_cluster": "KUBERNETES_CLUSTER-8D24AB8D4FBD47B8",
+      "scan.result.summary_json": "{\"standardResultSummaries\":[{\"standardCode\":\"NIST\",\"compliancePercentage\":0,\"ruleCountsByStatusBySeverity\":{\"FAILED\":{\"HIGH\":0,\"MEDIUM\":0,\"LOW\":0,\"CRITICAL\":0},\"MANUAL\":{\"HIGH\":0,\"MEDIUM\":0,\"LOW\":0,\"CRITICAL\":0},\"NOT_RELEVANT\":{\"HIGH\":16,\"MEDIUM\":40,\"LOW\":25,\"CRITICAL\":10},\"PASSED\":{\"HIGH\":0,\"MEDIUM\":0,\"LOW\":0,\"CRITICAL\":0}}},{\"standardCode\":\"STIG\",\"compliancePercentage\":0,\"ruleCountsByStatusBySeverity\":{\"FAILED\":{\"HIGH\":0,\"MEDIUM\":0,\"LOW\":0,\"CRITICAL\":0},\"MANUAL\":{\"HIGH\":0,\"MEDIUM\":0,\"LOW\":0,\"CRITICAL\":0},\"NOT_RELEVANT\":{\"HIGH\":16,\"MEDIUM\":40,\"LOW\":25,\"CRITICAL\":11},\"PASSED\":{\"HIGH\":0,\"MEDIUM\":0,\"LOW\":0,\"CRITICAL\":0}}},{\"standardCode\":\"DORA\",\"compliancePercentage\":0,\"ruleCountsByStatusBySeverity\":{\"FAILED\":{\"HIGH\":0,\"MEDIUM\":0,\"LOW\":0,\"CRITICAL\":0},\"MANUAL\":{\"HIGH\":0,\"MEDIUM\":0,\"LOW\":0,\"CRITICAL\":0},\"NOT_RELEVANT\":{\"HIGH\":31,\"MEDIUM\":68,\"LOW\":51,\"CRITICAL\":18},\"PASSED\":{\"HIGH\":0,\"MEDIUM\":0,\"LOW\":0,\"CRITICAL\":0}}},{\"standardCode\":\"CIS\",\"compliancePercentage\":0,\"ruleCountsByStatusBySeverity\":{\"FAILED\":{\"HIGH\":0,\"MEDIUM\":0,\"LOW\":0,\"CRITICAL\":0},\"MANUAL\":{\"HIGH\":0,\"MEDIUM\":0,\"LOW\":0,\"CRITICAL\":0},\"NOT_RELEVANT\":{\"HIGH\":85,\"MEDIUM\":160,\"LOW\":116,\"CRITICAL\":51},\"PASSED\":{\"HIGH\":0,\"MEDIUM\":0,\"LOW\":0,\"CRITICAL\":0}}}]}",
+      "k8s.cluster.uid": "00f42465-5697-490c-9c36-6a94156229ed",
+      "k8s.cluster.name": "vulnerable-ghost-test-k8s",
+      "dt.openpipeline.source": "/platform/ingest/v1/security.events",
+      "dt.openpipeline.pipelines": [
+        "security.events.internal:default"
+      ]
+    }
+]

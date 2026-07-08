@@ -75,6 +75,7 @@ Les documents de travail bruts (prompts Perplexity, audits clients) restent dans
 | **context-evaluator** (PackmindHub/context-evaluator) | 4/5 | **4/5** | ✅ Integrated: third-party-tools.md + 2 patterns in skill-design-patterns.md | [context-evaluator-evaluation.md](./context-evaluator-evaluation.md) |
 | **liza-mas CLI Tools** (scip-search, mdtoc, functional-clusters, stacklit-cli) | 1-2/5 | **1-2/5** | ❌ Reject (3 tools) / ⚠️ Watch only (stacklit-cli, one-line note) | [liza-mas-token-saving-cli-tools.md](./liza-mas-token-saving-cli-tools.md) |
 | **Semble** (MinishLab/semble) | 3/5 | **3/5** | ✅ Integrated: mcp-servers-ecosystem.md Code Search section | [semble-code-search.md](./semble-code-search.md) |
+| **MDMA** (MobileReality/mdma) | 3/5 | **3/5** | ✅ Integrated: ai-ecosystem.md Section 7.1 (generative UI) | [mdma-evaluation.md](./mdma-evaluation.md) |
 
 ## Watch List
 

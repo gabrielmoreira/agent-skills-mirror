@@ -1,30 +1,28 @@
 ---
 name: dt-sec-insights
 description: >-
-  Dynatrace Security Insights for querying and analyzing security data in
-  `security.events`: Runtime Vulnerability Analytics (RVA — third-party +
-  code-level), Runtime Application Protection (RAP), Automated Detections
-  (with MITRE ATT&CK), Security Posture Management — KSPM
-  (CIS/DORA/NIST/STIG) and CSPM/VSPM (PCI/ISO/HIPAA/GDPR) — plus externally
-  ingested security events from third-party products and tools. Covers
-  vulnerability finding/scan events, detection finding events, compliance
-  finding/scan events, and runtime entity contextualization of security findings.
-  Use when asked: "show me open critical vulnerabilities", "which vulnerable
-  functions are in use and publicly exposed?", "top vulnerable libraries / K8s
-  workloads", "what new vulnerabilities appeared in the last 24h?", "what's our
-  CIS/DORA compliance pass rate?", "show SQL injection detections", "map
-  external findings to K8s workloads", "which hosts are not covered by
-  vulnerability scanning?", "cross-provider critical findings summary".
+  Query and analyze Dynatrace security data in security.events with DQL:
+  vulnerabilities, threat detections, compliance posture, and scan coverage.
+  Covers Dynatrace-native Runtime Vulnerability Analytics (RVA — CVEs,
+  reachability, exposure, exploit), Runtime Application Protection (RAP),
+  Automated Detections, and Security Posture Management
+  (KSPM/CSPM), plus external security products and tools. Trigger:
+  "open critical vulnerabilities", "vulnerable functions in use and publicly
+  exposed", "top vulnerable libraries / K8s workloads", "CIS/DORA compliance
+  pass rate", "SQL injection detections", "map external findings to workloads",
+  "hosts not covered by scanning". Do NOT use for explaining existing DQL
+  (use dt-dql-essentials), Davis problems (dt-obs-problems), logs (dt-obs-logs),
+  distributed tracing (dt-obs-tracing), service RED metrics (dt-obs-services),
+  or platform usage/audit telemetry (dt-platform).
 license: Apache-2.0
 ---
 
 # Security Insights Skill
 
-Query and analyze Dynatrace security insights data using DQL. The covered data
-lives in `security.events`, emitted either by **Dynatrace-native sources** (RVA,
-RAP, Automated Detections, SPM) or by **external products** ingested via
-integrations (AWS Security Hub, Amazon GuardDuty, GitHub Advanced Security,
-Snyk, Qualys, Tenable, etc.).
+Query and analyze Dynatrace security data in `security.events` using DQL. Events
+come from **Dynatrace-native sources** (RVA, RAP, Automated Detections, SPM) or
+**external products** ingested via integrations (AWS Security Hub, Amazon
+GuardDuty, GitHub Advanced Security, Snyk, Qualys, Tenable, and more).
 
 ## What This Skill Covers
 
@@ -33,8 +31,7 @@ Snyk, Qualys, Tenable, etc.).
   assessment: vulnerable-function-in-use, public network exposure, reachable
   data assets, public exploit available) plus external SCA / SAST / image scanners.
 - **Compliance posture** — DT-native KSPM (Kubernetes-only: CIS, DORA, NIST,
-  STIG) plus CSPM/VSPM and external compliance/posture providers covering broader
-  standards (PCI DSS, ISO 27001, HIPAA, GDPR, and more).
+  STIG) plus CSPM/VSPM and external compliance/posture providers.
 - **Runtime attacks and threats** — DT-native detections (RAP runtime attacks,
   Automated Detections rules) plus external detection providers.
 - **Scan coverage analysis** — covered vs. not-covered k8s workloads/hosts/processes, by Dynatrace
@@ -43,7 +40,7 @@ Snyk, Qualys, Tenable, etc.).
   product.
 - **Entity enrichment** — map external findings to Dynatrace runtime entities
   (hosts, K8s workloads, cloud resources) via Smartscape.
-- **Dashboards / KPIs** — tiles, top-N tables, trend charts, coverage donuts for security data visualization.
+- **Dashboards / KPIs** — tiles, top-N tables, trend charts, coverage donuts.
 
 ## When to Use This Skill
 
@@ -55,7 +52,7 @@ Identify the intent, then load the matching reference before writing DQL.
 
 | Intent / example | Reference | Pattern |
 |---|---|---|
-| Security posture / overview across all products (incl. DT-native) | `all-security-events.md` § Broad-Question Query Decomposition | 3-stream decomposition (external+detections `24h` / RVA `30m` / KSPM `1h`), merged |
+| Security posture / overview across all products (incl. DT-native) | `all-security-events.md` § Broad-Question Query Decomposition | 3-stream decomposition (external+detections `24h` / RVA `30m` / KSPM `1h`), merged; **lead the count summary with KSPM compliance — CIS first** (other standards + RVA + detections beneath) → `compliance.md` § CIS-Primary Standard Summary |
 | Findings on a specific entity — direct or related (blast radius) | `entity-enrichment.md` · `all-security-events.md` | **Broad entity-security questions must decompose**: external `*_FINDING` by `dt.smartscape_source.id` / `dt.entity.*` / `k8s.*` (`24h`) + DT RVA entity scope (`30m`) + DT SPM entity scope (`1h`) |
 | Findings from a specific provider | `all-security-events.md` § Scoping to a Specific Provider | `contains(lower(event.provider \| product.vendor), "<p>")` |
 | Which **third-party / external** tools are sending data (DT-native excluded) | `all-security-events.md` § Which external integrations are active | external-only enumeration (single query) |
@@ -72,7 +69,7 @@ Identify the intent, then load the matching reference before writing DQL.
 | Most vulnerable components / hosts / workloads (rankings) | `vulnerabilities-entities.md` | Steps 1–3 + `expand` typed `related_entities.<group>.ids` → `smartscapeNodes` lookup on `id_classic` — ⚠ `k8s.*`/`dt.entity.*` are null on RVA events |
 | CVE / library lookup; "am I vulnerable to log4shell?" | `vulnerabilities.md` § Entity Scoping | Step 2 CVE/component filter; scope RVA to a known entity |
 | Blast radius — which entities are affected by CVE X | `vulnerabilities-entities.md` | `related_entities.*` indirect-relation expand |
-| Lifecycle — new / resolved / MTTR | `vulnerabilities.md` | post-derive `resolution.change_date` / `first_seen` filter |
+| Lifecycle — new / resolved / open-duration / MTTR | `vulnerabilities.md` | post-derive `resolution.change_date`; MTTR via change-events-only snippet (§ Resolution time) |
 | Runtime advanced — function-in-use, exposure, exploit, data-assets | `vulnerabilities.md` | Davis-assessment `fieldsAdd` (Step 3) |
 | External scanner vulns — containers / artifacts / components | `vulnerabilities-external.md` | `VULNERABILITY_FINDING` + external routing |
 | Verify external vulnerability findings with RVA | `vulnerabilities-external.md` § Verify external vulnerability findings with RVA · `entity-enrichment.md` | First match the same vulnerability by `vulnerability.references.cve`; then prove runtime relatedness via direct `dt.smartscape*` IDs, container-image digest → running `CONTAINER`, or host `host.ip` → Smartscape HOST |
@@ -96,7 +93,8 @@ Identify the intent, then load the matching reference before writing DQL.
 |---|---|---|
 | Pass-rate / posture (CIS / DORA / NIST / STIG) | `compliance.md` | **Load `compliance.md` first** — SPM Steps 1–2 + passRate |
 | Critical misconfigurations | `compliance.md` | **Load `compliance.md` first** — Steps 1–2 + severity filter |
-| Map control/standard → entities; per-namespace | `compliance.md` | `metadata_json` drill / entity scoping |
+| Compliance / misconfigurations on a **specific entity** | `compliance.md` § Entity Security-Tab View (entity-scoped `${entityIdsOrNames}` filter) · `entity-enrichment.md` | Mirror the entity **Security tab** (CIS default, failed-only): Table 1 DT CIS failed rules → Table 2 other DT standards (overlap caveat) → Table 3 external misconfigs. Broad posture/count questions instead use § CIS-Primary Standard Summary (scorecard). |
+| Map control/standard → entities; per-namespace | `compliance.md` | entity scoping via `compliance.standard.short_name` / `compliance.rule.id` (⚠ never `metadata_json`) |
 | Cloud / non-K8s (PCI/ISO/HIPAA/GDPR; AWS/Azure/GCP) | `compliance.md` § External | external taxonomy (`compliance.standards`/`policy`/`control`) |
 | External violations grouped by standard / framework | `compliance.md` § External | `compliance.standards` is an **array** — `expand` it before `summarize` |
 | Config **drift** / newly failing rules vs previous week (DT) | `compliance.md` § Week-over-Week Config Drift | prior-period **anti-join** — a wide fetch window is NOT a substitute |

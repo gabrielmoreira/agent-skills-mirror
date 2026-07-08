@@ -71,7 +71,7 @@ bash scripts/publish-skillhub.sh --dry-run     # local pre-check, all 120 (verif
 bash scripts/publish-skillhub.sh               # publish all → platform review (pending_review)
 ```
 
-Notes: publishing requires the account to have completed 实名认证 (real-name verification — a `403` means finish it in the browser first); each publish enters platform review before listing; consumers install with `skillhub install aaron-<skill-name>`. Keep the API key in the environment (`$SKILLHUB_KEY`) — never in the repo.
+Notes: publishing requires the account to have completed 实名认证 (real-name verification — a `403` means finish it in the browser first); each publish enters platform review before listing; consumers install with the SKILL.md frontmatter slug (`skillhub install <frontmatter-slug>`). Keep the API key in the environment (`$SKILLHUB_KEY`) — never in the repo.
 
 ## Per-agent matrix
 

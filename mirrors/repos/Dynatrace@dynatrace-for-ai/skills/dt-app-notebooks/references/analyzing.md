@@ -1,5 +1,7 @@
 # Notebook Analysis & Information Extraction
 
+**Fetch the JSON first:** `dtctl get notebook <id> -o json --plain` returns the full content (`.content.sections`). `describe` returns metadata only — no sections.
+
 ## Two Main Workflows
 
 1. **Look into the notebook** — read global context, then sections in display order

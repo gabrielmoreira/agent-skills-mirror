@@ -38,9 +38,34 @@ HOT entry last_updated > 30 days      → HOT demotes to WARM
 WARM file last_updated > 90 days      → WARM demotes to COLD (archive with YYYY-MM-DD- prefix)
 ```
 
+### Supersession Rule (conflict resolution)
+
+Promotion and demotion move a fact between tiers by **age**; supersession resolves two facts that
+**disagree** about the same thing (same entity + same field) within a tier. The rules above are
+append-and-age — without a conflict rule an old value and a new one coexist at equal weight, and a
+later read can surface the stale one (the classic "the record still says Postgres six weeks after the
+MySQL migration" failure). Resolve conflicts by **recency-wins with explicit invalidation** — never
+silent coexistence, never silent hard-delete:
+
+```
+new fact contradicts an existing entry (same entity + field)
+  → annotate the OLD line `superseded_by: YYYY-MM-DD` (the new fact's date); write the new value live
+  → a reader treats any line carrying `superseded_by:` as historical, not the current value
+  → the superseded line demotes/archives on the normal last_updated clock, not immediately
+```
+
+This is **observable** (a date annotation, no reference counting) and **reversible** (the prior value
+is retained, not deleted — matching the posture that hard-delete is for compliance/GDPR erasure only).
+It generalizes what the registries already do: `narrative-registry` retains superseded canon in
+`versions.md`, `consent-registry` keeps append-only status history — the `superseded_by:` annotation
+extends that pattern to HOT entries and the `candidates.md` ledgers. **Genuine ambiguity is not a
+supersession**: when it is unclear which of two conflicting facts is right, do not auto-pick — log it
+to `memory/open-loops.md` and surface it. Registry-owned facts are superseded only through that
+registry's candidate flow, never edited in place by another skill.
+
 ### Dual Truncation Rule
 
-HOT tier is limited to 80 lines AND 25KB (whichever triggers first). A cache within both limits is injected in full; the SessionStart hook applies the 80-line cap at a newline boundary and the 25KB cap at the byte limit, so an over-limit cache may be cut mid-line. If exceeded after Claude Write/Edit, the PostToolUse hook warns the user.
+HOT tier is limited to 80 lines AND 25KB (whichever triggers first). A cache within both limits is injected in full; the SessionStart hook applies the 80-line cap at a newline boundary and the 25KB cap at the byte limit, so an over-limit cache may be cut mid-line. If exceeded after Claude Write/Edit, the PostToolUse hook warns the user — and the SessionStart hook **also** warns at load time when the committed cache is already over-limit (closing the gap where a manually-oversized cache was silently truncated at load). At load the SessionStart hook additionally surfaces the **oldest `YYYY-MM-DD` dated entry** in the cache as a staleness signal when that date is >30 days old — an observable, date-only nudge; the agent judges which entries to verify or demote.
 
 ### Staleness Protocol
 
@@ -50,6 +75,8 @@ HOT tier is limited to 80 lines AND 25KB (whichever triggers first). A cache wit
 | 8–30 days | Point-in-time — verify against current state before asserting as fact |
 | 31–90 days | Stale — surfaced for review when `memory-management` runs its staleness scan (by `last_updated` date) |
 | >90 days | Archive candidate — recommend archival via memory-management |
+
+> The SessionStart hook also surfaces the oldest dated entry in `memory/hot-cache.md` as a >30-day staleness signal **at load**, so stale HOT items get flagged every session, not only when `memory-management` runs. A line annotated `superseded_by:` is treated as historical **regardless of age** — see the Supersession Rule above.
 
 ## Memory File Frontmatter
 
@@ -354,6 +381,7 @@ When a skill describes state updates, it should:
 - note missing data explicitly
 - avoid inventing data when tools are unavailable
 - keep raw exports beside the dated summary they support
+- when a new value contradicts an existing one (same entity + field), mark the old line `superseded_by: YYYY-MM-DD` rather than deleting it or silently overwriting — see the Supersession Rule above
 
 ## Ownership
 

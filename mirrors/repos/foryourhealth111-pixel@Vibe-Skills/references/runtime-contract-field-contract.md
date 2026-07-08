@@ -27,7 +27,6 @@ Required top-level fields:
 - `internal_grade`
 - `hierarchy`
 - `host_adapter`
-- `route_snapshot`
 - `authority_flags`
 - `provenance`
 
@@ -37,16 +36,18 @@ Required nested fields:
 - `hierarchy.root_run_id`
 - `host_adapter.requested_host_id`
 - `host_adapter.effective_host_id`
-- `route_snapshot.selected_skill`
-- `route_snapshot.route_mode`
-- `route_snapshot.confirm_required`
-- `route_snapshot.truth_level`
-- `route_snapshot.non_authoritative`
 - `authority_flags.explicit_runtime_skill`
 - `authority_flags.allow_requirement_freeze`
 - `authority_flags.allow_plan_freeze`
 - `authority_flags.allow_global_dispatch`
 - `authority_flags.allow_completion_claim`
+
+Optional compatibility nested fields:
+
+- `route_snapshot.selected_skill`
+- `route_snapshot.task_type`
+- `route_snapshot.route_mode`
+- `route_snapshot.confirm_required`
 
 ### Execution Manifest
 
@@ -125,7 +126,6 @@ These fields remain public and compatibility-preserved, but later waves may cont
   - `custom_admission`
   - `specialist_recommendations`
   - `specialist_dispatch`
-  - `overlay_decisions`
   - `divergence_shadow`
 - execution manifest:
   - `execution_topology`

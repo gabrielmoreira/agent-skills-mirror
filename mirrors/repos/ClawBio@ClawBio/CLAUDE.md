@@ -90,10 +90,11 @@ When the user asks a question, match it to a skill and act:
 | Single FASTA analysis, GC content, ORF finding, protein properties, isoelectric point, GRAVY index, molecular weight, sequence summary, fasta metrics | `skills/analyze-fasta/` | Run `analyze_fasta.py` |
 | Phylogenetic tree from VCF, distance matrix from variants, VCF2TREE, VCF2DIST, DIST2TREE, FASTA2DIST, fastreer, fastreeR, genomic distance, k-mer distance, population tree, cosine distance, sample phylogeny, hierarchical clustering of samples | `skills/fastreer/` | Run `fastreer.py` |
 | Phylogenetic tree from FASTA, maximum-likelihood tree, IQ-TREE 2, model selection, evolutionary distance, branch support, proportional phylogram | `skills/phylogenetics-builder/` | Run `phylogenetics_builder.py` |
+| Genomic interval operations, interval overlap, nearest interval, merge/coverage intervals, BED intersect, bioframe alternative, interval arithmetic, complement/subtract intervals, count overlaps, BigWig/BigBed, DataFusion SQL on genomic files, genomic pileup depth, polars-bio | `skills/polars-bio/` | Run `polars_bio_runner.py` |
 
 ## How to Use a Skill
 
-### Skills with Python scripts (pharmgx-reporter, equity-scorer, nutrigx, claw-metagenomics, genome-compare, bio-orchestrator, variant-annotation, bioconductor-bridge, clinical-trial-finder, data-extractor, illumina-bridge, pubmed-summariser, omics-target-evidence-mapper, target-validation-scorer, nfcore-scrnaseq-wrapper, nfcore-rnaseq-wrapper, nfcore-sarek-wrapper, scrna-orchestrator, scrna-embedding, diff-visualizer, proteomics-de, struct-predictor, clinical-variant-reporter, multiqc-reporter, labstep, clinpgx, gwas-prs, gwas-lookup, methylation-clock, profile-report, ukb-navigator, galaxy-bridge, flow-bio, rnaseq-de, protocols-io, soul2dna, genome-match, recombinator, fine-mapping, cell-detection, wes-clinical-report-en, wes-clinical-report-es, proteomics-clock, sample-qc-triage, crispr-screen-triage, marker-dominance-mapper, busco-assessor, fastreer)
+### Skills with Python scripts (pharmgx-reporter, equity-scorer, nutrigx, claw-metagenomics, genome-compare, bio-orchestrator, variant-annotation, bioconductor-bridge, clinical-trial-finder, data-extractor, illumina-bridge, pubmed-summariser, omics-target-evidence-mapper, target-validation-scorer, nfcore-scrnaseq-wrapper, nfcore-rnaseq-wrapper, nfcore-sarek-wrapper, scrna-orchestrator, scrna-embedding, diff-visualizer, proteomics-de, struct-predictor, clinical-variant-reporter, multiqc-reporter, labstep, clinpgx, gwas-prs, gwas-lookup, methylation-clock, profile-report, ukb-navigator, galaxy-bridge, flow-bio, rnaseq-de, protocols-io, soul2dna, genome-match, recombinator, fine-mapping, cell-detection, wes-clinical-report-en, wes-clinical-report-es, proteomics-clock, sample-qc-triage, crispr-screen-triage, marker-dominance-mapper, busco-assessor, fastreer, polars-bio)
 1. Read the skill's `SKILL.md` for domain context
 2. Run the Python script with correct CLI arguments (see below)
 3. Show the user the output — open any generated figures and explain results
@@ -343,6 +344,14 @@ python skills/fastreer/fastreer.py \
 python skills/fastreer/fastreer.py \
   --command DIST2TREE --input distances.dist --output <report_dir>
 python skills/fastreer/fastreer.py --demo --output /tmp/fastreer_demo
+
+# polars-bio — genomic interval ops, multi-format I/O, DataFusion SQL, pileup
+python skills/polars-bio/polars_bio_runner.py overlap --a a.bed --b b.bed --output <report_dir>
+python skills/polars-bio/polars_bio_runner.py merge --a a.bed --output <report_dir>
+python skills/polars-bio/polars_bio_runner.py io --input s.vcf --format vcf --describe --output <report_dir>
+python skills/polars-bio/polars_bio_runner.py sql --input s.vcf --query "SELECT chrom,start FROM t" --output <report_dir>
+python skills/polars-bio/polars_bio_runner.py pileup --input aln.bam --min-mapping-quality 20 --output <report_dir>
+python skills/polars-bio/polars_bio_runner.py --demo --output /tmp/polars_bio_demo
 ```
 
 ## Demo Data
@@ -383,6 +392,7 @@ For instant demos when the user has no data:
 | MultiQC demo (synthetic FastQC, 3 samples — SAMPLE_01/02/03) | `--demo` flag | multiqc-reporter |
 | Drug repurposing toy screen (10 samples × 20 compounds × 2 plates, 3 selective hits) | `--demo` flag | drug-repurposing-screen |
 | fastreeR demo VCF (5 synthetic samples, 20 biallelic SNPs, chr1) | `skills/fastreer/examples/demo_samples.vcf` | fastreer |
+| polars-bio demo (synthetic BED6 a/b overlap; io/sql/pileup fixtures incl. BAM/BigWig/BigBed) | `--demo` flag / `skills/polars-bio/examples/` | polars-bio |
 | fastreeR demo FASTA (5 synthetic sequences, 60 bp) | `skills/fastreer/examples/demo_sequences.fasta` | fastreer |
 | Corpas 30x chr20 SNPs + indels (WGS) | `corpas-30x/subsets/chr20_snps_indels.vcf.gz` | variant-annotation, equity-scorer |
 | Corpas 30x SV calls (WGS) | `corpas-30x/subsets/sv_calls.vcf.gz` | variant-annotation |

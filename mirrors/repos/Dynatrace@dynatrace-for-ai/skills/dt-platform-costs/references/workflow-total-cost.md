@@ -49,27 +49,26 @@ Always check all three before concluding what a workflow costs.
 
 ## Cross-Event Field Reference
 
-Field names differ across event kinds **and** across BUE event types. BUE Query
-events lack workflow attribution fields — use QEE AUTOMATION pool instead.
+Field names differ across event kinds **and** across BUE event types.
 
 | Concept | QEE (AUTOMATION pool) | `WORKFLOW_EVENT` | BUE `Automation Workflow` | BUE `AppEngine Functions` | BUE Query types |
 |---------|----------------------|------------------|--------------------------|--------------------------|----------------|
-| Workflow ID | `client.workflow_context` | `dt.automation_engine.workflow.id` | `workflow.id` | `workflow.id` | ❌ not available |
+| Workflow ID | `client.workflow_context` | `dt.automation_engine.workflow.id` | `workflow.id` | `workflow.id` | `client.workflow_context` |
 | Workflow name | — | `dt.automation_engine.workflow.title` | `workflow.title` | — | ❌ not available |
 | Function/action | `client.function_context` | `dt.automation_engine.action.name` | — | `function.id` | `client.function_context` |
 | User ID | `user.id` | `dt.automation_engine.workflow_execution.actor` | `workflow.actor` | `user.id` | `user.id` |
 | Trigger type | — | `dt.automation_engine.workflow_execution.trigger.type` | `workflow.trigger_type` | — | — |
 
-> **Critical:** BUE Query events (`Events - Query`, etc.) have NO `workflow.id`
-> or `client.workflow_context` field. To attribute query scan costs to a workflow,
-> use QEE AUTOMATION pool with `client.workflow_context`.
+> **Critical:** BUE Query events (`Events - Query`, etc.) have the `client.workflow_context` field available.
+> To attribute query scan costs to a workflow when no `client.workflow_context` field is given (value is `null`),
+> use QEE AUTOMATION pool with the QEE's `client.workflow_context`.
 >
 > **Tip:** When a field returns no results, sample raw events first:
 > `| limit 3` (without `fields`) to see all available fields on the event.
 
 ## Step 1 — Query Scan Cost (QEE)
 
-BUE Query events lack workflow attribution fields. Use QEE AUTOMATION pool
+BUE Query events contain workflow attribution fields, but they might not contain a value. Use QEE AUTOMATION pool
 (`client.workflow_context`) to attribute query scan volume to a workflow:
 
 ```dql-template

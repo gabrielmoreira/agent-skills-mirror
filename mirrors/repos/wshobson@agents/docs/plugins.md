@@ -1,6 +1,6 @@
 # Complete Plugin Reference
 
-Browse all **88 marketplace plugins** organized by category: 85 local plugins plus 3 externally hosted `git-subdir` entries (`pensyve`, `qa-orchestra`, `storymap-skill`).
+Browse all **90 marketplace plugins** organized by category: 87 local plugins plus 3 externally hosted `git-subdir` entries (`pensyve`, `qa-orchestra`, `storymap-skill`).
 
 ## Quick Start - Essential Plugins
 
@@ -128,13 +128,14 @@ Next.js, React + Vite, and Node.js project setup with pnpm and TypeScript best p
 | **documentation-generation** | OpenAPI specs, Mermaid diagrams, tutorials                                                                                                      | `/plugin install documentation-generation` |
 | **c4-architecture**          | Comprehensive C4 architecture documentation workflow with bottom-up code analysis, component synthesis, container mapping, and context diagrams | `/plugin install c4-architecture`          |
 
-### 🔄 Workflows (7 plugins)
+### 🔄 Workflows (8 plugins)
 
 | Plugin                       | Description                                                                    | Install                                    |
 | ---------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------ |
 | **conductor**                | Context-Driven Development with tracks, specs, and phased implementation plans | `/plugin install conductor`                |
 | **git-pr-workflows**         | Git automation and PR enhancement                                              | `/plugin install git-pr-workflows`         |
 | **full-stack-orchestration** | End-to-end feature orchestration                                               | `/plugin install full-stack-orchestration` |
+| **operating-kit**            | Session lifecycle, pre-ship review, deploy with live verification + state doc update, prod log health check | `/plugin install operating-kit`            |
 | **tdd-workflows**            | Test-driven development methodology                                            | `/plugin install tdd-workflows`            |
 | **agent-teams**              | Parallel code review, debugging, feature, and research teams                   | `/plugin install agent-teams`              |
 | **ship-mate**                | Story-file to reviewed, tested PR workflow orchestration                       | `/plugin install ship-mate`                |
@@ -147,13 +148,14 @@ Next.js, React + Vite, and Node.js project setup with pnpm and TypeScript best p
 | **unit-testing**   | Automated unit test generation (Python/JavaScript)                                   | `/plugin install unit-testing`   |
 | **qa-orchestra**   | Multi-agent QA toolkit (10 agents, Chrome MCP live validation, stack-agnostic) — external plugin | `/plugin install qa-orchestra`   |
 
-### 🔍 Quality (3 plugins)
+### 🔍 Quality (4 plugins)
 
 | Plugin                         | Description                                   | Install                                      |
 | ------------------------------ | --------------------------------------------- | -------------------------------------------- |
 | **comprehensive-review**       | Multi-perspective code analysis               | `/plugin install comprehensive-review`       |
 | **performance-testing-review** | Performance analysis and test coverage review | `/plugin install performance-testing-review` |
 | **plugin-eval**                | Three-layer quality evaluation framework for Claude Code plugins | `/plugin install plugin-eval`                |
+| **skill-forge-essentials**    | Behavioral skills for AI code debt detection and session compaction survival | `/plugin install skill-forge-essentials`    |
 
 ### 🛠️ Utilities (5 plugins)
 
@@ -360,7 +362,7 @@ plugins/python-development/
 /plugin marketplace add wshobson/agents
 ```
 
-This makes all 88 marketplace plugins available for installation, but **does not load any agents or tools** into your context.
+This makes all 90 marketplace plugins available for installation, but **does not load any agents or tools** into your context.
 
 ### Step 2: Install Specific Plugins
 

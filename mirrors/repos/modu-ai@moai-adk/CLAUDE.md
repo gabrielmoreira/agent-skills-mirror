@@ -76,7 +76,7 @@ Default (natural language): Routes to autonomous workflow (plan -> run -> sync p
 
 ## 4. Agent Catalog
 
-The MoAI agent catalog consists of exactly **8 retained agents** (7 MoAI-custom + 1 Anthropic built-in `Explore`). The catalog is aligned with Anthropic's published best practices: "Subagents cannot spawn other subagents" (claude.com/docs/en/sub-agents), "Start with 3-5 teammates for most workflows" (claude.com/docs/en/agent-teams), and "Define a custom subagent when you keep spawning the same kind of worker" (claude.com/docs/en/best-practices).
+The MoAI agent catalog consists of exactly **8 retained agents** (7 MoAI-custom + 1 Anthropic built-in `Explore`). The catalog is aligned with Anthropic's published best practices: "Subagents cannot spawn other subagents" (claude.com/docs/en/sub-agents — historical default; see the Watch note below for the v2.1.172 nesting update), "Start with 3-5 teammates for most workflows" (claude.com/docs/en/agent-teams), and "Define a custom subagent when you keep spawning the same kind of worker" (claude.com/docs/en/best-practices).
 
 > **Watch (Claude Code 2.1.172)**: As of Claude Code v2.1.172 a subagent can spawn its own nested subagents. This is gated by the `Agent` tool being present in the subagent's `tools` list — the `Agent(agent_type)` parenthesized allowlist is a main-thread (`claude --agent`) feature, and inside a subagent definition the parenthesized type list is ignored. Nesting depth is fixed and not configurable: a subagent at depth five does not receive the `Agent` tool and cannot spawn further. To prevent a subagent from spawning others, omit `Agent` from its `tools` list (or add it to `disallowedTools`). The MoAI retained agents do not list `Agent` in their `tools`, so MoAI subagents do not nest — the flat-hierarchy 8-agent consolidation rationale stands by configuration. See `code.claude.com/docs/en/sub-agents` § Spawn nested subagents.
 
@@ -130,32 +130,16 @@ MoAI uses DDD and TDD as its development methodologies, selected via quality.yam
 ### MoAI Command Flow
 
 - /moai plan "description" → manager-spec subagent
-- /moai run SPEC-XXX → manager-develop subagent (with cycle_type per quality.yaml development_mode)
+- /moai run SPEC-XXX → manager-develop subagent (cycle_type per quality.yaml development_mode)
 - /moai sync SPEC-XXX → manager-docs subagent
-
-For detailed workflow specifications, see .claude/rules/moai/workflow/spec-workflow.md
 
 ### Agent Chain for SPEC Execution
 
-- Phase 1 (plan-phase): manager-spec → SPEC artifacts (spec/plan/acceptance/research/design)
-- Phase 2 (plan audit gate): plan-auditor → independent skeptical audit, bias prevention, GEARS compliance verification
-- Phase 3 (run-phase): manager-develop → implementation (cycle_type ∈ {ddd, tdd, autofix}); for domain-specific work (backend/frontend/security/etc.) the orchestrator spawns `Agent(general-purpose)` with domain whitelist per `.claude/rules/moai/workflow/archived-agent-rejection.md` §C migration table
-- Phase 4 (sync-phase): manager-docs → CHANGELOG/README/docs + frontmatter status transitions (in-progress → implemented)
-- Phase 5 (sync audit gate): sync-auditor → independent 4-dimension quality scoring (Functionality/Security/Craft/Consistency)
-- Phase 6 (optional, Tier L OR explicit `--pr`): manager-git → branch creation + `gh pr create` + Late-Branch closure per Tier-based PR Routing
+Phases: plan (manager-spec) → plan-audit (plan-auditor) → run (manager-develop, cycle_type ∈ {ddd, tdd, autofix}; domain-specific work spawns `Agent(general-purpose)` with domain whitelist per `archived-agent-rejection.md` §C) → sync (manager-docs) → sync-audit (sync-auditor) → [optional Tier L OR `--pr`] PR (manager-git). For detailed phase specs, team-based parallel execution, and Late-Branch closure, see `.claude/rules/moai/workflow/spec-workflow.md`.
 
 ### MX Tag Integration
 
-All phases include @MX code annotation management (plan: identify targets; run: create/update tags; sync: validate + add missing). MX tag types:
-
-- `@MX:NOTE` - Context and intent delivery
-- `@MX:WARN` - Danger zone (requires @MX:REASON)
-- `@MX:ANCHOR` - Invariant contract (high fan_in functions)
-- `@MX:TODO` - Incomplete work (resolved in GREEN phase)
-
-For MX protocol details, see .claude/rules/moai/workflow/mx-tag-protocol.md
-
-For team-based parallel execution of these phases, see .claude/skills/moai/team/plan.md and .claude/skills/moai/team/run.md.
+All phases include @MX code annotation management (plan: identify targets; run: create/update; sync: validate + add missing). Tag types: `@MX:NOTE` (context/intent), `@MX:WARN` (danger zone, requires @MX:REASON), `@MX:ANCHOR` (invariant contract, high fan_in), `@MX:TODO` (incomplete, resolved in GREEN). Details: `.claude/rules/moai/workflow/mx-tag-protocol.md`.
 
 ---
 
@@ -210,7 +194,7 @@ User and language configuration:
 @.moai/config/sections/user.yaml
 @.moai/config/sections/language.yaml
 
-MoAI-ADK uses Claude Code's official rules system at `.claude/rules/moai/` (core / workflow / development / language / design rule categories). Design System Configuration (absorbed from agency) lives in `.moai/config/sections/design.yaml`, `.moai/project/brand/`, `.claude/rules/moai/design/constitution.md`, `.moai/config/sections/constitution.yaml`, `.moai/config/sections/harness.yaml`, `.moai/config/evaluator-profiles/`. Legacy .agency/ directories are archived via `moai migrate agency`.
+MoAI-ADK uses Claude Code's official rules system at `.claude/rules/moai/` (core / workflow / development / language / design rule categories). Design System Configuration (absorbed from agency) lives in `.moai/config/sections/design.yaml`, `.moai/project/brand/`, `.moai/config/sections/constitution.yaml`, `.moai/config/sections/harness.yaml`, `.moai/config/evaluator-profiles/`. Legacy .agency/ directories are archived via `moai migrate agency`.
 
 Language rules:
 - User Responses: Always in user's conversation_language
@@ -234,21 +218,14 @@ For research-heavy questions, the bundled `/deep-research <question>` workflow f
 
 ## 11. Error Handling
 
-> Canonical rule: this section is a high-level overview; detailed recovery flows live in `.claude/rules/moai/core/agent-common-protocol.md` § Error Recovery Pattern and individual agent definitions.
+> Canonical rule: detailed recovery flows live in `.claude/rules/moai/core/agent-common-protocol.md` § Error Recovery Pattern and individual agent definitions.
 
 ### Error Recovery
 
-- Agent execution errors: Consult `.claude/rules/moai/workflow/archived-agent-rejection.md` §C migration table; orchestrator emits `ARCHIVED_AGENT_REJECTED` when an archived agent is referenced; for diagnostic work spawn `Agent(general-purpose)` with diagnostic scope OR `Agent(Explore)` for read-only investigation
-- Token limit errors: Execute /clear, then guide user to resume via paste-ready resume message per `.claude/rules/moai/workflow/session-handoff.md`
-- Permission errors: Review settings.json manually (project + user scope)
-- Integration / DevOps errors: spawn `Agent(general-purpose)` with infrastructure/CI domain context per `archived-agent-rejection.md` §C migration table (formerly handled by an archived domain-expert agent)
-- MoAI-ADK errors: Suggest /moai feedback
+- **Agent / Integration-DevOps errors**: `ARCHIVED_AGENT_REJECTED` on archived-agent reference — consult `archived-agent-rejection.md` §C; spawn `Agent(general-purpose)` (diagnostics/infra) or `Agent(Explore)` (read-only)
+- **Token limit / Permission / MoAI-ADK errors**: /clear + paste-ready resume per `session-handoff.md`; permission → review settings.json; MoAI-ADK → /moai feedback
 
-### Resumable Agents
-
-Resume interrupted agent work using agentId:
-
-- "Resume agent abc123 and continue the security analysis"
+Resume interrupted agent work using agentId (e.g., "Resume agent abc123 and continue the analysis").
 
 ---
 
@@ -267,32 +244,22 @@ For MCP configuration and usage patterns, see .claude/rules/moai/core/settings-m
 
 ## 13. Progressive Disclosure System
 
-> Canonical rule: see `.claude/rules/moai/development/skill-authoring.md` § Progressive Disclosure for the 3-level token budget specification, the skill-listing / post-compaction budget (`skillListingBudgetFraction`), and trigger configuration schema.
-
-MoAI-ADK implements a 3-level Progressive Disclosure system — Level 1 (metadata, ~100 tokens, always listed), Level 2 (body, ~5K tokens, loaded on invocation), Level 3 (bundled, on-demand). Benefit: 67% reduction in initial token load with on-demand loading of full skill content.
+> Canonical rule: see `.claude/rules/moai/development/skill-authoring.md` § Progressive Disclosure for the 3-level token budget spec (Level 1: metadata ~100 tokens always listed; Level 2: body ~5K tokens on invocation; Level 3: bundled on-demand; 67% initial-token reduction), skill-listing / post-compaction budget (`skillListingBudgetFraction`), and trigger configuration schema.
 
 ---
 
 ## 14. Parallel Execution Safeguards
 
-For core parallel execution principles, see .claude/rules/moai/core/moai-constitution.md.
-
-- **File Write Conflict Prevention**: Analyze overlapping file access patterns and build dependency graphs before parallel execution
-- **Agent Tool Requirements**: All implementation agents MUST include Read, Write, Edit, Grep, Glob, Bash, TaskCreate, TaskUpdate, TaskList, TaskGet
-- **Loop Prevention**: Maximum 3 retries per operation with failure pattern detection and user intervention
-- **Platform Compatibility**: Always prefer Edit tool over sed/awk
-- **Team File Ownership**: In team mode, each teammate owns specific file patterns to prevent write conflicts
+For core principles, see `.claude/rules/moai/core/moai-constitution.md`. Operational safeguards: file-write-conflict prevention (dependency graphs before parallel execution), agent tool requirements (Read/Write/Edit/Grep/Glob/Bash/TaskCreate/Update/List/Get), loop prevention (max 3 retries), platform compatibility (prefer Edit over sed/awk), team file ownership (per-teammate patterns).
 - **Background Agent Write Restriction**: [ZONE:Frozen] [HARD] As of Claude Code v2.1.186, when a background subagent (`run_in_background: true`) reaches a tool call needing permission, the prompt surfaces in the main session (naming the asking subagent; Esc denies just that one call). MoAI nonetheless keeps `run_in_background: false` for agents that modify files as a conservative default — each background write would otherwise raise a main-session prompt that interrupts the leader's flow and undercuts the parallelism benefit of backgrounding. Read-only agents (research, analysis) can safely run in background.
 
-### Worktree Isolation Rules (Advisory)
-
-Per the current worktree-opt-in policy, L2/L3 worktree usage is user opt-in. L1 `Agent(isolation: "worktree")` is Claude Code runtime autonomous — MoAI orchestrator does not mandate isolation (implementation/read-only teammate guidance, one-shot cross-file changes, and GitHub fixer isolation are all [SHOULD], runtime-decided). For the complete worktree selection decision tree and per-role isolation guidance, see .claude/rules/moai/workflow/worktree-integration.md § Terminology Glossary.
+Per the worktree-opt-in policy, L2/L3 worktree usage is user opt-in; L1 `Agent(isolation: "worktree")` is Claude Code runtime autonomous (MoAI does not mandate isolation). For the decision tree and per-role guidance, see `.claude/rules/moai/workflow/worktree-integration.md` § Terminology Glossary.
 
 ---
 
 ## 15. Agent Teams (Experimental)
 
-MoAI supports optional Agent Teams mode for parallel phase execution. Activation requires Claude Code v2.1.32+, `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in settings.json env, and `workflow.team.enabled: true` in `.moai/config/sections/workflow.yaml`. Mode selection: `--team` (force teams) / `--solo` (force sub-agent) / no flag (complexity-based auto-select: domains ≥ 3, files ≥ 10, or score ≥ 7). Teams are implicit — spawn teammates via `Agent(name=...)` and the team forms on first spawn (one team per session, no nested teams; `TeamCreate`/`TeamDelete` removed in v2.1.178; cleanup automatic on session exit). Team APIs: SendMessage, TaskCreate/Update/List/Get; team hook events TeammateIdle (exit 2 = keep working), TaskCompleted (exit 2 = reject completion). For complete Agent Teams documentation (team API reference, role profiles, file ownership strategy, team workflows, configuration), see .claude/rules/moai/workflow/spec-workflow.md and .moai/config/sections/workflow.yaml.
+MoAI supports optional Agent Teams mode for parallel phase execution (Claude Code v2.1.32+, `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, `workflow.team.enabled: true`). Mode selection: `--team`/`--solo`/no flag (auto-select: domains ≥ 3, files ≥ 10, or score ≥ 7). Teams are implicit (`Agent(name=...)`, team forms on first spawn; cleanup automatic on exit). For complete documentation (team API, role profiles, file ownership, hooks), see `.claude/rules/moai/workflow/spec-workflow.md`.
 
 ### CG Mode (Claude + GLM Cost Optimization)
 
@@ -315,22 +282,9 @@ MoAI-ADK supports CG Mode for 60-70% cost reduction on implementation-heavy task
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Activation**: `moai cg` (requires tmux). Uses tmux session-level env isolation.
+**Activation**: `moai cg` (requires tmux). **Use for**: implementation-heavy SPECs (run phase), code generation, test writing, doc generation. **Avoid**: planning/architecture (needs Opus reasoning), security reviews, complex debugging.
 
-**When to use**:
-- Implementation-heavy SPECs (run phase)
-- Code generation tasks
-- Test writing
-- Documentation generation
-
-**When NOT to use**:
-- Planning/architecture decisions (needs Opus reasoning)
-- Security reviews (needs Claude's security training)
-- Complex debugging (needs advanced reasoning)
-
-### Dynamic Workflows (Research Preview)
-
-Dynamic workflows are a third orchestration primitive alongside sub-agents and Agent Teams: a JavaScript script the runtime executes to orchestrate dozens-to-hundreds of subagents, with intermediate results kept in script variables rather than conversation context. Use for codebase-wide sweeps, large migrations, and cross-checked research; prefer sequential sub-agents for coding-heavy work. Workflow subagents cannot prompt the user — the AskUserQuestion boundary holds. Requires Claude Code v2.1.154+. See .claude/rules/moai/workflow/dynamic-workflows.md and .claude/rules/moai/workflow/goal-directive.md.
+> Dynamic Workflows (a third orchestration primitive — JS scripts orchestrating dozens-to-hundreds of subagents, intermediate results in script variables) and `/effort ultracode` are documented in `.claude/rules/moai/workflow/dynamic-workflows.md` and `.claude/rules/moai/workflow/goal-directive.md` (requires Claude Code v2.1.154+). Workflow subagents cannot prompt the user.
 
 ---
 
@@ -338,48 +292,11 @@ Dynamic workflows are a third orchestration primitive alongside sub-agents and A
 
 > Canonical rule: see `.claude/rules/moai/workflow/context-window-management.md` for context window thresholds (1M = 50%, 200K = 90%) and `.claude/rules/moai/workflow/session-handoff.md` for paste-ready resume message format.
 
-MoAI searches previous Claude Code sessions when context is needed to continue work on existing tasks or discussions.
+MoAI searches previous Claude Code sessions when context is needed to continue work on existing tasks or discussions. **Search when**: user references past work without sufficient context, mentions a SPEC-ID not loaded in current context, asks to resume/continue previous work, or explicitly requests to find previous discussions. **Skip when**: relevant SPEC/code is already in current session, user references content present in conversation, or duplication would add no value.
 
-### When to Search
+**Process**: (1) check current session first (skip if found); (2) confirm via AskUserQuestion before searching; (3) Grep session index and transcripts in `~/.claude/projects/` (default 30-day window); (4) summarize and present for approval; (5) inject approved context avoiding duplicates. **Token budget**: max 5,000 tokens per injection; skip if current usage exceeds 150,000; summarize lengthy conversations to stay within budget.
 
-Search previous sessions when:
-- User references past work without sufficient context in current session
-- User mentions a SPEC-ID that is not loaded in current context
-- User asks to continue previous work or resume interrupted tasks
-- User explicitly requests to find previous discussions
-
-### When NOT to Search
-
-Skip context search when:
-- Relevant SPEC document is already loaded in current context
-- Related documents or code are already present in conversation
-- User references content that exists in current session
-- Context duplication would provide no additional value
-
-### Search Process
-
-1. Check if relevant context already exists in current session (skip if found)
-2. Ask user confirmation before searching (via AskUserQuestion)
-3. Use Grep to search session index and transcript files in ~/.claude/projects/
-4. Limit search to recent sessions (configurable, default 30 days)
-5. Summarize findings and present for user approval
-6. Inject approved context into current conversation (avoid duplicates)
-
-### Token Budget
-
-- Maximum 5,000 tokens per injection
-- Skip search if current token usage exceeds 150,000
-- Summarize lengthy conversations to stay within budget
-
-### Manual Trigger
-
-User can explicitly request context search at any time during conversation.
-
-### Integration Notes
-
-- Complements @MX TAG system for code context
-- Automatically triggered when SPEC reference lacks context
-- Available in both solo and team modes
+**Manual trigger**: user may request context search at any time. Complements @MX TAG system for code context; available in both solo and team modes.
 
 ---
 
@@ -398,8 +315,5 @@ When MoAI workflows behave unexpectedly, use Claude Code's built-in debug tools 
 
 ---
 
-Version: 14.3.0
-Language: English
-Core Rule: MoAI is an orchestrator; direct implementation is prohibited
-
-For detailed patterns on plugins, sandboxing, headless mode, and version management, see Skill("moai-foundation-cc").
+Version: 14.3.0 | Language: English | Core Rule: MoAI is an orchestrator; direct implementation is prohibited
+For detailed patterns (plugins, sandboxing, headless mode, version management), see Skill("moai-foundation-cc").

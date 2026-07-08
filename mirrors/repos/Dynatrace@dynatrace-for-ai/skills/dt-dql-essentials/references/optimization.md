@@ -2,6 +2,22 @@
 
 Comprehensive guide to writing efficient DQL queries with best practices, patterns, and performance tips.
 
+> **This is the right guide when the goal is to make a DQL query faster, more efficient, or
+> cheaper to run.** In Dynatrace, query cost and consumption are driven primarily by the
+> **amount of data a query scans**. Every technique here — filtering early, bucket filters,
+> short time ranges, field selection, sampling, and limiting cardinality — reduces scanned
+> data, which simultaneously makes the query **faster** and **lowers its consumption/cost per
+> execution**. So "how do I make my queries faster?", "how do I make my queries cheaper?",
+> and "how do I keep DQL query consumption/cost under control?" are the **same question** and
+> are all answered here. Share these practices with users to keep query cost from getting out
+> of hand.
+>
+> **Not covered here — use `dt-platform-costs` instead:** monitoring or analyzing a tenant's
+> *actual* recorded consumption/billing — e.g. "how much are my queries costing", "who
+> scanned the most", "which dashboard/workflow costs most", cost trends and spike
+> investigation. That skill *measures* consumption from billing data; this guide *reduces* it
+> by improving the query text.
+
 ## Table of Contents
 
 - [Core Optimization Principles](#core-optimization-principles)

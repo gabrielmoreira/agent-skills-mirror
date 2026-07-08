@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Dynatrace/dynatrace-for-ai` — 26 default patterns, 0 followed patterns, 331 file(s) materialized.
+Mirror of `Dynatrace/dynatrace-for-ai` — 26 default patterns, 0 followed patterns, 372 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Dynatrace/dynatrace-for-ai` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 331 |
+| Files         | 372 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -314,82 +314,123 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 253 | ✓ | [`skills/dt-obs-gcp/references/resource-ownership.md`](skills/dt-obs-gcp/references/resource-ownership.md) |
 | 254 | ✓ | [`skills/dt-obs-gcp/references/serverless-containers.md`](skills/dt-obs-gcp/references/serverless-containers.md) |
 | 255 | ✓ | [`skills/dt-obs-gcp/SKILL.md`](skills/dt-obs-gcp/SKILL.md) |
-| 256 | ✓ | [`skills/dt-obs-hosts/references/container-monitoring.md`](skills/dt-obs-hosts/references/container-monitoring.md) |
-| 257 | ✓ | [`skills/dt-obs-hosts/references/host-metrics.md`](skills/dt-obs-hosts/references/host-metrics.md) |
-| 258 | ✓ | [`skills/dt-obs-hosts/references/inventory-discovery.md`](skills/dt-obs-hosts/references/inventory-discovery.md) |
-| 259 | ✓ | [`skills/dt-obs-hosts/references/process-monitoring.md`](skills/dt-obs-hosts/references/process-monitoring.md) |
-| 260 | ✓ | [`skills/dt-obs-hosts/SKILL.md`](skills/dt-obs-hosts/SKILL.md) |
-| 261 | ✓ | [`skills/dt-obs-ios-sdk/scripts/add_spm_dependency.rb`](skills/dt-obs-ios-sdk/scripts/add_spm_dependency.rb) |
-| 262 | ✓ | [`skills/dt-obs-ios-sdk/scripts/verify-setup.sh`](skills/dt-obs-ios-sdk/scripts/verify-setup.sh) |
-| 263 | ✓ | [`skills/dt-obs-ios-sdk/SKILL.md`](skills/dt-obs-ios-sdk/SKILL.md) |
-| 264 | ✓ | [`skills/dt-obs-kubernetes/references/cluster-inventory.md`](skills/dt-obs-kubernetes/references/cluster-inventory.md) |
-| 265 | ✓ | [`skills/dt-obs-kubernetes/references/ingress.md`](skills/dt-obs-kubernetes/references/ingress.md) |
-| 266 | ✓ | [`skills/dt-obs-kubernetes/references/labels-annotations.md`](skills/dt-obs-kubernetes/references/labels-annotations.md) |
-| 267 | ✓ | [`skills/dt-obs-kubernetes/references/network-policies.md`](skills/dt-obs-kubernetes/references/network-policies.md) |
-| 268 | ✓ | [`skills/dt-obs-kubernetes/references/pod-debugging.md`](skills/dt-obs-kubernetes/references/pod-debugging.md) |
-| 269 | ✓ | [`skills/dt-obs-kubernetes/references/pod-node-placement.md`](skills/dt-obs-kubernetes/references/pod-node-placement.md) |
-| 270 | ✓ | [`skills/dt-obs-kubernetes/references/pv-pvc.md`](skills/dt-obs-kubernetes/references/pv-pvc.md) |
-| 271 | ✓ | [`skills/dt-obs-kubernetes/references/workload-health.md`](skills/dt-obs-kubernetes/references/workload-health.md) |
-| 272 | ✓ | [`skills/dt-obs-kubernetes/SKILL.md`](skills/dt-obs-kubernetes/SKILL.md) |
-| 273 | ✓ | [`skills/dt-obs-logs/SKILL.md`](skills/dt-obs-logs/SKILL.md) |
-| 274 | ✓ | [`skills/dt-obs-predictive-analytics/references/anomaly-scoring.md`](skills/dt-obs-predictive-analytics/references/anomaly-scoring.md) |
-| 275 | ✓ | [`skills/dt-obs-predictive-analytics/references/capacity-forecasting.md`](skills/dt-obs-predictive-analytics/references/capacity-forecasting.md) |
-| 276 | ✓ | [`skills/dt-obs-predictive-analytics/references/forecasting-analyzer.md`](skills/dt-obs-predictive-analytics/references/forecasting-analyzer.md) |
-| 277 | ✓ | [`skills/dt-obs-predictive-analytics/references/novelty-detection.md`](skills/dt-obs-predictive-analytics/references/novelty-detection.md) |
-| 278 | ✓ | [`skills/dt-obs-predictive-analytics/references/trend-detection.md`](skills/dt-obs-predictive-analytics/references/trend-detection.md) |
-| 279 | ✓ | [`skills/dt-obs-predictive-analytics/SKILL.md`](skills/dt-obs-predictive-analytics/SKILL.md) |
-| 280 | ✓ | [`skills/dt-obs-problems/references/impact-analysis.md`](skills/dt-obs-problems/references/impact-analysis.md) |
-| 281 | ✓ | [`skills/dt-obs-problems/references/problem-correlation.md`](skills/dt-obs-problems/references/problem-correlation.md) |
-| 282 | ✓ | [`skills/dt-obs-problems/references/problem-merging.md`](skills/dt-obs-problems/references/problem-merging.md) |
-| 283 | ✓ | [`skills/dt-obs-problems/references/problem-trending.md`](skills/dt-obs-problems/references/problem-trending.md) |
-| 284 | ✓ | [`skills/dt-obs-problems/SKILL.md`](skills/dt-obs-problems/SKILL.md) |
-| 285 | ✓ | [`skills/dt-obs-react-native/references/config-js.md`](skills/dt-obs-react-native/references/config-js.md) |
-| 286 | ✓ | [`skills/dt-obs-react-native/references/user-opt-in.md`](skills/dt-obs-react-native/references/user-opt-in.md) |
-| 287 | ✓ | [`skills/dt-obs-react-native/references/verification.md`](skills/dt-obs-react-native/references/verification.md) |
-| 288 | ✓ | [`skills/dt-obs-react-native/SKILL.md`](skills/dt-obs-react-native/SKILL.md) |
-| 289 | ✓ | [`skills/dt-obs-services/references/dotnet.md`](skills/dt-obs-services/references/dotnet.md) |
-| 290 | ✓ | [`skills/dt-obs-services/references/go.md`](skills/dt-obs-services/references/go.md) |
-| 291 | ✓ | [`skills/dt-obs-services/references/java.md`](skills/dt-obs-services/references/java.md) |
-| 292 | ✓ | [`skills/dt-obs-services/references/nodejs.md`](skills/dt-obs-services/references/nodejs.md) |
-| 293 | ✓ | [`skills/dt-obs-services/references/php.md`](skills/dt-obs-services/references/php.md) |
-| 294 | ✓ | [`skills/dt-obs-services/references/python.md`](skills/dt-obs-services/references/python.md) |
-| 295 | ✓ | [`skills/dt-obs-services/references/service-metrics.md`](skills/dt-obs-services/references/service-metrics.md) |
-| 296 | ✓ | [`skills/dt-obs-services/SKILL.md`](skills/dt-obs-services/SKILL.md) |
-| 297 | ✓ | [`skills/dt-obs-tracing/references/database-spans.md`](skills/dt-obs-tracing/references/database-spans.md) |
-| 298 | ✓ | [`skills/dt-obs-tracing/references/entity-lookups.md`](skills/dt-obs-tracing/references/entity-lookups.md) |
-| 299 | ✓ | [`skills/dt-obs-tracing/references/failure-detection.md`](skills/dt-obs-tracing/references/failure-detection.md) |
-| 300 | ✓ | [`skills/dt-obs-tracing/references/http-spans.md`](skills/dt-obs-tracing/references/http-spans.md) |
-| 301 | ✓ | [`skills/dt-obs-tracing/references/logs-correlation.md`](skills/dt-obs-tracing/references/logs-correlation.md) |
-| 302 | ✓ | [`skills/dt-obs-tracing/references/messaging-spans.md`](skills/dt-obs-tracing/references/messaging-spans.md) |
-| 303 | ✓ | [`skills/dt-obs-tracing/references/networking-analysis.md`](skills/dt-obs-tracing/references/networking-analysis.md) |
-| 304 | ✓ | [`skills/dt-obs-tracing/references/performance-analysis.md`](skills/dt-obs-tracing/references/performance-analysis.md) |
-| 305 | ✓ | [`skills/dt-obs-tracing/references/request-attributes.md`](skills/dt-obs-tracing/references/request-attributes.md) |
-| 306 | ✓ | [`skills/dt-obs-tracing/references/rpc-spans.md`](skills/dt-obs-tracing/references/rpc-spans.md) |
-| 307 | ✓ | [`skills/dt-obs-tracing/references/sampling-extrapolation.md`](skills/dt-obs-tracing/references/sampling-extrapolation.md) |
-| 308 | ✓ | [`skills/dt-obs-tracing/references/serverless-spans.md`](skills/dt-obs-tracing/references/serverless-spans.md) |
-| 309 | ✓ | [`skills/dt-obs-tracing/SKILL.md`](skills/dt-obs-tracing/SKILL.md) |
-| 310 | ✓ | [`skills/dt-platform-costs/references/billing-capabilities.md`](skills/dt-platform-costs/references/billing-capabilities.md) |
-| 311 | ✓ | [`skills/dt-platform-costs/references/billing-event-types.md`](skills/dt-platform-costs/references/billing-event-types.md) |
-| 312 | ✓ | [`skills/dt-platform-costs/references/cost-allocation.md`](skills/dt-platform-costs/references/cost-allocation.md) |
-| 313 | ✓ | [`skills/dt-platform-costs/references/cost-estimations.md`](skills/dt-platform-costs/references/cost-estimations.md) |
-| 314 | ✓ | [`skills/dt-platform-costs/references/entity-cost-drilldown.md`](skills/dt-platform-costs/references/entity-cost-drilldown.md) |
-| 315 | ✓ | [`skills/dt-platform-costs/references/metrics-ingest-optimization.md`](skills/dt-platform-costs/references/metrics-ingest-optimization.md) |
-| 316 | ✓ | [`skills/dt-platform-costs/references/query-cost-attribution.md`](skills/dt-platform-costs/references/query-cost-attribution.md) |
-| 317 | ✓ | [`skills/dt-platform-costs/references/workflow-total-cost.md`](skills/dt-platform-costs/references/workflow-total-cost.md) |
-| 318 | ✓ | [`skills/dt-platform-costs/SKILL.md`](skills/dt-platform-costs/SKILL.md) |
-| 319 | ✓ | [`skills/dt-sec-insights/references/all-security-events.md`](skills/dt-sec-insights/references/all-security-events.md) |
-| 320 | ✓ | [`skills/dt-sec-insights/references/common-patterns.md`](skills/dt-sec-insights/references/common-patterns.md) |
-| 321 | ✓ | [`skills/dt-sec-insights/references/compliance.md`](skills/dt-sec-insights/references/compliance.md) |
-| 322 | ✓ | [`skills/dt-sec-insights/references/coverage.md`](skills/dt-sec-insights/references/coverage.md) |
-| 323 | ✓ | [`skills/dt-sec-insights/references/dashboard-patterns.md`](skills/dt-sec-insights/references/dashboard-patterns.md) |
-| 324 | ✓ | [`skills/dt-sec-insights/references/data-model.md`](skills/dt-sec-insights/references/data-model.md) |
-| 325 | ✓ | [`skills/dt-sec-insights/references/detections.md`](skills/dt-sec-insights/references/detections.md) |
-| 326 | ✓ | [`skills/dt-sec-insights/references/entity-enrichment.md`](skills/dt-sec-insights/references/entity-enrichment.md) |
-| 327 | ✓ | [`skills/dt-sec-insights/references/mistakes-and-troubleshooting.md`](skills/dt-sec-insights/references/mistakes-and-troubleshooting.md) |
-| 328 | ✓ | [`skills/dt-sec-insights/references/vulnerabilities-entities.md`](skills/dt-sec-insights/references/vulnerabilities-entities.md) |
-| 329 | ✓ | [`skills/dt-sec-insights/references/vulnerabilities-external.md`](skills/dt-sec-insights/references/vulnerabilities-external.md) |
-| 330 | ✓ | [`skills/dt-sec-insights/references/vulnerabilities.md`](skills/dt-sec-insights/references/vulnerabilities.md) |
-| 331 | ✓ | [`skills/dt-sec-insights/SKILL.md`](skills/dt-sec-insights/SKILL.md) |
+| 256 | ✓ | [`skills/dt-obs-genai/references/agent-signals.md`](skills/dt-obs-genai/references/agent-signals.md) |
+| 257 | ✓ | [`skills/dt-obs-genai/references/conversation-analytics.md`](skills/dt-obs-genai/references/conversation-analytics.md) |
+| 258 | ✓ | [`skills/dt-obs-genai/references/cost-and-tokens.md`](skills/dt-obs-genai/references/cost-and-tokens.md) |
+| 259 | ✓ | [`skills/dt-obs-genai/references/evaluations.md`](skills/dt-obs-genai/references/evaluations.md) |
+| 260 | ✓ | [`skills/dt-obs-genai/references/golden-signals.md`](skills/dt-obs-genai/references/golden-signals.md) |
+| 261 | ✓ | [`skills/dt-obs-genai/references/guardrails.md`](skills/dt-obs-genai/references/guardrails.md) |
+| 262 | ✓ | [`skills/dt-obs-genai/references/llm-signals.md`](skills/dt-obs-genai/references/llm-signals.md) |
+| 263 | ✓ | [`skills/dt-obs-genai/SKILL.md`](skills/dt-obs-genai/SKILL.md) |
+| 264 | ✓ | [`skills/dt-obs-hosts/references/container-monitoring.md`](skills/dt-obs-hosts/references/container-monitoring.md) |
+| 265 | ✓ | [`skills/dt-obs-hosts/references/host-metrics.md`](skills/dt-obs-hosts/references/host-metrics.md) |
+| 266 | ✓ | [`skills/dt-obs-hosts/references/inventory-discovery.md`](skills/dt-obs-hosts/references/inventory-discovery.md) |
+| 267 | ✓ | [`skills/dt-obs-hosts/references/process-monitoring.md`](skills/dt-obs-hosts/references/process-monitoring.md) |
+| 268 | ✓ | [`skills/dt-obs-hosts/SKILL.md`](skills/dt-obs-hosts/SKILL.md) |
+| 269 | ✓ | [`skills/dt-obs-ios-sdk/scripts/add_spm_dependency.rb`](skills/dt-obs-ios-sdk/scripts/add_spm_dependency.rb) |
+| 270 | ✓ | [`skills/dt-obs-ios-sdk/scripts/verify-setup.sh`](skills/dt-obs-ios-sdk/scripts/verify-setup.sh) |
+| 271 | ✓ | [`skills/dt-obs-ios-sdk/SKILL.md`](skills/dt-obs-ios-sdk/SKILL.md) |
+| 272 | ✓ | [`skills/dt-obs-kubernetes/references/cluster-inventory.md`](skills/dt-obs-kubernetes/references/cluster-inventory.md) |
+| 273 | ✓ | [`skills/dt-obs-kubernetes/references/ingress.md`](skills/dt-obs-kubernetes/references/ingress.md) |
+| 274 | ✓ | [`skills/dt-obs-kubernetes/references/labels-annotations.md`](skills/dt-obs-kubernetes/references/labels-annotations.md) |
+| 275 | ✓ | [`skills/dt-obs-kubernetes/references/network-policies.md`](skills/dt-obs-kubernetes/references/network-policies.md) |
+| 276 | ✓ | [`skills/dt-obs-kubernetes/references/pod-debugging.md`](skills/dt-obs-kubernetes/references/pod-debugging.md) |
+| 277 | ✓ | [`skills/dt-obs-kubernetes/references/pod-node-placement.md`](skills/dt-obs-kubernetes/references/pod-node-placement.md) |
+| 278 | ✓ | [`skills/dt-obs-kubernetes/references/pv-pvc.md`](skills/dt-obs-kubernetes/references/pv-pvc.md) |
+| 279 | ✓ | [`skills/dt-obs-kubernetes/references/workload-health.md`](skills/dt-obs-kubernetes/references/workload-health.md) |
+| 280 | ✓ | [`skills/dt-obs-kubernetes/SKILL.md`](skills/dt-obs-kubernetes/SKILL.md) |
+| 281 | ✓ | [`skills/dt-obs-log-semantic-mapping/references/data-model-notes.md`](skills/dt-obs-log-semantic-mapping/references/data-model-notes.md) |
+| 282 | ✓ | [`skills/dt-obs-log-semantic-mapping/references/mapping-workflow.md`](skills/dt-obs-log-semantic-mapping/references/mapping-workflow.md) |
+| 283 | ✓ | [`skills/dt-obs-log-semantic-mapping/references/report-format.md`](skills/dt-obs-log-semantic-mapping/references/report-format.md) |
+| 284 | ✓ | [`skills/dt-obs-log-semantic-mapping/references/runtime-validation.md`](skills/dt-obs-log-semantic-mapping/references/runtime-validation.md) |
+| 285 | ✓ | [`skills/dt-obs-log-semantic-mapping/references/validation-rules.md`](skills/dt-obs-log-semantic-mapping/references/validation-rules.md) |
+| 286 | ✓ | [`skills/dt-obs-log-semantic-mapping/samples/audit-logs.json`](skills/dt-obs-log-semantic-mapping/samples/audit-logs.json) |
+| 287 | ✓ | [`skills/dt-obs-log-semantic-mapping/samples/http-logs.json`](skills/dt-obs-log-semantic-mapping/samples/http-logs.json) |
+| 288 | ✓ | [`skills/dt-obs-log-semantic-mapping/SKILL.md`](skills/dt-obs-log-semantic-mapping/SKILL.md) |
+| 289 | ✓ | [`skills/dt-obs-logs/SKILL.md`](skills/dt-obs-logs/SKILL.md) |
+| 290 | ✓ | [`skills/dt-obs-predictive-analytics/references/anomaly-scoring.md`](skills/dt-obs-predictive-analytics/references/anomaly-scoring.md) |
+| 291 | ✓ | [`skills/dt-obs-predictive-analytics/references/capacity-forecasting.md`](skills/dt-obs-predictive-analytics/references/capacity-forecasting.md) |
+| 292 | ✓ | [`skills/dt-obs-predictive-analytics/references/forecasting-analyzer.md`](skills/dt-obs-predictive-analytics/references/forecasting-analyzer.md) |
+| 293 | ✓ | [`skills/dt-obs-predictive-analytics/references/novelty-detection.md`](skills/dt-obs-predictive-analytics/references/novelty-detection.md) |
+| 294 | ✓ | [`skills/dt-obs-predictive-analytics/references/trend-detection.md`](skills/dt-obs-predictive-analytics/references/trend-detection.md) |
+| 295 | ✓ | [`skills/dt-obs-predictive-analytics/SKILL.md`](skills/dt-obs-predictive-analytics/SKILL.md) |
+| 296 | ✓ | [`skills/dt-obs-problems/references/impact-analysis.md`](skills/dt-obs-problems/references/impact-analysis.md) |
+| 297 | ✓ | [`skills/dt-obs-problems/references/problem-correlation.md`](skills/dt-obs-problems/references/problem-correlation.md) |
+| 298 | ✓ | [`skills/dt-obs-problems/references/problem-merging.md`](skills/dt-obs-problems/references/problem-merging.md) |
+| 299 | ✓ | [`skills/dt-obs-problems/references/problem-trending.md`](skills/dt-obs-problems/references/problem-trending.md) |
+| 300 | ✓ | [`skills/dt-obs-problems/SKILL.md`](skills/dt-obs-problems/SKILL.md) |
+| 301 | ✓ | [`skills/dt-obs-react-native/references/config-js.md`](skills/dt-obs-react-native/references/config-js.md) |
+| 302 | ✓ | [`skills/dt-obs-react-native/references/user-opt-in.md`](skills/dt-obs-react-native/references/user-opt-in.md) |
+| 303 | ✓ | [`skills/dt-obs-react-native/references/verification.md`](skills/dt-obs-react-native/references/verification.md) |
+| 304 | ✓ | [`skills/dt-obs-react-native/SKILL.md`](skills/dt-obs-react-native/SKILL.md) |
+| 305 | ✓ | [`skills/dt-obs-services/references/dotnet.md`](skills/dt-obs-services/references/dotnet.md) |
+| 306 | ✓ | [`skills/dt-obs-services/references/go.md`](skills/dt-obs-services/references/go.md) |
+| 307 | ✓ | [`skills/dt-obs-services/references/java.md`](skills/dt-obs-services/references/java.md) |
+| 308 | ✓ | [`skills/dt-obs-services/references/nodejs.md`](skills/dt-obs-services/references/nodejs.md) |
+| 309 | ✓ | [`skills/dt-obs-services/references/php.md`](skills/dt-obs-services/references/php.md) |
+| 310 | ✓ | [`skills/dt-obs-services/references/python.md`](skills/dt-obs-services/references/python.md) |
+| 311 | ✓ | [`skills/dt-obs-services/references/service-metrics.md`](skills/dt-obs-services/references/service-metrics.md) |
+| 312 | ✓ | [`skills/dt-obs-services/SKILL.md`](skills/dt-obs-services/SKILL.md) |
+| 313 | ✓ | [`skills/dt-obs-tracing/references/database-spans.md`](skills/dt-obs-tracing/references/database-spans.md) |
+| 314 | ✓ | [`skills/dt-obs-tracing/references/entity-lookups.md`](skills/dt-obs-tracing/references/entity-lookups.md) |
+| 315 | ✓ | [`skills/dt-obs-tracing/references/failure-detection.md`](skills/dt-obs-tracing/references/failure-detection.md) |
+| 316 | ✓ | [`skills/dt-obs-tracing/references/http-spans.md`](skills/dt-obs-tracing/references/http-spans.md) |
+| 317 | ✓ | [`skills/dt-obs-tracing/references/logs-correlation.md`](skills/dt-obs-tracing/references/logs-correlation.md) |
+| 318 | ✓ | [`skills/dt-obs-tracing/references/messaging-spans.md`](skills/dt-obs-tracing/references/messaging-spans.md) |
+| 319 | ✓ | [`skills/dt-obs-tracing/references/networking-analysis.md`](skills/dt-obs-tracing/references/networking-analysis.md) |
+| 320 | ✓ | [`skills/dt-obs-tracing/references/performance-analysis.md`](skills/dt-obs-tracing/references/performance-analysis.md) |
+| 321 | ✓ | [`skills/dt-obs-tracing/references/request-attributes.md`](skills/dt-obs-tracing/references/request-attributes.md) |
+| 322 | ✓ | [`skills/dt-obs-tracing/references/rpc-spans.md`](skills/dt-obs-tracing/references/rpc-spans.md) |
+| 323 | ✓ | [`skills/dt-obs-tracing/references/sampling-extrapolation.md`](skills/dt-obs-tracing/references/sampling-extrapolation.md) |
+| 324 | ✓ | [`skills/dt-obs-tracing/references/serverless-spans.md`](skills/dt-obs-tracing/references/serverless-spans.md) |
+| 325 | ✓ | [`skills/dt-obs-tracing/SKILL.md`](skills/dt-obs-tracing/SKILL.md) |
+| 326 | ✓ | [`skills/dt-platform-costs/references/billing-capabilities.md`](skills/dt-platform-costs/references/billing-capabilities.md) |
+| 327 | ✓ | [`skills/dt-platform-costs/references/billing-event-types.md`](skills/dt-platform-costs/references/billing-event-types.md) |
+| 328 | ✓ | [`skills/dt-platform-costs/references/cost-allocation.md`](skills/dt-platform-costs/references/cost-allocation.md) |
+| 329 | ✓ | [`skills/dt-platform-costs/references/cost-estimations.md`](skills/dt-platform-costs/references/cost-estimations.md) |
+| 330 | ✓ | [`skills/dt-platform-costs/references/entity-cost-drilldown.md`](skills/dt-platform-costs/references/entity-cost-drilldown.md) |
+| 331 | ✓ | [`skills/dt-platform-costs/references/metrics-ingest-optimization.md`](skills/dt-platform-costs/references/metrics-ingest-optimization.md) |
+| 332 | ✓ | [`skills/dt-platform-costs/references/query-cost-attribution.md`](skills/dt-platform-costs/references/query-cost-attribution.md) |
+| 333 | ✓ | [`skills/dt-platform-costs/references/workflow-total-cost.md`](skills/dt-platform-costs/references/workflow-total-cost.md) |
+| 334 | ✓ | [`skills/dt-platform-costs/SKILL.md`](skills/dt-platform-costs/SKILL.md) |
+| 335 | ✓ | [`skills/dt-sec-insights/references/all-security-events.md`](skills/dt-sec-insights/references/all-security-events.md) |
+| 336 | ✓ | [`skills/dt-sec-insights/references/common-patterns.md`](skills/dt-sec-insights/references/common-patterns.md) |
+| 337 | ✓ | [`skills/dt-sec-insights/references/compliance.md`](skills/dt-sec-insights/references/compliance.md) |
+| 338 | ✓ | [`skills/dt-sec-insights/references/coverage.md`](skills/dt-sec-insights/references/coverage.md) |
+| 339 | ✓ | [`skills/dt-sec-insights/references/dashboard-patterns.md`](skills/dt-sec-insights/references/dashboard-patterns.md) |
+| 340 | ✓ | [`skills/dt-sec-insights/references/data-model.md`](skills/dt-sec-insights/references/data-model.md) |
+| 341 | ✓ | [`skills/dt-sec-insights/references/detections.md`](skills/dt-sec-insights/references/detections.md) |
+| 342 | ✓ | [`skills/dt-sec-insights/references/entity-enrichment.md`](skills/dt-sec-insights/references/entity-enrichment.md) |
+| 343 | ✓ | [`skills/dt-sec-insights/references/mistakes-and-troubleshooting.md`](skills/dt-sec-insights/references/mistakes-and-troubleshooting.md) |
+| 344 | ✓ | [`skills/dt-sec-insights/references/vulnerabilities-entities.md`](skills/dt-sec-insights/references/vulnerabilities-entities.md) |
+| 345 | ✓ | [`skills/dt-sec-insights/references/vulnerabilities-external.md`](skills/dt-sec-insights/references/vulnerabilities-external.md) |
+| 346 | ✓ | [`skills/dt-sec-insights/references/vulnerabilities.md`](skills/dt-sec-insights/references/vulnerabilities.md) |
+| 347 | ✓ | [`skills/dt-sec-insights/SKILL.md`](skills/dt-sec-insights/SKILL.md) |
+| 348 | ✓ | [`skills/dt-sec-semantic-mapping/references/data-model-notes.md`](skills/dt-sec-semantic-mapping/references/data-model-notes.md) |
+| 349 | ✓ | [`skills/dt-sec-semantic-mapping/references/intake-and-output.md`](skills/dt-sec-semantic-mapping/references/intake-and-output.md) |
+| 350 | ✓ | [`skills/dt-sec-semantic-mapping/references/known-discrepancies.md`](skills/dt-sec-semantic-mapping/references/known-discrepancies.md) |
+| 351 | ✓ | [`skills/dt-sec-semantic-mapping/references/mapping-workflow.md`](skills/dt-sec-semantic-mapping/references/mapping-workflow.md) |
+| 352 | ✓ | [`skills/dt-sec-semantic-mapping/references/object-type-expectations.md`](skills/dt-sec-semantic-mapping/references/object-type-expectations.md) |
+| 353 | ✓ | [`skills/dt-sec-semantic-mapping/references/openpipeline-constraints.md`](skills/dt-sec-semantic-mapping/references/openpipeline-constraints.md) |
+| 354 | ✓ | [`skills/dt-sec-semantic-mapping/references/report-format.md`](skills/dt-sec-semantic-mapping/references/report-format.md) |
+| 355 | ✓ | [`skills/dt-sec-semantic-mapping/references/runtime-validation.md`](skills/dt-sec-semantic-mapping/references/runtime-validation.md) |
+| 356 | ✓ | [`skills/dt-sec-semantic-mapping/references/semantic-dictionary.md`](skills/dt-sec-semantic-mapping/references/semantic-dictionary.md) |
+| 357 | ✓ | [`skills/dt-sec-semantic-mapping/references/validation-rules.md`](skills/dt-sec-semantic-mapping/references/validation-rules.md) |
+| 358 | ✓ | [`skills/dt-sec-semantic-mapping/samples/dynatrace-compliance-scans.json`](skills/dt-sec-semantic-mapping/samples/dynatrace-compliance-scans.json) |
+| 359 | ✓ | [`skills/dt-sec-semantic-mapping/samples/dynatrace-compliance.json`](skills/dt-sec-semantic-mapping/samples/dynatrace-compliance.json) |
+| 360 | ✓ | [`skills/dt-sec-semantic-mapping/samples/dynatrace-detections-automated.json`](skills/dt-sec-semantic-mapping/samples/dynatrace-detections-automated.json) |
+| 361 | ✓ | [`skills/dt-sec-semantic-mapping/samples/dynatrace-detections-rap.json`](skills/dt-sec-semantic-mapping/samples/dynatrace-detections-rap.json) |
+| 362 | ✓ | [`skills/dt-sec-semantic-mapping/samples/dynatrace-vulnerabilities-change-events.json`](skills/dt-sec-semantic-mapping/samples/dynatrace-vulnerabilities-change-events.json) |
+| 363 | ✓ | [`skills/dt-sec-semantic-mapping/samples/dynatrace-vulnerabilities-findings.json`](skills/dt-sec-semantic-mapping/samples/dynatrace-vulnerabilities-findings.json) |
+| 364 | ✓ | [`skills/dt-sec-semantic-mapping/samples/dynatrace-vulnerabilities-scans.json`](skills/dt-sec-semantic-mapping/samples/dynatrace-vulnerabilities-scans.json) |
+| 365 | ✓ | [`skills/dt-sec-semantic-mapping/samples/dynatrace-vulnerabilities-state-reports.json`](skills/dt-sec-semantic-mapping/samples/dynatrace-vulnerabilities-state-reports.json) |
+| 366 | ✓ | [`skills/dt-sec-semantic-mapping/samples/external-compliance.json`](skills/dt-sec-semantic-mapping/samples/external-compliance.json) |
+| 367 | ✓ | [`skills/dt-sec-semantic-mapping/samples/external-detections.json`](skills/dt-sec-semantic-mapping/samples/external-detections.json) |
+| 368 | ✓ | [`skills/dt-sec-semantic-mapping/samples/external-vulnerabilities-code-artifact.json`](skills/dt-sec-semantic-mapping/samples/external-vulnerabilities-code-artifact.json) |
+| 369 | ✓ | [`skills/dt-sec-semantic-mapping/samples/external-vulnerabilities-container-image.json`](skills/dt-sec-semantic-mapping/samples/external-vulnerabilities-container-image.json) |
+| 370 | ✓ | [`skills/dt-sec-semantic-mapping/samples/external-vulnerabilities-host.json`](skills/dt-sec-semantic-mapping/samples/external-vulnerabilities-host.json) |
+| 371 | ✓ | [`skills/dt-sec-semantic-mapping/samples/external-vulnerabilities-scan.json`](skills/dt-sec-semantic-mapping/samples/external-vulnerabilities-scan.json) |
+| 372 | ✓ | [`skills/dt-sec-semantic-mapping/SKILL.md`](skills/dt-sec-semantic-mapping/SKILL.md) |
 
 ---
 

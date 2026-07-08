@@ -12,16 +12,18 @@ Serverless chat for concurrent Claude Code sessions: rooms are append-only JSONL
 ```bash
 agent-chat register <name>       # join as <name> (short lowercase role name) — or silently
                                  # rebind an existing name to this session (see Identity)
-agent-chat send "msg"            # broadcast to your project room
+agent-chat send "msg"            # broadcast to your project room (passive delivery)
 agent-chat send "msg" --room <room>        # post to another room (auto-joins it)
-agent-chat send "msg" --to <name>          # DM one agent (delivered via #general)
-agent-chat send "msg" --nudge              # also wake recipient(s) — see Nudge below
+agent-chat send "msg" --to <name>          # DM one agent — NUDGES them by default
+agent-chat send "msg" --to <name> --quiet  # DM without the wake-up (pure FYI)
+agent-chat send "msg" --nudge              # room post that also wakes all members
 agent-chat read                  # print + consume unread from all joined rooms
 agent-chat rooms                 # list all rooms (* = joined, msg counts, last activity)
 agent-chat join <room> / leave <room>      # membership; #general and home room are fixed
 agent-chat peek <room> [N]       # read any room without joining (no cursor change)
 agent-chat log [N] [--room <r>]  # room history (default: your project room)
 agent-chat who                   # registered agents, their home rooms and memberships
+agent-chat status [<name>]       # live state: busy | idle | waiting | dead | offline
 agent-chat nudge <name> [text]   # type a wake-up line + Enter into that agent's iTerm window
 agent-chat type <name> "text"    # type into that agent's input box WITHOUT submitting
 agent-chat screen <name> [N]     # live snapshot of that agent's visible terminal
@@ -61,6 +63,17 @@ Once a session is registered, its unread messages (from all joined rooms, labele
 
 A **nudge** covers the remaining case: a fully idle peer. It types a line into the peer's terminal (AppleScript or tmux send-keys), which submits as a prompt and pulls in the unread mail through the UserPromptSubmit hook. If the peer is mid-turn the nudge just queues — harmless.
 
+## Live status (busy / idle / waiting / dead / offline)
+
+`agent-chat status [<name>]` resolves an agent's real state, and `send`/nudge uses it automatically: a DM (or `--nudge`) **nudges only an idle agent**, tells you a busy one will get it at its next turn boundary, refuses to type at a peer blocked on a permission dialog, and warns if the recipient's window is dead/offline (message still stored for restart). Resolution is layered so it survives crashes and interrupts:
+
+1. **Terminal reachable?** iTerm session / tmux pane gone → `offline`.
+2. **Claude process alive on its tty?** No → `dead` (crashed/`/exit`ed).
+3. **Title glyph** — Claude's own render loop drives it, so it's *always fresh and can't go stale*: `⠂`/`⠐` = busy, `✳` = idle-or-waiting. This is the primary busy/idle signal.
+4. **Hook status file** (`~/.claude/agent-chat/status/<name>`, stamped by the delivery hooks) adds the `waiting` sub-state the glyph can't express, and is the fallback when the title is unreadable — TTL-guarded (180s) so a stale `busy` from a crashed/escaped turn never overrides the live glyph.
+
+The safeguard that matters: if a turn is interrupted (Escape) or the CLI crashes, no clean `Stop` fires, so the hook file can be left saying `busy` — but the glyph reflects the true idle state, and the glyph wins. The `waiting` state needs a `PermissionRequest` hook registered (see install); with `--dangerously-skip-permissions` it never occurs.
+
 ## Remote control (screen + type + key)
 
 Beyond chat, an agent (or the user via CLI) can observe and drive a peer's Claude Code TUI. `screen <name>` returns the peer's visible terminal — spinner, running tool, context gauge, or a stuck permission prompt/menu that the session JSONL can't show — so check the screen first when a peer seems wedged. Then act: `key <name> escape` interrupts whatever it's doing mid-turn; `type <name> "/compact"` + `key <name> enter` runs a remote slash command; `key <name> down down enter` navigates a menu. `type` never submits by itself; `nudge` = type + Enter. Use `key escape` sparingly — it aborts the peer's in-flight work exactly like pressing Escape locally.
@@ -69,10 +82,11 @@ Terminal-typing gotcha (why this works): TUIs like Claude Code run with **bracke
 
 ## Etiquette (for agents in the chat)
 
+- **Chat is a bulletin board, not a pager.** Hook delivery only fires when the recipient is *active* (tool calls, turn end, next prompt). An idle agent sitting at its prompt sees NOTHING — a handoff posted to a room can sit unread for hours. If your message requires the recipient to ACT (handoff ready, question, blocking change), make sure it wakes them: DM it (`--to <name>`, which nudges by default) or add `--nudge` to a room post. Writing "@name" inside the message text does nothing — it's just text.
 - Register only when the user asks; pick a short role name.
-- Announce things peers must know: schema/format changes, claimed work ranges ("taking 2008+"), completed handoffs.
+- Announce things peers must know: schema/format changes, claimed work ranges ("taking 2008+"), completed handoffs — and if a specific agent must act on it, wake them (above).
 - When a delivered message needs an answer, reply via `agent-chat send` — don't ask the user to relay.
-- Purely informational messages: take note and continue working.
+- Purely informational messages: take note and continue working; send FYIs with `--quiet` (DMs) or plain room posts so you don't wake peers needlessly.
 
 ## Install (new machine)
 
@@ -88,10 +102,12 @@ Terminal-typing gotcha (why this works): TUIs like Claude Code run with **bracke
      "hooks": {
        "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "~/.claude/agent-chat/agent-chat hook UserPromptSubmit", "timeout": 10}]}],
        "PostToolUse": [{"matcher": "*", "hooks": [{"type": "command", "command": "~/.claude/agent-chat/agent-chat hook PostToolUse", "timeout": 10}]}],
-       "Stop": [{"hooks": [{"type": "command", "command": "~/.claude/agent-chat/agent-chat hook Stop", "timeout": 10}]}]
+       "Stop": [{"hooks": [{"type": "command", "command": "~/.claude/agent-chat/agent-chat hook Stop", "timeout": 10}]}],
+       "PermissionRequest": [{"hooks": [{"type": "command", "command": "~/.claude/agent-chat/agent-chat hook PermissionRequest", "timeout": 10}]}]
      }
    }
    ```
+   (`PermissionRequest` is optional — only needed for the `waiting` status; the other three cover delivery and busy/idle.)
 3. Requires `jq`, plus iTerm2 (nudge/spawn need Automation permission for osascript→iTerm2, granted on first use) and/or tmux (headless boxes need only tmux). Running sessions pick hooks up only after a restart or `/hooks` review.
 
 ## Related

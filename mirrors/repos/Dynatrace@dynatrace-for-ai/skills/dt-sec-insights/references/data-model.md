@@ -346,8 +346,7 @@ it.
 | Raw field (per-entity) | Stage-3 derivation | Notes |
 |---|---|---|
 | `vulnerability.resolution.status` | derived: `if(in("OPEN", resolutionStatuses), "OPEN", else: "RESOLVED")` | Auto-resolved when no PG reports the vulnerable library for >2 h (third-party) or process restarts and OneAgent finds no exploitable data flow (CLV) |
-| `vulnerability.resolution.change_date` | `takeMax` | Last status transition timestamp (nanoseconds) |
-| `vulnerability.first_seen` | `vulnerability.first_seen = takeMin(...)` | First-ever detection across the vulnerability's entire history (re-opens after RESOLVED keep the original `first_seen`). The legacy `vulnerability.parent.first_seen` is deprecated — use the per-entity field collapsed via `takeMin`. |
+| `vulnerability.resolution.change_date` | `takeMax` | Last status transition timestamp (nanoseconds). For OPEN vulnerabilities indicates for how long they are in that status. |
 | `vulnerability.mute.status` | derived: `if(in("NOT_MUTED", muteStatuses), "NOT_MUTED", else: "MUTED")` | Per-entity mute; vulnerability is fully muted only if every entity is muted |
 | `vulnerability.mute.reason` | (raw, per-entity) | `FALSE_POSITIVE`, `IGNORE`, `AFFECTED` (=> NOT_MUTED), `CONFIGURATION_NOT_AFFECTED`, `OTHER` |
 | `vulnerability.mute.user` | (raw, per-entity) | User who set the mute |
@@ -460,21 +459,10 @@ Dynatrace Security Posture Management (SPM / XSPM) has three flavors:
 | `compliance.rule.title` | Human-readable rule name |
 | `compliance.rule.severity.level` | `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` — **exactly four values**. KSPM does not emit `NONE` / `NOT_AVAILABLE`. |
 | `compliance.rule.severity.score` | Numeric severity (0–10): `CRITICAL=10`, `HIGH=7`, `MEDIUM=4`, `LOW=1` (CCSS-based since 2026-03-10) |
-| `compliance.rule.metadata_json` | JSON string with standard-specific keys — see schema below |
+| `compliance.rule.metadata_json` | ❌ **Do not use.** Field exists in the data (standard-specific JSON blob) but the skill must **never** query or parse it. Use `compliance.rule.id` / `compliance.rule.title` for rule identity instead. |
 | `compliance.standard.short_name` | KSPM-native: `CIS`, `DORA`, `NIST`, `DISA STIG`. **Note the full `"DISA STIG"` label — `short_name == "STIG"` matches nothing.** Prefer `contains(lower(compliance.standard.short_name), "stig")` for filtering — it tolerates version suffixes and the DISA prefix. PCI / ISO / HIPAA / GDPR appear only via CSPM/VSPM or external integrations. |
 | `compliance.standard.name` | Versioned full name — e.g. `"CIS Kubernetes 1.6.0"`, `"NIST SP 800-53 Rev. 5.2.0"`, `"DISA STIG Kubernetes V2R5"` |
 | `compliance.standard.url` | Reference URL for the standard |
-
-### `compliance.rule.metadata_json` per-standard schema
-
-| Standard | Keys |
-|---|---|
-| `CIS` | `Version`, `CIS level`, `CIS recommendation section`, `CIS recommendation ID`, `CIS benchmark` |
-| `DISA STIG` | `Version`, `STIG ID` (auditor-facing control, e.g. `CNTR-K8-001163`), `STIG vulnerability ID` (e.g. `V-274884`), `STIG` (full standard name) |
-| `DORA` | `Version`, `DORA articles` |
-| `NIST` | `Version`, `NIST controls`, `NIST revision` |
-
-Parse via `parse compliance.rule.metadata_json, "JSON:meta"` then index `meta[\`CIS recommendation ID\`]`. Useful for grouping by control family or pulling the human-recognizable benchmark ID (e.g. `1.2.3`).
 
 ### KSPM result + evidence fields
 

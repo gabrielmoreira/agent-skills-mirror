@@ -53,24 +53,26 @@ totals but lacks per-detector breakdown. Steps 2-4 resolve that using QEE
 and `ANALYZER_EXECUTION_EVENT`. Stopping at Step 1 leaves most costs
 unattributed.
 
-**BUE vs QEE:** BUE Query events are billable truth but lack
-`client.client_context` (per-detector detail) and `client.workflow_context`
-(per-workflow attribution). QEE has both but `scanned_bytes` is diagnostic,
+**BUE vs QEE:** BUE Query events are billable truth. QEE's `scanned_bytes` is diagnostic,
 not billable. Start with BUE for totals, drill into QEE for breakdown.
 
 ## BUE Query Attribution Fields
 
-Coverage of `client.source`, `client.application_context`, and
-`client.function_context` varies by event type and `event.version`:
+Coverage of all `client.*` attribution fields depends on your tenant's query pool
+distribution, not on BUE event type. Always run the coverage check in Step 1a
+before building attribution queries.
 
-| Field | Description | Events - Query (v2.0) | Log/Traces/Files - Query (v1.0) |
-|-------|-------------|----------------------|--------------------------------|
-| `client.source` | Named source (dashboard URL, detector ID) | Low | High |
-| `client.application_context` | App ID (e.g., `dynatrace.automations`) | High — primary field | Low |
-| `client.function_context` | Function within the app — drill down after attributing | High | Low |
-| `user.id` / `user.email` | User or service account | High | High |
+| Field | Description | Populated on |
+|-------|-------------|--------------|
+| `client.source` | Named source (dashboard URL, detector ID) | ALERTING, DASHBOARDS, APPLICATION, OPERATIONAL, BILLING; variable on INTERNAL_APPLICATION |
+| `client.application_context` | App ID (e.g., `dynatrace.automations`) | AUTOMATION, DASHBOARDS, APPLICATION, INTERNAL_APPLICATION |
+| `client.function_context` | Function within the app — drill down after attributing | AUTOMATION reliably; partial on INTERNAL_APPLICATION |
+| `client.client_context` | Structured JSON with app, function, and version details | ALERTING and AUTOMATION reliably; variable on API and APPLICATION |
+| `client.internal_service_context` | Internal Dynatrace service name | ALERTING, OPERATIONAL, BILLING |
+| `client.workflow_context` | Workflow ID | AUTOMATION only |
+| `user.id` / `user.email` | User or service account | Most pools |
 
-Use `coalesce(client.source, client.application_context, "unknown")` for
+Use `coalesce(client.source, client.application_context, client.internal_service_context, client.workflow_context, client.function_context, client.client_context, "unknown")` for
 attribution. For app-level results, drill into `client.function_context`.
 
 ## Step 1 — Top Sources by Billable Scan (BUE)
@@ -106,8 +108,8 @@ fetch dt.system.events, from: -7d
 
 ### Step 1b — Combined Attribution
 
-Use `coalesce()` to capture both `client.source` and
-`client.application_context`:
+Use `coalesce()` across all six `client.*` attribution fields to capture the first
+non-null value regardless of which query pool generated the event:
 
 ```dql
 fetch dt.system.events, from: -30d
@@ -118,7 +120,7 @@ fetch dt.system.events, from: -30d
     "Traces - Query",
     "Files - Query")
 | dedup {event.id, event.type}
-| fieldsAdd attribution = coalesce(client.source, client.application_context, "unknown")
+| fieldsAdd attribution = coalesce(client.source, client.application_context, client.internal_service_context, client.workflow_context, client.function_context, client.client_context, "unknown")
 | summarize total_billed_gib = sum(toDouble(billed_bytes) / 1073741824),
     by: {attribution, event.type}
 | sort total_billed_gib desc
@@ -192,8 +194,7 @@ fetch dt.system.events, from: -7d
 ## Step 3 — Drill Into QEE for Details
 
 QEE provides per-query execution details not available on BUE: `query_string`,
-`scanned_bytes`, `execution_duration_ms`, `client.client_context`, and
-`client.workflow_context`.
+`scanned_bytes`, and `execution_duration_ms`.
 
 > **Sample a BUE Query event with `| limit 1` before joining to QEE** to
 > confirm available fields — notably `query_id`, the correct join key.
@@ -230,7 +231,7 @@ QEE provides per-query execution details not available on BUE: `query_string`,
 ```dql-template
 fetch dt.system.events, from: -7d
 | filter event.kind == "QUERY_EXECUTION_EVENT"
-| filter coalesce(client.source, client.application_context) == "<top attribution from step 1b>"
+| filter coalesce(client.source, client.application_context, client.internal_service_context, client.workflow_context, client.function_context, client.client_context) == "<top attribution from step 1b>"
 | summarize qee_events = count(),
     dql_statements = countDistinct(query_id),
     total_scanned_gib = sum(scanned_bytes) / 1073741824,
@@ -311,7 +312,7 @@ fetch dt.system.events, from: -7d
 
 For ALERTING sources, parse `client.client_context` from QEE to get per-detector
 scan volume, then resolve detector names from `ANALYZER_EXECUTION_EVENT` via
-`join`. **QEE only** — not available on BUE.
+`join`.
 
 **`dt.task.id` is the full encoded settings UID** (base64-encoded, e.g.,
 `vu9U3hXa3q0AAAAB...vu9U3hXa3q0`) — not a plain UUID. This same encoded UID
