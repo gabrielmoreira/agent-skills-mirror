@@ -380,6 +380,14 @@ Configuration is read from `NOTEBOOKLM_SERVER_*` env vars (overridable by the ma
 | `NOTEBOOKLM_SERVER_HOST` | `127.0.0.1` | Bind host. Non-loopback is refused unless the elevated-risk override below is set. |
 | `NOTEBOOKLM_SERVER_PORT` | `8000` | Bind port. |
 | `NOTEBOOKLM_SERVER_ALLOW_EXTERNAL_BIND` | *(unset)* | ⚠️ Set to `1` to bind a non-loopback interface. Only behind a trusted reverse proxy — this exposes account-fronting credentials to the network. |
+| `NOTEBOOKLM_SERVER_SOURCE_MUTATION_CONCURRENCY` | `4` | Max concurrent source create/rename/delete/batch handlers. |
+| `NOTEBOOKLM_SERVER_SOURCE_WAIT_CONCURRENCY` | `4` | Max concurrent source wait handlers. |
+| `NOTEBOOKLM_SERVER_GENERATION_CONCURRENCY` | `2` | Max concurrent artifact generation/retry handlers. |
+| `NOTEBOOKLM_SERVER_DOWNLOAD_CONCURRENCY` | `2` | Max concurrent artifact download handlers. |
+| `NOTEBOOKLM_SERVER_RESEARCH_CONCURRENCY` | `2` | Max concurrent research start/cancel/import handlers. |
+| `NOTEBOOKLM_SERVER_CHAT_CONCURRENCY` | `4` | Max concurrent blocking chat ask handlers. |
+
+The concurrency knobs are route-group backpressure for expensive work. They do not gate `/healthz` or cheap read/list/poll routes.
 
 **Surface:** every route is under `/v1` and requires `Authorization: Bearer <token>` plus a loopback `Host` header (a DNS-rebinding guard). `/healthz` is the one public, token-less route. The auto-generated `/docs` / `/openapi.json` schema UI is disabled (it would otherwise be reachable token-less).
 

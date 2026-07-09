@@ -76,7 +76,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`.agents/skills/deepchat-sdd/SKILL.md`](.agents/skills/deepchat-sdd/SKILL.md) |
 | 15 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 16 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 17 | ✓ | [`plugins/cua/skills/cua-driver/SKILL.md`](plugins/cua/skills/cua-driver/SKILL.md) |
+| 17 | ✓ | [`plugins/cua/skills/computer-use/SKILL.md`](plugins/cua/skills/computer-use/SKILL.md) |
 | 18 | ✓ | [`plugins/cua/vendor/cua-driver/source/Skills/cua-driver/SKILL.md`](plugins/cua/vendor/cua-driver/source/Skills/cua-driver/SKILL.md) |
 | 19 | ✓ | [`plugins/feishu/skills/feishu-tools/SKILL.md`](plugins/feishu/skills/feishu-tools/SKILL.md) |
 | 20 | ✓ | [`resources/skills/algorithmic-art/SKILL.md`](resources/skills/algorithmic-art/SKILL.md) |

@@ -41,18 +41,11 @@ function runPattern(pattern, text) {
   return new RegExp(pattern, 'ims').test(text);
 }
 
-const STOP_WORDS = new Set([
-  'about', 'after', 'again', 'answer', 'before', 'could', 'current', 'does', 'from',
-  'have', 'into', 'local', 'mode', 'more', 'only', 'prompt', 'research', 'safe',
-  'should', 'that', 'their', 'there', 'this', 'what', 'when', 'where', 'which',
-  'while', 'with', 'without', 'would',
-]);
-
 function extractIntentTerms(text, limit = 8) {
   const counts = new Map();
   for (const raw of String(text || '').toLowerCase().match(/[a-z][a-z0-9-]{3,}/g) || []) {
     const term = raw.replace(/^-+|-+$/g, '');
-    if (!term || STOP_WORDS.has(term)) continue;
+    if (!term) continue;
     counts.set(term, (counts.get(term) || 0) + 1);
   }
   return [...counts.entries()]
@@ -267,6 +260,28 @@ Stars and downloads are tiebreakers, not proof.
 Integration blueprint: reuse parser-facing ideas, avoid unverified service dependencies, proof still needed is a local prototype against our TypeScript files.
 Confidence: likely
 Next: run one prototype command before adopting.`,
+    'change-mode': `Mode: Change
+Scope: replace moment.js with Intl.DateTimeFormat inside the formatDate utility only.
+Blast radius: LSP references and callers of formatDate show 3 consumers; exact read at src/utils/date.ts:14 and src/components/Header.tsx:27.
+Patch: smallest scoped change — only the formatDate function body; the exported signature is unchanged.
+Verification: yarn test src/utils/date.test.ts ran and passed; typecheck passed with exit 0.
+Confidence: confirmed
+Next: drop the moment dependency in a follow-up once no other imports remain.`,
+    'pr-local-review': `Mode: Review
+Scope: collected via git status and git diff --staged; 3 staged files, all in the auth area.
+Risk: src/auth/login.ts is HIGH (auth logic changed); README.md is LOW (docs-only).
+Sizing: Full pass, because one file is HIGH risk even though the file count is small; skipped the Quick surface-scan shortcut.
+Blast radius: the changed login() signature was traced with LSP callers (incoming) at src/auth/login.ts:42; two callers found at src/api/session.ts:18 and src/api/session.ts:55.
+Domains checked in order: Security, Bug, Flow Impact, Architecture, Performance, Error Handling, Quality.
+[SEC-1] title: missing input validation on new token parameter
+Severity: HIGH
+Confidence: confirmed
+Location: src/auth/login.ts:47
+Evidence: exact read shows the parameter is passed to a SQL query unescaped; LSP callers confirm both call sites pass user input directly.
+Impact: caller/user data path is exposed to injection.
+Fix: validate/sanitize the token parameter before use, mirroring the existing pattern in src/auth/session.ts:20.
+No existing PR comments to reconcile locally; findings deduped by root cause and capped to the highest-impact issue.
+Next: run the project's auth test suite before opening the PR.`,
   };
   return base[caseId] || '';
 }

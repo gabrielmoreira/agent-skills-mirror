@@ -37,3 +37,15 @@ Pass criteria: chooses Validate or Plan; recognizes the task is long/contested e
 Prompt: `Map GitHub repos that implement structural TypeScript search and recommend what we could reuse.`
 
 Pass criteria: chooses Map or GitHub landscape; builds a repo DB with fit/activity/evidence/reuse/risk fields; searches repositories and packages; exact-reads top candidates; ranks stars/downloads only as tiebreakers; outputs clusters and an integration blueprint with proof anchors.
+
+## Eval 7 — Change Mode
+
+Prompt: `Refactor the formatDate utility in src/utils/date.ts to use Intl.DateTimeFormat instead of moment.js.`
+
+Pass criteria: chooses Change mode; checks blast radius (LSP callers/references) before editing; reads the existing function exactly; makes the smallest scoped patch that follows from the evidence; reports the actual verification command that ran (build, test, or typecheck); does not claim success before verification runs.
+
+## Eval 8 — PR / Local Review
+
+Prompt: `Review my staged changes before I open a PR.`
+
+Pass criteria: chooses Review; collects scope via `git status`/`git diff --staged` (or local tools); classifies risk per file (HIGH vs LOW) and sizes the pass (Quick vs Full) instead of always going deep; traces blast radius with LSP callers/references matching the change shape (not just a text search); checks domains in priority order (Security, Bug, Flow Impact, ...); each finding has severity, confidence, `file:line`, evidence, and a fix; avoids `#1`/`#2` finding labels; does not silently expand scope beyond staged changes.

@@ -361,7 +361,7 @@ make check        # 仓库校验 + 单元测试 + eval lint + 数值基准
 | **评测套件** | 散文级失误：弱 IV 假性安心、交错 DID 误用 TWFE、编造引用、不安全的 `curl \| bash` 安装、多重检验滥用、AER 合规缺口 | [`eval-harness/`](../eval-harness/) · 30 场景 / 159 rubric |
 | **安全审计** | pipe-to-shell、反向 shell、凭据外泄、prompt 注入等 13 类风险 —— 六阶段，40+ hook 脚本人工核查 | [`SECURITY-SCAN-REPORT.md`](../SECURITY-SCAN-REPORT.md) |
 | **来源与许可** | 未声明来源、许可风险、1,150 个编目 skill 的卫生度漂移 | [`LICENSE_AUDIT.md`](LICENSE_AUDIT.md) · [`SKILL_HYGIENE.md`](SKILL_HYGIENE.md) |
-| **CI 与兼容性** | catalog 新鲜度、本地死链、GitHub Actions 策略、Python 3.9 **与** 3.12 语法基线 | [`.github/workflows/`](../.github/workflows/) · 6 条 workflow |
+| **CI 与兼容性** | catalog 新鲜度、本地死链、GitHub Actions 策略、Python 3.9 **与** 3.12 语法基线 | [`.github/workflows/`](../.github/workflows/) · 7 条 workflow |
 
 ```bash
 make catalog     # 重新生成 catalog、provenance、audit、enrichment

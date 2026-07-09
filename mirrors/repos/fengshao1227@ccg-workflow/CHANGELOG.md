@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.11] - 2026-07-09
+
+### ✨ Features
+
+- **`ccg doctor` command** — One-command environment health check: Node version, CCG config, commands, hooks (scripts + registration), codeagent-wrapper binary, skills, rules, MCP servers, Codex mode. Reports issues with ✗/⚠/✓ indicators.
+- **`ccg status` command** — Installation overview: version (with update check), command count, hooks, binary version, frontend/backend model routing, MCP server list, Codex mode, active task count.
+- **DeepWiki badge** — README now links to DeepWiki for AI-powered project Q&A.
+- **Codecov integration** — CI uploads coverage to Codecov; badge in README shows real coverage percentage.
+- **Project health files** — Added SECURITY.md (vulnerability reporting), CODE_OF_CONDUCT.md (Contributor Covenant v2.1), .node-version, and package.json metadata (repository, homepage, bugs, engines) for npm quality score.
+- **Codex mode version marker** — `codex-mode install` writes `~/.codex/.ccg-version` with CCG version for external version checking.
+
+---
+
 ## [3.1.9] - 2026-07-04
 
 ### ✨ Features

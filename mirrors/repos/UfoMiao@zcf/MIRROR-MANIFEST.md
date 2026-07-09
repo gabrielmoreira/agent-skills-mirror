@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `UfoMiao/zcf` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `UfoMiao/zcf` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `UfoMiao/zcf` — 26 default patterns, 0 followed patterns, 19 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,14 +70,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`src/utils/code-tools/CLAUDE.md`](src/utils/code-tools/CLAUDE.md) |
 | 10 | ✓ | [`src/utils/cometix/CLAUDE.md`](src/utils/cometix/CLAUDE.md) |
 | 11 | ✓ | [`templates/claude-code/CLAUDE.md`](templates/claude-code/CLAUDE.md) |
-| 12 | ✓ | [`templates/claude-code/skills/user/example/SKILL.md`](templates/claude-code/skills/user/example/SKILL.md) |
-| 13 | ✓ | [`templates/claude-code/skills/zcf/zcf-init/SKILL.md`](templates/claude-code/skills/zcf/zcf-init/SKILL.md) |
-| 14 | ✓ | [`templates/CLAUDE.md`](templates/CLAUDE.md) |
-| 15 | ✓ | [`templates/codex/skills/user/example/SKILL.md`](templates/codex/skills/user/example/SKILL.md) |
-| 16 | ✓ | [`templates/codex/skills/zcf/zcf-init/SKILL.md`](templates/codex/skills/zcf/zcf-init/SKILL.md) |
-| 17 | ✓ | [`templates/opencode/skills/user/example/SKILL.md`](templates/opencode/skills/user/example/SKILL.md) |
-| 18 | ✓ | [`templates/opencode/skills/zcf/zcf-init/SKILL.md`](templates/opencode/skills/zcf/zcf-init/SKILL.md) |
-| 19 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
+| 12 | ✓ | [`templates/CLAUDE.md`](templates/CLAUDE.md) |
+| 13 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
 
 ---
 

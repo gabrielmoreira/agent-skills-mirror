@@ -1,7 +1,7 @@
 # Long Research
 
-Read this when an Octocode research task needs a durable decision brief, claim-level traceability, or a frozen campaign plan.
-Keep the normal chat flow for small answers; this reference is for longer, contested, public, or multi-surface research.
+**Rare path — skip by default.** Read only when Octocode research needs a durable decision brief, claim-level traceability, or a frozen campaign plan.
+Keep the normal chat flow for small answers. Evidence grades and the router still come from `references/algorithm.md`.
 
 ## When To Use
 
@@ -53,17 +53,9 @@ Use `evidence.jsonl` for proof items. Each row should be standalone and small.
 {"id":"ev2","type":"repo-readme","source":"github","locator":"owner/repo/README.md#section","quoteOrFact":"Project documents AST search support","quality":"primary","retrievedAt":"2026-06-28"}
 ```
 
-Recommended fields:
+Field values: `type` ∈ exact-file|lsp|ast|pr|commit|package|paper|official-doc|web|benchmark|test; `source` ∈ local|github|npm|web|paper|artifact; `quality` ∈ primary|secondary|weak|counter; `locator` = path:line, URL, package version, PR/commit id, or artifact path; `quoteOrFact` = short fact, not a pasted article; `retrievedAt` for unstable sources.
 
-- `id`: stable short id, such as `ev1`.
-- `type`: `exact-file`, `lsp`, `ast`, `pr`, `commit`, `package`, `paper`, `official-doc`, `web`, `benchmark`, or `test`.
-- `source`: `local`, `github`, `npm`, `web`, `paper`, or `artifact`.
-- `locator`: path:line, URL, package version, PR/commit id, or artifact path.
-- `quoteOrFact`: short fact, not a pasted article.
-- `quality`: `primary`, `secondary`, `weak`, or `counter`.
-- `retrievedAt`: date of retrieval for unstable sources.
-
-Prefer exact source facts over broad summaries. Search snippets are leads; only promote them to evidence after exact read, source fetch, AST/LSP proof, package metadata, history, or tests.
+Promote a search snippet to evidence only after exact read, source fetch, AST/LSP proof, package metadata, history, or tests.
 
 ## Claims Ledger
 
@@ -74,15 +66,7 @@ Use `claims.jsonl` for atomic claims and their support state.
 {"id":"cl2","claim":"Project B is actively maintained.","status":"partial","confidence":"likely","supportingEvidenceIds":["ev6"],"counterEvidenceIds":["ev7"],"nextCheck":"check releases and issue activity"}
 ```
 
-Recommended fields:
-
-- `id`: stable short id, such as `cl1`.
-- `claim`: one sentence, one claim.
-- `status`: `supported`, `partial`, `contradicted`, `unverified`, or `dropped`.
-- `confidence`: `confirmed`, `likely`, or `uncertain`.
-- `supportingEvidenceIds`: evidence rows that directly support the claim.
-- `counterEvidenceIds`: evidence rows that weaken or contradict the claim.
-- `nextCheck`: cheapest remaining proof step, or `null`.
+Field values: one sentence per claim; `status` ∈ supported|partial|contradicted|unverified|dropped; `confidence` ∈ confirmed|likely|uncertain; `nextCheck` = cheapest remaining proof step, or `null`.
 
 Drop claims that are only plausible but unsupported. Keep contradicted claims when the contradiction matters to the decision.
 
@@ -95,14 +79,14 @@ Drop claims that are only plausible but unsupported. Keep contradicted claims wh
 5. Update claims after each decisive observation.
 6. Run Advocate vs Critic over claims, not raw notes.
 7. Produce the brief from supported and partial claims only.
-8. Produce at most one awareness capture packet from final supported/partial claims, using evidence locators as `memoryReferences[]`; if no reusable lesson survived, record `doNotCaptureReason` instead of storing memory.
+8. On a durable finding, store one distilled lesson with the host's memory tooling when available.
+   Use `memory_record(...)`, `memory_reflect(...)`, or the `octocode-awareness` capture flow. If no reusable lesson survived rebuttal, skip memory capture.
 
 ## Vendor Adapters
 
-Firecrawl, Tavily, Parallel, Perplexity, and similar tools are optional adapters. Use them only when they are available, authenticated, and useful for the active surface.
-They enrich the web/paper surface only; they do not replace Octocode proof for local, GitHub, npm, PR/history, AST/LSP, or artifact claims.
-
-If a vendor adapter fails, continue with Octocode and runtime web search when possible. Mark the web/paper surface degraded instead of blocking the whole campaign.
+Optional web-enrichment adapters, such as Tavily or Perplexity, help only when available and authenticated.
+They enrich the web/paper surface; they do not replace Octocode proof for local, GitHub, npm, history, AST/LSP, or artifact claims.
+If an adapter fails, continue with native web search and mark the surface degraded.
 
 ## Output Skeleton
 

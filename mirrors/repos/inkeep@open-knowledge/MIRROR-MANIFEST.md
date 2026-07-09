@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `inkeep/open-knowledge` — 26 default patterns, 3 followed patterns, 19 file(s) materialized.
+Mirror of `inkeep/open-knowledge` — 26 default patterns, 4 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `inkeep/open-knowledge` — 26 default patterns, 3 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 19 |
+| Followed pats | 4 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,7 @@ Mirror of `inkeep/open-knowledge` — 26 default patterns, 3 followed patterns, 
 - `README.md`
 - `CONTRIBUTING.md`
 - `CLA.md`
+- `.github/PULL_REQUEST_TEMPLATE.md`
 
 ## File Index
 
@@ -77,9 +78,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`packages/server/assets/skills/packs/writing-pipeline/SKILL.md`](packages/server/assets/skills/packs/writing-pipeline/SKILL.md) |
 | 15 | ✓ | [`packages/server/assets/skills/project/SKILL.md`](packages/server/assets/skills/project/SKILL.md) |
 | 16 | ✓ | [`packages/server/assets/skills/write-skill/SKILL.md`](packages/server/assets/skills/write-skill/SKILL.md) |
-| 17 | → | [`CLA.md`](CLA.md) |
-| 18 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 19 | → | [`README.md`](README.md) |
+| 17 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 18 | → | [`CLA.md`](CLA.md) |
+| 19 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 20 | → | [`README.md`](README.md) |
 
 ---
 

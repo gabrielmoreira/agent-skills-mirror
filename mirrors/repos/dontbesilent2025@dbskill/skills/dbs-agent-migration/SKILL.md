@@ -1,10 +1,10 @@
 ---
 name: dbs-agent-migration
 description: |
-  Agent 工作台迁移。把任意项目整理成 Claude Code / Codex / Grok 三端一致、可长期维护的 Agent 工作台：审计规则文件、识别真源、统一命名并生成 bridge。
-  触发方式：/dbs-agent-migration、/agent迁移、「迁移到 Codex」「迁移到 Claude Code」「迁移到 Grok」「统一 AGENTS.md」「整理 skill bridge」「我的 Agent 工作台很乱」「帮我统一 Claude 和 Codex 和 Grok」
-  Agent workspace migration. Turn any project into a maintainable Claude Code / Codex / Grok three-host workspace by auditing rule files, establishing source-of-truth skills, normalizing names, and generating bridges.
-  Trigger: /dbs-agent-migration, /agent-migration, "migrate to Codex", "migrate to Claude Code", "migrate to Grok", "fix AGENTS.md", "organize skill bridges"
+  Agent 工作台迁移。把任意项目整理成 Claude Code / Codex / Grok / 通用 Agents（~/.agents/skills）多端一致、可长期维护的 Agent 工作台：审计规则文件、识别真源、统一命名并生成 bridge。
+  触发方式：/dbs-agent-migration、/agent迁移、「迁移到 Codex」「迁移到 Claude Code」「迁移到 Grok」「迁移到豆包」「统一 AGENTS.md」「整理 skill bridge」「我的 Agent 工作台很乱」「帮我统一 Claude 和 Codex 和 Grok 和豆包」
+  Agent workspace migration. Turn any project into a maintainable Claude Code / Codex / Grok / generic Agents (~/.agents/skills) workspace by auditing rule files, establishing source-of-truth skills, normalizing names, and generating bridges.
+  Trigger: /dbs-agent-migration, /agent-migration, "migrate to Codex", "migrate to Claude Code", "migrate to Grok", "migrate to Doubao", "fix AGENTS.md", "organize skill bridges"
 ---
 
 # dbs-agent-migration：Agent 工作台迁移
@@ -13,7 +13,7 @@ description: |
 
 **这不是安装教程。也不是脚本执行器。** 你做的是一套带审计、收编、命名、桥接和验证的迁移流程。
 
-**核心目标：让用户的 Agent 配置从“能凑合用”变成“结构清楚、真源明确、Claude Code / Codex / Grok 三端一致”。**
+**核心目标：让用户的 Agent 配置从“能凑合用”变成“结构清楚、真源明确、Claude Code / Codex / Grok / 通用 Agents 多端一致”。**
 
 ---
 
@@ -27,7 +27,8 @@ description: |
 - `Codex → Claude Code`
 - `Claude Code / Codex → Grok`
 - `Grok → Claude Code / Codex`
-- `Claude + Codex + Grok 三端统一`
+- `Claude + Codex + Grok + 通用 Agents 多端统一`
+- `豆包 Mac App / Trae Solo / Codex 读取的 ~/.agents/skills 纳入统一`
 - `混乱项目 → 标准 Agent 工作台`
 
 它不负责：
@@ -45,11 +46,12 @@ description: |
 
 - 想把 Claude Code 项目迁到 Codex 或 Grok
 - 想把 Codex / Grok 项目补回 Claude Code
-- 想同时兼容 Claude Code、Codex、Grok 三端
+- 想同时兼容 Claude Code、Codex、Grok、豆包 Mac App、Trae Solo 等多端
 - 觉得自己的 Agent 工作台很乱，想统一整理
 - 问 `CLAUDE.md`、`AGENTS.md`、skill bridge、真源怎么设计
 - 本地 skill 很乱，散落在各处，不知道怎么收编
 - 已经在 Grok TUI 里建了一些 skill，但想和 Claude/Codex 打通
+- 已经在 `~/.agents/skills` 里装了 skill，但想和 Claude/Codex/Grok 打通
 - 已经复制过 `CLAUDE.md`、已经建过一些 bridge，但不确定是否做完整了
 
 ---
@@ -60,16 +62,17 @@ description: |
 
 复制 `CLAUDE.md` 为 `AGENTS.md`，最多只解决了“先跑起来”。真正的迁移至少要解决：
 
-1. 项目级规则文件（AGENTS.md 作为三端共同基础）
+1. 项目级规则文件（AGENTS.md 作为多端共同基础）
 2. skill 真源位置（通常是项目内 `skills/`）
-3. bridge 命名规则（三端使用同一套规范名）
-4. Claude Code / Codex / Grok 三端一致
+3. bridge 命名规则（多端使用同一套规范名）
+4. Claude Code / Codex / Grok / 通用 Agents 多端一致
 5. 可持续维护
 
 ### 原则 2：真源优先，bridge 从真源生成
 
 - `skills/` 是理想真源目录
-- `~/.claude/skills/`、`~/.codex/skills/`、`~/.grok/skills/` 都只是 bridge
+- `~/.claude/skills/`、`~/.codex/skills/`、`~/.grok/skills/`、`~/.agents/skills/` 都只是 bridge 或宿主安装入口
+- `~/.agents/skills/` 是豆包 Mac App、Trae Solo、Codex 等通用 Agent 会读取的 skill 根目录
 - 不要把长期逻辑维护在 bridge 里
 
 ### 原则 3：不能假设项目已经规范
@@ -86,7 +89,8 @@ description: |
 1. 只有 Claude 侧
 2. 只有 Codex 侧
 3. 只有 Grok 侧
-4. 两端或三端都有，但不一致
+4. 只有通用 Agents 侧（`~/.agents/skills`）
+5. 两端、三端或多端都有，但不一致
 
 ### 原则 4：多步确认是产品的一部分
 
@@ -125,8 +129,8 @@ Grok Build（Grok TUI）对 bridge 有明确要求：
 - `SOURCE_OF_TRUTH.md`
 - 项目中是否存在 `skills/`
 - 项目中是否存在散落的 skill 候选
-- 是否已有 `~/.claude/skills` / `~/.codex/skills` / `~/.grok/skills` bridge
-- 当前主工作台更偏 Claude、Codex 还是 Grok
+- 是否已有 `~/.claude/skills` / `~/.codex/skills` / `~/.grok/skills` / `~/.agents/skills` bridge
+- 当前主工作台更偏 Claude、Codex、Grok 还是通用 Agents
 
 然后把项目判断为规则层类型：
 
@@ -140,7 +144,8 @@ Grok Build（Grok TUI）对 bridge 有明确要求：
 - 当前是 **Claude 主、Codex 缺、Grok 缺**
 - 当前是 **Codex 主、Claude 缺、Grok 缺**
 - 当前是 **Grok 主、Claude / Codex 缺**
-- 当前是 **三端都有，但不一致**
+- 当前是 **通用 Agents 主、Claude / Codex / Grok 缺**
+- 当前是 **三端或多端都有，但不一致**
 - 当前是 **多端都不成体系**
 
 #### Phase 1 输出格式
@@ -230,19 +235,20 @@ Grok Build（Grok TUI）对 bridge 有明确要求：
 命名顺序：
 
 1. 优先沿用用户已经长期使用的历史名字
-2. 再决定三边统一名
+2. 再决定多端统一名
 3. 最后回写真源 frontmatter
 
 不要让脚本根据标题临时乱取名。
 
-### Phase 5：生成三端 bridge（Claude / Codex / Grok）
+### Phase 5：生成多端 bridge（Claude / Codex / Grok / 通用 Agents）
 
 bridge 的核心要求：
 
 - 只做入口，不维护长逻辑
 - 指向项目真源
-- 三端使用同一套规范名
+- 多端使用同一套规范名
 - Grok bridge 必须带 `user_invocable: true`
+- 通用 Agents bridge 或软链写入 `~/.agents/skills/<name>`，豆包 Mac App / Trae Solo / Codex 会从这里发现 skill
 
 #### Grok Bridge 精确模板
 
@@ -293,12 +299,28 @@ bridge_mode: passthrough
 本文件为薄 bridge，仅做入口指向。长期逻辑维护在真源。
 ```
 
+#### 通用 Agents 目录策略
+
+`~/.agents/skills/<name>` 优先使用软链指向真源目录。这个目录已知会被豆包 Mac App、Trae Solo 和 Codex 读取。
+
+如果目标位置已有同名真实目录或文件：
+
+- 不覆盖；
+- 报告目标路径和当前类型；
+- 让用户确认是否迁出旧目录。
+
+如果目标位置已有同名软链：
+
+- 可以更新到新的真源；
+- 更新后必须检查 `readlink` 是否指回预期路径。
+
 #### Phase 5 执行策略
 
 1. 告诉用户你准备为哪些宿主生成 bridge。
 2. 得到明确确认后，直接帮用户生成文件内容，或先给出完整预览内容。
 3. Grok bridge 必须当场验证 `user_invocable: true`。
-4. 只有在用户明确允许写入目标宿主目录时，你才可以直接把 bridge 写到目标位置；否则先提供预览。
+4. 通用 Agents 目录优先写软链，不复制真源内容。
+5. 只有在用户明确允许写入目标宿主目录时，你才可以直接把 bridge 写到目标位置；否则先提供预览。
 
 #### Phase 5 写入前确认
 
@@ -316,9 +338,10 @@ bridge_mode: passthrough
 2. 真源是否明确
 3. frontmatter 是否补齐
 4. bridge 是否能指回真源
-5. 三端 bridge 集合是否一致
+5. 多端 bridge 集合是否一致
 6. Grok bridge 是否都带了 `user_invocable: true`
-7. 是否存在悬空引用
+7. `~/.agents/skills` 里的目标是否存在真实目录冲突或悬空软链
+8. 是否存在悬空引用
 
 #### Phase 6 输出
 
@@ -329,7 +352,8 @@ bridge_mode: passthrough
 - Claude bridge 是否完成
 - Codex bridge 是否完成
 - Grok bridge 是否完成（含 user_invocable 验证）
-- 三端集合是否一致
+- 通用 Agents bridge 是否完成（`~/.agents/skills`）
+- 多端集合是否一致
 - 后续如何维护（以后只改真源即可）
 
 ---
@@ -351,7 +375,7 @@ bridge_mode: passthrough
 收尾时必须交代：
 
 1. 现在这个项目属于“可运行迁移”还是“完整迁移”
-2. 已经补了哪些结构层（特别点出 Grok）
+2. 已经补了哪些结构层（特别点出 Grok 和 `~/.agents/skills`）
 3. 后面还有什么可选优化
 4. 如果别人照着做，最小步骤是什么
 5. 以后怎么维护：只改真源，重新生成对应宿主的 bridge 即可

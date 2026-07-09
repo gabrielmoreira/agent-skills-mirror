@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `datopian/portaljs` — 26 default patterns, 1 followed patterns, 16 file(s) materialized.
+Mirror of `datopian/portaljs` — 26 default patterns, 1 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `datopian/portaljs` — 26 default patterns, 1 followed patterns, 16 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 16 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,19 +62,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`site/content/docs/skills.md`](site/content/docs/skills.md) |
-| 4 | ✓ | [`skills/portaljs-add-chart/SKILL.md`](skills/portaljs-add-chart/SKILL.md) |
-| 5 | ✓ | [`skills/portaljs-add-dataset/SKILL.md`](skills/portaljs-add-dataset/SKILL.md) |
-| 6 | ✓ | [`skills/portaljs-add-dcat/SKILL.md`](skills/portaljs-add-dcat/SKILL.md) |
-| 7 | ✓ | [`skills/portaljs-add-map/SKILL.md`](skills/portaljs-add-map/SKILL.md) |
-| 8 | ✓ | [`skills/portaljs-add-resource/SKILL.md`](skills/portaljs-add-resource/SKILL.md) |
-| 9 | ✓ | [`skills/portaljs-architect/SKILL.md`](skills/portaljs-architect/SKILL.md) |
-| 10 | ✓ | [`skills/portaljs-check-data-quality/SKILL.md`](skills/portaljs-check-data-quality/SKILL.md) |
-| 11 | ✓ | [`skills/portaljs-connect-ckan/SKILL.md`](skills/portaljs-connect-ckan/SKILL.md) |
-| 12 | ✓ | [`skills/portaljs-define-schema/SKILL.md`](skills/portaljs-define-schema/SKILL.md) |
-| 13 | ✓ | [`skills/portaljs-deploy/SKILL.md`](skills/portaljs-deploy/SKILL.md) |
-| 14 | ✓ | [`skills/portaljs-migrate/SKILL.md`](skills/portaljs-migrate/SKILL.md) |
-| 15 | ✓ | [`skills/portaljs-new-portal/SKILL.md`](skills/portaljs-new-portal/SKILL.md) |
-| 16 | → | [`.claude/INSTALL.md`](.claude/INSTALL.md) |
+| 4 | ✓ | [`skills/portaljs-add-chart/references/reference.md`](skills/portaljs-add-chart/references/reference.md) |
+| 5 | ✓ | [`skills/portaljs-add-chart/SKILL.md`](skills/portaljs-add-chart/SKILL.md) |
+| 6 | ✓ | [`skills/portaljs-add-dataset/references/reference.md`](skills/portaljs-add-dataset/references/reference.md) |
+| 7 | ✓ | [`skills/portaljs-add-dataset/SKILL.md`](skills/portaljs-add-dataset/SKILL.md) |
+| 8 | ✓ | [`skills/portaljs-add-dcat/references/reference.md`](skills/portaljs-add-dcat/references/reference.md) |
+| 9 | ✓ | [`skills/portaljs-add-dcat/SKILL.md`](skills/portaljs-add-dcat/SKILL.md) |
+| 10 | ✓ | [`skills/portaljs-add-geo/references/reference.md`](skills/portaljs-add-geo/references/reference.md) |
+| 11 | ✓ | [`skills/portaljs-add-geo/SKILL.md`](skills/portaljs-add-geo/SKILL.md) |
+| 12 | ✓ | [`skills/portaljs-add-map/references/reference.md`](skills/portaljs-add-map/references/reference.md) |
+| 13 | ✓ | [`skills/portaljs-add-map/SKILL.md`](skills/portaljs-add-map/SKILL.md) |
+| 14 | ✓ | [`skills/portaljs-add-resource/references/reference.md`](skills/portaljs-add-resource/references/reference.md) |
+| 15 | ✓ | [`skills/portaljs-add-resource/SKILL.md`](skills/portaljs-add-resource/SKILL.md) |
+| 16 | ✓ | [`skills/portaljs-architect/references/reference.md`](skills/portaljs-architect/references/reference.md) |
+| 17 | ✓ | [`skills/portaljs-architect/SKILL.md`](skills/portaljs-architect/SKILL.md) |
+| 18 | ✓ | [`skills/portaljs-check-data-quality/references/reference.md`](skills/portaljs-check-data-quality/references/reference.md) |
+| 19 | ✓ | [`skills/portaljs-check-data-quality/SKILL.md`](skills/portaljs-check-data-quality/SKILL.md) |
+| 20 | ✓ | [`skills/portaljs-connect-ckan/references/reference.md`](skills/portaljs-connect-ckan/references/reference.md) |
+| 21 | ✓ | [`skills/portaljs-connect-ckan/SKILL.md`](skills/portaljs-connect-ckan/SKILL.md) |
+| 22 | ✓ | [`skills/portaljs-define-schema/references/reference.md`](skills/portaljs-define-schema/references/reference.md) |
+| 23 | ✓ | [`skills/portaljs-define-schema/SKILL.md`](skills/portaljs-define-schema/SKILL.md) |
+| 24 | ✓ | [`skills/portaljs-deploy/references/reference.md`](skills/portaljs-deploy/references/reference.md) |
+| 25 | ✓ | [`skills/portaljs-deploy/SKILL.md`](skills/portaljs-deploy/SKILL.md) |
+| 26 | ✓ | [`skills/portaljs-migrate/references/reference.md`](skills/portaljs-migrate/references/reference.md) |
+| 27 | ✓ | [`skills/portaljs-migrate/SKILL.md`](skills/portaljs-migrate/SKILL.md) |
+| 28 | ✓ | [`skills/portaljs-new-portal/references/reference.md`](skills/portaljs-new-portal/references/reference.md) |
+| 29 | ✓ | [`skills/portaljs-new-portal/SKILL.md`](skills/portaljs-new-portal/SKILL.md) |
+| 30 | → | [`.claude/INSTALL.md`](.claude/INSTALL.md) |
 
 ---
 

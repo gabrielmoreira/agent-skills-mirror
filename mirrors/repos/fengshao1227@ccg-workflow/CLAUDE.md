@@ -2,7 +2,7 @@
 
 > [根目录](../CLAUDE.md) > **skills-v2**
 
-**Last Updated**: 2026-07-04 (v3.1.9)
+**Last Updated**: 2026-07-09 (v3.1.11)
 
 > ⚠ 本文档主体仍停留在 v2.1.16 架构描述（v3.0 引擎重构后未全量同步）。下方变更记录保留 v3.x 修复轨迹，完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
@@ -11,6 +11,13 @@
 ## 变更记录 (Changelog)
 
 > 完整变更历史请查看 [CHANGELOG.md](./CHANGELOG.md)
+
+### 2026-07-09 (v3.1.11)
+- ✨ **`ccg doctor` 命令**：一键环境健康检查（Node 版本、配置、命令、Hooks、Binary、Skills、Rules、MCP、Codex 模式），有问题标红。
+- ✨ **`ccg status` 命令**：安装概况（版本+更新检查、模型路由、MCP 列表、活跃任务数）。
+- ✨ **Codecov 集成**：CI 上传覆盖率到 Codecov，README 展示覆盖率 badge。
+- ✨ **项目健康文件**：新增 SECURITY.md、CODE_OF_CONDUCT.md、.node-version，package.json 补全 repository/homepage/bugs/engines。
+- ✨ **Codex 模式版本标记**：`codex-mode install` 写入 `~/.codex/.ccg-version`。
 
 ### 2026-07-04 (v3.1.9)
 - ✨ **非交互 CLI 命令**：新增 `ccg codex-mode install`/`uninstall` 和 `ccg uninstall`，支持脚本/CI 无交互调用。

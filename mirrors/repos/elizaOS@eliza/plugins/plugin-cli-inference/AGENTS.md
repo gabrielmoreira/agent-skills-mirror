@@ -139,7 +139,7 @@ plugins/plugin-cli-inference/
 
 ## GenerateTextParams -> CLI mapping (HARD REQ: forward BOTH system AND messages/prompt)
 
-- **claude:** `[claude, -p <flattened body>, --system-prompt <params.system FULL REPLACE>, --exclude-dynamic-system-prompt-sections, --output-format text, --model <ELIZA_CLI_CLAUDE_MODEL || claude-opus-4-7>]`, stdin `/dev/null`, cwd = isolated empty tmpdir, env = `filterEnv(process.env)`.
+- **claude:** `[claude, -p <flattened body>, --system-prompt <params.system FULL REPLACE>, --exclude-dynamic-system-prompt-sections, --output-format text, --model <ELIZA_CLI_CLAUDE_MODEL || claude-opus-4-8>]`, stdin `/dev/null`, cwd = isolated empty tmpdir, env = `filterEnv(process.env)`.
 - **codex:** `[codex, exec, -m <ELIZA_CLI_CODEX_MODEL || gpt-5.5>, -s read-only, --skip-git-repo-check, -C <cwd>, --color never, --json, <system folded on top of flattened body>]`.
 
 `prompt-flatten` re-routes system/developer roles to the system slot and flattens user/assistant/tool turns into the body; messages are NEVER dropped (would strip skills/memory/recent-convo/grammar).
@@ -149,7 +149,7 @@ plugins/plugin-cli-inference/
 | Var | Required | Default | Description |
 |---|---|---|---|
 | `ELIZA_CHAT_VIA_CLI` | — | (unset = inert) | `claude`, `claude-sdk`, or `codex` — the single enable gate |
-| `ELIZA_CLI_CLAUDE_MODEL` | No | `claude-opus-4-7` | claude large-tier model (`--model` / SDK large tier) |
+| `ELIZA_CLI_CLAUDE_MODEL` | No | `claude-opus-4-8` | claude large-tier model (`--model` / SDK large tier) |
 | `ELIZA_CLI_CLAUDE_PLANNER_MODEL` | No | (falls back to large) | `claude-sdk` small/planner tier model (e.g. sonnet) |
 | `ELIZA_CLI_CLAUDE_BIN` | No | (SDK default) | `claude-sdk`: path to the Claude Code executable the SDK drives |
 | `ELIZA_CLI_SDK_RESTART_AFTER_TURNS` | No | `20` | `claude-sdk`: restart a warm session after N turns (bounds context) |

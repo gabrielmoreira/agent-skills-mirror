@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 56 file(s) materialized.
+Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 55 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 56 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 56 |
+| Files         | 55 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -104,17 +104,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 43 | ✓ | [`prototype/LOGIC.md`](prototype/LOGIC.md) |
 | 44 | ✓ | [`prototype/SKILL.md`](prototype/SKILL.md) |
 | 45 | ✓ | [`prototype/UI.md`](prototype/UI.md) |
-| 46 | ✓ | [`systematic-debugging/SKILL.md`](systematic-debugging/SKILL.md) |
-| 47 | ✓ | [`tdd/mocking.md`](tdd/mocking.md) |
-| 48 | ✓ | [`tdd/SKILL.md`](tdd/SKILL.md) |
-| 49 | ✓ | [`tdd/tests.md`](tdd/tests.md) |
-| 50 | ✓ | [`teach/LEARNING-RECORD-FORMAT.md`](teach/LEARNING-RECORD-FORMAT.md) |
-| 51 | ✓ | [`teach/MISSION-FORMAT.md`](teach/MISSION-FORMAT.md) |
-| 52 | ✓ | [`teach/RESOURCES-FORMAT.md`](teach/RESOURCES-FORMAT.md) |
-| 53 | ✓ | [`teach/SKILL.md`](teach/SKILL.md) |
-| 54 | ✓ | [`x-twitter-scraper/skill-card.md`](x-twitter-scraper/skill-card.md) |
-| 55 | ✓ | [`x-twitter-scraper/SKILL.md`](x-twitter-scraper/SKILL.md) |
-| 56 | ✓ | [`x-twitter-scraper/skillspector-report.md`](x-twitter-scraper/skillspector-report.md) |
+| 46 | ✓ | [`tdd/mocking.md`](tdd/mocking.md) |
+| 47 | ✓ | [`tdd/SKILL.md`](tdd/SKILL.md) |
+| 48 | ✓ | [`tdd/tests.md`](tdd/tests.md) |
+| 49 | ✓ | [`teach/LEARNING-RECORD-FORMAT.md`](teach/LEARNING-RECORD-FORMAT.md) |
+| 50 | ✓ | [`teach/MISSION-FORMAT.md`](teach/MISSION-FORMAT.md) |
+| 51 | ✓ | [`teach/RESOURCES-FORMAT.md`](teach/RESOURCES-FORMAT.md) |
+| 52 | ✓ | [`teach/SKILL.md`](teach/SKILL.md) |
+| 53 | ✓ | [`x-twitter-scraper/skill-card.md`](x-twitter-scraper/skill-card.md) |
+| 54 | ✓ | [`x-twitter-scraper/SKILL.md`](x-twitter-scraper/SKILL.md) |
+| 55 | ✓ | [`x-twitter-scraper/skillspector-report.md`](x-twitter-scraper/skillspector-report.md) |
 
 ---
 

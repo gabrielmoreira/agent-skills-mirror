@@ -91,10 +91,11 @@ When the user asks a question, match it to a skill and act:
 | Phylogenetic tree from VCF, distance matrix from variants, VCF2TREE, VCF2DIST, DIST2TREE, FASTA2DIST, fastreer, fastreeR, genomic distance, k-mer distance, population tree, cosine distance, sample phylogeny, hierarchical clustering of samples | `skills/fastreer/` | Run `fastreer.py` |
 | Phylogenetic tree from FASTA, maximum-likelihood tree, IQ-TREE 2, model selection, evolutionary distance, branch support, proportional phylogram | `skills/phylogenetics-builder/` | Run `phylogenetics_builder.py` |
 | Genomic interval operations, interval overlap, nearest interval, merge/coverage intervals, BED intersect, bioframe alternative, interval arithmetic, complement/subtract intervals, count overlaps, BigWig/BigBed, DataFusion SQL on genomic files, genomic pileup depth, polars-bio | `skills/polars-bio/` | Run `polars_bio_runner.py` |
+| Ancestry-stratified disease risk, population-specific variant risk, South Asian diabetes risk, East Asian KCNQ1, African kidney disease APOL1, ancestry elevation score, which diseases am I at risk for given my ancestry, ancestry-aware variant risk, genetic super-population disease risk | `skills/ancestry-risk-profiler/` | Run `ancestry_risk_profiler.py` |
 
 ## How to Use a Skill
 
-### Skills with Python scripts (pharmgx-reporter, equity-scorer, nutrigx, claw-metagenomics, genome-compare, bio-orchestrator, variant-annotation, bioconductor-bridge, clinical-trial-finder, data-extractor, illumina-bridge, pubmed-summariser, omics-target-evidence-mapper, target-validation-scorer, nfcore-scrnaseq-wrapper, nfcore-rnaseq-wrapper, nfcore-sarek-wrapper, scrna-orchestrator, scrna-embedding, diff-visualizer, proteomics-de, struct-predictor, clinical-variant-reporter, multiqc-reporter, labstep, clinpgx, gwas-prs, gwas-lookup, methylation-clock, profile-report, ukb-navigator, galaxy-bridge, flow-bio, rnaseq-de, protocols-io, soul2dna, genome-match, recombinator, fine-mapping, cell-detection, wes-clinical-report-en, wes-clinical-report-es, proteomics-clock, sample-qc-triage, crispr-screen-triage, marker-dominance-mapper, busco-assessor, fastreer, polars-bio)
+### Skills with Python scripts (pharmgx-reporter, equity-scorer, nutrigx, claw-metagenomics, genome-compare, bio-orchestrator, variant-annotation, bioconductor-bridge, clinical-trial-finder, data-extractor, illumina-bridge, pubmed-summariser, omics-target-evidence-mapper, target-validation-scorer, nfcore-scrnaseq-wrapper, nfcore-rnaseq-wrapper, nfcore-sarek-wrapper, scrna-orchestrator, scrna-embedding, diff-visualizer, proteomics-de, struct-predictor, clinical-variant-reporter, multiqc-reporter, labstep, clinpgx, gwas-prs, gwas-lookup, methylation-clock, profile-report, ukb-navigator, galaxy-bridge, flow-bio, rnaseq-de, protocols-io, soul2dna, genome-match, recombinator, fine-mapping, cell-detection, wes-clinical-report-en, wes-clinical-report-es, proteomics-clock, sample-qc-triage, crispr-screen-triage, marker-dominance-mapper, busco-assessor, fastreer, polars-bio, ancestry-risk-profiler)
 1. Read the skill's `SKILL.md` for domain context
 2. Run the Python script with correct CLI arguments (see below)
 3. Show the user the output — open any generated figures and explain results
@@ -408,6 +409,7 @@ For instant demos when the user has no data:
 | Sarek demo (upstream nf-core/sarek `-profile test` dataset, no local files) | `--demo` flag | nfcore-sarek-wrapper |
 | scRNA-seq demo (upstream nf-core/scrnaseq `-profile test` dataset, no local files) | `--demo` flag | nfcore-scrnaseq-wrapper |
 | Phylogenetics Builder demo FASTA (5 synthetic sequences, 50 bp) | `skills/phylogenetics-builder/demo_alignment.fasta` | phylogenetics-builder |
+| Ancestry risk demo patient (synthetic South Asian 23andMe, ~80 SNPs, T2D/CAD/hypertension risk alleles) | `--demo` flag | ancestry-risk-profiler |
 
 ### Demo Commands
 
@@ -537,6 +539,15 @@ python skills/fastreer/fastreer.py --command VCF2TREE \
 
 # Phylogenetics Builder demo
 python skills/phylogenetics-builder/phylogenetics_builder.py --demo --output /tmp/phylo_demo
+
+# Ancestry-Aware Disease Risk Profiler demo (South Asian synthetic patient)
+python skills/ancestry-risk-profiler/ancestry_risk_profiler.py --demo --output /tmp/ancestry_risk_demo
+
+# Ancestry risk profiler — infer ancestry + lifetime disease risk %
+python skills/ancestry-risk-profiler/ancestry_risk_profiler.py \
+  --input <23andme_file.txt> --output <report_dir>
+python skills/ancestry-risk-profiler/ancestry_risk_profiler.py \
+  --input <23andme_file.txt> --ancestry SAS --output <report_dir>
 ```
 
 ## Development Rules (STRICT)

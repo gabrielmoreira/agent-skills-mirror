@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Shubhamsaboo/awesome-llm-apps` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `Shubhamsaboo/awesome-llm-apps` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Shubhamsaboo/awesome-llm-apps` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,35 +59,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`awesome_agent_skills/academic-researcher/SKILL.md`](awesome_agent_skills/academic-researcher/SKILL.md) |
-| 2 | ✓ | [`awesome_agent_skills/code-reviewer/AGENTS.md`](awesome_agent_skills/code-reviewer/AGENTS.md) |
-| 3 | ✓ | [`awesome_agent_skills/code-reviewer/SKILL.md`](awesome_agent_skills/code-reviewer/SKILL.md) |
-| 4 | ✓ | [`awesome_agent_skills/content-creator/SKILL.md`](awesome_agent_skills/content-creator/SKILL.md) |
-| 5 | ✓ | [`awesome_agent_skills/data-analyst/SKILL.md`](awesome_agent_skills/data-analyst/SKILL.md) |
-| 6 | ✓ | [`awesome_agent_skills/debugger/SKILL.md`](awesome_agent_skills/debugger/SKILL.md) |
-| 7 | ✓ | [`awesome_agent_skills/decision-helper/SKILL.md`](awesome_agent_skills/decision-helper/SKILL.md) |
-| 8 | ✓ | [`awesome_agent_skills/deep-research/SKILL.md`](awesome_agent_skills/deep-research/SKILL.md) |
-| 9 | ✓ | [`awesome_agent_skills/editor/SKILL.md`](awesome_agent_skills/editor/SKILL.md) |
-| 10 | ✓ | [`awesome_agent_skills/email-drafter/SKILL.md`](awesome_agent_skills/email-drafter/SKILL.md) |
-| 11 | ✓ | [`awesome_agent_skills/fact-checker/SKILL.md`](awesome_agent_skills/fact-checker/SKILL.md) |
-| 12 | ✓ | [`awesome_agent_skills/fullstack-developer/SKILL.md`](awesome_agent_skills/fullstack-developer/SKILL.md) |
-| 13 | ✓ | [`awesome_agent_skills/meeting-notes/SKILL.md`](awesome_agent_skills/meeting-notes/SKILL.md) |
-| 14 | ✓ | [`awesome_agent_skills/project-planner/SKILL.md`](awesome_agent_skills/project-planner/SKILL.md) |
-| 15 | ✓ | [`awesome_agent_skills/python-expert/AGENTS.md`](awesome_agent_skills/python-expert/AGENTS.md) |
-| 16 | ✓ | [`awesome_agent_skills/python-expert/SKILL.md`](awesome_agent_skills/python-expert/SKILL.md) |
-| 17 | ✓ | [`awesome_agent_skills/self-improving-agent-skills/example_skills/code-reviewer/SKILL.md`](awesome_agent_skills/self-improving-agent-skills/example_skills/code-reviewer/SKILL.md) |
-| 18 | ✓ | [`awesome_agent_skills/self-improving-agent-skills/example_skills/content-writer/SKILL.md`](awesome_agent_skills/self-improving-agent-skills/example_skills/content-writer/SKILL.md) |
-| 19 | ✓ | [`awesome_agent_skills/sprint-planner/SKILL.md`](awesome_agent_skills/sprint-planner/SKILL.md) |
-| 20 | ✓ | [`awesome_agent_skills/strategy-advisor/SKILL.md`](awesome_agent_skills/strategy-advisor/SKILL.md) |
-| 21 | ✓ | [`awesome_agent_skills/technical-writer/SKILL.md`](awesome_agent_skills/technical-writer/SKILL.md) |
-| 22 | ✓ | [`awesome_agent_skills/ux-designer/AGENTS.md`](awesome_agent_skills/ux-designer/AGENTS.md) |
-| 23 | ✓ | [`awesome_agent_skills/ux-designer/SKILL.md`](awesome_agent_skills/ux-designer/SKILL.md) |
-| 24 | ✓ | [`awesome_agent_skills/visualization-expert/SKILL.md`](awesome_agent_skills/visualization-expert/SKILL.md) |
-| 25 | ✓ | [`generative_ui_agents/ai-dashboard-canvas-agent/AGENTS.md`](generative_ui_agents/ai-dashboard-canvas-agent/AGENTS.md) |
-| 26 | ✓ | [`generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md`](generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md) |
-| 27 | ✓ | [`generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md`](generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md) |
-| 28 | ✓ | [`generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md`](generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md) |
-| 29 | ✓ | [`generative_ui_agents/generative-ui-starter-project/CLAUDE.md`](generative_ui_agents/generative-ui-starter-project/CLAUDE.md) |
+| 1 | ✓ | [`awesome_agent_skills/project-graveyard/SKILL.md`](awesome_agent_skills/project-graveyard/SKILL.md) |
+| 2 | ✓ | [`generative_ui_agents/ai-dashboard-canvas-agent/AGENTS.md`](generative_ui_agents/ai-dashboard-canvas-agent/AGENTS.md) |
+| 3 | ✓ | [`generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md`](generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md) |
+| 4 | ✓ | [`generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md`](generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md) |
+| 5 | ✓ | [`generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md`](generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md) |
+| 6 | ✓ | [`generative_ui_agents/generative-ui-starter-project/CLAUDE.md`](generative_ui_agents/generative-ui-starter-project/CLAUDE.md) |
 
 ---
 

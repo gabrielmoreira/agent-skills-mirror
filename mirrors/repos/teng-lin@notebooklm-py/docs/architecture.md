@@ -698,6 +698,10 @@ from `_app.errors.classify` onto an HTTP status plus the
 `{"error": {"category": "...", "message": "..."}}` envelope. It imports no `click` / `rich` /
 `cli` (enforced by `tests/_guardrails/test_server_boundary.py`). Launch and
 configuration: [`docs/installation.md`](./installation.md#rest-api-server).
+Expensive route groups have lifespan-owned concurrency limiters, tuned by
+`NOTEBOOKLM_SERVER_*_CONCURRENCY` env vars, so source mutation/wait, artifact
+generation/download, research, and blocking chat work cannot unboundedly starve
+cheap reads or `/healthz`.
 
 ## Middleware chain (ADR-0009)
 
@@ -1292,6 +1296,7 @@ src/notebooklm/
     ├── __main__.py              # `notebooklm-server` entry: argparse + NOTEBOOKLM_SERVER_* env defaults + loopback-bind guard + fail-closed token check
     ├── app.py                   # create_app(*, client_factory=None) -> FastAPI; ASGI lifespan binds one client; public /healthz; auth-gated /v1 mount (docs/redoc/openapi disabled)
     ├── _context.py              # AppState (lifespan-bound client + pending registry) + get_client / get_pending FastAPI dependencies
+    ├── _limits.py               # Lifespan-owned REST route-group concurrency limiters for expensive source/chat/research/artifact work
     ├── _auth.py                 # Bearer-token (constant-time, 401) + loopback-Host (DNS-rebinding guard, 403) dependency for /v1
     ├── _errors.py               # ErrorCategory -> HTTP status table + _redact + the classify-once exception handler emitting {error:{category,message}}
     ├── _pagination.py           # Opt-in, non-breaking list-route envelope: paginate_envelope(items, key=…, limit, offset, **extra) — default (no limit) returns the full list under its existing key unchanged; ?limit= slices via _app.pagination.paginate + adds a meta:{total,has_more,limit,offset} block (Option B-lite)

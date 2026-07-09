@@ -66,7 +66,7 @@ list_skill_sources() {
 }
 
 ensure_target_parent() {
-  mkdir -p "$HOME/.claude/skills" "$HOME/.codex/skills"
+  mkdir -p "$HOME/.claude/skills" "$HOME/.codex/skills" "$HOME/.agents/skills" "$HOME/.grok/skills"
 }
 
 link_one() {
@@ -115,6 +115,96 @@ status_one() {
   fi
 }
 
+link_grok_one() {
+  local src="$1"
+  local name="$2"
+  local dir="$HOME/.grok/skills/$name"
+  local skill_file="$dir/SKILL.md"
+
+  if [[ -L "$dir" ]]; then
+    rm "$dir"
+  elif [[ -e "$dir" && ! -d "$dir" ]]; then
+    echo "✗ $dir 是真实文件，已跳过"
+    return 2
+  elif [[ -d "$dir" && -f "$skill_file" ]] && ! grep -q '^## Grok Bridge$' "$skill_file"; then
+    echo "✗ $dir 是真实 Grok skill，已跳过"
+    return 2
+  elif [[ -d "$dir" && ! -f "$skill_file" ]]; then
+    echo "✗ $dir 是真实目录，已跳过"
+    return 2
+  fi
+
+  mkdir -p "$dir"
+  cat > "$skill_file" <<EOF
+---
+name: $name
+user_invocable: true
+description: |
+  $name bridge。在 Grok TUI 中可通过 /$name 触发；触发后必须先读取项目真源 SKILL.md。
+---
+# $name
+
+## Grok Bridge
+
+- Source of truth: $src/SKILL.md
+- Read the source-of-truth file before executing this skill.
+- Follow the source file's workflow, constraints, examples, and output format.
+- Treat this file as a thin Grok bridge only; do not maintain long-form logic here.
+
+## 使用说明
+
+1. 在 Grok TUI 中输入 \`/$name\` 即可触发。
+2. Grok 会优先使用本 bridge 指向的真源。
+3. 如需更新，直接修改真源。
+EOF
+  echo "✓ $dir -> $src"
+}
+
+unlink_grok_one() {
+  local name="$1"
+  local dir="$HOME/.grok/skills/$name"
+  local skill_file="$dir/SKILL.md"
+
+  if [[ -L "$dir" ]]; then
+    rm "$dir"
+    echo "✓ 已移除软链 $dir"
+  elif [[ -d "$dir" && -f "$skill_file" ]] && grep -q '^## Grok Bridge$' "$skill_file"; then
+    rm -rf "$dir"
+    echo "✓ 已移除 Grok bridge $dir"
+  elif [[ -e "$dir" ]]; then
+    echo "✗ $dir 是真实目录或文件，已保留"
+    return 2
+  else
+    echo "· $dir 不存在，跳过"
+  fi
+}
+
+status_grok_one() {
+  local name="$1"
+  local dir="$HOME/.grok/skills/$name"
+  local skill_file="$dir/SKILL.md"
+  local source user_invocable
+
+  if [[ -L "$dir" ]]; then
+    echo "✓ $dir -> $(readlink "$dir")"
+  elif [[ -d "$dir" && -f "$skill_file" ]] && grep -q '^## Grok Bridge$' "$skill_file"; then
+    source="$(grep -m 1 '^- Source of truth:' "$skill_file" | sed 's/^- Source of truth: //')"
+    if grep -q '^user_invocable: true$' "$skill_file"; then
+      user_invocable="user_invocable: true"
+    else
+      user_invocable="缺 user_invocable: true"
+      echo "✗ $dir -> $source ($user_invocable)"
+      return 2
+    fi
+    echo "✓ $dir -> $source ($user_invocable)"
+  elif [[ -e "$dir" ]]; then
+    echo "✗ $dir 存在，但不是 dbs-bridge 生成的 Grok bridge"
+    return 2
+  else
+    echo "· $dir 未桥接"
+  fi
+}
+
 main() {
   if [[ $# -ne 2 ]]; then
     usage
@@ -124,6 +214,7 @@ main() {
   local action="$1"
   local input="$2"
   local root candidate src name failed
+  local target_dirs=("$HOME/.claude/skills" "$HOME/.codex/skills" "$HOME/.agents/skills")
 
   root="$(repo_root)"
   candidate="$(resolve_candidate "$input" "$root")"
@@ -137,16 +228,22 @@ main() {
 
     case "$action" in
       link)
-        link_one "$src" "$HOME/.claude/skills" "$name" || failed=1
-        link_one "$src" "$HOME/.codex/skills" "$name" || failed=1
+        for target_dir in "${target_dirs[@]}"; do
+          link_one "$src" "$target_dir" "$name" || failed=1
+        done
+        link_grok_one "$src" "$name" || failed=1
         ;;
       unlink)
-        unlink_one "$HOME/.claude/skills" "$name" || failed=1
-        unlink_one "$HOME/.codex/skills" "$name" || failed=1
+        for target_dir in "${target_dirs[@]}"; do
+          unlink_one "$target_dir" "$name" || failed=1
+        done
+        unlink_grok_one "$name" || failed=1
         ;;
       status)
-        status_one "$HOME/.claude/skills" "$name" || failed=1
-        status_one "$HOME/.codex/skills" "$name" || failed=1
+        for target_dir in "${target_dirs[@]}"; do
+          status_one "$target_dir" "$name" || failed=1
+        done
+        status_grok_one "$name" || failed=1
         ;;
       *)
         usage

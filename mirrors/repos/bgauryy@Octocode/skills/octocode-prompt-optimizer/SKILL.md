@@ -1,10 +1,9 @@
 ---
 name: octocode-prompt-optimizer
-description: Use when optimizing or strengthening a prompt, SKILL.md, AGENTS.md, or agent instructions — "optimize this prompt", "make this more reliable", "fix my agent instructions", "review this AGENTS.md", "my agent keeps skipping steps", "add enforcement". Turns weak or bloated prompts into reliable, concise, enforceable protocols while preserving intent, via a 6-step gated flow with Fast/Full modes.
+description: "Use when prompts, SKILL.md, AGENTS.md, or agent instructions need optimization, gates, enforcement, or reliability fixes."
 ---
 
 # Prompt Optimizer
-
 Improve instructional prompts, docs, and agent instructions with prompt-engineering best practices — strengthen enforcement, add gates and output formats, shorten wording — while preserving the original intent.
 
 ## When to use
@@ -27,6 +26,10 @@ Improve instructional prompts, docs, and agent instructions with prompt-engineer
 
 Mode: use **Full Path** (every gate separate) for multi-section, ambiguous, or high-risk prompts; **Fast Path** (READ+UNDERSTAND and RATE+FIX may combine) for short, low-risk ones. When unsure, use Full Path. VALIDATE and intent-preservation are never skipped.
 
+## Tooling
+When the prompt cites commands, flags, file paths, tool names, or schemas, verify them before rewriting.
+If verification needs Octocode-backed code, package, GitHub, or tool research, use `octocode-research` when installed. If missing, use https://github.com/bgauryy/octocode/tree/main/skills/octocode-research or install with `npx octocode skill --name octocode-research`; otherwise use host tools and flag unverified claims.
+
 ## Non-negotiables
 - Preserve working logic and intent — never alter what the prompt does without user approval.
 - Follow the gates in order; never skip a gate, checkbox, or VALIDATE.
@@ -36,7 +39,6 @@ Mode: use **Full Path** (every gate separate) for multi-section, ambiguous, or h
 - Write only after VALIDATE passes; if review-only or no safe write tool exists, return the optimized text or a patch-style delta and state that no files changed.
 
 ## Reference map
-Load one on demand; each states when it applies.
 - `references/gates.md` — when running the READ and UNDERSTAND gates.
 - `references/rate.md` — when rating: issue categories plus the weak-word reference.
 - `references/fix.md` — when fixing: command strength, Triple Lock, reasoning block, gate template, conciseness pass.

@@ -1,49 +1,49 @@
 ---
 name: octocode-research
-description: "Use when technical or code work needs evidence-first research: investigate, implement, review, refactor, map prior art, run Act→Observe→Learn loops, validate findings, inspect artifacts, or plan with citations before acting."
+description: "Use when researching, debugging, reviewing, or changing code with evidence-first proof. Covers local and GitHub repos, npm packages, PRs, dead code, architecture, prior art, and iterative ReAct loops."
 ---
 
 # Octocode Research
 
-Lead evidence-first technical research and code work across the modes below, looping until evidence converges. Flow: `SCOPE -> SEARCH -> READ EXACT -> VALIDATE -> DECIDE/PATCH -> VERIFY`.
+Evidence-first technical research and code work: `SCOPE -> SEARCH -> READ EXACT -> VALIDATE -> DECIDE/PATCH -> VERIFY`.
 
 ## Modes
 
-- Map: landscape or "what exists" questions.
-- Validate: "is this worth it" or "should we add X" decisions; default for ambiguous research.
-- Investigate: root cause, behavior, provenance, or code explanation; default for concrete behavior.
-- Plan: implementation, refactor, architecture, migration, or blast-radius planning; default before risky edits.
-- Review: PR/local diff findings ordered by severity.
-- Change: only when the user asks for code edits now.
-- Loop: one pass is insufficient or the user asks to iterate until proof.
+Investigate behavior/root cause; Review PRs/diffs; Change after evidence; Map/Validate prior art or architecture; Loop when evidence shifts.
 
-## Operating Rules
+## Rules
 
-- State corpus, question, mode, and active/skipped surfaces in one line; use MCP tools when exposed, else `npx octocode`, and read schemas/help before raw calls.
-- Start cheap with tree/path/package/repo discovery; deep-read exact slices only after anchors appear.
-- Cross-pollinate surfaces: local clues feed GitHub/npm/web, and external claims feed code reads.
-- Keep a claim ledger; promote snippets to proof only after exact source, AST/LSP, history, artifact, or test evidence.
-- Recall prior lessons first via octocode-awareness (`get-memory --smart --query <question>`); on zero results retry synonyms/locators, and validate recalled code facts before trusting them.
-- On a durable finding, emit one awareness capture packet (or a `doNotCaptureReason`) via `learning-capture.md` so it is not re-researched.
-- Ask before broad public-contract changes, materially conflicting evidence, thin surfaces after retries, or 3+ unrelated problem spaces.
-- For code edits, make the smallest scoped patch and report actual verification.
+1. State corpus, question, mode, and active/skipped surfaces in one line.
+2. Route by what you already hold; never force a fixed grep -> AST -> LSP path.
+3. For nontrivial code claims, read at least two of structure, stream, and connections.
+4. Keep a tiny ledger: `claim -> evidence -> confidence -> next check`.
+5. Ask before broad public contracts, deletes/renames, thin evidence, or 3+ unrelated problem spaces.
+6. For code edits, make the smallest scoped patch and report the checks that actually ran.
 
 ## Reference Map
 
-- `references/octocode.md` — when choosing transport, auth, install, schema, or CLI/MCP fallback behavior.
-- `references/research-flow.md` — when running Map, Validate, prior-art, PR/history, package, or multi-surface research.
-- `references/code-research.md` — when implementation, review, refactor, architecture, dead-code, binary, or blast-radius work is likely.
-- `references/loop-research.md` — when repeated Act->Observe->Learn loops, convergence proof, or no-progress handling matter.
-- `references/finding-checks.md` — when validating, dismissing, or presenting findings before a report or patch.
-- `references/long-research.md` — when the task needs a durable decision brief, saved artifacts, or audit trail.
-- `references/github-landscape.md` — when comparing GitHub repos, packages, reuse options, or ecosystem candidates.
+Before any task, read `references/algorithm.md` first; it owns routing, evidence grades, and failure signals.
+
+- `references/workflows.md` — when choosing a mode-specific workflow index.
+- `references/code-research.md` — when investigating, reviewing, refactoring, or changing code.
+- `references/research-flow.md` — when doing general research or idea validation.
+- `references/workflow-local.md` — when the local repo or installed dependency is source of truth.
+- `references/workflow-external.md` — when using GitHub, npm, PRs, commits, or remote repos.
+- `references/workflow-debug.md` — when debugging failures or proving root cause.
+- `references/workflow-pr-review.md` — when reviewing PRs, diffs, or merge safety.
+- `references/workflow-pr-review-analysis.md` — when PR review analysis and finding shape are needed.
+- `references/workflow-pr-review-report.md` — when writing PR/local review summaries or documents.
+- `references/workflow-change.md` — when implementing or refactoring after evidence.
+- `references/github-landscape.md` — when ranking GitHub repos or ecosystem prior art.
+- `references/long-research.md` — when a decision brief, audit trail, or contested question needs depth.
+- `references/loop-mode.md` — when evidence keeps shifting or verification fails repeatedly.
+- `references/octocode.md` — when command syntax, MCP transport, or raw tool schemas matter.
 
 ## Scripts
 
-- `scripts/eval-research.mjs` — self-test and evaluate research answers against prompts when changing this skill.
+- `scripts/eval-research.mjs` — when changing this skill; run the matching eval case.
 
 ## Output
 
-Quick answer: `Finding`, `Evidence`, `Confidence`, `Next`. Decision brief: `TL;DR`, `scope`, `evidence by surface`, `what survived rebuttal`, `verdict`, `risks/gaps`, `next step`. Review/code output: severity-ranked `file:line` findings, verification, confidence, and smallest safe fix.
-
-Install hint: `npx octocode skill --name octocode-research`.
+Quick answer: `Finding`, `Evidence`, `Confidence`, `Next`.
+Decision/review: `TL;DR`, evidence, verdict, risks, `file:line`, verification, confidence, smallest safe fix.

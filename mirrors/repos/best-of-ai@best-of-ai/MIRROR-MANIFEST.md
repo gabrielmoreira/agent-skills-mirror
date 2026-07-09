@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `best-of-ai/best-of-ai` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `best-of-ai/best-of-ai` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `best-of-ai/best-of-ai` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`content/tools/claude.md`](content/tools/claude.md) |
-| 2 | ✓ | [`content/tools/gemini.md`](content/tools/gemini.md) |
+| 1 | ✓ | [`content/alternatives/claude.md`](content/alternatives/claude.md) |
+| 2 | ✓ | [`content/alternatives/gemini.md`](content/alternatives/gemini.md) |
+| 3 | ✓ | [`content/tools/claude.md`](content/tools/claude.md) |
+| 4 | ✓ | [`content/tools/gemini.md`](content/tools/gemini.md) |
 
 ---
 

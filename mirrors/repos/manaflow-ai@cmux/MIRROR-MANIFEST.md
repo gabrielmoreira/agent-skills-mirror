@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `manaflow-ai/cmux` — 26 default patterns, 0 followed patterns, 81 file(s) materialized.
+Mirror of `manaflow-ai/cmux` — 26 default patterns, 0 followed patterns, 82 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `manaflow-ai/cmux` — 26 default patterns, 0 followed patterns, 81 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 81 |
+| Files         | 82 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -128,18 +128,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 67 | ✓ | [`skills/cmux-testing/agents/openai.yaml`](skills/cmux-testing/agents/openai.yaml) |
 | 68 | ✓ | [`skills/cmux-testing/references/local-vs-ci-validation.md`](skills/cmux-testing/references/local-vs-ci-validation.md) |
 | 69 | ✓ | [`skills/cmux-testing/references/regression-and-quality.md`](skills/cmux-testing/references/regression-and-quality.md) |
-| 70 | ✓ | [`skills/cmux-testing/references/swift-testing-migration.md`](skills/cmux-testing/references/swift-testing-migration.md) |
-| 71 | ✓ | [`skills/cmux-testing/SKILL.md`](skills/cmux-testing/SKILL.md) |
-| 72 | ✓ | [`skills/cmux-workspace/agents/openai.yaml`](skills/cmux-workspace/agents/openai.yaml) |
-| 73 | ✓ | [`skills/cmux-workspace/references/commands.md`](skills/cmux-workspace/references/commands.md) |
-| 74 | ✓ | [`skills/cmux-workspace/SKILL.md`](skills/cmux-workspace/SKILL.md) |
-| 75 | ✓ | [`skills/cmux/agents/openai.yaml`](skills/cmux/agents/openai.yaml) |
-| 76 | ✓ | [`skills/cmux/references/handles-and-identify.md`](skills/cmux/references/handles-and-identify.md) |
-| 77 | ✓ | [`skills/cmux/references/panes-surfaces.md`](skills/cmux/references/panes-surfaces.md) |
-| 78 | ✓ | [`skills/cmux/references/trigger-flash-and-health.md`](skills/cmux/references/trigger-flash-and-health.md) |
-| 79 | ✓ | [`skills/cmux/references/windows-workspaces.md`](skills/cmux/references/windows-workspaces.md) |
-| 80 | ✓ | [`skills/cmux/SKILL.md`](skills/cmux/SKILL.md) |
-| 81 | ✓ | [`web/app/llms.txt/route.ts`](web/app/llms.txt/route.ts) |
+| 70 | ✓ | [`skills/cmux-testing/references/remote-tmux-sizing-e2e.md`](skills/cmux-testing/references/remote-tmux-sizing-e2e.md) |
+| 71 | ✓ | [`skills/cmux-testing/references/swift-testing-migration.md`](skills/cmux-testing/references/swift-testing-migration.md) |
+| 72 | ✓ | [`skills/cmux-testing/SKILL.md`](skills/cmux-testing/SKILL.md) |
+| 73 | ✓ | [`skills/cmux-workspace/agents/openai.yaml`](skills/cmux-workspace/agents/openai.yaml) |
+| 74 | ✓ | [`skills/cmux-workspace/references/commands.md`](skills/cmux-workspace/references/commands.md) |
+| 75 | ✓ | [`skills/cmux-workspace/SKILL.md`](skills/cmux-workspace/SKILL.md) |
+| 76 | ✓ | [`skills/cmux/agents/openai.yaml`](skills/cmux/agents/openai.yaml) |
+| 77 | ✓ | [`skills/cmux/references/handles-and-identify.md`](skills/cmux/references/handles-and-identify.md) |
+| 78 | ✓ | [`skills/cmux/references/panes-surfaces.md`](skills/cmux/references/panes-surfaces.md) |
+| 79 | ✓ | [`skills/cmux/references/trigger-flash-and-health.md`](skills/cmux/references/trigger-flash-and-health.md) |
+| 80 | ✓ | [`skills/cmux/references/windows-workspaces.md`](skills/cmux/references/windows-workspaces.md) |
+| 81 | ✓ | [`skills/cmux/SKILL.md`](skills/cmux/SKILL.md) |
+| 82 | ✓ | [`web/app/llms.txt/route.ts`](web/app/llms.txt/route.ts) |
 
 ---
 

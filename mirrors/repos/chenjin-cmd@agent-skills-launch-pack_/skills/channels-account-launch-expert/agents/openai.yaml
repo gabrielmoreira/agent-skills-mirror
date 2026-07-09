@@ -1,0 +1,4 @@
+interface:
+  display_name: "视频号起号专家"
+  short_description: "规划视频号账号定位、脚本与增长承接"
+  default_prompt: "Use $channels-account-launch-expert 帮我做一份视频号从 0 到 1 的起号方案。"

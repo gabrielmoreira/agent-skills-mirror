@@ -76,6 +76,10 @@ Les documents de travail bruts (prompts Perplexity, audits clients) restent dans
 | **liza-mas CLI Tools** (scip-search, mdtoc, functional-clusters, stacklit-cli) | 1-2/5 | **1-2/5** | ❌ Reject (3 tools) / ⚠️ Watch only (stacklit-cli, one-line note) | [liza-mas-token-saving-cli-tools.md](./liza-mas-token-saving-cli-tools.md) |
 | **Semble** (MinishLab/semble) | 3/5 | **3/5** | ✅ Integrated: mcp-servers-ecosystem.md Code Search section | [semble-code-search.md](./semble-code-search.md) |
 | **MDMA** (MobileReality/mdma) | 3/5 | **3/5** | ✅ Integrated: ai-ecosystem.md Section 7.1 (generative UI) | [mdma-evaluation.md](./mdma-evaluation.md) |
+| **BMAD-METHOD** (bmad-code-org) | 4/5 | **4/5** | ✅ Integrated: spec-first.md (multi-role planning) | [bmad-method-spec-driven-agents.md](./bmad-method-spec-driven-agents.md) |
+| **OpenHands** (All Hands AI) | 4/5 | **4/5** | ✅ Integrated: agentic-tools.md §2.4 | [openhands-autonomous-agent.md](./openhands-autonomous-agent.md) |
+| **Spec-Kitty** (Priivacy-ai) | 3/5 | **3/5** | ✅ Mention: spec-first.md (worktree isolation) | [spec-kitty-worktree-isolation.md](./spec-kitty-worktree-isolation.md) |
+| **Agent Orchestrator** (AgentWrapper, ex-ComposioHQ) | 3/5 | **3/5** | ✅ Mention: third-party-tools.md (OSS equivalent to Conductor) | [agent-orchestrator-composio.md](./agent-orchestrator-composio.md) |
 
 ## Watch List
 
@@ -83,4 +87,4 @@ Ressources surveillées mais pas encore intégrées : [watch-list.md](./watch-li
 
 ---
 
-**Dernier update**: 2026-03-29 (116 évaluations)
+**Dernier update**: 2026-07-08 (120 évaluations)

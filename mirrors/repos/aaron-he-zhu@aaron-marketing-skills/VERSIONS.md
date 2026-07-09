@@ -2,7 +2,7 @@
 
 Current versions for the plugin and all 120 skills. Agents can fetch this file from `https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/VERSIONS.md` once per session.
 
-**Current release**: `16.1.0` (2026-07-08). **Memory-system consolidation upgrade** — adds the two levers the HOT/WARM/COLD memory lacked (Merge + Decay-enforcement) with no new dependency. A new **supersession rule** (`superseded_by:` — recency-wins with explicit invalidation) resolves contradicting facts instead of letting stale and current values coexist; the **SessionStart hook** now surfaces over-limit and >30-day-stale hot-cache signals **at load** (not only on Write/Edit); and `memory-management` gains a **`consolidate` (reflection) mode** (dedup + conflict-resolution + distill + prune). All markdown-only, keyless, observable-by-date — no reference-frequency counting, no external store. Also fixes stale "unreferenced"/per-category-archive wording. **No skills added/removed** (still 120); `memory-management` bumped to `16.1.0` (+7 hook tests, 20 passing).
+**Current release**: `16.1.1` (2026-07-08). **Command-system & routing hardening.** Deep review of the 8-command layer and the `/aaron-marketing:auto` router (benchmarked against the OSS marketing packs in `reference-oss/` and Anthropic's own `smb-router`). CI now guards the routing library against drift — `check-evals.py` asserts every `target_skill` **and** every `expected_route` (real command + valid `--phase`/`--mode`) resolves, and `check-versions.sh` asserts every discipline command's Route names all 16 of its skills (`ad.md`/`email.md` were 8/16 and `ad.md` denied 3 real skills — both fixed to 16/16). `auto.md` gains a compact cross-discipline seam index, `smb-router`-style guardrails, and a natural-language trigger `description`; `influencer.md` is aligned to its siblings; the routing library adds 7 scenarios (5 high-risk skills + 2 word-sense seams). `memory-management`'s `consolidate` pass gains a **structural-integrity lint** (orphan pages, broken cross-refs, data gaps — the LLM-Wiki *Lint* dimension) and is bumped to `16.1.1`. All markdown/CI-only, keyless. **No skills added/removed** (still 120).
 
 ## Skills
 
@@ -110,7 +110,7 @@ Current versions for the plugin and all 120 skills. Agents can fetch this file f
 | consent-registry | protocol | 16.0.0 | 2026-07-05 |
 | launch-registry | protocol | 16.0.0 | 2026-07-05 |
 | channel-registry | protocol | 16.0.0 | 2026-07-05 |
-| memory-management | protocol | 16.1.0 | 2026-07-08 |
+| memory-management | protocol | 16.1.1 | 2026-07-08 |
 | narrative-baseline-mapper | trace | 16.0.0 | 2026-07-05 |
 | category-narrative-mapper | trace | 16.0.0 | 2026-07-05 |
 | audience-belief-mapper | trace | 16.0.0 | 2026-07-05 |
@@ -130,6 +130,16 @@ Current versions for the plugin and all 120 skills. Agents can fetch this file f
 | narrative-registry | protocol | 16.0.0 | 2026-07-05 |
 
 ## Changelog
+
+### v16.1.1 — Command-system & routing hardening + memory structural lint (2026-07-08)
+
+Deep review of the 8-command layer and the `/aaron-marketing:auto` router (benchmarked against the three OSS marketing packs in `reference-oss/` — none of which ship a router — and Anthropic's own `smb-router`). No new skills (still 120); drift-proofing + coverage + polish only.
+
+- **Routing drift guards (CI).** `check-evals.py` now lints `references/auto-routing-scenarios.md`: every `target_skill` resolves to a real skill, and every `expected_route` names a real command with a valid `--phase`/`--mode`. `check-versions.sh` gains §6: every discipline command's Route must name all 16 of its skills. These close the exact drift class that once silently froze the library at the v12 four-discipline era.
+- **Command coverage fixes.** `ad.md` and `email.md` Route maps were 8/16 (2 skills/phase), and `ad.md` claimed 3 real skills were "not separate skills" — both filled to 16/16 with accurate descriptions and the false claim corrected. All 7 disciplines now 16/16.
+- **`/auto` router polish.** Compressed the disambiguation prose into a compact cross-discipline seam index; added `smb-router`-style guardrails (single best match, no menu-dump, never invent a route); rewrote the `description` into a natural-language trigger. `influencer.md` aligned to its five siblings. Documented the `--mode`/`--phase` rationale and per-discipline coverage model in the routing contract.
+- **Routing library +7 scenarios.** Five high-risk previously-uncovered skills (`reactivation-specialist`, `cold-outbound-sequencer`, `fatigue-frequency-manager`, `conversion-value-mapper`, `dark-social-attributor`) + two word-sense cross-discipline cases ("launch campaign", "boost this"). Scenario coverage: 34→29 uncovered (the rest reached transitively through each discipline command's Route map).
+- **Memory structural lint (`memory-management` → 16.1.1).** The `consolidate` pass gains a third dimension beyond meaning and size/age — the LLM-Wiki *Lint* (Karpathy): orphan pages, broken cross-references, and data gaps, in `references/consolidation-pass.md` + a fifth `consolidate` step in the SKILL.
 
 ### v16.1.0 — Memory consolidation upgrade: Merge + Decay levers (2026-07-08)
 

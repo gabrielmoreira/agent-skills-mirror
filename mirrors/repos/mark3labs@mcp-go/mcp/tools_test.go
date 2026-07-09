@@ -2671,3 +2671,47 @@ func TestCallToolRequest_WithTaskParams_RoundTrip(t *testing.T) {
 	assert.NotNil(t, unmarshaled.Params.Task)
 	assert.Equal(t, original.Params.Task.TTL, unmarshaled.Params.Task.TTL)
 }
+
+func TestCallToolParamsPreservesLargeIntegerArguments(t *testing.T) {
+	raw := []byte(`{"name":"t","arguments":{"id":9223372036854775807}}`)
+	var params CallToolParams
+	err := json.Unmarshal(raw, &params)
+	require.NoError(t, err)
+
+	rawArgs, ok := CallToolRequest{Params: params}.GetRawArguments().(json.RawMessage)
+	assert.True(t, ok)
+	assert.Contains(t, string(rawArgs), `"id":9223372036854775807`)
+
+	out, err := json.Marshal(params)
+	require.NoError(t, err)
+	assert.Contains(t, string(out), `"id":9223372036854775807`)
+
+	type args struct {
+		ID int64 `json:"id"`
+	}
+	var bound args
+	err = CallToolRequest{Params: params}.BindArguments(&bound)
+	require.NoError(t, err)
+	assert.Equal(t, int64(9223372036854775807), bound.ID)
+}
+
+func TestCallToolResultPreservesLargeIntegerStructuredContent(t *testing.T) {
+	raw := []byte(`{
+		"content": [{"type": "text", "text": "ok"}],
+		"structuredContent": {"id": 9223372036854775807}
+	}`)
+
+	var result CallToolResult
+	err := json.Unmarshal(raw, &result)
+	require.NoError(t, err)
+	assert.Contains(t, string(result.RawStructuredContent), "9223372036854775807")
+
+	out, err := json.Marshal(result)
+	require.NoError(t, err)
+	assert.Contains(t, string(out), "9223372036854775807")
+	assert.NotContains(t, string(out), "9223372036854776000")
+
+	parsed, err := ParseCallToolResult((*json.RawMessage)(&raw))
+	require.NoError(t, err)
+	assert.Contains(t, string(parsed.RawStructuredContent), "9223372036854775807")
+}

@@ -155,6 +155,14 @@ bearer-only deploy → the two file tools return a clear "not configured" error
   signed-URL flow above.
 - **Download an artifact:** `studio_download` returns a `download_ready` link (a
   clickable `resource_link`); open it to stream the podcast/video/PDF to your device.
+  The `download_ready` payload is self-describing so a client can render a download
+  affordance *before* opening the URL: alongside `url` / `expires_at` / `artifact_type`
+  / `artifact_id` it carries `filename` (the artifact title — or the type name on a
+  latest-by-type download — plus the format-resolved extension), `mime_type` (from a
+  central per-type/format table the `/files/dl` route serves with, so the advertised
+  type and the streamed `Content-Type` can't drift), and `size_bytes` (`null` — the
+  size isn't known without eagerly fetching the artifact, which the broker won't do;
+  the route sets the real `Content-Length` when the link is opened).
 - Links are HMAC-signed and short-lived (upload 15 min, download 30 min) and expire on
   a server restart. Google Drive (`source_add` with a Drive id) remains a no-browser
   alternative for adding files. stdio (local) installs are unchanged — they still read
@@ -234,8 +242,30 @@ source_wait(notebook="Quantum Computing")                 # block until sources 
 chat_ask(notebook="Quantum Computing", question="What are the open problems?")
 ```
 
+`source_wait` returns a structured aggregate: the four buckets (`ready` carries
+`source_view` rows; `timed_out`/`failed`/`not_found` carry `{source_id, error}`)
+plus explicit `*_count` scalars and a `total_count` for at-a-glance triage — so a
+client reads the counts without folding `len()` over every array. The counts are
+additive; the arrays stay for backward compatibility. `ok` is `true` iff every
+error bucket is empty, and `total_count` = `ready_count` + `timed_out_count` +
+`failed_count` + `not_found_count`:
+
+```text
+source_wait(notebook="Quantum Computing")
+# → {"notebook_id": ..., "ok": false,
+#    "ready":     [{"id": ..., "title": "Notes", "kind": "pasted_text", "status_label": "ready"}],
+#    "timed_out": [{"source_id": ..., "error": "..."}],
+#    "failed":    [],
+#    "not_found": [],
+#    "ready_count": 1, "timed_out_count": 1, "failed_count": 0,
+#    "not_found_count": 0, "total_count": 2}
+```
+
 `source_type` is one of `url`, `text`, `file` (local `path`), `drive` (a
-`document_id` + `mime_type`), or `youtube`. URL and YouTube adds reject
+`document_id` + a **required** `mime_type`, one of
+`google-doc`/`google-slides`/`google-sheets`/`pdf` — there is no default, since
+defaulting a non-Doc Drive file to `google-doc` fails the import), or `youtube`.
+URL and YouTube adds reject
 internal/loopback hosts by default; pass `allow_internal=true` only for
 deliberate local NotebookLM tests. `chat_ask` continues the most-recent
 conversation unless you pass a `conversation_id`.
@@ -250,8 +280,11 @@ times out or the import fails, so you can retry or delete it):
 ```text
 source_add_and_wait(notebook="Quantum Computing", source_type="url",
                     url="https://arxiv.org/abs/...")
-# → {"notebook_id": ..., "ok": true, "ready": [{...}], "timed_out": [], "failed": [],
-#    "not_found": [], "source_id": ...}
+# → {"notebook_id": ..., "ok": true,
+#    "ready":     [{"id": ..., "title": "...", "kind": "web_page", "status_label": "ready"}],
+#    "timed_out": [], "failed": [], "not_found": [],
+#    "ready_count": 1, "timed_out_count": 0, "failed_count": 0,
+#    "not_found_count": 0, "total_count": 1, "source_id": ...}
 ```
 
 It is single-source only (no `urls` batch) and cannot one-shot a **remote** `file`
@@ -336,6 +369,20 @@ studio_download(notebook="Quantum Computing", artifact_type="audio", path="old_p
 studio_generate(notebook="Quantum Computing", artifact_type="video",
                   style="custom", style_prompt="hand-drawn diagrams")
 ```
+
+`studio_download`'s `output_format` overrides the download file format, but only
+some artifact types have a format axis:
+
+| `artifact_type` | Supported `output_format` |
+| --- | --- |
+| `slide-deck` | `pdf` (default), `pptx` |
+| `quiz`, `flashcards` | `json` (default), `markdown`, `html` |
+| `audio`, `video`, `infographic`, `report`, `mind-map`, `data-table` | none — omit `output_format` |
+
+Passing `output_format` to a type with no format axis (e.g. `report` +
+`markdown`) is a validation error that says `supported formats: default only`
+rather than silently ignoring it, and the message is identical whether the
+download runs over stdio (`path`) or the remote signed-URL connector.
 
 `artifact_type` is one of `audio`, `video`, `cinematic-video`, `slide-deck`, `quiz`, `flashcards`,
 `infographic`, `data-table`, `mind-map`, `report`. Each kind's styling options are agent-settable

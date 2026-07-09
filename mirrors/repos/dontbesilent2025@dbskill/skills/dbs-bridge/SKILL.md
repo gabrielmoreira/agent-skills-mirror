@@ -1,30 +1,36 @@
 ---
 name: dbs-bridge
 description: |
-  Agent 基建：把任意 skill 或 skill 集合目录桥接到 Claude Code（~/.claude/skills）和 Codex（~/.codex/skills）。支持 dbskill 仓库内 skill，也支持外部 skill 绝对路径。通过软链连接源目录，改源目录后两端同步。支持按 skill 名称、相对路径、绝对路径、skills 目录批量桥接，也支持拆桥和查看桥接状态。
-  触发方式：/dbs-bridge、/bridge、「桥接这个 skill」「桥接整个 skills 目录」「把这个 skill 接到 Claude Code 和 Codex」「让 Claude 和 Codex 都能调用这个 skill」「取消桥接」「查看桥接状态」
-  Bridge any skill folder or directory of skill folders to Claude Code and Codex using symlinks. Supports dbskill skills and external skill directories. Use when the user wants one or many skills callable from both agents, or wants to unlink/check bridge status.
-  Trigger: /dbs-bridge, /bridge, "bridge this skill", "bridge this skills directory", "make this skill available to Claude Code and Codex", "unlink this skill", "check bridge status"
+  Agent 基建：把任意 skill 或 skill 集合目录桥接到 Claude Code（~/.claude/skills）、Codex（~/.codex/skills）、通用 Agents（~/.agents/skills，豆包 Mac App / Trae Solo / Codex 可读取）和 Grok（~/.grok/skills）。支持 dbskill 仓库内 skill，也支持外部 skill 绝对路径。Claude / Codex / 通用 Agents 使用软链，Grok 生成带 user_invocable: true 的薄 bridge。支持按 skill 名称、相对路径、绝对路径、skills 目录批量桥接，也支持拆桥和查看桥接状态。
+  触发方式：/dbs-bridge、/bridge、「桥接这个 skill」「桥接整个 skills 目录」「把这个 skill 接到 Claude Code、Codex、豆包和 Grok」「让多个 Agent 都能调用这个 skill」「取消桥接」「查看桥接状态」
+  Bridge any skill folder or directory of skill folders to Claude Code, Codex, generic Agents (~/.agents/skills), and Grok using symlinks plus Grok bridge files. Supports dbskill skills and external skill directories. Use when the user wants one or many skills callable from multiple agents, or wants to unlink/check bridge status.
+  Trigger: /dbs-bridge, /bridge, "bridge this skill", "bridge this skills directory", "make this skill available to Claude Code, Codex, Doubao, and Grok", "unlink this skill", "check bridge status"
 ---
 
-# dbs-bridge：双端 skill 桥接
+# dbs-bridge：多端 skill 桥接
 
 把任意包含 `SKILL.md` 的 skill 源目录，或包含多个 skill 子目录的集合目录，用软链同时挂到：
 
 - `~/.claude/skills/<skill-name>`
 - `~/.codex/skills/<skill-name>`
+- `~/.agents/skills/<skill-name>`
 
-这样 Claude Code 和 Codex 都能通过同一个源目录调用该 skill。源目录改动后，两端自动同步。源目录可以在 dbskill 仓库内，也可以在外部项目、`~/.claude/skills` 以外的本地目录、iCloud 目录或其他工作区。
+同时为 Grok 生成薄 bridge：
+
+- `~/.grok/skills/<skill-name>/SKILL.md`
+
+这样 Claude Code、Codex、豆包 Mac App、Trae Solo、Grok 等 Agent 都能通过同一个源目录调用该 skill。源目录改动后，各端自动同步。源目录可以在 dbskill 仓库内，也可以在外部项目、`~/.claude/skills` / `~/.codex/skills` / `~/.agents/skills` / `~/.grok/skills` 以外的本地目录、iCloud 目录或其他工作区。
 
 ---
 
 ## 核心原则
 
-1. **只用软链。** 不复制 skill 文件，避免两端出现版本分叉。
+1. **Claude / Codex / 通用 Agents 只用软链。** 不复制 skill 文件，避免多端出现版本分叉。
 2. **源目录可以在任何位置。** 桥接目录只指向源目录。
 3. **绝不覆盖真实目录。** 如果目标位置已有同名真实目录，停下来报告，让用户手动处理。
-4. **拆桥只删软链。** 取消桥接时只移除 `~/.claude/skills` 和 `~/.codex/skills` 下的链接，不删除源目录。
-5. **优先用脚本执行。** 使用本 skill 自带脚本 `scripts/bridge-skill.sh`，不要临场重写桥接命令。
+4. **Grok 生成薄 bridge。** Grok bridge 必须包含 `user_invocable: true` 并指向真源。
+5. **拆桥只删派生产物。** 取消桥接时只移除 `~/.claude/skills`、`~/.codex/skills`、`~/.agents/skills` 下的软链和 `~/.grok/skills` 下由本工具生成的 bridge，不删除源目录。
+6. **优先用脚本执行。** 使用本 skill 自带脚本 `scripts/bridge-skill.sh`，不要临场重写桥接命令。
 
 ---
 
@@ -74,7 +80,7 @@ skills/dbs-bridge/scripts/bridge-skill.sh link "/Users/me/external-skills/my-ski
 skills/dbs-bridge/scripts/bridge-skill.sh link "/Users/me/external-skills"
 ```
 
-执行后把脚本输出里的两条链接结果回给用户。
+执行后把脚本输出里的各宿主桥接结果回给用户。
 
 ---
 
@@ -86,7 +92,7 @@ skills/dbs-bridge/scripts/bridge-skill.sh link "/Users/me/external-skills"
 skills/dbs-bridge/scripts/bridge-skill.sh status <skill-name-or-path>
 ```
 
-输出应说明 Claude Code 和 Codex 两端分别指向哪里。
+输出应说明 Claude Code、Codex、通用 Agents 和 Grok 四个位置分别指向哪里。
 
 ---
 
@@ -98,7 +104,7 @@ skills/dbs-bridge/scripts/bridge-skill.sh status <skill-name-or-path>
 skills/dbs-bridge/scripts/bridge-skill.sh unlink <skill-name-or-path>
 ```
 
-拆桥完成后告诉用户：源 skill 没有被删除，只移除了两端软链。
+拆桥完成后告诉用户：源 skill 没有被删除，只移除了各端派生产物。
 
 ---
 
@@ -111,6 +117,8 @@ skills/dbs-bridge/scripts/bridge-skill.sh unlink <skill-name-or-path>
 
 - Claude Code：`~/.claude/skills/<skill-name>` -> `<source-path>`
 - Codex：`~/.codex/skills/<skill-name>` -> `<source-path>`
+- 通用 Agents：`~/.agents/skills/<skill-name>` -> `<source-path>`
+- Grok：`~/.grok/skills/<skill-name>` -> `<source-path>/SKILL.md`
 ```
 
 如果遇到同名真实目录：
@@ -128,6 +136,7 @@ skills/dbs-bridge/scripts/bridge-skill.sh unlink <skill-name-or-path>
 - 源目录存在；
 - 源目录含 `SKILL.md`，或其一级子目录包含 `SKILL.md`；
 - 外部路径必须使用绝对路径，或能从当前工作目录解析；
-- 目标位置如果存在，必须是软链才允许更新；
+- Claude / Codex / 通用 Agents 目标位置如果存在，必须是软链才允许更新；
+- Grok 目标位置如果存在，必须是本工具生成的 Grok Bridge 才允许更新；
 - 不能删除源目录；
-- 不能把 `skills/dbs-bridge` 自身复制到两端，只能软链。
+- 不能把 `skills/dbs-bridge` 自身复制到各端；Grok 只能生成薄 bridge。

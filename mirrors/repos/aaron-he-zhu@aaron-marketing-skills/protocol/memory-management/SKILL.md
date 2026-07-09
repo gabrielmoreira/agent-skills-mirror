@@ -4,13 +4,13 @@ slug: memory-management
 displayName: "Memory Management · 项目记忆"
 summary: "项目记忆/跨会话"
 description: 'Use when the user asks to "remember project context"; manages the cross-discipline marketing memory lifecycle (all seven disciplines: SEO/GEO, influencer, paid ads, email, launch, social, narrative) — hot-cache, active work, archive tiers, and privacy cleanup. Not for content or domain scoring — use the auditors. 项目记忆/跨会话'
-version: "16.1.0"
+version: "16.1.1"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when reviewing, archiving, or cleaning up campaign memory. Also when the user asks to check saved findings, manage hot cache, archive old data, or reconcile/consolidate memory (merge duplicates, resolve conflicting facts)."
 argument-hint: "[review|archive|cleanup|consolidate]"
-metadata: {"author": "aaron-he-zhu", "version": "16.1.0", "discipline": "protocol", "phase": "protocol", "geo-relevance": "low", "hermes": {"tags": ["marketing", "protocol"], "category": "protocol"}, "openclaw": {"emoji": "🗂️", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
+metadata: {"author": "aaron-he-zhu", "version": "16.1.1", "discipline": "protocol", "phase": "protocol", "geo-relevance": "low", "hermes": {"tags": ["marketing", "protocol"], "category": "protocol"}, "openclaw": {"emoji": "🗂️", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Memory Management
@@ -18,7 +18,7 @@ This skill implements a three-tier memory system (HOT/WARM/COLD) for all seven m
 
 ## What This Skill Does
 
-Manages a three-tier memory lifecycle (HOT/WARM/COLD) with automatic promotion, demotion, and archival. Also maintains open-loop tracking, cross-skill aggregation, and a periodic **consolidation pass** (dedup + conflict resolution) that keeps long-running memory from degrading into stale, contradictory noise.
+Manages a three-tier memory lifecycle (HOT/WARM/COLD) with automatic promotion, demotion, and archival. Also maintains open-loop tracking, cross-skill aggregation, and a periodic **consolidation pass** (dedup, conflict resolution, and structural lint) that keeps long-running memory from degrading into stale, contradictory, or broken-linked noise.
 
 ## Quick Start
 
@@ -190,12 +190,13 @@ Ask "Save these results for future sessions?" — if yes, write `YYYY-MM-DD-<top
 
 ### 7. Consolidate (Reflection Pass)
 
-When invoked with `consolidate` (or "reconcile/merge memory", or on the monthly cadence), run a reflection pass that reconciles memory **content** — not just size and age like the step-5 hygiene checks:
+When invoked with `consolidate` (or "reconcile/merge memory", or on the monthly cadence), run a reflection pass that reconciles memory **content and structure** — not just size and age like the step-5 hygiene checks:
 
 1. **Deduplicate** — merge hot-cache and `candidates.md` entries that state the same fact in different words; keep the clearest phrasing and the most recent `last_updated`.
 2. **Resolve conflicts** — apply the [State Model Supersession Rule](../../references/state-model.md): where two entries disagree on the same entity + field, mark the older `superseded_by: [date]`. Genuine ambiguity (unclear which is right) goes to `memory/open-loops.md`, not an auto-pick.
 3. **Distill** — where several related WARM findings point at one durable conclusion, promote the one-line conclusion to HOT (the standard ≤3-line promotion) and leave detail in WARM.
 4. **Prune the index** — demote/archive by the normal 30/90-day clock; drop superseded lines already past 90 days.
+5. **Check structural integrity** — the LLM-Wiki *lint* dimension: flag **orphan pages** (a WARM/registry file nothing points to), **broken cross-references** (a `[[link]]` or `memory/…` path to a file that no longer exists), and **data gaps** (a fact cited in HOT or a ledger with no backing WARM dossier or artifact). Repoint or link what is fixable; surface a real gap as NEEDS_INPUT to `memory/open-loops.md` — never invent the missing fact.
 
 **Decision gate**: never overwrite a user-approved `memory/decisions.md` entry or a registry canonical record during consolidation — surface the conflict and let the owner/registry reconcile. See [Consolidation Pass](references/consolidation-pass.md) for the full procedure and a worked example.
 

@@ -73,9 +73,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`skills/new-loop/references/KNOWLEDGE_SETUP.md`](skills/new-loop/references/KNOWLEDGE_SETUP.md) |
 | 13 | ✓ | [`skills/new-loop/references/LOG.md`](skills/new-loop/references/LOG.md) |
 | 14 | ✓ | [`skills/new-loop/SKILL.md`](skills/new-loop/SKILL.md) |
-| 15 | ✓ | [`skills/pr/ship-change.js`](skills/pr/ship-change.js) |
-| 16 | ✓ | [`skills/pr/SKILL.md`](skills/pr/SKILL.md) |
-| 17 | ✓ | [`skills/setup-codebase-harness/SKILL.md`](skills/setup-codebase-harness/SKILL.md) |
+| 15 | ✓ | [`skills/setup-codebase-harness/SKILL.md`](skills/setup-codebase-harness/SKILL.md) |
+| 16 | ✓ | [`skills/verifier-setup/assets/verify.template.md`](skills/verifier-setup/assets/verify.template.md) |
+| 17 | ✓ | [`skills/verifier-setup/SKILL.md`](skills/verifier-setup/SKILL.md) |
 | 18 | ✓ | [`skills/visual-flow-gif/assets/dark-spec.json`](skills/visual-flow-gif/assets/dark-spec.json) |
 | 19 | ✓ | [`skills/visual-flow-gif/assets/default-spec.json`](skills/visual-flow-gif/assets/default-spec.json) |
 | 20 | ✓ | [`skills/visual-flow-gif/references/spec-format.md`](skills/visual-flow-gif/references/spec-format.md) |

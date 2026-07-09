@@ -1,5 +1,8 @@
 Mode: Map
 
+## TL;DR
+Reflection/self-harness patterns for AI agents already have prior art (Reflexion, Self-Refine), but a compact receipt/eval loop is the narrower, less-crowded wedge. Research limits: none.
+
 ## Surface Plan
 Local skipped: external prior-art map. Web/top resources active first. GitHub/packages/code active after resource leads.
 
@@ -7,6 +10,10 @@ Local skipped: external prior-art map. Web/top resources active first. GitHub/pa
 Resource-first loop: started from top articles/resources and formal sources before code search.
 - Official docs article: `strong` https://example.com/official-agent-docs
 - Paper: `moderate` https://example.com/reflection-paper
+
+## Worker Loop
+Web Search Scout ran Serper/Tavily for breadth and returned formal source leads.
+Source/Code Checker fetched those sources, expanded the source list, and checked GitHub/packages/code for implementation evidence.
 
 ## Repo/Code Follow-up
 The resources named Reflexion and Self-Refine, so GitHub/packages follow-up checked repos/packages and exact code reads for implementation evidence.

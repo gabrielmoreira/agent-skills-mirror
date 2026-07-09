@@ -1,113 +1,106 @@
 # Research Flow
-Read this when executing an Octocode research workflow: the front door picks the mode; this file gives compact command chains and proof rules.
+
+Read when executing an Octocode research workflow. `SKILL.md` picks the mode; this file gives compact per-mode tool chains.
+The router, evidence grades, anti-patterns, and failure signals live in `references/algorithm.md`. Tool names and CLI forms live in `references/octocode.md`.
+For local/external routing, debug/root-cause flow, change flow, or PR/local review, read `references/workflows.md` (index) or the matching `workflow-*.md` file before choosing a tool chain here.
+
 Start each workflow with a **surface plan** (local, GitHub, packages, PR/history, artifacts, web, plus skipped surfaces with reasons); update it when cross-pollination changes the route.
-For long, contested, or public-facing decision briefs, read `references/long-research.md` before deep work. For repo ecosystem comparisons or "which implementation should we reuse?" questions, read `references/github-landscape.md`.
+
+Rare paths, skip by default: long/contested/public decision briefs → `references/long-research.md`; repo ecosystem comparisons → `references/github-landscape.md`.
+
+Each step below names the MCP tool; substitute the CLI form from `references/octocode.md`'s Tool Matrix when MCP isn't exposed.
 
 ## Mode Flows
+
 ### Map: landscape / prior art
 
-```text
+```
 frame terms: literal + 2 synonyms
--> search <keywords> --target repositories --concise --json
--> search <package-or-topic> --target packages --json
--> search <owner/repo> --tree --depth 1 --json
--> search <term> <owner/repo> --view discovery --json
--> search <owner/repo/path> --match-string <anchor> --content-view exact --json
+-> ghSearchRepos(keywords, concise)          + npmSearch(package-or-topic)
+-> ghViewRepoStructure(owner/repo, depth:1)  -> ghSearchCode(term, owner/repo)
+-> ghGetFileContent(matchString: anchor)
 -> cluster: active, abandoned, solved, partial, white-space
 ```
+
 Package evidence = last publish, maintainers, cadence, issue/PR ratio, dependency freshness; downloads alone are not validation.
 
 ### Validate: should this exist / should we add it?
 
-```text
-light diverge: reframe, invert, analogize, decompose
--> choose 1-3 framings
--> local-first if it touches this repo
--> GitHub/package research
--> optional web/product research
--> cross-pollinate every lead
--> advocate vs critic
+```
+light diverge: reframe, invert, analogize, decompose -> choose 1-3 framings
+-> local-first if it touches this repo -> GitHub/package research -> optional web/product research
+-> cross-pollinate every lead -> advocate vs critic
 -> verdict: build, do not build, narrow, or prototype hardest unknown
 ```
+
 Hypothesis map: `Crowded if...` / `Underserved if...` / `Blocked if...` / `Worth prototyping if...`.
 
 ### Investigate: behavior / bug / root cause
 
-```text
-search <path> --tree --depth 1 --json
--> search <symbol-or-error> <path> --view discovery --json
--> search <file> --match-string <anchor> --content-view exact --json
--> search <file> --op definition|references|callers|callees --symbol <name> --line <lineHint> --json
--> search <path> --pattern '<shape>' --lang <lang> --json when shape matters
--> search <owner/repo/path> --target commits or pullRequests when intent matters
 ```
-Keep two plausible explanations alive until a command disconfirms one.
+localViewStructure(path, depth:1)
+-> localSearchCode(symbol-or-error, path)
+-> localGetFileContent(matchString: anchor)
+-> lspGetSemantics(op: definition|references|callers|callees, symbol, lineHint)
+-> localSearchCode(mode:"structural", pattern) when shape matters
+-> ghHistoryResearch(type: commits|prs, owner/repo/path) when intent matters
+```
+
+Keep two plausible explanations alive until a call disconfirms one.
 
 ### Plan: implementation / refactor
 
-```text
-current behavior + invariants
--> file/flow orientation
--> blast radius with LSP references/callers
--> AST/import checks for boundaries and cycles
--> existing pattern to copy
+```
+current behavior + invariants -> file/flow orientation
+-> blast radius: lspGetSemantics(references|callers)
+-> AST/import checks for boundaries and cycles -> existing pattern to copy
 -> options and safest next step
 ```
+
 Gate before public contract changes, cross-package edits, deletes/renames, or broad consumer impact.
 
 ## Surface Recipes
 
-Local:
-```text
-search <path> --tree --depth 1
-search <query> <path> --search path
-search <term> <path> --view discovery
-search <file> --content-view symbols
-search <file> --match-string <anchor> --content-view exact
-search <file> --op references|callers|callees --symbol <name> --line <lineHint>
+Wiki/docs orientation (when present — a lead, not proof; see `algorithm.md` router):
+
+```
+localViewStructure/ghViewRepoStructure(depth:1)   -> spot ARCHITECTURE.md, droid-wiki/, openwiki/, .devin/wiki.json
+ghGetFileContent(ARCHITECTURE.md as exact content)  -> extract named entry points, then verify each claim via the router
 ```
 
-Remote/package:
-```text
-search <package> --target packages
-search <keywords> --target repositories --lang <language> --stars ">100" --concise
-search <owner/repo> --tree
-search <symbol> <owner/repo> --view discovery
-search <owner/repo/path> --match-string <anchor> --content-view exact
-```
+A GitHub Wiki tab or DeepWiki/Code Wiki page (if linked from the README) is the same lead, read externally instead of via tree.
 
-Remote as local:
-```text
-cache fetch <owner/repo> <path> --depth tree --json
-clone <owner/repo[/path][@ref]>
-search <repo-relative-path> --repo <owner/repo[@ref]> --pattern '<shape>' --lang <lang>
+```
+Local:          localViewStructure -> localFindFiles -> localSearchCode -> localGetFileContent(symbols) -> localGetFileContent(matchString) -> lspGetSemantics
+Remote/package: npmSearch -> ghSearchRepos -> ghViewRepoStructure -> ghSearchCode -> ghGetFileContent(matchString)
+Remote as local: ghGetFileContent(type:"directory") or ghCloneRepo -> localSearchCode/lspGetSemantics on the materialized path
 ```
 
 PR/change intent:
-```text
-search <owner/repo#N> --target pullRequests --json
-search <owner/repo#N> --target pullRequests --comments --json
-search <owner/repo#N> --target pullRequests --patches --file <path> --json
-search <owner/repo[/path]> --target commits --since <iso> --json
+
+```
+ghHistoryResearch(type:"prs", owner/repo#N)
+ghHistoryResearch(type:"prs", owner/repo#N, comments:true)
+ghHistoryResearch(type:"prs", owner/repo#N, patches:true, file:<path>)
+ghHistoryResearch(type:"commits", owner/repo[/path], since:<iso>)
 ```
 
 Dead code / reachability / drift:
-```text
-search --scheme --compact
--> search --query '{"target":"research","from":{"kind":"local","path":"."},"params":{"goal":"find unused exports, transitive dead code, unused files, and package drift","mode":"analyze"}}' --json
--> follow returned next.graph with search --query '<returned graph JSON>' --json
--> if no next.graph is returned, run search --scheme before writing graph JSON
+
+```
+search --scheme --compact  (or raw `oqlSearch` schema when using MCP directly)
+-> oqlSearch(target:"research", from:{kind:"local",path:"."}, goal:"find unused exports, transitive dead code, unused files, and package drift")
+-> follow returned next.graph -> oqlSearch(<returned graph query>)
+-> if no next.graph is returned, read --scheme before writing graph JSON by hand
 -> confirm with exact reads, AST/import search, LSP, and tests before deletion
 ```
 
 Artifacts:
-```text
-search <artifact> --target artifacts --inspect|--list|--strings
-search <artifact> --target artifacts --extract <entry>
-unzip <archive>
-search <localPath> --tree
-search <term> <localPath>
-search <file> --content-view exact
+
+```
+localBinaryInspect(target:"artifacts", inspect|list|strings)
+localBinaryInspect(extract:<entry>) / unzip <archive>
+localViewStructure/localSearchCode/localGetFileContent on the extracted path
 ```
 
 ## Cross-Pollination
@@ -128,11 +121,11 @@ search <file> --content-view exact
 
 ## Evidence Gates
 
-- Snippets are leads, not proof; exact content, AST, LSP, PR/commit evidence, binary metadata, or tests can prove.
+Grades, triangulation, and failure signals: `references/algorithm.md`. Additional gates for these flows:
+
 - LSP needs a real `lineHint`; get it from search/symbols/AST first.
 - Empty LSP references/callers are inconclusive until likely consumers are loaded.
 - `target:"research"` and `target:"graph"` rows are candidates until upgraded.
-- Follow `next.*`, pagination, char offsets, match/file/comment/commit pages.
 - Cite local evidence as `path:line`; cite remote evidence as full URL or PR/commit id.
 
 ## Before Answering
@@ -140,10 +133,9 @@ search <file> --content-view exact
 Confirm:
 
 1. The corpus is explicit: local path, package, owner/repo, branch/ref, PR number, artifact path, or materialized `localPath`.
-2. The surface is justified: MCP, `search`, OQL, raw tool, local shell, web, or skipped surface with reason.
-3. Raw-tool fields came from the active `--scheme`; OQL JSON came after `search --scheme`.
-4. Candidate results were converted into exact evidence when the claim depends on them.
-5. Pagination and continuations were followed or declared unnecessary.
-6. Diagnostics and provider limitations were handled.
-7. Claims distinguish syntax proof, semantic proof, history proof, binary proof, and runtime/test proof.
-8. Fallbacks are named when used.
+2. Every surface is justified — MCP, `search`, OQL, raw tool, local shell, web — and each skipped surface has a stated reason.
+3. Schemas were read before raw or OQL calls: MCP tool description, `npx octocode tools <name> --scheme`, or `search --scheme --compact` before OQL JSON.
+4. Candidates were upgraded to exact evidence wherever a claim depends on them; pagination and continuations were followed or declared unnecessary.
+5. Claims distinguish syntax, semantic, history, binary, and runtime/test proof; diagnostics, provider limits, and fallbacks are named.
+
+For repeated Act→Observe→Learn cycles, convergence goals, local code-check loops, or "keep going until evidence converges", read `references/loop-mode.md`.

@@ -66,18 +66,11 @@ function checkPattern(text, check) {
   return compile(check.pattern).test(text);
 }
 
-const STOP_WORDS = new Set([
-  'about', 'after', 'again', 'answer', 'before', 'build', 'could', 'does', 'from',
-  'have', 'idea', 'into', 'local', 'mode', 'more', 'only', 'prompt', 'should',
-  'that', 'their', 'there', 'this', 'what', 'when', 'where', 'which', 'while',
-  'with', 'without', 'would',
-]);
-
 function extractIntentTerms(text, limit = 8) {
   const counts = new Map();
   for (const raw of String(text || '').toLowerCase().match(/[a-z][a-z0-9-]{3,}/g) || []) {
     const term = raw.replace(/^-+|-+$/g, '');
-    if (!term || STOP_WORDS.has(term)) continue;
+    if (!term) continue;
     counts.set(term, (counts.get(term) || 0) + 1);
   }
   return [...counts.entries()]
@@ -265,8 +258,14 @@ Cases file: ${CASES_PATH}`;
 function strongSample() {
   return `Mode: Validate
 
+## TL;DR
+Issue-to-plan CLI has thin prior art; worth a bounded prototype. Research limits: none.
+
 ## Surface Plan
 Local active; GitHub/packages active; Web active.
+
+## Direction Check
+User chose the issue-to-plan workflow; no broader automation path was researched.
 
 ## Framings Considered
 Researched: issue-to-plan CLI.
@@ -328,6 +327,23 @@ function runSelfTest(cases) {
   if (!conflictBad.failedBinaryQuestions.some(question => question.id === 'concedes-unsupported-side')) {
     throw new Error('conflict failing fixture should mark the missing concession');
   }
+  const trendMomentum = cases.find(testCase => testCase.id === 'trend-momentum-check');
+  if (!trendMomentum) throw new Error('missing trend-momentum-check case');
+  const trendMomentumGood = evaluateCase(trendMomentum, readFixture(trendMomentum.fixtures.passing), { agentic: true });
+  const trendMomentumBad = evaluateCase(trendMomentum, readFixture(trendMomentum.fixtures.failing), { agentic: true });
+  if (!trendMomentumGood.passed) {
+    throw new Error(`trend-momentum fixture should pass: ${trendMomentumGood.failedChecks.join(', ')}`);
+  }
+  if (trendMomentumGood.failedBinaryQuestions.length) {
+    throw new Error(`trend-momentum fixture has failed binary questions: ${trendMomentumGood.failedBinaryQuestions.map(q => q.id).join(', ')}`);
+  }
+  if (trendMomentumBad.passed) {
+    throw new Error('trend-momentum fixture without a real signal should fail');
+  }
+  if (!trendMomentumBad.failedBinaryQuestions.some(question => question.id === 'dispatches-trend-source-scout')) {
+    throw new Error('trend-momentum failing fixture should mark the missing Trend & Source Scout dispatch');
+  }
+
   const resourceFirst = cases.find(testCase => testCase.id === 'resource-first-research');
   if (!resourceFirst) throw new Error('missing resource-first-research case');
   const resourceFirstGood = evaluateCase(resourceFirst, readFixture(resourceFirst.fixtures.passing), { agentic: true });
@@ -352,6 +368,10 @@ function runSelfTest(cases) {
     resourceFirst: {
       passingFixture: resourceFirstGood,
       failingFixture: resourceFirstBad,
+    },
+    trendMomentum: {
+      passingFixture: trendMomentumGood,
+      failingFixture: trendMomentumBad,
     },
     conflictingEvidence: {
       passingFixture: conflictGood,

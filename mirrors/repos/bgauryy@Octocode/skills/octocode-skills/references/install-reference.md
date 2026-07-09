@@ -27,6 +27,16 @@ Rules:
 - `skill-name` = final folder segment, unless the user overrides it.
 - If frontmatter `name` differs from folder name, surface the mismatch and ask.
 
+## Octocode CLI Shortcut
+
+After the user approves an install and Octocode CLI is available, prefer:
+
+```bash
+npx octocode skill --add --path <source-folder-or-skills-dir> --platform <platforms> [--mode copy|symlink|hybrid]
+```
+
+Use this when an agent already knows a local bundled skills path; the path may be one skill folder, `SKILL.md`, or a skills library root.
+
 ## Destinations: Provider Scopes
 
 Most agents load skills from at least two scopes: a user-level scope (applies everywhere) and a project-level scope (applies to one repo / workspace).
@@ -35,18 +45,18 @@ Some agents also honor a custom path via env var or config.
 
 Use this matrix as a default — verify with the active runtime when the user is unsure.
 
-| Provider       | User scope (global)                            | Project scope (per-repo)    | Custom override                    |
-|----------------|------------------------------------------------|-----------------------------|------------------------------------|
-| shared agents  | `~/.agents/skills/`                            | `<repo>/.agents/skills/`    | user-supplied absolute path        |
-| claude-code    | `~/.claude/skills/`                            | `<repo>/.claude/skills/`    | env or config `skillsDestDir`      |
-| claude-desktop | `~/.claude-desktop/skills/`                    | n/a                         | runtime config dir                 |
-| cursor         | `~/.cursor/skills/`                            | `<repo>/.cursor/skills/`    | runtime config                     |
-| codex          | `~/.agents/skills/`                            | `<repo>/.agents/skills/`    | admin `/etc/codex/skills`          |
-| opencode       | `~/.config/opencode/skills/`                   | `<repo>/.opencode/skills/`  | runtime config                     |
-| pi             | `~/.pi/agent/skills/`                          | `<repo>/.pi/skills/`        | runtime config                     |
-| copilot        | `~/.copilot/skills/`                           | `<repo>/.github/skills/`    | `/skills add` in Copilot CLI       |
-| gemini         | `~/.gemini/skills/` or `~/.agents/skills/`     | `<repo>/.gemini/skills/` or `<repo>/.agents/skills/` | `/skills link` / `gemini skills` |
-| other / custom | any directory the runtime scans                | any in-repo path            | user-supplied absolute path        |
+| Provider | User scope (global) | Project scope (per-repo) | Custom override |
+|---|---|---|---|
+| shared agents | `~/.agents/skills/` | `<repo>/.agents/skills/` | user-supplied absolute path |
+| claude-code | `~/.claude/skills/` | `<repo>/.claude/skills/` | env or config `skillsDestDir` |
+| claude-desktop | `~/.claude-desktop/skills/` | n/a | runtime config dir |
+| cursor | `~/.cursor/skills/` | `<repo>/.cursor/skills/` | runtime config |
+| codex | `~/.agents/skills/` | `<repo>/.agents/skills/` | admin `/etc/codex/skills` |
+| opencode | `~/.config/opencode/skills/` | `<repo>/.opencode/skills/` | runtime config |
+| pi | `~/.pi/agent/skills/` | `<repo>/.pi/skills/` | runtime config |
+| copilot | `~/.copilot/skills/` | `<repo>/.github/skills/` | `/skills add` in Copilot CLI |
+| gemini | `~/.gemini/skills/` or `~/.agents/skills/` | `<repo>/.gemini/skills/` or `<repo>/.agents/skills/` | `/skills link` / `gemini skills` |
+| other / custom | any directory the runtime scans | any in-repo path | user-supplied absolute path |
 
 Windows equivalents replace `~` with `%USERPROFILE%` (or `%APPDATA%` for desktop apps). Project-scope paths are identical relative to the repo root.
 

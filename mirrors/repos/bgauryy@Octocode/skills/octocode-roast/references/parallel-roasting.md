@@ -14,21 +14,30 @@
 4. Merge findings, deduplicate, prioritize by severity
 5. **IF** the host cannot run true parallel work → **THEN** execute the same domains sequentially
 
+Each worker returns this compact contract:
+
+| Field | Requirement |
+|---|---|
+| Scope | Exact files/directories inspected |
+| Findings | `file:line`, evidence, impact, confidence, repair move |
+| Non-findings | High-risk patterns checked but not found |
+| Limits | Missing tools, unreadable paths, or reduced coverage |
+
 ## Smart Parallelization Tips
 - **Phase 1 (Acquire Target)**: Keep sequential — need unified scope
 - **Phase 2-3 (Obliterate + Inventory)**: Parallelize across domains
-  - Agent 1: Hunt CAPITAL OFFENSES (security sins, God functions)
-  - Agent 2: Hunt FELONIES (any abuse, N+1 queries, callback hell)
+  - Agent 1: Hunt CAPITAL OFFENSES (security, data loss, auth bypass)
+  - Agent 2: Hunt FELONIES (god functions, any abuse, N+1 queries)
   - Agent 3: Hunt CRIMES + SLOP (magic numbers, AI hallucinations)
 - **Phase 4-6 (Autopsy + Redemption)**: Keep sequential — needs unified prioritization
 - Use the host's task tracker to track sins found per agent
-- Each agent uses: `localViewStructure` → `localSearchCode` → `lspGetSemantics(type=references)` → `localGetFileContent`
+- Each code-research worker should use `octocode-research` when installed; otherwise report reduced coverage and let the coordinator ask the user before installation.
 
 ## Example
 - Goal: "Roast entire repo with 50+ files"
-- Agent 1: Hunt security sins across all files (`localSearchCode` for credentials, secrets)
-- Agent 2: Hunt architectural sins (`localViewStructure` for God files, `lspGetSemantics(type=callers/callees)` for spaghetti)
-- Agent 3: Hunt performance sins (`localSearchCode` for N+1 patterns, blocking calls)
+- Agent 1: Hunt security sins across all files.
+- Agent 2: Hunt architectural sins, including large files and dependency spread.
+- Agent 3: Hunt performance sins, including N+1 patterns and blocking calls.
 - Merge: Combine into unified Hall of Shame, sort by severity
 
 ## Anti-patterns

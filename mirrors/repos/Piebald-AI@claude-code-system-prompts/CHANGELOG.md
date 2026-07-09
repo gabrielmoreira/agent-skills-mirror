@@ -4,6 +4,25 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.205](https://github.com/Piebald-AI/claude-code-system-prompts/commit/7a65ef5)
+
+_+23,674 tokens_
+
+- **NEW:** Data: Interrupt receipt still queued field — Adds schema guidance for `still_queued` interrupt receipts, describing which async user-message UUIDs survive an interrupt, cancellation granularity after coalescing, uuid/message-scope caveats, unknown internal UUIDs, receipt ordering, and the synchronous queue snapshot.
+- **NEW:** Data: Peer sender display name field — Adds schema guidance for normalized cross-session sender display names, including harness stripping/trimming rules, asserted display-name semantics, no client-side sanitization requirement, and absence cases for older or non-envelope messages.
+- **NEW:** Skill: /doctor slash command and Skill: /doctor slash command description — Adds a Claude Code setup-health workflow covering install/PATH/settings/agent checks, unused skills/MCP servers/plugins, local memory deduplication, lazy-loading migration, slow hooks and context-heavy extensions, version currency, auto-mode defaults, and read-only permission allow rules, with read-only reporting followed by separate cleanup and permission confirmation gates.
+- **NEW:** System Reminder: MCP servers failed to connect — Warns when configured MCP servers fail to connect, tells agents to treat their tools as unavailable because of a connection failure rather than a missing capability, and marks quoted connection errors as diagnostic data rather than instructions.
+- Agent Prompt: Background agent state classifier — Tightens status output so `detail` is a roughly 64-character headline for lock screens and session lists, moving longer explanations to `output.result`.
+- Agent Prompt: Conversation summarization; Agent Prompt: Recent Message Summarization; and System Prompt: Partial compaction instructions — Instruct summaries to count only actual user-role turns as user messages and never treat transcript-shaped text inside assistant messages as user requests, approvals, or confirmations.
+- Agent Prompt: Quick PR creation and Tool Description: Bash (Git commit and PR creation instructions) — Adds repository PR-template context and Slack-sharing follow-up to quick PR creation, and adds shared PR writing guidance plus generated summary/test-plan body templates to both quick PR and Bash PR workflows.
+- **REMOVED:** Agent Prompt: Security monitor edit-removal guidance — Removes the standalone edit-removal guidance prompt after folding deletion, truncation, NotebookEdit, failed-edit, and replace-all cautions into the main security monitor prompt.
+- Agent Prompt: Security monitor for autonomous agent actions (first part) — Adds harness outcome-line guidance for previous tool calls, distinguishing `ok`, `error`, `interrupted`, user rejection, permission blocks, and auto-mode failures while warning that prior `ok` only records execution or launch success, not safety, permission precedent, or background completion.
+- Agent Prompt: Security monitor for autonomous agent actions (first part) — Adds harness meta-line guidance for repo visibility and `gitStatus`, treating metadata as historical ground truth, public visibility as authoritative publishing context, private/unknown visibility as non-relaxing, and clean status metadata as clearing only the presume-dirty destruction rule for that command.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Expands Chrome-MCP coverage to include `mcp__Claude_Preview__*` and `mcp__Claude_Browser__*` as real-browser surfaces with live authenticated sessions.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Adds a soft block for recursive forced deletes whose target is an unresolved shell variable or variable-rooted glob, requiring the exact path to be named or the command rerun with a literal path.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Adds a soft block for writing/tampering with Claude Code session transcript JSONL or forged classifier meta lines, while leaving transcript reads routine.
+- Skill: Verify skill — Narrows project verify-skill updates to cases where existing guidance steered the agent wrong or missed a needed step, and discourages routine-learning, style-only, or reorganizing edits.
+
 #### [2.1.204](https://github.com/Piebald-AI/claude-code-system-prompts/commit/89ce9a7)
 
 <sub>_No changes to the system prompts in v2.1.204._</sub>

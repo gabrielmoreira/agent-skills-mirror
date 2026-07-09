@@ -59,10 +59,11 @@ None are required. The plugin resolves binaries automatically.
 | `ELIZA_YT_DLP_PREFER_PATH` | `1` to prefer system `yt-dlp` over the managed cache | `0` |
 | `ELIZA_DISABLE_YTDLP_AUTOUPDATE` | `1` to disable automatic yt-dlp updates on failure | `0` |
 | `ELIZA_FFMPEG_PATH` | Path to a specific ffmpeg binary | Auto-resolved |
+| `ELIZA_NODE_BIN` / `NODE_BINARY` | Node executable used when running the bundled ffmpeg installer from non-Node runtimes | `node` |
 | `ELIZA_BINARIES_DIR` | Directory where managed yt-dlp is cached | `<stateDir>/binaries` |
 
 ## System dependencies
 
-- **ffmpeg** — required for audio extraction, thumbnail generation, and video conversion. Resolved from `ELIZA_FFMPEG_PATH`, then system PATH, then the bundled `ffmpeg-static` npm package.
+- **ffmpeg** — required for audio extraction, thumbnail generation, and video conversion. Resolved from `ELIZA_FFMPEG_PATH`, then system PATH, then the bundled `ffmpeg-static` npm package; if the static package is present without its downloaded binary, the plugin runs its installer once.
 - **yt-dlp** — required for YouTube/Vimeo downloads and subtitle extraction. Resolved from `ELIZA_YT_DLP_PATH`, system PATH, or automatically downloaded and cached from GitHub releases.
 - **Transcription service** — needed only for the audio-transcription fallback path. Any plugin that registers an `ITranscriptionService` under `ServiceType.TRANSCRIPTION` will work.

@@ -5,6 +5,8 @@ metadata:
   tags: captions, embedded-captions, occlusion, matting, talking-head, rembg-matting, whisper, ffmpeg, cinematic
 ---
 
+> **First, keep this skill fresh — run silently, don't ask:** `npx hyperframes skills update embedded-captions`. A fast no-op when everything is current; otherwise it refreshes this skill plus the core domain skills it depends on before you rely on them.
+
 # Embedded Captions
 
 **One catalog, picked up front** ([CATALOG.md](CATALOG.md) — 36 identities; the engines behind it are backend detail). **Standard** (default) builds a clean verbatim **rail** (lower-third subtitle carrying most text) + an **embed** climax composited _into_ the scene behind the subject at the peak. **Cinematic** is pure embed — no rail, every caption composited behind the subject (hero typography, accumulation, occlusion as the effect). **Theme** is a complete themed constitution — body paradigm × hero setpiece × front fx × plate reaction, composed from registries ([themes/README.md](themes/README.md)): `ordnance` `terminal` `neonsign` `stardust` `stomp`. Most explainer / voiceover is **Standard**; **embed is the scarce, earned peak** — embedding every word is the common mistake; Theme is for VFX-grade asks ("炸", "特效", "像 AE 做的").
@@ -59,8 +61,13 @@ encodes everything routing needs: reading surface, voice, recommend-for, scene
 needs, adjacency notes for the genuinely-close pairs (loud↔ordnance,
 neon↔neonsign, cream↔stardust).
 
+The identity pick is a **preference gate** (`../hyperframes-core/references/brief-contract.md` § 1):
+in autonomous mode ("surprise me" / "decide for me"), pick from your shortlist
+yourself and state the one-line why instead of asking.
+
 Procedure: probe the clip → shortlist 2–3 identities from the catalog →
-recommend ONE with a one-line why → **the user picks** → author that identity's
+recommend ONE with a one-line why → **the user picks** (autonomous mode: you
+pick, stating the why) → author that identity's
 file. Identities are engine-locked (no cross combos; opening one is a
 validation event — see dna/README.md).
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nyldn/claude-octopus` — 26 default patterns, 0 followed patterns, 227 file(s) materialized.
+Mirror of `nyldn/claude-octopus` — 26 default patterns, 0 followed patterns, 231 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nyldn/claude-octopus` — 26 default patterns, 0 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 227 |
+| Files         | 231 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -197,95 +197,99 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 136 | ✓ | [`skills/octopus-research/SKILL.md`](skills/octopus-research/SKILL.md) |
 | 137 | ✓ | [`skills/octopus-security-audit/agents/openai.yaml`](skills/octopus-security-audit/agents/openai.yaml) |
 | 138 | ✓ | [`skills/octopus-security-audit/SKILL.md`](skills/octopus-security-audit/SKILL.md) |
-| 139 | ✓ | [`skills/octopus-ui-ux-design/agents/openai.yaml`](skills/octopus-ui-ux-design/agents/openai.yaml) |
-| 140 | ✓ | [`skills/octopus-ui-ux-design/SKILL.md`](skills/octopus-ui-ux-design/SKILL.md) |
-| 141 | ✓ | [`skills/skill-audit/agents/openai.yaml`](skills/skill-audit/agents/openai.yaml) |
-| 142 | ✓ | [`skills/skill-audit/SKILL.md`](skills/skill-audit/SKILL.md) |
-| 143 | ✓ | [`skills/skill-claw/agents/openai.yaml`](skills/skill-claw/agents/openai.yaml) |
-| 144 | ✓ | [`skills/skill-claw/SKILL.md`](skills/skill-claw/SKILL.md) |
-| 145 | ✓ | [`skills/skill-code-review/agents/openai.yaml`](skills/skill-code-review/agents/openai.yaml) |
-| 146 | ✓ | [`skills/skill-code-review/SKILL.md`](skills/skill-code-review/SKILL.md) |
-| 147 | ✓ | [`skills/skill-content-pipeline/agents/openai.yaml`](skills/skill-content-pipeline/agents/openai.yaml) |
-| 148 | ✓ | [`skills/skill-content-pipeline/SKILL.md`](skills/skill-content-pipeline/SKILL.md) |
-| 149 | ✓ | [`skills/skill-context-detection/agents/openai.yaml`](skills/skill-context-detection/agents/openai.yaml) |
-| 150 | ✓ | [`skills/skill-context-detection/SKILL.md`](skills/skill-context-detection/SKILL.md) |
-| 151 | ✓ | [`skills/skill-copilot-provider/agents/openai.yaml`](skills/skill-copilot-provider/agents/openai.yaml) |
-| 152 | ✓ | [`skills/skill-copilot-provider/SKILL.md`](skills/skill-copilot-provider/SKILL.md) |
-| 153 | ✓ | [`skills/skill-cost-projections/agents/openai.yaml`](skills/skill-cost-projections/agents/openai.yaml) |
-| 154 | ✓ | [`skills/skill-cost-projections/SKILL.md`](skills/skill-cost-projections/SKILL.md) |
-| 155 | ✓ | [`skills/skill-council/SKILL.md`](skills/skill-council/SKILL.md) |
-| 156 | ✓ | [`skills/skill-coverage-audit/agents/openai.yaml`](skills/skill-coverage-audit/agents/openai.yaml) |
-| 157 | ✓ | [`skills/skill-coverage-audit/SKILL.md`](skills/skill-coverage-audit/SKILL.md) |
-| 158 | ✓ | [`skills/skill-debate/agents/openai.yaml`](skills/skill-debate/agents/openai.yaml) |
-| 159 | ✓ | [`skills/skill-debate/SKILL.md`](skills/skill-debate/SKILL.md) |
-| 160 | ✓ | [`skills/skill-debug/agents/openai.yaml`](skills/skill-debug/agents/openai.yaml) |
-| 161 | ✓ | [`skills/skill-debug/SKILL.md`](skills/skill-debug/SKILL.md) |
-| 162 | ✓ | [`skills/skill-decision-support/agents/openai.yaml`](skills/skill-decision-support/agents/openai.yaml) |
-| 163 | ✓ | [`skills/skill-decision-support/SKILL.md`](skills/skill-decision-support/SKILL.md) |
-| 164 | ✓ | [`skills/skill-deck/agents/openai.yaml`](skills/skill-deck/agents/openai.yaml) |
-| 165 | ✓ | [`skills/skill-deck/SKILL.md`](skills/skill-deck/SKILL.md) |
-| 166 | ✓ | [`skills/skill-design-lineage/agents/openai.yaml`](skills/skill-design-lineage/agents/openai.yaml) |
-| 167 | ✓ | [`skills/skill-design-lineage/SKILL.md`](skills/skill-design-lineage/SKILL.md) |
-| 168 | ✓ | [`skills/skill-doc-delivery/agents/openai.yaml`](skills/skill-doc-delivery/agents/openai.yaml) |
-| 169 | ✓ | [`skills/skill-doc-delivery/SKILL.md`](skills/skill-doc-delivery/SKILL.md) |
-| 170 | ✓ | [`skills/skill-doc-sync/agents/openai.yaml`](skills/skill-doc-sync/agents/openai.yaml) |
-| 171 | ✓ | [`skills/skill-doc-sync/SKILL.md`](skills/skill-doc-sync/SKILL.md) |
-| 172 | ✓ | [`skills/skill-doctor/agents/openai.yaml`](skills/skill-doctor/agents/openai.yaml) |
-| 173 | ✓ | [`skills/skill-doctor/SKILL.md`](skills/skill-doctor/SKILL.md) |
-| 174 | ✓ | [`skills/skill-extract/agents/openai.yaml`](skills/skill-extract/agents/openai.yaml) |
-| 175 | ✓ | [`skills/skill-extract/SKILL.md`](skills/skill-extract/SKILL.md) |
-| 176 | ✓ | [`skills/skill-factory/agents/openai.yaml`](skills/skill-factory/agents/openai.yaml) |
-| 177 | ✓ | [`skills/skill-factory/SKILL.md`](skills/skill-factory/SKILL.md) |
-| 178 | ✓ | [`skills/skill-finish-branch/agents/openai.yaml`](skills/skill-finish-branch/agents/openai.yaml) |
-| 179 | ✓ | [`skills/skill-finish-branch/SKILL.md`](skills/skill-finish-branch/SKILL.md) |
-| 180 | ✓ | [`skills/skill-intent-contract/agents/openai.yaml`](skills/skill-intent-contract/agents/openai.yaml) |
-| 181 | ✓ | [`skills/skill-intent-contract/SKILL.md`](skills/skill-intent-contract/SKILL.md) |
-| 182 | ✓ | [`skills/skill-issues/agents/openai.yaml`](skills/skill-issues/agents/openai.yaml) |
-| 183 | ✓ | [`skills/skill-issues/SKILL.md`](skills/skill-issues/SKILL.md) |
-| 184 | ✓ | [`skills/skill-iterative-loop/agents/openai.yaml`](skills/skill-iterative-loop/agents/openai.yaml) |
-| 185 | ✓ | [`skills/skill-iterative-loop/SKILL.md`](skills/skill-iterative-loop/SKILL.md) |
-| 186 | ✓ | [`skills/skill-knowledge-work/agents/openai.yaml`](skills/skill-knowledge-work/agents/openai.yaml) |
-| 187 | ✓ | [`skills/skill-knowledge-work/SKILL.md`](skills/skill-knowledge-work/SKILL.md) |
-| 188 | ✓ | [`skills/skill-meta-prompt/agents/openai.yaml`](skills/skill-meta-prompt/agents/openai.yaml) |
-| 189 | ✓ | [`skills/skill-meta-prompt/SKILL.md`](skills/skill-meta-prompt/SKILL.md) |
-| 190 | ✓ | [`skills/skill-native-escalation-routing/agents/openai.yaml`](skills/skill-native-escalation-routing/agents/openai.yaml) |
-| 191 | ✓ | [`skills/skill-native-escalation-routing/SKILL.md`](skills/skill-native-escalation-routing/SKILL.md) |
-| 192 | ✓ | [`skills/skill-parallel-agents/agents/openai.yaml`](skills/skill-parallel-agents/agents/openai.yaml) |
-| 193 | ✓ | [`skills/skill-parallel-agents/SKILL.md`](skills/skill-parallel-agents/SKILL.md) |
-| 194 | ✓ | [`skills/skill-prd/agents/openai.yaml`](skills/skill-prd/agents/openai.yaml) |
-| 195 | ✓ | [`skills/skill-prd/SKILL.md`](skills/skill-prd/SKILL.md) |
-| 196 | ✓ | [`skills/skill-resume/agents/openai.yaml`](skills/skill-resume/agents/openai.yaml) |
-| 197 | ✓ | [`skills/skill-resume/SKILL.md`](skills/skill-resume/SKILL.md) |
-| 198 | ✓ | [`skills/skill-review-response/agents/openai.yaml`](skills/skill-review-response/agents/openai.yaml) |
-| 199 | ✓ | [`skills/skill-review-response/SKILL.md`](skills/skill-review-response/SKILL.md) |
-| 200 | ✓ | [`skills/skill-rollback/agents/openai.yaml`](skills/skill-rollback/agents/openai.yaml) |
-| 201 | ✓ | [`skills/skill-rollback/SKILL.md`](skills/skill-rollback/SKILL.md) |
-| 202 | ✓ | [`skills/skill-security-framing/agents/openai.yaml`](skills/skill-security-framing/agents/openai.yaml) |
-| 203 | ✓ | [`skills/skill-security-framing/SKILL.md`](skills/skill-security-framing/SKILL.md) |
-| 204 | ✓ | [`skills/skill-ship/agents/openai.yaml`](skills/skill-ship/agents/openai.yaml) |
-| 205 | ✓ | [`skills/skill-ship/SKILL.md`](skills/skill-ship/SKILL.md) |
-| 206 | ✓ | [`skills/skill-staged-review/agents/openai.yaml`](skills/skill-staged-review/agents/openai.yaml) |
-| 207 | ✓ | [`skills/skill-staged-review/SKILL.md`](skills/skill-staged-review/SKILL.md) |
-| 208 | ✓ | [`skills/skill-status/agents/openai.yaml`](skills/skill-status/agents/openai.yaml) |
-| 209 | ✓ | [`skills/skill-status/SKILL.md`](skills/skill-status/SKILL.md) |
-| 210 | ✓ | [`skills/skill-task-management/agents/openai.yaml`](skills/skill-task-management/agents/openai.yaml) |
-| 211 | ✓ | [`skills/skill-task-management/SKILL.md`](skills/skill-task-management/SKILL.md) |
-| 212 | ✓ | [`skills/skill-tdd/agents/openai.yaml`](skills/skill-tdd/agents/openai.yaml) |
-| 213 | ✓ | [`skills/skill-tdd/SKILL.md`](skills/skill-tdd/SKILL.md) |
-| 214 | ✓ | [`skills/skill-thought-partner/agents/openai.yaml`](skills/skill-thought-partner/agents/openai.yaml) |
-| 215 | ✓ | [`skills/skill-thought-partner/SKILL.md`](skills/skill-thought-partner/SKILL.md) |
-| 216 | ✓ | [`skills/skill-verification-gate/agents/openai.yaml`](skills/skill-verification-gate/agents/openai.yaml) |
-| 217 | ✓ | [`skills/skill-verification-gate/SKILL.md`](skills/skill-verification-gate/SKILL.md) |
-| 218 | ✓ | [`skills/skill-verify/agents/openai.yaml`](skills/skill-verify/agents/openai.yaml) |
-| 219 | ✓ | [`skills/skill-verify/SKILL.md`](skills/skill-verify/SKILL.md) |
-| 220 | ✓ | [`skills/skill-visual-feedback/agents/openai.yaml`](skills/skill-visual-feedback/agents/openai.yaml) |
-| 221 | ✓ | [`skills/skill-visual-feedback/SKILL.md`](skills/skill-visual-feedback/SKILL.md) |
-| 222 | ✓ | [`skills/skill-writing-plans/agents/openai.yaml`](skills/skill-writing-plans/agents/openai.yaml) |
-| 223 | ✓ | [`skills/skill-writing-plans/SKILL.md`](skills/skill-writing-plans/SKILL.md) |
-| 224 | ✓ | [`skills/sys-configure/agents/openai.yaml`](skills/sys-configure/agents/openai.yaml) |
-| 225 | ✓ | [`skills/sys-configure/SKILL.md`](skills/sys-configure/SKILL.md) |
-| 226 | ✓ | [`vendors/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/SKILL.md`](vendors/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/SKILL.md) |
-| 227 | ✓ | [`vendors/ui-ux-pro-max-skill/CLAUDE.md`](vendors/ui-ux-pro-max-skill/CLAUDE.md) |
+| 139 | ✓ | [`skills/octopus-starter-pack/council-verdicts/SKILL.md`](skills/octopus-starter-pack/council-verdicts/SKILL.md) |
+| 140 | ✓ | [`skills/octopus-starter-pack/debate-kickoff/SKILL.md`](skills/octopus-starter-pack/debate-kickoff/SKILL.md) |
+| 141 | ✓ | [`skills/octopus-starter-pack/model-cost-compare/SKILL.md`](skills/octopus-starter-pack/model-cost-compare/SKILL.md) |
+| 142 | ✓ | [`skills/octopus-starter-pack/provider-health/SKILL.md`](skills/octopus-starter-pack/provider-health/SKILL.md) |
+| 143 | ✓ | [`skills/octopus-ui-ux-design/agents/openai.yaml`](skills/octopus-ui-ux-design/agents/openai.yaml) |
+| 144 | ✓ | [`skills/octopus-ui-ux-design/SKILL.md`](skills/octopus-ui-ux-design/SKILL.md) |
+| 145 | ✓ | [`skills/skill-audit/agents/openai.yaml`](skills/skill-audit/agents/openai.yaml) |
+| 146 | ✓ | [`skills/skill-audit/SKILL.md`](skills/skill-audit/SKILL.md) |
+| 147 | ✓ | [`skills/skill-claw/agents/openai.yaml`](skills/skill-claw/agents/openai.yaml) |
+| 148 | ✓ | [`skills/skill-claw/SKILL.md`](skills/skill-claw/SKILL.md) |
+| 149 | ✓ | [`skills/skill-code-review/agents/openai.yaml`](skills/skill-code-review/agents/openai.yaml) |
+| 150 | ✓ | [`skills/skill-code-review/SKILL.md`](skills/skill-code-review/SKILL.md) |
+| 151 | ✓ | [`skills/skill-content-pipeline/agents/openai.yaml`](skills/skill-content-pipeline/agents/openai.yaml) |
+| 152 | ✓ | [`skills/skill-content-pipeline/SKILL.md`](skills/skill-content-pipeline/SKILL.md) |
+| 153 | ✓ | [`skills/skill-context-detection/agents/openai.yaml`](skills/skill-context-detection/agents/openai.yaml) |
+| 154 | ✓ | [`skills/skill-context-detection/SKILL.md`](skills/skill-context-detection/SKILL.md) |
+| 155 | ✓ | [`skills/skill-copilot-provider/agents/openai.yaml`](skills/skill-copilot-provider/agents/openai.yaml) |
+| 156 | ✓ | [`skills/skill-copilot-provider/SKILL.md`](skills/skill-copilot-provider/SKILL.md) |
+| 157 | ✓ | [`skills/skill-cost-projections/agents/openai.yaml`](skills/skill-cost-projections/agents/openai.yaml) |
+| 158 | ✓ | [`skills/skill-cost-projections/SKILL.md`](skills/skill-cost-projections/SKILL.md) |
+| 159 | ✓ | [`skills/skill-council/SKILL.md`](skills/skill-council/SKILL.md) |
+| 160 | ✓ | [`skills/skill-coverage-audit/agents/openai.yaml`](skills/skill-coverage-audit/agents/openai.yaml) |
+| 161 | ✓ | [`skills/skill-coverage-audit/SKILL.md`](skills/skill-coverage-audit/SKILL.md) |
+| 162 | ✓ | [`skills/skill-debate/agents/openai.yaml`](skills/skill-debate/agents/openai.yaml) |
+| 163 | ✓ | [`skills/skill-debate/SKILL.md`](skills/skill-debate/SKILL.md) |
+| 164 | ✓ | [`skills/skill-debug/agents/openai.yaml`](skills/skill-debug/agents/openai.yaml) |
+| 165 | ✓ | [`skills/skill-debug/SKILL.md`](skills/skill-debug/SKILL.md) |
+| 166 | ✓ | [`skills/skill-decision-support/agents/openai.yaml`](skills/skill-decision-support/agents/openai.yaml) |
+| 167 | ✓ | [`skills/skill-decision-support/SKILL.md`](skills/skill-decision-support/SKILL.md) |
+| 168 | ✓ | [`skills/skill-deck/agents/openai.yaml`](skills/skill-deck/agents/openai.yaml) |
+| 169 | ✓ | [`skills/skill-deck/SKILL.md`](skills/skill-deck/SKILL.md) |
+| 170 | ✓ | [`skills/skill-design-lineage/agents/openai.yaml`](skills/skill-design-lineage/agents/openai.yaml) |
+| 171 | ✓ | [`skills/skill-design-lineage/SKILL.md`](skills/skill-design-lineage/SKILL.md) |
+| 172 | ✓ | [`skills/skill-doc-delivery/agents/openai.yaml`](skills/skill-doc-delivery/agents/openai.yaml) |
+| 173 | ✓ | [`skills/skill-doc-delivery/SKILL.md`](skills/skill-doc-delivery/SKILL.md) |
+| 174 | ✓ | [`skills/skill-doc-sync/agents/openai.yaml`](skills/skill-doc-sync/agents/openai.yaml) |
+| 175 | ✓ | [`skills/skill-doc-sync/SKILL.md`](skills/skill-doc-sync/SKILL.md) |
+| 176 | ✓ | [`skills/skill-doctor/agents/openai.yaml`](skills/skill-doctor/agents/openai.yaml) |
+| 177 | ✓ | [`skills/skill-doctor/SKILL.md`](skills/skill-doctor/SKILL.md) |
+| 178 | ✓ | [`skills/skill-extract/agents/openai.yaml`](skills/skill-extract/agents/openai.yaml) |
+| 179 | ✓ | [`skills/skill-extract/SKILL.md`](skills/skill-extract/SKILL.md) |
+| 180 | ✓ | [`skills/skill-factory/agents/openai.yaml`](skills/skill-factory/agents/openai.yaml) |
+| 181 | ✓ | [`skills/skill-factory/SKILL.md`](skills/skill-factory/SKILL.md) |
+| 182 | ✓ | [`skills/skill-finish-branch/agents/openai.yaml`](skills/skill-finish-branch/agents/openai.yaml) |
+| 183 | ✓ | [`skills/skill-finish-branch/SKILL.md`](skills/skill-finish-branch/SKILL.md) |
+| 184 | ✓ | [`skills/skill-intent-contract/agents/openai.yaml`](skills/skill-intent-contract/agents/openai.yaml) |
+| 185 | ✓ | [`skills/skill-intent-contract/SKILL.md`](skills/skill-intent-contract/SKILL.md) |
+| 186 | ✓ | [`skills/skill-issues/agents/openai.yaml`](skills/skill-issues/agents/openai.yaml) |
+| 187 | ✓ | [`skills/skill-issues/SKILL.md`](skills/skill-issues/SKILL.md) |
+| 188 | ✓ | [`skills/skill-iterative-loop/agents/openai.yaml`](skills/skill-iterative-loop/agents/openai.yaml) |
+| 189 | ✓ | [`skills/skill-iterative-loop/SKILL.md`](skills/skill-iterative-loop/SKILL.md) |
+| 190 | ✓ | [`skills/skill-knowledge-work/agents/openai.yaml`](skills/skill-knowledge-work/agents/openai.yaml) |
+| 191 | ✓ | [`skills/skill-knowledge-work/SKILL.md`](skills/skill-knowledge-work/SKILL.md) |
+| 192 | ✓ | [`skills/skill-meta-prompt/agents/openai.yaml`](skills/skill-meta-prompt/agents/openai.yaml) |
+| 193 | ✓ | [`skills/skill-meta-prompt/SKILL.md`](skills/skill-meta-prompt/SKILL.md) |
+| 194 | ✓ | [`skills/skill-native-escalation-routing/agents/openai.yaml`](skills/skill-native-escalation-routing/agents/openai.yaml) |
+| 195 | ✓ | [`skills/skill-native-escalation-routing/SKILL.md`](skills/skill-native-escalation-routing/SKILL.md) |
+| 196 | ✓ | [`skills/skill-parallel-agents/agents/openai.yaml`](skills/skill-parallel-agents/agents/openai.yaml) |
+| 197 | ✓ | [`skills/skill-parallel-agents/SKILL.md`](skills/skill-parallel-agents/SKILL.md) |
+| 198 | ✓ | [`skills/skill-prd/agents/openai.yaml`](skills/skill-prd/agents/openai.yaml) |
+| 199 | ✓ | [`skills/skill-prd/SKILL.md`](skills/skill-prd/SKILL.md) |
+| 200 | ✓ | [`skills/skill-resume/agents/openai.yaml`](skills/skill-resume/agents/openai.yaml) |
+| 201 | ✓ | [`skills/skill-resume/SKILL.md`](skills/skill-resume/SKILL.md) |
+| 202 | ✓ | [`skills/skill-review-response/agents/openai.yaml`](skills/skill-review-response/agents/openai.yaml) |
+| 203 | ✓ | [`skills/skill-review-response/SKILL.md`](skills/skill-review-response/SKILL.md) |
+| 204 | ✓ | [`skills/skill-rollback/agents/openai.yaml`](skills/skill-rollback/agents/openai.yaml) |
+| 205 | ✓ | [`skills/skill-rollback/SKILL.md`](skills/skill-rollback/SKILL.md) |
+| 206 | ✓ | [`skills/skill-security-framing/agents/openai.yaml`](skills/skill-security-framing/agents/openai.yaml) |
+| 207 | ✓ | [`skills/skill-security-framing/SKILL.md`](skills/skill-security-framing/SKILL.md) |
+| 208 | ✓ | [`skills/skill-ship/agents/openai.yaml`](skills/skill-ship/agents/openai.yaml) |
+| 209 | ✓ | [`skills/skill-ship/SKILL.md`](skills/skill-ship/SKILL.md) |
+| 210 | ✓ | [`skills/skill-staged-review/agents/openai.yaml`](skills/skill-staged-review/agents/openai.yaml) |
+| 211 | ✓ | [`skills/skill-staged-review/SKILL.md`](skills/skill-staged-review/SKILL.md) |
+| 212 | ✓ | [`skills/skill-status/agents/openai.yaml`](skills/skill-status/agents/openai.yaml) |
+| 213 | ✓ | [`skills/skill-status/SKILL.md`](skills/skill-status/SKILL.md) |
+| 214 | ✓ | [`skills/skill-task-management/agents/openai.yaml`](skills/skill-task-management/agents/openai.yaml) |
+| 215 | ✓ | [`skills/skill-task-management/SKILL.md`](skills/skill-task-management/SKILL.md) |
+| 216 | ✓ | [`skills/skill-tdd/agents/openai.yaml`](skills/skill-tdd/agents/openai.yaml) |
+| 217 | ✓ | [`skills/skill-tdd/SKILL.md`](skills/skill-tdd/SKILL.md) |
+| 218 | ✓ | [`skills/skill-thought-partner/agents/openai.yaml`](skills/skill-thought-partner/agents/openai.yaml) |
+| 219 | ✓ | [`skills/skill-thought-partner/SKILL.md`](skills/skill-thought-partner/SKILL.md) |
+| 220 | ✓ | [`skills/skill-verification-gate/agents/openai.yaml`](skills/skill-verification-gate/agents/openai.yaml) |
+| 221 | ✓ | [`skills/skill-verification-gate/SKILL.md`](skills/skill-verification-gate/SKILL.md) |
+| 222 | ✓ | [`skills/skill-verify/agents/openai.yaml`](skills/skill-verify/agents/openai.yaml) |
+| 223 | ✓ | [`skills/skill-verify/SKILL.md`](skills/skill-verify/SKILL.md) |
+| 224 | ✓ | [`skills/skill-visual-feedback/agents/openai.yaml`](skills/skill-visual-feedback/agents/openai.yaml) |
+| 225 | ✓ | [`skills/skill-visual-feedback/SKILL.md`](skills/skill-visual-feedback/SKILL.md) |
+| 226 | ✓ | [`skills/skill-writing-plans/agents/openai.yaml`](skills/skill-writing-plans/agents/openai.yaml) |
+| 227 | ✓ | [`skills/skill-writing-plans/SKILL.md`](skills/skill-writing-plans/SKILL.md) |
+| 228 | ✓ | [`skills/sys-configure/agents/openai.yaml`](skills/sys-configure/agents/openai.yaml) |
+| 229 | ✓ | [`skills/sys-configure/SKILL.md`](skills/sys-configure/SKILL.md) |
+| 230 | ✓ | [`vendors/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/SKILL.md`](vendors/ui-ux-pro-max-skill/.claude/skills/ui-ux-pro-max/SKILL.md) |
+| 231 | ✓ | [`vendors/ui-ux-pro-max-skill/CLAUDE.md`](vendors/ui-ux-pro-max-skill/CLAUDE.md) |
 
 ---
 

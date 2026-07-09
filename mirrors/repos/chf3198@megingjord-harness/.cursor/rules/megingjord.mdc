@@ -29,3 +29,4 @@ then Throughput, then Observability, then Interoperability, then Maintainability
   workflow only; the project `.cursor/rules/megingjord.mdc` is the committed source.
 - Phase 0 (#3084) is registration + this static adapter; runtime hook/HAMR enforcement ships via `deploy:cursor:apply` (Phase 1 #3085, Phase 2 #3086 — see `docs/howto/cursor-parity-matrix.md`).
 - **Baton before code**: post `MANAGER_HANDOFF` with `worktree_branch:` matching your feat/fix branch before any file edit; hooks enforce authoritative handoff (#3204).
+- **Handoff schema + EDD** (#3673): `.cursor/rules/baton-handoff.mdc` is the canonical COLLABORATOR_HANDOFF template; post `## EDD` on the issue before implementation (`GOV-009`).

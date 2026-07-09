@@ -1,0 +1,64 @@
+---
+description: Cursor baton handoff schema — EDD, COLLABORATOR_HANDOFF, doc-coverage (#3673)
+alwaysApply: true
+---
+
+# Cursor Baton Handoff Schema
+
+Refs `scripts/global/megalint/collaborator-handoff.js`, `edd-required.js` (GOV-009),
+`config/doc-coverage-matrix.yml`. Derive signer: `node scripts/global/agent-signature.js
+--team cursor --model <m> --substrate cursor-ide --role <r>`.
+
+## Baton order
+
+1. **MANAGER_HANDOFF** on issue (includes `worktree_branch: feat/<N>-<slug>`).
+2. **EDD** on issue **before any file edit** (`lane:code-change` / GOV-009).
+3. Implement on dedicated branch; run `npm run lint && npm test`.
+4. **Cross-family L2** (`skills/cross-family-review`) before COLLABORATOR_HANDOFF.
+5. **COLLABORATOR_HANDOFF** → PR → **ADMIN_HANDOFF** → **CONSULTANT_CLOSEOUT**.
+
+## EDD artifact (post before implementation)
+
+```markdown
+## EDD
+scope: <one line>
+acceptance: <bullets>
+risk: <low|med|high — mitigation>
+implementation-plan: <numbered steps>
+```
+
+## COLLABORATOR_HANDOFF template (`lane:code-change`)
+
+```markdown
+## COLLABORATOR_HANDOFF
+ticket: #N
+scope: <summary>
+test_strategy: <from MANAGER_HANDOFF>
+per_ac_verification: |
+  - AC1: PASS — <evidence>
+doc_coverage:
+  <surface>: DONE — <path> | N/A — <reason>
+Pre-handoff verification (PASS)
+- [x] `branch-name-prefix` — <evidence>
+worktree_branch: feat/N-slug
+worktree_behind_main: 0
+cross_family_reviewer: <model>@<host>
+cross_family_rating: <N>/100
+cross_family_findings: <text>
+cross_family_receipt: <16-char hex sha256 prefix>
+reviewer_family: <family>
+Signed-by: <Cyrus Harper>
+Team&Model: cursor:<model>@cursor-ide
+Role: collaborator
+```
+
+Generate self-check block: `node scripts/global/collaborator-self-check.js` with
+`COLLABORATOR_SELF_CHECK_INPUT` JSON; paste `formatChecks()` output as
+`Pre-handoff verification` section. Or run `node scripts/global/collaborator-preflight.js
+--ticket=N` for lint/tests/changelog + cross-family receipt fields.
+
+**doc-coverage:** list every `required` surface from `doc-coverage-matrix.yml` for the
+ticket's `area:*` labels (`DONE` / `N/A — reason`). Builder key `doc_coverage:` also parses.
+
+**Blocking fields:** `cross_family_receipt:`, `worktree_behind_main:`, `Pre-handoff
+verification` (not FAIL), plus signer trio + `Role: collaborator` on own line.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `chenjin-cmd/agent-skills-launch-pack_` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `chenjin-cmd/agent-skills-launch-pack_` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `chenjin-cmd/agent-skills-launch-pack_` — 26 default patterns, 0 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,18 +59,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/douyin-account-launch-expert/agents/openai.yaml`](skills/douyin-account-launch-expert/agents/openai.yaml) |
-| 2 | ✓ | [`skills/douyin-account-launch-expert/references/launch-playbook.md`](skills/douyin-account-launch-expert/references/launch-playbook.md) |
-| 3 | ✓ | [`skills/douyin-account-launch-expert/SKILL.md`](skills/douyin-account-launch-expert/SKILL.md) |
-| 4 | ✓ | [`skills/wechat-account-launch-expert/agents/openai.yaml`](skills/wechat-account-launch-expert/agents/openai.yaml) |
-| 5 | ✓ | [`skills/wechat-account-launch-expert/references/launch-playbook.md`](skills/wechat-account-launch-expert/references/launch-playbook.md) |
-| 6 | ✓ | [`skills/wechat-account-launch-expert/SKILL.md`](skills/wechat-account-launch-expert/SKILL.md) |
-| 7 | ✓ | [`skills/x-twitter-cold-start-expert/agents/openai.yaml`](skills/x-twitter-cold-start-expert/agents/openai.yaml) |
-| 8 | ✓ | [`skills/x-twitter-cold-start-expert/references/cold-start-framework.md`](skills/x-twitter-cold-start-expert/references/cold-start-framework.md) |
-| 9 | ✓ | [`skills/x-twitter-cold-start-expert/SKILL.md`](skills/x-twitter-cold-start-expert/SKILL.md) |
-| 10 | ✓ | [`skills/xiaohongshu-account-launch-expert/agents/openai.yaml`](skills/xiaohongshu-account-launch-expert/agents/openai.yaml) |
-| 11 | ✓ | [`skills/xiaohongshu-account-launch-expert/references/launch-playbook.md`](skills/xiaohongshu-account-launch-expert/references/launch-playbook.md) |
-| 12 | ✓ | [`skills/xiaohongshu-account-launch-expert/SKILL.md`](skills/xiaohongshu-account-launch-expert/SKILL.md) |
+| 1 | ✓ | [`skills/channels-account-launch-expert/agents/openai.yaml`](skills/channels-account-launch-expert/agents/openai.yaml) |
+| 2 | ✓ | [`skills/channels-account-launch-expert/references/launch-playbook.md`](skills/channels-account-launch-expert/references/launch-playbook.md) |
+| 3 | ✓ | [`skills/channels-account-launch-expert/SKILL.md`](skills/channels-account-launch-expert/SKILL.md) |
+| 4 | ✓ | [`skills/douyin-account-launch-expert/agents/openai.yaml`](skills/douyin-account-launch-expert/agents/openai.yaml) |
+| 5 | ✓ | [`skills/douyin-account-launch-expert/references/launch-playbook.md`](skills/douyin-account-launch-expert/references/launch-playbook.md) |
+| 6 | ✓ | [`skills/douyin-account-launch-expert/SKILL.md`](skills/douyin-account-launch-expert/SKILL.md) |
+| 7 | ✓ | [`skills/wechat-account-launch-expert/agents/openai.yaml`](skills/wechat-account-launch-expert/agents/openai.yaml) |
+| 8 | ✓ | [`skills/wechat-account-launch-expert/references/launch-playbook.md`](skills/wechat-account-launch-expert/references/launch-playbook.md) |
+| 9 | ✓ | [`skills/wechat-account-launch-expert/SKILL.md`](skills/wechat-account-launch-expert/SKILL.md) |
+| 10 | ✓ | [`skills/x-twitter-cold-start-expert/agents/openai.yaml`](skills/x-twitter-cold-start-expert/agents/openai.yaml) |
+| 11 | ✓ | [`skills/x-twitter-cold-start-expert/references/cold-start-framework.md`](skills/x-twitter-cold-start-expert/references/cold-start-framework.md) |
+| 12 | ✓ | [`skills/x-twitter-cold-start-expert/SKILL.md`](skills/x-twitter-cold-start-expert/SKILL.md) |
+| 13 | ✓ | [`skills/xiaohongshu-account-launch-expert/agents/openai.yaml`](skills/xiaohongshu-account-launch-expert/agents/openai.yaml) |
+| 14 | ✓ | [`skills/xiaohongshu-account-launch-expert/references/launch-playbook.md`](skills/xiaohongshu-account-launch-expert/references/launch-playbook.md) |
+| 15 | ✓ | [`skills/xiaohongshu-account-launch-expert/SKILL.md`](skills/xiaohongshu-account-launch-expert/SKILL.md) |
 
 ---
 

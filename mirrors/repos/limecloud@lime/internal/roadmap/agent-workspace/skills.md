@@ -55,7 +55,7 @@
 | Composer | `src/components/agent/chat/skill-selection/**`、`skillCommand.ts`、`runtimeInputCapabilityCatalog.ts` | 有 SkillSelector、mention / slash、scene command、skill id map；普通 slash skill 回到 Agent Runtime turn 主链 |
 | Workspace binding | `workspaceSkillBindings/list`、`workspaceSkillBindingsMetadata.ts` | 有 workspace skill binding metadata 和 `ready_for_manual_enable`，但仍偏手动启用证据 |
 | Runtime gate | `lime-rs/crates/agent/src/tools/skill_tool_gate.rs` | 有 session access gate、allowed skills、allowed skill sources、source metadata、allow / deny 测试 |
-| Runtime 执行 | `lime-rs/crates/agent/src/skill_execution.rs` | 有 workflow / prompt execution、`skill-exec-*` runtime turn、allowed_tools 转发、TextDelta / FinalDone |
+| Runtime 执行 | `lime-rs/crates/agent/src/skill_execution.rs` | 有 workflow / prompt execution、`skill-exec-*` runtime turn、allowed_tools 转发、TextDelta / runtime.status；回合终态由 App Server `turn.completed / turn.failed / turn.canceled` 收口 |
 | Service / Site Skill | `ServiceSkillExecutionCard.tsx`、`useWorkspaceServiceSkillEntryActions.test.tsx`、`serviceSkillSceneLaunch.test.ts` | 有 site skill blocked/success/error、saved content、result file、browser prep、recent usage |
 | Evidence | `scripts/agent-runtime/service-skill-entry-smoke.mjs`、`HarnessEvidencePackCard.tsx` | 有 SkillTool gate transcript proof 和 evidence count 字段，但 Skill 专项 evidence pack 仍未完整产品化 |
 | Current boundary | `scripts/skills-current-smoke.mjs`、`src/lib/api/skills.current-boundary.test.ts` | 有 current App Server JSON-RPC smoke 和 legacy command 防回流守卫 |
@@ -127,7 +127,7 @@
 | `skill-implicit-trigger-eval` | Description / trigger | 正例触发、反例不触发、相似 skill 不误触发；记录 description 修改前后得分 |
 | `skill-required-vs-invoked` | Runtime / UI | required skill、实际 invoked skill、读取的 `SKILL.md` snapshot、resources、tool dependencies 可查 |
 | `skill-tool-gate-allow-deny` | Security / policy | 未启用默认拒绝；session allowlist 允许；source metadata、approval scope、permission summary 入 transcript |
-| `skill-workflow-execution` | Runtime steps / UI | `skill-exec-*` inline process、step progress、TextDelta、FinalDone、失败、取消、重试 |
+| `skill-workflow-execution` | Runtime steps / UI | `skill-exec-*` inline process、step progress、TextDelta、runtime.status、current turn terminal、失败、取消、重试 |
 | `skill-service-site-browser` | ServiceSkill / SiteSkill | 缺参 gate、attached browser、site run、saved content、result file、导出 Markdown |
 | `skill-artifact-evidence-replay` | Artifact / Evidence | prompt、skill version、resources hash、allowed tools、tool calls、artifact refs、grader verdict 可回放 |
 | `skill-subagent-preload` | Team / Subagent | subagent 预加载 skill、worker 调用 skill、handoff 结果和权限边界可见 |

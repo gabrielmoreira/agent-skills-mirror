@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default patterns, 0 followed patterns, 59 file(s) materialized.
+Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default patterns, 0 followed patterns, 61 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 59 |
+| Files         | 61 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -113,11 +113,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 52 | ✓ | [`skills/project-development/references/pipeline-patterns.md`](skills/project-development/references/pipeline-patterns.md) |
 | 53 | ✓ | [`skills/project-development/scripts/pipeline_template.py`](skills/project-development/scripts/pipeline_template.py) |
 | 54 | ✓ | [`skills/project-development/SKILL.md`](skills/project-development/SKILL.md) |
-| 55 | ✓ | [`skills/tool-design/references/architectural_reduction.md`](skills/tool-design/references/architectural_reduction.md) |
-| 56 | ✓ | [`skills/tool-design/references/best_practices.md`](skills/tool-design/references/best_practices.md) |
-| 57 | ✓ | [`skills/tool-design/scripts/description_generator.py`](skills/tool-design/scripts/description_generator.py) |
-| 58 | ✓ | [`skills/tool-design/SKILL.md`](skills/tool-design/SKILL.md) |
-| 59 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
+| 55 | ✓ | [`skills/self-improvement-loops/references/loop-design-evidence.md`](skills/self-improvement-loops/references/loop-design-evidence.md) |
+| 56 | ✓ | [`skills/self-improvement-loops/SKILL.md`](skills/self-improvement-loops/SKILL.md) |
+| 57 | ✓ | [`skills/tool-design/references/architectural_reduction.md`](skills/tool-design/references/architectural_reduction.md) |
+| 58 | ✓ | [`skills/tool-design/references/best_practices.md`](skills/tool-design/references/best_practices.md) |
+| 59 | ✓ | [`skills/tool-design/scripts/description_generator.py`](skills/tool-design/scripts/description_generator.py) |
+| 60 | ✓ | [`skills/tool-design/SKILL.md`](skills/tool-design/SKILL.md) |
+| 61 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
 
 ---
 

@@ -437,6 +437,8 @@ KB 文件预览端点是**纯 owner 平面，无 session 参数、无 owner fall
 | `set_active_model` | `POST /api/models/active` | ✅ |
 | `get_fallback_models` | `GET /api/models/fallback` | ✅ |
 | `set_fallback_models` | `POST /api/models/fallback` | ✅ |
+| `get_vision_model` | `GET /api/models/vision` | ✅ |
+| `set_vision_model` | `PUT /api/models/vision` | ✅ |
 | `set_reasoning_effort` | `POST /api/models/reasoning-effort` | ✅ |
 | `get_current_settings` | `GET /api/models/settings` | ✅ |
 | `get_global_temperature` | `GET /api/models/temperature` | ✅ |

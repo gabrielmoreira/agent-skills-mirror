@@ -48,6 +48,7 @@ All vars are optional. The plugin falls back to managed-cache download when no o
 | `ELIZA_YT_DLP_PREFER_PATH` | `1` to prefer system PATH yt-dlp over the managed cache |
 | `ELIZA_DISABLE_YTDLP_AUTOUPDATE` | `1` to disable automatic yt-dlp self-update on extractor errors |
 | `ELIZA_FFMPEG_PATH` | Use this ffmpeg binary; overrides system PATH and `ffmpeg-static` |
+| `ELIZA_NODE_BIN` / `NODE_BINARY` | Node executable used when running the bundled ffmpeg installer from non-Node runtimes |
 | `ELIZA_BINARIES_DIR` | Directory where the managed yt-dlp binary and metadata are cached (default: `<stateDir>/binaries`) |
 
 `ELIZA_STATE_DIR` / `ELIZA_BINARIES_DIR` interact: `BinaryResolver` calls `resolveStateDir()` from `@elizaos/core` to find the default binaries directory.
@@ -75,7 +76,7 @@ Same pattern: create `src/providers/my-provider.ts`, export a `Provider`, and ad
 - **Service singleton per runtime.** `VideoService` keeps a serial `processingChain` promise so concurrent `processVideo` calls are queued; don't bypass this.
 - **Cache directory is `./content_cache`** relative to the process cwd. Files are never auto-deleted; callers are responsible for cleanup if storage is a concern.
 - **yt-dlp auto-update.** On extractor failures matching known error patterns (`Sign in to confirm`, `nsig extraction failed`, `HTTP Error 403`, etc.), `BinaryResolver` re-downloads yt-dlp from the GitHub releases API and retries. This is throttled to once per hour. Set `ELIZA_DISABLE_YTDLP_AUTOUPDATE=1` to disable.
-- **ffmpeg is required for audio extraction and thumbnail generation.** The plugin resolves it from `ELIZA_FFMPEG_PATH`, then system PATH, then the `ffmpeg-static` npm package. If none is found, ffmpeg operations throw at first invocation.
+- **ffmpeg is required for audio extraction and thumbnail generation.** The plugin resolves it from `ELIZA_FFMPEG_PATH`, then system PATH, then the `ffmpeg-static` npm package. If the package exists but its binary payload is missing because install scripts were skipped, the resolver runs the package installer once before declaring ffmpeg unavailable.
 - **Transcription fallback requires `ServiceType.TRANSCRIPTION`.** If no subtitles or captions exist and the video is not categorised as Music, `VideoService` calls `runtime.getService<ITranscriptionService>(ServiceType.TRANSCRIPTION)`. Load a plugin that registers an `ITranscriptionService` under `ServiceType.TRANSCRIPTION`, or this path throws "Transcription service not found".
 - **Direct MP4 URLs** are detected by extension and bypass yt-dlp for metadata; they use a simple HEAD check and fall back to yt-dlp if unreachable.
 - **`BinaryResolver` is a singleton** (`BinaryResolver.instance()`). In tests, call `BinaryResolver.resetForTests()` between cases to avoid state leakage.

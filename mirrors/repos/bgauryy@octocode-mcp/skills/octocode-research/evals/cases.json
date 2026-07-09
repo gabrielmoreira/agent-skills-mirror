@@ -248,6 +248,115 @@
       "forbidden": [
         { "name": "popularity as proof", "pattern": "\\bstars?\\b[^\\n]*(?:prove|validate)|\\bdownloads?\\b[^\\n]*(?:prove|validate)" }
       ]
+    },
+    {
+      "id": "change-mode",
+      "mode": "Change",
+      "prompt": "Refactor the formatDate utility in src/utils/date.ts to use Intl.DateTimeFormat instead of moment.js.",
+      "minScore": 0.8,
+      "minCitationCount": 2,
+      "required": [
+        {
+          "name": "change mode",
+          "pattern": "\\bMode:\\s*Change\\b|\\bChange mode\\b"
+        },
+        {
+          "name": "blast radius or callers",
+          "pattern": "\\bblast.radius\\b|\\bcallers?\\b|\\breferences?\\b|\\bconsumers?\\b|\\bLSP\\b"
+        },
+        {
+          "name": "exact read of existing code",
+          "pattern": "[A-Za-z0-9_./-]+:\\d+|\\bexact(?:-read| read| reads)\\b"
+        },
+        {
+          "name": "scoped patch",
+          "pattern": "\\bsmallest\\b|\\bscoped\\b|\\bminimal\\b|\\bpatch\\b"
+        },
+        {
+          "name": "verification ran",
+          "pattern": "\\bverif(?:y|ied|ication)\\b[\\s\\S]*\\b(build|test|typecheck|lint|ran|passed)\\b"
+        }
+      ],
+      "binaryQuestions": [
+        {
+          "id": "checks-blast-radius",
+          "dimension": "method",
+          "question": "Does the answer check blast radius (callers, references, consumers) before making the change?",
+          "passPattern": "\\bblast.radius\\b|\\bcallers?\\b|\\bLSP[\\s\\S]*(?:references?|callers?)|(?:references?|callers?)[\\s\\S]*\\bLSP\\b",
+          "failureSignature": "mechanism:change-mode|cause:no-blast-radius-check",
+          "suggestedLesson": "Always check blast radius (LSP callers/references) before a Change mode edit to understand consumer impact."
+        },
+        {
+          "id": "verification-actually-ran",
+          "dimension": "evidence",
+          "question": "Does the answer report a verification command that actually ran (not just planned)?",
+          "passPattern": "\\bverif(?:y|ied|ication)\\b[\\s\\S]*\\b(ran|passed|output|result|exit|build|test|typecheck)\\b",
+          "failureSignature": "mechanism:change-mode|cause:verification-not-run",
+          "suggestedLesson": "Do not claim success for a code change until the verification command actually ran and its output is cited."
+        },
+        {
+          "id": "patch-is-scoped",
+          "dimension": "decision",
+          "question": "Does the answer make the smallest scoped patch rather than a broad rewrite?",
+          "passPattern": "\\bsmallest\\b|\\bscoped\\b|\\bminimal\\b|\\bonly(?:\\s+the)?\\s+(?:function|method|file|change)",
+          "failureSignature": "mechanism:change-mode|cause:overly-broad-patch",
+          "suggestedLesson": "Change mode patches should be the smallest scoped change that follows from evidence; avoid rewrites beyond the stated goal."
+        }
+      ],
+      "forbidden": [
+        {
+          "name": "success before verification",
+          "pattern": "\\b(?:done|complete|fixed|refactored)\\b(?![\\s\\S]*\\bverif)"
+        }
+      ]
+    },
+    {
+      "id": "pr-local-review",
+      "mode": "Review",
+      "prompt": "Review my staged changes before I open a PR.",
+      "minScore": 0.8,
+      "minCitationCount": 2,
+      "required": [
+        { "name": "review mode", "pattern": "\\bMode:\\s*Review\\b|\\bReview mode\\b" },
+        { "name": "scope via git", "pattern": "\\bgit status\\b|\\bgit diff\\b|\\bstaged\\b" },
+        { "name": "risk classification", "pattern": "\\bHIGH\\b[\\s\\S]*\\bLOW\\b|\\brisk\\b[\\s\\S]*(HIGH|LOW)" },
+        { "name": "quick vs full sizing", "pattern": "(?=[\\s\\S]*\\bQuick\\b)(?=[\\s\\S]*\\bFull\\b)|\\bsurface scan\\b" },
+        { "name": "blast radius via LSP", "pattern": "\\bLSP\\b|\\bcallers?\\b|\\breferences?\\b|\\bcallees?\\b" },
+        { "name": "domain priority order", "pattern": "\\bSecurity\\b[\\s\\S]*\\bBug\\b|\\bFlow Impact\\b" },
+        { "name": "finding shape", "pattern": "\\bSeverity:\\s*(HIGH|MED|LOW)\\b" },
+        { "name": "confidence", "pattern": "\\bConfidence:\\s*(confirmed|likely|uncertain)\\b" },
+        { "name": "file:line location", "pattern": "[A-Za-z0-9_./-]+:\\d+" }
+      ],
+      "binaryQuestions": [
+        {
+          "id": "classifies-risk-before-depth",
+          "dimension": "method",
+          "question": "Does the answer classify per-file risk (HIGH vs LOW) and size the review (Quick vs Full) instead of always going deep?",
+          "passPattern": "(\\bHIGH\\b[\\s\\S]*\\bLOW\\b|\\brisk\\b[\\s\\S]*(HIGH|LOW))[\\s\\S]*((?=[\\s\\S]*\\bQuick\\b)(?=[\\s\\S]*\\bFull\\b)|\\bsurface scan\\b)",
+          "failureSignature": "mechanism:pr-review|cause:no-risk-sizing",
+          "suggestedLesson": "Classify changed files as HIGH (auth/data/API/logic) or LOW (docs/style/config) risk and size the review pass accordingly before deep-diving."
+        },
+        {
+          "id": "traces-blast-radius-by-shape",
+          "dimension": "evidence",
+          "question": "Does the answer trace blast radius with LSP callers/references/callees matching the change shape, not just a text search?",
+          "passPattern": "\\bLSP\\b[\\s\\S]*(callers?|references?|callees?)",
+          "failureSignature": "mechanism:pr-review|cause:text-search-only-impact",
+          "suggestedLesson": "Match the LSP operation to the change shape: callers for signature changes, callees for new functions, references for type/interface changes."
+        },
+        {
+          "id": "findings-have-full-shape",
+          "dimension": "reporting",
+          "question": "Does every finding include severity, confidence, file:line location, and a fix?",
+          "passPattern": "\\bSeverity:\\s*(HIGH|MED|LOW)\\b[\\s\\S]*\\bConfidence:\\s*(confirmed|likely|uncertain)\\b[\\s\\S]*[A-Za-z0-9_./-]+:\\d+",
+          "failureSignature": "mechanism:pr-review|cause:incomplete-finding-shape",
+          "suggestedLesson": "Every review finding needs severity, confidence, file:line location, evidence, impact, and a fix — not a bare description."
+        }
+      ],
+      "forbidden": [
+        { "name": "hash finding labels", "pattern": "\\[?#\\d+\\]?\\s*(title|finding|issue)" },
+        { "name": "scope creep beyond staged", "pattern": "\\breviewed the (?:entire|whole|full) repo\\b" }
+      ]
     }
   ]
 }

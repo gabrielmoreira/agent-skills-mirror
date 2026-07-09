@@ -62,6 +62,9 @@ Production agent evaluation requires deterministic checks and multi-dimensional 
 **Harness Engineering**
 Reliable autonomous agents need explicit operating loops around the model: locked metrics, editable surfaces, durable logs, novelty checks, rollback rules, and human approval boundaries. Harnesses prevent agents from weakening the evaluator, losing state across compaction, or turning ambiguous goals into unreviewable changes.
 
+**Self-Improvement Loops**
+When the harness itself becomes the optimization target, a different discipline applies: recursive self-improvement, meta-harness search, failure-driven bounded self-edits, evolutionary scaffold search, and context mechanism evolution. The controlling constraints are empirical two-split acceptance gates, filesystem experience archives with raw traces, runtime-enforced constraints outside every editable surface, and diversity preservation to prevent collapse.
+
 ### Development Methodology
 
 **Project Development**
@@ -102,6 +105,7 @@ Internal skills in this collection:
 - [evaluation](skills/evaluation/SKILL.md)
 - [advanced-evaluation](skills/advanced-evaluation/SKILL.md)
 - [harness-engineering](skills/harness-engineering/SKILL.md)
+- [self-improvement-loops](skills/self-improvement-loops/SKILL.md)
 - [project-development](skills/project-development/SKILL.md)
 - [bdi-mental-states](skills/bdi-mental-states/SKILL.md)
 
@@ -115,6 +119,6 @@ External resources on context engineering:
 ## Skill Metadata
 
 **Created**: 2025-12-20
-**Last Updated**: 2026-06-29
+**Last Updated**: 2026-07-08
 **Author**: Agent Skills for Context Engineering Contributors
-**Version**: 2.3.1
+**Version**: 2.4.0

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `deanpeters/Product-Manager-Skills` — 26 default patterns, 0 followed patterns, 126 file(s) materialized.
+Mirror of `deanpeters/Product-Manager-Skills` — 26 default patterns, 0 followed patterns, 129 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `deanpeters/Product-Manager-Skills` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 126 |
+| Files         | 129 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -98,93 +98,96 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`skills/feature-investment-advisor/SKILL.md`](skills/feature-investment-advisor/SKILL.md) |
 | 38 | ✓ | [`skills/finance-based-pricing-advisor/SKILL.md`](skills/finance-based-pricing-advisor/SKILL.md) |
 | 39 | ✓ | [`skills/finance-metrics-quickref/SKILL.md`](skills/finance-metrics-quickref/SKILL.md) |
-| 40 | ✓ | [`skills/jobs-to-be-done/examples/sample.md`](skills/jobs-to-be-done/examples/sample.md) |
-| 41 | ✓ | [`skills/jobs-to-be-done/SKILL.md`](skills/jobs-to-be-done/SKILL.md) |
-| 42 | ✓ | [`skills/jobs-to-be-done/template.md`](skills/jobs-to-be-done/template.md) |
-| 43 | ✓ | [`skills/lean-ux-canvas/examples/sample.md`](skills/lean-ux-canvas/examples/sample.md) |
-| 44 | ✓ | [`skills/lean-ux-canvas/SKILL.md`](skills/lean-ux-canvas/SKILL.md) |
-| 45 | ✓ | [`skills/lean-ux-canvas/template.md`](skills/lean-ux-canvas/template.md) |
-| 46 | ✓ | [`skills/opportunity-solution-tree/examples/sample.md`](skills/opportunity-solution-tree/examples/sample.md) |
-| 47 | ✓ | [`skills/opportunity-solution-tree/SKILL.md`](skills/opportunity-solution-tree/SKILL.md) |
-| 48 | ✓ | [`skills/opportunity-solution-tree/template.md`](skills/opportunity-solution-tree/template.md) |
-| 49 | ✓ | [`skills/organic-growth-advisor/examples/sample.md`](skills/organic-growth-advisor/examples/sample.md) |
-| 50 | ✓ | [`skills/organic-growth-advisor/SKILL.md`](skills/organic-growth-advisor/SKILL.md) |
-| 51 | ✓ | [`skills/organic-growth-advisor/template.md`](skills/organic-growth-advisor/template.md) |
-| 52 | ✓ | [`skills/pestel-analysis/examples/sample.md`](skills/pestel-analysis/examples/sample.md) |
-| 53 | ✓ | [`skills/pestel-analysis/SKILL.md`](skills/pestel-analysis/SKILL.md) |
-| 54 | ✓ | [`skills/pestel-analysis/template.md`](skills/pestel-analysis/template.md) |
-| 55 | ✓ | [`skills/pm-skill-creator/SKILL.md`](skills/pm-skill-creator/SKILL.md) |
-| 56 | ✓ | [`skills/pol-probe-advisor/SKILL.md`](skills/pol-probe-advisor/SKILL.md) |
-| 57 | ✓ | [`skills/pol-probe/examples/sample.md`](skills/pol-probe/examples/sample.md) |
-| 58 | ✓ | [`skills/pol-probe/SKILL.md`](skills/pol-probe/SKILL.md) |
-| 59 | ✓ | [`skills/pol-probe/template.md`](skills/pol-probe/template.md) |
-| 60 | ✓ | [`skills/positioning-statement/examples/sample.md`](skills/positioning-statement/examples/sample.md) |
-| 61 | ✓ | [`skills/positioning-statement/SKILL.md`](skills/positioning-statement/SKILL.md) |
-| 62 | ✓ | [`skills/positioning-statement/template.md`](skills/positioning-statement/template.md) |
-| 63 | ✓ | [`skills/positioning-workshop/SKILL.md`](skills/positioning-workshop/SKILL.md) |
-| 64 | ✓ | [`skills/prd-development/examples/sample.md`](skills/prd-development/examples/sample.md) |
-| 65 | ✓ | [`skills/prd-development/SKILL.md`](skills/prd-development/SKILL.md) |
-| 66 | ✓ | [`skills/prd-development/template.md`](skills/prd-development/template.md) |
-| 67 | ✓ | [`skills/press-release/examples/sample.md`](skills/press-release/examples/sample.md) |
-| 68 | ✓ | [`skills/press-release/SKILL.md`](skills/press-release/SKILL.md) |
-| 69 | ✓ | [`skills/press-release/template.md`](skills/press-release/template.md) |
-| 70 | ✓ | [`skills/prioritization-advisor/SKILL.md`](skills/prioritization-advisor/SKILL.md) |
-| 71 | ✓ | [`skills/problem-framing-canvas/examples/sample.md`](skills/problem-framing-canvas/examples/sample.md) |
-| 72 | ✓ | [`skills/problem-framing-canvas/SKILL.md`](skills/problem-framing-canvas/SKILL.md) |
-| 73 | ✓ | [`skills/problem-framing-canvas/template.md`](skills/problem-framing-canvas/template.md) |
-| 74 | ✓ | [`skills/problem-statement/examples/sample.md`](skills/problem-statement/examples/sample.md) |
-| 75 | ✓ | [`skills/problem-statement/SKILL.md`](skills/problem-statement/SKILL.md) |
-| 76 | ✓ | [`skills/problem-statement/template.md`](skills/problem-statement/template.md) |
-| 77 | ✓ | [`skills/product-sense-interview-answer/examples/improve-youtube.md`](skills/product-sense-interview-answer/examples/improve-youtube.md) |
-| 78 | ✓ | [`skills/product-sense-interview-answer/SKILL.md`](skills/product-sense-interview-answer/SKILL.md) |
-| 79 | ✓ | [`skills/product-sense-interview-answer/template.md`](skills/product-sense-interview-answer/template.md) |
-| 80 | ✓ | [`skills/product-strategy-session/examples/sample.md`](skills/product-strategy-session/examples/sample.md) |
-| 81 | ✓ | [`skills/product-strategy-session/SKILL.md`](skills/product-strategy-session/SKILL.md) |
-| 82 | ✓ | [`skills/product-strategy-session/template.md`](skills/product-strategy-session/template.md) |
-| 83 | ✓ | [`skills/proto-persona/examples/sample.md`](skills/proto-persona/examples/sample.md) |
-| 84 | ✓ | [`skills/proto-persona/SKILL.md`](skills/proto-persona/SKILL.md) |
-| 85 | ✓ | [`skills/proto-persona/template.md`](skills/proto-persona/template.md) |
-| 86 | ✓ | [`skills/recommendation-canvas/examples/sample.md`](skills/recommendation-canvas/examples/sample.md) |
-| 87 | ✓ | [`skills/recommendation-canvas/SKILL.md`](skills/recommendation-canvas/SKILL.md) |
-| 88 | ✓ | [`skills/recommendation-canvas/template.md`](skills/recommendation-canvas/template.md) |
-| 89 | ✓ | [`skills/roadmap-planning/examples/sample.md`](skills/roadmap-planning/examples/sample.md) |
-| 90 | ✓ | [`skills/roadmap-planning/SKILL.md`](skills/roadmap-planning/SKILL.md) |
-| 91 | ✓ | [`skills/roadmap-planning/template.md`](skills/roadmap-planning/template.md) |
-| 92 | ✓ | [`skills/saas-economics-efficiency-metrics/examples/cash-trap.md`](skills/saas-economics-efficiency-metrics/examples/cash-trap.md) |
-| 93 | ✓ | [`skills/saas-economics-efficiency-metrics/examples/healthy-unit-economics.md`](skills/saas-economics-efficiency-metrics/examples/healthy-unit-economics.md) |
-| 94 | ✓ | [`skills/saas-economics-efficiency-metrics/SKILL.md`](skills/saas-economics-efficiency-metrics/SKILL.md) |
-| 95 | ✓ | [`skills/saas-economics-efficiency-metrics/template.md`](skills/saas-economics-efficiency-metrics/template.md) |
-| 96 | ✓ | [`skills/saas-revenue-growth-metrics/examples/healthy-saas.md`](skills/saas-revenue-growth-metrics/examples/healthy-saas.md) |
-| 97 | ✓ | [`skills/saas-revenue-growth-metrics/examples/warning-signs.md`](skills/saas-revenue-growth-metrics/examples/warning-signs.md) |
-| 98 | ✓ | [`skills/saas-revenue-growth-metrics/SKILL.md`](skills/saas-revenue-growth-metrics/SKILL.md) |
-| 99 | ✓ | [`skills/saas-revenue-growth-metrics/template.md`](skills/saas-revenue-growth-metrics/template.md) |
-| 100 | ✓ | [`skills/skill-authoring-workflow/SKILL.md`](skills/skill-authoring-workflow/SKILL.md) |
-| 101 | ✓ | [`skills/stakeholder-engagement-advisor/SKILL.md`](skills/stakeholder-engagement-advisor/SKILL.md) |
-| 102 | ✓ | [`skills/stakeholder-identification/SKILL.md`](skills/stakeholder-identification/SKILL.md) |
-| 103 | ✓ | [`skills/stakeholder-mapping/SKILL.md`](skills/stakeholder-mapping/SKILL.md) |
-| 104 | ✓ | [`skills/storyboard/examples/sample.md`](skills/storyboard/examples/sample.md) |
-| 105 | ✓ | [`skills/storyboard/SKILL.md`](skills/storyboard/SKILL.md) |
-| 106 | ✓ | [`skills/storyboard/template.md`](skills/storyboard/template.md) |
-| 107 | ✓ | [`skills/tam-sam-som-calculator/examples/sample.md`](skills/tam-sam-som-calculator/examples/sample.md) |
-| 108 | ✓ | [`skills/tam-sam-som-calculator/scripts/market-sizing.py`](skills/tam-sam-som-calculator/scripts/market-sizing.py) |
-| 109 | ✓ | [`skills/tam-sam-som-calculator/SKILL.md`](skills/tam-sam-som-calculator/SKILL.md) |
-| 110 | ✓ | [`skills/tam-sam-som-calculator/template.md`](skills/tam-sam-som-calculator/template.md) |
-| 111 | ✓ | [`skills/user-story-mapping-workshop/SKILL.md`](skills/user-story-mapping-workshop/SKILL.md) |
-| 112 | ✓ | [`skills/user-story-mapping-workshop/template.md`](skills/user-story-mapping-workshop/template.md) |
-| 113 | ✓ | [`skills/user-story-mapping/examples/sample.md`](skills/user-story-mapping/examples/sample.md) |
-| 114 | ✓ | [`skills/user-story-mapping/SKILL.md`](skills/user-story-mapping/SKILL.md) |
-| 115 | ✓ | [`skills/user-story-mapping/template.md`](skills/user-story-mapping/template.md) |
-| 116 | ✓ | [`skills/user-story-splitting/examples/sample.md`](skills/user-story-splitting/examples/sample.md) |
-| 117 | ✓ | [`skills/user-story-splitting/SKILL.md`](skills/user-story-splitting/SKILL.md) |
-| 118 | ✓ | [`skills/user-story-splitting/template.md`](skills/user-story-splitting/template.md) |
-| 119 | ✓ | [`skills/user-story/examples/sample.md`](skills/user-story/examples/sample.md) |
-| 120 | ✓ | [`skills/user-story/scripts/user-story-template.py`](skills/user-story/scripts/user-story-template.py) |
-| 121 | ✓ | [`skills/user-story/SKILL.md`](skills/user-story/SKILL.md) |
-| 122 | ✓ | [`skills/user-story/template.md`](skills/user-story/template.md) |
-| 123 | ✓ | [`skills/vp-cpo-readiness-advisor/examples/conversation-flow.md`](skills/vp-cpo-readiness-advisor/examples/conversation-flow.md) |
-| 124 | ✓ | [`skills/vp-cpo-readiness-advisor/SKILL.md`](skills/vp-cpo-readiness-advisor/SKILL.md) |
-| 125 | ✓ | [`skills/workshop-facilitation/examples/inline-input-flow.md`](skills/workshop-facilitation/examples/inline-input-flow.md) |
-| 126 | ✓ | [`skills/workshop-facilitation/SKILL.md`](skills/workshop-facilitation/SKILL.md) |
+| 40 | ✓ | [`skills/incoming-request-advisor/examples/conversation-flow.md`](skills/incoming-request-advisor/examples/conversation-flow.md) |
+| 41 | ✓ | [`skills/incoming-request-advisor/SKILL.md`](skills/incoming-request-advisor/SKILL.md) |
+| 42 | ✓ | [`skills/incoming-request-advisor/template.md`](skills/incoming-request-advisor/template.md) |
+| 43 | ✓ | [`skills/jobs-to-be-done/examples/sample.md`](skills/jobs-to-be-done/examples/sample.md) |
+| 44 | ✓ | [`skills/jobs-to-be-done/SKILL.md`](skills/jobs-to-be-done/SKILL.md) |
+| 45 | ✓ | [`skills/jobs-to-be-done/template.md`](skills/jobs-to-be-done/template.md) |
+| 46 | ✓ | [`skills/lean-ux-canvas/examples/sample.md`](skills/lean-ux-canvas/examples/sample.md) |
+| 47 | ✓ | [`skills/lean-ux-canvas/SKILL.md`](skills/lean-ux-canvas/SKILL.md) |
+| 48 | ✓ | [`skills/lean-ux-canvas/template.md`](skills/lean-ux-canvas/template.md) |
+| 49 | ✓ | [`skills/opportunity-solution-tree/examples/sample.md`](skills/opportunity-solution-tree/examples/sample.md) |
+| 50 | ✓ | [`skills/opportunity-solution-tree/SKILL.md`](skills/opportunity-solution-tree/SKILL.md) |
+| 51 | ✓ | [`skills/opportunity-solution-tree/template.md`](skills/opportunity-solution-tree/template.md) |
+| 52 | ✓ | [`skills/organic-growth-advisor/examples/sample.md`](skills/organic-growth-advisor/examples/sample.md) |
+| 53 | ✓ | [`skills/organic-growth-advisor/SKILL.md`](skills/organic-growth-advisor/SKILL.md) |
+| 54 | ✓ | [`skills/organic-growth-advisor/template.md`](skills/organic-growth-advisor/template.md) |
+| 55 | ✓ | [`skills/pestel-analysis/examples/sample.md`](skills/pestel-analysis/examples/sample.md) |
+| 56 | ✓ | [`skills/pestel-analysis/SKILL.md`](skills/pestel-analysis/SKILL.md) |
+| 57 | ✓ | [`skills/pestel-analysis/template.md`](skills/pestel-analysis/template.md) |
+| 58 | ✓ | [`skills/pm-skill-creator/SKILL.md`](skills/pm-skill-creator/SKILL.md) |
+| 59 | ✓ | [`skills/pol-probe-advisor/SKILL.md`](skills/pol-probe-advisor/SKILL.md) |
+| 60 | ✓ | [`skills/pol-probe/examples/sample.md`](skills/pol-probe/examples/sample.md) |
+| 61 | ✓ | [`skills/pol-probe/SKILL.md`](skills/pol-probe/SKILL.md) |
+| 62 | ✓ | [`skills/pol-probe/template.md`](skills/pol-probe/template.md) |
+| 63 | ✓ | [`skills/positioning-statement/examples/sample.md`](skills/positioning-statement/examples/sample.md) |
+| 64 | ✓ | [`skills/positioning-statement/SKILL.md`](skills/positioning-statement/SKILL.md) |
+| 65 | ✓ | [`skills/positioning-statement/template.md`](skills/positioning-statement/template.md) |
+| 66 | ✓ | [`skills/positioning-workshop/SKILL.md`](skills/positioning-workshop/SKILL.md) |
+| 67 | ✓ | [`skills/prd-development/examples/sample.md`](skills/prd-development/examples/sample.md) |
+| 68 | ✓ | [`skills/prd-development/SKILL.md`](skills/prd-development/SKILL.md) |
+| 69 | ✓ | [`skills/prd-development/template.md`](skills/prd-development/template.md) |
+| 70 | ✓ | [`skills/press-release/examples/sample.md`](skills/press-release/examples/sample.md) |
+| 71 | ✓ | [`skills/press-release/SKILL.md`](skills/press-release/SKILL.md) |
+| 72 | ✓ | [`skills/press-release/template.md`](skills/press-release/template.md) |
+| 73 | ✓ | [`skills/prioritization-advisor/SKILL.md`](skills/prioritization-advisor/SKILL.md) |
+| 74 | ✓ | [`skills/problem-framing-canvas/examples/sample.md`](skills/problem-framing-canvas/examples/sample.md) |
+| 75 | ✓ | [`skills/problem-framing-canvas/SKILL.md`](skills/problem-framing-canvas/SKILL.md) |
+| 76 | ✓ | [`skills/problem-framing-canvas/template.md`](skills/problem-framing-canvas/template.md) |
+| 77 | ✓ | [`skills/problem-statement/examples/sample.md`](skills/problem-statement/examples/sample.md) |
+| 78 | ✓ | [`skills/problem-statement/SKILL.md`](skills/problem-statement/SKILL.md) |
+| 79 | ✓ | [`skills/problem-statement/template.md`](skills/problem-statement/template.md) |
+| 80 | ✓ | [`skills/product-sense-interview-answer/examples/improve-youtube.md`](skills/product-sense-interview-answer/examples/improve-youtube.md) |
+| 81 | ✓ | [`skills/product-sense-interview-answer/SKILL.md`](skills/product-sense-interview-answer/SKILL.md) |
+| 82 | ✓ | [`skills/product-sense-interview-answer/template.md`](skills/product-sense-interview-answer/template.md) |
+| 83 | ✓ | [`skills/product-strategy-session/examples/sample.md`](skills/product-strategy-session/examples/sample.md) |
+| 84 | ✓ | [`skills/product-strategy-session/SKILL.md`](skills/product-strategy-session/SKILL.md) |
+| 85 | ✓ | [`skills/product-strategy-session/template.md`](skills/product-strategy-session/template.md) |
+| 86 | ✓ | [`skills/proto-persona/examples/sample.md`](skills/proto-persona/examples/sample.md) |
+| 87 | ✓ | [`skills/proto-persona/SKILL.md`](skills/proto-persona/SKILL.md) |
+| 88 | ✓ | [`skills/proto-persona/template.md`](skills/proto-persona/template.md) |
+| 89 | ✓ | [`skills/recommendation-canvas/examples/sample.md`](skills/recommendation-canvas/examples/sample.md) |
+| 90 | ✓ | [`skills/recommendation-canvas/SKILL.md`](skills/recommendation-canvas/SKILL.md) |
+| 91 | ✓ | [`skills/recommendation-canvas/template.md`](skills/recommendation-canvas/template.md) |
+| 92 | ✓ | [`skills/roadmap-planning/examples/sample.md`](skills/roadmap-planning/examples/sample.md) |
+| 93 | ✓ | [`skills/roadmap-planning/SKILL.md`](skills/roadmap-planning/SKILL.md) |
+| 94 | ✓ | [`skills/roadmap-planning/template.md`](skills/roadmap-planning/template.md) |
+| 95 | ✓ | [`skills/saas-economics-efficiency-metrics/examples/cash-trap.md`](skills/saas-economics-efficiency-metrics/examples/cash-trap.md) |
+| 96 | ✓ | [`skills/saas-economics-efficiency-metrics/examples/healthy-unit-economics.md`](skills/saas-economics-efficiency-metrics/examples/healthy-unit-economics.md) |
+| 97 | ✓ | [`skills/saas-economics-efficiency-metrics/SKILL.md`](skills/saas-economics-efficiency-metrics/SKILL.md) |
+| 98 | ✓ | [`skills/saas-economics-efficiency-metrics/template.md`](skills/saas-economics-efficiency-metrics/template.md) |
+| 99 | ✓ | [`skills/saas-revenue-growth-metrics/examples/healthy-saas.md`](skills/saas-revenue-growth-metrics/examples/healthy-saas.md) |
+| 100 | ✓ | [`skills/saas-revenue-growth-metrics/examples/warning-signs.md`](skills/saas-revenue-growth-metrics/examples/warning-signs.md) |
+| 101 | ✓ | [`skills/saas-revenue-growth-metrics/SKILL.md`](skills/saas-revenue-growth-metrics/SKILL.md) |
+| 102 | ✓ | [`skills/saas-revenue-growth-metrics/template.md`](skills/saas-revenue-growth-metrics/template.md) |
+| 103 | ✓ | [`skills/skill-authoring-workflow/SKILL.md`](skills/skill-authoring-workflow/SKILL.md) |
+| 104 | ✓ | [`skills/stakeholder-engagement-advisor/SKILL.md`](skills/stakeholder-engagement-advisor/SKILL.md) |
+| 105 | ✓ | [`skills/stakeholder-identification/SKILL.md`](skills/stakeholder-identification/SKILL.md) |
+| 106 | ✓ | [`skills/stakeholder-mapping/SKILL.md`](skills/stakeholder-mapping/SKILL.md) |
+| 107 | ✓ | [`skills/storyboard/examples/sample.md`](skills/storyboard/examples/sample.md) |
+| 108 | ✓ | [`skills/storyboard/SKILL.md`](skills/storyboard/SKILL.md) |
+| 109 | ✓ | [`skills/storyboard/template.md`](skills/storyboard/template.md) |
+| 110 | ✓ | [`skills/tam-sam-som-calculator/examples/sample.md`](skills/tam-sam-som-calculator/examples/sample.md) |
+| 111 | ✓ | [`skills/tam-sam-som-calculator/scripts/market-sizing.py`](skills/tam-sam-som-calculator/scripts/market-sizing.py) |
+| 112 | ✓ | [`skills/tam-sam-som-calculator/SKILL.md`](skills/tam-sam-som-calculator/SKILL.md) |
+| 113 | ✓ | [`skills/tam-sam-som-calculator/template.md`](skills/tam-sam-som-calculator/template.md) |
+| 114 | ✓ | [`skills/user-story-mapping-workshop/SKILL.md`](skills/user-story-mapping-workshop/SKILL.md) |
+| 115 | ✓ | [`skills/user-story-mapping-workshop/template.md`](skills/user-story-mapping-workshop/template.md) |
+| 116 | ✓ | [`skills/user-story-mapping/examples/sample.md`](skills/user-story-mapping/examples/sample.md) |
+| 117 | ✓ | [`skills/user-story-mapping/SKILL.md`](skills/user-story-mapping/SKILL.md) |
+| 118 | ✓ | [`skills/user-story-mapping/template.md`](skills/user-story-mapping/template.md) |
+| 119 | ✓ | [`skills/user-story-splitting/examples/sample.md`](skills/user-story-splitting/examples/sample.md) |
+| 120 | ✓ | [`skills/user-story-splitting/SKILL.md`](skills/user-story-splitting/SKILL.md) |
+| 121 | ✓ | [`skills/user-story-splitting/template.md`](skills/user-story-splitting/template.md) |
+| 122 | ✓ | [`skills/user-story/examples/sample.md`](skills/user-story/examples/sample.md) |
+| 123 | ✓ | [`skills/user-story/scripts/user-story-template.py`](skills/user-story/scripts/user-story-template.py) |
+| 124 | ✓ | [`skills/user-story/SKILL.md`](skills/user-story/SKILL.md) |
+| 125 | ✓ | [`skills/user-story/template.md`](skills/user-story/template.md) |
+| 126 | ✓ | [`skills/vp-cpo-readiness-advisor/examples/conversation-flow.md`](skills/vp-cpo-readiness-advisor/examples/conversation-flow.md) |
+| 127 | ✓ | [`skills/vp-cpo-readiness-advisor/SKILL.md`](skills/vp-cpo-readiness-advisor/SKILL.md) |
+| 128 | ✓ | [`skills/workshop-facilitation/examples/inline-input-flow.md`](skills/workshop-facilitation/examples/inline-input-flow.md) |
+| 129 | ✓ | [`skills/workshop-facilitation/SKILL.md`](skills/workshop-facilitation/SKILL.md) |
 
 ---
 

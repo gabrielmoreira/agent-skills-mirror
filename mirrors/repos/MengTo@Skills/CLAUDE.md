@@ -2,7 +2,7 @@
 
 Repo: **@MengTo/Skills**
 
-This repo contains Clawdbot-style AgentSkills written for designers.
+This repo contains designer-focused AgentSkills for reusable agent workflows.
 
 ## What to do here
 - Add new skills (new folders under `agent-skills/`)

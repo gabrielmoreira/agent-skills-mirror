@@ -172,6 +172,12 @@ automatically.
 | `NOTEBOOKLM_SERVER_HOST` | REST server bind host; non-loopback refused unless `NOTEBOOKLM_SERVER_ALLOW_EXTERNAL_BIND=1` | `127.0.0.1` |
 | `NOTEBOOKLM_SERVER_PORT` | REST server bind port | `8000` |
 | `NOTEBOOKLM_SERVER_ALLOW_EXTERNAL_BIND` | Allow REST server to bind a non-loopback host. Use only behind a trusted proxy. | `0` |
+| `NOTEBOOKLM_SERVER_SOURCE_MUTATION_CONCURRENCY` | Max concurrent REST source create/rename/delete/batch handlers. | `4` |
+| `NOTEBOOKLM_SERVER_SOURCE_WAIT_CONCURRENCY` | Max concurrent REST source wait handlers. | `4` |
+| `NOTEBOOKLM_SERVER_GENERATION_CONCURRENCY` | Max concurrent REST artifact generation/retry handlers. | `2` |
+| `NOTEBOOKLM_SERVER_DOWNLOAD_CONCURRENCY` | Max concurrent REST artifact download handlers. | `2` |
+| `NOTEBOOKLM_SERVER_RESEARCH_CONCURRENCY` | Max concurrent REST research start/cancel/import handlers. | `2` |
+| `NOTEBOOKLM_SERVER_CHAT_CONCURRENCY` | Max concurrent REST blocking chat ask handlers. | `4` |
 | `NOTEBOOKLM_QUIET_DEPRECATIONS` | Suppress the project's public-API `DeprecationWarning`s (the one-off warnings routed through `warn_deprecated`, e.g. awaiting `from_storage(...)`). Set to a truthy value (`1` / `true` / `yes` / `on`, case-insensitive) to silence them; see `docs/deprecations.md`. | (warnings emitted) |
 | `NOTEBOOKLM_FUTURE_ERRORS` | **Retired (removed in v0.8.0; ignored).** It was the v0.7.0 forward-compat preview gate for the v0.8.0 error contract; now that every break it staged is the default, the flag is a no-op — setting it has no effect. See `docs/deprecations.md`. | (ignored) |
 | `NOTEBOOKLM_VCR_RECORD_ERRORS` | Synthetic-error injection mode for VCR test cassettes (`429`, `5xx`, `expired_csrf`) | - |
@@ -230,6 +236,12 @@ be audited from one location.
 | `NOTEBOOKLM_SERVER_HOST` | REST server bind host. Non-loopback refused unless `NOTEBOOKLM_SERVER_ALLOW_EXTERNAL_BIND=1`. | `--host` flag → env var → `127.0.0.1` | `server.__main__._build_parser` / `_serving.check_bind_allowed` |
 | `NOTEBOOKLM_SERVER_PORT` | REST server bind port. | `--port` flag → env var → `8000` | `server.__main__._build_parser` / `_resolve_port` |
 | `NOTEBOOKLM_SERVER_ALLOW_EXTERNAL_BIND` | Allow REST server to bind a non-loopback host. Use only behind a trusted proxy. | Literal `1` enables; all other values disabled. | `server.__main__._check_bind_allowed` → `_serving.check_bind_allowed` |
+| `NOTEBOOKLM_SERVER_SOURCE_MUTATION_CONCURRENCY` | Max concurrent REST source create/rename/delete/batch handlers. | Env var → `4`; blank uses default; must be integer `>=1`. | `server._limits.ServerLimiters.from_env` |
+| `NOTEBOOKLM_SERVER_SOURCE_WAIT_CONCURRENCY` | Max concurrent REST source wait handlers. | Env var → `4`; blank uses default; must be integer `>=1`. | `server._limits.ServerLimiters.from_env` |
+| `NOTEBOOKLM_SERVER_GENERATION_CONCURRENCY` | Max concurrent REST artifact generation/retry handlers. | Env var → `2`; blank uses default; must be integer `>=1`. | `server._limits.ServerLimiters.from_env` |
+| `NOTEBOOKLM_SERVER_DOWNLOAD_CONCURRENCY` | Max concurrent REST artifact download handlers. | Env var → `2`; blank uses default; must be integer `>=1`. | `server._limits.ServerLimiters.from_env` |
+| `NOTEBOOKLM_SERVER_RESEARCH_CONCURRENCY` | Max concurrent REST research start/cancel/import handlers. | Env var → `2`; blank uses default; must be integer `>=1`. | `server._limits.ServerLimiters.from_env` |
+| `NOTEBOOKLM_SERVER_CHAT_CONCURRENCY` | Max concurrent REST blocking chat ask handlers. | Env var → `4`; blank uses default; must be integer `>=1`. | `server._limits.ServerLimiters.from_env` |
 | `NOTEBOOKLM_VCR_RECORD_ERRORS` | Synthetic-error injection mode for VCR test cassettes. Lowercase-normalized; valid values are `429` (rate limit), `5xx` (server error), or `expired_csrf` (CSRF token expiration). Used to record synthetic error cassettes under VCR. | Process env on each request, evaluated by `ErrorInjectionMiddleware` to intercept and synthesize failures. | `_error_injection._get_error_injection_mode` |
 
 **Boolean handling.** `NOTEBOOKLM_DEBUG_RPC` treats `1` / `true` / `yes`
