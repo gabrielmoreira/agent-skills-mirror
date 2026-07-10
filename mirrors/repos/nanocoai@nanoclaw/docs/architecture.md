@@ -904,13 +904,10 @@ MCP tools write to the container's own `outbound.db`. Anything that needs a chan
 
 (There is no `send_to_agent` tool — agent-to-agent is `send_message` to an `agent` destination.)
 
-**Scheduling** (all emit `kind: 'system'` actions except the read-only `list_tasks`):
-
-| Tool | What it does |
-|------|-------------|
-| `schedule_task` | `action: 'schedule_task'`; host inserts the `kind: 'task'` `messages_in` row with `process_after` + optional `recurrence` |
-| `list_tasks` | Read `inbound.db` (read-only) — one row per series: `kind = 'task' AND status IN ('pending','paused') GROUP BY series_id` |
-| `pause_task` / `resume_task` / `cancel_task` / `update_task` | matching `action`; host updates the live `messages_in` row(s) |
+**Scheduling**: scheduled-task management is not an MCP surface — it lives on
+`ncl tasks` (create/list/get/update/cancel/pause/resume/run/append-log). Due
+task rows live in the agent group's system session and are woken by the host
+sweep.
 
 **Central-DB / self-modification** (`kind: 'system'` actions; host authorizes, often via admin approval):
 

@@ -75,7 +75,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`.cursor/commands/create-spec.md`](.cursor/commands/create-spec.md) |
 | 15 | ✓ | [`.cursor/commands/create-worktree.md`](.cursor/commands/create-worktree.md) |
 | 16 | ✓ | [`.cursor/commands/explore-design.md`](.cursor/commands/explore-design.md) |
-| 17 | ✓ | [`.cursor/commands/implement-issue.md`](.cursor/commands/implement-issue.md) |
+| 17 | ✓ | [`.cursor/commands/implement-spec.md`](.cursor/commands/implement-spec.md) |
 | 18 | ✓ | [`.cursor/commands/profile.md`](.cursor/commands/profile.md) |
 | 19 | ✓ | [`.cursor/commands/review-alignment.md`](.cursor/commands/review-alignment.md) |
 | 20 | ✓ | [`.cursor/commands/update-issue.md`](.cursor/commands/update-issue.md) |

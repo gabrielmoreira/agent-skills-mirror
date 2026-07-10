@@ -4,8 +4,13 @@
 
 ---
 
-## 未发布：Keyword inspiration 轴库（Phase 1–2.3）+ 搜索词生成模式选择器（feature/discovery-inspiration-mvp，待发版归入下一个 vX.Y.Z）
+## v0.3.161 / extension v0.3.161 / desktop v0.3.161：Keyword inspiration 轴库 + 搜索词生成模式选择器（2026-07-09）
 
+后端源码走 `backend-v0.3.161`，浏览器插件走 `extension-v0.3.161`，桌面安装包走 `desktop-v0.3.161`。
+
+- **Responses API 无状态兼容修复（issue #95）**：`api_flavor="responses"` 此前未在请求体顶层显式发送 `store`，导致由 ChatGPT/Codex Responses 端点驱动的兼容网关拒绝请求；现在官方 OpenAI 与 OpenAI-compatible provider 的每个 Responses 请求都固定发送 `store=false`，保持无状态且不改变 Chat Completions、配置或既有重试行为。新增 provider 回归断言，锁定该请求字段。
+- **前端 UI 体验优化与扫码入口降噪（PR #97 接手修复）**：桌面 / 移动端 `delight` 队列新增自动轮播、拖拽切换、首尾循环和高度/淡入动画，桌面端使用当前封面作弱化背景；自动轮播现在复用输入保护，用户正在惊喜卡聊天、聚焦或有草稿时不会切卡串反馈。桌面 Web 滚动自动加载新增 1px 稳定哨兵、300px 预触发范围和 scroll / render / runtime 状态重检，避免哨兵已相交但首次被库存或渲染 guard 拦住后不再触发。手机版二维码改走轻量 `GET /api/qr-info` 只取 `lan_ip`，不再触发 `/api/health` 的 embedding readiness probe；该端点在 auth 开启和 degraded 模式下保持公开。补齐 QR/auth/degraded、PC 自动加载与 delight 自动轮播回归测试，并清理 `.gitignore` 噪音和 CSS whitespace。
+- **Docker 发布补丁**：`openbiliclaw-ollama` 多架构镜像构建时对 `ollama pull bge-m3` 增加 3 次有界重试，并把重试成功条件扩展为“pull 成功且 allowlist digest 对应 blob 已落盘可见”；每次重试前都会确认 `ollama serve` 仍在响应，若进程退出或不响应则重启，避免 GitHub runner / 上游模型下载偶发 `unexpected EOF`、pull 成功后 store 可见性滞后或 server 中途退出直接打断 Docker 渠道发布；发布契约测试覆盖该构建顺序。Douyin runtime source selection 拆分局部变量名，修复 `main` CI 的 MyPy literal tuple 推断误报。
 - **配置页新增「搜索词生成模式」下拉（经典 / 混合 / 灵感，两端一致）**：桌面 Web `/web` 与插件 popup 设置区把 `inspiration_search_enabled` / `inspiration_replace_merged_keywords` 两个布尔收成单一「搜索词生成模式」下拉，三档 经典 / 混合 / 灵感（option value `legacy` / `hybrid` / `inspiration`，两端值 / 顺序 / 文案一致，附「混合最贵」成本提示）。这是 UI/API 派生便利层——`DiscoveryConfigOut` 读出派生的 `keyword_generation_mode`（读容忍：`enabled=false` 一律 `legacy`），`PUT /api/config` 把它翻译回两布尔并规范化（每档显式写两布尔、不留 `replace` 残留），`config.toml` 仍只存两布尔（零 schema 改动、零后端行为改动）；非法值 → 422，mode 与显式布尔冲突时 mode 赢。（`_run_explore_inspiration_stage`），与 regular 通道并存。**种子 = merged call 现成的跨域 `explore_domains`（不是 like 二级兴趣、不是历史旧域）**，喂进 E0 参数化后的核心 pipeline；system prompt 增一条**静态** explore 规则（带 `explore_request` 时 `core_concept` 锚定"未覆盖但相关"的跨域具体实体、避开 `avoid_covered`，仍过 byte-identical cache），F1/F1.5/F2/F3 全继承。新轴打 `source='explore'`，复用 Phase 2 按 `axis_id` 的 yield 回填（零新逻辑，cohort 不排除 explore-kind 行）让高产 explore 轴 yield 上升，下一轮 `list_inspiration_axes_by_source('explore', min_yield=…)` 把它们作为当前域的 `existing_axes` 喂回，构成**舒适区扩张闭环**。装配前按归一化 `interest` 钳制候选 ∈ 当前 domains（机制保证 explore 词 `source_interest ∈ 当前域`）。**默认开**：`inspiration_search_enabled=true` 且 explore 到期即走富链路；富生成 degraded → **降级回旧拍平**（merged domains 现成、explore 池不裸奔），到期轮只多一次 explore 富生成调用、regular 通道不变；`replace` 模式 explore 路径不变。
 - **Keyword inspiration 多平台丰富度修复（Phase 2.1）**：真机发现平台数越多（6 平台 = 单次调用 48 槽），`core_concept` 会退化成"话题名 + 平台后缀"（`新游推荐 盘点`）而非具体锚点（`士官长 登陆PS5`）。三管齐下修复：**(F1)** `_INSPIRATION_AXIS_KEYWORD_SYSTEM_PROMPT` 新增静态具体性规则（`core_concept` 须锚定 `fresh_evidence` 里的具体实体 / 事件 / 作品 / 人物 / 机制、禁止复述 interest 或 axis_label、无锚点才退回话题级，仍过 byte-identical cache）；**(F1.5，主)** `materialize_platform_keywords` 装配排序键加确定性 `is_specific` 信号，具体候选同槽位压过泛化候选（`is_specific` 用剥离残留法按最长优先子串移除 interest / axis / marker，正确处理无空格 CJK 如 `新游推荐盘点`→复述），配套 `restatement_rate()` 观测；**(F2)** 单次调用 `max_tokens` 随槽位放大 `min(16384, 8192 + max(0, slots-12)*256)`（6 平台 24 槽→11264、48 槽→16384），provider max_tokens 报错时降回 8192 floor 有界重试一次，不破坏"一轮 ≤1 次成功生成调用"不变式；**(F3)** `RealizedKeyword.metadata` 观测性增补 `core_concept` / `decoration` 并让 preview 报告显式回写 `metadata_by_platform`（只观测、不改最终 keyword 文本与入池）。
 - **Keyword inspiration 默认档位提升为 `high`**：`inspiration_breadth` 发布默认从 `medium` 改为 `high`（更宽的素材 / 轴 / 关键词产量：每平台上限 16、采样 8 个二级兴趣、probe 搜索翻倍）。开启 inspiration 的用户升级后不显式设档位即走 `high`，每轮真实 probe 搜索与 LLM 用量随之放大；成本敏感可显式设 `medium`（逐项等于收敛前默认）或 `low`。
@@ -36,6 +41,11 @@
 - **搜索预览噪声过滤**：inspiration seed 抽取会过滤 Markdown 表格分隔符、纯标点和短残句，避免 `| --- | --- |`、`故事是` 这类搜索预览噪声进入关键词池。
 - **灵感、轴库与横向扩展持久化**：SQLite 初始化新增 `discovery_inspiration_probe_cache`、`discovery_inspiration_expansion_cache` 与 `discovery_inspiration_axis`，并提供 probe / expansion yield DAO 以及 `upsert_inspiration_axes()` / `list_inspiration_axes()`；同一灵感、扩展或轴可刷新证据字段，但不会清零反馈计数。
 - **关键词溯源元数据与 yield 回填**：`discovery_keywords` 增加 `aspect_id`、`inspiration_id`、`expansion_id`、`angle_id`、`source_interest`、`generation_reason` 等可选字段；`insert_pending_keywords()` 支持 `metadata_by_keyword`，但去重键仍保持原来的 `(platform, keyword, profile_kw_digest, keyword_kind)`。`increment_keyword_yield()` 成功记录新内容 yield 后，会把计数回填到对应 inspiration / expansion，重复 content 不会 double-count。
+- **跨设备扩展认证与密钥管理（PR #99）**：远程扩展访问默认关闭；CLI 生成高熵设备密钥，配置仅保存 SHA-256 摘要，扩展用其换取最长 168 小时的短会话。
+- **最小凭证暴露面**：普通 HTTP 统一使用 `Authorization: Bearer`，仅 WebSocket 与图片代理因浏览器接口限制携带短会话 query；长期设备密钥不进入普通请求、URL 或日志。
+- **设备生命周期 CLI**：`ext-key generate/enable/disable/list/revoke` 管理密钥；撤销会提升 `auth_epoch` 立即失效全部现有会话，运行库失败时配置自动回滚。
+- **最小远程 host 权限**：扩展保存 LAN / 远程 endpoint 前请求 `scheme://host/*` 可选权限；权限 API 无法跨浏览器限定端口，实际请求仍固定到配置端口。公网地址强制 HTTPS，WebSocket 自动使用 WSS。
+- **兼容升级**：清理 PR 早期的密码缓存与裸 token 存储，不采用 Extension ID / RSA manifest key 或 Docker 网关可信绕过。
 
 ## v0.3.160 / extension v0.3.160 / desktop v0.3.160：把 bge-m3 打进交付物,消灭装机时的模型下载（2026-07-07）
 

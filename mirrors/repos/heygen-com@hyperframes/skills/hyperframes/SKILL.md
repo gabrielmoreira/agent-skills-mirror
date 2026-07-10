@@ -47,6 +47,7 @@ This section knows only the top-level workflows; it does not load their internal
 Routing needs to know **what the video is about** — its input and subject. If that's unspecified ("make a video about our thing" with no URL, product, topic, or asset), ask before entering any workflow — committing to a workflow IS the routing decision. At most two questions:
 
 - **Input** — a product (URL / brief), a general website, a GitHub PR, a topic to explain, or an existing talking-head video?
+- **Figma source** — if the input is a figma.com URL, `/figma` extracts assets/tokens/(components/storyboard) first, regardless of which workflow below is chosen for the video's shape; that workflow then builds from `/figma`'s output — never by driving Figma via raw MCP tools directly (skips SVG sanitization, provenance, and brand-token binding).
 
 **Mode** — if the request carries an ongoing autonomous signal ("surprise me", "decide for me", "just build it"), note it and pass it into the workflow: the whole run goes autonomous and no later step re-asks. With no signal, the workflow asks the mode as its first brief question. Default is collaborative. (`/motion-graphics` is autonomous by design.) Semantics: `hyperframes-core` → `references/brief-contract.md`.
 

@@ -3,7 +3,7 @@ name: loop-engineer
 description: >
   Domain-agnostic autonomous loop for OpenAI Codex CLI. Asks 2 questions, scaffolds
   a parallel agent team as TOML files (resource-scout, researcher, planner, agent-factory,
-  executor, evaluator, verifier, auditor, memory-keeper), generates loop-stack/<LOOP_ID>/
+  executor, verifier, auditor, memory-keeper), generates loop-stack/<LOOP_ID>/
   state files, and outputs the exact `codex /goal` command for the fully autonomous loop.
 ---
 
@@ -187,35 +187,34 @@ d. Read AGENTS.md — if specialized agents were created for any tasks in this b
      Goal output (code, documents, files) goes to the project directory, NOT inside loop-stack/. loop-stack/ is state-only.
    Wait for all. Increment turns_used.
 
-e. Spawn memory-keeper checkpoint for each task in parallel (local only):
-   Wait for all.
+e. Spawn verifiers in parallel (one per task) — merged verifier does both jobs in one pass (researcher-criteria check + stop condition):
+   For each task: spawn_agent verifier with:
+     Loop directory: loop-stack/<LOOP_ID>/
+     Current task: {this_task}
+     Read .codex/agents/verifier.toml for full instructions (checks RESEARCH.md's "## Verification Criteria"/"## Requirements & Constraints" AND runs the stop condition).
+     Call report_agent_job_result when done.
+   Wait for all. Increment turns_used.
 
-f. Spawn evaluators in parallel (one per task):
-   Wait for all.
-
-g. Spawn verifiers in parallel (one per task):
-   Wait for all.
-
-h. Process verifier results per task:
+f. Process verifier results per task:
    - VERIFIED_PASS → proceed to auditor
    - FAILED, attempts < 3 → increment attempts, retry from (c) with error context
    - FAILED, attempts >= 3 → AUTO-SKIP: add to skipped_tasks, skip this task
 
-i. Spawn auditors in parallel (one per passing task):
+g. Spawn auditors in parallel (one per passing task):
    Wait for all.
 
-j. Process audit results per task:
+h. Process audit results per task:
    - CLEAN/WARN → proceed
    - BLOCK → AUTO-FIX: spawn executor once with BLOCK context, re-verify.
      Still BLOCK → auto-skip.
 
-k. spawn_agent: memory-keeper (single, final consolidation)
+i. spawn_agent: memory-keeper (single, final consolidation)
    Distill all batch learnings to loop-stack/<LOOP_ID>/MEMORY.md.
    Append most important per-task learning to loop-stack/.global/MEMORY.md.
    Call report_agent_job_result when done.
    Wait for completion.
 
-l. Advance: mark [x] for passed tasks. If USE_GIT=yes: commit PLAN.md + STATUS.md.
+j. Advance: mark [x] for passed tasks. If USE_GIT=yes: commit PLAN.md + STATUS.md.
    Find next unchecked group. If none → State = ALL DONE.
    Rename: loop-stack/<LOOP_ID>/ → loop-stack/<LOOP_ID>_DONE/ (or _EXTENDED_DONE/ if this loop directory contained _EXTENDED)
    Write REPORT.md in the renamed directory with goal, outcome, tasks, skipped, learnings.
@@ -244,12 +243,13 @@ HARD RULE — no plan-approval gate: proceed through this entire sequence withou
 - Phase 0 always first — run the check-resume script, never scan `loop-stack/` by hand.
 - **File copy**: shell commands only. Never write TOML agent files manually.
 - **Global data first**: every agent reads `.global/MEMORY.md` and `.global/TOOLS.md` before acting.
-- **Parallel first**: startup researchers parallel, per-task researchers parallel, on-demand agent-factory parallel, executors parallel, evaluators parallel, verifiers parallel, auditors parallel.
+- **Parallel first**: startup researchers parallel, per-task researchers parallel, on-demand agent-factory parallel, executors parallel, verifiers parallel, auditors parallel.
 - **Researcher before executor**: always. Dynamic count based on goal complexity.
 - **Agent-factory is on-demand, not a fixed startup step.** Invoke it only right before executing a task that clearly needs a specialist, and spawn it for all qualifying tasks in a batch simultaneously. Most loops never call it.
 - **knowledge-sources.md (`.codex/knowledge-sources/`) is a reference researchers consult on demand**, not a phase step.
 - **No watcher agent.** Check heartbeats yourself if an agent is slow; never spawn a dedicated watcher.
-- **Memory-keeper twice per batch**: checkpoint (local) after executors, consolidation (local+global) after audit.
+- **No separate evaluator.** Verifier does both jobs in one pass — checks RESEARCH.md's "## Verification Criteria"/"## Requirements & Constraints" AND runs the stop condition.
+- **Memory-keeper runs once per task batch**: single final consolidation (local+global) after audit. Executors already append learnings to MEMORY.md inline, so no mid-batch checkpoint call is needed.
 - **Executors append to MEMORY.md directly** during work.
 - **Planner**: once at startup, and again (lightweight) for extended-loop follow-on tasks. Creates parallel-group-tagged task list.
 - **Fully autonomous**: no user pauses. 3 fails → auto-skip. BLOCK → auto-fix once → skip.

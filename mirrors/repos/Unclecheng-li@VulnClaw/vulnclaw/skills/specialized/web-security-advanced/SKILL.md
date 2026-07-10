@@ -1,6 +1,32 @@
 ---
 name: web-security-advanced
 description: Web高级安全测试 — 注入攻击族、协议安全、认证与逻辑漏洞、文件与部署安全、现代Web攻击面，含完整Playbook
+routing:
+  target_types: [web, api]
+  phases: [vuln_discovery, exploitation]
+  task_types: [pentest, audit]
+  vulnerability_classes:
+    - sqli
+    - xss
+    - ssrf
+    - ssti
+    - xxe
+    - rce
+    - deserialization
+    - idor
+    - csrf
+    - cors
+    - file_upload
+    - path_traversal
+    - auth_bypass
+    - jwt
+    - oauth
+    - graphql
+    - websocket
+    - request_smuggling
+    - prototype_pollution
+    - business_logic
+  exclude_signals: ["无法重放", "签名阻塞", "重放被阻"]
 ---
 
 # Web 高级安全测试 Skill

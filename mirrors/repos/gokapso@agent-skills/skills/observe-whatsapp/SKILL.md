@@ -128,6 +128,7 @@ node scripts/openapi-explore.mjs --spec platform schema WebhookDelivery
 ## Notes
 
 - For webhook setup (create/update/delete, signature verification, event types), use `integrate-whatsapp`.
+- For Project Event definitions, event-triggered workflow setup, or `emit_event` graph changes, use `automate-whatsapp`.
 - Prefer resolving a display phone number to the canonical `phone_number_id` before deep debugging.
 - Prefer Logs search before older single-resource log endpoints when correlating across messages, workflows, API calls, and webhook deliveries.
 - Keep the scripts as the fallback path when the CLI is unavailable or when you need API-log or webhook-delivery inspection.

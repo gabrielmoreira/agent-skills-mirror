@@ -90,7 +90,7 @@ Route elsewhere when the task is primarily: multi-agent chain orchestration (`Ne
 - When the goal invokes Ralph Loop semantics (`PROMPT.md`, `<promise>COMPLETE</promise>`, `cat PROMPT.md \| claude`, ghuntley-style scripts), follow `reference/ralph-loop-pattern.md`.
 - When driving nexus **apex Phase 6**: engine fixed to **Codex CLI** (5 subagent tools); run the availability check (`agents.max_depth >= 2`, tools permitted) before consuming the contract, no silent fallback to Claude Agent. See `reference/resilience-patterns.md §Codex CLI engine check`.
 - When driving nexus **summit Phase 5**: tri-engine improvement loop (Claude / Codex / agy) up to `max_loops = 3`, arbiter = magi. See `reference/resilience-patterns.md §Tri-engine improvement loop`.
-- When driving a nexus **enact build loop**: consume the Charter §4/§5/§7/§10 slice read-only (sha256-pinned, never mutate); external DONE gate is the §10 per-package DoD checklist; append `PKG_START`/`PKG_RECOVER`/`PKG_DONE` to the §9 run-log (default `docs/CHARTER.run.log.md`); engine per §5 (Codex CLI, latest model). Orbit drives one package and reports terminal status to `enact` — it does not construct the team or sequence packages. See `reference/charter-loop-driver.md`.
+- When driving a nexus **enact build loop**: consume the Charter §4/§5/§7/§10 slice read-only (sha256-pinned, never mutate); external DONE gate is the §10 per-package DoD checklist; append `PKG_START`/`PKG_RECOVER`/`PKG_DONE` to the §9 run-log (default `docs/CHARTER.run.log.md`); engine per §5 (Codex CLI, latest generation — role-matched gpt-5.6 variant). Orbit drives one package and reports terminal status to `enact` — it does not construct the team or sequence packages. See `reference/charter-loop-driver.md`.
 - Lay out runner prompts with `PROMPT_CACHE_BREAKPOINTS=4` `cache_control` breakpoints (system / tools / goal / context tail); run each iteration in a dedicated `git worktree`; gate DONE through an **independent critic model** (`CRITIC_MODEL=haiku`).
 - Author for Opus 4.8 defaults: apply `_common/OPUS_48_AUTHORING.md` **P3** (front-load Read of goal / contracts / telemetry / checkpoint state at DESIGN) and **P5** (think step-by-step at checkpoint-replay, atomic write, OTel adoption, RECOVER triage) as critical; P1/P2 recommended.
 
@@ -248,6 +248,8 @@ Pre-flight & health gates, 3-Tier Timeout architecture, Convergence Detection th
 
 ### Circuit Breaker
 
+Single principle: **detect a stall or circular pattern, then stop.** The two mechanisms below are concrete applications of this one rule — repeated identical failures during retries, and an unresolved back-and-forth during summit-loop debate.
+
 Prevents infinite retry loops when the same error recurs.
 
 | State | Condition | Behavior |
@@ -260,7 +262,7 @@ State file `${LOOP_DIR}/.circuit-state`; reset via `recover.sh --reset-circuit` 
 
 #### Agent Tennis Circuit Breaker (summit Phase 5 only)
 
-When orbit drives the summit improvement loop (max 3 iterations), a dedicated **Agent Tennis** breaker fires if the same finding is debated between Improvement and Verification teams for `≥ 3` turns without resolution. Action: exit loop immediately, deliver with an unresolved-finding caveat, escalate to user. Independent of `CIRCUIT_THRESHOLD`; cannot be bypassed. See `nexus/reference/summit-recipe.md` §Phase 5 Circuit Breakers.
+When orbit drives the summit improvement loop (max 3 iterations), the same stall-detection principle applies to team debate: fires if the same finding is debated between Improvement and Verification teams for `≥ 3` turns without resolution. Action: exit loop immediately, deliver with an unresolved-finding caveat, escalate to user. Tracked separately from `CIRCUIT_THRESHOLD` (different signal — debate turns, not retry failures) but governed by the same stop-on-stall rule above; this stop is never skipped. See `nexus/reference/summit-recipe.md` §Phase 5 Circuit Breakers.
 
 ## Contract and Evidence Rules
 

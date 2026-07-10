@@ -837,7 +837,7 @@ _For shipping clean changes in public repositories._
 
 _For creating and maintaining high-quality SKILL.md assets._
 
-**Plugin status:** Codex pending hardening · Claude pending hardening
+**Plugin status:** Codex plugin-safe · Claude plugin-safe
 
 - [`skill-creator`](../../skills/skill-creator/): Design effective new skills.
 - [`skill-developer`](../../skills/skill-developer/): Implement triggers, hooks, and skill lifecycle.
@@ -1061,4 +1061,4 @@ Found a skill that should be in a bundle? Or want to create a new bundle? [Open 
 
 ---
 
-_Last updated: June 2026 | Total Skills: 1,935+ | Total Bundles: 59_
+_Last updated: June 2026 | Total Skills: 1,943+ | Total Bundles: 59_

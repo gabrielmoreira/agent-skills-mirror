@@ -136,9 +136,12 @@ def save_output(
     extension = "json" if emit == "json" else "html" if emit == "html" else "md"
     raw_label = "raw-html" if emit == "html" else "raw"
     suffix_part = f"-{suffix}" if suffix else ""
-    out_path = path / f"{slug}-{raw_label}{suffix_part}.{extension}"
-    if out_path.exists():
-        out_path = path / f"{slug}-{raw_label}{suffix_part}-{datetime.now().strftime('%Y-%m-%d')}.{extension}"
+    base = path / f"{slug}-{raw_label}{suffix_part}.{extension}"
+    date_str = datetime.now().strftime('%Y-%m-%d')
+    candidates = [base]
+    candidates.append(path / f"{slug}-{raw_label}{suffix_part}-{date_str}.{extension}")
+    for i in range(1, 100):
+        candidates.append(path / f"{slug}-{raw_label}{suffix_part}-{date_str}-{i}.{extension}")
     # Markdown saves keep the complete debug artifact. JSON and HTML preserve
     # their requested wire format so file extensions match their content.
     if rendered_content is not None:
@@ -147,8 +150,19 @@ def save_output(
         content = emit_output(report, emit, synthesis_md=synthesis_md)
     else:
         content = render.render_full(report)
-    out_path.write_text(content, encoding="utf-8")
-    return out_path
+    encoded = content.encode("utf-8")
+    for candidate in candidates:
+        try:
+            fd = os.open(candidate, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+        except FileExistsError:
+            continue
+        with os.fdopen(fd, "wb") as f:
+            f.write(encoded)
+        return candidate
+    # Fallback: all 101 candidates existed (extremely unlikely).
+    raise RuntimeError(
+        f"save_output: could not find a unique filename after 101 attempts in {path}"
+    )
 
 
 def save_rendered_output(rendered_content: str, output_file: str) -> Path:
@@ -437,7 +451,8 @@ def parse_competitors_plan(raw: str | None) -> dict[str, dict]:
     plan_str = raw
     if os.path.isfile(plan_str):
         try:
-            plan_str = open(plan_str, encoding="utf-8").read()
+            with open(plan_str, encoding="utf-8") as f:
+                plan_str = f.read()
         except (OSError, UnicodeDecodeError) as exc:
             sys.stderr.write(f"[CompetitorsPlan] Cannot read plan file: {exc}\n")
             raise SystemExit(2)
@@ -1171,7 +1186,8 @@ def main() -> int:
             plan_str = args.plan
             if os.path.isfile(plan_str):
                 try:
-                    plan_str = open(plan_str, encoding="utf-8").read()
+                    with open(plan_str, encoding="utf-8") as f:
+                        plan_str = f.read()
                 except (OSError, UnicodeDecodeError) as exc:
                     sys.stderr.write(f"[Planner] Cannot read --plan file: {exc}\n")
                     raise SystemExit(2)

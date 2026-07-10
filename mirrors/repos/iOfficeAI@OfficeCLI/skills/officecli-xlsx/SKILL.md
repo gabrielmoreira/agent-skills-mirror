@@ -66,13 +66,17 @@ Before you declare done, run `officecli view "$FILE" html` and Read the returned
 
 If any of the above fails, STOP and fix before declaring done.
 
-**Print layout.** Any sheet the user may print or send as a board pack needs page setup. Default portrait + no fit-to-page splits wide tables and charts mid-way. Apply per sheet:
+**Print layout.** Any sheet the user may print or send as a board pack needs page setup. Default portrait + no fit-to-page splits wide tables and charts mid-way. Pick the fit mode by sheet shape:
 
 ```bash
+# Summary / chart / dashboard sheet (small, ≤ ~40 rows): fit to a single page.
 officecli set "$FILE" "/Summary" --prop orientation=landscape --prop fitToPage=true
+# Tall data table (dozens+ rows): fit WIDTH only, let height paginate naturally.
+# fitToPage=true here crushes every row onto one page → unreadable (### dates, 5px rows).
+officecli set "$FILE" "/Data" --prop orientation=landscape --prop fitToPage=1x0
 ```
 
-Trigger: sheet holds a chart, or > 8 columns, or the user's ask mentions print / board / investor.
+`fitToPage=true` == `1x1` == fit both axes to one page — correct only when the sheet is already short. `1x0` = fit 1 page wide, unlimited pages tall. Trigger: sheet holds a chart, or > 8 columns, or the user's ask mentions print / board / investor.
 
 ### Financial models only — skip this section if you are building a template, tracker, CSV import, or operational sheet
 
@@ -389,11 +393,14 @@ Your first workbook is almost never correct. Treat QA as a bug hunt, not a confi
    ```
 4. `officecli validate "$FILE"` — safe with a resident open; `validate` flushes pending edits to disk itself.
 5. **Visual pass — walk every sheet via the HTML preview.** Run `officecli view "$FILE" html` and Read the returned HTML path. Each sheet renders with charts inline. Scan for `###`, truncated titles, placeholder tokens (`$fy$24`, `{var}`, `<TODO>`), sliced charts, white-slice pie charts, empty chart anchors — **STOP and fix before declaring done**. "validate pass" is not delivery; "the preview looks like a real workbook" is delivery. For human preview, run `officecli watch "$FILE"` (user opens the live preview at their own discretion) or have them open the `.xlsx` directly in Excel / WPS / Numbers.
-6. **Print layout fix (wide tables / multi-chart sheets).** When a sheet holds a chart or a wide table and the user will print it, set per-sheet page layout so it fits on one page:
+6. **Print layout fix (wide tables / multi-chart sheets).** When a sheet holds a chart or a wide table and the user will print it, set per-sheet page layout — but match the fit mode to the sheet's height:
    ```bash
+   # Short summary / chart sheet → fit to one page.
    officecli set "$FILE" "/Summary" --prop orientation=landscape --prop fitToPage=true
+   # Tall data table → fit width only (fitToPage=true would crush all rows onto one unreadable page).
+   officecli set "$FILE" "/Data" --prop orientation=landscape --prop fitToPage=1x0
    ```
-   Outcome: each sheet's print layout is one page with no mid-chart splits. Apply to every sheet that holds a chart or a > 8-column table.
+   Outcome: charts/wide tables print without mid-chart splits; tall tables stay readable across natural page breaks. Apply to every sheet that holds a chart or a > 8-column table.
 7. If anything failed, fix, then **rerun the full cycle**. One fix commonly creates another problem.
 
 `officecli view issues` + `view html` are the structural QA pair: `issues` catches broken formulas and empty sheets; `view html` (Read the returned HTML path) catches `###`, truncation, and token leakage. Chart fill colors / theme tints can vary across viewers — spot-check in the user's target viewer when color fidelity matters.

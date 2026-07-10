@@ -13,7 +13,7 @@ description: Search, ingest, expand chunk context, or manage local documents via
 | `ingest_data` | — | Raw content (HTML, text) with source URL |
 | `query_documents` | `npx mcp-local-rag query <text>` | Semantic + keyword hybrid search; optional `scope` to limit to a path prefix |
 | `delete_file` | `npx mcp-local-rag delete <path>` | Remove ingested content |
-| `list_files` | `npx mcp-local-rag list` | File ingestion status |
+| `list_files` | `npx mcp-local-rag list [--scope <prefix>]` | File ingestion status; optional `scope` to limit to a path prefix (reachable scan path) |
 | `status` | `npx mcp-local-rag status` | Database stats |
 | `read_chunk_neighbors` | `npx mcp-local-rag read-neighbors` | Read N chunks adjacent to a known chunkIndex (context expansion; call after `query_documents` or grep) |
 

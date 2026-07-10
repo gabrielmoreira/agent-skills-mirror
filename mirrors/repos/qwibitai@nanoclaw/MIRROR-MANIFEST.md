@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `qwibitai/nanoclaw` — 26 default patterns, 23 followed patterns, 118 file(s) materialized.
+Mirror of `qwibitai/nanoclaw` — 26 default patterns, 24 followed patterns, 119 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `qwibitai/nanoclaw` — 26 default patterns, 23 followed patterns, 118
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 23 |
-| Files         | 118 |
+| Followed pats | 24 |
+| Files         | 119 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,6 +72,7 @@ Mirror of `qwibitai/nanoclaw` — 26 default patterns, 23 followed patterns, 118
 - `docs/templates.md`
 - `CHANGELOG.md`
 - `docs/onecli-upgrades.md`
+- `docs/ncl-tasks-migration.md`
 - `docs/upgrade-recovery.md`
 - `RELEASING.md`
 
@@ -189,16 +190,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 106 | → | [`docs/db.md`](docs/db.md) |
 | 107 | → | [`docs/isolation-model.md`](docs/isolation-model.md) |
 | 108 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
-| 109 | → | [`docs/onecli-upgrades.md`](docs/onecli-upgrades.md) |
-| 110 | → | [`docs/provider-migration.md`](docs/provider-migration.md) |
-| 111 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
-| 112 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
-| 113 | → | [`docs/skills-model.md`](docs/skills-model.md) |
-| 114 | → | [`docs/templates.md`](docs/templates.md) |
-| 115 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
-| 116 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
-| 117 | → | [`README.md`](README.md) |
-| 118 | → | [`RELEASING.md`](RELEASING.md) |
+| 109 | → | [`docs/ncl-tasks-migration.md`](docs/ncl-tasks-migration.md) |
+| 110 | → | [`docs/onecli-upgrades.md`](docs/onecli-upgrades.md) |
+| 111 | → | [`docs/provider-migration.md`](docs/provider-migration.md) |
+| 112 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
+| 113 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
+| 114 | → | [`docs/skills-model.md`](docs/skills-model.md) |
+| 115 | → | [`docs/templates.md`](docs/templates.md) |
+| 116 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
+| 117 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
+| 118 | → | [`README.md`](README.md) |
+| 119 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

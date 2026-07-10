@@ -9,6 +9,81 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.1.0] - 2026-07-10 - "Maintainer Batch and Security Boundary Hardening"
+
+> Four reviewed community contributions plus targeted hardening for third-party consultation, update, install, connector-routing, and workspace-instruction boundaries.
+
+## Added
+
+- Added a self-contained Flutter implementation playbook covering architecture, typed failures, testing, and performance guidance (PR #799).
+- Added **auto-research** with explicit per-consultation approval and redaction requirements (PR #800).
+- Added **apple-container**, **gemini-deep-research**, **grok-build**, **postgres-readonly-queries**, and **telegram-bot-messaging** (PR #801).
+- Added **product-decision-agent** with Chinese product-decision playbooks, quality gate, and source-neutral metadata (PR #802).
+
+## Fixed
+
+- Hardened **ask-copilot** and both distributed plugin copies: no blanket path access for review and no shell construction from untrusted prompt text or filenames.
+- Removed remote self-overwrite guidance from **deepapi** and made **browser-harness** updates explicitly user-approved.
+- Replaced Pilot Protocol's predictable installer path with a private `mktemp` directory and cleanup trap.
+- Require a user-confirmed Notion database ID before **trading-ledger** reads or writes trade data.
+- Require explicit user approval before **atlas-contract** imports project-local `Atlas.md` clauses.
+
+## Changed
+
+- Regenerated canonical Codex and Claude plugin distributions from the hardened skill sources.
+
+## Validation
+
+- Ran `npm run security:docs`, `npm run validate`, `npm run validate:references`, generated plugin synchronization, and the release verification suite.
+
+## Credits
+
+- **[@Franklyn-R-Silva](https://github.com/Franklyn-R-Silva)** for PR #799 (`flutter-expert`).
+- **[@zyu51847-maker](https://github.com/zyu51847-maker)** for PR #800 (`auto-research`).
+- **[@sanjay3290](https://github.com/sanjay3290)** and **[sanjay3290/ai-skills](https://github.com/sanjay3290/ai-skills)** for PR #801.
+- **[@atdy](https://github.com/atdy)** for PR #802 (`product-decision-agent`).
+
+## [14.0.0] - 2026-07-09 - "Agentic Awesome Skills Rename and Catalog Continuity"
+
+> Project identity, package metadata, public URLs, source provenance, social preview assets, and reference completeness aligned after the rename from Antigravity Awesome Skills to Agentic Awesome Skills.
+
+Start here:
+
+- Install: `npx agentic-awesome-skills --help`
+- Choose your tool: [README.md#choose-your-tool](README.md#choose-your-tool)
+- Browse skills: [README.md#browse-1936-skills](README.md#browse-1936-skills)
+- Hosted catalog: https://sickn33.github.io/agentic-awesome-skills/
+
+This is a major release because the public project identity changed from **Antigravity Awesome Skills** to **Agentic Awesome Skills**. The rename reflects the catalog's broader role across Claude Code, Codex, Cursor, Gemini CLI, Antigravity, and other agentic coding environments while preserving Antigravity compatibility.
+
+## Added
+
+- Added **ask-copilot**, a critical-risk Copilot CLI consultation skill with explicit user-consent requirements for sending local context to GitHub Copilot and separate approval gates before any tool execution or workspace mutation (PR #792).
+
+## Changed
+
+- Promoted the renamed **Agentic Awesome Skills** identity as the canonical package, repository, hosted catalog, changelog, and public metadata surface.
+- Refreshed **x-twitter-scraper** with current Xquik source metadata, MIT license provenance, SDK setup guidance, and official-source README placement (PR #794).
+- Replaced the public social preview card with a PNG asset and updated web SEO verification to validate the 1200x630 PNG dimensions.
+
+## Fixed
+
+- Restored the missing `pytest-skill/reference/playbook.md` file in the canonical skill and both plugin mirrors, resolving the broken reference reported in issue #793.
+
+## Validation
+
+- Hardened and merged PR #792 after `Skills Registry CI`, `Skill Review`, `Dependency Review`, `CodeQL`, Socket, and Snyk checks passed.
+- Verified and merged PR #794 after `Skills Registry CI`, `Skill Review`, `Dependency Review`, `CodeQL`, Socket, and Snyk checks passed.
+- Reproduced issue #793 locally by confirming `pytest-skill` referenced `reference/playbook.md` while the distributed skill folders lacked the file, then restored it from the LambdaTest upstream source.
+- Closed issue #793 after restoring the missing pytest reference file on `main`.
+
+## Credits
+
+- **[@cshara1](https://github.com/cshara1)** for PR #792 (`ask-copilot`).
+- **[@kriptoburak](https://github.com/kriptoburak)** and **[Xquik-dev/x-twitter-scraper](https://github.com/Xquik-dev/x-twitter-scraper)** for PR #794 (`x-twitter-scraper` source refresh).
+- **[@grabear](https://github.com/grabear)** for reporting the missing pytest reference in issue #793.
+- **[LambdaTest/agent-skills](https://github.com/LambdaTest/agent-skills)** for the upstream `pytest-skill` playbook restored in this release.
+
 ## [13.13.0] - 2026-07-08 - "Codex Profiles, Deep Research, and Agent Reliability Gates"
 
 > Codex profile isolation, deep research orchestration, pre-ship verification, agent networking, tree-ring memory, and synchronized public metadata for the 1,935+ skill catalog.

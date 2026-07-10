@@ -3,7 +3,7 @@ name: loop-engineer
 description: >
   Loop engineering wizard for Antigravity. Asks 2 questions, then orchestrates
   a fully autonomous parallel agent team (resource-scout, researcher, planner,
-  agent-factory, executor, evaluator, verifier, auditor, memory-keeper) until the goal is met.
+  agent-factory, executor, verifier, auditor, memory-keeper) until the goal is met.
   Uses invoke_subagent for true parallel dispatch. Researcher agents use the
   built-in research TypeName. Persistent memory, git integration, resume support.
 ---
@@ -11,6 +11,8 @@ description: >
 # Loop Engineer (Antigravity)
 
 You are running a loop engineering wizard. Follow these phases in order.
+
+**Prerequisite — reduce permission friction:** confirmed via antigravity.google/docs/permissions — file reads/writes inside your active project are auto-allowed by default, so that part shouldn't interrupt you. `command(...)` actions (every terminal/bash call — including the init and check-resume scripts, and every `git commit` the executor makes) default to **Ask** unless you've added an allow rule. Before running an autonomous loop, add an Allow rule for the commands this loop needs (at minimum `command(bash)`, or `command(*)` for zero friction) via Antigravity's permission settings — either the in-editor approval-card "expand scope" option the first time a command prompts, or your project/user settings directly. Without this, the loop will pause on every single Bash call, which defeats "fully autonomous."
 
 ---
 
@@ -220,26 +222,22 @@ For parallel steps: call `invoke_subagent` once per agent, back-to-back in the s
    ```
    Wait for all. Increment turns_used.
 
-6. **Parallel MEMORY-KEEPER checkpoints** — one per task (local only). `TypeName: "self"`. Wait for all.
+6. **Parallel VERIFIERS** — one per task. Verifier now does both jobs in one pass: checks the task against RESEARCH.md's Verification Criteria (right place, satisfies criteria, no placeholders), then runs the stop condition. `TypeName: "self"`. Wait for all.
 
-7. **Parallel EVALUATORS** — one per task. `TypeName: "self"`. Wait for all.
-
-8. **Parallel VERIFIERS** — one per task. `TypeName: "self"`. Wait for all.
-
-9. **Process verifier results**:
+7. **Process verifier results**:
    - PASS → auditor
    - FAIL < 3 → retry from step 3
    - FAIL ≥ 3 → auto-skip
 
-10. **Parallel AUDITORS** (passing tasks only) — one per task. `TypeName: "self"`. Wait for all.
+8. **Parallel AUDITORS** (passing tasks only) — one per task. `TypeName: "self"`. Wait for all.
 
-11. **Process audit results**:
+9. **Process audit results**:
     - CLEAN/WARN → proceed
     - BLOCK → auto-fix (one executor with BLOCK context, `TypeName: "self"`, re-run verifier). Still BLOCK → auto-skip.
 
-12. **MEMORY-KEEPER final** — single `invoke_subagent`, `TypeName: "self"`, local + global write. Wait.
+10. **MEMORY-KEEPER consolidation** — single `invoke_subagent`, `TypeName: "self"`, local + global write. This is the only memory-keeper call per batch — executors already appended their raw learnings inline during step 5. Wait.
 
-13. **Advance** — mark [x], git commit if enabled. Find next group.
+11. **Advance** — mark [x], git commit if enabled. Find next group.
     None → ALL DONE → rename `loop-stack/<LOOP_ID>/` → `loop-stack/<LOOP_ID>_DONE/` (or `_EXTENDED_DONE/` if this was an extended loop) → Phase 6.
 
 ---
@@ -262,7 +260,8 @@ Write `REPORT.md` inside the renamed loop directory and print summary.
 - **Agent-factory is on-demand, not a fixed phase step.** Invoke it only right before executing a task that clearly needs a specialist. Most loops never call it.
 - **knowledge-sources.md is a reference file researchers consult on demand**, not a phase step.
 - **No watcher agent.** Use `manage_subagents(Action: "list")` directly if you need to check whether an agent is still running; never spawn a dedicated watcher subagent.
-- **Memory-keeper twice per batch**: checkpoint (local) after executors, consolidation (local+global) after audit.
+- **No separate evaluator.** Verifier does both jobs in one pass: checks the task against RESEARCH.md's Verification Criteria, then runs the stop condition. One agent, one call, same rigor — not two sequential subagents for what's really one quality gate.
+- **Memory-keeper runs once per task batch** (after audit, local + global) — not a separate mid-batch checkpoint. Executors already append their own learnings to MEMORY.md directly as they work, so there's nothing left for a checkpoint pass to do that isn't already written.
 - **Executors append to MEMORY.md directly** during work.
 - **Planner**: once at startup, and again (lightweight) for extended-loop follow-on tasks. Tasks MUST include [G1]/[G2] parallel group tags.
 - **Fully autonomous**: no pauses. 3 fails → auto-skip. BLOCK → auto-fix once → skip.

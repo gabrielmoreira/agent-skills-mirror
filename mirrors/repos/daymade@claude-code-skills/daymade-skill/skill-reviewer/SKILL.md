@@ -7,25 +7,20 @@ description: Reviews and improves Claude Code skills against official best pract
 
 Review and improve Claude Code skills against official best practices.
 
-## Setup (Auto-Install Dependencies)
+## Quick Start
 
-Before using this skill, ensure `skill-creator` is installed for automated validation.
-
-**Auto-install sequence:**
+Run the bundled reviewer with PyYAML declared explicitly through `uv`:
 
 ```bash
-# 1. Check if skill-creator exists
-SKILL_CREATOR=$(find ~/.claude/plugins/cache -name "skill-creator" -type d 2>/dev/null | head -1)
-
-# 2. If not found, install it
-if [ -z "$SKILL_CREATOR" ]; then
-  claude plugin marketplace add https://github.com/daymade/claude-code-skills
-  claude plugin install skill-creator@daymade-skills
-  SKILL_CREATOR=$(find ~/.claude/plugins/cache -name "skill-creator" -type d 2>/dev/null | head -1)
-fi
-
-echo "skill-creator location: $SKILL_CREATOR"
+uv run --with PyYAML python <this-skill-path>/scripts/review_skill.py <target-skill-path>
+uv run --with PyYAML python <this-skill-path>/scripts/review_skill.py <target-skill-path> --json
 ```
+
+The reviewer delegates YAML, schema, and internal-path validation to the canonical `skill-creator` validator bundled in the same suite. It then checks frontmatter quality, directory structure, SKILL.md size, hardcoded paths and secrets, script hygiene, `subagent_type` validity, and instruction-style heuristics.
+
+Interpret exit codes as follows: 0 = clean, 1 = warnings only, 2 = review errors, 3 = invocation or runtime failure. Codes 1 and 2 describe the target skill; code 3 means the reviewer could not complete a trustworthy review.
+
+Use the sibling `skill-creator` scripts for the deeper security scan and packaging checks.
 
 ## Three Modes
 
@@ -33,14 +28,17 @@ echo "skill-creator location: $SKILL_CREATOR"
 
 Check your own skill before publishing.
 
-**Automated validation** (run after setup):
+**Automated review:**
 
 ```bash
-# Quick validation
-python3 "$SKILL_CREATOR"/*/quick_validate.py <target-skill>
+uv run --with PyYAML python <this-skill-path>/scripts/review_skill.py <target-skill>
+```
 
+**Extended security validation:**
+
+```bash
 # Security scan
-python3 "$SKILL_CREATOR"/*/security_scan.py <target-skill> --verbose
+uv run python <this-skill-path>/../skill-creator/scripts/security_scan.py <target-skill> --verbose
 ```
 
 **Manual evaluation**: See `references/evaluation_checklist.md`.
@@ -150,9 +148,9 @@ Task Progress:
 
 Adding or validating `marketplace.json` (plugin boundaries, `source`/`skills`
 layout, whether skills are independently toggleable) is the `marketplace-dev`
-skill's domain — don't author it from a template here. Ensure `marketplace-dev`
-is available (auto-install it if missing), then follow its workflow and
-`references/cache_and_source_patterns.md`.
+skill's domain — don't author it from a template here. Invoke
+`daymade-claude-code:marketplace-dev`, then follow its workflow and its cache
+and source patterns reference.
 
 ## PR Guidelines
 
@@ -193,6 +191,7 @@ Respect Check:
 
 ## References
 
+- `scripts/review_skill.py` - Automated reviewer backed by `skill-creator` validation
 - `references/evaluation_checklist.md` - Full evaluation checklist
 - `references/pr_template.md` - PR description template
 - Best practices: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices

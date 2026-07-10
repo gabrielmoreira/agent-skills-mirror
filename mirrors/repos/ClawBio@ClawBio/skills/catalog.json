@@ -1,13 +1,13 @@
 {
   "version": "1.0.0",
   "generated_by": "scripts/generate_catalog.py",
-  "skill_count": 93,
+  "skill_count": 94,
   "galaxy_tool_count": 8182,
   "skills": [
     {
       "name": "affinity-proteomics",
       "cli_alias": "affprot",
-      "description": "Unified analysis pipeline for affinity-based proteomics platforms \u2014 Olink (PEA, NPX) and SomaLogic SomaScan (SOMAmer, RFU). Platform-aware QC, normalisation, differential abundance, volcano plots, heatmaps, and PCA.",
+      "description": "Unified analysis pipeline for affinity-based proteomics platforms — Olink (PEA, NPX) and SomaLogic SomaScan (SOMAmer, RFU). Platform-aware QC, normalisation, differential abundance, volcano plots, heatmaps, and PCA.",
       "version": "0.1.0",
       "status": "planned",
       "maturity_tier": "cli-registered",
@@ -104,6 +104,50 @@
       ]
     },
     {
+      "name": "ancestry-risk-profiler",
+      "cli_alias": null,
+      "description": "Infers genetic super-population ancestry from a 23andMe/AncestryDNA file and computes ancestry-stratified odds ratios with an exploratory Ancestry Elevation Score (AES) showing where ancestry-specific GWAS effect sizes diverge from European reference estimates.",
+      "version": "1.3.1",
+      "status": "planned",
+      "maturity_tier": "tested",
+      "maturity_evidence": {
+        "has_skill_md": true,
+        "has_script": true,
+        "has_tests": true,
+        "has_demo": true,
+        "cli_registered": false,
+        "ci_tested": false,
+        "benchmark_validated": false
+      },
+      "has_script": true,
+      "has_tests": true,
+      "has_demo": true,
+      "demo_command": "python skills/ancestry-risk-profiler/ancestry_risk_profiler.py --demo",
+      "dependencies": [
+        "python>=3.11",
+        "matplotlib>=3.6"
+      ],
+      "tags": [
+        "ancestry",
+        "disease-risk",
+        "population-genetics",
+        "gwas",
+        "ancestry-stratified"
+      ],
+      "trigger_keywords": [
+        "ancestry risk",
+        "population-stratified risk",
+        "South Asian diabetes risk",
+        "ancestry-aware variant risk",
+        "which diseases am I at risk for given my ancestry",
+        "ancestry elevation score",
+        "APOL1 African kidney",
+        "KCNQ1 East Asian diabetes",
+        "genetic super-population disease risk"
+      ],
+      "chaining_partners": []
+    },
+    {
       "name": "archaic-introgression",
       "cli_alias": null,
       "description": "Detect Neanderthal and Denisovan introgression segments from modern human genomes",
@@ -195,7 +239,7 @@
     {
       "name": "bgpt-mcp",
       "cli_alias": null,
-      "description": "Search scientific papers via the BGPT MCP server and retrieve structured experimental data \u2014 methods, results, conclusions, quality scores, and 25+ metadata fields per paper.",
+      "description": "Search scientific papers via the BGPT MCP server and retrieve structured experimental data — methods, results, conclusions, quality scores, and 25+ metadata fields per paper.",
       "version": "0.1.0",
       "status": "planned",
       "maturity_tier": "tested",
@@ -500,7 +544,7 @@
     {
       "name": "celltype-specificity-profiler",
       "cli_alias": "celltype-specificity-profiler",
-      "description": "Given a gene and a single-cell atlas, compute how cell-type-specific its expression is \u2014 the tau specificity index, Sarle's expression bimodality coefficient, and the cell types that drive the signal; a pure analytic transform that chains downstream of scrna-embedding.",
+      "description": "Given a gene and a single-cell atlas, compute how cell-type-specific its expression is — the tau specificity index, Sarle's expression bimodality coefficient, and the cell types that drive the signal; a pure analytic transform that chains downstream of scrna-embedding.",
       "version": "0.1.0",
       "status": "planned",
       "maturity_tier": "cli-registered",
@@ -591,7 +635,7 @@
     {
       "name": "claw-metagenomics",
       "cli_alias": "metagenomics",
-      "description": "Shotgun metagenomics profiling \u2014 taxonomy, resistome, and functional pathways",
+      "description": "Shotgun metagenomics profiling — taxonomy, resistome, and functional pathways",
       "version": "0.1.0",
       "status": "mvp",
       "maturity_tier": "cli-registered",
@@ -630,7 +674,7 @@
     {
       "name": "claw-methylation-cycle",
       "cli_alias": null,
-      "description": "Methylation cycle analysis \u2014 enzymatic activity profiles, Net Methylation Capacity, BH4 axis estimates, compound heterozygosity detection from SNP genotype data.",
+      "description": "Methylation cycle analysis — enzymatic activity profiles, Net Methylation Capacity, BH4 axis estimates, compound heterozygosity detection from SNP genotype data.",
       "version": "0.1.3",
       "status": "planned",
       "maturity_tier": "tested",
@@ -661,7 +705,7 @@
         "BH4",
         "homocysteine",
         "methylation cycle",
-        "metilaci\u00f3n",
+        "metilación",
         "neurotransmitter synthesis"
       ],
       "chaining_partners": []
@@ -1058,7 +1102,7 @@
     {
       "name": "dnasp",
       "cli_alias": "dnasp",
-      "description": "Full reimplementation of DnaSP 6 for population genetics analysis of aligned DNA sequences. Covers nucleotide diversity, haplotype statistics, neutrality tests (Tajima's D, Fu & Li's D*/F*, R2), linkage disequilibrium (D, D', R\u00b2, ZnS, Za, ZZ), minimum recombination (Rm), mismatch distribution, InDel polymorphism, between-population divergence (Dxy, Da, fixed/shared sites), outgroup-based Fu & Li D/F tests (fuliout), the HKA multi-locus neutrality test (hka), the McDonald-Kreitman test (mk), Ka/Ks (dN/dS) via the Nei-Gojobori (1986) method (kaks), Fu's Fs test (fufs), the site frequency spectrum (sfs, folded and outgroup-unfolded), transition/transversion ratio (tstv), and codon usage bias  -  RSCU (Sharp & Li 1987) and ENC (Wright 1990) (codon). Accepts FASTA or NEXUS input; outputs DnaSP-compatible TSV and a Markdown report.",
+      "description": "Full reimplementation of DnaSP 6 for population genetics analysis of aligned DNA sequences. Covers nucleotide diversity, haplotype statistics, neutrality tests (Tajima's D, Fu & Li's D*/F*, R2), linkage disequilibrium (D, D', R², ZnS, Za, ZZ), minimum recombination (Rm), mismatch distribution, InDel polymorphism, between-population divergence (Dxy, Da, fixed/shared sites), outgroup-based Fu & Li D/F tests (fuliout), the HKA multi-locus neutrality test (hka), the McDonald-Kreitman test (mk), Ka/Ks (dN/dS) via the Nei-Gojobori (1986) method (kaks), Fu's Fs test (fufs), the site frequency spectrum (sfs, folded and outgroup-unfolded), transition/transversion ratio (tstv), and codon usage bias  -  RSCU (Sharp & Li 1987) and ENC (Wright 1990) (codon). Accepts FASTA or NEXUS input; outputs DnaSP-compatible TSV and a Markdown report.",
       "version": "0.4.0",
       "status": "planned",
       "maturity_tier": "cli-registered",
@@ -1141,7 +1185,7 @@
     {
       "name": "drug-photo",
       "cli_alias": "drugphoto",
-      "description": "Medication photo to personalised PGx dosage card via Claude vision \u2014 snap a pill, get genotype-informed guidance",
+      "description": "Medication photo to personalised PGx dosage card via Claude vision — snap a pill, get genotype-informed guidance",
       "version": "0.1.0",
       "status": "mvp",
       "maturity_tier": "cli-registered",
@@ -1225,7 +1269,7 @@
     {
       "name": "eqtl-catalogue-region-fetch",
       "cli_alias": "eqtl-region",
-      "description": "Fetch a region of cis-eQTL summary statistics from EBI eQTL Catalogue v7+\nvia tabix-on-FTP. Use when an agent needs eQTL beta / SE / p-value for\nevery variant in a window around a gene's TSS for one specific dataset\n(study \u00d7 tissue \u00d7 quantification method). Input: dataset_id, chromosome,\nstart, end, optional molecular_trait_id. Output: harmonised TSV slice.\n",
+      "description": "Fetch a region of cis-eQTL summary statistics from EBI eQTL Catalogue v7+\nvia tabix-on-FTP. Use when an agent needs eQTL beta / SE / p-value for\nevery variant in a window around a gene's TSS for one specific dataset\n(study × tissue × quantification method). Input: dataset_id, chromosome,\nstart, end, optional molecular_trait_id. Output: harmonised TSV slice.\n",
       "version": "0.1.0",
       "status": "planned",
       "maturity_tier": "cli-registered",
@@ -1404,7 +1448,7 @@
     {
       "name": "flow-bio",
       "cli_alias": "flow",
-      "description": "Flow.bio API bridge \u2014 authenticate, browse pipelines/samples/projects, search, upload data, launch pipeline executions, and check run status on any Flow instance.",
+      "description": "Flow.bio API bridge — authenticate, browse pipelines/samples/projects, search, upload data, launch pipeline executions, and check run status on any Flow instance.",
       "version": "0.1.0",
       "status": "planned",
       "maturity_tier": "cli-registered",
@@ -1451,7 +1495,7 @@
     {
       "name": "galaxy-bridge",
       "cli_alias": "galaxy",
-      "description": "Galaxy tool discovery, intelligent recommendation, and execution \u2014 8,000+ bioinformatics tools from usegalaxy.org with multi-signal scoring and workflow suggestions",
+      "description": "Galaxy tool discovery, intelligent recommendation, and execution — 8,000+ bioinformatics tools from usegalaxy.org with multi-signal scoring and workflow suggestions",
       "version": "0.2.0",
       "status": "mvp",
       "maturity_tier": "cli-registered",
@@ -1578,7 +1622,7 @@
     {
       "name": "gi-annotation",
       "cli_alias": null,
-      "description": "Predict gene and transcript structure (intervals, exons, strand) from a DNA sequence using the Genomic Intelligence DNA Annotation model, via the hosted /v1/tasks/annotation/predict API. Async-only \u2014 the pipeline takes ~20 s for ~20 kbp.",
+      "description": "Predict gene and transcript structure (intervals, exons, strand) from a DNA sequence using the Genomic Intelligence DNA Annotation model, via the hosted /v1/tasks/annotation/predict API. Async-only — the pipeline takes ~20 s for ~20 kbp.",
       "version": "0.1.0",
       "status": "planned",
       "maturity_tier": "tested",
@@ -1626,7 +1670,7 @@
     {
       "name": "gi-chromatin",
       "cli_alias": null,
-      "description": "Predict chromatin state \u2014 histone marks, DNase, TF binding \u2014 across 919 tracks (DeepSEA-style) for DNA sequences, via the hosted Genomic Intelligence /v1/tasks/chromatin/predict API.",
+      "description": "Predict chromatin state — histone marks, DNase, TF binding — across 919 tracks (DeepSEA-style) for DNA sequences, via the hosted Genomic Intelligence /v1/tasks/chromatin/predict API.",
       "version": "0.1.0",
       "status": "planned",
       "maturity_tier": "tested",
@@ -1914,7 +1958,7 @@
     {
       "name": "gwas-lookup",
       "cli_alias": "gwas",
-      "description": "Federated variant lookup across 9 genomic databases \u2014 GWAS Catalog, Open Targets, PheWeb (UKB, FinnGen, BBJ), GTEx, eQTL Catalogue, and more.",
+      "description": "Federated variant lookup across 9 genomic databases — GWAS Catalog, Open Targets, PheWeb (UKB, FinnGen, BBJ), GTEx, eQTL Catalogue, and more.",
       "version": "0.1.0",
       "status": "mvp",
       "maturity_tier": "ci-validated",
@@ -2100,7 +2144,7 @@
     {
       "name": "labstep",
       "cli_alias": null,
-      "description": "Query and display Labstep electronic lab notebook data \u2014 experiments, protocols, resources, and inventory \u2014 via labstepPy.  Supports offline demo mode with synthetic biology data.",
+      "description": "Query and display Labstep electronic lab notebook data — experiments, protocols, resources, and inventory — via labstepPy.  Supports offline demo mode with synthetic biology data.",
       "version": "0.2.0",
       "status": "planned",
       "maturity_tier": "tested",
@@ -2142,7 +2186,7 @@
     {
       "name": "ld-1000g-region-compute",
       "cli_alias": "ld-region",
-      "description": "Compute pairwise r\u00b2 between a lead variant and every variant in a window\nusing the 1000 Genomes Phase 3 GRCh38 reference panel, ancestry-stratified.\nUse when an agent needs LD coloring for a regional plot or LD pruning\naround a candidate causal variant. Single client (on-demand region fetch\nfrom EBI 1000G FTP); no multi-GB cold-start.\n",
+      "description": "Compute pairwise r² between a lead variant and every variant in a window\nusing the 1000 Genomes Phase 3 GRCh38 reference panel, ancestry-stratified.\nUse when an agent needs LD coloring for a regional plot or LD pruning\naround a candidate causal variant. Single client (on-demand region fetch\nfrom EBI 1000G FTP); no multi-GB cold-start.\n",
       "version": "0.1.0",
       "status": "planned",
       "maturity_tier": "cli-registered",
@@ -2186,7 +2230,7 @@
     {
       "name": "lit-synthesizer",
       "cli_alias": null,
-      "description": "Search PubMed and bioRxiv for bioinformatics literature, synthesise results into a structured report, and build a citation graph \u2014 all locally, with a reproducibility bundle.\n",
+      "description": "Search PubMed and bioRxiv for bioinformatics literature, synthesise results into a structured report, and build a citation graph — all locally, with a reproducibility bundle.\n",
       "version": "0.1.0",
       "status": "planned",
       "maturity_tier": "tested",
@@ -2231,7 +2275,7 @@
     {
       "name": "locuscompare-region-render",
       "cli_alias": "locuscompare-region",
-      "description": "Render a 4-panel regional LocusCompare diagnostic for one (lead variant,\nexposure study, outcome study) tuple - overlays GWAS Manhattan, QTL Manhattan,\nGENCODE gene track, and cross-trait scatter colored by LD r\u00b2. Use when an\nagent needs visual confirmation that two GWAS / QTL signals share the same\ncausal variant (the Liu 2019 LocusCompare convention). Inputs: lead variant +\ntwo pre-fetched harmonised sumstats slices (or eQTL Catalogue / GWAS Catalog\nidentifiers for bundled fetch). Output: PNG + JSON manifest.\n",
+      "description": "Render a 4-panel regional LocusCompare diagnostic for one (lead variant,\nexposure study, outcome study) tuple - overlays GWAS Manhattan, QTL Manhattan,\nGENCODE gene track, and cross-trait scatter colored by LD r². Use when an\nagent needs visual confirmation that two GWAS / QTL signals share the same\ncausal variant (the Liu 2019 LocusCompare convention). Inputs: lead variant +\ntwo pre-fetched harmonised sumstats slices (or eQTL Catalogue / GWAS Catalog\nidentifiers for bundled fetch). Output: PNG + JSON manifest.\n",
       "version": "0.1.0",
       "status": "planned",
       "maturity_tier": "cli-registered",
@@ -2677,7 +2721,7 @@
     {
       "name": "nutrigx",
       "cli_alias": "nutrigx",
-      "description": "Personalised nutrition report from consumer genetic data (23andMe, AncestryDNA, VCF) \u2014 interrogates nutritionally-relevant SNPs and generates actionable dietary guidance, all computed locally.",
+      "description": "Personalised nutrition report from consumer genetic data (23andMe, AncestryDNA, VCF) — interrogates nutritionally-relevant SNPs and generates actionable dietary guidance, all computed locally.",
       "version": "0.1.0",
       "status": "mvp",
       "maturity_tier": "ci-validated",
@@ -2765,7 +2809,7 @@
     {
       "name": "organ-aging-studio",
       "cli_alias": null,
-      "description": "Interactive Goeminne proteomic aging clock with organ filters and per-protein contribution breakdown (protein NPX \u00d7 coefficient). Agent- and demo-friendly.",
+      "description": "Interactive Goeminne proteomic aging clock with organ filters and per-protein contribution breakdown (protein NPX × coefficient). Agent- and demo-friendly.",
       "version": "0.1.0",
       "status": "planned",
       "maturity_tier": "tested",
@@ -2809,7 +2853,7 @@
     {
       "name": "pathway-enricher",
       "cli_alias": "pathway-enricher",
-      "description": "Gene-set pathway enrichment analysis using Enrichr \u2014 queries KEGG, GO (BP/MF/CC), Reactome, WikiPathways, MSigDB, and Disease Ontology. Produces ranked pathway tables, interactive bubble charts, and a reproducible Markdown report.",
+      "description": "Gene-set pathway enrichment analysis using Enrichr — queries KEGG, GO (BP/MF/CC), Reactome, WikiPathways, MSigDB, and Disease Ontology. Produces ranked pathway tables, interactive bubble charts, and a reproducible Markdown report.",
       "version": "0.1.0",
       "status": "planned",
       "maturity_tier": "cli-registered",
@@ -2834,7 +2878,7 @@
     {
       "name": "pharmgx-reporter",
       "cli_alias": "pharmgx",
-      "description": "Pharmacogenomic report from DTC genetic data (23andMe/AncestryDNA) \u2014 12 genes, 31 SNPs, 51 drugs",
+      "description": "Pharmacogenomic report from DTC genetic data (23andMe/AncestryDNA) — 12 genes, 31 SNPs, 51 drugs",
       "version": "0.1.0",
       "status": "mvp",
       "maturity_tier": "ci-validated",
@@ -2876,7 +2920,7 @@
     {
       "name": "phylogenetics-builder",
       "cli_alias": "phylo",
-      "description": "End-to-end ML phylogenetic tree inference \u2014 MSA, trimming, ModelFinder, IQ-TREE2/RAxML-NG.",
+      "description": "End-to-end ML phylogenetic tree inference — MSA, trimming, ModelFinder, IQ-TREE2/RAxML-NG.",
       "version": "0.2.0",
       "status": "mvp",
       "maturity_tier": "cli-registered",
@@ -2973,7 +3017,7 @@
     {
       "name": "profile-report",
       "cli_alias": "profile",
-      "description": "Unified personal genomic profile report \u2014 reads a PatientProfile JSON and synthesizes all skill results into a single \"Your Genomic Profile\" document.",
+      "description": "Unified personal genomic profile report — reads a PatientProfile JSON and synthesizes all skill results into a single \"Your Genomic Profile\" document.",
       "version": "0.1.0",
       "status": "mvp",
       "maturity_tier": "cli-registered",
@@ -3536,7 +3580,7 @@
     {
       "name": "skill-builder",
       "cli_alias": null,
-      "description": "Scaffold a new ClawBio skill from a spec file (JSON/YAML) or interactively \u2014 generates SKILL.md, Python skeleton, tests, and updates catalog.json",
+      "description": "Scaffold a new ClawBio skill from a spec file (JSON/YAML) or interactively — generates SKILL.md, Python skeleton, tests, and updates catalog.json",
       "version": "0.1.0",
       "status": "planned",
       "maturity_tier": "ci-validated",
@@ -3730,7 +3774,7 @@
     {
       "name": "ukb-navigator",
       "cli_alias": null,
-      "description": "Semantic search across UK Biobank's 12,000+ data fields and publications \u2014 find the right variables for your research question.",
+      "description": "Semantic search across UK Biobank's 12,000+ data fields and publications — find the right variables for your research question.",
       "version": "0.1.0",
       "status": "mvp",
       "maturity_tier": "tested",
@@ -3977,41 +4021,54 @@
       "chaining_partners": []
     },
     {
-      "name": "ancestry-risk-profiler",
+      "name": "xena-tcga-gene-query",
       "cli_alias": null,
-      "description": "Infers genetic super-population ancestry from a 23andMe/AncestryDNA file and computes ancestry-stratified odds ratios with an exploratory Ancestry Elevation Score (AES) showing where ancestry-specific GWAS effect sizes diverge from European reference estimates. Returns a soft posterior over super-populations at low confidence.",
-      "version": "1.3.1",
-      "status": "active",
+      "description": "Query TCGA tumor biology through the ucscxenatoolspy API. Supports tumor-vs-normal differential expression, gene-gene correlation, survival association, and cancer catalogue browsing across 30+ TCGA cancer types.",
+      "version": "0.1.0",
+      "status": "planned",
+      "maturity_tier": "tested",
+      "maturity_evidence": {
+        "has_skill_md": true,
+        "has_script": true,
+        "has_tests": true,
+        "has_demo": false,
+        "cli_registered": false,
+        "ci_tested": false,
+        "benchmark_validated": false
+      },
       "has_script": true,
       "has_tests": true,
-      "has_demo": true,
-      "demo_command": "python skills/ancestry-risk-profiler/ancestry_risk_profiler.py --demo --output /tmp/ancestry_risk_demo",
+      "has_demo": false,
+      "demo_command": null,
       "dependencies": [
-        "matplotlib"
+        "python>=3.10"
       ],
       "tags": [
-        "ancestry",
-        "disease-risk",
-        "gwas",
-        "population-genetics",
-        "polygenic",
-        "stratified",
-        "south-asian",
-        "african",
-        "east-asian"
+        "tcga",
+        "gene-expression",
+        "survival-analysis",
+        "differential-expression",
+        "co-expression",
+        "cancer",
+        "tumor-biology"
       ],
       "trigger_keywords": [
-        "ancestry risk",
-        "population-stratified risk",
-        "genetic super-population disease risk",
-        "South Asian diabetes risk",
-        "ancestry-aware variant",
-        "ancestry disease",
-        "population risk",
-        "AES score",
-        "ancestry elevation",
-        "why am I at risk"
-      ]
+        "TCGA",
+        "tumor vs normal",
+        "differential expression",
+        "gene expression cancer",
+        "survival analysis",
+        "co-expression",
+        "prognosis",
+        "cancer biomarker",
+        "肿瘤",
+        "肺癌",
+        "乳腺癌",
+        "差异表达",
+        "生存分析",
+        "预后"
+      ],
+      "chaining_partners": []
     }
   ]
 }

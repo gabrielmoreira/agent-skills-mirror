@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `sivaprasadreddy/sivalabs-agent-skills` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `sivaprasadreddy/sivalabs-agent-skills` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `sivaprasadreddy/sivalabs-agent-skills` — 26 default patterns, 0 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,22 +61,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`agents/code-reviewer.md`](agents/code-reviewer.md) |
-| 3 | ✓ | [`skills/jspecify/scripts/verify_nullmarked.py`](skills/jspecify/scripts/verify_nullmarked.py) |
-| 4 | ✓ | [`skills/jspecify/SKILL.md`](skills/jspecify/SKILL.md) |
-| 5 | ✓ | [`skills/pair-programming/SKILL.md`](skills/pair-programming/SKILL.md) |
-| 6 | ✓ | [`skills/spring-boot/references/archunit.md`](skills/spring-boot/references/archunit.md) |
-| 7 | ✓ | [`skills/spring-boot/references/code-organization.md`](skills/spring-boot/references/code-organization.md) |
-| 8 | ✓ | [`skills/spring-boot/references/spring-boot-docker-compose.md`](skills/spring-boot/references/spring-boot-docker-compose.md) |
-| 9 | ✓ | [`skills/spring-boot/references/spring-boot-maven-config.md`](skills/spring-boot/references/spring-boot-maven-config.md) |
-| 10 | ✓ | [`skills/spring-boot/references/spring-boot-rest-api-testing.md`](skills/spring-boot/references/spring-boot-rest-api-testing.md) |
-| 11 | ✓ | [`skills/spring-boot/references/spring-boot-webapp-testing-with-mockmvctester.md`](skills/spring-boot/references/spring-boot-webapp-testing-with-mockmvctester.md) |
-| 12 | ✓ | [`skills/spring-boot/references/spring-data-jpa.md`](skills/spring-boot/references/spring-data-jpa.md) |
-| 13 | ✓ | [`skills/spring-boot/references/spring-modulith.md`](skills/spring-boot/references/spring-modulith.md) |
-| 14 | ✓ | [`skills/spring-boot/references/spring-service-layer.md`](skills/spring-boot/references/spring-service-layer.md) |
-| 15 | ✓ | [`skills/spring-boot/references/spring-webmvc-rest-api.md`](skills/spring-boot/references/spring-webmvc-rest-api.md) |
-| 16 | ✓ | [`skills/spring-boot/references/taskfile.md`](skills/spring-boot/references/taskfile.md) |
-| 17 | ✓ | [`skills/spring-boot/references/thymeleaf.md`](skills/spring-boot/references/thymeleaf.md) |
-| 18 | ✓ | [`skills/spring-boot/SKILL.md`](skills/spring-boot/SKILL.md) |
+| 3 | ✓ | [`skills/jspecify/references/annotation-migration.md`](skills/jspecify/references/annotation-migration.md) |
+| 4 | ✓ | [`skills/jspecify/references/incremental-adoption.md`](skills/jspecify/references/incremental-adoption.md) |
+| 5 | ✓ | [`skills/jspecify/references/kotlin-interop.md`](skills/jspecify/references/kotlin-interop.md) |
+| 6 | ✓ | [`skills/jspecify/scripts/verify_nullmarked.py`](skills/jspecify/scripts/verify_nullmarked.py) |
+| 7 | ✓ | [`skills/jspecify/SKILL.md`](skills/jspecify/SKILL.md) |
+| 8 | ✓ | [`skills/pair-programming/SKILL.md`](skills/pair-programming/SKILL.md) |
+| 9 | ✓ | [`skills/spring-boot/references/archunit.md`](skills/spring-boot/references/archunit.md) |
+| 10 | ✓ | [`skills/spring-boot/references/code-organization.md`](skills/spring-boot/references/code-organization.md) |
+| 11 | ✓ | [`skills/spring-boot/references/spring-boot-docker-compose.md`](skills/spring-boot/references/spring-boot-docker-compose.md) |
+| 12 | ✓ | [`skills/spring-boot/references/spring-boot-maven-config.md`](skills/spring-boot/references/spring-boot-maven-config.md) |
+| 13 | ✓ | [`skills/spring-boot/references/spring-boot-rest-api-testing.md`](skills/spring-boot/references/spring-boot-rest-api-testing.md) |
+| 14 | ✓ | [`skills/spring-boot/references/spring-boot-webapp-testing-with-mockmvctester.md`](skills/spring-boot/references/spring-boot-webapp-testing-with-mockmvctester.md) |
+| 15 | ✓ | [`skills/spring-boot/references/spring-data-jpa.md`](skills/spring-boot/references/spring-data-jpa.md) |
+| 16 | ✓ | [`skills/spring-boot/references/spring-modulith.md`](skills/spring-boot/references/spring-modulith.md) |
+| 17 | ✓ | [`skills/spring-boot/references/spring-service-layer.md`](skills/spring-boot/references/spring-service-layer.md) |
+| 18 | ✓ | [`skills/spring-boot/references/spring-webmvc-rest-api.md`](skills/spring-boot/references/spring-webmvc-rest-api.md) |
+| 19 | ✓ | [`skills/spring-boot/references/taskfile.md`](skills/spring-boot/references/taskfile.md) |
+| 20 | ✓ | [`skills/spring-boot/references/thymeleaf.md`](skills/spring-boot/references/thymeleaf.md) |
+| 21 | ✓ | [`skills/spring-boot/SKILL.md`](skills/spring-boot/SKILL.md) |
 
 ---
 

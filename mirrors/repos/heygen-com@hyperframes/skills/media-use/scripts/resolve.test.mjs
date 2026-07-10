@@ -57,18 +57,22 @@ function makeRecord(overrides = {}) {
 // a separate argv entry, so a value with spaces or shell metacharacters can't
 // break out — never build a command string and hand it to a shell.
 function runResolve(args, opts = {}) {
+  const { env, ...rest } = opts;
   return execFileSync(process.execPath, [RESOLVE_CLI, ...args], {
     cwd: REPO_ROOT,
     encoding: "utf8",
-    ...opts,
+    env: { ...process.env, DO_NOT_TRACK: "1", ...env },
+    ...rest,
   });
 }
 
 function spawnResolve(args, opts = {}) {
+  const { env, ...rest } = opts;
   return spawnSync(process.execPath, [RESOLVE_CLI, ...args], {
     cwd: REPO_ROOT,
     encoding: "utf8",
-    ...opts,
+    env: { ...process.env, DO_NOT_TRACK: "1", ...env },
+    ...rest,
   });
 }
 
@@ -293,6 +297,7 @@ test("--help exits 0", () => {
   assert.ok(out.includes("--for"));
   assert.ok(out.includes("--from"));
   assert.ok(out.includes("--local-only"));
+  assert.ok(out.includes("--stats"));
 });
 
 test("unknown type error lists grade and lut", () => {
@@ -328,6 +333,39 @@ test("--json returns error JSON on stub provider failure", () => {
     assert.ok(parsed.error.includes("no provider"));
   }
   cleanup();
+});
+
+test("--doctor --json reports dependency checks and top-level ok requires ffmpeg and ffprobe", () => {
+  const result = spawnResolve(["--doctor", "--json"]);
+  assert.match(result.stdout.trim(), /^\{/);
+  assert.equal(result.stderr, "");
+  assert.ok(result.status === 0 || result.status === 1);
+
+  const parsed = JSON.parse(result.stdout.trim());
+  assert.ok(Array.isArray(parsed.checks));
+
+  const expected = [
+    "heygen on PATH",
+    "heygen version",
+    "heygen authenticated",
+    "ffmpeg on PATH",
+    "ffprobe on PATH",
+    "node version",
+  ];
+  const byName = new Map(parsed.checks.map((check) => [check.name, check]));
+  for (const name of expected) {
+    assert.ok(byName.has(name), `missing check: ${name}`);
+    const check = byName.get(name);
+    assert.equal(typeof check.ok, "boolean", `${name}.ok`);
+    assert.equal(typeof check.detail, "string", `${name}.detail`);
+    assert.ok("fix" in check, `${name}.fix`);
+  }
+
+  const ffmpeg = byName.get("ffmpeg on PATH");
+  const ffprobe = byName.get("ffprobe on PATH");
+  const strictOk = ffmpeg.ok && ffprobe.ok;
+  assert.equal(parsed.ok, strictOk);
+  assert.equal(result.status, strictOk ? 0 : 1);
 });
 
 test("one-line output format matches contract", () => {

@@ -20,11 +20,11 @@ If `loop-stack/*_DONE/` exists and you want to follow up on those findings, atta
 ## Key files
 
 - `.github/prompts/loop-engineer.prompt.md` — the skill (attach this in Copilot Chat to activate)
-- `.github/agents/loop-engineer-*.agent.md` — the 9 agent roles (researcher, executor, evaluator, verifier, auditor, memory-keeper, planner, agent-factory, resource-scout), prefixed to avoid colliding with any other custom agents you have
+- `.github/agents/loop-engineer-*.agent.md` — the 8 agent roles (researcher, executor, verifier, auditor, memory-keeper, planner, agent-factory, resource-scout), prefixed to avoid colliding with any other custom agents you have
 - `.github/loop-engineer-knowledge/` — research reference material (not agents — kept out of `.github/agents/` since VS Code treats any `.md` file there as a custom agent)
 - `loop-stack/` — loop state (PLAN.md, STATUS.md, MEMORY.md, etc.)
 - `.vscode/mcp.json` — MCP server config (resource-scout checks this for available tools)
 
 ## Parallel execution
 
-This loop dispatches subagents in true parallel (confirmed: code.visualstudio.com/docs/agents/subagents) — batches of researchers, executors, evaluators, verifiers, and auditors all run concurrently, not one at a time.
+This loop dispatches subagents in true parallel (confirmed: code.visualstudio.com/docs/agents/subagents) — batches of researchers, executors, verifiers, and auditors all run concurrently, not one at a time.

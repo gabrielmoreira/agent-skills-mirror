@@ -73,12 +73,13 @@ Output: JSON array to stdout.
 ### list
 
 ```bash
-npx mcp-local-rag [global-options] list [--base-dir <path>]...
+npx mcp-local-rag [global-options] list [--base-dir <path>]... [--scope <prefix>]...
 ```
 
 | Option | Env Var | Default | Description |
 |--------|---------|---------|-------------|
 | `--base-dir <path>` | `BASE_DIR` / `BASE_DIRS` | cwd | Base directory to scan. Repeatable; CLI roots replace env roots. |
+| `--scope <prefix>` | — | — | Restrict the listing to files whose scan path is equal to or under an absolute prefix. Repeat for multiple prefixes (unioned). Relative prefixes match nothing. `ingest_data` `sources` are always listed regardless of scope. |
 
 Output: JSON to stdout. The result includes `baseDirs: string[]` (all effective roots) plus a legacy `baseDir: string` (first effective root after normalization and nested-root pruning). Each file entry is annotated with the `baseDir` that produced it. Raw-data/orphaned entries remain under `sources` without a root annotation.
 

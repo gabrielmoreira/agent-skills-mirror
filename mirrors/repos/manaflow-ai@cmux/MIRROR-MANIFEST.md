@@ -62,7 +62,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.cursor/rules/main.mdc`](.cursor/rules/main.mdc) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`mux/spec/commands.md`](mux/spec/commands.md) |
+| 4 | ✓ | [`cmux-tui/spec/commands.md`](cmux-tui/spec/commands.md) |
 | 5 | ✓ | [`skills/cmux-architecture/agents/openai.yaml`](skills/cmux-architecture/agents/openai.yaml) |
 | 6 | ✓ | [`skills/cmux-architecture/references/concurrency-carveouts.md`](skills/cmux-architecture/references/concurrency-carveouts.md) |
 | 7 | ✓ | [`skills/cmux-architecture/references/file-api-discipline.md`](skills/cmux-architecture/references/file-api-discipline.md) |

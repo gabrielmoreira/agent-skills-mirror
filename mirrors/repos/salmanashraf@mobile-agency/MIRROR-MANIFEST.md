@@ -106,7 +106,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | ✓ | [`agents/cross-platform/figma/agent.md`](agents/cross-platform/figma/agent.md) |
 | 46 | ✓ | [`agents/cross-platform/launchpad/agent.md`](agents/cross-platform/launchpad/agent.md) |
 | 47 | ✓ | [`agents/cross-platform/mobile-harness/agent.md`](agents/cross-platform/mobile-harness/agent.md) |
-| 48 | ✓ | [`agents/cross-platform/mrecall/agent.md`](agents/cross-platform/mrecall/agent.md) |
+| 48 | ✓ | [`agents/cross-platform/mobile-memory/agent.md`](agents/cross-platform/mobile-memory/agent.md) |
 | 49 | ✓ | [`agents/cross-platform/perf/agent.md`](agents/cross-platform/perf/agent.md) |
 | 50 | ✓ | [`agents/cross-platform/pipeline/agent.md`](agents/cross-platform/pipeline/agent.md) |
 | 51 | ✓ | [`agents/cross-platform/release-notes-generator/agent.md`](agents/cross-platform/release-notes-generator/agent.md) |
@@ -201,9 +201,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 140 | ✓ | [`skills/cross-platform/feature-slice.md`](skills/cross-platform/feature-slice.md) |
 | 141 | ✓ | [`skills/cross-platform/grill-mobile.md`](skills/cross-platform/grill-mobile.md) |
 | 142 | ✓ | [`skills/cross-platform/mobile-mcp-qa.md`](skills/cross-platform/mobile-mcp-qa.md) |
-| 143 | ✓ | [`skills/cross-platform/mrecall-graph.md`](skills/cross-platform/mrecall-graph.md) |
-| 144 | ✓ | [`skills/cross-platform/mrecall-save.md`](skills/cross-platform/mrecall-save.md) |
-| 145 | ✓ | [`skills/cross-platform/mrecall-search.md`](skills/cross-platform/mrecall-search.md) |
+| 143 | ✓ | [`skills/cross-platform/mobile-memory-graph.md`](skills/cross-platform/mobile-memory-graph.md) |
+| 144 | ✓ | [`skills/cross-platform/mobile-memory-save.md`](skills/cross-platform/mobile-memory-save.md) |
+| 145 | ✓ | [`skills/cross-platform/mobile-memory-search.md`](skills/cross-platform/mobile-memory-search.md) |
 | 146 | ✓ | [`skills/cross-platform/perf-audit.md`](skills/cross-platform/perf-audit.md) |
 | 147 | ✓ | [`skills/cross-platform/prd-verification.md`](skills/cross-platform/prd-verification.md) |
 | 148 | ✓ | [`skills/cross-platform/release-prep.md`](skills/cross-platform/release-prep.md) |

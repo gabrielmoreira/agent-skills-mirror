@@ -1,6 +1,11 @@
 ---
 name: ctf-web
 description: CTF Web攻击知识库 — PHP弱比较绕过、命令注入空格绕过、eval回显技巧、SSTI注入链、反序列化利用链、PHP代码审计checklist、常见flag位置
+routing:
+  target_types: [ctf, web]
+  task_types: [ctf]
+  technologies: [php]
+  vulnerability_classes: [rce, ssti, deserialization, type_juggling, path_traversal]
 ---
 
 # CTF Web 攻击知识库

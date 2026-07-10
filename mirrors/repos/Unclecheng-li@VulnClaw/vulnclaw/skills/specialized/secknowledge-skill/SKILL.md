@@ -13,6 +13,10 @@ description: |
   - 纯 Web 白盒代码审计（完整项目目录 / Source-Sink 污点分析）→ code-audit-skill
   - 仅引用 CVE 编号查文档 → WebSearch
   边界细则: CTF 短代码片段 + 利用思路 → 本 Skill；完整项目目录 + 系统白盒审计 → code-audit-skill
+routing:
+  target_types: [web, ai_agent]
+  task_types: [pentest, audit, bugbounty, ctf]
+  broad: true
 ---
 
 # Web 和 AI 安全测试知识库

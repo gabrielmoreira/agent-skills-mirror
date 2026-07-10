@@ -54,7 +54,7 @@ Coordinate specialist agents, design the minimum viable chain, and execute safel
 - Verify acceptance criteria before delivery; pair quantitative metrics with human evaluation for high-stakes tasks.
 - Adapt routing from execution evidence with safety constraints; track OE (orchestration efficiency) per chain type.
 - Leverage standardized inter-agent protocols where available: MCP, A2A, ACP.
-- Apply Plan-and-Execute pattern: capable models plan, cheaper models execute. Claude Code = opus/fable-5 plan / **Sonnet 5 execute** (haiku trivial only); Codex CLI = **always latest `gpt-5.5`** (depth via `model_reasoning_effort`); **agy = always Gemini 3.5 Flash**; Fable 5 hub → `high` effort. Full per-engine map → `reference/hub-authoring.md` § Model Selection, `_common/CLI_COMPATIBILITY.md §4`.
+- Apply Plan-and-Execute pattern: capable models plan, cheaper models execute. Claude Code = opus/fable-5 plan / **Sonnet 5 execute** (haiku trivial only); Codex CLI = **latest `gpt-5.6` generation, variant by role** (sol plan/design / terra execute / luna rote; depth via `model_reasoning_effort`); **agy = always Gemini 3.5 Flash**; Fable 5 hub → `high` effort. Full per-engine map → `reference/hub-authoring.md` § Model Selection, `_common/CLI_COMPATIBILITY.md §4`.
 - Use Anthropic **Managed Agents** vocabulary (SF 2026) and surface an escalation recommendation in `NEXUS_COMPLETE` when the workload justifies the managed platform; prefer **Dynamic Workflows** for large homogeneous parallel sweeps. Detail: `reference/managed-agents-mapping.md` §5.
 - Output language follows the CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`); identifiers and technical terms remain in English.
 
@@ -146,7 +146,7 @@ The full table below is flat; these families group it by the axis that separates
 | **Build** (new) | `feature` · `apex` · `playable` | single guided build / discovery→ship one-shot (8-25 agents) / game-specialized all-in-one (vertical-slice-first gate) |
 | **Discover → build pairs** | `spec`→`feature`/`apex` · `charter`→`enact` · `layer`→`sigil` | one feature spec / whole-repo team+work plan / whole-repo reusable operating layer. All stop at a design; the pair runs it |
 | **Reason** (no code) | `gedanken` · `delve` | abstract thought-experiment on a claim / grounded deep-dive of a shipped feature → evolution directions. Both orchestrate `magi`/`flux`. `evolve a feature` overloaded → REDIRECT |
-| **Comprehend** (reverse-engineer existing code → understanding artifact, no code) | `cartograph` | multi-repo reverse-engineering → bird's-eye diagrams + design doc. vs `delve` (one shipped feature → evolution dialogue) / `charter` (one repo → team+work plan) / `pdm` (plan-vs-code status) / `clone` (black-box external → rebuild). Single repo/one diagram → `lens`/`atlas`/`canvas` direct |
+| **Comprehend** (reverse-engineer existing code → understanding artifact, no code) | `cartograph` · `chronicle` | **space vs time**: `cartograph` = multi-repo structure → bird's-eye diagrams + design doc (how it works *today*); `chronicle` = commit history → era timeline + narrative storylines (feature/fix/improvement/decision) + decision log + inferred ethos/worldview (how it *got here* & what it *believes*). vs `delve` (one shipped feature → evolution dialogue) / `charter` (one repo → team+work plan) / `pdm` (plan-vs-code status) / `clone` (black-box external → rebuild). Single repo/one diagram → `lens`/`atlas`/`canvas` direct; one period's PR report → `harvest` direct |
 | **Verdict** (which feature) | `essential` · `killer` · `trim` | THE must-have / THE differentiator / remove dead-weight (inverse). Shared gate: `reference/verdict-gate.md` |
 | **Reproduce & Synthesize** | `clone` · `fuse` · `graft` · `transmute` · `migrate` | 1 source faithful / ≥2 synthesized / host+donor concept / own-source cross-language / own-system change-completeness. Shared: `_common/DIFFERENTIAL_PARITY.md`. `differential parity` alone → REDIRECT |
 | **Quality-Max** (expensive, confirm) | `acceptance` · `growth-acceptance` · `summit` · `podium` | proof-carrying merge (G1-10) / post-launch lifecycle (G11-15) / pre-merge quality tournament / content-slide quality |
@@ -175,6 +175,7 @@ The full table below is flat; these families group it by the axis that separates
 | Gedanken | `gedanken` |  | Structured thought-experiment reasoning. | → `reference/recipes-detail.md` §gedanken | `reference/gedanken-recipe.md` |
 | Delve | `delve` | | Existing-feature deep-dive → evolution-direction dialogue; no code — stops at a named Evolution Map. | See `reference/recipes-detail.md` | `reference/delve-recipe.md` |
 | Cartograph | `cartograph` | | Multi-repo reverse-engineering → bird's-eye architecture diagrams + design document; no code — stops at a named Cartography Map. | See `reference/recipes-detail.md` | `reference/cartograph-recipe.md` |
+| Chronicle | `chronicle` | | Commit-history reverse-engineering → era timeline + narrative storylines (feature/fix/improvement/decision) + reconstructed decision log + inferred ethos/worldview + repository history document; no code — stops at a named Chronicle. | See `reference/recipes-detail.md` | `reference/chronicle-recipe.md` |
 | Spec | `spec` |  | Interactive feature-proposal → locked specification through deep human-in-the-loop dialogue. | → `reference/recipes-detail.md` §spec | `reference/spec-recipe.md` |
 | Essential | `essential` |  | Must-have feature **verdict + conditional implementation**. | See `reference/recipes-detail.md` | `reference/inline-recipes.md` |
 | Killer | `killer` |  | Killer-feature **verdict + conditional implementation with feature flag**. | See `reference/recipes-detail.md` | `reference/inline-recipes.md` |
@@ -208,6 +209,7 @@ For natural-language input without an explicit subcommand. **Subcommand match al
 | `anneal`, `design audit`, `brush up the codebase`, `harden the architecture`, `design weaknesses` | `anneal` |
 | `loop`, `make a loop`, `run until done`, `autonomous loop`, `ralph loop` | `loop` (dispatcher → gate + route to goal/converge/orbit/apex) |
 | `cartograph`, `reverse-engineer across repos`, `bird's-eye diagram`, `overview diagram`, `architecture map`, `design doc from code`, `understand the system across repos` | `cartograph` |
+| `chronicle`, `repository history`, `commit history summary`, `how did we get here`, `evolution of the codebase`, `project timeline`, `git history narrative`, `history of the repo`, `feature/bug/decision history`, `decision log from history`, `design philosophy from history`, `project ethos/worldview` | `chronicle` (era timeline + storylines: feature/fix/improvement/decision + decision log + inferred ethos/worldview, from commit history) |
 | `/Nexus` (no arguments) | `proactive` |
 | unclear or multi-domain request | `classify` → `reference/intent-clarification.md` |
 
@@ -247,7 +249,7 @@ Before the first spawn, determine which CLI drives **this hub session**, then bi
 | Signal | Hub engine | Spawn API | Authoring protocol | Model map |
 |--------|-----------|-----------|--------------------|-----------|
 | `Agent` tool present | **Claude Code** | `Agent(...)` (L1 fg / L2 `run_in_background`) | `_common/OPUS_48_AUTHORING.md` (P-principles); **Fable 5 hub → also `reference/hub-authoring.md` § Claude Code hub — Fable 5 (F-principles)** | **Sonnet 5** (subagent default) / opus / haiku / **fable-5** (see Model Selection ¶) |
-| `spawn_agent` callable (C1 prereqs hold) | **Codex CLI** | `spawn_agent` → `wait_agent` (parallel = N spawn → join all) | `_common/CODEX_ORCHESTRATION.md` (C-principles) | `gpt-5.5` (latest, all steps; see `CLI_COMPATIBILITY.md §4`) |
+| `spawn_agent` callable (C1 prereqs hold) | **Codex CLI** | `spawn_agent` → `wait_agent` (parallel = N spawn → join all) | `_common/CODEX_ORCHESTRATION.md` (C-principles) | `gpt-5.6` family — sol/terra/luna by role (see `CLI_COMPATIBILITY.md §4`) |
 | `/agent` in TUI main session | **agy** | `/agent` or `agy -p` headless | `_common/AGY_ORCHESTRATION.md` (A1–A9) | Gemini 3.5 Flash mandated (‡), effort tier per step via `/model` (see `CLI_COMPATIBILITY.md §4`) |
 
 Codex-hub prereqs (C1): `multi_agent = true` + `[agents] max_depth >= 2`. If unmet → internal execution with a concrete reason, never a generic "spawn tool not found"; `spawn_agent` may be lazily hidden — attempt when prereqs hold (C5). Details → `_common/CLI_COMPATIBILITY.md`, `reference/execution-layers.md`.
@@ -286,7 +288,7 @@ Key rules (Codex lazy-hidden tools, agy headless `@<path>` + sentinel + `--print
 
 ### Model Selection
 
-Model names are hub-engine-specific; role → tier mapping is stable. Full table (Claude Code sonnet/opus/haiku per tier ↔ Codex CLI always `gpt-5.5`, depth via `model_reasoning_effort`) → `reference/hub-authoring.md` § Model Selection. Cross-CLI cross-reference → `_common/CLI_COMPATIBILITY.md §4`.
+Model names are hub-engine-specific; role → tier mapping is stable. Full table (Claude Code sonnet/opus/haiku per tier ↔ Codex CLI gpt-5.6 sol/terra/luna per tier, depth via `model_reasoning_effort`) → `reference/hub-authoring.md` § Model Selection. Cross-CLI cross-reference → `_common/CLI_COMPATIBILITY.md §4`.
 
 ### Adaptive Prompt Policy
 
@@ -309,10 +311,10 @@ Agent(
     Task: [task_description]
     Context from previous step: [handoff_context]
     Constraints: [constraints]
-    Acceptance criteria: [acceptance_criteria]  # P1: front-loaded
-    Output length envelope: [length_envelope]   # P2
-    Tool-use directive: [tool_use_directive]    # P3
-    Thinking directive: [thinking_directive]    # P5
+    Acceptance criteria: [acceptance_criteria]  # P1: front-loaded (always)
+    Output length envelope: [length_envelope]   # P2: optional — add for L/XL output
+    Tool-use directive: [tool_use_directive]    # P3: optional — add when tool use matters
+    Thinking directive: [thinking_directive]    # P5: optional — add for high-stakes steps
 
     On completion, emit:
     _STEP_COMPLETE:
@@ -323,7 +325,7 @@ Agent(
 )
 ```
 
-Opus 4.8 requires the four directive fields above. **On a Fable 5 hub directives are lighter, not heavier** — a brief outcome+brevity instruction steers best, and any "echo / show / transcribe your reasoning" wording is forbidden (`reasoning_extraction` refusal). Engine variants, Opus 4.8 / Fable 5 notes, parallel-spawn rules → `reference/hub-authoring.md` § Spawn Template Variants; detailed flows → `reference/execution-phases.md`, `reference/orchestration-patterns.md`.
+Front-load acceptance criteria (P1) on every spawn. The output-length (P2), tool-use (P3), and thinking (P5) directives are optional — add them by task scale, not by default. For orchestrator spawns the Critical directives per `_common/OPUS_48_AUTHORING.md` are P4/P6/P7/P9 (parallel triggers, effort, delegation framing, effort-calibrated tool use), carried by the `model`/`mode` fields and the parallel-spawn rules rather than by per-field template text. **On a Fable 5 hub directives are lighter, not heavier** — a brief outcome+brevity instruction steers best, and any "echo / show / transcribe your reasoning" wording is forbidden (`reasoning_extraction` refusal). Engine variants, Opus 4.8 / Fable 5 notes, parallel-spawn rules → `reference/hub-authoring.md` § Spawn Template Variants; detailed flows → `reference/execution-phases.md`, `reference/orchestration-patterns.md`.
 
 ## Safety Contract
 
@@ -427,7 +429,7 @@ Read only the files that match the current decision point.
 | `reference/execution-layers.md` | Per-CLI prereqs, runtime notes, agy headless mitigations + template |
 | `reference/hub-authoring.md` | Per-engine authoring (Claude/Codex/agy), spawn-template variants, model selection, execution-layer key rules, Fable 5 F-principles |
 | `reference/recipes-detail.md` | Recipe Families full axis prose + extended Recipe descriptions + full chain templates |
-| `reference/{anneal,apex,playable,charter,enact,layer,gedanken,delve,cartograph,spec,migrate,clone,fuse,graft,converge,loop,goal,acceptance,growth-acceptance,summit,transmute,venture,package,podium}-recipe.md`, `reference/apex-walkthrough.md` | Per-Recipe phase contracts, chain templates, cost profiles (+ apex Mermaid walkthroughs). Indexed per subcommand in the Recipes table Read column; open the matching `<recipe>-recipe.md` for full detail |
+| `reference/{anneal,apex,playable,charter,enact,layer,gedanken,delve,cartograph,chronicle,spec,migrate,clone,fuse,graft,converge,loop,goal,acceptance,growth-acceptance,summit,transmute,venture,package,podium}-recipe.md`, `reference/apex-walkthrough.md` | Per-Recipe phase contracts, chain templates, cost profiles (+ apex Mermaid walkthroughs). Indexed per subcommand in the Recipes table Read column; open the matching `<recipe>-recipe.md` for full detail |
 | `reference/inline-recipes.md` | Full phase contracts for `kaizen` / `essential` / `killer` / `trim` |
 | `reference/recipe-contract.md` | Authoring standard for nexus recipes — 8 required elements + canonical phrasing. Read when authoring/normalizing a recipe |
 | `reference/verdict-gate.md` | Shared contract for verdict recipes (`essential`/`killer`/`trim` + graft flag clause) |
@@ -484,9 +486,9 @@ Nexus-specific findings to surface in handoff:
 - Task type classification + selected chain + execution mode
 - Verification result + chain complexity / unresolved gaps / safety concerns
 
-## Model Compatibility
-- **Scoring:** If weighted calculation is difficult, use the Simplified Scoring table in `confidence-scoring.md`.
+## Operational Notes for Spawns
+- **Scoring:** Compute confidence with the weighted formula in `confidence-scoring.md`. The qualitative 3/2/1/0 table there is a human-readable audit summary that runs alongside it — reach for it as the sole score only to cap per-model compute cost under heavy parallel fan-out, not as a general fallback.
 - **References:** Load only files in the current phase row of the Workflow table. Skip anti-pattern refs unless chain has 4+ agents.
-- **Output:** `_STEP_COMPLETE` and `NEXUS_HANDOFF` minimum: Summary + Status + Next. Optional fields when capable.
-- **State:** Track Phase + Step only. Full `_NEXUS_STATE` is optional.
+- **Output:** `_STEP_COMPLETE` and `NEXUS_HANDOFF` minimum: Summary + Status + Next. Add the Recommended/Optional fields by task complexity per `_common/HANDOFF.md` (detail proportional to complexity).
+- **State:** Track Phase + Step at minimum; keep the full `_NEXUS_STATE` for complex or long (4+ step) chains — driven by task complexity, not model capability.
 - **Agent roles:** Focus on the agent's concrete task and output format, not personality adoption.

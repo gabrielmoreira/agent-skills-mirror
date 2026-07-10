@@ -193,6 +193,7 @@ Create:
 - Envelope: `inbox_embed`
 - Public scopes: `project`, `customer`, `phone_number`
 - `scope_id` is blank for `project`, a customer UUID for `customer`, and WhatsApp `phone_number_id` for `phone_number`
+- `language` controls the embedded inbox UI language; supported values are `en` and `es`
 - Create returns `token` and `embed_url` once. Store `embed_url`; list/get/update omit secrets.
 
 Example:
@@ -203,7 +204,8 @@ Example:
     "scope_type": "phone_number",
     "scope_id": "1234567890",
     "allowed_origins": ["https://app.example.com"],
-    "default_mode": "system"
+    "default_mode": "system",
+    "language": "es"
   }
 }
 ```

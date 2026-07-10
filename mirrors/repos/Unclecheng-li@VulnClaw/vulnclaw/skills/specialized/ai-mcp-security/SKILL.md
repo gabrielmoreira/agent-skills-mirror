@@ -1,6 +1,11 @@
 ---
 name: ai-mcp-security
 description: AI与MCP安全评估 — Prompt注入、工具滥用、MCP信任边界、Agent权限逃逸、数据泄露、模型风险、GAARM风险矩阵
+routing:
+  target_types: [ai_agent, mcp]
+  task_types: [pentest, audit]
+  technologies: [llm, rag, memory, plugin]
+  vulnerability_classes: [prompt_injection, tool_abuse, info_disclosure]
 ---
 
 # AI 与 MCP 安全评估 Skill

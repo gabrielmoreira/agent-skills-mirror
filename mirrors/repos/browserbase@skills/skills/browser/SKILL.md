@@ -74,6 +74,7 @@ browse get url                           # Get current URL
 browse get title                         # Get page title
 browse get text <selector>               # Get text content (use "body" for all text)
 browse get html <selector>               # Get HTML content of element
+browse get markdown [selector]           # Get page content as markdown (defaults to body)
 browse get value <selector>              # Get form field value
 ```
 
@@ -85,6 +86,7 @@ browse click <ref>                       # Click element by ref from snapshot (e
 browse type <text>                       # Type text into focused element
 browse fill <selector> <value>           # Fill input; add --press-enter if Enter is needed
 browse select <selector> <values...>     # Select dropdown option(s)
+browse upload <selector> <files...>      # Upload file(s) to <input type="file">
 browse press <key>                       # Press key (Enter, Tab, Escape, Cmd+A, etc.)
 browse mouse drag <fromX> <fromY> <toX> <toY>  # Drag from one point to another
 browse mouse scroll <x> <y> <deltaX> <deltaY>  # Scroll at coordinates
@@ -93,6 +95,20 @@ browse is visible <selector>             # Check if element is visible
 browse is checked <selector>             # Check if element is checked
 browse wait <type> [arg]                 # Wait for: load, selector, timeout
 ```
+
+### CDP event tailing
+```bash
+browse cdp <url|port>                    # Stream CDP events as NDJSON from any target
+browse cdp 9222                          # Attach to local Chrome on port 9222
+browse cdp ws://localhost:9222/devtools/browser/...  # Full WebSocket URL
+browse cdp <url> --domain Network        # Only Network events
+browse cdp <url> --domain Network --domain Console  # Multiple domains
+browse cdp <url> --pretty                # Human-readable output
+browse cdp <url> > events.jsonl          # Pipe to file
+browse cdp <url> | jq '.method'          # Filter with jq
+```
+
+The `cdp` command connects directly to any Chrome DevTools Protocol target and streams events. It does **not** use the daemon — it's a standalone, long-running process. Press Ctrl+C to stop. Default domains: Network, Console, Runtime, Log, Page.
 
 ### Session management
 ```bash

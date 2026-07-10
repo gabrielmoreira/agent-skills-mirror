@@ -7,6 +7,8 @@ description: "Turn a product or marketing URL, pasted script, or brief into a pr
 
 > **media-use**: Before sourcing audio/images/logos, call `/media-use` to resolve BGM/SFX/images from the HeyGen catalog and brand logos from their official sources. Run `--adopt` first to register existing assets. See `/media-use` skill.
 
+> **figma source**: If the source is a figma.com URL, run `/figma` first — asset export, brand tokens, and components/storyboard reconstruction if needed — then build this workflow from its output. Don't drive Figma via raw MCP tools directly: that skips SVG sanitization, `.media/manifest.jsonl` provenance, and brand-token `var()` binding, so a later brand change can't propagate without a full re-import.
+
 # Product Launch to HyperFrames
 
 Use this skill to capture a product, understand its brand, plan a launch video, and build it frame by frame in HyperFrames.

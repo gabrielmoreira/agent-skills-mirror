@@ -4,7 +4,7 @@ description: Redis Search guidance covering FT.CREATE schema design, field type 
 license: MIT
 metadata:
   author: Redis, Inc.
-  version: "0.1.0"
+  version: "1.0.0"
 ---
 
 # Redis Search

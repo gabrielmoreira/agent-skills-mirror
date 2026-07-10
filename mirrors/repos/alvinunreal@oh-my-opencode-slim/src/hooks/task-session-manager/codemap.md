@@ -45,7 +45,7 @@ All modules depend on `BackgroundJobBoard` from `src/utils/background-job-board.
    - Prunes stale context during lifecycle events and status transitions
 
 4. **Message Injection (`experimental.chat.messages.transform`)**
-   - Injects a `### Background Job Board` section into user messages for managed sessions
+   - Injects a `<system-reminder>` part containing the `### Background Job Board` section into user messages for managed sessions
    - Lists active, unreconciled, and reusable sessions
    - Remembers injected terminal jobs to reconcile them on parent idle events
 
@@ -60,7 +60,7 @@ All modules depend on `BackgroundJobBoard` from `src/utils/background-job-board.
 ```
 User task call → tool.execute.before → PendingTaskCall created → task ID resolved/reused
 → tool.execute.after → BackgroundJobBoard.registerLaunch() → context extracted/added
-→ Message transform → BackgroundJobBoard.formatForPrompt() injected into user message
+→ Message transform → BackgroundJobBoard.formatForPrompt() injected as a system-reminder message part
 → session.idle → reconcileInjectedTerminalJobs() → BackgroundJobBoard.markReconciled()
 ```
 

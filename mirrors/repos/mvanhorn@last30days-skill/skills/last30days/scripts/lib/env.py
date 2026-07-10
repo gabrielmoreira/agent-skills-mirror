@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime
 import json
+import locale
 import os
 import sys
 from dataclasses import dataclass
@@ -172,20 +173,29 @@ def load_env_file(path: Path) -> dict[str, str]:
         return env
     _check_file_permissions(path)
 
-    with open(path, 'r') as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith('#'):
-                continue
-            if '=' in line:
-                key, _, value = line.partition('=')
-                key = key.strip()
-                value = value.strip()
-                # Remove quotes if present
-                if value and value[0] in ('"', "'") and value[-1] == value[0]:
-                    value = value[1:-1]
-                if key and value:
-                    env.update({key: value})
+    # Prefer UTF-8 (utf-8-sig transparently strips a BOM written by Windows
+    # editors like Notepad). Fall back to the locale decoder for a genuinely
+    # locale-encoded .env (e.g. cp1252) so an existing file that loaded before
+    # keeps loading. If it decodes as neither, let UnicodeDecodeError surface
+    # rather than corrupting keys/secrets with replacement characters.
+    try:
+        text = path.read_text(encoding='utf-8-sig')
+    except UnicodeDecodeError:
+        text = path.read_text(encoding=locale.getpreferredencoding(False))
+
+    for line in text.splitlines():
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        if '=' in line:
+            key, _, value = line.partition('=')
+            key = key.strip()
+            value = value.strip()
+            # Remove quotes if present
+            if value and value[0] in ('"', "'") and value[-1] == value[0]:
+                value = value[1:-1]
+            if key and value:
+                env.update({key: value})
     return env
 
 
@@ -502,7 +512,9 @@ def get_config(policy: ConfigLoadPolicy | None = None) -> dict[str, Any]:
         ('INCLUDE_SOURCES', ''),
         ('EXCLUDE_SOURCES', ''),
         ('LAST30DAYS_DEFAULT_SEARCH', ''),
+        ('FUN_LEVEL', 'medium'),
         ('LAST30DAYS_YOUTUBE_SSH_HOST', None),
+        ('LAST30DAYS_REPORT_CACHE_TTL_SECONDS', None),
         ('LAST30DAYS_TRANSCRIPT_TIMEOUT', None),
         (KEYCHAIN_ALIASES_ENV, None),
         # Whisper transcription provider for caption-free audio/video. Groq's

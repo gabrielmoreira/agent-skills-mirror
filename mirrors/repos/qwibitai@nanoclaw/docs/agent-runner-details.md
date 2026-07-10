@@ -634,52 +634,18 @@ destination is of type `agent`. `resolveRouting` maps it to a `messages_out` row
 `channel_type: 'agent'` and `platform_id` set to the target agent group id; the host
 validates the send and routes it into the target session's `inbound.db`.
 
-#### schedule_task
+#### ncl tasks
 
-Schedule a one-shot or recurring task.
+Schedule, inspect, and modify one-shot or recurring tasks.
 
-```typescript
-{
-  name: 'schedule_task',
-  params: {
-    prompt: string,             // task prompt
-    processAfter: string,       // ISO timestamp for first run
-    recurrence?: string,        // cron expression (optional)
-    script?: string,            // pre-agent script (optional)
-  }
-}
+```bash
+ncl tasks create --prompt "..." --process-after "2026-01-15T09:00:00" --recurrence "0 9 * * *"
+ncl tasks list
+ncl tasks update <series_id> --prompt "..."
+ncl tasks cancel <series_id>
 ```
 
-Implementation: the container can't write host-owned `inbound.db`, so this writes a `messages_out` row with `kind: 'system'` and `action: 'schedule_task'` (`container/agent-runner/src/mcp-tools/scheduling.ts`). During delivery the host's action handler (`src/modules/scheduling/actions.ts` → `insertTask()` in `src/modules/scheduling/db.ts`) inserts the `kind: 'task'` row into `inbound.db` with `process_after` and optionally `recurrence`. The host sweep picks it up when due.
-
-#### list_tasks
-
-List active scheduled/recurring tasks.
-
-```typescript
-{
-  name: 'list_tasks',
-  params: {}
-}
-```
-
-Implementation: a read, not a write — the container may read the read-only `inbound.db` mount directly. Returns one row per series (the live pending/paused occurrence): `SELECT series_id AS id, ... FROM messages_in WHERE kind = 'task' AND status IN ('pending','paused') GROUP BY series_id`. See `container/agent-runner/src/mcp-tools/scheduling.ts`.
-
-#### cancel_task / pause_task / resume_task / update_task
-
-Modify a scheduled task.
-
-```typescript
-{
-  name: 'cancel_task',
-  params: { taskId: string }
-}
-// pause_task: set status = 'paused' (new status value for recurring tasks)
-// resume_task: set status = 'pending'
-// update_task: merge { prompt?, recurrence?, processAfter?, script? } into the live row
-```
-
-Implementation: all four are sent as system actions (`messages_out`, `kind: 'system'`, `action: 'cancel_task' | 'pause_task' | 'resume_task' | 'update_task'`) — the container never writes `inbound.db`. The host's handlers in `src/modules/scheduling/actions.ts` apply the change against `inbound.db` via `src/modules/scheduling/db.ts`: cancel/pause/resume flip status on the live row(s); update_task reads current content, merges supplied fields, and writes back. All four match by `(id = ? OR series_id = ?) AND kind='task' AND status IN ('pending','paused')`, so they reach the live next occurrence of a recurring task even when the agent passes the original (now-completed) id.
+Implementation: the host writes `messages_in` task rows into the agent group's system session (`thread_id = system:tasks`). The host sweep wakes that system-session container when a task is due. The task agent chooses its destination at fire time by emitting `<message to="name">...</message>` or using `send_message`.
 
 #### create_agent
 

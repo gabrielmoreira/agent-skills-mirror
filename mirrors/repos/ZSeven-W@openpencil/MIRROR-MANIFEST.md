@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ZSeven-W/openpencil` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `ZSeven-W/openpencil` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ZSeven-W/openpencil` — 26 default patterns, 0 followed patterns, 15
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,20 +60,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`apps/cli/CLAUDE.md`](apps/cli/CLAUDE.md) |
-| 3 | ✓ | [`apps/desktop/CLAUDE.md`](apps/desktop/CLAUDE.md) |
-| 4 | ✓ | [`apps/web/CLAUDE.md`](apps/web/CLAUDE.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`packages/CLAUDE.md`](packages/CLAUDE.md) |
-| 7 | ✓ | [`packages/pen-ai-skills/CLAUDE.md`](packages/pen-ai-skills/CLAUDE.md) |
-| 8 | ✓ | [`packages/pen-core/CLAUDE.md`](packages/pen-core/CLAUDE.md) |
-| 9 | ✓ | [`packages/pen-engine/CLAUDE.md`](packages/pen-engine/CLAUDE.md) |
-| 10 | ✓ | [`packages/pen-figma/CLAUDE.md`](packages/pen-figma/CLAUDE.md) |
-| 11 | ✓ | [`packages/pen-mcp/CLAUDE.md`](packages/pen-mcp/CLAUDE.md) |
-| 12 | ✓ | [`packages/pen-react/CLAUDE.md`](packages/pen-react/CLAUDE.md) |
-| 13 | ✓ | [`packages/pen-renderer/CLAUDE.md`](packages/pen-renderer/CLAUDE.md) |
-| 14 | ✓ | [`packages/pen-sdk/CLAUDE.md`](packages/pen-sdk/CLAUDE.md) |
-| 15 | ✓ | [`packages/pen-types/CLAUDE.md`](packages/pen-types/CLAUDE.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`crates/CLAUDE.md`](crates/CLAUDE.md) |
+| 4 | ✓ | [`packages/CLAUDE.md`](packages/CLAUDE.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,8 +61,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`Anthropic/Claude Code/bundled-skills/dataviz/SKILL.md`](Anthropic/Claude%20Code/bundled-skills/dataviz/SKILL.md) |
 | 2 | ✓ | [`Anthropic/Claude Code/bundled-skills/deep-research/SKILL.md`](Anthropic/Claude%20Code/bundled-skills/deep-research/SKILL.md) |
-| 3 | ✓ | [`Anthropic/Claude Code/bundled-skills/run-skill-generator/SKILL.md`](Anthropic/Claude%20Code/bundled-skills/run-skill-generator/SKILL.md) |
-| 4 | ✓ | [`Anthropic/Claude Code/bundled-skills/run-skill-generator/template.md`](Anthropic/Claude%20Code/bundled-skills/run-skill-generator/template.md) |
+| 3 | ✓ | [`Anthropic/Claude Code/bundled-skills/doctor/SKILL.md`](Anthropic/Claude%20Code/bundled-skills/doctor/SKILL.md) |
+| 4 | ✓ | [`Anthropic/Claude Code/bundled-skills/run-skill-generator/SKILL.md`](Anthropic/Claude%20Code/bundled-skills/run-skill-generator/SKILL.md) |
+| 5 | ✓ | [`Anthropic/Claude Code/bundled-skills/run-skill-generator/template.md`](Anthropic/Claude%20Code/bundled-skills/run-skill-generator/template.md) |
 
 ---
 

@@ -1,6 +1,10 @@
 ---
 name: client-reverse
 description: 客户端逆向与Burp重放 — 复杂客户端签名恢复、加密还原、请求链追踪、稳定重放，适用于已授权安卓App渗透测试、浏览器JS签名、桌面客户端逆向
+routing:
+  target_types: [client, android, mobile]
+  task_types: [reverse]
+  tooling: [frida, jadx, burp, scrcpy]
 ---
 
 # 客户端逆向与 Burp 重放 Skill

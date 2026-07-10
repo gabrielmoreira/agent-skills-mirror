@@ -3,7 +3,7 @@ name: loop-engineer
 description: >
   Loop engineering wizard for Gemini CLI. Asks 2 questions, then orchestrates
   a fully autonomous agent team (resource-scout, researcher, planner,
-  agent-factory, executor, evaluator, verifier, auditor, memory-keeper) until the goal is met.
+  agent-factory, executor, verifier, auditor, memory-keeper) until the goal is met.
   Each agent is a named tool. On Gemini CLI v0.36+, subagents run in true
   parallel (spawn multiple in one turn); on older versions, invoke one at a
   time. Dynamic researcher count. Persistent memory, git integration, resume
@@ -190,26 +190,22 @@ Initialize: `turns_used = 0`, `skipped_tasks = []`.
    ```
    Increment turns_used.
 
-6. **MEMORY-KEEPER checkpoints (parallel)** — one per task. Local only.
+6. **VERIFIERS (parallel)** — one per task. Verifier now does both jobs in one pass: checks the task against RESEARCH.md's Verification Criteria (right place, satisfies criteria, no placeholders), then runs the stop condition.
 
-7. **EVALUATORS (parallel)** — one per task.
-
-8. **VERIFIERS (parallel)** — one per task.
-
-9. **Process verifier results**:
+7. **Process verifier results**:
    - PASS → auditor
    - FAIL < 3 → retry from step 3
    - FAIL ≥ 3 → auto-skip
 
-10. **AUDITORS (parallel)** — one per passing task.
+8. **AUDITORS (parallel)** — one per passing task.
 
-11. **Process audit results**:
+9. **Process audit results**:
     - CLEAN/WARN → proceed
     - BLOCK → auto-fix (one executor retry + re-verify). Still BLOCK → auto-skip.
 
-12. **MEMORY-KEEPER final** — single invoke, local + global write.
+10. **MEMORY-KEEPER consolidation** — single invoke, local + global write. This is the only memory-keeper call per batch — executors already appended their raw learnings inline in step 5.
 
-13. **Advance** — mark [x], git commit if enabled. Find next group.
+11. **Advance** — mark [x], git commit if enabled. Find next group.
     None → ALL DONE → rename `loop-stack/<LOOP_ID>/` → `loop-stack/<LOOP_ID>_DONE/` (or `_EXTENDED_DONE/` if this was an extended loop) → Phase 6.
 
 ---
@@ -233,7 +229,8 @@ Write `REPORT.md` inside the renamed loop directory and print summary.
 - **Agent-factory is on-demand, not a fixed phase step.** Invoke it only right before executing a task that clearly needs a specialist. Most loops never call it.
 - **knowledge-sources.md is a reference file researchers consult on demand**, not a phase step.
 - **No watcher agent.** Check heartbeats yourself if an agent is slow; never invoke a dedicated watcher.
-- **Memory-keeper twice per batch**: checkpoint (local) after executors, consolidation (local+global) after audit.
+- **No separate evaluator.** Verifier does both jobs in one pass: checks the task against RESEARCH.md's Verification Criteria, then runs the stop condition. One agent, one call, same rigor.
+- **Memory-keeper runs once per task batch** (after audit, local + global) — not a separate mid-batch checkpoint. Executors already append their own learnings to MEMORY.md directly as they work.
 - **Executors append to MEMORY.md directly** during work.
 - **Planner**: once at startup after researchers + resource-scout, and again (lightweight) for extended-loop follow-on tasks. Tasks MUST use [G1]/[G2] group tags.
 - **Fully autonomous**: no pauses. 3 fails → auto-skip. BLOCK → auto-fix once → skip.

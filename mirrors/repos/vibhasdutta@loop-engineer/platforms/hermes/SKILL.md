@@ -3,7 +3,7 @@ name: loop-engineer
 description: >
   Loop engineering wizard for Hermes Agent. Asks 2 questions, then orchestrates
   a fully autonomous parallel agent team (resource-scout, researcher, planner,
-  agent-factory, executor, evaluator, verifier, auditor, memory-keeper) for any goal.
+  agent-factory, executor, verifier, auditor, memory-keeper) for any goal.
   Uses delegate_task for true parallel subagent dispatch. Persistent memory,
   git integration, resume support. Activate with /loop-engineer.
 compatibility: Requires git and a terminal backend (local, docker, ssh, modal, or daytona)
@@ -205,26 +205,22 @@ For each dispatch step: put every agent's task definition in one `delegate_task(
    ```
    Wait for the call to return. Increment turns_used.
 
-6. **MEMORY-KEEPER checkpoints** — one `delegate_task(tasks=[...])` call, one entry per task (local only).
+6. **VERIFIERS** — one `delegate_task(tasks=[...])` call, one entry per task. Verifier now does both jobs in one pass: checks the task against RESEARCH.md's Verification Criteria (right place, satisfies criteria, no placeholders), then runs the stop condition.
 
-7. **EVALUATORS** — one `delegate_task(tasks=[...])` call, one entry per task.
-
-8. **VERIFIERS** — one `delegate_task(tasks=[...])` call, one entry per task.
-
-9. **Process verifier results**:
+7. **Process verifier results**:
    - PASS → auditor
    - FAIL < 3 → retry from step 3
    - FAIL ≥ 3 → auto-skip
 
-10. **AUDITORS** (passing tasks only) — one `delegate_task(tasks=[...])` call, one entry per passing task.
+8. **AUDITORS** (passing tasks only) — one `delegate_task(tasks=[...])` call, one entry per passing task.
 
-11. **Process audit results**:
+9. **Process audit results**:
     - CLEAN/WARN → proceed
     - BLOCK → auto-fix (dispatch executor once with BLOCK context, re-dispatch verifier). Still BLOCK → auto-skip.
 
-12. **MEMORY-KEEPER final** — single `delegate_task` call, local + global write.
+10. **MEMORY-KEEPER consolidation** — single `delegate_task` call, local + global write. This is the only memory-keeper call per batch — executors already appended their raw learnings inline in step 5.
 
-13. **Advance** — mark [x], git commit if enabled. Find next group.
+11. **Advance** — mark [x], git commit if enabled. Find next group.
     None → ALL DONE → rename `loop-stack/<LOOP_ID>/` → `loop-stack/<LOOP_ID>_DONE/` (or `_EXTENDED_DONE/` if this was an extended loop) → Phase 6.
 
 ---
@@ -246,7 +242,8 @@ Write `REPORT.md` inside the renamed loop directory and print summary.
 - **Agent-factory is on-demand, not a fixed phase step.** Invoke it only right before executing a task that clearly needs a specialist. Most loops never call it.
 - **knowledge-sources.md is a reference file researchers consult on demand**, not a phase step.
 - **No watcher agent.** Check heartbeats yourself if an agent is slow; never dispatch a dedicated watcher task.
-- **Memory-keeper twice per batch**: checkpoint (local) after executors, consolidation (local+global) after audit.
+- **No separate evaluator.** Verifier does both jobs in one pass: checks the task against RESEARCH.md's Verification Criteria, then runs the stop condition. One agent, one call, same rigor.
+- **Memory-keeper runs once per task batch** (after audit, local + global) — not a separate mid-batch checkpoint. Executors already append their own learnings to MEMORY.md directly as they work.
 - **Executors append to MEMORY.md directly** during work.
 - **Planner**: once at startup after researchers + resource-scout, and again (lightweight) for extended-loop follow-on tasks. Tasks MUST include [G1]/[G2] parallel group tags.
 - **Fully autonomous**: no pauses. 3 fails → auto-skip. BLOCK → auto-fix once → skip.

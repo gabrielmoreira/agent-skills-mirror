@@ -43,6 +43,8 @@ Do not record ordinary chat, tiny one-off slips, or anything the user asked not 
 
 ## Memory Promotion
 
+As soon as you actually fix a failure — or the same failure recurs — write one short "遇到 X 先 Y" rule to memory (`memory_write_daily`, or `memory_upsert_longterm` when it is broadly stable) and back-fill the ERRORS entry's 建议修复 and 状态 (pending → resolved). Do not leave a resolved failure sitting as pending with an empty fix.
+
 Promote a lesson into memory only when it is stable, short, and broadly reusable.
 
 Good candidates:
@@ -58,6 +60,10 @@ Prefer this order:
 3. write the distilled rule with `memory_write_daily` or `memory_upsert_longterm`
 
 Do not invent Minis-only paths or tools such as `/var/minis/...` or `memory_write`.
+
+## Recall
+
+Recorded failures and lessons are indexed into memory retrieval. Before retrying a tool, command, or environment step that has failed before — or when the injected memory context mentions a related pitfall — trust that recall (or call `memory_search`) and apply the known fix instead of repeating the failed step.
 
 ## Command Patterns
 

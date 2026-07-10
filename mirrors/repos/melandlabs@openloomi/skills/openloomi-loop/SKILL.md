@@ -3,7 +3,7 @@ name: openloomi-loop
 description: "openloomi's Loop — the proactive execution brain. Loop runs inside the main web app (apps/web/lib/loop/) and is reached through its HTTP API. Use this skill to inspect state, run a tick, schedule / cancel decision actions, and tune preferences. Triggers: 'openloomi loop', 'loop tick', 'loop schedule', 'loop inbox', 'loop run', 'proactive decisions', 'signal → decision → execute', 'pull signals', 'decision queue'"
 allowed-tools: Bash(curl *), Bash(jq *), Bash(cat ~/.openloomi/token *), Bash(base64 -d *), Bash(ls ~/.openloomi/loop/*)
 metadata:
-  version: 0.8.0
+  version: 0.7.1
 ---
 
 > **Note:** If you haven't downloaded or installed openloomi yet, please refer to [Getting Started](https://openloomi.ai/docs/getting-started) for installation instructions.
@@ -23,7 +23,7 @@ skill is a thin Claude-side wrapper around the Loop's HTTP API.
 | HTTP API | `apps/web/app/api/loop/{state,decisions,decision/[id],card/[id],connectors,brief,wrap,tick,preferences,action/*}/route.ts` |
 | Persistence | `~/.openloomi/loop/{signals.jsonl,decisions.json,status.json,connectors.json,config.json}` |
 | Scheduler | `lib/loop/scheduler.ts` registers 3 `ScheduledJob` rows (`loop.tick` / `loop.brief` / `loop.wrap`) driven by `lib/cron/local-scheduler` |
-| Pet surface | Tauri Rust thread `loomi-pet-decision-watcher` (`apps/web/src-tauri/src/pet/watcher.rs`) polls `decisions.json` mtime every 2s and emits `loop:state` / `loop:decision` to bubble + card webviews |
+| Pet surface | Tauri Rust thread `loomi-pet-decision-watcher` (`apps/web/src-tauri/src/pet/watcher.rs`) polls `decisions.json` mtime every 2s and emits `loop:state` / `loop:decision` to bubble + card webviews. The widget (`apps/web/public/loomi-widget.html`) supports two built-in themes (`fox`, `capybara`) and a `presenting` state surfaced when a decision moves to `done` before the user has reviewed it — click the bubble to flip back to `happy`. User-editable theme config lives at `~/.openloomi/pet-config.json`; see `apps/web/src-tauri/src/pet/theme.rs` and `config_watcher.rs`. |
 
 ## Base URL
 

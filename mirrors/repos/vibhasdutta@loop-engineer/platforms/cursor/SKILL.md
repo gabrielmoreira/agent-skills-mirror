@@ -3,7 +3,7 @@ name: loop-engineer
 description: >
   Loop engineering wizard for Cursor. Asks 2 questions, then orchestrates
   a fully autonomous parallel agent team (resource-scout, researcher, planner,
-  agent-factory, executor, evaluator, verifier, auditor, memory-keeper) for any goal.
+  agent-factory, executor, verifier, auditor, memory-keeper) for any goal.
   Multiple agents run in parallel — dynamic researcher count, multiple executors
   on independent parts simultaneously. Persistent memory, git integration, resume support.
 ---
@@ -190,28 +190,24 @@ Follow .cursor/agents/executor.md.
 ```
 Wait for all. Increment turns_used.
 
-### Step 5 — Parallel MEMORY-KEEPER checkpoints
-One per task: local MEMORY.md only. Wait for all.
+### Step 5 — Parallel VERIFIERS
+Verifier now does both jobs in one pass: checks the task against RESEARCH.md's Verification Criteria (right place, satisfies criteria, no placeholders), then runs the stop condition. One per task. Wait for all.
 
-### Step 6 — Parallel EVALUATORS. One per task. Wait for all.
-
-### Step 7 — Parallel VERIFIERS. One per task. Wait for all.
-
-### Step 8 — Process results
+### Step 6 — Process results
 - PASS → auditor
 - FAIL < 3 attempts → retry from Step 3
 - FAIL ≥ 3 → auto-skip
 
-### Step 9 — Parallel AUDITORS (per passing task). Wait for all.
+### Step 7 — Parallel AUDITORS (per passing task). Wait for all.
 
-### Step 10 — Process audit results
+### Step 8 — Process audit results
 - CLEAN/WARN → proceed
 - BLOCK → auto-fix (one executor retry + re-verify). Still BLOCK → auto-skip.
 
-### Step 11 — MEMORY-KEEPER final consolidation (single)
-Distill all completed tasks. Write to MEMORY.md + loop-stack/.global/MEMORY.md.
+### Step 9 — MEMORY-KEEPER consolidation (single)
+This is the only memory-keeper call per batch — executors already appended their raw learnings inline in Step 4. Distill all completed tasks. Write to MEMORY.md + loop-stack/.global/MEMORY.md.
 
-### Step 12 — Advance
+### Step 10 — Advance
 Mark [x]. Git commit if enabled. Find next group. None → ALL DONE →
 rename `loop-stack/<LOOP_ID>/` → `loop-stack/<LOOP_ID>_DONE/` (or `_EXTENDED_DONE/` if this was an extended loop) → Phase 6.
 
@@ -235,7 +231,8 @@ Write `REPORT.md` inside the renamed loop directory and print summary.
 - **Agent-factory is on-demand, not a fixed phase step.** Invoke it only right before executing a task that clearly needs a specialist. Most loops never call it.
 - **knowledge-sources.md is a reference file researchers consult on demand**, not a phase step.
 - **No watcher agent.** Check heartbeats yourself if an agent is slow; never spawn a dedicated watcher.
-- **Memory-keeper twice per batch**: checkpoint (local) after executors, consolidation (local+global) after audit.
+- **No separate evaluator.** Verifier does both jobs in one pass: checks the task against RESEARCH.md's Verification Criteria, then runs the stop condition. One agent, one call, same rigor.
+- **Memory-keeper runs once per task batch** (after audit, local + global) — not a separate mid-batch checkpoint. Executors already append their own learnings to MEMORY.md directly as they work.
 - **Executors append to MEMORY.md directly** during work.
 - **Planner**: once at startup after researchers + resource-scout, and again (lightweight) for extended-loop follow-on tasks.
 - **Fully autonomous**: no pauses. 3 fails → auto-skip. BLOCK → auto-fix once → skip.

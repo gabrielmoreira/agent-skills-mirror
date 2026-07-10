@@ -3,15 +3,27 @@ name: loop-engineer
 description: >
   Domain-agnostic autonomous loop for any goal — coding, research, content, data,
   automation, or any objective. Asks 2 questions, then orchestrates a self-assembling
-  agent team (resource-scout, researcher, planner, agent-factory, executor, evaluator,
+  agent team (resource-scout, researcher, planner, agent-factory, executor,
   verifier, auditor, memory-keeper) that researches, discovers resources, builds
   specialized agents for the goal, executes, and iterates until done. Supports
   resume, persistent memory, git integration, and generates a completion report.
+disable-model-invocation: true
+allowed-tools:
+  - Bash
+  - Read
+  - Write
+  - Edit
+  - Agent
+  - Glob
+  - Grep
+  - TodoWrite
 ---
 
 # Loop Engineer
 
 You are running a loop engineering wizard. Follow these phases in order.
+
+**On permission prompts:** `allowed-tools` above pre-approves Bash/Read/Write/Edit/Agent/Glob/Grep/TodoWrite for the top-level orchestrator while this skill is active — you should not be interrupted for those. Spawned subagents (via the `Agent` tool) run under the same session's permission settings, not a separate grant, so if a subagent still gets interrupted, it's the session's own `.claude/settings.json` (or global settings) that needs an allow rule, not this skill. `disable-model-invocation: true` means this only runs when explicitly invoked with `/loop-engineer` — it will never trigger itself based on conversation content.
 
 ---
 
@@ -268,34 +280,9 @@ Follow .claude/agents/executor.md (or the specialized agent from AGENTS.md if ap
 
 Wait for ALL executors to finish. Increment `turns_used`.
 
-### Step 5 — Parallel MEMORY-KEEPER checkpoints
+### Step 5 — Parallel VERIFIERS (one per task in batch)
 
-Spawn one memory-keeper per task in the batch simultaneously:
-```
-Loop directory: loop-stack/<LOOP_ID>/
-Checkpoint: executor just completed "{this_task}".
-Capture NEW implementation learnings to loop-stack/<LOOP_ID>/MEMORY.md (local only, no global write yet).
-Follow .claude/agents/memory-keeper.md.
-```
-
-Wait for all to finish.
-
-### Step 6 — Parallel EVALUATORS (one per task in batch)
-
-Spawn one evaluator per task simultaneously:
-```
-Loop directory: loop-stack/<LOOP_ID>/
-GLOBAL DATA FIRST — read loop-stack/.global/MEMORY.md AND loop-stack/.global/TOOLS.md.
-Read loop-stack/<LOOP_ID>/RESEARCH.md — constraints and edge cases flagged for "{this_task}".
-Current task: {this_task}. Evaluate quality for this specific task only. Adapt verification approach to the goal type.
-Follow .claude/agents/evaluator.md.
-```
-
-Wait for ALL to finish.
-
-### Step 7 — Parallel VERIFIERS (one per task in batch)
-
-Spawn one verifier per task simultaneously:
+Verifier now does both jobs in one pass: checks the task against RESEARCH.md's Verification Criteria (right place, satisfies criteria, no placeholders), then runs the actual stop condition. Spawn one verifier per task simultaneously:
 ```
 Loop directory: loop-stack/<LOOP_ID>/
 GLOBAL DATA FIRST — read loop-stack/.global/MEMORY.md.
@@ -305,14 +292,14 @@ Follow .claude/agents/verifier.md.
 
 Wait for ALL to finish.
 
-### Step 8 — Process verifier results (per task)
+### Step 6 — Process verifier results (per task)
 
 For each task in the batch:
 - **VERIFIED_PASS** → proceed to auditor
 - **FAILED, attempts < 3** → increment attempts in STATUS.md, queue for retry (back to Step 3 for this task with error context)
 - **FAILED, attempts ≥ 3** → **auto-skip**: add to `skipped_tasks`, mark as skipped in STATUS.md
 
-### Step 9 — Parallel AUDITORS (one per verified-pass task)
+### Step 7 — Parallel AUDITORS (one per verified-pass task)
 
 For each task that passed verification, spawn an auditor simultaneously:
 ```
@@ -325,24 +312,24 @@ Follow .claude/agents/auditor.md.
 
 Wait for ALL auditors to finish.
 
-### Step 10 — Process audit results (per task)
+### Step 8 — Process audit results (per task)
 
 For each task:
 - **CLEAN or WARN** → proceed
 - **BLOCK** → **auto-fix**: spawn executor once more with BLOCK context + re-verify. If still BLOCK → auto-skip.
 
-### Step 11 — MEMORY-KEEPER final consolidation (single)
+### Step 9 — MEMORY-KEEPER consolidation (single)
 
-One memory-keeper consolidates all completed tasks in this batch:
+One memory-keeper consolidates all completed tasks in this batch — this is the only memory-keeper call per batch (executors already appended their raw learnings inline during Step 4):
 ```
 Loop directory: loop-stack/<LOOP_ID>/
 Tasks just completed: {all tasks in this batch that passed}
-Final consolidation: distill key learnings to loop-stack/<LOOP_ID>/MEMORY.md.
+Distill key learnings to loop-stack/<LOOP_ID>/MEMORY.md.
 Global write: append the most important new learning per completed task to loop-stack/.global/MEMORY.md.
 Follow .claude/agents/memory-keeper.md.
 ```
 
-### Step 12 — Advance
+### Step 10 — Advance
 
 - Mark each passed task [x] in PLAN.md, increment `done_tasks`, reset attempts.
 - If `USE_GIT`: commit PLAN.md + STATUS.md.
@@ -369,7 +356,8 @@ Write `REPORT.md` inside the renamed loop directory (`<LOOP_ID>_DONE/` or `<LOOP
 - **Agent-factory is an on-demand tool, not a fixed phase step.** It does not run automatically at startup. Invoke it only when a specific task is about to be executed and clearly needs domain expertise a generic executor lacks — check AGENTS.md immediately before spawning executors for a batch, and create a specialist then if needed. Most loops never call it.
 - **knowledge-sources.md is a reference file, not a phase step.** The researcher consults it only when a task genuinely needs external sources it doesn't already know how to find — never as a mandatory step.
 - **No watcher agent.** Stuck-agent detection is inline: if a spawned agent takes much longer than its peers, check its heartbeat in STATUS.md yourself and proceed without it if stale. Never spawn a dedicated agent just to watch other agents.
-- **Memory-keeper runs twice per task batch**: checkpoint after executors (local), consolidation after audit (local + global).
+- **No separate evaluator.** Verifier does both jobs in one pass: checks the task against RESEARCH.md's Verification Criteria, then runs the stop condition. One agent, one call, same rigor — not two sequential LLM passes for what's really one quality gate.
+- **Memory-keeper runs once per task batch** (after audit, local + global) — not a separate mid-batch checkpoint. Executors already append their own learnings to MEMORY.md directly as they work (see below), so there's nothing left for a checkpoint pass to do that isn't already written.
 - **Each executor appends discoveries to MEMORY.md directly** — continuous memory, don't wait for memory-keeper.
 - **Planner**: runs once at startup after researchers + resource-scout, and again (lightweight) whenever an extended loop adds new tasks. Creates parallel-group-tagged task list.
 - **Fully autonomous**: Never pause. 3 failures → auto-skip. Audit BLOCK → auto-fix once → skip.

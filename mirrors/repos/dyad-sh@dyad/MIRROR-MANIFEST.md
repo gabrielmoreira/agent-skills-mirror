@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dyad-sh/dyad` — 26 default patterns, 22 followed patterns, 52 file(s) materialized.
+Mirror of `dyad-sh/dyad` — 26 default patterns, 23 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 22 followed patterns, 52 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 22 |
-| Files         | 52 |
+| Followed pats | 23 |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,6 +73,7 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 22 followed patterns, 52 file(
 - `rules/claude-github-workflows.md`
 - `rules/ui-styling.md`
 - `rules/auto-update.md`
+- `rules/safe-storage.md`
 
 ## File Index
 
@@ -129,9 +130,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 47 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
 | 48 | → | [`rules/product-principles.md`](rules/product-principles.md) |
 | 49 | → | [`rules/prompt-guides.md`](rules/prompt-guides.md) |
-| 50 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
-| 51 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
-| 52 | → | [`rules/ui-styling.md`](rules/ui-styling.md) |
+| 50 | → | [`rules/safe-storage.md`](rules/safe-storage.md) |
+| 51 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
+| 52 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
+| 53 | → | [`rules/ui-styling.md`](rules/ui-styling.md) |
 
 ---
 

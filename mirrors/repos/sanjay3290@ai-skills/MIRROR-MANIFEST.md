@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `sanjay3290/ai-skills` — 26 default patterns, 0 followed patterns, 137 file(s) materialized.
+Mirror of `sanjay3290/ai-skills` — 26 default patterns, 0 followed patterns, 144 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `sanjay3290/ai-skills` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 137 |
+| Files         | 144 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -146,56 +146,63 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 85 | ✓ | [`skills/google-tts/scripts/extract.py`](skills/google-tts/scripts/extract.py) |
 | 86 | ✓ | [`skills/google-tts/scripts/google_tts.py`](skills/google-tts/scripts/google_tts.py) |
 | 87 | ✓ | [`skills/google-tts/SKILL.md`](skills/google-tts/SKILL.md) |
-| 88 | ✓ | [`skills/imagen/.env.example`](skills/imagen/.env.example) |
-| 89 | ✓ | [`skills/imagen/.gitignore`](skills/imagen/.gitignore) |
-| 90 | ✓ | [`skills/imagen/examples.md`](skills/imagen/examples.md) |
-| 91 | ✓ | [`skills/imagen/README.md`](skills/imagen/README.md) |
-| 92 | ✓ | [`skills/imagen/reference.md`](skills/imagen/reference.md) |
-| 93 | ✓ | [`skills/imagen/scripts/generate_image.py`](skills/imagen/scripts/generate_image.py) |
-| 94 | ✓ | [`skills/imagen/SKILL.md`](skills/imagen/SKILL.md) |
-| 95 | ✓ | [`skills/jules/SKILL.md`](skills/jules/SKILL.md) |
-| 96 | ✓ | [`skills/manus/references/api.md`](skills/manus/references/api.md) |
-| 97 | ✓ | [`skills/manus/SKILL.md`](skills/manus/SKILL.md) |
-| 98 | ✓ | [`skills/mssql/.gitignore`](skills/mssql/.gitignore) |
-| 99 | ✓ | [`skills/mssql/connections.example.json`](skills/mssql/connections.example.json) |
-| 100 | ✓ | [`skills/mssql/README.md`](skills/mssql/README.md) |
-| 101 | ✓ | [`skills/mssql/requirements.txt`](skills/mssql/requirements.txt) |
-| 102 | ✓ | [`skills/mssql/scripts/query.py`](skills/mssql/scripts/query.py) |
-| 103 | ✓ | [`skills/mssql/SKILL.md`](skills/mssql/SKILL.md) |
-| 104 | ✓ | [`skills/mysql/.gitignore`](skills/mysql/.gitignore) |
-| 105 | ✓ | [`skills/mysql/connections.example.json`](skills/mysql/connections.example.json) |
-| 106 | ✓ | [`skills/mysql/README.md`](skills/mysql/README.md) |
-| 107 | ✓ | [`skills/mysql/requirements.txt`](skills/mysql/requirements.txt) |
-| 108 | ✓ | [`skills/mysql/scripts/query.py`](skills/mysql/scripts/query.py) |
-| 109 | ✓ | [`skills/mysql/SKILL.md`](skills/mysql/SKILL.md) |
-| 110 | ✓ | [`skills/notebooklm/.gitignore`](skills/notebooklm/.gitignore) |
-| 111 | ✓ | [`skills/notebooklm/references/commands.md`](skills/notebooklm/references/commands.md) |
-| 112 | ✓ | [`skills/notebooklm/requirements.txt`](skills/notebooklm/requirements.txt) |
-| 113 | ✓ | [`skills/notebooklm/scripts/ask_question.py`](skills/notebooklm/scripts/ask_question.py) |
-| 114 | ✓ | [`skills/notebooklm/scripts/auth_manager.py`](skills/notebooklm/scripts/auth_manager.py) |
-| 115 | ✓ | [`skills/notebooklm/scripts/common.py`](skills/notebooklm/scripts/common.py) |
-| 116 | ✓ | [`skills/notebooklm/scripts/notebook_manager.py`](skills/notebooklm/scripts/notebook_manager.py) |
-| 117 | ✓ | [`skills/notebooklm/scripts/remote_manager.py`](skills/notebooklm/scripts/remote_manager.py) |
-| 118 | ✓ | [`skills/notebooklm/SKILL.md`](skills/notebooklm/SKILL.md) |
-| 119 | ✓ | [`skills/notebooklm/tests/conftest.py`](skills/notebooklm/tests/conftest.py) |
-| 120 | ✓ | [`skills/notebooklm/tests/test_ask_question_modes.py`](skills/notebooklm/tests/test_ask_question_modes.py) |
-| 121 | ✓ | [`skills/notebooklm/tests/test_remote_manager_filters.py`](skills/notebooklm/tests/test_remote_manager_filters.py) |
-| 122 | ✓ | [`skills/notebooklm/tests/test_smoke_playwright.py`](skills/notebooklm/tests/test_smoke_playwright.py) |
-| 123 | ✓ | [`skills/outline/.env.example`](skills/outline/.env.example) |
-| 124 | ✓ | [`skills/outline/.gitignore`](skills/outline/.gitignore) |
-| 125 | ✓ | [`skills/outline/README.md`](skills/outline/README.md) |
-| 126 | ✓ | [`skills/outline/requirements.txt`](skills/outline/requirements.txt) |
-| 127 | ✓ | [`skills/outline/scripts/outline.py`](skills/outline/scripts/outline.py) |
-| 128 | ✓ | [`skills/outline/SKILL.md`](skills/outline/SKILL.md) |
-| 129 | ✓ | [`skills/postgres/.gitignore`](skills/postgres/.gitignore) |
-| 130 | ✓ | [`skills/postgres/connections.example.json`](skills/postgres/connections.example.json) |
-| 131 | ✓ | [`skills/postgres/README.md`](skills/postgres/README.md) |
-| 132 | ✓ | [`skills/postgres/requirements.txt`](skills/postgres/requirements.txt) |
-| 133 | ✓ | [`skills/postgres/scripts/query.py`](skills/postgres/scripts/query.py) |
-| 134 | ✓ | [`skills/postgres/SKILL.md`](skills/postgres/SKILL.md) |
-| 135 | ✓ | [`skills/telegram/README.md`](skills/telegram/README.md) |
-| 136 | ✓ | [`skills/telegram/scripts/telegram.sh`](skills/telegram/scripts/telegram.sh) |
-| 137 | ✓ | [`skills/telegram/SKILL.md`](skills/telegram/SKILL.md) |
+| 88 | ✓ | [`skills/grok-build/references/cli.md`](skills/grok-build/references/cli.md) |
+| 89 | ✓ | [`skills/grok-build/SKILL.md`](skills/grok-build/SKILL.md) |
+| 90 | ✓ | [`skills/imagen/.env.example`](skills/imagen/.env.example) |
+| 91 | ✓ | [`skills/imagen/.gitignore`](skills/imagen/.gitignore) |
+| 92 | ✓ | [`skills/imagen/examples.md`](skills/imagen/examples.md) |
+| 93 | ✓ | [`skills/imagen/README.md`](skills/imagen/README.md) |
+| 94 | ✓ | [`skills/imagen/reference.md`](skills/imagen/reference.md) |
+| 95 | ✓ | [`skills/imagen/scripts/generate_image.py`](skills/imagen/scripts/generate_image.py) |
+| 96 | ✓ | [`skills/imagen/SKILL.md`](skills/imagen/SKILL.md) |
+| 97 | ✓ | [`skills/jules/SKILL.md`](skills/jules/SKILL.md) |
+| 98 | ✓ | [`skills/manus/references/api.md`](skills/manus/references/api.md) |
+| 99 | ✓ | [`skills/manus/SKILL.md`](skills/manus/SKILL.md) |
+| 100 | ✓ | [`skills/mssql/.gitignore`](skills/mssql/.gitignore) |
+| 101 | ✓ | [`skills/mssql/connections.example.json`](skills/mssql/connections.example.json) |
+| 102 | ✓ | [`skills/mssql/README.md`](skills/mssql/README.md) |
+| 103 | ✓ | [`skills/mssql/requirements.txt`](skills/mssql/requirements.txt) |
+| 104 | ✓ | [`skills/mssql/scripts/query.py`](skills/mssql/scripts/query.py) |
+| 105 | ✓ | [`skills/mssql/SKILL.md`](skills/mssql/SKILL.md) |
+| 106 | ✓ | [`skills/mysql/.gitignore`](skills/mysql/.gitignore) |
+| 107 | ✓ | [`skills/mysql/connections.example.json`](skills/mysql/connections.example.json) |
+| 108 | ✓ | [`skills/mysql/README.md`](skills/mysql/README.md) |
+| 109 | ✓ | [`skills/mysql/requirements.txt`](skills/mysql/requirements.txt) |
+| 110 | ✓ | [`skills/mysql/scripts/query.py`](skills/mysql/scripts/query.py) |
+| 111 | ✓ | [`skills/mysql/SKILL.md`](skills/mysql/SKILL.md) |
+| 112 | ✓ | [`skills/notebooklm/.gitignore`](skills/notebooklm/.gitignore) |
+| 113 | ✓ | [`skills/notebooklm/references/commands.md`](skills/notebooklm/references/commands.md) |
+| 114 | ✓ | [`skills/notebooklm/requirements.txt`](skills/notebooklm/requirements.txt) |
+| 115 | ✓ | [`skills/notebooklm/scripts/ask_question.py`](skills/notebooklm/scripts/ask_question.py) |
+| 116 | ✓ | [`skills/notebooklm/scripts/auth_manager.py`](skills/notebooklm/scripts/auth_manager.py) |
+| 117 | ✓ | [`skills/notebooklm/scripts/common.py`](skills/notebooklm/scripts/common.py) |
+| 118 | ✓ | [`skills/notebooklm/scripts/notebook_manager.py`](skills/notebooklm/scripts/notebook_manager.py) |
+| 119 | ✓ | [`skills/notebooklm/scripts/remote_manager.py`](skills/notebooklm/scripts/remote_manager.py) |
+| 120 | ✓ | [`skills/notebooklm/SKILL.md`](skills/notebooklm/SKILL.md) |
+| 121 | ✓ | [`skills/notebooklm/tests/conftest.py`](skills/notebooklm/tests/conftest.py) |
+| 122 | ✓ | [`skills/notebooklm/tests/test_ask_question_modes.py`](skills/notebooklm/tests/test_ask_question_modes.py) |
+| 123 | ✓ | [`skills/notebooklm/tests/test_remote_manager_filters.py`](skills/notebooklm/tests/test_remote_manager_filters.py) |
+| 124 | ✓ | [`skills/notebooklm/tests/test_smoke_playwright.py`](skills/notebooklm/tests/test_smoke_playwright.py) |
+| 125 | ✓ | [`skills/outline/.env.example`](skills/outline/.env.example) |
+| 126 | ✓ | [`skills/outline/.gitignore`](skills/outline/.gitignore) |
+| 127 | ✓ | [`skills/outline/README.md`](skills/outline/README.md) |
+| 128 | ✓ | [`skills/outline/requirements.txt`](skills/outline/requirements.txt) |
+| 129 | ✓ | [`skills/outline/scripts/outline.py`](skills/outline/scripts/outline.py) |
+| 130 | ✓ | [`skills/outline/SKILL.md`](skills/outline/SKILL.md) |
+| 131 | ✓ | [`skills/postgres/.gitignore`](skills/postgres/.gitignore) |
+| 132 | ✓ | [`skills/postgres/connections.example.json`](skills/postgres/connections.example.json) |
+| 133 | ✓ | [`skills/postgres/README.md`](skills/postgres/README.md) |
+| 134 | ✓ | [`skills/postgres/requirements.txt`](skills/postgres/requirements.txt) |
+| 135 | ✓ | [`skills/postgres/scripts/query.py`](skills/postgres/scripts/query.py) |
+| 136 | ✓ | [`skills/postgres/SKILL.md`](skills/postgres/SKILL.md) |
+| 137 | ✓ | [`skills/telegram/README.md`](skills/telegram/README.md) |
+| 138 | ✓ | [`skills/telegram/scripts/telegram.sh`](skills/telegram/scripts/telegram.sh) |
+| 139 | ✓ | [`skills/telegram/SKILL.md`](skills/telegram/SKILL.md) |
+| 140 | ✓ | [`skills/whatsapp/README.md`](skills/whatsapp/README.md) |
+| 141 | ✓ | [`skills/whatsapp/references/api.md`](skills/whatsapp/references/api.md) |
+| 142 | ✓ | [`skills/whatsapp/scripts/_bootstrap.sh`](skills/whatsapp/scripts/_bootstrap.sh) |
+| 143 | ✓ | [`skills/whatsapp/scripts/wa.py`](skills/whatsapp/scripts/wa.py) |
+| 144 | ✓ | [`skills/whatsapp/SKILL.md`](skills/whatsapp/SKILL.md) |
 
 ---
 

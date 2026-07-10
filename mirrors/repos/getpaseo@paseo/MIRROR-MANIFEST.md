@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 29 followed patterns, 43 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 30 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 29 followed patterns, 43 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 29 |
-| Files         | 43 |
+| Followed pats | 30 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,6 +73,7 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 29 followed patterns, 43 fil
 - `docs/terminal-performance.md`
 - `docs/testing.md`
 - `docs/mobile-testing.md`
+- `docs/mobile-panels.md`
 - `docs/ad-hoc-daemon-testing.md`
 - `docs/browser-capture-harness.md`
 - `docs/android.md`
@@ -118,18 +119,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | → | [`docs/forms.md`](docs/forms.md) |
 | 30 | → | [`docs/glossary.md`](docs/glossary.md) |
 | 31 | → | [`docs/hover.md`](docs/hover.md) |
-| 32 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
-| 33 | → | [`docs/product.md`](docs/product.md) |
-| 34 | → | [`docs/protocol-validation.md`](docs/protocol-validation.md) |
-| 35 | → | [`docs/providers.md`](docs/providers.md) |
-| 36 | → | [`docs/release.md`](docs/release.md) |
-| 37 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
-| 38 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
-| 39 | → | [`docs/terminal-activity.md`](docs/terminal-activity.md) |
-| 40 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
-| 41 | → | [`docs/testing.md`](docs/testing.md) |
-| 42 | → | [`docs/unistyles.md`](docs/unistyles.md) |
-| 43 | → | [`SECURITY.md`](SECURITY.md) |
+| 32 | → | [`docs/mobile-panels.md`](docs/mobile-panels.md) |
+| 33 | → | [`docs/mobile-testing.md`](docs/mobile-testing.md) |
+| 34 | → | [`docs/product.md`](docs/product.md) |
+| 35 | → | [`docs/protocol-validation.md`](docs/protocol-validation.md) |
+| 36 | → | [`docs/providers.md`](docs/providers.md) |
+| 37 | → | [`docs/release.md`](docs/release.md) |
+| 38 | → | [`docs/rpc-namespacing.md`](docs/rpc-namespacing.md) |
+| 39 | → | [`docs/service-proxy.md`](docs/service-proxy.md) |
+| 40 | → | [`docs/terminal-activity.md`](docs/terminal-activity.md) |
+| 41 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
+| 42 | → | [`docs/testing.md`](docs/testing.md) |
+| 43 | → | [`docs/unistyles.md`](docs/unistyles.md) |
+| 44 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

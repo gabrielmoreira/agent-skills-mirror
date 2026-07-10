@@ -107,7 +107,7 @@ browse screenshot --full-page            # capture entire scrollable page
 
 #### `get <property> [selector]`
 
-Get page properties. Available properties: `url`, `title`, `text`, `html`, `value`, `box`, `visible`, `checked`.
+Get page properties. Available properties: `url`, `title`, `text`, `html`, `markdown`, `value`, `box`, `visible`, `checked`.
 
 ```bash
 browse get url                           # current URL
@@ -115,13 +115,17 @@ browse get title                         # page title
 browse get text "body"                   # all visible text (selector required)
 browse get text ".product-info"          # text within a CSS selector
 browse get html "#main"                  # inner HTML of an element
+browse get markdown                      # full page body as markdown
+browse get markdown ".article"           # specific element as markdown
 browse get value "#email-input"          # value of a form field
 browse get box "#header"                 # bounding box (centroid coordinates)
 browse get visible ".modal"              # check if element is visible
 browse get checked "#agree"              # check if checkbox/radio is checked
 ```
 
-**Note**: `get text` requires a CSS selector argument — use `"body"` for full page text.
+**Note**: `get text` and `get html` require a selector argument — use `"body"` for full page content. `get markdown` defaults to body when no selector is given.
+
+**Tip**: Prefer `get markdown` over `get text` or `get html` when you need readable page content for analysis — it preserves links, headings, and structure without HTML noise.
 
 #### `refs`
 
@@ -186,6 +190,16 @@ Select option(s) from a dropdown.
 ```bash
 browse select "#country" "United States"
 browse select "#tags" "javascript" "typescript"    # multi-select
+```
+
+#### `upload <selector> <files...>`
+
+Upload file(s) to an `<input type="file">` element. Works with both local and remote Browserbase sessions (remote uses base64 injection). Supports ref-based selectors from snapshot.
+
+```bash
+browse upload "#fileUpload" ./document.pdf          # single file
+browse upload @0-5 ./photo.png                      # using ref from snapshot
+browse upload "#files" ./a.png ./b.png              # multiple files
 ```
 
 #### `press <key>`
@@ -389,6 +403,61 @@ Clear all captured requests.
 
 ```bash
 browse network clear
+```
+
+---
+
+### CDP Event Tailing
+
+#### `cdp <url|port>`
+
+Attach to any Chrome DevTools Protocol target and stream events as NDJSON (one JSON object per line). This command bypasses the daemon entirely — it opens a direct WebSocket connection and runs until interrupted.
+
+```bash
+browse cdp 9222                          # bare port — auto-discovers via /json/version
+browse cdp ws://127.0.0.1:9222/devtools/browser/...  # full WebSocket URL
+browse cdp wss://connect.browserbase.com/debug/...    # remote Browserbase debug URL
+```
+
+**Options:**
+
+| Flag | Description |
+|------|-------------|
+| `--domain <domains...>` | CDP domains to enable (repeatable). Default: Network, Console, Runtime, Log, Page |
+| `--pretty` | Human-readable output instead of JSON. Auto-enabled for TTY |
+
+**Default domains:** Network, Console, Runtime, Log, Page. To capture only specific domains:
+
+```bash
+browse cdp 9222 --domain Network                     # network events only
+browse cdp 9222 --domain Network --domain Console    # network + console
+```
+
+**Piping and filtering:**
+
+```bash
+browse cdp 9222 > events.jsonl                       # save to file
+browse cdp 9222 | jq '.method'                       # extract method names
+browse cdp 9222 | jq 'select(.method == "Network.requestWillBeSent") | .params.request.url'
+```
+
+**Pretty output** shows compact one-line summaries:
+
+```
+[Target.attachedToTarget] [page] https://example.com
+[Network.requestWillBeSent] GET https://example.com/api/data
+[Network.responseReceived] 200 https://example.com/api/data
+[Runtime.consoleAPICalled] [log] Hello world
+[Page.frameNavigated] https://example.com/about
+```
+
+**With Browserbase sessions:** Use `bb sessions debug <session-id>` to get the `wsUrl`, then pass it to `browse cdp`:
+
+```bash
+# Get the debug WebSocket URL
+bb sessions debug <session-id>
+# Copy the wsUrl field and pass it to browse cdp
+browse cdp wss://connect.browserbase.com/debug/<session-id>/devtools/browser/...
 ```
 
 ---

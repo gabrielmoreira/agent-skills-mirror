@@ -3,7 +3,7 @@ name: loop-engineer
 description: Domain-agnostic autonomous loop wizard for VS Code GitHub Copilot. Asks 2 questions, then orchestrates a fully autonomous agent team via true parallel subagent dispatch.
 agent: 'agent'
 tools: ['agent', 'read', 'edit', 'search', 'terminal', 'web']
-agents: ['loop-engineer-researcher', 'loop-engineer-executor', 'loop-engineer-evaluator', 'loop-engineer-verifier', 'loop-engineer-auditor', 'loop-engineer-memory-keeper', 'loop-engineer-planner', 'loop-engineer-agent-factory', 'loop-engineer-resource-scout']
+agents: ['loop-engineer-researcher', 'loop-engineer-executor', 'loop-engineer-verifier', 'loop-engineer-auditor', 'loop-engineer-memory-keeper', 'loop-engineer-planner', 'loop-engineer-agent-factory', 'loop-engineer-resource-scout']
 ---
 
 # Loop Engineer (VS Code Copilot)
@@ -179,26 +179,27 @@ Initialize: `turns_used = 0`, `skipped_tasks = []`.
    ```
    Increment `turns_used`.
 
-6. **MEMORY-KEEPER checkpoints (parallel)** — one per completed task, local write only.
+6. **VERIFIERS (parallel)** — one per task. Merged verifier does both jobs in one pass (researcher-criteria check + stop condition):
+   ```
+   Run these subagents in parallel using the loop-engineer-verifier agent:
+   1. Loop directory: loop-stack/<LOOP_ID>/. Current task: {task_1}.
+   2. [same, for task_2] ...
+   ```
 
-7. **EVALUATORS (parallel)** — one per task.
-
-8. **VERIFIERS (parallel)** — one per task.
-
-9. **Process verifier results**:
+7. **Process verifier results**:
    - VERIFIED_PASS → auditor
    - FAILED, attempts < 3 → increment attempts in STATUS.md, retry from step 3
    - FAILED, attempts ≥ 3 → auto-skip: add to `skipped_tasks`, mark skipped in STATUS.md
 
-10. **AUDITORS (parallel)** — one per verified-pass task.
+8. **AUDITORS (parallel)** — one per verified-pass task.
 
-11. **Process audit results**:
+9. **Process audit results**:
     - CLEAN/WARN → proceed
     - BLOCK → auto-fix: one executor retry + re-verify. Still BLOCK → auto-skip.
 
-12. **MEMORY-KEEPER final** — single run, local + global write.
+10. **MEMORY-KEEPER final** — single run, local + global write.
 
-13. **Advance** — mark [x] in PLAN.md, git commit if enabled. Find next unchecked group.
+11. **Advance** — mark [x] in PLAN.md, git commit if enabled. Find next unchecked group.
     None left → ALL DONE → rename `loop-stack/<LOOP_ID>/` → `loop-stack/<LOOP_ID>_DONE/` (or `_EXTENDED_DONE/` if this was an extended loop) → Phase 6.
 
 ---
@@ -220,7 +221,8 @@ Write `REPORT.md` inside the renamed loop directory and print summary.
 - **Agent-factory is on-demand, not a fixed phase step.** Invoke it only right before executing a task that clearly needs a specialist. Most loops never call it.
 - **knowledge-sources.md is a reference file researchers consult on demand**, not a phase step.
 - **No watcher agent.** Check heartbeats yourself if a subagent is slow; never spawn a dedicated watcher role.
-- **Memory-keeper twice per batch**: checkpoint (local) after executors, consolidation (local+global) after audit.
+- **No separate evaluator.** Verifier does both jobs in one pass — checks RESEARCH.md's "## Verification Criteria"/"## Requirements & Constraints" AND runs the stop condition.
+- **Memory-keeper runs once per task batch**: single final consolidation (local+global) after audit. Executors already append learnings to MEMORY.md inline, so no mid-batch checkpoint call is needed.
 - **Executors append to MEMORY.md directly** during work.
 - **Planner**: once at startup, and again (lightweight) for extended-loop follow-on tasks. Tasks MUST use [G1]/[G2] group tags.
 - **Fully autonomous**: no pauses. 3 fails → auto-skip. BLOCK → auto-fix once → skip.
