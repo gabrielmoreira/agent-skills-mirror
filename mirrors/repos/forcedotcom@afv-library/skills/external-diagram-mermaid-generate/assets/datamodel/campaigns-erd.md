@@ -130,7 +130,7 @@ flowchart LR
 
 ## ASCII Fallback
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  CAMPAIGNS DATA MODEL (L→R)                                                  │
 │  Legend: LK = Lookup (-->), MD = Master-Detail (==>)                        │

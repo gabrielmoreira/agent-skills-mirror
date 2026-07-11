@@ -75,7 +75,9 @@ Adapt search queries to the ecosystem and include the current year when recency 
 - `"[task] copilot skill"`
 - `"awesome agent skills" [task]`
 
-Never rely on a single registry for skills. Combine skills.sh, agentskills.io, GitHub topic search (`topic:agent-skills`, `topic:claude-skills`), GitHub code search for `path:SKILL.md`, and generic web search. Registries miss skills published only on GitHub or in blog posts.
+Never rely on a single registry for skills. Combine skills.sh, agentskills.io, GitHub topic search
+(`topic:agent-skills`, `topic:claude-skills`), GitHub code search for `path:SKILL.md`, and generic web search.
+Registries miss skills published only on GitHub or in blog posts.
 
 ### Databases / Infrastructure
 
@@ -104,15 +106,16 @@ Prioritize sources by ecosystem:
 
 ## Evaluation Criteria
 
-Rank tools with these default weights, then adjust for the ecosystem and task.
+Start from the user's decision criteria. When they are unstated, use these as evidence prompts rather than a scoring
+formula:
 
-| Criterion             | Weight | Evidence to collect                                               |
-| --------------------- | ------ | ----------------------------------------------------------------- |
-| Popularity/adoption   | 25%    | Downloads, installs, GitHub stars, community size, production use |
-| Maintenance status    | 25%    | Last release, recent commits, issue response, active maintainers  |
-| Security/quality      | 20%    | Known vulnerabilities, audits, test/CI quality, license           |
-| Documentation/DX      | 15%    | Docs quality, examples, API clarity, error messages               |
-| Performance/resources | 15%    | Benchmarks, bundle size, startup time, memory, scaling properties |
+| Criterion            | Evidence to collect                                               |
+| -------------------- | ----------------------------------------------------------------- |
+| Adoption             | Downloads, installs, GitHub stars, community size, production use |
+| Maintenance          | Last release, recent commits, issue response, active maintainers  |
+| Security and quality | Known vulnerabilities, audits, test/CI quality, license           |
+| Documentation and DX | Docs quality, examples, API clarity, error messages               |
+| Performance and cost | Benchmarks, bundle size, startup time, memory, operating cost     |
 
 ### Ecosystem-Specific Criteria
 
@@ -134,11 +137,13 @@ Rank tools with these default weights, then adjust for the ecosystem and task.
 - Rust: choose safer and better-documented crates unless performance data clearly favors another.
 - Go: choose the standard library first, then packages with fewer dependencies and idiomatic cancellation support.
 - CLI tools: choose the tool with simpler installation and better structured output when capability is comparable.
-- Agent skills: choose the skill with clearer progressive-disclosure metadata and fewer bundled execution risks when capability is comparable.
+- Agent skills: choose the skill with clearer progressive-disclosure metadata and fewer bundled execution risks when
+  capability is comparable.
 
-## Output Format
+## Output Shapes
 
-Use this structure for most answers:
+Choose the smallest shape that makes the decision legible. A concise recommendation with one alternative is often
+enough. When several options share comparable fields, adapt this structure:
 
 ````markdown
 ### Recommended: `tool-name`
@@ -182,7 +187,7 @@ Use this structure for most answers:
 
 GitHub columns in tables should use Markdown links, e.g. `[sindresorhus/execa](https://github.com/sindresorhus/execa)`.
 
-## Comparison Tables
+## Optional Comparison Tables
 
 Use the table that matches the ecosystem.
 
@@ -225,7 +230,7 @@ Use the table that matches the ecosystem.
 
 ## Red Flags
 
-Always call out:
+Call out any red flag that is material to the user's decision:
 
 - Abandoned tools with no updates in 12+ months.
 - Agent skills with no updates in 6+ months when the surrounding ecosystem is moving quickly.
@@ -314,7 +319,8 @@ cursor --install-extension publisher.extension-name
 
 ### Multiple Tools Are Equal
 
-Pick the option with the lowest switching cost and best maintenance signal. Say when the choice is close and name the deciding factor.
+Pick the option with the lowest switching cost and best maintenance signal. Say when the choice is close and name the
+deciding factor.
 
 ### No Good Package Exists
 
@@ -333,7 +339,7 @@ Prefer no dependency when the standard library or platform primitive is adequate
 - Go `log/slog` for structured logging in ordinary workloads.
 - Browser `URL` and `Intl` APIs for many frontend parsing/formatting tasks.
 
-## Example Interactions
+## Example Routing
 
 ### JavaScript Default
 
@@ -365,7 +371,8 @@ Process:
 
 - Detect agent skill request.
 - Search generic web, skills.sh, agentskills.io, GitHub topics, and GitHub `path:SKILL.md`.
-- Compare install counts, GitHub stars, update recency, host-agent compatibility, token footprint, license, and bundled-script risk.
+- Compare install counts, GitHub stars, update recency, host-agent compatibility, token footprint, license, and
+  bundled-script risk.
 - Provide source links and adoption guidance without assuming the user's host-agent install command.
 
 ### Go

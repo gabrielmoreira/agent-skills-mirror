@@ -8,7 +8,7 @@ External Services in Salesforce auto-generate Apex classes from OpenAPI specific
 
 When you register an External Service named `MyAPI`, Salesforce generates:
 
-```
+```text
 ExternalService.MyAPI                          - Main service class
 ExternalService.MyAPI_operationName_Request    - Request wrapper for each operation
 ExternalService.MyAPI_operationName_Response   - Response wrapper for each operation

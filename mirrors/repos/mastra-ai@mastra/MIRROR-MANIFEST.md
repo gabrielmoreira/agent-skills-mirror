@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mastra-ai/mastra` — 26 default patterns, 0 followed patterns, 71 file(s) materialized.
+Mirror of `mastra-ai/mastra` — 26 default patterns, 0 followed patterns, 74 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mastra-ai/mastra` — 26 default patterns, 0 followed patterns, 71 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 71 |
+| Files         | 74 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -88,48 +88,51 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 27 | ✓ | [`.github/prompts/make-moves.prompt.md`](.github/prompts/make-moves.prompt.md) |
 | 28 | ✓ | [`.github/prompts/pr.prompt.md`](.github/prompts/pr.prompt.md) |
 | 29 | ✓ | [`.github/prompts/ralph-plan.prompt.md`](.github/prompts/ralph-plan.prompt.md) |
-| 30 | ✓ | [`agent-sdks/acp/AGENTS.md`](agent-sdks/acp/AGENTS.md) |
-| 31 | ✓ | [`agent-sdks/claude/AGENTS.md`](agent-sdks/claude/AGENTS.md) |
-| 32 | ✓ | [`agent-sdks/cursor/AGENTS.md`](agent-sdks/cursor/AGENTS.md) |
-| 33 | ✓ | [`agent-sdks/openai/AGENTS.md`](agent-sdks/openai/AGENTS.md) |
-| 34 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 35 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 36 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 37 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 38 | ✓ | [`examples/agent-builder/AGENTS.md`](examples/agent-builder/AGENTS.md) |
-| 39 | ✓ | [`examples/agent/src/mastra/agents/weather-fs/skills/severe-weather/SKILL.md`](examples/agent/src/mastra/agents/weather-fs/skills/severe-weather/SKILL.md) |
-| 40 | ✓ | [`examples/AGENTS.md`](examples/AGENTS.md) |
-| 41 | ✓ | [`mastracode/AGENTS.md`](mastracode/AGENTS.md) |
-| 42 | ✓ | [`packages/_types-builder/AGENTS.md`](packages/_types-builder/AGENTS.md) |
-| 43 | ✓ | [`packages/auth/AGENTS.md`](packages/auth/AGENTS.md) |
-| 44 | ✓ | [`packages/cli/AGENTS.md`](packages/cli/AGENTS.md) |
-| 45 | ✓ | [`packages/codemod/.claude/skills/codemod-patterns/SKILL.md`](packages/codemod/.claude/skills/codemod-patterns/SKILL.md) |
-| 46 | ✓ | [`packages/codemod/AGENTS.md`](packages/codemod/AGENTS.md) |
-| 47 | ✓ | [`packages/core/AGENTS.md`](packages/core/AGENTS.md) |
-| 48 | ✓ | [`packages/editor/src/ee/workspace/skills/agent-prompt-quality-bar/SKILL.md`](packages/editor/src/ee/workspace/skills/agent-prompt-quality-bar/SKILL.md) |
-| 49 | ✓ | [`packages/editor/src/ee/workspace/skills/coding-agent/SKILL.md`](packages/editor/src/ee/workspace/skills/coding-agent/SKILL.md) |
-| 50 | ✓ | [`packages/editor/src/ee/workspace/skills/content-writer-agent/SKILL.md`](packages/editor/src/ee/workspace/skills/content-writer-agent/SKILL.md) |
-| 51 | ✓ | [`packages/editor/src/ee/workspace/skills/customer-support-agent/SKILL.md`](packages/editor/src/ee/workspace/skills/customer-support-agent/SKILL.md) |
-| 52 | ✓ | [`packages/editor/src/ee/workspace/skills/generic-assistant/SKILL.md`](packages/editor/src/ee/workspace/skills/generic-assistant/SKILL.md) |
-| 53 | ✓ | [`packages/editor/src/ee/workspace/skills/ops-automation-agent/SKILL.md`](packages/editor/src/ee/workspace/skills/ops-automation-agent/SKILL.md) |
-| 54 | ✓ | [`packages/editor/src/ee/workspace/skills/research-agent/SKILL.md`](packages/editor/src/ee/workspace/skills/research-agent/SKILL.md) |
-| 55 | ✓ | [`packages/editor/src/ee/workspace/skills/spreadsheet-agent/SKILL.md`](packages/editor/src/ee/workspace/skills/spreadsheet-agent/SKILL.md) |
-| 56 | ✓ | [`packages/mcp/AGENTS.md`](packages/mcp/AGENTS.md) |
-| 57 | ✓ | [`packages/memory/AGENTS.md`](packages/memory/AGENTS.md) |
-| 58 | ✓ | [`packages/playground-ui/.cursor/rules/frontend.mdc`](packages/playground-ui/.cursor/rules/frontend.mdc) |
-| 59 | ✓ | [`packages/playground-ui/AGENTS.md`](packages/playground-ui/AGENTS.md) |
-| 60 | ✓ | [`packages/playground-ui/CLAUDE.md`](packages/playground-ui/CLAUDE.md) |
-| 61 | ✓ | [`packages/playground/.cursor/rules/frontend.mdc`](packages/playground/.cursor/rules/frontend.mdc) |
-| 62 | ✓ | [`packages/playground/AGENTS.md`](packages/playground/AGENTS.md) |
-| 63 | ✓ | [`packages/playground/CLAUDE.md`](packages/playground/CLAUDE.md) |
-| 64 | ✓ | [`packages/rag/AGENTS.md`](packages/rag/AGENTS.md) |
-| 65 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
-| 66 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
-| 67 | ✓ | [`templates/template-claw-assistant/workspace/skills/general-tasks/SKILL.md`](templates/template-claw-assistant/workspace/skills/general-tasks/SKILL.md) |
-| 68 | ✓ | [`templates/template-claw-assistant/workspace/skills/research-tasks/SKILL.md`](templates/template-claw-assistant/workspace/skills/research-tasks/SKILL.md) |
-| 69 | ✓ | [`templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md`](templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md) |
-| 70 | ✓ | [`templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md) |
-| 71 | ✓ | [`templates/template-github-review-agent/workspace/skills/security-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/security-review/SKILL.md) |
+| 30 | ✓ | [`.mastracode/skills/gh-bulk-issues/SKILL.md`](.mastracode/skills/gh-bulk-issues/SKILL.md) |
+| 31 | ✓ | [`.mastracode/skills/understand-issue/SKILL.md`](.mastracode/skills/understand-issue/SKILL.md) |
+| 32 | ✓ | [`.mastracode/skills/understand-pr/SKILL.md`](.mastracode/skills/understand-pr/SKILL.md) |
+| 33 | ✓ | [`agent-sdks/acp/AGENTS.md`](agent-sdks/acp/AGENTS.md) |
+| 34 | ✓ | [`agent-sdks/claude/AGENTS.md`](agent-sdks/claude/AGENTS.md) |
+| 35 | ✓ | [`agent-sdks/cursor/AGENTS.md`](agent-sdks/cursor/AGENTS.md) |
+| 36 | ✓ | [`agent-sdks/openai/AGENTS.md`](agent-sdks/openai/AGENTS.md) |
+| 37 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 38 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 39 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 40 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 41 | ✓ | [`examples/agent-builder/AGENTS.md`](examples/agent-builder/AGENTS.md) |
+| 42 | ✓ | [`examples/agent/src/mastra/agents/weather-fs/skills/severe-weather/SKILL.md`](examples/agent/src/mastra/agents/weather-fs/skills/severe-weather/SKILL.md) |
+| 43 | ✓ | [`examples/AGENTS.md`](examples/AGENTS.md) |
+| 44 | ✓ | [`mastracode/AGENTS.md`](mastracode/AGENTS.md) |
+| 45 | ✓ | [`packages/_types-builder/AGENTS.md`](packages/_types-builder/AGENTS.md) |
+| 46 | ✓ | [`packages/auth/AGENTS.md`](packages/auth/AGENTS.md) |
+| 47 | ✓ | [`packages/cli/AGENTS.md`](packages/cli/AGENTS.md) |
+| 48 | ✓ | [`packages/codemod/.claude/skills/codemod-patterns/SKILL.md`](packages/codemod/.claude/skills/codemod-patterns/SKILL.md) |
+| 49 | ✓ | [`packages/codemod/AGENTS.md`](packages/codemod/AGENTS.md) |
+| 50 | ✓ | [`packages/core/AGENTS.md`](packages/core/AGENTS.md) |
+| 51 | ✓ | [`packages/editor/src/ee/workspace/skills/agent-prompt-quality-bar/SKILL.md`](packages/editor/src/ee/workspace/skills/agent-prompt-quality-bar/SKILL.md) |
+| 52 | ✓ | [`packages/editor/src/ee/workspace/skills/coding-agent/SKILL.md`](packages/editor/src/ee/workspace/skills/coding-agent/SKILL.md) |
+| 53 | ✓ | [`packages/editor/src/ee/workspace/skills/content-writer-agent/SKILL.md`](packages/editor/src/ee/workspace/skills/content-writer-agent/SKILL.md) |
+| 54 | ✓ | [`packages/editor/src/ee/workspace/skills/customer-support-agent/SKILL.md`](packages/editor/src/ee/workspace/skills/customer-support-agent/SKILL.md) |
+| 55 | ✓ | [`packages/editor/src/ee/workspace/skills/generic-assistant/SKILL.md`](packages/editor/src/ee/workspace/skills/generic-assistant/SKILL.md) |
+| 56 | ✓ | [`packages/editor/src/ee/workspace/skills/ops-automation-agent/SKILL.md`](packages/editor/src/ee/workspace/skills/ops-automation-agent/SKILL.md) |
+| 57 | ✓ | [`packages/editor/src/ee/workspace/skills/research-agent/SKILL.md`](packages/editor/src/ee/workspace/skills/research-agent/SKILL.md) |
+| 58 | ✓ | [`packages/editor/src/ee/workspace/skills/spreadsheet-agent/SKILL.md`](packages/editor/src/ee/workspace/skills/spreadsheet-agent/SKILL.md) |
+| 59 | ✓ | [`packages/mcp/AGENTS.md`](packages/mcp/AGENTS.md) |
+| 60 | ✓ | [`packages/memory/AGENTS.md`](packages/memory/AGENTS.md) |
+| 61 | ✓ | [`packages/playground-ui/.cursor/rules/frontend.mdc`](packages/playground-ui/.cursor/rules/frontend.mdc) |
+| 62 | ✓ | [`packages/playground-ui/AGENTS.md`](packages/playground-ui/AGENTS.md) |
+| 63 | ✓ | [`packages/playground-ui/CLAUDE.md`](packages/playground-ui/CLAUDE.md) |
+| 64 | ✓ | [`packages/playground/.cursor/rules/frontend.mdc`](packages/playground/.cursor/rules/frontend.mdc) |
+| 65 | ✓ | [`packages/playground/AGENTS.md`](packages/playground/AGENTS.md) |
+| 66 | ✓ | [`packages/playground/CLAUDE.md`](packages/playground/CLAUDE.md) |
+| 67 | ✓ | [`packages/rag/AGENTS.md`](packages/rag/AGENTS.md) |
+| 68 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
+| 69 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
+| 70 | ✓ | [`templates/template-claw-assistant/workspace/skills/general-tasks/SKILL.md`](templates/template-claw-assistant/workspace/skills/general-tasks/SKILL.md) |
+| 71 | ✓ | [`templates/template-claw-assistant/workspace/skills/research-tasks/SKILL.md`](templates/template-claw-assistant/workspace/skills/research-tasks/SKILL.md) |
+| 72 | ✓ | [`templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md`](templates/template-github-review-agent/workspace/skills/code-standards/SKILL.md) |
+| 73 | ✓ | [`templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/performance-review/SKILL.md) |
+| 74 | ✓ | [`templates/template-github-review-agent/workspace/skills/security-review/SKILL.md`](templates/template-github-review-agent/workspace/skills/security-review/SKILL.md) |
 
 ---
 

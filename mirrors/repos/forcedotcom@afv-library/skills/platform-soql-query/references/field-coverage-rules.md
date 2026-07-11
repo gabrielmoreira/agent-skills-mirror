@@ -21,7 +21,7 @@ This guide documents field coverage validation rules for SOQL queries — ensuri
 
 When you query an sObject, only the fields in the SELECT clause are populated. Accessing any other field results in a runtime error:
 
-```
+```text
 System.SObjectException: SObject row was retrieved via SOQL without querying the requested field: Account.Industry
 ```
 

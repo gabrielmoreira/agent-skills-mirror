@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mattpocock/skills` — 26 default patterns, 0 followed patterns, 72 file(s) materialized.
+Mirror of `mattpocock/skills` — 26 default patterns, 0 followed patterns, 74 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mattpocock/skills` — 26 default patterns, 0 followed patterns, 72 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 72 |
+| Files         | 74 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -106,31 +106,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | ✓ | [`skills/in-progress/claude-handoff/SKILL.md`](skills/in-progress/claude-handoff/SKILL.md) |
 | 46 | ✓ | [`skills/in-progress/loop-me/SKILL.md`](skills/in-progress/loop-me/SKILL.md) |
 | 47 | ✓ | [`skills/in-progress/README.md`](skills/in-progress/README.md) |
-| 48 | ✓ | [`skills/in-progress/wizard/SKILL.md`](skills/in-progress/wizard/SKILL.md) |
-| 49 | ✓ | [`skills/in-progress/wizard/template.sh`](skills/in-progress/wizard/template.sh) |
-| 50 | ✓ | [`skills/in-progress/writing-beats/SKILL.md`](skills/in-progress/writing-beats/SKILL.md) |
-| 51 | ✓ | [`skills/in-progress/writing-fragments/SKILL.md`](skills/in-progress/writing-fragments/SKILL.md) |
-| 52 | ✓ | [`skills/in-progress/writing-shape/SKILL.md`](skills/in-progress/writing-shape/SKILL.md) |
-| 53 | ✓ | [`skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh`](skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh) |
-| 54 | ✓ | [`skills/misc/git-guardrails-claude-code/SKILL.md`](skills/misc/git-guardrails-claude-code/SKILL.md) |
-| 55 | ✓ | [`skills/misc/migrate-to-shoehorn/SKILL.md`](skills/misc/migrate-to-shoehorn/SKILL.md) |
-| 56 | ✓ | [`skills/misc/README.md`](skills/misc/README.md) |
-| 57 | ✓ | [`skills/misc/scaffold-exercises/SKILL.md`](skills/misc/scaffold-exercises/SKILL.md) |
-| 58 | ✓ | [`skills/misc/setup-pre-commit/SKILL.md`](skills/misc/setup-pre-commit/SKILL.md) |
-| 59 | ✓ | [`skills/personal/edit-article/SKILL.md`](skills/personal/edit-article/SKILL.md) |
-| 60 | ✓ | [`skills/personal/obsidian-vault/SKILL.md`](skills/personal/obsidian-vault/SKILL.md) |
-| 61 | ✓ | [`skills/personal/README.md`](skills/personal/README.md) |
-| 62 | ✓ | [`skills/productivity/grill-me/SKILL.md`](skills/productivity/grill-me/SKILL.md) |
-| 63 | ✓ | [`skills/productivity/grilling/SKILL.md`](skills/productivity/grilling/SKILL.md) |
-| 64 | ✓ | [`skills/productivity/handoff/SKILL.md`](skills/productivity/handoff/SKILL.md) |
-| 65 | ✓ | [`skills/productivity/README.md`](skills/productivity/README.md) |
-| 66 | ✓ | [`skills/productivity/teach/GLOSSARY-FORMAT.md`](skills/productivity/teach/GLOSSARY-FORMAT.md) |
-| 67 | ✓ | [`skills/productivity/teach/LEARNING-RECORD-FORMAT.md`](skills/productivity/teach/LEARNING-RECORD-FORMAT.md) |
-| 68 | ✓ | [`skills/productivity/teach/MISSION-FORMAT.md`](skills/productivity/teach/MISSION-FORMAT.md) |
-| 69 | ✓ | [`skills/productivity/teach/RESOURCES-FORMAT.md`](skills/productivity/teach/RESOURCES-FORMAT.md) |
-| 70 | ✓ | [`skills/productivity/teach/SKILL.md`](skills/productivity/teach/SKILL.md) |
-| 71 | ✓ | [`skills/productivity/writing-great-skills/GLOSSARY.md`](skills/productivity/writing-great-skills/GLOSSARY.md) |
-| 72 | ✓ | [`skills/productivity/writing-great-skills/SKILL.md`](skills/productivity/writing-great-skills/SKILL.md) |
+| 48 | ✓ | [`skills/in-progress/setup-ts-deep-modules/dependency-cruiser.config.cjs`](skills/in-progress/setup-ts-deep-modules/dependency-cruiser.config.cjs) |
+| 49 | ✓ | [`skills/in-progress/setup-ts-deep-modules/SKILL.md`](skills/in-progress/setup-ts-deep-modules/SKILL.md) |
+| 50 | ✓ | [`skills/in-progress/wizard/SKILL.md`](skills/in-progress/wizard/SKILL.md) |
+| 51 | ✓ | [`skills/in-progress/wizard/template.sh`](skills/in-progress/wizard/template.sh) |
+| 52 | ✓ | [`skills/in-progress/writing-beats/SKILL.md`](skills/in-progress/writing-beats/SKILL.md) |
+| 53 | ✓ | [`skills/in-progress/writing-fragments/SKILL.md`](skills/in-progress/writing-fragments/SKILL.md) |
+| 54 | ✓ | [`skills/in-progress/writing-shape/SKILL.md`](skills/in-progress/writing-shape/SKILL.md) |
+| 55 | ✓ | [`skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh`](skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh) |
+| 56 | ✓ | [`skills/misc/git-guardrails-claude-code/SKILL.md`](skills/misc/git-guardrails-claude-code/SKILL.md) |
+| 57 | ✓ | [`skills/misc/migrate-to-shoehorn/SKILL.md`](skills/misc/migrate-to-shoehorn/SKILL.md) |
+| 58 | ✓ | [`skills/misc/README.md`](skills/misc/README.md) |
+| 59 | ✓ | [`skills/misc/scaffold-exercises/SKILL.md`](skills/misc/scaffold-exercises/SKILL.md) |
+| 60 | ✓ | [`skills/misc/setup-pre-commit/SKILL.md`](skills/misc/setup-pre-commit/SKILL.md) |
+| 61 | ✓ | [`skills/personal/edit-article/SKILL.md`](skills/personal/edit-article/SKILL.md) |
+| 62 | ✓ | [`skills/personal/obsidian-vault/SKILL.md`](skills/personal/obsidian-vault/SKILL.md) |
+| 63 | ✓ | [`skills/personal/README.md`](skills/personal/README.md) |
+| 64 | ✓ | [`skills/productivity/grill-me/SKILL.md`](skills/productivity/grill-me/SKILL.md) |
+| 65 | ✓ | [`skills/productivity/grilling/SKILL.md`](skills/productivity/grilling/SKILL.md) |
+| 66 | ✓ | [`skills/productivity/handoff/SKILL.md`](skills/productivity/handoff/SKILL.md) |
+| 67 | ✓ | [`skills/productivity/README.md`](skills/productivity/README.md) |
+| 68 | ✓ | [`skills/productivity/teach/GLOSSARY-FORMAT.md`](skills/productivity/teach/GLOSSARY-FORMAT.md) |
+| 69 | ✓ | [`skills/productivity/teach/LEARNING-RECORD-FORMAT.md`](skills/productivity/teach/LEARNING-RECORD-FORMAT.md) |
+| 70 | ✓ | [`skills/productivity/teach/MISSION-FORMAT.md`](skills/productivity/teach/MISSION-FORMAT.md) |
+| 71 | ✓ | [`skills/productivity/teach/RESOURCES-FORMAT.md`](skills/productivity/teach/RESOURCES-FORMAT.md) |
+| 72 | ✓ | [`skills/productivity/teach/SKILL.md`](skills/productivity/teach/SKILL.md) |
+| 73 | ✓ | [`skills/productivity/writing-great-skills/GLOSSARY.md`](skills/productivity/writing-great-skills/GLOSSARY.md) |
+| 74 | ✓ | [`skills/productivity/writing-great-skills/SKILL.md`](skills/productivity/writing-great-skills/SKILL.md) |
 
 ---
 

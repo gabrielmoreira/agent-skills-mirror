@@ -157,14 +157,14 @@ exit "$_rc"
 
 All artifacts under `~/.vibe/data/agentforce-architecture-analyze/<org_id15>/<agent_api_name>__<agent_version>/` (default; override with `--data-dir <path>`):
 
-```
+```xml
 <agent>_<ver>_metadata_tree.json   primary artifact — normalized planner/topic/action/flow/apex/prompt/plugin tree
 <agent>_<ver>_architecture.md      human-readable section-by-section rendering (H1 + 7 numbered sections, plus a conditional Dependency graph appendix). Mermaid diagrams are embedded inside the relevant sections (Action tree, Data flow, and Dependency graph)
 ```
 
 ## Pipeline — inline, no subagent
 
-```
+```text
 resolve_bot.py        → BotDefinition + BotVersion + planner name lookup
 retrieve_planner.py   → Metadata API zip retrieve for GenAiPlannerBundle (+ NGA plugins if present)
 parallel_retrieve.py  → 6 parallel Tooling SOQL channels fan out from the planner id

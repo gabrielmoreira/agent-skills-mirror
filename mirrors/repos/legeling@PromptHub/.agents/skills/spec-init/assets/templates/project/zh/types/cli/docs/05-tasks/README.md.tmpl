@@ -74,6 +74,20 @@
   - Output: 可用于终端和脚本的核心命令
   - Depends on: T-CLI-001, T-VER-001
 
+- [ ] T-ANALYZE-001 实现前检查需求、设计、验证、任务和 change workspace 的一致性
+  - Requirement: FR-ALL
+  - Design: DES-ALL
+  - Test: TEST-ALL
+  - Output: 一致性缺口清单或“无阻塞项”结论
+  - Depends on: T-CLI-002
+
+- [ ] T-CONVERGE-001 实现后回写文档、变更生命周期和长期真相
+  - Requirement: FR-ALL
+  - Design: DES-ALL
+  - Test: TEST-ALL
+  - Output: 已同步的 workflow / knowledge / changes / records
+  - Depends on: [完成对应实现任务]
+
 ## 当前任务列表
 
 [把上面的模板复制并替换为本项目真实任务]
@@ -84,3 +98,5 @@
 - 每个高优先级需求最终都能落到至少一个任务
 - 没有脱离需求和设计的“游离任务”
 - 第一批任务优先覆盖高风险和高不确定性部分
+- 实现前已经完成 analyze，且没有阻塞性缺口
+- 实现后已经安排 converge，把真实行为和文档重新对齐

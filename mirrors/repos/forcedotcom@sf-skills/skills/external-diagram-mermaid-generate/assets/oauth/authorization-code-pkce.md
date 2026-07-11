@@ -80,7 +80,7 @@ sequenceDiagram
 
 ## ASCII Fallback Template
 
-```
+```text
 ┌──────────┐     ┌───────────────┐     ┌────────────────────┐
 │  User    │     │  Mobile App   │     │     Salesforce     │
 │          │     │   or SPA      │     │   (Auth Server)    │

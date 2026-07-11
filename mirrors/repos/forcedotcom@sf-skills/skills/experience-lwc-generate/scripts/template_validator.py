@@ -282,7 +282,7 @@ def format_output(results: Dict) -> str:
         output_parts.append(f"   ... and {remaining} more issues")
 
     output_parts.append("─" * 50)
-    output_parts.append("📚 See: generating-lwc-components/references/template-anti-patterns.md")
+    output_parts.append("📚 See: experience-lwc-generate/references/template-anti-patterns.md")
 
     return "\n".join(output_parts)
 

@@ -33,12 +33,5 @@
       "hook": "persistent-mode.ts",
       "timeout": 5
     }
-  },
-  "featureFlags": {
-    "file": ".codex/config.toml",
-    "section": "features",
-    "flags": {
-      "hooks": true
-    }
   }
 }

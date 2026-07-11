@@ -85,7 +85,7 @@ Read the appropriate template before generating — do not build from scratch:
 | `assets/eca-policies.xml` | ECA configurable policies |
 
 If you need source-controlled ECA OAuth security metadata, retrieve it from an org first and treat the retrieved file as the schema source of truth:
-```
+```sh
 sf project retrieve start --metadata ExtlClntAppOauthSecuritySettings:<AppName> --target-org <alias>
 ```
 
@@ -172,7 +172,7 @@ When finishing, confirm and report in this order:
 5. **Next deployment / testing step**
 
 Suggested output shape:
-```
+```text
 App: <name>
 Type: Connected App | External Client App
 Flow: <oauth flow>

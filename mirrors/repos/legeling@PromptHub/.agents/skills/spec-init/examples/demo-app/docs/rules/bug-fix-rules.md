@@ -1,4 +1,9 @@
-# Bug Fix Rules
+# Bug 修复规则
+
+## 职责边界
+
+- 本文件负责：bug 复现、调用链分析、根因定位、修复步骤和回归要求。
+- 本文件不负责：普通需求变更的生命周期管理；那部分见 `change-management-rules.md`。测试分层标准见 `testing-standards.md`。
 
 ## 基本原则
 

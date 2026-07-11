@@ -16,7 +16,7 @@ Salesforce debugging and troubleshooting skill with log analysis, governor limit
 
 ### 1. Invoke the skill
 
-```
+```text
 Skill: platform-apex-logs-debug
 Request: "Analyze debug logs for AccountTrigger performance issues in org dev"
 ```
@@ -58,7 +58,7 @@ sf apex tail log --target-org [alias] --color
 
 | Related Skill | When to Use |
 |---------------|-------------|
-| sf-apex | Fix identified Apex issues |
+| platform-apex-generate | Fix identified Apex issues |
 | platform-soql-query | Optimize slow SOQL queries |
 | platform-apex-test-run | Re-run tests after fixes |
 

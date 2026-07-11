@@ -7,7 +7,7 @@ This guide covers building custom clients for Messaging for In-App and Web (MIAW
 
 ## Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                    MIAW CUSTOM CLIENT ARCHITECTURE                       │
 ├─────────────────────────────────────────────────────────────────────────┤
@@ -47,7 +47,7 @@ This guide covers building custom clients for Messaging for In-App and Web (MIAW
 
 ### Embedded Service Deployment
 
-```
+```text
 Setup → Embedded Service Deployments → New Deployment
 ├─ Type: Messaging for In-App and Web
 ├─ Channel: Web

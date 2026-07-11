@@ -4,16 +4,22 @@ disable-model-invocation: false
 effort: high
 name: yeet
 user-invocable: true
-description: 'Use for GitHub PR/issue/discussion workflows: create/update PRs or issues, post comments, start discussions; triggers include yeet.'
+description:
+  "Use for GitHub PR/issue/discussion workflows: create/update PRs or issues, post comments, start discussions; triggers
+  include yeet."
 ---
 
 # GitHub Contribution Workflows
 
-Facilitate GitHub-based open source contribution workflows including pull requests, issues, and discussions. Emphasizes semantic analysis over mechanical operations — understand the intent and context of changes before generating titles, descriptions, or selecting templates. All generated content should be conversational and informal.
+Create or update GitHub contributions from repository evidence, using the matching workflow's templates, idempotency
+rules, and Paul's writing voice.
 
 ## Prerequisites
 
-Use the first required read-only `gh` command in each workflow as authentication validation. The `scripts/yeet-context.sh` helper is bundled with this skill, not the target repository. Resolve it to an absolute path relative to the directory containing this `SKILL.md`, and never search for it in the target repository. Prefer the helper when the workflow needs repository, template, discussion, label, or issue/PR thread context.
+Use the first required read-only `gh` command in each workflow as authentication validation. The
+`scripts/yeet-context.sh` helper is bundled with this skill, not the target repository. Resolve it to an absolute path
+relative to the directory containing this `SKILL.md`, and never search for it in the target repository. Prefer the
+helper when the workflow needs repository, template, discussion, label, or issue/PR thread context.
 
 For pull request workflows, also verify:
 
@@ -21,9 +27,8 @@ For pull request workflows, also verify:
 - Current branch has commits ahead of the base branch
 - Remote tracking is configured
 
-## Related Skills
-
-For detailed GitHub CLI command syntax, flags, and patterns, activate the `cli-gh` skill.
+Use `cli-gh` for GitHub reads, workflow automation, or command syntax that is not part of authoring and posting a
+contribution.
 
 ## Workflows
 
@@ -41,4 +46,12 @@ Each workflow is fully documented in its reference file. Load the appropriate re
 | Comment on Issue  | "comment on issue", "reply on issue", "post a comment" | `references/comment-issue.md`     |
 | Create Discussion | "create discussion", "start discussion"                | `references/create-discussion.md` |
 
-Shared patterns (auth validation, admonitions, HEREDOC syntax, semantic analysis, tone, platform normalization, error handling, file links) are in `references/commons.md`.
+Each workflow reference links only the shared context, writing, or posting guidance it needs. Post directly when the
+user requested creation or update; do not add a confirmation gate. After a failed write, run the linked idempotency
+check before any retry.
+
+## Completion
+
+Complete when the requested contribution exists in its final authored state and the returned GitHub URL has been
+verified. For updates/comments, report the changed artifact once; for failures, report the idempotency check and next
+action without claiming a write succeeded.

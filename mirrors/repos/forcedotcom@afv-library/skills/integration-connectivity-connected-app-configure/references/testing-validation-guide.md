@@ -234,7 +234,7 @@ Client Credentials flow still requires post-deployment admin validation. Even wi
 
 ### Minimal ECA (API Integration)
 
-```
+```text
 Files:
 ├── externalClientApps/MyApp.eca-meta.xml
 ├── extlClntAppOauthSettings/MyApp.ecaOauth-meta.xml
@@ -246,7 +246,7 @@ PKCE: false (confidential client)
 
 ### Mobile App ECA (PKCE)
 
-```
+```text
 Files:
 ├── externalClientApps/MobileApp.eca-meta.xml
 ├── extlClntAppOauthSettings/MobileApp.ecaOauth-meta.xml
@@ -259,7 +259,7 @@ Callback: com.example.app://oauth/callback
 
 ### Server-to-Server ECA
 
-```
+```text
 Files:
 ├── externalClientApps/ServiceApp.eca-meta.xml
 ├── extlClntAppOauthSettings/ServiceApp.ecaOauth-meta.xml

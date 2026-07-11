@@ -15,7 +15,7 @@ Comprehensive Salesforce testing skill with test execution, code coverage analys
 
 ### 1. Invoke the skill
 
-```
+```yaml
 Skill: platform-apex-test-run
 Request: "Run all tests and show coverage report for org dev"
 ```

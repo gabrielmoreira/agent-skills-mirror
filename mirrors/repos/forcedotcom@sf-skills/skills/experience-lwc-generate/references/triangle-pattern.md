@@ -7,7 +7,7 @@ The **Triangle Architecture** is a foundational Salesforce pattern where Flow, L
 
 ## Architecture Overview
 
-```
+```text
                          ┌─────────────────────────────────────┐
                          │              FLOW                   │
                          │         (Orchestrator)              │
@@ -54,7 +54,7 @@ The **Triangle Architecture** is a foundational Salesforce pattern where Flow, L
 
 **Use Case**: Custom UI component for user selection within a guided Flow.
 
-```
+```text
 ┌─────────┐     @api (in)      ┌─────────┐
 │  FLOW   │ ────────────────▶  │   LWC   │
 │ Screen  │                    │  Screen │
@@ -320,7 +320,7 @@ describe('c-record-selector', () => {
 
 When deploying integrated triangle solutions:
 
-```
+```text
 1. APEX CLASSES
    └── @AuraEnabled controllers (LWC depends on these)
 

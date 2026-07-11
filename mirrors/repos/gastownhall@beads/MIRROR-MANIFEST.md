@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `gastownhall/beads` — 26 default patterns, 25 followed patterns, 91 file(s) materialized.
+Mirror of `gastownhall/beads` — 26 default patterns, 26 followed patterns, 93 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `gastownhall/beads` — 26 default patterns, 25 followed patterns, 91 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 25 |
-| Files         | 91 |
+| Followed pats | 26 |
+| Files         | 93 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,6 +68,7 @@ Mirror of `gastownhall/beads` — 26 default patterns, 25 followed patterns, 91 
 - `docs/SETUP.md`
 - `docs/INSTALLING.md`
 - `docs/ANTIVIRUS.md`
+- `docs/STORAGE-BACKENDS.md`
 - `docs/COMMUNITY_TOOLS.md`
 - `docs/RELATED_PROJECTS.md`
 - `docs/SYNC_CONCEPTS.md`
@@ -142,38 +143,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 57 | ✓ | [`plugins/beads/skills/beads/SKILL.md`](plugins/beads/skills/beads/SKILL.md) |
 | 58 | ✓ | [`scripts/README.md`](scripts/README.md) |
 | 59 | ✓ | [`tests/integration/README.md`](tests/integration/README.md) |
-| 60 | ✓ | [`website/docs/integrations/gemini.md`](website/docs/integrations/gemini.md) |
-| 61 | ✓ | [`website/README.md`](website/README.md) |
-| 62 | ✓ | [`website/static/llms.txt`](website/static/llms.txt) |
-| 63 | ✓ | [`website/versioned_docs/version-1.0.4/integrations/gemini.md`](website/versioned_docs/version-1.0.4/integrations/gemini.md) |
-| 64 | ✓ | [`website/versioned_docs/version-1.0.5/integrations/gemini.md`](website/versioned_docs/version-1.0.5/integrations/gemini.md) |
-| 65 | ✓ | [`website/versioned_docs/version-1.1.0/integrations/gemini.md`](website/versioned_docs/version-1.1.0/integrations/gemini.md) |
-| 66 | ✓ | [`winget/README.md`](winget/README.md) |
-| 67 | → | [`AGENT_INSTRUCTIONS.md`](AGENT_INSTRUCTIONS.md) |
-| 68 | → | [`ARTICLES.md`](ARTICLES.md) |
-| 69 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 70 | → | [`docs/ADVANCED.md`](docs/ADVANCED.md) |
-| 71 | → | [`docs/AGENT_SIGNING.md`](docs/AGENT_SIGNING.md) |
-| 72 | → | [`docs/ANTIVIRUS.md`](docs/ANTIVIRUS.md) |
-| 73 | → | [`docs/COMMUNITY_TOOLS.md`](docs/COMMUNITY_TOOLS.md) |
-| 74 | → | [`docs/COPILOT_CLI_INTEGRATION.md`](docs/COPILOT_CLI_INTEGRATION.md) |
-| 75 | → | [`docs/COPILOT_INTEGRATION.md`](docs/COPILOT_INTEGRATION.md) |
-| 76 | → | [`docs/FAQ.md`](docs/FAQ.md) |
-| 77 | → | [`docs/ICU-POLICY.md`](docs/ICU-POLICY.md) |
-| 78 | → | [`docs/INSTALLING.md`](docs/INSTALLING.md) |
-| 79 | → | [`docs/LINTING.md`](docs/LINTING.md) |
-| 80 | → | [`docs/PROJECT_CHARTER.md`](docs/PROJECT_CHARTER.md) |
-| 81 | → | [`docs/PROTECTED_BRANCHES.md`](docs/PROTECTED_BRANCHES.md) |
-| 82 | → | [`docs/RELATED_PROJECTS.md`](docs/RELATED_PROJECTS.md) |
-| 83 | → | [`docs/RELEASE-STABILITY-GATE.md`](docs/RELEASE-STABILITY-GATE.md) |
-| 84 | → | [`docs/SETUP.md`](docs/SETUP.md) |
-| 85 | → | [`docs/SYNC_CONCEPTS.md`](docs/SYNC_CONCEPTS.md) |
-| 86 | → | [`docs/TESTING_PHILOSOPHY.md`](docs/TESTING_PHILOSOPHY.md) |
-| 87 | → | [`docs/TESTING.md`](docs/TESTING.md) |
-| 88 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
-| 89 | → | [`PR_MAINTAINER_GUIDELINES.md`](PR_MAINTAINER_GUIDELINES.md) |
-| 90 | → | [`README.md`](README.md) |
-| 91 | → | [`RELEASING.md`](RELEASING.md) |
+| 60 | ✓ | [`tests/oracle-a/README.md`](tests/oracle-a/README.md) |
+| 61 | ✓ | [`website/docs/integrations/gemini.md`](website/docs/integrations/gemini.md) |
+| 62 | ✓ | [`website/README.md`](website/README.md) |
+| 63 | ✓ | [`website/static/llms.txt`](website/static/llms.txt) |
+| 64 | ✓ | [`website/versioned_docs/version-1.0.4/integrations/gemini.md`](website/versioned_docs/version-1.0.4/integrations/gemini.md) |
+| 65 | ✓ | [`website/versioned_docs/version-1.0.5/integrations/gemini.md`](website/versioned_docs/version-1.0.5/integrations/gemini.md) |
+| 66 | ✓ | [`website/versioned_docs/version-1.1.0/integrations/gemini.md`](website/versioned_docs/version-1.1.0/integrations/gemini.md) |
+| 67 | ✓ | [`winget/README.md`](winget/README.md) |
+| 68 | → | [`AGENT_INSTRUCTIONS.md`](AGENT_INSTRUCTIONS.md) |
+| 69 | → | [`ARTICLES.md`](ARTICLES.md) |
+| 70 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 71 | → | [`docs/ADVANCED.md`](docs/ADVANCED.md) |
+| 72 | → | [`docs/AGENT_SIGNING.md`](docs/AGENT_SIGNING.md) |
+| 73 | → | [`docs/ANTIVIRUS.md`](docs/ANTIVIRUS.md) |
+| 74 | → | [`docs/COMMUNITY_TOOLS.md`](docs/COMMUNITY_TOOLS.md) |
+| 75 | → | [`docs/COPILOT_CLI_INTEGRATION.md`](docs/COPILOT_CLI_INTEGRATION.md) |
+| 76 | → | [`docs/COPILOT_INTEGRATION.md`](docs/COPILOT_INTEGRATION.md) |
+| 77 | → | [`docs/FAQ.md`](docs/FAQ.md) |
+| 78 | → | [`docs/ICU-POLICY.md`](docs/ICU-POLICY.md) |
+| 79 | → | [`docs/INSTALLING.md`](docs/INSTALLING.md) |
+| 80 | → | [`docs/LINTING.md`](docs/LINTING.md) |
+| 81 | → | [`docs/PROJECT_CHARTER.md`](docs/PROJECT_CHARTER.md) |
+| 82 | → | [`docs/PROTECTED_BRANCHES.md`](docs/PROTECTED_BRANCHES.md) |
+| 83 | → | [`docs/RELATED_PROJECTS.md`](docs/RELATED_PROJECTS.md) |
+| 84 | → | [`docs/RELEASE-STABILITY-GATE.md`](docs/RELEASE-STABILITY-GATE.md) |
+| 85 | → | [`docs/SETUP.md`](docs/SETUP.md) |
+| 86 | → | [`docs/STORAGE-BACKENDS.md`](docs/STORAGE-BACKENDS.md) |
+| 87 | → | [`docs/SYNC_CONCEPTS.md`](docs/SYNC_CONCEPTS.md) |
+| 88 | → | [`docs/TESTING_PHILOSOPHY.md`](docs/TESTING_PHILOSOPHY.md) |
+| 89 | → | [`docs/TESTING.md`](docs/TESTING.md) |
+| 90 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
+| 91 | → | [`PR_MAINTAINER_GUIDELINES.md`](PR_MAINTAINER_GUIDELINES.md) |
+| 92 | → | [`README.md`](README.md) |
+| 93 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

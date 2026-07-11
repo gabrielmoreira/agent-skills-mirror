@@ -4,6 +4,19 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.207](https://github.com/Piebald-AI/claude-code-system-prompts/commit/4e1911e)
+
+_+6,150 tokens_
+
+- **NEW:** Data: Structured tool output field schema — Documents the per-tool `tool_use_result` output contract, including completed Agent/Task reports and run totals, and tells clients to render structured output instead of parsing model-facing result text.
+- **NEW:** Skill: /morning slash command — Adds a concise, styled morning-brief workflow that gathers connected calendar and communication data into a safe self-contained HTML artifact, supports user-selected sections and roles, and can configure or update a weekday recurring `/morning` task with verified local-time scheduling.
+- **NEW:** System Reminder: ClaudeDesign project grant unavailable without verified identity — Explains that project-wide Claude Design approval cannot be offered when the project identity cannot be verified or rendered safely, and directs agents to read and retry a fresh connection once or fall back to per-batch approvals.
+- **NEW:** Tool Description: ScheduleWakeup delay and reason guidance; Tool Description: Snooze (delay and reason guidance); and Skill: /loop self-pacing mode — Centralize wake-up pacing guidance in `ScheduleWakeup`, add quiet-tick `noop` reporting and billing-aware prompt-cache advice, retain specific user-visible reasons, and clarify that fallback heartbeats should follow task cadence rather than assuming a five-minute cache window.
+- **REMOVED:** Tool Description: Bash (sandbox — user permission prompt) — Removes the standalone note that disabling the sandbox prompts the user for permission.
+- Skill: Auto mode setup — Expands setup to review and safely remove ignored or destructive `permissions.allow` rules, migrate user-confirmed legacy auto-mode entries out of repo-writable `.claude/settings.local.json`, preserve `hard_deny` and `deny` settings, incorporate untrusted sibling-repository documentation gathered through `gh`, and keep project-specific proposals narrowly worded while storing supported auto-mode configuration in user settings.
+- System Prompt: Harness instructions — Makes system-reminder tag guidance conditional on the active tool context while retaining the instruction to treat hook output as user feedback.
+- Tool Description: Artifact — Allows proactive private publishing of ordinary agent-authored work while requiring complete inspection of externally authored files and forbidding publication of sensitive, impersonating, fabricated-record, deceptive credential/payment, or private-individual content, without suggesting alternate hosting after refusal.
+
 # [2.1.206](https://github.com/Piebald-AI/claude-code-system-prompts/commit/2b227df)
 
 _+10,807 tokens_

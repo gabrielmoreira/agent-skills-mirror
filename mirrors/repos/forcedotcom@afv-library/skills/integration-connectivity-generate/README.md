@@ -17,7 +17,7 @@ Creates comprehensive Salesforce integrations with 120-point scoring. Build secu
 
 ### 1. Invoke the skill
 
-```
+```text
 Skill: integration-connectivity-generate
 Request: "Create a Named Credential for Stripe API with OAuth"
 ```

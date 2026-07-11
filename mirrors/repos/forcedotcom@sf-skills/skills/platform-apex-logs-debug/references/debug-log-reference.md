@@ -4,12 +4,12 @@
 ## Log Structure
 
 Debug logs follow a consistent format:
-```
+```text
 TIMESTAMP|EVENT_IDENTIFIER|[PARAMS]|DETAILS
 ```
 
 Example:
-```
+```text
 14:32:54.123 (123456789)|SOQL_EXECUTE_BEGIN|[45]|SELECT Id FROM Account
 ```
 
@@ -34,7 +34,7 @@ Example:
 | `SOQL_EXECUTE_END` | Query ends | Rows returned |
 
 **Analysis Pattern:**
-```
+```text
 |SOQL_EXECUTE_BEGIN|[45]|SELECT Id, Name FROM Account WHERE...
 |SOQL_EXECUTE_END|[3 rows]
 ```
@@ -54,7 +54,7 @@ Example:
 | `DML_END` | DML ends | Rows affected |
 
 **Analysis Pattern:**
-```
+```text
 |DML_BEGIN|[78]|Op:Insert|Type:Contact|
 |DML_END|[200 rows]
 ```
@@ -74,7 +74,7 @@ Example:
 | `CUMULATIVE_LIMIT_USAGE` | End of transaction | Summary of all limits |
 
 **Example:**
-```
+```text
 |LIMIT_USAGE|SOQL_QUERIES|25|100
 |LIMIT_USAGE|DML_STATEMENTS|45|150
 |LIMIT_USAGE|CPU_TIME|3500|10000
@@ -89,7 +89,7 @@ Example:
 | `FATAL_ERROR` | Unhandled exception | Full stack trace |
 
 **Analysis Pattern:**
-```
+```text
 |EXCEPTION_THROWN|[67]|System.NullPointerException|Attempt to de-reference a null object
 |FATAL_ERROR|System.NullPointerException: Attempt to de-reference a null object
   Class.ContactService.processContacts: line 67, column 1
@@ -116,7 +116,7 @@ Example:
 | `ITERATION_END` | Iteration ends | |
 
 **Detection Pattern for SOQL in Loop:**
-```
+```text
 |LOOP_BEGIN|
   |ITERATION_BEGIN|
     |SOQL_EXECUTE_BEGIN|[45]|SELECT...
@@ -137,7 +137,7 @@ Example:
 | `CALLOUT_EXTERNAL_EXIT` | HTTP callout ends | Status code, Duration |
 
 **Example:**
-```
+```text
 |CALLOUT_EXTERNAL_ENTRY|[89]|https://api.example.com/endpoint
 |CALLOUT_EXTERNAL_EXIT|[200]|[1500ms]
 ```
@@ -182,7 +182,7 @@ Example:
 ### Recommended Debug Level Settings
 
 **For Performance Issues:**
-```
+```text
 Apex Code: FINE
 Apex Profiling: FINEST
 Database: FINE
@@ -190,7 +190,7 @@ System: DEBUG
 ```
 
 **For Exception Debugging:**
-```
+```text
 Apex Code: DEBUG
 Apex Profiling: FINE
 Database: INFO
@@ -198,7 +198,7 @@ System: DEBUG
 ```
 
 **For Callout Issues:**
-```
+```text
 Apex Code: DEBUG
 Callout: FINEST
 System: DEBUG
@@ -243,7 +243,7 @@ System: DEBUG
 
 ### Pattern 1: SOQL in Loop
 
-```
+```text
 |LOOP_BEGIN|
 |ITERATION_BEGIN|
 |SOQL_EXECUTE_BEGIN|[45]|SELECT Id FROM Contact WHERE AccountId = '001xxx'
@@ -260,7 +260,7 @@ System: DEBUG
 
 ### Pattern 2: DML in Loop
 
-```
+```text
 |LOOP_BEGIN|
 |ITERATION_BEGIN|
 |DML_BEGIN|[78]|Op:Insert|Type:Contact|
@@ -273,21 +273,21 @@ System: DEBUG
 
 ### Pattern 3: Non-Selective Query
 
-```
+```text
 |SOQL_EXECUTE_BEGIN|[23]|SELECT Id FROM Lead WHERE Status = 'Open'
 |SOQL_EXECUTE_END|[250000 rows]  ← Large result set!
 ```
 
 ### Pattern 4: CPU Limit Approaching
 
-```
+```text
 |CUMULATIVE_LIMIT_USAGE|
 |CPU_TIME|9500|10000  ← 95% used!
 ```
 
 ### Pattern 5: Null Pointer Exception
 
-```
+```text
 |SOQL_EXECUTE_BEGIN|[45]|SELECT Id FROM Account WHERE Id = '001xxx'
 |SOQL_EXECUTE_END|[0 rows]  ← No results!
 |METHOD_EXIT|getAccount|

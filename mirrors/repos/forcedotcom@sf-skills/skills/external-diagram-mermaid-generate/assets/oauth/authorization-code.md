@@ -83,7 +83,7 @@ sequenceDiagram
 
 ## ASCII Fallback Template
 
-```
+```text
 ┌──────────┐     ┌───────────────┐     ┌────────────────────┐
 │  User/   │     │  Application  │     │     Salesforce     │
 │  Browser │     │    Server     │     │  (Auth Server)     │

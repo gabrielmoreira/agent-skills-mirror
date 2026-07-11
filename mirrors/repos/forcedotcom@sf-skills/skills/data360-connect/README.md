@@ -55,5 +55,3 @@ sf data360 connection schema-upsert -o myorg --name <connector-id> -f examples/c
 
 - [SKILL.md](SKILL.md)
 - [../data360-orchestrate/references/plugin-setup.md](../data360-orchestrate/references/plugin-setup.md)
-- [../data360-orchestrate/UPSTREAM.md](../data360-orchestrate/UPSTREAM.md)
-- [CREDITS.md](CREDITS.md)

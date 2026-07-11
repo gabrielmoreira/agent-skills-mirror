@@ -25,6 +25,20 @@
 17. 实现代码
 18. 回写文档、测试、变更记录和 README
 
+## Workflow Phases
+
+本项目的文档流程借鉴 Spec Kit 的阶段化节奏，但长期文档源仍是 `docs/`：
+
+| Phase | 本项目落点 | 完成标准 |
+|---|---|---|
+| specify | `00-intake`, `01-requirements` | 目标、边界、FR/NFR/AC 清楚 |
+| clarify | 待确认区、必要时 `docs/issues/` | 关键分歧已问用户或明确阻塞 |
+| plan | `02-design`, `03-implementation`, `04-verification`, `docs/knowledge/` | 方案、顺序、验证、长期真相一致 |
+| tasks | `05-tasks`, `docs/changes/active/<change-key>/tasks.md` | 任务可执行、可验证、可追踪 |
+| analyze | tasks 之后、实现之前 | 没有孤立 ID、冲突文档或阻塞性 `[待确认]` |
+| implement | 代码、测试、脚本、迁移 | 只执行能回链到 `FR -> DES -> TEST -> T` 的工作 |
+| converge | 实现之后 | workflow、knowledge、changes、records、README、AGENTS 已回写 |
+
 ## Document Boundaries
 
 | File | Focus | Do not put here |
@@ -50,6 +64,10 @@
 - 新接口、数据结构、配置项变化，必须同时更新设计文档、知识层文档和测试。
 - 修 bug 必须补回归测试，并记录进当前变更工作区。
 - 新需求、bugfix、重构或流程变化，应同步更新 `docs/changes/active/` 或其归档位置。
+- 每次提交必须遵循 `docs/rules/commit-rules.md`，使用 `<type>: <简短标题>` 标题，并在正文写清摘要、关联、修改范围、影响范围、测试状态和详细变更。
+- 每次提交只能关联一个主要改动点；提交前必须确认对应 Issue、change workspace、需求 / 设计 / 验证文档已经存在或已同步。
+- 记录型文档必须遵循 `docs/rules/document-archive-rules.md`，使用 `TYPE-YYYYMMDD-NNN` 编号，并按年份和月份归档。
+- 代码注释必须说明关键逻辑是什么、为什么存在，以及它如何连接业务流程；不要写只重复代码语法的空注释。
 - 版本发布或对外交付变化，应同步更新 `docs/releases/`。
 - 未解决问题、风险和技术债，应同步更新 `docs/issues/`。
 - 被替代或废弃的文档，应同步归档到 `docs/archive/`。
@@ -58,6 +76,10 @@
 - 每个任务都应该关联 `FR-*`、`DES-*`、`TEST-*` ID。
 - 不确定的信息要显式标成 `[待确认]`，不要编造。
 - 开始编码前，至少保证一条完整追踪链已经存在：`FR -> DES -> TEST -> T`
+- 开始实现前必须完成 analyze 检查：需求、设计、验证、任务、change workspace 不得互相冲突。
+- 完成实现后必须完成 converge 检查：代码真实行为、测试结果、当前文档和历史记录重新一致。
+- `docs/changes/active/<change-key>/` 不能存放已完成变更；完成后必须移动到 `docs/changes/completed/`（如启用年月归档，则为 `docs/changes/completed/YYYY/MM/<change-key>/`）。
+- 如果暂时不能移动到 `completed/`，不得把状态写成“已完成”，必须保持“待收敛”或“阻塞”并写清剩余条件。
 - 具体编码、测试和文档同步规范，优先遵循 `docs/rules/` 下的规则文件。
 
 ## Project Commands
@@ -75,8 +97,11 @@
 - 需求、设计、验证、任务之间存在可追踪关系。
 - 长期稳定事实已沉淀到 `docs/knowledge/`。
 - 当前 change 已记录在 `docs/changes/active/`、`completed/` 或 `legacy/` 中的正确位置。
+- 已完成 change 不再停留在 `docs/changes/active/`。
 - 代码与文档保持一致。
 - 高优先级需求有自动化验证。
+- 实现前的一致性分析没有阻塞项。
+- 实现后的收敛回写已完成。
 - README 能帮助新成员快速理解项目结构。
 - 已知风险和取舍已记录到文档或 ADR。
 - `docs/rules/definition-of-done.md` 中的检查项通过。

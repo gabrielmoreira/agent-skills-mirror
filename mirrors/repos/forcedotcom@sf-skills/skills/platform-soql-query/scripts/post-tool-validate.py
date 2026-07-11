@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Post-Tool Validation Hook for querying-soql skill.
+Post-Tool Validation Hook for platform-soql-query skill.
 
 This hook runs AFTER Write or Edit tool completes and provides validation
 feedback for SOQL files (*.soql).
@@ -23,8 +23,8 @@ import json
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 
-# Find shared modules (../../shared relative to querying-soql)
-PLUGIN_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))  # querying-soql/
+# Find shared modules (../../shared relative to platform-soql-query)
+PLUGIN_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))  # platform-soql-query/
 SKILLS_ROOT = os.path.dirname(PLUGIN_ROOT)  # sf-skills/
 SHARED_DIR = os.path.join(SKILLS_ROOT, "shared")
 sys.path.insert(0, SHARED_DIR)

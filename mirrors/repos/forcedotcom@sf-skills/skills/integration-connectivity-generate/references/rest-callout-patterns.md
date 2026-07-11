@@ -21,7 +21,7 @@ This guide covers patterns for making HTTP callouts from Salesforce Apex to exte
 - Background processing
 - Long-running operations
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │  CALLOUT CONTEXT DECISION                                       │
 ├─────────────────────────────────────────────────────────────────┤

@@ -7,7 +7,7 @@ This guide covers real-time notification patterns for Lightning Web Components u
 
 ## Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                    ASYNC NOTIFICATION ARCHITECTURE                       │
 ├─────────────────────────────────────────────────────────────────────────┤

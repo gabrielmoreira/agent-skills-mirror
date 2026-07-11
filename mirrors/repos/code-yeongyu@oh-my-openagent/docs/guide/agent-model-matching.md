@@ -152,7 +152,7 @@ You don't need every provider. You need the right two.
 | Subscription | Cost | What You Get | Covers |
 |---|---|---|---|
 | **OpenCode Go** | $10/mo | `kimi-k2.5`, `kimi-k2.6`, `glm-5`, `glm-5.2`, `minimax-m2.5`, `minimax-m2.7`, `minimax-m3`, `mimo-v2-pro`, `qwen3.5-plus`, `qwen3.6-plus` | Claude-family alternatives (Kimi, GLM), Gemini-family alternatives (Qwen), utility/retrieval (MiniMax) |
-| **OpenAI Plus/Pro** | $20+/mo | `gpt-5.4`, `gpt-5.4-pro`, `gpt-5.5`, `gpt-5.5-codex`, `gpt-5.6-sol` | GPT-native agents (Hephaestus, Oracle, Momus), GPT fallbacks for model-flexible agents |
+| **OpenAI Plus/Pro** | $20+/mo | `gpt-5.4`, `gpt-5.4-pro`, `gpt-5.5`, `gpt-5.5-codex`, `gpt-5.6-sol`, `gpt-5.6-terra`, `gpt-5.6-luna` | GPT-native agents (Hephaestus, Oracle, Momus), GPT-5.6 category defaults (`deep`, `ultrabrain`, `unspecified-low`), GPT fallbacks for model-flexible agents |
 
 ### Why this specific combination
 
@@ -205,11 +205,13 @@ Used by: Sisyphus, Atlas, Sisyphus-Junior, Metis (Claude path), Prometheus (prim
 
 ### GPT Family (principle-driven, autonomous)
 
-Used by: Hephaestus, Oracle, Momus, `deep`, `ultrabrain`, `quick`, Prometheus (GPT fallback), Atlas (GPT path).
+Used by: Hephaestus, Oracle, Momus, `deep`, `ultrabrain`, `quick`, `unspecified-low`, Prometheus (GPT fallback), Atlas (GPT path).
 
 | Priority | Model | Provider | Why |
 |---|---|---|---|
-| 1 | `gpt-5.6-sol` (xhigh / high / medium) | `openai`, `vercel` | The GPT-5.6 flagship. New default for Hephaestus (medium), Momus (xhigh), `deep` (high), and `ultrabrain` (xhigh). |
+| 1 | `gpt-5.6-sol` (xhigh / high / medium) | `openai`, `vercel` | The GPT-5.6 flagship. Default for Hephaestus (medium), Momus (xhigh), and `ultrabrain` (xhigh); first fallback for `deep`. |
+| 1 | `gpt-5.6-terra` (xhigh) | `openai`, `vercel` | GPT-5.6 mid-tier. New default for the `deep` category. |
+| 1 | `gpt-5.6-luna` (xhigh) | `openai`, `vercel` | GPT-5.6 light tier. New default for the `unspecified-low` category. |
 | 2 | `gpt-5.5` / `gpt-5.4` (pro / xhigh / high / medium) | `openai`, `github-copilot`, `opencode`, `vercel` | Previous flagship generation; first fallback on providers without GPT-5.6. Hephaestus requires this family. |
 | 3 | `gpt-5.5-codex` | same | Still the deep-coding powerhouse. Kept as an explicit override option. |
 | 3 | **DeepSeek — LIMITED ALTERNATIVE** (`deepseek-v3.2`, `deepseek-chat-v3.1`) | `openrouter/deepseek` | Closest OSS equivalent for autonomous coding behavior. Not wired into default chains — add via `fallback_models`. |
@@ -244,7 +246,7 @@ Used by: `visual-engineering`, `artistry`, Oracle (visual fallback), Multimodal-
 
 ## Agent Profiles
 
-Exact runtime chains from [`packages/omo-opencode/src/shared/model-requirements.ts`](../../packages/omo-opencode/src/shared/model-requirements.ts).
+Exact runtime chains from [`agent-model-requirements.ts`](../../packages/model-core/src/agent-model-requirements.ts) and [`category-model-requirements.ts`](../../packages/model-core/src/category-model-requirements.ts).
 
 ### Communicators → Claude / Kimi / GLM
 
@@ -311,7 +313,9 @@ Principle-driven, explicit reasoning, deep technical capability. Best for agents
 | Model             | Strengths                                                                                       |
 | ----------------- | ----------------------------------------------------------------------------------------------- |
 | **GPT-5.5 Codex** | Deep coding powerhouse. Autonomous exploration. Still available for deep category and explicit overrides. |
-| **GPT-5.6 Sol**   | The GPT-5.6 flagship. Default for Hephaestus (medium) and Momus (xhigh); default for the `deep` / `ultrabrain` categories. |
+| **GPT-5.6 Sol**   | The GPT-5.6 flagship. Default for Hephaestus (medium) and Momus (xhigh); default for the `ultrabrain` category and first fallback for `deep`. |
+| **GPT-5.6 Terra** | GPT-5.6 mid-tier. Default for the `deep` category (xhigh). |
+| **GPT-5.6 Luna**  | GPT-5.6 light tier. Default for the `unspecified-low` category (xhigh). |
 | **GPT-5.5**       | High intelligence, strategic reasoning. Default for Oracle, first fallback for Momus (xhigh) and Hephaestus, and a key fallback for Prometheus / Atlas. |
 | **GPT-5.4 Mini**  | Fast + strong reasoning. Good for lightweight autonomous tasks. Default for quick category. |
 | **GPT-5-Nano**    | Ultra-cheap, fast. Good for simple utility tasks.                                               |
@@ -336,7 +340,7 @@ A premium subscription tier ($10/month) that provides reliable access to Chinese
 | Model                    | Use Case                                                              |
 | ------------------------ | --------------------------------------------------------------------- |
 | **opencode-go/kimi-k2.6** | Vision-capable, Claude-like reasoning. Used by Sisyphus, Atlas, Sisyphus-Junior, Multimodal Looker. |
-| **opencode-go/glm-5.2**     | Text-only orchestration model. Used by Oracle, Prometheus, Metis, Momus.                           |
+| **opencode-go/glm-5.2**     | Text-only orchestration model. Used by Oracle, Prometheus, Metis, Momus, `deep`, and `ultrabrain`.  |
 | **opencode-go/minimax-m3** | Latest MiniMax flagship on OpenCode Go. Primary MiniMax fallback for Atlas, Sisyphus-Junior, Explore and Librarian, ahead of M2.7. |
 | **opencode-go/minimax-m2.7** | Ultra-cheap, fast responses. Used by Atlas, Sisyphus-Junior, Explore and Librarian fallbacks for utility work. |
 | **opencode-go/qwen3.5-plus** | Qwen coding model used as the first OpenCode Go utility fallback for Explore and Librarian when GPT-5.4 Mini Fast is unavailable. |
@@ -365,11 +369,11 @@ When agents delegate work, they don't pick a model name — they pick a **catego
 |---|---|---|---|
 | `visual-engineering` | Frontend, UI, CSS, design | `google/gemini-3.1-pro` (high) | Gemini → `zai-coding-plan/glm-5` → `claude-opus-4-7` (max) → `opencode-go/glm-5.2` → `kimi-for-coding/k2p5` |
 | `artistry` | Creative, novel approaches | `google/gemini-3.1-pro` (high) | Gemini → `claude-opus-4-7` (max) → `gpt-5.5` |
-| `ultrabrain` | Maximum reasoning needed | `openai/gpt-5.6-sol` (xhigh) | GPT-5.6-sol xhigh → `gpt-5.5` (xhigh) → `gemini-3.1-pro` (high) → `claude-opus-4-7` (max) → `opencode-go/glm-5.2` |
-| `deep` | Deep coding, complex logic | `openai/gpt-5.6-sol` (high) | GPT-5.6-sol high → `gpt-5.5` (medium) → `claude-opus-4-7` (max) → `gemini-3.1-pro` (high) |
+| `ultrabrain` | Maximum reasoning needed | `openai/gpt-5.6-sol` (xhigh) | `openai\|vercel/gpt-5.6-sol` (xhigh) → `openai\|opencode\|vercel/gpt-5.5` (xhigh) → `google\|github-copilot\|opencode\|vercel/gemini-3.1-pro` (high) → `anthropic\|github-copilot\|opencode\|vercel/claude-opus-4-7` (max) → `opencode-go\|vercel/glm-5.2` |
+| `deep` | Deep coding, complex logic | `openai/gpt-5.6-terra` (xhigh) | `openai\|vercel/gpt-5.6-terra` (xhigh) → `openai\|vercel/gpt-5.6-sol` (high) → `openai\|github-copilot\|opencode\|vercel/gpt-5.5` (medium) → `anthropic\|github-copilot\|opencode\|vercel/claude-opus-4-7` (max) → `google\|github-copilot\|opencode\|vercel/gemini-3.1-pro` (high) → `opencode-go\|vercel/kimi-k2.6` → `opencode-go\|vercel/glm-5.2` |
 | `quick` | Simple, fast tasks | `openai/gpt-5.4-mini` | GPT-5.4-mini → `anthropic\|github-copilot\|vercel/claude-haiku-4-5` → `gemini-3-flash` → `opencode-go/minimax-m3` → `opencode-go/minimax-m2.7` → `opencode/gpt-5-nano` |
 | `unspecified-high` | General complex work | `anthropic/claude-opus-4-7` (max) | Opus → `gpt-5.5` (high) → `zai-coding-plan/glm-5` → `kimi-for-coding/k2p5` → `opencode-go/glm-5.2` → `opencode/kimi-k2.5` → `moonshotai/kimi-k2.5` |
-| `unspecified-low` | General standard work | `anthropic/claude-sonnet-4-6` | Sonnet → `gpt-5.5-codex` (medium) → `opencode-go/kimi-k2.6` → `google/gemini-3-flash` → `opencode-go/minimax-m3` → `opencode-go/minimax-m2.7` |
+| `unspecified-low` | General standard work | `openai/gpt-5.6-luna` (xhigh) | `openai\|vercel/gpt-5.6-luna` (xhigh) → `anthropic\|github-copilot\|opencode\|vercel/claude-sonnet-4-6` → `openai\|opencode\|vercel/gpt-5.5` (medium) → `opencode-go\|vercel/kimi-k2.6` → `google\|github-copilot\|opencode\|vercel/gemini-3-flash` → `opencode-go\|vercel/minimax-m3` → `minimax-coding-plan\|minimax-cn-coding-plan/MiniMax-M3` → `opencode-go\|vercel/minimax-m2.7` |
 | `writing` | Text, docs, prose | `kimi-for-coding/k2p5` | `gemini-3-flash` → `opencode-go/kimi-k2.6` → `claude-sonnet-4-6` → `opencode-go/minimax-m3` → `opencode-go/minimax-m2.7` |
 
 See the [Orchestration System Guide](./orchestration.md) for how agents dispatch tasks to categories.
@@ -414,7 +418,7 @@ See the [Orchestration System Guide](./orchestration.md) for how agents dispatch
 
   "categories": {
     "visual-engineering": { "model": "opencode-go/qwen3.6-plus" },  // Qwen as Gemini alt
-    "deep": { "model": "openai/gpt-5.6-sol", "variant": "high" },
+    "deep": { "model": "openai/gpt-5.6-terra", "variant": "xhigh" },
     "ultrabrain": { "model": "openai/gpt-5.6-sol", "variant": "xhigh" },
     "quick": { "model": "openai/gpt-5.4-mini" },
     "unspecified-low": { "model": "opencode-go/kimi-k2.7-code" },
@@ -447,7 +451,7 @@ Highest quality, highest cost. No surprises.
   },
   "categories": {
     "visual-engineering": { "model": "google/gemini-3.1-pro", "variant": "high" },
-    "deep": { "model": "openai/gpt-5.6-sol", "variant": "high" },
+    "deep": { "model": "openai/gpt-5.6-terra", "variant": "xhigh" },
     "unspecified-high": { "model": "anthropic/claude-opus-4-8", "variant": "max" },
   },
 }

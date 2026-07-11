@@ -309,6 +309,139 @@ Append-only. Newest at top. Each entry follows this shape:
 
 ---
 
+### 2026-07-10 — Isolate `llamacpp-upstream` DFlash requests from tools and preserve model settings on restart
+- **Context:** A user log showed that DFlash itself loaded successfully
+  (`draft-dflash` registered and non-zero acceptance), but the next request
+  included an MCP Exa tool result. The same log showed the settings-page
+  DFlash restart changing the model from its persisted GPU/context settings
+  (`-ngl -1`, 16K context) to raw engine defaults (`-ngl 0`, auto 262K
+  context), because the UI called `engine.load(modelId)` without the model's
+  stored settings.
+- **Decision:** At the final `streamText` tool gate, suppress both RAG and MCP
+  tool definitions when the selected provider is `llamacpp-upstream` and its
+  `dflash` provider setting is enabled. Keep MCP connections and configuration
+  intact; only the affected request receives no `tools` or `toolChoice`.
+  During a settings-page DFlash toggle, await the provider-setting write before
+  restarting, then restart through `serviceHub.models().startModel(...)`
+  instead of the raw engine load so persisted model-level settings are applied.
+- **Consequences:** Upstream DFlash sessions no longer receive tool calls or
+  large tool-result follow-ups, while non-DFlash and other-provider sessions
+  retain existing tool behavior. DFlash restarts preserve context, GPU layer,
+  batch, and other per-model settings. This is request-level isolation, not a
+  global MCP disable.
+- **Owner:** team.
+- **Links:** [`web-app/src/lib/custom-chat-transport.ts`](web-app/src/lib/custom-chat-transport.ts),
+  [`web-app/src/routes/settings/providers/$providerName.tsx`](web-app/src/routes/settings/providers/$providerName.tsx),
+  [`web-app/src/lib/__tests__/dflashToolIsolation.test.ts`](web-app/src/lib/__tests__/dflashToolIsolation.test.ts).
+
+### 2026-07-10 — Let users choose the `llamacpp-upstream` DFlash draft quantization before download
+- **Context:** The upstream DFlash registry initially pinned one Q4_K_M draft
+  per supported target. All three compatible Hugging Face repositories publish
+  several mainline-llama.cpp GGUF quantizations, but enabling DFlash downloaded
+  Q4_K_M immediately with no user choice. The existing MLX DFlash dialog
+  already established a quant-picker pattern.
+- **Decision:** Store every verified compatible draft variant (quant label,
+  filename, SHA-256, and byte size) in `dflashRegistry.ts`, keep Q4_K_M as the
+  default, and expose the matching variants through the extension engine.
+  Enabling DFlash for a supported active target now opens a draft-quant picker
+  before download. Non-default variants use quant-qualified local filenames;
+  the selected path is written to the existing `dflash_draft_path` field in
+  `model.yml`.
+- **Consequences:** Users can trade draft memory/disk usage against quality
+  before downloading, while automatic/lazy setup remains backward-compatible
+  and defaults to Q4_K_M. Previously downloaded Q4_K_M drafts keep their
+  existing `dflash-draft.gguf` path. Selecting another quant keeps the old file
+  on disk; automatic cleanup of unselected draft variants is deliberately out
+  of scope.
+- **Owner:** team.
+- **Links:** [`extensions/llamacpp-upstream-extension/src/dflashRegistry.ts`](extensions/llamacpp-upstream-extension/src/dflashRegistry.ts),
+  [`web-app/src/containers/dialogs/LlamacppDflashDraftDialog.tsx`](web-app/src/containers/dialogs/LlamacppDflashDraftDialog.tsx),
+  [`web-app/src/routes/settings/providers/$providerName.tsx`](web-app/src/routes/settings/providers/$providerName.tsx).
+
+### 2026-07-10 — Pin `llamacpp-upstream` DFlash drafts converted for mainline llama.cpp
+- **Context:** The original DFlash GGUF registry mixed incompatible conversion
+  formats. `Anbeeld/Qwen3.5-9B-DFlash-GGUF` identifies its architecture as
+  `dflash-draft` and targets BeeLlama.cpp, so official llama.cpp `b9937`
+  rejected it with `unknown model architecture: 'dflash-draft'`. The
+  `spiritbuun/Qwen3.6-27B-DFlash-GGUF` entry was likewise converted with
+  `spiritbuun/buun-llama-cpp` for its fork-specific Qwen 3.6 sliding-window
+  metadata. A direct test of
+  `onion515/Qwen3.5-9B-DFlash-GGUF` Q4_K_M against the official `b9937`
+  binary loaded successfully and generated with non-zero speculative
+  acceptance (`draft_n=285`, `draft_n_accepted=33`).
+- **Decision:** Keep the three strict target-family matchers, but pin only
+  repositories whose model cards identify architecture `dflash` and explicit
+  mainline llama.cpp `b9831+` compatibility. Qwen 3.5 9B now uses
+  `onion515/Qwen3.5-9B-DFlash-GGUF`; Qwen 3.6 27B now uses
+  `williamliao/qwen3.6-27B-DFlash-GGUF`; Qwen 3.6 35B-A3B keeps the already
+  compatible `williamliao/Qwen3.6-35B-A3B-DFlash-GGUF`. Pin each Q4_K_M
+  filename, byte size, and Hugging Face LFS SHA-256 from the live API.
+- **Consequences:** Fresh DFlash downloads for all three registered Qwen
+  families now use the mainline `dflash` GGUF schema expected by the official
+  upstream provider instead of fork-only architecture names. Existing
+  `dflash-draft.gguf` files are not migrated or revalidated automatically;
+  users who already downloaded an incompatible draft must remove it and run
+  DFlash setup again. Automatic draft migration is outside this registry-only
+  change.
+- **Owner:** team.
+- **Links:** [llama.cpp PR #22105](https://github.com/ggml-org/llama.cpp/pull/22105),
+  [`extensions/llamacpp-upstream-extension/src/dflashRegistry.ts`](extensions/llamacpp-upstream-extension/src/dflashRegistry.ts),
+  [`extensions/llamacpp-upstream-extension/src/dflashRegistry.test.ts`](extensions/llamacpp-upstream-extension/src/dflashRegistry.test.ts),
+  [onion515/Qwen3.5-9B-DFlash-GGUF](https://huggingface.co/onion515/Qwen3.5-9B-DFlash-GGUF),
+  [williamliao/qwen3.6-27B-DFlash-GGUF](https://huggingface.co/williamliao/qwen3.6-27B-DFlash-GGUF),
+  [williamliao/Qwen3.6-35B-A3B-DFlash-GGUF](https://huggingface.co/williamliao/Qwen3.6-35B-A3B-DFlash-GGUF).
+
+### 2026-07-10 — Probe `llamacpp-upstream` DFlash support and reject mislabeled bundled binaries
+- **Context:** A user enabled DFlash on
+  `unsloth/Qwen3_5-9B-GGUF-Qwen3_5-9B-IQ4_XS` with upstream backend
+  `b9937/macos-arm64`. The DFlash draft resolved, but the selected binary rejected
+  `--spec-type draft-dflash` with `unknown speculative type: draft-dflash`;
+  its help output listed only `none,draft-simple,draft-eagle3,draft-mtp,...`.
+  Direct inspection proved the directory label was false: `llama-server
+  --version` reported build `9222 (9a532ae4b)`, while the genuine official
+  `b9937` binary reports build `9937` and advertises `draft-dflash`. The macOS
+  Make target wrote the new `version.txt` before extracting into a resource
+  directory that still contained the old `build/bin`; because that destination
+  already existed, relocation of the newly-extracted archive was skipped.
+- **Decision:** Keep the model-level DFlash registry in place, but make backend
+  support dynamic instead of hard-coded. The upstream Rust plugin now exposes
+  `check_spec_type_support(backend_path, spec_type, envs)`, which runs the
+  selected `llama-server -h` with the same CUDA/library-path setup used by
+  other backend probes and checks whether the help text advertises
+  `draft-dflash`. The guest-js layer exposes `checkSpecTypeSupport`, and the
+  TS extension uses it both in `checkDflashBackendSupport()` (Settings toggle)
+  and in `performLoad()` before calling `loadLlamaModel`. The probe result is
+  passed to Rust as `LlamacppConfig.dflash_spec_supported`; the arg builder
+  emits `--model-draft ... --spec-type draft-dflash` only when both
+  `dflash=true` and `dflash_spec_supported=true`. The serde default stays
+  `false`, so stale configs and older extension bundles cannot crash older
+  binaries. The macOS download target now clears the resource directory before
+  extracting a release. `install_bundled_backend` independently runs
+  `llama-server --version`: it refuses a bundled resource whose executable does
+  not match `version.txt`, and replaces an existing installed directory when
+  its executable is mislabeled.
+- **Consequences:** Existing users with `dflash: true` no longer crash on model
+  load when the selected backend genuinely lacks DFlash. Correct `b9937`
+  resources advertise and enable DFlash, while mislabeled resources can no
+  longer masquerade as an updated backend. The local resource was rebuilt and
+  verified as `version: 9937 (2021515a1)` with `draft-dflash` present in
+  `--spec-type`. Additive IPC only; no settings-schema change.
+- **Owner:** team.
+- **Links:** files:
+  [`extensions/llamacpp-upstream-extension/src/index.ts`](extensions/llamacpp-upstream-extension/src/index.ts)
+  (`checkDflashBackendSupport`, `backendSupportsDflashSpec`, load-time probe),
+  [`src-tauri/plugins/tauri-plugin-llamacpp-upstream/src/args.rs`](src-tauri/plugins/tauri-plugin-llamacpp-upstream/src/args.rs)
+  (`dflash_spec_supported`, conditional `add_dflash_args`),
+  [`src-tauri/plugins/tauri-plugin-llamacpp-upstream/src/commands.rs`](src-tauri/plugins/tauri-plugin-llamacpp-upstream/src/commands.rs)
+  (`check_spec_type_support`),
+  [`web-app/src/routes/settings/providers/$providerName.tsx`](web-app/src/routes/settings/providers/$providerName.tsx)
+  (`handleToggleLlamacppDflash` backend-support toast),
+  [`extensions/llamacpp-upstream-extension/src/dflashRegistry.ts`](extensions/llamacpp-upstream-extension/src/dflashRegistry.ts)
+  (model-level registry),
+  [`Makefile`](Makefile) (clean macOS resource extraction),
+  [`src-tauri/plugins/tauri-plugin-llamacpp-upstream/src/backend.rs`](src-tauri/plugins/tauri-plugin-llamacpp-upstream/src/backend.rs)
+  (bundled/installed executable version validation and repair).
+
 ### 2026-07-07 — Fall back to the Local API Server's "Current Model" when configuring Launch-page agents against a cloud-provider selection
 - **Context:** A user reported Launch-page agents (Claude Code) failing when
   their globally selected model was a **cloud** provider (e.g. `gpt-5.4-mini`

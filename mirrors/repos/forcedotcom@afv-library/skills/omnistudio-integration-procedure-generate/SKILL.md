@@ -27,7 +27,7 @@ Expert OmniStudio Integration Procedure (IP) builder with deep knowledge of serv
 
 ## Quick Reference
 
-**Scoring**: 110 points across 6 categories. **Thresholds**: ✅ 90+ (Deploy) | ⚠️ 67-89 (Review) | ❌ <67 (Block - fix required)
+**Scoring**: 110 points across 6 categories. **Thresholds**: [PASS] 90+ (Deploy) | [REVIEW] 67-89 (Review) | [BLOCK] <67 (Block - fix required)
 
 ---
 
@@ -272,3 +272,11 @@ Deliverables produced by this skill:
 | `references/best-practices.md` | Phase 2-5 — Design patterns: element composition, error handling, caching, parallel execution, and security guidance |
 | `references/element-types.md` | Phase 2 — Element selection: read before configuring PropertySetConfig for any element type |
 | `scripts/cli-commands.sh` | Phase 1 & 4 — CLI queries and deploy/retrieve commands; adapt by replacing `<Name>` and `<org>` placeholders |
+
+---
+
+## Pre-Delivery Checklist
+
+- [ ] Data Mappers exist and are deployed before IP references them
+- [ ] `IsIntegrationProcedure = true` set when creating via Data API
+- [ ] IP activated before any OmniScript/FlexCard invokes it

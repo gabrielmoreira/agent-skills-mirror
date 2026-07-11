@@ -15,7 +15,7 @@ Lightning Web Components development skill with PICKLES architecture methodology
 
 ### 1. Invoke the skill
 
-```
+```yaml
 Skill: experience-lwc-generate
 Request: "Create a data table component for Account records"
 ```
@@ -39,7 +39,7 @@ The skill generates:
 
 ## PICKLES Framework
 
-```
+```text
 P → Prototype    │ Validate ideas with wireframes & mock data
 I → Integrate    │ Choose data source (LDS, Apex, GraphQL, API)
 C → Composition  │ Structure component hierarchy & communication
@@ -79,6 +79,7 @@ S → Security     │ Enforce permissions, FLS, and data protection
 | automation-flow-generate | Embed in Flow screens |
 | generating-metadata | Create Lightning Message Channels |
 | platform-metadata-deploy | Deploy component to org |
+
 
 ## Spring '26 Features (API 66.0)
 

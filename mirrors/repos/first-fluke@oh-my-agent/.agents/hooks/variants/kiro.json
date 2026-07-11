@@ -5,6 +5,7 @@
   "settingsFile": ".kiro/settings/cli.json",
   "projectDirEnv": null,
   "runtime": "bun",
+  "skipSettingsMerge": true,
   "events": {
     "userPromptSubmit": [
       {

@@ -16,7 +16,7 @@
 | **PICKLES Compliance** | 25 | Architecture methodology adherence (optional) |
 
 **Scoring Thresholds**:
-```
+```text
 ⭐⭐⭐⭐⭐ 150-165 pts → Production-ready, full SLDS 2 + Dark Mode
 ⭐⭐⭐⭐   125-149 pts → Good component, minor styling issues
 ⭐⭐⭐     100-124 pts → Functional, needs SLDS cleanup

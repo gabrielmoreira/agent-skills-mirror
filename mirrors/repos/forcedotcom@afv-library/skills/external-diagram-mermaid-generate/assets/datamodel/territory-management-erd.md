@@ -162,7 +162,7 @@ flowchart LR
 
 ## ASCII Fallback
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  ENTERPRISE TERRITORY MANAGEMENT DATA MODEL (L→R)                           │
 │  Legend: LK = Lookup (-->), MD = Master-Detail (==>)                        │

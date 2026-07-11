@@ -8,3 +8,17 @@
   - Test: [TEST-*]
   - Output: [输出]
   - Depends on: [依赖]
+
+- [ ] T-CHG-ANALYZE [实现前一致性分析]
+  - Requirement: FR-ALL
+  - Design: DES-ALL
+  - Test: TEST-ALL
+  - Output: 缺口清单或无阻塞项结论
+  - Depends on: T-CHG-001
+
+- [ ] T-CHG-CONVERGE [实现后文档收敛]
+  - Requirement: FR-ALL
+  - Design: DES-ALL
+  - Test: TEST-ALL
+  - Output: workflow / knowledge / changes / records 已同步；完成时工作区已从 `active/` 移到 `completed/`
+  - Depends on: [相关实现任务完成]

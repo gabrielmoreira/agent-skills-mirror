@@ -26,8 +26,50 @@ routes:
   records.archive: docs/archive/
   records.rules: docs/rules/
 
+workflow_phases:
+  specify:
+    - workflow.intake
+    - workflow.requirements
+  clarify:
+    - workflow.intake
+    - workflow.requirements
+    - records.issues
+  plan:
+    - workflow.design
+    - workflow.implementation
+    - workflow.verification
+    - knowledge.context
+    - knowledge.structure
+    - knowledge.behavior
+    - knowledge.reference
+  tasks:
+    - workflow.tasks
+    - changes.active
+  analyze:
+    - workflow.requirements
+    - workflow.design
+    - workflow.verification
+    - workflow.tasks
+    - changes.active
+  implement:
+    - workflow.tasks
+  converge:
+    - workflow.requirements
+    - workflow.design
+    - workflow.verification
+    - workflow.tasks
+    - knowledge.context
+    - knowledge.structure
+    - knowledge.behavior
+    - changes.completed
+    - records.issues
+    - records.releases
+    - records.decisions
+    - records.archive
+
 notes:
   - workflow holds the current delivery surface
   - knowledge holds long-lived truth and should not be polluted by temporary task notes
   - changes holds one-change workspaces and lifecycle states
   - records holds longer-running tracking and governance artifacts
+  - workflow_phases borrows Spec Kit's stages without requiring a specs/ directory

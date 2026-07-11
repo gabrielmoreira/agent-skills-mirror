@@ -102,7 +102,7 @@ flowchart LR
 ## Key Concepts
 
 ### Quote-to-Cash Flow
-```
+```text
 Opportunity → Quote → Order → Invoice → Payment
       ↓          ↓        ↓
     OLI        QLI   OrderItem
@@ -121,7 +121,7 @@ Opportunity → Quote → Order → Invoice → Payment
 | Reduction Orders | Negative quantity adjustments |
 
 ### Pricebook Structure
-```
+```text
 Pricebook2 (Standard + Custom)
     ↓
 PricebookEntry (Product + Price per Pricebook)
@@ -176,7 +176,7 @@ flowchart LR
 
 ## ASCII Fallback
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  QUOTE & ORDER DATA MODEL (L→R)                                              │
 │  Legend: LK = Lookup (-->), MD = Master-Detail (==>)                        │

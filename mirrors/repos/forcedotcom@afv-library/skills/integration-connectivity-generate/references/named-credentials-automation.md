@@ -11,7 +11,7 @@ This guide explains how to automate Named Credential configuration using the int
 
 Enhanced Named Credentials = **External Credential** + **Named Credential** + **Endpoint Security**
 
-```
+```text
 External Credential (stores the API key securely)
          ↓
 Named Credential (references the External Credential)

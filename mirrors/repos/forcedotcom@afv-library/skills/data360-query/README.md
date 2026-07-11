@@ -41,4 +41,3 @@ sf data360 query hybrid -o myorg --index Knowledge_Index --query "reset password
 
 - [SKILL.md](SKILL.md)
 - [../data360-orchestrate/assets/definitions/search-index.template.json](../data360-orchestrate/assets/definitions/search-index.template.json)
-- [CREDITS.md](CREDITS.md)

@@ -65,7 +65,7 @@ Do NOT use Load when:
 
 Always specify fields explicitly. Never rely on wildcard or "all fields" selection.
 
-```
+```text
 Good:  Account.Name, Account.Industry, Account.BillingCity
 Bad:   Account.* (extracts all fields, wastes bandwidth and heap)
 ```
@@ -74,14 +74,14 @@ Bad:   Account.* (extracts all fields, wastes bandwidth and heap)
 
 Data Mapper fields use dot-notation paths for input and output:
 
-```
+```text
 Input Path:   AccountData.Name
 Output Path:  Account.Name
 ```
 
 For nested structures:
 
-```
+```text
 Input Path:   Response.data.accounts[0].name
 Output Path:  AccountList.Name
 ```
@@ -106,7 +106,7 @@ When loading records with lookup relationships:
 2. Specify the lookup object and match field (e.g., `Account.Name` to resolve `AccountId`)
 3. Handle cases where the lookup returns no match (set default or fail gracefully)
 
-```
+```text
 Field:         AccountId
 Lookup Object: Account
 Match Field:   Name
@@ -132,7 +132,7 @@ For Extract and Turbo Extract, filter on indexed fields whenever possible:
 
 Place the most selective filter first to reduce the result set early:
 
-```
+```text
 Good:  WHERE Id = :recordId AND Status = 'Active'
 Bad:   WHERE Status = 'Active' AND Id = :recordId
 ```
@@ -141,7 +141,7 @@ Bad:   WHERE Status = 'Active' AND Id = :recordId
 
 Limit relationship traversal to 2 levels for performance:
 
-```
+```text
 Good:  Account.Owner.Name (1 level)
 Bad:   Account.Parent.Parent.Parent.Owner.Name (3+ levels)
 ```
@@ -150,7 +150,7 @@ Bad:   Account.Parent.Parent.Parent.Owner.Name (3+ levels)
 
 Always set a LIMIT on Extract queries unless the consuming component guarantees a bounded input:
 
-```
+```text
 LIMIT 200    -- Standard batch size
 LIMIT 2000   -- Maximum for most UI scenarios
 LIMIT 10000  -- Absolute maximum, use only with pagination
@@ -189,7 +189,7 @@ When mapping fields that may be null:
 
 Extract supports parent-to-child relationship queries:
 
-```
+```text
 Object: Account
 Fields: Name, Industry
 Child Relationship: Contacts (Contact)
@@ -212,7 +212,7 @@ Output structure:
 
 Extract supports child-to-parent traversal via dot notation:
 
-```
+```text
 Object: Contact
 Fields: FirstName, LastName, Account.Name, Account.Industry
 ```

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `simstudioai/sim` — 26 default patterns, 0 followed patterns, 90 file(s) materialized.
+Mirror of `simstudioai/sim` — 26 default patterns, 0 followed patterns, 96 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `simstudioai/sim` — 26 default patterns, 0 followed patterns, 90 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 90 |
+| Files         | 96 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -82,73 +82,79 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`.agents/skills/design-taste-frontend/SKILL.md`](.agents/skills/design-taste-frontend/SKILL.md) |
 | 22 | ✓ | [`.agents/skills/emcn-design-review/SKILL.md`](.agents/skills/emcn-design-review/SKILL.md) |
 | 23 | ✓ | [`.agents/skills/emil-design-eng/SKILL.md`](.agents/skills/emil-design-eng/SKILL.md) |
-| 24 | ✓ | [`.agents/skills/memory-load-check/SKILL.md`](.agents/skills/memory-load-check/SKILL.md) |
-| 25 | ✓ | [`.agents/skills/react-query-best-practices/SKILL.md`](.agents/skills/react-query-best-practices/SKILL.md) |
-| 26 | ✓ | [`.agents/skills/ship/SKILL.md`](.agents/skills/ship/SKILL.md) |
-| 27 | ✓ | [`.agents/skills/validate-connector/agents/openai.yaml`](.agents/skills/validate-connector/agents/openai.yaml) |
-| 28 | ✓ | [`.agents/skills/validate-connector/SKILL.md`](.agents/skills/validate-connector/SKILL.md) |
-| 29 | ✓ | [`.agents/skills/validate-integration/agents/openai.yaml`](.agents/skills/validate-integration/agents/openai.yaml) |
-| 30 | ✓ | [`.agents/skills/validate-integration/SKILL.md`](.agents/skills/validate-integration/SKILL.md) |
-| 31 | ✓ | [`.agents/skills/validate-model/agents/openai.yaml`](.agents/skills/validate-model/agents/openai.yaml) |
-| 32 | ✓ | [`.agents/skills/validate-model/SKILL.md`](.agents/skills/validate-model/SKILL.md) |
-| 33 | ✓ | [`.agents/skills/validate-trigger/SKILL.md`](.agents/skills/validate-trigger/SKILL.md) |
-| 34 | ✓ | [`.agents/skills/you-might-not-need-a-callback/SKILL.md`](.agents/skills/you-might-not-need-a-callback/SKILL.md) |
-| 35 | ✓ | [`.agents/skills/you-might-not-need-a-memo/SKILL.md`](.agents/skills/you-might-not-need-a-memo/SKILL.md) |
-| 36 | ✓ | [`.agents/skills/you-might-not-need-an-effect/SKILL.md`](.agents/skills/you-might-not-need-an-effect/SKILL.md) |
-| 37 | ✓ | [`.agents/skills/you-might-not-need-state/SKILL.md`](.agents/skills/you-might-not-need-state/SKILL.md) |
-| 38 | ✓ | [`.claude/skills/add-settings-page/SKILL.md`](.claude/skills/add-settings-page/SKILL.md) |
-| 39 | ✓ | [`.cursor/commands/add-block.md`](.cursor/commands/add-block.md) |
-| 40 | ✓ | [`.cursor/commands/add-connector.md`](.cursor/commands/add-connector.md) |
-| 41 | ✓ | [`.cursor/commands/add-feature-flag.md`](.cursor/commands/add-feature-flag.md) |
-| 42 | ✓ | [`.cursor/commands/add-hosted-key.md`](.cursor/commands/add-hosted-key.md) |
-| 43 | ✓ | [`.cursor/commands/add-integration.md`](.cursor/commands/add-integration.md) |
-| 44 | ✓ | [`.cursor/commands/add-tools.md`](.cursor/commands/add-tools.md) |
-| 45 | ✓ | [`.cursor/commands/add-trigger.md`](.cursor/commands/add-trigger.md) |
-| 46 | ✓ | [`.cursor/commands/babysit.md`](.cursor/commands/babysit.md) |
-| 47 | ✓ | [`.cursor/commands/cleanup.md`](.cursor/commands/cleanup.md) |
-| 48 | ✓ | [`.cursor/commands/council.md`](.cursor/commands/council.md) |
-| 49 | ✓ | [`.cursor/commands/emcn-design-review.md`](.cursor/commands/emcn-design-review.md) |
-| 50 | ✓ | [`.cursor/commands/react-query-best-practices.md`](.cursor/commands/react-query-best-practices.md) |
-| 51 | ✓ | [`.cursor/commands/ship.md`](.cursor/commands/ship.md) |
-| 52 | ✓ | [`.cursor/commands/validate-connector.md`](.cursor/commands/validate-connector.md) |
-| 53 | ✓ | [`.cursor/commands/validate-integration.md`](.cursor/commands/validate-integration.md) |
-| 54 | ✓ | [`.cursor/commands/validate-trigger.md`](.cursor/commands/validate-trigger.md) |
-| 55 | ✓ | [`.cursor/commands/you-might-not-need-a-callback.md`](.cursor/commands/you-might-not-need-a-callback.md) |
-| 56 | ✓ | [`.cursor/commands/you-might-not-need-a-memo.md`](.cursor/commands/you-might-not-need-a-memo.md) |
-| 57 | ✓ | [`.cursor/commands/you-might-not-need-an-effect.md`](.cursor/commands/you-might-not-need-an-effect.md) |
-| 58 | ✓ | [`.cursor/commands/you-might-not-need-state.md`](.cursor/commands/you-might-not-need-state.md) |
-| 59 | ✓ | [`.cursor/rules/constitution.mdc`](.cursor/rules/constitution.mdc) |
-| 60 | ✓ | [`.cursor/rules/emcn-components.mdc`](.cursor/rules/emcn-components.mdc) |
-| 61 | ✓ | [`.cursor/rules/global.mdc`](.cursor/rules/global.mdc) |
-| 62 | ✓ | [`.cursor/rules/landing-seo-geo.mdc`](.cursor/rules/landing-seo-geo.mdc) |
-| 63 | ✓ | [`.cursor/rules/sim-architecture.mdc`](.cursor/rules/sim-architecture.mdc) |
-| 64 | ✓ | [`.cursor/rules/sim-components.mdc`](.cursor/rules/sim-components.mdc) |
-| 65 | ✓ | [`.cursor/rules/sim-hooks.mdc`](.cursor/rules/sim-hooks.mdc) |
-| 66 | ✓ | [`.cursor/rules/sim-imports.mdc`](.cursor/rules/sim-imports.mdc) |
-| 67 | ✓ | [`.cursor/rules/sim-integrations.mdc`](.cursor/rules/sim-integrations.mdc) |
-| 68 | ✓ | [`.cursor/rules/sim-queries.mdc`](.cursor/rules/sim-queries.mdc) |
-| 69 | ✓ | [`.cursor/rules/sim-sandbox.mdc`](.cursor/rules/sim-sandbox.mdc) |
-| 70 | ✓ | [`.cursor/rules/sim-stores.mdc`](.cursor/rules/sim-stores.mdc) |
-| 71 | ✓ | [`.cursor/rules/sim-styling.mdc`](.cursor/rules/sim-styling.mdc) |
-| 72 | ✓ | [`.cursor/rules/sim-testing.mdc`](.cursor/rules/sim-testing.mdc) |
-| 73 | ✓ | [`.cursor/rules/sim-typescript.mdc`](.cursor/rules/sim-typescript.mdc) |
-| 74 | ✓ | [`.cursor/skills/add-hosted-key/SKILL.md`](.cursor/skills/add-hosted-key/SKILL.md) |
-| 75 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 76 | ✓ | [`apps/docs/app/llms.txt/route.ts`](apps/docs/app/llms.txt/route.ts) |
-| 77 | ✓ | [`apps/docs/public/llms.txt`](apps/docs/public/llms.txt) |
-| 78 | ✓ | [`apps/sim/AGENTS.md`](apps/sim/AGENTS.md) |
-| 79 | ✓ | [`apps/sim/app/(landing)/CLAUDE.md`](apps/sim/app/(landing)/CLAUDE.md) |
-| 80 | ✓ | [`apps/sim/app/llms.txt/route.ts`](apps/sim/app/llms.txt/route.ts) |
-| 81 | ✓ | [`apps/sim/blocks/AGENTS.md`](apps/sim/blocks/AGENTS.md) |
-| 82 | ✓ | [`apps/sim/hooks/AGENTS.md`](apps/sim/hooks/AGENTS.md) |
-| 83 | ✓ | [`apps/sim/hooks/queries/AGENTS.md`](apps/sim/hooks/queries/AGENTS.md) |
-| 84 | ✓ | [`apps/sim/public/llms.txt`](apps/sim/public/llms.txt) |
-| 85 | ✓ | [`apps/sim/stores/AGENTS.md`](apps/sim/stores/AGENTS.md) |
-| 86 | ✓ | [`apps/sim/tools/AGENTS.md`](apps/sim/tools/AGENTS.md) |
-| 87 | ✓ | [`apps/sim/triggers/AGENTS.md`](apps/sim/triggers/AGENTS.md) |
-| 88 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 89 | ✓ | [`helm/sim/.claude/skills/sim-helm/SKILL.md`](helm/sim/.claude/skills/sim-helm/SKILL.md) |
-| 90 | ✓ | [`packages/emcn/src/AGENTS.md`](packages/emcn/src/AGENTS.md) |
+| 24 | ✓ | [`.agents/skills/make-interfaces-feel-better/animations.md`](.agents/skills/make-interfaces-feel-better/animations.md) |
+| 25 | ✓ | [`.agents/skills/make-interfaces-feel-better/performance.md`](.agents/skills/make-interfaces-feel-better/performance.md) |
+| 26 | ✓ | [`.agents/skills/make-interfaces-feel-better/SKILL.md`](.agents/skills/make-interfaces-feel-better/SKILL.md) |
+| 27 | ✓ | [`.agents/skills/make-interfaces-feel-better/surfaces.md`](.agents/skills/make-interfaces-feel-better/surfaces.md) |
+| 28 | ✓ | [`.agents/skills/make-interfaces-feel-better/typography.md`](.agents/skills/make-interfaces-feel-better/typography.md) |
+| 29 | ✓ | [`.agents/skills/memory-load-check/SKILL.md`](.agents/skills/memory-load-check/SKILL.md) |
+| 30 | ✓ | [`.agents/skills/react-query-best-practices/SKILL.md`](.agents/skills/react-query-best-practices/SKILL.md) |
+| 31 | ✓ | [`.agents/skills/ship/SKILL.md`](.agents/skills/ship/SKILL.md) |
+| 32 | ✓ | [`.agents/skills/validate-connector/agents/openai.yaml`](.agents/skills/validate-connector/agents/openai.yaml) |
+| 33 | ✓ | [`.agents/skills/validate-connector/SKILL.md`](.agents/skills/validate-connector/SKILL.md) |
+| 34 | ✓ | [`.agents/skills/validate-integration/agents/openai.yaml`](.agents/skills/validate-integration/agents/openai.yaml) |
+| 35 | ✓ | [`.agents/skills/validate-integration/SKILL.md`](.agents/skills/validate-integration/SKILL.md) |
+| 36 | ✓ | [`.agents/skills/validate-model/agents/openai.yaml`](.agents/skills/validate-model/agents/openai.yaml) |
+| 37 | ✓ | [`.agents/skills/validate-model/SKILL.md`](.agents/skills/validate-model/SKILL.md) |
+| 38 | ✓ | [`.agents/skills/validate-trigger/SKILL.md`](.agents/skills/validate-trigger/SKILL.md) |
+| 39 | ✓ | [`.agents/skills/you-might-not-need-a-callback/SKILL.md`](.agents/skills/you-might-not-need-a-callback/SKILL.md) |
+| 40 | ✓ | [`.agents/skills/you-might-not-need-a-memo/SKILL.md`](.agents/skills/you-might-not-need-a-memo/SKILL.md) |
+| 41 | ✓ | [`.agents/skills/you-might-not-need-an-effect/SKILL.md`](.agents/skills/you-might-not-need-an-effect/SKILL.md) |
+| 42 | ✓ | [`.agents/skills/you-might-not-need-state/SKILL.md`](.agents/skills/you-might-not-need-state/SKILL.md) |
+| 43 | ✓ | [`.claude/skills/add-settings-page/SKILL.md`](.claude/skills/add-settings-page/SKILL.md) |
+| 44 | ✓ | [`.cursor/commands/add-block-preview.md`](.cursor/commands/add-block-preview.md) |
+| 45 | ✓ | [`.cursor/commands/add-block.md`](.cursor/commands/add-block.md) |
+| 46 | ✓ | [`.cursor/commands/add-connector.md`](.cursor/commands/add-connector.md) |
+| 47 | ✓ | [`.cursor/commands/add-feature-flag.md`](.cursor/commands/add-feature-flag.md) |
+| 48 | ✓ | [`.cursor/commands/add-hosted-key.md`](.cursor/commands/add-hosted-key.md) |
+| 49 | ✓ | [`.cursor/commands/add-integration.md`](.cursor/commands/add-integration.md) |
+| 50 | ✓ | [`.cursor/commands/add-tools.md`](.cursor/commands/add-tools.md) |
+| 51 | ✓ | [`.cursor/commands/add-trigger.md`](.cursor/commands/add-trigger.md) |
+| 52 | ✓ | [`.cursor/commands/babysit.md`](.cursor/commands/babysit.md) |
+| 53 | ✓ | [`.cursor/commands/cleanup.md`](.cursor/commands/cleanup.md) |
+| 54 | ✓ | [`.cursor/commands/council.md`](.cursor/commands/council.md) |
+| 55 | ✓ | [`.cursor/commands/emcn-design-review.md`](.cursor/commands/emcn-design-review.md) |
+| 56 | ✓ | [`.cursor/commands/react-query-best-practices.md`](.cursor/commands/react-query-best-practices.md) |
+| 57 | ✓ | [`.cursor/commands/ship.md`](.cursor/commands/ship.md) |
+| 58 | ✓ | [`.cursor/commands/validate-connector.md`](.cursor/commands/validate-connector.md) |
+| 59 | ✓ | [`.cursor/commands/validate-integration.md`](.cursor/commands/validate-integration.md) |
+| 60 | ✓ | [`.cursor/commands/validate-trigger.md`](.cursor/commands/validate-trigger.md) |
+| 61 | ✓ | [`.cursor/commands/you-might-not-need-a-callback.md`](.cursor/commands/you-might-not-need-a-callback.md) |
+| 62 | ✓ | [`.cursor/commands/you-might-not-need-a-memo.md`](.cursor/commands/you-might-not-need-a-memo.md) |
+| 63 | ✓ | [`.cursor/commands/you-might-not-need-an-effect.md`](.cursor/commands/you-might-not-need-an-effect.md) |
+| 64 | ✓ | [`.cursor/commands/you-might-not-need-state.md`](.cursor/commands/you-might-not-need-state.md) |
+| 65 | ✓ | [`.cursor/rules/constitution.mdc`](.cursor/rules/constitution.mdc) |
+| 66 | ✓ | [`.cursor/rules/emcn-components.mdc`](.cursor/rules/emcn-components.mdc) |
+| 67 | ✓ | [`.cursor/rules/global.mdc`](.cursor/rules/global.mdc) |
+| 68 | ✓ | [`.cursor/rules/landing-seo-geo.mdc`](.cursor/rules/landing-seo-geo.mdc) |
+| 69 | ✓ | [`.cursor/rules/sim-architecture.mdc`](.cursor/rules/sim-architecture.mdc) |
+| 70 | ✓ | [`.cursor/rules/sim-components.mdc`](.cursor/rules/sim-components.mdc) |
+| 71 | ✓ | [`.cursor/rules/sim-hooks.mdc`](.cursor/rules/sim-hooks.mdc) |
+| 72 | ✓ | [`.cursor/rules/sim-imports.mdc`](.cursor/rules/sim-imports.mdc) |
+| 73 | ✓ | [`.cursor/rules/sim-integrations.mdc`](.cursor/rules/sim-integrations.mdc) |
+| 74 | ✓ | [`.cursor/rules/sim-queries.mdc`](.cursor/rules/sim-queries.mdc) |
+| 75 | ✓ | [`.cursor/rules/sim-sandbox.mdc`](.cursor/rules/sim-sandbox.mdc) |
+| 76 | ✓ | [`.cursor/rules/sim-stores.mdc`](.cursor/rules/sim-stores.mdc) |
+| 77 | ✓ | [`.cursor/rules/sim-styling.mdc`](.cursor/rules/sim-styling.mdc) |
+| 78 | ✓ | [`.cursor/rules/sim-testing.mdc`](.cursor/rules/sim-testing.mdc) |
+| 79 | ✓ | [`.cursor/rules/sim-typescript.mdc`](.cursor/rules/sim-typescript.mdc) |
+| 80 | ✓ | [`.cursor/skills/add-hosted-key/SKILL.md`](.cursor/skills/add-hosted-key/SKILL.md) |
+| 81 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 82 | ✓ | [`apps/docs/app/llms.txt/route.ts`](apps/docs/app/llms.txt/route.ts) |
+| 83 | ✓ | [`apps/docs/public/llms.txt`](apps/docs/public/llms.txt) |
+| 84 | ✓ | [`apps/sim/AGENTS.md`](apps/sim/AGENTS.md) |
+| 85 | ✓ | [`apps/sim/app/(landing)/CLAUDE.md`](apps/sim/app/(landing)/CLAUDE.md) |
+| 86 | ✓ | [`apps/sim/app/llms.txt/route.ts`](apps/sim/app/llms.txt/route.ts) |
+| 87 | ✓ | [`apps/sim/blocks/AGENTS.md`](apps/sim/blocks/AGENTS.md) |
+| 88 | ✓ | [`apps/sim/hooks/AGENTS.md`](apps/sim/hooks/AGENTS.md) |
+| 89 | ✓ | [`apps/sim/hooks/queries/AGENTS.md`](apps/sim/hooks/queries/AGENTS.md) |
+| 90 | ✓ | [`apps/sim/public/llms.txt`](apps/sim/public/llms.txt) |
+| 91 | ✓ | [`apps/sim/stores/AGENTS.md`](apps/sim/stores/AGENTS.md) |
+| 92 | ✓ | [`apps/sim/tools/AGENTS.md`](apps/sim/tools/AGENTS.md) |
+| 93 | ✓ | [`apps/sim/triggers/AGENTS.md`](apps/sim/triggers/AGENTS.md) |
+| 94 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 95 | ✓ | [`helm/sim/.claude/skills/sim-helm/SKILL.md`](helm/sim/.claude/skills/sim-helm/SKILL.md) |
+| 96 | ✓ | [`packages/emcn/src/AGENTS.md`](packages/emcn/src/AGENTS.md) |
 
 ---
 

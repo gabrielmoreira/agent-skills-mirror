@@ -10,7 +10,7 @@ OmniStudio components form a directed graph where each component type can refere
 
 ## Dependency Direction Summary
 
-```
+```text
 OmniScript ──→ Integration Procedure (via IP Action element)
 OmniScript ──→ Data Mapper (via DataRaptor Action element)
 OmniScript ──→ OmniScript (via embedded OmniScript element)
@@ -206,7 +206,7 @@ Integration Procedures use the same element types as OmniScripts but are filtere
 
 An Integration Procedure can call another Integration Procedure, creating a chain:
 
-```
+```text
 IP: OrderValidation
   └── IP Action → IP: CustomerLookup
        └── DR Action → DM: CustomerExtract
@@ -322,7 +322,7 @@ Each `OmniDataTransformItem` (Core) or `DRMapItem__c` (Vlocity) record contains:
 
 ### Extract Type Data Mapper Example
 
-```
+```text
 DM: AccountExtract (Type: Extract)
 ├── Item 1: InputObjectName = "Account"
 │   InputFieldName = "Name"
@@ -339,7 +339,7 @@ Dependencies: Account (read), Contact (read)
 
 ### Load Type Data Mapper Example
 
-```
+```text
 DM: OrderCreate (Type: Load)
 ├── Item 1: OutputObjectName = "Order"
 │   InputFieldName = "OrderData.accountId"
@@ -355,7 +355,7 @@ Dependencies: Order (write), OrderItem (write)
 
 Transform type Data Mappers do not reference Salesforce objects directly — they map between data structures. They have no sObject dependencies but may participate in a chain:
 
-```
+```text
 OmniScript → DR Extract (reads Account) → DR Transform (reshapes data) → DR Load (writes CustomObj__c)
 ```
 
@@ -373,7 +373,7 @@ Circular references happen when component A depends on component B, which direct
 
 ### Detection Algorithm
 
-```
+```javascript
 function detectCircularDependencies(graph):
     cycles = []
     for each node N in graph:
@@ -402,7 +402,7 @@ function dfs(node, visited, path, graph, cycles):
 
 When a cycle is detected, report it clearly:
 
-```
+```text
 CIRCULAR DEPENDENCY DETECTED:
   OS:editAccount → IP:validateAccount → OS:editAccount
 
@@ -421,7 +421,7 @@ a termination condition.
 
 ### Step-by-Step Process
 
-```
+```text
 1. DETECT namespace (see namespace-guide.md)
 
 2. QUERY all container objects:
@@ -465,7 +465,7 @@ a termination condition.
 
 To answer "what breaks if I change Data Mapper X?", reverse the dependency direction:
 
-```
+```text
 Given: DM:AccountExtract
 
 Direct dependents (components that reference this DM):

@@ -90,7 +90,7 @@ When finishing, report in this order:
 
 Suggested shape — use `references/soql-syntax-reference.md` for exact syntax:
 
-```
+```text
 Query goal: <summary>
 Query: <soql or sosl>
 Design: <relationship / aggregate / filter choices>

@@ -3319,7 +3319,29 @@ function fontFaceForText(fontFamily, text = '') {
     const cjk = families.find(isCjkFontFamily);
     if (cjk) return cjk;
   }
-  return families[0] || 'Arial';
+  return pptxSafeFontFace(families[0] || 'Arial');
+}
+
+// 把主题的 web 字体(Google Fonts,浏览器里由 @font-face/woff2 提供)映射成
+// Windows/macOS/WPS 都自带的近似字体再写入 PPTX。原名写入时,没有安装这些字体的
+// 机器(尤其 WPS/Office 中文版)会做不可控的字体替换,真实用户案例(issue #6)里
+// 数字被替换成几何符号乱码。中文字体不在此映射:CJK 缺字回退由 charset 驱动,行为
+// 成熟可靠。注意 pptFontScale/pptTextYOffset 等度量启发式匹配的是 fontStack(含原
+// style.fontFamily),不受该映射影响。
+const PPTX_SAFE_FONT_MAP = [
+  [/^Anton$/i, 'Impact'],
+  [/^(Space Mono|IBM Plex Mono|JetBrains Mono|SFMono.*|ui-monospace|monospace|Menlo|Consolas)$/i, 'Courier New'],
+  [/^(Newsreader.*|serif)$/i, 'Georgia'],
+  [/^Caveat$/i, 'Georgia'],
+  [/^(Archivo.*|Space Grotesk|IBM Plex Sans|Inter|Arimo|sans-serif|system-ui|-apple-system)$/i, 'Arial'],
+];
+
+function pptxSafeFontFace(family) {
+  const name = String(family || '').trim();
+  for (const [pattern, safe] of PPTX_SAFE_FONT_MAP) {
+    if (pattern.test(name)) return safe;
+  }
+  return name || 'Arial';
 }
 
 function isCjkFontFamily(value) {
@@ -3409,3 +3431,5 @@ function clampColor(value) {
 function round(value) {
   return Math.round(value * 10000) / 10000;
 }
+
+export const __pptxFontTestables = { pptxSafeFontFace };

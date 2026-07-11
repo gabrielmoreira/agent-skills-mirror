@@ -107,8 +107,6 @@ Next step: <act / retrieve / follow-up>
 
 ## References
 
-- [README.md](README.md)
 - [../data360-orchestrate/assets/definitions/calculated-insight.template.json](../data360-orchestrate/assets/definitions/calculated-insight.template.json)
 - [../data360-orchestrate/assets/definitions/segment.template.json](../data360-orchestrate/assets/definitions/segment.template.json)
 - [../data360-orchestrate/references/feature-readiness.md](../data360-orchestrate/references/feature-readiness.md)
-- [../data360-orchestrate/UPSTREAM.md](../data360-orchestrate/UPSTREAM.md)

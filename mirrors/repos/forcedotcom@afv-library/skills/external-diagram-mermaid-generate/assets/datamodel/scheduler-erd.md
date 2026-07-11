@@ -112,7 +112,7 @@ flowchart LR
 ## Key Concepts
 
 ### Scheduling Flow
-```
+```text
 Customer (Contact) → WorkType → ServiceAppointment ← ServiceResource
                                         ↓
                                ServiceTerritory
@@ -184,7 +184,7 @@ flowchart LR
 
 ## ASCII Fallback
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  SALESFORCE SCHEDULER DATA MODEL (L→R)                                       │
 │  Legend: LK = Lookup (-->), MD = Master-Detail (==>)                        │

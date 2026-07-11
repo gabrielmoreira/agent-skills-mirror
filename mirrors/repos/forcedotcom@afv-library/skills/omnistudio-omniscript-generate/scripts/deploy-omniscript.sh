@@ -9,6 +9,14 @@ TYPE="${2:?}"
 SUBTYPE="${3:?}"
 ORG="${4:?}"
 
+# Validate inputs to prevent SOQL injection
+for var in "$TYPE" "$SUBTYPE"; do
+  if [[ ! "$var" =~ ^[a-zA-Z0-9_\ ]+$ ]]; then
+    echo "ERROR: Invalid input '$var'. Only alphanumeric, underscores, and spaces allowed." >&2
+    exit 1
+  fi
+done
+
 echo "Step 1: Verify prerequisites — check org auth"
 sf org display -o "${ORG}" || { echo "ERROR: Org '${ORG}' is not authenticated. Run: sf org login web --alias ${ORG}"; exit 1; }
 

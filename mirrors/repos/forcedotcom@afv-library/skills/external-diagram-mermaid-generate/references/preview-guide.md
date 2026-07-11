@@ -6,7 +6,7 @@ After generating the diagram, offer the user a localhost preview for real-time i
 ## Start Preview
 
 1. Save Mermaid code to temporary file:
-   ```
+   ```text
    Write: /tmp/mermaid-preview.mmd
    [Mermaid code content]
    ```

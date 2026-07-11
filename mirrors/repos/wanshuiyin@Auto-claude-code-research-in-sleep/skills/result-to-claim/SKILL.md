@@ -109,11 +109,12 @@ gate DRIVES, it does not ACQUIT).
 
 ### Step 2: Codex Judgment
 
-Send the collected results to Codex for objective evaluation:
+Send the collected results to Codex for objective evaluation. Include ONLY claims that passed the Step 1.5 pre-check — claims already terminally rejected (`evidence_not_found`) keep their deterministic verdict and are NOT re-litigated here:
 
 ```
 mcp__codex__codex:
-  config: {"model_reasoning_effort": "xhigh"}
+  model: gpt-5.6-sol
+  config: {"model_reasoning_effort": "ultra"}
   prompt: |
     RESULT-TO-CLAIM EVALUATION
 
@@ -296,7 +297,7 @@ if research-wiki/ exists:
 - Do not inflate claims beyond what the data supports. If Codex says "partial", do not round up to "yes".
 - A single positive result on one dataset does not support a general claim. Be honest about scope.
 - If `confidence` is low, treat the judgment as inconclusive and add experiments rather than committing to a claim.
-- If Codex MCP is unavailable (call fails), CC makes its own judgment and marks it `[pending Codex review]` — do not block the pipeline.
+- **Fail closed if the reviewer is unavailable.** If the Codex call fails, first walk the capability fallback chain in `shared-references/reviewer-routing.md` (`gpt-5.6-sol`+`ultra` → `gpt-5.6-sol`+`xhigh` → `gpt-5.5`+`xhigh`, capability errors only). If no allowed pair succeeds: write `CLAIMS_FROM_RESULTS.md` containing ONLY the first line `verdict: REVIEW_UNAVAILABLE` (a machine-checkable gate for pipeline callers), record the same in findings.md, and STOP — CC never substitutes its own claim judgment (a loop can drive, never acquit; `acceptance-gate.md`). Downstream steps (wiki `add_experiment` edges, ablation-planner, paper claims) must not consume a run without a Codex verdict. Exception: the deterministic evidence pre-check (Step 1.5) may still terminally mark a claim `claim_supported: no` for hallucinated evidence — a deterministic rejection needs no reviewer; only SUPPORTIVE or ambiguous outcomes require one.
 - Always record the verdict and reasoning in findings.md, regardless of outcome.
 
 ## Review Tracing

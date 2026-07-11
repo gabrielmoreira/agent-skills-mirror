@@ -43,7 +43,7 @@ Convert a VlocityOpenInterface2 implementation (`MyCustomRemoteClass`) to `Syste
   - `switch on action` with `when else` throwing `IndustriesCallableException`
 
 - **Response envelope:**
-  ```
+  ```json
   { success, data: { total }, errors }
   ```
 

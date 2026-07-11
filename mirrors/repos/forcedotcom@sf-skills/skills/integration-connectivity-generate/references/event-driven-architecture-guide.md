@@ -60,7 +60,7 @@ The Pub/Sub API is the **recommended mechanism for external consumers** subscrib
 
 ### External Consumer Architecture
 
-```
+```text
 Salesforce Org
   └── Platform Event / CDC Event
         └── Pub/Sub API (gRPC endpoint)
@@ -106,7 +106,7 @@ Salesforce Event Relays forward Platform Events to AWS EventBridge, enabling clo
 
 ### Architecture
 
-```
+```text
 Salesforce Platform Event
   └── Event Relay Definition (Metadata)
         └── AWS EventBridge Partner Event Source
@@ -156,7 +156,7 @@ For organizations needing long-retention, high-throughput event streaming beyond
 
 ### Integration Pattern
 
-```
+```text
 Salesforce → Platform Event → Apex/Flow subscriber → Heroku Kafka producer
                                                         └── Consumer Group A (analytics)
                                                         └── Consumer Group B (data lake)
@@ -187,7 +187,7 @@ For scenarios requiring high-volume data push to external systems:
 
 ### Recommended Pattern: Middleware + Platform Events
 
-```
+```text
 Salesforce Record Change
   └── After-Save Flow / Trigger
         └── Publish Platform Event (lightweight payload)
@@ -255,7 +255,7 @@ List<EventBusSubscriber> subs = [
 
 ## Summary: EDA Decision Tree
 
-```
+```text
 Need real-time data sync?
   ├── YES → Is consumer external?
   │    ├── YES → Pub/Sub API + Platform Events (or CDC for record changes)

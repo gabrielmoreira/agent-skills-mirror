@@ -114,7 +114,7 @@ flowchart LR
 | Omitted | Excluded from forecast |
 
 ### Forecast Rollup Hierarchy
-```
+```text
 CEO
  └── VP Sales
       ├── Regional Manager 1
@@ -182,7 +182,7 @@ flowchart LR
 
 ## ASCII Fallback
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  COLLABORATIVE FORECASTS DATA MODEL (L→R)                                    │
 │  Legend: LK = Lookup (-->), MD = Master-Detail (==>)                        │

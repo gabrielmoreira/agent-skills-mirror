@@ -8,7 +8,7 @@ Real-world examples of using the sf-diagram skill.
 ## Example 1: OAuth Flow Diagram
 
 ### Request
-```
+```text
 "Create a JWT Bearer OAuth flow diagram for our CI/CD pipeline integration"
 ```
 
@@ -60,7 +60,7 @@ sequenceDiagram
 ```
 
 #### ASCII Fallback
-```
+```text
 ┌───────────────────────┐     ┌────────────────────┐
 │   GitHub Actions      │     │     Salesforce     │
 │   (Private Key)       │     │   (Certificate)    │
@@ -81,7 +81,7 @@ sequenceDiagram
 ```
 
 ### Score
-```
+```yaml
 Score: 72/80 ⭐⭐⭐⭐⭐ Excellent
 ├─ Accuracy: 20/20     ✓ All JWT Bearer steps correct
 ├─ Clarity: 18/20      ✓ Clear labels, good flow
@@ -95,7 +95,7 @@ Score: 72/80 ⭐⭐⭐⭐⭐ Excellent
 ## Example 2: Data Model ERD
 
 ### Request
-```
+```text
 "Create an ERD for our custom Invoice system with Invoice__c, Invoice_Line_Item__c, and relationships to Account and Product"
 ```
 
@@ -168,7 +168,7 @@ erDiagram
 ```
 
 #### ASCII Fallback
-```
+```text
 ┌─────────────────────────┐       ┌─────────────────────────┐
 │        ACCOUNT          │       │        CONTACT          │
 ├─────────────────────────┤       ├─────────────────────────┤
@@ -214,7 +214,7 @@ erDiagram
 ```
 
 ### Score
-```
+```yaml
 Score: 74/80 ⭐⭐⭐⭐⭐ Excellent
 ├─ Accuracy: 20/20     ✓ All relationships correct
 ├─ Clarity: 19/20      ✓ Clear field annotations
@@ -228,7 +228,7 @@ Score: 74/80 ⭐⭐⭐⭐⭐ Excellent
 ## Example 3: Integration Sequence
 
 ### Request
-```
+```text
 "Diagram our real-time Order sync from Salesforce to SAP using Platform Events"
 ```
 
@@ -302,7 +302,7 @@ sequenceDiagram
 ```
 
 ### Score
-```
+```yaml
 Score: 70/80 ⭐⭐⭐⭐ Very Good
 ├─ Accuracy: 19/20     ✓ Platform Event pattern correct
 ├─ Clarity: 18/20      ✓ Good error handling shown
@@ -316,7 +316,7 @@ Score: 70/80 ⭐⭐⭐⭐ Very Good
 ## Example 4: Combined Request
 
 ### Request
-```
+```text
 "I need to document our partner portal authentication.
 Create: 1) The OAuth flow for partner login, 2) The data model showing Partner Account, Portal User, and Opportunities they can see"
 ```

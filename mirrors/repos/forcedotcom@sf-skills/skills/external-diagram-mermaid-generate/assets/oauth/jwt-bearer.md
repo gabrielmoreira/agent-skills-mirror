@@ -82,7 +82,7 @@ sequenceDiagram
 
 ## ASCII Fallback Template
 
-```
+```text
 ┌───────────────────────┐     ┌────────────────────┐
 │     Server/CI/CD      │     │     Salesforce     │
 │    (Private Key)      │     │   (Certificate)    │
@@ -145,7 +145,7 @@ sequenceDiagram
 ```
 
 ### Signature
-```
+```text
 RS256(
   base64URLEncode(header) + "." + base64URLEncode(payload),
   privateKey

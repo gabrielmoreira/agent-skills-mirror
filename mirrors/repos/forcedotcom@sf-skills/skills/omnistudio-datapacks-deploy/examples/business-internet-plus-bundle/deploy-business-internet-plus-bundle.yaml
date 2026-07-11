@@ -1,5 +1,5 @@
 projectPath: ../../../../
-expansionPath: skills/modeling-omnistudio-epc-catalog/examples/business-internet-plus-bundle
+expansionPath: skills/omnistudio-epc-catalog-generate/examples/business-internet-plus-bundle
 
 # Deterministic scope for this validation example.
 manifest:

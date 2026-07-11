@@ -47,6 +47,8 @@ not split reports into issue/PR subtrees.
 
 ## Safety Rules
 
+- Never disable or pause the live ClawSweeper sweep workflow unless Peter
+  explicitly asks for that exact action.
 - Do not run live apply/close commands unless Peter explicitly asks.
 - For apply-path repros, copy one report into a temp `items/` dir and pass
   `--skip-dashboard`, `--item-number`, and a temp `--closed-dir`.

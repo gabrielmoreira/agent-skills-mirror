@@ -157,7 +157,7 @@ flowchart LR
 
 ## ASCII Fallback
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  PARTY MODEL (INDUSTRY CLOUD) DATA MODEL (L→R)                              │
 │  Legend: LK = Lookup (-->), MD = Master-Detail (==>)                        │

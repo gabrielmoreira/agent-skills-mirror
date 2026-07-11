@@ -217,7 +217,7 @@ sequenceDiagram
 
 ## ASCII Fallback Template - Outbound Integration
 
-```
+```text
 ┌───────────────┐  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐
 │    Trigger    │  │   Queueable   │  │     Named     │  │   External    │
 │               │  │               │  │   Credential  │  │     API       │

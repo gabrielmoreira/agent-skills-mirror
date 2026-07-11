@@ -36,4 +36,3 @@ sf data360 data-action-target list -o myorg 2>/dev/null
 - [../data360-orchestrate/assets/definitions/data-action-target.template.json](../data360-orchestrate/assets/definitions/data-action-target.template.json)
 - [../data360-orchestrate/assets/definitions/data-action.template.json](../data360-orchestrate/assets/definitions/data-action.template.json)
 - [../data360-orchestrate/references/plugin-setup.md](../data360-orchestrate/references/plugin-setup.md)
-- [CREDITS.md](CREDITS.md)

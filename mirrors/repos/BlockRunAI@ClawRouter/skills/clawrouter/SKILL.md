@@ -135,7 +135,7 @@ Rules handle ~~80% of requests in <1ms. Only ambiguous queries hit the LLM class
 
 ## Available Models
 
-55+ models including: gpt-5.5, gpt-5.4, gpt-4o, o3, claude-opus-4.8, claude-opus-4.7, claude-opus-4.6, claude-opus-4.5, claude-sonnet-5, claude-sonnet-4.6, gemini-3.1-pro, gemini-2.5-flash, deepseek-v4-pro, deepseek-chat, grok-4.3, grok-build-0.1, kimi-k2.7, kimi-k2.6, and 8 free NVIDIA models (gpt-oss-120b [default], gpt-oss-20b, mistral-large-3-675b, qwen3.5-122b-a10b, qwen3-next-80b-a3b-instruct, llama-4-maverick, seed-oss-36b [coding], nemotron-3-nano-omni-30b-a3b-reasoning [vision]).
+55+ models including: gpt-5.6-terra [balanced, stable default], gpt-5.6-sol [flagship], gpt-5.6-luna [cost-efficient], gpt-5.5, gpt-5.4, gpt-4o, o3, claude-opus-4.8, claude-opus-4.7, claude-opus-4.6, claude-opus-4.5, claude-sonnet-5, claude-sonnet-4.6, gemini-3.1-pro, gemini-2.5-flash, deepseek-v4-pro, deepseek-chat, grok-4.3, grok-build-0.1, kimi-k2.7, kimi-k2.6, and 8 free NVIDIA models (gpt-oss-120b [default], gpt-oss-20b, mistral-large-3-675b, qwen3.5-122b-a10b, qwen3-next-80b-a3b-instruct, llama-4-maverick, seed-oss-36b [coding], nemotron-3-nano-omni-30b-a3b-reasoning [vision]).
 
 ## Built-in Agent Tools
 
@@ -201,6 +201,30 @@ Full prediction-market toolbox spanning **Polymarket, Kalshi, Limitless, Opinion
 | `blockrun_predexon_endpoint_call`    | Catch-all for the remaining 49 endpoints — orderbooks, candlesticks, top-holders, UMA oracle, wallet identity/cluster, Kalshi/Limitless/Opinion/Predict.Fun, dFlow, Binance Futures, cross-venue search, sports, canonical markets. Takes `path` + optional `method`/`query`/`body`. | $0.001 / $0.005 / call |
 
 Pricing: `$0.001` per market-data call, `$0.005` per analytics / search / wallet call. See the `predexon` skill for the full endpoint reference.
+
+### Prediction-Market Trading (Polymarket) — REAL MONEY
+
+Beyond reading odds, ClawRouter can **place, manage, and redeem real bets** on
+Polymarket (CLOB V2, Polygon) via the `blockrun_polymarket` tool. Unlike every
+other tool here it is **not** an HTTP-proxy wrapper — it runs a local trading
+engine that signs CLOB orders (EIP-712) with the SAME ClawRouter wallet that
+pays for LLM calls, and posts them to Polymarket (through BlockRun's Tokyo
+egress by default, so it works out of the box in geoblocked regions).
+
+| Tool                  | What it does                                                                                                 | Cost                       |
+| --------------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------- |
+| `blockrun_polymarket` | `action:` setup / fund / buy / sell / cancel / orders / positions / redeem / withdraw. One multiplexed tool. | Free tool; bets spend pUSD |
+
+- **Funds**: bets spend **pUSD** in a gasless Polygon deposit-wallet vault
+  derived from your key; `action:"fund"` moves your **Base USDC → pUSD** gaslessly
+  (x402, $0.01 fee, non-custodial). Winnings `withdraw` back to native USDC on Base.
+- **Safety**: `confirm:true` is **hard-required** to place/sign anything (omit →
+  dry-run preview); per-order cap `POLYMARKET_MAX_BET_USD` (default $25) + optional
+  `POLYMARKET_MAX_SESSION_USD`. Bets do NOT draw from the x402 API budget.
+- **Zero config**: no Polymarket account, API keys, or gas token — first `setup`
+  bootstraps everything from your wallet. Discover token IDs with the
+  `blockrun_predexon_*` data tools first. See the **`polymarket-trading` skill**
+  for the golden rules and end-to-end flow.
 
 ### Crypto Data (Surf) — skill-only integration
 

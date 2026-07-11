@@ -1,7 +1,7 @@
 ---
 name: experience-cms-brand-apply
 description: "Extracts, retrieves, and applies CMS brand guidelines (voice, tone, style, colors, typography) to generated content. Use this skill ANY TIME a user request involves branding, brand voice, brand tone, brand guidelines, brand identity, brand styling, or applying a brand to content. Triggers for requests like \"apply my brand\", \"use our brand voice\", \"match our brand guidelines\", \"find my brand\", \"search for brand\", \"get brand instructions\", \"apply brand tone\". Handles the full workflow: searching for brands in Salesforce CMS, extracting brand instructions, and applying brand voice/tone/guidelines to generated content. Does not apply to media/image search (use experience-content-media-search skill), logo search, or creating new brand definitions."
-compatibility: "Requires get_brand_instructions and/or search_brands MCP tools"
+compatibility: "Requires get_brand_instructions and/or search_media_cms_channels MCP tools"
 metadata:
   version: "1.0"
 ---
@@ -44,7 +44,7 @@ When a user requests branded content:
 
 Copy this checklist and track your progress:
 
-```
+```text
 CMS Branding Progress:
 - [ ] Step 1: Determine if brand is already identified or needs search
 - [ ] Step 2: Search for brands (if needed) and present options to user
@@ -63,35 +63,63 @@ Check if the user has already specified which brand to use:
 
 ## Step 2: Search for Brands
 
-**Tool:** `search_brands`
+**Tool:** `search_media_cms_channels`
+
+Brands are stored as CMS content of type `sfdc_cms__brand`. Search for them by
+querying the CMS channels with the brand content type.
+
+> **Note:** Brand content search (`contentTypeFqn=sfdc_cms__brand`) is explicitly
+> excluded from the `experience-content-media-search` skill's scope. Calling
+> `search_media_cms_channels` directly here is correct and intentional — do not
+> route brand search through `experience-content-media-search`.
 
 **Process:**
 
-1. **Determine search query** — Use the user's description, company name, or a general keyword
-2. **Build the request:**
+1. **Determine search query** — Use the user's keyword. Brand search matches on
+   brand title and description.
+2. **Build the request** with the fixed brand-search input contract:
 
 ```json
 {
   "inputs": [{
-    "searchQuery": "keyword or brand name"
+    "searchKeyword": "keyword",
+    "searchLanguage": "<detected_language>",
+    "channelType": "PublicUnauthenticated",
+    "contentTypeFqn": "sfdc_cms__brand",
+    "pageOffset": 0,
+    "searchLimit": 25
   }]
 }
 ```
 
-3. **Call `search_brands`** with the query
-4. **Parse the response** — Extract brand results:
+   Field rules:
+   - `searchKeyword` — the user's keyword input
+   - `searchLanguage` — auto-detect from the user's input; if unsure, use `en_US`
+   - `channelType` — always `PublicUnauthenticated` (brand content is delivered
+     via the public CMS channel; authenticated-channel brand search is not
+     supported by this tool)
+   - `contentTypeFqn` — always `sfdc_cms__brand`
+   - `pageOffset` — `0`
+   - `searchLimit` — `25`
+
+3. **Call `search_media_cms_channels`** with the request
+4. **Parse the response** — A brand result has an ID starting with **`9Ps`**. Extract:
    - `managedContentId` — Unique ID (use this for extraction in Step 3)
    - `managedContentKey` — Content key identifier
    - `title` — Brand display name
-   - `contentUrl` — URL to the brand content
-   - `totalResults` — Number of brands found
+   - `contentUrl` — URL to the brand content, found under
+     `managedContentChannelDeliveryDetails[0].contentUrl`
+   - `pageNumber`, `pageSize`, `totalResults` — pagination summary
 
 ### Presenting Brand Results
 
-**If multiple brands found**, use `ask_followup_question` to present options:
+**If brands found**, first show a summary line, then use `ask_followup_question`
+to present options:
 
-```
-I found [N] brands in your CMS. Which one should I apply?
+```text
+Showing [N] of [totalResults] total results (page [pageNumber], page size [pageSize]).
+
+Which brand should I apply?
 
 1. [Brand Title 1]
 2. [Brand Title 2]
@@ -100,15 +128,18 @@ I found [N] brands in your CMS. Which one should I apply?
 Which brand would you like to use?
 ```
 
+When the user replies with their selection, do NOT perform another search —
+proceed immediately to Step 3.
+
 **If one brand found**, confirm with the user:
 
-```
+```text
 I found the brand "[Brand Title]". Should I apply this brand's guidelines to the content?
 ```
 
 **If no brands found:**
 
-```
+```text
 No brands found in Salesforce CMS. To use branding:
 1. Create a brand in Salesforce CMS (Content Type: sfdc_cms__brand)
 2. Provide brand guidelines directly in this conversation
@@ -152,7 +183,7 @@ The extracted brand instructions typically include:
 
 | Error | Response |
 |---|---|
-| `search_brands` unavailable | "Brand search is unavailable. Please provide your brand name or guidelines directly." |
+| `search_media_cms_channels` unavailable | "Brand search is unavailable. Please provide your brand name or guidelines directly." |
 | `get_brand_instructions` unavailable | "Cannot retrieve brand instructions. Please share your brand guidelines in this conversation and I'll apply them manually." |
 | Org lacks Vibes branding | "CMS branding is not enabled for this org. Contact your admin to enable the Agentforce Vibes branding feature." |
 | Permission denied | "You don't have permission to access CMS brands. Ensure you have Managed Content Authoring permission." |

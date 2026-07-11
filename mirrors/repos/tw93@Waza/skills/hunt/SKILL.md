@@ -172,6 +172,8 @@ If adding logs changes the behavior, treat that as evidence of a timing, lifecyc
 | Worked when launched from app, broke when opened via file association / drag-drop / deep link / external proxy | Reproduce using the exact entry point the user described. App-internal init differs from cold-launch-with-file init; state may not be ready when the document arrives. |
 | Build passed but UI still looked wrong | Move up the Runtime Evidence Ladder and verify the real rendered surface or artifact. |
 | Fix matched the reporter's setup but changed nothing for everyone else, or regressed the default | A defect report is evidence, not the full scope. State whether the fix changes the default experience for all users or only the reporter's configuration, and prefer fixing the default path. |
+| Changed the algorithm but the output stayed wrong | The reader may be hitting persisted output written by the old code (scan results, analysis cache, snapshot with a TTL). Changing generated-then-persisted data requires invalidating or version-bumping the old cache in the same change; before re-diagnosing, confirm the runtime is not reading stale data. |
+| Reporter reproduces, local machine is fine, agent patched blind | Produce one copy-paste diagnostic command first (single command, silent collection, one output file, a privacy note), diagnose from the returned evidence, then fix. |
 
 ## Rendering Bug Mode
 

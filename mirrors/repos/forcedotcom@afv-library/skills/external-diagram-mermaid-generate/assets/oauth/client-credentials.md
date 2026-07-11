@@ -71,7 +71,7 @@ sequenceDiagram
 
 ## ASCII Fallback Template
 
-```
+```text
 ┌───────────────────────┐     ┌────────────────────┐
 │    Service/Backend    │     │     Salesforce     │
 │   (client_id/secret)  │     │   (Auth Server)    │

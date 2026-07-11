@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Credential Setup Suggestion Hook for building-sf-integrations
+Credential Setup Suggestion Hook for integration-connectivity-generate
 
 Detects when credential metadata files are created and suggests
 running the appropriate automation scripts.
@@ -19,6 +19,7 @@ import os
 import re
 import sys
 from pathlib import Path
+from typing import Optional
 
 # File pattern matchers
 PATTERNS = {
@@ -82,7 +83,7 @@ SCRIPT_RECOMMENDATIONS = {
 }
 
 
-def detect_file_type(file_path: str) -> str | None:
+def detect_file_type(file_path: str) -> Optional[str]:
     """Detect the credential file type from the file path."""
     filename = os.path.basename(file_path)
 
@@ -204,7 +205,7 @@ def generate_suggestion_message(file_type: str, cred_name: str, file_context: di
     if file_context.get('has_oauth'):
         lines.extend([
             '',
-            '⚠️  OAuth detected: Consider using /configuring-connected-apps to',
+            '⚠️  OAuth detected: Consider using /integration-connectivity-connected-app-configure to',
             '    create the Connected App for this credential.',
         ])
 

@@ -2,7 +2,7 @@
 
 ## Task
 
-Convert `MyCustomVlocityOpenInterface2.cls` (VlocityOpenInterface) to System.Callable and create a test class. Keep a transcript of reasoning and skills used.
+Convert `MyCustomClass.cls` (VlocityOpenInterface) to System.Callable and create a test class. Keep a transcript of reasoning and skills used.
 
 ---
 

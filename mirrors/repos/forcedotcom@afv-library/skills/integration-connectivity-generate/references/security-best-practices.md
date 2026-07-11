@@ -38,7 +38,7 @@ req.setEndpoint('https://api.example.com');
 
 Request only necessary scopes:
 
-```
+```text
 ✅ read:orders write:orders
 ❌ admin:* read:* write:*
 ```
@@ -54,13 +54,16 @@ Request only necessary scopes:
 
 For mobile or SPA clients:
 
-```
+```text
 Use Authorization Code with PKCE, not Implicit flow
 ```
 
 ## Network Security
 
 ### Remote Site Settings
+
+**Template**: `assets/endpoint-security/example.remoteSite-meta.xml`
+**Template**: `assets/endpoint-security/example.cspTrustedSite-meta.xml`
 
 - Only allow necessary domains
 - Don't use wildcard domains

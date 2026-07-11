@@ -183,7 +183,6 @@ Next step: <harmonize or retrieve>
 
 ## References
 
-- [README.md](README.md)
 - [examples/ingestion-api/README.md](examples/ingestion-api/README.md)
 - [../data360-orchestrate/assets/definitions/data-stream.template.json](../data360-orchestrate/assets/definitions/data-stream.template.json)
 - [../data360-orchestrate/references/plugin-setup.md](../data360-orchestrate/references/plugin-setup.md)

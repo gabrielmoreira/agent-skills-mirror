@@ -94,7 +94,7 @@ flowchart LR
 
 ## ASCII Fallback Template
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  DATA MODEL (L→R)                                                           │
 │  Legend: LK = Lookup (-->), MD = Master-Detail (==>)                        │

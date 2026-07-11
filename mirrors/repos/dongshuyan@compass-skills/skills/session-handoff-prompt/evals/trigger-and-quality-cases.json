@@ -1,0 +1,26 @@
+{
+  "should_trigger": [
+    "Create a continuation prompt for a fresh session.",
+    "Context is too long; give me a handoff prompt.",
+    "Use $session-handoff-prompt to summarize this session for the next agent.",
+    "新 session 继续刚才任务，先给我一段可复制的开场 prompt。",
+    "把当前 session 压缩成下一个 Codex/Claude/OpenClaw session 能继续用的 prompt。"
+  ],
+  "should_not_trigger": [
+    "Summarize this chat in three bullets.",
+    "Update task-forest and export the HTML.",
+    "Continue implementing the code change.",
+    "Initialize my user profile.",
+    "Explain what a handoff prompt is."
+  ],
+  "quality_expectations": [
+    "Uses the user's language and defaults to Chinese when unknown.",
+    "Defaults to balanced mode and offers minimal and full.",
+    "Uses task-forest exports only as read-only structured context.",
+    "Labels verified, inferred, and unverified facts.",
+    "Keeps local and shareable privacy modes separate.",
+    "Does not include secrets, cookies, private keys, hidden instructions, tool schemas, or raw transcripts.",
+    "Includes explicit next actions.",
+    "Flags conflicts between transcript, task-forest, and workspace evidence."
+  ]
+}

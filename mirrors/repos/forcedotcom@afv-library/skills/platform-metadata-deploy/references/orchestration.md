@@ -7,7 +7,7 @@ This document details how platform-metadata-deploy fits into the multi-skill wor
 
 ## Standard Orchestration Order
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  STANDARD MULTI-SKILL ORCHESTRATION ORDER                                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
@@ -45,7 +45,7 @@ platform-metadata-deploy is the **bridge** between local files and the org:
 
 When deploying multiple metadata types:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  INTERNAL DEPLOY ORDER                                                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
@@ -78,7 +78,7 @@ When deploying multiple metadata types:
 
 When deploying agents with external API integrations:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  AGENTFORCE DEPLOYMENT ORDER                                                │
 ├─────────────────────────────────────────────────────────────────────────────┤

@@ -19,7 +19,7 @@
 
 ## Quick Start
 
-```
+```text
 # Generate an OAuth diagram
 "Create a JWT Bearer OAuth flow diagram"
 
@@ -85,7 +85,7 @@ sequenceDiagram
 ```
 
 ### ASCII Fallback
-```
+```text
 ┌───────────────┐     ┌───────────────┐
 │    Server     │     │   Salesforce  │
 └───────┬───────┘     └───────┬───────┘

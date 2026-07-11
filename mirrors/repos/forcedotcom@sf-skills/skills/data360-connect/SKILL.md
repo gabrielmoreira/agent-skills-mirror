@@ -142,7 +142,6 @@ Next step: <prepare phase or connector follow-up>
 
 ## References
 
-- [README.md](README.md)
 - [examples/connections/heroku-postgres.json](examples/connections/heroku-postgres.json)
 - [examples/connections/redshift.json](examples/connections/redshift.json)
 - [examples/connections/sharepoint-unstructured.json](examples/connections/sharepoint-unstructured.json)
@@ -151,4 +150,3 @@ Next step: <prepare phase or connector follow-up>
 - [examples/connections/ingest-api-schema.json](examples/connections/ingest-api-schema.json)
 - [../data360-orchestrate/references/plugin-setup.md](../data360-orchestrate/references/plugin-setup.md)
 - [../data360-orchestrate/references/feature-readiness.md](../data360-orchestrate/references/feature-readiness.md)
-- [../data360-orchestrate/UPSTREAM.md](../data360-orchestrate/UPSTREAM.md)

@@ -30,6 +30,22 @@ These rules define where each document semantic type should live so long-lived t
 - Long-lived facts, glossary, structure, rules, and reusable examples: use `knowledge`
 - A single requirement change or bug-fix workspace: use `changes`
 - Issues, releases, decisions, and retired docs: use `records`
+- Record documents must follow `docs/rules/document-archive-rules.md`, use `TYPE-YYYYMMDD-NNN`, and archive by year and month
+- Long-lived state documents keep fixed paths; when they grow large, split them by feature module and keep the directory-level `README.md` as the index
+
+## Phase Mapping
+
+| Phase | Route |
+|---|---|
+| specify | `workflow.intake`, `workflow.requirements` |
+| clarify | open-question sections in intake / requirements, and `records.issues` when needed |
+| plan | `workflow.design`, `workflow.implementation`, `workflow.verification`, `knowledge.*` |
+| tasks | `workflow.tasks`, `changes.active` |
+| analyze | `workflow.requirements`, `workflow.design`, `workflow.verification`, `workflow.tasks`, `changes.active` |
+| implement | code, tests, scripts, migrations; task source still traces to `workflow.tasks` |
+| converge | `workflow.*`, `knowledge.*`, `changes.completed`, `records.*` |
+
+Note: this borrows Spec Kit's phase rhythm without making `specs/` the default long-term document directory.
 
 ## Sync requirements
 

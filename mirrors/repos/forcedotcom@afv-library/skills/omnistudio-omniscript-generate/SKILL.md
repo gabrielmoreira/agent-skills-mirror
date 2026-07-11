@@ -11,7 +11,7 @@ Expert OmniStudio OmniScript builder for declarative, step-based guided digital 
 
 ## Quick Reference
 
-**Scoring**: 120 points across 6 categories. **Thresholds**: ✅ 90+ (Deploy) | ⚠️ 67-89 (Review) | ❌ <67 (Block - fix required)
+**Scoring**: 120 points across 6 categories. **Thresholds**: [PASS] 90+ (Deploy) | [REVIEW] 67-89 (Review) | [BLOCK] <67 (Block - fix required)
 
 ---
 
@@ -168,7 +168,7 @@ Run `scripts/check-duplicate-omniscript.sh <Type> <SubType> <Language> <org>` to
 - **WARN**: Steps with no elements, input elements without validation, missing error handling on actions, unused data paths, deeply nested elements (>4 levels)
 
 **Validation Report Format** (6-Category Scoring 0-120):
-```
+```yaml
 Score: 102/120 ---- Very Good
 -- Design & Structure: 22/25 (88%)
 -- Data Integration: 18/20 (90%)

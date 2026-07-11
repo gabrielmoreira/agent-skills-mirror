@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `stablyai/orca` — 26 default patterns, 1 followed patterns, 12 file(s) materialized.
+Mirror of `stablyai/orca` — 26 default patterns, 2 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `stablyai/orca` — 26 default patterns, 1 followed patterns, 12 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 12 |
+| Followed pats | 2 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `stablyai/orca` — 26 default patterns, 1 followed patterns, 12 file(
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/STYLEGUIDE.md`
+- `docs/reference/git-compatibility.md`
 
 ## File Index
 
@@ -70,7 +71,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`skills/orca-per-workspace-env/SKILL.md`](skills/orca-per-workspace-env/SKILL.md) |
 | 10 | ✓ | [`skills/orchestration/SKILL.md`](skills/orchestration/SKILL.md) |
 | 11 | ✓ | [`tests/e2e/AGENTS.md`](tests/e2e/AGENTS.md) |
-| 12 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
+| 12 | → | [`docs/reference/git-compatibility.md`](docs/reference/git-compatibility.md) |
+| 13 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
 
 ---
 

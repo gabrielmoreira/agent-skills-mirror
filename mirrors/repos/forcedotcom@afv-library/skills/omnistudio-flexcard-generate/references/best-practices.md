@@ -8,7 +8,7 @@
 
 Use for displaying summary information about a single record. Group related fields into logical sections.
 
-```
+```text
 ┌──────────────────────────────────┐
 │  Header: Record Name             │
 ├──────────────────────────────────┤
@@ -37,7 +37,7 @@ Use for displaying summary information about a single record. Group related fiel
 
 Use for displaying a collection of related records. Each card in the list renders from one item in the data source array.
 
-```
+```text
 ┌──────────────────────────────────┐
 │  Card 1: Record A                │
 │  Field 1 | Field 2 | [Action]   │
@@ -62,7 +62,7 @@ Use for displaying a collection of related records. Each card in the list render
 
 Use when a single record has multiple contexts worth displaying. Each tab represents a different state with its own data source or field set.
 
-```
+```text
 ┌──────────────────────────────────┐
 │  [Tab 1: Overview] [Tab 2: History] [Tab 3: Related] │
 ├──────────────────────────────────┤
@@ -83,7 +83,7 @@ Use when a single record has multiple contexts worth displaying. Each tab repres
 
 Use for progressive disclosure: show a summary, then expand for details on demand.
 
-```
+```text
 ┌──────────────────────────────────┐
 │  Summary: Key Fields  [▼ More]   │
 └──────────────────────────────────┘
@@ -173,7 +173,7 @@ Use for progressive disclosure: show a summary, then expand for details on deman
 
 ### Color Usage
 
-```
+```yaml
 Correct:  Use SLDS token  →  var(--slds-g-color-brand-base-50)
 Wrong:    Hardcoded hex    →  #0176d3
 Wrong:    Hardcoded rgb    →  rgb(1, 118, 211)
@@ -272,7 +272,7 @@ Wrong:    Hardcoded rgb    →  rgb(1, 118, 211)
 
 ### Data Flow Pattern
 
-```
+```text
 Parent FlexCard
   ├── Data Source: IP_GetAccountSummary
   │     └── Passes {AccountId} to child

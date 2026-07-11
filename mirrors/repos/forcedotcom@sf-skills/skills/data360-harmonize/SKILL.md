@@ -107,7 +107,6 @@ Next step: <segment / retrieve / follow-up>
 
 ## References
 
-- [README.md](README.md)
 - [../data360-orchestrate/assets/definitions/dmo.template.json](../data360-orchestrate/assets/definitions/dmo.template.json)
 - [../data360-orchestrate/assets/definitions/mapping.template.json](../data360-orchestrate/assets/definitions/mapping.template.json)
 - [../data360-orchestrate/assets/definitions/relationship.template.json](../data360-orchestrate/assets/definitions/relationship.template.json)

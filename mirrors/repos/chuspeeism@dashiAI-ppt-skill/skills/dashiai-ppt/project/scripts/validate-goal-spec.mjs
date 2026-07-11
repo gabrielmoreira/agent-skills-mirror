@@ -3,8 +3,11 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { isCssColorLike, isMediaArrayKey, isSerializedReactElementLike } from '../src/prop-contract-core.mjs';
+// 与预算生成同一把尺:视觉宽度折算(全角=1、半角=0.5),见 copy-contract.mjs(issue #15)。
+import { charLength } from './workflow/copy-contract.mjs';
 import {
   NEUTRAL_PLACEHOLDERS,
+  THEME_PAGES,
   getCopyBudgetsForLayout,
   inspectLayout,
   getMediaSlotsForLayout,
@@ -367,8 +370,27 @@ function validateCopyBudgets(layout, props, slideNumber, layoutLabel, errors) {
     if (!budget) return;
     const length = charLength(stripInlineMarkers(text));
     if (length <= budget.maxChars) return;
-    errors.push(`slide ${slideNumber} layout ${layoutLabel} field ${field}: ${budget.density} copy is too long (${length} > ${budget.maxChars}); move long text to subtitle/lead/list or choose a denser layout`);
+    const hint = alternativeLayoutsForBudget(layout, budgetKey, length);
+    errors.push(`slide ${slideNumber} layout ${layoutLabel} field ${field}: ${budget.density} copy is too long (${length} > ${budget.maxChars}); ${hint || 'move long text to subtitle/lead/list or choose a denser layout'}`);
   });
+}
+
+// 「文案超长」曾只给一句泛泛的 choose a denser layout,用户只能在 90+ 个布局里盲试
+// (issue #16 用户换了 3 次 layout 才放下内容;issue #17 的多轮返工也多由换布局引发)。
+// 这里直接扫同主题里同名字段预算能容纳该长度的布局,附 3 个具体候选与其预算上限。
+function alternativeLayoutsForBudget(layout, budgetKey, requiredLength) {
+  const themeKey = layout.split('_')[0];
+  const candidates = [];
+  for (const page of THEME_PAGES) {
+    if (page.themeKey !== themeKey || page.key === layout) continue;
+    const budget = getCopyBudgetsForLayout(page.key)[budgetKey];
+    if (budget && budget.maxChars >= requiredLength) {
+      candidates.push(`${page.key}(${budgetKey} ≤ ${budget.maxChars})`);
+      if (candidates.length >= 3) break;
+    }
+  }
+  if (!candidates.length) return '';
+  return `压缩文案,或换同主题可容纳的布局: ${candidates.join('、')}`;
 }
 
 function validateArrayCapacities(layout, props, slideNumber, layoutLabel, errors) {
@@ -958,10 +980,6 @@ function stripInlineMarkers(value) {
 
 function normalizeRepeatedCopy(value) {
   return stripInlineMarkers(value).replace(/\s+/g, '').trim();
-}
-
-function charLength(value) {
-  return Array.from(String(value || '')).length;
 }
 
 function lastPathKey(pathName) {

@@ -6,6 +6,16 @@
   "projectDirEnv": "CLAUDE_PROJECT_DIR",
   "runtime": "bun",
   "events": {
+    "SessionStart": [
+      {
+        "hook": "serena-primer.ts",
+        "timeout": 3
+      },
+      {
+        "hook": "state-boundary.ts",
+        "timeout": 5
+      }
+    ],
     "UserPromptSubmit": [
       {
         "hook": "keyword-detector.ts",

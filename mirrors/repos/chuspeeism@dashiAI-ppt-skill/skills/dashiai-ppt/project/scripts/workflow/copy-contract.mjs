@@ -243,8 +243,26 @@ export function inferCopyDensity(pathName) {
   return 'compact';
 }
 
-function charLength(value) {
-  return Array.from(String(value ?? '')).length;
+// 文案长度按「视觉宽度」折算:全角(CJK 及全角标点)记 1,半角记 0.5(issue #15)。
+// 预算本质是布局的物理容宽,1 个中文字 ≈ 2 个拉丁字母宽;此前按码点计数,英文/混排
+// 文案(如 "GPT · Gemini · Claude",21 码点但视觉仅 ≈11 个中文字宽)被误拦,而预算
+// 常数是按中文字符标定的——视觉宽度口径下中文文案计数不变,预算常数无需调整。
+export function charLength(value) {
+  let width = 0;
+  for (const ch of String(value ?? '')) {
+    const code = ch.codePointAt(0);
+    const fullWidth = (code >= 0x1100 && code <= 0x115f) // Hangul Jamo
+      || (code >= 0x2e80 && code <= 0xa4cf)   // CJK 部首/汉字/假名/注音等
+      || (code >= 0xac00 && code <= 0xd7a3)   // Hangul 音节
+      || (code >= 0xf900 && code <= 0xfaff)   // CJK 兼容汉字
+      || (code >= 0xfe30 && code <= 0xfe4f)   // CJK 兼容形式
+      || (code >= 0xff00 && code <= 0xff60)   // 全角 ASCII/标点
+      || (code >= 0xffe0 && code <= 0xffe6)   // 全角符号
+      || (code >= 0x3000 && code <= 0x303e)   // CJK 标点(含全角空格、「」)
+      || (code >= 0x20000 && code <= 0x3fffd); // CJK 扩展
+    width += fullWidth ? 1 : 0.5;
+  }
+  return Math.ceil(width);
 }
 
 function hasFillableCopyLeaf(value, pathName) {

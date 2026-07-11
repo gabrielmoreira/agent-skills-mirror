@@ -16,7 +16,7 @@ Comprehensive Salesforce DevOps automation using sf CLI v2. Validate, deploy, ve
 
 ### 1. Invoke the skill
 
-```
+```text
 Skill: platform-metadata-deploy
 Request: "Deploy all changes to org dev with validation"
 ```
@@ -61,7 +61,7 @@ After a successful dry run, guide the user to the next safe step:
 
 ## Orchestration Order
 
-```
+```text
 platform-custom-object-generate/automation-flow-generate → platform-metadata-deploy → platform-data-manage
 ```
 

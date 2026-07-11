@@ -13,3 +13,17 @@
 ## 3. 回归要求
 
 - [必须保留的回归]
+
+## 4. Analyze 检查
+
+- [ ] 需求、设计、验证和任务没有冲突
+- [ ] 没有孤立的 `FR-*` / `DES-*` / `TEST-*` / `T-*`
+- [ ] 没有阻塞性 `[待确认]`
+
+## 5. Converge 检查
+
+- [ ] 实现结果已回写 workflow
+- [ ] 长期真相已回写 knowledge
+- [ ] change 生命周期状态已更新
+- [ ] 如果 change 已完成，工作区已从 `active/` 移动到 `completed/`
+- [ ] 受影响的 issues / releases / adr / archive 已同步

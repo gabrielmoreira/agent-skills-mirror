@@ -13,7 +13,7 @@ This guide covers deployment considerations for triggers, focusing on cascade fa
 
 When an exception in one trigger causes rollback of operations from preceding triggers in the chain.
 
-```
+```text
 Account Insert → AccountTrigger → ContactTrigger → OpportunityTrigger
                      ✓               ✓                 ✗ (Exception)
 
@@ -230,7 +230,7 @@ trigger AccountChangedSubscriber on Account_Changed__e (after insert) {
 
 Before deploying triggers, analyze the cascade impact:
 
-```
+```text
 CHECKLIST:
 □ List all triggers that fire on the same transaction
 □ Identify which operations are atomic (same business process)

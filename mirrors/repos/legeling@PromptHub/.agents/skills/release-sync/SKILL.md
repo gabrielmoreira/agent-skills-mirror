@@ -1,122 +1,102 @@
 ---
 name: release-sync
 description: PromptHub release update skill. Use for `/update-readme`, version bumps, changelog updates, website sync, GUI screenshot/doc refresh, and multilingual release/documentation alignment.
-trigger: manual
 ---
 
-# Release Sync Skill
+# PromptHub Release Sync
 
-This skill is for PromptHub release housekeeping.
+Use this skill for version bumps, release preparation, changelog or README
+updates, website release sync, screenshots, and multilingual release material.
 
-## Use this when
+## Read First
 
-- The user asks to bump the version, for example `0.4.5 -> 0.4.6`
-- The user asks to update `README.md`
-- The user asks to update `CHANGELOG.md`
-- The user asks to sync the website or release docs
-- The user asks to refresh GUI screenshots or feature descriptions
-- The user asks to align multilingual docs or app locales
-- The request is something like `/update-readme`, `发版`, `更新官网`, `同步文档`
+1. `AGENTS.md`
+2. `spec/releases/release-rules.md`
+3. `spec/releases/README.md` and the target version record, when present
+4. `package.json`, workspace package manifests, and the newest relevant
+   `CHANGELOG.md` section
 
-## Source of truth
+Do not treat this skill as a second release-policy source. Stable release
+semantics belong in `spec/releases/release-rules.md`; this skill is the
+execution procedure.
 
-Always treat these as source of truth first:
+## Establish Scope
 
-- `package.json`
-- newest section in `CHANGELOG.md`
+Before editing, identify:
 
-## Required update surfaces
+- target version and release date
+- stable, prerelease, historical prerelease, or docs-only update
+- affected distributions: desktop, CLI, self-hosted web, worker, mobile
+- whether public copy, in-app copy, screenshots, installers, or signing changed
 
-- Core
-  - `package.json`
-  - `CHANGELOG.md`
-- Release docs
-  - `README.md`
-  - `docs/README.en.md`
-  - `docs/README.zh-TW.md`
-  - `docs/README.ja.md`
-  - `docs/README.de.md`
-  - `docs/README.es.md`
-  - `docs/README.fr.md`
-- Website
-  - `website/scripts/sync-release.mjs`
-  - `website/src/generated/release.ts`
-  - `website/src/content/docs/changelog.md`
-  - `website/src/content/docs/introduction.md`
-  - `website/src/content/docs/en/introduction.md`
-  - `website/src/i18n/ui.ts`
-- App locales when user-facing app copy changed
-  - `src/renderer/i18n/locales/zh.json`
-  - `src/renderer/i18n/locales/zh-TW.json`
-  - `src/renderer/i18n/locales/en.json`
-  - `src/renderer/i18n/locales/ja.json`
-  - `src/renderer/i18n/locales/de.json`
-  - `src/renderer/i18n/locales/es.json`
-  - `src/renderer/i18n/locales/fr.json`
-- Screenshots/assets when GUI changed
-  - `docs/imgs/`
-  - `website/public/imgs/`
+For non-trivial release work, create or update the matching active change
+before implementation.
 
-## Execution order
+## Source And Sync Order
 
-1. Identify target version and release date.
-2. Update `package.json`.
-3. Add the new top release section to `CHANGELOG.md`.
-4. Update `README.md`, including:
-   - version badge
-   - download section text
-   - release download links
-   - roadmap/current-version section
-   - latest-version summary section
-5. Sync localized README files under `docs/`, especially `docs/README.en.md`, with the same surfaces:
-   - version badge
-   - download links
-   - roadmap/current-version section
-   - latest-version summary section
-6. Run:
+1. Update version-bearing manifests for affected distributions, including the
+   root and workspace packages when the monorepo version changes.
+2. Update `CHANGELOG.md` and `spec/releases/<version>.md`.
+3. Sync repository-facing documentation:
+   - `README.md`
+   - `docs/README.md`
+   - `docs/README.en.md`
+   - `docs/README.zh-TW.md`
+   - `docs/README.ja.md`
+   - `docs/README.de.md`
+   - `docs/README.es.md`
+   - `docs/README.fr.md`
+4. Run `pnpm --dir website sync:release` and inspect:
+   - `website/src/generated/release.ts`
+   - `website/src/content/docs/changelog.md`
+   - `website/src/content/docs/introduction.md`
+   - `website/src/content/docs/en/introduction.md`
+5. Update non-generated website copy only when the release contract changed:
+   - `website/src/i18n/ui.ts`
+   - `website/src/pages/index.astro`
+   - `website/src/pages/en/index.astro`
+6. When desktop user-facing copy changed, synchronize all locale files under
+   `apps/desktop/src/renderer/i18n/locales/`.
+7. When visible GUI or feature emphasis changed, inspect and update matching
+   assets under `docs/imgs/` and `website/public/imgs/`.
+8. Synchronize durable conclusions into `spec/workflow/*`, `spec/knowledge/*`,
+   `spec/rules/*`, or `spec/adr/*` only when their stable contracts changed.
 
-```bash
-node website/scripts/sync-release.mjs
-```
+## Release Semantics
 
-7. If needed, patch website copy beyond generated metadata.
-8. If app copy changed, sync `src/renderer/i18n/locales/*.json`.
-9. If GUI changed, verify docs/screenshots match the text.
-10. Search for stale version strings in docs before finishing, for example:
+- Stable-facing badges, default downloads, and install instructions continue
+  to point to the latest stable version when preparing a prerelease.
+- Historical prereleases below an existing stable version are manual testing
+  artifacts, not the default upgrade path.
+- Do not document a GUI state without matching current UI evidence or updated
+  screenshots.
+- Do not silently skip localized docs or locale files; record why a surface is
+  unaffected.
+- When mentioning CLI availability, distinguish the CLI/npm distribution from
+  desktop-bundled behavior.
+- Use the website sync command instead of hand-editing generated metadata.
 
-```bash
-rg -n "0\\.[0-9]+\\.[0-9]+" README.md docs
-```
+## Verification
 
-11. Run:
+Run the lowest relevant checks first, then:
 
-```bash
-pnpm exec tsc --noEmit --pretty false
-```
+- `pnpm verify:release:quick` for local release-impacting changes
+- `pnpm verify:release` before tagging or publishing a release candidate
+- platform signing/notarization checks required by
+  `spec/releases/release-rules.md` for packaged macOS artifacts
 
-## Rules
+Record commands, results, skipped surfaces, and residual risks in the active
+change `implementation.md`. The quick profile is diagnostic and does not grant
+release approval.
 
-- Keep changelog bilingual if the current release style is bilingual.
-- Keep README badge version, download links, and install text consistent with the target version.
-- Keep README "current version" and "latest version" summary blocks aligned with the newest changelog entry.
-- When the release includes operational fixes, do not omit them from docs. Commonly missed categories:
-  - backup / restore format changes
-  - WebDAV sync behavior
-  - data directory / migration behavior
-  - performance / large-dataset work
-  - test / CI / release-gate improvements
-- Do not silently skip localized docs; explicitly report what was updated and what was not.
-- If the release mentions CLI, clarify whether it is desktop-available or only available via CLI/npm distribution.
-- Prefer existing automation:
-  - use `website/scripts/sync-release.mjs` instead of manually editing generated release metadata
+## Completion Report
 
-## Output checklist
+Report:
 
-Final response should say:
-
-- target version
-- files updated
-- whether website sync was run
-- whether screenshots were updated
-- which locales/docs were updated
-- what was intentionally skipped
+- target version and release type
+- affected distributions and manifests
+- website sync status
+- screenshot status
+- updated docs and locales
+- verification results
+- intentionally skipped surfaces and remaining release risk

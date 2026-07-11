@@ -6,7 +6,7 @@ Real-world examples of using the integration-connectivity-connected-app-configur
 ## Example 1: Create a Basic API Integration Connected App
 
 **Request**:
-```
+```text
 Use the integration-connectivity-connected-app-configure skill to create a Connected App named "DataSyncIntegration"
 for syncing data with our external ERP system. It needs API access and refresh tokens.
 Contact email: admin@company.com
@@ -42,7 +42,7 @@ Contact email: admin@company.com
 ## Example 2: Create a JWT Bearer App for CI/CD
 
 **Request**:
-```
+```text
 Create a Connected App for our CI/CD pipeline using JWT Bearer flow.
 Name it "GitHubActionsDeployment" and use certificate "GH_Actions_Cert".
 ```
@@ -77,7 +77,7 @@ Name it "GitHubActionsDeployment" and use certificate "GH_Actions_Cert".
 ## Example 3: Create a Mobile App with External Client App
 
 **Request**:
-```
+```text
 Create an External Client App for our mobile app "FieldServiceMobile".
 It needs PKCE enabled, refresh tokens, and should be packageable for distribution.
 ```
@@ -134,7 +134,7 @@ sf project retrieve start \
 ## Example 4: Review Existing Connected Apps
 
 **Request**:
-```
+```text
 Review and score my existing Connected Apps for security best practices.
 ```
 
@@ -145,7 +145,7 @@ Review and score my existing Connected Apps for security best practices.
 4. Generate report
 
 **Sample Report**:
-```
+```text
 📊 CONNECTED APP SECURITY REVIEW
 ════════════════════════════════════════════════════════════════
 
@@ -180,7 +180,7 @@ LegacyERPConnector:
 ## Example 5: Migrate Connected App to External Client App
 
 **Request**:
-```
+```text
 Migrate our "SalesPortal" Connected App to an External Client App for better security.
 ```
 
@@ -191,7 +191,7 @@ Migrate our "SalesPortal" Connected App to an External Client App for better sec
 4. Provide migration checklist
 
 **Output**:
-```
+```text
 📦 MIGRATION PLAN: SalesPortal → External Client App
 ════════════════════════════════════════════════════════════════
 

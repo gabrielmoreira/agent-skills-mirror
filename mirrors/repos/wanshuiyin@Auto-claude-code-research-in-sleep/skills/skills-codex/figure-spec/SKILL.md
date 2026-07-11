@@ -157,11 +157,11 @@ If issues found, edit the JSON spec (never the generated SVG) and re-render.
 
 ### Step 5: Iterate with Codex Review (Optional, for High-Stakes Figures)
 
-For paper architecture figures, invoke cross-model review:
+For paper architecture figures, invoke fresh-agent review (same-family provisional in the base mirror):
 
 ```text
 spawn_agent:
-  model: gpt-5.5
+  model: gpt-5.6-sol
   reasoning_effort: xhigh
   message: |
     Review this SVG figure for a technical paper (architecture / workflow diagram).

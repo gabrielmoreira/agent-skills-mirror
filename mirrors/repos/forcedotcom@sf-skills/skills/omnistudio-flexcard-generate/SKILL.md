@@ -36,7 +36,7 @@ Expert OmniStudio engineer specializing in FlexCard UI components for Salesforce
 
 FlexCards sit at the presentation layer of the OmniStudio stack. Ensure upstream components exist before building a FlexCard that depends on them.
 
-```
+```text
 omnistudio-dependencies-analyze → omnistudio-datamapper-generate → omnistudio-integration-procedure-generate → omnistudio-omniscript-generate → omnistudio-flexcard-generate (you are here)
 ```
 
@@ -88,7 +88,7 @@ Read `references/best-practices.md` for layout patterns, SLDS compliance, access
 
 Each FlexCard data source connects to an Integration Procedure (or other source type) and maps response fields to display elements.
 
-```
+```text
 FlexCard → Data Source (type: IntegrationProcedure)
          → IP Name + Input Mapping
          → Response Field Mapping → Card Elements
@@ -165,7 +165,7 @@ Avoid these patterns when generating FlexCard definitions:
 
 ## Scoring Rubric (130 Points)
 
-All FlexCards are validated against 7 categories. **Thresholds**: ✅ 90+ (Deploy) | ⚠️ 67-89 (Review) | ❌ <67 (Block - fix required)
+All FlexCards are validated against 7 categories. **Thresholds**: [PASS] 90+ (Deploy) | [VERIFY] 67-89 (Review) | [BLOCK] <67 (Block - fix required)
 
 | Category | Points | Criteria |
 |----------|--------|----------|
@@ -211,7 +211,7 @@ Read `assets/omni-ui-card.json` for the complete OmniUiCard record template incl
 
 Map IP response fields to card display elements using merge field syntax:
 
-```
+```text
 IP Response:                    FlexCard Merge Field:
 ─────────────                   ─────────────────────
 { "Name": "Acme Corp" }   →    {Name}
@@ -322,3 +322,10 @@ Deliverables produced by this skill:
 | `references/data-binding-guide.md` | Phase 2-3 — Data source types, merge field syntax, input parameter mapping, and multi-source coordination |
 | `references/scoring-rubric.md` | Phase 3 — Full per-criterion breakdown of all 7 scoring categories (130 points) |
 | `scripts/flexcard-commands.sh` | Phase 4 — All CLI commands for querying, retrieving, and deploying FlexCard metadata |
+
+---
+
+## Pre-Delivery Checklist
+
+- [ ] Upstream Integration Procedures exist and are active before FlexCard depends on them
+- [ ] Orchestration order followed (FlexCard is last in the chain)

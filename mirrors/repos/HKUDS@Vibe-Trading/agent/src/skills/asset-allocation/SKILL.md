@@ -1,6 +1,6 @@
 ---
 name: asset-allocation
-description: Asset allocation theory and optimizer usage — MPT / Black-Litterman / risk budgeting / all-weather strategy, including guides for 4 optimizers and rebalancing rules.
+description: Asset allocation theory and optimizer usage — MPT / Black-Litterman / risk budgeting / all-weather strategy, including guides for 5 optimizers and rebalancing rules.
 category: asset-class
 ---
 
@@ -86,7 +86,7 @@ Simplified allocation example for China-focused portfolios:
 - 15% commodities / REITs
 ```
 
-## Guide to the 4 Optimizers
+## Guide to the 5 Optimizers
 
 ### Overview of the Built-In Optimizers
 
@@ -98,6 +98,7 @@ Configure them in `config.json` through `optimizer` and `optimizer_params`:
 | `risk_parity` | Risk Parity | Equalize risk contribution while accounting for correlation | Long-term robust allocation |
 | `mean_variance` | Mean-Variance | Maximize Sharpe ratio or minimize variance | When return forecasts are available |
 | `max_diversification` | Maximum Diversification | Maximize the diversification ratio | When pursuing a low-correlation portfolio |
+| `turnover_aware` | Turnover-Aware | Mean-variance utility with an L1 penalty on weight changes vs the previous rebalance | When trading costs matter; tune `turnover_penalty` to your data frequency |
 
 ### 1. `equal_volatility`
 
@@ -182,11 +183,37 @@ Configure them in `config.json` through `optimizer` and `optimizer_params`:
 **Advantages**: does not require return forecasts and seeks true diversification.  
 **Disadvantages**: effectiveness is limited in highly correlated environments.
 
+### 5. `turnover_aware`
+
+```json
+{
+  "optimizer": "turnover_aware",
+  "optimizer_params": {
+    "lookback": 60,
+    "risk_aversion": 1.0,
+    "turnover_penalty": 0.5
+  }
+}
+```
+
+**Principle**: minimize `-w'μ + λ·w'Σw + γ·||w - w_prev||₁` subject to long-only, fully-invested weights — mean-variance utility with an L1 penalty on weight changes versus the previous rebalance, so the optimizer only trades when the expected improvement outweighs the (implicit) cost.
+
+| Parameter | Default | Description |
+|------|--------|------|
+| lookback | 60 | Calculation window |
+| risk_aversion | 1.0 | Weight on the variance term (λ) |
+| turnover_penalty | 0.0 | Weight on the L1 turnover term (γ); 0 reduces to the mean-variance baseline |
+
+**Advantages**: dampens rebalancing churn, which usually dominates realized costs; the first rebalance is unpenalized so the cold start is undistorted.  
+**Disadvantages**: `turnover_penalty` is scale-sensitive to the return frequency of the input window — for daily returns even γ ≈ 0.5 strongly prefers holding still, so tune it per data frequency.
+
 ### Optimizer Selection Decision Tree
 
 ```
 Do you have return forecasts?
-├── Yes → mean_variance (remember to add constraints)
+├── Yes → Do trading costs / churn matter?
+│   ├── Yes → turnover_aware (tune turnover_penalty to data frequency)
+│   └── No → mean_variance (remember to add constraints)
 └── No → Do you need to account for correlation?
     ├── Yes → risk_parity (recommended default)
     └── No → Are volatility differences across assets large?

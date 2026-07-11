@@ -116,7 +116,7 @@ flowchart LR
 
 ## ASCII Fallback
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  SALES CLOUD DATA MODEL (L→R)                                               │
 │  Legend: LK = Lookup (-->), MD = Master-Detail (==>), -.-> = converts       │

@@ -17,7 +17,7 @@ rubric and migration guidance from legacy `VlocityOpenInterface` implementations
 
 ### 1. Invoke the skill
 
-```
+```text
 Skill: omnistudio-callable-apex-generate
 Request: "Create a callable implementation for Order actions with createOrder and cancelOrder"
 ```
@@ -65,10 +65,6 @@ The skill generates:
 | platform-custom-object-generate / platform-custom-field-generate | Verify object/field availability before coding |
 | platform-apex-test-run | Run tests and analyze coverage |
 | platform-metadata-deploy | Deploy callable classes to an org |
-
-## Documentation
-
-- [Skill Instructions](SKILL.md)
 
 ### VlocityOpenInterface / VlocityOpenInterface2
 

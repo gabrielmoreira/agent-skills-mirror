@@ -16,7 +16,7 @@ When the agentic loop is enabled, platform-apex-test-run will:
 
 ## Example Agentic Flow
 
-```
+```yaml
 User: "Run tests for AccountService with auto-fix enabled"
 
 Claude:
@@ -44,6 +44,6 @@ Claude:
 
 ## Auto-Fix Command
 
-```
+```text
 Skill(skill="sf-apex", args="Fix failing test [TestClassName].[methodName] - Error: [error message]")
 ```

@@ -107,7 +107,7 @@ flowchart LR
 ## Key Concepts
 
 ### B2B Commerce Flow
-```
+```text
 WebStore → ProductCatalog → Product2
     ↓           ↓
 BuyerAccount → WebCart → CartItem → Order
@@ -123,7 +123,7 @@ BuyerGroup → Entitlements (What they can see/buy)
 | BuyerGroup | Pricing/entitlement grouping |
 
 ### Entitlement Model
-```
+```text
 CommerceEntitlementPolicy
     ├── CommerceEntitlementProduct (What products)
     └── CommerceEntitlementBuyerGroup (Who can see)
@@ -223,7 +223,7 @@ flowchart LR
 
 ## ASCII Fallback
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  B2B COMMERCE DATA MODEL (L→R)                                               │
 │  Legend: LK = Lookup (-->), MD = Master-Detail (==>)                        │

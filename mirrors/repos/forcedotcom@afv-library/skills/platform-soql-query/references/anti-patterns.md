@@ -308,7 +308,7 @@ WHERE Days_Open__c > 30
 
 ## Quick Reference: Selectivity Rules
 
-```
+```text
 A filter is SELECTIVE when:
 ├── Uses an indexed field, AND
 ├── Returns < 10% of first million records, OR

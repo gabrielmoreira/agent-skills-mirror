@@ -25,6 +25,7 @@ import { agyConversationId, isAgyInput, readAgyPrompt } from "./agy-input.ts";
 import { UNKNOWN_SESSION_ID, VENDORS } from "./constants.ts";
 import { clearGrokContext } from "./grok-context.ts";
 import { makePromptOutput } from "./hook-output.ts";
+import { isRelayedAgentMessage, normalizePromptInput } from "./prompt-input.ts";
 // triggers.json is imported statically: the bundler inlines it into the oma
 // binary (bundled `oma hook` path needs no file on disk), while a standalone
 // bun run resolves the sibling file next to this module (pi / direct run).
@@ -153,6 +154,11 @@ export function isGenuineUserPrompt(input: Record<string, unknown>): boolean {
   // No event field — assume genuine (backward compat with vendors that omit it)
   return true;
 }
+
+// ── Guard: relayed inter-agent messages ──────────────────────
+// Shared with skill-injector — see prompt-input.ts. Re-exported here so
+// existing imports/tests keep resolving from this module.
+export { isRelayedAgentMessage };
 
 // ── Guard 3: Reinforcement suppression ───────────────────────
 
@@ -778,6 +784,9 @@ export async function run(
 
   if (!prompt.trim()) return null;
   if (startsWithSlashCommand(prompt)) return null;
+  // Relayed inter-agent messages carry another agent's text, not a user
+  // request — their content must not drive workflow keyword detection.
+  if (isRelayedAgentMessage(prompt)) return null;
 
   const config = loadConfig();
   const lang = detectLanguage(projectDir);
@@ -890,7 +899,7 @@ async function main() {
   const vendor = detectVendor(input);
   const projectDir = getProjectDir(vendor, input);
   const sessionId = getSessionId(input);
-  let prompt = (input.prompt as string) ?? "";
+  let prompt = normalizePromptInput(input.prompt);
 
   // agy's PreInvocation stdin carries no `prompt` — recover the user request
   // from the transcript. PreInvocation fires before every model call, so only

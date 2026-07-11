@@ -202,6 +202,10 @@ bd backup restore --force /path/to/backup
 See [docs/DOLT.md](docs/DOLT.md#migrating-between-backends) for full
 migration instructions.
 
+Prefer a different database? [docs/STORAGE-BACKENDS.md](docs/STORAGE-BACKENDS.md)
+covers running `bd` on Postgres, MySQL, or SQLite. Dolt stays the default and the
+only backend with history.
+
 `bd export` and `.beads/issues.jsonl` are issue-table exports. They are useful
 for review, migration, and interoperability, but they do not capture Dolt
 branches, commit history, working-set state, or non-issue tables. Use

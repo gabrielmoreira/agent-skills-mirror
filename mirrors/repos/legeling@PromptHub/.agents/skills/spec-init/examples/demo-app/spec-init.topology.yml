@@ -26,8 +26,50 @@ routes:
   records.archive: docs/archive/
   records.rules: docs/rules/
 
+workflow_phases:
+  specify:
+    - workflow.intake
+    - workflow.requirements
+  clarify:
+    - workflow.intake
+    - workflow.requirements
+    - records.issues
+  plan:
+    - workflow.design
+    - workflow.implementation
+    - workflow.verification
+    - knowledge.context
+    - knowledge.structure
+    - knowledge.behavior
+    - knowledge.reference
+  tasks:
+    - workflow.tasks
+    - changes.active
+  analyze:
+    - workflow.requirements
+    - workflow.design
+    - workflow.verification
+    - workflow.tasks
+    - changes.active
+  implement:
+    - workflow.tasks
+  converge:
+    - workflow.requirements
+    - workflow.design
+    - workflow.verification
+    - workflow.tasks
+    - knowledge.context
+    - knowledge.structure
+    - knowledge.behavior
+    - changes.completed
+    - records.issues
+    - records.releases
+    - records.decisions
+    - records.archive
+
 notes:
   - workflow 表示当前推进中的项目交付面
   - knowledge 表示长期稳定真相，不应被临时任务污染
   - changes 表示单次变更工作区和其生命周期
   - records 表示长期跟踪记录和治理规则
+  - workflow_phases 借鉴 Spec Kit 阶段，但不要求生成 specs/ 目录

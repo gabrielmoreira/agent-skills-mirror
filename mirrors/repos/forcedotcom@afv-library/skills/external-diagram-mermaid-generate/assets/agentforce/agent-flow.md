@@ -202,7 +202,7 @@ flowchart TD
 
 ## ASCII Fallback Template
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                        🤖 SERVICE AGENT STRUCTURE                           │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -283,17 +283,17 @@ flowchart TD
 ## Conversation Flow Patterns
 
 ### 1. Linear Flow
-```
+```text
 Start → Topic → Action → Response → End
 ```
 
 ### 2. Branching Flow
-```
+```text
 Start → Classify → [Topic A | Topic B | Escalate]
 ```
 
 ### 3. Loop Back
-```
+```text
 Start → Topic → Action → Validate → [Success | Retry]
 ```
 

@@ -48,7 +48,7 @@ Consistency guidelines for all sf-diagram generated diagrams.
 
 ### Example Structure
 
-```
+```text
 %%{init: {...}}%%
 sequenceDiagram
     autonumber
@@ -85,7 +85,7 @@ sequenceDiagram
 
 ### Field Representation
 
-```
+```text
 OBJECT {
     Type FieldName Annotation "Comment"
 }
@@ -198,7 +198,7 @@ flowchart LR
 
 ### Box Drawing Characters
 
-```
+```text
 Standard Box:
 ┌─────────────────┐
 │                 │
@@ -228,7 +228,7 @@ Rounded corners (optional):
 
 ### Arrow Characters
 
-```
+```yaml
 Right:  ───>  or  ──▶  or  ────────────────>
 Left:   <───  or  ◀──
 Up:     ▲
@@ -244,7 +244,7 @@ Bidirectional: <──>
 
 ### Example ASCII Sequence
 
-```
+```text
 ┌──────────┐     ┌───────────────┐     ┌────────────────┐
 │  Client  │     │    Server     │     │    Database    │
 └────┬─────┘     └───────┬───────┘     └───────┬────────┘

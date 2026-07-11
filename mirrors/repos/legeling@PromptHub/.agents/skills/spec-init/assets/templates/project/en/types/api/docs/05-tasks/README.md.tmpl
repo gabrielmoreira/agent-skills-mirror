@@ -74,6 +74,20 @@
   - Output: a runnable core API path
   - Depends on: T-API-001, T-VER-001
 
+- [ ] T-ANALYZE-001 Check consistency across requirements, design, verification, tasks, and the change workspace before implementation
+  - Requirement: FR-ALL
+  - Design: DES-ALL
+  - Test: TEST-ALL
+  - Output: consistency gap list or “no blocking findings”
+  - Depends on: T-API-002
+
+- [ ] T-CONVERGE-001 Write implementation results back into docs, change lifecycle, and long-lived truth
+  - Requirement: FR-ALL
+  - Design: DES-ALL
+  - Test: TEST-ALL
+  - Output: synced workflow / knowledge / changes / records
+  - Depends on: [completed implementation tasks]
+
 ## Current Task List
 
 [Copy the template above and replace it with real tasks for this project]
@@ -84,3 +98,5 @@
 - Every high-priority requirement eventually maps to at least one task
 - There are no “floating tasks” detached from requirements or design
 - The first batch of tasks prioritizes high-risk and high-uncertainty work
+- analyze has run before implementation and has no blocking gaps
+- converge is scheduled after implementation so real behavior and docs align again

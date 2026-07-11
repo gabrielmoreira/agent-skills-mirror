@@ -17,6 +17,12 @@
 - `completed/`: 已完成但仍保留历史价值的变更
 - `legacy/`: 旧结构遗留、仅保留参考价值的历史记录
 
+状态和目录必须一致：
+
+- 还在实现、验证、同步或阻塞中的变更，留在 `active/<change-key>/`
+- 已完成并通过收敛检查的变更，必须移动到 `completed/`（启用年月归档时为 `completed/YYYY/MM/<change-key>/`）
+- 不能把 `active/<change-key>/overview.md` 的状态写成“已完成”却不移动目录
+
 ## 与其他文档的关系
 
 - `workflow / knowledge / verification / tasks` 记录当前真相与长期真相

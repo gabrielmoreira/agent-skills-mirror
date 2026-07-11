@@ -1,12 +1,30 @@
 ---
 name: lesson-quiz
-version: 1.0.0
-description: Interactive lesson-level quiz for Claude Code tutorials. Tests understanding of a specific lesson (01-10) with 8-10 questions mixing conceptual and practical knowledge. Use before a lesson to pre-test, during to check progress, or after to verify mastery. Use when asked to "quiz me on hooks", "test my knowledge of lesson 3", "lesson quiz", "practice quiz for MCP", or "do I understand skills".
+description: "Test a learner on a single Claude Code tutorial lesson (01-10) with 10 questions, scoring answers and flagging weak spots. Use before, during, or after a lesson. Don't use for whole-tutorial assessment or explaining a topic instead of testing it."
+effort: high
+metadata:
+  version: 1.1.0
+  author: Luong NGUYEN
 ---
 
 # Lesson Quiz
 
 Interactive quiz that tests understanding of a specific Claude Code lesson with 8-10 questions, provides per-question feedback, and identifies areas to review.
+
+## Prerequisites
+
+This skill requires:
+
+- The tutorial repo checked out, so the lesson directories `01-slash-commands/` … `10-cli/` and each `README.md` are readable.
+- `references/question-bank.md` present in this skill (the source of all questions).
+
+Before starting, confirm the target lesson's `README.md` exists. If it is missing, do not fabricate questions — warn the user and ask them to check the repository structure (see Error Handling).
+
+**Guardrails:**
+
+- **Never invent questions or answers.** Ask only questions drawn from `references/question-bank.md` for the selected lesson; if the bank lacks entries for a lesson, say so rather than making them up.
+- **Score accurately.** Track which shuffled position holds the correct answer for every question and validate each response against it — never guess a score.
+- **Confirm timing before scoring.** The pre/during/after choice changes how results are framed; do not skip it.
 
 ## Instructions
 
@@ -58,7 +76,7 @@ Options:
 Read the lesson README.md file to refresh context:
 - Read file: `<lesson-directory>/README.md`
 
-Then use the question bank from `references/question-bank.md` for that lesson. The question bank provides 10 pre-written questions per lesson with correct answers and explanations.
+Then use the question bank from `references/question-bank.md` for that lesson (10 pre-written questions with answers and explanations). To stay within the context budget, read only the one selected lesson's README — not all ten.
 
 ### Step 3: Present the Quiz
 
@@ -111,52 +129,7 @@ After all rounds, calculate the score and present results.
 - 3-4: Beginning — Significant gaps, review recommended
 - 0-2: Not yet — Start from the beginning of this lesson
 
-**Output format:**
-
-```markdown
-## Lesson Quiz Results: [Lesson Name]
-
-**Score: N/10** — [Grade label]
-**Quiz timing**: [Before / During / After] the lesson
-**Question breakdown**: N conceptual correct, N practical correct
-
-### Per-Question Results
-
-| # | Category | Question (short) | Your Answer | Result |
-|---|----------|-----------------|-------------|--------|
-| 1 | Conceptual | [abbreviated question] | [their answer] | [Correct / Incorrect] |
-| 2 | Practical | ... | ... | ... |
-| ... | ... | ... | ... | ... |
-
-### Incorrect Answers — Review These
-
-[For each incorrect answer, show:]
-
-**Q[N]: [Full question text]**
-- Your answer: [what they chose]
-- Correct answer: [correct option]
-- Explanation: [why it's correct]
-- Review: [specific section of the lesson README to re-read]
-
-### [Timing-specific message]
-
-[If pre-test]:
-**Pre-test score: N/10.** This gives you a baseline! Focus your study on the topics you missed. After completing the lesson, retake the quiz to measure your improvement.
-
-[If during]:
-**Progress check: N/10.** [If 7+: Great progress — keep going! If 4-6: Review the incorrect topics before continuing. If <4: Consider re-reading from the beginning.]
-
-[If after]:
-**Mastery check: N/10.** [If 9-10: You've mastered this lesson! Move on to the next. If 7-8: Almost there — review the missed topics and retake. If <7: Spend more time with the lesson, especially the sections marked above.]
-
-### Recommended Next Steps
-
-[Based on score and timing:]
-- [If mastered]: Proceed to the next lesson in the roadmap: [next lesson link]
-- [If proficient]: Review these specific sections, then retake: [list sections]
-- [If developing or below]: Re-read the full lesson: [lesson link]. Focus on: [list weak categories]
-- [Offer]: "Would you like to retake this quiz, try a different lesson, or get help with a specific topic?"
-```
+**Output format:** Follow the report template in `references/results-template.md`. It defines the score line, the per-question results table, the "Incorrect Answers — Review These" block, the timing-specific message (pre-test / during / after), and the "Recommended Next Steps" section. Fill its bracketed placeholders with this run's data.
 
 ### Step 6: Offer Follow-up
 
@@ -173,16 +146,32 @@ If **Retake**: Go back to Step 4 (skip timing question, use same timing).
 If **Quiz another lesson**: Go back to Step 1.
 If **Explain a topic**: Ask which question number, then read the relevant section from the lesson README.md and explain it with examples.
 
-## Error Handling
+## Acceptance Criteria
+
+A completed quiz run must satisfy all of these — verify each before presenting final results:
+
+- Exactly one lesson (01-10) was resolved before any question was asked.
+- The timing context (before / during / after) was captured via AskUserQuestion.
+- 10 questions from `references/question-bank.md` for that lesson were presented, in 5 rounds of 2, with answer options shuffled per question.
+- Every answer was scored against the tracked correct-position, producing an integer score in the range 0-10.
+- **Expected output**: a `## Lesson Quiz Results` report containing the score line (`Score: N/10` with a grade label), the per-question results table, an "Incorrect Answers — Review These" block for each miss, and a timing-specific message.
+- The follow-up prompt (retake / another lesson / explain / done) was offered.
+
+Example: for a 7/10 "after" run on Hooks, the report asserts `Score: 7/10 — Proficient`, lists all 10 rows in the results table, and expands the 3 incorrect questions with correct answer, explanation, and a review pointer.
+
+## Edge Cases & Error Handling
 
 ### Invalid lesson argument
 If the argument doesn't match any lesson, show the valid lesson list and ask the user to pick one.
 
 ### User wants to quit mid-quiz
-If the user indicates they want to stop during any round, present partial results for questions answered so far.
+If the user indicates they want to stop during any round, present partial results for the questions answered so far (score out of the number attempted, not out of 10).
 
 ### Lesson README not found
-If the README.md file doesn't exist at the expected path, inform the user and suggest checking the repository structure.
+If the README.md file doesn't exist at the expected path, inform the user and suggest checking the repository structure. Do not proceed with fabricated content.
+
+### Question bank missing entries for a lesson
+If `references/question-bank.md` has no questions for the resolved lesson, tell the user and stop — never invent questions to fill the gap.
 
 ## Validation
 

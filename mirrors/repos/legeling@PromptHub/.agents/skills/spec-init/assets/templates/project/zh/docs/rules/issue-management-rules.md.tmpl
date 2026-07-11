@@ -1,4 +1,9 @@
-# Issue Management Rules
+# Issue 管理规则
+
+## 职责边界
+
+- 本文件负责：未解决问题、阻塞项、风险、技术债和被废弃文档的记录要求。
+- 本文件不负责：单次需求、bugfix 或重构的变更生命周期；那部分见 `change-management-rules.md`。归档编号和路径细则见 `document-archive-rules.md`。
 
 ## 基本原则
 

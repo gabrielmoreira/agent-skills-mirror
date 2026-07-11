@@ -43,7 +43,7 @@ Salesforce WSDL2Apex has limitations. Check for:
 
 For a WSDL defining `CustomerService` with operation `getCustomer`:
 
-```
+```text
 AsyncCustomerService.cls         - Async version of service
 CustomerService.cls              - Main stub class with methods
 GetCustomerRequest.cls           - Request wrapper

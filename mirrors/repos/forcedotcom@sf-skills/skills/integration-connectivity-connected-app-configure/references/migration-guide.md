@@ -72,7 +72,7 @@ List all systems using each Connected App:
 
 #### 2.2 Plan Credential Rollover
 
-```
+```text
 Timeline Example:
 Week 1: Create ECA, deploy to DevHub
 Week 2: Update integration systems with new credentials

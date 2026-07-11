@@ -20,7 +20,14 @@ public with sharing class Industries_XxxCallable implements System.Callable {
     }
 
     private Map<String, Object> actionOne(Map<String, Object> args) {
-        // 1. Validate required keys (e.g. args.get('requiredKey'))
+        // 1. Validate required keys
+        Map<String, Object> inputMap = (Map<String, Object>) args.get('inputMap');
+        if (inputMap == null || inputMap.isEmpty()) {
+            return new Map<String, Object>{
+                'success' => false,
+                'error'   => 'Missing required input in inputMap'
+            };
+        }
         // 2. Coerce types safely
         // 3. Run business logic (SOQL with WITH USER_MODE, DML with sharing)
         // 4. Return response envelope

@@ -33,4 +33,3 @@ sf data360 calculated-insight list -o myorg 2>/dev/null
 - [SKILL.md](SKILL.md)
 - [../data360-orchestrate/assets/definitions/calculated-insight.template.json](../data360-orchestrate/assets/definitions/calculated-insight.template.json)
 - [../data360-orchestrate/assets/definitions/segment.template.json](../data360-orchestrate/assets/definitions/segment.template.json)
-- [CREDITS.md](CREDITS.md)

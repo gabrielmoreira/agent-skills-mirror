@@ -1,6 +1,6 @@
 ---
 name: react-native-brownfield-migration
-description: Provides an incremental adoption strategy to migrate native iOS or Android apps to React Native or Expo using @callstack/react-native-brownfield for initial setup. Use when planning migration steps, packaging XCFramework/AAR artifacts, and integrating them into host apps.
+description: Implements an accepted incremental brownfield migration from native iOS or Android to React Native or Expo using @callstack/react-native-brownfield. Use after the brownfield path has been selected, when setting up the integration, packaging XCFramework or AAR artifacts, or adding React Native surfaces to native hosts.
 license: MIT
 metadata:
   author: Callstack
@@ -8,6 +8,8 @@ metadata:
 ---
 
 # Migrating to React Native
+
+Use this skill only after the decision to adopt brownfield migration has been made. When the user is still choosing between brownfield, greenfield, a checkpoint-based path, defer, or no migration, use [assess-react-native-migration](../assess-react-native-migration/SKILL.md) first.
 
 ## Overview
 
@@ -65,7 +67,7 @@ Before selecting any reference file, classify the project:
 
 Reference this package when:
 
-- Planning incremental migration from native-only apps to React Native or Expo
+- Implementing an accepted incremental migration from native-only apps to React Native or Expo
 - Creating brownfield integration flows for Expo or bare React Native projects
 - Performing initial setup with `@callstack/react-native-brownfield`
 - Generating iOS XCFramework artifacts from a React Native app
@@ -91,7 +93,8 @@ Reference this package when:
 
 | Problem | Start With |
 |---------|------------|
-| Need path decision first | [quick-start.md][quick-start] |
+| Need migration path decision first | [assess-react-native-migration](../assess-react-native-migration/SKILL.md) |
+| Need Expo vs bare path decision | [quick-start.md][quick-start] |
 | Need to create a new Expo app for brownfield | [expo-create-app.md][expo-create-app] |
 | Need Expo brownfield setup and plugin wiring | [expo-quick-start.md][expo-quick-start] |
 | Need Expo iOS brownfield integration | [expo-ios-integration.md][expo-ios-integration] |
@@ -101,6 +104,10 @@ Reference this package when:
 | Need bare RN Android AAR generation/publish | [bare-android-aar-generation.md][bare-android-aar-generation] |
 | Need bare RN iOS host integration | [bare-ios-native-integration.md][bare-ios-native-integration] |
 | Need bare RN Android host integration | [bare-android-native-integration.md][bare-android-native-integration] |
+
+## Related Skills
+
+- [Assess React Native migration](../assess-react-native-migration/SKILL.md) before selecting the migration path.
 
 [quick-start]: references/quick-start.md
 [expo-create-app]: references/expo-create-app.md

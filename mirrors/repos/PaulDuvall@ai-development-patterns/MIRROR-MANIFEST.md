@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PaulDuvall/ai-development-patterns` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `PaulDuvall/ai-development-patterns` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PaulDuvall/ai-development-patterns` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,9 +59,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`examples/codified-rules/CLAUDE.md`](examples/codified-rules/CLAUDE.md) |
+| 1 | ✓ | [`.agents/skills/evaluate-pattern-adoption/agents/openai.yaml`](.agents/skills/evaluate-pattern-adoption/agents/openai.yaml) |
+| 2 | ✓ | [`.agents/skills/evaluate-pattern-adoption/references/evidence-methodology.md`](.agents/skills/evaluate-pattern-adoption/references/evidence-methodology.md) |
+| 3 | ✓ | [`.agents/skills/evaluate-pattern-adoption/SKILL.md`](.agents/skills/evaluate-pattern-adoption/SKILL.md) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 6 | ✓ | [`examples/codified-rules/CLAUDE.md`](examples/codified-rules/CLAUDE.md) |
 
 ---
 

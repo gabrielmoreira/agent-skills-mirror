@@ -16,7 +16,7 @@
 
 ## Workflow
 
-This project follows Spec-Driven Development (SDD) + verification-driven delivery.
+This project follows Spec-Driven Development (SDD) + verification-driven delivery, with a Spec Kit-inspired phase loop.
 
 Recommended order:
 
@@ -28,8 +28,22 @@ Recommended order:
 6. Define `docs/workflow/04-verification/README.md`
 7. Generate `docs/workflow/05-tasks/README.md`
 8. Create `docs/changes/active/<change-key>/` for the current work
-9. Review `docs/rules/README.md`
-10. Start implementation and keep tests and docs in sync
+9. Run analyze to confirm requirements, design, verification, tasks, and the change workspace do not conflict
+10. Review `docs/rules/README.md`
+11. Start implementation and keep tests and docs in sync
+12. Run converge to update workflow, knowledge, changes, records, README, and AGENTS
+
+## Workflow Phases
+
+| Phase | Project location | Goal |
+|---|---|---|
+| specify | `00-intake`, `01-requirements` | turn the idea into goals, boundaries, FR/NFR/AC |
+| clarify | open-question sections, and `docs/issues/` when needed | clarify only decisions that affect scope, design, data, permissions, or tests |
+| plan | `02-design`, `03-implementation`, `04-verification`, `docs/knowledge/` | define design, delivery sequence, verification, and long-lived truth |
+| tasks | `05-tasks`, `docs/changes/active/<change-key>/tasks.md` | create executable, verifiable, traceable tasks |
+| analyze | before implementation | find orphan IDs, missing mappings, conflicting docs, and blocking `[To confirm]` items |
+| implement | code, tests, scripts, migrations | execute work that traces back to `FR -> DES -> TEST -> T` |
+| converge | after implementation | align real behavior, current docs, and historical records again |
 
 ## Document Guide
 
@@ -52,6 +66,8 @@ Recommended order:
 - `docs/rules/README.md`: coding, testing, doc-sync, and Definition of Done rules
 - `docs/rules/document-routing-rules.md`: semantic-to-path routing rules for documents
 - `docs/rules/change-management-rules.md`: change-tracking and release rules
+- `docs/rules/commit-rules.md`: commit format, document links, scope, and test status rules
+- `docs/rules/document-archive-rules.md`: record document IDs, indexes, and year/month archive rules
 - `docs/rules/issue-management-rules.md`: issue tracking and document retirement rules
 - `docs/rules/clarification-rules.md`: clarification and decision confirmation rules
 - `docs/rules/bug-fix-rules.md`: bug fixing, root-cause, and regression rules
@@ -69,6 +85,8 @@ The project should maintain at least this chain:
 Before implementation starts, confirm at least one complete chain:
 
 `FR-001 -> DES-001 -> TEST-001 -> T-001`
+
+Run analyze before implementation and converge after implementation. Otherwise the docs can remain a plan instead of representing the current code.
 
 ## Structure
 
@@ -131,6 +149,8 @@ Before implementation starts, confirm at least one complete chain:
 |       |-- testing-standards.md
 |       |-- doc-sync-rules.md
 |       |-- change-management-rules.md
+|       |-- commit-rules.md
+|       |-- document-archive-rules.md
 |       |-- issue-management-rules.md
 |       |-- document-routing-rules.md
 |       `-- definition-of-done.md
@@ -174,4 +194,5 @@ Fill in the real project commands:
 4. Capture long-lived truth under `docs/knowledge/`
 5. Define the first red tests in `docs/workflow/04-verification/README.md`
 6. Break the current requirement or bug fix into `docs/changes/active/<change-key>/`
-7. Track unresolved issues and retired docs in `docs/issues/` and `docs/archive/`
+7. Run analyze before implementation and converge after implementation
+8. Track unresolved issues and retired docs in `docs/issues/` and `docs/archive/`

@@ -17,7 +17,7 @@
 
 ## Selectivity Rules
 
-```
+```text
 A filter is selective when it returns:
 - < 10% of total records for first 1 million
 - < 5% of total records for additional records

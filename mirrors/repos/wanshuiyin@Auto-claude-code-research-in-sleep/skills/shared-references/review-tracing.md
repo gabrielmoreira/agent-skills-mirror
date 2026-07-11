@@ -31,7 +31,7 @@ Do NOT trace: purely informational LLM calls (e.g., `codex exec` for code genera
 
 ## How to Trace
 
-After each reviewer MCP call, save the trace using `save_trace.sh`,
+After each reviewer MCP call — including every FAILED attempt in a capability-fallback chain (one trace entry per attempt: `--status error` + `--fallback-reason`; the successful entry records the RESOLVED pair) — save the trace using `save_trace.sh`,
 resolved through the canonical helper chain (see
 `integration-contract.md` §2 — failure policy C, "forensic helper").
 The full invocation:
@@ -51,7 +51,10 @@ if [ -n "$TRACE_HELPER" ]; then
   bash "$TRACE_HELPER" \
     --skill "<skill-name>" \
     --purpose "<purpose>" \
-    --model "<model>" \
+    --model "<model that actually ran — the RESOLVED pair, not the target>" \
+    --effort "<effort that actually ran>" \
+    --fallback-reason "<why the capability chain stepped down; empty when it didn't>" \
+    --status "<ok | fallback_used | error>" \
     --thread-id "<threadId from response>" \
     --prompt "<full prompt as sent>" \
     --response "<full response content>"
@@ -98,7 +101,7 @@ when the helper is unreachable — the trace is forensic evidence, so
   "purpose": "round-1-review",
   "timestamp": "2026-04-15T14:31:00+08:00",
   "tool": "mcp__codex__codex",
-  "model": "gpt-5.5",
+  "model": "gpt-5.6-sol",
   "config": {"model_reasoning_effort": "xhigh"},
   "files_referenced": ["paper/sections/3_method.tex", "results/table1.csv"],
   "prompt": "<full prompt text>"
@@ -115,7 +118,7 @@ The reviewer's full response, verbatim. No truncation, no summarization.
   "purpose": "round-1-review",
   "timestamp": "2026-04-15T14:33:00+08:00",
   "thread_id": "019d8fe0-b25d-...",
-  "model": "gpt-5.5",
+  "model": "gpt-5.6-sol",
   "duration_ms": 142000,
   "status": "ok"
 }

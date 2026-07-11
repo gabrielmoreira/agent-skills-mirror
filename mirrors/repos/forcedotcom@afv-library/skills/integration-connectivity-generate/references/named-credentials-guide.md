@@ -20,7 +20,7 @@ Named Credentials provide secure storage of authentication credentials and endpo
 - Permission Set-based access control
 - More secure and flexible
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │  CREDENTIAL ARCHITECTURE (API 61+)                              │
 ├─────────────────────────────────────────────────────────────────┤
@@ -46,6 +46,9 @@ Named Credentials provide secure storage of authentication credentials and endpo
 
 ### 1. OAuth 2.0 Client Credentials
 
+**Template**: `assets/named-credentials/oauth-client-credentials.namedCredential-meta.xml`
+**Template**: `assets/external-credentials/oauth-external-credential.externalCredential-meta.xml`
+
 **Use Case**: Server-to-server integration without user context
 
 ```apex
@@ -63,6 +66,9 @@ req.setMethod('GET');
 
 ### 2. OAuth 2.0 JWT Bearer
 
+**Template**: `assets/named-credentials/oauth-jwt-bearer.namedCredential-meta.xml`
+**Template**: `assets/external-credentials/jwt-external-credential.externalCredential-meta.xml`
+
 **Use Case**: Certificate-based server-to-server auth
 
 **Prerequisites**:
@@ -78,6 +84,8 @@ req.setMethod('GET');
 
 ### 3. Certificate-Based (Mutual TLS)
 
+**Template**: `assets/named-credentials/certificate-auth.namedCredential-meta.xml`
+
 **Use Case**: High-security integrations requiring client certificate
 
 **Setup**:
@@ -87,6 +95,8 @@ req.setMethod('GET');
 4. External system must trust Salesforce's certificate
 
 ### 4. Basic Auth / API Key
+
+**Template**: `assets/named-credentials/custom-auth.namedCredential-meta.xml`
 
 **Use Case**: Simple APIs, internal systems
 
@@ -134,7 +144,7 @@ public class ExternalServiceCallout {
 
 ### Pattern 2: Multiple Environments
 
-```
+```text
 Named Credentials:
 ├── MyAPI_Dev     → https://api-dev.example.com
 ├── MyAPI_UAT     → https://api-uat.example.com

@@ -94,7 +94,7 @@ sequenceDiagram
 
 ## ASCII Fallback Template
 
-```
+```text
 ┌──────────┐  ┌───────────┐  ┌────────────┐  ┌────────────────┐
 │  User    │  │  Browser  │  │   Device   │  │   Salesforce   │
 │          │  │(phone/PC) │  │ (CLI/TV)   │  │  (Auth Server) │
@@ -166,7 +166,7 @@ curl -X POST https://login.salesforce.com/services/oauth2/device/code \
 
 ## Step 2: Display to User
 
-```
+```text
 ═══════════════════════════════════════════════════════════════
   To authorize this device, please:
 

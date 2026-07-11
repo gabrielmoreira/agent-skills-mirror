@@ -83,6 +83,8 @@ Activate when the user sends a screenshot or image alongside a complaint ("这�
 
 ## Lock the Direction First
 
+**Adding a surface to a mature product skips direction lock in the other direction**: when the task is a new panel, dialog, sheet, toast, or confirmation inside an app that already has same-class components, the direction is the app. Grep for the existing sibling component first and reuse its container, motion, and typography tokens; inventing a new style needs a stated reason why no existing component fits. First drafts that ignore the app's own component vocabulary get rejected on sight.
+
 **Before starting any component, page, or visual work**: list 2-3 mature products in the same category (e.g. Notion, Linear, Typora, iA Writer, Raycast), and write one sentence each on how they solve the specific problem at hand. Then write code. Skip only if the task is purely cosmetic (color, spacing, copy).
 
 Before writing any code, ask the user directly, using the environment's native question or approval mechanism if it has one:
@@ -150,6 +152,7 @@ Give at least 3 variations across genuinely different dimensions (density, typog
 | Added a setting or louder control to solve UI noise | Remove the misleading affordance or choose a quiet default first |
 | English looked fine, localized text overflowed | Test long words and localized strings before handoff, especially inside buttons, tabs, nav, and compact cards. |
 | Relied on `…` truncation to fit text in a fixed-width slot | Guarantee fit instead: compact the format, cap to whole segments, or hard-trim with no glyph. Metric and label footers must never tail-truncate into an ellipsis. |
+| One extra word pushed a line into a wrap; the last line held a single orphan word | Before handoff, sweep every user-visible text block for near-wrap and orphan-line states. Fix by tightening the copy, not by shrinking type; one instance found means sweep the whole document, all instances get fixed. |
 
 ## Output: Aesthetic Review
 

@@ -66,7 +66,7 @@ sequenceDiagram
 
 ## ASCII Fallback Template
 
-```
+```text
 ┌───────────────────────┐     ┌────────────────────┐
 │     Application       │     │     Salesforce     │
 │   (stored tokens)     │     │   (Auth Server)    │

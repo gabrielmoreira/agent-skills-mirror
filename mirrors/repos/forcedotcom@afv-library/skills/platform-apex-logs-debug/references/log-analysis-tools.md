@@ -11,7 +11,7 @@ The **Apex Log Analyzer** is a free VS Code extension that provides visual analy
 
 ### Installation
 
-```
+```text
 1. Open VS Code
 2. Go to Extensions (Ctrl+Shift+X / Cmd+Shift+X)
 3. Search "Apex Log Analyzer"
@@ -53,7 +53,7 @@ code --install-extension FinancialForce.lana
 
 ### Reading Flame Charts
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │ FLAME CHART INTERPRETATION                                   │
 ├─────────────────────────────────────────────────────────────┤

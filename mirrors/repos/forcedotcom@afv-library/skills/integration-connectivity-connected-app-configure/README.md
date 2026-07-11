@@ -23,21 +23,21 @@ This skill helps you create and manage:
 
 ### Create a Connected App
 
-```
+```text
 Use the integration-connectivity-connected-app-configure skill to create a Connected App named "MyIntegration"
 with API and RefreshToken scopes for server-to-server integration.
 ```
 
 ### Create an External Client App
 
-```
+```text
 Use the integration-connectivity-connected-app-configure skill to create an External Client App named
 "MobileApp" for a mobile application with PKCE enabled.
 ```
 
 ### Review Existing Apps
 
-```
+```text
 Use the integration-connectivity-connected-app-configure skill to review and score my existing Connected Apps
 for security best practices.
 ```
@@ -70,7 +70,7 @@ for security best practices.
 
 ## Directory Structure
 
-```
+```text
 integration-connectivity-connected-app-configure/
 ├── skills/
 │   └── integration-connectivity-connected-app-configure/
@@ -96,4 +96,3 @@ integration-connectivity-connected-app-configure/
 ## Dependencies
 
 - **platform-metadata-deploy**: For deploying apps to orgs
-- **sf-metadata**: For creating related metadata (Named Credentials)

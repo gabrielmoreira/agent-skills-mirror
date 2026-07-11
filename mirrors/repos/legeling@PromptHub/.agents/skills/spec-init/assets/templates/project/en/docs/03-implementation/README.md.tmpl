@@ -29,7 +29,7 @@
 
 Notes:
 
-- Phasing does not mean planning only once. After each delivery stage, come back and refine requirements, design, TDD, and tasks.
+- Phasing does not mean planning only once. After each delivery stage, come back and refine requirements, design, verification, and tasks.
 
 ## 3.2 Ongoing Refinement Plan
 
@@ -69,15 +69,24 @@ Explain which traceability chains are delivered in each milestone:
 - `M2`: Which requirement chains are added next
 - If some requirements move to a later version, note that here explicitly
 
-## 9. Implementation Plan Checklist
+## 9. Analysis and Convergence Plan
+
+- Pre-implementation analyze: check whether `FR-* / DES-* / TEST-* / T-*` are fully connected.
+- Pre-implementation analyze: check for blocking `[To confirm]` items, conflicting docs, or floating tasks.
+- Post-implementation converge: write real code behavior, test results, and newly discovered long-lived truth back into workflow and knowledge docs.
+- Post-implementation converge: update the status of `docs/changes/active/<change-key>/`, moving it to `completed/` or `legacy/` when appropriate.
+- Post-implementation converge: sync affected README, AGENTS, issues, releases, ADRs, and archive entries.
+
+## 10. Implementation Plan Checklist
 
 - This is a delivery order document, not a second design document
 - High-risk and high-uncertainty items are validated early
 - Every milestone has observable acceptance output
 - Doc updates and test updates are part of the plan
 - Obvious enhancement-only items are not forced into V1
+- analyze / converge are part of the delivery rhythm, not afterthoughts
 
-## 10. Blockers and Open Questions
+## 11. Blockers and Open Questions
 
 - [To confirm]
 - [To confirm]

@@ -18,7 +18,7 @@ Add the skill to your Cursor project by placing the `platform-data-manage` direc
 ## Usage
 
 Invoke the skill:
-```
+```text
 Skill(skill="platform-data-manage")
 Request: "Create 251 test Account records with varying Industries for trigger testing in org dev"
 ```
@@ -56,21 +56,21 @@ Request: "Create 251 test Account records with varying Industries for trigger te
 ## Cross-Skill Integration
 
 ### With platform-metadata-deploy
-```
+```text
 Skill(skill="platform-metadata-deploy")
 Request: "Describe Invoice__c in org dev - show all fields"
 ```
 Then use platform-data-manage with accurate field names and permitted values.
 
 ### From platform-apex-generate / automation-flow-generate
-```
+```text
 Skill(skill="platform-data-manage")
 Request: "Create 251 test Accounts to trigger AccountTrigger bulk testing"
 ```
 
 ## Directory Structure
 
-```
+```text
 platform-data-manage/
 ├── SKILL.md                   # Main skill prompt
 ├── assets/

@@ -16,7 +16,7 @@
 
 ## 开发方式
 
-本项目采用 Spec-Driven Development (SDD) + Verification-Driven Delivery。
+本项目采用 Spec-Driven Development (SDD) + Verification-Driven Delivery，并借鉴 Spec Kit 的阶段化工作流。
 
 推荐顺序：
 
@@ -28,8 +28,22 @@
 6. 制定 `docs/workflow/04-verification/README.md`
 7. 生成 `docs/workflow/05-tasks/README.md`
 8. 为本轮工作创建 `docs/changes/active/<change-key>/`
-9. 阅读 `docs/rules/README.md`
-10. 开始编码，并同步更新测试和文档
+9. 执行 analyze 检查，确认需求、设计、验证、任务和 change workspace 不冲突
+10. 阅读 `docs/rules/README.md`
+11. 开始编码，并同步更新测试和文档
+12. 执行 converge 检查，回写 workflow、knowledge、changes、records、README 和 AGENTS
+
+## 工作流阶段
+
+| Phase | 本项目落点 | 目标 |
+|---|---|---|
+| specify | `00-intake`, `01-requirements` | 把想法变成目标、边界、FR/NFR/AC |
+| clarify | 待确认区、必要时 `docs/issues/` | 只澄清会影响范围、方案、数据、权限、测试的关键问题 |
+| plan | `02-design`, `03-implementation`, `04-verification`, `docs/knowledge/` | 形成方案、实施顺序、验证策略和长期真相 |
+| tasks | `05-tasks`, `docs/changes/active/<change-key>/tasks.md` | 拆成可执行、可验证、可追踪任务 |
+| analyze | 实现前 | 查出孤立 ID、缺失映射、冲突文档和阻塞性 `[待确认]` |
+| implement | 代码、测试、脚本、迁移 | 执行能回链到 `FR -> DES -> TEST -> T` 的工作 |
+| converge | 实现后 | 让代码真实行为、当前文档和历史记录重新一致 |
 
 ## 文档导航
 
@@ -52,6 +66,8 @@
 - `docs/rules/README.md`: 编码、测试、文档同步和完成定义规则
 - `docs/rules/document-routing-rules.md`: 文档语义到目录路径的映射规则
 - `docs/rules/change-management-rules.md`: 变更记录与发布规则
+- `docs/rules/commit-rules.md`: 提交格式、文档关联、范围和测试状态规则
+- `docs/rules/document-archive-rules.md`: 记录型文档编号、索引和按年月归档规则
 - `docs/rules/issue-management-rules.md`: issue 跟踪与文档归档规则
 - `docs/rules/clarification-rules.md`: 需求澄清与决策确认规则
 - `docs/rules/bug-fix-rules.md`: bug 定位、根因修复与回归规则
@@ -69,6 +85,8 @@
 推荐在开始实现前，先确认至少一条完整链路：
 
 `FR-001 -> DES-001 -> TEST-001 -> T-001`
+
+实现前必须做 analyze 检查；实现后必须做 converge 检查。否则文档容易停留在计划状态，无法代表当前代码。
 
 ## 目录结构
 
@@ -174,4 +192,5 @@
 4. 在 `docs/knowledge/` 中补齐长期稳定真相
 5. 在 `docs/workflow/04-verification/README.md` 中定义首批红灯测试
 6. 当引入新需求或 bugfix 时，把本轮工作拆进 `docs/changes/active/<change-key>/`
-7. 当出现未解决问题或废弃文档时，维护 `docs/issues/` 和 `docs/archive/`
+7. 在实现前完成 analyze 检查，在实现后完成 converge 回写
+8. 当出现未解决问题或废弃文档时，维护 `docs/issues/` 和 `docs/archive/`

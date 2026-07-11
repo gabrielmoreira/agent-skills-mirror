@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Fission-AI/OpenSpec` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `Fission-AI/OpenSpec` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Fission-AI/OpenSpec` — 26 default patterns, 0 followed patterns, 4 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,10 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`openspec/work/AGENTS.md`](openspec/work/AGENTS.md) |
-| 3 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 4 | ✓ | [`website/app/llms.txt/route.ts`](website/app/llms.txt/route.ts) |
+| 1 | ✓ | [`.agents/skills/release-openspec/agents/openai.yaml`](.agents/skills/release-openspec/agents/openai.yaml) |
+| 2 | ✓ | [`.agents/skills/release-openspec/references/release-notes.md`](.agents/skills/release-openspec/references/release-notes.md) |
+| 3 | ✓ | [`.agents/skills/release-openspec/SKILL.md`](.agents/skills/release-openspec/SKILL.md) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`openspec/work/AGENTS.md`](openspec/work/AGENTS.md) |
+| 6 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 7 | ✓ | [`website/app/llms.txt/route.ts`](website/app/llms.txt/route.ts) |
 
 ---
 

@@ -7,7 +7,7 @@ This guide covers building Lightning Web Components for use in Salesforce Flow S
 
 ## Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                     FLOW ↔ LWC COMMUNICATION                        │
 ├─────────────────────────────────────────────────────────────────────┤

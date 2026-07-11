@@ -297,7 +297,7 @@ echo "Deleted $COUNT logs"
 Logs over 2MB are truncated. Solutions:
 
 1. **Reduce debug level:**
-   ```
+   ```text
    ApexCode: DEBUG → INFO
    ApexProfiling: FINEST → FINE
    ```
@@ -342,7 +342,7 @@ sf apex list log --target-org my-org --json | \
 ```
 
 The hook will output analysis like:
-```
+```text
 ============================================================
 🔍 DEBUG LOG ANALYSIS
 ============================================================

@@ -7,7 +7,7 @@ This guide covers best practices for writing effective, maintainable Apex tests 
 
 ## The Testing Pyramid
 
-```
+```text
                     ╱╲
                    ╱  ╲
                   ╱ E2E╲        Few end-to-end tests
@@ -423,7 +423,7 @@ Fast tests enable continuous integration. Slow tests become barriers to frequent
 
 ### Speed Strategy
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │  INTEGRATION TESTS (Few)                                    │
 │  - Real DML, real triggers                                  │
@@ -499,7 +499,7 @@ sf apex get test --test-run-id [id] --code-coverage --result-format json | jq '.
 
 ### Fast Test Checklist
 
-```
+```text
 □ Is there a pure logic portion that can be unit tested?
 □ Can database operations be mocked for edge cases?
 □ Is @TestSetup reused across multiple test methods?

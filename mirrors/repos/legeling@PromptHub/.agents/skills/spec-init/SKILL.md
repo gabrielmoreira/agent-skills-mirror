@@ -1,11 +1,6 @@
 ---
 name: spec-init
-description: 面向新项目或现有项目的文档驱动开发 skill。Use when the user wants to create,补齐,更新, or refine specs such as workflow, knowledge, verification, changes, README, or AGENTS for a real project.
-metadata:
-  stage: beta
-  language: zh-CN
-  workflow: agent-driven-spec
-  prompthub_profile: spec-directory-first
+description: 面向新项目或现有项目的文档驱动开发 skill。Use when the user wants to create, 补齐, 更新, or refine project specs, run a Spec Kit-inspired workflow loop, maintain workflow/knowledge/change docs, analyze consistency, converge implementation back into docs, or update README/AGENTS for a real project.
 ---
 
 # /spec-init — Agent 驱动的文档开发 skill
@@ -23,11 +18,12 @@ metadata:
 ## 目标
 
 - 帮用户把模糊想法整理成能执行的 spec
-- 帮已有项目补齐缺失的 intake / requirements / design / tdd / tasks / rules
+- 帮已有项目补齐缺失的 intake / requirements / design / verification / tasks / rules
 - 帮用户区分 what / why / how / verify / do-next
 - 形成至少一条完整追踪链：`FR -> DES -> TEST -> T`
 - 在信息不足时主动提供候选方案、对比、建议，而不是只留下空白
 - 帮用户逐步补全完整需求、完整设计、完整验证策略，而不是只停留在最小第一版
+- 帮项目把测试策略、测试标准、测试设计、用例矩阵、回归套件、测试数据和覆盖映射拆成可维护文档，而不是把测试计划平铺成一份进展报告
 
 ## 核心定位
 
@@ -62,7 +58,7 @@ metadata:
 
 你要做的是：
 
-- 先把想法拆成 intake / requirements / design / tdd / tasks
+- 先把想法拆成 intake / requirements / design / verification / tasks
 - 如果用户不懂概念，主动给方案、对比和建议
 - 不要只生成空文件；至少把当前已知信息写进去
 
@@ -86,52 +82,13 @@ metadata:
 - 如果项目已存在，先读代码再写文档，不要反过来。
 - 如果信息不全，写 `[待确认]`，但不要把整份文档都留空。
 - spec 不是一次性文档；每轮需求变化、设计变化、实现变化后都要继续完善。
-- 项目内已有 `AGENTS.md`、`spec/README.md`、`spec/rules/*` 或自定义 topology 时，必须优先遵循项目内真实拓扑；不要把本 skill 的通用 `docs/` 示例路径强行套用到项目上。
-- 对已有项目，先确认当前代码结构是否与历史文档一致；若不一致，先记录“文档已过时”的风险，再更新边界文档。
 
-## 项目拓扑覆盖规则
+## Repository Profiles
 
-本 skill 的默认示例使用 `docs/`，但这不是硬编码要求。
-
-执行时必须按以下顺序确定实际写入位置：
-
-1. 用户明确指定的路径或仓库规则。
-2. 当前仓库 `AGENTS.md` / `spec/README.md` / `spec/rules/document-routing-rules.md` 中定义的路径。
-3. 已存在且内容完整的项目文档拓扑。
-4. 最后才使用本 skill 的通用 `docs/` 示例路径。
-
-例如 PromptHub 项目使用 `spec/workflow/*`、`spec/knowledge/*`、`spec/rules/*`、`spec/changes/active/*` 作为内部 SSD 真相源；在该项目中不得新建平行的 `docs/workflow/*` 来承载内部变更。
-
-## PromptHub 内部执行规则
-
-当这个 skill 在 PromptHub 仓库内执行时，必须启用 PromptHub profile：
-
-- 先读 `AGENTS.md`、`spec/README.md`、`spec/rules/document-routing-rules.md`，再读相关稳定文档和 active change。
-- 内部需求、设计、验证、任务、问题、规则、发布与归档默认写入 `spec/`，不是 `docs/`。
-- `docs/` 只用于仓库对外说明、用户文档或 README 系列文档；不要把内部 SSD 内容写成新的 `docs/workflow/*`。
-- 非 trivial 的功能、迁移、重构、跨模块 bugfix、存储/同步/API/IPC/CLI/用户流程变化，必须创建或更新 `spec/changes/active/<change-key>/`。
-- active change 至少包含 `proposal.md`、`specs/<domain>/spec.md`、`design.md`、`tasks.md`、`implementation.md`。
-- delta spec 必须放在 `specs/<domain>/spec.md`，不要新建平铺的 `spec.md`。
-- 稳定真相只在变更落地后同步回 `spec/workflow/*`、`spec/knowledge/*`、`spec/rules/`、`spec/releases/` 或 `spec/adr/`。
-- 如果代码、稳定文档和 active change 互相冲突，先记录冲突并要求用户确认，不要静默选择最小改动。
-
-### PromptHub Issue 状态规则
-
-PromptHub 的 GitHub issue 远端状态和本地交付状态是两套记录：
-
-- `spec/issues/active/github-open.md` 和 `spec/issues/archive/github-closed.md` 只是 GitHub 远端快照。
-- `spec/issues/active/local-github-status.md` 记录本地 triage / delivery 状态。
-- 本地实现完成但版本尚未发布时，标记 `local_done` 或 `release_pending`，不要关闭 GitHub issue。
-- 目标版本发布后，才关闭 GitHub issue，并刷新 open / closed 快照。
-
-### PromptHub 测试与完成规则
-
-在 PromptHub 内处理 bugfix 或非 trivial feature 时：
-
-- 优先写能复现风险的失败测试或补充最小回归测试。
-- 测试要覆盖用户可见行为、持久化副作用、边界条件和失败路径，而不是只断言函数被调用。
-- `implementation.md` 必须记录实际验证命令、跳过项、警告和后续风险。
-- 不要把“已写代码”当成完成；完成必须包含文档记录和验证结果。
+When this skill runs inside the PromptHub repository, read and follow
+`references/prompthub-profile.md` before choosing document paths or change
+lifecycle semantics. The profile adapts upstream `docs/*` examples to
+PromptHub's `spec/*` topology without weakening the upstream phase gates.
 
 ## 文档边界
 
@@ -140,7 +97,7 @@ PromptHub 的 GitHub issue 远端状态和本地交付状态是两套记录：
 - `references/doc-boundaries.md`
 - `references/example-idea-to-docs.md`
 
-边界如下。路径里的 `docs/` 是通用新项目示例；在 PromptHub 内执行时按项目路由替换为 `spec/`：
+边界如下：
 
 - `docs/workflow/00-intake/README.md`: 为什么做，谁来用，什么不做
 - `docs/workflow/01-requirements/README.md`: 做什么，为什么做，怎么验收
@@ -151,6 +108,13 @@ PromptHub 的 GitHub issue 远端状态和本地交付状态是两套记录：
 - `docs/knowledge/reference/README.md`: 样例、协议、schema、素材、fixtures 等固定参考资料
 - `docs/workflow/03-implementation/README.md`: 先做什么后做什么
 - `docs/workflow/04-verification/README.md`: 怎么验证完成
+- `docs/workflow/04-verification/01-test-strategy-and-quality-gates.md`: 长期测试策略、测试层级、质量门禁和准出标准
+- `docs/workflow/04-verification/02-test-standards.md`: 测试代码命名、断言、隔离、Mock、失败路径和报告规则
+- `docs/workflow/04-verification/03-test-design-methodology.md`: 等价类、边界值、状态机、决策表、安全、并发、契约和回归设计方法
+- `docs/workflow/04-verification/04-test-case-matrix.md`: 模块级测试用例矩阵、优先级、层级、自动化状态和覆盖对象
+- `docs/workflow/04-verification/05-regression-suite.md`: 长期回归套件、触发条件、命令登记规范和残余风险记录
+- `docs/workflow/04-verification/06-test-data-and-fixtures.md`: 测试数据、fixtures、H2/Redis/外部依赖替身和脱敏规范
+- `docs/workflow/04-verification/07-coverage-map.md`: 模块、需求、设计、测试资产和已知缺口之间的覆盖映射
 - `docs/workflow/05-tasks/README.md`: 现在具体做什么动作
 - `docs/issues/README.md`: 尚未解决的问题、阻塞项、风险和技术债
 - `docs/changes/`: 这次为什么变、影响什么、同步了哪些文档和测试
@@ -158,6 +122,22 @@ PromptHub 的 GitHub issue 远端状态和本地交付状态是两套记录：
 - `docs/archive/README.md`: 已归档、已替代、已废弃但仍需保留历史的文档
 - `docs/adr/`: 关键架构或技术决策为什么改变
 - `docs/rules/`: 默认工程规则
+
+## Spec Kit 借鉴的阶段循环
+
+这个 skill 保留自己的 layered docs 拓扑，但执行节奏借鉴 Spec Kit 的阶段化工作流：
+
+| 阶段 | spec-init 落点 | 目标 |
+|---|---|---|
+| specify | `docs/workflow/00-intake/README.md`, `docs/workflow/01-requirements/README.md` | 把想法变成用户、边界、FR/NFR/AC |
+| clarify | intake / requirements 的待确认区，必要时更新 `docs/issues/` | 只澄清会影响范围、架构、数据、权限、测试的关键问题 |
+| plan | `docs/workflow/02-design/README.md`, `docs/workflow/03-implementation/README.md`, `docs/workflow/04-verification/README.md`, `docs/knowledge/` | 形成设计、实施顺序、验证策略和长期真相 |
+| tasks | `docs/workflow/05-tasks/README.md`, `docs/changes/active/<change-key>/tasks.md` | 拆成可执行、可验证、可追踪的任务 |
+| analyze | tasks 完成后、实现前，检查 requirements / design / verification / tasks / changes 是否冲突 | 找孤立 ID、缺失映射、未确认阻塞项和文档边界错误 |
+| implement | 代码、测试、脚本、迁移等真实改动 | 只执行已能回链到 `FR -> DES -> TEST -> T` 的工作 |
+| converge | 完成后回写 workflow、knowledge、changes、issues、releases、archive、README、AGENTS | 让代码现状、当前真相和历史变更记录重新一致 |
+
+不要把这些阶段理解成必须生成 `specs/` 目录。`spec-init` 的长期文档源仍是当前项目的 `docs/` 拓扑。
 
 ## 默认工作流
 
@@ -173,7 +153,6 @@ PromptHub 的 GitHub issue 远端状态和本地交付状态是两套记录：
 - 先读目录结构
 - 先读 README / docs / 关键入口代码
 - 先梳理真实调用链和模块边界
-- 如果仓库有 `AGENTS.md`、`spec/README.md`、`spec/rules/*` 或 active change，先按这些文件确定文档路由和工作流边界
 
 如果是新项目：
 
@@ -323,6 +302,13 @@ spec 应该随着项目推进不断完善。每轮需求澄清、设计决策、
 - `docs/workflow/02-design/README.md` 是否需要补新模块、新约定或新的异常链路
 - `docs/knowledge/` 是否需要补新的长期稳定真相
 - `docs/workflow/04-verification/README.md` 是否需要补新的测试映射和回归策略
+- `docs/workflow/04-verification/01-test-strategy-and-quality-gates.md` 是否需要更新测试层级、质量门禁或准出标准
+- `docs/workflow/04-verification/02-test-standards.md` 是否需要更新测试代码、断言、隔离或 Mock 规则
+- `docs/workflow/04-verification/03-test-design-methodology.md` 是否需要新增测试设计方法或模块风险模板
+- `docs/workflow/04-verification/04-test-case-matrix.md` 是否需要登记新的长期测试用例
+- `docs/workflow/04-verification/05-regression-suite.md` 是否需要更新回归套件和触发条件
+- `docs/workflow/04-verification/06-test-data-and-fixtures.md` 是否需要沉淀新的 fixtures 或测试数据规则
+- `docs/workflow/04-verification/07-coverage-map.md` 是否需要更新模块覆盖状态和测试缺口
 - `docs/workflow/05-tasks/README.md` 是否需要把新发现的工作拆成任务
 - `docs/issues/` 是否需要新增未解决问题、阻塞项、风险或技术债
 - `docs/changes/` 是否需要新增或移动一个 change workspace
@@ -331,8 +317,6 @@ spec 应该随着项目推进不断完善。每轮需求澄清、设计决策、
 - `README.md`、`AGENTS.md`、`docs/rules/`、`spec-init.topology.yml` 是否需要同步
 
 不要把 spec 当成“初始化时写一次，以后不更新”的静态文档。
-
-在 PromptHub 内，上述 `docs/*` 检查点对应 `spec/*` 的当前拓扑；只有对外文档才同步到 `docs/`。
 
 ### Step 5.2: 变更记录规则
 
@@ -353,6 +337,37 @@ spec 应该随着项目推进不断完善。每轮需求澄清、设计决策、
 - 被替代、废弃或仅保留历史价值的文档：放入 `docs/archive/` 并记录替代关系
 
 不要只改当前状态不留痕，也不要只写变更记录却不更新当前状态。
+
+### Step 5.3: 分析与收敛门禁
+
+在任务拆完、准备实现前，必须做一次一致性分析：
+
+- requirements 里每条高优 `FR-*` 是否有 `AC-*`
+- design 里是否有对应 `DES-*` 承接高优 `FR-*`
+- verification 里是否有对应 `TEST-*` 验证高优 `FR-*`
+- tasks 里是否有可执行 `T-*` 串起 `FR / DES / TEST`
+- `docs/changes/active/<change-key>/` 是否记录了本轮背景、影响、验证和同步清单
+- 高风险变更是否已经补测试设计、失败路径、回归触发条件和残余风险记录
+- 新增长期测试资产是否已经进入测试用例矩阵、回归套件、测试数据规范或覆盖映射
+- 是否仍存在阻塞性 `[待确认]`
+- 是否把需求、设计、任务、长期知识或变更历史写错了位置
+
+实现完成后，必须做一次收敛检查：
+
+- 代码真实行为是否和 requirements / design / verification 一致
+- 新增测试和回归验证是否已经写回 verification
+- 新增或变化的测试规范、测试设计、用例矩阵、回归套件、测试数据和覆盖缺口是否写回 verification 的对应细分文档
+- 新发现的长期真相是否进入 `docs/knowledge/`
+- 本轮 change 是否应该继续 active、移动到 completed，或转成 legacy
+- 发布、问题、ADR、归档、README、AGENTS 是否需要同步
+
+完成状态的 change 不允许继续留在 `docs/changes/active/`：
+
+- 如果任务、验证、同步清单和收敛回写都完成，必须把整个 `docs/changes/active/<change-key>/` 移到 `docs/changes/completed/`（项目启用年月归档时使用 `docs/changes/completed/YYYY/MM/<change-key>/`）
+- 如果暂时不能移动，不能把状态写成“已完成 / completed”；必须保持“待收敛 / needs convergence”或“阻塞 / blocked”，并在 `overview.md` 或 `impact.md` 写清剩余条件
+- 移动后必须同步 `docs/changes/README.md` 索引、提交引用路径，以及必要的 releases / issues / ADR / archive 记录
+
+如果分析或收敛发现缺口，先补文档和任务，再继续实现或交付。
 
 ### Step 6: 脚本和模板的正确位置
 
@@ -410,6 +425,7 @@ spec 应该随着项目推进不断完善。每轮需求澄清、设计决策、
 - 哪些地方是根据现状整理出来的
 - 哪些地方仍然是 `[待确认]`
 - 已形成哪些 `FR -> DES -> TEST -> T` 追踪链
+- 分析门禁发现了哪些缺口，以及实现后如何收敛文档
 
 ## 质量要求
 
@@ -418,6 +434,8 @@ spec 应该随着项目推进不断完善。每轮需求澄清、设计决策、
 - 不能把实现细节提前写进 requirements
 - 不能把任务清单混进 design
 - 不能把“后面补测试”当 verification 计划
+- 不能把测试计划、测试标准、测试用例、历史进展、调试步骤和覆盖映射混写在一份平铺文档里
+- 对高风险变更，verification 必须写清测试层级、测试设计方法、失败路径、回归触发条件、实际命令和残余风险
 - 对已有项目，不能写出和代码现状冲突的 spec
 - 对用户要求“完整设计”的场景，不能只给最小骨架或最小示例后就停止
 - 对新需求、bugfix、发布等场景，必须明确当前状态文档和历史变更文档分别怎么更新

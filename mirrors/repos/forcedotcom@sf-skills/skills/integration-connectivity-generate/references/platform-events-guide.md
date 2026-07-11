@@ -60,7 +60,7 @@ Platform Events enable event-driven architecture in Salesforce. They provide a s
 
 ### File Location
 
-```
+```text
 force-app/main/default/objects/Order_Update_Event__e/Order_Update_Event__e.object-meta.xml
 ```
 
@@ -125,7 +125,7 @@ trigger OrderUpdateSubscriber on Order_Update_Event__e (after insert) {
 
 External systems can subscribe using CometD streaming:
 
-```
+```text
 /event/Order_Update_Event__e
 ```
 
@@ -268,7 +268,7 @@ WHERE Topic = 'Order_Update_Event__e'
 
 Use CometD client to connect to Streaming API:
 
-```
+```text
 Endpoint: /cometd/62.0
 Channel: /event/Order_Update_Event__e
 ```

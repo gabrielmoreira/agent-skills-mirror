@@ -109,7 +109,7 @@ flowchart LR
 | **Dynamic Revenue Orchestration** | Guided selling |
 
 ### Product Hierarchy
-```
+```text
 ProductCatalog
     └── ProductCategory (Hierarchy)
             └── Product2
@@ -244,7 +244,7 @@ flowchart LR
 
 ## ASCII Fallback
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  REVENUE CLOUD DATA MODEL (L→R)                                              │
 │  Legend: LK = Lookup (-->), MD = Master-Detail (==>)                        │

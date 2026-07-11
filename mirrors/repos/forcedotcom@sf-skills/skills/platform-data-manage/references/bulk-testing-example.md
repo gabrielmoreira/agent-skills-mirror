@@ -173,7 +173,7 @@ System.debug('Heap: ' + Limits.getHeapSize() + '/' + Limits.getLimitHeapSize());
 
 ## Validation Score
 
-```
+```text
 Score: 128/130 ⭐⭐⭐⭐⭐ Excellent
 ├─ Query Efficiency: 25/25 (bulk queries)
 ├─ Bulk Safety: 25/25 (251 records, limits monitored)

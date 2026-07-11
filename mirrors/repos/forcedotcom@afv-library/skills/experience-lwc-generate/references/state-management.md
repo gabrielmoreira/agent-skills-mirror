@@ -11,7 +11,7 @@
 
 LWC state management has evolved beyond simple reactive properties. This guide covers modern patterns for managing complex state across components, including the `@lwc/state` library and Salesforce Platform State Managers.
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                    STATE MANAGEMENT SPECTRUM                                 │
 ├─────────────────────────────────────────────────────────────────────────────┤
@@ -588,7 +588,7 @@ disconnectedCallback() {
 
 ## Best Practices Summary
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                    STATE MANAGEMENT BEST PRACTICES                           │
 ├─────────────────────────────────────────────────────────────────────────────┤

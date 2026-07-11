@@ -3,7 +3,7 @@ name: open-knowledge-discovery
 description: "Read when the user asks what OpenKnowledge is, wants to install it on a repository, wants to share an OpenKnowledge project with collaborators, or asks how `ok init` / `ok cowork` / OK Desktop set up a project. Do NOT load to perform OpenKnowledge reads/writes — the runtime guidance for editing markdown inside an initialized OK project ships as a separate project-local skill at `.claude/skills/open-knowledge/` whenever `ok init` runs. If the user appears to be editing markdown inside a `.ok/` project and this is the only OK skill loaded, advise them to re-run `ok init` to install the project-local skill."
 compatibility: "Any agent host — no MCP server required. Pure discovery + install guidance."
 metadata:
-  version: "0.28.2"
+  version: "0.29.1"
   author: "Inkeep"
   repository: "https://github.com/inkeep/open-knowledge"
 ---
@@ -92,7 +92,7 @@ When asked to open or preview such a file, **decide by the viewing surface you
 actually have** — check the tool, not the host name. Only open a browser when
 you genuinely have one; never pop a browser tab on a host that has none.
 
-- **You have an in-app / built-in browser** (Cursor, Codex, and similar) — this
+- **You have an in-app / built-in browser** (Claude Code Desktop's Browser pane, Cursor, Codex, and similar) — this
   is the default: call the **`preview_url` MCP tool** with `file` set to the
   absolute path (it finds, or boots on demand, the session and returns a full
   `url`), then **immediately open that `url` in your in-app browser**. "Open it"
@@ -101,12 +101,7 @@ you genuinely have one; never pop a browser tab on a host that has none.
   (`ok open` prefers the Desktop app). Get the URL from `preview_url` only —
   never hunt for it via `ok ps` / `ok status` / `ok ui` / `ok start` or a guessed
   port.
-- **You have a Claude Code Desktop preview *pane* but no general browser** — the
-  pane is project-only: it shows in-project docs via `preview_start`, but it
-  **cannot host a file from outside the project**. For such a file run
-  `ok open /abs/path/to/file.md` (the Desktop app) instead; don't try to force
-  the file into the pane.
-- **No in-app browser and no pane** (a pure-stdio CLI) — run
+- **No in-app browser** (a pure-stdio CLI) — run
   `ok open /abs/path/to/file.md`: it opens the Desktop app when installed, else a
   browser, and boots the session itself. Don't force a browser tab the user
   didn't ask for; `ok open` is the right default here. If `ok` isn't on PATH,

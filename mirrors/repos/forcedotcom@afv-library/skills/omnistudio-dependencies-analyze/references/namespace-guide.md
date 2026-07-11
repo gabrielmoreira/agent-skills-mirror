@@ -20,7 +20,7 @@ Salesforce OmniStudio exists under three distinct namespaces depending on the or
 
 Run SOQL queries against each namespace's primary object. The first query that succeeds determines the namespace.
 
-```
+```text
 1. Probe Core:
    SELECT COUNT() FROM OmniProcess
    → Success? Namespace = Core. Stop.

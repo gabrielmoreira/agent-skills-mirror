@@ -21,3 +21,5 @@
 - When external contracts change, prioritize integration or end-to-end coverage.
 - When a new risky path appears, record it explicitly in the regression strategy.
 - For critical paths, explicitly state whether white-box, performance, and security coverage applies; if it applies, implement it, and if not, explain why.
+- If analyze finds an `FR-*` without a `TEST-*`, implementation must not start.
+- If converge finds that real test coverage and the verification plan differ, update the docs or add the missing tests.

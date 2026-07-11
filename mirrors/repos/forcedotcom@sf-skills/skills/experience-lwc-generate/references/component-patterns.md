@@ -154,7 +154,7 @@ LWC can interact with Apex in two ways: **@wire** (reactive/declarative) and **i
 
 #### Quick Comparison
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────────────┐
 │                    WIRE vs IMPERATIVE APEX CALLS                                     │
 ├──────────────────┬──────────────────────────────┬────────────────────────────────────┤
@@ -254,7 +254,7 @@ export default class ImperativeExample extends LightningElement {
 
 #### Decision Tree
 
-```
+```text
                     ┌─────────────────────────────┐
                     │   Need to modify data?      │
                     │   (Insert/Update/Delete)    │
@@ -955,7 +955,7 @@ export default class AccountList extends LightningElement {
 
 When two child components need to communicate but share the same parent, use the **parent as middleware**. This is the recommended pattern for master-detail UIs.
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    SIBLING COMMUNICATION FLOW                       │
 ├─────────────────────────────────────────────────────────────────────┤

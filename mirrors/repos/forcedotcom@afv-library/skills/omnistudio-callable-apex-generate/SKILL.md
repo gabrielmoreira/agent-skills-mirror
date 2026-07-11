@@ -53,7 +53,7 @@ Then:
 - Output schema (consistent response envelope)
 
 **Recommended response envelope**:
-```
+```json
 {
   "success": true|false,
   "data": {...},
@@ -70,7 +70,7 @@ Then:
 
 When designing for legacy Open Interface extensions (or dual Callable + Open Interface support), map the signature:
 
-```
+```text
 invokeMethod(String methodName, Map<String, Object> inputMap, Map<String, Object> outputMap, Map<String, Object> options)
 ```
 
@@ -171,7 +171,7 @@ action contract stable.
 | **Testing** | 15 | Positive/negative/contract/bulk tests |
 | **Documentation** | 10 | ApexDoc (`/** ... */` block comments — Salesforce Apex documentation standard) for class and action methods |
 
-**Thresholds**: ✅ 90+ (Ready) | ⚠️ 70-89 (Review) | ❌ <70 (Block)
+**Thresholds**: [PASS] 90+ (Ready) | [REVIEW] 70-89 (Review) | [BLOCK] <70 (Block)
 
 ---
 
@@ -266,10 +266,20 @@ Deliverables produced by this skill:
 | `examples/Test_VlocityOpenInterfaceConversion/MyCustomCallable.cls` | Phase 3 — migration pattern from legacy `VlocityOpenInterface` |
 | `examples/Test_VlocityOpenInterfaceConversion/MyCustomCallableTest.cls` | Phase 4 — test class for VlocityOpenInterface migration example |
 | `examples/Test_VlocityOpenInterfaceConversion/IndustriesCallableException.cls` | Phase 3 — custom exception class deployed alongside VlocityOpenInterface conversion |
-| `examples/Test_VlocityOpenInterfaceConversion/MyCustomVlocityOpenInterface2.cls` | Phase 3 — the original legacy VlocityOpenInterface2 class before migration |
+| `examples/Test_VlocityOpenInterfaceConversion/MyCustomClass.cls` | Phase 3 — the original legacy VlocityOpenInterface class before migration |
 | `examples/Test_VlocityOpenInterfaceConversion/TRANSCRIPT.md` | Reference — reasoning transcript for VlocityOpenInterface conversion |
 | `examples/Test_VlocityOpenInterface2Conversion/MyCustomCallable.cls` | Phase 3 — migration pattern from `VlocityOpenInterface2` |
 | `examples/Test_VlocityOpenInterface2Conversion/MyCustomCallableTest.cls` | Phase 4 — test class for VlocityOpenInterface2 migration example |
 | `examples/Test_VlocityOpenInterface2Conversion/IndustriesCallableException.cls` | Phase 3 — custom exception class deployed alongside VlocityOpenInterface2 conversion |
 | `examples/Test_VlocityOpenInterface2Conversion/MyCustomRemoteClass.cls` | Phase 3 — remote class used by the VlocityOpenInterface2 migration example |
 | `examples/Test_VlocityOpenInterface2Conversion/TRANSCRIPT.md` | Reference — reasoning transcript for VlocityOpenInterface2 conversion |
+
+---
+
+## Pre-Delivery Checklist
+
+- [ ] `call()` null-checks `args` before accessing keys
+- [ ] `IndustriesCallableException` class included in deployment package
+- [ ] Namespace qualified for `omnistudio.VlocityOpenInterface2` (if applicable)
+- [ ] `outputMap` keys documented per action (success and error cases)
+- [ ] Migrated callers read return value instead of `outputMap` by reference

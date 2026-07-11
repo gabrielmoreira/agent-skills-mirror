@@ -21,7 +21,7 @@ The `DR_` prefix stands for DataRaptor, the original product name. It remains th
 
 ### Format
 
-```
+```text
 DR_[Type]_[PrimaryObject]_[Purpose]
 ```
 
@@ -56,14 +56,14 @@ For custom objects, include the namespace prefix if applicable but drop the `__c
 
 When a Data Mapper spans multiple objects, name it after the primary (root) object:
 
-```
+```text
 DR_Extract_Account_WithContactsAndOpps
 DR_Extract_Order_WithLineItems
 ```
 
 If the Data Mapper truly serves a cross-cutting concern, use a domain name instead:
 
-```
+```text
 DR_Extract_CustomerProfile_Full
 DR_Transform_ClaimSubmission_Normalize
 ```
@@ -88,7 +88,7 @@ Output field names in the Data Mapper JSON response should follow these conventi
 
 Input paths reference the source data structure. Use consistent dot notation:
 
-```
+```text
 AccountData.Name          -- Simple field
 AccountData.Owner.Name    -- Relationship traversal
 AccountData.Contacts[0]   -- Collection index
@@ -99,7 +99,7 @@ RequestBody.payload.id    -- Nested JSON path
 
 Output paths define the JSON structure returned by the Data Mapper:
 
-```
+```text
 AccountInfo.Name           -- Nested output
 AccountInfo.OwnerName      -- Flattened relationship
 AccountInfo.Contacts       -- Collection output
@@ -126,7 +126,7 @@ Result.status              -- Top-level result wrapper
 
 Data Mapper names should be environment-agnostic. Do not include environment identifiers in the name:
 
-```
+```text
 Bad:   DR_Extract_Account_Details_DEV
 Bad:   DR_Extract_Account_Details_v2
 Good:  DR_Extract_Account_Details

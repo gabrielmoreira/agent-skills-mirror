@@ -29,7 +29,7 @@
 
 注意：
 
-- 分阶段不等于只做一次规划。每完成一个阶段后，都应该回来继续补 requirements、design、tdd 和 tasks。
+- 分阶段不等于只做一次规划。每完成一个阶段后，都应该回来继续补 requirements、design、verification 和 tasks。
 
 ## 3.2 持续完善计划
 
@@ -69,15 +69,24 @@
 - `M2`: 再扩展哪些需求链路
 - 如果某些需求要延后到下个版本，在这里标清楚
 
-## 9. 实施计划自检
+## 9. 分析与收敛计划
+
+- 实现前 analyze：检查 `FR-* / DES-* / TEST-* / T-*` 是否完整串联。
+- 实现前 analyze：检查是否存在阻塞性 `[待确认]`、冲突文档或游离任务。
+- 实现后 converge：把真实代码行为、测试结果和发现的长期真相回写到 workflow 与 knowledge。
+- 实现后 converge：更新 `docs/changes/active/<change-key>/` 的状态，必要时移到 `completed/` 或 `legacy/`。
+- 实现后 converge：同步 README、AGENTS、issues、releases、ADR、archive 中受影响内容。
+
+## 10. 实施计划自检
 
 - 这里安排的是交付顺序，不是重新做设计
 - 高风险和高不确定性被前置验证
 - 每个里程碑都有可观察的验收产出
 - 文档更新和测试补齐已经被纳入计划
 - 没有把明显可以延后的增强项强行塞进 V1
+- analyze / converge 已经进入实施节奏，而不是交付后才想起
 
-## 10. 阻塞项与待确认
+## 11. 阻塞项与待确认
 
 - [待确认]
 - [待确认]

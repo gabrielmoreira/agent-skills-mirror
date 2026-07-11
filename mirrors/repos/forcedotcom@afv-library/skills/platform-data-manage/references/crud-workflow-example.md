@@ -12,7 +12,7 @@ Create a Deal Desk workflow test environment with:
 
 ## Phase 1: Discovery (sf-metadata)
 
-```
+```text
 Skill(skill="sf-metadata")
 Request: "Describe object Account in org dev - show required fields and picklist values"
 ```
@@ -171,7 +171,7 @@ sf apex run --file create-hierarchy.apex --target-org dev
 
 ## Validation Score
 
-```
+```text
 Score: 125/130 ⭐⭐⭐⭐⭐ Excellent
 ├─ Query Efficiency: 25/25 (indexed fields, no N+1)
 ├─ Bulk Safety: 23/25 (single records OK for demo)

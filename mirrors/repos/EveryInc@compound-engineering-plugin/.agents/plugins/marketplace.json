@@ -1,0 +1,20 @@
+{
+  "name": "compound-engineering-plugin",
+  "interface": {
+    "displayName": "Compound Engineering"
+  },
+  "plugins": [
+    {
+      "name": "compound-engineering",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/EveryInc/compound-engineering-plugin.git"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Coding"
+    }
+  ]
+}

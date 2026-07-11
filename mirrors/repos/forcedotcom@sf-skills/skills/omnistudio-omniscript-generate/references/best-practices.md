@@ -41,7 +41,7 @@ The default and most common pattern. Each Step represents a phase of the process
 - The final Step should be a review/confirmation screen
 
 **Example structure:**
-```
+```text
 Step 1: "Account Selection"    -> Type Ahead (account search) + DataRaptor Extract (prefill)
 Step 2: "Service Details"      -> Select, Text, Date inputs for the request
 Step 3: "Attachments"          -> File upload + Text Area for notes

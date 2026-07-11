@@ -191,6 +191,7 @@ OrderStatusPublisher.publishEvents(events);
 ### Event Subscriber Trigger
 
 **Template**: `assets/platform-events/event-subscriber-trigger.trigger`
+**Template**: `assets/platform-events/event-subscriber-action.cls`
 
 #### Standard Volume Subscriber
 
@@ -534,7 +535,7 @@ public static void handleUpdate(OpportunityChangeEvent event, List<String> chang
 
 ### Decision Matrix
 
-```
+```text
 ┌───────────────────────────────────────────────────────────────────────┐
 │  WHEN TO USE PLATFORM EVENTS vs CHANGE DATA CAPTURE                   │
 ├───────────────────────────────────────────────────────────────────────┤
@@ -816,7 +817,7 @@ EventBus.publish(event);
 
 ### 3. Using Platform Events for Synchronous-Style Flow Orchestration
 
-```
+```javascript
 // ❌ WRONG: Using events to simulate synchronous request/response
 Flow A → Publish "Request" Event → Subscriber triggers Flow B → Publish "Response" Event → ???
 ```

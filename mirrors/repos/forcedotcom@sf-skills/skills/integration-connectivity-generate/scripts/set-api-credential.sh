@@ -45,6 +45,12 @@ SETTING_NAME=$1
 API_KEY=$2
 ORG_ALIAS=$3
 
+# Validate SETTING_NAME to prevent SOQL injection
+if [[ ! "$SETTING_NAME" =~ ^[a-zA-Z0-9_]+$ ]]; then
+    echo -e "${RED}Error: Invalid setting name '$SETTING_NAME'. Only alphanumeric and underscores allowed.${NC}" >&2
+    exit 1
+fi
+
 # If API key is "-", prompt securely
 if [ "$API_KEY" = "-" ]; then
     echo -e "${YELLOW}Enter API key (input hidden):${NC}"
@@ -57,6 +63,9 @@ if [ -z "$API_KEY" ]; then
     echo -e "${RED}Error: API key cannot be empty${NC}"
     exit 1
 fi
+
+# Escape single quotes in API_KEY for safe interpolation
+API_KEY_ESCAPED="${API_KEY//\'/\\\'}"
 
 # Validate org
 echo -e "${BLUE}Validating org connection...${NC}"
@@ -120,7 +129,7 @@ if [ -z "$EXISTING_ID" ]; then
     echo -e "${BLUE}Creating new credential record...${NC}"
     sf data create record \
         --sobject API_Credentials__c \
-        --values "Name='$SETTING_NAME' API_Key__c='$API_KEY'" \
+        --values "Name='$SETTING_NAME' API_Key__c='$API_KEY_ESCAPED'" \
         --target-org "$ORG_ALIAS"
     echo -e "${GREEN}✓ Credential created${NC}"
 else
@@ -128,7 +137,7 @@ else
     sf data update record \
         --sobject API_Credentials__c \
         --record-id "$EXISTING_ID" \
-        --values "API_Key__c='$API_KEY'" \
+        --values "API_Key__c='$API_KEY_ESCAPED'" \
         --target-org "$ORG_ALIAS"
     echo -e "${GREEN}✓ Credential updated${NC}"
 fi

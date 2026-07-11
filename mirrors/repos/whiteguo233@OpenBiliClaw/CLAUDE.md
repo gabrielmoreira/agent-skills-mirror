@@ -135,6 +135,36 @@ that broke the convention).
 - Async tests use `asyncio_mode = "auto"` (no manual `@pytest.mark.asyncio` needed)
 - Conventional Commits: `feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:`, `perf:`, `ci:`
 
+## Hard-Won Pitfall Rules
+
+These history-backed guardrails complement, rather than replace, the
+[LLM Prompt-Cache Convention](#llm-prompt-cache-convention-v0328) and
+[Documentation Requirements](#documentation-requirements).
+
+1. **Set `trust_env=False` for Bilibili, Douyin, XHS, Zhihu, CN-CDN, Ollama, and localhost HTTP clients; make proxy use an explicit opt-in.**
+   Inherited proxies broke Bilibili requests and hid useful login diagnostics (`df626f3f`).
+
+2. **Never cache empty or failed provider results; validate every value before a cache write.**
+   Empty embedding vectors polluted the cache and corrupted later scoring (`90918295`).
+
+3. **Document every algorithmic threshold's calibration provenance in a comment, and reopen calibration after any provider or model swap.**
+   The delight threshold repeatedly moved because its inherited constant lacked stable calibration (`70259c23`).
+
+4. **Validate structured LLM output before persistence: whitelist enums, clamp invalid numbers to field defaults, treat placeholders as missing, and log coercions at WARNING.**
+   Schema-defying taste-profile output was silently persisted until explicit validation was added (`1eef1cd2`).
+
+5. **Treat user-visible features as a four-surface contract: extension popup, desktop web, mobile web, and CLI; cover all four or state the exclusion in the PR, with shared logic in the backend.**
+   Independent implementations let fallback-provider guards drift between popup and desktop (`a03f8f92`).
+
+6. **Verify every install/update-adjacent change in git, Docker, and desktop install modes.**
+   Auto-update needed a cross-mode repair after install paths diverged (`ec9db8b7`).
+
+7. **Propagate failures with their real cause and reject invalid configuration at save time; diagnosable beats “appears to work.”**
+   Dead fallback-provider states were silently accepted until save-time rejection exposed them (`fd4b9390`).
+
+> Before merging, ask: Will this failure be swallowed? Does this constant or cache survive a
+> provider swap? Did the other surfaces and install modes keep up?
+
 ## Documentation Requirements
 
 **Every commit/merge to main, and every release, must keep docs and architecture diagrams in sync with the code.** Not optional. Branches without doc updates should not merge. Scope is not limited to "todolist tasks" — any change that touches interfaces, module boundaries, data flow, config, CLI, dependencies, or external integrations triggers this rule.

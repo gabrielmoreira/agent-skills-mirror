@@ -14,7 +14,7 @@ Salesforce SOQL query generation, optimization, and analysis skill with 100-poin
 
 ### 1. Invoke the skill
 
-```
+```yaml
 Skill: platform-soql-query
 Request: "Find Accounts with open Opportunities created this quarter"
 ```

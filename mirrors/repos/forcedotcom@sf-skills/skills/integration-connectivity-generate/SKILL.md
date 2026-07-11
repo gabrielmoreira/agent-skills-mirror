@@ -189,3 +189,9 @@ When this skill completes an integration task, it produces:
 | 90–107 | good design with some hardening left |
 | 72–89 | workable but needs architectural review |
 | < 72 | unsafe / incomplete for deployment |
+
+---
+
+## Pre-Delivery Checklist
+
+- [ ] Never hardcode credentials — all secrets stored in Named Credentials or External Credentials

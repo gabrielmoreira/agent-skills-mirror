@@ -409,6 +409,8 @@ Headers: Idempotency-Key: {{recordId}}-{{timestamp}}
 
 ### WSDL2Apex Process
 
+**Reference**: `assets/soap/wsdl2apex-guide.md`
+
 SOAP integrations in Salesforce use WSDL2Apex to auto-generate Apex classes from WSDL files.
 
 #### Step-by-Step Process
@@ -659,6 +661,8 @@ public with sharing class SoapQueueableCallout implements Queueable, Database.Al
 - Log callout errors without exposing sensitive data
 
 ### Error Handling Patterns
+
+**Template**: `assets/callouts/http-response-handler.cls`
 
 ```apex
 try {

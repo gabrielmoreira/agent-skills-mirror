@@ -115,7 +115,7 @@ sequenceDiagram
 
 ## ASCII Fallback Template
 
-```
+```text
 ┌────────────────┐     ┌────────────────────┐     ┌─────────────────────┐
 │     Client     │     │    Salesforce      │     │   OIDC Provider     │
 │  (Mobile App)  │     │ (Auth/RP Server)   │     │  (Google/Facebook)  │
@@ -221,7 +221,7 @@ sequenceDiagram
 
 ### Auth. Provider Setup
 
-```
+```text
 Setup → Auth. Providers → New
 ├── Provider Type: OpenID Connect (or specific: Google, Facebook)
 ├── Consumer Key: [From OP Developer Console]

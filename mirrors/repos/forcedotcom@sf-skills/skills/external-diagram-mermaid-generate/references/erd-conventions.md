@@ -13,7 +13,7 @@ Standardized conventions for Salesforce data model diagrams with object type ind
 
 ### Examples
 
-```
+```text
 Account [STD]         → Standard Salesforce object
 Invoice__c [CUST]     → Custom object
 SAP_Product__x [EXT]  → External object via Salesforce Connect

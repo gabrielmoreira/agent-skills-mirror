@@ -167,7 +167,7 @@ Use the **platform-metadata-deploy** skill: "Proceed with actual deployment to [
 | **Performance** | 15 | Bounded queries with LIMIT/filters; Turbo Extract for read-heavy scenarios; minimal relationship depth; indexed filter fields |
 | **Documentation** | 15 | Description on OmniDataTransform record; field mapping rationale documented; consuming components identified |
 
-**Thresholds**: ✅ 90+ (Deploy) | ⚠️ 67-89 (Review) | ❌ <67 (Block - fix required)
+**Thresholds**: [PASS] 90+ (Deploy) | [REVIEW] 67-89 (Review) | [BLOCK] <67 (Block - fix required)
 
 ---
 

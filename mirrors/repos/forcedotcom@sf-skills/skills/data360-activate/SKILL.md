@@ -107,11 +107,9 @@ Next step: <destination validation or downstream testing>
 
 ## References
 
-- [README.md](README.md)
 - [../data360-orchestrate/assets/definitions/activation-target.template.json](../data360-orchestrate/assets/definitions/activation-target.template.json)
 - [../data360-orchestrate/assets/definitions/activation.template.json](../data360-orchestrate/assets/definitions/activation.template.json)
 - [../data360-orchestrate/assets/definitions/data-action-target.template.json](../data360-orchestrate/assets/definitions/data-action-target.template.json)
 - [../data360-orchestrate/assets/definitions/data-action.template.json](../data360-orchestrate/assets/definitions/data-action.template.json)
-- [../data360-orchestrate/UPSTREAM.md](../data360-orchestrate/UPSTREAM.md)
 - [../data360-orchestrate/references/plugin-setup.md](../data360-orchestrate/references/plugin-setup.md)
 - [../data360-orchestrate/references/feature-readiness.md](../data360-orchestrate/references/feature-readiness.md)

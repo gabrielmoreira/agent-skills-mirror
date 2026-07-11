@@ -9,7 +9,7 @@ Check whether a proposed method/idea has already been done in the literature: **
 
 ## Constants
 
-- REVIEWER_MODEL = `gpt-5.5` — Model used via a secondary Codex agent. Must be an OpenAI model (e.g., `gpt-5.5`, `o3`, `gpt-4o`)
+- REVIEWER_MODEL = `gpt-5.6-sol` — Model used via a secondary Codex agent. Must be an OpenAI model (e.g., `gpt-5.6-sol`, `o3`, `gpt-4o`)
 - **REVIEWER_BACKEND = `codex`** — Default: Codex xhigh reviewer. Use `--reviewer: oracle-pro` only when explicitly requested; if Oracle is unavailable, warn and fall back to Codex xhigh.
 
 ## Instructions
@@ -39,7 +39,7 @@ For EACH core claim, search using ALL available sources:
 
 3. **Read abstracts**: For each potentially overlapping paper, WebFetch its abstract and related work section
 
-### Phase C: Cross-Model Verification
+### Phase C: Fresh-Agent Verification (same-family provisional by default)
 Call REVIEWER_MODEL via `spawn_agent` (`spawn_agent`) with xhigh reasoning:
 ```
 reasoning_effort: xhigh

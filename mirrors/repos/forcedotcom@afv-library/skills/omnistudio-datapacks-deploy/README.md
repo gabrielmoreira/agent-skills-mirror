@@ -14,7 +14,7 @@ Salesforce Industries DataPack deployment automation using Vlocity Build. Export
 
 Invoke this skill when working with OmniStudio/Vlocity DataPack deployments:
 
-```
+```text
 Skill: omnistudio-datapacks-deploy
 Request: "Deploy my OmniStudio DataPacks to UAT using Vlocity Build and include retry guidance."
 ```

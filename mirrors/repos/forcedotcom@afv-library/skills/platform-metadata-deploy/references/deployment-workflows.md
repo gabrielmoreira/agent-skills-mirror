@@ -6,7 +6,7 @@ This file contains practical examples of common Salesforce deployment scenarios 
 ## Example 1: Basic Production Deployment
 
 ### User Request:
-```
+```text
 "Deploy my changes to production with full test coverage"
 ```
 
@@ -19,7 +19,7 @@ This file contains practical examples of common Salesforce deployment scenarios 
    ```
 
 2. **Validation output**
-   ```
+   ```text
    ✓ Deployment validation succeeded
    ✓ Tests passed: 145/145 (92% coverage)
    ✓ Components validated: 23
@@ -31,7 +31,7 @@ This file contains practical examples of common Salesforce deployment scenarios 
    ```
 
 4. **Final output**
-   ```
+   ```text
    ## Salesforce Deployment Report
 
    ✓ Status: Succeeded
@@ -50,7 +50,7 @@ This file contains practical examples of common Salesforce deployment scenarios 
 ## Example 2: Selective Component Deployment
 
 ### User Request:
-```
+```text
 "Deploy only the new Lightning Web Components to sandbox"
 ```
 
@@ -72,7 +72,7 @@ This file contains practical examples of common Salesforce deployment scenarios 
    ```
 
 3. **Output**
-   ```
+   ```text
    ✓ Deployment succeeded
    ✓ Components Deployed:
      - accountCard (LWC)
@@ -85,7 +85,7 @@ This file contains practical examples of common Salesforce deployment scenarios 
 ## Example 3: Hotfix Deployment
 
 ### User Request:
-```
+```text
 "I need to deploy an urgent bug fix in AccountController to production"
 ```
 
@@ -124,7 +124,7 @@ This file contains practical examples of common Salesforce deployment scenarios 
 ## Example 4: Manifest-Based Deployment
 
 ### User Request:
-```
+```text
 "Deploy using the package.xml manifest for release v2.3"
 ```
 
@@ -155,7 +155,7 @@ This file contains practical examples of common Salesforce deployment scenarios 
 ## Example 5: Scratch Org Development Workflow
 
 ### User Request:
-```
+```text
 "Create a scratch org and deploy my feature branch"
 ```
 
@@ -195,7 +195,7 @@ This file contains practical examples of common Salesforce deployment scenarios 
 ## Example 6: Deployment Rollback
 
 ### User Request:
-```
+```text
 "The deployment failed, I need to rollback to the previous version"
 ```
 
@@ -232,7 +232,7 @@ This file contains practical examples of common Salesforce deployment scenarios 
 ## Example 7: Destructive Changes
 
 ### User Request:
-```
+```text
 "Remove the deprecated CustomObject__c and old Apex classes"
 ```
 
@@ -272,7 +272,7 @@ This file contains practical examples of common Salesforce deployment scenarios 
 ## Example 8: Multi-Environment Deployment
 
 ### User Request:
-```
+```text
 "Deploy to dev, then staging, then production after each passes validation"
 ```
 
@@ -303,7 +303,7 @@ This file contains practical examples of common Salesforce deployment scenarios 
 ## Example 9: Code Coverage Analysis
 
 ### User Request:
-```
+```text
 "Check my code coverage and identify classes that need more tests"
 ```
 
@@ -320,7 +320,7 @@ This file contains practical examples of common Salesforce deployment scenarios 
    ```
 
 2. **Analyze coverage report**
-   ```
+   ```text
    Overall Code Coverage: 87%
 
    Classes with <75% coverage:
@@ -339,14 +339,14 @@ This file contains practical examples of common Salesforce deployment scenarios 
 ## Example 10: Deployment Error Recovery
 
 ### User Request:
-```
+```text
 "Deployment failed with 'INVALID_CROSS_REFERENCE_KEY' error"
 ```
 
 ### Skill Execution:
 
 1. **Analyze error**
-   ```
+   ```text
    Error: INVALID_CROSS_REFERENCE_KEY
    Component: CustomObject__c.SomeLookupField__c
    Message: Field references non-existent object
@@ -358,7 +358,7 @@ This file contains practical examples of common Salesforce deployment scenarios 
    ```
 
 3. **Solution provided**
-   ```
+   ```text
    The error indicates that SomeLookupField__c references an object
    that doesn't exist in the target org.
 

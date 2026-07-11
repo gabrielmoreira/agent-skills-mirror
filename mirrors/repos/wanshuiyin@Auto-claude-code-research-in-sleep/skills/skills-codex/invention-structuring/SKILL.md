@@ -13,7 +13,7 @@ Adapted from the refinement pattern in `/research-refine` for patent invention d
 
 ## Constants
 
-- `REVIEWER_MODEL = gpt-5.5` — External reviewer for invention decomposition validation
+- `REVIEWER_MODEL = gpt-5.6-sol` — External reviewer for invention decomposition validation
 - `MAX_REFINEMENT_ROUNDS = 3` — Maximum structuring iterations
 
 ## Inputs
@@ -108,13 +108,13 @@ Dependent Claim 4 → depends on 2, adds optional feature D
 Dependent Claim 5 → alternative implementation of feature A
 ```
 
-### Step 6: Cross-Model Validation
+### Step 6: Fresh-Agent Validation (same-family provisional by default)
 
 Call `REVIEWER_MODEL` via a dedicated Codex reviewer agent at xhigh reasoning:
 
 ```text
 spawn_agent:
-  model: gpt-5.5
+  model: gpt-5.6-sol
   reasoning_effort: xhigh
   message: |
     You are a patent attorney reviewing an invention disclosure.

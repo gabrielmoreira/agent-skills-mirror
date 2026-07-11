@@ -3484,10 +3484,11 @@ bd info [flags]
 ### bd init
 
 Initialize bd in the current directory by creating a .beads/ directory
-and Dolt database. Optionally specify a custom issue prefix.
+and its storage (a Dolt database by default). Optionally specify a custom issue prefix.
 
-Dolt is the default (and only supported) storage backend. The legacy SQLite
-backend has been removed. Use --backend=sqlite to see migration instructions.
+Dolt is the default backend and the only one with version control (history,
+branching, sync). Select an alternative with --backend=&lt;postgres|mysql|sqlite&gt;;
+see docs/STORAGE-BACKENDS.md for the trade-offs and setup.
 
 Use --database to specify an existing server database name, overriding the
 default prefix-based naming. This is useful when an external tool (e.g. an orchestrator)
@@ -3527,7 +3528,7 @@ bd init [flags]
       --agents-file string                             Custom filename for agent instructions (default: AGENTS.md)
       --agents-profile string                          AGENTS.md profile: 'minimal' (default, pointer to bd prime) or 'full' (complete command reference)
       --agents-template string                         Path to custom AGENTS.md template (overrides embedded default)
-      --backend string                                 Storage backend (default: dolt). --backend=sqlite prints deprecation notice.
+      --backend string                                 Storage backend: dolt (default), postgres, mysql, or sqlite. See docs/STORAGE-BACKENDS.md.
       --contributor                                    Run OSS contributor setup wizard
       --database string                                Use existing server database name (overrides prefix-based naming)
       --debug                                          Run the managed Dolt sql-server with --loglevel=debug and CPU profiling (--prof cpu). Persisted to config.yaml as dolt.debug. No effect on externally-managed servers.
@@ -3537,7 +3538,11 @@ bd init [flags]
       --force                                          Deprecated alias for --reinit-local. Bypasses only the LOCAL data-safety guard; does NOT authorize remote divergence (see 'bd help init-safety').
       --from-jsonl                                     Import issues from configured import.path; refuses remote history unless --discard-remote authorizes replacement
       --init-if-missing                                If the workspace is already initialized, skip init and exit 0 instead of failing (idempotent init for scaffolds)
+      --mysql-database string                          MySQL database for this workspace (with --backend=mysql; MySQL's isolation unit)
+      --mysql-url string                               MySQL server DSN (with --backend=mysql), e.g. user:pass@tcp(host:3306)/ . A password may be included for init but is never persisted; set BEADS_MYSQL_PASSWORD for later commands. Falls back to BEADS_MYSQL_URL.
       --non-interactive                                Skip all interactive prompts (auto-detected in CI or non-TTY environments)
+      --pg-schema string                               Postgres schema for this workspace's tables (with --backend=postgres; provides search_path isolation)
+      --pg-url string                                  Postgres connection URL (with --backend=postgres). A password may be included for init but is never persisted; set BEADS_PG_PASSWORD for later commands. Falls back to BEADS_POSTGRES_URL.
   -p, --prefix string                                  Issue prefix (default: current directory name)
       --proxied-server                                 [EXPERIMENTAL] Use a per-workspace proxied dolt sql-server (proxy + child dolt) rooted at .beads/proxieddb
       --proxied-server-config-path string              [EXPERIMENTAL] Absolute path to an existing dolt sql-server YAML config (proxied-server mode only). When set, bd uses this file instead of auto-generating one. Relative paths are rejected.
@@ -3564,8 +3569,9 @@ bd init [flags]
       --server-user string                             Dolt server MySQL user (default: root)
       --setup-exclude                                  Configure .git/info/exclude to keep beads files local (for forks)
       --shared-server                                  Enable shared Dolt server mode (all projects share one server at ~/.beads/shared-server/)
-      --skip-agents                                    Skip AGENTS.md and Claude/Codex setup generation
+      --skip-agents                                    Skip AGENTS.md and Claude/Codex/Cursor setup generation
       --skip-hooks                                     Skip git hooks installation
+      --sqlite-path string                             SQLite database file (with --backend=sqlite; relative to the beads dir, default beads.db)
       --stealth                                        Enable stealth mode: global gitattributes and gitignore, no local repo tracking
       --team                                           Run team workflow setup wizard
 ```
@@ -3811,7 +3817,8 @@ Recipes define where beads workflow instructions are written. Built-in recipes
 include cursor, claude, copilot, gemini, aider, factory, codex, mux, opencode, junie, windsurf, cody, and kilocode.
 
 Examples:
-  bd setup cursor          # Install Cursor IDE integration
+  bd setup cursor          # Install Cursor IDE integration (rules + agent hooks)
+  bd setup cursor --global # Install global Cursor hooks (~/.cursor/hooks.json)
   bd setup codex           # Install Codex skill + AGENTS.md guidance + native hooks
   bd setup codex --global  # Install global Codex skill + guidance + native hooks
   bd setup copilot         # Install Copilot CLI plugin + repository instructions
@@ -3835,7 +3842,7 @@ bd setup [recipe] [flags]
 ```
       --add string      Add a custom recipe with given name
       --check           Check if integration is installed
-      --global          Install globally (claude/codex/mux; writes to ~/.claude/settings.json, $CODEX_HOME/AGENTS.md or ~/.codex/AGENTS.md, or ~/.mux/AGENTS.md)
+      --global          Install globally (claude/codex/cursor/mux; writes to ~/.claude/settings.json, $CODEX_HOME/AGENTS.md or ~/.codex/AGENTS.md, ~/.cursor/hooks.json, or ~/.mux/AGENTS.md)
       --list            List all available recipes
   -o, --output string   Write template to custom path
       --print           Print the template to stdout

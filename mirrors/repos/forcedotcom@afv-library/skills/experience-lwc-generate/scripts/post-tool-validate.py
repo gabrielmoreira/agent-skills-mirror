@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Post-Tool Validation Hook for generating-lwc-components plugin.
+Post-Tool Validation Hook for experience-lwc-generate plugin.
 
 This hook runs AFTER Write or Edit tool completes and provides SLDS 2
 validation feedback for LWC files (*.html, *.css, *.js).
@@ -38,7 +38,7 @@ for _ca_path in _CODE_ANALYZER_CANDIDATES:
         break
 
 # Also add shared dir for other shared modules
-PLUGIN_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))  # generating-lwc-components/
+PLUGIN_ROOT = os.path.dirname(os.path.dirname(SCRIPT_DIR))  # experience-lwc-generate/
 SKILLS_ROOT = os.path.dirname(PLUGIN_ROOT)
 SHARED_DIR = os.path.join(SKILLS_ROOT, "shared")
 if os.path.isdir(SHARED_DIR):

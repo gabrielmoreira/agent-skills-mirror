@@ -4,7 +4,7 @@ Use these templates in Phase 3 (scoring output) and Phase 5 (completion summary)
 
 ## Scoring Output (Phase 3)
 
-```
+```text
 Score: XX/100 Rating
 |- Design & Naming: XX/20
 |- Field Mapping: XX/25
@@ -17,7 +17,7 @@ Score: XX/100 Rating
 
 ## Completion Summary (Phase 5)
 
-```
+```text
 Data Mapper Complete: [Name]
   Type: [Extract|Transform|Load|Turbo Extract]
   Target Object(s): [Object1, Object2]

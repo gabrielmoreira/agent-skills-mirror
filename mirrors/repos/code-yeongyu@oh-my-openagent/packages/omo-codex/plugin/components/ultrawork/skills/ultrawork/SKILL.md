@@ -269,13 +269,17 @@ make the child continue old parent context instead of the delegated task.
 If your tool list has a flat `spawn_agent` with a required `task_name` instead of `multi_agent_v1.*` (`multi_agent_v2`), rewrite: `fork_context: false` becomes `fork_turns: "none"`, `send_input` becomes `send_message`, finished agents end on their own (no `close_agent`; `followup_task` re-tasks, `interrupt_agent` stops), and `wait_agent` takes only `timeout_ms`, returning on any child mailbox activity.
 
 # TOML-backed subagent routing compatibility
-Treat TOML-backed role routing as **routing-unverified**. The
-`multi_agent_v1.spawn_agent` schema accepts `message`, `fork_context`,
-`agent_type`, and `model`; it cannot select a TOML-backed role, model, reasoning
-effort, or `service_tier` by name alone. Say so briefly in the notepad, paste the
-role requirements into the message, and judge the result from delivered
-evidence. Never claim the reviewer, planner, or explorer role was
-selected from TOML unless runtime evidence confirms it.
+Installed role TOMLs (`~/.codex/agents/`) bind ONLY via `agent_type`.
+`multi_agent_v1.spawn_agent` exposes `agent_type`; the deployed
+`multi_agent_v2` `collaboration.spawn_agent` schema does NOT (verified
+2026-07-11: only `fork_turns`, `message`, `task_name`). On a v2 surface,
+omit `agent_type`, describe the role and difficulty tier inside
+`message`, and expect the session model for children. Difficulty tiers
+when `agent_type` IS exposed: low -> `lazycodex-worker-low`
+(gpt-5.6-luna/high), medium -> `lazycodex-worker-medium`
+(gpt-5.6-sol/high), high -> `lazycodex-worker-high` (gpt-5.6-sol/max);
+explorer/librarian carry their own TOMLs (gpt-5.6-luna/low). Difficulty
+(model power) is orthogonal to LIGHT/HEAVY rigor (process size).
 
 Treat child status as a progress signal, not a timeout counter. For
 work likely to exceed one wait cycle, tell the child to send
@@ -304,7 +308,7 @@ transition, `create_goal` continuation, implementation tool call, plan
 drafting, approval-gate work, PR handoff, or final response. A timeout is
 not terminal status.
 Do not write the final answer, PR handoff, or completion summary while
-active child agents remain open. Use short `multi_agent_v1.wait_agent` cycles.
+active child agents remain open. Use `multi_agent_v1.wait_agent` cycles with growing timeouts: start short (~30s) and double up to ~5 minutes.
 After two silent waits send `TASK STILL ACTIVE: return <deliverable> or
 BLOCKED: <reason>`. After four silent or ack-only checks, close the lane as
 inconclusive, record that it is not approval, and respawn smaller only
@@ -326,15 +330,20 @@ Procedure (NON-NEGOTIABLE):
    the message.
    Pass: goal, success-criteria, scenario evidence, full diff, notepad
    path.
-2. Treat the reviewer's verdict as binding. There is NO "false
-   positive". Every concern is real. Do not argue. Do not minimise. Do
-   not explain it away.
-3. Fix every issue. Re-run the FULL scenario QA. Capture fresh
-   evidence. Update notepad.
-4. Re-submit to the SAME reviewer. Loop until you receive an
-   UNCONDITIONAL approval ("looks good but..." = REJECTION).
-5. Only on unconditional approval may you declare done. Stopping early
-   IS failure.
+2. Verify each reviewer concern yourself. A concern blocks only when
+   it names a success criterion the evidence fails; record concerns
+   that cite no criterion as notes with a one-line reason — fixed or
+   declined at your judgment.
+3. Fix every criterion-cited blocker. Re-run ONLY the scenario QA
+   affected by the fix; capture fresh evidence for the delta. Update
+   notepad.
+4. Re-submit to the SAME reviewer at most twice, passing only the
+   delta diff, the blockers it cited, and the already-approved criteria
+   marked out-of-scope. An approval whose only remaining items are
+   notes counts as approval.
+5. On approval, declare done. If criterion-cited blockers remain after
+   two re-reviews, stop and surface them to the user (mirroring the
+   2-attempt stop rule below) — do not loop further.
 
 # Commits
 Atomic, Conventional Commits (`<type>(<scope>): <imperative>` — feat /

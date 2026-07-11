@@ -1,5 +1,5 @@
 {
-  "_doc": "retired-name references replaced with plugin-scoped layout. Machine-readable I/O contract for investigating-agentforce-architecture. Orchestrator code reads this file (not SKILL.md prose) to discover the input schema, output keys, STATUS enum, and error-contract rules. The architecture skill runs inline (no subagent).",
+  "_doc": "retired-name references replaced with plugin-scoped layout. Machine-readable I/O contract for agentforce-architecture-analyze. Orchestrator code reads this file (not SKILL.md prose) to discover the input schema, output keys, STATUS enum, and error-contract rules. The architecture skill runs inline (no subagent).",
   "_schema_version": "3.1",
   "_schema_notes": "3.1 (2026-05-05) canonicalizes `invocation_type` on STANDARD_ACTION / UNKNOWN nodes in the metadata tree. Prior versions split this across `raw_invocation_type` (bundle-sourced nodes) and `raw_action_type` (flow-actionCall-sourced nodes). Both legacy keys are still tolerated by readers for one release.",
   "input": {
@@ -35,15 +35,15 @@
       },
       "work_dir": {
         "type": "absolute_path",
-        "description": "Ephemeral scratch. Default: /tmp/investigating-agentforce-architecture-<epoch>-<rand>."
+        "description": "Ephemeral scratch. Default: /tmp/agentforce-architecture-analyze-<epoch>-<rand>."
       },
       "cache_root": {
         "type": "absolute_path",
-        "description": "Internal rebuildable cache root. Default: ~/.vibe/cache/investigating-agentforce-architecture. Override with --cache-dir <path>."
+        "description": "Internal rebuildable cache root. Default: ~/.vibe/cache/agentforce-architecture-analyze. Override with --cache-dir <path>."
       },
       "data_root": {
         "type": "absolute_path",
-        "description": "Durable user-facing output root. Default: ~/.vibe/data/investigating-agentforce-architecture. Override with --data-dir <path>."
+        "description": "Durable user-facing output root. Default: ~/.vibe/data/agentforce-architecture-analyze. Override with --data-dir <path>."
       },
       "force_refresh": {
         "type": "boolean",

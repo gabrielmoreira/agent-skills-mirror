@@ -215,10 +215,8 @@ Next step: <next phase, setup guidance, or cross-skill handoff>
 ## Reference Map
 
 ### Start here
-- [README.md](README.md)
 - [references/plugin-setup.md](references/plugin-setup.md)
 - [references/feature-readiness.md](references/feature-readiness.md)
-- [UPSTREAM.md](UPSTREAM.md)
 
 ### Phase skills
 - [data360-connect](../data360-connect/SKILL.md)

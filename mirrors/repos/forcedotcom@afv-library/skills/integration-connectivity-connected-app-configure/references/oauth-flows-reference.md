@@ -7,7 +7,7 @@ Detailed OAuth flow patterns, configuration examples, and implementation guidanc
 
 ## Flow Selection Decision Tree
 
-```
+```text
 START
 │
 ├─ Do you have a backend server?

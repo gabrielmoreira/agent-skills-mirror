@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wanshuiyin/Auto-claude-code-research-in-sleep` — 26 default patterns, 0 followed patterns, 314 file(s) materialized.
+Mirror of `wanshuiyin/Auto-claude-code-research-in-sleep` — 26 default patterns, 0 followed patterns, 324 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wanshuiyin/Auto-claude-code-research-in-sleep` — 26 default pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 314 |
+| Files         | 324 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -339,40 +339,50 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 278 | ✓ | [`skills/skills-codex/run-experiment/SKILL.md`](skills/skills-codex/run-experiment/SKILL.md) |
 | 279 | ✓ | [`skills/skills-codex/semantic-scholar/SKILL.md`](skills/skills-codex/semantic-scholar/SKILL.md) |
 | 280 | ✓ | [`skills/skills-codex/serverless-modal/SKILL.md`](skills/skills-codex/serverless-modal/SKILL.md) |
-| 281 | ✓ | [`skills/skills-codex/shared-references/assurance-contract.md`](skills/skills-codex/shared-references/assurance-contract.md) |
-| 282 | ✓ | [`skills/skills-codex/shared-references/citation-discipline.md`](skills/skills-codex/shared-references/citation-discipline.md) |
-| 283 | ✓ | [`skills/skills-codex/shared-references/compute-env-contract.md`](skills/skills-codex/shared-references/compute-env-contract.md) |
-| 284 | ✓ | [`skills/skills-codex/shared-references/effort-contract.md`](skills/skills-codex/shared-references/effort-contract.md) |
-| 285 | ✓ | [`skills/skills-codex/shared-references/experiment-integrity.md`](skills/skills-codex/shared-references/experiment-integrity.md) |
-| 286 | ✓ | [`skills/skills-codex/shared-references/integration-contract.md`](skills/skills-codex/shared-references/integration-contract.md) |
-| 287 | ✓ | [`skills/skills-codex/shared-references/output-language.md`](skills/skills-codex/shared-references/output-language.md) |
-| 288 | ✓ | [`skills/skills-codex/shared-references/output-manifest.md`](skills/skills-codex/shared-references/output-manifest.md) |
-| 289 | ✓ | [`skills/skills-codex/shared-references/output-versioning.md`](skills/skills-codex/shared-references/output-versioning.md) |
-| 290 | ✓ | [`skills/skills-codex/shared-references/patent-format-cn.md`](skills/skills-codex/shared-references/patent-format-cn.md) |
-| 291 | ✓ | [`skills/skills-codex/shared-references/patent-format-ep.md`](skills/skills-codex/shared-references/patent-format-ep.md) |
-| 292 | ✓ | [`skills/skills-codex/shared-references/patent-format-us.md`](skills/skills-codex/shared-references/patent-format-us.md) |
-| 293 | ✓ | [`skills/skills-codex/shared-references/patent-writing-principles.md`](skills/skills-codex/shared-references/patent-writing-principles.md) |
-| 294 | ✓ | [`skills/skills-codex/shared-references/prior-art-databases.md`](skills/skills-codex/shared-references/prior-art-databases.md) |
-| 295 | ✓ | [`skills/skills-codex/shared-references/review-tracing.md`](skills/skills-codex/shared-references/review-tracing.md) |
-| 296 | ✓ | [`skills/skills-codex/shared-references/reviewer-independence.md`](skills/skills-codex/shared-references/reviewer-independence.md) |
-| 297 | ✓ | [`skills/skills-codex/shared-references/reviewer-routing.md`](skills/skills-codex/shared-references/reviewer-routing.md) |
-| 298 | ✓ | [`skills/skills-codex/shared-references/venue-checklists.md`](skills/skills-codex/shared-references/venue-checklists.md) |
-| 299 | ✓ | [`skills/skills-codex/shared-references/wiki-helper-resolution.md`](skills/skills-codex/shared-references/wiki-helper-resolution.md) |
-| 300 | ✓ | [`skills/skills-codex/shared-references/writing-principles.md`](skills/skills-codex/shared-references/writing-principles.md) |
-| 301 | ✓ | [`skills/skills-codex/slides-polish/SKILL.md`](skills/skills-codex/slides-polish/SKILL.md) |
-| 302 | ✓ | [`skills/skills-codex/specification-writing/SKILL.md`](skills/skills-codex/specification-writing/SKILL.md) |
-| 303 | ✓ | [`skills/skills-codex/system-profile/SKILL.md`](skills/skills-codex/system-profile/SKILL.md) |
-| 304 | ✓ | [`skills/skills-codex/training-check/SKILL.md`](skills/skills-codex/training-check/SKILL.md) |
-| 305 | ✓ | [`skills/skills-codex/vast-gpu/SKILL.md`](skills/skills-codex/vast-gpu/SKILL.md) |
-| 306 | ✓ | [`skills/skills-codex/wiki-enrich/SKILL.md`](skills/skills-codex/wiki-enrich/SKILL.md) |
-| 307 | ✓ | [`skills/skills-codex/writing-systems-papers/SKILL.md`](skills/skills-codex/writing-systems-papers/SKILL.md) |
-| 308 | ✓ | [`skills/slides-polish/SKILL.md`](skills/slides-polish/SKILL.md) |
-| 309 | ✓ | [`skills/specification-writing/SKILL.md`](skills/specification-writing/SKILL.md) |
-| 310 | ✓ | [`skills/system-profile/SKILL.md`](skills/system-profile/SKILL.md) |
-| 311 | ✓ | [`skills/training-check/SKILL.md`](skills/training-check/SKILL.md) |
-| 312 | ✓ | [`skills/vast-gpu/SKILL.md`](skills/vast-gpu/SKILL.md) |
-| 313 | ✓ | [`skills/wiki-enrich/SKILL.md`](skills/wiki-enrich/SKILL.md) |
-| 314 | ✓ | [`skills/writing-systems-papers/SKILL.md`](skills/writing-systems-papers/SKILL.md) |
+| 281 | ✓ | [`skills/skills-codex/shared-references/acceptance-gate.md`](skills/skills-codex/shared-references/acceptance-gate.md) |
+| 282 | ✓ | [`skills/skills-codex/shared-references/assurance-contract.md`](skills/skills-codex/shared-references/assurance-contract.md) |
+| 283 | ✓ | [`skills/skills-codex/shared-references/capture-antipatterns.md`](skills/skills-codex/shared-references/capture-antipatterns.md) |
+| 284 | ✓ | [`skills/skills-codex/shared-references/citation-discipline.md`](skills/skills-codex/shared-references/citation-discipline.md) |
+| 285 | ✓ | [`skills/skills-codex/shared-references/compute-env-contract.md`](skills/skills-codex/shared-references/compute-env-contract.md) |
+| 286 | ✓ | [`skills/skills-codex/shared-references/effort-contract.md`](skills/skills-codex/shared-references/effort-contract.md) |
+| 287 | ✓ | [`skills/skills-codex/shared-references/evidence-precheck.md`](skills/skills-codex/shared-references/evidence-precheck.md) |
+| 288 | ✓ | [`skills/skills-codex/shared-references/experiment-integrity.md`](skills/skills-codex/shared-references/experiment-integrity.md) |
+| 289 | ✓ | [`skills/skills-codex/shared-references/external-cadence.md`](skills/skills-codex/shared-references/external-cadence.md) |
+| 290 | ✓ | [`skills/skills-codex/shared-references/fan-out-pattern.md`](skills/skills-codex/shared-references/fan-out-pattern.md) |
+| 291 | ✓ | [`skills/skills-codex/shared-references/injection-hygiene.md`](skills/skills-codex/shared-references/injection-hygiene.md) |
+| 292 | ✓ | [`skills/skills-codex/shared-references/integration-contract.md`](skills/skills-codex/shared-references/integration-contract.md) |
+| 293 | ✓ | [`skills/skills-codex/shared-references/output-composition.md`](skills/skills-codex/shared-references/output-composition.md) |
+| 294 | ✓ | [`skills/skills-codex/shared-references/output-language.md`](skills/skills-codex/shared-references/output-language.md) |
+| 295 | ✓ | [`skills/skills-codex/shared-references/output-manifest.md`](skills/skills-codex/shared-references/output-manifest.md) |
+| 296 | ✓ | [`skills/skills-codex/shared-references/output-versioning.md`](skills/skills-codex/shared-references/output-versioning.md) |
+| 297 | ✓ | [`skills/skills-codex/shared-references/patent-format-cn.md`](skills/skills-codex/shared-references/patent-format-cn.md) |
+| 298 | ✓ | [`skills/skills-codex/shared-references/patent-format-ep.md`](skills/skills-codex/shared-references/patent-format-ep.md) |
+| 299 | ✓ | [`skills/skills-codex/shared-references/patent-format-us.md`](skills/skills-codex/shared-references/patent-format-us.md) |
+| 300 | ✓ | [`skills/skills-codex/shared-references/patent-writing-principles.md`](skills/skills-codex/shared-references/patent-writing-principles.md) |
+| 301 | ✓ | [`skills/skills-codex/shared-references/prior-art-databases.md`](skills/skills-codex/shared-references/prior-art-databases.md) |
+| 302 | ✓ | [`skills/skills-codex/shared-references/resumable-runs.md`](skills/skills-codex/shared-references/resumable-runs.md) |
+| 303 | ✓ | [`skills/skills-codex/shared-references/review-tracing.md`](skills/skills-codex/shared-references/review-tracing.md) |
+| 304 | ✓ | [`skills/skills-codex/shared-references/reviewer-independence.md`](skills/skills-codex/shared-references/reviewer-independence.md) |
+| 305 | ✓ | [`skills/skills-codex/shared-references/reviewer-routing.md`](skills/skills-codex/shared-references/reviewer-routing.md) |
+| 306 | ✓ | [`skills/skills-codex/shared-references/skill-governance.md`](skills/skills-codex/shared-references/skill-governance.md) |
+| 307 | ✓ | [`skills/skills-codex/shared-references/taste-calibration.md`](skills/skills-codex/shared-references/taste-calibration.md) |
+| 308 | ✓ | [`skills/skills-codex/shared-references/venue-checklists.md`](skills/skills-codex/shared-references/venue-checklists.md) |
+| 309 | ✓ | [`skills/skills-codex/shared-references/wiki-helper-resolution.md`](skills/skills-codex/shared-references/wiki-helper-resolution.md) |
+| 310 | ✓ | [`skills/skills-codex/shared-references/writing-principles.md`](skills/skills-codex/shared-references/writing-principles.md) |
+| 311 | ✓ | [`skills/skills-codex/slides-polish/SKILL.md`](skills/skills-codex/slides-polish/SKILL.md) |
+| 312 | ✓ | [`skills/skills-codex/specification-writing/SKILL.md`](skills/skills-codex/specification-writing/SKILL.md) |
+| 313 | ✓ | [`skills/skills-codex/system-profile/SKILL.md`](skills/skills-codex/system-profile/SKILL.md) |
+| 314 | ✓ | [`skills/skills-codex/training-check/SKILL.md`](skills/skills-codex/training-check/SKILL.md) |
+| 315 | ✓ | [`skills/skills-codex/vast-gpu/SKILL.md`](skills/skills-codex/vast-gpu/SKILL.md) |
+| 316 | ✓ | [`skills/skills-codex/wiki-enrich/SKILL.md`](skills/skills-codex/wiki-enrich/SKILL.md) |
+| 317 | ✓ | [`skills/skills-codex/writing-systems-papers/SKILL.md`](skills/skills-codex/writing-systems-papers/SKILL.md) |
+| 318 | ✓ | [`skills/slides-polish/SKILL.md`](skills/slides-polish/SKILL.md) |
+| 319 | ✓ | [`skills/specification-writing/SKILL.md`](skills/specification-writing/SKILL.md) |
+| 320 | ✓ | [`skills/system-profile/SKILL.md`](skills/system-profile/SKILL.md) |
+| 321 | ✓ | [`skills/training-check/SKILL.md`](skills/training-check/SKILL.md) |
+| 322 | ✓ | [`skills/vast-gpu/SKILL.md`](skills/vast-gpu/SKILL.md) |
+| 323 | ✓ | [`skills/wiki-enrich/SKILL.md`](skills/wiki-enrich/SKILL.md) |
+| 324 | ✓ | [`skills/writing-systems-papers/SKILL.md`](skills/writing-systems-papers/SKILL.md) |
 
 ---
 

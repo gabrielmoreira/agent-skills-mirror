@@ -31,7 +31,7 @@ Agentforce agents consist of multiple metadata components:
 
 ### Metadata Hierarchy
 
-```
+```text
 Bot (Agent Definition)
 └── BotVersion (Version Config)
     └── GenAiPlannerBundle (Reasoning Engine)
@@ -365,7 +365,7 @@ Pass the BotVersion number you intend to activate as the third argument.
 
 **Critical:** Dependencies must be deployed BEFORE the agent.
 
-```
+```text
 1. Custom Objects/Fields (platform-custom-object-generate, platform-custom-field-generate)
    ↓
 2. Apex Classes (platform-apex-generate)

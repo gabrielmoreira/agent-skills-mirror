@@ -15,7 +15,7 @@ Salesforce Industries CME EPC product-modeling skill for Product2-based catalog 
 
 ### 1. Invoke the skill
 
-```
+```yaml
 Skill: omnistudio-epc-catalog-generate
 Request: "Create a Product2 offer bundle named Business Internet Plus with ProductCode BIZ-INT-PLUS-01, 3 child products, and generate all companion DataPack JSON files from the assets templates."
 ```

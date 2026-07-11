@@ -161,9 +161,9 @@ When the report is about a slow `wt` command, read its **Performance profile**
 section first. It renders the same breakdown as `wt config state logs profile`
 (subprocess time by command type, slowest calls, repeated `(command, context)`
 pairs) directly from the bundled `trace.log`, so you can spot redundant git
-calls and slow commands without parsing the raw trace by hand. The deeper
-per-render cache analysis is a separate tool — see **Weekly Maintenance:
-Statusline Cache-Check**.
+calls and slow commands without parsing the raw trace by hand. The same
+report run against a statusline capture is the weekly per-render cache
+check — see **Weekly Maintenance: Statusline Cache-Check**.
 
 Reach for narrower asks only when the diagnostic is overkill:
 
@@ -212,6 +212,31 @@ across every repo. It's the project's preferred extension point.
 4. Post the tested alias with usage examples.
 5. Link to the [aliases docs](https://worktrunk.dev/extending/#aliases) and
    [tips & patterns](https://worktrunk.dev/tips-patterns/).
+
+### Weigh the root-cause fix before shipping a config/docs workaround
+
+When a mismatch or false-positive report has an obvious configurable
+workaround (a template change, a config value, an alias), don't stop at
+documenting it. First check whether the workaround is **lossy or
+foot-gunny**, and weigh a proportionate **root-cause code fix** before
+opening a docs-only PR. A "docs-only, no risk" framing is not the same as
+good guidance — a zero-code-risk change can still steer users toward a
+collision-prone or lossy config. If you do recommend a config change,
+surface its downsides in the PR body up front, not only when challenged.
+
+Example (PR #3390 / issue #3389, maintainer-flagged bad case): triage of the
+`⚑` `branch_worktree_mismatch` flag — which fires when an external agent CLI
+checks branch `claude/frosty-kilby-92c7d3` into a directory named
+`frosty-kilby-92c7d3` — shipped a docs PR recommending
+`worktree-path = "{{ branch | basename }}"`. But `basename` is lossy:
+`alice/foo` and `bob/foo` both collapse to `foo` and collide on one
+directory, whereas the default `{{ branch | sanitize }}`
+(`sanitize_branch_name` in `src/config/expansion.rs`, swaps `/`→`-`) keeps
+them distinct (`alice-foo` / `bob-foo`). The proportionate fix was a code change
+teaching the path-match check to tolerate a dropped namespace prefix — not
+asking every affected user to adopt a lossy template. The PR presented
+`basename` as *the* fix and surfaced the collision downside only after the
+maintainer pushed back.
 
 ### Don't fix tests by adding skip guards
 
@@ -288,9 +313,9 @@ Discovery shortcut: a recent green CI run on `main` flags cargo-install drift di
 ## Weekly Maintenance: Statusline Cache-Check
 
 Detect new in-process cache-miss duplicates introduced by recent changes by
-running `wt-perf cache-check` against a real `wt list statusline --claude-code`
-trace. The render runs on every Claude Code prompt redraw, so duplicate git
-subprocesses there compound into measurable fseventsd / IPC load.
+profiling a real `wt list statusline --claude-code` trace. The render runs on
+every Claude Code prompt redraw, so duplicate git subprocesses there compound
+into measurable fseventsd / IPC load.
 
 ```bash
 # Run from any worktree of this repo
@@ -300,12 +325,12 @@ cat > /tmp/statusline-input.json <<'EOF'
 EOF
 sed -i '' "s|REPLACE_WITH_CWD|$PWD|" /tmp/statusline-input.json
 
-RUST_LOG=debug cargo run --release -- list statusline --claude-code \
-  < /tmp/statusline-input.json 2>&1 \
-  | cargo run -p wt-perf -- cache-check
+cargo run --release -- -vv list statusline --claude-code \
+  < /tmp/statusline-input.json > /dev/null
+cargo run --release -- config state logs profile --format=json | jq .cache
 ```
 
-The report flags commands invoked more than once with the same context.
+The `.cache` report flags commands invoked more than once with the same context.
 Triage each duplicate:
 
 - **Legitimate** (different cwd, different ref form that can't be normalized,

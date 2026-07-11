@@ -86,7 +86,7 @@ flowchart LR
 ## Key Concepts
 
 ### Content Architecture
-```
+```text
 ContentDocument (Container)
     ├── ContentVersion (Current + History)
     ├── ContentDocumentLink (Sharing to Records)
@@ -177,7 +177,7 @@ flowchart LR
 
 ## ASCII Fallback
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  SALESFORCE FILES DATA MODEL (L→R)                                           │
 │  Legend: LK = Lookup (-->), MD = Master-Detail (==>)                        │

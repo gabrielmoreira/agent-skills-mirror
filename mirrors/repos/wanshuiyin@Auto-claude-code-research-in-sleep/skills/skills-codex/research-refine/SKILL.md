@@ -1,6 +1,6 @@
 ---
 name: "research-refine"
-description: "Turn a vague research direction into a problem-anchored, elegant, frontier-aware, implementation-oriented method plan via iterative GPT-5.5 review. Use when the user says \"refine my approach\", \"\u5e2e\u6211\u7ec6\u5316\u65b9\u6848\", \"decompose this problem\", \"\u6253\u78e8idea\", \"refine research plan\", \"\u7ec6\u5316\u7814\u7a76\u65b9\u6848\", or wants a concrete research method that stays simple, focused, and top-venue ready instead of a vague or overbuilt idea."
+description: "Turn a vague research direction into a problem-anchored, elegant, frontier-aware, implementation-oriented method plan via iterative GPT-5.6-Sol review. Use when the user says \"refine my approach\", \"\u5e2e\u6211\u7ec6\u5316\u65b9\u6848\", \"decompose this problem\", \"\u6253\u78e8idea\", \"refine research plan\", \"\u7ec6\u5316\u7814\u7a76\u65b9\u6848\", or wants a concrete research method that stays simple, focused, and top-venue ready instead of a vague or overbuilt idea."
 ---
 
 # Research Refine: Problem-Anchored, Elegant, Frontier-Aware Plan Refinement
@@ -22,7 +22,7 @@ Four principles dominate this skill:
 User input (PROBLEM + vague APPROACH)
   -> Phase 0 (Local step): Freeze Problem Anchor
   -> Phase 1 (Local step): Scan grounding papers -> identify technical gap -> choose the sharpest route -> write focused proposal
-  -> Phase 2 (Codex/GPT-5.5): Review for fidelity, specificity, contribution quality, and frontier leverage
+  -> Phase 2 (Codex/GPT-5.6-Sol): Review for fidelity, specificity, contribution quality, and frontier leverage
   -> Phase 3 (Local step): Anchor check + simplicity check -> revise method -> rewrite full proposal
   -> Phase 4 (Codex, same agent): Re-evaluate revised proposal
   -> Repeat Phase 3-4 until OVERALL SCORE >= 9 or MAX_ROUNDS reached
@@ -32,7 +32,7 @@ User input (PROBLEM + vague APPROACH)
 
 ## Constants
 
-- **REVIEWER_MODEL = `gpt-5.5`** — Reviewer model used via a secondary Codex agent.
+- **REVIEWER_MODEL = `gpt-5.6-sol`** — Reviewer model used via a secondary Codex agent.
 - **MAX_ROUNDS = 5** — Maximum review-revise rounds.
 - **SCORE_THRESHOLD = 9** — Minimum overall score to stop.
 - **OUTPUT_DIR = `refine-logs/`** — Directory for round files and final report.
@@ -289,7 +289,7 @@ Use this structure:
 
 ### Phase 2: External Method Review (Round 1)
 
-Send the full proposal to GPT-5.5 for an **elegance-first, frontier-aware, method-first** review. The reviewer should spend most of the critique budget on the method itself, not on expanding the experiment menu.
+Send the full proposal to GPT-5.6-Sol for an **elegance-first, frontier-aware, method-first** review. The reviewer should spend most of the critique budget on the method itself, not on expanding the experiment menu.
 
 ```
 spawn_agent:
@@ -338,10 +338,12 @@ spawn_agent:
 
     **OVERALL SCORE** (1-10): Weighted toward Problem Fidelity, Method Specificity, Contribution Quality, and Frontier Leverage.
     Use this weighting: Problem Fidelity 15%, Method Specificity 25%, Contribution Quality 25%, Frontier Leverage 15%, Feasibility 10%, Validation Focus 5%, Venue Readiness 5%.
-    (This weighted-axis rubric is the working precedent for mainline
-    `taste-calibration.md`; if curated known-good/known-bad past proposals are
+    (Follow [`taste-calibration.md`](../shared-references/taste-calibration.md):
+    if curated known-good/known-bad past proposals are
     available, score 3 of each on these axes FIRST to anchor the scale, and
     name in the review which anchor the proposal sits closest to.)
+    Emit `CALIBRATION: anchored|none`, the weighted composite, and a GAP
+    paragraph. A fresh Codex positive review is same-family provisional.
 
     For each dimension scoring < 7, provide:
     - The specific weakness
@@ -472,13 +474,12 @@ Save to `refine-logs/round-N-refinement.md`:
 
 ### Phase 4: Re-evaluation (Round 2+)
 
-Send the revised proposal back to GPT-5.5 in the **same agent**:
+Send the revised proposal back to GPT-5.6-Sol in the **same agent**:
 
 ```
 send_input:
-  id: [saved from Phase 2]
-  model: REVIEWER_MODEL
-  reasoning_effort: xhigh
+  target: [saved from Phase 2]
+  # inherits the agent's model/effort — do not re-send
   message: |
     [Round N re-evaluation]
 
@@ -623,7 +624,7 @@ If the final verdict is not READY, still write the best current final version he
 <details>
 <summary>Round 1 Review</summary>
 
-[Full verbatim response from GPT-5.5]
+[Full verbatim response from GPT-5.6-Sol]
 
 </details>
 

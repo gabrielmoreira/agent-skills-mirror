@@ -1,6 +1,6 @@
 ---
 name: proof-checker
-description: Rigorous mathematical proof verification and fixing workflow. Reads a LaTeX proof, identifies gaps via cross-model review (external reviewer backend, xhigh reasoning), fixes each gap with full derivations, re-reviews, and generates an audit report. Use when user says "检查证明", "verify proof", "proof check", "审证明", "check this proof", or wants rigorous mathematical verification of a theory paper.
+description: Rigorous mathematical proof verification and fixing workflow. Reads a LaTeX proof, identifies gaps via cross-model review (external reviewer backend, ultra reasoning), fixes each gap with full derivations, re-reviews, and generates an audit report. Use when user says "检查证明", "verify proof", "proof check", "审证明", "check this proof", or wants rigorous mathematical verification of a theory paper.
 argument-hint: "[path-to-tex-file or proof-description] [--deep-fix] [--restatement-check]"
 allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent, mcp__codex__codex, mcp__codex__codex-reply, mcp__manual_review__review, mcp__manual_review__review_reply
 ---
@@ -22,15 +22,16 @@ Systematically verify a mathematical proof via cross-model adversarial review, f
 ## Constants
 
 - MAX_REVIEW_ROUNDS = 3
-- REVIEWER_MODEL = `gpt-5.5` — Default model for the Codex backend, reasoning effort always `xhigh`. Manual backend uses whatever model the user chooses, **but it must be a non-Claude model** — the executor is Claude, so routing the proof review into any Claude product makes Claude judge Claude and voids the cross-model invariant (see `shared-references/reviewer-routing.md`).
-- **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for Oracle MCP, or `— reviewer: manual` for Manual Review MCP. If manual-review MCP is unavailable, stop and print the install command; do not fall back to Codex. See `shared-references/reviewer-routing.md`.
+- REVIEWER_MODEL = `gpt-5.6-sol` — Default model for the Codex backend, reasoning effort `ultra` (deep-audit tier; capability fallback `gpt-5.6-sol`+`xhigh` → `gpt-5.5`+`xhigh` per `shared-references/reviewer-routing.md`, capability errors only — never below `xhigh`). Manual backend uses whatever model the user chooses, **but it must be a non-Claude model** — the executor is Claude, so routing the proof review into any Claude product makes Claude judge Claude and voids the cross-model invariant (see `shared-references/reviewer-routing.md`).
+- **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (ultra). Override with `— reviewer: oracle-pro` for Oracle MCP, or `— reviewer: manual` for Manual Review MCP. If manual-review MCP is unavailable, stop and print the install command; do not fall back to Codex. See `shared-references/reviewer-routing.md`.
 
 ## Reviewer Calling Convention
 
 When calling the reviewer, branch on REVIEWER_BACKEND:
 
 **If REVIEWER_BACKEND = `codex`:**
-  Use `mcp__codex__codex` for new review threads.
+  Use `mcp__codex__codex` for new review threads
+  (`model: gpt-5.6-sol`, `config: {"model_reasoning_effort": "ultra"}`).
   Use `mcp__codex__codex-reply` for follow-up rounds (reuse threadId).
 
 **If REVIEWER_BACKEND = `manual`:**
@@ -177,7 +178,7 @@ When the proof invokes any of the following, require explicit verification of AL
 >    quantifiers) is structural extraction. Whether a proof step is *valid* —
 >    whether an obligation is actually discharged — is a Type-B correctness
 >    verdict reserved for the cross-model jury in Phase 1 / Phase 3 (codex or
->    manual, `xhigh`). A Claude shard MUST NOT mark a micro-claim "proved" or
+>    manual, `ultra`). A Claude shard MUST NOT mark a micro-claim "proved" or
 >    "sound"; it only records the obligation and where the paper claims to
 >    discharge it. See [`acceptance-gate.md`](../shared-references/acceptance-gate.md)
 >    — the loop may self-verify *that the ledger is complete*, never *that the
@@ -248,11 +249,11 @@ h_act = Θ(κ^α)  [as κ→0, uniform in π on compact subsets of Π_K, for fix
 ```
 Flag any statement where limit order is ambiguous or uniformity is unclear.
 
-### Phase 1: First Review (reviewer backend, xhigh reasoning)
+### Phase 1: First Review (reviewer backend, ultra reasoning)
 
 Submit the **complete proof content** with the checklist below, using the selected backend.
 
-For `codex`, call `mcp__codex__codex`. For `manual`, call `mcp__manual_review__review`. Always use `config: {"model_reasoning_effort": "xhigh"}`.
+For `codex`, call `mcp__codex__codex`. For `manual`, call `mcp__manual_review__review`. Always pin `model: gpt-5.6-sol` + `config: {"model_reasoning_effort": "ultra"}` (deep-audit tier).
 
 Use this exact prompt for both backends:
 
@@ -421,7 +422,7 @@ Log this choice — it is a scope-changing decision when it alters theorem state
 pdflatex -interaction=nonstopmode <file>.tex 2>&1 | grep -E "Error|Warning|undefined"
 ```
 
-### Phase 3: Re-Review (reviewer backend, xhigh reasoning)
+### Phase 3: Re-Review (reviewer backend, ultra reasoning)
 
 Continue with the selected backend. For `codex`, use `mcp__codex__codex-reply` with the saved threadId. For `manual`, use `mcp__manual_review__review_reply` with the saved threadId. Include fix summaries. Request the same mandatory checklist.
 
@@ -449,7 +450,8 @@ The blind review prompt:
 ```
 [Codex:]
 mcp__codex__codex:
-  config: {"model_reasoning_effort": "xhigh"}
+  model: gpt-5.6-sol
+  config: {"model_reasoning_effort": "ultra"}
   prompt: |
     Blind review of the following proof section. You have NOT seen any prior
     review or discussion. Check every step for correctness, hidden assumptions,
@@ -646,7 +648,7 @@ A deep-fix-only failure must never contaminate the default proof-check output. A
 
 Verifier gates MUST treat `unavailable` identically to the field being absent: not blocking. Do **not** add a `UNCLEAR_DEEP_FIX` (or any deep-fix-only) entry into `details.issues`, since `details.issues` is the default schema's issue list and adding deep-fix-specific failures to it would change default behavior for callers without the flag.
 
-If the augmented Phase 1 call fails so badly that the normal proof review cannot be recovered (e.g., the reviewer thread itself errored), retry once with the unaugmented prompt; if that also fails, fall through to the existing reviewer-failure path that maps to the top-level `ERROR` verdict.
+If the augmented Phase 1 call fails so badly that the normal proof review cannot be recovered (e.g., the reviewer thread itself errored), retry once with the unaugmented prompt **only when the error proves the call never executed** (schema/validation or explicit capability error per the fallback chain in `reviewer-routing.md`); on timeout, rate-limit, transport, or server errors do NOT blind-retry (the review may have run — double-running double-bills), fall through directly to the existing reviewer-failure path that maps to the top-level `ERROR` verdict.
 
 ## Key Rules
 
@@ -662,7 +664,7 @@ If the augmented Phase 1 call fails so badly that the normal proof review cannot
 
 ### Cross-model protocol
 - **Executor analyzes, reviewer critiques**: Claude reads proof, formulates questions, implements fixes. The external reviewer provides adversarial review.
-- **Reviewer reasoning always xhigh**: Never downgrade.
+- **Reviewer reasoning always ultra** (deep-audit tier): never below `xhigh` — only the capability fallback chain in `reviewer-routing.md` may step down, and only on explicit capability errors.
 - **Send full content**: Don't summarize — send actual math for line-by-line checking.
 - **Preserve threadId within a single run**: Use the appropriate reply tool (`mcp__codex__codex-reply` or `mcp__manual_review__review_reply`) for Phase 3 follow-up rounds within the same top-level `/proof-checker` invocation, so the reviewer keeps prior-issue context when judging whether a fix closed the gap. Across separate top-level invocations, always start a fresh thread (see "Thread independence" below).
 
@@ -722,8 +724,8 @@ The artifact conforms to the schema in `shared-references/assurance-contract.md`
   },
   "trace_path":       ".aris/traces/proof-checker/<date>_run<NN>/",
   "thread_id":        "<codex mcp thread id>",
-  "reviewer_model":   "gpt-5.5",
-  "reviewer_reasoning": "xhigh",
+  "reviewer_model":   "<resolved — the model that actually ran (target: gpt-5.6-sol)>",
+  "reviewer_reasoning": "<resolved — the effort that actually ran (target: ultra)>",
   "generated_at":     "<UTC ISO-8601>",
   "details": {
     "theorems_audited": <int>,

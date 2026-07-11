@@ -64,7 +64,7 @@ Every edge is strictly **forward** from the entry query
 (`GenAiPlannerDefinition WHERE DeveloperName = :planner_name`). No
 backward lookups.
 
-```
+```text
 BotDefinition (Data API, PK Id, matched by DeveloperName)
  └── BotVersion (Data API, FK BotDefinitionId)
  │ [resolved to planner name via Bot metadata retrieve]

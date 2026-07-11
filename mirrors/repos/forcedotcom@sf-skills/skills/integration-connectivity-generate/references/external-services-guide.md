@@ -7,7 +7,7 @@ External Services in Salesforce automatically generate Apex classes from OpenAPI
 
 ## How It Works
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │  EXTERNAL SERVICE FLOW                                          │
 ├─────────────────────────────────────────────────────────────────┤
@@ -42,6 +42,9 @@ External Services in Salesforce automatically generate Apex classes from OpenAPI
 7. Save
 
 ### Via Metadata API
+
+**Template**: `assets/external-services/openapi-registration.externalServiceRegistration-meta.xml`
+**Reference**: `assets/external-services/external-service-operations.md`
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>

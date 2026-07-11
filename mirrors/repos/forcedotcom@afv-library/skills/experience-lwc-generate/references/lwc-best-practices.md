@@ -9,7 +9,7 @@ This guide provides comprehensive best practices for building production-ready L
 
 The PICKLES Framework provides a structured approach to LWC architecture. Use it as a checklist during component design and implementation.
 
-```
+```text
 🥒 P - Prototype    → Validate ideas with wireframes & mock data
 🥒 I - Integrate    → Choose data source (LDS, Apex, GraphQL)
 🥒 C - Composition  → Structure component hierarchy & communication
@@ -29,7 +29,7 @@ The PICKLES Framework provides a structured approach to LWC architecture. Use it
 
 Each component should do one thing well.
 
-```
+```text
 ✅ GOOD: accountCard, accountList, accountForm (separate components)
 ❌ BAD: accountManager (does display, list, and form in one)
 ```
@@ -52,7 +52,7 @@ Build complex UIs by composing simple components.
 
 Data flows down (props), events bubble up.
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                    DATA FLOW PATTERN                             │
 ├─────────────────────────────────────────────────────────────────┤
@@ -268,7 +268,7 @@ this.dispatchEvent(new CustomEvent('change', {
 
 ### Event Naming Conventions
 
-```
+```text
 ✅ GOOD                    ❌ BAD
 ────────────────────────   ────────────────────────
 onselect                   onSelectItem

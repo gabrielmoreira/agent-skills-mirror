@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `worldwonderer/oh-story-claudecode` — 26 default patterns, 0 followed patterns, 230 file(s) materialized.
+Mirror of `worldwonderer/oh-story-claudecode` — 26 default patterns, 0 followed patterns, 231 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `worldwonderer/oh-story-claudecode` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 230 |
+| Files         | 231 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -281,14 +281,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 220 | ✓ | [`skills/story-short-write/references/short-craft.md`](skills/story-short-write/references/short-craft.md) |
 | 221 | ✓ | [`skills/story-short-write/references/short-deslop.md`](skills/story-short-write/references/short-deslop.md) |
 | 222 | ✓ | [`skills/story-short-write/references/short-format.md`](skills/story-short-write/references/short-format.md) |
-| 223 | ✓ | [`skills/story-short-write/references/villain-and-reveal.md`](skills/story-short-write/references/villain-and-reveal.md) |
-| 224 | ✓ | [`skills/story-short-write/references/writing-workflow.md`](skills/story-short-write/references/writing-workflow.md) |
-| 225 | ✓ | [`skills/story-short-write/scripts/check-ai-patterns.js`](skills/story-short-write/scripts/check-ai-patterns.js) |
-| 226 | ✓ | [`skills/story-short-write/scripts/check-degeneration.js`](skills/story-short-write/scripts/check-degeneration.js) |
-| 227 | ✓ | [`skills/story-short-write/scripts/normalize-punctuation.js`](skills/story-short-write/scripts/normalize-punctuation.js) |
-| 228 | ✓ | [`skills/story-short-write/SKILL.md`](skills/story-short-write/SKILL.md) |
-| 229 | ✓ | [`skills/story/SKILL.md`](skills/story/SKILL.md) |
-| 230 | ✓ | [`skills/story/VERSION`](skills/story/VERSION) |
+| 223 | ✓ | [`skills/story-short-write/references/submission-craft.md`](skills/story-short-write/references/submission-craft.md) |
+| 224 | ✓ | [`skills/story-short-write/references/villain-and-reveal.md`](skills/story-short-write/references/villain-and-reveal.md) |
+| 225 | ✓ | [`skills/story-short-write/references/writing-workflow.md`](skills/story-short-write/references/writing-workflow.md) |
+| 226 | ✓ | [`skills/story-short-write/scripts/check-ai-patterns.js`](skills/story-short-write/scripts/check-ai-patterns.js) |
+| 227 | ✓ | [`skills/story-short-write/scripts/check-degeneration.js`](skills/story-short-write/scripts/check-degeneration.js) |
+| 228 | ✓ | [`skills/story-short-write/scripts/normalize-punctuation.js`](skills/story-short-write/scripts/normalize-punctuation.js) |
+| 229 | ✓ | [`skills/story-short-write/SKILL.md`](skills/story-short-write/SKILL.md) |
+| 230 | ✓ | [`skills/story/SKILL.md`](skills/story/SKILL.md) |
+| 231 | ✓ | [`skills/story/VERSION`](skills/story/VERSION) |
 
 ---
 

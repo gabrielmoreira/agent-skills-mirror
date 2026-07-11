@@ -111,7 +111,6 @@ Next step: <segment / harmonize / follow-up>
 
 ## References
 
-- [README.md](README.md)
 - [examples/search-indexes/vector-knowledge.json](examples/search-indexes/vector-knowledge.json)
 - [examples/search-indexes/hybrid-structured.json](examples/search-indexes/hybrid-structured.json)
 - [../data360-orchestrate/assets/definitions/search-index.template.json](../data360-orchestrate/assets/definitions/search-index.template.json)

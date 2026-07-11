@@ -47,7 +47,6 @@ See [references/plugin-setup.md](references/plugin-setup.md).
 | [scripts/diagnose-org.mjs](scripts/diagnose-org.mjs) | Classify org readiness by phase before mutating Data Cloud assets |
 | [references/feature-readiness.md](references/feature-readiness.md) | Map high-signal errors and feature gates to concrete next steps |
 | [assets/definitions/](assets/definitions/) | Generic JSON templates for repeatable Data Cloud definition files |
-| [UPSTREAM.md](UPSTREAM.md) | Upstream mapping for future distillation and maintenance |
 
 ## Generic templates
 
@@ -119,9 +118,3 @@ sf data360 activation platforms -o myorg 2>/dev/null
 - [SKILL.md](SKILL.md) - Orchestrator guidance
 - [references/plugin-setup.md](references/plugin-setup.md) - Plugin install and verification
 - [references/feature-readiness.md](references/feature-readiness.md) - Readiness classification and setup guidance
-- [UPSTREAM.md](UPSTREAM.md) - Upstream tracking and distillation policy
-- [CREDITS.md](CREDITS.md) - Contributor and source attribution
-
-## Primary contributor
-
-**Gnanasekaran Thoppae** — primary contributor for the data360-orchestrate family.

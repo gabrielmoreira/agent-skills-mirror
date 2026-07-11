@@ -190,7 +190,7 @@ sf data query --query "SELECT Id, Type, SubType, Language, IsActive FROM OmniPro
 
 #### Algorithm: BFS with Circular Detection
 
-```
+```text
 1. Initialize empty graph G and visited set V
 2. For each root component C:
    a. Enqueue C into work queue Q
@@ -221,7 +221,7 @@ OmniScript and IP elements store references in the `PropertySetConfig` JSON fiel
 | Apex Remote Action | `remoteClass` | Apex Class |
 
 **Parsing PropertySetConfig**:
-```
+```text
 For each OmniProcessElement:
   1. Read PropertySetConfig (JSON string)
   2. Parse JSON
@@ -235,7 +235,7 @@ For each OmniProcessElement:
 
 FlexCards store their data source configuration in the `DataSourceConfig` JSON field (NOT `Definition` — that field does not exist on `OmniUiCard`):
 
-```
+```text
 Parse DataSourceConfig JSON:
   1. Access dataSource object (singular, not array)
   2. For each dataSource where type === 'IntegrationProcedures' (note: PLURAL):
@@ -254,7 +254,7 @@ Parse DataSourceConfig JSON:
 
 Data Mappers reference Salesforce objects via their items:
 
-```
+```text
 For each OmniDataTransformItem:
   1. Read InputObjectName → source sObject
   2. Read OutputObjectName → target sObject
@@ -343,7 +343,7 @@ graph LR
 
 #### Output Format 3: Human-Readable Report
 
-```
+```text
 OmniStudio Dependency Report
 =============================
 Org Namespace: Core (Industries)
@@ -465,6 +465,13 @@ sf data query --query "SELECT Id, OmniDataTransformationId, InputObjectName, Out
 - **IsIntegrationProcedure is the discriminator**: `OmniProcess` uses a boolean `IsIntegrationProcedure` field, not a `TypeCategory` field (which does not exist). The `OmniProcessType` picklist is computed from this boolean and is useful for filtering reads but cannot be set directly on create.
 - **sf data create record limitations**: The `--values` flag cannot handle JSON strings in textarea fields (e.g., PropertySetConfig). Use `sf api request rest --method POST --body @file.json` instead for records with JSON configuration.
 - **Related skills**: `omnistudio-datamapper-generate`, `omnistudio-integration-procedure-generate`, `omnistudio-omniscript-generate`, `omnistudio-flexcard-generate` — install these to enable the full OmniStudio authoring suite
+
+---
+
+## Pre-Delivery Checklist
+
+- [ ] Namespace detected before any downstream queries
+- [ ] Orchestration order followed (this skill runs first in the chain)
 
 ---
 

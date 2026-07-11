@@ -465,12 +465,12 @@ Elements inside a Loop Block execute once per iteration. The current item is acc
 ### Example Pattern: Collect and Bulk Process
 
 Instead of:
-```
+```text
 Loop -> DataRaptor Load (per item)  // BAD: N DML operations
 ```
 
 Use:
-```
+```text
 Loop -> Set Values (collect items into array)
 DataRaptor Load (entire array)  // GOOD: 1 DML operation
 ```
@@ -501,7 +501,7 @@ Set Values elements define key-value mappings:
 
 ### Example: Response Assembly
 
-```
+```text
 Set Values: "BuildResponse"
   out_success = true
   out_accountId = %GetAccount:Id%

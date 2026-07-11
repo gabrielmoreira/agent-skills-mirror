@@ -91,10 +91,10 @@ python3 ./scripts/generate-from-template.py architecture ./output/arch.svg '{"ti
 5. **Map nodes to shapes** — use Shape Vocabulary below
 6. **Check icon needs** — load `references/icons.md` for known products
 7. **Write SVG** with adaptive strategy (see SVG Generation Strategy below)
-8. **Validate**: Run `python3 -c "import xml.etree.ElementTree as ET; ET.parse('file.svg')"` to check XML syntax
+8. **Validate**: Run `scripts/validate-svg.sh file.svg` to check XML, marker references, arrow-component collisions, and renderability
 9. **Export PNG**: Use `cairosvg` (recommended). See **SVG → PNG Conversion** section below for full method comparison
 10. **Report** the generated file paths
-11. **(Optional) Visual self-review** — if your runtime can read images, load the exported PNG back and inspect it. Syntactic validity does not guarantee visual correctness: arrows may cross through component interiors, labels may collide with lifelines or other labels, boxes may overlap, alt-frame text may sit on top of a message, or a legend may cover content. If you see any of these, revise the SVG and re-export; repeat until the rendered image is clean. Common fixes:
+11. **Visual review gate** — if your runtime can read images, load the exported PNG back and inspect it. Syntactic validity does not guarantee visual correctness: arrows may cross through component interiors, labels may collide with lifelines or other labels, boxes may overlap, alt-frame text may sit on top of a message, or a legend may cover content. If you see any of these, revise the SVG and re-export, with at most two focused correction passes. Common fixes:
     - Route arrows through gaps between boxes, not through box interiors
     - Move arrow labels 6-8px away from the arrow line (offset-first); add background rects only when offset is insufficient
     - Widen inter-row/inter-column gutters so same-layer arrows have clear corridors
@@ -102,7 +102,18 @@ python3 ./scripts/generate-from-template.py architecture ./output/arch.svg '{"ti
     - Move legend/notes out of any region where arrows or labels land
     - Increase viewBox height/width rather than packing elements tighter
     - If a filtered element (drop-shadow, blur) is missing one side of its border, move it ≥30px away from that viewBox edge, or remove the filter and rely on color/contrast for visual separation
-  Skip this step silently if image reading is unavailable — do not guess.
+  Report `visual_review: passed` after inspection. If image reading is unavailable, report `visual_review: skipped (image reader unavailable)` — do not guess or claim visual correctness.
+
+## Rule Precedence
+
+Use this order when instructions disagree:
+
+1. The user's explicit content and style request
+2. The selected `references/style-N-*.md` visual tokens (palette, typography, corner radius, shadow treatment)
+3. Diagram-type layout rules and semantic flow requirements in this file
+4. Universal defaults and examples
+
+Geometry and validation gates always remain active: style guidance cannot justify unreadable text, missing marker definitions, or arrows crossing component interiors. Tables in this file define semantic defaults; a selected style may override their colors and stroke treatment while preserving the meaning and direction of each flow.
 
 ## Diagram Types & Layout Rules
 
@@ -301,7 +312,7 @@ Map semantic concepts to consistent shapes across all diagram types:
 
 ## Arrow Semantics
 
-Always assign arrow meaning, not just color:
+Always assign arrow meaning, not just color. The values below are defaults; the selected style reference overrides colors and stroke weights while preserving flow semantics:
 
 | Flow Type | Color | Stroke | Dash | Meaning |
 |-----------|-------|--------|------|---------|
@@ -333,6 +344,8 @@ Always include a **legend** when 2+ arrow types are used.
 - Anchor arrows on component edges, not geometric centers
 - Route around dense node clusters, use different y-offsets for parallel arrows
 - Jump-over arcs (5px radius) for unavoidable crossings
+- Compress equivalent bidirectional traffic only when both directions share the same semantics and styling: use one corridor with `marker-start` + `marker-end`, or two visibly offset paths in that corridor
+- Keep read/write, request/response, sync/async, or differently labeled directions as separate arrows; remove redundant bends and duplicate rails without erasing direction or meaning
 
 **Post-Generation Arrow Optimization**:
 
@@ -379,6 +392,8 @@ When two arrows must cross each other, ALWAYS use jump-over arcs to prevent visu
 5. **Filter Boundary Safety**: For every element with `filter="url(...)"`, verify `(element_x + element_width + filter_extension) ≤ viewBox_width` AND `element_x ≥ filter_extension`. The default filter region extends 10-20% beyond bbox; staying near viewBox edges causes Chrome/cairosvg to clip the element's edge-side stroke (one side of the border vanishes while other sides render correctly)
 6. **Arrow-Title Collision**: Arrows MUST NOT cross through section/container title text or region labels (font-size ≥ 13px). For smaller annotations (< 13px), prefer routing around but tolerate if layout constraints require it. *(Visual self-review check — not covered by `validate-svg.sh` automated checks)*
 7. **Frame Label–Arrow Alignment** (sequence diagrams): Section/frame label badges MUST be vertically centered with their first message arrow. Compute `badge_y = first_arrow_y - (badge_height / 2)`. When appending new sections to an existing diagram, verify alignment matches the existing sections — this is the most common regression when adding content incrementally. Use variables in Python list generation to enforce the constraint: `sec_y = 840; badge_y = sec_y - 9  # for height=18 badge`
+8. **Marker Integrity**: Every `marker-start`, `marker-mid`, and `marker-end` URL MUST resolve to a `<marker id="...">` definition
+9. **Visual Review Status**: Report whether the exported PNG was visually inspected; automated validation does not cover every text, legend, or arrow-arrow collision
 
 ## SVG Technical Rules
 

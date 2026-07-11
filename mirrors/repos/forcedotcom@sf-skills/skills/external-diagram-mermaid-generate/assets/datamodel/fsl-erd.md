@@ -127,7 +127,7 @@ flowchart LR
 ## Key Concepts
 
 ### FSL Object Hierarchy
-```
+```text
 Case/Asset → WorkOrder → WorkOrderLineItem → ServiceAppointment
                    ↓              ↓                    ↓
               ProductRequired  ProductConsumed   AssignedResource
@@ -245,7 +245,7 @@ flowchart LR
 
 ## ASCII Fallback
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  FIELD SERVICE LIGHTNING DATA MODEL (L→R)                                    │
 │  Legend: LK = Lookup (-->), MD = Master-Detail (==>)                        │

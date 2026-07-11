@@ -1,6 +1,6 @@
 ---
 name: ccb-github
-description: Maintain this CCB project's GitHub-facing release and npm publication surface. Use when preparing, publishing, auditing, or fixing CCB releases; updating README.md, README_zh.md, CHANGELOG.md, VERSION, package.json, GitHub release notes/assets, repository description/topics, npm registry state, or GitHub Actions release/test status.
+description: Maintain this CCB project's GitHub-facing release and npm publication surface. Use when preparing, publishing, auditing, or fixing CCB releases; updating README.md, README/zh.md, localized README files, CHANGELOG.md, VERSION, package.json, GitHub release notes/assets, repository description/topics, npm registry state, or GitHub Actions release/test status.
 ---
 
 # CCB GitHub Release Maintainer
@@ -43,7 +43,7 @@ python "$CHECKER" --phase prepare --repo SeemSeam/claude_codex_bridge
 python "$CHECKER" --phase published --repo SeemSeam/claude_codex_bridge --wait-seconds 1800
 ```
 
-The checker is read-only. It catches mechanical drift, but still manually inspect the top of `README.md` and `README_zh.md` because stale "What's New" prose can be semantically wrong even when version numbers are correct.
+The checker is read-only. It catches mechanical drift, but still manually inspect the top of `README.md` and `README/zh.md` because stale "What's New" prose can be semantically wrong even when version numbers are correct.
 
 Use `--phase dev` for ordinary CCB development or maintainer tooling changes that are not intended to create a package release. Use `--wait-seconds 0` for lightweight commit/push work where the user did not ask to wait for GitHub Actions:
 
@@ -53,7 +53,7 @@ python "$CHECKER" --phase dev --repo SeemSeam/claude_codex_bridge --wait-seconds
 
 `--phase dev` checks that the worktree is clean, the branch is pushed, and the change set is classified as development-only vs package/release-impacting. When `--wait-seconds` is greater than 0, it also waits for required GitHub workflows.
 
-`--phase published` checks both release state and homepage state: GitHub latest release, release assets, `SHA256SUMS`, release workflows, branch validation workflows, and README/README_zh as rendered from the repository default branch. Use `--wait-seconds 1800` immediately after tagging so the checker waits for `Release Artifacts` and uploaded assets instead of reporting transient failures. The checker does not replace npm registry verification; for CCB releases, also verify `npm view @seemseam/ccb version dist-tags --json`.
+`--phase published` checks both release state and homepage state: GitHub latest release, release assets, `SHA256SUMS`, release workflows, branch validation workflows, and `README.md` / `README/zh.md` as rendered from the repository default branch. Use `--wait-seconds 1800` immediately after tagging so the checker waits for `Release Artifacts` and uploaded assets instead of reporting transient failures. The checker does not replace npm registry verification; for CCB releases, also verify `npm view @seemseam/ccb version dist-tags --json`.
 
 ## Decision Tree
 
@@ -106,7 +106,7 @@ Update these files together:
 - `.github/workflows/npm-publish.yml`
 - `CHANGELOG.md`
 - `README.md`
-- `README_zh.md`
+- `README/zh.md`
 
 README requirements:
 
@@ -163,7 +163,7 @@ For startup, tmux, ccbd, provider auth, or release asset changes, add the releva
 
 Use this when the latest release exists but GitHub's repository homepage is stale:
 
-1. Update `README.md`, `README_zh.md`, GitHub metadata, or `dev_tools` release checks.
+1. Update `README.md`, `README/zh.md`, GitHub metadata, or `dev_tools` release checks.
 2. Run:
    ```bash
    python dev_tools/skills/ccb-github/scripts/check_release_state.py --phase prepare --repo SeemSeam/claude_codex_bridge
@@ -188,7 +188,7 @@ Do not create a new release tag for README-only homepage maintenance unless runt
 
 Use this order:
 
-1. Complete release changes, including version files, changelog, README/README_zh, npm package metadata/wrapper scripts, and npm publish workflow. If npm files are missing, add them now instead of deferring.
+1. Complete release changes, including version files, changelog, `README.md` / `README/zh.md`, npm package metadata/wrapper scripts, and npm publish workflow. If npm files are missing, add them now instead of deferring.
 2. Run local release verification.
 3. Commit release changes.
 4. Push the branch.
@@ -264,7 +264,7 @@ Report only the useful facts: version, commit/tag, release URL, key fixes, test 
 
 Do not call the release complete if any of these are true:
 
-- README or README_zh still shows an old current version or stale current-release highlights.
+- `README.md` or `README/zh.md` still shows an old current version or stale current-release highlights.
 - `VERSION`, `ccb`, changelog, badges, or release notes disagree.
 - `package.json` version differs from `VERSION`, `ccb` `VERSION`, or the release tag.
 - The intended tag commit for a package release lacks `package.json` or `.github/workflows/npm-publish.yml`.

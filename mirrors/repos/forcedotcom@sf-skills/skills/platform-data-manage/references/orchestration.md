@@ -7,7 +7,7 @@ This document details how platform-data-manage fits into the multi-skill workflo
 
 ## Standard Orchestration Order
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  STANDARD MULTI-SKILL ORCHESTRATION ORDER                                   │
 ├─────────────────────────────────────────────────────────────────────────────┤
@@ -35,7 +35,7 @@ This document details how platform-data-manage fits into the multi-skill workflo
 - Run test factories
 - Generate bulk test data
 
-```
+```text
 ERROR: "SObject type 'Quote__c' is not supported"
 CAUSE: Quote__c object was never deployed to the org
 FIX:   Run platform-metadata-deploy BEFORE platform-data-manage
@@ -58,7 +58,7 @@ FIX:   Run platform-metadata-deploy BEFORE platform-data-manage
 
 When testing triggers or flows, always create test data AFTER deployment:
 
-```
+```text
 1. sf-apex   → Create trigger handler class
 2. sf-flow   → Create record-triggered flow
 3. platform-metadata-deploy → Deploy trigger + flow + objects
@@ -74,7 +74,7 @@ When testing triggers or flows, always create test data AFTER deployment:
 
 Always test with **251 records** to cross the 200-record batch boundary:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  BATCH BOUNDARY TESTING                                                     │
 ├─────────────────────────────────────────────────────────────────────────────┤
@@ -129,7 +129,7 @@ sf data query --query "SELECT Id FROM FieldPermissions WHERE SobjectType='MyObje
 
 Test Data Factory classes work with platform-data-manage:
 
-```
+```text
 sf-apex:  Creates TestDataFactory_Account.cls
           ↓
 platform-metadata-deploy: Deploys factory class
@@ -151,7 +151,7 @@ System.debug('Created ' + accounts.size() + ' accounts');
 
 After testing, clean up in reverse order:
 
-```
+```text
 1. platform-data-manage   → Delete test records
 2. platform-metadata-deploy → Deactivate flows (if needed)
 3. platform-metadata-deploy → Remove test metadata (if needed)

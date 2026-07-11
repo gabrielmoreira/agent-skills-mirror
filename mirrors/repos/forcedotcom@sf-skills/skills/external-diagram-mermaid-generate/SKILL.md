@@ -1,6 +1,6 @@
 ---
 name: external-diagram-mermaid-generate
-description: "Salesforce architecture diagrams using Mermaid with ASCII fallback. Use this skill when generating text-based diagrams for Salesforce architecture, OAuth flows, ERDs, integration sequences, or Agentforce structure. TRIGGER when: user says \"diagram\", \"visualize\", \"ERD\", or asks for sequence diagrams, flowcharts, class diagrams, or architecture visualizations in Mermaid. DO NOT TRIGGER when: user wants PNG/SVG image output (use external-diagram-visual-generate), or asks about non-Salesforce systems."
+description: "Salesforce architecture diagrams using Mermaid with ASCII fallback. Use this skill when generating text-based diagrams for Salesforce architecture, OAuth flows, ERDs, integration sequences, or Agentforce structure. TRIGGER when: user says \"diagram\", \"visualize\", \"ERD\", or asks for sequence diagrams, flowcharts, class diagrams, or architecture visualizations in Mermaid. DO NOT TRIGGER when: user asks about non-Salesforce systems."
 compatibility: "Requires Mermaid-capable renderer for diagram previews"
 metadata:
   version: "1.0"
@@ -20,7 +20,6 @@ Use `external-diagram-mermaid-generate` when the user wants:
 - diagrams that can live directly in docs, READMEs, or issues
 
 ### Out of Scope — Delegate elsewhere when the user wants:
-- rendered PNG/SVG images or polished mockups → [external-diagram-visual-generate](../external-diagram-visual-generate/SKILL.md)
 - non-Salesforce systems only → use a more general diagramming skill
 - object discovery before an ERD → [platform-custom-object-generate](../platform-custom-object-generate/SKILL.md) or [platform-custom-field-generate](../platform-custom-field-generate/SKILL.md)
 
@@ -125,7 +124,6 @@ Call out the key relationships, flow direction, and any assumptions.
 | Need | Delegate to | Reason |
 |---|---|---|
 | real object / field definitions | [platform-custom-object-generate](../platform-custom-object-generate/SKILL.md) / [platform-custom-field-generate](../platform-custom-field-generate/SKILL.md) | grounded ERD generation |
-| rendered diagram / image output | [external-diagram-visual-generate](../external-diagram-visual-generate/SKILL.md) | visual polish beyond Mermaid |
 | connected-app auth setup context | [integration-connectivity-connected-app-configure](../integration-connectivity-connected-app-configure/SKILL.md) | accurate OAuth flows |
 | Agentforce logic visualization | [agentforce-generate](../agentforce-generate/SKILL.md) | source-of-truth behavior details |
 | Flow behavior diagrams | [automation-flow-generate](../automation-flow-generate/SKILL.md) | actual Flow logic grounding |

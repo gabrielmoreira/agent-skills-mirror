@@ -48,4 +48,3 @@ sf data360 connection run-existing -o myorg --name <connection-id> 2>/dev/null
 - [SKILL.md](SKILL.md)
 - [examples/ingestion-api/README.md](examples/ingestion-api/README.md)
 - [../data360-orchestrate/assets/definitions/data-stream.template.json](../data360-orchestrate/assets/definitions/data-stream.template.json)
-- [CREDITS.md](CREDITS.md)

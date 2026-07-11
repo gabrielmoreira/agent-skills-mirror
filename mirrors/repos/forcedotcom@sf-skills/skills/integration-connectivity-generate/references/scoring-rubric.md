@@ -25,7 +25,7 @@
 
 ## Scoring Output Format
 
-```
+```text
 📊 INTEGRATION SCORE: XX/120 ⭐⭐⭐⭐ Rating
 ════════════════════════════════════════════════════
 

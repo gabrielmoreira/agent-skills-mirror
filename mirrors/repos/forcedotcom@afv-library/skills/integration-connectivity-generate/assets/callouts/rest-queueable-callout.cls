@@ -182,7 +182,7 @@ public with sharing class {{ServiceName}}QueueableCallout implements Queueable, 
      * @param recordId Salesforce record ID
      */
     private void deleteExternalRecord(Id recordId) {
-        // Query for external ID
+        // DELIBERATE: per-record query acceptable at BATCH_SIZE=10; refactor to bulk query if increasing batch size
         {{ObjectName}} record = [
             SELECT External_Id__c
             FROM {{ObjectName}}

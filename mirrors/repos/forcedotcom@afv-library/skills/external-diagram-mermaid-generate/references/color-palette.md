@@ -5,7 +5,7 @@ Soft pastel color palette (Tailwind 200-level) with dark borders for clear defin
 
 ## Primary Palette (Tailwind 200 + Dark Borders)
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  COMPONENT                │  FILL (200)  │  STROKE (700+) │  TEXT COLOR    │
 ├───────────────────────────┼──────────────┼────────────────┼────────────────┤
@@ -24,7 +24,7 @@ Soft pastel color palette (Tailwind 200-level) with dark borders for clear defin
 
 ## Subgraph Background Colors (Tailwind 50-level)
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  SUBGRAPH                 │  FILL (50)   │  STROKE (700+) │  STYLE         │
 ├───────────────────────────┼──────────────┼────────────────┼────────────────┤
@@ -45,7 +45,7 @@ Soft pastel color palette (Tailwind 200-level) with dark borders for clear defin
 
 ## Salesforce-Specific Colors
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  SALESFORCE COMPONENT     │  FILL (200)  │  STROKE (700+) │  TEXT COLOR    │
 ├───────────────────────────┼──────────────┼────────────────┼────────────────┤
@@ -62,7 +62,7 @@ Soft pastel color palette (Tailwind 200-level) with dark borders for clear defin
 
 Color coding for data model diagrams by object type:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  OBJECT TYPE              │  FILL (200)  │  STROKE (700+) │  TEXT COLOR    │
 ├───────────────────────────┼──────────────┼────────────────┼────────────────┤
@@ -114,7 +114,7 @@ style ext fill:#ecfdf5,stroke:#047857,stroke-dasharray:5
 
 ## Status Colors
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  STATUS                   │  FILL (200)  │  STROKE (700+) │  ICON          │
 ├───────────────────────────┼──────────────┼────────────────┼────────────────┤
@@ -132,7 +132,7 @@ style ext fill:#ecfdf5,stroke:#047857,stroke-dasharray:5
 
 Mermaid supports custom fonts via `%%{init}`:
 
-```
+```text
 %%{init: { "fontFamily": "Inter, sans-serif", "fontSize": "14px" }}%%
 ```
 
@@ -187,7 +187,7 @@ Control diagram density with `%%{init}` configuration:
 
 For clean, readable diagrams:
 
-```
+```text
 %%{init: {"flowchart": {"nodeSpacing": 80, "rankSpacing": 70}} }%%
 ```
 
@@ -248,7 +248,7 @@ flowchart TB
 
 ### Simple Label (Recommended)
 
-```
+```json
 ["🤖 agentforce-generate"]
 ```
 
@@ -256,7 +256,7 @@ Keep labels short for consistent rendering.
 
 ### Database/Cylinder
 
-```
+```json
 [(💾 Database)]
 ```
 
@@ -344,7 +344,7 @@ flowchart TB
 ### Detailed Guidelines
 
 #### Node Labels: lowercase (Recommended)
-```
+```text
 ["🤖 agentforce-generate"]    ✅ Preferred
 ["🤖 agentforce-generate"]    ❌ Avoid
 ["🤖 agentforce-generate"]    ❌ Avoid
@@ -357,7 +357,7 @@ flowchart TB
 - Easier to read in compact diagram nodes
 
 #### Subgraph Titles: UPPERCASE
-```
+```text
 subgraph ai["🤖 AI & AGENTS"]           ✅ UPPERCASE
 subgraph ai["🤖 ai & agents"]           ❌ lowercase
 subgraph ai["🤖 Ai & Agents"]           ❌ Title Case
@@ -370,7 +370,7 @@ subgraph ai["🤖 Ai & Agents"]           ❌ Title Case
 - Maximum contrast between group titles and contents
 
 #### Edge Labels: lowercase
-```
+```text
 -->|"schema"|              ✅ lowercase
 -->|"Schema"|              ❌ Title Case
 -->|"SCHEMA"|              ❌ ALL CAPS
@@ -382,7 +382,7 @@ subgraph ai["🤖 Ai & Agents"]           ❌ Title Case
 - Consistent with node label style
 
 #### ASCII Diagrams: UPPERCASE for Headers
-```
+```text
 ┌─────────────────────────────────────┐
 │         SYSTEM LANDSCAPE            │   ✅ UPPERCASE header
 └─────────────────────────────────────┘

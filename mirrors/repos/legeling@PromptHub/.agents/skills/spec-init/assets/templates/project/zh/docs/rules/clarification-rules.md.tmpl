@@ -1,4 +1,9 @@
-# Clarification Rules
+# 需求澄清规则
+
+## 职责边界
+
+- 本文件负责：识别必须向用户确认的关键问题，并规范提问方式。
+- 本文件不负责：确认后的方案设计和任务拆解；那部分见 `coding-standards.md`、`doc-sync-rules.md` 和工作流文档。
 
 ## 基本原则
 

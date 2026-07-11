@@ -34,7 +34,7 @@ The most common FlexCard data source is an Integration Procedure. The data sourc
 
 The `ipMethod` value combines the IP's Type and SubType fields:
 
-```
+```text
 IP Type:    "Account"
 IP SubType: "GetSummary"
 ipMethod:   "Account_GetSummary"
@@ -72,7 +72,7 @@ Input parameters pass context from the FlexCard's hosting environment into the I
 
 Map IP response fields to FlexCard display elements using curly-brace merge syntax:
 
-```
+```text
 IP Response JSON:                    FlexCard Merge Field:
 ─────────────────                    ─────────────────────
 { "Name": "Acme Corp" }        →    {Name}
@@ -84,7 +84,7 @@ IP Response JSON:                    FlexCard Merge Field:
 
 Access nested objects in the IP response using dot notation:
 
-```
+```text
 IP Response JSON:                         FlexCard Merge Field:
 ─────────────────                         ─────────────────────
 {                                    →    {Account.Name}
@@ -113,7 +113,7 @@ For card list layouts, set `resultListPath` to the array node. Each card in the 
 }
 ```
 
-```
+```text
 IP Response:                              Each Card Renders:
 ────────────                              ──────────────────
 {                                         Card 1: {Name} → "Alice"
@@ -145,7 +145,7 @@ Apply formatting to merge fields for display:
 
 Show or hide individual fields based on a data value:
 
-```
+```yaml
 Condition:  {Status} == "Active"
 Action:     Show the "Renewal Date" field
 
@@ -183,7 +183,7 @@ FlexCards support multiple states. Each state can have visibility conditions:
 
 Apply different styles based on data values:
 
-```
+```text
 If {Status} == "Active"    → Green badge (slds-badge slds-theme_success)
 If {Status} == "Expired"   → Red badge (slds-badge slds-theme_error)
 If {Status} == "Pending"   → Yellow badge (slds-badge slds-theme_warning)
@@ -203,7 +203,7 @@ Use SLDS theme classes rather than inline color styles to maintain dark mode com
 
 ### Configuration Pattern
 
-```
+```yaml
 FlexCard: AccountOverview
 ├── Data Source 1: "Account_GetSummary"
 │     Input: { "recordId": "{recordId}" }
@@ -222,7 +222,7 @@ FlexCard: AccountOverview
 
 When a card has multiple data sources, reference fields using the data source name prefix:
 
-```
+```text
 Single data source:     {Name}
 Multiple data sources:  {ds1.Name}  or  {accountSummary.Name}
 ```
@@ -261,7 +261,7 @@ Multiple data sources:  {ds1.Name}  or  {accountSummary.Name}
 
 Configure an explicit error state rather than letting the card fail silently:
 
-```
+```text
 ┌──────────────────────────────────┐
 │  ⚠ Unable to load account data   │
 │                                  │

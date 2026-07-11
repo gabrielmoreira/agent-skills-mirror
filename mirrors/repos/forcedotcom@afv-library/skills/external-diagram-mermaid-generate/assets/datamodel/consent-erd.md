@@ -114,7 +114,7 @@ flowchart LR
 Each contact point links to an Individual.
 
 ### Consent Model
-```
+```text
 DataUsePurpose  →  ContactPointConsent  ←  ContactPoint
 (e.g., Marketing)        (Opt-In/Out)        (Email/Phone)
 ```
@@ -179,7 +179,7 @@ flowchart LR
 
 ## ASCII Fallback
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  CONSENT DATA MODEL (GDPR/PRIVACY) (L→R)                                     │
 │  Legend: LK = Lookup (-->), MD = Master-Detail (==>)                        │

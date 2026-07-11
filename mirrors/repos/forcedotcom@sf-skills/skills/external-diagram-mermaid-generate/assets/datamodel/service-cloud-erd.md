@@ -120,7 +120,7 @@ flowchart LR
 
 ## ASCII Fallback
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  SERVICE CLOUD DATA MODEL (L→R)                                             │
 │  Legend: LK = Lookup (-->), MD = Master-Detail (==>)                        │
@@ -173,14 +173,14 @@ flowchart LR
 ## Service Cloud Patterns
 
 ### Case Flow
-```
+```text
 Customer → Contact → Case → CaseComment
               ↓
          Entitlement (SLA)
 ```
 
 ### Entitlement Coverage
-```
+```text
 Account → ServiceContract → Entitlement → Case
     └─────────────────────────────────────┘
                   (direct)

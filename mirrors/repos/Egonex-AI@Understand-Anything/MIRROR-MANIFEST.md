@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Egonex-AI/Understand-Anything` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `Egonex-AI/Understand-Anything` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Egonex-AI/Understand-Anything` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,9 +65,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`understand-anything-plugin/skills/understand-diff/SKILL.md`](understand-anything-plugin/skills/understand-diff/SKILL.md) |
 | 5 | ✓ | [`understand-anything-plugin/skills/understand-domain/SKILL.md`](understand-anything-plugin/skills/understand-domain/SKILL.md) |
 | 6 | ✓ | [`understand-anything-plugin/skills/understand-explain/SKILL.md`](understand-anything-plugin/skills/understand-explain/SKILL.md) |
-| 7 | ✓ | [`understand-anything-plugin/skills/understand-knowledge/SKILL.md`](understand-anything-plugin/skills/understand-knowledge/SKILL.md) |
-| 8 | ✓ | [`understand-anything-plugin/skills/understand-onboard/SKILL.md`](understand-anything-plugin/skills/understand-onboard/SKILL.md) |
-| 9 | ✓ | [`understand-anything-plugin/skills/understand/SKILL.md`](understand-anything-plugin/skills/understand/SKILL.md) |
+| 7 | ✓ | [`understand-anything-plugin/skills/understand-figma/SKILL.md`](understand-anything-plugin/skills/understand-figma/SKILL.md) |
+| 8 | ✓ | [`understand-anything-plugin/skills/understand-knowledge/SKILL.md`](understand-anything-plugin/skills/understand-knowledge/SKILL.md) |
+| 9 | ✓ | [`understand-anything-plugin/skills/understand-onboard/SKILL.md`](understand-anything-plugin/skills/understand-onboard/SKILL.md) |
+| 10 | ✓ | [`understand-anything-plugin/skills/understand/SKILL.md`](understand-anything-plugin/skills/understand/SKILL.md) |
 
 ---
 

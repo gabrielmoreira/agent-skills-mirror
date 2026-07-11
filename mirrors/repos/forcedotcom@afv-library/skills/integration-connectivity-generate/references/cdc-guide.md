@@ -7,7 +7,7 @@ Change Data Capture publishes change events for Salesforce records, enabling nea
 
 ## How CDC Works
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │  CHANGE DATA CAPTURE FLOW                                       │
 ├─────────────────────────────────────────────────────────────────┤
@@ -124,7 +124,7 @@ trigger AccountCDC on AccountChangeEvent (after insert) {
 
 ### External (CometD)
 
-```
+```text
 Channel: /data/AccountChangeEvent
 ```
 

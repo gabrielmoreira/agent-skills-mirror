@@ -7,7 +7,7 @@ Use individual `style` declarations with **Tailwind 200-level pastel fills** and
 
 Add this init directive at the start of every flowchart for optimal readability:
 
-```
+```text
 %%{init: {"flowchart": {"nodeSpacing": 80, "rankSpacing": 70}} }%%
 ```
 
@@ -74,7 +74,7 @@ flowchart TB
 ## Node Label Pattern
 
 Keep labels short (icon + name only). Avoid `<br/>` and `<small>` tags:
-```
+```json
 ["🔐 integration-connectivity-connected-app-configure"]
 ```
 

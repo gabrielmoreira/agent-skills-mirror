@@ -52,6 +52,16 @@
 - `TEST-004` 端到端测试：用户创建一张即将到期的发票后，在提醒视图中可见
 - 回归要求：任何与发票状态计算相关的 bug fix，都要补回归测试
 
+如果项目进入长期维护阶段，应继续拆分：
+
+- `01-test-strategy-and-quality-gates.md`: 发票金额、状态、提醒属于 P0/P1 业务链路，必须有失败路径和回归门禁
+- `02-test-standards.md`: 金额计算测试必须断返回值、持久化状态和提醒副作用
+- `03-test-design-methodology.md`: 使用边界值覆盖 0 元、最大金额、到期日前后；用状态机覆盖未收款、已逾期、已收款
+- `04-test-case-matrix.md`: 登记 `TEST-INVOICE-001` 到 `TEST-INVOICE-004`
+- `05-regression-suite.md`: 发票状态或提醒规则变化时必跑 invoice service 和 reminder integration tests
+- `06-test-data-and-fixtures.md`: 固定客户、发票、到期日和提醒规则 fixtures
+- `07-coverage-map.md`: 标记发票创建、状态计算、提醒更新的覆盖状态和缺口
+
 ## 5. 写进 `docs/workflow/05-tasks/README.md`
 
 这里写可执行动作：
@@ -75,12 +85,35 @@
 - 为什么这次要补发票提醒
 - 影响了哪些需求、设计和验证
 
-## 8. 写进 `docs/rules/`
+## 8. 做一次分析门禁
+
+任务拆完、实现前先检查：
+
+- `FR-001` 是否有对应 `AC-*`、`DES-*`、`TEST-*`、`T-*`
+- 发票状态流转是否同时出现在 requirements、design、verification 和 knowledge 中，且没有互相矛盾
+- 是否还有阻塞性的 `[待确认]`，例如提醒渠道、离线提醒策略、通知权限
+- change workspace 是否记录了影响范围、验证计划和同步清单
+
+如果发现缺口，先补文档或任务，再写代码。
+
+## 9. 实现后做收敛检查
+
+实现完成后把真实结果回写：
+
+- 新增或改变的状态规则同步到 `docs/knowledge/behavior/README.md`
+- 实际测试覆盖同步到 `docs/workflow/04-verification/README.md`
+- 长期可复用的测试规范、用例、回归和覆盖缺口同步到 `docs/workflow/04-verification/01-*` 到 `07-*`
+- 已完成任务更新到 `docs/workflow/05-tasks/README.md`
+- 本轮 change 从 `active/` 移到 `completed/`，或说明为什么仍未完成
+- 对外发布变化写入 `docs/releases/`，废弃说明写入 `docs/archive/`
+
+## 10. 写进 `docs/rules/`
 
 这里写默认做法，而不是业务需求：
 
 - `docs/rules/testing-standards.md`: 规定高优先级需求必须有自动化验证
 - `docs/rules/doc-sync-rules.md`: 规定发票状态流转规则变化时，必须同步更新 design、verification、tasks 和 knowledge
+- `docs/rules/test-case-management.md`: 规定长期用例进入 verification 矩阵，bug 复测进入 issues
 
 ## 快速判断口诀
 

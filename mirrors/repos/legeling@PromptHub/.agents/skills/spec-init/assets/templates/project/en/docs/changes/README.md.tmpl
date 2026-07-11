@@ -17,6 +17,12 @@ This directory records change-workspace lifecycles as well as why something chan
 - `completed/`: completed changes that still matter historically
 - `legacy/`: legacy change records kept only for reference
 
+Status and directory placement must match:
+
+- Changes still being implemented, verified, synced, or unblocked stay under `active/<change-key>/`
+- Changes that are done and have passed convergence must move to `completed/` (or `completed/YYYY/MM/<change-key>/` when year/month archiving is enabled)
+- Do not mark `active/<change-key>/overview.md` as `completed` without moving the directory
+
 ## Relationship to other docs
 
 - `workflow / knowledge / verification / tasks` describe current and long-lived truth

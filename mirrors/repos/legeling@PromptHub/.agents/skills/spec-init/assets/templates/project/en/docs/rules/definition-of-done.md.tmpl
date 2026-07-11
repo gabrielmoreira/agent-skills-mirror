@@ -7,6 +7,8 @@ Before a task is marked done, confirm at least the following:
 - Related `FR-*`, `DES-*`, `TEST-*`, and `T-*` items are updated
 - The structure and commands in `README.md` are still correct
 - Important technical trade-offs are recorded in `docs/adr/` when needed
+- Pre-implementation analyze findings are resolved or explicitly blocking
+- The current change is in the correct lifecycle directory: unfinished changes remain in `docs/changes/active/`, completed changes move to `docs/changes/completed/`, and legacy records move to `docs/changes/legacy/`
 
 ## Code and Tests
 
@@ -23,3 +25,5 @@ Before a task is marked done, confirm at least the following:
 - New engineering rules are written into `docs/rules/`, not kept only in temporary discussion
 - Known risks and unresolved items are explicit instead of hidden
 - Material ambiguities were confirmed with the user instead of being silently assumed by the implementer
+- Post-implementation converge is complete, and real behavior, test results, current docs, and change records align
+- No completed change remains under `docs/changes/active/`

@@ -5,6 +5,13 @@ description: "Full end-to-end research pipeline: from a broad research direction
 
 # Full Research Pipeline: Idea → Experiments → Submission
 
+> **External cadence is fire-control only.** An overnight scheduler may check
+> process/file progress, update a heartbeat, and nudge a stalled phase. It must
+> never rerun or replace a reviewer verdict. Register the state file with
+> `watchdog.py`, unregister on completion, and use `iteration_log.py` to trigger
+> structural pivots after repeated no-progress iterations. See
+> [`external-cadence.md`](../shared-references/external-cadence.md).
+
 End-to-end autonomous research workflow for: **$ARGUMENTS**
 
 ## Constants
@@ -13,12 +20,15 @@ End-to-end autonomous research workflow for: **$ARGUMENTS**
 - **ARXIV_DOWNLOAD = false** — When `true`, `/research-lit` downloads the top relevant arXiv PDFs during literature survey. When `false` (default), only fetches metadata via arXiv API. Passed through to `/idea-discovery` → `/research-lit`.
 - **HUMAN_CHECKPOINT = false** — When `true`, the auto-review loops (Stage 3) pause after each round's review to let you see the score and provide custom modification instructions before fixes are implemented. When `false` (default), loops run fully autonomously. Passed through to `/auto-review-loop`.
 - **REVIEWER_DIFFICULTY = medium** — How adversarial the reviewer is. `medium` (default): standard MCP review. `hard`: adds **Reviewer Memory** + **Debate Protocol**. `nightmare`: GPT reads repo directly via `codex exec` + memory + debate. Passed through to `/auto-review-loop`.
-- **CODE_REVIEW = true** — GPT-5.5 xhigh reviews experiment code before deployment. Catches logic bugs before wasting GPU hours. Set `false` to skip. Passed through to `/experiment-bridge`.
+- **CODE_REVIEW = true** — GPT-5.6-Sol xhigh reviews experiment code before deployment. Catches logic bugs before wasting GPU hours. Set `false` to skip. Passed through to `/experiment-bridge`.
 - **BASE_REPO = false** — GitHub repo URL to use as base codebase. When set, `/experiment-bridge` clones the repo first and implements experiments on top of it. When `false` (default), writes code from scratch or reuses existing project files. Passed through to `/experiment-bridge`.
 - **COMPACT = false** — When `true`, generates compact summary files for short-context models and session recovery. Passed through to `/idea-discovery` and `/experiment-bridge`.
 - **AUTO_WRITE = false** — When `true`, automatically invoke Workflow 3 (`/paper-writing`) after Stage 4. Requires `VENUE` to be set. When `false` (default), Stage 4 generates `NARRATIVE_REPORT.md` and stops — user invokes `/paper-writing` manually.
 - **VENUE = ICLR** — Target venue for paper writing (Stage 5). Only used when `AUTO_WRITE=true`. Options: `ICLR`, `NeurIPS`, `ICML`, `CVPR`, `ACL`, `AAAI`, `ACM`, `IEEE_CONF`, `IEEE_JOURNAL`.
-- **RENDER_HTML = true** — When `true` (default), auto-render `NARRATIVE_REPORT.md` to HTML at Stage 4 completion via `/render-html`. Uses `--no-review` (this is an internal handoff doc to `/paper-writing`, not a reviewer-facing final artifact — the upstream Stage 3 auto-review loop already cross-model-reviewed the claims). Set `false` to skip, or pass `— render html: false`. **Non-blocking**: if `/render-html` fails or Codex MCP is unavailable, log the failure and continue — the HTML view is a nice-to-have, not a Stage 4 prerequisite.
+- **RENDER_HTML = true** — When `true` (default), auto-render `NARRATIVE_REPORT.md` to HTML at Stage 4 completion via `/render-html`. Uses `--no-review` because Stage 3 already produced a traced same-family provisional review. Set `false` to skip. Rendering failure is non-blocking.
+- **RESUMABLE = true** — Record per-stage state under `.aris/runs/` and resume
+  from the first non-terminal phase. Same-family Codex review produces
+  `provisional`; deterministic or overlay gates produce `accepted`.
 
 > 💡 Override via argument, e.g., `/research-pipeline "topic" — AUTO_PROCEED: false, human checkpoint: true, difficulty: nightmare, code review: false, base repo: https://github.com/org/project, auto_write: true, venue: NeurIPS`.
 
@@ -32,6 +42,51 @@ This skill chains the entire research lifecycle into a single pipeline:
 ```
 
 It orchestrates up to four major workflows in sequence. Workflow 3 (paper writing) is optional and controlled by `AUTO_WRITE`.
+
+## Resumable runs and heartbeat
+
+When `RESUMABLE=true`, resolve helpers through the Codex manifest:
+
+```bash
+if [ -z "${ARIS_REPO:-}" ] && [ -f .aris/installed-skills-codex.txt ]; then
+  ARIS_REPO=$(awk -F'\t' '$1=="repo_root"{print $2; exit}' .aris/installed-skills-codex.txt 2>/dev/null) || true
+fi
+RUN_STATE=""
+ITER_LOG=""
+WATCHDOG=""
+[ -n "${ARIS_REPO:-}" ] && [ -f "$ARIS_REPO/tools/run_state.py" ] && RUN_STATE="$ARIS_REPO/tools/run_state.py"
+[ -n "${ARIS_REPO:-}" ] && [ -f "$ARIS_REPO/tools/iteration_log.py" ] && ITER_LOG="$ARIS_REPO/tools/iteration_log.py"
+[ -n "${ARIS_REPO:-}" ] && [ -f "$ARIS_REPO/tools/watchdog.py" ] && WATCHDOG="$ARIS_REPO/tools/watchdog.py"
+[ -z "$RUN_STATE" ] && [ -f tools/run_state.py ] && RUN_STATE="tools/run_state.py"
+[ -z "$ITER_LOG" ] && [ -f tools/iteration_log.py ] && ITER_LOG="tools/iteration_log.py"
+[ -z "$WATCHDOG" ] && [ -f tools/watchdog.py ] && WATCHDOG="tools/watchdog.py"
+```
+
+Warn-and-skip state tracking if `RUN_STATE` cannot be resolved; never pretend it
+was persisted. Phases are `idea-discovery,experiment-bridge,auto-review-loop,summary,paper-writing`.
+
+- New run: `python3 "$RUN_STATE" start . "$RUN_ID" --executor codex-gpt-5.6-sol --provisional-advances --phases "idea-discovery,experiment-bridge,auto-review-loop,summary,paper-writing"` (the `--provisional-advances` policy is what lets a same-family provisional verdict close a phase for resume — without it, mainline semantics apply and provisional phases stay open).
+- Resume: `python3 "$RUN_STATE" resume . "$RUN_ID"`; restart the returned phase.
+- Each phase: mark `running`, then `done --artifact <path>`.
+- A fresh Codex reviewer PASS uses `mark-provisional --reviewer gpt-5.6-sol
+  --verdict-id <trace-or-agent-id>`. This is terminal for resume but not accepted.
+- A cross-family overlay or deterministic verifier uses `accept`.
+- If `AUTO_WRITE=false`, mark `paper-writing` as `skipped` after summary.
+
+| Phase | Terminal record |
+|---|---|
+| idea-discovery | base Codex → provisional; overlay jury → accepted |
+| experiment-bridge | deterministic job/result completion → accepted |
+| auto-review-loop | base Codex positive STOP → provisional; overlay → accepted |
+| summary | deterministic file/render result → accepted |
+| paper-writing | verifier report; `overall_assurance=provisional` stays provisional |
+
+For an unattended loop, touch the run state at the start of every tick, register
+it once with `watchdog.py --register` as type `loop`, and unregister on
+completion. After each tick run `iteration_log.py note <root> <run_id> <phase>
+<new-finding-count>`: `pivot=structural` requires a genuinely different approach;
+`pivot=human` surfaces the stall. Neither result is a quality verdict. See
+[`resumable-runs.md`](../shared-references/resumable-runs.md).
 
 ## Pipeline
 
@@ -88,7 +143,7 @@ Once the user confirms which idea to pursue, delegate implementation and deploym
 **What this does (fully autonomous):**
 1. Parses `refine-logs/EXPERIMENT_PLAN.md` — extracts milestones, run order, compute budget
 2. Implements experiment code — extends pilot to full scale, follows existing codebase conventions
-3. **Cross-model code review** — GPT-5.5 xhigh reviews the implementation for logic bugs, incorrect metrics, and ground-truth misuse before any GPU time is spent
+3. **Fresh-agent code review** — GPT-5.6-Sol xhigh reviews the implementation in a new context; base result is same-family provisional
 4. **Sanity check** — runs the smallest experiment first to verify the environment; auto-debugs failures (up to 3 attempts, with `/codex:rescue` fallback)
 5. Deploys full experiments — auto-routes by job count (≤5 → `/run-experiment`, ≥10 → `/experiment-queue` with OOM retry, wave gating, crash-safe state)
 6. Collects initial results — parses outputs, updates `refine-logs/EXPERIMENT_TRACKER.md`, runs `/training-check` if W&B is configured
@@ -116,7 +171,7 @@ Once initial results are in, start the autonomous improvement loop:
 ```
 
 **What this does (up to 4 rounds):**
-1. GPT-5.5 xhigh reviews the work (score, weaknesses, minimum fixes)
+1. GPT-5.6-Sol xhigh reviews the work (score, weaknesses, minimum fixes)
 2. Claude Code implements fixes (code changes, new experiments, reframing)
 3. Deploy fixes, collect new results
 4. Re-review → repeat until score ≥ 6/10 or 4 rounds reached
@@ -222,7 +277,7 @@ After Stage 4 finalizes `NARRATIVE_REPORT.md` (before paper writing branches), i
 /render-html "NARRATIVE_REPORT.md" --no-review
 ```
 
-`--no-review` is intentional: this is an internal handoff doc, not reviewer-facing — the claims it summarizes were already cross-model-reviewed in Stage 3's `/auto-review-loop`. Output: `NARRATIVE_REPORT.html` next to the MD, with embedded source SHA256.
+`--no-review` is intentional: this is an internal handoff doc, not reviewer-facing — the claims already received a traced same-family provisional review in Stage 3. Output: `NARRATIVE_REPORT.html` next to the MD, with embedded source SHA256.
 
 **Non-blocking**: if `/render-html` fails (helper missing, file write error, etc.), log the failure and continue Stage 4 — the HTML view is a convenience artifact, not a pipeline prerequisite.
 

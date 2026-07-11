@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-building-sf-integrations Validation Script
+integration-connectivity-generate Validation Script
 
 Validates integration-related files against best practices.
 Scoring: 120 points across 6 categories.
