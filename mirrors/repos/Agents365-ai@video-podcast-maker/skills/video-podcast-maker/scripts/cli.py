@@ -20,7 +20,9 @@ Resources / actions:
     audit     beats
     shorts    gen
     design    list | show | delete | add
+    assets    init | add | list | validate
     prereqs
+    capabilities
     prefs     get | migrate | backend | bgm-path
     schema    [<method>]
 """
@@ -101,11 +103,41 @@ ACTIONS = {
         'parser_attr': '_build_parser',
         'description': 'Add design references (URLs / videos / images as positional args)',
     },
+    'assets.init': {
+        'script': 'assets.py',
+        'prepend': ['init'],
+        'parser_attr': 'build_parser',
+        'description': 'Create assets/ + an empty asset manifest for a video',
+    },
+    'assets.add': {
+        'script': 'assets.py',
+        'prepend': ['add'],
+        'parser_attr': 'build_parser',
+        'description': 'Register one asset (user file / stock / generated) in the manifest',
+    },
+    'assets.list': {
+        'script': 'assets.py',
+        'prepend': ['list'],
+        'parser_attr': 'build_parser',
+        'description': 'List manifest assets with status counts',
+    },
+    'assets.validate': {
+        'script': 'assets.py',
+        'prepend': ['validate'],
+        'parser_attr': 'build_parser',
+        'description': 'Validate the asset manifest (schema, files, licenses)',
+    },
     'prereqs': {
         'script': 'check_prereqs.py',
         'prepend': [],
         'parser_attr': 'build_parser',
         'description': 'Pre-flight check: required CLIs + backend env vars',
+    },
+    'capabilities': {
+        'script': 'components.py',
+        'prepend': ['probe'],
+        'parser_attr': None,
+        'description': 'Probe optional component skills (assetSeeker/imagenCN/videogenCN/ttsCN)',
     },
     'prefs.get': {
         'script': 'get_pref.py',
@@ -153,6 +185,8 @@ def build_parser():
                      ['gen'])
     _build_resource(sub, 'design', 'Design reference library',
                      ['list', 'show', 'delete', 'add'])
+    _build_resource(sub, 'assets', 'Per-video asset manifest',
+                     ['init', 'add', 'list', 'validate'])
     _build_resource(sub, 'prefs', 'User preferences',
                      ['get', 'migrate', 'backend', 'bgm-path'])
 
@@ -160,6 +194,7 @@ def build_parser():
     _build_leaf(sub, 'verify', ACTIONS['verify']['description'])
     _build_leaf(sub, 'align', ACTIONS['align']['description'])
     _build_leaf(sub, 'prereqs', ACTIONS['prereqs']['description'])
+    _build_leaf(sub, 'capabilities', ACTIONS['capabilities']['description'])
 
     # schema subcommand — uses cli_envelope envelope on stdout
     schema = sub.add_parser('schema', help='Print parameter schema for an action')
@@ -287,8 +322,8 @@ def _type_name(t):
 # Resources with sub-actions vs leaf resources. The leaves are themselves
 # the action — there's no second positional. Both lists are derived from
 # ACTIONS keys but kept explicit so the routing is readable.
-_RESOURCES_WITH_ACTIONS = {'tts', 'audit', 'shorts', 'design', 'prefs'}
-_LEAF_RESOURCES = {'verify', 'align', 'prereqs'}
+_RESOURCES_WITH_ACTIONS = {'tts', 'audit', 'shorts', 'design', 'assets', 'prefs'}
+_LEAF_RESOURCES = {'verify', 'align', 'prereqs', 'capabilities'}
 
 
 def main():

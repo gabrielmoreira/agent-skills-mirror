@@ -74,7 +74,7 @@ oh-my-opencode-slim/
 │   ├── multiplexer/  # Tmux/Zellij pane integration for child sessions
 │   ├── skills/       # Skill definitions (included in package publish)
 │   ├── tools/        # Tool definitions (council, webfetch, AST-grep, etc.)
-│   └── utils/        # Shared utilities (tmux, session helpers)
+│   └── utils/        # Shared utilities (session, task, logger, env, etc.)
 ├── dist/             # Built JavaScript and declarations
 ├── docs/             # User-facing documentation
 ├── biome.json        # Biome configuration
@@ -130,7 +130,7 @@ Session Deleted Externally:
 
 ### Key Implementation Details
 
-**1. Graceful Shutdown (src/utils/tmux.ts)**
+**1. Graceful Shutdown (src/multiplexer/tmux/index.ts)**
 ```typescript
 // Always send Ctrl+C before killing pane
 spawn([tmux, "send-keys", "-t", paneId, "C-c"])
@@ -252,8 +252,8 @@ OpenCode has a built-in `/review` command that automatically performs comprehens
 - Skills are located in `src/skills/` (included in package publish)
 - Multiplexer session management is in `src/multiplexer/`
 - Council manager (multi-LLM orchestration) is in `src/council/`
-- Tmux utilities are in `src/utils/tmux.ts`
-- 468 tests across 35 files - run `bun test` to verify
+- Tmux utilities are in `src/multiplexer/tmux/`
+- 1426 tests across 83 files - run `bun test` to verify
 
 ## Repository Map
 

@@ -318,7 +318,7 @@ When the orchestrator composes prompts for subagents, it includes only task-rele
 2. `execution-protocol.md`
 3. Resources matching the specific task type (from the maps above)
 4. `error-playbook.md` (always included; recovery is essential)
-5. Serena Memory Protocol (CLI mode)
+5. Memory Protocol (CLI mode)
 
 This targeted composition avoids loading unnecessary resources, maximizing the subagent's available context for actual work.
 
@@ -343,7 +343,7 @@ Clarification Debt (CD) measures the cost of unclear requirements during a sessi
 - **`redo` >= 2** → Orchestrator pauses and requests explicit scope confirmation
 - **CD >= 30 across 3 consecutive sessions for the same agent** → Agent prompt template review
 
-The session log is maintained in `.serena/memories/session-metrics.md` with per-event rows (turn, agent, event type, points, detail) and a summary section.
+The session log is maintained in `.agents/state/memories/session-metrics.md` with per-event rows (turn, agent, event type, points, detail) and a summary section.
 
 ---
 

@@ -11,7 +11,7 @@ disable-model-invocation: true
 - **You MUST use MCP tools throughout the workflow.**
   - Use code analysis tools (`get_symbols_overview`, `find_symbol`, `search_for_pattern`) to analyze the existing codebase.
   - Use memory tools (write/edit) to record planning results.
-  - Memory path: configurable via `memoryConfig.basePath` (default: `.serena/memories`)
+  - Memory path: configurable via `memoryConfig.basePath` (default: `.agents/state/memories`)
   - Tool names: configurable via `memoryConfig.tools` in `.agents/mcp.json`
   - Do NOT use raw file reads or grep as substitutes.
 

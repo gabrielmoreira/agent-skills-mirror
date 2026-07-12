@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills"><img src="https://img.shields.io/github/stars/aaron-he-zhu/aaron-marketing-skills?style=flat" alt="GitHub Stars"></a>
-  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-16.1.1-orange" alt="Version"></a>
+  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-17.0.0-orange" alt="Version"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/commits/main"><img src="https://img.shields.io/github/last-commit/aaron-he-zhu/aaron-marketing-skills" alt="Last Commit"></a>
 </p>
@@ -24,16 +24,18 @@
 
 | 层 | 技能 | 生命周期（阶段目录） | 框架 → 门 | 入口命令 |
 |----|------|----------------------|-----------|----------|
-| **品牌叙事（TALE）** | 16 | trace → architect → land → evaluate | [TALE](../references/tale-benchmark.md) → `narrative-quality-auditor`（NQS） | `/aaron-marketing:narrative` |
+| **品牌叙事（TALE）** | 16 | trace → architect → land → evaluate | [TALE](../references/tale-benchmark.md) → `narrative-quality-auditor` (truth / system / effectiveness profiles) | `/aaron-marketing:narrative` |
 | **SEO/GEO** | 16 | research → build → optimize → monitor | [CORE-EEAT](../references/core-eeat-benchmark.md) → `content-quality-auditor` · [CITE](../references/cite-domain-rating.md) → `domain-authority-auditor` | `/aaron-marketing:seo-geo` |
-| **红人** | 16 | discover → plan → activate → measure | [C³](../references/c3-benchmark.md) → `content-reviewer`（ART）；`fit-scorer` 打 ACE 分 | `/aaron-marketing:influencer` |
-| **付费广告（ROAS）** | 16 | research → orchestrate → activate → scale | [ROAS](../references/roas-benchmark.md) → `ad-account-auditor`（RQS） | `/aaron-marketing:ad` |
+| **自然社媒（ECHO）** | 16 | explore → craft → host → observe | [ECHO](../references/echo-benchmark.md) → `social-quality-auditor` (asset / program-maturity profiles) | `/aaron-marketing:social` |
 | **邮件营销（SEND）** | 16 | setup → engage → nurture → deliver | [SEND](../references/send-benchmark.md) → `email-quality-auditor`（EQS） | `/aaron-marketing:email` |
-| **产品发布（RAMP）** | 16 | research → assemble → mobilize → prove | [RAMP](../references/ramp-benchmark.md) → `launch-readiness-auditor`（LQS） | `/aaron-marketing:launch` |
-| **自然社媒（ECHO）** | 16 | explore → craft → host → observe | [ECHO](../references/echo-benchmark.md) → `social-quality-auditor`（SQS） | `/aaron-marketing:social` |
+| **付费广告（ROAS）** | 16 | research → orchestrate → activate → scale | [ROAS](../references/roas-benchmark.md) → `ad-account-auditor`（RQS） | `/aaron-marketing:ad` |
+| **红人** | 16 | discover → plan → activate → measure | [C³](../references/c3-benchmark.md) → `content-reviewer`（ART）；`fit-scorer` 打 ACE 分 | `/aaron-marketing:influencer` |
+| **产品发布（RAMP）** | 16 | research → assemble → mobilize → prove | [RAMP](../references/ramp-benchmark.md) → `launch-readiness-auditor` (preflight / execution / outcome profiles) | `/aaron-marketing:launch` |
 | **协议层** | 8 | ——（阶段流程之外的共享机件） | 7 个真相注册表（实体 · 创作者 · offer/声明 · 同意 · 发布 · 频道 · 叙事）+ HOT/WARM/COLD 记忆 | —— |
 
-`/aaron-marketing:auto` 把任意自然语言目标路由到全库。全部为**纯 Markdown** —— 唯一的代码是一个 Bash hook runner、一个 Bash 校验器、以及零依赖的 Python 标准库数据助手（无 `pip`、无构建步骤）。**每个技能都能在 Tier 1 仅凭你粘贴的数据运行**；连接器只是自动化取数。这不是一堆平级学科的堆叠，而是一套**四层营销操作系统**——详见下方[架构 § 四层营销操作系统](#四层营销操作系统)。
+`/aaron-marketing:auto` 可把任意自然语言目标路由到整套体系。技能与命令都是**纯 Markdown**；小型 Bash/Python 标准库运行时提供 hooks、校验、评分、注册表事件、连接器与 CI 检查（无 `pip`、无构建步骤）。**每个技能都在 Tier 1 用你提供的数据即可运行**；连接器只自动化数据拉取，或一次经明确批准的变更。
+
+权威的类型化拓扑是 [`references/system-catalog.json`](../references/system-catalog.json)；可读的四层地图、全部 120 条路径、注册表所有者、auditor 落点与分发档案见[生成的系统架构文档](system-architecture.md)。
 
 > 合并前的两个独立仓库现均为**纯路标仓库**——[seo-geo-claude-skills](https://github.com/aaron-he-zhu/seo-geo-claude-skills)（最终 20 技能版本线保留于 tag `v9.9.12`）与 [influencer-marketing-agent-skills](https://github.com/aaron-he-zhu/influencer-marketing-agent-skills)（最终 IMPACT 版本线保留于 tag `standalone-final`），安装一律指向本仓库。兄弟仓库策略见 [docs/repo-family.md](repo-family.md)。
 
@@ -76,10 +78,10 @@
 | 原则 | 落到实处 |
 |------|----------|
 | **默认 keyless** | 每个技能都能在 **Tier 1** 仅凭粘贴的数据、或从免费/第一方来源拉取的数据运行。付费工具与 MCP 服务器是可选项，绝非前提。付费广告技能基于**自有账户手动导出**评分——带密钥的广告 API 永不必需。 |
-| **是 Markdown，不是框架** | 技能即内容。唯一可执行代码是 `hooks/claude-hook.sh`（Bash）、`scripts/validate-skill.sh`（Bash）、`scripts/connectors/*.py`（**仅标准库**）。无需安装、审计或维护。 |
+| **内容优先、契约可执行** | 技能始终是 Markdown。小型 Bash/Python 标准库运行时让评分、状态、安全与契约一致性都可确定性执行，且不新增任何包依赖。 |
 | **一套共享契约** | 120 个技能暴露同样的七段结构，并自带 `discipline` + `phase` 元数据，整个库像一套操作系统：每个技能都知道自己的输入、输出，以及下一个该交棒的技能。 |
-| **带门的质量** | 八套基准驱动八个 auditor-class 门，产出结构化、可机器校验的判定——不是凭感觉。每个带门工件落盘前都经 PostToolUse hook 校验。 |
-| **真相住在注册表里** | 规范事实（品牌实体、创作者档案、offer/声明实证）住在协议层专职注册表中，唯一写入者规则——门对照注册表评判，而非各自重新推导。 |
+| **带门的质量** | 八套基准驱动八个 auditor-class 门，产出结构化、可机器校验的判定——不是凭感觉。成功/失败/批次 hook 通过有界检查暴露无效写入；pre-commit/CI 只兜底已提交 Git 内容中的 PII，不校验 runtime 工件。 |
+| **真相住在事件里** | 七条只追加（append-only）的注册表事件流是规范真相；由所有者掌控的投影对外暴露实体、创作者、声明、同意、发布、频道与叙事状态，全程不再有破坏性队列。 |
 | **跨轮记忆** | HOT/WARM/COLD 记忆模型在技能与会话之间携带发现、分数与未决事项，并在写入时净化。 |
 | **人话** | 技能内置 AI 腔检测器与禁用词表，让输出读起来像人写的。 |
 
@@ -154,9 +156,9 @@
 > | **L1 · 策略** —— 我们说什么 / 我们是谁 | crawl | **品牌叙事** · TALE | 常态 |
 > | **L2 · 频道** —— 表达策略的常态引擎（自有 → 付费） | walk | **SEO/GEO** · CORE-EEAT + CITE · **自然社媒** · ECHO · **邮件** · SEND · **付费广告** · ROAS · **红人** · C³ | 常态（红人偏阶段性） |
 > | **L3 · 编排** —— 跨频道的限时时刻 | run | **产品发布** · RAMP | 阶段性 |
-> | **L4 · 协议** —— 共享的系统级记录 | —— | 8 个真相注册表 + 记忆 · 8 个 auditor 门 · 一套技能契约 | —— |
+> | **L4 · 协议** —— 共享的系统级记录 | —— | 7 个真相注册表 + 工作记忆 · 8 个 auditor 门 · 一套技能契约 | —— |
 >
-> 叙事是消息，频道是表达它的媒介——拿掉任何一条频道，记录依然完整；拿掉叙事，每条频道说出的都是无出处、无治理的消息。每条频道都像今天每个 creative builder 已经在读声明台账那样，从 L1 继承嗓音与声明。每个学科自己的 4 阶段循环都活在它所属的层里（叙事 = Trace → Architect → Land → Evaluate）。
+> 叙事是消息，频道是表达它的媒介。每个核心 builder 都会记录它所使用的确切准则 ID/版本与声明投影偏移量（offset），或一次经明确批准的回退/阻断。每个学科自己的 4 阶段循环都活在它所属的层里（叙事 = Trace → Architect → Land → Evaluate）。
 
 七个学科都用阶段**目录**（`narrative/trace/`…、`seo-geo/research/`…、`influencer/discover/`…、`ad/research/`…、`email/setup/`…、`launch/research/`…、`social/explore/`…）。注意 "activate" 在红人里指创作者外联、在付费里指账户门控——同词不同域。
 
@@ -166,46 +168,46 @@
 
 | 框架 | 评分对象 | 项数 / 维度 | 汇总 | 否决项 |
 |------|----------|-------------|------|--------|
-| **[TALE](../references/tale-benchmark.md)** | 品牌叙事与消息（真实 · 架构 · 落地 · 证据） | T / A / L / E | **NQS = floor（目标加权均值）**（算术） | TALE `T1`/`A1`/`L1`/`E1` |
-| **[CORE-EEAT](../references/core-eeat-benchmark.md)** | 内容质量（GEO = CORE 均值，SEO = EEAT 均值） | 80 项 / 8 维 | 各维度均值 | `T04`、`C01`、`R10` |
-| **[CITE](../references/cite-domain-rating.md)** | 域名权威与引用信任 | 40 项 / 4 维 | 算术加权平均 | `T03`、`T05`、`T09` |
-| **[C³](../references/c3-benchmark.md)** | 红人 创作者/内容/活动 | ACE / ART / ROI · 9 维 | **CVI =（ACE × ART × ROI）^⅓**（几何） | ACE `A2`/`C1`/`E2`、ART `T1`/`T2` |
-| **[ROAS](../references/roas-benchmark.md)** | 付费广告 回报/报价/受众/花费效率 | R / O / A / S | **RQS = floor（目标加权均值）**（算术） | `R1`/`R2`/`O1`/`O2`/`A1` |
-| **[SEND](../references/send-benchmark.md)** | 邮件营销 发件完整/送达 · 互动 · 培育/生命周期 · 直接响应/转化 | S / E / N / D | **EQS = floor（目标加权均值）**（算术） | `S1`/`S2`/`N1`/`D1` |
-| **[RAMP](../references/ramp-benchmark.md)** | 产品发布 就绪 · 资产 · 势能 · 证明 | R / A / M / P · 4×10=40 项 | **LQS = floor（目标加权均值）**（算术） | RAMP `R1`/`A1`/`M1`/`P1`（与 ROAS 撞号，须带框架名限定） |
-| **[ECHO](../references/echo-benchmark.md)** | 自然社媒 嵌入度 · 创作 · 运营 · 可观测性 | E / C / H / O | **SQS = floor（目标加权均值）**（算术） | ECHO `E1`/`C1`/`C2`/`H1`/`H2`/`O1`（`O1` 与 ROAS `O1`、`C1` 与 C³ `C1`/CORE `C01` 撞号，须带框架名限定） |
+| **[TALE](../references/tale-benchmark.md)** | 品牌叙事的真相 / 体系 / 效果 | T / A / L / E | `truth`、`system`、`effectiveness` 三个 profile 结果各自独立；无总合成分 | TALE `T1`/`A1`/`L1`/`E1` |
+| **[CORE-EEAT](../references/core-eeat-benchmark.md)** | 内容质量，附 CORE/GEO 与 EEAT/SEO 诊断视图 | 80 项 / 8 维 | 完整的 profile 加权结果；诊断视图不是独立总分 | `T04`/`C01`/`R10` |
+| **[CITE](../references/cite-domain-rating.md)** | 域名权威与引用信任 | 40 项 / 4 维 | 算术 profile 加权平均 | `T03`/`T05`/`T09` |
+| **[C³](../references/c3-benchmark.md)** | 红人 Creator / Content / Campaign | ACE / ART / ROI；9 维 | 三个完整且口径兼容的 scope 结果齐备后取 `CVI = floor((ACE x ART x ROI)^(1/3))` | ACE `A2`/`C1`/`E2`；ART `T1`/`T2` |
+| **[ROAS](../references/roas-benchmark.md)** | 付费广告的增量贡献与运营质量 | R / O / A / S | `RQS = floor(profile-weighted mean)` | `R1`/`R2`/`O1`/`O2`/`A1` |
+| **[SEND](../references/send-benchmark.md)** | 邮件的发件人完整性 / 互动 / 培育 / 直接成效 | S / E / N / D | `EQS = floor(profile-weighted mean)` | `S1`/`S2`/`N1`/`D1` |
+| **[RAMP](../references/ramp-benchmark.md)** | 产品发布的就绪 / 资产 / 势能 / 证明 | R / A / M / P；40 个稳定 ID | `preflight`、`execution`、`outcome` 三个 profile 结果各自独立；绝不跨时间视界取平均 | RAMP `R1`/`A1`/`M1`/`P1` |
+| **[ECHO](../references/echo-benchmark.md)** | 自然社媒的嵌入度 / 工艺 / 运营 / 可观测性 | E / C / H / O；40 个稳定 ID | 每次只跑一个 `asset-gate` 或 `program-maturity-*` profile；绝不混合不同类单元 | ECHO `E1`/`C1`/`C2`/`H1`/`H2`/`O1` |
 
-每套框架由一个 **auditor-class 门**执行——写出受 PostToolUse hook 校验的带门工件（`class: auditor-output`）。门是工作流步骤，所以驻留并计入各自学科：
+每套框架由一个 **auditor-class 门**执行——其类型化工件（`class: auditor-output`）由确定性 validator 与有界生命周期 hooks 校验。仓库 CI 只回归测试 validator 与契约，不会检查被忽略的主机运行时工件。门是工作流步骤，所以驻留并计入各自学科：
 
 | 门 | 框架 | 所在 | 判定 |
 |----|------|------|------|
-| [narrative-quality-auditor](../narrative/evaluate/narrative-quality-auditor/SKILL.md) | TALE NQS | `narrative/evaluate/`（品牌叙事） | 发布前 SHIP / FIX / BLOCK |
-| [content-quality-auditor](../seo-geo/optimize/content-quality-auditor/SKILL.md) | CORE-EEAT | `seo-geo/optimize/`（SEO/GEO） | 发布前 SHIP / FIX / BLOCK |
-| [domain-authority-auditor](../seo-geo/monitor/domain-authority-auditor/SKILL.md) | CITE | `seo-geo/monitor/`（SEO/GEO） | TRUSTED / CAUTIOUS / UNTRUSTED |
-| [content-reviewer](../influencer/activate/content-reviewer/SKILL.md) | C³ ART | `influencer/activate/`（红人） | 创作者内容上线前 APPROVED / REVISIONS / REJECTED |
-| [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md) | ROAS RQS | `ad/activate/`（付费） | 加预算前 SHIP / FIX / BLOCK |
-| [email-quality-auditor](../email/deliver/email-quality-auditor/SKILL.md) | SEND EQS | `email/deliver/`（邮件） | 发送前 SHIP / FIX / BLOCK |
-| [launch-readiness-auditor](../launch/mobilize/launch-readiness-auditor/SKILL.md) | RAMP LQS | `launch/mobilize/`（产品发布） | 发布前 SHIP / FIX / BLOCK |
-| [social-quality-auditor](../social/host/social-quality-auditor/SKILL.md) | ECHO SQS | `social/host/`（自然社媒） | 发布前 SHIP / FIX / BLOCK |
+| [narrative-quality-auditor](../narrative/evaluate/narrative-quality-auditor/SKILL.md) | TALE 三 profile | `narrative/evaluate/` | truth/system/effectiveness 结果各自独立；无合成总分 |
+| [content-quality-auditor](../seo-geo/optimize/content-quality-auditor/SKILL.md) | CORE-EEAT | `seo-geo/optimize/` | SHIP / FIX / BLOCK / UNDECIDED |
+| [domain-authority-auditor](../seo-geo/monitor/domain-authority-auditor/SKILL.md) | CITE | `seo-geo/monitor/` | SHIP / FIX / BLOCK / UNDECIDED；信任标签仅作解释 |
+| [content-reviewer](../influencer/activate/content-reviewer/SKILL.md) | C³ ART | `influencer/activate/` | SHIP / FIX / BLOCK / UNDECIDED，另附面向创作者的转述 |
+| [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md) | ROAS | `ad/activate/` | SHIP / FIX / BLOCK / UNDECIDED |
+| [email-quality-auditor](../email/deliver/email-quality-auditor/SKILL.md) | SEND | `email/deliver/` | SHIP / FIX / BLOCK / UNDECIDED |
+| [launch-readiness-auditor](../launch/mobilize/launch-readiness-auditor/SKILL.md) | RAMP 生命周期 profile | `launch/mobilize/` | 对一个已声明的生命周期读数给出 SHIP / FIX / BLOCK / UNDECIDED |
+| [social-quality-auditor](../social/host/social-quality-auditor/SKILL.md) | ECHO 资产/项目 profile | `social/host/` | 对一个已声明的单元/profile 给出 SHIP / FIX / BLOCK / UNDECIDED |
 
-**共享封顶法：** 单个否决项把受影响维度与总分封顶到 `min(raw, 60)`；**两个及以上否决项 → `BLOCKED`**（无最终分）。判定对用户翻译成人话（报告里不出现项目 ID）。门的机制——handoff schema、封顶算术、工件门清单——在 [auditor-runbook.md](../references/auditor-runbook.md) 统一规定，八套框架的算术由确定性 golden 测试锁定（见[质量守卫](#质量守卫)）。
+**共享否决策略：** 一条经核实的否决项把最终分封顶在 `min(raw, 59)`；两条及以上经核实的否决项产生 `status: DONE` + `verdict: BLOCK` 且不给最终分。证据缺失记为 `Unknown`，绝不自动判负。类型化规则见 [auditor-runbook.md](../references/auditor-runbook.md)。
 
 ### 协议层
 
 `protocol/` 目录承载学科阶段流程之外的**共享真相与记忆机件** —— 8 个技能，单独计数：
 
-| 技能 | 职责 | 锚定 | 规范存储 |
+| 技能 | 职责 | 锚定 | 规范事件流 / 运行时角色 |
 |------|------|------|----------|
-| [entity-optimizer](../protocol/entity-optimizer/SKILL.md) | 规范品牌/实体档案（知识图谱、Wikidata、AI 消歧） | SEO/GEO | `memory/entities/` |
-| [creator-registry](../protocol/creator-registry/SKILL.md) | 规范创作者名册/档案——去重 handle、带溯源标签的受众数据、费率、合规历史 | 红人 | `memory/creators/` |
-| [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md) | offer 与声明实证台账——O1/T2 声明检查所对照评判的那份记录 | 付费 | `memory/claims/` |
-| [consent-registry](../protocol/consent-registry/SKILL.md) | 规范的按主体同意/抑制记录——S2/N1 否决项对照评判的那份记录 | 邮件 | `memory/consent/` |
-| [launch-registry](../protocol/launch-registry/SKILL.md) | 发布台账——每次发布的规范档案与发布日历：分级/类型、生命周期阶段（draft→GA 单向）、权威日期与禁运期承诺、渠道提交台账（launch 真相 SSOT） | 产品发布 | `memory/launch-registry/` |
-| [channel-registry](../protocol/channel-registry/SKILL.md) | 规范频道台账——去重 handle、按平台归属、粉丝/互动率基线（带溯源标签的命名/周期稳定分母）、认领状态与运营史；ECHO `E1` 否决项对照评判的那份记录（无记录 = NEEDS_INPUT） | 自然社媒 | `memory/channels/` |
-| [narrative-registry](../protocol/narrative-registry/SKILL.md) | 规范品牌准则 SSOT——叙事、消息系统、语言/词表红线与定位真相；TALE 门与各频道 creative builder 对照评判并继承嗓音与声明的那份记录 | 品牌叙事 | `memory/narrative-registry/` |
-| [memory-management](../protocol/memory-management/SKILL.md) | HOT/WARM/COLD 记忆生命周期（捕获 · 提升 · 降级 · 归档 · 查询） | 全部学科 | `memory/` |
+| [entity-optimizer](../protocol/entity-optimizer/SKILL.md) | 规范品牌/实体档案（知识图谱、Wikidata、AI 消歧） | SEO/GEO | `memory/events/entities.ndjson` |
+| [creator-registry](../protocol/creator-registry/SKILL.md) | 规范创作者名册/档案——去重 handle、带溯源标签的受众数据、费率、合规历史 | 红人 | `memory/events/creators.ndjson` |
+| [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md) | offer 与声明实证台账——O1/T2 声明检查所对照评判的那份记录 | 付费 | `memory/events/claims.ndjson` |
+| [consent-registry](../protocol/consent-registry/SKILL.md) | 规范的按主体同意/抑制记录——S2/N1 否决项对照评判的那份记录 | 邮件 | `memory/events/consent.ndjson` |
+| [launch-registry](../protocol/launch-registry/SKILL.md) | 发布台账——每次发布的规范档案与发布日历：分级/类型、生命周期阶段（draft→GA 单向）、权威日期与禁运期承诺、渠道提交台账（launch 真相 SSOT） | 产品发布 | `memory/events/launches.ndjson` |
+| [channel-registry](../protocol/channel-registry/SKILL.md) | 规范频道台账——去重 handle、按平台归属、粉丝/互动率基线（带溯源标签的命名/周期稳定分母）、认领状态与运营史；ECHO `E1` 否决项对照评判的那份记录（无记录 = NEEDS_INPUT） | 自然社媒 | `memory/events/channels.ndjson` |
+| [narrative-registry](../protocol/narrative-registry/SKILL.md) | 规范品牌准则 SSOT——叙事、消息系统、语言/词表红线与定位真相；TALE 门与各频道 creative builder 对照评判并继承嗓音与声明的那份记录 | 品牌叙事 | `memory/events/narrative.ndjson` |
+| [memory-management](../protocol/memory-management/SKILL.md) | HOT/WARM/COLD 记忆生命周期（捕获 · 提升 · 降级 · 归档 · 查询） | 全部学科 | 非规范的 `memory/` 运行时状态 |
 
-注册表遵循**唯一写入者规则**（其他技能经 `candidates.md` 投递），且注册表只*存证*——评判归门。最底层真正横向的是 `references/` 协议（[auditor-runbook](../references/auditor-runbook.md)、[state-model](../references/state-model.md)、[skill-contract](../references/skill-contract.md)、[humanizer-slop](../references/humanizer-slop.md)、[measurement-protocol](../references/measurement-protocol.md)）——按设计以文档而非技能的形式共享。
+注册表遵循**唯一写入者规则**（其他技能经 `registry-events.py` proposal events 投递），且注册表只*存证*——评判归门。最底层真正横向的是 `references/` 协议（[auditor-runbook](../references/auditor-runbook.md)、[state-model](../references/state-model.md)、[skill-contract](../references/skill-contract.md)、[humanizer-slop](../references/humanizer-slop.md)、[measurement-protocol](../references/measurement-protocol.md)）——按设计以文档而非技能的形式共享。
 
 ### 记忆与自动化
 
@@ -214,17 +216,20 @@
 | 层 | 位置 | 行为 |
 |----|------|------|
 | **HOT** | `memory/hot-cache.md` | 每次会话自动加载；封顶 **80 行 且 25 KB**（先触发者为准）。 |
-| **WARM** | `memory/<subdir>/` | 各技能工作状态、带门审计工件（`memory/audits/`）、注册表规范存储（`memory/entities\|creators\|claims/`）。 |
+| **WARM** | `memory/<subdir>/` | 可重建的工作投影与经许可的审计工件；规范的注册表真相住在 `memory/events/*.ndjson`。 |
 | **COLD** | `memory/archive/` | 降级/较旧记录，留作召回。 |
 
-**Hooks**（`hooks/hooks.json`，runner `hooks/claude-hook.sh`）接入四个 Claude Code 事件：
+**Hooks**（`hooks/hooks.json`，runner `hooks/claude-hook.sh`）接入七个 Claude Code 事件：
 
 | 事件 | 匹配 | 作用 |
 |------|------|------|
 | `SessionStart` | `startup\|resume\|clear\|compact` | 注入**净化后**的 hot-cache + 未决事项指针（提示注入行被涂掉；符号链接缓存被拒）。 |
 | `UserPromptSubmit` | （全部） | 轻量逐提示上下文 hook。 |
-| `PostToolUse` | `Write\|Edit` | hot-cache 体积告警 **+ Artifact Gate**：写到 `memory/audits/` 下、声明了 `class: auditor-output` 的文件都会被校验 handoff schema 与封顶字段，不合规则拦截写入。八个 auditor-class 门按契约必须声明该标记；未标记的文件不是审计工件，直接放行。 |
-| `Stop` | （全部） | 空操作（静默退出）。 |
+| `PreToolUse` | 已知可写工具 | 精确路径的直接 `memory/**` 写入必须被 Git 忽略；可识别的 opaque shell/MCP 内存变更不受支持并会被拒绝。Registry runtime 会再次检查最终/临时/锁路径。 |
+| `PostToolUse` | 已知可写工具 | 成功写入后复核整个 operational-memory 命名空间，并校验准确审计目标或执行有界保留区扫描。 |
+| `PostToolUseFailure` | 已知可写工具 | 工具失败后执行同样的写后隐私与 Artifact Gate 检查，因为失败命令仍可能已写文件。 |
+| `PostToolBatch` | （全部） | 每批并行工具结束后复核 operational memory 与完整审计保留区。 |
+| `Stop` | （全部） | 执行最后一次有界扫描并可阻止一次以便修复；`stop_hook_active` 会放行后续停止。pre-commit/CI 仅保护已提交 Git 内容中的 PII，不校验被忽略的 runtime 工件。 |
 
 Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE、C³、ROAS、SEND、RAMP、ECHO、TALE 工件，无任何针对单框架的代码。
 
@@ -236,7 +241,7 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 
 ### 品牌叙事 — TALE（16）
 
-`narrative/` 下四个阶段目录按 TALE 循环排布（Trace → Architect → Land → Evaluate）；本学科的门（⛩ narrative-quality-auditor）位于 Evaluate。只有门计算目标加权 NQS——其余技能各管一个杠杆并交棒。这是策略层（L1）——一种品牌嗓音，各常态频道从这里继承嗓音与声明。叙事吸收了定位（`positioning-mapper` 物理上仍在 `launch/`，逻辑上读作 TALE Trace 的最前端）。
+`narrative/` 下四个阶段按 Trace → Architect → Land → Evaluate 排布。`narrative-quality-auditor` 分别运行 truth、system、effectiveness 三个 profile；完整评审只把三个结果关联起来，绝不取平均。叙事是各频道 builder 所继承的 L1 策略。
 
 | 阶段 | 技能 |
 |------|------|
@@ -261,7 +266,7 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 | pitch-narrative-builder | L | pitch 叙事——面向媒体/投资人/销售的一页叙事与演示脊柱。 |
 | narrative-enablement-kit | L | 叙事赋能包——供内部/合作方一致复述的话术、FAQ、do/don't。 |
 | proof-point-packager | L | 证据点打包——把主张配上可核验证据、数据、第三方背书。 |
-| ⛩ narrative-quality-auditor | T+A+L+E（NQS） | auditor-class TALE 门：算 NQS、跑 T1/A1/L1/E1、产出 SHIP/FIX/BLOCK；含**发布前 go/no-go**模式。写入 `memory/audits/narrative/`。 |
+| ⛩ narrative-quality-auditor | truth / system / effectiveness | 类型化 TALE 门：分别返回各 profile 结果，绝不取平均。写入 `memory/audits/narrative/`。 |
 | message-test-designer | E | 消息测试设计——A/B 消息、信念位移测量、受众验证实验。 |
 | narrative-resonance-monitor | E | 叙事共鸣监控——消息采纳、复述保真、共鸣信号（复用 bluesky.py/gdelt.py/tavily.py/wayback.py 为 proxy，始终标注）。 |
 | narrative-drift-monitor | E | 叙事漂移监控——跨频道口径偏离、失控消息、准则违规预警。 |
@@ -304,73 +309,41 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 
 </details>
 
-### 红人（16）
+### 自然社媒 — ECHO（16）
 
-四个阶段目录（原 6 阶段 insight+map→discover、activate+convert→activate、track→measure）；本学科的门（⛩ content-reviewer）位于 Activate。
-
-| 阶段 | 技能 |
-|------|------|
-| **Discover 发现** | [audience-mapper](../influencer/discover/audience-mapper/SKILL.md)（合并 audience-analyzer + niche-researcher）, [trend-spotter](../influencer/discover/trend-spotter/SKILL.md), [influencer-discovery](../influencer/discover/influencer-discovery/SKILL.md), [fit-scorer](../influencer/discover/fit-scorer/SKILL.md) |
-| **Plan 规划** | [competitor-tracker](../influencer/plan/competitor-tracker/SKILL.md), [campaign-planner](../influencer/plan/campaign-planner/SKILL.md), [brief-generator](../influencer/plan/brief-generator/SKILL.md), [budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md) |
-| **Activate 启动** | [outreach-manager](../influencer/activate/outreach-manager/SKILL.md), ⛩ [content-reviewer](../influencer/activate/content-reviewer/SKILL.md), [contract-helper](../influencer/activate/contract-helper/SKILL.md), [content-amplifier](../influencer/activate/content-amplifier/SKILL.md)（合并 content-amplifier + ugc-repurposer） |
-| **Measure 度量** | [landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md), [performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md), [roi-calculator](../influencer/measure/roi-calculator/SKILL.md), [report-generator](../influencer/measure/report-generator/SKILL.md) |
-
-<details><summary><b>逐技能用途（红人）</b></summary>
-
-| 技能 | 用途 |
-|------|------|
-| audience-mapper | 在项目开始或进入新细分时做受众画像，并摸清某个亚文化 / 微社群（合并 audience-analyzer + niche-researcher）。 |
-| trend-spotter | 活动节奏与主题——趋势话题、声音、内容格式、文化时刻。 |
-| influencer-discovery | 从零搭建红人名单、拓展新平台、规模化找 nano/micro。 |
-| fit-scorer | 对候选名单做客观加权适配打分（基于 C³ ACE）。 |
-| competitor-tracker | 竞品的合作红人、活动、格式、估算触达/花费与缺口。 |
-| campaign-planner | 规划活动、产品发布、tentpole 或常态化创作者项目。 |
-| brief-generator | 标准化红人 brief 与可复用团队模板。 |
-| budget-optimizer | 跨层级/平台分配预算、预测 ROI、建模场景（同时服务付费广告的花费 + 出价节奏）。 |
-| outreach-manager | pitch、跟进节奏、再激活、费率谈判、状态跟踪。 |
-| ⛩ content-reviewer | 对红人提交内容做发布前门决策（C³ ART：FTC 披露 T1、声明真实性 T2）。 |
-| contract-helper | 起草/审阅创作者协议——使用权、独家、标准条款。 |
-| content-amplifier | 用付费投放放大自然创作者内容（白名单、Spark Ads、暗帖），并把 UGC 二次利用到付费、网站、邮件、自然社媒（合并 content-amplifier + ugc-repurposer）。 |
-| landing-optimizer | 面向创作者/付费流量的落地页——信息一致、移动端、A/B（同时服务付费点击后）。 |
-| performance-analyzer | 评估创作者结果、横比创作者、情感、转化（同时是付费跨渠道记分卡）。 |
-| roi-calculator | 度量/预测 ROI、为预算辩护、评估创作者/层级价值（共享回报计算引擎，含付费）。 |
-| report-generator | 周期结束后面向特定利益相关者的书面报告（同时出付费广告报告）。 |
-
-</details>
-
-### 付费广告 — ROAS（16）
-
-`ad/` 下四个阶段目录按 ROAS 循环排布；本学科的门（⛩ ad-account-auditor）位于 Activate。只有门计算目标加权 RQS——其余技能各管一个杠杆并交棒。
+`social/` 下四个阶段按 Explore → Craft → Host → Observe 排布。`social-quality-auditor` 选用 `asset-gate` 或一个 program-maturity profile；两类构念绝不混用。本学科不含任何发帖、互动或私信自动化。
 
 | 阶段 | 技能 |
 |------|------|
-| **Research 研究** | [campaign-architect](../ad/research/campaign-architect/SKILL.md), [audience-segment-builder](../ad/research/audience-segment-builder/SKILL.md), [search-term-miner](../ad/research/search-term-miner/SKILL.md)（NEW）, [product-feed-optimizer](../ad/research/product-feed-optimizer/SKILL.md)（NEW） |
-| **Orchestrate 编排** | [ad-creative-builder](../ad/orchestrate/ad-creative-builder/SKILL.md), [ad-test-designer](../ad/orchestrate/ad-test-designer/SKILL.md), [bid-strategy-planner](../ad/orchestrate/bid-strategy-planner/SKILL.md)（NEW）, [landing-experience-checker](../ad/orchestrate/landing-experience-checker/SKILL.md)（NEW） |
-| **Activate 激活** | ⛩ [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md), [conversion-signal-qa](../ad/activate/conversion-signal-qa/SKILL.md), [placement-exclusion-manager](../ad/activate/placement-exclusion-manager/SKILL.md)（NEW）, [conversion-value-mapper](../ad/activate/conversion-value-mapper/SKILL.md)（NEW） |
-| **Scale 放大** | [paid-measurement-loop](../ad/scale/paid-measurement-loop/SKILL.md), [attribution-reconciler](../ad/scale/attribution-reconciler/SKILL.md), [budget-pacing-monitor](../ad/scale/budget-pacing-monitor/SKILL.md)（NEW）, [fatigue-frequency-manager](../ad/scale/fatigue-frequency-manager/SKILL.md)（NEW） |
+| **Explore 探索** | [channel-portfolio-planner](../social/explore/channel-portfolio-planner/SKILL.md), [voice-dossier-builder](../social/explore/voice-dossier-builder/SKILL.md), [platform-norm-profiler](../social/explore/platform-norm-profiler/SKILL.md), [participation-warmup-planner](../social/explore/participation-warmup-planner/SKILL.md) |
+| **Craft 创作** | [social-calendar-builder](../social/craft/social-calendar-builder/SKILL.md), [social-creative-builder](../social/craft/social-creative-builder/SKILL.md), [short-video-scripter](../social/craft/short-video-scripter/SKILL.md), [advocacy-program-designer](../social/craft/advocacy-program-designer/SKILL.md) |
+| **Host 运营** | ⛩ [social-quality-auditor](../social/host/social-quality-auditor/SKILL.md), [engagement-inbox-manager](../social/host/engagement-inbox-manager/SKILL.md), [social-selling-planner](../social/host/social-selling-planner/SKILL.md), [crisis-response-planner](../social/host/crisis-response-planner/SKILL.md) |
+| **Observe 观测** | [social-pulse-monitor](../social/observe/social-pulse-monitor/SKILL.md), [share-of-voice-tracker](../social/observe/share-of-voice-tracker/SKILL.md), [dark-social-attributor](../social/observe/dark-social-attributor/SKILL.md), [social-measurement-loop](../social/observe/social-measurement-loop/SKILL.md) |
 
-<details><summary><b>逐技能用途（付费广告）</b></summary>
+<details><summary><b>逐技能用途（自然社媒）</b></summary>
 
-| 技能 | ROAS 杠杆 | 用途 |
+| 技能 | ECHO 杠杆 | 用途 |
 |------|-----------|------|
-| campaign-architect | A + 结构 | 账户/活动结构、campaign 类型选型、匹配类型、否定词/排除、付费↔自然蚕食。 |
-| audience-segment-builder | A | 把自有客户/CRM/GA4 导出转为种子受众、相似种子、排除人群、跨平台漏斗分层地图。 |
-| search-term-miner（NEW） | A | 从搜索词报告挖掘新增否定词与拓展词，收敛匹配类型漏斗。 |
-| product-feed-optimizer（NEW） | O | Shopping/PMax 商品 feed 质量——标题/属性/GTIN、feed 覆盖与拒登修复。 |
-| ad-creative-builder | O | RSA 标题/描述、hook、角度矩阵，并与落地页信息一致。 |
-| ad-test-designer | O（+S） | 设计 A/B/n 与增量实验（假设、变体矩阵、样本量/功效），判读显著性 → promote/kill。 |
-| bid-strategy-planner（NEW） | S | 出价策略选型、tCPA/tROAS 目标设定、学习期与出价上限规划。 |
-| landing-experience-checker（NEW） | O | 点击后落地体验 QA——信息一致、加载速度、移动端、转化路径。 |
-| ⛩ ad-account-auditor | R+O+A+S（RQS） | auditor-class ROAS 门：算 RQS、跑 R1/R2/O1/O2/A1、产出 SHIP/FIX/BLOCK；含**上线 go/no-go**模式。 |
-| conversion-signal-qa | R | 上线前追踪 QA（事件触发、UTM 规范、去重门控、窗口对齐、iOS-ATT 标记）——R1/R2 的前置（建信号，门打分）。 |
-| placement-exclusion-manager（NEW） | S | 版位/展示位排除——低质站点、app 品类、品牌安全清单治理。 |
-| conversion-value-mapper（NEW） | R | 把转化事件映射到价值/毛利，配置价值规则与 tROAS 目标信号。 |
-| paid-measurement-loop | R（+S） | 把一次上线的改动相对对照在窗口内回读 → Promote / Keep-testing / Rollback / Unproven。 |
-| attribution-reconciler | R | 针对 GA4/ecommerce 订单ID真值集做常态去重、窗口/币种归一、模型对比、增量。 |
-| budget-pacing-monitor（NEW） | S | 预算消耗节奏监控——超支/欠支告警、日内配速、月度落点预测。 |
-| fatigue-frequency-manager（NEW） | O（+S） | 创意疲劳与频次治理——频次上限、轮换节奏、衰减信号识别。 |
+| channel-portfolio-planner | E | 频道组合选型——按 ICP/资源在西方平台与 **中文平台（小红书 / 微信公众号 / 视频号 / 抖音）** 之间分配投入、主/辅频道定位、频道对照 channel-registry 认领。 |
+| voice-dossier-builder | C | 品牌语气档案——嗓音、口吻、词表与红线，跨频道一致。 |
+| platform-norm-profiler | E | 平台规范画像——每个平台的格式、节奏、社区红线与算法偏好（含中文平台差异）。 |
+| participation-warmup-planner | E | 冷启动前的真实参与预热——先融入社群再发声，genuine-question 才是入场券（非刷量）。 |
+| social-calendar-builder | C | 社媒排期表——主题支柱、频次上限、跨频道内容日历（over-posting 是 H 守卫项）。 |
+| social-creative-builder | C | 单条社媒创意——钩子、正文、CTA、话题标签，感知声明台账（C1）。 |
+| short-video-scripter | C | 短视频脚本——Reels/Shorts/TikTok/**视频号/抖音** 的分镜、口播与开头 3 秒钩子。 |
+| advocacy-program-designer | C | 员工/用户倡导计划——UGC 采集需**记录授权**（H2），披露物质关联（C2）。 |
+| ⛩ social-quality-auditor | asset gate / program maturity | 类型化 ECHO 门，一次只审一个单元/profile；绝不混合资产与运营两类构念。写入 `memory/audits/social/`。 |
+| engagement-inbox-manager | H | 互动收件箱**规划**——回复优先级、升级路径、模板库（不含任何自动回复/私信）。 |
+| social-selling-planner | H | 社交销售规划——创始人 IP、真实关系建立、去自动化的触达节奏。 |
+| crisis-response-planner | H | 危机响应预案——分级、发言人、暂停发布、模板（H1 不做刷量/操纵互动）。 |
+| social-pulse-monitor | O | 社媒脉搏监控——提及、情感、话题（gdelt.py/tavily.py 为 proxy，始终标注）。 |
+| share-of-voice-tracker | O | 声量份额追踪——对竞品的相对声量、周期稳定分母（O1）。 |
+| dark-social-attributor | O | 暗社交归因——不可追踪引荐、self-reported 渠道、复制粘贴分享估算。 |
+| social-measurement-loop | O | 把一次社媒动作相对基线在窗口内回读 → Promote / Keep-testing / Rollback / Unproven。 |
 
-**跨学科复用**（计入原阶段，不重复造轮子）：[budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md)（花费 + 出价节奏/学习期模式）、[landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md)（点击后）、[roi-calculator](../influencer/measure/roi-calculator/SKILL.md)（回报计算）、[report-generator](../influencer/measure/report-generator/SKILL.md)、[performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md)。
+**跨学科复用**（计入原阶段，不重复造轮子）：[trend-spotter](../influencer/discover/trend-spotter/SKILL.md)、[audience-mapper](../influencer/discover/audience-mapper/SKILL.md)、[content-amplifier](../influencer/activate/content-amplifier/SKILL.md)、[outreach-manager](../influencer/activate/outreach-manager/SKILL.md)、[competitor-tracker](../influencer/plan/competitor-tracker/SKILL.md)、[landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md)、[performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md)、[roi-calculator](../influencer/measure/roi-calculator/SKILL.md)、[report-generator](../influencer/measure/report-generator/SKILL.md)、[offer-claims-registry](../protocol/offer-claims-registry/SKILL.md)、[community-launch-runner](../launch/mobilize/community-launch-runner/SKILL.md)、[creator-registry](../protocol/creator-registry/SKILL.md)、[page-play-builder](../seo-geo/build/page-play-builder/SKILL.md)、[memory-management](../protocol/memory-management/SKILL.md)。社媒真相注册表 `channel-registry` 位于协议层。
+
+**中文平台覆盖：** 小红书 / 微信公众号 / 视频号 / 抖音以**手动数据包 / 用户导出**方式接入（无 keyless 官方公开 API）——技能照常在 Tier 1 用你粘贴或导出的数据运行；西方平台另配 keyless 连接器 `bluesky.py`、`fediverse.py`、`discourse.py` 与 `youtube.py --rss`。平台接入细节见 [social-platform-access.md](../references/social-platform-access.md)。
 
 </details>
 
@@ -410,9 +383,79 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 
 </details>
 
+### 付费广告 — ROAS（16）
+
+`ad/` 下四个阶段目录按 ROAS 循环排布；本学科的门（⛩ ad-account-auditor）位于 Activate。只有门计算目标加权 RQS——其余技能各管一个杠杆并交棒。
+
+| 阶段 | 技能 |
+|------|------|
+| **Research 研究** | [campaign-architect](../ad/research/campaign-architect/SKILL.md), [audience-segment-builder](../ad/research/audience-segment-builder/SKILL.md), [search-term-miner](../ad/research/search-term-miner/SKILL.md)（NEW）, [product-feed-optimizer](../ad/research/product-feed-optimizer/SKILL.md)（NEW） |
+| **Orchestrate 编排** | [ad-creative-builder](../ad/orchestrate/ad-creative-builder/SKILL.md), [ad-test-designer](../ad/orchestrate/ad-test-designer/SKILL.md), [bid-strategy-planner](../ad/orchestrate/bid-strategy-planner/SKILL.md)（NEW）, [landing-experience-checker](../ad/orchestrate/landing-experience-checker/SKILL.md)（NEW） |
+| **Activate 激活** | ⛩ [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md), [conversion-signal-qa](../ad/activate/conversion-signal-qa/SKILL.md), [placement-exclusion-manager](../ad/activate/placement-exclusion-manager/SKILL.md)（NEW）, [conversion-value-mapper](../ad/activate/conversion-value-mapper/SKILL.md)（NEW） |
+| **Scale 放大** | [paid-measurement-loop](../ad/scale/paid-measurement-loop/SKILL.md), [attribution-reconciler](../ad/scale/attribution-reconciler/SKILL.md), [budget-pacing-monitor](../ad/scale/budget-pacing-monitor/SKILL.md)（NEW）, [fatigue-frequency-manager](../ad/scale/fatigue-frequency-manager/SKILL.md)（NEW） |
+
+<details><summary><b>逐技能用途（付费广告）</b></summary>
+
+| 技能 | ROAS 杠杆 | 用途 |
+|------|-----------|------|
+| campaign-architect | A + 结构 | 账户/活动结构、campaign 类型选型、匹配类型、否定词/排除、付费↔自然蚕食。 |
+| audience-segment-builder | A | 把自有客户/CRM/GA4 导出转为种子受众、相似种子、排除人群、跨平台漏斗分层地图。 |
+| search-term-miner（NEW） | A | 从搜索词报告挖掘新增否定词与拓展词，收敛匹配类型漏斗。 |
+| product-feed-optimizer（NEW） | O | Shopping/PMax 商品 feed 质量——标题/属性/GTIN、feed 覆盖与拒登修复。 |
+| ad-creative-builder | O | RSA 标题/描述、hook、角度矩阵，并与落地页信息一致。 |
+| ad-test-designer | O（+S） | 设计 A/B/n 与增量实验（假设、变体矩阵、样本量/功效），判读显著性 → promote/kill。 |
+| bid-strategy-planner（NEW） | S | 出价策略选型、tCPA/tROAS 目标设定、学习期与出价上限规划。 |
+| landing-experience-checker（NEW） | O | 点击后落地体验 QA——信息一致、加载速度、移动端、转化路径。 |
+| ⛩ ad-account-auditor | R+O+A+S（RQS） | auditor-class ROAS 门：算 RQS、跑 R1/R2/O1/O2/A1、产出 SHIP/FIX/BLOCK；含**上线 go/no-go**模式。 |
+| conversion-signal-qa | R | 上线前追踪 QA（事件触发、UTM 规范、去重门控、窗口对齐、iOS-ATT 标记）——R1/R2 的前置（建信号，门打分）。 |
+| placement-exclusion-manager（NEW） | S | 版位/展示位排除——低质站点、app 品类、品牌安全清单治理。 |
+| conversion-value-mapper（NEW） | R | 把转化事件映射到价值/毛利，配置价值规则与 tROAS 目标信号。 |
+| paid-measurement-loop | R（+S） | 把一次上线的改动相对对照在窗口内回读 → Promote / Keep-testing / Rollback / Unproven。 |
+| attribution-reconciler | R | 针对 GA4/ecommerce 订单ID真值集做常态去重、窗口/币种归一、模型对比、增量。 |
+| budget-pacing-monitor（NEW） | S | 预算消耗节奏监控——超支/欠支告警、日内配速、月度落点预测。 |
+| fatigue-frequency-manager（NEW） | O（+S） | 创意疲劳与频次治理——频次上限、轮换节奏、衰减信号识别。 |
+
+**跨学科复用**（计入原阶段，不重复造轮子）：[budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md)（花费 + 出价节奏/学习期模式）、[landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md)（点击后）、[roi-calculator](../influencer/measure/roi-calculator/SKILL.md)（回报计算）、[report-generator](../influencer/measure/report-generator/SKILL.md)、[performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md)。
+
+</details>
+
+### 红人（16）
+
+四个阶段目录（原 6 阶段 insight+map→discover、activate+convert→activate、track→measure）；本学科的门（⛩ content-reviewer）位于 Activate。
+
+| 阶段 | 技能 |
+|------|------|
+| **Discover 发现** | [audience-mapper](../influencer/discover/audience-mapper/SKILL.md)（合并 audience-analyzer + niche-researcher）, [trend-spotter](../influencer/discover/trend-spotter/SKILL.md), [influencer-discovery](../influencer/discover/influencer-discovery/SKILL.md), [fit-scorer](../influencer/discover/fit-scorer/SKILL.md) |
+| **Plan 规划** | [competitor-tracker](../influencer/plan/competitor-tracker/SKILL.md), [campaign-planner](../influencer/plan/campaign-planner/SKILL.md), [brief-generator](../influencer/plan/brief-generator/SKILL.md), [budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md) |
+| **Activate 启动** | [outreach-manager](../influencer/activate/outreach-manager/SKILL.md), ⛩ [content-reviewer](../influencer/activate/content-reviewer/SKILL.md), [contract-helper](../influencer/activate/contract-helper/SKILL.md), [content-amplifier](../influencer/activate/content-amplifier/SKILL.md)（合并 content-amplifier + ugc-repurposer） |
+| **Measure 度量** | [landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md), [performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md), [roi-calculator](../influencer/measure/roi-calculator/SKILL.md), [report-generator](../influencer/measure/report-generator/SKILL.md) |
+
+<details><summary><b>逐技能用途（红人）</b></summary>
+
+| 技能 | 用途 |
+|------|------|
+| audience-mapper | 在项目开始或进入新细分时做受众画像，并摸清某个亚文化 / 微社群（合并 audience-analyzer + niche-researcher）。 |
+| trend-spotter | 活动节奏与主题——趋势话题、声音、内容格式、文化时刻。 |
+| influencer-discovery | 从零搭建红人名单、拓展新平台、规模化找 nano/micro。 |
+| fit-scorer | 对候选名单做客观加权适配打分（基于 C³ ACE）。 |
+| competitor-tracker | 竞品的合作红人、活动、格式、估算触达/花费与缺口。 |
+| campaign-planner | 规划活动、产品发布、tentpole 或常态化创作者项目。 |
+| brief-generator | 标准化红人 brief 与可复用团队模板。 |
+| budget-optimizer | 跨层级/平台分配预算、预测 ROI、建模场景（同时服务付费广告的花费 + 出价节奏）。 |
+| outreach-manager | pitch、跟进节奏、再激活、费率谈判、状态跟踪。 |
+| ⛩ content-reviewer | 对红人提交内容做发布前门决策（C³ ART：FTC 披露 T1、声明真实性 T2）。 |
+| contract-helper | 起草/审阅创作者协议——使用权、独家、标准条款。 |
+| content-amplifier | 用付费投放放大自然创作者内容（白名单、Spark Ads、暗帖），并把 UGC 二次利用到付费、网站、邮件、自然社媒（合并 content-amplifier + ugc-repurposer）。 |
+| landing-optimizer | 面向创作者/付费流量的落地页——信息一致、移动端、A/B（同时服务付费点击后）。 |
+| performance-analyzer | 评估创作者结果、横比创作者、情感、转化（同时是付费跨渠道记分卡）。 |
+| roi-calculator | 度量/预测 ROI、为预算辩护、评估创作者/层级价值（共享回报计算引擎，含付费）。 |
+| report-generator | 周期结束后面向特定利益相关者的书面报告（同时出付费广告报告）。 |
+
+</details>
+
 ### 产品发布 — RAMP（16）
 
-`launch/` 下四个阶段目录按 RAMP 循环排布；本学科的门（⛩ launch-readiness-auditor，LQS 门禁）位于 Mobilize。只有门计算目标加权 LQS——其余技能各管一个杠杆并交棒。
+`launch/` 下四个阶段按 Research → Assemble → Mobilize → Prove 排布。`launch-readiness-auditor` 每次运行只选一个 `preflight`、`execution` 或 `outcome` profile；生命周期结果只做关联，绝不取平均。
 
 | 阶段 | 技能 |
 |------|------|
@@ -433,7 +476,7 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 | launch-asset-packager | 资产清单、press kit、商店 listing 规格、上线检查。 |
 | pricing-packaging-planner | 发布定价、梯度打包、早鸟优惠、保证设计。 |
 | sales-enablement-kit | battle card、销售叙事、异议处理、内部 FAQ。 |
-| ⛩ launch-readiness-auditor | 40 项 RAMP 发布就绪门（LQS，SHIP/FIX/BLOCK）。 |
+| ⛩ launch-readiness-auditor | preflight / execution / outcome | 类型化 RAMP 门，一次只审一个生命周期读数；绝不跨时间视界取平均。写入 `memory/audits/launch/`。 |
 | launch-day-conductor | 发布日 runbook——作战室、观察窗、回滚裁决。 |
 | community-launch-runner | 社区发布——PH/HN 提交包、目录波次、平台红线。 |
 | press-media-relations | 媒体名单、禁运期 pitch、新闻稿、分析师简报。 |
@@ -441,44 +484,6 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 | launch-feedback-synthesizer | 反馈分诊、状态环、社证收割、you-asked-we-shipped。 |
 | launch-retro-analyzer | 发布复盘——渠道归因、5-Whys、keep/kill 决策。 |
 | momentum-planner | 抗第二周断崖——changelog-as-GTM、relaunch、下一发布时刻。 |
-
-</details>
-
-### 自然社媒 — ECHO（16）
-
-`social/` 下四个阶段目录按 ECHO 循环排布（Explore → Craft → Host → Observe）；本学科的门（⛩ social-quality-auditor）位于 Host。只有门计算目标加权 SQS——其余技能各管一个杠杆并交棒。用例无关（社区/开发者工具 · B2C 品牌 · B2B 创始人 IP），由目标权重列决定侧重。本学科**不含**任何发帖/互动/私信自动化——只做规划、创作与度量。
-
-| 阶段 | 技能 |
-|------|------|
-| **Explore 探索** | [channel-portfolio-planner](../social/explore/channel-portfolio-planner/SKILL.md), [voice-dossier-builder](../social/explore/voice-dossier-builder/SKILL.md), [platform-norm-profiler](../social/explore/platform-norm-profiler/SKILL.md), [participation-warmup-planner](../social/explore/participation-warmup-planner/SKILL.md) |
-| **Craft 创作** | [social-calendar-builder](../social/craft/social-calendar-builder/SKILL.md), [social-creative-builder](../social/craft/social-creative-builder/SKILL.md), [short-video-scripter](../social/craft/short-video-scripter/SKILL.md), [advocacy-program-designer](../social/craft/advocacy-program-designer/SKILL.md) |
-| **Host 运营** | ⛩ [social-quality-auditor](../social/host/social-quality-auditor/SKILL.md), [engagement-inbox-manager](../social/host/engagement-inbox-manager/SKILL.md), [social-selling-planner](../social/host/social-selling-planner/SKILL.md), [crisis-response-planner](../social/host/crisis-response-planner/SKILL.md) |
-| **Observe 观测** | [social-pulse-monitor](../social/observe/social-pulse-monitor/SKILL.md), [share-of-voice-tracker](../social/observe/share-of-voice-tracker/SKILL.md), [dark-social-attributor](../social/observe/dark-social-attributor/SKILL.md), [social-measurement-loop](../social/observe/social-measurement-loop/SKILL.md) |
-
-<details><summary><b>逐技能用途（自然社媒）</b></summary>
-
-| 技能 | ECHO 杠杆 | 用途 |
-|------|-----------|------|
-| channel-portfolio-planner | E | 频道组合选型——按 ICP/资源在西方平台与 **中文平台（小红书 / 微信公众号 / 视频号 / 抖音）** 之间分配投入、主/辅频道定位、频道对照 channel-registry 认领。 |
-| voice-dossier-builder | C | 品牌语气档案——嗓音、口吻、词表与红线，跨频道一致。 |
-| platform-norm-profiler | E | 平台规范画像——每个平台的格式、节奏、社区红线与算法偏好（含中文平台差异）。 |
-| participation-warmup-planner | E | 冷启动前的真实参与预热——先融入社群再发声，genuine-question 才是入场券（非刷量）。 |
-| social-calendar-builder | C | 社媒排期表——主题支柱、频次上限、跨频道内容日历（over-posting 是 H 守卫项）。 |
-| social-creative-builder | C | 单条社媒创意——钩子、正文、CTA、话题标签，感知声明台账（C1）。 |
-| short-video-scripter | C | 短视频脚本——Reels/Shorts/TikTok/**视频号/抖音** 的分镜、口播与开头 3 秒钩子。 |
-| advocacy-program-designer | C | 员工/用户倡导计划——UGC 采集需**记录授权**（H2），披露物质关联（C2）。 |
-| ⛩ social-quality-auditor | E+C+H+O（SQS） | auditor-class ECHO 门：算 SQS、跑 E1/C1/C2/H1/H2/O1、产出 SHIP/FIX/BLOCK；含**发布前 go/no-go**模式。写入 `memory/audits/social/`。 |
-| engagement-inbox-manager | H | 互动收件箱**规划**——回复优先级、升级路径、模板库（不含任何自动回复/私信）。 |
-| social-selling-planner | H | 社交销售规划——创始人 IP、真实关系建立、去自动化的触达节奏。 |
-| crisis-response-planner | H | 危机响应预案——分级、发言人、暂停发布、模板（H1 不做刷量/操纵互动）。 |
-| social-pulse-monitor | O | 社媒脉搏监控——提及、情感、话题（gdelt.py/tavily.py 为 proxy，始终标注）。 |
-| share-of-voice-tracker | O | 声量份额追踪——对竞品的相对声量、周期稳定分母（O1）。 |
-| dark-social-attributor | O | 暗社交归因——不可追踪引荐、self-reported 渠道、复制粘贴分享估算。 |
-| social-measurement-loop | O | 把一次社媒动作相对基线在窗口内回读 → Promote / Keep-testing / Rollback / Unproven。 |
-
-**跨学科复用**（计入原阶段，不重复造轮子）：[trend-spotter](../influencer/discover/trend-spotter/SKILL.md)、[audience-mapper](../influencer/discover/audience-mapper/SKILL.md)、[content-amplifier](../influencer/activate/content-amplifier/SKILL.md)、[outreach-manager](../influencer/activate/outreach-manager/SKILL.md)、[competitor-tracker](../influencer/plan/competitor-tracker/SKILL.md)、[landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md)、[performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md)、[roi-calculator](../influencer/measure/roi-calculator/SKILL.md)、[report-generator](../influencer/measure/report-generator/SKILL.md)、[offer-claims-registry](../protocol/offer-claims-registry/SKILL.md)、[community-launch-runner](../launch/mobilize/community-launch-runner/SKILL.md)、[creator-registry](../protocol/creator-registry/SKILL.md)、[page-play-builder](../seo-geo/build/page-play-builder/SKILL.md)、[memory-management](../protocol/memory-management/SKILL.md)。社媒真相注册表 `channel-registry` 位于协议层。
-
-**中文平台覆盖：** 小红书 / 微信公众号 / 视频号 / 抖音以**手动数据包 / 用户导出**方式接入（无 keyless 官方公开 API）——技能照常在 Tier 1 用你粘贴或导出的数据运行；西方平台另配 keyless 连接器 `bluesky.py`、`fediverse.py`、`discourse.py` 与 `youtube.py --rss`。平台接入细节见 [social-platform-access.md](../references/social-platform-access.md)。
 
 </details>
 
@@ -609,7 +614,7 @@ references/      # 共享契约、状态模型、八套基准、auditor runbook�
 evals/           # 各技能结构化 eval 用例 + structure-manifest.json
 hooks/           # hooks.json + claude-hook.sh(唯一运行逻辑)
 scripts/         # validate-skill.sh + connectors/(标准库) + CI 守卫
-memory/          # HOT/WARM/COLD 脚手架 + 注册表存储(entities/creators/claims/consent/channels/narrative-registry)
+memory/          # HOT/WARM/COLD 脚手架 + 注册表存储(entities/creators/claims/consent/launch/channels/narrative-registry)
 docs/            # 本地化 README(zh)
 .claude-plugin/  # plugin.json + marketplace.json 镜像
 ```
@@ -618,7 +623,7 @@ docs/            # 本地化 README(zh)
 
 ## 设计哲学
 
-- **技能即内容。** 唯一的代码是 Bash 校验器、Bash hook runner、零依赖的 Python 标准库连接器/检查助手。永不引入第三方 / `pip` 依赖——由依赖蔓延守卫强制。
+- **内容优先。** 技能是 Markdown；零依赖的 Bash/Python 标准库运行时提供连接器、评分、注册表事件、校验与检查。第三方 / `pip` 依赖被 CI 明令禁止。
 - **keyless 优先。** 每个 `~~category` 都有免费/自有数据配方；MCP 与付费工具纯属便利。
 - **外科手术式 & MECE。** 每个技能只担一项职责，边界清晰；重叠的工作做成现有技能的*模式*，而非新堆一个薄技能。注册表存证、门评判、分析器喂门。
 - **不编数字。** 技能为每个数据标注 Measured / User-provided / Estimated，并内置 AI 腔 / 禁用词检测。
@@ -637,18 +642,18 @@ docs/            # 本地化 README(zh)
 | `check-evals.py` | eval 结构 lint + `structure-manifest.json`（120/120 技能均带 eval 用例）。 |
 | `check-pii.py` | 拦截提交的密钥 / PII（token 级允许名单，fail-closed）。 |
 | `check-stdlib-only.sh` | 依赖蔓延守卫 + 付费广告带密钥 API 红线。 |
-| `check-versions.sh` | 版本同步守卫：束版本在 plugin.json / 两个 marketplace 镜像 / 双语 README 徽章 / CLAUDE.md / VERSIONS.md 发布行 + changelog 条目间完全一致，且每个 SKILL.md 版本与其 VERSIONS.md 行匹配。 |
-| `tests/test_connectors_local.py` | 全部连接器纯请求构建函数的离线单测（CI 不联网）。 |
+| `check-versions.sh` | 版本同步守卫：system catalog、plugin/marketplace/OpenClaw manifests、根与本地化 README 徽章、AGENTS/CLAUDE/VERSIONS、GitHub About 和 120 个 skill 版本保持一致。 |
+| `tests/test_connectors_local.py` | 覆盖全部 29 个内置连接器模块之请求构建器／解析器的离线测试（CI 不联网）。 |
 | `tests/test_hook_artifact_gate.sh` | hook 的 Artifact Gate + SessionStart 净化的行为测试。 |
 
-线上端点漂移由**手动**的 [`scripts/connectors/smoke-live.sh`](../scripts/connectors/smoke-live.sh) 单独覆盖——每个托管连接器一次最小真实调用 + 响应形状断言（限速应答记 SKIP）；发版前手动跑，绝不进 CI。
+线上端点漂移由**手动**的 [`scripts/connectors/smoke-live.sh`](../scripts/connectors/smoke-live.sh) 另行抽样——对脚本中列出的每个托管连接器做一次最小真实调用 + 响应形状断言（限速应答记 SKIP）；发版前手动跑，绝不进 CI。
 
 ---
 
 ## 贡献与文档
 
-- **[CONTRIBUTING.md](../CONTRIBUTING.md)** —— 撰写规则、贡献清单、权威的 8 文件追踪列表。
-- **[VERSIONS.md](../VERSIONS.md)** —— 各技能版本 + 变更日志（当前包：`16.1.1`）。
+- **[CONTRIBUTING.md](../CONTRIBUTING.md)** —— 撰写规则、贡献清单，以及权威的 10 个追踪面清单。
+- **[VERSIONS.md](../VERSIONS.md)** —— 各技能版本 + 变更日志（当前包：`17.0.0`）。
 - **[SECURITY.md](../SECURITY.md)** · **[PRIVACY.md](../PRIVACY.md)** · **[CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md)** —— 安全、隐私、社区政策。
 - **[CLAUDE.md](../CLAUDE.md)** / **[AGENTS.md](../AGENTS.md)** —— 面向 Agent 的本仓库上下文。
 
@@ -662,7 +667,7 @@ docs/            # 本地化 README(zh)
 
 Apache License 2.0 —— 见 [LICENSE](../LICENSE)。
 
-*最后同步英文 README：v16.1.0*
+*最后同步英文 README：v17.0.0*
 
 ## Star History
 

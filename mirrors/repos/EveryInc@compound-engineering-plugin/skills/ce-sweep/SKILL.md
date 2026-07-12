@@ -70,7 +70,7 @@ Resolve once and reuse for the entire run:
 **Every Bash call that runs the bundled engine sets `SKILL_DIR` inline** (shell state does not persist between calls):
 
 ```bash
-SKILL_DIR="<absolute path of the directory containing the SKILL.md you just read>"
+SKILL_DIR="<absolute path of the directory containing the SKILL.md you just read>";
 python3 "$SKILL_DIR/scripts/sweep-state.py" <subcommand> --state <state> ...
 ```
 

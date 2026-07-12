@@ -70,7 +70,7 @@ Create, revise, and validate OMA skills using the SSL-lite Markdown structure de
 2. **ACQUIRE**: Read analogous skills, existing resources, project conventions, and any user-provided source material.
 3. **REASON**: Decide what belongs inline in `SKILL.md` and what belongs in `resources/`, `config/`, `scripts/`, or `assets/`.
 4. **ACT**: Create or update the skill using the SSL-lite template.
-5. **VERIFY**: Run structural, routing, execution, resource, and formatting checks.
+5. **VERIFY**: Run structural, routing, execution, resource, utility-content, and formatting checks.
 6. **FINALIZE**: Report created/changed files, validation result, and any remaining assumptions.
 
 ### Transitions
@@ -155,6 +155,7 @@ Create, revise, and validate OMA skills using the SSL-lite Markdown structure de
 10. Put long variant-specific details in `resources/`, not in the main skill body.
 11. Do not create extra README, changelog, or installation docs inside a skill.
 12. Do not overwrite unrelated user edits.
+13. Enforce the three utility-predictive content dimensions — failure mechanism encoding, actionable specificity, high-risk action blacklist — per the Utility Content Checks in `resources/validation-checklist.md` (SkillLens, arXiv:2605.23899).
 
 ## References
 - SSL-lite template: `resources/ssl-lite-template.md`

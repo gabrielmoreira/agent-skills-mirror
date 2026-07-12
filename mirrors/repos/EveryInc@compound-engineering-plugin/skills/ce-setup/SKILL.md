@@ -31,12 +31,8 @@ Compound Engineering -- checking your environment...
 Run the bundled check script. Set `SKILL_DIR` to the absolute directory you loaded this `ce-setup` SKILL.md from — the Bash tool's CWD is the user's project, not the skill dir, so a bare `scripts/` path will not resolve:
 
 ```bash
-SKILL_DIR="<absolute path of the directory containing this SKILL.md>"
-if [ -f "$SKILL_DIR/scripts/check-health" ]; then
-  bash "$SKILL_DIR/scripts/check-health" --version VERSION
-else
-  echo "Bundled health script not found at $SKILL_DIR/scripts/check-health; run the inline checks from ce-setup instead."
-fi
+SKILL_DIR="<absolute path of the directory containing this SKILL.md>";
+if [ -f "$SKILL_DIR/scripts/check-health" ]; then bash "$SKILL_DIR/scripts/check-health" --version VERSION; else echo "Bundled health script not found at $SKILL_DIR/scripts/check-health; run the inline checks from ce-setup instead."; fi
 ```
 
 Use the same command without `--version VERSION` if Step 1 could not determine a version.

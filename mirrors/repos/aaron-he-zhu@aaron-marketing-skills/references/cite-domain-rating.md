@@ -6,6 +6,8 @@
 >
 > **Version sync**: When the source spec updates, check: item count references in README (currently "40 items"), skill validation checkpoints, and Sections 2, 3, 7 below.
 
+> **v17 execution contract**: this file owns human item anchors. Profiles, required comparison context, conditional applicability, and veto identity live in [`framework-catalog.json`](framework-catalog.json); Unknown/N/A, evidence, coverage, score, status, and verdict semantics live in [`scoring-semantics.md`](scoring-semantics.md). CITE is advisory and peer-relative until outcome-calibrated.
+
 **4 dimensions × 10 items = 40 evaluation criteria** for assessing domain authority in the Generative Engine Optimization (GEO) era.
 
 **Sister benchmark**: [CORE-EEAT Content Benchmark](core-eeat-benchmark.md) — content-level quality assessment (80 items).
@@ -20,23 +22,29 @@
 |-----------|-----------|-------|-------|---------------|
 | **CORE-EEAT** | Content quality | Single page/article | 80 | Is this content worth citing? |
 | **CITE** | Domain authority | Entire domain | 40 | Is this domain worth trusting as a source? |
-| **Combined** | Full assessment | Content + Domain | **120** | Should AI engines cite this source? |
+| **Combined** | Full diagnostic assessment | Content + Domain | **120** | What content and source controls support citation trust? |
 
 ### 4 Dimensions
 
-| Dim | Full Name | Default Weight | Core Question | MECE Boundary |
+| Dim | Full Name | Default Weight | Core Question | Primary Ownership |
 |-----|-----------|:-:|---------------|---------------|
 | **C** | Citation | 35% | How strongly is this domain referenced — through links AND AI citations? | All "others pointing to you" signals |
 | **I** | Identity | 20% | How clearly is this domain recognized as a distinct entity? | Entity presence and brand recognition |
 | **T** | Trust | 25% | Are there red flags suggesting manipulation? | All "is this suspicious?" detection signals |
 | **E** | Eminence | 20% | How visible and influential is this domain? | Visibility, reach, and industry standing |
 
-### MECE Boundary Rule
+### Ownership Boundary Rule
 
 - **C** = positive referencing signals (links + AI citations + editorial endorsements)
 - **I** = entity existence and brand coherence (who you are, not how visible you are)
 - **T** = suspicion and manipulation detection (negative/defensive signals)
 - **E** = visibility and influence outcomes (how much you're seen)
+
+These constructs are intentionally assigned one scoring owner, but they are not empirically independent. For example, links affect both Citation evidence and visibility outcomes; entity coherence influences trust. Preserve dependencies in findings and avoid counting one observation twice.
+
+### Peer-Relative Benchmark Rule
+
+Every scored run declares a comparison cohort, market, entity stage, and domain type. Numeric thresholds below are **diagnostic starting points inherited from the source benchmark**, not universal pass/fail laws. Before scoring, replace them with a dated peer distribution or an explicitly justified criterion for the declared cohort. If the necessary cohort or private evidence is absent, use `unknown`; do not force the item to Fail.
 
 ---
 
@@ -44,7 +52,7 @@
 
 ### C — Citation (10 Items)
 
-| ID | Check Item | One-Line Standard |
+| ID | Check Item | One-Line Diagnostic Anchor |
 |----|-----------|-------------------|
 | C01 | Referring Domains Volume | >=500 unique referring domains |
 | C02 | Referring Domains Quality | >=20% of referring domains have DA (Moz Domain Authority™) / DR (Ahrefs Domain Rating™) 50+ |
@@ -66,7 +74,7 @@
 | I03 | Brand SERP Ownership | Brand search yields >=7 first-page results you control |
 | I04 | Schema.org Coverage | >=50% of indexable pages with correct Schema.org markup |
 | I05 | Author Entity Recognition | >=80% of content has authors with verifiable public identities |
-| I06 | Domain Tenure | Registered >=5 years with continuous active use |
+| I06 | Domain Tenure | History is coherent relative to entity stage; age alone cannot fail the domain |
 | I07 | Cross-Platform Consistency | Brand name/description/contact identical across all platforms |
 | I08 | Niche Consistency | Same niche for >=3 consecutive years without major pivot |
 | I09 | Unlinked Brand Mentions | >=50 third-party mentions without links |
@@ -78,13 +86,13 @@
 |----|-----------|-------------------|
 | T01 | Link Profile Naturalness | No month >15% of total backlinks; growth correlates with publishing |
 | T02 | Dofollow Ratio Normality | Dofollow 40-85% of total backlinks |
-| T03 | Link-Traffic Coherence | Link volume proportional to organic traffic (**Veto Item**) |
+| T03 | Link-Traffic Coherence | Link/traffic relationship is coherent within the declared peer distribution (**Veto Item**) |
 | T04 | IP/Network Diversity | >=100 unique C-class IP ranges; no single C-class >5% |
-| T05 | Backlink Profile Uniqueness | No other domain shares >60% same referring domains (**Veto Item**) |
-| T06 | WHOIS & Registration Transparency | Public WHOIS, reputable registrar, stable ownership >=2 years |
+| T05 | Backlink Profile Uniqueness | No verified manipulation network after common-source adjustment (**Veto Item**) |
+| T06 | WHOIS & Registration Transparency | Ownership history is coherent; privacy-protected WHOIS is neutral |
 | T07 | Technical Security | Site-wide HTTPS + HSTS; no malware/phishing flags |
 | T08 | Content Freshness Signal | New/updated content within last 90 days |
-| T09 | Penalty & Deindex History | No Google manual actions or deindexing (**Veto Item**) |
+| T09 | Penalty & Deindex History | No verified active manual action or deindexing (**Veto Item**) |
 | T10 | Review & Reputation Signals | >=3.5/5 average on >=2 third-party review platforms |
 
 ### E — Eminence (10 Items)
@@ -114,11 +122,13 @@
 | Partial | 5 |
 | Fail | 0 |
 
+Applicable but unobserved items are `unknown`; omitted items are also `unknown`. Catalog-authorized inapplicable items are `na` with a reason. A comparable profile score requires 100% applicable evidence coverage and the declared peer/market/stage/type context.
+
 ### Score Calculation
 
 - **Dimension score** = sum of 10 items (0–100)
-- **CITE Score** = C × 0.35 + I × 0.20 + T × 0.25 + E × 0.20 (default weights)
-- **Weighted Score** = C × w_C + I × w_I + T × w_T + E × w_E (domain-type-specific weights)
+- **Default diagnostic** = C × 0.35 + I × 0.20 + T × 0.25 + E × 0.20
+- **Comparable profile score** = C × w_C + I × w_I + T × w_T + E × w_E, after peer-relative anchors and complete evidence are locked
 
 ### Domain-Type Weight Table
 
@@ -141,17 +151,17 @@
 
 ### Veto Items
 
-Failing any veto item activates the Critical Fail Cap. The cap arithmetic and thresholds are defined in [auditor-runbook.md §2](auditor-runbook.md). Do not restate cap numbers here or elsewhere — this file owns the item definitions only.
+Failing any veto item activates the Critical Fail Cap. The cap arithmetic and thresholds are defined in [auditor-runbook.md §4](auditor-runbook.md). Do not restate cap numbers here or elsewhere — this file owns the item definitions only.
 
 | Veto ID | Dimension | Check |
 |---------|-----------|-------|
-| **T03** | Trust | Thousands of links but near-zero organic traffic (link farm) |
-| **T05** | Trust | Near-identical backlink profile found on another domain (manipulation network) |
-| **T09** | Trust | Google manual action or deindexing (zero trust) |
+| **T03** | Trust | Verified, materially incoherent link/traffic pattern relative to the declared cohort, with manipulation evidence |
+| **T05** | Trust | Verified backlink manipulation network after common-source and ecosystem adjustment |
+| **T09** | Trust | Verified active manual action or material deindexing |
 
-**Single veto fail**: cap applies per [Runbook §2 decision table](auditor-runbook.md). Also raises a **Manipulation Alert** in the handoff `open_loops` field.
+**Single veto fail**: cap applies per [Runbook §4 Scoring Semantics](auditor-runbook.md). Also raises a **Manipulation Alert** in the handoff `open_loops` field.
 
-**2+ veto fails**: audit returns `status: BLOCKED` per [§2 Worked example 3 in domain-authority-auditor](../seo-geo/monitor/domain-authority-auditor/SKILL.md). Calibration for a numeric multi-veto cap is pending v7.3, gated on 30+ real multi-veto audits in `memory/audits/`.
+**2+ verified veto fails**: the completed audit returns `status: DONE`, `verdict: BLOCK`, and no final score. One verified veto caps the final score at 59. Missing cohort/private-console evidence remains Unknown and does not trigger a veto.
 
 ---
 
@@ -296,9 +306,9 @@ What is the domain's primary function?
 - **Fail**: <40% or unverifiable authors.
 
 **I06: Domain Tenure**
-- **Pass**: >=5 years continuous active use.
-- **Partial**: 2-4 years or older with activity gaps.
-- **Fail**: <2 years or recently acquired expired domain.
+- **Pass**: History is coherent and stable relative to the declared entity stage and peer cohort.
+- **Partial**: Limited history or an ownership/purpose transition is documented but not yet well established.
+- **Fail**: Verified deceptive expired-domain reuse or materially contradictory ownership/purpose history. Domain youth alone is not a failure.
 
 **I07: Cross-Platform Consistency**
 - **Pass**: Identical brand info across all platforms.
@@ -333,9 +343,10 @@ What is the domain's primary function?
 - **Fail**: >90% (manipulation signal) or <20%.
 
 **T03: Link-Traffic Coherence** | **VETO ITEM**
-- **Pass**: Traffic proportional to link volume (within 2 SD of industry norm).
-- **Partial**: Mild imbalance (e.g., new site with lagging traffic).
-- **Fail**: Thousands of links but near-zero traffic → **Veto triggered**.
+- **Pass**: The link/traffic relationship falls within the declared peer distribution or has a documented, credible explanation.
+- **Partial**: The relationship is anomalous but evidence does not establish manipulation.
+- **Fail**: A material anomaly plus corroborating manipulation evidence is verified against the declared cohort → **Veto triggered**.
+- **Unknown**: No suitable peer distribution or reliable traffic/link evidence is available.
 
 **T04: IP/Network Diversity**
 - **Pass**: >=100 unique C-class ranges; no single C-class >5%.
@@ -343,14 +354,16 @@ What is the domain's primary function?
 - **Fail**: <50 C-class ranges or >20% from one C-class (PBN signature).
 
 **T05: Backlink Profile Uniqueness** | **VETO ITEM**
-- **Pass**: No domain shares >60% of same referring domains.
-- **Partial**: One domain shares 40-60% overlap.
-- **Fail**: Another domain shares >60% → **Veto triggered**.
+- **Pass**: Overlap is ordinary for the declared ecosystem after ubiquitous/common sources are removed.
+- **Partial**: Unusual overlap exists but shared ownership, syndication, or niche structure remains a plausible explanation.
+- **Fail**: A declared comparison universe and corroborating network evidence establish coordinated manipulation → **Veto triggered**.
+- **Unknown**: No defensible comparison universe or cross-domain backlink evidence is available.
 
 **T06: WHOIS & Registration Transparency**
-- **Pass**: Public WHOIS, reputable registrar, stable ownership >=2 years.
-- **Partial**: Privacy-protected but reputable and stable.
-- **Fail**: Frequent ownership changes or suspicious registrar.
+- **Pass**: Available registration/history evidence is stable and consistent with the entity.
+- **Partial**: History is limited or contains a documented transition without contradictory evidence.
+- **Fail**: Verified ownership churn or registration evidence materially contradicts the represented entity.
+- **Neutral**: Privacy-protected WHOIS alone is neither Partial nor Fail.
 
 **T07: Technical Security**
 - **Pass**: Site-wide HTTPS + HSTS; no security flags.
@@ -363,9 +376,10 @@ What is the domain's primary function?
 - **Fail**: No updates for >1 year.
 
 **T09: Penalty & Deindex History** | **VETO ITEM**
-- **Pass**: No record of manual actions or deindexing.
-- **Partial**: Penalty >2 years ago, successfully resolved.
-- **Fail**: Active penalty or unresolved manual action → **Veto triggered**.
+- **Pass**: Authorized console evidence and index checks show no active action/deindexing.
+- **Partial**: A historical action is documented as resolved, with recovery evidence.
+- **Fail**: An active manual action or material unresolved deindexing is verified → **Veto triggered**.
+- **Unknown**: Private-console access is absent and public observations cannot establish the state; never pass by absence of evidence.
 
 **T10: Review & Reputation Signals**
 - **Pass**: >=3.5/5 average on >=2 review platforms.
@@ -494,7 +508,7 @@ What is the domain's primary function?
 
 ## 10. Commonly Confused Pairs
 
-When unsure which dimension a signal belongs to, use the MECE boundary rule (Section 1). For frequently confused items:
+When unsure which dimension owns a signal, use the ownership boundary rule (Section 1). For frequently confused items:
 
 | Pair | Disambiguation |
 |------|---------------|

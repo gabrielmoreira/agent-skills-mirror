@@ -2,134 +2,146 @@
 
 Current versions for the plugin and all 120 skills. Agents can fetch this file from `https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/VERSIONS.md` once per session.
 
-**Current release**: `16.1.1` (2026-07-08). **Command-system & routing hardening.** Deep review of the 8-command layer and the `/aaron-marketing:auto` router (benchmarked against the OSS marketing packs in `reference-oss/` and Anthropic's own `smb-router`). CI now guards the routing library against drift — `check-evals.py` asserts every `target_skill` **and** every `expected_route` (real command + valid `--phase`/`--mode`) resolves, and `check-versions.sh` asserts every discipline command's Route names all 16 of its skills (`ad.md`/`email.md` were 8/16 and `ad.md` denied 3 real skills — both fixed to 16/16). `auto.md` gains a compact cross-discipline seam index, `smb-router`-style guardrails, and a natural-language trigger `description`; `influencer.md` is aligned to its siblings; the routing library adds 7 scenarios (5 high-risk skills + 2 word-sense seams). `memory-management`'s `consolidate` pass gains a **structural-integrity lint** (orphan pages, broken cross-refs, data gaps — the LLM-Wiki *Lint* dimension) and is bumped to `16.1.1`. All markdown/CI-only, keyless. **No skills added/removed** (still 120).
+**Current release**: `17.0.0` (2026-07-11). **Breaking methodology and architecture hardening.** This release secures shared network and memory defaults; makes all eight advisory frameworks typed and executable; replaces destructive registry queues with append-only event streams; separates execution status from gate verdicts; requires explicit Narrative/claims dependencies; and adds deterministic architecture, behavior, link, artifact, privacy, and state conformance. All 120 skills move together because the shared contract changed; no skills were added or removed.
 
 ## Skills
 
 | Skill | Category | Version | Last Updated |
 |-------|----------|---------|--------------|
-| keyword-research | research | 16.0.0 | 2026-07-05 |
-| competitor-analysis | research | 16.0.0 | 2026-07-05 |
-| serp-analysis | research | 16.0.0 | 2026-07-05 |
-| content-gap-analysis | research | 16.0.0 | 2026-07-05 |
-| content-writer | build | 16.0.0 | 2026-07-05 |
-| geo-content-optimizer | build | 16.0.1 | 2026-07-07 |
-| serp-markup-builder | build | 16.0.0 | 2026-07-05 |
-| page-play-builder | build | 16.0.1 | 2026-07-07 |
-| content-quality-auditor | optimize | 16.0.1 | 2026-07-07 |
-| technical-seo-checker | optimize | 16.0.0 | 2026-07-05 |
-| on-page-seo-auditor | optimize | 16.0.0 | 2026-07-05 |
-| site-structure-optimizer | optimize | 16.0.0 | 2026-07-05 |
-| domain-authority-auditor | monitor | 16.0.1 | 2026-07-07 |
-| rank-tracker | monitor | 16.0.0 | 2026-07-05 |
-| performance-monitor | monitor | 16.0.0 | 2026-07-05 |
-| offsite-signal-analyzer | monitor | 16.0.0 | 2026-07-05 |
-| audience-mapper | discover | 16.0.0 | 2026-07-05 |
-| trend-spotter | discover | 16.0.1 | 2026-07-07 |
-| influencer-discovery | discover | 16.0.0 | 2026-07-05 |
-| fit-scorer | discover | 16.0.0 | 2026-07-05 |
-| competitor-tracker | plan | 16.0.0 | 2026-07-05 |
-| campaign-planner | plan | 16.0.0 | 2026-07-05 |
-| brief-generator | plan | 16.0.0 | 2026-07-05 |
-| budget-optimizer | plan | 16.0.0 | 2026-07-05 |
-| outreach-manager | activate | 16.0.0 | 2026-07-05 |
-| content-reviewer | activate | 16.0.0 | 2026-07-05 |
-| contract-helper | activate | 16.0.1 | 2026-07-07 |
-| content-amplifier | activate | 16.0.0 | 2026-07-05 |
-| landing-optimizer | measure | 16.0.1 | 2026-07-07 |
-| performance-analyzer | measure | 16.0.1 | 2026-07-07 |
-| roi-calculator | measure | 16.0.1 | 2026-07-07 |
-| report-generator | measure | 16.0.1 | 2026-07-07 |
-| campaign-architect | paid | 16.0.1 | 2026-07-07 |
-| audience-segment-builder | paid | 16.0.0 | 2026-07-05 |
-| search-term-miner | paid | 16.0.0 | 2026-07-05 |
-| product-feed-optimizer | paid | 16.0.0 | 2026-07-05 |
-| ad-creative-builder | paid | 16.0.0 | 2026-07-05 |
-| ad-test-designer | paid | 16.0.3 | 2026-07-07 |
-| bid-strategy-planner | paid | 16.0.0 | 2026-07-05 |
-| landing-experience-checker | paid | 16.0.0 | 2026-07-05 |
-| ad-account-auditor | paid | 16.0.0 | 2026-07-05 |
-| conversion-signal-qa | paid | 16.0.0 | 2026-07-05 |
-| placement-exclusion-manager | paid | 16.0.0 | 2026-07-05 |
-| conversion-value-mapper | paid | 16.0.0 | 2026-07-05 |
-| paid-measurement-loop | paid | 16.0.3 | 2026-07-07 |
-| attribution-reconciler | paid | 16.0.0 | 2026-07-05 |
-| budget-pacing-monitor | paid | 16.0.0 | 2026-07-05 |
-| fatigue-frequency-manager | paid | 16.0.0 | 2026-07-05 |
-| deliverability-qa | email | 16.0.0 | 2026-07-05 |
-| list-segment-builder | email | 16.0.0 | 2026-07-05 |
-| list-growth-designer | email | 16.0.0 | 2026-07-05 |
-| list-hygiene-monitor | email | 16.0.0 | 2026-07-05 |
-| email-creative-builder | email | 16.0.0 | 2026-07-05 |
-| subject-line-lab | email | 16.0.0 | 2026-07-05 |
-| email-render-builder | email | 16.0.0 | 2026-07-05 |
-| dynamic-content-personalizer | email | 16.0.0 | 2026-07-05 |
-| email-sequence-designer | email | 16.0.0 | 2026-07-05 |
-| newsletter-monetization-planner | email | 16.0.0 | 2026-07-05 |
-| preference-frequency-manager | email | 16.0.0 | 2026-07-05 |
-| reactivation-specialist | email | 16.0.0 | 2026-07-05 |
-| email-quality-auditor | email | 16.0.0 | 2026-07-05 |
-| send-experiment-designer | email | 16.0.3 | 2026-07-07 |
-| inbox-placement-monitor | email | 16.0.0 | 2026-07-05 |
-| cold-outbound-sequencer | email | 16.0.0 | 2026-07-05 |
-| positioning-mapper | launch | 16.0.0 | 2026-07-05 |
-| launch-tier-planner | launch | 16.0.0 | 2026-07-05 |
-| launch-window-planner | launch | 16.0.0 | 2026-07-05 |
-| early-access-designer | launch | 16.0.0 | 2026-07-05 |
-| message-house-builder | launch | 16.0.0 | 2026-07-05 |
-| launch-asset-packager | launch | 16.0.0 | 2026-07-05 |
-| pricing-packaging-planner | launch | 16.0.0 | 2026-07-05 |
-| sales-enablement-kit | launch | 16.0.0 | 2026-07-05 |
-| launch-readiness-auditor | launch | 16.0.0 | 2026-07-05 |
-| launch-day-conductor | launch | 16.0.0 | 2026-07-05 |
-| community-launch-runner | launch | 16.0.0 | 2026-07-05 |
-| press-media-relations | launch | 16.0.0 | 2026-07-05 |
-| launch-monitor | launch | 16.0.0 | 2026-07-05 |
-| launch-feedback-synthesizer | launch | 16.0.0 | 2026-07-05 |
-| launch-retro-analyzer | launch | 16.0.0 | 2026-07-05 |
-| momentum-planner | launch | 16.0.0 | 2026-07-05 |
-| channel-portfolio-planner | explore | 16.0.0 | 2026-07-05 |
-| voice-dossier-builder | explore | 16.0.0 | 2026-07-05 |
-| platform-norm-profiler | explore | 16.0.0 | 2026-07-05 |
-| participation-warmup-planner | explore | 16.0.0 | 2026-07-05 |
-| social-calendar-builder | craft | 16.0.0 | 2026-07-05 |
-| social-creative-builder | craft | 16.0.0 | 2026-07-05 |
-| short-video-scripter | craft | 16.0.3 | 2026-07-07 |
-| advocacy-program-designer | craft | 16.0.0 | 2026-07-05 |
-| social-quality-auditor | host | 16.0.0 | 2026-07-05 |
-| engagement-inbox-manager | host | 16.0.0 | 2026-07-05 |
-| social-selling-planner | host | 16.0.0 | 2026-07-05 |
-| crisis-response-planner | host | 16.0.0 | 2026-07-05 |
-| social-pulse-monitor | observe | 16.0.0 | 2026-07-05 |
-| share-of-voice-tracker | observe | 16.0.0 | 2026-07-05 |
-| dark-social-attributor | observe | 16.0.0 | 2026-07-05 |
-| social-measurement-loop | observe | 16.0.3 | 2026-07-07 |
-| entity-optimizer | protocol | 16.0.1 | 2026-07-07 |
-| creator-registry | protocol | 16.0.0 | 2026-07-05 |
-| offer-claims-registry | protocol | 16.0.0 | 2026-07-05 |
-| consent-registry | protocol | 16.0.0 | 2026-07-05 |
-| launch-registry | protocol | 16.0.0 | 2026-07-05 |
-| channel-registry | protocol | 16.0.0 | 2026-07-05 |
-| memory-management | protocol | 16.1.1 | 2026-07-08 |
-| narrative-baseline-mapper | trace | 16.0.0 | 2026-07-05 |
-| category-narrative-mapper | trace | 16.0.0 | 2026-07-05 |
-| audience-belief-mapper | trace | 16.0.0 | 2026-07-05 |
-| positioning-truth-tracer | trace | 16.0.0 | 2026-07-05 |
-| strategic-narrative-designer | architect | 16.0.0 | 2026-07-05 |
-| message-system-architect | architect | 16.0.3 | 2026-07-07 |
-| brand-language-codifier | architect | 16.0.0 | 2026-07-05 |
-| story-bank-builder | architect | 16.0.0 | 2026-07-05 |
-| narrative-cascade-planner | land | 16.0.0 | 2026-07-05 |
-| pitch-narrative-builder | land | 16.0.3 | 2026-07-07 |
-| narrative-enablement-kit | land | 16.0.0 | 2026-07-05 |
-| proof-point-packager | land | 16.0.0 | 2026-07-05 |
-| narrative-quality-auditor | evaluate | 16.0.0 | 2026-07-05 |
-| message-test-designer | evaluate | 16.0.3 | 2026-07-07 |
-| narrative-resonance-monitor | evaluate | 16.0.0 | 2026-07-05 |
-| narrative-drift-monitor | evaluate | 16.0.0 | 2026-07-05 |
-| narrative-registry | protocol | 16.0.0 | 2026-07-05 |
+| narrative-baseline-mapper | trace | 17.0.0 | 2026-07-10 |
+| category-narrative-mapper | trace | 17.0.0 | 2026-07-10 |
+| audience-belief-mapper | trace | 17.0.0 | 2026-07-10 |
+| positioning-truth-tracer | trace | 17.0.0 | 2026-07-10 |
+| strategic-narrative-designer | architect | 17.0.0 | 2026-07-10 |
+| message-system-architect | architect | 17.0.0 | 2026-07-10 |
+| brand-language-codifier | architect | 17.0.0 | 2026-07-10 |
+| story-bank-builder | architect | 17.0.0 | 2026-07-10 |
+| narrative-cascade-planner | land | 17.0.0 | 2026-07-10 |
+| pitch-narrative-builder | land | 17.0.0 | 2026-07-10 |
+| narrative-enablement-kit | land | 17.0.0 | 2026-07-10 |
+| proof-point-packager | land | 17.0.0 | 2026-07-10 |
+| narrative-quality-auditor | evaluate | 17.0.0 | 2026-07-10 |
+| message-test-designer | evaluate | 17.0.0 | 2026-07-10 |
+| narrative-resonance-monitor | evaluate | 17.0.0 | 2026-07-10 |
+| narrative-drift-monitor | evaluate | 17.0.0 | 2026-07-10 |
+| keyword-research | research | 17.0.0 | 2026-07-10 |
+| competitor-analysis | research | 17.0.0 | 2026-07-10 |
+| serp-analysis | research | 17.0.0 | 2026-07-10 |
+| content-gap-analysis | research | 17.0.0 | 2026-07-10 |
+| content-writer | build | 17.0.0 | 2026-07-10 |
+| geo-content-optimizer | build | 17.0.0 | 2026-07-10 |
+| serp-markup-builder | build | 17.0.0 | 2026-07-10 |
+| page-play-builder | build | 17.0.0 | 2026-07-10 |
+| content-quality-auditor | optimize | 17.0.0 | 2026-07-10 |
+| technical-seo-checker | optimize | 17.0.0 | 2026-07-10 |
+| on-page-seo-auditor | optimize | 17.0.0 | 2026-07-10 |
+| site-structure-optimizer | optimize | 17.0.0 | 2026-07-10 |
+| domain-authority-auditor | monitor | 17.0.0 | 2026-07-10 |
+| rank-tracker | monitor | 17.0.0 | 2026-07-10 |
+| performance-monitor | monitor | 17.0.0 | 2026-07-10 |
+| offsite-signal-analyzer | monitor | 17.0.0 | 2026-07-10 |
+| channel-portfolio-planner | explore | 17.0.0 | 2026-07-10 |
+| voice-dossier-builder | explore | 17.0.0 | 2026-07-10 |
+| platform-norm-profiler | explore | 17.0.0 | 2026-07-10 |
+| participation-warmup-planner | explore | 17.0.0 | 2026-07-10 |
+| social-calendar-builder | craft | 17.0.0 | 2026-07-10 |
+| social-creative-builder | craft | 17.0.0 | 2026-07-10 |
+| short-video-scripter | craft | 17.0.0 | 2026-07-10 |
+| advocacy-program-designer | craft | 17.0.0 | 2026-07-10 |
+| social-quality-auditor | host | 17.0.0 | 2026-07-10 |
+| engagement-inbox-manager | host | 17.0.0 | 2026-07-10 |
+| social-selling-planner | host | 17.0.0 | 2026-07-10 |
+| crisis-response-planner | host | 17.0.0 | 2026-07-10 |
+| social-pulse-monitor | observe | 17.0.0 | 2026-07-10 |
+| share-of-voice-tracker | observe | 17.0.0 | 2026-07-10 |
+| dark-social-attributor | observe | 17.0.0 | 2026-07-10 |
+| social-measurement-loop | observe | 17.0.0 | 2026-07-10 |
+| deliverability-qa | email | 17.0.0 | 2026-07-10 |
+| list-segment-builder | email | 17.0.0 | 2026-07-10 |
+| list-growth-designer | email | 17.0.0 | 2026-07-10 |
+| list-hygiene-monitor | email | 17.0.0 | 2026-07-10 |
+| email-creative-builder | email | 17.0.0 | 2026-07-10 |
+| subject-line-lab | email | 17.0.0 | 2026-07-10 |
+| email-render-builder | email | 17.0.0 | 2026-07-10 |
+| dynamic-content-personalizer | email | 17.0.0 | 2026-07-10 |
+| email-sequence-designer | email | 17.0.0 | 2026-07-10 |
+| newsletter-monetization-planner | email | 17.0.0 | 2026-07-10 |
+| preference-frequency-manager | email | 17.0.0 | 2026-07-10 |
+| reactivation-specialist | email | 17.0.0 | 2026-07-10 |
+| email-quality-auditor | email | 17.0.0 | 2026-07-10 |
+| send-experiment-designer | email | 17.0.0 | 2026-07-10 |
+| inbox-placement-monitor | email | 17.0.0 | 2026-07-10 |
+| cold-outbound-sequencer | email | 17.0.0 | 2026-07-10 |
+| campaign-architect | paid | 17.0.0 | 2026-07-10 |
+| audience-segment-builder | paid | 17.0.0 | 2026-07-10 |
+| search-term-miner | paid | 17.0.0 | 2026-07-10 |
+| product-feed-optimizer | paid | 17.0.0 | 2026-07-10 |
+| ad-creative-builder | paid | 17.0.0 | 2026-07-10 |
+| ad-test-designer | paid | 17.0.0 | 2026-07-10 |
+| bid-strategy-planner | paid | 17.0.0 | 2026-07-10 |
+| landing-experience-checker | paid | 17.0.0 | 2026-07-10 |
+| ad-account-auditor | paid | 17.0.0 | 2026-07-10 |
+| conversion-signal-qa | paid | 17.0.0 | 2026-07-10 |
+| placement-exclusion-manager | paid | 17.0.0 | 2026-07-10 |
+| conversion-value-mapper | paid | 17.0.0 | 2026-07-10 |
+| paid-measurement-loop | paid | 17.0.0 | 2026-07-10 |
+| attribution-reconciler | paid | 17.0.0 | 2026-07-10 |
+| budget-pacing-monitor | paid | 17.0.0 | 2026-07-10 |
+| fatigue-frequency-manager | paid | 17.0.0 | 2026-07-10 |
+| audience-mapper | discover | 17.0.0 | 2026-07-10 |
+| trend-spotter | discover | 17.0.0 | 2026-07-10 |
+| influencer-discovery | discover | 17.0.0 | 2026-07-10 |
+| fit-scorer | discover | 17.0.0 | 2026-07-10 |
+| competitor-tracker | plan | 17.0.0 | 2026-07-10 |
+| campaign-planner | plan | 17.0.0 | 2026-07-10 |
+| brief-generator | plan | 17.0.0 | 2026-07-10 |
+| budget-optimizer | plan | 17.0.0 | 2026-07-10 |
+| outreach-manager | activate | 17.0.0 | 2026-07-10 |
+| content-reviewer | activate | 17.0.0 | 2026-07-10 |
+| contract-helper | activate | 17.0.0 | 2026-07-10 |
+| content-amplifier | activate | 17.0.0 | 2026-07-10 |
+| landing-optimizer | measure | 17.0.0 | 2026-07-10 |
+| performance-analyzer | measure | 17.0.0 | 2026-07-10 |
+| roi-calculator | measure | 17.0.0 | 2026-07-10 |
+| report-generator | measure | 17.0.0 | 2026-07-10 |
+| positioning-mapper | launch | 17.0.0 | 2026-07-10 |
+| launch-tier-planner | launch | 17.0.0 | 2026-07-10 |
+| launch-window-planner | launch | 17.0.0 | 2026-07-10 |
+| early-access-designer | launch | 17.0.0 | 2026-07-10 |
+| message-house-builder | launch | 17.0.0 | 2026-07-10 |
+| launch-asset-packager | launch | 17.0.0 | 2026-07-10 |
+| pricing-packaging-planner | launch | 17.0.0 | 2026-07-10 |
+| sales-enablement-kit | launch | 17.0.0 | 2026-07-10 |
+| launch-readiness-auditor | launch | 17.0.0 | 2026-07-10 |
+| launch-day-conductor | launch | 17.0.0 | 2026-07-10 |
+| community-launch-runner | launch | 17.0.0 | 2026-07-10 |
+| press-media-relations | launch | 17.0.0 | 2026-07-10 |
+| launch-monitor | launch | 17.0.0 | 2026-07-10 |
+| launch-feedback-synthesizer | launch | 17.0.0 | 2026-07-10 |
+| launch-retro-analyzer | launch | 17.0.0 | 2026-07-10 |
+| momentum-planner | launch | 17.0.0 | 2026-07-10 |
+| entity-optimizer | protocol | 17.0.0 | 2026-07-10 |
+| creator-registry | protocol | 17.0.0 | 2026-07-10 |
+| offer-claims-registry | protocol | 17.0.0 | 2026-07-10 |
+| consent-registry | protocol | 17.0.0 | 2026-07-10 |
+| launch-registry | protocol | 17.0.0 | 2026-07-10 |
+| channel-registry | protocol | 17.0.0 | 2026-07-10 |
+| narrative-registry | protocol | 17.0.0 | 2026-07-10 |
+| memory-management | protocol | 17.0.0 | 2026-07-10 |
 
 ## Changelog
+
+### v17.0.0 — Methodology, runtime, and architecture hardening (2026-07-11)
+
+Breaking shared-contract release; 120 skills and 8 commands remain unchanged in count. A pre-release full review (6 parallel audit streams) hardened the cut before tagging: the PreToolUse privacy preflight is scoped to the host project's memory/ namespace (destinations outside the project root and non-path uses of the word "memory" pass through; python3-missing degrades instead of refusing everything), canonical registry authority is documented as the owner-run terminal ritual with pending-proposal and post-canonical read semantics, the standalone auditor-runtime returns `verdict: UNDECIDED` + `score_state: NOT_SCORED` with run-schema item states, a low-confidence `SHIP` carries an explicit `confidence_caveat`, the ROAS worked example and stale runbook § pointers were corrected, all nine translated READMEs carry the v17 narrative, and sync-family/publishers gained empty-ID, pushed-state, and dry-run-default guards.
+
+- **Secure-by-default runtime.** Public-only, DNS-pinned direct HTTP transport rejects mixed/private answers and ambient proxy delegation; every redirect is revalidated, decompression and retry waits are bounded, error responses are closed, operational memory is ignored, and expanded PII checks fail closed.
+- **Typed advisory methodology.** One machine-readable catalog and deterministic scorer define strict profile/context identity, applicability, Unknown/N/A, evidence provenance, 100% comparable coverage, confidence, lifecycle units, a universal 59 veto ceiling, and orthogonal status/verdict semantics across all eight frameworks. C³ adds typed multi-ACE budget weighting, equal-weight ART aggregation, one ROI scope, and cross-component identity checks.
+- **Typed gate sinks.** `memory/audits/` is reserved for the eight framework owners. Path-triggered Artifact Gate validation rejects unknown prose/fields, wrong framework/profile/sink combinations, inconsistent veto counts or status/verdict pairs, and aggregate `MULTI` scores.
+- **Durable state model.** Seven sole-writer registries now use append-only hash-chained events, idempotency, optimistic revisions, operation-specific payloads, executable state transitions, terminal-record protection, atomic projections, and semantic replay validation; consent suppression/erasure remains immediate and replay-safe.
+- **Explicit layer contracts.** Core builders record Narrative canon ID/version, claims projection offset, and dependency status; ordinary producers propose events rather than mutating canonical state.
+- **Executable assurance.** Deterministic suites cover scoring, registries, HTTP/connectors, artifact validation, hooks, eval/routing structure, architecture, generated standalone auditor runtimes, generated system docs, and local links; an optional fail-closed semantic adapter supports host/model evaluation.
+- **Distribution convergence.** Typed system topology drives canonical ordering across plugin, marketplace, skills.sh, root/localized documentation, and generated architecture docs. Standalone auditors carry immutable hashed runtime bundles and never fetch mutable `main` contracts.
 
 ### v16.1.1 — Command-system & routing hardening + memory structural lint (2026-07-08)
 

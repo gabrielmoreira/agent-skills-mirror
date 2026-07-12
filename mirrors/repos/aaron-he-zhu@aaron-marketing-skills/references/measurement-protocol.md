@@ -5,7 +5,7 @@
 > Without this discipline, every version is guesswork. This file is the SSOT for what is
 > testable, how fast, and what each signal does and does NOT prove.
 
-**Scope**: the layered latency model below (proxy vs outcome) is **SEO/GEO-specific**. The **cross-discipline decision protocol** and **per-discipline latency notes** further down apply to all disciplines — SEO/GEO, influencer, and paid ads. Influencer and paid skills use the decision protocol + their own latency note; they do not use the crawler/citation layers.
+**Scope**: the layered latency model below (proxy vs outcome) is **SEO/GEO-specific**. The cross-discipline design and decision protocol applies to every discipline. Other disciplines use their own unit, outcome truth set, latency, and guardrails; they do not inherit the crawler/citation layers.
 
 ## The problem this exists to fix
 
@@ -141,9 +141,13 @@ just a different data source and a longer window.
 - **Collection is semi-manual.** The tools structure and diff the data; they do not, for the AI
   engines, automate the asking.
 
-## Cross-discipline decision protocol (readback windows + promote / rollback)
+## Cross-Discipline Decision Protocol
 
-Discipline-neutral. Every monitored change (SEO/GEO edit, influencer activation, paid campaign change) is judged on a fixed schedule against a control, then promoted, kept-testing, rolled back, or marked unproven — never on vibes.
+Every monitored change is judged on a fixed schedule against a defensible counterfactual, then promoted, kept testing, rolled back, or marked unproven by the named decision owner. Statistical software supplies evidence; it does not own the business verdict.
+
+### Register Before Exposure
+
+Record the unit of randomization/analysis, population and exclusions, control and candidate, primary metric, guardrails, metric direction, outcome truth source, attribution rule, conversion lag, hypothesis, minimum practically important effect, alpha/confidence, power/precision target, sample plan, multiplicity or sequential-testing correction, start/stop/read dates, and decision owner. A plan written after looking at outcomes is exploratory, not confirmatory.
 
 **Readback windows** (set before the change; do not react inside the window):
 
@@ -156,13 +160,24 @@ Discipline-neutral. Every monitored change (SEO/GEO edit, influencer activation,
 | Influencer activation | per post + 7 / 30 days |
 | Paid campaign change | exit learning phase first, then 7 / 14 days |
 
-**Required readback fields** (record each time): change · owner · baseline window · candidate window · sources · primary + secondary metric · winner · caveats · decision · next-patch · next-readback date.
+**Required readback fields**: experiment/change ID · preregistration version · owner · target/population · control and candidate windows · sample/exclusions · sources and provenance · primary metric and guardrails · attribution/lag · effect and uncertainty · statistical method · data-quality incidents · decision · rationale · next patch · next readback date.
 
-**Decision rule**: **Promote** only if it beats the control on the primary metric past the bar below; **Keep-testing** if trending but not yet significant; **Rollback** if it loses by the same bar; **Unproven** otherwise (record and move on).
+### Method-Appropriate Evidence
 
-**Significance bar (documented method — no scipy, no code in this repo)**: treat a winner as real only when the lift is both statistically and practically meaningful — a non-parametric test (e.g. Mann-Whitney U) at p < 0.05 **and** ≥ 15% relative lift, with a bootstrap confidence interval on the lift that excludes zero. Below the sample floor, stay Keep-testing. State the method and compute it by hand or in a notebook; do not add a stats dependency to this repo.
+- **Binary rates**: use a prespecified two-proportion method, effect estimate/interval, and practical-effect bar. `experiment.py proportion` returns a two-sided pooled z-test, per-arm Wilson intervals, an absolute-lift interval, and separate statistical/practical flags.
+- **Continuous/skewed metrics**: report sample sizes, robust summaries, a rank test where its assumptions match the estimand, and a bootstrap effect interval. A Mann-Whitney test is not a test of mean difference and must not be described as one.
+- **Time series or non-randomized changes**: use a defensible matched control, interrupted-series, difference-in-differences, or other stated design. A generic A/B p-value does not repair confounding.
+- **Small or dependent samples**: remain exploratory unless the chosen exact, clustered, paired, or hierarchical method supports the design.
 
-**Do NOT promote when**: sample too small (below the floor) · attribution dirty (no control / confounded) · the move is explained by seasonality · a connector failed mid-window · "only the author liked it."
+`alpha=0.05`, `power=0.80`, and a 15% relative practical-lift reference are defaults only when no better domain-specific policy exists. They are not universal truths. Declare any default before exposure and report sensitivity. For a zero control rate, relative lift is undefined; use a preregistered absolute effect.
+
+Use [`scripts/connectors/experiment.py`](../scripts/connectors/experiment.py) for stdlib deterministic calculations. Inputs are user-provided observations; p-values, intervals, power, and effect estimates are **Calculated**. The helper deliberately emits no `promote`, `rollback`, or winner verdict.
+
+### Decision Ownership
+
+**Promote** only when the precommitted primary evidence and practical-effect bar are met, guardrails are acceptable, attribution/data quality is intact, and the decision owner accepts the operational tradeoff. **Keep testing** only under a registered continuation/sequential rule. **Rollback** may be immediate for a safety, legal, reliability, or material business guardrail even before efficacy is resolved. Otherwise record **Unproven**; absence of significance is not proof of equivalence.
+
+Do not promote when sample/precision is inadequate, attribution is dirty, exclusions changed post hoc, seasonality or interference explains the move, collection failed mid-window, repeated peeking/multiplicity is unhandled, or only a proxy improved while the declared outcome did not.
 
 ## Per-discipline latency notes
 
@@ -191,20 +206,17 @@ Notes on reading the band:
 | Tool | Status | Layer(s) | Role |
 |---|---|---|---|
 | `scripts/connectors/ledger.py` | **exists** | 2–4 | snapshot / diff / trend spine; per-target time series with collision guard |
+| `scripts/connectors/experiment.py` | **exists** | cross-discipline | statistical/effect-size decision inputs on user-provided observations; no business verdict |
+| `scripts/rubric-score.py` | **exists** | framework audits | deterministic advisory rubric scoring, coverage, confidence, veto, and verdict semantics |
 | `scripts/golden-auditor-math.py` | **exists** | — | guards the *internal* consistency of the scoring math (not external validity) |
 | `scripts/connectors/robots.py` | **exists** | 1 | robots.txt + AI-bot access check |
 | `scripts/connectors/botlog.py` | *proposed* | 1 | parse server logs → per-URL AI-bot hit counts |
 | `scripts/connectors/citations.py` | *proposed* | 2, 3 | `probe` (fast citability) + `surface` (slow unprompted-citation) modes, both → ledger |
 | `scripts/connectors/gsc.py` | *proposed* | 4 | Google Search Console impressions/position/clicks |
 
-## Relationship to CORE-EEAT / CITE
+## Relationship to the Eight Frameworks
 
-The framework scores are **internal heuristics**. `golden-auditor-math.py` guards their *internal*
-consistency (weights sum, examples recompute) — it says nothing about **external validity**:
-whether a high score actually predicts citability (L2) or surfacing (L3). That is itself a
-measurement question this protocol lets you eventually answer with a **calibration study** —
-correlate framework scores against *measured* citation rates across a corpus. Until that study
-exists, present the scores as structured opinion, not as a predictor of outcomes.
+CORE-EEAT, CITE, C3, ROAS, SEND, RAMP, ECHO, and TALE scores are advisory quality-control summaries. Deterministic math guards internal consistency; it does not establish reliability or external validity. Outcome calibration must follow the preregistered, version-locked study in [`scoring-semantics.md`](scoring-semantics.md). Until that study succeeds for a named profile/population/outcome, present scores as structured audit evidence, not outcome predictors.
 
 See also: [CONNECTORS.md](../CONNECTORS.md) (the data recipes and the measurement-loop note),
 [scripts/connectors/README.md](../scripts/connectors/README.md) (helper reference),

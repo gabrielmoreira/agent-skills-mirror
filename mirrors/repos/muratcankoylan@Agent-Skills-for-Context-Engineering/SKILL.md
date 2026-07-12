@@ -33,6 +33,9 @@ Language models exhibit predictable degradation patterns as context grows: the "
 **Multi-Agent Coordination**
 Production multi-agent systems converge on three dominant patterns: supervisor/orchestrator architectures with centralized control, peer-to-peer swarm architectures for flexible handoffs, and hierarchical structures for complex task decomposition. The critical insight is that sub-agents exist primarily to isolate context rather than to simulate organizational roles.
 
+**Long-Horizon Prompting**
+Long-running autonomous agents and parallel orchestrations succeed or fail on the launch prompt. Pseudo-formal task briefs specify success predicates, non-counting outcomes, persistence rules with audit-gated return conditions, effort floors, diversity policies for parallel portfolios, and contamination guards, applying the discipline of formal verification linguistically to problems with no machine-checkable success condition.
+
 **Memory System Design**
 Memory architectures range from simple scratchpads to sophisticated temporal knowledge graphs. Vector RAG provides semantic retrieval but loses relationship information. Knowledge graphs preserve structure but require more engineering investment. The file-system-as-memory pattern enables just-in-time context loading without stuffing context windows.
 
@@ -96,6 +99,7 @@ Internal skills in this collection:
 - [context-degradation](skills/context-degradation/SKILL.md)
 - [context-compression](skills/context-compression/SKILL.md)
 - [multi-agent-patterns](skills/multi-agent-patterns/SKILL.md)
+- [long-horizon-prompting](skills/long-horizon-prompting/SKILL.md)
 - [memory-systems](skills/memory-systems/SKILL.md)
 - [tool-design](skills/tool-design/SKILL.md)
 - [filesystem-context](skills/filesystem-context/SKILL.md)
@@ -119,6 +123,6 @@ External resources on context engineering:
 ## Skill Metadata
 
 **Created**: 2025-12-20
-**Last Updated**: 2026-07-08
+**Last Updated**: 2026-07-11
 **Author**: Agent Skills for Context Engineering Contributors
-**Version**: 2.4.0
+**Version**: 2.5.0

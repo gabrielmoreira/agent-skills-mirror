@@ -1,85 +1,83 @@
 # ROAS Benchmark — Paid Ads Evaluation Standard
 
-The fourth framework in this library, alongside [CORE-EEAT](core-eeat-benchmark.md) (content quality), [CITE](cite-domain-rating.md) (domain authority), and [C³](c3-benchmark.md) (influencer). ROAS scores **paid advertising** — named after the metric paid acquisition exists to maximize (Return On Ad Spend) — across four goal-weighted levers whose initials spell the name.
+ROAS evaluates **incremental paid-media contribution and operating quality under declared business constraints**. The mnemonic remains Return · Offer · Audience · Spend Efficiency, but the objective is not to maximize a platform-reported ROAS ratio. A high reported ratio can coexist with weak incrementality, under-spending, attribution inflation, or poor profit.
 
-**Keyless by design**: every input comes from the user's **own account, manually exported** (native ad-manager CSV, GA4/ecommerce export, screenshots). Keyed ad-platform APIs (Google Ads SDK, Meta Marketing API) are an optional Tier-2/3 MCP convenience, **never a Tier-1 precondition**.
+The framework is advisory. Executable items, profiles, context, and vetoes live in [`framework-catalog.json`](framework-catalog.json); common evidence, missingness, score, status, and verdict rules live in [`scoring-semantics.md`](scoring-semantics.md).
 
-## The four dimensions (R · O · A · S)
+**Keyless by design:** Tier 1 accepts the user's own exports from ad managers, analytics, ecommerce/CRM, and placement reports. Keyed platform APIs are optional conveniences, never a baseline requirement.
 
-| Letter | Dimension | What it measures |
-|--------|-----------|------------------|
-| **R** | **Return** | ROAS / CPA vs target, profitability, **+ measurement-signal integrity** (conversion tracking, attribution, UTM/offline imports, iOS-ATT modeled gaps) |
-| **O** | **Offer** | the ad unit: creative quality & hook, ad↔landing-page message match, Quality-Score relevance lever, format fit, **+ claim & policy compliance** |
-| **A** | **Audience** | targeting, match types, campaign-type fit (Search/PMax/broad), account structure, negatives/exclusions, **+ brand/placement safety** |
-| **S** | **Spend-efficiency** | CPC / CPM / CTR / CVR vs benchmark, budget pacing & allocation, learning-phase respect, paid↔organic cannibalization |
+## Unit and Required Context
 
-Mnemonic for the levers: **who sees it (A) → what they see (O) → how much you pay (S) → what comes back (R)**. The same four letters also frame the lifecycle as a **ROAS loop**: Research → Orchestrate → Activate → Scale.
+Score one account or campaign portfolio for one currency, normalized attribution window, observation period, conversion-lag assumption, goal, and business constraint. A change in those fields creates a different run. Platform self-report is evidence, not the outcome truth set.
 
-## Scoring chassis
+## The 20 Items
 
-| | |
+| ID | Dimension | Criterion |
+|---|---|---|
+| `R1` | Return | Conversion instrumentation is verified against an own-data truth set. |
+| `R2` | Return | Cross-platform attribution is deduplicated; windows and currency are normalized. |
+| `R3` | Return | Incremental contribution or profit is measured against the declared target/control. |
+| `R4` | Return | CAC/CPA and payback satisfy the declared business constraint. |
+| `R5` | Return | Marginal return is read after conversion lag with uncertainty stated. |
+| `O1` | Offer | Claims and required disclosures are substantiated. |
+| `O2` | Offer | Platform policy and restricted-category requirements are satisfied. |
+| `O3` | Offer | Economics, eligibility, terms, and availability are explicit. |
+| `O4` | Offer | Ad-to-landing message and intent match. |
+| `O5` | Offer | Hook, format, accessibility, and fatigue state fit the placement. |
+| `A1` | Audience | Brand and placement safety are verified from placement evidence. |
+| `A2` | Audience | Targeting and query/audience intent fit. |
+| `A3` | Audience | Negative keywords, exclusions, and suppression controls are maintained. |
+| `A4` | Audience | Account structure supports the objective without avoidable overlap. |
+| `A5` | Audience | Reach, overlap, and audience saturation are measured. |
+| `S1` | Spend Efficiency | Budget pacing remains within the declared plan and constraints. |
+| `S2` | Spend Efficiency | Bid strategy and learning-state changes are governed. |
+| `S3` | Spend Efficiency | Marginal CPC/CPM/CTR/CVR efficiency uses a normalized window. |
+| `S4` | Spend Efficiency | Frequency and creative decay are separated from audience saturation. |
+| `S5` | Spend Efficiency | Paid/organic and cross-campaign cannibalization are assessed. |
+
+## Profiles and Scoring
+
+| Profile | R | O | A | S | Use |
+|---|---:|---:|---:|---:|---|
+| `direct-response` | .40 | .20 | .15 | .25 | Conversion program under an explicit CAC/payback constraint |
+| `prospecting` | .15 | .30 | .30 | .25 | Reach/consideration program with a declared downstream outcome |
+| `incremental-profit` | .50 | .15 | .10 | .25 | Holdout or causal design centered on contribution/profit |
+
+Per item: Pass = 10, Partial = 5, Fail = 0. The Paid Ads Index (`RQS`) is the floor-rounded profile-weighted mean after 100% applicable evidence coverage. `RQS` is not the literal ROAS ratio and profiles are not interchangeable.
+
+For `R=75 O=80 A=85 S=78`, direct response is `78`; prospecting is `80`; incremental profit is `77`. These are arithmetic fixtures, not outcome predictions.
+
+## Vetoes and Unknowns
+
+| ID | Verified failure |
 |---|---|
-| Per sub-item | Pass = 10 · Partial = 5 · Fail = 0 |
-| Dimension score | mean of sub-items × 10 → 0–100 |
-| Rollup | **arithmetic goal-weighted mean** (same chassis as CITE), floor-rounded — **not** C³'s geometric CVI |
-| Rating bands | 90–100 Excellent · 75–89 Good · 60–74 Medium · 40–59 Low · 0–39 Poor |
-| Veto-cap | delegated to [auditor-runbook.md](auditor-runbook.md) §2 — single veto caps the weighted overall at `min(raw, 60)`; 2+ veto fails → `status: BLOCKED` |
+| `ROAS-R1` | Instrumentation is demonstrably broken or does not reconcile to the named truth set. |
+| `ROAS-R2` | The same outcomes are demonstrably double-counted or materially inflated. |
+| `ROAS-O1` | A material claim/disclosure is false, unsubstantiated, or missing. |
+| `ROAS-O2` | The offer violates an applicable platform/restricted-category rule. |
+| `ROAS-A1` | Placement evidence shows a material brand-safety breach. |
 
-**Paid Ads Index (RQS — ROAS Quality Score, 0–100)** = `floor(weighted({R, O, A, S}, goal-weights))`. ⚠ The RQS (a 0–100 quality score) is **not** the literal roas ratio (e.g. 4.2×); the roas ratio is one input to the **Return** dimension.
+No data or no access is `unknown`, producing `NEEDS_INPUT/UNDECIDED`; it is not a veto. iOS/ATT modeled data may be partial or weak evidence but is not automatically a failure. One verified veto caps the final score at 59; two or more produce `verdict: BLOCK` and no final score.
 
-### Goal-weight columns (each sums to 1.0)
+Premature scaling and learning-phase disruption are high-severity `S2` findings, not automatic vetoes.
 
-| Goal | R | O | A | S |
-|------|---|---|---|---|
-| **DR / Performance** | 0.40 | 0.20 | 0.15 | 0.25 |
-| **Prospecting / Awareness** | 0.15 | 0.30 | 0.30 | 0.25 |
+## Evidence Contract
 
-- DR weights: `RQS_DR = R×0.40 + O×0.20 + A×0.15 + S×0.25`
-- Prospecting weights: `RQS_PR = R×0.15 + O×0.30 + A×0.30 + S×0.25`
+| Need | Preferred evidence |
+|---|---|
+| Spend, pacing, queries, placements | Campaign, search-term, audience, and placement exports |
+| Outcomes | GA4/ecommerce/CRM order or lead truth set with stable IDs |
+| Attribution integrity | Deduplicated IDs/timestamps, normalized windows/currency, documented lag |
+| Incrementality | Holdout, geo/market split, causal test, or explicitly labeled proxy |
+| Profit constraint | Margin, fulfillment, CAC/payback, and contribution assumptions with provenance |
 
-### Worked examples (golden-math fixture)
+Use `~~web analytics`, `~~ecommerce`, and `~~ad platform` connector categories from [`CONNECTORS.md`](../CONNECTORS.md). Keep raw platform metrics, calculated reconciliations, and estimates visibly distinct.
 
-Kept here so `scripts/golden-auditor-math.py` can assert the arithmetic deterministically. Input vector `R=75 O=80 A=85 S=78`:
+## Skill Ownership
 
-- **DR / Performance goal** → 30 + 16 + 12.75 + 19.5 = `floor(78.25) = 78`.
-- **Prospecting / Awareness goal** (same vector) → 11.25 + 24 + 25.5 + 19.5 = `floor(80.25) = 80`. (Weighting toward Audience + Offer raises a prospecting score on the same account — the weights encode the goal.)
-- **Veto-capped** — if R1 (conversion tracking broken) fails on the DR example, the weighted overall is capped: `min(78, 60) = 60`, `cap_applied: true`.
+- **Research** — `campaign-architect`, `search-term-miner`, and `audience-segment-builder` own structure and audience inputs.
+- **Orchestrate** — `ad-creative-builder`, `ad-test-designer`, `landing-optimizer`, and `bid-strategy-planner` own offer/experience and test design.
+- **Activate** — [`ad-account-auditor`](../ad/activate/ad-account-auditor/SKILL.md) produces the gate; `conversion-signal-qa` fixes signal prerequisites but does not score them.
+- **Scale** — `paid-measurement-loop`, `attribution-reconciler`, `budget-pacing-monitor`, and `fatigue-frequency-manager` supply normalized return and efficiency evidence.
 
-## Veto items (red lines — stable IDs, distributed R:2 / O:2 / A:1)
-
-| ID | Dimension | Trigger |
-|----|-----------|---------|
-| **R1** | Return | Conversion tracking broken / unverifiable. *No data* = veto; iOS-ATT **modeled/partial** data = Partial/flag, **not** an auto-veto (or it fires on nearly every modern account). |
-| **R2** | Return | Cross-platform attribution double-counting / inflation (same conversion credited on Meta + Google, or stacked last-click). Detect by matching order IDs / timestamps across the GA4/ecommerce export and each platform export; normalize attribution windows + currency first. |
-| **O1** | Offer | Claim integrity — false / unsubstantiated claim or missing required disclosure. |
-| **O2** | Offer | Platform-policy compliance — prohibited category, trademark misuse, restricted vertical → disapproval or account risk. |
-| **A1** | Audience | Brand / placement safety — unsafe placements or brand-adjacency. Needs the **placements report** export; if absent, A1 = NEEDS_INPUT (not pass-by-default). |
-
-**Premature scaling / learning-phase violation** is a high-severity **guardrail/flag under S**, *not* a veto — it is a process error that wastes spend, but it does not make the RQS itself untrustworthy.
-
-## Data contract (keyless export columns)
-
-| Need | Source export (own data) |
-|------|--------------------------|
-| S / CTR / CVR / pacing | campaign + search-terms report |
-| A / negatives | search-terms + audience/placement reports |
-| A1 (placement safety) | **placements report** (else NEEDS_INPUT) |
-| R (ROAS/CPA) | conversions from GA4 / ecommerce export (own data) |
-| R1 / R2 (signal integrity) | GA4 Conversions + Traffic-acquisition (source/medium); order-ID truth set from GA4/ecommerce, **not** the ad platform's reported conversion count |
-
-Reuse the existing `~~web analytics` (GA4) and `~~ecommerce` connector categories plus `~~ad platform` (own-data manual export) — see [CONNECTORS.md](../CONNECTORS.md). Do **not** invent a `~~conversion tracking` category.
-
-## Naming disambiguation
-
-ROAS's letters **R/O/A** overlap C³'s ACE/ART/**ROI (R/O/I)** and the veto IDs R1/R2/O1/O2 textually resemble other frameworks' item IDs — but each framework's IDs are independent (C³'s ROI scope has **no** veto). In any shared document (e.g. [auditor-runbook.md](auditor-runbook.md) §5) always qualify the letter with the framework name (`ROAS-R` vs `C³ ROI-R` vs `CITE-...`). The runbook lists ROAS vetoes under a Paid-Ads sub-heading.
-
-## Where it is used
-
-The paid-ads skills apply ROAS across the conceptual **ROAS loop** — Research → Orchestrate → Activate → Scale (directories under `ad/<phase>/`). Only [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md) computes the goal-weighted RQS and runs the five vetoes; every other skill operates on a single lever and hands off.
-
-- **Research (A)** — [campaign-architect](../ad/research/campaign-architect/SKILL.md) scores **A** + structure; recurring S-lever mining (negatives/new keywords from the search-terms export) is owned by [search-term-miner](../ad/research/search-term-miner/SKILL.md), not a mode of campaign-architect; [audience-segment-builder](../ad/research/audience-segment-builder/SKILL.md) turns the user's own customer/CRM/GA4 export into seed/lookalike/exclusion segments. Reuse: [budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md) allocates spend (**S**).
-- **Orchestrate (O)** — [ad-creative-builder](../ad/orchestrate/ad-creative-builder/SKILL.md) produces **O** units (ad↔LP message-match + claim/policy checks baked in); [ad-test-designer](../ad/orchestrate/ad-test-designer/SKILL.md) owns experiment design + the significance read (promote/kill). Reuse: [landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md) fixes the post-click page.
-- **Activate (R-gate)** — [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md) is the auditor-class gate: it scores RQS, enforces R1/R2/O1/O2/A1, runs a **launch go/no-go mode**, and emits the [auditor-runbook](auditor-runbook.md) handoff schema to `memory/audits/ad/`. [conversion-signal-qa](../ad/activate/conversion-signal-qa/SKILL.md) BUILDS/FIXES the measurement signal pre-flight (the R1/R2 prerequisite) but does not score it — the auditor judges.
-- **Scale (S/R)** — [paid-measurement-loop](../ad/scale/paid-measurement-loop/SKILL.md) reads ROAS/CPA against a control per [measurement-protocol.md](measurement-protocol.md), reusing `ledger.py` + `roi-calculator` (in-flight pacing read is owned by [budget-pacing-monitor](../ad/scale/budget-pacing-monitor/SKILL.md) and bid-strategy by [bid-strategy-planner](../ad/orchestrate/bid-strategy-planner/SKILL.md), plus the auditor's S guardrail); [attribution-reconciler](../ad/scale/attribution-reconciler/SKILL.md) is the standing order-ID de-dup + incrementality workbook (delegates ratio math to [roi-calculator](../influencer/measure/roi-calculator/SKILL.md); does not re-run the R2 veto). Reuse: [report-generator](../influencer/measure/report-generator/SKILL.md), [performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md).
-
-> **Provisional**: ROAS is a new framework. Treat its bands as provisional until calibrated against ~30 real manually-exported account audits in `memory/audits/ad/`, per the runbook's calibration discipline.
+Experiment helpers return statistical facts; the calling skill owns the precommitted business decision under [`measurement-protocol.md`](measurement-protocol.md). ROAS remains advisory until its versioned profiles pass the calibration protocol.

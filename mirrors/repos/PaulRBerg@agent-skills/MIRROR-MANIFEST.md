@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PaulRBerg/agent-skills` — 26 default patterns, 0 followed patterns, 218 file(s) materialized.
+Mirror of `PaulRBerg/agent-skills` — 26 default patterns, 0 followed patterns, 216 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PaulRBerg/agent-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 218 |
+| Files         | 216 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -137,10 +137,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 76 | ✓ | [`skills/codex-handoff/SKILL.md`](skills/codex-handoff/SKILL.md) |
 | 77 | ✓ | [`skills/coingecko-cli/agents/openai.yaml`](skills/coingecko-cli/agents/openai.yaml) |
 | 78 | ✓ | [`skills/coingecko-cli/SKILL.md`](skills/coingecko-cli/SKILL.md) |
-| 79 | ✓ | [`skills/coingecko-historical/agents/openai.yaml`](skills/coingecko-historical/agents/openai.yaml) |
-| 80 | ✓ | [`skills/coingecko-historical/scripts/build-url.py`](skills/coingecko-historical/scripts/build-url.py) |
-| 81 | ✓ | [`skills/coingecko-historical/scripts/test_build_url.py`](skills/coingecko-historical/scripts/test_build_url.py) |
-| 82 | ✓ | [`skills/coingecko-historical/SKILL.md`](skills/coingecko-historical/SKILL.md) |
+| 79 | ✓ | [`skills/coingecko-open-page/agents/openai.yaml`](skills/coingecko-open-page/agents/openai.yaml) |
+| 80 | ✓ | [`skills/coingecko-open-page/scripts/build-url.py`](skills/coingecko-open-page/scripts/build-url.py) |
+| 81 | ✓ | [`skills/coingecko-open-page/scripts/test_build_url.py`](skills/coingecko-open-page/scripts/test_build_url.py) |
+| 82 | ✓ | [`skills/coingecko-open-page/SKILL.md`](skills/coingecko-open-page/SKILL.md) |
 | 83 | ✓ | [`skills/commit/agents/openai.yaml`](skills/commit/agents/openai.yaml) |
 | 84 | ✓ | [`skills/commit/references/conventional-prefix-format.md`](skills/commit/references/conventional-prefix-format.md) |
 | 85 | ✓ | [`skills/commit/references/natural-language-format.md`](skills/commit/references/natural-language-format.md) |
@@ -249,34 +249,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 188 | ✓ | [`skills/vitest/references/testing-patterns.md`](skills/vitest/references/testing-patterns.md) |
 | 189 | ✓ | [`skills/vitest/references/troubleshooting.md`](skills/vitest/references/troubleshooting.md) |
 | 190 | ✓ | [`skills/vitest/SKILL.md`](skills/vitest/SKILL.md) |
-| 191 | ✓ | [`skills/work/agents/openai.yaml`](skills/work/agents/openai.yaml) |
-| 192 | ✓ | [`skills/work/SKILL.md`](skills/work/SKILL.md) |
-| 193 | ✓ | [`skills/yeet/agents/openai.yaml`](skills/yeet/agents/openai.yaml) |
-| 194 | ✓ | [`skills/yeet/references/comment-issue.md`](skills/yeet/references/comment-issue.md) |
-| 195 | ✓ | [`skills/yeet/references/context.md`](skills/yeet/references/context.md) |
-| 196 | ✓ | [`skills/yeet/references/create-discussion.md`](skills/yeet/references/create-discussion.md) |
-| 197 | ✓ | [`skills/yeet/references/create-issue.md`](skills/yeet/references/create-issue.md) |
-| 198 | ✓ | [`skills/yeet/references/create-pr.md`](skills/yeet/references/create-pr.md) |
-| 199 | ✓ | [`skills/yeet/references/issue-claude-code.md`](skills/yeet/references/issue-claude-code.md) |
-| 200 | ✓ | [`skills/yeet/references/issue-codex-cli.md`](skills/yeet/references/issue-codex-cli.md) |
-| 201 | ✓ | [`skills/yeet/references/issue-sablier.md`](skills/yeet/references/issue-sablier.md) |
-| 202 | ✓ | [`skills/yeet/references/posting.md`](skills/yeet/references/posting.md) |
-| 203 | ✓ | [`skills/yeet/references/templates/claude-code/bug-report.md`](skills/yeet/references/templates/claude-code/bug-report.md) |
-| 204 | ✓ | [`skills/yeet/references/templates/claude-code/documentation.md`](skills/yeet/references/templates/claude-code/documentation.md) |
-| 205 | ✓ | [`skills/yeet/references/templates/claude-code/feature-request.md`](skills/yeet/references/templates/claude-code/feature-request.md) |
-| 206 | ✓ | [`skills/yeet/references/templates/claude-code/model-behavior.md`](skills/yeet/references/templates/claude-code/model-behavior.md) |
-| 207 | ✓ | [`skills/yeet/references/templates/codex/1-codex-app.md`](skills/yeet/references/templates/codex/1-codex-app.md) |
-| 208 | ✓ | [`skills/yeet/references/templates/codex/2-extension.md`](skills/yeet/references/templates/codex/2-extension.md) |
-| 209 | ✓ | [`skills/yeet/references/templates/codex/3-cli.md`](skills/yeet/references/templates/codex/3-cli.md) |
-| 210 | ✓ | [`skills/yeet/references/templates/codex/4-bug-report.md`](skills/yeet/references/templates/codex/4-bug-report.md) |
-| 211 | ✓ | [`skills/yeet/references/templates/codex/5-feature-request.md`](skills/yeet/references/templates/codex/5-feature-request.md) |
-| 212 | ✓ | [`skills/yeet/references/templates/codex/6-docs-issue.md`](skills/yeet/references/templates/codex/6-docs-issue.md) |
-| 213 | ✓ | [`skills/yeet/references/update-issue.md`](skills/yeet/references/update-issue.md) |
-| 214 | ✓ | [`skills/yeet/references/update-pr.md`](skills/yeet/references/update-pr.md) |
-| 215 | ✓ | [`skills/yeet/references/writing.md`](skills/yeet/references/writing.md) |
-| 216 | ✓ | [`skills/yeet/scripts/get-macos-version.sh`](skills/yeet/scripts/get-macos-version.sh) |
-| 217 | ✓ | [`skills/yeet/scripts/yeet-context.sh`](skills/yeet/scripts/yeet-context.sh) |
-| 218 | ✓ | [`skills/yeet/SKILL.md`](skills/yeet/SKILL.md) |
+| 191 | ✓ | [`skills/yeet/agents/openai.yaml`](skills/yeet/agents/openai.yaml) |
+| 192 | ✓ | [`skills/yeet/references/comment-issue.md`](skills/yeet/references/comment-issue.md) |
+| 193 | ✓ | [`skills/yeet/references/context.md`](skills/yeet/references/context.md) |
+| 194 | ✓ | [`skills/yeet/references/create-discussion.md`](skills/yeet/references/create-discussion.md) |
+| 195 | ✓ | [`skills/yeet/references/create-issue.md`](skills/yeet/references/create-issue.md) |
+| 196 | ✓ | [`skills/yeet/references/create-pr.md`](skills/yeet/references/create-pr.md) |
+| 197 | ✓ | [`skills/yeet/references/issue-claude-code.md`](skills/yeet/references/issue-claude-code.md) |
+| 198 | ✓ | [`skills/yeet/references/issue-codex-cli.md`](skills/yeet/references/issue-codex-cli.md) |
+| 199 | ✓ | [`skills/yeet/references/issue-sablier.md`](skills/yeet/references/issue-sablier.md) |
+| 200 | ✓ | [`skills/yeet/references/posting.md`](skills/yeet/references/posting.md) |
+| 201 | ✓ | [`skills/yeet/references/templates/claude-code/bug-report.md`](skills/yeet/references/templates/claude-code/bug-report.md) |
+| 202 | ✓ | [`skills/yeet/references/templates/claude-code/documentation.md`](skills/yeet/references/templates/claude-code/documentation.md) |
+| 203 | ✓ | [`skills/yeet/references/templates/claude-code/feature-request.md`](skills/yeet/references/templates/claude-code/feature-request.md) |
+| 204 | ✓ | [`skills/yeet/references/templates/claude-code/model-behavior.md`](skills/yeet/references/templates/claude-code/model-behavior.md) |
+| 205 | ✓ | [`skills/yeet/references/templates/codex/1-codex-app.md`](skills/yeet/references/templates/codex/1-codex-app.md) |
+| 206 | ✓ | [`skills/yeet/references/templates/codex/2-extension.md`](skills/yeet/references/templates/codex/2-extension.md) |
+| 207 | ✓ | [`skills/yeet/references/templates/codex/3-cli.md`](skills/yeet/references/templates/codex/3-cli.md) |
+| 208 | ✓ | [`skills/yeet/references/templates/codex/4-bug-report.md`](skills/yeet/references/templates/codex/4-bug-report.md) |
+| 209 | ✓ | [`skills/yeet/references/templates/codex/5-feature-request.md`](skills/yeet/references/templates/codex/5-feature-request.md) |
+| 210 | ✓ | [`skills/yeet/references/templates/codex/6-docs-issue.md`](skills/yeet/references/templates/codex/6-docs-issue.md) |
+| 211 | ✓ | [`skills/yeet/references/update-issue.md`](skills/yeet/references/update-issue.md) |
+| 212 | ✓ | [`skills/yeet/references/update-pr.md`](skills/yeet/references/update-pr.md) |
+| 213 | ✓ | [`skills/yeet/references/writing.md`](skills/yeet/references/writing.md) |
+| 214 | ✓ | [`skills/yeet/scripts/get-macos-version.sh`](skills/yeet/scripts/get-macos-version.sh) |
+| 215 | ✓ | [`skills/yeet/scripts/yeet-context.sh`](skills/yeet/scripts/yeet-context.sh) |
+| 216 | ✓ | [`skills/yeet/SKILL.md`](skills/yeet/SKILL.md) |
 
 ---
 

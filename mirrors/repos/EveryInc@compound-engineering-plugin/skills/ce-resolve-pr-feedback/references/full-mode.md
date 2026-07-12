@@ -11,20 +11,11 @@ If no PR number was provided, detect from the current branch:
 gh pr view --json number -q .number
 ```
 
-Then fetch all feedback using the GraphQL script at [scripts/get-pr-comments](../scripts/get-pr-comments):
+Then fetch all feedback using the GraphQL script at [scripts/get-pr-comments](../scripts/get-pr-comments). Set `SKILL_DIR` to the absolute directory you loaded the ce-resolve-pr-feedback SKILL.md from — the Bash tool's CWD is the user's project, not the skill dir, and shell state does not persist between Bash calls, so set it inline in each block below that runs a bundled script. If the bundled script is missing on disk the call fails plainly; fall back to the `gh` commands shown after this block.
 
 ```bash
-# SKILL_DIR = the absolute directory you loaded the ce-resolve-pr-feedback SKILL.md from.
-# The Bash tool's CWD is the user's project, not the skill dir, and shell state does not
-# persist between Bash calls — set SKILL_DIR in each block below that runs a bundled script.
-SKILL_DIR="<absolute path of the directory containing the ce-resolve-pr-feedback SKILL.md>"
-SCRIPT_DIR="$SKILL_DIR/scripts"
-if [ ! -f "$SCRIPT_DIR/get-pr-comments" ]; then
-  echo "ce-resolve-pr-feedback bundled scripts not found under $SCRIPT_DIR; use the fallback gh commands below." >&2
-  exit 1
-fi
-
-bash "$SCRIPT_DIR/get-pr-comments" PR_NUMBER
+SKILL_DIR="<absolute path of the directory containing the ce-resolve-pr-feedback SKILL.md>";
+bash "$SKILL_DIR/scripts/get-pr-comments" PR_NUMBER
 ```
 
 Returns a JSON object with three keys:
@@ -160,44 +151,25 @@ For `needs-human` verdicts, post the natural-sounding reply but do NOT resolve t
 
 ### Review threads
 
-0. **Verify the thread ID** before replying. GitHub Enterprise can return inconsistent node IDs for the same thread depending on the query path. Always confirm the ID from `get-pr-comments` resolves to the correct thread using [scripts/get-thread-for-comment](../scripts/get-thread-for-comment) with the comment's numeric URL ID:
+0. **Verify the thread ID** before replying. GitHub Enterprise can return inconsistent node IDs for the same thread depending on the query path. Always confirm the ID from `get-pr-comments` resolves to the correct thread using [scripts/get-thread-for-comment](../scripts/get-thread-for-comment) with the comment's numeric URL ID. Extract the numeric comment ID from the comment URL (e.g. `discussion_r2589700` → `2589700`) for the `gh api` call; if the bundled script is missing, use `gh api` to inspect the review thread instead:
 ```bash
-SKILL_DIR="<absolute path of the directory containing the ce-resolve-pr-feedback SKILL.md>"
-SCRIPT_DIR="$SKILL_DIR/scripts"
-if [ ! -f "$SCRIPT_DIR/get-thread-for-comment" ]; then
-  echo "ce-resolve-pr-feedback bundled scripts not found under $SCRIPT_DIR; use gh api to inspect the review thread." >&2
-  exit 1
-fi
-
-# Extract numeric comment ID from the comment URL (e.g. discussion_r2589700 → 2589700)
+SKILL_DIR="<absolute path of the directory containing the ce-resolve-pr-feedback SKILL.md>";
 GH_REPO=OWNER/REPO gh api repos/{owner}/{repo}/pulls/comments/COMMENT_ID --jq .node_id
-bash "$SCRIPT_DIR/get-thread-for-comment" PR_NUMBER COMMENT_NODE_ID OWNER/REPO
+bash "$SKILL_DIR/scripts/get-thread-for-comment" PR_NUMBER COMMENT_NODE_ID OWNER/REPO
 ```
 The returned `id` is the authoritative thread ID to use for reply and resolve. If it differs from what `get-pr-comments` returned, use the one from this script.
 
-1. **Reply** using [scripts/reply-to-pr-thread](../scripts/reply-to-pr-thread):
+1. **Reply** using [scripts/reply-to-pr-thread](../scripts/reply-to-pr-thread) (if the bundled script is missing, post the reply with `gh api` or `gh pr comment` as appropriate):
 ```bash
-SKILL_DIR="<absolute path of the directory containing the ce-resolve-pr-feedback SKILL.md>"
-SCRIPT_DIR="$SKILL_DIR/scripts"
-if [ ! -f "$SCRIPT_DIR/reply-to-pr-thread" ]; then
-  echo "ce-resolve-pr-feedback bundled scripts not found under $SCRIPT_DIR; post the reply with gh api or gh pr comment as appropriate." >&2
-  exit 1
-fi
-
-echo "REPLY_TEXT" | bash "$SCRIPT_DIR/reply-to-pr-thread" THREAD_ID
+SKILL_DIR="<absolute path of the directory containing the ce-resolve-pr-feedback SKILL.md>";
+echo "REPLY_TEXT" | bash "$SKILL_DIR/scripts/reply-to-pr-thread" THREAD_ID
 ```
 Check that the returned comment URL contains the correct `OWNER/REPO` and PR number before proceeding.
 
-2. **Resolve** using [scripts/resolve-pr-thread](../scripts/resolve-pr-thread):
+2. **Resolve** using [scripts/resolve-pr-thread](../scripts/resolve-pr-thread) (if the bundled script is missing, resolve the thread with `gh api` if supported):
 ```bash
-SKILL_DIR="<absolute path of the directory containing the ce-resolve-pr-feedback SKILL.md>"
-SCRIPT_DIR="$SKILL_DIR/scripts"
-if [ ! -f "$SCRIPT_DIR/resolve-pr-thread" ]; then
-  echo "ce-resolve-pr-feedback bundled scripts not found under $SCRIPT_DIR; resolve the thread with gh api if supported." >&2
-  exit 1
-fi
-
-bash "$SCRIPT_DIR/resolve-pr-thread" THREAD_ID
+SKILL_DIR="<absolute path of the directory containing the ce-resolve-pr-feedback SKILL.md>";
+bash "$SKILL_DIR/scripts/resolve-pr-thread" THREAD_ID
 ```
 
 ### PR comments and review bodies
@@ -215,14 +187,8 @@ Include enough quoted context in the reply so the reader can follow which commen
 Re-fetch feedback to confirm resolution:
 
 ```bash
-SKILL_DIR="<absolute path of the directory containing the ce-resolve-pr-feedback SKILL.md>"
-SCRIPT_DIR="$SKILL_DIR/scripts"
-if [ ! -f "$SCRIPT_DIR/get-pr-comments" ]; then
-  echo "ce-resolve-pr-feedback bundled scripts not found under $SCRIPT_DIR; use the fallback gh commands from Step 1." >&2
-  exit 1
-fi
-
-bash "$SCRIPT_DIR/get-pr-comments" PR_NUMBER
+SKILL_DIR="<absolute path of the directory containing the ce-resolve-pr-feedback SKILL.md>";
+bash "$SKILL_DIR/scripts/get-pr-comments" PR_NUMBER
 ```
 
 The `review_threads` array should be empty (except `needs-human` items).

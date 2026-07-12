@@ -9,6 +9,9 @@ description: >
   "sentinel errors", "errors.Is", "errors.As".
   Do NOT use for panic/recover patterns in middleware (use go-api-design)
   or test assertion errors (use go-test-quality).
+license: MIT
+metadata:
+  version: "1.1.0"
 ---
 
 # Go Error Handling
@@ -186,6 +189,17 @@ for _, item := range items {
     }
 }
 return errors.Join(errs...)
+```
+
+## Executable Verification
+
+After writing or reviewing error handling, run the linters that prove
+the rules above (skip any that is not installed and note it):
+
+```bash
+go vet ./...                                  # includes printf %w misuse
+golangci-lint run --enable errcheck,errorlint # unchecked errors, %v-vs-%w,
+                                              # == comparisons on errors
 ```
 
 ## Verification Checklist

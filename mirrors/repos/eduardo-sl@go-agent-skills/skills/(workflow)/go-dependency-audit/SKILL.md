@@ -10,6 +10,9 @@ description: >
   "update modules", "vulnerability scan", "govulncheck".
   Do NOT use for code-level security issues (use go-security-audit) or
   architecture review (use go-architecture-review).
+license: MIT
+metadata:
+  version: "1.0.0"
 ---
 
 # Go Dependency Audit
@@ -204,7 +207,7 @@ Rules:
 
 ## Audit Output Format
 
-```
+```text
 ## Dependency Audit Report
 
 **Module:** github.com/myorg/myproject

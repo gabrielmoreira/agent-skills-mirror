@@ -1,38 +1,28 @@
 ---
 name: fireworks-tech-graph
 description: >-
-  Use when the user wants to create any technical diagram - architecture, data
-  flow, flowchart, sequence, agent/memory, or concept map - and export as
-  SVG+PNG. Trigger on: "画图" "帮我画" "生成图" "做个图" "架构图" "流程图"
-  "可视化一下" "出图" "generate diagram" "draw diagram" "visualize" or any
-  system/flow description the user wants illustrated.
+  Create technical diagrams such as software architecture, data flow,
+  flowcharts, sequence diagrams, agent/memory systems, UML, ER, network
+  topology, timelines, and technical concept maps, then export SVG+PNG. Use
+  when the user asks to draw or visualize a system, workflow, protocol, model,
+  or engineering concept. Do not use for photos, raster illustrations, image
+  editing, decorative artwork, or quantitative data charts.
 ---
 
 # Fireworks Tech Graph
 
 Generate production-quality SVG technical diagrams exported as PNG via `cairosvg` (recommended), `rsvg-convert`, or `puppeteer`.
 
-## Install Source
+## Runtime Compatibility
 
-Install this skill from GitHub:
+Use this repository unchanged in both Codex and Claude Code. It follows the Agent Skills layout: `SKILL.md` is the shared entry point, bundled resources use relative paths, and `agents/openai.yaml` adds optional Codex UI metadata without affecting Claude Code.
 
-```bash
-npx skills add yizhiyanhua-ai/fireworks-tech-graph
-```
+Before reading a reference or running a script, resolve the directory containing this `SKILL.md` as `SKILL_ROOT`. Do not assume the current working directory is the skill directory, and do not assume a variable set in one shell call persists into the next.
 
-Public package page:
+- In Claude Code, use `${CLAUDE_SKILL_DIR}`.
+- In Codex, use the absolute skill directory shown in the loaded skill metadata.
 
-```text
-https://www.npmjs.com/package/@yizhiyanhua-ai/fireworks-tech-graph
-```
-
-Do not pass `@yizhiyanhua-ai/fireworks-tech-graph` directly to `skills add`, because the CLI expects a GitHub or local repository source.
-
-Update command:
-
-```bash
-npx skills add yizhiyanhua-ai/fireworks-tech-graph --force -g -y
-```
+Every command block below sets `SKILL_ROOT` itself. In Codex, replace `/absolute/path/from-codex-skill-metadata` with the absolute skill directory before running the command.
 
 ## Helper Scripts (Recommended)
 
@@ -40,15 +30,18 @@ Four helper scripts in `scripts/` directory provide stable SVG generation and va
 
 ### 1. `generate-diagram.sh` - Validate SVG + export PNG
 ```bash
-./scripts/generate-diagram.sh -t architecture -s 1 -o ./output/arch.svg
+SKILL_ROOT="${CLAUDE_SKILL_DIR:-/absolute/path/from-codex-skill-metadata}"
+"$SKILL_ROOT/scripts/generate-diagram.sh" -t architecture -s 1 -o ./output/arch.svg
 ```
 - Validates an existing SVG file
 - Exports PNG after validation
-- Example: `./scripts/generate-diagram.sh -t architecture -s 1 -o ./output/arch.svg`
+- Example: `"$SKILL_ROOT/scripts/generate-diagram.sh" -t architecture -s 1 -o ./output/arch.svg`
 
 ### 2. `generate-from-template.py` - Create starter SVG from template
 ```bash
-python3 ./scripts/generate-from-template.py architecture ./output/arch.svg '{"title":"My Diagram","nodes":[],"arrows":[]}'
+SKILL_ROOT="${CLAUDE_SKILL_DIR:-/absolute/path/from-codex-skill-metadata}"
+mkdir -p ./output
+python3 "$SKILL_ROOT/scripts/generate-from-template.py" architecture ./output/arch.svg '{"title":"My Diagram","nodes":[],"arrows":[]}'
 ```
 - Loads a built-in SVG template
 - Renders nodes, arrows, and legend entries from JSON input
@@ -56,7 +49,8 @@ python3 ./scripts/generate-from-template.py architecture ./output/arch.svg '{"ti
 
 ### 3. `validate-svg.sh` - Validate SVG syntax
 ```bash
-./scripts/validate-svg.sh <svg-file>
+SKILL_ROOT="${CLAUDE_SKILL_DIR:-/absolute/path/from-codex-skill-metadata}"
+"$SKILL_ROOT/scripts/validate-svg.sh" <svg-file>
 ```
 - Checks XML syntax
 - Verifies tag balance
@@ -66,7 +60,8 @@ python3 ./scripts/generate-from-template.py architecture ./output/arch.svg '{"ti
 
 ### 4. `test-all-styles.sh` - Batch test all styles
 ```bash
-./scripts/test-all-styles.sh
+SKILL_ROOT="${CLAUDE_SKILL_DIR:-/absolute/path/from-codex-skill-metadata}"
+"$SKILL_ROOT/scripts/test-all-styles.sh"
 ```
 - Tests multiple diagram sizes
 - Validates all generated SVGs
@@ -87,12 +82,12 @@ python3 ./scripts/generate-from-template.py architecture ./output/arch.svg '{"ti
 1. **Classify** the diagram type (see Diagram Types below)
 2. **Extract structure** — identify layers, nodes, edges, flows, and semantic groups from user description
 3. **Plan layout** — apply the layout rules for the diagram type
-4. **Load style reference** — always load `references/style-1-flat-icon.md` unless user specifies another; load the matching `references/style-N.md` for exact color tokens and SVG patterns
+4. **Load style reference** — always load `$SKILL_ROOT/references/style-1-flat-icon.md` unless user specifies another; load the matching `$SKILL_ROOT/references/style-N-*.md` for exact color tokens and SVG patterns
 5. **Map nodes to shapes** — use Shape Vocabulary below
-6. **Check icon needs** — load `references/icons.md` for known products
+6. **Check icon needs** — load `$SKILL_ROOT/references/icons.md` for known products
 7. **Write SVG** with adaptive strategy (see SVG Generation Strategy below)
-8. **Validate**: Run `scripts/validate-svg.sh file.svg` to check XML, marker references, arrow-component collisions, and renderability
-9. **Export PNG**: Use `cairosvg` (recommended). See **SVG → PNG Conversion** section below for full method comparison
+8. **Validate**: Run `"$SKILL_ROOT/scripts/validate-svg.sh" file.svg` to check XML, marker references, arrow-component collisions, and renderability
+9. **Export PNG**: Use `cairosvg` (recommended). Load `$SKILL_ROOT/references/png-export.md` when choosing another renderer
 10. **Report** the generated file paths
 11. **Visual review gate** — if your runtime can read images, load the exported PNG back and inspect it. Syntactic validity does not guarantee visual correctness: arrows may cross through component interiors, labels may collide with lifelines or other labels, boxes may overlap, alt-frame text may sit on top of a message, or a legend may cover content. If you see any of these, revise the SVG and re-export, with at most two focused correction passes. Common fixes:
     - Route arrows through gaps between boxes, not through box interiors
@@ -109,7 +104,7 @@ python3 ./scripts/generate-from-template.py architecture ./output/arch.svg '{"ti
 Use this order when instructions disagree:
 
 1. The user's explicit content and style request
-2. The selected `references/style-N-*.md` visual tokens (palette, typography, corner radius, shadow treatment)
+2. The selected `$SKILL_ROOT/references/style-N-*.md` visual tokens (palette, typography, corner radius, shadow treatment)
 3. Diagram-type layout rules and semantic flow requirements in this file
 4. Universal defaults and examples
 
@@ -377,7 +372,7 @@ Example — spacing two overlapping arrows into separate corridors:
 { "source": "nodeC", "target": "nodeD", "corridor_y": [320] }
 ```
 
-**Line Overlap Prevention** (CRITICAL - most common bug on Codex):
+**Line Overlap Prevention** (CRITICAL - common in AI-generated diagrams):
 When two arrows must cross each other, ALWAYS use jump-over arcs to prevent visual overlap:
 - Crossing horizontal arrows: add a small semicircle arc (radius 5px, stroke same color as arrow, fill none) that "jumps over" the other line
 - SVG pattern for jump-over: use a white/matching-background arc on the lower layer, then draw the upper arc on top
@@ -468,121 +463,7 @@ python3 -c "import cairosvg; cairosvg.svg2png(url='file.svg', write_to='/tmp/tes
 
 ## SVG → PNG Conversion
 
-### Method Comparison
-
-| Tool | Install | Render Quality | Notes |
-|------|---------|----------------|-------|
-| `rsvg-convert` | System (often preinstalled) | ⚠️ Fair | Drops some CSS styles and `<foreignObject>` elements — missing borders/text on complex SVGs |
-| **`cairosvg` (recommended)** | `pip install cairosvg` | ✅ Good | Solid CSS support; clearly better than rsvg-convert |
-| `puppeteer` (headless Chrome) | `npm install puppeteer` | ✅✅ Best | Real browser engine; 100% fidelity but heavy (Node + Chromium) |
-
-### Recommended: cairosvg (Python one-liner)
-
-```bash
-# Single file (2x resolution for retina/docs)
-python3 -c "import cairosvg; cairosvg.svg2png(url='input.svg', write_to='output.png', scale=2)"
-
-# Batch convert all SVGs in a directory
-python3 -c "
-import cairosvg, os, glob
-d = 'docs/00-core'
-for svg in sorted(glob.glob(os.path.join(d, '*.svg'))):
-    png = svg.replace('.svg', '.png')
-    cairosvg.svg2png(url=svg, write_to=png, scale=2)
-    print(f'Done: {os.path.basename(svg)} -> {os.path.basename(png)}')
-"
-```
-
-> `scale=2` produces 2x resolution PNG, ideal for high-DPI screens and embedded docs.
-
-### Fallback: rsvg-convert (simple but may drop styles)
-
-```bash
-# Single file
-rsvg-convert -w 1920 file.svg -o file.png
-
-# Batch (not recommended — complex SVGs may lose elements)
-for f in docs/00-core/*.svg; do rsvg-convert -o "${f%.svg}.png" "$f"; done
-
-# 2x resolution
-for f in docs/00-core/*.svg; do rsvg-convert -z 2 -o "${f%.svg}.png" "$f"; done
-```
-
-### Highest Fidelity: puppeteer (headless Chrome)
-
-```bash
-npm install puppeteer  # auto-downloads Chromium
-node svg2png.js [directory]
-```
-
-<details>
-<summary>svg2png.js — full puppeteer script</summary>
-
-```javascript
-const puppeteer = require('puppeteer');
-const fs = require('fs');
-const path = require('path');
-
-(async () => {
-  const dir = process.argv[2] || '.';
-  const svgFiles = fs.readdirSync(dir).filter(f => f.endsWith('.svg'));
-
-  const browser = await puppeteer.launch({
-    headless: 'new',
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
-
-  for (const file of svgFiles) {
-    const svgPath = path.resolve(dir, file);
-    const pngPath = svgPath.replace(/\.svg$/, '.png');
-    const svgContent = fs.readFileSync(svgPath, 'utf-8');
-
-    const wMatch = svgContent.match(/width="(\d+)/);
-    const hMatch = svgContent.match(/height="(\d+)/);
-    const vbMatch = svgContent.match(/viewBox="[^"]*\s(\d+)\s(\d+)"/);
-
-    let width = wMatch ? parseInt(wMatch[1]) : (vbMatch ? parseInt(vbMatch[1]) : 1200);
-    let height = hMatch ? parseInt(hMatch[1]) : (vbMatch ? parseInt(vbMatch[2]) : 800);
-
-    const scale = 2;
-    const page = await browser.newPage();
-    await page.setViewport({ width, height, deviceScaleFactor: scale });
-
-    const html = `<!DOCTYPE html>
-<html><head><style>
-  body { margin: 0; padding: 0; background: transparent; }
-  img { display: block; }
-</style></head>
-<body>
-  <img src="data:image/svg+xml;base64,${Buffer.from(svgContent).toString('base64')}" width="${width}" height="${height}" />
-</body></html>`;
-
-    await page.setContent(html, { waitUntil: 'networkidle0' });
-    await page.screenshot({ path: pngPath, type: 'png', omitBackground: true });
-    await page.close();
-
-    console.log(`Done: ${file} -> ${path.basename(pngPath)} (${width}x${height} @${scale}x)`);
-  }
-
-  await browser.close();
-})();
-```
-
-</details>
-
-### Gotchas (lessons learned)
-
-- `rsvg-convert` renders SVGs containing `<foreignObject>`, CSS `filter`, or complex `<style>` blocks **incompletely** — missing borders / missing text are the typical symptoms
-- `cairosvg` (built on Cairo) has much better CSS support than rsvg and is sufficient for most cases
-- `cairosvg` **may fail to render CJK characters and emoji** in `<text>` elements — Cairo's font API (`cairo_select_font_face`) does not reliably perform system fontconfig fallback, so glyphs not present in the matched font face render as □ (empty box). This commonly affects Chinese/Japanese/Korean text and emoji, depending on system font configuration. **Workaround**: use SVG as primary format for web/GitHub rendering (browsers handle CJK natively); reserve PNG export for Latin-only diagrams, or switch to the puppeteer path for full CJK+emoji fidelity
-- If the SVG was generated by a browser (D3.js, Mermaid, etc.), only headless Chrome (puppeteer) renders it 100% faithfully
-- **Chrome headless CLI `--window-size=W,H` is not the drawable area** — even in `--headless=new` mode, browser chrome (scrollbars, internal UI surfaces) consumes ~15-20% of both width and height, so the actual SVG viewport is only ~0.84×W by ~0.84×H. Symptom: SVG content past `x ≈ 0.84 × W` or `y ≈ 0.84 × H` is cut off and renders as a solid white band, even though the SVG file itself is correct. Typical failure modes: a Legend in the top-right corner loses its right border; a bottom-row container loses its bottom dashed line. Fix: pass window dimensions **≥ SVG width × 1.2 AND SVG height × 1.2**, then crop the raw screenshot back to `(SVG_width × scale, SVG_height × scale)` with PIL or ImageMagick. Example: for a 1280×580 SVG at 3× DPR, use `--window-size=1600,800` then crop the output to 3840×1740. The Puppeteer / `page.setViewport()` path does NOT have this issue — it sets a precise viewport regardless of window UI.
-
-### Picking a Method
-
-1. **Default** → `cairosvg` (pip install once, one-line conversion, good fidelity)
-2. **No Python available** → `rsvg-convert` (acceptable for simple flat-color diagrams)
-3. **Browser-generated SVG or pixel-perfect required** → `puppeteer`
+Use `$SKILL_ROOT/scripts/generate-diagram.sh` by default. Load `$SKILL_ROOT/references/png-export.md` only when selecting a renderer manually, handling CJK/emoji fallback, converting browser-generated SVG, or using the bundled Puppeteer converter.
 
 ## Styles
 
@@ -595,13 +476,13 @@ const path = require('path');
 | 5 | **Glassmorphism** | Dark gradient | Product sites, keynotes |
 | 6 | **Claude Official** | Warm cream `#f8f6f3` | Anthropic-style diagrams |
 | 7 | **OpenAI Official** | Pure white `#ffffff` | OpenAI-style diagrams |
-| 8 | **Dark Luxury** *(AI-authored)* | `#0a0a0a` deep black | Architecture docs, premium editorial — hand-craft SVG from `references/style-8-dark-luxury.md` |
+| 8 | **Dark Luxury** *(AI-authored)* | `#0a0a0a` deep black | Architecture docs, premium editorial — hand-craft SVG from `$SKILL_ROOT/references/style-8-dark-luxury.md` |
 
-Load `references/style-N.md` for exact color tokens and SVG patterns.
+Load the matching `$SKILL_ROOT/references/style-N-*.md` for exact color tokens and SVG patterns.
 
 ## Style Selection
 
-**Default**: Style 1 (Flat Icon) for most diagrams. Load `references/style-diagram-matrix.md` for detailed style-to-diagram-type recommendations.
+**Default**: Style 1 (Flat Icon) for most diagrams. Load `$SKILL_ROOT/references/style-diagram-matrix.md` for detailed style-to-diagram-type recommendations.
 
 These patterns appear frequently — internalize them:
 

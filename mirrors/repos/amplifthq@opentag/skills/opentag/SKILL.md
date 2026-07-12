@@ -1,11 +1,11 @@
 ---
 name: opentag
-description: Set up, run, and troubleshoot OpenTag with the published CLI across Slack, GitHub, Lark / Feishu, Codex, Claude Code, local config, platform credentials, and callback delivery.
+description: Set up, run, and troubleshoot OpenTag with the published CLI across Slack, GitHub, GitLab, Linear, Lark / Feishu, Codex, Claude Code, local config, platform credentials, and callback delivery.
 ---
 
 # OpenTag
 
-OpenTag connects collaboration platforms to a local coding agent. Use this skill when a user wants help with `opentag setup`, `opentag start`, Slack, GitHub, Lark / Feishu, Codex, Claude Code, local OpenTag config, or end-to-end setup verification.
+OpenTag connects collaboration platforms to a local coding agent. Use this skill when a user wants help with `opentag setup`, `opentag start`, Slack, GitHub, GitLab, Linear, Lark / Feishu, Codex, Claude Code, local OpenTag config, or end-to-end setup verification.
 
 ## Default Path
 
@@ -40,12 +40,14 @@ For platform credential steps, use the repository docs as the source of truth:
 
 - Slack: `docs/platforms/slack.en.md`
 - GitHub: `docs/platforms/github.en.md`
+- GitLab: `docs/platforms/gitlab.en.md`
+- Linear: `docs/platforms/linear.en.md`
 - Lark / Feishu: `docs/platforms/lark.en.md`
 
 ## Working Rules
 
 - Keep setup user-led. Never invent tokens, app IDs, Slack team/channel IDs, GitHub owner/repo names, or local project paths.
-- Prefer Slack, then GitHub, then Lark / Feishu when listing platforms.
+- Prefer Slack, then GitHub, then GitLab, then Linear, then Lark / Feishu when listing platforms.
 - Ask the user which platform and coding agent they want if it is not already clear outside Codex.
 - In Codex Plan mode, use `request_user_input` / askhuman to collect non-secret setup choices before running `opentag setup`, then pass those choices as CLI flags so the terminal wizard does not silently choose defaults.
 - Codex Default mode cannot render askhuman choice cards. If setup choices are needed and the current host does not expose a runtime transition into Plan mode, stop and explain that askhuman cannot render from Default mode in this run. Do not claim a Plan-mode handoff happened, do not ask the user to switch modes, do not ask the same choices in plain text, do not continue with CLI defaults, and do not run `opentag setup` until the choices are explicitly collected.
@@ -91,7 +93,7 @@ Only use a proxy URL the user provides or that is already active in the environm
 
 When helping a Codex user install or configure OpenTag, collect these non-secret choices with `request_user_input` / askhuman only when the current Codex host is actually in Plan mode and the tool is available:
 
-- Platform: Slack, GitHub, GitLab, Lark / Feishu, Telegram, or Discord.
+- Platform: Slack, GitHub, GitLab, Linear, Lark / Feishu, Telegram, or Discord.
 - Coding agent: Codex, Claude Code, or Echo, using local detection from `opentag executors` when available.
 - Local project: the current working directory as the recommended option, plus a free-form path option inside askhuman for another path.
 - Platform mode choices that are not credentials, such as Slack Socket Mode vs Events API, Lark / Feishu tenant for manual app setup, Lark scan vs manual setup, and default project binding vs bind later.

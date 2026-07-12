@@ -153,12 +153,12 @@ Memory provider and tool names are configurable via `mcp.json`:
 ```json
 {
   "memoryConfig": {
-    "provider": "serena",
-    "basePath": ".serena/memories",
+    "provider": "file",
+    "basePath": ".agents/state/memories",
     "tools": {
-      "read": "read_memory",
-      "write": "write_memory",
-      "edit": "edit_memory"
+      "read": "Read",
+      "write": "Write",
+      "edit": "Edit"
     }
   }
 }
@@ -229,7 +229,9 @@ oma verify {agent-type} --workspace {workspace} --json
 
 **[3] Cross-Review**: Spawn QA agent to review the changes:
 - QA agent reads the diff, runs checks, evaluates against acceptance criteria
+<!-- oma-docs:ignore-start -->
 - If `docs/CODE-REVIEW.md` exists, QA agent uses it as the review checklist
+<!-- oma-docs:ignore-end -->
 - QA agent outputs: PASS (with optional nits) or FAIL (with specific issues)
 - On FAIL: issues are fed back to the implementation agent for fixing
 

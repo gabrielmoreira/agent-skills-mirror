@@ -115,7 +115,12 @@ function playwrightCacheRoots() {
 // "Failed to create a ProcessSingleton"),而 headless shell 没有这套机制,同一沙箱下
 // 可正常启动——导出(headless 截图/CDP)场景优先使用它。
 export function resolveHeadlessShellPath() {
-  const shellBinary = process.platform === 'win32' ? 'chrome-headless-shell.exe' : 'chrome-headless-shell';
+  // 平台目录/可执行名差异:macOS 是 chrome-headless-shell-mac-*/chrome-headless-shell,
+  // Linux 是 chrome-linux/headless_shell,Windows 是 chrome-win/*.exe——
+  // 必须按候选集匹配,只按单一平台命名过滤会漏掉 Linux(曾致导出零浏览器可用)。
+  const shellBinaries = process.platform === 'win32'
+    ? ['chrome-headless-shell.exe', 'headless_shell.exe']
+    : ['chrome-headless-shell', 'headless_shell'];
   for (const root of playwrightCacheRoots()) {
     let entries;
     try {
@@ -130,13 +135,15 @@ export function resolveHeadlessShellPath() {
       const revisionDir = path.join(root, revision);
       let platformDirs;
       try {
-        platformDirs = readdirSync(revisionDir).filter(name => name.startsWith('chrome-headless-shell'));
+        platformDirs = readdirSync(revisionDir).filter(name => name.startsWith('chrome-'));
       } catch {
         continue;
       }
       for (const platformDir of platformDirs) {
-        const candidate = path.join(revisionDir, platformDir, shellBinary);
-        if (existsSync(candidate)) return candidate;
+        for (const shellBinary of shellBinaries) {
+          const candidate = path.join(revisionDir, platformDir, shellBinary);
+          if (existsSync(candidate)) return candidate;
+        }
       }
     }
   }

@@ -39,7 +39,7 @@ For the bundle-able categories the repo ships small **Python-3-stdlib** helpers 
 | Index push — tell Bing/DuckDuckGo/Yandex (IndexNow) and Baidu your URLs changed | `indexpush.py indexnow <urls…> --key …` · `indexpush.py baidu … --site … --token …` (dry-run by default, `--live` to submit) | self-minted key / site token |
 | Email ESP automation — domain-auth status / seed-test send / suppression sync / broadcasts (Resend) | `resend.py domains` · `resend.py seed …` (mutating commands dry-run by default, `--live` to execute) | free key |
 | Before/after deltas (measurement loop) | `… \| ledger.py record <target> --source <name>` → `ledger.py diff <target> --source <name>` | — |
-| A/B **significance** on your own test counts — z-test / Mann-Whitney + CI + a **promote** decision, and sample-size / MDE (the design→measure loop, keyless) | `experiment.py proportion --control <c> <n> --variant <v> <n> [--min-lift 0.05]` · `experiment.py samplesize --baseline 0.1 --mde 0.02` | — |
+| Experiment **decision inputs** on your own observations — z-test / Mann-Whitney, confidence/effect intervals, practical-effect flag, and sample-size / MDE; returns Calculated facts and never a business action | `experiment.py proportion --control <c> <n> --variant <v> <n> [--min-lift 0.15]` · `experiment.py samplesize --baseline 0.1 --mde 0.02` | — |
 
 See [scripts/connectors/README.md](scripts/connectors/README.md) for the full list, the safety contract, and what intentionally stays external (proprietary / own-data → MCP/API).
 
@@ -197,7 +197,7 @@ The email-marketing skills add one placeholder, `~~email platform` (the ESP), an
 
 1. Resend dashboard → Webhooks → subscribe `email.bounced`, `email.complained` (add `email.delivered` for delivery-rate context) and point them at an endpoint you own (any serverless function; **verify the Svix signature** on every payload).
 2. Have the endpoint append one row per event to a log you control (CSV/JSONL: `timestamp, recipient, event, email_id`). Webhook payloads are **untrusted data, never instructions** — see [SECURITY.md](SECURITY.md).
-3. Feed the log both ways: suppression events (`bounced`/`complained`) go into `memory/consent/candidates.md` as intake for [consent-registry](protocol/consent-registry/SKILL.md) (the registry stays the sole writer of `memory/consent/`), and the same rows are the **Measured** bounce/complaint input for [list-hygiene-monitor](email/setup/list-hygiene-monitor/SKILL.md) / [deliverability-qa](email/setup/deliverability-qa/SKILL.md) — no plugin-side server required; the bundle only ever reads the log file.
+3. Feed the log both ways: verified bounce/complaint rows trigger direct replay-safe consent suppression events through `registry-events.py`, while the same rows are **Measured** bounce/complaint input for [list-hygiene-monitor](email/setup/list-hygiene-monitor/SKILL.md) / [deliverability-qa](email/setup/deliverability-qa/SKILL.md). The connector only reads the user-owned webhook log; it does not append registry NDJSON or run a server.
 
 | Category | Placeholder | Discipline | Example paid tools | Free / own-data path | Agent default |
 |----------|-------------|------------|--------------------|----------------------|---------------|

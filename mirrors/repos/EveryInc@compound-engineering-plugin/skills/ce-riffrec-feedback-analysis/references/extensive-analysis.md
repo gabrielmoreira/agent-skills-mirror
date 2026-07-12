@@ -7,7 +7,7 @@ Use this path when the input is a longer recording (over ~60 seconds), contains 
 1. Run the analyzer (`SKILL_DIR` is the directory containing the `ce-riffrec-feedback-analysis` SKILL.md; set it in the same command — shell state does not persist between Bash calls):
 
    ```bash
-   SKILL_DIR="<absolute path of the directory containing the ce-riffrec-feedback-analysis SKILL.md>"
+   SKILL_DIR="<absolute path of the directory containing the ce-riffrec-feedback-analysis SKILL.md>";
    python "$SKILL_DIR/scripts/analyze_riffrec_zip.py" /path/to/input
    ```
 

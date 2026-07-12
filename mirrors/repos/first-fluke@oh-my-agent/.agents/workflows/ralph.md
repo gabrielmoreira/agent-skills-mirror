@@ -11,7 +11,7 @@ disable-model-invocation: true
 - **You MUST use MCP tools throughout the entire workflow.** This is NOT optional.
   - Use code analysis tools (`get_symbols_overview`, `find_symbol`, `find_referencing_symbols`, `search_for_pattern`) for code exploration.
   - Use memory tools (read/write/edit) for progress tracking.
-  - Memory path: configurable via `memoryConfig.basePath` (default: `.serena/memories`)
+  - Memory path: configurable via `memoryConfig.basePath` (default: `.agents/state/memories`)
   - Tool names: configurable via `memoryConfig.tools` in `.agents/mcp.json`
   - Do NOT use raw file reads or grep as substitutes. MCP tools are the primary interface for code and memory operations.
 - **This workflow does NOT stop until all completion criteria pass or safeguards trigger.**
@@ -116,7 +116,7 @@ oma ralph:verify --json --session {sessionId} --newer-than {iteration_start_iso}
 - `--session` scopes the plan artifact to this iteration's session id; `--newer-than` (this iteration's EXEC start time, ISO-8601) excludes stale artifacts from earlier iterations. Omit either when unknown.
 - The command checks the artifact table below, prints a structured result (`ok`, `checks`, `missing`, `remediation`), and exits non-zero on failure. On failure it also appends a `gate.failed` L1 event automatically.
 - **The JSON verdict IS the gate result.** Do NOT substitute your own narration for it, and do NOT proceed on a non-zero exit.
-- **Manual fallback** (only when the `oma` CLI is unavailable): check, using memory read / file existence tools, that the just-completed iteration produced ALL of the artifacts below. Resolve `{memBase}` from `memoryConfig.basePath` (default `.serena/memories`).
+- **Manual fallback** (only when the `oma` CLI is unavailable): check, using memory read / file existence tools, that the just-completed iteration produced ALL of the artifacts below. Resolve `{memBase}` from `memoryConfig.basePath` (default `.agents/state/memories`).
 
 | # | Artifact | Proves phase ran |
 |---|----------|------------------|

@@ -1,6 +1,6 @@
 # netclaw Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-07-10
+Auto-generated from all feature plans. Last updated: 2026-07-11
 
 ## Active Technologies
 - N/A (stateless server; subscription state held in-memory during runtime) (003-gnmi-mcp-server)
@@ -69,6 +69,8 @@ Auto-generated from all feature plans. Last updated: 2026-07-10
 - N/A — the virtual desktop's state is ephemeral (X11 session state), nothing NetClaw-managed persists across a restart (050-computer-use-desktop)
 - Python 3.10+ (daemon federation layer + n2n-mcp, matching + Existing `bgp-daemon-v2.py` (listener, protocol (052-n2n-federation)
 - SQLite at `~/.openclaw/n2n/federation.db` (consent records, grants, (052-n2n-federation)
+- Python 3.10+ (daemon federation layer + n2n-mcp, matching + Existing `bgp-daemon-v2.py` + `bgp/federation/*` (053-n2n-ergonomics)
+- Extend the existing SQLite at `~/.openclaw/n2n/federation.db` with (053-n2n-ergonomics)
 
 - Python 3.10+ + FastMCP (MCP framework), grpcio + grpcio-tools (gRPC transport), pygnmi (gNMI client library), protobuf, cryptography (TLS handling) (003-gnmi-mcp-server)
 
@@ -88,9 +90,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.10+: Follow standard conventions
 
 ## Recent Changes
+- 053-n2n-ergonomics: Added Python 3.10+ (daemon federation layer + n2n-mcp, matching + Existing `bgp-daemon-v2.py` + `bgp/federation/*`
 - 052-n2n-federation: Added Python 3.10+ (daemon federation layer + n2n-mcp, matching + Existing `bgp-daemon-v2.py` (listener, protocol
 - 050-computer-use-desktop: Added Bash (install function, matching every existing `scripts/lib/install-steps.sh` entry), Markdown (skill documentation) + OpenClaw's ClawHub `computer-use` skill (consumed as-is, no fork); apt packages `xvfb`, `xfce4`, `xfce4-terminal`, `xdotool`, `scrot`, `imagemagick`, `dbus-x11`, `x11vnc`, `novnc`, `websockify` (all confirmed present in this host's apt repositories; `dbus-x11`, `imagemagick`, `scrot`, `xvfb` already installed)
-- 049-merge-modular-installer: Added Bash (matches every existing NetClaw install/enable script and PR #96's own implementation), Python 3.10+ (for the coverage-check script, extending the existing `scripts/verify-inventory-counts.py` pattern) + None beyond what's already vendored — PR #96's own `scripts/lib/*.sh`, the repo's existing Python stdlib-only tooling convention
 
 
 <!-- MANUAL ADDITIONS START -->

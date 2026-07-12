@@ -24,7 +24,8 @@ The Plugin Mall is self-curating. Day-to-day operations (inventory, scoring, cat
   normalize-frontmatter.cjs         ├─▶ catalog/index.json
   list-refs.cjs                     │   catalog/stores/*.json
   compute-trust.cjs                 │   scoring/trust-audit.{json,md}
-  render-catalog.cjs               ─┘   catalog/INDEX.md + per-store + per-category
+  render-catalog.cjs                │   catalog/INDEX.md + per-store + per-category
+  validate-catalog.cjs             ─┘   structural gate before merge
                                         README.md (storefront)
 ```
 
@@ -38,6 +39,7 @@ Each step is idempotent: re-running with no upstream changes produces byte-ident
 | `list-refs.cjs` | Per-plugin version discovery | `$SOURCES_DIR/<name>/.git/` + plugin source_path | `catalog/stores/<store>.json` (plugins[*].available_refs) |
 | `compute-trust.cjs` | Trust score (provenance + 5 signals) | `catalog/stores/*.json` + `scoring/github-stats.json` | `catalog/stores/*.json` (store_trust + plugins[*].trust_score) + `scoring/trust-audit.{json,md}` |
 | `render-catalog.cjs` | JSON → MD rendering | `catalog/stores/*.json` | `catalog/index.json` + `catalog/INDEX.md` + `catalog/stores/<store>.md` (one per store) + `catalog/categories/<cat>.md` (one per category) + `README.md` (storefront) + `sources/SOURCES.md` (rendered registry) |
+| `validate-catalog.cjs` | Structural integrity gate | Registry + generated JSON/Markdown | Exit 0 only when registry, stores, counts, trust fields, and rendered surfaces reconcile |
 
 ## The `plugin-mall` self-entry — load-bearing rule
 
@@ -72,7 +74,8 @@ If the formula drifts from this table, update this skill in the same commit. Cha
 - **Weekly cron**: Mondays 11:00 UTC per `.github/workflows/scan-sources.yml`
 - **PR-back**: only when `catalog/`, `scoring/`, `README.md`, or `sources/SOURCES.md` change (timestamp-only deltas filtered)
 - **Manual dispatch**: `workflow_dispatch` available for ad-hoc re-scans (e.g., after adding a store to `supported-stores.json`)
-- **Editorial review on PR**: each catalog-refresh PR is the human surface for any deltas — score changes, new plugins, staleness flags
+- **Deterministic pre-merge gate**: `npm test` + `npm run validate` must pass before the catalog-refresh PR can open or merge
+- **Post-merge oversight**: the PR/commit diff is the sampling surface for Supervisor oversight; routine generated changes do not wait on Supervisor approval
 
 ## What the Mall does vs out-of-scope
 
@@ -108,6 +111,7 @@ Every editorial Mall decision lands in `docs/curation-log.md` in this repo (Mall
 This skill needs revision if any of the following occur by **2026-08-29** (90 days):
 
 - The workflow modifies a file outside `catalog/`, `scoring/`, `README.md`, `sources/SOURCES.md` ≥1 time
+- A structurally inconsistent registry/catalog/render state passes `npm run validate` ≥1 time
 - Trust scores cluster oddly (e.g., third-party score consistently > 60 — provenance bonus undercalibrated)
 - Mall-curated plugins fail to rank #1 in `/mall-search` for the same name as a third-party entry (provenance signal not flowing)
 - A new source-shape (frontmatter convention) breaks `normalize-frontmatter.cjs` ≥2 times without surfacing in `scoring/trust-audit.md`

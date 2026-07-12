@@ -47,7 +47,7 @@ Hermes pulls from multiple hubs; three routes work for this bundle, in order of 
 
 1. **skills.sh source** (works today, full skill folders): `hermes skills install skills-sh/aaron-he-zhu/aaron-marketing-skills/<skill-name>` — e.g. `…/keyword-research`; browse with `hermes skills search seo --source skills-sh`.
 2. **ClawHub source** (after the owner publishes, see above): `hermes skills search marketing --source clawhub`.
-3. **Direct URL** (single file, no `references/` bundled — the skill's own reference pack is lost, so prefer routes 1–2): `hermes skills install https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/<discipline>/<phase>/<skill>/SKILL.md`.
+3. **Pinned direct URL** (single file, no `references/` bundled — prefer routes 1–2): `hermes skills install https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/<release-tag>/<discipline>/<phase>/<skill>/SKILL.md`. Pin a release tag; do not use a mutable branch for an execution contract.
 
 **Tap caveat**: `hermes skills tap add` assumes one `skills/` root per repo (one `path` override in `~/.hermes/.hub/taps.json`), which this multi-discipline layout deliberately doesn't have — use the skills.sh source instead; it resolves the same folders. Installed skills surface as slash commands (`/keyword-research …`) and are security-scanned at `community` trust on install. Every skill's `metadata.hermes` carries `tags`/`category` so `hermes skills browse` filters cleanly.
 
@@ -79,7 +79,7 @@ Paths below are each host's **native** skill directories (docs verified 2026-07;
 
 | Agent | Project dir | Global dir | Notes |
 |-------|-------------|------------|-------|
-| **Claude Code** | `.claude/skills/` (+ plugin skills) | `~/.claude/skills/` | Prefer the plugin — it adds the 7 commands, hooks, memory, connectors. Does **not** read `.agents/skills/`; `npx skills` handles the mapping. |
+| **Claude Code** | `.claude/skills/` (+ plugin skills) | `~/.claude/skills/` | Prefer the plugin — it adds the 8 commands, hooks, memory, connectors. Does **not** read `.agents/skills/`; `npx skills` handles the mapping. |
 | **OpenAI Codex** ✦ | `.agents/skills/` (CWD → repo root) | `~/.agents/skills/`, `/etc/codex/skills` | `AGENTS.md` context file supported. Launch-era `~/.codex/skills` no longer in current docs. |
 | **Google Antigravity** ✦ | `.agents/skills/` | `~/.gemini/config/skills/` (CLI: `~/.gemini/antigravity-cli/skills/`) | `description` drives activation; global `~/.agents/skills` **not** read. |
 | **OpenCode** ✦ | `.opencode/skills/`, `.claude/skills/` | `~/.config/opencode/skills/`, `~/.claude/skills/`, `~/.agents/skills/` | Unknown frontmatter ignored; per-skill permissions in `opencode.json`. |
@@ -109,13 +109,14 @@ A standalone install bundles **only each skill's folder** (its `SKILL.md` + own 
 
 | Shared resource | Standalone behavior |
 |-----------------|---------------------|
-| Repo-root `references/` (auditor runbook, CORE-EEAT / CITE / C³ / ROAS / SEND / RAMP / ECHO / TALE benchmarks, skill contract, state model) | Relative links break. The 8 auditor gates carry an explicit fallback: fetch the file from `https://raw.githubusercontent.com/aaron-he-zhu/aaron-marketing-skills/main/references/<filename>` or ask for a repo clone — they never score without the runbook. `social-quality-auditor` (reading `auditor-runbook.md` + `echo-benchmark.md`) and `narrative-quality-auditor` (reading `auditor-runbook.md` + `tale-benchmark.md`) follow the same pattern with a raw.githubusercontent fallback. Non-gate skills inline their essential rules, so broken links are cosmetic. |
+| Repo-root `references/` (auditor runbook, typed catalogs, benchmarks, skill contract, state model) | Relative root links are unavailable, but every auditor folder includes a generated immutable `references/auditor-runtime.md` containing its shared runbook, typed framework slice, schemas, and benchmark. It never fetches a mutable branch or guesses missing policy. Non-gate skills inline their essential rules. |
+| Deterministic repo-root runtimes (`rubric-score.py`, `validate-audit-artifact.py`, `registry-events.py`) | Not bundled. In a Claude Code plugin install, commands resolve them through `${CLAUDE_PLUGIN_ROOT}`; in a full clone they fall back to the Git repository root, following the [root runtime invocation contract](../references/runtime-invocation.md). In **every** form, agent sessions are limited to `propose`/`suppress` and preparing owner request files — canonical acceptance (`owner-append`/`safety-append`) is an owner-run terminal step outside agent sessions, per the [Owner Ritual](../references/registry-event-protocol.md); once canonical events exist, agent sessions read the owner-installed projections rather than replaying. A standalone one-folder install must fail closed: auditors return `NOT_SCORED` instead of hand-calculating or claiming a gate verdict, and registry skills may prepare a proposal but cannot append, project, or claim canonical truth. Install the plugin or use a full clone for those operations. |
 | `scripts/connectors/*.py` (keyless data helpers) | Not bundled. Every skill is designed Tier-1: it runs on user-provided data with no connector. Clone the repo to use the connectors. |
-| The 7 `/aaron-marketing:*` commands | Claude Code plugin only. On other hosts, describe the goal — skill descriptions carry the routing triggers. |
-| Hooks (session hot-cache injection, Artifact Gate) + temperature memory | Claude Code plugin only. Gates still emit the full handoff schema; it just isn't machine-validated. |
+| The 8 `/aaron-marketing:*` commands | Claude Code plugin only. On other hosts, describe the goal — skill descriptions carry the routing triggers. |
+| Hooks (bounded working-memory context, Artifact Gate) | Claude Code plugin only, and hook **enforcement requires `python3` on PATH**. Without python3 the hooks degrade instead of refusing everything: non-memory tool calls pass through, and only identifiable memory-namespace / reserved-sink calls are refused until python3 is installed. A standalone host has no machine-enforced audit write interception; without the deterministic validator, an auditor may collect typed inputs but must return `NOT_SCORED` and must not claim `SHIP`, `FIX`, or a persisted valid artifact. |
 | Cross-skill handoffs (`../<skill>/SKILL.md` links) | Literal paths may break, but handoffs reference skills **by name** — any host with the sibling skill installed routes fine. Install the full bundle rather than single skills to keep chains intact. |
 
-**Positioning in one line**: Claude Code plugin = the operated product (gates enforced, memory persisted, connectors wired); any other host = the same 120 skill procedures, self-contained.
+**Positioning in one line**: Claude Code plugin = the operated product (gates checked by deterministic runtimes plus bounded lifecycle hooks, memory persisted, connectors wired, registry proposals flowing into the owner-run acceptance ritual); any other host = the same 120 authored procedures, with deterministic scoring, registry runtime access, hooks, and connectors degraded exactly as listed above. Canonical registry acceptance is owner-run in every form — no install grants an agent session that authority.
 
 ## For contributors
 

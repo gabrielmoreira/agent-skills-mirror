@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `UfoMiao/zcf` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `UfoMiao/zcf` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `UfoMiao/zcf` — 26 default patterns, 0 followed patterns, 13 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,19 +59,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
-| 4 | ✓ | [`src/config/CLAUDE.md`](src/config/CLAUDE.md) |
-| 5 | ✓ | [`src/i18n/CLAUDE.md`](src/i18n/CLAUDE.md) |
-| 6 | ✓ | [`src/types/CLAUDE.md`](src/types/CLAUDE.md) |
-| 7 | ✓ | [`src/utils/ccr/CLAUDE.md`](src/utils/ccr/CLAUDE.md) |
-| 8 | ✓ | [`src/utils/CLAUDE.md`](src/utils/CLAUDE.md) |
-| 9 | ✓ | [`src/utils/code-tools/CLAUDE.md`](src/utils/code-tools/CLAUDE.md) |
-| 10 | ✓ | [`src/utils/cometix/CLAUDE.md`](src/utils/cometix/CLAUDE.md) |
-| 11 | ✓ | [`templates/claude-code/CLAUDE.md`](templates/claude-code/CLAUDE.md) |
-| 12 | ✓ | [`templates/CLAUDE.md`](templates/CLAUDE.md) |
-| 13 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
+| 1 | ✓ | [`.claude/skills/zcf-add-sponsor/SKILL.md`](.claude/skills/zcf-add-sponsor/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/zcf-pr/SKILL.md`](.claude/skills/zcf-pr/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/zcf-release/SKILL.md`](.claude/skills/zcf-release/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/zcf-update-docs/SKILL.md`](.claude/skills/zcf-update-docs/SKILL.md) |
+| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 7 | ✓ | [`src/commands/CLAUDE.md`](src/commands/CLAUDE.md) |
+| 8 | ✓ | [`src/config/CLAUDE.md`](src/config/CLAUDE.md) |
+| 9 | ✓ | [`src/i18n/CLAUDE.md`](src/i18n/CLAUDE.md) |
+| 10 | ✓ | [`src/types/CLAUDE.md`](src/types/CLAUDE.md) |
+| 11 | ✓ | [`src/utils/ccr/CLAUDE.md`](src/utils/ccr/CLAUDE.md) |
+| 12 | ✓ | [`src/utils/CLAUDE.md`](src/utils/CLAUDE.md) |
+| 13 | ✓ | [`src/utils/code-tools/CLAUDE.md`](src/utils/code-tools/CLAUDE.md) |
+| 14 | ✓ | [`src/utils/cometix/CLAUDE.md`](src/utils/cometix/CLAUDE.md) |
+| 15 | ✓ | [`templates/claude-code/CLAUDE.md`](templates/claude-code/CLAUDE.md) |
+| 16 | ✓ | [`templates/CLAUDE.md`](templates/CLAUDE.md) |
+| 17 | ✓ | [`templates/skills/en/bmad-init/SKILL.md`](templates/skills/en/bmad-init/SKILL.md) |
+| 18 | ✓ | [`templates/skills/en/feat/SKILL.md`](templates/skills/en/feat/SKILL.md) |
+| 19 | ✓ | [`templates/skills/en/git-clean-branches/SKILL.md`](templates/skills/en/git-clean-branches/SKILL.md) |
+| 20 | ✓ | [`templates/skills/en/git-commit/SKILL.md`](templates/skills/en/git-commit/SKILL.md) |
+| 21 | ✓ | [`templates/skills/en/git-rollback/SKILL.md`](templates/skills/en/git-rollback/SKILL.md) |
+| 22 | ✓ | [`templates/skills/en/git-worktree/SKILL.md`](templates/skills/en/git-worktree/SKILL.md) |
+| 23 | ✓ | [`templates/skills/en/init-project/SKILL.md`](templates/skills/en/init-project/SKILL.md) |
+| 24 | ✓ | [`templates/skills/en/workflow/SKILL.md`](templates/skills/en/workflow/SKILL.md) |
+| 25 | ✓ | [`templates/skills/zh-CN/bmad-init/SKILL.md`](templates/skills/zh-CN/bmad-init/SKILL.md) |
+| 26 | ✓ | [`templates/skills/zh-CN/feat/SKILL.md`](templates/skills/zh-CN/feat/SKILL.md) |
+| 27 | ✓ | [`templates/skills/zh-CN/git-clean-branches/SKILL.md`](templates/skills/zh-CN/git-clean-branches/SKILL.md) |
+| 28 | ✓ | [`templates/skills/zh-CN/git-commit/SKILL.md`](templates/skills/zh-CN/git-commit/SKILL.md) |
+| 29 | ✓ | [`templates/skills/zh-CN/git-rollback/SKILL.md`](templates/skills/zh-CN/git-rollback/SKILL.md) |
+| 30 | ✓ | [`templates/skills/zh-CN/git-worktree/SKILL.md`](templates/skills/zh-CN/git-worktree/SKILL.md) |
+| 31 | ✓ | [`templates/skills/zh-CN/init-project/SKILL.md`](templates/skills/zh-CN/init-project/SKILL.md) |
+| 32 | ✓ | [`templates/skills/zh-CN/workflow/SKILL.md`](templates/skills/zh-CN/workflow/SKILL.md) |
+| 33 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
 
 ---
 

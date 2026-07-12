@@ -157,7 +157,7 @@ Scan the repo before substantive brainstorming. Match depth to scope:
 *Constraint Check (inline)* — Source the agnostic orientation (STRATEGY summary, CONCEPTS vocabulary, conventions) from the shared repo-grounding profile cache instead of re-reading those files every run. Set `SKILL_DIR` to this skill's directory and run the helper (full protocol in `references/repo-profile-cache.md`):
 
 ```bash
-SKILL_DIR="<absolute path of the directory containing the SKILL.md you just read>"
+SKILL_DIR="<absolute path of the directory containing the SKILL.md you just read>";
 python3 "$SKILL_DIR/scripts/repo-profile-cache.py" get
 ```
 

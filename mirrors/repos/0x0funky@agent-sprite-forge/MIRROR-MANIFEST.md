@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `0x0funky/agent-sprite-forge` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `0x0funky/agent-sprite-forge` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `0x0funky/agent-sprite-forge` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,13 +70,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`skills/generate2dsprite/references/modes.md`](skills/generate2dsprite/references/modes.md) |
 | 10 | ✓ | [`skills/generate2dsprite/references/prompt-rules.md`](skills/generate2dsprite/references/prompt-rules.md) |
 | 11 | ✓ | [`skills/generate2dsprite/scripts/generate2dsprite.py`](skills/generate2dsprite/scripts/generate2dsprite.py) |
-| 12 | ✓ | [`skills/generate2dsprite/scripts/make_layout_guide.py`](skills/generate2dsprite/scripts/make_layout_guide.py) |
-| 13 | ✓ | [`skills/generate2dsprite/SKILL.md`](skills/generate2dsprite/SKILL.md) |
-| 14 | ✓ | [`skills/video2dsprite/agents/openai.yaml`](skills/video2dsprite/agents/openai.yaml) |
-| 15 | ✓ | [`skills/video2dsprite/references/pipeline.md`](skills/video2dsprite/references/pipeline.md) |
-| 16 | ✓ | [`skills/video2dsprite/references/prompt-rules.md`](skills/video2dsprite/references/prompt-rules.md) |
-| 17 | ✓ | [`skills/video2dsprite/scripts/video2dsprite.py`](skills/video2dsprite/scripts/video2dsprite.py) |
-| 18 | ✓ | [`skills/video2dsprite/SKILL.md`](skills/video2dsprite/SKILL.md) |
+| 12 | ✓ | [`skills/generate2dsprite/scripts/make_anchor_layout.py`](skills/generate2dsprite/scripts/make_anchor_layout.py) |
+| 13 | ✓ | [`skills/generate2dsprite/scripts/make_layout_guide.py`](skills/generate2dsprite/scripts/make_layout_guide.py) |
+| 14 | ✓ | [`skills/generate2dsprite/SKILL.md`](skills/generate2dsprite/SKILL.md) |
+| 15 | ✓ | [`skills/video2dsprite/agents/openai.yaml`](skills/video2dsprite/agents/openai.yaml) |
+| 16 | ✓ | [`skills/video2dsprite/references/pipeline.md`](skills/video2dsprite/references/pipeline.md) |
+| 17 | ✓ | [`skills/video2dsprite/references/prompt-rules.md`](skills/video2dsprite/references/prompt-rules.md) |
+| 18 | ✓ | [`skills/video2dsprite/scripts/video2dsprite.py`](skills/video2dsprite/scripts/video2dsprite.py) |
+| 19 | ✓ | [`skills/video2dsprite/SKILL.md`](skills/video2dsprite/SKILL.md) |
 
 ---
 

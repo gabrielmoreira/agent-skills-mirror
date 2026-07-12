@@ -84,7 +84,7 @@ Do not let replacement subagents invent frontmatter fields, enum values, or sect
 4. **Run the mechanical claims check on the successor doc.** The bundled `scripts/validate-doc-claims.py` flags cited repo paths missing from the tree, commit SHAs that do not resolve or are unreachable, relative doc links that do not resolve, and dangling drafting scaffold ("Learning 3", unresolved `{{...}}` tokens):
 
    ```bash
-   SKILL_DIR="<absolute path of the directory containing the SKILL.md you just read>"
+   SKILL_DIR="<absolute path of the directory containing the SKILL.md you just read>";
    python3 "$SKILL_DIR/scripts/validate-doc-claims.py" <new-learning-path>
    ```
 

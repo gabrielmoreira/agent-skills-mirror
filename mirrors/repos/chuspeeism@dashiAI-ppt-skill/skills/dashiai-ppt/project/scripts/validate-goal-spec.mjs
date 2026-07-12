@@ -49,6 +49,10 @@ export function validateGoalSpec(spec, options = {}) {
     errors.push(`deck field themePack: unknown or unavailable themePack "${spec.themePack}"`);
   }
 
+  if (spec?.language != null && !/^(zh|en)([-_][a-z0-9]+)?$/i.test(String(spec.language).trim())) {
+    errors.push(`deck field language: unsupported "${spec.language}" (use "zh" or "en")`);
+  }
+
   if (Object.prototype.hasOwnProperty.call(spec || {}, 'media')) {
     errors.push('deck layout <deck> field media: top-level media is not rendered; use each slide props.images or props.media');
   }

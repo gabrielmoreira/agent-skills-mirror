@@ -35,7 +35,7 @@ The script is a CLI shell-out, not a subagent, so it doesn't consume the subagen
 Invoke it via the skill-dir anchor — set `SKILL_DIR` to the absolute directory of **this** skill's `SKILL.md` (the one you read to run ce-code-review), because the Bash tool's CWD is the user's project, not the skill dir, on every host:
 
 ```bash
-SKILL_DIR="<absolute path of the directory containing the ce-code-review SKILL.md you read>"
+SKILL_DIR="<absolute path of the directory containing the ce-code-review SKILL.md you read>";
 bash "$SKILL_DIR/scripts/cross-model-adversarial-review.sh" "<peer>" "<base-ref>" "<run-dir>"
 ```
 

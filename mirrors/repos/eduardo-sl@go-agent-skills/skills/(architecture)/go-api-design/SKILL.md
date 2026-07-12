@@ -10,6 +10,9 @@ description: >
   "middleware pattern", "graceful shutdown", "gRPC service", "API versioning".
   Do NOT use for general architecture (use go-architecture-review) or
   concurrency in handlers (use go-concurrency-review).
+license: MIT
+metadata:
+  version: "1.0.0"
 ---
 
 # Go API Design
@@ -122,7 +125,7 @@ func Recoverer(logger *slog.Logger) func(http.Handler) http.Handler {
 
 ### Middleware ordering (outside → inside):
 
-```
+```text
 Recoverer → RequestID → Logger → Auth → RateLimit → Handler
 ```
 
@@ -158,7 +161,7 @@ r.Body = http.MaxBytesReader(w, r.Body, 1<<20) // 1 MB
 
 ## 4. URL and Naming Conventions
 
-```
+```text
 GET    /api/v1/users          → list users
 POST   /api/v1/users          → create user
 GET    /api/v1/users/{id}     → get user

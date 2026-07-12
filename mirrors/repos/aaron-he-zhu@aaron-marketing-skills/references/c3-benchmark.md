@@ -1,80 +1,82 @@
 # C³ Benchmark — Influencer Marketing Evaluation Standard
 
-The third framework in this library, alongside [CORE-EEAT](core-eeat-benchmark.md) (content quality) and [CITE](cite-domain-rating.md) (domain authority). C³ scores **influencer marketing** across three nested scopes — **Creator · Content · Campaign** — each on a lean 3-dimension rubric (**ACE · ART · ROI**).
+C³ evaluates influencer marketing at three separate scopes: **Creator · Content · Campaign**, using the **ACE · ART · ROI** rubrics. It is an advisory quality-control framework, not a validated predictor of campaign outcomes.
 
-This file is the entry point; the full rubric lives in [references/c3/](c3).
+This file is the human entry point. Executable identity, profiles, evidence policy, missingness, vetoes, and rollup constraints live in [`framework-catalog.json`](framework-catalog.json); shared semantics live in [`scoring-semantics.md`](scoring-semantics.md). The detailed item anchors live under [`references/c3/`](c3).
 
-## The three scopes (C³)
+## The Three Scopes
 
-| Scope | Rubric | Core question | Portable? |
-|-------|--------|---------------|-----------|
-| **Creator** | **ACE** | Is this creator worth partnering with? | reusable across brands/campaigns |
-| **Content** | **ART** | Is this deliverable good and compliant? | per-piece |
-| **Campaign** | **ROI** | Did / will the campaign deliver? | per-initiative |
+| Scope | Rubric | Unit | Core question |
+|---|---|---|---|
+| **Creator** | **ACE** | One creator, platform, comparison window, and observation date | Is the creator's audience asset credible and behaviorally healthy? |
+| **Content** | **ART** | One deliverable or tightly defined asset set | Is the work appealing, relevant, compliant, and truthful? |
+| **Campaign** | **ROI** | One initiative, attribution window, and declared goal | What return, orchestration quality, and impact were observed or forecast? |
 
-Naming order follows the value chain `Creator · Content · Campaign`; report drill-down runs the other way (`Campaign → Creator → Content`, macro → micro).
+ACE is a reusable creator baseline only when it excludes campaign-specific brand fit. A specific brand/category conflict belongs in `ROI.O1`. Naming follows the value chain; report drill-down may run `Campaign → Creator → Content`.
 
-## The 9 dimensions
+## Dimensions and Ownership
 
-| Scope | Dimensions |
-|-------|-----------|
-| **ACE** (Creator) | **A**udience · **C**redibility 〔veto〕 · **E**ngagement |
-| **ART** (Content) | **A**ppeal · **R**elevance · **T**ransparency 〔veto〕 |
-| **ROI** (Campaign) | **R**eturn · **O**rchestration · **I**mpact |
+| Scope | Dimensions | Boundary corrections |
+|---|---|---|
+| **ACE** | **A**udience Asset · **C**redibility · **E**ngagement | `A1` is audience composition/stability, not brand fit; `A3` is reach reliability, not campaign-tier fit; `C4` is commercial saturation/history; `E3` is repeat audience action, not campaign conversion. |
+| **ART** | **A**ppeal · **R**elevance · **T**ransparency | Scores the actual deliverable; disclosure and claim integrity are veto-bearing. |
+| **ROI** | **R**eturn · **O**rchestration · **I**mpact | Owns brand conflict, campaign conversion, incrementality, and realized outcomes. |
 
-## Scoring chassis
+Each dimension contains four stable item IDs. The detailed rubrics define the anchors; the catalog defines item identity and policy.
 
-| | |
+## Scoring
+
+Per item: Pass = 10, Partial = 5, Fail = 0. A scope score is the floor-rounded, profile-weighted mean of its three dimensions. A score is emitted only at 100% coverage of applicable items. Missing evidence is `unknown` and prevents a score; catalog-authorized `na` requires a reason.
+
+Profiles are scope × goal: `ace-*`, `art-*`, and `roi-*`, where the goal is `awareness`, `engagement`, `conversion`, or `brand-building`. Do not compare profiles as though their weights were identical.
+
+Exactly one verified veto failure caps that scope at `min(raw, 59)`. Two or more verified veto failures produce `verdict: BLOCK` with no final score. Missing veto evidence is `unknown`, not a failure. See [`scoring-semantics.md`](scoring-semantics.md) for status/verdict behavior.
+
+### Campaign Value Index
+
+After one complete ACE, ART, and ROI result exists, C³ may report:
+
+`CVI = floor((ACE × ART × ROI)^(1/3))`
+
+When a campaign has multiple creators or assets, keep the budget-weighted ACE mean and equal-weighted ART mean exact through the geometric product. Do not floor either component mean before the one final CVI floor.
+
+The three components must share one `rollup_id`, goal, `observed_at`, `assessment_time`, and catalog version. A forecast CVI contains forecast components only; an actual CVI contains actual components only. Never replace missing actual outcomes with forecast values or combine unrelated creators/assets/campaigns merely because their dates match. Always show the three scope scores beside CVI because the components diagnose what the index only summarizes.
+
+For one creator/asset/campaign triplet, `c3-rollup` accepts the legacy three-result `scopes` array. For a real multi-creator campaign, use the typed [`c3-rollup.schema.json`](c3-rollup.schema.json) `components` form: ACE is budget-weighted, ART is equal-weighted, and exactly one ROI result is used. Multiple ACE entries require explicit positive weights; ART/ROI reject weights so the aggregation rule cannot drift silently.
+
+Golden fixtures:
+
+- No veto: `ACE=90`, `ART=80`, `ROI=70` → `CVI=79`.
+- One ACE veto: raw ACE capped to `59`, `ART=80`, `ROI=70` → `CVI=69`.
+- A blocked component has no final scope score, so CVI is not emitted.
+
+## Veto Items
+
+| Qualified ID | Trigger |
 |---|---|
-| Per sub-item | Pass = 10 · Partial = 5 · Fail = 0 |
-| Dimension score | mean of sub-items × 10 → 0–100 |
-| Within a scope (3 dims) | additive weighted mean (weights shift by campaign goal) |
-| Across scopes | multiplicative (geometric mean) — a weak link wastes the rest |
-| Rating bands | 90–100 Excellent · 75–89 Good · 60–74 Medium · 40–59 Low · 0–39 Poor |
-| Veto-cap | any failed veto item caps that scope's rating at Low (≤ 59) and raises a flag |
+| `C3-ACE.A2` | Verified follower fraud or a measured real-follower rate below the rubric threshold. Refused/missing access is `unknown`. |
+| `C3-ACE.C1` | Documented disqualifying brand-safety evidence under the declared policy and observation window. |
+| `C3-ACE.E2` | Verified bought, coordinated, or pod-based engagement. |
+| `C3-ART.T1` | Missing or materially inadequate disclosure where a material connection exists. |
+| `C3-ART.T2` | False or unsubstantiated material claim in the deliverable. |
 
-**Campaign Value Index**: `CVI = (ACE_avg × ART_avg × ROI)^(1/3)`. Keep the three scope scores beside the CVI — the index ranks and alerts, the three scores diagnose.
+Disclosure requirements depend on market and relationship. For U.S. work, the framework uses FTC Endorsement Guides and the Consumer Reviews and Testimonials Rule as compliance inputs. This is not legal advice.
 
-### Worked example (golden-math fixture)
+## Benchmark Regimes
 
-Concrete CVI computations (geometric mean, floor-rounded), kept here so `scripts/golden-auditor-math.py` can assert the arithmetic deterministically:
-
-- **No-veto** — `ACE_avg=90 ART_avg=80 ROI=70` → `CVI = floor(504000^(1/3)) = 79`. (The geometric mean 79 sits below the arithmetic mean 80 — a weaker scope drags the whole index, which is the point of the multiplicative rollup.)
-- **Veto-capped** — an ACE veto (e.g. A2 real-follower fraud) caps the Creator scope at the Low-band ceiling, so `ACE_avg=59 (capped)` → `CVI = floor(330400^(1/3)) = 69`.
-- **Cap-reconciliation boundary** — at a raw scope of exactly 60 with one veto, C³ caps to its Low-band ceiling **≤ 59**, while the framework-agnostic [auditor-runbook.md](auditor-runbook.md) §2 caps the weighted overall at `min(raw, 60) = 60`. These are **band-aligned**: they differ by ≤ 1 point *only* at this boundary (C³'s Low band tops at 59 by definition). No rubric numbers change; the runbook value is authoritative for the Artifact Gate.
-
-## Veto items (red lines)
-
-| Scope | Veto | Trigger |
-|-------|------|---------|
-| ACE | **A2** Real-Follower Rate | < 70% real / audit refused (follower fraud) |
-| ACE | **C1** Brand Safety | disqualifying content / active scandal |
-| ACE | **E2** Engagement Authenticity | pod / bought engagement |
-| ART | **T1** FTC Disclosure | missing / inadequate disclosure on sponsored content |
-| ART | **T2** Claim Integrity | false / unsubstantiated claims |
-
-Regulatory basis for the disclosure vetoes: FTC **16 CFR §255** (Endorsement Guides) and the 2024 Trade Regulation Rule on Consumer Reviews & Testimonials (**16 CFR Part 465**). Not legal advice — consult counsel for your jurisdiction.
-
-## Threshold regimes
-
-Influencer metrics are platform/tier/niche-relative — never hard-code platform-agnostic numbers.
-
-- **Relative (benchmarked)** — Audience reach, Engagement, Return, Impact. Pass = at/above the benchmark for the creator's tier × platform × niche.
-- **Absolute (gate)** — Credibility, Appeal, Relevance, Transparency, Orchestration. Pass = criterion met (presence / quality / compliance), independent of platform.
+Audience, reach, engagement, return, and impact are relative to a locked creator-tier × platform × niche cohort and stated window. Compliance and control-presence items use explicit criterion anchors. A platform-wide number without cohort, source, and date is an estimate, not a universal pass/fail threshold.
 
 ## Components
 
-- [c3/scoring-architecture.md](c3/scoring-architecture.md) — scoring chassis, thresholds, MECE boundaries, rollup math
-- [c3/ace-creator-benchmark.md](c3/ace-creator-benchmark.md) — Creator rubric (ACE)
-- [c3/art-content-benchmark.md](c3/art-content-benchmark.md) — Content rubric (ART)
-- [c3/roi-campaign-benchmark.md](c3/roi-campaign-benchmark.md) — Campaign rubric (ROI)
+- [`c3/scoring-architecture.md`](c3/scoring-architecture.md) — item scoring, profiles, boundaries, and rollup
+- [`c3/ace-creator-benchmark.md`](c3/ace-creator-benchmark.md) — Creator/ACE anchors
+- [`c3/art-content-benchmark.md`](c3/art-content-benchmark.md) — Content/ART anchors
+- [`c3/roi-campaign-benchmark.md`](c3/roi-campaign-benchmark.md) — Campaign/ROI anchors
 
-## Where it is used
+## Skill Ownership
 
-The influencer-marketing skills (phases: Discover · Plan · Activate · Measure) apply C³:
+- **Discover** — [`fit-scorer`](../influencer/discover/fit-scorer/SKILL.md) produces ACE; `influencer-discovery` only supplies candidates/evidence.
+- **Activate** — [`content-reviewer`](../influencer/activate/content-reviewer/SKILL.md) produces ART and applies `ART.T1/T2`.
+- **Measure** — [`roi-calculator`](../influencer/measure/roi-calculator/SKILL.md) produces ROI and CVI; `performance-analyzer` supplies measured inputs.
 
-Three skills apply C³ scoring directly (they emit the rubric scores and enforce the veto items); two more inform those scores without computing them.
-
-- **Discover** — [fit-scorer](../influencer/discover/fit-scorer/SKILL.md) scores creators on **ACE** and enforces the A2/C1/E2 veto items. [influencer-discovery](../influencer/discover/influencer-discovery/SKILL.md) *informs* this step: it shortlists candidates that fit-scorer then scores on ACE (it does not compute ACE itself).
-- **Activate** — [content-reviewer](../influencer/activate/content-reviewer/SKILL.md) gates deliverables on **ART**, with T1 (FTC disclosure) and T2 (claim integrity) as veto items.
-- **Measure** — [roi-calculator](../influencer/measure/roi-calculator/SKILL.md) computes the **ROI** score and the **CVI** rollup. [performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md) *contributes* the measured campaign inputs that feed ROI/CVI (it does not compute the rollup itself).
+All outputs remain advisory until the versioned profile passes the reliability and outcome-calibration protocol in [`scoring-semantics.md`](scoring-semantics.md).

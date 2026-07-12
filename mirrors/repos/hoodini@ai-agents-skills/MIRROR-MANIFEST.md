@@ -62,7 +62,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.claude/CLAUDE.md`](.claude/CLAUDE.md) |
 | 2 | ✓ | [`skills/analytics-metrics/SKILL.md`](skills/analytics-metrics/SKILL.md) |
 | 3 | ✓ | [`skills/aws-account-management/SKILL.md`](skills/aws-account-management/SKILL.md) |
-| 4 | ✓ | [`skills/aws-agentcore/SKILL.md`](skills/aws-agentcore/SKILL.md) |
+| 4 | ✓ | [`skills/aws-harness/SKILL.md`](skills/aws-harness/SKILL.md) |
 | 5 | ✓ | [`skills/aws-strands/SKILL.md`](skills/aws-strands/SKILL.md) |
 | 6 | ✓ | [`skills/bun/SKILL.md`](skills/bun/SKILL.md) |
 | 7 | ✓ | [`skills/cinematic-scrub-landing/assets/01-hero-mouse-scrub.png`](skills/cinematic-scrub-landing/assets/01-hero-mouse-scrub.png) |

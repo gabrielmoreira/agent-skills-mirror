@@ -120,7 +120,7 @@ docs:
 #
 # When set, `oma agent:spawn` records token usage per agent and blocks the
 # next spawn once any cap is exceeded. Records persist to
-# .serena/memories/session-cost-{sessionId}.md. Omit to disable.
+# .agents/state/memories/session-cost-{sessionId}.md. Omit to disable.
 #
 # All keys optional. Omitting a key leaves that dimension uncapped.
 # Schema source: cli/io/session-cost.ts (loadQuotaCap / normalizeQuotaCap).

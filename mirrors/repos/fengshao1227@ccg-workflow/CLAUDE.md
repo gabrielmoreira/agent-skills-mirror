@@ -2,7 +2,7 @@
 
 > [根目录](../CLAUDE.md) > **skills-v2**
 
-**Last Updated**: 2026-07-09 (v3.1.11)
+**Last Updated**: 2026-07-12 (v3.2.0)
 
 > ⚠ 本文档主体仍停留在 v2.1.16 架构描述（v3.0 引擎重构后未全量同步）。下方变更记录保留 v3.x 修复轨迹，完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
@@ -11,6 +11,16 @@
 ## 变更记录 (Changelog)
 
 > 完整变更历史请查看 [CHANGELOG.md](./CHANGELOG.md)
+
+### 2026-07-12 (v3.2.0)
+- ✨ **Grok CLI 后端**：Grok (xAI) 成为第五个模型选项，init Step 2 / 菜单可选为前端或后端；型号可选 `grok-4.5`（500k 上下文）或 `grok-composer-2.5-fast`（Cursor 编码模型）。`/ccg:go` Builder 模式可让 Grok 全权写代码，Claude token 消耗极低。
+- ✨ **Grok 专家提示词**：7 角色全套（analyzer/architect/builder/debugger/optimizer/reviewer/tester）→ `~/.claude/.ccg/prompts/grok/`。
+- ✨ **`--grok-model` flag + `{{GROK_MODEL_FLAG}}` 模板变量**：行级感知注入，与 gemini flag 同逻辑。
+- ✨ **`ccg doctor` Grok 检查**：路由用到 grok 时检查 CLI 存在 + 登录态（auth.json 7 天过期）。
+- 🐛 **`--gemini-model` spawn 时被静默丢弃**：单任务模式 executor 重建 cfg 未带模型字段，flag 只出现在显示行、从未到达 gemini 进程。经 TaskSpec 传递修复。
+- 🐛 **parallel 模式裸 `--gemini-model <value>` 硬报错**：值掉进 extras 触发 "only --backend..." 中止。现消费值后警告忽略。
+- 🐛 **`ccg update` 重配路由丢 `geminiModel`**：现与 `grokModel` 一并保留。
+- 🔄 **Binary `5.11.1` → `5.12.0`**：grok 后端（streaming-json 解析 / `-p` 传参 / `-r` 会话恢复 / PATH + `~/.grok/bin` 回退）。
 
 ### 2026-07-09 (v3.1.11)
 - ✨ **`ccg doctor` 命令**：一键环境健康检查（Node 版本、配置、命令、Hooks、Binary、Skills、Rules、MCP、Codex 模式），有问题标红。
@@ -378,9 +388,10 @@ npx ccg-workflow menu
 | 项目 | 默认值 | 可配置 | 说明 |
 |------|--------|--------|------|
 | 语言 | 中文 | ✗ | 所有模板为中文 |
-| 前端模型 | Gemini | ✓ (v2.1.0+) | init Step 2/4 / 菜单 6 |
-| 后端模型 | Codex | ✓ (v2.1.0+) | init Step 2/4 / 菜单 6 |
+| 前端模型 | Antigravity | ✓ (v2.1.0+) | init Step 2/4 / 菜单 6，可选 gemini/codex/grok |
+| 后端模型 | Codex | ✓ (v2.1.0+) | init Step 2/4 / 菜单 6，可选 gemini/antigravity/grok |
 | Gemini 型号 | gemini-3.1-pro-preview | ✓ (v2.1.0+) | 选 gemini 时可配 |
+| Grok 型号 | grok-4.5 | ✓ (v3.2.0+) | 选 grok 时可配，代码任务可选 grok-composer-2.5-fast |
 | 协作模式 | smart | ✗ | 最佳实践 |
 | 命令数量 | 29 个 | ✗ | 全部安装 |
 

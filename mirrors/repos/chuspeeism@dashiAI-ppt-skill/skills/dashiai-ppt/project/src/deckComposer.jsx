@@ -86,6 +86,7 @@ export function composeDeck(spec = {}) {
   return {
     themePack,
     title,
+    language: spec.language,
     text: spec.text || {},
     media: spec.media || {},
     props: spec.props || {},

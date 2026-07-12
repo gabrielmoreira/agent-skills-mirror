@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills"><img src="https://img.shields.io/github/stars/aaron-he-zhu/aaron-marketing-skills?style=flat" alt="GitHub Stars"></a>
-  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-16.1.1-orange" alt="Version"></a>
+  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-17.0.0-orange" alt="Version"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/commits/main"><img src="https://img.shields.io/github/last-commit/aaron-he-zhu/aaron-marketing-skills" alt="Last Commit"></a>
 </p>
@@ -24,16 +24,18 @@
 
 | 層 | スキル | ライフサイクル（フェーズディレクトリ） | フレームワーク → ゲート | エントリポイント |
 |-------|--------|-------------------------------|------------------|------------|
-| **Narrative** | 16 | trace → architect → land → evaluate | [TALE](../references/tale-benchmark.md) → `narrative-quality-auditor`（NQS） | `/aaron-marketing:narrative` |
+| **Narrative** | 16 | trace → architect → land → evaluate | [TALE](../references/tale-benchmark.md) → `narrative-quality-auditor` (truth / system / effectiveness profiles) | `/aaron-marketing:narrative` |
 | **SEO/GEO** | 16 | research → build → optimize → monitor | [CORE-EEAT](../references/core-eeat-benchmark.md) → `content-quality-auditor` · [CITE](../references/cite-domain-rating.md) → `domain-authority-auditor` | `/aaron-marketing:seo-geo` |
-| **インフルエンサー** | 16 | discover → plan → activate → measure | [C³](../references/c3-benchmark.md) → `content-reviewer`（ART）；`fit-scorer` が ACE を採点 | `/aaron-marketing:influencer` |
-| **Paid Ads** | 16 | research → orchestrate → activate → scale | [ROAS](../references/roas-benchmark.md) → `ad-account-auditor`（RQS） | `/aaron-marketing:ad` |
+| **ソーシャル** | 16 | explore → craft → host → observe | [ECHO](../references/echo-benchmark.md) → `social-quality-auditor` (asset / program-maturity profiles) | `/aaron-marketing:social` |
 | **メール** | 16 | setup → engage → nurture → deliver | [SEND](../references/send-benchmark.md) → `email-quality-auditor`（EQS） | `/aaron-marketing:email` |
-| **Launch** | 16 | research → assemble → mobilize → prove | [RAMP](../references/ramp-benchmark.md) → `launch-readiness-auditor`（LQS） | `/aaron-marketing:launch` |
-| **ソーシャル** | 16 | explore → craft → host → observe | [ECHO](../references/echo-benchmark.md) → `social-quality-auditor`（SQS） | `/aaron-marketing:social` |
+| **Paid Ads** | 16 | research → orchestrate → activate → scale | [ROAS](../references/roas-benchmark.md) → `ad-account-auditor`（RQS） | `/aaron-marketing:ad` |
+| **インフルエンサー** | 16 | discover → plan → activate → measure | [C³](../references/c3-benchmark.md) → `content-reviewer`（ART）；`fit-scorer` が ACE を採点 | `/aaron-marketing:influencer` |
+| **Launch** | 16 | research → assemble → mobilize → prove | [RAMP](../references/ramp-benchmark.md) → `launch-readiness-auditor` (preflight / execution / outcome profiles) | `/aaron-marketing:launch` |
 | **プロトコル層** | 8 | —（フェーズフローの外にある共有機構） | 7 つの真実レジストリ（entity · creator · offer/claims · consent · launch · channel · narrative）+ HOT/WARM/COLD メモリ | — |
 
-`/aaron-marketing:auto` は任意の自然言語ゴールをシステム全体にルーティングします。すべては**純粋な Markdown** —— 唯一のコードは Bash のフックランナー、Bash のバリデータ、そして依存関係ゼロの Python 標準ライブラリのデータヘルパー（`pip` 不要、ビルドステップ不要）です。**各スキルは Tier 1 で、貼り付けたデータだけで動作します**；コネクタは取得を自動化するだけです。
+`/aaron-marketing:auto` はあらゆる自然言語のゴールをシステム全体にルーティングします。スキルとコマンドは**プレーンな Markdown**です。小さな Bash/Python 標準ライブラリのランタイムが、フック、検証、採点、レジストリイベント、コネクタ、CI チェックを提供します（`pip` なし、ビルドステップなし）。**すべてのスキルは、あなたが提供するデータだけで Tier 1 で動作します**。コネクタが自動化するのは、データ取得か、明示的に承認された変更操作だけです。
+
+権威ある型付きトポロジーは [`references/system-catalog.json`](../references/system-catalog.json) です。読みやすい四層マップ、全 120 パス、レジストリのオーナー、auditor のシンク、配布プロファイルは[生成されたシステムアーキテクチャ](system-architecture.md)を参照してください。
 
 > 統合前に独立していたリポジトリは、いまはここを指す**道標リポジトリ**です —— [seo-geo-claude-skills](https://github.com/aaron-he-zhu/seo-geo-claude-skills)（最終の 20 スキル系列はタグ `v9.9.12` に保存）と [influencer-marketing-agent-skills](https://github.com/aaron-he-zhu/influencer-marketing-agent-skills)（最終の IMPACT 系列はタグ `standalone-final`）。姉妹リポジトリのポリシー：[docs/repo-family.md](repo-family.md)。
 
@@ -76,10 +78,10 @@
 | 原則 | 実務での意味 |
 |-----------|---------------------------|
 | **デフォルトで keyless** | 各スキルは、貼り付けた、あるいは無料/ファーストパーティのソースから取得したデータで **Tier 1** で動作します。有料ツールや MCP サーバーは任意の利便性であり、決して前提条件ではありません。Paid Ads スキルは**自アカウントの手動エクスポート**から採点します —— キー付き広告 API は決して必要ありません。 |
-| **フレームワークではなく Markdown** | スキルはコンテンツです。唯一の実行コードは `hooks/claude-hook.sh`（Bash）、`scripts/validate-skill.sh`（Bash）、`scripts/connectors/*.py`（**標準ライブラリのみ**の Python）です。インストール・監査・保守は不要です。 |
+| **コンテンツファースト、実行可能なコントラクト** | スキルは Markdown のままです。小さな Bash/Python 標準ライブラリのランタイムが、パッケージ依存を追加せずに採点・状態・安全性・適合性を決定論的にします。 |
 | **一つの共有コントラクト** | 120 のスキルすべてが同じ 7 セクションを公開し、`discipline` + `phase` メタデータを自己申告するため、ライブラリは一つのオペレーティングシステムのように振る舞います。各スキルは自らの入力・出力、そして次に引き継ぐ最良のスキルを知っています。 |
-| **ゲート付きの品質** | 8 つのベンチマークが 8 つの auditor クラスのゲートを駆動し、構造化された機械検証可能な判定を出力します —— 感覚ではありません。PostToolUse フックが、ゲート付き成果物が着地する前に検証します。 |
-| **真実はレジストリに宿る** | 正準的な事実（ブランドエンティティ、クリエイターのドシエ、オファー/クレームの裏付け、被験者ごとの同意）は、単一書き込み者ルールを持つプロトコル層の専用レジストリに宿ります —— ゲートはそれらを再導出せず、それらに照らして判定します。 |
+| **ゲート付きの品質** | 8 つのベンチマークが構造化された機械検証可能な判定を出力します。有界フックが無効な書き込みを検出し、pre-commit/CI はコミット済み Git の PII のみを保護し、runtime 成果物は検証しません。 |
+| **真実はイベントに宿る** | 追記専用（append-only）の 7 本のレジストリイベントストリームが正準です。オーナーが管理するプロジェクションが、エンティティ・クリエイター・クレーム・同意・Launch・チャネル・ナラティブの状態を、破壊的キューなしで公開します。 |
 | **ターンをまたぐメモリ** | HOT/WARM/COLD メモリモデルが、発見・スコア・未決事項をスキルとセッションの間で運び、入口でサニタイズします。 |
 | **人間らしい声** | スキルには AI 臭検出器と禁止フレーズリストが同梱され、出力が人間が書いたように読めるようにします。 |
 
@@ -154,9 +156,9 @@ Audit this Google Ads account before I scale — exports attached
 | **L1 · 戦略** —— 何を語るか / 我々は何者か | crawl | **Narrative** · TALE | 常時稼働 |
 | **L2 · チャネル** —— 戦略を表現する常時稼働のエンジン（自有 → 有料） | walk | **SEO/GEO** · CORE-EEAT + CITE · **Organic Social** · ECHO · **Email** · SEND · **Paid Ads** · ROAS · **Influencer** · C³ | 常時稼働（インフルエンサーはエピソード寄り） |
 | **L3 · オーケストレーション** —— チャネルをまたぐ時限の瞬間 | run | **Product Launch** · RAMP | エピソード |
-| **L4 · プロトコル** —— 共有された記録システム | — | 8 つの真実レジストリ + メモリ · 8 つの auditor ゲート · 一つのスキルコントラクト | — |
+| **L4 · プロトコル** —— 共有された記録システム | — | 7 つの真実レジストリ + ワーキングメモリ · 8 つの auditor ゲート · 一つのスキルコントラクト | — |
 
-Narrative はメッセージであり、チャネルはそれを表現する媒体です —— どのチャネルを 1 つ外しても記録は無傷ですが、Narrative を外すとすべてのチャネルが出所も統治もないメッセージを語ります。各チャネルは、今日どのクリエイティブビルダーもクレーム台帳を読むのと同じやり方で、L1 からボイスとクレームを継承します。各専門領域の 4 フェーズループは、その層の内側に宿ります（Narrative = Trace → Architect → Land → Evaluate）。
+Narrative はメッセージであり、チャネルはそれを表現する媒体です —— 各コアビルダーは、使用した正典の ID/バージョンとクレーム・プロジェクションのオフセット、あるいは明示的に承認されたフォールバック/ブロックを正確に記録します。各専門領域の 4 フェーズループは、その層の内側に宿ります（Narrative = Trace → Architect → Land → Evaluate）。
 
 7 つすべてがフェーズ**ディレクトリ**（`narrative/trace/`…、`seo-geo/research/`…、`influencer/discover/`…、`ad/research/`…、`email/setup/`…、`launch/research/`…、`social/explore/`…）を使います。注：「activate」はインフルエンサーではクリエイターへのアウトリーチを、Paid Ads ではアカウントのゲーティングを意味します —— 同じ語でも領域固有のスコープです。
 
@@ -166,46 +168,46 @@ Narrative はメッセージであり、チャネルはそれを表現する媒�
 
 | フレームワーク | 採点対象 | 項目 / 次元 | 集約 | 拒否項目 |
 |-----------|--------|--------------------|--------|------------|
-| **[TALE](../references/tale-benchmark.md)** | ブランドナラティブ Truth / Architecture / Landing / Evidence | T / A / L / E | **NQS = floor（目標加重平均）**（算術） | `T1`/`A1`/`L1`/`E1` |
-| **[CORE-EEAT](../references/core-eeat-benchmark.md)** | コンテンツ品質（GEO = CORE 平均、SEO = EEAT 平均） | 80 項目 / 8 次元 | 次元ごとの平均 | `T04`、`C01`、`R10` |
-| **[CITE](../references/cite-domain-rating.md)** | ドメイン権威と引用信頼 | 40 項目 / 4 次元 | 算術加重平均 | `T03`、`T05`、`T09` |
-| **[C³](../references/c3-benchmark.md)** | インフルエンサー Creator / Content / Campaign | ACE / ART / ROI · 9 次元 | **CVI =（ACE × ART × ROI）^⅓**（幾何） | ACE `A2`/`C1`/`E2`、ART `T1`/`T2` |
-| **[ROAS](../references/roas-benchmark.md)** | Paid ads Return / Offer / Audience / Spend-efficiency | R / O / A / S | **RQS = floor（目標加重平均）**（算術） | `R1`/`R2`/`O1`/`O2`/`A1` |
-| **[SEND](../references/send-benchmark.md)** | メールマーケティング Sender-integrity / Engagement / Nurture / Direct-response | S / E / N / D | **EQS = floor（目標加重平均）**（算術） | `S1`/`S2`/`N1`/`D1` |
-| **[RAMP](../references/ramp-benchmark.md)** | プロダクト Launch Readiness / Assets / Momentum / Proof | R / A / M / P · 40 項目 | **LQS = floor（目標加重平均）**（算術） | `R1`/`A1`/`M1`/`P1`（フレームワーク限定 —— ROAS `R1`/`A1` とは別物） |
-| **[ECHO](../references/echo-benchmark.md)** | Organic social Embeddedness / Craft / Hosting / Observability | E / C / H / O | **SQS = floor（目標加重平均）**（算術） | `E1`/`C1`/`C2`/`H1`/`H2`/`O1`（フレームワーク限定 —— ROAS `O1`/`O2` とは別物） |
+| **[TALE](../references/tale-benchmark.md)** | ブランドナラティブの真実 / システム / 有効性 | T / A / L / E | `truth`・`system`・`effectiveness` のプロファイル結果は個別。全体の合成スコアなし | TALE `T1`/`A1`/`L1`/`E1` |
+| **[CORE-EEAT](../references/core-eeat-benchmark.md)** | CORE/GEO と EEAT/SEO の診断ビューを備えたコンテンツ品質 | 80 項目 / 8 次元 | 完全なプロファイル加重結果。診断ビューは独立した合計ではない | `T04`/`C01`/`R10` |
+| **[CITE](../references/cite-domain-rating.md)** | ドメイン権威と引用信頼 | 40 項目 / 4 次元 | 算術プロファイル加重平均 | `T03`/`T05`/`T09` |
+| **[C³](../references/c3-benchmark.md)** | インフルエンサーの Creator / Content / Campaign | ACE / ART / ROI・9 次元 | 互換スコープの完全な 3 結果が揃った後に `CVI = floor((ACE x ART x ROI)^(1/3))` | ACE `A2`/`C1`/`E2`・ART `T1`/`T2` |
+| **[ROAS](../references/roas-benchmark.md)** | Paid Ads の増分貢献と運用品質 | R / O / A / S | `RQS = floor(profile-weighted mean)` | `R1`/`R2`/`O1`/`O2`/`A1` |
+| **[SEND](../references/send-benchmark.md)** | メールの送信者完全性 / エンゲージメント / ナーチャー / 直接成果 | S / E / N / D | `EQS = floor(profile-weighted mean)` | `S1`/`S2`/`N1`/`D1` |
+| **[RAMP](../references/ramp-benchmark.md)** | プロダクトローンチの準備 / アセット / モメンタム / 証明 | R / A / M / P・40 の安定 ID | `preflight`・`execution`・`outcome` のプロファイル結果は個別。時間軸をまたいで平均しない | RAMP `R1`/`A1`/`M1`/`P1` |
+| **[ECHO](../references/echo-benchmark.md)** | オーガニックソーシャルの埋め込み度 / クラフト / ホスティング / 可観測性 | E / C / H / O・40 の安定 ID | 実行ごとに `asset-gate` か `program-maturity-*` プロファイルを一つだけ。異種ユニットは決して混ぜない | ECHO `E1`/`C1`/`C2`/`H1`/`H2`/`O1` |
 
-各フレームワークは **auditor クラスのゲート**によって強制されます —— ゲート付き成果物（`class: auditor-output`）を書き込むスキルで、PostToolUse フックが検証します。ゲートはワークフローのステップなので、それぞれが自身の専門領域に宿り、そこで数えられます：
+各フレームワークは **auditor クラスのゲート**によって強制されます —— 型付き成果物（`class: auditor-output`）を決定論的バリデータと有界なライフサイクル Hook で検証します。リポジトリ CI はバリデータと契約を回帰テストしますが、無視されたホストランタイム成果物は検査しません。ゲートはワークフローのステップなので、それぞれが自身の専門領域に宿り、そこで数えられます：
 
 | ゲート | フレームワーク | 所在 | 判定 |
 |------|-----------|----------|---------|
-| [narrative-quality-auditor](../narrative/evaluate/narrative-quality-auditor/SKILL.md) | TALE NQS | `narrative/evaluate/`（Narrative） | ナラティブが採用される前に SHIP / FIX / BLOCK |
-| [content-quality-auditor](../seo-geo/optimize/content-quality-auditor/SKILL.md) | CORE-EEAT | `seo-geo/optimize/`（SEO/GEO） | 公開前に SHIP / FIX / BLOCK |
-| [domain-authority-auditor](../seo-geo/monitor/domain-authority-auditor/SKILL.md) | CITE | `seo-geo/monitor/`（SEO/GEO） | TRUSTED / CAUTIOUS / UNTRUSTED |
-| [content-reviewer](../influencer/activate/content-reviewer/SKILL.md) | C³ ART | `influencer/activate/`（インフルエンサー） | クリエイター投稿の公開前に APPROVED / REVISIONS / REJECTED |
-| [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md) | ROAS RQS | `ad/activate/`（Paid） | 予算のスケール前に SHIP / FIX / BLOCK |
-| [email-quality-auditor](../email/deliver/email-quality-auditor/SKILL.md) | SEND EQS | `email/deliver/`（メール） | 送信前に SHIP / FIX / BLOCK |
-| [launch-readiness-auditor](../launch/mobilize/launch-readiness-auditor/SKILL.md) | RAMP LQS | `launch/mobilize/`（Launch） | Launch の瞬間を確定する前に SHIP / FIX / BLOCK |
-| [social-quality-auditor](../social/host/social-quality-auditor/SKILL.md) | ECHO SQS | `social/host/`（ソーシャル） | 公開前に SHIP / FIX / BLOCK |
+| [narrative-quality-auditor](../narrative/evaluate/narrative-quality-auditor/SKILL.md) | TALE プロファイル | `narrative/evaluate/` | truth/system/effectiveness の結果は個別。合成スコアなし |
+| [content-quality-auditor](../seo-geo/optimize/content-quality-auditor/SKILL.md) | CORE-EEAT | `seo-geo/optimize/` | SHIP / FIX / BLOCK / UNDECIDED |
+| [domain-authority-auditor](../seo-geo/monitor/domain-authority-auditor/SKILL.md) | CITE | `seo-geo/monitor/` | SHIP / FIX / BLOCK / UNDECIDED。信頼ラベルは説明目的のみ |
+| [content-reviewer](../influencer/activate/content-reviewer/SKILL.md) | C³ ART | `influencer/activate/` | SHIP / FIX / BLOCK / UNDECIDED に加えクリエイター向けの翻訳 |
+| [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md) | ROAS | `ad/activate/` | SHIP / FIX / BLOCK / UNDECIDED |
+| [email-quality-auditor](../email/deliver/email-quality-auditor/SKILL.md) | SEND | `email/deliver/` | SHIP / FIX / BLOCK / UNDECIDED |
+| [launch-readiness-auditor](../launch/mobilize/launch-readiness-auditor/SKILL.md) | RAMP ライフサイクルプロファイル | `launch/mobilize/` | 宣言された一つのライフサイクル読み取りに対する SHIP / FIX / BLOCK / UNDECIDED |
+| [social-quality-auditor](../social/host/social-quality-auditor/SKILL.md) | ECHO アセット/プログラムプロファイル | `social/host/` | 宣言された一つのユニット/プロファイルに対する SHIP / FIX / BLOCK / UNDECIDED |
 
-**共有の上限シャーシ：** 単一の拒否が該当次元と総合を `min(raw, 60)` に抑えます；**2 つ以上の拒否 → `BLOCKED`**（最終スコアなし）。判定は平易な言葉に翻訳されます（ユーザー向けレポートに項目 ID は出ません）。ゲートの機構 —— handoff スキーマ、上限の算術、artifact gate チェックリスト —— は [auditor-runbook.md](../references/auditor-runbook.md) に一度だけ規定され、8 つのフレームワークの算術は決定論的な golden テストで固定されています（[品質ガード](#品質ガード-ci)を参照）。
+**共有拒否ポリシー：** 検証済みの拒否項目が 1 件なら最終スコアを `min(raw, 59)` で上限化します。2 件以上なら `status: DONE` + `verdict: BLOCK` となり、最終スコアは出ません。証拠の欠落は `Unknown` であり、決して自動的な不合格にはなりません。型付きルールは [auditor-runbook.md](../references/auditor-runbook.md) に宿ります。
 
 ### プロトコル層
 
 `protocol/` ディレクトリは、専門領域のフェーズフローの外に位置する**共有の真実＆メモリ機構**を収めます —— 8 スキル、別勘定です：
 
-| スキル | 役割 | アンカー先 | 正準ストア |
+| スキル | 役割 | アンカー先 | 正準イベントストリーム / ランタイムの役割 |
 |-------|-----|-------------|-----------------|
-| [entity-optimizer](../protocol/entity-optimizer/SKILL.md) | 正準的なブランド/エンティティプロファイル（ナレッジグラフ、Wikidata、AI 曖昧性解消） | SEO/GEO | `memory/entities/` |
-| [creator-registry](../protocol/creator-registry/SKILL.md) | 正準的なクリエイター名簿/ドシエ —— 重複排除されたハンドル、出所ラベル付きのオーディエンス統計、料率、コンプライアンス履歴 | インフルエンサー | `memory/creators/` |
-| [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md) | オファー＆クレーム裏付けの台帳 —— O1/T2 クレームチェックが照合して判定される記録 | Paid | `memory/claims/` |
-| [consent-registry](../protocol/consent-registry/SKILL.md) | 被験者ごとの正準的な同意/抑制記録 —— S2/N1 拒否がこれに照らして判定 | メール | `memory/consent/` |
-| [launch-registry](../protocol/launch-registry/SKILL.md) | 正準的な Launch ドシエ/カレンダー —— ティア、一方向のライフサイクル段階、権威ある日付/エンバーゴ、チャネル提出台帳；R1 段階真実拒否が照合する Launch 真実の SSOT | Launch | `memory/launch-registry/` |
-| [channel-registry](../protocol/channel-registry/SKILL.md) | 正準的なチャネルごとの記録 —— ハンドル、所有権/認可、プラットフォーム規範、開示デフォルト；ECHO E1 チャネル真実拒否が照合するチャネル真実の SSOT | ソーシャル | `memory/channels/` |
-| [narrative-registry](../protocol/narrative-registry/SKILL.md) | 正準的なブランドナラティブの正典 —— 承認済みの戦略ナラティブ、メッセージシステム、言語/レキシコン、証拠点；TALE T1 真実拒否が照合するブランド正典の SSOT | Narrative | `memory/narrative-registry/` |
-| [memory-management](../protocol/memory-management/SKILL.md) | HOT/WARM/COLD メモリのライフサイクル（キャプチャ · 昇格 · 降格 · アーカイブ · クエリ） | 全領域 | `memory/` |
+| [entity-optimizer](../protocol/entity-optimizer/SKILL.md) | 正準的なブランド/エンティティプロファイル（ナレッジグラフ、Wikidata、AI 曖昧性解消） | SEO/GEO | `memory/events/entities.ndjson` |
+| [creator-registry](../protocol/creator-registry/SKILL.md) | 正準的なクリエイター名簿/ドシエ —— 重複排除されたハンドル、出所ラベル付きのオーディエンス統計、料率、コンプライアンス履歴 | インフルエンサー | `memory/events/creators.ndjson` |
+| [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md) | オファー＆クレーム裏付けの台帳 —— O1/T2 クレームチェックが照合して判定される記録 | Paid | `memory/events/claims.ndjson` |
+| [consent-registry](../protocol/consent-registry/SKILL.md) | 被験者ごとの正準的な同意/抑制記録 —— S2/N1 拒否がこれに照らして判定 | メール | `memory/events/consent.ndjson` |
+| [launch-registry](../protocol/launch-registry/SKILL.md) | 正準的な Launch ドシエ/カレンダー —— ティア、一方向のライフサイクル段階、権威ある日付/エンバーゴ、チャネル提出台帳；R1 段階真実拒否が照合する Launch 真実の SSOT | Launch | `memory/events/launches.ndjson` |
+| [channel-registry](../protocol/channel-registry/SKILL.md) | 正準的なチャネルごとの記録 —— ハンドル、所有権/認可、プラットフォーム規範、開示デフォルト；ECHO E1 チャネル真実拒否が照合するチャネル真実の SSOT | ソーシャル | `memory/events/channels.ndjson` |
+| [narrative-registry](../protocol/narrative-registry/SKILL.md) | 正準的なブランドナラティブの正典 —— 承認済みの戦略ナラティブ、メッセージシステム、言語/レキシコン、証拠点；TALE T1 真実拒否が照合するブランド正典の SSOT | Narrative | `memory/events/narrative.ndjson` |
+| [memory-management](../protocol/memory-management/SKILL.md) | HOT/WARM/COLD メモリのライフサイクル（キャプチャ · 昇格 · 降格 · アーカイブ · クエリ） | 全領域 | 非正準の `memory/` ランタイム状態 |
 
-レジストリは**単一書き込み者ルール**に従い（他スキルは `candidates.md` 経由で提出）、*キュレート*します —— 判定はゲートが行います。すべての下にある真に水平な層は `references/` プロトコル（[auditor-runbook](../references/auditor-runbook.md)、[state-model](../references/state-model.md)、[skill-contract](../references/skill-contract.md)、[humanizer-slop](../references/humanizer-slop.md)、[measurement-protocol](../references/measurement-protocol.md)）です —— 設計上、スキルではなくドキュメントとして共有されます。
+レジストリは**単一書き込み者ルール**に従い（他スキルは `registry-events.py` proposal events 経由で提出）、*キュレート*します —— 判定はゲートが行います。すべての下にある真に水平な層は `references/` プロトコル（[auditor-runbook](../references/auditor-runbook.md)、[state-model](../references/state-model.md)、[skill-contract](../references/skill-contract.md)、[humanizer-slop](../references/humanizer-slop.md)、[measurement-protocol](../references/measurement-protocol.md)）です —— 設計上、スキルではなくドキュメントとして共有されます。
 
 ### メモリと自動化フック
 
@@ -214,17 +216,20 @@ Narrative はメッセージであり、チャネルはそれを表現する媒�
 | 層 | 場所 | 振る舞い |
 |------|----------|----------|
 | **HOT** | `memory/hot-cache.md` | セッションごとに自動読み込み；**80 行かつ 25 KB**（先に達した方）で上限。 |
-| **WARM** | `memory/<subdir>/` | スキルごとの作業状態、ゲート付き監査成果物（`memory/audits/`）、レジストリの正準ストア（`memory/entities\|creators\|claims/`）。 |
+| **WARM** | `memory/<subdir>/` | 再構築可能なワーキングプロジェクションと権限管理された監査成果物。正準のレジストリ真実は `memory/events/*.ndjson` に宿ります。 |
 | **COLD** | `memory/archive/` | 降格した/古い記録、想起のために保持。 |
 
-**フック**（`hooks/hooks.json`、ランナー `hooks/claude-hook.sh`）は 4 つの Claude Code イベントを配線します：
+**フック**（`hooks/hooks.json`、ランナー `hooks/claude-hook.sh`）は 7 つの Claude Code イベントを配線します：
 
 | イベント | マッチャー | 何をするか |
 |-------|---------|--------------|
 | `SessionStart` | `startup\|resume\|clear\|compact` | **サニタイズ済み**の hot-cache + 未決事項ポインタを注入（プロンプトインジェクション行は塗りつぶし；シンボリックリンクのキャッシュは拒否）。 |
 | `UserPromptSubmit` | （すべて） | 軽量なプロンプトごとのコンテキストフック。 |
-| `PostToolUse` | `Write\|Edit` | hot-cache サイズ警告 **+ Artifact Gate**：`class: auditor-output` を宣言する `memory/audits/` 配下のファイルは handoff スキーマと上限フィールドに照らして検証され、さもなくば書き込みがブロックされます。8 つの auditor クラスのゲートは契約上このマーカーを宣言せねばなりません；未マークのファイルは監査成果物ではなく通過します。 |
-| `Stop` | （すべて） | No-op（静かに終了）。 |
+| `PreToolUse` | 既知の書き込み可能ツール | サポートされる `memory/**` 書き込みの前に、正確なホストプロジェクト側ターゲットが Git-ignore されていることを検証します。そうでなければ書き込みは拒否されます。 |
+| `PostToolUse` | 既知の書き込み可能ツール | 書き込み成功後に、事後状態のメモリ監査 + 有界な Artifact Gate 検証を実行します。 |
+| `PostToolUseFailure` | 既知の書き込み可能ツール | 失敗したツールもすでにファイルを書いている可能性があるため、同じチェックを実行します。 |
+| `PostToolBatch` | （すべて） | 並列ツールバッチのたびに、運用メモリと予約済み監査シンクを再チェックします。 |
+| `Stop` | （すべて） | 最後の有界スイープを一度実行し、その後 active-stop ガードが終了を許可します。pre-commit/CI が守るのはコミット済み Git コンテンツの PII のみで、無視されたランタイム成果物は検証しません。 |
 
 Artifact Gate は**フレームワーク非依存**です —— 同じフックが TALE、CORE-EEAT、CITE、C³、ROAS、SEND、RAMP、ECHO の成果物をフレームワーク固有コードなしで検証します。
 
@@ -236,7 +241,7 @@ Artifact Gate は**フレームワーク非依存**です —— 同じフック
 
 ### Narrative — TALE (16)
 
-`narrative/` 配下の 4 つのフェーズディレクトリ（各 4 スキル）が TALE ループ（Trace → Architect → Land → Evaluate）に従います；ゲート（⛩ narrative-quality-auditor）は Evaluate に位置。ゲートだけが目標加重 NQS を計算します —— 他のスキルはそれぞれ 1 つのレバーを動かして引き継ぎます。Narrative は L1 · 戦略層です：5 つの常時稼働チャネルが継承する一つのブランドボイス。ポジショニングを吸収します —— `positioning-mapper` は物理的には `launch/` に留まりますが、論理的には TALE Trace の入口として読まれます。
+`narrative/` 配下の 4 フェーズは Trace → Architect → Land → Evaluate に従います。`narrative-quality-auditor` は truth・system・effectiveness の各プロファイルを別々に実行します。フルレビューは 3 つの結果をリンクするだけで、決して平均しません。Narrative は、チャネルのビルダーたちが継承する L1 戦略です。
 
 | フェーズ | スキル |
 |-------|--------|
@@ -261,7 +266,7 @@ Artifact Gate は**フレームワーク非依存**です —— 同じフック
 | pitch-narrative-builder | L | ナラティブをピッチ形式へ —— デッキの背骨、デモストーリー、投資家/プレス向けフレーミング。 |
 | narrative-enablement-kit | L | 各チームがストーリーを一貫して語れるイネーブルメントキット —— トークトラック、FAQ、メッセージマップ。 |
 | proof-point-packager | L | 証拠点をチャネル対応・claims-ledger 認識のアセットにパッケージング。 |
-| ⛩ narrative-quality-auditor | T+A+L+E（NQS） | auditor クラスの TALE ゲート：NQS を採点、T1/A1/L1/E1 を強制、SHIP/FIX/BLOCK を出力；**ナラティブ採用の go/no-go** モードを内蔵。 |
+| ⛩ narrative-quality-auditor | truth / system / effectiveness | 型付き TALE ゲート。プロファイルごとの結果を別々に返し、決して平均しません。`memory/audits/narrative/` に書き込みます。 |
 | message-test-designer | E | メッセージテストを設計 —— バリアントマトリクス、オーディエンスセル、戦略ナラティブの共鳴読み。 |
 | narrative-resonance-monitor | E | ナラティブがチャネル全体でどう着地しているかを keyless ソースから追跡（プロキシデータはラベル付き）。 |
 | narrative-drift-monitor | E | ナラティブのドリフトを監視 —— チャネルが承認済み正典から逸れた箇所 —— し、修正を提起。 |
@@ -304,73 +309,39 @@ Artifact Gate は**フレームワーク非依存**です —— 同じフック
 
 </details>
 
-### インフルエンサー (16)
+### Social — ECHO (16)
 
-4 つのフェーズディレクトリ（各 4 スキル）；本領域のゲート（⛩ content-reviewer）は Activate に位置。
-
-| フェーズ | スキル |
-|-------|--------|
-| **Discover** | [audience-mapper](../influencer/discover/audience-mapper/SKILL.md), [trend-spotter](../influencer/discover/trend-spotter/SKILL.md), [influencer-discovery](../influencer/discover/influencer-discovery/SKILL.md), [fit-scorer](../influencer/discover/fit-scorer/SKILL.md) |
-| **Plan** | [competitor-tracker](../influencer/plan/competitor-tracker/SKILL.md), [campaign-planner](../influencer/plan/campaign-planner/SKILL.md), [brief-generator](../influencer/plan/brief-generator/SKILL.md), [budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md) |
-| **Activate** | [outreach-manager](../influencer/activate/outreach-manager/SKILL.md), ⛩ [content-reviewer](../influencer/activate/content-reviewer/SKILL.md), [contract-helper](../influencer/activate/contract-helper/SKILL.md), [content-amplifier](../influencer/activate/content-amplifier/SKILL.md) |
-| **Measure** | [landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md), [performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md), [roi-calculator](../influencer/measure/roi-calculator/SKILL.md), [report-generator](../influencer/measure/report-generator/SKILL.md) |
-
-<details><summary><b>スキルごとの目的（インフルエンサー）</b></summary>
-
-| スキル | 何をするか |
-|-------|--------------|
-| audience-mapper | *(統合: audience-analyzer + niche-researcher)* クリエイターと組む前に、ターゲットオーディエンスをプロファイルし、そのサブカルチャー / マイクロコミュニティを地図化。 |
-| trend-spotter | キャンペーンのタイミングとテーマ —— トレンドのハッシュタグ、サウンド、フォーマット、文化的モーメント。 |
-| influencer-discovery | クリエイター名簿をゼロから構築、新プラットフォームへ拡大、nano/micro を大規模にソーシング。 |
-| fit-scorer | ショートリストの客観的な加重フィットスコア（C³ ACE で採点）。 |
-| competitor-tracker | 競合のクリエイター、キャンペーン、フォーマット、推定リーチ/支出、ギャップ。 |
-| campaign-planner | キャンペーン、製品ローンチ、テントポール、常時稼働のクリエイタープログラムを計画。 |
-| brief-generator | 標準化されたインフルエンサーブリーフと再利用可能なチームテンプレート。 |
-| budget-optimizer | ティア/プラットフォームに支出を配分、ROI を予測、シナリオをモデリング（Paid Ads の支出 + bid-pacing にも寄与）。 |
-| outreach-manager | ピッチ、フォローアップの頻度、再エンゲージ、料率交渉、ステータス追跡。 |
-| ⛩ content-reviewer | クリエイターの提出物への公開前ゲート判断（C³ ART：FTC 開示 T1、クレーム完全性 T2）。 |
-| contract-helper | クリエイター契約の起草/レビュー —— 使用権、独占、標準条項。 |
-| content-amplifier | *(統合: content-amplifier + ugc-repurposer)* オーガニックなクリエイターコンテンツを有料出稿で増幅し、UGC を Paid、Web、メール、オーガニックへ再利用。 |
-| landing-optimizer | クリエイター/Paid トラフィック向けランディングページ —— メッセージ整合、モバイル、A/B（Paid のクリック後にも寄与）。 |
-| performance-analyzer | クリエイター結果を評価、クリエイターを比較、センチメント、コンバージョン（Paid のクロスチャネルスコアカードも）。 |
-| roi-calculator | ROI を測定/予測、予算を擁護、クリエイター/ティアを評価（共有のリターン計算エンジン、Paid を含む）。 |
-| report-generator | 期間後のステークホルダー向け書面レポート（Paid Ads レポートも）。 |
-
-</details>
-
-### Paid Ads — ROAS (16)
-
-`ad/` 配下の 4 つのフェーズディレクトリ（各 4 スキル）が ROAS ループに従います；ゲート（⛩ ad-account-auditor）は Activate に位置。ゲートだけが目標加重 RQS を計算します —— 他のスキルはそれぞれ 1 つのレバーを動かして引き継ぎます。
+`social/` 配下の 4 フェーズは Explore → Craft → Host → Observe に従います。`social-quality-auditor` は `asset-gate` か一つの program-maturity プロファイルを選びます。この 2 つの構成概念は決して組み合わせません。この専門領域は投稿・エンゲージメント・DM の自動化を一切含みません。
 
 | フェーズ | スキル |
 |-------|--------|
-| **Research** | [campaign-architect](../ad/research/campaign-architect/SKILL.md), [audience-segment-builder](../ad/research/audience-segment-builder/SKILL.md), [search-term-miner](../ad/research/search-term-miner/SKILL.md), [product-feed-optimizer](../ad/research/product-feed-optimizer/SKILL.md) |
-| **Orchestrate** | [ad-creative-builder](../ad/orchestrate/ad-creative-builder/SKILL.md), [ad-test-designer](../ad/orchestrate/ad-test-designer/SKILL.md), [bid-strategy-planner](../ad/orchestrate/bid-strategy-planner/SKILL.md), [landing-experience-checker](../ad/orchestrate/landing-experience-checker/SKILL.md) |
-| **Activate** | ⛩ [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md), [conversion-signal-qa](../ad/activate/conversion-signal-qa/SKILL.md), [placement-exclusion-manager](../ad/activate/placement-exclusion-manager/SKILL.md), [conversion-value-mapper](../ad/activate/conversion-value-mapper/SKILL.md) |
-| **Scale** | [paid-measurement-loop](../ad/scale/paid-measurement-loop/SKILL.md), [attribution-reconciler](../ad/scale/attribution-reconciler/SKILL.md), [budget-pacing-monitor](../ad/scale/budget-pacing-monitor/SKILL.md), [fatigue-frequency-manager](../ad/scale/fatigue-frequency-manager/SKILL.md) |
+| **Explore** | [channel-portfolio-planner](../social/explore/channel-portfolio-planner/SKILL.md), [voice-dossier-builder](../social/explore/voice-dossier-builder/SKILL.md), [platform-norm-profiler](../social/explore/platform-norm-profiler/SKILL.md), [participation-warmup-planner](../social/explore/participation-warmup-planner/SKILL.md) |
+| **Craft** | [social-calendar-builder](../social/craft/social-calendar-builder/SKILL.md), [social-creative-builder](../social/craft/social-creative-builder/SKILL.md), [short-video-scripter](../social/craft/short-video-scripter/SKILL.md), [advocacy-program-designer](../social/craft/advocacy-program-designer/SKILL.md) |
+| **Host** | ⛩ [social-quality-auditor](../social/host/social-quality-auditor/SKILL.md), [engagement-inbox-manager](../social/host/engagement-inbox-manager/SKILL.md), [social-selling-planner](../social/host/social-selling-planner/SKILL.md), [crisis-response-planner](../social/host/crisis-response-planner/SKILL.md) |
+| **Observe** | [social-pulse-monitor](../social/observe/social-pulse-monitor/SKILL.md), [share-of-voice-tracker](../social/observe/share-of-voice-tracker/SKILL.md), [dark-social-attributor](../social/observe/dark-social-attributor/SKILL.md), [social-measurement-loop](../social/observe/social-measurement-loop/SKILL.md) |
 
-<details><summary><b>スキルごとの目的（Paid Ads）</b></summary>
+<details><summary><b>スキルごとの目的（Social）</b></summary>
 
-| スキル | ROAS レバー | 何をするか |
+| スキル | ECHO レバー | 何をするか |
 |-------|-----------|--------------|
-| campaign-architect | A + 構造 | アカウント/キャンペーン構造、キャンペーンタイプの適合、マッチタイプ、除外キーワード/除外、Paid↔オーガニックのカニバリゼーション；再帰的な **search-term-mining** モードを内蔵。 |
-| audience-segment-builder | A | 自社の顧客/CRM/GA4 エクスポートをシードオーディエンス、類似シード、除外セグメント、ファネル段階別ターゲティングマップに変換。 |
-| search-term-miner | A | *(NEW)* 検索語句レポートから除外語、新規キーワード候補、マッチタイプの精緻化を採掘。 |
-| product-feed-optimizer | O | *(NEW)* Shopping/PMax フィード衛生 —— タイトル、属性、GTIN、カテゴリマッピング、不承認の修正。 |
-| ad-creative-builder | O | RSA の見出し/説明文、フック、角度マトリクス。遷移先ページとメッセージ整合。 |
-| ad-test-designer | O (+S) | A/B/n & 増分テストを設計（仮説、バリアントマトリクス、サンプルサイズ/検出力）し、有意性を判読 → promote/kill。 |
-| bid-strategy-planner | S | *(NEW)* 目標別（tCPA/tROAS/max-conversions）に入札戦略を選定・設定し、ターゲットをシード、学習期の移行を計画。 |
-| landing-experience-checker | O | *(NEW)* クリック後ページの QA —— 広告関連性、読み込み速度、モバイル、ポリシー —— 広告↔ページのメッセージ整合チェック。 |
-| ⛩ ad-account-auditor | R+O+A+S (RQS) | auditor クラスの ROAS ゲート：RQS を採点、R1/R2/O1/O2/A1 を強制、SHIP/FIX/BLOCK を出力；**Launch go/no-go** モードを内蔵。 |
-| conversion-signal-qa | R | ローンチ前のトラッキング QA（イベント発火、UTM 衛生、重複排除ゲート、ウィンドウ整合、iOS-ATT フラグ）—— R1/R2 の前提（シグナルを構築；ゲートが採点）。 |
-| placement-exclusion-manager | A | *(NEW)* プレースメント/オーディエンス除外リスト —— ブランドセーフティのブロック、ジャンクプレースメントの剪定、無駄支出の抑制。 |
-| conversion-value-mapper | R | *(NEW)* コンバージョンアクションを値/重みと値ルールにマッピングし、tROAS が生の件数でなく真のマージンに入札するように。 |
-| paid-measurement-loop | R (+S) | 出荷済みの変更を、あるウィンドウで対照に照らして読み戻す → Promote / Keep-testing / Rollback / Unproven。 |
-| attribution-reconciler | R | GA4/ecommerce 真値集合に対する常時 order-ID 重複排除、ウィンドウ/通貨の正規化、モデル比較、増分。 |
-| budget-pacing-monitor | S | *(NEW)* フライト全体で予算に対する消化ペースを追跡、過少/過剰配信を検知、ペーシング修正を推奨。 |
-| fatigue-frequency-manager | O | *(NEW)* フリークエンシーとクリエイティブ劣化のシグナルを監視、疲弊した広告を検知、リフレッシュ/ローテーションを計画。 |
+| channel-portfolio-planner | E | オーディエンスが実際にいる場所から、プラットフォームの組み合わせとチャネルごとの役割/ケイデンスを選ぶ（チャネルをレジストリに記録）。 |
+| voice-dossier-builder | E | 一貫した人間らしいプレゼンスのためのブランドボイス、トーン、ペルソナ、do/don't レキシコン。 |
+| platform-norm-profiler | E | 投稿する前の、プラットフォーム別の規範、フォーマット、ランキングシグナル、レッドラインルール。 |
+| participation-warmup-planner | E | 非宣伝的なコミュニティウォームアップ計画 —— 売り込む前にどこに現れて価値を加えるか。 |
+| social-calendar-builder | C | 編集カレンダー —— テーマ、シリーズ、実キャパシティに合わせたケイデンス（過剰投稿なし）。 |
+| social-creative-builder | C | プラットフォームネイティブな投稿（hook/body/CTA）、メッセージ整合、claims-ledger 認識。 |
+| short-video-scripter | C | ショート動画スクリプト —— フック、ビート、画面上テキスト、リテンション構造。 |
+| advocacy-program-designer | C | 従業員/コミュニティのアドボカシープログラム —— オプトイン、開示デフォルト、シェア可能なアセットキット。 |
+| ⛩ social-quality-auditor | asset gate / program maturity | 一つのユニット/プロファイルに対する型付き ECHO ゲート。アセットと運用の構成概念は決して混ぜません。`memory/audits/social/` に書き込みます。 |
+| engagement-inbox-manager | H | 返信/コメント/DM トリアージの playbook —— 応答ティア、エスカレーション、真正なエンゲージメントの規律（捏造/餌付けエンゲージメントなし）。 |
+| social-selling-planner | H | 創業者/チームのソーシャルセリング動線 —— 関係優先のアウトリーチ、自動 DM なし。 |
+| crisis-response-planner | H | 事前起草した危機ティア、保留声明、エスカレーションラダー、キュー停止トリガー。 |
+| social-pulse-monitor | O | keyless ソースからの言及/センチメント/トピックのパルス、spike-vs-sustain の判読（プロキシデータはラベル付き）。 |
+| share-of-voice-tracker | O | 期間安定の分母に対する、名前付き競合とのシェアオブボイス。 |
+| dark-social-attributor | O | ダークソーシャル/未リンクトラフィックの帰属 —— UTM の規律、自己申告アトリビューションの捕捉、参照元パース。 |
+| social-measurement-loop | O | 出荷済みの変更を、あるウィンドウでベースラインに照らして読み戻す → Promote / Keep-testing / Rollback。 |
 
-**領域横断で再利用**（元フェーズで計上、重複なし）：[budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md)（支出 + bid-pacing/学習期モード）、[landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md)（クリック後）、[roi-calculator](../influencer/measure/roi-calculator/SKILL.md)（リターン計算）、[report-generator](../influencer/measure/report-generator/SKILL.md)、[performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md)。
+**領域横断で再利用**（元フェーズで計上、重複なし）：`trend-spotter`、`audience-mapper`、`content-amplifier`、`outreach-manager`、`competitor-tracker`、`landing-optimizer`、`performance-analyzer`、`roi-calculator`、`report-generator`、`offer-claims-registry`、`community-launch-runner`、`creator-registry`、`page-play-builder`、`memory-management` —— [echo-benchmark.md](../references/echo-benchmark.md) を参照。
 
 </details>
 
@@ -410,9 +381,79 @@ Artifact Gate は**フレームワーク非依存**です —— 同じフック
 
 </details>
 
+### Paid Ads — ROAS (16)
+
+`ad/` 配下の 4 つのフェーズディレクトリ（各 4 スキル）が ROAS ループに従います；ゲート（⛩ ad-account-auditor）は Activate に位置。ゲートだけが目標加重 RQS を計算します —— 他のスキルはそれぞれ 1 つのレバーを動かして引き継ぎます。
+
+| フェーズ | スキル |
+|-------|--------|
+| **Research** | [campaign-architect](../ad/research/campaign-architect/SKILL.md), [audience-segment-builder](../ad/research/audience-segment-builder/SKILL.md), [search-term-miner](../ad/research/search-term-miner/SKILL.md), [product-feed-optimizer](../ad/research/product-feed-optimizer/SKILL.md) |
+| **Orchestrate** | [ad-creative-builder](../ad/orchestrate/ad-creative-builder/SKILL.md), [ad-test-designer](../ad/orchestrate/ad-test-designer/SKILL.md), [bid-strategy-planner](../ad/orchestrate/bid-strategy-planner/SKILL.md), [landing-experience-checker](../ad/orchestrate/landing-experience-checker/SKILL.md) |
+| **Activate** | ⛩ [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md), [conversion-signal-qa](../ad/activate/conversion-signal-qa/SKILL.md), [placement-exclusion-manager](../ad/activate/placement-exclusion-manager/SKILL.md), [conversion-value-mapper](../ad/activate/conversion-value-mapper/SKILL.md) |
+| **Scale** | [paid-measurement-loop](../ad/scale/paid-measurement-loop/SKILL.md), [attribution-reconciler](../ad/scale/attribution-reconciler/SKILL.md), [budget-pacing-monitor](../ad/scale/budget-pacing-monitor/SKILL.md), [fatigue-frequency-manager](../ad/scale/fatigue-frequency-manager/SKILL.md) |
+
+<details><summary><b>スキルごとの目的（Paid Ads）</b></summary>
+
+| スキル | ROAS レバー | 何をするか |
+|-------|-----------|--------------|
+| campaign-architect | A + 構造 | アカウント/キャンペーン構造、キャンペーンタイプの適合、マッチタイプ、除外キーワード/除外、Paid↔オーガニックのカニバリゼーション；再帰的な **search-term-mining** モードを内蔵。 |
+| audience-segment-builder | A | 自社の顧客/CRM/GA4 エクスポートをシードオーディエンス、類似シード、除外セグメント、ファネル段階別ターゲティングマップに変換。 |
+| search-term-miner | A | *(NEW)* 検索語句レポートから除外語、新規キーワード候補、マッチタイプの精緻化を採掘。 |
+| product-feed-optimizer | O | *(NEW)* Shopping/PMax フィード衛生 —— タイトル、属性、GTIN、カテゴリマッピング、不承認の修正。 |
+| ad-creative-builder | O | RSA の見出し/説明文、フック、角度マトリクス。遷移先ページとメッセージ整合。 |
+| ad-test-designer | O (+S) | A/B/n & 増分テストを設計（仮説、バリアントマトリクス、サンプルサイズ/検出力）し、有意性を判読 → promote/kill。 |
+| bid-strategy-planner | S | *(NEW)* 目標別（tCPA/tROAS/max-conversions）に入札戦略を選定・設定し、ターゲットをシード、学習期の移行を計画。 |
+| landing-experience-checker | O | *(NEW)* クリック後ページの QA —— 広告関連性、読み込み速度、モバイル、ポリシー —— 広告↔ページのメッセージ整合チェック。 |
+| ⛩ ad-account-auditor | R+O+A+S (RQS) | auditor クラスの ROAS ゲート：RQS を採点、R1/R2/O1/O2/A1 を強制、SHIP/FIX/BLOCK を出力；**Launch go/no-go** モードを内蔵。 |
+| conversion-signal-qa | R | ローンチ前のトラッキング QA（イベント発火、UTM 衛生、重複排除ゲート、ウィンドウ整合、iOS-ATT フラグ）—— R1/R2 の前提（シグナルを構築；ゲートが採点）。 |
+| placement-exclusion-manager | A | *(NEW)* プレースメント/オーディエンス除外リスト —— ブランドセーフティのブロック、ジャンクプレースメントの剪定、無駄支出の抑制。 |
+| conversion-value-mapper | R | *(NEW)* コンバージョンアクションを値/重みと値ルールにマッピングし、tROAS が生の件数でなく真のマージンに入札するように。 |
+| paid-measurement-loop | R (+S) | 出荷済みの変更を、あるウィンドウで対照に照らして読み戻す → Promote / Keep-testing / Rollback / Unproven。 |
+| attribution-reconciler | R | GA4/ecommerce 真値集合に対する常時 order-ID 重複排除、ウィンドウ/通貨の正規化、モデル比較、増分。 |
+| budget-pacing-monitor | S | *(NEW)* フライト全体で予算に対する消化ペースを追跡、過少/過剰配信を検知、ペーシング修正を推奨。 |
+| fatigue-frequency-manager | O | *(NEW)* フリークエンシーとクリエイティブ劣化のシグナルを監視、疲弊した広告を検知、リフレッシュ/ローテーションを計画。 |
+
+**領域横断で再利用**（元フェーズで計上、重複なし）：[budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md)（支出 + bid-pacing/学習期モード）、[landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md)（クリック後）、[roi-calculator](../influencer/measure/roi-calculator/SKILL.md)（リターン計算）、[report-generator](../influencer/measure/report-generator/SKILL.md)、[performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md)。
+
+</details>
+
+### インフルエンサー (16)
+
+4 つのフェーズディレクトリ（各 4 スキル）；本領域のゲート（⛩ content-reviewer）は Activate に位置。
+
+| フェーズ | スキル |
+|-------|--------|
+| **Discover** | [audience-mapper](../influencer/discover/audience-mapper/SKILL.md), [trend-spotter](../influencer/discover/trend-spotter/SKILL.md), [influencer-discovery](../influencer/discover/influencer-discovery/SKILL.md), [fit-scorer](../influencer/discover/fit-scorer/SKILL.md) |
+| **Plan** | [competitor-tracker](../influencer/plan/competitor-tracker/SKILL.md), [campaign-planner](../influencer/plan/campaign-planner/SKILL.md), [brief-generator](../influencer/plan/brief-generator/SKILL.md), [budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md) |
+| **Activate** | [outreach-manager](../influencer/activate/outreach-manager/SKILL.md), ⛩ [content-reviewer](../influencer/activate/content-reviewer/SKILL.md), [contract-helper](../influencer/activate/contract-helper/SKILL.md), [content-amplifier](../influencer/activate/content-amplifier/SKILL.md) |
+| **Measure** | [landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md), [performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md), [roi-calculator](../influencer/measure/roi-calculator/SKILL.md), [report-generator](../influencer/measure/report-generator/SKILL.md) |
+
+<details><summary><b>スキルごとの目的（インフルエンサー）</b></summary>
+
+| スキル | 何をするか |
+|-------|--------------|
+| audience-mapper | *(統合: audience-analyzer + niche-researcher)* クリエイターと組む前に、ターゲットオーディエンスをプロファイルし、そのサブカルチャー / マイクロコミュニティを地図化。 |
+| trend-spotter | キャンペーンのタイミングとテーマ —— トレンドのハッシュタグ、サウンド、フォーマット、文化的モーメント。 |
+| influencer-discovery | クリエイター名簿をゼロから構築、新プラットフォームへ拡大、nano/micro を大規模にソーシング。 |
+| fit-scorer | ショートリストの客観的な加重フィットスコア（C³ ACE で採点）。 |
+| competitor-tracker | 競合のクリエイター、キャンペーン、フォーマット、推定リーチ/支出、ギャップ。 |
+| campaign-planner | キャンペーン、製品ローンチ、テントポール、常時稼働のクリエイタープログラムを計画。 |
+| brief-generator | 標準化されたインフルエンサーブリーフと再利用可能なチームテンプレート。 |
+| budget-optimizer | ティア/プラットフォームに支出を配分、ROI を予測、シナリオをモデリング（Paid Ads の支出 + bid-pacing にも寄与）。 |
+| outreach-manager | ピッチ、フォローアップの頻度、再エンゲージ、料率交渉、ステータス追跡。 |
+| ⛩ content-reviewer | クリエイターの提出物への公開前ゲート判断（C³ ART：FTC 開示 T1、クレーム完全性 T2）。 |
+| contract-helper | クリエイター契約の起草/レビュー —— 使用権、独占、標準条項。 |
+| content-amplifier | *(統合: content-amplifier + ugc-repurposer)* オーガニックなクリエイターコンテンツを有料出稿で増幅し、UGC を Paid、Web、メール、オーガニックへ再利用。 |
+| landing-optimizer | クリエイター/Paid トラフィック向けランディングページ —— メッセージ整合、モバイル、A/B（Paid のクリック後にも寄与）。 |
+| performance-analyzer | クリエイター結果を評価、クリエイターを比較、センチメント、コンバージョン（Paid のクロスチャネルスコアカードも）。 |
+| roi-calculator | ROI を測定/予測、予算を擁護、クリエイター/ティアを評価（共有のリターン計算エンジン、Paid を含む）。 |
+| report-generator | 期間後のステークホルダー向け書面レポート（Paid Ads レポートも）。 |
+
+</details>
+
 ### Launch — RAMP (16)
 
-`launch/` 配下の 4 つのフェーズディレクトリ（各 4 スキル）が RAMP ループに従います；ゲート（⛩ launch-readiness-auditor）は Mobilize に位置。ゲートだけが目標加重 LQS を計算します —— 他のスキルはそれぞれ 1 つのレバーを動かして引き継ぎます。ユースケース非依存（B2B SaaS セールス主導 / dev-tool コミュニティローンチ / モバイル app-store ローンチ）；目標加重列が力点を選びます。
+`launch/` 配下の 4 フェーズは Research → Assemble → Mobilize → Prove に従います。`launch-readiness-auditor` は実行ごとに `preflight`・`execution`・`outcome` のいずれか一つのプロファイルを選びます。ライフサイクルの結果はリンクされますが、決して平均されません。
 
 | フェーズ | スキル |
 |-------|--------|
@@ -433,7 +474,7 @@ Artifact Gate は**フレームワーク非依存**です —— 同じフック
 | launch-asset-packager | A | ティア範囲のローンチアセットマニフェスト —— プレスキット spec、デモ/スクショ spec、ローンチ FAQ、ストアリスティングメタデータ、技術的な go-live チェックリスト。 |
 | pricing-packaging-planner | A | ローンチの価格 & パッケージング —— ティア構造、価値対価格マップ、ローンチオファーのラダー、卒業パス付きベータ価格、保証条件。 |
 | sales-enablement-kit | A | 内部イネーブルメント —— バトルカード、セールストークトラック、反論処理表、内部 FAQ + CS マクロ、エンバーゴを守った内部アナウンス。 |
-| ⛩ launch-readiness-auditor | R+A+M+P (LQS) | auditor クラスの RAMP ゲート：LQS を採点、R1/A1/M1/P1 を強制、SHIP/FIX/BLOCK を出力；**T-1 go/no-go** モードを内蔵。 |
+| ⛩ launch-readiness-auditor | preflight / execution / outcome | 一つのライフサイクル読み取りに対する型付き RAMP ゲート。時間軸をまたいで平均しません。`memory/audits/launch/` に書き込みます。 |
 | launch-day-conductor | M | 時間ブロック化したローンチ当日ランブック —— 前提条件ゲートチェック、不可逆プッシュ後の観察ウィンドウ判定、P0–P3 インシデントラダー + ロールバック playbook。 |
 | community-launch-runner | M | プラットフォーム別提出パッケージ（Product Hunt、Show HN、subreddit、ディレクトリ波、地域/中国語チャネル）をプラットフォームのレッドラインチェックの下で。 |
 | press-media-relations | M | 三層のメディア/アナリストリスト、エンバーゴピッチのタイミング、標準構造のプレスリリース草案、アナリストブリーフィングの骨子。 |
@@ -443,42 +484,6 @@ Artifact Gate は**フレームワーク非依存**です —— 同じフック
 | momentum-planner | P | T+1→T+30 モメンタム計画 —— ローンチモーメントカレンダー、アナウンスのティアルーティング、relaunch の正当性判断、次の Tier-1 モーメント。 |
 
 **領域横断で再利用**（元フェーズで計上、重複なし）：`audience-mapper`、`trend-spotter`、`budget-optimizer`、`landing-optimizer`、`campaign-planner`、`outreach-manager`、`content-amplifier`、`email-creative-builder` / `email-sequence-designer` / `cold-outbound-sequencer`、`campaign-architect` / `ad-creative-builder`、`page-play-builder` / `content-writer`、`technical-seo-checker` / `serp-markup-builder`、`performance-monitor`、`keyword-research`、`entity-optimizer`、`offer-claims-registry`、`consent-registry`、`list-growth-designer`、`roi-calculator` / `performance-analyzer` / `report-generator` —— [ramp-benchmark.md](../references/ramp-benchmark.md) を参照。
-
-</details>
-
-### Social — ECHO (16)
-
-`social/` 配下の 4 つのフェーズディレクトリ（各 4 スキル）が ECHO ループに従います；ゲート（⛩ social-quality-auditor）は Host に位置。ゲートだけが目標加重 SQS を計算します —— 他のスキルはそれぞれ 1 つのレバーを動かして引き継ぎます。ユースケース非依存（コミュニティ/dev-tool / B2C ブランド / B2B 創業者主導）；目標加重列が力点を選びます。本領域は、いかなる種類の投稿・エンゲージメント・DM 自動化も**一切**同梱しません。
-
-| フェーズ | スキル |
-|-------|--------|
-| **Explore** | [channel-portfolio-planner](../social/explore/channel-portfolio-planner/SKILL.md), [voice-dossier-builder](../social/explore/voice-dossier-builder/SKILL.md), [platform-norm-profiler](../social/explore/platform-norm-profiler/SKILL.md), [participation-warmup-planner](../social/explore/participation-warmup-planner/SKILL.md) |
-| **Craft** | [social-calendar-builder](../social/craft/social-calendar-builder/SKILL.md), [social-creative-builder](../social/craft/social-creative-builder/SKILL.md), [short-video-scripter](../social/craft/short-video-scripter/SKILL.md), [advocacy-program-designer](../social/craft/advocacy-program-designer/SKILL.md) |
-| **Host** | ⛩ [social-quality-auditor](../social/host/social-quality-auditor/SKILL.md), [engagement-inbox-manager](../social/host/engagement-inbox-manager/SKILL.md), [social-selling-planner](../social/host/social-selling-planner/SKILL.md), [crisis-response-planner](../social/host/crisis-response-planner/SKILL.md) |
-| **Observe** | [social-pulse-monitor](../social/observe/social-pulse-monitor/SKILL.md), [share-of-voice-tracker](../social/observe/share-of-voice-tracker/SKILL.md), [dark-social-attributor](../social/observe/dark-social-attributor/SKILL.md), [social-measurement-loop](../social/observe/social-measurement-loop/SKILL.md) |
-
-<details><summary><b>スキルごとの目的（Social）</b></summary>
-
-| スキル | ECHO レバー | 何をするか |
-|-------|-----------|--------------|
-| channel-portfolio-planner | E | オーディエンスが実際にいる場所から、プラットフォームの組み合わせとチャネルごとの役割/ケイデンスを選ぶ（チャネルをレジストリに記録）。 |
-| voice-dossier-builder | E | 一貫した人間らしいプレゼンスのためのブランドボイス、トーン、ペルソナ、do/don't レキシコン。 |
-| platform-norm-profiler | E | 投稿する前の、プラットフォーム別の規範、フォーマット、ランキングシグナル、レッドラインルール。 |
-| participation-warmup-planner | E | 非宣伝的なコミュニティウォームアップ計画 —— 売り込む前にどこに現れて価値を加えるか。 |
-| social-calendar-builder | C | 編集カレンダー —— テーマ、シリーズ、実キャパシティに合わせたケイデンス（過剰投稿なし）。 |
-| social-creative-builder | C | プラットフォームネイティブな投稿（hook/body/CTA）、メッセージ整合、claims-ledger 認識。 |
-| short-video-scripter | C | ショート動画スクリプト —— フック、ビート、画面上テキスト、リテンション構造。 |
-| advocacy-program-designer | C | 従業員/コミュニティのアドボカシープログラム —— オプトイン、開示デフォルト、シェア可能なアセットキット。 |
-| ⛩ social-quality-auditor | E+C+H+O (SQS) | auditor クラスの ECHO ゲート：SQS を採点、E1/C1/C2/H1/H2/O1 を強制、SHIP/FIX/BLOCK を出力；**公開前 go/no-go** モードを内蔵。 |
-| engagement-inbox-manager | H | 返信/コメント/DM トリアージの playbook —— 応答ティア、エスカレーション、真正なエンゲージメントの規律（捏造/餌付けエンゲージメントなし）。 |
-| social-selling-planner | H | 創業者/チームのソーシャルセリング動線 —— 関係優先のアウトリーチ、自動 DM なし。 |
-| crisis-response-planner | H | 事前起草した危機ティア、保留声明、エスカレーションラダー、キュー停止トリガー。 |
-| social-pulse-monitor | O | keyless ソースからの言及/センチメント/トピックのパルス、spike-vs-sustain の判読（プロキシデータはラベル付き）。 |
-| share-of-voice-tracker | O | 期間安定の分母に対する、名前付き競合とのシェアオブボイス。 |
-| dark-social-attributor | O | ダークソーシャル/未リンクトラフィックの帰属 —— UTM の規律、自己申告アトリビューションの捕捉、参照元パース。 |
-| social-measurement-loop | O | 出荷済みの変更を、あるウィンドウでベースラインに照らして読み戻す → Promote / Keep-testing / Rollback。 |
-
-**領域横断で再利用**（元フェーズで計上、重複なし）：`trend-spotter`、`audience-mapper`、`content-amplifier`、`outreach-manager`、`competitor-tracker`、`landing-optimizer`、`performance-analyzer`、`roi-calculator`、`report-generator`、`offer-claims-registry`、`community-launch-runner`、`creator-registry`、`page-play-builder`、`memory-management` —— [echo-benchmark.md](../references/echo-benchmark.md) を参照。
 
 </details>
 
@@ -618,7 +623,7 @@ docs/            # ローカライズ済み README（zh）
 
 ## 設計思想
 
-- **スキルはコンテンツ。** 唯一のコードは Bash バリデータ、Bash フックランナー、依存関係ゼロの Python 標準ライブラリのコネクタ/チェックヘルパー。第三者 / `pip` 依存は決して入れない —— 依存増殖ガードで強制。
+- **コンテンツファースト。** スキルは Markdown です。ゼロ依存の Bash/Python 標準ライブラリランタイムがコネクタ、採点、レジストリイベント、検証、チェックを提供します。サードパーティ / `pip` 依存は CI が禁止します。
 - **keyless ファースト。** 各 `~~category` には無料/自有データのレシピがある；MCP と有料ツールは純粋な利便性。
 - **外科的 & MECE。** 各スキルは境界の明確な 1 つの職務を持つ；重なる作業は薄い新スキルではなく既存スキルの*モード*として出荷。レジストリはキュレート、ゲートは判定、アナライザはゲートに給餌。
 - **数字を捏造しない。** スキルは各数値に Measured / User-provided / Estimated を付け、AI 臭 / 禁止フレーズ検出器を同梱。
@@ -637,18 +642,18 @@ docs/            # ローカライズ済み README（zh）
 | `check-evals.py` | eval 構造 lint + `structure-manifest.json`（120/120 スキルが eval ケースを持つ）。 |
 | `check-pii.py` | コミットされたシークレット / PII をブロック（トークン級 allowlist、fail-closed）。 |
 | `check-stdlib-only.sh` | 依存増殖ガード + Paid Ads のキー付き API レッドライン。 |
-| `check-versions.sh` | バージョン同期ガード：バンドルバージョンが plugin.json / 両 marketplace ミラー / 両 README バッジ / CLAUDE.md / VERSIONS.md リリース行 + changelog エントリで一致し、各 SKILL.md バージョンがその VERSIONS.md 行と一致。 |
-| `tests/test_connectors_local.py` | 各コネクタの純粋なリクエストビルダーのオフライン単体テスト（CI ではネットワークなし）。 |
+| `check-versions.sh` | バージョン同期ガード：system catalog、plugin/marketplace/OpenClaw の各マニフェスト、ルート + ローカライズ README のバッジ、AGENTS/CLAUDE/VERSIONS、GitHub About、全 120 スキルのバージョンが揃っていることを保証。 |
+| `tests/test_connectors_local.py` | 同梱する全 29 コネクタモジュールを対象にしたリクエストビルダー／パーサーのオフラインテスト（CI ではネットワークなし）。 |
 | `tests/test_hook_artifact_gate.sh` | フックの Artifact Gate + SessionStart サニタイズの挙動テスト。 |
 
-ライブエンドポイントのドリフトは**手動**の [`scripts/connectors/smoke-live.sh`](../scripts/connectors/smoke-live.sh) が別途カバーします —— ホスト型コネクタごとに最小限の実呼び出し 1 回 + 形状アサーション（レートリミット応答は SKIP 扱い）；リリース前に実行し、決して CI では実行しません。
+ライブエンドポイントのドリフトは**手動**の [`scripts/connectors/smoke-live.sh`](../scripts/connectors/smoke-live.sh) で別途サンプリングします —— スクリプトに列挙されたホスト型コネクタごとに最小限の実呼び出し 1 回 + 形状アサーション（レートリミット応答は SKIP 扱い）；リリース前に実行し、決して CI では実行しません。
 
 ---
 
 ## コントリビュートとプロジェクトドキュメント
 
-- **[CONTRIBUTING.md](../CONTRIBUTING.md)** —— オーサリングルール、コントリビューションチェックリスト、権威ある 8 ファイル追跡リスト。
-- **[VERSIONS.md](../VERSIONS.md)** —— スキルごとのバージョン + changelog（現在のバンドル：`16.0.0`）。
+- **[CONTRIBUTING.md](../CONTRIBUTING.md)** —— オーサリングルール、コントリビューションチェックリスト、権威ある 10 の追跡サーフェスのリスト。
+- **[VERSIONS.md](../VERSIONS.md)** —— スキルごとのバージョン + changelog（現在のバンドル：`17.0.0`）。
 - **[SECURITY.md](../SECURITY.md)** · **[PRIVACY.md](../PRIVACY.md)** · **[CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md)** —— セキュリティ、プライバシー、コミュニティのポリシー。
 - **[CLAUDE.md](../CLAUDE.md)** / **[AGENTS.md](../AGENTS.md)** —— この repo のエージェント向けコンテキスト。
 
@@ -662,7 +667,7 @@ docs/            # ローカライズ済み README（zh）
 
 Apache License 2.0 —— [LICENSE](../LICENSE) を参照。
 
-*英語 README との最終同期：v16.0.3*
+*英語 README との最終同期：v17.0.0*
 
 ## Star History
 

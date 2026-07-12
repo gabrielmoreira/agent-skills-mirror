@@ -7,6 +7,9 @@ description: >
   "add metrics", "Prometheus", "observability", "instrument this code".
   Do NOT use for: performance profiling with pprof (use go-performance-review),
   error handling patterns (use go-error-handling), or health check endpoints (use go-api-design).
+license: MIT
+metadata:
+  version: "1.0.0"
 ---
 
 # Go Observability
@@ -207,7 +210,7 @@ var (
 
 ### Metric naming conventions:
 
-```
+```text
 <namespace>_<subsystem>_<name>_<unit>
 
 http_request_duration_seconds     ✅ (unit in name)

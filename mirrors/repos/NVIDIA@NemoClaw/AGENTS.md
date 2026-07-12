@@ -58,6 +58,7 @@ Package-specific guides:
 | Run repo-wide pre-commit and coverage checks | `npm run check` |
 | Reproduce `pre-commit`, `commit-msg`, and `pre-push` checks for the current diff | `npm run check:diff` |
 | Type-check CLI | `npm run typecheck:cli` |
+| Type-check plugin and plugin tests | `npm --prefix nemoclaw run typecheck` |
 | Auto-format | `npm run format` |
 | Build docs | `npm run docs` |
 | Serve docs locally | `npm run docs:live` |
@@ -143,7 +144,8 @@ For shell scripts use `#` comments. For Markdown use HTML comments.
 
 - Plugin code in `nemoclaw/src/` is linted and formatted by the root Biome config
 - CLI type-checking via `tsconfig.cli.json`
-- Plugin type-checking via `nemoclaw/tsconfig.json`
+- Plugin production and test type-checking via `npm --prefix nemoclaw run typecheck`, using
+  `nemoclaw/tsconfig.json` and `nemoclaw/tsconfig.test.json`
 
 ### Shell Scripts
 
@@ -170,11 +172,21 @@ All hooks managed by [prek](https://prek.j178.dev/) (installed via `npm install`
 ### Before Making Changes
 
 1. Read `CONTRIBUTING.md` for the full contributor guide
-2. Apply its engineering posture to every coding task: surface material assumptions and outcome-changing ambiguity, make the smallest issue-scoped change, prove observable success criteria, and for QA-escaped defects address both the product root cause and the detection gap
+2. Before coding, state what success looks like. Ask only when a choice changes behavior, security, data safety, or a supported contract. Then make the smallest change that works. For a QA-escaped defect, also add the test or diagnostic that should have caught it.
 3. For a first-time checkout, use `.agents/skills/nemoclaw-contributor-onboard/SKILL.md` or run `npm run dev:setup`
 4. Run `npm run dev:doctor` to verify the contributor environment without changing it
 5. Use `./scripts/dev-setup.sh --expose-cli` only with explicit approval for host-visible CLI exposure
 6. Run the tests targeted to the behavior you change once per relevant change set; rerun them after later edits or hook autofixes that can affect that behavior
+
+### Plain Language and Direct Design
+
+- Use existing repository vocabulary and name what a thing does.
+- Remove modifiers that do not distinguish a real current case.
+- Use one name for one concept across issues, code, workflows, checks, logs, tests, and docs.
+- Do not turn one case into a system of categories or a new abstraction.
+- Do not add configuration, fallback, migration, compatibility, or extension layers without a current requirement. Name the current consumer and the test that protects the contract.
+- Report conclusions and evidence, not an analysis transcript.
+- Stop exploring once the smallest safe solution is clear.
 
 ### Git and GitHub Access Failures
 

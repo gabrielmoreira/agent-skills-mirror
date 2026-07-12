@@ -7,6 +7,9 @@ description: >
   Trigger examples: "review this code", "check this PR", "code review", "review Go file".
   Do NOT use for security-specific audits (use go-security-audit) or
   performance-specific analysis (use go-performance-review).
+license: MIT
+metadata:
+  version: "1.2.0"
 ---
 
 # Go Code Review
@@ -14,12 +17,39 @@ description: >
 Structured code review process for Go. Reviews should be constructive, specific,
 and cite the relevant principle behind each finding.
 
+## Operating Modes
+
+Pick the mode that matches the request before starting:
+
+- **Diff review** (default) — review only the changed lines plus enough
+  surrounding context to judge them. Use for PRs and working-tree changes.
+- **File/package review** — review the named files or packages in full,
+  including their tests.
+- **Full audit** — sweep the entire codebase. Use the strategy in
+  "Auditing Large Codebases" below and aggregate everything into one report.
+
 ## Review Process
 
 Execute these steps in order. For each finding, classify severity:
 - 🔴 **BLOCKER** — Must fix before merge. Correctness, data loss, security.
 - 🟡 **WARNING** — Should fix. Maintainability, idiomatic Go, clarity.
 - 🟢 **SUGGESTION** — Consider improving. Style, naming, documentation.
+
+## 0. Run the Toolchain First
+
+Before reading code manually, let the tools catch the mechanical issues
+(skip any tool that is not installed and note it in the report):
+
+```bash
+go build ./...          # it must compile
+go vet ./...            # suspicious constructs
+golangci-lint run       # if the repo has a config
+go test -race ./...     # tests pass, no data races
+```
+
+Report tool findings alongside manual findings — a failing `go vet` is
+an automatic 🔴 BLOCKER. Never report an issue a tool already proves
+absent.
 
 ## 1. Correctness & Safety
 
@@ -93,9 +123,24 @@ Execute these steps in order. For each finding, classify severity:
 - Dependencies are from well-maintained, reputable sources.
 - Indirect dependencies are understood and acceptable.
 
+## Auditing Large Codebases
+
+When the scope exceeds ~20 files, do not read everything in one linear
+pass. Split the audit into independent passes:
+
+1. Enumerate packages (`go list ./...`) and group them by layer
+   (handlers, services, stores, shared libraries).
+2. Run one focused pass per concern from sections 1-7 (correctness,
+   API design, idioms, structure, testing, docs, dependencies).
+3. If your environment supports delegating work to parallel sub-agents
+   or tasks, assign each pass to one — they are independent by design.
+   Otherwise run them sequentially, one concern at a time.
+4. Require every finding to cite `file.go:line` and severity so the
+   final aggregation is mechanical: merge, deduplicate, sort by severity.
+
 ## Review Output Format
 
-```
+```text
 ## Code Review Summary
 
 **Files reviewed:** <list>

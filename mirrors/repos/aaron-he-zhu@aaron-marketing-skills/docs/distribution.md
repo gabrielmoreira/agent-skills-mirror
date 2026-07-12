@@ -5,6 +5,12 @@ is **owner-run, dry-run by default, and driven by the repo's committed state** â
 no hardcoded queues, no guessing. The single source of truth for "are we fully
 distributed?" is `scripts/registry-status.sh`.
 
+> Note: `scripts/build-distribution.py`'s minimal *plugin* profile is the
+> ClawHub package source via `publish-package.sh --from-build` â€” adopted at
+> v17.0.0 when the full git archive first exceeded ClawHub's upload limit
+> (413). The GitHub-source mode remains the default for as long as it fits.
+> The profile's manifest and link-closure are CI-checked.
+
 ## Channels
 
 | Channel | What ships | Tool | Cadence |

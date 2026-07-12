@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `first-fluke/oh-my-agent` — 26 default patterns, 0 followed patterns, 481 file(s) materialized.
+Mirror of `first-fluke/oh-my-agent` — 26 default patterns, 0 followed patterns, 519 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `first-fluke/oh-my-agent` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 481 |
+| Files         | 519 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -527,19 +527,57 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 466 | ✓ | [`cli/AGENTS.md`](cli/AGENTS.md) |
 | 467 | ✓ | [`cli/ARCHITECTURE.md`](cli/ARCHITECTURE.md) |
 | 468 | ✓ | [`cli/CLAUDE.md`](cli/CLAUDE.md) |
-| 469 | ✓ | [`web/docs/core-concepts/skills.md`](web/docs/core-concepts/skills.md) |
-| 470 | ✓ | [`web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 471 | ✓ | [`web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 472 | ✓ | [`web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 473 | ✓ | [`web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 474 | ✓ | [`web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 475 | ✓ | [`web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 476 | ✓ | [`web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 477 | ✓ | [`web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 478 | ✓ | [`web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 479 | ✓ | [`web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 480 | ✓ | [`web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 481 | ✓ | [`web/static/llms.txt`](web/static/llms.txt) |
+| 469 | ✓ | [`cli/platform/emit/__fixtures__/repo/.agents/skills/folded-desc-skill/SKILL.md`](cli/platform/emit/__fixtures__/repo/.agents/skills/folded-desc-skill/SKILL.md) |
+| 470 | ✓ | [`cli/platform/emit/__fixtures__/repo/.agents/skills/invalid-skill/SKILL.md`](cli/platform/emit/__fixtures__/repo/.agents/skills/invalid-skill/SKILL.md) |
+| 471 | ✓ | [`cli/platform/emit/__fixtures__/repo/.agents/skills/oversized-skill/SKILL.md`](cli/platform/emit/__fixtures__/repo/.agents/skills/oversized-skill/SKILL.md) |
+| 472 | ✓ | [`cli/platform/emit/__fixtures__/repo/.agents/skills/valid-skill/SKILL.md`](cli/platform/emit/__fixtures__/repo/.agents/skills/valid-skill/SKILL.md) |
+| 473 | ✓ | [`cli/platform/emit/__fixtures__/repo/AGENTS.md`](cli/platform/emit/__fixtures__/repo/AGENTS.md) |
+| 474 | ✓ | [`generated/agent-skills/oma-academic-writer/SKILL.md`](generated/agent-skills/oma-academic-writer/SKILL.md) |
+| 475 | ✓ | [`generated/agent-skills/oma-architecture/SKILL.md`](generated/agent-skills/oma-architecture/SKILL.md) |
+| 476 | ✓ | [`generated/agent-skills/oma-backend/SKILL.md`](generated/agent-skills/oma-backend/SKILL.md) |
+| 477 | ✓ | [`generated/agent-skills/oma-brainstorm/SKILL.md`](generated/agent-skills/oma-brainstorm/SKILL.md) |
+| 478 | ✓ | [`generated/agent-skills/oma-coordination/SKILL.md`](generated/agent-skills/oma-coordination/SKILL.md) |
+| 479 | ✓ | [`generated/agent-skills/oma-db/SKILL.md`](generated/agent-skills/oma-db/SKILL.md) |
+| 480 | ✓ | [`generated/agent-skills/oma-debug/SKILL.md`](generated/agent-skills/oma-debug/SKILL.md) |
+| 481 | ✓ | [`generated/agent-skills/oma-deepsec/SKILL.md`](generated/agent-skills/oma-deepsec/SKILL.md) |
+| 482 | ✓ | [`generated/agent-skills/oma-design/SKILL.md`](generated/agent-skills/oma-design/SKILL.md) |
+| 483 | ✓ | [`generated/agent-skills/oma-dev-workflow/SKILL.md`](generated/agent-skills/oma-dev-workflow/SKILL.md) |
+| 484 | ✓ | [`generated/agent-skills/oma-docs/SKILL.md`](generated/agent-skills/oma-docs/SKILL.md) |
+| 485 | ✓ | [`generated/agent-skills/oma-frontend/SKILL.md`](generated/agent-skills/oma-frontend/SKILL.md) |
+| 486 | ✓ | [`generated/agent-skills/oma-hwp/SKILL.md`](generated/agent-skills/oma-hwp/SKILL.md) |
+| 487 | ✓ | [`generated/agent-skills/oma-image/SKILL.md`](generated/agent-skills/oma-image/SKILL.md) |
+| 488 | ✓ | [`generated/agent-skills/oma-market/SKILL.md`](generated/agent-skills/oma-market/SKILL.md) |
+| 489 | ✓ | [`generated/agent-skills/oma-mobile/SKILL.md`](generated/agent-skills/oma-mobile/SKILL.md) |
+| 490 | ✓ | [`generated/agent-skills/oma-observability/SKILL.md`](generated/agent-skills/oma-observability/SKILL.md) |
+| 491 | ✓ | [`generated/agent-skills/oma-orchestrator/SKILL.md`](generated/agent-skills/oma-orchestrator/SKILL.md) |
+| 492 | ✓ | [`generated/agent-skills/oma-pdf/SKILL.md`](generated/agent-skills/oma-pdf/SKILL.md) |
+| 493 | ✓ | [`generated/agent-skills/oma-pm/SKILL.md`](generated/agent-skills/oma-pm/SKILL.md) |
+| 494 | ✓ | [`generated/agent-skills/oma-qa/SKILL.md`](generated/agent-skills/oma-qa/SKILL.md) |
+| 495 | ✓ | [`generated/agent-skills/oma-recap/SKILL.md`](generated/agent-skills/oma-recap/SKILL.md) |
+| 496 | ✓ | [`generated/agent-skills/oma-refactor/SKILL.md`](generated/agent-skills/oma-refactor/SKILL.md) |
+| 497 | ✓ | [`generated/agent-skills/oma-scholar/SKILL.md`](generated/agent-skills/oma-scholar/SKILL.md) |
+| 498 | ✓ | [`generated/agent-skills/oma-scm/SKILL.md`](generated/agent-skills/oma-scm/SKILL.md) |
+| 499 | ✓ | [`generated/agent-skills/oma-search/SKILL.md`](generated/agent-skills/oma-search/SKILL.md) |
+| 500 | ✓ | [`generated/agent-skills/oma-skill-creator/SKILL.md`](generated/agent-skills/oma-skill-creator/SKILL.md) |
+| 501 | ✓ | [`generated/agent-skills/oma-slide/SKILL.md`](generated/agent-skills/oma-slide/SKILL.md) |
+| 502 | ✓ | [`generated/agent-skills/oma-tf-infra/SKILL.md`](generated/agent-skills/oma-tf-infra/SKILL.md) |
+| 503 | ✓ | [`generated/agent-skills/oma-translator/SKILL.md`](generated/agent-skills/oma-translator/SKILL.md) |
+| 504 | ✓ | [`generated/agent-skills/oma-video/SKILL.md`](generated/agent-skills/oma-video/SKILL.md) |
+| 505 | ✓ | [`generated/agent-skills/oma-voice/SKILL.md`](generated/agent-skills/oma-voice/SKILL.md) |
+| 506 | ✓ | [`generated/agents-md/AGENTS.md`](generated/agents-md/AGENTS.md) |
+| 507 | ✓ | [`web/docs/core-concepts/skills.md`](web/docs/core-concepts/skills.md) |
+| 508 | ✓ | [`web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 509 | ✓ | [`web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 510 | ✓ | [`web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 511 | ✓ | [`web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 512 | ✓ | [`web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 513 | ✓ | [`web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 514 | ✓ | [`web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 515 | ✓ | [`web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 516 | ✓ | [`web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 517 | ✓ | [`web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 518 | ✓ | [`web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 519 | ✓ | [`web/static/llms.txt`](web/static/llms.txt) |
 
 ---
 

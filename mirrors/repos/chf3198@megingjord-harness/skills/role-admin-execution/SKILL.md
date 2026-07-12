@@ -61,6 +61,11 @@ Never revert a merge. If AC failures found post-merge, create a **new forward-fi
 
 - `ADMIN_HANDOFF` records objective outcomes for each operation.
 - Governance/release checks are marked complete or explicitly N/A.
+- **Merge-before-handoff** (#3053): for lane:code-change, when CI is green and
+  `admin_review_rating >= 93`, the PR MUST be merged before posting ADMIN_HANDOFF.
+  Red CI is never force-bypassed. Exceptions: `merge-evidence-override-approved`
+  label or `baseline_drift_override`. The Admin owns the merge; never route
+  merge authorization to the client (principle #2578).
 
 ## Must not do
 

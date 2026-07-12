@@ -69,7 +69,7 @@ Confirm the bug exists and understand its behavior. Run the test, trigger the er
 - **Writing the reproduction test:** Orient on the project's testing conventions before authoring the failing test. Resolve them from the shared repo-grounding cache first — set `SKILL_DIR` to this skill's directory and run the helper (full protocol in `references/repo-profile-cache.md`):
 
   ```bash
-  SKILL_DIR="<absolute path of the directory containing the SKILL.md you just read>"
+  SKILL_DIR="<absolute path of the directory containing the SKILL.md you just read>";
   python3 "$SKILL_DIR/scripts/repo-profile-cache.py" get
   ```
 

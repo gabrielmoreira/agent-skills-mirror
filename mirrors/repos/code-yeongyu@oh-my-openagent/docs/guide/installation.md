@@ -486,7 +486,7 @@ GitHub Copilot is supported as a **fallback provider** when native providers are
 | ------------- | ---------------------------------- |
 | **Sisyphus**  | `github-copilot/claude-opus-4.7`   |
 | **Oracle**    | `github-copilot/gpt-5.5`           |
-| **Explore**   | `github-copilot/grok-code-fast-1`  |
+| **Explore**   | `github-copilot/claude-haiku-4-5`  |
 | **Atlas**     | `github-copilot/claude-sonnet-4.6` |
 
 Copilot acts as a proxy provider, routing requests to underlying models based on your subscription. Some agents (like Librarian) are not installed from Copilot alone and instead rely on other providers or runtime fallback.
@@ -565,7 +565,7 @@ Not all models behave the same way. Understanding "similar" families helps you m
 
 | Model                      | Provider(s)         | Speed          | Notes                                                                          |
 | -------------------------- | ------------------- | -------------- | ------------------------------------------------------------------------------ |
-| **Grok Code Fast 1**       | github-copilot, xai | Very fast      | Optimized for code grep/search. Default for Explore.                          |
+| **Grok Code Fast 1**       | github-copilot, xai | Very fast      | Optimized for code grep/search. Manual override option — not in the default chains. |
 | **Claude Haiku 4.5**       | anthropic, vercel   | Fast           | Good balance of speed and intelligence.                                       |
 | **MiniMax M2.7 Highspeed** | vercel, opencode    | Very fast      | High-speed MiniMax utility fallback used by runtime chains.                   |
 | **GPT-5.3-codex-spark**    | openai              | Extremely fast | Blazing but compacts too aggressively. Not recommended for omo agents.        |
@@ -731,7 +731,7 @@ Skip this section if `--platform=opencode`. Otherwise, the user installed the **
 | `git-bash` | TypeScript + MCP | `PreToolUse` (`Bash`), `PostCompact`, MCP server | On Windows, exposes `git_bash`; reminds Codex before the first shell-like call and again after compaction |
 | `lsp` | TypeScript + MCP | MCP server + post-edit hooks | Exposes LSP diagnostics, navigation, symbols, rename via MCP |
 | `ultrawork` | TypeScript | `UserPromptSubmit` keyword detector | Detects `ulw`/`ultrawork` keyword; the installer links bundled Codex agent TOMLs into `$CODEX_HOME/agents` |
-| `ulw-loop` | TypeScript | Durable orchestration via `.omo/ulw-loop/` | Multi-goal orchestration with evidence audit trail |
+| `ulw-loop` | TypeScript | `UserPromptSubmit`, `PreToolUse`, `Stop` | Multi-goal orchestration with evidence audit trail, spawn guards, and Stop-hook auto-resume via `.omo/ulw-loop/` |
 | `start-work-continuation` | TypeScript | `Stop`, `SubagentStop` | Continues `.omo/boulder.json` start-work plans when Codex pauses at a stop boundary |
 | `telemetry` | TypeScript | `SessionStart` | Emits anonymous daily active telemetry when enabled |
 

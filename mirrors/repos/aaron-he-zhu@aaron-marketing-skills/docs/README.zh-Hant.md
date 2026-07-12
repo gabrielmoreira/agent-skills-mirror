@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills"><img src="https://img.shields.io/github/stars/aaron-he-zhu/aaron-marketing-skills?style=flat" alt="GitHub Stars"></a>
-  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-16.1.1-orange" alt="Version"></a>
+  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-17.0.0-orange" alt="Version"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/commits/main"><img src="https://img.shields.io/github/last-commit/aaron-he-zhu/aaron-marketing-skills" alt="Last Commit"></a>
 </p>
@@ -24,16 +24,18 @@
 
 | 層 | 技能 | 生命週期（階段目錄） | 框架 → 門 | 入口命令 |
 |----|------|----------------------|-----------|----------|
-| **Narrative** | 16 | trace → architect → land → evaluate | [TALE](../references/tale-benchmark.md) → `narrative-quality-auditor`（NQS） | `/aaron-marketing:narrative` |
+| **Narrative** | 16 | trace → architect → land → evaluate | [TALE](../references/tale-benchmark.md) → `narrative-quality-auditor` (truth / system / effectiveness profiles) | `/aaron-marketing:narrative` |
 | **SEO/GEO** | 16 | research → build → optimize → monitor | [CORE-EEAT](../references/core-eeat-benchmark.md) → `content-quality-auditor` · [CITE](../references/cite-domain-rating.md) → `domain-authority-auditor` | `/aaron-marketing:seo-geo` |
-| **紅人** | 16 | discover → plan → activate → measure | [C³](../references/c3-benchmark.md) → `content-reviewer`（ART）；`fit-scorer` 打 ACE 分 | `/aaron-marketing:influencer` |
-| **付費廣告** | 16 | research → orchestrate → activate → scale | [ROAS](../references/roas-benchmark.md) → `ad-account-auditor`（RQS） | `/aaron-marketing:ad` |
+| **社媒** | 16 | explore → craft → host → observe | [ECHO](../references/echo-benchmark.md) → `social-quality-auditor` (asset / program-maturity profiles) | `/aaron-marketing:social` |
 | **郵件** | 16 | setup → engage → nurture → deliver | [SEND](../references/send-benchmark.md) → `email-quality-auditor`（EQS） | `/aaron-marketing:email` |
-| **產品發布** | 16 | research → assemble → mobilize → prove | [RAMP](../references/ramp-benchmark.md) → `launch-readiness-auditor`（LQS） | `/aaron-marketing:launch` |
-| **社媒** | 16 | explore → craft → host → observe | [ECHO](../references/echo-benchmark.md) → `social-quality-auditor`（SQS） | `/aaron-marketing:social` |
+| **付費廣告** | 16 | research → orchestrate → activate → scale | [ROAS](../references/roas-benchmark.md) → `ad-account-auditor`（RQS） | `/aaron-marketing:ad` |
+| **紅人** | 16 | discover → plan → activate → measure | [C³](../references/c3-benchmark.md) → `content-reviewer`（ART）；`fit-scorer` 打 ACE 分 | `/aaron-marketing:influencer` |
+| **產品發布** | 16 | research → assemble → mobilize → prove | [RAMP](../references/ramp-benchmark.md) → `launch-readiness-auditor` (preflight / execution / outcome profiles) | `/aaron-marketing:launch` |
 | **協議層** | 8 | ——（階段流程之外的共享機件） | 7 個真相註冊表（entity · creator · offer/claims · consent · launch · channel · narrative）+ HOT/WARM/COLD 記憶 | —— |
 
-`/aaron-marketing:auto` 把任意自然語言目標路由到全庫。全部為**純 Markdown** —— 唯一的程式碼是一個 Bash hook runner、一個 Bash 校驗器、以及零依賴的 Python 標準庫資料助手（無 `pip`、無建置步驟）。**每個技能都能在 Tier 1 僅憑你貼上的資料執行**；連接器只是自動化取數。
+`/aaron-marketing:auto` 可把任意自然語言目標路由到整套體系。技能與命令都是**純 Markdown**；小型 Bash/Python 標準庫執行時提供 hooks、校驗、評分、註冊表事件、連接器與 CI 檢查（無 `pip`、無建置步驟）。**每個技能都在 Tier 1 用你提供的資料即可執行**；連接器只自動化資料拉取，或一次經明確核准的變更。
+
+權威的型別化拓撲是 [`references/system-catalog.json`](../references/system-catalog.json)；可讀的四層地圖、全部 120 條路徑、註冊表所有者、auditor 落點與分發檔案見[生成的系統架構文件](system-architecture.md)。
 
 > 合併前的兩個獨立倉庫現均為**純路標倉庫**——[seo-geo-claude-skills](https://github.com/aaron-he-zhu/seo-geo-claude-skills)（最終 20 技能版本線保留於 tag `v9.9.12`）與 [influencer-marketing-agent-skills](https://github.com/aaron-he-zhu/influencer-marketing-agent-skills)（最終 IMPACT 版本線保留於 tag `standalone-final`），安裝一律指向本倉庫。兄弟倉庫策略見 [docs/repo-family.md](repo-family.md)。
 
@@ -76,10 +78,10 @@
 | 原則 | 落到實處 |
 |------|----------|
 | **預設 keyless** | 每個技能都能在 **Tier 1** 僅憑貼上的資料、或從免費/第一方來源拉取的資料執行。付費工具與 MCP 伺服器是選配，絕非前提。付費廣告技能基於**自有帳戶手動匯出**評分——帶金鑰的廣告 API 永不必需。 |
-| **是 Markdown，不是框架** | 技能即內容。唯一可執行程式碼是 `hooks/claude-hook.sh`（Bash）、`scripts/validate-skill.sh`（Bash）、`scripts/connectors/*.py`（**僅 Python 標準庫**）。無需安裝、稽核或維護。 |
+| **內容優先、契約可執行** | 技能始終是 Markdown。小型 Bash/Python 標準庫執行時讓評分、狀態、安全與契約一致性都可確定性執行，且不新增任何套件相依。 |
 | **一套共享契約** | 120 個技能暴露同樣的七段結構，並自帶 `discipline` + `phase` 中繼資料，整個庫像一套作業系統：每個技能都知道自己的輸入、輸出，以及下一個該交棒的技能。 |
-| **帶門的品質** | 八套基準驅動八個 auditor-class 門，產出結構化、可機器校驗的判定——不是憑感覺。每個帶門產物落盤前都經 PostToolUse hook 校驗。 |
-| **真相住在註冊表裡** | 規範事實（品牌實體、創作者檔案、offer/聲明實證、逐主體同意）住在協議層專職註冊表中，唯一寫入者規則——門對照註冊表評判，而非各自重新推導。 |
+| **帶門的品質** | 八套基準驅動八個 auditor-class 門，產出結構化、可機器校驗的判定——不是憑感覺。成功/失敗/批次 hook 以有界檢查揭露無效寫入；pre-commit/CI 只兜底已提交 Git 內容中的 PII，不校驗 runtime 產物。 |
+| **真相住在事件裡** | 七條只追加（append-only）的註冊表事件流是規範真相；由所有者掌控的投影對外暴露實體、創作者、聲明、同意、發布、通路與敘事狀態，全程不再有破壞性佇列。 |
 | **跨輪記憶** | HOT/WARM/COLD 記憶模型在技能與工作階段之間攜帶發現、分數與未決事項，並在寫入時淨化。 |
 | **人話** | 技能內建 AI 腔偵測器與禁用詞表，讓輸出讀起來像人寫的。 |
 
@@ -154,9 +156,9 @@
 | **L1 · Strategy** —— 我們說什麼 / 我們是誰 | crawl | **Narrative** · TALE | 常駐 |
 | **L2 · Channels** —— 表達策略的常駐引擎（owned → bought） | walk | **SEO/GEO** · CORE-EEAT + CITE · **Organic Social** · ECHO · **Email** · SEND · **Paid Ads** · ROAS · **Influencer** · C³ | 常駐（紅人偏 episodic） |
 | **L3 · Orchestration** —— 跨通路的限時時刻 | run | **Product Launch** · RAMP | episodic |
-| **L4 · Protocol** —— 共享記錄系統 | —— | 8 個真相註冊表 + 記憶 · 8 個 auditor 門 · 一套技能契約 | —— |
+| **L4 · Protocol** —— 共享的記錄系統 | — | 7 個真相註冊表 + 工作記憶 · 8 個 auditor 門 · 一套技能契約 | — |
 
-Narrative 是訊息；通路是表達它的媒介——拿掉任一通路，記錄依舊完整；拿掉 Narrative，每個通路都在說一句無出處、無治理的訊息。每個通路都像今天每個 creative builder 已在讀聲明台帳那樣，從 L1 繼承聲音與聲明。每個學科的 4 階段循環都住在自己的層裡（Narrative = Trace → Architect → Land → Evaluate）。
+Narrative 是訊息；通路是表達它的媒介。每個核心 builder 都會記錄它所使用的確切正典 ID/版本與聲明投影偏移量（offset），或一次經明確核准的回退/阻斷。每個學科的 4 階段循環都住在自己的層裡（Narrative = Trace → Architect → Land → Evaluate）。
 
 七個學科都用階段**目錄**（`narrative/trace/`…、`seo-geo/research/`…、`influencer/discover/`…、`ad/research/`…、`email/setup/`…、`launch/research/`…、`social/explore/`…）。注意 "activate" 在紅人裡指創作者外聯、在付費裡指帳戶門控——同詞不同域。
 
@@ -166,46 +168,46 @@ Narrative 是訊息；通路是表達它的媒介——拿掉任一通路，記�
 
 | 框架 | 評分對象 | 項數 / 維度 | 彙總 | 否決項 |
 |------|----------|-------------|------|--------|
-| **[TALE](../references/tale-benchmark.md)** | 品牌敘事 Truth / Architecture / Landing / Evidence | T / A / L / E | **NQS = floor（目標加權均值）**（算術） | `T1`/`A1`/`L1`/`E1` |
-| **[CORE-EEAT](../references/core-eeat-benchmark.md)** | 內容品質（GEO = CORE 均值，SEO = EEAT 均值） | 80 項 / 8 維 | 各維度均值 | `T04`、`C01`、`R10` |
-| **[CITE](../references/cite-domain-rating.md)** | 網域權威與引用信任 | 40 項 / 4 維 | 算術加權平均 | `T03`、`T05`、`T09` |
-| **[C³](../references/c3-benchmark.md)** | 紅人 創作者/內容/活動 | ACE / ART / ROI · 9 維 | **CVI =（ACE × ART × ROI）^⅓**（幾何） | ACE `A2`/`C1`/`E2`、ART `T1`/`T2` |
-| **[ROAS](../references/roas-benchmark.md)** | 付費廣告 回報/報價/受眾/花費效率 | R / O / A / S | **RQS = floor（目標加權均值）**（算術） | `R1`/`R2`/`O1`/`O2`/`A1` |
-| **[SEND](../references/send-benchmark.md)** | 郵件行銷 寄件完整/送達 · 互動 · 培育/生命週期 · 直接回應/轉換 | S / E / N / D | **EQS = floor（目標加權均值）**（算術） | `S1`/`S2`/`N1`/`D1` |
-| **[RAMP](../references/ramp-benchmark.md)** | 產品發布 就緒 · 資產 · 勢能 · 證明 | R / A / M / P · 40 項 | **LQS = floor（目標加權均值）**（算術） | `R1`/`A1`/`M1`/`P1`（帶框架名限定——與 ROAS `R1`/`A1` 相區別） |
-| **[ECHO](../references/echo-benchmark.md)** | 自然社媒 Embeddedness / Craft / Hosting / Observability | E / C / H / O | **SQS = floor（目標加權均值）**（算術） | `E1`/`C1`/`C2`/`H1`/`H2`/`O1`（帶框架名限定——與 ROAS `O1`/`O2` 相區別） |
+| **[TALE](../references/tale-benchmark.md)** | 品牌敘事的真相 / 體系 / 效果 | T / A / L / E | `truth`、`system`、`effectiveness` 三個 profile 結果各自獨立；無總合成分 | TALE `T1`/`A1`/`L1`/`E1` |
+| **[CORE-EEAT](../references/core-eeat-benchmark.md)** | 內容品質，附 CORE/GEO 與 EEAT/SEO 診斷視圖 | 80 項 / 8 維 | 完整的 profile 加權結果；診斷視圖不是獨立總分 | `T04`/`C01`/`R10` |
+| **[CITE](../references/cite-domain-rating.md)** | 網域權威與引用信任 | 40 項 / 4 維 | 算術 profile 加權平均 | `T03`/`T05`/`T09` |
+| **[C³](../references/c3-benchmark.md)** | 紅人 Creator / Content / Campaign | ACE / ART / ROI；9 維 | 三個完整且口徑相容的 scope 結果齊備後取 `CVI = floor((ACE x ART x ROI)^(1/3))` | ACE `A2`/`C1`/`E2`；ART `T1`/`T2` |
+| **[ROAS](../references/roas-benchmark.md)** | 付費廣告的增量貢獻與營運品質 | R / O / A / S | `RQS = floor(profile-weighted mean)` | `R1`/`R2`/`O1`/`O2`/`A1` |
+| **[SEND](../references/send-benchmark.md)** | 郵件的寄件者完整性 / 互動 / 培育 / 直接成效 | S / E / N / D | `EQS = floor(profile-weighted mean)` | `S1`/`S2`/`N1`/`D1` |
+| **[RAMP](../references/ramp-benchmark.md)** | 產品發布的就緒 / 資產 / 動能 / 證明 | R / A / M / P；40 個穩定 ID | `preflight`、`execution`、`outcome` 三個 profile 結果各自獨立；絕不跨時間視界取平均 | RAMP `R1`/`A1`/`M1`/`P1` |
+| **[ECHO](../references/echo-benchmark.md)** | 自然社媒的嵌入度 / 工藝 / 營運 / 可觀測性 | E / C / H / O；40 個穩定 ID | 每次只跑一個 `asset-gate` 或 `program-maturity-*` profile；絕不混合不同類單元 | ECHO `E1`/`C1`/`C2`/`H1`/`H2`/`O1` |
 
-每套框架由一個 **auditor-class 門**執行——寫出受 PostToolUse hook 校驗的帶門產物（`class: auditor-output`）。門是工作流步驟，所以駐留並計入各自學科：
+每套框架由一個 **auditor-class 門**執行——其型別化產物（`class: auditor-output`）由確定性 validator 與有界生命週期 hooks 校驗。儲存庫 CI 只回歸測試 validator 與契約，不會檢查被忽略的主機執行期產物。門是工作流步驟，所以駐留並計入各自學科：
 
 | 門 | 框架 | 所在 | 判定 |
 |----|------|------|------|
-| [narrative-quality-auditor](../narrative/evaluate/narrative-quality-auditor/SKILL.md) | TALE NQS | `narrative/evaluate/`（narrative） | 敘事採用前 SHIP / FIX / BLOCK |
-| [content-quality-auditor](../seo-geo/optimize/content-quality-auditor/SKILL.md) | CORE-EEAT | `seo-geo/optimize/`（SEO/GEO） | 發布前 SHIP / FIX / BLOCK |
-| [domain-authority-auditor](../seo-geo/monitor/domain-authority-auditor/SKILL.md) | CITE | `seo-geo/monitor/`（SEO/GEO） | TRUSTED / CAUTIOUS / UNTRUSTED |
-| [content-reviewer](../influencer/activate/content-reviewer/SKILL.md) | C³ ART | `influencer/activate/`（紅人） | 創作者內容上線前 APPROVED / REVISIONS / REJECTED |
-| [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md) | ROAS RQS | `ad/activate/`（付費） | 加預算前 SHIP / FIX / BLOCK |
-| [email-quality-auditor](../email/deliver/email-quality-auditor/SKILL.md) | SEND EQS | `email/deliver/`（郵件） | 發送前 SHIP / FIX / BLOCK |
-| [launch-readiness-auditor](../launch/mobilize/launch-readiness-auditor/SKILL.md) | RAMP LQS | `launch/mobilize/`（產品發布） | 發布時刻確定前 SHIP / FIX / BLOCK |
-| [social-quality-auditor](../social/host/social-quality-auditor/SKILL.md) | ECHO SQS | `social/host/`（社媒） | 發布前 SHIP / FIX / BLOCK |
+| [narrative-quality-auditor](../narrative/evaluate/narrative-quality-auditor/SKILL.md) | TALE 三 profile | `narrative/evaluate/` | truth/system/effectiveness 結果各自獨立；無合成總分 |
+| [content-quality-auditor](../seo-geo/optimize/content-quality-auditor/SKILL.md) | CORE-EEAT | `seo-geo/optimize/` | SHIP / FIX / BLOCK / UNDECIDED |
+| [domain-authority-auditor](../seo-geo/monitor/domain-authority-auditor/SKILL.md) | CITE | `seo-geo/monitor/` | SHIP / FIX / BLOCK / UNDECIDED；信任標籤僅作解釋 |
+| [content-reviewer](../influencer/activate/content-reviewer/SKILL.md) | C³ ART | `influencer/activate/` | SHIP / FIX / BLOCK / UNDECIDED，另附面向創作者的轉述 |
+| [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md) | ROAS | `ad/activate/` | SHIP / FIX / BLOCK / UNDECIDED |
+| [email-quality-auditor](../email/deliver/email-quality-auditor/SKILL.md) | SEND | `email/deliver/` | SHIP / FIX / BLOCK / UNDECIDED |
+| [launch-readiness-auditor](../launch/mobilize/launch-readiness-auditor/SKILL.md) | RAMP 生命週期 profile | `launch/mobilize/` | 對一個已宣告的生命週期讀數給出 SHIP / FIX / BLOCK / UNDECIDED |
+| [social-quality-auditor](../social/host/social-quality-auditor/SKILL.md) | ECHO 資產/專案 profile | `social/host/` | 對一個已宣告的單元/profile 給出 SHIP / FIX / BLOCK / UNDECIDED |
 
-**共享封頂法：** 單個否決項把受影響維度與總分封頂到 `min(raw, 60)`；**兩個及以上否決項 → `BLOCKED`**（無最終分）。判定對使用者翻譯成人話（報告裡不出現項目 ID）。門的機制——handoff schema、封頂算術、產物門清單——在 [auditor-runbook.md](../references/auditor-runbook.md) 統一規定，八套框架的算術由確定性 golden 測試鎖定（見[品質守衛](#品質守衛)）。
+**共享否決策略：** 一條經核實的否決項把最終分封頂在 `min(raw, 59)`；兩條以上經核實的否決項產生 `status: DONE` + `verdict: BLOCK` 且不給最終分。證據缺失記為 `Unknown`，絕不自動判負。型別化規則見 [auditor-runbook.md](../references/auditor-runbook.md)。
 
 ### 協議層
 
 `protocol/` 目錄承載學科階段流程之外的**共享真相與記憶機件** —— 8 個技能，單獨計數：
 
-| 技能 | 職責 | 錨定 | 規範儲存 |
+| 技能 | 職責 | 錨定 | 規範事件流 / 執行期角色 |
 |------|------|------|----------|
-| [entity-optimizer](../protocol/entity-optimizer/SKILL.md) | 規範品牌/實體檔案（知識圖譜、Wikidata、AI 消歧） | SEO/GEO | `memory/entities/` |
-| [creator-registry](../protocol/creator-registry/SKILL.md) | 規範創作者名冊/檔案——去重 handle、帶溯源標籤的受眾資料、費率、合規歷史 | 紅人 | `memory/creators/` |
-| [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md) | offer 與聲明實證台帳——O1/T2 聲明檢查所對照評判的那份記錄 | 付費 | `memory/claims/` |
-| [consent-registry](../protocol/consent-registry/SKILL.md) | 規範的逐主體同意/抑制記錄——S2/N1 否決項對照評判的那份記錄 | 郵件 | `memory/consent/` |
-| [launch-registry](../protocol/launch-registry/SKILL.md) | 規範的逐次發布檔案/發布行事曆——分級、單向生命週期階段、權威日期/禁運期、通路提交台帳；R1 階段真相否決所對照評判的 launch 真相 SSOT | 產品發布 | `memory/launch-registry/` |
-| [channel-registry](../protocol/channel-registry/SKILL.md) | 規範的逐通路記錄——handle、所有權/授權、平台規範、揭露預設值；ECHO E1 通路真相否決所對照評判的通路真相 SSOT | 社媒 | `memory/channels/` |
-| [narrative-registry](../protocol/narrative-registry/SKILL.md) | 規範的品牌敘事正典——核准的策略敘事、訊息體系、語言/詞彙、證明點；TALE T1 真相否決所對照評判的品牌正典 SSOT | 敘事 | `memory/narrative-registry/` |
-| [memory-management](../protocol/memory-management/SKILL.md) | HOT/WARM/COLD 記憶生命週期（擷取 · 提升 · 降級 · 封存 · 查詢） | 全部學科 | `memory/` |
+| [entity-optimizer](../protocol/entity-optimizer/SKILL.md) | 規範品牌/實體檔案（知識圖譜、Wikidata、AI 消歧） | SEO/GEO | `memory/events/entities.ndjson` |
+| [creator-registry](../protocol/creator-registry/SKILL.md) | 規範創作者名冊/檔案——去重 handle、帶溯源標籤的受眾資料、費率、合規歷史 | 紅人 | `memory/events/creators.ndjson` |
+| [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md) | offer 與聲明實證台帳——O1/T2 聲明檢查所對照評判的那份記錄 | 付費 | `memory/events/claims.ndjson` |
+| [consent-registry](../protocol/consent-registry/SKILL.md) | 規範的逐主體同意/抑制記錄——S2/N1 否決項對照評判的那份記錄 | 郵件 | `memory/events/consent.ndjson` |
+| [launch-registry](../protocol/launch-registry/SKILL.md) | 規範的逐次發布檔案/發布行事曆——分級、單向生命週期階段、權威日期/禁運期、通路提交台帳；R1 階段真相否決所對照評判的 launch 真相 SSOT | 產品發布 | `memory/events/launches.ndjson` |
+| [channel-registry](../protocol/channel-registry/SKILL.md) | 規範的逐通路記錄——handle、所有權/授權、平台規範、揭露預設值；ECHO E1 通路真相否決所對照評判的通路真相 SSOT | 社媒 | `memory/events/channels.ndjson` |
+| [narrative-registry](../protocol/narrative-registry/SKILL.md) | 規範的品牌敘事正典——核准的策略敘事、訊息體系、語言/詞彙、證明點；TALE T1 真相否決所對照評判的品牌正典 SSOT | 敘事 | `memory/events/narrative.ndjson` |
+| [memory-management](../protocol/memory-management/SKILL.md) | HOT/WARM/COLD 記憶生命週期（擷取 · 提升 · 降級 · 封存 · 查詢） | 全部學科 | 非規範的 `memory/` 執行期狀態 |
 
-註冊表遵循**唯一寫入者規則**（其他技能經 `candidates.md` 投遞），且註冊表只*存證*——評判歸門。最底層真正橫向的是 `references/` 協議（[auditor-runbook](../references/auditor-runbook.md)、[state-model](../references/state-model.md)、[skill-contract](../references/skill-contract.md)、[humanizer-slop](../references/humanizer-slop.md)、[measurement-protocol](../references/measurement-protocol.md)）——按設計以文件而非技能的形式共享。
+註冊表遵循**唯一寫入者規則**（其他技能經 `registry-events.py` proposal events 投遞），且註冊表只*存證*——評判歸門。最底層真正橫向的是 `references/` 協議（[auditor-runbook](../references/auditor-runbook.md)、[state-model](../references/state-model.md)、[skill-contract](../references/skill-contract.md)、[humanizer-slop](../references/humanizer-slop.md)、[measurement-protocol](../references/measurement-protocol.md)）——按設計以文件而非技能的形式共享。
 
 ### 記憶與自動化
 
@@ -214,17 +216,20 @@ Narrative 是訊息；通路是表達它的媒介——拿掉任一通路，記�
 | 層 | 位置 | 行為 |
 |----|------|------|
 | **HOT** | `memory/hot-cache.md` | 每次工作階段自動載入；封頂 **80 行 且 25 KB**（先觸發者為準）。 |
-| **WARM** | `memory/<subdir>/` | 各技能工作狀態、帶門稽核產物（`memory/audits/`）、註冊表規範儲存（`memory/entities\|creators\|claims/`）。 |
+| **WARM** | `memory/<subdir>/` | 可重建的工作投影與經許可的稽核產物；規範的註冊表真相住在 `memory/events/*.ndjson`。 |
 | **COLD** | `memory/archive/` | 降級/較舊記錄，留作召回。 |
 
-**Hooks**（`hooks/hooks.json`，runner `hooks/claude-hook.sh`）接入四個 Claude Code 事件：
+**Hooks**（`hooks/hooks.json`，runner `hooks/claude-hook.sh`）接入七個 Claude Code 事件：
 
 | 事件 | 比對 | 作用 |
 |------|------|------|
 | `SessionStart` | `startup\|resume\|clear\|compact` | 注入**淨化後**的 hot-cache + 未決事項指標（提示注入行被塗掉；符號連結快取被拒）。 |
 | `UserPromptSubmit` | （全部） | 輕量逐提示上下文 hook。 |
-| `PostToolUse` | `Write\|Edit` | hot-cache 體積告警 **+ Artifact Gate**：寫到 `memory/audits/` 下、宣告了 `class: auditor-output` 的檔案都會被校驗 handoff schema 與封頂欄位，不合規則攔截寫入。八個 auditor-class 門按契約必須宣告該標記；未標記的檔案不是稽核產物，直接放行。 |
-| `Stop` | （全部） | 空操作（靜默退出）。 |
+| `PreToolUse` | 已知可寫工具 | 精確路徑的直接 `memory/**` 寫入必須被 Git 忽略；可識別的 opaque shell/MCP 記憶變更不受支援並會被拒絕。Registry runtime 會再次檢查最終/暫存/鎖定路徑。 |
+| `PostToolUse` | 已知可寫工具 | 成功寫入後複核整個 operational-memory 命名空間，並校驗準確審計目標或執行有界保留區掃描。 |
+| `PostToolUseFailure` | 已知可寫工具 | 工具失敗後執行相同的寫後隱私與 Artifact Gate 檢查，因為失敗命令仍可能已寫入檔案。 |
+| `PostToolBatch` | （全部） | 每批平行工具結束後複核 operational memory 與完整審計保留區。 |
+| `Stop` | （全部） | 執行最後一次有界掃描並可阻止一次以便修復；`stop_hook_active` 會放行後續停止。pre-commit/CI 僅保護已提交 Git 內容中的 PII，不校驗被忽略的 runtime 產物。 |
 
 Artifact Gate 是**框架無關**的——同一個 hook 校驗 TALE、CORE-EEAT、CITE、C³、ROAS、SEND、RAMP、ECHO 產物，無任何針對單框架的程式碼。
 
@@ -236,7 +241,7 @@ Artifact Gate 是**框架無關**的——同一個 hook 校驗 TALE、CORE-EEAT
 
 ### Narrative — TALE（16）
 
-`narrative/` 下四個階段目錄（各 4 技能）按 TALE 循環排布（Trace → Architect → Land → Evaluate）；門（⛩ narrative-quality-auditor）位於 Evaluate。只有門計算目標加權 NQS——其餘技能各管一個槓桿並交棒。Narrative 是 L1 · Strategy 層：五個常駐通路繼承的同一種品牌聲音。它吸收定位——`positioning-mapper` 實體仍在 `launch/`，邏輯上讀作 TALE Trace 的最前端。
+`narrative/` 下四個階段按 Trace → Architect → Land → Evaluate 排布。`narrative-quality-auditor` 分別執行 truth、system、effectiveness 三個 profile；完整評審只把三個結果關聯起來，絕不取平均。Narrative 是各通路 builder 所繼承的 L1 策略。
 
 | 階段 | 技能 |
 |------|------|
@@ -261,7 +266,7 @@ Artifact Gate 是**框架無關**的——同一個 hook 校驗 TALE、CORE-EEAT
 | pitch-narrative-builder | L | 把敘事塑成 pitch 形態——deck 骨架、demo 故事、投資人/媒體框架。 |
 | narrative-enablement-kit | L | 讓每個團隊都能一致講故事的賦能包——talk track、FAQ、訊息地圖。 |
 | proof-point-packager | L | 把證明點打包成通路就緒、感知聲明台帳的資產。 |
-| ⛩ narrative-quality-auditor | T+A+L+E（NQS） | auditor-class TALE 門：算 NQS、跑 T1/A1/L1/E1、產出 SHIP/FIX/BLOCK；含**敘事採用 go/no-go**模式。 |
+| ⛩ narrative-quality-auditor | truth / system / effectiveness | 型別化 TALE 門：分別回傳各 profile 結果，絕不取平均。寫入 `memory/audits/narrative/`。 |
 | message-test-designer | E | 設計訊息測試——變體矩陣、受眾分組、對策略敘事的共鳴判讀。 |
 | narrative-resonance-monitor | E | 用 keyless 來源追蹤敘事在各通路的落地情況（proxy 資料已標註）。 |
 | narrative-drift-monitor | E | 監視敘事漂移——各通路偏離核准正典之處——並標記校正。 |
@@ -304,73 +309,39 @@ Artifact Gate 是**框架無關**的——同一個 hook 校驗 TALE、CORE-EEAT
 
 </details>
 
-### 紅人（16）
+### 社媒 — ECHO（16）
 
-四個階段目錄（各 4 技能）；本學科的門（⛩ content-reviewer）位於 Activate。
-
-| 階段 | 技能 |
-|------|------|
-| **Discover** | [audience-mapper](../influencer/discover/audience-mapper/SKILL.md), [trend-spotter](../influencer/discover/trend-spotter/SKILL.md), [influencer-discovery](../influencer/discover/influencer-discovery/SKILL.md), [fit-scorer](../influencer/discover/fit-scorer/SKILL.md) |
-| **Plan** | [competitor-tracker](../influencer/plan/competitor-tracker/SKILL.md), [campaign-planner](../influencer/plan/campaign-planner/SKILL.md), [brief-generator](../influencer/plan/brief-generator/SKILL.md), [budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md) |
-| **Activate** | [outreach-manager](../influencer/activate/outreach-manager/SKILL.md), ⛩ [content-reviewer](../influencer/activate/content-reviewer/SKILL.md), [contract-helper](../influencer/activate/contract-helper/SKILL.md), [content-amplifier](../influencer/activate/content-amplifier/SKILL.md) |
-| **Measure** | [landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md), [performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md), [roi-calculator](../influencer/measure/roi-calculator/SKILL.md), [report-generator](../influencer/measure/report-generator/SKILL.md) |
-
-<details><summary><b>逐技能用途（紅人）</b></summary>
-
-| 技能 | 用途 |
-|------|------|
-| audience-mapper | *（合併 audience-analyzer + niche-researcher）* 在與創作者合作前做受眾畫像，並摸清其亞文化 / 微社群。 |
-| trend-spotter | 活動節奏與主題——趨勢話題、聲音、內容格式、文化時刻。 |
-| influencer-discovery | 從零搭建紅人名單、拓展新平台、規模化找 nano/micro。 |
-| fit-scorer | 對候選名單做客觀加權適配打分（基於 C³ ACE）。 |
-| competitor-tracker | 競品的合作紅人、活動、格式、估算觸及/花費與缺口。 |
-| campaign-planner | 規劃活動、產品發布、tentpole 或常態化創作者專案。 |
-| brief-generator | 標準化紅人 brief 與可複用團隊範本。 |
-| budget-optimizer | 跨層級/平台分配預算、預測 ROI、建模情境（同時服務付費廣告的花費 + 出價節奏）。 |
-| outreach-manager | pitch、跟進節奏、再啟用、費率談判、狀態追蹤。 |
-| ⛩ content-reviewer | 對紅人提交內容做發布前門決策（C³ ART：FTC 揭露 T1、聲明真實性 T2）。 |
-| contract-helper | 起草/審閱創作者協議——使用權、獨家、標準條款。 |
-| content-amplifier | *（合併 content-amplifier + ugc-repurposer）* 用付費投放放大自然創作者內容，並把 UGC 二次利用到付費、網站、郵件、自然社媒。 |
-| landing-optimizer | 面向創作者/付費流量的著陸頁——訊息一致、行動裝置、A/B（同時服務付費點擊後）。 |
-| performance-analyzer | 評估創作者結果、橫比創作者、情感、轉換（同時是付費跨通路記分卡）。 |
-| roi-calculator | 度量/預測 ROI、為預算辯護、評估創作者/層級價值（共享回報計算引擎，含付費）。 |
-| report-generator | 週期結束後面向利害關係人的書面報告（同時出付費廣告報告）。 |
-
-</details>
-
-### 付費廣告 — ROAS（16）
-
-`ad/` 下四個階段目錄（各 4 技能）按 ROAS 循環排布；門（⛩ ad-account-auditor）位於 Activate。只有門計算目標加權 RQS——其餘技能各管一個槓桿並交棒。
+`social/` 下四個階段按 Explore → Craft → Host → Observe 排布。`social-quality-auditor` 選用 `asset-gate` 或一個 program-maturity profile；兩類構念絕不混用。本學科不含任何發文、互動或私訊自動化。
 
 | 階段 | 技能 |
 |------|------|
-| **Research** | [campaign-architect](../ad/research/campaign-architect/SKILL.md), [audience-segment-builder](../ad/research/audience-segment-builder/SKILL.md), [search-term-miner](../ad/research/search-term-miner/SKILL.md), [product-feed-optimizer](../ad/research/product-feed-optimizer/SKILL.md) |
-| **Orchestrate** | [ad-creative-builder](../ad/orchestrate/ad-creative-builder/SKILL.md), [ad-test-designer](../ad/orchestrate/ad-test-designer/SKILL.md), [bid-strategy-planner](../ad/orchestrate/bid-strategy-planner/SKILL.md), [landing-experience-checker](../ad/orchestrate/landing-experience-checker/SKILL.md) |
-| **Activate** | ⛩ [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md), [conversion-signal-qa](../ad/activate/conversion-signal-qa/SKILL.md), [placement-exclusion-manager](../ad/activate/placement-exclusion-manager/SKILL.md), [conversion-value-mapper](../ad/activate/conversion-value-mapper/SKILL.md) |
-| **Scale** | [paid-measurement-loop](../ad/scale/paid-measurement-loop/SKILL.md), [attribution-reconciler](../ad/scale/attribution-reconciler/SKILL.md), [budget-pacing-monitor](../ad/scale/budget-pacing-monitor/SKILL.md), [fatigue-frequency-manager](../ad/scale/fatigue-frequency-manager/SKILL.md) |
+| **Explore** | [channel-portfolio-planner](../social/explore/channel-portfolio-planner/SKILL.md), [voice-dossier-builder](../social/explore/voice-dossier-builder/SKILL.md), [platform-norm-profiler](../social/explore/platform-norm-profiler/SKILL.md), [participation-warmup-planner](../social/explore/participation-warmup-planner/SKILL.md) |
+| **Craft** | [social-calendar-builder](../social/craft/social-calendar-builder/SKILL.md), [social-creative-builder](../social/craft/social-creative-builder/SKILL.md), [short-video-scripter](../social/craft/short-video-scripter/SKILL.md), [advocacy-program-designer](../social/craft/advocacy-program-designer/SKILL.md) |
+| **Host** | ⛩ [social-quality-auditor](../social/host/social-quality-auditor/SKILL.md), [engagement-inbox-manager](../social/host/engagement-inbox-manager/SKILL.md), [social-selling-planner](../social/host/social-selling-planner/SKILL.md), [crisis-response-planner](../social/host/crisis-response-planner/SKILL.md) |
+| **Observe** | [social-pulse-monitor](../social/observe/social-pulse-monitor/SKILL.md), [share-of-voice-tracker](../social/observe/share-of-voice-tracker/SKILL.md), [dark-social-attributor](../social/observe/dark-social-attributor/SKILL.md), [social-measurement-loop](../social/observe/social-measurement-loop/SKILL.md) |
 
-<details><summary><b>逐技能用途（付費廣告）</b></summary>
+<details><summary><b>逐技能用途（社媒）</b></summary>
 
-| 技能 | ROAS 槓桿 | 用途 |
+| 技能 | ECHO 槓桿 | 用途 |
 |------|-----------|------|
-| campaign-architect | A + 結構 | 帳戶/活動結構、campaign 類型選型、比對類型、否定詞/排除、付費↔自然蠶食；含常態化**搜尋詞挖掘**模式。 |
-| audience-segment-builder | A | 把自有客戶/CRM/GA4 匯出轉為種子受眾、相似種子、排除人群、漏斗分層鎖定地圖。 |
-| search-term-miner | A | *（NEW）* 從搜尋詞報告挖掘否定詞、新增關鍵字候選與比對類型收斂。 |
-| product-feed-optimizer | O | *（NEW）* Shopping/PMax feed 品質——標題、屬性、GTIN、品類對應與拒登修復。 |
-| ad-creative-builder | O | RSA 標題/描述、hook、角度矩陣，並與目標頁訊息一致。 |
-| ad-test-designer | O（+S） | 設計 A/B/n 與增量實驗（假設、變體矩陣、樣本量/檢定力），判讀顯著性 → promote/kill。 |
-| bid-strategy-planner | S | *（NEW）* 選型並配置出價策略（tCPA/tROAS/max-conversions）、設定目標種子、規劃學習期過渡。 |
-| landing-experience-checker | O | *（NEW）* 點擊後頁面 QA——廣告相關性、載入速度、行動裝置、政策——即廣告↔頁面訊息一致檢查。 |
-| ⛩ ad-account-auditor | R+O+A+S（RQS） | auditor-class ROAS 門：算 RQS、跑 R1/R2/O1/O2/A1、產出 SHIP/FIX/BLOCK；含**上線 go/no-go**模式。 |
-| conversion-signal-qa | R | 上線前追蹤 QA（事件觸發、UTM 規範、去重門控、視窗對齊、iOS-ATT 標記）——R1/R2 的前置（建訊號，門打分）。 |
-| placement-exclusion-manager | A | *（NEW）* 版位/受眾排除名單——品牌安全封鎖、垃圾版位剪除、浪費花費抑制。 |
-| conversion-value-mapper | R | *（NEW）* 把轉換動作對應到價值/權重與價值規則，讓 tROAS 依真實毛利而非原始次數出價。 |
-| paid-measurement-loop | R（+S） | 把一次上線的改動相對對照在視窗內回讀 → Promote / Keep-testing / Rollback / Unproven。 |
-| attribution-reconciler | R | 針對 GA4/ecommerce 訂單 ID 真值集做常態去重、視窗/幣別歸一、模型對比、增量。 |
-| budget-pacing-monitor | S | *（NEW）* 在投放期追蹤消耗節奏對比預算，標記欠投/超投，並建議配速校正。 |
-| fatigue-frequency-manager | O | *（NEW）* 監視頻次與創意衰減訊號，標記疲勞廣告，並排程刷新/輪換。 |
+| channel-portfolio-planner | E | 從受眾真正所在之處挑選平台組合與逐通路角色/節奏（把通路記錄進註冊表）。 |
+| voice-dossier-builder | E | 品牌聲音、語氣、人設、do/don't 詞彙，以維持一致的、像人的存在感。 |
+| platform-norm-profiler | E | 發文前的逐平台規範、格式、排名訊號與紅線規則。 |
+| participation-warmup-planner | E | 非推廣的社群暖場計畫——在推銷之前，在哪裡現身並創造價值。 |
+| social-calendar-builder | C | 內容行事曆——主題、系列、與真實產能平衡的節奏（不過度發文）。 |
+| social-creative-builder | C | 平台原生貼文（hook/內文/CTA），訊息一致且感知聲明台帳。 |
+| short-video-scripter | C | 短影音腳本——hook、節拍、螢幕文字、留存結構。 |
+| advocacy-program-designer | C | 員工/社群倡導計畫——opt-in、揭露預設值、可分享資產包。 |
+| ⛩ social-quality-auditor | asset gate / program maturity | 型別化 ECHO 門，一次只審一個單元/profile；絕不混合資產與營運兩類構念。寫入 `memory/audits/social/`。 |
+| engagement-inbox-manager | H | 回覆/留言/私訊分診 playbook——回應分層、升級、真誠互動紀律（不製造/誘餌式互動）。 |
+| social-selling-planner | H | 創辦人/團隊社交銷售動作——關係優先外聯，不做自動化私訊。 |
+| crisis-response-planner | H | 預先草擬的危機分層、緩衝聲明、升級階梯、暫停排程觸發條件。 |
+| social-pulse-monitor | O | 從 keyless 來源獲取提及/情感/主題脈動、spike-vs-sustain 判讀（proxy 資料已標註）。 |
+| share-of-voice-tracker | O | 在週期穩定的分母上，對比具名競品的聲量占比。 |
+| dark-social-attributor | O | 歸因 dark-social/無連結流量——UTM 紀律、自報歸因擷取、引薦解析。 |
+| social-measurement-loop | O | 把一次上線的改動相對基線在視窗內回讀 → Promote / Keep-testing / Rollback。 |
 
-**跨學科複用**（計入原階段，不重複造輪子）：[budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md)（花費 + 出價節奏/學習期模式）、[landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md)（點擊後）、[roi-calculator](../influencer/measure/roi-calculator/SKILL.md)（回報計算）、[report-generator](../influencer/measure/report-generator/SKILL.md)、[performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md)。
+**跨學科複用**（計入原階段，不重複造輪子）：`trend-spotter`、`audience-mapper`、`content-amplifier`、`outreach-manager`、`competitor-tracker`、`landing-optimizer`、`performance-analyzer`、`roi-calculator`、`report-generator`、`offer-claims-registry`、`community-launch-runner`、`creator-registry`、`page-play-builder`、`memory-management`——見 [echo-benchmark.md](../references/echo-benchmark.md)。
 
 </details>
 
@@ -410,9 +381,79 @@ Artifact Gate 是**框架無關**的——同一個 hook 校驗 TALE、CORE-EEAT
 
 </details>
 
+### 付費廣告 — ROAS（16）
+
+`ad/` 下四個階段目錄（各 4 技能）按 ROAS 循環排布；門（⛩ ad-account-auditor）位於 Activate。只有門計算目標加權 RQS——其餘技能各管一個槓桿並交棒。
+
+| 階段 | 技能 |
+|------|------|
+| **Research** | [campaign-architect](../ad/research/campaign-architect/SKILL.md), [audience-segment-builder](../ad/research/audience-segment-builder/SKILL.md), [search-term-miner](../ad/research/search-term-miner/SKILL.md), [product-feed-optimizer](../ad/research/product-feed-optimizer/SKILL.md) |
+| **Orchestrate** | [ad-creative-builder](../ad/orchestrate/ad-creative-builder/SKILL.md), [ad-test-designer](../ad/orchestrate/ad-test-designer/SKILL.md), [bid-strategy-planner](../ad/orchestrate/bid-strategy-planner/SKILL.md), [landing-experience-checker](../ad/orchestrate/landing-experience-checker/SKILL.md) |
+| **Activate** | ⛩ [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md), [conversion-signal-qa](../ad/activate/conversion-signal-qa/SKILL.md), [placement-exclusion-manager](../ad/activate/placement-exclusion-manager/SKILL.md), [conversion-value-mapper](../ad/activate/conversion-value-mapper/SKILL.md) |
+| **Scale** | [paid-measurement-loop](../ad/scale/paid-measurement-loop/SKILL.md), [attribution-reconciler](../ad/scale/attribution-reconciler/SKILL.md), [budget-pacing-monitor](../ad/scale/budget-pacing-monitor/SKILL.md), [fatigue-frequency-manager](../ad/scale/fatigue-frequency-manager/SKILL.md) |
+
+<details><summary><b>逐技能用途（付費廣告）</b></summary>
+
+| 技能 | ROAS 槓桿 | 用途 |
+|------|-----------|------|
+| campaign-architect | A + 結構 | 帳戶/活動結構、campaign 類型選型、比對類型、否定詞/排除、付費↔自然蠶食；含常態化**搜尋詞挖掘**模式。 |
+| audience-segment-builder | A | 把自有客戶/CRM/GA4 匯出轉為種子受眾、相似種子、排除人群、漏斗分層鎖定地圖。 |
+| search-term-miner | A | *（NEW）* 從搜尋詞報告挖掘否定詞、新增關鍵字候選與比對類型收斂。 |
+| product-feed-optimizer | O | *（NEW）* Shopping/PMax feed 品質——標題、屬性、GTIN、品類對應與拒登修復。 |
+| ad-creative-builder | O | RSA 標題/描述、hook、角度矩陣，並與目標頁訊息一致。 |
+| ad-test-designer | O（+S） | 設計 A/B/n 與增量實驗（假設、變體矩陣、樣本量/檢定力），判讀顯著性 → promote/kill。 |
+| bid-strategy-planner | S | *（NEW）* 選型並配置出價策略（tCPA/tROAS/max-conversions）、設定目標種子、規劃學習期過渡。 |
+| landing-experience-checker | O | *（NEW）* 點擊後頁面 QA——廣告相關性、載入速度、行動裝置、政策——即廣告↔頁面訊息一致檢查。 |
+| ⛩ ad-account-auditor | R+O+A+S（RQS） | auditor-class ROAS 門：算 RQS、跑 R1/R2/O1/O2/A1、產出 SHIP/FIX/BLOCK；含**上線 go/no-go**模式。 |
+| conversion-signal-qa | R | 上線前追蹤 QA（事件觸發、UTM 規範、去重門控、視窗對齊、iOS-ATT 標記）——R1/R2 的前置（建訊號，門打分）。 |
+| placement-exclusion-manager | A | *（NEW）* 版位/受眾排除名單——品牌安全封鎖、垃圾版位剪除、浪費花費抑制。 |
+| conversion-value-mapper | R | *（NEW）* 把轉換動作對應到價值/權重與價值規則，讓 tROAS 依真實毛利而非原始次數出價。 |
+| paid-measurement-loop | R（+S） | 把一次上線的改動相對對照在視窗內回讀 → Promote / Keep-testing / Rollback / Unproven。 |
+| attribution-reconciler | R | 針對 GA4/ecommerce 訂單 ID 真值集做常態去重、視窗/幣別歸一、模型對比、增量。 |
+| budget-pacing-monitor | S | *（NEW）* 在投放期追蹤消耗節奏對比預算，標記欠投/超投，並建議配速校正。 |
+| fatigue-frequency-manager | O | *（NEW）* 監視頻次與創意衰減訊號，標記疲勞廣告，並排程刷新/輪換。 |
+
+**跨學科複用**（計入原階段，不重複造輪子）：[budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md)（花費 + 出價節奏/學習期模式）、[landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md)（點擊後）、[roi-calculator](../influencer/measure/roi-calculator/SKILL.md)（回報計算）、[report-generator](../influencer/measure/report-generator/SKILL.md)、[performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md)。
+
+</details>
+
+### 紅人（16）
+
+四個階段目錄（各 4 技能）；本學科的門（⛩ content-reviewer）位於 Activate。
+
+| 階段 | 技能 |
+|------|------|
+| **Discover** | [audience-mapper](../influencer/discover/audience-mapper/SKILL.md), [trend-spotter](../influencer/discover/trend-spotter/SKILL.md), [influencer-discovery](../influencer/discover/influencer-discovery/SKILL.md), [fit-scorer](../influencer/discover/fit-scorer/SKILL.md) |
+| **Plan** | [competitor-tracker](../influencer/plan/competitor-tracker/SKILL.md), [campaign-planner](../influencer/plan/campaign-planner/SKILL.md), [brief-generator](../influencer/plan/brief-generator/SKILL.md), [budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md) |
+| **Activate** | [outreach-manager](../influencer/activate/outreach-manager/SKILL.md), ⛩ [content-reviewer](../influencer/activate/content-reviewer/SKILL.md), [contract-helper](../influencer/activate/contract-helper/SKILL.md), [content-amplifier](../influencer/activate/content-amplifier/SKILL.md) |
+| **Measure** | [landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md), [performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md), [roi-calculator](../influencer/measure/roi-calculator/SKILL.md), [report-generator](../influencer/measure/report-generator/SKILL.md) |
+
+<details><summary><b>逐技能用途（紅人）</b></summary>
+
+| 技能 | 用途 |
+|------|------|
+| audience-mapper | *（合併 audience-analyzer + niche-researcher）* 在與創作者合作前做受眾畫像，並摸清其亞文化 / 微社群。 |
+| trend-spotter | 活動節奏與主題——趨勢話題、聲音、內容格式、文化時刻。 |
+| influencer-discovery | 從零搭建紅人名單、拓展新平台、規模化找 nano/micro。 |
+| fit-scorer | 對候選名單做客觀加權適配打分（基於 C³ ACE）。 |
+| competitor-tracker | 競品的合作紅人、活動、格式、估算觸及/花費與缺口。 |
+| campaign-planner | 規劃活動、產品發布、tentpole 或常態化創作者專案。 |
+| brief-generator | 標準化紅人 brief 與可複用團隊範本。 |
+| budget-optimizer | 跨層級/平台分配預算、預測 ROI、建模情境（同時服務付費廣告的花費 + 出價節奏）。 |
+| outreach-manager | pitch、跟進節奏、再啟用、費率談判、狀態追蹤。 |
+| ⛩ content-reviewer | 對紅人提交內容做發布前門決策（C³ ART：FTC 揭露 T1、聲明真實性 T2）。 |
+| contract-helper | 起草/審閱創作者協議——使用權、獨家、標準條款。 |
+| content-amplifier | *（合併 content-amplifier + ugc-repurposer）* 用付費投放放大自然創作者內容，並把 UGC 二次利用到付費、網站、郵件、自然社媒。 |
+| landing-optimizer | 面向創作者/付費流量的著陸頁——訊息一致、行動裝置、A/B（同時服務付費點擊後）。 |
+| performance-analyzer | 評估創作者結果、橫比創作者、情感、轉換（同時是付費跨通路記分卡）。 |
+| roi-calculator | 度量/預測 ROI、為預算辯護、評估創作者/層級價值（共享回報計算引擎，含付費）。 |
+| report-generator | 週期結束後面向利害關係人的書面報告（同時出付費廣告報告）。 |
+
+</details>
+
 ### 產品發布 — RAMP（16）
 
-`launch/` 下四個階段目錄（各 4 技能）按 RAMP 循環排布；門（⛩ launch-readiness-auditor）位於 Mobilize。只有門計算目標加權 LQS——其餘技能各管一個槓桿並交棒。用例無關（B2B SaaS 銷售主導 / dev-tool 社群發布 / 行動 app 商店發布），由目標權重欄決定側重。
+`launch/` 下四個階段按 Research → Assemble → Mobilize → Prove 排布。`launch-readiness-auditor` 每次執行只選一個 `preflight`、`execution` 或 `outcome` profile；生命週期結果只做關聯，絕不取平均。
 
 | 階段 | 技能 |
 |------|------|
@@ -433,7 +474,7 @@ Artifact Gate 是**框架無關**的——同一個 hook 校驗 TALE、CORE-EEAT
 | launch-asset-packager | A | 分級化發布資產清單——press kit 規格、demo/截圖規格、發布 FAQ、商店 listing 中繼資料、技術上線檢查表。 |
 | pricing-packaging-planner | A | 發布定價與打包——層級結構、價值到定價地圖、launch-offer 階梯、帶畢業路徑的 beta 定價、保證條款。 |
 | sales-enablement-kit | A | 內部賦能——battle card、銷售 talk track、異議處理表、內部 FAQ + CS macros、遵守禁運紀律的內部公告。 |
-| ⛩ launch-readiness-auditor | R+A+M+P（LQS） | auditor-class RAMP 門：算 LQS、跑 R1/A1/M1/P1、產出 SHIP/FIX/BLOCK；含**T-1 go/no-go**模式。 |
+| ⛩ launch-readiness-auditor | preflight / execution / outcome | 型別化 RAMP 門，一次只審一個生命週期讀數；絕不跨時間視界取平均。寫入 `memory/audits/launch/`。 |
 | launch-day-conductor | M | 逐小時分塊的發布日 runbook——前置條件門檢查、不可逆推送後的觀察窗裁決、P0–P3 事件階梯 + 回滾 playbook。 |
 | community-launch-runner | M | 逐平台提交包（Product Hunt、Show HN、subreddit、目錄波次、區域/中文通路），置於平台紅線檢查之下。 |
 | press-media-relations | M | 三層媒體/分析師名單、禁運 pitch 擇時、標準結構新聞稿草稿、分析師簡報大綱。 |
@@ -443,42 +484,6 @@ Artifact Gate 是**框架無關**的——同一個 hook 校驗 TALE、CORE-EEAT
 | momentum-planner | P | T+1→T+30 勢能計畫——發布時刻行事曆、公告分級路由、relaunch 正當性裁決、下一個 Tier-1 時刻。 |
 
 **跨學科複用**（計入原階段，不重複造輪子）：`audience-mapper`、`trend-spotter`、`budget-optimizer`、`landing-optimizer`、`campaign-planner`、`outreach-manager`、`content-amplifier`、`email-creative-builder` / `email-sequence-designer` / `cold-outbound-sequencer`、`campaign-architect` / `ad-creative-builder`、`page-play-builder` / `content-writer`、`technical-seo-checker` / `serp-markup-builder`、`performance-monitor`、`keyword-research`、`entity-optimizer`、`offer-claims-registry`、`consent-registry`、`list-growth-designer`、`roi-calculator` / `performance-analyzer` / `report-generator`——見 [ramp-benchmark.md](../references/ramp-benchmark.md)。
-
-</details>
-
-### 社媒 — ECHO（16）
-
-`social/` 下四個階段目錄（各 4 技能）按 ECHO 循環排布；門（⛩ social-quality-auditor）位於 Host。只有門計算目標加權 SQS——其餘技能各管一個槓桿並交棒。用例無關（社群/dev-tool / B2C 品牌 / B2B 創辦人主導），由目標權重欄決定側重。本學科**不**提供任何發文、互動或私訊自動化。
-
-| 階段 | 技能 |
-|------|------|
-| **Explore** | [channel-portfolio-planner](../social/explore/channel-portfolio-planner/SKILL.md), [voice-dossier-builder](../social/explore/voice-dossier-builder/SKILL.md), [platform-norm-profiler](../social/explore/platform-norm-profiler/SKILL.md), [participation-warmup-planner](../social/explore/participation-warmup-planner/SKILL.md) |
-| **Craft** | [social-calendar-builder](../social/craft/social-calendar-builder/SKILL.md), [social-creative-builder](../social/craft/social-creative-builder/SKILL.md), [short-video-scripter](../social/craft/short-video-scripter/SKILL.md), [advocacy-program-designer](../social/craft/advocacy-program-designer/SKILL.md) |
-| **Host** | ⛩ [social-quality-auditor](../social/host/social-quality-auditor/SKILL.md), [engagement-inbox-manager](../social/host/engagement-inbox-manager/SKILL.md), [social-selling-planner](../social/host/social-selling-planner/SKILL.md), [crisis-response-planner](../social/host/crisis-response-planner/SKILL.md) |
-| **Observe** | [social-pulse-monitor](../social/observe/social-pulse-monitor/SKILL.md), [share-of-voice-tracker](../social/observe/share-of-voice-tracker/SKILL.md), [dark-social-attributor](../social/observe/dark-social-attributor/SKILL.md), [social-measurement-loop](../social/observe/social-measurement-loop/SKILL.md) |
-
-<details><summary><b>逐技能用途（社媒）</b></summary>
-
-| 技能 | ECHO 槓桿 | 用途 |
-|------|-----------|------|
-| channel-portfolio-planner | E | 從受眾真正所在之處挑選平台組合與逐通路角色/節奏（把通路記錄進註冊表）。 |
-| voice-dossier-builder | E | 品牌聲音、語氣、人設、do/don't 詞彙，以維持一致的、像人的存在感。 |
-| platform-norm-profiler | E | 發文前的逐平台規範、格式、排名訊號與紅線規則。 |
-| participation-warmup-planner | E | 非推廣的社群暖場計畫——在推銷之前，在哪裡現身並創造價值。 |
-| social-calendar-builder | C | 內容行事曆——主題、系列、與真實產能平衡的節奏（不過度發文）。 |
-| social-creative-builder | C | 平台原生貼文（hook/內文/CTA），訊息一致且感知聲明台帳。 |
-| short-video-scripter | C | 短影音腳本——hook、節拍、螢幕文字、留存結構。 |
-| advocacy-program-designer | C | 員工/社群倡導計畫——opt-in、揭露預設值、可分享資產包。 |
-| ⛩ social-quality-auditor | E+C+H+O（SQS） | auditor-class ECHO 門：算 SQS、跑 E1/C1/C2/H1/H2/O1、產出 SHIP/FIX/BLOCK；含**發布前 go/no-go**模式。 |
-| engagement-inbox-manager | H | 回覆/留言/私訊分診 playbook——回應分層、升級、真誠互動紀律（不製造/誘餌式互動）。 |
-| social-selling-planner | H | 創辦人/團隊社交銷售動作——關係優先外聯，不做自動化私訊。 |
-| crisis-response-planner | H | 預先草擬的危機分層、緩衝聲明、升級階梯、暫停排程觸發條件。 |
-| social-pulse-monitor | O | 從 keyless 來源獲取提及/情感/主題脈動、spike-vs-sustain 判讀（proxy 資料已標註）。 |
-| share-of-voice-tracker | O | 在週期穩定的分母上，對比具名競品的聲量占比。 |
-| dark-social-attributor | O | 歸因 dark-social/無連結流量——UTM 紀律、自報歸因擷取、引薦解析。 |
-| social-measurement-loop | O | 把一次上線的改動相對基線在視窗內回讀 → Promote / Keep-testing / Rollback。 |
-
-**跨學科複用**（計入原階段，不重複造輪子）：`trend-spotter`、`audience-mapper`、`content-amplifier`、`outreach-manager`、`competitor-tracker`、`landing-optimizer`、`performance-analyzer`、`roi-calculator`、`report-generator`、`offer-claims-registry`、`community-launch-runner`、`creator-registry`、`page-play-builder`、`memory-management`——見 [echo-benchmark.md](../references/echo-benchmark.md)。
 
 </details>
 
@@ -618,7 +623,7 @@ docs/            # 在地化 README（zh）
 
 ## 設計哲學
 
-- **技能即內容。** 唯一的程式碼是 Bash 校驗器、Bash hook runner、零依賴的 Python 標準庫連接器/檢查助手。永不引入第三方 / `pip` 依賴——由依賴蔓延守衛強制。
+- **內容優先。** 技能是 Markdown；零相依的 Bash/Python 標準庫執行時提供連接器、評分、註冊表事件、校驗與檢查。第三方 / `pip` 相依被 CI 明令禁止。
 - **keyless 優先。** 每個 `~~category` 都有免費/自有資料配方；MCP 與付費工具純屬便利。
 - **外科手術式 & MECE。** 每個技能只擔一項職責，邊界清晰；重疊的工作做成現有技能的*模式*，而非新堆一個薄技能。註冊表存證、門評判、分析器餵門。
 - **不編數字。** 技能為每個資料標註 Measured / User-provided / Estimated，並內建 AI 腔 / 禁用詞偵測。
@@ -637,18 +642,18 @@ docs/            # 在地化 README（zh）
 | `check-evals.py` | eval 結構 lint + `structure-manifest.json`（120/120 技能均帶 eval 用例）。 |
 | `check-pii.py` | 攔截提交的金鑰 / PII（token 級允許名單，fail-closed）。 |
 | `check-stdlib-only.sh` | 依賴蔓延守衛 + 付費廣告帶金鑰 API 紅線。 |
-| `check-versions.sh` | 版本同步守衛：束版本在 plugin.json / 兩個 marketplace 鏡像 / 兩個 README 徽章 / CLAUDE.md / VERSIONS.md 發布行 + changelog 條目間完全一致，且每個 SKILL.md 版本與其 VERSIONS.md 行相符。 |
-| `tests/test_connectors_local.py` | 全部連接器純請求建構函式的離線單測（CI 不連網）。 |
+| `check-versions.sh` | 版本同步守衛：system catalog、plugin/marketplace/OpenClaw manifests、根與本地化 README 徽章、AGENTS/CLAUDE/VERSIONS、GitHub About 和 120 個 skill 版本保持一致。 |
+| `tests/test_connectors_local.py` | 覆蓋全部 29 個內建連接器模組之請求建構器／解析器的離線測試（CI 不連網）。 |
 | `tests/test_hook_artifact_gate.sh` | hook 的 Artifact Gate + SessionStart 淨化的行為測試。 |
 
-線上端點漂移由**手動**的 [`scripts/connectors/smoke-live.sh`](../scripts/connectors/smoke-live.sh) 單獨覆蓋——每個託管連接器一次最小真實呼叫 + 回應形狀斷言（限速應答記 SKIP）；發版前手動跑，絕不進 CI。
+線上端點漂移由**手動**的 [`scripts/connectors/smoke-live.sh`](../scripts/connectors/smoke-live.sh) 另行抽樣——對腳本中列出的每個託管連接器做一次最小真實呼叫 + 回應形狀斷言（限速應答記 SKIP）；發版前手動跑，絕不進 CI。
 
 ---
 
 ## 貢獻與文檔
 
-- **[CONTRIBUTING.md](../CONTRIBUTING.md)** —— 撰寫規則、貢獻清單、權威的 8 檔案追蹤列表。
-- **[VERSIONS.md](../VERSIONS.md)** —— 各技能版本 + 變更日誌（目前套件：`16.0.0`）。
+- **[CONTRIBUTING.md](../CONTRIBUTING.md)** —— 撰寫規則、貢獻清單、權威的 10 個追蹤面列表。
+- **[VERSIONS.md](../VERSIONS.md)** —— 各技能版本 + 變更日誌（目前套件：`17.0.0`）。
 - **[SECURITY.md](../SECURITY.md)** · **[PRIVACY.md](../PRIVACY.md)** · **[CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md)** —— 安全、隱私、社群政策。
 - **[CLAUDE.md](../CLAUDE.md)** / **[AGENTS.md](../AGENTS.md)** —— 面向 Agent 的本倉庫上下文。
 
@@ -662,7 +667,7 @@ docs/            # 在地化 README（zh）
 
 Apache License 2.0 —— 見 [LICENSE](../LICENSE)。
 
-*最後同步英文 README：v16.0.3*
+*最後同步英文 README：v17.0.0*
 
 ## Star History
 

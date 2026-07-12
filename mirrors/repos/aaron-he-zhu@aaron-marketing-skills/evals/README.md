@@ -1,7 +1,7 @@
 # Skill Quality & Regression Cases
-**Status**: lightweight simulated seed set
+**Status**: deterministic conformance suites plus simulated semantic seed cases
 **Scope**: quality and regression review examples covering all 120 skills (16 SEO/GEO + 16 influencer + 16 paid ads + 16 email + 16 launch + 16 social + 16 narrative + 8 protocol) and the `/aaron-marketing:auto`/`/aaron-marketing:auto --deep` natural-language router
-This directory stores small review cases that document expected skill behavior and known regressions. They are reviewed manually or with Claude during PR and code review. They are not automated benchmarks and do not prove production behavior. (The `/aaron-marketing:auto` scenario library is runtime routing data and now lives in `references/auto-routing-scenarios.md`, not here.)
+This directory stores small review cases that document expected skill behavior and known regressions. The deterministic suite manifest executes the typed scorer, registry runtime, shared HTTP, hook, routing, and permission boundaries offline. Semantic Markdown cases remain review/evaluation seeds; passing them does not prove business outcomes. (The `/aaron-marketing:auto` scenario library is runtime routing data and now lives in `references/auto-routing-scenarios.md`, not here.)
 ## Layout
 ```text
 evals/<skill-name>/cases.md
@@ -23,4 +23,21 @@ The `/aaron-marketing:auto` routing scenarios live in `references/auto-routing-s
 Cases may be simulated, but simulated cases are non-validating and do not prove real behavior. Promote a case to `status: real` only after it is tied to a real user report, audit artifact, or another project-local signal.
 External research can create candidate cases, but external research is non-validating. A case based only on external research stays `status: simulated` until tied to a project-local artifact or real project signal.
 ## Running Cases
-These cases are reviewed by reading them during PR or code review, or by asking Claude to evaluate a skill's output against the relevant `expected_behavior` and `failure_modes` for a given `target_skill` or case id. Passing a simulated case is useful regression evidence, but it is not acceptance evidence on its own — that still requires a project-local real signal.
+
+Run all deterministic behavior suites:
+
+```bash
+python3 scripts/run-behavior-evals.py
+```
+
+An optional host/model adapter can evaluate the semantic seed cases without becoming a CI dependency:
+
+```bash
+python3 scripts/run-behavior-evals.py \
+  --adapter-command "<adapter executable and arguments>" \
+  --case content-quality-auditor
+```
+
+The runner sends one NDJSON object per case on stdin. The adapter returns one NDJSON object per case conforming to `behavior-adapter.schema.json`: `id`, boolean `passed`, and non-empty `evidence` are required. Output IDs must match input IDs exactly; missing, duplicate, unknown, malformed, or failed results fail closed. The adapter command is executed directly as an argument vector, never through a shell.
+
+Semantic cases may also be reviewed manually against `expected_behavior` and `failure_modes`. Passing a simulated case is useful regression evidence, not acceptance evidence; acceptance still requires a project-local real signal.

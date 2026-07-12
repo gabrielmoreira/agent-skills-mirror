@@ -1596,9 +1596,10 @@
   #deck-topbar #preview-export-main{width:auto;height:34px;padding:0 13px}
   #deck-topbar .pp-export-menu{top:calc(100% + 6px);bottom:auto;left:auto;right:0}
   #deck-topbar #preview-reset{height:34px;min-width:0;padding:0 13px}
-  #preview-theme-toggle{display:grid;place-items:center;width:34px;height:34px;border:1px solid var(--pp-border);border-radius:6px;background:var(--pp-bg);color:var(--pp-icon);cursor:pointer;transition:background .15s,color .15s,border-color .15s}
-  #preview-theme-toggle:hover{background:var(--pp-chip);color:var(--pp-fg)}
+  #preview-theme-toggle,#preview-lang-toggle{display:grid;place-items:center;width:34px;height:34px;border:1px solid var(--pp-border);border-radius:6px;background:var(--pp-bg);color:var(--pp-icon);cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+  #preview-theme-toggle:hover,#preview-lang-toggle:hover{background:var(--pp-chip);color:var(--pp-fg)}
   #preview-theme-toggle svg{width:17px;height:17px}
+  #preview-lang-toggle{font-size:12px;font-weight:650;letter-spacing:.02em}
   #deck-page-pager{position:fixed;left:calc(var(--deck-left) + var(--deck-w)/2);bottom:24px;z-index:120;display:flex;align-items:center;gap:4px;padding:5px;border:1px solid var(--pp-border);border-radius:12px;background:var(--pp-bg);box-shadow:0 8px 26px rgba(0,0,0,.18);color:var(--pp-fg);transform:translateX(-50%);font-family:var(--sans);transition:opacity .22s var(--ease-prod),transform .22s var(--ease-prod);pointer-events:auto}
   body.editor-panels-collapsed #deck-page-pager,body[data-mode="present"] #deck-page-pager{display:none}
   #deck-page-pager button{display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:8px;background:transparent;color:var(--pp-fg2);cursor:pointer;transition:background .15s,color .15s}
@@ -1871,6 +1872,7 @@
       <span>重置</span>
     </button>
     <span class="pp-topbar-sep" aria-hidden="true"></span>
+    <button id="preview-lang-toggle" type="button" aria-label="切换语言 / Switch language" title="切换语言 / Switch language"></button>
     <button id="preview-theme-toggle" type="button" aria-label="切换明暗" title="切换明暗"></button>
   </div>
 </header>
@@ -1958,6 +1960,247 @@
 <script id="preview-options" type="application/json">{"themePacks":{},"current":{}}</script>
 <script id="deck-view-model" type="application/json">{}</script>
 <script id="embedded-text-state" type="application/json">{}</script>
+<script>
+/* =============== Deck UI Language (i18n) =============== */
+// 双语只存在于词典层:metadata 词典子集(preview-options.i18n,渲染时按 deck 裁剪注入)
+// 翻控件 label/desc/选项/页面名;UI_STRINGS_EN 翻 template 自身的界面文案。
+// 查不到的词条一律回退中文,保证词典缺失只是显示降级,不产生任何功能差异。
+(function(){
+  // 界面语言解析优先级:用户手动选择(localStorage)> 系统语言(zh* → 中文,
+  // 其它 → 英文)> goal.language(渲染时指定,系统语言不可得时的回退)> 中文。
+  const LANG_KEY = 'dashi-deck-lang';
+  let language = 'zh';
+  let deckLanguage = 'zh';
+  let metaDict = {};
+  try {
+    const opts = JSON.parse(document.getElementById('preview-options')?.textContent || '{}');
+    if(opts.language === 'en') deckLanguage = 'en';
+    if(opts.i18n && typeof opts.i18n === 'object') metaDict = opts.i18n;
+  } catch (err) { /* keep zh */ }
+  let savedLanguage = null;
+  try { savedLanguage = localStorage.getItem(LANG_KEY); } catch (err) { /* private mode 等 */ }
+  if(savedLanguage === 'zh' || savedLanguage === 'en'){
+    language = savedLanguage;
+  } else {
+    const systemLanguage = String(navigator.language || '').toLowerCase();
+    if(systemLanguage.startsWith('zh')) language = 'zh';
+    else if(systemLanguage) language = 'en';
+    else language = deckLanguage;
+  }
+
+  function setLanguage(next){
+    const lang = next === 'en' ? 'en' : 'zh';
+    try { localStorage.setItem(LANG_KEY, lang); } catch (err) { /* ignore */ }
+    // 刷新后按新语言重新初始化;编辑内容经自动保存/草稿机制在刷新后恢复。
+    location.reload();
+  }
+
+  // template 自身 UI 文案词典(中文原文 → 英文)。动态插值词条用 {name} 占位符。
+  const UI_STRINGS_EN = {
+    // Topbar / shell
+    '更改仅保存在本浏览器,分发前请导出': 'Changes are saved only in this browser. Export before sharing.',
+    '演示控制台工具栏': 'Presenter console toolbar',
+    '演示控制台': 'Presenter console',
+    '0/0页': '0/0',
+    '{current}/{total}页': '{current}/{total}',
+    '播放预览': 'Start presentation',
+    '播放': 'Present',
+    '导出': 'Export',
+    '离线包': 'Offline bundle',
+    '下载': 'Download',
+    '可编辑': 'Editable',
+    '重置全部': 'Reset all',
+    '重置': 'Reset',
+    '切换明暗': 'Toggle light/dark',
+    '切换到明亮': 'Switch to light mode',
+    '切换到暗色': 'Switch to dark mode',
+    // Slide rail / pager / panels
+    '页面缩略图目录': 'Slide thumbnails',
+    '目录': 'Slides',
+    '调整目录宽度': 'Resize slide list',
+    '页面导航': 'Page navigation',
+    '上一页': 'Previous page',
+    '下一页': 'Next page',
+    '收起面板': 'Collapse panels',
+    '展开面板': 'Expand panels',
+    '预览控制器': 'Preview controls',
+    '调整控制面板宽度': 'Resize control panel',
+    '复制页面': 'Duplicate page',
+    '跳过页面': 'Skip page',
+    '取消跳过': 'Unskip page',
+    '删除页面': 'Delete page',
+    '已跳过': 'Skipped',
+    '生成中': 'Rendering',
+    '正在生成目录缩略图': 'Generating slide thumbnails',
+    '正在准备当前视图': 'Preparing current view',
+    '当前视图已准备': 'Current view ready',
+    '该页渲染失败，内容已跳过': 'This page failed to render and was skipped',
+    // Preview controls
+    '预览风格': 'Theme',
+    '切换动画': 'Transition',
+    '无动画': 'None',
+    '液态形变': 'Liquid morph',
+    '切入': 'Clip in',
+    '横滑': 'Slide in',
+    '行扫': 'Row sweep',
+    '缩放': 'Zoom',
+    '竖条': 'Bars',
+    '混合': 'Mixed',
+    '横切': 'Slices',
+    '画廊': 'Gallery',
+    '色块颜色': 'Transition color',
+    '切换色块颜色': 'Adjust transition color',
+    '无': 'None',
+    '配色 {n}': 'Palette {n}',
+    '数字': 'Number',
+    '符号': 'Symbol',
+    '关键词': 'Keyword',
+    // Export overlay
+    '{label} 导出中': 'Exporting {label}',
+    '准备中...': 'Preparing...',
+    '取消': 'Cancel',
+    '导出进度 {pct}%': 'Export progress {pct}%',
+    '正在取消...': 'Cancelling...',
+    '正在取消，正在恢复页面状态...': 'Cancelling and restoring page state...',
+    '导出中...': 'Exporting...',
+    '准备页面状态...': 'Preparing page state...',
+    '{label} 准备第 {current} / {total} 页': '{label}: preparing page {current} / {total}',
+    '{label} 页面已准备完成': '{label}: pages ready',
+    // Export pipeline
+    'HTML 已准备下载': 'HTML ready to download',
+    'HTML 导出失败，请在浏览器控制台查看错误。': 'HTML export failed. Check the browser console for details.',
+    'HTML 打包素材 {done} / {total}': 'Bundling assets {done} / {total}',
+    '没有可导出的页面。': 'No pages to export.',
+    '浏览器内截取第 {current}/{total} 页...': 'Capturing page {current}/{total} in the browser...',
+    '第 {n} 页截图超时': 'Screenshot timed out on page {n}',
+    '无法加载组件 {src}': 'Failed to load component {src}',
+    '导出环境加载超时': 'Export environment timed out while loading',
+    '导出环境加载失败': 'Export environment failed to load',
+    '导出环境的页面未就绪': 'Export environment pages are not ready',
+    '准备浏览器内导出环境...': 'Preparing in-browser export environment...',
+    '{detail}(浏览器内导出)': '{detail} (in-browser export)',
+    '保存 PPTX...': 'Saving PPTX...',
+    'PPTX 已开始下载(浏览器内导出)': 'PPTX download started (in-browser export)',
+    'PPTX 已开始下载': 'PPTX download started',
+    'PPTX 已生成：{name}': 'PPTX generated: {name}',
+    'PPTX 已生成：\n{name}': 'PPTX generated:\n{name}',
+    'PPTX 浏览器内导出失败,请在浏览器控制台查看错误。': 'In-browser PPTX export failed. Check the browser console for details.',
+    '合成 PDF...': 'Assembling PDF...',
+    'PDF 已开始下载(浏览器内导出)': 'PDF download started (in-browser export)',
+    'PDF 已开始下载': 'PDF download started',
+    'PDF 已生成：{name}': 'PDF generated: {name}',
+    'PDF 已生成：\n{name}': 'PDF generated:\n{name}',
+    'PDF 浏览器内导出失败，请在浏览器控制台查看错误。': 'In-browser PDF export failed. Check the browser console for details.',
+    'PDF 导出失败，请在浏览器控制台查看错误。': 'PDF export failed. Check the browser console for details.',
+    '提交截图 PDF 生成任务...': 'Submitting PDF render job...',
+    '提交可编辑 PPTX 生成任务...': 'Submitting editable PPTX job...',
+    '正在生成截图 PDF': 'Generating PDF screenshots',
+    '正在生成可编辑 PPTX': 'Generating editable PPTX',
+    '当前服务无导出端点,切换浏览器内导出...': 'No export endpoint on this server; switching to in-browser export...',
+    '服务器无法启动导出浏览器,切换浏览器内导出...': 'Server could not launch the export browser; switching to in-browser export...',
+    'codex 自带浏览器不支持导出，需要复制地址到浏览器再进行操作': 'The Codex in-app browser cannot export. Copy the URL into a regular browser and try again.',
+    '可编辑 PPTX 导出失败：{message}\n\n可以把「帮我导出PPTX」发给 AI,让它重新走导出流程。': 'Editable PPTX export failed: {message}\n\nSend "Help me export the PPTX" to your AI to run the export flow again.',
+    '未知错误': 'Unknown error',
+    '可编辑 PPTX 导出失败，请通过本地 HTTP/HTTPS 预览服务打开。直接打开本地 HTML/file:// 不能导出可编辑 PPTX。': 'Editable PPTX export failed. Open the deck through the local HTTP/HTTPS preview service — a local HTML file opened via file:// cannot export editable PPTX.',
+    // Export guide modal
+    '已复制': 'Copied',
+    '复制失败': 'Copy failed',
+    '复制': 'Copy',
+    '关闭': 'Close',
+    '导出需要预览服务': 'Export requires the preview service',
+    '当前非 HTTP 模式,无法导出': 'Not served over HTTP — export unavailable',
+    '直接打开本地 HTML 文件时没有导出服务。把下面的提示词发给 AI,让它用 DashiAI PPT 的预览服务打开后再导出:': 'Opening the local HTML file directly has no export service. Send the prompt below to your AI so it opens the deck with the DashiAI PPT preview service, then export:',
+    '发送给 AI,启动预览服务:': 'Send to your AI to start the preview service:',
+    '帮我用 dashiai-ppt 的预览服务启动这个 PPT 的预览 {dir}': 'Please start the preview of this deck with the dashiai-ppt preview service: {dir}',
+    '当前服务不支持导出': 'This server does not support export',
+    '这个地址后面没有可用的导出服务(可能是一个纯静态文件服务器,或预览服务已退出)。把下面的提示词发给 AI,让它用 DashiAI PPT 自带的预览服务重新启动:': 'No export service is available at this address (it may be a plain static file server, or the preview service has exited). Send the prompt below to your AI so it restarts the deck with the DashiAI PPT preview service:',
+    '发送给 AI,重启预览服务:': 'Send to your AI to restart the preview service:',
+    '帮我用 dashiai-ppt 的预览服务重新启动这个 PPT 的预览': 'Please restart the preview of this deck with the dashiai-ppt preview service',
+    '也可以直接跟 AI 说:': 'Or simply tell your AI:',
+    '帮我导出PPTX': 'Help me export the PPTX',
+    '手动方式:在终端运行 npm --prefix <skill-root>/project run preview:start -- <输出 ppt 目录> <port>,再用它输出的 http://127.0.0.1:<port>/ 打开导出。': 'Manual option: run npm --prefix <skill-root>/project run preview:start -- <output ppt dir> <port> in a terminal, then open the printed http://127.0.0.1:<port>/ and export from there.',
+  };
+
+  // 导出进度 detail 来自导出引擎(vendor bundle / 服务端接口)的中文文案,
+  // 按已知模式在显示层转英文;未匹配模式原样透出(中文兜底)。
+  const EXPORT_DETAIL_EN = [
+    [/^应用页面编辑状态$/, 'Applying page edits'],
+    [/^生成 PPTX 文件$/, 'Generating PPTX file'],
+    [/^保存 PPTX 文件$/, 'Saving PPTX file'],
+    [/^采集页面结构 (\d+)\/(\d+)$/, 'Collecting page structure $1/$2'],
+    [/^采集页面结构$/, 'Collecting page structure'],
+    [/^生成 PPTX 对象 (\d+)\/(\d+)$/, 'Building PPTX objects $1/$2'],
+    [/^服务端接收 PDF 导出请求$/, 'Server received PDF export request'],
+    [/^服务端接收导出请求$/, 'Server received export request'],
+    [/^启动截图浏览器$/, 'Launching screenshot browser'],
+    [/^准备下载文件$/, 'Preparing file download'],
+    [/^准备浏览器下载$/, 'Preparing browser download'],
+    [/^打开预览页面$/, 'Opening preview page'],
+    [/^准备导出页面状态$/, 'Preparing page state for export'],
+    [/^等待服务端进度$/, 'Waiting for server progress'],
+    [/^截图批次 (\d+)\/(\d+)$/, 'Screenshot batch $1/$2'],
+    [/^截取第 (\d+)\/(\d+) 页$/, 'Capturing slide $1/$2'],
+    [/^正在生成可编辑 PPTX$/, 'Generating editable PPTX'],
+  ];
+  function exportDetail(detail){
+    const text = typeof detail === 'string' ? detail.trim() : '';
+    if(!isEn || !text) return detail;
+    for(const [pattern, replacement] of EXPORT_DETAIL_EN){
+      if(pattern.test(text)) return text.replace(pattern, replacement);
+    }
+    return detail;
+  }
+
+  const isEn = language === 'en';
+  function meta(value){
+    if(!isEn || typeof value !== 'string' || !value) return value;
+    return metaDict[value] || metaDict[value.trim()] || value;
+  }
+  function ui(text, params){
+    let out = text;
+    if(isEn && typeof text === 'string' && UI_STRINGS_EN[text]) out = UI_STRINGS_EN[text];
+    if(params && typeof out === 'string'){
+      out = out.replace(/\{(\w+)\}/g, (match, key) => (key in params ? String(params[key]) : match));
+    }
+    return out;
+  }
+
+  // 静态 DOM 文案批量翻译:文本节点 + title/aria-label/placeholder/alt。
+  // 只在 en 下启动时跑一次,词典覆盖即生效,静态 HTML 无需逐处改动。
+  const STATIC_ATTRS = ['title', 'aria-label', 'placeholder', 'alt', 'data-color-label'];
+  function translateStaticDom(root){
+    if(!isEn || !root) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    while(walker.nextNode()) textNodes.push(walker.currentNode);
+    textNodes.forEach(node => {
+      const raw = node.nodeValue;
+      const trimmed = raw?.trim();
+      if(!trimmed || !UI_STRINGS_EN[trimmed]) return;
+      node.nodeValue = raw.replace(trimmed, UI_STRINGS_EN[trimmed]);
+    });
+    const all = [root, ...root.querySelectorAll('*')];
+    all.forEach(el => {
+      if(!el.getAttribute) return;
+      STATIC_ATTRS.forEach(attr => {
+        const value = el.getAttribute(attr);
+        if(value && UI_STRINGS_EN[value.trim()]) el.setAttribute(attr, UI_STRINGS_EN[value.trim()]);
+      });
+    });
+  }
+
+  window.__deckI18n = { language, isEn, meta, ui, exportDetail, setLanguage, translateStaticDom, uiStrings: UI_STRINGS_EN };
+
+  if(isEn){
+    const run = () => translateStaticDom(document.body);
+    document.readyState === 'loading'
+      ? document.addEventListener('DOMContentLoaded', run, { once: true })
+      : run();
+  }
+  // html lang 跟随运行时语言(SSR 写入的初始值可能与运行时决定不一致)。
+  document.documentElement.setAttribute('lang', isEn ? 'en' : 'zh-CN');
+})();
+</script>
 <script src="assets/imported-theme-runtime.js"></script>
 <script>
 (function(){
@@ -2029,6 +2272,7 @@
   // 不再有第三层 URL 编辑状态——分享链接式的编辑持久化已被自动保存(烧回 index.html 本体)取代。
   const deckSignature = createDeckSignature(vm, baseState.text);
   const saved = readSaved(deckSignature);
+  if(saved.__draftInIdb) setTimeout(() => restoreDraftFromIdb(), 0);
   vm.state.slideOrder = saved.slideOrder || baseState.slideOrder;
   vm.state.skippedSlides = saved.skippedSlides || baseState.skippedSlides;
   vm.state.deletedSlides = saved.deletedSlides || baseState.deletedSlides;
@@ -2152,14 +2396,62 @@
     }
   }
 
+  // 大 state(用户传图后 props 里是 data: URL)会超出 localStorage 配额——溢出到
+  // IndexedDB(容量以百 MB 计),localStorage 只留签名指针;readSaved 同步启动后由
+  // restoreDraftFromIdb 异步补齐。预览服务在时 state 仍会烧回 index.html 本体,
+  // 本地草稿只是无服务(静态服务器/file://)场景的兜底。
+  const DRAFT_DB = 'dashi-deck-drafts';
+  function idbDraft(mode, value){
+    return new Promise(resolve => {
+      try {
+        const open = indexedDB.open(DRAFT_DB, 1);
+        open.onupgradeneeded = () => open.result.createObjectStore('state');
+        open.onerror = () => resolve(null);
+        open.onsuccess = () => {
+          const db = open.result;
+          const tx = db.transaction('state', mode === 'get' ? 'readonly' : 'readwrite');
+          const store = tx.objectStore('state');
+          const req = mode === 'get' ? store.get(deckSignature) : store.put(value, deckSignature);
+          req.onsuccess = () => { resolve(mode === 'get' ? req.result : true); db.close(); };
+          req.onerror = () => { resolve(null); db.close(); };
+        };
+      } catch { resolve(null); }
+    });
+  }
   function persist(){
     vm.state.__deckSignature = deckSignature;
     try {
       localStorage.setItem(STORE, JSON.stringify(vm.state || {}));
     } catch (error) {
-      console.warn('[deck view model] state could not be persisted', error);
+      // 配额超限:整份 state 进 IndexedDB,localStorage 留指针供 readSaved 感知。
+      idbDraft('put', vm.state || {});
+      try {
+        localStorage.setItem(STORE, JSON.stringify({ __deckSignature: deckSignature, __draftInIdb: true }));
+      } catch {}
     }
     scheduleServerSave();
+  }
+  async function restoreDraftFromIdb(){
+    const draft = await idbDraft('get');
+    if(!draft || draft.__deckSignature !== deckSignature) return;
+    // 应用路径复用导出快照的共享实现(setText/setProps/文本 innerHTML/重渲染),
+    // 该路径已被服务端与浏览器端导出双重验证。
+    try {
+      const script = document.createElement('script');
+      await new Promise((resolve, reject) => {
+        if(window.__editablePptxBrowser?.applyEditablePptxSnapshot) return resolve();
+        script.src = 'assets/vendor/editable-pptx-browser.js';
+        script.onload = resolve;
+        script.onerror = () => reject(new Error('draft restore bundle failed'));
+        document.head.appendChild(script);
+      });
+      const currentIndex = Math.max(0, (window.__getVisibleSlides?.() || []).findIndex(s => s.classList.contains('active')));
+      await window.__editablePptxBrowser.applyEditablePptxSnapshot({ state: draft, currentIndex });
+      writeJson(textEl, vm.state.text);
+      writeVm();
+    } catch (error) {
+      console.warn('[deck draft] IndexedDB 草稿恢复失败', error);
+    }
   }
 
   function writeVm(){
@@ -2934,7 +3226,7 @@ function showRuntimeSlideErrorPlaceholder(slide, error){
       + 'align-items:center;justify-content:center;gap:10px;padding:48px;text-align:center;'
       + 'background:rgba(17,17,20,0.94);color:#fff;font:600 22px/1.4 var(--sans,sans-serif);pointer-events:none;';
     const title = document.createElement('div');
-    title.textContent = '该页渲染失败，内容已跳过';
+    title.textContent = window.__deckI18n.ui('该页渲染失败，内容已跳过');
     const detail = document.createElement('div');
     detail.style.cssText = 'font-weight:400;font-size:14px;opacity:.7;max-width:82%;word-break:break-word;';
     overlay.append(title, detail);
@@ -3803,14 +4095,14 @@ function showRailContextMenu(event, catalogIndex){
   const skipped = isSlideSkipped(slide, allSlides.indexOf(slide));
   const copyButton = document.createElement('button');
   copyButton.type='button';
-  copyButton.textContent='复制页面';
+  copyButton.textContent=window.__deckI18n.ui('复制页面');
   copyButton.onclick=()=>{
     if(duplicateCatalogSlide(catalogIndex)) hideRailContextMenu();
   };
 
   const skipButton = document.createElement('button');
   skipButton.type='button';
-  skipButton.textContent = skipped ? '取消跳过' : '跳过页面';
+  skipButton.textContent = window.__deckI18n.ui(skipped ? '取消跳过' : '跳过页面');
   skipButton.disabled = !skipped && slides.length <= 1;
   skipButton.onclick=()=>{
     if(toggleCatalogSlideSkipped(catalogIndex)) hideRailContextMenu();
@@ -3818,7 +4110,7 @@ function showRailContextMenu(event, catalogIndex){
 
   const deleteButton = document.createElement('button');
   deleteButton.type='button';
-  deleteButton.textContent='删除页面';
+  deleteButton.textContent=window.__deckI18n.ui('删除页面');
   deleteButton.disabled = catalogSlides.length <= 1;
   deleteButton.onclick=()=>{
     if(deleteCatalogSlide(catalogIndex)) hideRailContextMenu();
@@ -4754,7 +5046,7 @@ function createOverviewThumbPlaceholder(){
   placeholder.style.cssText='position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(0,0,0,.08)),repeating-linear-gradient(135deg,rgba(0,0,0,.08) 0 1px,transparent 1px 12px);opacity:.55';
   const placeholderText=document.createElement('div');
   placeholderText.style.cssText='position:absolute;left:10px;top:10px;padding:4px 7px;border-radius:999px;background:rgba(255,255,255,.72);color:rgba(0,0,0,.58);font:600 11px/1 var(--sans-zh);letter-spacing:0';
-  placeholderText.textContent='生成中';
+  placeholderText.textContent=window.__deckI18n.ui('生成中');
   fragment.append(placeholder, placeholderText);
   return fragment;
 }
@@ -4795,7 +5087,7 @@ function refreshOverviewCards(grid=overviewGrid){
     if(skipped && !badge){
       badge=document.createElement('div');
       badge.className='rail-skip-badge';
-      badge.textContent='已跳过';
+      badge.textContent=window.__deckI18n.ui('已跳过');
       card.appendChild(badge);
     }else if(!skipped && badge){
       badge.remove();
@@ -4884,7 +5176,7 @@ function createOverviewProgress(total){
   const text = document.createElement('div');
   text.style.cssText='display:flex;justify-content:space-between;gap:12px;margin-bottom:8px';
   const label = document.createElement('span');
-  label.textContent='正在生成目录缩略图';
+  label.textContent=window.__deckI18n.ui('正在生成目录缩略图');
   const count = document.createElement('span');
   text.append(label, count);
   const track = document.createElement('div');
@@ -4906,7 +5198,7 @@ function updateOverviewProgress(){
   const pct = total ? Math.round(done / total * 100) : 100;
   const busy = overviewThumbQueue.length > 0 || overviewThumbProcessing || overviewThumbScheduled;
   const show = total > 0 && done < total && busy;
-  overviewProgress.label.textContent = show ? '正在准备当前视图' : '当前视图已准备';
+  overviewProgress.label.textContent = window.__deckI18n.ui(show ? '正在准备当前视图' : '当前视图已准备');
   overviewProgress.count.textContent = `${done}/${total}`;
   overviewProgress.fill.style.width = pct + '%';
   overviewProgress.box.style.opacity = show ? '1' : '0';
@@ -5030,7 +5322,7 @@ function buildOverview(fromRects=null, fromThumbs=null){
     if(skipped){
       const badge=document.createElement('div');
       badge.className='rail-skip-badge';
-      badge.textContent='已跳过';
+      badge.textContent=window.__deckI18n.ui('已跳过');
       card.appendChild(badge);
     }
     card.onclick=()=>{
@@ -5401,7 +5693,7 @@ refreshRailCatalog();
 
   function refreshDeckSlides(){
     deckSlides = readPreviewDeckSlides();
-    if(count) count.textContent = `${Math.min(deckSlides.length, Math.max(1, (window.__currentSlideIndex || 0) + 1))}/${deckSlides.length}页`;
+    if(count) count.textContent = window.__deckI18n.ui('{current}/{total}页', {current: Math.min(deckSlides.length, Math.max(1, (window.__currentSlideIndex || 0) + 1)), total: deckSlides.length});
   }
 
   function readPreviewDeckSlides(){
@@ -5426,7 +5718,7 @@ refreshRailCatalog();
       const optionEl = document.createElement('option');
       const slideCount = counts[key] || 0;
       optionEl.value = key;
-      optionEl.textContent = option.label || option.displayName || key;
+      optionEl.textContent = window.__deckI18n?.meta(option.label || option.displayName || key) ?? (option.label || option.displayName || key);
       optionEl.title = [option.scenario, option.audience].filter(Boolean).join('\n');
       optionEl.disabled = slideCount === 0;
       themePackSelect.appendChild(optionEl);
@@ -5517,7 +5809,7 @@ refreshRailCatalog();
     range.step = '1';
     range.id = 'preview-transition-color-range';
     range.setAttribute('data-transition-color-range', 'true');
-    range.setAttribute('aria-label', '切换色块颜色');
+    range.setAttribute('aria-label', window.__deckI18n.ui('切换色块颜色'));
     makePreviewControlKeyboardNeutral(range);
     const readout = document.createElement('span');
     readout.className = 'preview-transition-color-readout';
@@ -5584,10 +5876,24 @@ refreshRailCatalog();
 
   function parsePropControls(root){
     try {
-      return JSON.parse(root?.dataset.propControls || '[]') || [];
+      const controls = JSON.parse(root?.dataset.propControls || '[]') || [];
+      return controls.map(translatePropControlForDisplay);
     } catch {
       return [];
     }
+  }
+
+  // 显示层翻译(en 下查 metadata 词典,miss 回退中文);只影响面板展示,
+  // 不触碰 key/value/options 的取值逻辑。
+  function translatePropControlForDisplay(control){
+    const i18n = window.__deckI18n;
+    if(!i18n?.isEn || !control || typeof control !== 'object') return control;
+    const next = { ...control };
+    if(typeof next.label === 'string') next.label = i18n.meta(next.label);
+    if(typeof next.desc === 'string') next.desc = i18n.meta(next.desc);
+    if(typeof next.description === 'string') next.description = i18n.meta(next.description);
+    if(typeof next.unit === 'string') next.unit = i18n.meta(next.unit);
+    return next;
   }
 
   function orderPropControlsForPanel(controls, root){
@@ -5748,7 +6054,7 @@ refreshRailCatalog();
         group.className = 'preview-prop-icon-grid';
         group.setAttribute('role', 'group');
         group.setAttribute('aria-label', control.label || control.key);
-        [{value:'', label:'无'}, ...propOptions(renderControl)].forEach(item => {
+        [{value:'', label:window.__deckI18n.ui('无')}, ...propOptions(renderControl)].forEach(item => {
           const button = document.createElement('button');
           button.type = 'button';
           button.className = 'preview-prop-icon-choice';
@@ -5764,7 +6070,7 @@ refreshRailCatalog();
           } else {
             const empty = document.createElement('span');
             empty.className = 'preview-prop-icon-empty';
-            empty.textContent = '无';
+            empty.textContent = window.__deckI18n.ui('无');
             button.appendChild(empty);
           }
           const text = document.createElement('span');
@@ -6061,7 +6367,7 @@ refreshRailCatalog();
   function normalizePropOptions(options){
     return (options || []).map((item, index) => Array.isArray(item)
       ? (isPaletteOption(item)
-        ? {value:[...item], label:`配色 ${index + 1}`, image:'', color:paletteSwatchBackground(item)}
+        ? {value:[...item], label:window.__deckI18n.ui('配色 {n}', {n: index + 1}), image:'', color:paletteSwatchBackground(item)}
         : {value:item[0], label:localizedPropOptionLabel(item[1] ?? item[0], item[0], index), image:item[2] || '', color:item[3] || ''})
       : item && typeof item === 'object' && 'value' in item
         ? {value:item.value, label:localizedPropOptionLabel(item.label ?? item.value, item.value, index), image:item.image || item.src || '', color:item.color || item.swatch || item.hex || item.background || ''}
@@ -6115,10 +6421,17 @@ refreshRailCatalog();
   queueMicrotask(() => renderPropControls());
 
   function localizedPropOptionLabel(label, value, index = 0){
-    if(value == null || label == null) return '隐藏';
+    const i18n = window.__deckI18n;
+    if(value == null || label == null) return i18n?.isEn ? 'Hidden' : '隐藏';
     const raw = String(label).trim();
     const valueText = String(value).trim();
-    if(/^#[0-9a-f]{3,8}$/i.test(valueText) && raw === valueText) return `颜色 ${index + 1}`;
+    if(/^#[0-9a-f]{3,8}$/i.test(valueText) && raw === valueText) return i18n?.isEn ? `Color ${index + 1}` : `颜色 ${index + 1}`;
+    if(i18n?.isEn){
+      // metadata 中文选项名查词典;本就是英文的值保持原样(仅首字母大写),
+      // ENGLISH_PROP_OPTION_LABELS(英→中)在 en 下不参与。
+      if(/[一-鿿]/.test(raw)) return i18n.meta(raw);
+      return raw.charAt(0).toUpperCase() + raw.slice(1);
+    }
     const labels = ENGLISH_PROP_OPTION_LABELS || {};
     const exact = labels[raw.toLowerCase()] || labels[valueText.toLowerCase()];
     if(exact && (raw === valueText || /^[A-Za-z0-9_./ -]+$/.test(raw))) return exact;
@@ -6129,9 +6442,9 @@ refreshRailCatalog();
     const options = normalizePropOptions(control?.options);
     if(options.length || control?.key !== 'labelType') return options;
     return [
-      {value:'number', label:'数字', image:''},
-      {value:'symbol', label:'符号', image:''},
-      {value:'keyword', label:'关键词', image:''},
+      {value:'number', label:window.__deckI18n.ui('数字'), image:''},
+      {value:'symbol', label:window.__deckI18n.ui('符号'), image:''},
+      {value:'keyword', label:window.__deckI18n.ui('关键词'), image:''},
     ];
   }
 
@@ -6235,7 +6548,7 @@ refreshRailCatalog();
       if(slideRail) slideRail.inert = collapsed;
     }
     if(panelCollapse){
-      const label = collapsed ? '展开面板' : '收起面板';
+      const label = window.__deckI18n.ui(collapsed ? '展开面板' : '收起面板');
       panelCollapse.classList.toggle('is-collapsed', collapsed);
       panelCollapse.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
       panelCollapse.setAttribute('aria-label', label);
@@ -6300,18 +6613,22 @@ refreshRailCatalog();
   if(!deck) return;
   window.__deckExportLocked = false;
 
-  let htmlToImageLoadPromise = null;
-  function ensureHtmlToImageLoaded(){
-    if(window.htmlToImage) return Promise.resolve();
-    if(htmlToImageLoadPromise) return htmlToImageLoadPromise;
-    htmlToImageLoadPromise = new Promise((resolve, reject) => {
+  const vendorScriptPromises = new Map();
+  function ensureVendorScript(src, readyCheck){
+    if(readyCheck?.()) return Promise.resolve();
+    if(vendorScriptPromises.has(src)) return vendorScriptPromises.get(src);
+    const promise = new Promise((resolve, reject) => {
       const script = document.createElement('script');
-      script.src = 'assets/vendor/html-to-image.js';
+      script.src = src;
       script.onload = () => resolve();
-      script.onerror = () => { htmlToImageLoadPromise = null; reject(new Error('无法加载截图组件 assets/vendor/html-to-image.js')); };
+      script.onerror = () => { vendorScriptPromises.delete(src); reject(new Error(window.__deckI18n.ui('无法加载组件 {src}', {src: src}))); };
       document.head.appendChild(script);
     });
-    return htmlToImageLoadPromise;
+    vendorScriptPromises.set(src, promise);
+    return promise;
+  }
+  function ensureHtmlToImageLoaded(){
+    return ensureVendorScript('assets/vendor/html-to-image.js', () => window.htmlToImage);
   }
 
   async function waitForSlideMediaReadyForCapture(root){
@@ -6343,17 +6660,36 @@ refreshRailCatalog();
     } catch {}
   }
 
+  async function assemblePdfInBrowser(pages, title){
+    await ensureVendorScript('assets/vendor/pdf-lib.min.js', () => window.PDFLib?.PDFDocument);
+    const { PDFDocument } = window.PDFLib;
+    const pdf = await PDFDocument.create();
+    pdf.setTitle(title || 'Deck PDF Export');
+    pdf.setAuthor('DashiAI PPT');
+    pdf.setSubject('Browser-captured PDF export');
+    const PDF_W = 16 * 72, PDF_H = 9 * 72;
+    for(const dataUrl of pages){
+      const base64 = String(dataUrl || '').split(',')[1] || '';
+      const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+      const image = /^data:image\/png/i.test(dataUrl) ? await pdf.embedPng(bytes) : await pdf.embedJpg(bytes);
+      const page = pdf.addPage([PDF_W, PDF_H]);
+      page.drawImage(image, { x: 0, y: 0, width: PDF_W, height: PDF_H });
+    }
+    const out = await pdf.save();
+    return new Blob([out], { type: 'application/pdf' });
+  }
+
   async function captureDeckPagesInBrowser(exportUi){
     await ensureHtmlToImageLoaded();
     const slides = window.__getVisibleSlides?.() || [...document.querySelectorAll('#deck > .slide:not([hidden])')];
-    if(!slides.length) throw new Error('没有可导出的页面。');
+    if(!slides.length) throw new Error(window.__deckI18n.ui('没有可导出的页面。'));
     const originalIndex = Math.max(0, slides.findIndex(slide => slide.classList.contains('active')));
     const waitFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
     const pages = [];
     try {
       for(let index = 0; index < slides.length; index += 1){
         throwIfDeckExportCancelled(exportUi);
-        updateDeckExport(exportUi, index, slides.length, `浏览器内截取第 ${index + 1}/${slides.length} 页...`);
+        updateDeckExport(exportUi, index, slides.length, window.__deckI18n.ui('浏览器内截取第 {current}/{total} 页...', {current: index + 1, total: slides.length}));
         window.go?.(index, { animate: false, force: true });
         await waitFrame(); await waitFrame();
         const slide = slides[index];
@@ -6373,7 +6709,7 @@ refreshRailCatalog();
         finishSlideAnimationsForCapture(slide);
         await waitFrame(); await waitFrame();
         const capture = window.htmlToImage.toJpeg(slide, withSlideCaptureFilter({ quality: 0.92, pixelRatio: 1.5, backgroundColor: '#000000' }));
-        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error(`第 ${index + 1} 页截图超时`)), 30000));
+        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error(window.__deckI18n.ui('第 {n} 页截图超时', {n: index + 1}))), 30000));
         pages.push(await Promise.race([capture, timeout]));
       }
     } finally {
@@ -6386,6 +6722,117 @@ refreshRailCatalog();
   // 浏览器内 PDF 导出:服务器在沙箱型宿主(如豆包)里无法启动导出浏览器时的兜底——
   // 截图发生在用户自己打开预览页的浏览器(正常桌面进程,不受宿主沙箱影响),
   // 服务器只用 pdf-lib 做纯 JS 合成。可手动调用,也由 __exportDeckPdf 自动降级触发。
+  async function runBrowserPptxExportInFrame(options){
+    const frame = document.createElement('iframe');
+    frame.style.cssText = 'position:fixed;left:-20020px;top:0;width:1920px;height:1080px;border:0;visibility:hidden;pointer-events:none';
+    frame.setAttribute('aria-hidden', 'true');
+    frame.src = location.pathname + location.search;
+    document.body.appendChild(frame);
+    try {
+      await new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error(window.__deckI18n.ui('导出环境加载超时'))), 30000);
+        frame.onload = () => { clearTimeout(timer); resolve(); };
+        frame.onerror = () => { clearTimeout(timer); reject(new Error(window.__deckI18n.ui('导出环境加载失败'))); };
+      });
+      const win = frame.contentWindow;
+      const doc = frame.contentDocument;
+      // 等 iframe 内 deck 就绪
+      await new Promise((resolve, reject) => {
+        const deadline = Date.now() + 30000;
+        (function poll(){
+          if(doc.querySelector('#deck > .slide.active') && typeof win.go === 'function') return resolve();
+          if(Date.now() > deadline) return reject(new Error(window.__deckI18n.ui('导出环境的页面未就绪')));
+          setTimeout(poll, 120);
+        })();
+      });
+      // 注入导出组件
+      for(const [src, ready] of [
+        ['assets/vendor/html-to-image.js', () => win.htmlToImage],
+        ['assets/vendor/pptxgen.bundle.js', () => typeof win.PptxGenJS === 'function'],
+        ['assets/vendor/editable-pptx-browser.js', () => win.__editablePptxBrowser?.exportEditablePptxInBrowser],
+      ]){
+        if(ready()) continue;
+        await new Promise((resolve, reject) => {
+          const script = doc.createElement('script');
+          script.src = src;
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error(window.__deckI18n.ui('无法加载组件 {src}', {src: src})));
+          doc.head.appendChild(script);
+        });
+      }
+      return await win.__editablePptxBrowser.exportEditablePptxInBrowser(options);
+    } finally {
+      frame.remove();
+    }
+  }
+
+  // 浏览器内可编辑 PPTX 导出:服务器在沙箱型宿主里起不了无头浏览器时的降级——
+  // 采集/截图/组装全部在用户当前浏览器完成(assets/vendor/editable-pptx-browser.js),
+  // 服务器只负责把成品二进制落盘(/api/export-pptx-store)。可手动调用,也由
+  // __exportDeckPptx 自动降级触发。
+  window.__exportDeckPptxInBrowser = async function(existingUi){
+    if(window.__deckExportLocked && !existingUi) return;
+    let exportUi = existingUi || null;
+    const owns = !exportUi;
+    try {
+      if(owns) exportUi = beginDeckExport('PPTX');
+      updateDeckExport(exportUi, 0, 1, window.__deckI18n.ui('准备浏览器内导出环境...'));
+      window.__syncDeckPageNumbers?.();
+      window.__flushEditableTextState?.();
+      window.__syncDeckViewModelFromDom?.();
+      throwIfDeckExportCancelled(exportUi);
+      const slides = window.__getVisibleSlides?.() || [...document.querySelectorAll('#deck > .slide:not([hidden])')];
+      // 在屏外 1920×1080 iframe 里跑导出:视口与服务端无头浏览器完全一致(deck 缩放
+      // 为 1:1,细元素不会被视口阈值过滤),同时不打断用户正在看的页面;当前的编辑
+      // 状态经 snapshot 带入 iframe。
+      const { blob, report } = await runBrowserPptxExportInFrame({
+        snapshot: buildEditablePptxExportSnapshot(),
+        title: document.title || 'Presentation',
+        onProgress: update => {
+          if(!update?.detail) return;
+          const percent = Number(update.percent || 0);
+          updateDeckExport(exportUi, Math.min(slides.length, Math.round((percent / 100) * slides.length)), slides.length, window.__deckI18n.ui('{detail}(浏览器内导出)', {detail: window.__deckI18n.exportDetail(update.detail)}));
+        },
+      });
+      throwIfDeckExportCancelled(exportUi);
+      updateDeckExport(exportUi, slides.length, slides.length, window.__deckI18n.ui('保存 PPTX...'));
+      const downloadName = `${getDeckFileName()}.pptx`;
+      // 优先经预览服务落盘(产物进 output/exports,可追溯);静态文件服务器(node/python
+      // 静态托管)没有该端点——直接把 blob 交给浏览器下载,导出不依赖任何服务端能力。
+      let result = null;
+      try {
+        const response = await fetch(`/api/export-pptx-store?fileName=${encodeURIComponent(getDeckFileName())}`, {
+          method: 'POST',
+          headers: {'content-type': 'application/octet-stream'},
+          body: blob,
+        });
+        if(response.ok) result = await response.json();
+      } catch {}
+      if(result?.downloadUrl){
+        window.__lastPptxExportResult = { ...result, ...report, downloadStarted: false };
+        const downloadStarted = startServerExportDownload(result.downloadUrl, 'PPTX');
+        window.__lastPptxExportResult.downloadStarted = downloadStarted;
+        updateDeckExport(exportUi, slides.length, slides.length, downloadStarted ? window.__deckI18n.ui('PPTX 已开始下载(浏览器内导出)') : window.__deckI18n.ui('PPTX 已生成：{name}', {name: result.relativePath || result.downloadName || 'download'}));
+        if(!downloadStarted) alert(window.__deckI18n.ui('PPTX 已生成：\n{name}', {name: result.downloadName || result.relativePath || 'download'}));
+        return result;
+      }
+      downloadBlob(blob, downloadName);
+      result = { ok: true, browserCapture: true, blobDownload: true, downloadName, ...report, downloadStarted: true };
+      window.__lastPptxExportResult = result;
+      updateDeckExport(exportUi, slides.length, slides.length, window.__deckI18n.ui('PPTX 已开始下载(浏览器内导出)'));
+      return result;
+    } catch (error) {
+      if(isDeckExportCancelledError(error)) return null;
+      if(!owns) throw error;
+      console.error('[export pptx][browser-capture]', error);
+      alert(error?.message || window.__deckI18n.ui('PPTX 浏览器内导出失败,请在浏览器控制台查看错误。'));
+      return null;
+    } finally {
+      if(owns) endDeckExport(exportUi);
+      window.__syncActiveEffects?.();
+    }
+  };
+
   window.__exportDeckPdfInBrowser = async function(existingUi){
     if(window.__deckExportLocked && !existingUi) return;
     let exportUi = existingUi || null;
@@ -6394,30 +6841,38 @@ refreshRailCatalog();
       if(owns) exportUi = beginDeckExport('PDF');
       const pages = await captureDeckPagesInBrowser(exportUi);
       throwIfDeckExportCancelled(exportUi);
-      updateDeckExport(exportUi, pages.length, pages.length, '上传页面截图,服务器合成 PDF...');
-      const response = await fetch('/api/export-pdf-assemble', {
-        method: 'POST',
-        headers: {'content-type': 'application/json'},
-        body: JSON.stringify({ title: document.title || 'Presentation', fileName: getDeckFileName(), pages }),
-      });
-      if(!response.ok){
-        let detail = '';
-        try { detail = (await response.json())?.error || ''; } catch {}
-        throw new Error(detail || `PDF assemble endpoint failed (${response.status})`);
+      updateDeckExport(exportUi, pages.length, pages.length, window.__deckI18n.ui('合成 PDF...'));
+      // 优先经预览服务合成落盘;静态文件服务器没有 assemble 端点——用前端 pdf-lib
+      // 在浏览器内合成并直接下载,导出不依赖任何服务端能力。
+      let result = null;
+      try {
+        const response = await fetch('/api/export-pdf-assemble', {
+          method: 'POST',
+          headers: {'content-type': 'application/json'},
+          body: JSON.stringify({ title: document.title || 'Presentation', fileName: getDeckFileName(), pages }),
+        });
+        if(response.ok) result = await response.json();
+      } catch {}
+      if(result?.downloadUrl){
+        window.__lastPdfExportResult = { ...result, downloadStarted: false };
+        const downloadStarted = startServerExportDownload(result.downloadUrl, 'PDF');
+        window.__lastPdfExportResult.downloadStarted = downloadStarted;
+        updateDeckExport(exportUi, pages.length, pages.length, downloadStarted ? window.__deckI18n.ui('PDF 已开始下载(浏览器内导出)') : window.__deckI18n.ui('PDF 已生成：{name}', {name: result.relativePath || result.downloadName || 'download'}));
+        if(!downloadStarted) alert(window.__deckI18n.ui('PDF 已生成：\n{name}', {name: result.downloadName || result.relativePath || 'download'}));
+        return result;
       }
-      const result = await response.json();
-      if(!result?.downloadUrl) throw new Error('PDF assemble did not return a download URL.');
-      window.__lastPdfExportResult = { ...result, downloadStarted: false };
-      const downloadStarted = startServerExportDownload(result.downloadUrl, 'PDF');
-      window.__lastPdfExportResult.downloadStarted = downloadStarted;
-      updateDeckExport(exportUi, pages.length, pages.length, downloadStarted ? 'PDF 已开始下载(浏览器内导出)' : `PDF 已生成：${result.relativePath || result.downloadName || 'download'}`);
-      if(!downloadStarted) alert(`PDF 已生成：\n${result.downloadName || result.relativePath || 'download'}`);
+      const blob = await assemblePdfInBrowser(pages, document.title || 'Presentation');
+      const downloadName = `${getDeckFileName()}.pdf`;
+      downloadBlob(blob, downloadName);
+      result = { ok: true, browserCapture: true, blobDownload: true, generationMode: 'browser-capture', pages: pages.length, downloadName, downloadStarted: true };
+      window.__lastPdfExportResult = result;
+      updateDeckExport(exportUi, pages.length, pages.length, window.__deckI18n.ui('PDF 已开始下载(浏览器内导出)'));
       return result;
     } catch (error) {
       if(isDeckExportCancelledError(error)) return null;
       if(!owns) throw error;
       console.error('[export pdf][browser-capture]', error);
-      alert(error?.message || 'PDF 浏览器内导出失败，请在浏览器控制台查看错误。');
+      alert(error?.message || window.__deckI18n.ui('PDF 浏览器内导出失败，请在浏览器控制台查看错误。'));
       return null;
     } finally {
       if(owns) endDeckExport(exportUi);
@@ -6437,7 +6892,7 @@ refreshRailCatalog();
       exportUi = beginDeckExport('PDF');
       const progressId = createPdfExportProgressId();
       progressPoll = beginPdfExportProgressPolling(exportUi, progressId);
-      updateDeckExport(exportUi, 0, 1, '提交截图 PDF 生成任务...');
+      updateDeckExport(exportUi, 0, 1, window.__deckI18n.ui('提交截图 PDF 生成任务...'));
       window.__syncDeckPageNumbers?.();
       window.__flushEditableTextState?.();
       window.__syncDeckViewModelFromDom?.();
@@ -6462,9 +6917,13 @@ refreshRailCatalog();
       progressPoll.stop();
       progressPoll = null;
       throwIfDeckExportCancelled(exportUi);
-      // 地址是 HTTP 但背后没有导出服务:通用静态服务器对 POST 返回 501/405,
-      // 路径没被服务的返回 404,服务进程退出则 fetch 直接失败——统一弹引导窗。
+      // 地址是 HTTP 但背后没有导出服务(通用静态服务器对 POST 返回 501/405,
+      // 路径没被服务的返回 404,服务进程退出则 fetch 直接失败):自 blob 导出支持后,
+      // 静态服务器同样可以完成全流程——直接切换浏览器内导出(截图+前端合成+blob 下载)。
       if(!response || [404, 405, 501].includes(response.status)){
+        updateDeckExport(exportUi, 0, 1, window.__deckI18n.ui('当前服务无导出端点,切换浏览器内导出...'));
+        const fallbackResult = await window.__exportDeckPdfInBrowser(exportUi);
+        if(fallbackResult) return;
         showExportServiceRequired('no-service');
         return;
       }
@@ -6474,7 +6933,7 @@ refreshRailCatalog();
         // 沙箱型宿主(如豆包)里服务器无法启动导出浏览器(Mach/显示服务被拦):
         // 自动降级为「当前浏览器逐页截图 + 服务器纯 JS 合成」。
         if(response.status === 500 && /browser has been closed|browserType\.launch|Target page, context or browser|Chrome executable not found/i.test(detail)){
-          updateDeckExport(exportUi, 0, 1, '服务器无法启动导出浏览器,切换浏览器内导出...');
+          updateDeckExport(exportUi, 0, 1, window.__deckI18n.ui('服务器无法启动导出浏览器,切换浏览器内导出...'));
           const fallbackResult = await window.__exportDeckPdfInBrowser(exportUi);
           if(fallbackResult) return;
         }
@@ -6485,12 +6944,12 @@ refreshRailCatalog();
       window.__lastPdfExportResult = result;
       const downloadStarted = startServerExportDownload(result.downloadUrl, 'PDF');
       window.__lastPdfExportResult.downloadStarted = downloadStarted;
-      updateDeckExport(exportUi, slides.length, slides.length, downloadStarted ? 'PDF 已开始下载' : `PDF 已生成：${result.relativePath || result.downloadName || 'download'}`);
-      if(!downloadStarted) alert(`PDF 已生成：\n${result.downloadName || result.relativePath || 'download'}`);
+      updateDeckExport(exportUi, slides.length, slides.length, downloadStarted ? window.__deckI18n.ui('PDF 已开始下载') : window.__deckI18n.ui('PDF 已生成：{name}', {name: result.relativePath || result.downloadName || 'download'}));
+      if(!downloadStarted) alert(window.__deckI18n.ui('PDF 已生成：\n{name}', {name: result.downloadName || result.relativePath || 'download'}));
     } catch (error) {
       if(isDeckExportCancelledError(error)) return;
       console.error('[export pdf]', error);
-      alert(error?.message || 'PDF 导出失败，请在浏览器控制台查看错误。');
+      alert(error?.message || window.__deckI18n.ui('PDF 导出失败，请在浏览器控制台查看错误。'));
     } finally {
       progressPoll?.stop?.();
       endDeckExport(exportUi);
@@ -6515,7 +6974,7 @@ refreshRailCatalog();
         if(!response.ok) return;
         const progress = await response.json();
         const percent = Math.max(0, Math.min(100, Number(progress.percent || 0)));
-        const detail = progress.detail || '正在生成截图 PDF';
+        const detail = progress.detail ? window.__deckI18n.exportDetail(progress.detail) : window.__deckI18n.ui('正在生成截图 PDF');
         updateDeckExport(exportUi, percent, 100, `${detail} · ${Math.round(percent)}%`);
       } catch {}
       if(!stopped) setTimeout(read, 450);
@@ -6536,7 +6995,7 @@ refreshRailCatalog();
   window.__exportDeckPptx = async function(){
     if(window.__deckExportLocked) return;
     if(isCodexInAppBrowser()){
-      const message = 'codex 自带浏览器不支持导出，需要复制地址到浏览器再进行操作';
+      const message = window.__deckI18n.ui('codex 自带浏览器不支持导出，需要复制地址到浏览器再进行操作');
       window.__codexExportBlockedMessage = message;
       alert(message);
       return;
@@ -6552,9 +7011,9 @@ refreshRailCatalog();
       exportUi = beginDeckExport('PPTX');
       if(button){
         button.disabled = true;
-        button.textContent = '导出中...';
+        button.textContent = window.__deckI18n.ui('导出中...');
       }
-      updateDeckExport(exportUi, 0, 1, '准备页面状态...');
+      updateDeckExport(exportUi, 0, 1, window.__deckI18n.ui('准备页面状态...'));
       window.__syncDeckPageNumbers?.();
       window.__flushEditableTextState?.();
       window.__syncDeckViewModelFromDom?.();
@@ -6563,7 +7022,7 @@ refreshRailCatalog();
       const slides = window.__getVisibleSlides?.() || [...document.querySelectorAll('#deck > .slide:not([hidden])')];
       const progressId = createEditablePptxProgressId();
       progressPoll = beginEditablePptxProgressPolling(exportUi, progressId);
-      updateDeckExport(exportUi, 1, 100, '提交可编辑 PPTX 生成任务...');
+      updateDeckExport(exportUi, 1, 100, window.__deckI18n.ui('提交可编辑 PPTX 生成任务...'));
       let response;
       try {
         response = await fetch('/api/export-editable-pptx', {
@@ -6583,14 +7042,25 @@ refreshRailCatalog();
       progressPoll.stop();
       progressPoll = null;
       throwIfDeckExportCancelled(exportUi);
-      // 同 PDF:HTTP 地址但没有导出服务(静态服务器 501/405、404、或服务已退出)。
+      // 同 PDF:HTTP 地址但没有导出服务(静态服务器 501/405、404、或服务已退出)——
+      // 自 blob 导出支持后直接切换浏览器内导出(iframe 采集+组装+blob 下载)。
       if(!response || [404, 405, 501].includes(response.status)){
+        updateDeckExport(exportUi, 0, 1, window.__deckI18n.ui('当前服务无导出端点,切换浏览器内导出...'));
+        const fallbackResult = await window.__exportDeckPptxInBrowser(exportUi);
+        if(fallbackResult) return;
         showExportServiceRequired('no-service');
         return;
       }
       if(!response.ok){
         let detail = '';
         try { detail = (await response.json())?.error || ''; } catch {}
+        // 沙箱型宿主里服务器无法启动导出浏览器(Mach/显示服务被拦)或机器无浏览器:
+        // 自动降级为「当前浏览器内采集/截图/组装 + 服务器纯落盘」。
+        if(response.status === 500 && /browser has been closed|browserType\.launch|Target page, context or browser|Chrome executable not found/i.test(detail)){
+          updateDeckExport(exportUi, 0, 1, window.__deckI18n.ui('服务器无法启动导出浏览器,切换浏览器内导出...'));
+          const fallbackResult = await window.__exportDeckPptxInBrowser(exportUi);
+          if(fallbackResult) return;
+        }
         throw new Error(detail || `Editable PPTX export endpoint failed (${response.status})`);
       }
       const result = await response.json();
@@ -6599,14 +7069,14 @@ refreshRailCatalog();
       throwIfDeckExportCancelled(exportUi);
       const downloadStarted = startServerExportDownload(result.downloadUrl, 'PPTX');
       window.__lastPptxExportResult.downloadStarted = downloadStarted;
-      updateDeckExport(exportUi, slides.length, slides.length, downloadStarted ? 'PPTX 已开始下载' : `PPTX 已生成：${result.relativePath || result.downloadName || 'download'}`);
-      if(!downloadStarted) alert(`PPTX 已生成：\n${result.downloadName || result.relativePath || 'download'}`);
+      updateDeckExport(exportUi, slides.length, slides.length, downloadStarted ? window.__deckI18n.ui('PPTX 已开始下载') : window.__deckI18n.ui('PPTX 已生成：{name}', {name: result.relativePath || result.downloadName || 'download'}));
+      if(!downloadStarted) alert(window.__deckI18n.ui('PPTX 已生成：\n{name}', {name: result.downloadName || result.relativePath || 'download'}));
     } catch (error) {
       if(isDeckExportCancelledError(error)) return;
       console.error('[export pptx]', error);
       const message = location.protocol === 'http:' || location.protocol === 'https:'
-        ? `可编辑 PPTX 导出失败：${error?.message || '未知错误'}\n\n可以把「帮我导出PPTX」发给 AI,让它重新走导出流程。`
-        : '可编辑 PPTX 导出失败，请通过本地 HTTP/HTTPS 预览服务打开。直接打开本地 HTML/file:// 不能导出可编辑 PPTX。';
+        ? window.__deckI18n.ui('可编辑 PPTX 导出失败：{message}\n\n可以把「帮我导出PPTX」发给 AI,让它重新走导出流程。', {message: error?.message || window.__deckI18n.ui('未知错误')})
+        : window.__deckI18n.ui('可编辑 PPTX 导出失败，请通过本地 HTTP/HTTPS 预览服务打开。直接打开本地 HTML/file:// 不能导出可编辑 PPTX。');
       window.__lastPptxExportErrorMessage = message;
       alert(message);
     } finally {
@@ -6646,7 +7116,7 @@ refreshRailCatalog();
         if(!response.ok) return;
         const progress = await response.json();
         const percent = Math.max(1, Math.min(99, Number(progress?.percent || 0)));
-        const detail = progress?.detail || '正在生成可编辑 PPTX';
+        const detail = progress?.detail || window.__deckI18n.ui('正在生成可编辑 PPTX');
         updateDeckExport(exportUi, percent, 100, detail);
       } catch {}
     };
@@ -6733,7 +7203,7 @@ refreshRailCatalog();
     const viewState = captureExportViewState();
     try {
       exportUi = beginDeckExport('HTML');
-      updateDeckExport(exportUi, 0, 1, '准备页面状态...');
+      updateDeckExport(exportUi, 0, 1, window.__deckI18n.ui('准备页面状态...'));
       window.__syncDeckPageNumbers?.();
       window.__flushEditableTextState?.();
       window.__syncDeckViewModelFromDom?.();
@@ -6747,12 +7217,12 @@ refreshRailCatalog();
       const html = await serializeHtmlExportClone(clone, exportUi);
       throwIfDeckExportCancelled(exportUi);
       const blob = new Blob(['<!DOCTYPE html>\n' + html], {type: 'text/html;charset=utf-8'});
-      updateDeckExport(exportUi, 1, 1, 'HTML 已准备下载');
+      updateDeckExport(exportUi, 1, 1, window.__deckI18n.ui('HTML 已准备下载'));
       await downloadBlob(blob, 'index.html');
     } catch (error) {
       if(isDeckExportCancelledError(error)) return;
       console.error('[export html]', error);
-      alert('HTML 导出失败，请在浏览器控制台查看错误。');
+      alert(window.__deckI18n.ui('HTML 导出失败，请在浏览器控制台查看错误。'));
     } finally {
       restoreExportViewState(viewState);
       endDeckExport(exportUi);
@@ -6765,11 +7235,11 @@ refreshRailCatalog();
     for(let index = 0; index < slides.length; index++){
       throwIfDeckExportCancelled(exportUi);
       const slide = slides[index];
-      updateDeckExport(exportUi, index, slides.length, `${label} 准备第 ${index + 1} / ${slides.length} 页`);
+      updateDeckExport(exportUi, index, slides.length, window.__deckI18n.ui('{label} 准备第 {current} / {total} 页', {label: label, current: index + 1, total: slides.length}));
       window.__ensureRuntimeSlideRendered?.(slide);
       if(index % 2 === 1) await nextFrame();
     }
-    updateDeckExport(exportUi, slides.length, slides.length, `${label} 页面已准备完成`);
+    updateDeckExport(exportUi, slides.length, slides.length, window.__deckI18n.ui('{label} 页面已准备完成', {label: label}));
     await nextFrame();
     return slides;
   }
@@ -6947,7 +7417,7 @@ refreshRailCatalog();
       throwIfDeckExportCancelled(exportUi);
       const dataUrl = await readHtmlExportLocalAssetDataUrl(item.path);
       done += 1;
-      updateDeckExport(exportUi, done, refs.length, `HTML 打包素材 ${done} / ${refs.length}`);
+      updateDeckExport(exportUi, done, refs.length, window.__deckI18n.ui('HTML 打包素材 {done} / {total}', {done: done, total: refs.length}));
       if(dataUrl) replacements.push({...item, dataUrl});
     }));
     replacements.forEach(({variants, dataUrl}) => {
@@ -7305,10 +7775,10 @@ refreshRailCatalog();
 	    overlay.__deckExportCancelled = false;
 	    overlay.innerHTML = `
 	      <div class="deck-export-card" role="status" aria-live="polite">
-	        <div class="deck-export-title">${label} 导出中</div>
-	        <div class="deck-export-detail">准备中...</div>
+	        <div class="deck-export-title">${window.__deckI18n.ui('{label} 导出中', {label: label})}</div>
+	        <div class="deck-export-detail">${window.__deckI18n.ui('准备中...')}</div>
 	        <div class="deck-export-bar"><div class="deck-export-fill"></div></div>
-	        <div class="deck-export-actions"><button class="deck-export-cancel" type="button">取消</button></div>
+	        <div class="deck-export-actions"><button class="deck-export-cancel" type="button">${window.__deckI18n.ui('取消')}</button></div>
 	      </div>`;
 	    overlay.querySelector('.deck-export-cancel')?.addEventListener('click', event => {
 	      event.preventDefault();
@@ -7324,7 +7794,7 @@ refreshRailCatalog();
   function updateDeckExport(overlay, current, total, detail){
     if(!overlay) return;
     const pct = total > 0 ? Math.min(100, Math.max(0, Math.round((current / total) * 100))) : 0;
-    const text = detail || `导出进度 ${pct}%`;
+    const text = detail || window.__deckI18n.ui('导出进度 {pct}%', {pct: pct});
     overlay.querySelector('.deck-export-detail').textContent = `${text} · ${pct}%`;
 	    overlay.querySelector('.deck-export-fill').style.width = pct + '%';
 	  }
@@ -7335,10 +7805,10 @@ refreshRailCatalog();
     const cancel = overlay.querySelector('.deck-export-cancel');
     if(cancel){
       cancel.disabled = true;
-      cancel.textContent = '正在取消...';
+      cancel.textContent = window.__deckI18n.ui('正在取消...');
     }
     const detail = overlay.querySelector('.deck-export-detail');
-    if(detail) detail.textContent = '正在取消，正在恢复页面状态...';
+    if(detail) detail.textContent = window.__deckI18n.ui('正在取消，正在恢复页面状态...');
   }
 
   function throwIfDeckExportCancelled(overlay){
@@ -7447,7 +7917,7 @@ refreshRailCatalog();
     }
     if(button){
       const original = button.textContent;
-      button.textContent = copied ? '已复制' : '复制失败';
+      button.textContent = window.__deckI18n.ui(copied ? '已复制' : '复制失败');
       button.classList.toggle('copied', copied);
       setTimeout(() => { button.textContent = original; button.classList.remove('copied'); }, 1600);
     }
@@ -7458,18 +7928,18 @@ refreshRailCatalog();
   // 或预览服务进程已退出)。两种场景都引导用户把提示词发给 AI 走正确的预览/导出流程。
   const EXPORT_GUIDE_COPY = {
     file: {
-      title: '当前非 HTTP 模式,无法导出',
-      desc: '直接打开本地 HTML 文件时没有导出服务。把下面的提示词发给 AI,让它用 DashiAI PPT 的预览服务打开后再导出:',
-      startLabel: '发送给 AI,启动预览服务:',
+      title: window.__deckI18n.ui('当前非 HTTP 模式,无法导出'),
+      desc: window.__deckI18n.ui('直接打开本地 HTML 文件时没有导出服务。把下面的提示词发给 AI,让它用 DashiAI PPT 的预览服务打开后再导出:'),
+      startLabel: window.__deckI18n.ui('发送给 AI,启动预览服务:'),
       // 提示词必须指名 dashiai-ppt 的预览服务:只说"启动 http 服务"会诱导 AI 用
       // python -m http.server 等静态服务器,那正是 no-service 场景的事故根源。
-      startPrompt: () => `帮我用 dashiai-ppt 的预览服务启动这个 PPT 的预览 ${deckLocalDirForPrompt()}`,
+      startPrompt: () => window.__deckI18n.ui('帮我用 dashiai-ppt 的预览服务启动这个 PPT 的预览 {dir}', {dir: deckLocalDirForPrompt()}),
     },
     'no-service': {
-      title: '当前服务不支持导出',
-      desc: '这个地址后面没有可用的导出服务(可能是一个纯静态文件服务器,或预览服务已退出)。把下面的提示词发给 AI,让它用 DashiAI PPT 自带的预览服务重新启动:',
-      startLabel: '发送给 AI,重启预览服务:',
-      startPrompt: () => '帮我用 dashiai-ppt 的预览服务重新启动这个 PPT 的预览',
+      title: window.__deckI18n.ui('当前服务不支持导出'),
+      desc: window.__deckI18n.ui('这个地址后面没有可用的导出服务(可能是一个纯静态文件服务器,或预览服务已退出)。把下面的提示词发给 AI,让它用 DashiAI PPT 自带的预览服务重新启动:'),
+      startLabel: window.__deckI18n.ui('发送给 AI,重启预览服务:'),
+      startPrompt: () => window.__deckI18n.ui('帮我用 dashiai-ppt 的预览服务重新启动这个 PPT 的预览'),
     },
   };
   function showExportServiceRequired(mode){
@@ -7489,6 +7959,7 @@ refreshRailCatalog();
           <div class="ehm-prompt"><code data-prompt="export"></code><button class="ehm-copy" type="button" data-copy="export">复制</button></div>
           <p class="ehm-desc" data-manual-cmd style="margin:14px 0 0"></p>
         </div>`;
+      window.__deckI18n.translateStaticDom(modal);
       modal.addEventListener('click', event => {
         const copyKey = event.target?.dataset?.copy;
         if(copyKey) { copyPromptText(modal.querySelector(`[data-prompt="${copyKey}"]`)?.textContent || '', event.target); return; }
@@ -7503,8 +7974,8 @@ refreshRailCatalog();
     modal.querySelector('.ehm-desc').textContent = copy.desc;
     modal.querySelector('[data-label="start"]').textContent = copy.startLabel;
     modal.querySelector('[data-prompt="start"]').textContent = copy.startPrompt();
-    modal.querySelector('[data-prompt="export"]').textContent = '帮我导出PPTX';
-    modal.querySelector('[data-manual-cmd]').textContent = '手动方式:在终端运行 npm --prefix <skill-root>/project run preview:start -- <输出 ppt 目录> <port>,再用它输出的 http://127.0.0.1:<port>/ 打开导出。';
+    modal.querySelector('[data-prompt="export"]').textContent = window.__deckI18n.ui('帮我导出PPTX');
+    modal.querySelector('[data-manual-cmd]').textContent = window.__deckI18n.ui('手动方式:在终端运行 npm --prefix <skill-root>/project run preview:start -- <输出 ppt 目录> <port>,再用它输出的 http://127.0.0.1:<port>/ 打开导出。');
     modal.classList.add('open');
   }
 
@@ -8224,6 +8695,20 @@ refreshRailCatalog();
 })();
 </script>
 <script>
+/* =============== Quiet topbar · 语言切换 =============== */
+(function(){
+  const btn=document.getElementById('preview-lang-toggle');
+  const i18n=window.__deckI18n;
+  if(!btn||!i18n) return;
+  // 按钮显示目标语言(点击后切到的那种),title 用目标语言书写给目标用户看。
+  btn.textContent=i18n.isEn?'中':'EN';
+  const hint=i18n.isEn?'切换到中文':'Switch to English';
+  btn.setAttribute('title',hint);
+  btn.setAttribute('aria-label',hint);
+  btn.addEventListener('click',()=>i18n.setLanguage(i18n.isEn?'zh':'en'));
+})();
+</script>
+<script>
 /* =============== Quiet topbar · 明暗切换 =============== */
 (function(){
   const btn=document.getElementById('preview-theme-toggle');
@@ -8233,7 +8718,7 @@ refreshRailCatalog();
   const MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>';
   const systemDark=()=>matchMedia('(prefers-color-scheme:dark)').matches;
   const current=()=>{const a=document.documentElement.getAttribute('data-pp-theme');return a==='dark'||a==='light'?a:(systemDark()?'dark':'light');};
-  function paintIcon(theme){btn.innerHTML=theme==='dark'?SUN:MOON;btn.setAttribute('title',theme==='dark'?'切换到明亮':'切换到暗色');}
+  function paintIcon(theme){btn.innerHTML=theme==='dark'?SUN:MOON;btn.setAttribute('title',window.__deckI18n.ui(theme==='dark'?'切换到明亮':'切换到暗色'));}
   function apply(theme){document.documentElement.setAttribute('data-pp-theme',theme);paintIcon(theme);try{localStorage.setItem(KEY,theme);}catch{}}
   let saved;try{saved=localStorage.getItem(KEY);}catch{}
   if(saved==='dark'||saved==='light') apply(saved); else paintIcon(current());

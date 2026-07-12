@@ -38,7 +38,7 @@ Two checkouts at the same commit share the same entry. Lookup is git metadata on
 Invoke the helper via the `SKILL_DIR` anchor (set `SKILL_DIR` to the absolute path of the directory containing the SKILL.md you just read; the Bash tool's cwd is the user's project, not the skill dir):
 
 ```bash
-SKILL_DIR="<absolute path of this skill's directory>"
+SKILL_DIR="<absolute path of this skill's directory>";
 python3 "$SKILL_DIR/scripts/repo-profile-cache.py" get
 ```
 
@@ -47,7 +47,7 @@ python3 "$SKILL_DIR/scripts/repo-profile-cache.py" get
 - `HIT` then the profile JSON on the following lines → load it as the agnostic profile; skip derivation.
 - `MISS` then a write-path on the next line → dispatch the `repo-profiler` persona to derive the profile, write its JSON output to a file, then persist it. This `put` runs after the profiler, so it is a **separate Bash-tool call** from the `get` above — shell variables do not persist between calls, so **re-set `SKILL_DIR` in the same command**:
   ```bash
-  SKILL_DIR="<absolute path of this skill's directory>"
+  SKILL_DIR="<absolute path of this skill's directory>";
   python3 "$SKILL_DIR/scripts/repo-profile-cache.py" put <profile-json-file>
   ```
 - `NO-CACHE` → no git repo or no writable cache. Derive the profile fresh for this run and **skip** `put` (nothing to persist).

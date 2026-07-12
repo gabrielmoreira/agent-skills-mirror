@@ -414,6 +414,30 @@ Re-tested end-to-end against the running dev server. The previous claim ("blocks
     text stays short, then read its `button`s (`[Close, 重试]`).
     Pick fixture names that do NOT contain any state keyword you'll assert on.
 
+### C6. ✅ WORKS — read a topic's metadata (workingDirectoryConfig etc.) from the chat store, and reset to a fresh topic
+
+- **Doesn't work**: `chat().topicsMap[topicId]` / `chat().topicDataMap[topicId]` — there is
+  no per-topic-id map. `topicDataMap` is keyed by **view key** (`agent_<agentId>`), and each
+  value is a paginated view object (`{ items, total, hasMore, … }`), not a topic.
+- **Works** (verified while E2E-testing `git worktree add` side-effect recording):
+  ```js
+  var c = window.__LOBE_STORES.chat();
+  var view = c.topicDataMap['agent_' + agentId];
+  var topic = (view.items || []).find(function (x) {
+    return x.id === c.activeTopicId;
+  });
+  topic.metadata.workingDirectoryConfig; // ← e.g. git.activeWorktree written by recordGitCommandEffects
+  ```
+- **Fresh topic without touching the UI**: `await c.openNewTopicOrSaveTopic()` — with an
+  active topic it saves/exits to the agent's no-topic compose state (activeTopicId → null),
+  so the next send creates a new topic. Chain per-case fixtures this way instead of clicking
+  "Start New Topic". The contenteditable ref changes after the switch — re-run
+  `snapshot -i -C` before typing.
+- Full E2E loop this enabled: E11 fixture agent (`heterogeneousProvider: { type: 'claude-code' },
+executionTarget: 'local'` in `agencyConfig`) + one message per case asking CC to run a
+  specific shell command → poll `chat().operations` for `running === 0` → assert the
+  topic's metadata via the probe above. A real CC one-command turn completes in \~10–20s.
+
 ---
 
 ## D. agent-browser / CDP mechanics
@@ -895,3 +919,57 @@ agents. Set` `agentRules: false` `in next.config to disable.` and leaves the wor
 - **Works**: name the ignored directory explicitly (`grep -rl "agentRules" node_modules`), which
   overrides the ignore, or call `/usr/bin/grep` directly. Before asserting "X exists nowhere",
   re-run the search with an explicit path into the dependency tree.
+
+### E14. Electron `will-attach-webview` params carry NO custom attributes — identity via data-\* never arrives
+
+- **Situation**: a main-process controller needs to know WHICH renderer feature a mounting
+  `<webview>` belongs to (e.g. a per-conversation session id), and the renderer put it in a
+  custom `data-*` attribute on the element.
+- **Doesn't work**: reading `params['data-…']` in `will-attach-webview`. Measured live: params
+  only contains the standard set (`instanceId, partition, src, httpreferrer, useragent,
+nodeintegration, plugins, disablewebsecurity, allowpopups, preload, …`). The handler silently
+  no-ops and — trap — a unit test that mocks params WITH the custom key passes green.
+- **Works**: two-channel design. (1) Recognition/hardening keyed off the **`partition`
+  attribute** set by the renderer (it IS forwarded); (2) identity bound after mount via an
+  explicit IPC — renderer listens for the webview's `dom-ready`, calls
+  `attach({ sessionId, webContentsId: el.getWebContentsId() })`, main process
+  `webContents.fromId()` + validates the guest's session belongs to the expected partition.
+
+### E16. agent-browser session silently re-targets to a newly created `<webview>` guest
+
+- **Situation**: driving an Electron app over CDP while the app itself spawns a `<webview>`
+  (in-app browser). After the guest mounts, `eval` on the SAME session suddenly returns the
+  guest page's DOM (`__LOBE_STORES` undefined, app selectors empty) — looks like the app broke.
+- **Doesn't work**: assuming a session stays pinned to the app target; also assuming
+  `document.querySelectorAll('webview').length === 0` means "no webview" (you may be evaluating
+  INSIDE the guest).
+- **Works**: `curl -s localhost:<cdp>/json/list` to see targets (`page` = app, `webview` =
+  guest), then use **separate session names** per target (`--session app-x` re-picks the `page`
+  target; the old session keeps following the guest — handy for driving the embedded page).
+  Verify with `get url` (`app://` vs the site URL) before trusting any eval result.
+
+### E17. Dev-mode main-process `logger.warn/debug` is invisible without DEBUG env — probe with console.log
+
+- **Situation**: adding a temporary probe log in Electron main code and watching the dev
+  instance log; nothing prints, which reads as "code path never runs".
+- **Doesn't work**: `createLogger(ns).warn/debug` in development — it routes to the `debug`
+  package, which is silent unless `DEBUG=<ns>` was set when the process started.
+- **Works**: temporary probes use `console.log('[AGENT-TEST] …')` (always reaches the instance
+  log via stdout); confirm the rebuilt bundle actually contains the probe string
+  (`grep "<probe>" apps/desktop/dist/main/index.js`) before interpreting silence.
+
+### D15. Host-page CDP screenshot renders the `<webview>` region BLACK intermittently — guest DOM eval is ground truth
+
+- **Situation**: capturing evidence of an Electron in-app browser (`<webview>` in a sidebar).
+  Early `Page.captureScreenshot` shots of the host page included the guest's pixels; minutes
+  later the same command on the same target returned the webview region uniformly black
+  (byte-identical output across retries), while the app chrome around it rendered fine.
+- **Doesn't work**: concluding the embedded page went blank/failed from the host screenshot,
+  or retrying the host capture. The guest was healthy the whole time: an `agent-browser`
+  session following the webview target (E16) read `document.title` = the expected page and
+  full body text.
+- **Works**: treat the guest target as the source of truth — eval `title`/`innerText` in the
+  webview target for the assertion, and capture the guest's own pixels via a session pinned
+  to the `webview` target (`agent-browser screenshot` there) when the embedded page's visual
+  matters. Use host-page screenshots only for the app chrome around the webview. Cause of the
+  black compositing not established (OOPIF surface not composited into the host capture).

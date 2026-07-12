@@ -10,12 +10,56 @@ description: >
   "SQL injection", "input validation", "secrets management", "auth review".
   Do NOT use for dependency CVE scanning (use go-dependency-audit) or
   concurrency safety (use go-concurrency-review).
+license: MIT
+metadata:
+  version: "1.2.0"
 ---
 
 # Go Security Audit
 
 Security is not a feature — it's a property. Every line of code either
 maintains it or degrades it.
+
+## Operating Modes
+
+Pick the mode that matches the request before starting:
+
+- **Targeted check** — a single concern ("is this query injectable?",
+  "review this auth middleware"). Apply only the relevant sections.
+- **Diff audit** — audit the changed lines of a PR or working tree for
+  every concern below.
+- **Full audit** (default for "security review the service") — sweep the
+  codebase using the parallel passes in "Auditing Large Codebases".
+
+## Run the Scanners First
+
+Before manual review, run the automated scanners and fold their output
+into the findings (skip any that is not installed and note it):
+
+```bash
+govulncheck ./...       # known CVEs actually reachable from your code
+gosec ./...             # static analysis for insecure patterns
+go vet ./...            # includes some security-relevant checks
+```
+
+Scanners find the known patterns; the manual passes below find the
+logic flaws they cannot.
+
+## Auditing Large Codebases
+
+Each numbered section below is an independent audit pass. For codebases
+beyond ~20 files:
+
+1. Locate the attack surface first: HTTP/gRPC handlers, CLI entry
+   points, queue consumers, and anything parsing external input.
+2. Run one pass per concern: (a) input validation + injection,
+   (b) authentication/authorization, (c) secrets + crypto,
+   (d) TLS + security headers + rate limiting, (e) logging hygiene.
+3. If your environment supports delegating work to parallel sub-agents
+   or tasks, assign each pass to one — the passes don't overlap.
+   Otherwise run them sequentially.
+4. Every finding must cite `file.go:line`, the vulnerable input path,
+   and a concrete fix. Aggregate into one report sorted by severity.
 
 ## 1. Input Validation
 
@@ -171,7 +215,7 @@ const apiKey = "sk-1234567890abcdef" // hardcoded secret
 
 ### Use `.gitignore`:
 
-```
+```text
 .env
 *.pem
 *.key

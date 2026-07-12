@@ -1,6 +1,6 @@
 ---
 name: deepwork
-description: Orchestrator-only workflow for heavy coding sessions, multi-phase implementation, and risky refactors. Use for complex work that needs planning, review gates, and persistent progress tracking.
+description: Orchestrator-only workflow designed for intensive coding sessions, complex multi-phase implementations, and high-risk refactors. Ideal when the task requires structured planning, clear review gates, progressive checkpoints, and persistent state tracking. Note, This is a high-cost operation. When in doubt, always ask the user for confirmation before starting Deepwork mode.
 ---
 
 # Deepwork

@@ -1,100 +1,97 @@
 # SEND Benchmark — Email Marketing Evaluation Standard
 
-The fifth framework in this library, alongside [CORE-EEAT](core-eeat-benchmark.md) (content quality), [CITE](cite-domain-rating.md) (domain authority), [C³](c3-benchmark.md) (influencer), and [ROAS](roas-benchmark.md) (paid ads). SEND scores an **email marketing program** — named for the verb the whole channel turns on — across four goal-weighted levers whose initials spell the name. It is deliberately **use-case-agnostic**: the same four dimensions score B2C lifecycle/ecommerce, B2B cold outbound, and newsletter/creator programs; the *goal-weight column* encodes which one you are running.
+SEND evaluates one email program across **Sender Integrity · Engagement · Nurture · Direct Outcome**. It supports promotional, retention, cold-outbound, and newsletter programs without pretending their journeys or outcome truth sets are identical.
 
-**Keyless by design**: every input comes from the user's **own account, manually exported** — ESP campaign/flow export (opens/clicks/revenue), the DMARC aggregate (RUA) report, a seed-list/inbox-placement test, and the GA4/ecommerce export. Keyed ESP APIs (Klaviyo, Mailchimp, HubSpot, Customer.io) are an optional Tier-2/3 MCP convenience, **never a Tier-1 precondition**.
+The framework is advisory. Executable items, profiles, conditional applicability, and vetoes live in [`framework-catalog.json`](framework-catalog.json); common evidence and scoring rules live in [`scoring-semantics.md`](scoring-semantics.md).
 
-## The four dimensions (S · E · N · D)
+**Keyless by design:** Tier 1 uses own-account exports, DNS/DMARC evidence, message headers, seed-panel results, and own analytics/CRM/subscription records. ESP APIs are optional conveniences.
 
-| Letter | Dimension | What it measures |
-|--------|-----------|------------------|
-| **S** | **Sender-integrity / Deliverability** | Authentication (SPF/DKIM/DMARC/BIMI), domain/IP reputation, inbox placement vs spam, bounce & spam-complaint rates, list hygiene, **+ list consent integrity** (vs consent-registry) |
-| **E** | **Engagement** | Open / click / CTOR vs benchmark, subject-line + preheader quality, personalization, send-time & frequency fit, engagement-decay & sunset hygiene |
-| **N** | **Nurture / Lifecycle** | Automation-flow design (welcome, abandoned-cart, post-purchase, win-back), trigger timing & cadence, segmentation relevance, goal progression, **+ unsubscribe / preference-center integrity** |
-| **D** | **Direct-response / Conversion** | Revenue-per-send & per-recipient, conversion vs target, offer & CTA strength, email↔landing message-match, **+ claim & disclosure compliance** (vs the claims ledger) |
+## Unit and Required Context
 
-Mnemonic for the levers: **will it land (S) → will they open it (E) → does the program sustain them (N) → what comes back (D)**. The same four letters also frame the lifecycle as the **SEND loop**: Setup → Engage → Nurture → Deliver — the phase directories under `email/`.
+Score one sending program/profile over one normalized window. Declare program type, provider mix, list age, market, and estimated Apple Mail Privacy Protection (`mpp_share`) exposure. Cohort, provider, and window changes create a new run.
 
-## Scoring chassis
+## The 20 Items
 
-| | |
+| ID | Dimension | Criterion |
+|---|---|---|
+| `S1` | Sender Integrity | SPF/DKIM/DMARC alignment is verified from DNS and aggregate evidence. |
+| `S2` | Sender Integrity | Consent/lawful basis and acquisition provenance are on file. |
+| `S3` | Sender Integrity | Inbox placement is measured on a declared provider or seed panel. |
+| `S4` | Sender Integrity | Hard-bounce and complaint rates are normalized by cohort/window. |
+| `S5` | Sender Integrity | Suppression, hygiene, and sunset controls are active. |
+| `E1` | Engagement | Click or downstream action rate is the primary engagement signal. |
+| `E2` | Engagement | Open/CTOR is used only with MPP segmentation and an explicit proxy caveat. |
+| `E3` | Engagement | Subject, preheader, and body promise match. |
+| `E4` | Engagement | Timing and frequency fit preferences and operating capacity. |
+| `E5` | Engagement | Engagement decay and reactivation/sunset behavior are measured. |
+| `N1` | Nurture | One-click opt-out works and live suppression tombstones are honored. |
+| `N2` | Nurture | Entry, confirmation, and welcome/first-touch logic fit the program. |
+| `N3` | Nurture | Journeys applicable to the declared program type exist and work. |
+| `N4` | Nurture | Segmentation and progression logic use relevant evidence. |
+| `N5` | Nurture | Preference/frequency controls exist where recurring sends make them applicable. |
+| `D1` | Direct Outcome | Claims, disclosures, and offer terms match the claims ledger. |
+| `D2` | Direct Outcome | The declared outcome truth set is measured. |
+| `D3` | Direct Outcome | Offer and CTA are clear for this program. |
+| `D4` | Direct Outcome | Email-to-destination message match holds. |
+| `D5` | Direct Outcome | Outcome attribution is reconciled outside provider self-reporting. |
+
+`E2`, `N3`, and `N5` are conditional. If opens/CTOR are not used, `E2` may be `na` with reason. A newsletter need not have an abandoned-cart flow; cold outbound need not have post-purchase automation. Applicability comes from the declared program, not from an ecommerce template.
+
+## Profiles and Scoring
+
+| Profile | S | E | N | D |
+|---|---:|---:|---:|---:|
+| `promotional` | .30 | .20 | .15 | .35 |
+| `retention` | .20 | .35 | .30 | .15 |
+| `cold-outbound` | .35 | .25 | .15 | .25 |
+| `newsletter` | .25 | .35 | .20 | .20 |
+
+Per item: Pass = 10, Partial = 5, Fail = 0. `EQS` is the floor-rounded profile-weighted mean after 100% applicable evidence coverage. Profiles are separate measurement contracts, not labels pasted onto one universal program.
+
+For `S=80 E=75 N=70 D=78`, promotional=`76`, retention=`74`, cold-outbound=`76`, and newsletter=`75`. These are arithmetic fixtures, not performance forecasts.
+
+## Engagement and Outcome Truth
+
+Apple MPP can preload tracking pixels, so opens and metrics derived from opens are proxy evidence unless segmented and caveated. Use clicks, replies, qualified downstream actions, and declared business outcomes as primary signals where available.
+
+`D2` follows the program:
+
+- Ecommerce: deduplicated orders, contribution, or customer value.
+- B2B/outbound: qualified replies, meetings, opportunities, and CRM pipeline/revenue.
+- Paid newsletter: subscriptions, churn/retention, and net subscription revenue.
+- Sponsored newsletter: contracted delivery, qualified sponsor outcomes, and recognized sponsorship revenue.
+- Other: one named, independently observable truth set declared before the read.
+
+## Vetoes
+
+| Qualified ID | Verified failure |
 |---|---|
-| Per sub-item | Pass = 10 · Partial = 5 · Fail = 0 |
-| Dimension score | mean of sub-items × 10 → 0–100 |
-| Rollup | **arithmetic goal-weighted mean** (same chassis as CITE / ROAS), floor-rounded — **not** C³'s geometric CVI |
-| Rating bands | 90–100 Excellent · 75–89 Good · 60–74 Medium · 40–59 Low · 0–39 Poor |
-| Veto-cap | delegated to [auditor-runbook.md](auditor-runbook.md) §2 — single veto caps the weighted overall at `min(raw, 60)`; 2+ veto fails → `status: BLOCKED` |
+| `SEND-S1` | Required authentication is demonstrably broken/unaligned. A monitored `p=none` policy with aligned SPF/DKIM is not automatically a failure. |
+| `SEND-S2` | The program uses a purchased, scraped, or otherwise unlawful list without a recorded lawful basis. Missing records are `unknown`. |
+| `SEND-N1` | Required opt-out is absent/broken, or a recorded suppression is not honored. Provider bulk-sender requirements and statutes must be named separately. |
+| `SEND-D1` | A material claim/disclosure/offer term is false, unsubstantiated, or missing. |
 
-**Email Quality Score (EQS, 0–100)** = `floor(weighted({S, E, N, D}, goal-weights))`. ⚠ The EQS (a 0–100 quality score) is **not** any single email KPI (open rate, inbox-placement %, revenue/recipient); those KPIs are *inputs* to the dimensions.
+One verified veto caps the score at 59; two or more produce `verdict: BLOCK` without a final score. Missing evidence is `unknown`, never a veto. Over-frequency is a serious `E4/E5` finding, not an automatic veto.
 
-### Sub-items (Pass / Partial / Fail each)
+## Evidence Contract
 
-- **S** — SPF + DKIM + DMARC aligned & passing · sending-domain/IP reputation acceptable · inbox-placement ≥ threshold (vs spam/promotions) · hard-bounce rate < benchmark · spam-complaint rate < 0.1% · list acquired with recorded consent.
-- **E** — open rate vs benchmark · click / CTOR vs benchmark · subject-line + preheader quality · send-time & frequency appropriate · engagement-decay managed (a re-engagement / sunset path exists).
-- **N** — core lifecycle flows present (welcome, cart, post-purchase, win-back) · trigger timing & cadence sound · segmentation relevance · goal-progression logic · preference-center / frequency options offered.
-- **D** — revenue / conversion vs target · offer clarity & CTA strength · email → landing message-match · urgency / social-proof used honestly · claims substantiated & policy-compliant.
+| Need | Preferred evidence |
+|---|---|
+| Authentication | DNS plus DMARC aggregate records and message headers |
+| Placement/reputation | Declared seed/provider panel and dated provider reports |
+| Consent/suppression | Append-only consent events and current suppression projection |
+| Engagement | ESP export segmented by provider/MPP exposure and cohort |
+| Lifecycle | Flow configuration and event-level flow export |
+| Outcome | Ecommerce, CRM, subscription, sponsorship, or named equivalent truth set |
+| Claims | Approved claims/disclosures and the rendered message/destination |
 
-### Goal-weight columns (each sums to 1.0)
+Use `~~email platform`, `~~web analytics`, and the relevant outcome connector from [`CONNECTORS.md`](../CONNECTORS.md). Keep provider-reported attribution separate from reconciled own-data outcomes.
 
-| Goal | S | E | N | D |
-|------|---|---|---|---|
-| **Promotional / DR** | 0.20 | 0.20 | 0.15 | 0.45 |
-| **Retention / Newsletter** | 0.20 | 0.35 | 0.30 | 0.15 |
-| **Cold outbound / Acquisition** | 0.45 | 0.25 | 0.15 | 0.15 |
+## Skill Ownership
 
-- Promotional weights: `EQS_promo = S×0.20 + E×0.20 + N×0.15 + D×0.45`
-- Retention weights: `EQS_reten = S×0.20 + E×0.35 + N×0.30 + D×0.15`
-- Cold-outbound weights: `EQS_cold = S×0.45 + E×0.25 + N×0.15 + D×0.15`
+- **Setup** — `deliverability-qa`, `list-segment-builder`, and `list-growth-designer` supply Sender Integrity and consent evidence.
+- **Engage** — `email-creative-builder`, `subject-line-lab`, `email-render-builder`, and `dynamic-content-personalizer` supply engagement/creative evidence.
+- **Nurture** — `email-sequence-designer`, `preference-frequency-manager`, `reactivation-specialist`, and `newsletter-monetization-planner` own applicable program journeys.
+- **Deliver** — [`email-quality-auditor`](../email/deliver/email-quality-auditor/SKILL.md) produces the SEND gate; `send-experiment-designer` returns experiment evidence, not an automatic promote/kill policy.
 
-*Rationale:* a promotional blast lives or dies on conversion (D heaviest). Retention/newsletter is an engagement-and-lifecycle game (E + N = 0.65). Cold outbound is deliverability-first — if you land in spam, nothing downstream matters (S heaviest).
-
-### Worked examples (golden-math fixture)
-
-Kept here so `scripts/golden-auditor-math.py` can assert the arithmetic deterministically. Input vector `S=80 E=75 N=70 D=78`:
-
-- **Promotional / DR goal** → 16 + 15 + 10.5 + 35.1 = `floor(76.6) = 76`.
-- **Retention / Newsletter goal** (same vector) → 16 + 26.25 + 21 + 11.7 = `floor(74.95) = 74`. (Weighting toward Engagement + Nurture *lowers* a retention read on a conversion-tilted account — the weights encode the goal.)
-- **Cold outbound / Acquisition goal** (same vector) → 36 + 18.75 + 10.5 + 11.7 = `floor(76.95) = 76`.
-- **Veto-capped** — if S1 (authentication broken) fails on the Promotional example, the weighted overall is capped: `min(76, 60) = 60`, `cap_applied: true`.
-
-## Veto items (red lines — stable IDs, distributed S:2 / N:1 / D:1)
-
-| ID | Dimension | Trigger |
-|----|-----------|---------|
-| **S1** | Sender-integrity | Email authentication broken / unverifiable — SPF, DKIM, or DMARC failing or unaligned. *No DMARC record at all* = veto. A young program at **DMARC `p=none` but SPF/DKIM aligned and passing** = Partial/flag, **not** an auto-veto (mirrors ROAS's iOS-ATT modeled-data carve-out). |
-| **S2** | Sender-integrity | List consent integrity — purchased / scraped / non-opt-in list with no lawful basis on record (checked against consent-registry). *No consent record on file* = **NEEDS_INPUT**, not pass-by-default. |
-| **N1** | Nurture | Unsubscribe / opt-out broken or absent — a functioning opt-out not honored (CAN-SPAM / GDPR / CASL red line), or the one-click `List-Unsubscribe` header missing for Gmail/Yahoo bulk senders (RFC 8058 — a mailbox-provider requirement, not a statute). Checked against consent-registry's suppression/opt-out history. |
-| **D1** | Direct-response | Claim integrity — false / unsubstantiated claim or missing required disclosure (checked against `memory/claims/claims-ledger.md`, same red line as ROAS O1). |
-
-**Over-frequency / list fatigue** (sending past the point of engagement decay) is a high-severity **guardrail/flag under E**, *not* a veto — it wastes reputation and suppresses future engagement, but it does not by itself make the EQS untrustworthy (mirrors ROAS's premature-scaling guardrail under S).
-
-## Data contract (keyless export columns)
-
-| Need | Source export (own data) |
-|------|--------------------------|
-| E / opens / clicks / CTOR / send-time | ESP campaign report (own data) |
-| N / flow performance / cadence | ESP flow/automation export |
-| S / bounce & complaint / reputation | ESP deliverability report + sending-domain reputation (Postmaster/SNDS) |
-| S1 (authentication) | **DMARC aggregate (RUA) report** + a DNS check of SPF/DKIM/DMARC/BIMI records (else NEEDS_INPUT) |
-| S / inbox placement | seed-list / inbox-placement test (else NEEDS_INPUT) |
-| S2 (consent) | consent record — opt-in timestamp + lawful basis from consent-registry (`memory/consent/`); **no record = NEEDS_INPUT** |
-| N1 (unsubscribe integrity) | list-unsubscribe / one-click opt-out present & functional (ESP send config + message headers), **and** opt-outs honored — checked against the suppression / opt-out history in consent-registry (`memory/consent/`) |
-| D (revenue / conversion) | GA4 / ecommerce export (own data) — order-ID truth set, **not** the ESP's self-reported attributed revenue |
-| D1 (claim integrity) | approved wording + required disclosures from `memory/claims/claims-ledger.md` |
-
-Reuse the existing `~~web analytics` (GA4) and `~~ecommerce` connector categories plus the new `~~email platform` (ESP, own-data manual export) — see [CONNECTORS.md](../CONNECTORS.md). Do **not** invent a `~~deliverability` category; SPF/DKIM/DMARC come from DNS + the DMARC RUA report, both keyless.
-
-## Naming disambiguation
-
-SEND's **S** (Sender-integrity) collides textually with ROAS's **S** (Spend-efficiency), and its **D** (Direct-response) with the ROAS/CITE letter pools. Each framework's letters and veto IDs are independent — SEND's `S1/S2/N1/D1` have no relationship to ROAS's `R1/R2/O1/O2/A1` or the S-guardrail. In any shared document (e.g. [auditor-runbook.md](auditor-runbook.md) §2/§5) always qualify the letter with the framework name (`SEND-S` vs `ROAS-S`). The runbook lists SEND vetoes under an Email sub-heading.
-
-## Where it is used
-
-The email skills apply SEND across the **SEND loop** — Setup → Engage → Nurture → Deliver (directories under `email/<phase>/`). Only [email-quality-auditor](../email/deliver/email-quality-auditor/SKILL.md) computes the goal-weighted EQS and runs the four vetoes; every other skill operates on a single lever and hands off.
-
-- **Setup (S/E)** — [deliverability-qa](../email/setup/deliverability-qa/SKILL.md) scores **S** (auth, reputation, inbox-placement, spam-content, list hygiene — the S1 pre-flight); [list-segment-builder](../email/setup/list-segment-builder/SKILL.md) turns the user's own list/CRM/GA4 export into behavioral + lifecycle-stage segments and suppression rules (**E** targeting); [list-growth-designer](../email/setup/list-growth-designer/SKILL.md) plans compliant acquisition + the opt-in capture-flow spec (the upstream of `S2`, feeding `N` lifecycle entry). Consent/suppression facts come from [consent-registry](../protocol/consent-registry/SKILL.md).
-- **Engage (E/D)** — [email-creative-builder](../email/engage/email-creative-builder/SKILL.md) produces the pre-click **E/D** unit (subject, preheader, body, CTA; message-matched to the landing page, claims-ledger-aware). Reuse: [audience-mapper](../influencer/discover/audience-mapper/SKILL.md) for persona/lifecycle-stage definition.
-- **Nurture (N/D)** — [email-sequence-designer](../email/nurture/email-sequence-designer/SKILL.md) designs lifecycle/automation flows + frequency governance (**N**); [newsletter-monetization-planner](../email/nurture/newsletter-monetization-planner/SKILL.md) plans paid-sub / sponsorship / referral economics (**D** for owned-audience programs). Reuse: [landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md) for the post-click page.
-- **Deliver (S·E·N·D gate)** — [email-quality-auditor](../email/deliver/email-quality-auditor/SKILL.md) is the auditor-class gate: it scores EQS, enforces S1/S2/N1/D1, and emits the [auditor-runbook](auditor-runbook.md) handoff schema to `memory/audits/email/`. [send-experiment-designer](../email/deliver/send-experiment-designer/SKILL.md) owns A/B / multivariate + send-time / hold-out design and the significance read (promote/kill). Reuse: [roi-calculator](../influencer/measure/roi-calculator/SKILL.md) (revenue-per-send / list-value), [report-generator](../influencer/measure/report-generator/SKILL.md), [performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md).
-
-> **Provisional**: SEND is a new framework. Treat its bands as provisional until calibrated against ~30 real manually-exported program audits in `memory/audits/email/`, per the runbook's calibration discipline.
+SEND remains advisory until each versioned profile passes the shared reliability and outcome-calibration protocol.

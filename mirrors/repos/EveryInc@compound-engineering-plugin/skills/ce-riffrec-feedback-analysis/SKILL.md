@@ -28,7 +28,7 @@ When the input is ambiguous (e.g., a zip arrived without context), inspect the r
 All non-setup paths share the same analyzer, which ships in this skill's `scripts/` directory. The Bash tool's working directory is the user's project, not the skill directory, so a bare `scripts/<name>` path will not resolve. Invoke it by the skill's own absolute path: set `SKILL_DIR` to the directory you loaded this `ce-riffrec-feedback-analysis` SKILL.md from, in the same command (shell state does not persist between Bash calls):
 
 ```bash
-SKILL_DIR="<absolute path of the directory containing this SKILL.md>"
+SKILL_DIR="<absolute path of the directory containing this SKILL.md>";
 python "$SKILL_DIR/scripts/analyze_riffrec_zip.py" /path/to/input
 ```
 

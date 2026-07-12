@@ -19,21 +19,17 @@
 
 ---
 
-## Step 5: Collect Media Assets
+## Step 5: Asset Plan & Resolve
 
-**Auto mode:** Skip media collection (text-only animated sections). Proceed to Step 6.
-**Interactive mode:** Ask per-section media source (skip / local file / screenshot / web search / AI generated).
+Moved to its own phase file — **load [workflow-assets.md](workflow-assets.md)**.
 
-If user mentioned AI images, screenshots, or specific assets in initial request, collect those regardless of mode.
-
-Save assets to `videos/{name}/media/`, generate `media_manifest.json`.
-
-**Available sources:**
-- **Unsplash** / **Pexels** / **Pixabay** — free images
-- **unDraw** — open-source SVG illustrations
-- **Simple Icons** — brand SVG icons
-- **Playwright** — web screenshots
-- **imagen skill** — AI-generated images
+Summary: plan per-section assets (role + source), register everything in
+`videos/{name}/assets/manifest.json` via `cli.py assets …`, resolve free
+sources (user files, assetSeeker stock) automatically, gate paid generation
+behind a cost confirmation, and consume in Remotion with `<AssetImage>` /
+`<AssetVideo>`. Playwright web screenshots are still available for
+product-UI captures — save them under `videos/{name}/assets/` and register
+with `assets add --path`.
 
 ---
 
@@ -49,7 +45,7 @@ Based on `podcast.txt`, generate `publish_info.md`:
 ## Step 7: Generate Video Thumbnail
 
 **Auto mode:** Generate Remotion thumbnails (16:9 + 4:3).
-**Interactive mode:** Ask user: Remotion-generated / AI (imagen skill) / both.
+**Interactive mode:** Ask user: Remotion-generated / AI (imagenCN) / both.
 
 **MUST generate both aspect ratios**: 16:9 (playback page) and 4:3 (feed/activity), both required for horizontal video. (9:16 thumbnail is generated alongside the vertical render in Step 10/15 — not here.)
 
@@ -67,6 +63,29 @@ npx remotion still src/remotion/index.ts Thumbnail4x3 videos/{name}/thumbnail_re
 ```bash
 npx remotion still src/remotion/index.ts Thumbnail3x4 videos/{name}/thumbnail_remotion_3x4.png --public-dir videos/{name}/
 ```
+
+**AI thumbnails (imagenCN)** — only when the user asked for AI thumbnails.
+Locate the entry via `cli.py capabilities`; it is paid generation, so quote
+the cost (~0.2 RMB/image) and confirm first. Generate at the model's native
+size, then normalize to the exact spec sizes `verify_output.py` expects
+(1920×1080 / 1200×900):
+
+```bash
+IMAGEN=<entry from capabilities>
+python3 "$IMAGEN" "<thumbnail prompt: bold title text, high contrast>" \
+  videos/{name}/thumb_raw.png --size 16:9
+ffmpeg -y -i videos/{name}/thumb_raw.png \
+  -vf "scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080" \
+  videos/{name}/thumbnail_ai_16x9.png
+ffmpeg -y -i videos/{name}/thumb_raw.png \
+  -vf "scale=1200:900:force_original_aspect_ratio=increase,crop=1200:900" \
+  videos/{name}/thumbnail_ai_4x3.png
+rm videos/{name}/thumb_raw.png
+```
+
+The default model (`qwen-image-2.0-pro`) renders legible Chinese title text
+directly in the image — put the exact title wording in the prompt. Keep the
+Remotion thumbnails too when generating both; verify accepts either naming.
 
 ---
 
@@ -88,6 +107,14 @@ python3 ${SKILL_DIR}/scripts/generate_tts.py --input videos/{name}/podcast.txt -
 ```
 
 Override per-run (without editing user_prefs): `TTS_BACKEND=edge TTS_RATE="+10%" python3 ...`. CLI `--backend <name>` also works and takes top priority.
+
+**`ttscn` bridge backend** — when the ttsCN component skill is installed
+(`cli.py capabilities`), `TTS_BACKEND=ttscn` routes synthesis through it,
+adding its providers without extra adapters here. Pick the ttsCN-side
+provider and voice with `TTSCN_PLATFORM` (default `edge`; e.g. `tencent`,
+`baidu`, `minimax`, `xunfei`) and `TTSCN_VOICE`; the chosen provider's API
+keys are validated by ttsCN itself. No word boundaries through the bridge —
+SRT uses the standard chunk-level estimation path.
 
 ### Voice Selection by Language
 
@@ -407,6 +434,25 @@ cp /path/to/user-bgm.mp3 videos/{name}/bgm.mp3
 ```
 
 **Override (different built-in track)**: edit `user_prefs.bgm.track` to one of the keys in `bgm.tracks` (e.g. `"calm-piano"`, `"perfect-beauty"`). Add new tracks by dropping the mp3 in `${SKILL_DIR}/assets/` and registering it in `bgm.tracks`.
+
+**Fresh BGM via assetSeeker** (when the user asks for new/different music and
+the component is usable per `cli.py capabilities`): search license-vetted
+tracks, download, and register in the asset manifest so provenance is kept:
+
+```bash
+SEEK=<entry from capabilities>
+python3 "$SEEK" search music "calm lofi study" --max 5      # license in results
+python3 "$SEEK" download "<download_url>" --output videos/{name}/bgm.mp3
+python3 ${SKILL_DIR}/scripts/cli.py assets add videos/{name}/ \
+  --id bgm --section global --type audio --role bgm --source seek \
+  --path bgm.mp3 --license "<license>" --credit "<url>"
+```
+
+Pick tracks ~1 dB-flat and loopable (the mix below `-stream_loop`s them);
+mention the credit line in `publish_info.md` when the license requires
+attribution. Sound effects follow the same pattern with
+`search sfx "<cue>"` + `--role sfx`, mixed as extra `amix` inputs at the
+timestamps you need.
 
 ### Mix
 

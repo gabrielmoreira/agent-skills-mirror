@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `treylom/prompt-engineering-skills` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `treylom/prompt-engineering-skills` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `treylom/prompt-engineering-skills` — 26 default patterns, 0 followe
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,17 +74,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`skills/expert-domain-priming.md`](skills/expert-domain-priming.md) |
 | 14 | ✓ | [`skills/gemini-3.1-prompt-strategies.md`](skills/gemini-3.1-prompt-strategies.md) |
 | 15 | ✓ | [`skills/gpt-5.5-prompt-enhancement.md`](skills/gpt-5.5-prompt-enhancement.md) |
-| 16 | ✓ | [`skills/image-prompt-guide.md`](skills/image-prompt-guide.md) |
-| 17 | ✓ | [`skills/prompt-engineering-guide.md`](skills/prompt-engineering-guide.md) |
-| 18 | ✓ | [`skills/prompt-engineering-guide/references/examples.md`](skills/prompt-engineering-guide/references/examples.md) |
-| 19 | ✓ | [`skills/prompt-engineering-guide/references/frameworks.md`](skills/prompt-engineering-guide/references/frameworks.md) |
-| 20 | ✓ | [`skills/prompt-engineering-guide/references/techniques.md`](skills/prompt-engineering-guide/references/techniques.md) |
-| 21 | ✓ | [`skills/prompt-engineering-guide/SKILL.md`](skills/prompt-engineering-guide/SKILL.md) |
-| 22 | ✓ | [`skills/prompt-variation-guide/references/examples.md`](skills/prompt-variation-guide/references/examples.md) |
-| 23 | ✓ | [`skills/prompt-variation-guide/references/techniques.md`](skills/prompt-variation-guide/references/techniques.md) |
-| 24 | ✓ | [`skills/prompt-variation-guide/SKILL.md`](skills/prompt-variation-guide/SKILL.md) |
-| 25 | ✓ | [`skills/research-prompt-guide.md`](skills/research-prompt-guide.md) |
-| 26 | ✓ | [`skills/slide-prompt-guide.md`](skills/slide-prompt-guide.md) |
+| 16 | ✓ | [`skills/gpt-5.6-prompt-enhancement.md`](skills/gpt-5.6-prompt-enhancement.md) |
+| 17 | ✓ | [`skills/image-prompt-guide.md`](skills/image-prompt-guide.md) |
+| 18 | ✓ | [`skills/prompt-engineering-guide.md`](skills/prompt-engineering-guide.md) |
+| 19 | ✓ | [`skills/prompt-engineering-guide/references/examples.md`](skills/prompt-engineering-guide/references/examples.md) |
+| 20 | ✓ | [`skills/prompt-engineering-guide/references/frameworks.md`](skills/prompt-engineering-guide/references/frameworks.md) |
+| 21 | ✓ | [`skills/prompt-engineering-guide/references/techniques.md`](skills/prompt-engineering-guide/references/techniques.md) |
+| 22 | ✓ | [`skills/prompt-engineering-guide/SKILL.md`](skills/prompt-engineering-guide/SKILL.md) |
+| 23 | ✓ | [`skills/prompt-variation-guide/references/examples.md`](skills/prompt-variation-guide/references/examples.md) |
+| 24 | ✓ | [`skills/prompt-variation-guide/references/techniques.md`](skills/prompt-variation-guide/references/techniques.md) |
+| 25 | ✓ | [`skills/prompt-variation-guide/SKILL.md`](skills/prompt-variation-guide/SKILL.md) |
+| 26 | ✓ | [`skills/research-prompt-guide.md`](skills/research-prompt-guide.md) |
+| 27 | ✓ | [`skills/slide-prompt-guide.md`](skills/slide-prompt-guide.md) |
 
 ---
 

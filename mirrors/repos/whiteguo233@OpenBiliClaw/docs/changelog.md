@@ -4,12 +4,49 @@
 
 ---
 
+## v0.3.164：WebUI 可配置的海外出口代理（issue #89，2026-07-12）
+
+- **新增 `[network].proxy` 海外出口代理**：一个字段即可让所有海外请求走代理——OpenAI / Claude / Gemini / DeepSeek / OpenRouter / openai_compatible 的 chat + embedding SDK、YouTube（yt-dlp）、GitHub 自动更新、Codex OAuth 令牌刷新。支持 `http` / `https` / `socks5` / `socks5h`，零新依赖（复用已有 `httpx[socks]`）。留空时行为与当前一致（沿用进程 env，Docker 代理探测不受影响）。
+- **国内直连严格隔离**：B站 / 抖音 / Ollama / 国内 CDN 图片缓存等 `trust_env=False` 客户端永不使用该代理（继承代理曾触发 B站 风控，`df626f3f`），并由 `tests/test_network_proxy_isolation.py` 守卫测试钉死「未来不得接入 CN 客户端」。
+- **保存时拒绝非法值 + 桌面 UI + 连通性探测**：协议 / 主机白名单校验，非法值经 `PUT /api/config` 返回 400 且不落盘，`config.toml` 手改非法值加载时 WARNING 并按空值处理；桌面 Web「设置-通用」与扩展 popup「后端设置-通用」新增输入框和「测试代理」按钮（`probe-service kind=network_proxy`，经待测代理请求 204 端点并区分 `proxy_unreachable` / `proxy_rejected` / `timeout`）。GET 响应对代理 URL 中的账号密码做遮蔽。四端契约：桌面 Web + 扩展 popup 提供设置；CLI 用 `config-show`；移动 Web 无设置页。
+
+## v0.3.163 / extension v0.3.163 / desktop v0.3.163：登录状态诚实同步、Web 库存恢复与冷加载判定（2026-07-11）
+
+后端源码走 `backend-v0.3.163`，浏览器插件走 `extension-v0.3.163`，桌面安装包走 `desktop-v0.3.163`。
+
+- **PC / Web 配置页登录状态改为纯本地、诚实同步**：`GET /api/sources/status` 不再为 Reddit 执行命令探测或访问平台；Reddit 只检查本地 credential，抖音有 Cookie 时显示「状态待验证」，小红书 / 知乎以插件读取真实登录 Cookie 后上报的布尔心跳为准。插件连接本地 runtime stream 时立即刷新 XHS `web_session` 与知乎 `z_c0`，两端配置页统一状态文案，`xsec_token` 明确仅是内容令牌；并发心跳改用短生命周期 SQLite 连接，避免共享连接偶发 HTTP 500。整个状态刷新链路只访问本机后端，不增加平台请求或封控风险。
+- **Web 推荐库存可从瞬时失败中自动恢复**：桌面 Web 与移动 Web 不再把推荐或 runtime 状态超时折叠成真实零库存；两类读取独立按 1/2/4/8 秒有界重试，库存事件只唤醒仍为空且上次读取失败的页面，不覆盖已显示或滚动追加的卡片。
+- **本地 embedding 冷加载不再误报停服**：readiness probe 区分缓存成功、明确失败与超时；普通 health 只容忍 loopback Ollama 冷加载超时，引导初始化仍严格等待真实向量成功，远端超时、404/500 与空向量继续报告未就绪。
+- **偏好反馈跨主题轴生效且操作更明确**：推荐反馈同时匹配细粒度与粗粒度 topic，并保留真实平台来源；桌面、移动和插件端统一兴趣 / 避雷 / 稍后反馈语义，移除会误导用户的推荐纠正入口，同时保持延迟聊天输入聚焦和 embedding fallback 稳定。
+- **Chrome Web Store 待审版本可显式替换**：商店发布 workflow 新增默认关闭的 `replace_pending`；仅当上传返回官方 `NOT_UPDATEABLE` 时调用 `cancelSubmission` 撤回旧审核，再重试同一新版上传并提交审核，避免上一版长时间待审阻断紧随其后的修复版。
+- **Chrome Web Store 商店页文案与截图已刷新**：短描述和详细描述改为七平台、本地后端、数据默认留在本机的准确定位，移除“至少先登录 B 站”和只列四个平台的过期引导；新增五张 1280×800「品牌首图 + 当前真实界面」素材，依次展示七平台、插件 / PC / 手机三端、跨平台推荐、可纠正画像和诚实登录状态。截图由只允许 loopback 请求的固定脱敏演示服务生成，不读取真实配置、数据库、Cookie 或账号信息，并用 pytest 锁定文件顺序、尺寸和平台覆盖。
+- **Chrome Web Store 截图 V2 设计收口**：根据实图复核，将五张浅色、文案偏多且推荐头图为空的素材精简为三张；新版要求七条脱敏推荐和惊喜推荐都通过真实 UI 数据链路渲染本地无版权封面，首图只保留一句定位，另两张分别展示 PC / 插件 / 手机三端和诚实接入状态，并继续禁止任何外部平台请求。
+- **Chrome Web Store listing metadata API 安全自动化**：新增独立 `Update Chrome Web Store Listing` workflow、`chrome-webstore-metadata.mjs` CLI 和 15 项 Node 回归测试。默认只读探测 v1.1 draft，即使 schema 不支持写入也会先输出字段名、长度与 SHA-256；只有 response 实际暴露 `summary` / `description` 和 listing identity 后，显式 apply 才会撤审、allowlist 写入、精确回读并通过 v2 重新提审。Google 官方 v1.1 `Item` resource 未承诺详情页文案字段且 API 将于 2026-10-15 停止支持，因此 schema 不匹配会在撤审 / 写入前安全停止；截图没有公开写接口，仍禁止猜测 Dashboard 私有端点、读取浏览器 Cookie 或声称仓库 PNG 已经上线。测试侧同时移除 B站 content-script retry 用例对“300ms 等待前重试一定尚未触发”的负载敏感假设，不改生产重试行为。
+
+## v0.3.162 / extension v0.3.162 / desktop v0.3.162：跨设备扩展认证、反馈提速、发布时间贯通与 Ollama 自愈（2026-07-11）
+
+后端源码走 `backend-v0.3.162`，浏览器插件走 `extension-v0.3.162`，桌面安装包走 `desktop-v0.3.162`。
+
+- **跨设备扩展访问可控开放**：新增默认关闭的设备密钥认证与 `ext-key generate/enable/disable/list/revoke` CLI；配置只保存密钥摘要，扩展换取短会话后使用 Bearer 访问，远程主机强制 HTTPS/WSS，并在保存 endpoint 前请求最小 host 权限。
+- **推荐反馈即时响应且可真实撤销**：桌面推荐卡和兴趣/避雷探针先本地更新，保留 10 秒撤销窗口；换一批先展示新内容、再后台结清旧卡，MMR 与聚类移出 asyncio 事件循环，减少卡顿和旧卡回流。
+- **七平台发布时间贯通所有推荐表面**：Bilibili、小红书、抖音、YouTube、X、知乎和 Reddit 的可靠发布时间进入候选池、缓存、普通推荐与惊喜推荐，并在桌面、移动端、插件和 CLI 使用统一的本地相对时间展示；知乎惊喜卡同时补齐正文预览和无封面文字卡。
+- **托管 Ollama 与引导初始化更能自愈**：with-embedding 私有 Ollama 记录并复用实际端口/模型目录，崩溃后按 5 秒至 300 秒退避自动拉起；缺失或损坏的向量模型可在引导初始化中自动修复并显示进度。
+- **本地 embedding 冷加载不再误报停服**：readiness probe 改为缓存成功、明确失败与超时三态；普通 health 仅容忍 loopback Ollama 冷加载超时，初始化仍严格等待真实向量成功，远端超时、404/500 和空向量继续报告未就绪。
+- **推荐准入与 API 兼容边界收紧**：除 `explore` 外所有来源统一执行全局 admission 下限，缓存与展示出口 fail closed；OpenAI Responses 请求固定发送 `store=false`，避免兼容网关拒绝无状态调用。
+- **默认 CI 不再被可选浏览器依赖阻断**：issue #98 的真实浏览器 E2E 改为与既有引导 E2E 相同的 `pytest.importorskip` 收集契约；普通 `[dev,x]` 测试环境未安装 Playwright 时跳过 integration 模块，安装 `[browser]` 后仍执行完整浏览器用例。
+- **Web 空库存假象自动恢复**：移动 Web `/m` 与桌面 Web `/web` 不再把推荐或 `runtime-status` 超时折叠成真实零库存；两类读取独立按 1/2/4/8 秒最多重试四次，成功空数组才进入真实空态。库存实时事件只会唤醒仍为空且上次读取失败的推荐页，已显示或滚动追加的卡片不会被后台刷新覆盖。
+
 ## v0.3.161 / extension v0.3.161 / desktop v0.3.161：Keyword inspiration 轴库 + 搜索词生成模式选择器（2026-07-09）
 
 后端源码走 `backend-v0.3.161`，浏览器插件走 `extension-v0.3.161`，桌面安装包走 `desktop-v0.3.161`。
 
+- **PC / Web 配置页来源登录态改为纯本地、诚实同步**：`GET /api/sources/status` 不再运行 Reddit `rdt` / `opencli` 探测，也不访问任何平台；Reddit 只检查本地 credential 文件，抖音有 Cookie 时标为「状态待验证」而非已接入，小红书 / 知乎以插件最近上报的布尔登录心跳为权威（未上报 / 显式登出 / 新鲜登录 / 过期分别展示），知乎仅在从未收到心跳时回落任务历史。插件 background 每次连接本地 runtime stream 会立即读取一次小红书 `web_session` 与知乎 `z_c0` 是否存在并只上报布尔值，不打开或刷新平台页面；两套配置页统一 `ready / unverified / login_required / error` 文案，`xsec_token` 明确标为内容访问令牌、不代表账号登录。状态页的 30 秒刷新仍只请求本地后端，不增加外站请求或封控风险。真实 unpacked Chrome E2E 还发现两个心跳会并发进入 FastAPI 线程池；登录态读写现改用各自短生命周期 SQLite 连接，由 busy timeout 串行化，避免共享 connection 偶发 `InterfaceError` / HTTP 500。
+- **多平台发布时间补齐（issue #75 后续）**：Bilibili、小红书、抖音、YouTube、X、知乎和 Reddit 的可靠发布时间现贯穿统一候选池、缓存与推荐/惊喜出口；精确时间按本地相对日期展示，平台仅提供相对时间时保留原文，缺失时隐藏。旧缓存不联网回填，投币数明确不做。
+- **跨平台原生保存设计与首阶段计划（issue #56）**：确认收藏与稍后再看的统一路由契约——所有动作先写 OpenBiliClaw 本地；收藏同步到各平台收藏 / 书签 / Saved / 专用播放列表，稍后再看优先平台原生能力、缺失时降级到收藏；自动同步总开关默认关闭，本地收藏页与稍后看页保留显式手动同步和逐项结果。设计同时定义 `source_platform + content_id` 内容身份、平台能力路由器、专用 `OpenBiliClaw` 收藏夹、插件任务端点、失败不回滚本地及七平台真实账号 E2E 边界；实施按「通用基础设施 + B站首适配」先行、其它平台在契约实测稳定后分计划接入。
 - **知乎惊喜卡正文与无封面体验收尾（issue #79）**：桌面 Web 惊喜推荐现在保留后端已下发的 `body_text`，在标题、互动指标和推荐原因之间展示最多 5 行正文预览；仅在真实溢出时出现可键盘操作的“展开正文 / 收起正文”。无封面或封面加载失败时，左侧媒体区改用正文开头与来源徽章组成的毛玻璃文字卡，不再只显示空泛渐变；切换候选和空队列会恢复折叠态，现有聊天输入保护、反馈和队列行为不变。
 - fix: with-embedding 私有 Ollama（11435）纳入自愈/一键修复 + 托管 daemon watchdog 崩溃自动拉起（5s→300s 退避、连续 5 次失败放弃直至手动修复；supervisor 记录 `(proc, host, models_dir)` 启动规格，restart 永远复用记录端口与模型目录，boot 时对私有端口残留 daemon 做记录式收养；私有 daemon 硬设 `OLLAMA_KEEP_ALIVE=24h`）
+- 修复 Issue #91：推荐反馈同时作用于细/粗 topic 且保留真实平台来源；三端兴趣/避雷
+  操作改为明确文字并补齐 defer，推荐区保持原布局，不新增画像或对话引导入口。
 - **桌面 Web 反馈响应与换批卡顿修复（issue #98）**：普通推荐卡与正向/避雷探针现在先在本地即时更新，并保留 10 秒真实撤销窗口；撤销会取消尚未发出的写请求，提交失败会恢复原状态，页面离开时用 keepalive 结清待提交动作。探针聊天继续即时发送，不进入可撤销状态机。`换一批` 改为先请求并展示新卡，再后台把旧卡记为 dismiss；请求显式携带当前可见内容 ID，推荐引擎扩大候选窗口并在平台保底后再次执行排除，避免旧卡回流。MMR 排序和 supergroup 两两聚类改由工作线程执行，保持输出确定性并避免 CPU 循环占住 asyncio 事件循环。
 - **惊喜推荐封面不再被空值抹掉 + popup/桌面补来源平台标识**：实测惊喜大卡「互动数据齐全但封面空白且无平台标识」。根因两层：`cache_content()` upsert 对 `cover_url` 无条件覆盖（旁边 `author_name` / `body_text` 早有 `COALESCE(NULLIF(...))` 保护），任何带空封面的重摄入——互动数据刷新、事件驱动 related-chain、插件在 B 站搜索页图片懒加载完成前抓到的卡片——都会把好封面永久抹掉，现已同策略保护；插件采集侧同步拒绝 `data:` 懒加载占位图。平台标识：桌面 Web 惊喜卡徽章原先写在「无封面提前 return」之后随封面一起消失，改为始终渲染；空惊喜队列保持 no-op，不会因读取空候选中断首页 hydration；插件消息流惊喜卡与 delight banner 新增平台 chip（`platformDisplayName`）。四表面契约：本次补齐 popup + 桌面 Web，移动 Web 已有 `card-source` 角标，CLI 文本输出不适用。
 - **池子整理不再清零互动数据**：`classify_pool_backlog()` 经 `_rows_to_discovered` 读行、`to_cache_kwargs` 回写——mapper 只回读 view/like/danmaku 三个字段，其余七个互动字段（favorite/collect/comment/share/reply/retweet/bookmark）与 `author_name` 在 dataclass 默认值上被回写清零/置空（与封面被空值抹掉同族的「重写路径丢字段」缺陷，封面排查时顺藤发现）。mapper 现回读全部互动字段，新增 row→dataclass→cache_kwargs 往返保真回归测试。

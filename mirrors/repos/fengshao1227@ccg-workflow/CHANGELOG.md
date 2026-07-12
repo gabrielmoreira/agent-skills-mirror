@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.2.0] - 2026-07-12
+
+### ✨ Features
+
+- **Grok CLI backend** — Grok (xAI) joins Codex/Gemini/Claude/Antigravity as a first-class model option. Select it as frontend or backend in `ccg init` Step 2 (or menu → model routing); pick `grok-4.5` (500k context) or `grok-composer-2.5-fast` (Cursor's coding model). `/ccg:go` Builder mode can now dispatch code-writing to Grok — near-zero Claude token consumption.
+- **Grok expert prompts** — Full 7-role prompt set (`analyzer` / `architect` / `builder` / `debugger` / `optimizer` / `reviewer` / `tester`) installed to `~/.claude/.ccg/prompts/grok/`.
+- **`--grok-model` wrapper flag** — codeagent-wrapper accepts `--grok-model <name>` (or `GROK_MODEL` env); templates get a line-aware `{{GROK_MODEL_FLAG}}` placeholder mirroring the gemini flag logic.
+- **`ccg doctor` Grok check** — When routing uses grok, doctor verifies the Grok CLI binary and login state (`~/.grok/auth.json`, tokens expire after 7 days).
+
+### 🐛 Fixes
+
+- **`--gemini-model` silently dropped at spawn time** — In single-task mode the executor rebuilt its config without the model field, so the flag appeared in the displayed command but never reached the actual gemini process. Model fields now flow through TaskSpec.
+- **Parallel mode hard-failed on bare `--gemini-model <value>`** — The flag was recognized but its value fell into `extras` and aborted the run with "only --backend and --full-output are allowed". The value is now consumed (still warned + ignored, as documented).
+- **`ccg update` routing reconfigure dropped `geminiModel`** — Rebuilding routing via the update flow lost the custom Gemini model name; it (and `grokModel`) are now preserved.
+
+### 🔄 Changes
+
+- **codeagent-wrapper `5.11.1` → `5.12.0`** — grok backend (streaming-json parser, `-p` prompt passing, `-r` session resume, PATH + `~/.grok/bin` fallback resolution).
+- **Strategy templates** — `guided-develop` / `full-collaborate` executor choice now shows the configured backend model and accepts by-name overrides ("用grok" / "用codex").
+
+---
+
 ## [3.1.11] - 2026-07-09
 
 ### ✨ Features

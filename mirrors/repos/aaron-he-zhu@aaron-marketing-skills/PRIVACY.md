@@ -2,61 +2,101 @@
 
 ## Overview
 
-Aaron Marketing Skills is a collection of markdown-based skill files — spanning SEO/GEO, influencer marketing, and paid ads — that run locally within your Claude Code environment. This project does not collect, store, or transmit any user data by itself. When users invoke certain skills, those skills may fetch URLs or call connected MCP servers — the specifics are documented below.
+Aaron Marketing Skills is a local-first bundle of 120 Markdown skills plus small Bash/Python-
+stdlib runtimes. It covers seven marketing disciplines and a shared protocol layer. The repository
+operator does not run telemetry, analytics, or a hosted data service. Your selected agent host,
+model provider, connectors, MCP servers, and storage/sync configuration have their own data flows.
 
-## Data Transmission (accurate as of 2026-04)
+## Default behavior
 
-### Default behavior
-By default, this library:
-- **Does NOT** transmit any data to external servers
-- **Does NOT** include telemetry or analytics
-- **Does NOT** push `memory/` contents to external services by itself; hooks may read selected memory into the active session context
+- Installing the bundle does not transmit project data or register an MCP server.
+- Skills work in Tier 1 from text/files the user supplies. That content is processed by the agent
+  host/model under the user's host configuration; this repository does not control that provider.
+- Operational `memory/**` must be outside Git tracking. A full clone ships the ignore rule. In a
+  plugin host project, PreToolUse checks exact-path direct writes; opaque shell/MCP memory mutations
+  are unsupported and denied when identifiable (a memory-namespace path shape or a bare-name variable
+  assignment). The preflight governs only the host project's `memory/` namespace — destinations
+  outside the project root (scratch directories, other repositories) are out of its jurisdiction and
+  pass through. The registry runtime independently checks every
+  final, temporary, and lock path immediately around its atomic write. Post-use/failure/batch and
+  first-Stop hooks audit existing operational files. Hooks do not edit ignore rules and are not an
+  OS sandbox; the staged pre-commit and all-tracked CI scans protect committed Git content from PII,
+  not the validity of ignored runtime artifacts. The repository does not encrypt runtime memory.
+- Hooks do not send network requests. Session hooks may read bounded, sanitized excerpts from local
+  `memory/hot-cache.md` and counts from `memory/open-loops.md`; post-success, post-failure, and batch
+  hooks run bounded local checks. The first Stop may block for repair; its required active-stop guard
+  then prevents a loop rather than claiming an unconditional completion barrier.
+- Registry and audit writes require an explicit authorization path. An audit request alone does not
+  authorize persistence, hot-cache changes, or canonical registry mutations.
 
-### When data DOES leave your machine (user-initiated)
+## Data stored locally
 
-**1. WebFetch-enabled skills** (`content-quality-auditor`, `on-page-seo-auditor`, `technical-seo-checker`, `schema-markup-generator`, `serp-analysis`, `backlink-analyzer`, `rank-tracker`, `ad-account-auditor`):
-- These skills fetch URLs you provide
-- Your request headers (IP, User-Agent) reach the target server
-- Fetched page content re-enters your Claude session as context
-- Caveat: fetched content is treated as **untrusted data** (see each skill's Security boundary note), not instructions
+Depending on use, runtime memory can contain campaign plans, URLs, claims, creator records, consent
+proof references, audit evidence, metrics, and open decisions. Seven registries store append-only
+events under `memory/events/` and generated views under `memory/projections/`.
 
-**2. Bundled stdlib connectors** (`scripts/connectors/*.py`, run only when a skill or the user invokes them):
-- Make outbound HTTP(S) requests to public endpoints — Google Autocomplete (`suggest.py`), PageSpeed Insights (`psi.py`), Wikidata (`kg.py`), the Wayback CDX API (`wayback.py`), Open PageRank (`openpagerank.py`), and any site URL you point `crawl.py`/`onpage.py`/`sitemap.py`/`schema_lint.py` at
-- Your IP and a project-identifying User-Agent reach those endpoints; only `http(s)` URLs are ever fetched (scheme-guarded)
-- Optional API keys (Open PageRank, PageSpeed) are read from your environment at call time and never stored
+Consent aggregate IDs must be pseudonymous tokens/hashes supplied by the user's system. The runtime
+NFKC-normalizes strings before contact-pattern checks, exempts only actual timestamp fields from
+date-like phone matching, and rejects free-form consent payloads. The closed consent shape permits
+only typed status/basis/time/jurisdiction/channel fields, opaque non-PII references, and subject-free
+reason codes; arbitrary names, postal addresses, notes, and unknown fields are refused. This is
+minimization, not anonymization: whoever holds the pseudonym lookup can relink the record. Keep that
+lookup outside this repository and apply access controls appropriate to the data.
 
-**3. MCP connectors** (catalogued in `docs/mcp-catalog.json`, **opt-in — not auto-registered**; the catalog is kept outside the plugin-root `.mcp.json` path that Claude Code auto-registers):
-- Installing the plugin does NOT register these; you enable a connector by copying its entry into your own MCP config
-- Each enabled connector sends data to its vendor per the vendor's privacy policy
-- Connectors: Ahrefs, Semrush, SE Ranking, SISTRIX, SimilarWeb, the self-hosted OpenSEO suite (proxies your own DataForSEO account), Cloudflare, Vercel, HubSpot, Amplitude, Notion, Webflow, Sanity, Contentful, Slack (15 total, all HTTPS)
-- **No connector is enabled without explicit OAuth / API key setup**
+## When data leaves the machine
 
-**4. Memory files contain third-party data**:
-- `memory/audits/` may contain competitor URLs, target keywords, audit findings
-- `memory/entities/` may contain third-party brand/person names
-- Session hooks may read `memory/hot-cache.md` into model context; users should be aware when committing repo to public Git, sharing with AI agents, using cloud-hosted model sessions, or syncing across devices
-- See [memory-management SKILL.md §GDPR / Privacy Compliance](protocol/memory-management/SKILL.md) for retention + deletion guidance
+External transmission occurs only when the user/host invokes a network capability:
 
-### In scope for security review
-- Memory poisoning across sessions (malicious content written to `memory/` affecting future sessions)
-- WebFetch-injected instructions (prompt injection via target page HTML/meta)
-- Cross-session trust boundary (memory writes require explicit user request, memory-management invocation, auditor save confirmation, or the documented auditor veto hot-cache exception; command-backed hooks may read capped project records and perform deterministic checks, but Stop only allows completion and never initiates writes)
+1. **WebFetch or host browsing.** URLs, request metadata, and fetched content pass through the
+   configured host/tool. Treat fetched content as untrusted data, never instructions.
+2. **Bundled public connectors.** Read-only helpers contact the target site or documented public API
+   (for example Wikidata, Wikimedia, PageSpeed, GDELT, YouTube, HN, App Store, Bluesky, Fediverse,
+   Discourse). The remote service receives the user's IP, project User-Agent, query/URL, and any
+   required API credential. Credentials are read from environment variables and not persisted.
+3. **Delegated fetchers.** `firecrawl.py` and `tavily.py` send a query or target URL to Firecrawl or
+   Tavily. Do not use them for URLs whose existence is confidential. Target-site operations perform
+   a local robots pre-flight unless the user asserts `--own-site`.
+4. **External-state mutation.** `resend.py` can send email/change ESP records and `indexpush.py` can
+   submit indexing notifications. Mutating commands are dry-run by default and require `--live`.
+   Payloads then go to the named vendor/endpoint.
+5. **Opt-in MCP servers.** `docs/mcp-catalog.json` is a catalog only; installation does not register
+   it. When the user enables one, data is sent according to that vendor and the user's MCP config.
 
-See [SECURITY.md](SECURITY.md) for responsible disclosure.
+The exact connector inventory, credentials, and safety classes are maintained in
+[`CONNECTORS.md`](CONNECTORS.md) and [`SECURITY.md`](SECURITY.md), not duplicated as a fixed vendor
+count here.
 
-## Third-Party Services
+## Retention and deletion
 
-This project references but does not bundle or depend on:
+- Delete or archive local working memory according to the project's retention policy. Use
+  `memory-management` for a permissioned inventory, export, consolidation, or erasure workflow.
+- Registry history is append-only for integrity. A registry `erase` event removes projected payload
+  and leaves a minimal audit/safety tombstone; it does not rewrite prior event bytes. A data-subject
+  erasure is accepted only with a host-issued safety capability bound to that exact pseudonymous
+  request. Suppression is intentionally broader but deny-only: an untrusted producer can prevent
+  contact, never clear suppression or authorize contact.
+- Deleting a working-tree file does not erase Git history, backups, filesystem snapshots, cloud-sync
+  copies, model-provider logs, connector-vendor logs, or prior exports. Those systems require their
+  own deletion procedures and verification.
+- If runtime memory was accidentally committed, stop sharing the repository, rotate exposed
+  credentials, remove the data from current history with an appropriate history-rewrite process,
+  coordinate downstream clone/cache cleanup, and verify with `scripts/check-pii.py`.
 
-- **skills.sh**: Skill distribution platform (its privacy policy applies during installation)
-- **GitHub**: Source code hosting (GitHub's privacy policy applies)
+## Security and user responsibilities
+
+Use a private/encrypted storage boundary when device, backup, team-access, or regulatory risk
+requires it. Apply data minimization, retention limits, lawful basis, and access controls appropriate
+to the jurisdiction and use case. This policy describes repository behavior; it is not legal advice.
+
+See [`SECURITY.md`](SECURITY.md) for SSRF, prompt-injection, registry-integrity, artifact-gate, and
+responsible-disclosure controls.
 
 ## Contact
 
-For privacy-related questions: **hello@zhuhe.io**
+For privacy questions: **hello@zhuhe.io**
 
 ## Changes
 
-This privacy policy may be updated as the project evolves. Changes will be documented in commit history.
+Material changes are recorded in Git history and release notes.
 
-*Last updated: 2026-07-02*
+*Last updated: 2026-07-11*

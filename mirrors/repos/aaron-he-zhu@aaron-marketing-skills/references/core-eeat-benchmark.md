@@ -6,6 +6,8 @@
 >
 > **Version sync**: When the source spec updates, check: item count references in README (currently "80 items"), skill validation checkpoints, and Sections 2, 3, 7 below.
 
+> **v17 execution contract**: this file owns the human item anchors. Profiles, conditional applicability, veto identity, and required context are versioned in [`framework-catalog.json`](framework-catalog.json); Unknown/N/A, evidence, coverage, score, status, and verdict semantics are defined in [`scoring-semantics.md`](scoring-semantics.md). The framework is advisory until outcome-calibrated.
+
 **8 dimensions × 10 items = 80 evaluation criteria** for optimizing content visibility across AI engines (GEO) and search engines (SEO).
 
 ---
@@ -19,7 +21,7 @@
 | CORE | GEO (AI Engine Optimization) | C, O, R, E | 40 | Content body |
 | EEAT | SEO (Search Engine Optimization) | Exp, Ept, A, T | 40 | Author / Organization / Site |
 
-**MECE Boundary Rule:** CORE evaluates the content body itself. EEAT evaluates the source — author, organization, and site credibility. There is no overlap.
+**Primary ownership rule:** CORE primarily evaluates the content body; EEAT primarily evaluates author, organization, and site credibility. The constructs are not statistically or operationally independent: citations, authorship, disclosure, and editorial controls cross the boundary. Assign each item one scoring owner to prevent double-counting, while preserving those dependencies in evidence and findings.
 
 ### 8 Dimensions
 
@@ -77,7 +79,7 @@
 | R07 | R | Entity Precision | GEO 🎯 | Full names for people/orgs/products; no "a company" |
 | R08 | R | Internal Link Graph | SEO 🔍 | Descriptive anchor texts forming topic clusters |
 | R09 | R | HTML Semantics | GEO 🎯 | Uses `<article>`, `<figure>`, `<time>`, `<cite>` |
-| R10 | R | Content Consistency | Dual ⚡ | Data self-consistent; no broken links (404) |
+| R10 | R | Content Consistency | Dual ⚡ | No material internal factual contradiction; isolated broken links are remediable findings |
 | E01 | E | Original Data | GEO 🎯 | First-party surveys, experiments, or statistics |
 | E02 | E | Novel Framework | GEO 🎯 | Named, citable original framework or model |
 | E03 | E | Primary Research | GEO 🎯 | Original experiments/surveys with documented process |
@@ -126,7 +128,7 @@
 | T01 | T | Legal Compliance | SEO 🔍 | Privacy Policy + Terms of Service present |
 | T02 | T | Contact Transparency | SEO 🔍 | Physical address or ≥2 contact methods |
 | T03 | T | Security Standards | SEO 🔍 | Site-wide HTTPS, no security warnings |
-| T04 | T | Disclosure Statements | Dual ⚡ | Affiliate links disclosed (veto if missing) |
+| T04 | T | Disclosure Statements | Dual ⚡ | Material connections are clearly disclosed where present (conditional veto) |
 | T05 | T | Editorial Policy | SEO 🔍 | Content standards and review process published |
 | T06 | T | Correction & Update Policy | Dual ⚡ | Has corrections page or changelog |
 | T07 | T | Ad Experience | SEO 🔍 | Ads <30% of page; no intrusive popups |
@@ -146,13 +148,16 @@
 | Partial | 5 |
 | Fail | 0 |
 
+Applicable but unobserved items are `unknown`; omitted items are also `unknown`. Catalog-authorized inapplicable items are `na` with a reason and are excluded. Neither state receives points. A comparable score requires 100% coverage of applicable items.
+
 ### Score Calculation
 
 - **Dimension score** = sum of 10 items (0–100)
-- **GEO Score** = (C + O + R + E) / 4
-- **SEO Score** = (Exp + Ept + A + T) / 4
-- **Total Score** = (GEO + SEO) / 2 — unweighted average for quick comparison
-- **Weighted Score** = Σ (dimension_score × content_type_weight) — use this for content-type-specific evaluation (see table below)
+- **GEO diagnostic** = (C + O + R + E) / 4, only when those four dimensions are complete
+- **SEO diagnostic** = (Exp + Ept + A + T) / 4, only when those four dimensions are complete
+- **Comparable overall** = Σ (dimension score × declared content-profile weight), emitted only when all applicable profile items are observed
+
+Do not use the old unweighted GEO/SEO average as a profile-independent total. Content type, market, publication state, catalog version, observation date, coverage, and evidence confidence travel with every result.
 
 ### Content-Type Weight Table
 
@@ -179,17 +184,17 @@
 
 ### Veto Items
 
-Failing any veto item activates the Critical Fail Cap. The cap arithmetic and thresholds are defined in [auditor-runbook.md §2](auditor-runbook.md). Do not restate cap numbers here or elsewhere — this file owns the item definitions only.
+Failing any veto item activates the Critical Fail Cap. The cap arithmetic and thresholds are defined in [auditor-runbook.md §4](auditor-runbook.md). Do not restate cap numbers here or elsewhere — this file owns the item definitions only.
 
 | Veto ID | Dimension | Check |
 |---------|-----------|-------|
 | **T04** | Trust | Affiliate links without disclosure |
 | **C01** | Contextual Clarity | Clickbait — title promises something the page doesn't deliver |
-| **R10** | Referenceability | Data on the page contradicts itself |
+| **R10** | Referenceability | Material factual data on the page contradicts itself |
 
-**Single veto fail**: cap applies per [Runbook §2 decision table](auditor-runbook.md).
+**Single veto fail**: cap applies per [Runbook §4 Scoring Semantics](auditor-runbook.md).
 
-**2+ veto fails**: audit returns `status: BLOCKED` per [§2 Worked example 3 in content-quality-auditor](../seo-geo/optimize/content-quality-auditor/SKILL.md). Calibration for a numeric multi-veto cap is pending v7.3, gated on 30+ real multi-veto audits in `memory/audits/`.
+**2+ verified veto fails**: the completed audit returns `status: DONE`, `verdict: BLOCK`, and no final score. One verified veto caps the final score at 59. Missing veto evidence is Unknown and does not trigger a veto.
 
 Rationale: prevents "79 items pass + 1 veto fails" from producing a misleadingly high overall score.
 
@@ -413,9 +418,9 @@ What is the primary goal?
 - **Fail**: Pure `<div>` markup.
 
 **R10: Content Consistency** | Dual ⚡
-- **Pass**: Data self-consistent; no broken links; has corrections log.
-- **Partial**: Mostly consistent.
-- **Fail**: Data contradicts itself or broken links.
+- **Pass**: Material facts and calculations are internally consistent; cited links resolve at the observation date; corrections are traceable.
+- **Partial**: An isolated broken link, stale non-material reference, or wording inconsistency exists without changing the substantive conclusion.
+- **Fail**: Two parts of the artifact make materially incompatible factual or numerical claims → **Veto triggered**.
 
 ### E — Exclusivity
 
@@ -644,21 +649,21 @@ What is the primary goal?
 
 **T04: Disclosure Statements** | Dual ⚡
 
-> **Regulatory basis (U.S. market)**: FTC **16 CFR §255.5** (Endorsement Guides — the substantive disclosure standards for material connections; advisory, not self-penalizing) and the FTC's **2024 Trade Regulation Rule on Consumer Reviews and Testimonials (16 CFR Part 465)**, effective 2024-10-21. Civil penalties attach under **15 U.S.C. §45(m)** and are **inflation-adjusted annually per 16 CFR §1.98** (baseline $51,744 in 2024; ~$53,088 in 2025; check current year). Applies to reviewers, affiliates, and endorsers operating in or marketing to the U.S., regardless of platform. EU/UK markets have analogous obligations (e.g., UK CMA's 2024 Digital Markets, Competition and Consumers Act). **Not legal advice — consult counsel for your jurisdiction.**
+> **Scope**: assess the applicable market and relationship. In the U.S., FTC endorsement guidance centers on disclosure of material connections in a clear and conspicuous manner. Other markets may impose different requirements. This rubric is not legal advice.
 
-Affiliate-link disclosure is enforceable only when ALL of the following sub-criteria are met. Missing any of (a)–(e) is a **Fail → VETO**.
+T04 applies only when a material connection, paid placement, affiliate relationship, or equivalent commercial relationship exists. Judge the rendered experience in context:
 
-- **(a) Placement**: the disclosure appears **above or at** the first affiliate link and sits within the **first fold** (visible without scrolling on a 1366×768 viewport). End-of-page or footer-only disclosures do not satisfy (a).
-- **(b) Wording**: disclosure language explicitly contains at least one of: "paid", "earn a commission", "earn commission", "affiliate", "sponsored", or an equally clear equivalent in the page's primary language. Euphemisms ("we may benefit", "some links", "partner links") do not satisfy (b).
-- **(c) Typography**: disclosure font size is **≥ body text size**. Smaller, lighter, or same-color-as-background text fails (c).
-- **(d) Visibility**: disclosure is not collapsed behind a toggle, hover tooltip, modal, expandable `<details>` element, or off-screen container. A reader must see it on first render.
-- **(e) Machine-readable**: the affiliate link itself carries `rel="sponsored"` (or `rel="sponsored nofollow"`). Google treats this as a required signal; FTC enforcement has historically focused on human-visible disclosure, but machine-readable reinforcement is now industry-standard and prevents LLM training pipelines from inadvertently laundering commercial links as editorial.
+- The disclosure is understandable to the intended audience and identifies the material nature of the relationship.
+- It is prominent, unavoidable, and proximate enough that a reasonable user encounters it before relying on the endorsement or taking the commercial action.
+- Contrast, size, placement, language, device, format, and repetition are assessed together; there is no universal viewport, font-size, or exact-word safe harbor.
+- A hidden, ambiguous, or materially separated disclosure does not cure the endorsement.
 
-**Pass**: (a) ∧ (b) ∧ (c) ∧ (d) ∧ (e) all satisfied on every page containing an affiliate link.
+Human disclosure and link-markup hygiene are separate controls. `rel="sponsored"` or `rel="nofollow"` may be relevant to search-engine link treatment, but their presence does not replace human disclosure and their absence alone does not trigger this legal/consumer-trust veto.
 
-**Partial**: Page contains no affiliate links (N/A — score as Partial, not Pass, because the control cannot be verified in the positive sense).
-
-**Fail**: Any affiliate link exists on the page and any one of (a)–(e) is missing → **VETO** per [§Veto Items](#veto-items). Cap rule applies per [auditor-runbook.md §2](auditor-runbook.md). Also surface in the handoff `key_findings` with severity `veto` and cite the specific sub-item that failed (e.g., "T04(a): disclosure placed in footer only, below first affiliate link").
+- **Pass**: Every in-scope material connection is clearly and conspicuously disclosed in context.
+- **Partial**: Disclosure is present and understandable but has a remediable contextual weakness that does not materially hide the relationship.
+- **Fail**: A material connection exists and the required relationship is undisclosed or materially obscured → **Veto triggered**.
+- **N/A**: No material connection or paid relationship exists; record the reason. Do not score Partial merely because the control is inapplicable.
 
 **T05: Editorial Policy** | SEO 🔍
 - **Pass**: Content standards and review process published.

@@ -32,6 +32,25 @@ Use this checklist after creating or updating a skill.
 - Resolve any `FAIL` (≥ 75% similarity) pair by rewriting one description to highlight distinct triggers, domains, or boundaries.
 - `WARN` (≥ 60%) pairs are acceptable when descriptions cover genuinely related domains; document the distinction in `When NOT to use` cross-routes.
 
+## Utility Content Checks (SkillLens rubric)
+
+Three content dimensions predict whether a skill measurably improves task outcomes
+(SkillLens, arXiv:2605.23899). Section structure, formatting, and prose fluency alone do
+not — a well-written skill can still fail `oma skills eval`.
+
+- **Failure mechanism encoding**: `Failure and recovery` (and guardrails) explain *why* the
+  agent fails in this domain and give an executable remedy. Reject generic advice
+  ("be careful", "edit minimally"); encode domain-specific failure modes
+  (e.g. "formulas don't evaluate in headless runs, so precompute static values").
+- **Actionable specificity**: the canonical path is a step-level procedure referencing
+  concrete domain objects, tools, flags, and file paths. An agent should be able to act
+  without re-deriving the procedure from scratch.
+- **High-risk action blacklist**: guardrails name and forbid the domain's specific harmful
+  action patterns (e.g. "never run `terraform apply` without a reviewed plan"), not only
+  positive instructions.
+- When in doubt, verify with `oma skills eval` fixtures instead of judging by prose quality —
+  textual plausibility does not predict utility.
+
 ## Structural Checks
 
 - `Entry` states what to verify before acting.

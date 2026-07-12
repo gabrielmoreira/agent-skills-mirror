@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default patterns, 0 followed patterns, 61 file(s) materialized.
+Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default patterns, 0 followed patterns, 66 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 61 |
+| Files         | 66 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -103,23 +103,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`skills/hosted-agents/SKILL.md`](skills/hosted-agents/SKILL.md) |
 | 43 | ✓ | [`skills/latent-briefing/references/attention-matching-formulation.md`](skills/latent-briefing/references/attention-matching-formulation.md) |
 | 44 | ✓ | [`skills/latent-briefing/SKILL.md`](skills/latent-briefing/SKILL.md) |
-| 45 | ✓ | [`skills/memory-systems/references/implementation.md`](skills/memory-systems/references/implementation.md) |
-| 46 | ✓ | [`skills/memory-systems/scripts/memory_store.py`](skills/memory-systems/scripts/memory_store.py) |
-| 47 | ✓ | [`skills/memory-systems/SKILL.md`](skills/memory-systems/SKILL.md) |
-| 48 | ✓ | [`skills/multi-agent-patterns/references/frameworks.md`](skills/multi-agent-patterns/references/frameworks.md) |
-| 49 | ✓ | [`skills/multi-agent-patterns/scripts/coordination.py`](skills/multi-agent-patterns/scripts/coordination.py) |
-| 50 | ✓ | [`skills/multi-agent-patterns/SKILL.md`](skills/multi-agent-patterns/SKILL.md) |
-| 51 | ✓ | [`skills/project-development/references/case-studies.md`](skills/project-development/references/case-studies.md) |
-| 52 | ✓ | [`skills/project-development/references/pipeline-patterns.md`](skills/project-development/references/pipeline-patterns.md) |
-| 53 | ✓ | [`skills/project-development/scripts/pipeline_template.py`](skills/project-development/scripts/pipeline_template.py) |
-| 54 | ✓ | [`skills/project-development/SKILL.md`](skills/project-development/SKILL.md) |
-| 55 | ✓ | [`skills/self-improvement-loops/references/loop-design-evidence.md`](skills/self-improvement-loops/references/loop-design-evidence.md) |
-| 56 | ✓ | [`skills/self-improvement-loops/SKILL.md`](skills/self-improvement-loops/SKILL.md) |
-| 57 | ✓ | [`skills/tool-design/references/architectural_reduction.md`](skills/tool-design/references/architectural_reduction.md) |
-| 58 | ✓ | [`skills/tool-design/references/best_practices.md`](skills/tool-design/references/best_practices.md) |
-| 59 | ✓ | [`skills/tool-design/scripts/description_generator.py`](skills/tool-design/scripts/description_generator.py) |
-| 60 | ✓ | [`skills/tool-design/SKILL.md`](skills/tool-design/SKILL.md) |
-| 61 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
+| 45 | ✓ | [`skills/long-horizon-prompting/references/cdc-prompt-annotated.md`](skills/long-horizon-prompting/references/cdc-prompt-annotated.md) |
+| 46 | ✓ | [`skills/long-horizon-prompting/references/research-evidence.md`](skills/long-horizon-prompting/references/research-evidence.md) |
+| 47 | ✓ | [`skills/long-horizon-prompting/references/task-brief-template.md`](skills/long-horizon-prompting/references/task-brief-template.md) |
+| 48 | ✓ | [`skills/long-horizon-prompting/references/vendor-guidance.md`](skills/long-horizon-prompting/references/vendor-guidance.md) |
+| 49 | ✓ | [`skills/long-horizon-prompting/SKILL.md`](skills/long-horizon-prompting/SKILL.md) |
+| 50 | ✓ | [`skills/memory-systems/references/implementation.md`](skills/memory-systems/references/implementation.md) |
+| 51 | ✓ | [`skills/memory-systems/scripts/memory_store.py`](skills/memory-systems/scripts/memory_store.py) |
+| 52 | ✓ | [`skills/memory-systems/SKILL.md`](skills/memory-systems/SKILL.md) |
+| 53 | ✓ | [`skills/multi-agent-patterns/references/frameworks.md`](skills/multi-agent-patterns/references/frameworks.md) |
+| 54 | ✓ | [`skills/multi-agent-patterns/scripts/coordination.py`](skills/multi-agent-patterns/scripts/coordination.py) |
+| 55 | ✓ | [`skills/multi-agent-patterns/SKILL.md`](skills/multi-agent-patterns/SKILL.md) |
+| 56 | ✓ | [`skills/project-development/references/case-studies.md`](skills/project-development/references/case-studies.md) |
+| 57 | ✓ | [`skills/project-development/references/pipeline-patterns.md`](skills/project-development/references/pipeline-patterns.md) |
+| 58 | ✓ | [`skills/project-development/scripts/pipeline_template.py`](skills/project-development/scripts/pipeline_template.py) |
+| 59 | ✓ | [`skills/project-development/SKILL.md`](skills/project-development/SKILL.md) |
+| 60 | ✓ | [`skills/self-improvement-loops/references/loop-design-evidence.md`](skills/self-improvement-loops/references/loop-design-evidence.md) |
+| 61 | ✓ | [`skills/self-improvement-loops/SKILL.md`](skills/self-improvement-loops/SKILL.md) |
+| 62 | ✓ | [`skills/tool-design/references/architectural_reduction.md`](skills/tool-design/references/architectural_reduction.md) |
+| 63 | ✓ | [`skills/tool-design/references/best_practices.md`](skills/tool-design/references/best_practices.md) |
+| 64 | ✓ | [`skills/tool-design/scripts/description_generator.py`](skills/tool-design/scripts/description_generator.py) |
+| 65 | ✓ | [`skills/tool-design/SKILL.md`](skills/tool-design/SKILL.md) |
+| 66 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
 
 ---
 
