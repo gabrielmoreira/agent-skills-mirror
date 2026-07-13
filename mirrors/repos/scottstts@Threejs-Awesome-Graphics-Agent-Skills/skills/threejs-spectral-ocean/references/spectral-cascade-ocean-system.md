@@ -4,13 +4,20 @@ Use this reference for a large, unbounded-looking ocean whose identity comes fro
 
 ## Contents
 
-1. Architecture and cascade partition
-2. Directional spectrum and Hermitian packing
-3. GPU inverse FFT and hard validation gate
-4. Spatial displacement and derivative maps
-5. Jacobian foam history
-6. Surface shading, detail, and spray
-7. Quality modes, defects, and diagnostics
+1. Architecture contract
+2. Cascade partition
+3. Initial directional spectrum
+4. Hermitian pairing and packed fields
+5. GPU inverse FFT schedule
+6. FFT hard gate
+7. Spatial map assembly
+8. Jacobian whitecaps with history
+9. Fold-aware surface normal
+10. Optical composition
+11. Runtime order
+12. Geometry, camera, and fog
+13. Required diagnostics
+14. Failure diagnosis
 
 ## 1. Architecture contract
 

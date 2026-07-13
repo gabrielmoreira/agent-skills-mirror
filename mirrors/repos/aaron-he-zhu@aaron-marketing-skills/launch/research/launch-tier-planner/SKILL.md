@@ -4,20 +4,20 @@ slug: aaron-launch-tier-planner
 displayName: "Launch Tier Planner · 发布分级规划"
 summary: "发布分级/发布类型/风险登记册/kill criteria"
 description: 'Use when the user asks to "plan my launch tier", "how big should this launch be", or "build a launch risk register with kill criteria"; produces a tier decision (Tier 1 flagship all-channel / Tier 2 targeted / Tier 3 changelog-level), a launch-type declaration (new-product / feature / relaunch / partnership with co-marketing split), an effort calibration matrix (tier to channel intensity and asset scope), D0/W1/M1 KPI targets (labeled Estimated), a risk register (likelihood x blast-radius, owners, mitigations, kill criteria / rollback thresholds), and a T-8w to T+4w timeline skeleton. Not for picking the launch date or window — use launch-window-planner; not for creator-channel launch campaigns — use campaign-planner. 发布分级/发布类型/风险登记册/kill criteria'
-version: "17.0.0"
+version: "18.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when deciding how big a launch should be and what kind it is: choosing Tier 1 / 2 / 3, declaring the launch type (new-product, feature, relaunch, partnership), calibrating effort per tier, setting D0/W1/M1 KPI targets, and building the risk register with kill criteria and rollback thresholds plus a T-8w to T+4w timeline skeleton. The sizing layer above the date choice (launch-window-planner) and the day-of runbook (launch-day-conductor)."
 argument-hint: "<product / feature / launch scope> [audience impact] [revenue linkage]"
-metadata: {"author": "aaron-he-zhu", "version": "17.0.0", "discipline": "launch", "phase": "research", "geo-relevance": "low", "hermes": {"tags": ["marketing", "launch", "research"], "category": "launch"}, "openclaw": {"emoji": "🚀", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
+metadata: {"author": "aaron-he-zhu", "version": "18.0.0", "discipline": "launch", "phase": "research", "geo-relevance": "low", "hermes": {"tags": ["marketing", "launch", "research"], "category": "launch"}, "openclaw": {"emoji": "🚀", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Launch Tier Planner
 
 Decides how big a launch is and what kind it is — the tier (Tier 1 flagship all-channel / Tier 2 targeted / Tier 3 changelog-level), the type (new-product / feature / relaunch / partnership), the effort that tier justifies, the KPI targets declared before launch, and the risk register with kill criteria that the day-of runbook inherits. It sits in the Research phase of the [RAMP loop](../../../references/ramp-benchmark.md) and feeds the RAMP `R` sub-items *launch tier & type declared with effort calibrated*, *risk register exists (likelihood × blast-radius, owners, kill criteria / rollback thresholds)*, and *launch KPI targets (D0/W1/M1) declared before launch*. Sizing the moment correctly is what keeps a changelog entry from burning a Tier-1 audience and a flagship from shipping with a Tier-3 kit.
 
-**Scope guard**: this skill sizes the launch and registers its risks only. It does **not** pick the date or window (that is [launch-window-planner](../launch-window-planner/SKILL.md)), build the positioning canvas (that is [positioning-mapper](../positioning-mapper/SKILL.md)), run a creator-channel launch campaign (launch requests that mention creators route to [campaign-planner](../../../influencer/plan/campaign-planner/SKILL.md)), compute the RAMP profile result or run the RAMP vetoes ([launch-readiness-auditor](../../mobilize/launch-readiness-auditor/SKILL.md)), or write stage/date/tier facts to `memory/launch-registry/` directly ([launch-registry](../../../protocol/launch-registry/SKILL.md) is the sole writer — this skill submits candidates). It works one lever — sizing — and hands off.
+**Scope guard**: this skill sizes the launch and registers its risks only. It does **not** pick the date or window (that is [launch-window-planner](../launch-window-planner/SKILL.md)), build the positioning canvas (that is [positioning-mapper](../positioning-mapper/SKILL.md)), run a creator-channel launch campaign (launch requests that mention creators route to [campaign-planner](../../../influencer/target/campaign-planner/SKILL.md)), compute the RAMP profile result or run the RAMP vetoes ([launch-readiness-auditor](../../mobilize/launch-readiness-auditor/SKILL.md)), or write stage/date/tier facts to `memory/launch-registry/` directly ([launch-registry](../../../protocol/launch-registry/SKILL.md) is the sole writer — this skill submits candidates). It works one lever — sizing — and hands off.
 
 ## Quick Start
 
@@ -82,6 +82,6 @@ On user confirmation, save to `memory/launch/launch-tier-planner/YYYY-MM-DD-<lau
 
 - **Primary**: [launch-window-planner](../launch-window-planner/SKILL.md) — pick the date and window for the declared tier (event cycles, competitor calendar, review-latency buffers).
 - **If the plan is formed and needs a pre-check**: [launch-readiness-auditor](../../mobilize/launch-readiness-auditor/SKILL.md) — early RAMP profile result read on the declared tier, targets, and risk register.
-- **If spend allocation across launch channels is the next gap**: [budget-optimizer](../../../influencer/plan/budget-optimizer/SKILL.md) — allocate the budget the effort matrix implies.
+- **If spend allocation across launch channels is the next gap**: [budget-optimizer](../../../influencer/target/budget-optimizer/SKILL.md) — allocate the budget the effort matrix implies.
 
 **Termination**: inherits the global rules in [skill-contract.md §Termination rules](../../../references/skill-contract.md) — visited-set check (skip any target already run this chain), `max-depth: 3`, and an ambiguity stop (present the options instead of auto-following). Stop when tier, type, targets, and the risk register are declared and submitted as registry proposals.

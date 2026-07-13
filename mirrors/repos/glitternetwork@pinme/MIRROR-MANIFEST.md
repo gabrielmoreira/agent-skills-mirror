@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `glitternetwork/pinme` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `glitternetwork/pinme` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `glitternetwork/pinme` — 26 default patterns, 0 followed patterns, 8
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,9 +64,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`skills/pinme-auth/SKILL.md`](skills/pinme-auth/SKILL.md) |
 | 4 | ✓ | [`skills/pinme-email/SKILL.md`](skills/pinme-email/SKILL.md) |
 | 5 | ✓ | [`skills/pinme-llm/SKILL.md`](skills/pinme-llm/SKILL.md) |
-| 6 | ✓ | [`skills/pinme-share/SKILL.md`](skills/pinme-share/SKILL.md) |
-| 7 | ✓ | [`skills/pinme-uniwebpay/SKILL.md`](skills/pinme-uniwebpay/SKILL.md) |
-| 8 | ✓ | [`skills/pinme/SKILL.md`](skills/pinme/SKILL.md) |
+| 6 | ✓ | [`skills/pinme-r2/agents/openai.yaml`](skills/pinme-r2/agents/openai.yaml) |
+| 7 | ✓ | [`skills/pinme-r2/SKILL.md`](skills/pinme-r2/SKILL.md) |
+| 8 | ✓ | [`skills/pinme-share/SKILL.md`](skills/pinme-share/SKILL.md) |
+| 9 | ✓ | [`skills/pinme-uniwebpay/SKILL.md`](skills/pinme-uniwebpay/SKILL.md) |
+| 10 | ✓ | [`skills/pinme/SKILL.md`](skills/pinme/SKILL.md) |
 
 ---
 

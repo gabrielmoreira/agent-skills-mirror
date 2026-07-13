@@ -110,7 +110,7 @@ Sandboxed, no-display agent environments — **Claude Cowork** (Anthropic's desk
 
 **Context does not survive a reset** either: the selected-notebook context (`context.json`) is gone each session, so pass an explicit `-n/--notebook <id>` on notebook-scoped commands instead of relying on `notebooklm use`.
 
-If Cowork reads `~/.claude/skills/`, `notebooklm skill install` registers this skill there automatically; otherwise add it through Cowork's own capability UI. Full recipe (extras matrix, headless auth, CI env-var notes): [installation.md § AI Agent](https://github.com/teng-lin/notebooklm-py/blob/main/docs/installation.md#a-ai-agent-primary-persona).
+If Cowork reads `~/.claude/skills/`, `notebooklm skill install` registers this skill there automatically; otherwise build the uploadable archive on the host with `notebooklm skill package` (writes `notebooklm-skill.zip`) and add it via **Claude Settings → Capabilities**. Full recipe (extras matrix, headless auth, CI env-var notes): [installation.md § AI Agent](https://github.com/teng-lin/notebooklm-py/blob/main/docs/installation.md#a-ai-agent-primary-persona).
 
 ## Agent Setup Verification
 

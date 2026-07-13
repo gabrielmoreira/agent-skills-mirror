@@ -13,7 +13,7 @@ Use this reference for phase-based launch, staging, docking, spring, rotating-fr
 - Docking-frame decomposition
 - Spring convergence and terminal lock
 - Peeling and released debris
-- planet-space implementation response and orientation patterns
+- Frame-rate-independent response and orientation patterns
 - Failure modes and diagnostics
 
 
@@ -39,7 +39,7 @@ when restarting the sequence.
 
 ## Piecewise launch kinematics
 
-cinematic implementation’s launch sequence uses:
+The authored launch timeline uses:
 
 ```text
 ignition hold = 1.2 s
@@ -188,8 +188,8 @@ shot. That is a presentation-aware choice, not a physical rule.
 Docking phases:
 
 ```text
-Endurance spin = 3.15 rad/s
-Ranger spin-up = 6.5 s
+station spin = 3.15 rad/s
+chaser spin-up = 6.5 s
 approach starts = 4.0 s
 approach duration = 14.5 s
 dock settle = 3.0 s
@@ -201,7 +201,7 @@ dock radial offset = 0.35
 Every phase uses a named `smoothstepRange(start, end, time)`. The sequence does
 not hide all timing in one normalized zero-to-one value.
 
-Endurance:
+Station spin state:
 
 ```text
 currentSpinRate = lerp(3.15, 0, spinDownT)
@@ -209,14 +209,14 @@ spinAngle += currentSpinRate * dt
 orientation = baseOrientation * rotation(localForward, spinAngle)
 ```
 
-The docking frame is recomputed from the newly rotated Endurance every frame.
+The docking frame is recomputed from the newly rotated station every frame.
 
 ## Docking-frame decomposition
 
 At approach start:
 
 ```text
-offset = rangerPosition - dockPort
+offset = chaserPosition - dockPort
 parallel = dot(offset, dockAxis)
 radialVector = offset - dockAxis * parallel
 radialDistance = length(radialVector)
@@ -250,7 +250,7 @@ lateral error.
 
 ## Spring convergence and terminal lock
 
-Ranger position follows target through a vector spring:
+The chaser position follows the target through a vector spring:
 
 ```text
 acceleration =
@@ -269,7 +269,7 @@ the docking axis:
 
 ```text
 alignment = quaternionFromUnitVectors(localUp, -dockAxis)
-spin = quaternionAround(dockAxis, rangerSpinAngle)
+spin = quaternionAround(dockAxis, chaserSpinAngle)
 orientation = spin * alignment
 ```
 
@@ -279,7 +279,7 @@ can retain imperceptible but destabilizing residual motion.
 
 ## Peeling and released debris
 
-Endurance debris has two states.
+Debris shed from the spinning station hull has two states.
 
 Attached peel:
 
@@ -311,32 +311,32 @@ its angular-velocity vector. Speed is capped at `95`.
 This rotating-frame inheritance is the defining mechanism. Random outward
 velocity alone would not match the spinning hull.
 
-## planet-space implementation response and orientation patterns
+## Frame-rate-independent response and orientation patterns
 
-planet-space implementation uses frame-rate-independent exponential response:
+Use frame-rate-independent exponential response:
 
 ```text
 alpha = 1 - exp(-lambda * dt)
 value = lerp(value, target, alpha)
 ```
 
-It uses this for camera blends, side-camera forward, effect intensities, color
+Use it for camera blends, side-camera forward, effect intensities, color
 response, and control state.
 
 Ship orientation control separates desired forward/up from angular physics.
 Quaternion targets are converted to angular error; damping acts on angular
 velocity. This keeps user control and rigid-body response distinct.
 
-For bounded camera lag, planet-space implementation uses a second-order spring with critical-like
-damping ratios rather than exponential interpolation. Choose exponential
-response for perceptual parameter smoothing and a spring when velocity/inertia
-is part of the motion.
+For bounded camera lag, use a second-order spring with critical-like damping
+ratios rather than exponential interpolation. Choose exponential response for
+perceptual parameter smoothing and a spring when velocity/inertia is part of
+the motion.
 
 ## Failure modes and diagnostics
 
 Observed boundaries:
 
-- cinematic implementation detachment randomness uses `Math.random`; seed it for replay and
+- Stage-detachment randomness uses `Math.random`; seed it for replay and
   regression.
 - Semi-implicit springs need a clamped `dt`, especially after tab suspension.
 - The launch path is authored for one planet scale and shot duration.

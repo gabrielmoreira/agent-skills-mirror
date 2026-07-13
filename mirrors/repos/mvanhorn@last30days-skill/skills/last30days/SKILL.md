@@ -1,6 +1,6 @@
 ---
 name: last30days
-version: "3.11.1"
+version: "3.13.0"
 description: "Research what people actually say about any topic in the last 30 days. Pulls posts and engagement from Reddit, X, YouTube, TikTok, Hacker News, Polymarket, GitHub, and the web. Includes a doctor health check to diagnose broken or missing sources."
 argument-hint: 'last30days nvidia earnings reaction | last30days AI video tools | last30days what users want in react'
 allowed-tools: Bash, Read, Write, AskUserQuestion, WebSearch
@@ -28,6 +28,7 @@ metadata:
         - BSKY_HANDLE
         - BSKY_APP_PASSWORD
         - TRUTHSOCIAL_TOKEN
+        - XIAOHONGSHU_API_BASE
       bins:
         - node
         - python3
@@ -50,6 +51,8 @@ metadata:
       - digg
       - bluesky
       - truthsocial
+      - xiaohongshu
+      - rednote
       - trends
       - recency
       - news
@@ -124,6 +127,7 @@ Replace `{VERSION}` with the installed plugin version (`jq -r '.version' "$SKILL
 **Placement by query type:**
 - GENERAL / NEWS / PROMPTING / RECOMMENDATIONS: badge on line 1, blank line 2, `What I learned:` on line 3, then bold-lead-in paragraphs
 - COMPARISON: badge on line 1, blank line 2, `# {TOPIC_A} vs {TOPIC_B} [vs {TOPIC_C}]: What the Community Says (/Last30Days)` on line 3, then Quick Verdict section
+- DISCOVERY: pass through the engine's topic-per-section discovery brief verbatim. Its ranked headings, momentum labels, evidence counters, and `/last30days "<topic>"` handoffs are engine-owned and are an explicit exception to the GENERAL synthesis template.
 
 ---
 
@@ -156,6 +160,8 @@ These LAWs dominate every other rule in this file. If you find yourself about to
 **LAW 5 - ENGINE FOOTER PASS-THROUGH. EVERY QUERY TYPE. EVERY RUN.** The engine output ends with a `✅ All agents reported back!` emoji-tree footer bounded by `---` lines and wrapped in `<!-- PASS-THROUGH FOOTER -->` / `<!-- END PASS-THROUGH FOOTER -->` comments (v3.0.10+). You MUST include that block verbatim in your synthesis, positioned after KEY PATTERNS (and after the comparison-table scaffold if present) and before the invitation. Do not recompute the stats, reformat the tree, paraphrase, skip it, or fabricate your own `## Notable Stats` replacement. A response without the engine footer is not valid skill output.
 
 **LAW 6 - NO RAW RANKED EVIDENCE CLUSTERS IN BODY.** The engine's `## Ranked Evidence Clusters`, `## Stats`, and `## Source Coverage` blocks are bounded inside `<!-- EVIDENCE FOR SYNTHESIS -->` / `<!-- END EVIDENCE FOR SYNTHESIS -->` comments in the `--emit compact` / `--emit md` stdout. They are raw evidence for YOU to read, not output to emit. Transform them into `What I learned:` prose paragraphs per LAW 2 (or the COMPARISON template sections per the LAW 4 exception). If your response contains the literal string `### 1.` followed by a score tuple like `(score N, M items, sources: ...)`, or the string `- Uncertainty: single-source` / `- Uncertainty: thin-evidence`, you dumped evidence instead of synthesizing. STOP and regenerate.
+
+**Per-run source outcomes (doctor-aligned):** Read `## Partial Coverage` and `Report.source_status` before synthesizing. `no-results` means the source completed cleanly with zero matches. `partial`, `rate-limited`, `auth-failed`, `unreachable`, `timeout`, `schema-drift`, `skipped-unconfigured`, and `error` mean the run did not establish that the source was quiet. Never write "nothing on X/Reddit/YouTube" for those states; qualify the conclusion as partial coverage and rely only on evidence that was actually returned. The engine footer carries the user-visible outcome and `doctor` pointer, so do not invent a repair prescription in prose. `doctor` predicts configuration health before a run; `source_status` reports what happened during this run.
 
 **Observed LAW 6 violation (2026-04-19, Hermes Agent Use Cases disaster):** two consecutive `/last30days Hermes Agent (Actual) Use Cases` runs returned the raw `## Ranked Evidence Clusters` block verbatim as user output, with 8 cluster entries carrying `(score N, M items, sources: ...)` tuples and `- Uncertainty: single-source` lines. Root cause: the prior canonical-boundary text said "Pass through the lines ABOVE this boundary verbatim," which the model scoped broadly to include the scratchpad. The current boundary text and this LAW 6 scope pass-through to the PASS-THROUGH FOOTER block only. A third run on the same topic framed as "Hermes Workflows" produced the correct `What I learned:` prose synthesis, which is the shape every run must produce.
 
@@ -230,6 +236,26 @@ End of OUTPUT CONTRACT. The laws above are the contract; everything below is imp
 
 # HOW TO INVOKE THIS SKILL (READ FIRST, FOLLOW EVERY TIME)
 
+**LIBRARY SEARCH FAST PATH — this overrides every research/setup step below.** If the user says “search my library for X”, “have I researched X before?”, or otherwise asks to query prior saved research, do not run WebSearch, setup, preflight, or fresh source research. Run:
+
+```bash
+LAST30DAYS_MEMORY_DIR="${LAST30DAYS_MEMORY_DIR:-$HOME/Documents/Last30Days}"
+"${LAST30DAYS_PYTHON:-python3}" "${SKILL_DIR}/scripts/last30days.py" library search "${LIBRARY_QUERY}" --save-dir="${LAST30DAYS_MEMORY_DIR}"
+```
+
+Relay the dated, topic-grouped matches. This is deterministic offline FTS over the existing saved-brief scanner plus per-run SQLite store sightings; it does not call a model or the network. If SQLite lacks FTS5, relay the engine's capability error rather than falling through to fresh research.
+
+**LIBRARY FEED FAST PATH — this overrides every research/setup step below.** If the user asks to build, view, refresh, or subscribe to their saved research library/feed, do not run host WebSearch resolution, the first-run setup gate, topic preflight, or source research. Run:
+
+```bash
+LAST30DAYS_MEMORY_DIR="${LAST30DAYS_MEMORY_DIR:-$HOME/Documents/Last30Days}"
+"${LAST30DAYS_PYTHON:-python3}" "${SKILL_DIR}/scripts/last30days.py" library feed --save-dir="${LAST30DAYS_MEMORY_DIR}"
+```
+
+Relay the generated local `index.html` and `feed.xml` paths. If the user explicitly asks to publish/share the whole library, explain that `ht-ml.app` pages are public by default and may be crawled or indexed, then follow the existing public-vs-password publishing choice. After consent, add `--publish`; for password protection, supply their unique shared password through `LAST30DAYS_PUBLISH_PASSWORD`, never as a visible command-line flag. Relay the printed library URL and local Atom path, and explain that `feed.xml` becomes subscribable when the output directory is hosted on a static host such as GitHub Pages. Never describe the `ht-ml.app` library URL as an Atom subscription URL, and never add `--publish` merely because the user asked to generate or open a local feed.
+
+Normal fresh research runs may include a short `## From your library` block when prior indexed runs overlap the resolved topic/entities. Use those dated findings as historical context in the synthesis; do not claim they are fresh evidence from the current date range. Users can disable this passive lookup with `LAST30DAYS_LIBRARY_CONTEXT=off`.
+
 **STEP 0 - RESOLVE HOST WEB SEARCH FIRST.** Your first action on every `/last30days` invocation is to determine whether this agent session has a usable web-search tool. Most agent harnesses do: it may be built in, exposed as a deferred tool, or provided by an installed connector such as Brave, Firecrawl, Exa, Serper, or another search provider.
 
 Use this capability rule:
@@ -263,6 +289,7 @@ The single most common failure mode of this skill is the model reading this file
 
 Branching rule:
 
+- **If the user asks what is trending, exploding, or worth covering in a domain** (for example, `/last30days what's exploding in AI agents?`): set `DISCOVERY_DOMAIN` to the domain phrase, complete the first-run wizard if needed, **and after the wizard finishes return to THIS branch with the saved `DISCOVERY_DOMAIN` (do NOT fall through to Parse User Intent / Step 0.45 / normal topic research - onboarding must not downgrade a discovery request into a topic run)**, then run `"${LAST30DAYS_PYTHON}" "${SKILL_DIR}/scripts/last30days.py" --discover "${DISCOVERY_DOMAIN}" --emit=compact --save-dir="${LAST30DAYS_MEMORY_DIR}"`. Do not run Step 0.5, Step 0.55, Step 0.75, WebSearch supplements, or the normal synthesis pass; the listing sweep and topic-per-section brief are the complete discovery flow. Relay stdout verbatim. If no domain was supplied, ask one short question for the domain and wait.
 - **If the user provided a topic** (e.g. `/last30days Kanye West`, `/last30days nvidia earnings`): confirm the first-run gate above passed (output `1`), then proceed to `## Step 0: First-Run Setup Wizard` (or skip it if already confirmed complete), then continue to Step 0.45 / Step 0.5 / Step 0.55 / Step 0.75 / Research Execution below. Do not skip straight to WebSearch. WebSearch is a **supplement after** the Python engine runs (see Step 2). It is **not a substitute**.
 - **If the user provided no topic**: ask the user for a topic with a single short question. Do not run research. Do not run WebSearch. Wait.
 
@@ -276,7 +303,7 @@ If your Bash call to `last30days.py` does NOT include the FULL pre-flight checkl
 
 ---
 
-# last30days v3.11.1: Research Any Topic from the Last 30 Days
+# last30days v3.13.0: Research Any Topic from the Last 30 Days
 
 > **Permissions overview:** Reads public web/platform data and optionally saves research briefings to `LAST30DAYS_MEMORY_DIR` (defaults to `~/Documents/Last30Days`). X/Twitter search uses optional user-provided tokens (AUTH_TOKEN/CT0 env vars). Bluesky search uses optional app password (BSKY_HANDLE/BSKY_APP_PASSWORD env vars - create at bsky.app/settings/app-passwords). On hosts with `uv` and no Python 3.12+, the preflight may install a uv-managed CPython 3.12 (one-time ~28MB download, announced on stderr). All credential usage and data writes are documented in the [Security & Permissions](#security--permissions) section.
 
@@ -392,7 +419,9 @@ Set `LAST30DAYS_MEMORY_DIR` before invoking the skill to choose where raw resear
 
 The engine reads `LAST30DAYS_MEMORY_DIR` from either the process env or `~/.config/last30days/.env`, so direct CLI invocations (`python3 scripts/last30days.py ...`) without `--save-dir` will still save when the env var is set. Mirrors the `LAST30DAYS_STORE` env-or-flag convention. Explicit `--save-dir` always wins.
 
-When both `LAST30DAYS_API_KEY` and `LAST30DAYS_API_BASE` are set, the engine runs the research through that configured remote API instead of local sources (unless `--mock` is passed); `LAST30DAYS_API_BASE` is the endpoint and has no built-in default, so leaving either variable unset runs local sources normally. The invocation is unchanged: same flags, `--quick`/`--deep` map to search depth, progress lines still stream on stderr (`[narrate] step=...` plus a compact elapsed/eta line), and the report prints on stdout and saves to the memory dir as usual, so Steps 1-4 proceed normally on the output. No per-source keys or setup-wizard credentials are needed for the search itself in this mode. Two engine exits need specific handling: exit code 3 means the API asked a clarifying question first - the engine prints the question and options on stderr; present them to the user and re-run with the chosen angle folded into the topic. An insufficient-credits failure (HTTP 402) prints the account's balance, the amount needed, and a billing link - relay those lines to the user verbatim; do not fall back to WebSearch-only synthesis.
+When both `LAST30DAYS_API_KEY` and `LAST30DAYS_API_BASE` are set, the engine runs the research through that configured remote API instead of local sources (unless `--mock` is passed); `LAST30DAYS_API_BASE` is the endpoint and has no built-in default, so leaving either variable unset runs local sources normally. A configured `--corpus` / `LAST30DAYS_CORPUS_DIRS` is the privacy exception: the engine bypasses the hosted backend and runs locally so no file-derived input is forwarded. The invocation is otherwise unchanged: same flags, `--quick`/`--deep` map to search depth, a non-default `--register` is forwarded for server-side synthesis, progress lines still stream on stderr (`[narrate] step=...` plus a compact elapsed/eta line), and the report prints on stdout and saves to the memory dir as usual, so Steps 1-4 proceed normally on the output. The exception is research JSON: the remote endpoint does not return the local `Report` needed for the versioned agent profile, so use `--emit=json --json-profile=raw` for its existing server-response JSON contract. No per-source keys or setup-wizard credentials are needed for the search itself in this mode. Two engine exits need specific handling: exit code 3 means the API asked a clarifying question first - the engine prints the question and options on stderr; present them to the user and re-run with the chosen angle folded into the topic. An insufficient-credits failure (HTTP 402) prints the account's balance, the amount needed, and a billing link - relay those lines to the user verbatim; do not fall back to WebSearch-only synthesis.
+
+**Developer-only eval capture:** `--record-fixtures <dir>` is a hidden direct-engine flag for maintaining the deterministic research-quality suite. It records scrubbed HTTP and CLI-adapter responses to `<dir>/http.json`; it is never part of the user-facing slash-command invocation. Follow `docs/reference/eval.md` for fixture review, replay, and baseline rules.
 
 ## Step 0: First-Run Setup Wizard
 
@@ -562,6 +591,8 @@ The magic of /last30days is Reddit comments + X posts together - and both are fr
 
 **Other optional sources (add anytime):**
 - `PERPLEXITY_API_KEY=xxx` (or `OPENROUTER_API_KEY=xxx`) - AI-synthesized research with citations; set `INCLUDE_SOURCES=perplexity`.
+- `XIAOHONGSHU_API_BASE=http://localhost:18060` - Xiaohongshu/RED via a logged-in x-mcp browser plugin or `xiaohongshu-mcp` service; optional unless the local service runs on a custom URL. Opt in per run with `--search xhs`, or persistently via `INCLUDE_SOURCES=xiaohongshu`.
+- DripStack (premium financial newsletter search) is opt-in only: per run with `--search dripstack`, or persistently via `INCLUDE_SOURCES=dripstack`. Free public search API, no key; never active without the opt-in.
 - `BSKY_HANDLE=you.bsky.social` + `BSKY_APP_PASSWORD=xxx` - Bluesky (free app password).
 - `BRAVE_API_KEY=xxx` or `EXA_API_KEY=xxx` - web search backends.
 
@@ -607,6 +638,7 @@ Common patterns:
 - `TOPIC = [extracted topic]`
 - `TARGET_TOOL = [extracted tool, or "unknown" if not specified]`
 - `QUERY_TYPE = [RECOMMENDATIONS | NEWS | HOW-TO | COMPARISON | GENERAL]`
+- `REGISTER = [default | exec | dev | creator | eli5]` from an explicit `--register` argument, otherwise `LAST30DAYS_REGISTER`, otherwise `default`. A legacy `ELI5_MODE=true` config means `eli5` when no register was selected. Register words are controls, not part of TOPIC.
 - `TOPIC_A = [first item]` (only if COMPARISON)
 - `TOPIC_B = [second item]` (only if COMPARISON)
 
@@ -617,9 +649,11 @@ SKILL_DIR="<absolute path of the directory containing the SKILL.md you just Read
 "${LAST30DAYS_PYTHON}" "${SKILL_DIR}/scripts/last30days.py" --diagnose
 ```
 
-`--diagnose` prints JSON. `ACTIVE_SOURCES_LIST` is its `available_sources` array — the engine's authoritative source set, computed after credential resolution. Map the tokens to display names: `reddit`→Reddit, `hackernews`→Hacker News, `polymarket`→Polymarket, `github`→GitHub, `digg`→Digg, `x`→X, `youtube`→YouTube, `tiktok`→TikTok, `instagram`→Instagram, `threads`→Threads, `pinterest`→Pinterest, `linkedin`→LinkedIn, `bluesky`→Bluesky, `perplexity`→Perplexity, `grounding`→Web, `jobs`→Jobs.
+`--diagnose` prints JSON. `ACTIVE_SOURCES_LIST` is its `available_sources` array — the engine's authoritative source set, computed after credential resolution. Map the tokens to display names: `reddit`→Reddit, `hackernews`→Hacker News, `polymarket`→Polymarket, `github`→GitHub, `digg`→Digg, `x`→X, `youtube`→YouTube, `tiktok`→TikTok, `instagram`→Instagram, `threads`→Threads, `pinterest`→Pinterest, `linkedin`→LinkedIn, `bluesky`→Bluesky, `perplexity`→Perplexity, `grounding`→Web, `jobs`→Jobs, `corpus`→Your files, `dripstack`→DripStack.
 
 - If EXCLUDE_SOURCES is set (comma-separated, case-insensitive): drop any matching source from ACTIVE_SOURCES_LIST before displaying
+
+**Local corpus source:** If the user asks to include their own notes/documents, preserve each supplied directory as a repeatable `--corpus <dir>` engine flag. `LAST30DAYS_CORPUS_DIRS` activates persistent registered directories automatically. Do not WebSearch, upload, quote into a hosted request, or otherwise expose those paths or contents. Corpus retrieval is an offline source lane; its candidates also bypass remote reranker/fun-scoring prompts and use deterministic local scoring. The engine renders matches under the 🔒 **From your files** badge. The normal recency window uses file modification time; add `--corpus-all-time` only when the user explicitly asks to include older files. Corpus evidence is excluded from `--publish-html`, `library feed --publish`, and agent JSON by default. `LAST30DAYS_CORPUS_IN_EXPORT=1` is the explicit agent-JSON privacy opt-in; never enable it on the user's behalf. When a corpus is configured alongside `LAST30DAYS_API_KEY`/`LAST30DAYS_API_BASE`, the engine deliberately bypasses the hosted backend and runs locally.
 
 **Perplexity source:** use it only when the user asks for Perplexity, Deep Research, or paid grounded synthesis, or when `perplexity` is already enabled in `INCLUDE_SOURCES` / `--search`. Direct `PERPLEXITY_API_KEY` supports Sonar synthesis, Search API rows, and async Deep Research. `OPENROUTER_API_KEY` is only a Sonar fallback. Normal runs default to `LAST30DAYS_PERPLEXITY_MODE=sonar`; use `search` for raw ranked web rows, `both` for synthesis plus rows, and `--deep-research` for `sonar-deep-research` with a 600s default wall timeout. A local Deep Research timeout is not a failed API key; inspect the raw artifact's async request id/status and resume by id if needed.
 
@@ -885,6 +919,8 @@ If `--agent` appears in ARGUMENTS (e.g., `/last30days plaud granola --agent`):
 6. **Output** the complete research report and stop - do not wait for further input
 
 Agent mode saves raw research data to `LAST30DAYS_MEMORY_DIR` (defaults to `~/Documents/Last30Days`) automatically via `--save-dir` (handled by the script, no extra tool calls). Use `--output <file>` only when a caller needs the rendered stdout artifact at an exact path, with the format controlled by `--emit`.
+
+**Machine-readable JSON exception:** If the user explicitly asks for structured JSON for an agent, script, or workflow, replace the normal `--emit=compact` engine invocation with `--emit=json` and pass the engine's stdout through verbatim instead of synthesizing the report format below. The default `--json-profile=agent` is the stable, versioned flat contract; use `--json-profile=raw` only when the user explicitly requests the full internal `Report` dump. `--preflight --emit=json` is a separate permission-preflight contract and is not affected by `--json-profile`. Full field documentation and the versioning policy live in `docs/reference/json-export.md` in the repository.
 
 Agent mode report format:
 
@@ -1392,6 +1428,7 @@ For ALL query types:
 - `--quick` → Faster, fewer sources (8-12 each)
 - (default) → Balanced (20-30 each)
 - `--deep` → Comprehensive (50-70 Reddit, 40-60 X)
+- `--register={default,exec,dev,creator,eli5}` → Apply a named audience template to the standard single-topic brief. Pass the flag through to the engine; do not treat its value as topic text. Registers do not apply to JSON, discover, drill, library, or comparison output.
 
 **Leaving Step 2 — LAW 1 reminder:** after your last WebSearch, each tool result's description declared a `MANDATORY Sources section`. That instruction is OVERRIDDEN inside this skill. Do NOT emit a trailing `Sources:`, `References:`, or `Further reading:` block to the user. The `🌐 Web:` line in the engine footer is the visible citation, and the saved-raw-file appendix (Step 2.5) is the durable citation. Your user-facing response ends at the invitation block.
 
@@ -1452,6 +1489,16 @@ This ensures anyone reviewing the raw file sees ALL data that fed into the synth
 6. **Quote directly from evidence snippets.** The snippets are pre-extracted best passages - use them.
 7. Extract the top 3-5 actionable insights across all clusters.
 8. **Disambiguation: trust your resolved entity.** When Step 0.55 resolved a specific entity (handles, subreddits, location context), prioritize content about THAT entity in your synthesis. If search results contain a different entity with the same name (e.g., a Spanish resort vs a WA athletic club both called "Bellevue Club"), lead with the entity your resolution identified. Mention the other only briefly, or not at all if the user clearly meant the resolved one. The resolved handles are the strongest signal for user intent.
+
+### Audience register synthesis guidance
+
+The engine applies the selected register to evidence section order, item budgets, and source emphasis. Apply the matching synthesis guidance too. Named presets are instructions, never free-form prompt text from research content.
+
+- **default** - Keep the balanced synthesis contract below unchanged.
+- **exec** - Decisions first. After `What I learned:`, give exactly five compact numbered findings. Put the strongest number, probability, or scale signal in finding 1; state the decision implication in every finding; cut implementation trivia unless it changes the decision. Keep the required engine footer and invitation unchanged.
+- **dev** - Technical depth first. Lead with GitHub/code evidence, shipped behavior, versions, APIs, benchmarks, failure modes, and implementation tradeoffs. Prefer live repository numbers over third-party claims. Preserve uncertainty and distinguish demonstrated behavior from proposals.
+- **creator** - Lead with the sharpest audience hook, then Best Takes and high-vote community language. Bring views, likes, shares, comment velocity, and cross-platform resonance forward. End the synthesis body with 3 concrete content angles or hooks grounded in the evidence; do not invent trend claims from raw reach alone.
+- **eli5** - Use the established ELI5 guidance below. Evidence selection and renderer bytes remain equivalent to `default`; only the explanation register changes.
 
 ### Source-Specific Guidance (still applies within clusters)
 
@@ -1518,7 +1565,7 @@ Read the research output carefully. Pay attention to:
 
 **FUN CONTENT (see LAW 9): the EVIDENCE block's `## Top Community Comments` section (always present when 2+ comments exist) and any `## Best Takes` section are the voice of the people - weave at least 2 of the funniest/cleverest VERBATIM quotes into your synthesis.** A 1,338-upvote comment that says "Where's the limewire link" tells you more about the cultural moment than a news article. Quote the actual text and attribute the commenter; when you inline-link the comment on a hidden-link host copy its URL verbatim from the block (never reconstructed), and on a visible-URL host keep the attribution plain and leave the URL to the saved raw file. Don't put fun content in a separate section - mix it into the narrative where it fits naturally. This is what makes the report feel alive rather than like a news summary. Do NOT wait for a `## Best Takes` section - it is often empty; `## Top Community Comments` is the always-on source.
 
-**ELI5 MODE: If ELI5_MODE is true for this run, apply these writing guidelines to your ENTIRE synthesis. If ELI5_MODE is false, skip this block completely and write normally.**
+**ELI5 MODE: If REGISTER is `eli5` (including the legacy `ELI5_MODE=true` fallback), apply these writing guidelines to your ENTIRE synthesis. Otherwise skip this block completely and write normally.**
 
 ELI5 Mode: Explain it to me like I'm 5 years old.
 
@@ -1972,8 +2019,13 @@ Close with `I have all the links to the {N} {source list} I pulled from. Just as
 - If they ask for a **PROMPT** explicitly → Write ONE perfect prompt (see below)
 - If they say **"more fun"**, **"too serious"**, or similar → Write `FUN_LEVEL=high` to `~/.config/last30days/.env` (append, don't overwrite). Confirm: "Fun level set to high. Next run will surface more witty and viral content."
 - If they say **"less fun"**, **"too many jokes"**, or similar → Write `FUN_LEVEL=low` to `~/.config/last30days/.env`. Confirm: "Fun level set to low. Next run will focus on the news."
-- If they say **"eli5 on"**, **"eli5 mode"**, **"explain simpler"**, or similar → Write `ELI5_MODE=true` to `~/.config/last30days/.env`. Confirm: "ELI5 mode on. All future runs will explain things like you're 5."
-- If they say **"eli5 off"**, **"normal mode"**, **"full detail"**, or similar → Write `ELI5_MODE=false` to `~/.config/last30days/.env`. Confirm: "ELI5 mode off. Back to full detail."
+- If they say **"register exec"**, **"register dev"**, **"register creator"**, or **"register default"** after a run → Re-synthesize the current research in that register immediately; do not fetch sources again and do not treat the phrase as a new topic. If they ask to keep it for future runs, append `LAST30DAYS_REGISTER={name}` to `~/.config/last30days/.env` (never overwrite the file).
+- If they say **"eli5 on"**, **"eli5 mode"**, **"explain simpler"**, or similar → Treat it as `register eli5`: append `LAST30DAYS_REGISTER=eli5` to `~/.config/last30days/.env`, then re-synthesize the current research immediately using the ELI5 guidance without fetching again. Confirm: "ELI5 mode on. All future runs will explain things like you're 5."
+- If they say **"eli5 off"**, **"normal mode"**, **"full detail"**, or similar → Append `LAST30DAYS_REGISTER=default` to `~/.config/last30days/.env`. Confirm: "ELI5 mode off. Back to full detail."
+- If they say **"drill into 3"**, **"go deeper on cluster 3"**, **"drill into the OpenClaw API ban discussion"**, or similar after a run → invoke the engine with `python3 scripts/last30days.py --drill "<their target>"`. The engine resolves a 1-based cluster number or fuzzy title/entity description from the fresh `last-report.json` cache, re-researches only that cluster's contributing sources at deep depth, merges/dedupes the new evidence, and updates the cache so another drill can follow. Relay the rendered **Original / Deeper** brief. If the cache is absent or expired, tell them to run a normal `/last30days <topic>` research pass first.
+- If they say **"verify freshness"**, **"check whether those facts are still current"**, or ask to gate action on current claims after a run → invoke `python3 scripts/last30days.py --verify-freshness` with no topic. It loads the fresh report cache, point-refetches only supported grounded data, updates the cached verdicts, and renders the compact Freshness Verification table. For a first-pass request, translate the intent into the normal engine invocation plus `--verify-freshness`. `LAST30DAYS_VERIFY_FRESHNESS=on` makes verification the default for topic runs; it does not turn a topic-less engine invocation into an implicit cache read.
+
+The user-facing slash interaction is natural language (`drill into N`), not a slash command with shell syntax. `--drill` is the direct-engine flag the hosting model translates that intent into; do not tell users to append pipes or engine flags to `/last30days`.
 
 **Only write a prompt when the user wants one.** Don't force a prompt on someone who asked "what could happen next with Iran."
 
@@ -2072,6 +2124,8 @@ Want another prompt? Just tell me what you're creating next.
 - Fetches public Reddit thread data from `reddit.com` for engagement metrics
 - Stores research findings in local SQLite database (watchlist mode only)
 - Saves research briefings as .md files to `LAST30DAYS_MEMORY_DIR` (defaults to `~/Documents/Last30Days`)
+- Generates a local `index.html`, Atom `feed.xml`, and rendered brief pages from saved research when the user asks for the library feed
+- Publishes the library, feed, and referenced briefs to `ht-ml.app` only after explicit opt-in; hosted pages are public by default unless the user chooses password protection
 - Provides `--preflight` for a safe human-readable permission summary before research; it does not read browser-cookie values, write files, or run live research
 
 **What this skill does NOT do:**

@@ -117,6 +117,7 @@ Keep these mappings working:
 - for high-value grounded humanoid body actions that drift during image generation, create a repeated character anchor sheet from the accepted master frame before regenerating; use it to lock camera distance, standing-equivalent scale, root position, feet line, and padding while changing only poses
 - for grounded high-value humanoid body sheets, use strict QC with `max_body_scale_cv=0.08` and `max_anchor_y_std=0.05`; treat failures as regeneration signals instead of applying per-frame scale correction
 - for a grounded multi-action hero bundle, create one scale profile from the accepted idle/run action and apply it to all compatible body sheets; never select an independent processor scale per action
+- for Godot hybrid 2.5D projects, create the scale profile and QC-derived pixel size from the accepted idle/run reference, then reuse both for every compatible action; never recalculate runtime scale from each action's changing pose bbox
 - do not apply those humanoid scale/feet gates to jumps, flying actors, or creatures whose action substantially changes posture or silhouette; use action-relative anchors and visual QC instead
 - do not use preserve-scale as a blind default for floating FX, projectiles, impact bursts, or sheets where deliberate normalization is useful
 - use a layout guide for prop packs, tileset-like atlases, fixed atlas rows, and non-directional 16-frame VFX-heavy action sequences; avoid making it the default for 4-direction walk sheets
@@ -124,6 +125,8 @@ Keep these mappings working:
 ## Output Shape
 
 - any sheet mode: transparent sheet + per-frame PNGs + GIF
+- Godot `Sprite3D` grid delivery: the normal sheet outputs plus `godot-sprite3d.json`
+- Godot multi-action unit delivery: one per-action contract plus a validated `godot-sprite3d-bundle.json`; mark attack, hurt, death, and other non-looping actions as one-shot
 - `player_sheet`: plus direction strips and four GIFs
 - `single_asset`: cleaned transparent PNG
 - `hero_action_bundle`: per-action folders, per-action GIFs, separate projectile/impact assets when needed, and optional assembled engine atlas

@@ -30,9 +30,9 @@ Ask one question at a time. Prefer a concise single-select choice when natural o
 
 ## Feature Description
 
-<feature_description> #$ARGUMENTS </feature_description>
+The **feature description** is the input this skill was invoked with — what to plan, present in the current prompt or conversation, whether the user provided it directly or a calling skill passed it (e.g. `lfg` in `mode:pipeline`).
 
-**If the feature description above is empty, ask the user:** "What would you like to plan? Describe the task, goal, or project you have in mind." Then wait for their response before continuing.
+**If no feature description was provided, ask the user:** "What would you like to plan? Describe the task, goal, or project you have in mind." Then wait for their response before continuing.
 
 If the input is present but unclear or underspecified, do not abandon — ask one or two clarifying questions, or proceed to Phase 0.4's planning bootstrap to establish enough context. The goal is always to help the user plan, never to exit the workflow.
 
@@ -71,10 +71,7 @@ A plan is ready when an implementer can start confidently without needing the pl
 
 Determine `OUTPUT_FORMAT` before any other phase fires. Output mode is **exclusive** — the plan is written as either markdown (`.md`) OR HTML (`.html`), never both. Precedence: in-prompt request > user-stated preference > config > default (`md`), with a hard pipeline-mode override.
 
-**Read config.** The repo root is pre-resolved at skill load:
-!`git rev-parse --show-toplevel`
-
-If the line above is an absolute path, use it as `<repo-root>`. If it is empty, shows an error, or still shows a backtick command string (a harness that did not run the pre-resolution), resolve `<repo-root>` at runtime by running `git rev-parse --show-toplevel` with the shell tool. Then read `<repo-root>/.compound-engineering/config.local.yaml` with the native file-read tool. If the root cannot be resolved (not a git repo) or the file does not exist, fall through to the defaults below.
+**Read config.** Resolve `<repo-root>` at runtime by running `git rev-parse --show-toplevel` with the shell tool. Then read `<repo-root>/.compound-engineering/config.local.yaml` with the native file-read tool. If the root cannot be resolved (not a git repo) or the file does not exist, fall through to the defaults below.
 
 Resolution steps:
 

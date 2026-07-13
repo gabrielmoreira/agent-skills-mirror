@@ -59,9 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/harness-moaiadk-best-practices/SKILL.md`](.claude/skills/harness-moaiadk-best-practices/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/harness-moaiadk-dev-reference/SKILL.md`](.claude/skills/harness-moaiadk-dev-reference/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/harness-moaiadk-patterns/SKILL.md`](.claude/skills/harness-moaiadk-patterns/SKILL.md) |
+| 1 | ✓ | [`.claude/skills/hns-moaiadk-best-practices/SKILL.md`](.claude/skills/hns-moaiadk-best-practices/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/hns-moaiadk-dev-reference/SKILL.md`](.claude/skills/hns-moaiadk-dev-reference/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/hns-moaiadk-patterns/SKILL.md`](.claude/skills/hns-moaiadk-patterns/SKILL.md) |
 | 4 | ✓ | [`.claude/skills/moai-domain-backend/SKILL.md`](.claude/skills/moai-domain-backend/SKILL.md) |
 | 5 | ✓ | [`.claude/skills/moai-domain-database/SKILL.md`](.claude/skills/moai-domain-database/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/moai-domain-frontend/SKILL.md`](.claude/skills/moai-domain-frontend/SKILL.md) |

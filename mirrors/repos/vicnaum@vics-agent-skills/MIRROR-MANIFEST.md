@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patterns, 60 file(s) materialized.
+Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patterns, 63 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 60 |
+| Files         | 63 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,41 +84,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`skills/session-stripper/references/surgery-report.md`](skills/session-stripper/references/surgery-report.md) |
 | 24 | ✓ | [`skills/session-stripper/scripts/lib/__init__.py`](skills/session-stripper/scripts/lib/__init__.py) |
 | 25 | ✓ | [`skills/session-stripper/scripts/lib/analyze.py`](skills/session-stripper/scripts/lib/analyze.py) |
-| 26 | ✓ | [`skills/session-stripper/scripts/lib/chain.py`](skills/session-stripper/scripts/lib/chain.py) |
-| 27 | ✓ | [`skills/session-stripper/scripts/lib/compact_range.py`](skills/session-stripper/scripts/lib/compact_range.py) |
-| 28 | ✓ | [`skills/session-stripper/scripts/lib/compact.py`](skills/session-stripper/scripts/lib/compact.py) |
-| 29 | ✓ | [`skills/session-stripper/scripts/lib/fork.py`](skills/session-stripper/scripts/lib/fork.py) |
-| 30 | ✓ | [`skills/session-stripper/scripts/lib/image_tokens.py`](skills/session-stripper/scripts/lib/image_tokens.py) |
-| 31 | ✓ | [`skills/session-stripper/scripts/lib/migrate_persisted.py`](skills/session-stripper/scripts/lib/migrate_persisted.py) |
-| 32 | ✓ | [`skills/session-stripper/scripts/lib/persist_layout.py`](skills/session-stripper/scripts/lib/persist_layout.py) |
-| 33 | ✓ | [`skills/session-stripper/scripts/lib/persist_message.py`](skills/session-stripper/scripts/lib/persist_message.py) |
-| 34 | ✓ | [`skills/session-stripper/scripts/lib/persist_range.py`](skills/session-stripper/scripts/lib/persist_range.py) |
-| 35 | ✓ | [`skills/session-stripper/scripts/lib/persist_text.py`](skills/session-stripper/scripts/lib/persist_text.py) |
-| 36 | ✓ | [`skills/session-stripper/scripts/lib/persist_tools.py`](skills/session-stripper/scripts/lib/persist_tools.py) |
-| 37 | ✓ | [`skills/session-stripper/scripts/lib/replace_images.py`](skills/session-stripper/scripts/lib/replace_images.py) |
-| 38 | ✓ | [`skills/session-stripper/scripts/lib/strip_thinking.py`](skills/session-stripper/scripts/lib/strip_thinking.py) |
-| 39 | ✓ | [`skills/session-stripper/scripts/lib/strip_tools.py`](skills/session-stripper/scripts/lib/strip_tools.py) |
-| 40 | ✓ | [`skills/session-stripper/scripts/stripper.py`](skills/session-stripper/scripts/stripper.py) |
-| 41 | ✓ | [`skills/session-stripper/SKILL.md`](skills/session-stripper/SKILL.md) |
-| 42 | ✓ | [`skills/session-stripper/tests/fixtures/README.md`](skills/session-stripper/tests/fixtures/README.md) |
-| 43 | ✓ | [`skills/session-stripper/tests/helpers.py`](skills/session-stripper/tests/helpers.py) |
-| 44 | ✓ | [`skills/session-stripper/tests/MANUAL_VERIFICATION.md`](skills/session-stripper/tests/MANUAL_VERIFICATION.md) |
-| 45 | ✓ | [`skills/session-stripper/tests/README.md`](skills/session-stripper/tests/README.md) |
-| 46 | ✓ | [`skills/session-stripper/tests/run.sh`](skills/session-stripper/tests/run.sh) |
-| 47 | ✓ | [`skills/session-stripper/tests/test_chain_integrity_after_persist.py`](skills/session-stripper/tests/test_chain_integrity_after_persist.py) |
-| 48 | ✓ | [`skills/session-stripper/tests/test_compact_range.py`](skills/session-stripper/tests/test_compact_range.py) |
-| 49 | ✓ | [`skills/session-stripper/tests/test_current.py`](skills/session-stripper/tests/test_current.py) |
-| 50 | ✓ | [`skills/session-stripper/tests/test_fork.py`](skills/session-stripper/tests/test_fork.py) |
-| 51 | ✓ | [`skills/session-stripper/tests/test_image_tokens.py`](skills/session-stripper/tests/test_image_tokens.py) |
-| 52 | ✓ | [`skills/session-stripper/tests/test_marker_contract.py`](skills/session-stripper/tests/test_marker_contract.py) |
-| 53 | ✓ | [`skills/session-stripper/tests/test_migrate_persisted.py`](skills/session-stripper/tests/test_migrate_persisted.py) |
-| 54 | ✓ | [`skills/session-stripper/tests/test_persist_dir_layout.py`](skills/session-stripper/tests/test_persist_dir_layout.py) |
-| 55 | ✓ | [`skills/session-stripper/tests/test_persist_message.py`](skills/session-stripper/tests/test_persist_message.py) |
-| 56 | ✓ | [`skills/session-stripper/tests/test_persist_range.py`](skills/session-stripper/tests/test_persist_range.py) |
-| 57 | ✓ | [`skills/session-stripper/tests/test_persist_text.py`](skills/session-stripper/tests/test_persist_text.py) |
-| 58 | ✓ | [`skills/session-stripper/tests/test_replace_images_marker.py`](skills/session-stripper/tests/test_replace_images_marker.py) |
-| 59 | ✓ | [`skills/session-stripper/tests/test_reset_usage.py`](skills/session-stripper/tests/test_reset_usage.py) |
-| 60 | ✓ | [`skills/session-stripper/tests/test_strip_tools_is_error.py`](skills/session-stripper/tests/test_strip_tools_is_error.py) |
+| 26 | ✓ | [`skills/session-stripper/scripts/lib/attachment_cost.py`](skills/session-stripper/scripts/lib/attachment_cost.py) |
+| 27 | ✓ | [`skills/session-stripper/scripts/lib/chain.py`](skills/session-stripper/scripts/lib/chain.py) |
+| 28 | ✓ | [`skills/session-stripper/scripts/lib/compact_range.py`](skills/session-stripper/scripts/lib/compact_range.py) |
+| 29 | ✓ | [`skills/session-stripper/scripts/lib/compact.py`](skills/session-stripper/scripts/lib/compact.py) |
+| 30 | ✓ | [`skills/session-stripper/scripts/lib/fork.py`](skills/session-stripper/scripts/lib/fork.py) |
+| 31 | ✓ | [`skills/session-stripper/scripts/lib/image_tokens.py`](skills/session-stripper/scripts/lib/image_tokens.py) |
+| 32 | ✓ | [`skills/session-stripper/scripts/lib/migrate_persisted.py`](skills/session-stripper/scripts/lib/migrate_persisted.py) |
+| 33 | ✓ | [`skills/session-stripper/scripts/lib/persist_layout.py`](skills/session-stripper/scripts/lib/persist_layout.py) |
+| 34 | ✓ | [`skills/session-stripper/scripts/lib/persist_message.py`](skills/session-stripper/scripts/lib/persist_message.py) |
+| 35 | ✓ | [`skills/session-stripper/scripts/lib/persist_range.py`](skills/session-stripper/scripts/lib/persist_range.py) |
+| 36 | ✓ | [`skills/session-stripper/scripts/lib/persist_text.py`](skills/session-stripper/scripts/lib/persist_text.py) |
+| 37 | ✓ | [`skills/session-stripper/scripts/lib/persist_tools.py`](skills/session-stripper/scripts/lib/persist_tools.py) |
+| 38 | ✓ | [`skills/session-stripper/scripts/lib/replace_images.py`](skills/session-stripper/scripts/lib/replace_images.py) |
+| 39 | ✓ | [`skills/session-stripper/scripts/lib/strip_attachments.py`](skills/session-stripper/scripts/lib/strip_attachments.py) |
+| 40 | ✓ | [`skills/session-stripper/scripts/lib/strip_thinking.py`](skills/session-stripper/scripts/lib/strip_thinking.py) |
+| 41 | ✓ | [`skills/session-stripper/scripts/lib/strip_tools.py`](skills/session-stripper/scripts/lib/strip_tools.py) |
+| 42 | ✓ | [`skills/session-stripper/scripts/stripper.py`](skills/session-stripper/scripts/stripper.py) |
+| 43 | ✓ | [`skills/session-stripper/SKILL.md`](skills/session-stripper/SKILL.md) |
+| 44 | ✓ | [`skills/session-stripper/tests/fixtures/README.md`](skills/session-stripper/tests/fixtures/README.md) |
+| 45 | ✓ | [`skills/session-stripper/tests/helpers.py`](skills/session-stripper/tests/helpers.py) |
+| 46 | ✓ | [`skills/session-stripper/tests/MANUAL_VERIFICATION.md`](skills/session-stripper/tests/MANUAL_VERIFICATION.md) |
+| 47 | ✓ | [`skills/session-stripper/tests/README.md`](skills/session-stripper/tests/README.md) |
+| 48 | ✓ | [`skills/session-stripper/tests/run.sh`](skills/session-stripper/tests/run.sh) |
+| 49 | ✓ | [`skills/session-stripper/tests/test_chain_integrity_after_persist.py`](skills/session-stripper/tests/test_chain_integrity_after_persist.py) |
+| 50 | ✓ | [`skills/session-stripper/tests/test_compact_range.py`](skills/session-stripper/tests/test_compact_range.py) |
+| 51 | ✓ | [`skills/session-stripper/tests/test_current.py`](skills/session-stripper/tests/test_current.py) |
+| 52 | ✓ | [`skills/session-stripper/tests/test_fork.py`](skills/session-stripper/tests/test_fork.py) |
+| 53 | ✓ | [`skills/session-stripper/tests/test_image_tokens.py`](skills/session-stripper/tests/test_image_tokens.py) |
+| 54 | ✓ | [`skills/session-stripper/tests/test_marker_contract.py`](skills/session-stripper/tests/test_marker_contract.py) |
+| 55 | ✓ | [`skills/session-stripper/tests/test_migrate_persisted.py`](skills/session-stripper/tests/test_migrate_persisted.py) |
+| 56 | ✓ | [`skills/session-stripper/tests/test_persist_dir_layout.py`](skills/session-stripper/tests/test_persist_dir_layout.py) |
+| 57 | ✓ | [`skills/session-stripper/tests/test_persist_message.py`](skills/session-stripper/tests/test_persist_message.py) |
+| 58 | ✓ | [`skills/session-stripper/tests/test_persist_range.py`](skills/session-stripper/tests/test_persist_range.py) |
+| 59 | ✓ | [`skills/session-stripper/tests/test_persist_text.py`](skills/session-stripper/tests/test_persist_text.py) |
+| 60 | ✓ | [`skills/session-stripper/tests/test_replace_images_marker.py`](skills/session-stripper/tests/test_replace_images_marker.py) |
+| 61 | ✓ | [`skills/session-stripper/tests/test_reset_usage.py`](skills/session-stripper/tests/test_reset_usage.py) |
+| 62 | ✓ | [`skills/session-stripper/tests/test_strip_attachments.py`](skills/session-stripper/tests/test_strip_attachments.py) |
+| 63 | ✓ | [`skills/session-stripper/tests/test_strip_tools_is_error.py`](skills/session-stripper/tests/test_strip_tools_is_error.py) |
 
 ---
 

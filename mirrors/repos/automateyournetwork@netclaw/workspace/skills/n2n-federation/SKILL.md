@@ -108,6 +108,46 @@ flapping?"). Anything build- or task-shaped → `n2n_delegate`.
 - `n2n_connect(peer, host, port)` — add + consent + dial in one call.
 - `n2n_trust(peer, tools="a,b", chat=true)` — consent + grants + chat in one call.
 
+## iN2N — internal federation, a "risk" of claws (feature 056)
+
+Everything above is **eN2N** (external N2N): federating with *other operators'*
+claws across the internet. **iN2N** is the internal counterpart: ONE operator
+runs a group of focused claws — a **risk** — coordinated by a single **Border
+Claw**, with the others as tightly-scoped **Member Claws**.
+
+- **You only ever talk to the Border.** It routes each request to the member
+  that owns the capability (`n2n_route`) and returns the result. Members are
+  specialists (a CML claw, a pyATS claw) carrying a handful of skills, not the
+  whole catalog — smaller context, smaller blast radius.
+- **Members dial the Border outbound** over the risk's internal transport — no
+  ngrok, no public mesh, no inbound ports. Trust within the risk is a **pinned
+  self-signed key** bootstrapped by a **single-use enrollment token** (no CA);
+  the eN2N mutual-consent model is only for the boundary *between* risks.
+- **The Border is the single face + audit point.** A peer risk sees one identity
+  (the Border), never member details; all internal + external activity is logged
+  in one place (`channel_kind` en2n/in2n).
+
+### Roles (set at install, or via `netclaw` / `POST /n2n/risk`)
+- **Standalone** — a "risk of one", behaves exactly as a classic NetClaw.
+- **Border** — gateway + eN2N/iN2N/both + routing + audit. Exactly one per risk.
+- **Member** — focused specialist; dials the Border, never federates externally.
+
+### Workflow (on a Border)
+1. `n2n_member_add(name, profile="cml")` — provision a member from a catalog-
+   derived profile (or `custom` + `specialty`); returns a single-use enrollment
+   token + join instructions. It does NOT spawn the member — that is a separate
+   NetClaw install (`N2N_ROLE=member` + the token).
+2. Bring up the member (its own install); it dials the Border and enrolls.
+3. `n2n_member_list` / `n2n_member_health` — see scope, state, quarantine alerts.
+4. `n2n_route("recreate my lab", target_hint="cml-lab-lifecycle")` — the Border
+   picks the right member and delegates (async; poll with `n2n_task_status` /
+   `n2n_task_result`). `netclaw risk route "…"` from the CLI does the same.
+5. `n2n_member_remove(member_id)` — unpin + refuse reconnect (confirm first).
+
+Profiles are derived from the installed catalog by `scripts/in2n-profiles.py`
+(cml, pyats, ipfabric, forward, itential, viz, security). A member repeatedly
+failing auth/health is **auto-quarantined** and surfaced to the operator.
+
 ## Tools used
 
 US1 capability: `n2n_status`, `n2n_consent`, `n2n_kill`, `n2n_peer_capabilities`,
@@ -116,3 +156,5 @@ US1 capability: `n2n_status`, `n2n_consent`, `n2n_kill`, `n2n_peer_capabilities`
 `n2n_approve`, `n2n_deny`, `n2n_audit`, `n2n_config`. US3 chat: `n2n_chat`.
 053 reliability/ergonomics: `n2n_delegate`, `n2n_task_status`,
 `n2n_task_result`, `n2n_task_cancel`, `n2n_health`, `n2n_connect`, `n2n_trust`.
+056 iN2N (risk): `n2n_risk_status`, `n2n_member_list`, `n2n_member_health`,
+`n2n_member_add`, `n2n_enroll_token`, `n2n_member_remove`, `n2n_route`.

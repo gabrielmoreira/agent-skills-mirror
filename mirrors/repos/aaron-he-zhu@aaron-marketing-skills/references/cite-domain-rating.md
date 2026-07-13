@@ -6,7 +6,7 @@
 >
 > **Version sync**: When the source spec updates, check: item count references in README (currently "40 items"), skill validation checkpoints, and Sections 2, 3, 7 below.
 
-> **v17 execution contract**: this file owns human item anchors. Profiles, required comparison context, conditional applicability, and veto identity live in [`framework-catalog.json`](framework-catalog.json); Unknown/N/A, evidence, coverage, score, status, and verdict semantics live in [`scoring-semantics.md`](scoring-semantics.md). CITE is advisory and peer-relative until outcome-calibrated.
+> **v18 execution contract**: this file owns human item anchors. Profiles, required comparison context, conditional applicability, and veto identity live in [`framework-catalog.json`](framework-catalog.json); Unknown/N/A, evidence, coverage, score, status, and verdict semantics live in [`scoring-semantics.md`](scoring-semantics.md). CITE is advisory and peer-relative until outcome-calibrated.
 
 **4 dimensions × 10 items = 40 evaluation criteria** for assessing domain authority in the Generative Engine Optimization (GEO) era.
 
@@ -126,7 +126,7 @@ Applicable but unobserved items are `unknown`; omitted items are also `unknown`.
 
 ### Score Calculation
 
-- **Dimension score** = sum of 10 items (0–100)
+- **Dimension score** = mean of the applicable items × 10 (0–100; catalog-authorized `na` items drop out of the mean)
 - **Default diagnostic** = C × 0.35 + I × 0.20 + T × 0.25 + E × 0.20
 - **Comparable profile score** = C × w_C + I × w_I + T × w_T + E × w_E, after peer-relative anchors and complete evidence are locked
 

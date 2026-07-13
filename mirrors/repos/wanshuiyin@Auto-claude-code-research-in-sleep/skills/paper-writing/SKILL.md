@@ -117,8 +117,8 @@ echo "<resolved-level>" > paper/.aris/assurance.txt   # draft or submission
 - **`draft`** — Existing behavior. Audits run only when their content detector
   matches (Phase 4.5 / 4.7 / 5.5 / 5.8). Missing artifacts are non-blocking.
   Silent-skip allowed.
-- **`submission`** — The three mandatory audits (proof-checker,
-  paper-claim-audit, citation-audit) are treated as load-bearing gates. Each
+- **`submission`** — The four mandatory audits (proof-checker,
+  paper-claim-audit, citation-audit, kill-argument) are treated as load-bearing gates. Each
   sub-audit must emit its JSON artifact (PASS / WARN / FAIL / NOT_APPLICABLE /
   BLOCKED / ERROR) — never silent-skip. Phase 6 runs
   `verify_paper_audits.sh` (canonical name; resolved per
@@ -553,6 +553,49 @@ else:
 
 **Empirical motivation:** in a real submission run, several real papers were cited in contexts they did not actually support, and at least one bib entry shipped with `author = "Anonymous"` because the metadata had not been resolved. None were caught by the improvement loop or numeric claim audit; only fresh web-lookup review surfaced them.
 
+### Phase 5.9: Integrity Forensics (submission self-audit — default ON)
+
+Run the [`/integrity-forensics`](../integrity-forensics/SKILL.md) launcher on
+`paper/` (ABSOLUTE path): the SHA-pinned Anti-Autoresearch sweep — evidence
+ledger, nine auditor dimensions, deterministic adjudication — followed by the
+typed policy gate and the append-only obligations ledger. Self-auditing runs
+at whatever observability the artifacts allow (with `code/` + `results/`
+present that is L2 — stricter than anything an external reviewer can run).
+
+**When it runs** (re-derive here — do NOT trust `.aris/assurance.txt` alone;
+a resumed run whose Phase 0 never executed, or whose file went stale, must
+not silently skip the default-ON gate):
+
+1. Re-derive the assurance level from `$ARGUMENTS` with the **same rule as
+   Phase 0 / Phase 6.0** (explicit `— assurance:` wins; else `max`/`beast` →
+   `submission`; else `draft`).
+2. Parse `$ARGUMENTS` for `— self_forensics: true | false`.
+3. Then:
+   - `submission` → **ON by default**. Opt out only with an explicit
+     `— self_forensics: false` — persist the receipt as a record:
+     `mkdir -p paper/.aris/forensics && echo "opted-out: — self_forensics: false in \$ARGUMENTS" > paper/.aris/forensics/opt_out.txt`
+     (recorded in the Final Report as `Forensics: skipped (opted out)`).
+     The receipt documents THIS run's decision; it does not authorize any
+     later run to skip — Phase 6.0 re-parses `$ARGUMENTS` itself.
+   - `draft` → off unless `— self_forensics: true`.
+
+**Gate handling** (exit 1 = `BLOCK`: upstream `HARD_FLAGS`,
+`REVIEW_UNAVAILABLE`, or an OPEN critical obligation):
+- Refuse the Final Report — same discipline as a verifier `FAIL`. Surface the
+  upstream `REPORT.md` and the obligations verbatim; never paraphrase-soften.
+- Route each obligation to its repair door (the family table in
+  `/integrity-forensics` Step 3): numeric → recompute from result files;
+  citations → `/citation-audit`; proof → `/proof-checker`; scope/baseline/
+  eval-design → `/auto-review-loop` as reviewer input, or the human.
+- Close obligations ONLY via `forensics_gate.py resolve` (typed, hashed
+  evidence) or a human `waive`. **Never edit the paper with the objective
+  "make the sweep stop flagging"** — a vanished-but-unresolved finding keeps
+  the gate closed (`UNRESOLVED_DISAPPEARANCE`).
+- `WARN` (SOFT_FLAGS / open non-critical obligations): proceed, but the Final
+  Report must list them under `Forensics`.
+- Zero-weight AIS style impressions: FYI only — may feed
+  `/auto-paper-improvement-loop` context, never gate.
+
 ### Phase 6: Final Report
 
 **Phase 6.0 — Submission Gate**
@@ -612,10 +655,27 @@ skipping audits while claiming to have run them.
    [ ] 3. /citation-audit       → paper/CITATION_AUDIT.json
    [ ] 4. Resolve $AUDIT_VERIFIER per integration-contract.md §2 (Policy A),
           then: bash "$AUDIT_VERIFIER" paper/ --assurance submission
-   [ ] 5. Block Final Report iff verifier exit code != 0 OR row 0 found a
-          violated undisputed assertion. (TWO separate gates: row 0 is graded
-          by instruction against the contract; the verifier checks audit JSONs
-          only — verify_paper_audits.sh does NOT read the contract.)
+   [ ] 5. Integrity forensics (Phase 5.9, default ON at submission). FIRST
+          re-parse the CURRENT $ARGUMENTS — an opt_out.txt receipt left by a
+          PREVIOUS run never carries over; it is a record for the report line,
+          not an authorization.
+          - current $ARGUMENTS has `— self_forensics: false` → skipping is
+            legal; write/refresh paper/.aris/forensics/opt_out.txt.
+          - otherwise the whole check is ONE command:
+            `python3 "$GATE_HELPER" fresh --paper-dir paper/ --anti-ar-commit
+            "$ANTI_AR_COMMIT"` (the pin constant from /integrity-forensics;
+            an old-pin gate must be re-audited) — exit 0 ⟺ a
+            gate exists ∧ no paper file changed after it ∧ it matches the
+            current obligations ledger ∧ its decision is pass-capable (an
+            ALLOWLIST: WARN / NO_NEW_BLOCKER — an unknown or missing token
+            never passes). Exit 1 → the sweep never saw this text (or the
+            gate is BLOCK): run Phase 5.9 NOW, before the Final Report —
+            BLOCK is blocked, same as a verifier FAIL.
+   [ ] 6. Block Final Report iff verifier exit code != 0 OR row 0 found a
+          violated undisputed assertion OR row 5 is red. (THREE separate
+          gates: row 0 is graded by instruction against the contract; the
+          verifier checks audit JSONs only — verify_paper_audits.sh does NOT
+          read the contract; row 5 reads the forensics gate artifact.)
 ```
 
 > The resolver in "Running the verifier" below tries
@@ -626,7 +686,7 @@ skipping audits while claiming to have run them.
 > `export ARIS_REPO=~/…` only ensures layer 3 has a valid target if
 > layers 1 and 2 are absent.
 
-#### Invoking the three audits
+#### Invoking the four audits
 
 Each sub-audit runs in a **fresh Codex thread** (never `codex-reply`,
 never pass prior audit output as context — this preserves reviewer
@@ -646,6 +706,8 @@ Order:
    `BLOCKED` if numeric claims exist but raw result files are missing)
 3. `/citation-audit "paper/"` → writes `paper/CITATION_AUDIT.json`
    (emits `NOT_APPLICABLE` if no `.bib` file or no `\cite{...}` usage)
+4. `paper/KILL_ARGUMENT.json` was already written in Phase 5.6 (including the
+   `NOT_APPLICABLE` record for non-theory papers) — the verifier requires all four.
 
 #### Running the verifier
 
@@ -724,6 +786,7 @@ or directly if `assurance=draft`)
 **Venue**: [ICLR/NeurIPS/ICML/CVPR/ACL/AAAI/ACM/IEEE_JOURNAL/IEEE_CONF]
 **Assurance**: [draft | submission]
 **Submission-ready**: [yes | provisional | no]   <!-- yes iff assurance=submission AND verifier exit 0 AND overall_assurance=accepted; provisional iff exit 0 with overall_assurance=provisional (same-family/legacy review — do NOT present as independently accepted); no otherwise -->
+**Forensics**: [NO_NEW_BLOCKER | WARN: <n> open obligations | BLOCK | skipped (opted out) | skipped (draft)]   <!-- from .aris/forensics/gate.json — upstream verdict verbatim in parentheses; NO_NEW_BLOCKER means "no flag found", never an acquittal -->
 **Date**: [today]
 
 ## Pipeline Summary

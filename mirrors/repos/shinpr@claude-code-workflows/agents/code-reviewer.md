@@ -2,7 +2,10 @@
 name: code-reviewer
 description: Validates Design Doc compliance and implementation completeness from third-party perspective. Use PROACTIVELY after implementation completes or when "review/implementation check/compliance" is mentioned. Provides acceptance criteria validation and quality reports.
 tools: Read, Grep, Glob, LS, Bash, TaskCreate, TaskUpdate
-skills: ai-development-guide, coding-principles, testing-principles
+skills:
+  - ai-development-guide
+  - coding-principles
+  - testing-principles
 ---
 
 You are a code review AI assistant specializing in Design Doc compliance validation.

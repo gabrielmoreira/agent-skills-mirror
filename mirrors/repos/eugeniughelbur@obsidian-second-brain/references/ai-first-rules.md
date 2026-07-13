@@ -43,6 +43,8 @@ When stating external facts, attach the date inline:
 
 So future-Claude knows what to verify before trusting individual facts.
 
+This extends to internal fast facts via the freshness policy (`references/freshness-policy.md`): every stored fact must be **timeless, dated, or a pointer**. A fact that can change within ~7 days (counts, statuses, balances, ticket states) is never written bare - it carries an `as of` stamp, links to the system where truth lives, or sits inside a dated note. The illegal form is the undated present-tense claim ("the pipeline has 13 deals") - true today, a lie next week, still reading as truth. `scripts/freshness_lint.py` enforces this; `/obsidian-health` runs it.
+
 ### 5. Sources preserved verbatim
 Every external claim has its source URL inline. Don't paraphrase a citation - keep the actual URL so the claim can be re-verified or refreshed years later.
 

@@ -27,7 +27,11 @@ This skill injects **design taste** into the AI's decision-making process throug
 - **oklch color theory** — perceptually uniform color derivation instead of random hex guessing
 - **Curated font & color pairings** — high-quality starting points that replace the default Inter + #3b82f6
 - **Placeholder philosophy** — honest `[icon]` markers instead of poorly drawn SVG fakes
-- **Structured workflow** — six-step process from requirements → context → design system → v0 draft → full build → verification
+- **Five-dial Design Read** — turns audience, artifact, brand, and constraints into visible variance / motion / density / asset / fidelity decisions
+- **Preservation-aware redesigns** — separates extension, preserve, and overhaul modes before touching an existing product
+- **Contextual failure patterns** — detects recurring layout, content, imagery, motion, and dashboard failures without turning taste into universal bans
+- **Structured workflow** — requirements → context → calibrated design system → v0 draft → full build → verification
+- **Opt-in browser acceptance** — executable responsive / interaction / runtime QA only when the user explicitly requests acceptance or browser testing
 
 ---
 
@@ -41,9 +45,15 @@ Copy this skill folder into your project:
 your-project/
 ├── .agents/skills/web-design-engineer/   # or .claude/skills/web-design-engineer/
 │   ├── SKILL.md                          # Main skill file
+│   ├── agents/openai.yaml                # Host-facing display metadata and default prompt
 │   └── references/
 │       ├── advanced-patterns.md          # Code template library (slide engine, device frames, motion timelines, data viz)
+│       ├── block-library.md               # Index of implemented reusable blocks
+│       ├── browser-acceptance.md          # Explicit-request-only executable browser QA harness
+│       ├── design-calibration.md          # Design Read + five dials + optional image-first branch
 │       ├── design-directions.md          # Design Direction Advisor (6 schools, differentiated 3-pick recommendation)
+│       ├── failure-patterns.md            # Contextual AI-design failure taxonomy and repairs
+│       ├── redesign-protocol.md           # Extension / Preserve / Overhaul audit and protected contracts
 │       ├── style-recipes/                # 25 anchored style recipes — one .md file per anchor, loaded on demand
 │       │   ├── INDEX.md                   #   Catalog index + 3 cross-indexes + cross-cutting anti-patterns
 │       │   ├── linear.md / aesop.md / pentagram.md / ...    #   25 single-recipe files
@@ -70,15 +80,16 @@ The agent will automatically pick up the skill when your request involves visual
 
 ## How It Works
 
-### The Six-Step Workflow
+### The Calibrated Workflow
 
 ```
 1. Understand requirements  →  Ask only when information is insufficient
-2. Gather design context    →  Code > screenshots; never start from nothing
-3. Declare design system    →  Colors, fonts, spacing, motion — in Markdown, before code
-4. Show v0 draft early      →  Placeholders + layout + tokens; let the user course-correct
-5. Full build               →  Components, states, motion; pause at key decision points
-6. Verify                   →  Pre-delivery checklist; no console errors, no rogue hues
+2. Gather design context    →  Code > screenshots; classify existing-work mode
+3. Produce a Design Read    →  Five dials connect the brief to visible decisions
+4. Declare design system    →  Colors, fonts, spacing, motion — in Markdown, before code
+5. Show v0 draft early      →  Placeholders + layout + tokens; let the user course-correct
+6. Full build               →  Components, states, motion; pause at key decision points
+7. Verify                   →  Lightweight self-check; browser harness only on explicit request
 ```
 
 ### Key Design Principles

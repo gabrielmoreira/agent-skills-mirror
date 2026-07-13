@@ -1283,11 +1283,13 @@ result = await client.artifacts.export_data_table(
 )
 # result contains the Google Sheets URL
 
-# Generic export (e.g., export any artifact to Sheets). All trailing
-# parameters have defaults: `artifact_id=None`, `content=None`,
-# `title="Export"`, `export_type=ExportType.DOCS`. Supply `content=...`
-# instead of `artifact_id=...` to export inline text without a pre-existing
-# artifact.
+# Generic export (e.g., export any artifact to Sheets). Signature:
+# `export(notebook_id, artifact_id=None, title="Export",
+# export_type=ExportType.DOCS, *, content=None)`. Exactly one of
+# `artifact_id=` or `content=` must be supplied (both or neither raises
+# `ValidationError`). `content` is keyword-only so the positional slots line
+# up with `export_report` / `export_data_table` (`title` in slot 3); supply
+# `content=...` to export inline text without a pre-existing artifact.
 result = await client.artifacts.export(
     nb_id,
     artifact_id="artifact_789",
@@ -2264,12 +2266,14 @@ class AccountLimits:
 limits block (index 4). It is an **opaque enum key, not an ordinal rank** — look it up,
 never compare with `<`/`>`. Mapping (per
 [Google's plan table](https://support.google.com/notebooklm/answer/16213268)):
-`1`=Standard/Free, `2`=Pro, `4`=Plus, `3`=Ultra (20 TB), `6`=Ultra (30 TB); `5` is a
-legacy/internal "Expanded" value not on Google's current page; Enterprise is separate.
+`1`=Standard/Free, `2`=Pro, `4`=Plus, `3`=Ultra (20 TB), `6`=Ultra (30 TB); `5` aligns
+with the Workspace "Expanded" access level (inferred — not a consumer plan, so it is
+absent from Google's consumer page); Enterprise is separate.
 Only `1` and `2` are live-confirmed. `tier` is `None` on legacy 4-element blocks or when
 the value is absent/non-positive. (The pre-v0.8.0 promotions-based tier / `plan_name`
 label is **not** back — it could not distinguish free from paid; this reads the real
-quota block instead.)
+quota block instead.) The full per-tier notebook/source/studio limits keyed to these
+ints are in [quota-limits.md](quota-limits.md).
 
 ### UserSettings
 

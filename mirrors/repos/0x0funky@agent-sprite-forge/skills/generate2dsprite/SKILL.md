@@ -27,6 +27,8 @@ Infer these from the user request:
 - `art_style`: pixel_art | clean_hd | pixel_inspired | retro_pixel | map_style | project-native
 - `reference`: `none` | `attached_image` | `generated_image` | `local_file`
 - `layout_guide`: `none` | `geometry` | `character_anchor`
+- `runtime_contract`: `none` | `godot_sprite3d`
+- `world_height`: desired in-engine subject height when a runtime contract is requested
 - `prompt`: the user's theme or visual direction
 - `role`: only when the asset is clearly an NPC role
 - `name`: optional output slug
@@ -56,6 +58,9 @@ Read [references/modes.md](references/modes.md) when the request is ambiguous.
 - If a game engine needs a final single-row strip or mixed atlas, first generate and QC the action as a multi-row grid, then assemble the delivery strip/atlas deterministically.
 - In every animated body grid prompt, require the subject body to stay centered in each cell, full body inside the central 60% to 70% safe area, consistent scale across cells, stable feet/bottom anchor line when applicable, and no limbs, weapons, hair, capes, dust, muzzle flashes, or detached FX crossing cell edges.
 - For hero attack body prompts, explicitly require body height and body scale to match the accepted idle/run sheets, stable feet/bottom anchor, weapon kept close enough to avoid widening the body bbox, and no detached slash arc or screen-space attack effect.
+- For elongated quadrupeds, serpentine creatures, and actors whose tail or attack extension nearly fills a cell, add a shared-silhouette-envelope contract to action prompts: keep the torso center fixed, keep every pose inside the same central 70% to 72% width/height box, tuck tails and long appendages inward, and express pounces or bites through in-place compression/extension instead of translating the whole body across the cell. "Generous margin" alone is not a reliable containment instruction for these silhouettes.
+- For massive grounded bosses, lock the feet and pelvis against lateral translation in idle prompts. Express weight through vertical torso compression, chest/core pulse, shoulder settling, and secondary motion of attached ornaments; do not use whole-body left/right sway as the idle beat.
+- For ground-contact environmental FX such as fire, write one explicit shared ignition/baseline coordinate into the prompt and forbid baked ground plates. Treat tip-height variation as animation, not anchor drift; visually verify the contact line and use an FX-specific anchor threshold instead of applying humanoid feet gates.
 - For high-value grounded player/hero body actions, prefer a character anchor sheet when consistent scale or feet placement matters: repeat one accepted master frame at the intended size and feet line in every cell, then use that sheet as a scale/root template while asking built-in `image_gen` to change only the poses. Do not use a grounded anchor sheet for jumps, knockback, airborne motion, projectiles, or FX.
 - For a multi-action character bundle, create one scale profile from an accepted idle or run sheet, then process every grounded body action with that profile. The profile locks output cell size, one shared raw-cell scale, anchor, trimming, and component rules across actions. Do not choose a new `fit_scale` per action.
 - For map prop packs, classify props before choosing a grid. Square `2x2`, `3x3`, and `4x4` packs are only for compact props. Do not put platforms, floors, bridges, walls, ladders, gates, doors, long hazards, wide/tall props, collision-bearing objects, or tileset/strip pieces into square prop packs; use one-by-one, `1x3`/`1x4` strips, custom wide cells, or a tileset-like atlas instead.
@@ -230,6 +235,35 @@ python scripts/generate2dsprite.py process \
 
 Process later actions with `--scale-profile <bundle>/character-scale-profile.json`. Profile values override per-command scale, anchor, trim, and component defaults so actions cannot silently use different output magnification. Keep using the same generation grid geometry and character anchor sheet when possible; a processing profile cannot repair a model-generated anatomy-scale change.
 
+When integrating a processed grid as a Godot `Sprite3D`, request a world-height contract instead of hand-tuning each action in the game:
+
+```bash
+python scripts/generate2dsprite.py process \
+  --input <raw-sheet.png> \
+  --target player --mode idle --rows 2 --cols 3 \
+  --output-dir <action-dir> \
+  --cell-size 256 --fit-scale 0.84 \
+  --align feet --scale-strategy preserve --component-mode largest \
+  --strict-qc --max-body-scale-cv 0.08 --max-anchor-y-std 0.05 \
+  --duration 125 --godot-world-height 0.70
+```
+
+This writes `godot-sprite3d.json` beside the frames. The reference action derives `recommended_pixel_size` from the QC-measured mean subject height and stores it in the scale profile. Later actions processed with that profile reuse the exact pixel size, so crouching, recoil, hurt, and creature silhouette changes remain real pose changes instead of being normalized back to the reference height. The contract also converts the shared output origin to Godot's `Sprite3D.offset`, lists animation frames, and records timing. Reuse the same `world_height` and scale profile for every compatible action in one bundle.
+
+After all actions pass QC, build one Godot animation bundle:
+
+```bash
+python scripts/generate2dsprite.py build-godot-bundle \
+  --action idle=<bundle>/idle/godot-sprite3d.json \
+  --action move=<bundle>/move/godot-sprite3d.json \
+  --action attack=<bundle>/attack/godot-sprite3d.json \
+  --action hurt=<bundle>/hurt/godot-sprite3d.json \
+  --default-action idle --one-shot attack --one-shot hurt \
+  --output <bundle>/godot-sprite3d-bundle.json
+```
+
+The bundle validates cross-action world height and `pixel_size`, stores relative contract paths, and declares loop versus one-shot playback. Treat a bundle drift failure as an asset-generation or wrong-profile error; do not compensate with per-action runtime scale.
+
 ### 5. QC the result
 
 Check:
@@ -242,9 +276,15 @@ Check:
 - for fixed-cell runtimes, did a wide weapon trail or FX arc shrink the body inside the cell
 - for preserve-scale runs, are feet/bottom anchors aligned without any `paste_clamped` frames
 - for grounded high-value body sheets, does `qc_summary.body_scale_cv` stay at or below about `0.08` and `qc_summary.anchor_y_std` at or below about `0.05`
+- for rooted boss idles, do the feet and pelvis remain fixed while motion comes from compression, glow, shoulders, and attached secondary elements
+- for ground-contact FX, is the authored ignition/baseline stable even when flame tips, embers, or effect height change
 - for multi-action bundles, does `qc_summary.profile_body_scale_drift` stay within the scale profile limit, normally `0.08`
 
 If not, rerun with different processor settings or regenerate the raw sheet.
+
+Strict QC distinguishes raw source-cell contact from processed output contact. Prefer regeneration when a body part is visibly clipped. If visual review confirms the raw subject is complete and only an antialiased or harmless contour touches the source-cell boundary, use `--allow-source-edge-touch`; it never permits output-edge contact, paste clamping, or empty frames.
+
+For elongated creature attacks, any `paste_clamped_frames` or `output_edge_touch_frames` means the raw sheet must be regenerated with the shared-silhouette-envelope contract above. Do not use `--allow-source-edge-touch` until clamp and processed-output edge contact are both zero and visual review confirms the full snout, paws, weapon, wings, or tail are intact.
 
 For grounded high-value humanoid player/hero body actions, run strict QC after generation-first scale control:
 
@@ -266,6 +306,8 @@ python scripts/generate2dsprite.py process \
 
 These numeric gates are for grounded humanoid body actions, not jumps, knockback, projectiles, impacts, floating actors, creatures whose attack strongly changes silhouette/posture, or intentionally changing-scale FX. A failed gate is a regeneration signal; do not hide generation drift with per-frame scale normalization.
 
+For ground-contact FX, prefer `component_mode=largest` when detached embers would corrupt the contact anchor. Accept a looser action-specific `max_anchor_y_std` only after visual review confirms a fixed baseline, zero output-edge contact, zero paste clamping, and correct in-engine placement. Do not loosen the grounded-character defaults globally.
+
 Cross-action scale-profile drift is a generation QC signal. Preserve legitimate crouching, recoil, and compressed pose bboxes; inspect borderline hurt or knockback sheets visually instead of applying per-frame resize. For ordinary idle, run, walk, and grounded body attacks, reject unexplained profile drift.
 
 ### 6. Return the right bundle
@@ -279,6 +321,8 @@ For a single sheet, expect:
 - `animation.gif`
 - `prompt-used.txt`
 - `pipeline-meta.json`
+- optional `godot-sprite3d.json` when `--godot-world-height` is supplied
+- `godot-sprite3d-bundle.json` for a multi-action Godot unit
 
 For `player_sheet`, expect:
 

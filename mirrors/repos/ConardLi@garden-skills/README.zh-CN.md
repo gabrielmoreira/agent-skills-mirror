@@ -100,7 +100,9 @@
 
 亮点：
 
-- 定义六步设计工作流：需求 → 上下文 → 设计系统 → v0 → 完整构建 → 验证
+- 用五旋钮 Design Read 把 brief 转成构图变化、动效、密度、素材依赖与品牌保真决策
+- 改动现有产品前先区分 Extension、Preserve 与 Overhaul
+- 只有用户明确提出验收、QA 或浏览器测试时，才运行可执行浏览器验收 harness
 - 用反 AI 俗套清单和更强的视觉判断，避免千篇一律的生成式 UI
 - 内置 **设计方向顾问（6 学派差异化推荐）+ 25 套有 anchor 的风格配方库**（Linear / Aesop / Pentagram / Bloomberg / Stripe Press / Mid-Century 等），含可粘贴的 palette / typography / signature moves / 反模式
 - 覆盖 HTML / CSS / JavaScript / React 原型，以及响应式布局、动效和交互细节
@@ -130,7 +132,7 @@
 
 <sub>↑ 25 套有 anchor 的配方里挑出最具代表性的 12 套 —— <a href="./skills/web-design-engineer/README.zh-CN.md#风格配方画廊"><b>打开完整画廊</b></a>，含全部 25 个真实作品（药剂师页、交易工作站、杂志封面、Y2K 门户、Mid-Century 海报……），含签名手法与适合场景标签。</sub>
 
-链接：[README](./skills/web-design-engineer/README.zh-CN.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[下载 v1.2.2 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.2.2/web-design-engineer-1.2.2.zip)<!-- DOWNLOAD:web-design-engineer:end -->
+链接：[README](./skills/web-design-engineer/README.zh-CN.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[下载 v1.3.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.3.0/web-design-engineer-1.3.0.zip)<!-- DOWNLOAD:web-design-engineer:end -->
 
 ---
 

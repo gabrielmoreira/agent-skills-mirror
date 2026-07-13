@@ -4,9 +4,9 @@
 
 This is the generated human view of [`references/system-catalog.json`](../references/system-catalog.json). The JSON catalog is authoritative.
 
-- Architecture contract: `17.0.0`
-- Bundle version: `17.0.0`
-- Catalog digest: `sha256:540d9983582500efeead062fa1ef64ca3f05abeb271662d7b30f6aee4a83da97`
+- Architecture contract: `18.0.0`
+- Bundle version: `18.0.0`
+- Catalog digest: `sha256:0b16d9cf1493b6bf46b5cabd9e50a848404fee649c37cf485f80ca40963fe882`
 - Shape: **112 discipline skills across 7 disciplines + 8 protocol skills = 120 skills; 8 commands**
 
 ## Four Layers
@@ -25,11 +25,11 @@ Canonical logical order: **narrative → seo-geo → social → email → ad →
 | Discipline | Layer | Framework | Loop | Skills |
 |---|---|---|---|---:|
 | **Brand Narrative** | L1 | TALE | Trace -> Architect -> Land -> Evaluate | 16 |
-| **SEO/GEO** | L2 | CORE-EEAT + CITE | Research -> Build -> Optimize -> Monitor | 16 |
+| **SEO/GEO** | L2 | CORE-EEAT + CITE | Survey -> Implement -> Tune -> Evaluate | 16 |
 | **Organic Social** | L2 | ECHO | Explore -> Craft -> Host -> Observe | 16 |
 | **Email Marketing** | L2 | SEND | Setup -> Engage -> Nurture -> Deliver | 16 |
 | **Paid Ads** | L2 | ROAS | Research -> Orchestrate -> Activate -> Scale | 16 |
-| **Influencer Marketing** | L2 | C3 | Discover -> Plan -> Activate -> Measure | 16 |
+| **Influencer Marketing** | L2 | STAR | Scout -> Target -> Activate -> Report | 16 |
 | **Product Launch** | L3 | RAMP | Research -> Assemble -> Mobilize -> Prove | 16 |
 
 ### Brand Narrative
@@ -41,10 +41,10 @@ Canonical logical order: **narrative → seo-geo → social → email → ad →
 
 ### SEO/GEO
 
-- **research:** [`keyword-research`](../seo-geo/research/keyword-research/SKILL.md) · [`competitor-analysis`](../seo-geo/research/competitor-analysis/SKILL.md) · [`serp-analysis`](../seo-geo/research/serp-analysis/SKILL.md) · [`content-gap-analysis`](../seo-geo/research/content-gap-analysis/SKILL.md)
-- **build:** [`content-writer`](../seo-geo/build/content-writer/SKILL.md) · [`geo-content-optimizer`](../seo-geo/build/geo-content-optimizer/SKILL.md) · [`serp-markup-builder`](../seo-geo/build/serp-markup-builder/SKILL.md) · [`page-play-builder`](../seo-geo/build/page-play-builder/SKILL.md)
-- **optimize:** [`content-quality-auditor`](../seo-geo/optimize/content-quality-auditor/SKILL.md) · [`technical-seo-checker`](../seo-geo/optimize/technical-seo-checker/SKILL.md) · [`on-page-seo-auditor`](../seo-geo/optimize/on-page-seo-auditor/SKILL.md) · [`site-structure-optimizer`](../seo-geo/optimize/site-structure-optimizer/SKILL.md)
-- **monitor:** [`domain-authority-auditor`](../seo-geo/monitor/domain-authority-auditor/SKILL.md) · [`rank-tracker`](../seo-geo/monitor/rank-tracker/SKILL.md) · [`performance-monitor`](../seo-geo/monitor/performance-monitor/SKILL.md) · [`offsite-signal-analyzer`](../seo-geo/monitor/offsite-signal-analyzer/SKILL.md)
+- **survey:** [`keyword-research`](../seo-geo/survey/keyword-research/SKILL.md) · [`competitor-analysis`](../seo-geo/survey/competitor-analysis/SKILL.md) · [`serp-analysis`](../seo-geo/survey/serp-analysis/SKILL.md) · [`content-gap-analysis`](../seo-geo/survey/content-gap-analysis/SKILL.md)
+- **implement:** [`content-writer`](../seo-geo/implement/content-writer/SKILL.md) · [`geo-content-optimizer`](../seo-geo/implement/geo-content-optimizer/SKILL.md) · [`serp-markup-builder`](../seo-geo/implement/serp-markup-builder/SKILL.md) · [`page-play-builder`](../seo-geo/implement/page-play-builder/SKILL.md)
+- **tune:** [`content-quality-auditor`](../seo-geo/tune/content-quality-auditor/SKILL.md) · [`technical-seo-checker`](../seo-geo/tune/technical-seo-checker/SKILL.md) · [`on-page-seo-checker`](../seo-geo/tune/on-page-seo-checker/SKILL.md) · [`site-structure-optimizer`](../seo-geo/tune/site-structure-optimizer/SKILL.md)
+- **evaluate:** [`domain-authority-auditor`](../seo-geo/evaluate/domain-authority-auditor/SKILL.md) · [`rank-tracker`](../seo-geo/evaluate/rank-tracker/SKILL.md) · [`performance-monitor`](../seo-geo/evaluate/performance-monitor/SKILL.md) · [`offsite-signal-analyzer`](../seo-geo/evaluate/offsite-signal-analyzer/SKILL.md)
 
 ### Organic Social
 
@@ -69,10 +69,10 @@ Canonical logical order: **narrative → seo-geo → social → email → ad →
 
 ### Influencer Marketing
 
-- **discover:** [`audience-mapper`](../influencer/discover/audience-mapper/SKILL.md) · [`trend-spotter`](../influencer/discover/trend-spotter/SKILL.md) · [`influencer-discovery`](../influencer/discover/influencer-discovery/SKILL.md) · [`fit-scorer`](../influencer/discover/fit-scorer/SKILL.md)
-- **plan:** [`competitor-tracker`](../influencer/plan/competitor-tracker/SKILL.md) · [`campaign-planner`](../influencer/plan/campaign-planner/SKILL.md) · [`brief-generator`](../influencer/plan/brief-generator/SKILL.md) · [`budget-optimizer`](../influencer/plan/budget-optimizer/SKILL.md)
-- **activate:** [`outreach-manager`](../influencer/activate/outreach-manager/SKILL.md) · [`content-reviewer`](../influencer/activate/content-reviewer/SKILL.md) · [`contract-helper`](../influencer/activate/contract-helper/SKILL.md) · [`content-amplifier`](../influencer/activate/content-amplifier/SKILL.md)
-- **measure:** [`landing-optimizer`](../influencer/measure/landing-optimizer/SKILL.md) · [`performance-analyzer`](../influencer/measure/performance-analyzer/SKILL.md) · [`roi-calculator`](../influencer/measure/roi-calculator/SKILL.md) · [`report-generator`](../influencer/measure/report-generator/SKILL.md)
+- **scout:** [`audience-mapper`](../influencer/scout/audience-mapper/SKILL.md) · [`trend-spotter`](../influencer/scout/trend-spotter/SKILL.md) · [`influencer-discovery`](../influencer/scout/influencer-discovery/SKILL.md) · [`fit-scorer`](../influencer/scout/fit-scorer/SKILL.md)
+- **target:** [`competitor-tracker`](../influencer/target/competitor-tracker/SKILL.md) · [`campaign-planner`](../influencer/target/campaign-planner/SKILL.md) · [`brief-generator`](../influencer/target/brief-generator/SKILL.md) · [`budget-optimizer`](../influencer/target/budget-optimizer/SKILL.md)
+- **activate:** [`outreach-manager`](../influencer/activate/outreach-manager/SKILL.md) · [`creator-content-auditor`](../influencer/activate/creator-content-auditor/SKILL.md) · [`contract-helper`](../influencer/activate/contract-helper/SKILL.md) · [`content-amplifier`](../influencer/activate/content-amplifier/SKILL.md)
+- **report:** [`landing-optimizer`](../influencer/report/landing-optimizer/SKILL.md) · [`performance-analyzer`](../influencer/report/performance-analyzer/SKILL.md) · [`roi-calculator`](../influencer/report/roi-calculator/SKILL.md) · [`report-generator`](../influencer/report/report-generator/SKILL.md)
 
 ### Product Launch
 
@@ -83,13 +83,13 @@ Canonical logical order: **narrative → seo-geo → social → email → ad →
 
 ## Protocol Layer
 
-The protocol layer contains 8 skills: [`entity-optimizer`](../protocol/entity-optimizer/SKILL.md) · [`creator-registry`](../protocol/creator-registry/SKILL.md) · [`offer-claims-registry`](../protocol/offer-claims-registry/SKILL.md) · [`consent-registry`](../protocol/consent-registry/SKILL.md) · [`launch-registry`](../protocol/launch-registry/SKILL.md) · [`channel-registry`](../protocol/channel-registry/SKILL.md) · [`narrative-registry`](../protocol/narrative-registry/SKILL.md) · [`memory-management`](../protocol/memory-management/SKILL.md).
+The protocol layer contains 8 skills: [`entity-registry`](../protocol/entity-registry/SKILL.md) · [`creator-registry`](../protocol/creator-registry/SKILL.md) · [`offer-claims-registry`](../protocol/offer-claims-registry/SKILL.md) · [`consent-registry`](../protocol/consent-registry/SKILL.md) · [`launch-registry`](../protocol/launch-registry/SKILL.md) · [`channel-registry`](../protocol/channel-registry/SKILL.md) · [`narrative-registry`](../protocol/narrative-registry/SKILL.md) · [`memory-management`](../protocol/memory-management/SKILL.md).
 
 ### Truth Registries
 
 | Registry | Owner | Canonical stream | Projection | State machine |
 |---|---|---|---|---|
-| `entities` | [`entity-optimizer`](../protocol/entity-optimizer/SKILL.md) | `memory/events/entities.ndjson` | `memory/projections/entities.json` | — |
+| `entities` | [`entity-registry`](../protocol/entity-registry/SKILL.md) | `memory/events/entities.ndjson` | `memory/projections/entities.json` | — |
 | `creators` | [`creator-registry`](../protocol/creator-registry/SKILL.md) | `memory/events/creators.ndjson` | `memory/projections/creators.json` | — |
 | `claims` | [`offer-claims-registry`](../protocol/offer-claims-registry/SKILL.md) | `memory/events/claims.ndjson` | `memory/projections/claims.json` | — |
 | `consent` | [`consent-registry`](../protocol/consent-registry/SKILL.md) | `memory/events/consent.ndjson` | `memory/projections/consent.json` | — |
@@ -102,25 +102,46 @@ The protocol layer contains 8 skills: [`entity-optimizer`](../protocol/entity-op
 | Auditor | Framework | Exclusive sink | Standalone contract |
 |---|---|---|---|
 | [`narrative-quality-auditor`](../narrative/evaluate/narrative-quality-auditor/SKILL.md) | TALE | `memory/audits/narrative/` | generated `references/auditor-runtime.md` |
-| [`content-quality-auditor`](../seo-geo/optimize/content-quality-auditor/SKILL.md) | CORE-EEAT | `memory/audits/content/` | generated `references/auditor-runtime.md` |
-| [`domain-authority-auditor`](../seo-geo/monitor/domain-authority-auditor/SKILL.md) | CITE | `memory/audits/domain/` | generated `references/auditor-runtime.md` |
+| [`content-quality-auditor`](../seo-geo/tune/content-quality-auditor/SKILL.md) | CORE-EEAT | `memory/audits/content/` | generated `references/auditor-runtime.md` |
+| [`domain-authority-auditor`](../seo-geo/evaluate/domain-authority-auditor/SKILL.md) | CITE | `memory/audits/domain/` | generated `references/auditor-runtime.md` |
 | [`social-quality-auditor`](../social/host/social-quality-auditor/SKILL.md) | ECHO | `memory/audits/social/` | generated `references/auditor-runtime.md` |
 | [`email-quality-auditor`](../email/deliver/email-quality-auditor/SKILL.md) | SEND | `memory/audits/email/` | generated `references/auditor-runtime.md` |
 | [`ad-account-auditor`](../ad/activate/ad-account-auditor/SKILL.md) | ROAS | `memory/audits/ad/` | generated `references/auditor-runtime.md` |
-| [`content-reviewer`](../influencer/activate/content-reviewer/SKILL.md) | C3 | `memory/audits/influencer/` | generated `references/auditor-runtime.md` |
+| [`creator-content-auditor`](../influencer/activate/creator-content-auditor/SKILL.md) | STAR | `memory/audits/influencer/` | generated `references/auditor-runtime.md` |
 | [`launch-readiness-auditor`](../launch/mobilize/launch-readiness-auditor/SKILL.md) | RAMP | `memory/audits/launch/` | generated `references/auditor-runtime.md` |
 
 ## L1 Dependency
 
 The seven core downstream builders must carry `narrative_canon_id`, `narrative_canon_version`, `claims_projection_offset`, `dependency_status`; `dependency_status` is exactly `verified | approved-fallback | blocked`.
 
-- [`content-writer`](../seo-geo/build/content-writer/SKILL.md)
+- [`content-writer`](../seo-geo/implement/content-writer/SKILL.md)
 - [`social-creative-builder`](../social/craft/social-creative-builder/SKILL.md)
 - [`email-creative-builder`](../email/engage/email-creative-builder/SKILL.md)
 - [`ad-creative-builder`](../ad/orchestrate/ad-creative-builder/SKILL.md)
-- [`brief-generator`](../influencer/plan/brief-generator/SKILL.md)
+- [`brief-generator`](../influencer/target/brief-generator/SKILL.md)
 - [`message-house-builder`](../launch/assemble/message-house-builder/SKILL.md)
 - [`launch-asset-packager`](../launch/assemble/launch-asset-packager/SKILL.md)
+
+## Symmetry Contract
+
+Every discipline satisfies each column or cites a licensed deviation (see below); `check-architecture.py` enforces conform-or-declared and fails stale deviations.
+
+| Discipline | Loop | Command | Registry | Gate(s) | Score surface |
+|---|---|---|---|---|---|
+| **Brand Narrative** | TALE (Trace -> Architect -> Land -> Evaluate) | `/narrative --phase trace\|architect\|land\|evaluate` | `narrative` (DEV-HUMANVIEW-NARRATIVE) | `narrative-quality-auditor` | profiles-only |
+| **SEO/GEO** | SITE (Survey -> Implement -> Tune -> Evaluate) | `/seo-geo --phase survey\|implement\|tune\|evaluate` | `entities` | `content-quality-auditor` · `domain-authority-auditor` | Comparable overall (weighted-arithmetic-mean) · Default diagnostic (weighted-arithmetic-mean) |
+| **Organic Social** | ECHO (Explore -> Craft -> Host -> Observe) | `/social --phase explore\|craft\|host\|observe` | `channels` | `social-quality-auditor` | profiles-only |
+| **Email Marketing** | SEND (Setup -> Engage -> Nurture -> Deliver) | `/email --phase setup\|engage\|nurture\|deliver` | `consent` | `email-quality-auditor` | EQS (weighted-arithmetic-mean) |
+| **Paid Ads** | ROAS (Research -> Orchestrate -> Activate -> Scale) | `/ad --phase research\|orchestrate\|activate\|scale` | `claims` | `ad-account-auditor` | RQS (weighted-arithmetic-mean) |
+| **Influencer Marketing** | STAR (Scout -> Target -> Activate -> Report) | `/influencer --phase scout\|target\|activate\|report` | `creators` | `creator-content-auditor` | SQS (weighted-arithmetic-mean) |
+| **Product Launch** | RAMP (Research -> Assemble -> Mobilize -> Prove) | `/launch --phase research\|assemble\|mobilize\|prove` | `launches` (DEV-HUMANVIEW-LAUNCHES) | `launch-readiness-auditor` | profiles-only |
+
+### Licensed Deviations
+
+| ID | Rule | Scope | Since | Rationale |
+|---|---|---|---|---|
+| `DEV-HUMANVIEW-LAUNCHES` | `SYM-09-human-view` | `registry:launches` | 18.0.0 | memory/launch/<skill>/ is the launch discipline's working-notes namespace, and the dossier/calendar view predates v18 in end-user projects; renaming the human view would orphan user state. (source: `references/skill-contract.md`) |
+| `DEV-HUMANVIEW-NARRATIVE` | `SYM-09-human-view` | `registry:narrative` | 18.0.0 | memory/narrative/<skill>/ is the narrative discipline's working-notes namespace, and canon.md/versions.md predate v18 in end-user projects; renaming the human view would orphan user state. (source: `references/skill-contract.md`) |
 
 ## Distribution Profiles
 

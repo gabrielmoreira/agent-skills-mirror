@@ -34,7 +34,7 @@ Read the
 [interactive pool volume implementation](examples/interactive-pool-volume/water-volume-system.js)
 for bounded RGBA height/velocity/normal simulation, local drops, moving-sphere
 displacement suitable for draggable objects, differential-area caustics, and
-shadered pool/water/sphere ray tracing against the pool bounds and sphere.
+in-shader pool/water/sphere ray tracing against the pool bounds and sphere.
 
 ## Failure conditions
 

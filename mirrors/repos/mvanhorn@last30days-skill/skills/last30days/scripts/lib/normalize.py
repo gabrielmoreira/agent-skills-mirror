@@ -44,6 +44,7 @@ def normalize_source_items(
         "instagram": lambda s, i, idx, fd, td: _normalize_shortform_video(s, i, idx, fd, td, "IG", "Instagram reel"),
         "hackernews": _normalize_hackernews,
         "stocktwits": _normalize_stocktwits,
+        "dripstack": _normalize_dripstack,
         "bluesky": lambda s, i, idx, fd, td: _normalize_microblog(s, i, idx, fd, td, "BS", "Bluesky post"),
         "truthsocial": lambda s, i, idx, fd, td: _normalize_microblog(s, i, idx, fd, td, "TS", "Truth Social post"),
         "threads": lambda s, i, idx, fd, td: _normalize_microblog(s, i, idx, fd, td, "TH", "Threads post"),
@@ -211,6 +212,42 @@ def _normalize_stocktwits(
         why_relevant=str(item.get("why_relevant") or ""),
         snippet=str(item.get("snippet") or "")[:400],
         metadata=meta,   # carries sentiment + symbol-level bull/bear aggregate
+    )
+
+
+def _normalize_dripstack(
+    source: str,
+    item: dict[str, Any],
+    index: int,
+    from_date: str,
+    to_date: str,
+) -> schema.SourceItem:
+    """Normalizer for DripStack newsletter search results.
+
+    DripStack returns article metadata from paid financial newsletters.
+    No engagement signal — ranking relies on DripStack's own relevanceScore
+    (0-100, normalized to 0-1) plus recency. The publication name serves as
+    author/attribution (e.g. "SemiAnalysis", "Bloomberg").
+    """
+    meta = item.get("metadata") or {}
+    return _source_item(
+        item_id=str(item.get("id") or f"DS{index + 1}"),
+        source=source,
+        title=str(item.get("title") or ""),
+        body=str(item.get("body") or "") or str(item.get("snippet") or "") or str(item.get("title") or ""),
+        url=str(item.get("url") or ""),
+        author=str(item.get("author") or "") or None,
+        container=str(meta.get("publication_slug") or "") or None,
+        published_at=item.get("date"),
+        date_confidence=_date_confidence(item, from_date, to_date, default="high"),
+        engagement={},
+        relevance_hint=item.get("relevance", 0.5),
+        why_relevant=str(item.get("why_relevant") or ""),
+        snippet=str(item.get("snippet") or "")[:400],
+        metadata={
+            **meta,
+            "publication_slug": meta.get("publication_slug"),
+        },
     )
 
 
@@ -663,7 +700,7 @@ def _normalize_polymarket(
         "liquidity": item.get("liquidity") or 0,
     }
     return _source_item(
-        item_id=str(item.get("id") or f"PM{index + 1}"),
+        item_id=str(item.get("event_id") or item.get("id") or f"PM{index + 1}"),
         source=source,
         title=title or question or f"Polymarket event {index + 1}",
         body="\n".join(part for part in [title, question, str(item.get("price_movement") or "")] if part),
@@ -677,6 +714,7 @@ def _normalize_polymarket(
         why_relevant=str(item.get("why_relevant") or ""),
         snippet=str(item.get("price_movement") or ""),
         metadata={
+            "event_id": item.get("event_id"),
             "question": question,
             "end_date": item.get("end_date"),
             "outcome_prices": item.get("outcome_prices") or [],

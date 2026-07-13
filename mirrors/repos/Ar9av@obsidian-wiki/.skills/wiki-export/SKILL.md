@@ -48,7 +48,7 @@ Pages with no `visibility/` tag, or tagged `visibility/public`, are always inclu
 
 ## Step 1: Build the Node and Edge Lists
 
-Glob all `.md` files in the vault (excluding `_archives/`, `_raw/`, `.obsidian/`, `index.md`, `log.md`, `_insights.md`). Apply any active filters (project and/or visibility) after collecting the full file list.
+Glob all `.md` files in the vault (excluding `_archives/`, `_raw/`, `_readouts/`, `.obsidian/`, `index.md`, `log.md`, `_insights.md`). Apply any active filters (project and/or visibility) after collecting the full file list.
 
 For each page, extract from frontmatter:
 - `id` — relative path from vault root, without `.md` extension (e.g. `concepts/transformers`)
@@ -354,7 +354,7 @@ Reuse the node list from Step 1 (with any active project/visibility filters alre
 
 5. **Filters.** Honor the same project/visibility filters as the graph export — filtered pages are omitted from the bundle and their inbound links degrade to plain text per step 2.
 
-Excluded from the bundle (same as the graph export): `_archives/`, `_raw/`, `.obsidian/`, `_insights.md`, `_meta/*.base`, and the vault root `index.md` (regenerated above).
+Excluded from the bundle (same as the graph export): `_archives/`, `_raw/`, `_readouts/`, `.obsidian/`, `_insights.md`, `_meta/*.base`, and the vault root `index.md` (regenerated above).
 
 ---
 

@@ -4,9 +4,9 @@ Use this reference to compose shared scene buffers, lighting effects, atmosphere
 
 ## Contents
 
-- production WebGPU pipeline WebGPU graph
-- selective gallery pipeline selective gallery graph
-- atlas-based renderer composer graph
+- WebGPU whole-scene graph
+- Selective gallery graph
+- Depth-prepass composer graph
 - Temporal-surface effect-local graph
 - Buffer and ownership rules
 - Resolution policies
@@ -14,7 +14,7 @@ Use this reference to compose shared scene buffers, lighting effects, atmosphere
 - Diagnostics
 
 
-## production WebGPU pipeline WebGPU graph
+## WebGPU whole-scene graph
 
 When GTAO is enabled, the scene pass writes MRT:
 
@@ -49,9 +49,10 @@ and distance grading. Its optional post-process cloud shadow is explicitly
 disabled in its configuration, avoiding duplicate ownership with material
 lighting.
 
-## selective gallery pipeline selective gallery graph
+## Selective gallery graph
 
-The gallery owns three composers:
+The gallery scene — the `sculpted-gallery-frame` example under
+`$threejs-procedural-geometry` — owns three composers:
 
 ```text
 neon selective bloom
@@ -73,10 +74,10 @@ shadowMap.needsUpdate = true only after relevant scene/light changes
 This is a bounded-scene optimization. It depends on every moving caster and
 light correctly invalidating the cache.
 
-## atlas-based renderer composer graph
+## Depth-prepass composer graph
 
-atlas-based renderer performs a separate depth prepass into a depth-stencil target before
-the composer:
+This graph renders a separate depth prepass into a depth-stencil target before
+the composer passes:
 
 ```text
 depth prepass target
@@ -136,7 +137,7 @@ do not add an uncoordinated duplicate prepass without measuring the reason.
 
 ## Resolution policies
 
-selective gallery pipeline caps DPR from both device and pixel budget:
+The gallery caps DPR from both device and pixel budget:
 
 ```text
 mobile budget = 1,000,000 pixels, max DPR 1.25
@@ -159,15 +160,17 @@ bandwidth. They solve different problems.
 
 ## Failure analysis
 
-- production WebGPU pipeline API names are version-sensitive; `PostProcessing` was renamed
-  and deprecated in favor of `RenderPipeline` in current Three.js history.
-- selective gallery pipeline selective bloom renders the scene multiple times.
-- selective gallery pipeline manual shadow invalidation can freeze unregistered motion.
-- atlas-based renderer depth prepass renders regular scene materials, not an explicit depth
-  override; verify transparent and alpha-tested behavior.
-- atlas-based renderer composer may not be the active runtime path.
-- The frost blur has a zero-weight division risk and pointer decay is frame
-  based.
+- WebGPU pipeline API names are version-sensitive; `PostProcessing` was
+  renamed and deprecated in favor of `RenderPipeline` in current Three.js
+  history.
+- The gallery's selective bloom renders the scene multiple times.
+- The gallery's manual shadow invalidation can freeze unregistered motion.
+- The depth prepass renders regular scene materials, not an explicit
+  depth override; verify transparent and alpha-tested behavior.
+- A standalone composer graph may not be the active runtime path; verify the
+  render-loop call path.
+- The frost blur must guard its weight normalization and scale pointer decay
+  by delta time; the `$threejs-temporal-surfaces` frost example does both.
 - None of these graphs provides a complete velocity/motion-vector
   contract for general temporal effects.
 - Do not advertise velocity ownership or TAA merely because a generic pipeline

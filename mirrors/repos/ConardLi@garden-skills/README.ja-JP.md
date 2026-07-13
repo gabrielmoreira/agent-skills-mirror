@@ -100,7 +100,9 @@
 
 主な特徴:
 
-- 要件 → コンテキスト → デザインシステム → v0 → フルビルド → 検証という 6 ステップのデザインワークフローを定義
+- 5 つのダイヤルによる Design Read で、構図変化、モーション、密度、アセット依存度、ブランド忠実度を brief から導出
+- 既存プロダクトを変更する前に Extension / Preserve / Overhaul を分類
+- 実行可能なブラウザ受け入れテストは、ユーザーが受け入れ確認、QA、ブラウザテストを明示的に依頼した場合のみ実行
 - アンチクリシェのブロックリストとより強いビジュアル判断力で、一般的な AI UI パターンを超える
 - **デザインディレクション・アドバイザー（6 学派の差別化された 3 択推薦）と、anchor 付きスタイルレシピ 25 種類**（Linear / Aesop / Pentagram / Bloomberg / Stripe Press / Mid-Century など）を内蔵。各レシピにはコピー可能なパレット、タイポグラフィ、シグネチャムーブ、アンチパターンが揃っており、デザインシステム宣言にそのまま貼り込める
 - HTML / CSS / JavaScript / React プロトタイプをカバーし、レスポンシブレイアウト、モーション、インタラクションの仕上げに関するガイダンスを提供
@@ -130,7 +132,7 @@
 
 <sub>↑ 25 種類の anchor 付きレシピから代表的な 12 種類を抜粋 — <a href="./skills/web-design-engineer/README.md#style-recipe-gallery"><b>完全なギャラリーを開く</b></a>と、25 種類すべての実作品（アポセカリーページ、取引ワークステーション、雑誌カバー、Y2K ポータル、ミッドセンチュリーポスター…）がシグネチャムーブと用途タグ付きで閲覧できます。</sub>
 
-リンク: [README](./skills/web-design-engineer/README.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[Download v1.2.2 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.2.2/web-design-engineer-1.2.2.zip)<!-- DOWNLOAD:web-design-engineer:end -->
+リンク: [README](./skills/web-design-engineer/README.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[Download v1.3.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.3.0/web-design-engineer-1.3.0.zip)<!-- DOWNLOAD:web-design-engineer:end -->
 
 ---
 

@@ -140,3 +140,11 @@ skills/dbs-bridge/scripts/bridge-skill.sh unlink <skill-name-or-path>
 - Grok 目标位置如果存在，必须是本工具生成的 Grok Bridge 才允许更新；
 - 不能删除源目录；
 - 不能把 `skills/dbs-bridge` 自身复制到各端；Grok 只能生成薄 bridge。
+
+---
+
+## 不知道下一步用哪个 Skill？
+
+输入 `/dbs`。
+
+它会读取刚才的具体结论，选择当前最值得处理的一个方向，并直接路由到对应 Skill。

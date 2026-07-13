@@ -104,6 +104,7 @@ User-facing parameters may be stated in natural language:
 - `art_style`: clean_hd | pixel_inspired | retro_pixel | hand_painted | project-native
 - `visual_asset_source`: image_gen | existing_assets | procedural_placeholder
 - `collision_precision`: none | coarse | precise | tile | walkmesh
+- `tile_generation`: none | terrain_tile_bundle | autotile_set | engine_native_tileset
 - `platform_strategy`: platform_rects_with_shared_tiles | platform_strip | tilemap | custom_terrain_chunks
 - `prop_generation`: none | one_by_one | prop_pack_2x2 | prop_pack_3x3 | prop_pack_4x4 | platform_strip_1x3 | platform_strip_1x4 | custom_wide_pack
 - `output_format`: PNG only | layered preview | manifest JSON | engine-native map data
@@ -162,6 +163,7 @@ When unspecified:
 
 4. Build metadata.
    - Store prop placement, player spawns, actor spawn marker metadata, interactable scene objects, blockers, walk bounds, encounter zones, exits, camera bounds, and triggers as structured data.
+   - For walkable cells or actor lanes with visible dressing, classify prop occlusion as `low`, `tall`, or `foreground`; record an actor-safe area and an occupant policy such as `none`, `rear_shift`, `fade`, `rear_shift_and_fade`, or `hide`. Do not rely on render priority alone to keep actors readable.
    - For `grid_mode`, store grid dimensions, cell size, tile ids, terrain types, walkable/buildable flags, movement cost, collision, resource nodes, and object/entity slots.
    - For `room_chunk_mode`, store chunk id, size, entrances/exits, connection sockets, collision, spawn markers, camera bounds, and validation hints for seam alignment.
    - For `side_scroll_mode`, store `stage_canvas`, `stage_segment_count`, `stage_length`, segment ids, parallax layer source size, display size, anchor, render order, scroll factors, loop/repeat policy, shared platform/object library ids, camera bounds, platform collision, hazards, exits, checkpoints, and actor spawn marker metadata.
@@ -170,7 +172,34 @@ When unspecified:
 5. Validate and preview.
    - Compose a flattened preview for layered maps.
    - Validate image sizes, alpha channels, prop pack extraction metadata, JSON parseability, and critical walkability points when collision matters.
+   - For any playable map with tall props on walkable space, produce or inspect an actor-in-place preview at the real gameplay camera. The actor's head, torso, weapon/action silhouette, selection state, and destination/path cues must remain readable. Slight foot overlap is acceptable; losing the actionable silhouette is not.
    - For `side_scroll_mode`, reject or normalize mismatched primary parallax layer sizes before runtime integration. The stage reference and QA preview must match `stage_canvas` exactly. Deterministic resizing/cropping/padding is allowed only as a normalization step on generated art, not as a way to invent missing art.
+
+## Terrain Tile Bundles
+
+For a fixed grid, tactical board, card-board arena, or project-native 2.5D tile mesh, prefer `tile_generation=terrain_tile_bundle` when each cell needs one of several opaque surface textures. Keep tile mesh/collision separate from the generated surface art.
+
+- Generate an atlas with one terrain family per row and 2-4 variants per row. Use a geometry layout guide when exact cells matter.
+- Require full-bleed top-down orthographic surfaces with no gutters, labels, borders, perspective, tile thickness, actors, tall props, or UI.
+- Use `edge_policy=isolated` when visible gaps or individual tile meshes separate cells. Use `seamless` only when adjacent tiles must visually join.
+- Preserve one surface scale, lighting direction, grain density, and palette relationship across every terrain family.
+- Extract and validate the atlas with `scripts/extract_terrain_tiles.py`. The script writes portable relative paths, per-variant luminance/contrast metrics, variant-difference QC, material hints, and a Godot mesh-top runtime contract.
+- Keep animated terrain states such as flame tongues, smoke, frost glints, corruption pulses, and void wisps separate from the opaque surface atlas. Generate them as transparent body/FX sheets with `$generate2dsprite`, preserve a fixed ground-contact anchor and shared silhouette envelope, and reference the generated runtime animation contract from the terrain metadata.
+- For a 2.5D `Sprite3D` status overlay on a horizontal tile mesh, record and validate `ground_lift`, `depth_policy`, `render_priority`, and `occupantPolicy`. A correct pixel-size/offset contract alone does not prove that the vertical card will survive intersection with the horizontal surface.
+- The safe default for a walkable animated status is: render above the tile surface, behind unit sprites, and apply `rear_shift_and_fade` while occupied. Do not solve tile clipping by drawing the FX over every actor.
+
+```bash
+python scripts/extract_terrain_tiles.py \
+  --input <terrain-atlas.png> \
+  --output-dir <assets/tilesets/name> \
+  --rows 2 --cols 3 \
+  --terrain-row plain=0 --terrain-row forest=1 \
+  --tile-size 512 --prompt <terrain-atlas.prompt.txt> \
+  --runtime-world-size 0.94 --surface-y 0.011 \
+  --strict-qc
+```
+
+Treat a low-contrast or near-duplicate variant failure as an art regeneration signal. Do not invent final terrain texture detail procedurally. Runtime tint, roughness, emission, highlighting, mesh depth, and destruction animation may remain engine-native layers.
 
 ## Prop Generation Rules
 
@@ -205,6 +234,8 @@ Choose the generation shape deliberately:
 - `custom_wide_pack`: several related wide objects using explicit wide cells, not square cells.
 
 Prop packs save image-generation calls and prompt overhead, but reduce per-prop control. Use square prop packs for rocks, shrubs, barrels, small signs, lamps, crates, floor ornaments, plants, and repeated compact environmental props. Do not use square prop packs for buildings, gates, trees with wide canopies, bridges, platforms, floors, walls, ladders, long fences, long hazards, character-like statues, hero objects, or anything that must be pixel-perfect or collision-aligned.
+
+When a compact shrub, grass cluster, rubble pile, or similar prop will share a walkable tile with an actor, classify it separately from blockers. Prefer a low silhouette or a rear-biased cluster that leaves the tile's actor-safe center clear. Tall walkable dressing must ship with an occupant policy; `rear_shift_and_fade` is the safe default for fixed isometric boards. Preserve the ground texture while fading only the tall decoration.
 
 For layered maps with generated props, prefer this in-world reference mockup pipeline:
 
@@ -368,10 +399,12 @@ Do not accept a single generated side-view action/platformer stage image plus co
 For `grid_mode`:
 
 - image-generated or user-supplied tileset/grid art
+- optional `generate2dmap.terrain_tile_bundle.v1` manifests with terrain variants, material hints, world footprint, surface height, prompt provenance, and QC
 - grid dimensions, cell size, and map data in project-native JSON, Tiled JSON, LDtk, Godot TileMap, Unity Tilemap, or equivalent
 - cell metadata for walkable/buildable, movement cost, terrain effects, resources, collision, and placement rules
 - object layers for units, buildings, machines, cards/board slots, exits, spawns, and triggers
 - a QA preview that can show optional debug grid/collision overlays
+- for decorated walkable cells, prop occlusion metadata plus an actor-in-place preview using a representative runtime actor and the real gameplay camera
 
 For `room_chunk_mode`:
 
@@ -404,6 +437,7 @@ Always validate what the chosen pipeline requires:
 - transparent props contain alpha
 - prop pack manifests parse and accepted props do not touch cell edges
 - placement JSON parses and referenced prop files exist
+- walkable tall props declare `occlusionClass`, `actorSafeArea`, and `occupantPolicy`; runtime integration applies that policy when an actor occupies or selects the cell
 - collision/zones JSON parses when present
 - critical spawn, path, entrance, blocker, and zone points behave as expected
 - playable/editable layered maps use a foundation-only base/background and do not bake runtime-controlled props, interactables, hazards, doors, gates, pickups, actors, foreground occluders, or reusable scene objects into the base
@@ -415,8 +449,11 @@ Always validate what the chosen pipeline requires:
 - `side_scroll_mode` parallax layers have explicit render order, scroll factors, dimensions, loop/repeat policy, and are not used as collision sources
 - `side_scroll_mode` platforms and terrain use explicit platform/object metadata plus a shared platform strip, tile, or terrain-chunk library; they are not taken from a generic square prop pack
 - `grid_mode` outputs include grid dimensions, cell size, cell metadata, object layers, and validation of critical walkable/buildable cells
+- terrain tile bundles use portable paths, cover every declared atlas row exactly once, contain the expected number of variants, and pass contrast/variant-difference QC
+- animated terrain overlays pass both standalone FX QC and an engine-level Hybrid preview: visible above the tile, not depth-clipped, behind actors, readable at gameplay zoom, and safe while a representative actor occupies the cell
 - `room_chunk_mode` outputs include chunk dimensions, exits/connection sockets, seam validation, collision, and at least one assembled or per-chunk preview
 - stage-reference maps preserve the background dimensions and their object plan matches the final object/collision metadata
 - stage-reference and dressed-reference mockups contain no more than 9 distinct visible runtime prop/object candidates unless the user explicitly requested a larger pass
 - reference mockups are followed by final props/objects, placement metadata, collision/scene-hook metadata, and a QA preview unless the user explicitly requested reference-only output
 - flattened preview looks coherent at the game's camera size
+- actor-in-place previews prove that tall walkable dressing does not hide the actor's actionable silhouette or path/selection cues

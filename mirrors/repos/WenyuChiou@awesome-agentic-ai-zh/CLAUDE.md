@@ -47,10 +47,10 @@ If unsure, ask the user to run `ollama list` and verify.
 
 | Model | Use case | Pricing (per 1M tokens) |
 |---|---|---|
-| **`claude-fable-5`** | Mythos-class (above Opus); GA 2026-06-09. ⚠️ **Suspended 2026-06-12** (US export-control directive); currently unavailable, use `claude-opus-4-8` | $10 input / $50 output |
+| **`claude-fable-5`** | Mythos-class (above Opus); suspended 2026-06-12, **restored 2026-07-01** (controls lifted 2026-06-30); the highest Claude tier | $10 input / $50 output |
 | **`claude-haiku-4-5`** | Cheapest cloud option, OK for all exercises | $1 input / $5 output |
 | **`claude-sonnet-5`** | Production default, agent development | $3 input / $15 output |
-| **`claude-opus-4-8`** | Opus-class flagship; current top usable tier (Fable 5 suspended 2026-06-12); high quality, complex reasoning | $5 input / $25 output |
+| **`claude-opus-4-8`** | Opus-class flagship; high quality, complex reasoning (Fable 5, restored 2026-07-01, is the tier above) | $5 input / $25 output |
 
 ## Framing rules (do not violate)
 

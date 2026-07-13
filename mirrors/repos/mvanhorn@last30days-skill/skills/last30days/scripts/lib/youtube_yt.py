@@ -56,7 +56,7 @@ def reset_transcript_fetch_stats() -> None:
 # Max words to keep from each transcript
 TRANSCRIPT_MAX_WORDS = 5000
 
-from . import dates, http, log, subproc
+from . import dates, health, http, log, subproc
 from .query import infer_query_intent
 
 from .relevance import token_overlap_relevance as _compute_relevance
@@ -141,6 +141,21 @@ def extract_transcript_highlights(transcript: str, topic: str, limit: int = 5) -
 
 def _log(msg: str):
     log.source_log("YouTube", msg, tty_only=False)
+
+
+def classify_run_failure(detail: str) -> str:
+    """Map yt-dlp's text-only throttling and bot-gate errors."""
+    text = detail.lower()
+    if any(marker in text for marker in ("yt-dlp not installed", "yt-dlp not found")):
+        return health.SKIPPED_UNCONFIGURED
+    if any(
+        marker in text
+        for marker in ("http error 429", "confirm you're not a bot", "confirm you’re not a bot", "bot-gate")
+    ):
+        return health.RATE_LIMITED
+    if any(marker in text for marker in ("sign in", "login required", "cookies are no longer valid")):
+        return health.AUTH_FAILED
+    return http.classify_failure(message=detail)
 
 
 def is_ytdlp_installed() -> bool:
@@ -833,8 +848,8 @@ def fetch_transcripts_parallel(
     with tempfile.TemporaryDirectory() as temp_dir:
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = {
-                executor.submit(
-                    fetch_transcript, vid, temp_dir, statuses[vid], token,
+                http.submit_with_context(
+                    executor, fetch_transcript, vid, temp_dir, statuses[vid], token,
                 ): vid
                 for vid in video_ids
             }
@@ -1082,7 +1097,7 @@ def enrich_with_comments(
 
     enriched_count = 0
     with ThreadPoolExecutor(max_workers=min(4, len(top_items))) as executor:
-        futures = {executor.submit(_enrich_one, item): item for item in top_items}
+        futures = {http.submit_with_context(executor, _enrich_one, item): item for item in top_items}
         for future in as_completed(futures):
             if future.result():
                 enriched_count += 1

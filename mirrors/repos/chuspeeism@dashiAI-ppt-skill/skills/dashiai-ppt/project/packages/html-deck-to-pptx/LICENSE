@@ -1,21 +1,35 @@
-MIT License
+DashiAI PPT Export Engine — Proprietary License
+专有许可
 
-Copyright (c) 2026 DashiAI PPT contributors
+Copyright (c) 2026 chuspeeism. All rights reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This package ("html-deck-to-pptx", the DashiAI PPT export engine) is
+proprietary software. It is licensed, not open-sourced.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Permission is granted to use this package SOLELY as an integrated
+component of the DashiAI PPT skill, for generating, previewing, and
+exporting presentations produced by that skill.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+The following are expressly prohibited without prior written permission
+from the copyright holder:
+
+- extracting, copying, or redistributing this package (in source or
+  bundled form) separately from the DashiAI PPT skill;
+- using this package, in whole or in part, in any other software,
+  product, or service;
+- modifying, reverse engineering, or creating derivative works of this
+  package, except to the extent such restriction is prohibited by
+  applicable law.
+
+Versions of this package released on or before v0.2.7 were published
+under the MIT License; that grant remains valid for those historical
+versions only and does not extend to this or any later version.
+
+本包(DashiAI PPT 导出引擎)为专有软件,仅授权作为 DashiAI PPT skill 的
+组成部分使用,用于该 skill 生成、预览与导出演示文稿。未经版权人书面许可,
+禁止将本包(源码或打包形态)从 skill 中单独提取、复制、再分发,禁止用于
+任何其他软件、产品或服务。v0.2.7 及之前版本曾以 MIT 协议发布,该授权仅对
+那些历史版本持续有效,不适用于本版本及后续版本。
+
+For commercial licensing, contact the copyright holder via
+https://github.com/chuspeeism/dashiAI-ppt-skill

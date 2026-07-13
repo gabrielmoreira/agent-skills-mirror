@@ -1,6 +1,6 @@
 # ECHO Benchmark — Organic Social Evaluation Standard
 
-ECHO evaluates organic social through **Embeddedness · Craft · Hosting · Observability**. v17 separates an individual asset's Craft gate from a channel portfolio's operating maturity. It does not let a polished post compensate for manufactured engagement, weak governance, or unobservable reporting.
+ECHO evaluates organic social through **Embeddedness · Craft · Hosting · Observability**. v18 separates an individual asset's Craft gate from a channel portfolio's operating maturity. It does not let a polished post compensate for manufactured engagement, weak governance, or unobservable reporting.
 
 The framework is advisory. Executable profiles, item policies, context, and vetoes live in [`framework-catalog.json`](framework-catalog.json); shared scoring semantics live in [`scoring-semantics.md`](scoring-semantics.md).
 

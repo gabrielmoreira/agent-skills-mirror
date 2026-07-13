@@ -4,19 +4,19 @@ Use this reference to choose bloom ownership, signal order, selective contributi
 
 ## Contents
 
-- production WebGPU pipeline signal order
-- production WebGPU pipeline bloom controls
-- selective gallery pipeline selective ownership
+- WebGPU pipeline signal order
+- WebGPU bloom-node controls
+- Gallery selective ownership
 - Material substitution invariant
-- atlas-based renderer baseline
-- pooled VFX system HDR hierarchy
+- Composer baseline
+- Effect HDR hierarchy
 - Implementation limits
 - Diagnostics
 
 
-## production WebGPU pipeline signal order
+## WebGPU pipeline signal order
 
-The WebGPU pipeline owns bloom before exposure and render output:
+The WebGPU pipeline places bloom before exposure and render output:
 
 ```text
 scene pass
@@ -34,7 +34,7 @@ The render pipeline disables its automatic output color transform and assigns
 one final output node. Preserve this one-owner rule when adapting to current
 Three.js `RenderPipeline`.
 
-## production WebGPU pipeline bloom controls
+## WebGPU bloom-node controls
 
 Bloom defaults:
 
@@ -55,9 +55,10 @@ and parameter ownership around the renderer’s bloom node.
 Verify the installed Three.js node API before using the exact constructor or
 property names.
 
-## selective gallery pipeline selective ownership
+## Gallery selective ownership
 
-The gallery uses two separate selective bloom pipelines:
+The `sculpted-gallery-frame` example under `$threejs-procedural-geometry` uses
+two separate selective bloom pipelines:
 
 ```text
 neon layer -> neon UnrealBloomPass
@@ -79,8 +80,8 @@ explicit layer membership with material-level HDR/display behavior.
 
 ## Material substitution invariant
 
-For each selective pass, selective gallery pipeline traverses visible meshes and replaces every
-non-member material with one shared black material.
+For each selective pass, the gallery scene traverses visible meshes and
+replaces every non-member material with one shared black material.
 
 Required transaction:
 
@@ -103,9 +104,9 @@ chandelier representations so only the intended version contributes.
 The `finally` block is non-negotiable. Without it, a render error permanently
 blackens scene meshes.
 
-## atlas-based renderer baseline
+## Composer baseline
 
-atlas-based renderer wraps `UnrealBloomPass` with:
+A minimal composer baseline wraps `UnrealBloomPass` with:
 
 ```text
 strength = 0.30
@@ -123,9 +124,9 @@ This is a useful comparison, not the quality target. The threshold is very low
 and can bloom ordinary bright surfaces. The wrapper exposes only enabled,
 strength, and threshold, while radius stays at its constructor value.
 
-## pooled VFX system HDR hierarchy
+## Effect HDR hierarchy
 
-pooled VFX system assigns compact effect luminance before bloom:
+Compact effect materials assign luminance before bloom:
 
 ```text
 spark initial RGB multiplier = 80
@@ -148,16 +149,17 @@ short spark flash
 
 ## Implementation limits
 
-- selective gallery pipeline renders the scene multiple times for selective bloom. This is
+- The gallery renders the scene multiple times for selective bloom. This is
   acceptable for its bounded gallery but expensive for large scenes.
 - Temporary material substitution can trigger shader/program changes and must
   account for newly added meshes.
-- The final selective gallery pipeline composite adds bloom textures directly; energy is
+- The final gallery composite adds bloom textures directly; energy is
   artistic, not physically conserved.
-- atlas-based renderer’s low threshold is not evidence for a general HDR calibration.
-- production WebGPU pipeline depends on version-sensitive Three.js bloom-node behavior.
-- pooled VFX system material multipliers are scene-relative and cannot be treated as
-  exposure-independent units.
+- The composer baseline’s low threshold is not evidence for a general HDR
+  calibration.
+- The WebGPU path depends on version-sensitive Three.js bloom-node behavior.
+- The effect material multipliers are scene-relative and cannot be treated
+  as exposure-independent units.
 
 Prefer a dedicated contribution target when MRT/backend architecture supports
 it and the scene cannot afford multiple full renders. Validate that decision

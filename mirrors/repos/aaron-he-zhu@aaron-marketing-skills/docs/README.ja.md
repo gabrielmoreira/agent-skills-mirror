@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills"><img src="https://img.shields.io/github/stars/aaron-he-zhu/aaron-marketing-skills?style=flat" alt="GitHub Stars"></a>
-  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-17.0.0-orange" alt="Version"></a>
+  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-18.0.0-orange" alt="Version"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/commits/main"><img src="https://img.shields.io/github/last-commit/aaron-he-zhu/aaron-marketing-skills" alt="Last Commit"></a>
 </p>
@@ -25,11 +25,11 @@
 | 層 | スキル | ライフサイクル（フェーズディレクトリ） | フレームワーク → ゲート | エントリポイント |
 |-------|--------|-------------------------------|------------------|------------|
 | **Narrative** | 16 | trace → architect → land → evaluate | [TALE](../references/tale-benchmark.md) → `narrative-quality-auditor` (truth / system / effectiveness profiles) | `/aaron-marketing:narrative` |
-| **SEO/GEO** | 16 | research → build → optimize → monitor | [CORE-EEAT](../references/core-eeat-benchmark.md) → `content-quality-auditor` · [CITE](../references/cite-domain-rating.md) → `domain-authority-auditor` | `/aaron-marketing:seo-geo` |
+| **SEO/GEO** | 16 | survey → implement → tune → evaluate | [CORE-EEAT](../references/core-eeat-benchmark.md) → `content-quality-auditor` · [CITE](../references/cite-domain-rating.md) → `domain-authority-auditor` | `/aaron-marketing:seo-geo` |
 | **ソーシャル** | 16 | explore → craft → host → observe | [ECHO](../references/echo-benchmark.md) → `social-quality-auditor` (asset / program-maturity profiles) | `/aaron-marketing:social` |
 | **メール** | 16 | setup → engage → nurture → deliver | [SEND](../references/send-benchmark.md) → `email-quality-auditor`（EQS） | `/aaron-marketing:email` |
 | **Paid Ads** | 16 | research → orchestrate → activate → scale | [ROAS](../references/roas-benchmark.md) → `ad-account-auditor`（RQS） | `/aaron-marketing:ad` |
-| **インフルエンサー** | 16 | discover → plan → activate → measure | [C³](../references/c3-benchmark.md) → `content-reviewer`（ART）；`fit-scorer` が ACE を採点 | `/aaron-marketing:influencer` |
+| **インフルエンサー** | 16 | scout → target → activate → report | [STAR](../references/star-benchmark.md) → `creator-content-auditor`（SQS）；`fit-scorer` が Suitability (S) を採点 | `/aaron-marketing:influencer` |
 | **Launch** | 16 | research → assemble → mobilize → prove | [RAMP](../references/ramp-benchmark.md) → `launch-readiness-auditor` (preflight / execution / outcome profiles) | `/aaron-marketing:launch` |
 | **プロトコル層** | 8 | —（フェーズフローの外にある共有機構） | 7 つの真実レジストリ（entity · creator · offer/claims · consent · launch · channel · narrative）+ HOT/WARM/COLD メモリ | — |
 
@@ -54,8 +54,8 @@
   - [メモリと自動化フック](#メモリと自動化フック)
 - [スキルカタログ](#スキルカタログ)
   - [Narrative — TALE (16)](#narrative--tale-16)
-  - [SEO/GEO (16)](#seogeo-16)
-  - [インフルエンサー (16)](#インフルエンサー-16)
+  - [SEO/GEO — SITE (16)](#seogeo--site-16)
+  - [インフルエンサー — STAR (16)](#インフルエンサー--star-16)
   - [Paid Ads — ROAS (16)](#paid-ads--roas-16)
   - [Email — SEND (16)](#email--send-16)
   - [Launch — RAMP (16)](#launch--ramp-16)
@@ -124,7 +124,7 @@ Audit this Google Ads account before I scale — exports attached
 /aaron-marketing:auto turn our pricing page into an AI-citable comparison hub
 ```
 ```text
-/aaron-marketing:seo-geo https://example.com/blog/my-article --mode audit
+/aaron-marketing:seo-geo https://example.com/blog/my-article --phase tune
 ```
 
 `/aaron-marketing:auto` は意図を推論し、最小限の有用なワークフローを実行し、ブロッキングな判断でのみ立ち止まります。各スキルは貼り付けたデータで動作します；任意のツールは [CONNECTORS.md](../CONNECTORS.md) に文書化されています。
@@ -154,13 +154,13 @@ Audit this Google Ads account before I scale — exports attached
 | 層 | 導入 | 専門領域 | ケイデンス |
 |-------|-------|-------------|--------|
 | **L1 · 戦略** —— 何を語るか / 我々は何者か | crawl | **Narrative** · TALE | 常時稼働 |
-| **L2 · チャネル** —— 戦略を表現する常時稼働のエンジン（自有 → 有料） | walk | **SEO/GEO** · CORE-EEAT + CITE · **Organic Social** · ECHO · **Email** · SEND · **Paid Ads** · ROAS · **Influencer** · C³ | 常時稼働（インフルエンサーはエピソード寄り） |
+| **L2 · チャネル** —— 戦略を表現する常時稼働のエンジン（自有 → 有料） | walk | **SEO/GEO** · CORE-EEAT + CITE · **Organic Social** · ECHO · **Email** · SEND · **Paid Ads** · ROAS · **Influencer** · STAR | 常時稼働（インフルエンサーはエピソード寄り） |
 | **L3 · オーケストレーション** —— チャネルをまたぐ時限の瞬間 | run | **Product Launch** · RAMP | エピソード |
 | **L4 · プロトコル** —— 共有された記録システム | — | 7 つの真実レジストリ + ワーキングメモリ · 8 つの auditor ゲート · 一つのスキルコントラクト | — |
 
 Narrative はメッセージであり、チャネルはそれを表現する媒体です —— 各コアビルダーは、使用した正典の ID/バージョンとクレーム・プロジェクションのオフセット、あるいは明示的に承認されたフォールバック/ブロックを正確に記録します。各専門領域の 4 フェーズループは、その層の内側に宿ります（Narrative = Trace → Architect → Land → Evaluate）。
 
-7 つすべてがフェーズ**ディレクトリ**（`narrative/trace/`…、`seo-geo/research/`…、`influencer/discover/`…、`ad/research/`…、`email/setup/`…、`launch/research/`…、`social/explore/`…）を使います。注：「activate」はインフルエンサーではクリエイターへのアウトリーチを、Paid Ads ではアカウントのゲーティングを意味します —— 同じ語でも領域固有のスコープです。
+7 つすべてがフェーズ**ディレクトリ**（`narrative/trace/`…、`seo-geo/survey/`…、`influencer/scout/`…、`ad/research/`…、`email/setup/`…、`launch/research/`…、`social/explore/`…）を使います。注：「activate」はインフルエンサーではクリエイターへのアウトリーチを、Paid Ads ではアカウントのゲーティングを意味します —— 同じ語でも領域固有のスコープです。
 
 ### 品質システム：八つのフレームワーク、八つのゲート
 
@@ -171,7 +171,7 @@ Narrative はメッセージであり、チャネルはそれを表現する媒�
 | **[TALE](../references/tale-benchmark.md)** | ブランドナラティブの真実 / システム / 有効性 | T / A / L / E | `truth`・`system`・`effectiveness` のプロファイル結果は個別。全体の合成スコアなし | TALE `T1`/`A1`/`L1`/`E1` |
 | **[CORE-EEAT](../references/core-eeat-benchmark.md)** | CORE/GEO と EEAT/SEO の診断ビューを備えたコンテンツ品質 | 80 項目 / 8 次元 | 完全なプロファイル加重結果。診断ビューは独立した合計ではない | `T04`/`C01`/`R10` |
 | **[CITE](../references/cite-domain-rating.md)** | ドメイン権威と引用信頼 | 40 項目 / 4 次元 | 算術プロファイル加重平均 | `T03`/`T05`/`T09` |
-| **[C³](../references/c3-benchmark.md)** | インフルエンサーの Creator / Content / Campaign | ACE / ART / ROI・9 次元 | 互換スコープの完全な 3 結果が揃った後に `CVI = floor((ACE x ART x ROI)^(1/3))` | ACE `A2`/`C1`/`E2`・ART `T1`/`T2` |
+| **[STAR](../references/star-benchmark.md)** | インフルエンサーの Suitability / Trust / Appeal / Return | S / T / A / R・40 項目 / 4 次元 | `SQS = floor(profile-weighted mean)` | `STAR-S2`/`S6`, `STAR-T1`/`T2`/`T3` |
 | **[ROAS](../references/roas-benchmark.md)** | Paid Ads の増分貢献と運用品質 | R / O / A / S | `RQS = floor(profile-weighted mean)` | `R1`/`R2`/`O1`/`O2`/`A1` |
 | **[SEND](../references/send-benchmark.md)** | メールの送信者完全性 / エンゲージメント / ナーチャー / 直接成果 | S / E / N / D | `EQS = floor(profile-weighted mean)` | `S1`/`S2`/`N1`/`D1` |
 | **[RAMP](../references/ramp-benchmark.md)** | プロダクトローンチの準備 / アセット / モメンタム / 証明 | R / A / M / P・40 の安定 ID | `preflight`・`execution`・`outcome` のプロファイル結果は個別。時間軸をまたいで平均しない | RAMP `R1`/`A1`/`M1`/`P1` |
@@ -182,9 +182,9 @@ Narrative はメッセージであり、チャネルはそれを表現する媒�
 | ゲート | フレームワーク | 所在 | 判定 |
 |------|-----------|----------|---------|
 | [narrative-quality-auditor](../narrative/evaluate/narrative-quality-auditor/SKILL.md) | TALE プロファイル | `narrative/evaluate/` | truth/system/effectiveness の結果は個別。合成スコアなし |
-| [content-quality-auditor](../seo-geo/optimize/content-quality-auditor/SKILL.md) | CORE-EEAT | `seo-geo/optimize/` | SHIP / FIX / BLOCK / UNDECIDED |
-| [domain-authority-auditor](../seo-geo/monitor/domain-authority-auditor/SKILL.md) | CITE | `seo-geo/monitor/` | SHIP / FIX / BLOCK / UNDECIDED。信頼ラベルは説明目的のみ |
-| [content-reviewer](../influencer/activate/content-reviewer/SKILL.md) | C³ ART | `influencer/activate/` | SHIP / FIX / BLOCK / UNDECIDED に加えクリエイター向けの翻訳 |
+| [content-quality-auditor](../seo-geo/tune/content-quality-auditor/SKILL.md) | CORE-EEAT | `seo-geo/tune/` | SHIP / FIX / BLOCK / UNDECIDED |
+| [domain-authority-auditor](../seo-geo/evaluate/domain-authority-auditor/SKILL.md) | CITE | `seo-geo/evaluate/` | SHIP / FIX / BLOCK / UNDECIDED。信頼ラベルは説明目的のみ |
+| [creator-content-auditor](../influencer/activate/creator-content-auditor/SKILL.md) | STAR SQS | `influencer/activate/` | SHIP / FIX / BLOCK / UNDECIDED に加えクリエイター向けの翻訳 |
 | [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md) | ROAS | `ad/activate/` | SHIP / FIX / BLOCK / UNDECIDED |
 | [email-quality-auditor](../email/deliver/email-quality-auditor/SKILL.md) | SEND | `email/deliver/` | SHIP / FIX / BLOCK / UNDECIDED |
 | [launch-readiness-auditor](../launch/mobilize/launch-readiness-auditor/SKILL.md) | RAMP ライフサイクルプロファイル | `launch/mobilize/` | 宣言された一つのライフサイクル読み取りに対する SHIP / FIX / BLOCK / UNDECIDED |
@@ -198,7 +198,7 @@ Narrative はメッセージであり、チャネルはそれを表現する媒�
 
 | スキル | 役割 | アンカー先 | 正準イベントストリーム / ランタイムの役割 |
 |-------|-----|-------------|-----------------|
-| [entity-optimizer](../protocol/entity-optimizer/SKILL.md) | 正準的なブランド/エンティティプロファイル（ナレッジグラフ、Wikidata、AI 曖昧性解消） | SEO/GEO | `memory/events/entities.ndjson` |
+| [entity-registry](../protocol/entity-registry/SKILL.md) | 正準的なブランド/エンティティプロファイル（ナレッジグラフ、Wikidata、AI 曖昧性解消） | SEO/GEO | `memory/events/entities.ndjson` |
 | [creator-registry](../protocol/creator-registry/SKILL.md) | 正準的なクリエイター名簿/ドシエ —— 重複排除されたハンドル、出所ラベル付きのオーディエンス統計、料率、コンプライアンス履歴 | インフルエンサー | `memory/events/creators.ndjson` |
 | [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md) | オファー＆クレーム裏付けの台帳 —— O1/T2 クレームチェックが照合して判定される記録 | Paid | `memory/events/claims.ndjson` |
 | [consent-registry](../protocol/consent-registry/SKILL.md) | 被験者ごとの正準的な同意/抑制記録 —— S2/N1 拒否がこれに照らして判定 | メール | `memory/events/consent.ndjson` |
@@ -231,7 +231,7 @@ Narrative はメッセージであり、チャネルはそれを表現する媒�
 | `PostToolBatch` | （すべて） | 並列ツールバッチのたびに、運用メモリと予約済み監査シンクを再チェックします。 |
 | `Stop` | （すべて） | 最後の有界スイープを一度実行し、その後 active-stop ガードが終了を許可します。pre-commit/CI が守るのはコミット済み Git コンテンツの PII のみで、無視されたランタイム成果物は検証しません。 |
 
-Artifact Gate は**フレームワーク非依存**です —— 同じフックが TALE、CORE-EEAT、CITE、C³、ROAS、SEND、RAMP、ECHO の成果物をフレームワーク固有コードなしで検証します。
+Artifact Gate は**フレームワーク非依存**です —— 同じフックが TALE、CORE-EEAT、CITE、STAR、ROAS、SEND、RAMP、ECHO の成果物をフレームワーク固有コードなしで検証します。
 
 ---
 
@@ -275,16 +275,16 @@ Artifact Gate は**フレームワーク非依存**です —— 同じフック
 
 </details>
 
-### SEO/GEO (16)
+### SEO/GEO — SITE (16)
 
 4 つのフェーズディレクトリ（各 4 スキル）＋本領域の 2 つの品質ゲート（⛩ 印）。
 
 | フェーズ | スキル |
 |-------|--------|
-| **Research** | [keyword-research](../seo-geo/research/keyword-research/SKILL.md), [competitor-analysis](../seo-geo/research/competitor-analysis/SKILL.md), [serp-analysis](../seo-geo/research/serp-analysis/SKILL.md), [content-gap-analysis](../seo-geo/research/content-gap-analysis/SKILL.md) |
-| **Build** | [content-writer](../seo-geo/build/content-writer/SKILL.md), [geo-content-optimizer](../seo-geo/build/geo-content-optimizer/SKILL.md), [serp-markup-builder](../seo-geo/build/serp-markup-builder/SKILL.md), [page-play-builder](../seo-geo/build/page-play-builder/SKILL.md) |
-| **Optimize** | ⛩ [content-quality-auditor](../seo-geo/optimize/content-quality-auditor/SKILL.md), [technical-seo-checker](../seo-geo/optimize/technical-seo-checker/SKILL.md), [on-page-seo-auditor](../seo-geo/optimize/on-page-seo-auditor/SKILL.md), [site-structure-optimizer](../seo-geo/optimize/site-structure-optimizer/SKILL.md) |
-| **Monitor** | ⛩ [domain-authority-auditor](../seo-geo/monitor/domain-authority-auditor/SKILL.md), [rank-tracker](../seo-geo/monitor/rank-tracker/SKILL.md), [performance-monitor](../seo-geo/monitor/performance-monitor/SKILL.md), [offsite-signal-analyzer](../seo-geo/monitor/offsite-signal-analyzer/SKILL.md) |
+| **Survey** | [keyword-research](../seo-geo/survey/keyword-research/SKILL.md), [competitor-analysis](../seo-geo/survey/competitor-analysis/SKILL.md), [serp-analysis](../seo-geo/survey/serp-analysis/SKILL.md), [content-gap-analysis](../seo-geo/survey/content-gap-analysis/SKILL.md) |
+| **Implement** | [content-writer](../seo-geo/implement/content-writer/SKILL.md), [geo-content-optimizer](../seo-geo/implement/geo-content-optimizer/SKILL.md), [serp-markup-builder](../seo-geo/implement/serp-markup-builder/SKILL.md), [page-play-builder](../seo-geo/implement/page-play-builder/SKILL.md) |
+| **Tune** | ⛩ [content-quality-auditor](../seo-geo/tune/content-quality-auditor/SKILL.md), [technical-seo-checker](../seo-geo/tune/technical-seo-checker/SKILL.md), [on-page-seo-checker](../seo-geo/tune/on-page-seo-checker/SKILL.md), [site-structure-optimizer](../seo-geo/tune/site-structure-optimizer/SKILL.md) |
+| **Evaluate** | ⛩ [domain-authority-auditor](../seo-geo/evaluate/domain-authority-auditor/SKILL.md), [rank-tracker](../seo-geo/evaluate/rank-tracker/SKILL.md), [performance-monitor](../seo-geo/evaluate/performance-monitor/SKILL.md), [offsite-signal-analyzer](../seo-geo/evaluate/offsite-signal-analyzer/SKILL.md) |
 
 <details><summary><b>スキルごとの目的（SEO/GEO）</b></summary>
 
@@ -294,18 +294,18 @@ Artifact Gate は**フレームワーク非依存**です —— 同じフック
 | competitor-analysis | 競合の SEO 戦略を分析し、ドメインを比較し、そのキーワードとギャップをあぶり出す。 |
 | serp-analysis | SERP を読み解く —— 機能、スニペット、People Also Ask、あるクエリのランキングパターン。 |
 | content-gap-analysis | 競合に対して欠けているトピックとカバレッジの穴を見つける。 |
-| content-writer | *(統合: seo-content-writer + content-refresher)* SEO 最適化された記事、ランディングページ、製品コピーを執筆・リフレッシュ。 |
+| content-writer | SEO 最適化された記事、ランディングページ、製品コピーを執筆・リフレッシュ。 |
 | geo-content-optimizer | AI エンジン（ChatGPT、Perplexity、AI Overviews、Gemini、Claude、Copilot）向けにコンテンツを最適化。 |
-| serp-markup-builder | *(統合: meta-tags-optimizer + schema-markup-generator)* Title/Meta/OG/Twitter タグ + JSON-LD / Schema.org 構造化データ。 |
-| page-play-builder | *(統合: programmatic + parasite + comparison + local SEO、4 モード)* テンプレート駆動のページ施策 —— プログラマティックページ、パラサイトプラットフォーム、比較ページ、local/GBP。 |
+| serp-markup-builder | Title/Meta/OG/Twitter タグ + JSON-LD / Schema.org 構造化データ。 |
+| page-play-builder | テンプレート駆動のページ施策 —— プログラマティックページ、パラサイトプラットフォーム、比較ページ、local/GBP。 |
 | ⛩ content-quality-auditor | 80 項目の CORE-EEAT 公開準備ゲート（SHIP/FIX/BLOCK）。 |
 | technical-seo-checker | サイト速度、Core Web Vitals、インデックス、クロール可能性、robots。 |
-| on-page-seo-auditor | ページレベルの on-page 健全性を監査 —— 見出し、キーワード配置、画像、品質シグナル。 |
-| site-structure-optimizer | *(統合: internal-linking-optimizer + site-architecture)* 内部リンク、アンカーテキスト、孤立ページ、ページ階層、URL 分類、hub/spoke クラスター。 |
+| on-page-seo-checker | ページレベルの on-page 健全性を監査 —— 見出し、キーワード配置、画像、品質シグナル。 |
+| site-structure-optimizer | 内部リンク、アンカーテキスト、孤立ページ、ページ階層、URL 分類、hub/spoke クラスター。 |
 | ⛩ domain-authority-auditor | 40 項目の CITE ドメイン信頼ゲート（TRUSTED/CAUTIOUS/UNTRUSTED）。 |
 | rank-tracker | キーワード順位、順位変動、下落を追跡。 |
-| performance-monitor | *(統合: performance-reporter + alert-manager)* 複数指標の SEO/GEO レポート、ダッシュボード、しきい値アラート。 |
-| offsite-signal-analyzer | *(統合: backlink-analyzer + ai-traffic)* バックリンクプロファイル + リンク品質、加えて自分の GA4/GSC/ログ内の AI アシスタントからの参照トラフィック。 |
+| performance-monitor | 複数指標の SEO/GEO レポート、ダッシュボード、しきい値アラート。 |
+| offsite-signal-analyzer | バックリンクプロファイル + リンク品質、加えて自分の GA4/GSC/ログ内の AI アシスタントからの参照トラフィック。 |
 
 </details>
 
@@ -363,21 +363,21 @@ Artifact Gate は**フレームワーク非依存**です —— 同じフック
 | deliverability-qa | S | 送信前の SPF/DKIM/DMARC/BIMI 認証、レピュテーション、inbox-placement、スパムコンテンツ、リスト衛生（S1 チェック）。 |
 | list-segment-builder | E | 自社のリスト/CRM/GA4 エクスポートから、行動 + ライフサイクル段階のセグメントと抑制ルール。 |
 | list-growth-designer | S (+N) | リスト成長戦略 —— 獲得チャネル、リードマグネット構想、準拠したオプトインキャプチャフロー spec、リファラルループの仕組み；獲得時に捕捉される S 同意品質に寄与。 |
-| list-hygiene-monitor | S | *(NEW)* 継続的なリスト健全性 —— バウンス/苦情の剪定、サンセットポリシー、再許諾、非アクティブセグメントの抑制。 |
+| list-hygiene-monitor | S | 継続的なリスト健全性 —— バウンス/苦情の剪定、サンセットポリシー、再許諾、非アクティブセグメントの抑制。 |
 | email-creative-builder | E (+D) | 件名/プリヘッダー/本文/CTA。ランディングページとメッセージ整合、claims-ledger を認識。 |
-| subject-line-lab | E | *(NEW)* 件名/プリヘッダーの発想とスコアリング —— 長さ、スパムトリガー、好奇心/明確性のバランス、テスト用バリアントセット。 |
-| email-render-builder | E | *(NEW)* HTML メールのビルド/QA —— クライアント互換性、ダークモード、アクセシビリティ、プレーンテキスト代替、レンダーテストチェックリスト。 |
-| dynamic-content-personalizer | E | *(NEW)* マージタグ/liquid のパーソナライズブロック、条件付きコンテンツルール、フォールバック値の安全性。 |
+| subject-line-lab | E | 件名/プリヘッダーの発想とスコアリング —— 長さ、スパムトリガー、好奇心/明確性のバランス、テスト用バリアントセット。 |
+| email-render-builder | E | HTML メールのビルド/QA —— クライアント互換性、ダークモード、アクセシビリティ、プレーンテキスト代替、レンダーテストチェックリスト。 |
+| dynamic-content-personalizer | E | マージタグ/liquid のパーソナライズブロック、条件付きコンテンツルール、フォールバック値の安全性。 |
 | email-sequence-designer | N | ライフサイクル/自動化フロー（welcome、cart、post-purchase、win-back）+ 頻度ガバナンス。 |
 | newsletter-monetization-planner | D | 有料購読、スポンサーシップ在庫 + レートカード、リファラル成長ループの経済性。 |
-| preference-frequency-manager | N | *(NEW)* プリファレンスセンター設計と送信頻度ガバナンスで疲弊と解除を削減。 |
-| reactivation-specialist | N | *(NEW)* 休眠購読者向けの win-back / 再エンゲージフロー、サンセット-or-回復の判断ルール付き。 |
+| preference-frequency-manager | N | プリファレンスセンター設計と送信頻度ガバナンスで疲弊と解除を削減。 |
+| reactivation-specialist | N | 休眠購読者向けの win-back / 再エンゲージフロー、サンセット-or-回復の判断ルール付き。 |
 | ⛩ email-quality-auditor | S+E+N+D (EQS) | auditor クラスの SEND ゲート：EQS を採点、S1/S2/N1/D1 を強制、SHIP/FIX/BLOCK を出力；**送信前 go/no-go** モードを内蔵。 |
 | send-experiment-designer | E | A/B / 送信時刻 / ホールドアウト設計、サンプルサイズ + 有意性の判読（promote/kill）。 |
-| inbox-placement-monitor | S | *(NEW)* シードリストとプロバイダーシグナル経由の inbox-vs-spam プレースメント継続追跡、レピュテーション変動アラート付き。 |
-| cold-outbound-sequencer | D | *(NEW)* 準拠した B2B コールドアウトバウンドの頻度 —— deliverability に安全なランプ、パーソナライズトークン、返信処理ステップ。 |
+| inbox-placement-monitor | S | シードリストとプロバイダーシグナル経由の inbox-vs-spam プレースメント継続追跡、レピュテーション変動アラート付き。 |
+| cold-outbound-sequencer | D | 準拠した B2B コールドアウトバウンドの頻度 —— deliverability に安全なランプ、パーソナライズトークン、返信処理ステップ。 |
 
-**領域横断で再利用**（元フェーズで計上、重複なし）：[audience-mapper](../influencer/discover/audience-mapper/SKILL.md)、[landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md)、[roi-calculator](../influencer/measure/roi-calculator/SKILL.md)、[report-generator](../influencer/measure/report-generator/SKILL.md)、[performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md)、[offer-claims-registry](../protocol/offer-claims-registry/SKILL.md)。
+**領域横断で再利用**（元フェーズで計上、重複なし）：[audience-mapper](../influencer/scout/audience-mapper/SKILL.md)、[landing-optimizer](../influencer/report/landing-optimizer/SKILL.md)、[roi-calculator](../influencer/report/roi-calculator/SKILL.md)、[report-generator](../influencer/report/report-generator/SKILL.md)、[performance-analyzer](../influencer/report/performance-analyzer/SKILL.md)、[offer-claims-registry](../protocol/offer-claims-registry/SKILL.md)。
 
 </details>
 
@@ -398,52 +398,52 @@ Artifact Gate は**フレームワーク非依存**です —— 同じフック
 |-------|-----------|--------------|
 | campaign-architect | A + 構造 | アカウント/キャンペーン構造、キャンペーンタイプの適合、マッチタイプ、除外キーワード/除外、Paid↔オーガニックのカニバリゼーション；再帰的な **search-term-mining** モードを内蔵。 |
 | audience-segment-builder | A | 自社の顧客/CRM/GA4 エクスポートをシードオーディエンス、類似シード、除外セグメント、ファネル段階別ターゲティングマップに変換。 |
-| search-term-miner | A | *(NEW)* 検索語句レポートから除外語、新規キーワード候補、マッチタイプの精緻化を採掘。 |
-| product-feed-optimizer | O | *(NEW)* Shopping/PMax フィード衛生 —— タイトル、属性、GTIN、カテゴリマッピング、不承認の修正。 |
+| search-term-miner | A | 検索語句レポートから除外語、新規キーワード候補、マッチタイプの精緻化を採掘。 |
+| product-feed-optimizer | O | Shopping/PMax フィード衛生 —— タイトル、属性、GTIN、カテゴリマッピング、不承認の修正。 |
 | ad-creative-builder | O | RSA の見出し/説明文、フック、角度マトリクス。遷移先ページとメッセージ整合。 |
 | ad-test-designer | O (+S) | A/B/n & 増分テストを設計（仮説、バリアントマトリクス、サンプルサイズ/検出力）し、有意性を判読 → promote/kill。 |
-| bid-strategy-planner | S | *(NEW)* 目標別（tCPA/tROAS/max-conversions）に入札戦略を選定・設定し、ターゲットをシード、学習期の移行を計画。 |
-| landing-experience-checker | O | *(NEW)* クリック後ページの QA —— 広告関連性、読み込み速度、モバイル、ポリシー —— 広告↔ページのメッセージ整合チェック。 |
+| bid-strategy-planner | S | 目標別（tCPA/tROAS/max-conversions）に入札戦略を選定・設定し、ターゲットをシード、学習期の移行を計画。 |
+| landing-experience-checker | O | クリック後ページの QA —— 広告関連性、読み込み速度、モバイル、ポリシー —— 広告↔ページのメッセージ整合チェック。 |
 | ⛩ ad-account-auditor | R+O+A+S (RQS) | auditor クラスの ROAS ゲート：RQS を採点、R1/R2/O1/O2/A1 を強制、SHIP/FIX/BLOCK を出力；**Launch go/no-go** モードを内蔵。 |
 | conversion-signal-qa | R | ローンチ前のトラッキング QA（イベント発火、UTM 衛生、重複排除ゲート、ウィンドウ整合、iOS-ATT フラグ）—— R1/R2 の前提（シグナルを構築；ゲートが採点）。 |
-| placement-exclusion-manager | A | *(NEW)* プレースメント/オーディエンス除外リスト —— ブランドセーフティのブロック、ジャンクプレースメントの剪定、無駄支出の抑制。 |
-| conversion-value-mapper | R | *(NEW)* コンバージョンアクションを値/重みと値ルールにマッピングし、tROAS が生の件数でなく真のマージンに入札するように。 |
+| placement-exclusion-manager | A | プレースメント/オーディエンス除外リスト —— ブランドセーフティのブロック、ジャンクプレースメントの剪定、無駄支出の抑制。 |
+| conversion-value-mapper | R | コンバージョンアクションを値/重みと値ルールにマッピングし、tROAS が生の件数でなく真のマージンに入札するように。 |
 | paid-measurement-loop | R (+S) | 出荷済みの変更を、あるウィンドウで対照に照らして読み戻す → Promote / Keep-testing / Rollback / Unproven。 |
 | attribution-reconciler | R | GA4/ecommerce 真値集合に対する常時 order-ID 重複排除、ウィンドウ/通貨の正規化、モデル比較、増分。 |
-| budget-pacing-monitor | S | *(NEW)* フライト全体で予算に対する消化ペースを追跡、過少/過剰配信を検知、ペーシング修正を推奨。 |
-| fatigue-frequency-manager | O | *(NEW)* フリークエンシーとクリエイティブ劣化のシグナルを監視、疲弊した広告を検知、リフレッシュ/ローテーションを計画。 |
+| budget-pacing-monitor | S | フライト全体で予算に対する消化ペースを追跡、過少/過剰配信を検知、ペーシング修正を推奨。 |
+| fatigue-frequency-manager | O | フリークエンシーとクリエイティブ劣化のシグナルを監視、疲弊した広告を検知、リフレッシュ/ローテーションを計画。 |
 
-**領域横断で再利用**（元フェーズで計上、重複なし）：[budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md)（支出 + bid-pacing/学習期モード）、[landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md)（クリック後）、[roi-calculator](../influencer/measure/roi-calculator/SKILL.md)（リターン計算）、[report-generator](../influencer/measure/report-generator/SKILL.md)、[performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md)。
+**領域横断で再利用**（元フェーズで計上、重複なし）：[budget-optimizer](../influencer/target/budget-optimizer/SKILL.md)（支出 + bid-pacing/学習期モード）、[landing-optimizer](../influencer/report/landing-optimizer/SKILL.md)（クリック後）、[roi-calculator](../influencer/report/roi-calculator/SKILL.md)（リターン計算）、[report-generator](../influencer/report/report-generator/SKILL.md)、[performance-analyzer](../influencer/report/performance-analyzer/SKILL.md)。
 
 </details>
 
-### インフルエンサー (16)
+### インフルエンサー — STAR (16)
 
-4 つのフェーズディレクトリ（各 4 スキル）；本領域のゲート（⛩ content-reviewer）は Activate に位置。
+4 つのフェーズディレクトリ（各 4 スキル）；本領域のゲート（⛩ creator-content-auditor）は Activate に位置。
 
 | フェーズ | スキル |
 |-------|--------|
-| **Discover** | [audience-mapper](../influencer/discover/audience-mapper/SKILL.md), [trend-spotter](../influencer/discover/trend-spotter/SKILL.md), [influencer-discovery](../influencer/discover/influencer-discovery/SKILL.md), [fit-scorer](../influencer/discover/fit-scorer/SKILL.md) |
-| **Plan** | [competitor-tracker](../influencer/plan/competitor-tracker/SKILL.md), [campaign-planner](../influencer/plan/campaign-planner/SKILL.md), [brief-generator](../influencer/plan/brief-generator/SKILL.md), [budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md) |
-| **Activate** | [outreach-manager](../influencer/activate/outreach-manager/SKILL.md), ⛩ [content-reviewer](../influencer/activate/content-reviewer/SKILL.md), [contract-helper](../influencer/activate/contract-helper/SKILL.md), [content-amplifier](../influencer/activate/content-amplifier/SKILL.md) |
-| **Measure** | [landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md), [performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md), [roi-calculator](../influencer/measure/roi-calculator/SKILL.md), [report-generator](../influencer/measure/report-generator/SKILL.md) |
+| **Scout** | [audience-mapper](../influencer/scout/audience-mapper/SKILL.md), [trend-spotter](../influencer/scout/trend-spotter/SKILL.md), [influencer-discovery](../influencer/scout/influencer-discovery/SKILL.md), [fit-scorer](../influencer/scout/fit-scorer/SKILL.md) |
+| **Target** | [competitor-tracker](../influencer/target/competitor-tracker/SKILL.md), [campaign-planner](../influencer/target/campaign-planner/SKILL.md), [brief-generator](../influencer/target/brief-generator/SKILL.md), [budget-optimizer](../influencer/target/budget-optimizer/SKILL.md) |
+| **Activate** | [outreach-manager](../influencer/activate/outreach-manager/SKILL.md), ⛩ [creator-content-auditor](../influencer/activate/creator-content-auditor/SKILL.md), [contract-helper](../influencer/activate/contract-helper/SKILL.md), [content-amplifier](../influencer/activate/content-amplifier/SKILL.md) |
+| **Report** | [landing-optimizer](../influencer/report/landing-optimizer/SKILL.md), [performance-analyzer](../influencer/report/performance-analyzer/SKILL.md), [roi-calculator](../influencer/report/roi-calculator/SKILL.md), [report-generator](../influencer/report/report-generator/SKILL.md) |
 
 <details><summary><b>スキルごとの目的（インフルエンサー）</b></summary>
 
 | スキル | 何をするか |
 |-------|--------------|
-| audience-mapper | *(統合: audience-analyzer + niche-researcher)* クリエイターと組む前に、ターゲットオーディエンスをプロファイルし、そのサブカルチャー / マイクロコミュニティを地図化。 |
+| audience-mapper | クリエイターと組む前に、ターゲットオーディエンスをプロファイルし、そのサブカルチャー / マイクロコミュニティを地図化。 |
 | trend-spotter | キャンペーンのタイミングとテーマ —— トレンドのハッシュタグ、サウンド、フォーマット、文化的モーメント。 |
 | influencer-discovery | クリエイター名簿をゼロから構築、新プラットフォームへ拡大、nano/micro を大規模にソーシング。 |
-| fit-scorer | ショートリストの客観的な加重フィットスコア（C³ ACE で採点）。 |
+| fit-scorer | ショートリストの客観的な加重フィットスコア（STAR Suitability (S) で採点）。 |
 | competitor-tracker | 競合のクリエイター、キャンペーン、フォーマット、推定リーチ/支出、ギャップ。 |
 | campaign-planner | キャンペーン、製品ローンチ、テントポール、常時稼働のクリエイタープログラムを計画。 |
 | brief-generator | 標準化されたインフルエンサーブリーフと再利用可能なチームテンプレート。 |
 | budget-optimizer | ティア/プラットフォームに支出を配分、ROI を予測、シナリオをモデリング（Paid Ads の支出 + bid-pacing にも寄与）。 |
 | outreach-manager | ピッチ、フォローアップの頻度、再エンゲージ、料率交渉、ステータス追跡。 |
-| ⛩ content-reviewer | クリエイターの提出物への公開前ゲート判断（C³ ART：FTC 開示 T1、クレーム完全性 T2）。 |
+| ⛩ creator-content-auditor | クリエイターの提出物への公開前ゲート判断（STAR Trust：FTC 開示 STAR-T1、クレーム完全性 STAR-T2）。 |
 | contract-helper | クリエイター契約の起草/レビュー —— 使用権、独占、標準条項。 |
-| content-amplifier | *(統合: content-amplifier + ugc-repurposer)* オーガニックなクリエイターコンテンツを有料出稿で増幅し、UGC を Paid、Web、メール、オーガニックへ再利用。 |
+| content-amplifier | オーガニックなクリエイターコンテンツを有料出稿で増幅し、UGC を Paid、Web、メール、オーガニックへ再利用。 |
 | landing-optimizer | クリエイター/Paid トラフィック向けランディングページ —— メッセージ整合、モバイル、A/B（Paid のクリック後にも寄与）。 |
 | performance-analyzer | クリエイター結果を評価、クリエイターを比較、センチメント、コンバージョン（Paid のクロスチャネルスコアカードも）。 |
 | roi-calculator | ROI を測定/予測、予算を擁護、クリエイター/ティアを評価（共有のリターン計算エンジン、Paid を含む）。 |
@@ -483,7 +483,7 @@ Artifact Gate は**フレームワーク非依存**です —— 同じフック
 | launch-retro-analyzer | P | D1/W1/M1 レトロ —— チャネル別 actual-vs-target、最大のミスへの 5-Whys、keep/kill/change の判断、レジストリへの結果スナップショット。 |
 | momentum-planner | P | T+1→T+30 モメンタム計画 —— ローンチモーメントカレンダー、アナウンスのティアルーティング、relaunch の正当性判断、次の Tier-1 モーメント。 |
 
-**領域横断で再利用**（元フェーズで計上、重複なし）：`audience-mapper`、`trend-spotter`、`budget-optimizer`、`landing-optimizer`、`campaign-planner`、`outreach-manager`、`content-amplifier`、`email-creative-builder` / `email-sequence-designer` / `cold-outbound-sequencer`、`campaign-architect` / `ad-creative-builder`、`page-play-builder` / `content-writer`、`technical-seo-checker` / `serp-markup-builder`、`performance-monitor`、`keyword-research`、`entity-optimizer`、`offer-claims-registry`、`consent-registry`、`list-growth-designer`、`roi-calculator` / `performance-analyzer` / `report-generator` —— [ramp-benchmark.md](../references/ramp-benchmark.md) を参照。
+**領域横断で再利用**（元フェーズで計上、重複なし）：`audience-mapper`、`trend-spotter`、`budget-optimizer`、`landing-optimizer`、`campaign-planner`、`outreach-manager`、`content-amplifier`、`email-creative-builder` / `email-sequence-designer` / `cold-outbound-sequencer`、`campaign-architect` / `ad-creative-builder`、`page-play-builder` / `content-writer`、`technical-seo-checker` / `serp-markup-builder`、`performance-monitor`、`keyword-research`、`entity-registry`、`offer-claims-registry`、`consent-registry`、`list-growth-designer`、`roi-calculator` / `performance-analyzer` / `report-generator` —— [ramp-benchmark.md](../references/ramp-benchmark.md) を参照。
 
 </details>
 
@@ -493,13 +493,13 @@ Artifact Gate は**フレームワーク非依存**です —— 同じフック
 
 | グループ | スキル |
 |-------|--------|
-| **プロトコル** | [entity-optimizer](../protocol/entity-optimizer/SKILL.md), [creator-registry](../protocol/creator-registry/SKILL.md), [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md), [consent-registry](../protocol/consent-registry/SKILL.md), [launch-registry](../protocol/launch-registry/SKILL.md), [channel-registry](../protocol/channel-registry/SKILL.md), [narrative-registry](../protocol/narrative-registry/SKILL.md), [memory-management](../protocol/memory-management/SKILL.md) |
+| **プロトコル** | [entity-registry](../protocol/entity-registry/SKILL.md), [creator-registry](../protocol/creator-registry/SKILL.md), [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md), [consent-registry](../protocol/consent-registry/SKILL.md), [launch-registry](../protocol/launch-registry/SKILL.md), [channel-registry](../protocol/channel-registry/SKILL.md), [narrative-registry](../protocol/narrative-registry/SKILL.md), [memory-management](../protocol/memory-management/SKILL.md) |
 
 <details><summary><b>スキルごとの目的（プロトコル）</b></summary>
 
 | スキル | 何をするか |
 |-------|--------------|
-| entity-optimizer | ナレッジグラフ、Wikidata、AI 曖昧性解消のための正準的エンティティプロファイル。 |
+| entity-registry | ナレッジグラフ、Wikidata、AI 曖昧性解消のための正準的エンティティプロファイル。 |
 | creator-registry | 正準的なクリエイター名簿/ドシエ —— 重複排除されたハンドル、出所ラベル付きのオーディエンス統計、料率、コンプライアンス履歴。 |
 | offer-claims-registry | 正準的なオファー & クレーム裏付け台帳 —— O1/T2 クレームチェックが照合して判定される記録。 |
 | consent-registry | 被験者ごとの正準的な同意/抑制記録 —— オプトインのタイムスタンプ + 法的根拠、ダブルオプトインの証明、追記のみの解除/バウンス/苦情履歴；S2/N1 拒否が照合する記録。 |
@@ -520,16 +520,14 @@ Artifact Gate は**フレームワーク非依存**です —— 同じフック
 |---------|-----------|-----------|
 | `/aaron-marketing:auto` | 任意のゴールを記述 —— 意図を推論し最小限の有用なワークフローを実行 | `--deep`（網羅 / ストレステスト） |
 | `/aaron-marketing:narrative` | ブランドナラティブ（TALE ループ）：現在のストーリー & カテゴリをトレース、戦略ナラティブ & メッセージシステムを設計、チャネル全体に着地、品質ゲート、共鳴 & ドリフト | `--phase trace\|architect\|land\|evaluate` |
-| `/aaron-marketing:seo-geo` | SEO/GEO をエンドツーエンド：需要/競合の調査、コンテンツ作成、品質/技術/可視性/権威の監査、順位/レポート/メモリの追跡 | `--mode research\|create\|audit\|track` + モード別フラグ（`--competitors` `--map` · `--brief` `--series` `--refresh` `--publish` `--meta` `--schema` `--type` · `--full` `--tech` `--visibility` `--authority` · `--alert` `--report` `--remember` `--period`） |
-| `/aaron-marketing:influencer` | インフルエンサー：オーディエンスインサイト、発見 & フィット、計画、アウトリーチ、増幅、ROI | `--phase discover\|plan\|activate\|measure` |
+| `/aaron-marketing:seo-geo` | SEO/GEO をエンドツーエンド（SITE ループ）：需要/競合のサーベイ、コンテンツの実装、品質/技術/オンページのチューニング、権威/順位/レポート/メモリの評価 | `--phase survey\|implement\|tune\|evaluate` + フェーズ別フラグ（`--competitors` `--map` · `--brief` `--series` `--refresh` `--publish` `--meta` `--schema` `--type` · `--full` `--tech` `--visibility` · `--authority` `--alert` `--report` `--remember` `--period`） |
+| `/aaron-marketing:influencer` | インフルエンサー（STAR ループ）：オーディエンスインサイト、スカウティング & フィット、ターゲティング、アウトリーチ、増幅、ROI レポーティング | `--phase scout\|target\|activate\|report` |
 | `/aaron-marketing:ad` | Paid ads（ROAS ループ）：セグメント、構造、クリエイティブ、実験設計、監査ゲート、測定 | `--phase research\|orchestrate\|activate\|scale` |
 | `/aaron-marketing:email` | メール（SEND ループ）：deliverability/consent、セグメンテーション、クリエイティブ、ライフサイクルフロー、収益化、送信テスト、監査ゲート | `--phase setup\|engage\|nurture\|deliver` |
 | `/aaron-marketing:launch` | Product launch（RAMP ループ）：ポジショニング、ティア & ウィンドウ、メッセージハウス & アセット、readiness ゲート、ローンチ当日の運行、監視 & レトロ | `--phase research\|assemble\|mobilize\|prove` |
 | `/aaron-marketing:social` | Organic social（ECHO ループ）：チャネルポートフォリオ & ボイス、カレンダー & クリエイティブ、品質ゲート、エンゲージメント/危機のホスティング、パルス & 測定 | `--phase explore\|craft\|host\|observe` |
 
-日々の作業は通常 `/aaron-marketing:auto` から始まります；他の 7 つは明示的な領域エントリポイントで、`--mode` / `--phase` で段階を絞ります。
-
-**リネーム注記：** コマンドは `/aaron-marketing:` プレフィックスを使います。旧 `research` / `create` / `audit` / `track` コマンドはいまや `/aaron-marketing:seo-geo` のモードです（フラグは不変）。より古い `/seo:*` と `/aaron-seo-geo:*` の名前は `auto` 経由で復旧します —— 例：`/aaron-marketing:auto /aaron-seo-geo:audit https://example.com/blog/post` は `/aaron-marketing:seo-geo https://example.com/blog/post --mode audit` を返します。
+日々の作業は通常 `/aaron-marketing:auto` から始まります；他の 7 つは明示的な領域エントリポイントで、`--phase` で段階を絞ります。
 
 ---
 
@@ -570,29 +568,55 @@ Paid Ads スキルは**自アカウントの手動エクスポート**（ネイ�
 
 ## 推奨ワークフロー
 
-**SEO/GEO**
-1. **Research** — `keyword-research` → `competitor-analysis` → `content-gap-analysis`
-2. **Build** — `content-writer` → `geo-content-optimizer` → `serp-markup-builder` / `page-play-builder`
-3. **Optimize** — `content-quality-auditor`（⛩ 公開ゲート） → `on-page-seo-auditor` → `technical-seo-checker` → `site-structure-optimizer`
-4. **Monitor** — `rank-tracker` → `performance-monitor` → `offsite-signal-analyzer`；信頼レビューには `domain-authority-auditor`（⛩）
+実際のゴールは複数の分野にまたがることがほとんどです。`/aaron-marketing:auto` は自然言語のゴールを 7 分野の最小限のスキルチェーンへルーティングします——たとえばプロダクトローンチなら Launch・Email・Social・Paid を同時に動かします:
 
-**インフルエンサー**
-1. **Discover** — `audience-mapper` → `trend-spotter` → `influencer-discovery` → `fit-scorer`（C³ ACE）
-2. **Plan** — `competitor-tracker` → `campaign-planner` → `brief-generator` → `budget-optimizer`
-3. **Activate** — `outreach-manager` → `content-reviewer`（⛩ ART ゲート） → `contract-helper` → `content-amplifier`
-4. **Measure** — `landing-optimizer` → `performance-analyzer` → `roi-calculator` → `report-generator`
+```text
+/aaron-marketing:auto 3 週間後に Product Hunt で v2 をローンチ——ウェイトリスト 1,200 人。ページ、メール、ローンチ当日のプランが必要
+```
 
-**Paid Ads（ROAS ループ）**
-1. **Research** — `audience-segment-builder` → `campaign-architect`
-2. **Orchestrate** — `ad-creative-builder` → `ad-test-designer`（ページ用に + `landing-optimizer`）
-3. **Activate** — `conversion-signal-qa` → `ad-account-auditor`（⛩ RQS ゲート）、いかなる予算もライブになる前に
-4. **Scale** — `paid-measurement-loop` → `attribution-reconciler` → `roi-calculator` → `report-generator`
+1 つの分野のループを端から端まで回すこともできます（各分野ディレクトリの `README.md` ガイドがシナリオ別のプレイを提供します）:
 
-**メール（SEND ループ）**
+**Narrative（TALE ループ）**
+1. **Trace** — `narrative-baseline-mapper` → `category-narrative-mapper` → `audience-belief-mapper` → `positioning-truth-tracer`
+2. **Architect** — `strategic-narrative-designer` → `message-system-architect` → `brand-language-codifier` → `story-bank-builder`
+3. **Land** — `narrative-cascade-planner` → `pitch-narrative-builder` → `narrative-enablement-kit` → `proof-point-packager`
+4. **Evaluate** — `narrative-quality-auditor`（⛩ TALE ゲート）→ `message-test-designer` → `narrative-resonance-monitor` → `narrative-drift-monitor`
+
+**SEO/GEO（SITE ループ）**
+1. **Survey** — `keyword-research` → `competitor-analysis` → `content-gap-analysis`
+2. **Implement** — `content-writer` → `geo-content-optimizer` → `serp-markup-builder` / `page-play-builder`
+3. **Tune** — `content-quality-auditor`（⛩ 公開ゲート）→ `on-page-seo-checker` → `technical-seo-checker` → `site-structure-optimizer`
+4. **Evaluate** — `rank-tracker` → `performance-monitor` → `offsite-signal-analyzer`；信頼レビューは `domain-authority-auditor`（⛩）
+
+**Social（ECHO ループ）**
+1. **Explore** — `channel-portfolio-planner` → `voice-dossier-builder` → `platform-norm-profiler` → `participation-warmup-planner`
+2. **Craft** — `social-calendar-builder` → `social-creative-builder` → `short-video-scripter` → `advocacy-program-designer`
+3. **Host** — `social-quality-auditor`（⛩ ECHO ゲート）→ `engagement-inbox-manager` → `social-selling-planner` → `crisis-response-planner`
+4. **Observe** — `social-pulse-monitor` → `share-of-voice-tracker` → `dark-social-attributor` → `social-measurement-loop`
+
+**Email（SEND ループ）**
 1. **Setup** — `deliverability-qa` → `list-segment-builder`
 2. **Engage** — `email-creative-builder`
 3. **Nurture** — `email-sequence-designer` → `newsletter-monetization-planner`
-4. **Deliver** — `send-experiment-designer` → `email-quality-auditor`（⛩ EQS ゲート）、送信前に
+4. **Deliver** — `send-experiment-designer` → `email-quality-auditor` （⛩ EQS ゲート）を送信前に
+
+**Paid Ads（ROAS ループ）**
+1. **Research** — `audience-segment-builder` → `campaign-architect`
+2. **Orchestrate** — `ad-creative-builder` → `ad-test-designer` （ページは `landing-optimizer`）
+3. **Activate** — `conversion-signal-qa` → `ad-account-auditor` （⛩ RQS ゲート）を予算投入前に
+4. **Scale** — `paid-measurement-loop` → `attribution-reconciler` → `roi-calculator` → `report-generator`
+
+**インフルエンサー（STAR ループ）**
+1. **Scout** — `audience-mapper` → `trend-spotter` → `influencer-discovery` → `fit-scorer`（STAR Suitability）
+2. **Target** — `competitor-tracker` → `campaign-planner` → `brief-generator` → `budget-optimizer`
+3. **Activate** — `outreach-manager` → `creator-content-auditor`（⛩ STAR ゲート）→ `contract-helper` → `content-amplifier`
+4. **Report** — `landing-optimizer` → `performance-analyzer` → `roi-calculator` → `report-generator`
+
+**Launch（RAMP ループ）**
+1. **Research** — `positioning-mapper` → `launch-tier-planner` → `launch-window-planner` → `early-access-designer`
+2. **Assemble** — `message-house-builder` → `launch-asset-packager` → `pricing-packaging-planner` → `sales-enablement-kit`
+3. **Mobilize** — `launch-readiness-auditor`（⛩ RAMP ゲート）→ `launch-day-conductor` → `community-launch-runner` → `press-media-relations`
+4. **Prove** — `launch-monitor` → `launch-feedback-synthesizer` → `launch-retro-analyzer` → `momentum-planner`
 
 完全な信頼レビューには、`content-quality-auditor` と `domain-authority-auditor` を組み合わせて合計 120 項目の評価に。`memory-management` が有効なら、引き継ぎと未決事項は HOT/WARM/COLD メモリに自動で永続化されます。
 
@@ -602,8 +626,8 @@ Paid Ads スキルは**自アカウントの手動エクスポート**（ネイ�
 
 ```
 narrative/{trace,architect,land,evaluate}/                  # Narrative — TALE（16、そのゲートを含む）
-seo-geo/{research,build,optimize,monitor}/                  # SEO/GEO（16、2 つのゲートを含む）
-influencer/{discover,plan,activate,measure}/                   # インフルエンサー（16、そのゲートを含む）
+seo-geo/{survey,implement,tune,evaluate}/                   # SEO/GEO（16、2 つのゲートを含む）
+influencer/{scout,target,activate,report}/                     # インフルエンサー（16、そのゲートを含む）
 ad/research|orchestrate|activate|scale/            # Paid Ads — ROAS（16、そのゲートを含む）
 email/setup|engage|nurture|deliver/                  # Email — SEND（16、そのゲートを含む）
 launch/research|assemble|mobilize|prove/             # Launch — RAMP（16、そのゲートを含む）
@@ -653,7 +677,7 @@ docs/            # ローカライズ済み README（zh）
 ## コントリビュートとプロジェクトドキュメント
 
 - **[CONTRIBUTING.md](../CONTRIBUTING.md)** —— オーサリングルール、コントリビューションチェックリスト、権威ある 10 の追跡サーフェスのリスト。
-- **[VERSIONS.md](../VERSIONS.md)** —— スキルごとのバージョン + changelog（現在のバンドル：`17.0.0`）。
+- **[VERSIONS.md](../VERSIONS.md)** —— スキルごとのバージョン + changelog（現在のバンドル：`18.0.0`）。
 - **[SECURITY.md](../SECURITY.md)** · **[PRIVACY.md](../PRIVACY.md)** · **[CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md)** —— セキュリティ、プライバシー、コミュニティのポリシー。
 - **[CLAUDE.md](../CLAUDE.md)** / **[AGENTS.md](../AGENTS.md)** —— この repo のエージェント向けコンテキスト。
 
@@ -667,7 +691,7 @@ docs/            # ローカライズ済み README（zh）
 
 Apache License 2.0 —— [LICENSE](../LICENSE) を参照。
 
-*英語 README との最終同期：v17.0.0*
+*英語 README との最終同期：v18.0.0*
 
 ## Star History
 

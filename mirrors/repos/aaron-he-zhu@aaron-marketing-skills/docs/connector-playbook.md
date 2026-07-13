@@ -108,7 +108,7 @@ not Firecrawl's 8, because only 4 gained something distinct). For each skill:
 
 ## Phase 6 — Track
 
-The 8-file list in [CONTRIBUTING.md §6](../CONTRIBUTING.md) + a `VERSIONS.md`
+The 10-surface list in [CONTRIBUTING.md §6](../CONTRIBUTING.md) + a `VERSIONS.md`
 changelog entry (what shipped · skills wired · safety gates · verified-date ·
 deliberately-not-done list). `scripts/check-versions.sh` fails CI on any
 drift, so run it locally after this phase.
@@ -121,7 +121,7 @@ python3 -m py_compile scripts/connectors/*.py
 bash scripts/check-stdlib-only.sh
 bash scripts/check-versions.sh
 cmp marketplace.json .claude-plugin/marketplace.json
-for d in seo-geo/*/*/ influencer/*/*/ ad/*/*/ email/*/*/ protocol/*/; do
+for d in narrative/*/*/ seo-geo/*/*/ social/*/*/ email/*/*/ ad/*/*/ influencer/*/*/ launch/*/*/ protocol/*/; do
   bash scripts/validate-skill.sh "${d%/}" || exit 1
 done
 bash scripts/connectors/smoke-live.sh   # manual, live — before release

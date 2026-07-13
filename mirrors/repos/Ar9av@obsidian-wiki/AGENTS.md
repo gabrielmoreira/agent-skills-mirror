@@ -35,6 +35,7 @@ $OBSIDIAN_VAULT_PATH/
 │   └── *.base              # Obsidian Bases dashboard definitions (wiki-dashboard skill)
 ├── _insights.md            # Graph analysis output (hubs, bridges, dead ends)
 ├── _raw/                   # Staging area — drop rough notes here, next ingest promotes them
+├── _readouts/              # Derived narrative readouts saved by wiki-narrate — not knowledge pages
 ├── concepts/               # Abstract ideas, patterns, mental models
 ├── entities/               # Concrete things — people, tools, libraries, companies
 ├── skills/                 # How-to knowledge, techniques, procedures
@@ -65,6 +66,7 @@ Skills live in `.skills/<name>/SKILL.md`. Match the user's intent to the right s
 | "what's the status" / "what's been ingested" / "show the delta" | `wiki-status` |
 | "wiki insights" / "hubs" / "wiki structure" | `wiki-status` (insights mode) |
 | "what do I know about X" / "find info on Y" / any question | `wiki-query` |
+| "narrate" / "briefing" / "explain this topic" / "/wiki-narrate" | `wiki-narrate` |
 | "audit" / "lint" / "find broken links" / "wiki health" | `wiki-lint` |
 | "dedup my wiki" / "find duplicate pages" / "merge duplicates" / "identity resolution" / "consolidate my wiki" | `wiki-dedup` |
 | "rebuild" / "start over" / "archive" / "restore" | `wiki-rebuild` |

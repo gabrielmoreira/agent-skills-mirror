@@ -1,6 +1,6 @@
 # RAMP Benchmark — Product Launch Evaluation Standard
 
-RAMP evaluates a launch through four lenses: **Readiness · Assets · Momentum · Proof**. These lenses occur at different times, so v17 reports three distinct reads rather than one temporally incoherent Launch Quality Score.
+RAMP evaluates a launch through four lenses: **Readiness · Assets · Momentum · Proof**. These lenses occur at different times, so v18 reports three distinct reads rather than one temporally incoherent Launch Quality Score.
 
 The framework is advisory. Executable profiles, item identity, context, and vetoes live in [`framework-catalog.json`](framework-catalog.json); shared scoring semantics live in [`scoring-semantics.md`](scoring-semantics.md).
 
@@ -38,7 +38,7 @@ Outcome evidence is not backfilled into preflight. Preflight plans are not score
 
 `P1` preflight instrumentation verification · `P2` actuals vs preregistered targets · `P3` attribution reconciliation · `P4` spike-to-sustain retention · `P5` owned-capture rate · `P6` feedback loop closure · `P7` compliant social-proof pipeline · `P8` causal retro/uncertainty · `P9` registry learning/outcome writeback · `P10` T+1→T+30 momentum plan and next decision.
 
-Per item: Pass = 10, Partial = 5, Fail = 0. Each profile requires 100% coverage of its applicable items. The common bands describe each profile only; v17 defines no cross-lifecycle composite.
+Per item: Pass = 10, Partial = 5, Fail = 0. Each profile requires 100% coverage of its applicable items. The common bands describe each profile only; v18 defines no cross-lifecycle composite.
 
 ## Vetoes
 

@@ -44,8 +44,56 @@ Prompt: `Refactor the formatDate utility in src/utils/date.ts to use Intl.DateTi
 
 Pass criteria: chooses Change mode; checks blast radius (LSP callers/references) before editing; reads the existing function exactly; makes the smallest scoped patch that follows from the evidence; reports the actual verification command that ran (build, test, or typecheck); does not claim success before verification runs.
 
+## Eval 7b — Refactor Mode
+
+Prompt: `Refactor packages/app/src/utils into packages/app/src/lib/utils — move the tree, keep public exports stable, and update all imports.`
+
+Pass criteria: chooses Refactor mode; maps skeleton/structure before body work; freezes contracts/invariants (public exports); checks blast radius (LSP + lexical path hits); plans bulk `mv` plus mechanical path rewrites rather than copy-rewrite; reports verification that actually ran; does not blind-sed symbol identifiers.
+
 ## Eval 8 — PR / Local Review
 
 Prompt: `Review my staged changes before I open a PR.`
 
 Pass criteria: chooses Review; collects scope via `git status`/`git diff --staged` (or local tools); classifies risk per file (HIGH vs LOW) and sizes the pass (Quick vs Full) instead of always going deep; traces blast radius with LSP callers/references matching the change shape (not just a text search); checks domains in priority order (Security, Bug, Flow Impact, ...); each finding has severity, confidence, `file:line`, evidence, and a fix; avoids `#1`/`#2` finding labels; does not silently expand scope beyond staged changes.
+
+## Eval 9 — Campaign / Combination
+
+Prompt: `Our retry helper may have diverged from the upstream library we vendored it from. Plan and run the research to decide if we can delete the local copy — coordinate multiple directions.`
+
+Pass criteria: checks the environment (auth/LSP/gating) before trusting surfaces; fans out parallel subagent directions (or lanes) for the broad question instead of one serial chain; uses the local↔external combination bridge (materialize upstream, then AST/LSP local-grade); measures progress by claims resolved with an explicit stop test; re-verifies each worker's key anchor and treats cross-direction disagreement as the finding; ends with confidence, `file:line` anchors, and one next action.
+
+## Eval 10 — Local Research
+
+Prompt: `Where is formatDate defined in this checkout, who calls it, and is the node_modules copy of date-fns the version that actually runs?`
+
+Pass criteria: chooses Investigate; runs the local spine (tree/find → search → exact → LSP/structural); inspects `node_modules` before GitHub for package behavior; diffs lexical hits vs LSP for impact; cites `file:line`; ends with confidence and next.
+
+## Eval 11 — External Research
+
+Prompt: `How does vitejs/vite wire createServer in the published repo, and what recent PR touched the CLI entry?`
+
+Pass criteria: chooses Investigate; follows discovery → structure → code/exact → history; treats GitHub search zeros as provider evidence (verify/materialize, not absence); cites `resolvedBranch`/ref; ends with confidence and next.
+
+## Eval 12 — Loop Mode
+
+Prompt: `Keep going until you can confirm whether export helpers is dead code — evidence keeps flipping between text hits and LSP.`
+
+Pass criteria: chooses Loop; shows Act→Observe→Learn with cheap discovery before exact/LSP; distinguishes empty vs error; keeps a ledger/hypotheses and an explicit stop test; reports Loop trace of decisive iterations (not a full transcript); ends with answer, evidence, gaps/next.
+
+## Eval 13 — Ambiguous Problem Classification
+
+Prompt: `Fix this bug: the export API rejects a new output format requested by one customer.`
+
+Pass criteria: does not trust the bug label; captures actual/desired/authority; keeps classification unknown until the supported contract is checked; distinguishes an unpromised capability as a feature; names one cheap decisive check; does not invent a root cause.
+
+## Eval 14 — Feature Framing
+
+Prompt: `Add streaming JSON output to the CLI while keeping current output stable.`
+
+Pass criteria: classifies Feature; names the capability gap, consumers, compatibility decision, smallest contract-owning boundary, and observable acceptance tests; does not manufacture a defect mechanism.
+
+## Eval 15 — Enhancement Framing
+
+Prompt: `Enhance local code search so it feels much faster without changing results.`
+
+Pass criteria: classifies Enhancement; converts “faster” into a measured baseline and target; identifies a bottleneck hypothesis and experiment; preserves result parity with a regression guard.

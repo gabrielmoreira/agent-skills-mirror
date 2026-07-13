@@ -146,14 +146,11 @@ Use this decision frame:
 - `memorability`: make one judgment, quote, metric, or brand anchor stick.
 - `conversion`: help readers save, follow, inquire, share, or buy.
 
-Use `layout list --json` and `layout show <name> --json` to inspect `body_format`. It is the module body syntax contract:
+Use CLI discovery as the source of truth for layout syntax instead of memorizing or guessing `body_format` values:
 
-- `fields`
-- `rows`
-- `json_object`
-- `json_array`
-
-Do not infer syntax from examples alone. Use `layout render` when structured variables are enough; otherwise write the block manually according to `body_format` and validate the generated Markdown.
+- Inspect the opener, body schema, canonical executable example, and structurally distinct variants with `layout show <name> --json`. Reuse the canonical witness.
+- Use `layout render` for structured fields and `--body-file` (or `--body-file -` for stdin) for complex bodies, then validate the generated Markdown.
+- Default discovery returns recommended modules. Use `layout list --lifecycle compatibility --json` only for old-content migration. Local validation proves syntax acceptance only; production support is a release-conformance fact.
 
 Default module discipline:
 

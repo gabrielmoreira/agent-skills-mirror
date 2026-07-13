@@ -12,8 +12,6 @@ SessionManager
 │   └── Wraps: codex exec --sandbox workspace-write --json (per-message spawning)
 ├── engine: 'codex-app' → PersistentCodexAppServerSession
 │   └── Wraps: codex app-server --listen stdio:// (long-running JSON-RPC; required for /goal)
-├── engine: 'gemini'    → PersistentGeminiSession
-│   └── Wraps: gemini -p --output-format stream-json (per-message spawning)
 ├── engine: 'agy'       → PersistentAgySession
 │   └── Wraps: agy -p (Google Antigravity CLI, per-message spawning, plain-text output)
 ├── engine: 'cursor'    → PersistentCursorSession
@@ -28,7 +26,7 @@ SessionManager
 
 ### Claude Code (`engine: 'claude'`)
 
-Default engine. Long-running subprocess with streaming JSON I/O. Tested with Claude Code CLI **2.1.206**.
+Default engine. Long-running subprocess with streaming JSON I/O. Tested with Claude Code CLI **2.1.207**.
 
 - Persistent multi-turn conversations
 - Real-time streaming (text, tool_use, tool_result, system events)
@@ -54,7 +52,7 @@ await manager.startSession({
 
 ### OpenAI Codex (`engine: 'codex'`)
 
-Wraps the `codex exec` subcommand. Each `send()` spawns a new process. Tested with `codex` CLI **0.143.0**.
+Wraps the `codex exec` subcommand. Each `send()` spawns a new process. Tested with `codex` CLI **0.144.1**.
 
 - Non-interactive execution via `codex exec --sandbox workspace-write --json` (replaces the deprecated `--full-auto` flag from earlier Codex versions)
 - Real per-turn `usage` from the `turn.completed` JSON event (input, output, cached, reasoning tokens)
@@ -63,6 +61,7 @@ Wraps the `codex exec` subcommand. Each `send()` spawns a new process. Tested wi
 - `codexProfile` → `--profile <name>` (named config profile from `~/.codex/config.toml`)
 - Per-session continuity: the `thread_id` from the first turn's `thread.started` event is captured and reused via `codex exec resume <id>` for subsequent sends, so the model sees prior turns
 - One-shot execution per message (no persistent subprocess between sends)
+- Captures the real Codex thread ID and persists it, so later sends and process-level session resume use `codex exec resume <thread_id>`
 - Working directory passed via `-C` flag
 - Default model: `gpt-5.5`
 - Requires `codex` CLI >= 0.119 (for `exec resume`): `npm install -g @openai/codex`
@@ -106,33 +105,11 @@ await manager.startSession({
 //   await tool('codex_goal_set', { name: 'codex-goal-task', objective: 'build a tic-tac-toe app' });
 ```
 
-### Google Gemini (`engine: 'gemini'`)
-
-Wraps the `gemini` CLI with `--output-format stream-json`. Each `send()` spawns a new process.
-
-- One-shot execution per message (no persistent subprocess)
-- Working directory carries accumulated changes across sends
-- Real token counts from stream-json `result` events (not estimated)
-- Permission modes: `bypassPermissions` → `--yolo`, `default` → `--sandbox`
-- Always passes `--skip-trust` to bypass the "trusted folders" gate introduced
-  in Gemini CLI 0.43 (otherwise headless runs in worktrees / arbitrary cwds
-  abort before producing output)
-- Requires `gemini` CLI installed: `npm install -g @google/gemini-cli`
-
-```typescript
-await manager.startSession({
-  name: 'gemini-task',
-  engine: 'gemini',
-  model: 'gemini-3.1-pro-preview',
-  cwd: '/project',
-});
-```
-
 ### Google Antigravity (`engine: 'agy'`)
 
 Wraps Google's **Antigravity CLI** (`agy`) — the successor to Gemini CLI (consumer
 Gemini CLI tiers stopped serving 2026-06-18). Each `send()` spawns a new process
-in print mode. Verified against `agy` **1.0.16**.
+in print mode. Verified against `agy` **1.1.1**.
 
 - One-shot execution per message (no persistent subprocess)
 - **Plain-text output** — agy has no structured/stream-json mode, so stdout is
@@ -143,9 +120,10 @@ in print mode. Verified against `agy` **1.0.16**.
   externally via `resumeSessionId` (bare UUID only); read it back from
   `getStats().agyConversationId`
 - Permission modes: `bypassPermissions` → `--dangerously-skip-permissions`,
-  `default` → `--sandbox` (terminal-restricted). Other modes run agy's own
-  approval flow, which blocks in headless print mode — use `bypassPermissions`
-  for autonomous work
+  `default` → `--sandbox` (terminal-restricted), and
+  `sandboxMode: 'read-only'` → `--mode plan` (takes precedence). Other modes
+  run agy's own approval flow, which blocks in headless print mode — use
+  `bypassPermissions` for autonomous write-enabled work
 - agy enforces its own print timeout (default 5m); the engine derives
   `--print-timeout` from the send timeout so the wrapper timer decides
 - Unknown `--model` slugs do **not** error — agy silently falls back to its
@@ -167,14 +145,22 @@ await manager.startSession({
 });
 ```
 
+> **Legacy: `engine: 'gemini'`.** Google sunset the consumer Gemini CLI (tiers stopped
+> serving 2026-06-18) in favour of Antigravity. The `gemini` engine still exists and
+> still works — existing callers are not broken, and `gemini-*` model strings outside
+> agy's registered slugs still route to it — but it is no longer a documented option,
+> is not version-tracked, and gets no new work. Use `agy` for Google. (Unrelated: the
+> multi-model **proxy** still talks to the Gemini **API**; that is a different
+> subsystem and is unaffected.)
+
 ### Cursor Agent (`engine: 'cursor'`)
 
-Wraps the Cursor Agent CLI (`agent`) with `--print --force --output-format stream-json`. Each `send()` spawns a new process.
+Wraps the Cursor Agent CLI (`agent`) with `--print --output-format stream-json`. Write-enabled sessions use `--force`. Each `send()` spawns a new process.
 
 - One-shot execution per message (no persistent subprocess)
 - Working directory via `--workspace` flag
 - Real token counts from stream-json `result` events (camelCase: `inputTokens`, `outputTokens`, `cacheReadTokens`)
-- `--force` enables auto-approval of all file changes
+- `--force` enables auto-approval of file changes. `sandboxMode: 'read-only'` does **not** use `--force`; it enforces read-only via a binding `.cursor/cli.json` deny config (`Write`/`Edit`/`Shell` denied) written into an isolated temp dir used as the process cwd, with `--workspace` pointing at the real project (the repo tree is never modified). `--mode plan` is passed too as model steering, but the deny config is the actual boundary — plan mode alone is model-cooperative and was verified to let an adversarial prompt write. Do not add `--sandbox` (it does not restrict in-workspace writes and overrides the mode). Read/grep/search remain available
 - `--trust` auto-trusts the workspace without prompting
 - Cursor uses its own model routing (e.g., `sonnet-4`, `gpt-5`, `auto`)
 - Requires Cursor Agent CLI: `curl https://cursor.com/install -fsSL | bash`
@@ -200,6 +186,7 @@ Wraps the [sst/opencode](https://github.com/sst/opencode) CLI with `run --format
 - Real token counts from `step_finish.part.tokens.{input,output,cache.read}`
 - The wrapper closes the subprocess's stdin immediately after spawn (opencode otherwise reads stdin and blocks on EOF, hanging the call)
 - Provider-agnostic: opencode's `--model` expects `provider/model` form (e.g. `anthropic/claude-sonnet-4`). The wrapper passes `--model` through only when the value contains a `/`; otherwise opencode's own default applies
+- `sandboxMode: 'read-only'` spawns a generated `clawo-readonly` agent (`--agent clawo-readonly` plus an `OPENCODE_CONFIG_CONTENT` env var defining it) whose permissions deny `edit` / `bash` / `external_directory`. It deliberately does **not** use OpenCode's built-in `plan` agent: that is a user-overridable preset whose compiled rules start with `{"permission":"*","action":"allow"}` and deny neither `bash` nor `edit`, so a "read-only" session could still author files through a shell heredoc. Verified against opencode 1.17.15 by attempting a real write, which the agent cannot perform (its toolset has no write/bash tools). Note that `opencode agent list` renders compiled permission rules and does not show the tool-level restriction — trust an actual write attempt, not that view
 - Requires opencode installed: `brew install sst/tap/opencode` or `npm install -g opencode-ai`. Auth via `opencode auth login` **or** any provider env var (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, etc.) — opencode picks up either path
 - Binary: `opencode` (set `OPENCODE_BIN` env var to override)
 
@@ -262,7 +249,7 @@ Team tools (`team_list`, `team_send`) operate on the same virtual-team layer for
 |--------|------------|-------------|
 | Claude | Lists other active SessionManager sessions | Routes via cross-session inbox |
 | Codex | Lists other active SessionManager sessions | Routes via cross-session inbox |
-| Gemini | Lists other active SessionManager sessions | Routes via cross-session inbox |
+| Antigravity | Lists other active SessionManager sessions | Routes via cross-session inbox |
 | Cursor | Lists other active SessionManager sessions | Routes via cross-session inbox |
 
 Messages are delivered via the inbox system — idle sessions receive immediately, busy sessions queue for later delivery.
@@ -318,7 +305,7 @@ Integrate **any** coding agent CLI without writing engine-specific code. You pro
 
 Two protocol modes:
 - **Persistent** (`persistent: true`) — long-running subprocess with stream-json I/O over stdin/stdout (like Claude Code)
-- **One-shot** (`persistent: false`, default) — new process spawned per `send()` (like Gemini/Codex)
+- **One-shot** (`persistent: false`, default) — new process spawned per `send()` (like Codex/Antigravity)
 
 ### CustomEngineConfig
 

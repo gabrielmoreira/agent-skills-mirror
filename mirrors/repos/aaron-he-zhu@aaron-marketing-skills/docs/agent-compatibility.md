@@ -57,7 +57,7 @@ Hermes pulls from multiple hubs; three routes work for this bundle, in order of 
 
 | SkillHub field | Repo convention |
 |----------------|-----------------|
-| `slug` (required, globally unique) | `aaron-<skill-name>` — e.g. `aaron-keyword-research` (validator-enforced) |
+| `slug` (required, globally unique) | unprefixed `<skill-name>` preferred, `aaron-<skill-name>` as the collision fallback — e.g. `keyword-research` (validator-enforced) |
 | `displayName` (required) | bilingual: `"Keyword Research · 关键词研究"` |
 | `summary` (recommended) | Chinese one-liner for the listing card |
 | `version` / `license` / `homepage` | shared with the Agent Skills fields |

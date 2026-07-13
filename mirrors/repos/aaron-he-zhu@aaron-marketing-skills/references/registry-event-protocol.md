@@ -23,7 +23,7 @@ This protocol is the executable write boundary for the seven truth registries. [
 
 | Registry key | Owning skill | Optional human view path |
 |---|---|---|
-| `entities` | `entity-optimizer` | `memory/entities/` |
+| `entities` | `entity-registry` | `memory/entities/` |
 | `creators` | `creator-registry` | `memory/creators/` |
 | `claims` | `offer-claims-registry` | `memory/claims/` |
 | `consent` | `consent-registry` | `memory/consent/` |

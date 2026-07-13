@@ -182,7 +182,7 @@ Do not promote when sample/precision is inadequate, attribution is dirty, exclus
 ## Per-discipline latency notes
 
 - **SEO/GEO** — the four-layer model above (crawler access → citability → surfacing → rankings). Proxy (L2) is minutes; outcomes (L3/L4) are weeks. Always read against a control.
-- **Influencer** — content has a short head (first 24–48h decides most reach) then a long tail; judge a post on its own platform analytics vs the creator's recent median, not vs another creator. ROI/CVI roll up per the [C³ framework](c3-benchmark.md).
+- **Influencer** — content has a short head (first 24–48h decides most reach) then a long tail; judge a post on its own platform analytics vs the creator's recent median, not vs another creator. Return rolls up into the SQS per the [STAR framework](star-benchmark.md).
 - **Paid ads** — auction feedback is near-instant, so the latency problem inverts vs GEO: the slow parts are **conversion lag** (a click today converts days later) and **attribution windows** (Meta 7-day-click vs Google last-click are not comparable — normalize before diffing), plus **learning-phase noise** (editing a campaign still in learning resets it; do not read or change it until it exits). Never compare cross-platform ROAS without normalizing window + currency. Scores roll up per the ROAS framework (`references/roas-benchmark.md`, added in the Paid Ads wave).
 
 ## Frequency ceiling by objective
@@ -216,7 +216,7 @@ Notes on reading the band:
 
 ## Relationship to the Eight Frameworks
 
-CORE-EEAT, CITE, C3, ROAS, SEND, RAMP, ECHO, and TALE scores are advisory quality-control summaries. Deterministic math guards internal consistency; it does not establish reliability or external validity. Outcome calibration must follow the preregistered, version-locked study in [`scoring-semantics.md`](scoring-semantics.md). Until that study succeeds for a named profile/population/outcome, present scores as structured audit evidence, not outcome predictors.
+CORE-EEAT, CITE, STAR, ROAS, SEND, RAMP, ECHO, and TALE scores are advisory quality-control summaries. Deterministic math guards internal consistency; it does not establish reliability or external validity. Outcome calibration must follow the preregistered, version-locked study in [`scoring-semantics.md`](scoring-semantics.md). Until that study succeeds for a named profile/population/outcome, present scores as structured audit evidence, not outcome predictors.
 
 See also: [CONNECTORS.md](../CONNECTORS.md) (the data recipes and the measurement-loop note),
 [scripts/connectors/README.md](../scripts/connectors/README.md) (helper reference),

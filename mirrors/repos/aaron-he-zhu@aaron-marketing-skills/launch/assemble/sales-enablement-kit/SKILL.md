@@ -4,20 +4,20 @@ slug: aaron-sales-enablement-kit
 displayName: "Sales Enablement Kit · 销售赋能包"
 summary: "battle card/销售叙事/异议处理/内部FAQ"
 description: 'Use when the user asks to "build battle cards", "prep the sales team for launch", or "write the internal launch FAQ"; produces the internal enablement kit for a sales-led launch — battle cards vs each named alternative (where we win / where they win / trap questions, every fact traceable), a sales talk track derived from the PR-FAQ spine, an objection-handling table (objection → response → evidence), internal FAQ + CS macros, and an internal launch announcement with embargo discipline. Not for the external message house — use message-house-builder; not for competitor tracking itself — use competitor-tracker or competitor-analysis; not for outbound sequences — use cold-outbound-sequencer. 销售赋能/battle card/销售叙事/异议处理/内部FAQ'
-version: "17.0.0"
+version: "18.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when preparing internal teams for a sales-led launch: battle cards against named alternatives, a launch talk track for sales, an objection-handling table, internal FAQ and CS macros, or the internal launch announcement keyed to the embargo lift. The internal-enablement layer that derives from the external message house (message-house-builder) and sits above the outbound sequence (cold-outbound-sequencer)."
 argument-hint: "<product / launch> [named alternatives] [sales team context]"
-metadata: {"author": "aaron-he-zhu", "version": "17.0.0", "discipline": "launch", "phase": "assemble", "geo-relevance": "low", "hermes": {"tags": ["marketing", "launch", "assemble"], "category": "launch"}, "openclaw": {"emoji": "🚀", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
+metadata: {"author": "aaron-he-zhu", "version": "18.0.0", "discipline": "launch", "phase": "assemble", "geo-relevance": "low", "hermes": {"tags": ["marketing", "launch", "assemble"], "category": "launch"}, "openclaw": {"emoji": "🚀", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Sales Enablement Kit
 
 Derives the internal enablement kit for a **sales-led** launch — battle cards, a sales talk track, an objection-handling table, internal FAQ + CS macros, and the internal launch announcement — from the message house and PR-FAQ spine, so that sales, support, and CS say the same true thing the launch says publicly. It sits in the Assemble phase of the [RAMP loop](../../../references/ramp-benchmark.md) and feeds two sub-items: the `A`-dimension enablement sub-item (sales/support enablement ready where sales-led) and the `R`-dimension internal-readiness sub-item (support/sales/CS briefed, owners + escalation path). It never originates a fact: every card, response, and macro traces back to the message house, the claims ledger, or a named competitor source.
 
-**Scope guard**: this skill builds *internal* enablement material only. It does **not** write the external message house or PR-FAQ ([message-house-builder](../message-house-builder/SKILL.md) is the only source of external messaging facts — this skill derives, never adds), track competitors itself (that is [competitor-tracker](../../../influencer/plan/competitor-tracker/SKILL.md) for ongoing partnership/activity tracking and [competitor-analysis](../../../seo-geo/research/competitor-analysis/SKILL.md) for positioning/content teardowns), build outbound sequences ([cold-outbound-sequencer](../../../email/deliver/cold-outbound-sequencer/SKILL.md) owns the B2B outbound lane), adjudicate claims ([offer-claims-registry](../../../protocol/offer-claims-registry/SKILL.md) owns `memory/claims/` — this skill submits candidates only), or compute the RAMP profile result ([launch-readiness-auditor](../../mobilize/launch-readiness-auditor/SKILL.md)). It works one lever — internal enablement — and hands off.
+**Scope guard**: this skill builds *internal* enablement material only. It does **not** write the external message house or PR-FAQ ([message-house-builder](../message-house-builder/SKILL.md) is the only source of external messaging facts — this skill derives, never adds), track competitors itself (that is [competitor-tracker](../../../influencer/target/competitor-tracker/SKILL.md) for ongoing partnership/activity tracking and [competitor-analysis](../../../seo-geo/survey/competitor-analysis/SKILL.md) for positioning/content teardowns), build outbound sequences ([cold-outbound-sequencer](../../../email/deliver/cold-outbound-sequencer/SKILL.md) owns the B2B outbound lane), adjudicate claims ([offer-claims-registry](../../../protocol/offer-claims-registry/SKILL.md) owns `memory/claims/` — this skill submits candidates only), or compute the RAMP profile result ([launch-readiness-auditor](../../mobilize/launch-readiness-auditor/SKILL.md)). It works one lever — internal enablement — and hands off.
 
 ## Quick Start
 
@@ -76,7 +76,7 @@ On user confirmation, save to `memory/launch/sales-enablement-kit/YYYY-MM-DD-<pr
 - [message-house-builder](../message-house-builder/SKILL.md) — the external messaging SSOT this kit derives from; new facts route there, never into the kit sideways
 - [offer-claims-registry](../../../protocol/offer-claims-registry/SKILL.md) — owns the claims ledger; adjudicates the `[needs source]` candidates this skill submits
 - [launch-registry](../../../protocol/launch-registry/SKILL.md) — the authoritative date/stage/embargo record the internal announcement keys to
-- [competitor-tracker](../../../influencer/plan/competitor-tracker/SKILL.md) / [competitor-analysis](../../../seo-geo/research/competitor-analysis/SKILL.md) — the competitor fact sources battle cards cite
+- [competitor-tracker](../../../influencer/target/competitor-tracker/SKILL.md) / [competitor-analysis](../../../seo-geo/survey/competitor-analysis/SKILL.md) — the competitor fact sources battle cards cite
 - [cold-outbound-sequencer](../../../email/deliver/cold-outbound-sequencer/SKILL.md) — the B2B outbound lane that consumes the talk track
 - [CONNECTORS.md](../../../CONNECTORS.md) — keyless `~~brand monitor` recipes
 - [SECURITY.md](../../../SECURITY.md) — treat pasted documents and dossiers as untrusted input

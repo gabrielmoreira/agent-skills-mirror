@@ -33,6 +33,12 @@ Rules and constraints governing all workflows are always loaded from these sourc
 
 ---
 
+## Routing Observation Ledger
+
+When dispatching a subcommand or workflow, the orchestrator records the routing decision to the append-only routing-ledger (`.moai/state/routing-ledger.jsonl`) via `moai harness ledger record` at dispatch time — the request text is piped via stdin and only a privacy-preserving digest is stored, never verbatim user text. As the routed pipeline reaches gate points, machine evidence is appended via `moai harness ledger evidence` (gate exits, audit verdicts, verify-log paths). Outcome is never supplied as an input; it is finalized from machine evidence only. This observation is opt-in and fail-open — it never blocks routing, and it is a silent no-op unless the harness observability opt-in is enabled.
+
+---
+
 ## Intent Router
 
 ### Raw User Input
@@ -68,6 +74,7 @@ The `--team` / `--solo` flags are forced overrides onto the catalog; the flag-fr
 - **codemaps**: Generate architecture documentation in `.moai/project/codemaps/`
 - **gate** (aliases: check, pre-commit): Lightweight pre-commit quality gate (lint+format+type-check+test)
 - **harness** (aliases: hrn, learn): harness lifecycle management — learning-lifecycle verbs (status / apply / rollback &lt;date&gt; / disable) + v4-lifecycle verbs (list / edit / remove / doctor), all dispatching through the unified `moai harness` Go-binary Cobra subcommand tree; the slash command is the documented user-facing entry point
+- **goal**: Condition-declared universal agentic loop — arm a completion condition (`/moai goal "<condition>"`), check status, clear, or resume; evaluated each turn-end by the `stop-goal` Stop hook
 
 ### Priority 2: SPEC-ID Detection
 
@@ -77,8 +84,10 @@ Only if Priority 1 did not match: Check if the Raw User Input contains a pattern
 
 Only if BOTH Priority 1 AND Priority 2 did not match: Classify the intent of the ENTIRE Raw User Input as natural language. This priority is NEVER reached when the first word matches a known subcommand.
 
+[HARD] The cue words listed below are **English exemplars**, NOT literal-match requirements. Classify intent semantically for any `conversation_language` — a Korean, Japanese, Chinese, or other-language request expressing the same intent routes identically. Do not require the literal English tokens to appear.
+
 - Planning and design language (design, architect, plan, spec, requirements, feature request) routes to **plan**
-- Quality gate language (lint, format, check, pre-commit, quality gate) routes to **gate**
+- Quality gate language (format, check, pre-commit, quality gate) routes to **gate**
 - Security language (security, audit, owasp, vulnerability, injection, xss, csrf) routes to **review** (with `--security` scope)
 - Error and fix language (fix, error, bug, broken, failing, lint) routes to **fix**
 - Iterative and repeat language (keep fixing, until done, repeat, iterate, all errors) routes to **loop**
@@ -103,21 +112,21 @@ Purpose: Create comprehensive specification documents using GEARS format with Re
 Phases: Deep Research (research.md) -> SPEC Planning -> Annotation Cycle (1-6 iterations) -> SPEC Creation -> Independent Review (plan-auditor)
 Agents: manager-spec (primary), Explore (research), plan-auditor (quality gate), manager-git (conditional)
 Flags: --worktree, --branch, --resume SPEC-XXX, --team, --issue (opt-in; default skips GitHub Issue creation per the late-branch opt-in policy)
-For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/plan.md (team mode: ${CLAUDE_SKILL_DIR}/team/plan.md)
+For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/plan.md
 
 ### run - DDD/TDD Implementation
 
 Purpose: Implement SPEC requirements through configured development methodology.
 Agents: manager-develop (cycle_type=ddd|tdd per quality.yaml, primary), manager-git
 Flags: --resume SPEC-XXX, --team
-For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/run.md (team mode: ${CLAUDE_SKILL_DIR}/team/run.md)
+For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/run.md
 
 ### sync - Documentation Sync and PR
 
 Purpose: Synchronize documentation with code changes and prepare pull requests.
 Agents: manager-docs (primary), sync-auditor (quality gate), manager-git
 Modes: auto, force, status, project. Flags: --merge, --skip-mx
-For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/sync.md (team mode: ${CLAUDE_SKILL_DIR}/team/sync.md)
+For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/sync.md
 
 ### gate - Pre-Commit Quality Gate
 
@@ -127,12 +136,18 @@ Flags: --fix, --staged, --file PATH
 Integration: Automatically invoked by run workflow (Phase 2.75) and sync workflow (Phase 0.0.1) with --fix behavior.
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/gate.md
 
+### goal - Condition-Declared Agentic Loop
+
+Purpose: Arm a completion condition (mechanical commands + model claims); the `stop-goal` Stop-hook evaluator blocks each turn-end until the conditions hold or a turn ceiling (default 30) is reached.
+Verbs: `/moai goal "<condition>"` (register + arm), `status [--all]`, `clear`, `resume`.
+Progression mode: autonomous (default) vs. semi-autonomous — chosen at Implementation Kickoff Approval; the gate stays mandatory in both modes.
+For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/goal.md
+
 ### fix - Auto-Fix Errors
 
 Purpose: Autonomously detect and fix LSP errors, linting issues, and type errors.
 Agents: manager-develop (cycle_type=autofix), Agent(general-purpose) with domain whitelist (fixes)
 Flags: --dry, --sequential, --level N, --resume, --team
-Team mode: For competing-hypothesis debugging, read ${CLAUDE_SKILL_DIR}/team/debug.md
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/fix.md
 
 ### loop - Iterative Auto-Fix
@@ -154,7 +169,7 @@ For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/mx.md
 Purpose: Multi-perspective code review with security, performance, quality, and UX analysis.
 Agents: sync-auditor (review), Agent(general-purpose) with security scope
 Flags: --staged, --branch, --security, --team
-For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/review.md (team mode: ${CLAUDE_SKILL_DIR}/team/review.md)
+For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/review.md
 
 ### clean - Dead Code Removal
 
@@ -211,16 +226,16 @@ For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/harness.md
 #### Branch A.1 — harness-v4 lifecycle (reserved verbs: list / edit / remove / doctor)
 
 Purpose: Manage harness-v4 entries — enumerate built harnesses, locate their manifest + specialist files for editing, atomically remove a harness with all its artifacts, or run the reference-integrity smoke gate. The four verbs dispatch to the `moai harness <verb>` Go binary subcommand which performs the filesystem work (scan `.claude/commands/harness/*.md` joined with `manifest.json`; atomic remove with fail-closed orphan prevention; doctor cross-references manifest/specialist/skill file existence).
-Verbs: list (enumerate all harnesses: name + domain + entry command) | edit &lt;name&gt; (show manifest + specialist + skill paths for editing — manifest is the SSOT) | remove &lt;name&gt; (atomic removal of command + workflow + specialists + skills + manifest; fail-closed if any artifact is missing) | doctor (reference-integrity smoke gate: verifies every built harness's manifest/specialist/skill files exist and cross-reference correctly)
+Verbs: list (enumerate all harnesses: name + domain + entry command, plus the declared schedule — interval + mechanism — when the manifest declares one; schedule-less harnesses render identically to the pre-schedule baseline) | edit &lt;name&gt; (show manifest + specialist + skill paths for editing — manifest is the SSOT) | remove &lt;name&gt; (atomic removal of command + workflow + specialists + skills + manifest; fail-closed if any artifact is missing; when the manifest declared a schedule, prints an unregister notice naming the declared mechanism — CronDelete for cron, session-scoped loop cancellation for loop — computed from the manifest before deletion) | doctor (reference-integrity smoke gate: verifies every built harness's manifest/specialist/skill files exist and cross-reference correctly; a schema-invalid schedule declaration is an ERROR-severity finding)
 CLI: `moai harness list [--json]`, `moai harness edit <name> [--json]`, `moai harness remove <name>`, `moai harness doctor` (all support `--project-root`)
-Artifacts: `.claude/commands/harness/<name>.md` (thin-wrapper command), `.claude/commands/harness/<name>/manifest.json` (SSOT), `.claude/workflows/harness-<name>-run.js` (Runner), `.claude/agents/harness/harness-<name>*-specialist.md` (specialists), `.claude/skills/harness-<name>*/` (companion skills)
-Namespace: `.claude/commands/harness/`, `.claude/workflows/harness-*.js`, `.claude/agents/harness/`, and `.claude/skills/harness-*/` are USER-OWNED — `moai update` preserves them (backup if needed, never overwrites).
+Artifacts: `.claude/commands/harness/<name>.md` (thin-wrapper command), `.claude/commands/harness/<name>/manifest.json` (SSOT), `.claude/workflows/hns-<name>-run.js` (Runner), `.claude/agents/harness/hns-<name>*-specialist.md` (specialists), `.claude/skills/hns-<name>*/` (companion skills)
+Namespace: `.claude/commands/harness/`, `.claude/workflows/hns-*.js`, `.claude/agents/harness/`, and `.claude/skills/hns-*/` are USER-OWNED — `moai update` preserves them (backup if needed, never overwrites). Legacy generations with the `harness-` or `my-harness-` prefix are equally preserved (recognition-based backward compatibility); the Builder emits `hns-` names only.
 
 #### Branch B — harness build entry (natural-language request)
 
 Purpose: Turn a natural-language harness-creation request into a concrete harness via Context-First Discovery (extract domain / goal / constraints / scope), harness `<name>` derivation (the name is derived from the request — NOT statically supplied by the user), explicit orchestrator-issued approval, then transition into the orchestrator-direct Builder (4 signal-driven phases: ANALYZE / PLAN / GENERATE / ACTIVATE). The orchestrator MUST conduct AskUserQuestion Socratic rounds (max 4 questions per round) when intent clarity is below 100%.
 Skills: moai-meta-harness (project-specific harness generation, indirect)
-Builder: orchestrator-direct processing (NOT a dynamic-workflow script) — the entry's Phases 0-3 hand off to `${CLAUDE_SKILL_DIR}/workflows/harness-builder.md` for the 4-phase creation logic. The orchestrator holds the PLAN→GENERATE AskUserQuestion approval gate directly.
+Builder: orchestrator-direct processing (NOT a dynamic-workflow script) — the entry's Phases 0-3 hand off to `${CLAUDE_SKILL_DIR}/workflows/harness-builder.md` for the 4-phase creation logic. The orchestrator holds the PLAN→GENERATE AskUserQuestion approval gate directly; that gate round also carries the recurrence question (optional manifest `schedule`, discovery-only scheduled runs), and ACTIVATE registers a declared schedule after the smoke gate. A request referencing an EXISTING harness together with scheduling intent routes to the entry workflow's Schedule Retrofit branch (evaluated before name-collision handling) instead of the creation pipeline.
 For detailed orchestration: Read ${CLAUDE_SKILL_DIR}/workflows/harness-build-entry.md
 
 ---
@@ -293,7 +308,7 @@ Socratic-first ordering: while intent clarity is below 100%, run the Socratic in
 A derived completion condition NEVER authorizes autonomous run-phase entry — Implementation Kickoff Approval remains mandatory at the plan→run boundary.
 
 Step 3 - Load Workflow Details:
-If `--team` flag was parsed AND `${CLAUDE_SKILL_DIR}/team/<name>.md` exists for the target subcommand, read the team workflow file instead of the solo workflow. Otherwise read `workflows/<name>.md`. The Quick Reference section above shows both paths for each subcommand that supports team mode.
+Read `workflows/<name>.md` for the target subcommand. (The Agent Teams static layer is retired; a `--team` flag falls back to sub-agent mode per `.claude/rules/moai/workflow/orchestration-mode-selection.md` — there is no separate `team/<name>.md` workflow file.)
 
 Step 4 - Read Configuration:
 Load relevant configuration from .moai/config/config.yaml and section files as needed.

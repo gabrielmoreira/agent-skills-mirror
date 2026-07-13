@@ -48,7 +48,7 @@ description: Choose Lime validation commands for GUI, command/bridge, config, ve
 
 校验前同时检查新增命名：新程序、目录、crate/package、命令、API 网关、类型、模块和脚本默认不得添加 `Lime` / `lime_` / `lime-` 品牌前缀；除非属于历史兼容、对外品牌标识或外部生态固定名，并已在计划中说明。
 
-如果新增的是 AI Agent / runtime / host integration / 跨 App 复用能力，质量检查还必须确认它走 App Server JSON-RPC current 主链；Electron 只能作为 Desktop Host bridge；`agent_runtime_*` / Aster legacy facade 只能作为 Desktop 兼容适配层，不能成为新业务逻辑事实源。
+如果新增的是 AI Agent / runtime / host integration / 跨 App 复用能力，质量检查还必须确认它走 App Server JSON-RPC current 主链；Electron 只能作为 Desktop Host bridge；`agent_runtime_*` 只能作为 retired guard / 历史 evidence，已删除 runtime 不能恢复为兼容 facade 或新业务逻辑事实源。
 
 质量检查还必须确认生产路径没有 mock fallback。`safeInvoke` / `invoke`、Electron Host、App Server sidecar、GUI smoke 和业务 E2E 不能回退 `mockPriorityCommands`、`defaultMocks`、`invokeMockOnly`、renderer mock fallback 或 mock backend；这些只允许测试夹具显式使用。
 

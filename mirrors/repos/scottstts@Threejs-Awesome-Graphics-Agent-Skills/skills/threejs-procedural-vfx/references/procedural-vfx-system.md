@@ -16,7 +16,7 @@ Use this reference for ship-conforming reentry plasma, generated wakes, instance
 
 ## Reentry representation
 
-planet-space implementation does not model reentry as one particle emitter. It composes:
+A complete reentry system is not one particle emitter. It composes:
 
 ```text
 ship-shaped front shell
@@ -40,6 +40,12 @@ wake up = projected local up
 wake right = cross(up, forward)
 wake origin = hull support point along fall direction
 ```
+
+The `reentry-plasma` example demonstrates the same grammar standalone: closed
+layered wake shells with authored per-shell configs, flow-axis deformation,
+advected filament fields, and opacity shaping, without requiring a host ship
+mesh. Its shell constants are its own contract; read the example for exact
+values.
 
 ## Reentry shell shading
 
@@ -109,7 +115,7 @@ with changed opacity.
 
 ## Instanced spark contract
 
-pooled VFX system preallocates a sprite pool of `12000`. Every instance stores:
+Preallocate a fixed sprite pool of `12000`. Every instance stores:
 
 ```text
 startPosition vec3
@@ -177,8 +183,8 @@ homing projectile multiplier: 30
 laser multiplier: 10
 ```
 
-These values are evidence of relative hierarchy inside that scene, not
-universal exposure-independent constants. Preserve the relationship:
+These values are evidence of relative hierarchy inside one calibrated scene,
+not universal exposure-independent constants. Preserve the relationship:
 
 ```text
 spark flash > projectile > laser > ordinary surface

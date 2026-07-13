@@ -4,19 +4,19 @@ Use this reference for atlas filtering, shared shadow and light causes, planet-s
 
 ## Contents
 
-- atlas-based renderer block material
+- Atlas block material
 - Atlas and minification response
 - Shared shadow/light causes
-- planet-space implementation planetary material
-- pooled VFX system terrain and debris
-- selective gallery pipeline authored PBR identities
+- Planetary node material
+- Game terrain and pooled debris
+- Gallery authored PBR identities
 - Selection rules and limitations
 - Diagnostics
 
 
-## atlas-based renderer block material
+## Atlas block material
 
-The block material is a complete custom shader whose inputs include:
+The atlas block material is one complete custom shader whose inputs include:
 
 ```text
 atlas albedo and optional normal
@@ -73,8 +73,8 @@ offline mip-safe padding when adopting this mechanism.
 
 ## Shared shadow/light causes
 
-atlas-based renderer’s cloud shadow uses the same conceptual field as its visible cloud
-layer:
+The block material’s cloud shadow uses the same conceptual field as its
+visible cloud layer:
 
 ```text
 project receiver to cloud altitude along sun direction
@@ -87,9 +87,9 @@ attenuate direct sunlight
 The material does not darken emission or all ambient response with this term.
 Keep projected environmental shadows attached to direct-light ownership.
 
-## planet-space implementation planetary material
+## Planetary node material
 
-planet-space implementation’s solid planets preserve an undeformed radial attribute and use it for
+Solid-planet materials preserve an undeformed radial attribute and use it for
 all geological sampling. Camera-altitude weights reduce high-frequency bump
 and optical detail.
 
@@ -112,9 +112,9 @@ path while changing only the normal input.
 The known debt is geometry/material field mismatch; see the planet and field
 references. Do not infer that close bump can substitute for silhouette parity.
 
-## pooled VFX system terrain and debris
+## Game terrain and pooled debris
 
-Terrain identity:
+A stylized game terrain material derives identity from orientation:
 
 ```text
 grassness = smoothstep(0.01, 1, normalWorld.y^1.6)
@@ -133,10 +133,10 @@ through Fresnel and receives a small environment term of `0.05`.
 The reusable pattern is per-instance material state, not one cloned material
 per object.
 
-## selective gallery pipeline authored PBR identities
+## Gallery authored PBR identities
 
-The gallery defines distinct frame surfaces with real texture and response
-bundles:
+The `sculpted-gallery-frame` example under `$threejs-procedural-geometry`
+defines distinct frame surfaces with real texture and response bundles:
 
 | Surface | Roughness | Metalness | Clearcoat | Clearcoat roughness | Bump |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -156,30 +156,31 @@ for a stylized light source, not a physically based metal recipe.
 Use the material mechanisms according to representation:
 
 ```text
-atlas voxel surface -> atlas-based renderer filtering and custom shadow hooks
-planet surface -> planet-space implementation radial fields and altitude filtering
-terrain/wetness -> pooled VFX system world-height causal blend
-authored luxury material -> selective gallery pipeline response bundle
-pooled effect debris -> pooled VFX system per-instance attributes
+atlas voxel surface -> atlas filtering and custom shadow hooks
+planet surface -> radial fields and altitude filtering
+terrain/wetness -> world-height causal blend
+authored luxury material -> gallery response bundles
+pooled effect debris -> per-instance attributes
 ```
 
 Do not combine every mechanism into one universal material.
 
 Exact node/material extension hooks are version-sensitive. Inspect the
-installed renderer before porting atlas-based renderer's full custom shader or adapting
-planet-space implementation's node-material normal and emissive inputs.
+installed renderer before porting the block material's full custom shader or
+adapting the planetary material's node-material normal and emissive inputs.
 
 Observed limits:
 
-- atlas-based renderer replaces the full physical shader, increasing maintenance and making
-  backend migration harder.
+- The block material replaces the full physical shader, increasing maintenance
+  and making backend migration harder.
 - Its custom lighting must be checked for energy consistency and environment
   parity.
-- selective gallery pipeline’s chandelier basic materials rely on selective bloom and are not a
-  substitute for lit metal in non-emissive views.
-- pooled VFX system uses undefined reversed-edge `smoothstep` in wetness expressions; write
-  portable equivalent logic.
-- planet-space implementation has approximate rather than exact geometry/material field parity.
+- The gallery’s chandelier basic materials rely on selective bloom and are not
+  a substitute for lit metal in non-emissive views.
+- The game terrain uses undefined reversed-edge `smoothstep` in wetness
+  expressions; write portable equivalent logic.
+- The planetary material has approximate rather than exact geometry/material
+  field parity.
 
 ## Diagnostics
 

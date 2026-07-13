@@ -21,14 +21,16 @@ description: Govern Lime legacy cleanup, fact-source convergence, current/compat
 
 目录级旧实现如果同时满足：已不在构建 / workspace manifest 中、当前工作树已物理删除或 staged delete、已有 current owner 承接、边界守卫能防回流，可直接按目录级 `dead / deleted / forbidden-to-restore` 判定；不要求逐文件证明业务语义无价值。`internal/exec-plans/**`、旧路线图和 git history 里的旧路径默认是历史 evidence，不是 current owner 残留。
 
-## Aster / Codex 固定口径
+## Agent / Codex 固定口径
 
-处理 Aster、`agent_runtime_*`、Agent tools、runtime loop、session/thread、MCP、Skills 或 native tool 迁移时，先按 `/Users/coso/Documents/dev/rust/codex` 做能力对照：
+处理 Agent、`agent_runtime_*`、Agent tools、runtime loop、session/thread、MCP、Skills 或 native tool 迁移时，先按 `/Users/coso/Documents/dev/rust/codex` 做能力对照：
 
 - Codex 有的能力：迁入 Lime current owner，并让 App Server、前端 GUI、Evidence / replay / analysis 或运行时主链至少一条真实消费链用起来。
-- Codex 没有的 Aster-only 能力：默认 `dead / deleted / forbidden-to-restore`，同步清 vendor 实现、catalog alias、前端 normalization/display/summary、测试正向断言和 active checklist。
-- 同名不同义必须按 Codex 语义重建，例如 Codex `clock.sleep` / `sleep` 不能继续沿用 Aster `SleepTool` 旧语义。
-- 命名优先短、领域化、可读；学习 Aster 的简洁命名品味，但不保留 Aster 实现事实源。避免把 `lime_*`、`aster_*`、`agent_runtime_*` 或冗长历史词带进 current API；`Tool` / `*Tool` 后缀只允许作为历史 alias、测试夹具或退场 adapter，不作为新 current API 命名。
+- Codex 没有的 Agent-only 能力：默认 `dead / deleted / forbidden-to-restore`，同步清 vendor 实现、catalog alias、前端 normalization/display/summary、测试正向断言和 active checklist。
+- 同名不同义必须按 Codex 语义重建，例如 Codex `clock.sleep` / `sleep` 不能继续沿用 Agent `SleepTool` 旧语义。
+- 命名优先短、领域化、可读；学习 Agent 的简洁命名品味，但不保留 Agent 实现事实源。避免把 `lime_*`、`agent_*`、`agent_runtime_*` 或冗长历史词带进 current API；`Tool` / `*Tool` 后缀只允许作为历史 alias、测试夹具或退场 adapter，不作为新 current API 命名。
+
+已退役 runtime 不是上述泛指的 Agent 能力：其 crate、vendor、迁移目录和专用 Skill 已物理删除。它们只能作为历史 evidence 或 retired guard 的文本匹配，绝不允许恢复为依赖、runtime adapter、fallback、文档导航或新 compat 层。
 
 ## 何时使用
 
@@ -55,7 +57,7 @@ description: Govern Lime legacy cleanup, fact-source convergence, current/compat
 
 如果本轮新增程序、目录、crate/package、命令、API 网关、类型、模块或脚本，默认不得添加 `Lime` / `lime_` / `lime-` 品牌前缀；使用领域名作为 current 事实源命名。只有历史兼容、对外品牌标识或外部生态固定名才允许例外，并写明退出条件。
 
-如果本轮新增 AI Agent、runtime、host integration 或跨 App 复用能力，事实源默认是 App Server JSON-RPC current 主链；`agent_runtime_*` / Aster legacy adapter 只允许作为 Desktop 兼容适配层，不得继续承接新业务逻辑。
+如果本轮新增 AI Agent、runtime、host integration 或跨 App 复用能力，事实源默认是 App Server JSON-RPC current 主链；`agent_runtime_*` 只允许作为 retired guard / 历史 evidence，已删除 runtime 不得恢复为 Desktop 兼容适配层或承接新业务逻辑。
 
 生产不能 mock，只有测试才 mock。如果生产入口需要靠 `defaultMocks`、`mockPriorityCommands`、`invokeMockOnly`、renderer mock fallback 或 App Server mock backend 才能跑通，该入口应判为 current 主链阻塞缺口，而不是可交付降级。
 

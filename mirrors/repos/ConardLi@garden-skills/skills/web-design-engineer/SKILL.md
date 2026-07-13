@@ -1,6 +1,6 @@
 ---
 name: web-design-engineer
-description: "Build polished visual web artifacts with HTML/CSS/JavaScript/React: pages, dashboards, prototypes, slide decks, animations, UI mockups, and data visualizations. Use when the user wants a browser-rendered, interactive, or presentational front-end deliverable. Not for back-end, CLI, or non-visual coding tasks."
+description: "Build or redesign polished browser-rendered visual artifacts with HTML/CSS/JavaScript/React: pages, dashboards, prototypes, slide decks, animations, UI mockups, and data visualizations. Use for visual front-end creation, design-system exploration, design critique, or explicit browser acceptance / QA of a web artifact. Not for back-end, CLI, non-visual coding, source-to-longform article conversion, or narration-driven click-through video presentations."
 ---
 
 # Web Design Engineer
@@ -13,9 +13,9 @@ Core philosophy: **The bar is "stunning," not "functional." Every pixel is inten
 
 ## Scope
 
-✅ **Applicable**: Visual front-end deliverables (pages / prototypes / slide decks / visualizations / animations / UI mockups / design systems)
+✅ **Applicable**: Visual front-end deliverables and redesigns (pages / dashboards / prototypes / slide decks / visualizations / animations / UI mockups / design systems)
 
-❌ **Not applicable**: Back-end APIs, CLI tools, data-processing scripts, pure logic development with no visual requirements, performance tuning, and other terminal tasks
+❌ **Not applicable**: Back-end APIs, CLI tools, data-processing scripts, pure logic development, source material → long-form HTML article conversion, or narration-beat → recordable web-video presentation. Route the last two to their dedicated skills when available.
 
 ---
 
@@ -25,16 +25,14 @@ Core philosophy: **The bar is "stunning," not "functional." Every pixel is inten
 
 **Highest priority — runs before clarifying questions.**
 
-When the request mentions a specific product, brand, technology, SDK, or event you're not 100% sure about, the **first** action is `WebSearch` to verify existence, release status, latest version, and key specs from authoritative sources. Never assert from training data.
+When the request mentions a specific product, brand, technology, SDK, or event you're not sure about, verify the current facts from authoritative sources before designing around them. Never assert unstable facts from memory.
 
 **Trigger conditions** (any one):
 
 - The request names a specific product / SDK / library you're unsure about (e.g., a new device, a recently announced model)
-- Anything dated 2024 or later (release timeline / version / specs)
+- Any time-sensitive release timeline / version / specification
 - You catch yourself thinking "I think it's…" / "should still be…" / "probably not released yet" / "I don't think that exists"
 - The user asks you to design materials for a specific company or product
-
-**Why this is Step 0**: clarifying questions only work if your understanding of the facts is correct. If the facts are wrong, every later question is crooked. Cost comparison: 10 seconds of search vs. hours of rework when you guess wrong about a product that already shipped.
 
 If search returns nothing or is ambiguous → ask the user. Don't guess. Forbidden phrases without prior search: *"I think X hasn't released yet" / "X is currently version N" / "X probably doesn't exist" / "As I recall, X's specs are…"*
 
@@ -97,15 +95,26 @@ When analyzing reference materials, focus on: color system, typography scheme, s
 
 #### When Adding to an Existing UI
 
-This is more common than designing from scratch. **Understand the visual vocabulary first, then act** — think out loud about your observations so the user can validate your reading:
+Classify the task as **Extension**, **Redesign · Preserve**, or **Redesign · Overhaul** before editing. Read `references/redesign-protocol.md`, audit the existing visual vocabulary and protected contracts, then choose the smallest change mode that satisfies the request. New elements in Extension mode should be indistinguishable from the originals.
 
-- **Color & tone**: The actual usage ratio of primary / neutral / accent colors? Does the copy feel engineer-oriented, marketing-oriented, or neutral?
-- **Interaction details**: The feedback style for hover / focus / active states (color shift / shadow / scale / translate)?
-- **Motion language**: Easing function preferences? Duration? Are transitions handled with CSS transition, CSS animation, or JS?
-- **Structural language**: How many elevation levels? Card density — sparse or dense? Border-radius uniform or hierarchical? Common layout patterns (split pane / cards / timeline / table)?
-- **Graphics & iconography**: Icon library in use? Illustration style? Image treatment?
+### Step 2b: Produce a Design Read and Calibrate Five Dials
 
-Matching the existing visual vocabulary is the prerequisite for seamless integration; newly added elements should be **indistinguishable from the originals**.
+Before choosing tokens, summarize the brief in one concise block. Infer rather than interrogate when context is sufficient:
+
+```yaml
+Design Read:
+  artifact: [landing / dashboard / prototype / slides / visualization / ...]
+  audience: [primary audience]
+  visual-language: [specific family, not "modern / clean"]
+  mode: [greenfield / extension / preserve / overhaul]
+  visual-variance: [1-10]
+  motion-intensity: [1-10]
+  information-density: [1-10]
+  asset-dependence: [1-10]
+  brand-fidelity: [1-10]
+```
+
+Use the dials as decision variables, not decorative scores. They must affect layout variation, motion, content per viewport, real-asset effort, and preservation strictness. Read `references/design-calibration.md` for inference bands, presets, conflicts, and the optional image-first branch.
 
 ### Step 3a: Position Four Questions Before Picking a System
 
@@ -124,6 +133,7 @@ The system that follows must serve these answers. Picking aesthetics in a vacuum
 
 ```markdown
 Design Decisions:
+- Design Read: [one-line synthesis + five dials]
 - Anchor / recipe (if any): [e.g., "linear" → `references/style-recipes/linear.md`, or "custom"]
 - Color palette: [primary / secondary / neutral / accent]
 - Typography: [heading font / body font / code font]
@@ -157,7 +167,9 @@ After v0 is approved, write full components, add states, and implement motion. F
 
 ### Step 6: Verification
 
-Walk through the "Pre-delivery Checklist" item by item.
+Always run the lightweight **Pre-delivery Checklist** as a code/design self-check.
+
+Run an executable browser acceptance harness **only when the user explicitly asks for acceptance / 验收, QA, browser testing / 浏览器测试, visual regression, responsive testing / 响应式检查, cross-viewport verification, or equivalent hands-on validation**. Do not infer this request merely from “build,” “finish,” “polish,” or “verify your work.” When triggered, read and follow `references/browser-acceptance.md`; report evidence and repair failures before delivery.
 
 ### Step 7: Critique on Request (or as Self-Check Before Delivery)
 
@@ -171,31 +183,7 @@ When the user asks "review this", "is it good?", "score this", "好不好看", o
 | **Functionality** | Does each element earn its place? "If I delete this, does the design get worse?" If no → delete |
 | **Originality** | Avoids clichés while staying coherent? Any "unexpected but right" decisions, or pure template? |
 
-Score each 0–10. Output format:
-
-```markdown
-## Design Critique
-
-**Overall: X.X / 10** [Excellent (8+) / Good (6–7.9) / Needs work (4–5.9) / Failing (<4)]
-
-**By dimension**: Philosophy X / Hierarchy X / Craft X / Functionality X / Originality X
-
-### Keep
-- [Specific things done well, in design language]
-
-### Fix (sorted by severity)
-1. **[Issue name]** — ⚠️ Critical / ⚡ Important / 💡 Polish
-   - Current: [what it looks like now]
-   - Why: [why it's a problem]
-   - Fix: [concrete change with values]
-
-### Quick Wins (top 3 if you only have 5 minutes)
-- [ ] [Highest-impact fix]
-- [ ] [Second]
-- [ ] [Third]
-```
-
-**Critique the design, not the designer.** For per-output-type weighting, common-issue catalog, and detailed scoring rubrics → see `references/critique-guide.md`.
+Score each 0–10; report overall score, dimension scores, Keep, severity-sorted Fixes, and three Quick Wins. **Critique the design, not the designer.** Read `references/critique-guide.md` for the exact format, weighting, issue catalog, and detailed rubrics.
 
 ---
 
@@ -302,6 +290,8 @@ This is why the only legitimate exception to every anti-cliché rule below is **
 | Inter / Roboto / Arial / Fraunces / system-ui as display | Too common; reads as "demo page" rather than "designed product" | The brand spec specifies these (and usually with custom adjustments) |
 | Cyber-neon on `#0D1117` dark | GitHub-dark cosplay; baseline noise in dev-tool clones | The brand actually lives in this aesthetic |
 | Fabricated stats, fake logo walls, dummy testimonials | Damages credibility; users notice when numbers don't match reality | **Never** — use placeholders that say "real data needed" |
+
+These are baseline examples, not the whole taxonomy. When designing a multi-section marketing page, redesign, dashboard, or motion-heavy artifact, read only the matching parts of `references/failure-patterns.md`. Treat each pattern as **default → reason → exceptions → detection → repair**, not as an unconditional aesthetic ban.
 
 ### Emoji Rules
 
@@ -413,7 +403,7 @@ Explore "atomic variants" across at least these dimensions — mixing conservati
 3. **Interaction**: motion, feedback, navigation patterns
 4. **Creative**: convention-breaking metaphors, novel UX, strong visual concepts
 
-Strategy: **Start the first few variants safely within the design system; then progressively push boundaries.** Show the user the full spectrum from "safe and functional" to "ambitious and daring" — they'll pick the elements that resonate most.
+Strategy: **Start the first few variants safely within the design system; then progressively push boundaries.** Vary the calibrated dials intentionally rather than producing cosmetic recolors. Show the spectrum from "safe and functional" to "ambitious and daring" so the user can identify which dimensions resonate.
 
 ---
 
@@ -451,12 +441,14 @@ Design guidelines:
 
 ## Pre-delivery Checklist
 
-Complete the following before considering the work delivered (all items must pass):
+Complete this lightweight self-check before delivery. It does **not** require launching a browser unless the user explicitly requested executable acceptance in Step 6:
 
 - [ ] **Step 0 ran** if any specific product/brand was named — facts verified via WebSearch, not assumed
+- [ ] **Design Read** exists; five dials influenced real decisions instead of being decorative labels
+- [ ] Existing-work mode was classified correctly; preserve/extension contracts were not changed silently
 - [ ] **If the task is branded**: `brand-spec.md` exists; logo is real (not a colored rectangle); product imagery is real (not a CSS silhouette) for hardware; UI screenshots are real for digital products
-- [ ] Browser console shows **no errors, no warnings**
-- [ ] Renders correctly on **target devices/viewports** (responsive web → mobile / tablet / desktop; mobile prototype → target device; slide decks/video with fixed dimensions → scaling container adapts without distortion)
+- [ ] Code inspection finds no obvious missing imports, broken local asset paths, invalid markup, or unhandled primary interactions
+- [ ] Responsive rules exist for the target viewports; fixed-canvas artifacts define a non-distorting scale strategy
 - [ ] **Interactive components** (buttons, links, inputs, cards, etc.) include states as appropriate: hover / focus / active / disabled / loading; empty/error states added where the scenario warrants them
 - [ ] No text overflow or truncation; `text-wrap: pretty` applied
 - [ ] All colors come from the design system declared in Step 3 — **no rogue hues introduced**
@@ -464,8 +456,10 @@ Complete the following before considering the work delivered (all items must pas
 - [ ] In React projects, no `const styles = {...}`; cross-file components exported via `Object.assign(window, {...})`
 - [ ] No AI clichés (purple-pink gradients, emoji abuse, left-border accent cards, Inter/Roboto) — unless the brand spec explicitly uses them
 - [ ] No filler content, no fabricated data
+- [ ] Relevant failure patterns were checked; repeated layouts and decorative UI do not overpower the brief
 - [ ] Semantic naming, clean structure, easy to modify later
 - [ ] Visual quality at Dribbble / Behance showcase level
+- [ ] **Only if executable acceptance was requested**: `references/browser-acceptance.md` was run, evidence was recorded, and discovered failures were repaired or disclosed
 
 ---
 
@@ -486,6 +480,11 @@ Read on demand based on task type — don't preload everything:
 
 | Task | Read |
 |---|---|
+| Infer Design Read + five dials; resolve dial conflicts; decide whether image-first exploration is justified | `references/design-calibration.md` |
+| Extend or redesign an existing project; classify Extension / Preserve / Overhaul; protect routes, IA, analytics, forms, accessibility, and brand | `references/redesign-protocol.md` |
+| Check recurring AI-design failure modes by artifact type; apply contextual detection and repairs | `references/failure-patterns.md` |
+| User explicitly asks for browser acceptance / 验收 / QA / responsive verification / visual regression | `references/browser-acceptance.md` |
+| Reuse a known working component pattern before inventing a new implementation | `references/block-library.md` → targeted section in `references/advanced-patterns.md` |
 | Slide engine, device frames, Tweaks panel, animation timeline, design canvas, dark mode, data viz, oklch color system, font recommendations | `references/advanced-patterns.md` |
 | Vague request → recommend 3 design directions; extended philosophy library + per-direction visual recipes + AI-prompt templates | `references/design-directions.md` |
 | User named an anchor ("Linear-style" / "Aesop feeling") → load **only that one file** | `references/style-recipes/<anchor>.md` (e.g., `linear.md`, `aesop.md`) |

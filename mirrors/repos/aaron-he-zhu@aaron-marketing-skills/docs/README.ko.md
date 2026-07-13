@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills"><img src="https://img.shields.io/github/stars/aaron-he-zhu/aaron-marketing-skills?style=flat" alt="GitHub Stars"></a>
-  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-17.0.0-orange" alt="Version"></a>
+  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-18.0.0-orange" alt="Version"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/commits/main"><img src="https://img.shields.io/github/last-commit/aaron-he-zhu/aaron-marketing-skills" alt="Last Commit"></a>
 </p>
@@ -25,11 +25,11 @@
 | 계층 | 스킬 | 라이프사이클(단계 디렉터리) | 프레임워크 → 게이트 | 진입점 |
 |-------|--------|-------------------------------|------------------|------------|
 | **Narrative** | 16 | trace → architect → land → evaluate | [TALE](../references/tale-benchmark.md) → `narrative-quality-auditor` (truth / system / effectiveness profiles) | `/aaron-marketing:narrative` |
-| **SEO/GEO** | 16 | research → build → optimize → monitor | [CORE-EEAT](../references/core-eeat-benchmark.md) → `content-quality-auditor` · [CITE](../references/cite-domain-rating.md) → `domain-authority-auditor` | `/aaron-marketing:seo-geo` |
+| **SEO/GEO** | 16 | survey → implement → tune → evaluate | [CORE-EEAT](../references/core-eeat-benchmark.md) → `content-quality-auditor` · [CITE](../references/cite-domain-rating.md) → `domain-authority-auditor` | `/aaron-marketing:seo-geo` |
 | **Social** | 16 | explore → craft → host → observe | [ECHO](../references/echo-benchmark.md) → `social-quality-auditor` (asset / program-maturity profiles) | `/aaron-marketing:social` |
 | **이메일** | 16 | setup → engage → nurture → deliver | [SEND](../references/send-benchmark.md) → `email-quality-auditor`(EQS) | `/aaron-marketing:email` |
 | **Paid Ads** | 16 | research → orchestrate → activate → scale | [ROAS](../references/roas-benchmark.md) → `ad-account-auditor`(RQS) | `/aaron-marketing:ad` |
-| **인플루언서** | 16 | discover → plan → activate → measure | [C³](../references/c3-benchmark.md) → `content-reviewer`(ART); `fit-scorer`가 ACE 채점 | `/aaron-marketing:influencer` |
+| **인플루언서** | 16 | scout → target → activate → report | [STAR](../references/star-benchmark.md) → `creator-content-auditor`(SQS); `fit-scorer`가 Suitability (S) 채점 | `/aaron-marketing:influencer` |
 | **Launch** | 16 | research → assemble → mobilize → prove | [RAMP](../references/ramp-benchmark.md) → `launch-readiness-auditor` (preflight / execution / outcome profiles) | `/aaron-marketing:launch` |
 | **프로토콜 계층** | 8 | —(단계 흐름 밖의 공유 기계장치) | 7개의 진실 레지스트리(entity · creator · offer/claims · consent · launch · channel · narrative) + HOT/WARM/COLD 메모리 | — |
 
@@ -54,8 +54,8 @@
   - [메모리 & 자동화 훅](#메모리--자동화-훅)
 - [스킬 카탈로그](#스킬-카탈로그)
   - [Narrative — TALE (16)](#narrative--tale-16)
-  - [SEO/GEO (16)](#seogeo-16)
-  - [인플루언서 (16)](#인플루언서-16)
+  - [SEO/GEO — SITE (16)](#seogeo--site-16)
+  - [인플루언서 — STAR (16)](#인플루언서--star-16)
   - [Paid Ads — ROAS (16)](#paid-ads--roas-16)
   - [Email — SEND (16)](#email--send-16)
   - [Launch — RAMP (16)](#launch--ramp-16)
@@ -124,7 +124,7 @@ Audit this Google Ads account before I scale — exports attached
 /aaron-marketing:auto turn our pricing page into an AI-citable comparison hub
 ```
 ```text
-/aaron-marketing:seo-geo https://example.com/blog/my-article --mode audit
+/aaron-marketing:seo-geo https://example.com/blog/my-article --phase tune
 ```
 
 `/aaron-marketing:auto`는 의도를 추론하고 가장 작은 유용한 워크플로를 실행하며, 차단성 결정에서만 멈춥니다. 모든 스킬은 붙여넣은 데이터로 동작합니다; 선택적 도구는 [CONNECTORS.md](../CONNECTORS.md)에 문서화되어 있습니다.
@@ -154,13 +154,13 @@ Audit this Google Ads account before I scale — exports attached
 | 계층 | 도입 | 분야 | 케이던스 |
 |-------|-------|-------------|---------|
 | **L1 · Strategy** — 무엇을 말하는가 / 우리는 누구인가 | crawl | **Narrative** · TALE | 상시 |
-| **L2 · Channels** — 전략을 표현하는 상시 엔진(owned → bought) | walk | **SEO/GEO** · CORE-EEAT + CITE · **Organic Social** · ECHO · **Email** · SEND · **Paid Ads** · ROAS · **Influencer** · C³ | 상시(인플루언서는 에피소딕 성향) |
+| **L2 · Channels** — 전략을 표현하는 상시 엔진(owned → bought) | walk | **SEO/GEO** · CORE-EEAT + CITE · **Organic Social** · ECHO · **Email** · SEND · **Paid Ads** · ROAS · **Influencer** · STAR | 상시(인플루언서는 에피소딕 성향) |
 | **L3 · Orchestration** — 채널을 가로지르는 시간 한정 순간 | run | **Product Launch** · RAMP | 에피소딕 |
 | **L4 · Protocol** — 공유된 기록 시스템 | — | 7개의 진실 레지스트리 + 워킹 메모리 · 8개의 auditor 게이트 · 하나의 스킬 계약 | — |
 
 Narrative는 메시지이고, 채널은 그것을 표현하는 매체입니다 — 각 코어 빌더는 자신이 사용한 정확한 캐논 ID/버전과 클레임 프로젝션 오프셋, 또는 명시적으로 승인된 폴백/차단을 기록합니다. 각 분야의 4단계 루프는 자신의 계층 안에 삽니다(Narrative = Trace → Architect → Land → Evaluate).
 
-일곱 모두 단계 **디렉터리**(`narrative/trace/`…, `seo-geo/research/`…, `influencer/discover/`…, `ad/research/`…, `email/setup/`…, `launch/research/`…, `social/explore/`…)를 사용합니다. 참고: "activate"는 인플루언서에서는 크리에이터 아웃리치를, Paid Ads에서는 계정 게이팅을 의미합니다 — 같은 단어, 분야별 범위.
+일곱 모두 단계 **디렉터리**(`narrative/trace/`…, `seo-geo/survey/`…, `influencer/scout/`…, `ad/research/`…, `email/setup/`…, `launch/research/`…, `social/explore/`…)를 사용합니다. 참고: "activate"는 인플루언서에서는 크리에이터 아웃리치를, Paid Ads에서는 계정 게이팅을 의미합니다 — 같은 단어, 분야별 범위.
 
 ### 품질 시스템: 여덟 프레임워크, 여덟 게이트
 
@@ -171,7 +171,7 @@ Narrative는 메시지이고, 채널은 그것을 표현하는 매체입니다 �
 | **[TALE](../references/tale-benchmark.md)** | 브랜드 내러티브의 진실 / 시스템 / 효과 | T / A / L / E | `truth`, `system`, `effectiveness` 프로파일 결과는 각각 별개; 전체 합성 점수 없음 | TALE `T1`/`A1`/`L1`/`E1` |
 | **[CORE-EEAT](../references/core-eeat-benchmark.md)** | CORE/GEO 및 EEAT/SEO 진단 뷰를 갖춘 콘텐츠 품질 | 80개 항목 / 8개 차원 | 완전한 프로파일 가중 결과; 진단 뷰는 별도 합계가 아님 | `T04`/`C01`/`R10` |
 | **[CITE](../references/cite-domain-rating.md)** | 도메인 권위와 인용 신뢰 | 40개 항목 / 4개 차원 | 산술 프로파일 가중 평균 | `T03`/`T05`/`T09` |
-| **[C³](../references/c3-benchmark.md)** | 인플루언서 Creator / Content / Campaign | ACE / ART / ROI · 9개 차원 | 호환 가능한 범위의 완전한 결과 셋이 갖춰진 뒤 `CVI = floor((ACE x ART x ROI)^(1/3))` | ACE `A2`/`C1`/`E2`; ART `T1`/`T2` |
+| **[STAR](../references/star-benchmark.md)** | 인플루언서 Suitability / Trust / Appeal / Return | S / T / A / R · 40개 항목 / 4개 차원 | `SQS = floor(profile-weighted mean)` | `STAR-S2`/`S6`, `STAR-T1`/`T2`/`T3` |
 | **[ROAS](../references/roas-benchmark.md)** | Paid Ads의 증분 기여와 운영 품질 | R / O / A / S | `RQS = floor(profile-weighted mean)` | `R1`/`R2`/`O1`/`O2`/`A1` |
 | **[SEND](../references/send-benchmark.md)** | 이메일의 발신자 무결성 / 인게이지먼트 / 너처링 / 직접 성과 | S / E / N / D | `EQS = floor(profile-weighted mean)` | `S1`/`S2`/`N1`/`D1` |
 | **[RAMP](../references/ramp-benchmark.md)** | 제품 출시의 준비도 / 자산 / 모멘텀 / 증명 | R / A / M / P · 40개의 안정 ID | `preflight`, `execution`, `outcome` 프로파일 결과는 각각 별개; 시간 지평을 결코 평균하지 않음 | RAMP `R1`/`A1`/`M1`/`P1` |
@@ -182,9 +182,9 @@ Narrative는 메시지이고, 채널은 그것을 표현하는 매체입니다 �
 | 게이트 | 프레임워크 | 위치 | 판정 |
 |------|-----------|----------|---------|
 | [narrative-quality-auditor](../narrative/evaluate/narrative-quality-auditor/SKILL.md) | TALE 프로파일 | `narrative/evaluate/` | truth/system/effectiveness 결과는 각각 별개; 합성 점수 없음 |
-| [content-quality-auditor](../seo-geo/optimize/content-quality-auditor/SKILL.md) | CORE-EEAT | `seo-geo/optimize/` | SHIP / FIX / BLOCK / UNDECIDED |
-| [domain-authority-auditor](../seo-geo/monitor/domain-authority-auditor/SKILL.md) | CITE | `seo-geo/monitor/` | SHIP / FIX / BLOCK / UNDECIDED; 신뢰 라벨은 설명용일 뿐 |
-| [content-reviewer](../influencer/activate/content-reviewer/SKILL.md) | C³ ART | `influencer/activate/` | SHIP / FIX / BLOCK / UNDECIDED에 더해 크리에이터용 번역 제공 |
+| [content-quality-auditor](../seo-geo/tune/content-quality-auditor/SKILL.md) | CORE-EEAT | `seo-geo/tune/` | SHIP / FIX / BLOCK / UNDECIDED |
+| [domain-authority-auditor](../seo-geo/evaluate/domain-authority-auditor/SKILL.md) | CITE | `seo-geo/evaluate/` | SHIP / FIX / BLOCK / UNDECIDED; 신뢰 라벨은 설명용일 뿐 |
+| [creator-content-auditor](../influencer/activate/creator-content-auditor/SKILL.md) | STAR SQS | `influencer/activate/` | SHIP / FIX / BLOCK / UNDECIDED에 더해 크리에이터용 번역 제공 |
 | [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md) | ROAS | `ad/activate/` | SHIP / FIX / BLOCK / UNDECIDED |
 | [email-quality-auditor](../email/deliver/email-quality-auditor/SKILL.md) | SEND | `email/deliver/` | SHIP / FIX / BLOCK / UNDECIDED |
 | [launch-readiness-auditor](../launch/mobilize/launch-readiness-auditor/SKILL.md) | RAMP 라이프사이클 프로파일 | `launch/mobilize/` | 선언된 하나의 라이프사이클 읽기에 대한 SHIP / FIX / BLOCK / UNDECIDED |
@@ -198,7 +198,7 @@ Narrative는 메시지이고, 채널은 그것을 표현하는 매체입니다 �
 
 | 스킬 | 역할 | 앵커 대상 | 정준 이벤트 스트림 / 런타임 역할 |
 |-------|-----|-------------|-----------------|
-| [entity-optimizer](../protocol/entity-optimizer/SKILL.md) | 정준적 브랜드/엔티티 프로필(Knowledge Graph, Wikidata, AI 중의성 해소) | SEO/GEO | `memory/events/entities.ndjson` |
+| [entity-registry](../protocol/entity-registry/SKILL.md) | 정준적 브랜드/엔티티 프로필(Knowledge Graph, Wikidata, AI 중의성 해소) | SEO/GEO | `memory/events/entities.ndjson` |
 | [creator-registry](../protocol/creator-registry/SKILL.md) | 정준적 크리에이터 명부/도시에 — 중복 제거된 핸들, 출처 라벨이 붙은 오디언스 통계, 요율, 컴플라이언스 이력 | 인플루언서 | `memory/events/creators.ndjson` |
 | [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md) | 오퍼 & 클레임 입증 원장 — O1/T2 클레임 점검이 대조하여 판정되는 기록 | Paid | `memory/events/claims.ndjson` |
 | [consent-registry](../protocol/consent-registry/SKILL.md) | 대상별 정준적 동의/억제 기록 — S2/N1 거부가 이에 비추어 판정 | 이메일 | `memory/events/consent.ndjson` |
@@ -231,7 +231,7 @@ Narrative는 메시지이고, 채널은 그것을 표현하는 매체입니다 �
 | `PostToolBatch` | (전부) | 병렬 도구 배치마다 운영 메모리와 예약된 감사 싱크를 재점검합니다. |
 | `Stop` | (전부) | 마지막 제한 스윕을 한 번 수행하며, 이후 active-stop 가드가 종료를 허용합니다. pre-commit/CI는 커밋된 Git 콘텐츠의 PII만 보호하고, 무시된 런타임 산출물은 검증하지 않습니다. |
 
-Artifact Gate는 **프레임워크 비의존적**입니다 — 같은 훅이 TALE, CORE-EEAT, CITE, C³, ROAS, SEND, RAMP, ECHO 산출물을 프레임워크별 코드 없이 검증합니다.
+Artifact Gate는 **프레임워크 비의존적**입니다 — 같은 훅이 TALE, CORE-EEAT, CITE, STAR, ROAS, SEND, RAMP, ECHO 산출물을 프레임워크별 코드 없이 검증합니다.
 
 ---
 
@@ -275,16 +275,16 @@ Artifact Gate는 **프레임워크 비의존적**입니다 — 같은 훅이 TAL
 
 </details>
 
-### SEO/GEO (16)
+### SEO/GEO — SITE (16)
 
 네 개의 단계 디렉터리(각 4개 스킬) + 분야의 두 품질 게이트(⛩ 표시).
 
 | 단계 | 스킬 |
 |-------|--------|
-| **Research** | [keyword-research](../seo-geo/research/keyword-research/SKILL.md), [competitor-analysis](../seo-geo/research/competitor-analysis/SKILL.md), [serp-analysis](../seo-geo/research/serp-analysis/SKILL.md), [content-gap-analysis](../seo-geo/research/content-gap-analysis/SKILL.md) |
-| **Build** | [content-writer](../seo-geo/build/content-writer/SKILL.md), [geo-content-optimizer](../seo-geo/build/geo-content-optimizer/SKILL.md), [serp-markup-builder](../seo-geo/build/serp-markup-builder/SKILL.md), [page-play-builder](../seo-geo/build/page-play-builder/SKILL.md) |
-| **Optimize** | ⛩ [content-quality-auditor](../seo-geo/optimize/content-quality-auditor/SKILL.md), [technical-seo-checker](../seo-geo/optimize/technical-seo-checker/SKILL.md), [on-page-seo-auditor](../seo-geo/optimize/on-page-seo-auditor/SKILL.md), [site-structure-optimizer](../seo-geo/optimize/site-structure-optimizer/SKILL.md) |
-| **Monitor** | ⛩ [domain-authority-auditor](../seo-geo/monitor/domain-authority-auditor/SKILL.md), [rank-tracker](../seo-geo/monitor/rank-tracker/SKILL.md), [performance-monitor](../seo-geo/monitor/performance-monitor/SKILL.md), [offsite-signal-analyzer](../seo-geo/monitor/offsite-signal-analyzer/SKILL.md) |
+| **Survey** | [keyword-research](../seo-geo/survey/keyword-research/SKILL.md), [competitor-analysis](../seo-geo/survey/competitor-analysis/SKILL.md), [serp-analysis](../seo-geo/survey/serp-analysis/SKILL.md), [content-gap-analysis](../seo-geo/survey/content-gap-analysis/SKILL.md) |
+| **Implement** | [content-writer](../seo-geo/implement/content-writer/SKILL.md), [geo-content-optimizer](../seo-geo/implement/geo-content-optimizer/SKILL.md), [serp-markup-builder](../seo-geo/implement/serp-markup-builder/SKILL.md), [page-play-builder](../seo-geo/implement/page-play-builder/SKILL.md) |
+| **Tune** | ⛩ [content-quality-auditor](../seo-geo/tune/content-quality-auditor/SKILL.md), [technical-seo-checker](../seo-geo/tune/technical-seo-checker/SKILL.md), [on-page-seo-checker](../seo-geo/tune/on-page-seo-checker/SKILL.md), [site-structure-optimizer](../seo-geo/tune/site-structure-optimizer/SKILL.md) |
+| **Evaluate** | ⛩ [domain-authority-auditor](../seo-geo/evaluate/domain-authority-auditor/SKILL.md), [rank-tracker](../seo-geo/evaluate/rank-tracker/SKILL.md), [performance-monitor](../seo-geo/evaluate/performance-monitor/SKILL.md), [offsite-signal-analyzer](../seo-geo/evaluate/offsite-signal-analyzer/SKILL.md) |
 
 <details><summary><b>스킬별 목적(SEO/GEO)</b></summary>
 
@@ -294,18 +294,18 @@ Artifact Gate는 **프레임워크 비의존적**입니다 — 같은 훅이 TAL
 | competitor-analysis | 경쟁사 SEO 전략 분석, 도메인 비교, 그들의 키워드와 격차 발굴. |
 | serp-analysis | SERP 해석 — 기능, 스니펫, People Also Ask, 특정 쿼리의 랭킹 패턴. |
 | content-gap-analysis | 경쟁사 대비 누락 주제와 커버리지 구멍 발견. |
-| content-writer | *(통합: seo-content-writer + content-refresher)* SEO 최적화된 기사, 랜딩 페이지, 제품 카피 작성 및 리프레시. |
+| content-writer | SEO 최적화된 기사, 랜딩 페이지, 제품 카피 작성 및 리프레시. |
 | geo-content-optimizer | AI 엔진(ChatGPT, Perplexity, AI Overviews, Gemini, Claude, Copilot)을 위한 콘텐츠 최적화. |
-| serp-markup-builder | *(통합: meta-tags-optimizer + schema-markup-generator)* Title/Meta/OG/Twitter 태그 + JSON-LD / Schema.org 구조화 데이터. |
-| page-play-builder | *(통합: programmatic + parasite + comparison + local SEO, 4 모드)* 템플릿 구동 페이지 플레이 — 프로그래매틱 페이지, 패러사이트 플랫폼, 비교 페이지, local/GBP. |
+| serp-markup-builder | Title/Meta/OG/Twitter 태그 + JSON-LD / Schema.org 구조화 데이터. |
+| page-play-builder | 템플릿 구동 페이지 플레이 — 프로그래매틱 페이지, 패러사이트 플랫폼, 비교 페이지, local/GBP. |
 | ⛩ content-quality-auditor | 80항목 CORE-EEAT 게시 준비 게이트(SHIP/FIX/BLOCK). |
 | technical-seo-checker | 사이트 속도, Core Web Vitals, 색인, 크롤 가능성, robots. |
-| on-page-seo-auditor | 페이지 수준 on-page 건강도 감사 — 헤딩, 키워드 배치, 이미지, 품질 신호. |
-| site-structure-optimizer | *(통합: internal-linking-optimizer + site-architecture)* 내부 링크, 앵커 텍스트, 고아 페이지, 페이지 계층, URL 분류, hub/spoke 클러스터. |
+| on-page-seo-checker | 페이지 수준 on-page 건강도 감사 — 헤딩, 키워드 배치, 이미지, 품질 신호. |
+| site-structure-optimizer | 내부 링크, 앵커 텍스트, 고아 페이지, 페이지 계층, URL 분류, hub/spoke 클러스터. |
 | ⛩ domain-authority-auditor | 40항목 CITE 도메인 신뢰 게이트(TRUSTED/CAUTIOUS/UNTRUSTED). |
 | rank-tracker | 키워드 랭킹, 순위 변동, 하락 추적. |
-| performance-monitor | *(통합: performance-reporter + alert-manager)* 다중 지표 SEO/GEO 리포트, 대시보드, 임계값 알림. |
-| offsite-signal-analyzer | *(통합: backlink-analyzer + ai-traffic)* 백링크 프로필 + 링크 품질, 그리고 자신의 GA4/GSC/로그 내 AI 어시스턴트 추천 트래픽. |
+| performance-monitor | 다중 지표 SEO/GEO 리포트, 대시보드, 임계값 알림. |
+| offsite-signal-analyzer | 백링크 프로필 + 링크 품질, 그리고 자신의 GA4/GSC/로그 내 AI 어시스턴트 추천 트래픽. |
 
 </details>
 
@@ -377,7 +377,7 @@ Artifact Gate는 **프레임워크 비의존적**입니다 — 같은 훅이 TAL
 | inbox-placement-monitor | S | *(신규)* 시드 리스트와 프로바이더 신호를 통한 inbox-vs-spam 지속 추적, 평판 표류 알림 포함. |
 | cold-outbound-sequencer | D | *(신규)* 준수하는 B2B 콜드 아웃바운드 케이던스 — deliverability 안전 램프, 개인화 토큰, 회신 처리 단계. |
 
-**분야 간 재사용**(원래 단계에서 계수, 중복 없음): [audience-mapper](../influencer/discover/audience-mapper/SKILL.md), [landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md), [roi-calculator](../influencer/measure/roi-calculator/SKILL.md), [report-generator](../influencer/measure/report-generator/SKILL.md), [performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md), [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md).
+**분야 간 재사용**(원래 단계에서 계수, 중복 없음): [audience-mapper](../influencer/scout/audience-mapper/SKILL.md), [landing-optimizer](../influencer/report/landing-optimizer/SKILL.md), [roi-calculator](../influencer/report/roi-calculator/SKILL.md), [report-generator](../influencer/report/report-generator/SKILL.md), [performance-analyzer](../influencer/report/performance-analyzer/SKILL.md), [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md).
 
 </details>
 
@@ -413,37 +413,37 @@ Artifact Gate는 **프레임워크 비의존적**입니다 — 같은 훅이 TAL
 | budget-pacing-monitor | S | *(신규)* 플라이트 전반의 예산 대비 지출 속도 추적, 과소/과다 전달 표시, 페이싱 교정 권고. |
 | fatigue-frequency-manager | O | *(신규)* 프리퀀시와 크리에이티브 감쇠 신호 감시, 피로한 광고 표시, 리프레시/로테이션 예약. |
 
-**분야 간 재사용**(원래 단계에서 계수, 중복 없음): [budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md)(지출 + bid-pacing/학습 단계 모드), [landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md)(클릭 후), [roi-calculator](../influencer/measure/roi-calculator/SKILL.md)(리턴 계산), [report-generator](../influencer/measure/report-generator/SKILL.md), [performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md).
+**분야 간 재사용**(원래 단계에서 계수, 중복 없음): [budget-optimizer](../influencer/target/budget-optimizer/SKILL.md)(지출 + bid-pacing/학습 단계 모드), [landing-optimizer](../influencer/report/landing-optimizer/SKILL.md)(클릭 후), [roi-calculator](../influencer/report/roi-calculator/SKILL.md)(리턴 계산), [report-generator](../influencer/report/report-generator/SKILL.md), [performance-analyzer](../influencer/report/performance-analyzer/SKILL.md).
 
 </details>
 
-### 인플루언서 (16)
+### 인플루언서 — STAR (16)
 
-네 개의 단계 디렉터리(각 4개 스킬); 분야의 게이트(⛩ content-reviewer)는 Activate에 위치.
+네 개의 단계 디렉터리(각 4개 스킬); 분야의 게이트(⛩ creator-content-auditor)는 Activate에 위치.
 
 | 단계 | 스킬 |
 |-------|--------|
-| **Discover** | [audience-mapper](../influencer/discover/audience-mapper/SKILL.md), [trend-spotter](../influencer/discover/trend-spotter/SKILL.md), [influencer-discovery](../influencer/discover/influencer-discovery/SKILL.md), [fit-scorer](../influencer/discover/fit-scorer/SKILL.md) |
-| **Plan** | [competitor-tracker](../influencer/plan/competitor-tracker/SKILL.md), [campaign-planner](../influencer/plan/campaign-planner/SKILL.md), [brief-generator](../influencer/plan/brief-generator/SKILL.md), [budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md) |
-| **Activate** | [outreach-manager](../influencer/activate/outreach-manager/SKILL.md), ⛩ [content-reviewer](../influencer/activate/content-reviewer/SKILL.md), [contract-helper](../influencer/activate/contract-helper/SKILL.md), [content-amplifier](../influencer/activate/content-amplifier/SKILL.md) |
-| **Measure** | [landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md), [performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md), [roi-calculator](../influencer/measure/roi-calculator/SKILL.md), [report-generator](../influencer/measure/report-generator/SKILL.md) |
+| **Scout** | [audience-mapper](../influencer/scout/audience-mapper/SKILL.md), [trend-spotter](../influencer/scout/trend-spotter/SKILL.md), [influencer-discovery](../influencer/scout/influencer-discovery/SKILL.md), [fit-scorer](../influencer/scout/fit-scorer/SKILL.md) |
+| **Target** | [competitor-tracker](../influencer/target/competitor-tracker/SKILL.md), [campaign-planner](../influencer/target/campaign-planner/SKILL.md), [brief-generator](../influencer/target/brief-generator/SKILL.md), [budget-optimizer](../influencer/target/budget-optimizer/SKILL.md) |
+| **Activate** | [outreach-manager](../influencer/activate/outreach-manager/SKILL.md), ⛩ [creator-content-auditor](../influencer/activate/creator-content-auditor/SKILL.md), [contract-helper](../influencer/activate/contract-helper/SKILL.md), [content-amplifier](../influencer/activate/content-amplifier/SKILL.md) |
+| **Report** | [landing-optimizer](../influencer/report/landing-optimizer/SKILL.md), [performance-analyzer](../influencer/report/performance-analyzer/SKILL.md), [roi-calculator](../influencer/report/roi-calculator/SKILL.md), [report-generator](../influencer/report/report-generator/SKILL.md) |
 
 <details><summary><b>스킬별 목적(인플루언서)</b></summary>
 
 | 스킬 | 하는 일 |
 |-------|--------------|
-| audience-mapper | *(통합: audience-analyzer + niche-researcher)* 크리에이터와 협업하기 전 타깃 오디언스를 프로파일링하고 그 서브컬처 / 마이크로 커뮤니티를 지도화. |
+| audience-mapper | 크리에이터와 협업하기 전 타깃 오디언스를 프로파일링하고 그 서브컬처 / 마이크로 커뮤니티를 지도화. |
 | trend-spotter | 캠페인 타이밍과 테마 — 트렌드 해시태그, 사운드, 포맷, 문화적 순간. |
 | influencer-discovery | 크리에이터 명부를 처음부터 구축, 새 플랫폼으로 확장, nano/micro를 대규모로 소싱. |
-| fit-scorer | 쇼트리스트에 대한 객관적 가중 적합도 점수(C³ ACE로 채점). |
+| fit-scorer | 쇼트리스트에 대한 객관적 가중 적합도 점수(STAR Suitability (S)로 채점). |
 | competitor-tracker | 경쟁사의 크리에이터, 캠페인, 포맷, 추정 도달/지출, 격차. |
 | campaign-planner | 캠페인, 제품 출시, 텐트폴, 상시 크리에이터 프로그램 기획. |
 | brief-generator | 표준화된 인플루언서 브리프와 재사용 가능한 팀 템플릿. |
 | budget-optimizer | 티어/플랫폼에 지출 배분, ROI 예측, 시나리오 모델링(Paid Ads 지출 + bid-pacing에도 기여). |
 | outreach-manager | 피치, 팔로업 케이던스, 재참여, 요율 협상, 상태 추적. |
-| ⛩ content-reviewer | 크리에이터 제출물에 대한 게시 전 게이트 결정(C³ ART: FTC 공개 T1, 클레임 무결성 T2). |
+| ⛩ creator-content-auditor | 크리에이터 제출물에 대한 게시 전 게이트 결정(STAR Trust: FTC 공개 STAR-T1, 클레임 무결성 STAR-T2). |
 | contract-helper | 크리에이터 계약 초안/검토 — 사용권, 독점, 표준 조항. |
-| content-amplifier | *(통합: content-amplifier + ugc-repurposer)* 오가닉 크리에이터 콘텐츠를 유료 지출로 증폭하고 UGC를 Paid, 웹, 이메일, 오가닉에 재활용. |
+| content-amplifier | 오가닉 크리에이터 콘텐츠를 유료 지출로 증폭하고 UGC를 Paid, 웹, 이메일, 오가닉에 재활용. |
 | landing-optimizer | 크리에이터/Paid 트래픽용 랜딩 페이지 — 메시지 매치, 모바일, A/B(Paid 클릭 후에도 기여). |
 | performance-analyzer | 크리에이터 결과 평가, 크리에이터 비교, 센티먼트, 전환(Paid 크로스채널 스코어카드도). |
 | roi-calculator | ROI 측정/예측, 예산 방어, 크리에이터/티어 가치 평가(공유 리턴 계산 엔진, Paid 포함). |
@@ -483,7 +483,7 @@ Artifact Gate는 **프레임워크 비의존적**입니다 — 같은 훅이 TAL
 | launch-retro-analyzer | P | D1/W1/M1 레트로 — 채널별 actual-vs-target, 최대 미스에 대한 5-Whys, keep/kill/change 결정, 레지스트리로의 결과 스냅샷. |
 | momentum-planner | P | T+1→T+30 모멘텀 계획 — 출시 순간 캘린더, 공지 티어 라우팅, relaunch 정당성 결정, 다음 Tier-1 순간. |
 
-**분야 간 재사용**(원래 단계에서 계수, 중복 없음): `audience-mapper`, `trend-spotter`, `budget-optimizer`, `landing-optimizer`, `campaign-planner`, `outreach-manager`, `content-amplifier`, `email-creative-builder` / `email-sequence-designer` / `cold-outbound-sequencer`, `campaign-architect` / `ad-creative-builder`, `page-play-builder` / `content-writer`, `technical-seo-checker` / `serp-markup-builder`, `performance-monitor`, `keyword-research`, `entity-optimizer`, `offer-claims-registry`, `consent-registry`, `list-growth-designer`, `roi-calculator` / `performance-analyzer` / `report-generator` — [ramp-benchmark.md](../references/ramp-benchmark.md) 참조.
+**분야 간 재사용**(원래 단계에서 계수, 중복 없음): `audience-mapper`, `trend-spotter`, `budget-optimizer`, `landing-optimizer`, `campaign-planner`, `outreach-manager`, `content-amplifier`, `email-creative-builder` / `email-sequence-designer` / `cold-outbound-sequencer`, `campaign-architect` / `ad-creative-builder`, `page-play-builder` / `content-writer`, `technical-seo-checker` / `serp-markup-builder`, `performance-monitor`, `keyword-research`, `entity-registry`, `offer-claims-registry`, `consent-registry`, `list-growth-designer`, `roi-calculator` / `performance-analyzer` / `report-generator` — [ramp-benchmark.md](../references/ramp-benchmark.md) 참조.
 
 </details>
 
@@ -493,13 +493,13 @@ Artifact Gate는 **프레임워크 비의존적**입니다 — 같은 훅이 TAL
 
 | 그룹 | 스킬 |
 |-------|--------|
-| **프로토콜** | [entity-optimizer](../protocol/entity-optimizer/SKILL.md), [creator-registry](../protocol/creator-registry/SKILL.md), [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md), [consent-registry](../protocol/consent-registry/SKILL.md), [launch-registry](../protocol/launch-registry/SKILL.md), [channel-registry](../protocol/channel-registry/SKILL.md), [narrative-registry](../protocol/narrative-registry/SKILL.md), [memory-management](../protocol/memory-management/SKILL.md) |
+| **프로토콜** | [entity-registry](../protocol/entity-registry/SKILL.md), [creator-registry](../protocol/creator-registry/SKILL.md), [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md), [consent-registry](../protocol/consent-registry/SKILL.md), [launch-registry](../protocol/launch-registry/SKILL.md), [channel-registry](../protocol/channel-registry/SKILL.md), [narrative-registry](../protocol/narrative-registry/SKILL.md), [memory-management](../protocol/memory-management/SKILL.md) |
 
 <details><summary><b>스킬별 목적(프로토콜)</b></summary>
 
 | 스킬 | 하는 일 |
 |-------|--------------|
-| entity-optimizer | Knowledge Graph, Wikidata, AI 중의성 해소를 위한 정준적 엔티티 프로필. |
+| entity-registry | Knowledge Graph, Wikidata, AI 중의성 해소를 위한 정준적 엔티티 프로필. |
 | creator-registry | 정준적 크리에이터 명부/도시에 — 중복 제거된 핸들, 출처 라벨이 붙은 오디언스 통계, 요율, 컴플라이언스 이력. |
 | offer-claims-registry | 정준적 오퍼 & 클레임 입증 원장 — O1/T2 클레임 점검이 대조하여 판정되는 기록. |
 | consent-registry | 대상별 정준적 동의/억제 기록 — 옵트인 타임스탬프 + 법적 근거, 더블 옵트인 증빙, 추가 전용 수신거부/바운스/불만 이력; S2/N1 거부가 대조하는 기록. |
@@ -520,16 +520,14 @@ Artifact Gate는 **프레임워크 비의존적**입니다 — 같은 훅이 TAL
 |---------|-----------|-----------|
 | `/aaron-marketing:auto` | 임의의 목표를 설명 — 의도를 추론하고 가장 작은 유용한 워크플로 실행 | `--deep`(전수 / 스트레스 테스트) |
 | `/aaron-marketing:narrative` | 브랜드 내러티브(TALE 루프): 현재 스토리 & 카테고리 추적, 전략 내러티브 & 메시지 시스템 설계, 채널 전반에 안착, 품질 게이트, 공명 & 표류 | `--phase trace\|architect\|land\|evaluate` |
-| `/aaron-marketing:seo-geo` | SEO/GEO 엔드투엔드: 수요/경쟁사 조사, 콘텐츠 생성, 품질/기술/가시성/권위 감사, 랭킹/리포트/메모리 추적 | `--mode research\|create\|audit\|track` + 모드별 플래그(`--competitors` `--map` · `--brief` `--series` `--refresh` `--publish` `--meta` `--schema` `--type` · `--full` `--tech` `--visibility` `--authority` · `--alert` `--report` `--remember` `--period`) |
-| `/aaron-marketing:influencer` | 인플루언서: 오디언스 인사이트, 발견 & 적합, 기획, 아웃리치, 증폭, ROI | `--phase discover\|plan\|activate\|measure` |
+| `/aaron-marketing:seo-geo` | SEO/GEO 엔드투엔드(SITE 루프): 수요/경쟁사 서베이, 콘텐츠 구현, 품질/기술/온페이지 튜닝, 권위/랭킹/리포트/메모리 평가 | `--phase survey\|implement\|tune\|evaluate` + 단계별 플래그(`--competitors` `--map` · `--brief` `--series` `--refresh` `--publish` `--meta` `--schema` `--type` · `--full` `--tech` `--visibility` · `--authority` `--alert` `--report` `--remember` `--period`) |
+| `/aaron-marketing:influencer` | 인플루언서(STAR 루프): 오디언스 인사이트, 스카우팅 & 적합, 타기팅, 아웃리치, 증폭, ROI 리포팅 | `--phase scout\|target\|activate\|report` |
 | `/aaron-marketing:ad` | Paid ads(ROAS 루프): 세그먼트, 구조, 크리에이티브, 실험 설계, 감사 게이트, 측정 | `--phase research\|orchestrate\|activate\|scale` |
 | `/aaron-marketing:email` | 이메일(SEND 루프): deliverability/consent, 세그먼테이션, 크리에이티브, 라이프사이클 플로, 수익화, 발송 테스트, 감사 게이트 | `--phase setup\|engage\|nurture\|deliver` |
 | `/aaron-marketing:launch` | Product launch(RAMP 루프): 포지셔닝, 티어 & 윈도, 메시지 하우스 & 에셋, readiness 게이트, 출시 당일 진행, 모니터링 & 레트로 | `--phase research\|assemble\|mobilize\|prove` |
 | `/aaron-marketing:social` | 오가닉 소셜(ECHO 루프): 채널 포트폴리오 & 보이스, 캘린더 & 크리에이티브, 품질 게이트, 인게이지먼트/위기 호스팅, 펄스 & 측정 | `--phase explore\|craft\|host\|observe` |
 
-일상 작업은 보통 `/aaron-marketing:auto`로 시작합니다; 나머지 일곱은 명시적 분야 진입점이며, `--mode` / `--phase`로 단계를 좁힙니다.
-
-**이름 변경 참고:** 명령어는 `/aaron-marketing:` 접두사를 사용합니다. 이전 `research` / `create` / `audit` / `track` 명령어는 이제 `/aaron-marketing:seo-geo`의 모드입니다(플래그 불변). 더 오래된 `/seo:*`와 `/aaron-seo-geo:*` 이름은 `auto`를 통해 복구됩니다 — 예: `/aaron-marketing:auto /aaron-seo-geo:audit https://example.com/blog/post`는 `/aaron-marketing:seo-geo https://example.com/blog/post --mode audit`를 반환합니다.
+일상 작업은 보통 `/aaron-marketing:auto`로 시작합니다; 나머지 일곱은 명시적 분야 진입점이며, `--phase`로 단계를 좁힙니다.
 
 ---
 
@@ -570,29 +568,55 @@ Paid Ads 스킬은 **자기 계정의 수동 내보내기**(네이티브 광고 
 
 ## 권장 워크플로
 
-**SEO/GEO**
-1. **Research** — `keyword-research` → `competitor-analysis` → `content-gap-analysis`
-2. **Build** — `content-writer` → `geo-content-optimizer` → `serp-markup-builder` / `page-play-builder`
-3. **Optimize** — `content-quality-auditor`(⛩ 게시 게이트) → `on-page-seo-auditor` → `technical-seo-checker` → `site-structure-optimizer`
-4. **Monitor** — `rank-tracker` → `performance-monitor` → `offsite-signal-analyzer`; 신뢰 검토에는 `domain-authority-auditor`(⛩)
+실제 목표는 대부분 여러 분야에 걸쳐 있습니다. `/aaron-marketing:auto`는 자연어 목표를 7개 분야의 최소 스킬 체인으로 라우팅합니다 — 예컨대 제품 론칭은 Launch·Email·Social·Paid를 동시에 가동합니다:
 
-**인플루언서**
-1. **Discover** — `audience-mapper` → `trend-spotter` → `influencer-discovery` → `fit-scorer`(C³ ACE)
-2. **Plan** — `competitor-tracker` → `campaign-planner` → `brief-generator` → `budget-optimizer`
-3. **Activate** — `outreach-manager` → `content-reviewer`(⛩ ART 게이트) → `contract-helper` → `content-amplifier`
-4. **Measure** — `landing-optimizer` → `performance-analyzer` → `roi-calculator` → `report-generator`
+```text
+/aaron-marketing:auto 3주 뒤 Product Hunt에서 v2 론칭 — 대기자 1,200명; 랜딩 페이지, 이메일, 론칭 당일 플랜 필요
+```
 
-**Paid Ads(ROAS 루프)**
-1. **Research** — `audience-segment-builder` → `campaign-architect`
-2. **Orchestrate** — `ad-creative-builder` → `ad-test-designer`(페이지용으로 + `landing-optimizer`)
-3. **Activate** — `conversion-signal-qa` → `ad-account-auditor`(⛩ RQS 게이트), 어떤 예산이든 라이브되기 전에
-4. **Scale** — `paid-measurement-loop` → `attribution-reconciler` → `roi-calculator` → `report-generator`
+하나의 분야 루프를 끝까지 돌릴 수도 있습니다(각 분야 디렉터리의 `README.md` 가이드가 시나리오 단위 플레이를 제공합니다):
 
-**이메일(SEND 루프)**
+**Narrative (TALE 루프)**
+1. **Trace** — `narrative-baseline-mapper` → `category-narrative-mapper` → `audience-belief-mapper` → `positioning-truth-tracer`
+2. **Architect** — `strategic-narrative-designer` → `message-system-architect` → `brand-language-codifier` → `story-bank-builder`
+3. **Land** — `narrative-cascade-planner` → `pitch-narrative-builder` → `narrative-enablement-kit` → `proof-point-packager`
+4. **Evaluate** — `narrative-quality-auditor` (⛩ TALE 게이트) → `message-test-designer` → `narrative-resonance-monitor` → `narrative-drift-monitor`
+
+**SEO/GEO (SITE 루프)**
+1. **Survey** — `keyword-research` → `competitor-analysis` → `content-gap-analysis`
+2. **Implement** — `content-writer` → `geo-content-optimizer` → `serp-markup-builder` / `page-play-builder`
+3. **Tune** — `content-quality-auditor` (⛩ 게시 게이트) → `on-page-seo-checker` → `technical-seo-checker` → `site-structure-optimizer`
+4. **Evaluate** — `rank-tracker` → `performance-monitor` → `offsite-signal-analyzer`; 신뢰 리뷰는 `domain-authority-auditor`(⛩)
+
+**Social (ECHO 루프)**
+1. **Explore** — `channel-portfolio-planner` → `voice-dossier-builder` → `platform-norm-profiler` → `participation-warmup-planner`
+2. **Craft** — `social-calendar-builder` → `social-creative-builder` → `short-video-scripter` → `advocacy-program-designer`
+3. **Host** — `social-quality-auditor` (⛩ ECHO 게이트) → `engagement-inbox-manager` → `social-selling-planner` → `crisis-response-planner`
+4. **Observe** — `social-pulse-monitor` → `share-of-voice-tracker` → `dark-social-attributor` → `social-measurement-loop`
+
+**Email (SEND 루프)**
 1. **Setup** — `deliverability-qa` → `list-segment-builder`
 2. **Engage** — `email-creative-builder`
 3. **Nurture** — `email-sequence-designer` → `newsletter-monetization-planner`
-4. **Deliver** — `send-experiment-designer` → `email-quality-auditor`(⛩ EQS 게이트), 발송 전에
+4. **Deliver** — `send-experiment-designer` → `email-quality-auditor` (⛩ EQS 게이트) — 발송 전
+
+**Paid Ads (ROAS 루프)**
+1. **Research** — `audience-segment-builder` → `campaign-architect`
+2. **Orchestrate** — `ad-creative-builder` → `ad-test-designer` (페이지는 `landing-optimizer`)
+3. **Activate** — `conversion-signal-qa` → `ad-account-auditor` (⛩ RQS 게이트) — 예산 집행 전
+4. **Scale** — `paid-measurement-loop` → `attribution-reconciler` → `roi-calculator` → `report-generator`
+
+**인플루언서 (STAR 루프)**
+1. **Scout** — `audience-mapper` → `trend-spotter` → `influencer-discovery` → `fit-scorer` (STAR Suitability)
+2. **Target** — `competitor-tracker` → `campaign-planner` → `brief-generator` → `budget-optimizer`
+3. **Activate** — `outreach-manager` → `creator-content-auditor` (⛩ STAR 게이트) → `contract-helper` → `content-amplifier`
+4. **Report** — `landing-optimizer` → `performance-analyzer` → `roi-calculator` → `report-generator`
+
+**Launch (RAMP 루프)**
+1. **Research** — `positioning-mapper` → `launch-tier-planner` → `launch-window-planner` → `early-access-designer`
+2. **Assemble** — `message-house-builder` → `launch-asset-packager` → `pricing-packaging-planner` → `sales-enablement-kit`
+3. **Mobilize** — `launch-readiness-auditor` (⛩ RAMP 게이트) → `launch-day-conductor` → `community-launch-runner` → `press-media-relations`
+4. **Prove** — `launch-monitor` → `launch-feedback-synthesizer` → `launch-retro-analyzer` → `momentum-planner`
 
 완전한 신뢰 검토를 위해 `content-quality-auditor`를 `domain-authority-auditor`와 짝지어 합계 120항목 평가를. `memory-management`가 활성이면 인계와 미해결 사항이 HOT/WARM/COLD 메모리에 자동으로 지속됩니다.
 
@@ -602,8 +626,8 @@ Paid Ads 스킬은 **자기 계정의 수동 내보내기**(네이티브 광고 
 
 ```
 narrative/{trace,architect,land,evaluate}/           # Narrative — TALE (16, 게이트 포함)
-seo-geo/{research,build,optimize,monitor}/           # SEO/GEO (16, 두 게이트 포함)
-influencer/{discover,plan,activate,measure}/         # 인플루언서 (16, 게이트 포함)
+seo-geo/{survey,implement,tune,evaluate}/            # SEO/GEO (16, 두 게이트 포함)
+influencer/{scout,target,activate,report}/           # 인플루언서 (16, 게이트 포함)
 ad/{research,orchestrate,activate,scale}/            # Paid Ads — ROAS (16, 게이트 포함)
 email/{setup,engage,nurture,deliver}/                # Email — SEND (16, 게이트 포함)
 launch/{research,assemble,mobilize,prove}/           # Launch — RAMP (16, 게이트 포함)
@@ -653,7 +677,7 @@ docs/            # 현지화된 README (de, es, fr, it, ja, ko, pt, zh, zh-Hant)
 ## 기여 & 프로젝트 문서
 
 - **[CONTRIBUTING.md](../CONTRIBUTING.md)** — 오서링 규칙, 기여 체크리스트, 권위 있는 10개 추적 표면 목록.
-- **[VERSIONS.md](../VERSIONS.md)** — 스킬별 버전 + changelog(현재 번들: `17.0.0`).
+- **[VERSIONS.md](../VERSIONS.md)** — 스킬별 버전 + changelog(현재 번들: `18.0.0`).
 - **[SECURITY.md](../SECURITY.md)** · **[PRIVACY.md](../PRIVACY.md)** · **[CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md)** — 보안, 프라이버시, 커뮤니티 정책.
 - **[CLAUDE.md](../CLAUDE.md)** / **[AGENTS.md](../AGENTS.md)** — 이 repo의 에이전트용 컨텍스트.
 
@@ -667,7 +691,7 @@ docs/            # 현지화된 README (de, es, fr, it, ja, ko, pt, zh, zh-Hant)
 
 Apache License 2.0 — [LICENSE](../LICENSE) 참조.
 
-*영어 README와 마지막 동기화: v17.0.0*
+*영어 README와 마지막 동기화: v18.0.0*
 
 ## Star History
 

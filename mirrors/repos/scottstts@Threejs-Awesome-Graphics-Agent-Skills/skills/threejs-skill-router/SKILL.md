@@ -14,9 +14,10 @@ Treat the model's Three.js knowledge and official documentation as prerequisites
 | shot composition, chase/side/orbit rigs, camera handoffs, projection ownership, pointer look, floating origins | `$threejs-camera-direction` |
 | launch and docking timelines, procedural transform phases, springs, staging, rotating-frame alignment, debris motion | `$threejs-procedural-animation` |
 | reusable scalar/vector fields, domain warping, causal masks, procedural normals | `$threejs-procedural-fields` |
-| atlas-filtered blocks, planetary surfaces, terrain wetness, lava/emissive procedural surfaces, authored frame PBR, specular AA | `$threejs-procedural-materials` |
+| atlas-filtered blocks, planetary surfaces, hybrid texture-backed PBR soil/moss with procedural displacement and masks, ground and model moss accumulation, terrain wetness, lava/emissive surfaces, authored frame PBR, specular AA | `$threejs-procedural-materials` |
+| height-field ray marching, silhouette-aware POM, curved relief shells, relief self-shadowing | `$threejs-parallax-occlusion-mapping` |
 | sculpted rails/frames, branch rings, semantic mesh writers, material groups | `$threejs-procedural-geometry` |
-| trees, stylized grass, GPU-computed grass, branching organisms, roots, foliage, rooted wind deformation | `$threejs-procedural-vegetation` |
+| trees, surface-following ivy, painted vines, stylized grass, GPU-computed grass, roots, foliage, rooted wind deformation | `$threejs-procedural-vegetation` |
 | buildings, façade grammars, profiles, ornaments, modular mesh writers | `$threejs-procedural-architecture` |
 | planets, terrain, craters, biome fields, coastlines, spherical detail | `$threejs-procedural-planets` |
 | sky scattering, planetary shells, depth-based aerial perspective | `$threejs-atmosphere-aerial-perspective` |
@@ -26,7 +27,7 @@ Treat the model's Three.js knowledge and official documentation as prerequisites
 | falling snow, snow accumulation, model snow caps, wet asphalt puddles, procedural ripple normals, splash flipbooks, rain streaks, shared weather envelopes, surface wetness | `$threejs-precipitation-surfaces` |
 | curved-ray black holes, accretion disks, wormholes | `$threejs-raymarched-space-effects` |
 | particles, trails, plasma, shockwaves, layered event effects | `$threejs-procedural-vfx` |
-| accumulated screen frost, touch clearing, reduced blur, and refraction masks | `$threejs-temporal-surfaces` |
+| accumulated screen frost, touch clearing, wet-window rain, view-aligned droplet refraction and blur | `$threejs-temporal-surfaces` |
 | stable large-world shadows, cascades, clipmaps, cached updates | `$threejs-shadow-systems` |
 | GTAO, bent normals, bilateral reconstruction | `$threejs-screen-space-ambient-occlusion` |
 | HDR bloom and selective emission contribution | `$threejs-bloom` |
@@ -54,7 +55,7 @@ For a new procedural scene:
 - Do not route “make it beautiful” directly to post-processing. Find the missing authored system.
 - Prefer one strong, inspectable visual rule over several independent noise layers.
 - When adapting a supplied reference, preserve the mechanism that creates its character. Do not reduce it to a generic effect category.
-- Keep source-space, world-space, and screen-space systems separate unless the composition explicitly requires coupling.
+- Keep object-space, world-space, and screen-space systems separate unless the composition explicitly requires coupling.
 - If no retained skill matches, state that the pack lacks expert coverage for that system. Do not stretch the nearest skill to cover it.
 
 ## Acceptance gate

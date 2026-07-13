@@ -1,13 +1,13 @@
 # Curved-ray numerical integrators
 
-Use this reference for an RK4 wormhole integrator and an artistic inverse-square curved-ray accretion volume, including state reduction, disk accumulation, background lensing, and numerical diagnostics.
+Use this reference for an RK4 wormhole integrator and an artistic inverse-square curved-ray accretion volume, including state reduction, disk accumulation, background lensing, and numerical diagnostics. For metric-derived Schwarzschild null-geodesic integration with interpolated disk crossings and Doppler-shifted emission, read the `schwarzschild-geodesic-black-hole` example directly.
 
 ## Contents
 
 - Wormhole state reduction
 - Wormhole RK4 integration
 - Universe selection
-- accretion volume screen-volume integration
+- Accretion-volume integration
 - Disk density and color
 - Background lensing
 - Observed defects and boundaries
@@ -88,9 +88,10 @@ direction rather than distort an already rendered screen image.
 A small direction-hashed grain of amplitude `0.01` reduces visible gradient
 banding.
 
-## accretion volume screen-volume integration
+## Accretion-volume integration
 
-The black-hole effect is evaluated on a sphere surrounding the effect. Defaults:
+The `curved-ray-accretion-volume` example is evaluated on a sphere surrounding
+the effect. Defaults:
 
 ```text
 iterations = 128
@@ -159,8 +160,8 @@ without random stars moving between runs.
   iteration while its steering magnitude uses a single `step`. Treat the
   effective distance step as `2 * step`, or remove the duplicate advance and
   retune the complete density-and-bending system explicitly.
-- accretion volume has no early exit and no termination IDs; every pixel pays the full
-  iteration count.
+- The accretion volume has no early exit and no termination IDs; every pixel
+  pays the full iteration count.
 - Its disk is detected by local band density at samples, not by a continuous
   plane-crossing test. A large step can skip a thin disk.
 - The artistic inverse-square steering must not be described as general
@@ -181,7 +182,7 @@ wormhole l and pL
 impact parameter and orbital-plane basis
 RK4 step count and escaped/capped state
 final exterior side and environment direction
-accretion volume radius and steering magnitude
+accretion-volume radius and steering magnitude
 effective traveled distance
 disk band, noise, ramp coordinate, and local alpha
 accumulated alpha and remaining transmittance
@@ -191,4 +192,5 @@ NaN/invalid-state mask
 ```
 
 Add CPU reference rays for the wormhole before claiming physical parity, and a
-continuous disk-crossing variant before increasing accretion volume’s step size.
+continuous disk-crossing variant before increasing the accretion volume’s step
+size.

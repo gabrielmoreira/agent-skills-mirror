@@ -4,12 +4,19 @@ Use this reference for stable directional shadows across a large procedural scen
 
 ## Contents
 
-1. Representation and defaults
-2. Light-space stabilization
-3. Committed centers and containment
-4. Sampling and cross-level blending
-5. Cache scheduling and invalidation
-6. Bias, defects, adaptation, and diagnostics
+1. Identify the representation correctly
+2. Preserve the exact default envelope
+3. Store committed map state
+4. Stabilize X/Y by the actual texel footprint
+5. Derive the light-space frame once
+6. Use a two-class update policy
+7. Commit camera and map atomically
+8. Cross-fade levels without divergent shadow samples
+9. Scale normal bias by texel size
+10. Target invalidation spatially
+11. Attach and dispose ownership explicitly
+12. Adaptation workflow
+13. Required diagnostics
 
 ## 1. Identify the representation correctly
 

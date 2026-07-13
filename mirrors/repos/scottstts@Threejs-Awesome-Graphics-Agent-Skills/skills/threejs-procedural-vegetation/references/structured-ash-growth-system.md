@@ -4,12 +4,17 @@ Use this reference when the target is a natural deciduous Ash with a stable spec
 
 ## Contents
 
-1. Species table
-2. Continuation and child placement
-3. Branch growth and geometry
-4. Leaves and wind
-5. Bark, meadow, and scene composition
-6. Budgets, divergences, and diagnostics
+1. Preserve the exact species table before tuning
+2. Match the branch continuation model
+3. Match section evolution
+4. Match taper and child radius semantics
+5. Match stratification and interpolation
+6. Match ring and bark UV construction
+7. Match leaf placement, card geometry, and normals
+8. Match material and wind behavior accurately
+9. Match composition before judging the generator
+10. Required contract diagnostics
+11. Numeric contract gate
 
 ## 1. Preserve the exact species table before tuning
 
@@ -66,27 +71,17 @@ The inherited section/segment counts differ from ordinary lateral children, whic
 
 ## 3. Match section evolution
 
-The implementation contains:
-
-```text
-sectionLength =
-  branchLength
-  / sectionCount
-  / (branchLevels - 1)
-```
-
-but guards the divisor with a comparison against the string `'Deciduous'`.
-The preset stores `'deciduous'`, so this build does **not** take that
-branch. Effective runtime behavior is:
+The section-length contract, implemented in `tree-system.js`, is:
 
 ```text
 sectionLength = branchLength / sectionCount
 ```
 
-For Ash Medium this doubles the height relative to the apparent intent. The
-complete build produces branch bounds reaching roughly `y=80.30` and leaf
-bounds reaching `y=83.69`. Preserve the actual runtime behavior.
-Do not infer behavior from one line without executing the complete growth path.
+Do not add an extra per-level divisor such as `/(branchLevels - 1)`; the
+species table is calibrated against the formula above. The complete build
+produces branch bounds reaching roughly `y=80.30` and leaf bounds reaching
+`y=83.69`. Validate against the numeric gate in section 11 rather than
+inferring height from any single line.
 
 At every section:
 
@@ -204,7 +199,7 @@ the vertex direction. Preserve that quirk when reproducing the contract. A
 corrected per-card normal is a legitimate extension but changes canopy
 lighting and must be documented.
 
-Use the bundled `ash.png` alpha silhouette. Replacing it with an ellipse or
+Use the included `ash.png` alpha silhouette. Replacing it with an ellipse or
 analytic lozenge changes crown porosity and edge frequency enough to invalidate
 visual comparison.
 
@@ -222,7 +217,7 @@ The complete scene uses:
 The wind shader deforms leaf vertices only:
 
 ```text
-windPhase = simplex3(position / 70)
+windPhase = 2π * simplex3(position / 70)
 wind =
   0.5 * sin(t * 0.5 + phase)
   + 0.3 * sin(2t * 0.5 + 1.3phase)

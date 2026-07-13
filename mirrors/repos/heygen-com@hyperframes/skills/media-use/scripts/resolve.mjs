@@ -30,10 +30,13 @@ import {
   HEYGEN_INSTALL_COMMAND,
   HEYGEN_MIN_VERSION,
   HEYGEN_UPDATE_COMMAND,
+  consumeHeygenRemediation,
   firstSemver,
   flushHeygenFailureTracking,
   versionLessThan,
 } from "./lib/heygen-cli.mjs";
+
+const INGEST_TYPES = [...listTypes(), "video"];
 
 // resolve shells `fetch`/`freezeUrl` and modern ESM; 18 is the floor where those
 // exist without flags. Named so the --doctor node check verifies something real
@@ -429,6 +432,16 @@ async function run() {
     },
   };
 
+  const heygenRemediation = consumeHeygenRemediation();
+  if (
+    searchResult.metadata?.provider === "bundled.sfx" &&
+    !localOnly &&
+    !args.provider &&
+    heygenRemediation
+  ) {
+    record.advisory = heygenRemediation;
+  }
+
   appendRecord(projectDir, record);
   regenerateIndex(projectDir);
   // Auto-promote: surface every fetched asset in the global cache so it's
@@ -720,8 +733,8 @@ async function resolveColor(type, intent, options) {
 }
 
 async function ingest(src) {
-  if (!type || !listTypes().includes(type)) {
-    console.error(`error: --from requires --type (one of: ${listTypes().join(", ")})`);
+  if (!type || !INGEST_TYPES.includes(type)) {
+    console.error(`error: --from requires --type (one of: ${INGEST_TYPES.join(", ")})`);
     process.exit(2);
   }
   const isUrl = /^https?:\/\//i.test(src);
@@ -1135,6 +1148,7 @@ const DEFAULT_EXT = {
   icon: ".svg",
   logo: ".svg",
   brand: ".png",
+  video: ".mp4",
   grade: ".cube",
   lut: ".cube",
 };

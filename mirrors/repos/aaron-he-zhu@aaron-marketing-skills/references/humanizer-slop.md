@@ -62,6 +62,6 @@ Opinions (not just reporting) · varied sentence rhythm · concrete names/dates/
 | `content-writer` | pre-publish self-check before handing off a draft | gate before DONE |
 | `geo-content-optimizer` | same self-check after AI-readability edits | gate before DONE |
 | `content-quality-auditor` | maps to CORE-EEAT **Experience** | **SOFT penalty** — never a veto; vetoes stay T04/C01/R10 |
-| `content-reviewer` | maps to the **ART** (content quality) dimension of C³ | **NON-veto** — ART vetoes stay T1/T2 only |
+| `creator-content-auditor` | maps to the STAR **Appeal** (content quality) dimension | **NON-veto** — never a veto; STAR's disclosure/claim vetoes stay STAR-T1/STAR-T2 only |
 
 Run it as the *last* pass on a draft. It flags voice; it does not check facts, structure, or schema — those are owned by the auditor gates.

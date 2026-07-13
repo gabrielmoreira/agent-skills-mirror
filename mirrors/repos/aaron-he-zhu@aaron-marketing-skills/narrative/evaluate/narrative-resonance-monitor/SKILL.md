@@ -4,20 +4,20 @@ slug: aaron-narrative-resonance-monitor
 displayName: "Narrative Resonance Monitor · 叙事共鸣监测"
 summary: "回声率/AI回答感知/份额之声/共鸣信号"
 description: 'Use when the user asks to "measure how our narrative is landing", "track echo rate against our canon lexicon", or "check how AI answer engines describe our brand"; produces a resonance report — echo rate (overlap of market language with the narrative-registry canon lexicon, method declared), AI-answer perception via tavily.py --answer (proxy-labeled), share-of-voice on a locked competitor panel (reusing share-of-voice-tracker), and resonance signals from bluesky.py / gdelt.py / pageviews.py — every number labeled Measured / proxy / User-provided, feeding the TALE E dimension and the upstream of the E1 evidence-integrity veto. Not for rebuilding share-of-voice machinery — use share-of-voice-tracker; not for own-site GA4/GSC analytics — use performance-monitor; not for scoring TALE profile result — use narrative-quality-auditor; not for adjudicating claims — use offer-claims-registry. 回声率/AI回答感知/份额之声/共鸣信号'
-version: "17.0.0"
+version: "18.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use in the TALE Evaluate phase to measure whether the durable narrative is resonating in the market: echo rate (market language overlap with the canon lexicon, method stated), AI-answer perception (how answer engines describe the brand vs the canon, tavily.py --answer, proxy-labeled), share-of-voice on a locked competitor panel (reusing share-of-voice-tracker), and public resonance signals via bluesky.py / gdelt.py / pageviews.py. The resonance-evidence feed for the E1 veto — every proxy number labeled proxy, never Measured. Not for scoring TALE profile result (that is narrative-quality-auditor) or own-site analytics (performance-monitor)."
 argument-hint: "<brand / narrative> [canon lexicon path] [competitor panel] [platforms]"
-metadata: {"author": "aaron-he-zhu", "version": "17.0.0", "discipline": "narrative", "phase": "evaluate", "geo-relevance": "low", "hermes": {"tags": ["marketing", "narrative", "evaluate"], "category": "narrative"}, "openclaw": {"emoji": "📖", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
+metadata: {"author": "aaron-he-zhu", "version": "18.0.0", "discipline": "narrative", "phase": "evaluate", "geo-relevance": "low", "hermes": {"tags": ["marketing", "narrative", "evaluate"], "category": "narrative"}, "openclaw": {"emoji": "📖", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Narrative Resonance Monitor
 
 Measures whether the durable brand narrative is actually landing in the market — an **echo rate** (how much of the market's own language overlaps the narrative-registry canon lexicon, with the matching method declared), an **AI-answer perception** read (how answer engines describe the brand versus the canon, via `scripts/connectors/tavily.py --answer`, proxy-labeled), **share-of-voice** on a locked competitor panel, and public **resonance signals** from Bluesky / GDELT / Wikipedia-attention. It sits in the **Evaluate** phase of the TALE loop and is the resonance-evidence feed for the `E` dimension — specifically the upstream of the `E1` evidence-integrity veto: the *proxy-not-Measured* discipline, echo-rate-with-declared-method, and AI-answer-perception sub-items (see [tale-benchmark.md](../../../references/tale-benchmark.md)). It reads the canon lexicon but never edits it, and it never adjudicates a claim.
 
-**Scope guard**: this skill produces the resonance report only. It does **not** rebuild share-of-voice tracking (it *reuses* [share-of-voice-tracker](../../../social/observe/share-of-voice-tracker/SKILL.md) — same locked-panel machinery, narrative/message query-term set swapped in), pull own-site GA4/GSC analytics ([performance-monitor](../../../seo-geo/monitor/performance-monitor/SKILL.md) owns own-property telemetry), compute or cap the TALE profile result ([narrative-quality-auditor](../narrative-quality-auditor/SKILL.md) is the sole gate), design the message tests whose results it later reads ([message-test-designer](../message-test-designer/SKILL.md)), edit the canon lexicon ([narrative-registry](../../../protocol/narrative-registry/SKILL.md) is the sole writer of `memory/narrative-registry/`), or adjudicate a claim ([offer-claims-registry](../../../protocol/offer-claims-registry/SKILL.md)). It works one lever — resonance measurement — and hands off.
+**Scope guard**: this skill produces the resonance report only. It does **not** rebuild share-of-voice tracking (it *reuses* [share-of-voice-tracker](../../../social/observe/share-of-voice-tracker/SKILL.md) — same locked-panel machinery, narrative/message query-term set swapped in), pull own-site GA4/GSC analytics ([performance-monitor](../../../seo-geo/evaluate/performance-monitor/SKILL.md) owns own-property telemetry), compute or cap the TALE profile result ([narrative-quality-auditor](../narrative-quality-auditor/SKILL.md) is the sole gate), design the message tests whose results it later reads ([message-test-designer](../message-test-designer/SKILL.md)), edit the canon lexicon ([narrative-registry](../../../protocol/narrative-registry/SKILL.md) is the sole writer of `memory/narrative-registry/`), or adjudicate a claim ([offer-claims-registry](../../../protocol/offer-claims-registry/SKILL.md)). It works one lever — resonance measurement — and hands off.
 
 ## Quick Start
 
@@ -74,7 +74,7 @@ After delivering the report, ask: "Save these results for future sessions?" On c
 - [narrative-drift-monitor](../narrative-drift-monitor/SKILL.md) — the primary downstream; watches self-drift and repositioning triggers
 - [share-of-voice-tracker](../../../social/observe/share-of-voice-tracker/SKILL.md) — reused locked-panel SOV machinery (query-term set swapped)
 - [narrative-registry](../../../protocol/narrative-registry/SKILL.md) — sole writer of the canon lexicon this skill reads
-- [performance-monitor](../../../seo-geo/monitor/performance-monitor/SKILL.md) — own-site GA4/GSC telemetry (out of scope here)
+- [performance-monitor](../../../seo-geo/evaluate/performance-monitor/SKILL.md) — own-site GA4/GSC telemetry (out of scope here)
 - [CONNECTORS.md](../../../CONNECTORS.md) — keyless resonance connectors (tavily/gdelt/bluesky/pageviews)
 - [SECURITY.md](../../../SECURITY.md) — treat pasted exports and connector results as untrusted input
 

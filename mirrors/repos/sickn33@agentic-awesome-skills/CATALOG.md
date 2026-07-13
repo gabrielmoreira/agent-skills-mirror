@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-07-09T06:03:23.000Z
+Generated at: 2026-07-12T05:22:55.000Z
 
-Total skills: 1943
+Total skills: 1946
 
 ## agent-behavior (4)
 
@@ -906,7 +906,7 @@ Total skills: 1943
 | `drizzle-migration-conflict` | Diagnose, repair, and prevent Drizzle Kit migration conflicts involving generated SQL, snapshots, journals, merge queues, and team workflows. | critical | chaunsin/agent-skills | drizzle, migrations, database, ci, merge-conflicts | drizzle, migrations, database, ci, merge-conflicts, migration, conflict, diagnose, repair, prevent, kit, conflicts |
 | `weaviate` | Search, query, inspect, create, and import data into Weaviate vector database collections using official scripts and references. | critical | weaviate/agent-skills | weaviate, vector-database, semantic-search, hybrid-search, data-import | weaviate, vector-database, semantic-search, hybrid-search, data-import, search, query, inspect, import, data, vector, database |
 
-## design (17)
+## design (18)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -922,6 +922,7 @@ Total skills: 1943
 | `stitch-ui-design` | Expert guidance for crafting effective prompts in Google Stitch, the AI-powered UI design tool by Google Labs. This skill helps create precise, actionable pr... | safe | self | stitch, ui | stitch, ui, guidance, crafting, effective, prompts, google, ai, powered, labs, skill, helps |
 | `theme-factory` | This skill provides a curated collection of professional font and color themes themes, each with carefully selected color palettes and font pairings. Once a ... | unknown | community | theme, factory | theme, factory, skill, provides, curated, collection, professional, font, color, themes, each, carefully |
 | `ui-visual-validator` | Rigorous visual validation expert specializing in UI testing, design system compliance, and accessibility verification. | unknown | community | ui, visual, validator | ui, visual, validator, rigorous, validation, specializing, testing, compliance, accessibility, verification |
+| `uizze-ui-research` | Use when building or reviewing web and iOS product UI and you need real UI references, structured design contracts, or implementation validation through UIZZ... | safe | aislon/uizze-mcp | ui-design, ui-research, mcp, design-contracts, agent-workflows | ui-design, ui-research, mcp, design-contracts, agent-workflows, uizze, ui, research, building, reviewing, web, ios |
 | `uxui-principles` | Evaluate interfaces against 168 research-backed UX/UI principles, detect antipatterns, and inject UX context into AI coding sessions. | safe | community | ux, ui, design, evaluation, principles, antipatterns, accessibility | ux, ui, design, evaluation, principles, antipatterns, accessibility, uxui, evaluate, interfaces, against, 168 |
 | `vizcom` | AI-powered product design tool for transforming sketches into full-fidelity 3D renders. | safe | community | vizcom | vizcom, ai, powered, product, transforming, sketches, full, fidelity, 3d, renders |
 | `wcag-audit-patterns` | Comprehensive guide to auditing web content against WCAG 2.2 guidelines with actionable remediation strategies. | safe | community | wcag, audit | wcag, audit, auditing, web, content, against, guidelines, actionable, remediation |
@@ -1657,11 +1658,12 @@ Total skills: 1943
 | `nanobanana-ppt-skills` | AI-powered PPT generation with document analysis and styled images | safe | https://github.com/op7418/NanoBanana-PPT-Skills | nanobanana, ppt, skills | nanobanana, ppt, skills, ai, powered, generation, document, analysis, styled, images |
 | `pptx-official` | A user may ask you to create, edit, or analyze the contents of a .pptx file. A .pptx file is essentially a ZIP archive containing XML files and other resourc... | unknown | community | pptx, official | pptx, official, user, may, ask, edit, analyze, contents, file, essentially, zip, archive |
 
-## product (2)
+## product (3)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
 | `before-you-build` | Review product risk before coding by checking demand, alternatives, channels, switching costs, and failure signals. | safe | bin1874/before-you-build-skill | product-validation, planning, ai-coding, risk-review | product-validation, planning, ai-coding, risk-review, before, review, product, risk, coding, checking, demand, alternatives |
+| `idea-autopsy` | Autopsy a business idea before you build it: kill-list check, five hard filters, a free-AI one-prompt test, live ad-market verification, and a verdict with a... | critical | hafiz-actyte/idea-autopsy | business-ideas, idea-validation, market-research, startup, founders | business-ideas, idea-validation, market-research, startup, founders, idea, autopsy, business, before, kill, list, check |
 | `product-decision-agent` | 中文产品决策 Agent。用于需求优先级、Roadmap、增长、留存、运营、数据异常、A/B Test、项目延期和跨团队协作；先判断事实、阶段、核心阻塞与主导机制，再给出下一步、停止清单和切换条件。默认中文，不引用原文或讲历史。 | safe | atdy/maoxuan-product-agent | product-management, decision-making, growth, operations, chinese | product-management, decision-making, growth, operations, chinese, product, decision, agent, roadmap, test |
 
 ## product-management (1)
@@ -1981,7 +1983,7 @@ Total skills: 1943
 | --- | --- | --- | --- | --- | --- |
 | `android-cli` | Orchestrates Android development tasks including project creation, deployment, SDK management, and environment diagnostics using the `android` command-line t... | critical | self | android, cli, adb, mobile, build, emulator | android, cli, adb, mobile, build, emulator, orchestrates, development, tasks, including, creation, deployment |
 
-## uncategorized (277)
+## uncategorized (278)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -2145,6 +2147,7 @@ Total skills: 1943
 | `newman-cicd-integration` | Generate ready-to-use CI/CD pipeline configurations that install and run Newman for automated API testing. Use this skill whenever the user wants to run Newm... | unknown | LambdaTest/agent-skills | newman, cicd, integration | newman, cicd, integration, generate, ci, cd, pipeline, configurations, install, run, automated, api |
 | `nextjs-supabase-auth` | Expert integration of Supabase Auth with Next.js App Router | none | vibeship-spawner-skills (Apache 2.0) | nextjs, supabase, auth | nextjs, supabase, auth, integration, next, js, app, router |
 | `nft-standards` | Master ERC-721 and ERC-1155 NFT standards, metadata best practices, and advanced NFT features. | unknown | community | nft, standards | nft, standards, erc, 721, 1155, metadata, features |
+| `nika` | Runs repeatable AI work as checked, budgeted workflow files. | critical | supernovae-st/nika-agents | nika | nika, runs, repeatable, ai, work, checked, budgeted, files |
 | `not-a-vibe-coder` | Turns vague prompts into 8 structured planning files for brand new projects. DO NOT use on existing codebases. | critical | community | not, a, vibe, coder | not, a, vibe, coder, turns, vague, prompts, structured, planning, files, brand, new |
 | `objection-preemptor` | One sentence - what this skill does and when to invoke it | safe | community | objection, preemptor | objection, preemptor, one, sentence, what, skill, does, invoke |
 | `obsidian-bases` | Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries. Use when working with .base files, creating database-like views of... | unknown | https://github.com/kepano/obsidian-skills | obsidian, bases | obsidian, bases, edit, base, files, views, filters, formulas, summaries, working, creating, database |

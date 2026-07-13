@@ -21,7 +21,7 @@
     "slides",
     "deck"
   ],
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "peerDependencies": {
     "pptxgenjs": "^4.0.1",
     "playwright-core": "^1.60.0"

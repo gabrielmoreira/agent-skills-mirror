@@ -953,6 +953,7 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_artifact/_download_client.py` | Download trusted-host allowlist + transport-aware client factory — wires the #1521 redirect guard for httpx (event hook) or the opt-in curl_cffi (`get_guarded` manual loop) |
 | `_artifact/formatters.py` | Markdown, HTML, and plain text formatters for artifacts |
 | `_artifact/payloads.py` | Stable CREATE_ARTIFACT / GENERATE_MIND_MAP request payload builders |
+| `_artifact/validation.py` | Input-validation guards for the `ArtifactsAPI` facade (`generate_report` format coercion, `export` exactly-one-of target), kept in a sibling module so the facade stays under the module-size ratchet (#1874) |
 | `_artifact/generation.py` | Generation kickoff service (`generate_*`, `revise_slide`, `retry_failed`) extracted from `ArtifactsAPI`; the facade keeps thin delegators |
 | `_artifact/listing.py` | Listing and filtering operations for notebook artifacts |
 | `_artifact/polling.py` | Poll coordination service for artifact generation tasks |
@@ -972,6 +973,7 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_chat/notes.py` | Chat-adjacent note saving workflow adapter |
 | `_chat/wire.py` | Streamed-chat wire request construction + response parsing for the chat client |
 | `_chat/transport.py` | Chat-specific error mapping over the shared transport pipeline |
+| `_chat/deleted_tracker.py` | Bounded `RecentlyDeletedConversations` set — `delete_conversation` records the id (under the conversation lock) so a concurrent null-conversation ask, after acquiring that lock, detects a mid-flight delete and drops `resolved_id_override` to recover the server's real conversation id post-POST (#1875) |
 | `_middleware/chain.py` | Constructs the middleware chain in the canonical ADR-0009 order |
 | `_middleware/*.py` | Modular middleware implementations (drain, metrics, semaphore, retry, auth, error injection, tracing) |
 | `rpc/types.py` | RPC method IDs (source of truth) |
@@ -1072,12 +1074,13 @@ src/notebooklm/
 │   ├── sharing.py               # Click-free sharing core: status/set_public/set_view_level/add_user/update_user/remove_user (injected resolve_notebook_id; permission/view-level display + str→enum parse stay in cli/share_cmd.py)
 │   ├── skill.py                 # Click-free skill-install core: TARGETS/SCOPES catalog + path/version helpers + classify_target (create/up_to_date/overwrite) + report_mixed_no_clobber_up_to_date (CLI owns the atomic write + packaged-source loader)
 │   ├── source_add.py            # Click-free `source add` core: input detection + URL SSRF/upload-path validation + add workflow (SourceAddPlan/Result; CLI builds the --json source-summary from the typed result via the neutral serialize.source_summary helper)
+│   ├── source_batch.py          # Transport-neutral batch-add policy shared by the MCP tool + REST route (#1871): MAX_BATCH_URLS cap + batch_item_is_fatal (fatal auth/rate-limit/5xx classification via _app.errors.classify → abort the batch; per-URL 4xx-input failures isolate). Neutral frozenset, not server's CATEGORY_STATUS (the _app boundary forbids fastapi); parity pinned by tests/server/test_source_batch_parity.py
 │   ├── source_clean.py          # Click-free `source clean` core: junk-source classification + batched-deletion orchestration (SourceCleanResult; injected list/delete/confirm callables)
 │   ├── source_content.py        # Click-free read-only source-content fetchers for get/fulltext/guide/stale (typed plan/result pairs)
 │   ├── source_listing.py        # Click-free `source list` fetch core: fetch_sources (label_filter resolution; label_resolver injected)
 │   ├── source_mutations.py      # Click-free source delete/delete-by-title/rename/refresh/add-drive core: resolvers + SourceMutationError + typed results (validate_id/resolve_source_id injected; confirmer injected)
 │   ├── source_research.py       # Click-free `source add-research` start/wait/import workflow + validate_add_research_flags (importer injected; SourceAddResearchPlan/Result)
-│   ├── source_wait.py           # Click-free `source wait` readiness-poll core: execute_source_wait + typed SourceWaitOutcome (wait_context injected)
+│   ├── source_wait.py           # Click-free `source wait` readiness-poll core: execute_source_wait + typed SourceWaitOutcome (wait_context injected) + wait_all_sources (single-snapshot loop via client.sources.wait_all_until_ready — one notebook poll per tick, order-preserving; #1870) shared by the MCP tool + REST route (#1871) + the MAX_WAIT_TIMEOUT / MAX_WAIT_SOURCE_IDS caps
 │   └── views.py                 # Transport-neutral output-projection views: share_status_view (access/permission/view_level enum→label), source_view (kind/status_label added), ask_result_view (raw_response debug blob stripped); shared by the MCP tools + REST routes so both emit the identical enriched shape (Option B)
 ├── _runtime/                    # Client-runtime subpackage (promoted from flat _runtime_*.py, #1328)
 │   ├── __init__.py              # Re-exports the cluster's public names
@@ -1118,6 +1121,7 @@ src/notebooklm/
 │   ├── formatters.py            # Artifact formatting helpers
 │   ├── generation.py            # Artifact generation kickoff service (generate_*, revise_slide, retry_failed)
 │   ├── payloads.py              # Stable artifact request payload builders
+│   ├── validation.py            # Facade input-validation guards (generate_report coercion, export exactly-one-of) (#1874)
 │   ├── listing.py               # Artifact listing helper
 │   └── polling.py               # Artifact polling coordinator
 ├── _label/                      # Source-label feature subpackage: stable RPC payload builders
@@ -1137,7 +1141,8 @@ src/notebooklm/
 │   ├── api.py                   # ChatAPI facade (was _chat.py)
 │   ├── notes.py                 # Note saving workflow adapter
 │   ├── wire.py                  # Streamed-chat wire request/response parser
-│   └── transport.py             # Chat error mapping
+│   ├── transport.py             # Chat error mapping
+│   └── deleted_tracker.py       # Bounded RecentlyDeletedConversations set — serializes null-ask vs delete (#1875)
 ├── _auth/                       # Auth subpackage (forwarded through auth.py facade)
 │   ├── __init__.py
 │   ├── paths.py                 # Storage paths and filesystem helpers
@@ -1183,6 +1188,7 @@ src/notebooklm/
 │   ├── server.py                # create_server(profile, client_factory, auth): FastMCP server; lifespan binds one NotebookLMClient; register_all tool-registration seam; auth passed explicitly (never reads the token env)
 │   ├── _auth.py                 # Remote-transport bearer auth: McpBearerAuthProvider(TokenVerifier) with constant-time hmac.compare_digest over NOTEBOOKLM_MCP_TOKEN (env-only, never logged/repr'd); build_auth_provider/get_configured_token; build_auth(token, oauth) composes bearer | OAuth | MultiAuth | None (IdP-agnostic) — mirrors server/_auth.py, NOT fastmcp StaticTokenVerifier
 │   ├── _oauth.py                # Optional self-hosted OAuth 2.1 AS for claude.ai (OAuth-only connector UI): SelfHostedOAuthProvider(InMemoryOAuthProvider) + a password-gated /login (override authorize()→stash SDK-validated (client,params) under a single-use sid→/login→InMemoryOAuthProvider.authorize); scrypt password digest + per-IP throttle, capped DCR + evict-oldest pending stash, atomic 0600 persistence of clients+tokens; get_oauth_config/build_oauth_provider (env NOTEBOOKLM_MCP_OAUTH_PASSWORD + _BASE_URL). Composed with the bearer via MultiAuth
+│   ├── _host_guard.py           # LoopbackHostGuardMiddleware: ASGI guard that rejects HTTP requests with a non-loopback Host header (403; DNS-rebinding guard, #1869) on the loopback-bound HTTP transport via _serving.host_header_is_loopback; skipped when allow_external (REST-parity bearer/OAuth auth is mandatory there) — mirrors server/_auth
 │   ├── _urlcheck.py             # _validate_bare_https_origin(url, env) — shared "bare public https origin" check (https scheme, host, no path/query/fragment); guards the OAuth base URL AND the file-transfer public URL so a /mcp-suffixed/non-https value can't mint broken links
 │   ├── _filelink.py             # HMAC-signed self-describing file-transfer tokens (ADR-0024): FileLinkSigner.sign(payload, ttl→injects exp)/verify(token, op) (stdlib hmac/base64/json; pre-decode length cap, base64url re-pad, compare_digest, exp+op check) + FileTransferConfig(signer, base_url).upload_url/download_url (UPLOAD_TTL 15m / DOWNLOAD_TTL 30m); FileLinkError
 │   ├── _fileroutes.py           # register_file_routes(mcp, config): the /files/{dl,ul} custom routes mounted on the FastMCP http app (ADR-0024). GET /files/dl streams the artifact (download core → FileResponse, meaningful filename, inside-tempdir assert, BackgroundTask cleanup); GET /files/ul = minimal upload page (file picker + raw-body fetch POST); POST|PUT /files/ul streams request.stream() into a 0600 temp under a running byte cap (real DoS guard) + Content-Length early 413 → neutral source_add core. Signed token is the sole auth (custom routes bypass the bearer gate); HTML pages set no-referrer/no-store/DENY; local _safe_upload_name (no server/ import)

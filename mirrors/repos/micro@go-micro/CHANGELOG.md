@@ -18,14 +18,49 @@ below is kept current between tags and rolled into the next version when it ship
 ## [Unreleased]
 
 ### Added
+- **Gemini streaming support** — the Gemini provider now supports streaming model responses. (`ai/gemini/`)
+- **Model retry jitter controls** — model retry behavior can now use jitter controls to reduce synchronized retry bursts. (`ai/`, `agent/`)
+- **Compacted memory summaries** — agent memory now exposes compacted run summaries for easier inspection and recovery. (`agent/`)
+- **CLI input resume for agent runs** — the CLI can resume agent runs that require additional user input. (`cmd/micro/`, `agent/`)
+
+### Changed
+- **Remote agent chat streaming** — `micro chat` now streams replies from remote agents instead of waiting for the full response. (`cmd/micro/`, `agent/`)
+- **A2A external-client conformance** — the A2A gateway now serves the Agent Card at the spec 0.3.0 `/.well-known/agent-card.json` (keeping `/.well-known/agent.json` as a legacy alias), and `message/stream` emits spec-shaped `status-update`/`artifact-update` events ending in a `final:true` status-update instead of repeated full `Task` snapshots — and never sends `result` and `error` together. Standard A2A clients (ADK, LangGraph, a2a-SDK) can now discover and stream from go-micro agents. (`gateway/a2a/`)
+
+### Fixed
+- **Provider failure inspection metadata** — provider failures recorded during agent runs now retain classification metadata for inspection. (`agent/`, `ai/`)
+
+### Security
+- **x402 spend-cap hardening** — the paying `Client` now refuses a 402 whose `maxAmountRequired` is not a positive integer (a swallowed parse error or negative amount previously bypassed the budget cap), and a new `Config.RequireSettlement` fails closed when a paid request is served by a verify-only facilitator that never captures funds. (`wrapper/x402/`)
+
+---
+
+## [6.7.0] - July 2026
+
+### Added
+- **A2A streaming conformance harness** — A2A streaming behavior is now covered by focused conformance checks. (`gateway/a2a/`, `internal/harness/`)
+- **Agent x402 spend budget guardrail** — agents now have spend budget guardrails for x402-paid tool calls. (`agent/`, `gateway/`)
 - **First-agent chat/inspect fixture** — the maintained first-agent CLI fixture now covers chat and inspect boundaries together. (`internal/harness/`, `cmd/micro/`)
 - **Zero-to-hero inspect transcript check** — the 0→hero harness now verifies the inspect transcript path stays visible in the lifecycle walkthrough. (`internal/harness/zero-to-hero-ci/`, `internal/website/docs/`)
 
 ### Changed
+- **Agent stream run context propagation** — agent streams now preserve run context through streaming paths for more complete tracing and inspection. (`agent/`)
+- **Postgres store pgx v5 migration** — the Postgres store now uses pgx v5. (`store/postgres/`, `go.mod`)
 - **Plan-delegate plan persistence** — plan/delegate runs now persist plan state more defensively across harness scenarios. (`agent/`, `internal/harness/`)
 
 ### Fixed
+- **Nested tool-call markup rejection** — agent argument parsing now rejects nested tool-call markup instead of accepting ambiguous tool input. (`agent/`)
+- **Retry cancellation during backoff** — retry backoff now respects cancellation more reliably. (`agent/`, `ai/`)
+- **Plan-delegate mock recovery regression gate** — the harness now catches plan/delegate mock recovery regressions before they ship. (`internal/harness/`, `agent/`)
+- **First-agent fixture registration wait** — first-agent fixture registration is less race-prone during harness runs. (`internal/harness/`)
+- **Memory stream Nack ordering** — memory stream Nack handling now preserves ordering more reliably. (`broker/memory/`)
 - **Zero-to-hero fixture output race** — 0→hero fixture output is less race-prone during harness runs. (`internal/harness/zero-to-hero-ci/`)
+
+### Documentation
+- **First-agent quickcheck wayfinding** — public docs now keep the quickcheck path discoverable from the first-agent route. (`README.md`, `internal/website/docs/`)
+- **Ordered 0→hero transcript** — docs and harness checks now keep the 0→hero transcript order explicit. (`internal/website/docs/`, `internal/harness/`)
+- **First-agent debug breadcrumbs** — docs now surface the first-agent debug smoke path more clearly. (`internal/website/docs/`)
+- **README badge cleanup** — the README no longer shows the Go Report Card badge. (`README.md`)
 
 ---
 

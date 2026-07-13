@@ -31,24 +31,21 @@ If invoked specifically to create or bootstrap `CONCEPTS.md` from scratch rather
 
 ## Mode Detection
 
-Check `$ARGUMENTS` for a `mode:headless` token. Tokens starting with `mode:` are flags, not context — strip `mode:headless` from arguments before treating the remainder as the brief context hint.
+Enter headless mode when **either** holds: the arguments you were invoked with contain the `mode:headless` token, **or** the invocation makes non-interactive intent unmistakable — a caller or standing instruction asking to run `ce-compound` "headless", "non-interactively", "unattended", or "without prompts/questions". The token is the explicit form; a clear natural-language request for a non-interactive run is equivalent. Bare "automatically" or "auto-run" is **not** on its own a headless signal — it speaks to *invoking* the skill, not to suppressing its prompts — so an ambiguous or absent signal defaults to interactive. Tokens starting with `mode:` are flags, not context — strip `mode:headless` from arguments before treating the remainder as the brief context hint.
 
 | Mode | When | Behavior |
 |------|------|----------|
-| **Interactive** (default) | No mode token present | Auto-pick Full vs Lightweight and report the choice; run session history as an automatic probe (Full only); prompt for Discoverability Check consent; end with a plain summary (no "What's next?" menu) |
-| **Headless** | `mode:headless` in arguments | No blocking questions. Run **Full mode without session history**. Apply the Discoverability Check edit silently if a gap exists. Skip Phase 3 specialized reviews. End with a structured terminal report — no "What's next?" menu. |
+| **Interactive** (default) | No headless token or clear non-interactive intent | Auto-pick Full vs Lightweight and report the choice; run session history as an automatic probe (Full only); prompt for Discoverability Check consent; end with a plain summary (no "What's next?" menu) |
+| **Headless** | `mode:headless` token present, or the invocation makes non-interactive intent unmistakable | No blocking questions. Run **Full mode without session history**. Apply the Discoverability Check edit silently if a gap exists. Skip Phase 3 specialized reviews. End with a structured terminal report — no "What's next?" menu. |
 
 Headless mode is intended for automations and skill-to-skill invocation where no human is present to answer questions. The doc itself is identical to what an interactive Full run would produce — classification work (track, category, overlap) follows the same rules and writes nothing extra into the artifact. Once detected, headless mode applies for the entire run.
 
-## Pre-resolved context
+## Session context
 
-**Git branch (pre-resolved):** !`git rev-parse --abbrev-ref HEAD`
+Resolve two values at runtime with the shell tool before Phase 1 session-history filtering. Run each as its own command and read its exit status — a non-zero exit is a normal state here, not an error to route around:
 
-If the line above resolved to a plain branch name (like `feat/my-branch`), use it in Phase 1 session-history filtering so the orchestrator does not waste a turn deriving it. If it still contains a backtick command string, shows an error, or is empty, derive the branch at runtime.
-
-**Repo root (pre-resolved):** !`git rev-parse --show-toplevel`
-
-If the line above resolved to an absolute path, use it as the session-history repo filter in Phase 1. If it still contains a backtick command string, shows an error, or is empty, derive the repo root at runtime with the shell tool (`git rev-parse --show-toplevel`, falling back to the working directory outside a git repo).
+- **Git branch** — run `git rev-parse --abbrev-ref HEAD`. Use the branch name to filter session history in Phase 1. If it returns `HEAD` (detached) or exits non-zero (not a git repo), skip branch filtering.
+- **Repo root** — run `git rev-parse --show-toplevel`. Use it as the session-history repo filter in Phase 1. If it exits non-zero (not a git repo), fall back to the working directory.
 
 ## Support Files
 
@@ -235,7 +232,7 @@ Pass `{run_id}` (the resolved `$RUN_ID` value) into every Phase 1 subagent promp
 
    **Session-history payload — keep tight.** A long, keyword-rich payload licenses widening. Use this shape:
 
-   - **Pre-resolved context** (only if values resolved cleanly above; otherwise omit): repo name, current git branch.
+   - **Session context** (only if the values resolved cleanly above; otherwise omit): repo name, current git branch.
    - **Time window**: explicit `7 days` unless the documented problem clearly spans a longer arc.
    - **Problem topic**: one sentence naming the concrete issue — error message, module name, what broke and how it was fixed. Not a paragraph; not a bullet list of related topics.
    - **Filter rule (one line)**: "Only surface findings directly relevant to this specific problem. Ignore unrelated work from the same sessions or branches."
@@ -319,9 +316,9 @@ The orchestrating agent (main conversation) performs these steps:
 
    ```bash
    if [ -n "${CLAUDE_SKILL_DIR}" ] && [ -f "${CLAUDE_SKILL_DIR}/scripts/validate-frontmatter.py" ]; then
-     python3 "${CLAUDE_SKILL_DIR}/scripts/validate-frontmatter.py" <output-path>
+     python3 "${CLAUDE_SKILL_DIR}/scripts/validate-frontmatter.py" <output-path>;
    else
-     echo "Bundled validate-frontmatter.py not resolvable on this platform; applying the parser-safety checklist manually."
+     echo "Bundled validate-frontmatter.py not resolvable on this platform; applying the parser-safety checklist manually.";
    fi
    ```
 

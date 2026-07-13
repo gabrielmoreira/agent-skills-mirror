@@ -1,4 +1,4 @@
-# Getting Started with Agentic Awesome Skills (V14.1.0)
+# Getting Started with Agentic Awesome Skills (V14.2.0)
 
 **New here? This guide will help you supercharge your AI Agent in 5 minutes.**
 
@@ -43,6 +43,16 @@ If you see a 404 error, use: `npx github:sickn33/agentic-awesome-skills`
 # Universal (works for most agents)
 git clone https://github.com/sickn33/agentic-awesome-skills.git .agent/skills
 ```
+
+**Option C — one exact skill with GitHub CLI (preview):**
+
+```bash
+gh skill preview sickn33/agentic-awesome-skills skills/brainstorming/SKILL.md
+gh skill install sickn33/agentic-awesome-skills skills/brainstorming/SKILL.md \
+  --agent github-copilot --scope user --pin v14.2.0
+```
+
+GitHub CLI skill support is currently in preview. In this large repository, use an exact `SKILL.md` path to avoid ambiguous canonical/plugin mirrors and unnecessary full-tree discovery. Avoid `--all` unless you intentionally want every discovered skill.
 
 ### 2. Pick Your Persona
 
@@ -110,7 +120,7 @@ Once installed, just talk to your AI naturally.
 | **Cursor**      | ✅ Native       | `.cursor/skills/`                                                     |
 | **OpenCode**    | ✅ Full Support | `.agents/skills/` (prefer reduced installs with `--risk`, `--category`, or `--tags`) |
 | **AdaL CLI**    | ✅ Full Support | `.adal/skills/`                                                       |
-| **Copilot**     | ⚠️ Text Only    | Manual copy-paste                                                     |
+| **Copilot**     | ✅ Native (preview) | `gh skill install ... --agent github-copilot` at project or user scope |
 
 ---
 

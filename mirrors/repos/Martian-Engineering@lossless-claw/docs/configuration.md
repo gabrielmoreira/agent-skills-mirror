@@ -272,7 +272,7 @@ the raw copied transcript.
 | `largeFileSummaryProvider` | `string` | `""` | `LCM_LARGE_FILE_SUMMARY_PROVIDER` | Large-file summarizer provider hint for bare model names. |
 | `expansionModel` | `string` | `""` | `LCM_EXPANSION_MODEL` | `lcm_expand_query` sub-agent model override. |
 | `expansionProvider` | `string` | `""` | `LCM_EXPANSION_PROVIDER` | `lcm_expand_query` sub-agent provider hint for bare model names. |
-| `delegationTimeoutMs` | `integer` | `120000` | `LCM_DELEGATION_TIMEOUT_MS` | Maximum time to wait for delegated expansion work. `lcm_expand_query` advertises a dynamic tool `timeoutMs` default with 30 seconds of extra RPC headroom so OpenClaw's tool watchdog does not fire before this wait completes. |
+| `delegationTimeoutMs` | `integer` | `120000` | `LCM_DELEGATION_TIMEOUT_MS` | Maximum wall-clock budget for delegated expansion work across one `lcm_expand_query` call. Cross-conversation buckets share this deadline. The dynamic tool advertises a `timeoutMs` default with 30 seconds of extra RPC headroom for cancellation, cleanup, and result delivery. |
 | `summaryTimeoutMs` | `integer` | `60000` | `LCM_SUMMARY_TIMEOUT_MS` | Maximum time to wait for one model-backed summarizer call. |
 | `summaryCallWindowMs` | `integer` | `600000` | `LCM_SUMMARY_CALL_WINDOW_MS` | Rolling window for the per-session summarization spend guard. |
 | `summaryMaxCallsPerWindow` | `integer` | `24` | `LCM_SUMMARY_MAX_CALLS_PER_WINDOW` | Maximum model-backed summarization calls per session/window before Lossless opens a non-auth spend backoff. |
@@ -382,12 +382,16 @@ LCM_EXPANSION_MODEL=openai/gpt-5.4-mini
 
 Cron scheduler keys (`agent:<agent>:cron:<job>...`) are isolated automatically when a new runtime `sessionId` reuses the same `sessionKey`. Configure `ignoreSessionPatterns` for cron only when the run should bypass LCM entirely; leave cron sessions included when they need in-run compaction. When OpenClaw exposes its runtime compaction delegate, `/compact` and overflow recovery for ignored sessions fall back to OpenClaw's built-in compaction path instead of LCM's summary DAG. Older hosts that do not expose that delegate keep the previous safe skip behavior.
 
+These examples are storage exclusions, not compaction preferences. Matching sessions do not create LCM conversation rows or store messages in LCM. The `agent:*:**:active-memory:**` pattern is intentionally broad because `**` spans colon-separated session-key segments, including nested prefixes before `active-memory`. The `agent:*:dreaming-narrative-**` example matches OpenClaw memory-core keys built with the `dreaming-narrative-` prefix ([source](https://github.com/openclaw/openclaw/blob/b81666ca6af25c86cc099983a4358cdc5ea9ced8/extensions/memory-core/src/dreaming-narrative.ts)).
+
 Example:
 
 ```json
 {
   "ignoreSessionPatterns": [
-    "agent:*:cron:**"
+    "agent:*:cron:**",
+    "agent:*:**:active-memory:**",
+    "agent:*:dreaming-narrative-**"
   ],
   "statelessSessionPatterns": [
     "agent:*:subagent:**",

@@ -1,6 +1,6 @@
 ---
 name: threejs-procedural-vegetation
-description: Generate authored procedural trees, grass, and vegetation in Three.js. Use for stylized meadow grass, realistic GPU-computed grass, trunks, recursive branches, roots, canopies, leaf cards, species presets, growth forces, trellises, deterministic variation, rooted blade/leaf wind, and wind deformation.
+description: Generate authored procedural trees, grass, ivy, and vegetation in Three.js. Use for surface-following vines, painted ivy paths, stylized or GPU grass, trunks, recursive branches, roots, canopies, leaf cards, species presets, deterministic growth, and rooted blade or petiole-hinge wind.
 ---
 
 # Procedural Vegetation
@@ -41,6 +41,15 @@ for MRT blade-parameter generation, deterministic terrain-conforming placement,
 Voronoi clumps, Bezier blade folding, wind-facing yaw, distance LOD/culling,
 normal/color fading, translucency, and field diagnostics.
 
+Read the
+[procedural surface ivy entry](examples/procedural-surface-ivy/ivy-effect.js)
+and its complete
+[TypeScript implementation](examples/procedural-surface-ivy/source/ivy.ts)
+for seeded spline-following stems, repeated mesh reprojection, tangent-plane
+creep and droop, parallel-transport tube rings, growth reveal, instanced leaves
+and umbels, and rigid petiole-hinge wind. Treat the TypeScript modules as the
+only implementation; the entry file only re-exports them.
+
 ## Visual failure conditions
 
 - branches form visible helices;
@@ -51,10 +60,13 @@ normal/color fading, translucency, and field diagnostics.
 - leaf wind moves card roots instead of remaining anchored;
 - branch wind is claimed to match a reference whose branches are static;
 - different seeds change species identity rather than controlled variation;
-- geometry cost grows without a per-level budget.
+- geometry cost grows without a per-level budget;
+- surface-following stems are offset from the host or flip normals across seams;
+- ivy branches ignore the tangent plane while attached;
+- leaf wind rotates around the card center instead of the petiole.
 
 ## Routing boundary
 
 Use `$threejs-procedural-geometry` for generic branch-ring emission without a
-growth model. This skill owns species tables, topology, child placement,
-foliage, grass fields, roots, and hierarchical/rooted wind.
+growth model. This skill owns species tables, vine and branch topology,
+surface-following growth, foliage, grass fields, roots, and rooted wind.

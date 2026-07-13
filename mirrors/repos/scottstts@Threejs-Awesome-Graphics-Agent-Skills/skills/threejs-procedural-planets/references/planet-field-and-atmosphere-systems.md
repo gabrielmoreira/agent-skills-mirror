@@ -5,13 +5,20 @@ Use this reference for practical planet-space field, material, LOD, biome, giant
 ## Contents
 
 1. Preserve undeformed sphere direction
-2. Geometry terrain stack and LOD
-3. Shader warp and parity debt
-4. Altitude-filtered detail
-5. Climate, biomes, and body-specific paths
-6. Gas/ice giants and stars
-7. Atmosphere handoff
-8. Adaptation and diagnostics
+2. Geometry terrain stack
+3. Geometry LOD contract
+4. Shader tangential warp
+5. Objective geometry/material mismatch
+6. Altitude-filtered detail
+7. Climate and biome causes
+8. Pelagia terrestrial path
+9. Astra rocky path
+10. Verdance rocky path
+11. Gas and ice giants
+12. Procedural bump and specular anti-aliasing
+13. Atmosphere handoff and limb clipping
+14. Refactor guidance
+15. Required diagnostics
 
 ## 1. Preserve undeformed sphere direction
 
@@ -190,8 +197,8 @@ The target skill should improve this when possible:
 3. derive biome altitude from that shared field;
 4. reserve material-only detail for sub-mesh-scale normal/roughness variation.
 
-Do not cite planet-space implementation as evidence that independent geometry/material fields are
-ideal.
+Do not treat this mismatch as evidence that independent geometry/material
+fields are ideal.
 
 ## 6. Altitude-filtered detail
 

@@ -1,22 +1,23 @@
 # Analytic water surface system
 
-Use this reference for bounded or analytic water with shared displacement and normals, derivative-filtered detail, analytic reflection, heuristic refraction, absorption, and crest foam. Use `$threejs-spectral-ocean` for stochastic FFT seas.
+Use this reference for analytic water surfaces with shared displacement and normals, derivative-filtered detail, analytic reflection, heuristic refraction, absorption, and crest foam. For the bounded pool heightfield simulation and its volume optics, read the `interactive-pool-volume` example. Use `$threejs-spectral-ocean` for stochastic FFT seas.
 
 ## Contents
 
-- cinematic implementation displaced ocean
+- Authored five-wave displaced ocean
 - Shared displacement/normal contract
-- cinematic implementation optical hierarchy
-- atlas-based renderer normal-only wave bundle
-- atlas-based renderer refraction and absorption
+- Optical hierarchy
+- Normal-only wave bundle
+- Side-aware refraction and absorption
 - Foam and distance response
 - Objective limits
 - Diagnostics
 
 
-## cinematic implementation displaced ocean
+## Authored five-wave displaced ocean
 
-The Miller’s Planet scene uses five authored Gerstner-style components:
+The `analytic-wave-optics` example uses five authored Gerstner-style
+components:
 
 | Direction X/Z | Amplitude | Wavelength | Steepness |
 | --- | ---: | ---: | ---: |
@@ -54,39 +55,44 @@ normal = normalize((-Nx, 1 - Ny, -Nz))
 This exact parameter sharing is the defining mechanism. If a wave changes,
 both geometry and normal evaluation change together.
 
-## cinematic implementation optical hierarchy
+## Optical hierarchy
 
-The surface adds four smaller sinusoidal normal bands after the displaced
-normal, with spatial scales `0.44`, `0.8`, `1.55`, and `2.8` and decreasing
-strength.
+After the displaced macro normal, the example adds three derivative-attenuated
+micro wave bands (wavelengths `5.25`, `3.0`, `1.5`, amplitudes `0.12`, `0.08`,
+`0.05`) and two low-amplitude noise gradients for wind-aligned
+micro-turbulence.
 
-Water response:
+Water response is side-aware:
 
 ```text
-F0 = 0.02
-F = F0 + (1 - F0) * (1 - NdotV)^5
+above water: eta = 1 / 1.333
+underwater:  eta = 1.333
+F0 = ((1 - eta) / (1 + eta))^2 + 0.035
+F = F0 + (1 - F0) * (1 - |NdotV|)^5
 ```
 
 Reflection samples the same analytic sky used by the sky dome. Sun response:
 
 ```text
-reflection disc = dot(reflection, sun)^2500 * 22
-reflection halo = dot(reflection, sun)^14 * 1.5
-surface specular = dot(normal, halfVector)^1200 * 22
+reflection disc = dot(reflection, sun)^2500 * 14
+reflection halo = dot(reflection, sun)^14 * 1.1
+surface specular = dot(normal, halfVector)^1200 * 12
 ```
 
-The transmitted body is a deep/shallow blue mix. A forward-scatter term uses
-`dot(view, -sun)^4`, scaled by `0.42 * (1 - Fresnel)`. Crest foam derives from
-`(1 - normal.y)`, and distance haze uses:
+The transmitted body mixes a deep-blue base with the refracted scene sample
+(`mix(deep, sceneRefraction, 0.65)`) under Beer-Lambert transmittance. A
+forward-scatter term uses `dot(view, -sun)^4`, scaled by `0.42 * (1 - Fresnel)`.
+Crest scatter adds `crest * 0.28`; crest itself derives from `(1 - normal.y)`
+slope, and distance haze uses:
 
 ```text
 1 - exp(-distance * 0.0026)
 ```
 
-## atlas-based renderer normal-only wave bundle
+## Normal-only wave bundle
 
-atlas-based renderer’s water mesh is not displaced by the material. It computes a normal
-and crest from six world-XZ wave bands:
+The flat-mesh variant leaves geometry undisplaced. Its material computes a
+normal and crest from six world-XZ wave bands:
 
 ```text
 wavelengths = 12, 6, 2.5, 5.25, 3.0, 1.5
@@ -104,12 +110,14 @@ aa5 = 1 - smoothstep(0, 1.0, footprint * k5)
 ```
 
 Two low-amplitude noise gradients add wind-aligned micro-turbulence. The crest
-metric combines slope with phase alignment from all six waves.
+metric combines slope with phase alignment from all six waves. The
+`analytic-wave-optics` example adopts this bundle’s three finest bands and
+turbulence gradients as its micro detail.
 
 Use this only when normal-only water is appropriate. Do not claim geometry and
 normal parity because the geometry remains flat.
 
-## atlas-based renderer refraction and absorption
+## Side-aware refraction and absorption
 
 Defaults:
 
@@ -130,10 +138,10 @@ underwater: eta = water / air
 F0 = ((1 - eta) / (1 + eta))^2 + artistic bias
 ```
 
-When scene color exists, it samples two clamped screen offsets from the
-refracted direction and procedural noise. When scene depth is absent, path
-length is approximated from fallback thickness and the refracted vertical
-component:
+When scene color exists, sample one or two clamped screen offsets from the
+refracted direction and procedural noise (the `analytic-wave-optics` example
+uses one clamped sample). When scene depth is absent, path length is
+approximated from fallback thickness and the refracted vertical component:
 
 ```text
 path = fallbackDepth / abs(refractedDirection.y)
@@ -144,7 +152,7 @@ This produces depth-dependent color but not actual object thickness.
 
 ## Foam and distance response
 
-atlas-based renderer foam:
+Crest-attached foam:
 
 ```text
 foamSeed = noise(xz * 0.9 + wind * time * foamDrift)
@@ -157,16 +165,17 @@ foam = smoothstep(
 
 It is causally attached to the crest output, then broken up by noise.
 
-The material also increases opacity over a configured distance range
-(`25–140` world units) and treats underwater alpha separately. This helps a
-bounded transparent surface meet a far-ocean horizon.
+A bounded transparent surface can also increase opacity over a configured
+distance range (`25–140` world units) and treat underwater alpha separately.
+This helps it meet a far-ocean horizon.
 
 ## Objective limits
 
-- cinematic implementation uses an authored five-wave sea, not a directional spectrum.
-- atlas-based renderer is normal-only and cannot produce crest silhouette or geometric
+- The five-wave sea is authored, not a directional spectrum.
+- The normal-only bundle cannot produce crest silhouette or geometric
   parallax.
-- atlas-based renderer refraction has no depth rejection and can sample foreground objects.
+- The screen refraction has no depth rejection and can sample foreground
+  objects.
 - Its thickness is a fallback estimate, not reconstructed scene thickness.
 - The demonstrated paths use artistic sky reflection rather than environment
   prefiltering or planar reflection.

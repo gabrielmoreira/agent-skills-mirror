@@ -361,12 +361,16 @@ lifecycle_changed: 2024-03-15  # ISO date of last state transition
 
 ### Confidence formula
 
-```
-base_confidence = source_count_score * 0.5 + source_quality_score * 0.5
+The formula is a **manual base score**, not a deterministic URL classifier:
 
-source_count_score   = min(distinct_source_ids / 3, 1.0)
-source_quality_score = avg(quality score per distinct source_id)
 ```
+base_confidence = lineage_count_score * 0.5 + source_quality_score * 0.5
+
+lineage_count_score  = min(independent_evidence_lineages / 3, 1.0)
+source_quality_score = avg(reviewed quality score per independent lineage)
+```
+
+After calculating the raw score, assess whether the evidence covers the page's material claims. Partial coverage may justify keeping or lowering the score; unsupported material claims require source/claim repair before any confidence change. Avoid small score churn without meaningful epistemic change.
 
 **Source-quality scores** (use the highest-matching bucket):
 
@@ -376,23 +380,23 @@ source_quality_score = avg(quality score per distinct source_id)
 | `official` | 0.9 | `*.gov`, vendor docs |
 | `documentation` | 0.85 | well-maintained third-party docs |
 | `book` | 0.8 | books, technical references |
-| `repository` | 0.75 | GitHub READMEs, codebases |
+| `repository` | 0.75 | content-addressed repository/code evidence |
 | `blog` | 0.55 | personal blogs |
-| `session_transcript` | 0.5 | conversation history |
-| `forum` | 0.4 | Stack Overflow, HN, Reddit |
-| `unknown` | 0.4 | catch-all |
-| `llm_generated` | 0.3 | LLM self-reflections |
+| `session_transcript` | 0.5 | conversation history or completed operation |
+| `forum` | 0.4 | Stack Overflow, HN, Reddit, issue-grade reports |
+| `unknown` | 0.4 | catch-all/current config |
+| `llm_generated` | 0.3 | LLM synthesis or unvalidated memory seed |
 
-**A `source_id`** is a stable per-source identifier — prevents counting three copies of the same blog as three distinct sources:
+**An independent evidence lineage** is an origin that can corroborate a claim independently. Canonical source IDs remain useful for identity, but identity alone does not prove independence. Collapse dependent evidence before counting:
 
-| Source type | source_id rule |
-|---|---|
-| Academic paper | DOI > arXiv ID > `<author>-<year>-<slug>` |
-| GitHub repo | `github.com/<owner>/<repo>` |
-| Documentation site | `<canonical-host>/<product>` |
-| Blog post | `<host>/<author>` |
-| Session transcript | `<agent>/<session-id>` |
-| Other | `<canonical-url>` |
+- files, releases, and commits from one repository → one repository lineage;
+- retry/review/fix tasks in one workstream → one task lineage;
+- parent/child Kanban records → one task lineage;
+- byte-identical memories across profiles → one memory lineage;
+- a snapshot plus the mutable source it captures → one lineage;
+- aliases or metadata references resolving to one origin → one lineage.
+
+The deterministic `wiki-lint` path validates `_meta/trust-ledger.json`; it does not recompute confidence from source strings. New or materially changed pages are marked for manual review. Refresh the ledger only after explicit human approval.
 
 **Per-skill defaults** (ingest skills compute this automatically):
 

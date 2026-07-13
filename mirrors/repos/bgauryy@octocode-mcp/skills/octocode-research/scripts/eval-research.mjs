@@ -64,6 +64,9 @@ function modeQuestion(testCase) {
   if (testCase.mode === 'Plan') {
     return 'Did the answer turn evidence into a bounded, reversible next step?';
   }
+  if (testCase.mode === 'Loop') {
+    return 'Did the answer iterate Act→Observe→Learn with a stop test instead of dumping a transcript?';
+  }
   return 'Did the answer investigate competing explanations before settling on a finding?';
 }
 
@@ -267,6 +270,15 @@ Patch: smallest scoped change — only the formatDate function body; the exporte
 Verification: yarn test src/utils/date.test.ts ran and passed; typecheck passed with exit 0.
 Confidence: confirmed
 Next: drop the moment dependency in a follow-up once no other imports remain.`,
+    'refactor-mode': `Mode: Refactor
+Tier: L (directory tree move inside one package).
+Skeleton: localViewStructure on packages/app/src (depth 2); minify:"symbols" on packages/app/src/utils/index.ts:1 and packages/app/src/index.ts:1.
+Contracts / invariants: public exports from utils/index.ts stay stable; no API signature changes; package.json exports paths updated only if they pointed at utils/.
+Blast radius: LSP references groupByFile for formatDate and parseId; lexical discovery for "src/utils" across tests/scripts/configs found 14 path hits.
+Task ledger (big→small): (1) mkdir -p packages/app/src/lib && mv packages/app/src/utils packages/app/src/lib/utils; (2) bulk path rewrite on the 14-hit inventory with perl -pi; (3) LSP diagnostic + references catch-up; (4) no body rewrites.
+Verification: yarn workspace app typecheck ran and passed; yarn test packages/app ran and passed; LSP diagnostic on packages/app/src/lib/utils clean; final localSearchCode for old path returned 0.
+Confidence: confirmed
+Next: remove any temporary re-export shim only if package exports already point at lib/utils.`,
     'pr-local-review': `Mode: Review
 Scope: collected via git status and git diff --staged; 3 staged files, all in the auth area.
 Risk: src/auth/login.ts is HIGH (auth logic changed); README.md is LOW (docs-only).
@@ -281,7 +293,75 @@ Evidence: exact read shows the parameter is passed to a SQL query unescaped; LSP
 Impact: caller/user data path is exposed to injection.
 Fix: validate/sanitize the token parameter before use, mirroring the existing pattern in src/auth/session.ts:20.
 No existing PR comments to reconcile locally; findings deduped by root cause and capped to the highest-impact issue.
-Next: run the project's auth test suite before opening the PR.`,
+Verification: auth tests passed; typecheck passed.
+Recommendation: APPROVE
+Next: open the PR with the verification receipts.`,
+    'campaign-combination': `Mode: Investigate
+Environment: ran context, auth status (GitHub reachable), and lsp-server status packages/app/src/retry.ts before trusting any surface; no ENABLE_ gate blocked local or clone.
+Scope: local retry helper vs the upstream vendored library; active surfaces: local code, GitHub history, upstream repo; skipped: npm registry because there is no version question.
+Plan: broad and contested, so I fanned out three parallel subagent directions — (1) local proof of our copy, (2) upstream divergence, (3) history/prior-art — each returning claim, evidence, verdict, confidence.
+Hypotheses: our copy is a stale fork (likely) vs it was intentionally patched (alternate); stop test = both killed or no cheap step changes the verdict; I measure progress by claims resolved, not calls made, until the answer converges.
+Combination bridge: materialize the upstream subtree (directory fetch/clone) so AST/LSP run local-grade on it, then diff against ours.
+Cross-check: diffed lexical hits against LSP references across tests, scripts, and configs, and re-verified each subagent's key anchor myself; one direction's "no callers" conflicted with a lexical hit, and that conflict was the finding.
+Exact evidence: packages/app/src/retry.ts:31 diverges from upstream lib/retry.js:44 (extra jitter branch); LSP references at packages/app/src/queue.ts:88.
+Confidence: likely
+Next: open a small PR removing the local copy only if the jitter branch stays unused after the cross-check.`,
+    'local-research': `Mode: Investigate
+Scope: this checkout only; active surfaces: local tree, local search, exact reads, LSP; skipped: GitHub (package behavior comes from the installed copy).
+Spine: localViewStructure on src/ → localFindFiles names formatDate* → localSearchCode discovery → exact read → lspGetSemantics references.
+node_modules: inspected node_modules/date-fns/package.json before any GitHub lookup — that is the version that runs.
+Exact evidence: src/utils/date.ts:14 defines formatDate; LSP callers at src/components/Header.tsx:27 and src/api/report.ts:9; structural import shape confirmed.
+Diffed lexical "formatDate" hits against LSP references before claiming impact.
+Confidence: confirmed
+Next: if behavior looks wrong, compare node_modules/date-fns against the lockfile pin, not upstream HEAD.`,
+    'external-research': `Mode: Investigate
+Scope: remote vitejs/vite; active surfaces: npmSearch, ghViewRepoStructure, ghGetFileContent, ghHistoryResearch; skipped: local clone until needed.
+Spine: npmSearch packageName:vite → ghViewRepoStructure packages/vite/src/node → ghSearchCode createServer (empty = provider blind spot, not absence) → verify path → ghGetFileContent exact read.
+Provider empty: GitHub code search returned no hits; treated as unindexed/provider evidence, verified path with structure, then exact-read — did not claim absence.
+Exact evidence: packages/vite/src/node/index.ts:48 exports createServer; packages/vite/src/node/cli.ts:216 calls createServer; resolvedBranch:main.
+History: ghHistoryResearch commits/PRs on packages/vite/src/node/cli.ts; recent PR #22912 touched related test wiring.
+Confidence: confirmed
+Next: materialize packages/vite/src/node only if AST/LSP on the CLI entry is required.`,
+    'loop-mode': `Mode: Loop
+Question: is export helpers dead? Evidence flipped between text hits and LSP.
+Act→Observe→Learn: cheap discovery first, then exact/LSP only on survivors.
+Ledger: hypotheses = (1) dead export, (2) dynamic import alternate; anchors carried forward exactly.
+Iteration 1 (cheap): localSearchCode discovery for helpers — status empty on path A; adjusted include, not treated as absence.
+Iteration 2: broader path returned hits; Observe distinguished empty vs error (no tool error).
+Iteration 3 (expensive): exact read packages/app/src/helpers.ts:12 + LSP references (includeDeclaration:false) — one dynamic import remained.
+Stop test: alternate killed when dynamic import confirmed; budget 3 decisive iterations; answer converged.
+Answer: not safe to delete — dynamic import remains.
+Evidence: packages/app/src/helpers.ts:12; packages/app/src/lazy.ts:40.
+Loop trace: discovery empty→scope fix; lexical hits; LSP+exact confirmed dynamic import.
+Verification: LSP references ran; final discovery for static imports returned 0.
+Open gaps: runtime-only require() strings not fully ruled out.
+Confidence: likely
+Next: one structural/regex pass for require(.*helpers) before delete.`,
+    'ambiguous-problem-classification': `Mode: Investigate
+Problem contract: actual = export API rejects the requested format; desired = accept it; authority = supported schema/spec/test still unknown; trigger = new format; impact = one customer blocked.
+Classification: unknown. The user label is not proof of a bug; a supported contract violation would be a bug, while a new or unpromised format is a feature.
+Exact evidence: src/export/schema.ts:18 defines current formats, but product acceptance is not yet evidenced.
+Cheapest check: compare the requested format with the published schema and accepted contract test.
+Confidence: uncertain
+Next: read the schema/spec and its contract test, then classify bug versus feature before patching.`,
+    'feature-framing': `Mode: Plan
+Task class: feature. This is a capability gap and new contract, not a defect with a root cause.
+Problem contract: actual = buffered JSON only; desired = streaming JSON; authority = accepted user criterion; success = stream incrementally while current output stays byte-compatible.
+Exact evidence: src/cli/output.ts:24 owns serialization; consumers include shell pipelines and existing JSON parsers.
+Consumers and compatibility: keep the default output unchanged and gate streaming behind an explicit option.
+Acceptance tests: streaming emits incrementally for large input; cancellation closes cleanly; existing output snapshots remain unchanged.
+Smallest boundary: the output writer interface owns the new contract; patch boundary is that adapter plus focused tests.
+Confidence: likely
+Next: exact-read the writer callers and confirm the option/API shape before implementation.`,
+    'enhancement-framing': `Mode: Plan
+Task class: enhancement. Existing result behavior is the contract; "feels faster" needs measurement.
+Baseline: benchmark representative searches at src/search/execute.ts:41, recording p50/p95 latency and result hashes.
+Target: reduce p95 latency by 30% without changing result parity.
+Hypotheses: file enumeration or ranking is the bottleneck; profile both before choosing a patch.
+Experiment: benchmark/profile each stage, change only the dominant stage, then rerun the same corpus.
+Regression guard: identical result hashes and existing search tests, plus the latency target.
+Confidence: likely
+Next: capture the baseline benchmark before implementing optimization.`,
   };
   return base[caseId] || '';
 }
@@ -292,6 +372,12 @@ function weakSample() {
 
 function selfTest() {
   const data = loadCases();
+  const prWorkflow = readFileSync(resolve(SKILL_DIR, 'references', 'workflow-pr-review.md'), 'utf8');
+  const prReport = readFileSync(resolve(SKILL_DIR, 'references', 'workflow-pr-review-report.md'), 'utf8');
+  const contractChecks = {
+    fileScopeAllowsCleanTree: /File Scope[^\n]*does not require staged, unstaged, or untracked changes/i.test(prWorkflow),
+    approveRequiresVerification: /APPROVE[^\n]*(?:requires|only when)[^\n]*(?:test|verification)[^\n]*(?:pass|succeed)/i.test(`${prWorkflow}\n${prReport}`),
+  };
   const results = data.cases.map(testCase => {
     const strong = evaluateCase(testCase, strongSample(testCase.id), { agentic: true });
     const weak = evaluateCase(testCase, weakSample(), { agentic: true });
@@ -305,8 +391,9 @@ function selfTest() {
       weak,
     };
   });
-  const ok = results.every(r => r.strongPassed && r.strongBinaryClean && r.strongAgenticQuestions >= 3 && !r.weakPassed);
-  return { ok, casesPath: CASES_PATH, results };
+  const ok = Object.values(contractChecks).every(Boolean) &&
+    results.every(r => r.strongPassed && r.strongBinaryClean && r.strongAgenticQuestions >= 3 && !r.weakPassed);
+  return { ok, casesPath: CASES_PATH, contractChecks, results };
 }
 
 function usage() {

@@ -6,7 +6,7 @@
 >
 > **Version sync**: When the source spec updates, check: item count references in README (currently "80 items"), skill validation checkpoints, and Sections 2, 3, 7 below.
 
-> **v17 execution contract**: this file owns the human item anchors. Profiles, conditional applicability, veto identity, and required context are versioned in [`framework-catalog.json`](framework-catalog.json); Unknown/N/A, evidence, coverage, score, status, and verdict semantics are defined in [`scoring-semantics.md`](scoring-semantics.md). The framework is advisory until outcome-calibrated.
+> **v18 execution contract**: this file owns the human item anchors. Profiles, conditional applicability, veto identity, and required context are versioned in [`framework-catalog.json`](framework-catalog.json); Unknown/N/A, evidence, coverage, score, status, and verdict semantics are defined in [`scoring-semantics.md`](scoring-semantics.md). The framework is advisory until outcome-calibrated.
 
 **8 dimensions × 10 items = 80 evaluation criteria** for optimizing content visibility across AI engines (GEO) and search engines (SEO).
 
@@ -152,7 +152,7 @@ Applicable but unobserved items are `unknown`; omitted items are also `unknown`.
 
 ### Score Calculation
 
-- **Dimension score** = sum of 10 items (0–100)
+- **Dimension score** = mean of the applicable items × 10 (0–100; catalog-authorized `na` items drop out of the mean)
 - **GEO diagnostic** = (C + O + R + E) / 4, only when those four dimensions are complete
 - **SEO diagnostic** = (Exp + Ept + A + T) / 4, only when those four dimensions are complete
 - **Comparable overall** = Σ (dimension score × declared content-profile weight), emitted only when all applicable profile items are observed

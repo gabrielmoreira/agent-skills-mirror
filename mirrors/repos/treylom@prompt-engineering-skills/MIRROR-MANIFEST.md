@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `treylom/prompt-engineering-skills` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `treylom/prompt-engineering-skills` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `treylom/prompt-engineering-skills` — 26 default patterns, 0 followe
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,8 +84,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`skills/prompt-variation-guide/references/examples.md`](skills/prompt-variation-guide/references/examples.md) |
 | 24 | ✓ | [`skills/prompt-variation-guide/references/techniques.md`](skills/prompt-variation-guide/references/techniques.md) |
 | 25 | ✓ | [`skills/prompt-variation-guide/SKILL.md`](skills/prompt-variation-guide/SKILL.md) |
-| 26 | ✓ | [`skills/research-prompt-guide.md`](skills/research-prompt-guide.md) |
-| 27 | ✓ | [`skills/slide-prompt-guide.md`](skills/slide-prompt-guide.md) |
+| 26 | ✓ | [`skills/prompt/references/prompt-command.md`](skills/prompt/references/prompt-command.md) |
+| 27 | ✓ | [`skills/prompt/SKILL.md`](skills/prompt/SKILL.md) |
+| 28 | ✓ | [`skills/research-prompt-guide.md`](skills/research-prompt-guide.md) |
+| 29 | ✓ | [`skills/slide-prompt-guide.md`](skills/slide-prompt-guide.md) |
 
 ---
 

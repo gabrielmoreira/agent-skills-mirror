@@ -27,7 +27,11 @@
 - **oklch 色彩理论** —— 基于感知均匀色彩空间的配色派生，取代随机 hex 值
 - **精选字体 × 配色组合** —— 高品质起点，替代默认的 Inter + #3b82f6
 - **占位符哲学** —— 用诚实的 `[icon]` 标记代替拙劣的 SVG 假图
-- **结构化工作流** —— 从需求理解 → 上下文获取 → 设计系统宣告 → v0 草稿 → 完整构建 → 验证的六步流程
+- **五旋钮 Design Read** —— 把受众、产物、品牌和约束转成可见的构图变化 / 动效 / 密度 / 素材 / 品牌保真决策
+- **保留契约的改版协议** —— 动手前区分 Extension、Preserve 与 Overhaul
+- **上下文化失败模式** —— 识别布局、内容、素材、动效与 Dashboard 的常见 AI 问题，同时保留合理例外
+- **结构化工作流** —— 需求 → 上下文 → 校准后的设计系统 → v0 草稿 → 完整构建 → 验证
+- **按需浏览器验收** —— 只有用户明确提出验收或浏览器测试时，才运行响应式 / 交互 / 运行时 QA harness
 
 ---
 
@@ -41,9 +45,15 @@
 your-project/
 ├── .agents/skills/web-design-engineer/   # 或 .claude/skills/web-design-engineer/
 │   ├── SKILL.md                          # 主技能文件
+│   ├── agents/openai.yaml                # 宿主展示信息与默认提示词
 │   └── references/
 │       ├── advanced-patterns.md          # 代码模板库（slide engine / 设备框架 / 动效时间线 / 数据可视化）
+│       ├── block-library.md               # 已实现可复用 Block 索引
+│       ├── browser-acceptance.md          # 仅在用户明确要求时执行的浏览器验收 harness
+│       ├── design-calibration.md          # Design Read + 五旋钮 + 可选 image-first 分支
 │       ├── design-directions.md          # 设计方向顾问（6 学派，差异化 3 选 1 推荐）
+│       ├── failure-patterns.md            # 上下文化 AI 设计失败模式与修复方式
+│       ├── redesign-protocol.md           # Extension / Preserve / Overhaul 审计与受保护契约
 │       ├── style-recipes/                # 25 套有 anchor 的风格配方（按需读单文件，每个 anchor 一个 .md）
 │       │   ├── INDEX.md                   #   目录索引 + 3 张索引表 + 跨配方反模式
 │       │   ├── linear.md / aesop.md / pentagram.md / ...    #   25 个独立 recipe 文件
@@ -70,15 +80,16 @@ your-project/
 
 ## 工作原理
 
-### 六步工作流
+### 校准式工作流
 
 ```
 1. 理解需求          →  信息充足就干活，信息不足才提问
-2. 获取设计上下文    →  代码 > 截图；不要从空气中开始
-3. 宣告设计系统      →  配色、字体、间距、动效 —— 用 Markdown 说明，写代码之前
-4. 尽早展示 v0       →  占位符 + 布局 + token；让用户提前纠偏
-5. 完整构建          →  组件、状态、动效；在关键决策点暂停确认
-6. 验证              →  交付前清单；无控制台错误，无私自新增色相
+2. 获取设计上下文    →  代码 > 截图；现有项目先判断改动模式
+3. 产出 Design Read  →  五个旋钮把 brief 映射为可见决策
+4. 宣告设计系统      →  配色、字体、间距、动效 —— 用 Markdown 说明，写代码之前
+5. 尽早展示 v0       →  占位符 + 布局 + token；让用户提前纠偏
+6. 完整构建          →  组件、状态、动效；在关键决策点暂停确认
+7. 验证              →  默认轻量自检；仅在用户明确要求时运行浏览器 harness
 ```
 
 ### 核心设计原则

@@ -12,7 +12,7 @@ The eight auditor-class artifact producers are:
 |---|---|---|
 | `content-quality-auditor` | CORE-EEAT | `memory/audits/content/` |
 | `domain-authority-auditor` | CITE | `memory/audits/domain/` |
-| `content-reviewer` | C3/ART | `memory/audits/influencer/` |
+| `creator-content-auditor` | STAR | `memory/audits/influencer/` |
 | `ad-account-auditor` | ROAS | `memory/audits/ad/` |
 | `email-quality-auditor` | SEND | `memory/audits/email/` |
 | `launch-readiness-auditor` | RAMP | `memory/audits/launch/` |
@@ -59,7 +59,7 @@ Otherwise present the result without writing. The Artifact Gate validates struct
 
 ## 4. Scoring Semantics
 
-All eight frameworks use the common item states, evidence taxonomy, 100% applicable coverage rule, floor rounding, and advisory boundary from [`scoring-semantics.md`](scoring-semantics.md). Dimension values and C3 ACE/ART component means remain exact through their weighted/geometric calculation; floor only the final documented overall/CVI boundary.
+All eight frameworks use the common item states, evidence taxonomy, 100% applicable coverage rule, floor rounding, and advisory boundary from [`scoring-semantics.md`](scoring-semantics.md). Dimension values remain exact through the weighted-mean calculation; floor only the final documented overall/composite boundary.
 
 ### Veto Policy
 
@@ -74,7 +74,7 @@ Qualified veto sets:
 |---|---|
 | CORE-EEAT | `CORE-EEAT-T04`, `CORE-EEAT-C01`, `CORE-EEAT-R10` |
 | CITE | `CITE-T03`, `CITE-T05`, `CITE-T09` |
-| C3 | `C3-ACE.A2`, `C3-ACE.C1`, `C3-ACE.E2`, `C3-ART.T1`, `C3-ART.T2` |
+| STAR | `STAR-S2`, `STAR-S6`, `STAR-T1`, `STAR-T2`, `STAR-T3` |
 | ROAS | `ROAS-R1`, `ROAS-R2`, `ROAS-O1`, `ROAS-O2`, `ROAS-A1` |
 | SEND | `SEND-S1`, `SEND-S2`, `SEND-N1`, `SEND-D1` |
 | RAMP | `RAMP-R1`, `RAMP-A1`, `RAMP-M1`, `RAMP-P1` |
@@ -105,7 +105,7 @@ The durable Markdown artifact uses scalar YAML frontmatter plus a deterministic 
 class: auditor-output
 schema_version: 3.0
 runbook_version: 3.0.0
-catalog_version: 17.0.0
+catalog_version: 18.0.0
 framework: ROAS
 profile: direct-response
 ---

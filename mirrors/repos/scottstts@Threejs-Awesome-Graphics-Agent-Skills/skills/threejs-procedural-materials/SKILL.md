@@ -1,6 +1,6 @@
 ---
 name: threejs-procedural-materials
-description: Author production procedural materials in Three.js. Use for atlas filtering and specular AA, planet-space material fields, terrain wetness, lava and hot emissive procedural surfaces, raymarched material fields, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
+description: Author production procedural materials in Three.js. Use for hybrid texture-backed PBR soil and moss with procedural displacement and masks, upward-facing model moss accumulation, atlas filtering, specular AA, planet-space fields, terrain wetness, lava and emissive surfaces, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
 ---
 
 # Procedural Materials
@@ -53,7 +53,18 @@ emission, glow, embers, fog, and grain are coupled to one material cause stack.
 - specular antialiasing;
 - channel and mask debug modes.
 - emissive-material debug modes when the material owns glow or volumetric
-  accumulation.
+accumulation.
+
+Read [references/hybrid-soil-moss-surface.md](references/hybrid-soil-moss-surface.md)
+and the
+[hybrid soil and moss implementation](examples/hybrid-soil-moss-surface/hybrid-soil-moss-surface.js)
+for texture-backed soil and moss albedo, AO, roughness, and normal microdetail
+combined with procedural mound displacement, moisture, moss coverage/height,
+and warped cellular cracks. Do not describe its surface identity as fully
+procedurally synthesized. When moss must also settle onto a model, read the
+[model moss implementation](examples/hybrid-soil-moss-surface/model-moss-accumulation.js)
+for model-locked coverage, upward-face accumulation, displaced thickness, and
+shared moss PBR identity.
 
 ## Failure conditions
 
@@ -69,4 +80,6 @@ emission, glow, embers, fog, and grain are coupled to one material cause stack.
 
 Use `$threejs-procedural-fields` when the main problem is designing shared
 scalar/vector causes. Use `$threejs-procedural-planets` for a complete
-orbit-to-close-approach body, not merely its material.
+orbit-to-close-approach body, not merely its material. Use
+`$threejs-parallax-occlusion-mapping` when a height field must own ray-marched
+intersection, silhouette coverage, or relief-aware shadows.

@@ -1,89 +1,33 @@
 # GitHub Landscape
 
-**Rare path — skip by default.** Read only for repo discovery, reuse decisions, open-source implementation searches, or deeper GitHub prior-art comparison.
-
-GitHub Landscape is a structured repo ecosystem pass: discover broadly, rank cheaply, deep-dive selectively, then produce an integration blueprint.
-Skip it for a single known repo or a narrow code bug. Router, evidence grades, and tool names come from `references/algorithm.md` and `references/octocode.md`.
-
-## Output Goal
-
-End with:
-
-```text
-Repo clusters        (active, partial, abandoned, research-only, production-ready, not relevant)
-Ranked repo table
-Top repo deep-dive notes
-Integration blueprint (what to reuse, what to avoid)
-Proof still needed
-```
-
-## Repo DB
-
-Keep a compact table in chat for small runs, or a `repo_db.jsonl` artifact for long runs. Score each repo on fit, activity, evidence, reuse, and risk (rubric below).
-
-```json
-{"repo":"owner/name","url":"https://github.com/owner/name","sourceQuery":"structural TypeScript search","stars":1200,"language":"TypeScript","license":"MIT","lastActivity":"2026-06-01","package":"name-or-null","fit":"high","activity":"active","evidenceIds":["ev1","ev2"],"notes":"Has tree-sitter parser and CLI docs"}
-```
+Rare path: load for repo discovery, reuse decisions, open-source implementation search, or ecosystem comparison. Skip for one known repo or a narrow bug. `algorithm.md` owns proof; `octocode.md` owns syntax.
 
 ## Flow
+1. Frame literal, alias, adjacent implementation, and package terms.
+2. Discover repos/packages; turn web/product/paper names into repo/package leads.
+3. Record a compact table or approved `repo_db.jsonl` artifact.
+4. Rank cheaply; deep-read only the top 3-8 within budget.
+5. For each finalist, inspect tree, README, exact source/test anchors, issues/PRs, releases/history, and license.
+6. Upgrade claims from snippets/README to exact evidence; use `long-research.md` for contested/large runs.
+7. Return clusters, ranking, integration blueprint, and proof still needed.
 
-1. Frame search terms: literal phrase, aliases, adjacent implementation terms, and package names.
-2. Discover repos:
-   ```text
-   search <keywords> --target repositories --json
-   search <topic> --target packages --json
-   search <term> <owner/repo> --view discovery --json
-   ```
-3. Add web/product/paper names only as leads, then resolve each lead to GitHub/npm.
-4. Build the repo DB from search results and exact reads.
-5. Rank cheaply and select top repos for deep dive. Default: top 3-8, depending on budget.
-6. Deep dive each selected repo:
-   ```text
-   search <owner/repo> --tree --depth 2 --json
-   search <owner/repo/README.md> --content-view exact --json
-   search <term> <owner/repo> --view discovery --json
-   search <owner/repo/path> --match-string <anchor> --content-view exact --json
-   search <owner/repo/path> --target commits --since <iso> --json when history matters
-   ```
-7. Upgrade claims with exact source evidence. Use `long-research.md` ledgers for large or contested landscapes.
-8. Produce clusters, ranking, and integration blueprint.
-
-## Ranking Rubric
-
-Use `high`, `medium`, or `low` for each dimension:
-
-| Dimension | High | Medium | Low |
-|---|---|---|---|
-| Fit | Directly implements the target capability | Adjacent or partial | Keyword-only |
-| Evidence | Exact code/docs/tests prove the claim | README or examples only | Search snippet only |
-| Activity | Recent release/commits and responsive issues | Some recent movement | Stale or archived |
-| Reuse | Clear API, acceptable license, small dependency drag | Some adaptation needed | Hidden service, unclear license, or heavy rewrite |
-| Risk | Known caveats are bounded | Some unknowns | Material blocker |
-
-Downloads and stars are tiebreakers, not validation.
-
-## Integration Blueprint
-
-```text
-Recommended repo(s)
-Why these survive
-Reusable pieces
-Integration path
-Known incompatibilities
-License/dependency risks
-Proof still needed
-Next command or prototype
+```json
+{"repo":"owner/name","url":"https://github.com/owner/name","sourceQuery":"term","stars":1200,"language":"TypeScript","license":"MIT","lastActivity":"2026-06-01","package":"name","fit":"high","activity":"active","evidenceIds":["ev1"],"notes":"exact capability"}
 ```
 
-Tie every recommendation to evidence. If no repo is good enough, say so and identify the hardest missing capability.
+## Ranking
+| Dimension | High | Medium | Low |
+|---|---|---|---|
+| fit | direct capability | adjacent/partial | keyword only |
+| evidence | exact code/docs/tests | README/example | snippet |
+| activity | recent release/commits/issues | some movement | stale/archive |
+| reuse | clear API/license, low drag | adaptation needed | hidden service/unclear license/rewrite |
+| risk | bounded caveats | unknowns | blocker |
 
-## Stop Gates
+Stars/downloads are tiebreakers, never validation.
 
-Stop when one of these fires:
+## Output
+`repo clusters → ranked table → finalist proof → reusable pieces → integration path → incompatibilities/license/dependencies → remaining proof → next prototype`
 
-- top candidates are proven with exact evidence and next repo is unlikely to change the decision
-- search surfaces are thin after synonym/package/web-lead retries
-- license or service dependency risk makes reuse a user decision
-- deep dive would require cloning or running untrusted code without approval
-
-Ask before cloning many repos, running repo code, or writing artifacts outside the current skill/report scope.
+Stop after finalist proof converges, retries stay thin, license/service risk needs user choice, or deeper work requires unapproved clone/execution.
+Ask before cloning many repos, running untrusted code, or writing artifacts.

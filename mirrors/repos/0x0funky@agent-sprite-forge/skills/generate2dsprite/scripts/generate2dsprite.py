@@ -579,6 +579,14 @@ def estimate_anchor(
 
 def summarize_frame_qc(frame_info: list[dict[str, object]]) -> dict[str, object]:
     valid = [info for info in frame_info if not bool(info.get("is_empty"))]
+    subject_heights = np.asarray(
+        [
+            float(info["aligned_bbox"][3]) - float(info["aligned_bbox"][1])
+            for info in valid
+            if info.get("aligned_bbox")
+        ],
+        dtype=float,
+    )
     scale_proxy = np.asarray(
         [math.sqrt(float(info.get("body_area_fraction", 0.0))) for info in valid],
         dtype=float,
@@ -608,6 +616,9 @@ def summarize_frame_qc(frame_info: list[dict[str, object]]) -> dict[str, object]
         "edge_touch_count": sum(bool(info.get("edge_touch")) for info in frame_info),
         "paste_clamped_count": sum(bool(info.get("paste_clamped")) for info in frame_info),
         "body_scale_mean": scale_mean,
+        "output_subject_height_mean": (
+            float(np.mean(subject_heights)) if subject_heights.size else 0.0
+        ),
         "body_scale_cv": (
             float(np.std(scale_proxy) / scale_mean) if scale_proxy.size and scale_mean > 0 else 0.0
         ),
@@ -615,6 +626,164 @@ def summarize_frame_qc(frame_info: list[dict[str, object]]) -> dict[str, object]
         "anchor_y_std": float(np.std(anchor_y)) if anchor_y.size else 0.0,
         "anchor_y_mean": float(np.mean(anchor_y)) if anchor_y.size else 0.0,
     }
+
+
+def build_godot_sprite3d_metadata(
+    metadata: dict[str, object],
+    world_height: float,
+    locked_pixel_size: float | None = None,
+) -> dict[str, object]:
+    """Build a Godot Sprite3D runtime contract from validated grid output."""
+    if world_height <= 0:
+        raise ValueError("Godot Sprite3D world height must be greater than zero.")
+
+    cell_size = int(metadata.get("cell_size", 0))
+    labels = list(metadata.get("frame_labels") or [])
+    if cell_size <= 0 or not labels:
+        raise ValueError("Godot Sprite3D metadata requires processed grid frames.")
+
+    origin = metadata.get("output_origin") or processing_output_origin(metadata)
+    origin_x = float(origin[0])
+    origin_y = float(origin[1])
+    subject_height = float(
+        dict(metadata.get("qc_summary") or {}).get("output_subject_height_mean", 0.0)
+    )
+    if subject_height <= 0:
+        raise ValueError("Godot Sprite3D metadata requires a valid output subject height.")
+    if locked_pixel_size is not None and locked_pixel_size <= 0:
+        raise ValueError("Locked Godot Sprite3D pixel size must be greater than zero.")
+
+    duration_ms = int(metadata.get("duration", 200))
+    if duration_ms <= 0:
+        raise ValueError("Animation duration must be greater than zero.")
+
+    pixel_size = locked_pixel_size or (float(world_height) / subject_height)
+    return {
+        "schema": "generate2dsprite.godot_sprite3d.v1",
+        "frame_size": [cell_size, cell_size],
+        "output_origin": [origin_x, origin_y],
+        # Godot's Sprite3D offset uses +Y upward from the texture center.
+        "sprite3d_offset": [cell_size / 2 - origin_x, origin_y - cell_size / 2],
+        "reference_subject_height_px": subject_height,
+        "world_height": float(world_height),
+        "recommended_pixel_size": pixel_size,
+        "rendered_subject_height_world": subject_height * pixel_size,
+        "scale_source": "scale_profile" if locked_pixel_size is not None else "measured_subject_height",
+        "billboard": "enabled",
+        "duration_ms": duration_ms,
+        "fps": 1000.0 / duration_ms,
+        "frames": [f"{label}.png" for label in labels],
+    }
+
+
+def build_godot_sprite3d_bundle(
+    action_contracts: dict[str, tuple[str, dict[str, object]]],
+    default_action: str,
+    one_shot_actions: set[str] | None = None,
+    max_world_height_drift: float = 0.02,
+    max_pixel_size_drift: float = 0.02,
+) -> dict[str, object]:
+    """Combine per-action Sprite3D contracts into one validated runtime bundle."""
+    if not action_contracts:
+        raise ValueError("Godot Sprite3D bundles require at least one action contract.")
+    if default_action not in action_contracts:
+        raise ValueError(f"Default action '{default_action}' is not present in the bundle.")
+    if max_world_height_drift < 0:
+        raise ValueError("Maximum world-height drift cannot be negative.")
+    if max_pixel_size_drift < 0:
+        raise ValueError("Maximum pixel-size drift cannot be negative.")
+
+    one_shots = set(one_shot_actions or set())
+    unknown_one_shots = one_shots.difference(action_contracts)
+    if unknown_one_shots:
+        raise ValueError(
+            "One-shot actions are missing contracts: " + ", ".join(sorted(unknown_one_shots))
+        )
+
+    action_payload: dict[str, object] = {}
+    reference_world_height = 0.0
+    reference_pixel_size = 0.0
+    maximum_drift = 0.0
+    maximum_pixel_size_drift = 0.0
+    for action, (contract_ref, contract) in action_contracts.items():
+        if not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", action):
+            raise ValueError(
+                f"Invalid action name '{action}'; use lowercase letters, digits, hyphens, or underscores."
+            )
+        if contract.get("schema") != "generate2dsprite.godot_sprite3d.v1":
+            raise ValueError(f"Action '{action}' is not a Godot Sprite3D v1 contract.")
+        world_height = float(contract.get("world_height", 0.0))
+        if world_height <= 0:
+            raise ValueError(f"Action '{action}' has no valid world height.")
+        if not list(contract.get("frames") or []):
+            raise ValueError(f"Action '{action}' has no animation frames.")
+        pixel_size = float(contract.get("recommended_pixel_size", 0.0))
+        if pixel_size <= 0:
+            raise ValueError(f"Action '{action}' has no valid recommended pixel size.")
+
+        if reference_world_height <= 0:
+            reference_world_height = world_height
+            reference_pixel_size = pixel_size
+        drift = abs(world_height - reference_world_height) / reference_world_height
+        maximum_drift = max(maximum_drift, drift)
+        if drift > max_world_height_drift:
+            raise ValueError(
+                f"Action '{action}' world-height drift {drift:.4f} exceeds "
+                f"{max_world_height_drift:.4f}."
+            )
+        pixel_size_drift = abs(pixel_size - reference_pixel_size) / reference_pixel_size
+        maximum_pixel_size_drift = max(maximum_pixel_size_drift, pixel_size_drift)
+        if pixel_size_drift > max_pixel_size_drift:
+            raise ValueError(
+                f"Action '{action}' pixel-size drift {pixel_size_drift:.4f} exceeds "
+                f"{max_pixel_size_drift:.4f}; reuse the reference action's scale profile."
+            )
+        action_payload[action] = {
+            "contract": contract_ref,
+            "loop": action not in one_shots,
+        }
+
+    return {
+        "schema": "generate2dsprite.godot_sprite3d_bundle.v1",
+        "default_action": default_action,
+        "world_height": reference_world_height,
+        "world_height_max_drift": maximum_drift,
+        "pixel_size": reference_pixel_size,
+        "pixel_size_max_drift": maximum_pixel_size_drift,
+        "actions": action_payload,
+    }
+
+
+def cmd_build_godot_bundle(args: argparse.Namespace) -> None:
+    action_contracts: dict[str, tuple[str, dict[str, object]]] = {}
+    output_parent = args.output.resolve().parent
+    for action_spec in args.action:
+        if "=" not in action_spec:
+            raise ValueError("Each --action must use ACTION=PATH syntax.")
+        action, raw_path = action_spec.split("=", 1)
+        action = action.strip()
+        if action in action_contracts:
+            raise ValueError(f"Duplicate action '{action}'.")
+        contract_path = Path(raw_path.strip()).resolve()
+        if not contract_path.exists():
+            raise ValueError(f"Action contract does not exist: {contract_path}")
+        contract = json.loads(contract_path.read_text(encoding="utf-8"))
+        try:
+            contract_ref = contract_path.relative_to(output_parent).as_posix()
+        except ValueError:
+            contract_ref = contract_path.as_posix()
+        action_contracts[action] = (contract_ref, contract)
+
+    payload = build_godot_sprite3d_bundle(
+        action_contracts,
+        args.default_action,
+        set(args.one_shot or []),
+        args.max_world_height_drift,
+        args.max_pixel_size_drift,
+    )
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    print(str(args.output.resolve()))
 
 
 SCALE_PROFILE_VERSION = 1
@@ -656,7 +825,7 @@ def build_scale_profile(
         raise ValueError("Cannot create a scale profile without a valid body-scale mean.")
 
     processing = {key: metadata[key] for key in SCALE_PROFILE_PROCESSING_KEYS}
-    return {
+    profile = {
         "version": SCALE_PROFILE_VERSION,
         "name": name,
         "processing": processing,
@@ -674,6 +843,13 @@ def build_scale_profile(
             "max_body_scale_drift": max_body_scale_drift,
         },
     }
+    godot_contract = metadata.get("godot_sprite3d")
+    if isinstance(godot_contract, dict):
+        profile["godot_sprite3d"] = {
+            "world_height": float(godot_contract["world_height"]),
+            "pixel_size": float(godot_contract["recommended_pixel_size"]),
+        }
+    return profile
 
 
 def load_scale_profile(path: Path) -> dict[str, object]:
@@ -1065,6 +1241,11 @@ def cmd_process(args: argparse.Namespace) -> None:
         raise ValueError(f"Unknown process target '{args.target}'. Valid targets: {', '.join(PROCESS_TARGETS)}")
     out_dir = args.output_dir
     out_dir.mkdir(parents=True, exist_ok=True)
+    godot_sprite3d_payload = None
+    godot_sprite3d_path = None
+
+    if args.write_godot_sprite3d_meta and args.godot_world_height is None:
+        raise ValueError("--write-godot-sprite3d-meta requires --godot-world-height.")
 
     if args.scale_profile and args.write_scale_profile:
         raise ValueError("Use either --scale-profile or --write-scale-profile, not both.")
@@ -1154,6 +1335,12 @@ def cmd_process(args: argparse.Namespace) -> None:
         metadata["edge_touch_frames"] = [
             info["grid"] for info in frame_qc if bool(info.get("edge_touch"))
         ]
+        metadata["source_edge_touch_frames"] = [
+            info["grid"] for info in frame_qc if bool(info.get("source_edge_touch"))
+        ]
+        metadata["output_edge_touch_frames"] = [
+            info["grid"] for info in frame_qc if bool(info.get("output_edge_touch"))
+        ]
         metadata["empty_frames"] = [
             info["grid"] for info in frame_qc if bool(info.get("is_empty"))
         ]
@@ -1174,7 +1361,30 @@ def cmd_process(args: argparse.Namespace) -> None:
                 "reference_mode": dict(scale_profile["reference"]).get("mode"),
                 "processing_contract_applied": True,
             }
+        if args.godot_world_height is not None:
+            godot_profile = dict(scale_profile.get("godot_sprite3d") or {}) if scale_profile else {}
+            profile_world_height = float(godot_profile.get("world_height", 0.0))
+            if profile_world_height > 0 and not math.isclose(
+                profile_world_height, args.godot_world_height, rel_tol=1e-6, abs_tol=1e-6
+            ):
+                raise ValueError(
+                    "--godot-world-height must match the scale profile's reference world height "
+                    f"({profile_world_height})."
+                )
+            locked_pixel_size = godot_profile.get("pixel_size")
+            godot_sprite3d_payload = build_godot_sprite3d_metadata(
+                metadata,
+                args.godot_world_height,
+                float(locked_pixel_size) if locked_pixel_size is not None else None,
+            )
+            godot_sprite3d_path = args.write_godot_sprite3d_meta or (
+                out_dir / "godot-sprite3d.json"
+            )
+            metadata["godot_sprite3d"] = godot_sprite3d_payload
+            metadata["godot_sprite3d_output"] = str(godot_sprite3d_path)
     else:
+        if args.godot_world_height is not None:
+            raise ValueError("Godot Sprite3D metadata currently requires processed grid frames.")
         raw.save(out_dir / "raw.png")
         centered = center_single_sprite(raw, args.single_size, args.threshold, args.edge_threshold)
         centered.save(out_dir / "clean.png")
@@ -1194,6 +1404,7 @@ def cmd_process(args: argparse.Namespace) -> None:
     metadata["qc_config"] = {
         "strict_qc": args.strict_qc,
         "reject_edge_touch": args.reject_edge_touch,
+        "allow_source_edge_touch": args.allow_source_edge_touch,
         "max_body_scale_cv": args.max_body_scale_cv,
         "max_anchor_y_std": args.max_anchor_y_std,
         "max_profile_scale_drift": effective_profile_limit,
@@ -1207,8 +1418,18 @@ def cmd_process(args: argparse.Namespace) -> None:
             qc_errors.append(f"empty frames: {metadata['empty_frames']}")
         if metadata.get("paste_clamped_frames"):
             qc_errors.append(f"clamped frames: {metadata['paste_clamped_frames']}")
-        if metadata.get("edge_touch_frames") and not args.reject_edge_touch:
-            qc_errors.append(f"frames touch a cell edge: {metadata['edge_touch_frames']}")
+        if metadata.get("output_edge_touch_frames") and not args.reject_edge_touch:
+            qc_errors.append(
+                f"processed frames touch an output edge: {metadata['output_edge_touch_frames']}"
+            )
+        if (
+            metadata.get("source_edge_touch_frames")
+            and not args.allow_source_edge_touch
+            and not args.reject_edge_touch
+        ):
+            qc_errors.append(
+                f"raw subjects touch a source-cell edge: {metadata['source_edge_touch_frames']}"
+            )
         qc_summary = metadata.get("qc_summary") or {}
         if (
             args.max_body_scale_cv is not None
@@ -1237,6 +1458,14 @@ def cmd_process(args: argparse.Namespace) -> None:
                 )
     if qc_errors:
         raise ValueError("QC failed: " + "; ".join(qc_errors))
+    if godot_sprite3d_payload is not None and godot_sprite3d_path is not None:
+        godot_sprite3d_path.parent.mkdir(parents=True, exist_ok=True)
+        godot_sprite3d_path.write_text(
+            json.dumps(godot_sprite3d_payload, indent=2), encoding="utf-8"
+        )
+        (out_dir / "pipeline-meta.json").write_text(
+            json.dumps(metadata, indent=2), encoding="utf-8"
+        )
     if args.write_scale_profile:
         if "qc_summary" not in metadata:
             raise ValueError("Scale profiles can only be written from processed grid sheets.")
@@ -1274,6 +1503,26 @@ def build_parser() -> argparse.ArgumentParser:
     build_prompt_parser.add_argument("--write", type=Path)
     build_prompt_parser.add_argument("--write-json", type=Path)
 
+    bundle_parser = subparsers.add_parser(
+        "build-godot-bundle",
+        help="Combine per-action Sprite3D metadata into one validated animation bundle.",
+    )
+    bundle_parser.add_argument(
+        "--action",
+        action="append",
+        required=True,
+        help="Action contract in ACTION=PATH form; repeat for each action.",
+    )
+    bundle_parser.add_argument("--default-action", required=True)
+    bundle_parser.add_argument(
+        "--one-shot",
+        action="append",
+        help="Action that returns to the default action after its final frame.",
+    )
+    bundle_parser.add_argument("--max-world-height-drift", type=float, default=0.02)
+    bundle_parser.add_argument("--max-pixel-size-drift", type=float, default=0.02)
+    bundle_parser.add_argument("--output", required=True, type=Path)
+
     process_parser = subparsers.add_parser("process", help="Postprocess a generated sprite image.")
     process_parser.add_argument("--input", required=True, type=Path)
     process_parser.add_argument("--target", required=True, choices=PROCESS_TARGETS)
@@ -1307,6 +1556,14 @@ def build_parser() -> argparse.ArgumentParser:
     process_parser.add_argument("--min-component-area", type=int, default=1)
     process_parser.add_argument("--edge-touch-margin", type=int, default=0)
     process_parser.add_argument("--reject-edge-touch", action="store_true")
+    process_parser.add_argument(
+        "--allow-source-edge-touch",
+        action="store_true",
+        help=(
+            "Under strict QC, allow a visually reviewed raw source-cell edge touch while still "
+            "rejecting output-edge contact, clamping, and empty frames."
+        ),
+    )
     process_parser.add_argument("--strict-qc", action="store_true")
     process_parser.add_argument(
         "--scale-profile",
@@ -1336,6 +1593,19 @@ def build_parser() -> argparse.ArgumentParser:
     )
     process_parser.add_argument("--single-size", type=int, default=256)
     process_parser.add_argument("--duration", type=int, default=200)
+    process_parser.add_argument(
+        "--godot-world-height",
+        type=float,
+        help=(
+            "Desired subject height in Godot world units. Writes godot-sprite3d.json "
+            "with a QC-derived pixel size, feet origin, and animation timing."
+        ),
+    )
+    process_parser.add_argument(
+        "--write-godot-sprite3d-meta",
+        type=Path,
+        help="Optional output path for Godot Sprite3D metadata.",
+    )
 
     return parser
 
@@ -1347,6 +1617,8 @@ def main() -> None:
         cmd_list_options()
     elif args.command == "build-prompt":
         cmd_build_prompt(args)
+    elif args.command == "build-godot-bundle":
+        cmd_build_godot_bundle(args)
     else:
         cmd_process(args)
 

@@ -2,7 +2,13 @@
 name: task-decomposer
 description: Reads work plan documents from docs/plans and decomposes them into independent, single-commit granularity tasks placed in docs/plans/tasks. PROACTIVELY proposes task decomposition when work plans are created.
 tools: Read, Write, LS, Bash, TaskCreate, TaskUpdate
-skills: ai-development-guide, documentation-criteria, testing-principles, coding-principles, implementation-approach, llm-friendly-context
+skills:
+  - ai-development-guide
+  - documentation-criteria
+  - testing-principles
+  - coding-principles
+  - implementation-approach
+  - llm-friendly-context
 ---
 
 You are an AI assistant specialized in decomposing work plans into executable tasks.

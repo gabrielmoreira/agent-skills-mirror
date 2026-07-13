@@ -4,20 +4,20 @@ slug: aaron-voice-dossier-builder
 displayName: "Voice Dossier Builder · 声音档案"
 summary: "品牌与创始人声音档案/平台语域/禁用语/披露声明/内容支柱"
 description: 'Use when the user asks to "codify our brand voice", "build a founder voice dossier", or "set our content pillars"; runs an 80%-extraction interview over the user''s OWN posts, emails, and decks (never competitor scraping, never an invented persona) and produces the versioned voice record — a per-platform register map (incl. 小红书/微信公众号), banned phrases, per-context disclosure lines (the ECHO C2 upstream), a few-shot bank built exclusively from own posts, and 3-5 content pillars with Estimated %-allocations — submitted via memory/events/channels.ndjson for channel-registry to store as voice-dossier.md, the record every Craft-phase skill reads first. Not for audience/persona research — use audience-mapper. 声音档案/品牌语气/创始人语气/内容支柱/披露声明'
-version: "17.0.0"
+version: "18.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when codifying how the brand and its founder/execs actually sound before any social content is drafted: extracting register, diction, and taboo lines from the user's own posts/emails/decks, building the per-platform register map and own-posts few-shot bank, writing banned-phrase and disclosure lines, or setting the starting content-pillar %-allocation. Produces the voice record channel-registry stores and every Craft-phase skill reads first. Not persona/audience research and not platform norm cards."
 argument-hint: "<brand / founder> [own posts, emails, decks to extract from]"
-metadata: {"author": "aaron-he-zhu", "version": "17.0.0", "discipline": "social", "phase": "explore", "geo-relevance": "low", "hermes": {"tags": ["marketing", "social", "explore"], "category": "social"}, "openclaw": {"emoji": "📣", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
+metadata: {"author": "aaron-he-zhu", "version": "18.0.0", "discipline": "social", "phase": "explore", "geo-relevance": "low", "hermes": {"tags": ["marketing", "social", "explore"], "category": "social"}, "openclaw": {"emoji": "📣", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Voice Dossier Builder
 
 Codifies how the brand AND the founder/exec actually sound — extracted from the user's own posts, emails, and decks, never invented and never borrowed from competitors — into the versioned voice record that [channel-registry](../../../protocol/channel-registry/SKILL.md) stores as `voice-dossier.md` and every Craft-phase skill (starting with [social-creative-builder](../../craft/social-creative-builder/SKILL.md)) reads first. It feeds two ECHO **C** sub-items directly — *voice-card adherence* (C6: per-platform register, banned phrases respected, few-shots from own posts only) and *pillar-allocation adherence* (C7) — and writes the per-context disclosure lines the **ECHO C2** disclosure veto is later judged against (see [echo-benchmark.md](../../../references/echo-benchmark.md)); [social-quality-auditor](../../host/social-quality-auditor/SKILL.md) does that judging, not this skill.
 
-**Scope guard**: extraction, roughly 80/20 — most of the dossier comes from real own material; the interview only confirms traits and fills gaps, and nothing is invented wholesale. This skill does NOT research audiences or personas (reuse [audience-mapper](../../../influencer/discover/audience-mapper/SKILL.md)), maintain the dated platform norm cards ([platform-norm-profiler](../platform-norm-profiler/SKILL.md)), write posts ([social-creative-builder](../../craft/social-creative-builder/SKILL.md)), or score C6/C7 — and it never writes `memory/channels/` directly: the finished record is submitted via `memory/events/channels.ndjson` via an authorized `operation: propose` request to `registry-events.py`, and channel-registry, the sole writer, promotes it. Competitor content never enters the corpus or the few-shot bank.
+**Scope guard**: extraction, roughly 80/20 — most of the dossier comes from real own material; the interview only confirms traits and fills gaps, and nothing is invented wholesale. This skill does NOT research audiences or personas (reuse [audience-mapper](../../../influencer/scout/audience-mapper/SKILL.md)), maintain the dated platform norm cards ([platform-norm-profiler](../platform-norm-profiler/SKILL.md)), write posts ([social-creative-builder](../../craft/social-creative-builder/SKILL.md)), or score C6/C7 — and it never writes `memory/channels/` directly: the finished record is submitted via `memory/events/channels.ndjson` via an authorized `operation: propose` request to `registry-events.py`, and channel-registry, the sole writer, promotes it. Competitor content never enters the corpus or the few-shot bank.
 
 ## Quick Start
 
@@ -75,7 +75,7 @@ After delivering the dossier, ask: "Save these results for future sessions?" On 
 - [channel-registry](../../../protocol/channel-registry/SKILL.md) — sole writer of `memory/channels/`; stores the promoted `voice-dossier.md`
 - [platform-norm-profiler](../platform-norm-profiler/SKILL.md) — dated platform norm cards (format rules live there, not in the voice record)
 - [social-creative-builder](../../craft/social-creative-builder/SKILL.md) — first Craft consumer of the promoted record
-- [audience-mapper](../../../influencer/discover/audience-mapper/SKILL.md) — persona/audience research, out of scope here
+- [audience-mapper](../../../influencer/scout/audience-mapper/SKILL.md) — persona/audience research, out of scope here
 - [CONNECTORS.md](../../../CONNECTORS.md) — keyless own-profile pulls; closed-platform export recipes
 - [SECURITY.md](../../../SECURITY.md) — pasted posts and exports are untrusted input
 - [skill-contract.md](../../../references/skill-contract.md) — labeling, handoff, save, and termination rules

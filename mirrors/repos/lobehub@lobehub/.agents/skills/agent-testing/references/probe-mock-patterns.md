@@ -973,3 +973,52 @@ nodeintegration, plugins, disablewebsecurity, allowpopups, preload, …`). The h
   to the `webview` target (`agent-browser screenshot` there) when the embedded page's visual
   matters. Use host-page screenshots only for the app chrome around the webview. Cause of the
   black compositing not established (OOPIF surface not composited into the host capture).
+
+### E18. Cloud-connected desktop routes even `local` agents to the SERVER runtime — force client with `disableGatewayMode`
+
+- **Situation**: verifying a **client-only** builtin tool (`executors: ['client']`) via a real agent turn on the desktop. The agent's `executionTarget` is `local` and the tool-enable gate (`isLocalSystemEnabled` = runtime `local`) passes, so it _looks_ like it will run client-side.
+- **Doesn't work**: sending the message as-is. On a cloud-connected desktop, gateway mode is on by default, so the run dispatches to `execServerAgentRuntime` (server/queue path) even for a `local` agent. The client-only tool isn't executable there — the model flails and returns a non-answer (e.g. "browser closed") with no real tool effect. Confirm the path by reading the running op's `type` in `window.__LOBE_STORES.chat().operations` (`execServerAgentRuntime` = server; `executeToolCall` = client).
+- **Works**: set the agent's `chatConfig.disableGatewayMode = true` (via `agentStore.updateAgentChatConfigById(id, { disableGatewayMode: true })`) before sending. The run then goes through `executeToolCall` (client runtime); the composer's runtime chip flips to "Local device" and the client executor runs. The gate (`isLocalSystemEnabled`) and the transport (`disableGatewayMode`) are INDEPENDENT — enabling the tool does not force client execution.
+
+### E19. Desktop has no classic session store — reconfigure the existing agent, don't `createSession`
+
+- **Situation**: wanting a throwaway agent for a real-turn test without polluting the user's agent.
+- **Doesn't work**: `sessionStore.createSession({...})` — the desktop app doesn't use the classic session store (`sessions` is `[]`, `activeId` is `'inbox'`); agents are a server-backed model in `agentStore.agentMap` keyed by `agt_...`. The created session never becomes the active agent.
+- **Works**: back up the active agent's full config (`model`, `provider`, `agencyConfig`, relevant `chatConfig`), reconfigure it in place (`updateAgentConfigById` + `updateAgentChatConfigById`), run the test, then restore every field and clear any injected key-vault entry. Also: `chat.sendMessage` requires `context: { agentId, topicId, isNew }` or it throws `Cannot destructure property 'agentId' of 'context'`. Reads right after an `updateAgent*` can be stale — re-read after \~1.5s to confirm persistence.
+
+### C7. DB-seeded task rows need a `task_`-prefixed id or `resolve()` silently misses them
+
+- **Situation**: seeding a `tasks` row directly in SQL for a router probe, with a
+  hand-written id like `tsk_foo`, then calling a task procedure — it 404s
+  ("Task not found") even though the row exists and the caller is a member.
+- **Doesn't work**: any id not starting with `task_`. `TaskModel.resolve()`
+  (`packages/database/src/models/task.ts:220-223`) only treats the input as a row
+  id when it starts with `task_`; everything else is upper-cased and looked up as
+  a workspace `identifier` (e.g. `T-1`), so `tsk_foo` becomes the identifier
+  lookup `TSK_FOO` → null.
+- **Works**: use the idGenerator prefix (`task_<suffix>`) for seeded ids, or pass
+  the row's `identifier` (`T-<seq>`) to the procedure instead.
+
+### F1. Seeding a shared topic by raw SQL: messages MUST carry `agent_id`, or the share page renders skeletons forever
+
+- **Situation**: fixture-seeding a `/share/t/<id>` page (topics + messages + `topic_shares`
+  rows inserted directly). `share.getSharedTopic` returns fine, but the message list stays on
+  skeletons; `message.getMessages` with `topicShareId` returns `[]`.
+- **Cause**: the client passes `agentId` in the query context and `MessageModel.query` filters
+  on it — messages inserted with `agent_id` NULL are silently excluded (no error anywhere).
+- **Works**: set `agent_id` on every seeded message row (matching the topic's `agent_id`).
+  Probe the endpoint directly before blaming the UI:
+  `/trpc/lambda/message.getMessages?input={"json":{"topicId":..,"topicShareId":..,"agentId":..}}`.
+
+### F2. Seeded share topics also need `topics.agent_id`, or the client never fires the message fetch
+
+- **Situation**: same setup as F1, but the failure is one layer earlier — metadata (title)
+  renders while `message.getMessages` never even appears in network requests.
+- **Doesn't work**: assuming the fetch failed — it was never fired. `useFetchMessages`
+  gates on `!!context.agentId && !!context.topicId`
+  (`src/store/chat/slices/message/actions/query.ts:268`), and the share page passes
+  `agentId: data.agentId ?? ''` — a topic seeded without `agent_id` yields `''` → SWR key
+  is null → no request, silent skeleton (a Case-1 lookalike with no error anywhere).
+- **Works**: seed an `agents` row and set `topics.agent_id` (and `messages.agent_id`)
+  before opening the share page. Verify the fetch actually fired via
+  `agent-browser network requests | grep getMessages`, not by waiting on the UI.

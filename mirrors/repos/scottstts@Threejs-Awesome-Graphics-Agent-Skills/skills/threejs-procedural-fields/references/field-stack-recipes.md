@@ -5,10 +5,10 @@ Use this reference to construct coherent field bundles for spherical terrain, al
 ## Contents
 
 - Stable coordinate ownership
-- planet-space implementation sphere fields
+- Planetary sphere fields
 - Altitude filtering
-- pooled VFX system terrain coupling
-- atlas-based renderer water field coupling
+- Wetness-coupled game terrain
+- Shared-phase water fields
 - Structured stochastic placement
 - Cross-system implementation contract
 - Diagnostics
@@ -19,7 +19,7 @@ Use this reference to construct coherent field bundles for spherical terrain, al
 The strongest common rule is that one stable coordinate domain owns related
 visual channels.
 
-planet-space implementation stores normalized undeformed sphere direction in a
+Planetary terrain materials store normalized undeformed sphere direction in a
 `surfaceDirection` attribute. Terrain shader fields sample:
 
 ```text
@@ -30,9 +30,9 @@ They do not sample the interpolated displaced position. This prevents noise
 stretching over steep relief and allows orbit/close-detail filtering in the
 same kilometer domain.
 
-pooled VFX system terrain samples `positionWorld`, because wetness is tied to a world water
-height. atlas-based renderer water also samples world XZ so near tiles and far ocean quads
-share wave phase.
+Wetness-coupled game terrain samples `positionWorld`, because wetness is tied
+to a world water height. Open-water surfaces likewise sample world XZ so near
+tiles and far ocean quads share wave phase.
 
 Choose coordinates from the cause:
 
@@ -42,9 +42,9 @@ water/wetness -> shared world plane
 tree growth -> branch-local longitudinal and radial coordinates
 ```
 
-## planet-space implementation sphere fields
+## Planetary sphere fields
 
-The planet material performs tangential warp:
+A planet-scale material performs tangential warp:
 
 ```text
 warp = three seeded noise channels - 0.5
@@ -74,7 +74,10 @@ crater-like: 3 octaves, pow(1 - noise, 3.2)
 This mismatch is an observed defect, not a recommended pattern. The material
 mixes only `8%` actual geometry displacement into shader macro height. A new
 implementation should share one deterministic field or validate CPU/GPU parity
-at fixed sphere directions.
+at fixed sphere directions. The `procedural-planet-surface` example under
+`$threejs-procedural-planets` demonstrates the shared-field form: one
+deterministic `sharedTerrain` stack evaluated identically for CPU displacement
+and GLSL shading.
 
 Derived climate causes in this field stack:
 
@@ -98,7 +101,7 @@ specific color palette.
 
 ## Altitude filtering
 
-planet-space implementation computes:
+The same planetary material computes:
 
 ```text
 cameraAltitude = max(distance(camera, center) - radius, 0)
@@ -116,9 +119,9 @@ midWeight = clamp(1 - nearWeight - farWeight, 0, 1)
 These weights attenuate bump, coastline sharpness, wave detail, clearcoat, and
 micro material variation. The frequencies remain stable; contribution fades.
 
-## pooled VFX system terrain coupling
+## Wetness-coupled game terrain
 
-The pooled VFX system terrain material uses three world-space noise bands:
+A stylized game terrain material uses three world-space noise bands:
 
 ```text
 noise1: position * (0.2, 1, 0.2), amplitude 0.05, bias 0.2
@@ -142,13 +145,14 @@ wetness = smoothstep(-1, -7, positionWorld.y) * noise1 * 3.5
 roughness -= wetness
 ```
 
-The reversed-looking edges are intentional GLSL `smoothstep` usage in the
-source but are undefined by the GLSL specification when `edge0 > edge1`.
-Rewrite as `1 - smoothstep(-7, -1, y)` for portable behavior.
+The reversed-looking edges are intentional, but GLSL leaves `smoothstep`
+undefined when `edge0 > edge1`. Write it as `1 - smoothstep(-7, -1, y)` for
+portable behavior.
 
-## atlas-based renderer water field coupling
+## Shared-phase water fields
 
-atlas-based renderer evaluates six directional wave bands in one function and returns:
+An open-water field bundle evaluates six directional wave bands in one
+function and returns:
 
 ```text
 RGB = analytic normal from summed gradients
@@ -169,14 +173,18 @@ Amplitudes relative to the base:
 
 The three smallest bands are attenuated from screen derivatives using their
 wavenumbers. Foam consumes the returned crest metric; it does not sample an
-unrelated scrolling mask.
+unrelated scrolling mask. The `analytic-wave-optics` example under
+`$threejs-water-optics` applies the same contract: `resolvedNormalAndCrest()`
+returns the resolved normal and crest from one evaluation and attenuates its
+three smallest bands by their derivative footprint.
 
 ## Structured stochastic placement
 
-`branch-growth implementation` demonstrates a different kind of field: constrained discrete
-placement. Child branches use stratified longitudinal slots and independently
-permuted angular slots. Randomness selects within valid slots rather than
-choosing every position freely.
+The `structured-ash-growth` example under `$threejs-procedural-vegetation`
+demonstrates a different kind of field: constrained discrete placement. Child
+branches use stratified longitudinal slots and independently permuted angular
+slots. Randomness selects within valid slots rather than choosing every
+position freely.
 
 That same mechanism applies to:
 

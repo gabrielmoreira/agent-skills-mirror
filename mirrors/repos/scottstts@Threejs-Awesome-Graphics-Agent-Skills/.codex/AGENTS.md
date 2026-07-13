@@ -33,7 +33,7 @@ Since this skill pack targets awesome 3D graphics in three.js, visual inspection
 
 After you have confirmed the skills are extracted correctly, do a final audit on the skill pack in terms of skill usability, things like if there are semantic ambiguity, does router work as expected, any expressions that might confuse the agent using this skill pack -- things that are "Agent Skills" related and not necessarily three.js related. Note: this part you need to check yourself (because they are semantic checks not functional checks), it's not something you check with deterministic tests, so don't try to write test scripts for this
 
-When you finish, the entire skill pack should be publish ready (1. content correctly extracted based on the ref projects, 2. skill usability audit pass, and 3. package publishing readiness check)
+When you finish, the entire skill pack should be publish ready (publish-ready check should NOT run package version update) (1. content correctly extracted based on the ref projects, 2. skill usability audit pass, and 3. package publishing readiness check)
 
 ## Complete Dev Process
 
@@ -45,7 +45,7 @@ When you finish, the entire skill pack should be publish ready (1. content corre
 6. confirm exact implemetations/assets have been copied to the dev shim and skills (must be exact, unless told otherwise). **Important:** when i say "copy", I do NOT mean just copy paste, I mean be faithful to the original ref project implementation, but the code should still be translated into what skill examples and dev shim expects, this is your responsibility. Do NOT just copy built minified js code from ref project into the skills! Always use the source code!
 7. confirm visually that example and ref projects are the same (unnecessary objects can be omitted--an example about grass, you can omit accompanying trees in the scene; an example about ocean, you cannot omit correct lighting or ocean bed texture). NOT close, NOT approximately the same, MUST be the same. here you MUST actually compare the visual between them (run dev)
 8. confirm agent skill overall usability check passes
-9. confirm package is publish-ready
+9. confirm package is publish-ready (not including package version update)
 10. then finish. NONE of the steps above are skippable and all must pass
 
 ## Rules
@@ -63,3 +63,33 @@ When you finish, the entire skill pack should be publish ready (1. content corre
 - all captures must be under either .playwright-mcp/ or .example-captures/
 - visual inspection when finished should be terminated immediately, do NOT leave browser tabs with a render scene running (both in-app browser tab or external tab using playwright)
 - After every context compaction, re-read this file in full before continuing work. A compacted summary must explicitly remind the next agent to do so.
+- skill example dir structure: for complex ref project where the source code is a big system (such as `lut-aerial-perspective` example, you should follow the convention of having a `source/` dir for the entire source code system, and a js file to re-exports them, and dev shim will transpiles those originals). This is only for when ref project effect system is too big (and better left modular). If it can be a few distilled js files, independent js files are preferred, like the majority of skill examples
+
+## SKILL.md & references/ Authoring Conventions
+
+These apply to every SKILL.md and every md under references/.
+
+### Standalone voice — single source of truth
+
+- The pack is self-authored. A consuming agent must never learn, or be able to infer, that any skill came from somewhere else. No mention of ref projects, "original" implementations, upstream code, sources, hosts, or any system outside skills/. The skill, its references, and its examples/assets are the only reality.
+- Present knowledge as the skill's own contracts and recipes — definitional or imperative ("the planetary material performs tangential warp: …", "preallocate a fixed sprite pool") — never as a description of someone else's system.
+- Banned attribution vocabulary anywhere under skills/: ref project, source(s), original, upstream, distilled, extracted, copied, reviewed, bundled, "host integration". Write as if the leak-check regex didn't exist; it is a backstop, not the standard. Sole exception: THIRD_PARTY_LICENSES.md files under assets/ carry legally required attribution and stay minimal.
+- No placeholder codenames standing in for scrubbed project names. If a sentence only parses with a project name in it, rewrite the sentence.
+- If a described system IS an example, name the example (e.g., "the `analytic-wave-optics` example"); every constant and formula in that section must match the example code exactly.
+- When a reference documents a mechanism variant whose constants differ from an example, present both as the skill's own tiers/variants and state which one each example implements. A reader must never mistake one variant's constants for another's.
+- Defect and hazard notes are written as properties of this contract or as failure patterns to avoid ("a split CPU/GPU field stack is a defect; share one field"), never as history ("the original had this bug"). Verify every defect/limitation claim against the shipped example code before writing it.
+
+### references/ structure
+
+- `## Contents` must mirror the actual section headings verbatim and in order, one entry per section. Update it in the same edit as any heading change.
+- Constants are exact and unit-bearing. Formulas are either exact or explicitly labeled as a paraphrase. Never silently drop factors (a missing 2π is a wrong formula, not a simplification).
+- Keep the standing skeleton: mechanism sections → observed limits/defects → diagnostics (plus a failure-diagnosis section where the skill warrants it).
+- A reference intro must not claim coverage it doesn't contain; if a sibling example owns a subsystem, point to that example instead.
+
+### SKILL.md
+
+- Every example link carries a one-line purpose clause ("read X for A, B, C") whose claims are verifiable in that file.
+- The frontmatter `Use for` triggers, the router-table row, and the routing fixture signals in source_materials/agent-routing-cases.json are one unit — maintain them together in the same change.
+- A new skill that overlaps an existing one gets reciprocal `$skill` mentions in both Routing boundary sections plus a boundary entry in the routing fixtures.
+- Cross-skill pointers are encouraged when a mechanism's canonical implementation lives in another skill's example — route to it (`$skill` + example name) instead of re-describing it.
+- Use standard graphics vocabulary only (object-space/world-space/screen-space, etc.). No invented or ambiguous terms.

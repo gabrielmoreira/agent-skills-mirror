@@ -1,6 +1,6 @@
 # Workflow: Local Research
 
-Use when the running repo, local checkout, local artifact, or installed dependency is source of truth.
+Use when the running repo, local checkout, or installed dependency is source of truth.
 Read `algorithm.md` first; read `octocode.md` only when tool or CLI syntax is unclear.
 
 ```text
@@ -17,3 +17,5 @@ Local-first defaults:
 - For edits, find a local pattern first, patch the smallest scope, then run the targeted verification.
 
 Use external surfaces only when they answer something local cannot: upstream intent, fixes in newer versions, PR/commit history, source repo tests, or ecosystem alternatives — see `workflow-external.md`.
+
+Validate: `node scripts/eval-research.mjs --case local-research`.

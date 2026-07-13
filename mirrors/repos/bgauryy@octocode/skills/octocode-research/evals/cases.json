@@ -311,6 +311,83 @@
       ]
     },
     {
+      "id": "refactor-mode",
+      "mode": "Refactor",
+      "prompt": "Refactor packages/app/src/utils into packages/app/src/lib/utils — move the tree, keep public exports stable, and update all imports.",
+      "minScore": 0.8,
+      "minCitationCount": 2,
+      "required": [
+        {
+          "name": "refactor mode",
+          "pattern": "\\bMode:\\s*Refactor\\b|\\bRefactor mode\\b"
+        },
+        {
+          "name": "skeleton or structure map",
+          "pattern": "\\bskeleton\\b|\\blocalViewStructure\\b|\\bminify:\\s*\"?symbols\"?\\b|\\bstructure\\b"
+        },
+        {
+          "name": "contracts or invariants",
+          "pattern": "\\bcontracts?\\b|\\binvariants?\\b|\\bpublic exports?\\b|\\bAPI\\b"
+        },
+        {
+          "name": "blast radius",
+          "pattern": "\\bblast.radius\\b|\\bcallers?\\b|\\breferences?\\b|\\bconsumers?\\b|\\bLSP\\b"
+        },
+        {
+          "name": "bulk move or task plan",
+          "pattern": "\\bmv\\b|\\bbulk\\b|\\btask(?:s| list| ledger)?\\b|\\bbig.?small\\b"
+        },
+        {
+          "name": "verification ran",
+          "pattern": "\\bverif(?:y|ied|ication)\\b[\\s\\S]*\\b(build|test|typecheck|lint|ran|passed|diagnostic)\\b"
+        }
+      ],
+      "binaryQuestions": [
+        {
+          "id": "maps-skeleton-first",
+          "dimension": "method",
+          "question": "Does the answer orient on structure/skeleton before rewriting bodies?",
+          "passPattern": "\\bskeleton\\b|\\blocalViewStructure\\b|\\bminify:\\s*\"?symbols\"?\\b|\\bstructure\\b[\\s\\S]*(?:before|first|orient)",
+          "failureSignature": "mechanism:refactor-mode|cause:no-skeleton-map",
+          "suggestedLesson": "Refactor mode should map skeleton (structure/symbols) before body rewrites or bulk moves."
+        },
+        {
+          "id": "freezes-contracts",
+          "dimension": "method",
+          "question": "Does the answer freeze public contracts/invariants before executing the move?",
+          "passPattern": "\\bcontracts?\\b|\\binvariants?\\b|\\bpublic exports?\\b",
+          "failureSignature": "mechanism:refactor-mode|cause:no-contract-freeze",
+          "suggestedLesson": "List public contracts/invariants before a refactor so behavior and exports stay stable."
+        },
+        {
+          "id": "uses-bulk-moves-when-fit",
+          "dimension": "decision",
+          "question": "Does the answer prefer bulk mv (or an explicit task plan) over one-file rewrite-by-copy for a tree move?",
+          "passPattern": "\\bmv\\b|\\bbulk\\b|\\btask(?:s| list| ledger)?\\b",
+          "failureSignature": "mechanism:refactor-mode|cause:no-bulk-move-plan",
+          "suggestedLesson": "For directory/tree refactors, plan bulk mv plus mechanical path rewrites instead of copy-rewrite loops."
+        },
+        {
+          "id": "verification-actually-ran",
+          "dimension": "evidence",
+          "question": "Does the answer report verification that actually ran after the refactor?",
+          "passPattern": "\\bverif(?:y|ied|ication)\\b[\\s\\S]*\\b(ran|passed|output|result|exit|build|test|typecheck|diagnostic)\\b",
+          "failureSignature": "mechanism:refactor-mode|cause:verification-not-run",
+          "suggestedLesson": "Do not claim a refactor succeeded until verification (test/typecheck/diagnostics) actually ran."
+        }
+      ],
+      "forbidden": [
+        {
+          "name": "success before verification",
+          "pattern": "\\b(?:done|complete|finished|refactored)\\b(?![\\s\\S]*\\bverif)"
+        },
+        {
+          "name": "blind identifier sed",
+          "pattern": "\\bsed\\b[\\s\\S]*\\b(rename symbol|symbol rename|identifier)\\b|\\bblind sed\\b"
+        }
+      ]
+    },
+    {
       "id": "pr-local-review",
       "mode": "Review",
       "prompt": "Review my staged changes before I open a PR.",
@@ -325,7 +402,9 @@
         { "name": "domain priority order", "pattern": "\\bSecurity\\b[\\s\\S]*\\bBug\\b|\\bFlow Impact\\b" },
         { "name": "finding shape", "pattern": "\\bSeverity:\\s*(HIGH|MED|LOW)\\b" },
         { "name": "confidence", "pattern": "\\bConfidence:\\s*(confirmed|likely|uncertain)\\b" },
-        { "name": "file:line location", "pattern": "[A-Za-z0-9_./-]+:\\d+" }
+        { "name": "file:line location", "pattern": "[A-Za-z0-9_./-]+:\\d+" },
+        { "name": "verification status", "pattern": "\\bVerification:\\s*[^\\n]*(passed|failed|not run|not applicable)\\b" },
+        { "name": "recommendation", "pattern": "\\bRecommendation:\\s*(APPROVE|REQUEST_CHANGES|COMMENT)\\b" }
       ],
       "binaryQuestions": [
         {
@@ -351,11 +430,343 @@
           "passPattern": "\\bSeverity:\\s*(HIGH|MED|LOW)\\b[\\s\\S]*\\bConfidence:\\s*(confirmed|likely|uncertain)\\b[\\s\\S]*[A-Za-z0-9_./-]+:\\d+",
           "failureSignature": "mechanism:pr-review|cause:incomplete-finding-shape",
           "suggestedLesson": "Every review finding needs severity, confidence, file:line location, evidence, impact, and a fix — not a bare description."
+        },
+        {
+          "id": "recommendation-reflects-verification",
+          "dimension": "verification",
+          "question": "Does the recommendation reflect whether applicable project verification passed?",
+          "passPattern": "(\\bVerification:\\s*[^\\n]*passed\\b[\\s\\S]*\\bRecommendation:\\s*APPROVE\\b)|(\\bVerification:\\s*[^\\n]*(failed|not run)\\b[\\s\\S]*\\bRecommendation:\\s*(REQUEST_CHANGES|COMMENT)\\b)",
+          "failureSignature": "mechanism:pr-review|cause:ungated-approval",
+          "suggestedLesson": "APPROVE requires applicable project checks to pass; otherwise use COMMENT or REQUEST_CHANGES and name the verification gap."
         }
       ],
       "forbidden": [
         { "name": "hash finding labels", "pattern": "\\[?#\\d+\\]?\\s*(title|finding|issue)" },
         { "name": "scope creep beyond staged", "pattern": "\\breviewed the (?:entire|whole|full) repo\\b" }
+      ]
+    },
+    {
+      "id": "campaign-combination",
+      "mode": "Investigate",
+      "prompt": "Our retry helper may have diverged from the upstream library we vendored it from. Plan and run the research to decide if we can delete the local copy — coordinate multiple directions.",
+      "minScore": 0.8,
+      "minCitationCount": 2,
+      "required": [
+        { "name": "mode", "pattern": "\\bMode:\\s*Investigate\\b" },
+        { "name": "environment or surfaces", "pattern": "\\bactive surfaces\\b|\\bauth status\\b|\\blsp-server status\\b|\\bENABLE_" },
+        { "name": "subagent directions", "pattern": "\\bsubagents?\\b|fan.?out|parallel[\\s\\S]{0,20}direction|\\bdirections\\b" },
+        { "name": "combination bridge", "pattern": "\\bmateriali|\\bcombination\\b|\\bbridge\\b" },
+        { "name": "cross-lane validation", "pattern": "\\bcross-check\\b|\\bre-verif" },
+        { "name": "measure or stop", "pattern": "\\bstop test\\b|\\bconverge\\b|\\bhypothes" },
+        { "name": "exact evidence", "pattern": "[A-Za-z0-9_./-]+:\\d+" },
+        { "name": "confidence", "pattern": "\\bConfidence:\\s*(confirmed|likely|uncertain)\\b" },
+        { "name": "next action", "pattern": "\\bNext:" }
+      ],
+      "binaryQuestions": [
+        {
+          "id": "fans-out-directions",
+          "dimension": "method",
+          "question": "Does the answer fan out parallel subagent directions (or lanes) for a broad/contested question instead of one serial chain?",
+          "passPattern": "\\bsubagents?\\b|fan.?out|parallel[\\s\\S]{0,20}direction",
+          "failPattern": "\\bserial(?:ly)?\\b[\\s\\S]{0,20}\\bsingle\\b",
+          "failureSignature": "mechanism:research-campaign|cause:no-fan-out",
+          "suggestedLesson": "Broad or contested questions should fan out parallel directions or lanes, not run one serial chain."
+        },
+        {
+          "id": "validates-workers",
+          "dimension": "evidence",
+          "question": "Does the answer re-verify each worker's key anchor and treat cross-direction disagreement as the finding?",
+          "passPattern": "\\bre-verif|\\bcross-check\\b|\\bconflict(?:ed|ing)?\\b[\\s\\S]{0,40}\\bfinding\\b",
+          "failPattern": "\\btrust(?:ed|s)?\\b[\\s\\S]{0,20}\\b(?:worker|subagent)s?\\b[\\s\\S]{0,20}\\bwithout\\b",
+          "failureSignature": "mechanism:research-campaign|cause:unvalidated-worker-output",
+          "suggestedLesson": "A subagent's returned anchor is a lead until re-verified; a conflict between directions is the finding, not noise."
+        },
+        {
+          "id": "measures-by-claims",
+          "dimension": "decision",
+          "question": "Does the answer measure progress by claims resolved and set an explicit stop test rather than counting calls?",
+          "passPattern": "\\bclaims resolved\\b|\\bstop test\\b|\\bconverge",
+          "failureSignature": "mechanism:research-campaign|cause:activity-over-outcome",
+          "suggestedLesson": "Measure research by claims resolved and a stated stop test, not by the number of calls made."
+        }
+      ],
+      "forbidden": [
+        { "name": "empty means absence", "pattern": "\\bempty result means absence\\b|\\bzero matches prove absence\\b" },
+        { "name": "blanket delete without proof", "pattern": "\\bsafe to delete all\\b" }
+      ]
+    },
+    {
+      "id": "local-research",
+      "mode": "Investigate",
+      "prompt": "Where is formatDate defined in this checkout, who calls it, and is the node_modules copy of date-fns the version that actually runs?",
+      "minScore": 0.8,
+      "minCitationCount": 2,
+      "required": [
+        { "name": "mode", "pattern": "\\bMode:\\s*Investigate\\b|\\bInvestigate mode\\b" },
+        { "name": "local surfaces", "pattern": "\\blocalViewStructure\\b|\\blocalFindFiles\\b|\\blocalSearchCode\\b|\\bactive surfaces\\b[\\s\\S]*\\blocal\\b" },
+        { "name": "node_modules before github", "pattern": "\\bnode_modules\\b" },
+        { "name": "exact evidence", "pattern": "[A-Za-z0-9_./-]+:\\d+" },
+        { "name": "lsp or structural", "pattern": "\\bLSP\\b|\\blspGetSemantics\\b|\\bstructural\\b|\\bdocumentSymbols\\b|\\breferences\\b|\\bcallers?\\b" },
+        { "name": "confidence", "pattern": "\\bConfidence:\\s*(confirmed|likely|uncertain)\\b" },
+        { "name": "next action", "pattern": "\\bNext:" }
+      ],
+      "binaryQuestions": [
+        {
+          "id": "orients-local-first",
+          "dimension": "method",
+          "question": "Does the answer start with local tree/find/search before any GitHub call?",
+          "passPattern": "\\b(localViewStructure|localFindFiles|localSearchCode)\\b[\\s\\S]*\\b(exact|LSP|references|callers?)\\b",
+          "failPattern": "\\bghSearch|\\bghViewRepo|\\bGitHub first\\b",
+          "failureSignature": "mechanism:local-research|cause:skipped-local-spine",
+          "suggestedLesson": "Local research should run localViewStructure/localFindFiles → localSearchCode → exact/LSP before leaving the checkout."
+        },
+        {
+          "id": "prefers-installed-package",
+          "dimension": "evidence",
+          "question": "Does the answer inspect node_modules (the running version) before trusting GitHub for package behavior?",
+          "passPattern": "\\bnode_modules\\b",
+          "failureSignature": "mechanism:local-research|cause:github-before-installed",
+          "suggestedLesson": "For package behavior, inspect node_modules/<pkg> before GitHub — it is the version that runs."
+        },
+        {
+          "id": "diffs-text-vs-lsp",
+          "dimension": "evidence",
+          "question": "Does the answer use LSP/structural identity (or explicitly diff lexical hits vs LSP) for callers/impact?",
+          "passPattern": "\\bLSP\\b|\\blspGetSemantics\\b|\\bstructural\\b|\\breferences\\b|\\bcallers?\\b",
+          "failureSignature": "mechanism:local-research|cause:lexical-only-impact",
+          "suggestedLesson": "Diff broad text hits against LSP before claiming unused/only/safe on local code."
+        }
+      ],
+      "forbidden": [
+        { "name": "empty means absence", "pattern": "\\bempty result means absence\\b|\\bzero matches prove absence\\b" },
+        { "name": "github-only package proof", "pattern": "\\bGitHub alone proves the installed version\\b" }
+      ]
+    },
+    {
+      "id": "external-research",
+      "mode": "Investigate",
+      "prompt": "How does vitejs/vite wire createServer in the published repo, and what recent PR touched the CLI entry?",
+      "minScore": 0.8,
+      "minCitationCount": 2,
+      "required": [
+        { "name": "mode", "pattern": "\\bMode:\\s*Investigate\\b|\\bInvestigate mode\\b" },
+        { "name": "discovery", "pattern": "\\bnpmSearch\\b|\\bghSearchRepos\\b|\\bghViewRepoStructure\\b" },
+        { "name": "code or exact", "pattern": "\\bghSearchCode\\b|\\bghGetFileContent\\b|\\bexact(?:-read| read)\\b|[A-Za-z0-9_./-]+:\\d+" },
+        { "name": "history", "pattern": "\\bghHistoryResearch\\b|\\bPR\\b|\\bcommit\\b" },
+        { "name": "resolved branch", "pattern": "\\bresolvedBranch\\b|\\bdefault branch\\b|\\bmain\\b|\\bcanary\\b|\\bmaster\\b" },
+        { "name": "confidence", "pattern": "\\bConfidence:\\s*(confirmed|likely|uncertain)\\b" },
+        { "name": "next action", "pattern": "\\bNext:" }
+      ],
+      "binaryQuestions": [
+        {
+          "id": "follows-external-spine",
+          "dimension": "method",
+          "question": "Does the answer follow discovery → structure → code/exact → history (not jump straight to a guessed path)?",
+          "passPattern": "(\\bnpmSearch\\b|\\bghSearchRepos\\b|\\bghViewRepoStructure\\b)[\\s\\S]*(\\bghSearchCode\\b|\\bghGetFileContent\\b|exact)[\\s\\S]*(\\bghHistoryResearch\\b|\\bPR\\b|\\bcommit\\b)",
+          "failureSignature": "mechanism:external-research|cause:skipped-external-spine",
+          "suggestedLesson": "External research should run npmSearch/ghSearchRepos → ghViewRepoStructure → ghSearchCode/ghGetFileContent → ghHistoryResearch."
+        },
+        {
+          "id": "treats-empty-as-provider",
+          "dimension": "evidence",
+          "question": "Does the answer treat GitHub search zeros as provider evidence (not absence) and mention verify/materialize?",
+          "passPattern": "\\bprovider\\b|\\bunindexed\\b|\\bmateriali|\\bnot absence\\b|\\bverify path\\b|\\bblind spot\\b",
+          "failureSignature": "mechanism:external-research|cause:empty-as-absence",
+          "suggestedLesson": "GitHub search zeros are provider evidence, not absence — verify path/ref, then materialize before strong negative claims."
+        },
+        {
+          "id": "cites-resolved-ref",
+          "dimension": "evidence",
+          "question": "Does the answer track the resolved branch/ref that was actually read?",
+          "passPattern": "\\bresolvedBranch\\b|\\bdefault branch\\b|\\bon (main|master|canary)\\b",
+          "failureSignature": "mechanism:external-research|cause:no-resolved-ref",
+          "suggestedLesson": "Cite resolvedBranch/ref; a fallback branch changes what was actually researched."
+        }
+      ],
+      "forbidden": [
+        { "name": "empty means absence", "pattern": "\\bempty result means absence\\b|\\bzero matches prove absence\\b" }
+      ]
+    },
+    {
+      "id": "loop-mode",
+      "mode": "Loop",
+      "prompt": "Keep going until you can confirm whether export helpers is dead code — evidence keeps flipping between text hits and LSP.",
+      "minScore": 0.8,
+      "minCitationCount": 2,
+      "required": [
+        { "name": "loop mode", "pattern": "\\bMode:\\s*Loop\\b|\\bLoop mode\\b" },
+        { "name": "act observe learn", "pattern": "\\bAct\\b[\\s\\S]*\\bObserve\\b|\\bAct→Observe→Learn\\b|\\biteration\\b" },
+        { "name": "ledger or hypotheses", "pattern": "\\bledger\\b|\\bhypothes(?:is|es)\\b|\\balternate\\b" },
+        { "name": "stop test", "pattern": "\\bstop test\\b|\\bconverge\\b|\\bbudget\\b" },
+        { "name": "loop trace", "pattern": "\\bLoop trace\\b|\\bdecisive iteration" },
+        { "name": "exact evidence", "pattern": "[A-Za-z0-9_./-]+:\\d+" },
+        { "name": "confidence", "pattern": "\\bConfidence:\\s*(confirmed|likely|uncertain)\\b" },
+        { "name": "next or gaps", "pattern": "\\bNext:|\\bOpen gaps\\b" }
+      ],
+      "binaryQuestions": [
+        {
+          "id": "iterates-cheap-first",
+          "dimension": "method",
+          "question": "Does the answer show cheap discovery iterations before expensive exact/LSP/clone steps?",
+          "passPattern": "\\b(discovery|path|concise|symbols)\\b[\\s\\S]*\\b(exact|LSP|clone|AST)\\b|\\bcheap\\b[\\s\\S]*\\b(exact|LSP|clone)\\b",
+          "failureSignature": "mechanism:loop-mode|cause:expensive-first",
+          "suggestedLesson": "Loop mode should Act with the cheapest call that can change the answer; spend exact/LSP/clone only on surviving leads."
+        },
+        {
+          "id": "observes-empty-vs-error",
+          "dimension": "evidence",
+          "question": "Does the answer distinguish empty (ran, no match) from error (broken call) when observing results?",
+          "passPattern": "\\bempty\\b[\\s\\S]*\\berror\\b|\\berror\\b[\\s\\S]*\\bempty\\b|\\bnot absence\\b|\\bstatus\\b",
+          "failureSignature": "mechanism:loop-mode|cause:empty-error-conflated",
+          "suggestedLesson": "Observe status first: empty = adjust one variable; error = fix the call — never read either as settled absence."
+        },
+        {
+          "id": "stops-on-test",
+          "dimension": "decision",
+          "question": "Does the answer state an explicit stop test and end with answer/evidence/loop trace rather than a full transcript?",
+          "passPattern": "(\\bstop test\\b|\\bconverge\\b|\\bbudget\\b)[\\s\\S]*(\\bLoop trace\\b|\\bdecisive iteration)",
+          "failureSignature": "mechanism:loop-mode|cause:no-stop-test",
+          "suggestedLesson": "Stop when the framed question is answered, the alternate is killed, or the budget is hit — report Loop trace of decisive iterations only."
+        }
+      ],
+      "forbidden": [
+        { "name": "empty means absence", "pattern": "\\bempty result means absence\\b|\\bzero matches prove absence\\b" },
+        { "name": "full transcript dump", "pattern": "\\bfull transcript\\b|\\bevery tool call listed\\b" }
+      ]
+    },
+    {
+      "id": "ambiguous-problem-classification",
+      "mode": "Investigate",
+      "prompt": "Fix this bug: the export API rejects a new output format requested by one customer.",
+      "minScore": 0.8,
+      "minCitationCount": 1,
+      "required": [
+        { "name": "problem contract", "pattern": "\\bProblem contract\\b|\\bactual\\b[\\s\\S]*\\b(expected|desired)\\b[\\s\\S]*\\bauthority\\b" },
+        { "name": "unknown classification", "pattern": "\\bClass(?:ification)?:\\s*unknown\\b|\\bclass remains unknown\\b" },
+        { "name": "authority check", "pattern": "\\b(spec|test|schema|documented support|accepted criterion|authority)\\b" },
+        { "name": "cheapest classification check", "pattern": "\\bcheapest check\\b|\\bNext:\\b" },
+        { "name": "exact evidence", "pattern": "[A-Za-z0-9_./-]+:\\d+" },
+        { "name": "confidence", "pattern": "\\bConfidence:\\s*(likely|uncertain)\\b" }
+      ],
+      "binaryQuestions": [
+        {
+          "id": "does-not-trust-user-label",
+          "dimension": "classification",
+          "question": "Does the answer avoid accepting the word bug until a supported contract is evidenced?",
+          "passPattern": "\\b(unknown|not yet a bug|do not label.*bug|supported contract)\\b",
+          "failureSignature": "mechanism:problem-framing|cause:user-label-treated-as-proof",
+          "suggestedLesson": "Classify from actual/expected/authority evidence rather than the user's initial label."
+        },
+        {
+          "id": "distinguishes-feature-gap",
+          "dimension": "decision",
+          "question": "Does the answer explain that an unpromised new format is a feature rather than a defect?",
+          "passPattern": "\\b(new|unpromised|not supported)\\b[\\s\\S]*\\bfeature\\b|\\bfeature\\b[\\s\\S]*\\b(new|unpromised|not supported)\\b",
+          "failureSignature": "mechanism:problem-framing|cause:feature-debugged-as-defect",
+          "suggestedLesson": "A desired capability outside the supported contract is a feature gap, not a root-cause bug."
+        },
+        {
+          "id": "asks-one-decisive-check",
+          "dimension": "efficiency",
+          "question": "Does the answer name one cheap fact that will resolve the classification?",
+          "passPattern": "\\bcheapest check\\b|\\bNext:\\b[\\s\\S]*(spec|schema|test|support|contract)",
+          "failureSignature": "mechanism:problem-framing|cause:no-decisive-next-check",
+          "suggestedLesson": "Unknown classification should end with the cheapest authority or behavior check that resolves it."
+        }
+      ],
+      "forbidden": [
+        { "name": "invented root cause", "pattern": "\\bRoot cause:\\s*(the code|missing implementation|unsupported format)\\b" },
+        { "name": "premature confirmed bug", "pattern": "\\bClass(?:ification)?:\\s*bug\\b[\\s\\S]*\\bConfidence:\\s*confirmed\\b" }
+      ]
+    },
+    {
+      "id": "feature-framing",
+      "mode": "Plan",
+      "prompt": "Add streaming JSON output to the CLI while keeping current output stable.",
+      "minScore": 0.8,
+      "minCitationCount": 1,
+      "required": [
+        { "name": "feature classification", "pattern": "\\bClass(?:ification)?:\\s*feature\\b|\\btask class:\\s*feature\\b" },
+        { "name": "capability gap", "pattern": "\\bcapability gap\\b|\\bnew contract\\b" },
+        { "name": "consumers and compatibility", "pattern": "\\bconsumers?\\b[\\s\\S]*\\bcompatib|\\bcompatib[\\s\\S]*\\bconsumers?\\b" },
+        { "name": "acceptance criteria", "pattern": "\\bacceptance (?:criteria|tests?)\\b" },
+        { "name": "exact evidence", "pattern": "[A-Za-z0-9_./-]+:\\d+" },
+        { "name": "next action", "pattern": "\\bNext:\\b" }
+      ],
+      "binaryQuestions": [
+        {
+          "id": "does-not-invent-root-cause",
+          "dimension": "classification",
+          "question": "Does the answer frame the request as a new capability without inventing a defect mechanism?",
+          "passPattern": "\\b(feature|new contract|capability gap)\\b",
+          "failPattern": "\\bRoot cause:\\b",
+          "failureSignature": "mechanism:feature-framing|cause:fictional-root-cause",
+          "suggestedLesson": "Features need rationale and gap analysis, not a fictional root cause."
+        },
+        {
+          "id": "defines-observable-acceptance",
+          "dimension": "decision",
+          "question": "Does the answer define observable acceptance behavior for new and existing consumers?",
+          "passPattern": "\\bacceptance (?:criteria|tests?)\\b[\\s\\S]*(stream|existing|legacy|current)",
+          "failureSignature": "mechanism:feature-framing|cause:no-observable-acceptance",
+          "suggestedLesson": "Turn feature intent into observable acceptance tests before implementation."
+        },
+        {
+          "id": "checks-smallest-owner",
+          "dimension": "method",
+          "question": "Does the answer identify the smallest boundary that can own the new contract?",
+          "passPattern": "\\bsmallest (?:boundary|owner|scope|patch)\\b|\\bpatch boundary\\b",
+          "failureSignature": "mechanism:feature-framing|cause:no-contract-owner",
+          "suggestedLesson": "Map consumers and choose the smallest boundary that can own the feature contract."
+        }
+      ],
+      "forbidden": [
+        { "name": "feature called bug", "pattern": "\\bClass(?:ification)?:\\s*bug\\b" }
+      ]
+    },
+    {
+      "id": "enhancement-framing",
+      "mode": "Plan",
+      "prompt": "Enhance local code search so it feels much faster without changing results.",
+      "minScore": 0.8,
+      "minCitationCount": 1,
+      "required": [
+        { "name": "enhancement classification", "pattern": "\\bClass(?:ification)?:\\s*enhancement\\b|\\btask class:\\s*enhancement\\b" },
+        { "name": "baseline", "pattern": "\\bbaseline\\b" },
+        { "name": "measurable target", "pattern": "\\btarget\\b[\\s\\S]*(latency|p\\d+|milliseconds|percent|%)|\\b(latency|p\\d+|milliseconds|percent|%)\\b[\\s\\S]*\\btarget\\b" },
+        { "name": "bottleneck or hypothesis", "pattern": "\\bbottleneck\\b|\\bhypothes(?:is|es)\\b" },
+        { "name": "experiment", "pattern": "\\bexperiment\\b|\\bbenchmark\\b" },
+        { "name": "regression guard", "pattern": "\\bregression (?:guard|check|test)\\b|\\bresult parity\\b" },
+        { "name": "exact evidence", "pattern": "[A-Za-z0-9_./-]+:\\d+" }
+      ],
+      "binaryQuestions": [
+        {
+          "id": "refuses-vague-faster",
+          "dimension": "classification",
+          "question": "Does the answer replace 'feels faster' with a measured baseline and target?",
+          "passPattern": "\\bbaseline\\b[\\s\\S]*\\btarget\\b",
+          "failureSignature": "mechanism:enhancement-framing|cause:unmeasurable-quality-goal",
+          "suggestedLesson": "An enhancement needs a baseline and measurable target before choosing a fix."
+        },
+        {
+          "id": "tests-bottleneck",
+          "dimension": "method",
+          "question": "Does the answer propose an experiment that can confirm or reject the suspected bottleneck?",
+          "passPattern": "\\b(bottleneck|hypothes(?:is|es))\\b[\\s\\S]*\\b(experiment|benchmark|profile)\\b",
+          "failureSignature": "mechanism:enhancement-framing|cause:optimization-without-bottleneck-proof",
+          "suggestedLesson": "Profile or benchmark the suspected bottleneck before optimizing."
+        },
+        {
+          "id": "preserves-existing-contract",
+          "dimension": "verification",
+          "question": "Does the answer protect result parity while measuring performance?",
+          "passPattern": "\\b(result parity|same results|existing contract|regression (?:guard|check|test))\\b",
+          "failureSignature": "mechanism:enhancement-framing|cause:no-regression-guard",
+          "suggestedLesson": "Performance enhancements must verify the target and preserve existing result contracts."
+        }
+      ],
+      "forbidden": [
+        { "name": "optimization before baseline", "pattern": "\\bimplement(?:ed)? optimization\\b(?![\\s\\S]*\\bbaseline\\b)" }
       ]
     }
   ]

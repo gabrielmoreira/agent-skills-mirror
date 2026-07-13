@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `MadsLorentzen/ai-job-search` — 26 default patterns, 0 followed patterns, 76 file(s) materialized.
+Mirror of `MadsLorentzen/ai-job-search` — 26 default patterns, 0 followed patterns, 78 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MadsLorentzen/ai-job-search` — 26 default patterns, 0 followed patt
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 76 |
+| Files         | 78 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -115,26 +115,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 54 | ✓ | [`.agents/skills/jobnet-search/cli/src/commands/search.ts`](.agents/skills/jobnet-search/cli/src/commands/search.ts) |
 | 55 | ✓ | [`.agents/skills/jobnet-search/cli/src/commands/suggestions.ts`](.agents/skills/jobnet-search/cli/src/commands/suggestions.ts) |
 | 56 | ✓ | [`.agents/skills/jobnet-search/cli/src/helpers.ts`](.agents/skills/jobnet-search/cli/src/helpers.ts) |
-| 57 | ✓ | [`.agents/skills/jobnet-search/cli/tests/helpers.ts`](.agents/skills/jobnet-search/cli/tests/helpers.ts) |
-| 58 | ✓ | [`.agents/skills/jobnet-search/cli/tsconfig.json`](.agents/skills/jobnet-search/cli/tsconfig.json) |
-| 59 | ✓ | [`.agents/skills/jobnet-search/SKILL.md`](.agents/skills/jobnet-search/SKILL.md) |
-| 60 | ✓ | [`.agents/skills/linkedin-search/cli/package.json`](.agents/skills/linkedin-search/cli/package.json) |
-| 61 | ✓ | [`.agents/skills/linkedin-search/cli/README.md`](.agents/skills/linkedin-search/cli/README.md) |
-| 62 | ✓ | [`.agents/skills/linkedin-search/cli/src/cli.ts`](.agents/skills/linkedin-search/cli/src/cli.ts) |
-| 63 | ✓ | [`.agents/skills/linkedin-search/cli/src/commands/detail.ts`](.agents/skills/linkedin-search/cli/src/commands/detail.ts) |
-| 64 | ✓ | [`.agents/skills/linkedin-search/cli/src/commands/search.ts`](.agents/skills/linkedin-search/cli/src/commands/search.ts) |
-| 65 | ✓ | [`.agents/skills/linkedin-search/cli/src/helpers.ts`](.agents/skills/linkedin-search/cli/src/helpers.ts) |
-| 66 | ✓ | [`.agents/skills/linkedin-search/cli/tests/cli-flag-validation.test.ts`](.agents/skills/linkedin-search/cli/tests/cli-flag-validation.test.ts) |
-| 67 | ✓ | [`.agents/skills/linkedin-search/cli/tests/helpers.ts`](.agents/skills/linkedin-search/cli/tests/helpers.ts) |
-| 68 | ✓ | [`.agents/skills/linkedin-search/cli/tests/parsing.test.ts`](.agents/skills/linkedin-search/cli/tests/parsing.test.ts) |
-| 69 | ✓ | [`.agents/skills/linkedin-search/cli/tests/search.test.ts`](.agents/skills/linkedin-search/cli/tests/search.test.ts) |
-| 70 | ✓ | [`.agents/skills/linkedin-search/cli/tsconfig.json`](.agents/skills/linkedin-search/cli/tsconfig.json) |
-| 71 | ✓ | [`.agents/skills/linkedin-search/SKILL.md`](.agents/skills/linkedin-search/SKILL.md) |
-| 72 | ✓ | [`.agents/skills/linkedin-search/url-reference.md`](.agents/skills/linkedin-search/url-reference.md) |
-| 73 | ✓ | [`.claude/skills/job-application-assistant/SKILL.md`](.claude/skills/job-application-assistant/SKILL.md) |
-| 74 | ✓ | [`.claude/skills/job-scraper/SKILL.md`](.claude/skills/job-scraper/SKILL.md) |
-| 75 | ✓ | [`.claude/skills/upskill/SKILL.md`](.claude/skills/upskill/SKILL.md) |
-| 76 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 57 | ✓ | [`.agents/skills/jobnet-search/cli/tests/detail-formatting.test.ts`](.agents/skills/jobnet-search/cli/tests/detail-formatting.test.ts) |
+| 58 | ✓ | [`.agents/skills/jobnet-search/cli/tests/helpers.ts`](.agents/skills/jobnet-search/cli/tests/helpers.ts) |
+| 59 | ✓ | [`.agents/skills/jobnet-search/cli/tests/search-normalization.test.ts`](.agents/skills/jobnet-search/cli/tests/search-normalization.test.ts) |
+| 60 | ✓ | [`.agents/skills/jobnet-search/cli/tsconfig.json`](.agents/skills/jobnet-search/cli/tsconfig.json) |
+| 61 | ✓ | [`.agents/skills/jobnet-search/SKILL.md`](.agents/skills/jobnet-search/SKILL.md) |
+| 62 | ✓ | [`.agents/skills/linkedin-search/cli/package.json`](.agents/skills/linkedin-search/cli/package.json) |
+| 63 | ✓ | [`.agents/skills/linkedin-search/cli/README.md`](.agents/skills/linkedin-search/cli/README.md) |
+| 64 | ✓ | [`.agents/skills/linkedin-search/cli/src/cli.ts`](.agents/skills/linkedin-search/cli/src/cli.ts) |
+| 65 | ✓ | [`.agents/skills/linkedin-search/cli/src/commands/detail.ts`](.agents/skills/linkedin-search/cli/src/commands/detail.ts) |
+| 66 | ✓ | [`.agents/skills/linkedin-search/cli/src/commands/search.ts`](.agents/skills/linkedin-search/cli/src/commands/search.ts) |
+| 67 | ✓ | [`.agents/skills/linkedin-search/cli/src/helpers.ts`](.agents/skills/linkedin-search/cli/src/helpers.ts) |
+| 68 | ✓ | [`.agents/skills/linkedin-search/cli/tests/cli-flag-validation.test.ts`](.agents/skills/linkedin-search/cli/tests/cli-flag-validation.test.ts) |
+| 69 | ✓ | [`.agents/skills/linkedin-search/cli/tests/helpers.ts`](.agents/skills/linkedin-search/cli/tests/helpers.ts) |
+| 70 | ✓ | [`.agents/skills/linkedin-search/cli/tests/parsing.test.ts`](.agents/skills/linkedin-search/cli/tests/parsing.test.ts) |
+| 71 | ✓ | [`.agents/skills/linkedin-search/cli/tests/search.test.ts`](.agents/skills/linkedin-search/cli/tests/search.test.ts) |
+| 72 | ✓ | [`.agents/skills/linkedin-search/cli/tsconfig.json`](.agents/skills/linkedin-search/cli/tsconfig.json) |
+| 73 | ✓ | [`.agents/skills/linkedin-search/SKILL.md`](.agents/skills/linkedin-search/SKILL.md) |
+| 74 | ✓ | [`.agents/skills/linkedin-search/url-reference.md`](.agents/skills/linkedin-search/url-reference.md) |
+| 75 | ✓ | [`.claude/skills/job-application-assistant/SKILL.md`](.claude/skills/job-application-assistant/SKILL.md) |
+| 76 | ✓ | [`.claude/skills/job-scraper/SKILL.md`](.claude/skills/job-scraper/SKILL.md) |
+| 77 | ✓ | [`.claude/skills/upskill/SKILL.md`](.claude/skills/upskill/SKILL.md) |
+| 78 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

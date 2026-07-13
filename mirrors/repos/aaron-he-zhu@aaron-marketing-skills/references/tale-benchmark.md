@@ -1,6 +1,6 @@
 # TALE Benchmark — Narrative and Messaging Evaluation Standard
 
-TALE governs the L1 narrative system through **Truth · Architecture · Landing · Evidence**. v17 reports three distinct reads: whether the narrative is defensible, whether the message system is coherent across surfaces, and whether effectiveness is actually observed. A coherent story cannot compensate for a false claim, and a truthful canon cannot be declared effective without outcome evidence.
+TALE governs the L1 narrative system through **Truth · Architecture · Landing · Evidence**. v18 reports three distinct reads: whether the narrative is defensible, whether the message system is coherent across surfaces, and whether effectiveness is actually observed. A coherent story cannot compensate for a false claim, and a truthful canon cannot be declared effective without outcome evidence.
 
 The framework is advisory. Executable profiles, item policies, context, and vetoes live in [`framework-catalog.json`](framework-catalog.json); shared scoring semantics live in [`scoring-semantics.md`](scoring-semantics.md).
 
@@ -14,7 +14,7 @@ The framework is advisory. Executable profiles, item policies, context, and veto
 | `system` | One canon plus a declared flagship-surface set | A 50% · L 50% | Is the message system coherent and consistently landed? |
 | `effectiveness` | One message experiment or locked observation panel/date | E 100% | What evidence shows the message was understood or changed behavior? |
 
-There is no v17 overall composite. Preserve the three profile results and their dates. A later effectiveness read must link to the exact canon version tested.
+There is no v18 overall composite. Preserve the three profile results and their dates. A later effectiveness read must link to the exact canon version tested.
 
 ## Stable Item Anchors
 

@@ -2333,8 +2333,11 @@ await rpc_call(
 # Tier enum at: result[0][1][4]  — OPAQUE key, not an ordinal rank.
 #   1=Standard/Free, 2=Pro, 4=Plus, 3=Ultra(20TB), 6=Ultra(30TB); 5=Expanded (legacy/
 #   unconfirmed); Enterprise separate. Live-confirmed 1 & 2 (source limits match Google's
-#   published 50 / 300). Ref: https://support.google.com/notebooklm/answer/16213268
+#   published 50 / 300). Full per-tier limits: docs/quota-limits.md
 ```
+
+The full per-tier notebook/source/studio limits these enum values map to are documented in
+[quota-limits.md](quota-limits.md).
 
 ### RPC: SET_USER_SETTINGS (hT54vc)
 

@@ -1,15 +1,15 @@
 # Camera rig and cinematic systems
 
-Use this reference for scale-aware chase, side, orbit, authored-shot, pointer-look, floating-origin, projection, and lifecycle camera systems.
+Use this reference for scale-aware chase, side, orbit, authored-shot, pointer-look, floating-origin, projection, and lifecycle camera systems. It defines two systems: a planetary flight rig (chase, side, and orbit cameras around large bodies) and an authored cinematic shot system.
 
 ## Contents
 
 - Camera contract
-- planet-space implementation ship-scaled chase mount
-- planet-space implementation thrust-lag spring
-- planet-space implementation side and orbit camera
+- Ship-scaled chase mount
+- Thrust-lag spring
+- Side and orbit camera
 - Explicit camera handoffs
-- cinematic implementation shot ownership
+- Cinematic shot ownership
 - Pointer-look and movement constraints
 - Floating origin and background handling
 - Projection and lifecycle ownership
@@ -36,7 +36,7 @@ type CameraDirectionContract = {
 Do not combine modes until each can produce a valid position and quaternion
 independently.
 
-## planet-space implementation ship-scaled chase mount
+## Ship-scaled chase mount
 
 `CameraRigSystem` derives the chase mount from ship length:
 
@@ -66,9 +66,9 @@ local forward convention before retaining it.
 The mount is parented to `ShipRoot`, so its world position/quaternion follows
 the ship without recomputing the authored chase pose.
 
-## planet-space implementation thrust-lag spring
+## Thrust-lag spring
 
-planet-space implementation adds camera distance behind the ship only while manual thrust is
+The chase rig adds camera distance behind the ship only while manual thrust is
 active. Throttle and boost own separate scalar spring states:
 
 ```text
@@ -108,7 +108,7 @@ along negative ship forward after reading the chase mount’s world pose.
 
 This gives acceleration weight without adding camera rotation lag.
 
-## planet-space implementation side and orbit camera
+## Side and orbit camera
 
 Scale-aware offsets after the ship model loads:
 
@@ -189,7 +189,7 @@ coordinate ownership when adapting the rig.
 
 ## Explicit camera handoffs
 
-planet-space implementation captures position and quaternion at transition start. Launch handoff
+The rig captures position and quaternion at transition start. Launch handoff
 begins at progress `0.68`; orbit-exit duration varies from `1.1` to `2.6`
 seconds based on the current side-camera blend.
 
@@ -222,12 +222,12 @@ lambda 18 when pure chase
 At effectively zero blend, copy the chase pose exactly to prevent a permanent
 subpixel tail.
 
-## cinematic implementation shot ownership
+## Cinematic shot ownership
 
-Each cinematic implementation scene owns its shot and projection values, for example:
+Each cinematic scene owns its shot and projection values, for example:
 
 ```text
-Saturn approach:
+gas-giant approach:
   FOV 40
   near 12
   far 360000
@@ -289,21 +289,21 @@ Keys are cleared on:
 
 Scene-specific constraints then run after controls:
 
-- NASA room clamps X/Y/Z with floor, ceiling, and wall clearance.
-- Mann’s Planet clamps camera Y above sampled terrain plus `0.2`.
+- An interior room scene clamps X/Y/Z with floor, ceiling, and wall clearance.
+- A terrain-walk scene clamps camera Y above sampled terrain plus `0.2`.
 - cinematic scenes block movement keys while retaining their authored camera.
 
 Input control and spatial constraint are separate layers.
 
 ## Floating origin and background handling
 
-The Saturn scene first computes a virtual camera pose, stores its orientation
-basis, then:
+The gas-giant approach scene first computes a virtual camera pose, stores its
+orientation basis, then:
 
 ```text
 camera position = origin
-Saturn group position = -virtualCameraPosition
-atmosphere center uniform = Saturn group position
+planet group position = -virtualCameraPosition
+atmosphere center uniform = planet group position
 stars position = camera position
 ```
 
@@ -315,7 +315,7 @@ parallax and prevent them from crossing the far envelope.
 
 ## Projection and lifecycle ownership
 
-planet-space implementation’s global camera uses:
+The flight rig’s global camera uses:
 
 ```text
 FOV 38
@@ -326,7 +326,7 @@ far 3.0e7
 It prewarms pipelines by temporarily aiming at representative bodies, then
 restores both position and quaternion in `finally`.
 
-cinematic implementation’s scene manager:
+The cinematic scene manager:
 
 ```text
 dispose active scene
@@ -342,8 +342,8 @@ This ownership prevents one shot’s lens from leaking into another.
 
 Observed boundaries:
 
-- planet-space implementation’s scalar spring is semi-implicit Euler; clamp `dt` during long frame
-  stalls.
+- The thrust-lag scalar spring is semi-implicit Euler; clamp `dt` during long
+  frame stalls.
 - The chase mount’s final 180-degree correction depends on model conventions.
 - Side-camera local/world ownership is easy to break when adapting the ship
   hierarchy.

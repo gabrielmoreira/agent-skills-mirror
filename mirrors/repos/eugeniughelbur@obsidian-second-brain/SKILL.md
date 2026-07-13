@@ -558,6 +558,7 @@ Steps:
    - **Contradictions agent**: scan Key Decisions and Knowledge/ for claims that conflict or are superseded
    - **Concept gaps agent**: find terms mentioned 3+ times without a dedicated page
    - **Stale claims agent**: flag Knowledge/ notes older than 6 months on fast-moving topics
+   - **Freshness agent**: run `python scripts/freshness_lint.py --path <vault> --json` - enforces `references/freshness-policy.md` (every stored fact must be timeless, dated, or a pointer; fast facts carry an `as of` stamp or link to their home system)
 4. Merge agent results and group by severity:
    - 🔴 Critical: broken links, unfilled template syntax, contradictions
    - 🟡 Warning: duplicates, stale tasks, missing frontmatter, stale claims, concept gaps

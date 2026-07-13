@@ -1,0 +1,4 @@
+interface:
+  display_name: "Parallax Occlusion Mapping"
+  short_description: "Silhouette-aware TSL relief mapping"
+  default_prompt: "Use $threejs-parallax-occlusion-mapping to build a silhouette-aware TSL relief material with self-shadowing and curved-surface support."

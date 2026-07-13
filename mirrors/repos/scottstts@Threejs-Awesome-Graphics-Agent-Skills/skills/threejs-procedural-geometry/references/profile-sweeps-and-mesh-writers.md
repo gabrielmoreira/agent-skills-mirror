@@ -4,20 +4,20 @@ Use this reference for reusable profile sweeps, rail skins and caps, oriented br
 
 ## Contents
 
-- selective gallery pipeline sculpted frame profile
+- Sculpted frame profile
 - Rail mesh emission
 - Semantic dimensions and material fit
 - Tree ring emission
-- production WebGPU pipeline mesh writer
+- Semantic mesh writer
 - Selection and LOD
 - Observed limitations
 - Diagnostics
 
 
-## selective gallery pipeline sculpted frame profile
+## Sculpted frame profile
 
-The frame is not a beveled box. A normalized rail coordinate `t` drives a
-profile assembled from named lobes:
+In the `sculpted-gallery-frame` example, the frame is not a beveled box. A
+normalized rail coordinate `t` drives a profile assembled from named lobes:
 
 ```text
 crown:
@@ -106,7 +106,8 @@ depth must create readable highlights without bloom.
 
 ## Tree ring emission
 
-`branch-growth implementation` emits branches as oriented rings. Every branch section owns:
+The `structured-ash-growth` example under `$threejs-procedural-vegetation`
+emits branches as oriented rings. Every branch section owns:
 
 ```text
 center
@@ -128,9 +129,10 @@ Leaf cards use canopy-oriented normals rather than only card-plane normals,
 showing that generated shading attributes can intentionally differ from
 geometric face normals.
 
-## production WebGPU pipeline mesh writer
+## Semantic mesh writer
 
-The architecture compiler accumulates vertices and indices by
+The `procedural-financial-tower` compiler under
+`$threejs-procedural-architecture` accumulates vertices and indices by
 material slot. Modules emit semantic geometry into a shared writer rather than
 constructing one `Mesh` each.
 
@@ -174,8 +176,8 @@ Derive LOD from the generator:
 
 ## Observed limitations
 
-- selective gallery pipeline computes smooth normals across all connected frame faces. If hard
-  backing edges become visible, duplicate vertices by smoothing group.
+- The gallery frame computes smooth normals across all connected frame faces.
+  If hard backing edges become visible, duplicate vertices by smoothing group.
 - Its profile and segment counts are expensive for many frames. Cache geometry
   by dimension set and add a lower-detail authored profile.
 - The four rails are separate meshes; a larger gallery may need material-based

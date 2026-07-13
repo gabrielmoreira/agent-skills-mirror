@@ -4,12 +4,18 @@ Use this reference for a bounded-cost WebGPU/TSL ambient-visibility pass with ha
 
 ## Contents
 
-1. Gather budget and depth convention
-2. World-radius projection and horizon integration
-3. Bent-normal encoding
-4. Bilateral reconstruction
-5. Indirect-light composite
-6. Implementation defects, adaptation, and diagnostics
+1. Preserve the actual budget
+2. Preserve the depth convention
+3. Preserve world-radius projection
+4. Rotate two horizon slices per pixel
+5. Keep horizon angle and distance falloff separate
+6. Treat the bent direction as an observed heuristic
+7. Own gather rendering state
+8. Upsample with the exact kernel
+9. Apply AO only to reconstructed indirect light
+10. Verify view/world transform semantics
+11. Temporal behavior
+12. Required diagnostics
 
 ## 1. Preserve the actual budget
 

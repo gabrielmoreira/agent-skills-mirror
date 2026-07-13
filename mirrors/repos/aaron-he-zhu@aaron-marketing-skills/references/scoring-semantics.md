@@ -48,14 +48,14 @@ Every observed item cites a source, source date, evidence type, and confidence. 
 
 ## 5. Coverage and Scoring
 
-All applicable items require an observed `pass`, `partial`, or `fail` before a comparable total is emitted. The v17 threshold is therefore **100% applicable evidence coverage**. Incomplete runs remain useful: they return dimension coverage, a best/worst score interval, explicit gaps, `score_state: NOT_SCORED`, and normally `verdict: UNDECIDED`.
+All applicable items require an observed `pass`, `partial`, or `fail` before a comparable total is emitted. The v18 threshold is therefore **100% applicable evidence coverage**. Incomplete runs remain useful: they return dimension coverage, a best/worst score interval, explicit gaps, `score_state: NOT_SCORED`, and normally `verdict: UNDECIDED`.
 
 For a complete run:
 
 1. Item points are averaged exactly within each included dimension and scaled to 0–100. A fractional dimension value is not floored before weighting.
 2. Profile dimension weights are applied with exact decimal arithmetic.
 3. The weighted overall result is floor-rounded once, at the final documented rollup boundary. Score-interval bounds follow the same rule; a displayed dimension value never feeds a rounded value back into the calculation.
-4. Framework-specific rollups, such as C3 CVI, run only after every required component is independently complete and comparable. C3 budget-weighted ACE and equal-weighted ART component means remain exact through the geometric product; only the final CVI is floored.
+4. Named composite scores — such as ROAS RQS, SEND EQS, and STAR SQS — run only after every required dimension is independently complete and comparable. Each is a profile-weighted arithmetic mean of its dimensions under the same floor-once rule above; only the final documented composite value is floored.
 
 The common descriptive bands are Excellent 90–100, Good 75–89, Medium 60–74, Low 40–59, and Poor 0–39. Bands are labels, not empirical outcome probabilities.
 
@@ -92,7 +92,7 @@ python3 "$AARON_SKILLS_ROOT/scripts/rubric-score.py" check-catalog
 python3 "$AARON_SKILLS_ROOT/scripts/rubric-score.py" score path/to/audit-run.json
 ```
 
-For C3, score comparable ACE, ART, and ROI runs with the same goal, campaign `rollup_id`, `assessment_time`, `observed_at`, and catalog version, then pass the complete components to `c3-rollup`. Forecast and actual scopes never mix; a blocked component prevents CVI.
+For STAR, score each creator partnership separately — the creator, their deliverable, and the attributed outcome — under its own goal, `assessment_time`, `observed_at`, and catalog version. A budget-weighted mean of the per-partnership SQS may summarize a multi-creator campaign but never replaces the per-partnership diagnosis. Forecast and actual reads never mix.
 
 Human-readable audit artifacts follow [`audit-artifact.schema.json`](audit-artifact.schema.json) and [`auditor-runbook.md`](auditor-runbook.md). Every durable artifact preserves the scorer's `catalog_version` and complete typed `context`; scalar summaries are not substitutes. Preserve the typed input and scorer output beside the narrative artifact when the host supports files.
 

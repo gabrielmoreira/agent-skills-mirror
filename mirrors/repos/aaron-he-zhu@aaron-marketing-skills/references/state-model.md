@@ -1,6 +1,6 @@
 # State Model
 
-This document defines the v17 project-state architecture. Runtime state is private by default, registry history is event sourced, projections are disposable views, and ordinary skill outputs never become canonical merely because they were saved.
+This document defines the v18 project-state architecture. Runtime state is private by default, registry history is event sourced, projections are disposable views, and ordinary skill outputs never become canonical merely because they were saved.
 
 ## State Classes
 
@@ -30,13 +30,14 @@ The repository tracks only safe templates and guidance under `memory/`. A full c
 5. A proposal has no canonical effect until accepted. Rejecting or accepting never deletes the original event.
 6. JSON projections are installed atomically and can be rebuilt from verified history. Human Markdown is a rendering of the projection.
 7. Stale expected revisions fail. A caller must re-read and reconcile; force-overwrite is not a recovery path.
+8. Proposals resolve individually in offset order — the owner adjudicates each `propose` on its own merits, in stream order, never as a batch. This is the clause launch-window (T-0) writers rely on: competing same-window proposals resolve deterministically, one offset at a time.
 8. Event streams are never cleared, consumed, rotated, archived, or edited by a skill.
 
 ### Registry Ownership
 
 | Registry | Canonical stream | Owner | Human view |
 |---|---|---|---|
-| Entities | `memory/events/entities.ndjson` | `entity-optimizer` | `memory/entities/` |
+| Entities | `memory/events/entities.ndjson` | `entity-registry` | `memory/entities/` |
 | Creators | `memory/events/creators.ndjson` | `creator-registry` | `memory/creators/` |
 | Claims/offers | `memory/events/claims.ndjson` | `offer-claims-registry` | `memory/claims/` |
 | Consent/suppression | `memory/events/consent.ndjson` | `consent-registry` | `memory/consent/` |
@@ -77,7 +78,7 @@ WARM paths hold dated artifacts produced by skills, for example:
 |---|---|
 | SEO/GEO research | `memory/research/<skill>/` |
 | SEO/GEO build | `memory/content/<skill>/` |
-| SEO/GEO optimize | `memory/seo-geo/optimize/<skill>/` |
+| SEO/GEO optimize | `memory/seo-geo/tune/<skill>/` |
 | SEO/GEO monitor | `memory/monitoring/<skill>/` |
 | Influencer | `memory/influencer/<skill>/` |
 | Paid ads | `memory/ad/<skill>/` |

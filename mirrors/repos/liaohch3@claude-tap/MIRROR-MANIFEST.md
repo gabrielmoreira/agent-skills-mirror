@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `liaohch3/claude-tap` — 26 default patterns, 1 followed patterns, 376 file(s) materialized.
+Mirror of `liaohch3/claude-tap` — 26 default patterns, 1 followed patterns, 378 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `liaohch3/claude-tap` — 26 default patterns, 1 followed patterns, 37
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 376 |
+| Files         | 378 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -353,88 +353,90 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 292 | ✓ | [`.agents/evidence/pr/split-viewer-assets/codex-real-static-viewer.png`](.agents/evidence/pr/split-viewer-assets/codex-real-static-viewer.png) |
 | 293 | ✓ | [`.agents/evidence/pr/split-viewer-assets/codex-real-viewer-nodes-overview.png`](.agents/evidence/pr/split-viewer-assets/codex-real-viewer-nodes-overview.png) |
 | 294 | ✓ | [`.agents/evidence/pr/split-viewer-assets/codex-real-viewer-response-detail.png`](.agents/evidence/pr/split-viewer-assets/codex-real-viewer-response-detail.png) |
-| 295 | ✓ | [`.agents/evidence/pr/sqlite-trace-store/dashboard-detail-loading.png`](.agents/evidence/pr/sqlite-trace-store/dashboard-detail-loading.png) |
-| 296 | ✓ | [`.agents/evidence/pr/sqlite-trace-store/dashboard-load-more.png`](.agents/evidence/pr/sqlite-trace-store/dashboard-load-more.png) |
-| 297 | ✓ | [`.agents/evidence/pr/sqlite-trace-store/dashboard-loading.png`](.agents/evidence/pr/sqlite-trace-store/dashboard-loading.png) |
-| 298 | ✓ | [`.agents/evidence/pr/sqlite-trace-store/dashboard-sqlite.png`](.agents/evidence/pr/sqlite-trace-store/dashboard-sqlite.png) |
-| 299 | ✓ | [`.agents/evidence/pr/stale-active-delete/dashboard-full-viewer-retained.png`](.agents/evidence/pr/stale-active-delete/dashboard-full-viewer-retained.png) |
-| 300 | ✓ | [`.agents/evidence/pr/stale-active-delete/dashboard-redacted-detail.png`](.agents/evidence/pr/stale-active-delete/dashboard-redacted-detail.png) |
-| 301 | ✓ | [`.agents/evidence/pr/stale-active-delete/dashboard-stale-active-delete.png`](.agents/evidence/pr/stale-active-delete/dashboard-stale-active-delete.png) |
-| 302 | ✓ | [`.agents/evidence/pr/stream-events-default-off/codex-default-messages.png`](.agents/evidence/pr/stream-events-default-off/codex-default-messages.png) |
-| 303 | ✓ | [`.agents/evidence/pr/stream-events-default-off/codex-default-system-prompt.png`](.agents/evidence/pr/stream-events-default-off/codex-default-system-prompt.png) |
-| 304 | ✓ | [`.agents/evidence/pr/stream-events-default-off/default-no-raw-events.png`](.agents/evidence/pr/stream-events-default-off/default-no-raw-events.png) |
-| 305 | ✓ | [`.agents/evidence/pr/stream-events-default-off/opt-in-raw-events.png`](.agents/evidence/pr/stream-events-default-off/opt-in-raw-events.png) |
-| 306 | ✓ | [`.agents/evidence/pr/technical-log-tabs/history-delete-control.png`](.agents/evidence/pr/technical-log-tabs/history-delete-control.png) |
-| 307 | ✓ | [`.agents/evidence/pr/technical-log-tabs/trace-copy-followup.png`](.agents/evidence/pr/technical-log-tabs/trace-copy-followup.png) |
-| 308 | ✓ | [`.agents/evidence/pr/technical-log-tabs/trace-view.png`](.agents/evidence/pr/technical-log-tabs/trace-view.png) |
-| 309 | ✓ | [`.agents/evidence/pr/tool-search/README.md`](.agents/evidence/pr/tool-search/README.md) |
-| 310 | ✓ | [`.agents/evidence/pr/tool-search/responses-function-call.png`](.agents/evidence/pr/tool-search/responses-function-call.png) |
-| 311 | ✓ | [`.agents/evidence/pr/tool-search/tool-search-output-context.png`](.agents/evidence/pr/tool-search/tool-search-output-context.png) |
-| 312 | ✓ | [`.agents/evidence/pr/tool-search/tool-search-response.png`](.agents/evidence/pr/tool-search/tool-search-response.png) |
-| 313 | ✓ | [`.agents/evidence/pr/trace-viewer-openai-compatible-usage-zero-alias.png`](.agents/evidence/pr/trace-viewer-openai-compatible-usage-zero-alias.png) |
-| 314 | ✓ | [`.agents/evidence/pr/viewer-i18n-source/README.md`](.agents/evidence/pr/viewer-i18n-source/README.md) |
-| 315 | ✓ | [`.agents/evidence/pr/viewer-i18n-source/viewer-i18n-source-codex-trace.png`](.agents/evidence/pr/viewer-i18n-source/viewer-i18n-source-codex-trace.png) |
-| 316 | ✓ | [`.agents/evidence/pr/viewer-quality/anthropic_messages.png`](.agents/evidence/pr/viewer-quality/anthropic_messages.png) |
-| 317 | ✓ | [`.agents/evidence/pr/viewer-quality/codex_websocket.png`](.agents/evidence/pr/viewer-quality/codex_websocket.png) |
-| 318 | ✓ | [`.agents/evidence/pr/viewer-quality/gemini.png`](.agents/evidence/pr/viewer-quality/gemini.png) |
-| 319 | ✓ | [`.agents/evidence/pr/viewer-quality/README.md`](.agents/evidence/pr/viewer-quality/README.md) |
-| 320 | ✓ | [`.agents/evidence/pr/viewer-search-duplicate-request-id.png`](.agents/evidence/pr/viewer-search-duplicate-request-id.png) |
-| 321 | ✓ | [`.agents/evidence/pr/viewer-search/quote-search.png`](.agents/evidence/pr/viewer-search/quote-search.png) |
-| 322 | ✓ | [`.agents/evidence/pr/vscode-wrapper-open/codex-viewer-preview.png`](.agents/evidence/pr/vscode-wrapper-open/codex-viewer-preview.png) |
-| 323 | ✓ | [`.agents/evidence/pr/win32-no-console-popup/README.md`](.agents/evidence/pr/win32-no-console-popup/README.md) |
-| 324 | ✓ | [`.agents/evidence/pr/win32-no-console-popup/win32-trace-evidence.png`](.agents/evidence/pr/win32-no-console-popup/win32-trace-evidence.png) |
-| 325 | ✓ | [`.agents/evidence/pr/windows-pip-update-fix/dashboard-session.png`](.agents/evidence/pr/windows-pip-update-fix/dashboard-session.png) |
-| 326 | ✓ | [`.agents/evidence/pr/windows-pip-update-fix/README.md`](.agents/evidence/pr/windows-pip-update-fix/README.md) |
-| 327 | ✓ | [`.agents/evidence/pr/WS_VERIFY_REPORT.md`](.agents/evidence/pr/WS_VERIFY_REPORT.md) |
-| 328 | ✓ | [`.agents/recordings/01_error_banner_and_sidebar.png`](.agents/recordings/01_error_banner_and_sidebar.png) |
-| 329 | ✓ | [`.agents/recordings/02_sidebar_error_styling.png`](.agents/recordings/02_sidebar_error_styling.png) |
-| 330 | ✓ | [`.agents/recordings/03_copy_button_fallback_success.png`](.agents/recordings/03_copy_button_fallback_success.png) |
-| 331 | ✓ | [`.agents/recordings/codex-demo.cast`](.agents/recordings/codex-demo.cast) |
-| 332 | ✓ | [`.agents/recordings/codex-demo.gif`](.agents/recordings/codex-demo.gif) |
-| 333 | ✓ | [`.agents/recordings/demo_zh.mp4`](.agents/recordings/demo_zh.mp4) |
-| 334 | ✓ | [`.agents/recordings/demo.mp4`](.agents/recordings/demo.mp4) |
-| 335 | ✓ | [`.agents/recordings/diff-scroll-bottom.png`](.agents/recordings/diff-scroll-bottom.png) |
-| 336 | ✓ | [`.agents/recordings/diff-scroll-top.png`](.agents/recordings/diff-scroll-top.png) |
-| 337 | ✓ | [`.agents/recordings/search-01-open.png`](.agents/recordings/search-01-open.png) |
-| 338 | ✓ | [`.agents/recordings/search-02-highlight.png`](.agents/recordings/search-02-highlight.png) |
-| 339 | ✓ | [`.agents/recordings/search-03-navigate.png`](.agents/recordings/search-03-navigate.png) |
-| 340 | ✓ | [`.agents/recordings/viewer-01-turn1-overview.png`](.agents/recordings/viewer-01-turn1-overview.png) |
-| 341 | ✓ | [`.agents/recordings/viewer-02-tools-sse-expanded.png`](.agents/recordings/viewer-02-tools-sse-expanded.png) |
-| 342 | ✓ | [`.agents/recordings/viewer-03-request-json-scrolled.png`](.agents/recordings/viewer-03-request-json-scrolled.png) |
-| 343 | ✓ | [`.agents/recordings/viewer-04-turn5.png`](.agents/recordings/viewer-04-turn5.png) |
-| 344 | ✓ | [`.agents/recordings/viewer-05-diff.png`](.agents/recordings/viewer-05-diff.png) |
-| 345 | ✓ | [`.agents/recordings/viewer-06-curl.png`](.agents/recordings/viewer-06-curl.png) |
-| 346 | ✓ | [`.agents/recordings/viewer-07-turn10.png`](.agents/recordings/viewer-07-turn10.png) |
-| 347 | ✓ | [`.agents/recordings/viewer-08-dark-mode.png`](.agents/recordings/viewer-08-dark-mode.png) |
-| 348 | ✓ | [`.agents/recordings/viewer-09-sidebar-scrolled.png`](.agents/recordings/viewer-09-sidebar-scrolled.png) |
-| 349 | ✓ | [`.agents/recordings/viewer-10-last-turn.png`](.agents/recordings/viewer-10-last-turn.png) |
-| 350 | ✓ | [`.agents/recordings/viewer-11-final-wide.png`](.agents/recordings/viewer-11-final-wide.png) |
-| 351 | ✓ | [`.agents/recordings/viewer-codex-01-overview.png`](.agents/recordings/viewer-codex-01-overview.png) |
-| 352 | ✓ | [`.agents/recordings/viewer-codex-02-messages.png`](.agents/recordings/viewer-codex-02-messages.png) |
-| 353 | ✓ | [`.agents/recordings/viewer-codex-02-system-prompt.png`](.agents/recordings/viewer-codex-02-system-prompt.png) |
-| 354 | ✓ | [`.agents/recordings/viewer-codex-03-messages.png`](.agents/recordings/viewer-codex-03-messages.png) |
-| 355 | ✓ | [`.agents/recordings/viewer-codex-03-scrolled.png`](.agents/recordings/viewer-codex-03-scrolled.png) |
-| 356 | ✓ | [`.agents/recordings/viewer-codex-04-response.png`](.agents/recordings/viewer-codex-04-response.png) |
-| 357 | ✓ | [`.agents/recordings/viewer-codex-04-turn3.png`](.agents/recordings/viewer-codex-04-turn3.png) |
-| 358 | ✓ | [`.agents/recordings/viewer-codex-05-diff.png`](.agents/recordings/viewer-codex-05-diff.png) |
-| 359 | ✓ | [`.agents/recordings/viewer-codex-05-tokens.png`](.agents/recordings/viewer-codex-05-tokens.png) |
-| 360 | ✓ | [`.agents/recordings/viewer-codex-06-diff.png`](.agents/recordings/viewer-codex-06-diff.png) |
-| 361 | ✓ | [`.agents/recordings/viewer-codex-08-tools.png`](.agents/recordings/viewer-codex-08-tools.png) |
-| 362 | ✓ | [`.agents/recordings/viewer-demo.mp4`](.agents/recordings/viewer-demo.mp4) |
-| 363 | ✓ | [`.agents/skills/codex-e2e-test/SKILL.md`](.agents/skills/codex-e2e-test/SKILL.md) |
-| 364 | ✓ | [`.agents/skills/demo-video/SKILL.md`](.agents/skills/demo-video/SKILL.md) |
-| 365 | ✓ | [`.agents/skills/e2e-test/SKILL.md`](.agents/skills/e2e-test/SKILL.md) |
-| 366 | ✓ | [`.agents/skills/js-in-html-testing/SKILL.md`](.agents/skills/js-in-html-testing/SKILL.md) |
-| 367 | ✓ | [`.agents/skills/legibility-check/SKILL.md`](.agents/skills/legibility-check/SKILL.md) |
-| 368 | ✓ | [`.agents/skills/playwright-screen-recording/SKILL.md`](.agents/skills/playwright-screen-recording/SKILL.md) |
-| 369 | ✓ | [`.agents/skills/pr-preflight/SKILL.md`](.agents/skills/pr-preflight/SKILL.md) |
-| 370 | ✓ | [`.agents/skills/push-release/SKILL.md`](.agents/skills/push-release/SKILL.md) |
-| 371 | ✓ | [`.agents/skills/real-e2e-test/SKILL.md`](.agents/skills/real-e2e-test/SKILL.md) |
-| 372 | ✓ | [`.agents/skills/screenshot-validation/SKILL.md`](.agents/skills/screenshot-validation/SKILL.md) |
-| 373 | ✓ | [`.agents/skills/translate-i18n/SKILL.md`](.agents/skills/translate-i18n/SKILL.md) |
-| 374 | ✓ | [`.claude/CLAUDE.md`](.claude/CLAUDE.md) |
-| 375 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 376 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 295 | ✓ | [`.agents/evidence/pr/sqlite-lock-contention/sqlite-lock-real-codex-viewer.png`](.agents/evidence/pr/sqlite-lock-contention/sqlite-lock-real-codex-viewer.png) |
+| 296 | ✓ | [`.agents/evidence/pr/sqlite-lock-contention/sqlite-lock-real-dashboard.png`](.agents/evidence/pr/sqlite-lock-contention/sqlite-lock-real-dashboard.png) |
+| 297 | ✓ | [`.agents/evidence/pr/sqlite-trace-store/dashboard-detail-loading.png`](.agents/evidence/pr/sqlite-trace-store/dashboard-detail-loading.png) |
+| 298 | ✓ | [`.agents/evidence/pr/sqlite-trace-store/dashboard-load-more.png`](.agents/evidence/pr/sqlite-trace-store/dashboard-load-more.png) |
+| 299 | ✓ | [`.agents/evidence/pr/sqlite-trace-store/dashboard-loading.png`](.agents/evidence/pr/sqlite-trace-store/dashboard-loading.png) |
+| 300 | ✓ | [`.agents/evidence/pr/sqlite-trace-store/dashboard-sqlite.png`](.agents/evidence/pr/sqlite-trace-store/dashboard-sqlite.png) |
+| 301 | ✓ | [`.agents/evidence/pr/stale-active-delete/dashboard-full-viewer-retained.png`](.agents/evidence/pr/stale-active-delete/dashboard-full-viewer-retained.png) |
+| 302 | ✓ | [`.agents/evidence/pr/stale-active-delete/dashboard-redacted-detail.png`](.agents/evidence/pr/stale-active-delete/dashboard-redacted-detail.png) |
+| 303 | ✓ | [`.agents/evidence/pr/stale-active-delete/dashboard-stale-active-delete.png`](.agents/evidence/pr/stale-active-delete/dashboard-stale-active-delete.png) |
+| 304 | ✓ | [`.agents/evidence/pr/stream-events-default-off/codex-default-messages.png`](.agents/evidence/pr/stream-events-default-off/codex-default-messages.png) |
+| 305 | ✓ | [`.agents/evidence/pr/stream-events-default-off/codex-default-system-prompt.png`](.agents/evidence/pr/stream-events-default-off/codex-default-system-prompt.png) |
+| 306 | ✓ | [`.agents/evidence/pr/stream-events-default-off/default-no-raw-events.png`](.agents/evidence/pr/stream-events-default-off/default-no-raw-events.png) |
+| 307 | ✓ | [`.agents/evidence/pr/stream-events-default-off/opt-in-raw-events.png`](.agents/evidence/pr/stream-events-default-off/opt-in-raw-events.png) |
+| 308 | ✓ | [`.agents/evidence/pr/technical-log-tabs/history-delete-control.png`](.agents/evidence/pr/technical-log-tabs/history-delete-control.png) |
+| 309 | ✓ | [`.agents/evidence/pr/technical-log-tabs/trace-copy-followup.png`](.agents/evidence/pr/technical-log-tabs/trace-copy-followup.png) |
+| 310 | ✓ | [`.agents/evidence/pr/technical-log-tabs/trace-view.png`](.agents/evidence/pr/technical-log-tabs/trace-view.png) |
+| 311 | ✓ | [`.agents/evidence/pr/tool-search/README.md`](.agents/evidence/pr/tool-search/README.md) |
+| 312 | ✓ | [`.agents/evidence/pr/tool-search/responses-function-call.png`](.agents/evidence/pr/tool-search/responses-function-call.png) |
+| 313 | ✓ | [`.agents/evidence/pr/tool-search/tool-search-output-context.png`](.agents/evidence/pr/tool-search/tool-search-output-context.png) |
+| 314 | ✓ | [`.agents/evidence/pr/tool-search/tool-search-response.png`](.agents/evidence/pr/tool-search/tool-search-response.png) |
+| 315 | ✓ | [`.agents/evidence/pr/trace-viewer-openai-compatible-usage-zero-alias.png`](.agents/evidence/pr/trace-viewer-openai-compatible-usage-zero-alias.png) |
+| 316 | ✓ | [`.agents/evidence/pr/viewer-i18n-source/README.md`](.agents/evidence/pr/viewer-i18n-source/README.md) |
+| 317 | ✓ | [`.agents/evidence/pr/viewer-i18n-source/viewer-i18n-source-codex-trace.png`](.agents/evidence/pr/viewer-i18n-source/viewer-i18n-source-codex-trace.png) |
+| 318 | ✓ | [`.agents/evidence/pr/viewer-quality/anthropic_messages.png`](.agents/evidence/pr/viewer-quality/anthropic_messages.png) |
+| 319 | ✓ | [`.agents/evidence/pr/viewer-quality/codex_websocket.png`](.agents/evidence/pr/viewer-quality/codex_websocket.png) |
+| 320 | ✓ | [`.agents/evidence/pr/viewer-quality/gemini.png`](.agents/evidence/pr/viewer-quality/gemini.png) |
+| 321 | ✓ | [`.agents/evidence/pr/viewer-quality/README.md`](.agents/evidence/pr/viewer-quality/README.md) |
+| 322 | ✓ | [`.agents/evidence/pr/viewer-search-duplicate-request-id.png`](.agents/evidence/pr/viewer-search-duplicate-request-id.png) |
+| 323 | ✓ | [`.agents/evidence/pr/viewer-search/quote-search.png`](.agents/evidence/pr/viewer-search/quote-search.png) |
+| 324 | ✓ | [`.agents/evidence/pr/vscode-wrapper-open/codex-viewer-preview.png`](.agents/evidence/pr/vscode-wrapper-open/codex-viewer-preview.png) |
+| 325 | ✓ | [`.agents/evidence/pr/win32-no-console-popup/README.md`](.agents/evidence/pr/win32-no-console-popup/README.md) |
+| 326 | ✓ | [`.agents/evidence/pr/win32-no-console-popup/win32-trace-evidence.png`](.agents/evidence/pr/win32-no-console-popup/win32-trace-evidence.png) |
+| 327 | ✓ | [`.agents/evidence/pr/windows-pip-update-fix/dashboard-session.png`](.agents/evidence/pr/windows-pip-update-fix/dashboard-session.png) |
+| 328 | ✓ | [`.agents/evidence/pr/windows-pip-update-fix/README.md`](.agents/evidence/pr/windows-pip-update-fix/README.md) |
+| 329 | ✓ | [`.agents/evidence/pr/WS_VERIFY_REPORT.md`](.agents/evidence/pr/WS_VERIFY_REPORT.md) |
+| 330 | ✓ | [`.agents/recordings/01_error_banner_and_sidebar.png`](.agents/recordings/01_error_banner_and_sidebar.png) |
+| 331 | ✓ | [`.agents/recordings/02_sidebar_error_styling.png`](.agents/recordings/02_sidebar_error_styling.png) |
+| 332 | ✓ | [`.agents/recordings/03_copy_button_fallback_success.png`](.agents/recordings/03_copy_button_fallback_success.png) |
+| 333 | ✓ | [`.agents/recordings/codex-demo.cast`](.agents/recordings/codex-demo.cast) |
+| 334 | ✓ | [`.agents/recordings/codex-demo.gif`](.agents/recordings/codex-demo.gif) |
+| 335 | ✓ | [`.agents/recordings/demo_zh.mp4`](.agents/recordings/demo_zh.mp4) |
+| 336 | ✓ | [`.agents/recordings/demo.mp4`](.agents/recordings/demo.mp4) |
+| 337 | ✓ | [`.agents/recordings/diff-scroll-bottom.png`](.agents/recordings/diff-scroll-bottom.png) |
+| 338 | ✓ | [`.agents/recordings/diff-scroll-top.png`](.agents/recordings/diff-scroll-top.png) |
+| 339 | ✓ | [`.agents/recordings/search-01-open.png`](.agents/recordings/search-01-open.png) |
+| 340 | ✓ | [`.agents/recordings/search-02-highlight.png`](.agents/recordings/search-02-highlight.png) |
+| 341 | ✓ | [`.agents/recordings/search-03-navigate.png`](.agents/recordings/search-03-navigate.png) |
+| 342 | ✓ | [`.agents/recordings/viewer-01-turn1-overview.png`](.agents/recordings/viewer-01-turn1-overview.png) |
+| 343 | ✓ | [`.agents/recordings/viewer-02-tools-sse-expanded.png`](.agents/recordings/viewer-02-tools-sse-expanded.png) |
+| 344 | ✓ | [`.agents/recordings/viewer-03-request-json-scrolled.png`](.agents/recordings/viewer-03-request-json-scrolled.png) |
+| 345 | ✓ | [`.agents/recordings/viewer-04-turn5.png`](.agents/recordings/viewer-04-turn5.png) |
+| 346 | ✓ | [`.agents/recordings/viewer-05-diff.png`](.agents/recordings/viewer-05-diff.png) |
+| 347 | ✓ | [`.agents/recordings/viewer-06-curl.png`](.agents/recordings/viewer-06-curl.png) |
+| 348 | ✓ | [`.agents/recordings/viewer-07-turn10.png`](.agents/recordings/viewer-07-turn10.png) |
+| 349 | ✓ | [`.agents/recordings/viewer-08-dark-mode.png`](.agents/recordings/viewer-08-dark-mode.png) |
+| 350 | ✓ | [`.agents/recordings/viewer-09-sidebar-scrolled.png`](.agents/recordings/viewer-09-sidebar-scrolled.png) |
+| 351 | ✓ | [`.agents/recordings/viewer-10-last-turn.png`](.agents/recordings/viewer-10-last-turn.png) |
+| 352 | ✓ | [`.agents/recordings/viewer-11-final-wide.png`](.agents/recordings/viewer-11-final-wide.png) |
+| 353 | ✓ | [`.agents/recordings/viewer-codex-01-overview.png`](.agents/recordings/viewer-codex-01-overview.png) |
+| 354 | ✓ | [`.agents/recordings/viewer-codex-02-messages.png`](.agents/recordings/viewer-codex-02-messages.png) |
+| 355 | ✓ | [`.agents/recordings/viewer-codex-02-system-prompt.png`](.agents/recordings/viewer-codex-02-system-prompt.png) |
+| 356 | ✓ | [`.agents/recordings/viewer-codex-03-messages.png`](.agents/recordings/viewer-codex-03-messages.png) |
+| 357 | ✓ | [`.agents/recordings/viewer-codex-03-scrolled.png`](.agents/recordings/viewer-codex-03-scrolled.png) |
+| 358 | ✓ | [`.agents/recordings/viewer-codex-04-response.png`](.agents/recordings/viewer-codex-04-response.png) |
+| 359 | ✓ | [`.agents/recordings/viewer-codex-04-turn3.png`](.agents/recordings/viewer-codex-04-turn3.png) |
+| 360 | ✓ | [`.agents/recordings/viewer-codex-05-diff.png`](.agents/recordings/viewer-codex-05-diff.png) |
+| 361 | ✓ | [`.agents/recordings/viewer-codex-05-tokens.png`](.agents/recordings/viewer-codex-05-tokens.png) |
+| 362 | ✓ | [`.agents/recordings/viewer-codex-06-diff.png`](.agents/recordings/viewer-codex-06-diff.png) |
+| 363 | ✓ | [`.agents/recordings/viewer-codex-08-tools.png`](.agents/recordings/viewer-codex-08-tools.png) |
+| 364 | ✓ | [`.agents/recordings/viewer-demo.mp4`](.agents/recordings/viewer-demo.mp4) |
+| 365 | ✓ | [`.agents/skills/codex-e2e-test/SKILL.md`](.agents/skills/codex-e2e-test/SKILL.md) |
+| 366 | ✓ | [`.agents/skills/demo-video/SKILL.md`](.agents/skills/demo-video/SKILL.md) |
+| 367 | ✓ | [`.agents/skills/e2e-test/SKILL.md`](.agents/skills/e2e-test/SKILL.md) |
+| 368 | ✓ | [`.agents/skills/js-in-html-testing/SKILL.md`](.agents/skills/js-in-html-testing/SKILL.md) |
+| 369 | ✓ | [`.agents/skills/legibility-check/SKILL.md`](.agents/skills/legibility-check/SKILL.md) |
+| 370 | ✓ | [`.agents/skills/playwright-screen-recording/SKILL.md`](.agents/skills/playwright-screen-recording/SKILL.md) |
+| 371 | ✓ | [`.agents/skills/pr-preflight/SKILL.md`](.agents/skills/pr-preflight/SKILL.md) |
+| 372 | ✓ | [`.agents/skills/push-release/SKILL.md`](.agents/skills/push-release/SKILL.md) |
+| 373 | ✓ | [`.agents/skills/real-e2e-test/SKILL.md`](.agents/skills/real-e2e-test/SKILL.md) |
+| 374 | ✓ | [`.agents/skills/screenshot-validation/SKILL.md`](.agents/skills/screenshot-validation/SKILL.md) |
+| 375 | ✓ | [`.agents/skills/translate-i18n/SKILL.md`](.agents/skills/translate-i18n/SKILL.md) |
+| 376 | ✓ | [`.claude/CLAUDE.md`](.claude/CLAUDE.md) |
+| 377 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 378 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

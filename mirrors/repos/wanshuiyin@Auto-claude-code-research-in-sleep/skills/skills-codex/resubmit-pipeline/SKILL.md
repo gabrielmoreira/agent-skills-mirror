@@ -302,6 +302,22 @@ If extra round queue is non-empty AND user-budget allows: one extra Phase 2 roun
 
 Verifies no Phase 2 microedit accidentally introduced a numerical claim that's not backed by results.
 
+**Integrity forensics re-run** (opt-in here: `— self_forensics: true`): the
+mainline pipeline defaults to an Anti-Autoresearch re-sweep after microedits;
+in a Codex-native session only upstream's **deterministic-only slice** is
+runnable (numeric core + rules-only adjudicator — it can flag, it can never
+say CLEAN), so it is off unless requested. If opted in, run
+`/integrity-forensics` on `$NEW_VENUE_DIR/` AFTER all microedits (never
+between rounds — its One Forbidden Loop), gate `BLOCK` → stop before the
+Overleaf push. Resubmit-specific rule: the bib is frozen, so
+`citation-replaced` is NOT a legal fix-type here — citation obligations get a
+human-signed `waive` or escalate to relax the bib freeze. If opted in
+(re-check the CURRENT `$ARGUMENTS`, not conversation memory), the Overleaf
+push additionally requires
+`python3 "$GATE_HELPER" fresh --paper-dir "$NEW_VENUE_DIR/" --anti-ar-commit "$ANTI_AR_COMMIT"`
+exit 0 — a
+microedit or recompile after the gate is STALE and forces the re-run.
+
 **Diff report**:
 
 ```bash
@@ -355,6 +371,7 @@ Every resubmit run writes one master report at `$NEW_VENUE_DIR/RESUBMIT_REPORT.{
 
 - Source dir, target venue, target style files used, run start / end timestamps
 - Pointers to all artifacts: `BASELINE.md`, `PROOF_AUDIT.json`, `PAPER_CLAIM_AUDIT.json`, `CITATION_AUDIT.json`, `KNOWN_WEAKNESSES.md`, `PAPER_IMPROVEMENT_LOG.md`, `KILL_ARGUMENT.json`, `COMPILE_REPORT.json`, `DIFF_REPORT.md`
+- If forensics was opted in: the gate decision from `.aris/forensics/gate.json` **plus every OPEN obligation verbatim** — a `WARN` that passes `fresh` still carries findings awaiting human disposition; they must appear here, never silently drop out
 - SHA256 hashes of every input file consumed (for `verify_paper_audits.sh` compatibility)
 - All thread IDs (Phase 1 audits + Phase 2 reviewer rounds + Phase 3 kill-argument's two threads)
 - `audit_skill: resubmit-pipeline`, `verdict ∈ {PASS, WARN, FAIL, NOT_APPLICABLE, BLOCKED, ERROR}`, `reason_code: <one of the listed codes>`

@@ -333,6 +333,7 @@ Manage NotebookLM agent skill integration.
 | `status` | Check installed targets and version info | `skill status --scope project` |
 | `uninstall` | Remove one or more installed targets | `skill uninstall --target agents` |
 | `show` | Display the packaged skill or an installed target | `skill show --target source` |
+| `package` | Build a Claude-uploadable skill archive (chat/Cowork) | `skill package -o dist/` |
 
 Defaults:
 
@@ -1471,7 +1472,7 @@ notebooklm profile delete old-account --yes
 
 > **Note:** `profile delete` refuses to remove the currently active default profile. Switch to a different profile first (`notebooklm profile switch <other>`) and then delete.
 
-### Skill: `install`, `status`, `uninstall`, `show`
+### Skill: `install`, `status`, `uninstall`, `show`, `package`
 
 Manage the bundled NotebookLM agent-skill template. The skill lives in `SKILL.md` at the repository root; installing it materializes a copy under one of:
 - `.claude/skills/notebooklm/SKILL.md` (Claude Code, `--target claude`)
@@ -1479,18 +1480,21 @@ Manage the bundled NotebookLM agent-skill template. The skill lives in `SKILL.md
 
 `--scope` selects whether to write into the **user's** home (`~/.claude/skills/...`, `~/.agents/skills/...`) or the **current project** (`./.claude/skills/...`, `./.agents/skills/...`).
 
+`skill package` takes neither `--scope` nor `--target`: it builds a ZIP archive (zip root: `notebooklm/SKILL.md`, version-stamped) for upload via **Claude Settings → Capabilities** — the supported hand-off for sandboxed agent environments such as Claude Cowork, which cannot run `skill install` against a local directory.
+
 ```bash
-notebooklm skill <install|status|uninstall|show> [OPTIONS]
+notebooklm skill <install|status|uninstall|show|package> [OPTIONS]
 ```
 
 **Options matrix** (defaults: `--scope user --target all`):
 
-| Subcommand | `--scope` choices | `--target` choices | Default `--target` |
-|---|---|---|---|
-| `install` | `user`, `project` | `all`, `claude`, `agents` | `all` |
-| `status` | `user`, `project` | `all`, `claude`, `agents` | `all` |
-| `uninstall` | `user`, `project` | `all`, `claude`, `agents` | `all` |
-| `show` | `user`, `project` | `source`, `claude`, `agents` | `source` |
+| Subcommand | `--scope` choices | `--target` choices | Default `--target` | Other options |
+|---|---|---|---|---|
+| `install` | `user`, `project` | `all`, `claude`, `agents` | `all` | `--dry-run`, `--no-clobber`, `--force` (project scope) |
+| `status` | `user`, `project` | `all`, `claude`, `agents` | `all` | `--json` |
+| `uninstall` | `user`, `project` | `all`, `claude`, `agents` | `all` | — |
+| `show` | `user`, `project` | `source`, `claude`, `agents` | `source` | — |
+| `package` | — | — | — | `-o/--output PATH` (default `./notebooklm-skill.zip`; an existing directory — or a PATH ending in a separator — gets the default filename inside it), `--force`, `--json` |
 
 `skill show --target source` prints the packaged `SKILL.md` straight out of the wheel (the canonical content); the other `show` targets read the materialized copy from disk.
 
@@ -1521,7 +1525,20 @@ notebooklm skill show --scope project --target claude
 
 # Remove all installed targets from the current project
 notebooklm skill uninstall --scope project --target all
+
+# Build the uploadable archive in the current directory (./notebooklm-skill.zip)
+notebooklm skill package
+
+# Write to an explicit file, or drop the default filename into a directory
+notebooklm skill package --output dist/notebooklm-v0.8.zip
+notebooklm skill package --output dist/
+
+# Overwrite an existing archive, or emit a machine-readable result
+notebooklm skill package --output dist/ --force
+notebooklm skill package --json
 ```
+
+`skill package` refuses to overwrite an existing archive unless `--force` is passed. With `--json` it prints `{"path", "version", "entries", "size_bytes"}` on success and the standard error envelope on failure.
 
 Codex does not consume the `skill` subcommand. In this repository it reads the root [`AGENTS.md`](../AGENTS.md) file and invokes the `notebooklm` CLI or Python API directly.
 

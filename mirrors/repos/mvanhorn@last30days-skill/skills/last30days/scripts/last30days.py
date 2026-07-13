@@ -11,6 +11,7 @@ import json
 import os
 import re
 import signal
+import sqlite3
 import sys
 import threading
 from pathlib import Path
@@ -47,7 +48,7 @@ if os.name == "nt":
 SCRIPT_DIR = Path(__file__).parent.resolve()
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from lib import dates, env, html_render, permission_preflight, pipeline, render, schema, ui
+from lib import corpus, dates, env, freshness, html_render, http, permission_preflight, pipeline, registers, render, schema, ui
 
 _child_pids: set[int] = set()
 _child_pids_lock = threading.Lock()
@@ -120,6 +121,34 @@ def slugify(value: str) -> str:
     return slug or "last30days"
 
 
+def _report_has_private_corpus(report: schema.Report) -> bool:
+    items_by_source = getattr(report, "items_by_source", {})
+    if isinstance(items_by_source, dict) and items_by_source.get("corpus"):
+        return True
+    candidates = getattr(report, "ranked_candidates", ())
+    if not isinstance(candidates, (list, tuple)):
+        return False
+    return any(
+        candidate.source == "corpus"
+        or any(item.source == "corpus" for item in candidate.source_items)
+        for candidate in candidates
+    )
+
+
+def _ensure_output_directory(path: Path, *, private: bool) -> None:
+    if not private:
+        path.mkdir(parents=True, exist_ok=True)
+        return
+    missing: list[Path] = []
+    current = path
+    while not current.exists():
+        missing.append(current)
+        current = current.parent
+    path.mkdir(parents=True, exist_ok=True, mode=0o700)
+    for directory in missing:
+        directory.chmod(0o700)
+
+
 def save_output(
     report: schema.Report,
     emit: str,
@@ -128,10 +157,12 @@ def save_output(
     synthesis_md: str | None = None,
     topic_override: str | None = None,
     rendered_content: str | None = None,
+    json_profile: str = "agent",
+    register: str = "default",
+    private: bool | None = None,
 ) -> Path:
     from datetime import datetime
     path = Path(save_dir).expanduser().resolve()
-    path.mkdir(parents=True, exist_ok=True)
     slug = slugify(topic_override or report.topic)
     extension = "json" if emit == "json" else "html" if emit == "html" else "md"
     raw_label = "raw-html" if emit == "html" else "raw"
@@ -147,17 +178,49 @@ def save_output(
     if rendered_content is not None:
         content = rendered_content
     elif emit in {"json", "html"}:
-        content = emit_output(report, emit, synthesis_md=synthesis_md)
+        content = emit_output(
+            report,
+            emit,
+            synthesis_md=synthesis_md,
+            json_profile=json_profile,
+            register=register,
+        )
     else:
         content = render.render_full(report)
+    private_corpus = _report_has_private_corpus(report) or bool(private)
+    _ensure_output_directory(path, private=private_corpus)
     encoded = content.encode("utf-8")
     for candidate in candidates:
         try:
-            fd = os.open(candidate, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+            fd = os.open(
+                candidate,
+                os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+                0o600 if private_corpus else 0o644,
+            )
         except FileExistsError:
             continue
         with os.fdopen(fd, "wb") as f:
             f.write(encoded)
+        if candidate.suffix.lower() == ".md":
+            try:
+                from lib import library, library_index
+
+                save_root = candidate.parent.resolve()
+                if save_root == Path(library.DEFAULT_MEMORY_DIR).expanduser().resolve():
+                    library_index.sync_library(save_root)
+                else:
+                    # A scoped save must sync a per-directory index with the
+                    # same paths scoped search uses; syncing the shared DB
+                    # from one scope's scan would prune other scopes' rows.
+                    library_index.sync_library(
+                        save_root,
+                        save_root / "briefings",
+                        db_path=save_root / ".last30days-library.db",
+                    )
+            except (library_index.LibrarySearchUnavailable, OSError, sqlite3.DatabaseError):
+                # Saving research must not depend on the optional local index;
+                # `library search` reports a clear capability error on demand.
+                pass
         return candidate
     # Fallback: all 101 candidates existed (extremely unlikely).
     raise RuntimeError(
@@ -165,10 +228,25 @@ def save_output(
     )
 
 
-def save_rendered_output(rendered_content: str, output_file: str) -> Path:
+def save_rendered_output(
+    rendered_content: str,
+    output_file: str,
+    *,
+    private: bool = False,
+) -> Path:
     out_path = Path(output_file).expanduser().resolve()
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(rendered_content, encoding="utf-8")
+    _ensure_output_directory(out_path.parent, private=private)
+    if private and out_path.exists():
+        out_path.chmod(0o600)
+    fd = os.open(
+        out_path,
+        os.O_CREAT | os.O_TRUNC | os.O_WRONLY,
+        0o600 if private else 0o644,
+    )
+    with os.fdopen(fd, "w", encoding="utf-8") as handle:
+        handle.write(rendered_content)
+    if private:
+        out_path.chmod(0o600)
     return out_path
 
 
@@ -207,8 +285,16 @@ def publish_rendered_html(
     return result
 
 
-def _publish_password_for_args(args: argparse.Namespace) -> str | None:
-    return (args.publish_password or env.read_secret_env("LAST30DAYS_PUBLISH_PASSWORD") or None)
+def _publish_password_for_args(
+    args: argparse.Namespace,
+    config: dict[str, object] | None = None,
+) -> str | None:
+    return (
+        args.publish_password
+        or env.read_secret_env("LAST30DAYS_PUBLISH_PASSWORD")
+        or (config or {}).get("LAST30DAYS_PUBLISH_PASSWORD")
+        or None
+    )
 
 
 def emit_output(
@@ -217,15 +303,31 @@ def emit_output(
     fun_level: str = "medium",
     save_path: str | None = None,
     synthesis_md: str | None = None,
+    json_profile: str = "agent",
+    register: str = "default",
 ) -> str:
     if emit == "json":
-        return json.dumps(schema.to_dict(report), indent=2, sort_keys=True)
+        payload = (
+            schema.to_dict(report)
+            if json_profile == "raw"
+            else schema.to_agent_export(report)
+        )
+        return json.dumps(payload, indent=2, sort_keys=True)
     if emit == "html":
         return html_render.render_html(
-            report, fun_level=fun_level, save_path=save_path, synthesis_md=synthesis_md,
+            report,
+            fun_level=fun_level,
+            save_path=save_path,
+            synthesis_md=synthesis_md,
+            register=register,
         )
     if emit in {"compact", "md"}:
-        return render.render_compact(report, fun_level=fun_level, save_path=save_path)
+        return render.render_compact(
+            report,
+            fun_level=fun_level,
+            save_path=save_path,
+            register=register,
+        )
     if emit == "context":
         return render.render_context(report)
     if emit == "brief":
@@ -239,16 +341,26 @@ def emit_comparison_output(
     fun_level: str = "medium",
     save_path: str | None = None,
     synthesis_md: str | None = None,
+    json_profile: str = "agent",
 ) -> str:
     if emit == "json":
         payload = {
             "comparison": True,
             "entities": [label for label, _ in entity_reports],
             "reports": [
-                {"entity": label, "report": schema.to_dict(report)}
+                {
+                    "entity": label,
+                    "report": (
+                        schema.to_dict(report)
+                        if json_profile == "raw"
+                        else schema.to_agent_export(report)
+                    ),
+                }
                 for label, report in entity_reports
             ],
         }
+        if json_profile == "agent":
+            payload["schema_version"] = schema.AGENT_EXPORT_SCHEMA_VERSION
         return json.dumps(payload, indent=2, sort_keys=True)
     if emit == "html":
         return html_render.render_html_comparison(
@@ -310,27 +422,46 @@ def read_synthesis_file(path: str) -> str:
         raise SystemExit(2)
 
 
-def persist_report(report: schema.Report) -> dict[str, int]:
+def _scoped_store_db(args: argparse.Namespace) -> Path | None:
+    """Scoped runs write findings inside the save dir, matching scoped reads."""
+    save_dir = getattr(args, "save_dir", None)
+    if save_dir:
+        return Path(save_dir).expanduser().resolve() / "research.db"
+    return None
+
+
+def persist_report(report: schema.Report, store_db: Path | None = None) -> dict[str, int]:
     import store
 
-    store.init_db()
-    topic_row = store.add_topic(report.topic)
-    topic_id = topic_row["id"]
-    source_mode = ",".join(sorted(report.items_by_source)) or "v3"
-    run_id = store.record_run(topic_id, source_mode=source_mode, status="running")
-    try:
-        findings = store.findings_from_report(report)
-        counts = store.store_findings(run_id, topic_id, findings)
-        store.update_run(
-            run_id,
-            status="completed",
-            findings_new=counts["new"],
-            findings_updated=counts["updated"],
-        )
-        return counts
-    except Exception as exc:
-        store.update_run(run_id, status="failed", error_message=str(exc)[:500])
-        raise
+    private_corpus = _report_has_private_corpus(report)
+    with store.scoped_db(store_db):
+        if private_corpus:
+            store.ensure_private_db_files()
+        store.init_db()
+        if private_corpus:
+            store.ensure_private_db_files()
+        topic_row = store.add_topic(report.topic)
+        topic_id = topic_row["id"]
+        source_mode = ",".join(sorted(report.items_by_source)) or "v3"
+        run_id = store.record_run(topic_id, source_mode=source_mode, status="running")
+        try:
+            findings = store.findings_from_report(report)
+            if private_corpus:
+                store.ensure_private_db_files()
+            counts = store.store_findings(run_id, topic_id, findings)
+            store.update_run(
+                run_id,
+                status="completed",
+                findings_new=counts["new"],
+                findings_updated=counts["updated"],
+            )
+            return counts
+        except Exception as exc:
+            store.update_run(run_id, status="failed", error_message=str(exc)[:500])
+            raise
+        finally:
+            if private_corpus:
+                store.ensure_private_db_files()
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -340,11 +471,51 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("topic", nargs="*", help="Research topic")
     parser.add_argument("--emit", default="compact", choices=["compact", "json", "context", "md", "html", "brief"])
+    parser.add_argument(
+        "--register",
+        choices=registers.REGISTER_NAMES,
+        default=None,
+        help="Audience synthesis preset for the standard brief (default, exec, dev, creator, eli5)",
+    )
+    parser.add_argument(
+        "--json-profile",
+        default="agent",
+        choices=["agent", "raw"],
+        help="JSON export profile for --emit=json (default: agent)",
+    )
     parser.add_argument("--search", help="Comma-separated source list")
     parser.add_argument("--quick", action="store_true", help="Lower-latency retrieval profile")
     parser.add_argument("--deep", action="store_true", help="Higher-recall retrieval profile")
+    freshness_group = parser.add_mutually_exclusive_group()
+    freshness_group.add_argument(
+        "--verify-freshness",
+        action="store_true",
+        default=None,
+        help="Re-check source-grounded claims after research, or verify the cached report when no topic is supplied",
+    )
+    freshness_group.add_argument(
+        "--no-verify-freshness",
+        dest="verify_freshness",
+        action="store_false",
+        help="Disable freshness verification configured by LAST30DAYS_VERIFY_FRESHNESS",
+    )
+    parser.add_argument(
+        "--drill",
+        metavar="TARGET",
+        help="Deep follow-up on a cluster from the fresh last-report.json cache",
+    )
+    parser.add_argument(
+        "--discover",
+        metavar="DOMAIN",
+        help="Sweep category listings and rank 5-10 topics accelerating in a domain",
+    )
     parser.add_argument("--debug", action="store_true", help="Enable HTTP debug logging")
     parser.add_argument("--mock", action="store_true", help="Use mock retrieval fixtures")
+    parser.add_argument(
+        "--record-fixtures",
+        metavar="DIR",
+        help=argparse.SUPPRESS,
+    )
     parser.add_argument("--diagnose", action="store_true", help="Print provider and source availability")
     parser.add_argument("--preflight", action="store_true",
                         help="Print a safe human-readable permission preflight")
@@ -354,12 +525,26 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--no-browser-cookies", action="store_true",
                         help="Disable browser-cookie extraction even when FROM_BROWSER is configured")
     parser.add_argument("--save-dir", help="Optional directory for saving the rendered output")
+    parser.add_argument(
+        "--corpus",
+        action="append",
+        default=[],
+        metavar="DIR",
+        help="Add a local .md/.txt/.pdf directory as a private ranked source (repeatable)",
+    )
+    parser.add_argument(
+        "--corpus-all-time",
+        action="store_true",
+        help="Include matching corpus files older than the research window",
+    )
     parser.add_argument("--output", help="Optional exact file path for saving the rendered output")
     parser.add_argument("--synthesis-file", help="Markdown synthesis to embed in --emit=html output")
     parser.add_argument("--publish-html", action="store_true",
                         help="Publish --emit=html output to ht-ml.app (explicit opt-in; public by default)")
+    parser.add_argument("--publish", action="store_true",
+                        help="With 'library feed', publish the HTML index and briefs (explicit opt-in; public by default); feed.xml remains local")
     parser.add_argument("--publish-password",
-                        help="Optional shared password for --publish-html; prefer LAST30DAYS_PUBLISH_PASSWORD to avoid exposing secrets in process lists")
+                        help="Optional shared password for --publish-html or 'library feed --publish'; prefer LAST30DAYS_PUBLISH_PASSWORD to avoid exposing secrets in process lists")
     parser.add_argument("--store", action="store_true", help="Persist ranked findings to the SQLite research store")
     parser.add_argument("--x-handle", help="X handle for targeted supplemental search")
     parser.add_argument("--x-related", help="Comma-separated related X handles (searched with lower weight)")
@@ -382,7 +567,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--lookback-days",
         dest="lookback_days",
         type=int,
-        default=30,
+        default=None,
         help="Number of days to look back for research (default: 30, watchlist uses 90)",
     )
     parser.add_argument(
@@ -708,12 +893,17 @@ def _write_last_run(
     topic: str,
     report: "schema.Report",
     entity_reports: list[tuple[str, schema.Report]] | None = None,
-) -> None:
+) -> bool:
     try:
         if env.CONFIG_DIR is None:
-            return
+            return False
         target = env.CONFIG_DIR
-        target.mkdir(parents=True, exist_ok=True)
+        cached_reports = entity_reports or [(report.topic, report)]
+        has_private_corpus = any(
+            cached_report.items_by_source.get("corpus")
+            for _, cached_report in cached_reports
+        )
+        _ensure_output_directory(target, private=has_private_corpus)
         counts = {source: len(items) for source, items in report.items_by_source.items()}
         payload = {
             "topic": topic,
@@ -724,7 +914,6 @@ def _write_last_run(
             "comparison": bool(entity_reports),
         }
         (target / "last-run.json").write_text(json.dumps(payload, indent=2))
-        cached_reports = entity_reports or [(report.topic, report)]
         cache_payload = {
             "schema": REPORT_CACHE_VERSION,
             "topic": topic,
@@ -735,13 +924,20 @@ def _write_last_run(
                 for label, cached_report in cached_reports
             ],
         }
-        (target / "last-report.json").write_text(json.dumps(cache_payload, indent=2))
-    except Exception:
-        pass
+        report_cache_path = target / "last-report.json"
+        report_cache_path.write_text(json.dumps(cache_payload, indent=2))
+        if has_private_corpus:
+            report_cache_path.chmod(0o600)
+        return True
+    except Exception as exc:
+        # Never fatal, but never silent either (#787's lesson): callers that
+        # promise cache state (drill chaining) branch on the return value.
+        sys.stderr.write(f"[last30days] warning: could not write run cache: {exc}\n")
+        return False
 
 
 def _load_last_report_cache(
-    topic: str,
+    topic: str | None,
     ttl_seconds: int = DEFAULT_REPORT_CACHE_TTL_SECONDS,
 ) -> tuple[schema.Report, list[tuple[str, schema.Report]] | None, Path] | None:
     cache_path = _last_report_cache_path()
@@ -749,12 +945,14 @@ def _load_last_report_cache(
         return None
     try:
         payload = json.loads(cache_path.read_text(encoding="utf-8"))
+        if not isinstance(payload, dict):
+            raise TypeError("report cache payload must be a JSON object")
         if payload.get("schema") != REPORT_CACHE_VERSION:
             return None
         if not _is_report_cache_fresh(payload.get("timestamp"), ttl_seconds):
             return None
         cached_topic = str(payload.get("topic") or "").strip().lower()
-        if cached_topic != topic.strip().lower():
+        if topic is not None and cached_topic != topic.strip().lower():
             return None
         reports_payload = payload.get("reports") or []
         if not reports_payload:
@@ -773,8 +971,453 @@ def _load_last_report_cache(
                 return None
             return entity_reports[0][1], entity_reports, cache_path
         return entity_reports[0][1], None, cache_path
-    except Exception:
+    except (OSError, json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
+        sys.stderr.write(
+            f"[last30days] Could not read report cache {cache_path}: "
+            f"{type(exc).__name__}: {exc}\n"
+        )
         return None
+
+
+def _config_truthy(value: object) -> bool:
+    return str(value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _freshness_enabled(args: argparse.Namespace, config: dict[str, object]) -> bool:
+    if args.verify_freshness is not None:
+        return bool(args.verify_freshness)
+    return _config_truthy(config.get("LAST30DAYS_VERIFY_FRESHNESS"))
+
+
+def _update_cached_freshness(
+    cache_path: Path,
+    report: schema.Report,
+    entity_reports: list[tuple[str, schema.Report]] | None,
+) -> bool:
+    """Rewrite cached report bodies without extending the research-cache TTL."""
+    try:
+        payload = json.loads(cache_path.read_text(encoding="utf-8"))
+        if not isinstance(payload, dict) or payload.get("schema") != REPORT_CACHE_VERSION:
+            return False
+        existing = payload.get("reports") or []
+        if entity_reports:
+            cached_reports = entity_reports
+        else:
+            label = (
+                str(existing[0].get("entity") or report.topic)
+                if existing and isinstance(existing[0], dict)
+                else report.topic
+            )
+            cached_reports = [(label, report)]
+        payload["reports"] = [
+            {"entity": label, "report": schema.to_dict(cached_report)}
+            for label, cached_report in cached_reports
+        ]
+        cache_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        return True
+    except (OSError, json.JSONDecodeError, TypeError, ValueError) as exc:
+        sys.stderr.write(
+            f"[last30days] warning: could not update freshness cache: {exc}\n"
+        )
+        return False
+
+
+def _verify_report_set(
+    report: schema.Report,
+    entity_reports: list[tuple[str, schema.Report]] | None,
+    *,
+    allow_network: bool,
+) -> None:
+    reports = [item for _, item in entity_reports] if entity_reports else [report]
+    for current_report in reports:
+        freshness.verify_report(current_report, allow_network=allow_network)
+    if not any(current_report.freshness_verdicts for current_report in reports):
+        # An empty verdict list is a legitimate outcome, but a silent one has
+        # already misled operators once; say why there is nothing to show.
+        sys.stderr.write(
+            "[last30days] Freshness verification found no re-checkable claims"
+            " in this report; the verdict list is empty.\n"
+        )
+
+
+def _run_cached_freshness(
+    args: argparse.Namespace,
+    config: dict[str, object],
+) -> int:
+    cached = _load_last_report_cache(
+        None,
+        ttl_seconds=_report_cache_ttl_seconds(config),
+    )
+    if cached is None:
+        sys.stderr.write("[last30days] No fresh cached report; run a research pass first.\n")
+        return 2
+    report, entity_reports, cache_path = cached
+    _verify_report_set(report, entity_reports, allow_network=not args.mock)
+    if _update_cached_freshness(cache_path, report, entity_reports):
+        sys.stderr.write(f"[last30days] Updated freshness verdicts in {cache_path}\n")
+    else:
+        sys.stderr.write("[last30days] warning: freshness cache update failed\n")
+    return _render_save_and_print(args, report, entity_reports, None, config)
+
+
+def _drill_config(config: dict[str, object], sources: list[str]) -> dict[str, object]:
+    """Enable configured comment enrichments for a deep follow-up."""
+    drill_config = dict(config)
+    include = {
+        value.strip().lower()
+        for value in str(config.get("INCLUDE_SOURCES") or "").split(",")
+        if value.strip()
+    }
+    comment_flags = {
+        "youtube": "youtube_comments",
+        "tiktok": "tiktok_comments",
+        "instagram": "instagram_comments",
+    }
+    include.update(comment_flags[source] for source in sources if source in comment_flags)
+    if include:
+        drill_config["INCLUDE_SOURCES"] = ",".join(sorted(include))
+    drill_config["_drill_mode"] = True
+    return drill_config
+
+
+def _run_drill(
+    args: argparse.Namespace,
+    config: dict[str, object],
+) -> int:
+    from lib import planner
+
+    cached = _load_last_report_cache(
+        None,
+        ttl_seconds=_report_cache_ttl_seconds(config),
+    )
+    if cached is None:
+        sys.stderr.write(
+            "[last30days] No fresh cached report; run a research pass first.\n"
+        )
+        return 2
+    report, entity_reports, cache_path = cached
+    if entity_reports:
+        sys.stderr.write(
+            "[last30days] Drill mode needs a single-topic cached report; "
+            "run a research pass for one entity first.\n"
+        )
+        return 2
+
+    lookback_days = args.lookback_days
+    if lookback_days is None:
+        range_from = datetime.date.fromisoformat(report.range_from)
+        range_to = datetime.date.fromisoformat(report.range_to)
+        lookback_days = (range_to - range_from).days
+    as_of_date = args.as_of_date or report.range_to
+
+    try:
+        matched_clusters = planner.resolve_drill_clusters(report, args.drill)
+        drill_plan = planner.build_drill_plan(
+            report,
+            args.drill,
+            clusters=matched_clusters,
+        )
+    except planner.DrillTargetError as exc:
+        sys.stderr.write(f"[last30days] {exc}\n")
+        return 2
+
+    sources = list(drill_plan.source_weights)
+    drill_config = _drill_config(config, sources)
+    diag = pipeline.diagnose(drill_config, sources, safe=False)
+    progress = ui.ProgressDisplay(
+        f"{report.topic} — drill: {args.drill}",
+        show_banner=True,
+    )
+    progress.start_processing()
+    resolved = report.artifacts.get("resolved") or {}
+    try:
+        drill_report = pipeline.run(
+            # Keep source gating anchored to the cached entity (for example,
+            # StockTwits needs the original cashtag/finance context). The
+            # external drill plan below remains cluster-focused.
+            topic=report.topic,
+            config=drill_config,
+            depth="deep",
+            requested_sources=sources,
+            mock=args.mock,
+            x_handle=(
+                (args.x_handle or resolved.get("x_handle") or None)
+                if "x" in sources else None
+            ),
+            x_related=(
+                [value.strip() for value in args.x_related.split(",") if value.strip()]
+                if (args.x_related and "x" in sources) else None
+            ),
+            web_backend=args.web_backend,
+            external_plan=schema.to_dict(drill_plan),
+            subreddits=(
+                ([value.strip().removeprefix("r/") for value in args.subreddits.split(",") if value.strip()]
+                 if args.subreddits else list(resolved.get("subreddits") or []) or None)
+                if "reddit" in sources else None
+            ),
+            tiktok_hashtags=(
+                [value.strip().lstrip("#") for value in args.tiktok_hashtags.split(",") if value.strip()]
+                if args.tiktok_hashtags else None
+            ),
+            tiktok_creators=(
+                [value.strip().lstrip("@") for value in args.tiktok_creators.split(",") if value.strip()]
+                if args.tiktok_creators else None
+            ),
+            ig_creators=(
+                [value.strip().lstrip("@") for value in args.ig_creators.split(",") if value.strip()]
+                if args.ig_creators else None
+            ),
+            lookback_days=lookback_days,
+            as_of_date=as_of_date,
+            github_user=(
+                (args.github_user or resolved.get("github_user") or None)
+                if "github" in sources else None
+            ),
+            github_repos=(
+                ([value.strip() for value in args.github_repo.split(",") if value.strip()]
+                 if args.github_repo else list(resolved.get("github_repos") or []) or None)
+                if "github" in sources else None
+            ),
+            trustpilot_domain=(
+                (args.trustpilot_domain or resolved.get("trustpilot_domain") or None)
+                if "trustpilot" in sources else None
+            ),
+            internal_subrun=True,
+            corpus_dirs=args.corpus,
+            corpus_all_time=args.corpus_all_time,
+        )
+    except Exception:
+        progress.end_processing()
+        raise
+
+    _show_runtime_ui(drill_report, progress, diag, suppress_web_promo=True)
+    merged = pipeline.merge_drill_report(
+        report,
+        drill_report,
+        matched_clusters,
+        target=args.drill,
+    )
+    if _freshness_enabled(args, config):
+        _verify_report_set(merged, None, allow_network=not args.mock)
+    else:
+        merged.freshness_verdicts = []
+    if _write_last_run(report.topic, merged):
+        sys.stderr.write(f"[last30days] Updated drill cache in {cache_path}\n")
+    else:
+        sys.stderr.write(
+            "[last30days] warning: drill cache update failed; the next drill "
+            "will see the pre-drill report\n"
+        )
+
+    store_default = str(
+        os.environ.get("LAST30DAYS_STORE")
+        or config.get("LAST30DAYS_STORE")
+        or ""
+    ).lower()
+    if args.store or store_default in {"1", "true", "yes"}:
+        counts = persist_report(merged, store_db=_scoped_store_db(args))
+        sys.stderr.write(
+            f"[last30days] Stored {counts['new']} new, "
+            f"{counts['updated']} updated findings\n"
+        )
+
+    synthesis_md = None
+    if args.synthesis_file:
+        if args.emit == "html":
+            synthesis_md = read_synthesis_file(args.synthesis_file)
+        else:
+            sys.stderr.write(
+                "[last30days] Warning: --synthesis-file is only used with "
+                "--emit=html; ignoring.\n"
+            )
+    return _render_save_and_print(args, merged, None, synthesis_md, config)
+
+
+def _save_discovery_output(
+    rendered: str,
+    *,
+    domain: str,
+    emit: str,
+    save_dir: str,
+    suffix: str = "",
+) -> Path:
+    directory = Path(save_dir).expanduser().resolve()
+    directory.mkdir(parents=True, exist_ok=True)
+    extension = "json" if emit == "json" else "md"
+    suffix_part = f"-{suffix}" if suffix else ""
+    stem = f"{slugify(domain)}-discover-raw{suffix_part}"
+    date_str = datetime.datetime.now().strftime("%Y-%m-%d")
+    candidates = [directory / f"{stem}.{extension}", directory / f"{stem}-{date_str}.{extension}"]
+    candidates.extend(directory / f"{stem}-{date_str}-{index}.{extension}" for index in range(1, 100))
+    encoded = rendered.encode("utf-8")
+    for candidate in candidates:
+        try:
+            fd = os.open(candidate, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+        except FileExistsError:
+            continue
+        with os.fdopen(fd, "wb") as output:
+            output.write(encoded)
+        return candidate
+    raise RuntimeError("Could not find a unique discovery output filename")
+
+
+def _run_discover(args: argparse.Namespace, config: dict[str, object]) -> int:
+    domain = " ".join(str(args.discover or "").split())
+    if not domain:
+        sys.stderr.write("[last30days] --discover requires a non-empty domain.\n")
+        return 2
+    if args.as_of_date:
+        sys.stderr.write(
+            "[last30days] --as-of cannot be used with --discover because discovery "
+            "sweeps current live listings.\n"
+        )
+        return 2
+    if args.emit == "html" or args.publish_html:
+        sys.stderr.write("[last30days] discovery mode does not support HTML publishing yet.\n")
+        return 2
+    if args.store:
+        sys.stderr.write("[last30days] Warning: --store is not used by discovery mode.\n")
+    if args.synthesis_file:
+        sys.stderr.write("[last30days] Warning: --synthesis-file is not used by discovery mode.\n")
+
+    requested_sources = resolve_requested_sources(args.search, config)
+    if requested_sources:
+        discovery_sources = [
+            source for source in requested_sources
+            if source in pipeline.DISCOVERY_SOURCES
+        ]
+        if not discovery_sources:
+            # A configured source boundary holds even when it leaves nothing
+            # to sweep: silently widening to all feeds would query sources
+            # the user filtered out.
+            origin = "--search" if args.search is not None else "LAST30DAYS_DEFAULT_SEARCH"
+            sys.stderr.write(
+                f"[last30days] {origin} has no discovery-capable sources "
+                f"(unsupported: {', '.join(requested_sources)}); discovery "
+                f"sweeps use: {', '.join(pipeline.DISCOVERY_SOURCES)}. Pass "
+                "--search with one of those (or clear the source filter) to "
+                "run a sweep.\n"
+            )
+            return 2
+        requested_sources = discovery_sources
+    subreddits = (
+        [value.strip().removeprefix("r/") for value in args.subreddits.split(",") if value.strip()]
+        if args.subreddits else None
+    )
+    depth = "deep" if args.deep else "quick" if args.quick else "default"
+    try:
+        report = pipeline.run_discover(
+            domain=domain,
+            config=config,
+            depth=depth,
+            requested_sources=requested_sources,
+            mock=args.mock,
+            subreddits=subreddits,
+            lookback_days=args.lookback_days or 30,
+            as_of_date=args.as_of_date,
+        )
+    except ValueError as exc:
+        sys.stderr.write(f"[last30days] {exc}\n")
+        return 2
+
+    if args.emit == "json":
+        payload = schema.to_dict(report) if args.json_profile == "raw" else schema.to_discovery_export(report)
+        rendered = json.dumps(payload, indent=2, sort_keys=True)
+    else:
+        rendered = render.render_discovery(report)
+
+    if args.output:
+        output_path = save_rendered_output(rendered, args.output)
+        sys.stderr.write(f"[last30days] Saved output to {output_path}\n")
+    if args.save_dir:
+        save_path = _save_discovery_output(
+            rendered,
+            domain=domain,
+            emit=args.emit,
+            save_dir=args.save_dir,
+            suffix=args.save_suffix or "",
+        )
+        sys.stderr.write(f"[last30days] Saved output to {save_path}\n")
+    print(rendered)
+
+    strict = str(config.get("LAST30DAYS_STRICT_EXIT") or "").strip().lower()
+    degraded = [
+        source for source, outcome in report.source_status.items()
+        if outcome.state not in _STRICT_EXIT_OK_STATES
+    ]
+    if strict in {"1", "true", "yes", "on"} and degraded:
+        sys.stderr.write(
+            f"[last30days] strict-exit: degraded sources: {', '.join(sorted(degraded))}\n"
+        )
+        return 3
+    return 0
+
+
+_STRICT_EXIT_OK_STATES = {"ok", "no-results", "skipped-unconfigured"}
+
+
+def _strict_exit_code(
+    report: schema.Report,
+    entity_reports: list[tuple[str, schema.Report]] | None,
+    config: dict[str, object],
+) -> int:
+    """Opt-in machine-detectable degraded-run signal (issue #384).
+
+    When LAST30DAYS_STRICT_EXIT is truthy, a run whose report carries any
+    source outcome that is neither clean nor a plain no-results exits 3 so
+    cron/CI wrappers can distinguish degraded coverage from success. Default
+    behavior (exit 0, warning rendered in the report footer) is unchanged.
+    """
+    raw = str(config.get("LAST30DAYS_STRICT_EXIT") or "").strip().lower()
+    if raw not in {"1", "true", "yes", "on"}:
+        return 0
+    reports = [report] + [rep for _, rep in (entity_reports or [])]
+    degraded = sorted({
+        name
+        for rep in reports
+        for name, outcome in (rep.source_status or {}).items()
+        if outcome.state not in _STRICT_EXIT_OK_STATES
+    })
+    if not degraded:
+        return 0
+    sys.stderr.write(
+        f"[last30days] strict-exit: degraded sources: {', '.join(degraded)}\n"
+    )
+    sys.stderr.flush()
+    return 3
+
+
+def _audience_register_for_run(
+    args: argparse.Namespace,
+    config: dict[str, object],
+    entity_reports: list[tuple[str, schema.Report]] | None,
+) -> registers.AudienceRegister:
+    """Resolve CLI > config for single-topic standard brief renderers."""
+
+    from lib import planner
+
+    topic = " ".join(getattr(args, "topic", [])).strip()
+    comparison_topic_requested = bool(
+        len(planner._comparison_entities(topic)) >= 2
+        or args.competitors is not None
+        or args.competitors_list
+        or args.competitors_plan
+    )
+    if (
+        entity_reports
+        or comparison_topic_requested
+        or args.drill
+        or args.emit not in {"compact", "md", "html"}
+    ):
+        return registers.get_register()
+    explicit = getattr(args, "register", None)
+    configured = config.get("LAST30DAYS_REGISTER")
+    name = explicit or (str(configured) if configured else "default")
+    # Preserve configs written by the pre-register ELI5 follow-up command.
+    legacy_eli5 = str(config.get("ELI5_MODE") or "").strip().lower()
+    if not explicit and not configured and legacy_eli5 in {"1", "true", "yes", "on"}:
+        name = "eli5"
+    return registers.get_register(name)
 
 
 def _render_save_and_print(
@@ -785,6 +1428,14 @@ def _render_save_and_print(
     config: dict[str, object],
 ) -> int:
     fun_level = str(config.get("FUN_LEVEL", "medium")).lower()
+    try:
+        audience = _audience_register_for_run(args, config, entity_reports)
+    except ValueError as exc:
+        sys.stderr.write(f"[last30days] {exc}\n")
+        return 2
+    if audience.name != "default":
+        sys.stderr.write(f"[last30days] Audience register: {audience.name}\n")
+        sys.stderr.flush()
     # Comparison HTML is the one case where the saved file's title and content
     # have to be overridden away from the leading entity's report. Compute the
     # gate once so the footer-display and save-output paths can't disagree.
@@ -805,6 +1456,7 @@ def _render_save_and_print(
             fun_level=fun_level,
             save_path=footer_save_path,
             synthesis_md=synthesis_md,
+            json_profile=args.json_profile,
         )
     else:
         rendered = emit_output(
@@ -813,10 +1465,21 @@ def _render_save_and_print(
             fun_level=fun_level,
             save_path=footer_save_path,
             synthesis_md=synthesis_md,
+            json_profile=args.json_profile,
+            register=audience.name,
         )
+    has_private_corpus = _report_has_private_corpus(report) or bool(
+        entity_reports
+        and any(_report_has_private_corpus(entity) for _label, entity in entity_reports)
+    )
+    private_saved_format = has_private_corpus
     publish_companion_paths: list[Path] = []
     if args.output:
-        output_path = save_rendered_output(rendered, args.output)
+        output_path = save_rendered_output(
+            rendered,
+            args.output,
+            private=private_saved_format,
+        )
         if args.emit == "html":
             publish_companion_paths.append(output_path)
         sys.stderr.write(f"[last30days] Saved output to {output_path}\n")
@@ -831,6 +1494,9 @@ def _render_save_and_print(
             synthesis_md=synthesis_md,
             topic_override=comparison_topic(entity_reports) if is_comparison_html else None,
             rendered_content=rendered if is_comparison_html else None,
+            json_profile=args.json_profile,
+            register=audience.name,
+            private=private_saved_format,
         )
         if args.emit == "html":
             publish_companion_paths.append(save_path)
@@ -844,6 +1510,8 @@ def _render_save_and_print(
                     entity_report, args.emit, args.save_dir,
                     suffix=args.save_suffix or "",
                     synthesis_md=synthesis_md,
+                    json_profile=args.json_profile,
+                    private=_report_has_private_corpus(entity_report),
                 )
                 comparison_peer_paths.append(peer_path)
                 sys.stderr.write(f"[last30days] Saved output to {peer_path}\n")
@@ -855,9 +1523,40 @@ def _render_save_and_print(
         sys.stderr.flush()
     if args.publish_html:
         try:
+            has_private_corpus = "corpus" in report.source_status or bool(
+                entity_reports
+                and any("corpus" in entity.source_status for _label, entity in entity_reports)
+            )
+            publish_rendered = rendered
+            if has_private_corpus:
+                sys.stderr.write(
+                    "[last30days] Excluding local corpus evidence and synthesis from published HTML.\n"
+                )
+                if entity_reports:
+                    publish_rendered = emit_comparison_output(
+                        [
+                            (label, schema.without_sources(entity, {"corpus"}))
+                            for label, entity in entity_reports
+                        ],
+                        "html",
+                        fun_level=fun_level,
+                        save_path=footer_save_path,
+                        synthesis_md=None,
+                        json_profile=args.json_profile,
+                    )
+                else:
+                    publish_rendered = emit_output(
+                        schema.without_sources(report, {"corpus"}),
+                        "html",
+                        fun_level=fun_level,
+                        save_path=footer_save_path,
+                        synthesis_md=None,
+                        json_profile=args.json_profile,
+                        register=audience.name,
+                    )
             publish_result = publish_rendered_html(
-                rendered,
-                password=_publish_password_for_args(args),
+                publish_rendered,
+                password=_publish_password_for_args(args, config),
                 companion_paths=publish_companion_paths,
             )
             sys.stderr.write(f"[last30days] Published HTML to {publish_result['url']}\n")
@@ -873,7 +1572,7 @@ def _render_save_and_print(
             sys.stderr.write(f"[last30days] HTML publish failed: {exc}\n")
             sys.stderr.flush()
     print(rendered)
-    return 0
+    return _strict_exit_code(report, entity_reports, config)
 
 
 def _propagate_config_to_environ(config: dict[str, object]) -> None:
@@ -958,19 +1657,255 @@ def _validate_extra_argv(parser: argparse.ArgumentParser, topic: str, extra_argv
 
 
 def _config_policy_for_args(args: argparse.Namespace, topic: str, extra_argv: list[str]) -> env.ConfigLoadPolicy:
+    normalized_topic = topic.lower()
+    is_library_command = (
+        normalized_topic == "library feed"
+        or normalized_topic == "library search"
+        or normalized_topic.startswith("library search ")
+    )
+    is_cached_verification = bool(getattr(args, "verify_freshness", None)) and not normalized_topic
     if args.no_browser_cookies:
         browser_mode = "off"
-    elif args.diagnose or args.preflight or topic.lower() == "doctor":
+    elif (
+        args.diagnose or args.preflight or normalized_topic == "doctor"
+        or is_library_command or is_cached_verification
+    ):
         # doctor is plan-only like --diagnose: it must never read cookies.
+        # Cache-only freshness verification hits only point APIs (Polymarket,
+        # GitHub, StockTwits) - no cookie-backed source, so no Keychain prompt.
         browser_mode = "plan_only"
-    elif topic.lower() == "setup":
+    elif normalized_topic == "setup":
         browser_mode = "read" if _setup_allows_browser_cookies(args, extra_argv) else "off"
     else:
         browser_mode = "read"
     return env.ConfigLoadPolicy(
         browser_cookies=browser_mode,
-        inspect_ignored_project_config=args.diagnose or args.preflight or topic.lower() == "doctor",
+        inspect_ignored_project_config=args.diagnose or args.preflight or normalized_topic == "doctor",
     )
+
+
+def _run_library_feed(args: argparse.Namespace, config: dict[str, object]) -> int:
+    """Generate the local research index/feed and optionally publish it."""
+    from lib import feed, html_publish, library
+
+    if args.publish_html:
+        sys.stderr.write(
+            "[last30days] library feed uses --publish, not --publish-html.\n"
+        )
+        return 2
+    if args.output:
+        sys.stderr.write(
+            "[last30days] library feed writes index.html and feed.xml to --save-dir; "
+            "--output is not supported.\n"
+        )
+        return 2
+
+    memory_dir = Path(args.save_dir).expanduser() if args.save_dir else library.DEFAULT_MEMORY_DIR
+    output_dir = memory_dir.resolve()
+    # Scoped libraries (--save-dir) must not mix in the global briefing
+    # archive: a client-specific or publishable feed pulling unrelated default
+    # briefings could publish them publicly. The default library keeps the
+    # archive; a scoped one reads only its own directory.
+    briefs_dir = (
+        library.DEFAULT_BRIEFS_DIR if not args.save_dir else memory_dir / "briefings"
+    )
+    entries, notes = library.scan_library(memory_dir, briefs_dir)
+    feed_author = str(
+        config.get("LAST30DAYS_LIBRARY_OWNER") or "last30days research library"
+    )
+    output_dir.mkdir(parents=True, exist_ok=True)
+    library_id = library.get_or_create_library_id(output_dir)
+    rendered_briefs_dir = output_dir / "briefs"
+    has_private_entries = any(
+        render.PRIVATE_CORPUS_START in entry.content for entry in entries
+    )
+    _ensure_output_directory(rendered_briefs_dir, private=has_private_entries)
+
+    def _preserve_hand_written_page(existing_path: Path, generated_marker: str) -> None:
+        """Back up any page library feed did not generate before overwriting it."""
+        if not existing_path.exists():
+            return
+        try:
+            marker_found = generated_marker in existing_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            marker_found = False
+        if marker_found:
+            return
+        backup = existing_path.with_suffix(existing_path.suffix + ".bak")
+        counter = 1
+        while backup.exists():
+            backup = existing_path.with_suffix(f"{existing_path.suffix}.bak{counter}")
+            counter += 1
+        existing_path.replace(backup)
+        sys.stderr.write(
+            f"[last30days] {existing_path.name} was not generated by "
+            f"library feed; preserved the original at {backup.name}\n"
+        )
+
+    publishable_brief_documents: dict[str, str] = {}
+    for entry in entries:
+        rendered = html_render.render_library_brief(entry)
+        target = rendered_briefs_dir / entry.output_name
+        _preserve_hand_written_page(target, html_render.LIBRARY_BRIEF_MARKER)
+        save_rendered_output(
+            rendered,
+            str(target),
+            private=render.PRIVATE_CORPUS_START in entry.content,
+        )
+        publishable_brief_documents[entry.entry_id] = html_render.render_library_brief(
+            entry, include_private=False
+        )
+
+    current_brief_names = {entry.output_name for entry in entries}
+    for path in rendered_briefs_dir.glob("*.html"):
+        is_orphan = path.name not in current_brief_names
+        if not (is_orphan and library.is_generated_brief_name(path.name)):
+            continue
+        # A generated-looking name is not proof of ownership; only prune
+        # pages that carry the renderer's own marker.
+        try:
+            generated = html_render.LIBRARY_BRIEF_MARKER in path.read_text(
+                encoding="utf-8"
+            )
+        except (OSError, UnicodeDecodeError):
+            generated = False
+        if generated:
+            path.unlink()
+
+    feed_xml = feed.render_atom(entries, library_id=library_id, author=feed_author)
+    index_html = html_render.render_library_index(entries)
+    feed_path = output_dir / "feed.xml"
+    index_path = output_dir / "index.html"
+    _preserve_hand_written_page(feed_path, "urn:last30days:research-library")
+    _preserve_hand_written_page(
+        index_path, "Generated locally by <strong>last30days</strong>"
+    )
+    feed_path.write_text(feed_xml, encoding="utf-8")
+    index_path.write_text(index_html, encoding="utf-8")
+
+    for note in notes:
+        sys.stderr.write(f"[last30days] Library note: {note}\n")
+    sys.stderr.write(
+        f"[last30days] Library feed generated {len(entries)} brief(s): "
+        f"{index_path} and {feed_path}\n"
+    )
+
+    if args.publish:
+        password = _publish_password_for_args(args, config)
+        entry_urls: dict[str, str] = {}
+        try:
+            brief_results = html_publish.publish_html_documents(
+                publishable_brief_documents,
+                password=password,
+            )
+            entry_urls = {
+                entry_id: str(result["url"])
+                for entry_id, result in brief_results.items()
+            }
+            if batch_error := getattr(brief_results, "error", None):
+                raise batch_error
+            published_index = html_render.render_library_index(
+                entries,
+                entry_urls=entry_urls,
+                feed_url=None,
+            )
+            index_result = html_publish.publish_html(published_index, password=password)
+            index_url = str(index_result["url"])
+        except (html_publish.HtmlPublishError, KeyError, OSError) as exc:
+            sys.stderr.write(f"[last30days] Library publish failed: {exc}\n")
+            if entry_urls:
+                sys.stderr.write(
+                    f"[last30days] Partial publish: {len(entry_urls)} public brief "
+                    "page(s) were created before the failure.\n"
+                )
+            return 1
+
+        # Keep the local artifacts useful as a record of the live publication.
+        feed_path.write_text(
+            feed.render_atom(
+                entries,
+                library_id=library_id,
+                entry_urls=entry_urls,
+                author=feed_author,
+            ),
+            encoding="utf-8",
+        )
+        index_path.write_text(
+            html_render.render_library_index(entries, entry_urls=entry_urls),
+            encoding="utf-8",
+        )
+        sys.stderr.write(f"[last30days] Published library to {index_url}\n")
+        sys.stderr.write(f"[last30days] Local Atom feed: {feed_path}\n")
+        print(
+            f"Library: {index_url}\nFeed: {feed_path}\n"
+            "Atom feed is local; host feed.xml on any static host (for example, GitHub Pages) "
+            "to make it subscribable."
+        )
+        return 0
+
+    print(
+        f"Library: {index_path}\nFeed: {feed_path}\n"
+        "Atom feed is local; host feed.xml on any static host (for example, GitHub Pages) "
+        "to make it subscribable."
+    )
+    return 0
+
+
+def _run_library_search(
+    args: argparse.Namespace,
+    config: dict[str, object],
+    query: str,
+) -> int:
+    """Search saved briefs and store sightings without network access."""
+    from lib import library, library_index
+
+    if not query.strip():
+        sys.stderr.write("[last30days] library search requires a non-empty query.\n")
+        return 2
+    if args.publish or args.publish_html:
+        sys.stderr.write("[last30days] library search does not publish output.\n")
+        return 2
+    if args.emit != "compact":
+        sys.stderr.write("[last30days] library search currently supports text output only.\n")
+        return 2
+    if args.output:
+        sys.stderr.write(
+            "[last30days] library search prints to stdout; --output is not supported.\n"
+        )
+        return 2
+
+    memory_dir = Path(args.save_dir).expanduser() if args.save_dir else library.DEFAULT_MEMORY_DIR
+    try:
+        matches, synced = library_index.sync_and_search(
+            query,
+            memory_dir=memory_dir,
+            briefs_dir=(
+                memory_dir / "briefings" if args.save_dir else library.DEFAULT_BRIEFS_DIR
+            ),
+            db_path=(
+                memory_dir.resolve() / ".last30days-library.db"
+                if args.save_dir else library_index.DEFAULT_LIBRARY_DB
+            ),
+            # A scoped search must never merge in the shared store: one
+            # client's sightings would leak into another client's scope. A
+            # scoped store is read only if it exists inside the save dir.
+            store_db_path=(
+                memory_dir.resolve() / "research.db"
+                if args.save_dir else library_index.DEFAULT_STORE_DB
+            ),
+        )
+    except library_index.LibrarySearchUnavailable as exc:
+        sys.stderr.write(f"[last30days] Library search unavailable: {exc}.\n")
+        return 2
+    except (OSError, sqlite3.DatabaseError) as exc:
+        sys.stderr.write(f"[last30days] Library search failed: {exc}.\n")
+        return 1
+    for note in synced.notes:
+        sys.stderr.write(f"[last30days] Library note: {note}\n")
+    if synced.rebuilt:
+        sys.stderr.write("[last30days] Rebuilt a corrupt library search index.\n")
+    print(render.render_library_search(query, matches), end="")
+    return 0
 
 
 def main() -> int:
@@ -978,6 +1913,17 @@ def main() -> int:
     # Use parse_known_args so setup sub-flags (--device-auth, --github,
     # --openclaw) pass through without argparse hard-exiting.
     args, extra_argv = parser.parse_known_args()
+    if args.record_fixtures:
+        with http.recording_requests(Path(args.record_fixtures)):
+            return _main(parser, args, extra_argv)
+    return _main(parser, args, extra_argv)
+
+
+def _main(
+    parser: argparse.ArgumentParser,
+    args: argparse.Namespace,
+    extra_argv: list[str],
+) -> int:
     if args.debug:
         os.environ["LAST30DAYS_DEBUG"] = "1"
 
@@ -989,7 +1935,29 @@ def main() -> int:
     topic = " ".join(args.topic).strip()
     original_topic = topic
     _validate_extra_argv(parser, topic, extra_argv)
+    if args.publish and topic.lower() != "library feed":
+        sys.stderr.write(
+            "[last30days] --publish is only supported by the 'library feed' command.\n"
+        )
+        return 2
     config = env.get_config(policy=_config_policy_for_args(args, topic, extra_argv))
+    resolved_corpus_dirs = corpus.resolve_directories(
+        args.corpus, config.get("LAST30DAYS_CORPUS_DIRS")
+    )
+    # EXCLUDE_SOURCES=corpus disables corpus retrieval entirely; the hosted
+    # privacy bypass below must use the same predicate, or hosted users with
+    # configured-but-excluded dirs silently lose the remote backend.
+    excluded_sources = {
+        value.strip().lower()
+        for value in str(config.get("EXCLUDE_SOURCES") or "").split(",")
+        if value.strip()
+    }
+    if "corpus" in excluded_sources:
+        resolved_corpus_dirs = []
+    if resolved_corpus_dirs:
+        config["_CORPUS_DIRS"] = [str(path) for path in resolved_corpus_dirs]
+    if _config_truthy(config.get("LAST30DAYS_CORPUS_IN_EXPORT")):
+        config["_CORPUS_IN_EXPORT"] = True
     _propagate_config_to_environ(config)
 
     # Env-var fallback for --save-dir, mirroring the LAST30DAYS_STORE pattern below.
@@ -1037,6 +2005,11 @@ def main() -> int:
             emit_json=(args.emit == "json" or "--json" in extra_argv),
             cached="--cached" in extra_argv,
         )
+
+    if topic.lower() == "library feed":
+        return _run_library_feed(args, config)
+    if topic.lower() == "library search" or topic.lower().startswith("library search "):
+        return _run_library_search(args, config, topic[len("library search") :].strip())
 
     # Handle setup subcommand
     if topic.lower() == "setup":
@@ -1098,6 +2071,57 @@ def main() -> int:
         sys.stderr.write(setup_wizard.get_setup_status_text(results) + "\n")
         return 0
 
+    if args.discover:
+        if topic:
+            sys.stderr.write(
+                "[last30days] --discover supplies the domain and cannot be combined "
+                "with a positional topic.\n"
+            )
+            return 2
+        if args.drill:
+            sys.stderr.write("[last30days] --discover and --drill are mutually exclusive.\n")
+            return 2
+        return _run_discover(args, config)
+
+    if args.drill:
+        if topic:
+            sys.stderr.write(
+                "[last30days] --drill uses the cached topic and cannot be "
+                "combined with a new topic.\n"
+            )
+            return 2
+        if args.publish_html and args.emit != "html":
+            sys.stderr.write("[last30days] --publish-html requires --emit=html\n")
+            return 2
+        if args.dedicated_subreddits:
+            config["_dedicated_subreddits"] = [
+                value.strip().removeprefix("r/")
+                for value in args.dedicated_subreddits.split(",")
+                if value.strip()
+            ]
+        if args.polymarket_keywords:
+            config["_polymarket_keywords"] = [
+                value.strip().lower()
+                for value in args.polymarket_keywords.split(",")
+                if value.strip()
+            ]
+        return _run_drill(args, config)
+
+    if args.verify_freshness and not topic:
+        return _run_cached_freshness(args, config)
+
+    if args.lookback_days is None:
+        args.lookback_days = 30
+
+    # Reject a misspelled configured register before remote submission or any
+    # local source retrieval. Excluded modes resolve to default and remain
+    # unaffected by the register setting.
+    try:
+        _audience_register_for_run(args, config, None)
+    except ValueError as exc:
+        sys.stderr.write(f"[last30days] {exc}\n")
+        return 2
+
     # Remote API path: when BOTH LAST30DAYS_API_KEY and LAST30DAYS_API_BASE are
     # set (and --mock is not), the search runs through the configured remote API
     # instead of local sources; no local provider keys are needed (see
@@ -1105,20 +2129,53 @@ def main() -> int:
     # to local-only runs - there is no built-in endpoint.
     if (
         topic
-        and not args.diagnose
-        and not args.mock
+        and resolved_corpus_dirs
         and env.read_secret_env("LAST30DAYS_API_KEY")
         and os.environ.get("LAST30DAYS_API_BASE")
     ):
+        sys.stderr.write(
+            "[last30days] Local corpus configured; bypassing the hosted backend so files stay on this machine.\n"
+        )
+    if (
+        topic
+        and not args.diagnose
+        and not args.mock
+        and not args.record_fixtures
+        and env.read_secret_env("LAST30DAYS_API_KEY")
+        and os.environ.get("LAST30DAYS_API_BASE")
+        and not resolved_corpus_dirs
+    ):
+        if _freshness_enabled(args, config):
+            if args.verify_freshness is True:
+                sys.stderr.write(
+                    "[last30days] Freshness verification is not supported by the hosted backend; "
+                    "run locally or omit --verify-freshness.\n"
+                )
+                return 2
+            sys.stderr.write(
+                "hosted backend does not support freshness verification; skipping\n"
+            )
+        if args.emit == "json" and args.json_profile == "agent":
+            sys.stderr.write(
+                "[last30days] --json-profile=agent requires the local Report; "
+                "the remote API backend only supports --json-profile=raw.\n"
+            )
+            return 2
         from lib import hosted
         depth = "deep" if args.deep else "quick" if args.quick else "default"
-        return hosted.run_hosted(
-            topic,
-            depth,
-            emit=args.emit,
-            save_dir=args.save_dir,
-            save_suffix=args.save_suffix or "",
-        )
+        try:
+            audience = _audience_register_for_run(args, config, None)
+        except ValueError as exc:
+            sys.stderr.write(f"[last30days] {exc}\n")
+            return 2
+        hosted_kwargs = {
+            "emit": args.emit,
+            "save_dir": args.save_dir,
+            "save_suffix": args.save_suffix or "",
+        }
+        if audience.name != "default":
+            hosted_kwargs["register"] = audience.name
+        return hosted.run_hosted(topic, depth, **hosted_kwargs)
 
     requested_sources = resolve_requested_sources(args.search, config)
     diag = pipeline.diagnose(config, requested_sources, safe=args.diagnose)
@@ -1159,6 +2216,17 @@ def main() -> int:
                 f"[last30days] Reusing cached report data from {cache_path}\n"
             )
             sys.stderr.flush()
+            if _freshness_enabled(args, config):
+                _verify_report_set(
+                    cached_report,
+                    cached_entity_reports,
+                    allow_network=not args.mock,
+                )
+                _update_cached_freshness(
+                    cache_path,
+                    cached_report,
+                    cached_entity_reports,
+                )
             return _render_save_and_print(
                 args, cached_report, cached_entity_reports, synthesis_md, config
             )
@@ -1327,6 +2395,9 @@ def main() -> int:
                 trustpilot_domain_is_hint=trustpilot_domain_is_hint,
                 internal_subrun=comp_enabled,
                 hiring_signals_mode=args.hiring_signals,
+                save_dir=args.save_dir,
+                corpus_dirs=args.corpus,
+                corpus_all_time=args.corpus_all_time,
             )
             r.artifacts["resolved"] = {
                 "entity": topic,
@@ -1463,6 +2534,9 @@ def main() -> int:
                     as_of_date=args.as_of_date,
                     hiring_signals_mode=args.hiring_signals,
                     internal_subrun=True,
+                    save_dir=args.save_dir,
+                    corpus_dirs=args.corpus,
+                    corpus_all_time=args.corpus_all_time,
                 )
                 report.artifacts["resolved"] = resolved_effective
                 return report
@@ -1489,6 +2563,9 @@ def main() -> int:
         progress.end_processing()
         progress.show_error(str(exc))
         raise
+    if _freshness_enabled(args, config):
+        _verify_report_set(report, entity_reports, allow_network=not args.mock)
+
     _show_runtime_ui(
         report, progress, diag,
         suppress_web_promo=bool(external_plan or comp_plan),
@@ -1505,7 +2582,7 @@ def main() -> int:
         or ""
     ).lower()
     if args.store or _store_env in ("1", "true", "yes"):
-        counts = persist_report(report)
+        counts = persist_report(report, store_db=_scoped_store_db(args))
         sys.stderr.write(
             f"[last30days] Stored {counts['new']} new, {counts['updated']} updated findings\n"
         )

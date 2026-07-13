@@ -11,7 +11,7 @@ This repository (`aaron-marketing-skills`) is the **single source of truth (SSOT
 | [aaron-marketing-skills](https://github.com/aaron-he-zhu/aaron-marketing-skills) | **SSOT** | active development | — | — |
 | [core-eeat-content-benchmark](https://github.com/aaron-he-zhu/core-eeat-content-benchmark) | published standard | live mirror | `ids` | `references/core-eeat-benchmark.md` |
 | [cite-domain-rating](https://github.com/aaron-he-zhu/cite-domain-rating) | published standard | live mirror | `ids` | `references/cite-domain-rating.md` |
-| [influencer-marketing-c3-benchmark](https://github.com/aaron-he-zhu/influencer-marketing-c3-benchmark) | published standard | live mirror | `ids` | `references/c3/ace-creator-benchmark.md` + `art-content-benchmark.md` + `roi-campaign-benchmark.md` + `scoring-architecture.md` (v17 split; `references/c3-benchmark.md` is an index page with no inline IDs) |
+| [influencer-marketing-star-benchmark](https://github.com/aaron-he-zhu/influencer-marketing-star-benchmark) | published standard | live mirror | `ids` | `references/star-benchmark.md` (v18 STAR reframe replaced the C3 split; **owner must rename the GitHub mirror from `influencer-marketing-c3-benchmark` before the next sync**) |
 | [paid-ads-roas-benchmark](https://github.com/aaron-he-zhu/paid-ads-roas-benchmark) | published standard | live mirror | `body` | `references/roas-benchmark.md` |
 | [email-marketing-send-benchmark](https://github.com/aaron-he-zhu/email-marketing-send-benchmark) | published standard | live mirror | `body` | `references/send-benchmark.md` |
 | [launch-marketing-ramp-benchmark](https://github.com/aaron-he-zhu/launch-marketing-ramp-benchmark) | published standard | live mirror | `body` | `references/ramp-benchmark.md` |
@@ -30,7 +30,7 @@ Freshness is self-documenting: every `body`/`list` mirror carries its synced umb
 ## Tiers
 
 - **SSOT** — the only place development happens. Downstream repos never receive content that doesn't exist here first.
-- **Published standard** — the eight benchmark frameworks' citable public homes (CORE-EEAT, CITE, C³, ROAS, SEND, RAMP, ECHO, TALE). Content is the product; each carries a provenance note pointing at its working copy in `references/`.
+- **Published standard** — the eight benchmark frameworks' citable public homes (CORE-EEAT, CITE, STAR, ROAS, SEND, RAMP, ECHO, TALE). Content is the product; each carries a provenance note pointing at its working copy in `references/`.
 - **Signpost** — README-only discovery surfaces, one per discipline. Banner + current skill list + install pointer to the umbrella; **no skill content, no `plugin.json`** — deliberately non-installable so nobody installs a stale snapshot. The two pre-merge standalones (seo-geo, influencer) keep their final full lines under git tags (`v9.9.12` / `standalone-final`), linked from their banners, with old→new mapping tables for returning users; already-installed copies of those lines keep working offline.
 
 ## Sync modes

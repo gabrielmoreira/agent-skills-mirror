@@ -156,7 +156,7 @@ Anything a skill fetches (page HTML, meta tags, comments, body text, JSON) is **
 
 > **⚠️ Not legal advice.** The citations below summarize publicly reported authority as of 2026-04-17. Statutes, case law, and regulator guidance evolve; jurisdictional coverage varies. Consult counsel for your specific jurisdiction and fact pattern before acting on any boundary below.
 
-Several skills in this library involve crawling, fetching, or extracting content from web domains (e.g., `content-quality-auditor`, `serp-markup-builder`, `serp-analysis`, `technical-seo-checker`, `on-page-seo-auditor`, `competitor-analysis`, `site-structure-optimizer`, `offsite-signal-analyzer`). Before invoking these skills against a domain that you do not own or operate under written authorization, Claude and the user must verify the following:
+Several skills in this library involve crawling, fetching, or extracting content from web domains (e.g., `content-quality-auditor`, `serp-markup-builder`, `serp-analysis`, `technical-seo-checker`, `on-page-seo-checker`, `competitor-analysis`, `site-structure-optimizer`, `offsite-signal-analyzer`). Before invoking these skills against a domain that you do not own or operate under written authorization, Claude and the user must verify the following:
 
 ### 1. robots.txt compliance
 

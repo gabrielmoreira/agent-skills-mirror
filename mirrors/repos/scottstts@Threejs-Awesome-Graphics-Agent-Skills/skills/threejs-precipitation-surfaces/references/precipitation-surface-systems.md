@@ -179,4 +179,4 @@ Known failure modes:
 - puddle masks are independent of roughness and normal changes;
 - splashes sample all triangles and appear under objects;
 - rain progress affects particles but not the material, or the reverse;
-- license notices are stripped from copied GPL-derived rain examples.
+- license notices are stripped from GPL-derived rain code.

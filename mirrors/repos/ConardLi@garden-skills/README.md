@@ -100,7 +100,9 @@ Links: [README](./skills/web-video-presentation/README.md) · [SKILL.md](./skill
 
 Highlights:
 
-- Defines a six-step design workflow: requirements → context → design system → v0 → full build → verification
+- Converts the brief into a five-dial Design Read covering variance, motion, density, asset dependence, and brand fidelity
+- Distinguishes extension, preserve, and overhaul redesign modes before changing an existing product
+- Runs executable browser acceptance only when the user explicitly requests acceptance, QA, or browser testing
 - Pushes beyond generic AI UI patterns with an anti-cliché blocklist and stronger visual judgment
 - Ships a **Design Direction Advisor (six differentiated schools) + 25 anchored style recipes** (Linear / Aesop / Pentagram / Bloomberg / Stripe Press / Mid-Century, etc.) — each recipe carries concrete palette, typography, signature moves, and anti-patterns ready to paste into the design-system declaration
 - Covers HTML / CSS / JavaScript / React prototypes, with guidance for responsive layout, motion, and interaction polish
@@ -130,7 +132,7 @@ Highlights:
 
 <sub>↑ 12 of 25 anchored recipes — <a href="./skills/web-design-engineer/README.md#style-recipe-gallery"><b>open the full gallery</b></a> for all 25 working artefacts (apothecary pages, trading workstations, magazine covers, Y2K portals, mid-century posters …) with signature moves and best-for tags.</sub>
 
-Links: [README](./skills/web-design-engineer/README.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[Download v1.2.2 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.2.2/web-design-engineer-1.2.2.zip)<!-- DOWNLOAD:web-design-engineer:end -->
+Links: [README](./skills/web-design-engineer/README.md) · [SKILL.md](./skills/web-design-engineer/SKILL.md) · [Website](./website/web-design-website) · [Demo](./demo/web-design-demo) · <!-- DOWNLOAD:web-design-engineer:start -->[Download v1.3.0 .zip](https://github.com/ConardLi/garden-skills/releases/download/web-design-engineer-v1.3.0/web-design-engineer-1.3.0.zip)<!-- DOWNLOAD:web-design-engineer:end -->
 
 ---
 

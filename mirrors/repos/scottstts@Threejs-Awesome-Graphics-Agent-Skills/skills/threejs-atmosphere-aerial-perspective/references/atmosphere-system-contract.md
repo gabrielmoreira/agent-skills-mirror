@@ -5,10 +5,10 @@ Use this contract to choose between a precomputed LUT/ellipsoid atmosphere and b
 ## Contents
 
 - Shared parameter model
-- LUT atmosphere implementation LUT contract
+- LUT atmosphere contract
 - Ellipsoid and depth ownership
-- planet-space implementation body profiles
-- planet-space implementation integration
+- Dynamic-integration body profiles
+- Dynamic integration
 - Shell/post handoff
 - Implementation limits
 - Diagnostics
@@ -16,8 +16,8 @@ Use this contract to choose between a precomputed LUT/ellipsoid atmosphere and b
 
 ## Shared parameter model
 
-`LUT atmosphere implementation` keeps one atmosphere object for sky and aerial perspective.
-Earth-like defaults:
+The LUT path — the `lut-aerial-perspective` example — keeps one atmosphere
+object for sky and aerial perspective. Earth-like defaults:
 
 ```text
 solar irradiance = (1.474, 1.8504, 1.91198)
@@ -52,7 +52,7 @@ another ground-heavy exponential.
 One explicit meter-to-render-unit conversion is applied when parameters become
 uniforms. Preserve this single conversion boundary.
 
-## LUT atmosphere implementation LUT contract
+## LUT atmosphere contract
 
 The sky material and aerial-perspective effect consume the same:
 
@@ -106,9 +106,10 @@ The aerial effect declares depth ownership through its post-processing effect
 attribute. It also supports octahedral normals or normal reconstruction when
 lighting terms require orientation.
 
-## planet-space implementation body profiles
+## Dynamic-integration body profiles
 
-planet-space implementation derives profiles by body kind and density. Terrestrial baseline:
+The dynamic per-body path derives profiles by body kind and density.
+Terrestrial baseline:
 
 ```text
 Rayleigh = (0.0058, 0.0135, 0.0331)
@@ -133,9 +134,9 @@ g <= 0.92
 
 This prevents negative absorption and unstable phase behavior.
 
-## planet-space implementation integration
+## Dynamic integration
 
-For each camera ray, planet-space implementation:
+For each camera ray, the dynamic path:
 
 1. intersects the top atmosphere sphere;
 2. clamps the segment against the surface sphere;
@@ -152,12 +153,12 @@ It adds an upper-Rayleigh exponential term and fades density over the final
 
 The compact path includes a small multiple-scattering approximation derived
 from `1 - transmittance`; it is not equivalent to the precomputed higher-order
-scattering available in `LUT atmosphere implementation`.
+scattering available in the LUT path.
 
 ## Shell/post handoff
 
-planet-space implementation renders a double-sided shell and a depth-aware post path from one
-profile. Runtime face-opacity weights avoid a hard front/back cull switch.
+The dynamic path renders a double-sided shell and a depth-aware post path from
+one profile. Runtime face-opacity weights avoid a hard front/back cull switch.
 
 The post blend is based on altitude above the atmosphere top:
 
@@ -183,12 +184,12 @@ continuous shell/post blend
 
 ## Implementation limits
 
-- planet-space implementation performs nested dynamic integration and is expensive compared with
+- The dynamic path performs nested integration and is expensive compared with
   LUT lookup.
-- Its atmosphere uses spheres, while `LUT atmosphere implementation` supports an ellipsoid
+- Its atmosphere uses spheres, while the LUT example supports an ellipsoid
   and ECEF correction.
-- planet-space implementation’s multiple-scattering term is an artistic approximation.
-- `LUT atmosphere implementation` is version-sensitive and built around its own
+- The dynamic path’s multiple-scattering term is an artistic approximation.
+- The LUT architecture is version-sensitive and built around its own
   post-processing/coordinate utilities; adapt the architecture, not imports
   blindly.
 - Do not combine LUT radiance and dynamic integrated radiance at full weight.

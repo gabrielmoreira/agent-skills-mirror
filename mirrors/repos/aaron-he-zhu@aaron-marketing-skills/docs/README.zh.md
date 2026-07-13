@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills"><img src="https://img.shields.io/github/stars/aaron-he-zhu/aaron-marketing-skills?style=flat" alt="GitHub Stars"></a>
-  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-17.0.0-orange" alt="Version"></a>
+  <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/VERSIONS.md"><img src="https://img.shields.io/badge/version-18.0.0-orange" alt="Version"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
   <a href="https://github.com/aaron-he-zhu/aaron-marketing-skills/commits/main"><img src="https://img.shields.io/github/last-commit/aaron-he-zhu/aaron-marketing-skills" alt="Last Commit"></a>
 </p>
@@ -24,13 +24,13 @@
 
 | 层 | 技能 | 生命周期（阶段目录） | 框架 → 门 | 入口命令 |
 |----|------|----------------------|-----------|----------|
-| **品牌叙事（TALE）** | 16 | trace → architect → land → evaluate | [TALE](../references/tale-benchmark.md) → `narrative-quality-auditor` (truth / system / effectiveness profiles) | `/aaron-marketing:narrative` |
-| **SEO/GEO** | 16 | research → build → optimize → monitor | [CORE-EEAT](../references/core-eeat-benchmark.md) → `content-quality-auditor` · [CITE](../references/cite-domain-rating.md) → `domain-authority-auditor` | `/aaron-marketing:seo-geo` |
-| **自然社媒（ECHO）** | 16 | explore → craft → host → observe | [ECHO](../references/echo-benchmark.md) → `social-quality-auditor` (asset / program-maturity profiles) | `/aaron-marketing:social` |
-| **邮件营销（SEND）** | 16 | setup → engage → nurture → deliver | [SEND](../references/send-benchmark.md) → `email-quality-auditor`（EQS） | `/aaron-marketing:email` |
-| **付费广告（ROAS）** | 16 | research → orchestrate → activate → scale | [ROAS](../references/roas-benchmark.md) → `ad-account-auditor`（RQS） | `/aaron-marketing:ad` |
-| **红人** | 16 | discover → plan → activate → measure | [C³](../references/c3-benchmark.md) → `content-reviewer`（ART）；`fit-scorer` 打 ACE 分 | `/aaron-marketing:influencer` |
-| **产品发布（RAMP）** | 16 | research → assemble → mobilize → prove | [RAMP](../references/ramp-benchmark.md) → `launch-readiness-auditor` (preflight / execution / outcome profiles) | `/aaron-marketing:launch` |
+| **品牌叙事** | 16 | trace → architect → land → evaluate | [TALE](../references/tale-benchmark.md) → `narrative-quality-auditor` (truth / system / effectiveness profiles) | `/aaron-marketing:narrative` |
+| **SEO/GEO** | 16 | survey → implement → tune → evaluate | [CORE-EEAT](../references/core-eeat-benchmark.md) → `content-quality-auditor` · [CITE](../references/cite-domain-rating.md) → `domain-authority-auditor` | `/aaron-marketing:seo-geo` |
+| **自然社媒** | 16 | explore → craft → host → observe | [ECHO](../references/echo-benchmark.md) → `social-quality-auditor` (asset / program-maturity profiles) | `/aaron-marketing:social` |
+| **邮件营销** | 16 | setup → engage → nurture → deliver | [SEND](../references/send-benchmark.md) → `email-quality-auditor`（EQS） | `/aaron-marketing:email` |
+| **付费广告** | 16 | research → orchestrate → activate → scale | [ROAS](../references/roas-benchmark.md) → `ad-account-auditor`（RQS） | `/aaron-marketing:ad` |
+| **红人** | 16 | scout → target → activate → report | [STAR](../references/star-benchmark.md) → `creator-content-auditor`（SQS）；`fit-scorer` 打 Suitability (S) 分 | `/aaron-marketing:influencer` |
+| **产品发布** | 16 | research → assemble → mobilize → prove | [RAMP](../references/ramp-benchmark.md) → `launch-readiness-auditor` (preflight / execution / outcome profiles) | `/aaron-marketing:launch` |
 | **协议层** | 8 | ——（阶段流程之外的共享机件） | 7 个真相注册表（实体 · 创作者 · offer/声明 · 同意 · 发布 · 频道 · 叙事）+ HOT/WARM/COLD 记忆 | —— |
 
 `/aaron-marketing:auto` 可把任意自然语言目标路由到整套体系。技能与命令都是**纯 Markdown**；小型 Bash/Python 标准库运行时提供 hooks、校验、评分、注册表事件、连接器与 CI 检查（无 `pip`、无构建步骤）。**每个技能都在 Tier 1 用你提供的数据即可运行**；连接器只自动化数据拉取，或一次经明确批准的变更。
@@ -54,8 +54,8 @@
   - [记忆与自动化](#记忆与自动化)
 - [技能目录](#技能目录)
   - [品牌叙事 — TALE（16）](#品牌叙事--tale16)
-  - [SEO/GEO（16）](#seogeo16)
-  - [红人（16）](#红人16)
+  - [SEO/GEO — SITE（16）](#seogeo--site16)
+  - [红人 — STAR（16）](#红人--star16)
   - [付费广告 — ROAS（16）](#付费广告--roas16)
   - [邮件营销 — SEND（16）](#邮件营销--send16)
   - [产品发布 — RAMP（16）](#产品发布--ramp16)
@@ -124,7 +124,7 @@
 /aaron-marketing:auto 把我们的定价页改造成可被 AI 引用的对比中心
 ```
 ```text
-/aaron-marketing:seo-geo https://example.com/blog/my-article --mode audit
+/aaron-marketing:seo-geo https://example.com/blog/my-article --phase tune
 ```
 
 `/aaron-marketing:auto` 会推断意图并执行最小够用的工作流，只在阻塞性决策处停下。每个技能都能用粘贴的数据运行；可选工具见 [CONNECTORS.md](../CONNECTORS.md)。
@@ -154,13 +154,13 @@
 > | 层 | 上手节奏 | 学科 | 节律 |
 > |----|----------|------|------|
 > | **L1 · 策略** —— 我们说什么 / 我们是谁 | crawl | **品牌叙事** · TALE | 常态 |
-> | **L2 · 频道** —— 表达策略的常态引擎（自有 → 付费） | walk | **SEO/GEO** · CORE-EEAT + CITE · **自然社媒** · ECHO · **邮件** · SEND · **付费广告** · ROAS · **红人** · C³ | 常态（红人偏阶段性） |
+> | **L2 · 频道** —— 表达策略的常态引擎（自有 → 付费） | walk | **SEO/GEO** · CORE-EEAT + CITE · **自然社媒** · ECHO · **邮件** · SEND · **付费广告** · ROAS · **红人** · STAR | 常态（红人偏阶段性） |
 > | **L3 · 编排** —— 跨频道的限时时刻 | run | **产品发布** · RAMP | 阶段性 |
 > | **L4 · 协议** —— 共享的系统级记录 | —— | 7 个真相注册表 + 工作记忆 · 8 个 auditor 门 · 一套技能契约 | —— |
 >
 > 叙事是消息，频道是表达它的媒介。每个核心 builder 都会记录它所使用的确切准则 ID/版本与声明投影偏移量（offset），或一次经明确批准的回退/阻断。每个学科自己的 4 阶段循环都活在它所属的层里（叙事 = Trace → Architect → Land → Evaluate）。
 
-七个学科都用阶段**目录**（`narrative/trace/`…、`seo-geo/research/`…、`influencer/discover/`…、`ad/research/`…、`email/setup/`…、`launch/research/`…、`social/explore/`…）。注意 "activate" 在红人里指创作者外联、在付费里指账户门控——同词不同域。
+七个学科都用阶段**目录**（`narrative/trace/`…、`seo-geo/survey/`…、`influencer/scout/`…、`ad/research/`…、`email/setup/`…、`launch/research/`…、`social/explore/`…）。注意 "activate" 在红人里指创作者外联、在付费里指账户门控——同词不同域。
 
 ### 质量体系：八框架、八门
 
@@ -171,7 +171,7 @@
 | **[TALE](../references/tale-benchmark.md)** | 品牌叙事的真相 / 体系 / 效果 | T / A / L / E | `truth`、`system`、`effectiveness` 三个 profile 结果各自独立；无总合成分 | TALE `T1`/`A1`/`L1`/`E1` |
 | **[CORE-EEAT](../references/core-eeat-benchmark.md)** | 内容质量，附 CORE/GEO 与 EEAT/SEO 诊断视图 | 80 项 / 8 维 | 完整的 profile 加权结果；诊断视图不是独立总分 | `T04`/`C01`/`R10` |
 | **[CITE](../references/cite-domain-rating.md)** | 域名权威与引用信任 | 40 项 / 4 维 | 算术 profile 加权平均 | `T03`/`T05`/`T09` |
-| **[C³](../references/c3-benchmark.md)** | 红人 Creator / Content / Campaign | ACE / ART / ROI；9 维 | 三个完整且口径兼容的 scope 结果齐备后取 `CVI = floor((ACE x ART x ROI)^(1/3))` | ACE `A2`/`C1`/`E2`；ART `T1`/`T2` |
+| **[STAR](../references/star-benchmark.md)** | 红人 Suitability / Trust / Appeal / Return | S / T / A / R；40 项 / 4 维 | `SQS = floor(profile-weighted mean)` | `STAR-S2`/`S6`, `STAR-T1`/`T2`/`T3` |
 | **[ROAS](../references/roas-benchmark.md)** | 付费广告的增量贡献与运营质量 | R / O / A / S | `RQS = floor(profile-weighted mean)` | `R1`/`R2`/`O1`/`O2`/`A1` |
 | **[SEND](../references/send-benchmark.md)** | 邮件的发件人完整性 / 互动 / 培育 / 直接成效 | S / E / N / D | `EQS = floor(profile-weighted mean)` | `S1`/`S2`/`N1`/`D1` |
 | **[RAMP](../references/ramp-benchmark.md)** | 产品发布的就绪 / 资产 / 势能 / 证明 | R / A / M / P；40 个稳定 ID | `preflight`、`execution`、`outcome` 三个 profile 结果各自独立；绝不跨时间视界取平均 | RAMP `R1`/`A1`/`M1`/`P1` |
@@ -182,9 +182,9 @@
 | 门 | 框架 | 所在 | 判定 |
 |----|------|------|------|
 | [narrative-quality-auditor](../narrative/evaluate/narrative-quality-auditor/SKILL.md) | TALE 三 profile | `narrative/evaluate/` | truth/system/effectiveness 结果各自独立；无合成总分 |
-| [content-quality-auditor](../seo-geo/optimize/content-quality-auditor/SKILL.md) | CORE-EEAT | `seo-geo/optimize/` | SHIP / FIX / BLOCK / UNDECIDED |
-| [domain-authority-auditor](../seo-geo/monitor/domain-authority-auditor/SKILL.md) | CITE | `seo-geo/monitor/` | SHIP / FIX / BLOCK / UNDECIDED；信任标签仅作解释 |
-| [content-reviewer](../influencer/activate/content-reviewer/SKILL.md) | C³ ART | `influencer/activate/` | SHIP / FIX / BLOCK / UNDECIDED，另附面向创作者的转述 |
+| [content-quality-auditor](../seo-geo/tune/content-quality-auditor/SKILL.md) | CORE-EEAT | `seo-geo/tune/` | SHIP / FIX / BLOCK / UNDECIDED |
+| [domain-authority-auditor](../seo-geo/evaluate/domain-authority-auditor/SKILL.md) | CITE | `seo-geo/evaluate/` | SHIP / FIX / BLOCK / UNDECIDED；信任标签仅作解释 |
+| [creator-content-auditor](../influencer/activate/creator-content-auditor/SKILL.md) | STAR SQS | `influencer/activate/` | SHIP / FIX / BLOCK / UNDECIDED，另附面向创作者的转述 |
 | [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md) | ROAS | `ad/activate/` | SHIP / FIX / BLOCK / UNDECIDED |
 | [email-quality-auditor](../email/deliver/email-quality-auditor/SKILL.md) | SEND | `email/deliver/` | SHIP / FIX / BLOCK / UNDECIDED |
 | [launch-readiness-auditor](../launch/mobilize/launch-readiness-auditor/SKILL.md) | RAMP 生命周期 profile | `launch/mobilize/` | 对一个已声明的生命周期读数给出 SHIP / FIX / BLOCK / UNDECIDED |
@@ -198,7 +198,7 @@
 
 | 技能 | 职责 | 锚定 | 规范事件流 / 运行时角色 |
 |------|------|------|----------|
-| [entity-optimizer](../protocol/entity-optimizer/SKILL.md) | 规范品牌/实体档案（知识图谱、Wikidata、AI 消歧） | SEO/GEO | `memory/events/entities.ndjson` |
+| [entity-registry](../protocol/entity-registry/SKILL.md) | 规范品牌/实体档案（知识图谱、Wikidata、AI 消歧） | SEO/GEO | `memory/events/entities.ndjson` |
 | [creator-registry](../protocol/creator-registry/SKILL.md) | 规范创作者名册/档案——去重 handle、带溯源标签的受众数据、费率、合规历史 | 红人 | `memory/events/creators.ndjson` |
 | [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md) | offer 与声明实证台账——O1/T2 声明检查所对照评判的那份记录 | 付费 | `memory/events/claims.ndjson` |
 | [consent-registry](../protocol/consent-registry/SKILL.md) | 规范的按主体同意/抑制记录——S2/N1 否决项对照评判的那份记录 | 邮件 | `memory/events/consent.ndjson` |
@@ -231,7 +231,7 @@
 | `PostToolBatch` | （全部） | 每批并行工具结束后复核 operational memory 与完整审计保留区。 |
 | `Stop` | （全部） | 执行最后一次有界扫描并可阻止一次以便修复；`stop_hook_active` 会放行后续停止。pre-commit/CI 仅保护已提交 Git 内容中的 PII，不校验被忽略的 runtime 工件。 |
 
-Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE、C³、ROAS、SEND、RAMP、ECHO、TALE 工件，无任何针对单框架的代码。
+Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE、STAR、ROAS、SEND、RAMP、ECHO、TALE 工件，无任何针对单框架的代码。
 
 ---
 
@@ -271,20 +271,20 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 | narrative-resonance-monitor | E | 叙事共鸣监控——消息采纳、复述保真、共鸣信号（复用 bluesky.py/gdelt.py/tavily.py/wayback.py 为 proxy，始终标注）。 |
 | narrative-drift-monitor | E | 叙事漂移监控——跨频道口径偏离、失控消息、准则违规预警。 |
 
-**跨学科复用**（计入原阶段，不重复造轮子）：[positioning-mapper](../launch/research/positioning-mapper/SKILL.md)（物理留在 launch，逻辑读作 TALE Trace 最前端）、[message-house-builder](../launch/assemble/message-house-builder/SKILL.md)、[audience-mapper](../influencer/discover/audience-mapper/SKILL.md)、[share-of-voice-tracker](../social/observe/share-of-voice-tracker/SKILL.md)。**无新增连接器**——叙事共鸣复用 `bluesky.py`/`gdelt.py`/`tavily.py`/`wayback.py`。品牌叙事真相注册表 `narrative-registry` 位于协议层。
+**跨学科复用**（计入原阶段，不重复造轮子）：[positioning-mapper](../launch/research/positioning-mapper/SKILL.md)（物理留在 launch，逻辑读作 TALE Trace 最前端）、[message-house-builder](../launch/assemble/message-house-builder/SKILL.md)、[audience-mapper](../influencer/scout/audience-mapper/SKILL.md)、[share-of-voice-tracker](../social/observe/share-of-voice-tracker/SKILL.md)。**无新增连接器**——叙事共鸣复用 `bluesky.py`/`gdelt.py`/`tavily.py`/`wayback.py`。品牌叙事真相注册表 `narrative-registry` 位于协议层。
 
 </details>
 
-### SEO/GEO（16）
+### SEO/GEO — SITE（16）
 
-四个阶段目录，外加本学科的两个质量门（标 ⛩）。
+四个阶段目录沿 SITE 循环（Survey 勘测 → Implement 实施 → Tune 调优 → Evaluate 评估），外加本学科的两个质量门（标 ⛩）；质量基准仍是 CORE-EEAT + CITE，循环品牌与基准名彼此独立。
 
 | 阶段 | 技能 |
 |------|------|
-| **研究** | [keyword-research](../seo-geo/research/keyword-research/SKILL.md), [competitor-analysis](../seo-geo/research/competitor-analysis/SKILL.md), [serp-analysis](../seo-geo/research/serp-analysis/SKILL.md), [content-gap-analysis](../seo-geo/research/content-gap-analysis/SKILL.md) |
-| **构建** | [content-writer](../seo-geo/build/content-writer/SKILL.md)（合并 seo-content-writer + content-refresher）, [geo-content-optimizer](../seo-geo/build/geo-content-optimizer/SKILL.md), [serp-markup-builder](../seo-geo/build/serp-markup-builder/SKILL.md)（合并 meta-tags-optimizer + schema-markup-generator）, [page-play-builder](../seo-geo/build/page-play-builder/SKILL.md)（合并 programmatic + parasite + comparison + local，4 模式） |
-| **优化** | ⛩ [content-quality-auditor](../seo-geo/optimize/content-quality-auditor/SKILL.md), [technical-seo-checker](../seo-geo/optimize/technical-seo-checker/SKILL.md), [on-page-seo-auditor](../seo-geo/optimize/on-page-seo-auditor/SKILL.md), [site-structure-optimizer](../seo-geo/optimize/site-structure-optimizer/SKILL.md)（合并 internal-linking-optimizer + site-architecture） |
-| **监控** | ⛩ [domain-authority-auditor](../seo-geo/monitor/domain-authority-auditor/SKILL.md), [rank-tracker](../seo-geo/monitor/rank-tracker/SKILL.md), [performance-monitor](../seo-geo/monitor/performance-monitor/SKILL.md)（合并 performance-reporter + alert-manager）, [offsite-signal-analyzer](../seo-geo/monitor/offsite-signal-analyzer/SKILL.md)（合并 backlink-analyzer + ai-traffic） |
+| **Survey 勘测** | [keyword-research](../seo-geo/survey/keyword-research/SKILL.md), [competitor-analysis](../seo-geo/survey/competitor-analysis/SKILL.md), [serp-analysis](../seo-geo/survey/serp-analysis/SKILL.md), [content-gap-analysis](../seo-geo/survey/content-gap-analysis/SKILL.md) |
+| **Implement 实施** | [content-writer](../seo-geo/implement/content-writer/SKILL.md), [geo-content-optimizer](../seo-geo/implement/geo-content-optimizer/SKILL.md), [serp-markup-builder](../seo-geo/implement/serp-markup-builder/SKILL.md), [page-play-builder](../seo-geo/implement/page-play-builder/SKILL.md) |
+| **Tune 调优** | ⛩ [content-quality-auditor](../seo-geo/tune/content-quality-auditor/SKILL.md), [technical-seo-checker](../seo-geo/tune/technical-seo-checker/SKILL.md), [on-page-seo-checker](../seo-geo/tune/on-page-seo-checker/SKILL.md), [site-structure-optimizer](../seo-geo/tune/site-structure-optimizer/SKILL.md) |
+| **Evaluate 评估** | ⛩ [domain-authority-auditor](../seo-geo/evaluate/domain-authority-auditor/SKILL.md), [rank-tracker](../seo-geo/evaluate/rank-tracker/SKILL.md), [performance-monitor](../seo-geo/evaluate/performance-monitor/SKILL.md), [offsite-signal-analyzer](../seo-geo/evaluate/offsite-signal-analyzer/SKILL.md) |
 
 <details><summary><b>逐技能用途（SEO/GEO）</b></summary>
 
@@ -294,18 +294,18 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 | competitor-analysis | 分析竞品 SEO 策略，对比域名，挖出其关键词与缺口。 |
 | serp-analysis | 读懂 SERP——特性、摘要、People Also Ask、某查询的排名规律。 |
 | content-gap-analysis | 找出相对竞品缺失的主题与覆盖空洞。 |
-| content-writer | 撰写并刷新 SEO 优化的文章、博文、落地页、产品文案（合并 seo-content-writer + content-refresher）。 |
+| content-writer | 撰写并刷新 SEO 优化的文章、博文、落地页、产品文案。 |
 | geo-content-optimizer | 为 AI 引擎（ChatGPT、Perplexity、AI Overviews、Gemini、Claude、Copilot）优化内容。 |
-| serp-markup-builder | 标题标签、元描述、Open Graph、Twitter Cards + JSON-LD / Schema.org 结构化数据（合并 meta-tags-optimizer + schema-markup-generator）。 |
-| page-play-builder | programmatic / parasite / comparison / local 四模式页面打法——模板批量页、第三方平台发布、对比页、本地 SEO（合并 4 个技能）。 |
+| serp-markup-builder | 标题标签、元描述、Open Graph、Twitter Cards + JSON-LD / Schema.org 结构化数据。 |
+| page-play-builder | programmatic / parasite / comparison / local 四模式页面打法——模板批量页、第三方平台发布、对比页、本地 SEO。 |
 | ⛩ content-quality-auditor | 80 项 CORE-EEAT 发布就绪门（SHIP/FIX/BLOCK）。 |
 | technical-seo-checker | 站点速度、Core Web Vitals、索引、可抓取性、robots。 |
-| on-page-seo-auditor | 审计页面级 on-page 健康度——标题层级、关键词布局、图片、质量信号。 |
-| site-structure-optimizer | 内链结构、锚文本分布、孤立页 + 页面层级、导航、URL 分类、hub/spoke 主题集群（合并 internal-linking-optimizer + site-architecture）。 |
+| on-page-seo-checker | 审计页面级 on-page 健康度——标题层级、关键词布局、图片、质量信号。 |
+| site-structure-optimizer | 内链结构、锚文本分布、孤立页 + 页面层级、导航、URL 分类、hub/spoke 主题集群。 |
 | ⛩ domain-authority-auditor | 40 项 CITE 域名信任门（TRUSTED/CAUTIOUS/UNTRUSTED）。 |
 | rank-tracker | 跟踪关键词排名、位次变化与跌幅。 |
-| performance-monitor | 多指标 SEO/GEO 绩效报告与看板 + 排名/流量/外链/技术/AI 可见性告警（合并 performance-reporter + alert-manager）。 |
-| offsite-signal-analyzer | 外链档案、链接质量、毒链、锚文本分布 + 在你自己的 GA4 / GSC / 服务器日志中度量 AI 助手引荐流量（合并 backlink-analyzer + ai-traffic）。 |
+| performance-monitor | 多指标 SEO/GEO 绩效报告与看板 + 排名/流量/外链/技术/AI 可见性告警。 |
+| offsite-signal-analyzer | 外链档案、链接质量、毒链、锚文本分布 + 在你自己的 GA4 / GSC / 服务器日志中度量 AI 助手引荐流量。 |
 
 </details>
 
@@ -341,7 +341,7 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 | dark-social-attributor | O | 暗社交归因——不可追踪引荐、self-reported 渠道、复制粘贴分享估算。 |
 | social-measurement-loop | O | 把一次社媒动作相对基线在窗口内回读 → Promote / Keep-testing / Rollback / Unproven。 |
 
-**跨学科复用**（计入原阶段，不重复造轮子）：[trend-spotter](../influencer/discover/trend-spotter/SKILL.md)、[audience-mapper](../influencer/discover/audience-mapper/SKILL.md)、[content-amplifier](../influencer/activate/content-amplifier/SKILL.md)、[outreach-manager](../influencer/activate/outreach-manager/SKILL.md)、[competitor-tracker](../influencer/plan/competitor-tracker/SKILL.md)、[landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md)、[performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md)、[roi-calculator](../influencer/measure/roi-calculator/SKILL.md)、[report-generator](../influencer/measure/report-generator/SKILL.md)、[offer-claims-registry](../protocol/offer-claims-registry/SKILL.md)、[community-launch-runner](../launch/mobilize/community-launch-runner/SKILL.md)、[creator-registry](../protocol/creator-registry/SKILL.md)、[page-play-builder](../seo-geo/build/page-play-builder/SKILL.md)、[memory-management](../protocol/memory-management/SKILL.md)。社媒真相注册表 `channel-registry` 位于协议层。
+**跨学科复用**（计入原阶段，不重复造轮子）：[trend-spotter](../influencer/scout/trend-spotter/SKILL.md)、[audience-mapper](../influencer/scout/audience-mapper/SKILL.md)、[content-amplifier](../influencer/activate/content-amplifier/SKILL.md)、[outreach-manager](../influencer/activate/outreach-manager/SKILL.md)、[competitor-tracker](../influencer/target/competitor-tracker/SKILL.md)、[landing-optimizer](../influencer/report/landing-optimizer/SKILL.md)、[performance-analyzer](../influencer/report/performance-analyzer/SKILL.md)、[roi-calculator](../influencer/report/roi-calculator/SKILL.md)、[report-generator](../influencer/report/report-generator/SKILL.md)、[offer-claims-registry](../protocol/offer-claims-registry/SKILL.md)、[community-launch-runner](../launch/mobilize/community-launch-runner/SKILL.md)、[creator-registry](../protocol/creator-registry/SKILL.md)、[page-play-builder](../seo-geo/implement/page-play-builder/SKILL.md)、[memory-management](../protocol/memory-management/SKILL.md)。社媒真相注册表 `channel-registry` 位于协议层。
 
 **中文平台覆盖：** 小红书 / 微信公众号 / 视频号 / 抖音以**手动数据包 / 用户导出**方式接入（无 keyless 官方公开 API）——技能照常在 Tier 1 用你粘贴或导出的数据运行；西方平台另配 keyless 连接器 `bluesky.py`、`fediverse.py`、`discourse.py` 与 `youtube.py --rss`。平台接入细节见 [social-platform-access.md](../references/social-platform-access.md)。
 
@@ -353,10 +353,10 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 
 | 阶段 | 技能 |
 |------|------|
-| **Setup 搭建** | [deliverability-qa](../email/setup/deliverability-qa/SKILL.md), [list-segment-builder](../email/setup/list-segment-builder/SKILL.md), [list-growth-designer](../email/setup/list-growth-designer/SKILL.md), [list-hygiene-monitor](../email/setup/list-hygiene-monitor/SKILL.md)（NEW） |
-| **Engage 触达** | [email-creative-builder](../email/engage/email-creative-builder/SKILL.md), [subject-line-lab](../email/engage/subject-line-lab/SKILL.md)（NEW）, [email-render-builder](../email/engage/email-render-builder/SKILL.md)（NEW）, [dynamic-content-personalizer](../email/engage/dynamic-content-personalizer/SKILL.md)（NEW） |
-| **Nurture 培育** | [email-sequence-designer](../email/nurture/email-sequence-designer/SKILL.md), [newsletter-monetization-planner](../email/nurture/newsletter-monetization-planner/SKILL.md), [preference-frequency-manager](../email/nurture/preference-frequency-manager/SKILL.md)（NEW）, [reactivation-specialist](../email/nurture/reactivation-specialist/SKILL.md)（NEW） |
-| **Deliver 投递** | ⛩ [email-quality-auditor](../email/deliver/email-quality-auditor/SKILL.md), [send-experiment-designer](../email/deliver/send-experiment-designer/SKILL.md)（原 send-test-designer 改名）, [inbox-placement-monitor](../email/deliver/inbox-placement-monitor/SKILL.md)（NEW）, [cold-outbound-sequencer](../email/deliver/cold-outbound-sequencer/SKILL.md)（NEW） |
+| **Setup 搭建** | [deliverability-qa](../email/setup/deliverability-qa/SKILL.md), [list-segment-builder](../email/setup/list-segment-builder/SKILL.md), [list-growth-designer](../email/setup/list-growth-designer/SKILL.md), [list-hygiene-monitor](../email/setup/list-hygiene-monitor/SKILL.md) |
+| **Engage 触达** | [email-creative-builder](../email/engage/email-creative-builder/SKILL.md), [subject-line-lab](../email/engage/subject-line-lab/SKILL.md), [email-render-builder](../email/engage/email-render-builder/SKILL.md), [dynamic-content-personalizer](../email/engage/dynamic-content-personalizer/SKILL.md) |
+| **Nurture 培育** | [email-sequence-designer](../email/nurture/email-sequence-designer/SKILL.md), [newsletter-monetization-planner](../email/nurture/newsletter-monetization-planner/SKILL.md), [preference-frequency-manager](../email/nurture/preference-frequency-manager/SKILL.md), [reactivation-specialist](../email/nurture/reactivation-specialist/SKILL.md) |
+| **Deliver 投递** | ⛩ [email-quality-auditor](../email/deliver/email-quality-auditor/SKILL.md), [send-experiment-designer](../email/deliver/send-experiment-designer/SKILL.md), [inbox-placement-monitor](../email/deliver/inbox-placement-monitor/SKILL.md), [cold-outbound-sequencer](../email/deliver/cold-outbound-sequencer/SKILL.md) |
 
 <details><summary><b>逐技能用途（邮件营销）</b></summary>
 
@@ -365,21 +365,21 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 | deliverability-qa | S | 发送前 SPF/DKIM/DMARC/BIMI 认证、声誉、收件箱落位、垃圾内容、列表卫生（S1 检查）。 |
 | list-segment-builder | E | 从自有列表/CRM/GA4 导出构建行为 + 生命周期阶段分群与抑制规则。 |
 | list-growth-designer | S（+N） | 列表增长策略——获取渠道、lead magnet 构思、合规的双重确认捕获流程 spec、推荐环机制；在获取点保证 S 同意质量。 |
-| list-hygiene-monitor（NEW） | S | 列表卫生监控——退信/未互动清理、sunset 政策、垃圾陷阱与投诉率治理。 |
+| list-hygiene-monitor | S | 列表卫生监控——退信/未互动清理、sunset 政策、垃圾陷阱与投诉率治理。 |
 | email-creative-builder | E / D | 主题行/预览文本/正文/CTA，与落地页信息一致，感知声明台账。 |
-| subject-line-lab（NEW） | E | 主题行/预览文本创意与迭代——角度矩阵、长度/emoji/个性化实验、垃圾触发词规避。 |
-| email-render-builder（NEW） | E / D | 邮件 HTML 渲染 QA——跨客户端兼容、暗色模式、纯文本 fallback、可访问性。 |
-| dynamic-content-personalizer（NEW） | E | 动态内容/合并标签个性化——受众条件块、回退值、渲染安全校验。 |
+| subject-line-lab | E | 主题行/预览文本创意与迭代——角度矩阵、长度/emoji/个性化实验、垃圾触发词规避。 |
+| email-render-builder | E / D | 邮件 HTML 渲染 QA——跨客户端兼容、暗色模式、纯文本 fallback、可访问性。 |
+| dynamic-content-personalizer | E | 动态内容/合并标签个性化——受众条件块、回退值、渲染安全校验。 |
 | email-sequence-designer | N | 生命周期/自动化流程（欢迎、弃购、购后、召回）+ 频次治理。 |
 | newsletter-monetization-planner | D | 付费订阅、赞助位库存 + 刊例、推荐增长循环经济。 |
-| preference-frequency-manager（NEW） | N | 偏好中心与频次治理——订阅主题、频次上限、降频而非退订路径。 |
-| reactivation-specialist（NEW） | N | 沉睡用户召回——win-back 序列、再确认、sunset 前最后一搏。 |
+| preference-frequency-manager | N | 偏好中心与频次治理——订阅主题、频次上限、降频而非退订路径。 |
+| reactivation-specialist | N | 沉睡用户召回——win-back 序列、再确认、sunset 前最后一搏。 |
 | ⛩ email-quality-auditor | S+E+N+D（EQS） | auditor-class SEND 门：算 EQS、跑 S1/S2/N1/D1、产出 SHIP/FIX/BLOCK；含**发送前 go/no-go**模式。写入 `memory/audits/email/`。 |
-| send-experiment-designer | E | A/B / 发送时间 / hold-out 设计，含样本量 + 显著性判读（promote/kill）（原 send-test-designer 改名）。 |
-| inbox-placement-monitor（NEW） | S | 收件箱落位监控——seed 列表、垃圾/推广标签分布、ISP 级声誉追踪。 |
-| cold-outbound-sequencer（NEW） | D | B2B 冷触达序列——分步跟进节奏、合规同意/退订、送达与回复优化。 |
+| send-experiment-designer | E | A/B / 发送时间 / hold-out 设计，含样本量 + 显著性判读（promote/kill）。 |
+| inbox-placement-monitor | S | 收件箱落位监控——seed 列表、垃圾/推广标签分布、ISP 级声誉追踪。 |
+| cold-outbound-sequencer | D | B2B 冷触达序列——分步跟进节奏、合规同意/退订、送达与回复优化。 |
 
-**跨学科复用**（计入原阶段，不重复造轮子）：[audience-mapper](../influencer/discover/audience-mapper/SKILL.md)、[landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md)（点击后）、[roi-calculator](../influencer/measure/roi-calculator/SKILL.md)（回报计算）、[report-generator](../influencer/measure/report-generator/SKILL.md)、[performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md)、[offer-claims-registry](../protocol/offer-claims-registry/SKILL.md)。
+**跨学科复用**（计入原阶段，不重复造轮子）：[audience-mapper](../influencer/scout/audience-mapper/SKILL.md)、[landing-optimizer](../influencer/report/landing-optimizer/SKILL.md)（点击后）、[roi-calculator](../influencer/report/roi-calculator/SKILL.md)（回报计算）、[report-generator](../influencer/report/report-generator/SKILL.md)、[performance-analyzer](../influencer/report/performance-analyzer/SKILL.md)、[offer-claims-registry](../protocol/offer-claims-registry/SKILL.md)。
 
 </details>
 
@@ -389,10 +389,10 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 
 | 阶段 | 技能 |
 |------|------|
-| **Research 研究** | [campaign-architect](../ad/research/campaign-architect/SKILL.md), [audience-segment-builder](../ad/research/audience-segment-builder/SKILL.md), [search-term-miner](../ad/research/search-term-miner/SKILL.md)（NEW）, [product-feed-optimizer](../ad/research/product-feed-optimizer/SKILL.md)（NEW） |
-| **Orchestrate 编排** | [ad-creative-builder](../ad/orchestrate/ad-creative-builder/SKILL.md), [ad-test-designer](../ad/orchestrate/ad-test-designer/SKILL.md), [bid-strategy-planner](../ad/orchestrate/bid-strategy-planner/SKILL.md)（NEW）, [landing-experience-checker](../ad/orchestrate/landing-experience-checker/SKILL.md)（NEW） |
-| **Activate 激活** | ⛩ [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md), [conversion-signal-qa](../ad/activate/conversion-signal-qa/SKILL.md), [placement-exclusion-manager](../ad/activate/placement-exclusion-manager/SKILL.md)（NEW）, [conversion-value-mapper](../ad/activate/conversion-value-mapper/SKILL.md)（NEW） |
-| **Scale 放大** | [paid-measurement-loop](../ad/scale/paid-measurement-loop/SKILL.md), [attribution-reconciler](../ad/scale/attribution-reconciler/SKILL.md), [budget-pacing-monitor](../ad/scale/budget-pacing-monitor/SKILL.md)（NEW）, [fatigue-frequency-manager](../ad/scale/fatigue-frequency-manager/SKILL.md)（NEW） |
+| **Research 研究** | [campaign-architect](../ad/research/campaign-architect/SKILL.md), [audience-segment-builder](../ad/research/audience-segment-builder/SKILL.md), [search-term-miner](../ad/research/search-term-miner/SKILL.md), [product-feed-optimizer](../ad/research/product-feed-optimizer/SKILL.md) |
+| **Orchestrate 编排** | [ad-creative-builder](../ad/orchestrate/ad-creative-builder/SKILL.md), [ad-test-designer](../ad/orchestrate/ad-test-designer/SKILL.md), [bid-strategy-planner](../ad/orchestrate/bid-strategy-planner/SKILL.md), [landing-experience-checker](../ad/orchestrate/landing-experience-checker/SKILL.md) |
+| **Activate 激活** | ⛩ [ad-account-auditor](../ad/activate/ad-account-auditor/SKILL.md), [conversion-signal-qa](../ad/activate/conversion-signal-qa/SKILL.md), [placement-exclusion-manager](../ad/activate/placement-exclusion-manager/SKILL.md), [conversion-value-mapper](../ad/activate/conversion-value-mapper/SKILL.md) |
+| **Scale 放大** | [paid-measurement-loop](../ad/scale/paid-measurement-loop/SKILL.md), [attribution-reconciler](../ad/scale/attribution-reconciler/SKILL.md), [budget-pacing-monitor](../ad/scale/budget-pacing-monitor/SKILL.md), [fatigue-frequency-manager](../ad/scale/fatigue-frequency-manager/SKILL.md) |
 
 <details><summary><b>逐技能用途（付费广告）</b></summary>
 
@@ -400,52 +400,52 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 |------|-----------|------|
 | campaign-architect | A + 结构 | 账户/活动结构、campaign 类型选型、匹配类型、否定词/排除、付费↔自然蚕食。 |
 | audience-segment-builder | A | 把自有客户/CRM/GA4 导出转为种子受众、相似种子、排除人群、跨平台漏斗分层地图。 |
-| search-term-miner（NEW） | A | 从搜索词报告挖掘新增否定词与拓展词，收敛匹配类型漏斗。 |
-| product-feed-optimizer（NEW） | O | Shopping/PMax 商品 feed 质量——标题/属性/GTIN、feed 覆盖与拒登修复。 |
+| search-term-miner | A | 从搜索词报告挖掘新增否定词与拓展词，收敛匹配类型漏斗。 |
+| product-feed-optimizer | O | Shopping/PMax 商品 feed 质量——标题/属性/GTIN、feed 覆盖与拒登修复。 |
 | ad-creative-builder | O | RSA 标题/描述、hook、角度矩阵，并与落地页信息一致。 |
 | ad-test-designer | O（+S） | 设计 A/B/n 与增量实验（假设、变体矩阵、样本量/功效），判读显著性 → promote/kill。 |
-| bid-strategy-planner（NEW） | S | 出价策略选型、tCPA/tROAS 目标设定、学习期与出价上限规划。 |
-| landing-experience-checker（NEW） | O | 点击后落地体验 QA——信息一致、加载速度、移动端、转化路径。 |
+| bid-strategy-planner | S | 出价策略选型、tCPA/tROAS 目标设定、学习期与出价上限规划。 |
+| landing-experience-checker | O | 点击后落地体验 QA——信息一致、加载速度、移动端、转化路径。 |
 | ⛩ ad-account-auditor | R+O+A+S（RQS） | auditor-class ROAS 门：算 RQS、跑 R1/R2/O1/O2/A1、产出 SHIP/FIX/BLOCK；含**上线 go/no-go**模式。 |
 | conversion-signal-qa | R | 上线前追踪 QA（事件触发、UTM 规范、去重门控、窗口对齐、iOS-ATT 标记）——R1/R2 的前置（建信号，门打分）。 |
-| placement-exclusion-manager（NEW） | S | 版位/展示位排除——低质站点、app 品类、品牌安全清单治理。 |
-| conversion-value-mapper（NEW） | R | 把转化事件映射到价值/毛利，配置价值规则与 tROAS 目标信号。 |
+| placement-exclusion-manager | S | 版位/展示位排除——低质站点、app 品类、品牌安全清单治理。 |
+| conversion-value-mapper | R | 把转化事件映射到价值/毛利，配置价值规则与 tROAS 目标信号。 |
 | paid-measurement-loop | R（+S） | 把一次上线的改动相对对照在窗口内回读 → Promote / Keep-testing / Rollback / Unproven。 |
 | attribution-reconciler | R | 针对 GA4/ecommerce 订单ID真值集做常态去重、窗口/币种归一、模型对比、增量。 |
-| budget-pacing-monitor（NEW） | S | 预算消耗节奏监控——超支/欠支告警、日内配速、月度落点预测。 |
-| fatigue-frequency-manager（NEW） | O（+S） | 创意疲劳与频次治理——频次上限、轮换节奏、衰减信号识别。 |
+| budget-pacing-monitor | S | 预算消耗节奏监控——超支/欠支告警、日内配速、月度落点预测。 |
+| fatigue-frequency-manager | O（+S） | 创意疲劳与频次治理——频次上限、轮换节奏、衰减信号识别。 |
 
-**跨学科复用**（计入原阶段，不重复造轮子）：[budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md)（花费 + 出价节奏/学习期模式）、[landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md)（点击后）、[roi-calculator](../influencer/measure/roi-calculator/SKILL.md)（回报计算）、[report-generator](../influencer/measure/report-generator/SKILL.md)、[performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md)。
+**跨学科复用**（计入原阶段，不重复造轮子）：[budget-optimizer](../influencer/target/budget-optimizer/SKILL.md)（花费 + 出价节奏/学习期模式）、[landing-optimizer](../influencer/report/landing-optimizer/SKILL.md)（点击后）、[roi-calculator](../influencer/report/roi-calculator/SKILL.md)（回报计算）、[report-generator](../influencer/report/report-generator/SKILL.md)、[performance-analyzer](../influencer/report/performance-analyzer/SKILL.md)。
 
 </details>
 
-### 红人（16）
+### 红人 — STAR（16）
 
-四个阶段目录（原 6 阶段 insight+map→discover、activate+convert→activate、track→measure）；本学科的门（⛩ content-reviewer）位于 Activate。
+四个阶段目录沿 STAR 循环（Scout 侦察 → Target 锁定 → Activate 启动 → Report 汇报；原 6 阶段 insight+map→scout、activate+convert→activate、track→report）；循环与质量基准现同为 STAR（Suitability · Trust · Appeal · Return）；本学科的门（⛩ creator-content-auditor）位于 Activate。
 
 | 阶段 | 技能 |
 |------|------|
-| **Discover 发现** | [audience-mapper](../influencer/discover/audience-mapper/SKILL.md)（合并 audience-analyzer + niche-researcher）, [trend-spotter](../influencer/discover/trend-spotter/SKILL.md), [influencer-discovery](../influencer/discover/influencer-discovery/SKILL.md), [fit-scorer](../influencer/discover/fit-scorer/SKILL.md) |
-| **Plan 规划** | [competitor-tracker](../influencer/plan/competitor-tracker/SKILL.md), [campaign-planner](../influencer/plan/campaign-planner/SKILL.md), [brief-generator](../influencer/plan/brief-generator/SKILL.md), [budget-optimizer](../influencer/plan/budget-optimizer/SKILL.md) |
-| **Activate 启动** | [outreach-manager](../influencer/activate/outreach-manager/SKILL.md), ⛩ [content-reviewer](../influencer/activate/content-reviewer/SKILL.md), [contract-helper](../influencer/activate/contract-helper/SKILL.md), [content-amplifier](../influencer/activate/content-amplifier/SKILL.md)（合并 content-amplifier + ugc-repurposer） |
-| **Measure 度量** | [landing-optimizer](../influencer/measure/landing-optimizer/SKILL.md), [performance-analyzer](../influencer/measure/performance-analyzer/SKILL.md), [roi-calculator](../influencer/measure/roi-calculator/SKILL.md), [report-generator](../influencer/measure/report-generator/SKILL.md) |
+| **Scout 侦察** | [audience-mapper](../influencer/scout/audience-mapper/SKILL.md), [trend-spotter](../influencer/scout/trend-spotter/SKILL.md), [influencer-discovery](../influencer/scout/influencer-discovery/SKILL.md), [fit-scorer](../influencer/scout/fit-scorer/SKILL.md) |
+| **Target 锁定** | [competitor-tracker](../influencer/target/competitor-tracker/SKILL.md), [campaign-planner](../influencer/target/campaign-planner/SKILL.md), [brief-generator](../influencer/target/brief-generator/SKILL.md), [budget-optimizer](../influencer/target/budget-optimizer/SKILL.md) |
+| **Activate 启动** | [outreach-manager](../influencer/activate/outreach-manager/SKILL.md), ⛩ [creator-content-auditor](../influencer/activate/creator-content-auditor/SKILL.md), [contract-helper](../influencer/activate/contract-helper/SKILL.md), [content-amplifier](../influencer/activate/content-amplifier/SKILL.md) |
+| **Report 汇报** | [landing-optimizer](../influencer/report/landing-optimizer/SKILL.md), [performance-analyzer](../influencer/report/performance-analyzer/SKILL.md), [roi-calculator](../influencer/report/roi-calculator/SKILL.md), [report-generator](../influencer/report/report-generator/SKILL.md) |
 
 <details><summary><b>逐技能用途（红人）</b></summary>
 
 | 技能 | 用途 |
 |------|------|
-| audience-mapper | 在项目开始或进入新细分时做受众画像，并摸清某个亚文化 / 微社群（合并 audience-analyzer + niche-researcher）。 |
+| audience-mapper | 在项目开始或进入新细分时做受众画像，并摸清某个亚文化 / 微社群。 |
 | trend-spotter | 活动节奏与主题——趋势话题、声音、内容格式、文化时刻。 |
 | influencer-discovery | 从零搭建红人名单、拓展新平台、规模化找 nano/micro。 |
-| fit-scorer | 对候选名单做客观加权适配打分（基于 C³ ACE）。 |
+| fit-scorer | 对候选名单做客观加权适配打分（基于 STAR Suitability (S)）。 |
 | competitor-tracker | 竞品的合作红人、活动、格式、估算触达/花费与缺口。 |
 | campaign-planner | 规划活动、产品发布、tentpole 或常态化创作者项目。 |
 | brief-generator | 标准化红人 brief 与可复用团队模板。 |
 | budget-optimizer | 跨层级/平台分配预算、预测 ROI、建模场景（同时服务付费广告的花费 + 出价节奏）。 |
 | outreach-manager | pitch、跟进节奏、再激活、费率谈判、状态跟踪。 |
-| ⛩ content-reviewer | 对红人提交内容做发布前门决策（C³ ART：FTC 披露 T1、声明真实性 T2）。 |
+| ⛩ creator-content-auditor | 对红人提交内容做发布前门决策（STAR Trust：FTC 披露 STAR-T1、声明真实性 STAR-T2）。 |
 | contract-helper | 起草/审阅创作者协议——使用权、独家、标准条款。 |
-| content-amplifier | 用付费投放放大自然创作者内容（白名单、Spark Ads、暗帖），并把 UGC 二次利用到付费、网站、邮件、自然社媒（合并 content-amplifier + ugc-repurposer）。 |
+| content-amplifier | 用付费投放放大自然创作者内容（白名单、Spark Ads、暗帖），并把 UGC 二次利用到付费、网站、邮件、自然社媒。 |
 | landing-optimizer | 面向创作者/付费流量的落地页——信息一致、移动端、A/B（同时服务付费点击后）。 |
 | performance-analyzer | 评估创作者结果、横比创作者、情感、转化（同时是付费跨渠道记分卡）。 |
 | roi-calculator | 度量/预测 ROI、为预算辩护、评估创作者/层级价值（共享回报计算引擎，含付费）。 |
@@ -493,13 +493,13 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 
 | 组 | 技能 |
 |----|------|
-| **协议层** | [entity-optimizer](../protocol/entity-optimizer/SKILL.md), [creator-registry](../protocol/creator-registry/SKILL.md), [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md), [consent-registry](../protocol/consent-registry/SKILL.md), [launch-registry](../protocol/launch-registry/SKILL.md), [channel-registry](../protocol/channel-registry/SKILL.md), [narrative-registry](../protocol/narrative-registry/SKILL.md), [memory-management](../protocol/memory-management/SKILL.md) |
+| **协议层** | [entity-registry](../protocol/entity-registry/SKILL.md), [creator-registry](../protocol/creator-registry/SKILL.md), [offer-claims-registry](../protocol/offer-claims-registry/SKILL.md), [consent-registry](../protocol/consent-registry/SKILL.md), [launch-registry](../protocol/launch-registry/SKILL.md), [channel-registry](../protocol/channel-registry/SKILL.md), [narrative-registry](../protocol/narrative-registry/SKILL.md), [memory-management](../protocol/memory-management/SKILL.md) |
 
 <details><summary><b>逐技能用途（协议层）</b></summary>
 
 | 技能 | 用途 |
 |------|------|
-| entity-optimizer | 面向知识图谱、Wikidata、AI 消歧的规范实体档案。 |
+| entity-registry | 面向知识图谱、Wikidata、AI 消歧的规范实体档案。 |
 | creator-registry | 规范创作者名册/档案——去重 handle、带溯源标签的受众数据、费率与合规历史。 |
 | offer-claims-registry | 规范 offer 与声明实证台账——O1/T2 声明检查所对照评判的那份记录。 |
 | consent-registry | 规范的按主体邮件同意/抑制 SSOT——退订/退信/投诉历史，S2/N1 否决项对照评判。 |
@@ -520,16 +520,14 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 |------|------|------|
 | `/aaron-marketing:auto` | 描述任意目标——推断意图并执行最小够用的工作流 | `--deep`（穷尽/压测） |
 | `/aaron-marketing:narrative` | 品牌叙事（TALE 循环）：溯源现状与品类/受众信念、架构消息系统、级联落地与赋能、审计门与共鸣/漂移监控 | `--phase trace\|architect\|land\|evaluate` |
-| `/aaron-marketing:seo-geo` | SEO/GEO 端到端：研究需求/竞品、创作内容、审计质量/技术/可见性/权威、追踪排名/报告/记忆 | `--mode research\|create\|audit\|track` + 各模式子参数（`--competitors` `--map` · `--brief` `--series` `--refresh` `--publish` `--meta` `--schema` `--type` · `--full` `--tech` `--visibility` `--authority` · `--alert` `--report` `--remember` `--period`） |
-| `/aaron-marketing:influencer` | 红人：受众洞察、发现与适配、规划、外联、放大、ROI | `--phase discover\|plan\|activate\|measure` |
+| `/aaron-marketing:seo-geo` | SEO/GEO 端到端（SITE 循环）：勘测需求/竞品、实施内容、调优质量/技术/页面、评估权威/排名/报告/记忆 | `--phase survey\|implement\|tune\|evaluate` + 各阶段子参数（`--competitors` `--map` · `--brief` `--series` `--refresh` `--publish` `--meta` `--schema` `--type` · `--full` `--tech` `--visibility` · `--authority` `--alert` `--report` `--remember` `--period`） |
+| `/aaron-marketing:influencer` | 红人（STAR 循环）：受众洞察、侦察与适配、锁定规划、外联、放大、ROI 汇报 | `--phase scout\|target\|activate\|report` |
 | `/aaron-marketing:ad` | 付费广告（ROAS 循环）：分群、结构、创意、实验设计、审计门、衡量 | `--phase research\|orchestrate\|activate\|scale` |
 | `/aaron-marketing:email` | 邮件营销（SEND 循环）：送达/同意、分群、创意、生命周期流程、变现、发送测试、审计门 | `--phase setup\|engage\|nurture\|deliver` |
 | `/aaron-marketing:launch` | 产品发布（RAMP 循环）：定位与分级、择时、消息屋与资产组装、就绪审计门、发布日执行、复盘与势能 | `--phase research\|assemble\|mobilize\|prove` |
 | `/aaron-marketing:social` | 自然社媒（ECHO 循环）：频道组合与语气、内容日历与创作、运营与质量门、脉搏与度量 | `--phase explore\|craft\|host\|observe` |
 
-日常工作通常从 `/aaron-marketing:auto` 开始；其余七个是显式的学科入口，用 `--mode` / `--phase` 收窄阶段。
-
-**改名说明：** 命令使用 `/aaron-marketing:` 前缀。原 `research` / `create` / `audit` / `track` 四个命令现为 `/aaron-marketing:seo-geo` 的 `--mode`（子参数不变）。旧 `/seo:*` 与 `/aaron-seo-geo:*` 可经 `auto` 恢复——例如 `/aaron-marketing:auto /aaron-seo-geo:audit https://example.com/blog/post` 返回 `/aaron-marketing:seo-geo https://example.com/blog/post --mode audit`。
+日常工作通常从 `/aaron-marketing:auto` 开始；其余七个是显式的学科入口，用 `--phase` 收窄阶段。
 
 ---
 
@@ -570,29 +568,55 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 
 ## 推荐工作流
 
-**SEO/GEO**
-1. **研究** — `keyword-research` → `competitor-analysis` → `content-gap-analysis`
-2. **构建** — `content-writer` → `geo-content-optimizer` → `serp-markup-builder` / `page-play-builder`
-3. **优化** — `content-quality-auditor`（⛩ 发布门） → `on-page-seo-auditor` → `technical-seo-checker` → `site-structure-optimizer`
-4. **监控** — `rank-tracker` → `performance-monitor` → `offsite-signal-analyzer`；信任评审用 `domain-authority-auditor`（⛩）
+真实目标大多横跨多个学科。`/aaron-marketing:auto` 会把一句自然语言目标路由到七个学科中最小可用的技能链——比如一次产品发布会同时调动 Launch、Email、Social 与 Paid：
 
-**红人**
-1. **发现** — `audience-mapper` → `trend-spotter` → `influencer-discovery` → `fit-scorer`（C³ ACE）
-2. **规划** — `competitor-tracker` → `campaign-planner` → `brief-generator` → `budget-optimizer`
-3. **启动** — `outreach-manager` → `content-reviewer`（⛩ ART 门） → `contract-helper` → `content-amplifier`
-4. **度量** — `landing-optimizer` → `performance-analyzer` → `roi-calculator` → `report-generator`
+```text
+/aaron-marketing:auto 三周后在 Product Hunt 发布 v2——等候名单 1,200 人；需要发布页、邮件序列和发布日计划
+```
 
-**付费广告（ROAS 循环）**
-1. **研究** — `audience-segment-builder` → `campaign-architect`
-2. **编排** — `ad-creative-builder` → `ad-test-designer`（落地页配 `landing-optimizer`）
-3. **激活** — `conversion-signal-qa` → `ad-account-auditor`（⛩ RQS 门），在任何预算上线前
-4. **放大** — `paid-measurement-loop` → `attribution-reconciler` → `roi-calculator` → `report-generator`
+也可以端到端驱动单个学科的循环（各学科目录下的 `README.zh.md` 学科指南提供场景级打法）：
+
+**品牌叙事（TALE 循环）**
+1. **Trace** — `narrative-baseline-mapper` → `category-narrative-mapper` → `audience-belief-mapper` → `positioning-truth-tracer`
+2. **Architect** — `strategic-narrative-designer` → `message-system-architect` → `brand-language-codifier` → `story-bank-builder`
+3. **Land** — `narrative-cascade-planner` → `pitch-narrative-builder` → `narrative-enablement-kit` → `proof-point-packager`
+4. **Evaluate** — `narrative-quality-auditor`（⛩ TALE 门）→ `message-test-designer` → `narrative-resonance-monitor` → `narrative-drift-monitor`
+
+**SEO/GEO（SITE 循环）**
+1. **Survey** — `keyword-research` → `competitor-analysis` → `content-gap-analysis`
+2. **Implement** — `content-writer` → `geo-content-optimizer` → `serp-markup-builder` / `page-play-builder`
+3. **Tune** — `content-quality-auditor`（⛩ 发布门）→ `on-page-seo-checker` → `technical-seo-checker` → `site-structure-optimizer`
+4. **Evaluate** — `rank-tracker` → `performance-monitor` → `offsite-signal-analyzer`；信任评审用 `domain-authority-auditor`（⛩）
+
+**自然社媒（ECHO 循环）**
+1. **Explore** — `channel-portfolio-planner` → `voice-dossier-builder` → `platform-norm-profiler` → `participation-warmup-planner`
+2. **Craft** — `social-calendar-builder` → `social-creative-builder` → `short-video-scripter` → `advocacy-program-designer`
+3. **Host** — `social-quality-auditor`（⛩ ECHO 门）→ `engagement-inbox-manager` → `social-selling-planner` → `crisis-response-planner`
+4. **Observe** — `social-pulse-monitor` → `share-of-voice-tracker` → `dark-social-attributor` → `social-measurement-loop`
 
 **邮件营销（SEND 循环）**
-1. **搭建** — `deliverability-qa` → `list-segment-builder`
-2. **触达** — `email-creative-builder`（落地页配 `landing-optimizer`）
-3. **培育** — `email-sequence-designer` → `newsletter-monetization-planner`
-4. **投递** — `send-experiment-designer` → `email-quality-auditor`（⛩ EQS 门），在任何发送前
+1. **Setup** — `deliverability-qa` → `list-segment-builder`
+2. **Engage** — `email-creative-builder`
+3. **Nurture** — `email-sequence-designer` → `newsletter-monetization-planner`
+4. **Deliver** — `send-experiment-designer` → `email-quality-auditor` （⛩ EQS 门），在任何发送前
+
+**付费广告（ROAS 循环）**
+1. **Research** — `audience-segment-builder` → `campaign-architect`
+2. **Orchestrate** — `ad-creative-builder` → `ad-test-designer` （落地页配 `landing-optimizer`）
+3. **Activate** — `conversion-signal-qa` → `ad-account-auditor` （⛩ RQS 门），在任何预算上线前
+4. **Scale** — `paid-measurement-loop` → `attribution-reconciler` → `roi-calculator` → `report-generator`
+
+**红人（STAR 循环）**
+1. **Scout** — `audience-mapper` → `trend-spotter` → `influencer-discovery` → `fit-scorer`（STAR Suitability）
+2. **Target** — `competitor-tracker` → `campaign-planner` → `brief-generator` → `budget-optimizer`
+3. **Activate** — `outreach-manager` → `creator-content-auditor`（⛩ STAR 门）→ `contract-helper` → `content-amplifier`
+4. **Report** — `landing-optimizer` → `performance-analyzer` → `roi-calculator` → `report-generator`
+
+**产品发布（RAMP 循环）**
+1. **Research** — `positioning-mapper` → `launch-tier-planner` → `launch-window-planner` → `early-access-designer`
+2. **Assemble** — `message-house-builder` → `launch-asset-packager` → `pricing-packaging-planner` → `sales-enablement-kit`
+3. **Mobilize** — `launch-readiness-auditor`（⛩ RAMP 门）→ `launch-day-conductor` → `community-launch-runner` → `press-media-relations`
+4. **Prove** — `launch-monitor` → `launch-feedback-synthesizer` → `launch-retro-analyzer` → `momentum-planner`
 
 要做完整信任评审，把 `content-quality-auditor` 与 `domain-authority-auditor` 搭配，得到合计 120 项的评估。开启 `memory-management` 后，交棒与未决事项自动留存在 HOT/WARM/COLD 记忆中。
 
@@ -602,8 +626,8 @@ Artifact Gate 是**框架无关**的——同一个 hook 校验 CORE-EEAT、CITE
 
 ```
 narrative/{trace,architect,land,evaluate}/          # 品牌叙事 — TALE(16，含其门)
-seo-geo/{research,build,optimize,monitor}/                  # SEO/GEO(16，含其 2 个门)
-influencer/{discover,plan,activate,measure}/                   # 红人(16，含其门)
+seo-geo/{survey,implement,tune,evaluate}/                  # SEO/GEO(16，含其 2 个门)
+influencer/{scout,target,activate,report}/                   # 红人(16，含其门)
 ad/research|orchestrate|activate|scale/            # 付费广告 — ROAS(16，含其门)
 email/setup|engage|nurture|deliver/                  # 邮件营销 — SEND(16，含其门)
 launch/research|assemble|mobilize|prove/             # 产品发布 — RAMP(16，含其门)
@@ -653,7 +677,7 @@ docs/            # 本地化 README(zh)
 ## 贡献与文档
 
 - **[CONTRIBUTING.md](../CONTRIBUTING.md)** —— 撰写规则、贡献清单，以及权威的 10 个追踪面清单。
-- **[VERSIONS.md](../VERSIONS.md)** —— 各技能版本 + 变更日志（当前包：`17.0.0`）。
+- **[VERSIONS.md](../VERSIONS.md)** —— 各技能版本 + 变更日志（当前包：`18.0.0`）。
 - **[SECURITY.md](../SECURITY.md)** · **[PRIVACY.md](../PRIVACY.md)** · **[CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md)** —— 安全、隐私、社区政策。
 - **[CLAUDE.md](../CLAUDE.md)** / **[AGENTS.md](../AGENTS.md)** —— 面向 Agent 的本仓库上下文。
 
@@ -667,7 +691,7 @@ docs/            # 本地化 README(zh)
 
 Apache License 2.0 —— 见 [LICENSE](../LICENSE)。
 
-*最后同步英文 README：v17.0.0*
+*最后同步英文 README：v18.0.0*
 
 ## Star History
 

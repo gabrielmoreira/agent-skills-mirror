@@ -165,8 +165,8 @@ LUT = Real Daylight
 LUT intensity = 1
 ```
 
-The feature factory initially disables LUT intensity and eye adaptation until
-enabled through settings. Distinguish configuration defaults from active
+The configuration layer initially disables LUT intensity and eye adaptation
+until enabled through settings. Distinguish configuration defaults from active
 feature state.
 
 ## Observed limitations

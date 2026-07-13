@@ -30,36 +30,17 @@ Core principles (1-4) and six Agent Core Behaviors (consolidated cross-cutting r
 
 ## 2. Request Processing Pipeline
 
-Four-phase request flow.
+**Analyze-First** is the default main-session orchestration behavior: every request — in any input language (any `conversation_language`), with or without a `/moai` subcommand — flows through one ordered pipeline. It begins with intent analysis: classify meaning, language-independent, never gated on English keyword matching. The structured Intent Router (P1 subcommand fast-path + P3 semantic classification) lives in the `/moai` skill (`.claude/skills/moai/SKILL.md`); this section defines the pipeline the router plugs into.
 
-### Phase 1: Analyze
+Five ordered stages:
 
-- Assess complexity and scope of the request
-- Detect technology keywords for agent matching (framework names, domain terms)
-- Identify if clarification is needed before delegation
+- ① **Intent analysis** — classify the request's intent regardless of input language (any `conversation_language`; language-independent, not keyword-gated). Technology signals are context for stage ③ only, never the routing gate.
+- ② **Context-sufficiency check** — when context is insufficient, run the Rule 5 Context-First Discovery `AskUserQuestion` rounds (§7) before proceeding.
+- ③ **Execution-plan composition** — compose the skill / agent / dynamic-workflow chain and select the Phase 0.95 orchestration mode (unchanged; see `.claude/rules/moai/workflow/orchestration-mode-selection.md`).
+- ④ **Approval gates** — unchanged, including the **Implementation Kickoff Approval** human gate at the plan→run boundary (§8); the gate also offers an autonomous-vs-semi-autonomous progression-mode axis (a post-approval progression choice, never a gate bypass).
+- ⑤ **Execute → verify → iterate** — run the plan, verify against acceptance criteria, iterate; when a goal is armed (`/goal`, `/moai goal`), the goal evaluator is the termination judge.
 
-Core Skills (load when needed): `Skill("moai-foundation-cc")` (orchestration patterns), `Skill("moai-foundation-core")` (SPEC system and workflows), `Skill("moai-workflow-project")` (project management).
-
-### Phase 2: Route
-
-- **Workflow Subcommands**: /moai project, /moai plan, /moai run, /moai sync, /moai harness
-- **Utility Subcommands**: /moai (default), /moai fix, /moai loop, /moai clean, /moai mx
-- **Quality Subcommands**: /moai review, /moai codemaps, /moai gate
-- **Feedback Subcommand**: /moai feedback
-- **Direct Agent Requests**: Immediate delegation when user explicitly requests an agent
-
-### Phase 3: Execute
-
-Execute using explicit agent invocation:
-
-- "Use the manager-develop subagent to implement the API (cycle_type=tdd, domain context: backend)"
-- "Use the manager-develop subagent to implement with DDD approach (cycle_type=ddd)"
-- "Use the Explore subagent to analyze the codebase structure"
-
-### Phase 4: Report
-
-- Consolidate agent execution results
-- Format response in user's conversation_language
+Report: consolidate agent results and format the response in the user's `conversation_language`.
 
 ---
 
@@ -71,6 +52,8 @@ Single entry point for all MoAI development workflows.
 
 Subcommands: plan, run, sync, project, fix, loop, mx, feedback, review, clean, codemaps, gate, harness
 Default (natural language): Routes to autonomous workflow (plan -> run -> sync pipeline)
+
+`/moai loop` and `/moai fix` are goal-preset siblings built on the goal engine: `/moai loop` is the goal preset for a bounded project-wide improvement sweep (scan a finite issue queue, then delegate iterate-until-done to the goal engine), and `/moai fix` is the one-shot turn-based preset.
 
 ---
 
@@ -160,10 +143,13 @@ LSP quality gates apply phase-specific thresholds — plan: capture LSP baseline
 The five development safeguards (HARD Rules) ensure code quality and prevent regressions. They are the §1 HARD bullets (Approach-First, Multi-File Decomposition, Post-Implementation Review, Reproduction-First Bug Fix, Context-First Discovery) expanded:
 
 - **Rule 1 — Approach-First Development**: Before non-trivial code, explain the approach + which files change + why; get user approval. Exceptions: typo/single-line/obvious bug fixes.
+  - Present the decisions most likely to change first (data-model changes, new type interfaces, user-facing/UX flows), deferring mechanical/refactoring steps to the end, so review focuses on the highest-change-likelihood decisions.
 - **Rule 2 — Multi-File Change Decomposition**: When modifying 3+ files, split into logical units (TodoList), execute file-by-file, analyze dependencies before parallel execution, report progress per unit.
 - **Rule 3 — Post-Implementation Review**: After coding, provide potential-issue list (edge cases, error/concurrency scenarios), suggested test cases, known limitations/assumptions, additional-validation recommendations.
 - **Rule 4 — Reproduction-First Bug Fixing**: Write a failing reproduction test first; confirm it fails; challenge the diagnosed root cause once ("How do we know this is the cause, not a symptom?"); fix minimally; verify the test passes.
 - **Rule 5 — Context-First Discovery**: When intent is unclear, conduct a Socratic interview before execution. Trigger conditions, the discovery process (ToolSearch preload → AskUserQuestion rounds → 100% clarity → explicit confirmation), exceptions, and constraints are the SSOT at `.claude/rules/moai/core/askuser-protocol.md` § Ambiguity Triggers and Exceptions + § Socratic Interview Structure.
+  - When the domain is unfamiliar and unknown-unknowns are suspected, run an OPTIONAL Blind Spot Pass before plan-phase entry (SSOT: `.claude/rules/moai/core/askuser-protocol.md` § Blind Spot Pass).
+  - Classify ambiguity with the Known-Knowns / Known-Unknowns / Unknown-Knowns / Unknown-Unknowns 4-quadrant lens; suspected Unknown-Unknowns route to a Blind Spot Pass (same SSOT § Ambiguity Triggers and Exceptions).
 
 Rule sequencing: Rule 5 (Discovery — establishes WHAT) executes BEFORE Rule 1 (Approach-First — explains HOW).
 
@@ -175,7 +161,7 @@ The quality gate auto-detects the project language and runs the appropriate tool
 - **Python**: `ruff` → `pytest`
 - **Rust**: `cargo clippy` → `cargo test`
 
-Tools that are not installed are skipped gracefully. Projects with no recognized language marker pass the gate silently.
+The four toolchains above are illustrative examples, not an exhaustive or privileged list — all 16 supported languages (go, python, typescript, javascript, rust, java, kotlin, csharp, ruby, php, elixir, cpp, scala, r, flutter, swift) are detected equally via project markers, each running its own standard lint/format/test toolchain. Tools that are not installed are skipped gracefully. Projects with no recognized language marker pass the gate silently.
 
 ---
 
@@ -185,7 +171,9 @@ Tools that are not installed are skipped gracefully. Projects with no recognized
 
 [ZONE:Frozen] [HARD] `AskUserQuestion`, `TaskCreate`, `TaskUpdate`, `TaskList`, `TaskGet` are **deferred tools** — schemas NOT loaded at session start. Call `ToolSearch(query: "select:AskUserQuestion,TaskCreate,TaskUpdate,TaskList,TaskGet", max_results: 5)` before first use.
 
-The AskUserQuestion channel rules (Socratic interview limits, recommended-option label, anti-patterns, pre-response self-check) are the SSOT at `.claude/rules/moai/core/askuser-protocol.md`. The orchestrator–subagent interaction boundary (subagents return blocker reports instead of prompting; MoAI bridges AskUserQuestion + SendMessage + TaskList in team mode) is at `.claude/rules/moai/core/agent-common-protocol.md` § User Interaction Boundary.
+[ZONE:Evolvable] [HARD] Native-UTF-8 tool-call payloads: every tool-call payload carrying `conversation_language` text (AskUserQuestion questions/options, Bash commands, Write/Edit content) MUST be written as native UTF-8. Hand-authored `\uXXXX` escape sequences are PROHIBITED — they corrupt the JSON into an `InputValidationError` / `Invalid tool parameters`, and the failure is self-reinforcing (one `\uXXXX` run in context seeds the next). SSOT: `.claude/rules/moai/core/askuser-protocol.md` § Non-ASCII Tool-Call Encoding (mechanism + recovery + pre-emit self-check).
+
+The AskUserQuestion channel rules (Socratic interview limits, recommended-option label, anti-patterns, pre-response self-check) are the SSOT at `.claude/rules/moai/core/askuser-protocol.md`. The orchestrator–subagent interaction boundary (subagents return blocker reports instead of prompting; MoAI bridges AskUserQuestion + TaskList in team mode) is at `.claude/rules/moai/core/agent-common-protocol.md` § User Interaction Boundary.
 
 ---
 
@@ -253,7 +241,7 @@ For MCP configuration and usage patterns, see .claude/rules/moai/core/settings-m
 ## 14. Parallel Execution Safeguards
 
 For core principles, see `.claude/rules/moai/core/moai-constitution.md`. Operational safeguards: file-write-conflict prevention (dependency graphs before parallel execution), agent tool requirements (Read/Write/Edit/Grep/Glob/Bash/TaskCreate/Update/List/Get), loop prevention (max 3 retries), platform compatibility (prefer Edit over sed/awk), team file ownership (per-teammate patterns).
-- **Background Agent Write Restriction**: [ZONE:Frozen] [HARD] As of Claude Code v2.1.186, when a background subagent (`run_in_background: true`) reaches a tool call needing permission, the prompt surfaces in the main session (naming the asking subagent; Esc denies just that one call). MoAI nonetheless keeps `run_in_background: false` for agents that modify files as a conservative default — each background write would otherwise raise a main-session prompt that interrupts the leader's flow and undercuts the parallelism benefit of backgrounding. Read-only agents (research, analysis) can safely run in background.
+- **Background Agent Execution (background-default aligned)**: [ZONE:Evolvable] [HARD] As of Claude Code v2.1.198, subagents run in the background by default; the runtime chooses foreground only when it needs the result before continuing, and a background subagent still surfaces every permission prompt in the main session (naming the asking subagent since v2.1.186; Esc denies just that one call). MoAI aligns with this runtime default rather than forcing write-capable agents to the foreground, and does not set the `background:` frontmatter field. The retained safeguard is concurrency, not backgrounding: MoAI does not run two write-capable agents concurrently, and orchestrator work concurrent with a write-capable agent is read-only.
 
 Per the worktree-opt-in policy, L2/L3 worktree usage is user opt-in; L1 `Agent(isolation: "worktree")` is Claude Code runtime autonomous (MoAI does not mandate isolation). For the decision tree and per-role guidance, see `.claude/rules/moai/workflow/worktree-integration.md` § Terminology Glossary.
 
@@ -319,3 +307,9 @@ When MoAI workflows behave unexpectedly, use Claude Code's built-in debug tools 
 
 Version: 14.3.0 | Language: English | Core Rule: MoAI is an orchestrator; direct implementation is prohibited
 For detailed patterns (plugins, sandboxing, headless mode, version management), see Skill("moai-foundation-cc").
+
+---
+
+## MOAI:LEARNED-WORKFLOW
+<!-- moai:learned-start -->
+<!-- moai:learned-end -->

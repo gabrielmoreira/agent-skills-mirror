@@ -1,4 +1,4 @@
 interface:
   display_name: "Three.js Procedural Materials"
-  short_description: "Author coherent procedural PBR and emissive surfaces"
-  default_prompt: "Use $threejs-procedural-materials to build a causal procedural surface, including PBR or lava-like emissive materials, with shared fields, derivative normals, filtering, and explicit diagnostics."
+  short_description: "Author hybrid PBR and procedural surfaces"
+  default_prompt: "Use $threejs-procedural-materials to build a causal material such as texture-backed PBR soil and moss with procedural displacement and coverage fields, coherent PBR, or lava-like emission with derivative normals, filtering, and diagnostics."

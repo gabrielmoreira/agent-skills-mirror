@@ -1,79 +1,37 @@
 # PR Review Report
 
-Use after `workflow-pr-review-analysis.md` has produced deduped findings and recommendation.
+Load after analysis produces deduped findings, verification receipts, and a recommendation.
 
-## Report
-
-Present a chat summary before writing any file:
-
+## Chat Report
 ```markdown
 | Field | Value |
 |---|---|
-| Recommendation | REQUEST_CHANGES |
-| Risk Level | High: auth token handling changed |
+| Recommendation | APPROVE / REQUEST_CHANGES / COMMENT |
+| Risk | High/Medium/Low: <reason> |
+| Verification | <check: passed/failed/not run/not applicable> |
 
-## High
-1. [SEC-1] Token logged on retry
-Severity: HIGH; Confidence: confirmed; Location: src/auth.ts:42
-Evidence: retry logger reads raw token.
-Impact: token can leak to logs.
-Fix: redact token before logging.
+## High / Medium / Low
+1. [SEC-1] <title>
+   Severity: HIGH; Confidence: confirmed; Location: src/auth.ts:42
+   Evidence: <exact proof>; Impact: <consequence>; Fix: <minimal repair>
 ```
 
-The summary includes recommendation, risk level, findings grouped High/Medium/Low, `file:line`, and guidelines status.
-Ask before creating a document: "Would you like me to create the detailed review document?"
-Only write a file after the user says yes.
+`APPROVE` requires all applicable tests or verification to pass. Use `REQUEST_CHANGES` for a blocker/failing check and `COMMENT` when no blocker is proven but verification is incomplete.
 
-If approved, write the document using the sections below.
-For PR Mode, write `.octocode/reviewPR/<session-name>/PR_<prNumber>.md`.
-For Local Mode, write `.octocode/reviewLocal/<session-name>/REVIEW_<branch>_<timestamp>.md`.
-Use a short `<session-name>` slug, such as `auth-refactor`.
-If writing fails, output the document content in chat.
-Never write the file before approval.
+Report recommendation, risk, verification, guidelines status, and findings ordered by severity. Use full blob URLs for remote PR code and `file:line` locally; distinguish requirements from preferences.
 
-## Document Sections
+## Optional Document
+Ask before writing. After approval:
+- PR: `.octocode/reviewPR/<session>/PR_<number>.md`
+- Local: `.octocode/reviewLocal/<session>/REVIEW_<branch>_<timestamp>.md`
 
-- **Executive Summary** table:
-  PR Goal/scope, Files Changed, Risk Level, Review Mode, Review Effort, Recommendation.
-- **Narrative bullets**:
-  Affected Areas, Business Impact, and Flow Changes.
-- **Ratings** table:
-  Correctness, Security, Performance, Maintainability; each uses `X/5`.
-- **PR Health**:
-  clear description, ticket/issue if applicable, size, and relevant tests.
-- **Changes Health**:
-  cohesive concern, size/split recommendation, and relevant tests.
-- **Guidelines Compliance**:
-  Source | Rule | Status, only when guidelines were loaded.
-- **Issues by priority**:
-  High, Medium, Low; number sequentially across all three.
-- **Flow Impact Analysis**:
-  affected callers/consumers list, or before/after diagram.
-- **Suggested Next Steps**:
-  Local Mode only: tests, fixes, split commits, or ready to commit.
-
-Tone: professional, constructive, and about the code rather than the author.
-Explain reasoning and distinguish requirements from preferences.
-Use full GitHub blob URLs for PR Mode code references.
-Use `file:line` for Local Mode.
-Never give timing or duration estimates.
+If writing fails, return the document in chat. Sections: executive summary; affected areas/business/flow; 1-5 ratings for correctness/security/performance/maintainability; PR/change health; guidelines compliance; findings; flow impact; next steps. Never provide duration estimates.
 
 ## Verification Checklist
+- [ ] Target/mode, availability, guidelines, diff/PR context, risk sizing, and checkpoint were handled.
+- [ ] Full mode traced every modified function/method and covered requested focus only.
+- [ ] Findings were deduped; each has location, severity, confidence, evidence, impact, and fix.
+- [ ] Every check has an explicit status; APPROVE appears only after applicable checks pass.
+- [ ] Chat report came before any approved document; written issue numbering is sequential.
 
-Before delivering the review, confirm:
-
-- [ ] Target/mode resolved, including file-scoped local checks.
-- [ ] Availability Gate passed for the resolved mode.
-- [ ] Guidelines Gate ran, even when the answer was "skip".
-- [ ] Diff/PR context collected for the active mode.
-- [ ] User Checkpoint presented, unless the change was tiny and LOW risk.
-- [ ] Flow impact analyzed for every modified function/method in Full mode.
-- [ ] User focus areas covered and excluded areas skipped.
-- [ ] Findings deduped against PR comments and each other.
-- [ ] Every finding has `file:line`, severity, confidence, evidence, and a fix.
-- [ ] Guidelines compliance checked and reported when guidelines were loaded.
-- [ ] No `#<number>` notation used anywhere in the output.
-- [ ] Chat summary presented and approval requested before writing a document.
-- [ ] Written documents number issues sequentially across High/Medium/Low.
-
-Validate: `node scripts/eval-research.mjs --case pr-local-review`.
+Validate with `node scripts/eval-research.mjs --case pr-local-review`.

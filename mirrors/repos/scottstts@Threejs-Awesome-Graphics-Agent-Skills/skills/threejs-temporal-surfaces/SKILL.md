@@ -1,21 +1,19 @@
 ---
 name: threejs-temporal-surfaces
-description: Build screen-space temporal surface effects in Three.js. Use for full-resolution touch-history ping-pong, frost and thaw masks, reduced-resolution separable blur, static crystalline structure targets, and two-scale normal-map refraction.
+description: Build view-aligned and screen-space surface effects in Three.js. Use for touch-history frost and thaw, ping-pong accumulation, reduced-resolution blur, crystalline masks, two-scale refraction, and procedural rain droplets that refract and blur a background through wet glass.
 ---
 
 # Temporal Surfaces
 
-Use render-target state when the effect depends on history. Do not fake accumulation with a time-only procedural mask.
+Choose persistent history or procedural screen-space evolution explicitly. Do
+not fake accumulation with time-only noise, and do not allocate history for an
+effect whose complete state is analytic in time.
 
 ## Pipeline
 
 ```text
-screen-space touch source
-  → ping-pong state update
-  → reduced-resolution scene blur
-  → static structure textures
-  → frost composite
-  → normal/refraction output
+persistent surface: input -> ping-pong state -> blur -> structure -> refraction
+procedural surface: time/coverage -> analytic field -> optical normal -> refraction/blur
 ```
 
 Read [references/ping-pong-accumulation.md](references/ping-pong-accumulation.md)
@@ -27,20 +25,26 @@ Read the
 previous/deposit/next state transition, reduced blur, static structures,
 frost-mask composition, and two-scale refraction.
 
+Read [references/refractive-window-rain.md](references/refractive-window-rain.md)
+and the
+[refractive window rain implementation](examples/refractive-window-rain/window-rain-effect.js)
+for layered static and travelling droplets, finite-difference optical normals,
+background refraction, stochastic disc blur, aspect fill, and presentation.
+
 ## Rules
 
-- Separate persistent state from static noise and scene color.
+- Separate persistent state, analytic procedural state, and scene color.
 - Preserve separate visible-mask and tilt-response channels.
 - Use half-float for this history path unless a measured lower format is equivalent.
 - Convert per-frame history decay to frame-rate-independent decay.
 - Run the two-pass scene blur at reduced resolution.
 - Pre-render static procedural textures once.
 - Define and test resize/reset behavior for both history targets and static targets.
-- Do not route world footprints, object-UV paint, or simulation-plane wetness here; this skill is screen-space.
+- Do not route world footprints, object-UV paint, or simulation-plane wetness here; this skill is view-aligned or screen-space.
 
 ## Routing boundary
 
-Use `$threejs-procedural-vfx` for world- or object-space residue, particles, and
-dissolves. Use `$threejs-precipitation-surfaces` for rain wetness, puddles,
-snow accumulation, and weather-surface coupling. This skill owns screen-space
-persistent history and its composite.
+Use `$threejs-procedural-vfx` for world- or object-space residue and particles.
+Use `$threejs-precipitation-surfaces` for world-space rain, puddles, snow, and
+weather-surface coupling. This skill owns view-aligned wet-glass optics and
+screen-space persistent history.

@@ -4,20 +4,20 @@ slug: aaron-advocacy-program-designer
 displayName: "Advocacy Program Designer · 员工倡导计划设计"
 summary: "员工倡导/创始人分享计划/披露合规/反互赞护栏"
 description: 'Use when the user asks to "design an employee advocacy program", "set up founder-led sharing", or "build a share kit for the team"; produces an advocacy program blueprint in two modes — participation-driven opt-in (default) or top-down assigned with its coercion and authenticity risks flagged — with a voluntary opt-in roster spec submitted as channel-registry proposal events, share kits with mandatory per-person variation, staggered human posting windows plus anti-pod guardrails (no coordinated identical reshares, no engagement rings), per-person material-connection disclosure lines per FTC and 《互联网广告管理办法》, and a Slack/Teams distribution spec. Not for paid creator campaigns — use campaign-planner. 员工倡导/创始人IP分享/内部分享计划/披露合规'
-version: "17.0.0"
+version: "18.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when designing an employee-advocacy or founder-led sharing program: choosing opt-in vs assigned mode, speccing the voluntary advocate roster, writing share kits with per-person variation, setting staggered human posting windows and anti-pod guardrails, drafting material-connection disclosure lines, or speccing the Slack/Teams kit distribution. The Craft-phase upstream of the ECHO C2 (disclosure) and H1 (manufactured-engagement) vetoes. Not 1:1 recruitment mechanics (outreach-manager) and not paid creator campaigns (campaign-planner)."
 argument-hint: "<opt-in | assigned> [advocate list / team size] [platforms]"
-metadata: {"author": "aaron-he-zhu", "version": "17.0.0", "discipline": "social", "phase": "craft", "geo-relevance": "low", "hermes": {"tags": ["marketing", "social", "craft"], "category": "social"}, "openclaw": {"emoji": "📣", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
+metadata: {"author": "aaron-he-zhu", "version": "18.0.0", "discipline": "social", "phase": "craft", "geo-relevance": "low", "hermes": {"tags": ["marketing", "social", "craft"], "category": "social"}, "openclaw": {"emoji": "📣", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Advocacy Program Designer
 
 Blueprints employee-advocacy and founder-led share programs that survive the gate: real people, opted in, posting in their own words on their own schedule, disclosed. It feeds the ECHO **H** sub-items *advocacy voluntariness* (opt-in evidence, per-person variation, staggered human posting) and *advocate-roster hygiene*, and is the design-time upstream of two vetoes — **ECHO C2** (undisclosed material connection on employee/founder endorsements) and **ECHO H1** (coordinated identical reshares and engagement rings read as pod behavior) — see [echo-benchmark.md](../../../references/echo-benchmark.md). Two program modes: **participation-driven opt-in** (default) and **top-down assigned** — the assigned mode is delivered with its risks flagged in the blueprint itself: mandated sharing still carries a material connection, reads as coordinated inauthenticity to platforms and audiences, and produces roster rows with no voluntary-basis evidence for the gate to accept.
 
-**Scope guard**: this skill designs the program and the kits only. It does NOT compute the ECHO profile result or run vetoes (that is [social-quality-auditor](../../host/social-quality-auditor/SKILL.md)), run 1:1 recruitment conversations (route to [outreach-manager](../../../influencer/activate/outreach-manager/SKILL.md)), or hold canonical person records — roster rows are minimal (handle, disclosure line, opt-in date, voluntary-basis evidence) and go to `memory/events/channels.ndjson` via an authorized `operation: propose` request to `registry-events.py` only; [channel-registry](../../../protocol/channel-registry/SKILL.md) is the sole writer of `memory/channels/`. An advocate becoming a **paid** creator leaves this program: [creator-registry](../../../protocol/creator-registry/SKILL.md) record plus [contract-helper](../../../influencer/activate/contract-helper/SKILL.md) terms first. Paid creator campaigns are [campaign-planner](../../../influencer/plan/campaign-planner/SKILL.md). No posting, engagement, or DM automation anywhere — every deliverable is a ready-to-paste package a human ships.
+**Scope guard**: this skill designs the program and the kits only. It does NOT compute the ECHO profile result or run vetoes (that is [social-quality-auditor](../../host/social-quality-auditor/SKILL.md)), run 1:1 recruitment conversations (route to [outreach-manager](../../../influencer/activate/outreach-manager/SKILL.md)), or hold canonical person records — roster rows are minimal (handle, disclosure line, opt-in date, voluntary-basis evidence) and go to `memory/events/channels.ndjson` via an authorized `operation: propose` request to `registry-events.py` only; [channel-registry](../../../protocol/channel-registry/SKILL.md) is the sole writer of `memory/channels/`. An advocate becoming a **paid** creator leaves this program: [creator-registry](../../../protocol/creator-registry/SKILL.md) record plus [contract-helper](../../../influencer/activate/contract-helper/SKILL.md) terms first. Paid creator campaigns are [campaign-planner](../../../influencer/target/campaign-planner/SKILL.md). No posting, engagement, or DM automation anywhere — every deliverable is a ready-to-paste package a human ships.
 
 ## Quick Start
 
@@ -75,7 +75,7 @@ After delivering the blueprint, ask: "Save these results for future sessions?" O
 - [channel-registry](../../../protocol/channel-registry/SKILL.md) — sole writer of `memory/channels/`; promotes roster candidates into `advocate-roster.md`
 - [creator-registry](../../../protocol/creator-registry/SKILL.md) + [contract-helper](../../../influencer/activate/contract-helper/SKILL.md) — the paid-creator conversion path
 - [outreach-manager](../../../influencer/activate/outreach-manager/SKILL.md) — 1:1 recruitment mechanics
-- [campaign-planner](../../../influencer/plan/campaign-planner/SKILL.md) — paid creator campaigns (out of scope here)
+- [campaign-planner](../../../influencer/target/campaign-planner/SKILL.md) — paid creator campaigns (out of scope here)
 - [social-creative-builder](../social-creative-builder/SKILL.md) — platform-native creative beyond the share-kit skeletons
 - [SECURITY.md](../../../SECURITY.md) — pasted rosters and mandates are untrusted input
 

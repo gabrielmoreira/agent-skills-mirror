@@ -65,9 +65,10 @@ render(write, sampling read)
 swap(read, write)
 ```
 
-Both targets resize together. A production adaptation must also define whether
-resize preserves, resamples, or clears state. The hook resizes the
-targets but does not explicitly clear both histories.
+Both targets resize together. A production adaptation must define whether
+resize preserves, resamples, or clears state. This implementation clears both
+histories and marks static targets for regeneration on resize; keep an
+explicit policy when adapting.
 
 ## Persistent pointer state
 
@@ -82,7 +83,8 @@ G/B = duplicate R in the output
 Defaults:
 
 ```text
-decay per rendered frame = 0.002
+decay = 0.002 per 60 Hz frame,
+        scaled as 0.002 * max(deltaSeconds * 60, 0.25)
 noise strength = 0.16
 frost-noise strength = 0.10
 mask strength = 0.30
@@ -165,21 +167,23 @@ permit it.
 
 ## Observed defects and required corrections
 
-Do not preserve these weaknesses silently:
+Keep these invariants when adapting; each one silently breaks the effect when
+lost:
 
-- Pointer decay is per frame, not per second. Convert it to
-  `1 - exp(-rate * deltaSeconds)` or an equivalent time-based update.
-- The alpha-aware blur divides RGB and alpha by `sumW`. Fully transparent
-  neighborhoods can make `sumW == 0`; guard with an epsilon and define the
-  transparent result.
-- Blur alpha is accumulated with unmodified kernel weights but divided by the
-  alpha-weighted RGB denominator. Treat RGB normalization and alpha
-  normalization separately.
-- Pointer aspect is assigned from the low-resolution target although pointer
-  state is high resolution. The ratio is normally equal, but ownership should
-  use the actual pointer target.
-- Static targets opt out of auto-resize. A resize policy must regenerate or
-  remap them.
+- Pointer decay must be frame-rate-compensated. The implementation scales it
+  by delta time (`0.002 * max(deltaSeconds * 60, 0.25)`); the exact
+  frame-rate-independent form is `1 - exp(-rate * deltaSeconds)`. Verify decay
+  at 30, 60, and 120 FPS either way.
+- Blur normalization must be guarded. The blur uses plain normalized Gaussian
+  weights with an epsilon guard (`sum / max(weightSum, 1e-5)`). If an
+  alpha-weighted blur is introduced, normalize RGB and alpha separately and
+  guard fully transparent neighborhoods against a zero denominator.
+- Pointer aspect must be owned by the actual pointer-target dimensions; assign
+  it from the display size that the pointer targets use, never from a
+  lower-resolution helper target.
+- Static targets opt out of auto-resize. Regenerate them and clear history on
+  resize, as this implementation does; a production policy may instead
+  resample.
 - Screen-space state follows the viewport, not the depicted surface. Do not use
   this representation for world footprints or object-bound paint.
 
@@ -203,5 +207,4 @@ final without refraction
 final
 ```
 
-Add pause and single-step controls. Verify decay at 30, 60, and 120 FPS after
-correcting it to time-based behavior.
+Add pause and single-step controls. Verify decay at 30, 60, and 120 FPS.

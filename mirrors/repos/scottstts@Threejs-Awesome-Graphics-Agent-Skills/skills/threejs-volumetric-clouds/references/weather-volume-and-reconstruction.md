@@ -4,13 +4,20 @@ Use this reference for planetary or large-world volumetric clouds built from pac
 
 ## Contents
 
-1. Four-layer density model
-2. Packed intervals and generated field assets
-3. Weather, shape, turbulence, and detail
-4. Beauty march and lighting
-5. Temporal reconstruction
-6. Shadow system and quality presets
-7. Implementation limits, adaptation, and diagnostics
+1. Preserve the four-layer vector model
+2. Understand the packed interval subtlety
+3. Generate field assets once
+4. Weather coverage response
+5. Base shape and turbulence
+6. Detail changes topology by height
+7. Planetary ray interval
+8. Primary march policy
+9. Lighting contract
+10. Quarter-resolution temporal upscale
+11. Cloud shadow representation
+12. Quality tiers must remove expensive mechanisms intentionally
+13. Required diagnostics
+14. Failure diagnosis
 
 ## 1. Preserve the four-layer vector model
 

@@ -4,14 +4,14 @@ slug: aaron-community-launch-runner
 displayName: "Community Launch Runner · 社区发布执行"
 summary: "社区发布/PH-HN提交包/目录波次/平台红线"
 description: 'Use when the user asks to "launch on Product Hunt / Hacker News", "prepare community or directory launch submissions", or "plan the launch submission waves"; produces per-platform submission packages — a Product Hunt tagline / gallery / first-comment skeleton, a factual Show HN title and text, per-subreddit posts with a self-promotion rules table, tiered directory waves, and a regional channel matrix including Chinese communities — plus a platform red-line check (never solicit votes or organize voting rings) and T-0 submission-status lines for the launch registry. Not for paid amplification — use content-amplifier; not for creator channels — use campaign-planner; not for launch telemetry readouts — use launch-monitor; not for ongoing community presence or pre-launch karma-building outside the launch window — use participation-warmup-planner. 社区发布/PH提交包/Show HN/目录波次/平台红线/中文渠道'
-version: "17.0.0"
+version: "18.0.0"
 license: Apache-2.0
 compatibility: "Claude Code and compatible agent-skill hosts"
 homepage: "https://github.com/aaron-he-zhu/aaron-marketing-skills"
 when_to_use: "Use when executing the community and directory lane of a product launch: preparing a Product Hunt submission package, a Show HN post, subreddit posts under each community self-promotion rule, or tiered directory submission waves. Also when selecting regional channels by audience fit (including Chinese communities such as Jike, V2EX, sspai, Juejin) or checking a submission plan against platform red lines like vote solicitation. The execution layer for community channels — the go/no-go gate is launch-readiness-auditor, the telemetry read is launch-monitor."
 argument-hint: "<product / launch slug> [platforms] [region] [launch date]"
 allowed-tools: WebFetch
-metadata: {"author": "aaron-he-zhu", "version": "17.0.0", "discipline": "launch", "phase": "mobilize", "geo-relevance": "low", "hermes": {"tags": ["marketing", "launch", "mobilize"], "category": "launch"}, "openclaw": {"emoji": "🚀", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
+metadata: {"author": "aaron-he-zhu", "version": "18.0.0", "discipline": "launch", "phase": "mobilize", "geo-relevance": "low", "hermes": {"tags": ["marketing", "launch", "mobilize"], "category": "launch"}, "openclaw": {"emoji": "🚀", "homepage": "https://github.com/aaron-he-zhu/aaron-marketing-skills"}}
 ---
 
 # Community Launch Runner
@@ -39,8 +39,7 @@ Check my submission drafts against each platform's rules before T-0 — here are
 **Expected output**: per-platform submission packages (Product Hunt tagline / gallery / first-comment skeleton, factual Show HN title + text, per-subreddit posts with a self-promotion rules table, tiered directory waves, regional-channel posts), a red-line check across the whole plan, T-0 submission-status lines routed to the registry proposal protocol, and the standard handoff summary.
 
 - **Reads**: the launch dossier facts (stage, authoritative date, embargo commitments) from [launch-registry](../../../protocol/launch-registry/SKILL.md) (`memory/launch-registry/`); the message house and per-channel asset kit from the assemble phase (User-provided); target platforms, region, and audience; each platform's current submission rules and field specs via WebFetch of the official docs (verify current at submission time); early launch-window telemetry via `scripts/connectors/hn.py`, `scripts/connectors/producthunt.py`, and `scripts/connectors/gdelt.py` (`~~launch platform` / `~~brand monitor`).
-- **Writes**: submission packages + a reusable summary to `memory/launch/community-launch-runner/`; dated T-0 submission-status lines submitted as proposal events to `memory/events/launches.ndjson` via an authorized `operation: propose` request to `registry-events.py` (the hot-path — [launch-registry](../../../protocol/launch-registry/SKILL.md) promotes them in batch; this skill never writes the dossier or calendar directly).
-- **Writes**: the package to its WARM path after permission; registry-bound submission facts become authorized `operation: propose` events. It does not write HOT automatically.
+- **Writes**: submission packages + a reusable summary to `memory/launch/community-launch-runner/` (its WARM path, after permission); dated T-0 submission-status lines submitted as proposal events to `memory/events/launches.ndjson` via an authorized `operation: propose` request to `registry-events.py` (the hot path — [launch-registry](../../../protocol/launch-registry/SKILL.md) resolves each proposal individually in offset order; this skill never writes the dossier or calendar directly). It does not write HOT automatically.
 - **Done when**: every selected platform has a complete submission package with field specs cited to that platform's official docs and marked verify-current; the plan passes the red-line check — no vote or engagement solicitation anywhere, every undocumented platform mechanic labeled Estimated with a named source; and the wave schedule + regional channel selection states a per-channel rules check.
 - **Primary next skill**: [launch-monitor](../../prove/launch-monitor/SKILL.md) — the T-0→T+30 telemetry read of what these submissions produce.
 
@@ -50,7 +49,7 @@ Check my submission drafts against each platform's rules before T-0 — here are
 
 ## Data Sources
 
-Platform rules come from each platform's published documentation via WebFetch — the Product Hunt official submission docs, the official Show HN guidelines, each subreddit's rules page, each directory's submission page — all re-checked at submission time (specs change; never trust a cached limit). Launch-window telemetry uses the keyless/free-key connectors: `scripts/connectors/hn.py` (Algolia + Firebase, keyless), `scripts/connectors/producthunt.py` (free-key developer token), `scripts/connectors/gdelt.py` (news echo, `~~brand monitor`). Own click-through data comes from `~~web analytics` (GA4 export, Measured). Every path is keyless/free Tier-1; keyed launch suites are an optional Tier-2/3 convenience, never required. See [CONNECTORS.md](../../../CONNECTORS.md).
+Platform rules come from each platform's published documentation via WebFetch — the Product Hunt official submission docs, the official Show HN guidelines, each subreddit's rules page, each directory's submission page — all re-checked at submission time (specs change; never trust a cached limit). Launch-window telemetry uses the keyless/free-key connectors: `scripts/connectors/hn.py` (Algolia + Firebase, keyless), `scripts/connectors/producthunt.py` (free-key developer token; non-commercial API ToS — business use needs Product Hunt approval, attribution required), `scripts/connectors/gdelt.py` (news echo, `~~brand monitor`). Own click-through data comes from `~~web analytics` (GA4 export, Measured). Every path is keyless/free Tier-1; keyed launch suites are an optional Tier-2/3 convenience, never required. See [CONNECTORS.md](../../../CONNECTORS.md).
 
 ## Instructions
 

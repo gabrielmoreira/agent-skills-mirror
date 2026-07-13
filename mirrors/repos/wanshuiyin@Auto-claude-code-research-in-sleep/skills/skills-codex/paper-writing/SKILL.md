@@ -1,7 +1,7 @@
 ---
 name: paper-writing
 description: "Workflow 3: Full paper writing pipeline that goes from a narrative report to a polished, submission-ready PDF. Use when user says \"写论文全流程\", \"write paper pipeline\", \"从报告到PDF\", \"paper writing\", or wants the complete paper generation workflow."
-argument-hint: [narrative-report-path-or-topic]
+argument-hint: "[narrative-report-path-or-topic]"
 allowed-tools: Bash(*), Read, Write, Edit, Grep, Glob, Skill
 ---
 
@@ -76,8 +76,8 @@ echo "<resolved-level>" > paper/.aris/assurance.txt   # draft or submission
 - **`draft`** — Existing behavior. Audits run only when their content detector
   matches (Phase 4.5 / 4.7 / 5.5 / 5.8). Missing artifacts are non-blocking.
   Silent-skip allowed.
-- **`submission`** — The three mandatory audits (proof-checker,
-  paper-claim-audit, citation-audit) are treated as load-bearing gates. Each
+- **`submission`** — The four mandatory audits (proof-checker,
+  paper-claim-audit, citation-audit, kill-argument) are treated as load-bearing gates. Each
   sub-audit must emit its JSON artifact (PASS / WARN / FAIL / NOT_APPLICABLE /
   BLOCKED / ERROR) — never silent-skip. Phase 6 runs
   `verify_paper_audits.sh` (canonical name; resolved per
@@ -444,6 +444,25 @@ else:
 
 **Empirical motivation:** in a real submission run, several real papers were cited in contexts they did not actually support, and at least one bib entry shipped with `author = "Anonymous"` because the metadata had not been resolved. None were caught by the improvement loop or numeric claim audit; only fresh web-lookup review surfaced them.
 
+### Phase 5.9: Integrity Forensics (optional here — see Codex-native note)
+
+The mainline pipeline defaults to a pre-submission Anti-Autoresearch sweep
+(`/integrity-forensics` launcher: SHA-pinned clone, evidence ledger, nine
+auditor dimensions, deterministic adjudication, typed BLOCK/WARN/NO_NEW_BLOCKER
+gate + append-only obligations). **In a Codex-native session this is OFF by
+default**: upstream ships no Codex-native pack, so only its deterministic-only
+mode is runnable here (numeric core + adjudicator with an all-unavailable
+coverage map — it can flag, it can never say CLEAN; translating upstream's
+reviewer calls into `spawn_agent` would rewrite an upstream contract and is
+forbidden). Run it with `— self_forensics: true` for the deterministic slice,
+or run the full sweep from a Claude Code session. If it runs: gate `BLOCK`
+refuses the Final Report; the gate records `same-family` proposal provenance
+for a Codex executor — informational, since this gate only raises flags and
+grants nothing. An opted-in run (`— self_forensics: true` in `$ARGUMENTS` —
+re-check `$ARGUMENTS` at Phase 6.0, not conversation memory) that reaches the
+Final Report without `paper/.aris/forensics/gate.json` is **incomplete, not
+skippable**: run the slice before reporting.
+
 ### Phase 6: Final Report
 
 **Phase 6.0 — Submission Gate**
@@ -503,10 +522,18 @@ skipping audits while claiming to have run them.
    [ ] 3. /citation-audit       → paper/CITATION_AUDIT.json
    [ ] 4. Resolve $AUDIT_VERIFIER per integration-contract §2 (Policy A),
           then: bash "$AUDIT_VERIFIER" paper/ --assurance submission
-   [ ] 5. Block Final Report iff verifier exit code != 0 OR row 0 found a
-          violated undisputed assertion. (TWO separate gates: row 0 is graded
-          by instruction against the contract; the verifier checks audit JSONs
-          only — verify_paper_audits.sh does NOT read the contract.)
+   [ ] 5. Integrity forensics (Phase 5.9 — OPT-IN here): re-parse the CURRENT
+          $ARGUMENTS. If it contains `— self_forensics: true`, require
+          `python3 "$GATE_HELPER" fresh --paper-dir paper/ --anti-ar-commit
+          "$ANTI_AR_COMMIT"` exit 0 (produced at the current pin; gate
+          exists ∧ paper unchanged since ∧ ledger-bound ∧ decision
+          pass-capable). Exit 1 → the deterministic slice never saw this
+          text: run Phase 5.9 NOW. Not opted in → mark "n/a (opt-in)".
+   [ ] 6. Block Final Report iff verifier exit code != 0 OR row 0 found a
+          violated undisputed assertion OR row 5 is red. (THREE separate
+          gates: row 0 is graded by instruction against the contract; the
+          verifier checks audit JSONs only — verify_paper_audits.sh does NOT
+          read the contract; row 5 reads the forensics gate artifact.)
 ```
 
 > `<ARIS_REPO>` placeholder — replace with the absolute path to your ARIS
@@ -517,7 +544,7 @@ skipping audits while claiming to have run them.
 > `ARIS_REPO="$(cd "$(readlink .agents/skills/paper-writing)/../../.." && pwd)"`.
 > The path is stable across runs; store it in a shell variable if you prefer.
 
-#### Invoking the three audits
+#### Invoking the four audits
 
 Each sub-audit runs in a **fresh Codex thread** (never a continuation reply,
 never pass prior audit output as context — this preserves reviewer
@@ -610,6 +637,7 @@ or directly if `assurance=draft`)
 **Venue**: [ICLR/NeurIPS/ICML/CVPR/ACL/AAAI/ACM/IEEE_JOURNAL/IEEE_CONF]
 **Assurance**: [draft | submission]
 **Submission-ready**: [yes | provisional | no]   <!-- yes iff overall_assurance=accepted; provisional iff same-family review passed -->
+**Forensics**: [NO_NEW_BLOCKER | WARN: <n> open obligations | BLOCK | n/a (opt-in, not requested)]   <!-- deterministic slice only; from .aris/forensics/gate.json — a WARN's open obligations MUST be listed in this report, never silently passed -->
 **Date**: [today]
 
 ## Pipeline Summary
