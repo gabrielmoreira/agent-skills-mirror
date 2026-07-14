@@ -1,6 +1,6 @@
 ---
-description: "Generate a 1200×300 SVG banner for a document — title, subtitle, watermark category, on-brand for Alex — ACT Edition"
-lastReviewed: 2026-05-26
+description: "Generate a 1200×320 SVG banner with the canonical Alex x-loop, current palette, title, subtitle, and watermark. Use for Edition READMEs, plans, notes, and release artifacts."
+lastReviewed: 2026-07-13
 ---
 
 # Banner
@@ -39,7 +39,7 @@ Skill: [alex-banner-generation](../skills/alex-banner-generation/SKILL.md). Musc
      --title "Project Name" \
      --subtitle "One-line value statement" \
      --watermark DOCS \
-     --output assets/banner-readme.svg
+   --out assets/banner-readme.svg
    ```
 
 6. **Embed in markdown**:
@@ -50,7 +50,7 @@ Skill: [alex-banner-generation](../skills/alex-banner-generation/SKILL.md). Musc
    # Project Name
    ```
 
-7. **Verify** — open the SVG in browser or VS Code preview. Title should be readable, subtitle should not overflow, watermark should be in the right corner.
+7. **Verify** — open the SVG in browser or VS Code preview. The x-loop must render, title and subtitle must fit, and the watermark must remain in the lower-right background.
 
 ## Boundaries
 

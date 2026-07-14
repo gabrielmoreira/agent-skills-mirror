@@ -4,8 +4,25 @@
 
 ---
 
-## v0.3.164：WebUI 可配置的海外出口代理（issue #89，2026-07-12）
+## v0.3.166 / extension v0.3.166 / desktop v0.3.166：海外网络路由加固与初始化错误可诊断（2026-07-14）
 
+后端源码走 `backend-v0.3.166`，浏览器插件走 `extension-v0.3.166`，桌面安装包走 `desktop-v0.3.166`。
+
+- **海外网络路由不再被失效系统代理拖死**：`[network]` 新增 `direct / system / custom` 三模式，默认 `direct` 显式忽略环境 / OS 代理，旧的非空 `proxy` 自动迁移为 `custom`；OpenAI / Claude / Gemini 系 SDK、GitHub 更新、Codex OAuth 与 YouTube 的 yt-dlp / scrapetube / InnerTube / HTML fallback 统一执行同一策略。桌面 Web、扩展设置页和连通性探测同步支持模式选择，Docker 检出或继承代理变量时自动选择 `system`（显式用户选择优先）。
+- **初始化卡在「分析偏好」时报出真实原因（issue #113）**：`describe_llm_failure` / `classify_llm_failure_kind` 新增 SSL 证书校验失败与通用连接失败识别（httpx `ConnectError:[SSL...]`、OpenAI SDK `APIConnectionError:"Connection error."` 均不是 Python `ConnectionError` 子类，此前被漏判成泛化错误）；SSL 失败会给出「本地代理/杀软对 HTTPS 中间人拦截或自签证书，请关闭代理或加直连白名单」的可操作提示，优先级高于「所有 provider 失败」。guided-init Stage 2（`analyze_events`）与 Stage 3 一致包装 LLM 异常为 `GuidedInitError("analyze_failed")`，把原因透传到初始化页，不再静默重试。
+
+## v0.3.165 / extension v0.3.165 / desktop v0.3.165：Firefox 签名安装修复（2026-07-14）
+
+后端源码走 `backend-v0.3.165`，浏览器插件走 `extension-v0.3.165`，桌面安装包走 `desktop-v0.3.165`。
+
+- **Firefox 正式 XPI 恢复发布**：Firefox manifest 的稳定 Gecko ID 改为 `openbiliclaw-firefox@whiteguo233.github.io`，避开旧 ID 已被其他 AMO 作者占用导致的 403；扩展测试锁定该 ID，发布链路通过当前 AMO 账号做 unlisted 签名并要求产出 `openbiliclaw-extension-v0.3.165-firefox.xpi`，签名失败会直接阻止 release。
+- **扩展连接徽标不再反复横跳**：popup 将 `/api/ping` 可达性与 runtime WebSocket 状态拆成「已连接 / 重连中 / 未连接」三态；断流后先复检 HTTP，后端仍通时保持功能可用并显示「重连中」，只有探活失败才进入离线轮询。revision guard 会丢弃连接恢复后才返回的旧失败结果，主动切换后端地址关闭旧流也不再误报断线。
+
+## v0.3.164 / extension v0.3.164 / desktop v0.3.164：持续补货、Web 可靠交互与安全对话（2026-07-13）
+
+后端源码走 `backend-v0.3.164`，浏览器插件走 `extension-v0.3.164`，桌面安装包走 `desktop-v0.3.164`。
+
+- **Linux CI 并发回归去抖**：refill 优先级测试先确认新 refill waiter 已实际入队，并持有其槽位到优先顺序断言完成，避免把 refill 正常退出后的 maintenance 准入误判为门控失效；50 轮持续补货 E2E 继续由每轮 2 秒功能超时守卫，移除会受共享 runner 负载影响的额外 1 秒墙钟断言。
 - **OpenAI-compatible 结构化 JSON 合约兼容**：`LLMService` 的普通 / 多模态 structured 路径会把已有大写 `JSON` 归一为小写 `json`，若完全缺失则只追加最小 `json` 标记，满足部分兼容端点在 `response_format=json_object` 下的字面消息检查；非结构化调用、业务提示、画像、准入阈值、user 内容和 core-memory 排序均不变。
 - **候选批量评估不再虚占 16384 输出 token 配额**：文本与多模态 evaluator 的单次 `max_tokens` 统一收敛为 4096，仍覆盖生产观测中 30 条 JSON 评分约 1500–3000 tokens 的输出，同时避免 OpenAI-compatible 服务按声明上限预留额度并对 8 条真实评估直接返回 `insufficient_quota`。真实商汤回归覆盖空池补货、全部消费后再次评估 / 入池 / 文案回填，以及后台 3 槽占用时交互第 4 槽仍可进入。
 - **结构化批处理失败不再放大成请求风暴**：推荐文案与候选评估把 provider 异常和成功响应的 payload 缺项分开处理；429、timeout、connection、5xx 每轮只调用一次 provider，鉴权/缺 provider 暂停等待配置唤醒。malformed 成功响应先持久化有效 keyed sibling，仅对缺失成员做 depth=3、最多六次额外请求的有界重试；仍缺失的文案保持 pending，评估候选按 claim token 无 attempt 增量地回到 `pending_eval`。协调器 transient 退避统一为 15/30/60/120/300 秒并尊重更长 `Retry-After`。
@@ -26,12 +43,21 @@
 - **升级后先恢复历史合格库存再调用 LLM**：每个 controller 的幂等 startup-maintenance hook 都先在原子 pool maintenance 事务中检查历史 `suppressed` 行；API 启动/热重载由 `run_forever()` 调用，OpenClaw direct bootstrap 则在 adapter service 暴露前同步调用，随后进入 loop 也不会重复维护。只有 `rolled_back=False` 的真实维护结果才完成启动标记；snapshot/DB fallback 或 rollback 保持可重试。仅恢复未推荐、未看过、非 dislike/shown/purged、仍达 admission 与完整 readiness guards 的结果。
 - **推荐库存维护改为原子且保护可用底线**：runtime 的 topic/source/stale/explore/raw 维护收敛为一次短连接 `BEGIN IMMEDIATE`；canonical available 按 serve SQL/排序保护，维护后必须满足 `available_after >= min(available_before, target)`，否则整笔回滚。raw ceiling 统一覆盖 `content_cache` 与 active `discovery_candidates`，未领取候选进入可审计的 `trimmed_capacity` 而不是删除，`evaluating` / token-owned 行永不裁剪；source/topic 配额在库存不足时允许延期并输出统一观测汇总。若 BEGIN / canonical snapshot 取得前锁失败，storage 抛出专用异常，runtime 重新读取 canonical available 决策，不再把未初始化计数误报为零库存。
 - **知乎来源配额归类修复**：新增七平台唯一可枚举来源族规则表，pool available/raw accounting、discovery 已看过滤、已看事件身份和 URL host 推断统一复用同一别名 / strategy 前缀口径；`zhihu-search/hot/feed/creator/related` 即使旧数据缺少 `source_platform` 也会计入 `zhihu`，不再以五个碎片来源绕过知乎配额。
+- **对话失败保留类型且不误学习（issue #107）**：LLM 失败/超时会回滚本轮临时历史，Web durable turn 持久化安全错因与空 reply，CLI / OpenClaw / 三类 Web 客户端显示同一分类且不泄漏上游文本。
+- **并发对话历史事务串行化（issue #107）**：同一个 `SocraticDialogue` 实例现在用独立异步锁串行执行普通与工具调用的完整 turn；失败或取消只回滚自己的临时 user turn，等待锁时取消零写入，避免多个 API 入口重叠响应时删掉别轮历史或留下不配对 turn。
 - **本机 Ollama 默认端点改用 `127.0.0.1` 并给出超时根因提示**：chat / embedding provider、CLI `setup-embedding` / 模型探测、`ollama_supervisor` 托管端点、`config.example.toml` 与文档示例的默认 `base_url` 从 `localhost:11434` 统一切到 `127.0.0.1:11434`，与 Ollama 默认只监听 IPv4 的行为对齐，避免 `localhost` 被解析到 IPv6 (`::1`) 时连接超时。`ollama_diagnostics` 遇到 `ConnectTimeout`（区别于连接被拒）时额外提示两条真正根因——系统级 TUN 代理（Clash/V2Ray 增强模式）在网卡层劫持了 `127.0.0.1`（`trust_env=False` 拦不住，需加直连白名单），或 `base_url` 仍用 `localhost` 触发 IPv6 解析；该提示会透传进「自动修复已达到上限」文案，让单独安装 Ollama 的用户不再被误导为「服务没启动」。
 - **新增 `[network].proxy` 海外出口代理**：一个字段即可让所有海外请求走代理——OpenAI / Claude / Gemini / DeepSeek / OpenRouter / openai_compatible 的 chat + embedding SDK、YouTube（yt-dlp）、GitHub 自动更新、Codex OAuth 令牌刷新。支持 `http` / `https` / `socks5` / `socks5h`，零新依赖（复用已有 `httpx[socks]`）。留空时行为与当前一致（沿用进程 env，Docker 代理探测不受影响）。
 - **国内直连严格隔离**：B站 / 抖音 / Ollama / 国内 CDN 图片缓存等 `trust_env=False` 客户端永不使用该代理（继承代理曾触发 B站 风控，`df626f3f`），并由 `tests/test_network_proxy_isolation.py` 守卫测试钉死「未来不得接入 CN 客户端」。
 - **保存时拒绝非法值 + 桌面 UI + 连通性探测**：协议 / 主机白名单校验，非法值经 `PUT /api/config` 返回 400 且不落盘，`config.toml` 手改非法值加载时 WARNING 并按空值处理；桌面 Web「设置-通用」与扩展 popup「后端设置-通用」新增输入框和「测试代理」按钮（`probe-service kind=network_proxy`，经待测代理请求 204 端点并区分 `proxy_unreachable` / `proxy_rejected` / `timeout`）。GET 响应对代理 URL 中的账号密码做遮蔽。四端契约：桌面 Web + 扩展 popup 提供设置；CLI 用 `config-show`；移动 Web 无设置页。
 - **桌面 Web 滚动自动加载预载边距 300px → 50px**：`#loadMoreSentinel` 哨兵紧贴推荐网格底部，旧的 300px `rootMargin` 约等于一整行卡片高度（16:9 封面 + 文案约 250–350px），导致最后一行（最多 4 张）还在视口下方约 300px 时就追加了新卡片，用户永远看不全当前批次、也到不了「已看完」的干净状态。收到 50px 后，哨兵需几乎滚到视口底部才触发。真实 chromium 浏览器端到端验证（`tests/test_desktop_web_autoload_margin_e2e.py`）：300px 时哨兵在视口下方 150px 即触发，50px 时约 20px 才触发，改回 300 该测试失败——守卫回归而非 grep 源码文本。
+- **桌面 Web 首屏渐进渲染与封面请求限流（issue #101）**：首屏改用 `/api/ping` 判断连接，推荐与 runtime 独立于慢 health / 次级读取即时渲染并保留消费后库存复读与 1/2/4/8 秒恢复；推荐网格仅前 4 张封面使用 `eager/high`，其余改为 `lazy/low`，Delight 优先级不变。
 - **桌面 Web 侧栏动画与交互细节打磨（PR #102）**：侧边抽屉从 `position:fixed` + `body.side-drawer-open` 推挤改为 flex 行内项，用 `margin-left + transform` 双可插值属性做过渡，展开 / 折叠全程平滑无跳变，并置为 `position:sticky` 固定视口高度让导航常驻；delight 卡片拖拽新增 10px 死区（`_DELIGHT_DRAG_DEAD_ZONE`），微小位移不再误触切换，死区内松手视为点击；单条静态 `#toast` 升级为右下角栈式 `#toastContainer` 通知（进出场滑动、hover 暂停、点击关闭、磨砂玻璃样式）；delight-nav / 反馈按钮加磨砂底衬保证在封面背景上可读；进入聊天页补 `renderChat()` 确保滚到底部。纯桌面 Web 前端改动，移动 Web 与其它三端不受影响。
+- **桌面 Web 侧栏、拖拽与自动加载阈值回归（issues #102 / #105）**：真实 Chromium 现锁定侧栏按钮 / 面板 ARIA 同步和 flex 主栏让渡，并逐一验证 Delight 9px 不进入拖动态、10px 进入拖动态、49px 不切卡、50px 切卡；滚动自动加载的 50px root margin 继续由独立 E2E 守卫，未改回过早预载。
+- **Delight 按可用主栏宽度响应（issue #106）**：`.layout` 新增命名 inline-size container，Delight 在实际主栏宽度 700 / 620 / 430px 处复用现有紧凑布局，修复 860px 视口展开 312px 侧栏后仍保持双栏、内容被挤压的问题；viewport media query 继续独占移动导航切换，侧栏宽度与过渡不变。
+- **移动 Web 探针提交状态跨重渲染保留（issue #103）**：兴趣与避雷探针的非聊天动作按归一化 `type + domain` 保留 in-flight 状态；消息层关闭再打开时整卡仍保持禁用与 `aria-busy`，结算成功后才记为已处理，失败则保留卡片并恢复重试，避免重复 POST 或失败后消息消失。
+- **移动 / 桌面 Web 已喜欢 Delight 状态一致（issue #104）**：liked 卡片保留结果提示与完整动作组，like 统一为 `aria-pressed=true` 且仅禁用重复提交；本地点击、队列重灌和实时事件会收敛到同一状态，失败点击恢复可重试。
+- **扩展 Delight liked 投影补齐（issue #108）**：side panel 新增独立的结果、动作和 like ARIA 投影，服务端 liked 队列状态不再被本地 pending 覆盖，除重复 like 外的查看、保存、负反馈与聊天动作继续可用。
+- **桌面 Web 探针反馈明确显示主题（issue #109）**：消息抽屉与画像页的 inline 结果和 toast 统一使用同一条安全文案，显示有长度上限的兴趣/避雷主题，不再只提示泛化的“这个方向”。
 
 ## v0.3.163 / extension v0.3.163 / desktop v0.3.163：登录状态诚实同步、Web 库存恢复与冷加载判定（2026-07-11）
 

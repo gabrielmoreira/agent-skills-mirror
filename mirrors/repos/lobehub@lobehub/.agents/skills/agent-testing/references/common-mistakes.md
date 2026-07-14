@@ -148,10 +148,32 @@ before from after.
 and it takes another round to re-explain.
 
 **Correct approach**: never ship a raw stale/before screenshot as standalone
-evidence. If a contrast helps, build ONE labeled before→after composite (e.g. sharp:
-crop the region from each, add a "BEFORE …/AFTER …" header bar, place side by side)
-and attach that single image. Evidence for a passed case = the after state (or a
-clearly-labeled comparison), full stop.
+evidence. When a contrast helps, use the report format's **native comparison pairing**
+— attach both raw screenshots and tag them with a shared `comparison` id, and the
+verify page renders them side by side under Before / After headings
+([report.md](./report.md#L64-78)):
+
+```json
+"evidence": [
+  { "path": "assets/before.png", "comparison": { "id": "layout", "role": "before" } },
+  { "path": "assets/after.png", "comparison": { "id": "layout", "role": "after" } }
+]
+```
+
+**Do NOT hand-compose the two shots into one image with sharp** (an earlier version of
+this note told you to, and an agent duly shipped stacked red/green banner images — the
+user asked why the report ignored the spec). The page owns the labeling; a composite
+also bakes in a fixed layout, can't be zoomed per side, and duplicates the heading the
+page already draws. Evidence for a passed case = the after state, or a `comparison`
+pair, full stop.
+
+Two more traps in the same area:
+
+- **One evidence item per case, not the same image reused across cases.** Attaching the
+  same before/after pair to two different cases makes the report look padded and leaves
+  the second case with no evidence of its own claim.
+- A group needs **exactly one `before` and one `after`** — an incomplete group silently
+  degrades to ordinary (unlabeled) evidence, i.e. straight back into this bug.
 
 ## Case 6 — `app://renderer` desktop instance runs the STALE built bundle, not working-tree code
 
@@ -463,3 +485,29 @@ actions can disappear before their confirmation surface opens.
 **Correct approach**: coordinate both surfaces through explicit shared state. Keep
 the hover surface disabled for the complete lifetime of the nested action popover,
 then restore it only after that popover closes.
+
+---
+
+## Case 19 — Coordinator hand-driving a broken UI flow instead of re-delegating
+
+**Wrong approach**: after a delegated UI-verification subagent is killed mid-case,
+the coordinator takes over and drives the remaining flow inline — dozens of small
+browser commands (probe, reload, sign-in retries, dialog step-through), plus a deep
+root-cause dig into a flapping shared dependency, all in the main loop.
+
+**Why it's wrong**: the coordinator's per-step latency and context cost are far
+higher than a subagent's, and inline grinding turns one recoverable failure into a
+long visible stall. Root-causing an env flake (a shared cache/DB rejecting
+connections) is also not the goal of the test run — a disposable local replacement
+gets the case unblocked in one step.
+
+**What it breaks**: the user watches minutes of micro-steps with no case progress
+and loses confidence; total wall-clock and token spend balloon for zero extra
+evidence value.
+
+**Correct approach**: when a delegated case dies, repackage the _remaining_ steps
+into a fresh, tightly-scoped subagent prompt (include everything already learned:
+working recipes, seeded fixtures, exact remaining assertions). Timebox any
+environment rabbit hole to a couple of probes, then switch to a disposable local
+substitute (e.g. spin up a local instance and override the connection env var for
+the test server) instead of diagnosing shared infrastructure.

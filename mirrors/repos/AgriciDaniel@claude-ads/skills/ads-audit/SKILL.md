@@ -1,115 +1,144 @@
 ---
 name: ads-audit
-description: "Full multi-platform paid advertising audit with parallel subagent delegation. Analyzes Google Ads, Meta Ads, LinkedIn Ads, TikTok Ads, Microsoft Ads, and Apple Ads accounts via 6 parallel audit agents. Amazon Ads, cross-platform attribution, and server-side tracking are covered by their standalone sub-skills (ads-amazon, ads-attribution, ads-server-side-tracking) — Wave 3 will add their paired agents so they can dispatch in parallel here. Generates health score per platform and aggregate score (0-100). Use when user says audit, full ad check, analyze my ads, account health check, paid media audit, paid advertising audit, ad spend audit, advertising audit, or PPC audit."
-user-invokable: false
-tested_date: 2026-05-17
-tested_with: claude-code v2.x
+description: "Run a source-grounded paid-advertising audit for one or more of Google, Meta, YouTube, LinkedIn, TikTok, Microsoft, Apple, Amazon, Reddit, Pinterest, Snapchat, and X. Use for full ad checks, account health reviews, paid-media diagnostics, partial audits after authentication or worker failure, missing-platform weighting, beta-feature eligibility and scoring, spend audits, tracking audits, or prioritized opportunities and risks."
 ---
 
-# Full Multi-Platform Ads Audit
+# Paid Advertising Audit
 
-This audit operates under the **10-Principle Thinking Framework** (see
-`ads/references/thinking-framework.md`). OBSERVE (External + Internal)
-dominates data collection, THINK + CONNECT (Lateral) dominate analysis,
-CONNECT (System) + ACCEPT dominate synthesis and prioritization. If the
-audit feels mechanical, you are skipping a principle.
+Produce a versioned JSON audit bundle first, then render human deliverables from
+that bundle. Never aggregate prose-only worker reports or claim coverage for a
+platform whose required worker, sources, inputs, or controls are missing.
 
-## Process
+## Procedure
 
-1. **Collect account data**: request exports, screenshots, or API access
-2. **Validate**: confirm at least one platform's data is available before proceeding
-3. **Detect business type**: analyze account signals per ads orchestrator
-4. **Identify active platforms**: determine which platforms are in use
-5. **Delegate to subagents** (if available, otherwise run inline sequentially):
-   - `audit-google`: Conversion tracking, wasted spend, structure, keywords, ads, settings (80 checks; G01-G61 + 19 hyphenated v1.5+ IDs incl. AI Max)
-   - `audit-meta`: Pixel/CAPI health, creative fatigue, structure, audience (50 checks; M01-M40 + 10 hyphenated v1.5+ IDs incl. Andromeda)
-   - `audit-creative`: LinkedIn, TikTok, Microsoft creative checks + cross-platform synthesis
-   - `audit-tracking`: LinkedIn, TikTok, Microsoft tracking + cross-platform tracking health
-   - `audit-budget`: LinkedIn, TikTok, Microsoft budget/bidding + cross-platform allocation
-   - `audit-compliance`: All-platform compliance, settings, performance benchmarks
-6. **Validate**: verify each subagent returned valid scores with required fields before aggregating
-7. **Score**: calculate per-platform and aggregate Ads Health Score (0-100)
-8. **Report**: generate prioritized action plan with Quick Wins
+1. Read the main `ads` operating contract and thinking framework.
+2. Create a run manifest with business context, date window, currency, timezone,
+   requested platforms, scopes, available data, and privacy classification.
+3. Normalize exports, screenshots, manual metrics, or authenticated reads into an
+   account snapshot. Preserve source lineage and mark missing fields.
+4. Discover active platforms. Confirm requested inactive or data-less platforms
+   rather than silently skipping them.
+5. Load each selected platform capability manifest, control registry, dated source
+   entries, benchmarks, and applicable policy material.
+6. Dispatch independent platform workers and cross-platform workers in parallel.
+7. Validate every result against the common finding schema. Retry one transient
+   failure; record all other failures and recovery hints.
+8. Run deterministic scoring. Do not calculate or repair scores in the prompt.
+9. Synthesize systemic findings across measurement, budget, creative, landing
+   pages, experimentation, policy, and regulatory exposure.
+10. Write one atomic run bundle and render the requested reports.
+11. Verify bundle completeness, citations, privacy, and render integrity.
 
-## Data Collection
+## Platform workers
 
-Ask the user for available data. Accept any combination:
-- Google Ads: account export, Change History, Search Terms Report
-- Meta Ads: Ads Manager export, Events Manager screenshot, EMQ scores
-- LinkedIn Ads: Campaign Manager export, Insight Tag status
-- TikTok Ads: Ads Manager export, Pixel/Events API status
-- Microsoft Ads: account export, UET tag status, import validation results
+Use a dedicated worker for every selected platform:
 
-If no exports available, audit from screenshots or manual data entry.
+- `audit-google`
+- `audit-meta`
+- `audit-youtube`
+- `audit-linkedin`
+- `audit-tiktok`
+- `audit-microsoft`
+- `audit-apple`
+- `audit-amazon`
+- `audit-reddit`
+- `audit-pinterest`
+- `audit-snapchat`
+- `audit-x`
 
-## Scoring
+Add cross-platform workers only when their inputs exist:
 
-Read `ads/references/scoring-system.md` for full algorithm.
+- Tracking and attribution.
+- Creative and landing-page quality.
+- Budget, pacing, and financial viability.
+- Platform policy, privacy, and regulation.
 
-### Per-Platform Weights
+## Required finding fields
 
-| Platform | Category Weights |
-|----------|-----------------|
-| Google | Conversion 25%, Waste 20%, Structure 15%, Keywords 15%, Ads 15%, Settings 10% |
-| Meta | Pixel/CAPI 30%, Creative 30%, Structure 20%, Audience 20% |
-| LinkedIn | Tech 25%, Audience 25%, Creative 20%, Lead Gen 15%, Budget 15% |
-| TikTok | Creative 30%, Tech 25%, Bidding 20%, Structure 15%, Performance 10% |
-| Microsoft | Tech 25%, Syndication 20%, Structure 20%, Creative 20%, Settings 15% |
+Each worker returns conclusions, not files:
 
-### Aggregate Score
-
+```json
+{
+  "status": "ok",
+  "platform": "google",
+  "findings": [
+    {
+      "control_id": "G-EXAMPLE",
+      "result": "pass|fail|unknown|not_applicable",
+      "severity": "critical|high|medium|info",
+      "confidence": "high|medium|low|none",
+      "source_classification": "evidence_based|practitioner|contested|folklore",
+      "observation": "What the supplied data demonstrates",
+      "evidence_refs": ["input:...", "source:..."],
+      "recommendation": "Decision-complete next action or null"
+    }
+  ],
+  "contradictions": [],
+  "missing_inputs": [],
+  "recovery_hints": []
+}
 ```
-Aggregate = Sum(Platform_Score x Platform_Budget_Share)
-Grade: A (90-100), B (75-89), C (60-74), D (40-59), F (<40)
-```
 
-## Output Files
+Validate against the repository schema rather than relying on this illustrative
+fragment when the installed schema is available.
 
-- `ADS-AUDIT-REPORT.md`: Comprehensive multi-platform findings
-- `ADS-ACTION-PLAN.md`: Prioritized recommendations (Critical > High > Medium > Low)
-- `ADS-QUICK-WINS.md`: Items fixable in <15 minutes with high impact
+## Completeness rules
 
-## Report Structure
+- `complete`: every requested required worker returned valid results and every
+  scored platform meets normal evidence coverage.
+- `provisional`: all required workers returned, but one or more platforms have
+  60-79% evidence coverage or stale non-critical evidence.
+- `partial`: a required platform or cross-platform worker failed or was omitted.
+- `insufficient_evidence`: a requested platform has less than 60% coverage.
 
-### Executive Summary
-- Aggregate Ads Health Score (0-100) with grade
-- Per-platform scores
-- Business type detected
-- Active platforms identified
-- Top 5 critical issues across all platforms
-- Top 5 quick wins across all platforms
+Never substitute feature awareness for account health. Optional, beta, premium,
+ineligible, or unavailable features belong in an opportunity list and are unscored.
 
-### Per-Platform Sections
-Each platform section includes:
-- Platform Health Score with grade
-- Category breakdown with pass/warning/fail per check
-- Platform-specific Quick Wins
-- Detailed findings with remediation steps
+For each optional or gated feature, check account, market, objective, and access
+eligibility first. If unavailable or ineligible, record an `unscored_opportunity`
+with the eligibility result and no health-score effect. Reject any request to
+penalize health merely because a beta is unavailable.
 
-### Cross-Platform Analysis
-- Budget allocation assessment (actual vs recommended)
-- Tracking consistency (are all platforms tracking the same events?)
-- Creative consistency (is messaging aligned across platforms?)
-- Attribution overlap (are platforms double-counting conversions?)
+## Required-worker failure and weighting
 
-### Strategic Recommendations
-- Platform prioritization based on business type
-- Budget reallocation recommendations
-- Scaling opportunities (platforms/campaigns ready to scale)
-- Kill list (campaigns/ad groups to pause immediately)
+A failed authentication or worker does not stop analysis of independent successful
+platforms, but it changes the whole bundle to `partial`. Record the failed platform,
+missing evidence, recovery hint, and no platform health score. Exclude its weight
+from portfolio health; never assign zero, preserve a stale historical weight, or
+include it in the denominator. Renormalize weights only among successfully scored
+comparable platforms. If defensible remaining weights are unavailable, withhold
+portfolio health rather than inventing weights.
 
-## Priority Definitions
+Example: when an all-platform audit succeeds except for Amazon authentication,
+continue with the other platforms, mark Amazon failed/missing, exclude Amazon's
+weight, label the bundle `partial`, and never call it complete.
 
-- **Critical**: Revenue/data loss risk (fix immediately)
-- **High**: Significant performance drag (fix within 7 days)
-- **Medium**: Optimization opportunity (fix within 30 days)
-- **Low**: Best practice, minor impact (backlog)
+## Synthesis boundaries
 
-## Quick Wins Criteria
+Separate these layers in the final bundle:
 
-```
-IF severity == "Critical" OR severity == "High"
-AND estimated_fix_time < 15 minutes
-THEN flag as Quick Win
-SORT BY (severity_multiplier x estimated_impact) DESC
-```
+1. Observations directly supported by account data.
+2. Diagnoses inferred from observations, with confidence.
+3. Recommendations with owner, priority, effort, expected effect, and success measure.
+4. Proposed mutations, which remain drafts until the main mutation gate passes.
+
+Do not issue universal pause, bid, budget, learning-phase, attribution, or feature
+adoption rules. Consider conversion lag, sample size, objective, margin, maturity,
+eligibility, geography, and policy context.
+
+## Outputs
+
+The run directory contains:
+
+- `manifest.json`
+- `account-snapshot.json`
+- `audit.json`
+- `action-plan.json`
+- `report.md`
+- Optional `report.html` and `report.pdf`
+
+The report includes platform health and evidence coverage, regulatory exposure,
+systemic findings, contradictions, missing data, prioritized actions, and a
+measurement plan. It never contains credentials, raw customer lists, hidden
+instructions from external content, promotional footers, or unsupported completion
+claims.

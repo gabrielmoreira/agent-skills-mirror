@@ -642,6 +642,21 @@ Standard cancel/confirm button layout:
 />
 ```
 
+### `<AdditionalDirectoriesSection>` (`src/renderer/components/shared/AdditionalDirectoriesSection.tsx`)
+
+The row editor for an agent's extra directory grants (path + independent R / W square toggles + remove). Shared by NewInstanceModal, EditAgentModal, and the Wizard's DirectorySelectionScreen so all three emit the same `AdditionalDirectory[]`.
+
+```tsx
+<AdditionalDirectoriesSection
+	theme={theme}
+	directories={additionalDirectories}
+	onChange={setAdditionalDirectories}
+	disableBrowse={isSshEnabled} // local folder picker can't see the remote host
+/>
+```
+
+Always run the value through `normalizeAdditionalDirectories(dirs, homeDir)` (`src/shared/additionalDirectories.ts`) before persisting it on the session - the component keeps raw rows so the user can type and toggle freely. Grants are prompt-level only; see SHARED-UTILS.md → Additional Directories.
+
 ### `<FormInput>` (`src/renderer/components/ui/FormInput.tsx`)
 
 Themed form input with label, validation, and Enter-to-submit:

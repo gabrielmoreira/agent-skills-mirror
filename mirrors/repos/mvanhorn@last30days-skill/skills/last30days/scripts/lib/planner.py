@@ -26,10 +26,32 @@ def build_discovery_plan(
     available_sources: list[str] | None = None,
     subreddits: list[str] | None = None,
 ) -> schema.DiscoveryPlan:
-    """Resolve a domain to the existing category-peer community feeds."""
+    """Resolve a domain to the existing category-peer community feeds.
+
+    An empty domain is global trending: sweep every river feed's own hot list
+    (r/all, HN front page, Digg) with no category scoping. Keyword-driven
+    sources (X, Techmeme, arXiv - none of which expose a river/front-page
+    lane) sit out of the global nominate stage and join per-topic at the
+    enrichment pass, where every nomination gets a full research run.
+    """
     normalized_domain = " ".join(domain.split())
     if not normalized_domain:
-        raise ValueError("Discovery domain cannot be empty")
+        resolved = [
+            subreddit.removeprefix("r/").strip()
+            for subreddit in (subreddits or ["all"])
+            if subreddit.strip()
+        ]
+        allowed = set(DISCOVERY_SOURCE_ORDER if available_sources is None else available_sources)
+        allowed.discard("x")
+        sources = [source for source in DISCOVERY_SOURCE_ORDER if source in allowed]
+        if not sources:
+            raise ValueError("No listing sources are available for global trending")
+        return schema.DiscoveryPlan(
+            domain="",
+            category=None,
+            subreddits=resolved or ["all"],
+            sources=sources,
+        )
 
     category = categories.detect_category(normalized_domain)
     candidate_subreddits = list(subreddits or categories.peer_subs_for(category))

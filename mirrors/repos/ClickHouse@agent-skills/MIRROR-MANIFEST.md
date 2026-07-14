@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ClickHouse/agent-skills` — 26 default patterns, 0 followed patterns, 301 file(s) materialized.
+Mirror of `ClickHouse/agent-skills` — 26 default patterns, 0 followed patterns, 303 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ClickHouse/agent-skills` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 301 |
+| Files         | 303 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -360,6 +360,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 299 | ✓ | [`skills/clickhousectl-cloud-deploy/SKILL.md`](skills/clickhousectl-cloud-deploy/SKILL.md) |
 | 300 | ✓ | [`skills/clickhousectl-local-dev/metadata.json`](skills/clickhousectl-local-dev/metadata.json) |
 | 301 | ✓ | [`skills/clickhousectl-local-dev/SKILL.md`](skills/clickhousectl-local-dev/SKILL.md) |
+| 302 | ✓ | [`skills/clickstack-otel-collector/metadata.json`](skills/clickstack-otel-collector/metadata.json) |
+| 303 | ✓ | [`skills/clickstack-otel-collector/SKILL.md`](skills/clickstack-otel-collector/SKILL.md) |
 
 ---
 

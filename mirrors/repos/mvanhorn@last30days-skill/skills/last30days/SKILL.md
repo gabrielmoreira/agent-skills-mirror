@@ -1,6 +1,6 @@
 ---
 name: last30days
-version: "3.13.0"
+version: "3.14.0"
 description: "Research what people actually say about any topic in the last 30 days. Pulls posts and engagement from Reddit, X, YouTube, TikTok, Hacker News, Polymarket, GitHub, and the web. Includes a doctor health check to diagnose broken or missing sources."
 argument-hint: 'last30days nvidia earnings reaction | last30days AI video tools | last30days what users want in react'
 allowed-tools: Bash, Read, Write, AskUserQuestion, WebSearch
@@ -127,7 +127,7 @@ Replace `{VERSION}` with the installed plugin version (`jq -r '.version' "$SKILL
 **Placement by query type:**
 - GENERAL / NEWS / PROMPTING / RECOMMENDATIONS: badge on line 1, blank line 2, `What I learned:` on line 3, then bold-lead-in paragraphs
 - COMPARISON: badge on line 1, blank line 2, `# {TOPIC_A} vs {TOPIC_B} [vs {TOPIC_C}]: What the Community Says (/Last30Days)` on line 3, then Quick Verdict section
-- DISCOVERY: pass through the engine's topic-per-section discovery brief verbatim. Its ranked headings, momentum labels, evidence counters, and `/last30days "<topic>"` handoffs are engine-owned and are an explicit exception to the GENERAL synthesis template.
+- DISCOVERY: pass through the engine's topic-per-section discovery brief verbatim. Its ranked headings, momentum labels, community-voice quotes, evidence counters, `/last30days "<topic>"` handoffs, and the "Nothing solid this window" empty state are engine-owned and are an explicit exception to the GENERAL synthesis template. A nothing-solid result is a valid final answer — relay it, never retry or fabricate topics around it.
 
 ---
 
@@ -289,7 +289,11 @@ The single most common failure mode of this skill is the model reading this file
 
 Branching rule:
 
-- **If the user asks what is trending, exploding, or worth covering in a domain** (for example, `/last30days what's exploding in AI agents?`): set `DISCOVERY_DOMAIN` to the domain phrase, complete the first-run wizard if needed, **and after the wizard finishes return to THIS branch with the saved `DISCOVERY_DOMAIN` (do NOT fall through to Parse User Intent / Step 0.45 / normal topic research - onboarding must not downgrade a discovery request into a topic run)**, then run `"${LAST30DAYS_PYTHON}" "${SKILL_DIR}/scripts/last30days.py" --discover "${DISCOVERY_DOMAIN}" --emit=compact --save-dir="${LAST30DAYS_MEMORY_DIR}"`. Do not run Step 0.5, Step 0.55, Step 0.75, WebSearch supplements, or the normal synthesis pass; the listing sweep and topic-per-section brief are the complete discovery flow. Relay stdout verbatim. If no domain was supplied, ask one short question for the domain and wait.
+- **If the user asks what is trending — globally or in a domain** (for example, `/last30days trending`, `/last30days what's hot right now?`, `/last30days what's exploding in AI agents?`): this is DISCOVERY. Complete the first-run wizard if needed, **and after the wizard finishes return to THIS branch (do NOT fall through to Parse User Intent / Step 0.45 / normal topic research - onboarding must not downgrade a discovery request into a topic run)**. Two variants:
+  - **Global trending** (no domain named — "trending", "what's hot", "what's happening"): run `"${LAST30DAYS_PYTHON}" "${SKILL_DIR}/scripts/last30days.py" --discover --emit=compact --save-dir="${LAST30DAYS_MEMORY_DIR}"` (bare `--discover`, NO domain argument, NOT a request to ask the user for a domain). It sweeps every river feed's own hot list (r/all, HN front page, Digg) with no keyword gate.
+  - **Domain trending** (a domain phrase is named): set `DISCOVERY_DOMAIN` to the domain phrase and run `"${LAST30DAYS_PYTHON}" "${SKILL_DIR}/scripts/last30days.py" --discover "${DISCOVERY_DOMAIN}" --emit=compact --save-dir="${LAST30DAYS_MEMORY_DIR}"`.
+
+  Discovery is two-stage: a listing sweep NOMINATES candidate topics, then each nomination gets a full research pass (Reddit with comments, X, YouTube, Techmeme, arXiv, HN, Polymarket, web) before ranking — expect an enriched discovery run to take a few minutes; use a Bash timeout of 600000 (10 minutes). If the user asks for a fast/rough sweep, add `--discover-shallow` (listing evidence only; thinner cards, still quality-floored). Do not run Step 0.5, Step 0.55, Step 0.75, WebSearch supplements, or the normal synthesis pass; the nominate-enrich sweep and topic-per-section brief are the complete discovery flow. Relay stdout verbatim — including a **"Nothing solid this window"** result, which is a valid, honest outcome (the confidence floor found no topic with enough cross-source confirmation or engagement; do NOT retry, work around it, or fabricate topics — relay it and suggest a narrower domain or a direct topic run).
 - **If the user provided a topic** (e.g. `/last30days Kanye West`, `/last30days nvidia earnings`): confirm the first-run gate above passed (output `1`), then proceed to `## Step 0: First-Run Setup Wizard` (or skip it if already confirmed complete), then continue to Step 0.45 / Step 0.5 / Step 0.55 / Step 0.75 / Research Execution below. Do not skip straight to WebSearch. WebSearch is a **supplement after** the Python engine runs (see Step 2). It is **not a substitute**.
 - **If the user provided no topic**: ask the user for a topic with a single short question. Do not run research. Do not run WebSearch. Wait.
 
@@ -303,7 +307,7 @@ If your Bash call to `last30days.py` does NOT include the FULL pre-flight checkl
 
 ---
 
-# last30days v3.13.0: Research Any Topic from the Last 30 Days
+# last30days v3.14.0: Research Any Topic from the Last 30 Days
 
 > **Permissions overview:** Reads public web/platform data and optionally saves research briefings to `LAST30DAYS_MEMORY_DIR` (defaults to `~/Documents/Last30Days`). X/Twitter search uses optional user-provided tokens (AUTH_TOKEN/CT0 env vars). Bluesky search uses optional app password (BSKY_HANDLE/BSKY_APP_PASSWORD env vars - create at bsky.app/settings/app-passwords). On hosts with `uv` and no Python 3.12+, the preflight may install a uv-managed CPython 3.12 (one-time ~28MB download, announced on stderr). All credential usage and data writes are documented in the [Security & Permissions](#security--permissions) section.
 

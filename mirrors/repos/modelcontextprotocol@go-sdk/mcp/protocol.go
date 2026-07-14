@@ -28,6 +28,24 @@ const (
 	resultTypeInputRequired resultType = "input_required"
 )
 
+type completeResultWithType struct {
+	ResultType resultType `json:"resultType,omitempty"`
+}
+
+func (r *completeResultWithType) setResultType(rt resultType) { r.ResultType = rt }
+func (*completeResultWithType) isCompleteResult()             {}
+
+type completeResultResponse interface {
+	setResultType(resultType)
+	isCompleteResult()
+}
+
+func setCompleteResultType(res Result) {
+	if r, ok := res.(completeResultResponse); ok {
+		r.setResultType(resultTypeComplete)
+	}
+}
+
 // InputRequest is a type for parameters that a server can include in the response
 // to request input from client (SEP-2322). Implementations are [*ElicitParams],
 // [*CreateMessageParams], and [*ListRootsParams].
@@ -62,6 +80,9 @@ func (m InputRequestMap) MarshalJSON() ([]byte, error) {
 		method, err := typeToMethod(v)
 		if err != nil {
 			return nil, err
+		}
+		if ep, ok := v.(*ElicitParams); ok {
+			v = ep.inferElicitMode()
 		}
 		converted[k] = &wire{Method: method, Params: v}
 	}
@@ -637,6 +658,7 @@ type CompletionResultDetails struct {
 
 // The server's response to a completion/complete request
 type CompleteResult struct {
+	completeResultWithType
 	// This property is reserved by the protocol to allow clients and servers to
 	// attach additional metadata to their responses.
 	Meta       `json:"_meta,omitempty"`
@@ -1114,6 +1136,7 @@ func (x *DiscoverParams) GetProgressToken() any  { return getProgressToken(x) }
 func (x *DiscoverParams) SetProgressToken(t any) { setProgressToken(x, t) }
 
 type DiscoverResult struct {
+	completeResultWithType
 	Meta `json:"_meta,omitempty"`
 	Cacheable
 	// The versions of the Model Context Protocol that the server supports.
@@ -1177,6 +1200,7 @@ func (c *Cacheable) setDefaultCacheableValues() {
 
 // The server's response to a prompts/list request from the client.
 type ListPromptsResult struct {
+	completeResultWithType
 	// This property is reserved by the protocol to allow clients and servers to
 	// attach additional metadata to their responses.
 	Meta `json:"_meta,omitempty"`
@@ -1207,6 +1231,7 @@ func (x *ListResourceTemplatesParams) cursorPtr() *string     { return &x.Cursor
 
 // The server's response to a resources/templates/list request from the client.
 type ListResourceTemplatesResult struct {
+	completeResultWithType
 	// This property is reserved by the protocol to allow clients and servers to
 	// attach additional metadata to their responses.
 	Meta `json:"_meta,omitempty"`
@@ -1237,6 +1262,7 @@ func (x *ListResourcesParams) cursorPtr() *string     { return &x.Cursor }
 
 // The server's response to a resources/list request from the client.
 type ListResourcesResult struct {
+	completeResultWithType
 	// This property is reserved by the protocol to allow clients and servers to
 	// attach additional metadata to their responses.
 	Meta `json:"_meta,omitempty"`
@@ -1303,6 +1329,7 @@ func (x *ListToolsParams) cursorPtr() *string     { return &x.Cursor }
 
 // The server's response to a tools/list request from the client.
 type ListToolsResult struct {
+	completeResultWithType
 	// This property is reserved by the protocol to allow clients and servers to
 	// attach additional metadata to their responses.
 	Meta `json:"_meta,omitempty"`
@@ -2125,6 +2152,21 @@ func (x *ElicitParams) isNil() bool     { return x == nil }
 
 func (x *ElicitParams) GetProgressToken() any  { return getProgressToken(x) }
 func (x *ElicitParams) SetProgressToken(t any) { setProgressToken(x, t) }
+
+// inferElicitMode returns x with Mode populated by inference if it was empty.
+// Mode is inferred as "url" when URL or ElicitationID is set, otherwise "form".
+func (x *ElicitParams) inferElicitMode() *ElicitParams {
+	if x == nil || x.Mode != "" {
+		return x
+	}
+	x2 := *x
+	if x.URL != "" || x.ElicitationID != "" {
+		x2.Mode = "url"
+	} else {
+		x2.Mode = "form"
+	}
+	return &x2
+}
 
 // The client's response to an elicitation/create request from the server.
 type ElicitResult struct {

@@ -278,7 +278,13 @@ class DiscoveryPlan:
 
 @dataclass(frozen=True)
 class DiscoveryTopic:
-    """One engagement-ranked topic produced by a discovery sweep."""
+    """One engagement-ranked topic produced by a discovery sweep.
+
+    ``top_comment`` is the strongest verbatim community comment from the
+    topic's enriched corpus (with attribution), present only on enriched runs.
+    ``corroboration_count`` is the number of distinct sources confirming the
+    topic - the floor's cross-source signal, surfaced for readers.
+    """
 
     rank: int
     name: str
@@ -289,11 +295,20 @@ class DiscoveryTopic:
     engagement_by_source: dict[str, dict[str, float | int]]
     command: str
     evidence_urls: list[str] = field(default_factory=list)
+    top_comment: str | None = None
+    corroboration_count: int = 0
 
 
 @dataclass
 class DiscoveryReport:
-    """Versioned result of a domain-level listing sweep."""
+    """Versioned result of a domain-level listing sweep.
+
+    ``outcome`` is "ok" when at least one topic cleared the confidence floor,
+    "nothing-solid" when the window's evidence was all sub-floor - an honest
+    empty result instead of ranked noise. ``weak_signal`` optionally names the
+    strongest sub-floor topic so a nothing-solid brief can still say what came
+    closest.
+    """
 
     domain: str
     range_from: str
@@ -303,6 +318,8 @@ class DiscoveryReport:
     topics: list[DiscoveryTopic]
     source_status: dict[str, SourceOutcome] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
+    outcome: str = "ok"
+    weak_signal: str | None = None
 
 
 @dataclass
@@ -841,8 +858,12 @@ def to_discovery_export(report: DiscoveryReport) -> dict[str, Any]:
                 "engagement": topic.engagement_by_source,
                 "command": topic.command,
                 "evidence_urls": list(topic.evidence_urls),
+                "top_comment": topic.top_comment,
+                "corroboration_count": topic.corroboration_count,
             }
             for topic in report.topics
         ],
         "warnings": list(report.warnings),
+        "outcome": report.outcome,
+        "weak_signal": report.weak_signal,
     }

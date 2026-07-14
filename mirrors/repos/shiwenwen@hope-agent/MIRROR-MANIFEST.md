@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shiwenwen/hope-agent` — 26 default patterns, 46 followed patterns, 158 file(s) materialized.
+Mirror of `shiwenwen/hope-agent` — 26 default patterns, 47 followed patterns, 159 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `shiwenwen/hope-agent` — 26 default patterns, 46 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 46 |
-| Files         | 158 |
+| Followed pats | 47 |
+| Files         | 159 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `shiwenwen/hope-agent` — 26 default patterns, 46 followed patterns, 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/release-process.md`
+- `docs/architecture/ui-interaction-system.md`
 - `docs/architecture/process-model.md`
 - `docs/architecture/backend-separation.md`
 - `docs/architecture/transport-modes.md`
@@ -259,9 +260,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 153 | → | [`docs/architecture/subagent.md`](docs/architecture/subagent.md) |
 | 154 | → | [`docs/architecture/tool-system.md`](docs/architecture/tool-system.md) |
 | 155 | → | [`docs/architecture/transport-modes.md`](docs/architecture/transport-modes.md) |
-| 156 | → | [`docs/architecture/workflow.md`](docs/architecture/workflow.md) |
-| 157 | → | [`docs/README.md`](docs/README.md) |
-| 158 | → | [`docs/release-process.md`](docs/release-process.md) |
+| 156 | → | [`docs/architecture/ui-interaction-system.md`](docs/architecture/ui-interaction-system.md) |
+| 157 | → | [`docs/architecture/workflow.md`](docs/architecture/workflow.md) |
+| 158 | → | [`docs/README.md`](docs/README.md) |
+| 159 | → | [`docs/release-process.md`](docs/release-process.md) |
 
 ---
 

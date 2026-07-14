@@ -27,6 +27,7 @@ import (
 	"github.com/google/jsonschema-go/jsonschema"
 	internaljson "github.com/modelcontextprotocol/go-sdk/internal/json"
 	"github.com/modelcontextprotocol/go-sdk/internal/jsonrpc2"
+	"github.com/modelcontextprotocol/go-sdk/internal/mcpgodebug"
 	"github.com/modelcontextprotocol/go-sdk/internal/util"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/yosida95/uritemplate/v3"
@@ -661,7 +662,23 @@ func (s *Server) capabilities() *ServerCapabilities {
 	return caps
 }
 
+// disablecompleteparamsvalidation is a compatibility parameter that restores
+// the previous behavior of [Server.complete], where required fields on
+// [CompleteParams] were not validated before dispatching to the completion
+// handler. See the documentation for the mcpgodebug package for instructions
+// how to enable it.
+// The option will be removed in a future version of the SDK.
+var disablecompleteparamsvalidation = mcpgodebug.Value("disablecompleteparamsvalidation")
+
 func (s *Server) complete(ctx context.Context, req *CompleteRequest) (*CompleteResult, error) {
+	if disablecompleteparamsvalidation != "1" {
+		if req.Params.Ref == nil {
+			return nil, fmt.Errorf("%w: missing required 'ref' field", jsonrpc2.ErrInvalidParams)
+		}
+		if req.Params.Argument.Name == "" {
+			return nil, fmt.Errorf("%w: missing required 'argument.name' field", jsonrpc2.ErrInvalidParams)
+		}
+	}
 	if s.opts.CompletionHandler == nil {
 		return nil, jsonrpc2.ErrMethodNotFound
 	}
@@ -1639,15 +1656,7 @@ func (ss *ServerSession) Elicit(ctx context.Context, params *ElicitParams) (*Eli
 		return nil, fmt.Errorf("%w: params cannot be nil", jsonrpc2.ErrInvalidParams)
 	}
 
-	if params.Mode == "" {
-		params2 := *params
-		if params.URL != "" || params.ElicitationID != "" {
-			params2.Mode = "url"
-		} else {
-			params2.Mode = "form"
-		}
-		params = &params2
-	}
+	params = params.inferElicitMode()
 
 	if iparams := ss.InitializeParams(); iparams == nil || iparams.Capabilities == nil || iparams.Capabilities.Elicitation == nil {
 		return nil, fmt.Errorf("client does not support elicitation")
@@ -1901,7 +1910,14 @@ func (ss *ServerSession) handle(ctx context.Context, req *jsonrpc.Request) (any,
 	if validatedMeta.usesNewProtocol {
 		ss.setLevel(ctx, &SetLoggingLevelParams{Level: validatedMeta.logLevel})
 	}
-	return handleReceive(ctx, ss, req)
+	res, err := handleReceive(ctx, ss, req)
+	if err != nil {
+		return nil, err
+	}
+	if validatedMeta.usesNewProtocol {
+		setCompleteResultType(res)
+	}
+	return res, nil
 }
 
 // InitializeParams returns the InitializeParams provided during the client's

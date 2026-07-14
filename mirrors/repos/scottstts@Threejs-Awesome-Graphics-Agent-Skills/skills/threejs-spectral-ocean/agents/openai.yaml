@@ -1,4 +1,4 @@
 interface:
   display_name: "Three.js Spectral Ocean"
-  short_description: "Build FFT oceans with cascades, foam, and underwater optics"
-  default_prompt: "Use $threejs-spectral-ocean to build a validated multi-cascade FFT ocean, hybrid clear-water surface, or stylized above/below ocean whose displacement, derivatives, long swell, whitecaps, absorption, shading, and diagnostics form one coherent GPU system."
+  short_description: "Build FFT oceans with foam, Snell windows, and underwater media"
+  default_prompt: "Use $threejs-spectral-ocean to build a validated multi-cascade FFT ocean, hybrid clear-water surface, stylized above/below ocean, or permanently submerged Snell-window scene whose displacement, derivatives, whitecaps, sky, refraction, absorption, caustics, god rays, shading, and diagnostics form one coherent GPU system."

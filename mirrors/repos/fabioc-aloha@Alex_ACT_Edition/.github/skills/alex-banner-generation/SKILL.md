@@ -1,12 +1,12 @@
 ---
 name: "alex-banner-generation"
-description: "Generate on-brand Alex — ACT Edition SVG banners for documents (READMEs, plans, notes, release artifacts)"
-lastReviewed: 2026-05-26
+description: "Generate current-brand Alex SVG banners with the canonical x-loop and navy/emerald/teal/cyan palette. Use for READMEs, plans, notes, and release artifacts."
+lastReviewed: 2026-07-13
 ---
 
 # Alex Banner Generation
 
-Generate visually consistent SVG banners for any document in this heir using the Alex — ACT Edition brand template.
+Generate visually consistent, self-contained SVG banners using the current Alex brand template.
 
 ## When to Use
 
@@ -20,10 +20,12 @@ Generate visually consistent SVG banners for any document in this heir using the
 
 | Element | Value |
 |---|---|
-| Dimensions | 1200 × 300 px |
+| Dimensions | 1200 × 320 px |
 | Background | `#0f172a` (Slate 900) |
-| Accent bar | 4px wide, `#6366f1` (Indigo 500) |
-| Series label | `ALEX · ACT EDITION` |
+| Accent | `#10b981` → `#14b8a6` → `#06b6d4` |
+| Brand label | `ALEX` + `ARTIFICIAL CRITICAL THINKING` |
+| Mark | Canonical emerald x-loop, embedded in output |
+| Letter spacing | `0` |
 | Title | 56px / weight 700 / `#f1f5f9` |
 | Subtitle | 18px / weight 600 / `#94a3b8` |
 | Watermark | ~100px / weight 800 / `#f1f5f9` / 10% opacity |
@@ -97,6 +99,7 @@ Before declaring done:
 - [ ] Watermark matches the document's role (not just convenient)
 - [ ] Title ≤ 32 chars, subtitle ≤ 80 chars (else the muscle rejects)
 - [ ] Embed line added under the document's H1
+- [ ] Canonical x-loop renders in the upper-right
 - [ ] Renders in VS Code preview without errors
 
 ## PNG Conversion (optional)
@@ -105,7 +108,7 @@ GitHub renders SVG banners natively in `README.md` and most surfaces, so SVG is 
 
 ```sh
 # Via mermaid-cli's bundled chrome (already a dependency):
-npx svgexport assets/banner-foo.svg assets/banner-foo.png 1200:300
+npx svgexport assets/banner-foo.svg assets/banner-foo.png 1200:320
 ```
 
 Don't ship PNGs unless required — they double the asset weight and can drift from the SVG source.

@@ -13,29 +13,39 @@
 </p>
 
 <p align="center">
-  <sub>Free desktop app for AI agent teams. Start with a free model with no auth - no signup, API key, or card - or connect Claude/Codex/OpenCode provider access for more models. For coding and broader project work.</sub>
+  <sub>Free desktop app for AI agent teams. Start with a free model with no auth - no signup, API key, or card - or connect Claude Code, Codex, OpenCode, Cursor, SuperGrok, GitHub Copilot, Z.AI, MiniMax, or Kiro. For coding and broader project work.</sub>
 </p>
 
 <table>
 <tr>
-<td width="33.33%">
-  <img src="docs/screenshots/8.png" alt="Task details, attachments, and execution logs" width="100%" />
+<td width="50%">
+  <img src="https://i.imgur.com/2avkEET.jpeg" alt="Agent Teams AI screenshot" width="100%" />
 </td>
-<td width="33.33%">
-  <img src="docs/screenshots/9.png" alt="Agent execution log with tool calls" width="100%" />
-</td>
-<td width="33.33%">
-  <img src="docs/screenshots/7.png" alt="Code review with hunk-level controls" width="100%" />
+<td width="50%">
+  <img src="https://i.imgur.com/cBTjmYU.png" alt="Agent Teams AI screenshot" width="100%" />
 </td>
 </tr>
 <tr>
-<td width="33.33%">
+<td width="50%">
+  <img src="docs/screenshots/8.png" alt="Task details, attachments, and execution logs" width="100%" />
+</td>
+<td width="50%">
+  <img src="docs/screenshots/9.png" alt="Agent execution log with tool calls" width="100%" />
+</td>
+</tr>
+<tr>
+<td width="50%">
+  <img src="docs/screenshots/7.png" alt="Code review with hunk-level controls" width="100%" />
+</td>
+<td width="50%">
   <img src="docs/screenshots/4.png" alt="Create an AI team with roles and models" width="100%" />
 </td>
-<td width="33.33%">
+</tr>
+<tr>
+<td width="50%">
   <img src="docs/screenshots/1.jpg" alt="Kanban board with agent tasks" width="100%" />
 </td>
-<td width="33.33%">
+<td width="50%">
   <img src="docs/screenshots/task-detail-animated.gif" alt="Agent Teams AI product demo" width="100%" />
 </td>
 </tr>
@@ -76,7 +86,7 @@ https://github.com/user-attachments/assets/35e27989-726d-4059-8662-bae610e46b42
 
 ## Installation
 
-No prerequisites - the app can detect and use installed claude/codex/opencode and you can configure from the UI.
+No prerequisites - the app can detect installed Claude Code, Codex, and OpenCode runtimes. You can also connect Cursor, SuperGrok, GitHub Copilot, Z.AI, MiniMax, and Kiro from the UI.
 
 <table align="center">
 <tr>
@@ -138,7 +148,7 @@ No prerequisites - the app can detect and use installed claude/codex/opencode an
 
 ## What is this
 
-An orchestration layer for AI agent teams across Claude, Codex, and OpenCode.
+An orchestration layer for AI agent teams across Claude Code, Codex, OpenCode, Cursor, SuperGrok, GitHub Copilot, Z.AI, MiniMax, and Kiro.
 
 - **Assemble your team** — create agent teams with different roles that work autonomously in parallel
 - **Sit back and watch** — tasks change status on the kanban board while agents handle everything on their own
@@ -153,7 +163,7 @@ An orchestration layer for AI agent teams across Claude, Codex, and OpenCode.
 - **Task-specific logs and messages** — clearly see agent/runtime logs (tools), actions and messages in isolation for each individual task, making it easy to trace what happened for any assignment
 - **Integrated terminal workspace** — run commands in a visual PTY, switch between the team runtime and local shell, and use persistent history, autocomplete, and terminal settings without leaving the app
 - **Solo mode** — one-member team: a single agent that creates its own tasks and shows live progress. Saves tokens; can expand to a full team anytime
-- **Claude + Codex + OpenCode orchestration** — start with a free model with no auth immediately, or auto-detect available Claude/Codex/OpenCode runtimes and use the provider access you already have - subscriptions or API keys
+- **Multi-provider orchestration** — start with a free model with no auth, auto-detect available Claude Code, Codex, and OpenCode runtimes, or connect Cursor, SuperGrok, GitHub Copilot, Z.AI, MiniMax, and Kiro using the subscriptions or API keys you already have
 
 <details>
 <summary><strong>More features</strong></summary>
@@ -214,7 +224,7 @@ An orchestration layer for AI agent teams across Claude, Codex, and OpenCode.
 | **Linked tasks** | ✅ Tasks can link to and block each other | ✅ Task deps + grouped work | ✅ Goals, parent tasks, blockers | ❌ | ✅ Shared task list |
 | **Agent activity and history** | ✅ Messages, tool calls, timeline, token use, and cost | ⚠️ Session recall, feed, metrics | ⚠️ Run transcripts + cost audit | ⚠️ Agent chat + terminal | ⚠️ CLI transcripts + background logs |
 | **Organizations & global overview** | ✅ Nested groups, live team/task status, relations, cross-team activity | ⚠️ Coordination hierarchy, no editable org map | ✅ Org chart + board governance | ⚠️ Team admin, no live org map | ❌ |
-| **Mixed AI teammates** | ✅ Claude, Codex, and OpenCode in one team | ✅ Many providers, terminal-first | ✅ Bring your own agents/runtimes | ⚠️ Multi-model agents, no shared team | ⚠️ Claude-only experimental teams |
+| **Mixed AI teammates** | ✅ Claude Code, Codex, OpenCode, Cursor, SuperGrok, GitHub Copilot, Z.AI, MiniMax, and Kiro in one team | ✅ Many providers, terminal-first | ✅ Bring your own agents/runtimes | ⚠️ Multi-model agents, no shared team | ⚠️ Claude-only experimental teams |
 | **Budget controls** | ✅ Budget alerts + hard caps for scheduled runs | ⚠️ Cost tiers + digest, no hard caps | ✅ Per-agent budgets + hard stops | ⚠️ Usage + cloud spend limits | ⚠️ `/usage` + workspace limits |
 | **Separate agent workspaces** | ✅ Optional workspace per teammate | ✅ Core primitive | ✅ Worktrees / branches | ✅ Agents Window worktrees | ✅ Built-in for sessions and subagents |
 | **Terminal** | ✅ Built-in visual terminal for team and local commands | ⚠️ Terminal-based workflow, no built-in terminal | ⚠️ Runs commands, no interactive terminal | ✅ Built-in IDE terminal | ⚠️ Runs in your terminal |
@@ -264,7 +274,7 @@ Yes. Agents send direct messages, create shared tasks, and leave comments - all 
 <details>
 <summary><strong>Is it free?</strong></summary>
 <br />
-Yes. The app is free and open source, and you can start with a free model with no auth - no registration, API keys, or credit card. If you want more models, connect the provider access you already have, such as Claude, Codex, OpenCode/OpenRouter, or other supported runtimes.
+Yes. The app is free and open source, and you can start with a free model with no auth - no registration, API keys, or credit card. If you want more models, connect the provider access you already have, including Claude Code, Codex, OpenCode/OpenRouter, Cursor, SuperGrok, GitHub Copilot, Z.AI, MiniMax, and Kiro.
 </details>
 
 <details>
@@ -297,7 +307,7 @@ Some RDP (Remote Desktop Protocol) sessions expose virtual GPU drivers that can 
 - [ ] Launching 24/7 autonomous teams in the cloud with current UI (in progress)
 - [ ] Automatic account switching  (in progress)
 - [ ] Navigating very complex long tasks without losing context (in progress)
-- [ ] Support for different coding agents (in progress)
+- [x] Multiple AI runtimes and provider-backed coding agents
 - [ ] A secure universal plugin system regardless of the type of agents
 - [ ] Efficiency and controllability under load with 20-100+ agents in parallel
 
@@ -312,7 +322,7 @@ For feature architecture and implementation guidance:
 
 ## Tech stack
 
-Electron 40, React 19, TypeScript 5, Tailwind CSS 3, Zustand 4. The desktop app works with local runtime/session state, while some runtime modes may also use provider or startup capability services when required.
+Electron 40, React 19, TypeScript 5, Tailwind CSS 3, Zustand 4. The desktop app reads local project, app, and runtime/session data. Claude Code data under `~/.claude/` is one supported local source, while some runtime modes may also use provider or startup capability services when required.
 
 <details>
 <summary><strong>Build from source</strong></summary>
@@ -332,8 +342,9 @@ pnpm dev
 
 `pnpm dev` starts the desktop Electron app. Do not start a browser/web dev server for normal development; that path is limited and is not the supported way to run agent teams locally.
 
-Use `pnpm dev:mcp` when you want an MCP browser/debugging tool to attach to the current
-Electron renderer through the local Chrome DevTools Protocol endpoint on `127.0.0.1:9222`.
+Use `pnpm dev:mcp` for automated interactive or visual UI verification. It exposes the current
+Electron renderer through the local Chrome DevTools Protocol endpoint on `127.0.0.1:9222`, avoiding
+window-selection ambiguity when packaged or other Electron apps are also open.
 
 The desktop app auto-discovers Claude Code projects from `~/.claude/`.
 

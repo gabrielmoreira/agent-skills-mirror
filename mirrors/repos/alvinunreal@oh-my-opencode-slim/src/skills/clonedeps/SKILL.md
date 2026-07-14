@@ -100,7 +100,37 @@ The orchestrator owns final approval. Before cloning:
 5. Ask for confirmation before network cloning unless the user explicitly asked
    to clone immediately.
 
-### Step 4: Clone Sources Manually
+### Step 4: Update Ignore Files
+
+Before cloning artifacts or cleaning cloned dependencies, inspect existing
+`.gitignore` and `.ignore`. Update the managed block in place when present;
+otherwise append it. Add only the missing exact lines below, never duplicate
+entries or modify unrelated rules. These blocks keep cloned artifacts git-local
+while the `.ignore` allowlist keeps them readable to OpenCode.
+
+`.gitignore`:
+
+```gitignore
+# BEGIN oh-my-opencode-slim clonedeps
+.slim/clonedeps/repos/
+# END oh-my-opencode-slim clonedeps
+```
+
+`.ignore`:
+
+```ignore
+# BEGIN oh-my-opencode-slim clonedeps
+!.slim/
+!.slim/clonedeps.json
+!.slim/clonedeps/
+!.slim/clonedeps/repos/
+!.slim/clonedeps/repos/**
+.slim/clonedeps/repos/**/.git/
+.slim/clonedeps/repos/**/.git/**
+# END oh-my-opencode-slim clonedeps
+```
+
+### Step 5: Clone Sources Manually
 
 Create one folder per source repository under:
 
@@ -135,7 +165,7 @@ Safe manual git pattern:
 
 Do not run dependency install/build/test scripts from cloned repositories.
 
-### Step 5: Write Local State
+### Step 6: Write Local State
 
 Write `.slim/clonedeps.json` so future agents know what exists:
 
@@ -172,33 +202,6 @@ successful clones so future inspection is not misleading.
 Do not add `.slim/clonedeps.json` to `.gitignore`. It is small, reviewable
 project metadata that can be committed. Only the cloned repository contents
 under `.slim/clonedeps/repos/` should be ignored.
-
-### Step 6: Update Ignore Files
-
-Update `.gitignore` with an idempotent marker block:
-
-```gitignore
-# BEGIN oh-my-opencode-slim clonedeps
-.slim/clonedeps/repos/
-# END oh-my-opencode-slim clonedeps
-```
-
-Update `.ignore` so OpenCode can read the cloned source while git still ignores
-it:
-
-```ignore
-# BEGIN oh-my-opencode-slim clonedeps
-!.slim/
-!.slim/clonedeps.json
-!.slim/clonedeps/
-!.slim/clonedeps/repos/
-!.slim/clonedeps/repos/**
-.slim/clonedeps/repos/**/.git/
-.slim/clonedeps/repos/**/.git/**
-# END oh-my-opencode-slim clonedeps
-```
-
-Only edit content inside these marker blocks.
 
 ### Step 7: Register Dependency Source in AGENTS.md
 

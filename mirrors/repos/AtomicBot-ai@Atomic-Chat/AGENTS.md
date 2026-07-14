@@ -309,6 +309,128 @@ Append-only. Newest at top. Each entry follows this shape:
 
 ---
 
+### 2026-07-13 — Run tray status synchronization on Windows
+- **Context:** The Windows tray menu shipped and emitted the same
+  `tray-start-server` / `tray-stop-server` events as macOS, but the React hook
+  that updates its server/model/RAM rows and listens for those events returned
+  early unless `IS_MACOS` was true. On Windows the menu therefore stayed on
+  its initial "Server Stopped" placeholders and its Start/Stop action did
+  nothing.
+- **Decision:** Mount the existing tray synchronization and event-listener
+  effects on Windows Tauri builds as well as macOS. Keep web, mobile, and Linux
+  excluded.
+- **Consequences:** The Windows tray reflects live state and its Start/Stop
+  action reaches the existing Local API Server flow. macOS behavior is
+  unchanged. No IPC, settings, or server lifecycle changes.
+- **Owner:** team.
+- **Links:** [Issue #167](https://github.com/AtomicBot-ai/Atomic-Chat/issues/167),
+  [`web-app/src/hooks/useTrayStatusSync.ts`](web-app/src/hooks/useTrayStatusSync.ts),
+  [`web-app/src/routes/__root.tsx`](web-app/src/routes/__root.tsx).
+
+### 2026-07-13 — Default upstream DFlash downloads to Atomic Chat Q8_0 for every target quantization
+- **Context:** The upstream DFlash picker defaulted to a community Q4_K_M
+  draft even when the selected target family had a verified Atomic Chat Q8_0
+  conversion. Target-model quantization does not constrain the separate
+  DFlash draft quantization, so IQ4, Q4, Q5, and other target GGUFs can all
+  pair with the same Q8_0 draft.
+- **Decision:** Change the registry and picker default from Q4_K_M to Q8_0.
+  When an Atomic Chat Q8_0 draft exists, enabling DFlash now selects and
+  downloads it regardless of the target model's quantization. Keep the other
+  compatible draft quantizations available for explicit selection, and keep
+  community Q8_0 as the fallback for families without a published Atomic Chat
+  conversion.
+- **Consequences:** Atomic Chat's draft repositories become the default test
+  path without removing previously supported community drafts or changing
+  existing `dflash_draft_path` values. Qwen 3.6 35B-A3B continues to use its
+  verified community-hosted Q8_0 draft until an Atomic Chat conversion is
+  published.
+- **Owner:** team.
+- **Links:** [`extensions/llamacpp-upstream-extension/src/dflashRegistry.ts`](extensions/llamacpp-upstream-extension/src/dflashRegistry.ts),
+  [`web-app/src/containers/dialogs/LlamacppDflashDraftDialog.tsx`](web-app/src/containers/dialogs/LlamacppDflashDraftDialog.tsx).
+
+### 2026-07-13 — Detect embedded Qwen MTP from canonical GGUF metadata
+- **Context:** The `llamacpp-upstream` load and Settings gates treated a Qwen
+  model as built-in MTP-capable only when its Atomic Chat model id contained
+  `mtp`. Valid combined GGUFs can be imported under ordinary filenames, so
+  their embedded MTP head was silently disabled despite the file carrying the
+  metadata llama.cpp itself uses.
+- **Decision:** Read `general.architecture`,
+  `<architecture>.nextn_predict_layers`, and `<architecture>.block_count` from
+  the existing GGUF metadata IPC. Accept embedded MTP only for implemented
+  `qwen35` / `qwen35moe` architectures when
+  `block_count > nextn_predict_layers > 0`. Use this capability check in both
+  the load-time gate and Settings UI. Keep Gemma 4 on its separate downloaded
+  `mtp_draft_path` branch, and keep the built-in Qwen launch arguments at
+  `--spec-type draft-mtp --spec-draft-n-max 2` without `--model-draft`.
+- **Consequences:** Correct combined Qwen GGUFs use MTP regardless of repository
+  or filename. Missing, malformed, or unsupported metadata conservatively
+  disables MTP, while the existing one-shot retry without MTP remains a final
+  load safeguard. No Rust parser, IPC shape, or speculative-window change.
+- **Owner:** team.
+- **Links:** [`extensions/llamacpp-upstream-extension/src/util.ts`](extensions/llamacpp-upstream-extension/src/util.ts),
+  [`extensions/llamacpp-upstream-extension/src/index.ts`](extensions/llamacpp-upstream-extension/src/index.ts),
+  [`web-app/src/routes/settings/providers/$providerName.tsx`](web-app/src/routes/settings/providers/$providerName.tsx),
+  [`src-tauri/plugins/tauri-plugin-llamacpp-upstream/src/args.rs`](src-tauri/plugins/tauri-plugin-llamacpp-upstream/src/args.rs).
+
+### 2026-07-13 — Apply a request-local throughput profile whenever `llamacpp-upstream` DFlash is enabled
+- **Context:** The initial DFlash request override forced only
+  `temperature: 0`. The upstream llama.cpp DFlash reference command also uses
+  `top-k 1`, and DFlash acceptance drops when thinking generation or sampling
+  penalties move target selection away from the draft model's predictions.
+- **Decision:** Extend the request-local DFlash override to set
+  `temperature: 0`, `top_k: 1`, `repeat_penalty: 1`,
+  `presence_penalty: 0`, and `frequency_penalty: 0`. Independently force
+  `chat_template_kwargs.enable_thinking: false` and `reasoning_budget: 0`.
+  Preserve all unrelated request parameters and never write these overrides to
+  the global Sampling or General settings stores. Keep DFlash block size and
+  draft quantization user-selectable.
+- **Consequences:** DFlash requests use deterministic, non-thinking generation
+  with neutral penalties to maximize draft acceptance and per-request
+  throughput. Disabling DFlash or switching providers immediately restores the
+  user's persisted sampling and reasoning choices.
+- **Owner:** team.
+- **Links:** [llama.cpp DFlash PR #22105](https://github.com/ggml-org/llama.cpp/pull/22105),
+  [`web-app/src/lib/custom-chat-transport.ts`](web-app/src/lib/custom-chat-transport.ts),
+  [`web-app/src/lib/__tests__/dflashToolIsolation.test.ts`](web-app/src/lib/__tests__/dflashToolIsolation.test.ts).
+
+### 2026-07-13 — Offer every published Atomic Chat DFlash GGUF to `llamacpp-upstream`
+- **Context:** Atomic Chat now publishes eight MIT-licensed Q8_0 DFlash GGUF
+  conversions on Hugging Face, while the upstream llama.cpp DFlash registry
+  covered only three target families and downloaded exclusively from community
+  repositories.
+- **Decision:** Register the published Atomic Chat Q8_0 drafts for Qwen3 4B/8B,
+  Qwen3.5 4B/9B/27B, Qwen3.6 27B, Qwen3-Coder 30B-A3B, and
+  Qwen3-Coder-Next. Prefer the Atomic Chat Q8_0 file for the two previously
+  supported families while retaining their other community-hosted
+  quantizations. Keep Qwen3.6 35B-A3B on its existing community source because
+  Atomic Chat does not publish that draft. Pin every Atomic Chat file's live
+  Hugging Face LFS SHA-256 and byte size.
+- **Consequences:** Users running any matching target are offered the
+  additional Q8_0 draft download directly from the Atomic Chat organization.
+  Existing quant choices remain available for Qwen3.5 9B, Qwen3.6 27B, and
+  Qwen3.6 35B-A3B. Families with only a published Q8_0 draft fall back to that
+  sole option when no quant is specified.
+- **Owner:** team.
+- **Links:** [`extensions/llamacpp-upstream-extension/src/dflashRegistry.ts`](extensions/llamacpp-upstream-extension/src/dflashRegistry.ts),
+  [`extensions/llamacpp-upstream-extension/src/dflashRegistry.test.ts`](extensions/llamacpp-upstream-extension/src/dflashRegistry.test.ts),
+  [AtomicChat models](https://huggingface.co/AtomicChat/models).
+
+### 2026-07-13 — Force greedy sampling for `llamacpp-upstream` DFlash requests
+- **Context:** DFlash speculative decoding on the upstream llama.cpp provider
+  requires deterministic target sampling, while Atomic Chat's global sampling
+  defaults include a non-zero temperature.
+- **Decision:** At request construction, when the selected provider is
+  `llamacpp-upstream` and its DFlash setting is enabled, override only the
+  effective request parameters with `temperature: 0`. Do not modify the
+  persisted global Sampling store.
+- **Consequences:** DFlash requests use greedy sampling regardless of the
+  user's global temperature. Disabling DFlash or switching providers
+  immediately restores the user's existing sampling value because it was
+  never overwritten.
+- **Owner:** team.
+- **Links:** [`web-app/src/lib/custom-chat-transport.ts`](web-app/src/lib/custom-chat-transport.ts),
+  [`web-app/src/lib/__tests__/dflashToolIsolation.test.ts`](web-app/src/lib/__tests__/dflashToolIsolation.test.ts).
+
 ### 2026-07-10 — Isolate `llamacpp-upstream` DFlash requests from tools and preserve model settings on restart
 - **Context:** A user log showed that DFlash itself loaded successfully
   (`draft-dflash` registered and non-zero acceptance), but the next request

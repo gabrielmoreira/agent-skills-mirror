@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `FullAgent/fulling` — 26 default patterns, 1 followed patterns, 2 file(s) materialized.
+Mirror of `FullAgent/fulling` — 26 default patterns, 2 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `FullAgent/fulling` — 26 default patterns, 1 followed patterns, 2 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 2 |
+| Followed pats | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `FullAgent/fulling` — 26 default patterns, 1 followed patterns, 2 fi
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/architecture.md`
+- `docs/design.md`
 
 ## File Index
 
@@ -61,6 +62,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 3 | → | [`docs/design.md`](docs/design.md) |
 
 ---
 

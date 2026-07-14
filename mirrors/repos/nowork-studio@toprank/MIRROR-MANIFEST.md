@@ -68,8 +68,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`google-ads/manage/SKILL.md`](google-ads/manage/SKILL.md) |
 | 8 | ✓ | [`meta-ads/audit/SKILL.md`](meta-ads/audit/SKILL.md) |
 | 9 | ✓ | [`meta-ads/manage/SKILL.md`](meta-ads/manage/SKILL.md) |
-| 10 | ✓ | [`notfair-cmo/CLAUDE.md`](notfair-cmo/CLAUDE.md) |
-| 11 | ✓ | [`notfair-upgrade-skill/SKILL.md`](notfair-upgrade-skill/SKILL.md) |
+| 10 | ✓ | [`notfair-upgrade-skill/SKILL.md`](notfair-upgrade-skill/SKILL.md) |
+| 11 | ✓ | [`notfair/CLAUDE.md`](notfair/CLAUDE.md) |
 | 12 | ✓ | [`seo/broken-link-checker/SKILL.md`](seo/broken-link-checker/SKILL.md) |
 | 13 | ✓ | [`seo/content-planner/SKILL.md`](seo/content-planner/SKILL.md) |
 | 14 | ✓ | [`seo/content-writer/SKILL.md`](seo/content-writer/SKILL.md) |

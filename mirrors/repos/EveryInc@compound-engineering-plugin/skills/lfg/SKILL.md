@@ -1,7 +1,6 @@
 ---
 name: lfg
-description: Run the full hands-off engineering pipeline from planning through a green PR.
-disable-model-invocation: true
+description: "Run the full autonomous shipping pipeline end-to-end, hands-off with no check-ins: plan, implement, review and fix, commit, push a branch, open a PR, and watch CI to green. Use only when the user explicitly asks to build or ship something autonomously all the way to an open PR, or invokes lfg directly — it pushes and opens a PR without stopping. Not for in-the-loop work where the user reviews each step: use ce-plan to plan, ce-work to implement a plan, ce-debug to fix a bug, or ce-commit-push-pr to commit and open a PR for existing changes."
 argument-hint: "[feature description]"
 ---
 

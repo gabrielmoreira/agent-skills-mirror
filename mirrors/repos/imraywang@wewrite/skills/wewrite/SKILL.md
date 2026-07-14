@@ -46,7 +46,7 @@ wewrite-* 模块）和**编排**（主管道 8 步按序跑完）。
 
 **读取/检查约定**：本文档中 `读取: <路径>` / `检查: <路径>` = **用你环境的文件读取工具真实打开该文件、读完其全部内容，然后再继续本步**。这不是描述性注释——未读取前不得执行依赖该文件的步骤；不同 harness 的文件读取工具名不同，按你环境的对应工具执行。
 
-**CLI 约定**：确定性操作（自检/抓热点/评分/生图/排版/发布…）一律走 `wewrite` 命令，需在 PATH（缺失 → `bash {repo}/install.sh` 或 `uv tool install git+https://github.com/imraywang/wewrite.git`）。**{home}** = 用户状态目录 `$WEWRITE_HOME` 或 `~/.wewrite`（`wewrite home` 可查）——config/style/history/playbook/output/exemplars 全在 {home}，不在仓库；references 文档中的状态路径同此约定。
+**CLI 约定**：确定性操作（自检/抓热点/评分/生图/排版/发布…）一律走 `wewrite` 命令，需在 PATH（缺失 → `bash {repo}/install.sh` 或 `uv tool install wewrite`）。**{home}** = 用户状态目录 `$WEWRITE_HOME` 或 `~/.wewrite`（`wewrite home` 可查）——config/style/history/playbook/output/exemplars 全在 {home}，不在仓库；references 文档中的状态路径同此约定。
 
 **管道状态**：跨模块状态统一落盘 `{home}/output/_state.yaml`，契约见 `{skill_dir}/references/pipeline-state.md`。主管道开新一篇文章时重置该文件（保留当天有效的 `flags`）。
 
@@ -70,10 +70,8 @@ wewrite-* 模块）和**编排**（主管道 8 步按序跑完）。
 | 改写成小红书 / 抖音版 / 多平台分发 | `wewrite-rewrite` | 一源多平台改写 |
 | 更新 / 更新 WeWrite / 升级 | （就地执行）在 `{repo}` 执行 `git pull origin main` 并重跑 `bash {repo}/install.sh`（更新 CLI 与链接），完成后告知版本变化 | |
 
-<!-- wewrite:modular-start -->
 **模块激活方式**：环境有 Skill 工具 → 直接激活同名 skill；没有 →
 `读取: {skill_dir}/../<模块名>/SKILL.md`，跳过其「运行约定」小节，按主体执行。
-<!-- wewrite:modular-end -->
 
 ---
 
@@ -117,7 +115,6 @@ wewrite diagnose --json
 **1.4 重置管道状态**：开新一篇文章 → 重置 `{home}/output/_state.yaml`（保留 `flags`）。
 如果用户直接给了选题 → 写入 `topic`（`source: "用户指定"`），跳过 [2/8] 直达 [3/8]（仍需框架选择和素材采集，不可跳过）。
 
-<!-- wewrite:modular-start -->
 ### Step 2-7: 按序激活管道模块
 
 | 进度 | 模块 | 核心产出 |
@@ -129,8 +126,6 @@ wewrite diagnose --json
 | [7/8] 排版+发布 | `wewrite-publish` | `_state.publish` |
 
 激活方式同上方「模块激活方式」。每个模块完成即更新进度，直接进下一个。
-<!-- wewrite:modular-end -->
-<!-- wewrite:inline-pipeline -->
 
 ### Step 8: 收尾
 
@@ -202,8 +197,5 @@ wewrite diagnose --json
 | 历史写入 | 警告不阻断 |
 | 效果数据 | 告知等 24h |
 | Playbook 不存在 | 用 writing-guide.md |
-<!-- wewrite:modular-start -->
 | 模块 skill 未安装（Skill 工具不可见） | `读取: {skill_dir}/../<模块名>/SKILL.md` 按主体执行 |
-<!-- wewrite:modular-end -->
 
-<!-- wewrite:inline-aux -->

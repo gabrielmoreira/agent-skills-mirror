@@ -131,6 +131,13 @@ exiting once all sentinels are seen. Set the Monitor `timeout_ms` above the wave
 digest, post one short ⏳ wave-status block. If the Monitor tool is unavailable in the host, poll each progress file for
 its sentinel with short foreground Bash checks instead.
 
+Continue monitoring through quiet periods until the wrapper sentinel or approved timeout. The non-interactive
+`codex exec --json` stream does not expose app-server safety-buffering or model-rerouting notifications, so silence
+alone does not establish that either occurred. Report `no recent activity`; never cancel, retry, or relaunch with a
+suggested faster model because of apparent buffering. Preserve the approved timeout and normal failure handling: do not
+extend the run or start a replacement automatically. A faster-model retry offered during transient safety buffering is
+optional and distinct from an independent server-side policy reroute, which may make the responding model unknowable.
+
 ### Collect
 
 When an agent's sentinel arrives, read that background task's output file (use the Read tool, not deprecated
@@ -169,6 +176,11 @@ Wave status, on each digest or completion:
   verification evidence proves the approved plan.
 - When the plan marked polish as required, invoke `$code-polish` once with exactly that union and its default
   simplify-then-review mode. Skip polish if any required agent failed; do not recompute or broaden scope.
-- Finish with a 🏁 report: the strategy, agent count, and per agent — model, effort, timeout budget vs actual elapsed
-  (from `elapsed=`/the sentinel), output tokens when available, status, and summary — plus the combined changed files
-  and verification, the polish result when run, blockers, and residual risks.
+- If the approved work changes one or more Git repositories on this machine other than the repository where the handoff
+  began, automatically invoke `$commit` from each additional repository after its work, validation, and any required
+  polish are complete. Scope each invocation to the files changed there, do not ask for separate confirmation, and do
+  not commit incomplete, blocked, unexpected, or out-of-scope changes. Push only when the user explicitly requested it.
+- Finish with a 🏁 report: the strategy, agent count, and per agent — requested model, effort, timeout budget vs actual
+  elapsed (from `elapsed=`/the sentinel), output tokens when available, status, and summary — plus the combined changed
+  files and verification, the polish result when run, any automatic cross-repository commit hashes, blockers, and
+  residual risks.

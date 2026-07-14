@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `MadsLorentzen/ai-job-search` — 26 default patterns, 0 followed patterns, 78 file(s) materialized.
+Mirror of `MadsLorentzen/ai-job-search` — 26 default patterns, 0 followed patterns, 82 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MadsLorentzen/ai-job-search` — 26 default patterns, 0 followed patt
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 78 |
+| Files         | 82 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,65 +78,69 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`.agents/skills/jobbank-search/cli/src/commands/detail.ts`](.agents/skills/jobbank-search/cli/src/commands/detail.ts) |
 | 18 | ✓ | [`.agents/skills/jobbank-search/cli/src/commands/search.ts`](.agents/skills/jobbank-search/cli/src/commands/search.ts) |
 | 19 | ✓ | [`.agents/skills/jobbank-search/cli/src/helpers.ts`](.agents/skills/jobbank-search/cli/src/helpers.ts) |
-| 20 | ✓ | [`.agents/skills/jobbank-search/cli/tests/helpers.ts`](.agents/skills/jobbank-search/cli/tests/helpers.ts) |
-| 21 | ✓ | [`.agents/skills/jobbank-search/cli/tests/rss-fetch.test.ts`](.agents/skills/jobbank-search/cli/tests/rss-fetch.test.ts) |
-| 22 | ✓ | [`.agents/skills/jobbank-search/cli/tsconfig.json`](.agents/skills/jobbank-search/cli/tsconfig.json) |
-| 23 | ✓ | [`.agents/skills/jobbank-search/SKILL.md`](.agents/skills/jobbank-search/SKILL.md) |
-| 24 | ✓ | [`.agents/skills/jobbank-search/url-reference.md`](.agents/skills/jobbank-search/url-reference.md) |
-| 25 | ✓ | [`.agents/skills/jobdanmark-search/cli/package.json`](.agents/skills/jobdanmark-search/cli/package.json) |
-| 26 | ✓ | [`.agents/skills/jobdanmark-search/cli/README.md`](.agents/skills/jobdanmark-search/cli/README.md) |
-| 27 | ✓ | [`.agents/skills/jobdanmark-search/cli/src/cli.ts`](.agents/skills/jobdanmark-search/cli/src/cli.ts) |
-| 28 | ✓ | [`.agents/skills/jobdanmark-search/cli/src/commands/autocomplete.ts`](.agents/skills/jobdanmark-search/cli/src/commands/autocomplete.ts) |
-| 29 | ✓ | [`.agents/skills/jobdanmark-search/cli/src/commands/categories.ts`](.agents/skills/jobdanmark-search/cli/src/commands/categories.ts) |
-| 30 | ✓ | [`.agents/skills/jobdanmark-search/cli/src/commands/detail.ts`](.agents/skills/jobdanmark-search/cli/src/commands/detail.ts) |
-| 31 | ✓ | [`.agents/skills/jobdanmark-search/cli/src/commands/locations.ts`](.agents/skills/jobdanmark-search/cli/src/commands/locations.ts) |
-| 32 | ✓ | [`.agents/skills/jobdanmark-search/cli/src/commands/search.ts`](.agents/skills/jobdanmark-search/cli/src/commands/search.ts) |
-| 33 | ✓ | [`.agents/skills/jobdanmark-search/cli/src/helpers.ts`](.agents/skills/jobdanmark-search/cli/src/helpers.ts) |
-| 34 | ✓ | [`.agents/skills/jobdanmark-search/cli/tests/detail-parsing.test.ts`](.agents/skills/jobdanmark-search/cli/tests/detail-parsing.test.ts) |
-| 35 | ✓ | [`.agents/skills/jobdanmark-search/cli/tests/helpers.ts`](.agents/skills/jobdanmark-search/cli/tests/helpers.ts) |
-| 36 | ✓ | [`.agents/skills/jobdanmark-search/cli/tsconfig.json`](.agents/skills/jobdanmark-search/cli/tsconfig.json) |
-| 37 | ✓ | [`.agents/skills/jobdanmark-search/SKILL.md`](.agents/skills/jobdanmark-search/SKILL.md) |
-| 38 | ✓ | [`.agents/skills/jobindex-search/cli/package.json`](.agents/skills/jobindex-search/cli/package.json) |
-| 39 | ✓ | [`.agents/skills/jobindex-search/cli/README.md`](.agents/skills/jobindex-search/cli/README.md) |
-| 40 | ✓ | [`.agents/skills/jobindex-search/cli/src/cli.ts`](.agents/skills/jobindex-search/cli/src/cli.ts) |
-| 41 | ✓ | [`.agents/skills/jobindex-search/cli/src/commands/detail.ts`](.agents/skills/jobindex-search/cli/src/commands/detail.ts) |
-| 42 | ✓ | [`.agents/skills/jobindex-search/cli/src/commands/search.ts`](.agents/skills/jobindex-search/cli/src/commands/search.ts) |
-| 43 | ✓ | [`.agents/skills/jobindex-search/cli/src/helpers.ts`](.agents/skills/jobindex-search/cli/src/helpers.ts) |
-| 44 | ✓ | [`.agents/skills/jobindex-search/cli/tests/helpers.ts`](.agents/skills/jobindex-search/cli/tests/helpers.ts) |
-| 45 | ✓ | [`.agents/skills/jobindex-search/cli/tests/parsing.test.ts`](.agents/skills/jobindex-search/cli/tests/parsing.test.ts) |
-| 46 | ✓ | [`.agents/skills/jobindex-search/cli/tsconfig.json`](.agents/skills/jobindex-search/cli/tsconfig.json) |
-| 47 | ✓ | [`.agents/skills/jobindex-search/SKILL.md`](.agents/skills/jobindex-search/SKILL.md) |
-| 48 | ✓ | [`.agents/skills/jobindex-search/url-reference.md`](.agents/skills/jobindex-search/url-reference.md) |
-| 49 | ✓ | [`.agents/skills/jobnet-search/cli/package.json`](.agents/skills/jobnet-search/cli/package.json) |
-| 50 | ✓ | [`.agents/skills/jobnet-search/cli/README.md`](.agents/skills/jobnet-search/cli/README.md) |
-| 51 | ✓ | [`.agents/skills/jobnet-search/cli/src/cli.ts`](.agents/skills/jobnet-search/cli/src/cli.ts) |
-| 52 | ✓ | [`.agents/skills/jobnet-search/cli/src/commands/detail.ts`](.agents/skills/jobnet-search/cli/src/commands/detail.ts) |
-| 53 | ✓ | [`.agents/skills/jobnet-search/cli/src/commands/occupations.ts`](.agents/skills/jobnet-search/cli/src/commands/occupations.ts) |
-| 54 | ✓ | [`.agents/skills/jobnet-search/cli/src/commands/search.ts`](.agents/skills/jobnet-search/cli/src/commands/search.ts) |
-| 55 | ✓ | [`.agents/skills/jobnet-search/cli/src/commands/suggestions.ts`](.agents/skills/jobnet-search/cli/src/commands/suggestions.ts) |
-| 56 | ✓ | [`.agents/skills/jobnet-search/cli/src/helpers.ts`](.agents/skills/jobnet-search/cli/src/helpers.ts) |
-| 57 | ✓ | [`.agents/skills/jobnet-search/cli/tests/detail-formatting.test.ts`](.agents/skills/jobnet-search/cli/tests/detail-formatting.test.ts) |
-| 58 | ✓ | [`.agents/skills/jobnet-search/cli/tests/helpers.ts`](.agents/skills/jobnet-search/cli/tests/helpers.ts) |
-| 59 | ✓ | [`.agents/skills/jobnet-search/cli/tests/search-normalization.test.ts`](.agents/skills/jobnet-search/cli/tests/search-normalization.test.ts) |
-| 60 | ✓ | [`.agents/skills/jobnet-search/cli/tsconfig.json`](.agents/skills/jobnet-search/cli/tsconfig.json) |
-| 61 | ✓ | [`.agents/skills/jobnet-search/SKILL.md`](.agents/skills/jobnet-search/SKILL.md) |
-| 62 | ✓ | [`.agents/skills/linkedin-search/cli/package.json`](.agents/skills/linkedin-search/cli/package.json) |
-| 63 | ✓ | [`.agents/skills/linkedin-search/cli/README.md`](.agents/skills/linkedin-search/cli/README.md) |
-| 64 | ✓ | [`.agents/skills/linkedin-search/cli/src/cli.ts`](.agents/skills/linkedin-search/cli/src/cli.ts) |
-| 65 | ✓ | [`.agents/skills/linkedin-search/cli/src/commands/detail.ts`](.agents/skills/linkedin-search/cli/src/commands/detail.ts) |
-| 66 | ✓ | [`.agents/skills/linkedin-search/cli/src/commands/search.ts`](.agents/skills/linkedin-search/cli/src/commands/search.ts) |
-| 67 | ✓ | [`.agents/skills/linkedin-search/cli/src/helpers.ts`](.agents/skills/linkedin-search/cli/src/helpers.ts) |
-| 68 | ✓ | [`.agents/skills/linkedin-search/cli/tests/cli-flag-validation.test.ts`](.agents/skills/linkedin-search/cli/tests/cli-flag-validation.test.ts) |
-| 69 | ✓ | [`.agents/skills/linkedin-search/cli/tests/helpers.ts`](.agents/skills/linkedin-search/cli/tests/helpers.ts) |
-| 70 | ✓ | [`.agents/skills/linkedin-search/cli/tests/parsing.test.ts`](.agents/skills/linkedin-search/cli/tests/parsing.test.ts) |
-| 71 | ✓ | [`.agents/skills/linkedin-search/cli/tests/search.test.ts`](.agents/skills/linkedin-search/cli/tests/search.test.ts) |
-| 72 | ✓ | [`.agents/skills/linkedin-search/cli/tsconfig.json`](.agents/skills/linkedin-search/cli/tsconfig.json) |
-| 73 | ✓ | [`.agents/skills/linkedin-search/SKILL.md`](.agents/skills/linkedin-search/SKILL.md) |
-| 74 | ✓ | [`.agents/skills/linkedin-search/url-reference.md`](.agents/skills/linkedin-search/url-reference.md) |
-| 75 | ✓ | [`.claude/skills/job-application-assistant/SKILL.md`](.claude/skills/job-application-assistant/SKILL.md) |
-| 76 | ✓ | [`.claude/skills/job-scraper/SKILL.md`](.claude/skills/job-scraper/SKILL.md) |
-| 77 | ✓ | [`.claude/skills/upskill/SKILL.md`](.claude/skills/upskill/SKILL.md) |
-| 78 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 20 | ✓ | [`.agents/skills/jobbank-search/cli/tests/cli-contract.test.ts`](.agents/skills/jobbank-search/cli/tests/cli-contract.test.ts) |
+| 21 | ✓ | [`.agents/skills/jobbank-search/cli/tests/helpers.ts`](.agents/skills/jobbank-search/cli/tests/helpers.ts) |
+| 22 | ✓ | [`.agents/skills/jobbank-search/cli/tests/rss-fetch.test.ts`](.agents/skills/jobbank-search/cli/tests/rss-fetch.test.ts) |
+| 23 | ✓ | [`.agents/skills/jobbank-search/cli/tests/rss-parsing.test.ts`](.agents/skills/jobbank-search/cli/tests/rss-parsing.test.ts) |
+| 24 | ✓ | [`.agents/skills/jobbank-search/cli/tsconfig.json`](.agents/skills/jobbank-search/cli/tsconfig.json) |
+| 25 | ✓ | [`.agents/skills/jobbank-search/SKILL.md`](.agents/skills/jobbank-search/SKILL.md) |
+| 26 | ✓ | [`.agents/skills/jobbank-search/url-reference.md`](.agents/skills/jobbank-search/url-reference.md) |
+| 27 | ✓ | [`.agents/skills/jobdanmark-search/cli/package.json`](.agents/skills/jobdanmark-search/cli/package.json) |
+| 28 | ✓ | [`.agents/skills/jobdanmark-search/cli/README.md`](.agents/skills/jobdanmark-search/cli/README.md) |
+| 29 | ✓ | [`.agents/skills/jobdanmark-search/cli/src/cli.ts`](.agents/skills/jobdanmark-search/cli/src/cli.ts) |
+| 30 | ✓ | [`.agents/skills/jobdanmark-search/cli/src/commands/autocomplete.ts`](.agents/skills/jobdanmark-search/cli/src/commands/autocomplete.ts) |
+| 31 | ✓ | [`.agents/skills/jobdanmark-search/cli/src/commands/categories.ts`](.agents/skills/jobdanmark-search/cli/src/commands/categories.ts) |
+| 32 | ✓ | [`.agents/skills/jobdanmark-search/cli/src/commands/detail.ts`](.agents/skills/jobdanmark-search/cli/src/commands/detail.ts) |
+| 33 | ✓ | [`.agents/skills/jobdanmark-search/cli/src/commands/locations.ts`](.agents/skills/jobdanmark-search/cli/src/commands/locations.ts) |
+| 34 | ✓ | [`.agents/skills/jobdanmark-search/cli/src/commands/search.ts`](.agents/skills/jobdanmark-search/cli/src/commands/search.ts) |
+| 35 | ✓ | [`.agents/skills/jobdanmark-search/cli/src/helpers.ts`](.agents/skills/jobdanmark-search/cli/src/helpers.ts) |
+| 36 | ✓ | [`.agents/skills/jobdanmark-search/cli/tests/cli-contract.test.ts`](.agents/skills/jobdanmark-search/cli/tests/cli-contract.test.ts) |
+| 37 | ✓ | [`.agents/skills/jobdanmark-search/cli/tests/detail-jsonld.test.ts`](.agents/skills/jobdanmark-search/cli/tests/detail-jsonld.test.ts) |
+| 38 | ✓ | [`.agents/skills/jobdanmark-search/cli/tests/detail-parsing.test.ts`](.agents/skills/jobdanmark-search/cli/tests/detail-parsing.test.ts) |
+| 39 | ✓ | [`.agents/skills/jobdanmark-search/cli/tests/helpers.ts`](.agents/skills/jobdanmark-search/cli/tests/helpers.ts) |
+| 40 | ✓ | [`.agents/skills/jobdanmark-search/cli/tsconfig.json`](.agents/skills/jobdanmark-search/cli/tsconfig.json) |
+| 41 | ✓ | [`.agents/skills/jobdanmark-search/SKILL.md`](.agents/skills/jobdanmark-search/SKILL.md) |
+| 42 | ✓ | [`.agents/skills/jobindex-search/cli/package.json`](.agents/skills/jobindex-search/cli/package.json) |
+| 43 | ✓ | [`.agents/skills/jobindex-search/cli/README.md`](.agents/skills/jobindex-search/cli/README.md) |
+| 44 | ✓ | [`.agents/skills/jobindex-search/cli/src/cli.ts`](.agents/skills/jobindex-search/cli/src/cli.ts) |
+| 45 | ✓ | [`.agents/skills/jobindex-search/cli/src/commands/detail.ts`](.agents/skills/jobindex-search/cli/src/commands/detail.ts) |
+| 46 | ✓ | [`.agents/skills/jobindex-search/cli/src/commands/search.ts`](.agents/skills/jobindex-search/cli/src/commands/search.ts) |
+| 47 | ✓ | [`.agents/skills/jobindex-search/cli/src/helpers.ts`](.agents/skills/jobindex-search/cli/src/helpers.ts) |
+| 48 | ✓ | [`.agents/skills/jobindex-search/cli/tests/helpers.ts`](.agents/skills/jobindex-search/cli/tests/helpers.ts) |
+| 49 | ✓ | [`.agents/skills/jobindex-search/cli/tests/parsing.test.ts`](.agents/skills/jobindex-search/cli/tests/parsing.test.ts) |
+| 50 | ✓ | [`.agents/skills/jobindex-search/cli/tsconfig.json`](.agents/skills/jobindex-search/cli/tsconfig.json) |
+| 51 | ✓ | [`.agents/skills/jobindex-search/SKILL.md`](.agents/skills/jobindex-search/SKILL.md) |
+| 52 | ✓ | [`.agents/skills/jobindex-search/url-reference.md`](.agents/skills/jobindex-search/url-reference.md) |
+| 53 | ✓ | [`.agents/skills/jobnet-search/cli/package.json`](.agents/skills/jobnet-search/cli/package.json) |
+| 54 | ✓ | [`.agents/skills/jobnet-search/cli/README.md`](.agents/skills/jobnet-search/cli/README.md) |
+| 55 | ✓ | [`.agents/skills/jobnet-search/cli/src/cli.ts`](.agents/skills/jobnet-search/cli/src/cli.ts) |
+| 56 | ✓ | [`.agents/skills/jobnet-search/cli/src/commands/detail.ts`](.agents/skills/jobnet-search/cli/src/commands/detail.ts) |
+| 57 | ✓ | [`.agents/skills/jobnet-search/cli/src/commands/occupations.ts`](.agents/skills/jobnet-search/cli/src/commands/occupations.ts) |
+| 58 | ✓ | [`.agents/skills/jobnet-search/cli/src/commands/search.ts`](.agents/skills/jobnet-search/cli/src/commands/search.ts) |
+| 59 | ✓ | [`.agents/skills/jobnet-search/cli/src/commands/suggestions.ts`](.agents/skills/jobnet-search/cli/src/commands/suggestions.ts) |
+| 60 | ✓ | [`.agents/skills/jobnet-search/cli/src/helpers.ts`](.agents/skills/jobnet-search/cli/src/helpers.ts) |
+| 61 | ✓ | [`.agents/skills/jobnet-search/cli/tests/detail-formatting.test.ts`](.agents/skills/jobnet-search/cli/tests/detail-formatting.test.ts) |
+| 62 | ✓ | [`.agents/skills/jobnet-search/cli/tests/helpers.ts`](.agents/skills/jobnet-search/cli/tests/helpers.ts) |
+| 63 | ✓ | [`.agents/skills/jobnet-search/cli/tests/search-normalization.test.ts`](.agents/skills/jobnet-search/cli/tests/search-normalization.test.ts) |
+| 64 | ✓ | [`.agents/skills/jobnet-search/cli/tsconfig.json`](.agents/skills/jobnet-search/cli/tsconfig.json) |
+| 65 | ✓ | [`.agents/skills/jobnet-search/SKILL.md`](.agents/skills/jobnet-search/SKILL.md) |
+| 66 | ✓ | [`.agents/skills/linkedin-search/cli/package.json`](.agents/skills/linkedin-search/cli/package.json) |
+| 67 | ✓ | [`.agents/skills/linkedin-search/cli/README.md`](.agents/skills/linkedin-search/cli/README.md) |
+| 68 | ✓ | [`.agents/skills/linkedin-search/cli/src/cli.ts`](.agents/skills/linkedin-search/cli/src/cli.ts) |
+| 69 | ✓ | [`.agents/skills/linkedin-search/cli/src/commands/detail.ts`](.agents/skills/linkedin-search/cli/src/commands/detail.ts) |
+| 70 | ✓ | [`.agents/skills/linkedin-search/cli/src/commands/search.ts`](.agents/skills/linkedin-search/cli/src/commands/search.ts) |
+| 71 | ✓ | [`.agents/skills/linkedin-search/cli/src/helpers.ts`](.agents/skills/linkedin-search/cli/src/helpers.ts) |
+| 72 | ✓ | [`.agents/skills/linkedin-search/cli/tests/cli-flag-validation.test.ts`](.agents/skills/linkedin-search/cli/tests/cli-flag-validation.test.ts) |
+| 73 | ✓ | [`.agents/skills/linkedin-search/cli/tests/helpers.ts`](.agents/skills/linkedin-search/cli/tests/helpers.ts) |
+| 74 | ✓ | [`.agents/skills/linkedin-search/cli/tests/parsing.test.ts`](.agents/skills/linkedin-search/cli/tests/parsing.test.ts) |
+| 75 | ✓ | [`.agents/skills/linkedin-search/cli/tests/search.test.ts`](.agents/skills/linkedin-search/cli/tests/search.test.ts) |
+| 76 | ✓ | [`.agents/skills/linkedin-search/cli/tsconfig.json`](.agents/skills/linkedin-search/cli/tsconfig.json) |
+| 77 | ✓ | [`.agents/skills/linkedin-search/SKILL.md`](.agents/skills/linkedin-search/SKILL.md) |
+| 78 | ✓ | [`.agents/skills/linkedin-search/url-reference.md`](.agents/skills/linkedin-search/url-reference.md) |
+| 79 | ✓ | [`.claude/skills/job-application-assistant/SKILL.md`](.claude/skills/job-application-assistant/SKILL.md) |
+| 80 | ✓ | [`.claude/skills/job-scraper/SKILL.md`](.claude/skills/job-scraper/SKILL.md) |
+| 81 | ✓ | [`.claude/skills/upskill/SKILL.md`](.claude/skills/upskill/SKILL.md) |
+| 82 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

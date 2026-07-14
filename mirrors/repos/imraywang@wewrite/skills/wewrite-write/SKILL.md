@@ -19,10 +19,9 @@ allowed-tools:
 
 # wewrite-write — 框架 + 素材 + 写作
 
-<!-- wewrite:standalone-start -->
 ## 运行约定
 
-- **CLI**：确定性操作走 `wewrite` 命令（需在 PATH；缺失则引导 `uv tool install git+https://github.com/imraywang/wewrite.git`，或在仓库里 `bash install.sh`）。
+- **CLI**：确定性操作走 `wewrite` 命令（需在 PATH；缺失则引导 `uv tool install wewrite`，或在仓库里 `bash install.sh`）。
 - **{home}**：用户状态目录 = `$WEWRITE_HOME` 或 `~/.wewrite`（`wewrite home` 可查）。config/style/history/playbook/output/exemplars 全在 {home}，不在仓库；references 文档中的状态路径同此约定。
 - **`读取: <路径>`** = 用文件读取工具真实读完该文件再继续，不是注释。
 - **references/**：本 skill 自带 `{skill_dir}/references/`；references 文档内的 `{skill_dir}` 即本 skill 目录。
@@ -36,7 +35,6 @@ allowed-tools:
    `blacklist`、`writing_persona`、`content_style`。不存在 → 先激活 **wewrite-style**（onboard）。
 3. **写作模式标记**：读 `_state.yaml` 的 `flags.use_writer_model`；缺失或
    `diagnosed_at` 非当天 → `wewrite diagnose --json` 重取并写回。
-<!-- wewrite:standalone-end -->
 
 ## Step 3: 框架 + 素材
 
@@ -181,7 +179,7 @@ Category 映射规则：
 - **写作规范**：writing-guide.md 中的基础规则（禁用词、句长方差、词汇混用等）在初稿阶段生效
 - **分段实时自检**：读取 `{skill_dir}/references/realtime-check.md`，每写完约 500 字（或每个 H2）就地执行 5 项快速检查（句长交替 / 情绪锚定 / 词汇温度 / 素材锚定 / 句法变形），问题当场掐掉不累积到全文。按 500 字/H2 粒度查，不要写一句修一句；也不要为凑检查项刻意制造大量单句段落（会触发过度优化检测）
 - 2-3 个编辑锚点：`<!-- ✏️ 编辑建议：在这里加一句你自己的经历/看法 -->`
-- 可选容器语法：`:::dialogue`、`:::timeline`、`:::callout`、`:::quote`、`:::highlight`（琥珀高亮框）、`:::summary`（青色总结框）
+- 可选容器语法：`:::dialogue`、`:::timeline`、`:::callout`、`:::quote`、`:::pullquote`（金句居中）、`:::label`/`:::label pill`（小标签标题）、`:::steps`（编号步骤卡）、`:::highlight`（琥珀高亮框）、`:::summary`（青色总结框）
 
 保存到 `{home}/output/article.md`（全流程统一用这个工作文件名；委托写作模型与自己写都写这里）
 

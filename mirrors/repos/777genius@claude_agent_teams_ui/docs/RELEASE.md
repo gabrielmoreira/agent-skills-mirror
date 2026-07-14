@@ -1,5 +1,90 @@
 # Release Guide
 
+## Draft: v2.8.0 (2026-07-13)
+
+Target branch: `dev`.
+
+Runtime gate:
+
+- Agent Teams runtime: `v0.0.65`.
+- Terminal Platform runtime: `v0.3.2`.
+
+Draft body source for GitHub release:
+
+<!-- RELEASE_BODY_START v2.8.0 -->
+Use more of the AI subscriptions you already pay for in the same Agent Team. Guided setup connects supported plans, lets you choose a provider and model for each teammate, and keeps the whole flow in one place. This release also adds safe team-folder import, newer Codex models, and fuller usage and cost reporting.
+
+### What's New
+
+- Connect SuperGrok, GitHub Copilot, Cursor, Amazon Q Developer / Kiro, Z.AI Coding Plan, MiniMax Token Plan, Kimi Code Membership, and Xiaomi MiMo Token Plan through guided setup in the dashboard and Provider Settings.
+- Browse models by connected provider and assign them to individual teammates, including models from the larger OpenCode catalog.
+- Import an existing team folder, preview the detected members, skills, and project path, and create a draft team before launching it.
+- Discover GPT-5.6 Sol, Terra, and Luna in Codex, with Max and Ultra reasoning effort where supported.
+- Include OpenCode token usage and refreshed model pricing in the shared Usage dashboard and budget breakdowns.
+- Configure and validate context and output limits for local OpenCode models without changing the user's OpenCode project settings.
+
+### Improvements
+
+- Make Provider Settings easier to understand with clearer Claude, Codex, and OpenCode tabs, immediate setup progress, guided browser and device-code sign-in, key validation, and clearer verification results.
+- Load provider cards and connection counts sooner, then cache, paginate, and virtualize large model catalogs for faster search and stable scrolling.
+- Guide installation or updates for the OpenCode runtime and the Cursor Agent or Kiro CLI components required by their provider flows.
+- Let connected providers renew or replace managed credentials without deleting the working credential first, and detect Xiaomi MiMo regions automatically from the plan's dedicated Base URL.
+- Keep mixed OpenCode teammates isolated by model, improve readiness checks, and apply model context limits consistently.
+- Update the terminal runtime and make command history render more reliably.
+- Preserve task references, attachment paths, and work-sync timeouts in MCP actions, plus advanced team settings sent through HTTP.
+
+### Bug Fixes
+
+- Fix SuperGrok device authorization getting stuck after browser approval, and refresh its managed session before team launch when needed.
+- Fix stale provider cards and connection counts after connecting or reconnecting, stop plans from appearing connected without usable credentials, and close setup races around OAuth, cancellation, credential writes, and model verification.
+- Prevent simultaneous team messages from overwriting one another, keep other inboxes readable when one history is damaged, and reject unsafe member paths.
+- Fix project matching when path casing differs while keeping distinct case-sensitive paths separate on macOS and Linux.
+- Reject malformed or unsafe team-folder imports and prevent competing imports or storage writes from overwriting each other.
+- Fix unavailable Codex models and stale teammate effort values in team configuration, show a clear fallback notice when the live catalog is unavailable, and offer an in-app runtime update when one is available.
+- Stop cancelled setup and CLI operations from leaving child processes running in the background.
+- Prevent the startup configuration request from running before its desktop handler is ready.
+
+### Downloads
+
+<table>
+<tr>
+<td align="center">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.8.0/Agent.Teams.AI-2.8.0-arm64.dmg">
+    <img src="https://img.shields.io/badge/macOS_Apple_Silicon-.dmg-000000?style=for-the-badge&logo=apple&logoColor=white" alt="macOS Apple Silicon" />
+  </a>
+  <br />
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.8.0/Agent.Teams.AI-2.8.0-x64.dmg">
+    <img src="https://img.shields.io/badge/macOS_Intel-.dmg-434343?style=for-the-badge&logo=apple&logoColor=white" alt="macOS Intel" />
+  </a>
+</td>
+<td align="center">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.8.0/Agent.Teams.AI.Setup.2.8.0.exe">
+    <img src="https://img.shields.io/badge/Windows-Download_.exe-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows" />
+  </a>
+  <br />
+  <sub>May trigger SmartScreen - click "More info" then "Run anyway"</sub>
+  <br />
+  <sub>Run normally. Administrator mode may be needed only if the app reports a specific OpenCode symlink or permission error.</sub>
+</td>
+<td align="center">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.8.0/Agent.Teams.AI-2.8.0.AppImage">
+    <img src="https://img.shields.io/badge/Linux-Download_.AppImage-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Linux AppImage" />
+  </a>
+  <br />
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.8.0/agent-teams-ai_2.8.0_amd64.deb">
+    <img src="https://img.shields.io/badge/.deb-E95420?style=flat-square&logo=ubuntu&logoColor=white" alt=".deb" />
+  </a>&nbsp;
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.8.0/agent-teams-ai-2.8.0.x86_64.rpm">
+    <img src="https://img.shields.io/badge/.rpm-294172?style=flat-square&logo=redhat&logoColor=white" alt=".rpm" />
+  </a>&nbsp;
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.8.0/agent-teams-ai-2.8.0.pacman">
+    <img src="https://img.shields.io/badge/.pacman-1793D1?style=flat-square&logo=archlinux&logoColor=white" alt=".pacman" />
+  </a>
+</td>
+</tr>
+</table>
+<!-- RELEASE_BODY_END v2.8.0 -->
+
 ## Published: v2.5.1 (2026-06-21)
 
 GitHub release: [v2.5.1](https://github.com/777genius/agent-teams-ai/releases/tag/v2.5.1).
@@ -442,14 +527,22 @@ If the orchestrator repository is private, local `pnpm dev` needs GitHub CLI
 authentication with access to `777genius/agent_teams_orchestrator`, or a local
 runtime override through `CLAUDE_AGENT_TEAMS_ORCHESTRATOR_CLI_PATH`.
 
-### 3. Create tag and push
+### 3. Create tag and build the draft
 
 ```bash
 git tag v<VERSION>
 git push origin v<VERSION>
+
+gh workflow run release.yml \
+  --repo 777genius/agent-teams-ai \
+  --ref v<VERSION> \
+  -f release_tag=v<VERSION> \
+  -f publish_release=false
 ```
 
-This triggers the `release.yml` GitHub Actions workflow which:
+Pushing the tag does not start the release workflow. `release.yml` is
+`workflow_dispatch`-only, so the explicit `gh workflow run` command is required.
+The draft workflow:
 
 - Builds the app (ubuntu)
 - Packages macOS arm64 + x64 (with code signing & notarization)
@@ -492,7 +585,46 @@ Draft releases must be treated as review artifacts:
 - If a draft already exists when starting or retrying a release, do not delete it automatically. Ask for explicit permission to delete, replace, or reuse it.
 - Never delete a draft release just because the user said to "make a release" or "redo the release". Deleting a draft requires a separate explicit command such as "delete the draft release".
 
-### 5. Required release closeout gate
+### 5. Publish a reviewed draft
+
+Publish only by rerunning the release workflow for the exact same tag with
+`publish_release=true`:
+
+```bash
+gh workflow run release.yml \
+  --repo 777genius/agent-teams-ai \
+  --ref v<VERSION> \
+  -f release_tag=v<VERSION> \
+  -f publish_release=true
+
+gh run list \
+  --repo 777genius/agent-teams-ai \
+  --workflow release.yml \
+  --limit 3
+
+gh run watch <RUN_ID> --repo 777genius/agent-teams-ai
+```
+
+Do not use GitHub's **Publish release** button and do not publish with
+`gh release edit --draft=false`. Those paths bypass the `upload-stable-links`
+job. That job uploads the stable aliases and the canonical updater feeds
+`latest.yml`, `latest-linux.yml`, and `latest-mac.yml` before making the release
+public.
+
+After the publish workflow succeeds, verify both publication state and updater
+metadata:
+
+```bash
+gh release view v<VERSION> \
+  --repo 777genius/agent-teams-ai \
+  --json isDraft,assets \
+  --jq '{isDraft, assets: [.assets[].name]}'
+```
+
+The result must have `isDraft: false` and include all three `latest*.yml`
+assets. If any feed is missing, treat the release as incomplete.
+
+### 6. Required release closeout gate
 
 Do not publish or call a release finished until this is true:
 
@@ -505,6 +637,8 @@ Do not publish or call a release finished until this is true:
 - The asset names in the notes match the assets uploaded by `release.yml`.
 - For a draft handoff, `gh release view v<VERSION> --json body,assets,isDraft,isPrerelease,targetCommitish` confirms the release is still a draft, targets the intended commit, has current notes, and has the expected installer assets.
 - For final publication, `gh release view v<VERSION> --json body,assets,isDraft,isPrerelease,targetCommitish` confirms the release is public, has current notes, targets the intended commit, and has the expected installer assets.
+- The successful final `release.yml` run used `publish_release=true`, including a successful `upload-stable-links` job.
+- The public release assets include `latest.yml`, `latest-linux.yml`, and `latest-mac.yml`.
 
 If a draft was published before notes were written, immediately edit the public release body with `gh release edit`; do not leave a release with only generated notes.
 
@@ -546,7 +680,7 @@ If a draft was published before notes were written, immediately edit the public 
   <br />
   <sub>May trigger SmartScreen - click "More info" then "Run anyway"</sub>
   <br />
-  <sub><strong>Windows required:</strong> launch Agent Teams AI as Administrator, especially when using OpenCode runtimes.</sub>
+  <sub>Run normally. Administrator mode may be needed only if the app reports a specific OpenCode symlink or permission error.</sub>
 </td>
 <td align="center">
   <a href="https://github.com/777genius/agent-teams-ai/releases/download/v<VERSION>/Agent.Teams.AI-<VERSION>.AppImage">
@@ -652,21 +786,30 @@ Without these secrets, macOS builds will be unsigned (users need to bypass Gatek
 
 ## Auto-Update
 
-The release workflow publishes canonical updater metadata after all platform assets are uploaded:
+The `publish_release=true` workflow publishes canonical updater metadata after
+all platform assets are uploaded:
 
 - `latest.yml` for Windows
 - `latest-linux.yml` for Linux
 - `latest-mac.yml` for macOS
 
-⚠️ `latest-mac.yml` is currently Apple Silicon first because `electron-updater` on GitHub releases still uses a single macOS metadata file. Intel Mac users keep manual download support, while automatic macOS updates stay aligned with the native arm64 build until we move to universal packaging or an arch-aware provider.
+`latest-mac.yml` includes both Apple Silicon and Intel assets. Draft workflows
+do not upload updater metadata because draft releases are intentionally hidden
+from the stable update channel.
 
 ## Quick Reference
 
 ```bash
-# Create and publish a release
+# Create a draft release
 git tag v1.0.0
 git push origin v1.0.0
-# Wait for CI to finish (~10 min), then update notes
+gh workflow run release.yml --repo 777genius/agent-teams-ai --ref v1.0.0 \
+  -f release_tag=v1.0.0 -f publish_release=false
+# Wait for CI, review the assets, and update the draft notes
+
+# Publish the reviewed draft and generate updater metadata
+gh workflow run release.yml --repo 777genius/agent-teams-ai --ref v1.0.0 \
+  -f release_tag=v1.0.0 -f publish_release=true
 
 # Delete a release (if needed)
 gh release delete v1.0.0 --repo 777genius/agent-teams-ai --yes

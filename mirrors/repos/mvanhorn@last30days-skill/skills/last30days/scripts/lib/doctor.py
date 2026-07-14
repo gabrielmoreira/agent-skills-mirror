@@ -99,6 +99,7 @@ SOURCE_ORDER = (
     "pinterest",
     "xiaohongshu",
     "jobs",
+    "library",
 )
 
 # Key-presence booleans for the setup block. NEVER values.
@@ -178,6 +179,33 @@ def _finding_json(finding: backends.BackendFinding) -> Dict[str, Any]:
     }
 
 
+def _host_native_web_note(config: Dict[str, Any]) -> str:
+    """Doctor-local note when the host's own web search serves this run.
+
+    Keys on LAST30DAYS_NATIVE_SEARCH (via env.is_native_search) AND on
+    CLAUDECODE as a host signal - Claude Code always exposes a web-search tool,
+    but `doctor` run in a plain shell never sees the LAST30DAYS_NATIVE_SEARCH
+    the engine exports only for its own run, so without the CLAUDECODE signal it
+    would mislabel a fine setup as "degraded/keyless". Messaging only: it does
+    not change env.is_native_search or the engine's keyless-floor behavior. The
+    note names the signal actually detected so it never cites an env var the
+    user did not set.
+    """
+    if env.is_native_search(config):
+        return (
+            "host-native search active (LAST30DAYS_NATIVE_SEARCH): the host's "
+            "own web search serves this run; set a web key only if you want "
+            "engine-side web search"
+        )
+    if config.get("CLAUDECODE") or os.environ.get("CLAUDECODE"):
+        return (
+            "host-native web search active (Claude Code): the host's own web "
+            "search serves this run; set a web key only if you want "
+            "engine-side web search"
+        )
+    return ""
+
+
 def _chained_record(source: str, config: Dict[str, Any]) -> Dict[str, Any]:
     descriptor = backends.get_descriptor(source)
     res = backends.resolve(source, config)
@@ -202,6 +230,23 @@ def _chained_record(source: str, config: Dict[str, Any]) -> Dict[str, Any]:
         active = by_name.get(res.active_backend)
         return _record(status=health.OK, note=res.summary,
                        requires=active.requires if active else "", **common)
+
+    # Doctor-local (KTD-3): on a host that brings its own web search, the
+    # engine's web lanes (keyless floor or nothing configured) are intentionally
+    # dormant - report that, not an alarming "degraded/keyless". This must run
+    # before the WARN branch, because the keyless floor resolves to WARN and
+    # would otherwise return first. Messaging only; it never touches
+    # env.is_native_search or the engine's keyless-floor runtime behavior.
+    if source == "web":
+        host_note = _host_native_web_note(config)
+        if host_note:
+            return _record(
+                status="unconfigured",
+                note=host_note,
+                requires=res.findings[0].requires if res.findings else "",
+                **common,
+            )
+
     if res.tier == backends.TIER_WARN:
         active = by_name.get(res.active_backend)
         return _record(status=health.DEGRADED, note=res.summary,
@@ -211,19 +256,6 @@ def _chained_record(source: str, config: Dict[str, Any]) -> Dict[str, Any]:
 
     # res.tier == error: separate "nothing configured" (tier off) from
     # "configured but broken" (tier error).
-    if source == "web" and env.is_native_search(config):
-        # The engine's web lanes are all unavailable BECAUSE the host brings
-        # its own (better) native search — intentionally off, no false alarm.
-        return _record(
-            status="unconfigured",
-            note=(
-                "host-native search active (LAST30DAYS_NATIVE_SEARCH): the "
-                "host's own web search serves this run; set a web key only "
-                "if you want engine-side web search"
-            ),
-            requires=res.findings[0].requires if res.findings else "",
-            **common,
-        )
     if res.findings and all(f.status == health.MISSING for f in res.findings):
         return _record(
             status="unconfigured",
@@ -275,18 +307,63 @@ def _reddit_record(config):
 
 
 def _x_record(config):
-    return _chained_record("x", config)
+    record = _chained_record("x", config)
+    # Diagnose/doctor load config in plan_only mode, so browser cookies are not
+    # extracted and every X backend reads as statically missing -> unconfigured.
+    # But if bird is installed and FROM_BROWSER will authenticate X at run time,
+    # a normal run serves X fine (this is how the reporting user pulled 29 posts
+    # while doctor said "Off"). Reuse the existing shared predicate so doctor and
+    # diagnose cannot drift. It reads no cookie *values*, so it confirms a run
+    # will *attempt* browser auth, not that the session is currently valid -
+    # keep the note honest and point at the verified key-backed path.
+    if record["status"] == "unconfigured" and env.x_pending_browser_auth(
+        config, local_only=True
+    ):
+        record["status"] = health.OK
+        record["tier"] = TIER_BY_STATUS[health.OK]
+        record["note"] = (
+            "will use: bird (browser cookies; session not verified until a run "
+            "- add XAI_API_KEY for a verified, cookie-free path)"
+        )
+        record["fix"] = ""
+    return record
 
 
 def _youtube_record(config):
     record = _chained_record("youtube", config)
-    if record["status"] == health.OK and not env.transcription_providers(config):
-        # Usable, but the caption-free transcript backstop is unavailable.
+    if record["status"] != health.OK:
+        return record
+    notes: List[str] = []
+    # yt-dlp already provides search + transcripts. A transcription key only
+    # backfills captions for the occasional caption-free video - an enhancement,
+    # not a sign YouTube is broken.
+    if not env.transcription_providers(config):
         entry = prescriptions.get("youtube", "transcription_key_missing")
-        record["note"] = (record["note"] + "; " if record["note"] else "") + (
-            "no transcription key for caption-free videos"
+        notes.append(
+            "search + transcripts work; a transcription key only adds "
+            "captions for caption-free videos"
         )
         record["fix"] = _fix_text(entry)
+    # Comment *text* comes from ScrapeCreators, never yt-dlp (yt-dlp yields
+    # search, transcripts, and a comment count only). Say so accurately so a
+    # user does not expect yt-dlp to surface comment text.
+    if not env.is_youtube_comments_available(config):
+        notes.append(
+            "comment text needs a ScrapeCreators key + youtube_comments opt-in"
+        )
+        # Actionable fix, matching the transcription branch. The transcription
+        # fix takes precedence when both caveats fire (one fix line per record).
+        if not record["fix"]:
+            if not config.get("SCRAPECREATORS_API_KEY"):
+                record["fix"] = _sc_fix()
+            else:
+                record["fix"] = (
+                    "add youtube_comments to INCLUDE_SOURCES in "
+                    "~/.config/last30days/.env to enable YouTube comment text"
+                )
+    if notes:
+        joined = "; ".join(notes)
+        record["note"] = (record["note"] + "; " + joined) if record["note"] else joined
     return record
 
 
@@ -437,6 +514,58 @@ def _jobs_record(config):
     )
 
 
+def _count_saved_briefs(memory_dir) -> int:
+    """Cheap count of saved research briefs (directory listing, no file parse).
+
+    Globs the ``*-raw*.md`` artifacts the engine writes, deliberately avoiding
+    library.scan_library's read_text+parse of every file - a count does not
+    need the parsed content, and the full scan adds real latency to every
+    `doctor` run on a large library.
+    """
+    path = Path(memory_dir).expanduser()
+    return sum(1 for _ in path.glob("*-raw*.md"))
+
+
+def _library_record(config):
+    """Local research library that feeds the report's 'From your library' block.
+
+    This is not a network source - it reports how many saved briefs are indexed
+    so the 'From your library' block's presence is explained on the health
+    surface. Read-only and never fails the run: an empty store, a missing store,
+    or a SQLite build without FTS5 all resolve to an informational OK line.
+    """
+    from . import library, library_index
+
+    if not library_index.fts5_available():
+        return _record(
+            status=health.OK,
+            requires="none (local SQLite)",
+            note=(
+                "search index unavailable (this SQLite build lacks FTS5); "
+                "saved briefs still render, `library search` is disabled"
+            ),
+        )
+    try:
+        count = _count_saved_briefs(
+            config.get("LAST30DAYS_MEMORY_DIR") or library.DEFAULT_MEMORY_DIR
+        )
+    except Exception:
+        return _record(
+            status=health.OK,
+            requires="none (local SQLite)",
+            note="local research library (powers the 'From your library' block)",
+        )
+    if count == 0:
+        note = "no saved briefs yet - runs you save build this over time"
+    else:
+        plural = "brief" if count == 1 else "briefs"
+        note = (
+            f"{count} saved {plural}; powers the 'From your library' block "
+            "(LAST30DAYS_LIBRARY_CONTEXT=off to hide)"
+        )
+    return _record(status=health.OK, requires="none (local SQLite)", note=note)
+
+
 _SOURCE_BUILDERS: Dict[str, Callable[[Dict[str, Any]], Dict[str, Any]]] = {
     "reddit": _reddit_record,
     "x": _x_record,
@@ -456,6 +585,7 @@ _SOURCE_BUILDERS: Dict[str, Callable[[Dict[str, Any]], Dict[str, Any]]] = {
     "pinterest": _pinterest_record,
     "xiaohongshu": _xiaohongshu_record,
     "jobs": _jobs_record,
+    "library": _library_record,
 }
 
 

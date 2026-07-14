@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
+Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 47 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 46
 | Ref           | `next` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 46 |
+| Files         | 47 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -97,14 +97,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 36 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
 | 37 | ✓ | [`docs/app/llms.txt/route.ts`](docs/app/llms.txt/route.ts) |
 | 38 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 39 | ✓ | [`python/AGENTS.md`](python/AGENTS.md) |
-| 40 | ✓ | [`python/providers/AGENTS.md`](python/providers/AGENTS.md) |
-| 41 | ✓ | [`ts/AGENTS.md`](ts/AGENTS.md) |
-| 42 | ✓ | [`ts/e2e-tests/AGENTS.md`](ts/e2e-tests/AGENTS.md) |
-| 43 | ✓ | [`ts/packages/cli/AGENTS.md`](ts/packages/cli/AGENTS.md) |
-| 44 | ✓ | [`ts/packages/cli/CLAUDE.md`](ts/packages/cli/CLAUDE.md) |
-| 45 | ✓ | [`ts/packages/core/AGENTS.md`](ts/packages/core/AGENTS.md) |
-| 46 | ✓ | [`ts/packages/providers/AGENTS.md`](ts/packages/providers/AGENTS.md) |
+| 39 | ✓ | [`docs/content/toolkits/faq/gemini.md`](docs/content/toolkits/faq/gemini.md) |
+| 40 | ✓ | [`python/AGENTS.md`](python/AGENTS.md) |
+| 41 | ✓ | [`python/providers/AGENTS.md`](python/providers/AGENTS.md) |
+| 42 | ✓ | [`ts/AGENTS.md`](ts/AGENTS.md) |
+| 43 | ✓ | [`ts/e2e-tests/AGENTS.md`](ts/e2e-tests/AGENTS.md) |
+| 44 | ✓ | [`ts/packages/cli/AGENTS.md`](ts/packages/cli/AGENTS.md) |
+| 45 | ✓ | [`ts/packages/cli/CLAUDE.md`](ts/packages/cli/CLAUDE.md) |
+| 46 | ✓ | [`ts/packages/core/AGENTS.md`](ts/packages/core/AGENTS.md) |
+| 47 | ✓ | [`ts/packages/providers/AGENTS.md`](ts/packages/providers/AGENTS.md) |
 
 ---
 

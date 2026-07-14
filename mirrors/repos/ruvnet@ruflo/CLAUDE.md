@@ -948,6 +948,38 @@ memory_search_unified({ query: "authentication security", limit: 5 })
 - Publish order: `@claude-flow/cli` first, then `claude-flow` (umbrella), then `ruflo` (alias umbrella)
 - MUST run verification for ALL THREE before telling user publishing is complete
 
+**Helpers signing key (required for `@claude-flow/cli` publish):** `npm publish`'s
+`prepublishOnly` runs `scripts/sign-helpers.mjs`, which needs a private key to sign
+`.claude/helpers/helpers.manifest.json`. The secret lives in GCP Secret Manager in the
+**`ruv-dev`** project (not `cognitum-20260110` or `claude-flow` — checked both, not there),
+secret name `ruflo-helpers-signing-key`:
+
+```bash
+cd v3/@claude-flow/cli
+RUFLO_HELPERS_SIGNING_SECRET=ruflo-helpers-signing-key RUFLO_HELPERS_SIGNING_PROJECT=ruv-dev \
+  npm publish
+```
+
+(`ruv-dev` also holds `ruflo-config-signing-key` and `NPM_TOKEN` — likely the right project
+for other ruflo release-time secrets too.)
+
+**Concurrent-session helper corruption (real, observed, be paranoid):** multiple Claude Code
+sessions can have their own `npm exec @claude-flow/cli@latest mcp start` MCP server running
+concurrently with `cwd` inside this repo (check with `readlink /proc/<pid>/cwd` on
+`pgrep -f "npm exec @claude-flow/cli@latest mcp start"`). If one of those resolved an older
+cached `@latest` (predating the `semver.gte` downgrade-guard in
+`helper-refresh.ts:autoRefreshHelpersIfStale`), it will silently overwrite this repo's
+hand-maintained `.claude/helpers/hook-handler.cjs` / `intelligence.cjs` (root AND package
+copies) — and `helpers.manifest.json` + `.helpers-version` — with its own older bundled
+content, mid-session, with no warning. Observed live 2026-07-13: this happened *twice* in
+one publish flow, once right after a manual revert and once right after signing (silently
+invalidating a freshly-signed manifest). **Mitigation:** never trust the on-disk state of
+those files between tool calls — `git diff --stat` them immediately before any `git add`/
+`sign-helpers.mjs`/`npm publish` step, `git checkout HEAD --` revert if dirty, and chain
+revert → sign → verify → add → commit as ONE bash invocation (`&&`-joined) to minimize the
+race window. `npm publish`'s own `prepublishOnly` re-signs fresh at pack time regardless, so
+what matters is the on-disk state at the *exact moment* `npm publish` runs, not before.
+
 ```bash
 # Replace 3.7.1 below with your chosen stable version (patch/minor/major per the rules above)
 

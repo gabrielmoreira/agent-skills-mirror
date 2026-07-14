@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-07-12T05:22:55.000Z
+Generated at: 2026-07-13T08:55:06.000Z
 
-Total skills: 1946
+Total skills: 1948
 
 ## agent-behavior (4)
 
@@ -990,7 +990,7 @@ Total skills: 1946
 | `mcp-tool-developer` | Build Model Context Protocol (MCP) servers and tools from scratch. Full-stack MCP development with TypeScript/Python, testing, deployment, and registry publi... | safe | demo112/yunqu-ai-skills | mcp, ai-agent, tool-development, typescript, python, llm, model-context-protocol | mcp, ai-agent, tool-development, typescript, python, llm, model-context-protocol, developer, model, context, protocol, servers |
 | `tokenwise` | Measurement-driven model router for Claude Code. Routes Haiku/Sonnet/Opus per task class, logs every routed task with real $ numbers, and A/B tests cheaper t... | critical | CodeShuX/tokenwise | model-routing, token-optimization, cost-reduction, anthropic, haiku, sonnet, opus, claude-code, ab-testing, measurement | model-routing, token-optimization, cost-reduction, anthropic, haiku, sonnet, opus, claude-code, ab-testing, measurement, tokenwise, driven |
 
-## development (171)
+## development (172)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -1103,6 +1103,7 @@ Total skills: 1946
 | `legacy-modernizer` | Refactor legacy codebases, migrate outdated frameworks, and implement gradual modernization. Handles technical debt, dependency updates, and backward compati... | safe | community | legacy, modernizer | legacy, modernizer, refactor, codebases, migrate, outdated, frameworks, gradual, modernization, technical, debt, dependency |
 | `linux-shell-scripting` | Provide production-ready shell script templates for common Linux system administration tasks including backups, monitoring, user management, log analysis, an... | unknown | community | linux, shell, scripting | linux, shell, scripting, provide, script, common, administration, tasks, including, backups, monitoring, user |
 | `logic-lens` | AI-powered Claude Code skill that performs deep code review using formal logic and reasoning frameworks to detect bugs, anti-patterns, and security risks bey... | safe | hyhmrright/logic-lens | code-review, logic-analysis, debugging, security-review, claude-code | code-review, logic-analysis, debugging, security-review, claude-code, logic, lens, ai, powered, claude, code, skill |
+| `lore` | Markdown project memory for AI agents. Use for decisions, architecture, conventions, monorepo scopes, `.lore/`, or `lore` commands; not native `/init`/`/comp... | safe | TheaDust/lore | memory, knowledge-base, project-context, monorepo, markdown, conventions, adr, agent-skills | memory, knowledge-base, project-context, monorepo, markdown, conventions, adr, agent-skills, lore, ai, agents, decisions |
 | `makepad-animation` | CRITICAL: Use for Makepad animation system. Triggers on: makepad animation, makepad animator, makepad hover, makepad state, makepad transition, "from: { all:... | safe | community | makepad, animation | makepad, animation, critical, triggers, animator, hover, state, transition, all, forward, pressed |
 | `makepad-basics` | CRITICAL: Use for Makepad getting started and app structure. Triggers on: makepad, makepad getting started, makepad tutorial, live_design!, app_main!, makepa... | unknown | https://github.com/makepad/makepad | makepad, basics | makepad, basics, critical, getting, started, app, structure, triggers, tutorial, live, main, setup |
 | `makepad-deployment` | CRITICAL: Use for Makepad packaging and deployment. Triggers on: deploy, package, APK, IPA, 打包, 部署, cargo-packager, cargo-makepad, WASM, Android, iOS, distri... | critical | community | makepad, deployment | makepad, deployment, critical, packaging, triggers, deploy, package, apk, ipa, cargo, packager, wasm |
@@ -1630,10 +1631,11 @@ Total skills: 1946
 | --- | --- | --- | --- | --- | --- |
 | `polis-protocol` | Coordinate multi-vendor AI agents as a self-improving team — a learning router assigns work by track record and citizens can amend the protocol's own rules. | critical | yehudalevy-collab/polis-protocol | multi-agent, coordination, routing, orchestration, governance, vendor-agnostic | multi-agent, coordination, routing, orchestration, governance, vendor-agnostic, polis, protocol, coordinate, multi, vendor, ai |
 
-## personal-development (1)
+## personal-development (2)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
+| `quit-sponsor` | Helps an AI agent provide non-judgmental, evidence-informed quit-smoking support with user-consented tracking, craving check-ins, and escalation to human or ... | safe | metrox-eth/quit-sponsor | quit-smoking, smoking-cessation, health, habits, addiction-recovery, wellbeing, coaching | quit-smoking, smoking-cessation, health, habits, addiction-recovery, wellbeing, coaching, quit, sponsor, helps, ai, agent |
 | `satori` | Clinically informed wisdom companion blending psychology and philosophy into a structured thinking partner | safe | MetcalfSolutions/Satori | mental-health, psychology, wisdom, philosophy, ifs, stoicism, jungian, conversation | mental-health, psychology, wisdom, philosophy, ifs, stoicism, jungian, conversation, satori, clinically, informed, companion |
 
 ## planning (7)
@@ -2390,7 +2392,7 @@ Total skills: 1946
 | `git-pr-workflows-git-workflow` | Orchestrate a comprehensive git workflow from code review through PR creation, leveraging specialized agents for quality assurance, testing, and deployment r... | critical | community | git, pr | git, pr, orchestrate, code, review, through, creation, leveraging, specialized, agents, quality, assurance |
 | `git-pr-workflows-onboard` | You are an **expert onboarding specialist and knowledge transfer architect** with deep experience in remote-first organizations, technical team integration, ... | critical | community | git, pr, onboard | git, pr, onboard, onboarding, knowledge, transfer, architect, deep, experience, remote, first, organizations |
 | `git-pr-workflows-pr-enhance` | You are a PR optimization expert specializing in creating high-quality pull requests that facilitate efficient code reviews. Generate comprehensive PR descri... | unknown | community | git, pr, enhance | git, pr, enhance, optimization, specializing, creating, high, quality, pull, requests, facilitate, efficient |
-| `git-pushing` | Stage all changes, create a conventional commit, and push to the remote branch. Use when explicitly asks to push changes ("push this", "commit and push"), me... | critical | community | git, pushing | git, pushing, stage, all, changes, conventional, commit, push, remote, branch, explicitly, asks |
+| `git-pushing` | Safely stage, commit, and push intended git changes with conventional commit messages. Use for ordinary non-release pushes when explicitly asked to push, sav... | critical | community | git, pushing | git, pushing, safely, stage, commit, push, intended, changes, conventional, messages, ordinary, non |
 | `git-workflow-and-versioning` | Structures git workflow practices. Use when making any code change. Use when committing, branching, resolving conflicts, or when you need to organize work ac... | unknown | addyosmani/agent-skills | git, and, versioning | git, and, versioning, structures, making, any, code, change, committing, branching, resolving, conflicts |
 | `github-actions-templates` | Production-ready GitHub Actions workflow patterns for testing, building, and deploying applications. | critical | community | github, actions | github, actions, testing, building, deploying, applications |
 | `github-automation` | Automate GitHub repositories, issues, pull requests, branches, CI/CD, and permissions via Rube MCP (Composio). Manage code workflows, review PRs, search code... | critical | community | github | github, automation, automate, repositories, issues, pull, requests, branches, ci, cd, permissions, via |

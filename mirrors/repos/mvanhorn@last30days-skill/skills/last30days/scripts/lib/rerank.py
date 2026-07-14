@@ -84,6 +84,38 @@ def discovery_velocity_score(
     corroboration = 1.0 + (0.15 * max(0, source_count - 1))
     return round(raw * corroboration, 4)
 
+
+# Discovery confidence floor. The named 2026-07-12 failure mode: quiet feeds
+# left the sweep ranking noise against noise, and it dutifully emitted five
+# 1-like tweets as a "trend list". The floor makes "nothing solid this window"
+# a first-class outcome instead. Constants are deliberately tunable:
+# - FLOOR_MIN_ENGAGEMENT kills absolute junk (a 1-like tweet can never rank).
+# - A topic then clears via EITHER independent cross-source confirmation
+#   (>= FLOOR_MIN_SOURCES) OR a genuinely strong single-source spike
+#   (>= FLOOR_SINGLE_SOURCE_ENGAGEMENT) - a 1,600-point single-source HN
+#   thread is a real story, a 30-upvote single-source meme is not.
+FLOOR_MIN_ENGAGEMENT = 25.0
+FLOOR_MIN_SOURCES = 2
+FLOOR_SINGLE_SOURCE_ENGAGEMENT = 200.0
+
+
+def passes_discovery_floor(
+    *,
+    source_count: int,
+    engagement_total: float,
+    item_count: int,
+) -> bool:
+    """Whether a discovery topic's evidence is strong enough to show a user.
+
+    Below this floor the honest output is "nothing solid this window", not a
+    ranked list of whatever survived the sweep.
+    """
+    if item_count <= 0 or engagement_total < FLOOR_MIN_ENGAGEMENT:
+        return False
+    if source_count >= FLOOR_MIN_SOURCES:
+        return True
+    return engagement_total >= FLOOR_SINGLE_SOURCE_ENGAGEMENT
+
 # Engagement rescue: a high-engagement X post that is on-topic (entity-grounded
 # or first-party) cannot be fully zeroed by the other penalties. The floor is a
 # function of the post's engagement percentile *within the run's X pool* (so it

@@ -507,7 +507,22 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--discover",
         metavar="DOMAIN",
-        help="Sweep category listings and rank 5-10 topics accelerating in a domain",
+        nargs="?",
+        const="",
+        default=None,
+        help=(
+            "Sweep river listings and rank the topics accelerating in a domain; "
+            "each survivor gets a full research pass. Bare --discover (no domain) "
+            "runs global trending across every feed's hot list"
+        ),
+    )
+    parser.add_argument(
+        "--discover-shallow",
+        action="store_true",
+        help=(
+            "Skip the per-topic research pass during --discover: rank on listing "
+            "evidence only (faster, thinner; the confidence floor still applies)"
+        ),
     )
     parser.add_argument("--debug", action="store_true", help="Enable HTTP debug logging")
     parser.add_argument("--mock", action="store_true", help="Use mock retrieval fixtures")
@@ -1263,9 +1278,8 @@ def _save_discovery_output(
 
 def _run_discover(args: argparse.Namespace, config: dict[str, object]) -> int:
     domain = " ".join(str(args.discover or "").split())
-    if not domain:
-        sys.stderr.write("[last30days] --discover requires a non-empty domain.\n")
-        return 2
+    # Empty domain = global trending: sweep every river feed's hot list with no
+    # keyword gate. The confidence floor is what keeps junk out, not a keyword.
     if args.as_of_date:
         sys.stderr.write(
             "[last30days] --as-of cannot be used with --discover because discovery "
@@ -1281,6 +1295,10 @@ def _run_discover(args: argparse.Namespace, config: dict[str, object]) -> int:
         sys.stderr.write("[last30days] Warning: --synthesis-file is not used by discovery mode.\n")
 
     requested_sources = resolve_requested_sources(args.search, config)
+    # The user's original source boundary, honored by the per-topic research
+    # passes (which reach beyond the discovery-capable listing feeds - e.g.
+    # Techmeme, arXiv, YouTube, Polymarket). None = every available source.
+    enrich_requested_sources = list(requested_sources) if requested_sources else None
     if requested_sources:
         discovery_sources = [
             source for source in requested_sources
@@ -1315,6 +1333,8 @@ def _run_discover(args: argparse.Namespace, config: dict[str, object]) -> int:
             subreddits=subreddits,
             lookback_days=args.lookback_days or 30,
             as_of_date=args.as_of_date,
+            enrich=not args.discover_shallow,
+            enrich_requested_sources=enrich_requested_sources,
         )
     except ValueError as exc:
         sys.stderr.write(f"[last30days] {exc}\n")
@@ -1332,7 +1352,7 @@ def _run_discover(args: argparse.Namespace, config: dict[str, object]) -> int:
     if args.save_dir:
         save_path = _save_discovery_output(
             rendered,
-            domain=domain,
+            domain=domain or "trending",
             emit=args.emit,
             save_dir=args.save_dir,
             suffix=args.save_suffix or "",
@@ -2071,7 +2091,9 @@ def _main(
         sys.stderr.write(setup_wizard.get_setup_status_text(results) + "\n")
         return 0
 
-    if args.discover:
+    # Bare --discover (no domain) is global trending, so the dispatch keys on
+    # "flag present" (is not None), never on the domain string's truthiness.
+    if args.discover is not None:
         if topic:
             sys.stderr.write(
                 "[last30days] --discover supplies the domain and cannot be combined "
@@ -2082,6 +2104,15 @@ def _main(
             sys.stderr.write("[last30days] --discover and --drill are mutually exclusive.\n")
             return 2
         return _run_discover(args, config)
+
+    if args.discover_shallow:
+        # Without --discover this flag would silently no-op into a full
+        # research run - reject it instead of ignoring the requested mode.
+        sys.stderr.write(
+            "[last30days] --discover-shallow only applies to --discover runs; "
+            "add --discover [domain] or drop the flag.\n"
+        )
+        return 2
 
     if args.drill:
         if topic:

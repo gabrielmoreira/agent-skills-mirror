@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel/ai` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `vercel/ai` — 26 default patterns, 1 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `vercel/ai` — 26 default patterns, 0 followed patterns, 28 file(s) m
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 28 |
+| Followed pats | 1 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `vercel/ai` — 26 default patterns, 0 followed patterns, 28 file(s) m
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `contributing/secure-url-handling.md`
 
 ## File Index
 
@@ -87,6 +87,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`skills/migrate-ai-sdk-v6-to-v7/SKILL.md`](skills/migrate-ai-sdk-v6-to-v7/SKILL.md) |
 | 27 | ✓ | [`skills/update-provider-models/SKILL.md`](skills/update-provider-models/SKILL.md) |
 | 28 | ✓ | [`skills/use-ai-sdk/SKILL.md`](skills/use-ai-sdk/SKILL.md) |
+| 29 | → | [`contributing/secure-url-handling.md`](contributing/secure-url-handling.md) |
 
 ---
 

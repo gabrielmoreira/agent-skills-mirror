@@ -15,10 +15,9 @@ allowed-tools:
 
 # wewrite-visual — 视觉 AI（封面 + 配图）
 
-<!-- wewrite:standalone-start -->
 ## 运行约定
 
-- **CLI**：确定性操作走 `wewrite` 命令（需在 PATH；缺失则引导 `uv tool install git+https://github.com/imraywang/wewrite.git`，或在仓库里 `bash install.sh`）。
+- **CLI**：确定性操作走 `wewrite` 命令（需在 PATH；缺失则引导 `uv tool install wewrite`，或在仓库里 `bash install.sh`）。
 - **{home}**：用户状态目录 = `$WEWRITE_HOME` 或 `~/.wewrite`（`wewrite home` 可查）。config/style/history/playbook/output/exemplars 全在 {home}，不在仓库；references 文档中的状态路径同此约定。
 - **`读取: <路径>`** = 用文件读取工具真实读完该文件再继续，不是注释。
 - **references/**：本 skill 自带 `{skill_dir}/references/`；references 文档内的 `{skill_dir}` 即本 skill 目录。
@@ -31,7 +30,6 @@ allowed-tools:
 2. **降级标记**：读 `_state.yaml` 的 `flags.skip_image_gen`；缺失或 `diagnosed_at`
    非当天 → `wewrite diagnose --json` 重取并写回。
 3. style.yaml 的 `cover_style` / `cover_template`（有则作为封面风格约束）。
-<!-- wewrite:standalone-end -->
 
 ## 执行
 

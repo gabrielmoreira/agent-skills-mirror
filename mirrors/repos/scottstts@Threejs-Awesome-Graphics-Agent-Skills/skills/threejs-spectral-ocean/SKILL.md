@@ -1,6 +1,6 @@
 ---
 name: threejs-spectral-ocean
-description: Build large procedural oceans in Three.js from directional wave spectra. Use for WebGPU/TSL FFT oceans, multi-cascade wavelength bands, hybrid FFT plus Gerstner clear-water oceans, stylized above/below surface ocean optics, choppy displacement, spectral derivatives, Jacobian whitecaps, temporal foam, analytic sky reflection, underwater absorption, crest scatter, and GPU validation.
+description: Build large procedural oceans in Three.js from directional wave spectra. Use for WebGPU/TSL FFT oceans, multi-cascade wavelength bands, hybrid FFT plus Gerstner clear-water oceans, stylized above/below surface optics, permanently submerged Snell-window views, total internal reflection, aquatic perspective, caustic god rays, choppy displacement, spectral derivatives, Jacobian whitecaps, temporal foam, analytic sky reflection, underwater absorption, crest scatter, and GPU validation.
 ---
 
 # Spectral Ocean
@@ -43,6 +43,14 @@ above and below the surface: height-gradient water color, sun-path glints,
 crest scatter, Jacobian foam, water-tinted seafloor caustics, and an
 underwater Beer-Lambert composite driven by scene depth.
 
+Read the
+[submerged Snell ocean system](examples/submerged-snell-ocean/underwater-snell-ocean.ts)
+when the camera must remain underwater beneath a WebGPU spectral surface: it
+provides surface-anchored above-water structure reprojection through Snell's
+window, exact water-to-air Fresnel and total internal reflection, shared HDR
+sky radiance, aquatic extinction and in-scatter, differential-area caustics,
+full-resolution god rays, suspended particulates, and the final HDR grade.
+
 ## Non-negotiable gates
 
 - Require a power-of-two grid and a passing FFT impulse/frequency test.
@@ -52,6 +60,9 @@ underwater Beer-Lambert composite driven by scene depth.
 - Persist foam in simulation state; do not infer all foam anew per frame.
 - Submit FFT stages with the synchronization required by the active backend.
 - Share sun and sky parameters between the visible sky and ocean reflection.
+- Start underwater structure reprojection at the displaced interface hit point; reject samples that are offscreen, on the wrong side of the interface, or misaligned with the refracted ray.
+- Gate the entire optical side from one camera-medium state; do not choose above/below behavior per triangle.
+- Terminate distant underwater sightlines with a safely submerged terrain rim; do not mask an empty seabed/ocean horizon with a view-aligned scattering layer.
 - Keep a deterministic seed and fixed-camera capture for comparisons.
 
 ## Route elsewhere

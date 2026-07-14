@@ -246,11 +246,23 @@ You can narrow further with `--tags` or exclude values with a trailing `-`:
 npx agentic-awesome-skills --path .agents/skills --tags debugging,typescript-
 ```
 
+To manage a reproducible exact set and inspect every install, update, or removal without writing:
+
+```bash
+npx agentic-awesome-skills@14.3.0 --path .agents/skills --release 14.3.0 --skills frontend-design,backend-dev-guidelines --dry-run
+```
+
+Remove `--dry-run` only after reviewing the plan.
+
+If you prefer to assemble and review the set visually, use the hosted [Skill Workbench](https://sickn33.github.io/agentic-awesome-skills/workbench). It filters recorded risk, provenance, host compatibility, and setup evidence before generating the same release-pinned commands.
+
 The filter rules are:
 
 - comma-separated values are ORed within one flag
 - exclusions use a trailing `-`, for example `legal-`
 - `--risk`, `--category`, and `--tags` combine with AND
+- `--skills` accepts exact names, ids, or nested paths; unknown or ambiguous values fail closed
+- exact selection and metadata filters combine with AND
 
 This keeps the installed skill set smaller and reduces the chance of context overload in OpenCode-style runtimes.
 

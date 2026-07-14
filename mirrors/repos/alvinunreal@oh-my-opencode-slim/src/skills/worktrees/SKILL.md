@@ -81,7 +81,11 @@ operation.
 
 ### 3. Ignore File Setup
 
-Before creating lanes, add or update managed marker blocks only.
+Before creating or cleaning lanes, inspect existing `.gitignore` and `.ignore`.
+Update the managed block in place when present; otherwise append it. Add only
+the missing exact lines below, never duplicate entries or modify unrelated
+rules. These blocks keep lane artifacts git-local while the `.ignore` allowlist
+keeps them readable to OpenCode.
 
 `.gitignore`:
 
@@ -111,7 +115,8 @@ Before creating lanes, add or update managed marker blocks only.
 1. Identify the task scope and determine a short `<slug>` for the worktree.
 2. Formulate a branch name. Default to `omos/<slug>` unless project/user conventions dictate otherwise.
 3. Validate repository safety. Ask the user for confirmation to initialize the lane.
-4. Ensure the managed ignore blocks are present.
+4. Before creating the lane, ensure the managed ignore blocks are present using
+   the Ignore File Setup rules above.
 5. Run:
    ```bash
    git worktree add -b <branch-name> .slim/worktrees/<slug> <base-commit/branch>
@@ -138,14 +143,16 @@ Before merging or integrating the worktree branch:
    checkout or the user-approved integration checkout.
 
 ### Phase 4: Cleanup & Pruning
-1. Ensure all changes are safely merged or archived.
-2. Confirm the worktree has no uncommitted changes.
-3. Request user approval to remove the worktree.
-4. Safely remove the worktree using:
+1. Before cleaning the lane, ensure the managed ignore blocks follow the Ignore
+   File Setup rules above.
+2. Ensure all changes are safely merged or archived.
+3. Confirm the worktree has no uncommitted changes.
+4. Request user approval to remove the worktree.
+5. Safely remove the worktree using:
    ```bash
    git worktree remove .slim/worktrees/<slug>
    ```
-5. Update `.slim/worktrees.json` to mark the lane as `archived` or remove it.
+6. Update `.slim/worktrees.json` to mark the lane as `archived` or remove it.
 
 ---
 

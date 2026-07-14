@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 51 file(s) materialized.
+Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 52 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mxyhi/ok-skills` — 26 default patterns, 0 followed patterns, 51 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 51 |
+| Files         | 52 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,26 +90,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`minimax-docx/SKILL.md`](minimax-docx/SKILL.md) |
 | 30 | ✓ | [`minimax-pdf/SKILL.md`](minimax-pdf/SKILL.md) |
 | 31 | ✓ | [`minimax-xlsx/SKILL.md`](minimax-xlsx/SKILL.md) |
-| 32 | ✓ | [`opencli/opencli-adapter-author/SKILL.md`](opencli/opencli-adapter-author/SKILL.md) |
-| 33 | ✓ | [`opencli/opencli-autofix/SKILL.md`](opencli/opencli-autofix/SKILL.md) |
-| 34 | ✓ | [`opencli/opencli-browser-sitemap/SKILL.md`](opencli/opencli-browser-sitemap/SKILL.md) |
-| 35 | ✓ | [`opencli/opencli-browser/SKILL.md`](opencli/opencli-browser/SKILL.md) |
-| 36 | ✓ | [`opencli/opencli-sitemap-author/SKILL.md`](opencli/opencli-sitemap-author/SKILL.md) |
-| 37 | ✓ | [`opencli/opencli-usage/SKILL.md`](opencli/opencli-usage/SKILL.md) |
-| 38 | ✓ | [`opencli/smart-search/SKILL.md`](opencli/smart-search/SKILL.md) |
-| 39 | ✓ | [`planning-with-files/SKILL.md`](planning-with-files/SKILL.md) |
-| 40 | ✓ | [`pptx-generator/SKILL.md`](pptx-generator/SKILL.md) |
-| 41 | ✓ | [`product-decision-agent/SKILL.md`](product-decision-agent/SKILL.md) |
-| 42 | ✓ | [`prototype/LOGIC.md`](prototype/LOGIC.md) |
-| 43 | ✓ | [`prototype/SKILL.md`](prototype/SKILL.md) |
-| 44 | ✓ | [`prototype/UI.md`](prototype/UI.md) |
-| 45 | ✓ | [`tdd/mocking.md`](tdd/mocking.md) |
-| 46 | ✓ | [`tdd/SKILL.md`](tdd/SKILL.md) |
-| 47 | ✓ | [`tdd/tests.md`](tdd/tests.md) |
-| 48 | ✓ | [`teach/LEARNING-RECORD-FORMAT.md`](teach/LEARNING-RECORD-FORMAT.md) |
-| 49 | ✓ | [`teach/MISSION-FORMAT.md`](teach/MISSION-FORMAT.md) |
-| 50 | ✓ | [`teach/RESOURCES-FORMAT.md`](teach/RESOURCES-FORMAT.md) |
-| 51 | ✓ | [`teach/SKILL.md`](teach/SKILL.md) |
+| 32 | ✓ | [`ontoly-software-graph/SKILL.md`](ontoly-software-graph/SKILL.md) |
+| 33 | ✓ | [`opencli/opencli-adapter-author/SKILL.md`](opencli/opencli-adapter-author/SKILL.md) |
+| 34 | ✓ | [`opencli/opencli-autofix/SKILL.md`](opencli/opencli-autofix/SKILL.md) |
+| 35 | ✓ | [`opencli/opencli-browser-sitemap/SKILL.md`](opencli/opencli-browser-sitemap/SKILL.md) |
+| 36 | ✓ | [`opencli/opencli-browser/SKILL.md`](opencli/opencli-browser/SKILL.md) |
+| 37 | ✓ | [`opencli/opencli-sitemap-author/SKILL.md`](opencli/opencli-sitemap-author/SKILL.md) |
+| 38 | ✓ | [`opencli/opencli-usage/SKILL.md`](opencli/opencli-usage/SKILL.md) |
+| 39 | ✓ | [`opencli/smart-search/SKILL.md`](opencli/smart-search/SKILL.md) |
+| 40 | ✓ | [`planning-with-files/SKILL.md`](planning-with-files/SKILL.md) |
+| 41 | ✓ | [`pptx-generator/SKILL.md`](pptx-generator/SKILL.md) |
+| 42 | ✓ | [`product-decision-agent/SKILL.md`](product-decision-agent/SKILL.md) |
+| 43 | ✓ | [`prototype/LOGIC.md`](prototype/LOGIC.md) |
+| 44 | ✓ | [`prototype/SKILL.md`](prototype/SKILL.md) |
+| 45 | ✓ | [`prototype/UI.md`](prototype/UI.md) |
+| 46 | ✓ | [`tdd/mocking.md`](tdd/mocking.md) |
+| 47 | ✓ | [`tdd/SKILL.md`](tdd/SKILL.md) |
+| 48 | ✓ | [`tdd/tests.md`](tdd/tests.md) |
+| 49 | ✓ | [`teach/LEARNING-RECORD-FORMAT.md`](teach/LEARNING-RECORD-FORMAT.md) |
+| 50 | ✓ | [`teach/MISSION-FORMAT.md`](teach/MISSION-FORMAT.md) |
+| 51 | ✓ | [`teach/RESOURCES-FORMAT.md`](teach/RESOURCES-FORMAT.md) |
+| 52 | ✓ | [`teach/SKILL.md`](teach/SKILL.md) |
 
 ---
 

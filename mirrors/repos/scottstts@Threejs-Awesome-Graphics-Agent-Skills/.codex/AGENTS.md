@@ -64,6 +64,7 @@ When you finish, the entire skill pack should be publish ready (publish-ready ch
 - visual inspection when finished should be terminated immediately, do NOT leave browser tabs with a render scene running (both in-app browser tab or external tab using playwright)
 - After every context compaction, re-read this file in full before continuing work. A compacted summary must explicitly remind the next agent to do so.
 - skill example dir structure: for complex ref project where the source code is a big system (such as `lut-aerial-perspective` example, you should follow the convention of having a `source/` dir for the entire source code system, and a js file to re-exports them, and dev shim will transpiles those originals). This is only for when ref project effect system is too big (and better left modular). If it can be a few distilled js files, independent js files are preferred, like the majority of skill examples
+- do NOT use installed agent skills in this task. the task itself is to develop agent skills, not to consume them. the only two influences on how you develop a given skill here is 1. the ref project, and 2. the guideline on how to create agent skills--unless explicitly told otherwise
 
 ## SKILL.md & references/ Authoring Conventions
 

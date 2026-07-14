@@ -265,6 +265,10 @@ source_wait(notebook="Quantum Computing")
 `document_id` + a **required** `mime_type`, one of
 `google-doc`/`google-slides`/`google-sheets`/`pdf` — there is no default, since
 defaulting a non-Doc Drive file to `google-doc` fails the import), or `youtube`.
+NotebookLM's Drive import only ingests those four by reference (Google-native
+Docs/Slides/Sheets + PDF); an upload-only Drive file (e.g. epub/docx/txt/md/rtf/
+odt/csv) cannot be added via `drive` — download it and add it as a `file`
+source instead.
 URL and YouTube adds reject
 internal/loopback hosts by default; pass `allow_internal=true` only for
 deliberate local NotebookLM tests. `chat_ask` continues the most-recent

@@ -20,6 +20,10 @@ python3 src/ui-ux-pro-max/scripts/search.py "<query>" --domain <domain> [-n <max
 - `landing` - Page structure and CTA strategies
 - `chart` - Chart types and library recommendations
 - `ux` - Best practices and anti-patterns
+- `icons` - Icon recommendations with import code (Phosphor, Heroicons, Lucide)
+- `react` - React/Next.js performance patterns
+- `web` - App interface guidelines (iOS/Android/React Native)
+- `google-fonts` - Individual Google Fonts lookup
 - `gsap` - GSAP animation skeletons by intensity tier (hover, scroll reveal, stagger, page transition, parallax, loading)
 
 **Design dials (optional, only with `--design-system`):**

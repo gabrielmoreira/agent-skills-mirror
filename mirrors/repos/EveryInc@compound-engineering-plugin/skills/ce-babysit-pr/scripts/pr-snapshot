@@ -49,14 +49,6 @@ DISPOSITION_DISPATCHED = "dispatched"
 # this much quiet a stale/never-cleared signal is ignored so the PR can still be called ready.
 REVIEW_INPROGRESS_MAX_WAIT = 900
 
-# Pure CI/status bots whose top-level comments are never review feedback (coverage deltas,
-# deploy previews). Code-review bots (Codex, CodeRabbit, Greptile, etc.) are deliberately NOT
-# here — their comments ARE feedback and must reach ce-resolve-pr-feedback. Matched case-folded
-# against both the bare login and its "[bot]" suffix form.
-CI_BOT_LOGINS = {
-    "github-actions", "codecov", "codecov-commenter", "netlify", "vercel",
-}
-
 # Trajectory check-history states (persisted, compared by ==).
 CHECK_UNKNOWN = "unknown"
 CHECK_CLEAR = "clear"
@@ -190,16 +182,11 @@ def fetch(pr, repo):
         "threads": fetch_threads(pr, owner, name, host),
         # Non-thread feedback: top-level PR comments + review submission bodies. ce-resolve-pr-feedback
         # handles these too, so a Changes-Requested review body or an actionable top-level comment with
-        # NO inline thread must not be invisible to the loop. Content-actionability is the resolver's
-        # judgment; here we just surface non-empty, non-author, non-CI-bot items so the loop invokes it.
+        # NO inline thread must not be invisible to the loop. Content-actionability is entirely the
+        # resolver's judgment; this deterministic layer keeps every non-empty non-author body.
         "feedback": _extract_feedback(v),
         "awaiting_approval": fetch_awaiting_approval(owner, name, head, host),
     }
-
-
-def _is_ci_bot(login):
-    """A pure CI/status bot login, tolerant of the "[bot]" suffix gh reports."""
-    return login.lower().removesuffix("[bot]") in CI_BOT_LOGINS
 
 
 def _body_hash(body):
@@ -211,17 +198,18 @@ def _body_hash(body):
 
 
 def _extract_feedback(v):
-    """Top-level PR comments + non-empty review bodies, excluding the PR author and CI/status
-    bots. `gh pr view --json comments,reviews` returns flat arrays (not GraphQL {nodes})."""
+    """Every non-empty top-level PR comment and review body not known to be from the PR author.
+    `gh pr view --json comments,reviews` returns flat arrays (not GraphQL {nodes}). Content,
+    identity, and surface are evidence for the resolver to judge, not deterministic exclusions."""
     author = (v.get("author") or {}).get("login")
     out = []
     for c in v.get("comments") or []:
         a = (c.get("author") or {}).get("login")
-        if a and a != author and not _is_ci_bot(a) and (c.get("body") or "").strip():
+        if (not author or a != author) and (c.get("body") or "").strip():
             out.append({"id": c.get("id"), "kind": "comment", "author": a, "edit_id": _body_hash(c.get("body"))})
     for r in v.get("reviews") or []:
         a = (r.get("author") or {}).get("login")
-        if a and a != author and not _is_ci_bot(a) and (r.get("body") or "").strip():
+        if (not author or a != author) and (r.get("body") or "").strip():
             out.append({"id": r.get("id"), "kind": "review", "author": a, "state": r.get("state"),
                         "edit_id": _body_hash(r.get("body"))})
     return out

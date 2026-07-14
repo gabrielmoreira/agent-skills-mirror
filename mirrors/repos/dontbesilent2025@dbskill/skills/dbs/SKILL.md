@@ -118,6 +118,7 @@ description: |
 | 想把重大决策长期记录下来、回填结果、复盘规律，或说"帮我记下这个决策"、"看看我是不是又在重复老问题" | `/dbs-decision` | 决策系统，在 `~/.dbs/decisions/` 里沉淀可回填、可复盘的本地项目 |
 | 明确提到 Claude Code、Codex、Grok、豆包、Trae、`~/.agents/skills`、AGENTS.md、CLAUDE.md、skill bridge、工作台迁移、多端统一，或说"我的 Agent 工作台很乱""帮我统一 Claude 和 Codex 和 Grok 和豆包" | `/dbs-agent-migration` | Agent 工作台迁移，整理规则文件、真源、命名与 Claude Code / Codex / Grok / 通用 Agents 多端 bridge |
 | 想把某个 skill 目录桥接到 Claude Code、Codex、豆包、Trae、Grok 或 `~/.agents/skills`，说"桥接这个 skill"、"让多个 Agent 都能调用"、"取消桥接"、"查看桥接状态" | `/dbs-bridge` | 多端 skill 桥接，把任意 skill 目录挂到 Claude Code、Codex、通用 Agents 和 Grok，改一处多端同步 |
+| 想检查、审查或清理本地 skill；担心广告导流、隐蔽商业意图、任务劫持、可疑外部调用或敏感数据读取 | `/dbs-skill-cleaner` | 本地 skill 清理器，先出带证据的只读审查报告，再按用户确认隔离问题 skill |
 | 想把本地大量文稿、推文、选题、案例做成可重组系统，或提到「内容结构化系统」「内容资产工程化」「主题地图」「选题装配」「旧内容变成可复用资产」 | `/dbs-content-system` | 内容结构化系统，先审计内容规模与边界，再建立新工程、复制素材、抽取内容单元、生成主题地图与装配稿 |
 | 想把这次诊断的关键状态留下来、说「保存」「记下来」「存档」「这个结论留着」 | `/dbs-save` | 把当前诊断状态写到本地，下次可恢复 |
 | 想接续上次的诊断、说「上次」「之前的」「接着」「续上」「上次诊断到哪了」 | `/dbs-restore` | 拉出最近一份存档，接着上次继续 |

@@ -22,7 +22,7 @@ Treat the model's Three.js knowledge and official documentation as prerequisites
 | planets, terrain, craters, biome fields, coastlines, spherical detail | `$threejs-procedural-planets` |
 | sky scattering, planetary shells, depth-based aerial perspective | `$threejs-atmosphere-aerial-perspective` |
 | weather-driven raymarched clouds and cloud shadows | `$threejs-volumetric-clouds` |
-| FFT oceans, hybrid FFT/Gerstner clear water, stylized above/below ocean optics, spectral cascades, choppy derivatives, Jacobian whitecaps | `$threejs-spectral-ocean` |
+| FFT oceans, hybrid FFT/Gerstner clear water, stylized above/below ocean optics, submerged Snell windows, total internal reflection, aquatic perspective, caustic god rays, spectral cascades, choppy derivatives, Jacobian whitecaps | `$threejs-spectral-ocean` |
 | authored analytic waves, bounded heightfield pools, object ripples, differential-area caustics, ray-traced pool volume optics, shared normals, heuristic refraction, fallback absorption, crest foam | `$threejs-water-optics` |
 | falling snow, snow accumulation, model snow caps, wet asphalt puddles, procedural ripple normals, splash flipbooks, rain streaks, shared weather envelopes, surface wetness | `$threejs-precipitation-surfaces` |
 | curved-ray black holes, accretion disks, wormholes | `$threejs-raymarched-space-effects` |

@@ -4,6 +4,15 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.208](https://github.com/Piebald-AI/claude-code-system-prompts/commit/d39e922)
+
+_+2,947 tokens_
+
+- Data: Data visualization reference palette; Data: Plan artifact HTML template; Skill: Artifact dashboard; Skill: Artifact data table; Skill: Artifact explainer; Skill: Artifact report; and Skill: Plan Artifact — Make artifact themes follow both the OS color scheme and the viewer's explicit light/dark toggle, keep applicable print output light, preserve the plan template's theme shim, and require restyling palette values consistently across every theme and print scope.
+- Skill: Auto mode setup — Moves repository visibility, ruleset, branch-protection, shell-command-word, and nearby-repository discovery into deterministic pre-gathering; treats gathered names as untrusted data; forbids agents from reading raw shell history or repeating filesystem and GitHub scans; and scopes optional recon to the user's project and source selections.
+- Tool Description: Artifact — Documents native Mermaid rendering for Markdown `mermaid` fences and HTML `<pre class="mermaid">` blocks without external libraries.
+- Tool Description: Background monitor (streaming events) — When background tasks are disabled, directs one-shot readiness and completion waits to foreground Bash loops instead of unavailable background execution.
+
 # [2.1.207](https://github.com/Piebald-AI/claude-code-system-prompts/commit/4e1911e)
 
 _+6,150 tokens_

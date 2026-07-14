@@ -174,7 +174,7 @@ Beyond the 8 required fields, schema 3.5.0+ adds optional visibility-gating fiel
 
 **Branch protection on `main` requires exactly TWO always-reporting contexts: `ci-required` + `gitleaks`** (both from the GitHub Actions app; `strict:false`, `enforce_admins:false`, 1 approving review). Every other blocking check gates _through_ the aggregate:
 
-- **`ci-required`** is the final job in `.github/workflows/validate-plugins.yml` — `if: always()`, `needs:` all 15 gate jobs (validate, verify, test, check-package-manager, marketplace-validation, cli-smoke-tests, shellcheck-skills, skill-codeblock-syntax, typescript-coverage-audit, eslint-check, format-check, ruff-check, ruff-format-check, markdownlint, scan-synced-content). It fails if any needed job ended `failure`/`cancelled`; a `skipped` result counts as PASS — legitimate **only** for a designed job-level `if:`.
+- **`ci-required`** is the final job in `.github/workflows/validate-plugins.yml` — `if: always()`, `needs:` all 17 gate jobs (validate, verify, test, check-package-manager, marketplace-validation, cli-smoke-tests, shellcheck-skills, skill-codeblock-syntax, typescript-coverage-audit, eslint-check, format-check, ruff-check, ruff-format-check, markdownlint, scan-synced-content, promote-curated-check, check-submission-docs). It fails if any needed job ended `failure`/`cancelled`; a `skipped` result counts as PASS — legitimate **only** for a designed job-level `if:`.
 - **`gitleaks`** comes from `secret-scan.yml` (also unfiltered).
 
 **Why, and the rules that keep it fixed (do not regress):** the previous 10-context required set sourced checks from path-filtered workflows, so a PR without matching files left them "Expected" forever and could never merge (the #778/#964 stuck-PR class).
@@ -185,6 +185,8 @@ Beyond the 8 required fields, schema 3.5.0+ adds optional visibility-gating fiel
 4. The five split lint workflows (`lint-markdown/python/shell/typescript/skill-codeblocks.yml`) were retired 2026-07; their identically-named jobs live in `validate-plugins.yml`. Do not re-split them. `tests/ci/test_path_routing.py` pins this invariant.
 
 **Supply-chain gate:** `scan-synced-content` (the REFUSE/CHALLENGE/FLAG scanner over `plugins/**`, `scripts/scan-synced-content.mjs`) blocks via the aggregate. A `sources.yaml`-only PR scans zero files and deliberately fails with a **waivable** `sources-change-unscanned` CHALLENGE — a reviewer clears it with a `sources.yaml:sources-change-unscanned  <reason>` line in `scripts/scan-allowlist.txt` after confirming the source is vetted and pinned in `sources.lock.json`. REFUSE is never waivable.
+
+**Submission-docs intake gate:** `check-submission-docs` (`scripts/check-submission-docs.mjs`) blocks via the aggregate. A PR that adds a NEW plugin directory (its `.claude-plugin/plugin.json` is an added file in the diff) must ship the tiered submission documents per the matrix in `templates/skill-docs/README.md` (micro → `docs/PRD.md`; standard → + `docs/ADR.md`; pack, 2+ skills → + `docs/ONE-PAGER.md`; `CFO-ONE-PAGER.md` stays review-enforced — "money is the pitch" isn't deterministic). External mirror plugins (dir contains `.source.json`) are exempt — their docs live upstream. A PR adding no new plugin passes clean INSIDE the script (the designed skip), so the job always reports. Standard: `000-docs/700-DR-GUID-skill-submission-standard.md`.
 
 **Advisory lanes (report, never block — never promote into the required set from a side PR):** the two kernel lanes (next section); agent frontmatter (`validate-skills-schema.py --agents-only`, report-only with a tracked `REPORT-ONLY-UNTIL:` marker — corpus unbaselined); `.mcp.json` (`scripts/validate-mcp-config.mjs`, never `--strict` — that promotion belongs to the DR-049 soak checklist); CodeQL (PR trigger scoped to `packages/**` + `marketplace/src/**` so it adds no fan-out to plugin PRs); and the PR pre-screen (below).
 
@@ -294,9 +296,24 @@ The full cycle:
 python3 freshie/scripts/rebuild-inventory.py                         # 1. New discovery run
 python3 scripts/validate-skills-schema.py --marketplace --populate-db freshie/inventory.sqlite  # 2. Compliance
 python3 freshie/scripts/dolt-sync.py                                 # 3. Dolt commit + tag + DoltHub push
+python3 freshie/scripts/promote-to-curated.py                        # 4. Refresh skills/.curated/ (skills.sh mirror)
 sqlite3 freshie/inventory.sqlite "SELECT grade, COUNT(*) FROM skill_compliance GROUP BY grade;"  # runtime queries
 python3 freshie/scripts/batch-remediate.py --dry-run && python3 freshie/scripts/batch-remediate.py --all --execute
 ```
+
+**skills.sh curated mirror** (`freshie/scripts/promote-to-curated.py`): rebuilds
+`skills/.curated/` as a generated mirror of the repo's best **A+B** plugin skills (our own;
+external `.source.json` mirrors excluded → ~1,881) so skills.sh can index them — it only
+crawls root `skills/` / `.curated/`, never `plugins/**/skills/`. The plugin skill stays the
+source of truth; the mirror is wipe-and-rebuilt from the tracked `grades.csv` (not the
+git-ignored `inventory.sqlite`, so the CI drift gate is reproducible), copies only
+git-tracked files, and re-grades each candidate in-process (promote iff fresh grade still
+A/B). Audit trail: `skills/.curated/MANIFEST.json`. It is excluded from the README count
+(`generate-readme-toc.mjs`) and the inventory scan (`validate-skills-schema.py`
+`find_skill_files`) so a mirror copy is never double-counted. Self-maintaining:
+`promote-curated.yml` refreshes it weekly (PR on change, Slack-on-fail); the
+`promote-curated-check` gate in `ci-required` fails a PR that edits a promoted source
+without regenerating. Repo-page branding: root `skills.sh.json`.
 
 History queries go to Dolt (`cd freshie/dolt/freshie`): `WHERE run_id = N`,
 `AS OF 'run-N'`, `dolt diff run-7 run-8 --stat` — the run_id model is

@@ -101,9 +101,9 @@ Review method:
 - Trace callers, callees, configuration, runtime entry points, and persistence
   or network boundaries touched by the change.
 - Inspect adjacent tests and docs when they explain the contract.
-- If changed code or release notes mention issue or PR numbers, use `gh` to
-  inspect them when available. Commit reviews receive only a read-scoped target
-  repository token for this purpose.
+- If changed code or release notes mention issue or PR numbers, inspect the
+  prehydrated GitHub context bundle included below. Commit reviews do not
+  receive GitHub credentials; do not run `gh` or attempt to refresh that bundle.
 - If dependency files changed, inspect manifests and lockfiles, then check
   package health, releases/changelog, install scripts, and advisories when
   relevant.

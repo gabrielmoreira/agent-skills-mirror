@@ -174,7 +174,10 @@ If the bridge says bootstrap succeeded but the manifest has `entries: []`, the i
 OpenCode bridge ledger, if needed:
 
 ```bash
-LEDGER="$HOME/Library/Application Support/claude-agent-teams-ui/opencode-bridge/command-ledger.json"
+LEDGER="$HOME/Library/Application Support/agent-teams-ai/opencode-bridge/command-ledger.json"
+if [ ! -f "$LEDGER" ]; then
+  LEDGER="$HOME/Library/Application Support/claude-agent-teams-ui/opencode-bridge/command-ledger.json"
+fi
 jq --arg team "$TEAM" '.data[] | select(.teamName == $team)' "$LEDGER" 2>/dev/null
 ```
 

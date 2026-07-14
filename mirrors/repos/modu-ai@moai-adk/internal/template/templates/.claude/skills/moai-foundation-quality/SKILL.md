@@ -14,7 +14,7 @@ when_to_use: >
 
 license: Apache-2.0
 compatibility: Designed for Claude Code
-allowed-tools: Read, Grep, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
+allowed-tools: Read, Grep, Glob
 user-invocable: false
 metadata:
   version: "3.0.0"
@@ -164,7 +164,7 @@ Each module is loaded on demand. Load the one relevant to the current task.
 - [Proactive Analysis](modules/proactive-analysis.md) — how `/moai gate`,
   `/moai review`, and `/moai loop` surface quality issues proactively, and
   how to triage findings.
-- [Best Practices](modules/best-practices.md) — using Context7 MCP for
+- [Best Practices](modules/best-practices.md) — using WebSearch / WebFetch for
   up-to-date framework/library best practices, and validating against them.
 - [Integration Patterns](modules/integration-patterns.md) — how quality fits
   into the SPEC workflow phases (plan/run/sync) and the harness levels.
@@ -180,7 +180,7 @@ Each module is loaded on demand. Load the one relevant to the current task.
 
 ## Works Well With
 
-Agents (see CLAUDE.md §4 for the 10-agent catalog):
+Agents (see CLAUDE.md §4 for the 11-agent catalog):
 
 - `manager-develop` — run-phase implementation; owns the Tested and Unified
   principles through cycle_type.

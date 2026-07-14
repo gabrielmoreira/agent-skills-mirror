@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `NeoLabHQ/context-engineering-kit` — 26 default patterns, 1 followed patterns, 73 file(s) materialized.
+Mirror of `NeoLabHQ/context-engineering-kit` — 26 default patterns, 1 followed patterns, 74 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NeoLabHQ/context-engineering-kit` — 26 default patterns, 1 followed
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 73 |
+| Files         | 74 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -111,27 +111,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 50 | ✓ | [`plugins/reflexion/skills/reflect/SKILL.md`](plugins/reflexion/skills/reflect/SKILL.md) |
 | 51 | ✓ | [`plugins/review/skills/review-local-changes/SKILL.md`](plugins/review/skills/review-local-changes/SKILL.md) |
 | 52 | ✓ | [`plugins/review/skills/review-pr/SKILL.md`](plugins/review/skills/review-pr/SKILL.md) |
-| 53 | ✓ | [`plugins/sadd/skills/do-and-judge/SKILL.md`](plugins/sadd/skills/do-and-judge/SKILL.md) |
-| 54 | ✓ | [`plugins/sadd/skills/do-competitively/SKILL.md`](plugins/sadd/skills/do-competitively/SKILL.md) |
-| 55 | ✓ | [`plugins/sadd/skills/do-in-parallel/SKILL.md`](plugins/sadd/skills/do-in-parallel/SKILL.md) |
-| 56 | ✓ | [`plugins/sadd/skills/do-in-steps/SKILL.md`](plugins/sadd/skills/do-in-steps/SKILL.md) |
-| 57 | ✓ | [`plugins/sadd/skills/judge-with-debate/SKILL.md`](plugins/sadd/skills/judge-with-debate/SKILL.md) |
-| 58 | ✓ | [`plugins/sadd/skills/judge/SKILL.md`](plugins/sadd/skills/judge/SKILL.md) |
-| 59 | ✓ | [`plugins/sadd/skills/launch-sub-agent/SKILL.md`](plugins/sadd/skills/launch-sub-agent/SKILL.md) |
-| 60 | ✓ | [`plugins/sadd/skills/multi-agent-patterns/SKILL.md`](plugins/sadd/skills/multi-agent-patterns/SKILL.md) |
-| 61 | ✓ | [`plugins/sadd/skills/subagent-driven-development/SKILL.md`](plugins/sadd/skills/subagent-driven-development/SKILL.md) |
-| 62 | ✓ | [`plugins/sadd/skills/tree-of-thoughts/SKILL.md`](plugins/sadd/skills/tree-of-thoughts/SKILL.md) |
-| 63 | ✓ | [`plugins/sdd/skills/add-task/SKILL.md`](plugins/sdd/skills/add-task/SKILL.md) |
-| 64 | ✓ | [`plugins/sdd/skills/brainstorm/SKILL.md`](plugins/sdd/skills/brainstorm/SKILL.md) |
-| 65 | ✓ | [`plugins/sdd/skills/create-ideas/SKILL.md`](plugins/sdd/skills/create-ideas/SKILL.md) |
-| 66 | ✓ | [`plugins/sdd/skills/implement-task/SKILL.md`](plugins/sdd/skills/implement-task/SKILL.md) |
-| 67 | ✓ | [`plugins/sdd/skills/plan-task/SKILL.md`](plugins/sdd/skills/plan-task/SKILL.md) |
-| 68 | ✓ | [`plugins/tdd/skills/design-testing-strategy/SKILL.md`](plugins/tdd/skills/design-testing-strategy/SKILL.md) |
-| 69 | ✓ | [`plugins/tdd/skills/fix-tests/SKILL.md`](plugins/tdd/skills/fix-tests/SKILL.md) |
-| 70 | ✓ | [`plugins/tdd/skills/test-coverage/SKILL.md`](plugins/tdd/skills/test-coverage/SKILL.md) |
-| 71 | ✓ | [`plugins/tdd/skills/test-driven-development/SKILL.md`](plugins/tdd/skills/test-driven-development/SKILL.md) |
-| 72 | ✓ | [`plugins/tdd/skills/write-tests/SKILL.md`](plugins/tdd/skills/write-tests/SKILL.md) |
-| 73 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 53 | ✓ | [`plugins/review/skills/traiage-review/SKILL.md`](plugins/review/skills/traiage-review/SKILL.md) |
+| 54 | ✓ | [`plugins/sadd/skills/do-and-judge/SKILL.md`](plugins/sadd/skills/do-and-judge/SKILL.md) |
+| 55 | ✓ | [`plugins/sadd/skills/do-competitively/SKILL.md`](plugins/sadd/skills/do-competitively/SKILL.md) |
+| 56 | ✓ | [`plugins/sadd/skills/do-in-parallel/SKILL.md`](plugins/sadd/skills/do-in-parallel/SKILL.md) |
+| 57 | ✓ | [`plugins/sadd/skills/do-in-steps/SKILL.md`](plugins/sadd/skills/do-in-steps/SKILL.md) |
+| 58 | ✓ | [`plugins/sadd/skills/judge-with-debate/SKILL.md`](plugins/sadd/skills/judge-with-debate/SKILL.md) |
+| 59 | ✓ | [`plugins/sadd/skills/judge/SKILL.md`](plugins/sadd/skills/judge/SKILL.md) |
+| 60 | ✓ | [`plugins/sadd/skills/launch-sub-agent/SKILL.md`](plugins/sadd/skills/launch-sub-agent/SKILL.md) |
+| 61 | ✓ | [`plugins/sadd/skills/multi-agent-patterns/SKILL.md`](plugins/sadd/skills/multi-agent-patterns/SKILL.md) |
+| 62 | ✓ | [`plugins/sadd/skills/subagent-driven-development/SKILL.md`](plugins/sadd/skills/subagent-driven-development/SKILL.md) |
+| 63 | ✓ | [`plugins/sadd/skills/tree-of-thoughts/SKILL.md`](plugins/sadd/skills/tree-of-thoughts/SKILL.md) |
+| 64 | ✓ | [`plugins/sdd/skills/add-task/SKILL.md`](plugins/sdd/skills/add-task/SKILL.md) |
+| 65 | ✓ | [`plugins/sdd/skills/brainstorm/SKILL.md`](plugins/sdd/skills/brainstorm/SKILL.md) |
+| 66 | ✓ | [`plugins/sdd/skills/create-ideas/SKILL.md`](plugins/sdd/skills/create-ideas/SKILL.md) |
+| 67 | ✓ | [`plugins/sdd/skills/implement-task/SKILL.md`](plugins/sdd/skills/implement-task/SKILL.md) |
+| 68 | ✓ | [`plugins/sdd/skills/plan-task/SKILL.md`](plugins/sdd/skills/plan-task/SKILL.md) |
+| 69 | ✓ | [`plugins/tdd/skills/design-testing-strategy/SKILL.md`](plugins/tdd/skills/design-testing-strategy/SKILL.md) |
+| 70 | ✓ | [`plugins/tdd/skills/fix-tests/SKILL.md`](plugins/tdd/skills/fix-tests/SKILL.md) |
+| 71 | ✓ | [`plugins/tdd/skills/test-coverage/SKILL.md`](plugins/tdd/skills/test-coverage/SKILL.md) |
+| 72 | ✓ | [`plugins/tdd/skills/test-driven-development/SKILL.md`](plugins/tdd/skills/test-driven-development/SKILL.md) |
+| 73 | ✓ | [`plugins/tdd/skills/write-tests/SKILL.md`](plugins/tdd/skills/write-tests/SKILL.md) |
+| 74 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

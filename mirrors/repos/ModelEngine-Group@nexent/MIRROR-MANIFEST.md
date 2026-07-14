@@ -2,7 +2,7 @@
 repo: ModelEngine-Group/nexent
 repoUrl: https://github.com/ModelEngine-Group/nexent.git
 refType: branch
-ref: main
+ref: develop
 ---
 
 # Mirror Manifest
@@ -15,7 +15,7 @@ Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed pattern
 |---------------|-------|
 | Repo          | `ModelEngine-Group/nexent` |
 | Ref Type      | `branch` |
-| Ref           | `main` |
+| Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
 | Files         | 22 |

@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import copy
 import math
+import queue
 import re
 import sqlite3
 import sys
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from shutil import which
@@ -371,7 +373,17 @@ def _fetch_discovery_source(
     depth: str,
     mock: bool,
     config: dict[str, Any],
+    keyword_gate: bool = True,
 ) -> tuple[list[dict[str, Any]], str | None]:
+    """Fetch one listing/river source for the nominate stage.
+
+    ``keyword_gate`` controls whether items are filtered to the domain by
+    ``_matches_discovery_domain``. Domain-scoped discovery (``--discover X``)
+    keeps the gate on; global trending (``--discover`` with no domain) turns it
+    off, because there is no keyword to gate against - the river feeds ARE the
+    "what is hot right now" signal, and the confidence floor downstream is what
+    keeps junk out, not a keyword match.
+    """
     if mock:
         return _mock_discovery_items(source, plan.domain, to_date), None
     if source == "reddit":
@@ -379,13 +391,14 @@ def _fetch_discovery_source(
             plan.subreddits, depth=depth, query=plan.domain,
         )
         items = result.get("items") or []
-        items = [
-            item for item in items
-            if _matches_discovery_domain(
-                plan.domain,
-                f"{item.get('title') or ''} {item.get('selftext') or ''}",
-            )
-        ]
+        if keyword_gate:
+            items = [
+                item for item in items
+                if _matches_discovery_domain(
+                    plan.domain,
+                    f"{item.get('title') or ''} {item.get('selftext') or ''}",
+                )
+            ]
         return items, "; ".join(result.get("errors") or []) or None
     if source == "hackernews":
         result = hackernews.fetch_discovery_listings(from_date, to_date, depth=depth)
@@ -395,21 +408,25 @@ def _fetch_discovery_source(
                 plan.domain,
                 str(item.get("title") or ""),
             )
-        # HN is a broad technology listing, so keep only domain-bearing stories.
-        items = [
-            item for item in items
-            if _matches_discovery_domain(plan.domain, str(item.get("title") or ""))
-        ]
+        # HN is a broad technology listing, so keep only domain-bearing stories
+        # when a domain is in play; global trending keeps the whole front page.
+        if keyword_gate:
+            items = [
+                item for item in items
+                if _matches_discovery_domain(plan.domain, str(item.get("title") or ""))
+            ]
         errors = result.get("errors") or []
         return items, "; ".join(errors) or None
     if source == "digg":
         result = digg.search_digg(plan.domain, from_date, to_date, depth=depth)
         items = digg.parse_digg_response(result, query=plan.domain)
-        # Digg is an AI-focused broad listing, so keep only domain-bearing clusters.
-        items = [
-            item for item in items
-            if _matches_discovery_domain(plan.domain, str(item.get("title") or ""))
-        ]
+        # Digg is an AI-focused broad listing, so keep only domain-bearing
+        # clusters when scoped; global trending keeps the whole feed.
+        if keyword_gate:
+            items = [
+                item for item in items
+                if _matches_discovery_domain(plan.domain, str(item.get("title") or ""))
+            ]
         return items, result.get("error")
     if source == "x":
         subquery = schema.SubQuery(
@@ -504,57 +521,29 @@ def _discovery_momentum(items: list[schema.SourceItem], to_date: str) -> str:
     return "new-this-week" if ages and max(ages) < 7 else "building"
 
 
-def run_discover(
+def nominate_candidates(
+    plan: schema.DiscoveryPlan,
     *,
-    domain: str,
+    from_date: str,
+    to_date: str,
+    depth: str,
+    mock: bool,
     config: dict[str, Any],
-    depth: str = "default",
-    requested_sources: list[str] | None = None,
-    mock: bool = False,
-    subreddits: list[str] | None = None,
-    lookback_days: int = 30,
-    as_of_date: str | None = None,
-    limit: int = 10,
-) -> schema.DiscoveryReport:
-    """Sweep category listings and rank the topics gaining velocity."""
-    from_date, to_date = dates.get_date_range(lookback_days, as_of_date=as_of_date)
-    requested = normalize_requested_sources(requested_sources)
-    unsupported = sorted(set(requested or []) - set(DISCOVERY_SOURCES))
-    if unsupported:
-        raise ValueError(
-            "Discovery supports listing sources only: reddit, hackernews, digg "
-            f"(unsupported: {', '.join(unsupported)})"
-        )
-    available = list(DISCOVERY_SOURCES) if mock else [
-        source for source in available_sources(config, requested, x_pending=False)
-        if source in DISCOVERY_SOURCES
-    ]
-    if requested:
-        available = [source for source in available if source in requested]
-    plan = planner.build_discovery_plan(
-        domain,
-        available_sources=available,
-        subreddits=subreddits,
-    )
+    lookback_days: int,
+    keyword_gate: bool = True,
+) -> schema.RetrievalBundle:
+    """Stage 1 of discovery: fetch, normalize, and bundle candidate hot items
+    from the river/listing feeds.
 
-    source_status: dict[str, schema.SourceOutcome] = {}
+    This is the topic-nomination pass. For domain discovery ``keyword_gate`` is
+    on and the feeds are filtered to the domain; for global trending it is off
+    and the feeds' own hot ranking IS the signal. The returned bundle feeds the
+    clustering + enrichment stages downstream. Every source's failure is
+    recorded on the bundle (never raised) so a single dead feed cannot sink the
+    run - the confidence floor decides whether the surviving evidence is enough.
+    """
     bundle = schema.RetrievalBundle()
-    query_plan = schema.QueryPlan(
-        intent="breaking_news",
-        freshness_mode="breaking",
-        cluster_mode="story",
-        raw_topic=plan.domain,
-        subqueries=[schema.SubQuery(
-            label="discovery-listings",
-            search_query=plan.domain,
-            ranking_query=f"What is accelerating in {plan.domain}?",
-            sources=list(plan.sources),
-        )],
-        source_weights={source: 1.0 for source in plan.sources},
-        notes=["discover-mode", "listing-sweep"],
-    )
-
-    with ThreadPoolExecutor(max_workers=len(plan.sources)) as executor:
+    with ThreadPoolExecutor(max_workers=max(1, len(plan.sources))) as executor:
         futures = {
             executor.submit(
                 _fetch_discovery_source,
@@ -565,6 +554,7 @@ def run_discover(
                 depth=depth,
                 mock=mock,
                 config=config,
+                keyword_gate=keyword_gate,
             ): source
             for source in plan.sources
         }
@@ -580,7 +570,10 @@ def run_discover(
                     to_date,
                     freshness_mode="breaking",
                 )
-                prepared = relevance.PreparedQuery(plan.domain)
+                # Global trending has no domain; annotate against a neutral
+                # phrase so snippet extraction still works without biasing
+                # relevance toward any keyword.
+                prepared = relevance.PreparedQuery(plan.domain or "trending now")
                 normalized = signals.annotate_stream(
                     normalized,
                     prepared,
@@ -606,22 +599,40 @@ def run_discover(
             except Exception as exc:
                 state, attempted = _classify_source_failure(exc)
                 bundle.record_failure(source, state, str(exc), attempted=attempted)
+    return bundle
 
-    for source in DISCOVERY_SOURCES:
-        if source in bundle.source_status:
-            continue
-        detail = (
-            "Source is not configured for discovery."
-        )
-        source_status[source] = schema.SourceOutcome(
-            source=source,
-            state=schema.SKIPPED_UNCONFIGURED,
-            attempted=False,
-            detail=detail,
-            fix_hint="doctor",
-        )
-    source_status.update(_finalize_source_status(bundle.source_status, bundle.items_by_source))
 
+@dataclass(frozen=True)
+class Nomination:
+    """A named candidate topic produced by the nominate stage.
+
+    ``seed_score`` is the cheap pre-enrichment velocity rank - enough to decide
+    WHICH candidates deserve a full pipeline pass, but not the final ranking
+    signal (that comes from enriched evidence downstream).
+    """
+
+    name: str
+    seed_score: float
+    items: list[schema.SourceItem] = field(default_factory=list)
+    summary: str = ""
+
+
+def nominate_topics(
+    bundle: schema.RetrievalBundle,
+    query_plan: schema.QueryPlan,
+    plan: schema.DiscoveryPlan,
+    *,
+    to_date: str,
+    limit: int,
+) -> list[Nomination]:
+    """Stage 1b of discovery: cluster nominated items into named candidate
+    topics and rank them by seed velocity.
+
+    Names are deduped casefold so the same story surfacing under two clusters
+    yields one nomination. Returns at most ``limit`` nominations, never padded -
+    fewer clusters than ``limit`` means a shorter list, and the confidence
+    floor downstream decides whether what survived is worth showing.
+    """
     candidates = weighted_rrf(bundle.items_by_source_and_query, query_plan, pool_limit=80)
     for candidate in candidates:
         velocity = rerank.discovery_velocity_score(candidate.source_items, as_of_date=to_date)
@@ -643,8 +654,7 @@ def run_discover(
         ranked_clusters.append((score, cluster, cluster_items))
     ranked_clusters.sort(key=lambda entry: (-entry[0], entry[1].title.lower()))
 
-    topic_limit = max(5, min(10, limit))
-    topics: list[schema.DiscoveryTopic] = []
+    nominations: list[Nomination] = []
     seen_topic_names: set[str] = set()
     for score, cluster, cluster_items in ranked_clusters:
         name = discovery_topic_name(cluster, candidate_map, plan.domain)
@@ -652,41 +662,367 @@ def run_discover(
         if name_key in seen_topic_names:
             continue
         seen_topic_names.add(name_key)
-        rank = len(topics) + 1
-        sources = sorted({item.source for item in cluster_items})
-        native_total = sum(rerank.discovery_engagement_total(item) for item in cluster_items)
+        leader = candidate_map.get(cluster.representative_ids[0]) if cluster.representative_ids else None
+        summary = (leader.snippet if leader else "") or (leader.title if leader else name)
+        nominations.append(Nomination(
+            name=name,
+            seed_score=score,
+            items=cluster_items,
+            summary=summary,
+        ))
+        if len(nominations) >= limit:
+            break
+    return nominations
+
+
+# Enrichment fan-out bounds. Sub-runs hit the same upstream APIs as a normal
+# research pass, so parallelism stays low and the whole batch runs against a
+# wall-clock budget - a slow topic is dropped, never fatal.
+ENRICH_LIMIT = 6
+ENRICH_DEPTH = "quick"
+ENRICH_MAX_WORKERS = 3
+ENRICH_BUDGET_SECONDS = 240.0
+
+
+@dataclass
+class EnrichedTopic:
+    """A nomination plus the full-pipeline evidence gathered for it.
+
+    ``report`` is None when enrichment for this topic failed or ran past the
+    batch budget - the topic survives as nomination-only and the confidence
+    floor downstream decides whether its seed evidence is enough to show.
+    """
+
+    nomination: Nomination
+    report: schema.Report | None = None
+    error: str | None = None
+
+
+def enrich_nominations(
+    nominations: list[Nomination],
+    *,
+    config: dict[str, Any],
+    requested_sources: list[str] | None = None,
+    mock: bool = False,
+    depth: str = ENRICH_DEPTH,
+    lookback_days: int = 30,
+    as_of_date: str | None = None,
+    max_workers: int = ENRICH_MAX_WORKERS,
+    budget_seconds: float = ENRICH_BUDGET_SECONDS,
+) -> list[EnrichedTopic]:
+    """Stage 2 of discovery: run the real research pipeline on each nomination.
+
+    Each nominated topic gets a full ``run()`` pass (``internal_subrun=True``,
+    same lane as comparison-mode sub-runs), which buys the whole multi-source
+    corpus - Reddit with comments, X, YouTube, Techmeme, arXiv, HN, Polymarket,
+    web - plus clustering and ranking, with zero bespoke fetch code.
+
+    Failure containment: a topic whose sub-run raises is returned with
+    ``report=None`` and the error recorded; topics still unfinished when the
+    batch budget expires are likewise dropped to nomination-only. The batch
+    never raises and preserves nomination order.
+    """
+    if not nominations:
+        return []
+
+    def _run_one(nomination: Nomination) -> schema.Report:
+        return run(
+            topic=nomination.name,
+            config=config,
+            depth=depth,
+            requested_sources=requested_sources,
+            mock=mock,
+            lookback_days=lookback_days,
+            as_of_date=as_of_date,
+            internal_subrun=True,
+        )
+
+    # Daemon threads + a semaphore instead of ThreadPoolExecutor: executor
+    # threads are non-daemon and joined at interpreter shutdown, so one hung
+    # sub-run could keep the whole process alive long after its topic was
+    # downgraded to nomination-only. Daemon workers make the wall-clock budget
+    # real - stragglers cannot delay process exit. Abandonment is safe because
+    # internal_subrun passes write nothing to disk (no save, no library sync,
+    # no store), and every fetch layer inside run() carries its own timeout.
+    enriched: dict[str, EnrichedTopic] = {}
+    results_queue: queue.Queue[tuple[Nomination, schema.Report | None, Exception | None]] = queue.Queue()
+    slots = threading.Semaphore(max(1, max_workers))
+
+    def _worker(nomination: Nomination) -> None:
+        with slots:
+            try:
+                results_queue.put((nomination, _run_one(nomination), None))
+            except Exception as exc:  # noqa: BLE001 - containment is the contract
+                results_queue.put((nomination, None, exc))
+
+    for nomination in nominations:
+        threading.Thread(
+            target=_worker,
+            args=(nomination,),
+            name=f"discover-enrich-{nomination.name[:32]}",
+            daemon=True,
+        ).start()
+
+    deadline = time.monotonic() + max(1.0, budget_seconds)
+    pending = len(nominations)
+    while pending and (remaining := deadline - time.monotonic()) > 0:
+        try:
+            nomination, report, exc = results_queue.get(timeout=min(remaining, 0.5))
+        except queue.Empty:
+            continue
+        pending -= 1
+        if exc is None:
+            enriched[nomination.name] = EnrichedTopic(
+                nomination=nomination, report=report,
+            )
+        else:
+            enriched[nomination.name] = EnrichedTopic(
+                nomination=nomination,
+                error=f"{type(exc).__name__}: {exc}",
+            )
+            print(
+                f"[Discover] enrichment failed for {nomination.name!r}: "
+                f"{type(exc).__name__}: {exc}",
+                file=sys.stderr,
+            )
+    # Budget expired (or all done): unfinished topics fall through below as
+    # nomination-only; their daemon workers are abandoned and cannot block exit.
+
+    results: list[EnrichedTopic] = []
+    for nomination in nominations:
+        entry = enriched.get(nomination.name)
+        if entry is None:
+            entry = EnrichedTopic(
+                nomination=nomination,
+                error="enrichment budget exhausted",
+            )
+            print(
+                f"[Discover] enrichment budget exhausted before {nomination.name!r} "
+                "finished; keeping nomination-only evidence",
+                file=sys.stderr,
+            )
+        results.append(entry)
+    return results
+
+
+def _enriched_evidence_items(entry: EnrichedTopic) -> list[schema.SourceItem]:
+    """The items a topic is judged on: the enriched corpus when the pipeline
+    pass succeeded, the nomination's seed items otherwise."""
+    if entry.report is not None:
+        flattened: list[schema.SourceItem] = []
+        for source_items in entry.report.items_by_source.values():
+            flattened.extend(source_items)
+        if flattened:
+            return flattened
+    return entry.nomination.items
+
+
+def _best_community_comment(items: list[schema.SourceItem]) -> str | None:
+    """The strongest verbatim community comment across a topic's evidence,
+    formatted with attribution - the voice-of-the-people line on a trend card.
+
+    Vote strength is per-platform-normalized (signals.normalized_comment_vote)
+    so one viral platform's counts don't drown out the rest.
+    """
+    best: tuple[float, str, str | None, float | int | None] | None = None
+    for item in items:
+        comments = item.metadata.get("top_comments") or []
+        for comment in comments:
+            if not isinstance(comment, dict):
+                continue
+            body = (comment.get("excerpt") or comment.get("text") or comment.get("body") or "").strip()
+            if len(body) < 12:
+                continue
+            strength = signals.normalized_comment_vote(item.source, comment.get("score"))
+            if best is None or strength > best[0]:
+                best = (strength, body, comment.get("author"), comment.get("score"))
+    if best is None:
+        return None
+    _, body, author, score = best
+    # Comment bodies that themselves start/end with quote characters would
+    # render as doubled quotes inside our wrapping quotes.
+    body = body.strip('"“”‘’\'').strip()
+    if len(body) > 200:
+        body = body[:197].rsplit(" ", 1)[0] + "..."
+    attribution = f" - {author}" if author else ""
+    votes = (
+        f" ({int(score):,} votes)"
+        if isinstance(score, (int, float)) and not isinstance(score, bool) and score > 0
+        else ""
+    )
+    return f'"{body}"{attribution}{votes}'
+
+
+def run_discover(
+    *,
+    domain: str,
+    config: dict[str, Any],
+    depth: str = "default",
+    requested_sources: list[str] | None = None,
+    mock: bool = False,
+    subreddits: list[str] | None = None,
+    lookback_days: int = 30,
+    as_of_date: str | None = None,
+    limit: int = 10,
+    enrich: bool = False,
+    enrich_requested_sources: list[str] | None = None,
+) -> schema.DiscoveryReport:
+    """Sweep category listings and rank the topics gaining velocity.
+
+    ``requested_sources`` bounds the listing sweep (discovery-capable feeds
+    only). ``enrich_requested_sources`` bounds the per-topic research passes:
+    None means every available source - which is what lets Techmeme, arXiv,
+    YouTube, Polymarket, and community comments reach discovery despite having
+    no river feed of their own. Pass the user's original --search list here so
+    an explicit source boundary holds through enrichment too.
+    """
+    from_date, to_date = dates.get_date_range(lookback_days, as_of_date=as_of_date)
+    requested = normalize_requested_sources(requested_sources)
+    unsupported = sorted(set(requested or []) - set(DISCOVERY_SOURCES))
+    if unsupported:
+        raise ValueError(
+            "Discovery supports listing sources only: reddit, hackernews, digg "
+            f"(unsupported: {', '.join(unsupported)})"
+        )
+    available = list(DISCOVERY_SOURCES) if mock else [
+        source for source in available_sources(config, requested, x_pending=False)
+        if source in DISCOVERY_SOURCES
+    ]
+    if requested:
+        available = [source for source in available if source in requested]
+    plan = planner.build_discovery_plan(
+        domain,
+        available_sources=available,
+        subreddits=subreddits,
+    )
+
+    global_mode = not plan.domain
+    domain_label = plan.domain or "everything"
+    source_status: dict[str, schema.SourceOutcome] = {}
+    query_plan = schema.QueryPlan(
+        intent="breaking_news",
+        freshness_mode="breaking",
+        cluster_mode="story",
+        raw_topic=plan.domain,
+        subqueries=[schema.SubQuery(
+            label="discovery-listings",
+            search_query=plan.domain,
+            ranking_query=f"What is accelerating in {domain_label}?",
+            sources=list(plan.sources),
+        )],
+        source_weights={source: 1.0 for source in plan.sources},
+        notes=["discover-mode", "listing-sweep"],
+    )
+
+    bundle = nominate_candidates(
+        plan,
+        from_date=from_date,
+        to_date=to_date,
+        depth=depth,
+        mock=mock,
+        config=config,
+        lookback_days=lookback_days,
+        # Global trending has no keyword to gate against - the river feeds' own
+        # hot ranking is the signal and the confidence floor culls the junk.
+        keyword_gate=not global_mode,
+    )
+
+    for source in DISCOVERY_SOURCES:
+        if source in bundle.source_status:
+            continue
+        detail = (
+            "Source is not configured for discovery."
+        )
+        source_status[source] = schema.SourceOutcome(
+            source=source,
+            state=schema.SKIPPED_UNCONFIGURED,
+            attempted=False,
+            detail=detail,
+            fix_hint="doctor",
+        )
+    source_status.update(_finalize_source_status(bundle.source_status, bundle.items_by_source))
+
+    topic_limit = max(5, min(10, limit))
+    nominations = nominate_topics(
+        bundle, query_plan, plan,
+        to_date=to_date,
+        limit=ENRICH_LIMIT if enrich else topic_limit,
+    )
+
+    if enrich and nominations:
+        enriched_entries = enrich_nominations(
+            nominations,
+            config=config,
+            requested_sources=enrich_requested_sources,
+            mock=mock,
+            lookback_days=lookback_days,
+            as_of_date=as_of_date,
+        )
+    else:
+        enriched_entries = [
+            EnrichedTopic(nomination=nomination) for nomination in nominations
+        ]
+
+    topics: list[schema.DiscoveryTopic] = []
+    weak_signal: tuple[float, str] | None = None
+    for entry in enriched_entries:
+        evidence_items = _enriched_evidence_items(entry)
+        sources = sorted({item.source for item in evidence_items})
+        native_total = sum(
+            rerank.discovery_engagement_total(item) for item in evidence_items
+        )
+        score = rerank.discovery_velocity_score(evidence_items, as_of_date=to_date)
+        if not rerank.passes_discovery_floor(
+            source_count=len(sources),
+            engagement_total=native_total,
+            item_count=len(evidence_items),
+        ):
+            # Sub-floor evidence never ranks; remember what came closest so a
+            # nothing-solid brief can still name the strongest weak signal.
+            if weak_signal is None or score > weak_signal[0]:
+                weak_signal = (score, entry.nomination.name)
+            continue
+        if len(topics) >= topic_limit:
+            break
+        nomination = entry.nomination
         source_phrase = ", ".join(sources[:-1]) + (
             f" and {sources[-1]}" if len(sources) > 1 else (sources[0] if sources else "the listings")
         )
-        leader = candidate_map.get(cluster.representative_ids[0]) if cluster.representative_ids else None
-        summary = (leader.snippet if leader else "") or (leader.title if leader else name)
+        noun = "evidence item" if entry.report is not None else "listing item"
         why = (
-            f"{len(cluster_items)} listing item{'s' if len(cluster_items) != 1 else ''} on "
+            f"{len(evidence_items)} {noun}{'s' if len(evidence_items) != 1 else ''} on "
             f"{source_phrase} generated {native_total:,.0f} native interactions. "
-            f"{summary[:220]}"
+            f"{nomination.summary[:220]}"
         )
         topics.append(schema.DiscoveryTopic(
-            rank=rank,
-            name=name,
+            rank=len(topics) + 1,
+            name=nomination.name,
             why_spiking=why,
-            momentum=_discovery_momentum(cluster_items, to_date),
+            momentum=_discovery_momentum(evidence_items, to_date),
             velocity_score=round(score, 2),
             sources=sources,
-            engagement_by_source=_discovery_engagement(cluster_items),
-            command=f'/last30days "{name.replace(chr(34), chr(39))}"',
-            evidence_urls=list(dict.fromkeys(item.url for item in cluster_items if item.url))[:5],
+            engagement_by_source=_discovery_engagement(evidence_items),
+            command=f'/last30days "{nomination.name.replace(chr(34), chr(39))}"',
+            evidence_urls=list(dict.fromkeys(item.url for item in evidence_items if item.url))[:5],
+            top_comment=_best_community_comment(evidence_items) if entry.report is not None else None,
+            corroboration_count=len(sources),
         ))
-        if len(topics) >= topic_limit:
-            break
+
+    outcome = "ok" if topics else "nothing-solid"
 
     warnings: list[str] = []
-    if len(topics) < 5:
-        warnings.append("Fewer than five topic clusters survived this domain sweep.")
+    if outcome == "nothing-solid":
+        warnings.append(
+            "No topic cleared the discovery confidence floor this window; "
+            "reporting nothing solid instead of ranked noise."
+        )
+    elif len(topics) < 5:
+        warnings.append("Fewer than five topic clusters cleared the confidence floor this window.")
     if topics and all(len(topic.sources) == 1 for topic in topics):
         warnings.append("Discovery evidence is single-source; configure Digg for broader confirmation.")
     failed = [
-        source for source, outcome in source_status.items()
-        if outcome.state not in {health.OK, schema.NO_RESULTS, schema.SKIPPED_UNCONFIGURED}
+        source for source, outcome_state in source_status.items()
+        if outcome_state.state not in {health.OK, schema.NO_RESULTS, schema.SKIPPED_UNCONFIGURED}
     ]
     if failed:
         warnings.append(f"Some discovery sources degraded: {', '.join(sorted(failed))}.")
@@ -700,6 +1036,8 @@ def run_discover(
         topics=topics,
         source_status=source_status,
         warnings=warnings,
+        outcome=outcome,
+        weak_signal=weak_signal[1] if weak_signal and not topics else None,
     )
 
 

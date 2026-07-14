@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `elizaOS/eliza` — 26 default patterns, 11 followed patterns, 1196 file(s) materialized.
+Mirror of `elizaOS/eliza` — 26 default patterns, 11 followed patterns, 1195 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elizaOS/eliza` — 26 default patterns, 11 followed patterns, 1196 fi
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 11 |
-| Files         | 1196 |
+| Files         | 1195 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -1249,22 +1249,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1178 | ✓ | [`plugins/plugin-zai/AGENTS.md`](plugins/plugin-zai/AGENTS.md) |
 | 1179 | ✓ | [`plugins/plugin-zai/CLAUDE.md`](plugins/plugin-zai/CLAUDE.md) |
 | 1180 | ✓ | [`plugins/plugin-zai/README.md`](plugins/plugin-zai/README.md) |
-| 1181 | ✓ | [`reports/coverage/README.md`](reports/coverage/README.md) |
-| 1182 | ✓ | [`scripts/gpu-vision/README.md`](scripts/gpu-vision/README.md) |
-| 1183 | ✓ | [`scripts/training-harvest/README.md`](scripts/training-harvest/README.md) |
-| 1184 | ✓ | [`scripts/vast/README.md`](scripts/vast/README.md) |
-| 1185 | ✓ | [`upstreams/electrobun-patches/README.md`](upstreams/electrobun-patches/README.md) |
-| 1186 | → | [`.github/ISSUE_TEMPLATE/agent_work_item.md`](.github/ISSUE_TEMPLATE/agent_work_item.md) |
-| 1187 | → | [`.github/ISSUE_TEMPLATE/bug_report.md`](.github/ISSUE_TEMPLATE/bug_report.md) |
-| 1188 | → | [`.github/ISSUE_TEMPLATE/feature_request.md`](.github/ISSUE_TEMPLATE/feature_request.md) |
-| 1189 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 1190 | → | [`docs/automation-glossary.md`](docs/automation-glossary.md) |
-| 1191 | → | [`packages/docs/development/shared-dev-server.md`](packages/docs/development/shared-dev-server.md) |
-| 1192 | → | [`packages/docs/ongoing-development/mvp/MVP.md`](packages/docs/ongoing-development/mvp/MVP.md) |
-| 1193 | → | [`packages/docs/ongoing-development/README.md`](packages/docs/ongoing-development/README.md) |
-| 1194 | → | [`README.md`](README.md) |
-| 1195 | → | [`SECURITY.md`](SECURITY.md) |
-| 1196 | → | [`WINDOWS.md`](WINDOWS.md) |
+| 1181 | ✓ | [`scripts/gpu-vision/README.md`](scripts/gpu-vision/README.md) |
+| 1182 | ✓ | [`scripts/training-harvest/README.md`](scripts/training-harvest/README.md) |
+| 1183 | ✓ | [`scripts/vast/README.md`](scripts/vast/README.md) |
+| 1184 | ✓ | [`upstreams/electrobun-patches/README.md`](upstreams/electrobun-patches/README.md) |
+| 1185 | → | [`.github/ISSUE_TEMPLATE/agent_work_item.md`](.github/ISSUE_TEMPLATE/agent_work_item.md) |
+| 1186 | → | [`.github/ISSUE_TEMPLATE/bug_report.md`](.github/ISSUE_TEMPLATE/bug_report.md) |
+| 1187 | → | [`.github/ISSUE_TEMPLATE/feature_request.md`](.github/ISSUE_TEMPLATE/feature_request.md) |
+| 1188 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 1189 | → | [`docs/automation-glossary.md`](docs/automation-glossary.md) |
+| 1190 | → | [`packages/docs/development/shared-dev-server.md`](packages/docs/development/shared-dev-server.md) |
+| 1191 | → | [`packages/docs/ongoing-development/mvp/MVP.md`](packages/docs/ongoing-development/mvp/MVP.md) |
+| 1192 | → | [`packages/docs/ongoing-development/README.md`](packages/docs/ongoing-development/README.md) |
+| 1193 | → | [`README.md`](README.md) |
+| 1194 | → | [`SECURITY.md`](SECURITY.md) |
+| 1195 | → | [`WINDOWS.md`](WINDOWS.md) |
 
 ---
 

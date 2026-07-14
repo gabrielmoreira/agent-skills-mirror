@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 2 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,7 +60,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`agents/codex/config.toml`](agents/codex/config.toml) |
+| 3 | ✓ | [`agents/hooks/post-edit-format.py`](agents/hooks/post-edit-format.py) |
+| 4 | ✓ | [`agents/hooks/post-edit-format.py.lock`](agents/hooks/post-edit-format.py.lock) |
+| 5 | ✓ | [`agents/hooks/session-start-web.sh`](agents/hooks/session-start-web.sh) |
+| 6 | ✓ | [`agents/hooks/session-start.sh`](agents/hooks/session-start.sh) |
+| 7 | ✓ | [`agents/prompts/editorialize-changelog.md`](agents/prompts/editorialize-changelog.md) |
+| 8 | ✓ | [`agents/prompts/triage-issue.md`](agents/prompts/triage-issue.md) |
+| 9 | ✓ | [`agents/schemas/issue-triage.json`](agents/schemas/issue-triage.json) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 
