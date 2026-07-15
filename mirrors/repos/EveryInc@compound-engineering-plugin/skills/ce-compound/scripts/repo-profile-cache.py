@@ -23,15 +23,19 @@ stamp, and writes it atomically to the computed cache path. Prints the path
 on success, `NO-CACHE` when the repo/cache is unavailable.
 
 Cache path:
-    /tmp/compound-engineering/repo-profile/<root-sha>/<head-sha>.json
+    /tmp/compound-engineering/repo-profile/<root-sha>/<inputs-digest>.json
   root-sha = lexicographically-first `git rev-list --max-parents=0 HEAD`
              (deterministic even for multi-root histories) — the repo identity,
              shared across worktrees and clones.
-  head-sha = `git rev-parse HEAD` — the working state.
+  inputs-digest = sha256 over (1) every committed blob path (shape — catches
+             topology/module-layout changes such as a new directory or file)
+             and (2) (path, blob-sha) for every profile-input file at HEAD.
+             Content edits to non-input files keep the same entry; adding or
+             removing any path, or changing a profile-input's content, does not.
 
 Validity (HIT) requires ALL of:
   - the cache file exists and parses as JSON,
-  - stored `head_sha` == current HEAD,
+  - stored `inputs_digest` == current inputs digest,
   - stored `profile_schema_version` == PROFILE_SCHEMA_VERSION,
   - no profile-input path is dirty or newly-added per `git status --porcelain`
     (the schema-derived superset in `is_profile_input`, which also catches
@@ -44,6 +48,7 @@ never serves a profile it cannot prove fresh.
 
 Pure stdlib. No third-party dependencies.
 """
+import hashlib
 import json
 import os
 import subprocess
@@ -122,6 +127,8 @@ _TOPOLOGY = {
     "Pulumi.yaml", "Pulumi.yml", "Chart.yaml",
     # CI descriptors outside .github/workflows/ (that prefix is handled below).
     ".gitlab-ci.yml", "Jenkinsfile", "azure-pipelines.yml",
+    # Submodule map — topology/dependency surface when gitlinks are present.
+    ".gitmodules",
 }
 
 # Path prefixes whose contents shape the profile (conventions / CI / deploy).
@@ -195,6 +202,201 @@ def root_sha() -> "str | None":
     return sorted(out.split("\n"))[0]
 
 
+def _parse_ls_tree() -> "list[tuple[str, str, str, str]] | None":
+    """Parse `git ls-tree -r -z HEAD` into (mode, obj_type, obj, path) rows."""
+    try:
+        result = subprocess.run(
+            ["git", "ls-tree", "-r", "-z", "HEAD"],
+            capture_output=True,
+            check=False,
+        )
+    except OSError:
+        return None
+    if result.returncode != 0:
+        return None
+
+    rows: list[tuple[str, str, str, str]] = []
+    for entry in result.stdout.split(b"\0"):
+        if not entry:
+            continue
+        try:
+            meta, path_b = entry.split(b"\t", 1)
+        except ValueError:
+            continue
+        parts = meta.split()
+        if len(parts) < 3:
+            continue
+        mode, obj_type, obj = parts[0], parts[1], parts[2]
+        path = path_b.decode("utf-8", errors="surrogateescape")
+        rows.append(
+            (
+                mode.decode("ascii"),
+                obj_type.decode("ascii"),
+                obj.decode("ascii"),
+                path,
+            )
+        )
+    return rows
+
+
+def _resolve_symlink_target(link_path: str, target: str) -> "str | None":
+    """Resolve a symlink target relative to link_path; None if outside the tree."""
+    import posixpath
+
+    target = target.strip()
+    if not target or target.startswith("/"):
+        return None
+    base = posixpath.dirname(link_path)
+    resolved = posixpath.normpath(
+        posixpath.join(base, target) if base else target
+    )
+    if resolved.startswith("../") or resolved == "..":
+        return None
+    return resolved
+
+
+def _follow_symlink_chain(
+    start_path: str,
+    by_path: "dict[str, tuple[str, str, str]]",
+) -> "tuple[str, str, set[str]] | None":
+    """Follow symlink chain from start_path to a regular blob.
+
+    Returns (final_path, final_blob_sha, intermediate_paths) where
+    intermediate_paths are every symlink path visited after start (not including
+    start or the final regular file). None if the chain cannot be resolved
+    (missing entry, cycle, escaped tree, or non-blob).
+    """
+    seen: set[str] = set()
+    path = start_path
+    intermediates: set[str] = set()
+    for _ in range(32):
+        if path in seen:
+            return None
+        seen.add(path)
+        entry = by_path.get(path)
+        if entry is None:
+            return None
+        mode, typ, obj = entry
+        if typ != "blob":
+            return None
+        if mode != "120000":
+            return path, obj, intermediates
+        target_raw = git("cat-file", "-p", obj)
+        if target_raw is None:
+            return None
+        resolved = _resolve_symlink_target(path, target_raw)
+        if not resolved:
+            return None
+        if path != start_path:
+            intermediates.add(path)
+        path = resolved
+    return None
+
+
+def profile_input_symlink_targets() -> "set[str] | None":
+    """Paths whose dirtiness affects a profile-input symlink chain at HEAD.
+
+    Includes intermediate symlink paths and the final regular-file target.
+    None if the tree could not be listed — callers treat that as dirty/miss.
+    """
+    rows = _parse_ls_tree()
+    if rows is None:
+        return None
+    by_path = {path: (mode, typ, obj) for mode, typ, obj, path in rows}
+    targets: set[str] = set()
+    for mode, typ, _obj, path in rows:
+        if typ != "blob" or mode != "120000" or not is_profile_input(path):
+            continue
+        followed = _follow_symlink_chain(path, by_path)
+        if followed is None:
+            return None
+        final_path, _final_obj, intermediates = followed
+        targets.update(intermediates)
+        targets.add(final_path)
+    return targets
+
+
+def head_gitlink_paths() -> "set[str] | None":
+    """Paths of submodule gitlinks at HEAD. None if the tree could not be listed."""
+    rows = _parse_ls_tree()
+    if rows is None:
+        return None
+    return {path for _mode, typ, _obj, path in rows if typ == "commit"}
+
+
+def profile_inputs_affected(changed: list[str]) -> "bool | None":
+    """True if any changed path affects the cached profile's freshness.
+
+    Covers ordinary profile inputs, profile-input symlink-chain paths, and
+    HEAD gitlink (submodule) paths — so an uncommitted submodule pointer
+    advance cannot serve a HIT keyed on the old committed gitlink.
+
+    None if symlink/gitlink metadata could not be resolved (caller treats as miss).
+    """
+    if any(is_profile_input(p) for p in changed):
+        return True
+    targets = profile_input_symlink_targets()
+    if targets is None:
+        return None
+    if any(p in targets for p in changed):
+        return True
+    gitlinks = head_gitlink_paths()
+    if gitlinks is None:
+        return None
+    return any(p in gitlinks for p in changed)
+
+
+def inputs_digest() -> "str | None":
+    """Sha256 covering committed tree shape + profile-input contents at HEAD.
+
+    Layers (committed state only via `git ls-tree`; working-tree dirtiness is a
+    separate HIT gate via `changed_paths`):
+
+    - Every blob **path** (no content) — so adding/removing/renaming a file
+      (e.g. a new `src/db/migrations/` module) changes the digest and busts a
+      cached topology/module_layout, without invalidating on content edits to
+      existing non-input files.
+    - `(path, blob-sha)` for every **profile-input** blob — so manifest/docs/CI
+      content changes still invalidate.
+    - For profile-input **symlinks** (mode 120000), the final in-repo regular
+      blob after following the full symlink chain — so
+      `README.md -> docs/link.md -> docs/README.md` invalidates when the final
+      file content changes.
+    - `(path, commit-sha)` for every **gitlink** (`160000 commit` submodule
+      entry) — so adding a submodule or advancing its pointer invalidates.
+
+    None if git could not list the tree.
+    """
+    rows = _parse_ls_tree()
+    if rows is None:
+        return None
+    by_path = {path: (mode, typ, obj) for mode, typ, obj, path in rows}
+
+    pairs: list[str] = []
+    for mode, typ, obj, path in rows:
+        if typ == "blob":
+            pairs.append(f"path\0{path}")
+            if is_profile_input(path):
+                pairs.append(f"blob\0{path}\0{obj}")
+                if mode == "120000":
+                    followed = _follow_symlink_chain(path, by_path)
+                    if followed is None:
+                        return None
+                    final_path, final_obj, _intermediates = followed
+                    pairs.append(
+                        f"symlink-target\0{path}\0{final_path}\0{final_obj}"
+                    )
+        elif typ == "commit":
+            pairs.append(f"gitlink\0{path}\0{obj}")
+
+    pairs.sort()
+    h = hashlib.sha256()
+    for pair in pairs:
+        h.update(pair.encode("utf-8", errors="surrogateescape"))
+        h.update(b"\n")
+    return h.hexdigest()
+
+
 def changed_paths() -> "list[str] | None":
     """Paths from `git status --porcelain`, or None if it could not run.
 
@@ -247,17 +449,18 @@ def changed_paths() -> "list[str] | None":
     return paths
 
 
-def cache_path(root: str, head: str) -> str:
-    return os.path.join(CACHE_ROOT, root, f"{head}.json")
+def cache_path(root: str, digest: str) -> str:
+    return os.path.join(CACHE_ROOT, root, f"{digest}.json")
 
 
-def resolve_keys() -> "tuple[str, str] | None":
-    """The (root-sha, head-sha) cache key, or None if not a usable git repo."""
+def resolve_keys() -> "tuple[str, str, str] | None":
+    """The (root-sha, head-sha, inputs-digest) key, or None if unusable."""
     root = root_sha()
     head = git("rev-parse", "HEAD")
-    if not root or not head:
+    digest = inputs_digest()
+    if not root or not head or not digest:
         return None
-    return root, head
+    return root, head, digest
 
 
 _PROFILE_KEYS = ("stack", "dependencies", "topology", "conventions", "vocabulary")
@@ -277,8 +480,8 @@ def do_get() -> int:
     if keys is None:
         print("NO-CACHE")
         return 0
-    root, head = keys
-    path = cache_path(root, head)
+    root, _head, digest = keys
+    path = cache_path(root, digest)
 
     def miss() -> int:
         print("MISS")
@@ -304,15 +507,16 @@ def do_get() -> int:
     profile = doc.get("profile") if isinstance(doc, dict) else None
     if (
         not isinstance(doc, dict)
-        or doc.get("head_sha") != head
+        or doc.get("inputs_digest") != digest
         or doc.get("profile_schema_version") != PROFILE_SCHEMA_VERSION
         or not is_valid_profile(profile)
     ):
         return miss()
 
     changed = changed_paths()
-    # Could not determine cleanliness, or a profile input changed/was added.
-    if changed is None or any(is_profile_input(p) for p in changed):
+    # Could not determine cleanliness, or a profile input (or symlink target) changed.
+    affected = None if changed is None else profile_inputs_affected(changed)
+    if changed is None or affected is None or affected:
         return miss()
 
     print("HIT")
@@ -325,7 +529,7 @@ def do_put(profile_file: str) -> int:
     if keys is None:
         print("NO-CACHE")
         return 0
-    root, head = keys
+    root, head, digest = keys
 
     try:
         with open(profile_file) as f:
@@ -348,11 +552,12 @@ def do_put(profile_file: str) -> int:
         return 0
 
     # Do not cache a profile derived from a DIRTY tree: it reflects uncommitted
-    # edits to profile inputs, yet it would be stored under the clean HEAD key
-    # and served as a HIT after those edits are reverted (same HEAD, clean tree)
-    # — stale. Only persist a profile that matches the committed HEAD.
+    # edits to profile inputs, yet it would be stored under the clean inputs
+    # digest and served as a HIT after those edits are reverted — stale. Only
+    # persist a profile that matches the committed profile inputs.
     changed = changed_paths()
-    if changed is None or any(is_profile_input(p) for p in changed):
+    affected = None if changed is None else profile_inputs_affected(changed)
+    if changed is None or affected is None or affected:
         sys.stderr.write(
             "repo-profile-cache: profile inputs are dirty; not caching\n"
         )
@@ -362,12 +567,13 @@ def do_put(profile_file: str) -> int:
     doc = {
         "profile_schema_version": PROFILE_SCHEMA_VERSION,
         "root_sha": root,
-        "head_sha": head,
+        "head_sha": head,  # provenance only — not part of the HIT key
+        "inputs_digest": digest,
         "built_at": datetime.now(timezone.utc).isoformat(),
         "profile": profile,
     }
 
-    path = cache_path(root, head)
+    path = cache_path(root, digest)
     try:
         os.makedirs(os.path.dirname(path), exist_ok=True)
         # Atomic write: temp file in the same dir + os.replace (atomic on

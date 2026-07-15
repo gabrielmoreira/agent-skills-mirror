@@ -57,6 +57,17 @@ This skill ships with support files — use them when they are available:
 - **`references/signal-vs-noise.md`** — Product Health: Separating Signal from Dashboard Noise. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/health-review.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Target & trend discipline | Metrics shown as bare snapshots; no targets or period-over-period comparison | Most metrics have targets and trends, but some RAG statuses don't follow from the numbers or targets are accepted uncritically | Every metric has target, trend, and a status that follows from both — and at least one target is itself challenged if it's no longer meaningful |
+| Root cause depth | Movements listed without explanation ("activation dropped 27pts") | Flagged metrics have hypotheses, but they're generic ("onboarding friction") with no diagnostic to confirm them | Every flagged metric has a specific, falsifiable hypothesis plus a named diagnostic step, and at least one cross-metric correlation (e.g. activation → retention lag) is drawn |
+| Segment honesty | Only blended aggregates reported; opposing segment trends invisible | Some segment cuts shown, but the headline observations still lean on averages that hide divergence | Every material aggregate is decomposed where segments diverge, and the divergence itself is surfaced as a finding, not a footnote |
+| Verdict & actionability | No overall rating, or a rating asserted without evidence; actions missing or ownerless | Overall RAG present and roughly justified; actions exist but some lack owners, dates, or a link to a flagged metric | Overall rating argued from specific evidence (including against the good news), and every action has a named owner, a date, and traces to an investigation or observation |
+
 ## Quality Checks
 
 - [ ] Every metric includes both a target and a trend (not just a snapshot)

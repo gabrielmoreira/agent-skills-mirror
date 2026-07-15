@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 43 file(s) materialized.
+Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langgenius/dify` — 26 default patterns, 0 followed patterns, 43 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 43 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,31 +77,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`.agents/skills/frontend-code-review/references/performance.md`](.agents/skills/frontend-code-review/references/performance.md) |
 | 17 | ✓ | [`.agents/skills/frontend-code-review/references/testing.md`](.agents/skills/frontend-code-review/references/testing.md) |
 | 18 | ✓ | [`.agents/skills/frontend-code-review/SKILL.md`](.agents/skills/frontend-code-review/SKILL.md) |
-| 19 | ✓ | [`.agents/skills/frontend-testing/assets/component-test.template.tsx`](.agents/skills/frontend-testing/assets/component-test.template.tsx) |
-| 20 | ✓ | [`.agents/skills/frontend-testing/assets/hook-test.template.ts`](.agents/skills/frontend-testing/assets/hook-test.template.ts) |
-| 21 | ✓ | [`.agents/skills/frontend-testing/assets/utility-test.template.ts`](.agents/skills/frontend-testing/assets/utility-test.template.ts) |
-| 22 | ✓ | [`.agents/skills/frontend-testing/references/async-testing.md`](.agents/skills/frontend-testing/references/async-testing.md) |
-| 23 | ✓ | [`.agents/skills/frontend-testing/references/checklist.md`](.agents/skills/frontend-testing/references/checklist.md) |
-| 24 | ✓ | [`.agents/skills/frontend-testing/references/common-patterns.md`](.agents/skills/frontend-testing/references/common-patterns.md) |
-| 25 | ✓ | [`.agents/skills/frontend-testing/references/domain-components.md`](.agents/skills/frontend-testing/references/domain-components.md) |
-| 26 | ✓ | [`.agents/skills/frontend-testing/references/mocking.md`](.agents/skills/frontend-testing/references/mocking.md) |
-| 27 | ✓ | [`.agents/skills/frontend-testing/references/workflow.md`](.agents/skills/frontend-testing/references/workflow.md) |
-| 28 | ✓ | [`.agents/skills/frontend-testing/SKILL.md`](.agents/skills/frontend-testing/SKILL.md) |
-| 29 | ✓ | [`.agents/skills/how-to-write-component/SKILL.md`](.agents/skills/how-to-write-component/SKILL.md) |
-| 30 | ✓ | [`.agents/skills/karpathy-guidelines/SKILL.md`](.agents/skills/karpathy-guidelines/SKILL.md) |
-| 31 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 32 | ✓ | [`api/AGENTS.md`](api/AGENTS.md) |
-| 33 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 34 | ✓ | [`cli/AGENTS.md`](cli/AGENTS.md) |
-| 35 | ✓ | [`cli/src/commands/AGENTS.md`](cli/src/commands/AGENTS.md) |
-| 36 | ✓ | [`dify-agent/AGENTS.md`](dify-agent/AGENTS.md) |
-| 37 | ✓ | [`e2e/AGENTS.md`](e2e/AGENTS.md) |
-| 38 | ✓ | [`e2e/features/agent-v2/AGENTS.md`](e2e/features/agent-v2/AGENTS.md) |
-| 39 | ✓ | [`e2e/fixtures/test-materials/e2e-summary-skill/SKILL.md`](e2e/fixtures/test-materials/e2e-summary-skill/SKILL.md) |
-| 40 | ✓ | [`packages/dify-ui/AGENTS.md`](packages/dify-ui/AGENTS.md) |
-| 41 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 42 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
-| 43 | ✓ | [`web/features/agent-v2/AGENTS.md`](web/features/agent-v2/AGENTS.md) |
+| 19 | ✓ | [`.agents/skills/frontend-testing/SKILL.md`](.agents/skills/frontend-testing/SKILL.md) |
+| 20 | ✓ | [`.agents/skills/how-to-write-component/SKILL.md`](.agents/skills/how-to-write-component/SKILL.md) |
+| 21 | ✓ | [`.agents/skills/karpathy-guidelines/SKILL.md`](.agents/skills/karpathy-guidelines/SKILL.md) |
+| 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 23 | ✓ | [`api/AGENTS.md`](api/AGENTS.md) |
+| 24 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 25 | ✓ | [`cli/AGENTS.md`](cli/AGENTS.md) |
+| 26 | ✓ | [`cli/src/commands/AGENTS.md`](cli/src/commands/AGENTS.md) |
+| 27 | ✓ | [`dify-agent/AGENTS.md`](dify-agent/AGENTS.md) |
+| 28 | ✓ | [`e2e/AGENTS.md`](e2e/AGENTS.md) |
+| 29 | ✓ | [`e2e/features/agent-v2/AGENTS.md`](e2e/features/agent-v2/AGENTS.md) |
+| 30 | ✓ | [`e2e/fixtures/test-materials/e2e-summary-skill/SKILL.md`](e2e/fixtures/test-materials/e2e-summary-skill/SKILL.md) |
+| 31 | ✓ | [`packages/dify-ui/AGENTS.md`](packages/dify-ui/AGENTS.md) |
+| 32 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 33 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
+| 34 | ✓ | [`web/features/agent-v2/AGENTS.md`](web/features/agent-v2/AGENTS.md) |
 
 ---
 

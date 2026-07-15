@@ -9,7 +9,8 @@ public project page and must not be edited unless the user explicitly requests t
 - `pentestgpt_agent/` — maintained autonomous Supervisor/Executor framework; nested uv project.
 - `pentestgpt_legacy/` — maintained human-driven USEN-2024-style client.
 - `../UnifedAgentWrapper/` — canonical `unified-agent` package used by the framework.
-- `../xbow-benchmark/` — benchmark harness and results; owned by a separate repository.
+- `../xbow-benchmark/` — reference-only benchmark harness and historical results; it is not a
+  supported `pentestgpt-agent` CLI, CI, or runtime integration.
 - `unified_agent/` — obsolete compatibility copy retained by root packaging/Docker only. Do not add
   features here or confuse it with the framework dependency.
 
@@ -54,9 +55,9 @@ make docker-login
 make docker-auth-status
 ```
 
-The root Docker image does not currently contain `pentestgpt_agent`; treat `make docker-run` and the
-external framework benchmark path as pending runtime wiring. Benchmark commands belong in
-`../xbow-benchmark`.
+The root Docker image does not currently contain `pentestgpt_agent`; treat `make docker-run` as
+pending runtime wiring. The sibling XBOW checkout is retained only as a reference and is not a
+product verification path.
 
 ## Documentation map
 

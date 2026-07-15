@@ -179,6 +179,17 @@ This skill ships with support files — use them when they are available:
 - **`references/risk-timeline.md`** — The Renewal Clock: What Happens at T-minus-When. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/renewal-plan.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Health honesty | Target ARR asserted with no health assessment, or a Red/Amber account given a flat-renewal plan on hope | Health snapshot present with evidence, but the renewal thesis and target ARR don't fully follow from it (e.g. shelfware acknowledged, target still flat) | Every dimension score cites evidence, the renewal thesis follows from the health picture, and the target ARR reflects reality — including recommending contraction or right-sizing when that is the honest play |
+| Stakeholder & risk coverage | Champion-only view; economic buyer unmapped; risks are generic labels without mitigations | Economic buyer mapped but relationship gaps unaddressed; H/H risks listed but some mitigations are vague or unowned | Economic buyer, detractors, and champion risk all assessed with a concrete multi-thread plan; every H/H risk has a dated, owned, pre-emptive mitigation that reappears in the timeline |
+| Commercial rigor | No scenario planning; discounting is the first and only lever; no floor or approval gate | Scenarios present but probabilities don't sum to 100% or ARR figures don't reconcile to contract components; floor exists but no ask-in-return framework | Scenario probabilities sum to 100%, every ARR figure decomposes into real contract line items, discount floor and escalation gate are explicit, and each concession names what we get in return |
+| Timeline & objection specificity | No timeline, or one starting under 90 days without acknowledgment; objection responses are boilerplate | Timeline covers 90+ days with owners, but objections could apply to any account; genuine dissatisfaction and negotiating tactics handled identically | Timeline starts 90+ days out (or explicitly flags and compresses when late) with owners per step, and every objection response uses this account's actual numbers, distinguishing real dissatisfaction to resolve from tactics to negotiate |
+
 ## Quality Checks
 
 - [ ] Stakeholder map includes the economic buyer — not just the champion

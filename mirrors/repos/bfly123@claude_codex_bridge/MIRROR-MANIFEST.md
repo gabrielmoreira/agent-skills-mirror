@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bfly123/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `bfly123/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bfly123/claude_codex_bridge` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,31 +65,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_frontdesk/skills/frontdesk-intake/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_frontdesk/skills/frontdesk-intake/SKILL.md) |
 | 5 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_orchestrator/adapters/ccb/skills/dynamic-agent-lifecycle/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_orchestrator/adapters/ccb/skills/dynamic-agent-lifecycle/SKILL.md) |
 | 6 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_orchestrator/adapters/ccb/skills/orchestrator-capacity/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_orchestrator/adapters/ccb/skills/orchestrator-capacity/SKILL.md) |
-| 7 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_plan_reviewer/skills/plan-readiness-review/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_plan_reviewer/skills/plan-readiness-review/SKILL.md) |
-| 8 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_planner/skills/planner-task-packet/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_planner/skills/planner-task-packet/SKILL.md) |
-| 9 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_round_checker/skills/round-verification/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_round_checker/skills/round-verification/SKILL.md) |
-| 10 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_worker/skills/bounded-work-item/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_worker/skills/bounded-work-item/SKILL.md) |
-| 11 | ✓ | [`docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-comm-reply-recover/SKILL.md`](docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-comm-reply-recover/SKILL.md) |
-| 12 | ✓ | [`docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-config/SKILL.md`](docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-config/SKILL.md) |
-| 13 | ✓ | [`docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-self-chain/SKILL.md`](docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-self-chain/SKILL.md) |
-| 14 | ✓ | [`docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-self-diagnose/SKILL.md`](docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-self-diagnose/SKILL.md) |
-| 15 | ✓ | [`docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-self-recover/SKILL.md`](docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-self-recover/SKILL.md) |
-| 16 | ✓ | [`inherit_skills/claude_skills/ask/SKILL.md`](inherit_skills/claude_skills/ask/SKILL.md) |
-| 17 | ✓ | [`inherit_skills/claude_skills/ccb-clear/SKILL.md`](inherit_skills/claude_skills/ccb-clear/SKILL.md) |
-| 18 | ✓ | [`inherit_skills/codex_skills/ask/SKILL.md`](inherit_skills/codex_skills/ask/SKILL.md) |
-| 19 | ✓ | [`inherit_skills/codex_skills/ccb-clear/SKILL.md`](inherit_skills/codex_skills/ccb-clear/SKILL.md) |
-| 20 | ✓ | [`inherit_skills/droid_skills/ask/SKILL.md`](inherit_skills/droid_skills/ask/SKILL.md) |
-| 21 | ✓ | [`inherit_skills/gemini_skills/ask/SKILL.md`](inherit_skills/gemini_skills/ask/SKILL.md) |
-| 22 | ✓ | [`inherit_skills/grok_skills/ask/SKILL.md`](inherit_skills/grok_skills/ask/SKILL.md) |
-| 23 | ✓ | [`inherit_skills/grok_skills/ccb-clear/SKILL.md`](inherit_skills/grok_skills/ccb-clear/SKILL.md) |
-| 24 | ✓ | [`inherit_skills/kimi_skills/ask/SKILL.md`](inherit_skills/kimi_skills/ask/SKILL.md) |
-| 25 | ✓ | [`mcp/ccb-delegation/server_runtime_io.py`](mcp/ccb-delegation/server_runtime_io.py) |
-| 26 | ✓ | [`mcp/ccb-delegation/server_runtime_protocol.py`](mcp/ccb-delegation/server_runtime_protocol.py) |
-| 27 | ✓ | [`mcp/ccb-delegation/server_runtime_schema.py`](mcp/ccb-delegation/server_runtime_schema.py) |
-| 28 | ✓ | [`mcp/ccb-delegation/server_runtime_tools.py`](mcp/ccb-delegation/server_runtime_tools.py) |
-| 29 | ✓ | [`mcp/ccb-delegation/server.py`](mcp/ccb-delegation/server.py) |
-| 30 | ✓ | [`useful_tools/claude_skills/plan-tree/SKILL.md`](useful_tools/claude_skills/plan-tree/SKILL.md) |
-| 31 | ✓ | [`useful_tools/codex_skills/plan-tree/SKILL.md`](useful_tools/codex_skills/plan-tree/SKILL.md) |
+| 7 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_orchestrator/skills/orchestration-bundle-candidate/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_orchestrator/skills/orchestration-bundle-candidate/SKILL.md) |
+| 8 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_plan_reviewer/skills/plan-readiness-review/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_plan_reviewer/skills/plan-readiness-review/SKILL.md) |
+| 9 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_planner/skills/planner-closure-backfill/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_planner/skills/planner-closure-backfill/SKILL.md) |
+| 10 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_planner/skills/planner-task-packet/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_planner/skills/planner-task-packet/SKILL.md) |
+| 11 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_round_checker/skills/round-verification/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_round_checker/skills/round-verification/SKILL.md) |
+| 12 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_round_reviewer/skills/round-verification/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_round_reviewer/skills/round-verification/SKILL.md) |
+| 13 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_task_detailer/skills/task-detail-packet/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_task_detailer/skills/task-detail-packet/SKILL.md) |
+| 14 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_worker/skills/bounded-work-item/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.ccb_worker/skills/bounded-work-item/SKILL.md) |
+| 15 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.code_reviewer/skills/node-check/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.code_reviewer/skills/node-check/SKILL.md) |
+| 16 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.coder/skills/assigned-review-chain/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.coder/skills/assigned-review-chain/SKILL.md) |
+| 17 | ✓ | [`docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.coder/skills/bounded-work-item/SKILL.md`](docs/plantree/plans/agentic-loop-workflow/drafts/agentroles.coder/skills/bounded-work-item/SKILL.md) |
+| 18 | ✓ | [`docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-comm-reply-recover/SKILL.md`](docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-comm-reply-recover/SKILL.md) |
+| 19 | ✓ | [`docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-config/SKILL.md`](docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-config/SKILL.md) |
+| 20 | ✓ | [`docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-self-chain/SKILL.md`](docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-self-chain/SKILL.md) |
+| 21 | ✓ | [`docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-self-diagnose/SKILL.md`](docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-self-diagnose/SKILL.md) |
+| 22 | ✓ | [`docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-self-recover/SKILL.md`](docs/plantree/plans/ccb-self-role/drafts/agentroles.ccb_self/skills/codex/ccb-self-recover/SKILL.md) |
+| 23 | ✓ | [`inherit_skills/claude_skills/ask/SKILL.md`](inherit_skills/claude_skills/ask/SKILL.md) |
+| 24 | ✓ | [`inherit_skills/claude_skills/ccb-clear/SKILL.md`](inherit_skills/claude_skills/ccb-clear/SKILL.md) |
+| 25 | ✓ | [`inherit_skills/codex_skills/ask/SKILL.md`](inherit_skills/codex_skills/ask/SKILL.md) |
+| 26 | ✓ | [`inherit_skills/codex_skills/ccb-clear/SKILL.md`](inherit_skills/codex_skills/ccb-clear/SKILL.md) |
+| 27 | ✓ | [`inherit_skills/droid_skills/ask/SKILL.md`](inherit_skills/droid_skills/ask/SKILL.md) |
+| 28 | ✓ | [`inherit_skills/gemini_skills/ask/SKILL.md`](inherit_skills/gemini_skills/ask/SKILL.md) |
+| 29 | ✓ | [`inherit_skills/grok_skills/ask/SKILL.md`](inherit_skills/grok_skills/ask/SKILL.md) |
+| 30 | ✓ | [`inherit_skills/grok_skills/ccb-clear/SKILL.md`](inherit_skills/grok_skills/ccb-clear/SKILL.md) |
+| 31 | ✓ | [`inherit_skills/kimi_skills/ask/SKILL.md`](inherit_skills/kimi_skills/ask/SKILL.md) |
+| 32 | ✓ | [`mcp/ccb-delegation/server_runtime_io.py`](mcp/ccb-delegation/server_runtime_io.py) |
+| 33 | ✓ | [`mcp/ccb-delegation/server_runtime_protocol.py`](mcp/ccb-delegation/server_runtime_protocol.py) |
+| 34 | ✓ | [`mcp/ccb-delegation/server_runtime_schema.py`](mcp/ccb-delegation/server_runtime_schema.py) |
+| 35 | ✓ | [`mcp/ccb-delegation/server_runtime_tools.py`](mcp/ccb-delegation/server_runtime_tools.py) |
+| 36 | ✓ | [`mcp/ccb-delegation/server.py`](mcp/ccb-delegation/server.py) |
+| 37 | ✓ | [`mcp/ccb-role-command/server.py`](mcp/ccb-role-command/server.py) |
+| 38 | ✓ | [`useful_tools/claude_skills/plan-tree/SKILL.md`](useful_tools/claude_skills/plan-tree/SKILL.md) |
+| 39 | ✓ | [`useful_tools/codex_skills/plan-tree/SKILL.md`](useful_tools/codex_skills/plan-tree/SKILL.md) |
 
 ---
 

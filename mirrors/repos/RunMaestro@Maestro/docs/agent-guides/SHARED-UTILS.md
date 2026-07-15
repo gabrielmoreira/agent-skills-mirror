@@ -86,6 +86,15 @@ All utilities in Maestro organized by category. Each entry lists the file path, 
 | ---------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `stripAnsiCodes(text)` | `(string) => string` | Remove ANSI escape codes, OSC sequences, iTerm2/VSCode shell integration sequences. Handles SSH edge cases. |
 
+## Font Utilities (`src/shared/fontStack.ts` - Both)
+
+| Export                     | Signature                                 | Purpose                                                                                                                                                                                                                                                              |
+| -------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `withMonoFallback(family)` | `(string \| undefined \| null) => string` | Guarantee a CSS font-family degrades to monospace, not the browser's serif default. Apply where the `fontFamily` setting becomes a CSS value, not at the source (the picker `<select>` needs the raw name). No-ops when the value already carries a generic keyword. |
+| `MONO_FALLBACK_STACK`      | `string`                                  | The safe monospace chain appended by `withMonoFallback` (`ui-monospace` -> ... -> `monospace`). Matches the file-preview surfaces so the whole app degrades to the same faces.                                                                                       |
+
+The font picker stores a bare name (`Roboto Mono`) with no generic fallback, which resolves to serif on iOS / the web-desktop bundle. Do NOT re-derive a fallback chain inline; call `withMonoFallback(s.fontFamily)` at the render site.
+
 ## JSON Utilities (`src/shared/jsonUtils.ts` - Both)
 
 | Function           | Signature                         | Purpose                                                                   |
@@ -436,6 +445,19 @@ Per-model token pricing is the single source of truth in `src/shared/modelPricin
 | ------------------------------------------ | ----------------------------------------- | --------------------------------------- |
 | `captureException(error, captureContext?)` | `(Error \| unknown, { extra? }?) => void` | Report error to Sentry from renderer.   |
 | `captureMessage(message, captureContext?)` | `(string, { level?, extra? }?) => void`   | Report message to Sentry from renderer. |
+
+### Touch Primitives (`src/renderer/utils/touch.ts`)
+
+The desktop renderer also runs on phones (web-desktop build). These are the canonical touch helpers - do NOT re-derive `navigator.vibrate` calls or pointer-media queries. Hoisted out of the legacy mobile bundle (retired in Phase 06); the touch gesture hook `useLongPress` (see [UI-PATTERNS.md](UI-PATTERNS.md)) is built on `triggerHaptic`/`HAPTIC_PATTERNS`.
+
+| Export               | Signature                                         | Purpose                                                                                                                                   |
+| -------------------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `isCoarsePointer`    | `() => boolean`                                   | True when the primary pointer is coarse (finger/stylus). Gate touch-only affordances on it. Falls back to `false` if `matchMedia` throws. |
+| `triggerHaptic`      | `(pattern?: number \| readonly number[]) => void` | Fire `navigator.vibrate` when supported; no-op otherwise. Defaults to a 10ms tap.                                                         |
+| `supportsHaptics`    | `() => boolean`                                   | Whether `navigator.vibrate` exists.                                                                                                       |
+| `HAPTIC_PATTERNS`    | const record                                      | Named vibrate patterns: `tap`, `send`, `interrupt`, `success`, `error`.                                                                   |
+| `GESTURE_THRESHOLDS` | const record                                      | `swipeDistance`, `swipeTime`, `pullToRefresh`, `longPress` thresholds.                                                                    |
+| `MIN_TOUCH_TARGET`   | `44`                                              | Minimum touch target size (px) per Apple HIG.                                                                                             |
 
 ---
 

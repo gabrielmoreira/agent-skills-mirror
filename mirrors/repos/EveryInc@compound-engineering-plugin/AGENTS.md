@@ -6,14 +6,15 @@ It also contains:
 - the Bun/TypeScript CLI that converts Claude Code plugins into other agent platform formats
 - shared release and metadata infrastructure for the CLI, marketplace, and plugin
 
-`AGENTS.md` is the canonical repo instruction file. Root `CLAUDE.md` exists only as a compatibility shim for tools and conversions that still look for it.
+`AGENTS.md` is the canonical repo instruction file. Root `CLAUDE.md` is a symlink to `AGENTS.md` so Claude Code and other tools that look for `CLAUDE.md` still find it at the expected path. Keep that symlink (do not replace it with a regular file): a real root `CLAUDE.md` makes `claude plugin validate --strict` fail because this checkout is also the plugin root.
 
 ## Quick Start
 
 ```bash
 bun install
-bun test                  # full test suite
-bun run release:validate  # check plugin/marketplace consistency
+bun test                  # full test suite (also runs in CI)
+bun run release:validate  # plugin/marketplace consistency (also runs in CI)
+bun run plugin:validate   # Claude marketplace + plugin schema (also runs in CI; needs `claude` on PATH)
 ```
 
 ## Working Agreement
@@ -21,7 +22,7 @@ bun run release:validate  # check plugin/marketplace consistency
 - **Branching:** Create a feature branch for any non-trivial change. If already on the correct branch for the task, keep using it; do not create additional branches or worktrees unless explicitly requested.
 - **Merge policy:** All changes to `main` go through pull requests. Direct pushes and direct merges are not allowed; branch protection on `main` enforces this by requiring the `test` status check to pass. The direct path bypasses `release:validate`, the test suite, and PR title validation — past direct merges have caused version drift requiring multi-PR recovery (see `docs/solutions/workflow/release-please-version-drift-recovery.md`).
 - **Safety:** Do not delete or overwrite user data. Avoid destructive commands.
-- **Testing:** Run `bun test` after changes that affect parsing, conversion, or output.
+- **Testing:** Run `bun test` after changes that affect parsing, conversion, output, skill conventions, or other mechanical guards. Local `bun test` is the same suite CI runs — there is no separate local-only unit-test lane.
 - **Release versioning:** Releases are prepared by release automation, not normal feature PRs. The repo has one root plugin/package release component (`compound-engineering`) plus marketplace components (`marketplace`, `cursor-marketplace`). GitHub release PRs and GitHub Releases are the canonical release-notes surface for new releases; root `CHANGELOG.md` is only a pointer to that history. Use conventional titles such as `feat:` and `fix:` so release automation can classify change intent, but do not hand-bump release-owned versions or hand-author release notes in routine PRs.
 - **Output Paths:** Keep OpenCode output at `opencode.json` and `.opencode/{agents,skills,plugins}`. For OpenCode, commands go to `~/.config/opencode/commands/<name>.md`; `opencode.json` is deep-merged (never overwritten wholesale).
 - **Scratch Space:** Default to OS temp. Use `.context/` only when explicitly justified by the rules below.
@@ -88,7 +89,7 @@ cat .claude-plugin/plugin.json | jq .
 
 ## Runtime vs Authoring Context
 
-`AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` are authoring context for this source repository. Skills are installed into end-user environments, where they run against the user's local instruction files, not this repo's. Behavioral rules that must affect a skill at runtime belong in that skill's `SKILL.md` or files under its own `references/` directory.
+`AGENTS.md`, `CLAUDE.md` (symlink to `AGENTS.md`), and `GEMINI.md` are authoring context for this source repository. Skills are installed into end-user environments, where they run against the user's local instruction files, not this repo's. Behavioral rules that must affect a skill at runtime belong in that skill's `SKILL.md` or files under its own `references/` directory.
 
 ## Cross-Model Skill Authoring
 
@@ -153,6 +154,38 @@ Behavioral changes to a plugin skill or skill-local persona (anything under `ski
 - **A version-matched cache is not automatically stale — confirm by content, not by version.** When this working tree is the local marketplace source, a session (re)start re-copies it into `~/.claude/plugins/cache/.../compound-engineering/<version>/` (a plain copy, no `.git`; `<version>` is the working tree's `.claude-plugin/plugin.json` version), so the loaded plugin can be identical to — and as current as — your edits. Do not assume the running copy is stale just because it lives under the cache path; equally, do not assume a matching `<version>` means it includes your latest change. Version match is necessary but not sufficient: edits within a release do not bump the version, so a matching segment proves only that the cache was built from this release, not that it captured your most recent edit. To know which copy is actually loaded, diff the specific cache file against the working-tree file — identical means the running plugin is your current edit and you can trust it; differing means the session predates the edit, so restart (or use skill-creator). Never infer "stale" or "current" from the version segment alone.
 
 - **Mechanical changes do not have this restriction.** Skill scripts (e.g., `extract-metadata.py`), parser logic, conversion code, and anything `bun test` exercises always run the current source. The caching issue only affects LLM-driven skill prose behavior dispatched through the plugin loader.
+
+## CI and Quality Gates
+
+PR CI (`.github/workflows/ci.yml`) is the merge gate. It runs, in order: PR-title lint (PRs only), `bun run release:validate`, `bun run plugin:validate`, and `bun test`. Do not invent a parallel local-only mechanical suite — if a check is deterministic and should block merges, put it in one of those steps (usually `bun test`).
+
+### What belongs where
+
+| Kind of check | Where it lives | Notes |
+|---|---|---|
+| Deterministic invariants (frontmatter, parity, path safety, script behavior, converter/writer output, greppable skill contracts) | `bun test` / `release:validate` / `plugin:validate` | Must pass in CI |
+| Skill *prose behavior* (routing judgment, restraint, cross-model peer outcomes) | `skill-creator` eval, local / PR evidence | Not a CI job; non-deterministic and needs a model |
+
+That split is intentional. See `docs/solutions/skill-design/portable-agent-skill-authoring.md` ("Evaluate proportionally"). Mechanical checks belong in CI; behavioral agent evals are best-effort evidence, not an exhaustive CI matrix.
+
+### Right-size new mechanical guards
+
+When a review bot or human finds a greppable invariant that `bun test` missed:
+
+1. Prefer **tightening an existing guard** over adding a new suite (e.g. widen a regex that already documents the rule).
+2. Pin the **smallest falsifiable unit** — a token, enum, path, heading, or one fixture that would have failed on the regressing diff. Do not snapshot whole skill bodies or pin incidental wording.
+3. If the failure needs an LLM to judge, keep it in skill-creator; do not fake it as a brittle string test.
+
+### Maintaining `plugin:validate`
+
+- `package.json` `plugin:validate` must validate **both** the marketplace catalog and the plugin manifest, with `--strict` on each. Paths: `.claude-plugin/marketplace.json` and `.claude-plugin/plugin.json`. Do **not** use `claude plugin validate .` — that resolves this repo as a marketplace only (because `.claude-plugin/marketplace.json` exists with `source: "./"`) and skips plugin-root checks.
+- CI pins `@anthropic-ai/claude-code` for reproducible schema rules. Bump the pin deliberately when adopting new upstream rules; do not float `@latest`.
+- Root `CLAUDE.md` must remain a **symlink** to `AGENTS.md` (path stays at the repo root where contributors expect it). Upstream warns on a regular-file plugin-root `CLAUDE.md` because it is not loaded as end-user project context; the symlink avoids that warning so `--strict` can stay on. Do not replace the symlink with a regular `@AGENTS.md` shim or relocate the file just for validators.
+- If `--strict` starts failing again on `CLAUDE.md` after an upstream bump, check whether the symlink was materialized into a regular file (Windows/`core.symlinks=false` checkouts) or whether the validator started following symlinks — fix the layout or pin, do not silently drop `--strict`.
+
+### When CI comments look "stale"
+
+If CI claims a deferred warning or a missing gate, reproduce with the **pinned** `claude` version against `.claude-plugin/plugin.json` before treating the comment as current. Marketplace-only validation can hide plugin warnings.
 
 ## Coding Conventions
 
@@ -228,7 +261,7 @@ If two skills need the same supporting file, duplicate it into each skill's dire
 
 ## Shared Repo-Grounding Profile Cache
 
-Repo-grounding skills (`ce-pov`, `ce-plan`, `ce-optimize`, `ce-ideate`, `ce-brainstorm`, `ce-code-review`, plus lighter consumers `ce-compound` — which still derives **and persists** on a miss — and `ce-debug`, which only opportunistically reads `conventions.testing` and never derives/persists) reuse one cached **question-agnostic project profile** (stack, deps, conventions, structure) instead of each re-deriving it. The profile is git-keyed and stored at `/tmp/compound-engineering/repo-profile/<root-sha>/<head-sha>.json`.
+Repo-grounding skills (`ce-pov`, `ce-plan`, `ce-optimize`, `ce-ideate`, `ce-brainstorm`, `ce-code-review`, plus lighter consumers `ce-compound` — which still derives **and persists** on a miss — and `ce-debug`, which only opportunistically reads `conventions.testing` and never derives/persists) reuse one cached **question-agnostic project profile** (stack, deps, conventions, structure) instead of each re-deriving it. The profile is git-keyed and stored at `/tmp/compound-engineering/repo-profile/<root-sha>/<inputs-digest>.json` (`inputs-digest` = sha256 of profile-input path+blob pairs at `HEAD`, so commits that do not touch those inputs share one entry).
 
 The mechanism is three **byte-duplicated** assets per consuming skill (the plugin has no cross-skill import — see "File References in Skills"):
 

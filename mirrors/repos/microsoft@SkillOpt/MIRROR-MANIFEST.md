@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/SkillOpt` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `microsoft/SkillOpt` — 26 default patterns, 5 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `microsoft/SkillOpt` — 26 default patterns, 0 followed patterns, 3 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 3 |
+| Followed pats | 5 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,11 @@ Mirror of `microsoft/SkillOpt` — 26 default patterns, 0 followed patterns, 3 f
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `README.md`
+- `CHANGELOG.md`
+- `docs/sleep/README.md`
+- `docs/guide/new-backend.md`
+- `docs/guide/new-benchmark.md`
 
 ## File Index
 
@@ -59,9 +63,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`plugins/claude-code/skills/skillopt-sleep/SKILL.md`](plugins/claude-code/skills/skillopt-sleep/SKILL.md) |
-| 2 | ✓ | [`plugins/codex/skills/skillopt-sleep/SKILL.md`](plugins/codex/skills/skillopt-sleep/SKILL.md) |
-| 3 | ✓ | [`plugins/openclaw/SKILL.md`](plugins/openclaw/SKILL.md) |
+| 1 | ✓ | [`ckpt/README.md`](ckpt/README.md) |
+| 2 | ✓ | [`data/README.md`](data/README.md) |
+| 3 | ✓ | [`docs/sleep/openai-compatible-endpoints.md`](docs/sleep/openai-compatible-endpoints.md) |
+| 4 | ✓ | [`docs/sleep/RESULTS.md`](docs/sleep/RESULTS.md) |
+| 5 | ✓ | [`plugins/claude-code/README.md`](plugins/claude-code/README.md) |
+| 6 | ✓ | [`plugins/claude-code/skills/skillopt-sleep/SKILL.md`](plugins/claude-code/skills/skillopt-sleep/SKILL.md) |
+| 7 | ✓ | [`plugins/codex/README.md`](plugins/codex/README.md) |
+| 8 | ✓ | [`plugins/codex/skills/skillopt-sleep/SKILL.md`](plugins/codex/skills/skillopt-sleep/SKILL.md) |
+| 9 | ✓ | [`plugins/copilot/README.md`](plugins/copilot/README.md) |
+| 10 | ✓ | [`plugins/copilot/skillopt/README.md`](plugins/copilot/skillopt/README.md) |
+| 11 | ✓ | [`plugins/devin/README.md`](plugins/devin/README.md) |
+| 12 | ✓ | [`plugins/openclaw/README.md`](plugins/openclaw/README.md) |
+| 13 | ✓ | [`plugins/openclaw/SKILL.md`](plugins/openclaw/SKILL.md) |
+| 14 | ✓ | [`plugins/README.md`](plugins/README.md) |
+| 15 | ✓ | [`skillopt/envs/_template/README.md`](skillopt/envs/_template/README.md) |
+| 16 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 17 | → | [`docs/guide/new-backend.md`](docs/guide/new-backend.md) |
+| 18 | → | [`docs/guide/new-benchmark.md`](docs/guide/new-benchmark.md) |
+| 19 | → | [`docs/sleep/README.md`](docs/sleep/README.md) |
+| 20 | → | [`README.md`](README.md) |
 
 ---
 

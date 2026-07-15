@@ -147,6 +147,17 @@ This skill ships with support files — use them when they are available:
 - **`references/spec-decisions.md`** — What a Spec Is For: Decisions, Alternatives, and the Blast Radius. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/spec-skeleton.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Problem framing | Problem statement is the solution restated ("we need a queue"), or missing; no non-goals | Problem stated but with solution language leaking in; non-goals present but generic ("out of scope: everything else") | Problem described in user/business terms with numbers, independent of any solution; goals measurable; ≥2 non-goals that shut down real scope assumptions |
+| Decision documentation | One approach, no alternatives — a design description, not a decision record | Alternatives table exists but strawmanned (cons-only options nobody argued for); rejection reasons are taste, not evidence | ≥2 genuine alternatives with honest pros, evidence-based rejection reasons, recorded dissent where it exists, and revisit triggers for contested calls |
+| Security & privacy depth | Section skipped or "N/A" on a feature that touches user data | Boilerplate answers (encrypt at rest/in transit) with no analysis of this feature's specific data exposure | Data touched is enumerated, the design's single largest privacy risk is named, authn/authz/compliance addressed concretely, and unresolved risks visibly gate approval |
+| Operational readiness | No testing plan, rollout plan, or rollback trigger; open questions absent or all "TBD" | Testing and rollout sketched but rollback is untested intent; some open questions lack owners or dates | Tests cover the tricky edge cases, rollout is staged with progress criteria, rollback trigger is concrete (and doesn't strand data), and every open question has a named owner and due date |
+
 ## Quality Checks
 
 - [ ] Problem statement contains no solution language

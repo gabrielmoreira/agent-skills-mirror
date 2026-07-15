@@ -60,6 +60,17 @@ This skill ships with support files — use them when they are available:
 - **`references/strategic-weighting.md`** — Blending RICE with Strategic Fit — Without Cooking the Books. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/matrix-worksheet.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Scoring integrity | Invented or uniform component values; 100% confidence everywhere | All components estimated, but confidence levels unexamined and scales inconsistent across rows | Every component sourced or explicitly flagged; no unvalidated 100%s; 50%-confidence rows marked and scale choices (e.g. reach units) stated |
+| Strategic-alignment rigour | Alignment rated on "feels strategic" with no reference to priorities | Ratings given but not tied to named OKRs; nothing scores negative | Every rating maps to a specific OKR by name; initiatives that contradict strategy actually receive −1 |
+| Conflict surfacing | Combined score presented as the definitive ranking | Sharp RICE-vs-alignment divergences are visible in the table but never discussed | Every sharp divergence is flagged with an explicit conversation recommendation (owner, forum, and a scoreable alternative where one exists) |
+| Quadrant decisiveness | Everything lands in "Now"; no Drops | Quadrants used, but Drop recommendations are vague ("deprioritise") and capacity is ignored | Honest distribution including specific Drop actions with re-entry conditions, and sequencing checked against actual capacity |
+
 ## Quality Checks
 
 - [ ] All RICE components have an estimate (even if low confidence — flag those)

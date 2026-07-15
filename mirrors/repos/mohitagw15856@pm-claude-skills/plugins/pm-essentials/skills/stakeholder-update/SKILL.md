@@ -239,6 +239,17 @@ Only include issues that matter at executive level.
 - Market opportunities
 - Financial implications
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **BLUF & status honesty** | Status buried or missing; update reads as a diary of activities | Status and takeaway up front, but the emoji flatters the metrics (green outside, red inside) | First three lines give status, one-sentence takeaway, and the ask; the 🟢/🟡/🔴 call matches the worst material metric and says why |
+| **Metric context** | Raw numbers with no targets, trends, or period comparison | Targets present, but metrics are activity counts disconnected from business outcomes | 3–5 metrics, each with target, trend, and status — and the ones that matter are tied to money, customers, or the goal at stake |
+| **Risk actionability** | Risks listed as worries with no owner, mitigation, or impact | Mitigations stated, but impact is unquantified and it's unclear whether the reader needs to do anything | Every risk has quantified impact, a mitigation with a date or success condition, and an explicit "help needed" (or "none") |
+| **Decision framing** | Open-ended questions thrown at executives, or no decisions surfaced at all | Options listed, but without costs/trade-offs or a recommendation | Each decision has 2–3 costed options, a clear recommendation with reasoning, and the date the decision is needed — with what forces that date |
+
 ## Quality Checks
 
 - [ ] Update leads with BLUF — status, key takeaway, and action needed before any detail

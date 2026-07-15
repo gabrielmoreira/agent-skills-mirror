@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Agents365-ai/drawio-skill` — 26 default patterns, 0 followed patterns, 51 file(s) materialized.
+Mirror of `Agents365-ai/drawio-skill` — 26 default patterns, 0 followed patterns, 60 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Agents365-ai/drawio-skill` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 51 |
+| Files         | 60 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,53 +63,62 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`skills/drawio-skill/data/SHAPE-INDEX-NOTICE.md`](skills/drawio-skill/data/SHAPE-INDEX-NOTICE.md) |
 | 3 | ✓ | [`skills/drawio-skill/data/shape-index.json.gz`](skills/drawio-skill/data/shape-index.json.gz) |
 | 4 | ✓ | [`skills/drawio-skill/references/autolayout.md`](skills/drawio-skill/references/autolayout.md) |
-| 5 | ✓ | [`skills/drawio-skill/references/diagram-types.md`](skills/drawio-skill/references/diagram-types.md) |
-| 6 | ✓ | [`skills/drawio-skill/references/live-infra.md`](skills/drawio-skill/references/live-infra.md) |
-| 7 | ✓ | [`skills/drawio-skill/references/mermaid-authoring.md`](skills/drawio-skill/references/mermaid-authoring.md) |
-| 8 | ✓ | [`skills/drawio-skill/references/shapes.md`](skills/drawio-skill/references/shapes.md) |
-| 9 | ✓ | [`skills/drawio-skill/references/style-extraction.md`](skills/drawio-skill/references/style-extraction.md) |
-| 10 | ✓ | [`skills/drawio-skill/references/style-presets.md`](skills/drawio-skill/references/style-presets.md) |
-| 11 | ✓ | [`skills/drawio-skill/references/toolbox.md`](skills/drawio-skill/references/toolbox.md) |
-| 12 | ✓ | [`skills/drawio-skill/references/troubleshooting.md`](skills/drawio-skill/references/troubleshooting.md) |
-| 13 | ✓ | [`skills/drawio-skill/references/xml-authoring.md`](skills/drawio-skill/references/xml-authoring.md) |
-| 14 | ✓ | [`skills/drawio-skill/scripts/aiicons.py`](skills/drawio-skill/scripts/aiicons.py) |
-| 15 | ✓ | [`skills/drawio-skill/scripts/autolayout.py`](skills/drawio-skill/scripts/autolayout.py) |
-| 16 | ✓ | [`skills/drawio-skill/scripts/c4.py`](skills/drawio-skill/scripts/c4.py) |
-| 17 | ✓ | [`skills/drawio-skill/scripts/ciimports.py`](skills/drawio-skill/scripts/ciimports.py) |
-| 18 | ✓ | [`skills/drawio-skill/scripts/composeimports.py`](skills/drawio-skill/scripts/composeimports.py) |
-| 19 | ✓ | [`skills/drawio-skill/scripts/dockerimports.py`](skills/drawio-skill/scripts/dockerimports.py) |
-| 20 | ✓ | [`skills/drawio-skill/scripts/drawio2mermaid.py`](skills/drawio-skill/scripts/drawio2mermaid.py) |
-| 21 | ✓ | [`skills/drawio-skill/scripts/drawio2pptx.py`](skills/drawio-skill/scripts/drawio2pptx.py) |
-| 22 | ✓ | [`skills/drawio-skill/scripts/drawiodiff.py`](skills/drawio-skill/scripts/drawiodiff.py) |
-| 23 | ✓ | [`skills/drawio-skill/scripts/drawiohtml.py`](skills/drawio-skill/scripts/drawiohtml.py) |
-| 24 | ✓ | [`skills/drawio-skill/scripts/encode_drawio_url.py`](skills/drawio-skill/scripts/encode_drawio_url.py) |
-| 25 | ✓ | [`skills/drawio-skill/scripts/explain.py`](skills/drawio-skill/scripts/explain.py) |
-| 26 | ✓ | [`skills/drawio-skill/scripts/goimports.py`](skills/drawio-skill/scripts/goimports.py) |
-| 27 | ✓ | [`skills/drawio-skill/scripts/heatmap.py`](skills/drawio-skill/scripts/heatmap.py) |
-| 28 | ✓ | [`skills/drawio-skill/scripts/jsimports.py`](skills/drawio-skill/scripts/jsimports.py) |
-| 29 | ✓ | [`skills/drawio-skill/scripts/k8simports.py`](skills/drawio-skill/scripts/k8simports.py) |
-| 30 | ✓ | [`skills/drawio-skill/scripts/openapiimports.py`](skills/drawio-skill/scripts/openapiimports.py) |
-| 31 | ✓ | [`skills/drawio-skill/scripts/pyclasses.py`](skills/drawio-skill/scripts/pyclasses.py) |
-| 32 | ✓ | [`skills/drawio-skill/scripts/pyimports.py`](skills/drawio-skill/scripts/pyimports.py) |
-| 33 | ✓ | [`skills/drawio-skill/scripts/relabel.py`](skills/drawio-skill/scripts/relabel.py) |
-| 34 | ✓ | [`skills/drawio-skill/scripts/repair_png.py`](skills/drawio-skill/scripts/repair_png.py) |
-| 35 | ✓ | [`skills/drawio-skill/scripts/restyle.py`](skills/drawio-skill/scripts/restyle.py) |
-| 36 | ✓ | [`skills/drawio-skill/scripts/rustimports.py`](skills/drawio-skill/scripts/rustimports.py) |
-| 37 | ✓ | [`skills/drawio-skill/scripts/seqlayout.py`](skills/drawio-skill/scripts/seqlayout.py) |
-| 38 | ✓ | [`skills/drawio-skill/scripts/shapesearch.py`](skills/drawio-skill/scripts/shapesearch.py) |
-| 39 | ✓ | [`skills/drawio-skill/scripts/sqlerd.py`](skills/drawio-skill/scripts/sqlerd.py) |
-| 40 | ✓ | [`skills/drawio-skill/scripts/svgflow.py`](skills/drawio-skill/scripts/svgflow.py) |
-| 41 | ✓ | [`skills/drawio-skill/scripts/tfimports.py`](skills/drawio-skill/scripts/tfimports.py) |
-| 42 | ✓ | [`skills/drawio-skill/scripts/tfstate.py`](skills/drawio-skill/scripts/tfstate.py) |
-| 43 | ✓ | [`skills/drawio-skill/scripts/timelapse.py`](skills/drawio-skill/scripts/timelapse.py) |
-| 44 | ✓ | [`skills/drawio-skill/scripts/validate.py`](skills/drawio-skill/scripts/validate.py) |
-| 45 | ✓ | [`skills/drawio-skill/SKILL.md`](skills/drawio-skill/SKILL.md) |
-| 46 | ✓ | [`skills/drawio-skill/styles/built-in/colorblind-safe.json`](skills/drawio-skill/styles/built-in/colorblind-safe.json) |
-| 47 | ✓ | [`skills/drawio-skill/styles/built-in/corporate.json`](skills/drawio-skill/styles/built-in/corporate.json) |
-| 48 | ✓ | [`skills/drawio-skill/styles/built-in/dark.json`](skills/drawio-skill/styles/built-in/dark.json) |
-| 49 | ✓ | [`skills/drawio-skill/styles/built-in/default.json`](skills/drawio-skill/styles/built-in/default.json) |
-| 50 | ✓ | [`skills/drawio-skill/styles/built-in/handdrawn.json`](skills/drawio-skill/styles/built-in/handdrawn.json) |
-| 51 | ✓ | [`skills/drawio-skill/styles/schema.json`](skills/drawio-skill/styles/schema.json) |
+| 5 | ✓ | [`skills/drawio-skill/references/derasterize.md`](skills/drawio-skill/references/derasterize.md) |
+| 6 | ✓ | [`skills/drawio-skill/references/diagram-types.md`](skills/drawio-skill/references/diagram-types.md) |
+| 7 | ✓ | [`skills/drawio-skill/references/live-infra.md`](skills/drawio-skill/references/live-infra.md) |
+| 8 | ✓ | [`skills/drawio-skill/references/mermaid-authoring.md`](skills/drawio-skill/references/mermaid-authoring.md) |
+| 9 | ✓ | [`skills/drawio-skill/references/pr-bot.md`](skills/drawio-skill/references/pr-bot.md) |
+| 10 | ✓ | [`skills/drawio-skill/references/shapes.md`](skills/drawio-skill/references/shapes.md) |
+| 11 | ✓ | [`skills/drawio-skill/references/style-extraction.md`](skills/drawio-skill/references/style-extraction.md) |
+| 12 | ✓ | [`skills/drawio-skill/references/style-presets.md`](skills/drawio-skill/references/style-presets.md) |
+| 13 | ✓ | [`skills/drawio-skill/references/toolbox.md`](skills/drawio-skill/references/toolbox.md) |
+| 14 | ✓ | [`skills/drawio-skill/references/troubleshooting.md`](skills/drawio-skill/references/troubleshooting.md) |
+| 15 | ✓ | [`skills/drawio-skill/references/tubemap.md`](skills/drawio-skill/references/tubemap.md) |
+| 16 | ✓ | [`skills/drawio-skill/references/xml-authoring.md`](skills/drawio-skill/references/xml-authoring.md) |
+| 17 | ✓ | [`skills/drawio-skill/scripts/aiicons.py`](skills/drawio-skill/scripts/aiicons.py) |
+| 18 | ✓ | [`skills/drawio-skill/scripts/autolayout.py`](skills/drawio-skill/scripts/autolayout.py) |
+| 19 | ✓ | [`skills/drawio-skill/scripts/buildup.py`](skills/drawio-skill/scripts/buildup.py) |
+| 20 | ✓ | [`skills/drawio-skill/scripts/c4.py`](skills/drawio-skill/scripts/c4.py) |
+| 21 | ✓ | [`skills/drawio-skill/scripts/ciimports.py`](skills/drawio-skill/scripts/ciimports.py) |
+| 22 | ✓ | [`skills/drawio-skill/scripts/composeimports.py`](skills/drawio-skill/scripts/composeimports.py) |
+| 23 | ✓ | [`skills/drawio-skill/scripts/compress.py`](skills/drawio-skill/scripts/compress.py) |
+| 24 | ✓ | [`skills/drawio-skill/scripts/dockerimports.py`](skills/drawio-skill/scripts/dockerimports.py) |
+| 25 | ✓ | [`skills/drawio-skill/scripts/drawio2mermaid.py`](skills/drawio-skill/scripts/drawio2mermaid.py) |
+| 26 | ✓ | [`skills/drawio-skill/scripts/drawio2pptx.py`](skills/drawio-skill/scripts/drawio2pptx.py) |
+| 27 | ✓ | [`skills/drawio-skill/scripts/drawiodiff.py`](skills/drawio-skill/scripts/drawiodiff.py) |
+| 28 | ✓ | [`skills/drawio-skill/scripts/drawiohtml.py`](skills/drawio-skill/scripts/drawiohtml.py) |
+| 29 | ✓ | [`skills/drawio-skill/scripts/encode_drawio_url.py`](skills/drawio-skill/scripts/encode_drawio_url.py) |
+| 30 | ✓ | [`skills/drawio-skill/scripts/explain.py`](skills/drawio-skill/scripts/explain.py) |
+| 31 | ✓ | [`skills/drawio-skill/scripts/goimports.py`](skills/drawio-skill/scripts/goimports.py) |
+| 32 | ✓ | [`skills/drawio-skill/scripts/heatmap.py`](skills/drawio-skill/scripts/heatmap.py) |
+| 33 | ✓ | [`skills/drawio-skill/scripts/jsimports.py`](skills/drawio-skill/scripts/jsimports.py) |
+| 34 | ✓ | [`skills/drawio-skill/scripts/k8simports.py`](skills/drawio-skill/scripts/k8simports.py) |
+| 35 | ✓ | [`skills/drawio-skill/scripts/openapiimports.py`](skills/drawio-skill/scripts/openapiimports.py) |
+| 36 | ✓ | [`skills/drawio-skill/scripts/prdiff.py`](skills/drawio-skill/scripts/prdiff.py) |
+| 37 | ✓ | [`skills/drawio-skill/scripts/pyclasses.py`](skills/drawio-skill/scripts/pyclasses.py) |
+| 38 | ✓ | [`skills/drawio-skill/scripts/pyimports.py`](skills/drawio-skill/scripts/pyimports.py) |
+| 39 | ✓ | [`skills/drawio-skill/scripts/raster2drawio.py`](skills/drawio-skill/scripts/raster2drawio.py) |
+| 40 | ✓ | [`skills/drawio-skill/scripts/relabel.py`](skills/drawio-skill/scripts/relabel.py) |
+| 41 | ✓ | [`skills/drawio-skill/scripts/repair_png.py`](skills/drawio-skill/scripts/repair_png.py) |
+| 42 | ✓ | [`skills/drawio-skill/scripts/restyle.py`](skills/drawio-skill/scripts/restyle.py) |
+| 43 | ✓ | [`skills/drawio-skill/scripts/runbook.py`](skills/drawio-skill/scripts/runbook.py) |
+| 44 | ✓ | [`skills/drawio-skill/scripts/rustimports.py`](skills/drawio-skill/scripts/rustimports.py) |
+| 45 | ✓ | [`skills/drawio-skill/scripts/seqlayout.py`](skills/drawio-skill/scripts/seqlayout.py) |
+| 46 | ✓ | [`skills/drawio-skill/scripts/shapesearch.py`](skills/drawio-skill/scripts/shapesearch.py) |
+| 47 | ✓ | [`skills/drawio-skill/scripts/sqlerd.py`](skills/drawio-skill/scripts/sqlerd.py) |
+| 48 | ✓ | [`skills/drawio-skill/scripts/svgflow.py`](skills/drawio-skill/scripts/svgflow.py) |
+| 49 | ✓ | [`skills/drawio-skill/scripts/tfimports.py`](skills/drawio-skill/scripts/tfimports.py) |
+| 50 | ✓ | [`skills/drawio-skill/scripts/tfstate.py`](skills/drawio-skill/scripts/tfstate.py) |
+| 51 | ✓ | [`skills/drawio-skill/scripts/timelapse.py`](skills/drawio-skill/scripts/timelapse.py) |
+| 52 | ✓ | [`skills/drawio-skill/scripts/tubemap.py`](skills/drawio-skill/scripts/tubemap.py) |
+| 53 | ✓ | [`skills/drawio-skill/scripts/validate.py`](skills/drawio-skill/scripts/validate.py) |
+| 54 | ✓ | [`skills/drawio-skill/SKILL.md`](skills/drawio-skill/SKILL.md) |
+| 55 | ✓ | [`skills/drawio-skill/styles/built-in/colorblind-safe.json`](skills/drawio-skill/styles/built-in/colorblind-safe.json) |
+| 56 | ✓ | [`skills/drawio-skill/styles/built-in/corporate.json`](skills/drawio-skill/styles/built-in/corporate.json) |
+| 57 | ✓ | [`skills/drawio-skill/styles/built-in/dark.json`](skills/drawio-skill/styles/built-in/dark.json) |
+| 58 | ✓ | [`skills/drawio-skill/styles/built-in/default.json`](skills/drawio-skill/styles/built-in/default.json) |
+| 59 | ✓ | [`skills/drawio-skill/styles/built-in/handdrawn.json`](skills/drawio-skill/styles/built-in/handdrawn.json) |
+| 60 | ✓ | [`skills/drawio-skill/styles/schema.json`](skills/drawio-skill/styles/schema.json) |
 
 ---
 

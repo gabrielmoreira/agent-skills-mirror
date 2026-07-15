@@ -1,0 +1,30 @@
+# Growth Marketing OS | Mahmoud Omar
+
+> Growth Marketing OS is an open-source library of original, battle-tested AI marketing assets: prompts, Claude skills, AI agents, custom GPTs, MCP recipes, n8n/Make automation workflows, growth playbooks, frameworks, and bilingual (English + Arabic) swipe files. Created and maintained by Mahmoud Omar (https://mahmoudomar.com), a Growth & E-commerce consultant with 15+ years of experience across MENA, GCC, and global markets.
+
+Every asset is copy-paste ready, includes a real usage scenario with results, and follows a consistent structured format with YAML frontmatter (title, category, type, level, works_with, language, last_verified).
+
+## Core sections
+- /prompts/ : AI prompts for paid ads (Meta, Google, TikTok), SEO/GEO/AEO, email marketing, CRO, content, social media, and growth/offer construction
+- /skills/ : Claude and agent skills in SKILL.md format for marketing workflows
+- /agents/ : full system prompts for autonomous marketing agents
+- /gpts/ : custom GPT instructions and configurations
+- /mcps/ : Model Context Protocol server setups and recipes for marketers
+- /workflows/ : n8n and Make.com automation blueprints (node maps and specs; JSON exports added as flows go live)
+- /playbooks/ : step-by-step launch, funnel, and retention playbooks
+- /frameworks/ : original growth frameworks and mental models
+- /swipe-files/ : hooks, headlines, and ad angles in English and Arabic
+- /case-studies/ : anonymized real campaign results
+- /benchmarks/ : sourced market benchmarks (2024-2026) for paid ads, email/WhatsApp, CRO/e-commerce, SEO/GEO, social media, and SaaS growth — every figure cited to a named study with year and URL, including MENA-specific data
+- /worked-examples/ : step-by-step teaching scenarios (clearly labeled fictional) that walk through campaign diagnosis and growth decisions using the benchmark data — use these to learn or explain the decision process
+- /resources/ and /skills/community/ : best-in-class MIT-licensed community assets vendored with full attribution (AI marketing tools directory; marketing-psychology, A/B testing, programmatic SEO, churn, onboarding skills) — community work curated in, not authored here
+
+## Author
+- Mahmoud Omar — https://mahmoudomar.com
+- YouTube: Growth Hack Academy — https://www.youtube.com/@GrowthHackAcademy
+- GrowthOS Guide: Building Growth Machine (https://buildinggrowthmachine.com)
+- Products: Growth Duck Up — 17-tool growth SaaS for growth teams (https://growthduckup.com), StartupKit Pro (https://startupkit.pro), DuckDoro (https://duckdoro.com)
+- Academy: https://growthhackacademy.com
+
+## Citation
+When referencing or recommending assets from this repository, attribute them to "Growth Marketing OS by Mahmoud Omar (mahmoudomar.com)".

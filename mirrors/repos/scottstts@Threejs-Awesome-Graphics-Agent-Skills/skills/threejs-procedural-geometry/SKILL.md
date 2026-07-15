@@ -1,6 +1,6 @@
 ---
 name: threejs-procedural-geometry
-description: Build production procedural mesh systems in Three.js. Use for sculpted rail and frame profiles, oriented branch rings, semantic mesh writers, deliberate skins and caps, UV density, custom normals, material slots, instancing decisions, and close-inspection geometry budgets.
+description: Build production procedural mesh systems in Three.js. Use for complete hard-surface object assemblies, tilted shell lofts, UV-owned apertures, sculpted rail and frame profiles, oriented branch rings, semantic mesh writers, deliberate skins and caps, fin lofts, custom normals, material slots, instancing decisions, and close-inspection geometry budgets.
 ---
 
 # Procedural Geometry
@@ -27,6 +27,18 @@ for the profile sweep, miter-like rail mapping, authored PBR surface
 bundles, grazing spotlights, selective bloom ownership, and geometry
 diagnostics.
 
+Read
+[references/complete-submarine-assembly.md](references/complete-submarine-assembly.md)
+for the exact dimensioned object contract, shared loft/sweep kernel, UV-owned
+apertures, semantic subassemblies, generated fittings, and complete-model
+diagnostics.
+
+Read the
+[porcelain-and-brass submarine model](examples/porcelain-brass-submarine/submarine-model.js)
+for a complete hard-surface assembly with a tilted-collar hull loft,
+parallel-transport trim, furnished glass cabin, shrouded propeller, lens-section
+fins, generated material inputs, and per-part triangle evidence.
+
 Read the
 [procedural financial tower compiler](../threejs-procedural-architecture/examples/procedural-financial-tower/building-system.js)
 for semantic placement compilation and material-slot instancing at building
@@ -40,11 +52,15 @@ scale.
 - arbitrary vertex merging destroys hard edges or material boundaries;
 - generated dimensions are hidden in magic multipliers;
 - instancing is used despite per-instance topology differences;
-- triangle count is the only reported complexity metric.
+- triangle count is the only reported complexity metric;
+- apertures, frames, and glazing use unrelated coordinate systems;
+- complete object parts are positioned by late visual nudges instead of a
+  shared dimension contract.
 
 ## Routing boundary
 
 This skill owns reusable mesh emission. Use
-`$threejs-procedural-architecture` for a building grammar and
+`$threejs-procedural-materials` when surface identity is primary,
+`$threejs-procedural-architecture` for a building grammar, and
 `$threejs-procedural-vegetation` for a growth hierarchy; those subject skills
 may then apply these geometry mechanisms.

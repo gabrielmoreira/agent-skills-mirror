@@ -204,6 +204,17 @@ This skill ships with support files — use them when they are available:
 - **`references/evidence-based-mapping.md`** — Journey Maps Built on Evidence (Not Conference-Room Fiction). Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/journey-canvas.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Persona specificity | "All customers" or a demographic sketch that could be anyone; touchpoints generic to any product | One persona named but thin — goals and frustrations could apply to any buyer in the category | One vivid persona with role, goal, frustrations, and decision power; every touchpoint and pain point is recognisably this product and this person |
+| Evidence grounding | Map is conference-room fiction — no data sources cited, pain points invented | Some sources named but pain points not traced to them; assumed sections not distinguished from researched ones | Sources listed in the header, key pain points tied to specific data (ticket categories, survey %, interview quotes), assumed stages labelled, and a research-gaps table covering the claims the recommendations lean on |
+| Emotional truthfulness | No emotional layer — a process flow wearing a journey map's clothes | Emotions listed per stage but the curve is aspirationally smooth; lowest point unnamed or softened | Emotion at every stage, a curve with a real low, and the lowest point / biggest drop named with evidence — including customer pain that conflicts with an internal team's metric |
+| Opportunity actionability | Opportunities missing, unranked, or platitudes ("improve onboarding") | Opportunities listed but vague, or ranked without impact/effort reasoning; not weighted toward the worst friction | Every opportunity written as a backlog-ready item, ranked by impact and effort, with P1s targeting the highest-friction moment the curve identified |
+
 ## Quality Checks
 
 - [ ] Map covers one specific persona — not "all customers"

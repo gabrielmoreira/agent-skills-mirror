@@ -1883,6 +1883,12 @@ func (ss *ServerSession) handle(ctx context.Context, req *jsonrpc.Request) (any,
 		// In case of methodDiscover call the state.initializeParams is populated
 		// within the discover handle function to make sure the method is supported
 		// when the user is probing a pre-2026-07-28 server.
+		if !validatedMeta.usesNewProtocol {
+			return nil, &jsonrpc.Error{
+				Code:    jsonrpc.CodeMethodNotFound,
+				Message: fmt.Sprintf("%q is only supported in protocol version >= %s", req.Method, protocolVersion20260728),
+			}
+		}
 	default:
 		if !initialized && !validatedMeta.usesNewProtocol {
 			ss.server.opts.Logger.Error("method invalid during initialization", "method", req.Method)

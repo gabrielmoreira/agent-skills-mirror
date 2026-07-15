@@ -70,6 +70,10 @@ gh pr create --repo dyad-sh/dyad --head <owner>:<branch> --no-maintainer-edit --
 
 When passing a PR body inline via `gh pr create --body "..."`, unescaped backticks are evaluated by `zsh` before `gh` runs. Avoid backticks in inline bodies, or use a body file / heredoc so literal code identifiers do not turn into `command not found` errors.
 
+## PR description quality
+
+Publishing helpers must transport an agent-written PR body based on the complete branch diff; a commit subject plus changed filenames is not an acceptable summary. Start with a 1-2 sentence overview, then highlight subjective design decisions, trade-offs, boundaries, and questions reviewers should verify. Do not add a routine testing section, and preserve human or review-tool additions when refreshing an existing PR body.
+
 ## Formatter Touching Unrelated Skill Files
 
 `npm run fmt` may rewrite Markdown emphasis in `.claude/skills/*.md`. After
@@ -88,6 +92,10 @@ When a worktree symlinks `node_modules` from another checkout (common in agent w
 ## Commit hooks and untracked artifacts
 
 After a commit with lint-staged hooks, re-check both `git status --short` and any untracked artifact files you intentionally left out of the commit. Hook cleanup can leave the tracked tree clean while untracked scratch files under directories like `.agents/` have been removed; restore or report them before finishing.
+
+If `pr_push.sh` fails while staging a rename with `fatal: pathspec '<old path>' did not match any files`, run the required format/lint/type checks, commit the already-staged rename manually, then rerun the script so it can complete its checks, push, and PR handling.
+
+For filesystem traversal or bulk sync, do not run `git check-ignore` once per path: it spawns excessive Git processes, and a Git-enumeration fallback may fail open because it depends on the same valid-repository state. Use the cached standalone `ignore` parser for `.gitignore` rules, and stop evaluating nested ignore files below an ignored parent directory because Git never descends into it.
 
 ## Skipping automated review
 

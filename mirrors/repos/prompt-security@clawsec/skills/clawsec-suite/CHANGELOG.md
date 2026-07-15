@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.1.16] - 2026-07-14
+
+### Fixed
+
+- Preserved the release-path policy helper required by the manual ClawHub republish flow after it checks out a release tag.
+- Published the corrected signed Suite package under a new immutable version instead of attempting to replace the existing `0.1.15` registry entry.
+
+### Changed
+
+- Added dependency-closure coverage for every current workflow helper carried across the tag-checkout boundary.
+- Kept tests and other excluded development files out of the ClawHub package while retaining the five signed advisory trust artifacts.
+
+## [0.1.15] - 2026-07-13
+
+### Fixed
+
+- Published ClawHub packages from the verified, signed GitHub release payload instead of the raw source directory.
+- Preserved `.sig` and `.pem` advisory trust files that ClawHub's client extension allowlist otherwise omitted.
+- Made ClawHub publication blocking and verified every published file hash and size before reporting success.
+
+### Changed
+
+- Enforced the complete five-file embedded advisory trust set in release staging and published-package verification.
+- Required changed skill releases to advance the core version by at least a patch so an already released version cannot be reused.
+
 ## [0.1.14] - 2026-07-13
 
 ### Fixed

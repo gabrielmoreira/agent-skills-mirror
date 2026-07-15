@@ -20,6 +20,8 @@ The internal draft is structured in three labeled buckets. Items may appear in t
 - **Inferred** — what the agent assumed to fill gaps. Scope boundaries the user never explicitly named, success criteria extrapolated from intent, technical assumptions made because the brief interview didn't probe them. The Inferred bucket is the most actionable surface for correction — items here are the agent's bets.
 - **Out of scope** — deliberately excluded items. Adjacent work the agent considered but decided not to include, refactors, nice-to-haves, future-work items. Making exclusions explicit lets the agent spot anything that should actually be included.
 
+A session-settled decision (per `references/settled-decisions.md`) is **Stated with provenance** — record it in the Stated bucket with its class, rejected alternative, and one-line reason, never in Inferred: it is the user's confirmed choice, not an agent bet.
+
 This draft is internal. Do not paste it verbatim into chat. Compose it as a thinking step, then derive stage 2 from it.
 
 ---
@@ -34,6 +36,8 @@ The scoping synthesis has up to four named sections, each **render-conditional**
 2. **Key trade-offs** (conditional) — 1–3 bullets, each with a brief why. Render only when real trade-offs were made in dialogue.
 3. **What's not in scope** (conditional) — 1–3 bullets, or fold into a single sentence. Render only when deferred items would surprise a downstream reader if absent.
 4. **Call outs** (conditional) — 0–3 bullets. Residual forks the dialogue didn't resolve: post-dialogue consequences (combining user answers surfaced something they couldn't see during Q&A), silent agent inferences, or — in pre-loaded contexts with no dialogue — scope bets the user is seeing for the first time. **Not "questions the agent could have asked during Phase 1.3 but didn't"** — if a call-out reads like a missed dialogue question, Phase 1.3's integration check failed; flag the gap rather than padding the section.
+
+Session-settled decisions render as `Carrying forward:` lines — one line each, placed before Call outs (where Call outs would sit when none survive): `Carrying forward: <decision> over <rejected alternative> — <one-line reason>.` They are statements, never questions and never call-outs: the confirmation covers the overall shape, not decisions the user already made.
 
 Each section answers a different question:
 
@@ -73,6 +77,7 @@ Each conditional section has its own keep test. Sections are render-conditional 
 
 Cut anything that doesn't match a keep-test category, including:
 
+- Session-settled decisions — already chosen; they render as `Carrying forward:` lines, never call-outs
 - Mechanical items where there is no real alternative
 - Implementation choices that will be settled during planning
 - Items already implied by the scoping synthesis prose
@@ -265,6 +270,8 @@ After user confirmation (or after the soft-cut decision proceeds), Phase 3 write
 | Out-of-scope bullets | `## Scope Boundaries` |
 
 The chat-time Trade-offs section dissolves into `## Key Decisions` (the explicit choices acknowledged in chat become documented decisions). The chat-time What's-not-in-scope section dissolves into `## Scope Boundaries`.
+
+Session-settled decisions are the exception to the Stated → Requirements row: each routes to `## Key Decisions` carrying its `session-settled:` annotation — a user-confirmed choice, never softened into an inferred bet or recorded as an assumption. This holds equally when the artifact is written from context without dialogue.
 
 No italic capture-context note (e.g., "Captured at Phase 2.5..."). It would leak engineering process into an artifact whose readers do not need that signal.
 

@@ -65,6 +65,17 @@ This skill ships with support files — use them when they are available:
 - **`references/cheap-tests.md`** — The Cheap-Test Catalog: Right-Sizing Validation. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/assumption-board.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Category coverage | Desirability-only — the feasibility and viability assumptions most likely to kill the plan are absent | Three categories populated, but the empty one wasn't re-mined from the brief; coverage is token (one throwaway row) | All four categories populated with substantive rows, with visible digging into whichever category the brief itself neglected |
+| Scoring discipline | Confidence/impact numbers arbitrary or missing; priority arithmetic inconsistent; no critical flags | Scores present and Priority = Impact − Confidence holds, but confidence is inflated for unchallenged assumptions and critical flags applied selectively | Scores defensible (unchallenged ≠ high confidence), arithmetic consistent including negative priorities left visible, and the CRITICAL flag applied mechanically at Impact 4+ / Confidence ≤2 — even to assumptions the team likes |
+| Validation method fit | "User interviews" (or "do research") pasted into every row | Methods vary but several are mismatched to the assumption type, missing sample sizes, or unpriced | Each method matched to the assumption (data audit, backtest, fake door, desk check, spike…) with sample size and effort; untestable assumptions flagged unknowable and converted to owned risks, not given fake tests |
+| Decision leverage | Top-3 list missing, or tests whose outcome would change nothing | Top 3 named with effort, but "what the result changes" is vague or the tests validate comfortable assumptions over dangerous ones | Top 3 are the highest-priority testable assumptions, each with effort, a pre-committed threshold where relevant, and a concrete decision the result would change |
+
 ## Quality Checks
 
 - [ ] At least one assumption per category (Desirability, Feasibility, Viability, Usability)

@@ -19,6 +19,14 @@
 <table>
 <tr>
 <td width="50%">
+  <img src="docs/screenshots/task-detail-animated.gif" alt="Agent Teams AI product demo" width="100%" />
+</td>
+<td width="50%">
+  <img width="2560" height="1552" alt="telegram-cloud-photo-size-2-5384488731521259756-w" src="https://github.com/user-attachments/assets/276fb24c-478c-4900-826c-476a5aa9e572" />
+</td>
+</tr>
+<tr>
+<td width="50%">
   <img src="https://i.imgur.com/2avkEET.jpeg" alt="Agent Teams AI screenshot" width="100%" />
 </td>
 <td width="50%">
@@ -38,7 +46,8 @@
   <img src="docs/screenshots/7.png" alt="Code review with hunk-level controls" width="100%" />
 </td>
 <td width="50%">
-  <img src="docs/screenshots/4.png" alt="Create an AI team with roles and models" width="100%" />
+  <!-- <img src="docs/screenshots/4.png" alt="Create an AI team with roles and models" width="100%" /> -->
+  <img width="1312" height="817" alt="image" src="https://github.com/user-attachments/assets/1920c0da-82d6-4fee-b7de-c1a723e609b1" />
 </td>
 </tr>
 <tr>
@@ -46,7 +55,7 @@
   <img src="docs/screenshots/1.jpg" alt="Kanban board with agent tasks" width="100%" />
 </td>
 <td width="50%">
-  <img src="docs/screenshots/task-detail-animated.gif" alt="Agent Teams AI product demo" width="100%" />
+  <img width="1312" height="820" alt="image" src="https://github.com/user-attachments/assets/05f1129f-5671-437c-b9bf-5be053d31778" />
 </td>
 </tr>
 </table>
@@ -310,6 +319,14 @@ Some RDP (Remote Desktop Protocol) sessions expose virtual GPU drivers that can 
 - [x] Multiple AI runtimes and provider-backed coding agents
 - [ ] A secure universal plugin system regardless of the type of agents
 - [ ] Efficiency and controllability under load with 20-100+ agents in parallel
+
+## Vision
+
+Agent Teams AI is moving toward a simple interface for highly autonomous work. From a phone, users should be able to see only the high-level tasks that matter and give the lead agent instructions by voice. The lead should route each request to the right project and team, while agents break it down, work in parallel, communicate, review, resolve blockers, and prepare the final result with minimal supervision.
+
+Technical subtasks and coordination should remain available as a secondary layer, while the main view surfaces only the decisions, blockers, and outcomes that genuinely need attention. Agents should first try to solve problems together and involve the user only when human input is truly required.
+
+This vision is not tied to a specific SDLC or workflow. Users should be free to organize teams however they prefer and continue using their existing plugins, skills, MCP servers, rules, and agent settings.
 
 ## Development
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `RunMaestro/Maestro` — 26 default patterns, 19 followed patterns, 22 file(s) materialized.
+Mirror of `RunMaestro/Maestro` — 26 default patterns, 20 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `RunMaestro/Maestro` — 26 default patterns, 19 followed patterns, 22
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 19 |
-| Files         | 22 |
+| Followed pats | 20 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,6 +59,7 @@ Mirror of `RunMaestro/Maestro` — 26 default patterns, 19 followed patterns, 22
 - `docs/agent-guides/STATE-PATTERNS.md`
 - `docs/agent-guides/AGENT-INFRA.md`
 - `docs/agent-guides/UI-PATTERNS.md`
+- `docs/agent-guides/WIDGET-LIBRARY.md`
 - `docs/agent-guides/TEST-PATTERNS.md`
 - `docs/agent-guides/RENDERER-SERVICES.md`
 - `docs/agent-guides/PROCESS-SYSTEM.md`
@@ -99,6 +100,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | → | [`docs/agent-guides/TEST-PATTERNS.md`](docs/agent-guides/TEST-PATTERNS.md) |
 | 21 | → | [`docs/agent-guides/UI-PATTERNS.md`](docs/agent-guides/UI-PATTERNS.md) |
 | 22 | → | [`docs/agent-guides/WEB-MOBILE.md`](docs/agent-guides/WEB-MOBILE.md) |
+| 23 | → | [`docs/agent-guides/WIDGET-LIBRARY.md`](docs/agent-guides/WIDGET-LIBRARY.md) |
 
 ---
 

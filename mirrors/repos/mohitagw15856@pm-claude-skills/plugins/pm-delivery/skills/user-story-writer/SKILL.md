@@ -207,6 +207,17 @@ This skill ships with support files — use them when they are available:
 - **`references/acceptance-criteria-craft.md`** — Acceptance Criteria That Actually Gate. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/story-card.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **User voice & value** | Stories written from the system's or developer's perspective; "so that" is missing or circular ("so that it's easier") | Personas are specific but some "so that" clauses describe the feature rather than the outcome the user gets | Every story names a specific user type and a "so that" stating the concrete outcome they achieve — a stakeholder could read it and know why it's worth building |
+| **AC testability & granularity** | ACs missing, or prose descriptions with no pass/fail condition | GWT format used, but criteria bundle multiple behaviours or test the UI solution instead of the observable outcome | One GWT per observable behaviour, each with an unambiguous pass/fail condition, testing outcomes not implementation |
+| **Unhappy-path coverage** | Happy path only — no empty, error, or permission states anywhere | Some edge cases listed, but key failure modes (empty state, mid-flow failure, permission boundaries) are missing or vague | Empty states, error states, permission boundaries, and known technical constraints all appear as explicit ACs or edge cases with defined behaviour |
+| **Scope discipline & sizing** | Stories are epic-sized, interdependent, with no out-of-scope section | Out of scope is present but generic; some stories too large to estimate or ship independently in one sprint | Every story is sprint-sized and independently shippable, splits are recorded with their reason, and Out of Scope names where the next story begins |
+
 ## Quality Checks
 
 - [ ] Every story has a specific user type — not "a user" or "the system"

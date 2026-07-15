@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" width="960" height="600"
+  data-quality-profile="showcase" data-max-bends-per-edge="2" data-max-total-bends="8"
+  data-max-route-stretch="1.35" data-max-bridged-crossings="0" data-min-node-gap="40"
+  data-min-container-gutter="20" data-min-label-clearance="4" data-min-segment-length="16">
+  <style>
+    text { font-family: -apple-system, "Helvetica Neue", Arial, "PingFang SC", sans-serif; }
+    .title { font-family: Georgia, "Times New Roman", serif; font-size: 24px; font-weight: 700; fill: #f5f0eb; }
+    .section { font-family: Georgia, "Times New Roman", serif; font-size: 14px; font-weight: 700; fill: #c9a96e; }
+    .node { font-size: 14px; font-weight: 600; }
+    .node-small { font-size: 13px; font-weight: 600; }
+    .detail { font-size: 11px; fill: #a39787; }
+    .edge-label { font-size: 11px; fill: #a39787; }
+  </style>
+  <defs>
+    <marker id="arrow-gold" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#d4a574"/>
+    </marker>
+    <marker id="arrow-mint" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#6ee7b7"/>
+    </marker>
+    <marker id="arrow-violet" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#a78bfa"/>
+    </marker>
+    <marker id="arrow-sky" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#38bdf8"/>
+    </marker>
+    <marker id="arrow-rose" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0,10 3.5,0 7" fill="#f87171"/>
+    </marker>
+  </defs>
+
+  <rect width="960" height="600" fill="#0a0a0a" data-graph-role="background"/>
+  <text x="48" y="54" class="title">Agent Runtime Architecture</text>
+  <text x="48" y="78" class="detail">orchestration, memory, tools, and evaluation</text>
+
+  <rect id="control-plane" x="40" y="120" width="880" height="116" rx="8" fill="none" stroke="#d4a574" stroke-width="1" stroke-dasharray="6 4" opacity="0.5" data-graph-role="container"/>
+  <rect id="control-plane-header" x="48" y="126" width="154" height="30" fill="none" stroke="none" data-graph-role="reserved"/>
+  <text x="54" y="144" class="section">CONTROL PLANE</text>
+  <rect id="execution-state" x="40" y="304" width="880" height="136" rx="8" fill="none" stroke="#d4a574" stroke-width="1" stroke-dasharray="6 4" opacity="0.5" data-graph-role="container"/>
+  <rect id="execution-state-header" x="48" y="310" width="214" height="30" fill="none" stroke="none" data-graph-role="reserved"/>
+  <text x="54" y="328" class="section">EXECUTION AND STATE</text>
+
+  <path id="request" data-graph-role="edge" data-edge-id="request" data-source="client" data-target="gateway" data-bends="0" data-route-stretch="1" d="M 220 186 H 300" fill="none" stroke="#d4a574" stroke-width="2" marker-end="url(#arrow-gold)"/>
+  <path id="dispatch" data-graph-role="edge" data-edge-id="dispatch" data-source="gateway" data-target="agent" data-bends="0" data-route-stretch="1" d="M 480 186 H 560" fill="none" stroke="#d4a574" stroke-width="2" marker-end="url(#arrow-gold)"/>
+  <path id="context" data-graph-role="edge" data-edge-id="context" data-source="agent" data-target="memory" data-bends="2" data-route-stretch="1" d="M 632 216 V 270 H 390 V 344" fill="none" stroke="#38bdf8" stroke-width="1.7" marker-end="url(#arrow-sky)"/>
+  <path id="tool-call" data-graph-role="edge" data-edge-id="tool-call" data-source="agent" data-target="tools" data-bends="0" data-route-stretch="1" d="M 650 216 V 344" fill="none" stroke="#a78bfa" stroke-width="1.7" stroke-dasharray="6 3" marker-end="url(#arrow-violet)"/>
+  <path id="augment" data-graph-role="edge" data-edge-id="augment" data-source="memory" data-target="tools" data-bends="0" data-route-stretch="1" d="M 480 374 H 560" fill="none" stroke="#6ee7b7" stroke-width="1.7" marker-end="url(#arrow-mint)"/>
+  <path id="trace" data-graph-role="edge" data-edge-id="trace" data-source="tools" data-target="eval" data-bends="0" data-route-stretch="1" d="M 740 374 H 790" fill="none" stroke="#d4a574" stroke-width="2" marker-end="url(#arrow-gold)"/>
+  <path id="z-feedback" data-graph-role="edge" data-edge-id="z-feedback" data-source="eval" data-target="agent" data-bends="2" data-route-stretch="1" d="M 845 344 V 270 H 668 V 216" fill="none" stroke="#f87171" stroke-width="1.7" stroke-dasharray="4 3" marker-end="url(#arrow-rose)"/>
+
+  <rect id="client" data-node-id="client" x="60" y="156" width="160" height="60" rx="6" fill="#111111" stroke="#94a3b8" stroke-width="1.5" data-graph-role="node"/>
+  <text x="80" y="181" class="node" fill="#94a3b8">Client</text>
+  <text x="80" y="201" class="detail">request + policy</text>
+  <rect id="gateway" data-node-id="gateway" x="300" y="156" width="180" height="60" rx="6" fill="#111111" stroke="#fbbf24" stroke-width="1.5" data-graph-role="node"/>
+  <text x="320" y="181" class="node" fill="#fbbf24">Gateway</text>
+  <text x="320" y="201" class="detail">auth + routing</text>
+  <rect id="agent" data-node-id="agent" x="560" y="156" width="180" height="60" rx="6" fill="#111111" stroke="#a78bfa" stroke-width="1.5" data-graph-role="node"/>
+  <text x="580" y="181" class="node" fill="#a78bfa">Agent Runtime</text>
+  <text x="580" y="201" class="detail">plan + inference</text>
+
+  <rect id="memory" data-node-id="memory" x="300" y="344" width="180" height="60" rx="6" fill="#111111" stroke="#38bdf8" stroke-width="1.5" data-graph-role="node"/>
+  <text x="320" y="369" class="node" fill="#38bdf8">Vector Memory</text>
+  <text x="320" y="389" class="detail">retrieve + persist</text>
+  <rect id="tools" data-node-id="tools" x="560" y="344" width="180" height="60" rx="6" fill="#111111" stroke="#5a9e6f" stroke-width="1.5" data-graph-role="node"/>
+  <text x="580" y="369" class="node" fill="#5a9e6f">Tool Runtime</text>
+  <text x="580" y="389" class="detail">MCP + functions</text>
+  <rect id="eval" data-node-id="eval" x="790" y="344" width="110" height="60" rx="6" fill="#111111" stroke="#f87171" stroke-width="1.5" data-graph-role="node"/>
+  <text x="845" y="369" text-anchor="middle" class="node-small" fill="#f87171">Trace + Eval</text>
+  <text x="845" y="389" text-anchor="middle" class="detail">quality gate</text>
+
+  <text x="260" y="178" text-anchor="middle" class="edge-label" data-graph-role="label" data-owner="request">request</text>
+  <text x="520" y="178" text-anchor="middle" class="edge-label" data-graph-role="label" data-owner="dispatch">dispatch</text>
+  <text x="510" y="258" text-anchor="middle" class="edge-label" data-graph-role="label" data-owner="context">context</text>
+  <text x="700" y="296" text-anchor="middle" class="edge-label" data-graph-role="label" data-owner="tool-call">tool call</text>
+  <text x="520" y="366" text-anchor="middle" class="edge-label" data-graph-role="label" data-owner="augment">augment</text>
+  <text x="765" y="366" text-anchor="middle" class="edge-label" data-graph-role="label" data-owner="trace">trace</text>
+  <text x="756" y="258" text-anchor="middle" class="edge-label" data-graph-role="label" data-owner="z-feedback">feedback</text>
+
+  <g data-graph-role="legend">
+    <path d="M 48 510 H 86" fill="none" stroke="#d4a574" stroke-width="2" marker-end="url(#arrow-gold)"/>
+    <text x="98" y="514" class="edge-label">primary</text>
+    <path d="M 192 510 H 230" fill="none" stroke="#6ee7b7" stroke-width="1.5" marker-end="url(#arrow-mint)"/>
+    <text x="242" y="514" class="edge-label">data</text>
+    <path d="M 322 510 H 360" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="6 3" marker-end="url(#arrow-violet)"/>
+    <text x="372" y="514" class="edge-label">dependency</text>
+  </g>
+  <text x="48" y="570" class="detail">Style 8 · Dark Luxury · showcase composition contract</text>
+</svg>

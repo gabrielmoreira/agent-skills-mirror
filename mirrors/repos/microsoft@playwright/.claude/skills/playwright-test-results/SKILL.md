@@ -123,6 +123,73 @@ ORDER BY runs DESC
 LIMIT 20;
 ```
 
+## Generate a linked emoji run history
+
+For a compact result that drops straight into a GitHub comment, render each
+final run verdict as a linked square. Edit the four test identity fields, then
+run:
+
+```bash
+node --input-type=module <<'EOF'
+import { DuckDBInstance } from "@duckdb/node-api";
+
+const repository = "microsoft/playwright";
+const test = {
+  projectName: "firefox-library",
+  file: "library/proxy.spec.ts",
+  testTitle: "should exclude patterns",
+  botName: "firefox-macos-15-large",
+};
+
+const conn = await (await DuckDBInstance.create(
+  "utils/test-results-db/test-results.duckdb"
+)).connect();
+const result = await conn.runAndReadAll(`
+  WITH per_run AS (
+    SELECT run_id, run_attempt,
+           any_value(run_started_at) AS run_started_at,
+           arg_max(status, retry) AS final_status,
+           arg_max(expected_status, retry) AS expected_status,
+           list(status ORDER BY retry) AS attempt_statuses
+    FROM test_results
+    WHERE project_name = $projectName
+      AND file = $file
+      AND test_title = $testTitle
+      AND bot_name = $botName
+    GROUP BY run_id, run_attempt
+  )
+  SELECT run_id, run_attempt, final_status, attempt_statuses
+  FROM per_run
+  WHERE expected_status = 'passed'
+    AND final_status IN ('passed', 'failed', 'timedOut')
+  ORDER BY run_started_at, run_id, run_attempt
+`, test);
+
+const markdown = result.getRowObjectsJson().map(row => {
+  const rescued = row.final_status === "passed" &&
+    row.attempt_statuses.some(status => status === "failed" || status === "timedOut");
+  const emoji = rescued ? "🟧" : row.final_status === "passed" ? "🟩" : "🟥";
+  const url = `https://github.com/${repository}/actions/runs/${row.run_id}/attempts/${row.run_attempt}`;
+  return `[${emoji}](${url})`;
+}).join("");
+
+console.log(markdown);
+EOF
+```
+
+The output is Markdown:
+
+```markdown
+[🟩](https://github.com/microsoft/playwright/actions/runs/123/attempts/1)[🟧](https://github.com/microsoft/playwright/actions/runs/456/attempts/1)[🟥](https://github.com/microsoft/playwright/actions/runs/789/attempts/1)
+```
+
+Each square is one workflow run attempt, oldest first. Green means passed,
+orange means a retry rescued an earlier failure, and red means failed or timed
+out. `arg_max(status, retry)` picks the final verdict after retries, while
+grouping by `(run_id, run_attempt)` keeps retries from turning into extra
+squares. The `/attempts/<n>` URL links to the exact rerun that produced the
+result.
+
 ## Fetching the full detail
 
 The db stores per-result summaries. For the full step tree / attachments / stdio,

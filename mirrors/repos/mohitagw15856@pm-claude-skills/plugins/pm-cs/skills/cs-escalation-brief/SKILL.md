@@ -173,6 +173,17 @@ This skill ships with support files — use them when they are available:
 - **`references/deescalation-sequencing.md`** — De-escalation Sequencing: the Order of Operations When an Account Is on Fire. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/escalation-brief.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Root cause specificity & honesty** | Vague ("communication breakdown") or pins blame on individuals | Specific cause named, but internal failures are softened or the systemic-vs-isolated question is skipped | Specific primary cause, contributing factors that own internal failures plainly, and an explicit systemic-vs-isolated call |
+| **Quantified business impact** | No ARR figure; churn risk described in adjectives | ARR stated, but churn probability, expansion pipeline, or reference risk left blank | ARR at risk, churn probability, expansion pipeline, and reference/reputational exposure all quantified |
+| **Fair representation of the customer** | Customer's position missing, minimised, or paraphrased into harmlessness | Their ask is stated, but their version of events is filtered or their sentiment unassessed | Their account of events, explicit ask, sentiment, and public-escalation risk stated fairly and unfiltered |
+| **Decision-readiness of the plan** | No clear ask; brief ends with "what do you think?"; owners TBD | Plan exists but the decision needed is implicit, or some actions lack owners and dates | A specific decision is requested from the escalation owner; every action has an owner and date; what we are NOT offering and success criteria are explicit |
+
 ## Quality Checks
 
 - [ ] Root cause is specific — not "communication breakdown" or "product gap" without detail

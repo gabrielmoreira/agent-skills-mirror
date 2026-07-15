@@ -74,6 +74,17 @@ This skill ships with support files — use them when they are available:
 - **`references/description-engineering.md`** — Description Engineering: the 300 Characters That Decide Everything. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/skill-scaffold.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Description & trigger engineering** | Description says what the skill is about, with no trigger phrases or named deliverable | Has "Use when…" and "Produces…", but triggers are category labels, not phrasings users actually type | All three parts present; triggers cover the real synonyms users would say, and are distinct enough that the model wouldn't confuse this skill with a neighbour |
+| **Output contract concreteness** | Output Format *describes* the artifact ("a structured report with sections") | A partial template — some real headings, but key sections still described abstractly | A full template with real headings, tables, and field formats — two independent runs would produce recognisably the same product |
+| **Guardrail specificity** | Quality checks are unobservable ("output should be clear"); anti-patterns missing or generic | Checks are observable but generic to any document; anti-patterns don't name this skill's failure modes | Every check is verifiable at a glance, and each anti-pattern names a specific lazy output a weaker model would actually produce for this artifact |
+| **Thin-brief resilience** | The skill begs for inputs or would return a skeleton full of `[placeholders]` | Working-from-a-brief section exists, but there's no instruction to label inferences, so gaps get silently invented | Explicitly instructs: build the complete artifact anyway, infer and *label* assumptions, never leave TODOs — and the inputs list says what to ask for only when it changes the output |
+
 ## Quality Checks
 
 - [ ] `name` is kebab-case and matches the intended folder

@@ -160,6 +160,17 @@ Rules for action items:
 
 ---
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Blamelessness with truth | Names-and-shames, or sanitizes so much the story vanishes | Blameless wording but individual actions blurred | Individuals' actions stated factually inside a systems framing — honest and safe at once |
+| Root-cause depth | Stops at the symptom or "human error" | Names a system gap but only one "why" deep | Root cause plus contributing factors explain why the system allowed it, not just what broke |
+| Timeline forensic quality | Sparse, unordered, or missing detection-to-resolution beats | Complete but without timestamps or decision points | Timestamped, includes detection lag, decision points, and dead ends actually explored |
+| Action-item accountability | Vague improvements, no owners | Owners assigned but items unticketable or dateless | Every item ticketable with owner and due date, mapped to a root cause or contributing factor |
+
 ## Quality Checks
 
 - [ ] Timeline has no blame-focused language

@@ -112,6 +112,17 @@ This skill ships with support files — use them when they are available:
 - **`references/situation-mining.md`** — Situation Mining — the "When" Is the Whole Method. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/job-story-canvas.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Situation specificity | "When" clauses are roles or generic desires ("as a user who wants to manage work") | Situations name a task but not a moment — no trigger, time, or emotional context | Every situation is a concrete, recognisable moment ("a tenant texts me at 11pm") that makes the motivation self-evident |
+| Dimensional completeness | Only the functional job mapped; emotional and social fields empty or absent | All three fields filled, but emotional/social entries just restate the functional job in feeling-words | Functional, emotional, and social dimensions each carry distinct content, and at least one non-functional dimension shapes the opportunity analysis |
+| Workaround grounding | No current workarounds identified; jobs float free of what customers do today | Workarounds named but treated as trivia — nothing inferred from them | Every high-opportunity story names its workaround and reads it as evidence of what the job is worth (time spent, money paid, delay tolerated) |
+| Scoring & prioritisation discipline | No opportunity scores, or scores invented without the Importance/Satisfaction inputs | Scores computed correctly but treated as the build order — no feasibility or strategic-fit check | Arithmetic is shown and consistent, borderline scores are not rounded up, and high scores the roadmap can't serve are flagged as strategy questions rather than queued |
+
 ## Quality Checks
 
 - [ ] Job stories use the "When / I want to / So I can" format (not user story format)

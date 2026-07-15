@@ -97,6 +97,17 @@ This skill ships with support files — use them when they are available:
 - **`references/question-craft.md`** — Question Craft: Getting Truth Instead of Politeness. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/guide-skeleton.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Behavioural anchoring | Questions are hypothetical ("Would you use…?") or answerable yes/no | Mostly past-tense, but a few opinion or future-tense questions slipped into the core section | Every problem question is anchored to a specific past event ("tell me about the last time…") and open-ended |
+| Solution containment | The product or feature appears in the screener or early questions, anchoring every answer | Product withheld from questions but the guide gives the interviewer no script for when participants ask what's being built | Product absent from all phases before pain is confirmed, with an inline interviewer note and deflection script guarding the boundary |
+| Screener selectivity | Screeners are self-assessments anyone can pass ("Are you responsible for X?") | Screeners qualify on role and firmographics but include no behaviour check or disqualifier | Screeners qualify on recent, verifiable behaviour, include an explicit disqualifier, and would be hard to guess the "right" answer to |
+| Synthesis machinery | No per-session template or pattern-detection plan; synthesis left to memory | Template exists but lacks intensity rating or surprise capture; pattern thresholds not tied to planned interview count | Per-session template with anchored intensity scale and surprise field, plus pattern detection gated at 5+ interviews with X/N counts matched to the planned sample |
+
 ## Quality Checks
 
 - [ ] No future-tense questions ("would you...") — only past-behaviour questions

@@ -92,6 +92,17 @@ At quarter end, score each KR:
 - Include a "health check" section flagging which KRs have no current baseline data
 - Remind user: OKRs are not performance reviews — they should be ambitious enough that missing them is okay
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Outcome orientation | KRs are a shipped-feature task list ("launch X", "complete Y") | Mostly outcomes, but one or more KRs are outputs or binary ship/no-ship | Every KR is an outcome metric scorable 0.0–1.0 by degree of achievement |
+| Baseline & measurability | No baselines or measurement methods; KRs cannot be scored at quarter end | Targets present but several baselines missing or unsourced, with no health-check flag | Every KR has baseline, target, and measurement method; missing data is flagged in a health check with a plan to instrument |
+| Ambition calibration | Targets are last quarter's trendline (sandbagged) or pure fantasy with no path | Some stretch, but nobody could say what a 0.7 score looks like | Calibrated so 0.7 attainment is the expected good quarter; sandbagged proposals and moonshots are called out and corrected |
+| Strategic focus & control | No link to a North Star; 5+ objectives or KR zoo; KRs depend on other teams' work | Ladders loosely to strategy but objectives are overloaded or one KR fails the control test | ≤3 objectives with ≤4 KRs each, every objective explicitly ladders to the North Star, and every KR is within the team's control |
+
 ## Quality Checks
 
 - [ ] Each KR is measurable with a baseline and target

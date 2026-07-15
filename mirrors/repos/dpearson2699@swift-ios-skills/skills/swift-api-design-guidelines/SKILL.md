@@ -5,7 +5,10 @@ description: "Apply Swift API Design Guidelines to name, label, and document Swi
 
 # Swift API Design Guidelines
 
-Apply the Swift API Design Guidelines when naming types, methods, properties, parameters, and argument labels. Targets Swift 6.3. For language features and syntax, see `swift-language`. For concurrency patterns, see `swift-concurrency`. For mixed requests, answer the API naming portion briefly, then route Swift type-system details to `swift-language` and lint configuration to `swiftlint` instead of implementing those sibling domains here.
+Apply the Swift API Design Guidelines to naming, labels, documentation, and
+call-site clarity. For mixed requests, handle the API-design portion here and
+route language/type-system work to `swift-language`, concurrency to
+`swift-concurrency`, and lint configuration to `swiftlint`.
 
 ## Contents
 
@@ -22,78 +25,7 @@ Apply the Swift API Design Guidelines when naming types, methods, properties, pa
 
 ## Argument Label Rules
 
-Argument labels determine how a call site reads. Apply these rules in order.
-
-### When to omit the first argument label
-
-**Grammatical phrase rule.** When the first argument forms a grammatical phrase with the base name, omit the label. Move any leading words from what would be the label into the base name instead.
-
-```swift
-// GOOD — reads as "add subview y"
-view.addSubview(y)
-
-// BAD — redundant label breaks the phrase
-view.add(subview: y)
-```
-
-**Value-preserving type conversions.** When an initializer performs a value-preserving (widening) conversion, omit the first argument label.
-
-```swift
-// GOOD — widening conversion, no label
-let value = Int64(someUInt32)
-let str = String(someCharacter)
-
-// Narrowing or lossy conversions keep a label
-let approx = Int64(truncating: someDecimal)
-let str = String(describing: someObject)
-```
-
-**Indistinguishable arguments.** When all arguments cannot be usefully distinguished, omit all labels.
-
-```swift
-// GOOD — arguments are peers
-let smaller = min(x, y)
-zip(sequence1, sequence2)
-```
-
-### When to use a prepositional label
-
-**Prepositional phrase rule.** When the first argument completes a prepositional phrase with the base name, label it with the preposition.
-
-```swift
-// GOOD — "remove boxes having length 12"
-x.removeBoxes(havingLength: 12)
-
-// GOOD — "fade from red"
-view.fade(from: red)
-
-// GOOD — "relative path from root"
-path.relativePath(from: root)
-```
-
-**Exception — abstraction boundary.** When the first two arguments represent parts of a single abstraction, fold the preposition into the base name so each component gets its own label.
-
-```swift
-// GOOD — x and y are parts of a single abstraction (a point)
-a.moveTo(x: b, y: c)
-
-// BAD — preposition attaches to first arg, leaving y unlabeled
-a.move(toX: b, y: c)
-```
-
-### Default: label everything else
-
-When no special rule above applies, label the argument.
-
-```swift
-// GOOD
-array.split(maxSplits: 2)
-button.setTitle("OK", for: .normal)
-controller.dismiss(animated: true)
-array.sorted(by: >)
-```
-
-### Argument label decision table
+Argument labels determine how a call site reads. Apply the first matching row:
 
 | Situation | Rule | Example |
 |-----------|------|---------|
@@ -104,106 +36,42 @@ array.sorted(by: >)
 | First two args form a single abstraction | Fold preposition into base name | `moveTo(x: b, y: c)` |
 | Everything else | Label it | `split(maxSplits: 2)` |
 
-For extended examples and edge cases, see [references/argument-labels-and-parameters.md](references/argument-labels-and-parameters.md).
+Load [Argument Labels and Parameters](references/argument-labels-and-parameters.md)
+when resolving abstraction boundaries, multiple prepositions, conversion
+initializers, indistinguishable peers, parameter naming, or default arguments.
 
 ## Side-Effect Naming
 
-Name functions and methods by their side effects.
-
-### Functions with side effects — imperative verbs
-
-When a function mutates state, name it as an imperative verb phrase.
+Use imperative verbs for operations with side effects, result-describing noun
+or adjective phrases for operations without side effects, and assertion-style
+names for Boolean APIs.
 
 ```swift
-// Mutates — imperative verb
 array.sort()
 array.append(newElement)
-list.remove(at: index)
-timer.invalidate()
-```
-
-### Functions without side effects — nouns or adjective phrases
-
-When a function returns a result without mutating anything, name it as a noun phrase, adjective phrase, or read as a description of what it returns.
-
-```swift
-// Pure — noun/description
 let d = point.distance(to: origin)
-let area = rect.intersection(other)
-let line = text.trimmingCharacters(in: .whitespaces)
-```
-
-### Boolean properties and methods
-
-Boolean properties and methods read as assertions about the receiver.
-
-```swift
-// GOOD — reads as "line is empty"
 line.isEmpty
 set.contains(element)
-url.isFileURL
-
-// BAD — not an assertion
-line.empty       // verb? adjective?
-set.includes     // incomplete phrase
 ```
 
-For more examples, see [references/side-effects-and-mutating-pairs.md](references/side-effects-and-mutating-pairs.md).
+Load [Side Effects and Mutating Pairs](references/side-effects-and-mutating-pairs.md)
+when reviewing extended pure/mutating examples or Boolean naming.
 
 ## Mutating and Nonmutating Pairs
 
-When an operation has both mutating and nonmutating variants, name them as a pair.
+Name mutating/nonmutating pairs from the operation's natural description:
 
-### Verb-described operations — -ed/-ing suffix
+- For verb operations, use the imperative for mutation and a result-describing
+  participle for the copy: `sort()/sorted()` or `append(_:)/appending(_:)`.
+  Prefer `-ed`; use `-ing` only when `-ed` is ungrammatical or describes the
+  direct object instead of the returned result.
+- For noun operations, use the noun for the copy and `form` + noun for
+  mutation: `union(_:)` / `formUnion(_:)`.
+- Prefix factories that create new values with `make`.
 
-When the operation is naturally described by a verb:
-- **Mutating:** imperative verb (`sort`, `append`, `reverse`)
-- **Nonmutating:** past participle `-ed` or present participle `-ing`
-
-Default to `-ed` (past participle) when the phrase naturally describes the returned value. Use `-ing` (present participle) only when the `-ed` form is ungrammatical or describes the direct object rather than the returned receiver or result. A direct object is a clue to check the grammar, not the rule by itself.
-
-| Mutating | Nonmutating | Why |
-|----------|-------------|-----|
-| `sort()` | `sorted()` | `-ed` — "a sorted array" |
-| `reverse()` | `reversed()` | `-ed` — "a reversed collection" |
-| `sortLines()` | `sortedLines()` | `-ed` — "sorted lines" describes the result |
-| `append(y)` | `appending(y)` | `-ing` — `appended` does not describe the returned receiver clearly |
-| `stripNewlines()` | `strippingNewlines()` | `-ing` — direct-object pattern from the guidelines |
-
-### Noun-described operations — form- prefix
-
-When the operation is naturally described by a noun:
-- **Nonmutating:** the noun itself (`union`, `intersection`)
-- **Mutating:** `form` prefix (`formUnion`, `formIntersection`)
-
-```swift
-// Nonmutating — returns new value
-let combined = a.union(b)
-
-// Mutating — modifies in place
-a.formUnion(b)
-```
-
-### Factory methods — make- prefix
-
-Factory methods that create a new value start with `make`.
-
-```swift
-let iterator = collection.makeIterator()
-let buffer = parser.makeBuffer()
-```
-
-In mixed routing answers, briefly validate existing `make...` factory names before handing off unrelated type-system or linting details to sibling skills.
-
-### Pair decision table
-
-| Operation described by | Mutating name | Nonmutating name | Example pair |
-|------------------------|---------------|-------------------|-------------|
-| Verb (default) | verb | verb + `-ed` | `sort()` / `sorted()` |
-| Verb (`-ed` is ungrammatical) | verb | verb + `-ing` | `stripNewlines()` / `strippingNewlines()` |
-| Noun | `form` + Noun | noun | `formUnion(b)` / `union(b)` |
-
-For the full -ed/-ing decision tree and expanded naming patterns, see [references/side-effects-and-mutating-pairs.md](references/side-effects-and-mutating-pairs.md).
+Load the [`-ed`/`-ing` Decision Tree](references/side-effects-and-mutating-pairs.md#the--ed-ing-decision-tree)
+when the returned-result grammar is unclear. The same reference contains
+expanded `form`-prefix, Boolean, and factory patterns.
 
 ## Documentation Comments
 
@@ -390,27 +258,16 @@ For casing edge cases, overload patterns, and tuple/closure naming, see [referen
 
 ## Common Mistakes
 
-1. **Omitting needed argument labels.** Using `remove(position)` instead of `remove(at: position)` when the role of the argument is ambiguous without the label.
-
-2. **Using -ed when -ing is correct.** Applying `stripped()` when the past participle is ungrammatical — use `stripping()` instead. Test: does "a [verb]-ed [noun]" read naturally?
-
-3. **Using verb names for side-effect-free operations.** Naming a nonmutating method `sort()` that returns a new collection — use `sorted()` to signal no mutation.
-
-4. **Naming by type instead of role.** Using `string` instead of `greeting`, or `array` instead of `elements`, when the role would be more informative.
-
-5. **Missing documentation comments.** Leaving public declarations undocumented, or writing summaries that describe the implementation rather than the purpose.
-
-6. **Not documenting non-O(1) computed properties.** Exposing a linear-time computed property without a `Complexity:` note, causing callers to assume O(1) and use it in loops.
-
-7. **Applying form- prefix to verb-based operations.** Writing `formSort()` instead of just `sort()` — the `form` prefix is only for noun-based operations (`formUnion`).
-
-8. **Factory methods without make- prefix.** Naming factory methods as `createIterator()` or `buildBuffer()` instead of `makeIterator()` and `makeBuffer()`.
-
-9. **Repeating type information in names.** Writing `removeElement(cancelButton)` or `stringValue: String` when the type is already evident from context.
-
-10. **Return-type-only overloads.** Defining overloads that differ only in return type, creating ambiguity when the compiler cannot infer the expected type.
-
-11. **Unlabeled tuple members and closure parameters.** Exposing tuples or closures in public API without naming their components, forcing callers to use positional access.
+| Mistake | Correction |
+|---|---|
+| Ambiguous or missing labels | Make the call read grammatically, such as `remove(at:)`. |
+| Wrong mutating/nonmutating form | Use imperative verbs for mutation and a grammatical `-ed`/`-ing` or noun form for copies. |
+| Names describe types or implementation | Name roles and semantic effects. |
+| Public API lacks purpose or complexity docs | Add a concise summary and document non-O(1) properties. |
+| `form` or factory prefixes are misapplied | Reserve `form` for noun operations; use `make` for factories. |
+| Type information is repeated | Remove words already clear from the declaration and context. |
+| Overloads differ only by return type | Add a semantic name or parameter distinction. |
+| Tuple or closure components are positional | Label public components and closure parameters. |
 
 ## Review Checklist
 

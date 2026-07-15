@@ -5,13 +5,10 @@ description: "Implement, review, or improve SwiftUI Liquid Glass effects for iOS
 
 # SwiftUI Liquid Glass
 
-Liquid Glass is the dynamic translucent material introduced in iOS 26 (and iPadOS 26,
-macOS 26, tvOS 26, watchOS 26). It blurs content behind it, reflects surrounding color
-and light, and reacts to touch and pointer interactions. Standard SwiftUI components
-(tab bars, toolbars, navigation bars, sheets) adopt Liquid Glass automatically when
-built with the iOS 26 SDK. Treat custom Liquid Glass as a controls/navigation-layer
-effect, not a general content background. Use the APIs below for custom views and
-controls that need that functional layer.
+Liquid Glass is the dynamic translucent material introduced across Apple platforms
+26. Standard SwiftUI bars and presentations adopt it automatically when built with
+the current SDK. Reserve custom glass for functional controls and navigation surfaces,
+not general content backgrounds.
 
 See [references/liquid-glass.md](references/liquid-glass.md) for the full API reference with additional examples.
 
@@ -37,9 +34,8 @@ Choose the path that matches the request:
 5. Add `.interactive()` only to tappable/focusable elements.
 6. Add morphing transitions with `glassEffectID(_:in:)` where the view hierarchy
    changes with animation. Put `glassEffectTransition(_:)` on the inserted or
-   removed glass child, not on the always-present container. Name the transition
-   choice: `.matchedGeometry` for nearby effects inside container spacing;
-   `.materialize` for distant insertion/removal or no geometry match.
+   removed glass child, not on the always-present container, and choose the style
+   using [Morphing & Transitions](#morphing--transitions).
 7. Gate with `if #available(iOS 26, *)` and provide a fallback for earlier versions.
 
 ### 2. Improve an existing feature with Liquid Glass
@@ -51,7 +47,7 @@ Choose the path that matches the request:
 
 ### 3. Review existing Liquid Glass usage
 
-Run through the Review Checklist below and verify each item.
+Trace each effect through content/control ownership, layout order, container scope, interactivity, transitions, availability, accessibility settings, and fallback. Restore the same UI fixture and rerun the checklist after each correction.
 
 ## Core API Summary
 
@@ -117,32 +113,16 @@ Button("Media") { }
     .buttonStyle(.glass(.clear))    // configurable variant; verify contrast
 ```
 
-### Scroll Edge Effects and Background Extension (iOS 26+)
+### Related iOS 26 APIs
 
-These complement Liquid Glass when building custom toolbars and scroll views:
+| API | Use |
+|---|---|
+| `scrollEdgeEffectStyle` | Configure a scroll boundary's visual treatment. |
+| `backgroundExtensionEffect` | Extend one background under safe-area edges with mirrored blur. |
+| `ToolbarSpacer` | Create a visual break between toolbar items. |
 
-```swift
-ScrollView {
-    content
-}
-.scrollEdgeEffectStyle(.soft, for: .top)  // Configures edge effect at scroll boundaries
-
-// Duplicate view into mirrored copies at safe area edges with blur (e.g., under sidebars)
-content
-    .backgroundExtensionEffect()
-```
-
-### ToolbarSpacer (iOS 26+)
-
-Creates a visual break between items in toolbars:
-
-```swift
-.toolbar {
-    ToolbarItem { Button("Edit") { } }
-    ToolbarSpacer(.fixed)
-    ToolbarItem { Button("Share") { } }
-}
-```
+See the corresponding sections in
+[references/liquid-glass.md](references/liquid-glass.md) for signatures and examples.
 
 ## Code Examples
 
@@ -204,9 +184,6 @@ var body: some View {
     .buttonStyle(.glass)
 }
 ```
-
-For distant inserted or removed glass that should not morph from a nearby control,
-use `.glassEffectTransition(.materialize)` on the conditional child instead.
 
 ### Unioning views into a single glass shape
 
@@ -289,83 +266,14 @@ VStack(spacing: 8) {
 
 ## Common Mistakes
 
-### DON'T: Apply Liquid Glass to every surface
-
-Overuse distracts from content. Liquid Glass belongs in the controls/navigation layer;
-do not use it to decorate static content containers.
-
-```swift
-// WRONG: Glass on everything
-VStack {
-    Text("Title").glassEffect()
-    Text("Subtitle").glassEffect()
-    Divider().glassEffect()
-    Text("Body").glassEffect()
-}
-
-// CORRECT: Static content stays in the content layer
-VStack {
-    Text("Title").font(.title)
-    Text("Subtitle").font(.subheadline)
-    Divider()
-    Text("Body")
-}
-
-Button("Add") { addItem() }
-    .buttonStyle(.glass)
-```
-
-### DON'T: Make static status look tappable
-
-Counts, badges, summaries, and read-only status chips should not live in toolbar
-action slots or use `.interactive()` unless they initiate an immediate action. If a
-badge belongs to a real toolbar action, make the action one accessible control and
-keep the badge subordinate to that control.
-
-### DON'T: Nest GlassEffectContainer for one related group
-
-Use one container for the related glass group so rendering, blending, and morphing
-scope stay predictable.
-
-```swift
-// WRONG
-GlassEffectContainer {
-    GlassEffectContainer {
-        content.glassEffect()
-    }
-}
-
-// CORRECT: Single container wrapping all glass views
-GlassEffectContainer {
-    content.glassEffect()
-}
-```
-
-### DON'T: Add .interactive() to non-interactive elements
-
-`.interactive()` adds visual affordance suggesting tappability. Using it on decorative
-or read-only status glass misleads users.
-
-### DON'T: Apply .glassEffect() before layout modifiers
-
-Glass calculates its shape from the final frame. Applying it before padding/frame produces incorrect bounds.
-
-```swift
-// WRONG: Glass applied before padding
-Text("Label").glassEffect().padding()
-
-// CORRECT: Glass applied after layout
-Text("Label").padding().glassEffect()
-```
-
-### DON'T: Forget accessibility testing
-
-Always test with Reduce Transparency and Reduce Motion enabled. System settings can
-remove or modify translucency and motion, so verify custom glass content remains readable.
-
-### DON'T: Skip availability checks
-
-Liquid Glass requires iOS 26+. Gate with `if #available(iOS 26, *)` and provide a fallback.
+| Mistake | Fix |
+|---|---|
+| Glass decorates static content | Keep it in the controls/navigation layer. |
+| Read-only status uses `.interactive()` or an action slot | Present status as content, or make the whole badge one real accessible action. |
+| Related effects use nested containers | Use one `GlassEffectContainer` per related blending/morphing group. |
+| `.glassEffect()` precedes padding/frame/style | Apply layout and appearance first, then glass. |
+| Custom effects assume default accessibility settings | Test Reduce Transparency, Reduce Motion, contrast, and legibility. |
+| No pre-iOS 26 path | Gate the effect and preserve a functional fallback. |
 
 ## Review Checklist
 

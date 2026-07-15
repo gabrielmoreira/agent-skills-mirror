@@ -51,6 +51,17 @@ This skill ships with support files — use them when they are available:
 - **`references/root-cause-vs-symptom.md`** — Retros That Change Things: Root Causes vs Symptoms. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/retro-board.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Data grounding** | Numbers missing or wrong; observations are opinions with no traceable source | Core rates computed correctly, but observations only restate the numbers without pattern analysis (ticket types, historical comparison) | Every observation traces to a computed figure, carry-over is broken down by type/cause, and velocity is compared against the historical trend, not just the average |
+| **Blamelessness** | Brief names or implies individuals/disciplines as the cause ("QA missed them") | Neutral wording, but framing still points at effort or diligence rather than systemic conditions | Failure modes are reframed as process/coverage/scheduling patterns the data actually supports — a defensive reader would find nothing aimed at them |
+| **Prompt specificity** | Start/Stop/Continue are recycled generic categories ("communicate better") | Prompts reference this sprint but stay at category level — no numbers, no named behaviour | Each prompt is welded to this sprint's data, names one specific behaviour, and is phrased to open discussion rather than dictate the answer |
+| **Experiment quality** | No experiment, or a multi-quarter initiative dressed as one | One concrete change, but success is unmeasurable or can't be evaluated at the next retro | One process change testable within a single sprint, with explicit success metrics and a stated cost-if-wrong, checkable at the next retro |
+
 ## Quality Checks
 
 - [ ] Each Start/Stop/Continue prompt names a specific behaviour, not a vague category

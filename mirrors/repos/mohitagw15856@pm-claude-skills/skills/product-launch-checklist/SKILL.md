@@ -136,6 +136,17 @@ This skill ships with support files — use them when they are available:
 - **`references/launch-tiering.md`** — Launch Tiering: Matching Ceremony to Stakes. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/launch-plan.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Tier calibration | No tier stated, or checklist depth obviously mismatched (full Tier 1 ceremony for a copy tweak, or a bare list for a new revenue line) | Tier stated but not justified; some sections included or dropped inconsistently with the tier | Tier stated with the reasoning (pricing, legal, blast radius — not engineering effort), sections match the tier, and any tier disagreement is resolved on record |
+| Ownership & timing | Items and gates owned by "the team" or nobody; no dates | Most items have owners but key gates (Go/No-Go, expansions, retro) lack a named individual or a specific time | Every checklist item, gate, and decision has one named individual and a date/time, including the Go/No-Go decision time set ~24h before launch |
+| Rollback & staged rollout | No rollback plan, or flag flips to 100% on day one | Rollback documented but untested; staging exists but expansion steps have no pass criteria | Rollback tested with a known revert time ("X minutes, tested on [date]"), flag staged 5–10% → 50% → 100%, and each expansion gated on specific named checks |
+| Go/No-Go integrity | No gate, or a gate that is theatre — everything green by default, blocked work checked off | Gate exists with criteria, but blocked items are softened, statuses aspirational, or a NO-GO has no revised plan | Honest statuses (reds shown with blocker and owner), the decision follows the table even when that means slipping, and a NO-GO produces a dated re-gate — plus the retro booked at launch time |
+
 ## Quality Checks
 
 - [ ] Launch tier confirmed before generating checklist (scope determines depth)

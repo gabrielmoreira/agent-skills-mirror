@@ -118,6 +118,17 @@ This skill ships with support files — use them when they are available:
 - **`references/test-validity-traps.md`** — The Validity Traps That Quietly Invalidate A/B Tests. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/test-plan.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Statistical rigour | No sample size, or a number with no stated baseline/MDE behind it | Sample size present but MDE is guessed or copied from the lookup table without checking the actual baseline; power/significance unstated | Sample size derived from the stated baseline and MDE at 80% power / 95% confidence, duration checked against real daily traffic and the 2–4 week window, and the low-traffic escape hatch invoked if it doesn't fit |
+| Hypothesis discipline | "Let's see what happens" — no direction, no magnitude, or multiple changes bundled into one variant | Directional hypothesis but missing magnitude, segment, or the evidence-based *because*; variant purity not confirmed | Full template filled (change, metric, direction, magnitude, segment, rationale citing data), and the treatment isolates exactly one change with excluded ideas named as follow-up tests |
+| Guardrails & rollback | No guardrail metrics, or a rollback line with no threshold | Guardrails named but denominators/definitions ambiguous; rollback trigger vague ("if things look bad") | 1–2 guardrails protecting revenue or core engagement with pre-agreed definitions, concrete rollback thresholds, and the peeking-vs-harm-monitoring distinction handled explicitly |
+| Decision readiness | No interpretation guide; results will be argued about after the fact | Ship/iterate/reject listed but thresholds fuzzy; inconclusive outcome missing or treated as a soft win | All four outcomes (ship / iterate / reject / inconclusive) mapped to pre-committed thresholds, including what an inconclusive result costs and what each outcome changes next |
+
 ## Quality Checks
 
 - [ ] Hypothesis is directional (predicts a specific direction and magnitude, not "let's see")

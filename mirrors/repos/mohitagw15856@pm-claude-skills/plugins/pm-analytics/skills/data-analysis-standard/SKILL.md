@@ -116,6 +116,17 @@ This skill ships with support files — use them when they are available:
 - **`references/analysis-integrity.md`** — Analysis Integrity: the Checks Between Query and Conclusion. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/analysis-writeup.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Four-question completeness | Describes what changed and stops | Covers what/why but "so what / now what" are thin | All four answered with proportionate depth; the "now what" is decision-ready |
+| Evidence behind the root cause | Root cause asserted from intuition | One supporting data point, alternatives unexamined | Root cause tested against at least one rival explanation, with the discriminating evidence shown |
+| Uncertainty honesty | Reads as certain; no confidence statement | Confidence stated but not justified | Confidence level justified, and "what the data cannot tell us" names the real blind spots, not token ones |
+| Actionability | Findings with no action | Action named but ownerless or dateless | Recommended action has an owner, a timeline, and a stated expected effect worth checking later |
+
 ## Quality Checks
 
 - [ ] Analysis answers all 4 questions: what changed, why, so what, now what

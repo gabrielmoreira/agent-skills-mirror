@@ -255,6 +255,17 @@ This skill ships with support files — use them when they are available:
 - **`references/debt-pricing.md`** — Pricing Debt: Turning "It's Bad" Into a Number Someone Can Rank. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/debt-entry.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Business-impact translation | Items described in engineering terms only | Impact stated but unquantified | Every item priced in business terms (risk, velocity drag, cost) a non-engineer could rank |
+| Scoring discipline | Priorities assigned by feel | Formula used but security/dependency items still under-scored | Formula applied consistently, with the "feels technical" bias explicitly corrected |
+| Resolution plan quality | Top items have vague intentions | Plans exist but aren't ticketable | Top-5 plans are specific, ticketable steps with sequencing and a definition of done |
+| Capacity realism | Roadmap ignores sprint budget | Allocation stated but exceeds actual capacity | Quarterly allocation fits real capacity, and accepted/deferred items carry owners and review dates |
+
 ## Quality Checks
 
 - [ ] Every item has a named owner — no unowned debt

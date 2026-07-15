@@ -31,13 +31,27 @@ bash scripts/registry-status.sh --json   # machine-readable (drives the publishe
 
 Prints, for every manifest skill, `repo` vs `ClawHub` vs `SkillHub` published version, a per-platform current/stale/missing summary, and the bundle-plugin package version. Read-only — it never publishes.
 
-## Release-time distribution (in order)
+## Release-time distribution (the full push→distribution runbook, in order)
 
-1. `bash scripts/registry-status.sh` — see what's behind.
-2. `bash scripts/publish-registries.sh` → review → `bash scripts/publish-registries.sh --live` — publish **only the behind-set** to both registries.
-3. `bash scripts/publish-package.sh` → review → `bash scripts/publish-package.sh --live` — publish the bundle-plugin from the pushed HEAD.
-4. `bash scripts/sync-family.sh` → review → `bash scripts/sync-family.sh --live` — sync the downstream repo family.
-5. `bash scripts/registry-status.sh` — confirm 120/120 current on both + package current.
+Validated end-to-end at v18.0.0 (2026-07-13/14). Every step is resumable: a killed
+session loses at most one in-flight skill — re-run the same command.
+
+1. **Push**: clean tree → `git pull --rebase` → `git push` → CI green on origin/main.
+2. **Release**: `gh release create vX.Y.Z --title … --notes …` (VERSIONS.md entry is the source for the notes).
+3. **About**: `bash scripts/sync-about.sh` → review → `--live` — projects `.github/repo-about.json` onto the GitHub sidebar. *This step was silently skipped at v18.0.0 and the About kept advertising the previous release's framework names — it is part of the ritual, not an extra.*
+4. **Family prerequisites** (only when the release renamed/reshaped a family repo): `gh repo rename` the mirror first, then manually reconcile any `ids`-mode mirror's content (README + standard file + CHANGELOG + CITATION) — `ids` targets are verify-only and never auto-pushed.
+5. **Family**: `bash scripts/sync-family.sh` → review → `--live` → re-run the dry-run until all 15 report ✓.
+6. **Package**: `bash scripts/publish-package.sh --from-build` → review → `--live`. On a transport error after upload the script now verifies server-side via `package inspect` before declaring failure.
+7. **Registries**: `bash scripts/registry-status.sh` (parallel by default, ~2–4 min) → `bash scripts/publish-registries.sh` → review → `bash scripts/publish-registries.sh --live --parallel` — publishes **only the behind-set**; the two platforms run concurrently. **Exit 8 = SkillHub quota deferrals** (see the quota box below): finish the remainder the next day with `bash scripts/publish-registries.sh --live skillhub`.
+8. **Verify**: `bash scripts/registry-status.sh` — 120/120 current on both + package current — plus a glance at the release page and the About sidebar.
+
+> **SkillHub quota (measured, v18.0.0)**: ~**100 publishes per 24h rolling window,
+> account-wide**. Past it, every skill returns 发布频率过高 and *retries keep the
+> window hot* — never grind retries against it. `publish-registries.sh` therefore
+> stops at `--skillhub-budget` (default 90), retries a rate-limit once, defers the
+> skill, and aborts the pass after 2 consecutive deferrals. A 120-skill full
+> re-release is by design a **two-day publish**: ~90 on day one, the rest after
+> the window rolls. Deferred runs exit 8, not 1.
 
 ## Gotchas (learned the hard way)
 
@@ -45,7 +59,8 @@ Prints, for every manifest skill, `repo` vs `ClawHub` vs `SkillHub` published ve
 - **The manifest must be committed + pushed** before a package publish — `publish-package.sh` refuses otherwise.
 - **SkillHub slug**: unprefixed `<name>` is preferred (when the account owns the short slug), else `aaron-<name>`. `validate-skill.sh` accepts both. Legacy `aaron-<name>` records from before a slug switch may linger as orphans (most registries can't delete).
 - **SkillHub search recall**: `registry-status.sh` reads SkillHub via fuzzy search, so it can report a false `missing`. The publisher self-corrects — an idempotent publish of an already-current version returns `版本已存在` and counts as in-sync.
-- **ClawHub rate limits**: brand-new skills are ~5/hour; **version updates to existing skills are not capped**. SkillHub throttles bursts (`发布频率过高`) — the publisher spaces 40s and backs off 5 min on 429. Both publishers are resumable.
+- **ClawHub rate limits**: brand-new skills are ~5/hour; **version updates to existing skills are not capped** (measured ~37s/skill wall time — packing + upload dominates, not the 6s spacing). SkillHub's real constraint is the ~100/24h rolling account quota (box above), not burst pacing; the publisher spaces 40s and owns the retry policy (`publish-skillhub.sh --attempts 1` in orchestrated mode, so the two retry layers can no longer multiply into 16 requests per limited skill). Both publishers are resumable via the version-keyed state file.
+- **Session-death resilience**: publishers hold no in-memory state worth saving — behind-set comes from the server, done-set from the state file, and re-publishing an already-current version is a no-op (`版本已存在`). After any crash/restart: re-run the same command.
 - **ClawHub MIT-0**: per-skill publishes relicense to MIT-0 (`--i-accept-mit0`), broader than the repo's Apache-2.0.
 - Requires the `clawhub` + `skillhub` CLIs logged in on the owner machine. **Never CI-automated** — pushes to public registries get a human glance.
 

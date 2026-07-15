@@ -122,6 +122,17 @@ This skill ships with support files — use them when they are available:
 - **`references/capacity-honesty.md`** — Capacity Honesty — the numbers teams lie to themselves about. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/planning-worksheet.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Sprint goal quality | Goal is a task list ("do stories 1–8") or missing entirely | Outcome-flavoured but vague — not scoreable pass/fail at sprint end | Single outcome sentence with user/business benefit and a success indicator, unambiguously scoreable at sprint end |
+| Capacity honesty | Commitment assumes 100% of theoretical capacity; carry-overs ignored | Availability adjusted, but the 80% commit ratio is skipped or carry-over points not subtracted before pulling new work | Real availability (holidays, meetings, focus hours), carry-overs deducted first, and commitment capped at 80% of adjusted velocity |
+| Story readiness | Stories lack acceptance criteria, estimates, or owners | Most stories estimated and owned, but 8+ pointers are unsplit or acceptance criteria are untestable | Every story has one owner, calibrated points, and testable acceptance criteria; every 8+ pointer is flagged for splitting |
+| Risk & dependency surfacing | No risks or dependencies listed | Generic risks ("might slip") with no mitigations or owners | Specific blockers and cross-team dependencies, each with a concrete mitigation and a named owner |
+
 ## Quality Checks
 
 - [ ] Sprint goal is outcome-focused (not "implement X" — something like "users can do Y")

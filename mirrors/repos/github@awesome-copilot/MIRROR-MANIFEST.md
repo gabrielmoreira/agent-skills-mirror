@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `github/awesome-copilot` — 26 default patterns, 12 followed patterns, 1384 file(s) materialized.
+Mirror of `github/awesome-copilot` — 26 default patterns, 12 followed patterns, 1386 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `github/awesome-copilot` — 26 default patterns, 12 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 12 |
-| Files         | 1384 |
+| Files         | 1386 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -1406,54 +1406,56 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1334 | ✓ | [`skills/threat-model-analyst/SKILL.md`](skills/threat-model-analyst/SKILL.md) |
 | 1335 | ✓ | [`skills/tiny-stepping/SKILL.md`](skills/tiny-stepping/SKILL.md) |
 | 1336 | ✓ | [`skills/tldr-prompt/SKILL.md`](skills/tldr-prompt/SKILL.md) |
-| 1337 | ✓ | [`skills/transloadit-media-processing/SKILL.md`](skills/transloadit-media-processing/SKILL.md) |
-| 1338 | ✓ | [`skills/typescript-mcp-server-generator/SKILL.md`](skills/typescript-mcp-server-generator/SKILL.md) |
-| 1339 | ✓ | [`skills/typespec-api-operations/SKILL.md`](skills/typespec-api-operations/SKILL.md) |
-| 1340 | ✓ | [`skills/typespec-create-agent/SKILL.md`](skills/typespec-create-agent/SKILL.md) |
-| 1341 | ✓ | [`skills/typespec-create-api-plugin/SKILL.md`](skills/typespec-create-api-plugin/SKILL.md) |
-| 1342 | ✓ | [`skills/ui-screenshots/SKILL.md`](skills/ui-screenshots/SKILL.md) |
-| 1343 | ✓ | [`skills/unit-test-vue-pinia/references/pinia-patterns.md`](skills/unit-test-vue-pinia/references/pinia-patterns.md) |
-| 1344 | ✓ | [`skills/unit-test-vue-pinia/SKILL.md`](skills/unit-test-vue-pinia/SKILL.md) |
-| 1345 | ✓ | [`skills/update-avm-modules-in-bicep/SKILL.md`](skills/update-avm-modules-in-bicep/SKILL.md) |
-| 1346 | ✓ | [`skills/update-implementation-plan/SKILL.md`](skills/update-implementation-plan/SKILL.md) |
-| 1347 | ✓ | [`skills/update-llms/SKILL.md`](skills/update-llms/SKILL.md) |
-| 1348 | ✓ | [`skills/update-markdown-file-index/SKILL.md`](skills/update-markdown-file-index/SKILL.md) |
-| 1349 | ✓ | [`skills/update-specification/SKILL.md`](skills/update-specification/SKILL.md) |
-| 1350 | ✓ | [`skills/vardoger-analyze/SKILL.md`](skills/vardoger-analyze/SKILL.md) |
-| 1351 | ✓ | [`skills/vscode-ext-commands/SKILL.md`](skills/vscode-ext-commands/SKILL.md) |
-| 1352 | ✓ | [`skills/vscode-ext-localization/SKILL.md`](skills/vscode-ext-localization/SKILL.md) |
-| 1353 | ✓ | [`skills/web-design-reviewer/references/framework-fixes.md`](skills/web-design-reviewer/references/framework-fixes.md) |
-| 1354 | ✓ | [`skills/web-design-reviewer/references/visual-checklist.md`](skills/web-design-reviewer/references/visual-checklist.md) |
-| 1355 | ✓ | [`skills/web-design-reviewer/SKILL.md`](skills/web-design-reviewer/SKILL.md) |
-| 1356 | ✓ | [`skills/webapp-testing/assets/test-helper.js`](skills/webapp-testing/assets/test-helper.js) |
-| 1357 | ✓ | [`skills/webapp-testing/SKILL.md`](skills/webapp-testing/SKILL.md) |
-| 1358 | ✓ | [`skills/what-context-needed/SKILL.md`](skills/what-context-needed/SKILL.md) |
-| 1359 | ✓ | [`skills/winmd-api-search/LICENSE.txt`](skills/winmd-api-search/LICENSE.txt) |
-| 1360 | ✓ | [`skills/winmd-api-search/scripts/cache-generator/CacheGenerator.csproj`](skills/winmd-api-search/scripts/cache-generator/CacheGenerator.csproj) |
-| 1361 | ✓ | [`skills/winmd-api-search/scripts/cache-generator/Directory.Build.props`](skills/winmd-api-search/scripts/cache-generator/Directory.Build.props) |
-| 1362 | ✓ | [`skills/winmd-api-search/scripts/cache-generator/Directory.Build.targets`](skills/winmd-api-search/scripts/cache-generator/Directory.Build.targets) |
-| 1363 | ✓ | [`skills/winmd-api-search/scripts/cache-generator/Directory.Packages.props`](skills/winmd-api-search/scripts/cache-generator/Directory.Packages.props) |
-| 1364 | ✓ | [`skills/winmd-api-search/scripts/cache-generator/Program.cs`](skills/winmd-api-search/scripts/cache-generator/Program.cs) |
-| 1365 | ✓ | [`skills/winmd-api-search/scripts/Invoke-WinMdQuery.ps1`](skills/winmd-api-search/scripts/Invoke-WinMdQuery.ps1) |
-| 1366 | ✓ | [`skills/winmd-api-search/scripts/Update-WinMdCache.ps1`](skills/winmd-api-search/scripts/Update-WinMdCache.ps1) |
-| 1367 | ✓ | [`skills/winmd-api-search/SKILL.md`](skills/winmd-api-search/SKILL.md) |
-| 1368 | ✓ | [`skills/winui3-migration-guide/SKILL.md`](skills/winui3-migration-guide/SKILL.md) |
-| 1369 | ✓ | [`skills/workiq-copilot/SKILL.md`](skills/workiq-copilot/SKILL.md) |
-| 1370 | ✓ | [`skills/write-coding-standards-from-file/SKILL.md`](skills/write-coding-standards-from-file/SKILL.md) |
-| 1371 | ✓ | [`skills/x-twitter-scraper/SKILL.md`](skills/x-twitter-scraper/SKILL.md) |
-| 1372 | ✓ | [`website/README.md`](website/README.md) |
-| 1373 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 1374 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 1375 | → | [`cookbook/README.md`](cookbook/README.md) |
-| 1376 | → | [`docs/README.agents.md`](docs/README.agents.md) |
-| 1377 | → | [`docs/README.hooks.md`](docs/README.hooks.md) |
-| 1378 | → | [`docs/README.instructions.md`](docs/README.instructions.md) |
-| 1379 | → | [`docs/README.plugins.md`](docs/README.plugins.md) |
-| 1380 | → | [`docs/README.skills.md`](docs/README.skills.md) |
-| 1381 | → | [`docs/README.workflows.md`](docs/README.workflows.md) |
-| 1382 | → | [`README.md`](README.md) |
-| 1383 | → | [`SECURITY.md`](SECURITY.md) |
-| 1384 | → | [`workflows/daily-issues-report.md`](workflows/daily-issues-report.md) |
+| 1337 | ✓ | [`skills/tm7-threat-model/assets/example-minimal.tm7`](skills/tm7-threat-model/assets/example-minimal.tm7) |
+| 1338 | ✓ | [`skills/tm7-threat-model/SKILL.md`](skills/tm7-threat-model/SKILL.md) |
+| 1339 | ✓ | [`skills/transloadit-media-processing/SKILL.md`](skills/transloadit-media-processing/SKILL.md) |
+| 1340 | ✓ | [`skills/typescript-mcp-server-generator/SKILL.md`](skills/typescript-mcp-server-generator/SKILL.md) |
+| 1341 | ✓ | [`skills/typespec-api-operations/SKILL.md`](skills/typespec-api-operations/SKILL.md) |
+| 1342 | ✓ | [`skills/typespec-create-agent/SKILL.md`](skills/typespec-create-agent/SKILL.md) |
+| 1343 | ✓ | [`skills/typespec-create-api-plugin/SKILL.md`](skills/typespec-create-api-plugin/SKILL.md) |
+| 1344 | ✓ | [`skills/ui-screenshots/SKILL.md`](skills/ui-screenshots/SKILL.md) |
+| 1345 | ✓ | [`skills/unit-test-vue-pinia/references/pinia-patterns.md`](skills/unit-test-vue-pinia/references/pinia-patterns.md) |
+| 1346 | ✓ | [`skills/unit-test-vue-pinia/SKILL.md`](skills/unit-test-vue-pinia/SKILL.md) |
+| 1347 | ✓ | [`skills/update-avm-modules-in-bicep/SKILL.md`](skills/update-avm-modules-in-bicep/SKILL.md) |
+| 1348 | ✓ | [`skills/update-implementation-plan/SKILL.md`](skills/update-implementation-plan/SKILL.md) |
+| 1349 | ✓ | [`skills/update-llms/SKILL.md`](skills/update-llms/SKILL.md) |
+| 1350 | ✓ | [`skills/update-markdown-file-index/SKILL.md`](skills/update-markdown-file-index/SKILL.md) |
+| 1351 | ✓ | [`skills/update-specification/SKILL.md`](skills/update-specification/SKILL.md) |
+| 1352 | ✓ | [`skills/vardoger-analyze/SKILL.md`](skills/vardoger-analyze/SKILL.md) |
+| 1353 | ✓ | [`skills/vscode-ext-commands/SKILL.md`](skills/vscode-ext-commands/SKILL.md) |
+| 1354 | ✓ | [`skills/vscode-ext-localization/SKILL.md`](skills/vscode-ext-localization/SKILL.md) |
+| 1355 | ✓ | [`skills/web-design-reviewer/references/framework-fixes.md`](skills/web-design-reviewer/references/framework-fixes.md) |
+| 1356 | ✓ | [`skills/web-design-reviewer/references/visual-checklist.md`](skills/web-design-reviewer/references/visual-checklist.md) |
+| 1357 | ✓ | [`skills/web-design-reviewer/SKILL.md`](skills/web-design-reviewer/SKILL.md) |
+| 1358 | ✓ | [`skills/webapp-testing/assets/test-helper.js`](skills/webapp-testing/assets/test-helper.js) |
+| 1359 | ✓ | [`skills/webapp-testing/SKILL.md`](skills/webapp-testing/SKILL.md) |
+| 1360 | ✓ | [`skills/what-context-needed/SKILL.md`](skills/what-context-needed/SKILL.md) |
+| 1361 | ✓ | [`skills/winmd-api-search/LICENSE.txt`](skills/winmd-api-search/LICENSE.txt) |
+| 1362 | ✓ | [`skills/winmd-api-search/scripts/cache-generator/CacheGenerator.csproj`](skills/winmd-api-search/scripts/cache-generator/CacheGenerator.csproj) |
+| 1363 | ✓ | [`skills/winmd-api-search/scripts/cache-generator/Directory.Build.props`](skills/winmd-api-search/scripts/cache-generator/Directory.Build.props) |
+| 1364 | ✓ | [`skills/winmd-api-search/scripts/cache-generator/Directory.Build.targets`](skills/winmd-api-search/scripts/cache-generator/Directory.Build.targets) |
+| 1365 | ✓ | [`skills/winmd-api-search/scripts/cache-generator/Directory.Packages.props`](skills/winmd-api-search/scripts/cache-generator/Directory.Packages.props) |
+| 1366 | ✓ | [`skills/winmd-api-search/scripts/cache-generator/Program.cs`](skills/winmd-api-search/scripts/cache-generator/Program.cs) |
+| 1367 | ✓ | [`skills/winmd-api-search/scripts/Invoke-WinMdQuery.ps1`](skills/winmd-api-search/scripts/Invoke-WinMdQuery.ps1) |
+| 1368 | ✓ | [`skills/winmd-api-search/scripts/Update-WinMdCache.ps1`](skills/winmd-api-search/scripts/Update-WinMdCache.ps1) |
+| 1369 | ✓ | [`skills/winmd-api-search/SKILL.md`](skills/winmd-api-search/SKILL.md) |
+| 1370 | ✓ | [`skills/winui3-migration-guide/SKILL.md`](skills/winui3-migration-guide/SKILL.md) |
+| 1371 | ✓ | [`skills/workiq-copilot/SKILL.md`](skills/workiq-copilot/SKILL.md) |
+| 1372 | ✓ | [`skills/write-coding-standards-from-file/SKILL.md`](skills/write-coding-standards-from-file/SKILL.md) |
+| 1373 | ✓ | [`skills/x-twitter-scraper/SKILL.md`](skills/x-twitter-scraper/SKILL.md) |
+| 1374 | ✓ | [`website/README.md`](website/README.md) |
+| 1375 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 1376 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 1377 | → | [`cookbook/README.md`](cookbook/README.md) |
+| 1378 | → | [`docs/README.agents.md`](docs/README.agents.md) |
+| 1379 | → | [`docs/README.hooks.md`](docs/README.hooks.md) |
+| 1380 | → | [`docs/README.instructions.md`](docs/README.instructions.md) |
+| 1381 | → | [`docs/README.plugins.md`](docs/README.plugins.md) |
+| 1382 | → | [`docs/README.skills.md`](docs/README.skills.md) |
+| 1383 | → | [`docs/README.workflows.md`](docs/README.workflows.md) |
+| 1384 | → | [`README.md`](README.md) |
+| 1385 | → | [`SECURITY.md`](SECURITY.md) |
+| 1386 | → | [`workflows/daily-issues-report.md`](workflows/daily-issues-report.md) |
 
 ---
 

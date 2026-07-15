@@ -67,6 +67,17 @@ Produce a clean SWOT for the user's product in the context of this competitive l
 
 3–5 actionable recommendations based on the analysis. Frame each as: **"Given [observation], [your product] should [action] to [outcome]."**
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Map meaningfulness | Axes are generic (price × quality) | Market-specific axes but positions unjustified | Axes capture the real buying tension in this market and every placement is defensible |
+| Comparative depth | Feature table is checkmarks | Features compared with some notes | Differentiators carry strategic notes explaining why the gap matters and to whom |
+| SWOT honesty | Weaknesses/threats softened to niceties | Honest but unprioritized | Weaknesses and threats stated plainly, ranked by how much they should worry you |
+| Recommendation specificity | Generic strategy advice | Actionable but unlinked to findings | Each recommendation follows "given [observation], do [action] to [outcome]" and traces to the analysis |
+
 ## Quality Checks
 
 - [ ] Axes on positioning map are meaningful and specific to this market

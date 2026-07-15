@@ -216,6 +216,17 @@ This skill ships with support files — use them when they are available:
 - **`references/value-narrative.md`** — The QBR Value Narrative: Their Numbers, Not Your Features. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/qbr-outline.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Outcome framing | Value slide is product activity (logins, sessions, features shipped) dressed as impact | Business outcomes present but unquantified, or quantified in vendor units rather than the customer's own metrics and currency | Every value claim is a before/after in the customer's units (hours, spend, attrition, £/$), and shaky attribution is disclosed rather than claimed |
+| Accountability honesty | Last quarter's goals missing, or every goal quietly marked achieved; problems and escalations omitted | Goals graded but misses lack a cause and a changed plan; support issues mentioned only in passing | Every goal graded ✅/⚠️/❌ with cause and corrective plan for misses, and the quarter's worst moment (outage, escalation, disputed number) gets its own airtime with what changes next |
+| Customer airtime & facilitation | Deck is a one-way vendor presentation; no customer input sections | Agenda nominally includes customer slots but talking points don't actually hand over the floor, or airtime totals under 20 minutes | Customer holds 20+ minutes by the agenda, the goals slide is pure facilitation with prompts and a live-capture table, and multiple talking points explicitly invite pushback |
+| Commitments & relevance | No mutual commitments; roadmap is a full product dump | Commitments exist but are vendor-only or undated; some roadmap items lack a link to this customer's goals | Both sides own named, dated commitments, every roadmap row states why it matters to this account, and a next touchpoint is booked before the deck ends |
+
 ## Quality Checks
 
 - [ ] Every slide has a talking point, not just a title

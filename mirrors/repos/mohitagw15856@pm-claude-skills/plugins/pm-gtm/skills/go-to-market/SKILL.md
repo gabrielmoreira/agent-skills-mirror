@@ -95,6 +95,17 @@ This skill ships with support files — use them when they are available:
 - **`references/messaging-hierarchy.md`** — The Messaging Hierarchy: One Claim, Then Everything Else. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/gtm-pack.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Positioning precision | Generic value statement, no target or alternative | Moore format followed but the "unlike" clause is soft | Moore format with a sharp target segment and an "unlike" that names the real alternative buyers weigh |
+| Message-proof integrity | Pillars are unsupported claims | Proof points exist but some are restated claims | Every pillar carries ≥2 genuine proof points (or honestly flagged placeholders), and the hierarchy leads with one claim |
+| Feature-to-benefit conversion | Feature list with no benefits | Benefits present but passive or feature-shaped | Every feature paired with an action-verb benefit a buyer would repeat to their boss |
+| Launch usability | A positioning essay, not a pack | Pack complete but pieces inconsistent with each other | Tagline, pillars, use cases and benefit list all tell the same story and are lift-ready for a launch page |
+
 ## Quality Checks
 
 Before delivering output, verify:

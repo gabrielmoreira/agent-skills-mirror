@@ -1,15 +1,14 @@
 ---
 name: app-store-review
-description: "Prepare for App Store review and prevent rejections. Covers App Store review guidelines, app rejection reasons, PrivacyInfo.xcprivacy privacy manifest requirements, required API reason codes, in-app purchase IAP and StoreKit rules, App Store Guidelines compliance, ATT App Tracking Transparency, EU DMA Digital Markets Act, HIG compliance checklist, app submission preparation, review preparation, metadata requirements, entitlements, widgets, and Live Activities review rules. Use when preparing for App Store submission, fixing rejection reasons, auditing privacy manifests, implementing ATT consent flow, configuring StoreKit IAP, or checking HIG compliance."
+description: "Audits App Store submission readiness and rejection risk across current review guidelines, PrivacyInfo.xcprivacy and required-reason APIs, privacy labels, ATT, StoreKit payments, metadata, entitlements, widgets, and Live Activities. Use when preparing a submission, responding to rejection, reconciling privacy evidence, or separating upload blockers from cleanup."
 ---
 
 # App Store Review Preparation
 
-Guidance for catching App Store rejection risks before submission. Apple's May 2026 fraud-prevention update says App Review evaluated more than 9.1 million submissions in 2025 and rejected more than 2 million, so treat rejection prevention as a normal release-readiness step and re-check official Apple sources before quoting annual statistics.
+Catch App Store rejection risks before submission. Treat policy, SDK, privacy, entitlement, payment, and metadata checks as current release evidence rather than durable facts.
 
 ## Contents
 
-- [Overview](#overview)
 - [Top Rejection Reasons and How to Avoid Them](#top-rejection-reasons-and-how-to-avoid-them)
 - [PrivacyInfo.xcprivacy -- Privacy Manifest Requirements](#privacyinfoxcprivacy-privacy-manifest-requirements)
 - [Data Use, Sharing, and Privacy Policy (Guideline 5.1.2)](#data-use-sharing-and-privacy-policy-guideline-512)
@@ -25,63 +24,32 @@ Guidance for catching App Store rejection risks before submission. Apple's May 2
 - [Review Checklist](#review-checklist)
 - [References](#references)
 
-## Overview
+Start every audit by fetching the current App Review Guidelines, Upcoming Requirements, screenshot specifications, required-reason API documentation, and applicable storefront/entitlement payment rules. Record the checked date and source beside each release blocker. Then archive-build and validate the exact submission, separate blockers from cleanup, fix one class of evidence mismatch, and rerun the same checks against the rebuilt archive.
 
-Use this SKILL.md for quick guidance on common rejection reasons and key policies. Use the references for detailed checklists and privacy manifest specifics.
+For prompts about keywords, screenshot captions, product-page metadata, or metadata rejection risk, answer from a compliance angle and explicitly defer keyword research, ranking strategy, conversion optimization, screenshot ordering, and A/B testing to `app-store-optimization`. Keep App Review metadata guidance limited to accuracy, field limits, misleading-content risk, and screenshot compliance. Load the dated format, screenshot, and toolchain facts from [Current Release Requirements](references/review-checklists.md#current-release-requirements).
 
-For prompts about keywords, screenshot captions, product-page metadata, or metadata rejection risk, answer from a compliance angle and explicitly defer keyword research, ranking strategy, conversion optimization, screenshot ordering, and A/B testing to `app-store-optimization`. Keep App Review metadata guidance limited to accuracy, field limits, misleading-content risk, and screenshot compliance. Always surface the rejection-prone format checks: app name 30 characters, subtitle 30 characters, keyword field 100 characters with comma-separated keywords and no spaces after commas, screenshots showing actual app UI, 6.9-inch iPhone screenshots as the primary current iPhone set, and 13-inch iPad screenshots when the app runs on iPad.
-
-For full submission readiness audits, separate blocking upload/review issues from ordinary cleanup. Treat Xcode 26+ with the relevant platform SDK 26+ as a blocking App Store Connect upload requirement after April 28, 2026. Cross-check privacy manifests, App Store privacy nutrition labels, privacy policy, ATT state, runtime network behavior, and SDK behavior against each other; the declarations and observed behavior must align.
+For full submission readiness audits, separate blocking upload/review issues from ordinary cleanup. Cross-check privacy manifests, App Store privacy nutrition labels, privacy policy, ATT state, runtime network behavior, and SDK behavior against each other; the declarations and observed behavior must align.
 
 ### Blocking Submission Checks
 
 Escalate these as blockers before ordinary cleanup:
 
-- Uploads after April 28, 2026 that are not built with Xcode 26+ and the relevant platform SDK 26+
-- Privacy manifest, privacy label, privacy policy, ATT state, SDK transmissions, or audited runtime network behavior mismatches
-- Digital goods and subscriptions that bypass StoreKit IAP, or external purchase paths/links/buttons/CTAs for digital goods, unless current rules or approved entitlements allow them
-- Missing required screenshot sets: 6.9-inch iPhone screenshots, and 13-inch iPad screenshots when the app runs on iPad
-- Login-gated or non-obvious features without demo credentials, demo mode, and clear App Review notes
+- The archive misses the current Xcode or platform SDK upload floor
+- Unresolved privacy evidence mismatches; reconcile them with the [PrivacyInfo.xcprivacy requirements](#privacyinfoxcprivacy-privacy-manifest-requirements)
+- Payment paths that fail the [StoreKit rules](#in-app-purchase-and-storekit-rules-guideline-311)
+- Missing screenshot sets required by the current App Store Connect specification
+- Review access that fails the Guideline 2.1 completeness evidence below
 
 ## Top Rejection Reasons and How to Avoid Them
 
-### Guideline 2.1 -- App Completeness
+| Guideline risk | Release evidence |
+|---|---|
+| 2.1 completeness | No placeholders, broken/empty flows, inaccessible hardware-only features, or login gates without working demo credentials and review notes. |
+| 2.3 metadata | App name, category, description, keywords, and screenshots accurately represent the submitted binary and actual UI. |
+| 4.2 minimum functionality | The app provides meaningful app-specific value beyond a thin website or trivial duplication of system behavior. |
+| 2.5.1 software requirements | Archive uses public APIs and does not download code that changes reviewed functionality outside documented exceptions. |
 
-The app must be fully functional when reviewed. Apple rejects for:
-
-- Placeholder content, lorem ipsum, or test data visible anywhere
-- Broken links or empty screens
-- Features behind logins without demo credentials provided in App Review notes
-- Features that require hardware Apple does not have access to
-
-**Prevention:**
-- Provide demo account credentials in the App Review Information notes field in App Store Connect
-- Walk through every screen and verify real content is present
-- Test all flows end-to-end, including edge cases like empty states and error conditions
-
-### Guideline 2.3 -- Accurate Metadata
-
-- App name must match what the app actually does
-- Screenshots must show the actual app UI, not marketing renders or mockups
-- Description must not contain prices (they vary by region)
-- No references to other platforms ("Also available on Android")
-- Keywords must be relevant -- no competitor names or unrelated terms
-- Category must match the app's primary function
-
-### Guideline 4.2 -- Minimum Functionality
-
-Apple rejects apps that are too simple or are just websites in a wrapper:
-
-- WKWebView-only apps are rejected unless they add meaningful native functionality
-- Single-feature apps may be rejected if the feature is better suited as part of another app
-- Apps that duplicate built-in iOS functionality without significant improvement are rejected
-
-### Guideline 2.5.1 -- Software Requirements
-
-- Must use public APIs only -- private API usage is an instant rejection
-- As of April 28, 2026, uploads to App Store Connect must be built with Xcode 26 or later using the relevant platform SDK 26 or later
-- Deployment target support is a product and compatibility decision, not an App Review rule
-- Must not download or execute code that introduces or changes app features or functionality after review, except where Apple guidelines and agreements explicitly allow interpreted code
+Verify these against the current guidelines and the exact archive; do not carry version or screenshot requirements forward from an older release checklist.
 
 ## PrivacyInfo.xcprivacy -- Privacy Manifest Requirements
 
@@ -106,42 +74,12 @@ A privacy manifest is required when your app code, an executable, a dynamic libr
 
 ## In-App Purchase and StoreKit Rules (Guideline 3.1.1)
 
-IAP rules are strict and heavily enforced.
-
-### What Generally Requires Apple IAP
-
-Digital content, features, subscriptions, and services unlocked in the app generally must use Apple's In-App Purchase system unless a specific App Review guideline exception, regional rule, or approved entitlement applies. Remove external purchase paths unless the current rules or an approved entitlement allow them:
-
-- Premium features or content unlocks
-- Subscriptions to app functionality
-- Virtual currency, coins, gems
-- Ad removal
-- Digital tips or donations
-
-### What Does NOT Require IAP
-
-- Physical products (e-commerce)
-- Ride-sharing, food delivery, real-world services
-- One-to-one services (tutoring, consulting booked through the app)
-- Enterprise/B2B apps distributed through Apple Business Manager
-
-### Subscription Display Requirements
-
-- Price, duration, and auto-renewal terms must be clearly displayed before purchase
-- Free trials must clearly show trial duration, post-trial price, billing frequency, auto-renewal, and cancellation terms before purchase
-- Remove external purchase links, buttons, calls to action, or purchase paths for digital goods unless the current storefront rules or an approved entitlement explicitly allow them
-- "Reader" apps (Netflix, Spotify) may link to external sign-up but cannot offer IAP bypass
-
-### StoreKit Implementation Checklist
-
-- Consumables, non-consumables, and subscriptions must be correctly categorized in App Store Connect
-- Restore purchases functionality must be present and working
-- Transaction verification should use StoreKit 2 `Transaction.currentEntitlements` or server-side validation
-- Handle interrupted purchases, deferred transactions, and ask-to-buy gracefully
+Digital goods, features, subscriptions, virtual currency, ad removal, and digital tips generally require IAP unless a current guideline exception, storefront rule, or approved entitlement applies. Physical goods and real-world services use their ordinary payment flow. Before purchase, show price, duration, renewal/trial terms, billing frequency, and cancellation terms; verify product classification, restoration, entitlement verification, deferred/interrupted purchases, and Ask to Buy. Load `storekit` for implementation and re-check current regional/external-link rules before labeling a path compliant.
 
 ## HIG Compliance Checklist
 
-See [references/review-checklists.md](references/review-checklists.md) for the full HIG checklist (navigation, modals, widgets, system feature support, launch screen, empty states). This section stays intentionally brief to keep SKILL.md concise.
+Load the full HIG checks for navigation, modals, widgets, system features,
+launch screens, and empty states from [review-checklists.md](references/review-checklists.md).
 
 ## App Tracking Transparency (ATT)
 
@@ -186,46 +124,15 @@ func requestTrackingPermission() async {
 
 ## EU Digital Markets Act (DMA) Considerations
 
-For apps distributed in the EU, and for other region-specific distribution models as Apple updates them:
-
-- Alternative browser engines are permitted on iOS in the EU
-- Alternative app marketplaces exist -- apps may be distributed outside the App Store
-- External payment links may be allowed under specific conditions, with Apple's commission structure adjusted
-- Notarization is required even for sideloaded apps distributed outside the App Store
-- Apps using alternative distribution must still meet Apple's notarization requirements for security
+Alternative distribution, browser-engine, notarization, and external-payment
+paths are region- and entitlement-specific. Re-check the current storefront
+rules and treat an unsupported route as a blocker.
 
 ## Entitlements and Capabilities
 
-Every entitlement must be justified. Apple reviews these closely:
-
-| Entitlement | Apple Scrutiny |
-|---|---|
-| Camera | Must explain purpose in `NSCameraUsageDescription` |
-| Location (Always) | Must have clear, user-visible reason for background location |
-| Push Notifications | Must not be used for marketing without user opt-in |
-| HealthKit | Must actually use health data in a meaningful way |
-| Background Modes | Each mode (audio, location, VoIP, fetch) must be justified and actively used |
-| App Groups | Must explain what shared data is needed |
-| Associated Domains | Universal links must actually resolve and function |
-
-### Usage Description Strings
-
-Usage descriptions in Info.plist must be specific about what data is accessed and why:
-
-```xml
-// REJECTED -- too vague
-
-// APPROVED -- specific purpose
-"Your location is used to show nearby restaurants on the map."
-
-// REJECTED -- too vague
-"This app needs access to your camera."
-
-// APPROVED -- specific purpose
-"The camera is used to scan barcodes for price comparison."
-```
-
-Apple rejects vague usage descriptions. Always state what the data is used for in user-facing terms.
+Every entitlement needs an active feature, a specific usage description when
+applicable, and matching archive behavior. Use the table and valid property-list
+examples in [Entitlements and Usage Descriptions](references/review-checklists.md#entitlements-and-usage-descriptions).
 
 ## Submission Workflow
 
@@ -239,117 +146,57 @@ Apple rejects vague usage descriptions. Always state what the data is used for i
 
 ### Expedited Review Requests
 
-Apple grants expedited reviews for critical situations only:
-
-- Critical bug fix affecting existing users
-- Time-sensitive event (holiday launch, legal compliance deadline)
-- Security vulnerability patch
-
-Request via the Contact Us form in App Store Connect (App Review > Expedite Request). Provide a specific, factual justification. Do not request expedited review for initial launches or feature updates.
+Request expedited review only for Apple-documented critical or time-sensitive
+cases, using a concise factual justification in App Store Connect's Contact Us
+form.
 
 ### Phased Release
 
-After approval, you can enable phased release to gradually roll out the update:
-
-| Day | Percentage of Users |
-|-----|---------------------|
-| 1   | 1%                  |
-| 2   | 2%                  |
-| 3   | 5%                  |
-| 4   | 10%                 |
-| 5   | 20%                 |
-| 6   | 50%                 |
-| 7   | 100%                |
-
-Users who manually check for updates in the App Store will receive the update immediately regardless of phased release stage. You can pause, resume, or complete the rollout at any time from App Store Connect.
+Use [Phased Release Schedule](references/review-checklists.md#phased-release-schedule)
+for the rollout percentages and App Store Connect controls.
 
 ## Metadata Best Practices
 
-### App Name and Subtitle
-
-- **30 characters max** for the app name. Keep it memorable and unique.
-- **30 characters max** for the subtitle. Use it for a concise value proposition.
-- No generic terms that describe a category ("Photo Editor" alone is likely rejected).
-- No competitor names or trademarked terms you do not own.
-- No pricing information in the name or subtitle.
-- Name must be unique on the App Store -- Apple rejects duplicates.
-
-### Screenshot Requirements
-
-- Provide 1-10 screenshots per required platform and localization.
-- For iPhone, use the current App Store Connect screenshot specifications. As of May 2026, 6.9-inch iPhone screenshots are the primary accepted iPhone set; 6.5-inch screenshots are required only when 6.9-inch screenshots are not provided, and smaller iPhone displays can use scaled screenshots from larger sets.
-- For iPad apps, 13-inch iPad screenshots are required; smaller iPad displays can use scaled screenshots from larger sets.
-- Screenshots must show the **actual app UI** -- no misleading content, no features that do not exist.
-- Text overlays and marketing frames are allowed but must not obscure or misrepresent the actual interface.
-- Up to 10 screenshots per localization.
-- Screenshots for different localizations should show localized UI.
-
-### Keyword Field Compliance
-
-- 100-character limit, comma-separated, no spaces after commas.
-- Do not duplicate words already in your app name or subtitle (Apple indexes those automatically).
-- Use singular or plural, not both ("game" not "game,games").
-- No competitor names, trademarked terms, or irrelevant words.
-
-### App Preview Videos
-
-- **30 seconds max** per preview video.
-- Up to 3 preview videos per localization.
-- Must show the actual app running on device -- no pre-rendered animations of features that look different in practice.
-- App audio is captured; narration and background music are optional.
-- Avoid any framing, hand footage, or visual treatment that makes the preview misleading about the actual app experience.
-- First frame is used as the poster frame on the product page (choose carefully).
+Keep the name, subtitle, keywords, screenshots, and previews accurate to the
+submitted binary and actual UI. Do not use prices, competitor terms, or
+misleading claims. Apply field limits and media rules from the
+[Metadata Compliance Checklist](references/review-checklists.md#metadata-compliance-checklist),
+and route research, ranking, conversion, screenshot ordering, and A/B testing
+to `app-store-optimization`.
 
 ## Appeal Process
 
-### Replying to Rejections
+Respond in App Store Connect's Resolution Center with a concise evidence trail:
 
-All rejections appear in the **Resolution Center** in App Store Connect. To respond:
+- [ ] Map the rejection to the cited guideline and exact submitted behavior.
+- [ ] If fixed, identify the precise change and resubmit; if disputed, explain how
+      the submission satisfies each relevant requirement.
+- [ ] Attach the evidence needed to reproduce compliance, such as working demo
+      credentials, screenshots, or a focused video walkthrough.
+- [ ] If the exchange remains unresolved, request App Review Board escalation
+      through the Resolution Center or App Store Contact form (App Review >
+      Appeal), including the full submission history and supporting evidence.
 
-1. Read the rejection message carefully -- it cites the specific guideline violated.
-2. Reply directly in the Resolution Center thread with a clear, factual explanation.
-3. If you made a fix, describe exactly what changed and resubmit the binary.
-4. If you believe the rejection is incorrect, explain why your app complies, with references to the specific guideline text.
-
-**Tone matters.** Be professional, specific, and concise. Provide demo credentials, screenshots, or screen recordings that demonstrate compliance. Avoid emotional language or threats.
-
-### Escalation to App Review Board
-
-If the Resolution Center exchange does not resolve the issue:
-
-1. Request an appeal to the **App Review Board** via the Resolution Center or the App Store Contact form (App Review > Appeal).
-2. The Board is a separate team from the original reviewer. Provide all context -- they review the full history.
-3. Board decisions are final for that submission, but you can always modify the app and resubmit.
-
-### Common Successful Appeal Strategies
-
-- **Provide a video walkthrough** showing the feature the reviewer could not find or access.
-- **Cite the specific guideline** and explain how the app satisfies each requirement.
-- **Include demo credentials** if the reviewer could not log in (the most common 2.1 rejection cause).
-- **Reference precedent** -- if similar apps exist on the App Store with the same pattern, note them (respectfully).
-- **Offer a compromise** -- if Apple objects to a specific implementation, propose an alternative that satisfies both sides.
+The Board's decision is final for that submission; modifying the app and
+resubmitting remains available.
 
 ## Common Mistakes
 
-1. **Missing demo credentials.** Provide App Review login credentials in App Store Connect notes. Most Guideline 2.1 rejections are from reviewers unable to test behind a login.
-2. **Privacy manifest mismatch.** Declared data collection in PrivacyInfo.xcprivacy must match App Store privacy nutrition labels, SDK behavior, and app functionality.
-3. **Unnecessary ATT prompt.** Do not show the App Tracking Transparency prompt unless you actually track users across apps or websites. Apple rejects unnecessary prompts.
-4. **Vague usage descriptions.** "This app needs your location" is rejected. State the specific feature that uses the data.
-5. **Unapproved external purchase paths.** External payment links for digital goods are region- and entitlement-sensitive; do not add them without checking current Guideline 3.1.1(a) rules.
-6. **Treating code quality as review compliance.** Swift 6 concurrency annotations and StoreKit transaction handling matter, but they do not replace privacy, payment, metadata, and entitlement compliance checks.
+1. **Vague usage descriptions.** Name the specific feature that uses the data.
+2. **Treating code quality as review compliance.** Concurrency and transaction correctness do not replace privacy, payment, metadata, and entitlement evidence.
 
 ## Review Checklist
 
 Quick-check before every submission (full version in [references/review-checklists.md](references/review-checklists.md)):
 
-- [ ] No placeholder/test content; all features functional; demo credentials provided
-- [ ] App name matches functionality; screenshots are real; no prices in description; 6.9-inch iPhone and 13-inch iPad screenshots supplied when applicable
-- [ ] PrivacyInfo.xcprivacy present when required-reason APIs, tracking, collected data declarations, or SDK tracking domains apply; nutrition labels match reality
+- [ ] Guideline 2.1 completeness and review access pass [Blocking Submission Checks](#blocking-submission-checks)
+- [ ] App name and screenshots match the binary and current release requirements
+- [ ] Privacy evidence passes the [PrivacyInfo.xcprivacy requirements](#privacyinfoxcprivacy-privacy-manifest-requirements)
 - [ ] Privacy policy URL set and accessible in-app
-- [ ] Digital content uses IAP; subscription terms visible; restore purchases works; external purchase links/buttons/CTAs removed unless current rules or approved entitlements allow them
+- [ ] Payment paths pass the [StoreKit rules](#in-app-purchase-and-storekit-rules-guideline-311)
 - [ ] Dark Mode and Dynamic Type supported; standard navigation patterns
-- [ ] Built with Xcode 26+ and platform SDK 26+ for uploads after April 28, 2026; no private APIs; entitlements justified
-- [ ] ATT prompt only if cross-app or cross-website tracking occurs
+- [ ] Archive and entitlements pass [Blocking Submission Checks](#blocking-submission-checks)
+- [ ] ATT behavior passes the [ATT criteria](#app-tracking-transparency-att)
 
 ## References
 

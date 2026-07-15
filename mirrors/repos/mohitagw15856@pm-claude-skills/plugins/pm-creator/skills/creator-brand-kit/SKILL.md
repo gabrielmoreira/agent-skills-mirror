@@ -53,6 +53,17 @@ This skill ships with support files — use them when they are available:
 - **`references/voice-consistency.md`** — Voice Consistency: the Creator's Compounding Asset. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/brand-kit.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Niche sharpness** | A broad category ("fitness", "tech") that positions against everyone | Audience and topic named, but the angle is generic — ten other creators could claim the same line | Audience + topic + angle so specific the positioning line excludes most of the niche's competitors, with the differentiator stated |
+| **Pillar durability & funnel mix** | Pillars are topics-of-the-week or a flat content list with no purpose per pillar | 3–5 durable themes, but all serve reach — no deliberate grow/nurture/convert mix, thin example ideas | Each pillar states what it covers, why it serves the audience, 2–3 concrete post ideas, and the set visibly spans grow, nurture, and convert for the stated goal |
+| **Voice demonstrability** | Voice is a list of adjectives with no examples | Attributes have examples, but they're interchangeable — another writer still couldn't reproduce the voice | Every attribute has a do/don't pair, words-to-use/avoid are listed, and the in-voice sample would pass as the creator's own writing |
+| **Reusability as a foundation** | Bio is clever but says nothing about who it helps; no guidance on reusing the kit | Bio works and fits limits, but the kit ends there — no wiring to downstream content skills | Bio (≤150 chars) names who it's for and what they get, handles are consolidated, and the reuse note tells you exactly how other skills consume this kit |
+
 ## Quality Checks
 
 - [ ] The niche is specific (audience + topic + angle), not a broad category

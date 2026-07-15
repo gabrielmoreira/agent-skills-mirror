@@ -42,6 +42,7 @@ import {
   screenUV,
   sin,
   smoothstep,
+  transformNormalToView,
   uniform,
   vec2,
   vec3,
@@ -273,7 +274,10 @@ export function createSeabedMaterial(
     )
     const micro = valueNoise2(xz.mul(7)).sub(0.5).mul(0.24)
     const slope = vec2(firstBand.mul(0.08), secondBand.mul(0.06)).add(micro)
-    return normalize(normalGeometry.add(vec3(slope.x, 0, slope.y)))
+    const localNormal = normalize(
+      normalGeometry.add(vec3(slope.x, 0, slope.y)),
+    )
+    return transformNormalToView(localNormal)
   })()
   applyCaustics(material, caustics.textureNode, 1.15)
   return material

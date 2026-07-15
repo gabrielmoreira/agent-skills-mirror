@@ -18,7 +18,7 @@ disable-model-invocation: true
 
 ---
 
-> **Vendor note:** This workflow executes inline (no subagent spawning). All vendors use their native code analysis and file tools.
+> **Vendor note:** This workflow executes inline (no subagent spawning), with one exception: the Step 5 blind-review escalation path may spawn fresh-context reviewer subagents for high-stakes designs. All vendors otherwise use their native code analysis and file tools.
 
 ---
 
@@ -110,7 +110,18 @@ Groupthink and authority bias hide real gaps. A blind round, where each perspect
 
 6. **Present resolved design** to the user for final approval before Step 6.
 
-Skip only if the design is trivially small (1-2 files, low stakes). Otherwise mandatory.
+**Blind fidelity — inline vs. delegated:**
+
+The default inline lenses run in *this* session, so the model that authored the Step 4 design is also critiquing it. That satisfies the "lenses don't see each other's feedback" requirement, but it does **not** remove authorship bias — the reviewer knows every rationale and approval that produced the design and tends to rationalize rather than challenge. That is a *lower-grade* blind review, acceptable for most designs.
+
+**Escalation (high-stakes designs only):** when the design is architecturally significant, hard to reverse, or security-/compliance-sensitive, delegate the critique to **fresh-context reviewer subagents** instead of inline lenses, so each reviewer sees only the design artifact — not the conversation history, rationale, or approval flow that carries the author's bias.
+
+- Resolve `target_vendor_for_agent` per agent, then dispatch each reviewer lens using the standard per-agent path: native subagent when `target_vendor_for_agent === current_runtime_vendor`, otherwise `oma agent:spawn {agent_id} {prompt_file} {session_id} -w {workspace}`.
+- Pass **only the Step 4 design document** (and minimal domain constraints) in the prompt file. Do **not** include the clarification Q&A, prior `PARTIAL→PASS` votes, or user approvals — that context is exactly what a blind reviewer must not see.
+- Suggested reviewer agents: `qa-reviewer`, `architecture-reviewer`, plus domain lenses from the stakeholder map in point 1.
+- Consolidate their findings back through points 3-6 above.
+
+Skip only if the design is trivially small (1-2 files, low stakes). Otherwise the inline round is mandatory; the escalation path is recommended for high-stakes designs.
 
 ---
 

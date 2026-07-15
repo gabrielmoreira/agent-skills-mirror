@@ -387,6 +387,21 @@ These apply regardless of rendering format.
 - **No process exhaust.** No "captured at Phase X" notes, no `## Next Steps`
   pointing to the next skill, no italic provenance lines. Engineering process
   metadata belongs in commit messages and tool output, not the artifact.
+- **Session-settled annotations on KTDs.** A Key Technical Decision that
+  records a decision settled in the invoking conversation carries an inline
+  annotation on its entry:
+  `(session-settled: user-directed — chosen over <alternative>: <one-line reason>)`.
+  Exactly two classes: `user-directed` (the user chose against or between
+  surfaced options) and `user-approved` (the agent proposed with the tradeoff
+  surfaced; the user assented). An agent never labels its own unexamined
+  proposal. A KTD that instantiates a labeled brainstorm / Product Contract
+  Key Decision inherits the label and cites that decision. The annotation is
+  self-contained — decision, rejected alternative, and one-line reason
+  readable without the conversation — and lives inline on the entry: no
+  sidecar files, no frontmatter registry, no numeric weights, no lifecycle
+  field. Like a `(see origin: <path>)` citation, it is decision provenance,
+  not process exhaust — review passes must not strip it. A consumer that
+  does not recognize the annotation treats the entry as a normal KTD.
 - **Group Requirements by concern when they span distinct logical areas.**
   The trigger is distinct concerns, not item count — even four requirements
   benefit from grouping if they cover three different topics. Skip grouping

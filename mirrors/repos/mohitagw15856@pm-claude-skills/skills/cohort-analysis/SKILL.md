@@ -229,6 +229,17 @@ ORDER BY 1, 3;
 
 ---
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Cohort definition rigor | Boundaries ambiguous; a user could sit in two cohorts | Mutually exclusive but entry event weakly justified | Unambiguous entry event and date boundaries, with the definition's tradeoffs stated |
+| Plateau & window honesty | Retention read off a window too short to support it | Plateau claimed without showing where | Plateau visible and located, or the window explicitly declared too short to confirm one |
+| LTV grounding | LTV from assumed retention or assumed ARPU | Observed data used but projection method unstated | LTV built from observed retention × observed ARPU with the projection method and decay assumption shown |
+| Trend & leading-indicator payoff | Cohorts described, nothing compared | Cohort-over-cohort trend shown without indicators | Trend across acquisition periods read correctly, plus behavioural leading indicators of churn tied to detection |
+
 ## Quality Checks
 
 Run all checks before delivering output. Do not mark a check as passed unless it is verifiably true given the supplied data.

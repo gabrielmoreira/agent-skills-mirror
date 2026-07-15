@@ -81,6 +81,17 @@ This skill ships with support files — use them when they are available:
 - **`references/reviewer-empathy.md`** — PR Descriptions as Review Navigation. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/pr-template.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Why over what** | Description only restates the diff; no motivation given | The what is clear, but the why is thin or generic ("improves the code") | Problem, goal, and approach are explicit; the description adds context the diff cannot convey |
+| **Title & structure** | Single unstructured paragraph; title vague, missing a type prefix, or over 72 characters | Structured with headers, but the title or section usage slips (placeholder sections left in) | Valid type prefix, imperative mood, under 72 characters; sections let a reviewer navigate straight to what they need |
+| **Testing reproducibility** | No testing steps | Steps exist but assume codebase familiarity or skip edge cases | Someone unfamiliar with the code can reproduce verification — commands, test data, flags, and at least one edge case included |
+| **Risk-calibrated reviewer guidance** | High-risk PR with no reviewer notes, or notes that are pure boilerplate | Notes exist but name no specific trade-off, uncertainty, or out-of-scope item | Guidance matches risk: high-risk flags specific concerns and deliberate trade-offs; low-risk keeps notes to one line or omits them |
+
 ## Quality Checks
 - [ ] Title is imperative mood and under 72 characters
 - [ ] Summary explains what AND why (not just what)

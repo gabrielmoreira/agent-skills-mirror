@@ -42,6 +42,8 @@ Before applying each fix, confirm it preserves behavior: same output for every i
 
 **Never simplify away a safety check.** Input validation at trust boundaries, error handling that prevents data loss, security checks (authorization, escaping, sanitization), and accessibility affordances are not removable boilerplate — preserve them even when a finding frames them as redundant or inline-able. Code that drops one of these is not simpler, it is unfinished. If a proposed simplification would thin or remove one, skip it.
 
+**Honor caller-passed structure pins.** When the caller passes a plan path with the structure-pin constraint, that plan path is context, never the simplification scope; that plan's `session-settled:`-labeled Key Technical Decisions are structural constraints the simplification must preserve — deliberately duplicated files stay duplicated, deliberately separate implementations stay separate — even when consolidation would otherwise be the obvious simplification. Behavior preservation already governs every fix; this extends it to settled structure.
+
 ## Step 4: Verify behavior is preserved
 
 The premise of this skill is that simplification preserves exact functionality. After applying fixes:

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `kubesphere/kubesphere` — 26 default patterns, 0 followed patterns, 95 file(s) materialized.
+Mirror of `kubesphere/kubesphere` — 26 default patterns, 0 followed patterns, 104 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kubesphere/kubesphere` — 26 default patterns, 0 followed patterns, 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 95 |
+| Files         | 104 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -116,44 +116,53 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 55 | ✓ | [`skills/kubesphere-fluid/examples/juicefs.yaml`](skills/kubesphere-fluid/examples/juicefs.yaml) |
 | 56 | ✓ | [`skills/kubesphere-fluid/examples/thinruntime.yaml`](skills/kubesphere-fluid/examples/thinruntime.yaml) |
 | 57 | ✓ | [`skills/kubesphere-fluid/SKILL.md`](skills/kubesphere-fluid/SKILL.md) |
-| 58 | ✓ | [`skills/kubesphere-multi-tenant-management/evals/evals.json`](skills/kubesphere-multi-tenant-management/evals/evals.json) |
-| 59 | ✓ | [`skills/kubesphere-multi-tenant-management/references/multi-tenancy-architecture.jpeg`](skills/kubesphere-multi-tenant-management/references/multi-tenancy-architecture.jpeg) |
-| 60 | ✓ | [`skills/kubesphere-multi-tenant-management/references/multi-tenancy-in-kubesphere.md`](skills/kubesphere-multi-tenant-management/references/multi-tenancy-in-kubesphere.md) |
-| 61 | ✓ | [`skills/kubesphere-multi-tenant-management/scripts/ks_api.py`](skills/kubesphere-multi-tenant-management/scripts/ks_api.py) |
-| 62 | ✓ | [`skills/kubesphere-multi-tenant-management/SKILL.md`](skills/kubesphere-multi-tenant-management/SKILL.md) |
-| 63 | ✓ | [`skills/kubesphere-network-extension-operations/agents/openai.yaml`](skills/kubesphere-network-extension-operations/agents/openai.yaml) |
-| 64 | ✓ | [`skills/kubesphere-network-extension-operations/evals/evals.json`](skills/kubesphere-network-extension-operations/evals/evals.json) |
-| 65 | ✓ | [`skills/kubesphere-network-extension-operations/references/api_doc.md`](skills/kubesphere-network-extension-operations/references/api_doc.md) |
-| 66 | ✓ | [`skills/kubesphere-network-extension-operations/references/extension.yaml`](skills/kubesphere-network-extension-operations/references/extension.yaml) |
-| 67 | ✓ | [`skills/kubesphere-network-extension-operations/references/README_zh.md`](skills/kubesphere-network-extension-operations/references/README_zh.md) |
-| 68 | ✓ | [`skills/kubesphere-network-extension-operations/references/swagger.yaml`](skills/kubesphere-network-extension-operations/references/swagger.yaml) |
-| 69 | ✓ | [`skills/kubesphere-network-extension-operations/references/values.yaml`](skills/kubesphere-network-extension-operations/references/values.yaml) |
-| 70 | ✓ | [`skills/kubesphere-network-extension-operations/SKILL.md`](skills/kubesphere-network-extension-operations/SKILL.md) |
-| 71 | ✓ | [`skills/kubesphere-openkruise/evals/evals.json`](skills/kubesphere-openkruise/evals/evals.json) |
-| 72 | ✓ | [`skills/kubesphere-openkruise/examples/cloneset.yaml`](skills/kubesphere-openkruise/examples/cloneset.yaml) |
-| 73 | ✓ | [`skills/kubesphere-openkruise/examples/sidecarset.yaml`](skills/kubesphere-openkruise/examples/sidecarset.yaml) |
-| 74 | ✓ | [`skills/kubesphere-openkruise/SKILL.md`](skills/kubesphere-openkruise/SKILL.md) |
-| 75 | ✓ | [`skills/kubesphere-servicemesh/references/extension-values.md`](skills/kubesphere-servicemesh/references/extension-values.md) |
-| 76 | ✓ | [`skills/kubesphere-servicemesh/scripts/check-status.sh`](skills/kubesphere-servicemesh/scripts/check-status.sh) |
-| 77 | ✓ | [`skills/kubesphere-servicemesh/scripts/generate-installplan.sh`](skills/kubesphere-servicemesh/scripts/generate-installplan.sh) |
-| 78 | ✓ | [`skills/kubesphere-servicemesh/scripts/verify-uninstall.sh`](skills/kubesphere-servicemesh/scripts/verify-uninstall.sh) |
-| 79 | ✓ | [`skills/kubesphere-servicemesh/SKILL.md`](skills/kubesphere-servicemesh/SKILL.md) |
-| 80 | ✓ | [`skills/kubesphere-volcano/evals/evals.json`](skills/kubesphere-volcano/evals/evals.json) |
-| 81 | ✓ | [`skills/kubesphere-volcano/SKILL.md`](skills/kubesphere-volcano/SKILL.md) |
-| 82 | ✓ | [`skills/nodegroup/scripts/nodegroup_api.py`](skills/nodegroup/scripts/nodegroup_api.py) |
-| 83 | ✓ | [`skills/nodegroup/SKILL.md`](skills/nodegroup/SKILL.md) |
-| 84 | ✓ | [`skills/openpitrix/evals/evals.json`](skills/openpitrix/evals/evals.json) |
-| 85 | ✓ | [`skills/openpitrix/SKILL.md`](skills/openpitrix/SKILL.md) |
-| 86 | ✓ | [`skills/opensearch/SKILL.md`](skills/opensearch/SKILL.md) |
-| 87 | ✓ | [`skills/vector/SKILL.md`](skills/vector/SKILL.md) |
-| 88 | ✓ | [`skills/whizard-auditing/SKILL.md`](skills/whizard-auditing/SKILL.md) |
-| 89 | ✓ | [`skills/whizard-events/SKILL.md`](skills/whizard-events/SKILL.md) |
-| 90 | ✓ | [`skills/whizard-logging/SKILL.md`](skills/whizard-logging/SKILL.md) |
-| 91 | ✓ | [`skills/whizard-notification/SKILL.md`](skills/whizard-notification/SKILL.md) |
-| 92 | ✓ | [`skills/whizard-telemetry-ruler/SKILL.md`](skills/whizard-telemetry-ruler/SKILL.md) |
-| 93 | ✓ | [`skills/whizard-telemetry/scripts/generate-config.sh`](skills/whizard-telemetry/scripts/generate-config.sh) |
-| 94 | ✓ | [`skills/whizard-telemetry/SKILL.md`](skills/whizard-telemetry/SKILL.md) |
-| 95 | ✓ | [`skills/wiztelemetry-tracing/SKILL.md`](skills/wiztelemetry-tracing/SKILL.md) |
+| 58 | ✓ | [`skills/kubesphere-gateway-api/scripts/check-status.sh`](skills/kubesphere-gateway-api/scripts/check-status.sh) |
+| 59 | ✓ | [`skills/kubesphere-gateway-api/scripts/generate-installplan.sh`](skills/kubesphere-gateway-api/scripts/generate-installplan.sh) |
+| 60 | ✓ | [`skills/kubesphere-gateway-api/scripts/verify-uninstall.sh`](skills/kubesphere-gateway-api/scripts/verify-uninstall.sh) |
+| 61 | ✓ | [`skills/kubesphere-gateway-api/SKILL.md`](skills/kubesphere-gateway-api/SKILL.md) |
+| 62 | ✓ | [`skills/kubesphere-gateway/references/extension-values.md`](skills/kubesphere-gateway/references/extension-values.md) |
+| 63 | ✓ | [`skills/kubesphere-gateway/scripts/check-status.sh`](skills/kubesphere-gateway/scripts/check-status.sh) |
+| 64 | ✓ | [`skills/kubesphere-gateway/scripts/generate-installplan.sh`](skills/kubesphere-gateway/scripts/generate-installplan.sh) |
+| 65 | ✓ | [`skills/kubesphere-gateway/scripts/verify-uninstall.sh`](skills/kubesphere-gateway/scripts/verify-uninstall.sh) |
+| 66 | ✓ | [`skills/kubesphere-gateway/SKILL.md`](skills/kubesphere-gateway/SKILL.md) |
+| 67 | ✓ | [`skills/kubesphere-multi-tenant-management/evals/evals.json`](skills/kubesphere-multi-tenant-management/evals/evals.json) |
+| 68 | ✓ | [`skills/kubesphere-multi-tenant-management/references/multi-tenancy-architecture.jpeg`](skills/kubesphere-multi-tenant-management/references/multi-tenancy-architecture.jpeg) |
+| 69 | ✓ | [`skills/kubesphere-multi-tenant-management/references/multi-tenancy-in-kubesphere.md`](skills/kubesphere-multi-tenant-management/references/multi-tenancy-in-kubesphere.md) |
+| 70 | ✓ | [`skills/kubesphere-multi-tenant-management/scripts/ks_api.py`](skills/kubesphere-multi-tenant-management/scripts/ks_api.py) |
+| 71 | ✓ | [`skills/kubesphere-multi-tenant-management/SKILL.md`](skills/kubesphere-multi-tenant-management/SKILL.md) |
+| 72 | ✓ | [`skills/kubesphere-network-extension-operations/agents/openai.yaml`](skills/kubesphere-network-extension-operations/agents/openai.yaml) |
+| 73 | ✓ | [`skills/kubesphere-network-extension-operations/evals/evals.json`](skills/kubesphere-network-extension-operations/evals/evals.json) |
+| 74 | ✓ | [`skills/kubesphere-network-extension-operations/references/api_doc.md`](skills/kubesphere-network-extension-operations/references/api_doc.md) |
+| 75 | ✓ | [`skills/kubesphere-network-extension-operations/references/extension.yaml`](skills/kubesphere-network-extension-operations/references/extension.yaml) |
+| 76 | ✓ | [`skills/kubesphere-network-extension-operations/references/README_zh.md`](skills/kubesphere-network-extension-operations/references/README_zh.md) |
+| 77 | ✓ | [`skills/kubesphere-network-extension-operations/references/swagger.yaml`](skills/kubesphere-network-extension-operations/references/swagger.yaml) |
+| 78 | ✓ | [`skills/kubesphere-network-extension-operations/references/values.yaml`](skills/kubesphere-network-extension-operations/references/values.yaml) |
+| 79 | ✓ | [`skills/kubesphere-network-extension-operations/SKILL.md`](skills/kubesphere-network-extension-operations/SKILL.md) |
+| 80 | ✓ | [`skills/kubesphere-openkruise/evals/evals.json`](skills/kubesphere-openkruise/evals/evals.json) |
+| 81 | ✓ | [`skills/kubesphere-openkruise/examples/cloneset.yaml`](skills/kubesphere-openkruise/examples/cloneset.yaml) |
+| 82 | ✓ | [`skills/kubesphere-openkruise/examples/sidecarset.yaml`](skills/kubesphere-openkruise/examples/sidecarset.yaml) |
+| 83 | ✓ | [`skills/kubesphere-openkruise/SKILL.md`](skills/kubesphere-openkruise/SKILL.md) |
+| 84 | ✓ | [`skills/kubesphere-servicemesh/references/extension-values.md`](skills/kubesphere-servicemesh/references/extension-values.md) |
+| 85 | ✓ | [`skills/kubesphere-servicemesh/scripts/check-status.sh`](skills/kubesphere-servicemesh/scripts/check-status.sh) |
+| 86 | ✓ | [`skills/kubesphere-servicemesh/scripts/generate-installplan.sh`](skills/kubesphere-servicemesh/scripts/generate-installplan.sh) |
+| 87 | ✓ | [`skills/kubesphere-servicemesh/scripts/verify-uninstall.sh`](skills/kubesphere-servicemesh/scripts/verify-uninstall.sh) |
+| 88 | ✓ | [`skills/kubesphere-servicemesh/SKILL.md`](skills/kubesphere-servicemesh/SKILL.md) |
+| 89 | ✓ | [`skills/kubesphere-volcano/evals/evals.json`](skills/kubesphere-volcano/evals/evals.json) |
+| 90 | ✓ | [`skills/kubesphere-volcano/SKILL.md`](skills/kubesphere-volcano/SKILL.md) |
+| 91 | ✓ | [`skills/nodegroup/scripts/nodegroup_api.py`](skills/nodegroup/scripts/nodegroup_api.py) |
+| 92 | ✓ | [`skills/nodegroup/SKILL.md`](skills/nodegroup/SKILL.md) |
+| 93 | ✓ | [`skills/openpitrix/evals/evals.json`](skills/openpitrix/evals/evals.json) |
+| 94 | ✓ | [`skills/openpitrix/SKILL.md`](skills/openpitrix/SKILL.md) |
+| 95 | ✓ | [`skills/opensearch/SKILL.md`](skills/opensearch/SKILL.md) |
+| 96 | ✓ | [`skills/vector/SKILL.md`](skills/vector/SKILL.md) |
+| 97 | ✓ | [`skills/whizard-auditing/SKILL.md`](skills/whizard-auditing/SKILL.md) |
+| 98 | ✓ | [`skills/whizard-events/SKILL.md`](skills/whizard-events/SKILL.md) |
+| 99 | ✓ | [`skills/whizard-logging/SKILL.md`](skills/whizard-logging/SKILL.md) |
+| 100 | ✓ | [`skills/whizard-notification/SKILL.md`](skills/whizard-notification/SKILL.md) |
+| 101 | ✓ | [`skills/whizard-telemetry-ruler/SKILL.md`](skills/whizard-telemetry-ruler/SKILL.md) |
+| 102 | ✓ | [`skills/whizard-telemetry/scripts/generate-config.sh`](skills/whizard-telemetry/scripts/generate-config.sh) |
+| 103 | ✓ | [`skills/whizard-telemetry/SKILL.md`](skills/whizard-telemetry/SKILL.md) |
+| 104 | ✓ | [`skills/wiztelemetry-tracing/SKILL.md`](skills/wiztelemetry-tracing/SKILL.md) |
 
 ---
 

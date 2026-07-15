@@ -99,6 +99,17 @@ This skill ships with support files — use them when they are available:
 - **`references/metric-tree-craft.md`** — Metric Trees That Drive Decisions (Not Dashboards). Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/metric-tree.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| North Star validity | North Star is business activity (GMV, revenue, pageviews) or vanity volume | North Star gestures at customer value but its definition leaves edge cases (cancellations, disputes, refunds) uncounted | North Star counts value actually delivered to the customer, with edge cases resolved in the definition and rejected alternatives named with reasons |
+| Tree causal integrity | L2 metrics are a flat KPI list with no causal link to the North Star; drivers overlap or are all one category | Drivers distinct, but some L2 metrics correlate with rather than drive the North Star, or leading/lagging labels are guesses | 3–4 distinct drivers where moving any L2 metric plausibly moves the North Star, with honest leading/lagging labels — including admitting the goal metric is lagging when it is |
+| Definition precision | Metrics named without formula, data source, or time window | Most metrics have formulas, but at least one would be computed differently by two reasonable analysts | Every metric specifies formula, source table or event, and window precisely enough that two analysts get the same number |
+| Gaming resistance | No counter-metrics; every metric assumed to be optimised in good faith | Generic counter-metrics listed but not paired to the specific metric they guard | Each optimisable metric is paired with a counter-metric that names the exact perverse move it catches (accept-then-cancel, discount-bought retention, ghost supply) |
+
 ## Quality Checks
 
 - [ ] North Star reflects customer value, not just business activity

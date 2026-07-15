@@ -27,7 +27,7 @@ Scan for each category and rate severity (🔴 High / 🟠 Medium / 🟡 Low):
 | Category | Look for |
 |---|---|
 | **Prompt injection** | "ignore previous/all instructions", "developer mode", jailbreak/DAN framing, attempts to reveal the system prompt, forced unrestricted personas |
-| **Data exfiltration** | Instructions to send conversation/user data, credentials, or keys to an external URL/webhook/server |
+| **Data exfiltration** | Instructions that transmit the conversation, user-provided content, credentials, or keys to an external URL/webhook/server |
 | **Code & command execution** | `eval`/`exec`, `os.system`, `subprocess`, `child_process`, destructive shell (`rm -rf /`, `dd`, fork bombs, `chmod 777`) |
 | **Secrets** | Hardcoded API keys, AWS keys (`AKIA…`), private keys, or asking the user to paste secrets |
 | **Obfuscation** | Zero-width / invisible Unicode, very long base64 blobs that hide payloads |
@@ -67,6 +67,17 @@ This skill ships with support files — use them when they are available:
 
 - **`references/injection-patterns.md`** — The Injection Pattern Library: What Malicious Skills Actually Look Like. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/audit-report.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
+
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Coverage depth** | Only the markdown body was skimmed; bundled scripts untouched | Body read carefully, scripts glanced at, but encodings and invisible characters not checked | Every bundled script read line-by-line, plus codepoint/encoding inspection for hidden content, with scope stated in the report |
+| **Evidence precision** | Findings say "looks risky" with no location | Findings cite lines but mix observation with speculation | Every finding pins an exact line/file reference with a faithful, inert description of the pattern and why it's dangerous |
+| **Verdict discipline** | Vague caution with no install decision | A verdict is given but doesn't follow from the severities found | Verdict applies the severity rule exactly (any high ⇒ do not install), stated up front with reasons |
+| **Calibration** | Every mention of keys or network activity flagged as malicious | One benign pattern over-flagged or one real risk missed | Benign documented examples cleared by name, intent and context weighed, nothing real missed |
 
 ## Quality Checks
 

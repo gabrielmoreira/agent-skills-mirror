@@ -4,7 +4,7 @@ Agent entry point for WorldMonitor. Read this first, then follow links for depth
 
 ## What This Project Is
 
-Real-time global intelligence dashboard. TypeScript SPA (Vite + Preact) with 162 top-level TypeScript component files, 80+ Vercel Edge API endpoint entries, a Tauri desktop app with Node.js sidecar, and a Railway relay service. Aggregates geopolitics, military, finance, climate, cyber, maritime, and aviation data across 35 freshness-tracked source groups.
+Real-time global intelligence dashboard. TypeScript SPA (Vite + Preact) with 163 top-level TypeScript component files, 80+ Vercel Edge API endpoint entries, a Tauri desktop app with Node.js sidecar, and a Railway relay service. Aggregates geopolitics, military, finance, climate, cyber, maritime, and aviation data across 35 freshness-tracked source groups.
 
 ## Repository Map
 
@@ -13,7 +13,7 @@ Real-time global intelligence dashboard. TypeScript SPA (Vite + Preact) with 162
 ├── src/                    # Browser SPA (TypeScript, class-based components)
 │   ├── app/                # App orchestration (data-loader, refresh-scheduler, panel-layout)
 │   ├── bootstrap/          # Startup/recovery (chunk reload, deferred Sentry, SW update)
-│   ├── components/         # 162 top-level TypeScript component files
+│   ├── components/         # 163 top-level TypeScript component files
 │   ├── config/             # Variant configs, panel/layer definitions, market symbols
 │   ├── services/           # Business logic (199 service modules and domain directories)
 │   ├── shared/             # Cross-cutting helpers (premium paths, registries, staleness)
@@ -53,8 +53,10 @@ Real-time global intelligence dashboard. TypeScript SPA (Vite + Preact) with 162
 ├── e2e/                    # Playwright E2E specs
 ├── pro-test/               # Standalone Pro QA app (separate package)
 ├── docs/                   # Mintlify documentation site
+│   └── solutions/          # Documented solutions to past problems (bugs, patterns, practices) — YAML frontmatter (module, tags, problem_type)
 ├── docker/                 # Docker build for Railway services
 ├── deploy/                 # Deployment configs (nginx)
+├── CONCEPTS.md             # Shared domain vocabulary (entities, named processes, status concepts)
 └── blog-site/              # Static blog (built into public/blog/)
 ```
 
@@ -212,7 +214,8 @@ Heavy checks (`test:data`, typechecks, edge-bundle) must run **sequentially** in
 ## Shipping Velocity (Agent Workflow)
 
 - **Before starting work on an issue:** check for parallel/duplicate work first — `gh pr list --search "<issue#>"` AND `git worktree list` (background codex/claude sessions ship PRs under the same account).
-- **After pushing a PR:** don't sleep-poll CI. Enable auto-merge (`gh pr merge <n> --auto --squash` — repo has auto-merge enabled) and/or start `gh pr checks <n> --watch` as a background task; act only when it exits.
+- **Merge authority is explicit and non-delegable:** never merge a PR, enable auto-merge, queue a merge, or run any equivalent GitHub merge action unless the user has explicitly requested that specific action in the current conversation. A request to implement, ship, push, create a PR, or monitor CI does **not** authorize merging. Wait for clear approval and report the ready state instead.
+- **After pushing a PR:** do not sleep-poll CI. Start `gh pr checks <n> --watch` as a background task, or report the current check state; never turn on auto-merge without the explicit approval above.
 - **docs/plans/ is gitignored** — plan documents are local working state and do not travel between worktrees or ship in PRs.
 - **PR-review verification:** never assert a finding is fixed/stale from memory — re-fetch the PR head SHA and diff the cited lines first.
 

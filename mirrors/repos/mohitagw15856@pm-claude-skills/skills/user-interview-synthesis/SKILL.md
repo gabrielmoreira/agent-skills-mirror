@@ -50,6 +50,17 @@ This skill ships with support files — use them when they are available:
 - **`references/coding-transcripts.md`** — Coding Interview Transcripts Without Losing the Signal. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/per-session-capture.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Evidence traceability | Themes asserted with no quotes or participant attribution | Most themes carry quotes, but some rest on 1–2 participants or unattributed paraphrase | Every theme carries verbatim quotes from ≥3 distinct participants, with frequency counts ("6 of 9") consistent with the roster |
+| Implication actionability | Implications restate the observation ("users find X frustrating") | Implications gesture at direction but name no decision, owner, or change | Every implication enables a specific product decision someone could act on this quarter |
+| Contradiction honesty | All findings conveniently support the sponsor's hypothesis; inconvenient data absent | Contradictory evidence present but buried or softened; both-ways quotes trimmed to the helpful half | Findings that contradict the hypothesis are surfaced prominently, and ambiguous quotes are kept whole with the tension flagged |
+| Signal separation & question coverage | Single-source anecdotes mixed into main themes; research questions ignored | Low-confidence signals segregated but with no follow-up path, or one research question left unaddressed | Every 1–2-participant signal sits in its own section with the cheap test that would confirm it, and every research question gets an explicit answer — including "inconclusive" |
+
 ## Quality Checks
 
 - [ ] Every theme is supported by quotes from at least 3 participants

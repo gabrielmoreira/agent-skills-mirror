@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `parallel-web/parallel-agent-skills` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `parallel-web/parallel-agent-skills` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `parallel-web/parallel-agent-skills` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,15 +62,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`agents/parallel-subagent.md`](agents/parallel-subagent.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`skills/parallel-cli-setup/SKILL.md`](skills/parallel-cli-setup/SKILL.md) |
-| 5 | ✓ | [`skills/parallel-data-enrichment/SKILL.md`](skills/parallel-data-enrichment/SKILL.md) |
-| 6 | ✓ | [`skills/parallel-deep-research/SKILL.md`](skills/parallel-deep-research/SKILL.md) |
-| 7 | ✓ | [`skills/parallel-findall/SKILL.md`](skills/parallel-findall/SKILL.md) |
-| 8 | ✓ | [`skills/parallel-monitor/SKILL.md`](skills/parallel-monitor/SKILL.md) |
-| 9 | ✓ | [`skills/parallel-web-extract/SKILL.md`](skills/parallel-web-extract/SKILL.md) |
-| 10 | ✓ | [`skills/parallel-web-search/SKILL.md`](skills/parallel-web-search/SKILL.md) |
-| 11 | ✓ | [`skills/result/SKILL.md`](skills/result/SKILL.md) |
-| 12 | ✓ | [`skills/status/SKILL.md`](skills/status/SKILL.md) |
+| 4 | ✓ | [`skills/migrate-to-parallel/agents/openai.yaml`](skills/migrate-to-parallel/agents/openai.yaml) |
+| 5 | ✓ | [`skills/migrate-to-parallel/references/exa.md`](skills/migrate-to-parallel/references/exa.md) |
+| 6 | ✓ | [`skills/migrate-to-parallel/references/firecrawl.md`](skills/migrate-to-parallel/references/firecrawl.md) |
+| 7 | ✓ | [`skills/migrate-to-parallel/references/integration-patterns.md`](skills/migrate-to-parallel/references/integration-patterns.md) |
+| 8 | ✓ | [`skills/migrate-to-parallel/references/parallel-products.md`](skills/migrate-to-parallel/references/parallel-products.md) |
+| 9 | ✓ | [`skills/migrate-to-parallel/references/parallel-search.md`](skills/migrate-to-parallel/references/parallel-search.md) |
+| 10 | ✓ | [`skills/migrate-to-parallel/references/perplexity.md`](skills/migrate-to-parallel/references/perplexity.md) |
+| 11 | ✓ | [`skills/migrate-to-parallel/references/tavily.md`](skills/migrate-to-parallel/references/tavily.md) |
+| 12 | ✓ | [`skills/migrate-to-parallel/scripts/scan_provider_usage.py`](skills/migrate-to-parallel/scripts/scan_provider_usage.py) |
+| 13 | ✓ | [`skills/migrate-to-parallel/SKILL.md`](skills/migrate-to-parallel/SKILL.md) |
+| 14 | ✓ | [`skills/parallel-cli-setup/SKILL.md`](skills/parallel-cli-setup/SKILL.md) |
+| 15 | ✓ | [`skills/parallel-data-enrichment/SKILL.md`](skills/parallel-data-enrichment/SKILL.md) |
+| 16 | ✓ | [`skills/parallel-deep-research/SKILL.md`](skills/parallel-deep-research/SKILL.md) |
+| 17 | ✓ | [`skills/parallel-findall/SKILL.md`](skills/parallel-findall/SKILL.md) |
+| 18 | ✓ | [`skills/parallel-monitor/SKILL.md`](skills/parallel-monitor/SKILL.md) |
+| 19 | ✓ | [`skills/parallel-web-extract/SKILL.md`](skills/parallel-web-extract/SKILL.md) |
+| 20 | ✓ | [`skills/parallel-web-search/SKILL.md`](skills/parallel-web-search/SKILL.md) |
+| 21 | ✓ | [`skills/result/SKILL.md`](skills/result/SKILL.md) |
+| 22 | ✓ | [`skills/status/SKILL.md`](skills/status/SKILL.md) |
 
 ---
 

@@ -79,6 +79,17 @@ This skill ships with support files — use them when they are available:
 - **`references/user-translation.md`** — Commit-to-Changelog Translation: Writing for the People Affected. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/release-entry.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Reader-facing translation** | Entries restate commit messages, with internal identifiers and implementation details | Mostly user-facing, but a few entries leak internals or describe the patch rather than what was broken | Every entry describes the change from the reader's perspective — what changed for them, never how the code was refactored |
+| **Breaking-change handling** | Breaking changes buried mid-list or missing a migration path | Flagged at the top, but migration guidance is vague ("update your code") | At the top with ⚠️, each with a specific migration action the user can execute |
+| **Curation & grouping** | Every micro-commit listed; internal-only commits included | Some grouping, but related commits still appear as separate entries or noise slips through | Related commits grouped into single entries; internal-only commits excluded; nothing a user can't observe |
+| **Format discipline** | Wrong or missing version/date header; past-tense verbs; empty sections left in | Header correct but tense or empty-section slips remain | Keep a Changelog conventions throughout — correct header, imperative mood, only populated sections |
+
 ## Quality Checks
 - [ ] Breaking changes are at the top with migration instructions
 - [ ] All entries are user-facing language (no internal variable names or implementation details)

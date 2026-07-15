@@ -136,7 +136,9 @@ contracts — the agent picks the shape that fits the content.
   concrete repo commands such as `bun test` rather than generic "run tests"
   when the repo has known commands.
 - **Key Technical Decisions** — bullets with bold decision name + prose
-  rationale, or numbered KTD-N pattern when traceability matters.
+  rationale, or numbered KTD-N pattern when traceability matters. A
+  `session-settled:` annotation renders as part of the KTD bullet's
+  visible text, stem preserved verbatim.
 - **Key Flows / Acceptance Examples** — bullets with bold leader labels
   (Trigger / Actors / Steps / Outcome / Covers / Given-When-Then).
 - **Scope Boundaries** — bullets, optionally split into "Deferred for

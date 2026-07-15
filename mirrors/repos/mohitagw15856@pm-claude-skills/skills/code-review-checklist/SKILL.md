@@ -107,6 +107,17 @@ This skill ships with support files — use them when they are available:
 - **`references/review-depth-calibration.md`** — Calibrating Review Depth: Not Every PR Deserves the Same Eyes. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/review-record.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Language specificity** | Checks could apply to any language — a swapped-in language name would change nothing | Correct language block chosen, but checks restate the template rather than this PR's constructs | Every correctness check names a construct actually in the diff (goroutines, promise chains, context managers) |
+| **Risk-depth calibration** | Same depth regardless of stated risk level | Depth roughly scales, but high-risk extras (rollback plan, staged rollout, monitoring) are missing or token | Depth matches the stated risk exactly and the review-time estimate follows the diff size guide |
+| **Decision-framework sharpness** | "Approve if it looks good" — no named conditions | Blockers listed but untestable; a reviewer can't tell when they're satisfied | Every approve/block/comment condition is checkable against a specific test, flag, metric, or artifact |
+| **Pitfall specificity** | Pitfalls absent or generic ("watch for bugs") | Pitfalls match the language *or* the change type, but not the combination | 2–3 pitfalls that only make sense for this exact language + change-type combination |
+
 ## Quality Checks
 - [ ] Checklist is tailored to the stated language (not generic)
 - [ ] Change-type-specific section is included

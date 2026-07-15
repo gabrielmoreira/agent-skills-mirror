@@ -80,6 +80,17 @@ It outputs a ranked table with computed RICE scores and auto-flags **quick-win**
 #### Data Gaps to Address
 [What information would most improve scoring accuracy]
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Estimate credibility | Round-number guesses at 100% confidence; effort estimated by PM alone | Reach grounded in analytics but confidence uniform across items regardless of evidence | Each estimate names its source; anything without data sits at 50% confidence; effort comes from engineering, and the doc says so |
+| Impact discrimination | Everything scored 2–3 — the scale produces no signal | Some spread across the scale but anchors undefined, so scores aren't comparable | Full scale used with a stated anchor for each level; "massive" reserved for genuinely rare items |
+| Ranking interrogation | Raw sorted output accepted as the verdict | Quick wins and moonshots flagged, but surprising ranks and dependencies unexamined | Surprising top ranks investigated with the inflated estimate found or defended; dependencies noted where they change sequencing |
+| Actionable sequencing | A scored table with no recommendation | Table plus a top-5 list, but no rationale or data-gap follow-ups | Recommended sequence with per-item rationale, quick wins slotted alongside bigger bets, and named data gaps that would sharpen the next pass |
+
 ## Quality Checks
 
 - [ ] Every initiative has all four RICE components estimated (even roughly)

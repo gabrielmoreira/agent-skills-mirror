@@ -1,25 +1,29 @@
 ---
 name: skillopt-sleep
-description: "Use when the user wants their Claude agent to self-improve from past usage, asks about a nightly/offline 'sleep' or 'dream' cycle, memory/skill consolidation, or says things like 'make my agent better the more I use it', 'review my past sessions', 'learn my preferences', 'consolidate what you learned', 'run the sleep cycle', or wants to schedule offline self-optimization. Drives the skillopt_sleep engine: harvest past sessions -> mine recurring tasks -> replay offline -> consolidate validated CLAUDE.md/SKILL.md behind a held-out gate."
+description: "Use when the user wants their Claude agent to self-improve from past usage, asks about a nightly/offline 'sleep' or 'dream' cycle, memory/skill consolidation, or says things like 'make my agent better the more I use it', 'review my past sessions', 'learn my preferences', 'consolidate what you learned', 'run the sleep cycle', or wants to schedule background self-optimization. Drives the skillopt_sleep engine: harvest past sessions -> mine recurring tasks -> replay through a selected backend -> consolidate validated CLAUDE.md/SKILL.md behind a held-out gate."
 ---
 
-# SkillOpt-Sleep: offline self-evolution for a local Claude agent
+# SkillOpt-Sleep: usage-driven self-evolution for a local Claude agent
 
-SkillOpt-Sleep gives the user's agent a **sleep cycle**. While the user is
-offline (e.g. nightly), it reviews their real past Claude Code sessions,
-re-runs recurring tasks on their own API budget, and consolidates what it
-learns into **memory** (`CLAUDE.md`) and **skills** (`SKILL.md`) — but only
-keeps changes that pass a held-out validation gate, and only after the user
-adopts them. The agent gets measurably better at *this* user's recurring work,
+SkillOpt-Sleep gives the user's agent a **sleep cycle**. On demand or on a
+nightly schedule, it reviews real past Claude Code sessions, re-runs recurring
+tasks through the selected backend, and consolidates what it
+learns into **memory** (`CLAUDE.md`) and **skills** (`SKILL.md`). With the
+default validation gate enabled, it keeps only changes that improve a held-out
+score. Live files change only through explicit adoption or a user-requested
+`--auto-adopt`. It aims to improve this user's recurring work, while making
+each accepted proposal measurable on the run's held-out tasks,
 with no model-weight training. It is the deployment-time analogue of training:
 short-term experience → long-term competence.
 
 It synthesizes three ideas:
 - **SkillOpt** — the skill/memory doc is trainable text; bounded add/delete/replace
-  edits; accepted only through a held-out gate; rejected edits become negative feedback.
-- **Claude Dreams** — offline consolidation that reads past sessions and rebuilds
-  memory (dedup/merge/resolve); the input is never mutated; output is reviewed then adopted.
-- **Agent sleep** — periodic offline replay turns episodes into durable skill.
+  edits; accepted only through a held-out gate; rejected edits are recorded in
+  the run report for review.
+- **Claude Dreams** — consolidation that reads past sessions and proposes changes
+  inside protected learned blocks; the input is never mutated, and output is
+  reviewed before adoption.
+- **Agent sleep** — periodic background replay turns episodes into durable skill.
 
 ## When to use this skill
 
@@ -34,9 +38,14 @@ Trigger when the user wants any of:
 
 1. **Harvest** — read `~/.claude/projects/*/<session>.jsonl` + `~/.claude/history.jsonl` (READ-ONLY) → session digests.
 2. **Mine** — digests → `TaskRecord`s (recurring intents + outcome labels + checkable refs where possible).
-3. **Replay** — re-run tasks offline under the *current* skill+memory → (hard, soft) scores.
-4. **Consolidate** — reflect on failures → propose bounded edits → **gate** on a held-out slice; accept only if it strictly improves.
-5. **Stage** — write `proposed_CLAUDE.md`, `proposed_SKILL.md`, a diff, and `report.md` into `<project>/.skillopt-sleep/staging/<date>/`. **Nothing live changes.**
+3. **Replay** — re-run tasks through the selected backend under the *current*
+   skill+memory → (hard, soft) scores.
+4. **Consolidate** — reflect on failures → propose bounded edits → **gate** on a held-out slice; with the default gate enabled, accept only if it strictly improves.
+5. **Stage** — write the accepted `proposed_CLAUDE.md` and/or
+   `proposed_SKILL.md`, plus `report.md`, `report.json`, `manifest.json`, and
+   `diagnostics.json` into `<project>/.skillopt-sleep/staging/<timestamp>/`.
+   **Nothing live changes.** A rejected run still has a report but no proposed
+   live-file replacement.
 6. **Adopt** — explicit (or opt-in auto): copy staged files over live ones, backing up first.
 
 ## How to drive it
@@ -45,14 +54,20 @@ Prefer the `/skillopt-sleep` command. Under the hood it calls the bundled runner
 
 ```bash
 "${CLAUDE_PLUGIN_ROOT}/scripts/sleep.sh" status                       # what's happened
-"${CLAUDE_PLUGIN_ROOT}/scripts/sleep.sh" dry-run --project "$(pwd)"    # safe preview
+"${CLAUDE_PLUGIN_ROOT}/scripts/sleep.sh" dry-run --project "$(pwd)"    # no-staging preview
 "${CLAUDE_PLUGIN_ROOT}/scripts/sleep.sh" run --project "$(pwd)"        # full cycle, stages a proposal
 "${CLAUDE_PLUGIN_ROOT}/scripts/sleep.sh" adopt --project "$(pwd)"      # apply staged proposal (with backup)
 ```
 
 - Default backend is `mock` (deterministic, **no API spend**) — good for trying the plumbing.
-- Add `--backend claude` or `--backend codex` to spend the user's real budget for genuine improvement.
-- Scope defaults to the invoked project; `--scope all` harvests every project.
+- Add `--backend claude` or `--backend codex` to spend the user's real budget
+  for model-driven optimization. A held-out gain is run-specific evidence, not
+  a guarantee of broader improvement; results depend on the tasks, model, and
+  checks.
+- Scope defaults to the invoked project; `--scope all` harvests every Claude
+  project into the current run's configured targets.
+- A real backend sends truncated transcript/task content to its provider. See
+  the data-boundary rules below before using one with sensitive sessions.
 
 ### Scheduling
 
@@ -63,24 +78,29 @@ Prefer the `/skillopt-sleep` command. Under the hood it calls the bundled runner
 
 Installs a nightly cron entry. `unschedule --all` removes every managed entry.
 
-## All CLI flags
+## Common CLI flags
 
 | Flag | Default | Description |
 |------|---------|-------------|
 | `--project PATH` | cwd | Project directory to evolve |
 | `--scope all\|invoked` | invoked | Harvest scope |
-| `--backend mock\|claude\|codex\|copilot` | mock | Replay backend (mock = no API spend) |
+| `--backend mock\|claude\|codex\|copilot\|handoff\|azure_openai` | mock | Backend (mock = no provider calls) |
 | `--model NAME` | backend default | Override the model used for replay |
 | `--source claude\|codex\|auto` | claude | Transcript source |
 | `--lookback-hours N` | 72 | Harvest window |
-| `--max-sessions N` | unlimited | Cap harvested sessions |
+| `--max-sessions N` | derived | Cap harvested sessions; defaults to 3 × max tasks (120 with current defaults) |
 | `--max-tasks N` | 40 | Cap mined tasks |
-| `--target-skill-path PATH` | auto | Explicit SKILL.md to evolve |
+| `--target-skill-path PATH` | `~/.claude/skills/skillopt-sleep-learned/SKILL.md` | Explicit SKILL.md to evolve |
 | `--tasks-file PATH` | — | Reviewed TaskRecord JSON (skip harvest) |
 | `--progress` | off | Print phase progress to stderr |
 | `--auto-adopt` | off | Auto-adopt if gate passes |
 | `--edit-budget N` | 4 | Max bounded edits per night |
+| `--preferences TEXT` | empty | Add house rules to the optimizer's reflection prior |
 | `--json` | off | Machine-readable JSON output |
+
+The CLI also has source/runtime path overrides (`--claude-home`, `--codex-home`,
+and `--codex-path`) and action-specific flags. Use
+`python -m skillopt_sleep <action> --help` as the authoritative surface.
 
 ## Config keys (`~/.skillopt-sleep/config.json`)
 
@@ -99,28 +119,37 @@ The sleep cycle can consolidate both:
 - **SKILL.md** — the managed skill file (bounded edits: add/delete/replace)
 - **CLAUDE.md** — the project memory (same bounded edits)
 
-Both are gated by the same held-out validation score. Set `evolve_memory: false` to consolidate only skills, or `evolve_skill: false` for only memory.
+With the default gate enabled, both are evaluated by the same held-out score.
+Set `evolve_memory: false` to consolidate only skills, or `evolve_skill: false`
+for only memory.
 
 ## Hard rules
 
 - **Never** hand-edit the user's `CLAUDE.md` / `SKILL.md` as part of this skill.
-  Only the `adopt` action changes live files, and it backs them up first.
+  Let the engine's explicit `adopt` or user-requested `--auto-adopt` path apply
+  the staging manifest and back up existing live files first.
 - Harvest is read-only. `mock` replay has no side effects.
+- Real backends send truncated transcript excerpts and derived tasks to the
+  selected provider for mining, replay, judging, and reflection. The Claude
+  transcript path is not guaranteed to remove every secret before those calls.
+  Review provider policy and session contents first. For sensitive data, use
+  `mock` or run `harvest --output <file>`, inspect/redact the JSON, set
+  `"reviewed": true`, and replay it with `--tasks-file`; real backends refuse an
+  unreviewed task file.
 - Always show the user the **held-out baseline → candidate** score and the
   exact proposed edits before suggesting adoption. Evidence before adoption.
-- If asked whether it really helps, run
+- If asked to demonstrate the mechanism without provider calls, run
   `python -m skillopt_sleep.experiments.run_experiment --persona researcher --json`
-  — a deterministic demo that proves held-out lift and that the gate blocks
-  harmful edits.
+  — a deterministic synthetic demo of held-out lift and gate rejection. It
+  validates the mechanism, not effectiveness on the user's own tasks.
 
 ## Validate / demo
 
 ```bash
-# deterministic proof (no API): held-out score rises, gate blocks regressions
+# deterministic synthetic demo (no API): score rises and the gate blocks a regression
 python -m skillopt_sleep.experiments.run_experiment --persona researcher --assert-improves
 python -m skillopt_sleep.experiments.run_experiment --persona programmer  --assert-improves
 ```
 
-See the SkillOpt-Sleep guide section for recorded output and
-`docs/superpowers/specs/2026-06-07-skillopt-sleep-claude-code-plugin-design.md`
-for the full design.
+See the [SkillOpt-Sleep documentation](https://github.com/microsoft/SkillOpt/tree/main/docs/sleep)
+for recorded results, limitations, and the supported integration surface.

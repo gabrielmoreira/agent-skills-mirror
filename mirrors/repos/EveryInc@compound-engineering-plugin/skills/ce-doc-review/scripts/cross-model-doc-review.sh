@@ -88,6 +88,64 @@ M_GROK="grok-4.5"              # grok CLI             (--effort high)
 M_GROK_CURSOR="grok-4.5-high"  # cursor-agent grok fallback (reasoning baked into id)
 M_COMPOSER="composer-2.5-fast" # cursor-agent composer (no high tier; -fast is the ceiling)
 
+# --- model-identity receipt (R7/R8) -----------------------------------------
+# "Which model ran" is a claim that needs a serving-side receipt. Only the
+# claude CLI reports one today: its JSON envelope carries a modelUsage object
+# keyed by the full dated id that actually served the run. Match requested vs
+# actual by expected full-family prefix (alias -> dated id counts as a match;
+# never substring). Every other route records the literal "unverified" — never
+# a fallback to the requested value. Keep this block byte-identical across
+# ce-code-review and ce-doc-review (kernel parity).
+expected_model_prefix() {   # <requested-alias> -> expected served-id prefix
+  case "$1" in
+    opus)   printf 'claude-opus-' ;;
+    sonnet) printf 'claude-sonnet-' ;;
+    haiku)  printf 'claude-haiku-' ;;
+  esac
+}
+
+route_model() {   # <route> -> the M_* constant that route requests
+  case "$1" in
+    codex)       printf '%s' "$M_CODEX" ;;
+    claude)      printf '%s' "$M_CLAUDE" ;;
+    grok-cli)    printf '%s' "$M_GROK" ;;
+    grok-cursor) printf '%s' "$M_GROK_CURSOR" ;;
+    composer)    printf '%s' "$M_COMPOSER" ;;
+  esac
+}
+
+MODEL_ACTUAL="unverified"
+extract_model_receipt() {   # <route>; reads the envelope in $PEERLOG, sets MODEL_ACTUAL
+  MODEL_ACTUAL="unverified"
+  [ "$1" = "claude" ] || return 0
+  local requested actual prefix matched
+  requested="$(route_model claude)"
+  prefix="$(expected_model_prefix "$requested")"
+  # jq `keys` is sorted, so keys[0] is the alphabetically-first model, not
+  # necessarily the one that served the run (a multi-key envelope can also carry
+  # an auxiliary model's usage). Prefer a key matching the requested family's
+  # expected prefix; fall back to the first key only when none matches, and warn
+  # only then. A missing/unparseable envelope stays "unverified" (never the
+  # requested value).
+  matched=""
+  if [ -n "$prefix" ]; then
+    # first modelUsage key matching the expected family prefix (jq-native, no
+    # external `head`: the route sandbox may not carry coreutils on PATH).
+    matched="$(jq -r --arg p "$prefix" 'first((.modelUsage // {} | keys[] | select(startswith($p)))) // empty' "$PEERLOG" 2>/dev/null)"
+  fi
+  if [ -n "$matched" ]; then
+    MODEL_ACTUAL="$matched"
+    return 0
+  fi
+  actual="$(jq -r '.modelUsage // empty | keys[0] // empty' "$PEERLOG" 2>/dev/null)"
+  if [ -z "$actual" ]; then
+    log "model receipt absent/unparseable on claude route; recording unverified"
+    return 0
+  fi
+  MODEL_ACTUAL="$actual"
+  log "WARNING: model mismatch - requested $requested, backend served $actual; reconcile must surface this"
+}
+
 # --- adapter argv (single source of truth for route flags) -----------------
 # Emits the CLI + flags one token per line. Read-only, no-prompt, least-privilege
 # (tool-less on claude/grok; read-only residual on codex/cursor-agent), and
@@ -221,7 +279,12 @@ case "$MAX_PEERS" in ''|*[!0-9]*) MAX_PEERS=1 ;; esac
 [ "$MAX_PEERS" -gt 2 ] && MAX_PEERS=2
 
 in_csv() { case ",$2," in *",$1,"*) return 0 ;; *) return 1 ;; esac; }
-out_missing_or_invalid() { [ ! -s "$RAW_OUT" ] || ! jq -e . "$RAW_OUT" >/dev/null 2>&1; }
+# Require a reviewer-shaped return (top-level `findings` array), not merely valid
+# JSON: a grok error/envelope object (e.g. a 402 usage-exhausted body) is valid
+# JSON but has no findings, and accepting it would suppress the grok-cursor
+# fallback and then be dropped at normalize, yielding no fold-in. Matches the
+# adversarial twin's check.
+out_missing_or_invalid() { [ ! -s "$RAW_OUT" ] || ! jq -e '(.findings|type)=="array"' "$RAW_OUT" >/dev/null 2>&1; }
 
 # The cursor-agent route egresses content through Cursor even when the *model* is
 # grok (grok-via-cursor-agent). CROSS_MODEL_PEERS is an egress boundary (R19), not
@@ -301,7 +364,12 @@ fi
 # asks only for the short name.
 PROMPT_FILE="$(mktemp "${TMPDIR:-/tmp}/xmodel-doc-prompt-XXXXXX")"
 PEERLOG="$(mktemp "${TMPDIR:-/tmp}/xmodel-doc-log-XXXXXX")"
-trap 'rm -f "$PROMPT_FILE" "$PEERLOG"' EXIT
+# Peer stderr goes to its own file, NOT merged into PEERLOG: PEERLOG must stay
+# clean stdout for the findings brace-match and the receipt jq-parse. An
+# auth/quota/rate-limit message often lands on stderr, so capture it separately
+# and surface it in the skip evidence (grok's 402 is on stdout, others on stderr).
+PEERERR="$(mktemp "${TMPDIR:-/tmp}/xmodel-doc-err-XXXXXX")"
+trap 'rm -f "$PROMPT_FILE" "$PEERLOG" "$PEERERR"' EXIT
 # Basename only in the peer prompt: content is already embedded (KTD3). An absolute
 # path would give cursor-agent residual-Read a repo coordinate to walk from.
 DOC_BASENAME="$(basename "$DOC_PATH")"
@@ -363,6 +431,30 @@ build_cmd() {
   while IFS= read -r -d '' tok; do CMD+=("$tok"); done < <(adapter_argv "$1")
 }
 
+# --- liveness heartbeat -----------------------------------------------------
+# The peer CLI streams into $PEERLOG (private), so nothing reaches this script's
+# own stdout/stderr during a long model call. An outer supervisor that watches
+# THIS process's output for liveness (the peer-job runner's out.log byte-growth
+# idle window) would mistake a healthy multi-minute run for a wedge. A background
+# writer emits one stderr line every CROSS_MODEL_HEARTBEAT_SECS (default 60s) so
+# that liveness is visible; it is torn down as soon as the foreground wait returns,
+# so it adds no latency to a fast run. Keep this block byte-identical across
+# cross-model-adversarial-review.sh and cross-model-doc-review.sh (kernel parity).
+_HEARTBEAT_PID=""
+start_heartbeat() {
+  local every="${CROSS_MODEL_HEARTBEAT_SECS:-60}"
+  # Floor to 1s: a non-numeric or 0 value would make `sleep` return instantly and
+  # spin the loop, flooding out.log into the runner's byte cap.
+  case "$every" in ''|*[!0-9]*) every=60 ;; esac; [ "$every" -lt 1 ] && every=1
+  ( local t0 n; t0="$(date +%s)"
+    while :; do sleep "$every"; n="$(date +%s)"; log "peer alive ($(( n - t0 ))s elapsed)"; done ) &
+  _HEARTBEAT_PID=$!
+}
+stop_heartbeat() {
+  [ -n "$_HEARTBEAT_PID" ] && kill "$_HEARTBEAT_PID" 2>/dev/null
+  _HEARTBEAT_PID=""
+}
+
 run_codex_cmd() {   # CMD already built for the codex route; streams to PEERLOG, writes -o RAW_OUT
   local prev; case "$-" in *m*) prev=1;; *) prev=0;; esac
   set -m
@@ -370,6 +462,7 @@ run_codex_cmd() {   # CMD already built for the codex route; streams to PEERLOG,
   local pid=$!
   ACTIVE_PEER_PID="$pid"
   [ "$prev" = 0 ] && set +m
+  start_heartbeat
   local start last=-1 lastchg now size
   start="$(date +%s)"; lastchg="$start"
   while kill -0 "$pid" 2>/dev/null; do
@@ -383,6 +476,13 @@ run_codex_cmd() {   # CMD already built for the codex route; streams to PEERLOG,
     fi
   done
   wait "$pid" 2>/dev/null || true
+  # Sweep any survivor the provider left in its OWN process group. `set -m` puts
+  # the provider in a separate pgid, and on a clean worker exit the runner's
+  # final sweep only kills the worker's pgid while a group-orphan reparents off
+  # the worker's process tree -- so it must be reaped here, where the pgid is
+  # known. reap() returns immediately when the group is already empty.
+  reap "$pid" 2>/dev/null || true
+  stop_heartbeat
   ACTIVE_PEER_PID=""
 }
 
@@ -395,14 +495,17 @@ run_timeout_cmd() {   # $1 = stdin file ("" -> /dev/null). CMD already built.
   local prev; case "$-" in *m*) prev=1;; *) prev=0;; esac
   set -m
   if [ -n "$TO_BIN" ]; then
-    ( cd "$PEER_WORKDIR" && exec "$TO_BIN" -k 10 "$HARD_SECS" "${CMD[@]}" ) < "$stdin_file" > "$PEERLOG" 2>/dev/null &
+    ( cd "$PEER_WORKDIR" && exec "$TO_BIN" -k 10 "$HARD_SECS" "${CMD[@]}" ) < "$stdin_file" > "$PEERLOG" 2>"$PEERERR" &
   else
-    ( cd "$PEER_WORKDIR" && exec perl -e 'alarm shift; exec @ARGV' "$HARD_SECS" "${CMD[@]}" ) < "$stdin_file" > "$PEERLOG" 2>/dev/null &
+    ( cd "$PEER_WORKDIR" && exec perl -e 'alarm shift; exec @ARGV' "$HARD_SECS" "${CMD[@]}" ) < "$stdin_file" > "$PEERLOG" 2>"$PEERERR" &
   fi
   local pid=$!
   ACTIVE_PEER_PID="$pid"
   [ "$prev" = 0 ] && set +m
+  start_heartbeat
   wait "$pid" 2>/dev/null || log "peer exited non-zero or timed out"
+  reap "$pid" 2>/dev/null || true   # sweep survivors in the provider's own group (see run_codex_cmd)
+  stop_heartbeat
   ACTIVE_PEER_PID=""
 }
 
@@ -439,7 +542,7 @@ parse_structured() {   # <logfile> <outfile>
 # Run one route for a provider; leaves a schema-shaped (pre-normalization) $RAW_OUT on success.
 attempt_route() {   # <provider> <route>
   local provider="$1" route="$2" note
-  : > "$PEERLOG"; rm -f "$RAW_OUT" "$OUT"
+  : > "$PEERLOG"; : > "$PEERERR"; rm -f "$RAW_OUT" "$OUT"
   build_cmd "$route"
   case "$route" in
     codex)       note="$M_CODEX (effort high)" ;;
@@ -465,6 +568,9 @@ attempt_route() {   # <provider> <route>
       # the exec with E2BIG on low-limit hosts, whereas stdin has no size limit.
       run_timeout_cmd "$PROMPT_FILE"; parse_structured "$PEERLOG" "$RAW_OUT" ;;
   esac
+  # Extract the served-model receipt from the envelope while $PEERLOG still
+  # holds it — normalization below only sees the schema-extracted RAW_OUT.
+  extract_model_receipt "$route"
 }
 
 # Run a provider (with the grok CLI -> cursor-agent classified-failure fallback).
@@ -526,9 +632,12 @@ run_provider() {   # <provider>
   if [ -s "$RAW_OUT" ]; then
     _norm="$(mktemp "${TMPDIR:-/tmp}/xmodel-doc-norm-XXXXXX")"
     if jq --arg r "$REVIEWER_NAME-$provider" --arg route "$ACTUAL_ROUTE" \
+         --arg mreq "$(route_model "$ACTUAL_ROUTE")" --arg mact "$MODEL_ACTUAL" \
          'if (.findings|type)=="array"
           then { reviewer: $r,
                  cross_model_route: $route,
+                 model_requested: $mreq,
+                 model_actual: $mact,
                  findings: [ .findings[] | if (.autofix_class? == "safe_auto") then .autofix_class = "gated_auto" else . end ],
                  residual_risks: (.residual_risks // []),
                  deferred_questions: (.deferred_questions // []) }
@@ -545,6 +654,19 @@ run_provider() {   # <provider>
     log "wrote $n finding(s) to $OUT (reviewer $REVIEWER_NAME-$provider)"
   else
     log "provider $provider produced no usable schema-shaped output; skipping fold-in"
+    # Surface a bounded tail of the peer's raw output so the orchestrator can
+    # reason about WHY it was skipped (quota/usage-limit exhaustion vs an ordinary
+    # empty review) and, in a repeated-pass session, deprioritize an exhausted
+    # route. Harness-agnostic: the agent classifies from the text; this only makes
+    # the evidence visible in out.log. Surface BOTH streams -- the error can be on
+    # stdout (grok's 402) or stderr (claude/cursor auth/quota). Bash builtins only
+    # (the route sandbox has no tail/tr); both are small on a failed route.
+    if [ -s "$PEERLOG" ]; then
+      _pt="$(< "$PEERLOG")"; _pt="${_pt//$'\n'/ }"; log "  peer skip evidence: ${_pt: -300}"
+    fi
+    if [ -s "$PEERERR" ]; then
+      _pe="$(< "$PEERERR")"; _pe="${_pe//$'\n'/ }"; log "  peer skip evidence (stderr): ${_pe: -300}"
+    fi
     rm -f "$OUT" "$RAW_OUT"
   fi
   # Tear down the per-peer workspace (never RUN_DIR, which holds the published OUT).

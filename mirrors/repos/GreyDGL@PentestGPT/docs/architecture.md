@@ -11,11 +11,12 @@ public project page and is intentionally being revised separately.
 PentestGPT_Project/
 ├── PentestGPT/          # framework, legacy interactive client, and tool image
 ├── UnifedAgentWrapper/  # canonical unified-agent package
-└── xbow-benchmark/      # Docker-network benchmark harness and results
+└── xbow-benchmark/      # reference-only benchmark harness and historical results
 ```
 
-The three directories are independent Git repositories. Benchmark code and result archives belong
-in `xbow-benchmark`; new benchmark logic must not be added here.
+The three directories are independent Git repositories. The XBOW checkout is retained as a
+reference corpus only; the product CLI, runtime, and CI do not depend on it. Benchmark logic and
+result archives must not be added here.
 
 ## Maintained runtime
 
@@ -107,10 +108,8 @@ deterministic strategy projection and duplicate/branch policy before adding anot
 - Local framework development runs from `pentestgpt_agent/`.
 - The root Docker image supplies pentest tools, provider CLIs, legacy code, and persisted auth. It
   does not currently bake in the maintained framework.
-- The temporary `pentestgpt_agent/scripts/run_xbow.py` qualification runner builds framework and
-  wrapper wheels before installing them into an isolated tool container. New benchmark development
-  belongs in the sibling `xbow-benchmark` repo; transfer this runner there when its framework path is
-  rewired.
+- The sibling `xbow-benchmark` checkout is a historical/reference artifact, not a supported runtime
+  or verification path. PentestGPT owns no XBOW runner.
 - HTB execution happens only on the authorized remote attack box described in the parent project
   guide, never directly from the development Mac.
 
@@ -119,6 +118,5 @@ deterministic strategy projection and duplicate/branch policy before adding anot
 1. Preserve the two-role loop and deterministic memory authority.
 2. Improve Supervisor coverage retrieval and convergence using saved-trace replay tests.
 3. Keep both roles fully enabled inside a restricted deployment environment.
-4. Move the remaining XBOW qualification runner to the benchmark repository.
-5. Remove the root `unified_agent` compatibility copy in a coordinated public-package cleanup.
-6. Add a goal-specific verifier only when non-CTF completion semantics require it.
+4. Remove the root `unified_agent` compatibility copy in a coordinated public-package cleanup.
+5. Add a goal-specific verifier only when non-CTF completion semantics require it.

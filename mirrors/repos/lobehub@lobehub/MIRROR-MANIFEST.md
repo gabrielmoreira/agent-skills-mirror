@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `lobehub/lobehub` — 26 default patterns, 2 followed patterns, 240 file(s) materialized.
+Mirror of `lobehub/lobehub` — 26 default patterns, 2 followed patterns, 247 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lobehub/lobehub` — 26 default patterns, 2 followed patterns, 240 fi
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 240 |
+| Files         | 247 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -221,85 +221,92 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 159 | ✓ | [`.agents/skills/model-bank-metadata/SKILL.md`](.agents/skills/model-bank-metadata/SKILL.md) |
 | 160 | ✓ | [`.agents/skills/pr/agents/openai.yaml`](.agents/skills/pr/agents/openai.yaml) |
 | 161 | ✓ | [`.agents/skills/pr/SKILL.md`](.agents/skills/pr/SKILL.md) |
-| 162 | ✓ | [`.agents/skills/project-overview/SKILL.md`](.agents/skills/project-overview/SKILL.md) |
-| 163 | ✓ | [`.agents/skills/react/references/layout-kit.md`](.agents/skills/react/references/layout-kit.md) |
-| 164 | ✓ | [`.agents/skills/react/SKILL.md`](.agents/skills/react/SKILL.md) |
-| 165 | ✓ | [`.agents/skills/response-compliance/SKILL.md`](.agents/skills/response-compliance/SKILL.md) |
-| 166 | ✓ | [`.agents/skills/skills-audit/agents/openai.yaml`](.agents/skills/skills-audit/agents/openai.yaml) |
-| 167 | ✓ | [`.agents/skills/skills-audit/SKILL.md`](.agents/skills/skills-audit/SKILL.md) |
-| 168 | ✓ | [`.agents/skills/spa-routes/SKILL.md`](.agents/skills/spa-routes/SKILL.md) |
-| 169 | ✓ | [`.agents/skills/store-data-structures/references/reducer.md`](.agents/skills/store-data-structures/references/reducer.md) |
-| 170 | ✓ | [`.agents/skills/store-data-structures/references/types.md`](.agents/skills/store-data-structures/references/types.md) |
-| 171 | ✓ | [`.agents/skills/store-data-structures/SKILL.md`](.agents/skills/store-data-structures/SKILL.md) |
-| 172 | ✓ | [`.agents/skills/testing/references/agent-runtime-e2e.md`](.agents/skills/testing/references/agent-runtime-e2e.md) |
-| 173 | ✓ | [`.agents/skills/testing/references/db-model-test.md`](.agents/skills/testing/references/db-model-test.md) |
-| 174 | ✓ | [`.agents/skills/testing/references/desktop-controller-test.md`](.agents/skills/testing/references/desktop-controller-test.md) |
-| 175 | ✓ | [`.agents/skills/testing/references/electron-ipc-test.md`](.agents/skills/testing/references/electron-ipc-test.md) |
-| 176 | ✓ | [`.agents/skills/testing/references/zustand-store-action-test.md`](.agents/skills/testing/references/zustand-store-action-test.md) |
-| 177 | ✓ | [`.agents/skills/testing/SKILL.md`](.agents/skills/testing/SKILL.md) |
-| 178 | ✓ | [`.agents/skills/trpc-router/SKILL.md`](.agents/skills/trpc-router/SKILL.md) |
-| 179 | ✓ | [`.agents/skills/typescript/SKILL.md`](.agents/skills/typescript/SKILL.md) |
-| 180 | ✓ | [`.agents/skills/upstash-workflow/references/best-practices.md`](.agents/skills/upstash-workflow/references/best-practices.md) |
-| 181 | ✓ | [`.agents/skills/upstash-workflow/references/cloud.md`](.agents/skills/upstash-workflow/references/cloud.md) |
-| 182 | ✓ | [`.agents/skills/upstash-workflow/references/examples.md`](.agents/skills/upstash-workflow/references/examples.md) |
-| 183 | ✓ | [`.agents/skills/upstash-workflow/references/implementation.md`](.agents/skills/upstash-workflow/references/implementation.md) |
-| 184 | ✓ | [`.agents/skills/upstash-workflow/SKILL.md`](.agents/skills/upstash-workflow/SKILL.md) |
-| 185 | ✓ | [`.agents/skills/ux-audit/agents/openai.yaml`](.agents/skills/ux-audit/agents/openai.yaml) |
-| 186 | ✓ | [`.agents/skills/ux-audit/references/example/channel.md`](.agents/skills/ux-audit/references/example/channel.md) |
-| 187 | ✓ | [`.agents/skills/ux-audit/references/example/chat.md`](.agents/skills/ux-audit/references/example/chat.md) |
-| 188 | ✓ | [`.agents/skills/ux-audit/references/example/community-list.md`](.agents/skills/ux-audit/references/example/community-list.md) |
-| 189 | ✓ | [`.agents/skills/ux-audit/references/example/create.md`](.agents/skills/ux-audit/references/example/create.md) |
-| 190 | ✓ | [`.agents/skills/ux-audit/references/example/doc.md`](.agents/skills/ux-audit/references/example/doc.md) |
-| 191 | ✓ | [`.agents/skills/ux-audit/references/example/eval.md`](.agents/skills/ux-audit/references/example/eval.md) |
-| 192 | ✓ | [`.agents/skills/ux-audit/references/example/fleet.md`](.agents/skills/ux-audit/references/example/fleet.md) |
-| 193 | ✓ | [`.agents/skills/ux-audit/references/example/home.md`](.agents/skills/ux-audit/references/example/home.md) |
-| 194 | ✓ | [`.agents/skills/ux-audit/references/example/memory.md`](.agents/skills/ux-audit/references/example/memory.md) |
-| 195 | ✓ | [`.agents/skills/ux-audit/references/example/onboarding.md`](.agents/skills/ux-audit/references/example/onboarding.md) |
-| 196 | ✓ | [`.agents/skills/ux-audit/references/example/page.md`](.agents/skills/ux-audit/references/example/page.md) |
-| 197 | ✓ | [`.agents/skills/ux-audit/references/example/profile.md`](.agents/skills/ux-audit/references/example/profile.md) |
-| 198 | ✓ | [`.agents/skills/ux-audit/references/example/resource.md`](.agents/skills/ux-audit/references/example/resource.md) |
-| 199 | ✓ | [`.agents/skills/ux-audit/references/example/settings.md`](.agents/skills/ux-audit/references/example/settings.md) |
-| 200 | ✓ | [`.agents/skills/ux-audit/references/example/stats.md`](.agents/skills/ux-audit/references/example/stats.md) |
-| 201 | ✓ | [`.agents/skills/ux-audit/references/example/task-detail.md`](.agents/skills/ux-audit/references/example/task-detail.md) |
-| 202 | ✓ | [`.agents/skills/ux-audit/references/example/tasks.md`](.agents/skills/ux-audit/references/example/tasks.md) |
-| 203 | ✓ | [`.agents/skills/ux-audit/references/example/topic.md`](.agents/skills/ux-audit/references/example/topic.md) |
-| 204 | ✓ | [`.agents/skills/ux-audit/references/example/topics.md`](.agents/skills/ux-audit/references/example/topics.md) |
-| 205 | ✓ | [`.agents/skills/ux-audit/references/layer-1-static.md`](.agents/skills/ux-audit/references/layer-1-static.md) |
-| 206 | ✓ | [`.agents/skills/ux-audit/references/layer-2-visual.md`](.agents/skills/ux-audit/references/layer-2-visual.md) |
-| 207 | ✓ | [`.agents/skills/ux-audit/references/layer-3-dynamic.md`](.agents/skills/ux-audit/references/layer-3-dynamic.md) |
-| 208 | ✓ | [`.agents/skills/ux-audit/references/pattern-catalog.md`](.agents/skills/ux-audit/references/pattern-catalog.md) |
-| 209 | ✓ | [`.agents/skills/ux-audit/SKILL.md`](.agents/skills/ux-audit/SKILL.md) |
-| 210 | ✓ | [`.agents/skills/ux/references/act.md`](.agents/skills/ux/references/act.md) |
-| 211 | ✓ | [`.agents/skills/ux/references/design-values.md`](.agents/skills/ux/references/design-values.md) |
-| 212 | ✓ | [`.agents/skills/ux/references/edit.md`](.agents/skills/ux/references/edit.md) |
-| 213 | ✓ | [`.agents/skills/ux/references/feedback.md`](.agents/skills/ux/references/feedback.md) |
-| 214 | ✓ | [`.agents/skills/ux/references/grow.md`](.agents/skills/ux/references/grow.md) |
-| 215 | ✓ | [`.agents/skills/ux/references/read.md`](.agents/skills/ux/references/read.md) |
-| 216 | ✓ | [`.agents/skills/ux/SKILL.md`](.agents/skills/ux/SKILL.md) |
-| 217 | ✓ | [`.agents/skills/version-release/agents/openai.yaml`](.agents/skills/version-release/agents/openai.yaml) |
-| 218 | ✓ | [`.agents/skills/version-release/references/changelog-example/db-migration.md`](.agents/skills/version-release/references/changelog-example/db-migration.md) |
-| 219 | ✓ | [`.agents/skills/version-release/references/changelog-example/hotfix.md`](.agents/skills/version-release/references/changelog-example/hotfix.md) |
-| 220 | ✓ | [`.agents/skills/version-release/references/changelog-example/weekly-release.md`](.agents/skills/version-release/references/changelog-example/weekly-release.md) |
-| 221 | ✓ | [`.agents/skills/version-release/references/minor-release.md`](.agents/skills/version-release/references/minor-release.md) |
-| 222 | ✓ | [`.agents/skills/version-release/references/patch-release-scenarios.md`](.agents/skills/version-release/references/patch-release-scenarios.md) |
-| 223 | ✓ | [`.agents/skills/version-release/references/release-notes-style.md`](.agents/skills/version-release/references/release-notes-style.md) |
-| 224 | ✓ | [`.agents/skills/version-release/SKILL.md`](.agents/skills/version-release/SKILL.md) |
-| 225 | ✓ | [`.agents/skills/zustand/references/action-patterns.md`](.agents/skills/zustand/references/action-patterns.md) |
-| 226 | ✓ | [`.agents/skills/zustand/references/slice-organization.md`](.agents/skills/zustand/references/slice-organization.md) |
-| 227 | ✓ | [`.agents/skills/zustand/SKILL.md`](.agents/skills/zustand/SKILL.md) |
-| 228 | ✓ | [`.cursor/docs/createStaticStyles_migration_guide.md`](.cursor/docs/createStaticStyles_migration_guide.md) |
-| 229 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 230 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 231 | ✓ | [`e2e/CLAUDE.md`](e2e/CLAUDE.md) |
-| 232 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 233 | ✓ | [`packages/agent-templates/src/templates/claw/AGENTS.md`](packages/agent-templates/src/templates/claw/AGENTS.md) |
-| 234 | ✓ | [`packages/builtin-skills/src/task/SKILL.md`](packages/builtin-skills/src/task/SKILL.md) |
-| 235 | ✓ | [`packages/builtin-skills/src/verify/references/auth.md`](packages/builtin-skills/src/verify/references/auth.md) |
-| 236 | ✓ | [`packages/builtin-skills/src/verify/SKILL.md`](packages/builtin-skills/src/verify/SKILL.md) |
-| 237 | ✓ | [`packages/builtin-skills/src/verify/surfaces/electron.md`](packages/builtin-skills/src/verify/surfaces/electron.md) |
-| 238 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
-| 239 | → | [`DESIGN.dark.md`](DESIGN.dark.md) |
-| 240 | → | [`DESIGN.md`](DESIGN.md) |
+| 162 | ✓ | [`.agents/skills/product-design/references/canon.md`](.agents/skills/product-design/references/canon.md) |
+| 163 | ✓ | [`.agents/skills/product-design/references/layer-model.md`](.agents/skills/product-design/references/layer-model.md) |
+| 164 | ✓ | [`.agents/skills/product-design/references/pattern-base.md`](.agents/skills/product-design/references/pattern-base.md) |
+| 165 | ✓ | [`.agents/skills/product-design/references/trace-schema.md`](.agents/skills/product-design/references/trace-schema.md) |
+| 166 | ✓ | [`.agents/skills/product-design/references/worked-example.md`](.agents/skills/product-design/references/worked-example.md) |
+| 167 | ✓ | [`.agents/skills/product-design/SKILL.md`](.agents/skills/product-design/SKILL.md) |
+| 168 | ✓ | [`.agents/skills/product-design/templates/design-spec.md`](.agents/skills/product-design/templates/design-spec.md) |
+| 169 | ✓ | [`.agents/skills/project-overview/SKILL.md`](.agents/skills/project-overview/SKILL.md) |
+| 170 | ✓ | [`.agents/skills/react/references/layout-kit.md`](.agents/skills/react/references/layout-kit.md) |
+| 171 | ✓ | [`.agents/skills/react/SKILL.md`](.agents/skills/react/SKILL.md) |
+| 172 | ✓ | [`.agents/skills/response-compliance/SKILL.md`](.agents/skills/response-compliance/SKILL.md) |
+| 173 | ✓ | [`.agents/skills/skills-audit/agents/openai.yaml`](.agents/skills/skills-audit/agents/openai.yaml) |
+| 174 | ✓ | [`.agents/skills/skills-audit/SKILL.md`](.agents/skills/skills-audit/SKILL.md) |
+| 175 | ✓ | [`.agents/skills/spa-routes/SKILL.md`](.agents/skills/spa-routes/SKILL.md) |
+| 176 | ✓ | [`.agents/skills/store-data-structures/references/reducer.md`](.agents/skills/store-data-structures/references/reducer.md) |
+| 177 | ✓ | [`.agents/skills/store-data-structures/references/types.md`](.agents/skills/store-data-structures/references/types.md) |
+| 178 | ✓ | [`.agents/skills/store-data-structures/SKILL.md`](.agents/skills/store-data-structures/SKILL.md) |
+| 179 | ✓ | [`.agents/skills/testing/references/agent-runtime-e2e.md`](.agents/skills/testing/references/agent-runtime-e2e.md) |
+| 180 | ✓ | [`.agents/skills/testing/references/db-model-test.md`](.agents/skills/testing/references/db-model-test.md) |
+| 181 | ✓ | [`.agents/skills/testing/references/desktop-controller-test.md`](.agents/skills/testing/references/desktop-controller-test.md) |
+| 182 | ✓ | [`.agents/skills/testing/references/electron-ipc-test.md`](.agents/skills/testing/references/electron-ipc-test.md) |
+| 183 | ✓ | [`.agents/skills/testing/references/zustand-store-action-test.md`](.agents/skills/testing/references/zustand-store-action-test.md) |
+| 184 | ✓ | [`.agents/skills/testing/SKILL.md`](.agents/skills/testing/SKILL.md) |
+| 185 | ✓ | [`.agents/skills/trpc-router/SKILL.md`](.agents/skills/trpc-router/SKILL.md) |
+| 186 | ✓ | [`.agents/skills/typescript/SKILL.md`](.agents/skills/typescript/SKILL.md) |
+| 187 | ✓ | [`.agents/skills/upstash-workflow/references/best-practices.md`](.agents/skills/upstash-workflow/references/best-practices.md) |
+| 188 | ✓ | [`.agents/skills/upstash-workflow/references/cloud.md`](.agents/skills/upstash-workflow/references/cloud.md) |
+| 189 | ✓ | [`.agents/skills/upstash-workflow/references/examples.md`](.agents/skills/upstash-workflow/references/examples.md) |
+| 190 | ✓ | [`.agents/skills/upstash-workflow/references/implementation.md`](.agents/skills/upstash-workflow/references/implementation.md) |
+| 191 | ✓ | [`.agents/skills/upstash-workflow/SKILL.md`](.agents/skills/upstash-workflow/SKILL.md) |
+| 192 | ✓ | [`.agents/skills/ux-audit/agents/openai.yaml`](.agents/skills/ux-audit/agents/openai.yaml) |
+| 193 | ✓ | [`.agents/skills/ux-audit/references/example/channel.md`](.agents/skills/ux-audit/references/example/channel.md) |
+| 194 | ✓ | [`.agents/skills/ux-audit/references/example/chat.md`](.agents/skills/ux-audit/references/example/chat.md) |
+| 195 | ✓ | [`.agents/skills/ux-audit/references/example/community-list.md`](.agents/skills/ux-audit/references/example/community-list.md) |
+| 196 | ✓ | [`.agents/skills/ux-audit/references/example/create.md`](.agents/skills/ux-audit/references/example/create.md) |
+| 197 | ✓ | [`.agents/skills/ux-audit/references/example/doc.md`](.agents/skills/ux-audit/references/example/doc.md) |
+| 198 | ✓ | [`.agents/skills/ux-audit/references/example/eval.md`](.agents/skills/ux-audit/references/example/eval.md) |
+| 199 | ✓ | [`.agents/skills/ux-audit/references/example/fleet.md`](.agents/skills/ux-audit/references/example/fleet.md) |
+| 200 | ✓ | [`.agents/skills/ux-audit/references/example/home.md`](.agents/skills/ux-audit/references/example/home.md) |
+| 201 | ✓ | [`.agents/skills/ux-audit/references/example/memory.md`](.agents/skills/ux-audit/references/example/memory.md) |
+| 202 | ✓ | [`.agents/skills/ux-audit/references/example/onboarding.md`](.agents/skills/ux-audit/references/example/onboarding.md) |
+| 203 | ✓ | [`.agents/skills/ux-audit/references/example/page.md`](.agents/skills/ux-audit/references/example/page.md) |
+| 204 | ✓ | [`.agents/skills/ux-audit/references/example/profile.md`](.agents/skills/ux-audit/references/example/profile.md) |
+| 205 | ✓ | [`.agents/skills/ux-audit/references/example/resource.md`](.agents/skills/ux-audit/references/example/resource.md) |
+| 206 | ✓ | [`.agents/skills/ux-audit/references/example/settings.md`](.agents/skills/ux-audit/references/example/settings.md) |
+| 207 | ✓ | [`.agents/skills/ux-audit/references/example/stats.md`](.agents/skills/ux-audit/references/example/stats.md) |
+| 208 | ✓ | [`.agents/skills/ux-audit/references/example/task-detail.md`](.agents/skills/ux-audit/references/example/task-detail.md) |
+| 209 | ✓ | [`.agents/skills/ux-audit/references/example/tasks.md`](.agents/skills/ux-audit/references/example/tasks.md) |
+| 210 | ✓ | [`.agents/skills/ux-audit/references/example/topic.md`](.agents/skills/ux-audit/references/example/topic.md) |
+| 211 | ✓ | [`.agents/skills/ux-audit/references/example/topics.md`](.agents/skills/ux-audit/references/example/topics.md) |
+| 212 | ✓ | [`.agents/skills/ux-audit/references/layer-1-static.md`](.agents/skills/ux-audit/references/layer-1-static.md) |
+| 213 | ✓ | [`.agents/skills/ux-audit/references/layer-2-visual.md`](.agents/skills/ux-audit/references/layer-2-visual.md) |
+| 214 | ✓ | [`.agents/skills/ux-audit/references/layer-3-dynamic.md`](.agents/skills/ux-audit/references/layer-3-dynamic.md) |
+| 215 | ✓ | [`.agents/skills/ux-audit/references/pattern-catalog.md`](.agents/skills/ux-audit/references/pattern-catalog.md) |
+| 216 | ✓ | [`.agents/skills/ux-audit/SKILL.md`](.agents/skills/ux-audit/SKILL.md) |
+| 217 | ✓ | [`.agents/skills/ux/references/act.md`](.agents/skills/ux/references/act.md) |
+| 218 | ✓ | [`.agents/skills/ux/references/design-values.md`](.agents/skills/ux/references/design-values.md) |
+| 219 | ✓ | [`.agents/skills/ux/references/edit.md`](.agents/skills/ux/references/edit.md) |
+| 220 | ✓ | [`.agents/skills/ux/references/feedback.md`](.agents/skills/ux/references/feedback.md) |
+| 221 | ✓ | [`.agents/skills/ux/references/grow.md`](.agents/skills/ux/references/grow.md) |
+| 222 | ✓ | [`.agents/skills/ux/references/read.md`](.agents/skills/ux/references/read.md) |
+| 223 | ✓ | [`.agents/skills/ux/SKILL.md`](.agents/skills/ux/SKILL.md) |
+| 224 | ✓ | [`.agents/skills/version-release/agents/openai.yaml`](.agents/skills/version-release/agents/openai.yaml) |
+| 225 | ✓ | [`.agents/skills/version-release/references/changelog-example/db-migration.md`](.agents/skills/version-release/references/changelog-example/db-migration.md) |
+| 226 | ✓ | [`.agents/skills/version-release/references/changelog-example/hotfix.md`](.agents/skills/version-release/references/changelog-example/hotfix.md) |
+| 227 | ✓ | [`.agents/skills/version-release/references/changelog-example/weekly-release.md`](.agents/skills/version-release/references/changelog-example/weekly-release.md) |
+| 228 | ✓ | [`.agents/skills/version-release/references/minor-release.md`](.agents/skills/version-release/references/minor-release.md) |
+| 229 | ✓ | [`.agents/skills/version-release/references/patch-release-scenarios.md`](.agents/skills/version-release/references/patch-release-scenarios.md) |
+| 230 | ✓ | [`.agents/skills/version-release/references/release-notes-style.md`](.agents/skills/version-release/references/release-notes-style.md) |
+| 231 | ✓ | [`.agents/skills/version-release/SKILL.md`](.agents/skills/version-release/SKILL.md) |
+| 232 | ✓ | [`.agents/skills/zustand/references/action-patterns.md`](.agents/skills/zustand/references/action-patterns.md) |
+| 233 | ✓ | [`.agents/skills/zustand/references/slice-organization.md`](.agents/skills/zustand/references/slice-organization.md) |
+| 234 | ✓ | [`.agents/skills/zustand/SKILL.md`](.agents/skills/zustand/SKILL.md) |
+| 235 | ✓ | [`.cursor/docs/createStaticStyles_migration_guide.md`](.cursor/docs/createStaticStyles_migration_guide.md) |
+| 236 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 237 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 238 | ✓ | [`e2e/CLAUDE.md`](e2e/CLAUDE.md) |
+| 239 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 240 | ✓ | [`packages/agent-templates/src/templates/claw/AGENTS.md`](packages/agent-templates/src/templates/claw/AGENTS.md) |
+| 241 | ✓ | [`packages/builtin-skills/src/task/SKILL.md`](packages/builtin-skills/src/task/SKILL.md) |
+| 242 | ✓ | [`packages/builtin-skills/src/verify/references/auth.md`](packages/builtin-skills/src/verify/references/auth.md) |
+| 243 | ✓ | [`packages/builtin-skills/src/verify/SKILL.md`](packages/builtin-skills/src/verify/SKILL.md) |
+| 244 | ✓ | [`packages/builtin-skills/src/verify/surfaces/electron.md`](packages/builtin-skills/src/verify/surfaces/electron.md) |
+| 245 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
+| 246 | → | [`DESIGN.dark.md`](DESIGN.dark.md) |
+| 247 | → | [`DESIGN.md`](DESIGN.md) |
 
 ---
 

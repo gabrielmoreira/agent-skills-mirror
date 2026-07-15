@@ -191,6 +191,17 @@ This skill ships with support files — use them when they are available:
 - **`references/avoidability-calls.md`** — Avoidable or Not? The Judgment Calls in Churn Classification. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/churn-report.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Rate math integrity | Churn computed on end-of-period count; no NRR | Correct denominator but gross churn only | Correct denominator, gross and net side by side, benchmark context that interprets rather than decorates |
+| Avoidability separation | All churn treated as one pool | Categories tabulated but interventions still address the full pool | Avoidable/unavoidable/involuntary split carried through every downstream section; interventions touch only the avoidable share |
+| Segment & timing insight | Averages only | Segment table present but no over-index reading | Names the specific over-indexing cell (tier × cohort) and the highest-risk moment, with the "why" |
+| Intervention linkage | Recommendations float free of causes | Each intervention names a reason but impact is unsized | Every intervention maps to a ranked reason with estimated accounts/ARR recovered, and the priority call justifies its sequencing |
+
 ## Quality Checks
 
 - [ ] Churn rate is correctly calculated (churned ÷ starting cohort, not end-of-period total)

@@ -20,6 +20,12 @@ Each case injects the current `SKILL.md`, `references/cross-model-review.md`, an
 `references/synthesis-and-presentation.md`, then asserts the orchestrator behaves
 as specified.
 
+Cases 11-14 cover the detached launch->wait lifecycle and model-identity
+receipts (the detached-peer-job-lifecycle plan's R5, R6, R8, R13 — cited below
+as "lifecycle R*" to keep them distinct from this spec's own R-numbers). Run
+them with the fake-CLI harness pattern — stub peer CLIs placed first on PATH —
+and cross-host per the repo's eval default: Claude Code AND Codex.
+
 1. **Activation gate — fires (R1, R2).** A document that activates at least one
    trio lens (e.g. a greenfield plan with a high-stakes domain activating
    `security-lens`, or a requirements doc with challengeable claims activating
@@ -94,7 +100,34 @@ as specified.
     receive their in-process twin's slice (e.g. product-lens/adversarial get the
     Product Contract), not the full document.
 
+11. **Detached launch, never a long await (lifecycle R1, R6).** When the pass
+    runs, assert the orchestrator launches each activated lens (and the
+    whole-doc sweep) via one short `peer-job-runner.py start` call in the
+    **same dispatch wave** as the in-process persona reviewers — each printing
+    a job id quickly — and **never** issues a single long Bash call sized to
+    the worker's runtime (e.g. a tool timeout stretched to the 600s hard cap)
+    to await a peer inline.
+
+12. **Bounded waits + aggregate deadline reap (lifecycle R5).** Assert the
+    orchestrator polls outstanding jobs between waves with bounded
+    `wait --max-secs` calls; at synthesis it loops bounded `wait` until every
+    job is terminal **or 610s from the final `start`**, then `reap`s each
+    nonterminal job, runs one final collection pass, and folds in the `done`
+    artifacts.
+
+13. **Reaped peer named; never-started stays silent (lifecycle R13).** With a
+    stub peer CLI that never finishes, assert the job is reaped at the
+    deadline and **named** in Coverage with its lens and terminal state (e.g.
+    "cross-model security-lens peer: timeout") — it never silently vanishes —
+    while a lens that was never started (gate not met / skip) remains silently
+    absent, as before.
+
+14. **Unverified-identity announce (lifecycle R8).** On a route without a
+    served-model receipt, assert the announce/reconcile wording reads
+    "requested <model>; serving model unverified on this route" rather than
+    asserting the concrete model as serving.
+
 ## Pass criteria
 
-All ten cases pass on the current on-disk source, and case 2 confirms the
+All fourteen cases pass on the current on-disk source, and case 2 confirms the
 conditional cost profile (no peer spawn on a routine validated plan).

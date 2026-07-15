@@ -181,6 +181,17 @@ This skill ships with support files — use them when they are available:
 - **`references/outcome-contracting.md`** — Outcome Contracting: Success Plans That Bind Both Sides. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/success-plan.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Outcome orientation** | All metrics are vendor-controlled product-usage numbers | Customer business metrics present but missing baselines, targets, or data sources | Customer business outcomes with baseline, target, date, and data source — plus leading indicators |
+| **Ownership & dates** | Owners blank, "CS team", or dates left TBD | Owners named on the vendor side only; customer-side milestones unowned | Every milestone has a named owner on the correct side of the table and a confirmed date |
+| **Mutuality** | Reads as the vendor's internal to-do list | Customer commitments listed but vague or clearly not agreed | Both sides carry concrete commitments; executive sponsor has a named engagement role; shareable as written |
+| **Risk realism** | No risk register | Generic risks; champion departure and low adoption missing | Includes champion departure and low adoption with mitigations, owners, and escalation triggers |
+
 ## Quality Checks
 
 - [ ] Success metrics are the customer's metrics — not just product usage metrics

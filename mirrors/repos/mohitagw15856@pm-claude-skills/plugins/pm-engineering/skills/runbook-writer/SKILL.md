@@ -137,6 +137,17 @@ This skill ships with support files — use them when they are available:
 - **`references/3am-usability.md`** — The 3AM Test: Runbooks for Degraded Humans. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/runbook.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Command exactness** | Steps are vague actions ("run the deploy script") with no commands | Most steps have commands, but some paraphrase tool names or omit flags | Every step has an exact, copy-pasteable command with correct flags and placeholders clearly marked |
+| **Success & failure signalling** | No expected outputs; reader cannot tell whether a step worked | Expected output on the happy path only; failure paths say "investigate" | Every step states expected output and a named failure path or troubleshooting link |
+| **Rollback completeness** | Rollback missing or left as a placeholder | Rollback commands exist but are partial and have no verification | Rollback is complete, independently testable, and each rollback step has its own verify command |
+| **Cold-reader usability** | Assumes system knowledge; unexplained jargon; escalation cells like "[Team name]" | Followable by a team member, but tribal-knowledge gaps would stall an outsider | An engineer who has never touched the system can execute it under pressure; every escalation row has a real contact or an explicit [FILL IN] flag |
+
 ## Quality Checks
 - [ ] Every step has an exact command (no "run the deploy script")
 - [ ] Expected output is specified for each step so engineer knows if it worked

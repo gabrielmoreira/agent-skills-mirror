@@ -167,6 +167,14 @@ worse than omitting it.
   that constrain Requirements / Flows / Scope below. Each entry names the
   decision in bold with prose rationale. Sits high in the rendered doc so
   readers encounter the framing choices before descending into detail.
+  An entry recording a decision settled in the invoking conversation may
+  carry the inline annotation
+  `(session-settled: <class> — chosen over <alternative>: <reason>)`, with
+  exactly two classes — `user-directed` (the user chose against or between
+  surfaced options) and `user-approved` (the agent proposed with the
+  tradeoff surfaced; the user assented). An agent never labels its own
+  unexamined proposal. `ce-plan` enrichment inherits these labels into
+  plan KTDs.
 
 - **Actors** — include when the proposed thing has multi-party behavior
   (multiple humans, agents, or systems meaningfully involved). Skip for

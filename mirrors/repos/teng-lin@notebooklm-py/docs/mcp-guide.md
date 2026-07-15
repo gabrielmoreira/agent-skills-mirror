@@ -422,6 +422,28 @@ omits the large report by default — pass `include_report=true` to fetch it onc
 > `DeprecationWarning` and adds a `deprecation` note to the result — switch to
 > `poll_task_id`. See [docs/deprecations.md](deprecations.md).
 
+## Experimental: in-app upload widget
+
+Set `NOTEBOOKLM_MCP_UPLOAD_WIDGET=1` (http transport + a public URL required) to expose
+`source_add_widget(notebook)` — an **MCP-App** tool that renders a file picker *inline* in
+MCP-Apps hosts (e.g. claude.ai), so a mobile user can pick and upload a file without leaving the
+chat. The widget uploads to the same signed `/files/ul` route as the link flow; confirm the add
+with `await_upload(upload_url)`.
+
+**Opt-in and experimental** (off by default): MCP-Apps rendering is new (Jan 2026) and
+host-specific; the widget resolves host render gates (`_meta.ui.domain` computed from your public
+URL, the flat `ui/resourceUri` key) that a host can change. If it doesn't render, the widget
+silently no-ops and the portable **signed-link flow stays the fallback** — nothing else breaks.
+It stays off the default tool surface (and the ADR-0025 tool budgets) unless enabled. See
+[ADR-0027](adr/0027-mcp-app-upload-widget.md).
+
+Enabling the widget **auto-enables stateless HTTP** (`FASTMCP_STATELESS_HTTP`): an MCP-Apps host
+fetches the `ui://` widget resource on a connection *without* the chat session id, and a stateful
+server rejects that with "fail to fetch app content". Set `FASTMCP_STATELESS_HTTP` explicitly to
+override. Stateless is harmless for ordinary tool use (each request is self-contained). Note:
+ChatGPT caches the widget template per conversation, so the *first* `source_add_widget` call in a
+new chat may not render — call it again and it will (a ChatGPT-side quirk, not a server issue).
+
 ## Tool reference
 
 | Domain | Tools |

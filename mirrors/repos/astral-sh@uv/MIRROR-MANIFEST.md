@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 10 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,9 +66,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`agents/hooks/session-start-web.sh`](agents/hooks/session-start-web.sh) |
 | 6 | ✓ | [`agents/hooks/session-start.sh`](agents/hooks/session-start.sh) |
 | 7 | ✓ | [`agents/prompts/editorialize-changelog.md`](agents/prompts/editorialize-changelog.md) |
-| 8 | ✓ | [`agents/prompts/triage-issue.md`](agents/prompts/triage-issue.md) |
-| 9 | ✓ | [`agents/schemas/issue-triage.json`](agents/schemas/issue-triage.json) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 8 | ✓ | [`agents/prompts/pull-request-security-review.md`](agents/prompts/pull-request-security-review.md) |
+| 9 | ✓ | [`agents/prompts/reproduce-bug.md`](agents/prompts/reproduce-bug.md) |
+| 10 | ✓ | [`agents/prompts/triage-issue.md`](agents/prompts/triage-issue.md) |
+| 11 | ✓ | [`agents/references/threat-model.md`](agents/references/threat-model.md) |
+| 12 | ✓ | [`agents/schemas/issue-triage-bug.json`](agents/schemas/issue-triage-bug.json) |
+| 13 | ✓ | [`agents/schemas/issue-triage.json`](agents/schemas/issue-triage.json) |
+| 14 | ✓ | [`agents/schemas/pull-request-security-review.json`](agents/schemas/pull-request-security-review.json) |
+| 15 | ✓ | [`agents/scripts/agent-review-to-github-comments.py`](agents/scripts/agent-review-to-github-comments.py) |
+| 16 | ✓ | [`agents/scripts/agent-review-to-github-comments.py.lock`](agents/scripts/agent-review-to-github-comments.py.lock) |
+| 17 | ✓ | [`agents/scripts/install-codex-security.sh`](agents/scripts/install-codex-security.sh) |
+| 18 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

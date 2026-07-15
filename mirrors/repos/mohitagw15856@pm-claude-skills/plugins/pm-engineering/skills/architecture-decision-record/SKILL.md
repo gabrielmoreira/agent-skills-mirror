@@ -108,6 +108,17 @@ This skill ships with support files — use them when they are available:
 - **`references/decision-scoping.md`** — What Deserves an ADR (and What "Context" Must Contain). Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/adr.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Context reconstruction** | Assumes the reader already knows the problem and the pressures | Problem stated, but the forces (team constraints, scale, deadline, forcing event) are missing | A reader two years later could guess the decision from the Context section alone |
+| **Options honesty** | Only the chosen option, or rejected options written as strawmen | ≥2 options, but rejection reasons are circular ("didn't meet requirements") | Every rejected option has genuine strengths and a specific losing constraint tied to a context pressure |
+| **Consequence balance** | All consequences are positive | Token negatives with no operational specifics | Negatives name real debts, new operational burdens, and what must stay true for the decision to hold |
+| **Revisit triggers** | No risks or review conditions stated | "Review periodically" — no measurable condition | Specific, measurable trigger conditions that would invalidate the decision, with an owner |
+
 ## Quality Checks
 
 - [ ] Context explains the *why* — not just the *what*

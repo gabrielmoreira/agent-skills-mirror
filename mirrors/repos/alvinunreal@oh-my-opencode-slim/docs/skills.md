@@ -25,7 +25,6 @@ new bundled versions for customized skills are staged under
 | [`verification-planning`](#verification-planning) | Design project-specific evidence before implementation | `orchestrator` |
 | [`reflect`](#reflect) | Review repeated work and suggest reusable workflow improvements | `orchestrator` |
 | [`worktrees`](#worktrees) | Safe Git worktree lane management | `orchestrator` |
-| [`release-smoke-test`](#release-smoke-test) | Packed release-candidate and bugfix smoke validation | `orchestrator` |
 | [`oh-my-opencode-slim`](#oh-my-opencode-slim) | Plugin configuration and self-improvement guidance | `orchestrator` |
 
 ---
@@ -155,12 +154,12 @@ constraints are unfamiliar or rapidly changing, it asks `@librarian` for focused
 official and project-specific research before deciding; it does not seek generic
 testing advice or research when current evidence is already decisive.
 
-**When NOT to use:** tiny mechanical edits or release-specific validation (use
-`release-smoke-test`). It complements ordinary verification and deepwork, does
-not prescribe a default mechanism, and requires approval for verification-only
-dependencies, persistent instrumentation, production debug surfaces, or
-structural changes. Temporary support is removed; durable support needs a clear
-justification. Completed work reports what was established and its limitations.
+**When NOT to use:** tiny mechanical edits. It complements ordinary verification
+and deepwork, does not prescribe a default mechanism, and requires approval for
+verification-only dependencies, persistent instrumentation, production debug
+surfaces, or structural changes. Temporary support is removed; durable support
+needs a clear justification. Completed work reports what was established and its
+limitations.
 
 ---
 
@@ -253,32 +252,6 @@ After config changes, expect guidance like:
 ```text
 This should apply on the next OpenCode run; restart OpenCode if you need it immediately.
 ```
-
----
-
-## release-smoke-test
-
-**Validate packed release candidates and bugfixes before public publish.**
-
-`release-smoke-test` is an orchestrator-only skill for proving a release branch
-works as an installed package artifact. It builds and packs the candidate,
-installs the tarball into a throwaway app, runs OpenCode with a sanitized
-temporary config, verifies the active `plugin_origins`, and searches isolated
-logs for the crash signature being fixed.
-
-Use it for release hardening, runtime compatibility checks, and model-specific
-smokes such as OpenCode 1.17.11 malformed message transform regressions.
-
-Typical request:
-
-```text
-Use release-smoke-test to validate this release candidate before npm publish.
-```
-
-The skill distinguishes fully isolated smokes from host-provider smokes. If a
-model such as GPT-5.5 Fast needs provider aliases from the current machine, the
-skill records that limitation instead of treating it as equivalent to a clean
-`env -i` smoke.
 
 ---
 

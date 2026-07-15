@@ -158,3 +158,55 @@ US1 capability: `n2n_status`, `n2n_consent`, `n2n_kill`, `n2n_peer_capabilities`
 `n2n_task_result`, `n2n_task_cancel`, `n2n_health`, `n2n_connect`, `n2n_trust`.
 056 iN2N (risk): `n2n_risk_status`, `n2n_member_list`, `n2n_member_health`,
 `n2n_member_add`, `n2n_enroll_token`, `n2n_member_remove`, `n2n_route`.
+057 production posture: `n2n_posture`, `n2n_faults`.
+
+## Operator heartbeat — fault isolation (057)
+
+Diagnose trouble with `n2n_faults`, which reports a single truthful `fault_class`:
+
+- **`daemon`** — the federation layer / mesh daemon is down. (If `n2n_faults` or
+  `n2n_posture` itself errors or times out, treat that as daemon-down — the daemon
+  serves these endpoints.) Report a *federation-layer fault*, NOT a member flap.
+- **`member`** — a specific member has no live channel. Name it and say whether it
+  `will_cold_start` on the next route.
+- **`backend`** — a member is up but its backend device/API is unreachable. Report a
+  *backend-reachability* issue, NOT a federation fault.
+- **`none`** — healthy.
+
+This is the fix for the 056 misdiagnosis where a poll bug was reported as a member
+flap. Always report the specific cause, never a generic "something's down."
+
+## Operator heartbeat — report posture (057)
+
+Every heartbeat MUST report the risk's **production posture** by calling
+`n2n_posture` and stating its `summary` verbatim — one of:
+
+- `testing` — guards intentionally off (fast iteration).
+- `production — enforced` — all three controls verified active: **member sandbox**
+  (host-level systemd kernel confinement — `NoNewPrivileges`, read-only system,
+  master `.env` hidden), **model-guard** (DefenseClaw LLM guardrail proxy on `:4000`
+  + component scan), and **GAIT** immutable git audit. Each claw also advertises its
+  posture + LLM tier in its **A2A capability card** so peers see it.
+- `production — DEGRADED (<controls> missing)` — one or more controls are down.
+  Name exactly which, and note the effect: a **containment** gap (sandbox /
+  model-guard) means delegations are **refused** (fail-closed); an **audit** gap
+  (GAIT) means delegations **run but are flagged `audit-degraded`**.
+
+The Border NEVER reports `enforced` while any control is missing — an honest
+`degraded` is always preferred to a false `production` claim.
+
+## Durable runtime (057)
+
+The mesh daemon and always-on members run as durable `systemd --user` services
+(`Restart=always`, survive session/terminal churn + reboot), generated repeatably:
+
+```bash
+python3 scripts/in2n-services.py generate   # write units: mesh daemon + one per always-on member
+python3 scripts/in2n-services.py enable      # daemon-reload + enable --now each
+python3 scripts/in2n-services.py status      # per-unit active/failed
+python3 scripts/in2n-services.py disable <member>   # tear a member's unit down (reverts to cold-start)
+```
+
+Single-owner: a member bound to a durable service is brought up via its unit, never
+double-launched by the Border's cold-start path. On a non-systemd host the generator
+degrades gracefully and posture reports the durable-runtime aspect accordingly.

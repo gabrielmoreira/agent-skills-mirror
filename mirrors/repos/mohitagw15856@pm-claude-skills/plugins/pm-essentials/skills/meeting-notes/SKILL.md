@@ -269,6 +269,17 @@ This skill ships with support files — use them when they are available:
 - **`references/decisions-vs-discussion.md`** — Separating Decisions from Discussion. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/notes-skeleton.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Action-item accountability | Actions assigned to "the team" or nobody, with no dates | Named owners but vague deadlines ("next week", "soon") or co-owned blobs | Every action has exactly one named owner and a concrete date; shared work split into separately-owned items |
+| Decision traceability | Decisions buried in discussion or recorded without any why | Decisions listed with owners but rationale thin; disagreement invisible | Each decision carries context, owner, and deadline; dissent recorded inside the decision with a revisit condition, not smoothed over |
+| Synthesis over transcript | Verbatim capture of who said what, in order | Trimmed transcript grouped by topic, but still dialogue rather than distillation | Discussion reduced to load-bearing points; quotes appear only where they carry decision weight |
+| Loop closure | Open questions, deferred topics, and escalations silently dropped | Open items listed but ownerless or dateless; deferrals vanish from next steps | Every open question has an owner and by-when; deferred items reappear in next steps with dates; notes sent within the 2-hour window |
+
 ## Quality Checks
 
 - [ ] Every action item has a single named owner (not "team")

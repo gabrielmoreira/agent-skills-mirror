@@ -51,6 +51,17 @@ This skill ships with support files — use them when they are available:
 - **`references/goal-writing.md`** — Writing Sprint Goals That Steer. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/brief-one-pager.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Goal scoreability** | Goal is a task list or a vague direction ("make progress on X") — nobody could score it at sprint end | Goal states one outcome but the pass/fail line is fuzzy (no number, date, or observable test) | Goal is a single outcome statement with an explicit pass/fail test anyone on the team could apply on the last day |
+| **Critical path precision** | No critical path, or "the important tickets" — reader can't tell which slippage is fatal | Critical path tickets are named but without sequencing or the date/trigger at which the goal fails | Named tickets in dependency order, with the deadline that kills the goal and a clear fatal-vs-survivable split from the rest of the board |
+| **Risk actionability** | Risks are a worry list — no mitigations, no owners | Each risk has a mitigation *or* an owner, but responses are generic ("monitor closely") | Every risk has a concrete mitigation with a ready-by date and a single named owner, and states whether it threatens the goal or just a ticket |
+| **Capacity honesty** | Carry-over listed without impact; board is silently overloaded | Carry-over impact on the goal is stated, but the brief doesn't act on it — overload is flagged as a risk and left there | Carry-over is costed against capacity and the brief shows the resolution: named scope cuts, a de-scoped goal, or an explicit team-agreed overload acceptance |
+
 ## Quality Checks
 
 - [ ] Sprint goal is specific enough to score pass/fail at the end of the sprint

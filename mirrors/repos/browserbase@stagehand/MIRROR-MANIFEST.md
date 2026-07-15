@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `browserbase/stagehand` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `browserbase/stagehand` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `browserbase/stagehand` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,7 +62,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.cursorrules`](.cursorrules) |
 | 2 | ✓ | [`claude.md`](claude.md) |
 | 3 | ✓ | [`packages/cli/skills/browse/SKILL.md`](packages/cli/skills/browse/SKILL.md) |
-| 4 | ✓ | [`packages/evals/skills/browser/SKILL.md`](packages/evals/skills/browser/SKILL.md) |
 
 ---
 

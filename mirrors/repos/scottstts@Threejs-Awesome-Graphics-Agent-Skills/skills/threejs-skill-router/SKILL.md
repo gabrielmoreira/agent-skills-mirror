@@ -16,7 +16,7 @@ Treat the model's Three.js knowledge and official documentation as prerequisites
 | reusable scalar/vector fields, domain warping, causal masks, procedural normals | `$threejs-procedural-fields` |
 | atlas-filtered blocks, planetary surfaces, hybrid texture-backed PBR soil/moss with procedural displacement and masks, ground and model moss accumulation, terrain wetness, lava/emissive surfaces, authored frame PBR, specular AA | `$threejs-procedural-materials` |
 | height-field ray marching, silhouette-aware POM, curved relief shells, relief self-shadowing | `$threejs-parallax-occlusion-mapping` |
-| sculpted rails/frames, branch rings, semantic mesh writers, material groups | `$threejs-procedural-geometry` |
+| complete hard-surface object assemblies, tilted shell lofts, UV-owned apertures, sculpted rails/frames, branch rings, fin lofts, semantic mesh writers, material groups | `$threejs-procedural-geometry` |
 | trees, surface-following ivy, painted vines, stylized grass, GPU-computed grass, roots, foliage, rooted wind deformation | `$threejs-procedural-vegetation` |
 | buildings, façade grammars, profiles, ornaments, modular mesh writers | `$threejs-procedural-architecture` |
 | planets, terrain, craters, biome fields, coastlines, spherical detail | `$threejs-procedural-planets` |

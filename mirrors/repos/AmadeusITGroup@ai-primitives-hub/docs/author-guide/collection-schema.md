@@ -30,6 +30,16 @@ readme:                                   # Optional. Documentation for the coll
   path: docs/python-development/readme.md 
 
 mcp:                                # Optional. MCP server configurations
+  inputs:                           # Optional. Input definitions for secrets/configurable values
+    - id: apiToken                  # Required. Referenced as ${input:apiToken} in server config
+      type: promptString            # Required. One of: promptString, pickString, command
+      description: API access token # Optional. Label shown to the user
+      password: true                # Optional. Mask the value (for secrets)
+    - id: environment
+      type: pickString
+      description: Target environment
+      options: [staging, production]
+      default: staging
   items:
     # Stdio server (local process)
     python-analyzer:                # Server name
@@ -39,6 +49,7 @@ mcp:                                # Optional. MCP server configurations
         - "${bundlePath}/server.py" # ${bundlePath} = installed bundle path
       env:                          # Optional. Environment variables
         LOG_LEVEL: info
+        TOKEN: "${input:apiToken}"  # Reference an input
       envFile: "${bundlePath}/.env" # Optional. Path to env file
       disabled: false               # Optional. Default: false
       description: Python analyzer  # Optional. Human-readable description
@@ -48,7 +59,7 @@ mcp:                                # Optional. MCP server configurations
       type: http                    # Required for remote. One of: http, sse
       url: "https://api.example.com/mcp"  # Required for remote
       headers:                      # Optional. Authentication headers
-        Authorization: "Bearer ${env:API_TOKEN}"
+        Authorization: "Bearer ${input:apiToken}"  # Use an input for secrets
 
     # Remote SSE server
     streaming-server:
@@ -61,6 +72,23 @@ display:                            # Optional. UI preferences
   ordering: manual                  # manual or alphabetical
   show_badge: true                  # Show badge in UI
 ```
+
+## MCP Input Definitions
+
+Use `mcp.inputs` to declare secrets or user-configurable values. VS Code will prompt the user when the server starts. Inputs are referenced in server configuration using `${input:id}`.
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `id` | ✅ | Unique identifier (alphanumeric, `-`, `_`) |
+| `type` | ✅ | `promptString`, `pickString`, or `command` |
+| `description` | — | Label shown to the user |
+| `password` | — | Mask the input (use for secrets) |
+| `default` | — | Pre-filled value |
+| `options` | — | List of choices for `pickString` |
+
+**Install behaviour**: inputs from `mcp.inputs` are merged into `.vscode/mcp.json`. Existing inputs with the same `id` are preserved — they are never overwritten.
+
+**Uninstall behaviour**: when a bundle is uninstalled, inputs that are no longer referenced by any remaining MCP server are automatically removed from `mcp.json`.
 
 ## MCP Server Duplicate Detection
 

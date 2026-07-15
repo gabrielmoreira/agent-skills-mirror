@@ -37,7 +37,7 @@ pnpm test && pnpm typecheck
 pnpm lint
 pnpm run verify                   # Full pipeline — what CI's `verify` job runs
 
-# Validator (schema 3.15.0 — see 000-docs/SCHEMA_CHANGELOG.md)
+# Validator (schema 3.15.2 — see 000-docs/SCHEMA_CHANGELOG.md)
 python3 scripts/validate-skills-schema.py --verbose
 python3 scripts/validate-skills-schema.py --marketplace --verbose
 python3 scripts/validate-skills-schema.py --marketplace --populate-db freshie/inventory.sqlite
@@ -66,16 +66,21 @@ cd packages/cli && pnpm test -- --grep "pattern"
 pnpm exec j-rig --version         # → 0.1.2 (the real 7-layer CLI)
 pnpm exec j-rig check <skill-dir> # Tier 3A: deterministic (~seconds, free, no API key, no DB)
 
-# Real behavioral eval (opt-in, ~$2-5/skill) — needs a provider API key + the
-# native better-sqlite3 build (run `pnpm rebuild better-sqlite3` once; the build
-# script is not auto-run on install).
-DEEPSEEK_API_KEY=...  pnpm exec j-rig eval <skill-dir> \
-  --provider deepseek --models deepseek-v4-flash --db freshie/inventory.sqlite
-# DEEPSEEK_API_KEY is provisioned via SOPS (intent-eval-lab/.env.sops; see the
-# IEP umbrella CLAUDE.md credential table). `deepseek-v4-flash` is a real
-# behavioral provider — this is ground truth, replacing the prior dev/stub
-# resolution where the global `j-rig` symlink pointed at a local unbuilt CLI.
-# Other providers (haiku/sonnet/opus via Anthropic, etc.) remain available.
+# Real behavioral eval (opt-in, ~$2-5/skill) — needs the native better-sqlite3
+# build (run `pnpm rebuild better-sqlite3` once; the build script is not
+# auto-run on install). ALWAYS route through the wrapper — it runs j-rig
+# against a /dev/shm scratch DB and records the verdict into forge_proofs via
+# scripts/record-jrig-proofs.mjs. NEVER pass freshie/inventory.sqlite to
+# `j-rig eval --db` directly: j-rig writes its own run tables into whatever
+# --db it is given, which contaminates the tracked CMDB (and, pre-allowlist,
+# leaked those tables to the public DoltHub record).
+scripts/run-jrig-eval.sh --skill-dir <skill-dir> --plugin <catalog-name> \
+  --inventory-db freshie/inventory.sqlite
+# DEEPSEEK_API_KEY is SOPS-decrypted in-process by the wrapper
+# (intent-eval-lab/.env.sops; see the IEP umbrella CLAUDE.md credential
+# table). Defaults: --provider deepseek --models deepseek-v4-flash — a real
+# behavioral provider, this is ground truth; other providers (haiku/sonnet/
+# opus via Anthropic, etc.) remain available via --provider/--models.
 ```
 
 ## Two Catalog System — Critical
@@ -119,13 +124,13 @@ Performance budgets (CI-enforced): 40 MB total gzipped, 1 MB largest file, < 30s
 
 Adopted model: **mirror by default · upstream improvements · never clobber.** Decision record: `000-docs/694-AT-DECR-external-sync-mirror-by-default-model.md`; pipeline audit + hardening: `000-docs/691-AT-AUDT-sync-external-pipeline-audit-and-hardening.md`.
 
-**Scale first — external is a minority augment, not the core.** 454 plugins total, but only ~51 are externally synced (48 third-party sources + 6 of Jeremy's own repos). The other ~403 (89%) are in-repo Intent Solutions work. The sync is a curated side-channel, not the marketplace — treat external contributors as a respected minority augment, never the center of gravity.
+**Scale first — external is a minority augment, not the core.** ~470 plugins total (per `marketplace.extended.json`), but only 63 are externally synced (57 third-party sources + 6 of Jeremy's own repos, per `sources.yaml`). The other ~407 (~87%) are in-repo Intent Solutions work. The sync is a curated side-channel, not the marketplace — treat external contributors as a respected minority augment, never the center of gravity.
 
 **How sync works.** `sources.yaml` registers each external source. `.github/workflows/sync-external.yml` runs weekly (Mondays 06:00 UTC) and on demand (`workflow_dispatch` / `repository_dispatch`), invoking `scripts/sync-external.mjs` to mirror a source's files into `plugins/` and open an automated PR. A human reviews every auto-PR — historically ~1 in 10 sync PRs merges. The contributor's own repo is the source of truth; we do NOT locally edit a pure-mirror plugin.
 
 **Mirror vs curate.** Default is a pure mirror — the upstream repo governs, and improvements flow by upstreaming (see below), so the mirror becomes A-grade naturally with nothing to revert. Only when we deliberately harden a plugin past its upstream do we mark it `curated:` and freeze it.
 
-**Never-clobber guard (`curated:` freeze).** A source with `curated: true` in `sources.yaml` is FROZEN: `sync-external.mjs` logs `Curated — mirror frozen`, writes no files (no clone, no overwrite, no orphan-prune), and only keeps the catalog entry current — so even a `--force` sync can never revert our edits. `tonone` and `hyperflow` carry `curated: true` today (we A-graded their agents; upstreaming is planned). This guard exists because a prior `--force` run reverted ~100 A-graded agents back to 3-field upstream stubs — the ~18.9k-line deletion that motivated the whole model. Note `curated:` (we hardened it locally) and `verified:` (a maintainer vetted quality/trust) are orthogonal: tonone/hyperflow are `curated: true` but `verified: false`, an honest state and exactly why the two flags are separate.
+**Never-clobber guard (`curated:` freeze).** A source with `curated: true` in `sources.yaml` is FROZEN: `sync-external.mjs` logs `Curated — mirror frozen`, writes no files (no clone, no overwrite, no orphan-prune), and only keeps the catalog entry current — so even a `--force` sync can never revert our edits. `tonone`, `servicegraph`, and `schedule-after-usage-reset` carry `curated: true` today; `hyperflow` does NOT — it is the completed off-ramp example (its frontmatter hardening merged upstream, so the flag was dropped in #1008). This guard exists because a prior `--force` run reverted ~100 A-graded agents back to 3-field upstream stubs — the ~18.9k-line deletion that motivated the whole model. Note `curated:` (we hardened it locally) and `verified:` (a maintainer vetted quality/trust) are orthogonal: all three curated sources are `curated: true` but `verified: false`, an honest state and exactly why the two flags are separate.
 
 **Pileup auto-close (≤1 open sync PR).** `sync-external.yml` runs a "Close superseded sync PRs" step before Create-PR: it closes older open `automation/sync-external-*` PRs (with `--delete-branch`), keeping at most one open sync PR. The safe unique-per-run-branch model (from the 691 audit, which fixed an earlier shared-branch clobber) is preserved — this only prunes the pileup that model produced.
 

@@ -1,0 +1,1 @@
+cache/repos/github.com/SigNoz@signoz/frontend/AGENTS.md

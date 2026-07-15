@@ -5,13 +5,8 @@ description: "Create child communication safety experiences using PermissionKit 
 
 # PermissionKit
 
-> **Note:** PermissionKit APIs span multiple 26.x releases. Verify signatures
-> and availability against the current Xcode 26 SDK before shipping.
-
 Request permission from a parent or guardian to modify a child's communication
-rules. PermissionKit creates communication safety experiences that let children
-ask for exceptions to communication limits set by their parents. Targets
-Swift 6.3 / iOS 26+.
+rules. PermissionKit creates communication safety experiences that let children ask for exceptions to communication limits set by their parents.
 
 PermissionKit communication experiences are available only through iMessage.
 Use it for parent/guardian approval flows, not as a general in-app contact
@@ -19,7 +14,7 @@ permission, moderation, or chat-safety framework.
 
 ## Contents
 
-- [Setup](#setup)
+- [Availability and Setup](#availability-and-setup)
 - [Core Concepts](#core-concepts)
 - [Checking Communication Limits](#checking-communication-limits)
 - [Creating Permission Questions](#creating-permission-questions)
@@ -31,7 +26,7 @@ permission, moderation, or chat-safety framework.
 - [Review Checklist](#review-checklist)
 - [References](#references)
 
-## Setup
+## Availability and Setup
 
 Import `PermissionKit`. Do not invent PermissionKit entitlement keys; verify
 current Apple documentation and Xcode capabilities before adding signing
@@ -41,19 +36,13 @@ requirements.
 import PermissionKit
 ```
 
-**Platform availability:**
+Use this centralized version matrix and verify it against the current SDK:
 
-When reviewing or correcting code, state these exact tiers instead of collapsing
-PermissionKit to "iOS 26+":
-
-- Core topic, handle, question, response, choice, and `CommunicationLimits`
-  APIs: iOS 26.0+, iPadOS 26.0+, Mac Catalyst 26.0+, macOS 26.0+,
-  visionOS 26.0+.
-- `AskError`: iOS 26.1+, iPadOS 26.1+, Mac Catalyst 26.1+, macOS 26.1+,
-  visionOS 26.1+.
-- `AskCenter`, `AskCenter.ask(_:in:)`, `AskCenter.responses(for:)`,
-  `PermissionButton`, and `SignificantAppUpdateTopic`: iOS/iPadOS/
-  Mac Catalyst/macOS/visionOS 26.2+.
+| Tier | APIs | iOS/iPadOS/Mac Catalyst/macOS/visionOS |
+|---|---|---|
+| Core | Topics, handles, questions, responses, choices, `CommunicationLimits` | 26.0+ |
+| Errors | `AskError` | 26.1+ |
+| Presentation | `AskCenter`, ask/response sequences, `PermissionButton`, significant-update topics | 26.2+ |
 
 ## Core Concepts
 
@@ -352,130 +341,23 @@ for await response in AskCenter.shared.responses(for: SignificantAppUpdateTopic.
 
 ## Common Mistakes
 
-### DON'T: Treat known-handle checks as enabled-limits checks
-
-`isKnownHandle(_:)` and `knownHandles(in:)` only classify handles. They do not
-replace handling `.communicationLimitsNotEnabled` from `ask(_:in:)`.
-
-```swift
-// WRONG: Assuming a handle lookup proves active limits
-let isKnown = await CommunicationLimits.current.isKnownHandle(handle)
-if !isKnown {
-    try await AskCenter.shared.ask(question, in: viewController)
-}
-
-// CORRECT: Handle the case where limits are not enabled
-do {
-    try await AskCenter.shared.ask(question, in: viewController)
-} catch AskError.communicationLimitsNotEnabled {
-    // Communication limits not active -- continue with normal app flow.
-    allowCommunication()
-} catch {
-    handleError(error)
-}
-```
-
-### DON'T: Ignore AskError cases
-
-Each error case requires different handling.
-
-```swift
-// WRONG: Catch-all with no user feedback
-do {
-    try await AskCenter.shared.ask(question, in: viewController)
-} catch {
-    print(error)
-}
-
-// CORRECT: Handle each case
-do {
-    try await AskCenter.shared.ask(question, in: viewController)
-} catch let error as AskError {
-    switch error {
-    case .communicationLimitsNotEnabled:
-        allowCommunication()
-    case .contactSyncNotSetup:
-        showContactSyncPrompt()
-    case .invalidQuestion:
-        showInvalidQuestionAlert()
-    case .notAvailable:
-        showUnavailableMessage()
-    case .systemError(let underlying):
-        showSystemError(underlying)
-    case .unknown:
-        showGenericError()
-    @unknown default:
-        break
-    }
-}
-```
-
-### DON'T: Create questions with empty handles
-
-A question with no handles or person information is invalid.
-
-```swift
-// WRONG: Empty handles array
-let question = PermissionQuestion<CommunicationTopic>(handles: [])  // Invalid
-
-// CORRECT: Provide at least one handle
-let handle = CommunicationHandle(value: "+1234567890", kind: .phoneNumber)
-let question = PermissionQuestion<CommunicationTopic>(handle: handle)
-```
-
-### DON'T: Forget to observe responses and pending states
-
-Presenting a question without listening for the response means you never know
-if the parent approved. A child can also cancel the send flow, so do not wait
-forever for a response to every question.
-
-```swift
-// WRONG: Fire and forget
-try await AskCenter.shared.ask(question, in: viewController)
-
-// CORRECT: Observe responses
-Task {
-    for await response in AskCenter.shared.responses(for: CommunicationTopic.self) {
-        handleResponse(response)
-    }
-}
-try await AskCenter.shared.ask(question, in: viewController)
-```
-
-### DON'T: Use deprecated CommunicationLimitsButton
-
-Use `PermissionButton` instead of the deprecated `CommunicationLimitsButton`.
-
-```swift
-// WRONG: Deprecated
-CommunicationLimitsButton(question: question) {
-    Text("Ask Permission")
-}
-
-// CORRECT: Use PermissionButton
-PermissionButton(question: question) {
-    Text("Ask Permission")
-}
-```
+| Mistake | Fix |
+|---|---|
+| Known-handle lookup is treated as proof that limits are enabled | Handle `.communicationLimitsNotEnabled` from the ask operation as the normal unconfigured path. |
+| `AskError` is collapsed into one message | Distinguish limits-disabled, contact-sync, invalid-question, unavailable, system, and unknown cases. |
+| Question has no handle or person information | Validate at least one meaningful communication target before presentation. |
+| Ask is fire-and-forget | Observe response and pending state, while allowing child cancellation/abandonment. |
+| Deprecated `CommunicationLimitsButton` is used | Use `PermissionButton`. |
 
 ## Review Checklist
 
 - [ ] iMessage-only routing understood before choosing PermissionKit
-- [ ] Corrected guidance states exact availability tiers: core communication
-  types/limits 26.0+, `AskError` 26.1+, and `AskCenter`/`PermissionButton`/
-  responses/significant-update topics 26.2+
-- [ ] `AskError.communicationLimitsNotEnabled` handled to allow fallback
-- [ ] `AskError` cases handled individually with appropriate user feedback
+- [ ] The centralized availability matrix is applied to every API in use
 - [ ] `CommunicationHandle` created with correct `Kind` (phone, email, custom)
 - [ ] Known-handle examples guard a non-nil, nonempty bundle identifier before
   `knownHandles(in:)`
-- [ ] Known-handle checks are not treated as active-limits checks
-- [ ] `PermissionQuestion` includes at least one handle or person information
-- [ ] `AskCenter.shared.responses(for:)` observed to receive parent decisions
-- [ ] `PermissionButton` used instead of deprecated `CommunicationLimitsButton`
 - [ ] Person information includes name components for a clear permission prompt
 - [ ] Communication actions match the app's actual communication capabilities
-- [ ] Pending/canceled/expired question states handled when no response arrives
 - [ ] Response handling updates UI on the main actor
 - [ ] Error states provide clear guidance to the user
 

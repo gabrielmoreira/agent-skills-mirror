@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `InternLM/lmdeploy` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `InternLM/lmdeploy` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `InternLM/lmdeploy` — 26 default patterns, 0 followed patterns, 3 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 2 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,7 +61,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/docker-build/SKILL.md`](.claude/skills/docker-build/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/support-new-model/SKILL.md`](.claude/skills/support-new-model/SKILL.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

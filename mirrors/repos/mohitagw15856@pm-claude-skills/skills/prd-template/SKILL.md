@@ -120,6 +120,17 @@ Format: "As a [user type], I want to [action] so that [benefit]"
 - Skip the "why"
 - Forget about accessibility
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Problem grounding** | Problem stated from the company's perspective, or asserted with no evidence | User-framed problem, but the supporting data is vague ("users are frustrated") and research isn't cited | Problem is the user's, quantified with current-state data, and Why Now explains what changed; claims trace to cited research |
+| **Requirement testability** | Requirements are vague qualities ("fast", "intuitive") a reviewer couldn't verify | Most requirements are concrete, but acceptance criteria are thin and non-functional requirements are boilerplate | Every P0/P1/P2 item and NFR is verifiable (thresholds, percentiles, standards), and each traces to a user story or research finding |
+| **Metric rigor** | Success metrics missing, or percentages with no baseline | Baselines and targets present, but metrics only measure adoption — nothing would catch the feature succeeding while the business loses | Every metric has baseline → target, the set covers outcome as well as adoption, and at least one guardrail protects against winning the metric while harming the user |
+| **Scope & risk honesty** | MVP and future phases blur together; no open questions listed | Phases are separated, but the reasons for the cut-lines are absent and disagreements are smoothed over | Each phase boundary has a stated reason, out-of-scope asks are recorded with re-entry conditions, and open questions carry an owner, a deadline, and the cost of each answer |
+
 ## Quality Checks
 
 - [ ] Problem statement is written from the user's perspective (not the company's)

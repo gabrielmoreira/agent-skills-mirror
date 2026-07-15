@@ -124,6 +124,17 @@ This skill ships with support files — use them when they are available:
 - **`references/curve-reading.md`** — Reading Retention Curves Without Fooling Yourself. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/retention-readout.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Curve diagnosis | Reports a retention number without curve shape | Shape shown but not interpreted | Flattening vs trending-to-zero explicitly diagnosed and tied to what it means (PMF vs onboarding problem) |
+| Cohort discipline | All users lumped into one blended rate | Cohorts split but read as a table dump | Cohorts segmented before analysis, with the divergent cohort called out and explained |
+| Aha-moment linkage | Activation never connects to retention | Correlation claimed without data or caveat | The behavior separating retained from churned users identified with evidence, or honestly flagged unknown with a plan to find it |
+| Intervention specificity | "Improve onboarding"-grade advice | Specific actions but no measurement plan | Interventions name the user moment they target, plus a monitoring plan with an alert threshold and churned-user interviews |
+
 ## Quality Checks
 
 - [ ] Retention curve shape is diagnosed (flattening vs trending to zero = PMF vs onboarding)

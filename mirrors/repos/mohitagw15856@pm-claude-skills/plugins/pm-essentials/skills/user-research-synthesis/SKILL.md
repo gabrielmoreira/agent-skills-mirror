@@ -137,6 +137,17 @@ This skill ships with support files — use them when they are available:
 - **`references/theme-validity.md`** — When Is a Theme Real? Synthesis Validity Rules. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/synthesis-report.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Evidence discipline | Claims float free — no participant counts, no quotes, or quotes unattributed | Most themes quantified, but some quotes lack attribution or prevalence is vague ("many users") | Every theme states prevalence from the data ("8 of 12") and carries 2–3 attributed, pattern-illustrating quotes |
+| Synthesis altitude | A list of individual comments dressed up as findings | Real cross-participant themes, but one or two are single-participant anecdotes promoted to theme status | 4–8 genuine patterns across participants; outliers labelled as outliers; say/do gaps caught, not just stated opinions |
+| Decision connection | Observations with no implications — a museum tour of the data | Implications exist but are generic ("improve onboarding") with no priority or expected impact | Each theme names the product decision it affects; recommendations are prioritised with evidence, expected impact, and effort |
+| Honesty about conflict and gaps | Sanitized happy path — contradictions and uncertainty invisible | Conflicting data acknowledged but not explored; interpretations blur into observations | Contradictory findings surfaced with a resolution path; observation vs interpretation explicitly separated; open questions have named follow-ups |
+
 ## Quality Checks
 
 - [ ] Themes identify patterns across multiple participants, not individual responses

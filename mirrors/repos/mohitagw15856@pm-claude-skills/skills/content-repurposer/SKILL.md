@@ -48,6 +48,17 @@ This skill ships with support files — use them when they are available:
 - **`references/platform-native-translation.md`** — Platform-Native Translation: Why Cross-Posting Fails and Repurposing Works. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/repurpose-plan.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Platform nativeness** | The same paragraph pasted five times with different line breaks | Formats differ (thread numbering, slide splits) but the prose is identical underneath — reflowed, not rewritten | Each draft is written for how that platform is read: thread beats stand alone, LinkedIn breathes, carousel slides fit, script sounds spoken |
+| **Hook strength** | Openers are throat-clearing ("Here are some thoughts on…") | Hooks exist but are interchangeable across platforms and could top any post on the topic | Every piece opens with a distinct, scroll-stopping first line that earns the next second on *that* platform |
+| **Core-idea coherence** | The pack is five loosely related posts with no stated core idea | Core idea stated, but some drafts wander into secondary points that dilute it | One core idea leads the pack and every draft ladders back to it — a reader hitting any single piece gets the whole insight |
+| **CTA & cadence fit** | CTAs missing, identical everywhere, or fighting the platform (hard sell in a thread); no posting plan | CTAs present and roughly match the goal, but cadence is an afterthought ("post whenever") | Each CTA matches the stated goal *and* the platform's norms, and the posting order/cadence sequences the pack deliberately over the week |
+
 ## Quality Checks
 
 - [ ] Each platform draft is genuinely *rewritten* for that platform (length, formatting, tone), not the same text reflowed

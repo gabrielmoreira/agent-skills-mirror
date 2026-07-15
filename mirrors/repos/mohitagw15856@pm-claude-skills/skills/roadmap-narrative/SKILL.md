@@ -78,6 +78,17 @@ This skill ships with support files — use them when they are available:
 - **`references/now-next-later.md`** — Now/Next/Later Done Right: Commitment Gradients, Not Date Camouflage. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/roadmap-onepager.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Thematic coherence | A feature list with dates relabelled as a "narrative"; no themes | Themes exist but one or more initiatives are orphaned without being flagged | Every initiative maps to a theme; anything that doesn't fit is explicitly flagged as a narrative gap, not smuggled in |
+| Causal progression | Quarters are a chronological listing with no connection between them | Sequence is stated but the "Q1 enables Q2 because…" reasoning is missing or asserted without evidence | Each period visibly enables the next, with the causal dependency argued in prose and reflected in the timeline |
+| Strategic candour | No "what's not on the roadmap" section | One exclusion with thin rationale ("not a priority right now") | ≥2 named exclusions with defensible strategic rationale — including at least one idea someone actually wants |
+| Executive repeatability | Jargon-heavy; no standalone summary; a CFO couldn't retell any of it | Summary exists but is too long, too technical, or reads as compression rather than a story | 3–4 sentence summary a non-technical stakeholder could repeat correctly after one reading, zero engineering jargon |
+
 ## Quality Checks
 
 - [ ] Every initiative in the input maps to a strategic theme

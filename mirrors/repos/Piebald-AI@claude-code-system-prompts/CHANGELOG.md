@@ -4,6 +4,32 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.210](https://github.com/Piebald-AI/claude-code-system-prompts/commit/8eb4b72)
+
+_-8,629 tokens_
+
+- **NEW:** Data: Doctor checkup suggestion trigger — Identifies Claude Code installation, update, startup, settings, extension-bloat, and setup-drift problems that should suggest `/doctor`, while excluding project bugs, mid-session context pressure, and permission fatigue.
+- **NEW:** System Prompt: Auto mode setup proposal generator — Converts mechanically gathered, untrusted repository and session reconnaissance into a constrained JSON proposal for environment context, narrowly scoped classifier rules, unsafe permission-allow removals, and recon-status notes.
+- **NEW:** System Reminder: Memory index capacity warning — Warns when a private or team memory index approaches or exceeds its read limit and directs immediate compaction below the target size so trailing entries remain visible.
+- **NEW:** Tool Description: SendFile — Documents cross-session file transfer to local peers and Remote Control or cloud sessions, including addressing, size and count limits, SHA-256 integrity checks, and when shared-filesystem agents or plain text should use messaging instead.
+- **REMOVED:** Data: Data visualization color formula — Removes the standalone reference for assigning and validating categorical, sequential, diverging, and status colors.
+- **REMOVED:** Skill: Auto mode setup — Removes the interactive setup workflow for gathering repository context and configuring auto mode environment, rule, and permission settings.
+- Data: Data visualization anti-patterns; Data: Data visualization reference palette; and Skill: Data Visualization — Reorder the default categorical palette, lower the OKLab CVD separation target to 8 with a 6–8 secondary-encoding floor, add a hard normal-vision separation floor, cap all-pairs charts at four series, and update validator and sequential-hue guidance accordingly.
+- Skill: /doctor slash command — Treats auto mode as available across third-party providers, leaving per-model availability and fallback enforcement to the CLI instead of skipping the setup proposal for Bedrock, Vertex, or Foundry sessions.
+- Skill: /morning slash command — Reworks the morning brief into a warm, hand-sketched HTML view that maps calendar load as terrain, verifies and sorts connected-source findings into Needs attention and Resolved, incorporates tomorrow preparation and requested sections, provides safe action-seeding buttons under strict sourcing and design rules, and removes the prior recurring-task setup and schedule-management flow.
+- Skill: Setup Cowork and Skill: Setup Cowork role selection — Expand onboarding into a visible six-step flow that checks installed plugins before role-matched recommendations, connects every plugin in play, offers a skill trial and optional writing-voice setup, reacts only after widgets render, and clarifies that connectors supply tools while plugins bundle skills and connectors.
+- Skill: Update config settings file locations — Corrects the example permission prompt rule from `Write(/etc/*)` to `Edit(//etc/*)`.
+- Tool Description: Artifact — Adds scoped listing of owned and shared artifacts, permits reading but not updating shared artifacts, treats shared titles as untrusted data, and documents HTML title fallback behavior while preserving Markdown filename identity.
+- Tool Description: ScheduleWakeup delay and reason guidance — Clarifies that consecutive no-op wakeups collapse in the terminal and are tracked as a streak so long quiet holds remain readable.
+
+# [2.1.209](https://github.com/Piebald-AI/claude-code-system-prompts/commit/d83c700)
+
+_+1,261 tokens_
+
+- **NEW:** Data: Artifact connected-source guidance and Data: Artifact runtime capability declarations — Explain how published Artifacts can fetch live connected-source data through declared runtime capabilities, require loading the capabilities skill before writing runtime code, and define carry-forward, clear-all, full-replacement, and contract pinning or upgrade semantics for redeployments.
+- **NEW:** Data: Artifact MCP connector guidance — Documents how to identify supported claude.ai connectors and their exact server values, distinguish upstream tool names from normalized tool-list names, reject locally configured MCP servers, and discover connectors through the API in hermetic or CI sessions.
+- **NEW:** Data: Artifact connector call observation requirement — Requires observing a real connector request and response before publishing an Artifact that calls it, reporting when safe observation is impossible instead of guessing the schema, and preventing observed user data from being embedded as samples or placeholders.
+
 # [2.1.208](https://github.com/Piebald-AI/claude-code-system-prompts/commit/d39e922)
 
 _+2,947 tokens_

@@ -90,6 +90,17 @@ This skill ships with support files — use them when they are available:
 - **`references/compression-craft.md`** — Compression Craft: Summaries Executives Actually Absorb. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/summary-frame.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Bottom line placement** | Conclusion appears only at the end, after chronological summary | Recommendation appears early but hedged, or split across sections | The ask or finding is unambiguous within the first three sentences and repeated nowhere it doesn't need to be |
+| **Standalone completeness** | Unreadable without the source document; leans on unexplained references | Mostly standalone but assumes context the named audience may lack | A reader with no other material can understand the situation and decide from this page alone |
+| **Actionability** | "Options for consideration" with no owners, dates, or stated ask | Recommendation is specific but next steps lack owners or dates | Specific recommendation, next steps each with owner and date, and risks of inaction quantified |
+| **Audience fit & length** | Author-priority framing, over the length limit | Fits the limit but framing is generic — same summary would go to any audience | Framed to the named audience's decision context (financial/governance/return/policy) and within the limit |
+
 ## Quality Checks
 
 - [ ] Bottom line in first 3 sentences

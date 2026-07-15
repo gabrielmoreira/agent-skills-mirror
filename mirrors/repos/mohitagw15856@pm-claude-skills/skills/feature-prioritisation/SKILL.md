@@ -141,6 +141,17 @@ This skill ships with support files — use them when they are available:
 - **`references/framework-selection.md`** — Picking the Prioritisation Framework (Instead of Defaulting to RICE). Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/prioritisation-session.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Goal anchoring | No stated goal, or items silently scored against different objectives | A goal is named but individual scores don't reference it; off-goal items scored anyway | One explicit metric and scope; every score justified against it; items serving a different goal ejected with instructions to resubmit |
+| Scoring integrity | Frameworks mixed in one session, arithmetic wrong, or scales invented mid-table | One framework applied consistently, but confidence defaults high and scale anchors are undefined | Consistent framework, verifiable maths, defined impact anchors, confidence honestly reflecting the evidence behind each estimate |
+| Transparency of cuts and assumptions | Cut items simply vanish; no record of estimates or their sources | Deprioritised items listed but without reasons; assumptions partial or unsourced | Every cut carries a reason and revisit trigger; assumptions name their sources (analytics, engineering estimates) so the ranking is re-runnable |
+| Judgment beyond the number | A sorted table presented as the decision | Top picks get rationale, but near-ties, risk profiles, and politics go unmentioned | Near-ties broken on risk with reasoning shown; political pressure named with framework score separated from final decision; top and bottom of list both explained |
+
 ## Quality Checks
 
 - [ ] Every item is scored against the same goal or metric (not different goals per item)

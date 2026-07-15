@@ -1,129 +1,103 @@
 ---
 name: skillopt-sleep
-description: Validate and refine agent skills through nightly sleep cycles with held-out gates. Wraps Microsoft's SkillOpt-Sleep engine for the OpenClaw/DeepSeek stack.
+description: Reference-only OpenClaw adaptation of SkillOpt-Sleep. Use it to study or port the contributed DeepSeek wrapper, not as a ready-to-run installation.
 ---
 
-# skillopt-sleep — OpenClaw Adaptation of Microsoft SkillOpt-Sleep
+# SkillOpt-Sleep OpenClaw reference adaptation
 
-A nightly self-improvement loop that reads our session transcripts, mines recurring workflow patterns, replays them with proposed skill edits, and gates the proposals against a held-out test set. Only improvements that beat baseline are staged for human adoption.
+This directory is a contributed **reference**, not a supported, plug-and-play
+OpenClaw integration. It illustrates one way to connect the shared
+`skillopt_sleep` cycle to a custom DeepSeek Chat Completions backend and a set of
+environment-specific task fixtures.
 
-## When To Use
+Do not run or schedule the files unchanged. Several scripts and the sample
+configuration preserve assumptions from the contributor's original machine,
+and parts of the wrapper have not yet been ported to the current shared-engine
+interfaces. Start with the directory's [README.md](README.md), which is the
+authoritative status and adaptation guide.
 
-- After Hermes's Weekly Skill Review (or as its replacement)
-- When a skill is being used 10+ times/week and could be tighter
-- Before promoting a new skill from `skill-proposals/` to `skills/`
-- When a skill regresses in observed quality
+## What is included
 
-## What It Does (One Cycle)
+- `skillopt_sleep_openclaw.py` — a contributed DeepSeek backend prototype. It
+  also contains an Ollama embedding helper, but that helper is not wired into
+  the current shared sleep cycle.
+- `run_sleep.py` — a custom cycle wrapper with environment-specific paths and a
+  backend-registration shim.
+- `slash_sleep.py` — an experimental command helper written for an older
+  staging-manifest shape.
+- `run_sleep_cron.sh` — a machine-specific category runner, not a portable cron
+  installer.
+- `config.json` — a sample configuration, not a set of guaranteed or enforced
+  runtime limits.
+- `tests/*.json` — example task fixtures from one environment, not a universal
+  OpenClaw benchmark.
 
-```
-harvest session transcripts  ->  mine recurring task patterns
-                              ->  replay each pattern (current skill vs proposed)
-                              ->  GATE: must improve held-out score
-                              ->  stage proposal
-                              ->  Ethan adopts (manual)
-```
+## Known porting gaps
 
-Nothing live changes until Ethan adopts. Every adopt backs up first.
+Before treating this as an integration, a maintainer must at least:
 
-## Architecture
+1. Replace every absolute workspace, repository, state, skill, log, and task
+   path with explicit user configuration.
+2. Update the custom backend factory to the current `get_backend` call contract,
+   including the project directory, and update its backend methods and edit
+   records to the current protocol.
+3. Replace the experimental adoption logic with the current staging manifest
+   and `skillopt_sleep.staging.adopt` behavior. Current staging artifacts use
+   `proposed_SKILL.md` / `proposed_CLAUDE.md`, `manifest.json`, and report files;
+   they do not expose the old `manifest.proposed_skill` field.
+4. Decide how real OpenClaw transcripts are converted into a supported session
+   format. Pointing `claude_home` at an arbitrary agent directory does not by
+   itself make its files Claude Code-compatible JSONL.
+5. Build scheduling around the adapted wrapper. The shared scheduler launches
+   the shared CLI; it does not automatically preserve this custom backend or
+   its category task-file flow.
+6. Add isolated end-to-end tests for dry-run, accepted/rejected gates, staging,
+   adoption and backup, credential failure, and scheduled execution.
 
-```
-skills/skillopt-sleep/
-├── SKILL.md                          # this file
-├── config.json                       # engine config (backend, budgets, etc.)
-├── run_sleep.py                      # entry point
-└── skillopt_sleep_openclaw.py        # DeepSeek/Ollama backend
-```
+Until those gaps are resolved, use the supported shared
+`python -m skillopt_sleep` CLI with `--backend mock` to test SkillOpt-Sleep itself,
+and treat this directory only as source material for a future OpenClaw port.
 
-The engine itself is at `~/.openclaw/workspace/SkillOpt/skillopt_sleep/` (cloned from microsoft/SkillOpt).
+## Shared-engine features are not wrapper features
 
-## Usage
+At this revision the supported shared CLI backends are `mock`, `claude`,
+`codex`, `copilot`, `handoff`, and `azure_openai`; the
+[plugin integration reference](../README.md#supported-cli-surface) is the
+authoritative list. The shared engine can consolidate a selected skill and
+project `CLAUDE.md` memory (controlled by `evolve_skill` and `evolve_memory`),
+and its `schedule` / `unschedule` actions manage shared-engine cron entries.
+Those capabilities do **not** make the custom OpenClaw wrapper portable: the
+shared scheduler will not invoke the prototype backend or its category
+fixtures. Use the shared documentation for those features, not this reference
+SKILL.
 
-```bash
-# Run one cycle with current config
-cd ~/.openclaw/workspace/skills/skillopt-sleep
-python3 run_sleep.py
+## Data and credential boundary
 
-# Dry run (report only, no staging)
-python3 run_sleep.py --dry-run
+The prototype DeepSeek backend sends task, skill, memory, response, rubric, and
+reflection content to its configured Chat Completions endpoint. Its source also
+contains a helper that can send text to an Ollama service if a future port wires
+that helper into the cycle. Neither path should be assumed to remove every
+secret or private detail.
 
-# Use a pre-built task set (recommended for testing)
-python3 run_sleep.py --tasks tests/research-cron-tasks.json
-```
+Before any port is tested with real data:
 
-## Scheduling
+- use isolated, synthetic or explicitly reviewed task files;
+- replace sample business names, personal references, URLs, and machine paths;
+- load credentials through the operator's secret-management mechanism;
+- verify TLS and retention policy for every remote endpoint; and
+- inspect all staged artifacts before adoption.
 
-```bash
-python3 slash_sleep.py schedule --hour 3 --minute 17
-python3 slash_sleep.py unschedule
-python3 slash_sleep.py unschedule --all
-```
+The bundled fixtures are examples only. Their scores and any old cost estimates
+do not establish effectiveness, safety, or a stable nightly price for another
+OpenClaw deployment.
 
-Installs a nightly cron entry using the shared SkillOpt-Sleep scheduler. This is an alternative to the external `run_sleep_cron.sh` script.
+## Further information
 
-## Alternative backends
+- [OpenClaw README](README.md) — current reference status and adaptation checklist
+- [plugin integration reference](../README.md) — supported shared-engine CLI
+  surface and data boundary
+- [SkillOpt-Sleep documentation](../../docs/sleep/README.md) — concepts,
+  results, and limitations
 
-While OpenClaw defaults to `openclaw-deepseek` (DeepSeek V4 Pro + Ollama), the shared engine also supports:
-- `--backend mock` — deterministic, no API spend (for testing)
-- `--backend claude` — uses the Claude CLI
-- `--backend codex` — uses the Codex CLI
-- `--backend copilot` — uses the GitHub Copilot CLI
-
-These can be used via the engine directly (`python -m skillopt_sleep`).
-
-## Shared-engine flags
-
-When invoking the engine directly, all standard flags are available:
-- `--source codex` / `--source auto` — harvest from Codex Desktop sessions
-- `--tasks-file PATH` — use a pre-built task set
-- `--target-skill-path PATH` — explicit SKILL.md target
-- `--max-tasks N` / `--max-sessions N` — cap workload
-- `--progress` — print phase progress
-- `--json` — machine-readable output
-- `--auto-adopt` — auto-adopt if gate passes
-
-Config keys: `preferences`, `gate_mode`, `gate_metric`, `dream_rollouts`, `recall_k`, `evolve_memory`, `evolve_skill`.
-
-## Config (config.json)
-
-Key knobs:
-- `backend: "openclaw-deepseek"` — our custom backend
-- `model: "deepseek-v4-pro"` — optimizer model
-- `edit_budget: 3` — max bounded edits per night
-- `gate_mode: "on"` — validation-gated (rejects regressions)
-- `auto_adopt: false` — require Ethan to adopt manually
-- `max_tasks_per_night: 12` — cap to control cost
-
-## Cost Estimate
-
-Per night: 12 tasks × (1 attempt + 1 judge + 1 reflect) × ~$0.005/1K tokens × ~3K tokens/call ≈ **$0.50-2.00/night**.
-
-## Outputs
-
-- Report: `~/.skillopt-sleep/state.json` (running totals)
-- Staging: `~/.skillopt-sleep/staging/<night>/`
-  - `report.md` — readable summary
-  - `best_skill.md` — proposed skill
-  - `edits.json` — bounded edit list
-  - `before.md` / `after.md` — diffs
-
-## Held-Out Test Sets (Phase 2)
-
-Located at `tests/<category>-tasks.json`. Each task has:
-- `prompt` — the recurring task
-- `reference` — exact-match gold answer
-- `rubric` — soft score rubric (0-1)
-- `domain` — research/devops/wiki/etc.
-
-Currently building for 3 categories:
-- research-cron-output
-- devops-infrastructure-check
-- wiki-canonical-guide
-
-## When NOT To Use
-
-- For a one-off workflow (not a recurring pattern)
-- During a crisis/incident (humans must lead)
-- When session transcripts are < 24h old (not enough signal)
-- For skills < 300 tokens (over-optimization risk)
+Contributions that turn this reference into a portable integration should add
+tests and update all three documents together.

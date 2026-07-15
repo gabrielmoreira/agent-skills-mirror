@@ -137,6 +137,17 @@ This skill ships with support files — use them when they are available:
 - **`references/example-first-docs.md`** — Example-First API Docs: the Rules That Make Docs Usable. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/endpoint-entry.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Parameter completeness** | Fields listed without types or required/optional flags | Tables complete, but descriptions say what a field *is*, not what it *does*; enums and ranges missing | Every field typed and constrained (enums, ranges, formats), described by behaviour and consequence |
+| **Error-path coverage** | Happy path only — no error table | Standard 400/401/404/429/500 rows present but with no resolution guidance | Full standard set plus endpoint-specific codes, each with what the developer should *do*, including unsafe-retry cases |
+| **Example runnability** | Pseudo-code, undefined variables, or "YOUR_ENDPOINT" placeholders | Examples exist but aren't copy-paste-runnable or use only one language | ≥2 languages, real base URL, obviously-fake placeholder credentials, runnable as pasted |
+| **Behavioural candour** | Async behaviour, pagination, idempotency, and legacy quirks omitted | Quirks mentioned in prose but absent from examples and error rows | Gotchas documented with the exact requests/responses they produce, including awkward legacy behaviour |
+
 ## Quality Checks
 
 - [ ] Every parameter is documented (type, required/optional, description)

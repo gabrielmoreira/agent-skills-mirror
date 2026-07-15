@@ -71,6 +71,17 @@ This skill ships with support files — use them when they are available:
 - **`references/newsworthiness.md`** — Newsworthiness: What Makes a Release News Instead of Noise. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/release-skeleton.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Headline & lead** | Passive headline over 12 words starting with the company name; the news is buried mid-release | Active headline, but the first paragraph needs the second to make sense | Active, specific headline under 10 words; first paragraph carries who/what/when/where/why and could run verbatim |
+| **Newsworthiness** | Reads as advertising — superlatives, no reader-side "so what" | Real news present but wrapped in promotional framing a journalist must strip | Significance paragraph answers why an outsider cares; limitations stated plainly rather than hidden |
+| **Quote quality** | Quote restates the headline in corporate voice | Quote sounds human but adds no information the facts don't already carry | Quote says something new, sounds like a person, and would survive being the only excerpt used |
+| **Apparatus completeness** | No release/embargo line, boilerplate, or media contact | Apparatus present but boilerplate is promotional or contact lacks phone/hours | Release line, ENDS marker, factual dates-and-numbers boilerplate, and full contact with hours/timezone |
+
 ## Quality Checks
 
 - [ ] Headline uses active voice and is under 10 words

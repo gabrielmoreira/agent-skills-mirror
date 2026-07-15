@@ -210,6 +210,17 @@ This skill ships with support files — use them when they are available:
 - **`references/category-choice.md`** — Choosing Your Category: the Highest-Leverage Positioning Decision. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/positioning-canvas.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| **Differentiation specificity** | Positioning could describe any competitor; attributes are feature names | Some genuinely unique attributes, but mixed with table-stakes features and no "why competitors can't match it" reasoning | Every attribute is an outcome, provable, paired with why alternatives can't copy it, and traceable to one primary claim |
+| **Category & alternatives honesty** | Category asserted without justification; alternatives list only named competitors | Category justified, but status quo/DIY missing from alternatives or the key insight is generic | Category argued against a named adjacent category, alternatives include the status quo, and the key insight visibly drives the messaging |
+| **Evidence discipline** | Proof points are unsourced claims ("customers say…") | Most claims sourced, but proof gaps unacknowledged and stale data undated | Every proof point cites a dated source, and gaps are listed with what sales may not claim until they close |
+| **Persona message fit** | Same headline for every persona, written in company jargon | Personas differ but wording is internal vocabulary, or the "not for" section is missing | Each persona has a distinct lead message in the buyer's own words with a matched proof point, and "not for" works as a qualification tool |
+
 ## Quality Checks
 
 - [ ] Positioning statement has exactly one A — the product is accountable to exactly one primary differentiated claim

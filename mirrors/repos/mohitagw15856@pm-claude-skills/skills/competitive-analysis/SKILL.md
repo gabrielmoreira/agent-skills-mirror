@@ -105,6 +105,17 @@ This skill ships with support files — use them when they are available:
 - **`references/feature-matrix-honesty.md`** — Feature Matrices That Don't Lie. Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/landscape-doc.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Source hygiene | Competitor claims stated as fact with no provenance; stale data presented as current | Major claims sourced, but assumptions unflagged and mixed in with verified facts | Every claim carries a source tag or explicit assumption flag; an assumption register tells the reader what to re-verify |
+| Depth beyond the feature checklist | A feature matrix and nothing else | Features plus pricing, but no positioning, GTM motion, or recent-moves analysis | Features, pricing, positioning map, and win/loss all present — with quality-difference notes where checkmark parity would mislead |
+| Segment-aware win/loss | One generic strengths/weaknesses list averaged across all buyers | Win/loss present but undifferentiated by segment or based on internal opinion, not customer evidence | Win/loss split by segment with customer-voiced reasons and deal counts; contradicting segments (win SMB, lose enterprise) shown side by side |
+| Actionability of recommendations | Generic advice ("monitor competitors", "improve differentiation") | Directionally useful actions but untethered from the findings or missing timeframes | Specific actions with timeframe and rationale, each traceable to a numbered finding — including explicit non-actions |
+
 ## Quality Checks
 
 - [ ] All competitor claims cite a source or are flagged as assumptions

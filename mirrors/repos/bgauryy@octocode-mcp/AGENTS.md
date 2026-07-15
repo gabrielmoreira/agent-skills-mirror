@@ -96,6 +96,53 @@ $OCTO tools localSearchCode lspGetSemantics --scheme
 
 Prefer `node packages/octocode/out/octocode.js` over global `octocode` / npx when validating monorepo changes. After engine or tools-core edits: rebuild the package, then `yarn workspace octocode build:dev`. `build:dev` skips clean + lint; engine uses debug (not `--release`).
 
+## Dev setup and publish guard
+
+See [`scripts/README.md`](scripts/README.md) for the script catalog. Use the root scripts as the source of truth; do not re-add package-local version sync helpers.
+
+### `yarn devScript` — local dev: resolve internal packages from workspace
+
+```bash
+yarn devScript                         # adds workspace:* to root resolutions
+yarn install                           # apply resolutions
+```
+
+Adds the internal packages and octocode-engine platform packages to the `resolutions` field in the root `package.json` so Yarn uses the local build for every consumer, including transitive ones:
+
+| Package | Role |
+|---|---|
+| `@octocodeai/octocode-tools-core` | Brain / all tool runners |
+| `@octocodeai/config` | Zero-dep env + config loader |
+| `@octocodeai/octocode-core` | External schemas + system prompt (sibling repo) |
+| `@octocodeai/octocode-engine` | Rust/napi engine |
+| `@octocodeai/octocode-engine-*` | Platform-native engine packages from `packages/octocode-engine/npm/*` |
+
+Script: [`scripts/dev-setup.mjs`](scripts/dev-setup.mjs). Idempotent — safe to re-run.
+
+### `scripts/prepublish.mjs` — publish prep: remove resolutions + align versions
+
+Runs automatically as part of `yarn prepublish`, followed by the shared final guard at `packages/octocode/scripts/check-no-workspace-protocol.mjs` and `readme:sync`. Also callable directly:
+
+```bash
+node ./scripts/prepublish.mjs             # check only — exit 1 if issues found
+node ./scripts/prepublish.mjs --fix       # remove workspace:* resolutions + align package/dependency versions
+node ./scripts/prepublish.mjs --dry-run   # preview fixes without writing
+```
+
+Three checks:
+
+1. **Resolutions** — root `package.json` must not have `workspace:*` for managed packages. Yarn rewrites these during publish and can produce wrong pinned versions in tarballs.
+2. **Publish package versions** — publishable Octocode package versions and engine platform package versions must match the root `package.json` version.
+3. **Dependency alignment** — every workspace package that pins a managed package (non-`workspace:*`) must match the package's current `version` in the repo (written as `^<version>` or exact). Packages not in this workspace (e.g. `@octocodeai/octocode-core`) are skipped.
+
+**Typical flow before publishing any package:**
+
+```bash
+node ./scripts/prepublish.mjs --fix   # remove dev resolutions + align versions
+yarn install                          # update lockfile
+yarn prepublish                       # runs prepublish + shared final guard + readme sync
+```
+
 ## Docs and references
 
 | Area | Links |

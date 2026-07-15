@@ -160,6 +160,17 @@ This skill ships with support files — use them when they are available:
 - **`references/leading-signals.md`** — Health Signals That Lead (Instead of Eulogise). Apply it while producing the output; it carries the calibration and judgment calls the method summary above compresses.
 - **`templates/account-scorecard.md`** — a fill-in version of the deliverable with the quality gates inline. Offer it when the user wants to work the document themselves rather than have it generated.
 
+## Scoring Rubric (0–40)
+
+Score any output of this skill before handing it over; 32+ is ship-quality.
+
+| Dimension | 0 | 5 | 10 |
+|---|---|---|---|
+| Score integrity | Weighted total doesn't compute from the dimension scores and stated weights, or the RAG band contradicts the total | Arithmetic is correct but weights were adjusted silently, or the headline RAG smooths over a dimension that tells a different story | Total computes exactly (score × weight on the 1–5 scale, out of 100), RAG matches the 80/60 bands, and any dimension that contradicts the overall status is called out rather than averaged away |
+| Evidence per dimension | Dimension scores asserted with no supporting data ("engagement feels weak") | Most dimensions cite data, but at least one score leans on gut feel or a stale data point presented as current | Every dimension score is anchored to named, dated evidence (usage figures, ticket counts, QBR dates, seat utilisation) and benchmarks are applied where the format provides them |
+| Risk specificity | Risks are labels ("low engagement", "churn risk") with no people, dates, or dollar amounts | Risks are real but partially vague — severity assigned without a mitigation, or mitigations without owners | Every risk names the person/event/amount involved ("champion departs 25 July, no successor"), carries a severity, and has a mitigation someone could start this week |
+| Renewal calibration | Forecast missing, probabilities don't sum to 100%, or the recommended play ignores the score | Forecast present and sums correctly, but ARR-at-risk figures don't reconcile to contract line items, or the play is generic | Probabilities sum to 100%, ARR at risk maps to actual contract components, the play (Expand/Hold/Save/Manage out) follows from the score and risks, and actions are owned, dated, and sequenced against the renewal date |
+
 ## Quality Checks
 
 - [ ] Score is based on data, not gut feel — each dimension has evidence

@@ -1,1 +1,1 @@
-@AGENTS.md
+cache/repos/github.com/EveryInc@compound-engineering-plugin/AGENTS.md

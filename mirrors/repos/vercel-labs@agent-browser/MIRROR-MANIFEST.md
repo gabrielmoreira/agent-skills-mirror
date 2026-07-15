@@ -60,8 +60,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`examples/sandbox/eve/AGENTS.md`](examples/sandbox/eve/AGENTS.md) |
-| 3 | ✓ | [`examples/sandbox/eve/CLAUDE.md`](examples/sandbox/eve/CLAUDE.md) |
+| 2 | ✓ | [`examples/eve/AGENTS.md`](examples/eve/AGENTS.md) |
+| 3 | ✓ | [`examples/eve/CLAUDE.md`](examples/eve/CLAUDE.md) |
 | 4 | ✓ | [`skill-data/agentcore/SKILL.md`](skill-data/agentcore/SKILL.md) |
 | 5 | ✓ | [`skill-data/core/SKILL.md`](skill-data/core/SKILL.md) |
 | 6 | ✓ | [`skill-data/dogfood/SKILL.md`](skill-data/dogfood/SKILL.md) |
