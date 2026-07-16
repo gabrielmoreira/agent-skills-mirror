@@ -12,7 +12,7 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 ---
 
-> Agent 兼容性：检查专业 agent 是否可用时，按 `.claude/agents/{agent}.md` → `.opencode/agents/{agent}.md` → `.codex/agents/{agent}.toml` 的顺序查找。Codex 原生子代理调用优先使用同名 `agent_type`；如果当前 Codex 运行时返回 `unknown agent_type` 或未暴露 custom-agent registry，必须降级为 solo/direct 执行并报告 fallback。Claude/OpenCode 兼容面保留 `subagent_type`。
+> Agent 兼容性：检查专业 agent 是否可用时，按 `.claude/agents/{agent}.md` → `.opencode/agents/{agent}.md` → `.codex/agents/{agent}.toml` 的顺序查找。Codex 原生子代理调用优先使用同名 `agent_type`；如果当前 Codex 运行时返回 `unknown agent_type` 或未暴露 custom-agent registry，必须降级为 solo/direct。检测到 `.zcode/` 时同样直接 solo/direct，因为 ZCode 3.3.4 不执行项目 custom agents；报告 `Fallback: project custom agents unavailable -> solo`。Claude/OpenCode 兼容面保留 `subagent_type`。
 
 ## 核心哲学
 
@@ -107,12 +107,12 @@ AI味不按语法错误处理，也不需要"修正"。它属于风格问题：�
 | 第P段 | 解释腔/上帝感 | G | "她不知道的是…" / "演得真好" / "之所以…是因为" | 叙述者跳出角色当下解释/剧透/定性/升华（模式 8） |
 | 第Q段 | 动作清单 | D/E | "伸手拿起…取过…放下…转身…" | 监控摄像头式步骤表，缺少视角温度/心理缓冲（模式 10） |
 
-> 类型 → Gate 速查：禁用词 = A，句式套路 = B，心理告知 = C，节奏均匀 = D，对话腔调 = E，结尾升华 = F，解释腔/上帝感/安排感 = G，重复描写 = C/D。Phase 2 判定"7 Gate 中 4+ 个有问题"时按 Gate 列计数。
+> 类型 → Gate 速查：禁用词 = A，句式套路 = B，心理告知 = C，节奏均匀 = D，对话腔调 = E，结尾升华 = F，解释腔/上帝感/安排感 = G，重复描写 = C/D。「诊断与分级」判定"7 Gate 中 4+ 个有问题"时按 Gate 列计数。
 ```
 
 > 评价只输出 AI味等级（轻度/中度/重度）与问题标记；不做「上乘 / 新人投稿属上乘 / 性价比高」这类横向市场判断——skill 没有平台投稿分布数据，这类措辞是无依据的越权担保。
 
-**确定性句式预检（文件模式）**：当输入是本地正文文件路径时，Phase 1 必须先运行本 skill 自带脚本，只报告不修改：
+**确定性句式预检（文件模式）**：当输入是本地正文文件路径时，「AI味扫描」必须先运行本 skill 自带脚本，只报告不修改：
 
 ```bash
 node scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
@@ -127,7 +127,7 @@ node scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
 
 ### Phase 2：诊断与分级
 
-根据 Phase 1 检测结果判断AI味程度，决定处理策略：
+根据「AI味扫描」检测结果判断AI味程度，决定处理策略：
 
 | AI味程度 | 量化标准（参考值） | 特征 | 处理策略 |
 |----------|---------|------|----------|
@@ -168,10 +168,10 @@ node scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
 
 #### Agent 调用：narrative-writer（去AI味执行）
 
-Phase 2 诊断完成后，按以下顺序选择执行路径：
+「诊断与分级」完成后，按以下顺序选择执行路径：
 
 1. **已在 narrative-writer 子代理内**：直接 inline 执行 Gate A-G，不再 spawn（嵌套 spawn 会被静默降级）。
-2. **未在子代理内且 agent 目录（优先 `.claude/agents/`，其次 `.opencode/agents/`，再检查 `.codex/agents/`）下的 `narrative-writer.md` 或 `.codex/agents/narrative-writer.toml` 存在**：spawn `Agent(subagent_type: "narrative-writer", prompt: "项目目录：{dir}\n任务描述：去AI味\n检查范围：{待处理的正文文件}\nAI味等级：{Phase 2 诊断结果}\n处理策略：{轻度/中度/重度对应的 Gate 范围}\n删除优先：每条 AI 味项先判能否删除——删后不丢伏笔/钩子/角色/情节/人物记忆/情绪承接/因果锚点/必要信息/必要转折的直接删，会丢才进 Gate 润色；看似解释/评价但承担小连贯的句子，压成白话承接、动作或物件锚点，不机械删除；已有任务/手续/物件/证据缺口可以压成角色当下要处理的具体卡点，但不新增原文没有的事件链；删除服从比例上限与字数下限，跌破下限改降AI重写。\n模式处理：按 references/anti-ai-writing.md 的问题模式目录执行；模式 8（解释腔/上帝视角/安排感）归入 Gate G，其余新增模式归入 Gate A-F 的对应处理。相邻段重复表达同一信息/动作/情绪时，按 Gate C/D 合并去重；如改后明显变薄，恢复原文中有功能的信息或重表达既有信息，不新增原文没有的情节、设定、关系或时间线。")`。
+2. **未在子代理内且 agent 目录（优先 `.claude/agents/`，其次 `.opencode/agents/`，再检查 `.codex/agents/`）下的 `narrative-writer.md` 或 `.codex/agents/narrative-writer.toml` 存在**：spawn `Agent(subagent_type: "narrative-writer", prompt: "项目目录：{dir}\n任务描述：去AI味\n检查范围：{待处理的正文文件}\nAI味等级：{诊断与分级结果}\n处理策略：{轻度/中度/重度对应的 Gate 范围}\n删除优先：每条 AI 味项先判能否删除——删后不丢伏笔/钩子/角色/情节/人物记忆/情绪承接/因果锚点/必要信息/必要转折的直接删，会丢才进 Gate 润色；看似解释/评价但承担小连贯的句子，压成白话承接、动作或物件锚点，不机械删除；已有任务/手续/物件/证据缺口可以压成角色当下要处理的具体卡点，但不新增原文没有的事件链；删除服从比例上限与字数下限，跌破下限改降AI重写。\n模式处理：按 references/anti-ai-writing.md 的问题模式目录执行；模式 8（解释腔/上帝视角/安排感）归入 Gate G，其余新增模式归入 Gate A-F 的对应处理。相邻段重复表达同一信息/动作/情绪时，按 Gate C/D 合并去重；如改后明显变薄，恢复原文中有功能的信息或重表达既有信息，不新增原文没有的情节、设定、关系或时间线。")`。
 3. **agent 不存在或 spawn 失败**：主线程 inline 执行。
 
 #### 删除优先判断（先于各 Gate）
@@ -180,7 +180,7 @@ Phase 2 诊断完成后，按以下顺序选择执行路径：
 
 1. 删掉后是否丢失伏笔、钩子、角色特征、情节推进、必要信息或必要转折？都不丢则直接删，不进 Gate。
 2. 丢任意一项 → 保留信息进对应 Gate 改写（只删"怎么说"的 AI 味，不删"说什么"）。
-3. 删除服从既有"过度去AI味保护"与 Phase 2 比例上限：不整段删、不删剧情功能；若删后跌破字数下限，改为降AI重写，不删完再用新废话凑字。
+3. 删除服从既有"过度去AI味保护"与「诊断与分级」比例上限：不整段删、不删剧情功能；若删后跌破字数下限，改为降AI重写，不删完再用新废话凑字。
 4. 删完通读：若整段只剩最短句、结构虚词被扫光、每个动作都带「了一下」式尾巴，就是删过头的电报体（见 anti-ai-writing.md 模式 9）——把非峰值叙述句恢复成自然白话，不是接着删。删的是废话，不是中文的自然冗余；这条只调删减的度，禁用词与套路句式的清理力度不因此降低。
 
 以下为各 Gate 的详细规则（删不掉的标记项按此润色；无论 agent 还是主线程执行，均须遵循）：
@@ -342,9 +342,9 @@ AI写作的结尾特征：总想总结、升华、点题。
 
 ---
 
-### Phase 3.5：确定性收尾（文件模式）
+### Phase 4：确定性收尾（文件模式）
 
-当输入是正文文件路径，且 Phase 3 已落盘修改后，**先**做句式/段落复扫，**再**做机械标点兜底（破折号要按功能改写，故先于机械替换报出）：
+当输入是正文文件路径，且「逐项清除」已落盘修改后，**先**做句式/段落复扫，**再**做机械标点兜底（破折号要按功能改写，故先于机械替换报出）：
 
 ```bash
 node scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
@@ -363,7 +363,7 @@ node scripts/normalize-punctuation.js <正文文件...>
 
 ---
 
-### Phase 4：输出润色结果
+### Phase 5：输出润色结果
 
 ```
 ## 去AI味润色报告
@@ -396,7 +396,7 @@ node scripts/normalize-punctuation.js <正文文件...>
 {**文件模式（默认；章节/正文文件、批量与长篇去AI）**：通过 Edit/Write 直接改写落盘，本节只回 ≤200 字代表性片段，不向父会话返回全文。**文本模式（仅限交互式贴入、无文件路径的零散片段）**：完整输出润色后的文本。}
 ```
 
-**字数硬约束**：删除比例不得超过 Phase 2 等级对应上限（轻度 ≤15%、中度 ≤25%、重度 ≤35%）。超限时分段输出并在报告里标记，不得整段删除正文。
+**字数硬约束**：删除比例不得超过「诊断与分级」对应上限（轻度 ≤15%、中度 ≤25%、重度 ≤35%）。超限时分段输出并在报告里标记，不得整段删除正文。
 
 **收敛终止**：
 1. 同一段连续两轮去 AI 后没有新改动 → 停止该段处理
@@ -412,7 +412,7 @@ node scripts/normalize-punctuation.js <正文文件...>
 | 用户贴一段文字说"太AI了" | 执行完整检测 + 润色流程 |
 | 用户说"帮我润色" | 先检测AI味，再润色 |
 | 用户说"检查下有没有AI味" | 只做检测，不做修改 |
-| 用户写作中要求 `仅标注 / 只检测 / 不要改` | 嵌入式提醒模式：执行 Phase 1+2，跳过 Phase 3-4；输出问题标记表（含 Gate 列），不修改原文，不写文件 |
+| 用户写作中要求 `仅标注 / 只检测 / 不要改` | 嵌入式提醒模式：执行「AI味扫描」和「诊断与分级」，跳过「逐项清除」「确定性收尾」「输出润色结果」；输出问题标记表（含 Gate 列），不修改原文，不写文件 |
 
 ---
 
@@ -425,8 +425,8 @@ node scripts/normalize-punctuation.js <正文文件...>
 | [references/banned-words.md](references/banned-words.md) | 检测和替换禁用词时 |
 | [references/anti-ai-writing.md](references/anti-ai-writing.md) | **去AI味完整指南**：预防+三遍法+范例 |
 | [scripts/normalize-punctuation.js](scripts/normalize-punctuation.js) | 文件模式落盘后做确定性标点收尾；默认保留引号风格 |
-| [scripts/check-ai-patterns.js](scripts/check-ai-patterns.js) | 文件模式 Phase 1 预检与 Phase 3.5 复扫（只看引号外叙述），只报告不改写 |
-| [scripts/check-degeneration.js](scripts/check-degeneration.js) | 文件模式 Phase 3.5 复扫，只报告不改写 |
+| [scripts/check-ai-patterns.js](scripts/check-ai-patterns.js) | 文件模式「AI味扫描」预检与「确定性收尾」复扫（只看引号外叙述），只报告不改写 |
+| [scripts/check-degeneration.js](scripts/check-degeneration.js) | 文件模式「确定性收尾」复扫，只报告不改写 |
 
 ---
 

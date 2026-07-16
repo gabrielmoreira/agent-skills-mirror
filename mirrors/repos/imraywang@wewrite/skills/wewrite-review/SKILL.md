@@ -1,10 +1,8 @@
 ---
 name: wewrite-review
 description: |
-  WeWrite 质量验证模块：SEO（标题/摘要/标签）+ 编辑视角整体自评 + 写作质量评分，
-  也承接「检查一下 / 自检 / 这篇文章怎么样 / 有没有 AI 味」的自检报告。
-  触发关键词：检查一下、自检、这篇文章怎么样、有没有 AI 味、公众号 SEO 优化。
-  需要公众号/WeWrite 上下文；不应被通用的"代码 review"、网站 SEO 触发。
+  WeWrite 编辑审稿模块：核对任务、事实来源、观点和实用性，必要时直接改稿，只有通过编辑门槛
+  才生成公众号成稿。也响应“检查这篇文章”。通用代码 review 和网站 SEO 不触发。
 allowed-tools:
   - Bash
   - Read
@@ -12,83 +10,91 @@ allowed-tools:
   - Edit
 ---
 
-# wewrite-review — SEO + 质量验证
-
-## 运行约定
-
-- **CLI**：确定性操作走 `wewrite` 命令（需在 PATH；缺失则引导 `uv tool install wewrite`，或在仓库里 `bash install.sh`）。
-- **{home}**：用户状态目录 = `$WEWRITE_HOME` 或 `~/.wewrite`（`wewrite home` 可查）。config/style/history/playbook/output/exemplars 全在 {home}，不在仓库；references 文档中的状态路径同此约定。
-- **`读取: <路径>`** = 用文件读取工具真实读完该文件再继续，不是注释。
-- **references/**：本 skill 自带 `{skill_dir}/references/`；references 文档内的 `{skill_dir}` 即本 skill 目录。
-- **管道状态**：`{home}/output/_state.yaml`（契约见主入口 wewrite 的 `references/pipeline-state.md`）。
+# wewrite-review — 编辑、改稿与成稿
 
 ## 前置
 
-1. **文章**：用户指定的文件 > `_state.yaml` 的 `article` > `{home}/output/article.md`。
-   都没有 → 问用户"要检查哪篇？"
-2. 本会话若未读过 writing-guide.md → `读取: {skill_dir}/../wewrite-write/references/writing-guide.md`
-   （5.2 校验按其编号规则 1.1-3.2 检查；管道模式下 wewrite-write 已读，保持驻留不要重读；
-   读不到该文件就按本文件内建检查项执行）。
-3. **模式判断**：管道内（或用户要"优化这篇"）→ 走「管道验证」；用户只要报告
-   （"检查一下/怎么样"）→ 走「自检报告」，只诊断不改稿。
+用户指定文章时检查该文件；否则运行 `wewrite run show`，优先读取 `artifacts.draft`，并读取
+`artifacts.brief`、`artifacts.claims` 和 `artifacts.sources`。旧任务没有初稿产物时才回退
+`artifacts.article`。管道内先运行 `wewrite run step review in_progress`。
 
-## 管道验证
+完整读取：
 
-```
+```text
+读取: {skill_dir}/../wewrite-write/references/article-brief.md
+读取: {skill_dir}/../wewrite-write/references/editorial-quality.md
 读取: {skill_dir}/references/seo-rules.md
 ```
 
-**5.1 SEO**：3 个备选标题 + 摘要（≤40 字）+ 5 标签 + 关键词密度优化
+用户只说“检查一下”且给了外部文件时，只给报告；主流程、任务内初稿或用户明确说“优化”时，
+必须直接完成必要修改。
 
-**5.2 编辑视角整体自评**（**读一遍文章全文**，像挑剔的主编那样判断——这是质量的**主**把关，不是逐项打钩。委托写作模式下这就是你唯一一次把正文读进上下文）：
+## 审稿与改稿
 
-读一遍，问自己：
-- **顺不顺**：读下来通畅吗？逻辑站得住吗？有没有突兀跳转、车轱辘话、为凑字的废话？
-- **像不像一个好作者写的**：有具体细节、有观点、有人味——还是"正确的废话"？
-- **有没有 AI 味**：套话（值得注意的是 / 综上所述 / 赋能…）、通篇一个腔调、情绪全程平铺？命中就改。
-- **真不真**：数据/案例/工具名是不是素材采集拿到的真实素材？**有没有编造？编造必须改——这是底线**。
+### 1. 对齐任务
 
-外加按框架看下面内容质量（脚本测不了，你来判），明显缺的补一处：
+检查文章是否真的回答 `audience.question`，核心判断是否与 `thesis` 一致，每节是否推动指定
+claim，结尾是否交付 `goal.takeaway/action`。无关段落删除，不用漂亮结构掩盖答非所问。
 
-| 内容检查项 | 标准 | 适用框架 |
-|--------|------|---------|
-| 增强贯穿 | 增强策略核心输出全文可见，不只一段 | 所有 |
-| 开头钩子 | 前 3 句制造悬念/冲突/好奇，非背景铺垫 | 所有 |
-| 金句密度 | ≥ 1 处可独立截图转发的句子 | 所有 |
-| 操作密度 | 每个 H2 有可操作要点（工具/步骤/参数） | 痛点/清单 |
-| 角度锐度 | 核心观点能引发同意或反对 | 热点解读/纯观点 |
-| 场景感 | ≥ 2 处时间/地点/对话画面细节 | 故事/复盘 |
-| 真实声音 | ≥ 1 处真实用户评价或体验 | 对比 |
+### 2. 核对事实与个人材料
 
-发现问题就**定向修**：只改有问题的具体句子，不重写整段，最多 3-5 处。剩下的小毛病留给作者（编辑锚点）。
+运行 `wewrite sources list --json`，把正文中的具体数字、日期、引述、研究结论和时效性事实
+逐项对到 `claims.yaml` 与原始来源。来源不支持时优先补查；查不到就删除、缩小或改成明确的
+推断。不能用模型记忆补洞。
 
-**5.3 质量评分（顺手跑一次当参考，别为分数返工）**：
+检查所有第一人称事件、朋友同事、采访、对话、时间地点和感官细节。它们必须来自本次任务
+明确记录的用户材料；否则属于阻断问题，直接删除或改成非亲历论述。
 
-```bash
-wewrite score output/article.md --json
+### 3. 五项编辑判断
+
+按“准确、观点、有用、合声、好读”各评 1-5 分，并列出阻断问题和最多 5 个主要问题：
+
+- `pass`：平均分至少 4、单项不低于 3、没有阻断问题。
+- `revise`：能在现有材料内修正。直接修改后重新执行 1-3，不得只写建议。
+- `needs_input`：仅限用户明确要求个人故事而材料不足且无法安全换框架。
+
+最多两轮。第二轮仍有问题时，删掉不可靠内容、缩小承诺，生成能通过的可靠版本；不得给未
+通过的文章贴上“可交付”。通过后把最终正文写入 `artifacts.article`。
+
+### 4. 标题、摘要与工具提示
+
+生成一个主标题、两个准确的备选标题、40 字内摘要和 3-5 个标签。关键词自然出现，不按密度
+硬塞，也不为打开率虚构数字或承诺。审稿不调用配图。
+
+运行 `wewrite score {article_path} --json`。该分数只帮助定位套话、句式过齐和段落节奏风险，
+不设机械及格线，也不为提分反复重写。
+
+## 保存编辑报告
+
+先把编辑判断写为任务目录内临时 `assessment.yaml`：
+
+```yaml
+decision: pass
+pass_number: 1
+dimensions:
+  accuracy: 4
+  viewpoint: 4
+  usefulness: 4
+  voice: 4
+  readability: 4
+blockers: []
+major_issues: []
+notes: ""
 ```
 
-`composite_score`（0=好,100=差）只当**参考信号**，不是过线门：
-- 看 `param_scores` 有没有**明显翻车**的项（禁用词命中、句长几乎没方差等）→ 有就顺手修那一处。
-- **别为了压低分数反复重写**：实测这个分单次方差很大（~31-50），且刻意拉满会触发"过度优化"反而更差。**读着顺、没硬伤就进下一步**。
-- 真正的质量门是**人**：作者在编辑锚点处补自己的话、复审定稿。把 `composite_score` 记进状态（收尾时进 history）当长期参考即可。
+再生成 `artifacts.review_report`：
 
-（委托模式想再润一版：把"最弱 1-2 个 param + 具体改写要求"追加进 `{home}/output/_brief.md` 重生成**一次**，不多轮。）
+```bash
+wewrite content-eval --draft {draft_path} --final {article_path} \
+  --assessment {assessment_path} --output {review_report_path} --json
+```
 
-**完成**：写回 `_state.yaml`：`seo.title`、`seo.alt_titles`、`seo.digest`、`seo.tags`、
-`seo.composite_score`，`steps_done` 追加 `review`。
+只有报告里的 `publishable=true` 才能完成审稿。更新任务并标记完成：
 
-## 自检报告（"检查一下 / 自检 / 这篇怎么样"）
+```bash
+wewrite run update --patch '{"editorial":{"decision":"pass","pass_number":1,"publishable":true},"seo":{"title":"...","alt_titles":[],"digest":"...","tags":[],"quality_score":0},"provenance":{"verified_sources":0,"unverified_sources":0}}'
+wewrite run step review completed
+```
 
-对最近一篇生成的文章（或用户指定的文章）执行，输出生成报告：
-
-**第一部分：生成档案**（这篇是怎么来的）
-1. 读取 `{home}/history.yaml` 最近一条记录，提取：使用的框架类型 + 写作人格、激活的维度随机化组合、素材采集来源（WebSearch 还是降级到 LLM）、内容增强策略、范文库是否命中（用了哪几篇 exemplar 还是 fallback 到种子）、playbook 中生效的规则条数。
-2. 若 history.yaml 无记录或用户指定了外部文章 → 跳过此部分，提示"这篇文章不是 WeWrite 生成的，只做质量检查"。
-
-**第二部分：质量检查**（哪里还能改）
-1. `wewrite score {article_path} --json`
-2. Agent 解读 JSON 各项得分，翻译成可操作建议：每条定位到具体段落/句子、给出具体改法、按影响度排序最多 5 条。
-3. 若各项得分都不错 → "这篇文章质量不错，建议在编辑锚点处加入你的个人内容就可以发了。"
-
-**输出格式**：自然语言报告，不输出 JSON 或分数。
+自检报告用自然语言，最多列 5 个按影响排序的问题，并说明已经怎样修正。没有硬伤就直说正文
+可以交付；如有需要可再单独配图或排版，不输出大段分数表。

@@ -1,27 +1,31 @@
-# Codex And Claude Code Runners
+# ACP Coding-Agent Runners
 
-Use this path when the user wants OpenTag to run real coding work with Codex or Claude Code.
+Use this path when the user wants OpenTag to run real coding work with Codex, Claude Code, Cursor, OpenCode, Hermes, or OpenClaw.
 
 ## Executor Choices
 
-- Codex uses the local `codex` command.
-- Claude Code uses the local `claude` command.
+- Codex uses the bundled `codex-acp` adapter and the user's existing Codex login.
+- Claude Code uses the bundled `claude-agent-acp` adapter and the user's existing Claude login.
+- Hermes uses the installed `hermes` ACP server with a fixed profile whose provider is already configured.
+- Cursor uses the installed `cursor-agent acp` command and an existing Cursor login.
+- OpenCode uses the pinned `opencode-ai` ACP server and an authenticated provider.
+- OpenClaw uses the installed Gateway ACP bridge. It currently reports `cancel=no`; inspect provider-owned processes after cancellation before starting conflicting work.
 - Echo is dev/test only and does not run a real coding agent.
 
-Prefer the executor the user already has installed. Do not silently switch executors without telling the user.
+Prefer the executor whose authentication or Hermes provider is already ready. Do not silently switch executors without telling the user.
 
 ## Prerequisites
 
-For Codex:
+For Codex, Claude Code, Cursor, OpenCode, and OpenClaw:
 
 ```bash
-codex --version
+opentag doctor
 ```
 
-For Claude Code:
+For Hermes:
 
 ```bash
-claude --version
+hermes profile list
 ```
 
 The user also needs a local project checkout that the chosen executor can safely edit.
@@ -33,7 +37,7 @@ npm install -g @opentag/cli
 opentag setup
 ```
 
-During setup, choose Codex or Claude Code when asked:
+During setup, choose Codex, Claude Code, Cursor, OpenCode, Hermes, or OpenClaw when asked:
 
 ```text
 Which coding agent should OpenTag use?

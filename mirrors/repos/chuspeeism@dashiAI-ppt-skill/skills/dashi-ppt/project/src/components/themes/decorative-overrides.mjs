@@ -3,13 +3,11 @@
 // 由 scripts/skill-workflow-utils.mjs 的 inspect 契约层消费,不改主题组件视觉。
 //
 // 收编范围保守:只标已确认的纯装饰位。
-// - theme09_page007 封面右下角手写花字 signature('AInsight'):
-//   与 JAD-196(closing 已在组件层处理)一致,这里补封面契约标记,避免被当文案填写。
-// - theme09_page111(结语/closing)同一枚手写花字 signature('AInsight')。
-export const DECORATIVE_SLOTS = {
-  theme09_page007: ['signature'],
-  theme09_page111: ['signature'],
-};
+// theme09_page007/page111 的 signature(封面/结语手写花字)曾在此黑名单里,
+// 但它其实是完全 props 驱动的真实品牌落款文案(非结构装饰),黑名单把它排除出
+// copyKeys 后,Agent 只能任由示例品牌名 'AInsight' 出现在每份生成的画册里——
+// 已移除该条目,交回 copyKeys 正常暴露(见 theme09-report.json 审计结论)。
+export const DECORATIVE_SLOTS = {};
 
 export function getDecorativeKeys(layout) {
   return DECORATIVE_SLOTS[layout] || [];

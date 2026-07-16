@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed patterns, 240 file(s) materialized.
+Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed patterns, 241 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `coreyhaines31/marketingskills` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 240 |
+| Files         | 241 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -298,7 +298,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 237 | ✓ | [`skills/social/SKILL.md`](skills/social/SKILL.md) |
 | 238 | ✓ | [`skills/video/evals/evals.json`](skills/video/evals/evals.json) |
 | 239 | ✓ | [`skills/video/references/ai-video-prompting.md`](skills/video/references/ai-video-prompting.md) |
-| 240 | ✓ | [`skills/video/SKILL.md`](skills/video/SKILL.md) |
+| 240 | ✓ | [`skills/video/references/edit-anatomy.md`](skills/video/references/edit-anatomy.md) |
+| 241 | ✓ | [`skills/video/SKILL.md`](skills/video/SKILL.md) |
 
 ---
 

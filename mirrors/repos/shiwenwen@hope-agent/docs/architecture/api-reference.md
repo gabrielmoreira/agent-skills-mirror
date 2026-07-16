@@ -6,13 +6,13 @@
 
 Hope Agent 前端通过 `Transport` 抽象层和后端通信，内部根据运行环境自动在 Tauri IPC 和 HTTP/WebSocket 之间切换。本文档把两条通道上的**每一条接口**列成一一对应的表格，并标记对齐状态。
 
-## 数据来源（截至 2026-07-03）
+## 数据来源（截至 2026-07-15）
 
 | 源 | 位置 | 数量 |
 |---|---|---|
-| Tauri 命令 | `src-tauri/src/lib.rs` 的 `tauri::generate_handler!` | **813** |
-| HTTP 路由 | `crates/ha-server/src/lib.rs` 的 `.route(...)` | **766** |
-| 前端 COMMAND_MAP | `src/lib/transport-http.ts::COMMAND_MAP` | **799** |
+| Tauri 命令 | `src-tauri/src/lib.rs` 的 `tauri::generate_handler!` | **963** |
+| HTTP 路由 | `crates/ha-server/src/lib.rs` 的 `.route(...)` | **894** |
+| 前端 COMMAND_MAP | `src/lib/transport-http.ts::COMMAND_MAP` | **943** |
 | WebSocket 端点 | `crates/ha-server/src/ws/` | **1** |
 | EventBus 事件 | 全代码 `emit_event` 调用 | **59+** |
 
@@ -20,13 +20,13 @@ Hope Agent 前端通过 `Transport` 抽象层和后端通信，内部根据运�
 
 | 分类 | 数量 | 说明 |
 |---|---|---|
-| ✅ 两端完全对齐（在 COMMAND_MAP 中） | 799 | 常规请求/响应命令（所有 COMMAND_MAP 条目都有 Tauri 命令对应） |
-| 🔧 特殊处理（不在 COMMAND_MAP 但 HTTP 已实现，走专用 Transport 方法） | 6 | `save_avatar` multipart、`fs_list_dir` / `fs_search_files` query-string GET（`listServerDirectory` / `searchFiles`）、`fs_create_dir`（`createDirectory`）、`project_fs_upload`（`projectFsUpload`）、`export_session_cmd`（`exportSession`，两端形态不对称） |
-| 🖥️ Desktop-only / Tauri-only（HTTP 无对应） | 8 | macOS / legacy 系统权限探测（5 条）+ `project_fs_resolve` / `kb_file_resolve_cmd`（`convertFileSrc`）+ `set_dock_badge_cmd` |
+| ✅ 两端完全对齐（在 COMMAND_MAP 中） | 943 | 常规请求/响应命令（所有 COMMAND_MAP 条目都有 Tauri 命令对应） |
+| 🔧 特殊处理（不在 COMMAND_MAP 但 HTTP 已实现，走专用 Transport 方法） | 12 | multipart/二进制流/保存对话框类接口：avatar、filesystem、session export、Artifact export 和 memory backup archive |
+| 🖥️ Desktop-only / Tauri-only（HTTP 无对应） | 9 | macOS / legacy 系统权限探测（5 条）+ `project_fs_resolve` / `kb_file_resolve_cmd`（`convertFileSrc`）+ Dock / tray 未读提示 |
 | ❌ HTTP 路由存在但 COMMAND_MAP 漏写 | 0 | — |
 | ❌ HTTP 路由完全缺失 | 0 | — |
 
-Tauri ↔ COMMAND_MAP 差集为 14 条合法非 REST 命令（5 条 Desktop-only 系统权限命令 + `save_avatar` multipart + `fs_list_dir` / `fs_search_files` query-string GET + `fs_create_dir` / `project_fs_upload` / `export_session_cmd` 走专用 Transport 方法 + `project_fs_resolve` / `kb_file_resolve_cmd` / `set_dock_badge_cmd` Tauri-only）；HTTP 路由侧的非 REST endpoint（`/api/health` / `/api/server/status` / `/api/filesystem/list-dir` / `/api/filesystem/search-files` / `/api/filesystem/create-dir` / `/api/avatars/{...}` multipart / `/api/chat` 流式等）本身不映射到单条 Tauri 命令，它们的对齐状态在各自功能域章节单独说明。新增 Tauri 命令时须同步补 HTTP 路由 + COMMAND_MAP，保持差集不变——详见下文"新增接口 checklist"与"验证脚本"两节。
+Tauri ↔ COMMAND_MAP 差集为 21 条合法非通用映射命令：5 条 Desktop-only 系统权限命令、12 条走专用 Transport 方法的 multipart/二进制/保存路径接口，以及 `project_fs_resolve` / `kb_file_resolve_cmd` / `set_dock_badge_cmd` / `set_tray_unread_cmd` 4 条 Tauri-only 命令。HTTP 路由侧的非 REST endpoint（健康检查、静态文件、流式 chat、multipart 和二进制下载等）不要求映射为通用 `call()`；对齐状态在各功能域章节登记。新增 Tauri 命令时须同步补 HTTP 路由、COMMAND_MAP 或专用 Transport 说明。
 
 ## 运行模式与 Transport 切换
 
@@ -177,6 +177,7 @@ Tauri ↔ COMMAND_MAP 差集为 14 条合法非 REST 命令（5 条 Desktop-only
 | `dreaming:cycle_started` / `dreaming:cycle_complete` | dreaming 固化周期开始 / 结束（payload 含 `runId`） |
 | `cron:run_completed` | cron/executor.rs |
 | `cron:unread_changed` | cron 未读聚合数变化（`cron_mark_all_read` 清除时发 `{ total: 0 }`）；前端 cron 未读 store 收到后刷新侧边栏角标 |
+| `session:unread_changed` | assistant 消息落库或任一会话水位线更新；payload `{ sessionId?: string, domain?: "regular"\|"channel"\|"cron" }` 只作精准失效提示，消费者必须重查各域权威值 |
 | `job:created` / `job:updated` / `job:progress` / `job:completed` / `job:mark_injected_failed` | **统一后台任务事件（R3，替代旧 `async_tool_job:*`）**。`async_jobs::events` 发射；kind-tagged（payload `{ job_id, kind: "tool"\|"group", tool, status, session_id }`），覆盖后台**工具 + Group** 生命周期。`created`=新任务出现（running/queued）；`updated`=非终态变化（如 cancelling）；`progress`=`{ job_id, kind, session_id, current, total }`（目前 Group 报 N/M 子完成）；`completed`=终态；`mark_injected_failed`=结果注入主对话失败告警 `{ job_id, error }`。**`subagent` kind 沿用 `subagent:*` 流**（不双发），R4 面板合并两路 + `job_status list`。 |
 | `app_update:progress` / `app_update:completed` | 自升级 (`app_update` 工具) 进度上报。`progress` payload `{ job_id, label, phase, percent?, written?, total? }`（每 5% / 1s 节流）；`completed` payload `{ job_id, status: "done"|"failed", outcome?, error? }`，详见 [`self-update.md`](self-update.md) |
 
@@ -210,6 +211,17 @@ Tauri ↔ COMMAND_MAP 差集为 14 条合法非 REST 命令（5 条 Desktop-only
 | `canvas_show` / `canvas_hide` / `canvas_reload` / `canvas_deleted` | 画布面板 |
 | `canvas_snapshot_request` / `canvas_eval_request` | 画布工具流 |
 | `browser:frame` | 浏览器活动 tab 的实时 JPEG 帧。Payload `{ sessionId?, targetId?, url?, title?, jpegBase64, capturedAt, backend }`。在 `act` / `navigate` / `tabs.new|select|claim` 后由后端自动 emit；BrowserPanel 同时以 1Hz 轮询 `browser_capture_frame` 兜底并按当前会话过滤 |
+
+### Artifacts
+
+| 事件名 | 触发点 | Payload 关键字段 |
+|---|---|---|
+| `artifact:created` / `artifact:updated` | `ArtifactService` 创建、更新或 restore | `{ artifactId, version, detail? }` |
+| `artifact:verified` | 当前版本完成确定性 verifier | `{ artifactId, version, detail }`，detail 为 passed/failed |
+| `artifact:export_running` / `artifact:export_ready` / `artifact:export_failed` | HTML/ZIP/Markdown/PDF 导出生命周期 | `{ artifactId, version, detail? }`，ready 时 detail 为 receipt ID |
+| `artifact:archived` / `artifact:deleted` | owner archive/delete | `{ artifactId, version, detail? }` |
+
+Artifact 创建或 show 仍复用 `canvas_show`，当前投影变化复用 `canvas_reload`，因此 `CanvasPanel` 不需要第二套预览事件。缺少系统 Chrome 和 Hope runtime 的 PDF 导出还会触发 `browser:runtime_required`，由全局 runtime 安装对话框处理。
 
 ### MCP
 
@@ -255,6 +267,14 @@ Tauri ↔ COMMAND_MAP 差集为 14 条合法非 REST 命令（5 条 Desktop-only
 | `previewReadText(path,{sessionId})` | `invoke("preview_read_text", {path})` | `GET /api/sessions/{id}/files/read?path=`（会话鉴权） |
 | `previewExtractDoc(path,{sessionId})` | `invoke("preview_extract", {path})` | `GET /api/sessions/{id}/files/extract?path=`（会话鉴权） |
 | `previewRawUrl(path,{sessionId},download)` | `resolveAssetUrl(path)`（`convertFileSrc`） | tokened `/api/sessions/{id}/files/by-path?...&download=` |
+| `fileRuntime()` | `{workspaceHost:"local",openMode:"system",canReveal:true}` | `{workspaceHost:"remote",openMode:"browser",canReveal:false}` |
+| `getWorkspaceAccess(scope)` | `project_fs_capabilities` | `GET /api/fs/capabilities` |
+| `openWorkspaceFile` / `downloadWorkspaceFile` | 系统打开 | tokened `/api/fs/raw` 浏览/下载 |
+| `revealWorkspaceFile` | `reveal_in_folder` | 不支持（capability disabled） |
+| `uploadFile(file,purpose)` | `file_upload_start/status/chunk/complete`（chunk raw binary IPC） | `/api/file-uploads*`（chunk Blob body） |
+| `discardFileUpload(id)` | `file_upload_discard` | `DELETE /api/file-uploads/{id}` |
+| `stageChatAttachment(file)` | 委托 `uploadFile(...,"chat_attachment")` | 同左 |
+| `discardChatAttachmentUpload(id)` | 委托 `discardFileUpload` | 同左 |
 | `supportsLocalFileOps()` | `true` | `false` |
 | `pickLocalImage()` | `@tauri-apps/plugin-dialog.open` | 隐藏 `<input type="file">` + blob URL |
 
@@ -263,8 +283,11 @@ Tauri ↔ COMMAND_MAP 差集为 14 条合法非 REST 命令（5 条 Desktop-only
 | 命令 | HTTP 端点 |
 |---|---|
 | `save_attachment` | `POST /api/chat/attachment` |
-| `project_fs_upload` | `POST /api/fs/upload`（workspace-scoped，前端 `projectFsUpload` 专用方法） |
+| `stage_chat_attachment` | `POST /api/chat/attachment-stage`（仅旧客户端兼容，静态 20 MiB） |
+| `project_fs_upload` | `POST /api/fs/upload`（仅旧客户端兼容，静态 20 MiB） |
 | `save_avatar` | `POST /api/avatars`（服务端返 `{path}`，前端解包为 `string` 匹配 Tauri `-> String` 契约） |
+
+新版聊天、Workspace、知识来源与客户端本地 Artifact 来源统一使用上传租约：`file_upload_start/status/chunk/complete/discard` ↔ `POST /api/file-uploads`、`GET|DELETE /api/file-uploads/{id}`、`PUT /api/file-uploads/{id}/chunk?offset=`、`POST /api/file-uploads/{id}/complete`。purpose 分别为 `chat_attachment`、`workspace_upload`、`knowledge_source`、`artifact_source`；固定 4 MiB 顺序 chunk，lease 1 小时过期，最终由对应业务 claim 消费。
 
 ## 命令对照表（按功能域分组）
 
@@ -276,8 +299,12 @@ Tauri ↔ COMMAND_MAP 差集为 14 条合法非 REST 命令（5 条 Desktop-only
 |---|---|---|
 | `list_projects_cmd` | `GET /api/projects` | ✅ |
 | `get_project_cmd` | `GET /api/projects/{id}` | ✅ |
+| `get_project_overview_cmd` | `GET /api/projects/{id}/overview` | ✅（用户会话 + 自动记忆主题 + 有效结构化记忆 + `AGENTS.md` 状态） |
 | `create_project_cmd` | `POST /api/projects` | ✅ |
 | `update_project_cmd` | `PATCH /api/projects/{id}` | ✅ |
+| `inspect_project_instructions_cmd` | `POST /api/projects/instructions/inspect` | ✅（表单切换工作目录时只读检查，不创建缺失文件） |
+| `get_project_instructions_cmd` | `GET /api/projects/{id}/instructions` | ✅（缺失时创建根 `AGENTS.md`） |
+| `save_project_instructions_cmd` | `PUT /api/projects/{id}/instructions` | ✅（owner 设置面，原子写入，不受通用文件写闸门影响） |
 | `delete_project_cmd` | `DELETE /api/projects/{id}` | ✅ |
 | `archive_project_cmd` | `POST /api/projects/{id}/archive` | ✅ |
 | `list_project_sessions_cmd` | `GET /api/projects/{id}/sessions` | ✅ |
@@ -289,20 +316,24 @@ Tauri ↔ COMMAND_MAP 差集为 14 条合法非 REST 命令（5 条 Desktop-only
 | `delete_project_memory_file_cmd` | `DELETE /api/projects/{id}/memory-files/{fileName}?expectedFileHash=` | ✅（stale-write guard） |
 | `rebuild_project_memory_index_cmd` | `POST /api/projects/{id}/memory-files/rebuild-index` | ✅ |
 
-`list_projects_cmd` / `GET /api/projects` 接受可选 `active_session_id`（HTTP query `activeSessionId`）：正在打开的那个会话会从其所属项目的未读聚合里排除（在 SQL 里按已读处理），使项目徽标与“当前会话读作 0”一致，无需前端跨数据源相减。
+`list_projects_cmd` / `GET /api/projects` 接受可选 `active_session_id`（HTTP query `activeSessionId`）：前端仅在该会话满足“聊天主视图已选中 + 窗口聚焦 + document 可见 + 消息列表在最新位置”的可读条件时传入，使项目徽标与会话行口径一致，无需前端跨数据源相减。项目列表不再返回旧 `memoryCount`，也不再逐项目查询记忆库；概览口径统一由 `get_project_overview_cmd` / `GET /api/projects/{id}/overview` 提供。
+
+项目指令以项目工作目录根 `AGENTS.md` 为唯一真相源，`Project` / `CreateProjectInput` / `UpdateProjectInput` 均不再携带 `instructions`。新增 / 编辑表单通过独立 `instructions: { content, expectedFileHash }` 请求字段把文件草稿与项目元数据一起提交；文件步骤失败会回滚项目创建 / 元数据更新，内容仍不进 SQLite。切换目录前可用 inspect 接口只读取得目标文件，缺失时返回空内容与空文件 hash，但不提前建文件。创建项目、切换 `workingDir` 和启动迁移会确保文件存在；GET 返回 `{ path, content, contentHash, created }`，PUT body 为 `{ content, expectedFileHash }` 并原样保留 Markdown 空白。保存前以磁盘 raw BLAKE3 校验 `expectedFileHash`，不一致返回冲突，防止覆盖 Agent / 外部编辑器的并发修改。
 
 **项目文件浏览器（workspace-scoped filesystem）**——上传/读写改走作用域文件管理 API（旧的 `list_project_files_cmd` / `upload_project_file_cmd` / `delete_project_file_cmd` / `rename_project_file_cmd` / `read_project_file_content_cmd` 五条命令与对应 `/api/projects/{id}/files*` 路由已删除）。命令以 `{ scope: "session"|"project", scopeId, ... }` 寻址，后端 `WorkspaceScope` 解析工作目录并做越界校验：
 
 | Tauri 命令 | HTTP 路由 | 对齐 |
 |---|---|---|
 | `project_fs_list` | `GET /api/fs/list?scope=&scopeId=&path=` | ✅ |
+| `project_fs_capabilities` | `GET /api/fs/capabilities?scope=&scopeId=` | ✅（最终写能力） |
 | `project_fs_read_text` | `GET /api/fs/read?...` | ✅ |
 | `project_fs_extract` | `GET /api/fs/extract?...` | ✅ (PDF/Office 提取预览) |
-| `project_fs_write_text` | `PUT /api/fs/file` | ✅ (写闸门) |
+| `project_fs_write_text` | `PUT /api/fs/file` | ✅（`expectedFileHash` / `createOnly` / 结构化冲突 + 写闸门） |
 | `project_fs_delete` | `DELETE /api/fs/entry?...&recursive=` | ✅ (写闸门) |
 | `project_fs_rename` | `POST /api/fs/rename` | ✅ (写闸门) |
 | `project_fs_mkdir` | `POST /api/fs/mkdir` | ✅ (写闸门) |
-| `project_fs_upload` | `POST /api/fs/upload` (multipart) | ✅ (写闸门，`projectFsUpload` 专用方法) |
+| `project_fs_upload` | `POST /api/fs/upload` (multipart) | ✅（旧客户端兼容，静态 20 MiB） |
+| `project_fs_claim_upload` | `POST /api/fs/upload-claim` | ✅（`workspace_upload` lease，最终 scope/大小复检 + 原子 publish） |
 | `project_fs_resolve` | —（Tauri-only，图片预览 `convertFileSrc`） | N/A |
 | —（HTTP-only raw serve） | `GET /api/fs/raw?...&download=` | N/A (`projectFsRawUrl` 专用方法) |
 | `preview_read_text` | `GET /api/sessions/{id}/files/read?path=` | ✅ (preview-by-path，绝对路径，会话鉴权) |
@@ -369,6 +400,8 @@ Tauri ↔ COMMAND_MAP 差集为 14 条合法非 REST 命令（5 条 Desktop-only
 | `kb_passive_recall_config_set_cmd` | `POST /api/knowledge/passive-recall/config` | ✅ (写被动相关笔记配置，clamp 后返回) |
 | `knowledge_media_retention_config_get_cmd` | `GET /api/knowledge/media-retention/config` | ✅ (读取原始媒体可选留存配置；默认关闭，HIGH/privacy，也可经 `get_settings(knowledge_media_retention)` 读) |
 | `knowledge_media_retention_config_set_cmd` | `POST /api/knowledge/media-retention/config` | ✅ (写原始媒体可选留存配置，clamp 后返回；只影响未来 source 导入) |
+| `knowledge_source_limits_config_get_cmd` | `GET /api/knowledge/source-limits/config` | ✅（文本/二进制/URL 三类来源 MiB 限制，MEDIUM） |
+| `knowledge_source_limits_config_set_cmd` | `POST /api/knowledge/source-limits/config` | ✅（clamp 后保存并返回） |
 | `knowledge_vision_config_get_cmd` | `GET /api/knowledge/vision/config` | ✅ (读取图片 OCR 模型链配置，GUI 面板；也可经 `get_settings(knowledge_vision)` 读) |
 | `knowledge_vision_config_set_cmd` | `POST /api/knowledge/vision/config` | ✅ (写图片 OCR 模型链配置) |
 | `note_tools_config_get_cmd` | `GET /api/knowledge/note-tools/config` | ✅ (读取笔记三件套共享模型链配置，GUI 面板；也可经 `get_settings(note_tools)` 读) |
@@ -376,7 +409,7 @@ Tauri ↔ COMMAND_MAP 差集为 14 条合法非 REST 命令（5 条 Desktop-only
 | `kb_sprite_observe_cmd` | `POST /api/knowledge/sprite/observe` | ✅ (精灵编辑空闲触发，fire-and-forget；节流 + side_query 后建议经 `sprite:suggestion` 事件返回) |
 | `sprite_config_get_cmd` | `GET /api/knowledge/sprite/config` | ✅ (读精灵配置，GUI 面板；也可经 `get_settings(sprite)` 读) |
 | `sprite_config_set_cmd` | `POST /api/knowledge/sprite/config` | ✅ (写精灵配置，clamp 后返回) |
-| `kb_source_import_batch_cmd` | `POST /api/knowledge/{kbId}/sources/batch` | ✅ (资料舱批量导入：文本 / Markdown / PDF / DOCX / 音视频转录 / 图片 OCR / URL，创建 import run + item 后返回 `running` run；后台执行，重复内容标 `duplicate`) |
+| `kb_source_import_batch_cmd` | `POST /api/knowledge/{kbId}/sources/batch` | ✅（资料舱批量导入；本地文件输入使用 `uploadId`，与 `content` / `dataBase64` / `url` 互斥；创建 import run + item 后返回 `running` run） |
 | `kb_source_import_session_attachment_cmd` | `POST /api/knowledge/{kbId}/sources/session-attachment` | ✅ (把已落到会话附件目录的聊天 / IM 附件归档为 raw source；后端校验 `sessionId + path` 位于该 session attachments dir，再复用文本 / PDF / DOCX / STT / OCR 导入链路) |
 | `kb_source_asset_link_cmd` | `GET /api/knowledge/{kbId}/sources/{sourceId}/assets/{original\|thumbnail}/link` | ✅ (返回 retained source asset metadata + owner-plane local path；文件流走同路径去掉 `/link`，可加 `?download=1`) |
 | `kb_source_import_runs_list_cmd` | `GET /api/knowledge/{kbId}/sources/import-runs?limit=` | ✅ (导入历史，limit 默认 20、钳 1..=200) |
@@ -407,7 +440,7 @@ KB 文件预览端点是**纯 owner 平面，无 session 参数、无 owner fall
 
 **preview-by-path（文件操作统一）**：`preview_read_text` / `preview_extract` 按**绝对路径**读取，供 Markdown 链接 / 下挂文件 / 工作台产物文件统一预览。桌面信任本机路径直接读；HTTP 经 `/api/sessions/{id}/files/{read,extract}`，与既有 `/files/by-path` 共用授权 `authorized_canonical_file_path` = **被会话 tool 消息引用 ∪ 落在会话工作目录内**，二者皆非的主机任意路径一律 403。详见 [file-operations.md](./file-operations.md)。
 
-写端点（write/delete/rename/mkdir/upload）在 HTTP handler 层读 `filesystem.allow_remote_writes`（默认 false）闸门，为 false 返 403；桌面 Tauri 不受限。配置读写：`get_filesystem_config` / `save_filesystem_config` ↔ `GET/PUT /api/config/filesystem`。
+写端点（write/delete/rename/mkdir/upload）在 HTTP handler 层读 `filesystem.allow_remote_writes`（默认 false）闸门，为 false 返 403；桌面 Tauri 不受限。`FilesystemConfig` 包含聊天附件、Workspace 上传、文本预览、文本编辑、文档预览五项 MiB 限制；`maxChatAttachmentMb` 同时约束用户聊天附件与 Agent `send_attachment`。配置读写：`get_filesystem_config` / `save_filesystem_config` / `patch_filesystem_config` ↔ `GET/PUT/PATCH /api/config/filesystem`；设置面使用 PATCH，避免不同风险面的字段互相覆盖。完整默认值与范围见 [file-operations.md](file-operations.md#大小配置与硬上限)。
 
 `Project` 支持 `workingDir: string | null` 字段，作为该项目下会话的默认工作目录。运行时合并优先级 `session.working_dir > project 显式 working_dir > 默认 workspace`，lazy ensure 创建——编辑项目工作目录后未单独设置的已有会话立即跟随。详见 [`AGENTS.md`](../../AGENTS.md) 「项目（Project）容器」段与 [project.md](./project.md)。
 
@@ -439,9 +472,11 @@ KB 文件预览端点是**纯 owner 平面，无 session 参数、无 owner fall
 | `get_session_stream_state` | `GET /api/sessions/{sessionId}/stream-state` | ✅ |
 | `delete_session_cmd` | `DELETE /api/sessions/{sessionId}` | ✅ |
 | `rename_session_cmd` | `PATCH /api/sessions/{sessionId}` | ✅ |
-| `mark_session_read_cmd` | `POST /api/sessions/{sessionId}/read` | ✅ |
+| `mark_session_read_cmd` | `POST /api/sessions/{sessionId}/read` | ✅ 可选 body `{throughMessageId}`；阅读面按已渲染上限推进，省略表示显式全部已读 |
 | `mark_session_read_batch_cmd` | `POST /api/sessions/read-batch` | ✅ |
-| `mark_all_sessions_read_cmd` | `POST /api/sessions/read-all` | ✅ |
+| `mark_all_sessions_read_cmd` | `POST /api/sessions/read-all` | ✅（仅普通顶层会话，不清 Cron / IM / Knowledge / Subagent / incognito） |
+| `regular_unread_total_cmd` | `GET /api/sessions/unread?activeSessionId=` | ✅（全库普通未读 session 数） |
+| `next_unread_session_cmd` | `GET /api/sessions/unread/next?activeSessionId=` | ✅（侧边栏视觉顺序中的首个普通未读 session + projectId + listOffset） |
 | `compact_context_now` | `POST /api/sessions/{sessionId}/compact` | ✅ |
 | `export_session_cmd` | `GET /api/sessions/{sessionId}/export` | ✅ |
 | `write_export_file` | `POST /api/misc/write-export-file` | ✅ |
@@ -449,6 +484,8 @@ KB 文件预览端点是**纯 owner 平面，无 session 参数、无 owner fall
 | `set_dangerous_skip_all_approvals` | `POST /api/security/dangerous-skip-all-approvals` | ✅ |
 
 `create_session_cmd` 与 `chat` 在自动创建新会话时都支持可选 `incognito: boolean`，返回的 `SessionMeta` 也会包含 `incognito` 字段；主聊天 UI 将 incognito 视为“新会话预设”，只在尚未 materialize session 的草稿态提供入口，已有会话不再暴露切换按钮。`set_session_incognito` 保留给兼容调用和非主 UI 适配，但不应作为常规会话内开关使用。当请求同时带了 `project_id` 时 `incognito` 被强制为 `false`（互斥）。`list_sessions_cmd` / `search_sessions_cmd` / `list_project_sessions_cmd` 接受可选 `active_session_id` 参数：默认会过滤掉所有 incognito 会话，`active_session_id` 让正在打开的那个无痕会话仍出现在 sidebar / 搜索结果里。`purge_session_if_incognito` 在前端 `handleSwitchSession / handleNewChat / handleNewChatInProject` 切走当前 session 之前调用，仅当目标 session 当前为 incognito 时硬删，否则 no-op。
+
+未读产品口径为 session 数：普通域仅包含 `kind=regular`、顶层、非 Cron、非 incognito、无 IM 绑定的会话（项目会话包含）。只有聊天主视图已选中、应用窗口聚焦、document 可见且消息列表停在最新位置时，当前 session 才按已读显示并推进水位线；组件仍挂载或仅持有 `currentSessionId` 不代表用户正在阅读。`regular_unread_total_cmd` 是对话入口、Dock 和状态栏的单一聚合来源，不得用当前分页列表求和；再次点击已经激活的“对话”入口时，用 `next_unread_session_cmd` 定位侧边栏视觉顺序中的首个未读会话，按返回的 `projectId + listOffset` 一次加载足够的前缀并滚动到目标行。会话行只显示点，项目与全局入口显示数量。
 
 `update_session_agent_cmd` 接受 `{ agentId: string }`，后端在 SQL 层校验 `messages` 表中该 session 没有 `role IN ('user','assistant')` 的记录，否则返回 400。前端 `ChatTitleBar` 的 `AgentSwitcher` dropdown 在 `messages.length > 0` 时会把触发器降级为只读 `<span>`，作为 UX 防御层。
 
@@ -716,6 +753,8 @@ Loop owner API 管理 session-scoped recurring triggers。`create_loop_schedule`
 | `set_permission_mode` | `POST /api/chat/permission-mode` | ✅ 替代旧 `set_tool_permission_mode` |
 | `respond_to_approval` | `POST /api/chat/approval` | ✅ |
 | `save_attachment` | `POST /api/chat/attachment` | ✅ (multipart) |
+| `stage_chat_attachment` | `POST /api/chat/attachment-stage` | ✅（旧 multipart 兼容，静态 20 MiB） |
+| `discard_chat_attachment_upload` | `DELETE /api/chat/attachment-stage/{uploadId}` | ✅ |
 | `list_builtin_tools` | `GET /api/chat/tools` | ✅ |
 | `list_session_tasks` | `GET /api/sessions/{sessionId}/tasks` | ✅ TaskProgressPanel 用户控件 |
 | `create_session_task` | `POST /api/sessions/{sessionId}/tasks` | ✅ Workspace Context 候选转任务 |
@@ -724,7 +763,7 @@ Loop owner API 管理 session-scoped recurring triggers。`create_loop_schedule`
 
 #### Chat `attachments` wire format
 
-`chat` / `POST /api/chat` 与 `queue_turn_user_message` / `POST /api/chat/turn-message` 共用同一份 `attachments` 数组；Tauri IPC 和 HTTP 都按 snake_case 原样序列化。每项的基础字段为 `{ name, mime_type, source?, data?, file_path? }`。图片使用 base64 `data`，普通文件须先经 `save_attachment` / `POST /api/chat/attachment` 落盘并以 `file_path` 引用。
+`chat` / `POST /api/chat` 与 `queue_turn_user_message` / `POST /api/chat/turn-message` 共用同一份 `attachments` 数组；Tauri IPC 和 HTTP 都按 snake_case 原样序列化。每项的基础字段为 `{ name, mime_type, source?, upload_id?, data?, file_path? }`。GUI 新客户端点击发送后统一经通用 `chat_attachment` 分块 lease，再只传 `upload_id`；`upload_id` 与 `data` / `file_path` 互斥。图片不再由 GUI 转 Base64。旧字段保留给 ACP、IM、历史客户端与历史消息，旧 stage/Base64 固定 20 MiB；HTTP 旧 `file_path` 必须 canonicalize 后位于对应 session 或 `_temp` 附件目录。单文件动态上限取当前后端 `filesystem.maxChatAttachmentMb`（默认 20 MiB），单消息最多 64 个，前后端双重校验；claim 采用全量 prepare + rollback，部分失败不会消费其他 lease。
 
 对话消息引用使用独立来源，不可复用文件引用语义：
 
@@ -774,6 +813,23 @@ Loop owner API 管理 session-scoped recurring triggers。`create_loop_schedule`
 | `list_canvas_projects` | `GET /api/canvas/projects` | ✅ |
 | `get_canvas_project` | `GET /api/canvas/projects/{projectId}` | ✅ |
 | `delete_canvas_project` | `DELETE /api/canvas/projects/{projectId}` | ✅ |
+
+### Artifacts
+
+| Tauri Command / Transport | HTTP | 状态 |
+|---|---|---|
+| `list_artifacts` | `GET /api/artifacts?limit=&offset=&kind=&lifecycleState=` | ✅ |
+| `get_artifact` | `GET /api/artifacts/{id}` | ✅ |
+| `list_artifact_versions` | `GET /api/artifacts/{id}/versions` | ✅ |
+| `import_artifact` | `POST /api/artifacts/import` | ✅（`filePath` 与 `artifact_source uploadId` 互斥；同一路径同时承载 create/update，update 必须带 `artifactId+expectedVersion`） |
+| `restore_artifact` | `POST /api/artifacts/{id}/restore` | ✅ |
+| `verify_artifact` | `POST /api/artifacts/{id}/verify` | ✅ |
+| `review_artifact_export` | `POST /api/artifacts/{id}/export-review` | ✅ |
+| `export_artifact` | `POST /api/artifacts/{id}/exports` + `GET /api/artifact-exports/{exportId}/download` | ✅（Tauri 保存对话框 + 原子复制；HTTP 受管文件 streaming） |
+| `archive_artifact` | `POST /api/artifacts/{id}/archive` | ✅ |
+| `delete_artifact` | `DELETE /api/artifacts/{id}` | ✅ |
+
+Artifact owner API 的完整不变量、输入白名单、Export Guard 和 receipt 见 [Artifacts 本地优先产物平台](artifacts.md)。列表响应包含 metadata/source/verification 摘要但不返回 canonical payload 或大 dataset；正文由受保护的 Canvas 静态路径加载。
 
 ### Models
 
@@ -964,7 +1020,7 @@ Agent 执行准入采用两层 guard：Desktop / HTTP / Channel / Cron 等调用
 | `cron_get_run_logs` | `GET /api/cron/jobs/{jobId}/logs` | ✅ |
 | `cron_get_calendar_events` | `GET /api/cron/calendar` | ✅ |
 | `cron_run_timeline` | `GET /api/cron/timeline?limit=&offset=` | ✅ (跨 job 运行时间线，cron 面板「对话」视图) |
-| `cron_unread_total` | `GET /api/cron/unread` | ✅ (cron 未读聚合数，侧边栏角标) |
+| `cron_unread_total` | `GET /api/cron/unread` | ✅（未读 Cron 运行 session 数，侧边栏独立角标） |
 | `cron_mark_all_read` | `POST /api/cron/read-all` | ✅ (一键清除 cron 未读，emit `cron:unread_changed`) |
 
 ### Dashboard
@@ -979,6 +1035,7 @@ Agent 执行准入采用两层 guard：Desktop / HTTP / Channel / Cron 等调用
 | `dashboard_sessions` | `POST /api/dashboard/sessions` | ✅ |
 | `dashboard_errors` | `POST /api/dashboard/errors` | ✅ |
 | `dashboard_tasks` | `POST /api/dashboard/tasks` | ✅ |
+| `dashboard_control_plane` | `POST /api/dashboard/control-plane` | ✅（Goal / Workflow / Loop / Task / Plan 聚合；独立 Agent/项目筛选） |
 | `dashboard_system_metrics` | `GET /api/dashboard/system-metrics` | ✅ |
 | `dashboard_session_list` | `POST /api/dashboard/session-list` | ✅ |
 | `dashboard_message_list` | `POST /api/dashboard/message-list` | ✅ |
@@ -986,6 +1043,8 @@ Agent 执行准入采用两层 guard：Desktop / HTTP / Channel / Cron 等调用
 | `dashboard_error_list` | `POST /api/dashboard/error-list` | ✅ |
 | `dashboard_agent_list` | `POST /api/dashboard/agent-list` | ✅ |
 | `dashboard_local_model_usage` | `POST /api/dashboard/local-model-usage` | ✅ |
+
+`dashboard_control_plane` 请求体为 `{ "filter": { "startDate": ISO8601|null, "endDate": ISO8601|null, "agentId": string|null, "projectId": string|null } }`；返回 `{ summary, goals, workflows, loops, tasks, plans, attention }`。`projectId="__unassigned__"` 表示未分配项目。比例零分母序列化为 `null`；`attention.items` 最多 20 条、`attention.total` 保留未截断总数。旧 `dashboard_tasks` 只统计 Cron / Subagent（前端名“自动化”），`dashboard_plan_stats` 保持兼容。
 
 #### Dashboard Learning
 
@@ -1243,7 +1302,7 @@ Agent 执行准入采用两层 guard：Desktop / HTTP / Channel / Cron 等调用
 | Context | `messages` 最后一条 assistant 行的 `tokens_in_last`（fallback `tokens_in`）vs 该行 `model` 对应的 `context_window` | `- **Context**: 42k / 200k (21%)`；window=0 时仅显示已用值 |
 | Cache (last round) | 最后一条 assistant 的 `tokens_cache_creation` / `tokens_cache_read`（**不累计**；来自该 turn 最后一次 API round） | `- **Cache (last round)**: write 2k · hit 38k`；字段存在时即使两值都是 0 也显示，字段缺失时整行省略 |
 | Updated | `sessions.updated_at` 相对时间 | `- **Updated**: just now` / `Nm ago` / `Nh ago` / `Nd ago` |
-| Current Project | `sessions.project_id` | 单独一段（项目名 / desc / agent / working dir / instructions / agent source） |
+| Current Project | `sessions.project_id` | 单独一段（项目名 / desc / agent / working dir / `AGENTS.md` 指令预览 / agent source） |
 | Attached IM Channels | `channel_db.list_attached(session_id)` | 单独一段（每行 `★` primary 标记 + channel:account:chat:thread + `attached_at`） |
 
 Context / Cache 共用单 SQL `get_session_last_assistant_token_row`，避免渲染时多次扫表。Context window 在当前激活模型与该行 `model` 列名不同时，按 `cached_config().providers` 反查兜底。
@@ -1449,6 +1508,7 @@ Context / Cache 共用单 SQL `get_session_last_assistant_token_row`，避免渲
 | `open_directory` | `POST /api/desktop/open-directory` | 同上 |
 | `reveal_in_folder` | `POST /api/desktop/reveal-in-folder` | 同上 |
 | `set_dock_badge_cmd` | — | 仅桌面：把全局未读总数写到 app icon / Dock 角标（`count=0` 清除）；前端按 `isTauriMode()` 门控，Web 端不调用，无 HTTP 端点 |
+| `set_tray_unread_cmd` | — | 仅桌面：状态栏 / tray 图标按普通未读会话是否大于 0 显示红点；紧凑图标不绘制数字 |
 | `get_system_prompt` | `POST /api/system-prompt` | 调试端点 |
 
 ### Filesystem
@@ -1484,7 +1544,7 @@ Context / Cache 共用单 SQL `get_session_last_assistant_token_row`，避免渲
 
 ## 已知不对齐项
 
-截至 2026-07-08 三端差集为 14 条（§7.3 的 5 条 Desktop-only 系统权限命令 + §7.3.1 的 `save_avatar` multipart / `fs_list_dir` / `fs_search_files` / `fs_create_dir` / `project_fs_upload` / `export_session_cmd` 六条 HTTP 已实现但走专用 Transport 方法 + `project_fs_resolve` / `kb_file_resolve_cmd` / `set_dock_badge_cmd` 三条 Tauri-only），没有"HTTP 漏写 COMMAND_MAP"或"HTTP 路由缺失"的破口。COMMAND_MAP 里的每一条都能在 `tauri::generate_handler!` 里找到对应命令；反向差 14 条均已在下文相应章节登记。`check_sandbox_available` 已对齐到 HTTP `GET /api/config/sandbox/status`，不再属于 Desktop-only。
+截至 2026-07-15 三端差集为 21 条：§7.3 的 5 条 Desktop-only 系统权限命令、§7.3.1 的 12 条 HTTP 已实现但走专用 Transport 方法，以及 `project_fs_resolve` / `kb_file_resolve_cmd` / `set_dock_badge_cmd` / `set_tray_unread_cmd` 4 条 Tauri-only 命令。没有“HTTP 漏写 COMMAND_MAP”或“HTTP 路由缺失”的破口；COMMAND_MAP 每一条都能在 `tauri::generate_handler!` 找到对应命令。
 
 ### §7.3 Desktop-only（Tauri 专属，合法缺失，5 条）
 
@@ -1498,18 +1558,24 @@ Context / Cache 共用单 SQL `get_session_last_assistant_token_row`，避免渲
 
 前端必须在 `supportsLocalFileOps()` / `isTauriMode()` 或等价的运行模式判定保护下调用，HTTP 模式应 gate 住相关 UI。
 
-### §7.3.1 不进 COMMAND_MAP 但 HTTP 已实现的合法非 REST 命令（6 条）
+### §7.3.1 不进 COMMAND_MAP 但 HTTP 已实现的合法非 REST 命令（12 条）
 
 | Tauri Command | HTTP 端点 | 原因 |
 |---|---|---|
+| `stage_chat_attachment` | `POST /api/chat/attachment-stage` | multipart/form-data，HTTP 走 `HttpTransport.stageChatAttachment()` 专用方法 |
 | `save_avatar` | `POST /api/avatars` | multipart/form-data，HTTP 走 `HttpTransport.call()` 特殊分支 |
 | `fs_list_dir` | `GET /api/filesystem/list-dir?path=<abs>` | query-string GET，HTTP 走 `HttpTransport.listServerDirectory()` 自定义方法（详见 Filesystem 域） |
 | `fs_search_files` | `GET /api/filesystem/search-files?root=<abs>&q=<q>&limit=<n>` | 同上，走 `HttpTransport.searchFiles()` |
 | `fs_create_dir` | `POST /api/filesystem/create-dir` | 绝对目录创建 + listing 返回，HTTP 走 `HttpTransport.createDirectory()` 专用方法 |
 | `project_fs_upload` | `POST /api/fs/upload`（multipart） | 走 `HttpTransport.projectFsUpload()` 专用方法（详见 Filesystem 域） |
 | `export_session_cmd` | `GET /api/sessions/{sessionId}/export` | 两端形态不对称（Tauri 走原生 save dialog，HTTP 返二进制流），统一入口 `exportSession`（详见 Session 域） |
+| `export_artifact` | `POST /api/artifacts/{id}/exports` + `GET /api/artifact-exports/{exportId}/download` | Tauri 走 save dialog + 受管文件复制；HTTP 走 receipt + 二进制流，统一入口 `exportArtifact` |
+| `memory_backup_export_archive` | `POST /api/memory/backup/export-archive` | Tauri 保存到用户路径；HTTP 返回 ZIP blob，统一入口 `exportMemoryBackupArchive` |
+| `memory_backup_preview_archive` | `POST /api/memory/backup/preview-archive` | HTTP body 为 ZIP bytes，走 `previewMemoryBackupArchive` |
+| `memory_backup_restore_legacy_archive` | `POST /api/memory/backup/restore-legacy-archive` | HTTP body 为 ZIP bytes，走 `restoreMemoryBackupLegacyArchive` |
+| `memory_backup_restore_structured_archive` | `POST /api/memory/backup/restore-structured-archive` | HTTP body 为 ZIP bytes，走 `restoreMemoryBackupStructuredArchive` |
 
-这六条都是 HTTP 端有路由且前端两侧都能调用，只是不通过通用的 `COMMAND_MAP` JSON 路径。另有 `project_fs_resolve` / `kb_file_resolve_cmd`（Tauri-only `convertFileSrc`）与 `set_dock_badge_cmd`（Desktop-only Dock 角标）属 Tauri 专属、无 HTTP 对应，已分别在 Filesystem / 知识空间 / Desktop-only 章节登记。
+这 12 条都是 HTTP 端有路由且前端两侧都能调用，只是不通过通用的 `COMMAND_MAP` JSON 路径。另有 `project_fs_resolve` / `kb_file_resolve_cmd`（Tauri-only `convertFileSrc`）、`set_dock_badge_cmd`（Desktop-only Dock 数字角标）与 `set_tray_unread_cmd`（Desktop-only tray 红点）属 Tauri 专属、无 HTTP 对应。
 
 ### §7.4 命名/返回值语义差异
 
@@ -1539,15 +1605,15 @@ Context / Cache 共用单 SQL `get_session_last_assistant_token_row`，避免渲
 以下 shell 段落可在项目根运行，本文档对照表的数据正确性依赖它们：
 
 ```bash
-# 1. Tauri 命令总数（截至 2026-07-08：813）
+# 1. Tauri 命令总数（截至 2026-07-15：963）
 awk 'BEGIN{flag=0} /tauri::generate_handler!\[/{flag=1;next} flag&&/^[[:space:]]*\]\)/{flag=0} flag' \
     src-tauri/src/lib.rs | grep -vE '^[[:space:]]*//|^[[:space:]]*$' | \
     grep -oE '::[a-z_][a-zA-Z0-9_]*,?[[:space:]]*$' | tr -d ':, ' | sort -u | wc -l
 
-# 2. HTTP 路由总数（截至 2026-07-08：766）
+# 2. HTTP 路由总数（截至 2026-07-15：894）
 grep -cE '^[[:space:]]+\.route\(' crates/ha-server/src/lib.rs
 
-# 3. COMMAND_MAP 条目数（截至 2026-07-08：799，不含闭合 `}` 的行）
+# 3. COMMAND_MAP 条目数（截至 2026-07-15：943，不含闭合 `}` 的行）
 awk '/^const COMMAND_MAP/,/^};/' src/lib/transport-http.ts | \
     grep -cE '^[[:space:]]+[a-z_][a-zA-Z0-9_]*:[[:space:]]*\{'
 
@@ -1558,11 +1624,13 @@ comm -23 \
       grep -oE '::[a-z_][a-zA-Z0-9_]*,?[[:space:]]*$' | tr -d ':, ' | sort -u) \
   <(awk '/^const COMMAND_MAP/,/^};/' src/lib/transport-http.ts | \
       grep -oE '^[[:space:]]+[a-z_][a-zA-Z0-9_]*:' | tr -d ': ' | sort -u)
-# 期望：14 行
+# 期望：21 行
 #   check_system_permissions / request_system_permission
 #   / check_all_permissions / check_permission / request_permission  （§7.3 Desktop-only）
-#   / save_avatar / fs_list_dir / fs_search_files / fs_create_dir / project_fs_upload / export_session_cmd  （§7.3.1 HTTP 已实现走专用方法）
-#   / project_fs_resolve / kb_file_resolve_cmd / set_dock_badge_cmd  （Tauri-only，无 HTTP）
+#   / save_avatar / fs_list_dir / fs_search_files / fs_create_dir / project_fs_upload / export_session_cmd
+#   / export_artifact / memory_backup_*_archive  （§7.3.1 HTTP 已实现走专用方法）
+#   / stage_chat_attachment  （兼容聊天 staging 专用方法）
+#   / project_fs_resolve / kb_file_resolve_cmd / set_dock_badge_cmd / set_tray_unread_cmd  （Tauri-only，无 HTTP）
 ```
 
 ## 运行模式快速回顾

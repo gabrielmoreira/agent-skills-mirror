@@ -2,7 +2,8 @@
   "metadata": {
     "blockscoutObservedAt": "2026-07-08",
     "etherscanProviderChainCount": 64,
-    "etherscanVerifiedAt": "2026-07-08"
+    "etherscanVerifiedAt": "2026-07-08",
+    "routeMeshVerifiedAt": "2026-07-15"
   },
   "chains": {
     "abstract": {
@@ -309,6 +310,17 @@
         "instanceUrl": "https://polygon.blockscout.com/"
       }
     },
+    "robinhood": {
+      "primaryPublicRpc": "https://rpc.mainnet.chain.robinhood.com",
+      "fallbackPublicRpcs": ["https://robinhoodchain.blockscout.com/api/eth-rpc"],
+      "routeMesh": true,
+      "etherscan": { "support": "unsupported" },
+      "blockscout": {
+        "status": "observed",
+        "hostedBy": "blockscout",
+        "instanceUrl": "https://robinhoodchain.blockscout.com/"
+      }
+    },
     "ronin": {
       "primaryPublicRpc": "https://api.roninchain.com/rpc",
       "fallbackPublicRpcs": ["https://ronin.drpc.org", "https://2020.rpc.thirdweb.com"],
@@ -316,7 +328,7 @@
       "etherscan": { "support": "unsupported" },
       "blockscout": {
         "status": "unsafe",
-        "notes": "Chainscout returns a different network for `2020`"
+        "notes": "Chainscout returns a different network for `2020`; app.roninchain.com blocks scripted access, so verify through chrome-devtools/Chromium instead of curl or WebFetch"
       }
     },
     "scroll": {
@@ -325,7 +337,7 @@
       "routeMesh": true,
       "etherscan": {
         "support": "unsupported",
-        "notes": "Removed from Etherscan V2 on 2026-04-16"
+        "notes": "Removed from Etherscan V2 on 2026-04-16; api.scrollscan.com no longer resolves"
       },
       "blockscout": {
         "status": "observed",
@@ -446,7 +458,7 @@
     "zora": {
       "primaryPublicRpc": "https://zora.drpc.org",
       "fallbackPublicRpcs": ["https://7777777.rpc.thirdweb.com", "https://rpc.zora.energy"],
-      "routeMesh": false,
+      "routeMesh": true,
       "etherscan": { "support": "unsupported" },
       "blockscout": { "status": "absent", "notes": "Not returned by Chainscout" }
     }

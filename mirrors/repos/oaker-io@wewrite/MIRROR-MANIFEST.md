@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `oaker-io/wewrite` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
+Mirror of `oaker-io/wewrite` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `oaker-io/wewrite` — 26 default patterns, 0 followed patterns, 39 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 39 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,43 +61,38 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`skills/wewrite-learn/references/learn-edits.md`](skills/wewrite-learn/references/learn-edits.md) |
 | 2 | ✓ | [`skills/wewrite-learn/SKILL.md`](skills/wewrite-learn/SKILL.md) |
-| 3 | ✓ | [`skills/wewrite-publish/references/compliance-seo.md`](skills/wewrite-publish/references/compliance-seo.md) |
-| 4 | ✓ | [`skills/wewrite-publish/references/wechat-constraints.md`](skills/wewrite-publish/references/wechat-constraints.md) |
-| 5 | ✓ | [`skills/wewrite-publish/SKILL.md`](skills/wewrite-publish/SKILL.md) |
-| 6 | ✓ | [`skills/wewrite-review/references/seo-rules.md`](skills/wewrite-review/references/seo-rules.md) |
-| 7 | ✓ | [`skills/wewrite-review/SKILL.md`](skills/wewrite-review/SKILL.md) |
-| 8 | ✓ | [`skills/wewrite-rewrite/platforms/douyin.yaml`](skills/wewrite-rewrite/platforms/douyin.yaml) |
-| 9 | ✓ | [`skills/wewrite-rewrite/platforms/xiaohongshu.yaml`](skills/wewrite-rewrite/platforms/xiaohongshu.yaml) |
-| 10 | ✓ | [`skills/wewrite-rewrite/references/multiplatform-rewrite.md`](skills/wewrite-rewrite/references/multiplatform-rewrite.md) |
-| 11 | ✓ | [`skills/wewrite-rewrite/SKILL.md`](skills/wewrite-rewrite/SKILL.md) |
-| 12 | ✓ | [`skills/wewrite-stats/references/effect-review.md`](skills/wewrite-stats/references/effect-review.md) |
-| 13 | ✓ | [`skills/wewrite-stats/SKILL.md`](skills/wewrite-stats/SKILL.md) |
-| 14 | ✓ | [`skills/wewrite-style/references/onboard.md`](skills/wewrite-style/references/onboard.md) |
-| 15 | ✓ | [`skills/wewrite-style/references/style-template.md`](skills/wewrite-style/references/style-template.md) |
-| 16 | ✓ | [`skills/wewrite-style/SKILL.md`](skills/wewrite-style/SKILL.md) |
-| 17 | ✓ | [`skills/wewrite-style/style.example.yaml`](skills/wewrite-style/style.example.yaml) |
-| 18 | ✓ | [`skills/wewrite-topic/references/topic-selection.md`](skills/wewrite-topic/references/topic-selection.md) |
-| 19 | ✓ | [`skills/wewrite-topic/SKILL.md`](skills/wewrite-topic/SKILL.md) |
-| 20 | ✓ | [`skills/wewrite-visual/references/cover-prompts.md`](skills/wewrite-visual/references/cover-prompts.md) |
-| 21 | ✓ | [`skills/wewrite-visual/references/visual-prompts.md`](skills/wewrite-visual/references/visual-prompts.md) |
-| 22 | ✓ | [`skills/wewrite-visual/SKILL.md`](skills/wewrite-visual/SKILL.md) |
-| 23 | ✓ | [`skills/wewrite-write/personas/cold-analyst.yaml`](skills/wewrite-write/personas/cold-analyst.yaml) |
-| 24 | ✓ | [`skills/wewrite-write/personas/humor-storyteller.yaml`](skills/wewrite-write/personas/humor-storyteller.yaml) |
-| 25 | ✓ | [`skills/wewrite-write/personas/industry-observer.yaml`](skills/wewrite-write/personas/industry-observer.yaml) |
-| 26 | ✓ | [`skills/wewrite-write/personas/midnight-friend.yaml`](skills/wewrite-write/personas/midnight-friend.yaml) |
-| 27 | ✓ | [`skills/wewrite-write/personas/sharp-journalist.yaml`](skills/wewrite-write/personas/sharp-journalist.yaml) |
-| 28 | ✓ | [`skills/wewrite-write/personas/tech-coder.yaml`](skills/wewrite-write/personas/tech-coder.yaml) |
-| 29 | ✓ | [`skills/wewrite-write/personas/warm-editor.yaml`](skills/wewrite-write/personas/warm-editor.yaml) |
-| 30 | ✓ | [`skills/wewrite-write/references/anti-ai-writing-system.md`](skills/wewrite-write/references/anti-ai-writing-system.md) |
-| 31 | ✓ | [`skills/wewrite-write/references/content-enhance.md`](skills/wewrite-write/references/content-enhance.md) |
-| 32 | ✓ | [`skills/wewrite-write/references/exemplar-seeds.yaml`](skills/wewrite-write/references/exemplar-seeds.yaml) |
-| 33 | ✓ | [`skills/wewrite-write/references/frameworks.md`](skills/wewrite-write/references/frameworks.md) |
-| 34 | ✓ | [`skills/wewrite-write/references/persona-selection.md`](skills/wewrite-write/references/persona-selection.md) |
-| 35 | ✓ | [`skills/wewrite-write/references/realtime-check.md`](skills/wewrite-write/references/realtime-check.md) |
-| 36 | ✓ | [`skills/wewrite-write/references/writing-guide.md`](skills/wewrite-write/references/writing-guide.md) |
-| 37 | ✓ | [`skills/wewrite-write/SKILL.md`](skills/wewrite-write/SKILL.md) |
-| 38 | ✓ | [`skills/wewrite/references/pipeline-state.md`](skills/wewrite/references/pipeline-state.md) |
-| 39 | ✓ | [`skills/wewrite/SKILL.md`](skills/wewrite/SKILL.md) |
+| 3 | ✓ | [`skills/wewrite-publish/references/wechat-constraints.md`](skills/wewrite-publish/references/wechat-constraints.md) |
+| 4 | ✓ | [`skills/wewrite-publish/SKILL.md`](skills/wewrite-publish/SKILL.md) |
+| 5 | ✓ | [`skills/wewrite-review/references/seo-rules.md`](skills/wewrite-review/references/seo-rules.md) |
+| 6 | ✓ | [`skills/wewrite-review/SKILL.md`](skills/wewrite-review/SKILL.md) |
+| 7 | ✓ | [`skills/wewrite-rewrite/platforms/douyin.yaml`](skills/wewrite-rewrite/platforms/douyin.yaml) |
+| 8 | ✓ | [`skills/wewrite-rewrite/platforms/xiaohongshu.yaml`](skills/wewrite-rewrite/platforms/xiaohongshu.yaml) |
+| 9 | ✓ | [`skills/wewrite-rewrite/references/multiplatform-rewrite.md`](skills/wewrite-rewrite/references/multiplatform-rewrite.md) |
+| 10 | ✓ | [`skills/wewrite-rewrite/SKILL.md`](skills/wewrite-rewrite/SKILL.md) |
+| 11 | ✓ | [`skills/wewrite-stats/references/effect-review.md`](skills/wewrite-stats/references/effect-review.md) |
+| 12 | ✓ | [`skills/wewrite-stats/SKILL.md`](skills/wewrite-stats/SKILL.md) |
+| 13 | ✓ | [`skills/wewrite-style/references/onboard.md`](skills/wewrite-style/references/onboard.md) |
+| 14 | ✓ | [`skills/wewrite-style/references/style-template.md`](skills/wewrite-style/references/style-template.md) |
+| 15 | ✓ | [`skills/wewrite-style/SKILL.md`](skills/wewrite-style/SKILL.md) |
+| 16 | ✓ | [`skills/wewrite-style/style.example.yaml`](skills/wewrite-style/style.example.yaml) |
+| 17 | ✓ | [`skills/wewrite-topic/references/topic-selection.md`](skills/wewrite-topic/references/topic-selection.md) |
+| 18 | ✓ | [`skills/wewrite-topic/SKILL.md`](skills/wewrite-topic/SKILL.md) |
+| 19 | ✓ | [`skills/wewrite-visual/references/visual-guide.md`](skills/wewrite-visual/references/visual-guide.md) |
+| 20 | ✓ | [`skills/wewrite-visual/SKILL.md`](skills/wewrite-visual/SKILL.md) |
+| 21 | ✓ | [`skills/wewrite-write/personas/cold-analyst.yaml`](skills/wewrite-write/personas/cold-analyst.yaml) |
+| 22 | ✓ | [`skills/wewrite-write/personas/humor-storyteller.yaml`](skills/wewrite-write/personas/humor-storyteller.yaml) |
+| 23 | ✓ | [`skills/wewrite-write/personas/industry-observer.yaml`](skills/wewrite-write/personas/industry-observer.yaml) |
+| 24 | ✓ | [`skills/wewrite-write/personas/midnight-friend.yaml`](skills/wewrite-write/personas/midnight-friend.yaml) |
+| 25 | ✓ | [`skills/wewrite-write/personas/sharp-journalist.yaml`](skills/wewrite-write/personas/sharp-journalist.yaml) |
+| 26 | ✓ | [`skills/wewrite-write/personas/tech-coder.yaml`](skills/wewrite-write/personas/tech-coder.yaml) |
+| 27 | ✓ | [`skills/wewrite-write/personas/warm-editor.yaml`](skills/wewrite-write/personas/warm-editor.yaml) |
+| 28 | ✓ | [`skills/wewrite-write/references/article-brief.md`](skills/wewrite-write/references/article-brief.md) |
+| 29 | ✓ | [`skills/wewrite-write/references/content-enhance.md`](skills/wewrite-write/references/content-enhance.md) |
+| 30 | ✓ | [`skills/wewrite-write/references/editorial-quality.md`](skills/wewrite-write/references/editorial-quality.md) |
+| 31 | ✓ | [`skills/wewrite-write/references/frameworks-quick.md`](skills/wewrite-write/references/frameworks-quick.md) |
+| 32 | ✓ | [`skills/wewrite-write/SKILL.md`](skills/wewrite-write/SKILL.md) |
+| 33 | ✓ | [`skills/wewrite/references/pipeline-state.md`](skills/wewrite/references/pipeline-state.md) |
+| 34 | ✓ | [`skills/wewrite/SKILL.md`](skills/wewrite/SKILL.md) |
 
 ---
 

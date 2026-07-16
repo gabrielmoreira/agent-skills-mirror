@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `fengshao1227/ccg-workflow` — 26 default patterns, 1 followed patterns, 95 file(s) materialized.
+Mirror of `fengshao1227/ccg-workflow` — 26 default patterns, 1 followed patterns, 96 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `fengshao1227/ccg-workflow` — 26 default patterns, 1 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 95 |
+| Files         | 96 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -124,36 +124,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 63 | ✓ | [`templates/skills/domains/security/SKILL.md`](templates/skills/domains/security/SKILL.md) |
 | 64 | ✓ | [`templates/skills/domains/security/threat-intel.md`](templates/skills/domains/security/threat-intel.md) |
 | 65 | ✓ | [`templates/skills/domains/security/vuln-research.md`](templates/skills/domains/security/vuln-research.md) |
-| 66 | ✓ | [`templates/skills/impeccable/adapt/SKILL.md`](templates/skills/impeccable/adapt/SKILL.md) |
-| 67 | ✓ | [`templates/skills/impeccable/animate/SKILL.md`](templates/skills/impeccable/animate/SKILL.md) |
-| 68 | ✓ | [`templates/skills/impeccable/arrange/SKILL.md`](templates/skills/impeccable/arrange/SKILL.md) |
-| 69 | ✓ | [`templates/skills/impeccable/audit/SKILL.md`](templates/skills/impeccable/audit/SKILL.md) |
-| 70 | ✓ | [`templates/skills/impeccable/bolder/SKILL.md`](templates/skills/impeccable/bolder/SKILL.md) |
-| 71 | ✓ | [`templates/skills/impeccable/clarify/SKILL.md`](templates/skills/impeccable/clarify/SKILL.md) |
-| 72 | ✓ | [`templates/skills/impeccable/colorize/SKILL.md`](templates/skills/impeccable/colorize/SKILL.md) |
-| 73 | ✓ | [`templates/skills/impeccable/critique/SKILL.md`](templates/skills/impeccable/critique/SKILL.md) |
-| 74 | ✓ | [`templates/skills/impeccable/delight/SKILL.md`](templates/skills/impeccable/delight/SKILL.md) |
-| 75 | ✓ | [`templates/skills/impeccable/distill/SKILL.md`](templates/skills/impeccable/distill/SKILL.md) |
-| 76 | ✓ | [`templates/skills/impeccable/extract/SKILL.md`](templates/skills/impeccable/extract/SKILL.md) |
-| 77 | ✓ | [`templates/skills/impeccable/harden/SKILL.md`](templates/skills/impeccable/harden/SKILL.md) |
-| 78 | ✓ | [`templates/skills/impeccable/normalize/SKILL.md`](templates/skills/impeccable/normalize/SKILL.md) |
-| 79 | ✓ | [`templates/skills/impeccable/onboard/SKILL.md`](templates/skills/impeccable/onboard/SKILL.md) |
-| 80 | ✓ | [`templates/skills/impeccable/optimize/SKILL.md`](templates/skills/impeccable/optimize/SKILL.md) |
-| 81 | ✓ | [`templates/skills/impeccable/overdrive/SKILL.md`](templates/skills/impeccable/overdrive/SKILL.md) |
-| 82 | ✓ | [`templates/skills/impeccable/polish/SKILL.md`](templates/skills/impeccable/polish/SKILL.md) |
-| 83 | ✓ | [`templates/skills/impeccable/quieter/SKILL.md`](templates/skills/impeccable/quieter/SKILL.md) |
-| 84 | ✓ | [`templates/skills/impeccable/teach-impeccable/SKILL.md`](templates/skills/impeccable/teach-impeccable/SKILL.md) |
-| 85 | ✓ | [`templates/skills/impeccable/typeset/SKILL.md`](templates/skills/impeccable/typeset/SKILL.md) |
-| 86 | ✓ | [`templates/skills/orchestration/multi-agent/SKILL.md`](templates/skills/orchestration/multi-agent/SKILL.md) |
-| 87 | ✓ | [`templates/skills/scrapling/SKILL.md`](templates/skills/scrapling/SKILL.md) |
-| 88 | ✓ | [`templates/skills/SKILL.md`](templates/skills/SKILL.md) |
-| 89 | ✓ | [`templates/skills/tools/gen-docs/SKILL.md`](templates/skills/tools/gen-docs/SKILL.md) |
-| 90 | ✓ | [`templates/skills/tools/override-refusal/SKILL.md`](templates/skills/tools/override-refusal/SKILL.md) |
-| 91 | ✓ | [`templates/skills/tools/verify-change/SKILL.md`](templates/skills/tools/verify-change/SKILL.md) |
-| 92 | ✓ | [`templates/skills/tools/verify-module/SKILL.md`](templates/skills/tools/verify-module/SKILL.md) |
-| 93 | ✓ | [`templates/skills/tools/verify-quality/SKILL.md`](templates/skills/tools/verify-quality/SKILL.md) |
-| 94 | ✓ | [`templates/skills/tools/verify-security/SKILL.md`](templates/skills/tools/verify-security/SKILL.md) |
-| 95 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 66 | ✓ | [`templates/skills/domains/seo/SKILL.md`](templates/skills/domains/seo/SKILL.md) |
+| 67 | ✓ | [`templates/skills/impeccable/adapt/SKILL.md`](templates/skills/impeccable/adapt/SKILL.md) |
+| 68 | ✓ | [`templates/skills/impeccable/animate/SKILL.md`](templates/skills/impeccable/animate/SKILL.md) |
+| 69 | ✓ | [`templates/skills/impeccable/arrange/SKILL.md`](templates/skills/impeccable/arrange/SKILL.md) |
+| 70 | ✓ | [`templates/skills/impeccable/audit/SKILL.md`](templates/skills/impeccable/audit/SKILL.md) |
+| 71 | ✓ | [`templates/skills/impeccable/bolder/SKILL.md`](templates/skills/impeccable/bolder/SKILL.md) |
+| 72 | ✓ | [`templates/skills/impeccable/clarify/SKILL.md`](templates/skills/impeccable/clarify/SKILL.md) |
+| 73 | ✓ | [`templates/skills/impeccable/colorize/SKILL.md`](templates/skills/impeccable/colorize/SKILL.md) |
+| 74 | ✓ | [`templates/skills/impeccable/critique/SKILL.md`](templates/skills/impeccable/critique/SKILL.md) |
+| 75 | ✓ | [`templates/skills/impeccable/delight/SKILL.md`](templates/skills/impeccable/delight/SKILL.md) |
+| 76 | ✓ | [`templates/skills/impeccable/distill/SKILL.md`](templates/skills/impeccable/distill/SKILL.md) |
+| 77 | ✓ | [`templates/skills/impeccable/extract/SKILL.md`](templates/skills/impeccable/extract/SKILL.md) |
+| 78 | ✓ | [`templates/skills/impeccable/harden/SKILL.md`](templates/skills/impeccable/harden/SKILL.md) |
+| 79 | ✓ | [`templates/skills/impeccable/normalize/SKILL.md`](templates/skills/impeccable/normalize/SKILL.md) |
+| 80 | ✓ | [`templates/skills/impeccable/onboard/SKILL.md`](templates/skills/impeccable/onboard/SKILL.md) |
+| 81 | ✓ | [`templates/skills/impeccable/optimize/SKILL.md`](templates/skills/impeccable/optimize/SKILL.md) |
+| 82 | ✓ | [`templates/skills/impeccable/overdrive/SKILL.md`](templates/skills/impeccable/overdrive/SKILL.md) |
+| 83 | ✓ | [`templates/skills/impeccable/polish/SKILL.md`](templates/skills/impeccable/polish/SKILL.md) |
+| 84 | ✓ | [`templates/skills/impeccable/quieter/SKILL.md`](templates/skills/impeccable/quieter/SKILL.md) |
+| 85 | ✓ | [`templates/skills/impeccable/teach-impeccable/SKILL.md`](templates/skills/impeccable/teach-impeccable/SKILL.md) |
+| 86 | ✓ | [`templates/skills/impeccable/typeset/SKILL.md`](templates/skills/impeccable/typeset/SKILL.md) |
+| 87 | ✓ | [`templates/skills/orchestration/multi-agent/SKILL.md`](templates/skills/orchestration/multi-agent/SKILL.md) |
+| 88 | ✓ | [`templates/skills/scrapling/SKILL.md`](templates/skills/scrapling/SKILL.md) |
+| 89 | ✓ | [`templates/skills/SKILL.md`](templates/skills/SKILL.md) |
+| 90 | ✓ | [`templates/skills/tools/gen-docs/SKILL.md`](templates/skills/tools/gen-docs/SKILL.md) |
+| 91 | ✓ | [`templates/skills/tools/override-refusal/SKILL.md`](templates/skills/tools/override-refusal/SKILL.md) |
+| 92 | ✓ | [`templates/skills/tools/verify-change/SKILL.md`](templates/skills/tools/verify-change/SKILL.md) |
+| 93 | ✓ | [`templates/skills/tools/verify-module/SKILL.md`](templates/skills/tools/verify-module/SKILL.md) |
+| 94 | ✓ | [`templates/skills/tools/verify-quality/SKILL.md`](templates/skills/tools/verify-quality/SKILL.md) |
+| 95 | ✓ | [`templates/skills/tools/verify-security/SKILL.md`](templates/skills/tools/verify-security/SKILL.md) |
+| 96 | → | [`CHANGELOG.md`](CHANGELOG.md) |
 
 ---
 

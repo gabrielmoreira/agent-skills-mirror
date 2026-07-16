@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `nrwl/nx` — 26 default patterns, 0 followed patterns, 54 file(s) materialized.
+Mirror of `nrwl/nx` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nrwl/nx` — 26 default patterns, 0 followed patterns, 54 file(s) mat
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 54 |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,43 +76,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`.agents/skills/nx-run-tasks/SKILL.md`](.agents/skills/nx-run-tasks/SKILL.md) |
 | 16 | ✓ | [`.agents/skills/nx-workspace/references/AFFECTED.md`](.agents/skills/nx-workspace/references/AFFECTED.md) |
 | 17 | ✓ | [`.agents/skills/nx-workspace/SKILL.md`](.agents/skills/nx-workspace/SKILL.md) |
-| 18 | ✓ | [`.claude/disabled-skills/diagnose-sandbox-report/SKILL.md`](.claude/disabled-skills/diagnose-sandbox-report/SKILL.md) |
-| 19 | ✓ | [`.claude/skills/dist-build-migration/SKILL.md`](.claude/skills/dist-build-migration/SKILL.md) |
-| 20 | ✓ | [`.claude/skills/multi-version-compliance/SKILL.md`](.claude/skills/multi-version-compliance/SKILL.md) |
-| 21 | ✓ | [`.claude/skills/nx-docs-style-check/SKILL.md`](.claude/skills/nx-docs-style-check/SKILL.md) |
-| 22 | ✓ | [`.claude/skills/nx-gradle-plugin-version-bump/SKILL.md`](.claude/skills/nx-gradle-plugin-version-bump/SKILL.md) |
-| 23 | ✓ | [`.claude/skills/nx-multi-repo-migrate/SKILL.md`](.claude/skills/nx-multi-repo-migrate/SKILL.md) |
-| 24 | ✓ | [`.claude/skills/review-pr/SKILL.md`](.claude/skills/review-pr/SKILL.md) |
-| 25 | ✓ | [`.claude/skills/run-nx-generator/SKILL.md`](.claude/skills/run-nx-generator/SKILL.md) |
-| 26 | ✓ | [`.cursor/agents/ci-watcher.md`](.cursor/agents/ci-watcher.md) |
-| 27 | ✓ | [`.cursor/commands/ci-monitor.md`](.cursor/commands/ci-monitor.md) |
-| 28 | ✓ | [`.cursor/skills/ci-monitor/SKILL.md`](.cursor/skills/ci-monitor/SKILL.md) |
-| 29 | ✓ | [`.cursor/skills/nx-generate/SKILL.md`](.cursor/skills/nx-generate/SKILL.md) |
-| 30 | ✓ | [`.cursor/skills/nx-plugins/SKILL.md`](.cursor/skills/nx-plugins/SKILL.md) |
-| 31 | ✓ | [`.cursor/skills/nx-run-tasks/SKILL.md`](.cursor/skills/nx-run-tasks/SKILL.md) |
-| 32 | ✓ | [`.cursor/skills/nx-workspace/SKILL.md`](.cursor/skills/nx-workspace/SKILL.md) |
-| 33 | ✓ | [`.github/prompts/ci-monitor.prompt.md`](.github/prompts/ci-monitor.prompt.md) |
-| 34 | ✓ | [`.github/prompts/monitor-ci.prompt.md`](.github/prompts/monitor-ci.prompt.md) |
-| 35 | ✓ | [`.github/skills/ci-monitor/SKILL.md`](.github/skills/ci-monitor/SKILL.md) |
-| 36 | ✓ | [`.github/skills/link-workspace-packages/SKILL.md`](.github/skills/link-workspace-packages/SKILL.md) |
-| 37 | ✓ | [`.github/skills/monitor-ci/SKILL.md`](.github/skills/monitor-ci/SKILL.md) |
-| 38 | ✓ | [`.github/skills/nx-generate/SKILL.md`](.github/skills/nx-generate/SKILL.md) |
-| 39 | ✓ | [`.github/skills/nx-import/SKILL.md`](.github/skills/nx-import/SKILL.md) |
-| 40 | ✓ | [`.github/skills/nx-plugins/SKILL.md`](.github/skills/nx-plugins/SKILL.md) |
-| 41 | ✓ | [`.github/skills/nx-run-tasks/SKILL.md`](.github/skills/nx-run-tasks/SKILL.md) |
-| 42 | ✓ | [`.github/skills/nx-workspace/SKILL.md`](.github/skills/nx-workspace/SKILL.md) |
-| 43 | ✓ | [`.opencode/skills/ci-monitor/SKILL.md`](.opencode/skills/ci-monitor/SKILL.md) |
-| 44 | ✓ | [`.opencode/skills/link-workspace-packages/SKILL.md`](.opencode/skills/link-workspace-packages/SKILL.md) |
-| 45 | ✓ | [`.opencode/skills/monitor-ci/SKILL.md`](.opencode/skills/monitor-ci/SKILL.md) |
-| 46 | ✓ | [`.opencode/skills/nx-generate/SKILL.md`](.opencode/skills/nx-generate/SKILL.md) |
-| 47 | ✓ | [`.opencode/skills/nx-import/SKILL.md`](.opencode/skills/nx-import/SKILL.md) |
-| 48 | ✓ | [`.opencode/skills/nx-plugins/SKILL.md`](.opencode/skills/nx-plugins/SKILL.md) |
-| 49 | ✓ | [`.opencode/skills/nx-run-tasks/SKILL.md`](.opencode/skills/nx-run-tasks/SKILL.md) |
-| 50 | ✓ | [`.opencode/skills/nx-workspace/SKILL.md`](.opencode/skills/nx-workspace/SKILL.md) |
-| 51 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 52 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 53 | ✓ | [`packages/devkit/CLAUDE.md`](packages/devkit/CLAUDE.md) |
-| 54 | ✓ | [`packages/nx/src/native/CLAUDE.md`](packages/nx/src/native/CLAUDE.md) |
+| 18 | ✓ | [`.claude/skills/dist-build-migration/SKILL.md`](.claude/skills/dist-build-migration/SKILL.md) |
+| 19 | ✓ | [`.claude/skills/multi-version-compliance/SKILL.md`](.claude/skills/multi-version-compliance/SKILL.md) |
+| 20 | ✓ | [`.claude/skills/nx-docs-style-check/SKILL.md`](.claude/skills/nx-docs-style-check/SKILL.md) |
+| 21 | ✓ | [`.claude/skills/nx-gradle-plugin-version-bump/SKILL.md`](.claude/skills/nx-gradle-plugin-version-bump/SKILL.md) |
+| 22 | ✓ | [`.claude/skills/nx-multi-repo-migrate/SKILL.md`](.claude/skills/nx-multi-repo-migrate/SKILL.md) |
+| 23 | ✓ | [`.claude/skills/review-pr/SKILL.md`](.claude/skills/review-pr/SKILL.md) |
+| 24 | ✓ | [`.claude/skills/run-nx-generator/SKILL.md`](.claude/skills/run-nx-generator/SKILL.md) |
+| 25 | ✓ | [`.cursor/agents/ci-watcher.md`](.cursor/agents/ci-watcher.md) |
+| 26 | ✓ | [`.cursor/commands/ci-monitor.md`](.cursor/commands/ci-monitor.md) |
+| 27 | ✓ | [`.cursor/skills/ci-monitor/SKILL.md`](.cursor/skills/ci-monitor/SKILL.md) |
+| 28 | ✓ | [`.cursor/skills/nx-generate/SKILL.md`](.cursor/skills/nx-generate/SKILL.md) |
+| 29 | ✓ | [`.cursor/skills/nx-plugins/SKILL.md`](.cursor/skills/nx-plugins/SKILL.md) |
+| 30 | ✓ | [`.cursor/skills/nx-run-tasks/SKILL.md`](.cursor/skills/nx-run-tasks/SKILL.md) |
+| 31 | ✓ | [`.cursor/skills/nx-workspace/SKILL.md`](.cursor/skills/nx-workspace/SKILL.md) |
+| 32 | ✓ | [`.github/prompts/ci-monitor.prompt.md`](.github/prompts/ci-monitor.prompt.md) |
+| 33 | ✓ | [`.github/prompts/monitor-ci.prompt.md`](.github/prompts/monitor-ci.prompt.md) |
+| 34 | ✓ | [`.github/skills/ci-monitor/SKILL.md`](.github/skills/ci-monitor/SKILL.md) |
+| 35 | ✓ | [`.github/skills/link-workspace-packages/SKILL.md`](.github/skills/link-workspace-packages/SKILL.md) |
+| 36 | ✓ | [`.github/skills/monitor-ci/SKILL.md`](.github/skills/monitor-ci/SKILL.md) |
+| 37 | ✓ | [`.github/skills/nx-generate/SKILL.md`](.github/skills/nx-generate/SKILL.md) |
+| 38 | ✓ | [`.github/skills/nx-import/SKILL.md`](.github/skills/nx-import/SKILL.md) |
+| 39 | ✓ | [`.github/skills/nx-plugins/SKILL.md`](.github/skills/nx-plugins/SKILL.md) |
+| 40 | ✓ | [`.github/skills/nx-run-tasks/SKILL.md`](.github/skills/nx-run-tasks/SKILL.md) |
+| 41 | ✓ | [`.github/skills/nx-workspace/SKILL.md`](.github/skills/nx-workspace/SKILL.md) |
+| 42 | ✓ | [`.opencode/skills/ci-monitor/SKILL.md`](.opencode/skills/ci-monitor/SKILL.md) |
+| 43 | ✓ | [`.opencode/skills/link-workspace-packages/SKILL.md`](.opencode/skills/link-workspace-packages/SKILL.md) |
+| 44 | ✓ | [`.opencode/skills/monitor-ci/SKILL.md`](.opencode/skills/monitor-ci/SKILL.md) |
+| 45 | ✓ | [`.opencode/skills/nx-generate/SKILL.md`](.opencode/skills/nx-generate/SKILL.md) |
+| 46 | ✓ | [`.opencode/skills/nx-import/SKILL.md`](.opencode/skills/nx-import/SKILL.md) |
+| 47 | ✓ | [`.opencode/skills/nx-plugins/SKILL.md`](.opencode/skills/nx-plugins/SKILL.md) |
+| 48 | ✓ | [`.opencode/skills/nx-run-tasks/SKILL.md`](.opencode/skills/nx-run-tasks/SKILL.md) |
+| 49 | ✓ | [`.opencode/skills/nx-workspace/SKILL.md`](.opencode/skills/nx-workspace/SKILL.md) |
+| 50 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 51 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 52 | ✓ | [`packages/devkit/CLAUDE.md`](packages/devkit/CLAUDE.md) |
+| 53 | ✓ | [`packages/nx/src/native/CLAUDE.md`](packages/nx/src/native/CLAUDE.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nelsonwerd/idea-to-ship-skills` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `nelsonwerd/idea-to-ship-skills` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nelsonwerd/idea-to-ship-skills` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,29 +59,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/autopilot/references/kickoff-skeleton.md`](skills/autopilot/references/kickoff-skeleton.md) |
-| 2 | ✓ | [`skills/autopilot/references/pipeline-playbook.md`](skills/autopilot/references/pipeline-playbook.md) |
-| 3 | ✓ | [`skills/autopilot/SKILL.md`](skills/autopilot/SKILL.md) |
-| 4 | ✓ | [`skills/build-loop/references/acceptance-criteria.md`](skills/build-loop/references/acceptance-criteria.md) |
-| 5 | ✓ | [`skills/build-loop/references/design-critique.md`](skills/build-loop/references/design-critique.md) |
-| 6 | ✓ | [`skills/build-loop/references/loop-procedure.md`](skills/build-loop/references/loop-procedure.md) |
-| 7 | ✓ | [`skills/build-loop/SKILL.md`](skills/build-loop/SKILL.md) |
-| 8 | ✓ | [`skills/deep-dive/references/codebase-audit.md`](skills/deep-dive/references/codebase-audit.md) |
-| 9 | ✓ | [`skills/deep-dive/references/design-evaluation.md`](skills/deep-dive/references/design-evaluation.md) |
-| 10 | ✓ | [`skills/deep-dive/references/research-deep-dive.md`](skills/deep-dive/references/research-deep-dive.md) |
-| 11 | ✓ | [`skills/deep-dive/references/specialist-prompt-template.md`](skills/deep-dive/references/specialist-prompt-template.md) |
-| 12 | ✓ | [`skills/deep-dive/references/strategy-evaluation.md`](skills/deep-dive/references/strategy-evaluation.md) |
-| 13 | ✓ | [`skills/deep-dive/SKILL.md`](skills/deep-dive/SKILL.md) |
-| 14 | ✓ | [`skills/ideate/references/concept-brief-template.md`](skills/ideate/references/concept-brief-template.md) |
-| 15 | ✓ | [`skills/ideate/references/facilitation-guide.md`](skills/ideate/references/facilitation-guide.md) |
-| 16 | ✓ | [`skills/ideate/references/handoff-guide.md`](skills/ideate/references/handoff-guide.md) |
-| 17 | ✓ | [`skills/ideate/references/modes-guide.md`](skills/ideate/references/modes-guide.md) |
-| 18 | ✓ | [`skills/ideate/SKILL.md`](skills/ideate/SKILL.md) |
-| 19 | ✓ | [`skills/prompt-pack/references/authoring-guide.md`](skills/prompt-pack/references/authoring-guide.md) |
-| 20 | ✓ | [`skills/prompt-pack/references/execution-guide.md`](skills/prompt-pack/references/execution-guide.md) |
-| 21 | ✓ | [`skills/prompt-pack/references/handoff-guide.md`](skills/prompt-pack/references/handoff-guide.md) |
-| 22 | ✓ | [`skills/prompt-pack/references/pack-template.md`](skills/prompt-pack/references/pack-template.md) |
-| 23 | ✓ | [`skills/prompt-pack/SKILL.md`](skills/prompt-pack/SKILL.md) |
+| 1 | ✓ | [`skills/audit-and-fix/references/audit-fix-playbook.md`](skills/audit-and-fix/references/audit-fix-playbook.md) |
+| 2 | ✓ | [`skills/audit-and-fix/references/receipt-discipline.md`](skills/audit-and-fix/references/receipt-discipline.md) |
+| 3 | ✓ | [`skills/audit-and-fix/references/triage-guide.md`](skills/audit-and-fix/references/triage-guide.md) |
+| 4 | ✓ | [`skills/audit-and-fix/SKILL.md`](skills/audit-and-fix/SKILL.md) |
+| 5 | ✓ | [`skills/autopilot/references/kickoff-skeleton.md`](skills/autopilot/references/kickoff-skeleton.md) |
+| 6 | ✓ | [`skills/autopilot/references/pipeline-playbook.md`](skills/autopilot/references/pipeline-playbook.md) |
+| 7 | ✓ | [`skills/autopilot/SKILL.md`](skills/autopilot/SKILL.md) |
+| 8 | ✓ | [`skills/build-loop/references/acceptance-criteria.md`](skills/build-loop/references/acceptance-criteria.md) |
+| 9 | ✓ | [`skills/build-loop/references/design-critique.md`](skills/build-loop/references/design-critique.md) |
+| 10 | ✓ | [`skills/build-loop/references/loop-procedure.md`](skills/build-loop/references/loop-procedure.md) |
+| 11 | ✓ | [`skills/build-loop/SKILL.md`](skills/build-loop/SKILL.md) |
+| 12 | ✓ | [`skills/deep-dive/references/codebase-audit.md`](skills/deep-dive/references/codebase-audit.md) |
+| 13 | ✓ | [`skills/deep-dive/references/design-evaluation.md`](skills/deep-dive/references/design-evaluation.md) |
+| 14 | ✓ | [`skills/deep-dive/references/research-deep-dive.md`](skills/deep-dive/references/research-deep-dive.md) |
+| 15 | ✓ | [`skills/deep-dive/references/specialist-prompt-template.md`](skills/deep-dive/references/specialist-prompt-template.md) |
+| 16 | ✓ | [`skills/deep-dive/references/strategy-evaluation.md`](skills/deep-dive/references/strategy-evaluation.md) |
+| 17 | ✓ | [`skills/deep-dive/SKILL.md`](skills/deep-dive/SKILL.md) |
+| 18 | ✓ | [`skills/ideate/references/concept-brief-template.md`](skills/ideate/references/concept-brief-template.md) |
+| 19 | ✓ | [`skills/ideate/references/facilitation-guide.md`](skills/ideate/references/facilitation-guide.md) |
+| 20 | ✓ | [`skills/ideate/references/handoff-guide.md`](skills/ideate/references/handoff-guide.md) |
+| 21 | ✓ | [`skills/ideate/references/modes-guide.md`](skills/ideate/references/modes-guide.md) |
+| 22 | ✓ | [`skills/ideate/SKILL.md`](skills/ideate/SKILL.md) |
+| 23 | ✓ | [`skills/prompt-pack/references/authoring-guide.md`](skills/prompt-pack/references/authoring-guide.md) |
+| 24 | ✓ | [`skills/prompt-pack/references/execution-guide.md`](skills/prompt-pack/references/execution-guide.md) |
+| 25 | ✓ | [`skills/prompt-pack/references/handoff-guide.md`](skills/prompt-pack/references/handoff-guide.md) |
+| 26 | ✓ | [`skills/prompt-pack/references/pack-template.md`](skills/prompt-pack/references/pack-template.md) |
+| 27 | ✓ | [`skills/prompt-pack/SKILL.md`](skills/prompt-pack/SKILL.md) |
 
 ---
 

@@ -15,6 +15,13 @@
 
 ### 开发记录
 
+- 修复线程文件接口的同步文件 I/O 阻塞：交付物预览仅异步读取媒体类型识别所需的 512 字节文件头，不再同步加载完整文件；线程文件全文读取和目录扫描下沉到工作线程，避免大文件或大目录并发访问时阻塞 API 事件循环。
+- 修复应用 lifespan 关闭时未释放共享 Neo4j driver 的问题，避免同进程重载或重复启动后残留图数据库连接。
+- 修复删除 Milvus 知识库阻塞事件循环：`MilvusKB.delete_database` 恢复异步基类契约，并将同步的主集合与图集合清理下沉到工作线程，避免删除期间阻塞其他对话和 SSE 推送。
+- 修复 Agent 对话流式输出时的前端性能问题：自动滚动改为监听 `conversations` computed 的顶层引用变化，不再对完整对话与消息树执行深度 watch，避免每个 token 到达时递归遍历全部历史消息。
+- 修复删除知识库文件图谱时清理范围过宽：Neo4j 仅删除本次文件 `MENTIONS` 边触及且已无任何 `MENTIONS` 引用的实体，不再顺带删除同知识库内其他文件遗留的孤儿实体。
+- 对照当前解析器、知识库工具和 Agent 运行链路重整正式文档：补充默认 OCR、文件级处理参数、工作区 `AGENTS.md` / `USER.md` / `MEMORY.md`、知识库 `knowledge-base` Skill、`search_file`、`ocr_parse_file`、子智能体进度和图片 OCR 回退语义；更正知识库工具使用 `kb_id`、MCP 配置按数据库实时读取等过时描述；移除正式文档中的问答式栏目。
+- 统一用户菜单的设置入口：管理员与普通用户均显示“设置”，打开后默认进入账户设置；管理员专属的基本设置、用户管理等标签继续按原权限展示。
 - 工作区 `agents` 目录新增 `USER.md` 与 `MEMORY.md` 上下文文件，并与 `AGENTS.md` 一起在 Agent 运行开始时加载；三个默认文件首次创建时均写入对应标题和说明，不再生成空文件，已有内容保持不变。
 - 新增 Summary 上下文压缩实时状态流式同步：`YuxiSummarizationMiddleware` 触发压缩时通过 `langgraph.config.get_stream_writer()` 推送 `yuxi.context_compression` 自定义事件（started/completed/failed），复用 DeepAgents 已有 `_summarization_event` 作为完成数据源；`base.py` 通过 `astream_events(version="v3")` 的 `CustomTransformer` 透传 custom 流，`chat_service`/`agent_run_service` 将事件映射为 `context_compression` chunk 并透传到前端；前端收到 `started` 时将"正在生成回复"加载态文案切换为"正在压缩上下文"，压缩结束（`completed`/`finished`）即切回，不额外渲染分隔符、不保留压缩完成态。为避免摘要 LLM 调用的 token 流被 LangGraph messages stream 捕获并广播成 phantom 摘要消息，重写 `_create_summary`/`_acreate_summary` 在摘要模型 invoke 的 config 上挂 `TAG_NOSTREAM`，让流式层在源头跳过该调用，主 messages 流天然只含用户可见回复，无需 `chat_service` 下游过滤（参考 DeerFlow 实现）。异步 L2 压缩路径的 `_aoffload_to_backend` 与 `_acreate_summary` 改回 `asyncio.gather` 并发执行，与 DeepAgents 父类一致，避免串行等待一次文件 I/O 与一次摘要 LLM 调用；两路复用 `_SUMMARY_SANITIZED_MESSAGES` 的 id 缓存。L1-only 调用若仍触发 provider context overflow，会回落到 L2 summary 后重试；`summary_tool_result_token_limit` 默认改为 300，并同时作为 L1 工具结果 offload 阈值和预览上限，L2 只消费 L1 视图，不再对工具结果做第二轮 offload；L2 摘要模型的待摘要历史输入上限改为与 `summary_threshold` 对齐，避免固定 4000 token 裁剪丢失早期历史；新增 `summary_l2_trigger_ratio` 管理 L1 后进入 L2 的比例阈值，默认 `0.4`。
 
@@ -62,7 +69,7 @@
 - 对话消息图片支持点击全屏预览：对话中用户上传的图片支持点击放大查看，复用文件预览的全屏蒙层交互（Teleport 蒙层，点击图片/空白处或按 Esc 关闭），不引入额外依赖。
 - 新增 Agent token usage 状态快照，在状态面板中作为普通可折叠分组展示完整 `messages`、当前传给 LLM 的 `messages`、system/tools 构成、输入构成堆叠条和上下文窗口占用估算。
 - 优化 Agent token usage 状态面板展示：后端补充 LLM 内容消息与工具消息的 token/count 拆分字段，前端将内容消息、工具消息、系统消息与工具定义分开展示，并修正上下文窗口/剩余信息换行与对话流式输出期间的底部跟随滚动。
-- 对齐 DeepAgents `read_file` 的非文本读取边界：已知非文本扩展和小型未知二进制返回 base64，多模态工具结果可直接携带图片；二进制预览沿用 DeepAgents 500 KiB 上限，OpenAI 兼容模型请求会把 tool-role 图片额外镜像为 user-role 图片消息。
+- 收敛 Agent `read_file` 多模态边界：仅 UTF-8 文本和图片可读，PDF/Office 文档会引导使用 `ocr_parse_file` 转为 Markdown，音视频及未知二进制不再注入模型消息；OpenAI 兼容链路的 tool-role 图片桥接从私有 payload 覆盖迁移到公开模型中间件，Provider 明确拒绝图片输入时会自动调用 `ocr_parse_file` 提取文字，并在后续请求中移除同一张历史图片，避免文本模型重复报错。
 - 新增默认 OCR 解析引擎配置 `default_ocr_engine`，普通登录用户可读取系统配置；知识库上传弹窗与临时附件解析弹窗默认选中系统默认 OCR，解析入口仅在未显式传入 `ocr_engine` 时使用该默认值。修复读取该配置时因反向导入知识库模块导致配置初始化循环、并中断后续配置加载的问题；OCR 注册表改为轻量模块，知识库单例迁移到显式 runtime 入口，解析器调用方直接导入真实定义模块，包初始化不再加载运行对象。
 - 新增 Agent 内置 `ocr_parse_file` 工具：只允许解析 `/home/gem/user-data/{workspace,uploads,outputs}` 下的沙盒虚拟路径文件，使用指定或系统默认 OCR 引擎生成 Markdown，并把结果写入 `outputs/ocr/*.md`；工具返回结果文件路径、字符数和短预览，不写入知识库 MinIO，也不创建知识库文件记录。
 - 收敛 Agent Invocation 服务边界：新增 `agent_invocation_service.py` 承接 agent-call/eval 的外部调用语义、同步等待、异步响应与 OpenAI-compatible 响应装配；`agent_invocation_router.py` 收敛为 HTTP 适配层，`agent_run_service.py` 只保留通用 AgentRun 生命周期能力，`subagent_run_service.py` 改为调用公开 AgentRun 创建 API，不再穿透私有函数。

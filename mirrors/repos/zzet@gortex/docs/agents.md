@@ -24,7 +24,7 @@ commands accept `--agents=<csv>` to constrain setup and
 | `aider`         | `.aiderignore` block, `CONVENTIONS.md` communities block                                        | project    | https://aider.chat/docs/config/aider_conf.html                      |
 | `antigravity`   | `~/.gemini/antigravity/mcp_config.json` + Knowledge Item                                        | user       | https://antigravity.google/docs/mcp                                 |
 | `cline`         | `cline_mcp_settings.json` (per VS Code / Cursor globalStorage), `.clinerules/gortex-communities.md` | both     | https://docs.cline.bot/mcp/mcp-overview                             |
-| `codex`         | `~/.codex/config.toml` (`[mcp_servers.gortex]` + `SessionStart` / Bash + Gortex MCP read-tool `PreToolUse` / Bash `PostToolUse` hooks), `AGENTS.md` communities block | both       | https://developers.openai.com/codex/mcp                             |
+| `codex`         | `~/.codex/config.toml` (`[mcp_servers.gortex]` + `SessionStart`, `UserPromptSubmit`, Bash/Gortex-read `PreToolUse`, and Bash/`apply_patch` `PostToolUse` hooks), `AGENTS.md` communities block | both       | https://developers.openai.com/codex/mcp                             |
 | `continue`      | `.continue/mcpServers/gortex.json`, `.continue/rules/gortex-communities.md`                     | project    | https://docs.continue.dev/customize/deep-dives/mcp                  |
 | `cursor`        | `.cursor/mcp.json` (project) or `~/.cursor/mcp.json`, `.cursor/rules/gortex-communities.mdc`    | both       | https://docs.cursor.com/en/context/mcp                              |
 | `gemini`        | `.gemini/settings.json` or `~/.gemini/settings.json`, `GEMINI.md` communities block             | both       | https://geminicli.com/docs/tools/mcp-server/                        |
@@ -45,13 +45,44 @@ Mode legend: **project** writes inside the repo (`gortex init` only);
 the adapter splits: `gortex install` writes the user-level pieces and
 `gortex init` writes the repo-level pieces.
 
-Tool-usage guidance (how to prefer graph tools over `Read`/`Grep`) no
-longer gets duplicated into every repo. For Claude Code and
-Antigravity — the two adapters whose upstream tool exposes a
-user-level instructions surface — the guidance lives once per user
-(installed by `gortex install`). For the other 13, MCP tool
-descriptions carry the teaching. Only codebase-derived community
-routing lands in per-repo instructions files.
+Tool-usage guidance is agent-neutral. Every named MCP connection receives the
+same mandatory, compact workflow in the server initialization response.
+Adapters also install that workflow where their host exposes a persistent
+rules, skill, or extension surface; the wording names only the 21 public tools
+and the exact `gortex call` fallback. Codebase-derived community routing still
+lives in per-repo instruction files because it is workspace-specific.
+
+## Compact MCP surface
+
+Every MCP connection with a non-empty `clientInfo.name` receives the
+same 21-tool compact surface in `hide` mode by default. The complete
+static roster is documented in [`mcp.md`](mcp.md#compact-mcp-surface).
+Empty and pre-initialize sessions retain the server default. Explicit
+forwarded, operator, or instruction-profile policy wins over the
+named-client default. Wire-format negotiation is independent, so an
+unknown named client remains on JSON unless it is separately
+GCX-capable.
+
+An MCP-capable host MUST call the compact tools directly. In
+particular, use `read({target:{file:"..."}})` for a
+known source file; it MUST NOT spawn a shell command merely to relay
+the same request. A harness that exposes Bash but no native Gortex MCP
+functions MUST use the exact CLI mirror instead:
+
+```bash
+gortex call read \
+  --arg target='{"file":"internal/mcp/server.go"}'
+
+gortex call search \
+  --arg operation=symbols \
+  --arg query=Server.addTool
+```
+
+The CLI accepts the same compact tool names and argument objects; it
+does not translate them to legacy names. See the
+[`gortex call` reference](cli.md#compact-surface-mirror-for-bash-only-harnesses)
+for mutation previews, schema discovery, repository selection, and
+the distinction between tool `dry_run` and CLI `--dry`.
 
 ## Subagent tool propagation
 
@@ -197,27 +228,56 @@ directory that exists. Auto-approval field is `alwaysAllow` (not
 
 OpenAI Codex CLI stores config in `~/.codex/config.toml`. We
 upsert a `[mcp_servers.gortex]` table there. When hooks are enabled
-(the default), Codex receives user-level hooks that keep the integration
-soft-only: they add graph context or read-shaping guidance without
-denying tools, rewriting input, or suppressing output.
+(the default), Codex receives user-level hooks. The default posture remains
+advisory. A team can opt into `deny`, `rewrite`, or `suppress` by setting
+`GORTEX_CODEX_HOOK_MODE` while running `gortex init --hooks-only`; the selected
+posture is written into the managed hook commands.
 
 Current Codex hook coverage:
 
 | Surface | Coverage |
 | ------- | -------- |
 | `SessionStart` | Matches `startup|resume|clear|compact` and emits graph-tools orientation for new, resumed, cleared, and compacted sessions. |
-| Bash `PreToolUse` | Soft graph guidance for shell search/read/list shapes. |
-| Gortex MCP read-tool `PreToolUse` | `read_file` and `get_editing_context` guidance that nudges source reads toward `compress_bodies`. |
-| Bash `PostToolUse` | Output graph enrichment for Bash-wrapped grep/search, source-read, and file-list shapes. |
+| Bash `PreToolUse` | Advises by default; `deny` hard-blocks graph-detectable fallback reads/searches; `rewrite` converts only an unambiguous indexed `cat <source>` into the exact public `gortex call read` mirror. Compound or ambiguous commands remain advisory. |
+| Gortex MCP `read` `PreToolUse` | Advises broad file/editing-context reads by default; `deny` blocks them; `rewrite` preserves the request and adds `options.compress_bodies=true`. Selector-driven reads with no explicit operation are covered. |
+| Bash `PostToolUse` | Adds graph context for grep/search, source reads, and conservative file-list shapes: `find -name`, `fd`, `ls`, `tree -fi`, and `git ls-files`; bounded `sed`/`awk` reads get file graph context. Execution-capable or ambiguous forms are no-ops. |
+| `apply_patch` `PostToolUse` | Runs `detect_changes`, extracts affected symbol IDs, then reports tests, guards, and contracts. The completed mutation is never rolled back by the hook. |
+| `UserPromptSubmit` | Re-surfaces prompt-relevant indexed symbols on every turn so long sessions do not rely on the initial reminder alone. |
 | `gortex init --hooks-only` | Refreshes Codex hooks without rewriting the MCP server config, `AGENTS.md`, or other adapter surfaces. |
 
-We do not install separate Codex `PreCompact` or `PostCompact` hooks
-today: Codex ignores plain text stdout for those events, while the
-`SessionStart` `compact` source already provides the orientation path
-after compaction. We also intentionally do not install `Stop`; Codex
-`Stop` can continue a turn, which expands the behavior surface and
-should be tracked separately if needed. `apply_patch` remains out of
-scope for Codex hooks and should be handled by a dedicated follow-up.
+Postures:
+
+```bash
+# Existing behavior (default).
+GORTEX_CODEX_HOOK_MODE=enrich gortex init --hooks-only
+
+# Enforce graph-detectable fallback reads/searches.
+GORTEX_CODEX_HOOK_MODE=deny gortex init --hooks-only
+
+# Rewrite only requests whose semantics can be preserved.
+GORTEX_CODEX_HOOK_MODE=rewrite gortex init --hooks-only
+
+# Replace enrichable raw PostToolUse results with graph feedback.
+GORTEX_CODEX_HOOK_MODE=suppress gortex init --hooks-only
+```
+
+Current [Codex hook behavior](https://developers.openai.com/codex/hooks)
+implements deny and `updatedInput`. It does not implement the nominal
+`suppressOutput` field; the `suppress` posture therefore uses the supported
+PostToolUse result-replacement decision and never emits
+`suppressOutput`.
+
+Intentional Codex lifecycle gaps are tracked separately from missing tool
+coverage:
+
+| Surface | Intentional status |
+| ------- | ------------------ |
+| `PreCompact` / `PostCompact` | Not installed. `SessionStart(source="compact")` restores the mandatory workflow after compaction without paying for two more lifecycle hooks. |
+| `Stop` | Not installed. A Stop hook can continue a turn, so adding it is a separate policy decision rather than implicit mutation handling. |
+| Native output-suppression fields | Not emitted while Codex rejects `suppressOutput` and `updatedMCPToolOutput`; the opt-in `suppress` posture uses supported PostToolUse result replacement. |
+
+`apply_patch` mutation handling and opt-in deny/rewrite/suppress postures are
+implemented and are no longer intentional gaps.
 
 ### continue
 
@@ -264,7 +324,7 @@ machine-wide user hook stays inert elsewhere):
 | Surface | Coverage |
 | ------- | -------- |
 | `UserPromptSubmit` | Injects graph symbols relevant to the prompt before the model runs. |
-| `PreToolUse` | Redirects native `Read`/`Grep`/`Glob`/`Bash` to graph tools — a hard `deny` for an indexed whole-file read, soft plain-stdout guidance otherwise — plus the `read_file`/`get_editing_context` `compress_bodies` nudge. |
+| `PreToolUse` | Redirects native `Read`/`Grep`/`Glob`/`Bash` to graph tools — a hard `deny` for an indexed whole-file read, soft plain-stdout guidance otherwise — plus compact `read` shaping for broad file/editing-context operations. |
 | `Stop` | Runs post-turn diagnostics (changed symbols → test targets, guards, dead code, coverage, contracts) and feeds them back so the agent self-corrects before handoff. |
 | `SubagentStart` | Briefs a spawned subagent with `smart_context` results and the tool-swap table so it doesn't default to raw `Read`/`Grep`. |
 
@@ -304,10 +364,11 @@ under `mcp.servers.<name>`.
 **Pi has no MCP support — by design**, so instead of an `mcpServers`
 stanza this adapter ships a self-contained TypeScript extension at
 `.pi/extensions/gortex/index.ts` (project) or
-`~/.pi/agent/extensions/gortex/index.ts` (global). It registers Gortex's
-graph tools natively and re-creates the same read-discipline enforcement
-the other agents get (skip it with `--no-hooks`). `GORTEX_TOOLS` selects
-the eagerly-registered preset (default `core`), matching the daemon.
+`~/.pi/agent/extensions/gortex/index.ts` (global). It registers the same fixed
+21 public tools natively through exact `gortex call` request forwarding and
+re-creates the same read-discipline enforcement the other clients get (skip it
+with `--no-hooks`). It does not expose legacy discovery or depend on dynamic
+tool promotion.
 
 The read-discipline rules are injected by the extension at runtime.
 

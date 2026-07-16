@@ -2372,6 +2372,7 @@ export const pages = [
       "centerValue": "970",
       "centerUnit": "亿美元",
       "centerLabel": "全年合计",
+      "overflowLabel": "其他",
       "caption": "通用大模型占据近半壁江山，反映对 AGI 叙事的押注；基础设施与芯片合计超四分之一",
       "chartType": "donut",
       "segmentCount": 5,
@@ -5408,6 +5409,7 @@ export const pages = [
         "label": "旧金山湾区",
         "note": "独占六成以上 · 人才、资本、算力虹吸效应进一步强化"
       },
+      "overflowLabel": "其他地区",
       "caption": "“地理护城河”短期内难以撼动 · 旧金山湾区独占六成以上份额",
       "segmentCount": 5,
       "highlight": true,
@@ -8625,7 +8627,7 @@ export const pages = [
           ]
         }
       ],
-      "unit": "亿",
+      "unit": "亿美元",
       "caption": "热力矩阵 · 资金向大模型与算力、向下半年同时收口",
       "rowCount": 5,
       "highlight": true,
@@ -9708,6 +9710,7 @@ export const pages = [
           ]
         }
       ],
+      "overflowLabel": "其它赛道",
       "note": "通用大模型这条「主河道」逐季拓宽，到 25Q4 已占全部增量的近半——资金正加速向最上层的基座模型汇聚。",
       "itemCount": 5,
       "highlight": true,
@@ -11446,7 +11449,7 @@ export const pages = [
       "title": "一年之间，估值翻了几番",
       "en": "Valuation Leap · Dumbbell",
       "cn": "年初 → 最新，谁的跃迁最猛",
-      "unit": "亿",
+      "unit": "亿美元",
       "startLabel": "年初",
       "endLabel": "最新",
       "rows": [
@@ -12748,7 +12751,7 @@ export const pages = [
           ]
         }
       ],
-      "unit": "亿",
+      "unit": "亿美元",
       "axisMax": 450,
       "tickStep": 150,
       "caption": "柱状图 · 五大赛道全线放量，大模型与算力增量最猛",
@@ -13180,6 +13183,7 @@ export const pages = [
         }
       ],
       "unit": "亿",
+      "overflowLabel": "其他",
       "caption": "玫瑰图 · 半径越长越吸金，通用大模型的花瓣一枝独秀",
       "itemCount": 5,
       "radiusScale": "area",
@@ -13351,6 +13355,7 @@ export const pages = [
         }
       ],
       "centerLabel": "资金合计",
+      "overflowLabel": "其它",
       "note": "企业战投（微软、英伟达、亚马逊）首次逼近传统 VC——巨头用资本+算力换股权，把生态绑定在自己的云上。",
       "chartType": "donut",
       "itemCount": 5,

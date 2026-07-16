@@ -6006,7 +6006,9 @@ export const pages = [
       "copy": {
         "t001": "笔",
         "t002": "均",
-        "t003": "亿"
+        "t003": "亿",
+        "t004": "高亮",
+        "t005": "占"
       },
       "showDecor": false,
       "decorSrc": null,
@@ -17485,7 +17487,8 @@ export const pages = [
         }
       ],
       "copy": {
-        "t001": "亿 ·"
+        "t001": "亿 ·",
+        "t002": "亿"
       },
       "showDecor": false,
       "decorSrc": null,

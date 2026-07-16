@@ -2627,6 +2627,7 @@ export const pages = [
       "lead": "Q1 交易数量稳定，但整体金额尚未进入全年高峰，更像上一年度项目延续，市场仍在等待新一轮验证。",
       "closing": "全年热度从保守启动开始。",
       "chartLabel": "月度融资额 / 亿美元",
+      "monthRangeLabel": "1 — 3 月",
       "months": [
         {
           "m": "1月",

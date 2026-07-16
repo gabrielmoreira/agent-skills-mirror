@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `marmotdata/marmot` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `marmotdata/marmot` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `marmotdata/marmot` — 26 default patterns, 0 followed patterns, 4 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,8 +61,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`SKILL.md`](SKILL.md) |
 | 2 | ✓ | [`web/docs/docs/MCP/skills.md`](web/docs/docs/MCP/skills.md) |
-| 3 | ✓ | [`web/docs/versioned_docs/version-0.8/MCP/skills.md`](web/docs/versioned_docs/version-0.8/MCP/skills.md) |
-| 4 | ✓ | [`web/docs/versioned_docs/version-0.9/MCP/skills.md`](web/docs/versioned_docs/version-0.9/MCP/skills.md) |
+| 3 | ✓ | [`web/docs/versioned_docs/version-0.10/MCP/skills.md`](web/docs/versioned_docs/version-0.10/MCP/skills.md) |
+| 4 | ✓ | [`web/docs/versioned_docs/version-0.8/MCP/skills.md`](web/docs/versioned_docs/version-0.8/MCP/skills.md) |
+| 5 | ✓ | [`web/docs/versioned_docs/version-0.9/MCP/skills.md`](web/docs/versioned_docs/version-0.9/MCP/skills.md) |
 
 ---
 

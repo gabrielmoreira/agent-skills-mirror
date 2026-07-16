@@ -12,7 +12,7 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 ---
 
-> Agent 兼容性：检查专业 agent 是否可用时，按 `.claude/agents/{agent}.md` → `.opencode/agents/{agent}.md` → `.codex/agents/{agent}.toml` 的顺序查找。Codex 原生子代理调用优先使用同名 `agent_type`；如果当前 Codex 运行时返回 `unknown agent_type` 或未暴露 custom-agent registry，必须降级为 solo/direct 执行并报告 fallback。Claude/OpenCode 兼容面保留 `subagent_type`。
+> Agent 兼容性：检查专业 agent 是否可用时，按 `.claude/agents/{agent}.md` → `.opencode/agents/{agent}.md` → `.codex/agents/{agent}.toml` 的顺序查找。Codex 原生子代理调用优先使用同名 `agent_type`；如果当前 Codex 运行时返回 `unknown agent_type` 或未暴露 custom-agent registry，必须降级为 solo/direct。检测到 `.zcode/` 时同样直接 solo/direct，因为 ZCode 3.3.4 不执行项目 custom agents；报告 `Fallback: project custom agents unavailable -> solo`。Claude/OpenCode 兼容面保留 `subagent_type`。
 
 ## 拆解边界声明（主线程同样适用）
 
@@ -112,7 +112,7 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 | 阶段 | 名称 | 输入 | 输出 | 完成标志 |
 |------|------|------|------|----------|
-| 0 | 概要提取 | 原始文本 | 概要.md（**首版 200 字 thin first-pass** + 章节索引；full plot-aware 500-1000 字版在 Stage 5 落盘覆盖）+ **Stage 0.5 章节边界表写入 `_progress.md`**（详见下方说明） | 章节结构识别完成 + 章节边界落盘 |
+| 0 | 概要提取 | 原始文本 | 概要.md（**首版 200 字 thin first-pass** + 章节索引；full plot-aware 500-1000 字版在 Stage 5 落盘覆盖）+ **Stage 0 章节边界子步骤将边界表写入 `_progress.md`**（详见下方说明） | 章节结构识别完成 + 章节边界落盘 |
 | 1 | 黄金三章 | 前3章原文 | 第1章_深度拆解.md / 第2章_深度拆解.md / 第3章_深度拆解.md（每章一个文件）。非人形反派（灵气复苏/末世/国运等抽象对抗型）出现在前三章时，在本阶段一并按抽象对抗型路由分析（核心对抗面/紧迫感来源/升级机制/叙事替代）。 | 3章拆解完成 → **停靠产出快速预览.md** |
 | 2 | 逐章摘要 | 分块章节文本 | 章节摘要.md（含情节点+角色+**关键信息与扩写技法**+**逐章写法公式**）。逐章写法公式必须提取情绪流向、节奏配比、结构公式、核心技巧、章尾卡点与伏笔。角色过滤（龙套不提取、别名归类）。每章10-40情节点（密度150-200字/个，按字数动态调节；公式低于10时仍按硬下限10拆足关键步骤）。**并行模式：每章 spawn chapter-extractor agent**。**计数验证：摘要数 == 章节数，不等则标记失败章节**。 | 所有章节处理完成 |
 | 3 | 聚合分析 | 全部章节摘要 | 剧情/*.md + README.md + 故事线.md + **节奏.md + 情绪模块.md**。**故事框架识别**（前置，决定聚合策略）。**两步法剧情聚合**（先从摘要识别剧情大纲，再按大纲分配情节点）。**关键信息推进索引**（按章节/剧情线追踪信息如何被扩写）。**情绪触动点与爆发节奏**（爽点/虐点/期待点的铺垫→释放→余波）。**全书情绪节奏总览**（情绪折线、爽点频率、小/中/大高潮位置、冲突升级路径、跨章伏笔地图、小/中/大循环单元）。**读者需求 / 情绪引擎 / 爽文套路框架**（沉淀为可复现模块卡）。**角色合并**（跨章节去重+别名归一）。**角色分级**（主角/反派/核心配角/功能角色）。**散落情节兜底**（6步，含覆盖率验证）。**桥段标签**（每个剧情模块按 deconstruction-notes.md 桥段词表打标，best-effort，无匹配留空）。**质量检查**（阈值详见 material-decomposition.md 质量阈值体系）。 | 质量检查通过 |
@@ -120,7 +120,7 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 | 5 | 汇总报告 | 全部输出 | 拆文报告.md（含「读者需求 / 情绪引擎」「关键信息与扩写技法总览」「全书情绪节奏总览」「节奏与情绪触动点」「循环单元」「跨章伏笔地图」「冲突升级路径」「可复现模块」摘要，并指向 `剧情/节奏.md` / `剧情/情绪模块.md`；含「写法技巧」清单，覆盖一笔两用/延迟揭示/视角欺骗/对比锚点/行为循环/身体反应替代心理描写/**跨章回扣**——物品/意象在不同章节承担不同功能）+ **概要.md 全书 500-1000 字版**（plot-aware，覆盖 Stage 0 的 200 字 thin first-pass） | 报告 + 全书概要生成完成 |
 | 6 | 文风 | 拆文报告.md + 章节/第1-3章_深度拆解.md + 章节/*_摘要.md + 原文/原文.txt | 文风.md（整书级写作技法视图：句长/标点/对话潜台词/情绪交替周期 + 4-6 段原文锚点范例片段 + 分层模仿建议，硬上限 ~4000 字。详见 [style-profile-protocol.md](references/style-profile-protocol.md) + [style-profile-generator.md](references/style-profile-generator.md)） | 文风落盘 `拆文库/{书名}/文风.md` |
 
-### Stage 0.5 章节边界表（Stage 0 子步骤）
+### Stage 0 章节边界子步骤
 
 Stage 0 完成概要 + 章节索引之后、转入 Stage 1 之前，**必须**额外产出一份「章节边界」表写入 `_progress.md`。这是后续 Stage 1（黄金三章原文切片）/ Stage 2（每章传给 chapter-extractor agent）/ Stage 6（文风采样）共用的**唯一切片来源**——避免每个阶段各跑一次 regex 切片，结果可能不一致。
 
@@ -129,7 +129,7 @@ Stage 0 完成概要 + 章节索引之后、转入 Stage 1 之前，**必须**�
 - 按 `| 章号 | 标题 | 起始行 | 字数 |` 四列写入 `_progress.md` 的「章节边界」section（见 [pipeline-ops.md](references/pipeline-ops.md) 模板）
 - `_progress.md` 顶部 `schema_version: 2` 同时落盘
 
-**旧拆文库续跑兼容**：旧 `_progress.md`（schema v1，无 `章节边界` 表）resume 时由 `pipeline-ops.md` 「恢复机制操作步骤 0」做 lazy migration——现场重建一次切片表后正常续跑，不破 `paused_after_stage1` 契约。
+**恢复前置条件**：续跑只接受 `schema_version: 2` 且包含「章节边界」表的 `_progress.md`。缺失或结构不完整时停止续跑，提示从 Stage 0 章节边界子步骤重建进度文件，避免不同阶段使用不同切片真值。
 
 ### Stage 1 停靠点
 
@@ -150,7 +150,8 @@ Stage 0+1 完成后，管道**自动停靠**，产出快速预览报告并询问
 **仅当**项目根存在 `选题决策.md` 时：按本书题材，在它的推荐选题里找**题材关键词对得上**的那个——
 - 正好对上一个 → 把该选题的"能爆的原因"从 `待拆文验证` 改成带出处的支撑：「本书拆解支撑：{`拆文报告.md` 的 读者需求/情绪引擎 + `剧情/情绪模块.md` 的可复现模块 Top + `剧情/节奏.md` 的爽点/触动点节奏摘要}（`拆文库/{书名}/拆文报告.md`、`剧情/情绪模块.md`、`剧情/节奏.md`）」。注意还只是假设（只拆了一本，不算坐实）。
 - 对上多个 / 拿不准 → 问用户「《{书名}》对应选题决策里的哪个方向？」
-- 一个都对不上 / `选题决策.md` 里没有"能爆的原因"这栏（旧模板或文件坏了）→ 直接跳过，不提示。
+- 一个都对上 → 记录「无匹配选题，未回填」，不改文件。
+- `选题决策.md` 缺少当前契约必需的「能爆的原因」字段 → 报告 `invalid_topic_decision_contract`，提示重跑 `story-long-scan` Phase 5 生成当前文件；不猜测、不静默回填，拆文主流程仍可完成。
 - 重复拆文不覆盖：只回填还标着 `待拆文验证` 的；已经填过的不动。
 
 没有 `选题决策.md` → 直接跳过，不影响拆文。
@@ -254,7 +255,7 @@ Agent(
 
 以下任一情况，Stage 2 自动退回串行模式，由主线程按 chapter-extractor 方法论逐章处理（结果同样套 output-templates.md 的章节摘要模板，质量不受影响，只是改为串行、速度略慢）：
 
-- **agent 未部署**：agent 目录（优先 `.claude/agents/`，其次 `.opencode/agents/`，再检查 `.codex/agents/`）下的 `chapter-extractor.md` 或 `.codex/agents/chapter-extractor.toml` 不存在。`.claude/agents/` 通常不随仓库提交，由 `/story-setup` 部署；模板源在 `skills/story-setup/references/templates/agents/chapter-extractor.md`，必要时可手动复制部署。
+- **agent 未部署**：agent 目录（优先 `.claude/agents/`，其次 `.opencode/agents/`，再检查 `.codex/agents/`）下的 `chapter-extractor.md` 或 `.codex/agents/chapter-extractor.toml` 不存在。`.claude/agents/` 通常不随仓库提交，应重新运行 `/story-setup` 完成当前适配器部署，不跨 Skill 读取模板源。
 - **环境不支持 spawn 子代理**：本 skill 正运行在某个子代理上下文中，无法再起下一层 agent。
 
 ### Stage 2 收尾：合并章节摘要（_章节摘要汇总.md）
@@ -280,7 +281,7 @@ Stage 3-5 分块见 [material-decomposition.md](references/material-decompositio
 ## 恢复机制
 
 启动时检查 _progress.md；`paused_after_stage1` → 直接从 Stage 2 续跑。
-操作步骤（含 schema lazy migration）见 [pipeline-ops.md](references/pipeline-ops.md)。
+操作步骤见 [pipeline-ops.md](references/pipeline-ops.md)。
 
 ---
 

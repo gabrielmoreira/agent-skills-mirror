@@ -67,7 +67,7 @@ const COMMON_TERMS = new Set([
 const groups = [
   {
     name: 'AI Capital / 投融资默认文案',
-    allowWhen: /AI|人工智能|资本|投资|融资|风投|VC|venture|OpenAI|xAI|估值|美元/i,
+    allowWhen: /人工智能|资本|投资|融资|风投|估值|美元|\b(AI|VC|venture|OpenAI|xAI)\b/i,
     terms: [
       'AI CAPITAL',
       'AI Capital',

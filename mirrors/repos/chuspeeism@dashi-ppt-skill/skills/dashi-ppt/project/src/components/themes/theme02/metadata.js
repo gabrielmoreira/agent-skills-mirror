@@ -1759,7 +1759,7 @@ export const pages = [
         "key": "focusIndex",
         "type": "number",
         "label": "强调项",
-        "default": 7,
+        "default": 4,
         "min": 0,
         "step": 1,
         "oneBased": true,
@@ -1820,30 +1820,6 @@ export const pages = [
         {
           "label": "6 月",
           "value": 93
-        },
-        {
-          "label": "7 月",
-          "value": 92
-        },
-        {
-          "label": "8 月",
-          "value": 118
-        },
-        {
-          "label": "9 月",
-          "value": 108
-        },
-        {
-          "label": "10 月",
-          "value": 73
-        },
-        {
-          "label": "11 月",
-          "value": 81
-        },
-        {
-          "label": "12 月",
-          "value": 52
         }
       ],
       "cellCount": 6,
@@ -2273,26 +2249,6 @@ export const pages = [
           "name": "Scale AI",
           "track": "AI 基础设施 · 数据标注",
           "value": 10
-        },
-        {
-          "name": "Figure AI",
-          "track": "AI 硬件 · 人形机器人",
-          "value": 6.8
-        },
-        {
-          "name": "Perplexity AI",
-          "track": "垂直应用 · AI 搜索",
-          "value": 5.2
-        },
-        {
-          "name": "Databricks",
-          "track": "AI 基础设施 · 数据平台",
-          "value": 5
-        },
-        {
-          "name": "Glean",
-          "track": "垂直应用 · 企业搜索",
-          "value": 2.6
         }
       ],
       "rowCount": 6,
@@ -2509,30 +2465,6 @@ export const pages = [
           "tag": "算力扩容",
           "title": "GPU 云锁定长单",
           "desc": "模型厂商提前预定训练资源，基础设施融资继续升温。"
-        },
-        {
-          "date": "2025 · 05",
-          "tag": "应用层爆发",
-          "title": "AI 搜索与办公加速",
-          "desc": "资本从底座外溢到高频场景，垂直应用估值抬升。"
-        },
-        {
-          "date": "2025 · Q3",
-          "tag": "并购整合",
-          "title": "工具链进入平台化",
-          "desc": "数据、评测与开发工具被大平台吸收，赛道集中度提高。"
-        },
-        {
-          "date": "2026 · Q1",
-          "tag": "二级预热",
-          "title": "核心资产进入窗口",
-          "desc": "一级市场定价开始对接上市叙事，退出路径更清晰。"
-        },
-        {
-          "date": "2026 · 06",
-          "tag": "IPO 在即",
-          "title": "Anthropic 递交上市申请",
-          "desc": "一级市场盛宴向二级市场传导。"
         }
       ],
       "itemCount": 5,
@@ -4063,6 +3995,8 @@ export const pages = [
       "focusIndex": 0,
       "showValueLabels": true,
       "showTargetMeta": true,
+      "bandwidthLabel": "带宽 = 融资额",
+      "totalLabel": "全年合计",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -4865,6 +4799,7 @@ export const pages = [
       "accentHero": true,
       "heroExtra": "tags",
       "showCaption": true,
+      "sparkCaption": "季度节奏 · 资本逐季加码",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -6749,6 +6684,8 @@ export const pages = [
       "showAvg": true,
       "showAvgBar": true,
       "showTotal": true,
+      "countUnit": "笔",
+      "avgUnit": "亿/笔",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -7809,6 +7746,7 @@ export const pages = [
       "showValueLabels": true,
       "showRate": true,
       "showDetail": true,
+      "rateLabel": "留存",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -8012,20 +7950,6 @@ export const pages = [
           "y": 14,
           "r": 1,
           "note": "数据标注"
-        },
-        {
-          "label": "Perplexity",
-          "x": 0.05,
-          "y": 9,
-          "r": 0.5,
-          "note": "AI 搜索"
-        },
-        {
-          "label": "Mistral",
-          "x": 0.03,
-          "y": 6,
-          "r": 0.6,
-          "note": "开源模型"
         }
       ],
       "xLabel": "年化营收 ARR（十亿美元）",
@@ -8039,6 +7963,10 @@ export const pages = [
       "showGrid": true,
       "showLabels": true,
       "showAxisTitles": true,
+      "yShortLabel": "估值",
+      "xShortLabel": "ARR",
+      "focusUnitLabel": "十亿美元",
+      "ratioLabel": "营收倍数",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -9632,16 +9560,6 @@ export const pages = [
           "title": "算力成本高企",
           "desc": "GPU 与训练成本居高，持续挤压毛利空间。",
           "level": "mid"
-        },
-        {
-          "title": "监管不确定",
-          "desc": "安全与合规政策走向，影响落地节奏。",
-          "level": "mid"
-        },
-        {
-          "title": "头部过度集中",
-          "desc": "资金与人才高度集中，长尾公司承压。",
-          "level": "low"
         }
       ],
       "riskCount": 3,
@@ -12560,6 +12478,7 @@ export const pages = [
         "单笔融资额",
         "累计占比"
       ],
+      "insightLead": "前三家合计",
       "insightConclusion": "赢家通吃格局确立",
       "scheme": "green",
       "emphasis": "ticket",
@@ -12764,30 +12683,6 @@ export const pages = [
         {
           "label": "6月",
           "value": 93
-        },
-        {
-          "label": "7月",
-          "value": 92
-        },
-        {
-          "label": "8月",
-          "value": 118
-        },
-        {
-          "label": "9月",
-          "value": 108
-        },
-        {
-          "label": "10月",
-          "value": 73
-        },
-        {
-          "label": "11月",
-          "value": 81
-        },
-        {
-          "label": "12月",
-          "value": 52
         }
       ],
       "unit": "亿美元",
@@ -12998,6 +12893,8 @@ export const pages = [
       "showValue": true,
       "showShare": true,
       "showNote": true,
+      "areaLabel": "面积 ∝ 吸纳资金",
+      "totalLabel": "全年合计",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -14293,6 +14190,7 @@ export const pages = [
       "showInnerLabels": true,
       "showValueLabels": true,
       "showLegend": true,
+      "insightText": "↳ 模型层 + 基础设施合计占比超 {pct}%——资本仍集中在「造模型」与「卖铲子」两端",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,

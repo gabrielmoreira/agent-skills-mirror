@@ -545,7 +545,7 @@ def _trim_subqueries_for_depth(
     limits = SOURCE_LIMITS.get(depth)
     if not limits:
         return subqueries
-    priority_table = QUICK_SOURCE_PRIORITY if depth == "quick" else SOURCE_PRIORITY
+    priority_table = QUICK_SOURCE_PRIORITY
     priority = priority_table.get(intent, priority_table["breaking_news"])
     limit = limits.get(intent, 3)
     ranked_sources = [source for source in priority if source in available_sources]
@@ -553,26 +553,34 @@ def _trim_subqueries_for_depth(
         ranked_sources = list(available_sources)
     trimmed = []
     for subquery in subqueries:
-        if depth in {"quick", "default"}:
-            preferred_sources = ranked_sources[:limit]
-            if requested_sources:
-                requested = [
-                    source
-                    for source in requested_sources
-                    if source in available_sources and source in subquery.sources
-                ]
-                for source in requested:
-                    if source not in preferred_sources:
-                        preferred_sources.append(source)
-        else:
-            preferred_sources = [source for source in ranked_sources if source in subquery.sources][:limit]
-            if len(preferred_sources) < limit:
-                for source in ranked_sources:
-                    if source in preferred_sources:
-                        continue
+        # Quick depth only reaches this block. Honor the plan's explicit
+        # per-subquery sources: prefer priority-ranked plan sources first, then
+        # append any plan sources absent from the priority table (e.g.
+        # instagram). Explicit --search sources are user overrides, so they get
+        # first claim on the quick slots when present. The final list remains
+        # capped to the quick-depth limit.
+        plan_sources = [s for s in ranked_sources if s in subquery.sources]
+        for source in subquery.sources:
+            if source not in plan_sources:
+                plan_sources.append(source)
+        if not plan_sources:
+            plan_sources = ranked_sources[:limit]
+        preferred_sources: list[str] = []
+        if requested_sources:
+            for source in requested_sources:
+                if (
+                    source in available_sources
+                    and source in subquery.sources
+                    and source not in preferred_sources
+                ):
                     preferred_sources.append(source)
                     if len(preferred_sources) >= limit:
                         break
+        for source in plan_sources:
+            if len(preferred_sources) >= limit:
+                break
+            if source not in preferred_sources:
+                preferred_sources.append(source)
         trimmed.append(
             schema.SubQuery(
                 label=subquery.label,

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `buildfastwithai/gen-ai-experiments` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `buildfastwithai/gen-ai-experiments` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `buildfastwithai/gen-ai-experiments` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,36 +64,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`Agent Tools/launch mcp/skills/writing-linkedin-posts/SKILL.md`](Agent%20Tools/launch%20mcp/skills/writing-linkedin-posts/SKILL.md) |
 | 4 | ✓ | [`Agent Tools/launch mcp/skills/x-algo-tweet-writer/SKILL.md`](Agent%20Tools/launch%20mcp/skills/x-algo-tweet-writer/SKILL.md) |
 | 5 | ✓ | [`agent-skills/crazy-ecommerce-builder/SKILL.md`](agent-skills/crazy-ecommerce-builder/SKILL.md) |
-| 6 | ✓ | [`agents/AG2_Building_Multi_Agent_AI_Systems.ipynb`](agents/AG2_Building_Multi_Agent_AI_Systems.ipynb) |
-| 7 | ✓ | [`agents/AgentScope.ipynb`](agents/AgentScope.ipynb) |
-| 8 | ✓ | [`agents/Agno_Skills_Claude_Sonnet_4_6.ipynb`](agents/Agno_Skills_Claude_Sonnet_4_6.ipynb) |
-| 9 | ✓ | [`agents/Agno_TypeSafe_Agents.ipynb`](agents/Agno_TypeSafe_Agents.ipynb) |
-| 10 | ✓ | [`agents/Browser_Use_Agent.ipynb`](agents/Browser_Use_Agent.ipynb) |
-| 11 | ✓ | [`agents/CrewAI_Qwen3_5_OpenRouter.ipynb`](agents/CrewAI_Qwen3_5_OpenRouter.ipynb) |
-| 12 | ✓ | [`agents/CSV_Agents_with_LangChain_&_LlamaIndex.ipynb`](agents/CSV_Agents_with_LangChain_&_LlamaIndex.ipynb) |
-| 13 | ✓ | [`agents/Day_5_OpenAI_Agents.ipynb`](agents/Day_5_OpenAI_Agents.ipynb) |
-| 14 | ✓ | [`agents/day1_langchain_agent.ipynb`](agents/day1_langchain_agent.ipynb) |
-| 15 | ✓ | [`agents/DAY2_AI_BOOTCAMP_CrewAI.ipynb`](agents/DAY2_AI_BOOTCAMP_CrewAI.ipynb) |
-| 16 | ✓ | [`agents/DAY3_Ai_AGNET_SERIES.ipynb`](agents/DAY3_Ai_AGNET_SERIES.ipynb) |
-| 17 | ✓ | [`agents/Day4_agno_encryption.ipynb`](agents/Day4_agno_encryption.ipynb) |
-| 18 | ✓ | [`agents/elysia_agentic_decision_tree_framework.ipynb`](agents/elysia_agentic_decision_tree_framework.ipynb) |
-| 19 | ✓ | [`agents/Financial_AI_Agent_with_Google_ADK.ipynb`](agents/Financial_AI_Agent_with_Google_ADK.ipynb) |
-| 20 | ✓ | [`agents/GLM_5_Agno_Agents.ipynb`](agents/GLM_5_Agno_Agents.ipynb) |
-| 21 | ✓ | [`agents/Google_Agent_DevKit_Tutorial_.ipynb`](agents/Google_Agent_DevKit_Tutorial_.ipynb) |
-| 22 | ✓ | [`agents/JEE_AI_Agent.ipynb`](agents/JEE_AI_Agent.ipynb) |
-| 23 | ✓ | [`agents/Kimi_K2_5_Agent_Swarm_Cookbook.ipynb`](agents/Kimi_K2_5_Agent_Swarm_Cookbook.ipynb) |
-| 24 | ✓ | [`agents/Kimi_K2_5_Agno_Cookbook.ipynb`](agents/Kimi_K2_5_Agno_Cookbook.ipynb) |
-| 25 | ✓ | [`agents/kimi_k2_5_crewai.ipynb`](agents/kimi_k2_5_crewai.ipynb) |
-| 26 | ✓ | [`agents/langchain_agent.ipynb`](agents/langchain_agent.ipynb) |
-| 27 | ✓ | [`agents/LangGraph_Supervisor.ipynb`](agents/LangGraph_Supervisor.ipynb) |
-| 28 | ✓ | [`agents/microsoft-agents/maf-code-reviewer.ipynb`](agents/microsoft-agents/maf-code-reviewer.ipynb) |
-| 29 | ✓ | [`agents/openai_swarm_.ipynb`](agents/openai_swarm_.ipynb) |
-| 30 | ✓ | [`agents/personel_agent.py`](agents/personel_agent.py) |
-| 31 | ✓ | [`agents/qwen3_coder_next_agno.ipynb`](agents/qwen3_coder_next_agno.ipynb) |
-| 32 | ✓ | [`agents/README.md`](agents/README.md) |
-| 33 | ✓ | [`agents/simple-agent-gemini3-pro.py`](agents/simple-agent-gemini3-pro.py) |
-| 34 | ✓ | [`agents/smolagents_a_smol_library_to_build_great_agents.ipynb`](agents/smolagents_a_smol_library_to_build_great_agents.ipynb) |
-| 35 | ✓ | [`agents/step_3_5_using_agno.ipynb`](agents/step_3_5_using_agno.ipynb) |
+| 6 | ✓ | [`agent-skills/talking-avatar/SKILL.md`](agent-skills/talking-avatar/SKILL.md) |
+| 7 | ✓ | [`agents/AG2_Building_Multi_Agent_AI_Systems.ipynb`](agents/AG2_Building_Multi_Agent_AI_Systems.ipynb) |
+| 8 | ✓ | [`agents/AgentScope.ipynb`](agents/AgentScope.ipynb) |
+| 9 | ✓ | [`agents/Agno_Skills_Claude_Sonnet_4_6.ipynb`](agents/Agno_Skills_Claude_Sonnet_4_6.ipynb) |
+| 10 | ✓ | [`agents/Agno_TypeSafe_Agents.ipynb`](agents/Agno_TypeSafe_Agents.ipynb) |
+| 11 | ✓ | [`agents/Browser_Use_Agent.ipynb`](agents/Browser_Use_Agent.ipynb) |
+| 12 | ✓ | [`agents/CrewAI_Qwen3_5_OpenRouter.ipynb`](agents/CrewAI_Qwen3_5_OpenRouter.ipynb) |
+| 13 | ✓ | [`agents/CSV_Agents_with_LangChain_&_LlamaIndex.ipynb`](agents/CSV_Agents_with_LangChain_&_LlamaIndex.ipynb) |
+| 14 | ✓ | [`agents/Day_5_OpenAI_Agents.ipynb`](agents/Day_5_OpenAI_Agents.ipynb) |
+| 15 | ✓ | [`agents/day1_langchain_agent.ipynb`](agents/day1_langchain_agent.ipynb) |
+| 16 | ✓ | [`agents/DAY2_AI_BOOTCAMP_CrewAI.ipynb`](agents/DAY2_AI_BOOTCAMP_CrewAI.ipynb) |
+| 17 | ✓ | [`agents/DAY3_Ai_AGNET_SERIES.ipynb`](agents/DAY3_Ai_AGNET_SERIES.ipynb) |
+| 18 | ✓ | [`agents/Day4_agno_encryption.ipynb`](agents/Day4_agno_encryption.ipynb) |
+| 19 | ✓ | [`agents/elysia_agentic_decision_tree_framework.ipynb`](agents/elysia_agentic_decision_tree_framework.ipynb) |
+| 20 | ✓ | [`agents/Financial_AI_Agent_with_Google_ADK.ipynb`](agents/Financial_AI_Agent_with_Google_ADK.ipynb) |
+| 21 | ✓ | [`agents/GLM_5_Agno_Agents.ipynb`](agents/GLM_5_Agno_Agents.ipynb) |
+| 22 | ✓ | [`agents/Google_Agent_DevKit_Tutorial_.ipynb`](agents/Google_Agent_DevKit_Tutorial_.ipynb) |
+| 23 | ✓ | [`agents/JEE_AI_Agent.ipynb`](agents/JEE_AI_Agent.ipynb) |
+| 24 | ✓ | [`agents/Kimi_K2_5_Agent_Swarm_Cookbook.ipynb`](agents/Kimi_K2_5_Agent_Swarm_Cookbook.ipynb) |
+| 25 | ✓ | [`agents/Kimi_K2_5_Agno_Cookbook.ipynb`](agents/Kimi_K2_5_Agno_Cookbook.ipynb) |
+| 26 | ✓ | [`agents/kimi_k2_5_crewai.ipynb`](agents/kimi_k2_5_crewai.ipynb) |
+| 27 | ✓ | [`agents/langchain_agent.ipynb`](agents/langchain_agent.ipynb) |
+| 28 | ✓ | [`agents/LangGraph_Supervisor.ipynb`](agents/LangGraph_Supervisor.ipynb) |
+| 29 | ✓ | [`agents/microsoft-agents/maf-code-reviewer.ipynb`](agents/microsoft-agents/maf-code-reviewer.ipynb) |
+| 30 | ✓ | [`agents/openai_swarm_.ipynb`](agents/openai_swarm_.ipynb) |
+| 31 | ✓ | [`agents/personel_agent.py`](agents/personel_agent.py) |
+| 32 | ✓ | [`agents/qwen3_coder_next_agno.ipynb`](agents/qwen3_coder_next_agno.ipynb) |
+| 33 | ✓ | [`agents/README.md`](agents/README.md) |
+| 34 | ✓ | [`agents/simple-agent-gemini3-pro.py`](agents/simple-agent-gemini3-pro.py) |
+| 35 | ✓ | [`agents/smolagents_a_smol_library_to_build_great_agents.ipynb`](agents/smolagents_a_smol_library_to_build_great_agents.ipynb) |
+| 36 | ✓ | [`agents/step_3_5_using_agno.ipynb`](agents/step_3_5_using_agno.ipynb) |
 
 ---
 

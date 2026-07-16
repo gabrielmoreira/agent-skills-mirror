@@ -2382,6 +2382,8 @@ export const pages = [
       "focusIndex": 0,
       "labelType": "number",
       "showAside": true,
+      "centerValue": "970",
+      "centerUnit": "亿美元 · 全年",
       "head": {
         "no": "03",
         "en": "Sunburst · Hierarchy",
@@ -7630,6 +7632,11 @@ export const pages = [
       "imgCount": 0,
       "showAside": true,
       "badge": "09",
+      "toneLabels": {
+        "看好": "看好",
+        "谨慎": "谨慎",
+        "中性": "中性"
+      },
       "quotes": [
         {
           "text": "2024 是 AI 的「资本大年」—— 资金以前所未有的密度涌向少数能讲好 AGI 故事的团队，赢家通吃成为常态。",

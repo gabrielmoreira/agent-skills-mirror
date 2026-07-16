@@ -728,11 +728,12 @@ function validateValueShape(value, defaultValue, field, errors, warnings = [], e
             errors.push(`${field}[${index}]: expected tuple array`);
             return;
           }
-          if (item.length !== tuple.items.length) {
-            errors.push(`${field}[${index}]: expected tuple length ${tuple.items.length}`);
+          if (tuple.variable ? item.length > tuple.items.length : item.length !== tuple.items.length) {
+            errors.push(`${field}[${index}]: expected tuple length ${tuple.variable ? '<= ' : ''}${tuple.items.length}`);
             return;
           }
           tuple.items.forEach((itemDefault, itemIndex) => {
+            if (itemIndex >= item.length) return; // 变长元组的短行缺位是合法的
             validateValueShape(item[itemIndex], itemDefault, `${field}[${index}][${itemIndex}]`, errors, warnings);
           });
         });
@@ -741,7 +742,15 @@ function validateValueShape(value, defaultValue, field, errors, warnings = [], e
       const itemDefault = defaultValue.find(item => item != null);
       const itemPrimitive = primitiveShape(itemDefault);
       if (itemPrimitive) {
-        value.forEach((item, index) => validatePrimitiveValue(item, itemPrimitive, itemDefault, `${field}[${index}]`, errors));
+        value.forEach((item, index) => {
+          // 按位对齐:异构标量数组(如评分表 [5,4,5,true,'旗舰'])每列按同位置默认值校验;
+          // 数组内存在与提交值同类型的默认元素时放行(boolean|string 混合列允许勾选格改文字)
+          const tv = item === null ? 'null' : typeof item;
+          if (defaultValue.some(d => (d === null ? 'null' : typeof d) === tv)) return;
+          const posDefault = index < defaultValue.length && defaultValue[index] != null ? defaultValue[index] : itemDefault;
+          const posPrimitive = primitiveShape(posDefault) || itemPrimitive;
+          validatePrimitiveValue(item, posPrimitive, posDefault, `${field}[${index}]`, errors);
+        });
       }
       return;
     }
@@ -752,7 +761,7 @@ function validateValueShape(value, defaultValue, field, errors, warnings = [], e
         errors.push(`${field}[${index}]: expected object item`);
         return;
       }
-      validateObjectShape(item, shape, `${field}[${index}]`, errors, warnings, enumFields, numberBounds);
+      validateObjectShape(item, shape, `${field}[${index}]`, errors, warnings, enumFields, numberBounds, defaultValue[index]);
     });
     return;
   }
@@ -770,10 +779,19 @@ function isRawMatrixProp(key) {
   return String(key || '') === 'matrix';
 }
 
-function validateObjectShape(value, shape, field, errors, warnings = [], enumFields = new Map(), numberBounds = new Map()) {
+function validateObjectShape(value, shape, field, errors, warnings = [], enumFields = new Map(), numberBounds = new Map(), posDefault = undefined) {
   const allowed = new Set(Object.keys(shape || {}));
   for (const [key, item] of Object.entries(value || {})) {
     if (!allowed.has(key)) {
+      // 同位置默认项自带的键(异构行独有字段)不算 unknown —— 但:私有/非内容字段(颜色、
+      // pos/tone、视觉数值)保持拒绝;shape 外字符串字段多为结构枚举(如象限键 q),改值也拒绝,
+      // 仅允许原值回传与非字符串(数字/坐标数组)修改。
+      if (posDefault && typeof posDefault === 'object' && key in posDefault
+        && !isNonContentContractValue(key, posDefault[key])
+        && (typeof item !== 'string' || item === posDefault[key])) {
+        validateValueShape(item, posDefault[key], `${field}.${key}`, errors, warnings);
+        continue;
+      }
       errors.push(`${field}.${key}: unknown nested prop; expected ${formatExpectedKeys(allowed)}`);
       continue;
     }
@@ -784,7 +802,20 @@ function validateObjectShape(value, shape, field, errors, warnings = [], enumFie
     }
     const bounds = numberBounds.get(key);
     if (bounds) validateNumberBounds(item, bounds, `${field}.${key}`, bounds.explicit ? errors : warnings);
-    validateValueShape(item, shape[key], `${field}.${key}`, errors, warnings);
+    // 双轨校验:先按同位置默认值(本行契约,含 null/异构),不过再按合并样本(跨行联合类型),
+    // 任一通过即视为契约内;两者都不过才报错(取本行轨的错误)。
+    const hasPos = posDefault && typeof posDefault === 'object' && key in posDefault;
+    if (hasPos && posDefault[key] !== shape[key]) {
+      const posErrors = [];
+      validateValueShape(item, posDefault[key], `${field}.${key}`, posErrors, warnings);
+      if (!posErrors.length) continue;
+      const mergedErrors = [];
+      validateValueShape(item, shape[key], `${field}.${key}`, mergedErrors, warnings);
+      if (!mergedErrors.length) continue;
+      errors.push(...posErrors);
+      continue;
+    }
+    validateValueShape(item, hasPos ? posDefault[key] : shape[key], `${field}.${key}`, errors, warnings);
   }
 }
 
@@ -795,6 +826,13 @@ function primitiveShape(value) {
 }
 
 function validatePrimitiveValue(value, expected, defaultValue, field, errors) {
+  // 默认值证据放行:提交值类型虽与合并 shape 不符,但与同位置默认值同类型(含同为 null)——
+  // 异构默认(勾选列 boolean|string、自定义价 number|null、首段 null)是组件契约的一部分。
+  const tv = value === null ? 'null' : typeof value;
+  const td = defaultValue === null ? 'null' : typeof defaultValue;
+  if (tv !== expected && tv === td && ['null', 'string', 'number', 'boolean'].includes(tv)) {
+    if (tv !== 'number' || Number.isFinite(value)) return;
+  }
   if (expected === 'number') {
     if (typeof value !== 'number' || !Number.isFinite(value)) errors.push(`${field}: expected number`);
     return;
@@ -827,6 +865,9 @@ function enumFieldsForArrayItems(items = [], excludedFields = null) {
     const values = objects
       .map(item => item?.[key])
       .filter(item => typeof item === 'string' && item.trim());
+    // 枚举锁定仅对 token 形值(结构键):值是自然文案(CJK/多词,如分类列「风险投资/战略投资」)
+    // 时按可改写文案对待,不锁死取值集合 —— 用户换领域时这些分类词必须可替换。
+    if (values.some(v => /[一-龥]/.test(v) || /\S\s+\S/.test(v))) continue;
     const unique = new Set(values);
     if (unique.size) result.set(key, unique);
   }
@@ -998,16 +1039,18 @@ function mergeShape(left, right) {
 function mergeShapeValue(left, right) {
   if (Array.isArray(left) && Array.isArray(right)) return mergeObjectShape([...left, ...right]) ? [...left, ...right] : left;
   if (isPlainObject(left) && isPlainObject(right)) return mergeShape(left, right);
+  // null 不压制真实类型:首项为 null 的字段(如漏斗首段 rate/conv)以后续项的实际类型为准
+  if (left == null) return right;
   return left;
 }
 
 function tupleShapeForArrayItems(items) {
   const arrays = (items || []).filter(Array.isArray);
   if (!arrays.length) return null;
-  const length = arrays.every(item => item.length === arrays[0].length)
-    ? arrays[0].length
-    : Math.max(...arrays.map(item => item.length));
+  const fixed = arrays.every(item => item.length === arrays[0].length);
+  const length = fixed ? arrays[0].length : Math.max(...arrays.map(item => item.length));
   return {
+    variable: !fixed,
     items: Array.from({ length }, (_, index) => mergeTupleItemShape(arrays.map(item => item[index]).filter(item => item !== undefined))),
   };
 }
@@ -1064,11 +1107,28 @@ export function isNonContentContractValue(pathName, value) {
   if (!field) return false;
   if (isScatterPointMetricField(pathName, field, value)) return false;
   if (/axesData\[\]\.id$/i.test(String(pathName || '')) && typeof value === 'string') return false;
-  if (isMediaArrayKey(field)) return true;
+  if (isMediaArrayKey(field)) {
+    // pins/photos 等媒体名数组:若项内没有任何媒体源字段、却带 CJK 文案(标注点文字、
+    // 始终可见的照片图注),它是内容数组而非媒体数组,不整体剪(theme11 pins、theme08 photos)
+    const rows = Array.isArray(value) ? value.filter(isPlainObject) : [];
+    const hasMediaSource = rows.some(row => Object.keys(row).some(k => /^(src|url|image|img|poster|video|href)$/i.test(k)));
+    const hasCjkCopy = rows.some(row => Object.values(row).some(v => typeof v === 'string' && /[一-龥]/.test(v)));
+    if (rows.length && !hasMediaSource && hasCjkCopy) {
+      return isColorArray(value);
+    }
+    return true;
+  }
   if (Array.isArray(value)) return isColorArray(value) || isVisualContainerPath(pathName);
-  if (isPlainObject(value)) return isNumericKeyedConfigObject(value) || NON_CONTENT_FIELD_PATTERN.test(field);
+  // 数字键变体预设({1:{...},2:{...}},如 theme08 图片槽位布局)不整体剪枝:
+  // 其中混有始终可见的文本字段(label/cap/tag),交给字段级递归逐项判定。
+  if (isPlainObject(value)) return NON_CONTENT_FIELD_PATTERN.test(field);
   if (isColorString(value)) return true;
-  if (NON_CONTENT_FIELD_PATTERN.test(field)) return true;
+  if (NON_CONTENT_FIELD_PATTERN.test(field)) {
+    // 字段名撞结构词但值是自然文案(theme07 kind="看好方向"、theme05 src="EXPANDED SLIDE · P61")
+    const text = typeof value === 'string' ? value.trim() : '';
+    const naturalCopy = /[一-龥]/.test(text) || (/\S\s+\S/.test(text) && !/^[a-z0-9_\-./:]+$/i.test(text));
+    return !naturalCopy;
+  }
   if (typeof value === 'number' && Number.isFinite(value) && VISUAL_NUMBER_FIELD_PATTERN.test(field)) return true;
   if (typeof value === 'boolean' && /^(show|hide|enable|enabled|visible|dark|dim|muted|active)$/i.test(field)) return true;
   return false;

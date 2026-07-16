@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hashicorp/agent-skills` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `hashicorp/agent-skills` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hashicorp/agent-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,12 +70,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`terraform/code-generation/skills/terraform-test/SKILL.md`](terraform/code-generation/skills/terraform-test/SKILL.md) |
 | 10 | ✓ | [`terraform/module-generation/skills/refactor-module/SKILL.md`](terraform/module-generation/skills/refactor-module/SKILL.md) |
 | 11 | ✓ | [`terraform/module-generation/skills/terraform-stacks/SKILL.md`](terraform/module-generation/skills/terraform-stacks/SKILL.md) |
-| 12 | ✓ | [`terraform/provider-development/skills/new-terraform-provider/SKILL.md`](terraform/provider-development/skills/new-terraform-provider/SKILL.md) |
-| 13 | ✓ | [`terraform/provider-development/skills/provider-actions/SKILL.md`](terraform/provider-development/skills/provider-actions/SKILL.md) |
-| 14 | ✓ | [`terraform/provider-development/skills/provider-docs/SKILL.md`](terraform/provider-development/skills/provider-docs/SKILL.md) |
-| 15 | ✓ | [`terraform/provider-development/skills/provider-resources/SKILL.md`](terraform/provider-development/skills/provider-resources/SKILL.md) |
-| 16 | ✓ | [`terraform/provider-development/skills/provider-test-patterns/SKILL.md`](terraform/provider-development/skills/provider-test-patterns/SKILL.md) |
-| 17 | ✓ | [`terraform/provider-development/skills/run-acceptance-tests/SKILL.md`](terraform/provider-development/skills/run-acceptance-tests/SKILL.md) |
+| 12 | ✓ | [`terraform/policy/skills/terraform-policy/SKILL.md`](terraform/policy/skills/terraform-policy/SKILL.md) |
+| 13 | ✓ | [`terraform/provider-development/skills/new-terraform-provider/SKILL.md`](terraform/provider-development/skills/new-terraform-provider/SKILL.md) |
+| 14 | ✓ | [`terraform/provider-development/skills/provider-actions/SKILL.md`](terraform/provider-development/skills/provider-actions/SKILL.md) |
+| 15 | ✓ | [`terraform/provider-development/skills/provider-docs/SKILL.md`](terraform/provider-development/skills/provider-docs/SKILL.md) |
+| 16 | ✓ | [`terraform/provider-development/skills/provider-resources/SKILL.md`](terraform/provider-development/skills/provider-resources/SKILL.md) |
+| 17 | ✓ | [`terraform/provider-development/skills/provider-test-patterns/SKILL.md`](terraform/provider-development/skills/provider-test-patterns/SKILL.md) |
+| 18 | ✓ | [`terraform/provider-development/skills/run-acceptance-tests/SKILL.md`](terraform/provider-development/skills/run-acceptance-tests/SKILL.md) |
 
 ---
 

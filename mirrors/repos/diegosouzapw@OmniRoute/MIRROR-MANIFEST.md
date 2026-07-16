@@ -2,12 +2,12 @@
 repo: diegosouzapw/OmniRoute
 repoUrl: https://github.com/diegosouzapw/OmniRoute.git
 refType: branch
-ref: main
+ref: release/v3.8.49
 ---
 
 # Mirror Manifest
 
-Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 25 followed patterns, 377 file(s) materialized.
+Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 25 followed patterns, 378 file(s) materialized.
 
 ## Metadata
 
@@ -15,10 +15,10 @@ Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 25 followed patterns
 |---------------|-------|
 | Repo          | `diegosouzapw/OmniRoute` |
 | Ref Type      | `branch` |
-| Ref           | `main` |
+| Ref           | `release/v3.8.49` |
 | Default pats  | 26 |
 | Followed pats | 25 |
-| Files         | 377 |
+| Files         | 378 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -408,58 +408,59 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 323 | ✓ | [`skills/cli-routing/SKILL.md`](skills/cli-routing/SKILL.md) |
 | 324 | ✓ | [`skills/cli-serve/SKILL.md`](skills/cli-serve/SKILL.md) |
 | 325 | ✓ | [`skills/cli-setup/SKILL.md`](skills/cli-setup/SKILL.md) |
-| 326 | ✓ | [`skills/cli-tunnel/SKILL.md`](skills/cli-tunnel/SKILL.md) |
-| 327 | ✓ | [`skills/config-codex-cli/SKILL.md`](skills/config-codex-cli/SKILL.md) |
-| 328 | ✓ | [`skills/omni-agents-a2a/SKILL.md`](skills/omni-agents-a2a/SKILL.md) |
-| 329 | ✓ | [`skills/omni-api-keys/SKILL.md`](skills/omni-api-keys/SKILL.md) |
-| 330 | ✓ | [`skills/omni-auth/SKILL.md`](skills/omni-auth/SKILL.md) |
-| 331 | ✓ | [`skills/omni-budget/SKILL.md`](skills/omni-budget/SKILL.md) |
-| 332 | ✓ | [`skills/omni-cache/SKILL.md`](skills/omni-cache/SKILL.md) |
-| 333 | ✓ | [`skills/omni-cli-tools/SKILL.md`](skills/omni-cli-tools/SKILL.md) |
-| 334 | ✓ | [`skills/omni-combos-routing/SKILL.md`](skills/omni-combos-routing/SKILL.md) |
-| 335 | ✓ | [`skills/omni-compression/SKILL.md`](skills/omni-compression/SKILL.md) |
-| 336 | ✓ | [`skills/omni-context-rtk/SKILL.md`](skills/omni-context-rtk/SKILL.md) |
-| 337 | ✓ | [`skills/omni-db-backups/SKILL.md`](skills/omni-db-backups/SKILL.md) |
-| 338 | ✓ | [`skills/omni-github-skills/SKILL.md`](skills/omni-github-skills/SKILL.md) |
-| 339 | ✓ | [`skills/omni-inference/SKILL.md`](skills/omni-inference/SKILL.md) |
-| 340 | ✓ | [`skills/omni-mcp/SKILL.md`](skills/omni-mcp/SKILL.md) |
-| 341 | ✓ | [`skills/omni-models/SKILL.md`](skills/omni-models/SKILL.md) |
-| 342 | ✓ | [`skills/omni-providers/SKILL.md`](skills/omni-providers/SKILL.md) |
-| 343 | ✓ | [`skills/omni-proxies/SKILL.md`](skills/omni-proxies/SKILL.md) |
-| 344 | ✓ | [`skills/omni-resilience/SKILL.md`](skills/omni-resilience/SKILL.md) |
-| 345 | ✓ | [`skills/omni-settings/SKILL.md`](skills/omni-settings/SKILL.md) |
-| 346 | ✓ | [`skills/omni-sync-cloud/SKILL.md`](skills/omni-sync-cloud/SKILL.md) |
-| 347 | ✓ | [`skills/omni-tunnels/SKILL.md`](skills/omni-tunnels/SKILL.md) |
-| 348 | ✓ | [`skills/omni-usage-logs/SKILL.md`](skills/omni-usage-logs/SKILL.md) |
-| 349 | ✓ | [`skills/omni-version-manager/SKILL.md`](skills/omni-version-manager/SKILL.md) |
-| 350 | ✓ | [`skills/omni-webhooks/SKILL.md`](skills/omni-webhooks/SKILL.md) |
-| 351 | ✓ | [`skills/README.md`](skills/README.md) |
-| 352 | ✓ | [`src/lib/db/AGENTS.md`](src/lib/db/AGENTS.md) |
-| 353 | → | [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) |
-| 354 | → | [`docs/architecture/AUTHZ_GUIDE.md`](docs/architecture/AUTHZ_GUIDE.md) |
-| 355 | → | [`docs/architecture/cluster-decisions.md`](docs/architecture/cluster-decisions.md) |
-| 356 | → | [`docs/architecture/CODEBASE_DOCUMENTATION.md`](docs/architecture/CODEBASE_DOCUMENTATION.md) |
-| 357 | → | [`docs/architecture/QUALITY_GATES.md`](docs/architecture/QUALITY_GATES.md) |
-| 358 | → | [`docs/architecture/REPOSITORY_MAP.md`](docs/architecture/REPOSITORY_MAP.md) |
-| 359 | → | [`docs/architecture/RESILIENCE_GUIDE.md`](docs/architecture/RESILIENCE_GUIDE.md) |
-| 360 | → | [`docs/frameworks/A2A-SERVER.md`](docs/frameworks/A2A-SERVER.md) |
-| 361 | → | [`docs/frameworks/AGENT_PROTOCOLS_GUIDE.md`](docs/frameworks/AGENT_PROTOCOLS_GUIDE.md) |
-| 362 | → | [`docs/frameworks/CLOUD_AGENT.md`](docs/frameworks/CLOUD_AGENT.md) |
-| 363 | → | [`docs/frameworks/EVALS.md`](docs/frameworks/EVALS.md) |
-| 364 | → | [`docs/frameworks/MCP-SERVER.md`](docs/frameworks/MCP-SERVER.md) |
-| 365 | → | [`docs/frameworks/MEMORY.md`](docs/frameworks/MEMORY.md) |
-| 366 | → | [`docs/frameworks/SKILLS.md`](docs/frameworks/SKILLS.md) |
-| 367 | → | [`docs/frameworks/WEBHOOKS.md`](docs/frameworks/WEBHOOKS.md) |
-| 368 | → | [`docs/guides/ELECTRON_GUIDE.md`](docs/guides/ELECTRON_GUIDE.md) |
-| 369 | → | [`docs/ops/RELEASE_CHECKLIST.md`](docs/ops/RELEASE_CHECKLIST.md) |
-| 370 | → | [`docs/ops/TUNNELS_GUIDE.md`](docs/ops/TUNNELS_GUIDE.md) |
-| 371 | → | [`docs/reference/API_REFERENCE.md`](docs/reference/API_REFERENCE.md) |
-| 372 | → | [`docs/reference/PROVIDER_REFERENCE.md`](docs/reference/PROVIDER_REFERENCE.md) |
-| 373 | → | [`docs/routing/AUTO-COMBO.md`](docs/routing/AUTO-COMBO.md) |
-| 374 | → | [`docs/routing/REASONING_REPLAY.md`](docs/routing/REASONING_REPLAY.md) |
-| 375 | → | [`docs/security/COMPLIANCE.md`](docs/security/COMPLIANCE.md) |
-| 376 | → | [`docs/security/GUARDRAILS.md`](docs/security/GUARDRAILS.md) |
-| 377 | → | [`docs/security/STEALTH_GUIDE.md`](docs/security/STEALTH_GUIDE.md) |
+| 326 | ✓ | [`skills/cli-skill-collector/SKILL.md`](skills/cli-skill-collector/SKILL.md) |
+| 327 | ✓ | [`skills/cli-tunnel/SKILL.md`](skills/cli-tunnel/SKILL.md) |
+| 328 | ✓ | [`skills/config-codex-cli/SKILL.md`](skills/config-codex-cli/SKILL.md) |
+| 329 | ✓ | [`skills/omni-agents-a2a/SKILL.md`](skills/omni-agents-a2a/SKILL.md) |
+| 330 | ✓ | [`skills/omni-api-keys/SKILL.md`](skills/omni-api-keys/SKILL.md) |
+| 331 | ✓ | [`skills/omni-auth/SKILL.md`](skills/omni-auth/SKILL.md) |
+| 332 | ✓ | [`skills/omni-budget/SKILL.md`](skills/omni-budget/SKILL.md) |
+| 333 | ✓ | [`skills/omni-cache/SKILL.md`](skills/omni-cache/SKILL.md) |
+| 334 | ✓ | [`skills/omni-cli-tools/SKILL.md`](skills/omni-cli-tools/SKILL.md) |
+| 335 | ✓ | [`skills/omni-combos-routing/SKILL.md`](skills/omni-combos-routing/SKILL.md) |
+| 336 | ✓ | [`skills/omni-compression/SKILL.md`](skills/omni-compression/SKILL.md) |
+| 337 | ✓ | [`skills/omni-context-rtk/SKILL.md`](skills/omni-context-rtk/SKILL.md) |
+| 338 | ✓ | [`skills/omni-db-backups/SKILL.md`](skills/omni-db-backups/SKILL.md) |
+| 339 | ✓ | [`skills/omni-github-skills/SKILL.md`](skills/omni-github-skills/SKILL.md) |
+| 340 | ✓ | [`skills/omni-inference/SKILL.md`](skills/omni-inference/SKILL.md) |
+| 341 | ✓ | [`skills/omni-mcp/SKILL.md`](skills/omni-mcp/SKILL.md) |
+| 342 | ✓ | [`skills/omni-models/SKILL.md`](skills/omni-models/SKILL.md) |
+| 343 | ✓ | [`skills/omni-providers/SKILL.md`](skills/omni-providers/SKILL.md) |
+| 344 | ✓ | [`skills/omni-proxies/SKILL.md`](skills/omni-proxies/SKILL.md) |
+| 345 | ✓ | [`skills/omni-resilience/SKILL.md`](skills/omni-resilience/SKILL.md) |
+| 346 | ✓ | [`skills/omni-settings/SKILL.md`](skills/omni-settings/SKILL.md) |
+| 347 | ✓ | [`skills/omni-sync-cloud/SKILL.md`](skills/omni-sync-cloud/SKILL.md) |
+| 348 | ✓ | [`skills/omni-tunnels/SKILL.md`](skills/omni-tunnels/SKILL.md) |
+| 349 | ✓ | [`skills/omni-usage-logs/SKILL.md`](skills/omni-usage-logs/SKILL.md) |
+| 350 | ✓ | [`skills/omni-version-manager/SKILL.md`](skills/omni-version-manager/SKILL.md) |
+| 351 | ✓ | [`skills/omni-webhooks/SKILL.md`](skills/omni-webhooks/SKILL.md) |
+| 352 | ✓ | [`skills/README.md`](skills/README.md) |
+| 353 | ✓ | [`src/lib/db/AGENTS.md`](src/lib/db/AGENTS.md) |
+| 354 | → | [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) |
+| 355 | → | [`docs/architecture/AUTHZ_GUIDE.md`](docs/architecture/AUTHZ_GUIDE.md) |
+| 356 | → | [`docs/architecture/cluster-decisions.md`](docs/architecture/cluster-decisions.md) |
+| 357 | → | [`docs/architecture/CODEBASE_DOCUMENTATION.md`](docs/architecture/CODEBASE_DOCUMENTATION.md) |
+| 358 | → | [`docs/architecture/QUALITY_GATES.md`](docs/architecture/QUALITY_GATES.md) |
+| 359 | → | [`docs/architecture/REPOSITORY_MAP.md`](docs/architecture/REPOSITORY_MAP.md) |
+| 360 | → | [`docs/architecture/RESILIENCE_GUIDE.md`](docs/architecture/RESILIENCE_GUIDE.md) |
+| 361 | → | [`docs/frameworks/A2A-SERVER.md`](docs/frameworks/A2A-SERVER.md) |
+| 362 | → | [`docs/frameworks/AGENT_PROTOCOLS_GUIDE.md`](docs/frameworks/AGENT_PROTOCOLS_GUIDE.md) |
+| 363 | → | [`docs/frameworks/CLOUD_AGENT.md`](docs/frameworks/CLOUD_AGENT.md) |
+| 364 | → | [`docs/frameworks/EVALS.md`](docs/frameworks/EVALS.md) |
+| 365 | → | [`docs/frameworks/MCP-SERVER.md`](docs/frameworks/MCP-SERVER.md) |
+| 366 | → | [`docs/frameworks/MEMORY.md`](docs/frameworks/MEMORY.md) |
+| 367 | → | [`docs/frameworks/SKILLS.md`](docs/frameworks/SKILLS.md) |
+| 368 | → | [`docs/frameworks/WEBHOOKS.md`](docs/frameworks/WEBHOOKS.md) |
+| 369 | → | [`docs/guides/ELECTRON_GUIDE.md`](docs/guides/ELECTRON_GUIDE.md) |
+| 370 | → | [`docs/ops/RELEASE_CHECKLIST.md`](docs/ops/RELEASE_CHECKLIST.md) |
+| 371 | → | [`docs/ops/TUNNELS_GUIDE.md`](docs/ops/TUNNELS_GUIDE.md) |
+| 372 | → | [`docs/reference/API_REFERENCE.md`](docs/reference/API_REFERENCE.md) |
+| 373 | → | [`docs/reference/PROVIDER_REFERENCE.md`](docs/reference/PROVIDER_REFERENCE.md) |
+| 374 | → | [`docs/routing/AUTO-COMBO.md`](docs/routing/AUTO-COMBO.md) |
+| 375 | → | [`docs/routing/REASONING_REPLAY.md`](docs/routing/REASONING_REPLAY.md) |
+| 376 | → | [`docs/security/COMPLIANCE.md`](docs/security/COMPLIANCE.md) |
+| 377 | → | [`docs/security/GUARDRAILS.md`](docs/security/GUARDRAILS.md) |
+| 378 | → | [`docs/security/STEALTH_GUIDE.md`](docs/security/STEALTH_GUIDE.md) |
 
 ---
 

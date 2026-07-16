@@ -172,6 +172,21 @@ function runGoal(goalArg, options = {}) {
         normalized = safe.normalized;
       }
     }
+    // 字段级抢救:此前任何一个字段报错都会丢弃整页 props(整页回退演示文案,正是用户
+    // 反馈的「几乎每页都残留」);现在仅剔除无法通过契约的根键,其余字段保留并写回。
+    if (layout && normalized.errors?.length) {
+      const salvaged = salvageSlideProps(layout, slide?.props || {});
+      if (salvaged && Object.keys(salvaged.props || {}).length) {
+        normalized = {
+          props: salvaged.props,
+          errors: [],
+          warnings: [
+            ...(normalized.warnings || []),
+            `已剔除无法通过契约的字段并保留其余覆盖:${salvaged.dropped.join(', ')}(被剔除字段回退默认值,建议修正后重试)`,
+          ],
+        };
+      }
+    }
     normalizedSlides.push(layout && !normalized.errors?.length
       ? { ...slide, layout, props: normalized.props }
       : { ...slide, layout });
@@ -211,6 +226,23 @@ function runGoal(goalArg, options = {}) {
 
 // 仅在“作者媒体数组长度超出该 layout 所有媒体槽位容量”这一可客观判定的场景下触发候选查找;
 // 其余任何 normalizeProps 错误(未知字段、文案越界等)一律原样报错,不做 layout 替换。
+function salvageSlideProps(layout, props = {}) {
+  const current = { ...(props || {}) };
+  const dropped = [];
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const res = normalizeProps(layout, current);
+    if (!res.errors?.length) return dropped.length ? { props: res.props ?? current, dropped } : null;
+    const bad = new Set((res.errors || [])
+      .map(err => String(err).match(/props\.([A-Za-z0-9_$]+)/)?.[1])
+      .filter(Boolean));
+    if (!bad.size) return null;
+    for (const key of bad) {
+      if (key in current) { delete current[key]; dropped.push(key); }
+    }
+  }
+  return null;
+}
+
 function findLayoutMediaMismatch(layout, props = {}) {
   const slots = getMediaSlotsForLayout(layout);
   if (!slots.length) return null;

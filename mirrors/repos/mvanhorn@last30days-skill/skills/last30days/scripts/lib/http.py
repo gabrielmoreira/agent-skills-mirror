@@ -13,7 +13,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar, copy_context
 from pathlib import Path
 from typing import Any, Dict, Optional, Union
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit, quote
 
 from . import health
 from . import log as _log
@@ -556,6 +556,19 @@ def request(
         if filtered:
             separator = "&" if ("?" in url) else "?"
             url = f"{url}{separator}{urlencode(filtered)}"
+    # Encode any non-ASCII characters to prevent UnicodeEncodeError from
+    # http.client.HTTPConnection.putrequest (which uses latin-1 internally).
+    # Only encode path, query, and fragment — not the hostname (netloc), which
+    # needs IDNA encoding instead of percent-encoding for non-ASCII domains.
+    parts = urlsplit(url)
+    safe = '/:@!$&\'()*+,;=-._~%?#[]=+'
+    url = urlunsplit((
+        parts.scheme,
+        parts.netloc,
+        quote(parts.path, safe=safe),
+        quote(parts.query, safe=safe),
+        quote(parts.fragment, safe=safe),
+    ))
 
     fixture_request = _fixture_request(method, url, json_data, raw)
     fixture_redactions = _fixture_redactions(url, headers, json_data)

@@ -2484,6 +2484,7 @@ export const GENERATED_THEME_PAGES = [
       "centerValue": "970",
       "centerUnit": "亿美元",
       "centerLabel": "全年合计",
+      "overflowLabel": "其他",
       "caption": "通用大模型占据近半壁江山，反映对 AGI 叙事的押注；基础设施与芯片合计超四分之一",
       "chartType": "donut",
       "segmentCount": 5,
@@ -5520,6 +5521,7 @@ export const GENERATED_THEME_PAGES = [
         "label": "旧金山湾区",
         "note": "独占六成以上 · 人才、资本、算力虹吸效应进一步强化"
       },
+      "overflowLabel": "其他地区",
       "caption": "“地理护城河”短期内难以撼动 · 旧金山湾区独占六成以上份额",
       "segmentCount": 5,
       "highlight": true,
@@ -8737,7 +8739,7 @@ export const GENERATED_THEME_PAGES = [
           ]
         }
       ],
-      "unit": "亿",
+      "unit": "亿美元",
       "caption": "热力矩阵 · 资金向大模型与算力、向下半年同时收口",
       "rowCount": 5,
       "highlight": true,
@@ -9820,6 +9822,7 @@ export const GENERATED_THEME_PAGES = [
           ]
         }
       ],
+      "overflowLabel": "其它赛道",
       "note": "通用大模型这条「主河道」逐季拓宽，到 25Q4 已占全部增量的近半——资金正加速向最上层的基座模型汇聚。",
       "itemCount": 5,
       "highlight": true,
@@ -11558,7 +11561,7 @@ export const GENERATED_THEME_PAGES = [
       "title": "一年之间，估值翻了几番",
       "en": "Valuation Leap · Dumbbell",
       "cn": "年初 → 最新，谁的跃迁最猛",
-      "unit": "亿",
+      "unit": "亿美元",
       "startLabel": "年初",
       "endLabel": "最新",
       "rows": [
@@ -12860,7 +12863,7 @@ export const GENERATED_THEME_PAGES = [
           ]
         }
       ],
-      "unit": "亿",
+      "unit": "亿美元",
       "axisMax": 450,
       "tickStep": 150,
       "caption": "柱状图 · 五大赛道全线放量，大模型与算力增量最猛",
@@ -13292,6 +13295,7 @@ export const GENERATED_THEME_PAGES = [
         }
       ],
       "unit": "亿",
+      "overflowLabel": "其他",
       "caption": "玫瑰图 · 半径越长越吸金，通用大模型的花瓣一枝独秀",
       "itemCount": 5,
       "radiusScale": "area",
@@ -13463,6 +13467,7 @@ export const GENERATED_THEME_PAGES = [
         }
       ],
       "centerLabel": "资金合计",
+      "overflowLabel": "其它",
       "note": "企业战投（微软、英伟达、亚马逊）首次逼近传统 VC——巨头用资本+算力换股权，把生态绑定在自己的云上。",
       "chartType": "donut",
       "itemCount": 5,
@@ -16036,7 +16041,7 @@ export const GENERATED_THEME_PAGES = [
         "key": "focusIndex",
         "type": "number",
         "label": "强调项",
-        "default": 7,
+        "default": 4,
         "min": 0,
         "step": 1,
         "oneBased": true,
@@ -16097,30 +16102,6 @@ export const GENERATED_THEME_PAGES = [
         {
           "label": "6 月",
           "value": 93
-        },
-        {
-          "label": "7 月",
-          "value": 92
-        },
-        {
-          "label": "8 月",
-          "value": 118
-        },
-        {
-          "label": "9 月",
-          "value": 108
-        },
-        {
-          "label": "10 月",
-          "value": 73
-        },
-        {
-          "label": "11 月",
-          "value": 81
-        },
-        {
-          "label": "12 月",
-          "value": 52
         }
       ],
       "cellCount": 6,
@@ -16550,26 +16531,6 @@ export const GENERATED_THEME_PAGES = [
           "name": "Scale AI",
           "track": "AI 基础设施 · 数据标注",
           "value": 10
-        },
-        {
-          "name": "Figure AI",
-          "track": "AI 硬件 · 人形机器人",
-          "value": 6.8
-        },
-        {
-          "name": "Perplexity AI",
-          "track": "垂直应用 · AI 搜索",
-          "value": 5.2
-        },
-        {
-          "name": "Databricks",
-          "track": "AI 基础设施 · 数据平台",
-          "value": 5
-        },
-        {
-          "name": "Glean",
-          "track": "垂直应用 · 企业搜索",
-          "value": 2.6
         }
       ],
       "rowCount": 6,
@@ -16786,30 +16747,6 @@ export const GENERATED_THEME_PAGES = [
           "tag": "算力扩容",
           "title": "GPU 云锁定长单",
           "desc": "模型厂商提前预定训练资源，基础设施融资继续升温。"
-        },
-        {
-          "date": "2025 · 05",
-          "tag": "应用层爆发",
-          "title": "AI 搜索与办公加速",
-          "desc": "资本从底座外溢到高频场景，垂直应用估值抬升。"
-        },
-        {
-          "date": "2025 · Q3",
-          "tag": "并购整合",
-          "title": "工具链进入平台化",
-          "desc": "数据、评测与开发工具被大平台吸收，赛道集中度提高。"
-        },
-        {
-          "date": "2026 · Q1",
-          "tag": "二级预热",
-          "title": "核心资产进入窗口",
-          "desc": "一级市场定价开始对接上市叙事，退出路径更清晰。"
-        },
-        {
-          "date": "2026 · 06",
-          "tag": "IPO 在即",
-          "title": "Anthropic 递交上市申请",
-          "desc": "一级市场盛宴向二级市场传导。"
         }
       ],
       "itemCount": 5,
@@ -18340,6 +18277,8 @@ export const GENERATED_THEME_PAGES = [
       "focusIndex": 0,
       "showValueLabels": true,
       "showTargetMeta": true,
+      "bandwidthLabel": "带宽 = 融资额",
+      "totalLabel": "全年合计",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -19142,6 +19081,7 @@ export const GENERATED_THEME_PAGES = [
       "accentHero": true,
       "heroExtra": "tags",
       "showCaption": true,
+      "sparkCaption": "季度节奏 · 资本逐季加码",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -21026,6 +20966,8 @@ export const GENERATED_THEME_PAGES = [
       "showAvg": true,
       "showAvgBar": true,
       "showTotal": true,
+      "countUnit": "笔",
+      "avgUnit": "亿/笔",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -22086,6 +22028,7 @@ export const GENERATED_THEME_PAGES = [
       "showValueLabels": true,
       "showRate": true,
       "showDetail": true,
+      "rateLabel": "留存",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -22289,20 +22232,6 @@ export const GENERATED_THEME_PAGES = [
           "y": 14,
           "r": 1,
           "note": "数据标注"
-        },
-        {
-          "label": "Perplexity",
-          "x": 0.05,
-          "y": 9,
-          "r": 0.5,
-          "note": "AI 搜索"
-        },
-        {
-          "label": "Mistral",
-          "x": 0.03,
-          "y": 6,
-          "r": 0.6,
-          "note": "开源模型"
         }
       ],
       "xLabel": "年化营收 ARR（十亿美元）",
@@ -22316,6 +22245,10 @@ export const GENERATED_THEME_PAGES = [
       "showGrid": true,
       "showLabels": true,
       "showAxisTitles": true,
+      "yShortLabel": "估值",
+      "xShortLabel": "ARR",
+      "focusUnitLabel": "十亿美元",
+      "ratioLabel": "营收倍数",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -23909,16 +23842,6 @@ export const GENERATED_THEME_PAGES = [
           "title": "算力成本高企",
           "desc": "GPU 与训练成本居高，持续挤压毛利空间。",
           "level": "mid"
-        },
-        {
-          "title": "监管不确定",
-          "desc": "安全与合规政策走向，影响落地节奏。",
-          "level": "mid"
-        },
-        {
-          "title": "头部过度集中",
-          "desc": "资金与人才高度集中，长尾公司承压。",
-          "level": "low"
         }
       ],
       "riskCount": 3,
@@ -26837,6 +26760,7 @@ export const GENERATED_THEME_PAGES = [
         "单笔融资额",
         "累计占比"
       ],
+      "insightLead": "前三家合计",
       "insightConclusion": "赢家通吃格局确立",
       "scheme": "green",
       "emphasis": "ticket",
@@ -27041,30 +26965,6 @@ export const GENERATED_THEME_PAGES = [
         {
           "label": "6月",
           "value": 93
-        },
-        {
-          "label": "7月",
-          "value": 92
-        },
-        {
-          "label": "8月",
-          "value": 118
-        },
-        {
-          "label": "9月",
-          "value": 108
-        },
-        {
-          "label": "10月",
-          "value": 73
-        },
-        {
-          "label": "11月",
-          "value": 81
-        },
-        {
-          "label": "12月",
-          "value": 52
         }
       ],
       "unit": "亿美元",
@@ -27275,6 +27175,8 @@ export const GENERATED_THEME_PAGES = [
       "showValue": true,
       "showShare": true,
       "showNote": true,
+      "areaLabel": "面积 ∝ 吸纳资金",
+      "totalLabel": "全年合计",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -28570,6 +28472,7 @@ export const GENERATED_THEME_PAGES = [
       "showInnerLabels": true,
       "showValueLabels": true,
       "showLegend": true,
+      "insightText": "↳ 模型层 + 基础设施合计占比超 {pct}%——资本仍集中在「造模型」与「卖铲子」两端",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -35927,7 +35830,9 @@ export const GENERATED_THEME_PAGES = [
       "copy": {
         "t001": "笔",
         "t002": "均",
-        "t003": "亿"
+        "t003": "亿",
+        "t004": "高亮",
+        "t005": "占"
       },
       "showDecor": false,
       "decorSrc": null,
@@ -47406,7 +47311,8 @@ export const GENERATED_THEME_PAGES = [
         }
       ],
       "copy": {
-        "t001": "亿 ·"
+        "t001": "亿 ·",
+        "t002": "亿"
       },
       "showDecor": false,
       "decorSrc": null,
@@ -69615,6 +69521,8 @@ export const GENERATED_THEME_PAGES = [
         "kicker": "DEVELOPER TOOLS · 开发者工具赛道",
         "index": "33",
         "sheet": "STATEMENT · 33 / 80",
+        "leadZh": "研发效率",
+        "leadEn": "Developer Productivity",
         "quote": "研发效率，是企业\n最直接的 AI 预算入口之一。",
         "sub": "效率工具最贴近开发团队的日常，预算决策链路短、落地周期快。",
         "keywords": [
@@ -98145,6 +98053,7 @@ export const GENERATED_THEME_PAGES = [
       "lead": "Q1 交易数量稳定，但整体金额尚未进入全年高峰，更像上一年度项目延续，市场仍在等待新一轮验证。",
       "closing": "全年热度从保守启动开始。",
       "chartLabel": "月度融资额 / 亿美元",
+      "monthRangeLabel": "1 — 3 月",
       "months": [
         {
           "m": "1月",
@@ -125277,6 +125186,8 @@ export const GENERATED_THEME_PAGES = [
       "focusIndex": 0,
       "labelType": "number",
       "showAside": true,
+      "centerValue": "970",
+      "centerUnit": "亿美元 · 全年",
       "head": {
         "no": "03",
         "en": "Sunburst · Hierarchy",
@@ -130525,6 +130436,11 @@ export const GENERATED_THEME_PAGES = [
       "imgCount": 0,
       "showAside": true,
       "badge": "09",
+      "toneLabels": {
+        "看好": "看好",
+        "谨慎": "谨慎",
+        "中性": "中性"
+      },
       "quotes": [
         {
           "text": "2024 是 AI 的「资本大年」—— 资金以前所未有的密度涌向少数能讲好 AGI 故事的团队，赢家通吃成为常态。",
@@ -141768,6 +141684,7 @@ export const GENERATED_THEME_PAGES = [
       "splitBias": 52,
       "showStat": true,
       "showPoints": true,
+      "statCaption": "三年累计回报",
       "overline": "两条路 · THE CHOICE",
       "left": {
         "label": "自己打理",
@@ -153012,6 +152929,8 @@ export const GENERATED_THEME_PAGES = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "showKicker": true,
       "showTrend": true,
@@ -153452,6 +153371,8 @@ export const GENERATED_THEME_PAGES = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "showSidePanel": true,
       "stepCount": 3,
@@ -153640,6 +153561,8 @@ export const GENERATED_THEME_PAGES = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "ink",
       "chartVariant": "area",
       "showChart": true,
@@ -153834,6 +153757,8 @@ export const GENERATED_THEME_PAGES = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "chartVariant": "donut",
       "itemCount": 4,
@@ -154221,6 +154146,8 @@ export const GENERATED_THEME_PAGES = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "stageCount": 5,
       "emphasis": false,
@@ -154416,6 +154343,8 @@ export const GENERATED_THEME_PAGES = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "ink",
       "imageCount": true,
       "images": [],
@@ -156161,6 +156090,8 @@ export const GENERATED_THEME_PAGES = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "ink",
       "rowCount": 7,
       "columnCount": 4,
@@ -156762,6 +156693,8 @@ export const GENERATED_THEME_PAGES = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "ink",
       "imageCount": 3,
       "images": [],
@@ -157316,6 +157249,8 @@ export const GENERATED_THEME_PAGES = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "showKicker": true,
       "showDelta": true,
@@ -157856,6 +157791,8 @@ export const GENERATED_THEME_PAGES = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "rowCount": 6,
       "showColHeads": true,
@@ -158015,6 +157952,9 @@ export const GENERATED_THEME_PAGES = [
       {
         "key": "pinCount",
         "type": "slider",
+        "countArrays": [
+          "callouts"
+        ],
         "label": "列表数量",
         "default": 3,
         "min": 1,
@@ -158065,6 +158005,8 @@ export const GENERATED_THEME_PAGES = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "ink",
       "imageCount": true,
       "images": [],
@@ -158093,7 +158035,7 @@ export const GENERATED_THEME_PAGES = [
       "imagePlaceholder": "产品截图 · 16:10",
       "capTag": "↗ After",
       "capText": "VOLT 落地页 · 重构版",
-      "pins": [
+      "callouts": [
         {
           "x": 24,
           "y": 30,
@@ -158368,6 +158310,8 @@ export const GENERATED_THEME_PAGES = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "imageCount": true,
       "images": [],
@@ -158795,42 +158739,36 @@ export const GENERATED_THEME_PAGES = [
       "lede": "把增长拆成可解释的几段：每一段都来自一个具体动作，没有黑箱。",
       "steps": [
         {
-          "type": "base",
-          "zh": "接入前基线",
-          "en": "Baseline",
-          "v": 100
-        },
-        {
-          "type": "inc",
           "zh": "搜索与内容",
           "en": "+SEO",
           "v": 64
         },
         {
-          "type": "inc",
           "zh": "转化优化",
           "en": "+CRO",
           "v": 52
         },
         {
-          "type": "inc",
           "zh": "付费放大",
           "en": "+Paid",
           "v": 48
         },
         {
-          "type": "inc",
           "zh": "协同复利",
           "en": "+Synergy",
           "v": 36
-        },
-        {
-          "type": "tot",
-          "zh": "12 个月后",
-          "en": "Total",
-          "v": 300
         }
       ],
+      "baseStep": {
+        "zh": "接入前基线",
+        "en": "Baseline",
+        "v": 100
+      },
+      "totalStep": {
+        "zh": "12 个月后",
+        "en": "Total",
+        "v": 300
+      },
       "metaLeft": "IGNIS — 燃点 · 增长来源拆解（指数化 · 基线 = 100）",
       "metaMid": "每一段，都说得清来源"
     }
@@ -159312,6 +159250,8 @@ export const GENERATED_THEME_PAGES = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "rowCount": 4,
       "showColHeads": true,
@@ -160861,6 +160801,8 @@ export const GENERATED_THEME_PAGES = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "rowCount": 4,
       "showColHeads": true,
@@ -163076,7 +163018,7 @@ export const GENERATED_THEME_PAGES = [
         "团队",
         "后台"
       ],
-      "photos": [
+      "frames": [
         {
           "ph": "门店开业",
           "cap": "首店 · 当天售罄",
@@ -166250,6 +166192,9 @@ export const GENERATED_THEME_PAGES = [
       {
         "key": "pinCount",
         "type": "slider",
+        "countArrays": [
+          "callouts"
+        ],
         "label": "标注数量",
         "default": 4,
         "min": 2,
@@ -166363,7 +166308,7 @@ export const GENERATED_THEME_PAGES = [
       "eyebrowEn": "What we changed",
       "headingHtml": "一张截图，<span class=\"ign-ember-text\">把每处改动指出来</span>。",
       "noteHtml": "编号对应改动点——<br>每一处都对着转化。",
-      "pins": [
+      "callouts": [
         {
           "x": 16,
           "y": 26,
@@ -173759,12 +173704,14 @@ export const GENERATED_THEME_PAGES = [
       "ctaDefault": "免费开始",
       "ctaContact": "联系销售",
       "customLabel": "定制",
+      "unitMonthly": "/月",
+      "unitYearly": "/月 · 年付",
       "plans": [
         {
           "cn": "入门",
           "en": "Starter",
           "m": 0,
-          "y": 0,
+          "yearly": 0,
           "note": "永久免费",
           "desc": "适合刚起步的创作者",
           "feats": [
@@ -173777,7 +173724,7 @@ export const GENERATED_THEME_PAGES = [
           "cn": "专业",
           "en": "Pro",
           "m": 39,
-          "y": 29,
+          "yearly": 29,
           "note": "按月计费",
           "desc": "为认真经营的音乐人",
           "feats": [
@@ -173791,7 +173738,7 @@ export const GENERATED_THEME_PAGES = [
           "cn": "厂牌",
           "en": "Label",
           "m": 99,
-          "y": 79,
+          "yearly": 79,
           "note": "按月计费",
           "desc": "多艺人 · 团队协作",
           "feats": [
@@ -173805,7 +173752,7 @@ export const GENERATED_THEME_PAGES = [
           "cn": "企业",
           "en": "Enterprise",
           "m": null,
-          "y": null,
+          "yearly": null,
           "note": "定制报价",
           "desc": "平台级集成需求",
           "feats": [
@@ -176828,6 +176775,7 @@ export const GENERATED_THEME_PAGES = [
       "axisY": "创作者掌控力 →",
       "ownLegend": "声浪 · 创作者主权象限",
       "rivalLegend": "传统方案 ·",
+      "rivalLegendSuffix": "家对照",
       "own": {
         "cn": "声浪",
         "en": "SoundWave",

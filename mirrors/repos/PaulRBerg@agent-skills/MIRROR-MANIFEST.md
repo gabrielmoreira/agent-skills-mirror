@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PaulRBerg/agent-skills` — 26 default patterns, 0 followed patterns, 221 file(s) materialized.
+Mirror of `PaulRBerg/agent-skills` — 26 default patterns, 0 followed patterns, 223 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PaulRBerg/agent-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 221 |
+| Files         | 223 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -198,88 +198,90 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 137 | ✓ | [`skills/find-tool/agents/openai.yaml`](skills/find-tool/agents/openai.yaml) |
 | 138 | ✓ | [`skills/find-tool/references/find-tool.md`](skills/find-tool/references/find-tool.md) |
 | 139 | ✓ | [`skills/find-tool/SKILL.md`](skills/find-tool/SKILL.md) |
-| 140 | ✓ | [`skills/git-squash/agents/openai.yaml`](skills/git-squash/agents/openai.yaml) |
-| 141 | ✓ | [`skills/git-squash/SKILL.md`](skills/git-squash/SKILL.md) |
-| 142 | ✓ | [`skills/grill-me/agents/openai.yaml`](skills/grill-me/agents/openai.yaml) |
-| 143 | ✓ | [`skills/grill-me/SKILL.md`](skills/grill-me/SKILL.md) |
-| 144 | ✓ | [`skills/html-debrief/agents/openai.yaml`](skills/html-debrief/agents/openai.yaml) |
-| 145 | ✓ | [`skills/html-debrief/scripts/prepare.sh`](skills/html-debrief/scripts/prepare.sh) |
-| 146 | ✓ | [`skills/html-debrief/SKILL.md`](skills/html-debrief/SKILL.md) |
-| 147 | ✓ | [`skills/html-playground/agents/openai.yaml`](skills/html-playground/agents/openai.yaml) |
-| 148 | ✓ | [`skills/html-playground/SKILL.md`](skills/html-playground/SKILL.md) |
-| 149 | ✓ | [`skills/html-playground/templates/code-map.md`](skills/html-playground/templates/code-map.md) |
-| 150 | ✓ | [`skills/html-playground/templates/concept-map.md`](skills/html-playground/templates/concept-map.md) |
-| 151 | ✓ | [`skills/html-playground/templates/data-explorer.md`](skills/html-playground/templates/data-explorer.md) |
-| 152 | ✓ | [`skills/html-playground/templates/design-playground.md`](skills/html-playground/templates/design-playground.md) |
-| 153 | ✓ | [`skills/html-playground/templates/diff-review.md`](skills/html-playground/templates/diff-review.md) |
-| 154 | ✓ | [`skills/html-playground/templates/document-critique.md`](skills/html-playground/templates/document-critique.md) |
-| 155 | ✓ | [`skills/large-file-refactor/agents/openai.yaml`](skills/large-file-refactor/agents/openai.yaml) |
-| 156 | ✓ | [`skills/large-file-refactor/scripts/large-file-refactor.py`](skills/large-file-refactor/scripts/large-file-refactor.py) |
-| 157 | ✓ | [`skills/large-file-refactor/SKILL.md`](skills/large-file-refactor/SKILL.md) |
-| 158 | ✓ | [`skills/night-shift/agents/openai.yaml`](skills/night-shift/agents/openai.yaml) |
-| 159 | ✓ | [`skills/night-shift/SKILL.md`](skills/night-shift/SKILL.md) |
-| 160 | ✓ | [`skills/repo-rename/agents/openai.yaml`](skills/repo-rename/agents/openai.yaml) |
-| 161 | ✓ | [`skills/repo-rename/scripts/repo-rename.py`](skills/repo-rename/scripts/repo-rename.py) |
-| 162 | ✓ | [`skills/repo-rename/scripts/test_repo_rename.py`](skills/repo-rename/scripts/test_repo_rename.py) |
-| 163 | ✓ | [`skills/repo-rename/SKILL.md`](skills/repo-rename/SKILL.md) |
-| 164 | ✓ | [`skills/skill-doctor/agents/openai.yaml`](skills/skill-doctor/agents/openai.yaml) |
-| 165 | ✓ | [`skills/skill-doctor/scripts/skill-doctor.py`](skills/skill-doctor/scripts/skill-doctor.py) |
-| 166 | ✓ | [`skills/skill-doctor/scripts/test_skill_doctor.py`](skills/skill-doctor/scripts/test_skill_doctor.py) |
-| 167 | ✓ | [`skills/skill-doctor/SKILL.md`](skills/skill-doctor/SKILL.md) |
-| 168 | ✓ | [`skills/skill-map/agents/openai.yaml`](skills/skill-map/agents/openai.yaml) |
-| 169 | ✓ | [`skills/skill-map/references/ignore-policy.md`](skills/skill-map/references/ignore-policy.md) |
-| 170 | ✓ | [`skills/skill-map/scripts/skill-map.py`](skills/skill-map/scripts/skill-map.py) |
-| 171 | ✓ | [`skills/skill-map/SKILL.md`](skills/skill-map/SKILL.md) |
-| 172 | ✓ | [`skills/spreadsheets/agents/openai.yaml`](skills/spreadsheets/agents/openai.yaml) |
-| 173 | ✓ | [`skills/spreadsheets/references/recipes.md`](skills/spreadsheets/references/recipes.md) |
-| 174 | ✓ | [`skills/spreadsheets/references/xlsx.md`](skills/spreadsheets/references/xlsx.md) |
-| 175 | ✓ | [`skills/spreadsheets/scripts/peek.py`](skills/spreadsheets/scripts/peek.py) |
-| 176 | ✓ | [`skills/spreadsheets/scripts/profile.py`](skills/spreadsheets/scripts/profile.py) |
-| 177 | ✓ | [`skills/spreadsheets/scripts/recalc.py`](skills/spreadsheets/scripts/recalc.py) |
-| 178 | ✓ | [`skills/spreadsheets/scripts/test_spreadsheets.py`](skills/spreadsheets/scripts/test_spreadsheets.py) |
-| 179 | ✓ | [`skills/spreadsheets/SKILL.md`](skills/spreadsheets/SKILL.md) |
-| 180 | ✓ | [`skills/tailwind-css/agents/openai.yaml`](skills/tailwind-css/agents/openai.yaml) |
-| 181 | ✓ | [`skills/tailwind-css/references/coding-preferences.md`](skills/tailwind-css/references/coding-preferences.md) |
-| 182 | ✓ | [`skills/tailwind-css/references/eslint.md`](skills/tailwind-css/references/eslint.md) |
-| 183 | ✓ | [`skills/tailwind-css/references/tailwind-v4-rules.md`](skills/tailwind-css/references/tailwind-v4-rules.md) |
-| 184 | ✓ | [`skills/tailwind-css/references/tailwind-variants.md`](skills/tailwind-css/references/tailwind-variants.md) |
-| 185 | ✓ | [`skills/tailwind-css/references/tw-animate-css.md`](skills/tailwind-css/references/tw-animate-css.md) |
-| 186 | ✓ | [`skills/tailwind-css/SKILL.md`](skills/tailwind-css/SKILL.md) |
-| 187 | ✓ | [`skills/todo-archive/agents/openai.yaml`](skills/todo-archive/agents/openai.yaml) |
-| 188 | ✓ | [`skills/todo-archive/scripts/archive_todo.py`](skills/todo-archive/scripts/archive_todo.py) |
-| 189 | ✓ | [`skills/todo-archive/SKILL.md`](skills/todo-archive/SKILL.md) |
-| 190 | ✓ | [`skills/vitest/agents/openai.yaml`](skills/vitest/agents/openai.yaml) |
-| 191 | ✓ | [`skills/vitest/references/mocking.md`](skills/vitest/references/mocking.md) |
-| 192 | ✓ | [`skills/vitest/references/monorepo-testing.md`](skills/vitest/references/monorepo-testing.md) |
-| 193 | ✓ | [`skills/vitest/references/testing-patterns.md`](skills/vitest/references/testing-patterns.md) |
-| 194 | ✓ | [`skills/vitest/references/troubleshooting.md`](skills/vitest/references/troubleshooting.md) |
-| 195 | ✓ | [`skills/vitest/SKILL.md`](skills/vitest/SKILL.md) |
-| 196 | ✓ | [`skills/yeet/agents/openai.yaml`](skills/yeet/agents/openai.yaml) |
-| 197 | ✓ | [`skills/yeet/references/comment-issue.md`](skills/yeet/references/comment-issue.md) |
-| 198 | ✓ | [`skills/yeet/references/context.md`](skills/yeet/references/context.md) |
-| 199 | ✓ | [`skills/yeet/references/create-discussion.md`](skills/yeet/references/create-discussion.md) |
-| 200 | ✓ | [`skills/yeet/references/create-issue.md`](skills/yeet/references/create-issue.md) |
-| 201 | ✓ | [`skills/yeet/references/create-pr.md`](skills/yeet/references/create-pr.md) |
-| 202 | ✓ | [`skills/yeet/references/issue-claude-code.md`](skills/yeet/references/issue-claude-code.md) |
-| 203 | ✓ | [`skills/yeet/references/issue-codex-cli.md`](skills/yeet/references/issue-codex-cli.md) |
-| 204 | ✓ | [`skills/yeet/references/issue-sablier.md`](skills/yeet/references/issue-sablier.md) |
-| 205 | ✓ | [`skills/yeet/references/posting.md`](skills/yeet/references/posting.md) |
-| 206 | ✓ | [`skills/yeet/references/templates/claude-code/bug-report.md`](skills/yeet/references/templates/claude-code/bug-report.md) |
-| 207 | ✓ | [`skills/yeet/references/templates/claude-code/documentation.md`](skills/yeet/references/templates/claude-code/documentation.md) |
-| 208 | ✓ | [`skills/yeet/references/templates/claude-code/feature-request.md`](skills/yeet/references/templates/claude-code/feature-request.md) |
-| 209 | ✓ | [`skills/yeet/references/templates/claude-code/model-behavior.md`](skills/yeet/references/templates/claude-code/model-behavior.md) |
-| 210 | ✓ | [`skills/yeet/references/templates/codex/1-codex-app.md`](skills/yeet/references/templates/codex/1-codex-app.md) |
-| 211 | ✓ | [`skills/yeet/references/templates/codex/2-extension.md`](skills/yeet/references/templates/codex/2-extension.md) |
-| 212 | ✓ | [`skills/yeet/references/templates/codex/3-cli.md`](skills/yeet/references/templates/codex/3-cli.md) |
-| 213 | ✓ | [`skills/yeet/references/templates/codex/4-bug-report.md`](skills/yeet/references/templates/codex/4-bug-report.md) |
-| 214 | ✓ | [`skills/yeet/references/templates/codex/5-feature-request.md`](skills/yeet/references/templates/codex/5-feature-request.md) |
-| 215 | ✓ | [`skills/yeet/references/templates/codex/6-docs-issue.md`](skills/yeet/references/templates/codex/6-docs-issue.md) |
-| 216 | ✓ | [`skills/yeet/references/update-issue.md`](skills/yeet/references/update-issue.md) |
-| 217 | ✓ | [`skills/yeet/references/update-pr.md`](skills/yeet/references/update-pr.md) |
-| 218 | ✓ | [`skills/yeet/references/writing.md`](skills/yeet/references/writing.md) |
-| 219 | ✓ | [`skills/yeet/scripts/get-macos-version.sh`](skills/yeet/scripts/get-macos-version.sh) |
-| 220 | ✓ | [`skills/yeet/scripts/yeet-context.sh`](skills/yeet/scripts/yeet-context.sh) |
-| 221 | ✓ | [`skills/yeet/SKILL.md`](skills/yeet/SKILL.md) |
+| 140 | ✓ | [`skills/fresh-eyes-sweep/agents/openai.yaml`](skills/fresh-eyes-sweep/agents/openai.yaml) |
+| 141 | ✓ | [`skills/fresh-eyes-sweep/SKILL.md`](skills/fresh-eyes-sweep/SKILL.md) |
+| 142 | ✓ | [`skills/git-squash/agents/openai.yaml`](skills/git-squash/agents/openai.yaml) |
+| 143 | ✓ | [`skills/git-squash/SKILL.md`](skills/git-squash/SKILL.md) |
+| 144 | ✓ | [`skills/grill-me/agents/openai.yaml`](skills/grill-me/agents/openai.yaml) |
+| 145 | ✓ | [`skills/grill-me/SKILL.md`](skills/grill-me/SKILL.md) |
+| 146 | ✓ | [`skills/html-debrief/agents/openai.yaml`](skills/html-debrief/agents/openai.yaml) |
+| 147 | ✓ | [`skills/html-debrief/scripts/prepare.sh`](skills/html-debrief/scripts/prepare.sh) |
+| 148 | ✓ | [`skills/html-debrief/SKILL.md`](skills/html-debrief/SKILL.md) |
+| 149 | ✓ | [`skills/html-playground/agents/openai.yaml`](skills/html-playground/agents/openai.yaml) |
+| 150 | ✓ | [`skills/html-playground/SKILL.md`](skills/html-playground/SKILL.md) |
+| 151 | ✓ | [`skills/html-playground/templates/code-map.md`](skills/html-playground/templates/code-map.md) |
+| 152 | ✓ | [`skills/html-playground/templates/concept-map.md`](skills/html-playground/templates/concept-map.md) |
+| 153 | ✓ | [`skills/html-playground/templates/data-explorer.md`](skills/html-playground/templates/data-explorer.md) |
+| 154 | ✓ | [`skills/html-playground/templates/design-playground.md`](skills/html-playground/templates/design-playground.md) |
+| 155 | ✓ | [`skills/html-playground/templates/diff-review.md`](skills/html-playground/templates/diff-review.md) |
+| 156 | ✓ | [`skills/html-playground/templates/document-critique.md`](skills/html-playground/templates/document-critique.md) |
+| 157 | ✓ | [`skills/large-file-refactor/agents/openai.yaml`](skills/large-file-refactor/agents/openai.yaml) |
+| 158 | ✓ | [`skills/large-file-refactor/scripts/large-file-refactor.py`](skills/large-file-refactor/scripts/large-file-refactor.py) |
+| 159 | ✓ | [`skills/large-file-refactor/SKILL.md`](skills/large-file-refactor/SKILL.md) |
+| 160 | ✓ | [`skills/night-shift/agents/openai.yaml`](skills/night-shift/agents/openai.yaml) |
+| 161 | ✓ | [`skills/night-shift/SKILL.md`](skills/night-shift/SKILL.md) |
+| 162 | ✓ | [`skills/repo-rename/agents/openai.yaml`](skills/repo-rename/agents/openai.yaml) |
+| 163 | ✓ | [`skills/repo-rename/scripts/repo-rename.py`](skills/repo-rename/scripts/repo-rename.py) |
+| 164 | ✓ | [`skills/repo-rename/scripts/test_repo_rename.py`](skills/repo-rename/scripts/test_repo_rename.py) |
+| 165 | ✓ | [`skills/repo-rename/SKILL.md`](skills/repo-rename/SKILL.md) |
+| 166 | ✓ | [`skills/skill-doctor/agents/openai.yaml`](skills/skill-doctor/agents/openai.yaml) |
+| 167 | ✓ | [`skills/skill-doctor/scripts/skill-doctor.py`](skills/skill-doctor/scripts/skill-doctor.py) |
+| 168 | ✓ | [`skills/skill-doctor/scripts/test_skill_doctor.py`](skills/skill-doctor/scripts/test_skill_doctor.py) |
+| 169 | ✓ | [`skills/skill-doctor/SKILL.md`](skills/skill-doctor/SKILL.md) |
+| 170 | ✓ | [`skills/skill-map/agents/openai.yaml`](skills/skill-map/agents/openai.yaml) |
+| 171 | ✓ | [`skills/skill-map/references/ignore-policy.md`](skills/skill-map/references/ignore-policy.md) |
+| 172 | ✓ | [`skills/skill-map/scripts/skill-map.py`](skills/skill-map/scripts/skill-map.py) |
+| 173 | ✓ | [`skills/skill-map/SKILL.md`](skills/skill-map/SKILL.md) |
+| 174 | ✓ | [`skills/spreadsheets/agents/openai.yaml`](skills/spreadsheets/agents/openai.yaml) |
+| 175 | ✓ | [`skills/spreadsheets/references/recipes.md`](skills/spreadsheets/references/recipes.md) |
+| 176 | ✓ | [`skills/spreadsheets/references/xlsx.md`](skills/spreadsheets/references/xlsx.md) |
+| 177 | ✓ | [`skills/spreadsheets/scripts/peek.py`](skills/spreadsheets/scripts/peek.py) |
+| 178 | ✓ | [`skills/spreadsheets/scripts/profile.py`](skills/spreadsheets/scripts/profile.py) |
+| 179 | ✓ | [`skills/spreadsheets/scripts/recalc.py`](skills/spreadsheets/scripts/recalc.py) |
+| 180 | ✓ | [`skills/spreadsheets/scripts/test_spreadsheets.py`](skills/spreadsheets/scripts/test_spreadsheets.py) |
+| 181 | ✓ | [`skills/spreadsheets/SKILL.md`](skills/spreadsheets/SKILL.md) |
+| 182 | ✓ | [`skills/tailwind-css/agents/openai.yaml`](skills/tailwind-css/agents/openai.yaml) |
+| 183 | ✓ | [`skills/tailwind-css/references/coding-preferences.md`](skills/tailwind-css/references/coding-preferences.md) |
+| 184 | ✓ | [`skills/tailwind-css/references/eslint.md`](skills/tailwind-css/references/eslint.md) |
+| 185 | ✓ | [`skills/tailwind-css/references/tailwind-v4-rules.md`](skills/tailwind-css/references/tailwind-v4-rules.md) |
+| 186 | ✓ | [`skills/tailwind-css/references/tailwind-variants.md`](skills/tailwind-css/references/tailwind-variants.md) |
+| 187 | ✓ | [`skills/tailwind-css/references/tw-animate-css.md`](skills/tailwind-css/references/tw-animate-css.md) |
+| 188 | ✓ | [`skills/tailwind-css/SKILL.md`](skills/tailwind-css/SKILL.md) |
+| 189 | ✓ | [`skills/todo-archive/agents/openai.yaml`](skills/todo-archive/agents/openai.yaml) |
+| 190 | ✓ | [`skills/todo-archive/scripts/archive_todo.py`](skills/todo-archive/scripts/archive_todo.py) |
+| 191 | ✓ | [`skills/todo-archive/SKILL.md`](skills/todo-archive/SKILL.md) |
+| 192 | ✓ | [`skills/vitest/agents/openai.yaml`](skills/vitest/agents/openai.yaml) |
+| 193 | ✓ | [`skills/vitest/references/mocking.md`](skills/vitest/references/mocking.md) |
+| 194 | ✓ | [`skills/vitest/references/monorepo-testing.md`](skills/vitest/references/monorepo-testing.md) |
+| 195 | ✓ | [`skills/vitest/references/testing-patterns.md`](skills/vitest/references/testing-patterns.md) |
+| 196 | ✓ | [`skills/vitest/references/troubleshooting.md`](skills/vitest/references/troubleshooting.md) |
+| 197 | ✓ | [`skills/vitest/SKILL.md`](skills/vitest/SKILL.md) |
+| 198 | ✓ | [`skills/yeet/agents/openai.yaml`](skills/yeet/agents/openai.yaml) |
+| 199 | ✓ | [`skills/yeet/references/comment-issue.md`](skills/yeet/references/comment-issue.md) |
+| 200 | ✓ | [`skills/yeet/references/context.md`](skills/yeet/references/context.md) |
+| 201 | ✓ | [`skills/yeet/references/create-discussion.md`](skills/yeet/references/create-discussion.md) |
+| 202 | ✓ | [`skills/yeet/references/create-issue.md`](skills/yeet/references/create-issue.md) |
+| 203 | ✓ | [`skills/yeet/references/create-pr.md`](skills/yeet/references/create-pr.md) |
+| 204 | ✓ | [`skills/yeet/references/issue-claude-code.md`](skills/yeet/references/issue-claude-code.md) |
+| 205 | ✓ | [`skills/yeet/references/issue-codex-cli.md`](skills/yeet/references/issue-codex-cli.md) |
+| 206 | ✓ | [`skills/yeet/references/issue-sablier.md`](skills/yeet/references/issue-sablier.md) |
+| 207 | ✓ | [`skills/yeet/references/posting.md`](skills/yeet/references/posting.md) |
+| 208 | ✓ | [`skills/yeet/references/templates/claude-code/bug-report.md`](skills/yeet/references/templates/claude-code/bug-report.md) |
+| 209 | ✓ | [`skills/yeet/references/templates/claude-code/documentation.md`](skills/yeet/references/templates/claude-code/documentation.md) |
+| 210 | ✓ | [`skills/yeet/references/templates/claude-code/feature-request.md`](skills/yeet/references/templates/claude-code/feature-request.md) |
+| 211 | ✓ | [`skills/yeet/references/templates/claude-code/model-behavior.md`](skills/yeet/references/templates/claude-code/model-behavior.md) |
+| 212 | ✓ | [`skills/yeet/references/templates/codex/1-codex-app.md`](skills/yeet/references/templates/codex/1-codex-app.md) |
+| 213 | ✓ | [`skills/yeet/references/templates/codex/2-extension.md`](skills/yeet/references/templates/codex/2-extension.md) |
+| 214 | ✓ | [`skills/yeet/references/templates/codex/3-cli.md`](skills/yeet/references/templates/codex/3-cli.md) |
+| 215 | ✓ | [`skills/yeet/references/templates/codex/4-bug-report.md`](skills/yeet/references/templates/codex/4-bug-report.md) |
+| 216 | ✓ | [`skills/yeet/references/templates/codex/5-feature-request.md`](skills/yeet/references/templates/codex/5-feature-request.md) |
+| 217 | ✓ | [`skills/yeet/references/templates/codex/6-docs-issue.md`](skills/yeet/references/templates/codex/6-docs-issue.md) |
+| 218 | ✓ | [`skills/yeet/references/update-issue.md`](skills/yeet/references/update-issue.md) |
+| 219 | ✓ | [`skills/yeet/references/update-pr.md`](skills/yeet/references/update-pr.md) |
+| 220 | ✓ | [`skills/yeet/references/writing.md`](skills/yeet/references/writing.md) |
+| 221 | ✓ | [`skills/yeet/scripts/get-macos-version.sh`](skills/yeet/scripts/get-macos-version.sh) |
+| 222 | ✓ | [`skills/yeet/scripts/yeet-context.sh`](skills/yeet/scripts/yeet-context.sh) |
+| 223 | ✓ | [`skills/yeet/SKILL.md`](skills/yeet/SKILL.md) |
 
 ---
 

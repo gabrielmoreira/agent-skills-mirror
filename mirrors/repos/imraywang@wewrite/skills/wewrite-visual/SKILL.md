@@ -1,10 +1,8 @@
 ---
 name: wewrite-visual
 description: |
-  WeWrite 视觉模块：为公众号文章生成封面 + 内文配图（提示词创作 → 风格锚定 →
-  批量 AI 生图 → 验证插入）。
-  触发关键词：封面图、生成封面、配图、给文章配图、换封面、封面换个风格。
-  需要公众号/WeWrite 上下文；不应被通用的"画个图"、logo 设计触发。
+  WeWrite 视觉模块：为公众号文章生成封面和必要的内文配图，或只交付提示词。触发词：
+  封面图、公众号配图、给文章配图、换封面。通用绘图和 logo 设计不触发。
 allowed-tools:
   - Bash
   - Read
@@ -13,59 +11,52 @@ allowed-tools:
   - Glob
 ---
 
-# wewrite-visual — 视觉 AI（封面 + 配图）
-
-## 运行约定
-
-- **CLI**：确定性操作走 `wewrite` 命令（需在 PATH；缺失则引导 `uv tool install wewrite`，或在仓库里 `bash install.sh`）。
-- **{home}**：用户状态目录 = `$WEWRITE_HOME` 或 `~/.wewrite`（`wewrite home` 可查）。config/style/history/playbook/output/exemplars 全在 {home}，不在仓库；references 文档中的状态路径同此约定。
-- **`读取: <路径>`** = 用文件读取工具真实读完该文件再继续，不是注释。
-- **references/**：本 skill 自带 `{skill_dir}/references/`；references 文档内的 `{skill_dir}` 即本 skill 目录。
-- **管道状态**：`{home}/output/_state.yaml`（契约见主入口 wewrite 的 `references/pipeline-state.md`）。
+# wewrite-visual — 封面与配图
 
 ## 前置
 
-1. **文章**：用户指定的文件 > `_state.yaml` 的 `article` > `{home}/output/article.md`。
-   都没有 → 问用户"给哪篇文章配图？"
-2. **降级标记**：读 `_state.yaml` 的 `flags.skip_image_gen`；缺失或 `diagnosed_at`
-   非当天 → `wewrite diagnose --json` 重取并写回。
-3. style.yaml 的 `cover_style` / `cover_template`（有则作为封面风格约束）。
+用户指定文章时使用该文件；否则 `wewrite run show`，读取当前任务的 `artifacts.article`、
+`artifacts.illustrated_article`、`artifacts.image_prompts`、`artifacts.images_manifest`、
+`visual`、`flags` 和任务目录。已完成的文章也可以直接配图，不要恢复或新建写作任务。
+
+有任务时运行 `wewrite run step visual in_progress`。用户直接给了任务外文章时独立执行，
+不写任务状态；提示词和图片放进文章同目录的 `<文件名>-assets/`，带图副本写成
+`<文件名>-illustrated.md`。
+
+根据本轮原话确定模式并用 `wewrite run update` 记录：只要封面用 `cover`，封面和必要内文图
+用 `full`，只要提示词用 `prompts`。不要沿用写作模式猜测用户想生图。`prompts` 或
+`skip_image_gen=true` 时仍要完成提示词，但不调用付费图片服务。
+
+完整读取：
+
+```text
+读取: {skill_dir}/references/visual-guide.md
+```
 
 ## 执行
 
-**如果 `skip_image_gen = true`** → 只执行 6.1（输出提示词，不生图）。
-
-```
-读取: {skill_dir}/references/visual-prompts.md
-```
-
-**6.1 实体提取**：从终稿中提取 3-5 个**具体实体**（人物、产品名、场景、数据点、行业术语）。后续所有提示词必须包含至少 2 个实体。
-
-**6.2 提示词 + 风格锚定**（一次性把全部提示词写齐，**不要生成一张等一张**）：
-1. 生成封面 3 组创意提示词（按 visual-prompts.md），选最佳 1 组。
-2. **从选定的封面提示词文本**（而非已渲染的图）提取视觉锚点：色板 hex、风格关键词、画面调性。锚点来自提示词本身，所以无需等封面图回来就能继续。
-3. 分析文章结构，为每个需要配图的段落选图片类型（infographic/scene/flowchart/comparison/framework/timeline），按 visual-prompts.md 模板写 3-6 张内文配图提示词；每张都引用第 2 步的视觉锚点，保证全文视觉一致。
-
-**6.3 生成全部图片（封面 + 内文配图，必须实际生成 .png，不能只写提示词就算完成）**：把封面与每张内文配图都用 `wewrite image-gen` 实际生成出来。封面 `--size cover`，内文配图 `--size article`；多 provider 自动 fallback 已内置。**一次性把全部命令发出**（环境支持并行工具调用就并行，不支持就顺序，但务必把全部图都生成）：
+1. 从终稿提取 3-5 个具体实体和文章主情绪，形成统一色板、构图与质感。
+2. 写一个封面提示词。`cover` 模式到此为止；`full` 模式只为确实需要解释或缓冲阅读的
+   段落补图，不按固定数量凑图。
+3. 将提示词和目标路径写到 `artifacts.image_prompts`；批量清单写到
+   `artifacts.images_manifest`。
+4. 数量必须不超过任务的 `visual.max_images`。调用时同时传入数量和费用上限：
 
 ```bash
-wewrite image-gen --prompt "{封面提示词}" --output {home}/output/{slug}-cover.png --size cover
-wewrite image-gen --prompt "{配图1提示词}" --output {home}/output/{slug}-fig1.png --size article
-wewrite image-gen --prompt "{配图2提示词}" --output {home}/output/{slug}-fig2.png --size article
-# …其余配图同理，全部生成
+wewrite image-gen --manifest {run_dir}/images.json --max-images {max_images} --max-cost {max_cost}
 ```
-> 提示词只是中间产物——**本模块完成的标志是 `{home}/output/` 下真的出现了这些 .png 文件**，不是把提示词写进某个 md 就完事。
-> 也可用一条命令批量并发（等价、工具内并行）：把 `[{"prompt","output","size"}…]` 写进 `{home}/output/_images.json`，再 `wewrite image-gen --manifest {home}/output/_images.json`。
 
-**6.4 一次性验证 + 插入**：
-- **全自动模式**：所有图返回后，**在一轮内**统一确认每张 .png 都已生成（核心实体可识别、风格一致）。只对明显失败（实体不可辨 / 风格跑偏 / 没生成）的那一张换提示词重试 1 次，其余直接采用。**不要逐张读图、逐张推理**（那会把一次检查拆成多轮，显著拖慢）。
-- **交互模式**：展示封面（及配图），问用户"效果如何？"，不满意再针对性重生成。
+`max_cost` 为空时省略该参数。预算预检不通过就减少内文图，不能绕过上限。图片服务失败时
+保留完整提示词并继续流程。
 
-确认后把对应的 Markdown 图片占位符一次性替换为实际路径。
+5. 一次性检查所有实际文件：能打开、格式与扩展名一致、核心实体可辨、风格连贯。只重试
+   明显失败的单张一次。`full` 模式先复制原始正文到 `artifacts.illustrated_article`，再把
+   采用的内文图插到副本相应段落；封面不插入正文。任何模式都不得覆盖原始正文。
 
-**降级**：`wewrite image-gen` 支持多 provider 自动 fallback（按 config.yaml 中 providers 列表顺序尝试）。全部失败 → 输出提示词 + 备选图库关键词，继续。
+完成后更新 `images.cover`、`images.figures`，再执行：
 
-## 完成
+```bash
+wewrite run step visual completed
+```
 
-写回 `_state.yaml`：`images.cover`、`images.figures`（实际生成的 .png 路径），
-`steps_done` 追加 `visual`。单独激活时展示生成的图片路径并提示可"换个风格重生成"。
+只有提示词时同样标 completed，并明确说明未产生费用、没有实际图片。

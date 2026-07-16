@@ -3776,10 +3776,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3679 | ✓ | [`skills/68-research-productivity-skills/web-access/scripts/match-site.mjs`](skills/68-research-productivity-skills/web-access/scripts/match-site.mjs) |
 | 3680 | ✓ | [`skills/68-research-productivity-skills/web-access/SKILL.md`](skills/68-research-productivity-skills/web-access/SKILL.md) |
 | 3681 | ✓ | [`skills/68-research-productivity-skills/web-research/SKILL.md`](skills/68-research-productivity-skills/web-research/SKILL.md) |
-| 3682 | ✓ | [`skills/ssci-polish/references/academic.md`](skills/ssci-polish/references/academic.md) |
-| 3683 | ✓ | [`skills/ssci-polish/references/grammar.md`](skills/ssci-polish/references/grammar.md) |
-| 3684 | ✓ | [`skills/ssci-polish/references/style.md`](skills/ssci-polish/references/style.md) |
-| 3685 | ✓ | [`skills/ssci-polish/SKILL.md`](skills/ssci-polish/SKILL.md) |
+| 3682 | ✓ | [`skills/70-ssci-polish/references/academic.md`](skills/70-ssci-polish/references/academic.md) |
+| 3683 | ✓ | [`skills/70-ssci-polish/references/grammar.md`](skills/70-ssci-polish/references/grammar.md) |
+| 3684 | ✓ | [`skills/70-ssci-polish/references/style.md`](skills/70-ssci-polish/references/style.md) |
+| 3685 | ✓ | [`skills/70-ssci-polish/SKILL.md`](skills/70-ssci-polish/SKILL.md) |
 | 3686 | → | [`CHANGELOG.md`](CHANGELOG.md) |
 | 3687 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 3688 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |

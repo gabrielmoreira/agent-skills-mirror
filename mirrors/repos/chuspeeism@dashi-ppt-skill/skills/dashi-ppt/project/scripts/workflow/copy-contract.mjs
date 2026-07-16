@@ -58,9 +58,40 @@ function collectCopyPaths(value, pathName, out) {
     return;
   }
   if (Array.isArray(value)) {
-    const shape = value.find(isPlainObject);
-    if (shape) {
-      for (const [key, item] of Object.entries(shape)) collectCopyPaths(item, `${pathName}[].${key}`, out);
+    if (isCopyTupleArray(value)) {
+      // 元组数组整体作为一个可填路径(specs[][]);写回时保持 [[...], ...] 形状。
+      if (tupleLooksLikeCopy(value)
+        && value.flat().some(x => (typeof x === 'string' || typeof x === 'number') && isFillableCopyLeaf(`${pathName}[][]`, x))) {
+        out.push(`${pathName}[][]`);
+      }
+      return;
+    }
+    if (isCopySegmentRowsArray(value)) {
+      // 富文本分段行数组(如 theme01 lines:[[{t,mark?},...],...])——按行展开成
+      // `<key>[][].<field>`;mark 等样式标签不是文案,保持只读(不进 out),只收字符串叶子(t)。
+      const tokens = value.filter(Array.isArray).flat().filter(isPlainObject);
+      const merged = {};
+      for (const tok of tokens) {
+        for (const [key, item] of Object.entries(tok)) {
+          if (!(key in merged) || merged[key] == null) merged[key] = item;
+        }
+      }
+      for (const [key, item] of Object.entries(merged)) {
+        if (key === 'mark' || typeof item !== 'string') continue;
+        collectCopyPaths(item, `${pathName}[][].${key}`, out);
+      }
+      return;
+    }
+    const objects = value.filter(isPlainObject);
+    if (objects.length) {
+      // 并集全部对象项(样本取首个非 null):首项为 null 的字段(如漏斗首段 conv)也能进 copyKeys
+      const merged = {};
+      for (const obj of objects) {
+        for (const [key, item] of Object.entries(obj)) {
+          if (!(key in merged) || merged[key] == null) merged[key] = item;
+        }
+      }
+      for (const [key, item] of Object.entries(merged)) collectCopyPaths(item, `${pathName}[].${key}`, out);
       return;
     }
     if (value.some(item => (typeof item === 'string' || typeof item === 'number') && isFillableCopyLeaf(`${pathName}[]`, item))) out.push(`${pathName}[]`);
@@ -194,6 +225,7 @@ function collectCopyBudgets(value, pathName, budgets) {
     return;
   }
   if (Array.isArray(value)) {
+    if (isCopyTupleArray(value) && !tupleLooksLikeCopy(value)) return;
     value.slice(0, 4).forEach(item => collectCopyBudgets(item, `${pathName}[]`, budgets));
     return;
   }
@@ -272,6 +304,7 @@ function hasFillableCopyLeaf(value, pathName) {
     return isFillableCopyLeaf(pathName, value);
   }
   if (Array.isArray(value)) {
+    if (isCopyTupleArray(value) && !tupleLooksLikeCopy(value)) return false;
     return value.some(item => hasFillableCopyLeaf(item, `${pathName}[]`));
   }
   if (!isPlainObject(value)) return false;
@@ -283,7 +316,14 @@ export function isFillableCopyLeaf(pathName, value) {
   if (/axesData\[\]\.id$/i.test(String(pathName || '')) && typeof value === 'string') return true;
   if (isNonContentContractValue(pathName, value)) return false;
   if (isColorString(value) && /^(c|color|colour|accent|fill|stroke|background|bg|tint|hex)$/i.test(field)) return false;
-  if (/^(id|key|type|kind|mode|variant|style|layout|align|side|position|fit|icon|href|url|src|className)$/i.test(field)) return false;
+  if (/^(id|key|type|kind|mode|variant|style|layout|align|side|position|fit|icon|href|url|src|className|state)$/i.test(field)) {
+    // 字段名撞结构词但值是自然文案(CJK 或多词文本,且非路径/枚举 token)——按文案放行:
+    // theme07 columns[].kind="看好方向"(可见大标题)、theme05 copy.src="EXPANDED SLIDE · P61"(可见字幕)
+    // theme11 rows[].cells[].state="partial"/"full"/"missing" 是驱动图标的闭集枚举,非自由文案。
+    const text = typeof value === 'string' ? value.trim() : '';
+    const looksLikeCopy = /[一-龥]/.test(text) || (/\S\s+\S/.test(text) && !/^[a-z0-9_\-./:]+$/i.test(text));
+    if (!looksLikeCopy) return false;
+  }
   // 'q' is ambiguous by name alone: a structural quadrant/scorecard token elsewhere (locked, see
   // FREE_TEXT_ARRAY_FIELD_PATHS comment in prop-contract-core.mjs) vs. a rewritable quarter-tick
   // label / quote / FAQ question here. Registered array[].field paths opt out of the token-like
@@ -309,9 +349,53 @@ function isTokenLike(value) {
   return /^[A-Za-z0-9_-]{1,24}$/.test(text);
 }
 
+// 元组数组([[label, value], ...]):行全为标量数组。theme07 封面 specs、theme01 榜单 rows 属此形。
+export function isCopyTupleArray(value) {
+  if (!Array.isArray(value) || !value.length) return false;
+  const rows = value.filter(item => item != null);
+  return rows.length > 0 && rows.every(item => Array.isArray(item)
+    && item.every(x => x == null || ['string', 'number'].includes(typeof x)));
+}
+
+// 元组叶子须含自然文案(CJK 或多词文本)才算 copy,或行首(index 0)是品牌词
+// (见 isBrandLikeToken,logo 墙客户名需可替换)——排除代码型元组
+// (如 theme10 热力/拼布矩阵的资产代码、logo 墙的样式标记)。
+function tupleLooksLikeCopy(value) {
+  const rows = value.filter(row => row != null);
+  if (rows.some(row => row.some(x => /[\u4e00-\u9fa5]/.test(String(x ?? '')) || /\S\s+\S/.test(String(x ?? ''))))) return true;
+  return rows.some(row => isBrandLikeToken(row?.[0]));
+}
+
+// Brand-like token: ALL-CAPS word (DAZZ) or TitleCase word (Multiply), i.e. a
+// logo-wall client-name shape, distinct from lowercase asset codes (cm/eq/reit)
+// and bare style flags ('.'/'soft'); only index 0 is checked here, so an
+// index-1-only style tag never triggers exposure by itself.
+function isBrandLikeToken(value) {
+  if (typeof value !== 'string') return false;
+  const text = value.trim();
+  return /^[A-Z][A-Z0-9]+$/.test(text) || /^[A-Z][a-z0-9]+$/.test(text);
+}
+
+// 富文本分段行数组([[{t,mark?},...], ...]):行是数组(不是元组标量、也不是顶层对象数组),
+// 行内元素是 {t,...} 小对象——theme01 SlideTypeStatement `lines` 属此形。与 isCopyTupleArray
+// (行内是标量)、顶层对象数组(下方 isCopyValue 的 value.every(isPlainObject) 那支)都不同,
+// 需单列一支才能被 isCopyValue 认作 copy 根、被 collectCopyPaths 展开成 `<key>[][].t`。
+function isCopySegmentRowsArray(value) {
+  if (!Array.isArray(value) || !value.length) return false;
+  const rows = value.filter(item => item != null);
+  if (!rows.length || !rows.every(row => Array.isArray(row) && row.length && row.every(isPlainObject))) return false;
+  return rows.some(row => row.some(tok => typeof tok.t === 'string' && /\S/.test(tok.t)));
+}
+
 function isCopyValue(value) {
   if (value == null) return false;
   if (['string', 'number'].includes(typeof value)) return true;
-  if (Array.isArray(value)) return value.length > 0 && value.every(item => item == null || ['string', 'number'].includes(typeof item) || isPlainObject(item));
+  if (Array.isArray(value)) {
+    return value.length > 0 && (
+      value.every(item => item == null || ['string', 'number'].includes(typeof item) || isPlainObject(item))
+      || isCopyTupleArray(value)
+      || isCopySegmentRowsArray(value)
+    );
+  }
   return isPlainObject(value);
 }

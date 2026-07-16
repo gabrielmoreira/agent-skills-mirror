@@ -1,7 +1,7 @@
 # Cross-Model Judgment Pass — Skill-Creator Eval Spec
 
-This is the eval-case specification for the cross-model judgment pass (U6 of the
-cross-model plan). It is the **load-bearing behavioral gate**: `bun test` does
+This is the eval-case specification for the cross-model judgment pass. It is the
+**load-bearing behavioral gate**: `bun test` does
 not exercise SKILL.md/reference prose, and plugin skill definitions cache at
 session start, so behavioral wiring must be validated through the `skill-creator`
 skill's eval workflow — which injects the current on-disk skill/reference content
@@ -21,10 +21,9 @@ Each case injects the current `SKILL.md`, `references/cross-model-review.md`, an
 as specified.
 
 Cases 11-14 cover the detached launch->wait lifecycle and model-identity
-receipts (the detached-peer-job-lifecycle plan's R5, R6, R8, R13 — cited below
-as "lifecycle R*" to keep them distinct from this spec's own R-numbers). Run
-them with the fake-CLI harness pattern — stub peer CLIs placed first on PATH —
-and cross-host per the repo's eval default: Claude Code AND Codex.
+receipts. Case 15 covers U8's fixed-route and bounded-adaptability contract.
+Run them with the fake-CLI harness pattern — stub peer CLIs placed first on
+PATH — and cross-host per the repo's eval default: Claude Code AND Codex.
 
 1. **Activation gate — fires (R1, R2).** A document that activates at least one
    trio lens (e.g. a greenfield plan with a high-stakes domain activating
@@ -43,59 +42,61 @@ and cross-host per the repo's eval default: Claude Code AND Codex.
    `feasibility`/`coherence`/`scope-guardian` but no trio lens, assert no
    cross-model call is launched for any of those lenses.
 
-4. **Attest host provider, resolve one different-provider peer (R7, R15, R16).**
-   Assert the orchestrator attests the host provider from its own harness and
-   **excludes** it, then passes the script a `host_provider` plus a candidate
-   order: Claude host → `host_provider=claude`, default candidates resolve peer
-   `codex`; Codex host → `host_provider=codex`, peer `claude`; Cursor on an
-   **un-attestable** model → the pass **skips (zero peers)**, never a guessed
-   same-provider peer. A preference stated in conversation (or `cross_model_peer:`
-   in config, or the active project instructions) is front-loaded into the
-   candidate order and overrides the default. Assert a second peer is launched
-   only when `CROSS_MODEL_MAX_PEERS=2`.
+4. **Attest host identity; sanction one fixed route (R7, R15, R16).** Assert the
+   orchestrator separates host harness from serving family, excludes an
+   attestably same-family target, and resolves exactly one target plus concrete
+   route for the whole document before egress. Claude host → default target
+   `codex`; Codex host → default target `claude`; Cursor host with an unknown
+   serving family → automatic pass skips. The worker receives
+   `CROSS_MODEL_HOST_HARNESS` and `CROSS_MODEL_FIXED_ROUTE`; it never chooses a
+   recipient from a candidate list after content is available.
 
 5. **Context slots threaded (R13).** Assert the orchestrator passes `document_type`
    (the Phase 1 classification) and `origin` (the same `{origin_path}` slot the
    in-process personas receive) to each cross-model call.
 
-6. **One model per provider at high reasoning (R4; R5 superseded).** Assert every
-   activated trio lens runs on the resolved provider's single model at high
-   reasoning (not a per-lens flagship/mid split) — the skill/reference hands the
-   script `host_provider` + candidates and lets its single in-script mapping pick
-   the model, rather than restating per-lens model IDs in the prose.
+6. **One model per target at high reasoning (R4; R5 superseded).** Assert every
+   activated trio lens uses the same sanctioned target and fixed route. The
+   script's mapping owns the concrete model and reasoning flags; prose does not
+   restate model IDs. `cursor` omits `--model` for Cursor default/Auto, while
+   `composer` requests an explicit Composer-family model through Cursor.
 
-7. **Fold-in + agreement promotion (R8, R9, R18).** Given a stubbed
-   `<reviewer-name>-<provider>.json` return whose finding shares a fingerprint with
-   an in-process twin finding, assert synthesis 3.4 promotes the merged finding by
-   one anchor step and renders the Reviewer column as
-   `<reviewer-name>, <reviewer-name>-<provider> (+1 anchor)`. Assert the peer
-   finding is **never** rendered/applied as `safe_auto` and that agreement adds at
-   most one anchor step even with a second opt-in peer. Also assert the promotion
+7. **Fold-in + receipt-gated agreement promotion (R8, R9, R18).** Given a
+   stubbed `<reviewer-name>-<provider>.json` return with
+   `independence_verified: true` whose finding shares a fingerprint with an
+   in-process twin, assert synthesis promotes the merged finding by one anchor
+   step and attributes both reviewers. Repeat with
+   `independence_verified: false` and assert the finding remains attributed
+   evidence but receives no agreement promotion. Assert the peer finding is
+   **never** rendered/applied as
+   `safe_auto`. Also assert the promotion
    path is capped: a **peer-only** `manual` finding at confidence 100 with a
    mechanically-implied `suggested_fix` is **not** promoted to `safe_auto` by 3.6
    (nor silently applied by 3.7) — it caps at `gated_auto` unless an in-process
    reviewer independently raised the same finding (merged twin in 3.3).
 
-8. **Announce by mode (R12).** Interactive host, default mode → a prominent line
-   that frames it as an **independent cross-model review**, names the concrete
-   **model + reasoning** (not just a provider key), and — for a cursor-agent route
-   — names the **route** so Grok-4.5-via-cursor-agent vs Composer vs
-   Grok-4.5-via-grok-CLI is unambiguous, and names the document-content egress
-   **scope** — and when the front-loaded provider falls through to a fallback, the
-   **actual** provider (read from the `<lens>-<provider>.json` fold-in filename) is
-   disclosed, not just the announced primary.
+8. **Announce by mode (R12).** Interactive host, default mode → before egress, a
+   prominent line names the requested target, fixed route/intermediaries,
+   requested model and reasoning, receipt status, and document-content egress
+   scope. Call it independent only when serving families are attestably
+   different. A failed route never changes recipients internally; any retry is
+   a new host decision requiring a new disclosure and sanction.
    Headless mode → no user-facing prose about the pass (the script still emits the
    stderr egress audit log).
 
-9. **Non-blocking (R11).** With the peer CLI absent/unauthed (script writes no
-   output file), assert the review completes with all in-process findings and
-   notes "cross-model pass: not run" in Coverage on an interactive host; no error.
+9. **Non-blocking (R11).** With the peer CLI absent/unauthed, or with the fixed
+   route failing after dispatch, assert the review completes with all in-process
+   findings. A never-started pass reports "cross-model pass: not run"; a started
+   failed pass is named with its terminal state. No worker-internal recipient
+   fallback is attempted.
 
 10. **Whole-document sweep + trio slicing (R20, KTD6, KTD3).** When the pass runs,
     assert exactly **one** additional `whole-doc` call is launched (not one per
     lens) on the **full** document with the same resolved provider, folds in as
     `whole-doc-<provider>`, and a sweep finding sharing a fingerprint with *any*
-    in-process finding promotes one anchor step (no in-process twin needed); the
+    in-process finding promotes one anchor step (no in-process twin needed) only
+    when the whole-doc artifact has `independence_verified: true`; with false or
+    absent independence it remains attributed evidence without promotion. The
     sweep is never `safe_auto`. Assert that on a **unified plan** the trio peers
     receive their in-process twin's slice (e.g. product-lens/adversarial get the
     Product Contract), not the full document.
@@ -127,7 +128,15 @@ and cross-host per the repo's eval default: Claude Code AND Codex.
     "requested <model>; serving model unverified on this route" rather than
     asserting the concrete model as serving.
 
+15. **Preferred-first bounded adaptation (U8).** The declared mapping is tried
+    first. Only after an observed unavailable, obsolete, or incompatible model
+    may the host inspect capabilities and bind a same-target/same-family override
+    with `CROSS_MODEL_MODEL_OVERRIDE_TARGET` plus `CROSS_MODEL_MODEL_OVERRIDE`.
+    Assert cross-family substitution, override leakage to another target, and a
+    new recipient are rejected. A recipient-changing retry requires a newly
+    disclosed and sanctioned dispatch.
+
 ## Pass criteria
 
-All fourteen cases pass on the current on-disk source, and case 2 confirms the
+All fifteen cases pass on the current on-disk source, and case 2 confirms the
 conditional cost profile (no peer spawn on a routine validated plan).

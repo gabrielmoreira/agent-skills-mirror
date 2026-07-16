@@ -22,6 +22,11 @@ below is kept current between tags and rolled into the next version when it ship
 - **Model retry jitter controls** — model retry behavior can now use jitter controls to reduce synchronized retry bursts. (`ai/`, `agent/`)
 - **Compacted memory summaries** — agent memory now exposes compacted run summaries for easier inspection and recovery. (`agent/`)
 - **CLI input resume for agent runs** — the CLI can resume agent runs that require additional user input. (`cmd/micro/`, `agent/`)
+- **A2A inbound AP2 mandate verification (opt-in)** — set `Options.AP2PublicKey` (or `a2a.WithPushURLPolicy`'s sibling `a2a.WithAP2PublicKey` for embedded handlers) and the gateway verifies AP2 payment/checkout mandates carried on incoming messages — signature and task/context binding — recording the outcome in each task's `ap2Verifications`, with the x402 settlement rail carried through for the paid path. Off by default; mandates are otherwise carried unverified. (`gateway/a2a/`)
+- **Flow human-in-the-loop pause/resume** — a flow step can suspend a run for external input with `flow.Await(key, prompt)` (or `flow.AwaitStep`): the run checkpoints with status `waiting` and `Execute` returns cleanly. `Flow.Waiting` lists suspended runs with what they await, and `Flow.ResumeWith(ctx, runID, input)` injects the input and continues from the next step. Recovery (`ResumePending`) skips waiting runs since they need input, not a restart. (`flow/`)
+- **Kubernetes reconcile core (alpha)** — `kubernetes.Reconcile(desired, observed)` decides the single action needed to converge an `Agent`/`Service`/`Flow` resource toward its Deployment (create / update / noop) and returns `Ready`/`Error` status conditions. Dependency-free (no controller-runtime / client-go) and fully unit-testable; a future operator binary supplies observed state and applies the action. (`deploy/kubernetes/`)
+- **In-process "local network" fast-path (opt-in)** — `client.Local()` lets a unary `Call` to a service running in the same process skip the network transport and dispatch straight to that server's handlers (for raw `codec/bytes.Frame` bodies — the shape agent/MCP/flow tool calls use), running the same router, wrappers, and codecs. In a benchmark this cut an in-process call from ~545µs to ~28µs (≈20×) with ~3.6× fewer allocations. Off by default; falls back to the network path for anything it doesn't cover. (`client/`, `server/`, `internal/network/`)
+- **`micro.Local()` service option** — turn on the in-process fast-path for a whole service in one place: every co-located unary call its client makes (agent tool calls, flow dispatch, gateway → service) takes the fast-path, with no per-call wiring. Off by default; a no-op for distributed deployments. (`service/`, root `options.go`)
 
 ### Changed
 - **Remote agent chat streaming** — `micro chat` now streams replies from remote agents instead of waiting for the full response. (`cmd/micro/`, `agent/`)
@@ -32,6 +37,7 @@ below is kept current between tags and rolled into the next version when it ship
 
 ### Security
 - **x402 spend-cap hardening** — the paying `Client` now refuses a 402 whose `maxAmountRequired` is not a positive integer (a swallowed parse error or negative amount previously bypassed the budget cap), and a new `Config.RequireSettlement` fails closed when a paid request is served by a verify-only facilitator that never captures funds. (`wrapper/x402/`)
+- **A2A push-notification SSRF guard** — the A2A gateway no longer delivers task push notifications to caller-supplied URLs that resolve to loopback, private, link-local (incl. cloud metadata), or unspecified addresses. Callbacks are validated when set and re-checked at dial time on the resolved IP (DNS-rebinding safe); non-http(s) schemes are rejected. `Options.AllowPushURL` (and `a2a.WithPushURLPolicy` for embedded handlers) lets operators authorize trusted in-cluster receivers. (`gateway/a2a/`)
 
 ---
 

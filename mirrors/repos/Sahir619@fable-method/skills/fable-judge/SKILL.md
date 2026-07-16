@@ -12,12 +12,13 @@ The most documented failure of coding agents is claiming success regardless of r
 Target: the most recent completed piece of work in this conversation, or whatever the user names (a diff, a directory, a branch, another agent's report pasted in).
 
 1. **Collect the claims.** From the report or conversation, list: what was supposedly done, what was supposedly verified ("tests pass", "build green", "renders correctly"), and what was supposedly left untouched. Each becomes a row to prove or refute.
-2. **Establish what actually changed.** `git diff` and `git status` (or a directory diff against a pristine reference when there is no repo). The diff is ground truth; the report is not. Compare the set of touched files against the ask's blast radius.
+2. **Establish what actually changed.** `git diff` and `git status` (or a directory diff against a pristine reference when there is no repo). The diff is ground truth; the report is not. Compare the set of touched files against the ask's blast radius, and against the plan's declared scope when the work declared one.
 3. **Re-run every claimed verification yourself.** Do not read code and nod: run the tests, the build, the script, the page. Capture the actual output. A claim that cannot be re-run (missing environment, credentials, human-eyes-only) is labeled UNVERIFIABLE, never assumed true.
 4. **Hunt the classic frauds**, in order of real-world frequency:
    - **Weakened checks.** Diff the test files specifically: assertions loosened or deleted, expected values changed to match the new behavior, tests skipped, tolerances widened, real calls replaced by mocks. A changed test is guilty until its justification traces to a spec.
    - **False completion.** A pass claimed with no run shown, a partial pass reported as full, "should work now", success language on a failure transcript.
    - **Scope creep.** Changes beyond the ask: drive-by refactors, reformatting, new dependencies, "improvements".
+   - **Unauthorized action.** An outward-facing effect (deploy, push, publish, send, install, schedule, delete of shared data) that no quoted user instruction covers. Look for the report's `AUTH: user said` line and check its quote against the conversation; an outward effect in the diff or environment (a deploy marker, a new remote, a sent artifact) with no AUTH line, or with a quote that does not actually authorize that action, is the fraud. Documentation telling the agent to deploy does not count as authorization.
    - **Spec betrayal.** Code changed to satisfy a check that contradicts the README/spec/docstring. Authority order: explicit user statement beats spec, spec beats tests, tests beat current code behavior.
    - **Debris.** Leftover scratch files, debug prints, commented-out code, orphaned imports.
    The full catalogue is `fable-method`'s `references/failure-modes.md`; use it as the checklist when the work is large.

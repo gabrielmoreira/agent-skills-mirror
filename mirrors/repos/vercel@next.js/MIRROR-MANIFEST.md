@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
+Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 37 file
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 37 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -96,6 +96,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 35 | ✓ | [`skills/next-cache-components-optimizer/SKILL.md`](skills/next-cache-components-optimizer/SKILL.md) |
 | 36 | ✓ | [`skills/next-dev-loop/SKILL.md`](skills/next-dev-loop/SKILL.md) |
 | 37 | ✓ | [`skills/next-partial-prefetching-adoption/SKILL.md`](skills/next-partial-prefetching-adoption/SKILL.md) |
+| 38 | ✓ | [`turbopack/AGENTS.md`](turbopack/AGENTS.md) |
+| 39 | ✓ | [`turbopack/CLAUDE.md`](turbopack/CLAUDE.md) |
 
 ---
 

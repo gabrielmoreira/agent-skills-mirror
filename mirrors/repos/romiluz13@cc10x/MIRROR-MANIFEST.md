@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `romiluz13/cc10x` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `romiluz13/cc10x` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `romiluz13/cc10x` — 26 default patterns, 0 followed patterns, 17 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,17 +65,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`plugins/cc10x/skills/building/SKILL.md`](plugins/cc10x/skills/building/SKILL.md) |
 | 5 | ✓ | [`plugins/cc10x/skills/cc10x-router/SKILL.md`](plugins/cc10x/skills/cc10x-router/SKILL.md) |
 | 6 | ✓ | [`plugins/cc10x/skills/code-review/SKILL.md`](plugins/cc10x/skills/code-review/SKILL.md) |
-| 7 | ✓ | [`plugins/cc10x/skills/codebase-hygiene/SKILL.md`](plugins/cc10x/skills/codebase-hygiene/SKILL.md) |
-| 8 | ✓ | [`plugins/cc10x/skills/debugging/SKILL.md`](plugins/cc10x/skills/debugging/SKILL.md) |
-| 9 | ✓ | [`plugins/cc10x/skills/diff-driven-docs/SKILL.md`](plugins/cc10x/skills/diff-driven-docs/SKILL.md) |
-| 10 | ✓ | [`plugins/cc10x/skills/exploration/SKILL.md`](plugins/cc10x/skills/exploration/SKILL.md) |
-| 11 | ✓ | [`plugins/cc10x/skills/frontend/SKILL.md`](plugins/cc10x/skills/frontend/SKILL.md) |
-| 12 | ✓ | [`plugins/cc10x/skills/mcp-cli/SKILL.md`](plugins/cc10x/skills/mcp-cli/SKILL.md) |
-| 13 | ✓ | [`plugins/cc10x/skills/memory-and-handoff/SKILL.md`](plugins/cc10x/skills/memory-and-handoff/SKILL.md) |
-| 14 | ✓ | [`plugins/cc10x/skills/plan-review-gate/SKILL.md`](plugins/cc10x/skills/plan-review-gate/SKILL.md) |
-| 15 | ✓ | [`plugins/cc10x/skills/research/SKILL.md`](plugins/cc10x/skills/research/SKILL.md) |
-| 16 | ✓ | [`plugins/cc10x/skills/update/SKILL.md`](plugins/cc10x/skills/update/SKILL.md) |
-| 17 | ✓ | [`plugins/cc10x/skills/verification/SKILL.md`](plugins/cc10x/skills/verification/SKILL.md) |
+| 7 | ✓ | [`plugins/cc10x/skills/codebase-design/DEEPENING.md`](plugins/cc10x/skills/codebase-design/DEEPENING.md) |
+| 8 | ✓ | [`plugins/cc10x/skills/codebase-design/DESIGN-IT-TWICE.md`](plugins/cc10x/skills/codebase-design/DESIGN-IT-TWICE.md) |
+| 9 | ✓ | [`plugins/cc10x/skills/codebase-design/SKILL.md`](plugins/cc10x/skills/codebase-design/SKILL.md) |
+| 10 | ✓ | [`plugins/cc10x/skills/codebase-hygiene/SKILL.md`](plugins/cc10x/skills/codebase-hygiene/SKILL.md) |
+| 11 | ✓ | [`plugins/cc10x/skills/debugging/SKILL.md`](plugins/cc10x/skills/debugging/SKILL.md) |
+| 12 | ✓ | [`plugins/cc10x/skills/diff-driven-docs/SKILL.md`](plugins/cc10x/skills/diff-driven-docs/SKILL.md) |
+| 13 | ✓ | [`plugins/cc10x/skills/domain-modeling/ADR-FORMAT.md`](plugins/cc10x/skills/domain-modeling/ADR-FORMAT.md) |
+| 14 | ✓ | [`plugins/cc10x/skills/domain-modeling/CONTEXT-FORMAT.md`](plugins/cc10x/skills/domain-modeling/CONTEXT-FORMAT.md) |
+| 15 | ✓ | [`plugins/cc10x/skills/domain-modeling/SKILL.md`](plugins/cc10x/skills/domain-modeling/SKILL.md) |
+| 16 | ✓ | [`plugins/cc10x/skills/exploration/SKILL.md`](plugins/cc10x/skills/exploration/SKILL.md) |
+| 17 | ✓ | [`plugins/cc10x/skills/frontend/SKILL.md`](plugins/cc10x/skills/frontend/SKILL.md) |
+| 18 | ✓ | [`plugins/cc10x/skills/mcp-cli/SKILL.md`](plugins/cc10x/skills/mcp-cli/SKILL.md) |
+| 19 | ✓ | [`plugins/cc10x/skills/memory-and-handoff/SKILL.md`](plugins/cc10x/skills/memory-and-handoff/SKILL.md) |
+| 20 | ✓ | [`plugins/cc10x/skills/plan-review-gate/SKILL.md`](plugins/cc10x/skills/plan-review-gate/SKILL.md) |
+| 21 | ✓ | [`plugins/cc10x/skills/research/SKILL.md`](plugins/cc10x/skills/research/SKILL.md) |
+| 22 | ✓ | [`plugins/cc10x/skills/update/SKILL.md`](plugins/cc10x/skills/update/SKILL.md) |
+| 23 | ✓ | [`plugins/cc10x/skills/verification/SKILL.md`](plugins/cc10x/skills/verification/SKILL.md) |
 
 ---
 

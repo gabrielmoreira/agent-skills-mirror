@@ -32,11 +32,13 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import subprocess
 import tempfile
 import time
 from contextlib import contextmanager
 from datetime import datetime, timezone
+from urllib.parse import urlsplit
 
 # Conclusions that mean "this check needs attention" (failing states).
 FAILING = {"FAILURE", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED", "STARTUP_FAILURE", "STALE"}
@@ -44,6 +46,13 @@ FAILING = {"FAILURE", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED", "STARTUP_FAIL
 DISPOSITION_OPEN = "open"
 DISPOSITION_NEEDS_HUMAN = "needs-human"
 DISPOSITION_DISPATCHED = "dispatched"
+
+MANAGER_CONFIRMED = "confirmed"
+MANAGER_ABSENT = "absent"
+MANAGER_PROBE_ERROR = "probe-error"
+RELATIONSHIP_DEPENDENT = "dependent"
+RELATIONSHIP_INDEPENDENT = "independent"
+RELATIONSHIP_PROBE_ERROR = "probe-error"
 
 # A present in-progress review signal (👀) blocks a merge-ready read — but never terminally: after
 # this much quiet a stale/never-cleared signal is ignored so the PR can still be called ready.
@@ -123,16 +132,247 @@ def _host_args(host):
     return ["--hostname", host] if host else []
 
 
+def _stack_schema_unavailable(stderr):
+    """Recognize only GraphQL schema errors for the private-preview PullRequest stack fields."""
+    unavailable_markers = ("doesn't exist on type", "does not exist on type",
+                           "cannot query field", "unknown field")
+    for line in (stderr or "").splitlines():
+        lowered = line.lower()
+        if ("pullrequest" in lowered
+                and re.search(r"\bstack(?:entry)?\b", lowered)
+                and any(marker in lowered for marker in unavailable_markers)):
+            return True
+    return False
+
+
+def _fetch_default_branch(owner, name, host=None):
+    """Read the default branch without relying on private-preview GraphQL fields."""
+    result = _run(["gh", "api", *_host_args(host), f"repos/{owner}/{name}",
+                   "--jq", ".default_branch"])
+    if result.returncode != 0:
+        return None
+    branch = result.stdout.strip()
+    return branch if branch and branch != "null" else None
+
+
 def _thread_identity(t):
     """The remote-truth identity of a thread's latest state."""
     return (t.get("last_comment_id"), t.get("last_comment_at"))
+
+
+def _default_pr_chain():
+    """Backward-compatible neutral shape for injected/older snapshots with no chain facts."""
+    return {
+        "manager_status": MANAGER_ABSENT,
+        "manager_source": None,
+        "relationship_status": RELATIONSHIP_INDEPENDENT,
+        "trunk": None,
+        "current_branch": None,
+        "target_position": None,
+        "target_needs_rebase": None,
+        "upstack_needs_rebase": [],
+        "entries": [],
+        "parent_prs": [],
+        "dependent_prs": [],
+    }
+
+
+def _pr_summary(pr):
+    if not pr:
+        return None
+    return {k: pr.get(k) for k in ("number", "url", "state", "isDraft", "baseRefName", "headRefName")
+            if pr.get(k) is not None}
+
+
+def _pr_url_identity(url):
+    """Normalize a GitHub PR URL to a repository-scoped identity tuple."""
+    if not isinstance(url, str):
+        return None
+    try:
+        parsed = urlsplit(url.strip())
+        parts = [part for part in parsed.path.split("/") if part]
+        if (parsed.scheme.lower() not in ("http", "https") or not parsed.netloc
+                or len(parts) < 4 or parts[-2].lower() != "pull"):
+            return None
+        number = int(parts[-1])
+    except (TypeError, ValueError):
+        return None
+    return (parsed.netloc.lower(), parts[-4].lower(), parts[-3].lower(), number)
+
+
+def _chain_from_entries(entries, pr, source, trunk=None, current_branch=None,
+                        manager_id=None, manager_number=None, target_url=None):
+    """Normalize an ordered manager-owned chain and locate the requested PR within it."""
+    target_identity = _pr_url_identity(target_url) if target_url is not None else None
+    target_index = next((i for i, e in enumerate(entries)
+                         if (e.get("number") == pr or str(e.get("number")) == str(pr))
+                         and (target_url is None
+                              or (target_identity is not None
+                                  and _pr_url_identity(e.get("url")) == target_identity))), None)
+    if target_index is None:
+        return None
+    target = entries[target_index]
+    upstack_stale = [
+        {k: e.get(k) for k in ("number", "position", "name", "url") if e.get(k) is not None}
+        for e in entries[target_index + 1:] if e.get("needs_rebase") is True
+    ]
+    chain = _default_pr_chain()
+    chain.update({
+        "manager_status": MANAGER_CONFIRMED,
+        "manager_source": source,
+        "manager_id": manager_id,
+        "manager_number": manager_number,
+        "relationship_status": RELATIONSHIP_DEPENDENT if len(entries) > 1 else RELATIONSHIP_INDEPENDENT,
+        "trunk": trunk,
+        "current_branch": current_branch,
+        "target_position": target.get("position") or target_index + 1,
+        "target_needs_rebase": target.get("needs_rebase"),
+        "upstack_needs_rebase": upstack_stale,
+        "entries": entries,
+        "parent_prs": [_pr_summary(entries[target_index - 1])] if target_index > 0 else [],
+        "dependent_prs": [_pr_summary(e) for e in entries[target_index + 1:]],
+    })
+    return chain
+
+
+def _chain_from_stack_view(raw, pr, target_url):
+    entries = []
+    for index, branch in enumerate((raw or {}).get("branches") or []):
+        remote_pr = branch.get("pr") or {}
+        entries.append({
+            "position": index + 1,
+            "name": branch.get("name"),
+            "head": branch.get("head"),
+            "base": branch.get("base"),
+            "is_current": bool(branch.get("isCurrent")),
+            "is_merged": bool(branch.get("isMerged")),
+            "is_queued": bool(branch.get("isQueued")),
+            "needs_rebase": branch.get("needsRebase"),
+            "number": remote_pr.get("number"),
+            "url": remote_pr.get("url"),
+            "state": remote_pr.get("state"),
+            "isDraft": remote_pr.get("isDraft"),
+        })
+    return _chain_from_entries(entries, pr, "gh-stack", (raw or {}).get("trunk"),
+                               (raw or {}).get("currentBranch"), target_url=target_url)
+
+
+def _fetch_graphql_stack(pr, owner, name, host=None):
+    """Read-only remote membership fallback. A successful null stack is distinct from failure."""
+    query = """
+query($owner:String!,$repo:String!,$pr:Int!){
+  repository(owner:$owner,name:$repo){
+    defaultBranchRef{ name }
+    pullRequest(number:$pr){
+    stackEntry{ position }
+    stack{ id number size baseRefName
+      entries(first:100){ nodes{ position pullRequest{
+        number url state isDraft baseRefName headRefName headRefOid
+      } } }
+    }
+  } }
+}"""
+    args = ["gh", "api", "graphql", *_host_args(host), "-f", f"owner={owner}", "-f", f"repo={name}",
+            "-F", f"pr={pr}", "-f", f"query={query}"]
+    r = _run(args)
+    if r.returncode != 0:
+        if _stack_schema_unavailable(r.stderr):
+            default_branch = _fetch_default_branch(owner, name, host)
+            if default_branch:
+                return MANAGER_ABSENT, None, default_branch
+        return MANAGER_PROBE_ERROR, None, None
+    try:
+        repository = json.loads(r.stdout)["data"]["repository"]
+        default_branch = (repository.get("defaultBranchRef") or {}).get("name")
+        node = repository["pullRequest"]
+        stack = node.get("stack")
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+        return MANAGER_PROBE_ERROR, None, None
+    if stack is None:
+        return MANAGER_ABSENT, None, default_branch
+    entries = []
+    for raw in (stack.get("entries") or {}).get("nodes") or []:
+        remote_pr = raw.get("pullRequest") or {}
+        entries.append({
+            "position": raw.get("position"),
+            "name": remote_pr.get("headRefName"),
+            "head": remote_pr.get("headRefOid"),
+            "base_ref_name": remote_pr.get("baseRefName"),
+            "needs_rebase": None,
+            **(_pr_summary(remote_pr) or {}),
+        })
+    chain = _chain_from_entries(entries, pr, "graphql", stack.get("baseRefName"),
+                                manager_id=stack.get("id"), manager_number=stack.get("number"))
+    return ((MANAGER_CONFIRMED, chain, default_branch) if chain
+            else (MANAGER_PROBE_ERROR, None, default_branch))
+
+
+def _manual_relationships(pr, repo, base_ref_name, head_ref_name, owner, name,
+                          host=None, default_branch=None):
+    """Find ordinary parent/children with narrow read-only branch filters."""
+    repo_ref = repo or f"{owner}/{name}"
+    if host and repo_ref.count("/") == 1:
+        repo_ref = f"{host}/{repo_ref}"
+    fields = "number,url,state,isDraft,baseRefName,headRefName"
+    parent_result = None
+    if base_ref_name and base_ref_name != default_branch:
+        parent_result = _run(["gh", "pr", "list", "--repo", repo_ref, "--state", "all",
+                              "--head", base_ref_name, "--limit", "20", "--json", fields])
+    dependent_result = _run(["gh", "pr", "list", "--repo", repo_ref, "--state", "open",
+                             "--base", head_ref_name or "", "--limit", "100", "--json", fields])
+    if ((parent_result is not None and parent_result.returncode != 0)
+            or dependent_result.returncode != 0):
+        return RELATIONSHIP_PROBE_ERROR, [], []
+    try:
+        parent_candidates = json.loads(parent_result.stdout) or [] if parent_result else []
+        dependent_candidates = json.loads(dependent_result.stdout) or []
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return RELATIONSHIP_PROBE_ERROR, [], []
+    parents = [_pr_summary(p) for p in parent_candidates
+               if p.get("number") != pr and p.get("headRefName") == base_ref_name]
+    dependents = [_pr_summary(p) for p in dependent_candidates
+                  if p.get("number") != pr and p.get("state") == "OPEN"
+                  and p.get("baseRefName") == head_ref_name]
+    status = RELATIONSHIP_DEPENDENT if parents or dependents else RELATIONSHIP_INDEPENDENT
+    return status, parents, dependents
+
+
+def fetch_pr_chain(pr, repo, url, base_ref_name, head_ref_name, owner, name, host=None):
+    """Classify manager membership and ordinary dependency relationships without mutation.
+
+    The local manager is the fast/rich path, but its output is accepted only when it contains the
+    requested PR. `gh stack view` has no target argument and may describe a different current stack.
+    """
+    local = _run(["gh", "stack", "view", "--json"])
+    if local.returncode == 0:
+        try:
+            chain = _chain_from_stack_view(json.loads(local.stdout), pr, url)
+        except (TypeError, ValueError, json.JSONDecodeError):
+            chain = None
+        if chain:
+            return chain
+
+    manager_status, chain, default_branch = _fetch_graphql_stack(pr, owner, name, host)
+    if manager_status == MANAGER_CONFIRMED:
+        return chain
+
+    relationship, parents, dependents = _manual_relationships(
+        pr, repo, base_ref_name, head_ref_name, owner, name, host, default_branch)
+    result = _default_pr_chain()
+    result.update({
+        "manager_status": manager_status,
+        "relationship_status": relationship,
+        "parent_prs": parents,
+        "dependent_prs": dependents,
+    })
+    return result
 
 
 def fetch(pr, repo):
     """Fetch both event streams via gh into one combined snapshot dict."""
     repo_args = ["--repo", repo] if repo else []
     view = _run_checked(["gh", "pr", "view", str(pr), *repo_args, "--json",
-                         "state,mergeable,mergeStateStatus,reviewDecision,headRefOid,url,number,"
+                         "state,mergeable,mergeStateStatus,reviewDecision,headRefOid,baseRefName,headRefName,url,number,"
                          "statusCheckRollup,author,comments,reviews,reactionGroups"],
                         "gh pr view")
     v = json.loads(view.stdout)
@@ -186,6 +426,8 @@ def fetch(pr, repo):
         # resolver's judgment; this deterministic layer keeps every non-empty non-author body.
         "feedback": _extract_feedback(v),
         "awaiting_approval": fetch_awaiting_approval(owner, name, head, host),
+        "pr_chain": fetch_pr_chain(v.get("number") or pr, repo, v.get("url"),
+                                   v.get("baseRefName"), v.get("headRefName"), owner, name, host),
     }
 
 
@@ -283,6 +525,7 @@ def _empty_state(pr, repo, url, now):
         "head_sha": None, "tick": 0, "started_at": _iso(now),
         "checks": {}, "threads": {}, "ci_dispatched": {},
         "review_decision": None, "mergeable": None, "merge_state_status": None,
+        "pr_chain": _default_pr_chain(),
         "last_change_at": None, "last_action": None, "stop_reason": None,
         "trajectory": _empty_trajectory(),
     }
@@ -572,6 +815,7 @@ def diff(state, cur, now=None, advance_trajectory=True):
     state["merge_state_status"] = cur["merge_state_status"]
     state["review_in_progress"] = cur.get("review_in_progress", False)
     state["awaiting_approval"] = cur.get("awaiting_approval", 0)
+    state["pr_chain"] = cur.get("pr_chain") or _default_pr_chain()
 
     actionable = {"ci": actionable_ci, "threads": actionable_threads, "comments": actionable_feedback}
     if advance_trajectory:
@@ -623,6 +867,8 @@ def diff(state, cur, now=None, advance_trajectory=True):
         "review_in_progress": cur.get("review_in_progress", False),
         "checks_awaiting_approval": awaiting_approval,
         "blocked_external": blocked_external,
+        "pr_chain": state["pr_chain"],
+        "stack_blocker": _stack_blocker(state["pr_chain"]),
         "open_needs_human": open_needs_human,
         "needs_human_ids": needs_human_ids,
         "actionable": {"threads": actionable_threads, "ci": actionable_ci, "comments": actionable_feedback},
@@ -630,6 +876,7 @@ def diff(state, cur, now=None, advance_trajectory=True):
                    "comments": len(actionable_feedback), "needs_human": open_needs_human},
         "changed_this_tick": changed_this_tick,
         "quiet_seconds": quiet_seconds,
+        "session_started_at": state.get("started_at"),
         "session_seconds": _elapsed(state.get("started_at"), now),
         "tick": state["tick"],
         "trajectory": trajectory,
@@ -643,9 +890,26 @@ def _change_sig(state):
     feedback = {fid: v.get("disposition") for fid, v in state.get("feedback", {}).items()}
     return (checks, threads, feedback, state.get("review_decision"), state.get("mergeable"),
             state.get("merge_state_status"), state.get("review_in_progress"),
+            json.dumps(state.get("pr_chain") or _default_pr_chain(), sort_keys=True),
             # awaiting-approval clearing is movement: a fork gate lifting must reset the settle clock
             # so merge-ready waits for the now-imminent check-runs instead of firing on an empty rollup.
             bool(state.get("awaiting_approval")))
+
+
+def _stack_blocker(chain):
+    """Return the manager-currency residual that blocks target readiness, if any."""
+    status = (chain or {}).get("manager_status")
+    if status == MANAGER_PROBE_ERROR:
+        return "manager-probe-error"
+    if (chain or {}).get("relationship_status") == RELATIONSHIP_PROBE_ERROR:
+        return "relationship-probe-error"
+    if status == MANAGER_CONFIRMED:
+        freshness = chain.get("target_needs_rebase")
+        if freshness is True:
+            return "target-needs-rebase"
+        if freshness is not False:
+            return "managed-freshness-unknown"
+    return None
 
 
 def _elapsed(iso_str, now):
@@ -653,6 +917,17 @@ def _elapsed(iso_str, now):
         return int((now - datetime.fromisoformat(iso_str)).total_seconds())
     except (ValueError, TypeError):
         return 0
+
+
+def _session_started_at(value):
+    """Parse one invocation-wide, timezone-aware budget anchor for reuse across state dirs."""
+    try:
+        parsed = datetime.fromisoformat(value)
+    except (ValueError, TypeError):
+        raise argparse.ArgumentTypeError("must be an ISO-8601 timestamp")
+    if parsed.tzinfo is None:
+        raise argparse.ArgumentTypeError("must include a timezone")
+    return _iso(parsed.astimezone(timezone.utc))
 
 
 @contextmanager
@@ -689,10 +964,13 @@ def _run_snapshot(args, now, advance_trajectory=True):
     with locked_state(args.state_dir, args.pr, args.repo, now) as box:
         if box["state"].get("pr", {}).get("url") is None and cur.get("url"):
             box["state"]["pr"]["url"] = cur["url"]
-        if getattr(args, "reset_session", False):
-            # A new babysit session (fresh invocation / watch arm) starts the budget clock now. Without
-            # this, `started_at` persists from state creation, so resuming against day-old state would
-            # read session_seconds as huge and hand back as "budget exhausted" before doing any work.
+        if getattr(args, "session_started_at", None):
+            # Carry one invocation-wide clock through watch re-arms and managed-stack layer state dirs.
+            box["state"]["started_at"] = args.session_started_at
+        elif getattr(args, "reset_session", False):
+            # A fresh babysit invocation starts the budget clock now. Without this, `started_at`
+            # persists from state creation, so resuming against day-old state would read
+            # session_seconds as huge and hand back before doing any work.
             box["state"]["started_at"] = _iso(now)
         actionable, box["state"] = diff(box["state"], cur, now, advance_trajectory=advance_trajectory)
     return actionable
@@ -710,8 +988,14 @@ def _wake_reason(a, settle_seconds):
     if a.get("blocked_external"):
         return "blocked-external"
     c = a.get("counts") or {}
-    if c.get("threads", 0) or c.get("comments", 0) or c.get("ci", 0):
+    if c.get("threads", 0) or c.get("ci", 0):
         return "actionable"
+    if c.get("comments", 0):
+        # Non-thread bodies are feedback candidates, not a deterministic conclusion that work is
+        # required. The resolver may legitimately silent-drop status noise or review wrappers.
+        return "feedback-candidate"
+    if a.get("stack_blocker"):
+        return "stack-blocked"
     if a.get("open_needs_human", 0):
         return "needs-human"         # parked items block ready; surface them
     if a.get("has_failing_checks") and a.get("checks_terminal"):
@@ -752,6 +1036,8 @@ def _blocker_sig(a):
         sig.add("__terminal_red__")
     if a.get("blocked_external"):
         sig.add("__blocked_external__")
+    if a.get("stack_blocker"):
+        sig.add(f"__stack__:{a['stack_blocker']}")
     # A new head is "context materially changed": a human may have pushed a commit that answers or
     # supersedes a parked residual, so the head is part of the baseline — when it moves, the residual
     # is no longer "already-surfaced against this state" and the watch wakes to give the agent a tick
@@ -764,29 +1050,29 @@ def _blocker_sig(a):
 def cmd_watch(args):
     """Deterministic background change-detector (no agent tokens between changes): poll on an
     interval, print one wake sentinel line and exit when there is something for the agent to do
-    (an actionable change or a stop condition), or exit on the stop-signal file / max-runtime.
+    (work to inspect or a stop condition), or exit on the stop-signal file / max-runtime.
     A residual already present at arm time (a parked needs-human, or a dispatched terminal-red the
     agent already handed back) does NOT re-wake the loop — it keeps watching the other streams;
     only a *new* blocker (signature grown past the baseline) wakes."""
-    deadline = (time.monotonic() + args.max_runtime) if args.max_runtime else None
     armed = None  # baseline blocker signature captured on the first poll (already-surfaced residuals)
-    args.reset_session = True   # arming a watch is a fresh session -> start the budget clock now
     while True:
         if args.stop_file and os.path.exists(args.stop_file):
             _emit_wake("stop-signal")
             return
         actionable = _run_snapshot(args, _now(), advance_trajectory=False)  # a poll must not roll the trajectory
-        args.reset_session = False   # ...but later polls are ticks of that same session, not new ones
+        # `watch --reset-session` is a compatibility route for a direct fresh arm. It resets only
+        # the first poll; leaving the flag set would renew started_at forever and defeat max-runtime.
+        args.reset_session = False
         if armed is None:
             armed = _blocker_sig(actionable)
         reason = _wake_reason(actionable, args.settle_seconds)
-        if reason in ("needs-human", "blocked-failing", "blocked-external") and _blocker_sig(actionable) <= armed:
+        if reason in ("needs-human", "blocked-failing", "blocked-external", "stack-blocked") and _blocker_sig(actionable) <= armed:
             reason = None   # already-surfaced residual — keep watching, do not re-wake or terminate
         if reason:
             _emit_wake(reason, url=actionable.get("url"),
                        pr_state=actionable.get("pr_state"), counts=actionable.get("counts"))
             return
-        if deadline is not None and time.monotonic() >= deadline:
+        if args.max_runtime and actionable.get("session_seconds", 0) >= args.max_runtime:
             _emit_wake("max-runtime", url=actionable.get("url"))
             return
         time.sleep(args.interval)
@@ -855,7 +1141,10 @@ def main():
     s.add_argument("--repo", default=None)
     s.add_argument("--state-dir", required=True)
     s.add_argument("--fetch-file", default=None)
-    s.add_argument("--reset-session", action="store_true")  # start the budget clock (a fresh invocation)
+    sg = s.add_mutually_exclusive_group()
+    sg.add_argument("--reset-session", action="store_true")  # start the budget clock (a fresh invocation)
+    sg.add_argument("--session-started-at", type=_session_started_at,
+                    help="carry a prior invocation's ISO-8601 budget anchor")
     s.set_defaults(func=cmd_snapshot)
 
     m = sub.add_parser("mark")
@@ -881,7 +1170,10 @@ def main():
     w.add_argument("--settle-seconds", type=float, default=300.0, help="quiet window before a merge-ready wake")
     w.add_argument("--stop-file", default=None, help="path whose existence stops the watch")
     w.add_argument("--fetch-file", default=None)
-    w.add_argument("--reset-session", action="store_true")  # cmd_watch also forces this on arm
+    wg = w.add_mutually_exclusive_group()
+    wg.add_argument("--reset-session", action="store_true")
+    wg.add_argument("--session-started-at", type=_session_started_at,
+                    help="carry the invocation-wide ISO-8601 budget anchor")
     w.set_defaults(func=cmd_watch)
 
     args = p.parse_args()

@@ -1,11 +1,8 @@
 ---
 name: wewrite-publish
 description: |
-  WeWrite 排版发布模块：Markdown → 微信 HTML 排版（16 主题 + 容器语法），metadata
-  预检后推送公众号草稿箱或本地预览；含主题画廊、小绿书（图片帖）。
-  触发关键词：推到草稿箱、发布公众号、微信排版、markdown 转微信格式、排版预览、
-  主题画廊、看看有什么主题、换成XX主题、小绿书、图片帖。
-  不应被"发布网站"、"发推特"触发——只管微信公众号。
+  WeWrite 排版发布模块：把 Markdown 做成微信预览，或在用户明确授权后推入公众号草稿箱；
+  也支持主题画廊和图片帖。只处理微信公众号。
 allowed-tools:
   - Bash
   - Read
@@ -14,69 +11,64 @@ allowed-tools:
   - Glob
 ---
 
-# wewrite-publish — 排版 + 发布
+# wewrite-publish — 排版、预览、草稿箱
 
-## 运行约定
+## 前置
 
-- **CLI**：确定性操作走 `wewrite` 命令（需在 PATH；缺失则引导 `uv tool install wewrite`，或在仓库里 `bash install.sh`）。
-- **{home}**：用户状态目录 = `$WEWRITE_HOME` 或 `~/.wewrite`（`wewrite home` 可查）。config/style/history/playbook/output/exemplars 全在 {home}，不在仓库；references 文档中的状态路径同此约定。
-- **`读取: <路径>`** = 用文件读取工具真实读完该文件再继续，不是注释。
-- **references/**：本 skill 自带 `{skill_dir}/references/`；references 文档内的 `{skill_dir}` 即本 skill 目录。
-- **管道状态**：`{home}/output/_state.yaml`（契约见主入口 wewrite 的 `references/pipeline-state.md`）。
+用户指定文章时使用该文件；否则 `wewrite run show`。如果
+`artifacts.illustrated_article` 存在且非空就使用它，否则使用 `artifacts.article`；读取标题、
+摘要、封面、预览路径、发布权限和降级标记。已完成文章可以直接排版或发布，不要恢复写作
+任务。主题取 style.yaml 的 `theme`，默认 `professional-clean`。
 
-## 前置（发布/预览时；主题画廊、小绿书不需要）
+排版和发布不得自动调用 `wewrite-visual`。没有封面时照常生成本地预览；只有用户另行要求
+配图时才进入视觉模块。
 
-1. **文章**：用户指定的文件 > `_state.yaml` 的 `article` > `{home}/output/article.md`。
-2. **标题/摘要**：`_state.yaml` 的 `seo.title` / `seo.digest`；缺失 → 用文章 H1 当标题、
-   converter 自动生成摘要（或建议先跑 wewrite-review 出 SEO）。
-3. **封面**：`_state.yaml` 的 `images.cover`；没有 → 见 7.1 预检的封面行。
-4. **主题**：style.yaml 的 `theme`，默认 professional-clean。
-5. **降级标记**：读 `_state.yaml` 的 `flags.skip_publish`；缺失或 `diagnosed_at`
-   非当天 → `wewrite diagnose --json` 重取并写回。
+用户本轮明确要求“推到草稿箱/发布”时，有任务先运行
+`wewrite run permission publish allow`；用户撤回时运行 `wewrite run permission publish deny`。
+只排版、预览或“完整制作”都不能授予发布权限。
 
-## 发布主流程
-
-**7.1 Metadata 预检**（发布前必须通过）：
-
-| 检查项 | 标准 | 不通过时 |
-|--------|------|---------|
-| H1 标题 | 存在且 5-64 字节 | 自动修正或提示用户 |
-| 摘要 | 存在且 ≤ 120 UTF-8 字节 | converter 自动生成 |
-| 封面图 | 推送模式下需要 | 无封面则警告，仍可推送（微信会显示默认封面） |
-| 正文字数 | ≥ 200 字 | 警告"内容过短，微信可能不收录" |
-| 图片数量 | ≤ 10 张 | 超出则移除末尾多余图片 |
-
-预检全部通过后才进入排版。converter 产物自带微信兼容性校验（preview/publish 自动执行，
-命中 ERROR 会打印告警）；人工改过 HTML 后可手动 `wewrite validate <file>` 复查。
-
-**平台硬限**（converter 不强制，写作/发布时 agent 必须遵守）：
-- 单篇正文 ≤ 20000 字
-- 图片 ≤ 10 张（超出移除末尾多余）
-- 未认证公众号**不能用外部链接** → 转纯文本或放「阅读原文」
-- 表格 ≤ 4 列（手机端更宽会被截断）
-
-**7.2 排版 + 发布**：
-
-**如果 `skip_publish = true`** → 直接走 preview。
-
-Converter 自动处理：CJK 加空格、加粗标点外移、列表转 section、外链转脚注、暗黑模式、容器语法、AIGC 声明（**默认追加**，合规标识；主题/配置设 `aigc_footer: false` 可关）。
+有任务时进入：
 
 ```bash
-# 发布
-wewrite publish {markdown} --cover {cover} --theme {theme} --title "{title}" --digest "{digest}"
-
-# 降级：本地预览
-wewrite preview {markdown} --theme {theme} --no-open -o {output}.html
+wewrite run step publish in_progress
 ```
 
-**完成**：写回 `_state.yaml`：`publish.media_id`（降级时 null）、`publish.preview_html`
-（预览时），`steps_done` 追加 `publish`。单独激活时告知 media_id 或预览文件路径。
+## 预检
+
+- 标题存在且符合微信限制；摘要不超过 120 字节；正文 200-20000 字。
+- 正文图片不超过 10 张且实际可读；表格不超过 4 列。
+- 发布草稿必须有封面。没有封面不能假设微信会补默认图，改走本地预览。
+- 发布必须同时满足：`permissions.publish=true`、`flags.skip_publish=false`、用户本轮没有撤回。
+
+## 动作
+
+始终先生成本地预览，有任务时保存到 `artifacts.preview`；任务外文章保存到原文件旁：
+
+```bash
+wewrite preview {article} --theme {theme} --no-open -o {preview}
+```
+
+确认预览产物存在且通过兼容性校验。若没有明确发布权限，流程到此结束；“写一篇”“完整制作”
+都不等于允许发布。
+
+只有用户明确要求草稿箱且预检全部通过时执行：
+
+```bash
+wewrite publish {article} --cover {cover} --theme {theme} --title "{title}" --digest "{digest}"
+```
+
+发布失败时保留预览，不自动重试产生外部动作。有任务时更新 `publish.preview_html`；成功时再写
+`publish.media_id`，随后：
+
+```bash
+wewrite run step publish completed
+```
 
 ## 辅助功能
 
 | 用户说 | 动作 |
-|--------|------|
-| 看看有什么主题 / 主题画廊 | `wewrite gallery`（浏览器内预览全部 16 个主题） |
-| 换成 XX 主题 | 用该主题重新 preview/publish；用户满意可提示写入 style.yaml 的 theme 字段 |
-| 做一个小绿书 / 图片帖 | `wewrite image-post img1.jpg img2.jpg -t "标题"` |
-| 只排版不发布 / 预览 | 走 preview 命令，输出本地 HTML 路径 |
+|---|---|
+| 看主题 | `wewrite gallery` |
+| 换主题 | 重新 preview；只有再次明确要求才重新 publish |
+| 做图片帖 | 先确认用户确实要推草稿箱，再执行 `wewrite image-post` |
+| 只排版 | 只 preview |

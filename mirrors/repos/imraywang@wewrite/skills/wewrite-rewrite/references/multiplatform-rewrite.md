@@ -12,10 +12,10 @@
 - 仅按平台调性适配「表达方式」：长句叙事（公众号）↔ 短句口语+emoji（小红书）↔ 可口播短句（抖音）。
 
 ## 质量门（每个版本都要过）
-1. 拟人度：`wewrite score <file> --json`，分数应 ≥ 0.6。
-2. 原创度：`wewrite similarity output/source.md <file> --json`，`max_similarity` 应 ≤ 0.6。
+1. 编辑质量：先检查事实、平台价值和表达是否自然；`wewrite score <file> --json` 仅提示机械语言风险，`quality_score` 建议 ≥ 60，但不能替代审稿。
+2. 原创度：`wewrite similarity {run_dir}/source.md <file> --json`，`max_similarity` 应 ≤ 0.6。
 3. 不过就重写该平台版本，最多重试 2 次；仍不过则保留最好的一版并说明。
 
 ## 产出位置
-- 每个平台写到 `{home}/output/<platform 的 output_filename>`（如 `{home}/output/xiaohongshu.md`、`{home}/output/douyin.md`）。
-- 小红书需图文：复用源稿已有配图（在 `{home}/output/` 内的图片），正文按 markdown 图片语法引用；若源无图，在文末注明「需补图」。
+- 每个平台写到当前任务目录，不覆盖源稿或其他任务。
+- 小红书需图文：复用当前任务已有配图，正文按 markdown 图片语法引用；若源无图，在文末注明“需补图”。

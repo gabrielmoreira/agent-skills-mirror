@@ -2336,6 +2336,7 @@ export const pages = [
       "splitBias": 52,
       "showStat": true,
       "showPoints": true,
+      "statCaption": "三年累计回报",
       "overline": "两条路 · THE CHOICE",
       "left": {
         "label": "自己打理",

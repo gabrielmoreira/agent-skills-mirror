@@ -27,7 +27,7 @@ Check whether the payload is already wired (a prior apply, or a trunk that still
 
 ### 1. Fetch and copy the payload
 
-Fetch the `providers` branch and copy the Codex payload into all three trees (additive — overwrite each file, never merge the branch). The host files are the provider contribution + AGENTS.md compose + their guards; the container files are the provider runtime (turn loop, JSON-RPC wrapper, per-exchange archiver) + their guards; the setup file is the picker entry + vault auth walk-through; `container/AGENTS.md` is the runtime-contract base the composed AGENTS.md embeds.
+Fetch the `providers` branch and copy the Codex payload into all three trees (additive — overwrite each file, never merge the branch). The host files are the provider contribution + AGENTS.md compose + their guards; the container files are the provider runtime (turn loop, JSON-RPC wrapper, native memory SessionStart hook, per-exchange archiver) + their guards; the setup file is the picker entry + vault auth walk-through; `container/AGENTS.md` is the runtime-contract base the composed AGENTS.md embeds.
 
 ```nc:copy from-branch:providers
 src/providers/codex.ts
@@ -110,7 +110,11 @@ ncl groups config update --id <group-id> --provider codex
 ncl groups restart --id <group-id>
 ```
 
-Switching is an operator action — run it from the host. Memory does NOT carry over automatically — each provider keeps its own store; run `/migrate-memory` to carry it across. See [docs/provider-migration.md](../../docs/provider-migration.md) for the carry-over table and rollback.
+Switching is an operator action — run it from the host. Every provider uses the
+same `memory/` tree, so memory carries across automatically. Run
+`/migrate-memory` only when upgrading a group that still has legacy `.seed.md`,
+`CLAUDE.local.md`, or unindexed imported memory. See
+[docs/provider-migration.md](../../docs/provider-migration.md).
 
 ### Default new groups to codex (optional)
 

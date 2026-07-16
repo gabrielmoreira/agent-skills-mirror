@@ -7004,6 +7004,8 @@ export const pages = [
         "kicker": "DEVELOPER TOOLS · 开发者工具赛道",
         "index": "33",
         "sheet": "STATEMENT · 33 / 80",
+        "leadZh": "研发效率",
+        "leadEn": "Developer Productivity",
         "quote": "研发效率，是企业\n最直接的 AI 预算入口之一。",
         "sub": "效率工具最贴近开发团队的日常，预算决策链路短、落地周期快。",
         "keywords": [

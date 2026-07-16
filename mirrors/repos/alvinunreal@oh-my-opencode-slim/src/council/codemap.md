@@ -9,7 +9,6 @@ Orchestrates multi-LLM council sessions by spawning parallel councillor agents, 
 - **Singleton**: One instance per plugin session manages the entire council lifecycle
 - **Strategy Pattern**: Configurable execution modes (`parallel` vs `serial`) for councillor orchestration
 - **Retry Pattern**: Automatic retry on empty responses with configurable limits
-- **Observer Pattern**: Tracks subagent depth to prevent infinite recursion
 
 ### Key Components
 
@@ -57,8 +56,7 @@ Orchestrates multi-LLM council sessions by spawning parallel councillor agents, 
 │                   runCouncillors()                     │
 │  - For each councillor config:                         │
 │    - Spawn child session (session.create)               │
-│    - Apply depth tracking (if enabled)                 │
-│    - Send prompt with restricted tools                 │
+ │    - Send prompt with restricted tools                 │
 │    - Extract result (extractSessionResult)              │
 │    - Cleanup session (session.abort)                  │
 └─────────────────────────────────────────────────────────────┘
@@ -67,8 +65,7 @@ Orchestrates multi-LLM council sessions by spawning parallel councillor agents, 
 ┌─────────────────────────────────────────────────────────────┐
 │                 runAgentSession()                      │
 │  - Create session with parentID                        │
-│  - Register child in depth tracker                     │
-│  - Send prompt (promptWithTimeout)                     │
+ │  - Send prompt (promptWithTimeout)                     │
 │  - Extract result with reasoning disabled               │
 │  - Abort session on completion/cleanup                 │
 └─────────────────────────────────────────────────────────────┘
@@ -88,7 +85,6 @@ Orchestrates multi-LLM council sessions by spawning parallel councillor agents, 
 1. **Empty responses**: Retry up to `maxRetries` times (provider rate-limiting)
 2. **Timeouts**: Immediate failure, no retry
 3. **Session failures**: Mark as failed, continue with other councillors
-4. **Depth violations**: Block spawn immediately, return error
 
 ## Integration
 
@@ -97,7 +93,6 @@ Orchestrates multi-LLM council sessions by spawning parallel councillor agents, 
 - **Agents**: `formatCouncillorPrompt()`, `formatCouncillorResults()` from `../agents/council`
 - **Session**: `extractSessionResult()`, `promptWithTimeout()` from `../utils/session`
 - **Logger**: `log()` from `../utils/logger`
-- **Depth Tracker**: `SubagentDepthTracker` from `../utils/subagent-depth` (optional)
 - **Client**: `OpencodeClient` from `@opencode-ai/plugin` (session management)
 
 ### Consumers
@@ -139,11 +134,6 @@ Councillors operate with **advisory-only** tool access:
 
 This ensures councillors provide guidance without side effects.
 
-### Depth Tracking
-- Prevents infinite recursion by tracking subagent depth
-- Configurable maximum depth (default: 3 levels)
-- Logs violations and blocks spawn attempts
-
 ### Notifications
 - Sends immediate feedback to parent session on council start
 - Message format: `⎔ Council starting - ${count} councillors launching - ctrl+x ↓ to watch`
@@ -164,7 +154,6 @@ This ensures councillors provide guidance without side effects.
 | Empty preset | Return error about no councillors | User adds councillors to preset |
 | All councillors fail | Return error with all failures | Investigate model availability or prompts |
 | Timeout | Mark timed_out status | Increase timeout or reduce council size |
-| Depth exceeded | Block spawn, return error | Increase maxDepth or simplify task |
 | Provider rate-limiting | Retry up to maxRetries | Automatic recovery |
 
 ## Testing Points
@@ -172,7 +161,6 @@ This ensures councillors provide guidance without side effects.
 - Preset resolution (default vs named)
 - Parallel vs serial execution modes
 - Retry logic for empty responses
-- Depth tracking and blocking
 - Tool restrictions enforcement
 - Session lifecycle (create → prompt → extract → abort)
 - Timeout behavior

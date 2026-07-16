@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jiji262/claude-design-skill` — 26 default patterns, 9 followed patterns, 10 file(s) materialized.
+Mirror of `jiji262/claude-design-skill` — 26 default patterns, 9 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jiji262/claude-design-skill` — 26 default patterns, 9 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 9 |
-| Files         | 10 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,16 +67,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`SKILL.md`](SKILL.md) |
-| 2 | → | [`references/brand-context.md`](references/brand-context.md) |
-| 3 | → | [`references/design-principles.md`](references/design-principles.md) |
-| 4 | → | [`references/design-styles.md`](references/design-styles.md) |
-| 5 | → | [`references/fact-verification.md`](references/fact-verification.md) |
-| 6 | → | [`references/output-formats.md`](references/output-formats.md) |
-| 7 | → | [`references/react-babel.md`](references/react-babel.md) |
-| 8 | → | [`references/variations-and-tweaks.md`](references/variations-and-tweaks.md) |
-| 9 | → | [`references/verification.md`](references/verification.md) |
-| 10 | → | [`references/workflow.md`](references/workflow.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`SKILL.md`](SKILL.md) |
+| 4 | → | [`references/brand-context.md`](references/brand-context.md) |
+| 5 | → | [`references/design-principles.md`](references/design-principles.md) |
+| 6 | → | [`references/design-styles.md`](references/design-styles.md) |
+| 7 | → | [`references/fact-verification.md`](references/fact-verification.md) |
+| 8 | → | [`references/output-formats.md`](references/output-formats.md) |
+| 9 | → | [`references/react-babel.md`](references/react-babel.md) |
+| 10 | → | [`references/variations-and-tweaks.md`](references/variations-and-tweaks.md) |
+| 11 | → | [`references/verification.md`](references/verification.md) |
+| 12 | → | [`references/workflow.md`](references/workflow.md) |
 
 ---
 

@@ -1,11 +1,11 @@
 ---
 name: opentag
-description: Set up, run, and troubleshoot OpenTag with the published CLI across Slack, GitHub, GitLab, Linear, Lark / Feishu, Codex, Claude Code, local config, platform credentials, and callback delivery.
+description: Set up, run, and troubleshoot OpenTag with the published CLI across Slack, GitHub, GitLab, Linear, Lark / Feishu, Codex, Claude Code, OpenClaw, local config, platform credentials, and callback delivery.
 ---
 
 # OpenTag
 
-OpenTag connects collaboration platforms to a local coding agent. Use this skill when a user wants help with `opentag setup`, `opentag start`, Slack, GitHub, GitLab, Linear, Lark / Feishu, Codex, Claude Code, local OpenTag config, or end-to-end setup verification.
+OpenTag connects collaboration platforms to a local coding agent. Use this skill when a user wants help with `opentag setup`, `opentag start`, Slack, GitHub, GitLab, Linear, Lark / Feishu, Codex, Claude Code, OpenClaw, local OpenTag config, or end-to-end setup verification.
 
 ## Default Path
 
@@ -33,7 +33,7 @@ Read only the reference needed for the user's path:
 - First setup or Echo test loop: `references/local-echo.md`
 - Slack setup: `references/slack-setup.md`
 - GitHub setup: `references/github-setup.md`
-- Codex / Claude Code execution: `references/codex-runner.md`
+- ACP coding-agent execution: `references/codex-runner.md`
 - Broken setup, missing callbacks, rejected runs, or auth errors: `references/troubleshooting.md`
 
 For platform credential steps, use the repository docs as the source of truth:
@@ -52,8 +52,9 @@ For platform credential steps, use the repository docs as the source of truth:
 - In Codex Plan mode, use `request_user_input` / askhuman to collect non-secret setup choices before running `opentag setup`, then pass those choices as CLI flags so the terminal wizard does not silently choose defaults.
 - Codex Default mode cannot render askhuman choice cards. If setup choices are needed and the current host does not expose a runtime transition into Plan mode, stop and explain that askhuman cannot render from Default mode in this run. Do not claim a Plan-mode handoff happened, do not ask the user to switch modes, do not ask the same choices in plain text, do not continue with CLI defaults, and do not run `opentag setup` until the choices are explicitly collected.
 - Never request secrets through askhuman. Tokens, app secrets, signing secrets, app IDs, channel IDs, repository names, and any non-recommended project path still need explicit user confirmation before they are entered into the CLI or config.
-- Use Codex when `codex` is available, Claude Code when `claude` is available, and Echo only for dev/test verification.
-- Do not ask setup users to run `codex exec` directly. OpenTag invokes Codex internally; when debugging the Codex CLI, check `codex exec --help` first and only use flags that the installed Codex version advertises.
+- Prefer Codex or Claude Code when the corresponding local login is ready, Hermes when its ACP profile and provider are ready, OpenClaw when its Gateway is ready, and Echo only for dev/test verification.
+- Do not ask setup users to invoke an agent directly. OpenTag provides built-in Generic ACP launches for Codex, Claude Code, Cursor, OpenCode, Hermes, and OpenClaw; diagnose them with `opentag doctor` and the built-in ACP conformance gate.
+- OpenClaw currently reports `cancel=no`. A cancellation request stops OpenTag's local bridge, but Gateway-owned tool subprocess termination is not guaranteed; inspect provider-owned processes before starting conflicting follow-up work.
 - Treat `opentag start` as a foreground process. Tell the user to keep it running and stop it with Ctrl-C.
 - Do not expose secrets in responses. Use `opentag config show` for redacted config.
 - When credentials are needed, point the user to the matching platform guide and walk them through the official setup.
@@ -94,7 +95,7 @@ Only use a proxy URL the user provides or that is already active in the environm
 When helping a Codex user install or configure OpenTag, collect these non-secret choices with `request_user_input` / askhuman only when the current Codex host is actually in Plan mode and the tool is available:
 
 - Platform: Slack, GitHub, GitLab, Linear, Lark / Feishu, Telegram, or Discord.
-- Coding agent: Codex, Claude Code, or Echo, using local detection from `opentag executors` when available.
+- Coding agent: Codex, Claude Code, Cursor, OpenCode, Hermes, OpenClaw, or Echo, using local detection from `opentag executors` when available.
 - Local project: the current working directory as the recommended option, plus a free-form path option inside askhuman for another path.
 - Platform mode choices that are not credentials, such as Slack Socket Mode vs Events API, Lark / Feishu tenant for manual app setup, Lark scan vs manual setup, and default project binding vs bind later.
 
@@ -105,7 +106,7 @@ After the user chooses, run `opentag setup` with matching flags, for example `--
 ## Setup Workflow
 
 1. Check prerequisites.
-   Completion: Node.js 20+ is available and the user has a local project path.
+   Completion: Node.js 22+ is available and the user has a local project path.
 
 2. Install or run the CLI.
    If npm cannot reach the published package, follow "Npm Registry And Network Failures" before treating setup as blocked.

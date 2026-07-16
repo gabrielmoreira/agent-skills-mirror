@@ -22,6 +22,11 @@ real browser/Electron behavior, native dialogs, screenshots/visual layout,
 Monaco or Lexical browser interactions, drag/click/focus behavior that
 happy-dom cannot model, or a full user journey across app shell navigation.
 
+Base UI dropdown actions have `role="menuitem"`, while
+`HybridChatHarness.clickMenuItem()` currently looks for `role="button"`. For
+dropdown tests, query the open menu with `within(...).getByRole("menuitem")`
+unless the harness helper has been expanded to support both roles.
+
 Default to the node chat-flow harness when assertions are about files, git, db
 rows, IPC events, or LLM request dumps. Use the renderer+IPC hybrid harness only
 when assertions are about rendered UI or a flow that must be driven through a
@@ -82,3 +87,8 @@ like `Failed to resolve ref 'main'` or a branch banner showing `master`, check
 the fixture repo's `git init` default branch. Either make production code use
 the current branch instead of assuming `main`, or force the fixture branch name
 in the test so local and CI exercise the same branch layout.
+
+For asynchronous Git actions driven through the renderer, file existence can
+change before the underlying Git subprocess finishes. Wait for the expected
+branch and a clean `git status --porcelain` before making follow-up mutations or
+ending the test.

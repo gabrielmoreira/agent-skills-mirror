@@ -415,13 +415,17 @@ def fetch_captions(
         if not url:
             continue
         try:
-            data = http.get(
-                f"{SCRAPECREATORS_BASE}/v2/instagram/media/transcript",
-                params={"url": url},
-                headers=http.scrapecreators_headers(token),
-                timeout=transcript_timeout,
-                retries=1,
-            )
+            # Isolate transcript fetch errors from the pipeline-level
+            # capture_failures() context so an individual reel's 400 doesn't
+            # poison the entire source outcome (#829).
+            with http.capture_failures() as _tf:
+                data = http.get(
+                    f"{SCRAPECREATORS_BASE}/v2/instagram/media/transcript",
+                    params={"url": url},
+                    headers=http.scrapecreators_headers(token),
+                    timeout=transcript_timeout,
+                    retries=1,
+                )
             transcripts = data.get("transcripts") or []
             if transcripts and isinstance(transcripts, list):
                 transcript_text = " ".join(
@@ -494,7 +498,7 @@ def search_and_enrich(
                 items.append(item)
 
     # Sort merged results by views descending
-    items.sort(key=lambda x: x.get("engagement", {}).get("views", 0), reverse=True)
+    items.sort(key=lambda x: x.get("engagement", {}).get("views") or 0, reverse=True)
 
     if not items:
         return {"items": [], "error": last_error}

@@ -105,7 +105,7 @@ runs the same check.
 
 ```bash
 # Pull the exact Dolt image to enable integration tests
-docker pull dolthub/dolt-sql-server:2.1.10
+docker pull dolthub/dolt-sql-server:2.2.0
 
 # Point tests at an existing Dolt server (skips container startup)
 BEADS_DOLT_PORT=3308 ./scripts/test.sh

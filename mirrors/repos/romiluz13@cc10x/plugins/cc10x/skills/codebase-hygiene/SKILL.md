@@ -58,8 +58,10 @@ Existing code works; the problem is **shape**, not features. LLM-grown codebases
 
 For each candidate: **If I deleted this module, would the complexity it holds CONCENTRATE somewhere, or just MOVE elsewhere?**
 
-- Complexity vanishes/stays put → module is earning its keep (real abstraction). Leave it alone.
-- Complexity just moves → module is a pass-through. Deepening candidate.
+- Complexity **vanishes** → the module was a pass-through / shallow. It adds indirection without hiding complexity. Deepening candidate (delete it or deepen its interface).
+- Complexity **reappears across N call sites** → the module is deep. It earns its existence by hiding complexity that would otherwise be duplicated. Leave it alone.
+
+This verdict agrees with `cc10x:codebase-design` (canonical) and `cc10x:architecture`. Depth is leverage at the interface — not a lines-ratio.
 
 | Smell | Usually |
 | ------- | --------- |
@@ -84,12 +86,9 @@ For each: before/after sketch (current shallow interface vs proposed deeper one)
 
 ### Two-Adapters Rule for Seam Placement
 
-When designing the deeper interface, the seam must have two concrete adapters:
+When designing the deeper interface, a **port** (an injected external dependency seam) needs two concrete **adapters** — e.g. a production transport and a test stand-in. An ordinary caller or a test exercising a public interface is NOT an adapter; the two-adapter rule is about ports, not every seam.
 
-1. **First adapter:** production caller(s) using the new interface
-2. **Second adapter:** test exercising the same interface
-
-If only production code crosses the seam and you can't name a second adapter → the seam is a guess. Put the interface where a test can reach it, or don't introduce it.
+For a non-port seam (the common case for module deepening): the test must be able to reach the interface. If only production code crosses the seam and no test can reach it → the seam is a guess. Put the interface where a test can reach it, or don't introduce it. This aligns with `cc10x:codebase-design` — "one adapter means a hypothetical seam" applies to ports; internal seams need reachability, not a second adapter.
 
 ### Handoff to BUILD
 

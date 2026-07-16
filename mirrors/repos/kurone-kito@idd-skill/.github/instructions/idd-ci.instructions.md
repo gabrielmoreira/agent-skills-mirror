@@ -85,15 +85,73 @@ interpreting `gh pr checks` output.
    gh api repos/{owner}/{repo}/branches/{url-encoded-base-branch}/protection
    ```
 
-4. Build the required-check set as the union of enforcing-ruleset checks
-   and branch-protection checks. Keep expected check source metadata
+4. **Distinguish a permission error from a genuine empty result** on
+   each of the three reads above. For the ruleset-**detail** read (step
+   2), an empty result never arises from that call itself — step 2 only
+   runs once per ruleset ID already returned by step 1, so a genuinely
+   empty ruleset list in step 1 means step 2 has nothing to iterate over
+   and is skipped entirely, not called with an empty result. A `403` /
+   forbidden response on any of the three reads (including a `403` on
+   an individual ruleset-detail call, e.g. a ruleset ID visible in the
+   step 1 summary but not readable in detail) means the read itself
+   failed (the token lacks permission to inspect protection or
+   rulesets), not that no required checks exist. Never substitute an
+   empty array/object for a `403` — record it as **unreadable**.
+
+   **A `404` on any of the three reads gets the same treatment by
+   default.** None of these endpoints documents `403` as a possible
+   response at all: the branch-protection reference lists only
+   `200`/`404`
+   (<https://docs.github.com/en/rest/branches/branch-protection#get-branch-protection>),
+   and the ruleset-list and ruleset-detail references list only
+   `200`/`404`/`500`
+   (<https://docs.github.com/en/rest/repos/rules#get-all-repository-rulesets>,
+   <https://docs.github.com/en/rest/repos/rules#get-a-repository-ruleset>).
+   GitHub's own REST troubleshooting guide documents this as general
+   API behavior: a `404` on a private resource substitutes for `403` to
+   avoid confirming the resource's existence, and insufficient token
+   scope is a listed cause of a `404` on a resource that actually
+   exists
+   (<https://docs.github.com/en/rest/using-the-rest-api/troubleshooting-the-rest-api#404-not-found-for-an-existing-resource>).
+   Because these endpoints never document `403`, a `404` on any of them
+   is _structurally_ ambiguous between "genuinely nothing configured"
+   and "the token cannot read this" — the response body cannot resolve
+   that ambiguity, and an actor's collaborator role cannot either
+   (role is not proof the caller's own token carries the scope the
+   endpoint requires).
+
+   **Fail-closed default**: treat every `404` on these reads **exactly
+   like a `403`** — record it as **unreadable**, apply the same
+   fail-closed hold immediately below, do not fall through to step 6. A
+   repository may opt out and restore the pre-`#1377` trusting behavior
+   (a `404` on these reads is genuinely empty) by recording
+   `ciGate.trustEmptyProtectionReads: true` in `.github/idd/config.json`
+   — a git-committed, human-authorized policy decision that requires
+   the same repository-write access as any other policy edit, not a
+   runtime check of the caller's role or token scope that a
+   narrower-scoped token could spoof. Absent or `false` keeps the
+   fail-closed default.
+
+   If any of the three reads is **unreadable** (a confirmed `403`, or
+   an untrusted `404` per above), **fail closed**: do not fall through
+   to step 6 below. Post a hold comment stating "cannot determine
+   required checks: protection/ruleset unreadable" and stop. This is
+   distinct from the genuine `noRequiredChecksConfigured` case in step
+   6, which requires every read to have returned a genuine, trusted
+   result — a `200`, or a `404` trusted under
+   `ciGate.trustEmptyProtectionReads` — never an unreadable one.
+
+5. Build the required-check set as the union of enforcing-ruleset checks
+   and branch-protection checks, using only the genuine (readable, not
+   unreadable) results from step 4. Keep expected check source metadata
    (GitHub App/integration) when configured.
 
-5. If neither source yields a required-check set, this is **not**
-   automatically a hold — it is the same `noRequiredChecksConfigured:
-   true` state `idd-pre-merge.instructions.md` F2's CI gate already
-   interprets. When `pre-merge-readiness` output is available, reuse
-   its `ci.presentRunConclusion` value directly. Otherwise, derive the
+6. If neither source yields a required-check set — and step 4 found no
+   unreadable result on any of the reads — this is **not** automatically a
+   hold — it is the same `noRequiredChecksConfigured: true` state
+   `idd-pre-merge.instructions.md` F2's CI gate already interprets. When
+   `pre-merge-readiness` output is available, reuse its
+   `ci.presentRunConclusion` value directly. Otherwise, derive the
    equivalent from the current PR head SHA's actual runs: `all-passing`
    (every present run completed green) may proceed; `pending` → wait
    per the polling algorithm below, then re-check; `some-failing`, or
@@ -167,6 +225,22 @@ check name.
 If GH CLI cannot resolve a run ID, use Actions REST endpoints directly
 for the same run before posting a hold.
 
+**`idd-advisory-convergence` specifically** (when a repository hosts it
+as a required check): its own `workflow_dispatch` trigger does NOT
+reliably refresh the PR's required-check rollup for the current HEAD
+SHA, even though the workflow's own header comment frames it as a
+one-click re-check affordance -- a manually dispatched run has no
+`pull_request` context of its own, so it is not reliably associated
+with the PR's HEAD SHA the way a `pull_request` / `pull_request_review`
+/ `pull_request_review_comment`-triggered run is. See
+[kurone-kito/idd-skill's own dogfooded copy of `.github/workflows/idd-advisory-convergence.yml`](https://github.com/kurone-kito/idd-skill/blob/main/.github/workflows/idd-advisory-convergence.yml)'s
+header comment for the full finding -- the investigation prose lives
+only in that upstream file, not in the portable stub this template
+ships as your `.github/workflows/idd-advisory-convergence.yml`.
+When this check shows a stuck or stale rollup entry, apply the rerun
+mechanic above -- `gh run rerun <run-id>` on the _existing_ PR-linked
+run for the current HEAD SHA -- rather than `workflow_dispatch`.
+
 ## Interpretation
 
 <!-- dprint-ignore-start -->
@@ -198,16 +272,20 @@ keeps the **wait itself cheap**: the dominant cost of a wait is each
 re-invocation's context re-read (worse once it crosses the prompt-cache TTL,
 as CI/e2e waits routinely do), not the idle time.
 
-**Portability**: prefer a synchronous / blocking wait in the worker's own
-turn under supervisor/worker or multi-agent topologies — a background
-wait's completion notification often reaches only the supervisor, so the
-worker's turn ends and stalls until re-prompted (the background-wait
-resumption caveat). Background the watch (below) only when the topology
-is known to route completion back to the same turn.
+**Portability**: under supervisor/worker or multi-agent topologies, a
+background wait's completion notification often reaches only the
+supervisor, so the worker's turn ends and stalls until re-prompted (the
+background-wait resumption caveat). The topology-safety condition this
+implies is folded directly into the first bullet below, not just stated
+here.
 
-- **No interim polling turns** — background the watch, or schedule one wake at
-  the **expected** completion interval; do not insert "is it done yet?" turns
-  or peek at an empty watch buffer between wakes.
+- **No interim polling turns** — schedule one wake at the **expected**
+  completion interval, or background the watch only if the topology is
+  confirmed to route completion back to this turn; otherwise default to a
+  synchronous / blocking wait here. Do not insert "is it done yet?" turns,
+  peek at an empty watch buffer, or end this turn assuming an unconfirmed
+  background/async notification resumes it — that stalls silently under
+  supervisor/worker topologies.
 - **Batch post-wait actions** into a single turn once the wait resolves
   (disposition, replies, marker, next gate together — not one round-trip each).
 - **Scope post-fix re-validation to the changed surface** when the change is

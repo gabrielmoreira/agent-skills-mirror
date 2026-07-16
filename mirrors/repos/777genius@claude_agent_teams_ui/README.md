@@ -52,10 +52,10 @@
 </tr>
 <tr>
 <td width="50%">
-  <img src="docs/screenshots/1.jpg" alt="Kanban board with agent tasks" width="100%" />
+  <img width="1312" height="824" alt="image" src="https://github.com/user-attachments/assets/3b5d1a00-5e10-4e0a-902c-214c1266793d" />
 </td>
 <td width="50%">
-  <img width="1312" height="820" alt="image" src="https://github.com/user-attachments/assets/05f1129f-5671-437c-b9bf-5be053d31778" />
+  <img width="1312" height="820" alt="image" src="https://github.com/user-attachments/assets/e78c2229-5d40-4615-bbee-79b0bc611d51" />
 </td>
 </tr>
 </table>

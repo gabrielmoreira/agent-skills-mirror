@@ -1147,6 +1147,8 @@ export const pages = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "showKicker": true,
       "showTrend": true,
@@ -1587,6 +1589,8 @@ export const pages = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "showSidePanel": true,
       "stepCount": 3,
@@ -1775,6 +1779,8 @@ export const pages = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "ink",
       "chartVariant": "area",
       "showChart": true,
@@ -1969,6 +1975,8 @@ export const pages = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "chartVariant": "donut",
       "itemCount": 4,
@@ -2356,6 +2364,8 @@ export const pages = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "stageCount": 5,
       "emphasis": false,
@@ -2551,6 +2561,8 @@ export const pages = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "ink",
       "imageCount": true,
       "images": [],
@@ -4296,6 +4308,8 @@ export const pages = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "ink",
       "rowCount": 7,
       "columnCount": 4,
@@ -4897,6 +4911,8 @@ export const pages = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "ink",
       "imageCount": 3,
       "images": [],
@@ -5451,6 +5467,8 @@ export const pages = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "showKicker": true,
       "showDelta": true,
@@ -5991,6 +6009,8 @@ export const pages = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "rowCount": 6,
       "showColHeads": true,
@@ -6150,6 +6170,9 @@ export const pages = [
       {
         "key": "pinCount",
         "type": "slider",
+        "countArrays": [
+          "callouts"
+        ],
         "label": "列表数量",
         "default": 3,
         "min": 1,
@@ -6200,6 +6223,8 @@ export const pages = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "ink",
       "imageCount": true,
       "images": [],
@@ -6228,7 +6253,7 @@ export const pages = [
       "imagePlaceholder": "产品截图 · 16:10",
       "capTag": "↗ After",
       "capText": "VOLT 落地页 · 重构版",
-      "pins": [
+      "callouts": [
         {
           "x": 24,
           "y": 30,
@@ -6503,6 +6528,8 @@ export const pages = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "imageCount": true,
       "images": [],
@@ -6930,42 +6957,36 @@ export const pages = [
       "lede": "把增长拆成可解释的几段：每一段都来自一个具体动作，没有黑箱。",
       "steps": [
         {
-          "type": "base",
-          "zh": "接入前基线",
-          "en": "Baseline",
-          "v": 100
-        },
-        {
-          "type": "inc",
           "zh": "搜索与内容",
           "en": "+SEO",
           "v": 64
         },
         {
-          "type": "inc",
           "zh": "转化优化",
           "en": "+CRO",
           "v": 52
         },
         {
-          "type": "inc",
           "zh": "付费放大",
           "en": "+Paid",
           "v": 48
         },
         {
-          "type": "inc",
           "zh": "协同复利",
           "en": "+Synergy",
           "v": 36
-        },
-        {
-          "type": "tot",
-          "zh": "12 个月后",
-          "en": "Total",
-          "v": 300
         }
       ],
+      "baseStep": {
+        "zh": "接入前基线",
+        "en": "Baseline",
+        "v": 100
+      },
+      "totalStep": {
+        "zh": "12 个月后",
+        "en": "Total",
+        "v": 300
+      },
       "metaLeft": "IGNIS — 燃点 · 增长来源拆解（指数化 · 基线 = 100）",
       "metaMid": "每一段，都说得清来源"
     }
@@ -7447,6 +7468,8 @@ export const pages = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "rowCount": 4,
       "showColHeads": true,
@@ -8996,6 +9019,8 @@ export const pages = [
       }
     ],
     "defaultProps": {
+      "wordmarkLabel": "IGNIS",
+      "wordmarkSub": "燃点",
       "surface": "paper",
       "rowCount": 4,
       "showColHeads": true,
@@ -11211,7 +11236,7 @@ export const pages = [
         "团队",
         "后台"
       ],
-      "photos": [
+      "frames": [
         {
           "ph": "门店开业",
           "cap": "首店 · 当天售罄",
@@ -14385,6 +14410,9 @@ export const pages = [
       {
         "key": "pinCount",
         "type": "slider",
+        "countArrays": [
+          "callouts"
+        ],
         "label": "标注数量",
         "default": 4,
         "min": 2,
@@ -14498,7 +14526,7 @@ export const pages = [
       "eyebrowEn": "What we changed",
       "headingHtml": "一张截图，<span class=\"ign-ember-text\">把每处改动指出来</span>。",
       "noteHtml": "编号对应改动点——<br>每一处都对着转化。",
-      "pins": [
+      "callouts": [
         {
           "x": 16,
           "y": 26,

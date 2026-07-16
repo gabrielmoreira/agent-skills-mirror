@@ -6285,12 +6285,14 @@ export const pages = [
       "ctaDefault": "免费开始",
       "ctaContact": "联系销售",
       "customLabel": "定制",
+      "unitMonthly": "/月",
+      "unitYearly": "/月 · 年付",
       "plans": [
         {
           "cn": "入门",
           "en": "Starter",
           "m": 0,
-          "y": 0,
+          "yearly": 0,
           "note": "永久免费",
           "desc": "适合刚起步的创作者",
           "feats": [
@@ -6303,7 +6305,7 @@ export const pages = [
           "cn": "专业",
           "en": "Pro",
           "m": 39,
-          "y": 29,
+          "yearly": 29,
           "note": "按月计费",
           "desc": "为认真经营的音乐人",
           "feats": [
@@ -6317,7 +6319,7 @@ export const pages = [
           "cn": "厂牌",
           "en": "Label",
           "m": 99,
-          "y": 79,
+          "yearly": 79,
           "note": "按月计费",
           "desc": "多艺人 · 团队协作",
           "feats": [
@@ -6331,7 +6333,7 @@ export const pages = [
           "cn": "企业",
           "en": "Enterprise",
           "m": null,
-          "y": null,
+          "yearly": null,
           "note": "定制报价",
           "desc": "平台级集成需求",
           "feats": [
@@ -9354,6 +9356,7 @@ export const pages = [
       "axisY": "创作者掌控力 →",
       "ownLegend": "声浪 · 创作者主权象限",
       "rivalLegend": "传统方案 ·",
+      "rivalLegendSuffix": "家对照",
       "own": {
         "cn": "声浪",
         "en": "SoundWave",

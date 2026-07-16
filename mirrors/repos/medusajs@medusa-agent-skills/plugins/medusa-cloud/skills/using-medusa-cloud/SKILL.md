@@ -12,7 +12,8 @@ Operational guide for AI agents managing Medusa Cloud infrastructure through the
 - **Always pass `--json`** when parsing CLI output. Plaintext output is for humans and may change without warning.
 - **Confirm context before mutating.** Run `mcloud whoami --json` before any state change.
 - **Read before you write.** Run a `get` or `list` before any `delete`, `redeploy`, or `trigger-build`.
-- **Use `--yes` for destructive operations.** `delete` commands require `--yes` in non-interactive mode.
+- **Use `--yes` for destructive operations.** `delete` commands (including `variables delete`) require `--yes` in non-interactive mode.
+- **Variable changes need a deploy to apply.** `variables set`/`delete` don't rebuild or redeploy: `redeploy` for runtime changes, `trigger-build` for build changes.
 - **Production environments cannot be deleted.** `mcloud environments delete` errors on production by design.
 - **Never pass `--reveal` unless the user explicitly asks.** Secret values appear in terminal scrollback and logs.
 - **`--json` and `--follow` are incompatible.** Use bounded time windows (`--from`/`--to`) with `--json` for programmatic log ingestion.
@@ -74,6 +75,7 @@ Route on `backend_status` (or `storefront_status`):
 - **Personal vs org access keys.** Personal keys require `--organization`; org keys are pre-scoped.
 - **`organizations list` requires personal auth.** Org access keys return 401 on this command.
 - **Build IDs vs deployment IDs.** `depl_*` = deployment ID; anything else = build ID (resolved to latest deployment). `mcloud logs --deployment` accepts both; other commands take build IDs only.
+- **`mcloud local build` has no `--json`.** It streams plaintext and reports success via its exit code (`0` = success). Requires Docker and must run inside the project's Git repo. Use it to reproduce `build-failed` failures locally — see `debugging-deployments.md`.
 
 ## Reference Files
 

@@ -59,8 +59,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/memu/SKILL.md`](.claude/skills/memu/SKILL.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

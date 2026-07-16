@@ -34,6 +34,7 @@ Detailed rules and learnings are in the `rules/` directory. Read the relevant fi
 | [rules/auto-update.md](rules/auto-update.md)                         | Debugging Squirrel/update-electron-app failures, update feed URLs, or updater log capture in bug reports and session debug bundles                                             |
 | [rules/safe-storage.md](rules/safe-storage.md)                       | Working with Electron `safeStorage`, macOS Keychain identities, or legacy os_crypt secret recovery                                                                             |
 | [rules/electron-workers.md](rules/electron-workers.md)               | Spawning `worker_threads`/`utilityProcess`, moving heavy computation off the main process, or diagnosing main-process memory usage and OOM crashes                             |
+| [rules/app-naming.md](rules/app-naming.md)                           | Touching app display names, folder slugs, or flows that create/move app directories (create, copy, import, rename, blueprint approval, template apply)                         |
 
 ## Project setup and lints
 
@@ -134,6 +135,8 @@ Our project relies on a combination of unit tests, Vitest integration tests, and
 Use unit testing for pure business logic and util functions.
 
 Target a Vitest file with `npm test -- path/to/file.test.ts`. Do not pass Jest-only flags such as `--runInBand`; Vitest will fail with `Unknown option '--runInBand'`.
+
+When adding another suite or prerequisite to the root `test` script, keep Vitest as the final shell command. `npm test -- <path>` appends its arguments only to the final command, so placing another runner last silently turns a targeted Vitest run into the full suite.
 
 Package-local Vitest suites may use their own config and not match the root `npm test -- path` include globs. For example, run `npm --prefix packages/ts-pg-schema-diff test` and `npm --prefix packages/ts-pg-schema-diff run typecheck` for `packages/ts-pg-schema-diff`.
 

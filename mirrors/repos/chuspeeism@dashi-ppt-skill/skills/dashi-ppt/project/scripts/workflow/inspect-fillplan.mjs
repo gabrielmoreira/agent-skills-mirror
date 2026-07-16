@@ -9,6 +9,7 @@ import {
   explicitNumberBoundsForArrayKey,
   isContractContentArray,
   isMediaArrayKey,
+  isNonContentContractValue,
   isPrivateDefaultRoundTrip,
   isPrunedContractOmit,
   isSerializedReactElementLike,
@@ -91,6 +92,7 @@ function buildFillablePropShapes(defaultProps = {}, copyKeys = [], roots = []) {
     shapes[root] = shape;
   }
   for (const key of copyKeys || []) {
+    if (String(key).endsWith('[][]')) continue; // 元组路径:root 已建 [[...]] 形状,扁平展开会产生脏键
     const root = rootPropKey(key);
     if (rootFilter && !rootFilter.has(root)) continue;
     const type = simpleValueType(sampleValueForCopyPath(defaultProps, key));
@@ -415,8 +417,8 @@ function validateFillableValueShape(value, shape, field, errors, warnings = [], 
       return;
     }
     const isTupleShape = shape.length > 1;
-    if (isTupleShape && value.length !== shape.length) {
-      errors.push(`${String(field).replace(/^props\./, '')}: expected tuple length ${shape.length}`);
+    if (isTupleShape && value.length > shape.length) {
+      errors.push(`${String(field).replace(/^props\./, '')}: expected tuple length <= ${shape.length}`);
       return;
     }
     const itemNumberBounds = Array.isArray(defaultValue) ? numberBoundsForArrayItems(defaultValue, explicitBoundsByField) : new Map();
@@ -448,6 +450,12 @@ function validateFillableValueShape(value, shape, field, errors, warnings = [], 
       if (!allowed.has(key)) {
         if (!isPrivatePosToneField(key) && isPrivateDefaultRoundTrip(item, defaultValue?.[key])) continue;
         if (isAllowedNestedArrayField(field, key, item, defaultValue?.[key], allowedNestedArrays)) continue;
+        // 同位置默认项自带的键(可填 shape 之外的结构/数值字段,如价格 y、坐标 pins)
+        // 回传或修改都放行 —— 类型正确性由渲染层契约(prop-contract-core)按同位默认校验兜底;
+        // 私有/非内容字段(颜色、pos/tone、视觉数值)仍保持拒绝。
+        if (isPlainObject(defaultValue) && key in defaultValue
+          && !isNonContentContractValue(key, defaultValue[key])
+          && (typeof item !== 'string' || item === defaultValue[key])) continue;
         errors.push(`${field}.${key}: unknown nested prop; expected ${formatExpectedKeys(allowed)}`);
         continue;
       }
@@ -456,6 +464,16 @@ function validateFillableValueShape(value, shape, field, errors, warnings = [], 
       if (bounds) validateNumberBounds(item, bounds, `${field}.${key}`, bounds.explicit ? errors : warnings);
     }
     return;
+  }
+  // 默认值证据放行:提交值与同位置默认值同类型(含同为 null)即视为契约内 ——
+  // 异构默认(勾选表格 boolean|string 列、自定义价 number|null、漏斗首段 null)本就是组件设计的一部分,
+  // 合并 shape 无法表达联合类型,此处以默认值为准放行(theme09_page103/theme12_page032/041 等病例)。
+  if (shape === 'number' || shape === 'boolean' || shape === 'string') {
+    const tv = value === null ? 'null' : typeof value;
+    const td = defaultValue === null ? 'null' : typeof defaultValue;
+    if (tv === td && ['null', 'string', 'number', 'boolean'].includes(tv)) {
+      if (tv !== 'number' || Number.isFinite(value)) return;
+    }
   }
   if (shape === 'number' && (typeof value !== 'number' || !Number.isFinite(value))) {
     errors.push(`${field}: expected number`);
@@ -1023,8 +1041,10 @@ function buildFillPlanArrays(arrayMeta, copyBudgets, copyRoles, defaultProps, co
 }
 
 function fillPlanStringArrayItem(arrayKey, itemShape, copyBudgets, copyRoles) {
-  if (itemShape !== 'string') return null;
-  const itemKey = `${arrayKey}[]`;
+  const isTupleShape = Array.isArray(itemShape) && itemShape.length > 0
+    && itemShape.every(t => t === 'string' || t === 'number');
+  if (itemShape !== 'string' && !isTupleShape) return null;
+  const itemKey = isTupleShape ? `${arrayKey}[][]` : `${arrayKey}[]`;
   const budget = copyBudgets[itemKey];
   if (!budget?.maxChars) return null;
   return {
@@ -1323,7 +1343,14 @@ function fillPlanTupleShapeForArrayItems(items) {
 function fillPlanTupleItemShape(values) {
   const objects = values.filter(isPlainObject);
   if (objects.length) {
-    return Object.fromEntries(Object.entries(objects[0]).map(([key, value]) => [
+    // 并集全部对象项的键(样本取首个非 null 值),首项缺失的字段(如首段 conv=null)不再丢失
+    const merged = {};
+    for (const obj of objects) {
+      for (const [key, value] of Object.entries(obj)) {
+        if (!(key in merged) || merged[key] == null) merged[key] = value;
+      }
+    }
+    return Object.fromEntries(Object.entries(merged).map(([key, value]) => [
       key,
       Array.isArray(value) ? fillPlanArrayValueShape(value) : simpleValueType(value),
     ]));

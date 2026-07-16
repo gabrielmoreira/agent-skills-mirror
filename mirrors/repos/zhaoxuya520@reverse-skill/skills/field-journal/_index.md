@@ -6,9 +6,9 @@
 
 ## 统计
 
-- 真实项目数：7
+- 真实项目数：8
 - 种子参考数：17
-- 总条目数：23
+- 总条目数：24
 
 ## 按场景分类
 
@@ -19,6 +19,7 @@
 
 ### 二进制 / 固件 / CTF
 
+- [2026-07-14_android-arm64-self-extract-source-recovery](./2026-07-14_android-arm64-self-extract-source-recovery.md)
 - [2026-05-15_lumine-go-reverse](./2026-05-15_lumine-go-reverse.md)
 - [[种子] seed-001_elf-packed-loader](./seed-001_elf-packed-loader.md)
 - [[种子] seed-002_go-malware-stripped](./seed-002_go-malware-stripped.md)

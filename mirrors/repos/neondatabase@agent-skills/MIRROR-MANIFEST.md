@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `neondatabase/agent-skills` — 26 default patterns, 1 followed patterns, 19 file(s) materialized.
+Mirror of `neondatabase/agent-skills` — 26 default patterns, 1 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `neondatabase/agent-skills` — 26 default patterns, 1 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 19 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,9 +75,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`skills/neon-object-storage/SKILL.md`](skills/neon-object-storage/SKILL.md) |
 | 15 | ✓ | [`skills/neon-postgres-branches/SKILL.md`](skills/neon-postgres-branches/SKILL.md) |
 | 16 | ✓ | [`skills/neon-postgres-egress-optimizer/SKILL.md`](skills/neon-postgres-egress-optimizer/SKILL.md) |
-| 17 | ✓ | [`skills/neon-postgres/SKILL.md`](skills/neon-postgres/SKILL.md) |
-| 18 | ✓ | [`skills/neon/SKILL.md`](skills/neon/SKILL.md) |
-| 19 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 17 | ✓ | [`skills/neon-postgres/references/neon-sdk.md`](skills/neon-postgres/references/neon-sdk.md) |
+| 18 | ✓ | [`skills/neon-postgres/SKILL.md`](skills/neon-postgres/SKILL.md) |
+| 19 | ✓ | [`skills/neon/SKILL.md`](skills/neon/SKILL.md) |
+| 20 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

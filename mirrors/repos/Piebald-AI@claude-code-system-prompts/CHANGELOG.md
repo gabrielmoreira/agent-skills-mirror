@@ -4,6 +4,28 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.211](https://github.com/Piebald-AI/claude-code-system-prompts/commit/2c464fc)
+
+_+3,890 tokens_
+
+- **NEW:** System Prompt: Background subagent delegation examples; System Prompt: Foreground subagent delegation examples; and System Prompt: Fresh subagent delegation example — Split delegation examples by execution mode, requiring self-contained prompts, status-only replies while background work is pending, later reporting from completion notifications, and sufficient context for independent fresh-agent reviews.
+- **NEW:** System Reminder: Async agent launched metadata and System Reminder: Cloud agent launched — Mark launch IDs and result locations as internal, prohibit exposing or predicting results before completion, and require cloud launches to receive only a brief user-facing acknowledgement before ending the response.
+- **NEW:** Tool Description: Navigate — Documents standalone and batched browser navigation, automatic tab creation, and when an explicit tab ID is required.
+- **NEW:** Tool Description: RefreshMcpTools and Tool Description: RefreshMcpTools prompt — Add on-demand resynchronization of connected MCP server tool lists, including stale-tool recovery triggers, per-server refreshes, and added, removed, or disconnected result reporting without reconnecting servers.
+- **REMOVED:** Skill: Schedule recurring cron and execute immediately (compact) — Removes the standalone compact recurring-schedule workflow after folding its create, confirmation, expiry, cancellation, and immediate-execution steps into `/loop`.
+- **REMOVED:** System Prompt: Subagent prompt-writing examples — Removes the combined delegation-example prompt after separating foreground, background, and fresh-agent guidance into dedicated prompts.
+- **REMOVED:** System Reminder: ClaudeDesign project grant unavailable without verified identity — Removes the fallback reminder that required verified project identity before offering project-wide ClaudeDesign approval.
+- Agent Prompt: Security monitor for autonomous agent actions (first part) — Clarifies that naming a desired outcome does not authorize a destructive means chosen by the agent; consent must name the dangerous operation, scope, guard, or targets themselves.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Replaces default-branch-specific push blocking with a destination exception for ordinary pushes to any session-repository branch, while adding a separate consent rule for landing code that would leak secrets or sensitive data when run, widen deployment exposure, or arm an exfiltrating CI or setup path.
+- Data: Claude API reference — C# and Data: Claude Code gateway protocol — Update Anthropic documentation links from `docs.claude.com` to `platform.claude.com`.
+- Data: Claude Code recent changes reference — Adds removed memory-entry and thinking-toggle shortcuts plus corrections for model aliases, keybinding hot reload and schema, permission-mode cycling, macOS Option chords, subprocess credential scrubbing, and `--bg` incompatibility with print mode.
+- Data: Data visualization reference palette — Documents measured categorical-versus-status color collisions and requires same-hue series and status cues to remain distinguishable through icons, labels, and placement rather than hue alone.
+- Skill: Claude Code configuration guide — Adds keybinding-specific routing, requires strictly valid comment-free JSON configuration examples, and forbids inventing documentation heading anchors.
+- Skill: /loop slash command (dynamic mode) — Inlines recurring cron creation, confirmation, expiry and cancellation details, and immediate execution of the parsed prompt after scheduling.
+- Tool Description: Agent (simple usage notes) and Tool Description: Agent (usage notes) — Tailor final-report wording to background-agent support, prohibit racing or predicting pending background results, and distinguish in-process subagents from teammates when describing available parameters and agent types.
+- Tool Description: Claude in Chrome read page — Changes oversized accessibility-tree handling from an error to line-boundary truncation with the full size and guidance to raise `max_chars` or narrow the read by depth or element reference.
+- Tool Description: ClaudeDesign — Makes project writes use a one-time durable approval instead of a plan token, while retaining plan-token requirements for deletes and copies.
+
 # [2.1.210](https://github.com/Piebald-AI/claude-code-system-prompts/commit/8eb4b72)
 
 _-8,629 tokens_

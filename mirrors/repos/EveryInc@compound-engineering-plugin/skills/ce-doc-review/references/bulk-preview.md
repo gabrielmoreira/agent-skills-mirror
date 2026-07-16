@@ -42,7 +42,7 @@ Worked example for routing option B (top-level best-judgment):
 Auto-resolve plan — 8 findings:
 
 Applying (4):
-  [P0] Requirements Trace — Renumber R4 to match unit reference
+  [P0] Requirements Trace — Renumber R4 (the auth-token requirement) to match unit reference
   [P1] Unit 3 Files — Add read-fallback for renamed report file
   [P2] Key Technical Decisions — Use framework's Deprecated field rather than hand-rolling
   [P3] Overview — Correct wrong count (says 6, list has 5)
@@ -73,6 +73,7 @@ Each line uses the compressed form of the framing-quality guidance from the suba
 - **Shape:** `[<severity>] <section> — <one-line summary>`
 - **Width target:** keep lines near 80 columns so the preview renders cleanly in narrow terminals. Truncate with ellipsis when necessary.
 - **No section numbering** unless the reader needs it to locate the issue (when multiple findings hit the same named section).
+- **Self-contained identifiers** — when the one-line summary references a document-defined identifier (a requirement or unit ID such as `R4`, `U3`), pair it at first mention with a short plain-language handle drawn from the document (e.g., `R4 (the auth-token requirement)`), never a bare ID, per the self-contained-rendered-lines rule in `references/synthesis-and-presentation.md`.
 
 When no `why_it_matters` is available for a finding (rare — only if persona output was malformed), fall back to the finding's title directly. Note the gap in the completion report's Coverage section if it affects more than a few findings in the same run.
 
@@ -80,7 +81,14 @@ When no `why_it_matters` is available for a finding (rare — only if persona ou
 
 ## Question and options
 
-After the preview body is rendered, ask the user using the platform's blocking question tool (`AskUserQuestion` in Claude Code, `request_user_input` in Codex, `ask_question` in Antigravity CLI (`agy`), `ask_user` in Pi (requires the `pi-ask-user` extension)). In Claude Code, the tool should already be loaded from the Interactive-mode pre-load step — if it isn't, call `ToolSearch` with query `select:AskUserQuestion` now. The text fallback below applies only when the harness genuinely lacks a blocking tool — `ToolSearch` returns no match, the tool call explicitly fails, or the runtime mode does not expose it (e.g., Codex edit modes without `request_user_input`). A pending schema load is not a fallback trigger. Never silently skip the question.
+Treat the preview and its confirmation as two ordered user-facing events:
+
+1. **Preview event** — emit the complete preview body as user-visible assistant text in the conversation. Content composed only in hidden thinking or reasoning does not count. Do not place the preview only inside the question interface's input.
+2. **Decision event** — after the preview event is visible, invoke the harness's agent-callable blocking-question capability and wait for the answer. Success means the user can see the preview while choosing `Proceed` or `Cancel`, and the workflow does not continue until they answer.
+
+If the preview event has not occurred, do not invoke the blocking-question capability. If the harness exposes no such capability or the call errors, preserve the same interaction as visible chat: put the numbered `Proceed` / `Cancel` options immediately below the visible preview and wait for the user's reply. Never omit the preview or continue silently.
+
+**Non-exhaustive adapters:** `AskUserQuestion` in Claude Code, `request_user_input` in Codex, `ask_question` in Antigravity CLI (`agy`), and `ask_user` in Pi with the `pi-ask-user` extension. In Claude Code, `AskUserQuestion` should already be loaded from the Interactive-mode pre-load step; if it is not, call `ToolSearch` with query `select:AskUserQuestion` now. A pending schema load is not a fallback trigger.
 
 Stem (adapted to the path):
 
@@ -92,8 +100,6 @@ Options (exactly two, in all three cases):
 
 - `Proceed` — execute the plan as shown
 - `Cancel` — do nothing, return to the originating question
-
-Only when `ToolSearch` explicitly returns no match or the tool call errors — or on a platform with no blocking question tool — fall back to presenting numbered options and waiting for the user's next reply.
 
 ---
 

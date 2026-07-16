@@ -24,9 +24,13 @@ Each packet provides:
 - `../references/cut-catalog.md` — the **cut catalog** (zoom-through / inverse / cut-the-curve / waterfall) for a within-frame seam. You never author the between-frame transition — story's `transition_in` + the injector own that.
 - Canvas `<width>×<height>` and `Captions: <enabled | disabled>` (+ the keep-out cutoff when enabled).
 
-**Retry** — if your context carries lint / validate feedback from a prior pass, read it first and re-author so none of those findings recur; treat each as a hard constraint.
+**Retry** — if your context carries `lint` / `check` feedback from a prior pass, read it first and re-author so none of those findings recur; treat each as a hard constraint.
 
 **OUTPUT** — one `compositions/frames/<frame_id>.html` per assigned packet, each a bare template fragment. The first non-whitespace bytes are `<template`; the last are `</template>`. Never emit `<!doctype>`, `<html>`, `<head>`, `<body>`, or any markup outside that single template. After the last assigned file passes the self-check, stop — you do not edit `STORYBOARD.md`, mint audio, assemble the index, run the CLI, or report back. The orchestrator validates the files before assembly and marks their `status`.
+
+## When a confirmed sketch exists
+
+In collaborative runs the orchestrator wireframes the board first, so your target file may already exist as the frame's **user-confirmed wireframe** — your dispatch says whether it does (a file found on a retry is your own prior output, not a sketch). Read it first and **keep its composition**: the placement, hierarchy, and copy were approved — don't move or drop them. Everything else is yours to finish: the full `frame.md` treatment (the sketch is deliberately unstyled), the `code-*` block where the sketch held plain code, the finished invented visuals where it used plain blocks, and the motion — map each Scene onto a timeline phase, reveal each piece on its `voiceover` cue with `fromTo` entrances, adding DOM only where a phase needs it. The frame's landed state must still read as the approved wireframe, fully dressed.
 
 ## Mostly invented — you build the visual (except code blocks + the credits avatars)
 
@@ -78,7 +82,7 @@ Generic seek-safety + structure live in `hyperframes-core` (read it; not restate
 
 ## Self-check before finishing (you do NOT run the CLI)
 
-You **can't** meaningfully run `hyperframes lint` / `validate` / `inspect` here: they operate on the **assembled project** (the `index.html` graph / bundle), and your frame isn't wired in yet — so they report on _other_ files, not yours (a false green). The **orchestrator** runs them at **Step 6, after assembly** (the correct unit), and **re-dispatches you with the finding** if your frame fails (see **Retry** above). So get it right on write: re-read your file against this checklist before finishing — the codes in parens are `hyperframes lint`'s and what the orchestrator may cite back (the rules behind them live in `hyperframes-core`):
+You **can't** meaningfully run `hyperframes lint` / `check` here: they operate on the **assembled project** (the `index.html` graph / bundle), and your frame isn't wired in yet — so they report on _other_ files, not yours (a false green). The **orchestrator** runs them at **Step 6, after assembly** (the correct unit), and **re-dispatches you with the finding** if your frame fails (see **Retry** above). So get it right on write: re-read your file against this checklist before finishing — the codes in parens are `hyperframes lint`'s and what the orchestrator may cite back (the rules behind them live in `hyperframes-core`):
 
 - `missing_template_wrapper` / `missing_composition_id` — the entire file is exactly one bare `<template>…</template>` fragment (no DOCTYPE/full document); its first element carries `data-composition-id="<frame_id>"` and a positive `data-duration` matching the packet.
 - **Template transport** — every `<style>` and `<script>` block, including the GSAP load, lives inside `<template>`.

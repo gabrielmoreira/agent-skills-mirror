@@ -17,14 +17,14 @@ Execute `mcloud projects` commands to manage Cloud projects.
 
 ### projects list
 
-List all projects in an organization.
+List projects in an organization. If `--organization` is omitted (and no active context org is set), lists projects across all organizations you have access to, grouped by organization.
 
 ```bash
 mcloud projects list --organization <org-id> --json
 ```
 
 **Options:**
-- `-o/--organization <id>` — Organization ID (falls back to active context; **required**)
+- `-o/--organization <id>` — Organization ID (falls back to active context; if unset, lists across all your organizations)
 - `--json` — Output as JSON
 
 ### projects get
@@ -71,7 +71,8 @@ mcloud projects delete <project-id-or-handle> \
 | `region` | Deployment region (e.g. `us-east-1`) |
 | `repository` | Linked GitHub repository (`owner/repo`) |
 | `root_path` | Root path within the repository |
-| `environments` | Array of associated environments |
+| `organization` | Owning organization (`id`, `name`, `created_at`) |
+| `environments` | Array of associated environments (each may include `storefront_environments`) |
 
 ## Examples
 

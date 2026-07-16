@@ -31,14 +31,14 @@ mcloud environments list --organization <org-id> --project <project-id-or-handle
 
 ### environments get
 
-Retrieve a single environment by handle.
+Retrieve a single environment by its ID or handle.
 
 ```bash
-mcloud environments get <environment-handle> --organization <org-id> --project <project-id-or-handle> --json
+mcloud environments get <environment-id-or-handle> --organization <org-id> --project <project-id-or-handle> --json
 ```
 
 **Arguments:**
-- `environment` — Environment handle (required)
+- `environment` — Environment ID or handle (required)
 
 **Options:**
 - `-o/--organization <id>`, `-p/--project <id-or-handle>`, `--json`
@@ -68,14 +68,14 @@ mcloud environments create \
 Delete an environment. **Cannot delete production environments.**
 
 ```bash
-mcloud environments delete <environment-handle> \
+mcloud environments delete <environment-id-or-handle> \
   --organization <org-id> \
   --project <project-id-or-handle> \
   --yes
 ```
 
 **Arguments:**
-- `environment` — Environment handle (required)
+- `environment` — Environment ID or handle (required)
 
 **Options:**
 - `-o/--organization <id>`, `-p/--project <id-or-handle>`
@@ -87,14 +87,14 @@ mcloud environments delete <environment-handle> \
 Re-run an existing build for the active deployment. Use when the fix is environment-side (variable change, infra issue) — does NOT start a new build.
 
 ```bash
-mcloud environments redeploy <environment-handle> \
+mcloud environments redeploy <environment-id-or-handle> \
   --organization <org-id> \
   --project <project-id-or-handle> \
   --json
 ```
 
 **Arguments:**
-- `environment` — Environment handle (required)
+- `environment` — Environment ID or handle (required)
 
 **Options:**
 - `-o/--organization <id>`, `-p/--project <id-or-handle>`, `--json`
@@ -106,14 +106,14 @@ mcloud environments redeploy <environment-handle> \
 Start a new build from the tracked branch. Use when the fix is committed code — creates a new deployment.
 
 ```bash
-mcloud environments trigger-build <environment-handle> \
+mcloud environments trigger-build <environment-id-or-handle> \
   --organization <org-id> \
   --project <project-id-or-handle> \
   --json
 ```
 
 **Arguments:**
-- `environment` — Environment handle (required)
+- `environment` — Environment ID or handle (required)
 
 **Options:**
 - `-o/--organization <id>`, `-p/--project <id-or-handle>`, `--json`

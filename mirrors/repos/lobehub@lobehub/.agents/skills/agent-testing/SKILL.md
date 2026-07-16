@@ -31,10 +31,33 @@ Finish unless the user explicitly asks to keep the environment running.
 Confirm what will run and whether the environment is ready before changing or
 starting anything.
 
-### Step 0 — Read the two living logs (mandatory, before every run)
+Skill-internal setup — loading this skill, reading the living logs and
+reference files — is silent preparation: never narrate it to the user ("I'll
+load the mandatory living logs first…" is noise). The first user-visible
+message of a session is about the user's test — the target confirmation
+(Step 0) or the Phase 1 approval gate — in one message, not a setup
+announcement followed by the same question again.
 
-Before doing anything else, read both of these in full and hold them in mind for
-this run:
+### Step 0 — Ground the target, then read the two living logs (mandatory)
+
+**A test target must exist before anything else happens.** When the invocation
+carries none (bare skill invocation, no pending ask in the conversation),
+ground it first — do NOT read the living logs or touch the environment yet:
+
+1. Take the target from the user's words in this conversation when they
+   exist — the task lives in their words, not in git (common-mistakes Case 3).
+2. Otherwise, infer the most likely candidate from observable context (current
+   branch, recent commits, working-tree changes) and confirm it with one
+   structured question — the candidate as the recommended option, clearly
+   labeled as a guess. Never start executing against an unconfirmed guess.
+3. Only when nothing is inferable, ask one direct open question. Asking "what
+   should I verify" is the one legitimate opening question (common-mistakes
+   Case 8) — but asking it open-ended when a candidate was inferable wastes
+   the user's turn.
+
+**Once the target is known**, read both of these in full and hold them in mind
+for this run. Reading them before a target exists wastes context that may be
+compacted away before Execute — they inform execution, not target selection:
 
 - [references/common-mistakes.md](./references/common-mistakes.md) — mistakes the
   user has called out. Two that keep biting:
@@ -346,6 +369,8 @@ At the end of Step 2, always send one user-facing Plan feedback before entering
 Execute. Read and follow [references/plan.md](./references/plan.md). It requires:
 
 - an overall environment verdict with concrete checks and evidence;
+- emoji-prefixed status markers in the verdict and every table row
+  (`✅ Ready`, `⚠️ Warning`, `❌ Blocked`, `⏳ Pending`);
 - the proposed execution plan, cases, and expected evidence;
 - every unresolved prerequisite, clearly assigned to Codex or the user;
 - an explicit statement that nothing is needed from the user when that is true;
@@ -589,10 +614,12 @@ env -u LOBEHUB_SERVER -u LOBE_API_KEY -u LOBEHUB_CLI_API_KEY -u LOBEHUB_CLI_HOME
 env -u LOBEHUB_SERVER -u LOBE_API_KEY -u LOBEHUB_CLI_API_KEY -u LOBEHUB_CLI_HOME lh login                  # only if not authed
 ```
 
-`verify ingest-report` reads `$DIR` and, in one call, creates a standalone
-verification session and uploads everything:
+`verify ingest-report` reads `$DIR` and, in one call, creates a new immutable
+verification run, attaches it to the subject acceptance, and uploads everything:
 
-- `result.json.plan[]` → the frozen check plan (what this round set out to verify)
+- `result.json.plan[]` → the frozen check plan (what this round set out to verify),
+  with a business-scenario `category` on every item; categories name requirements
+  or features, never execution surfaces such as Desktop / CLI / Backend
 - `result.json.cases[]` → one check result each (verdict + key observation),
   paired back to its plan item by `id`; a planned item with no case renders as
   **未执行** instead of silently disappearing
@@ -612,24 +639,41 @@ inline screenshot/text evidence). On production that resolves to
 `https://app.lobehub.com/verify/<verifyRunId>`. **Include that full production
 link in the final chat reply** alongside the local report dir.
 
-#### Re-verifying the same case updates the report in place (don't spawn a new one)
+#### Every run belongs to a subject acceptance (mandatory)
 
-When you iterate on one change — fix → re-verify → fix again — **keep reusing the
-same report dir (`$DIR`)**. `ingest-report` records the session it created in a
-`.verify-run.json` sidecar inside `$DIR`, so re-ingesting the **same dir**
-**updates that session in place** (same `/verify/<id>` URL) instead of creating a
-new list entry every round. The update is a full replace: cases are overwritten
-by their stable `id`, each case's evidence is re-attached (old screenshots
-cleared, not stacked), and cases the new report dropped are pruned.
+Every agent-testing run MUST be chained onto a task, topic, or document
+**acceptance aggregate**, so every round lands on one auditable decision page.
+When the harness runs inside a LobeHub topic, `ingest-report` automatically uses
+`LOBEHUB_TOPIC_ID` as `topic:<id>`; do not ask the user to supply it and do not
+omit the acceptance. An explicit `--subject` or `result.json.subject` overrides
+that default for task/document verification:
 
-So the rule for an iterative case: `report-init.sh` **once**, then re-run
-`ingest-report "$DIR"` after each fix — the report accretes value at one stable
-URL rather than flooding the list with near-duplicate runs. Only scaffold a fresh
-`$DIR` when you start verifying a genuinely different case.
+```bash
+# SUBJECT is task:$TASK_ID, topic:$TOPIC_ID, or document:$DOC_ID
+env -u LOBEHUB_SERVER -u LOBE_API_KEY -u LOBEHUB_CLI_API_KEY -u LOBEHUB_CLI_HOME \
+  lh verify ingest-report "$DIR" --source agent-testing --subject "$SUBJECT" --open --json
+```
 
-Escape hatches: `--new` forces a fresh session even if the dir already made one;
-`--run <verifyRunId>` targets an existing session explicitly (e.g. to update from
-a different machine/checkout where the sidecar is absent).
+`--subject` accepts `task:<id> | topic:<id> | document:<id>` (or put
+`"subject": "task:<id>"` / `{ "type", "id", "requirement" }` in `result.json`).
+Outside a LobeHub topic, one of those explicit forms is required; publishing
+without a resolvable subject fails instead of creating an orphan verify report.
+The first ingest creates the acceptance and every ingest creates its next
+immutable round. The user closes the loop on `/acceptance/<acceptanceId>` (also
+printed by `--open`) — accept / reject with a comment; inspect or decide from the
+terminal via `lh verify acceptance view|accept|reject <id | type:id>`.
+
+#### Every verification run is an immutable snapshot
+
+One call to `ingest-report` creates one immutable `/verify/<id>` snapshot. Never
+overwrite, replace, prune, or re-ingest into an earlier run. A fix followed by
+re-verification MUST create another run on the same acceptance, preserving the
+earlier plan, results, evidence, and verdict exactly as observed at that time.
+
+Use a fresh report directory for every execution round. The acceptance page is
+the stable cross-round URL; individual `/verify/<id>` URLs are permanent
+historical records. There is no `--run` update path and no same-directory
+sidecar reuse in the agent-testing workflow.
 
 Notes:
 

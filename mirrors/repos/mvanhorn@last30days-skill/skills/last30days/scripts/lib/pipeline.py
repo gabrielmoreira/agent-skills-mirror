@@ -95,6 +95,28 @@ SEARCH_ALIAS = {
 # its own WAF-cookie Chrome harvest.
 MAX_SOURCE_FETCHES: dict[str, int] = {"x": 2, "jobs": 1, "linkedin": 1, "stocktwits": 1, "trustpilot": 1}
 
+
+def _resolve_depth_settings(depth: str, config: dict[str, Any]) -> dict[str, int]:
+    """Depth profile with optional CLI cap overrides applied (issue #716).
+
+    Returns a copy so the module-level DEPTH_SETTINGS is never mutated. Overrides
+    are set directly (not max()) so callers can also lower a cap. `--max-results`
+    raises the final ranked pool (pool_limit/rerank_limit); `--max-per-source`
+    raises the per-stream truncation applied before pooling. The per-source fetch
+    cap (`--max-source-fetches`) is applied separately at the fetch site.
+    """
+    settings = dict(DEPTH_SETTINGS[depth])
+    # `is not None` (not truthiness) so an explicit 0 is honored as a real lower
+    # bound rather than ignored as "unset" — matches how main() stashes these.
+    max_per_source = config.get("_max_per_source")
+    if max_per_source is not None:
+        settings["per_stream_limit"] = int(max_per_source)
+    max_results = config.get("_max_results")
+    if max_results is not None:
+        settings["pool_limit"] = int(max_results)
+        settings["rerank_limit"] = int(max_results)
+    return settings
+
 # Per-handle result caps for the X handle-search lanes. The FROM lane (the
 # subject's own timeline) is the single best source for a person topic, so it
 # gets the highest cap; the ABOUT (mention) and related-handle lanes stay
@@ -1254,7 +1276,7 @@ def run(
     corpus_dirs: list[str] | None = None,
     corpus_all_time: bool = False,
 ) -> schema.Report:
-    settings = DEPTH_SETTINGS[depth]
+    settings = _resolve_depth_settings(depth, config)
     requested_sources = normalize_requested_sources(requested_sources)
     from_date, to_date = dates.get_date_range(lookback_days, as_of_date=as_of_date)
     resolved_corpus_dirs = corpus.resolve_directories(
@@ -1540,8 +1562,15 @@ def run(
                 # Skip GitHub keyword search if person-mode already ran
                 if source == "github" and (_github_person_done or _github_custom_done):
                     continue
-                # Enforce per-source fetch cap
+                # Enforce per-source fetch cap. A CLI override (issue #716) raises
+                # the cap for capped sources so every X subquery in a multi-angle
+                # --plan fetches, instead of only the first two.
                 cap = MAX_SOURCE_FETCHES.get(source)
+                _cap_override = config.get("_max_source_fetches")
+                if cap is not None and _cap_override is not None:
+                    # `is not None` so --max-source-fetches 0 (disable fetching a
+                    # capped source) is honored instead of falling back to default.
+                    cap = int(_cap_override)
                 if cap is not None:
                     current = source_fetch_count.get(source, 0)
                     if current >= cap:
@@ -1675,6 +1704,10 @@ def run(
         settings=settings,
         web_backend=web_backend,
         skip_sources=_github_skip_retry,
+        subreddits=subreddits,
+        tiktok_hashtags=tiktok_hashtags,
+        tiktok_creators=tiktok_creators,
+        ig_creators=ig_creators,
     )
 
     # Reclassify partial failures as DEGRADED instead of silently dropping them.
@@ -2636,6 +2669,10 @@ def _retry_thin_sources(
     settings: dict[str, Any],
     web_backend: str = "auto",
     skip_sources: set[str] | None = None,
+    subreddits: list[str] | None = None,
+    tiktok_hashtags: list[str] | None = None,
+    tiktok_creators: list[str] | None = None,
+    ig_creators: list[str] | None = None,
 ) -> None:
     """Retry sources with thin results using simplified core subject query."""
     if depth == "quick":
@@ -2698,6 +2735,10 @@ def _retry_thin_sources(
             rate_limit_lock=rate_limit_lock,
             web_backend=web_backend,
             raw_topic=topic,
+            subreddits=subreddits,
+            tiktok_hashtags=tiktok_hashtags,
+            tiktok_creators=tiktok_creators,
+            ig_creators=ig_creators,
         )
         outcome_note = artifact.get("_source_outcome") if isinstance(artifact, dict) else None
         normalized = _normalize_score_dedupe(
@@ -3454,3 +3495,4 @@ def _mock_stream_results(source: str, subquery: schema.SubQuery) -> tuple[list[d
             "resultCount": 1,
         }
     return payloads.get(source, []), {}
+

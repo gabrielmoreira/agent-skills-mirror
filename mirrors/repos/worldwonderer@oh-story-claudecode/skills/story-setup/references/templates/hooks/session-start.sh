@@ -55,13 +55,19 @@ if sentinel_exists "$ROOT/.story-deployed"; then
       HAS_CONTENT=true
       ;;
     *)
-      if [ "$AGENTS_VERSION" -lt 17 ]; then
-        OUTPUT+="[WARN] story-setup agents_version=$AGENTS_VERSION 低于 v17。重新运行 /story-setup 刷新 hooks、agents 和 references（部署后需新开会话）。\n\n"
+      if [ "$AGENTS_VERSION" -lt 18 ]; then
+        OUTPUT+="[WARN] story-setup agents_version=$AGENTS_VERSION 低于 v18。重新运行 /story-setup 刷新 hooks、agents 和 references（部署后需新开会话）。\n\n"
+        HAS_CONTENT=true
+      elif [ "$AGENTS_VERSION" -gt 18 ]; then
+        OUTPUT+="[WARN] story-setup agents_version=$AGENTS_VERSION 高于本 hook 支持的 v18。不要降级覆盖；请先更新 oh-story-claudecode。\n\n"
         HAS_CONTENT=true
       fi
       ;;
   esac
 
+  # agents_version（上面）是唯一的运行时过期权威，只在部署物行为变化时才 bump；
+  # setup_skill_version 是 skill 内容锚点，按内容节奏独立变化，这里只做存在性检查、
+  # 不参与版本比较——否则内容改动会误报"需要重新部署"。
   for field in setup_skill_version target_cli resolver_strategy references_dir; do
     if [ -z "$(read_sentinel_field "$field" "$ROOT/.story-deployed")" ]; then
       OUTPUT+="[WARN] .story-deployed 缺少 $field 字段。重新运行 /story-setup 刷新部署元信息。\n\n"

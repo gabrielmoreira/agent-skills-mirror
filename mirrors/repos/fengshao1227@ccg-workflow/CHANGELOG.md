@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.2.1] - 2026-07-15
+
+### ✨ Features
+
+- **SEO Growth Engine skill** — New `domains/seo/seo-growth.md` knowledge file covering the full SEO workflow: GSC analysis → keyword research → title optimization (per-language localization rules for KO/ES/ID/DE/AR/JA/ZH) → content creation (comparison/guide/review templates) → batch translation (with artifact auto-fix) → validation (5-check pipeline) → internal linking (hub-and-spoke) → technical audit → deploy & monitor. Auto-routed when user mentions SEO, CTR, GSC, keywords, etc.
+
+---
+
 ## [3.2.0] - 2026-07-12
 
 ### ✨ Features

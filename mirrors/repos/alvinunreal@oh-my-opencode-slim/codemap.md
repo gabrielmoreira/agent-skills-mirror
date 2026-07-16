@@ -56,7 +56,7 @@ This codemap covers the plugin repository itself and excludes the nested `openco
 | `src/tools/` | Tool and runtime-command export surface for AST-grep, smartfetch, council orchestration, and `/preset` switching. | [View Map](src/tools/codemap.md) |
 | `src/tools/ast-grep/` | AST-grep binary management and AST-aware search/replace tool flow. | [View Map](src/tools/ast-grep/codemap.md) |
 | `src/tools/smartfetch/` | Fetch/extract/cache pipeline for web content and secondary-model summarization. | [View Map](src/tools/smartfetch/codemap.md) |
-| `src/utils/` | Cross-cutting helpers for logging, session metadata, resumable task aliases, system-message normalization, subagent depth tracking, environment, and runtime operations. | [View Map](src/utils/codemap.md) |
+| `src/utils/` | Cross-cutting helpers for logging, session metadata, resumable task aliases, system-message normalization, environment, and runtime operations. | [View Map](src/utils/codemap.md) |
 | `scripts/` | Build/release validation and generated-artifact maintenance scripts. | [View Map](scripts/codemap.md) |
 
 ## Runtime Control Flow
@@ -91,7 +91,7 @@ This codemap covers the plugin repository itself and excludes the nested `openco
 - `src/index.ts` is the central composition root for nearly every runtime subsystem.
 - `src/config/` feeds `src/agents/`, session/delegation utilities, and MCP registration.
 - `src/cli/skills.ts` and `src/cli/custom-skills.ts` bridge install-time skill packaging with runtime permission policy.
-- Session/delegation utilities depend on `src/multiplexer/` and cooperate with helpers in `src/utils/` for depth tracking, result extraction, task output parsing, and alias state.
+- Session/delegation utilities depend on `src/multiplexer/` and cooperate with helpers in `src/utils/` for result extraction, task output parsing, and alias state.
 - cmux-specific readiness, retry, orphan, and cleanup state lives under
   `src/multiplexer/cmux/`; the generic manager delegates cmux events so other
   multiplexer behavior remains on the upstream path.

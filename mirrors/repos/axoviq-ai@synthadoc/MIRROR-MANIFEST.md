@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `axoviq-ai/synthadoc` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `axoviq-ai/synthadoc` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `axoviq-ai/synthadoc` — 26 default patterns, 0 followed patterns, 11
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,16 +60,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`synthadoc/demos/ai-research/AGENTS.md`](synthadoc/demos/ai-research/AGENTS.md) |
-| 2 | ✓ | [`synthadoc/demos/history-of-computing/AGENTS.md`](synthadoc/demos/history-of-computing/AGENTS.md) |
-| 3 | ✓ | [`synthadoc/skills/docx/SKILL.md`](synthadoc/skills/docx/SKILL.md) |
-| 4 | ✓ | [`synthadoc/skills/image/SKILL.md`](synthadoc/skills/image/SKILL.md) |
-| 5 | ✓ | [`synthadoc/skills/markdown/SKILL.md`](synthadoc/skills/markdown/SKILL.md) |
-| 6 | ✓ | [`synthadoc/skills/pdf/SKILL.md`](synthadoc/skills/pdf/SKILL.md) |
-| 7 | ✓ | [`synthadoc/skills/pptx/SKILL.md`](synthadoc/skills/pptx/SKILL.md) |
-| 8 | ✓ | [`synthadoc/skills/url/SKILL.md`](synthadoc/skills/url/SKILL.md) |
-| 9 | ✓ | [`synthadoc/skills/web_search/SKILL.md`](synthadoc/skills/web_search/SKILL.md) |
-| 10 | ✓ | [`synthadoc/skills/xlsx/SKILL.md`](synthadoc/skills/xlsx/SKILL.md) |
-| 11 | ✓ | [`synthadoc/skills/youtube/SKILL.md`](synthadoc/skills/youtube/SKILL.md) |
+| 2 | ✓ | [`synthadoc/demos/ai-research/CLAUDE.md`](synthadoc/demos/ai-research/CLAUDE.md) |
+| 3 | ✓ | [`synthadoc/demos/ai-research/GEMINI.md`](synthadoc/demos/ai-research/GEMINI.md) |
+| 4 | ✓ | [`synthadoc/demos/history-of-computing/AGENTS.md`](synthadoc/demos/history-of-computing/AGENTS.md) |
+| 5 | ✓ | [`synthadoc/demos/history-of-computing/CLAUDE.md`](synthadoc/demos/history-of-computing/CLAUDE.md) |
+| 6 | ✓ | [`synthadoc/demos/history-of-computing/GEMINI.md`](synthadoc/demos/history-of-computing/GEMINI.md) |
+| 7 | ✓ | [`synthadoc/skills/docx/SKILL.md`](synthadoc/skills/docx/SKILL.md) |
+| 8 | ✓ | [`synthadoc/skills/image/SKILL.md`](synthadoc/skills/image/SKILL.md) |
+| 9 | ✓ | [`synthadoc/skills/markdown/SKILL.md`](synthadoc/skills/markdown/SKILL.md) |
+| 10 | ✓ | [`synthadoc/skills/pdf/SKILL.md`](synthadoc/skills/pdf/SKILL.md) |
+| 11 | ✓ | [`synthadoc/skills/pptx/SKILL.md`](synthadoc/skills/pptx/SKILL.md) |
+| 12 | ✓ | [`synthadoc/skills/url/SKILL.md`](synthadoc/skills/url/SKILL.md) |
+| 13 | ✓ | [`synthadoc/skills/web_search/SKILL.md`](synthadoc/skills/web_search/SKILL.md) |
+| 14 | ✓ | [`synthadoc/skills/xlsx/SKILL.md`](synthadoc/skills/xlsx/SKILL.md) |
+| 15 | ✓ | [`synthadoc/skills/youtube/SKILL.md`](synthadoc/skills/youtube/SKILL.md) |
 
 ---
 

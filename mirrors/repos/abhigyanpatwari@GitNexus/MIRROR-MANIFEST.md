@@ -70,15 +70,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
-| 2 | ✓ | [`.claude/skills/gitnexus-pr-swarm-review/SKILL.md`](.claude/skills/gitnexus-pr-swarm-review/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/gitnexus/gitnexus-cli/SKILL.md`](.claude/skills/gitnexus/gitnexus-cli/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/gitnexus/gitnexus-debugging/SKILL.md`](.claude/skills/gitnexus/gitnexus-debugging/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/gitnexus/gitnexus-exploring/SKILL.md`](.claude/skills/gitnexus/gitnexus-exploring/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/gitnexus/gitnexus-guide/SKILL.md`](.claude/skills/gitnexus/gitnexus-guide/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md`](.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/gitnexus/gitnexus-pdg-query/SKILL.md`](.claude/skills/gitnexus/gitnexus-pdg-query/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/gitnexus/gitnexus-pr-review/SKILL.md`](.claude/skills/gitnexus/gitnexus-pr-review/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md`](.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/gitnexus-cli/SKILL.md`](.claude/skills/gitnexus-cli/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/gitnexus-debugging/SKILL.md`](.claude/skills/gitnexus-debugging/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/gitnexus-exploring/SKILL.md`](.claude/skills/gitnexus-exploring/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/gitnexus-guide/SKILL.md`](.claude/skills/gitnexus-guide/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/gitnexus-impact-analysis/SKILL.md`](.claude/skills/gitnexus-impact-analysis/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/gitnexus-pr-swarm-review/SKILL.md`](.claude/skills/gitnexus-pr-swarm-review/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/gitnexus-refactoring/SKILL.md`](.claude/skills/gitnexus-refactoring/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/gitnexus/gitnexus-pdg-query/SKILL.md`](.claude/skills/gitnexus/gitnexus-pdg-query/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/gitnexus/gitnexus-pr-review/SKILL.md`](.claude/skills/gitnexus/gitnexus-pr-review/SKILL.md) |
 | 11 | ✓ | [`.claude/skills/gitnexus/gitnexus-taint-analysis/SKILL.md`](.claude/skills/gitnexus/gitnexus-taint-analysis/SKILL.md) |
 | 12 | ✓ | [`.cursor/.gitignore`](.cursor/.gitignore) |
 | 13 | ✓ | [`.cursor/commands/gitnexus-pr-swarm-review.md`](.cursor/commands/gitnexus-pr-swarm-review.md) |

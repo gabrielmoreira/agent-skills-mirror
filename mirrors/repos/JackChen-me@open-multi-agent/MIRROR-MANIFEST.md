@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JackChen-me/open-multi-agent` — 26 default patterns, 10 followed patterns, 11 file(s) materialized.
+Mirror of `JackChen-me/open-multi-agent` — 26 default patterns, 10 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JackChen-me/open-multi-agent` — 26 default patterns, 10 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,17 +68,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
-| 3 | → | [`docs/checkpoint.md`](docs/checkpoint.md) |
-| 4 | → | [`docs/cli.md`](docs/cli.md) |
-| 5 | → | [`docs/context-management.md`](docs/context-management.md) |
-| 6 | → | [`docs/external-agents.md`](docs/external-agents.md) |
-| 7 | → | [`docs/observability.md`](docs/observability.md) |
-| 8 | → | [`docs/providers.md`](docs/providers.md) |
-| 9 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
-| 10 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
-| 11 | → | [`packages/core/README.md`](packages/core/README.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
+| 4 | → | [`docs/checkpoint.md`](docs/checkpoint.md) |
+| 5 | → | [`docs/cli.md`](docs/cli.md) |
+| 6 | → | [`docs/context-management.md`](docs/context-management.md) |
+| 7 | → | [`docs/external-agents.md`](docs/external-agents.md) |
+| 8 | → | [`docs/observability.md`](docs/observability.md) |
+| 9 | → | [`docs/providers.md`](docs/providers.md) |
+| 10 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
+| 11 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
+| 12 | → | [`packages/core/README.md`](packages/core/README.md) |
 
 ---
 

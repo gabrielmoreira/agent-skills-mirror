@@ -33,19 +33,21 @@
 - 专业/分析/深度/行业 → `industry-observer`
 - 犀利/锐评/观点/新闻 → `sharp-journalist`
 - 严谨/数据/研究/财经 → `cold-analyst`
-| 偏好哪种排版风格？（可运行 `gallery` 命令预览全部 16 个主题） | `theme` | "professional-clean" |
+| 偏好哪种排版风格？（可运行 `gallery` 命令预览全部 18 个主题） | `theme` | "professional-clean" |
 | 封面风格偏好？ | `cover_style` | 从 industry 推断 |
 | 有没有固定封面模板？ | `cover_template` | 不设置 |
 
 **写作人格说明**（`personas/` 目录下有详细定义）：
 
-| 人格 | 适合 | 朱雀实测 | 一句话描述 |
-|------|------|---------|----------|
-| `midnight-friend` | 个人号/自媒体 | **39% 人工** | 像深夜给朋友发微信，极度口语化 |
-| `warm-editor` | 生活/文化/情感 | 10% 人工 | 故事驱动，温暖共鸣 |
-| `industry-observer` | 行业媒体/分析 | 10% 人工 | 克制的专业分析，偶尔锐利 |
-| `sharp-journalist` | 新闻/评论 | 0% 人工（需编辑） | 短句利落，观点鲜明 |
-| `cold-analyst` | 财经/投研 | 0% 人工（需编辑） | 严谨数据，专业措辞 |
+| 人格 | 适合 | 一句话描述 |
+|------|------|----------|
+| `midnight-friend` | 个人号/自媒体 | 像给熟悉的朋友解释一件事 |
+| `warm-editor` | 生活/文化/情感 | 故事驱动，温暖克制 |
+| `industry-observer` | 行业媒体/分析 | 专业分析，偶尔锐利 |
+| `sharp-journalist` | 新闻/评论 | 短句利落，观点鲜明 |
+| `cold-analyst` | 财经/投研 | 数据优先，边界清楚 |
+| `humor-storyteller` | 娱乐/热点评论 | 用幽默承载观点 |
+| `tech-coder` | 技术教程/开发者 | 示例先行，务实精炼 |
 
 **快捷路径**：
 - 如果用户直接甩了一段描述（如"我做科技自媒体，风格像虎嗅"），直接从中提取所有能提取的字段，只补问缺的
@@ -60,7 +62,7 @@
 用收集到的信息自动生成 `{home}/style.yaml`。
 
 同时确保以下文件/目录存在（不存在则创建）：
-- `{home}/history.yaml` → 初始化为 `articles: []`
+- `{home}/history.yaml` → 初始化为 `version: 1` + `articles: []`
 - `{home}/corpus/` → 空目录
 - `{home}/lessons/` → 空目录
 

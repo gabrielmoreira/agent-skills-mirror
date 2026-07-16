@@ -7,6 +7,7 @@ from __future__ import annotations
 import argparse
 import atexit
 import datetime
+import hashlib
 import json
 import os
 import re
@@ -116,8 +117,14 @@ def resolve_requested_sources(args_search: str | None, config: dict) -> list[str
     return None
 
 
-def slugify(value: str) -> str:
+def slugify(value: str, max_length: int = 180) -> str:
     slug = re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
+    if len(slug) > max_length:
+        # Filenames built from long topics can exceed the OS 255-byte limit
+        # (macOS errno 63). Truncate and append a hash of the full value so
+        # distinct long topics still get distinct, deterministic names.
+        digest = hashlib.sha1(slug.encode("utf-8")).hexdigest()[:10]
+        slug = f"{slug[:max_length].rstrip('-')}-{digest}"
     return slug or "last30days"
 
 
@@ -594,6 +601,17 @@ def build_parser() -> argparse.ArgumentParser:
             "When set, --days looks back from this date instead of today."
             ),
     )
+    parser.add_argument("--max-results", dest="max_results", type=int,
+                        help="Override the final ranked-pool cap (pool_limit/rerank_limit) from the depth profile. "
+                             "Use for high-volume topics where the default (deep=60) under-covers. See issue #716.")
+    parser.add_argument("--max-per-source", dest="max_per_source", type=int,
+                        help="Override the per-stream cap (per_stream_limit) applied to each (source, subquery) before "
+                             "pooling. Raising it increases unique-item yield when one source has many relevant items. "
+                             "See issue #716.")
+    parser.add_argument("--max-source-fetches", dest="max_source_fetches", type=int,
+                        help="Override the per-source fetch cap (MAX_SOURCE_FETCHES, default x=2) that limits how many "
+                             "subqueries actually fetch a capped source. Raise it so every X subquery in a multi-angle "
+                             "--plan runs instead of just the first two. See issue #716.")
     parser.add_argument("--auto-resolve", action="store_true",
                         help="Use web search to discover subreddits/handles before planning (for platforms without WebSearch)")
     parser.add_argument("--github-user", help="GitHub username for person-mode search (e.g., steipete)")
@@ -1603,7 +1621,7 @@ def _propagate_config_to_environ(config: dict[str, object]) -> None:
     XAI_BASE_URL overrides are silently ignored. This is a no-op for
     keys that are already set in process env.
     """
-    for key in ("OPENAI_BASE_URL", "XAI_BASE_URL"):
+    for key in ("OPENAI_BASE_URL", "XAI_BASE_URL", "OPENROUTER_BASE_URL"):
         val = config.get(key)
         if val and not os.environ.get(key):
             os.environ[key] = val
@@ -1638,6 +1656,8 @@ SKILL_ONLY_FLAGS = {
 DOCTOR_PASSTHROUGH_FLAGS = {
     "--json",
     "--cached",
+    "--postmortem",
+    "--probe",
 }
 
 
@@ -2024,6 +2044,8 @@ def _main(
             config,
             emit_json=(args.emit == "json" or "--json" in extra_argv),
             cached="--cached" in extra_argv,
+            postmortem="--postmortem" in extra_argv,
+            probe="--probe" in extra_argv,
         )
 
     if topic.lower() == "library feed":
@@ -2271,6 +2293,15 @@ def _main(
     progress.start_processing()
 
     depth = "deep" if args.deep else "quick" if args.quick else "default"
+    # CLI overrides for the depth profile's result caps (issue #716). Stashed on
+    # config so pipeline.run() can apply them without widening its signature; the
+    # comparison path inherits them via `entity_config = dict(config)`.
+    if args.max_results is not None:
+        config["_max_results"] = args.max_results
+    if args.max_per_source is not None:
+        config["_max_per_source"] = args.max_per_source
+    if args.max_source_fetches is not None:
+        config["_max_source_fetches"] = args.max_source_fetches
     try:
         x_related = [h.strip() for h in args.x_related.split(",") if h.strip()] if args.x_related else None
         subreddits = [s.strip().removeprefix("r/") for s in args.subreddits.split(",") if s.strip()] if args.subreddits else None

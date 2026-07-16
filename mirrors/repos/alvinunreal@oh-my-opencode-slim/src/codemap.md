@@ -85,9 +85,9 @@ OpenCode Core → Plugin Initialization (index.ts)
 Key event flows:
 
 1. **Session Lifecycle**:
-   - `session.created` → register child session in `SubagentDepthTracker`
+   - `session.created` → register child session
    - `session.status` → multiplexer session management and companion updates
-   - `session.deleted` → cleanup depth tracker, session agent map, and companion state
+   - `session.deleted` → cleanup session agent map and companion state
 
 2. **Message Updates**:
    - `message.updated` → record agent/model usage in TUI state
@@ -123,7 +123,7 @@ Key event flows:
 - **Multiplexer** (`src/multiplexer/`): Tmux/Zellij session management for child sessions
 - **Council** (`src/council/`): Multi-LLM council orchestration
 - **Companion** (`src/companion/`): Companion version management
-- **Utils** (`src/utils/`): Logger, environment checks, subagent depth tracking
+- **Utils** (`src/utils/`): Logger, environment checks
 
 ### Cross-Directory Flow
 
