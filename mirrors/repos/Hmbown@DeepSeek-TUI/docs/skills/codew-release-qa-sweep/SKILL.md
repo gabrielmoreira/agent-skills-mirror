@@ -81,8 +81,8 @@ visual pass; the test leaves no provider traffic or credentials behind.
 2. **Multi-terminal route isolation (#3227).** Open multiple terminals on
    distinct provider/model routes. Confirm zero cross-terminal contamination and
    no provider+model mismatch — each terminal honors its own route.
-3. **Queued steering + Ctrl+S (#3203).** Queue a steering message into a busy
-   turn; confirm Ctrl+S sends the queued/draft message and queued-steering
+3. **Queued steering + Ctrl+G (#3203).** Queue a steering message into a busy
+   turn; confirm Ctrl+G sends the queued/draft message and queued-steering
    status reads clearly.
 
 ## Reporting format

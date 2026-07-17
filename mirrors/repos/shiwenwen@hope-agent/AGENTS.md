@@ -114,17 +114,30 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `kno
 
 详见 [`ui-interaction-system.md`](docs/architecture/ui-interaction-system.md)。
 
-- **组件入口唯一**：搜索用 `SearchInput`；普通下拉用 Radix `Select`；分组模型选择用
-  `ModelSelector` / `ModelChainEditor`；数字输入用 `NumberInput` / `DeferredNumberInput`。
-  业务组件禁止裸 `<select>`、裸 `<input type="number">`、`Input type="number"` 和 `NativeSelect`。
-- **扁平表面单一来源**：选择类控件和数字框必须复用 `FLAT_CONTROL_SURFACE_CLASS`；搜索框
-  使用 `SearchInput` 的无边框表面。业务侧只覆盖尺寸与布局，禁止恢复 `shadow-sm`、深色边框
-  或复制背景/边框/圆角整套 class。
+- **组件入口唯一**：搜索用 `SearchInput`；普通文本用 `Input`，多行文本用 `Textarea`；普通下拉
+  用 Radix `Select`；分组模型选择用 `ModelSelector` / `ModelChainEditor`；数字输入用
+  `NumberInput` / `DeferredNumberInput`。业务组件禁止裸 `<select>`、裸 `<input type="number">`、
+  `Input type="number"` 和 `NativeSelect`。
+- **扁平表面单一来源**：`Input`、`Textarea`、选择类控件和数字框必须复用
+  `FLAT_CONTROL_SURFACE_CLASS`；搜索框使用 `SearchInput` 的无边框表面。业务侧只覆盖尺寸、
+  布局与排版，禁止恢复 `shadow-sm`、深色边框或复制背景/边框/圆角整套 class。只有视觉边界
+  由外壳承担的已登记复合控件可用 `surface="embedded"`，禁止手动覆盖默认表面的部分状态；
+  普通 hover / selected / open 只加深背景，不得新增或加深边框、ring、shadow。
 - **焦点与高对比度**：组件不得自行添加 `focus:ring-*` / `focus:border-*`；Pointer、Keyboard、
   enhanced、`prefers-contrast` 和 `forced-colors` 全部服从全局焦点协议。强制色模式必须保留
   系统边框，不能只靠半透明背景表达控件边界。
-- **工具栏例外**：聊天输入区的模型/权限入口属于 ghost action，可保持无边框紧凑按钮；
-  设置页全尺寸字段不得借此绕过表单控件标准。
+- **工具栏例外**：聊天输入区的模型/权限入口、设计空间首页生成器 prompt dock 内的模型入口
+  属于 ghost action，可保持无边框紧凑按钮；设置页全尺寸字段不得借此绕过表单控件标准。
+- **空间标题栏统一**：知识空间、设计空间、产物库、仪表盘、Plan、定时任务等一级工作区使用
+  `h-10` 单行标题栏；返回按钮最左，存在侧栏开关时紧随其后；副标题同行截断，不得撑高标题栏。
+- **Tab 选中态例外**：公共 `TabsList` 内的 `TabsTrigger` 选中使用 `bg-background` + 轻阴影，
+  不能改成与 `bg-muted` 容器接近的普通灰色选中；无外壳线型 Tab 可保留持久选中底线。Tab
+  hover 仍不得改变边框。
+- **列表条目状态统一**：普通列表行默认 hover 使用 `bg-secondary/40`，持久选中使用
+  `bg-secondary/70` + 正常前景色；禁止用 `bg-primary/*` 或 `text-primary` 表达普通选中。
+  错误、警告、未读、拖拽落点等明确语义状态可保留各自强调色，但不得污染常规 hover/selected；
+  强互斥分类标签统一使用 `RadioPills variant="strong"`（选中 `bg-primary` + 反白前景，仍无
+  选中边框），只用于“并列标签中确定一个值”；Tab、视图切换、权限等级和多选筛选不得套用。
 
 ### 分层 & 运行模式
 
@@ -205,6 +218,22 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `kno
 - **自主维护（Layer 2，默认全关）**：后台扫内部 KB 产提案进 `sessions.db`（D9，级联删）；落地经 owner 平面（用户已批准故**绕 D10**，但写前重读磁盘 hash 守 stale-write + 跳外部只读）；`ha-settings` 归 **HIGH**
 - **块级引用（仅 Obsidian `^block-id`，Logseq 不做）/ 原生大纲只读视图**：见架构文档；大纲红线**只读、永不替代 CM6 底座**
 - **新增 KB 工具 / 端点**：工具走 `tools/note.rs` + `core_tools.rs` + `execution.rs`；Tauri / HTTP owner 薄壳调 `knowledge::service`；逻辑全在 ha-core（红线）
+
+### 设计空间（Design Space）
+
+详见 [`design-space.md`](docs/architecture/design-space.md)（架构）。对外名「设计空间」（侧边栏「知识空间」正下方），代码标识 `design`（模块 `design/`、agent 工具 `design`、库 `design.db`、视图 `DesignView`）。**本节只列跨 PR 红线，实现细节一律在架构文档**。
+
+- **编译只在后端 / 浏览器零编译（红线，精修自「轻量自包含 HTML」）**：产物 iframe 只加载**已编译落盘的静态产物**，**浏览器端零编译 / 零打包 / 零 JIT**（不引 in-browser Babel / esbuild-wasm / Tailwind JIT——这是旧版 `feat/atelier` 白屏卡顿被推倒重做的根因）。9 个静态 kind（web/mobile/deck/dashboard/poster/document/email/image/motion）+ audio 是纯自包含 HTML；**`component`（交互式 React）kind 走 `design::compile`（纯 Rust `oxc`，进程内编译 JSX/TSX→JS）在 ha-core 后端编译一次**，内联 vendored React 18 UMD（`design/assets/`，锁版本、零网络）+ 编译产物落成静态 `index.html`。**编译失败必降级为静态错误页 / 占位，绝不白屏 / 绝不后端 panic**。Component 编译产物 ≠ 源码故**不支持 oid 可视化微调**（微调仍只归 9 静态 kind）
+- **产物墙非画布（红线）**：主编辑面是产物库缩略图墙 + 单产物稳定 iframe 预览（纯 CSS 缩放），**刻意不做无限画布**（旧版卡顿之源）
+- **可视化微调确定性回写**：纯 HTML → 渲染期注入 `data-ds-oid` + 产出 oidmap（映射源码字节范围），`patch::apply_{style,text}_patch` 走单一命中 + `expected_hash`（磁盘 body BLAKE3）stale-write 守卫；预览态注入 dormant inspector bridge（收 `ds_activate` 才启用），**导出态 `editable=false` 不注入 bridge/oid**（干净产物）
+- **文件即真相源**：产物 `index.html`/`source/`/`versions/`、设计系统 `SYSTEM.md`/`tokens.json` 都是磁盘真实文件；`design.db` 是可重建元数据注册表
+- **内置设计系统两类**：6 套**原创原型语言**（`system.rs::builtins`）+ 一批**品牌风格参考**（`brands.rs` 种子 → `system::expand` 展开为完整 token 契约，对各品牌公开视觉语言的独立再诠释；`build_system_md` 对 `brand_ref=Some(..)` 渲染时**必附免责声明**、非官方）；token 编译注入产物 `:root`，产物 CSS 引用 `var(--ds-*)`
+- **两鉴权平面**：owner 平面（Tauri/HTTP `service.rs`）本机/API key 信任、不经 access 检查；agent 平面（`design` 工具）；写盘走 `platform::write_atomic`，静态托管三闸（id 白名单 + `validate_safe_rest_path` + `contained_canonical`），iframe `sandbox="allow-scripts"`
+- **设置三件套**：`AppConfig.design`（MEDIUM，含 `auto_critique` 成本项）+ `DesignSettingsPanel`（Tools 设置页 tab）+ `ha-settings` `design` category + SKILL.md 登记
+- **每项目 AI 对话（对话改写主入口，复用主对话栈）**：设计视图左栏内嵌 `DesignChatPanel`（`useDesignChat` + 复用 `useChatStream`/`ChatInput`/`MessageList`，同知识空间 `KnowledgeChatPanel` 模式）。会话 = `SessionKind::Design`（从主侧栏/`/sessions`/全局 FTS 隐藏，与 knowledge 同谓词）经 `design_chat_threads`（sessions.db，无跨库 FK）锚到设计项目；`chat` 命令 `tool_scope=design` 新会话提升为 thread（Tauri+HTTP 双写，镜像 KB 分支）。`ToolScope::Design` 白名单收窄注入工具面（`design` + 参考检索 + 框架基础），**纯 schema 可见性、非安全边界**。`design` 工具经 `threads::project_for_session` 从锚定会话解析项目；面板每轮注入当前打开产物为 `<design_context>` 让「改这个」落到正确产物。**incognito 零对话**（design 工具在无痕会话 fail-closed）
+- **发现问卷 + 视觉风格卡（走 `ask_user_question` 扩展）**：设计 Agent 在**需求不清时**先弹结构化发现问卷、**需要定视觉方向时**弹 `direction-cards` 风格卡（选项带调色板/字体/气质/参考），需求写清则直接开做——行为写在 `design` 工具描述里。前端经 `useAskUserPending` 把 `ask_user_question` 接进设计对话（`useDesignChat` → `DesignChatPanel` 传 `askUserVariant="design"` → `MessageList`）。**红线见上「ask_user_question」条**：扩展非 fork、答案走 `selected[]`、富卡仅设计对话渲染其余降级。**首页不再有静态「补充简报」表单**（已删，需求补全交给对话按需追问）
+- **小改就地精改红线**：agent 改已有产物走 `get_artifact`（回 oid 标注源）→ `edit_element(oid)`（复用确定性 `patch_element`、保留其它一切），**绝不为小改 `update_artifact` 整段重造、绝不 `web_fetch`/浏览产物读它**（实测：看不到内容→抓产物失败→凭记忆重造→抹空整页）；仅 `supports_oid_edit` kind（非 image/audio/component）可 `edit_element`；批注带到对话即带 `oid`。详见 [`design-space.md`](docs/architecture/design-space.md) §8
+- **新增 design 工具 action / 端点**：工具全在 `tools/design/mod.rs`（复用 `design::service`）；owner 薄壳 Tauri `commands/design.rs` + HTTP `routes/design.rs`，逻辑全在 ha-core（红线）
 
 ### Agent 控制平面 / 通用场景
 
@@ -291,6 +320,10 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `kno
 - **配置读写 contract**：读 `cached_config().mcp_servers`；写 `mutate_config(("mcp.<op>", source), ...)`，`op ∈ add|update|remove|reorder|global|import`
 - handshake 401/403 → `ServerState::NeedsAuth`（避免 watchdog 死循环）
 
+### 平台 MCP 服务器（`hope-agent mcp`）
+
+详见 [`mcp-server.md`](docs/architecture/mcp-server.md)。**红线**：共享 host 在 `ha-core/src/mcp_server/`（`ToolProvider` 注册表），design 经 `design/mcp_provider.rs` 挂为首个 provider（**不做 provider 专属 host**）；默认只读、`--allow-writes` 才注册写集且 host 层 `!read_only && !allow_writes` 双保险拒；**恒不暴露** implement_to_code / 代码绑定写 / deploy / share / delete / export——外部 agent 不得经 MCP 写用户代码仓库、对外发布或删除；`mcp` 等 stdio interop 角色走 `acquire_or_secondary_for` **被动 Secondary**（永不争 runtime_lock Primary）；`knowledge-mcp` 已发布接口保持原样。
+
 ### Subagent / Team / Cron
 
 详见 [`subagent.md`](docs/architecture/subagent.md) / [`agent-team.md`](docs/architecture/agent-team.md) / [`cron.md`](docs/architecture/cron.md)。
@@ -341,7 +374,7 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `kno
 
 - `dashboard/insights.rs`：overview delta / cost trend / heatmap / health score / `query_insights` orchestrator
 - **目标与执行大盘**：`dashboard/control_plane.rs` 是 Goal / Workflow / Loop / Task / Plan 全局只读聚合单一入口；结果、驱动、进度和风险必须分层，Task/Plan 在新增可靠外键前禁止按 session 伪造因果漏斗。窗口比例零分母返回 `null`，当前状态不受起始时间限制；Goal / Workflow / Loop / Task / attention 仅统计非无痕的用户主会话，排除 Cron 与 `parent_session_id` 子会话。旧 `dashboard_tasks`（Cron/Subagent，UI 名“自动化”）与 `dashboard_plan_stats` 只作兼容。
-- **模型用量总账**：所有会触发模型推理 / one-shot / side_query / summarize / embedding / STT / judge / web_search / image_generation / provider_test / vision（视觉桥图片转述）的新调用入口，必须通过 [`model_usage.rs`](crates/ha-core/src/model_usage.rs) 写入 `session.db.model_usage_events`；Dashboard token / cost 总量以该表为准。Provider 原始 usage 返回多少就记录多少，未返回 token 的本地模型 / STT / embedding / 生图只记录调用次数与耗时，**禁止用字符估算冒充准确 token**。无痕会话不得入账。
+- **模型用量总账**：所有会触发模型推理 / one-shot / side_query / summarize / embedding / STT / judge / web_search / image_generation / audio_generation（设计空间 TTS/音乐/音效）/ provider_test / vision（视觉桥转述）的新调用入口，必须通过 [`model_usage.rs`](crates/ha-core/src/model_usage.rs) 写入 `session.db.model_usage_events`；Dashboard token / cost 总量以该表为准。**流式生成也要入账**（`automation::run_streaming` 里记 `KIND_SIDE_QUERY`——`side_query_streaming` 自身不记账）。Provider 原始 usage 返回多少就记录多少，未返回 token 的本地模型 / STT / embedding / 生图 / 生音只记录调用次数与耗时，**禁止用字符估算冒充准确 token**。无痕会话不得入账。新增 `KIND_*` 须同步前端 `DashboardFilter` 列表 + `dashboard.usageKind.*` 12 语标签。
 - Learning Tracker 落 `session.db.learning_events`，目前埋点：`skills::author` CRUD + `tool_recall_memory` 命中 + MCP tool 调用
 - `/recap` 独立 `~/.hope-agent/recap/recap.db` 缓存按 `last_message_ts` 失效；facet/section 提取模型经 `recap.modelOverride`（`ModelChain`，deprecated `analysisAgent` 仍惰性兼容旧值）解析、拿不到再落 `function_models.automation` 全局默认链，与主对话 Agent 解耦
 
@@ -353,7 +386,7 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `kno
 - **统一日志**：前后端走 [`logging/mod.rs`](crates/ha-core/src/logging/mod.rs)（SQLite + 文本双写），API 请求体 `redact_sensitive` + 32KB 截断；agent 自主排查入口见 [`skills/ha-logs/SKILL.md`](skills/ha-logs/SKILL.md)（用 `exec` + `sqlite3 -readonly` 直查 `~/.hope-agent/{logs,sessions,background_jobs}.db`）
 - **延迟工具加载**：opt-in `deferredTools.enabled`，只发核心 ~10 个 schema，其余通过 `tool_search` 发现；execution dispatch 不变
 - **会话搜索**：FTS5 + `<mark>` 高亮 + XSS 防御（escape → 白名单反解）；`Cmd+F` 复用同一 `search_messages` + session_id 过滤
-- **ask_user_question**：1–4 题结构化问答（单选/多选/输入）；pending 持久化 SQLite，App 重启 replay 断点续答；IM 按 `supports_buttons` 走按钮或文本
+- **ask_user_question**：1–4 题结构化问答（单选/多选/输入）；pending 持久化 SQLite，App 重启 replay 断点续答；IM 按 `supports_buttons` 走按钮或文本。**唯一结构化问答入口**——富输入（`input_kind ∈ text|textarea|direction-cards`）与设计空间视觉风格卡都靠**扩展本工具**实现、**绝不 fork 并行问答机制**；`direction-cards` 是「选项带 `card` 载荷的单选」，**答案仍走 `selected[]`**（Yes/No 门 / IM 协议 / DB 零改动），富卡仅在设计对话 `variant="design"` 渲染、其余降级选项列表，风格卡色值/字体经 sanitize（详见 [`ask-user.md`](docs/architecture/ask-user.md)）
 - **会话级工作目录**：`sessions.working_dir` 注入 system_prompt `# Working Directory` 段，并作为 `exec` 实际 cwd（`execution.rs::default_cwd()`）与 `read` 工具相对路径解析的首选根
 - **桌面专属 markdown 路径链接**：仅 `is_desktop()` 注入 `MARKDOWN_PATH_LINKS_GUIDANCE`，要求 LLM 写 `[名](绝对路径)`；前端按 `localPathFromHref()` + Transport 分流（Tauri 走 `open_directory`；HTTP/server 早返回禁用）。**例外**：anchor `title` 用 native HTML 不用 shadcn Tooltip（一条流式消息可能渲染上百个）
 

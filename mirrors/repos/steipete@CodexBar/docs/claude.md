@@ -125,14 +125,20 @@ The accepted multi-account design in
 - Behavior: on each Claude refresh, CodexBar runs `cswap --list --json` independently of the ambient Claude fetch (no
   shell, fixed arguments, bounded runtime and output), requires `schemaVersion == 1`, and parses only slot number,
   active state, usage status, email (display only), and the 5-hour/7-day windows.
-- Display: when claude-swap reports more than one account, the Claude menu shows one stacked card per
-  account (active account first) alongside nothing else changing; with zero or one account the menu is
-  unchanged. Account identity is `claude-swap:<slot>`.
+- Display: when claude-swap reports more than one account, the Claude menu and `codexbar cards` show one card per
+  account (active account first, then numeric slot) instead of ambient/token-account Claude cards; with zero or one
+  account those views are unchanged. Account identity is `claude-swap:<slot>`, never the display email.
+- Terminal scope: this automatic precedence is cards-only and works on every supported CLI platform. An explicit
+  Claude provider or `--source auto` remains eligible, while `--account`, `--account-index`, `--all-accounts`, and
+  explicit non-auto source flags bypass the adapter. `codexbar usage` and `codexbar serve` are unchanged.
 - Isolation: CodexBar never reads claude-swap or Claude Code credential storage for this feature; the
-  subprocess handles its own credential access. Adapter failures keep the last successful accounts as
-  stale data, surface the error in provider settings, and never affect the ambient Claude usage card.
+  subprocess handles its own credential access. In the app, adapter failures keep the last successful accounts as
+  stale data, surface the error in provider settings, and never affect the ambient Claude usage card. In terminal
+  cards, a list failure retains the current ambient output, adds a distinct `Claude (claude-swap)` footer entry, and
+  exits non-zero.
 - Sentinel statuses (`token_expired`, `api_key`, `keychain_unavailable`, `no_credentials`,
-  `unavailable`) render as per-account notes instead of usage bars.
+  `unavailable`, and unknown future values) render as per-account notes instead of usage bars in both full and brief
+  cards. Active rows are marked `[active]`; no claude-swap row infers a plan badge.
 - Switching: an inactive account with usable source credentials shows “Switch Account…”. Clicking it runs exactly
   `cswap --switch-to <slot> --json`, validates the versioned result and requested slot, then refreshes both ambient
   Claude usage and every claude-swap account card. Switches are serialized; no automatic switching occurs.

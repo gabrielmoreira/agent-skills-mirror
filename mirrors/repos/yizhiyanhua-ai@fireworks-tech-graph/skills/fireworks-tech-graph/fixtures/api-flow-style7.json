@@ -3,6 +3,7 @@
   "mode": "architecture",
   "template_type": "architecture",
   "style": 7,
+  "motion_scene": "token-stream",
   "quality_profile": "showcase",
   "width": 960,
   "height": 700,
@@ -24,14 +25,14 @@
     { "id": "release", "kind": "rect", "x": 700, "y": 510, "width": 180, "height": 60, "type_label": "CONFIG", "label": "Release Control", "fill": "#ffffff", "stroke": "#dce5e3", "flat": true }
   ],
   "arrows": [
-    { "id": "connect", "source": "app", "target": "sdk", "source_port": "right", "target_port": "left", "flow": "control", "label": "connect" },
-    { "id": "prepare", "source": "sdk", "target": "prompt", "source_port": "bottom", "target_port": "top", "flow": "read", "label": "prepare" },
-    { "id": "invoke", "source": "prompt", "target": "model", "source_port": "right", "target_port": "left", "flow": "control", "label": "invoke" },
-    { "id": "tool-call", "source": "model", "target": "tools", "source_port": "right", "target_port": "left", "flow": "read", "label": "tool call" },
-    { "id": "stream", "source": "model", "target": "formatter", "source_port": "bottom", "target_port": "top", "flow": "control", "label": "stream" },
-    { "id": "measure", "source": "formatter", "target": "observability", "source_port": "right", "target_port": "left", "flow": "feedback", "label": "measure" },
-    { "id": "govern", "source": "tools", "target": "release", "source_port": "bottom", "target_port": "top", "flow": "feedback", "label": "govern" },
-    { "id": "promote", "source": "observability", "target": "release", "source_port": "right", "target_port": "left", "flow": "feedback", "label": "promote" }
+    { "id": "connect", "source": "app", "target": "sdk", "source_port": "right", "target_port": "left", "flow": "control", "motion_role": "connect", "motion_stage": 1, "motion_order": 0, "label": "connect" },
+    { "id": "prepare", "source": "sdk", "target": "prompt", "source_port": "bottom", "target_port": "top", "flow": "read", "motion_role": "prepare", "motion_stage": 2, "motion_order": 0, "label": "prepare" },
+    { "id": "invoke", "source": "prompt", "target": "model", "source_port": "right", "target_port": "left", "flow": "control", "motion_role": "invoke", "motion_stage": 3, "motion_order": 0, "label": "invoke" },
+    { "id": "tool-call", "source": "model", "target": "tools", "source_port": "right", "target_port": "left", "flow": "read", "motion_role": "tool-call", "motion_stage": 4, "motion_order": 0, "label": "tool call" },
+    { "id": "stream", "source": "model", "target": "formatter", "source_port": "bottom", "target_port": "top", "flow": "control", "motion_role": "token-stream", "motion_stage": 4, "motion_order": 1, "label": "stream" },
+    { "id": "measure", "source": "formatter", "target": "observability", "source_port": "right", "target_port": "left", "flow": "feedback", "motion_role": "measure", "motion_stage": 5, "motion_order": 1, "label": "measure" },
+    { "id": "govern", "source": "tools", "target": "release", "source_port": "bottom", "target_port": "top", "flow": "feedback", "motion_role": "govern", "motion_stage": 5, "motion_order": 0, "label": "govern" },
+    { "id": "promote", "source": "observability", "target": "release", "source_port": "right", "target_port": "left", "flow": "feedback", "motion_role": "promote", "motion_stage": 6, "motion_order": 0, "label": "promote" }
   ],
   "legend_orientation": "horizontal",
   "legend_x": 48,

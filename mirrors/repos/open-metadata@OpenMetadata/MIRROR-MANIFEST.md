@@ -51,9 +51,9 @@ Mirror of `open-metadata/OpenMetadata` — 26 default patterns, 3 followed patte
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `openmetadata-ui/src/main/resources/ui/docs/colors.md`
 - `DEVELOPER.md`
 - `openmetadata-ui/src/main/resources/ui/docs/formutils.md`
-- `openmetadata-ui/src/main/resources/ui/docs/colors.md`
 
 ## File Index
 

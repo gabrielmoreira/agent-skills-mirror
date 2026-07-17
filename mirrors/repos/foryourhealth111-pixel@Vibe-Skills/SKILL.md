@@ -5,14 +5,11 @@ description: Vibe Code Orchestrator (VCO) is a governed runtime entry that freez
 
 # Vibe Governed Runtime Entry
 
-This file is the host-facing SOP for entering canonical `vibe`. Keep it small:
-runtime details belong in `protocols/runtime.md`, execution discipline belongs in `protocols/do.md`, and host wrapper recipes belong in installer-generated wrapper docs.
+This file is the host-facing SOP for entering canonical `vibe`. Keep it small: runtime details belong in `protocols/runtime.md`, execution discipline belongs in `protocols/do.md`, and host wrapper recipes belong in installer-generated wrapper docs.
 
 ## Trigger Contract
 
-Enter canonical `vibe` before ordinary execution when the user explicitly invokes
-`$vibe`, `/vibe`, or the `vibe` skill, or when the host intentionally chooses
-governed requirement/plan/execution closure for a complex task.
+Enter canonical `vibe` before ordinary execution when the user explicitly invokes `$vibe`, `/vibe`, or the `vibe` skill, or when the host intentionally chooses governed requirement/plan/execution closure for a complex task.
 
 Do not route every loosely related task into `vibe`. Lightweight questions,
 single-command checks, or tasks better served by another explicitly requested
@@ -20,7 +17,7 @@ skill may proceed outside `vibe` unless the user explicitly invoked this entry.
 
 Installed-copy upgrades stay on the command path. Use the repo's `update`
 entry with `--skills-dir` for the same managed skills directory instead of
-introducing a second public runtime skill.
+starting a separate skill flow.
 
 User instructions remain highest priority. If CLAUDE.md, GEMINI.md, AGENTS.md,
 or the direct user request narrows or forbids a workflow such as TDD, follow the
@@ -28,12 +25,10 @@ user's instruction while preserving canonical launch and proof rules.
 
 ## Canonical Bootstrap
 
-`vibe` is a host-syntax-neutral skill contract.
+`vibe` is a host-syntax-neutral skill contract. Before canonical launch, do only the minimum needed to launch:
 
-Before canonical launch, do only the minimum needed to launch:
-
-- Resolve `skill_root`, `workspace_root`, and `host_id`.
-- Extract core intent as keyword text. Do not pass the raw prompt, full chat history, or mixed-language filler to the router.
+- Resolve `skill_root` and `workspace_root`.
+- Pass the current user task verbatim as the task specification; unrelated chat history may be excluded. Do not summarize, rewrite, or reduce it to keywords. Preserve exact input paths, input immutability constraints, exact output roots, synthetic-data evidence boundaries, module dependencies and safe parallel boundaries, and acceptance criteria.
 
 Do not search the current workspace, repository, or install root for canonical proof files before launch.
 Do not inspect the repo, protocol docs, or prior run outputs before canonical launch returns.
@@ -41,16 +36,15 @@ Do not simulate stages, claim canonical entry from reading this file or wrapper 
 Do not manually create `outputs/runtime/vibe-sessions/<run-id>/`.
 Do not use the Vibe installation root as the governed artifact root.
 
-Local installed specialist recommender: semantic owner `packages/runtime-core/src/vgo_runtime/router_contract_runtime.py`; compatibility bridge `scripts/router/resolve-pack-route.ps1`
+Local skill candidate audit: semantic owner `packages/runtime-core/src/vgo_runtime/router_contract_runtime.py`; compatibility bridge `scripts/router/resolve-pack-route.ps1`
 
 Specialist recommender input rules:
 
-This recommender runs inside canonical `vibe`; it may suggest specialist skills, but it does not decide whether `$vibe` is the public runtime entry.
+This audit runs inside canonical `vibe`; it may expose candidates for inspection, but it does not choose task skills, bind execution, or control stage progression.
 
 - Include work type, domain/technology, deliverable, and explicit constraints.
 - Reuse verified frozen requirement/plan facts when continuing a run.
-- If the router returns `confirm_required`, surface the machine-readable route contract and convert the user's natural-language reply into a structured route decision.
-- If the router fails, report `blocked` with the concrete failure reason.
+- Treat its output as compatibility evidence only; never relabel a routed candidate as an Agent choice.
 
 Canonical entry command shape:
 
@@ -59,9 +53,7 @@ $env:PYTHONPATH = "<skill_root>/apps/vgo-cli/src"
 py -3 -m vgo_cli.main canonical-entry `
   --repo-root "<skill_root>" `
   --artifact-root "<workspace_root>" `
-  --host-id "<host_id>" `
-  --entry-id "vibe" `
-  --prompt "<extracted keyword intent text>"
+  --prompt "<current user task, verbatim>"
 ```
 
 For PowerShell, do not place `$env:PYTHONPATH=...` inside a double-quoted `-Command` string; host interpolation may corrupt it to `:PYTHONPATH`.
@@ -75,16 +67,18 @@ WORKSPACE_ROOT="${WORKSPACE_ROOT:-$PWD}"
 PYTHONPATH="$REPO_ROOT/apps/vgo-cli/src" python -m vgo_cli.main canonical-entry \
   --repo-root "$REPO_ROOT" \
   --artifact-root "$WORKSPACE_ROOT" \
-  --host-id "<host_id>" \
-  --entry-id "vibe" \
-  --prompt "<extracted keyword intent text>"
+  --prompt "<current user task, verbatim>"
 ```
+
+A normal launch does not need explicit `--host-id` or `--entry-id`.
+Those flags remain compatibility-only for wrappers or older automation that already carries them.
 
 Only validate canonical proof artifacts after canonical-entry returns a `session_root`.
 `check` on an installed copy proves only `installed locally`.
 It does not prove `runtime coherent` or `delivery accepted`.
 Proof of canonical launch is post-launch and requires: `host-launch-receipt.json`, `runtime-input-packet.json`, `governance-capsule.json`, and `stage-lineage.json` under the returned `session_root`.
 `local-agent-kernel` follows the same proof rule. If it cannot produce those truth artifacts, it may produce local work scaffolds, but it must not be treated as `canonical verified`.
+If canonical launch fails, report `blocked` with the concrete failure reason instead of simulating the missing stages or proof artifacts.
 
 ## Hard Stop And Re-entry
 
@@ -110,6 +104,7 @@ bounded_return_control.host_decision_contract`, infer the user's intent, and
 write a structured host decision JSON file. Use the same `run_id`,
 `bounded_reentry_token`, and stable `workspace_root`:
 
+At a requirement stop, build `agent_skill_organization` directly from `agent_skill_organization_contract`; `preferred_payload` is incomplete until then, and the schema must not be learned through failed retries or runtime source inspection.
 ```bash
 REPO_ROOT='<skill_root>'
 WORKSPACE_ROOT="${WORKSPACE_ROOT:-$PWD}"
@@ -120,16 +115,21 @@ cat > "$DECISION_JSON" <<'JSON'
 {
   "decision_kind": "approval_response",
   "decision_action": "approve_requirement",
-  "approval_decision": "approve"
+  "approval_decision": "approve",
+  "agent_skill_organization": {
+    "schema_version": "agent_skill_organization_v1", "derived_by": "agent", "workflow_level": "L",
+    "modules": [{"module_id": "module-a", "goal": "...", "candidate_skill_ids": ["skill-a"], "execution_mode": "skill_assigned", "acceptance_criteria": [{"criterion_id": "module-a-result", "description": "The module result satisfies the frozen requirement.", "verification_mode": "automated"}]}],
+    "selected_skills": [{"skill_id": "skill-a", "module_ids": ["module-a"], "responsibility": "...", "reason": "..."}],
+    "uncovered_modules": [],
+    "workflow_level_contract": {"L": "smallest complete organization", "XL": "bounded multi-lane organization"}
+  }
 }
 JSON
 
 PYTHONPATH="$REPO_ROOT/apps/vgo-cli/src" py -3 -m vgo_cli.main canonical-entry \
   --repo-root "$REPO_ROOT" \
   --artifact-root "$WORKSPACE_ROOT" \
-  --host-id "<host_id>" \
-  --entry-id "vibe" \
-  --prompt "<stable continuation intent, not just the user's short reply>" \
+  --prompt "<current user task, verbatim>" \
   --continue-from-run-id "<source_run_id>" \
   --bounded-reentry-token "<reentry_token>" \
   --host-decision-json-file "$DECISION_JSON"
@@ -151,8 +151,16 @@ stage without asking the user for a separate approval first:
 }
 ```
 
-Route confirmations must stay inside surfaced confirm options. Bounded approvals
-or revisions must stay inside the surfaced bounded-stage action contract.
+Bounded approvals or revisions must stay inside the surfaced bounded-stage action contract.
+
+At `requirement_doc`, read `runtime-summary.json -> host_user_briefing` and use `host_user_briefing.rendered_text` as the backbone of the user reply. Keep the same field order.
+Frame that stop around the Agent-led skill search guide: split the task into modules, search local skills per module, read candidate `SKILL.md`, organize both `L` / `XL` plans, and disclose uncovered modules honestly. Do not surface shortlist size, selected-skill rankings, or raw router ordering at requirement freeze.
+Do not ask the user to choose L or XL until the reply explains each task-specific workflow and names the task-specific candidate skill names for that option. Label every named skill as a candidate that is not yet selected or used; formal selection still belongs to the Agent organization produced after requirement approval.
+
+After requirement approval, the Agent must split the approved work into modules, search every declared local skill root for each module, and read each retained candidate's `SKILL.md`. The host must, before entering `xl_plan`, put the validated result in `HostDecisionJson.agent_skill_organization`; route output may remain candidate audit evidence but cannot populate this field. If one selected Skill owns multiple modules, include one `module_assignments` entry per module with the exact module id, an `owner`, `support`, or `verifier` role, module-specific responsibility, one concrete write scope, expected outputs, and verification. Role order is executable: `support` runs before and feeds the `owner`; `verifier` runs only after the `owner`. A post-owner review or minimality check must use `verifier`, not `support`. An `agent_direct` module must declare its own concrete `write_scope`, `expected_outputs`, and `verification`; the runtime must not replace them with a generic module label or restated goal. A task work scope must not claim canonical runtime artifacts such as `module-execution.json`; use a stable task-owned output scope or `no task-file writes` for read-only work. A plan revision that changes modules, Skills, roles, dependencies, write scopes, outputs, verification, or workflow level must resubmit the complete updated `agent_skill_organization`; `revision_delta` alone records text and does not mutate the frozen organization.
+Use the directory name that directly contains the retained `SKILL.md` as the exact `skill_id` in both `candidate_skill_ids` and `selected_skills[].skill_id`. A displayed Skill name or frontmatter `name` is descriptive, not an execution identifier. A nested retained `SKILL.md` uses its own containing directory name. Resolve this from the candidate path before submission instead of learning the identifier through failed retries.
+Module acceptance criteria must be satisfiable before canonical module-result re-entry. They must not require cleanup receipts, delivery acceptance, or completion-language permission, because canonical `phase_cleanup` creates those only after `module-execution.json` is accepted. Verify ordinary modules from their actual deliverables and normal command or test output. Do not invent task-specific hashes, receipts, ledgers, matrices, scans, or proof files solely to prove execution order, Skill use, or file scope. Only require an extra evidence artifact when the user or domain contract needs that artifact.
+After plan approval, reuse the frozen `agent_skill_organization` for `plan_execute` and cleanup, and do not rerun procedural skill selection, silently add skills, or replace declared gaps unless the user revises the frozen requirement or plan. `stage_order` records dependency depth, not permission to run in parallel; L still emits one-unit sequential waves even when independent units share a dependency stage. XL may place at most two dependency-ready units in one wave, and nested or overlapping write scopes must remain serial.
 
 ## Unified Runtime Contract
 
@@ -179,32 +187,24 @@ Installed-copy updates remain a command-path action:
 
 - `update --skills-dir <skills-dir>`
 
-Compatibility stage IDs are non-public metadata and must not be materialized as
-host-visible command or skill wrappers:
-
-- `vibe-what-do-i-want` -> `requirement_doc`
-- `vibe-how-do-we-do` -> `xl_plan`
-- `vibe-do-it` -> `phase_cleanup`
+Compatibility stage wrappers stay internal-only. If an old caller still sends
+one, collapse it to canonical `vibe` before runtime launch and keep it out of
+the host-visible skill surface.
 
 ## Skill Execution
 
-The router may surface selected skill execution candidates, but `vibe` remains
-the runtime-selected skill and runtime authority.
+The frozen `agent_skill_organization` is the only task-skill truth. Before plan
+approval, disclose modules, candidates, selected skills and reasons, gaps, and the L / XL difference.
 
-The host must inspect surfaced candidates and make a structured skill execution
-decision when curation is needed. It may approve, defer, or reject only surfaced
-candidate ids. Unsuitable or noisy candidates should be rejected or deferred
-with a reason rather than forced into execution.
-
-For interactive L/XL work, surface the selected skill list before execution and
-ask the user: "我将会在接下来的工作中使用这些 skills，你觉得 OK 吗？" This approval
-only means the skills may be used; final material-use claims still require
-`skill_usage.used` and evidence files. `skill_usage.bound` only means a skill was attached to a work unit; it is not a material-use claim.
-
-Only selected skills become execution units. The host must not invent unsurfaced
-skills, bypass runtime validation, create hidden skill sub-sessions, or open a
-second requirement/plan/runtime surface. Selected skill work must preserve the
-skill's own workflow, inputs, outputs, and validation style.
+Only selected skills become module-bound execution units. The host must not
+invent skills, promote route candidates, hide skill sessions, or open another
+requirement/plan/runtime surface. Selection, loading, planning, dispatch, or a
+generic manifest is not contribution proof; completion requires observable
+module results and the module acceptance defined in `protocols/runtime.md`.
+After plan approval, `module-work-plan.json` is the only dispatch authority.
+`agent-execution-handoff.json.result_contract` freezes the `module_execution_v1` submission bindings; after handoff, copy `result_contract.submission_template`, preserve every frozen binding, and fill only the result fields. `criterion_results` states must be exactly `passing`, `failing`, or `blocked`. If canonical rejects the format before cleanup, correct the same `module-execution.json` and reuse the same return command instead of creating another handoff. Code-task TDD evidence belongs inside the same `module-execution.json` when the handoff template includes `tdd_evidence`; fill that structured section before canonical return and do not create a separate `tdd-evidence.json` sidecar. The contract is not execution evidence.
+The Agent still does the real work and creates `module-execution.json`; required failure, blocking,
+missing evidence, or pending human review blocks task completion.
 
 For XL delegation, root/child hierarchy remains governed: only `root_governed`
 may freeze canonical requirements/plans or make final completion claims.
@@ -239,7 +239,7 @@ Read these references only after canonical launch or when maintaining the repo:
 ## Maintenance
 
 - Runtime family: governed-runtime-first
-- Version: 3.2.0
-- Updated: 2026-07-08
-- Local installed specialist recommender: semantic owner `packages/runtime-core/src/vgo_runtime/router_contract_runtime.py`; compatibility bridge `scripts/router/resolve-pack-route.ps1`
+- Version: 4.0.0
+- Updated: 2026-07-17
+- Local skill candidate audit: semantic owner `packages/runtime-core/src/vgo_runtime/router_contract_runtime.py`; compatibility bridge `scripts/router/resolve-pack-route.ps1`
 - Primary contract metadata: `core/skill-contracts/v1/vibe.json`

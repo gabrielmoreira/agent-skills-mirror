@@ -108,6 +108,7 @@ Memory UX v2 的调研、实施路线与原始召回截图已在 2026-07-13 按�
 | [ACP 协议](architecture/acp.md)          | IDE 直连（NDJSON over stdio）、会话生命周期、事件映射         | `acp/`, `acp_control/` |
 | [斜杠命令](architecture/slash-commands.md) | 6 类命令、双派发路径（UI/IM）、CommandAction 副作用          | `slash_commands/`      |
 | [MCP 客户端](architecture/mcp.md)         | 四种 transport（stdio/HTTP/SSE/WebSocket）、OAuth 2.1+PKCE、Resources/Prompts、凭据 0600、SSRF 硬约束、Learning 埋点 | `mcp/`                 |
+| [MCP Server（平台）](architecture/mcp-server.md) | `hope-agent mcp` stdio server：把子系统暴露给外部 agent；共享 host + `ToolProvider` 注册表（design 首个 provider）、默认只读 + `--allow-writes`、active-context | `mcp_server/`, `design/mcp_provider.rs` |
 
 
 ## 基础设施
@@ -117,7 +118,8 @@ Memory UX v2 的调研、实施路线与原始召回截图已在 2026-07-13 按�
 | ----------------------------------------- | ---------------------------------- | ----------------------- |
 | [图像生成](architecture/image-generation.md)  | 7 个 Provider、Capabilities 路由、分辨率推断 | `tools/image_generate/` |
 | [Canvas 子系统](architecture/canvas.md)     | 7 种内容类型沙盒预览、版本快照、snapshot/eval 双向通道、独立窗口、HTTP 静态托管 | `tools/canvas/`, `canvas_db.rs` |
-| [Artifacts 产物平台](architecture/artifacts.md) | Canvas façade、不可变版本、Gallery、Data Analytics、离线导出与 Export Guard | `artifacts/`, `tools/artifact.rs`, `components/artifacts/` |
+| [设计空间（Design Space）](architecture/design-space.md) | agent 原生设计工作空间：11 类自包含产物（web/mobile/deck/dashboard/poster/document/email/image/motion/audio/component）、品牌设计系统 + token 编译、稳定单产物预览（无画布）、oid 确定性可视化微调、一键导出 HTML/PNG/PDF/PPTX/MP4/ZIP、5 维质量门 + 反 slop 自查、**工程轴**（多平台 Token 导出 / Figma 导入 / 代码交付包 / 绑定代码工程同步）、与知识空间/项目联动 | `design/`, `tools/design/`, `components/design/` |
+| [Artifacts 产物平台](architecture/artifacts.md) | Canvas façade、不可变版本、Gallery、Data Analytics、离线本地导出与未来 Publisher Guard | `artifacts/`, `tools/artifact.rs`, `components/artifacts/` |
 | [Cron 调度](architecture/cron.md)           | 定时任务调度、Agent 执行、Failover、指数退避      | `cron/`                 |
 | [Sandbox 架构](architecture/sandbox.md) | 会话级 Docker 执行沙箱、权限放松矩阵、Docker 平台引导、SearXNG 容器管理 | `sandbox.rs`, `permission/`, `docker/` |
 | [Dashboard](architecture/dashboard.md)    | 跨 DB 聚合分析、成本估算、系统指标、Learning Tab、coding release/generalization gate 与 general domain quality gate | `dashboard/`, `components/dashboard/learning/` |

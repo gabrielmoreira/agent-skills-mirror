@@ -1411,6 +1411,7 @@ export const GENERATED_THEME_PAGES = [
         "desc": "沿时间轴追踪同一指标的演化——趋势向上还是向下、拐点在何处、节奏是否可持续。"
       },
       "result": "产业链层级结构 · 因果传导关系",
+      "crossLabel": "交叉",
       "caption": "两个维度交叉后，可进一步识别产业链的层级结构与因果传导关系",
       "colorA": "#5b8def",
       "colorB": "#46b083",
@@ -2485,6 +2486,7 @@ export const GENERATED_THEME_PAGES = [
       "centerUnit": "亿美元",
       "centerLabel": "全年合计",
       "overflowLabel": "其他",
+      "unit": "亿",
       "caption": "通用大模型占据近半壁江山，反映对 AGI 叙事的押注；基础设施与芯片合计超四分之一",
       "chartType": "donut",
       "segmentCount": 5,
@@ -5183,6 +5185,7 @@ export const GENERATED_THEME_PAGES = [
       "cn": "不同轮次的事件笔数与平均单笔",
       "barLegendLabel": "事件笔数",
       "lineLegendLabel": "平均单笔（亿美元）",
+      "dealsUnit": "笔",
       "rounds": [
         {
           "label": "种子轮",
@@ -5522,6 +5525,7 @@ export const GENERATED_THEME_PAGES = [
         "note": "独占六成以上 · 人才、资本、算力虹吸效应进一步强化"
       },
       "overflowLabel": "其他地区",
+      "unit": "亿",
       "caption": "“地理护城河”短期内难以撼动 · 旧金山湾区独占六成以上份额",
       "segmentCount": 5,
       "highlight": true,
@@ -7824,6 +7828,7 @@ export const GENERATED_THEME_PAGES = [
       "totalValue": "970",
       "totalUnit": "亿美元",
       "barAnnotation": "*/ 各地区占全球 AI 融资份额 · 合计 100% /*",
+      "amountUnit": "亿",
       "regions": [
         {
           "name": "美国",
@@ -8353,6 +8358,8 @@ export const GENERATED_THEME_PAGES = [
       "refLabel": "20× 合理参考",
       "metricAxisLabel": "P/S MULTIPLE · 估值 ÷ 年化收入",
       "unit": "亿",
+      "valLabel": "估值",
+      "revLabel": "收入",
       "items": [
         {
           "name": "OpenAI",
@@ -8740,6 +8747,9 @@ export const GENERATED_THEME_PAGES = [
         }
       ],
       "unit": "亿美元",
+      "totalsLabel": "合计",
+      "lowLabel": "低",
+      "highLabel": "高",
       "caption": "热力矩阵 · 资金向大模型与算力、向下半年同时收口",
       "rowCount": 5,
       "highlight": true,
@@ -9973,6 +9983,7 @@ export const GENERATED_THEME_PAGES = [
       "legendTargetLabel": "目标线",
       "legendBandsLabel": "差 · 良 · 优 区间",
       "noteBadgeLabel": "核心发现",
+      "targetLabel": "目标",
       "unit": "亿",
       "items": [
         {
@@ -11036,6 +11047,7 @@ export const GENERATED_THEME_PAGES = [
         }
       ],
       "leadLabel": "维度领先",
+      "avgLabel": "均分",
       "scaleNote": "0–100 相对分 · 非绝对金额",
       "caption": "雷达图 · OpenAI 全维领跑，Anthropic 胜在模型，xAI 强于算力",
       "itemCount": 3,
@@ -11564,6 +11576,7 @@ export const GENERATED_THEME_PAGES = [
       "unit": "亿美元",
       "startLabel": "年初",
       "endLabel": "最新",
+      "valuationLabel": "估值",
       "rows": [
         {
           "name": "OpenAI",
@@ -13659,6 +13672,7 @@ export const GENERATED_THEME_PAGES = [
         "#46b083",
         "#e0a23a"
       ],
+      "unit": "亿",
       "caption": "可变宽堆叠 · 大模型不仅最吸金，且资金高度押注后期；越垂直，越早期",
       "itemCount": 5,
       "highlight": true,
@@ -15645,6 +15659,7 @@ export const GENERATED_THEME_PAGES = [
       "showRail": true,
       "showLead": true,
       "leadKicker": "SECTIONS · 章节",
+      "chapterUnit": "章",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -16541,6 +16556,7 @@ export const GENERATED_THEME_PAGES = [
       "showBars": true,
       "showValueLabels": true,
       "footnote": "注：部分公司全年有多轮融资，此处仅列其最大单笔。",
+      "shareColumnLabel": "占比",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -18279,6 +18295,8 @@ export const GENERATED_THEME_PAGES = [
       "showTargetMeta": true,
       "bandwidthLabel": "带宽 = 融资额",
       "totalLabel": "全年合计",
+      "flowVerb": "汇入",
+      "annualShareLabel": "占全年",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -19476,6 +19494,7 @@ export const GENERATED_THEME_PAGES = [
       "focusEnabled": false,
       "focusIndex": 0,
       "images": [],
+      "noImagePlaceholder": "主视觉 · 纯文字版式",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -19738,6 +19757,7 @@ export const GENERATED_THEME_PAGES = [
       "showFrame": true,
       "showCaption": true,
       "images": [],
+      "noImagePlaceholder": "纯文字主视觉海报",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -20351,6 +20371,7 @@ export const GENERATED_THEME_PAGES = [
       "showCaptions": true,
       "showLead": true,
       "images": [],
+      "noImagePlaceholder": "纯标题版式 · 图片数量为 0",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -20549,6 +20570,7 @@ export const GENERATED_THEME_PAGES = [
       "showNames": true,
       "showTags": true,
       "images": [],
+      "noTilePlaceholder": "纯标题版式 · 瓦片数量为 0",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -20748,6 +20770,7 @@ export const GENERATED_THEME_PAGES = [
       "showVerdict": true,
       "showCaptions": true,
       "images": [],
+      "verdictLabel": "结论",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -21166,6 +21189,9 @@ export const GENERATED_THEME_PAGES = [
       "focusIndex": 4,
       "showLegend": true,
       "showValueLabels": true,
+      "dotLabel": "点",
+      "sumLabel": "共",
+      "shareOfLabel": "占全部",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -22455,6 +22481,8 @@ export const GENERATED_THEME_PAGES = [
         "资本增量",
         "资本回落"
       ],
+      "contributionLabel": "贡献",
+      "anchorLabel": "锚定",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -22673,6 +22701,8 @@ export const GENERATED_THEME_PAGES = [
       "showCenter": true,
       "showLegend": true,
       "showNote": true,
+      "avgCenterLabel": "平均达成率",
+      "rateLabel": "RATE",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -22880,6 +22910,7 @@ export const GENERATED_THEME_PAGES = [
       "showTarget": true,
       "showNote": true,
       "showValueLabels": true,
+      "targetLabel": "目标",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -27599,6 +27630,7 @@ export const GENERATED_THEME_PAGES = [
       "showValueLabels": true,
       "showDelta": true,
       "insightText": "↳ 线越陡上扬，份额被放大越多——资本向后期高度集中",
+      "metricLabel": "金额份额",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -28695,6 +28727,8 @@ export const GENERATED_THEME_PAGES = [
       "showRankAxis": true,
       "showEndLabels": true,
       "insightText": "↳ 线条交叉处即为「反超」时刻——排位赛仍在进行",
+      "periodLabel": "全年",
+      "rankUnit": "位",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -28888,6 +28922,7 @@ export const GENERATED_THEME_PAGES = [
       "focusIndex": 0,
       "showCaptions": true,
       "images": [],
+      "noImagePlaceholder": "纯标题版式 · 图片数量为 0",
       "scheme": "green",
       "emphasis": "ticket",
       "breath": 55,
@@ -30011,7 +30046,7 @@ export const GENERATED_THEME_PAGES = [
       "figureUnit": "亿美元",
       "figureLabel": "全年 AI 风险投资额",
       "figureCaption": "占全美风险投资近 ⅓ · 97 笔大额融资事件",
-      "galleryCaption": "封面配图 / DROP IMAGE",
+      "galleryPlaceholder": "封面配图 / DROP IMAGE",
       "meta": [
         "编制 · 2026.06",
         "口径 · ≥1 亿美元公开融资",
@@ -30447,7 +30482,7 @@ export const GENERATED_THEME_PAGES = [
       "backgroundMode": "unicorn",
       "unicornScene": "automations",
       "imageCount": 1,
-      "imageCaption": "背景图 / DROP IMAGE",
+      "imagePlaceholder": "背景图 / DROP IMAGE",
       "showFrame": true,
       "showFigure": true,
       "showMeta": true,
@@ -30917,7 +30952,7 @@ export const GENERATED_THEME_PAGES = [
       "titleAccent": "智能硬件",
       "titleC": "产业增长报告",
       "sub": "供应链、终端体验与生态格局的全景扫描。",
-      "imageCaption": "封面主视觉 / DROP HERO IMAGE",
+      "imagePlaceholder": "封面主视觉 / DROP HERO IMAGE",
       "figureValue": "+38",
       "figureUnit": "%",
       "figureCaption": "整体市场 · 同比增速",
@@ -34091,9 +34126,9 @@ export const GENERATED_THEME_PAGES = [
         "t010": "垂直应用 · 占全年 25.3%",
         "t011": "↳ 隐形价值区",
         "t012": "当资本从\"赌叙事\"转向\"看兑现\"，已验证 PMF、ARR 持续增长的垂直应用， 是退潮后最可能留在牌桌上的标的——下游潜力最大，但仍需时间验证。",
-        "t013": "应用 / 产品界面配图 / DROP IMAGE",
-        "t014": "应用 / 产品界面配图 / DROP IMAGE",
-        "t015": "纯文字版式 · 无配图",
+        "t013Placeholder": "应用 / 产品界面配图 / DROP IMAGE",
+        "t014Placeholder": "应用 / 产品界面配图 / DROP IMAGE",
+        "t015Placeholder": "纯文字版式 · 无配图",
         "t016": "↗ 企业搜索 · 工作流 · 数据平台界面"
       },
       "chips": [
@@ -34299,7 +34334,7 @@ export const GENERATED_THEME_PAGES = [
       "caseTag": "CASE STUDY · ANTHROPIC",
       "title": "Anthropic：从追赶到反超",
       "lead": "由 Dario Amodei 团队 2021 年创立。2024 年连续完成三轮大额融资，累计超 650 亿美元，估值突破 9650 亿美元，超越 OpenAI 成为全球估值最高的 AI 初创企业。",
-      "galleryCaption": "案例配图 / DROP IMAGE",
+      "galleryPlaceholder": "案例配图 / DROP IMAGE",
       "quoteBody": "「通过 Constitutional AI 构建可解释、可控的系统，比单纯追求规模更符合长远利益。」",
       "quoteAttribution": "—— Dario Amodei · CEO",
       "milestones": [
@@ -34550,9 +34585,9 @@ export const GENERATED_THEME_PAGES = [
         "t006": "2023 年由埃隆·马斯克创立，2024 年 11 月完成 50 亿美元融资、估值达 500 亿美元。 体量虽不及 OpenAI / Anthropic，但增速惊人——从成立到跻身头部梯队仅用 18 个月。",
         "t007": "↳ 差异化优势",
         "t008": "背靠 X（原 Twitter）平台的海量实时社交数据，并与特斯拉自动驾驶团队协同； Grok 模型主打「幽默 · 实时 · 无审查」，差异化定位明显。",
-        "t009": "案例配图 / DROP IMAGE",
-        "t010": "案例配图 / DROP IMAGE",
-        "t011": "纯文字案例 · 无配图",
+        "t009Placeholder": "案例配图 / DROP IMAGE",
+        "t010Placeholder": "案例配图 / DROP IMAGE",
+        "t011Placeholder": "纯文字案例 · 无配图",
         "t012": "↗ Grok · 多模态感知"
       },
       "stats": [
@@ -34810,8 +34845,8 @@ export const GENERATED_THEME_PAGES = [
       "lead": "CoreWeave 原本是一家加密货币挖矿公司，2023 年转身为 AI 算力云服务商。与 NVIDIA 签订长期供应协议，手握数万张 H100 / H200 GPU，成为 OpenAI、Stability AI 等公司的核心算力供应商。",
       "calloutLabel": "↳ 「卖铲子」逻辑",
       "calloutBody": "当所有模型公司都在抢 GPU，提前锁定算力资源的基础设施提供商，反而成为最稀缺的标的——「淘金热中卖铲子」的商业逻辑被完美印证。",
-      "galleryCaption": "案例配图 / DROP IMAGE",
-      "emptyText": "纯文字案例 · 无配图",
+      "galleryPlaceholder": "案例配图 / DROP IMAGE",
+      "emptyPlaceholder": "纯文字案例 · 无配图",
       "stats": [
         {
           "num": "110",
@@ -35288,7 +35323,7 @@ export const GENERATED_THEME_PAGES = [
         "t006": "与",
         "t007": "展望",
         "t008": "在市场全景之上，进一步拆解轮次结构、月度节奏与集中度， 回答资金「如何分布、何时加速、向谁集中」，并据此展望下一阶段的产业走向。",
-        "t009": "章节配图 / DROP IMAGE",
+        "t009Placeholder": "章节配图 / DROP IMAGE",
         "t010": "04",
         "t011": "本章包含",
         "t012": "横纵分析法"
@@ -37013,7 +37048,7 @@ export const GENERATED_THEME_PAGES = [
         "t005": "亿",
         "t006": "↳ 高度集聚",
         "t007": "旧金山湾区独占六成以上，人才、资本、算力的虹吸效应进一步强化，「地理护城河」短期内难以撼动。",
-        "t008": "科技枢纽实景 / DROP IMAGE",
+        "t008Placeholder": "科技枢纽实景 / DROP IMAGE",
         "t009": "63.9",
         "t010": "资金落在",
         "t011": "旧金山湾区",
@@ -45761,9 +45796,9 @@ export const GENERATED_THEME_PAGES = [
         "t003": "押注 AGI 的",
         "t004": "四张面孔",
         "t005": "资本最密集、竞争最激烈、兑现最待验证的一层",
-        "t006": "实验室影像 / DROP IMAGE",
-        "t007": "实验室影像 / DROP IMAGE",
-        "t008": "纯文字版式 · 无配图",
+        "t006Placeholder": "实验室影像 / DROP IMAGE",
+        "t007Placeholder": "实验室影像 / DROP IMAGE",
+        "t008Placeholder": "纯文字版式 · 无配图",
         "t009": "0"
       },
       "labs": [
@@ -46809,9 +46844,9 @@ export const GENERATED_THEME_PAGES = [
         "t010": "Figure AI · 最大单笔",
         "t011": "↳ 看好逻辑",
         "t012": "技术壁垒高、复制周期长，一旦落地便形成数据 + 硬件双护城河—— 适合作为「长周期、高确定性」的耐心资本配置，而非短线叙事博弈。",
-        "t013": "具身智能配图 / DROP IMAGE",
-        "t014": "具身智能配图 / DROP IMAGE",
-        "t015": "纯文字版式 · 无配图",
+        "t013Placeholder": "具身智能配图 / DROP IMAGE",
+        "t014Placeholder": "具身智能配图 / DROP IMAGE",
+        "t015Placeholder": "纯文字版式 · 无配图",
         "t016": "↗ 人形机器人 · 物理世界落地"
       },
       "chips": [
@@ -47778,7 +47813,7 @@ export const GENERATED_THEME_PAGES = [
       "accent": "blue",
       "theme": "dark",
       "copy": {
-        "t001": "全幅主视觉 / DROP HERO IMAGE",
+        "t001Placeholder": "全幅主视觉 / DROP HERO IMAGE",
         "t002": "资本大年 / CAPITAL YEAR",
         "t003": "2024 · 美国 AI 大额融资",
         "t004": "报告摘要 · 一句话定调",
@@ -48751,9 +48786,9 @@ export const GENERATED_THEME_PAGES = [
       ],
       "calloutLabel": "↳ 上游确定性",
       "calloutBody": "无论模型与应用如何更迭，训练与推理都要消耗芯片算力——上游硬件因此成为“卖铲子”逻辑里确定性最高、最难被绕过的一环。",
-      "galleryCaption": "芯片 / 硬件配图 / DROP IMAGE",
+      "galleryPlaceholder": "芯片 / 硬件配图 / DROP IMAGE",
       "galleryNote": "↗ 晶圆 · 推理芯片 · 算力机柜",
-      "emptyText": "纯文字版式 · 无配图",
+      "emptyPlaceholder": "纯文字版式 · 无配图",
       "showDecor": false,
       "decorSrc": null,
       "decorScale": 1,
@@ -48975,9 +49010,9 @@ export const GENERATED_THEME_PAGES = [
       ],
       "calloutLabel": "↳ 卖铲赢家",
       "calloutBody": "“淘金热中卖铲子”——谁掌握 GPU 与电力，谁就握住整条价值链的咽喉。算力云因此成为兼具融资热度与收入确定性的“明星兑现”标的。",
-      "galleryCaption": "数据中心 / GPU 机柜 / DROP IMAGE",
+      "galleryPlaceholder": "数据中心 / GPU 机柜 / DROP IMAGE",
       "galleryNote": "↗ 机房 · GPU 机柜 · 算力集群",
-      "emptyText": "纯文字版式 · 无配图",
+      "emptyPlaceholder": "纯文字版式 · 无配图",
       "showDecor": false,
       "decorSrc": null,
       "decorScale": 1,
@@ -65673,6 +65708,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "timelineCap": "阶段性观察 · 2024 → 2027",
+        "timelineCapEn": "PHASE TIMELINE",
         "timeline": [
           {
             "year": "2024",
@@ -74464,6 +74500,7 @@ export const GENERATED_THEME_PAGES = [
         "message": "优势来自人才密度、资本网络、云厂商和模型实验室邻近。",
         "shareLabel": "湾区",
         "restLabel": "其余地区",
+        "gaugeCapEn": "SHARE OF TOTAL",
         "aux": [
           [
             "其余地区合计",
@@ -79119,6 +79156,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "wallLabel": "壁垒墙",
+        "anchorCapEn": "RESIDUAL MOAT",
         "anchorNum": "14",
         "anchorUnit": "%",
         "anchorLabel": "剩余独立壁垒空间",
@@ -79561,6 +79599,7 @@ export const GENERATED_THEME_PAGES = [
         "flowCap": "工作流嵌入点",
         "flowUnit": "EMBED IN PROCESS",
         "embedBadge": "AI 嵌入",
+        "trackBase": "宿主刚性流程 · HOST PROCESS",
         "stages": [
           {
             "k": "业务输入",
@@ -82664,6 +82703,7 @@ export const GENERATED_THEME_PAGES = [
       "phrase": "在资本与算力的浪潮里，每一笔融资都是一次方向的押注。",
       "closing": "从资本流向，看 AI 产业下一阶段的真实重心。",
       "watermark": "CAPITAL",
+      "mediaPlaceholder": "封面主视觉 / DROP IMAGE",
       "data": [
         {
           "label": "年份 / YEAR",
@@ -82954,6 +82994,7 @@ export const GENERATED_THEME_PAGES = [
       "title": "报告结构",
       "subhead": "从方法到结论的阅读路径",
       "closing": "先建立框架，再进入数据和判断。",
+      "sectionUnit": "章节",
       "items": [
         {
           "name": "研究方法",
@@ -83511,6 +83552,7 @@ export const GENERATED_THEME_PAGES = [
       "subhead": "大额融资事件地图 / 金额 $B",
       "closing": "影响最大的往往是少数巨额交易。",
       "unit": "亿",
+      "dealUnit": "笔",
       "tiers": [
         {
           "range": "1–2亿",
@@ -83973,6 +84015,7 @@ export const GENERATED_THEME_PAGES = [
       "periodLabel": "Q3",
       "periodCaption": "市场情绪高点 / THIRD QUARTER",
       "peakTag": "全年峰值 / PEAK",
+      "mediaPlaceholder": "主视觉 / DROP IMAGE",
       "hero": {
         "value": "318",
         "unit": "亿$",
@@ -84096,6 +84139,7 @@ export const GENERATED_THEME_PAGES = [
       "title": "理性回落季度",
       "subhead": "Q4 融资拆解 / RATIONAL PULLBACK",
       "closing": "回落不是终点，而是分化的开始。",
+      "stageUnit": "阶段",
       "periodLabel": "Q4",
       "periodCaption": "资金挑选确定性 / FOURTH QUARTER",
       "axisCaption": "季度演进 / QUARTERLY PROGRESSION",
@@ -84277,6 +84321,8 @@ export const GENERATED_THEME_PAGES = [
       "subhead": "月度峰谷对比 / MONTHLY SPREAD",
       "closing": "月度波动背后是头部交易节奏。",
       "unit": "亿",
+      "meanLabel": "均值",
+      "spreadLabel": "峰谷差",
       "points": [
         {
           "label": "8月",
@@ -84452,6 +84498,7 @@ export const GENERATED_THEME_PAGES = [
       "unit": "亿",
       "closing": "大模型制造热度，基础设施和应用承接兑现。",
       "totalLabel": "全年合计",
+      "footTotalLabel": "合计",
       "segments": [
         {
           "name": "通用大模型",
@@ -84874,6 +84921,7 @@ export const GENERATED_THEME_PAGES = [
       "subhead": "资本集中曲线 / CONCENTRATION",
       "closing": "集中度本身就是市场结构。",
       "unit": "%",
+      "tierUnit": "档",
       "hero": {
         "value": 71.2,
         "label": "累计占比 / CUMULATIVE"
@@ -86021,6 +86069,7 @@ export const GENERATED_THEME_PAGES = [
       "title": "产业链分层透视",
       "subhead": "上游、中游、下游的资本位置",
       "closing": "产业链分层决定了资本确定性与商业风险的不同位置。",
+      "layerUnit": "层",
       "layers": [
         {
           "tier": "上游 / UPSTREAM",
@@ -86174,6 +86223,8 @@ export const GENERATED_THEME_PAGES = [
       "title": "典型案例深度剖析",
       "subhead": "三类资本逻辑的代表公司",
       "closing": "不同案例共同指向：技术优势能否转成可持续收入。",
+      "mediaPlaceholder": "案例配图 / DROP IMAGE",
+      "statUnit": "例",
       "cases": [
         {
           "name": "Anthropic",
@@ -86468,6 +86519,15 @@ export const GENERATED_THEME_PAGES = [
       "summary": "高估值、盈利验证、监管压力、大厂竞争与算力成本，构成一条<b>互相传导的风险链条</b>。",
       "railCaption": "风险传导 / TRANSMISSION",
       "closing": "下一阶段会淘汰只会讲故事的公司。",
+      "mediaPlaceholder": "风险主视觉 / DROP IMAGE",
+      "riskLevelLabels": [
+        "高",
+        "偏高",
+        "中"
+      ],
+      "riskGaugeLabel": "综合风险水位",
+      "riskLevelSuffix": "风险",
+      "riskCountUnit": "项风险",
       "risks": [
         {
           "name": "估值泡沫",
@@ -86946,6 +87006,7 @@ export const GENERATED_THEME_PAGES = [
       "title": "慢变量高壁垒",
       "subhead": "医疗 AI 赛道 / HEALTHCARE AI",
       "closing": "慢场景不代表低价值。",
+      "countUnit": "支",
       "rootTag": "医疗 AI 赛道 / HEALTH",
       "hero": {
         "value": "34",
@@ -87110,6 +87171,7 @@ export const GENERATED_THEME_PAGES = [
       "subhead": "金融 AI 赛道 / FINANCE AI",
       "unit": "%",
       "closing": "高价值行业需要更强可信度。",
+      "segUnit": "项",
       "railCaption": "场景占比 / SEGMENT SHARE",
       "hero": {
         "value": "22",
@@ -87388,6 +87450,7 @@ export const GENERATED_THEME_PAGES = [
       "title": "企业 AI 底座",
       "subhead": "数据基础设施 / DATA INFRASTRUCTURE",
       "closing": "没有数据底座，AI 应用很难稳定落地。",
+      "stageUnit": "段",
       "pipelineCaption": "数据流 / DATA PIPELINE",
       "stages": [
         {
@@ -87565,6 +87628,7 @@ export const GENERATED_THEME_PAGES = [
       "subhead": "销售与营销 AI / GROWTH TOOLS",
       "unit": " 亿",
       "closing": "营销 AI 要用转化率证明自己。",
+      "tierUnit": "层",
       "funnelCaption": "增长漏斗 / GROWTH FUNNEL",
       "hero": {
         "value": "24",
@@ -88075,6 +88139,7 @@ export const GENERATED_THEME_PAGES = [
       "title": "安全与对齐工具",
       "subhead": "模型安全公司 / MODEL ALIGNMENT",
       "closing": "可信 AI 会成为企业级 AI 的基础设施。",
+      "stageUnit": "段",
       "pipelineCaption": "数据流 / DATA PIPELINE",
       "stages": [
         {
@@ -88391,6 +88456,7 @@ export const GENERATED_THEME_PAGES = [
       "closing": "小金额交易往往藏着下一轮主题。",
       "unitCount": " 笔",
       "unitAmount": " 亿",
+      "roundUnit": "轮",
       "rounds": [
         {
           "name": "Pre-Seed",
@@ -88635,6 +88701,8 @@ export const GENERATED_THEME_PAGES = [
         }
       ],
       "mediaPlaceholder": "交易结构示意 / DROP IMAGE",
+      "totalLabel": "合计",
+      "partUnit": "项",
       "railCaption": "交易结构拆解 / STRUCTURE",
       "chartType": "stacked",
       "partCount": 4,
@@ -88763,6 +88831,7 @@ export const GENERATED_THEME_PAGES = [
       "subhead": "投资人类型分布 / INVESTOR MIX",
       "unit": "%",
       "closing": "钱的来源本身也是产业结构信号。",
+      "segUnit": "项",
       "railCaption": "场景占比 / SEGMENT SHARE",
       "hero": {
         "value": "40",
@@ -88962,6 +89031,7 @@ export const GENERATED_THEME_PAGES = [
         }
       ],
       "mediaPlaceholder": "资源类型示意 / DROP IMAGE",
+      "resourceUnit": "类资源",
       "cardCount": 4,
       "layout": "grid",
       "mediaSlotCount": 1,
@@ -89095,6 +89165,7 @@ export const GENERATED_THEME_PAGES = [
       "subhead": "云厂商联盟 / CLOUD ALLIANCES",
       "unit": "亿$",
       "closing": "云资源正在成为融资交易的一部分。",
+      "countUnit": "家",
       "providers": [
         {
           "name": "Azure",
@@ -89254,6 +89325,7 @@ export const GENERATED_THEME_PAGES = [
       "title": "GPU 资源链条",
       "subhead": "NVIDIA 生态 / NVIDIA ECOSYSTEM",
       "closing": "算力供给能力正在变成融资能力。",
+      "countUnit": "支",
       "rootTag": "NVIDIA 生态 / GPU",
       "hero": {
         "value": "92",
@@ -93043,6 +93115,7 @@ export const GENERATED_THEME_PAGES = [
       "title": "确定性预算",
       "subhead": "策略 · 优先基础设施 / PRIORITIZE INFRA",
       "closing": "优先看能支撑全行业增长的基础设施。",
+      "directionUnit": "方向",
       "stanceTag": "STRATEGY · 优先基础设施",
       "dirTag": "PICKS",
       "thesis": "基础设施公司更接近 <b>刚性预算</b>，收入确定性相对更强——模型胜负未定时，卖铲子仍是更稳的资本逻辑。",
@@ -93230,6 +93303,7 @@ export const GENERATED_THEME_PAGES = [
       "title": "嵌入工作流",
       "subhead": "策略 · 筛选垂直应用 / EMBED IN WORKFLOW",
       "closing": "应用价值来自流程位置。",
+      "directionUnit": "方向",
       "stanceTag": "STRATEGY · 筛选垂直应用",
       "dirTag": "SCENES",
       "thesis": "垂直应用要看是否 <b>嵌入刚性流程</b>，而不是只看生成效果——能成为工作流一部分的应用才有长期价值。",
@@ -93872,6 +93946,9 @@ export const GENERATED_THEME_PAGES = [
       "footRight": "12 MONTHS · PEAK AUG",
       "totalLabel": "全年合计 / TOTAL",
       "scaleLowLabel": "低 / LOW",
+      "scaleHighLabel": "高 / HIGH",
+      "peakLabel": "峰值 / PEAK",
+      "troughLabel": "低位 / TROUGH",
       "periods": [
         {
           "m": "1月",
@@ -94060,6 +94137,8 @@ export const GENERATED_THEME_PAGES = [
       "subhead": "10 亿美元以上交易层 / MEGA-DEAL TIER",
       "closing": "市场被少数超级交易重新定价。",
       "galleryTag": "超级交易 / MEGA",
+      "mediaPlaceholder": "主视觉 / DROP IMAGE",
+      "wallUnit": "笔",
       "hero": {
         "value": "718",
         "unit": "亿$",
@@ -96043,6 +96122,7 @@ export const GENERATED_THEME_PAGES = [
       "closing": "资本仍在涌入 AI，但下一阶段会从赌叙事转向看兑现。",
       "chartTitle": "赛道融资占比",
       "shareLabel": "SHARE",
+      "donutCenterLabel": "亿美元 · 全年",
       "tracks": [
         {
           "label": "通用大模型",
@@ -98439,6 +98519,8 @@ export const GENERATED_THEME_PAGES = [
       "lead": "Q3 融资额和事件数均达到全年最高，是市场情绪高点，强度来自头部公司融资和多赛道同时活跃。",
       "closing": "高峰之后，市场开始从热度转向筛选。",
       "chartLabel": "全年月度融资额 / 亿美元",
+      "seriesLabelBars": "月度融资额",
+      "seriesLabelArea": "融资额",
       "peakTag": "全年峰值",
       "avgLabel": "月度均值 80.8",
       "metrics": [
@@ -98846,6 +98928,8 @@ export const GENERATED_THEME_PAGES = [
       "closing": "月度波动背后是头部交易节奏。",
       "chartLabel": "月度融资额 / 亿美元",
       "avgLabel": "全年均值",
+      "peakLegend": "峰值",
+      "troughLegend": "低位",
       "months": [
         {
           "m": "1",
@@ -106544,6 +106628,7 @@ export const GENERATED_THEME_PAGES = [
       "bandCore": "剩余壁垒",
       "bandCoreSub": "数据 · 工作流 · 行业入口",
       "metersTitle": "竞争压力 · 逼近壁垒线",
+      "thresholdLabel": "壁垒线",
       "threshold": 60,
       "indicators": [
         {
@@ -108067,17 +108152,17 @@ export const GENERATED_THEME_PAGES = [
       "indexTotal": "03",
       "photos": [
         {
-          "placeholder": "旗舰新品实拍",
+          "placeholder": "上传",
           "caption": "旗舰新品",
           "capClass": "supp-pink"
         },
         {
-          "placeholder": "发布会现场",
+          "placeholder": "上传",
           "caption": "技术路演",
           "capClass": ""
         },
         {
-          "placeholder": "产品细节",
+          "placeholder": "上传",
           "caption": "NEXT-GEN",
           "capClass": "supp-ink"
         }
@@ -108225,12 +108310,12 @@ export const GENERATED_THEME_PAGES = [
       "indexTotal": "03",
       "photos": [
         {
-          "placeholder": "团队 / 路演",
+          "placeholder": "上传",
           "caption": "核心团队",
           "capClass": "supp-pink"
         },
         {
-          "placeholder": "市场 / 数据",
+          "placeholder": "上传",
           "caption": "市场洞察",
           "capClass": "supp-ink"
         }
@@ -108297,19 +108382,19 @@ export const GENERATED_THEME_PAGES = [
       "sticker": "集团供应链体系三年发展战略",
       "photos": [
         {
-          "placeholder": "物流枢纽",
+          "placeholder": "上传",
           "tag": "全国网络"
         },
         {
-          "placeholder": "干线运输",
+          "placeholder": "上传",
           "tag": ""
         },
         {
-          "placeholder": "智能仓",
+          "placeholder": "上传",
           "tag": "高效履约"
         },
         {
-          "placeholder": "履约现场",
+          "placeholder": "上传",
           "tag": ""
         }
       ]
@@ -108709,7 +108794,9 @@ export const GENERATED_THEME_PAGES = [
           "pct": 5.1
         }
       ],
-      "closingLine": "资本仍在涌入 AI，但下一阶段会从赌叙事转向看兑现。"
+      "closingLine": "资本仍在涌入 AI，但下一阶段会从赌叙事转向看兑现。",
+      "summaryTagLabel": "摘要",
+      "focusBadgeLabel": "重点"
     }
   },
   {
@@ -108818,7 +108905,8 @@ export const GENERATED_THEME_PAGES = [
           "en": "Conclusion"
         }
       ],
-      "closingLine": "先建立框架，再进入数据和判断。"
+      "closingLine": "先建立框架，再进入数据和判断。",
+      "focusBadgeLabel": "重点"
     }
   },
   {
@@ -108956,7 +109044,8 @@ export const GENERATED_THEME_PAGES = [
       "countUnit": "笔",
       "peakNote": "全年最高点 →",
       "trendNote": "事件数同步走高",
-      "closingLine": "高峰过后不是崩塌，而是市场开始筛选。"
+      "closingLine": "高峰过后不是崩塌，而是市场开始筛选。",
+      "peakBadgeLabel": "峰值"
     }
   },
   {
@@ -109831,7 +109920,8 @@ export const GENERATED_THEME_PAGES = [
         }
       ],
       "unit": "亿美元",
-      "closingLine": "头部融资规模既反映技术叙事，也反映资源绑定能力。"
+      "closingLine": "头部融资规模既反映技术叙事，也反映资源绑定能力。",
+      "topBadgeLabel": "榜首"
     }
   },
   {
@@ -109958,7 +110048,11 @@ export const GENERATED_THEME_PAGES = [
           ]
         }
       ],
-      "closingLine": "资本正在从叙事驱动转向兑现驱动。"
+      "closingLine": "资本正在从叙事驱动转向兑现驱动。",
+      "axisYHighLabel": "高",
+      "axisYLowLabel": "低",
+      "axisXLowLabel": "低",
+      "axisXHighLabel": "高 →"
     }
   },
   {
@@ -110205,7 +110299,8 @@ export const GENERATED_THEME_PAGES = [
         "头部集中度本身就是市场结构，长尾被超级交易重新定价。",
         "兑现能力正取代叙事，成为衡量公司价值的新标尺。"
       ],
-      "source": "数据口径：2024 全年 · 单笔 ≥1 亿美元 · AI CAPITAL LAB"
+      "source": "数据口径：2024 全年 · 单笔 ≥1 亿美元 · AI CAPITAL LAB",
+      "judgmentBadgeLabel": "核心判断"
     }
   },
   {
@@ -111132,6 +111227,7 @@ export const GENERATED_THEME_PAGES = [
         }
       ],
       "unit": "亿",
+      "deltaSuffix": "% vs 上期",
       "deckNote": "仍处高位",
       "closingLine": "回落不是终点，而是分化的开始。"
     }
@@ -114384,7 +114480,8 @@ export const GENERATED_THEME_PAGES = [
           "repEn": "Interconnect"
         }
       ],
-      "closingLine": "硬件方向看长期确定性。"
+      "closingLine": "硬件方向看长期确定性。",
+      "focusStickerLabel": "长期确定性"
     }
   },
   {
@@ -116352,6 +116449,8 @@ export const GENERATED_THEME_PAGES = [
         "信号强度"
       ],
       "amountUnit": "亿美元",
+      "countUnit": "笔",
+      "focusBadgeLabel": "新主题",
       "rows": [
         {
           "round": "种子轮 Seed",
@@ -116977,7 +117076,8 @@ export const GENERATED_THEME_PAGES = [
           "val": 21
         }
       ],
-      "closingLine": "云资源，正在成为融资交易的一部分。"
+      "closingLine": "云资源，正在成为融资交易的一部分。",
+      "segmentUnit": "亿"
     }
   },
   {
@@ -117509,7 +117609,8 @@ export const GENERATED_THEME_PAGES = [
           "t": "4%"
         }
       },
-      "closingLine": "行业客户密度，决定垂直应用的落地机会。"
+      "closingLine": "行业客户密度，决定垂直应用的落地机会。",
+      "focusBadgeLabel": "重点"
     }
   },
   {
@@ -118177,7 +118278,9 @@ export const GENERATED_THEME_PAGES = [
           "size": 64
         }
       ],
-      "closingLine": "本地行业资源，也能形成应用机会。"
+      "closingLine": "本地行业资源，也能形成应用机会。",
+      "focusBadgeLabel": "重点",
+      "nodeUnit": "亿"
     }
   },
   {
@@ -118508,7 +118611,8 @@ export const GENERATED_THEME_PAGES = [
           "v": "X 平台"
         }
       ],
-      "closingLine": "独特的数据入口，可以成为模型的差异化。"
+      "closingLine": "独特的数据入口，可以成为模型的差异化。",
+      "coreAssetBadgeLabel": "核心资产"
     }
   },
   {
@@ -119266,7 +119370,9 @@ export const GENERATED_THEME_PAGES = [
           "unit": "%"
         }
       ],
-      "closingLine": "存量客户基础，是 AI 商业化的捷径。"
+      "closingLine": "存量客户基础，是 AI 商业化的捷径。",
+      "expansionBadgeLabel": "延展",
+      "retentionStickerSub": "NRR"
     },
     "numberBounds": {
       "layers[].meter": {
@@ -121361,7 +121467,8 @@ export const GENERATED_THEME_PAGES = [
           "unit": "亿新增"
         }
       ],
-      "closingLine": "看清主线，比押中单点更重要。"
+      "closingLine": "看清主线，比押中单点更重要。",
+      "mainlineBadgeLabel": "主线"
     }
   },
   {
@@ -121660,7 +121767,8 @@ export const GENERATED_THEME_PAGES = [
           "unit": "% 净留存"
         }
       ],
-      "closingLine": "可复制的路径，才是模板的价值所在。"
+      "closingLine": "可复制的路径，才是模板的价值所在。",
+      "templateBadgeLabel": "样板"
     }
   },
   {
@@ -122114,6 +122222,7 @@ export const GENERATED_THEME_PAGES = [
       "refValue": 30,
       "refLabel": "全市场中位",
       "spreadLegendLabel": "区间跨度",
+      "spreadBadgeLabel": "跨度",
       "insightStickerLabel": "区间越宽 越分化",
       "items": [
         {
@@ -122288,7 +122397,8 @@ export const GENERATED_THEME_PAGES = [
           "unit": "类"
         }
       ],
-      "closingLine": "路线图不是预测，而是提前站位的坐标。"
+      "closingLine": "路线图不是预测，而是提前站位的坐标。",
+      "keyNodeBadgeLabel": "关键节点"
     }
   },
   {
@@ -125002,6 +125112,7 @@ export const GENERATED_THEME_PAGES = [
       "focusIndex": 0,
       "labelType": "number",
       "showAside": true,
+      "centerLabel": "对联投关系",
       "head": {
         "no": "03",
         "en": "Chord · Co-investment",
@@ -127796,6 +127907,21 @@ export const GENERATED_THEME_PAGES = [
       "focusIndex": 0,
       "labelType": "number",
       "showAside": true,
+      "topRankCaption": "↑ 名次第 1 在顶部",
+      "asideTag": "轨迹",
+      "riseWordPrefix": "↑ 升 ",
+      "riseWordSuffix": " 位",
+      "fallWordPrefix": "↓ 降 ",
+      "fallWordSuffix": " 位",
+      "flatWord": "持平",
+      "riseVerb": "稳步攀升至",
+      "fallVerb": "回落至",
+      "flatVerb": "保持",
+      "deltaMetricLabel": "名次变化",
+      "insightFromWord": "自",
+      "insightRankWord": "第",
+      "insightUnitWord": "名",
+      "insightTail": "；资本注意力在多期内显著重排，头部赛道更替加速。",
       "head": {
         "no": "08",
         "en": "Bump · Rank Trajectory",
@@ -131123,6 +131249,7 @@ export const GENERATED_THEME_PAGES = [
       "legendCaption1": "● 点径 ∝ 机构出资体量",
       "legendCaption2": "⌒ 弧宽 ∝ 共投强度",
       "asideTag": "关联",
+      "asideMetricLabel": "关联机构",
       "insightMid1": " 共与 ",
       "insightMid2": " 家机构联合出资， 其中与 ",
       "insightMid3": " 的共投跨度最强（强度 ",
@@ -131621,7 +131748,8 @@ export const GENERATED_THEME_PAGES = [
         {
           "label": "轮次",
           "unit": "次",
-          "type": "num"
+          "type": "num",
+          "rawTotal": true
         },
         {
           "label": "同比",
@@ -132870,6 +132998,15 @@ export const GENERATED_THEME_PAGES = [
       "highlightCol": -1,
       "labelType": "number",
       "showAside": true,
+      "compositeLabel": "综合",
+      "gradeLegendLabel": "等级",
+      "gradeNames": {
+        "S": "卓越",
+        "A": "优",
+        "B": "良",
+        "C": "中",
+        "D": "弱"
+      },
       "rowHeader": "赛道 / 投资原型",
       "note": "等级为研究性主观判断：S 卓越 · A 优 · B 良 · C 中 · D 弱；综合为各维度等级的加权折算。",
       "head": {
@@ -133484,6 +133621,7 @@ export const GENERATED_THEME_PAGES = [
       "focusIndex": 0,
       "labelType": "number",
       "showAside": true,
+      "asideTag": "口径说明",
       "head": {
         "no": "10",
         "en": "Radial Bars",
@@ -134606,7 +134744,23 @@ export const GENERATED_THEME_PAGES = [
       "totalStrengthLabel": "全年累计强度",
       "focusMonthPrefix": "焦点月份 · ",
       "focusStrengthSuffix": " 当月强度",
-      "peakMonthLabel": "全年最热月份"
+      "peakMonthLabel": "全年最热月份",
+      "monthNames": [
+        "1月",
+        "2月",
+        "3月",
+        "4月",
+        "5月",
+        "6月",
+        "7月",
+        "8月",
+        "9月",
+        "10月",
+        "11月",
+        "12月"
+      ],
+      "totalStrengthUnit": "格·年",
+      "focusStrengthUnit": "格"
     }
   },
   {
@@ -135382,7 +135536,9 @@ export const GENERATED_THEME_PAGES = [
       "insightMid3": " ",
       "insightPost": "；资金加速向头部赛道集中，部分前期热门方向理性退潮。",
       "changeSuffix": " 变化",
-      "upShareLabel": "上升赛道占比"
+      "upShareLabel": "上升赛道占比",
+      "changeValue": "+210",
+      "upShareValue": "7/8"
     }
   },
   {
@@ -146411,6 +146567,8 @@ export const GENERATED_THEME_PAGES = [
       }
     ],
     "defaultProps": {
+      "overline": "答疑 · COMMON QUESTIONS",
+      "title": "你可能正想问的",
       "items": [
         {
           "q": "我的钱安全吗？",
@@ -146441,6 +146599,7 @@ export const GENERATED_THEME_PAGES = [
       "focus": false,
       "focusIndex": 1,
       "showIndex": true,
+      "countUnit": " 个常见问题",
       "idPrefix": "faq",
       "tone": "light"
     }
@@ -147346,6 +147505,17 @@ export const GENERATED_THEME_PAGES = [
       "showLegend": true,
       "focusRow": false,
       "focusIndex": 1,
+      "overline": "分散度 · CORRELATION",
+      "title": "它们彼此独立吗",
+      "labels": [
+        "全球股票",
+        "科技成长",
+        "投资级债",
+        "另类对冲",
+        "黄金",
+        "现金",
+        "新兴市场"
+      ],
       "legendCaption": "相关系数",
       "legendHigh": "+1 同向",
       "legendMid": "0",
@@ -147436,8 +147606,54 @@ export const GENERATED_THEME_PAGES = [
       "showGrid": true,
       "fillArea": true,
       "showScores": true,
+      "overline": "组合体检 · FACTOR PROFILE",
+      "title": "六个维度的均衡",
+      "primaryLabel": "本组合",
+      "compareLabel": "市场基准",
       "avgLabel": "综合评分 / 100",
       "note": "每根轴代表一个独立维度，越靠外表现越好。",
+      "axes": [
+        {
+          "label": "回报",
+          "a": 88,
+          "b": 62
+        },
+        {
+          "label": "抗跌",
+          "a": 74,
+          "b": 58
+        },
+        {
+          "label": "分散度",
+          "a": 92,
+          "b": 50
+        },
+        {
+          "label": "流动性",
+          "a": 66,
+          "b": 80
+        },
+        {
+          "label": "税务效率",
+          "a": 95,
+          "b": 40
+        },
+        {
+          "label": "成本",
+          "a": 84,
+          "b": 55
+        },
+        {
+          "label": "透明度",
+          "a": 90,
+          "b": 48
+        },
+        {
+          "label": "自动化",
+          "a": 97,
+          "b": 35
+        }
+      ],
       "idPrefix": "radar",
       "tone": "light"
     }
@@ -151417,6 +151633,7 @@ export const GENERATED_THEME_PAGES = [
       "images": [],
       "overline": "标的档案 · ONE NAME, UP CLOSE",
       "fileNo": "NO.012",
+      "fileTag": "DOSSIER",
       "title": "长江电力",
       "subtitle": "600900 · 公用事业 / 水电",
       "specs": [
@@ -172916,6 +173133,8 @@ export const GENERATED_THEME_PAGES = [
       "kicker": "路线图 / Roadmap",
       "title": "未来四季，[[齐头并进]]。",
       "nowLabel": "当前 NOW",
+      "laneUnit": "lanes",
+      "quarterUnit": "quarters",
       "nowCol": 1,
       "quarters": [
         "26·Q1",
@@ -175146,6 +175365,7 @@ export const GENERATED_THEME_PAGES = [
         "s": "当下"
       },
       "axisLabel": "占总播放份额 · SHARE OF PLAYS (%)",
+      "deltaUnit": "pt",
       "metrics": [
         {
           "t": "独立厂牌 Indies",
@@ -178493,6 +178713,7 @@ export const GENERATED_THEME_PAGES = [
       "kicker": "画框墙 / Gallery Wall",
       "title": "把每张作品，[[挂上墙]]。",
       "metaPrefix": "声浪典藏 ·",
+      "countUnit": "works",
       "mediaPlaceholder": "拖入画作",
       "plaques": [
         {

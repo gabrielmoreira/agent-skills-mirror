@@ -349,7 +349,7 @@ export default (async ({
       event?: { type?: string; properties?: Record<string, unknown> };
     }): Promise<void> => {
       const event = input.event;
-      if (!event || event.type !== "session.idle") return;
+      if (event?.type !== "session.idle") return;
       const sessionID = (event.properties as { sessionID?: string } | undefined)
         ?.sessionID;
       if (!sessionID) return;
@@ -363,7 +363,7 @@ export default (async ({
         cwd,
       );
 
-      if (!pm || pm.decision !== "block") {
+      if (pm?.decision !== "block") {
         // Workflow complete / not active — clear the backstop counter.
         idleReentryCount.delete(sessionID);
         return;

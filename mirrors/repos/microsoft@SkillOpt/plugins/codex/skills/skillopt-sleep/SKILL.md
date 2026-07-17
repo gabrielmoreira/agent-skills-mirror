@@ -65,6 +65,18 @@ bash "$SKILLOPT_SLEEP_REPO/plugins/run-sleep.sh" run --project "$(pwd)" \
 bash "$SKILLOPT_SLEEP_REPO/plugins/run-sleep.sh" adopt --project "$(pwd)"
 ```
 
+On Windows (CMD / PowerShell):
+```cmd
+:: CMD
+set SKILLOPT_SLEEP_REPO=C:\path\to\SkillOpt-Sleep
+"%SKILLOPT_SLEEP_REPO%\plugins\run-sleep.cmd" status --project "%CD%"
+```
+```powershell
+# PowerShell
+$env:SKILLOPT_SLEEP_REPO = "C:\path\to\SkillOpt-Sleep"
+powershell -File "$env:SKILLOPT_SLEEP_REPO\plugins\run-sleep.ps1" status --project "$(pwd)"
+```
+
 Actions are `status`, `harvest`, `dry-run`, `run`, `adopt`, `schedule`, and `unschedule`.
 
 - Default backend is `mock`, which is deterministic and spends no API budget.

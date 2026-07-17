@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 47 file(s) materialized.
+Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 48 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 47 |
+| Files         | 48 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -91,21 +91,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`skills/dbs-goal/SKILL.md`](skills/dbs-goal/SKILL.md) |
 | 31 | ✓ | [`skills/dbs-good-question/SKILL.md`](skills/dbs-good-question/SKILL.md) |
 | 32 | ✓ | [`skills/dbs-hook/SKILL.md`](skills/dbs-hook/SKILL.md) |
-| 33 | ✓ | [`skills/dbs-learning/SKILL.md`](skills/dbs-learning/SKILL.md) |
-| 34 | ✓ | [`skills/dbs-report/SKILL.md`](skills/dbs-report/SKILL.md) |
-| 35 | ✓ | [`skills/dbs-resonate/SKILL.md`](skills/dbs-resonate/SKILL.md) |
-| 36 | ✓ | [`skills/dbs-restore/SKILL.md`](skills/dbs-restore/SKILL.md) |
-| 37 | ✓ | [`skills/dbs-save/SKILL.md`](skills/dbs-save/SKILL.md) |
-| 38 | ✓ | [`skills/dbs-script-flow/SKILL.md`](skills/dbs-script-flow/SKILL.md) |
-| 39 | ✓ | [`skills/dbs-skill-cleaner/scripts/skill_cleaner.py`](skills/dbs-skill-cleaner/scripts/skill_cleaner.py) |
-| 40 | ✓ | [`skills/dbs-skill-cleaner/SKILL.md`](skills/dbs-skill-cleaner/SKILL.md) |
-| 41 | ✓ | [`skills/dbs-slowisfast/SKILL.md`](skills/dbs-slowisfast/SKILL.md) |
-| 42 | ✓ | [`skills/dbs-spread/SKILL.md`](skills/dbs-spread/SKILL.md) |
-| 43 | ✓ | [`skills/dbs-update/SKILL.md`](skills/dbs-update/SKILL.md) |
-| 44 | ✓ | [`skills/dbs-wechat-html/SKILL.md`](skills/dbs-wechat-html/SKILL.md) |
-| 45 | ✓ | [`skills/dbs-wechat-html/templates/styles.md`](skills/dbs-wechat-html/templates/styles.md) |
-| 46 | ✓ | [`skills/dbs-xhs-title/SKILL.md`](skills/dbs-xhs-title/SKILL.md) |
-| 47 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
+| 33 | ✓ | [`skills/dbs-knowledge/SKILL.md`](skills/dbs-knowledge/SKILL.md) |
+| 34 | ✓ | [`skills/dbs-learning/SKILL.md`](skills/dbs-learning/SKILL.md) |
+| 35 | ✓ | [`skills/dbs-report/SKILL.md`](skills/dbs-report/SKILL.md) |
+| 36 | ✓ | [`skills/dbs-resonate/SKILL.md`](skills/dbs-resonate/SKILL.md) |
+| 37 | ✓ | [`skills/dbs-restore/SKILL.md`](skills/dbs-restore/SKILL.md) |
+| 38 | ✓ | [`skills/dbs-save/SKILL.md`](skills/dbs-save/SKILL.md) |
+| 39 | ✓ | [`skills/dbs-script-flow/SKILL.md`](skills/dbs-script-flow/SKILL.md) |
+| 40 | ✓ | [`skills/dbs-skill-cleaner/scripts/skill_cleaner.py`](skills/dbs-skill-cleaner/scripts/skill_cleaner.py) |
+| 41 | ✓ | [`skills/dbs-skill-cleaner/SKILL.md`](skills/dbs-skill-cleaner/SKILL.md) |
+| 42 | ✓ | [`skills/dbs-slowisfast/SKILL.md`](skills/dbs-slowisfast/SKILL.md) |
+| 43 | ✓ | [`skills/dbs-spread/SKILL.md`](skills/dbs-spread/SKILL.md) |
+| 44 | ✓ | [`skills/dbs-update/SKILL.md`](skills/dbs-update/SKILL.md) |
+| 45 | ✓ | [`skills/dbs-wechat-html/SKILL.md`](skills/dbs-wechat-html/SKILL.md) |
+| 46 | ✓ | [`skills/dbs-wechat-html/templates/styles.md`](skills/dbs-wechat-html/templates/styles.md) |
+| 47 | ✓ | [`skills/dbs-xhs-title/SKILL.md`](skills/dbs-xhs-title/SKILL.md) |
+| 48 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
 
 ---
 

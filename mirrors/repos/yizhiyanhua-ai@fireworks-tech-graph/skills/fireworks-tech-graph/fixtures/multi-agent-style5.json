@@ -3,6 +3,7 @@
   "mode": "agent",
   "template_type": "agent",
   "style": 5,
+  "motion_scene": "agent-orchestration",
   "quality_profile": "showcase",
   "width": 960,
   "height": 700,
@@ -24,15 +25,15 @@
     { "id": "response", "kind": "speech", "x": 700, "y": 510, "width": 180, "height": 60, "label": "Final Response", "sublabel": "reviewed result", "fill": "rgba(255,255,255,0.12)", "stroke": "#f59e0b", "flat": true }
   ],
   "arrows": [
-    { "id": "brief", "source": "request", "target": "coordinator", "source_port": "right", "target_port": "left", "flow": "read", "label": "brief" },
-    { "id": "a-delegate-research", "source": "coordinator", "target": "research", "source_port": "bottom", "target_port": "top", "flow": "control", "label": "research" },
-    { "id": "b-delegate-coding", "source": "coordinator", "target": "coding", "source_port": "bottom", "target_port": "top", "flow": "control", "label": "build" },
-    { "id": "c-delegate-review", "source": "coordinator", "target": "review", "source_port": "bottom", "target_port": "top", "flow": "control", "label": "review" },
-    { "id": "research-write", "source": "research", "target": "memory", "source_port": "bottom", "target_port": "top", "flow": "write", "label": "evidence" },
-    { "id": "memory-merge", "source": "memory", "target": "synthesis", "source_port": "right", "target_port": "left", "flow": "read", "label": "context" },
-    { "id": "coding-merge", "source": "coding", "target": "synthesis", "source_port": "bottom", "target_port": "top", "flow": "write", "label": "artifact" },
-    { "id": "review-output", "source": "review", "target": "response", "source_port": "bottom", "target_port": "top", "flow": "feedback", "label": "approval" },
-    { "id": "deliver", "source": "synthesis", "target": "response", "source_port": "right", "target_port": "left", "flow": "feedback", "label": "deliver" }
+    { "id": "brief", "source": "request", "target": "coordinator", "source_port": "right", "target_port": "left", "flow": "read", "motion_role": "ingress", "motion_stage": 1, "motion_order": 0, "label": "brief" },
+    { "id": "a-delegate-research", "source": "coordinator", "target": "research", "source_port": "bottom", "target_port": "top", "flow": "control", "motion_role": "delegate", "motion_stage": 2, "motion_order": 0, "label": "research" },
+    { "id": "b-delegate-coding", "source": "coordinator", "target": "coding", "source_port": "bottom", "target_port": "top", "flow": "control", "motion_role": "delegate", "motion_stage": 2, "motion_order": 1, "label": "build" },
+    { "id": "c-delegate-review", "source": "coordinator", "target": "review", "source_port": "bottom", "target_port": "top", "flow": "control", "motion_role": "delegate", "motion_stage": 2, "motion_order": 2, "label": "review" },
+    { "id": "research-write", "source": "research", "target": "memory", "source_port": "bottom", "target_port": "top", "flow": "write", "motion_role": "evidence", "motion_stage": 3, "motion_order": 0, "label": "evidence" },
+    { "id": "memory-merge", "source": "memory", "target": "synthesis", "source_port": "right", "target_port": "left", "flow": "read", "motion_role": "context", "motion_stage": 4, "motion_order": 0, "label": "context" },
+    { "id": "coding-merge", "source": "coding", "target": "synthesis", "source_port": "bottom", "target_port": "top", "flow": "write", "motion_role": "artifact", "motion_stage": 3, "motion_order": 1, "label": "artifact" },
+    { "id": "review-output", "source": "review", "target": "response", "source_port": "bottom", "target_port": "top", "flow": "feedback", "motion_role": "approval", "motion_stage": 5, "motion_order": 1, "label": "approval" },
+    { "id": "deliver", "source": "synthesis", "target": "response", "source_port": "right", "target_port": "left", "flow": "feedback", "motion_role": "deliver", "motion_stage": 5, "motion_order": 0, "label": "deliver" }
   ],
   "legend_orientation": "horizontal",
   "legend_x": 48,

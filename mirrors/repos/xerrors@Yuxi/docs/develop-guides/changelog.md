@@ -6,6 +6,10 @@
 
 ## v0.7.1 (current)
 
+### 安全
+
+- 生产 Compose 不再回退到公开的 Neo4j、MinIO 和 PostgreSQL 默认凭证，并要求显式配置 JWT 随机密钥与实例标识；相关配置缺失时会在解析阶段拒绝启动并提示具体变量名。管理员初始化、创建用户、创建部门管理员及修改用户密码在前后端统一要求密码不少于 8 位。
+
 ### 破坏性变更
 
 - API Key 收紧到具体用户：`api_keys.user_id` 收紧为非空，启动 schema 演进会先清理 `cli_auth_sessions` 中对未绑定 API Key 的引用，再 `DELETE FROM api_keys WHERE user_id IS NULL`，最后 `ALTER COLUMN user_id SET NOT NULL`。**升级前请在 0.7.0 库执行 `SELECT id, name, department_id FROM api_keys WHERE user_id IS NULL;`**，决定每个未绑定 Key 的归属用户并手动 `UPDATE`，未绑定的 Key 升级后会被静默删除且无法恢复；清理前后端日志会输出 `Schema migration will delete N unbound API key(s)` 告警以便回溯。
@@ -39,7 +43,7 @@
 - 模型供应商管理前端开放 Anthropic provider type：Provider Type 下拉仅保留 OpenAI Completions API 与 Anthropic Messages API 两种可选项，保存值继续使用后端枚举，并在供应商卡片中展示友好类型名称。
 - 优化 Agent 状态面板子智能体弹窗：弹窗消息列表复用对话消息渲染路径，打开运行中的子智能体时会展示主 run SSE 已路由到 child thread 的流式消息，并在生成中保持与主对话一致的处理态；修复当前 run 的历史半成品消息与 ongoing 流式片段叠加导致同一个子智能体在主对话中重复展示的问题，子智能体状态查询工具不再渲染成独立 Agent 卡片，弹窗会随子智能体条目补齐 run_id 后订阅对应 SSE，并复用主对话的流式平滑输出与底部跟随滚动控制；已完成的子智能体改为直接读取持久化 Message 历史，不再从 Redis run event 重放渲染。
 - 增强异步子智能体 `subagent_status`：状态查询会从子 run 的 Redis 事件流反向提取最近 3 条可读进度摘要，并在工具卡中优先展示，终态结果读取语义保持不变；同时移除模型侧 `subagent_events` 工具，Redis 原始事件流继续仅供运行基础设施与前端 SSE 使用，避免包含重复 metadata、query 与嵌套 payload 的事件信封进入模型上下文并被写入 `large_tool_results`。
-- 优化任务中心（Tasker）定位为「后台作业实体 + 只读进度面板」。前端修正失效的任务类型标签、状态判断收敛、任务详情补充参数/结果，并把轮询收敛到 store 修复抽屉关闭后角标不更新；后端 `TaskContext` 暴露 `payload` 消除私有穿透，进度更新按增量节流降低写放大，新增终态任务保留上限自动裁剪内存与数据库，`_load_state` 恢复历史任务使任务中心重启后仍可见。
+- 优化任务中心（Tasker）定位为「后台作业实体 + 只读进度面板」。前端修正失效的任务类型标签、状态判断收敛、任务详情补充参数/结果，并把轮询收敛到 store 修复抽屉关闭后角标不更新；后端 `TaskContext` 暴露 `payload` 消除私有穿透，进度更新按增量节流降低写放大，新增终态任务保留上限自动裁剪内存与数据库，`_load_state` 恢复历史任务使任务中心重启后仍可见。修复运行中任务关闭时 `shutdown()` 持有状态锁等待 worker、worker 又等待同一锁写入取消状态形成的死锁；生命周期操作改用独立锁串行化，等待 worker 前释放状态锁，并区分服务关闭取消与任务协作式取消，确保关闭能够完成且普通任务取消不会损失 worker。
 - 知识库访问能力迁移为内置 Skill：新增 `knowledge-base` Skill，绑定 `list_kbs`、`query_kb`、`find_kb_document`、`open_kb_document`、`get_mindmap` 等知识库工具；内置 Agent 不再默认挂载知识库工具，改为读取并激活 Skill 后按需加载，同时保留 `knowledges` 作为知识库资源范围与权限边界。Agent 配置页在启用知识库但显式未选择 `knowledge-base` Skill 时实时展示提示，保存时不阻断。修复 Skill 依赖工具的可执行性：`create_agent` 中「模型可见工具」与「ToolNode 可执行工具」是两套，仅靠 `awrap_model_call` 动态追加工具只会绑定给模型、不进 ToolNode，导致激活 Skill 后调用 `list_kbs`/`query_kb` 报 `not a valid tool`；现由 `resolve_configured_runtime_tools` 统一把所有可见 Skill 依赖的本地工具随基础工具一起注册进 ToolNode（可执行），`SkillsMiddleware` 运行期再按 Skill 激活状态门控模型可见性（保持按需加载）。新增 `search_file` 工具支持按文件名关键词跨/指定知识库搜索文件，并已加入 `knowledge-base` Skill 的依赖工具；其分页统计基于全量扫描结果计算 `total`/`has_more`，避免按 `limit+offset` 截断导致计数失真。
 - 增强知识库工具结果豁免：`open_kb_document` 工具结果加入 Summary 卸载豁免名单，避免大文档窗口被摘要后丢失上下文。
 - 新增 Yuxi Python CLI 首版底座：新增独立 `packages/yuxi-cli` 包，提供 `remote add/use/list/ping`、`login --browser`、`login --api-key`、`whoami`、`status`、`logout`；配置统一写入 `~/.yuxi/config.toml`，remote URL 只保留实例入口并派生 `/api` 请求路径。后端新增 `/api/auth/cli/sessions` device flow 授权接口与 `cli_auth_sessions` 持久表，浏览器确认后为当前用户创建一次性返回的 API Key；新增公开 `/api/system/discovery` 声明服务端版本、API 前缀、CLI 能力和关键端点，CLI 登录前校验服务端版本至少为 `0.7.1`（`0.7.1.dev*` 按 release tuple 兼容）及对应能力；前端新增 `/auth/cli/authorize` 授权确认页。补充 CLI 本地单测与后端服务/路由单测。

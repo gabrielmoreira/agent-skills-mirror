@@ -1,0 +1,141 @@
+{
+  "categories": [
+    {
+      "name": "内容创作",
+      "description": "写作、排版、品牌内容与社交平台发布。",
+      "skills": [
+        "algorithmic-art",
+        "chinese-novelist",
+        "chinese-writing",
+        "content-research-writer",
+        "internal-comms",
+        "slack-gif-creator",
+        "theme-factory",
+        "wechat-article",
+        "xiaohongshu-creator"
+      ]
+    },
+    {
+      "name": "图像与视频",
+      "description": "图像理解、视觉生成、视频处理与音视频内容提取。",
+      "skills": [
+        "baidu-picture-book",
+        "baidu-video-notes",
+        "bilibili-watcher",
+        "canvas-design",
+        "douyin-tool",
+        "image-understander",
+        "image-understanding",
+        "seedance-video",
+        "video-downloader",
+        "youtube-summarizer"
+      ]
+    },
+    {
+      "name": "文档与数据",
+      "description": "Office、PDF、OCR、演示文稿、表格与结构化图表。",
+      "skills": [
+        "baidu-paddleocr-doc",
+        "baidu-paddleocr-text",
+        "baidu-ppt-gen",
+        "doc-coauthoring",
+        "docx",
+        "pdf",
+        "ppt-creator",
+        "pptx",
+        "pretty-mermaid",
+        "xlsx"
+      ]
+    },
+    {
+      "name": "开发与测试",
+      "description": "代码质量、调试、测试、前端开发与交付验证。",
+      "skills": [
+        "changelog-generator",
+        "code-review",
+        "frontend-design",
+        "superpowers-brainstorming",
+        "superpowers-debugging",
+        "superpowers-receiving-review",
+        "superpowers-tdd",
+        "superpowers-verification",
+        "superpowers-writing-plans",
+        "web-artifacts-builder",
+        "webapp-testing"
+      ]
+    },
+    {
+      "name": "搜索与研究",
+      "description": "网页采集、资料检索、学术搜索与新闻研究。",
+      "skills": [
+        "apify-scraper",
+        "baidu-baike",
+        "baidu-deep-research",
+        "baidu-scholar",
+        "baidu-search",
+        "tencent-news"
+      ]
+    },
+    {
+      "name": "知识与效率",
+      "description": "个人知识库、笔记、时间与日常信息整理。",
+      "skills": [
+        "datetime-tool",
+        "obsidian-skills",
+        "tencent-ima"
+      ]
+    },
+    {
+      "name": "通讯与协作",
+      "description": "邮件、即时通讯、会议、问卷与团队协作平台。",
+      "skills": [
+        "dingtalk-cli",
+        "feishu-cli",
+        "github-automation",
+        "gmail-automation",
+        "google-calendar-automation",
+        "qq-channel",
+        "smtp-email-sender",
+        "tencent-meeting",
+        "tencent-survey",
+        "wecom-cli"
+      ]
+    },
+    {
+      "name": "地图与出行",
+      "description": "地图查询、路线规划、打车与旅行服务。",
+      "skills": [
+        "amap-maps",
+        "baidu-maps",
+        "didi-ride",
+        "fliggy-travel"
+      ]
+    },
+    {
+      "name": "电商与营销",
+      "description": "电商运营、营销内容与商品推广工具。",
+      "skills": [
+        "baidu-ecommerce",
+        "baidu-marketing",
+        "taobaoke-tool"
+      ]
+    },
+    {
+      "name": "平台与扩展",
+      "description": "第三方平台连接器、MCP、技能开发与通用扩展工具。",
+      "skills": [
+        "baidu-famou",
+        "baidu-netdisk",
+        "baidu-yijian",
+        "file-manager",
+        "mcp-builder",
+        "mcp-installer",
+        "miaoda-app-builder",
+        "moltbook",
+        "netease-music",
+        "skill-creator",
+        "xiaodu-control"
+      ]
+    }
+  ]
+}

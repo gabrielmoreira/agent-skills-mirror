@@ -3,6 +3,7 @@
   "mode": "memory",
   "template_type": "memory",
   "style": 4,
+  "motion_scene": "memory-lifecycle",
   "quality_profile": "showcase",
   "width": 960,
   "height": 620,
@@ -50,12 +51,12 @@
     }
   ],
   "arrows": [
-    { "id": "sample", "source": "sensory", "target": "working", "source_port": "right", "target_port": "left", "flow": "read" },
-    { "id": "attend", "source": "working", "target": "agent", "source_port": "right", "target_port": "left", "flow": "control" },
-    { "id": "invoke", "source": "agent", "target": "procedural", "source_port": "right", "target_port": "left", "flow": "control" },
-    { "id": "remember", "source": "working", "target": "episodic", "source_port": "bottom", "target_port": "top", "flow": "write", "label": "remember" },
-    { "id": "recall", "source": "semantic", "target": "agent", "source_port": "top", "target_port": "bottom", "flow": "read", "label": "recall" },
-    { "id": "consolidate", "source": "episodic", "target": "semantic", "source_port": "right", "target_port": "left", "flow": "write" }
+    { "id": "sample", "source": "sensory", "target": "working", "source_port": "right", "target_port": "left", "flow": "read", "motion_role": "sample", "motion_stage": 1, "motion_order": 0 },
+    { "id": "attend", "source": "working", "target": "agent", "source_port": "right", "target_port": "left", "flow": "control", "motion_role": "attend", "motion_stage": 2, "motion_order": 0 },
+    { "id": "invoke", "source": "agent", "target": "procedural", "source_port": "right", "target_port": "left", "flow": "control", "motion_role": "invoke", "motion_stage": 3, "motion_order": 0 },
+    { "id": "remember", "source": "working", "target": "episodic", "source_port": "bottom", "target_port": "top", "flow": "write", "motion_role": "remember", "motion_stage": 4, "motion_order": 0, "label": "remember" },
+    { "id": "recall", "source": "semantic", "target": "agent", "source_port": "top", "target_port": "bottom", "flow": "read", "motion_role": "recall", "motion_stage": 6, "motion_order": 0, "label": "recall" },
+    { "id": "consolidate", "source": "episodic", "target": "semantic", "source_port": "right", "target_port": "left", "flow": "write", "motion_role": "consolidate", "motion_stage": 5, "motion_order": 0 }
   ],
   "footer": "Style 4 · Notion Clean · five complementary memory systems",
   "footer_x": 48,

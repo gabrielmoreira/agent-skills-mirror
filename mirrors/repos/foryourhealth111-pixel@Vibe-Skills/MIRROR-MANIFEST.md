@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `foryourhealth111-pixel/Vibe-Skills` — 26 default patterns, 1 followed patterns, 306 file(s) materialized.
+Mirror of `foryourhealth111-pixel/Vibe-Skills` — 26 default patterns, 1 followed patterns, 301 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `foryourhealth111-pixel/Vibe-Skills` — 26 default patterns, 1 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 306 |
+| Files         | 301 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -301,70 +301,65 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 240 | ✓ | [`bundled/skills/structured-content-storage/SKILL.md`](bundled/skills/structured-content-storage/SKILL.md) |
 | 241 | ✓ | [`bundled/skills/subagent-driven-development/SKILL.md`](bundled/skills/subagent-driven-development/SKILL.md) |
 | 242 | ✓ | [`bundled/skills/submission-checklist/SKILL.md`](bundled/skills/submission-checklist/SKILL.md) |
-| 243 | ✓ | [`bundled/skills/superclaude-framework-compat/SKILL.md`](bundled/skills/superclaude-framework-compat/SKILL.md) |
-| 244 | ✓ | [`bundled/skills/sympy/SKILL.md`](bundled/skills/sympy/SKILL.md) |
-| 245 | ✓ | [`bundled/skills/systematic-debugging/SKILL.md`](bundled/skills/systematic-debugging/SKILL.md) |
-| 246 | ✓ | [`bundled/skills/tdd-guide/SKILL.md`](bundled/skills/tdd-guide/SKILL.md) |
-| 247 | ✓ | [`bundled/skills/tensorboard/SKILL.md`](bundled/skills/tensorboard/SKILL.md) |
-| 248 | ✓ | [`bundled/skills/theme-factory/SKILL.md`](bundled/skills/theme-factory/SKILL.md) |
-| 249 | ✓ | [`bundled/skills/think-harder/SKILL.md`](bundled/skills/think-harder/SKILL.md) |
-| 250 | ✓ | [`bundled/skills/tiledbvcf/SKILL.md`](bundled/skills/tiledbvcf/SKILL.md) |
-| 251 | ✓ | [`bundled/skills/timesfm-forecasting/SKILL.md`](bundled/skills/timesfm-forecasting/SKILL.md) |
-| 252 | ✓ | [`bundled/skills/torch-geometric/SKILL.md`](bundled/skills/torch-geometric/SKILL.md) |
-| 253 | ✓ | [`bundled/skills/torchdrug/SKILL.md`](bundled/skills/torchdrug/SKILL.md) |
-| 254 | ✓ | [`bundled/skills/transcribe/SKILL.md`](bundled/skills/transcribe/SKILL.md) |
-| 255 | ✓ | [`bundled/skills/transformer-lens-interpretability/SKILL.md`](bundled/skills/transformer-lens-interpretability/SKILL.md) |
-| 256 | ✓ | [`bundled/skills/transformers/SKILL.md`](bundled/skills/transformers/SKILL.md) |
-| 257 | ✓ | [`bundled/skills/treatment-plans/SKILL.md`](bundled/skills/treatment-plans/SKILL.md) |
-| 258 | ✓ | [`bundled/skills/umap-learn/SKILL.md`](bundled/skills/umap-learn/SKILL.md) |
-| 259 | ✓ | [`bundled/skills/uniprot-database/SKILL.md`](bundled/skills/uniprot-database/SKILL.md) |
-| 260 | ✓ | [`bundled/skills/unsloth/SKILL.md`](bundled/skills/unsloth/SKILL.md) |
-| 261 | ✓ | [`bundled/skills/usfiscaldata/references/examples.md`](bundled/skills/usfiscaldata/references/examples.md) |
-| 262 | ✓ | [`bundled/skills/usfiscaldata/SKILL.md`](bundled/skills/usfiscaldata/SKILL.md) |
-| 263 | ✓ | [`bundled/skills/uspto-database/SKILL.md`](bundled/skills/uspto-database/SKILL.md) |
-| 264 | ✓ | [`bundled/skills/ux-researcher-designer/SKILL.md`](bundled/skills/ux-researcher-designer/SKILL.md) |
-| 265 | ✓ | [`bundled/skills/vaex/SKILL.md`](bundled/skills/vaex/SKILL.md) |
-| 266 | ✓ | [`bundled/skills/venue-templates/SKILL.md`](bundled/skills/venue-templates/SKILL.md) |
-| 267 | ✓ | [`bundled/skills/vercel-deploy/SKILL.md`](bundled/skills/vercel-deploy/SKILL.md) |
-| 268 | ✓ | [`bundled/skills/verification-before-completion/SKILL.md`](bundled/skills/verification-before-completion/SKILL.md) |
-| 269 | ✓ | [`bundled/skills/verification-quality-assurance/SKILL.md`](bundled/skills/verification-quality-assurance/SKILL.md) |
-| 270 | ✓ | [`bundled/skills/vibe-do-it/SKILL.md`](bundled/skills/vibe-do-it/SKILL.md) |
-| 271 | ✓ | [`bundled/skills/vibe-how-do-we-do/SKILL.md`](bundled/skills/vibe-how-do-we-do/SKILL.md) |
-| 272 | ✓ | [`bundled/skills/vibe-upgrade/SKILL.md`](bundled/skills/vibe-upgrade/SKILL.md) |
-| 273 | ✓ | [`bundled/skills/vibe-what-do-i-want/SKILL.md`](bundled/skills/vibe-what-do-i-want/SKILL.md) |
-| 274 | ✓ | [`bundled/skills/video-studio/SKILL.md`](bundled/skills/video-studio/SKILL.md) |
-| 275 | ✓ | [`bundled/skills/visualization-best-practices/SKILL.md`](bundled/skills/visualization-best-practices/SKILL.md) |
-| 276 | ✓ | [`bundled/skills/vscode-release-notes-writer/SKILL.md`](bundled/skills/vscode-release-notes-writer/SKILL.md) |
-| 277 | ✓ | [`bundled/skills/vscode-release-notes-writer/template-release-note-endgame.md`](bundled/skills/vscode-release-notes-writer/template-release-note-endgame.md) |
-| 278 | ✓ | [`bundled/skills/vscode-release-notes-writer/template-release-note-insiders.md`](bundled/skills/vscode-release-notes-writer/template-release-note-insiders.md) |
-| 279 | ✓ | [`bundled/skills/webthinker-deep-research/SKILL.md`](bundled/skills/webthinker-deep-research/SKILL.md) |
-| 280 | ✓ | [`bundled/skills/weights-and-biases/SKILL.md`](bundled/skills/weights-and-biases/SKILL.md) |
-| 281 | ✓ | [`bundled/skills/windows-hook-debugging/SKILL.md`](bundled/skills/windows-hook-debugging/SKILL.md) |
-| 282 | ✓ | [`bundled/skills/writing-docs/SKILL.md`](bundled/skills/writing-docs/SKILL.md) |
-| 283 | ✓ | [`bundled/skills/writing-plans/SKILL.md`](bundled/skills/writing-plans/SKILL.md) |
-| 284 | ✓ | [`bundled/skills/xan/SKILL.md`](bundled/skills/xan/SKILL.md) |
-| 285 | ✓ | [`bundled/skills/xlsx/SKILL.md`](bundled/skills/xlsx/SKILL.md) |
-| 286 | ✓ | [`bundled/skills/yeet/SKILL.md`](bundled/skills/yeet/SKILL.md) |
-| 287 | ✓ | [`bundled/skills/zarr-python/SKILL.md`](bundled/skills/zarr-python/SKILL.md) |
-| 288 | ✓ | [`references/capability-catalog.md`](references/capability-catalog.md) |
-| 289 | ✓ | [`references/changelog.md`](references/changelog.md) |
-| 290 | ✓ | [`references/connector-action-ledger.md`](references/connector-action-ledger.md) |
-| 291 | ✓ | [`references/connector-capability-matrix.md`](references/connector-capability-matrix.md) |
-| 292 | ✓ | [`references/cross-plane-replay-ledger.md`](references/cross-plane-replay-ledger.md) |
-| 293 | ✓ | [`references/document-golden-corpus.md`](references/document-golden-corpus.md) |
-| 294 | ✓ | [`references/memory-eval-scenarios.md`](references/memory-eval-scenarios.md) |
-| 295 | ✓ | [`references/mirror-topology.md`](references/mirror-topology.md) |
-| 296 | ✓ | [`references/prompt-eval-scenarios.md`](references/prompt-eval-scenarios.md) |
-| 297 | ✓ | [`references/reference-asset-taxonomy.md`](references/reference-asset-taxonomy.md) |
-| 298 | ✓ | [`references/release-evidence-bundle-contract.md`](references/release-evidence-bundle-contract.md) |
-| 299 | ✓ | [`references/role-pack-catalog-v2.md`](references/role-pack-catalog-v2.md) |
-| 300 | ✓ | [`references/runtime-contract-field-contract.md`](references/runtime-contract-field-contract.md) |
-| 301 | ✓ | [`references/tool-registry.md`](references/tool-registry.md) |
-| 302 | ✓ | [`references/tool-rule-contract.md`](references/tool-rule-contract.md) |
-| 303 | ✓ | [`references/unified-task-contract.md`](references/unified-task-contract.md) |
-| 304 | ✓ | [`references/upstream-value-ledger.md`](references/upstream-value-ledger.md) |
-| 305 | ✓ | [`SKILL.md`](SKILL.md) |
-| 306 | → | [`references/index.md`](references/index.md) |
+| 243 | ✓ | [`bundled/skills/sympy/SKILL.md`](bundled/skills/sympy/SKILL.md) |
+| 244 | ✓ | [`bundled/skills/systematic-debugging/SKILL.md`](bundled/skills/systematic-debugging/SKILL.md) |
+| 245 | ✓ | [`bundled/skills/tdd-guide/SKILL.md`](bundled/skills/tdd-guide/SKILL.md) |
+| 246 | ✓ | [`bundled/skills/tensorboard/SKILL.md`](bundled/skills/tensorboard/SKILL.md) |
+| 247 | ✓ | [`bundled/skills/theme-factory/SKILL.md`](bundled/skills/theme-factory/SKILL.md) |
+| 248 | ✓ | [`bundled/skills/think-harder/SKILL.md`](bundled/skills/think-harder/SKILL.md) |
+| 249 | ✓ | [`bundled/skills/tiledbvcf/SKILL.md`](bundled/skills/tiledbvcf/SKILL.md) |
+| 250 | ✓ | [`bundled/skills/timesfm-forecasting/SKILL.md`](bundled/skills/timesfm-forecasting/SKILL.md) |
+| 251 | ✓ | [`bundled/skills/torch-geometric/SKILL.md`](bundled/skills/torch-geometric/SKILL.md) |
+| 252 | ✓ | [`bundled/skills/torchdrug/SKILL.md`](bundled/skills/torchdrug/SKILL.md) |
+| 253 | ✓ | [`bundled/skills/transcribe/SKILL.md`](bundled/skills/transcribe/SKILL.md) |
+| 254 | ✓ | [`bundled/skills/transformer-lens-interpretability/SKILL.md`](bundled/skills/transformer-lens-interpretability/SKILL.md) |
+| 255 | ✓ | [`bundled/skills/transformers/SKILL.md`](bundled/skills/transformers/SKILL.md) |
+| 256 | ✓ | [`bundled/skills/treatment-plans/SKILL.md`](bundled/skills/treatment-plans/SKILL.md) |
+| 257 | ✓ | [`bundled/skills/umap-learn/SKILL.md`](bundled/skills/umap-learn/SKILL.md) |
+| 258 | ✓ | [`bundled/skills/uniprot-database/SKILL.md`](bundled/skills/uniprot-database/SKILL.md) |
+| 259 | ✓ | [`bundled/skills/unsloth/SKILL.md`](bundled/skills/unsloth/SKILL.md) |
+| 260 | ✓ | [`bundled/skills/usfiscaldata/references/examples.md`](bundled/skills/usfiscaldata/references/examples.md) |
+| 261 | ✓ | [`bundled/skills/usfiscaldata/SKILL.md`](bundled/skills/usfiscaldata/SKILL.md) |
+| 262 | ✓ | [`bundled/skills/uspto-database/SKILL.md`](bundled/skills/uspto-database/SKILL.md) |
+| 263 | ✓ | [`bundled/skills/ux-researcher-designer/SKILL.md`](bundled/skills/ux-researcher-designer/SKILL.md) |
+| 264 | ✓ | [`bundled/skills/vaex/SKILL.md`](bundled/skills/vaex/SKILL.md) |
+| 265 | ✓ | [`bundled/skills/venue-templates/SKILL.md`](bundled/skills/venue-templates/SKILL.md) |
+| 266 | ✓ | [`bundled/skills/vercel-deploy/SKILL.md`](bundled/skills/vercel-deploy/SKILL.md) |
+| 267 | ✓ | [`bundled/skills/verification-before-completion/SKILL.md`](bundled/skills/verification-before-completion/SKILL.md) |
+| 268 | ✓ | [`bundled/skills/verification-quality-assurance/SKILL.md`](bundled/skills/verification-quality-assurance/SKILL.md) |
+| 269 | ✓ | [`bundled/skills/video-studio/SKILL.md`](bundled/skills/video-studio/SKILL.md) |
+| 270 | ✓ | [`bundled/skills/visualization-best-practices/SKILL.md`](bundled/skills/visualization-best-practices/SKILL.md) |
+| 271 | ✓ | [`bundled/skills/vscode-release-notes-writer/SKILL.md`](bundled/skills/vscode-release-notes-writer/SKILL.md) |
+| 272 | ✓ | [`bundled/skills/vscode-release-notes-writer/template-release-note-endgame.md`](bundled/skills/vscode-release-notes-writer/template-release-note-endgame.md) |
+| 273 | ✓ | [`bundled/skills/vscode-release-notes-writer/template-release-note-insiders.md`](bundled/skills/vscode-release-notes-writer/template-release-note-insiders.md) |
+| 274 | ✓ | [`bundled/skills/webthinker-deep-research/SKILL.md`](bundled/skills/webthinker-deep-research/SKILL.md) |
+| 275 | ✓ | [`bundled/skills/weights-and-biases/SKILL.md`](bundled/skills/weights-and-biases/SKILL.md) |
+| 276 | ✓ | [`bundled/skills/windows-hook-debugging/SKILL.md`](bundled/skills/windows-hook-debugging/SKILL.md) |
+| 277 | ✓ | [`bundled/skills/writing-docs/SKILL.md`](bundled/skills/writing-docs/SKILL.md) |
+| 278 | ✓ | [`bundled/skills/writing-plans/SKILL.md`](bundled/skills/writing-plans/SKILL.md) |
+| 279 | ✓ | [`bundled/skills/xan/SKILL.md`](bundled/skills/xan/SKILL.md) |
+| 280 | ✓ | [`bundled/skills/xlsx/SKILL.md`](bundled/skills/xlsx/SKILL.md) |
+| 281 | ✓ | [`bundled/skills/yeet/SKILL.md`](bundled/skills/yeet/SKILL.md) |
+| 282 | ✓ | [`bundled/skills/zarr-python/SKILL.md`](bundled/skills/zarr-python/SKILL.md) |
+| 283 | ✓ | [`references/capability-catalog.md`](references/capability-catalog.md) |
+| 284 | ✓ | [`references/changelog.md`](references/changelog.md) |
+| 285 | ✓ | [`references/connector-action-ledger.md`](references/connector-action-ledger.md) |
+| 286 | ✓ | [`references/connector-capability-matrix.md`](references/connector-capability-matrix.md) |
+| 287 | ✓ | [`references/cross-plane-replay-ledger.md`](references/cross-plane-replay-ledger.md) |
+| 288 | ✓ | [`references/document-golden-corpus.md`](references/document-golden-corpus.md) |
+| 289 | ✓ | [`references/memory-eval-scenarios.md`](references/memory-eval-scenarios.md) |
+| 290 | ✓ | [`references/mirror-topology.md`](references/mirror-topology.md) |
+| 291 | ✓ | [`references/prompt-eval-scenarios.md`](references/prompt-eval-scenarios.md) |
+| 292 | ✓ | [`references/reference-asset-taxonomy.md`](references/reference-asset-taxonomy.md) |
+| 293 | ✓ | [`references/release-evidence-bundle-contract.md`](references/release-evidence-bundle-contract.md) |
+| 294 | ✓ | [`references/role-pack-catalog-v2.md`](references/role-pack-catalog-v2.md) |
+| 295 | ✓ | [`references/runtime-contract-field-contract.md`](references/runtime-contract-field-contract.md) |
+| 296 | ✓ | [`references/tool-registry.md`](references/tool-registry.md) |
+| 297 | ✓ | [`references/tool-rule-contract.md`](references/tool-rule-contract.md) |
+| 298 | ✓ | [`references/unified-task-contract.md`](references/unified-task-contract.md) |
+| 299 | ✓ | [`references/upstream-value-ledger.md`](references/upstream-value-ledger.md) |
+| 300 | ✓ | [`SKILL.md`](SKILL.md) |
+| 301 | → | [`references/index.md`](references/index.md) |
 
 ---
 

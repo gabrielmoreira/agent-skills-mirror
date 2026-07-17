@@ -5,34 +5,37 @@ Downloads videos from YouTube with customizable quality and format options.
 """
 
 import argparse
-import sys
-import subprocess
 import json
+import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
 
 
 def check_yt_dlp():
-    """Check if yt-dlp is installed, install if not."""
-    try:
-        subprocess.run(["yt-dlp", "--version"], capture_output=True, check=True)
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        print("yt-dlp not found. Installing...")
-        subprocess.run(
-            [sys.executable, "-m", "pip", "install", "--break-system-packages", "yt-dlp"],
-            check=True,
+    """Return the yt-dlp executable without mutating the user's environment."""
+    executable = shutil.which("yt-dlp")
+    if executable is None:
+        raise RuntimeError(
+            "yt-dlp is not installed. Install it with `uv tool install yt-dlp` "
+            "or enable the dependency from OpenAkita's skill manager."
         )
+    return executable
 
 
-def get_video_info(url):
+def get_video_info(executable, url):
     """Get information about the video without downloading."""
     result = subprocess.run(
-        ["yt-dlp", "--dump-json", "--no-playlist", url], capture_output=True, text=True, check=True
+        [executable, "--dump-json", "--no-playlist", url],
+        capture_output=True,
+        text=True,
+        check=True,
     )
     return json.loads(result.stdout)
 
 
-def download_video(
-    url, output_path="/mnt/user-data/outputs", quality="best", format_type="mp4", audio_only=False
-):
+def download_video(url, output_path=None, quality="best", format_type="mp4", audio_only=False):
     """
     Download a YouTube video.
 
@@ -43,10 +46,14 @@ def download_video(
         format_type: Output format (mp4, webm, mkv, etc.)
         audio_only: Download only audio (mp3)
     """
-    check_yt_dlp()
+    executable = check_yt_dlp()
+    output_dir = Path(
+        output_path or os.environ.get("OPENAKITA_OUTPUT_DIR") or Path.cwd() / "downloads"
+    ).expanduser()
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     # Build command
-    cmd = ["yt-dlp"]
+    cmd = [executable]
 
     if audio_only:
         cmd.extend(
@@ -82,7 +89,7 @@ def download_video(
     cmd.extend(
         [
             "-o",
-            f"{output_path}/%(title)s.%(ext)s",
+            str(output_dir / "%(title)s.%(ext)s"),
             "--no-playlist",  # Don't download playlists by default
         ]
     )
@@ -92,18 +99,18 @@ def download_video(
     print(f"Downloading from: {url}")
     print(f"Quality: {quality}")
     print(f"Format: {'mp3 (audio only)' if audio_only else format_type}")
-    print(f"Output: {output_path}\n")
+    print(f"Output: {output_dir}\n")
 
     try:
         # Get video info first
-        info = get_video_info(url)
+        info = get_video_info(executable, url)
         print(f"Title: {info.get('title', 'Unknown')}")
         print(f"Duration: {info.get('duration', 0) // 60}:{info.get('duration', 0) % 60:02d}")
         print(f"Uploader: {info.get('uploader', 'Unknown')}\n")
 
         # Download the video
         subprocess.run(cmd, check=True)
-        print(f"\n✅ Download complete!")
+        print("\n✅ Download complete!")
         return True
     except subprocess.CalledProcessError as e:
         print(f"\n❌ Error downloading video: {e}")
@@ -121,8 +128,8 @@ def main():
     parser.add_argument(
         "-o",
         "--output",
-        default="/mnt/user-data/outputs",
-        help="Output directory (default: /mnt/user-data/outputs)",
+        default=None,
+        help="Output directory (default: OPENAKITA_OUTPUT_DIR or ./downloads)",
     )
     parser.add_argument(
         "-q",
@@ -144,13 +151,17 @@ def main():
 
     args = parser.parse_args()
 
-    success = download_video(
-        url=args.url,
-        output_path=args.output,
-        quality=args.quality,
-        format_type=args.format,
-        audio_only=args.audio_only,
-    )
+    try:
+        success = download_video(
+            url=args.url,
+            output_path=args.output,
+            quality=args.quality,
+            format_type=args.format,
+            audio_only=args.audio_only,
+        )
+    except RuntimeError as error:
+        print(f"Error: {error}", file=sys.stderr)
+        success = False
 
     sys.exit(0 if success else 1)
 

@@ -2,7 +2,7 @@
 name: adr-index
 description: Build or rebuild the ADR index + dependency graph by running scripts/import.mjs (handles v3-style and plugin-style ADR formats; one Bash call vs hundreds of MCP round-trips)
 argument-hint: ""
-allowed-tools: Bash mcp__claude-flow__memory_list mcp__claude-flow__memory_search
+allowed-tools: Bash mcp__plugin_ruflo-core_ruflo__memory_list mcp__plugin_ruflo-core_ruflo__memory_search
 ---
 
 # ADR Index
@@ -37,7 +37,7 @@ Implementation is in `scripts/import.mjs` (one Bash call) rather than dozens of 
 
 3. **Verify graph integrity** (optional but recommended) via the sibling `adr-verify` skill, which runs `scripts/verify.mjs` and exits 1 on cycles.
 
-4. **Search semantically** via `mcp__claude-flow__memory_search` against the populated namespace:
+4. **Search semantically** via `mcp__plugin_ruflo-core_ruflo__memory_search` against the populated namespace:
 
    ```
    memory_search --query "federation budget" --namespace adr-patterns

@@ -2,7 +2,7 @@
 
 # fireworks-tech-graph
 
-> 不用手画图了。用中文描述你的系统，直接得到通过几何门禁的 SVG、PNG 与离线交互技术图。
+> 不用手画图了。用中文描述你的系统，直接得到通过几何门禁的 SVG、PNG、聚焦的 SVG 转 GIF 动效与离线交互技术图。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/yizhiyanhua-ai/fireworks-tech-graph)](https://github.com/yizhiyanhua-ai/fireworks-tech-graph/releases)
@@ -14,7 +14,7 @@
 
 ## 概述
 
-`fireworks-tech-graph` 是一份可由 **Codex 和 Claude Code 共用**的 Agent Skill。它将自然语言描述转化为经过几何校验的 SVG、高分辨率 PNG 与单文件离线交互 HTML。项目内置 **11 种生成器风格** + **1 种 AI 手绘风格（Dark Luxury）**；新增的四种工程风格分别为 C4 评审、云部署、事件流和可靠性排查提供可执行语义契约，同时保留 AI/Agent Pattern 与全部 14 种 UML 图类型。
+`fireworks-tech-graph` 是一份可由 **Codex 和 Claude Code 共用**的 Agent Skill。它将自然语言描述转化为经过几何校验的 SVG、高分辨率 PNG、经过媒体探测验证的 SVG 转 GIF 语义动效与离线交互 HTML。聚焦后的动效链路只接收生成器产出的语义 SVG，只输出一个紧凑、可验证的 GIF。项目内置 **11 种生成器风格** + **1 种 AI 手绘风格（Dark Luxury）**；新增的四种工程风格分别为 C4 评审、云部署、事件流和可靠性排查提供可执行语义契约，同时保留 AI/Agent Pattern 与全部 14 种 UML 图类型。
 
 ```
 用户: "画一张 Mem0 的架构图，暗黑风格"
@@ -28,59 +28,59 @@
 
 ## 效果展示
 
-> 所有示例图均由回归流水线以 1920px 宽度（2× 视网膜分辨率）导出。流水线优先使用 `cairosvg`，不可用时回退到 `rsvg-convert`；PNG 能无损保留技术图中的文字和线条。
+> 动态样例统一使用已验收的 5.75 秒 settled-flow 时间线：先逐步绘制线路，再让最终拓扑中的数据流额外持续 2 秒。每张完整 GIF 为 960px 宽、20fps / 115 帧；3×4 总览压缩为 1200px 动态预览。`assets/samples/` 中仍保留 1920px 无损 PNG，作为静态回归基线。
 
-![最新 12 风格总览 — 每种风格使用独立工程场景](assets/samples/showcase-12-styles.png)
+![动态 12 风格总览 — 每种风格使用独立工程场景](assets/samples/showcase-12-styles.gif)
 
-上方 v1.1.0 总览与下方每张大图均来自最终回归集。12 种风格保留各自独立场景，同时统一通过几何、文字适配和线束路由质量门禁。
+上方 v1.2.0 总览与下方每张完整动态样例均来自已验收回归集。12 种风格保留各自独立场景，同时统一通过几何、文字适配、线束路由和语义动效质量门禁。
 
 ### 风格 1 — 扁平图标风（默认）
 *Mem0 Memory Architecture — 个人记忆抽取、冲突消解、存储与检索*
-![风格 1 — 扁平图标风](assets/samples/sample-style1-flat.png)
+![风格 1 — 扁平图标风](assets/samples/sample-style1-flat.gif)
 
 ### 风格 2 — 暗黑极客风
 *Tool Call Flow — 暗黑终端执行、来源 Grounding、检索与回答合成*
-![风格 2 — 暗黑极客风](assets/samples/sample-style2-dark.png)
+![风格 2 — 暗黑极客风](assets/samples/sample-style2-dark.gif)
 
 ### 风格 3 — 工程蓝图风
 *Microservices Architecture — 工程网格、领域服务、数据存储、事件与遥测*
-![风格 3 — 工程蓝图风](assets/samples/sample-style3-blueprint.png)
+![风格 3 — 工程蓝图风](assets/samples/sample-style3-blueprint.gif)
 
 ### 风格 4 — Notion 极简风
 *Agent Memory Types — 从感知和工作上下文到长期记忆的极简层级*
-![风格 4 — Notion 极简风](assets/samples/sample-style4-notion.png)
+![风格 4 — Notion 极简风](assets/samples/sample-style4-notion.gif)
 
 ### 风格 5 — 玻璃态卡片风
 *Multi-Agent Collaboration — 协调器、专家 Agent、共享状态、评审与合成*
-![风格 5 — 玻璃态卡片风](assets/samples/sample-style5-glass.png)
+![风格 5 — 玻璃态卡片风](assets/samples/sample-style5-glass.gif)
 
 ### 风格 6 — Claude 官方风格
 *System Architecture — 温暖的界面、Runtime、安全、记忆、工具和运维分层*
-![风格 6 — Claude 官方风格](assets/samples/sample-style6-claude.png)
+![风格 6 — Claude 官方风格](assets/samples/sample-style6-claude.gif)
 
 ### 风格 7 — OpenAI 官方风格
 *API Integration Flow — 清晰的 SDK、Prompt、Model、Tool、交付与发布阶段*
-![风格 7 — OpenAI 官方风格](assets/samples/sample-style7-openai.png)
+![风格 7 — OpenAI 官方风格](assets/samples/sample-style7-openai.gif)
 
 ### 风格 8 — 暗黑奢华风 *(AI 手绘)*
 *Agent Runtime Architecture — 控制平面、执行与状态分层，香槟金结构线和语义色桶*
-![风格 8 — 暗黑奢华风](assets/samples/sample-style8-dark-luxury.png)
+![风格 8 — 暗黑奢华风](assets/samples/sample-style8-dark-luxury.gif)
 
 ### 风格 9 — C4 评审画布
 *Checkout Container Review — 单一抽象层级、明确职责、技术栈与协议*
-![风格 9 — C4 评审画布](assets/samples/sample-style9-c4-review-canvas.png)
+![风格 9 — C4 评审画布](assets/samples/sample-style9-c4-review-canvas.gif)
 
 ### 风格 10 — Cloud Fabric
 *Active–Active Checkout Deployment — 全局入口、Region、VPC 归属与跨区复制*
-![风格 10 — Cloud Fabric](assets/samples/sample-style10-cloud-fabric.png)
+![风格 10 — Cloud Fabric](assets/samples/sample-style10-cloud-fabric.gif)
 
 ### 风格 11 — Event Transit
 *Checkout Event Line — Topic 轨道、处理站点、显式 Junction、DLQ 与状态投影*
-![风格 11 — Event Transit](assets/samples/sample-style11-event-transit.png)
+![风格 11 — Event Transit](assets/samples/sample-style11-event-transit.gif)
 
 ### 风格 12 — Ops Pulse
 *Checkout Reliability Pulse — Golden Signals、关键路径、OTel 导出与关联 Trace*
-![风格 12 — Ops Pulse](assets/samples/sample-style12-ops-pulse.png)
+![风格 12 — Ops Pulse](assets/samples/sample-style12-ops-pulse.gif)
 
 ---
 
@@ -132,6 +132,7 @@
 - **产品图标库** — 40+ 产品品牌色：OpenAI、Anthropic、Pinecone、Weaviate、Kafka、PostgreSQL……
 - **泳道分组** — 自动为复杂架构添加层级标签
 - **SVG + PNG 双输出** — SVG 可编辑，1920px PNG 可直接嵌入文章
+- **聚焦的语义 GIF 动效** — 只支持生成 SVG 输入和 GIF 输出；连接线从无到有并按语义顺序绘制。Style 1–12 的数据包头、终端证据流、Blueprint bead、14×10 Notion memory card、玻璃任务胶囊、治理印章、API token train、宝石 tracer、评审 cursor、双活区域流、事件列车和运维瀑布 scanner 均已验收；共享 `+2s-settled-flow` 时间修订也已成为正式默认
 - **渲染器友好** — 纯内联 SVG，不依赖外部字体；在 cairosvg、rsvg-convert、headless Chrome 下都能稳定渲染
 
 ---
@@ -249,15 +250,29 @@ python3 "$SKILL_ROOT/scripts/fireworks.py" validate architecture "$SKILL_ROOT/fi
 python3 "$SKILL_ROOT/scripts/fireworks.py" render architecture "$SKILL_ROOT/fixtures/api-flow-style7.json" diagram.svg --report layout.json
 python3 "$SKILL_ROOT/scripts/fireworks.py" check diagram.svg
 python3 "$SKILL_ROOT/scripts/fireworks.py" export-html diagram.svg diagram.html --title "API Integration Flow"
+python3 "$SKILL_ROOT/scripts/fireworks.py" animate diagram.svg diagram.gif
 ```
 
 HTML 导出是单文件离线产物。导出器会清洗 SVG，并提供平移、缩放、复位、明暗主题、复制 SVG 源码，以及 1×–4× 的 SVG/PNG/JPEG/WebP 下载。
+
+动效可以直接说 **“生成 GIF”**、**“制作 GIF”** 或 **“让这张图动起来”**。命令只接收带有 12 套已验收动效契约之一的生成器语义 SVG。它不锁定源文件的精确字节，因此同一受支持拓扑下通过校验的标题和内容变化可以正常使用；缺失或改变 role/stage/order 覆盖、线路方向、必要颜色或几何时会 fail closed。动效媒体格式只允许 GIF，默认还会写出 `<output>.motion.json` 验证报告。正式默认参数为 960px、5.75 秒、20fps、115 个帧中心采样：第 1–36 帧完成线路构建，第 36–38 帧淡入运行流，第 38–109 帧保持完整稳定数据流，第 110–114 帧执行五档 reset。Style 1–12 的 signature、速度、路径、几何、构建节奏均已验收，包括 packet head、terminal evidence trace、Blueprint bead、14×10 Notion memory card 和八种场景专属 signature；共享的 `+2s-settled-flow` 时间修订也已验收，默认新包的相关状态统一记录为 `user-approved`。75 帧及以下继续要求全部帧唯一；更长时间线允许完整不透明区间内出现非相邻重复。frame 110 因 reset opacity 精确保留 1.00，成为唯一边界例外，并显式分类为 `intentional_reset_boundary_repeat`；frame 111–114 必须全局不同。长时间线至少保留 75 个唯一 raster，并禁止相邻重复。全样式 75-vs-115 gate 分开统计 binary-exact 与 decoded-RGBA-exact；仅当 AE ≤ 128、normalized RMSE ≤ 0.001、差异 component 宽或高不超过 2px 且只落在 edge/node border 时，才接受 compositor 抗锯齿等价，DOM 与 signature geometry 始终 strict-exact。显式 3.75 秒/75 帧与 2.75 秒/55 帧调用继续兼容。详见 [聚焦的 SVG 转 GIF 动效](references/motion-effects.md)。
+
+| Style | Preset | 运行态 signature |
+|---:|---|---|
+| 5 | `agent-orchestration` | 玻璃任务胶囊 + coordinator halo |
+| 6 | `governed-runtime` | governance thread + policy seal |
+| 7 | `token-stream` | API rail + 三格 token train |
+| 8 | `golden-circuit` | luxury circuit rail + gem tracer |
+| 9 | `review-trace` | review rail + moving review cursor |
+| 10 | `cloud-flow` | region chevrons + replication capsule |
+| 11 | `event-transit` | event train + exception/projection cars |
+| 12 | `ops-pulse` | ECG/export heads + trace reveal + waterfall scanner |
 
 ---
 
 ## 安装依赖
 
-仓库自带的校验/导出脚本需要 **cairosvg**（推荐）或 `rsvg-convert`。Puppeteer 是 `SKILL.md` 中的高级手动转换方案，不是脚本会自动使用的回退项。
+仓库自带的 SVG/PNG 校验与导出脚本需要 **cairosvg**（推荐）或 `rsvg-convert`。可选的 SVG 转 GIF 动效导出需要 FFmpeg/FFprobe、Chrome/Chromium，以及 `puppeteer` 或 `puppeteer-core`。
 
 ```bash
 # 推荐：cairosvg（CSS 支持最好）
@@ -266,6 +281,18 @@ python3 -m pip install cairosvg
 # 备选：rsvg-convert（系统包，可能丢失 CSS / <foreignObject>）
 brew install librsvg                   # macOS
 sudo apt install librsvg2-bin          # Ubuntu/Debian
+
+# 可选：语义动效导出。依赖分别安装在两份 Skill 旁边，因为渲染器会
+# 刻意忽略调用者当前目录中的同名 Node 模块。
+brew install ffmpeg                    # macOS；其他平台使用系统包管理器
+for SKILL_ROOT in \
+  "$HOME/.agents/skills/fireworks-tech-graph" \
+  "$HOME/.claude/skills/fireworks-tech-graph"
+do
+  [ -d "$SKILL_ROOT" ] || continue
+  npm install --prefix "$SKILL_ROOT" --ignore-scripts --no-save --package-lock=false puppeteer-core@25.3.0
+  python3 "$SKILL_ROOT/scripts/fireworks.py" doctor
+done
 
 # 验证脚本支持的任一渲染器
 python3 -c "import cairosvg; print(cairosvg.__version__)"
@@ -291,6 +318,7 @@ rsvg-convert --version
 ```
 画图 / 帮我画 / 生成图 / 做个图 / 架构图 / 流程图 / 可视化一下 / 出图
 generate diagram / draw diagram / create chart / visualize
+生成 GIF / 制作 GIF / 让这张图动起来 / 把刚才的 SVG 转成 GIF / Generate a GIF / animate this diagram / animate this SVG as a GIF
 ```
 
 ### 基本用法
@@ -597,12 +625,14 @@ fireworks-tech-graph/
 │   ├── ops-pulse-style12.json    # Style 12 · Reliability Pulse
 │   └── quality-baseline/         # 内部同拓扑质量回归基线
 ├── scripts/
-│   ├── fireworks.py              # 统一 validate/render/check/export CLI
+│   ├── fireworks.py              # 统一 validate/render/check/animate/export CLI
 │   ├── diagram_ir.py             # Schema v1 类型化归一层
 │   ├── fireworks_geometry.py     # 路由与碰撞共享语义
 │   ├── interactive_html.py       # 安全的离线 HTML 导出器
 │   ├── generate-diagram.sh       # SVG 校验与 PNG 导出
 │   ├── generate-from-template.py # 基于模板生成 SVG 起始文件
+│   ├── motion.py                 # SVG 转 GIF 校验、编码与原子报告
+│   ├── svg2gif.js                # 手动时间轴 Chromium 逐帧渲染器
 │   ├── svg2png.js                 # Puppeteer 高保真导出脚本
 │   ├── validate-svg.sh           # 校验与渲染检查入口
 │   ├── validate_svg.py           # XML、marker、transform 与路径碰撞检测

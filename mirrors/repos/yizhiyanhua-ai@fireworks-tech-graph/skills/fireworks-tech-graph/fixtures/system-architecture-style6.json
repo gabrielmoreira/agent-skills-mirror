@@ -3,6 +3,7 @@
   "mode": "architecture",
   "template_type": "architecture",
   "style": 6,
+  "motion_scene": "governed-runtime",
   "quality_profile": "showcase",
   "width": 960,
   "height": 700,
@@ -25,15 +26,15 @@
     { "id": "registry", "kind": "rect", "x": 760, "y": 510, "width": 120, "height": 60, "label": "Registry", "sublabel": "rollouts", "fill": "#efe8de", "stroke": "#d0c3b3", "flat": true }
   ],
   "arrows": [
-    { "id": "request", "source": "client", "target": "gateway", "source_port": "right", "target_port": "left", "flow": "read", "label": "request" },
-    { "id": "dispatch", "source": "gateway", "target": "runtime", "source_port": "bottom", "target_port": "top", "flow": "control", "label": "dispatch" },
-    { "id": "plan", "source": "runtime", "target": "planner", "source_port": "left", "target_port": "right", "flow": "control", "label": "plan" },
-    { "id": "enforce", "source": "runtime", "target": "guardrails", "source_port": "right", "target_port": "left", "flow": "control", "label": "enforce" },
-    { "id": "remember", "source": "planner", "target": "memory", "source_port": "bottom", "target_port": "top", "flow": "write", "label": "remember" },
-    { "id": "act", "source": "runtime", "target": "tools", "source_port": "bottom", "target_port": "top", "flow": "read", "label": "act" },
-    { "id": "register", "source": "guardrails", "target": "registry", "source_port": "bottom", "target_port": "top", "flow": "feedback", "label": "release" },
-    { "id": "trace", "source": "tools", "target": "observability", "source_port": "right", "target_port": "left", "flow": "feedback", "label": "trace" },
-    { "id": "promote", "source": "observability", "target": "registry", "source_port": "right", "target_port": "left", "flow": "feedback", "label": "promote" }
+    { "id": "request", "source": "client", "target": "gateway", "source_port": "right", "target_port": "left", "flow": "read", "motion_role": "ingress", "motion_stage": 1, "motion_order": 0, "label": "request" },
+    { "id": "dispatch", "source": "gateway", "target": "runtime", "source_port": "bottom", "target_port": "top", "flow": "control", "motion_role": "dispatch", "motion_stage": 2, "motion_order": 0, "label": "dispatch" },
+    { "id": "plan", "source": "runtime", "target": "planner", "source_port": "left", "target_port": "right", "flow": "control", "motion_role": "runtime-branch", "motion_stage": 3, "motion_order": 0, "label": "plan" },
+    { "id": "enforce", "source": "runtime", "target": "guardrails", "source_port": "right", "target_port": "left", "flow": "control", "motion_role": "runtime-branch", "motion_stage": 3, "motion_order": 1, "label": "enforce" },
+    { "id": "remember", "source": "planner", "target": "memory", "source_port": "bottom", "target_port": "top", "flow": "write", "motion_role": "foundation", "motion_stage": 4, "motion_order": 0, "label": "remember" },
+    { "id": "act", "source": "runtime", "target": "tools", "source_port": "bottom", "target_port": "top", "flow": "read", "motion_role": "runtime-branch", "motion_stage": 3, "motion_order": 2, "label": "act" },
+    { "id": "register", "source": "guardrails", "target": "registry", "source_port": "bottom", "target_port": "top", "flow": "feedback", "motion_role": "foundation", "motion_stage": 4, "motion_order": 1, "label": "release" },
+    { "id": "trace", "source": "tools", "target": "observability", "source_port": "right", "target_port": "left", "flow": "feedback", "motion_role": "foundation", "motion_stage": 4, "motion_order": 2, "label": "trace" },
+    { "id": "promote", "source": "observability", "target": "registry", "source_port": "right", "target_port": "left", "flow": "feedback", "motion_role": "promote", "motion_stage": 5, "motion_order": 0, "label": "promote" }
   ],
   "legend_orientation": "horizontal",
   "legend_x": 48,

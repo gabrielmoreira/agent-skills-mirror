@@ -7,13 +7,13 @@ one `tts.py` invocation (ttsCN sub-chunks internally per provider limits),
 then normalized to the suite's 48 kHz mono WAV.
 
 Word boundaries: when ttsCN returns data.word_boundaries (platforms with
-native boundary events: edge, azure), each offset_sec — absolute within
-that invocation's file — is shifted by the accumulated duration of prior
-chunks, and non-spoken script characters (punctuation) are reinserted
-between word tokens (_merge_native_boundaries) because srt.py and section
-matching rely on them. Otherwise (and for resume-skipped parts) boundaries
-are estimated by distributing the measured chunk duration across visible
-characters.
+native boundary events: edge, azure, doubao, minimax, cosyvoice), each
+offset_sec — absolute within that invocation's file — is shifted by the
+accumulated duration of prior chunks, and non-spoken script characters
+(punctuation) are reinserted between word tokens
+(_merge_native_boundaries) because srt.py and section matching rely on
+them. Otherwise (and for resume-skipped parts) boundaries are estimated
+by distributing the measured chunk duration across visible characters.
 Keep registry max_chars small (400): estimation error is bounded by chunk
 length, and chunk durations themselves are always measured.
 
@@ -126,9 +126,15 @@ def synthesize(chunks, config, output_dir, resume=False):
             except json.JSONDecodeError:
                 pass
             if proc.returncode == 0 and envelope and envelope.get('ok'):
-                subprocess.run(
+                resample = subprocess.run(
                     ["ffmpeg", "-y", "-i", raw_file, "-ar", "48000", "-ac", "1", part_file],
-                    capture_output=True)
+                    capture_output=True, text=True)
+                if resample.returncode != 0:
+                    # Fail here with the real cause — otherwise the part is
+                    # reported done at 0.0s and the run dies later at concat.
+                    raise RuntimeError(
+                        f"ffmpeg resample failed for part {i + 1}: "
+                        f"{resample.stderr.strip()[-200:]}")
                 os.remove(raw_file)
                 chunk_duration = float(envelope['data'].get('duration_seconds') or 0)
                 if not chunk_duration:

@@ -16,10 +16,10 @@
 The suite is reachable through one hierarchical entry point at `scripts/cli.py`:
 
 ```bash
-python3 scripts/cli.py --help                       # 9 resources
+python3 scripts/cli.py --help                       # 11 resources
 python3 scripts/cli.py <resource> --help            # actions for one resource
 python3 scripts/cli.py <resource> <action> --help   # full args (forwards to underlying script)
-python3 scripts/cli.py schema                       # JSON list of all 15 methods
+python3 scripts/cli.py schema                       # JSON list of all 20 methods
 python3 scripts/cli.py schema <method>              # typed parameter schema for one method
 ```
 
@@ -334,9 +334,9 @@ Run `references list` — orphaned entries are auto-cleaned on list.
 
 ### Word-Boundary Precision by Platform
 
-- **Native per-word timings**: only platforms with boundary events (`edge`, `azure`) — ttsCN returns them and the bridge shifts offsets per chunk
+- **Native per-word timings**: only platforms with boundary events (`edge`, `azure`, `doubao`, `minimax`, `cosyvoice` — ttsCN ≥1.5.0 for doubao/minimax, ≥1.6.0 for cosyvoice) — ttsCN returns them and the bridge shifts offsets per chunk
 - **All other platforms**: subtitle timing is estimated by distributing each measured chunk duration across its characters (chunks are capped at 400 chars to bound the error)
-- **Workaround**: If subtitle precision is critical, use `TTS_BACKEND=azure` or `TTS_BACKEND=edge`
+- **Workaround**: If subtitle precision is critical, use one of the native-boundary platforms (`edge`, `azure`, `doubao`, `minimax`, `cosyvoice`)
 
 ---
 

@@ -19,7 +19,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from semantic_contracts import resolve_style_index, validate_semantic_contract
+from semantic_contracts import resolve_style_index, validate_semantic_contract  # noqa: E402
 
 
 class DiagramValidationError(ValueError):

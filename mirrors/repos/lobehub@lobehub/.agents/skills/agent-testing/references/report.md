@@ -62,7 +62,14 @@ table — those double up on the page. It carries only the non-duplicate narrati
 
    - UI (before/after comparison): capture and visually verify both original
      screenshots. Do not ask the agent to compose them into a new image. In the
-     case's `evidence` array, pair them with a shared comparison id:
+     case's `evidence` array, pair them with a shared comparison id.
+
+     **A `comparison` pair means ONE view in two states** — the same surface
+     before and after a change (the red/green role bands say "was / is now").
+     Two sequential steps of a FLOW (a dialog, then the state after submitting
+     it) are NOT a before/after: labeling them so misstates the semantics and
+     reads as if the first shot were a defect. For flow steps, attach plain
+     ordered evidence items and let each caption name its step:
 
      ```json
      "evidence": [
@@ -224,6 +231,17 @@ Status values: `pass` / `fail` / `blocked` (couldn't run — e.g. auth or env
 missing; a blocked case is not a pass).
 
 ## result.json schema
+
+**Two fields are the report's identity in every list surface — treat them as
+REQUIRED on every ingest:**
+
+- `title` (top level) — without it the run lists as "未命名验证" forever.
+- `summary.verdict` (`pass` / `fail` / `partial`) — without it the list glyph is
+  a permanent amber "?" instead of the green pass. The CLI now derives a
+  fallback from the cases, but an explicit verdict is still the author's job.
+- Every `comparison` pair side should carry a `label` — the role band renders
+  it as the explanation ("优化前：清单头部被挤压…"); a pair without labels shows
+  two bare role words and reads as unexplained.
 
 ```json
 {

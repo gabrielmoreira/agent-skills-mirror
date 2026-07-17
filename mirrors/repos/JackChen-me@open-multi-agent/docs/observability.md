@@ -2,6 +2,12 @@
 
 `open-multi-agent` exposes three telemetry layers: live progress events, structured trace spans, and a static post-run dashboard.
 
+For an existing callback integration, follow the staged
+[`onTrace` migration guide](./observability-migration.md). Release engineering
+and benchmark evidence are recorded in
+[`observability-performance.md`](./observability-performance.md) and
+[`observability-release-readiness.md`](./observability-release-readiness.md).
+
 ## Run identity and outcome
 
 Every top-level execution (`runAgent`, `runTeam`, `runTasks`, `runFromPlan`,
@@ -137,6 +143,136 @@ intended for unit tests, local inspection, and short-lived processes. It has no
 filesystem or database dependency, and it returns copies rather than mutable
 references to its internal records.
 
+### FileTraceStore: persistent single-process reference
+
+`FileTraceStore` is the Node-only reference implementation for local
+development, tests, CLIs, and modest single-process services. It ships in the
+core package—there is no extra dependency to install—but it must be imported
+from the explicit Node-only subpath:
+
+```typescript
+import { FileTraceStore } from '@open-multi-agent/core/observability/file'
+import {
+  BatchingTraceSink,
+  TraceStoreExporter,
+} from '@open-multi-agent/core/observability'
+
+const store = await FileTraceStore.open('./.oma/traces.ndjson')
+const sink = new BatchingTraceSink(new TraceStoreExporter(store))
+
+try {
+  const orchestrator = new OpenMultiAgent({ observability: { sinks: [sink] } })
+  await orchestrator.runAgent(agent, prompt)
+  await sink.forceFlush({ timeoutMs: 5_000 }) // exporter → FileTraceStore
+  await store.flush()                         // fsync the trace file
+} finally {
+  await sink.shutdown({ timeoutMs: 5_000 })
+  await store.close()
+}
+```
+
+Neither `@open-multi-agent/core` nor
+`@open-multi-agent/core/observability` exports or imports this implementation.
+Only `@open-multi-agent/core/observability/file` loads its Node filesystem
+code. Importing any of these modules performs no file I/O; `FileTraceStore.open`
+is the explicit creation/recovery boundary.
+
+`FileTraceStore` and `InMemoryTraceStore` run the same TraceStore contract.
+The in-memory store has no lifecycle or persistence and its state disappears
+with the process. The file store scans its log on open, rebuilds the same
+in-memory indexes, serializes every read/mutation on one instance, and exposes
+`flush`, `close`, and `compact`. Query cursors remain store-instance-specific:
+a cursor from a closed instance is intentionally invalid after reopen; start a
+fresh pagination walk.
+
+#### Disk envelope and recovery
+
+The append-only file is UTF-8 NDJSON with this versioned envelope:
+
+```text
+file_header(format="oma.file_trace_store", formatVersion=1, traceSchemaMajor=2)
+batch_start(batchId, operation, itemCount, payloadSha256)
+batch_item(batchId, index, payload)  # one TraceRecord or delete tombstone
+...
+batch_commit(batchId, itemCount, payloadSha256)
+```
+
+The format version belongs to the file envelope; each trace payload still has
+its own `schemaVersion: 2`. Recovery does not infer either version from memory.
+Unknown additive fields inside supported TraceRecord v2 payloads round-trip
+unchanged.
+
+An append/delete batch becomes visible only when its commit marker is a
+complete NDJSON line and its id, contiguous item count, and SHA-256 checksum
+match the start marker and payloads. On open, the store scans in file order and
+replays only committed batches. A final truncated line or trailing uncommitted
+batch produces a structured, payload-free diagnostic and is truncated back to
+the last committed byte boundary. Thus one API batch is entirely visible or
+entirely absent after restart. A malformed complete line, corruption before
+the tail, invalid committed payload, unsupported file format, or unsupported
+trace schema fails open loudly; it is never skipped.
+
+Delete and retention operations append committed tombstone batches containing
+the exact logical run IDs removed. Reopen therefore cannot resurrect deleted
+records, and it does not re-evaluate retention against a different clock.
+
+#### Write, flush, close, and failure semantics
+
+- A successful `append` means the complete committed envelope was accepted by
+  the operating system's file write and the descriptor was closed. It does
+  **not** mean `fsync` completed.
+- `flush()` waits behind all operations accepted before it and `fsync`s the
+  target file. Repeat calls are safe. It is the explicit boundary for surviving
+  an OS crash/power loss to the extent promised by the local filesystem.
+- `close()` stops accepting new operations, waits for already accepted work,
+  performs the same file `fsync`, and is idempotent. Calls other than repeated
+  `close()` reject afterward with a structured `CLOSED` error.
+- Graceful CLI/server shutdown should flush the batching sink first, then close
+  the store. On an abrupt process exit, fully written but not fsynced batches
+  may be lost by an OS/power failure; a process crash alone normally leaves
+  writes already accepted by the kernel recoverable.
+- Write, permission, disk-full, fsync, and rename failures reject with
+  `FileTraceStoreError`. They are never reported as successful. Error and
+  diagnostic messages contain no TraceRecord or telemetry payload.
+
+New files request mode `0600`. Platforms without POSIX mode enforcement emit a
+diagnostic and rely on their native access controls. The store registers no
+signal handlers and never calls `process.exit()`.
+
+#### Crash-safe compaction
+
+`await store.compact()` writes only the current effective records, in stable
+query/record order, to `<path>.compact.tmp` in the same directory. It sets mode
+`0600`, flushes/fsyncs the temp file, atomically renames it over the target, and
+fsyncs the parent directory when the platform/filesystem supports directory
+fsync. A rename failure leaves the original target authoritative and usable.
+An interrupted temp beside an existing target is diagnosed as stale and is
+ignored until the next compaction overwrites it. A temp without its target is
+treated as ambiguous possible data and open fails rather than creating an
+empty store. Repeated compaction of unchanged state is byte-deterministic.
+
+Compaction does not change query results. Deleted/retention-cleaned records and
+their tombstones disappear from the compacted file.
+
+#### Scope and migration boundary
+
+This is a reference store, not a database. It deliberately provides no
+cross-process lock, multi-process writer coordination, network-filesystem
+consistency, high-concurrency tuning, full-text search, advanced analytics,
+tenant authentication, or RBAC. Do not let two instances write one path, and
+do not use it as a shared NFS/SMB trace backend. For those requirements,
+implement the storage-medium-neutral `TraceStore` contract in a separate
+database adapter/package and migrate by replaying the committed TraceRecord
+stream. No database driver belongs in the core or this subpath.
+
+From the repository root, run `npm run build -w @open-multi-agent/core`
+followed by
+`node --expose-gc packages/core/benchmarks/file-trace-store.mjs` for the
+repeatable 1k/10k local boundary benchmark (append, fsync, reopen, query,
+compaction, heap estimate, file size, and batch-size comparison). The benchmark
+is a repository development tool and is intentionally excluded from the npm
+tarball.
+
 ### Append, schema, and materialization
 
 `append(records)` accepts a batch atomically: validation failure leaves the
@@ -199,14 +335,85 @@ first with `runId` as the tie-breaker, and repeated application is safe.
 TraceStore retention only affects that store. It cannot delete copies already
 exported to OTel or another vendor.
 
-### TraceStore is not RunStore or CheckpointStore
+### Dashboard, TraceStore, CheckpointStore, and RunStore
 
-TraceStore is append/query telemetry and can be best-effort. A future RunStore
-is the authoritative durable state machine with CAS, lease, suspend, and resume
-semantics; TraceStore deliberately provides none of those. CheckpointStore
-persists execution state used to restore work. Losing telemetry must not roll
-back a durable run, and deleting traces must not imply deleting checkpoints or
-shared memory.
+| Data plane | Responsibility | Reliability boundary |
+|---|---|---|
+| Dashboard | static post-run task DAG, timing, token facts, and task details | derived artifact; no live delivery or authoritative state |
+| TraceStore | append/query telemetry, retention, and trace deletion | best-effort; no CAS, lease, suspend, or resume |
+| CheckpointStore | task-grained execution snapshot consumed by `restore()` | execution recovery state; not a trace query system |
+| future RunStore | authoritative durable run state machine | not implemented by Observability v2 |
+
+Losing telemetry must not roll back a durable run. Deleting traces must not
+delete checkpoints, shared memory, or remotely exported OTel data.
+
+## Optional OpenTelemetry package
+
+`@open-multi-agent/otel` is an independent workspace/package that adapts OBS-2
+`TraceRecord` batches to OpenTelemetry spans. It is not imported by core, so a
+core-only installation has no OpenTelemetry runtime dependency or import path.
+
+```typescript
+import { OpenMultiAgent } from '@open-multi-agent/core'
+import { createOtelTraceSink } from '@open-multi-agent/otel'
+
+// The application has already constructed and configured this OTel provider.
+const sink = createOtelTraceSink({
+  tracerProvider: provider,
+  metadata: { environment: 'production', release: '2026.07.15' },
+})
+const orchestrator = new OpenMultiAgent({ observability: { sinks: [sink] } })
+```
+
+Pass exactly one application-owned `tracer` or `tracerProvider`; supplying
+neither is a configuration error. The adapter never reads, initializes, or
+replaces the global provider. `forceFlush()` delegates to a supplied provider
+when it supports that operation. Provider shutdown is skipped by default, even
+when available: set `shutdownOnShutdown: true` only when the adapter owns that
+provider's lifecycle. Rejection/timeout maps to the OBS-2 exporter result and
+diagnostics, never to an Agent/Task/Run failure.
+
+OMA run/agent/task/LLM/tool/consensus/checkpoint records become spans;
+retry, verdict, first-chunk, and stream records become `oma.*` events. DAG,
+delegation, consumed-synthesis, and restore-continuation relations become OTel
+links. The adapter keeps `schemaVersion: 2`, run/attempt, OMA trace/span IDs,
+record ID, and sequence as stable `oma.*` attributes. It maps `error`,
+`timeout`, and `budget_exhausted` to OTel `Error`; all remaining OMA statuses
+remain OTel `Unset` and are preserved in `oma.status`.
+
+Links whose targets were observed by the same adapter use the target span's
+actual SDK-generated OTel context. Each link records `oma.link.resolved` plus
+the stable OMA target trace/span IDs. A same-process restore resolves through a
+bounded cache of the 256 most recent root contexts. After a process restart the
+previous SDK context is unavailable, so `continued_from` falls back to a remote
+unsampled context built from the OMA IDs and marks itself unresolved; the OMA
+target attributes remain available for correlation.
+
+Completed OTel `Span` objects are released immediately. Lightweight contexts
+live only until their root span closes, at which point the trace-local registry
+is cleared. Root close and adapter shutdown end any remaining open spans as
+incomplete before clearing state, so telemetry loss cannot produce an unbounded
+live-span registry.
+
+For LLM/tool spans it also emits a bounded compatibility subset of the current
+development-status GenAI conventions (provider/model, token/cache/reasoning
+counts, tool name, and TTFT). Every span records
+`oma.otel.mapping.version` and `oma.otel.gen_ai_semconv.version`; the stable
+contract is `oma.*`, not the evolving GenAI field names. It emits no metrics,
+so no high-cardinality run/task/tenant/request fields become metric labels.
+
+The adapter exports no prompt, completion, tool arguments/results, raw payload,
+credential, chain-of-thought, or reasoning content. Numeric token counts remain
+eligible. It forwards only an explicit low-sensitivity `oma.*` allowlist rather
+than arbitrary record attributes. `contentCapture` is a reserved disabled-only extension point; there
+is no content-capture switch in this release.
+
+The first release intentionally provides no OTLP convenience subpath. The
+application selects its own OTel SDK and OTLP/exporter implementation, avoiding
+eager OTLP imports, implicit global-provider configuration, and a second
+SDK/exporter compatibility matrix. See
+[`packages/otel/README.md`](../packages/otel/README.md) for the full API and
+mapping table.
 
 ## Flush and shutdown
 
@@ -235,15 +442,20 @@ return { result, telemetry: telemetry.status }
 // Short-lived CLI: finish delivery before natural process exit.
 try {
   await main()
-  await sink.forceFlush({ timeoutMs: 5_000 })
 } finally {
+  await sink.forceFlush({ timeoutMs: 5_000 })
+  await store?.flush()
   await sink.shutdown({ timeoutMs: 5_000 })
+  await store?.close()
 }
 
 // Long-lived server: application-owned graceful shutdown.
 async function stopServer() {
+  await stopAcceptingAndWaitForInflight(server)
+  await sink.forceFlush({ timeoutMs: 10_000 })
   await sink.shutdown({ timeoutMs: 10_000 })
-  await server.close()
+  await store?.close()
+  await provider?.shutdown()
 }
 // Register stopServer with your server/process framework if desired.
 ```
@@ -314,6 +526,9 @@ event object. Synchronous callback throws and asynchronous rejections remain
 isolated and cannot become unhandled rejections. `onTrace` is not marked
 deprecated in this release; the 1.x compatibility window remains open while
 users can migrate transport code to `observability.sinks` at their own pace.
+The copyable stage-by-stage path is in
+[`observability-migration.md`](./observability-migration.md), including direct
+`LegacyCallbackTraceSink`, batching, TraceStore/OTel, and lifecycle ownership.
 
 Span parentage is best-effort and uses the causal structure known to the runtime. In team runs, worker agent spans point to their task span, and LLM/tool/stream spans point to the agent span. Root spans such as top-level agent runs omit `parentId`.
 

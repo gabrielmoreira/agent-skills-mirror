@@ -10,8 +10,8 @@ OmnibotApp is an AI-powered intelligent robot assistant application for Android.
 - Android app with embedded Flutter UI module
 - Modular monorepo architecture with feature-specific modules
 - State machine-based task management system
-- Accessibility services and overlay functionality
-- AI/ML intelligence integration (on-device models)
+- Floating overlay and background task functionality
+- Agent tools, including optional Shizuku-backed privileged Android actions
 
 ## Build and Development Commands
 
@@ -60,15 +60,6 @@ flutter test
 flutter analyze
 ```
 
-### Project Setup
-The project requires importing the OmniIntelligence module as an external module:
-```bash
-# Clone the companion repository
-git clone https://github.com/omnimind-ai/OmniIntelligence
-
-# Import OmniIntelligence/OmniIntelligence as a module in Android Studio
-```
-
 ## Architecture Overview
 
 ### Module Structure
@@ -77,19 +68,16 @@ OmnibotApp/
 ├── app/                 # Main application module (entry point, activities)
 ├── ui/                  # Flutter UI module (cross-platform UI with Riverpod)
 ├── baselib/             # Core libraries (database, networking, auth, storage)
-├── assists/             # Task management and state machine
-├── omniintelligence/    # AI/ML intelligence modules (external import)
+├── assists/             # Chat/task coordination and shared HTTP integration
 ├── overlay/             # Floating overlay functionality
-├── accessibility/       # Accessibility services for UI automation
 └── testbot/             # Testing utilities (develop flavor only)
 ```
 
 ### Core Architectural Patterns
 
 **1. State Machine Pattern** (`assists/StateMachine.kt`)
-- Central task lifecycle management (Companion, Learning, Scheduled tasks)
-- Coordinates state transitions between different task types
-- Manages communication between UI, services, and background tasks
+- Coordinates the remaining chat/task lifecycle
+- Manages communication between UI, services, and background work
 
 **2. Flutter-Native Embedding**
 - Flutter module embedded in native Android app via `FlutterEngineGroup`
@@ -97,28 +85,25 @@ OmnibotApp/
 - Shared resource management across Flutter engine instances
 
 **3. Task-Based System**
-- Three task types: Companion, Learning, Scheduled
-- Task parameters and result callbacks
-- Background execution with Kotlin coroutines
+- Agent and subagent task execution
+- App-level scheduled tasks for deferred subagent runs
+- Background execution with Kotlin coroutines and Android alarms
 
 **4. Service-Oriented Architecture**
-- Accessibility services for interaction monitoring
 - Overlay services for floating UI elements
 - Background services for long-running tasks
+- Shizuku-backed privileged shell actions when the user authorizes them
 
 ### Key Integration Points
 
 **Assists Module** (`assists/`)
 - `StateMachine.kt`: Core state machine managing task lifecycles
 - `AssistsCore.kt`: SDK interface for task creation, state changes, and results
-- `CompanionController.kt`: Interface for companion mode tasks (engineering team)
-- `TaskFilterServer.kt`: XML-based scene filtering and matching (research team)
 
 Directory structure:
 - `api/`: Models, enums, listeners
-- `controller/`: Controllers providing functionality for tasks
-- `server/`: Core services for XML acquisition and scene filtering
-- `task/`: Core task modules (Companion, Scheduled, Learning tasks)
+- `controller/`: HTTP and shared task controllers
+- `task/`: Remaining chat/task implementations
 - `util/`: Utility classes
 
 **Database Layer** (`baselib/`)
@@ -174,7 +159,6 @@ OMNI_RELEASE_KEY_PWD=***
 
 ### Module Dependencies
 - All modules except `app` are Android library modules
-- `omniintelligence` must be imported as external module
 - Flutter integration via `include_flutter.groovy`
 - `testbot` only included in develop flavor
 
@@ -185,7 +169,7 @@ OMNI_RELEASE_KEY_PWD=***
 
 ### Permissions
 - System overlay permission (for floating UI)
-- Accessibility service permission (user must enable manually)
+- Optional Shizuku authorization for privileged Android actions
 - Standard Android permissions as needed
 
 ### Key Files to Understand
@@ -193,20 +177,6 @@ OMNI_RELEASE_KEY_PWD=***
 - `assists/src/main/java/cn/com/omnimind/assists/StateMachine.kt`: Task state machine
 - `assists/src/main/java/cn/com/omnimind/assists/AssistsCore.kt`: Task SDK interface
 - `baselib/src/main/java/cn/com/omnimind/baselib/database/`: Database layer
-
-### Team Responsibilities
-
-**Engineering Team**:
-- Implement white-block features in assists architecture
-- Define interfaces with `CompanionController.kt`
-- Complete companion mode task logic
-- Implement task display and animations
-
-**Research Team**:
-- Complete `companionServer` module (XML acquisition and SDK node matching)
-- Integrate with OmniIntelligence SDK for companion server requirements
-- Implement scene filtering (e.g., prevent duplicate task suggestions)
-- Define interfaces with `CompanionController.kt`
 
 ## Version Management
 

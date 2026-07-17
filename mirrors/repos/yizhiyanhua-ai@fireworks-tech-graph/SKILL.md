@@ -4,16 +4,16 @@ description: >-
   Create technical diagrams such as software architecture, data flow,
   flowcharts, sequence diagrams, C4 reviews, cloud deployments, event streams,
   observability investigations, agent/memory systems, UML, ER, network
-  topology, timelines, and technical concept maps, then export SVG, PNG, or
-  offline interactive HTML. Use
-  when the user asks to draw or visualize a system, workflow, protocol, model,
-  or engineering concept. Do not use for photos, raster illustrations, image
-  editing, decorative artwork, or quantitative data charts.
+  topology, timelines, and technical concept maps, then export SVG, PNG,
+  focused semantic SVG-to-GIF motion, or offline interactive HTML. Treat direct
+  requests such as "Generate a GIF", "生成 GIF", or "制作 GIF" as motion requests,
+  and use this skill when the user asks to visualize a system or engineering
+  concept. Do not use for photos, raster artwork, or quantitative data charts.
 ---
 
 # Fireworks Tech Graph
 
-Generate geometry-checked SVG technical diagrams, high-resolution PNG, and sanitized offline interactive HTML.
+Generate geometry-checked SVG technical diagrams, high-resolution PNG, validated SVG-to-GIF semantic motion, and sanitized offline interactive HTML.
 
 ## Runtime Compatibility
 
@@ -28,7 +28,7 @@ Every command block below sets `SKILL_ROOT` itself. In Codex, replace `/absolute
 
 ## Helper Scripts (Recommended)
 
-The unified `scripts/fireworks.py` CLI and compatibility helpers provide stable rendering, geometry validation, inspection, and export:
+The unified `scripts/fireworks.py` CLI and compatibility helpers provide stable rendering, geometry validation, inspection, animation, and export:
 
 ### 1. `generate-diagram.sh` - Validate SVG + export PNG
 ```bash
@@ -86,7 +86,7 @@ SKILL_ROOT="${CLAUDE_SKILL_DIR:-/absolute/path/from-codex-skill-metadata}"
 8. **Write SVG** with adaptive strategy (see SVG Generation Strategy below)
 9. **Validate**: Run `"$SKILL_ROOT/scripts/validate-svg.sh" file.svg` to check XML, markers, geometry, composition budgets, and renderability
 10. **Export PNG**: Use `cairosvg` (recommended). Load `$SKILL_ROOT/references/png-export.md` when choosing another renderer
-11. **Report** the generated file paths
+11. **Animate on request** — `让这张图动起来` / `生成 GIF` / `制作 GIF` / `Animate this diagram` / `Generate a GIF` means the latest generated semantic SVG to one GIF with `auto`, 5.75s, 20fps, and 960px width when that SVG satisfies one of the 12 approved motion contracts. Exact source bytes are not pinned, but role/stage/order coverage, route directions, required colors, and geometry fail closed; do not claim arbitrary same-style topologies are supported. Load `$SKILL_ROOT/references/motion-effects.md`, run `fireworks.py animate`, and report SVG/GIF/report paths. GIF is the only motion media format, while the default command also emits `<output>.motion.json`. Styles 1–12 are enabled, and their contracts plus the shared `+2s-settled-flow` timing revision are user-approved; the default keeps frames 38–109 at full opacity and resets on frames 110–114. Every scene begins connector-free and advances its moving primitives toward each target. The 75-vs-115 compatibility gate counts binary-exact frames first, decoded-RGBA-exact frames second, and permits a guarded antialias equivalent only when AE ≤ 128, normalized RMSE ≤ 0.001, every difference component is at most 2px wide or high, and all differences remain on edge or node borders; DOM and signature geometry stay strict-exact. Reject raster animation inputs and non-GIF motion outputs. Explicit 3.75s/75-frame and 2.75s/55-frame timelines remain supported
 12. **Visual review gate** — if your runtime can read images, load the exported PNG back and inspect it. Syntactic validity does not guarantee visual correctness: arrows may cross through component interiors, labels may collide with lifelines or other labels, boxes may overlap, alt-frame text may sit on top of a message, or a legend may cover content. If you see any of these, revise the SVG and re-export, with at most two focused correction passes. Common fixes:
     - Route arrows through gaps between boxes, not through box interiors
     - Move arrow labels 6-8px away from the arrow line (offset-first); add background rects only when offset is insufficient
@@ -457,7 +457,7 @@ python3 -c "import cairosvg; cairosvg.svg2png(url='file.svg', write_to='/tmp/tes
 
 - **Default**: `./[derived-name].svg` and `./[derived-name].png` in current directory
 - **Custom**: user specifies path with `--output /path/` or `输出到 /path/`
-- **PNG export**: see **SVG → PNG Conversion** below
+- **PNG / motion export**: see **SVG → PNG Conversion** below and `$SKILL_ROOT/references/motion-effects.md`
 
 ## SVG → PNG Conversion
 
@@ -486,7 +486,7 @@ Load the matching `$SKILL_ROOT/references/style-N-*.md` for exact color tokens a
 
 **Default**: Style 1 (Flat Icon) for most diagrams. Load `$SKILL_ROOT/references/style-diagram-matrix.md` for detailed style-to-diagram-type recommendations.
 
-Prompt fingerprints: `C4评审画布/C4 review board` → 9; `多区域云部署/deployment topology` → 10; `事件地铁图/event metro map` → 11; `可靠性脉冲/golden signals trace` → 12.
+Prompt fingerprints: `C4评审画布/C4 review board` → 9; `多区域云部署/deployment topology` → 10; `事件地铁图/event metro map` → 11; `可靠性脉冲/golden signals trace` → 12; `让这张图动起来/生成 GIF/制作 GIF/animate this diagram/Generate a GIF` → auto motion.
 Auto-select these only with matching domain evidence; otherwise use Styles 1–7 or `semantic_profile: "generic"`, and split mixed C4/deployment/event/ops views.
 
 These patterns appear frequently — internalize them:

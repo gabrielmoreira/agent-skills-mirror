@@ -43,7 +43,9 @@
 </tr>
 <tr>
 <td width="50%">
-  <img src="docs/screenshots/7.png" alt="Code review with hunk-level controls" width="100%" />
+  <!-- <img src="docs/screenshots/7.png" alt="Code review with hunk-level controls" width="100%" /> -->
+  <img width="1312" height="824" alt="image" src="https://github.com/user-attachments/assets/74f4c6fe-9a0e-4631-a283-b894ed9a0263" />
+
 </td>
 <td width="50%">
   <!-- <img src="docs/screenshots/4.png" alt="Create an AI team with roles and models" width="100%" /> -->
@@ -52,7 +54,7 @@
 </tr>
 <tr>
 <td width="50%">
-  <img width="1312" height="824" alt="image" src="https://github.com/user-attachments/assets/3b5d1a00-5e10-4e0a-902c-214c1266793d" />
+  <img width="1312" height="826" alt="image" src="https://github.com/user-attachments/assets/9b7339c3-9390-45c1-83ce-423ec9deb6d7" />
 </td>
 <td width="50%">
   <img width="1312" height="820" alt="image" src="https://github.com/user-attachments/assets/e78c2229-5d40-4615-bbee-79b0bc611d51" />

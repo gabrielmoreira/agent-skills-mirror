@@ -443,11 +443,15 @@ func (c *Client) discover(ctx context.Context, cs *ClientSession) (*InitializeRe
 		}
 	}
 
+	var serverInfo *Implementation
+	if v, ok := decodeMetaValue[*Implementation](res.GetMeta(), MetaKeyServerInfo); ok {
+		serverInfo = v
+	}
 	return &InitializeResult{
 		Capabilities:    res.Capabilities,
 		Instructions:    res.Instructions,
 		ProtocolVersion: negotiated,
-		ServerInfo:      res.ServerInfo,
+		ServerInfo:      serverInfo,
 	}, nil
 }
 
@@ -509,9 +513,12 @@ func (cs *ClientSession) usesNewProtocol() bool {
 	return res != nil && res.ProtocolVersion >= protocolVersion20260728
 }
 
-// injectRequestMeta populates the SEP-2575 per-request `_meta` triple
-// (protocolVersion, clientInfo, clientCapabilities) on the given outgoing
-// request params. Keys already present in params.Meta are not overwritten.
+// injectRequestMeta populates the SEP-2575 per-request `_meta` fields
+// (protocolVersion, optional clientInfo, clientCapabilities) on the given
+// outgoing request params. Keys already present in params.Meta are not
+// overwritten. Per PR modelcontextprotocol/modelcontextprotocol#3002
+// clientInfo is SHOULD (not MUST), and is omitted when the client has no
+// [Implementation] configured.
 func injectRequestMeta[T any, P interface {
 	*T
 	Params
@@ -527,7 +534,7 @@ func injectRequestMeta[T any, P interface {
 	if _, ok := m[MetaKeyProtocolVersion]; !ok {
 		m[MetaKeyProtocolVersion] = res.ProtocolVersion
 	}
-	if _, ok := m[MetaKeyClientInfo]; !ok {
+	if _, ok := m[MetaKeyClientInfo]; !ok && cs.client.impl != nil {
 		m[MetaKeyClientInfo] = cs.client.impl
 	}
 	if _, ok := m[MetaKeyClientCapabilities]; !ok {

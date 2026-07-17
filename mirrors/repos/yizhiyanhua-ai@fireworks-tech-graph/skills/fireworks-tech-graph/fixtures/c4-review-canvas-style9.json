@@ -3,6 +3,7 @@
   "mode": "architecture",
   "template_type": "architecture",
   "style": 9,
+  "motion_scene": "review-trace",
   "semantic_profile": "c4-review",
   "diagram_type": "c4",
   "c4_level": "container",
@@ -114,6 +115,9 @@
       "source_port": "right",
       "target_port": "left",
       "flow": "read",
+      "motion_role": "review-entry",
+      "motion_stage": 1,
+      "motion_order": 0,
       "label": "start",
       "protocol": "HTTPS"
     },
@@ -124,6 +128,9 @@
       "source_port": "right",
       "target_port": "left",
       "flow": "control",
+      "motion_role": "review-request",
+      "motion_stage": 2,
+      "motion_order": 0,
       "label": "order",
       "protocol": "JSON/HTTPS"
     },
@@ -134,6 +141,9 @@
       "source_port": "bottom",
       "target_port": "top",
       "flow": "async",
+      "motion_role": "review-async",
+      "motion_stage": 3,
+      "motion_order": 0,
       "label": "enqueue",
       "protocol": "Kafka"
     },
@@ -144,6 +154,9 @@
       "source_port": "left",
       "target_port": "right",
       "flow": "write",
+      "motion_role": "review-state",
+      "motion_stage": 4,
+      "motion_order": 0,
       "label": "save",
       "protocol": "SQL"
     },
@@ -154,6 +167,9 @@
       "source_port": "right",
       "target_port": "left",
       "flow": "control",
+      "motion_role": "review-external",
+      "motion_stage": 4,
+      "motion_order": 1,
       "label": "authorize",
       "protocol": "HTTPS"
     }

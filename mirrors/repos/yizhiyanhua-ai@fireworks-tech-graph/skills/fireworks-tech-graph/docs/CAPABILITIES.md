@@ -27,9 +27,10 @@
 
 ## Output
 
-- SVG is the canonical artifact and carries `data-graph-role`, style, diagram-type, semantic-profile, semantic-role, edge-kind, topic, and critical-path metadata.
+- SVG is the canonical artifact and carries `data-graph-role`, style, diagram-type, semantic-profile, semantic-role, edge-kind, topic, flow, station-order, status, critical-hop, and trace-timing metadata.
 - PNG export uses CairoSVG or `rsvg-convert` in the shell workflow.
-- Offline interactive HTML supports pan, zoom, reset, light/dark themes, SVG copy, and SVG/PNG/JPEG/WebP export at 1×–4×.
+- Optional motion export has one media contract: a generated semantic SVG carrying one of the 12 approved role/stage/order scene contracts becomes a validated GIF plus its JSON verification report. Exact source bytes are not pinned, but unsupported same-style topologies fail closed. The user-approved 5.75s/115-frame default keeps construction at 1–36, live fade at 36–38, full settled flow at 38–109, and reset at 110–114. Styles 1–12 and the shared `+2s-settled-flow` timing revision retain `user-approved` status. Timelines through 75 frames remain all-unique. Longer timelines require at least 75 unique rasters and zero adjacent duplicates. Repeats stay inside the full-opacity interval except frame 110, the sole `intentional_reset_boundary_repeat` allowed by its unchanged 1.00 reset opacity; frames 111–114 remain globally distinct. The 75-vs-115 compatibility report separates binary-exact, decoded-RGBA-exact, and guarded antialias-equivalent counts. The guarded tier requires AE ≤ 128, normalized RMSE ≤ 0.001, components no thicker than 2px, and edge/node-border-only scope while DOM and signature geometry remain strict-exact. Direction/source-DOM guards, FFprobe validation, infinite looping, and atomic GIF/report installation remain mandatory.
+- The single-SVG offline HTML viewer remains independent of motion and supports pan, zoom, reset, themes, copy, and static SVG/PNG/JPEG/WebP export.
 - Interactive export rejects active elements, event handlers, external references, `foreignObject`, and external CSS.
 
 ## Distribution

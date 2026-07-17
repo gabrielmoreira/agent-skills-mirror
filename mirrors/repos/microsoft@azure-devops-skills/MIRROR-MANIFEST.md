@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/azure-devops-skills` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `microsoft/azure-devops-skills` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/azure-devops-skills` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,12 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/skills/boards-my-work/SKILL.md`](.github/skills/boards-my-work/SKILL.md) |
-| 2 | ✓ | [`.github/skills/boards-work-item-summary/SKILL.md`](.github/skills/boards-work-item-summary/SKILL.md) |
-| 3 | ✓ | [`.github/skills/pipelines-build-summary/SKILL.md`](.github/skills/pipelines-build-summary/SKILL.md) |
-| 4 | ✓ | [`.github/skills/security-alert-review/SKILL.md`](.github/skills/security-alert-review/SKILL.md) |
-| 5 | ✓ | [`.github/skills/work-iterations/SKILL.md`](.github/skills/work-iterations/SKILL.md) |
-| 6 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
+| 1 | ✓ | [`.github/skills/boards-backlog-summary/SKILL.md`](.github/skills/boards-backlog-summary/SKILL.md) |
+| 2 | ✓ | [`.github/skills/boards-my-work/SKILL.md`](.github/skills/boards-my-work/SKILL.md) |
+| 3 | ✓ | [`.github/skills/boards-team-active-work/SKILL.md`](.github/skills/boards-team-active-work/SKILL.md) |
+| 4 | ✓ | [`.github/skills/boards-work-item-summary/SKILL.md`](.github/skills/boards-work-item-summary/SKILL.md) |
+| 5 | ✓ | [`.github/skills/pipelines-build-summary/SKILL.md`](.github/skills/pipelines-build-summary/SKILL.md) |
+| 6 | ✓ | [`.github/skills/security-alert-review/SKILL.md`](.github/skills/security-alert-review/SKILL.md) |
+| 7 | ✓ | [`.github/skills/work-iterations/SKILL.md`](.github/skills/work-iterations/SKILL.md) |
+| 8 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
 
 ---
 

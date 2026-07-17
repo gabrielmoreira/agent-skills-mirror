@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 17 followed patterns, 48 file(s) materialized.
+Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 17 followed patterns, 52 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 17 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 17 |
-| Files         | 48 |
+| Files         | 52 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,42 +87,46 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`docs/contributor-guide/validation.md`](docs/contributor-guide/validation.md) |
 | 11 | ✓ | [`docs/reference/settings.md`](docs/reference/settings.md) |
 | 12 | ✓ | [`lib/README.md`](lib/README.md) |
-| 13 | ✓ | [`resources/skills/prompt-registry-helper/SKILL.md`](resources/skills/prompt-registry-helper/SKILL.md) |
-| 14 | ✓ | [`scripts/README.md`](scripts/README.md) |
-| 15 | ✓ | [`src/adapters/AGENTS.md`](src/adapters/AGENTS.md) |
-| 16 | ✓ | [`src/adapters/CLAUDE.md`](src/adapters/CLAUDE.md) |
-| 17 | ✓ | [`src/config/README.md`](src/config/README.md) |
-| 18 | ✓ | [`src/services/AGENTS.md`](src/services/AGENTS.md) |
-| 19 | ✓ | [`src/services/CLAUDE.md`](src/services/CLAUDE.md) |
-| 20 | ✓ | [`templates/scaffolds/github/docs/example-collection/README.md`](templates/scaffolds/github/docs/example-collection/README.md) |
-| 21 | ✓ | [`templates/scaffolds/github/mcp-server/README.md`](templates/scaffolds/github/mcp-server/README.md) |
-| 22 | ✓ | [`templates/scaffolds/github/scripts/README.md`](templates/scaffolds/github/scripts/README.md) |
-| 23 | ✓ | [`templates/scaffolds/github/skills/example-skill/SKILL.md`](templates/scaffolds/github/skills/example-skill/SKILL.md) |
-| 24 | ✓ | [`templates/scaffolds/README.md`](templates/scaffolds/README.md) |
-| 25 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 26 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
-| 27 | ✓ | [`test/e2e/AGENTS.md`](test/e2e/AGENTS.md) |
-| 28 | ✓ | [`test/e2e/CLAUDE.md`](test/e2e/CLAUDE.md) |
-| 29 | ✓ | [`test/fixtures/local-awesome-collections/skills/analyzer/SKILL.md`](test/fixtures/local-awesome-collections/skills/analyzer/SKILL.md) |
-| 30 | ✓ | [`test/fixtures/local-awesome-collections/skills/reporter/SKILL.md`](test/fixtures/local-awesome-collections/skills/reporter/SKILL.md) |
-| 31 | ✓ | [`test/fixtures/README.md`](test/fixtures/README.md) |
-| 32 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 33 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 34 | → | [`docs/author-guide/creating-source-bundle.md`](docs/author-guide/creating-source-bundle.md) |
-| 35 | → | [`docs/contributor-guide/architecture.md`](docs/contributor-guide/architecture.md) |
-| 36 | → | [`docs/contributor-guide/coding-standards.md`](docs/contributor-guide/coding-standards.md) |
-| 37 | → | [`docs/contributor-guide/core-flows.md`](docs/contributor-guide/core-flows.md) |
-| 38 | → | [`docs/contributor-guide/development-setup.md`](docs/contributor-guide/development-setup.md) |
-| 39 | → | [`docs/README.md`](docs/README.md) |
-| 40 | → | [`docs/reference/commands.md`](docs/reference/commands.md) |
-| 41 | → | [`docs/user-guide/configuration.md`](docs/user-guide/configuration.md) |
-| 42 | → | [`docs/user-guide/getting-started.md`](docs/user-guide/getting-started.md) |
-| 43 | → | [`docs/user-guide/marketplace.md`](docs/user-guide/marketplace.md) |
-| 44 | → | [`docs/user-guide/profiles-and-hubs.md`](docs/user-guide/profiles-and-hubs.md) |
-| 45 | → | [`docs/user-guide/sources.md`](docs/user-guide/sources.md) |
-| 46 | → | [`docs/user-guide/troubleshooting.md`](docs/user-guide/troubleshooting.md) |
-| 47 | → | [`README.md`](README.md) |
-| 48 | → | [`SECURITY.md`](SECURITY.md) |
+| 13 | ✓ | [`packages/app/README.md`](packages/app/README.md) |
+| 14 | ✓ | [`packages/core/README.md`](packages/core/README.md) |
+| 15 | ✓ | [`packages/infra/README.md`](packages/infra/README.md) |
+| 16 | ✓ | [`packages/README.md`](packages/README.md) |
+| 17 | ✓ | [`resources/skills/prompt-registry-helper/SKILL.md`](resources/skills/prompt-registry-helper/SKILL.md) |
+| 18 | ✓ | [`scripts/README.md`](scripts/README.md) |
+| 19 | ✓ | [`src/adapters/AGENTS.md`](src/adapters/AGENTS.md) |
+| 20 | ✓ | [`src/adapters/CLAUDE.md`](src/adapters/CLAUDE.md) |
+| 21 | ✓ | [`src/config/README.md`](src/config/README.md) |
+| 22 | ✓ | [`src/services/AGENTS.md`](src/services/AGENTS.md) |
+| 23 | ✓ | [`src/services/CLAUDE.md`](src/services/CLAUDE.md) |
+| 24 | ✓ | [`templates/scaffolds/github/docs/example-collection/README.md`](templates/scaffolds/github/docs/example-collection/README.md) |
+| 25 | ✓ | [`templates/scaffolds/github/mcp-server/README.md`](templates/scaffolds/github/mcp-server/README.md) |
+| 26 | ✓ | [`templates/scaffolds/github/scripts/README.md`](templates/scaffolds/github/scripts/README.md) |
+| 27 | ✓ | [`templates/scaffolds/github/skills/example-skill/SKILL.md`](templates/scaffolds/github/skills/example-skill/SKILL.md) |
+| 28 | ✓ | [`templates/scaffolds/README.md`](templates/scaffolds/README.md) |
+| 29 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 30 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
+| 31 | ✓ | [`test/e2e/AGENTS.md`](test/e2e/AGENTS.md) |
+| 32 | ✓ | [`test/e2e/CLAUDE.md`](test/e2e/CLAUDE.md) |
+| 33 | ✓ | [`test/fixtures/local-awesome-collections/skills/analyzer/SKILL.md`](test/fixtures/local-awesome-collections/skills/analyzer/SKILL.md) |
+| 34 | ✓ | [`test/fixtures/local-awesome-collections/skills/reporter/SKILL.md`](test/fixtures/local-awesome-collections/skills/reporter/SKILL.md) |
+| 35 | ✓ | [`test/fixtures/README.md`](test/fixtures/README.md) |
+| 36 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 37 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 38 | → | [`docs/author-guide/creating-source-bundle.md`](docs/author-guide/creating-source-bundle.md) |
+| 39 | → | [`docs/contributor-guide/architecture.md`](docs/contributor-guide/architecture.md) |
+| 40 | → | [`docs/contributor-guide/coding-standards.md`](docs/contributor-guide/coding-standards.md) |
+| 41 | → | [`docs/contributor-guide/core-flows.md`](docs/contributor-guide/core-flows.md) |
+| 42 | → | [`docs/contributor-guide/development-setup.md`](docs/contributor-guide/development-setup.md) |
+| 43 | → | [`docs/README.md`](docs/README.md) |
+| 44 | → | [`docs/reference/commands.md`](docs/reference/commands.md) |
+| 45 | → | [`docs/user-guide/configuration.md`](docs/user-guide/configuration.md) |
+| 46 | → | [`docs/user-guide/getting-started.md`](docs/user-guide/getting-started.md) |
+| 47 | → | [`docs/user-guide/marketplace.md`](docs/user-guide/marketplace.md) |
+| 48 | → | [`docs/user-guide/profiles-and-hubs.md`](docs/user-guide/profiles-and-hubs.md) |
+| 49 | → | [`docs/user-guide/sources.md`](docs/user-guide/sources.md) |
+| 50 | → | [`docs/user-guide/troubleshooting.md`](docs/user-guide/troubleshooting.md) |
+| 51 | → | [`README.md`](README.md) |
+| 52 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

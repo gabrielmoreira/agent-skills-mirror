@@ -1,7 +1,7 @@
 {
   "name": "@yizhiyanhua-ai/fireworks-tech-graph",
-  "version": "1.1.0",
-  "description": "Agent Skill and CLI for Codex and Claude Code that generates geometry-safe SVG technical diagrams and offline interactive exports.",
+  "version": "1.2.0",
+  "description": "Agent Skill and CLI for geometry-safe technical diagrams, focused SVG-to-GIF motion, and offline HTML.",
   "keywords": [
     "claude-code",
     "codex",
@@ -15,7 +15,9 @@
     "uml",
     "sequence-diagram",
     "er-diagram",
-    "visualization"
+    "visualization",
+    "animation",
+    "gif"
   ],
   "author": "yizhiyanhua-ai",
   "license": "MIT",

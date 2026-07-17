@@ -761,7 +761,7 @@ function validateValueShape(value, defaultValue, field, errors, warnings = [], e
         errors.push(`${field}[${index}]: expected object item`);
         return;
       }
-      validateObjectShape(item, shape, `${field}[${index}]`, errors, warnings, enumFields, numberBounds, defaultValue[index]);
+      validateObjectShape(item, shape, `${field}[${index}]`, errors, warnings, enumFields, numberBounds, defaultValue[index], defaultValue);
     });
     return;
   }
@@ -779,7 +779,7 @@ function isRawMatrixProp(key) {
   return String(key || '') === 'matrix';
 }
 
-function validateObjectShape(value, shape, field, errors, warnings = [], enumFields = new Map(), numberBounds = new Map(), posDefault = undefined) {
+function validateObjectShape(value, shape, field, errors, warnings = [], enumFields = new Map(), numberBounds = new Map(), posDefault = undefined, siblingRows = undefined) {
   const allowed = new Set(Object.keys(shape || {}));
   for (const [key, item] of Object.entries(value || {})) {
     if (!allowed.has(key)) {
@@ -812,6 +812,17 @@ function validateObjectShape(value, shape, field, errors, warnings = [], enumFie
       const mergedErrors = [];
       validateValueShape(item, shape[key], `${field}.${key}`, mergedErrors, warnings);
       if (!mergedErrors.length) continue;
+      // 第三轨:任一兄弟行的同名字段作为校验基准通过 → 跨行联合类型
+      // (勾选表格某行 vals 全 boolean、另一行全 string,单元格级翻转应被允许)
+      if (Array.isArray(siblingRows)) {
+        const passedSibling = siblingRows.some(row => {
+          if (!row || typeof row !== 'object' || !(key in row) || row[key] === posDefault[key]) return false;
+          const sibErrors = [];
+          validateValueShape(item, row[key], `${field}.${key}`, sibErrors, []);
+          return !sibErrors.length;
+        });
+        if (passedSibling) continue;
+      }
       errors.push(...posErrors);
       continue;
     }
@@ -856,7 +867,7 @@ function validatePrimitiveValue(value, expected, defaultValue, field, errors) {
   }
 }
 
-function enumFieldsForArrayItems(items = [], excludedFields = null) {
+export function enumFieldsForArrayItems(items = [], excludedFields = null) {
   const result = new Map();
   const objects = items.filter(isPlainObject);
   const keys = new Set(objects.flatMap(item => Object.keys(item)));
@@ -1111,11 +1122,17 @@ export function isNonContentContractValue(pathName, value) {
     // pins/photos 等媒体名数组:若项内没有任何媒体源字段、却带 CJK 文案(标注点文字、
     // 始终可见的照片图注),它是内容数组而非媒体数组,不整体剪(theme11 pins、theme08 photos)
     const rows = Array.isArray(value) ? value.filter(isPlainObject) : [];
-    const hasMediaSource = rows.some(row => Object.keys(row).some(k => /^(src|url|image|img|poster|video|href)$/i.test(k)));
-    const hasCjkCopy = rows.some(row => Object.values(row).some(v => typeof v === 'string' && /[一-龥]/.test(v)));
-    if (rows.length && !hasMediaSource && hasCjkCopy) {
+    // 项内带 CJK 文本(标注文字、照片图注)即视为内容数组,不整体剪 —— 媒体源字段(src/url)
+    // 由字段级黑名单单独剪除;纯媒体数组(无文本)照旧整体排除。
+    const hasCjkCopy = rows.some(row => Object.entries(row).some(([k, v]) =>
+      typeof v === 'string' && /[一-龥]/.test(v) && !/^(src|url|image|img|poster|video|href)$/i.test(k)));
+    if (rows.length && hasCjkCopy) {
       return isColorArray(value);
     }
+    if (Array.isArray(value)) return true;
+    // 媒体名命中但值是单个项对象(photos[] 的递归项):交给下方对象/字段级判定,
+    // 项内文本字段(caption/tag)保留、媒体源字段由字段级黑名单剪除。
+    if (isPlainObject(value)) return NON_CONTENT_FIELD_PATTERN.test(field);
     return true;
   }
   if (Array.isArray(value)) return isColorArray(value) || isVisualContainerPath(pathName);

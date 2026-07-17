@@ -3,6 +3,7 @@
   "mode": "memory",
   "template_type": "memory",
   "style": 1,
+  "motion_scene": "memory-weave",
   "quality_profile": "showcase",
   "width": 960,
   "height": 680,
@@ -25,14 +26,14 @@
     { "id": "response", "kind": "speech", "x": 700, "y": 500, "width": 160, "height": 60, "label": "Personalized Reply", "sublabel": "ranked context", "fill": "#faf5ff", "stroke": "#8b5cf6", "flat": true }
   ],
   "arrows": [
-    { "id": "request", "source": "user", "target": "app", "source_port": "right", "target_port": "left", "flow": "control", "label": "message" },
-    { "id": "reason", "source": "app", "target": "llm", "source_port": "right", "target_port": "left", "flow": "control", "label": "reason" },
-    { "id": "extract", "source": "app", "target": "extractor", "source_port": "bottom", "target_port": "top", "flow": "data", "label": "extract", "corridor_y": [240] },
-    { "id": "facts", "source": "extractor", "target": "manager", "source_port": "right", "target_port": "left", "flow": "data", "label": "facts" },
-    { "id": "resolved", "source": "resolver", "target": "manager", "source_port": "left", "target_port": "right", "flow": "feedback", "label": "resolved" },
-    { "id": "write", "source": "manager", "target": "vector", "source_port": "bottom", "target_port": "top", "flow": "write", "label": "write", "corridor_y": [420] },
-    { "id": "relate", "source": "vector", "target": "graph", "source_port": "right", "target_port": "left", "flow": "read", "label": "retrieve" },
-    { "id": "context", "source": "graph", "target": "response", "source_port": "right", "target_port": "left", "flow": "control", "label": "context" }
+    { "id": "request", "source": "user", "target": "app", "source_port": "right", "target_port": "left", "flow": "control", "motion_role": "ingress", "motion_stage": 1, "motion_order": 0, "label": "message" },
+    { "id": "reason", "source": "app", "target": "llm", "source_port": "right", "target_port": "left", "flow": "control", "motion_role": "reason", "motion_stage": 2, "motion_order": 0, "label": "reason" },
+    { "id": "extract", "source": "app", "target": "extractor", "source_port": "bottom", "target_port": "top", "flow": "data", "motion_role": "extract", "motion_stage": 3, "motion_order": 0, "label": "extract", "corridor_y": [240] },
+    { "id": "facts", "source": "extractor", "target": "manager", "source_port": "right", "target_port": "left", "flow": "data", "motion_role": "transform", "motion_stage": 4, "motion_order": 0, "label": "facts" },
+    { "id": "resolved", "source": "resolver", "target": "manager", "source_port": "left", "target_port": "right", "flow": "feedback", "motion_role": "resolve", "motion_stage": 4, "motion_order": 1, "label": "resolved" },
+    { "id": "write", "source": "manager", "target": "vector", "source_port": "bottom", "target_port": "top", "flow": "write", "motion_role": "memory-write", "motion_stage": 5, "motion_order": 0, "label": "write", "corridor_y": [420] },
+    { "id": "relate", "source": "vector", "target": "graph", "source_port": "right", "target_port": "left", "flow": "read", "motion_role": "memory-read", "motion_stage": 6, "motion_order": 0, "label": "retrieve" },
+    { "id": "context", "source": "graph", "target": "response", "source_port": "right", "target_port": "left", "flow": "control", "motion_role": "response-context", "motion_stage": 7, "motion_order": 0, "label": "context" }
   ],
   "legend_orientation": "horizontal",
   "legend_x": 48,

@@ -1,8 +1,6 @@
 ---
 name: openloomi-feature-guide
 description: "Use this when users ask about openloomi features, capabilities, or how to use it. Examples: 'openloomi 怎么用', '你能做什么', 'What can you do?', 'How does openloomi work?', 'Tell me about openloomi features', 'What platforms does openloomi support?', 'How do I use scheduled tasks?', 'What is Insights system?', 'How do I connect Telegram?', 'How to create automation?', '什么是 openloomi 事件?'"
-metadata:
-  version: 0.7.7
 ---
 
 > **Note:** If you haven't downloaded or installed openloomi yet, please refer to [Getting Started](https://openloomi.ai/docs/getting-started) for installation instructions.
@@ -324,8 +322,6 @@ All data in the desktop app — including messages, conversations, scheduled tas
 ## Permissions
 
 When you first launch openloomi, the system may ask for a few permissions. Each one has a specific purpose — and **you can decline any of them**. openloomi will continue to work; you'll just lose the feature that requires that permission.
-
-> **Privacy note:** openloomi processes data locally on your machine. Message content is never sent to third-party servers without your consent. [See our Privacy Policy →](https://app.alloomi.ai/privacy)
 
 ### macOS
 
@@ -1017,5 +1013,3 @@ Step 4/4: What You'll Receive
 
 - openloomi website: https://openloomi.ai
 - openloomi documents: https://openloomi.ai/docs
-- Terms of Service: https://app.alloomi.ai/terms
-- Privacy Policy: https://app.alloomi.ai/privacy

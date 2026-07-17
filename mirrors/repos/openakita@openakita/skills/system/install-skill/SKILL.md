@@ -32,5 +32,4 @@ category: Skills Management
 ## Related Skills
 
 - `list-skills`: 查看已安装技能
-- `find-skills`: 搜索可用技能
-
+- `search-store-skills`: 搜索技能商店

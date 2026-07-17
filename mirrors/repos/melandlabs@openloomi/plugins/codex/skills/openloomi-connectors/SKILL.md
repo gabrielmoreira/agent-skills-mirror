@@ -1,9 +1,7 @@
 ---
 name: openloomi-connectors
-description: "Use OpenLoomi connector readiness guidance from Codex for Slack, Gmail, Calendar, GitHub, and other integrations. Trigger when users ask whether connectors are configured, need setup, or block a Loomi workflow."
+description: "Use OpenLoomi connector readiness guidance from Codex for Slack, Gmail, Calendar, GitHub, and other integrations. Trigger when users ask whether connectors are configured, need setup, or block a Loomi workflow. Pair with the composio skill to also list composio-linked accounts."
 allowed-tools: "Bash(node $SKILL_DIR/../../scripts/loomi-bridge.mjs *)"
-metadata:
-  version: 0.7.7
 ---
 
 # OpenLoomi Connectors
@@ -47,3 +45,12 @@ Do not treat this as core runtime failure when `ready: true`.
 accounts (for example Gmail or QQbot) as status-only connector rows. Report that
 connected state when present, but keep all authentication, sync, and account
 management inside OpenLoomi.
+
+For accounts connected through **Composio** (a broader 1000+ apps surface),
+treat the `composio` skill as a sibling status-only source. When the user asks
+"what am I connected to?" or "list all linked accounts", invoke the `composio`
+skill in parallel (`composio-cli list-connections`, or
+`mcp__composio__COMPOSIO_MANAGE_CONNECTIONS` with `action: "list"`) and merge
+its results with the `setup-status` connector rows before reporting. Keep
+authentication, OAuth, and disconnect flows native to each skill — do not route
+Composio auth or connection management through OpenLoomi.

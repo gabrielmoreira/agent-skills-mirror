@@ -1,93 +1,63 @@
 ---
 name: benchmarking
-description: Run runtime benchmark evaluations on enabled simulation targets, aggregate session artifacts, and write experiment reports.
-metadata: {"PhyAgentOS":{"always":false,"available":true,"requires":{"runtime":{"enabled":true,"target_kind":"simulation","skillruntime_kind":"policy"}}}}
+description: Select and run a declared Target benchmarking path, then aggregate its canonical artifacts.
+metadata: {"PhyAgentOS":{"always":false,"available":true,"requires":{"runtime":{"enabled":true,"target_kind":"simulation","benchmark":true}}}}
 ---
 
 # Benchmarking
 
-Use this skill when the user asks to evaluate a policy on a runtime simulation benchmark, run a benchmark sweep, compute success rates, or produce an experiment report from runtime sessions.
+Use this skill for policy evaluation, benchmark sweeps, success metrics, and experiment reports. Benchmarking always runs through a PAOS Session, Watchdog, SessionRunner, and a concrete SkillRuntime.
 
-This is an agent skill. It does not define a runtime skillruntime. Runtime execution still belongs to `TARGETS.md`, `SKILLRUNTIME.md`, `SESSIONS.md`, and the watchdog/session runner.
+## Capability discovery
 
-## Preconditions
+Read `RUNTIME.md`, `TARGETS.md`, `SKILLRUNTIME.md`, `SESSIONS.md`, and `LOG.md` before compiling a Session.
 
-Before creating sessions:
+1. Select an enabled Target whose `benchmark_capabilities[].benchmark_id` and `suites` match the request.
+2. Read that capability's `execution_modes`.
+3. Intersect the Target's `supported_skillruntimes` with SkillRuntimes whose structured `benchmark` declaration matches the same benchmark, execution mode, Target interface, result schema, and reset owner.
+4. Select one complete `(Target, execution_mode, SkillRuntime)` tuple. Never infer a mode from `runtime_kind` and never switch modes after Session creation.
 
-- Read `RUNTIME.md`, `TARGETS.md`, `SKILLRUNTIME.md`, `SESSIONS.md`, and `LOG.md` when present.
-- Use only targets with `enabled: true` and `target_kind: simulation`.
-- Use only skillruntimes listed by the selected target's `supported_skillruntimes`.
-- Use only supported skillruntimes whose `runtime_kind` is `policy`.
-- Prefer endpoints already declared in `TARGETS.md`; override endpoints only when the user explicitly provides them.
-- Preserve all existing sessions and results in `SESSIONS.md`.
+Stop when no exact tuple exists. Do not call a raw Target RPC, substitute another benchmark runtime, or downgrade to a different execution mode.
 
-If no enabled simulation target supports a policy skillruntime, stop and explain which runtime requirement is missing.
+## Path selection
 
-## Task Discovery
+- Select `policy_loop` when the request requires the standard PAOS observation-policy-action loop, one root Session per logical episode, or SessionVerifier evidence.
+- Select `target_native` when the request requires the Target's native suite scheduler, high-throughput execution, or episode-boundary recovery. Use the benchmark-specific builtin selected above; LIBERO uses `LiberoBenchmarkSkillRuntime`, while another benchmark must declare its own concrete runtime.
 
-Prefer live benchmark metadata when a remote target endpoint is configured:
+`agent_exposure` only controls interactive TargetTool exposure. It does not grant or deny a builtin's typed access through `TargetSessionHandle`.
 
-- Use TargetWS `target.describe` when available.
-- Extract `benchmark_name`, `num_tasks`, `task_list`, task language, and any action or observation contract metadata.
-- Treat `task_list` entries as the authoritative task source for session generation.
+## Session construction
 
-When live discovery is unavailable, fall back to `TARGETS.md`:
+Every benchmark Session records `target_ref`, `skillruntime_ref`, top-level `verification_profile`, and benchmark metadata containing `benchmark_id`, `suite_id`, `execution_mode`, `policy_id`, and `run_id`.
 
-- Use `config.benchmark_name`, `config.task_id`, `config.init_state_id`, and any task description already present.
-- Record in the report that task discovery used static target config rather than live target metadata.
+Preserve evaluation parameters declared by the benchmark or user. Put policy
+refresh cadence in `execution.replan_every_steps` (and the matching preferred
+runtime hint when required by the runtime); this is the number of action steps
+consumed before requesting a new policy response, not a verification retry.
+Keep environment seed, control mode, and `retry_instruction_mode` in Target
+configuration. `retry_instruction_mode` is `original` by default; select
+`verifier_rewrite` only when recovery attempts should use the verifier's
+nonempty `replan_task_description` as their policy instruction.
 
-## Session Construction
+For `policy_loop`:
 
-Append one pending session per selected task and init-state pair to `SESSIONS.md`.
+- append one root Session per task/init-state;
+- set `execution.reset_policy: session_runner`;
+- use a policy SkillRuntime and a policy endpoint.
 
-Each session must use the existing runtime session schema:
+For `target_native`:
 
-- `session_id`: stable, unique, benchmark-readable id.
-- `target_ref`: `target://<target_id>`.
-- `skillruntime_ref`: `skillruntime://<policy_skillruntime_id>`.
-- `task_description`: task language from `target.describe` when available.
-- `status`: `pending`.
-- `routing`: target and policy endpoints from target config or explicit user override.
-- `execution`: benchmark-appropriate `max_steps`, `replan_every_steps`, and `action_chunk_mode`.
-- `timeouts`: long enough for the selected simulation benchmark.
-- `safety_profile.profile`: simulation-specific profile such as `default_simulation`.
-- `result`: `{}`.
+- append one root Session for the complete suite/run;
+- set `execution.reset_policy: skillruntime_managed`;
+- use the benchmark-specific BuiltinSkillRuntime;
+- put the selected task/init-state ranges in the runtime hints expected by that concrete runtime.
 
-Do not instantiate `SessionRunner` directly for normal benchmark work. Let the watchdog claim and execute pending sessions so results are written through the standard runtime path.
+Verification profiles are `strict`, `audit`, and `recovery`. Do not copy provider, endpoint, timeout, retention, or budget settings into the Session; those are Agent-global configuration. Policy-loop SessionVerifier and target-native episode verification both use the Agent-owned Verification Service, but a target-native root Session is not verified again by SessionVerifier.
 
-## Result Aggregation
+Append pending Sessions without modifying existing Session history. Execution must be claimed by the Watchdog; never instantiate SessionRunner or call `target.benchmark.*` directly from the Agent.
 
-After sessions finish, read:
+## Results
 
-- `SESSIONS.md` for final session status and `result`.
-- `LOG.md` for runtime session history.
-- `artifacts/runtime/<session_id>/episode.json` for benchmark episode details.
+Wait for the canonical terminal Session state, then use the benchmark artifact manifest and summary. Report official `first_attempt_score` separately from `assisted_final_score`. Include configured/effective/consumed verifier budget, episode and attempt counts, recovery counts, latency, failures, and artifact references. Do not reconstruct compacted episode arrays from `SESSIONS.md`.
 
-Compute at least:
-
-- total episodes, successful episodes, and success rate.
-- per-task success rate when task ids are available.
-- mean steps and median steps for completed episodes.
-- mean return or reward when present.
-- timeout, rejected, failed, and cancelled counts.
-- common `error_code` values and representative failure messages.
-
-Use `episode.json["benchmark"]` first for benchmark-specific fields, then fall back to `result.metadata.final_status` and session-level fields.
-
-## Report Writing
-
-Write a Markdown experiment report in the workspace. Use a filename that includes the benchmark and date or run id, for example `BENCHMARK_REPORT_libero_spatial.md`.
-
-Match the report style to the simulation benchmark when recognizable. For LIBERO-style benchmarks, include:
-
-- title with benchmark name, target, policy skillruntime, and run timestamp.
-- experimental setup.
-- benchmark suite and task split.
-- policy and runtime configuration.
-- metrics.
-- aggregate results table.
-- per-task results table.
-- failure analysis with error-code summary.
-- reproducibility notes, including endpoints, session ids, max steps, replan settings, and artifact locations.
-
-Keep raw logs in their original runtime files. The report should summarize and link to artifacts instead of duplicating full traces.
+Write the experiment report in the workspace with the benchmark id and run id in its filename. Keep full task, episode, attempt, verifier, and failure records in their canonical artifacts rather than duplicating them into the report.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `chuspeeism/dashiAI-ppt-skill` — 26 default patterns, 0 followed patterns, 360 file(s) materialized.
+Mirror of `chuspeeism/dashiAI-ppt-skill` — 26 default patterns, 0 followed patterns, 361 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `chuspeeism/dashiAI-ppt-skill` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 360 |
+| Files         | 361 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -417,8 +417,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 356 | ✓ | [`skills/dashi-ppt/references/layout-roles.md`](skills/dashi-ppt/references/layout-roles.md) |
 | 357 | ✓ | [`skills/dashi-ppt/references/options.md`](skills/dashi-ppt/references/options.md) |
 | 358 | ✓ | [`skills/dashi-ppt/scripts/check_latest_version.mjs`](skills/dashi-ppt/scripts/check_latest_version.mjs) |
-| 359 | ✓ | [`skills/dashi-ppt/scripts/render_goal_deck.sh`](skills/dashi-ppt/scripts/render_goal_deck.sh) |
-| 360 | ✓ | [`skills/dashi-ppt/SKILL.md`](skills/dashi-ppt/SKILL.md) |
+| 359 | ✓ | [`skills/dashi-ppt/scripts/render_goal_deck.ps1`](skills/dashi-ppt/scripts/render_goal_deck.ps1) |
+| 360 | ✓ | [`skills/dashi-ppt/scripts/render_goal_deck.sh`](skills/dashi-ppt/scripts/render_goal_deck.sh) |
+| 361 | ✓ | [`skills/dashi-ppt/SKILL.md`](skills/dashi-ppt/SKILL.md) |
 
 ---
 

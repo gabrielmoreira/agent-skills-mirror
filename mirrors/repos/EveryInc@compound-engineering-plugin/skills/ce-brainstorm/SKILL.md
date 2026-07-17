@@ -143,6 +143,29 @@ Product-tier triggers additional Phase 1.2 questions and additional Product Cont
 
 **Unfamiliarity tripwire.** If the user signals they lack working knowledge of the domain or the territory the topic touches — "I know nothing about X", "never touched the auth modules", "I don't know what's possible / what I should be asking" — read `references/blindspot-pass.md` now. Loading here is readiness only; the reference owns when the offer fires (territory-scoped, before the first substantive question into the flagged territory), the map's shape, and how mapped decisions re-enter the dialogue.
 
+#### 0.4 Surface the Workflow Spine
+
+For **Standard and Deep** scope, create a task list with the platform's task tracking tool (`TaskCreate`/`TaskUpdate`/`TaskList` in Claude Code, `update_plan` in Codex, or the equivalent on other harnesses). Skip it entirely for Lightweight and on the Phase 0.1b non-software route. Create it here, not earlier — 0.1b and 0.1c exit before this point, and the tier is unknown until 0.3.
+
+If the harness exposes no task primitive — including `ToolSearch` or its equivalent returning no match — name the six tasks once in chat and continue without per-task updates, rather than dropping the spine silently. Do not restate the list to simulate progress you cannot track.
+
+The spine is six tasks, in order:
+
+1. Check what already exists
+2. Ask scoping questions
+3. Weigh approaches and recommend
+4. Confirm scope before writing
+5. Write the requirements plan
+6. Offer next steps
+
+**Conditional work earns a task only when its gate fires** — never at creation, and never as a placeholder for a branch that may not run. A branch earns one when the user is either waiting on it or would be surprised to learn it happened: an accepted blindspot pass, a dispatched Slack researcher, a Phase 2.6 verifier working in the background. A step that fires per-decision rather than once does not — it would thrash the list. Insert it at the position where it runs.
+
+**Name every task you add the way the spine is named:** verb first, five words or fewer, naming the outcome the user can hold you to — not the phase, the internal activity, or the tool. `Verify claims against the code`, not `Phase 2.6 claim verification`. Never restate counts, quotas, or pacing in a name; that contract lives in the phase that owns it.
+
+**When a gate resolves such that a listed task will not run, record the skip — never mark it plainly complete, and never let it vanish unexplained.** In order of preference: set a `cancelled` or `skipped` status if the harness has one; otherwise rename the task to name the skip (`Skipped: no doc warranted`) and then mark it complete; only if the name cannot be changed, delete it. Say why in the conversation either way — the list carries the fact, not the reason. If Phase 3 decides no doc is warranted, that is task 5. If the 0.1c handoff is accepted mid-dialogue, clear the list entirely — `ce-pov` owns the run from there. A task you find yourself skipping routinely is misnamed: it encodes a branch rather than an outcome, so rename it to what happens in the common case.
+
+The list is a view for the user, not an instruction to you. It does not change when a phase fires or what that phase requires, and it never substitutes for a phase's own exit condition.
+
 ### Phase 1: Understand the Idea
 
 #### 1.1 Existing Context Scan

@@ -21,8 +21,8 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-import fireworks_geometry as geometry
-import composition_quality as quality
+import fireworks_geometry as geometry  # noqa: E402
+import composition_quality as quality  # noqa: E402
 
 
 NUMBER_RE = re.compile(r"[-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?")
@@ -115,6 +115,10 @@ def parse_transform(value: Optional[str]) -> Matrix:
                 )
             else:
                 current = rotation
+        elif name == "skewx" and len(values) == 1:
+            current = (1, 0, math.tan(math.radians(values[0])), 1, 0, 0)
+        elif name == "skewy" and len(values) == 1:
+            current = (1, math.tan(math.radians(values[0])), 0, 1, 0, 0)
         result = multiply(result, current)
     return result
 
@@ -335,8 +339,9 @@ def sample_arc(
     ]
 
 
-def path_points(path_data: str, *, arc_chords: bool = False) -> list[Point]:
+def path_routes(path_data: str, *, arc_chords: bool = False) -> list[list[Point]]:
     tokens = PATH_TOKEN_RE.findall(path_data or "")
+    routes: list[list[Point]] = []
     points: list[Point] = []
     index = 0
     command = ""
@@ -379,9 +384,11 @@ def path_points(path_data: str, *, arc_chords: bool = False) -> list[Point]:
             return []
 
         if op == "M":
+            if points:
+                routes.append(points)
             current = absolute(values[0], values[1], relative)
             start = current
-            points.append(current)
+            points = [current]
             command = "l" if relative else "L"
         elif op == "L":
             current = absolute(values[0], values[1], relative)
@@ -438,10 +445,12 @@ def path_points(path_data: str, *, arc_chords: bool = False) -> list[Point]:
             previous_cubic = previous_quadratic = None
         if op not in {"C", "S", "Q", "T"}:
             previous_cubic = previous_quadratic = None
-    return points
+    if points:
+        routes.append(points)
+    return routes
 
 
-def edge_points(context: ElementContext) -> list[Point]:
+def edge_routes(context: ElementContext) -> list[list[Point]]:
     element = context.element
     tag = local_name(element.tag)
     explicit_edge = context.role == "edge"
@@ -452,21 +461,24 @@ def edge_points(context: ElementContext) -> list[Point]:
     ):
         return []
     if tag == "line":
-        points = [
+        routes = [[
             (float(parse_number(element.get("x1"), 0.0) or 0.0), float(parse_number(element.get("y1"), 0.0) or 0.0)),
             (float(parse_number(element.get("x2"), 0.0) or 0.0), float(parse_number(element.get("y2"), 0.0) or 0.0)),
-        ]
+        ]]
     elif tag == "polyline":
         values = [float(item) for item in NUMBER_RE.findall(element.get("points", ""))]
-        points = list(zip(values[::2], values[1::2]))
+        routes = [list(zip(values[::2], values[1::2]))]
     elif tag == "path":
-        points = path_points(
+        routes = path_routes(
             element.get("d", ""),
             arc_chords=bool(element.get("data-bridges")),
         )
     else:
         return []
-    return [transform_point(context.matrix, point) for point in points]
+    return [
+        [transform_point(context.matrix, point) for point in route]
+        for route in routes
+    ]
 
 
 def segment_hits_bounds(start: Point, end: Point, bounds: Bounds, epsilon: float = 1e-5) -> bool:
@@ -507,7 +519,7 @@ def find_collisions(root: ET.Element) -> list[Collision]:
         for context in contexts
         if (bounds := shape_bounds(context, canvas_size(root))) is not None
     ]
-    edges = [(context, edge_points(context)) for context in contexts]
+    edges = [(context, edge_routes(context)) for context in contexts]
     legend_obstacles = [
         (context, bounds)
         for context in contexts
@@ -515,17 +527,24 @@ def find_collisions(root: ET.Element) -> list[Collision]:
     ]
     obstacles.extend(legend_obstacles)
     collisions: list[Collision] = []
-    for edge_context, points in edges:
-        if len(points) < 2:
+    for edge_context, routes in edges:
+        if not any(len(route) >= 2 for route in routes):
             continue
         # A marker path wholly inside a recognized legend is decoration. The
         # legend remains a hard obstacle for every business edge outside it.
-        if any(points_within_bounds(points, bounds) for _, bounds in legend_obstacles):
+        if routes and all(
+            any(points_within_bounds(route, bounds) for _, bounds in legend_obstacles)
+            for route in routes
+        ):
             continue
         edge = edge_context.element
         for obstacle_context, bounds in obstacles:
             obstacle = obstacle_context.element
-            if any(segment_hits_bounds(first, second, bounds) for first, second in zip(points, points[1:])):
+            if any(
+                segment_hits_bounds(first, second, bounds)
+                for route in routes
+                for first, second in zip(route, route[1:])
+            ):
                 collisions.append(
                     Collision(
                         describe_element(edge),
@@ -564,14 +583,25 @@ def role_bounds(context: ElementContext) -> Optional[Bounds]:
         width = parse_number(element.get("width"), None)
         height = parse_number(element.get("height"), None)
         if width is not None and height is not None and width >= 0 and height >= 0:
-            return transformed_bounds(context.matrix, ((x, y), (x + width, y + height)))
+            return transformed_bounds(
+                context.matrix,
+                ((x, y), (x + width, y), (x + width, y + height), (x, y + height)),
+            )
     if tag == "text" and context.role == "label":
         x = float(parse_number(element.get("x"), 0.0) or 0.0)
         y = float(parse_number(element.get("y"), 0.0) or 0.0)
         font_size = float(parse_number(element.get("font-size"), 12.0) or 12.0)
         anchor = element.get("text-anchor", "start")
         local = geometry.estimate_text_bounds(x, y, "".join(element.itertext()), font_size=font_size, anchor=anchor)
-        return transformed_bounds(context.matrix, ((local[0], local[1]), (local[2], local[3])))
+        return transformed_bounds(
+            context.matrix,
+            (
+                (local[0], local[1]),
+                (local[2], local[1]),
+                (local[2], local[3]),
+                (local[0], local[3]),
+            ),
+        )
     return None
 
 
@@ -596,7 +626,7 @@ def geometry_check(root: ET.Element) -> list[str]:
     obstacles: list[tuple[ElementContext, Bounds]] = []
     labels: list[tuple[ElementContext, Bounds]] = []
     bridge_masks: dict[str, ElementContext] = {}
-    edges: list[tuple[ElementContext, list[Point]]] = []
+    edges: list[tuple[ElementContext, list[list[Point]]]] = []
     matched_bridges: dict[str, list[Point]] = {}
 
     for context in contexts:
@@ -619,20 +649,28 @@ def geometry_check(root: ET.Element) -> list[str]:
             if owner:
                 bridge_masks[owner] = context
         elif context.role == "edge":
-            points = edge_points(context)
-            if len(points) >= 2:
-                edges.append((context, points))
+            routes = edge_routes(context)
+            if any(len(route) >= 2 for route in routes):
+                edges.append((context, routes))
 
     for context, bounds in [*obstacles, *labels]:
         if not bounds_inside_canvas(bounds, canvas):
             details.append(f"canvas_clip: {describe_element(context.element)} exceeds viewBox")
 
-    for edge_context, points in edges:
+    for edge_context, routes in edges:
         edge = edge_context.element
         edge_name = describe_element(edge)
-        if not geometry.route_inside_canvas(points, (canvas.left, canvas.top, canvas.right, canvas.bottom)):
+        if not all(
+            geometry.route_inside_canvas(route, (canvas.left, canvas.top, canvas.right, canvas.bottom))
+            for route in routes
+            if len(route) >= 2
+        ):
             details.append(f"canvas_clip: {edge_name} exceeds viewBox")
-        if root.get("data-generator") == "fireworks-tech-graph" and not geometry.route_is_orthogonal(points):
+        if root.get("data-generator") == "fireworks-tech-graph" and not all(
+            geometry.route_is_orthogonal(route)
+            for route in routes
+            if len(route) >= 2
+        ):
             details.append(f"non_orthogonal: {edge_name}")
         for obstacle_context, bounds in obstacles:
             obstacle_node_id = obstacle_context.element.get("data-node-id", "")
@@ -641,22 +679,33 @@ def geometry_check(root: ET.Element) -> list[str]:
                 edge.get("data-target", ""),
             }:
                 continue
-            if any(segment_hits_bounds(first, second, bounds) for first, second in zip(points, points[1:])):
+            if any(
+                segment_hits_bounds(first, second, bounds)
+                for route in routes
+                for first, second in zip(route, route[1:])
+            ):
                 role = obstacle_context.role or "obstacle"
                 details.append(
                     f"edge_{role}: {edge_name} intersects {describe_element(obstacle_context.element)}"
                 )
 
-    for first_index, (first_context, first_points) in enumerate(edges):
+    for first_index, (first_context, first_routes) in enumerate(edges):
         first_element = first_context.element
         first_name = describe_element(first_element)
-        for second_context, second_points in edges[first_index + 1 :]:
+        for second_context, second_routes in edges[first_index + 1 :]:
             second_element = second_context.element
             second_name = describe_element(second_element)
-            interactions = geometry.route_interactions(first_points, [second_points])
-            if interactions.overlap_count:
+            interactions = [
+                geometry.route_interactions(
+                    first_route,
+                    [route for route in second_routes if len(route) >= 2],
+                )
+                for first_route in first_routes
+                if len(first_route) >= 2
+            ]
+            if any(item.overlap_count for item in interactions):
                 details.append(f"edge_overlap: {first_name} overlaps {second_name}")
-            for point in interactions.crossings:
+            for point in [point for item in interactions for point in item.crossings]:
                 first_bridges = geometry.parse_bridge_points(first_element.get("data-bridges"))
                 second_bridges = geometry.parse_bridge_points(second_element.get("data-bridges"))
                 first_owner = first_element.get("data-edge-id") or first_element.get("id", "")
@@ -703,12 +752,16 @@ def geometry_check(root: ET.Element) -> list[str]:
             obstacle_tuple = (obstacle_bounds.left, obstacle_bounds.top, obstacle_bounds.right, obstacle_bounds.bottom)
             if geometry.bounds_intersect(label_tuple, obstacle_tuple):
                 details.append(f"label_obstacle: {label_name} intersects {describe_element(obstacle_context.element)}")
-        for edge_context, edge_route in edges:
+        for edge_context, edge_routes_for_context in edges:
             edge = edge_context.element
             edge_owner = edge.get("data-edge-id") or edge.get("id", "")
             if edge_owner == owner:
                 continue
-            if any(segment_hits_bounds(first, second, label_bounds) for first, second in zip(edge_route, edge_route[1:])):
+            if any(
+                segment_hits_bounds(first, second, label_bounds)
+                for route in edge_routes_for_context
+                for first, second in zip(route, route[1:])
+            ):
                 details.append(f"label_edge: {label_name} intersects {describe_element(edge)}")
         for other_context, other_bounds in labels[label_index + 1 :]:
             other_tuple = (other_bounds.left, other_bounds.top, other_bounds.right, other_bounds.bottom)
@@ -760,7 +813,7 @@ def composition_check(root: ET.Element) -> list[str]:
     nodes: list[tuple[str, tuple[float, float, float, float]]] = []
     containers: list[tuple[str, tuple[float, float, float, float]]] = []
     labels: list[tuple[ElementContext, Bounds]] = []
-    edges: list[tuple[ElementContext, list[Point]]] = []
+    edges: list[tuple[ElementContext, list[list[Point]]]] = []
 
     for context in contexts:
         if context.in_defs:
@@ -784,21 +837,27 @@ def composition_check(root: ET.Element) -> list[str]:
         elif context.role == "label" and bounds is not None and (explicit == "label" or metadata_bounds(context) is not None):
             labels.append((context, bounds))
         if context.role == "edge" or (context.role is None and has_marker(context.element)):
-            points = edge_points(context)
-            if len(points) >= 2:
-                edges.append((context, points))
+            routes = edge_routes(context)
+            if any(len(route) >= 2 for route in routes):
+                edges.append((context, routes))
 
     edge_records = []
-    for context, points in edges:
+    for context, routes in edges:
         edge = context.element
-        edge_records.append(
-            {
-                "id": edge.get("data-edge-id") or edge.get("id") or describe_element(edge),
-                "route": points,
-                "bends": geometry.bend_count(points),
-                "bridges": geometry.parse_bridge_points(edge.get("data-bridges")),
-            }
-        )
+        edge_id = edge.get("data-edge-id") or edge.get("id") or describe_element(edge)
+        valid_routes = [route for route in routes if len(route) >= 2]
+        declared_bridges = geometry.parse_bridge_points(edge.get("data-bridges"))
+        for index, route in enumerate(valid_routes):
+            edge_records.append(
+                {
+                    "id": edge_id if len(valid_routes) == 1 else f"{edge_id}:{index + 1}",
+                    "route": route,
+                    "bends": geometry.bend_count(route),
+                    # Bridges are declared once per SVG edge element even when
+                    # its path contains multiple independently drawn subpaths.
+                    "bridges": declared_bridges if index == 0 else [],
+                }
+            )
     assessment = quality.assess_composition(
         nodes=nodes,
         containers=containers,
@@ -830,12 +889,16 @@ def composition_check(root: ET.Element) -> list[str]:
                     f"composition_label_clearance: {describe_element(label_context.element)} is too close to a node"
                 )
                 break
-        for edge_context, points in edges:
+        for edge_context, routes in edges:
             edge = edge_context.element
             edge_owner = edge.get("data-edge-id") or edge.get("id", "")
             if edge_owner == owner:
                 continue
-            if any(segment_hits_bounds(first, second, expanded) for first, second in zip(points, points[1:])):
+            if any(
+                segment_hits_bounds(first, second, expanded)
+                for route in routes
+                for first, second in zip(route, route[1:])
+            ):
                 details.append(
                     f"composition_label_clearance: {describe_element(label_context.element)} is too close to {describe_element(edge)}"
                 )

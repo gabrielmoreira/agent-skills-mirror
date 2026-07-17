@@ -111,6 +111,18 @@
         "authentication": "ON_FIRST_USE"
       },
       "category": "productivity"
+    },
+    {
+      "name": "metaskills",
+      "source": {
+        "source": "local",
+        "path": "./plugins/metaskills"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_FIRST_USE"
+      },
+      "category": "productivity"
     }
   ]
 }

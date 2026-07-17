@@ -2,7 +2,7 @@
 
 # fireworks-tech-graph
 
-> **Stop drawing diagrams by hand.** Describe your system in English or Chinese — get geometry-safe SVG, PNG, and offline interactive technical diagrams.
+> **Stop drawing diagrams by hand.** Describe your system in English or Chinese — get geometry-safe SVG, PNG, focused SVG-to-GIF motion, and offline interactive technical diagrams.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/yizhiyanhua-ai/fireworks-tech-graph)](https://github.com/yizhiyanhua-ai/fireworks-tech-graph/releases)
@@ -16,7 +16,7 @@
 
 ## Overview
 
-`fireworks-tech-graph` is one Agent Skill that works unchanged in **Codex and Claude Code**. It turns natural language descriptions into polished, geometry-checked SVG diagrams, high-resolution PNGs, and self-contained interactive HTML. It ships with **11 generator-backed styles** and **1 AI-authored style (Dark Luxury)**. Four engineering-first styles add executable contracts for C4 reviews, cloud deployments, event streams, and reliability investigations, alongside deep AI/Agent domain patterns and all 14 UML diagram types.
+`fireworks-tech-graph` is one Agent Skill that works unchanged in **Codex and Claude Code**. It turns natural language descriptions into polished, geometry-checked SVG diagrams, high-resolution PNGs, validated SVG-to-GIF semantic motion, and offline interactive HTML. The focused animation path accepts a generated semantic SVG and emits one compact, probed GIF. It ships with **11 generator-backed styles** and **1 AI-authored style (Dark Luxury)**. Four engineering-first styles add executable contracts for C4 reviews, cloud deployments, event streams, and reliability investigations, alongside deep AI/Agent domain patterns and all 14 UML diagram types.
 
 ```
 User: "Generate a Mem0 memory architecture diagram, dark style"
@@ -42,59 +42,59 @@ If you are building agent infrastructure, AI IDEs, internal copilots, developer 
 
 ## Showcase
 
-> All samples are exported at 1920px width (2× retina) by the regression pipeline. It prefers `cairosvg` and falls back to `rsvg-convert`. PNG keeps technical text and line work lossless.
+> The animated previews use the user-approved 5.75-second settled-flow timeline: routes draw in first, then the final topology keeps live data moving for two additional seconds. Each full-size GIF is 960px wide at 20fps / 115 frames; the 3×4 overview is an optimized 1200px preview. Lossless 1920px PNGs remain in `assets/samples/` as static regression baselines.
 
-![Latest 12-style showcase — one distinct engineering scenario per style](assets/samples/showcase-12-styles.png)
+![Animated 12-style showcase — one distinct engineering scenario per style](assets/samples/showcase-12-styles.gif)
 
-The v1.1.0 overview above and every full-size sample below come from the final regression set. Each style keeps a distinct scenario while sharing the same geometry, text-fit, and wire-routing quality gates.
+The v1.2.0 overview above and every full-size animated sample below come from the approved regression set. Each style keeps a distinct scenario while sharing the same geometry, text-fit, wire-routing, and semantic-motion quality gates.
 
 ### Style 1 — Flat Icon (default)
 *Mem0 Memory Architecture — personal-memory extraction, conflict resolution, storage, and retrieval*
-![Style 1 — Flat Icon](assets/samples/sample-style1-flat.png)
+![Style 1 — Flat Icon](assets/samples/sample-style1-flat.gif)
 
 ### Style 2 — Dark Terminal
 *Tool Call Flow — dark terminal execution, source grounding, retrieval, and answer synthesis*
-![Style 2 — Dark Terminal](assets/samples/sample-style2-dark.png)
+![Style 2 — Dark Terminal](assets/samples/sample-style2-dark.gif)
 
 ### Style 3 — Blueprint
 *Microservices Architecture — engineering grid, domain services, data stores, events, and telemetry*
-![Style 3 — Blueprint](assets/samples/sample-style3-blueprint.png)
+![Style 3 — Blueprint](assets/samples/sample-style3-blueprint.gif)
 
 ### Style 4 — Notion Clean
 *Agent Memory Types — minimal hierarchy from sensory and working context to durable memory*
-![Style 4 — Notion Clean](assets/samples/sample-style4-notion.png)
+![Style 4 — Notion Clean](assets/samples/sample-style4-notion.gif)
 
 ### Style 5 — Glassmorphism
 *Multi-Agent Collaboration — coordinator, specialists, shared state, review, and synthesis*
-![Style 5 — Glassmorphism](assets/samples/sample-style5-glass.png)
+![Style 5 — Glassmorphism](assets/samples/sample-style5-glass.gif)
 
 ### Style 6 — Claude Official
 *System Architecture — warm interface, runtime, safety, memory, tools, and operations layers*
-![Style 6 — Claude Official](assets/samples/sample-style6-claude.png)
+![Style 6 — Claude Official](assets/samples/sample-style6-claude.gif)
 
 ### Style 7 — OpenAI Official
 *API Integration Flow — clean SDK, prompt, model, tool, delivery, and release stages*
-![Style 7 — OpenAI Official](assets/samples/sample-style7-openai.png)
+![Style 7 — OpenAI Official](assets/samples/sample-style7-openai.gif)
 
 ### Style 8 — Dark Luxury *(AI-authored)*
 *Agent Runtime Architecture — control plane, execution and state layers, champagne-gold structure, semantic color buckets*
-![Style 8 — Dark Luxury](assets/samples/sample-style8-dark-luxury.png)
+![Style 8 — Dark Luxury](assets/samples/sample-style8-dark-luxury.gif)
 
 ### Style 9 — C4 Review Canvas
 *Checkout Container Review — one abstraction level, explicit responsibilities, technologies, and protocols*
-![Style 9 — C4 Review Canvas](assets/samples/sample-style9-c4-review-canvas.png)
+![Style 9 — C4 Review Canvas](assets/samples/sample-style9-c4-review-canvas.gif)
 
 ### Style 10 — Cloud Fabric
 *Active–Active Checkout Deployment — global ingress, regions, VPC ownership, and cross-region replication*
-![Style 10 — Cloud Fabric](assets/samples/sample-style10-cloud-fabric.png)
+![Style 10 — Cloud Fabric](assets/samples/sample-style10-cloud-fabric.gif)
 
 ### Style 11 — Event Transit
 *Checkout Event Line — topics as rails, processors as stations, a declared junction, DLQ, and state projection*
-![Style 11 — Event Transit](assets/samples/sample-style11-event-transit.png)
+![Style 11 — Event Transit](assets/samples/sample-style11-event-transit.gif)
 
 ### Style 12 — Ops Pulse
 *Checkout Reliability Pulse — golden signals, one critical path, OTel export, and a correlated trace*
-![Style 12 — Ops Pulse](assets/samples/sample-style12-ops-pulse.png)
+![Style 12 — Ops Pulse](assets/samples/sample-style12-ops-pulse.gif)
 
 ---
 
@@ -143,6 +143,7 @@ Replace `N` with `1`–`12`. Style 8 remains AI-authored and loads `references/s
 - **Versioned diagram IR** — legacy JSON normalizes to schema v1; duplicate IDs, dangling references, malformed waypoints, and non-finite geometry fail before rendering
 - **Structured SVG validation** — XML and marker integrity plus semantic node, reserved-region, label, canvas, edge-overlap, and edge-crossing checks
 - **Unified CLI + interactive export** — render, validate, inspect, and export one offline HTML file with pan/zoom, themes, copy, and SVG/PNG/JPEG/WebP output up to 4×
+- **Focused semantic GIF motion** — generated SVG in, validated GIF out; connectors begin absent and draw in semantic order. All twelve style contracts are user-approved. The shared `+2s-settled-flow` timing revision is also user-approved, so the default 5.75s/115-frame loop holds full settled flow on frames 38–109, then resets on 110–114
 - **Visual review gate** — exported PNGs are inspected for clipping, overlap, label placement, and routing regressions before delivery
 - **Product icons** — 40+ products with brand colors: OpenAI, Anthropic, Pinecone, Weaviate, Kafka, PostgreSQL…
 - **Swim lane grouping** — automatic layer labeling for complex architectures
@@ -264,15 +265,29 @@ python3 "$SKILL_ROOT/scripts/fireworks.py" validate architecture "$SKILL_ROOT/fi
 python3 "$SKILL_ROOT/scripts/fireworks.py" render architecture "$SKILL_ROOT/fixtures/api-flow-style7.json" diagram.svg --report layout.json
 python3 "$SKILL_ROOT/scripts/fireworks.py" check diagram.svg
 python3 "$SKILL_ROOT/scripts/fireworks.py" export-html diagram.svg diagram.html --title "Agent Runtime Architecture"
+python3 "$SKILL_ROOT/scripts/fireworks.py" animate diagram.svg diagram.gif
 ```
 
 The HTML export is one offline file. It sanitizes the SVG, adds pan/zoom/reset, light and dark themes, SVG source copy, and SVG/PNG/JPEG/WebP downloads at 1×–4×.
+
+For motion, say **“Generate a GIF”**, **“Animate this diagram”**, `生成 GIF`, `制作 GIF`, or `让这张图动起来`. The command accepts a generated semantic SVG that carries one of the twelve approved motion contracts. Exact source bytes are not pinned, so validated title and content variants of a supported topology work; missing or changed role/stage/order coverage, route direction, required colors, or geometry fails closed. GIF is the only motion media format, and the default command also writes `<output>.motion.json` as its verification report. The approved default is 960px, 5.75 seconds, 20fps, and 115 frame-center samples. All twelve scenes start connector-free, draw routes on frames 1–36, fade live flow on 36–38, hold full settled flow on 38–109, and reset on 110–114. Their approved identities include the packet heads, terminal evidence trace, Blueprint registration beads, 14×10 Notion memory cards, and the eight scene-specific signatures listed below. Default packages report both the style contract and shared `+2s-settled-flow` timing revision as `user-approved`. Timelines of 75 frames or fewer remain all-unique. Longer timelines allow non-adjacent repeated rasters inside the full-opacity interval; frame 110 is the sole boundary exception because its unchanged reset opacity is exactly 1.00, and such evidence is classified as `intentional_reset_boundary_repeat`. Frames 111–114 remain globally distinct. Long timelines require at least 75 unique rasters and forbid adjacent duplicates. The all-style 75-vs-115 gate counts binary-exact and decoded-RGBA-exact frames separately; compositor-only fallback is accepted only at AE ≤ 128, normalized RMSE ≤ 0.001, with components no thicker than 2px and confined to edge or node borders. DOM and signature geometry remain strict-exact. Explicit 3.75s/75-frame and 2.75s/55-frame calls remain supported. See [Focused SVG-to-GIF Motion](references/motion-effects.md).
+
+| Style | Preset | Live signature |
+|---:|---|---|
+| 5 | `agent-orchestration` | glass task capsule + coordinator halo |
+| 6 | `governed-runtime` | governance thread + policy seal |
+| 7 | `token-stream` | API rail + three-cell token train |
+| 8 | `golden-circuit` | luxury circuit rail + gem tracer |
+| 9 | `review-trace` | review rail + moving review cursor |
+| 10 | `cloud-flow` | region chevrons + replication capsule |
+| 11 | `event-transit` | event train + exception/projection cars |
+| 12 | `ops-pulse` | ECG/export heads + trace reveal + waterfall scanner |
 
 ---
 
 ## Requirements
 
-The bundled validation/export scripts require **cairosvg** (recommended) or `rsvg-convert`. Puppeteer is an advanced manual conversion path documented in `SKILL.md`, not a fallback used by the bundled shell scripts.
+The bundled SVG/PNG scripts require **cairosvg** (recommended) or `rsvg-convert`. Optional SVG-to-GIF export requires FFmpeg/FFprobe, Chrome/Chromium, and `puppeteer` or `puppeteer-core`.
 
 ```bash
 # Recommended: cairosvg (best CSS support)
@@ -281,6 +296,18 @@ python3 -m pip install cairosvg
 # Fallback: rsvg-convert (system package; may drop CSS / <foreignObject>)
 brew install librsvg                   # macOS
 sudo apt install librsvg2-bin          # Ubuntu/Debian
+
+# Optional semantic motion export. Install beside every copied Skill because the
+# renderer intentionally does not load modules from the caller's directory.
+brew install ffmpeg                    # macOS; use your system package manager elsewhere
+for SKILL_ROOT in \
+  "$HOME/.agents/skills/fireworks-tech-graph" \
+  "$HOME/.claude/skills/fireworks-tech-graph"
+do
+  [ -d "$SKILL_ROOT" ] || continue
+  npm install --prefix "$SKILL_ROOT" --ignore-scripts --no-save --package-lock=false puppeteer-core@25.3.0
+  python3 "$SKILL_ROOT/scripts/fireworks.py" doctor
+done
 
 # Verify either supported script renderer
 python3 -c "import cairosvg; print(cairosvg.__version__)"
@@ -319,6 +346,7 @@ The skill auto-triggers on:
 ```
 generate diagram / draw diagram / create chart / visualize
 architecture diagram / flowchart / sequence diagram / data flow
+Generate a GIF / animate this diagram / animate this SVG as a GIF / 生成 GIF / 制作 GIF / 让这张图动起来 / 把刚才的 SVG 转成 GIF
 ```
 
 ### Basic usage
@@ -625,12 +653,14 @@ fireworks-tech-graph/
 │   ├── ops-pulse-style12.json    # Style 12 · Reliability pulse
 │   └── quality-baseline/         # Internal same-topology regression set
 ├── scripts/
-│   ├── fireworks.py              # Unified validate/render/check/export CLI
+│   ├── fireworks.py              # Unified validate/render/check/animate/export CLI
 │   ├── diagram_ir.py             # Typed schema-v1 normalization
 │   ├── fireworks_geometry.py     # Shared routing and collision semantics
 │   ├── interactive_html.py       # Sanitized offline HTML exporter
 │   ├── generate-diagram.sh       # Validate SVG + export PNG
 │   ├── generate-from-template.py # Create starter SVGs from templates
+│   ├── motion.py                 # SVG-to-GIF validation, encoding, and atomic reports
+│   ├── svg2gif.js                # Manual-timeline Chromium frame renderer
 │   ├── svg2png.js                 # High-fidelity Puppeteer exporter
 │   ├── validate-svg.sh           # Validation and render-check entrypoint
 │   ├── validate_svg.py           # XML, marker, transform, and path collision checks

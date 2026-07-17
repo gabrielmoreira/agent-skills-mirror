@@ -10,8 +10,8 @@ OmnibotApp is an AI-powered intelligent robot assistant application for Android.
 - Android app with embedded Flutter UI module
 - Modular monorepo architecture with feature-specific modules
 - State machine-based task management system
-- Accessibility services and overlay functionality
-- AI/ML intelligence integration (on-device models)
+- Cloud and custom API model-provider integration
+- Shizuku-backed Android privileged actions
 
 ## Build and Development Commands
 
@@ -21,10 +21,10 @@ OmnibotApp is an AI-powered intelligent robot assistant application for Android.
 ./gradlew build
 
 # Build debug APK (develop flavor)
-./gradlew assembleDevelopDebug
+./gradlew assembleDevelopStandardDebug -Ptarget=lib/main_standard.dart
 
 # Build release APK (production flavor)
-./gradlew assembleProductionRelease
+./gradlew assembleProductionStandardRelease -Ptarget=lib/main_standard.dart
 
 # Run tests
 ./gradlew test
@@ -36,7 +36,7 @@ OmnibotApp is an AI-powered intelligent robot assistant application for Android.
 ./gradlew lint
 
 # Install debug APK to connected device
-./gradlew installDevelopDebug
+./gradlew installDevelopStandardDebug -Ptarget=lib/main_standard.dart
 ```
 
 ### Flutter Commands (for ui/ module)
@@ -60,15 +60,6 @@ flutter test
 flutter analyze
 ```
 
-### Project Setup
-The project requires importing the OmniIntelligence module as an external module:
-```bash
-# Clone the companion repository
-git clone https://github.com/omnimind-ai/OmniIntelligence
-
-# Import OmniIntelligence/OmniIntelligence as a module in Android Studio
-```
-
 ## Architecture Overview
 
 ### Module Structure
@@ -78,10 +69,8 @@ OmnibotApp/
 ├── ui/                  # Flutter UI module (cross-platform UI with Riverpod)
 ├── baselib/             # Core libraries (database, networking, auth, storage)
 ├── assists/             # Task management and state machine
-├── omniintelligence/    # AI/ML intelligence modules (external import)
-├── overlay/             # Floating overlay functionality
-├── accessibility/       # Accessibility services for UI automation
-└── testbot/             # Testing utilities (develop flavor only)
+├── uikit/               # Native Android UI components
+└── ReTerminal/          # Embedded terminal runtime
 ```
 
 ### Core Architectural Patterns
@@ -102,8 +91,7 @@ OmnibotApp/
 - Background execution with Kotlin coroutines
 
 **4. Service-Oriented Architecture**
-- Accessibility services for interaction monitoring
-- Overlay services for floating UI elements
+- Shizuku-backed privileged Android capabilities
 - Background services for long-running tasks
 
 ### Key Integration Points
@@ -138,12 +126,10 @@ The project uses product flavors for different environments:
 
 **develop**: Development environment
 - Optional backend via `OMNIBOT_BASE_URL` (empty by default in open-source mode)
-- Includes testbot module
 - Debug signing config (Android default debug keystore)
 
 **production**: Production environment
 - Optional backend via `OMNIBOT_BASE_URL` (empty by default in open-source mode)
-- Excludes testbot module
 - Release signing config with V2/V3 signatures
 
 ## Configuration
@@ -186,7 +172,7 @@ flutter analyze --no-fatal-warnings --no-fatal-infos
 ```
 
 ### Platform Requirements
-- **Min SDK**: 30 (Android 11)
+- **Min SDK**: 29 (Android 10)
 - **Target SDK**: 34 (Android 14)
 - **Compile SDK**: 36
 - **NDK**: ARMv7 and ARM64 architectures
@@ -196,9 +182,7 @@ flutter analyze --no-fatal-warnings --no-fatal-infos
 
 ### Module Dependencies
 - All modules except `app` are Android library modules
-- `omniintelligence` must be imported as external module
 - Flutter integration via `include_flutter.groovy`
-- `testbot` only included in develop flavor
 
 ### State Management
 - **Native (Kotlin)**: Coroutines, Flow, and custom state machine
@@ -206,8 +190,7 @@ flutter analyze --no-fatal-warnings --no-fatal-infos
 - **Database**: Room with Flow-based observables
 
 ### Permissions
-- System overlay permission (for floating UI)
-- Accessibility service permission (user must enable manually)
+- Shizuku permission for optional privileged Android actions
 - Standard Android permissions as needed
 
 ### Key Files to Understand
@@ -216,28 +199,13 @@ flutter analyze --no-fatal-warnings --no-fatal-infos
 - `assists/src/main/java/cn/com/omnimind/assists/AssistsCore.kt`: Task SDK interface
 - `baselib/src/main/java/cn/com/omnimind/baselib/database/`: Database layer
 
-### Team Responsibilities
-
-**Engineering Team**:
-- Implement white-block features in assists architecture
-- Define interfaces with `CompanionController.kt`
-- Complete companion mode task logic
-- Implement task display and animations
-
-**Research Team**:
-- Complete `companionServer` module (XML acquisition and SDK node matching)
-- Integrate with OmniIntelligence SDK for companion server requirements
-- Implement scene filtering (e.g., prevent duplicate task suggestions)
-- Define interfaces with `CompanionController.kt`
-
 ## Version Management
 
 The app includes automatic version update checking and forced update functionality. Version info is in `app/build.gradle.kts`:
-- `versionCode`: 14
-- `versionName`: "1.6.1"
+- `versionCode`: 1
+- `versionName`: "0.5.6.4"
 
 ## External Integrations
 
 - **WeChat Login**: Social authentication
-- **ML Kit**: OCR capabilities
 - **MCP Server**: Model Context Protocol integration (see `McpServerManager`)

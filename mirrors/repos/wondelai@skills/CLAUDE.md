@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Purpose
 
-This is a collection of 50 agent skills for Claude, Claude Code, Claude Cowork, Codex, Cursor, OpenClaw, Hermes Agent and other agentskills.io-compatible agents. Skills provide specialized domain knowledge and frameworks for specific use cases (UX design, marketing, product strategy, sales, operations, positioning, virality, code quality, systems architecture, etc.).
+This is a collection of 62 agent skills for Claude, Claude Code, Claude Cowork, Codex, Cursor, OpenClaw, Hermes Agent and other agentskills.io-compatible agents. Skills provide specialized domain knowledge and frameworks for specific use cases (UX design, marketing, product strategy, sales, operations, positioning, virality, code quality, systems architecture, etc.). Twelve of them are **metaskills** — guided journeys that orchestrate the other skills step by step toward a goal.
 
 ## Repository Structure
 
@@ -29,12 +29,13 @@ skills/
 └── plugins/{collection}/  # Codex plugins: .codex-plugin/plugin.json + skills/ symlinks
 ```
 
-The Codex plugin standard (`plugins/` + `.agents/plugins/marketplace.json`) is **generated from `.claude-plugin/marketplace.json`** by `scripts/generate-codex-plugins.sh` — same 9 collections, same skill membership, versions tracked automatically. Never hand-edit the generated trees.
+The Codex plugin standard (`plugins/` + `.agents/plugins/marketplace.json`) is **generated from `.claude-plugin/marketplace.json`** by `scripts/generate-codex-plugins.sh` — same 10 collections, same skill membership, versions tracked automatically. Never hand-edit the generated trees.
 
-## Current Skills (50)
+## Current Skills (62)
 
 | Category | Skills |
 |----------|--------|
+| **Metaskills** | create-business, create-website, create-app, improve-business, improve-website, improve-app, grow-business, grow-website, grow-app, improve-code-quality, remove-technical-debt, design-code-architecture |
 | **UX/Design** | refactoring-ui, ios-hig-design, ux-heuristics, hooked-ux, improve-retention, web-typography, top-design, design-everyday-things, lean-ux, microinteractions, steve-jobs-design-review |
 | **Marketing/CRO** | cro-methodology, storybrand-messaging, scorecard-marketing, contagious, one-page-marketing |
 | **Sales/Influence** | influence-psychology, predictable-revenue, made-to-stick, hundred-million-offers |
@@ -107,6 +108,10 @@ See [references/file.md](references/file.md) when <situation> — <what it adds>
 
 The YAML frontmatter `description` field is critical for skill discovery - it should include keywords and trigger phrases that help match user requests to the skill. Single quotes in YAML values must be escaped by doubling them (`''`).
 
+### Metaskill Format (the 12 guided journeys)
+
+The 12 metaskills (create/improve/grow × business/website/app, improve-code-quality, remove-technical-debt, design-code-architecture) are **orchestrators, not book skills** — do not force-fit the book template above (no Scoring, Further Reading, or About the Author). Their SKILL.md sections, in order: intro → `## Core Principle` (the journey's sequencing law) → `## Journey Map` (Phase | Skill | Question it answers | Artifact) → `## Operating Rules` (rules 1–7 word-identical across all 12; rule 8 is the journey-specific guardrail) → `## Intake` → `## Phases` (each phase has six fields: Purpose, Brief (fallback), Invoke, Decide with the user, Artifact, Done when) → `## Optional Phases` → `## Common Mistakes` → `## Completing the Journey`. Descriptions follow a 5-sentence formula whose 4th sentence routes to sibling metaskills (negative triggers) — keep the routing mutually consistent when editing. Metaskills write UPPERCASE artifacts into the *user's project* `docs/` folder; the canonical skeletons and section headings live in [docs/ARTIFACT-REGISTRY.md](docs/ARTIFACT-REGISTRY.md) — artifact headings quoted in phases must match it, and each metaskill's `references/artifact-templates.md` copies the skeletons it creates.
+
 ## Adding New Skills
 
 1. Create a new folder: `{skill-name}/`
@@ -135,6 +140,7 @@ The YAML frontmatter `description` field is critical for skill discovery - it sh
 /plugin install team-motivation@wondelai-skills     # Drive (Autonomy, Mastery, Purpose), High Output Management
 /plugin install code-craftsmanship@wondelai-skills  # Clean Code, Refactoring Patterns, Software Design Philosophy, Pragmatic Programmer, DDD, Working with Legacy Code
 /plugin install systems-architecture@wondelai-skills # DDIA, System Design, Clean Architecture, Release It!, High Performance Browser Networking, Team Topologies
+/plugin install metaskills@wondelai-skills           # 12 guided journeys: create/improve/grow × business/website/app + improve-code-quality, remove-technical-debt, design-code-architecture
 ```
 
 ### Via skills.sh

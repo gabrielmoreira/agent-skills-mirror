@@ -14,8 +14,8 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-from diagram_ir import normalize_diagram
-from semantic_contracts import resolve_style_index
+from diagram_ir import normalize_diagram  # noqa: E402
+from semantic_contracts import resolve_style_index  # noqa: E402
 
 
 def load_generator():
@@ -208,6 +208,10 @@ class EngineeringSemanticContractTest(unittest.TestCase):
                             self.assertLessEqual(rendered_width, available + 0.01)
                     self.assertTrue(wrapped)
                 if style_id == 10:
+                    self.assertEqual(
+                        {item.get("data-flow") for item in semantic_edges},
+                        {"read", "write", "async"},
+                    )
                     for node_group in (item for item in root if item.get("data-graph-role") == "node"):
                         bounds = [float(value) for value in node_group.get("data-graph-bounds", "").split(",")]
                         available = bounds[2] - bounds[0] - 78
@@ -233,12 +237,31 @@ class EngineeringSemanticContractTest(unittest.TestCase):
                     ]
                     self.assertTrue(transit_copy)
                     self.assertTrue(all(item.text == item.get("data-full-text") for item in transit_copy))
+                    station_orders = sorted(
+                        int(item.get("data-station-order", "-1"))
+                        for item in root
+                        if item.get("data-graph-role") == "node" and item.get("data-station-order")
+                    )
+                    self.assertEqual(station_orders, list(range(5)))
                 if style_id == 12:
                     self.assertEqual(sum(item.get("data-critical") == "true" for item in semantic_edges), 3)
+                    critical_edges = [item for item in semantic_edges if item.get("data-critical") == "true"]
+                    self.assertEqual(
+                        sorted(int(item.get("data-critical-hop", "0")) for item in critical_edges),
+                        [1, 2, 3],
+                    )
+                    self.assertTrue(all(item.get("data-critical-hops") == "3" for item in critical_edges))
                     hop_markers = [item for item in root if item.get("id", "").endswith("-hop")]
                     metric_windows = [item for item in root.iter() if (item.text or "").startswith("@5m")]
                     self.assertEqual(len(hop_markers), 3)
                     self.assertGreaterEqual(len(metric_windows), 16)
+                    span_nodes = [
+                        item
+                        for item in root
+                        if item.get("data-graph-role") == "node" and item.get("data-span-id")
+                    ]
+                    self.assertEqual(len(span_nodes), 4)
+                    self.assertTrue(all(item.get("data-duration-ms") for item in span_nodes))
 
     def test_engineering_style_signatures_fit_long_dynamic_values(self) -> None:
         cases = (

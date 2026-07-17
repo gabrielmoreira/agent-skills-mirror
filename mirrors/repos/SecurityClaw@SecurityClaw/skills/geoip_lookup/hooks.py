@@ -3,6 +3,7 @@ from __future__ import annotations
 
 def format_response(user_question: str, result: dict, skill_results: dict | None = None) -> str:
     action = result.get("action", "ready")
+    provider = result.get("provider", "maxmind")
     db_path = result.get("db_path")
     warning = result.get("warning")
 
@@ -12,7 +13,7 @@ def format_response(user_question: str, result: dict, skill_results: dict | None
         for lookup in lookups[:15]:
             ip = lookup.get("ip", "unknown")
             if lookup.get("status") == "not_found":
-                rendered.append(f"{ip}: not found in the MaxMind database")
+                rendered.append(f"{ip}: not found by the configured GeoIP provider")
                 continue
             if lookup.get("status") == "error":
                 rendered.append(f"{ip}: lookup error ({lookup.get('error', 'unknown error')})")
@@ -29,12 +30,13 @@ def format_response(user_question: str, result: dict, skill_results: dict | None
         response = "Resolved GeoIP for the referenced IPs: " + "; ".join(rendered) + "."
         if db_path:
             response += f" Database: {db_path}."
+        response += f" Provider: {provider}."
         if warning:
             response += f" Warning: {warning}."
         return response
 
     if result.get("status") == "not_found":
-        response = f"No MaxMind geolocation record was found for IP {result.get('ip', 'unknown')}."
+        response = f"No geolocation record was found for IP {result.get('ip', 'unknown')}."
         if db_path:
             response += f" Database: {db_path}."
         return response
@@ -63,10 +65,15 @@ def format_response(user_question: str, result: dict, skill_results: dict | None
         extra.append(f"postal code {geo['postal_code']}")
     if geo.get("latitude") is not None and geo.get("longitude") is not None:
         extra.append(f"coordinates {geo['latitude']}, {geo['longitude']}")
+    if geo.get("asn"):
+        as_label = geo["asn"]
+        if geo.get("as_name"):
+            as_label += f" ({geo['as_name']})"
+        extra.append(f"ASN {as_label}")
     if extra:
         response += " " + "; ".join(extra) + "."
 
-    response += f" GeoIP DB status: {action}."
+    response += f" GeoIP provider: {provider}; status: {action}."
     if warning:
         response += f" Warning: {warning}."
     return response

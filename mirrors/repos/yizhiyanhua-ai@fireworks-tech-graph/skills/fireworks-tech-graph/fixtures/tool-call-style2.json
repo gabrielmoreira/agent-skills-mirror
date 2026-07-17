@@ -3,6 +3,7 @@
   "mode": "agent",
   "template_type": "agent",
   "style": 2,
+  "motion_scene": "tool-grounding",
   "quality_profile": "showcase",
   "width": 960,
   "height": 720,
@@ -27,14 +28,14 @@
     { "id": "documents", "kind": "folder", "x": 390, "y": 520, "width": 180, "height": 50, "label": "Source Documents", "fill": "#3f2a00", "stroke": "#f59e0b", "line_stroke": "#fcd34d" }
   ],
   "arrows": [
-    { "id": "request", "source": "query", "target": "retrieve", "source_port": "right", "target_port": "left", "flow": "control", "label": "request" },
-    { "id": "draft", "source": "retrieve", "target": "generate", "source_port": "right", "target_port": "left", "flow": "data", "label": "context" },
-    { "id": "answer", "source": "generate", "target": "grounded", "source_port": "right", "target_port": "left", "flow": "feedback", "label": "answer" },
-    { "id": "delegate", "source": "retrieve", "target": "agent", "source_port": "bottom", "target_port": "top", "flow": "control", "label": "delegate" },
-    { "id": "tool-call", "source": "agent", "target": "terminal", "source_port": "right", "target_port": "left", "flow": "read", "label": "tool call" },
-    { "id": "inspect", "source": "terminal", "target": "documents", "source_port": "bottom", "target_port": "top", "flow": "read", "label": "inspect" },
-    { "id": "index", "source": "documents", "target": "knowledge", "source_port": "right", "target_port": "bottom", "flow": "write", "label": "index" },
-    { "id": "ground", "source": "knowledge", "target": "generate", "source_port": "top", "target_port": "bottom", "flow": "data", "label": "ground" }
+    { "id": "request", "source": "query", "target": "retrieve", "source_port": "right", "target_port": "left", "flow": "control", "motion_role": "ingress", "motion_stage": 1, "motion_order": 0, "label": "request" },
+    { "id": "draft", "source": "retrieve", "target": "generate", "source_port": "right", "target_port": "left", "flow": "data", "motion_role": "grounding", "motion_stage": 6, "motion_order": 1, "label": "context" },
+    { "id": "answer", "source": "generate", "target": "grounded", "source_port": "right", "target_port": "left", "flow": "feedback", "motion_role": "answer", "motion_stage": 7, "motion_order": 0, "label": "answer" },
+    { "id": "delegate", "source": "retrieve", "target": "agent", "source_port": "bottom", "target_port": "top", "flow": "control", "motion_role": "delegate", "motion_stage": 2, "motion_order": 0, "label": "delegate" },
+    { "id": "tool-call", "source": "agent", "target": "terminal", "source_port": "right", "target_port": "left", "flow": "read", "motion_role": "tool-call", "motion_stage": 3, "motion_order": 0, "label": "tool call" },
+    { "id": "inspect", "source": "terminal", "target": "documents", "source_port": "bottom", "target_port": "top", "flow": "read", "motion_role": "inspect", "motion_stage": 4, "motion_order": 0, "label": "inspect" },
+    { "id": "index", "source": "documents", "target": "knowledge", "source_port": "right", "target_port": "bottom", "flow": "write", "motion_role": "index", "motion_stage": 5, "motion_order": 0, "label": "index" },
+    { "id": "ground", "source": "knowledge", "target": "generate", "source_port": "top", "target_port": "bottom", "flow": "data", "motion_role": "grounding", "motion_stage": 6, "motion_order": 0, "label": "ground" }
   ],
   "legend_orientation": "horizontal",
   "legend_x": 48,

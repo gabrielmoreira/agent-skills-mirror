@@ -1,7 +1,7 @@
 # Troubleshooting
 
 **Status:** Active
-**Last Updated:** 2026-07-04
+**Last Updated:** 2026-07-16
 
 Common issues, known limitations, and workarounds for `notebooklm-py`.
 
@@ -824,6 +824,26 @@ the features:
   otherwise). See [installation.md#rest-api-server](installation.md#rest-api-server).
 - **`curl_cffi` transport**: `NOTEBOOKLM_TRANSPORT=curl_cffi` requires the
   `curl_cffi` package; see the region / anti-abuse gate section above.
+
+### "Unknown tool" from the claude.ai connector after upgrading the server
+
+**Cause:** The claude.ai connector fetches the server's tool list (`tools/list`)
+when it connects and caches it. After you upgrade a deployed server to a version
+that **renamed or folded** a tool, the connector keeps advertising the *old*
+manifest, so a call to a since-removed tool reaches the server and fails cleanly
+with `Unknown tool: '<name>'`. This is expected MCP-host caching, not a server
+bug: a server can't notify a client that isn't connected, and
+`notifications/tools/list_changed` only reaches a *live* session.
+
+**Solution:** Reconnect the connector in claude.ai — disconnect and reconnect, or
+toggle it off and back on — to refresh the manifest.
+
+**Only removed or renamed _tools_ ghost this way — new _optional_ parameters
+forward through the stale schema.** For example, when `source_upload_bytes` was folded
+into `source_add(bytes_base64=…)` (and `studio_get_prompt` into
+`studio_list(item=…)`), the removed tool names failed with `Unknown tool`, but
+`source_add` with the new `bytes_base64` argument reached the upgraded server and
+worked without a reconnect.
 
 ## Getting Help
 

@@ -1,8 +1,6 @@
 ---
 name: openloomi-api
-description: "openloomi API documentation and reference. Use when working with openloomi backend APIs, AI, authentication, characters, messages, files, integrations, billing, or any server-side functionality. Triggers: API endpoints, backend routes, authentication, cloud API, integrations"
-metadata:
-  version: 0.7.7
+description: "openloomi API documentation and reference. Use when working with openloomi backend APIs, AI, authentication, characters, messages, files, integrations, billing, or any server-side functionality. Triggers: API endpoints, backend routes, authentication, local API, integrations"
 ---
 
 > **Note:** If you haven't downloaded or installed openloomi yet, please refer to [Getting Started](https://openloomi.ai/docs/getting-started) for installation instructions.
@@ -11,70 +9,73 @@ metadata:
 
 ## API Modules
 
-### Module Overview
+All auth routes resolve against the local SQLite database. There is **no cloud dependency** — openloomi is fully self-contained. The `remote-auth` prefix is historical (the routes once proxied to a cloud server); today they are the canonical local endpoints, and the Claude/Codex plugin bridge uses `/api/remote-auth/user` as a port-discovery + auth-handshake probe.
 
-| Module | Base Path | Description |
-|--------|-----------|-------------|
-| **Auth** | `/api/auth/*`, `/api/remote-auth/*` | OAuth, login, register |
-| **User** | `/api/user/*` | User identity and entitlements |
-| **Chat** | `/api/chat/*` (app routes) | Chat/Character CRUD |
-| **Messages** | `/api/messages/*` | Message sending and sync |
-| **Files** | `/api/files/*` | File storage and upload |
-| **Storage** | `/api/storage/*` | Session and disk management |
-| **Integrations** | `/api/integrations/*`, `/api/*/callback` | Slack, Discord, X, etc. |
-| **RAG** | `/api/rag/*` | Retrieval-augmented generation |
-| **Workspace** | `/api/workspace/*` | Artifacts and skills |
-| **Native** | `/api/native/*` | Native agent operations |
-| **AI** | `/api/ai/*` | LLM, embeddings, images, audio |
-| **Insights** | `/api/insights/*`, `/api/chat-insights/*` | Analytics and insights |
-| **Billing** | `/api/billing/*` | Billing ledger |
+This reference covers **131 route handlers** under 36 top-level `/api/*` modules (auto-surveyed from `apps/web/app/api/`).
+
+### Functional Modules
+
+| Module | Base Path | Routes | Description |
+|--------|-----------|--------|-------------|
+| **Auth** | `/api/auth/*`, `/api/remote-auth/*`, `/api/remote-feedback/*` | 6 | Guest session, token, user probe, feedback |
+| **AI** | `/api/ai/*` | 5 | Chat, images, audio, embeddings |
+| **Audit** | `/api/audit/*` | 1 | Audit log retrieval |
+| **Chat Insights** | `/api/chat-insights/*` | 1 | Per-chat insight records |
+| **Chronicle** | `/api/chronicle/*` | 7 | Meeting detection, analysis, memories |
+| **Contacts** | `/api/contacts/*` | 1 | Contact query |
+| **DB Init** | `/api/db/*` | 1 | Bootstrap database |
+| **Files** | `/api/files/*` | 8 | File storage, upload, download |
+| **Insight Tabs** | `/api/insight-tabs/*` | 3 | Tab CRUD + reorder |
+| **Integrations** | `/api/integrations/*` | 9 | OAuth + connected accounts |
+| **Listeners** | `/api/listeners/*` | 1 | Listener cleanup |
+| **LLM Usage** | `/api/llm/*` | 1 | Usage summary |
+| **Loop** | `/api/loop/*` | 24 | Attention loop, decisions, channels, classifier rules |
+| **Markmap** | `/api/markmap/*` | 1 | Markmap generation |
+| **Memory** | `/api/memory/*` | 2 | Memory search, raw messages |
+| **Messages** | `/api/messages/*` | 4 | Send, sync, status, raw |
+| **Native** | `/api/native/*` | 5 | Native agent operations, providers, skills |
+| **Pet** | `/api/pet/*` | 1 | Pet state mirror |
+| **Proxy** | `/api/proxy/*` | 2 | CSS/JS proxy |
+| **RAG** | `/api/rag/*` | 11 | Document upload, search, stats |
+| **Storage** | `/api/storage/*` | 4 | Disk usage, sessions, cleanup |
+| **Workspace** | `/api/workspace/*` | 11 | Artifacts, files, skills, previews |
+
+### Platform Callback Modules
+
+Each integration platform has its own `/api/<platform>/*` module:
+
+| Platform | Base Path | Routes |
+|----------|-----------|--------|
+| **Slack** | `/api/slack/*` | 2 |
+| **Discord** | `/api/discord/*` | 2 |
+| **Feishu (Lark)** | `/api/feishu/*` | 1 |
+| **DingTalk** | `/api/dingtalk/*` | 1 |
+| **QQ Bot** | `/api/qqbot/*` | 1 |
+| **Weixin (WeChat)** | `/api/weixin/*` | 4 |
+| **Telegram** | `/api/telegram/*` | 4 |
+| **WhatsApp** | `/api/whatsapp/*` | 2 |
+| **iMessage** | `/api/imessage/*` | 2 |
+| **HubSpot** | `/api/hubspot/*` | 1 |
+| **LinkedIn** | `/api/linkedin/*` | 1 |
+| **Notion** | `/api/notion/*` | 1 |
 
 ---
 
 ## Endpoints Reference
 
-### Auth Module (`/api/auth/*`, `/api/remote-auth/*`)
+### Auth Module
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/auth/poll-[provider]` | Poll OAuth status |
 | POST | `/api/auth/set-token` | Set auth token |
 | POST | `/api/auth/clear-auth-cookie` | Clear session |
-| POST | `/api/remote-auth/login` | Login with email/password |
-| POST | `/api/remote-auth/register` | Register new user |
-| POST | `/api/remote-auth/oauth/[provider]` | OAuth exchange |
-| POST | `/api/remote-auth/oauth/[provider]/exchange` | OAuth code exchange |
-| POST | `/api/remote-auth/refresh` | Refresh token |
-| GET | `/api/remote-auth/user` | Get current user |
+| POST | `/api/auth/token` | Issue session token |
+| POST | `/api/remote-auth/guest` | Create anonymous guest session |
+| GET | `/api/remote-auth/user` | Get current user (also used by plugin probe) |
 | PUT | `/api/remote-auth/user` | Update user info |
-| GET | `/api/remote-auth/subscription` | Get subscription info |
+| POST | `/api/remote-feedback` | Submit feedback |
 
-#### Login Example
-
-```bash
-curl -X POST https://app.alloomi.ai/api/remote-auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","password":"password123"}'
-```
-
-Response:
-```json
-{
-  "user": { "id": "user_xxx", "email": "user@example.com", "name": "User" },
-  "token": "eyJhbG..."
-}
-```
-
-### User Module (`/api/user/*`)
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/user/identity` | Get user identity |
-| PUT | `/api/user/identity` | Update identity |
-| PUT | `/api/user/password` | Change password |
-| GET | `/api/user/entitlements` | Get user entitlements |
-
-### Messages Module (`/api/messages/*`)
+### Messages Module
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -84,19 +85,20 @@ Response:
 | GET | `/api/messages/check` | Check message status |
 | GET | `/api/messages/raw` | Get raw message |
 
-### Files Module (`/api/files/*`)
+### Files Module
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/files/list` | List files |
 | GET | `/api/files/[id]` | Get file by ID |
+| GET | `/api/files/download` | Download file |
 | POST | `/api/files/upload` | Upload file |
 | POST | `/api/files/save` | Save file |
 | GET | `/api/files/usage` | Get storage usage |
 | GET | `/api/files/insights/download` | Download insights file |
 | POST | `/api/files/insights/save` | Save insights |
 
-### Storage Module (`/api/storage/*`)
+### Storage Module
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -106,7 +108,7 @@ Response:
 | GET | `/api/storage/sessions/[taskId]` | Get session by task ID |
 | DELETE | `/api/storage/sessions/[taskId]` | Delete session |
 
-### Integrations Module (`/api/integrations/*`)
+### Integrations Module
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -116,24 +118,28 @@ Response:
 | GET | `/api/integrations/discord/oauth/start` | Start Discord OAuth |
 | GET | `/api/integrations/discord/oauth/exchange` | Exchange Discord OAuth code |
 | GET | `/api/integrations/x/oauth/start` | Start X OAuth |
+| GET | `/api/integrations/hubspot/oauth/start` | Start HubSpot OAuth |
+| GET | `/api/integrations/linkedin/oauth/start` | Start LinkedIn OAuth |
+| GET | `/api/integrations/notion/oauth/start` | Start Notion OAuth |
 
-### OAuth Callbacks (Various Platforms)
+### Platform Callbacks
 
-| Method | Endpoint | Platform |
-|--------|----------|----------|
-| GET | `/api/slack/callback` | Slack |
-| GET | `/api/discord/callback` | Discord |
-| GET | `/api/auth/callback/github` | GitHub |
-| GET | `/api/auth/callback/google` | Google |
-| POST | `/api/feishu/listener/init` | Feishu |
-| POST | `/api/dingtalk/listener/init` | DingTalk |
-| POST | `/api/qqbot/listener/init` | QQ Bot |
-| POST | `/api/weixin/listener/init` | WeChat |
-| POST | `/api/telegram/user-listener/init` | Telegram |
-| POST | `/api/whatsapp/register-socket` | WhatsApp |
-| POST | `/api/imessage/init-self-listener` | iMessage |
+| Platform | Module | Sample Endpoint |
+|----------|--------|-----------------|
+| Slack | `/api/slack/*` | OAuth + listener endpoints under the module |
+| Discord | `/api/discord/*` | OAuth + listener endpoints under the module |
+| Feishu | `/api/feishu/*` | `POST /api/feishu/listener/init` |
+| DingTalk | `/api/dingtalk/*` | `POST /api/dingtalk/listener/init` |
+| QQ Bot | `/api/qqbot/*` | `POST /api/qqbot/listener/init` |
+| Weixin (WeChat) | `/api/weixin/*` | `POST /api/weixin/listener/init` |
+| Telegram | `/api/telegram/*` | `POST /api/telegram/user-listener/init` |
+| WhatsApp | `/api/whatsapp/*` | `POST /api/whatsapp/register-socket` |
+| iMessage | `/api/imessage/*` | `POST /api/imessage/init-self-listener` |
+| HubSpot | `/api/hubspot/*` | OAuth start under `/api/hubspot/...` |
+| LinkedIn | `/api/linkedin/*` | OAuth start under `/api/linkedin/...` |
+| Notion | `/api/notion/*` | OAuth start under `/api/notion/...` |
 
-### RAG Module (`/api/rag/*`)
+### RAG Module
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -150,7 +156,7 @@ Response:
 | POST | `/api/rag/upload/async` | Async upload |
 | GET | `/api/rag/upload/async/status` | Check async upload status |
 
-### Workspace Module (`/api/workspace/*`)
+### Workspace Module
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -159,6 +165,7 @@ Response:
 | GET | `/api/workspace/file/[...path]` | Get file by path |
 | GET | `/api/workspace/preview` | Preview artifact |
 | GET | `/api/workspace/external-preview` | External preview |
+| GET | `/api/workspace/pptx-preview/[taskId]/[...path]` | Preview PPTX artifact |
 | GET | `/api/workspace/skills` | List skills |
 | GET | `/api/workspace/skills/[skillId]` | Get skill |
 | POST | `/api/workspace/skills` | Create skill |
@@ -168,56 +175,97 @@ Response:
 | POST | `/api/workspace/skills/upload` | Upload skill |
 | GET | `/api/workspace/skills/metadata` | Get skill metadata |
 
-### AI Module (`/api/ai/*`)
+### AI Module
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/ai/chat` | Chat completions (streaming) |
-| GET | `/api/ai/chat` | Check AI status |
-| POST | `/api/ai/v1/chat/completions` | V1 chat completions |
-| POST | `/api/ai/v1/embeddings` | Generate embeddings |
+| POST | `/api/ai/v1/chat/completions` | Chat completions (streaming) |
+| POST | `/api/ai/v1/messages` | Messages API |
 | POST | `/api/ai/v1/images/generations` | Generate images |
-| POST | `/api/ai/v1/audio/speech` | Text-to-speech |
-| POST | `/api/ai/v1/audio/transcriptions` | Speech-to-text |
-| POST | `/api/ai/v1/messages/count_tokens` | Count tokens |
-| POST | `/api/ai/v1/upload` | Upload file for AI |
-| GET | `/api/ai/v1/models` | List available models |
+| POST | `/api/ai/v1/images/lifestyle/generate` | Lifestyle image generate |
+| POST | `/api/ai/v1/images/lifestyle/compose` | Lifestyle image compose |
 
-#### Chat Example
-
-```bash
-curl -X POST https://app.alloomi.ai/api/ai/chat \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "messages": [
-      {"role": "system", "content": "You are a helpful assistant."},
-      {"role": "user", "content": "Hello!"}
-    ],
-    "stream": true
-  }'
-```
-
-### Insights Module (`/api/insights/*`, `/api/chat-insights/*`)
+### Chronicle Module
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/chat-insights` | Get chat insights |
-| GET | `/api/insights/brief-categories` | List brief categories |
-| POST | `/api/insights/brief-categories/sync` | Sync categories |
-| POST | `/api/insights/brief-categories/overrides` | Override categories |
-| POST | `/api/insights/brief-categories/pinned` | Pin categories |
-| POST | `/api/insights/brief-categories/cleanup` | Cleanup categories |
+| POST | `/api/chronicle/analyze` | Run chronicle analysis |
+| GET | `/api/chronicle/memories` | List memories |
+| GET | `/api/chronicle/memories/[memoryId]` | Get a memory |
+| DELETE | `/api/chronicle/memories/[memoryId]` | Delete a memory |
+
+### Insight Tabs Module
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
 | GET | `/api/insight-tabs` | List insight tabs |
 | POST | `/api/insight-tabs` | Create insight tab |
 | PUT | `/api/insight-tabs/[tabId]` | Update tab |
 | POST | `/api/insight-tabs/reorder` | Reorder tabs |
 
-### Billing Module (`/api/billing/*`)
+### Chat Insights Module
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/billing/ledger` | Get billing ledger |
+| GET | `/api/chat-insights` | Get chat insights |
+
+### Memory Module
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/memory/search` | Search memory |
+| GET | `/api/memory/raw-messages` | Get raw messages |
+
+### Native Module
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/native/providers` | List native providers |
+| GET | `/api/native/skills` | List native skills |
+| POST | `/api/native/agent` | Agent invocation |
+| POST | `/api/native/agent/password` | Agent password |
+| POST | `/api/native/agent/permission` | Agent permission |
+
+### Pet Module
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/pet/state` | Read pet state |
+| POST | `/api/pet/state` | Write pet state |
+
+### Loop Module (highlights)
+
+24 routes total. Top-level surfaces:
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/loop/connectors` | Connector status |
+| `GET /api/loop/state` | Loop state |
+| `POST /api/loop/tick` | Advance loop tick |
+| `POST /api/loop/activation` | Trigger activation |
+| `GET /api/loop/preferences` | Loop preferences |
+| `GET /api/loop/brief` / `GET /api/loop/brief/content` | Brief delivery |
+| `GET /api/loop/wrap` / `GET /api/loop/wrap/content` | Wrap delivery |
+| `GET /api/loop/channels` / `GET /api/loop/channels/[id]` | Channels |
+| `GET /api/loop/types` / `GET /api/loop/types/[id]` | Loop types |
+| `GET /api/loop/decisions` / `GET /api/loop/decision/[id]` | Decisions |
+| `POST /api/loop/action/schedule` / `GET /api/loop/action/[id]` | Actions |
+| `GET /api/loop/action/by-decision/[id]` | Actions by decision |
+| `GET /api/loop/classifier-rules[/...]` | Classifier rules + dry-run |
+| `GET /api/loop/card/[id]` | Card |
+| `POST /api/loop/dev/reset` / `GET /api/loop/dev/scene` | Dev tooling |
+
+### Other Modules (single-route or paired)
+
+| Module | Endpoints |
+|--------|-----------|
+| **Audit** | `GET /api/audit/logs` |
+| **Contacts** | `GET /api/contacts` |
+| **DB** | `POST /api/db/init` |
+| **Listeners** | `POST /api/listeners/cleanup` |
+| **LLM Usage** | `GET /api/llm/usage/summary` |
+| **Markmap** | `POST /api/markmap` |
+| **Proxy** | `GET /api/proxy/css`, `GET /api/proxy/js` |
 
 ---
 
@@ -282,15 +330,15 @@ TOKEN=$(cat ~/.openloomi/token | base64 -d)
 # 1. Check AI API status (no auth required)
 curl http://localhost:3414/api/ai/chat
 
-# 2. Get current user info
+# 2. Get current user info (also used by Claude/Codex plugin as a port-discovery probe)
 TOKEN=$(cat ~/.openloomi/token | base64 -d)
 curl http://localhost:3414/api/remote-auth/user \
   -H "Authorization: Bearer $TOKEN"
 
-# 3. Get subscription info
-TOKEN=$(cat ~/.openloomi/token | base64 -d)
-curl http://localhost:3414/api/remote-auth/subscription \
-  -H "Authorization: Bearer $TOKEN"
+# 3. Create an anonymous guest session (no credentials)
+curl -X POST http://localhost:3414/api/remote-auth/guest \
+  -H "Content-Type: application/json" \
+  -d '{}'
 
 # 4. Chat with AI (streaming)
 TOKEN=$(cat ~/.openloomi/token | base64 -d)
@@ -324,24 +372,17 @@ curl -X POST http://localhost:3414/api/remote-feedback \
   -d '{"content":"Feedback message","email":"user@example.com"}'
 ```
 
-### Production API Access
-
-```bash
-# Using production API
-export TOKEN="your_production_token"
-curl https://app.alloomi.ai/api/remote-auth/user \
-  -H "Authorization: Bearer $TOKEN"
-```
-
 ---
 
 ## Summary
 
-- **129+ API endpoints** across 20+ functional modules
+- **131 route handlers** across 22 functional modules + 12 platform callback modules + 2 cross-cutting modules (`proxy`, `db`)
+- **Fully self-contained**: all auth, data, AI, and sync run locally — no cloud dependency
 - **Dual authentication**: Session cookies (web) and Bearer tokens (Tauri)
 - **RESTful JSON APIs** with Zod validation
-- **CloudApiClient** for desktop/Tauri integration
 - **SWR utilities** for client-side data fetching
-- **OAuth support** for Google, GitHub, Slack, Discord, X
+- **OAuth support** for Slack, Discord, X, HubSpot, LinkedIn, Notion
 - **RAG** for document retrieval and search
-- **AI** endpoints for chat, embeddings, images, audio
+- **AI** endpoints for chat, images, audio
+- **Loop** for attention loop, decisions, channels, classifier rules
+- **Pet** state mirror (read/write `/api/pet/state`)

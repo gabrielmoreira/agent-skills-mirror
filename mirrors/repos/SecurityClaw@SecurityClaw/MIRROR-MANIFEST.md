@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SecurityClaw/SecurityClaw` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
+Mirror of `SecurityClaw/SecurityClaw` — 26 default patterns, 0 followed patterns, 79 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SecurityClaw/SecurityClaw` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 44 |
+| Files         | 79 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,42 +67,77 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`skills/baseline_querier/instruction.md`](skills/baseline_querier/instruction.md) |
 | 7 | ✓ | [`skills/baseline_querier/logic.py`](skills/baseline_querier/logic.py) |
 | 8 | ✓ | [`skills/baseline_querier/manifest.yaml`](skills/baseline_querier/manifest.yaml) |
-| 9 | ✓ | [`skills/fields_baseliner/instruction.md`](skills/fields_baseliner/instruction.md) |
-| 10 | ✓ | [`skills/fields_baseliner/logic.py`](skills/fields_baseliner/logic.py) |
-| 11 | ✓ | [`skills/fields_baseliner/manifest.yaml`](skills/fields_baseliner/manifest.yaml) |
-| 12 | ✓ | [`skills/fields_querier/instruction.md`](skills/fields_querier/instruction.md) |
-| 13 | ✓ | [`skills/fields_querier/logic.py`](skills/fields_querier/logic.py) |
-| 14 | ✓ | [`skills/fields_querier/manifest.yaml`](skills/fields_querier/manifest.yaml) |
-| 15 | ✓ | [`skills/forensic_examiner/graph.py`](skills/forensic_examiner/graph.py) |
-| 16 | ✓ | [`skills/forensic_examiner/hooks.py`](skills/forensic_examiner/hooks.py) |
-| 17 | ✓ | [`skills/forensic_examiner/instruction.md`](skills/forensic_examiner/instruction.md) |
-| 18 | ✓ | [`skills/forensic_examiner/logic.py`](skills/forensic_examiner/logic.py) |
-| 19 | ✓ | [`skills/forensic_examiner/manifest.yaml`](skills/forensic_examiner/manifest.yaml) |
-| 20 | ✓ | [`skills/geoip_lookup/__init__.py`](skills/geoip_lookup/__init__.py) |
-| 21 | ✓ | [`skills/geoip_lookup/hooks.py`](skills/geoip_lookup/hooks.py) |
-| 22 | ✓ | [`skills/geoip_lookup/instruction.md`](skills/geoip_lookup/instruction.md) |
-| 23 | ✓ | [`skills/geoip_lookup/logic.py`](skills/geoip_lookup/logic.py) |
-| 24 | ✓ | [`skills/geoip_lookup/manifest.yaml`](skills/geoip_lookup/manifest.yaml) |
-| 25 | ✓ | [`skills/ip_fingerprinter/__init__.py`](skills/ip_fingerprinter/__init__.py) |
-| 26 | ✓ | [`skills/ip_fingerprinter/graph.py`](skills/ip_fingerprinter/graph.py) |
-| 27 | ✓ | [`skills/ip_fingerprinter/hooks.py`](skills/ip_fingerprinter/hooks.py) |
-| 28 | ✓ | [`skills/ip_fingerprinter/instruction.md`](skills/ip_fingerprinter/instruction.md) |
-| 29 | ✓ | [`skills/ip_fingerprinter/logic.py`](skills/ip_fingerprinter/logic.py) |
-| 30 | ✓ | [`skills/ip_fingerprinter/manifest.yaml`](skills/ip_fingerprinter/manifest.yaml) |
-| 31 | ✓ | [`skills/ip_fingerprinter/port_registry.py`](skills/ip_fingerprinter/port_registry.py) |
-| 32 | ✓ | [`skills/network_baseliner/instruction.md`](skills/network_baseliner/instruction.md) |
-| 33 | ✓ | [`skills/network_baseliner/logic.py`](skills/network_baseliner/logic.py) |
-| 34 | ✓ | [`skills/network_baseliner/manifest.yaml`](skills/network_baseliner/manifest.yaml) |
-| 35 | ✓ | [`skills/opensearch_querier/hooks.py`](skills/opensearch_querier/hooks.py) |
-| 36 | ✓ | [`skills/opensearch_querier/instruction.md`](skills/opensearch_querier/instruction.md) |
-| 37 | ✓ | [`skills/opensearch_querier/logic.py`](skills/opensearch_querier/logic.py) |
-| 38 | ✓ | [`skills/opensearch_querier/manifest.yaml`](skills/opensearch_querier/manifest.yaml) |
-| 39 | ✓ | [`skills/opensearch_querier/PLANNING_PROMPT.md`](skills/opensearch_querier/PLANNING_PROMPT.md) |
-| 40 | ✓ | [`skills/threat_analyst/hooks.py`](skills/threat_analyst/hooks.py) |
-| 41 | ✓ | [`skills/threat_analyst/instruction.md`](skills/threat_analyst/instruction.md) |
-| 42 | ✓ | [`skills/threat_analyst/logic.py`](skills/threat_analyst/logic.py) |
-| 43 | ✓ | [`skills/threat_analyst/manifest.yaml`](skills/threat_analyst/manifest.yaml) |
-| 44 | ✓ | [`skills/threat_analyst/reputation_intel.py`](skills/threat_analyst/reputation_intel.py) |
+| 9 | ✓ | [`skills/endpoint_response/instruction.md`](skills/endpoint_response/instruction.md) |
+| 10 | ✓ | [`skills/endpoint_response/logic.py`](skills/endpoint_response/logic.py) |
+| 11 | ✓ | [`skills/endpoint_response/manifest.yaml`](skills/endpoint_response/manifest.yaml) |
+| 12 | ✓ | [`skills/endpoint_telemetry/logic.py`](skills/endpoint_telemetry/logic.py) |
+| 13 | ✓ | [`skills/endpoint_telemetry/manifest.yaml`](skills/endpoint_telemetry/manifest.yaml) |
+| 14 | ✓ | [`skills/endpoint_threat_hunter/instruction.md`](skills/endpoint_threat_hunter/instruction.md) |
+| 15 | ✓ | [`skills/endpoint_threat_hunter/logic.py`](skills/endpoint_threat_hunter/logic.py) |
+| 16 | ✓ | [`skills/endpoint_threat_hunter/manifest.yaml`](skills/endpoint_threat_hunter/manifest.yaml) |
+| 17 | ✓ | [`skills/fields_baseliner/instruction.md`](skills/fields_baseliner/instruction.md) |
+| 18 | ✓ | [`skills/fields_baseliner/logic.py`](skills/fields_baseliner/logic.py) |
+| 19 | ✓ | [`skills/fields_baseliner/manifest.yaml`](skills/fields_baseliner/manifest.yaml) |
+| 20 | ✓ | [`skills/fields_querier/instruction.md`](skills/fields_querier/instruction.md) |
+| 21 | ✓ | [`skills/fields_querier/logic.py`](skills/fields_querier/logic.py) |
+| 22 | ✓ | [`skills/fields_querier/manifest.yaml`](skills/fields_querier/manifest.yaml) |
+| 23 | ✓ | [`skills/file_integrity_monitor/instruction.md`](skills/file_integrity_monitor/instruction.md) |
+| 24 | ✓ | [`skills/file_integrity_monitor/logic.py`](skills/file_integrity_monitor/logic.py) |
+| 25 | ✓ | [`skills/file_integrity_monitor/manifest.yaml`](skills/file_integrity_monitor/manifest.yaml) |
+| 26 | ✓ | [`skills/forensic_examiner/graph.py`](skills/forensic_examiner/graph.py) |
+| 27 | ✓ | [`skills/forensic_examiner/hooks.py`](skills/forensic_examiner/hooks.py) |
+| 28 | ✓ | [`skills/forensic_examiner/instruction.md`](skills/forensic_examiner/instruction.md) |
+| 29 | ✓ | [`skills/forensic_examiner/logic.py`](skills/forensic_examiner/logic.py) |
+| 30 | ✓ | [`skills/forensic_examiner/manifest.yaml`](skills/forensic_examiner/manifest.yaml) |
+| 31 | ✓ | [`skills/geoip_lookup/__init__.py`](skills/geoip_lookup/__init__.py) |
+| 32 | ✓ | [`skills/geoip_lookup/hooks.py`](skills/geoip_lookup/hooks.py) |
+| 33 | ✓ | [`skills/geoip_lookup/instruction.md`](skills/geoip_lookup/instruction.md) |
+| 34 | ✓ | [`skills/geoip_lookup/logic.py`](skills/geoip_lookup/logic.py) |
+| 35 | ✓ | [`skills/geoip_lookup/manifest.yaml`](skills/geoip_lookup/manifest.yaml) |
+| 36 | ✓ | [`skills/host_inventory/instruction.md`](skills/host_inventory/instruction.md) |
+| 37 | ✓ | [`skills/host_inventory/logic.py`](skills/host_inventory/logic.py) |
+| 38 | ✓ | [`skills/host_inventory/manifest.yaml`](skills/host_inventory/manifest.yaml) |
+| 39 | ✓ | [`skills/ip_fingerprinter/__init__.py`](skills/ip_fingerprinter/__init__.py) |
+| 40 | ✓ | [`skills/ip_fingerprinter/graph.py`](skills/ip_fingerprinter/graph.py) |
+| 41 | ✓ | [`skills/ip_fingerprinter/hooks.py`](skills/ip_fingerprinter/hooks.py) |
+| 42 | ✓ | [`skills/ip_fingerprinter/instruction.md`](skills/ip_fingerprinter/instruction.md) |
+| 43 | ✓ | [`skills/ip_fingerprinter/logic.py`](skills/ip_fingerprinter/logic.py) |
+| 44 | ✓ | [`skills/ip_fingerprinter/manifest.yaml`](skills/ip_fingerprinter/manifest.yaml) |
+| 45 | ✓ | [`skills/ip_fingerprinter/port_registry.py`](skills/ip_fingerprinter/port_registry.py) |
+| 46 | ✓ | [`skills/network_baseliner/instruction.md`](skills/network_baseliner/instruction.md) |
+| 47 | ✓ | [`skills/network_baseliner/logic.py`](skills/network_baseliner/logic.py) |
+| 48 | ✓ | [`skills/network_baseliner/manifest.yaml`](skills/network_baseliner/manifest.yaml) |
+| 49 | ✓ | [`skills/network_defense_monitor/instruction.md`](skills/network_defense_monitor/instruction.md) |
+| 50 | ✓ | [`skills/network_defense_monitor/logic.py`](skills/network_defense_monitor/logic.py) |
+| 51 | ✓ | [`skills/network_defense_monitor/manifest.yaml`](skills/network_defense_monitor/manifest.yaml) |
+| 52 | ✓ | [`skills/network_monitor/instruction.md`](skills/network_monitor/instruction.md) |
+| 53 | ✓ | [`skills/network_monitor/logic.py`](skills/network_monitor/logic.py) |
+| 54 | ✓ | [`skills/network_monitor/manifest.yaml`](skills/network_monitor/manifest.yaml) |
+| 55 | ✓ | [`skills/opensearch_querier/hooks.py`](skills/opensearch_querier/hooks.py) |
+| 56 | ✓ | [`skills/opensearch_querier/instruction.md`](skills/opensearch_querier/instruction.md) |
+| 57 | ✓ | [`skills/opensearch_querier/logic.py`](skills/opensearch_querier/logic.py) |
+| 58 | ✓ | [`skills/opensearch_querier/manifest.yaml`](skills/opensearch_querier/manifest.yaml) |
+| 59 | ✓ | [`skills/opensearch_querier/PLANNING_PROMPT.md`](skills/opensearch_querier/PLANNING_PROMPT.md) |
+| 60 | ✓ | [`skills/persistence_scanner/instruction.md`](skills/persistence_scanner/instruction.md) |
+| 61 | ✓ | [`skills/persistence_scanner/logic.py`](skills/persistence_scanner/logic.py) |
+| 62 | ✓ | [`skills/persistence_scanner/manifest.yaml`](skills/persistence_scanner/manifest.yaml) |
+| 63 | ✓ | [`skills/process_monitor/instruction.md`](skills/process_monitor/instruction.md) |
+| 64 | ✓ | [`skills/process_monitor/logic.py`](skills/process_monitor/logic.py) |
+| 65 | ✓ | [`skills/process_monitor/manifest.yaml`](skills/process_monitor/manifest.yaml) |
+| 66 | ✓ | [`skills/security_posture/instruction.md`](skills/security_posture/instruction.md) |
+| 67 | ✓ | [`skills/security_posture/logic.py`](skills/security_posture/logic.py) |
+| 68 | ✓ | [`skills/security_posture/manifest.yaml`](skills/security_posture/manifest.yaml) |
+| 69 | ✓ | [`skills/software_inventory/instruction.md`](skills/software_inventory/instruction.md) |
+| 70 | ✓ | [`skills/software_inventory/logic.py`](skills/software_inventory/logic.py) |
+| 71 | ✓ | [`skills/software_inventory/manifest.yaml`](skills/software_inventory/manifest.yaml) |
+| 72 | ✓ | [`skills/threat_analyst/hooks.py`](skills/threat_analyst/hooks.py) |
+| 73 | ✓ | [`skills/threat_analyst/instruction.md`](skills/threat_analyst/instruction.md) |
+| 74 | ✓ | [`skills/threat_analyst/logic.py`](skills/threat_analyst/logic.py) |
+| 75 | ✓ | [`skills/threat_analyst/manifest.yaml`](skills/threat_analyst/manifest.yaml) |
+| 76 | ✓ | [`skills/threat_analyst/reputation_intel.py`](skills/threat_analyst/reputation_intel.py) |
+| 77 | ✓ | [`skills/vulnerability_scanner/instruction.md`](skills/vulnerability_scanner/instruction.md) |
+| 78 | ✓ | [`skills/vulnerability_scanner/logic.py`](skills/vulnerability_scanner/logic.py) |
+| 79 | ✓ | [`skills/vulnerability_scanner/manifest.yaml`](skills/vulnerability_scanner/manifest.yaml) |
 
 ---
 

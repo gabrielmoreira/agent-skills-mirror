@@ -9,6 +9,8 @@ A skill's turn ends when it returns, so *the skill sets up its own loop* — not
 - **`pr-snapshot watch`** is that detector — same fetch→diff on an interval, **no agent tokens**, prints one `BABYSIT_WAKE {reason,url,...}` line *only* on work to inspect (`actionable` for unresolved threads or failed CI; `feedback-candidate` for non-thread content awaiting resolver judgment) or a stop condition (`terminal` / `blocked-external` / `blocked-failing` — a dispatched check left terminally red — / `needs-human` / `merge-ready` after settle / `max-runtime` / `stop-signal`), then exits. A `feedback-candidate` that the resolver silent-drops is a normal classification outcome, not a detector false positive.
 - The agent **backgrounds `watch` and waits for that line** with its harness's *background-and-wake* capability, runs a tick, and re-arms. The loop lives **in the current session**, so it keeps every decision the conversation made — declined nits, a reviewer judged wrong, the user's mid-run steering — and spends reasoning only when something changed.
 
+Watcher ownership is **latest-valid-watcher-wins**. A newer invocation cancels an older invocation whose first fetch is still in flight, preventing network completion order from stealing ownership back. That candidate reservation does not displace the active watcher: only a successful first snapshot atomically supersedes and gracefully terminates it, while a failed preflight leaves it healthy and active. Wakes and snapshots carry `watch_generation`. On delivery, compare the wake generation with a fresh snapshot: discard a stale wake and coalesce it into that current read; if the generation matches but the attention set already cleared, do no work. Replacement never resets `last_change_at` or `session_started_at`, so a fresh watcher polls immediately without adding a new settle or budget delay.
+
 The needed capability is generic — *run a background process and be woken when it emits a line, without ending the turn* — so **describe the capability and use whatever tool the harness has**, rather than hardcoding a scheduler. A skill drives **tool calls**, never user-typed slash commands. Known instances (examples, not a required list; verified live this session):
 
 | Harness | Background-and-wake tool the agent uses | Durable beyond the session? |
@@ -70,6 +72,9 @@ State lives at `/tmp/compound-engineering/ce-babysit-pr/<host>-<owner>-<repo>-<p
   "head_sha": "abc123",
   "tick": 7,
   "started_at": "<iso8601>",
+  "watch_generation": "<opaque generation>",
+  "watch_pid": 12345,
+  "watch_process_identity": "<pid-reuse guard>",
   "checks": { "<check_key>": { "name": "...", "status": "COMPLETED", "conclusion": "FAILURE", "head_sha": "abc123" } },
   "threads": { "<thread_id>": { "last_comment_id": "...", "last_comment_at": "<iso8601>", "disposition": "open|dispatched|needs-human", "acted_identity": ["<comment_id>", "<comment_at>"] } },
   "feedback": { "<comment_or_review_id>": { "kind": "comment|review", "author": "...", "disposition": "open|dispatched|needs-human" } },

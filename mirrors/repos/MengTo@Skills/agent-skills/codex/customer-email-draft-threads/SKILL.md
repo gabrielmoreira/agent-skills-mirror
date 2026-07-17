@@ -7,7 +7,7 @@ description: Draft-only Gmail customer support triage with per-draft Codex proje
 
 ## Overview
 
-Run a safe support-email pass: inspect recent or requested Gmail messages, create unsent draft replies only for real customer/person emails, and create one Codex project thread for each drafted email.
+Run a safe support-email pass: inspect recent or requested Gmail messages, create unsent draft replies only for real customer/person emails, and create one Codex project thread for each drafted email. Treat approved affiliate-operation mail, such as PromoteKit notices and affiliate program applications, as a separate operations workflow rather than low-value automated mail.
 
 Use the detailed workflow in [references/runbook.md](references/runbook.md) whenever drafting, classifying risk, or creating project-thread handoffs.
 
@@ -26,6 +26,8 @@ Use the detailed workflow in [references/runbook.md](references/runbook.md) when
 3. Classify before drafting:
    - Draft for real customer/person emails that need a response.
    - Skip automated or low-value mail unless it clearly requires support action.
+   - Treat inbound sponsorship, paid collaboration, partnership, creator campaign, and media-kit requests as actionable operations mail. Keep them approval-gated and route them through the workspace's trusted partnership or manual-review workflow instead of ordinary product-support drafting.
+   - Do not skip PromoteKit "A new affiliate joined your program" notices or affiliate program "New Affiliate Application" emails when the workspace has a trusted affiliate workflow. Extract the affiliate name, email, platform, and promotion strategy, then run the affiliate operations workflow in the runbook instead of drafting a Gmail reply by default.
    - Flag phishing, scams, impersonation, credential/payment requests, suspicious links/domains, unusual urgency, or attachment risk for manual review.
 
 4. Create Gmail drafts only when safe:
@@ -33,8 +35,11 @@ Use the detailed workflow in [references/runbook.md](references/runbook.md) when
    - Preserve the thread recipient/subject context. Prefer in-thread drafts; if Gmail rejects threading, save a standalone draft and report that clearly.
    - Do not overpromise refunds, cancellations, account changes, legal/privacy actions, timelines, discounts, or technical fixes. Use safe acknowledgements when verification is needed.
 
-5. Create one Codex thread per drafted email:
+5. Create one canonical Codex thread per drafted email:
+   - Before creating a thread, search existing Codex threads by customer name/email, Gmail thread id, latest message id, draft id, and short issue phrase.
    - For every saved Gmail draft, create a separate project thread for that specific email unless an existing matching thread is already present.
+   - If duplicate support threads already exist for the same customer issue, keep the canonical thread with the newest customer message, freshest draft state, or active follow-up context. Archive or close stale duplicate threads before creating or reporting any new handoff.
+   - Report the canonical thread id and any archived duplicate thread ids in the final handoff or status report.
    - Choose the most relevant project or workspace. If uncertain, use the user's general support workspace and explain the ambiguity.
    - Pass the thread the sender, subject, Gmail thread id, latest message id, draft id, customer ask, risk notes, and next investigation/action.
    - The project thread must not send email, mutate production/account/billing data, click email links, download unsafe attachments, or make external changes without explicit user confirmation.
@@ -43,6 +48,7 @@ Use the detailed workflow in [references/runbook.md](references/runbook.md) when
    - The follow-up must ask the request owner whether the case is resolved yet.
    - It must briefly restate what the customer wants and what the request owner should do next.
    - It must repeat every hour until the request owner confirms the case is resolved; do not use a single delayed summary.
+   - When the request owner confirms the ticket is resolved, archive the canonical Codex support thread/chat with the thread archive tool, stop or pause unresolved follow-ups for that ticket, and report the archived thread id. Do not archive Gmail conversations as part of this cleanup.
 
 7. Report cleanly:
    - Use a markdown table with: Sender, Subject, Action, Draft Status, Risk, Next Step.

@@ -25,6 +25,24 @@
 - Malformed YAML、非 object root、自定义 tag、重复 key 和超限 alias expansion 必须明确解析失败，不得返回部分可信元数据。
 - Skill 元数据与正文分工明确：UI 展示元数据与版本信息由数据库维护，说明正文与指令正文由 `SKILL.md` 持有。
 
+### 1.2 Package Ignore And Secret Guard Contract
+
+- CLI 的本地目录、GitHub 与 JSON 导入、托管副本、package fingerprint、版本快照、
+  Project 分发和 Agent 平台分发必须使用同一套内置 ignore policy；package 根目录可以用
+  Gitignore 语义的 `.prompthubignore` 增补规则，但不能排除必需的根 `SKILL.md`。
+- `.DS_Store`、VCS/PromptHub 内部目录、依赖、缓存、日志、临时文件、本地 `.env*`
+  凭据和常见构建输出默认不进入托管副本、fingerprint、快照或分发目标；可分发的
+  `.env.example` / `.env.sample` / `.env.template` 继续参与 package。
+- 托管复制、版本快照、Project/Agent 分发和 JSON 内容写入前必须扫描非忽略文本文件，
+  并阻止高置信私钥、provider token 与非占位 credential assignment。错误只返回 finding
+  类型、规范化相对路径与行号，不得回显命中的值。
+- package 扫描必须有明确容量边界：单文本文件最多 2 MiB、累计文本最多 16 MiB、
+  过滤后最多 500 个文件系统项、最多返回 100 条 finding。超过边界必须 fail closed，
+  不得静默截断后继续复制或分发。
+- 托管、Project 与 Agent copy 替换必须通过同级 staging/backup 原子交换；扫描、复制、
+  rename 或清理失败时必须恢复原目标。GitHub 导入必须先在临时 checkout 完成选择、
+  ignore 与 secret 检查，再创建最终托管 package。
+
 ### 2. Sync Contract
 
 - PromptHub 必须支持 DB 与本地 Skill 仓库之间的双向同步。
@@ -35,7 +53,7 @@
 - 链接导入的 My Skills 文件浏览、读取、编辑、同步与 fingerprint 刷新必须使用该外部目录；不得在解析路径时静默复制为托管 package。
 - 删除链接导入的 My Skills 记录时，只能删除 PromptHub 记录和 PromptHub 拥有的分发链接；不得删除外部源目录。
 - 通过 backup/restore 恢复 Skill 时，`local_repo_path` 属于机器本地的写入目标，不能作为可移植数据回放。恢复必须从备份的内容和文件树重建当前机器的 PromptHub 托管 package，同时保留来源标识、来源地址和 package 对账基线。
-- Desktop 自部署 Web 同步必须在发送前移除 `local_repo_path` 以及非 HTTP(S) 的 `source_url`、`content_url` 和本地 icon 路径；Skill 正文、文件树和可移植的远程来源元数据必须保留。拉取合并不能只按数据库 ID 判断同一 Skill，必须优先按 `source_id`、package/content fingerprint 或旧记录规范化名称对齐，并同步重映射版本与文件快照，避免重复名称和孤儿文件写入。
+- Desktop 自部署 Web 备份和兼容期 live-sync 必须在发送前移除 `local_repo_path` 以及非 HTTP(S) 的 `source_url`、`content_url` 和本地 icon 路径；Skill 正文、文件树和可移植的远程来源元数据必须保留。旧 live-sync 拉取合并不能只按数据库 ID 判断同一 Skill，必须优先按 `source_id`、package/content fingerprint 或旧记录规范化名称对齐，并同步重映射版本与文件快照，避免重复名称和孤儿文件写入。
 
 ### 2.1 Source Update Reconciliation Contract
 
@@ -112,6 +130,18 @@
 - 已启用的 custom Agent 和存在用户覆盖配置的 built-in Agent 必须作为可分发目标显示，即使其根目录当前还不存在；安装流程负责创建缺失目录。
 - `disabledPlatformIds` 始终优先于检测和显式配置，用于隐藏用户不希望看到的平台。
 - 平台检测仍用于默认 built-in 平台降噪和状态提示，但不得单独作为分发目标可见性的唯一门禁。
+
+### 3.4 CLI Automation And Asset Topology Contract
+
+- CLI 以 `skill import` 表示纳入 PromptHub，以 `skill distribute` / `skill undistribute`
+  表示向 Agent 平台分发或撤回；`install`、`install-md`、`uninstall-md` 作为兼容别名保留。
+- CLI 的 Skill `list/get/import/versions/create-version/rollback/sync/update` 成功结果默认只返回
+  identity、version、fingerprint 与 file count 等有界摘要，不返回正文或文件快照；`--full`
+  显式恢复完整 payload，`--quiet` 只抑制成功 stdout，错误仍写 stderr。显式 `repo-read`
+  与 export 命令继续返回调用者要求的内容。
+- Skill 详情必须把 upstream/local external source、当前可编辑 package 和已检测到的 Agent
+  分发目标分为三个拓扑阶段。外部直连目录不能标成 PromptHub 托管副本；copy target 必须
+  说明再次分发会覆盖，symlink target 必须说明编辑会沿链接生效。
 
 ### 4. Translation Contract
 

@@ -177,10 +177,10 @@
     }
   ],
   "arrows": [
-    { "id": "edge-gateway-api", "source": "edge-gateway", "target": "api-gateway", "source_port": "right", "target_port": "left", "flow": "control", "edge_kind": "business", "protocol": "HTTP/2" },
-    { "id": "edge-api-checkout", "source": "api-gateway", "target": "checkout-service", "source_port": "right", "target_port": "left", "flow": "control", "edge_kind": "business", "protocol": "gRPC" },
-    { "id": "edge-checkout-payment", "source": "checkout-service", "target": "payment-service", "source_port": "right", "target_port": "left", "flow": "control", "edge_kind": "business", "protocol": "gRPC" },
-    { "id": "export-telemetry", "source": "checkout-service", "target": "otel-collector", "source_port": "bottom", "target_port": "top", "flow": "async", "edge_kind": "telemetry", "dashed": true }
+    { "id": "edge-gateway-api", "source": "edge-gateway", "target": "api-gateway", "source_port": "right", "target_port": "left", "flow": "control", "edge_kind": "business", "protocol": "HTTP/2", "motion_role": "critical-request", "motion_stage": 1, "motion_order": 0 },
+    { "id": "edge-api-checkout", "source": "api-gateway", "target": "checkout-service", "source_port": "right", "target_port": "left", "flow": "control", "edge_kind": "business", "protocol": "gRPC", "motion_role": "critical-request", "motion_stage": 2, "motion_order": 0 },
+    { "id": "edge-checkout-payment", "source": "checkout-service", "target": "payment-service", "source_port": "right", "target_port": "left", "flow": "control", "edge_kind": "business", "protocol": "gRPC", "motion_role": "critical-request", "motion_stage": 3, "motion_order": 0 },
+    { "id": "export-telemetry", "source": "checkout-service", "target": "otel-collector", "source_port": "bottom", "target_port": "top", "flow": "async", "edge_kind": "telemetry", "motion_role": "telemetry-export", "motion_stage": 4, "motion_order": 0, "dashed": true }
   ],
   "legend_orientation": "horizontal",
   "legend_x": 48,

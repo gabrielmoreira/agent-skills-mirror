@@ -960,6 +960,11 @@
           "id": "chart_image",
           "requirement": "required",
           "type": "image"
+        },
+        {
+          "id": "fmp",
+          "requirement": "optional",
+          "type": "market_data"
         }
       ],
       "status": "production",

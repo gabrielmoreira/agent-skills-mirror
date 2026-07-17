@@ -6,7 +6,7 @@
 > server and its dependencies only arrive with the `mcp` extra.
 
 The MCP server exposes NotebookLM to any [Model Context Protocol](https://modelcontextprotocol.io)
-client (Claude Desktop, Claude Code, Cursor, Windsurf, …) as a set of **34 tools** — manage
+client (Claude Desktop, Claude Code, Cursor, Windsurf, …) as a set of **33 tools** — manage
 notebooks and sources, chat over a notebook's sources, generate and download studio artifacts,
 and run deep research. It is a thin adapter over the same business logic the CLI uses, so it
 behaves identically to `notebooklm <command>`.
@@ -163,6 +163,13 @@ bearer-only deploy → the two file tools return a clear "not configured" error
   type and the streamed `Content-Type` can't drift), and `size_bytes` (`null` — the
   size isn't known without eagerly fetching the artifact, which the broker won't do;
   the route sets the real `Content-Length` when the link is opened).
+- **Confirm an upload landed:** `await_upload` (pass the `human_upload.url` or bare token)
+  polls the in-process completion record and returns `{source_id, file:{name, size, mime,
+  sha256}}` once the add commits — `sha256` is the digest of exactly the bytes the server
+  received, so a client that hashed its local copy can confirm byte-integrity. An agent
+  `PUT`ing to the upload URL may also append `?sha256=<hex>`: the route verifies the received
+  stream against it and rejects a corrupted transfer with a clean 400 (retryable) *before*
+  adding the source.
 - Links are HMAC-signed and short-lived (upload 15 min, download 30 min) and expire on
   a server restart. Google Drive (`source_add` with a Drive id) remains a no-browser
   alternative for adding files. stdio (local) installs are unchanged — they still read
@@ -222,8 +229,8 @@ These conventions hold across every tool:
   `failed` tallies + per-item `results[].status` for partial outcomes.)
 - **Structured errors.** Failures arrive as `CODE: message (retriable=…)`, where `CODE` is one of
   `AUTH`, `RATE_LIMITED`, `NOT_FOUND`, `VALIDATION`, `TIMEOUT`, `NETWORK`, `SERVER`, `RPC`,
-  `CONFIG`, `NOTEBOOK_LIMIT`, `ARTIFACT_TIMEOUT`, `SOURCE_MUTATION`, `SOURCE_ADD`, `ERROR`, or
-  `UNEXPECTED`. The
+  `CONFIG`, `DEPENDENCY`, `NOTEBOOK_LIMIT`, `ARTIFACT_TIMEOUT`, `SOURCE_MUTATION`, `SOURCE_ADD`,
+  `ERROR`, or `UNEXPECTED`. The
   `retriable` flag tells an agent whether a retry could succeed (e.g. `RATE_LIMITED`, `TIMEOUT`,
   `NETWORK`). Many errors also carry an actionable `hint` (e.g. `AUTH → run notebooklm login`); a
   near-miss name lookup puts its `Did you mean: …` candidates (title + id) in that hint (see
@@ -328,27 +335,35 @@ rejects**: the source stays READY, `ok` stays `true`, and any fetch failure
 (including a >5s slow `source_read`) degrades to no warning rather than breaking
 the wait.
 
-It fires on a **web-page source only** (`kind == "web_page"`) via two body-only
+It fires on a **web-page source only** (`kind == "web_page"`) via three body-only
 signals — the title is never scanned:
 
 | Signal | Threshold | Warning contains |
 |--------|-----------|------------------|
 | **char-thin** | indexed text shorter than **100 characters** | `"little/no text extracted (N chars) …"` |
-| **dead-link boilerplate** | **indexed text** shorter than **2000 characters** that (casefolded) contains any of the phrases below | `"ingested as ready (N chars) but the body matches a dead-link / error-page pattern …"` |
+| **dead-link boilerplate** | **indexed text** shorter than **2000 characters** that (casefolded) contains any of the dead-link phrases below | `"ingested as ready (N chars) but the body matches a dead-link / error-page pattern …"` |
+| **bot-challenge / WAF interstitial** | **indexed text** shorter than **5000 characters** that (casefolded) contains any of the challenge phrases below | `"ingested as ready (N chars) but the body matches a bot-challenge / WAF interstitial pattern …"` |
 
 The full dead-link phrase set (the complete list, so you can build a fixture that
 trips it): `broken link`, `page not found`, `page isn't available`, `page does
 not exist`, `page no longer available`, `no longer available`, `error 404`, `404
 not found`, `whoops!`.
 
-Both gates measure the source's **indexed text** length (`char_count` from a
+The full bot-challenge phrase set (a Cloudflare "Just a moment…" or Akamai
+"Access Denied" page that serves HTTP 200 and indexes as ready): `just a moment`,
+`enable javascript and cookies`, `checking your browser`, `attention required`,
+`access denied`, `security verification`, `captcha`, `cloudflare ray id`. The
+dead-link scan takes precedence when a body trips both.
+
+Each gate measures the source's **indexed text** length (`char_count` from a
 `source_read` with `detail="full"`), not the raw HTTP response — a large HTML
-page that indexes to little text is still caught. The 2000-char gate is what
-keeps the weaker phrases safe: a page whose indexed text is 2000 chars or longer
-is never phrase-scanned (so `broken link` in a real article about broken links,
-or a shop's `no longer available`, does not false-positive), and the phrases are
-all multi-word / anchored — no bare `404` or `not found`. Every warning ends with
-`verify with source_read (detail="full").` (trailing period included).
+page that indexes to little text is still caught. The length gate is what keeps
+the phrases safe: a page whose indexed text is at/over its cap (2000 for
+dead-link, 5000 for bot-challenge) is never phrase-scanned (so `broken link` in a
+real article about broken links, or a passing mention of a WAF vendor, does not
+false-positive), and the phrases are all multi-word / anchored — no bare `404` or
+`not found`. Every warning ends with `verify with source_read (detail="full").`
+(trailing period included).
 
 **To exercise the warning branch** (the reason this is documented): note that a
 `text` source — even an empty one — is *never* flagged; only a `web_page` under
@@ -417,6 +432,12 @@ allowed only when the notebook has a single in-flight task. `research_status`
 omits the large report by default — pass `include_report=true` to fetch it once
 `completed`.
 
+`research_import` is timeout-tolerant: a deep import that times out is reconciled
+against what the server actually committed (rather than reported as if nothing
+imported). Pass `cited_only=true` to import only the sources the report cites, or
+`max_sources=N` to cap how many are imported (applied after `cited_only`) so one
+call can't blow the notebook's source cap.
+
 > **Deprecated (removed in v0.9.0):** `research_status`/`research_import` also
 > accept the old `task_id` name and `research_cancel` the old `run_id` name as
 > aliases for `poll_task_id`. Passing an alias still works but emits a
@@ -431,7 +452,9 @@ MCP-Apps hosts (e.g. claude.ai), so a mobile user can pick and upload **one or m
 10 per call) without leaving the chat. The tool returns a small pool of independent single-use
 tokens (`upload_urls`, one per file); the widget uploads each file to its own token via the same
 signed `/files/ul` route as the link flow — so multi-file needs no change to the route or the
-single-use invariant. To confirm, call `await_upload` on the specific `upload_urls` entry for a
+single-use invariant. The pool is minted up front but uploaded sequentially, so its tokens carry a
+longer **1 h** lifetime (vs the 15-min single link) so a late file in a slow batch can't outlive its
+token. To confirm, call `await_upload` on the specific `upload_urls` entry for a
 file (`upload_url` is the first of the pool, kept for back-compat), or use `source_list` to verify
 the whole batch — for a multi-file add, don't rely on `upload_url` alone (the first file may be
 skipped while later ones land).
@@ -450,16 +473,60 @@ override. Stateless is harmless for ordinary tool use (each request is self-cont
 ChatGPT caches the widget template per conversation, so the *first* `source_add_widget` call in a
 new chat may not render — call it again and it will (a ChatGPT-side quirk, not a server issue).
 
+## Known limitations for autonomous deep-research ingestion
+
+Curated, interactive use of these tools is solid. **Autonomous bulk deep-research
+ingestion** hits a handful of Google-NotebookLM *backend* behaviors this client cannot
+change — the client surfaces them faithfully, but an agent driving unattended imports
+should **audit the result after the fact** rather than assume all-or-nothing success.
+Client-actionable follow-ups are tracked in
+[#1919](https://github.com/teng-lin/notebooklm-py/issues/1919)–[#1924](https://github.com/teng-lin/notebooklm-py/issues/1924).
+
+- **Research import is not truly atomic.** `research_import` can commit a *partial*
+  import even when the call errors (e.g. on a timeout) — some findings land, some don't.
+  There is no server-side all-or-nothing guarantee. After any errored or timed-out
+  import, call `source_list` to reconcile what actually persisted before retrying.
+  Client-side timeout reconciliation is tracked in
+  [#1920](https://github.com/teng-lin/notebooklm-py/issues/1920).
+- **Retrying a partial import is not idempotent.** Once a first import mutated notebook
+  state, re-importing the same research is rejected server-side with `FAILED_PRECONDITION`
+  (gRPC 9) — the retry does **not** cleanly resume. Reconcile with `source_list` and add
+  any missing sources individually instead of re-driving the whole import.
+- **A failed source add can leave a ghost row.** A rejected add (e.g. the 51st source over
+  a limit) can still persist a backend row, so the notebook's source count may read one
+  higher than the sources that actually imported. Verify against `source_list` /
+  `source_wait` rather than the raw count; count-inflation handling is tracked in
+  [#1919](https://github.com/teng-lin/notebooklm-py/issues/1919).
+- **Deep research does not hard-enforce a primary-source / authority preference.**
+  Discovery and ranking happen server-side; a query that asks for "authoritative" or
+  "primary" sources steers the model but is **advisory**, not a hard filter. There is no
+  client lever over which sources research discovers.
+- **Chat source-quality instructions are softly followed.** Telling `chat_ask` to "use
+  only authoritative sources" is natural-language guidance, not a retrieval filter. The
+  one **hard, deterministic** lever is `chat_ask`'s `source_ids` — scope the answer to the
+  exact sources you trust. Domain/authority filtering is backend-gated.
+- **Note-backed vs interactive mind maps differ in instruction adherence.** The
+  note-backed generation path can collapse a cross-source request into a single-source
+  outline; the interactive mind map follows a multi-source instruction more closely. This
+  is server-side generation behavior, not a client bug.
+- **AI source summaries are interpretive.** `source_read(detail=summary)` returns a
+  model-generated summary — there is no extractive/verbatim mode exposed by the backend.
+  Use `detail=full` when you need the indexed source text itself.
+- **A custom title on a direct Drive add is ignored.** Adding a Google Drive source with a
+  custom title still re-derives the display title from live Drive metadata (the client does
+  send the title; the backend overrides it for native Drive imports). Call `source_rename`
+  after the add if you need a specific title.
+
 ## Tool reference
 
 | Domain | Tools |
 |--------|-------|
 | **Notebooks** | `notebook_list(limit?, offset?)` · `notebook_create(title)` · `notebook_describe(notebook, include_metadata?)` (AI description; `include_metadata=true` adds a `metadata` block with notebook details + source list) · `notebook_rename(notebook, new_title)` · `notebook_delete(notebook, confirm)` |
-| **Sources** | `source_list(notebook, status?, label?, detail?, limit?, offset?)` (each source has string `kind`/`status_label`; `status` filters to one of ready\|processing\|error\|preparing — e.g. `status="error"` finds failed imports; `detail=compact` returns a low-token roster of just `id`/`title`/`kind`/`status_label`/`created_at`) · `source_read(notebook, source, detail?, output_format?, max_chars?, offset?)` (`detail=full` (default) → metadata + a bounded slice of the indexed text: `max_chars` caps `content` (default 10k), `offset` pages, plus a `truncated` flag and the full `char_count`; `detail=summary` → low-token triage: AI summary **+ keywords**, not the body; `output_format`: text\|markdown) · `source_rename(notebook, source, new_title)` · `source_delete(notebook, source, confirm)` · `source_wait(notebook, source?, timeout, interval)` (a READY web page with thin/empty text, or a short body matching a dead-link / soft-404 boilerplate pattern, carries a non-blocking `warning`) · `source_add(notebook, source_type, ..., bytes_base64?, filename?, wait?, timeout?, interval?, allow_internal?)` (single; echoes `kind`/`status_label`, flags a failed import inline with a `warning`. `bytes_base64`/`filename` add a small `file` in-channel (no signed URL). `wait=true` folds in `source_wait` → the aggregate plus a top-level `source_id`; single-source only, not a remote `file` upload) / `source_add(notebook, urls=[...], allow_internal?)` (batch → per-item `results`; a synchronously-ready web-page item may also carry the same content-sanity `warning`) |
+| **Sources** | `source_list(notebook, status?, label?, detail?, limit?, offset?)` (each source has string `kind`/`status_label`; `status` filters to one of ready\|processing\|error\|preparing — e.g. `status="error"` finds failed imports; `detail=compact` returns a low-token roster of just `id`/`title`/`kind`/`status_label`/`created_at`) · `source_read(notebook, source, detail?, output_format?, max_chars?, offset?)` (`detail=full` (default) → metadata + a bounded slice of the indexed text: `max_chars` caps `content` (default 10k), `offset` pages, plus a `truncated` flag and the full `char_count`; `detail=summary` → low-token triage: AI summary **+ keywords**, not the body; `output_format`: text\|markdown) · `source_rename(notebook, source, new_title)` · `source_delete(notebook, source, confirm)` · `source_wait(notebook, source?, timeout, interval)` (a READY web page with thin/empty text, or a short body matching a dead-link / soft-404 or bot-challenge / WAF interstitial pattern, carries a non-blocking `warning`) · `source_add(notebook, source_type, ..., bytes_base64?, filename?, wait?, timeout?, interval?, allow_internal?)` (single; echoes `kind`/`status_label`, flags a failed import inline with a `warning`. `bytes_base64`/`filename` add a small `file` in-channel (no signed URL). `wait=true` folds in `source_wait` → the aggregate plus a top-level `source_id`; single-source only, not a remote `file` upload) / `source_add(notebook, urls=[...], allow_internal?)` (batch → per-item `results`; a synchronously-ready web-page item may also carry the same content-sanity `warning`) |
 | **Chat** | `chat_ask(notebook, question?, conversation_id?, references?, source_ids?, history?, suggest_followups?)` (`references`: lite\|full; never returns the raw debug blob; `source_ids` scopes to specific sources — list, JSON-array string, or comma string; omit for all; `history`>0 also returns up to N prior `{question, answer}` pairs — omit `question` to recall only; `suggest_followups=true` also returns `suggested_prompts` (3 questions to ask — works question-less too)) · `chat_configure(notebook, chat_mode?, goal?, response_length?)` (`chat_mode`: default\|learning-guide\|concise\|detailed — a preset, mutually exclusive with `goal`/`response_length`; a **partial** custom call sets just `goal` or just `response_length` and **merges** with the current settings — the omitted field is preserved, not reset; only a bare call, no preset and neither field, is rejected) · `suggest_prompts(notebook, surface?, source_ids?, query?)` (READ_ONLY; `surface`: ask\|audio-deep-dive\|audio-brief\|audio-critique\|audio-debate\|video-explainer\|video-short\|quiz\|flashcards — returns `{title, prompt}` suggestions to steer that studio surface; `ask` (default) = chat questions) |
 | **Notes** | `note_save(notebook, note?, title?, content?)` (upsert: omit `note` to **create** — `title` AND `content` required; pass a `note` ref to **update** — `title` and/or `content`, title-only = rename). Reading and deleting notes fold into the Studio row below. |
-| **Studio** | `studio_list(notebook, item?, kind?, detail?, limit?, offset?)` (the unified Studio panel — **notes AND artifacts** merged into one `items` list; each item has `id`/`title`/`type` where `type` is `note` or a hyphenated artifact kind; artifacts add `status_label`/`url`; `detail=summary` (default) gives each note a bounded `content_preview` + full-body `char_count` to keep a discovery listing low-token, `detail=full` returns the whole note `content`, `detail=compact` collapses every item to `id`/`title`/`type`/`status_label`/`created_at`; `kind` filters to one `type`; `item` fetches one note-or-artifact by ref as a 1-element list, always with the note's full `content`) · `studio_generate(notebook, artifact_type, …)` · `studio_status(notebook, task_id)` · `studio_get_prompt(notebook, artifact)` (the free-text prompt an artifact was generated from; `null` if none) · `studio_download(notebook, artifact? \| artifact_type?, path?, output_format?, artifact_id?)` (target by `artifact` name-or-id ref **or** by `artifact_type` [+ `artifact_id` for a specific one, else latest]) · `studio_rename(notebook, item, new_title)` (cross-type: renames a note OR an artifact resolved from the merged list) · `studio_retry(notebook, artifact)` (re-run a failed artifact in place; task_id == artifact_id) · `studio_delete(notebook, item, confirm)` (cross-type: deletes a note OR an artifact resolved from the merged list) |
-| **Research** | `research_start(notebook, query, source, mode)` (returns `poll_task_id` — the one id status/import/cancel drive off) · `research_status(notebook, poll_task_id?, include_report?, report_max_chars?, source_limit?, source_offset?)` (report + per-source `report_markdown` omitted unless `include_report`) · `research_import(notebook, poll_task_id)` · `research_cancel(notebook, poll_task_id)` (sends the cancel unless the run is already terminal → `cancel_requested`). The old `task_id` / `run_id` param names are deprecated aliases for `poll_task_id`, removed in v0.9.0 |
+| **Studio** | `studio_list(notebook, item?, kind?, detail?, limit?, offset?)` (the unified Studio panel — **notes AND artifacts** merged into one `items` list; each item has `id`/`title`/`type` where `type` is `note` or a hyphenated artifact kind; artifacts add `status_label`/`url`; `detail=summary` (default) gives each note a bounded `content_preview` + full-body `char_count` to keep a discovery listing low-token and each **artifact** its `created_at` + `generation_prompt` (the free-text prompt it was generated from, `null` if none), `detail=full` returns the whole note `content`, `detail=compact` collapses every item to `id`/`title`/`type`/`status_label`/`created_at`; `kind` filters to one `type`; `item` fetches one note-or-artifact by ref as a 1-element list, always with the note's full `content` — or, for an artifact, its `generation_prompt`) · `studio_generate(notebook, artifact_type, …)` · `studio_status(notebook, task_id)` · `studio_download(notebook, artifact? \| artifact_type?, path?, output_format?, artifact_id?)` (target by `artifact` name-or-id ref **or** by `artifact_type` [+ `artifact_id` for a specific one, else latest]) · `studio_rename(notebook, item, new_title)` (cross-type: renames a note OR an artifact resolved from the merged list) · `studio_retry(notebook, artifact)` (re-run a failed artifact in place; task_id == artifact_id) · `studio_delete(notebook, item, confirm)` (cross-type: deletes a note OR an artifact resolved from the merged list) |
+| **Research** | `research_start(notebook, query, source, mode)` (returns `poll_task_id` — the one id status/import/cancel drive off) · `research_status(notebook, poll_task_id?, include_report?, report_max_chars?, source_limit?, source_offset?)` (report + per-source `report_markdown` omitted unless `include_report`) · `research_import(notebook, poll_task_id?, max_sources?, cited_only?)` (timeout-tolerant import; `cited_only` narrows to report-cited sources, `max_sources` caps the count) · `research_cancel(notebook, poll_task_id)` (sends the cancel unless the run is already terminal → `cancel_requested`). The old `task_id` / `run_id` param names are deprecated aliases for `poll_task_id`, removed in v0.9.0 |
 | **Sharing** | `share_status(notebook)` (is_public/access/share_url/shared_users; enums as string labels; `view_level` omitted — the read API can't report it) · `share_set_access(notebook, public?, view_level?, confirm)` (link settings; `view_level`: full\|chat, echoed back only when set; `confirm` gates public widening restricted→public) · `share_set_user(notebook, email, permission?, notify?, message?, confirm)` (upsert grant; `permission`: editor\|viewer; `notify` defaults `false`; `confirm` gates every grant) · `share_remove_user(notebook, email, confirm)` |
 | **Server** | `server_info(include_account?)` — version + local auth health; `include_account=true` adds an `account` block: signed-in identity (`email`, `authuser`) plus notebook/source limits, the subscription `tier` (opaque enum, e.g. `1`=Free/`2`=Pro, `null` on legacy responses; per-tier limits in [quota-limits.md](quota-limits.md)), and global `output_language` for quota pacing + language context (best-effort; identity is network-free from the profile, the quota fields need a live session). `email` is real account PII, returned only under this opt-in flag |
 
@@ -476,6 +543,11 @@ gate the destructive ones.
   searches common install dirs beyond `PATH`.
 - **Client doesn't see the tools.** Confirm the config was written (`notebooklm mcp install <client>`)
   and **restart the client** — most hosts only read MCP config at startup.
+- **`Unknown tool: '<name>'` after upgrading the server.** The claude.ai connector caches the tool
+  list from when it connected, so a version upgrade that **renamed or folded** a tool leaves the old
+  name callable-but-failing until you **reconnect the connector** (disconnect + reconnect, or toggle it
+  off/on). Newly-added *optional* parameters on existing tools forward through the stale schema and keep
+  working without a reconnect. See [troubleshooting.md](troubleshooting.md#unknown-tool-from-the-claudeai-connector-after-upgrading-the-server).
 - **Wrong account.** The server binds one profile per process. Start it with `--profile <name>`, or set
   `NOTEBOOKLM_PROFILE`. See [configuration.md](configuration.md#multiple-accounts).
 - **`RATE_LIMITED`.** NotebookLM enforces per-account quotas; the error is `retriable=true` — back off

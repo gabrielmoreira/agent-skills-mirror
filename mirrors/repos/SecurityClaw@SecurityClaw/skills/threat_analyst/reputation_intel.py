@@ -26,11 +26,14 @@ logger = logging.getLogger(__name__)
 ABUSEIPDB_URL = "https://api.abuseipdb.com/api/v2/check"
 ABUSEIPDB_KEY = os.getenv("ABUSEIPDB_API_KEY", "")
 
-ALIENVAULT_URL = "https://otx.alienvault.com/api/v1"
+ALIENVAULT_URL = "https://otx.alienvault.com/api/v1/indicators"
 ALIENVAULT_KEY = os.getenv("ALIENVAULT_API_KEY", "")
 
 VIRUSTOTAL_URL = "https://www.virustotal.com/api/v3"
 VIRUSTOTAL_KEY = os.getenv("VIRUSTOTAL_API_KEY", "")
+
+OTX_ENTITY_PATHS = {"ip": "IPv4", "domain": "domain"}
+VIRUSTOTAL_ENTITY_PATHS = {"ip": "ip_addresses", "domain": "domains"}
 
 TALOS_URL = "https://api.amp.cisco.com/v1"
 TALOS_KEY = os.getenv("TALOS_CLIENT_ID", "")
@@ -40,6 +43,11 @@ MITRE_URL = "https://raw.githubusercontent.com/mitre/cti/master/enterprise-attac
 
 REQUEST_TIMEOUT = 5
 MAX_RETRIES = 1
+
+
+def _runtime_key(environment_name: str, configured_value: str) -> str:
+    """Read credentials after .env reloads while preserving test overrides."""
+    return configured_value or os.getenv(environment_name, "")
 
 
 def get_ip_reputation(ip: str) -> dict:
@@ -68,7 +76,7 @@ def get_ip_reputation(ip: str) -> dict:
         return result
 
     # Try AbuseIPDB
-    if ABUSEIPDB_KEY:
+    if _runtime_key("ABUSEIPDB_API_KEY", ABUSEIPDB_KEY):
         try:
             abuse_data = _query_abuseipdb(ip)
             if abuse_data:
@@ -78,7 +86,7 @@ def get_ip_reputation(ip: str) -> dict:
             logger.debug(f"[reputation_intel] AbuseIPDB query failed for {ip}: {e}")
 
     # Try AlienVault OTX
-    if ALIENVAULT_KEY:
+    if _runtime_key("ALIENVAULT_API_KEY", ALIENVAULT_KEY):
         try:
             alien_data = _query_alienvault(ip, "ip")
             if alien_data:
@@ -88,7 +96,7 @@ def get_ip_reputation(ip: str) -> dict:
             logger.debug(f"[reputation_intel] AlienVault query failed for {ip}: {e}")
 
     # Try Talos
-    if TALOS_KEY and TALOS_SECRET:
+    if _runtime_key("TALOS_CLIENT_ID", TALOS_KEY) and _runtime_key("TALOS_CLIENT_SECRET", TALOS_SECRET):
         try:
             talos_data = _query_talos(ip)
             if talos_data:
@@ -98,7 +106,7 @@ def get_ip_reputation(ip: str) -> dict:
             logger.debug(f"[reputation_intel] Talos query failed for {ip}: {e}")
 
     # Try VirusTotal
-    if VIRUSTOTAL_KEY:
+    if _runtime_key("VIRUSTOTAL_API_KEY", VIRUSTOTAL_KEY):
         try:
             vt_data = _query_virustotal(ip, "ip")
             if vt_data:
@@ -131,7 +139,7 @@ def get_domain_reputation(domain: str) -> dict:
         return result
 
     # Try AlienVault OTX
-    if ALIENVAULT_KEY:
+    if _runtime_key("ALIENVAULT_API_KEY", ALIENVAULT_KEY):
         try:
             alien_data = _query_alienvault(domain, "domain")
             if alien_data:
@@ -141,7 +149,7 @@ def get_domain_reputation(domain: str) -> dict:
             logger.debug(f"[reputation_intel] AlienVault query failed for {domain}: {e}")
 
     # Try VirusTotal
-    if VIRUSTOTAL_KEY:
+    if _runtime_key("VIRUSTOTAL_API_KEY", VIRUSTOTAL_KEY):
         try:
             vt_data = _query_virustotal(domain, "domain")
             if vt_data:
@@ -183,11 +191,12 @@ def get_mitre_data(tactic: str = None, technique: str = None) -> dict:
 
 def _query_abuseipdb(ip: str) -> dict:
     """Query AbuseIPDB API for IP reputation."""
-    if not ABUSEIPDB_KEY:
+    api_key = _runtime_key("ABUSEIPDB_API_KEY", ABUSEIPDB_KEY)
+    if not api_key:
         return {}
 
     headers = {
-        "Key": ABUSEIPDB_KEY,
+        "Key": api_key,
         "Accept": "application/json",
     }
     params = {
@@ -221,11 +230,16 @@ def _query_abuseipdb(ip: str) -> dict:
 
 def _query_alienvault(entity: str, entity_type: str) -> dict:
     """Query AlienVault OTX API for entity reputation."""
-    if not ALIENVAULT_KEY:
+    api_key = _runtime_key("ALIENVAULT_API_KEY", ALIENVAULT_KEY)
+    if not api_key:
         return {}
 
-    url = f"{ALIENVAULT_URL}/{entity_type}/{entity}/general"
-    headers = {"X-OTX-API-KEY": ALIENVAULT_KEY}
+    path_type = OTX_ENTITY_PATHS.get(entity_type)
+    if not path_type:
+        logger.debug("[reputation_intel] Unsupported AlienVault entity type: %s", entity_type)
+        return {}
+    url = f"{ALIENVAULT_URL}/{path_type}/{entity}/general"
+    headers = {"X-OTX-API-KEY": api_key}
 
     try:
         resp = requests.get(
@@ -259,7 +273,7 @@ def _query_alienvault(entity: str, entity_type: str) -> dict:
 
 def _query_talos(ip: str) -> dict:
     """Query Cisco Talos API for IP reputation."""
-    if not TALOS_KEY or not TALOS_SECRET:
+    if not _runtime_key("TALOS_CLIENT_ID", TALOS_KEY) or not _runtime_key("TALOS_CLIENT_SECRET", TALOS_SECRET):
         return {}
 
     try:
@@ -274,14 +288,19 @@ def _query_talos(ip: str) -> dict:
 
 def _query_virustotal(entity: str, entity_type: str) -> dict:
     """Query VirusTotal API for entity reputation."""
-    if not VIRUSTOTAL_KEY:
+    api_key = _runtime_key("VIRUSTOTAL_API_KEY", VIRUSTOTAL_KEY)
+    if not api_key:
         return {}
 
-    headers = {"x-apikey": VIRUSTOTAL_KEY}
+    headers = {"x-apikey": api_key}
     
     try:
         # VirusTotal v3 API endpoints
-        url = f"{VIRUSTOTAL_URL}/{entity_type}/{entity}"
+        path_type = VIRUSTOTAL_ENTITY_PATHS.get(entity_type)
+        if not path_type:
+            logger.debug("[reputation_intel] Unsupported VirusTotal entity type: %s", entity_type)
+            return {}
+        url = f"{VIRUSTOTAL_URL}/{path_type}/{entity}"
         resp = requests.get(
             url,
             headers=headers,

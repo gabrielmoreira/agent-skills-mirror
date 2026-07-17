@@ -65,6 +65,22 @@ End-to-end message delivery against a real WhatsApp Business number is verified
 manually once the service is running — see Next Steps and the webhook setup
 below.
 
+## Upgrading an existing install
+
+Older copies of the adapter registered this bridge under the bare `whatsapp` key,
+which collided with the native Baileys adapter. It now registers under a distinct
+`whatsapp-cloud` instance (channelType stays `whatsapp`). Two consequences for an
+install that ran the previous version:
+
+- **Webhook route moves** from `/webhook/whatsapp` to `/webhook/whatsapp-cloud`.
+  Update the callback URL in your Meta App dashboard (WhatsApp > Configuration)
+  accordingly.
+- **Chat SDK state namespace moves.** Subscriptions in the `chat_sdk_*` tables
+  re-key under the new instance, so previously-subscribed threads may need to
+  re-engage the bot.
+
+Fresh installs need none of this.
+
 ## Credentials
 
 Meta app setup is human and interactive — these steps are prose, not directives
@@ -77,7 +93,7 @@ compiling, registered adapter that cannot receive a message until they're done.
    - Note the **Phone Number ID** (not the phone number itself).
    - Generate a **permanent System User access token** with `whatsapp_business_messaging` permission.
 4. Go to **WhatsApp** > **Configuration**:
-   - Set webhook URL: `https://your-domain/webhook/whatsapp`.
+   - Set webhook URL: `https://your-domain/webhook/whatsapp-cloud`.
    - Set a **Verify Token** (any random string you choose).
    - Subscribe to webhook fields: `messages`.
 5. Copy the **App Secret** from **Settings** > **Basic**.
@@ -111,7 +127,7 @@ WHATSAPP_VERIFY_TOKEN={{verify_token}}
 ### Webhook server
 
 The Chat SDK bridge automatically starts a shared webhook server on port 3000
-(`WEBHOOK_PORT` to change it), handling `/webhook/whatsapp`. This port must be
+(`WEBHOOK_PORT` to change it), handling `/webhook/whatsapp-cloud`. This port must be
 publicly reachable for Meta to deliver events. Running locally, expose it with
 ngrok (`ngrok http 3000`), a Cloudflare Tunnel, or a reverse proxy on a VPS —
 the resulting public URL is the base for the webhook URL set under WhatsApp >
@@ -134,7 +150,7 @@ Otherwise, run `/manage-channels` to wire this channel to an agent group.
 
 ## Troubleshooting
 
-**Meta's "Verify and save" fails on the webhook.** Meta hits your URL with a challenge the moment you click, so the endpoint must already be publicly reachable at `/webhook/whatsapp` (shared webhook server, port 3000) *and* the service must be running with `WHATSAPP_VERIFY_TOKEN` set to exactly the string you typed under WhatsApp > Configuration. Start or restart the service first, then click verify.
+**Meta's "Verify and save" fails on the webhook.** Meta hits your URL with a challenge the moment you click, so the endpoint must already be publicly reachable at `/webhook/whatsapp-cloud` (shared webhook server, port 3000) *and* the service must be running with `WHATSAPP_VERIFY_TOKEN` set to exactly the string you typed under WhatsApp > Configuration. Start or restart the service first, then click verify.
 
 **Everything works for a day, then all calls 401.** You stored the temporary token from WhatsApp > API Setup, which expires in ~24 hours. Create a **System User** under Business Settings → Users, grant it the app with `whatsapp_business_messaging`, generate a permanent token, and replace `WHATSAPP_ACCESS_TOKEN`.
 

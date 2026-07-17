@@ -1,7 +1,7 @@
 ---
 name: aris-compute-guard
 description: "Mandatory pre-flight compute resource check before running experiments. Detects whether local/remote GPU or compute resources are actually available. If resources are unavailable, STOPS the experiment pipeline immediately and reports to the user — preventing the model from hallucinating fake experiment results. Use when: about to run experiments, deploy training, or any GPU-intensive task."
-argument-hint: [environment-type]
+argument-hint: "[environment-type]"
 allowed-tools: Bash(nvidia-smi*), Bash(python*), Bash(ssh*), Bash(echo*), Bash(which*), Bash(command*), Read, Grep, Glob
 license: MIT
 metadata:

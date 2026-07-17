@@ -657,16 +657,12 @@ OpenAkita 内置多种预设角色人格：
 
 | 配置项 | 默认值 |
 |--------|--------|
-| SCHEDULER_ENABLED | `true` |
 | SCHEDULER_TIMEZONE | `Asia/Shanghai` |
-| SCHEDULER_MAX_CONCURRENT | `5` |
 
 ### 会话
 
 | 配置项 | 默认值 |
 |--------|--------|
-| SESSION_TIMEOUT_MINUTES | `30` |
-| SESSION_MAX_HISTORY | `50` |
 | SESSION_STORAGE_PATH | `data/sessions` |
 
 ### IM 通道（默认全部关闭）

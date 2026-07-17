@@ -24,7 +24,7 @@ category: Browser
 
 ## Related Skills
 
-- `browser-status`: 检查浏览器状态
+- `browser-open`: 启动浏览器并检查状态
 - `browser-navigate`: 在当前标签页导航
 - `browser-switch-tab`: 切换标签页
 
@@ -37,4 +37,3 @@ category: Browser
 ```python
 browser_task(task="打开百度搜索福建福州并截图")
 ```
-

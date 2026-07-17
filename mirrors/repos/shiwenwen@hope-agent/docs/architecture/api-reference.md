@@ -210,6 +210,9 @@ Tauri ↔ COMMAND_MAP 差集为 21 条合法非通用映射命令：5 条 Deskto
 |---|---|
 | `canvas_show` / `canvas_hide` / `canvas_reload` / `canvas_deleted` | 画布面板 |
 | `canvas_snapshot_request` / `canvas_eval_request` | 画布工具流 |
+| `design:show` / `design:reload` / `design:artifact_ready` / `design:artifact_deleted` / `design:project_changed` / `design:system_changed` / `design:critiqued` / `design:code_drift` | 设计空间（产物生成 / 预览刷新 / 系统变更 / 质量评审 / code→design 回灌 stale 翻转） |
+| `design:artifact_generating` / `design:generate_delta` / `design:generate_done` / `design:generate_error` | 设计空间真流式生成（建 generating 壳 / 逐帧回填预览 / 定稿受控 swap / 失败降级）。`generate_delta` payload `{ projectId, artifactId, streamId, seq, css, bodyHtml, done }` |
+| `design:ffmpeg_download_progress` | MP4 导出编码器（ffmpeg）按需下载进度。Payload `{ stage: "downloading"\|"ready", percent?, downloadedBytes?, totalBytes?, binaryPath? }` |
 | `browser:frame` | 浏览器活动 tab 的实时 JPEG 帧。Payload `{ sessionId?, targetId?, url?, title?, jpegBase64, capturedAt, backend }`。在 `act` / `navigate` / `tabs.new|select|claim` 后由后端自动 emit；BrowserPanel 同时以 1Hz 轮询 `browser_capture_frame` 兜底并按当前会话过滤 |
 
 ### Artifacts
@@ -277,6 +280,8 @@ Artifact 创建或 show 仍复用 `canvas_show`，当前投影变化复用 `canv
 | `discardChatAttachmentUpload(id)` | 委托 `discardFileUpload` | 同左 |
 | `supportsLocalFileOps()` | `true` | `false` |
 | `pickLocalImage()` | `@tauri-apps/plugin-dialog.open` | 隐藏 `<input type="file">` + blob URL |
+| `saveFileAs(blob, filename)` | `@tauri-apps/plugin-dialog.save`（记住上次目录）→ `invoke("save_exported_file", {path, dataBase64})`；返回 `path` 供 reveal | `showSaveFilePicker`（Chromium + 安全上下文）否则回退 `<a download>`；`path=null`。**绝不写服务器磁盘** |
+| `revealFile(path)` | `invoke("reveal_in_folder", {path})` | no-op（Web 沙箱无法 reveal 本机文件） |
 
 **文件上传特殊路径**（在 `HttpTransport.call()` 中走 multipart/form-data 而非 JSON）：
 
@@ -814,6 +819,112 @@ Loop owner API 管理 session-scoped recurring triggers。`create_loop_schedule`
 | `get_canvas_project` | `GET /api/canvas/projects/{projectId}` | ✅ |
 | `delete_canvas_project` | `DELETE /api/canvas/projects/{projectId}` | ✅ |
 
+### Design Space（设计空间）
+
+| Tauri Command | HTTP | 状态 |
+|---|---|---|
+| `list_design_projects_cmd` | `GET /api/design/projects` | ✅ |
+| `create_design_project_cmd` | `POST /api/design/projects` | ✅ |
+| `update_design_project_cmd` | `PUT /api/design/projects` | ✅ |
+| `get_design_project_cmd` | `GET /api/design/projects/{id}` | ✅ |
+| `delete_design_project_cmd` | `DELETE /api/design/projects/{id}` | ✅ |
+| `duplicate_design_project_cmd` | `POST /api/design/projects/{id}/duplicate` | ✅ |
+| `list_design_artifacts_cmd` | `GET /api/design/projects/{projectId}/artifacts` | ✅ |
+| `create_design_artifact_cmd` | `POST /api/design/artifacts` | ✅ |
+| `import_design_image_cmd` | `POST /api/design/artifacts/import-image`（拖入导入：base64 图片→image 产物） | ✅ |
+| `generate_design_brand_pack_cmd` | `POST /api/design/artifacts/brand-pack`（一 brief 批量生成一组共享系统的协调产物；可带 `referenceImages`（每件产物真看参考图、逐件规整成功计数钳 ≤5 张）+ `modelOverride`（单模型不降级）） | ✅ |
+| `set_design_presenter_notes_cmd` | `PUT /api/design/artifacts/{artifactId}/presenter-notes`（deck 演讲者备注，存 metadata） | ✅ |
+| `set_design_artifact_dir_cmd` | `PUT /api/design/artifacts/{id}/dir`（RTL/LTR 文本方向，存 metadata.dir + 重渲染） | ✅ |
+| `patch_design_page_style_cmd` | `PUT /api/design/artifacts/{id}/page-style`（页面级 body 样式，CSS 标记块 + 落版本） | ✅ |
+| `inpaint_design_image_cmd` | `POST /api/design/artifacts/{id}/inpaint`（image 蒙版局部重绘，OpenAI `/images/edits`） | ✅ |
+| `export_design_pptx_outline_cmd` | `GET /api/design/artifacts/{id}/pptx-outline`（deck 结构化可编辑文本 PPTX，服务端抽大纲） | ✅ |
+| `review_design_artifact_cmd` | `GET /api/design/artifacts/{id}/quality-review`（确定性多镜头质量审查：a11y/内容/语义） | ✅ |
+| `generate_design_artifact_cmd` | `POST /api/design/artifacts/generate`（`referenceImages`（≤5 张，优先于单张 `referenceImageB64`）作视觉附件真多模态；`modelOverride` 单模型不降级） | ✅ |
+| `design_ffmpeg_doctor_cmd` | `GET /api/design/ffmpeg/doctor` | ✅ |
+| `design_install_ffmpeg_cmd` | `POST /api/design/ffmpeg/install` | ✅ |
+| `design_browser_doctor_cmd` | `GET /api/design/browser/doctor` | ✅ |
+| `design_install_browser_cmd` | `POST /api/design/browser/install` | ✅ |
+| `list_all_design_artifacts_cmd` | `GET /api/design/artifacts` | ✅ |
+| `get_design_artifact_cmd` | `GET /api/design/artifacts/{id}` | ✅ |
+| `ensure_design_artifact_fresh_cmd` | `POST /api/design/artifacts/{id}/ensure-fresh`（打开时自愈渲染版本，返回是否重渲染） | ✅ |
+| `delete_design_artifact_cmd` | `DELETE /api/design/artifacts/{id}` | ✅ |
+| `rename_design_artifact_cmd` | `PUT /api/design/artifacts/{id}/title`（轻量改名，不重渲染/不新版本） | ✅ |
+| `duplicate_design_artifact_cmd` | `POST /api/design/artifacts/{id}/duplicate`（同项目内深拷贝） | ✅ |
+| `reorder_design_artifacts_cmd` | `POST /api/design/projects/{projectId}/artifacts/reorder`（拖动排序，body `orderedIds`） | ✅ |
+| `list_design_folders_cmd` | `GET /api/design/projects/{projectId}/folders`（页面分组文件夹路径） | ✅ |
+| `create_design_folder_cmd` | `POST /api/design/projects/{projectId}/folders`（新建空文件夹，body `name`） | ✅ |
+| `rename_design_folder_cmd` | `PUT /api/design/projects/{projectId}/folders`（文件夹改名/移动，body `from`/`to`） | ✅ |
+| `delete_design_folder_cmd` | `DELETE /api/design/projects/{projectId}/folders?path=`（删文件夹，页面移到根） | ✅ |
+| `move_design_artifact_cmd` | `PUT /api/design/artifacts/{id}/folder`（把页面移到文件夹，body `folder`） | ✅ |
+| `list_design_artifact_versions_cmd` | `GET /api/design/artifacts/{id}/versions` | ✅ |
+| `get_design_artifact_version_html_cmd` | `GET /api/design/artifacts/{artifactId}/versions/{versionNumber}/html` | ✅ |
+| `create_design_share_cmd` | `POST /api/design/artifacts/{artifactId}/share` | ✅ |
+| `get_design_share_cmd` | `GET /api/design/artifacts/{artifactId}/share` | ✅ |
+| `revoke_design_share_cmd` | `DELETE /api/design/artifacts/{artifactId}/share` | ✅ |
+| _(公开只读快照，无鉴权)_ | `GET /api/design/share/{token}` | ✅ HTTP-only |
+| `save_cf_deploy_config_cmd` | `PUT /api/design/deploy/config` | ✅ |
+| `get_cf_deploy_config_cmd` | `GET /api/design/deploy/config` | ✅ |
+| `deploy_design_artifact_cmd` | `POST /api/design/artifacts/{artifactId}/deploy` | ✅ |
+| `probe_design_deploy_cmd` | `POST /api/design/deploy/probe`（探测部署 URL 是否已生效，body `{url}` 回 `{ready,status}`） | ✅ |
+| `bind_design_domain_cmd` | `POST /api/design/artifacts/{artifactId}/domains`（绑定 CF Pages 自定义域名，回域名+验证态） | ✅ |
+| `list_design_domains_cmd` | `GET /api/design/artifacts/{artifactId}/domains`（列已绑定域名+验证态） | ✅ |
+| `preflight_design_deploy_cmd` | `GET /api/design/artifacts/{artifactId}/deploy/preflight`（部署预检：空/超限阻断、外部引用告警） | ✅ |
+| `list_design_deployments_cmd` | `GET /api/design/artifacts/{artifactId}/deployments`（部署历史，跨 provider，最新在前） | ✅ |
+| `save_vercel_deploy_config_cmd` | `PUT /api/design/deploy/vercel/config`（保存 Vercel token 0600 + team） | ✅ |
+| `get_vercel_deploy_config_cmd` | `GET /api/design/deploy/vercel/config`（读配置，token 脱敏） | ✅ |
+| `deploy_design_artifact_vercel_cmd` | `POST /api/design/artifacts/{artifactId}/deploy/vercel`（部署到 Vercel，回 `{url}`） | ✅ |
+| `restore_design_version_cmd` | `POST /api/design/artifacts/{artifactId}/restore` | ✅ |
+| `restyle_design_artifact_cmd` | `POST /api/design/artifacts/{id}/restyle`（换设计系统重染，新版本快照） | ✅ |
+| `patch_design_element_cmd` | `POST /api/design/patch` | ✅ |
+| `remove_design_element_cmd` | `POST /api/design/artifacts/{id}/remove-element`（删元素+回传重建上下文，结构 undo） | ✅ |
+| `insert_design_element_cmd` | `POST /api/design/artifacts/{id}/insert-element`（重插被删元素，结构 undo 撤销侧，owner-only） | ✅ |
+| `cancel_design_generation_cmd` | `POST /api/design/artifacts/{id}/cancel`（停止在途流式生成、降级占位，不删） | ✅ |
+| `export_design_artifact_cmd` | `GET /api/design/artifacts/{id}/export`（format=html 干净自包含 / markdown HTML→MD） | ✅ |
+| `export_design_handoff_cmd` | `GET /api/design/artifacts/{id}/handoff`（代码交付包 ZIP：index.html + source/ + 多平台 tokens/ + HANDOFF.md，base64） | ✅ |
+| `bind_design_code_project_cmd` | `POST /api/design/bindings`（绑定设计系统→代码工程目录；HTTP 受 `allowRemoteWrites` 门） | ✅ |
+| `sync_design_code_binding_cmd` | `POST /api/design/bindings/{id}/sync`（把多平台 token 写入绑定目录；HTTP 受 `allowRemoteWrites` 门） | ✅ |
+| `list_design_code_bindings_cmd` | `GET /api/design/bindings?systemId=`（列出代码绑定） | ✅ |
+| `unbind_design_code_project_cmd` | `DELETE /api/design/bindings/{id}`（解绑，不删已写文件） | ✅ |
+| `get_design_project_code_binding_cmd` | `GET /api/design/projects/{id}/code-binding`（项目级代码仓库绑定状态：来源/生效目录/stale） | ✅ |
+| `set_design_project_code_binding_cmd` | `PUT /api/design/projects/{id}/code-binding`（设置/清除双源绑定，`codeDir` 与 `haProjectId` 互斥；owner 平面专属） | ✅ |
+| `design_implement_to_code_cmd` | `POST /api/design/artifacts/{id}/implement`（组 handoff pack + 建实现会话，返回 `{sessionId, prompt, codeDir}`） | ✅ |
+| `design_check_code_drift_cmd` | `POST /api/design/projects/{id}/code-drift/check`（code→design 回灌：收割承接会话写盘 + 逐文件比对，标 `metadata.codeDrift`；body `{artifactId?}`） | ✅ |
+| `design_code_drift_changes_cmd` | `GET /api/design/artifacts/{id}/code-drift`（逐 stale 文件 diff 喂 DiffPanel + 带到对话 quote） | ✅ |
+| `design_code_drift_sync_cmd` | `POST /api/design/artifacts/{id}/code-drift/sync`（重置基线为当前磁盘态 + 清 drift 标记） | ✅ |
+| `mark_design_artifact_opened_cmd` | `POST /api/design/artifacts/{id}/opened`（上报「最近查看」，MCP `design_get_active_context` 事实源；不动 updated_at） | ✅ |
+| `export_design_pptx_cmd` | `POST /api/design/pptx`（前端整页 PNG → OOXML 组装） | ✅ |
+| `export_design_zip_cmd` | `POST /api/design/zip`（artifactId=单产物源码包 / projectId=项目级全产物包） | ✅ |
+| `export_design_selected_zip_cmd` | `POST /api/design/zip/selected`（body `artifactIds` → 选中产物打成一个 ZIP + 画廊，文件面批量导出） | ✅ |
+| `critique_design_artifact_cmd` | `POST /api/design/artifacts/{id}/critique` | ✅ |
+| `list_design_systems_cmd` | `GET /api/design/systems` | ✅ |
+| `get_design_system_cmd` | `GET /api/design/systems/{id}` | ✅ |
+| `save_design_system_cmd` | `POST /api/design/systems` | ✅ |
+| `extract_design_system_cmd` | `POST /api/design/systems/extract`（brief/codebase/url/image 反向提取；`image` 走 `run_vision` 真视觉 + 可选 `modelOverride` 单模型不降级） | ✅ |
+| `import_design_md_cmd` | `POST /api/design/systems/import`（导入 DESIGN.md 规范文本） | ✅ |
+| `import_figma_system_cmd` | `POST /api/design/systems/figma`（从 Figma 文件导入设计系统；owner 平面，令牌按次传不落盘） | ✅ |
+| `export_design_md_cmd` | `GET /api/design/systems/{id}/design-md`（导出为规范 DESIGN.md） | ✅ |
+| `export_design_tokens_cmd` | `GET /api/design/systems/{id}/tokens/export`（Token 导出多平台代码：CSS/SCSS/TS/Swift/Android XML/DTCG） | ✅ |
+| `propose_design_directions_cmd` | `POST /api/design/directions` | ✅ |
+| `list_design_recipes_cmd` | `GET /api/design/recipes`（内置设计模板目录，首屏模板快选） | ✅ |
+| `get_design_recipe_demo_cmd` | `GET /api/design/recipes/{id}/demo?systemId=`（模板骨架 demo HTML：工具箱 hover 预览，注入设计系统配色） | ✅ |
+| `export_design_native_cmd` | `GET /api/design/artifacts/{id}/native?format=pdf\|png`（真实浏览器原生捕获：矢量 PDF / 全保真 PNG；无后端时前端回退客户端栅格化） | ✅ |
+| `delete_design_system_cmd` | `DELETE /api/design/systems/{id}` | ✅ |
+| `rename_design_system_cmd` | `PATCH /api/design/systems/{id}`（重命名用户设计系统，body `{name}`，内置拒改） | ✅ |
+| `get_design_config_cmd` | `GET /api/config/design` | ✅ |
+| `save_design_config_cmd` | `PUT /api/config/design` | ✅ |
+| `design_comment_add_cmd` | `POST /api/design/artifacts/{artifactId}/comments` | ✅ |
+| `design_comment_list_cmd` | `GET /api/design/artifacts/{artifactId}/comments` | ✅ |
+| `design_comment_relocate_cmd` | `POST /api/design/artifacts/{artifactId}/comments/{commentId}/relocate` | ✅ |
+| `design_comment_update_cmd` | `PUT /api/design/artifacts/{artifactId}/comments/{commentId}` | ✅ |
+| `design_comment_resolve_cmd` | `POST /api/design/artifacts/{artifactId}/comments/{commentId}/resolve` | ✅ |
+| `design_comment_delete_cmd` | `DELETE /api/design/artifacts/{artifactId}/comments/{commentId}` | ✅ |
+| `design_comment_refine_cmd` | `POST /api/design/artifacts/{artifactId}/comments/{commentId}/refine`（回灌对话：AI 按批注精修产物、落新版本） | ✅ |
+| `design_review_artifact_cmd` | `POST /api/design/artifacts/{artifactId}/review`（反-slop 自查复查：`action ∈ recheck\|dismiss`） | ✅ |
+| `get_design_system_kit_cmd` | `GET /api/design/systems/{id}/kit`（设计系统套件视图自包含 HTML，返回 JSON 字符串） | ✅ |
+| `design_chat_thread_get_cmd` | `GET /api/design/projects/{projectId}/chat/thread`（设计对话默认加载目标：该项目最近一条对话线程的 SessionMeta，无则空） | ✅ |
+| `design_chat_threads_list_cmd` | `GET /api/design/projects/{projectId}/chat/threads`（设计对话历史选择器分页，`query` FTS 过滤） | ✅ |
+| （静态托管，iframe 直连） | `GET /api/design/projects/{pid}/artifacts/{aid}/{*rest}` | ✅ |
+
 ### Artifacts
 
 | Tauri Command / Transport | HTTP | 状态 |
@@ -829,7 +940,9 @@ Loop owner API 管理 session-scoped recurring triggers。`create_loop_schedule`
 | `archive_artifact` | `POST /api/artifacts/{id}/archive` | ✅ |
 | `delete_artifact` | `DELETE /api/artifacts/{id}` | ✅ |
 
-Artifact owner API 的完整不变量、输入白名单、Export Guard 和 receipt 见 [Artifacts 本地优先产物平台](artifacts.md)。列表响应包含 metadata/source/verification 摘要但不返回 canonical payload 或大 dataset；正文由受保护的 Canvas 静态路径加载。
+Artifact owner API 的完整不变量、输入白名单、本地导出与未来 Publisher Guard 边界、receipt 见 [Artifacts 本地优先产物平台](artifacts.md)。列表响应包含 metadata/source/verification 摘要但不返回 canonical payload 或大 dataset；正文由受保护的 Canvas 静态路径加载。
+
+`POST /api/artifacts/{id}/exports` 接受 `format` 与可选 `expectedVersion`；Gallery 总是传入风险确认时读取到的当前版本。Core 在生成快照前原子比较版本，不一致返回 `artifact_conflict`，调用方应刷新产物后重新确认，而不是自动重试导出新版本。
 
 ### Models
 
@@ -919,6 +1032,10 @@ Agent 执行准入采用两层 guard：Desktop / HTTP / Channel / Cron 等调用
 
 | Tauri Command | HTTP | 状态 |
 |---|---|---|
+| `get_audio_model_catalog_cmd` | `GET /api/config/audio-model-catalog` | ✅ |
+| `list_elevenlabs_voices_cmd` | `GET /api/config/elevenlabs-voices` | ✅ |
+| `get_audio_generate_config` | `GET /api/config/audio-generate` | ✅ |
+| `save_audio_generate_config` | `PUT /api/config/audio-generate` | ✅ |
 | `get_embedding_config` | `GET /api/config/embedding` | ✅ |
 | `save_embedding_config` | `PUT /api/config/embedding` | ✅ |
 | `get_embedding_presets` | `GET /api/config/embedding/presets` | ✅ |
@@ -1507,6 +1624,7 @@ Context / Cache 共用单 SQL `get_session_last_assistant_token_row`，避免渲
 | `open_url` | `POST /api/desktop/open-url` | HTTP 端点保留但返回 no-op（浏览器无系统调用权限） |
 | `open_directory` | `POST /api/desktop/open-directory` | 同上 |
 | `reveal_in_folder` | `POST /api/desktop/reveal-in-folder` | 同上 |
+| `save_exported_file` | — | 仅桌面：把导出字节（base64）写到原生保存框选定的路径（设计空间导出）。**故意无 HTTP 端点**——远端经 File System Access / 浏览器下载在本机保存，绝不写服务器磁盘（防远程写盘 / 外泄） |
 | `set_dock_badge_cmd` | — | 仅桌面：把全局未读总数写到 app icon / Dock 角标（`count=0` 清除）；前端按 `isTauriMode()` 门控，Web 端不调用，无 HTTP 端点 |
 | `set_tray_unread_cmd` | — | 仅桌面：状态栏 / tray 图标按普通未读会话是否大于 0 显示红点；紧凑图标不绘制数字 |
 | `get_system_prompt` | `POST /api/system-prompt` | 调试端点 |

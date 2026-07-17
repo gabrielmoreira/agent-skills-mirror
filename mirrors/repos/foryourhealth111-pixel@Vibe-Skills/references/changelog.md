@@ -1,5 +1,14 @@
 # VCO Changelog
 
+## v4.0.0 (2026-07-17)
+
+- Replaced retired native and delegated execution lanes with Agent-owned module handoff, strict canonical module-result re-entry, and failure-safe delivery acceptance.
+- Removed legacy public wrapper names and stale execution authorities so `vibe` is the single public runtime entry for the v4 line.
+- Hardened exact task preservation, non-code classification, Skill execution disclosure, and forbidden-MCP policy across the runtime and verification surfaces.
+- Synchronized release metadata, Python package versions, distribution manifests, public asset naming, and v3-to-v4 installation guidance at `4.0.0`.
+- Detailed release notes: `docs/releases/v4.0.0.md`.
+
+
 ## v3.2.0 (2026-07-08)
 
 - Rebuilt the default blocking regression lane around capability seams: install lifecycle, runtime entry truth, routing mainline, and one focused host-boundary smoke instead of the old oversized gate pile.

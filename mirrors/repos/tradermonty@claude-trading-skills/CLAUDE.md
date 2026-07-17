@@ -273,7 +273,7 @@ The table below is **auto-generated** from `skills-index.yaml` by `scripts/gener
 | **Stockbee Momentum Burst Screener** | ✅ Required | ❌ Not used | ❌ Not used | Live US universe and daily OHLCV via Financial Modeling Prep |
 | **Stockbee Setup Fluency Trainer** | 🟡 Optional | ❌ Not used | ❌ Not used | Financial Modeling Prep daily OHLCV for automatic outcome updates when local prices are unavailable |
 | **Strategy Pivot Designer** | ❌ Not used | ❌ Not used | ❌ Not used | Pivot proposal generator; pure calculation |
-| **Technical Analyst** | ❌ Not used | ❌ Not used | ❌ Not used | Chart screenshot input |
+| **Technical Analyst** | 🟡 Optional | ❌ Not used | ❌ Not used | Optional weekly OHLCV fallback for contrarian confirmation (Shapiro step 3) |
 | **Theme Detector** | 🟡 Optional | 🟡 Optional (Recommended) | ❌ Not used | Financial Modeling Prep API |
 | **Trade Hypothesis Ideator** | ❌ Not used | ❌ Not used | ❌ Not used | Hypothesis generation from journal/data inputs; pure calculation |
 | **Trade Performance Coach** | ❌ Not used | ❌ Not used | ❌ Not used | Works from local trader-memory / postmortem / journal records; no network or paid API required |

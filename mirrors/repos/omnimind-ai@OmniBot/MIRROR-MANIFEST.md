@@ -61,7 +61,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`app/src/main/assets/builtin_skills/find-install-skills/SKILL.md`](app/src/main/assets/builtin_skills/find-install-skills/SKILL.md) |
-| 3 | ✓ | [`app/src/main/assets/builtin_skills/hatch-pet/SKILL.md`](app/src/main/assets/builtin_skills/hatch-pet/SKILL.md) |
+| 3 | ✓ | [`app/src/main/assets/builtin_skills/install-codex-pet/SKILL.md`](app/src/main/assets/builtin_skills/install-codex-pet/SKILL.md) |
 | 4 | ✓ | [`app/src/main/assets/builtin_skills/self-improving-agent/SKILL.md`](app/src/main/assets/builtin_skills/self-improving-agent/SKILL.md) |
 | 5 | ✓ | [`app/src/main/assets/builtin_skills/skill-creator/SKILL.md`](app/src/main/assets/builtin_skills/skill-creator/SKILL.md) |
 | 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |

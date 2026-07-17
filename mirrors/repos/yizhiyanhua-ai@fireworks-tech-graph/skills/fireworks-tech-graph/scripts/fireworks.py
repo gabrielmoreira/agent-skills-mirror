@@ -18,9 +18,10 @@ ROOT = SCRIPT_DIR.parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from diagram_ir import normalize_diagram
-from interactive_html import build_interactive_html
-from validate_svg import run_check
+from diagram_ir import normalize_diagram  # noqa: E402
+from interactive_html import build_interactive_html  # noqa: E402
+from motion import DEFAULT_MOTION_DURATION, MOTION_PRESETS, probe_motion_runtime, render_motion_gif  # noqa: E402
+from validate_svg import run_check  # noqa: E402
 
 
 def _load_generator():
@@ -34,13 +35,17 @@ def _load_generator():
 
 
 def command_doctor(_: argparse.Namespace) -> int:
+    motion_runtime = probe_motion_runtime()
     probes = {
         "python": {"ok": sys.version_info >= (3, 9), "value": sys.version.split()[0]},
         "cairosvg": {"ok": importlib.util.find_spec("cairosvg") is not None},
         "rsvg-convert": {"ok": shutil.which("rsvg-convert") is not None},
         "node": {"ok": shutil.which("node") is not None},
+        "ffmpeg": {"ok": shutil.which("ffmpeg") is not None},
+        "motion_renderer": motion_runtime,
     }
     probes["raster_export"] = {"ok": probes["cairosvg"]["ok"] or probes["rsvg-convert"]["ok"]}
+    probes["animation_export"] = {"ok": motion_runtime["ok"], "optional": True}
     print(json.dumps(probes, indent=2, sort_keys=True))
     return 0 if probes["python"]["ok"] and probes["raster_export"]["ok"] else 1
 
@@ -129,6 +134,22 @@ def command_export_html(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_animate(args: argparse.Namespace) -> int:
+    report = args.report or args.output.with_suffix(".motion.json")
+    result = render_motion_gif(
+        args.input,
+        args.output,
+        report_path=report,
+        preset=args.preset,
+        duration=args.duration,
+        fps=args.fps,
+        width=args.width,
+        dry_run=args.dry_run,
+    )
+    print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+    return 0
+
+
 def command_examples(_: argparse.Namespace) -> int:
     examples = [str(path.relative_to(ROOT)) for path in sorted((ROOT / "fixtures").glob("*")) if path.suffix in {".json", ".svg"}]
     print(json.dumps({"examples": examples}, indent=2))
@@ -168,6 +189,20 @@ def build_parser() -> argparse.ArgumentParser:
     export.add_argument("--slug")
     export.set_defaults(func=command_export_html)
 
+    animate = subparsers.add_parser(
+        "animate",
+        help="create a validated animated GIF from a generated semantic SVG",
+    )
+    animate.add_argument("input", type=Path)
+    animate.add_argument("output", type=Path)
+    animate.add_argument("--preset", choices=("auto", *MOTION_PRESETS), default="auto")
+    animate.add_argument("--duration", type=float, default=DEFAULT_MOTION_DURATION)
+    animate.add_argument("--fps", type=int, default=20)
+    animate.add_argument("--width", type=int, default=960)
+    animate.add_argument("--report", type=Path)
+    animate.add_argument("--dry-run", action="store_true")
+    animate.set_defaults(func=command_animate)
+
     subparsers.add_parser("examples").set_defaults(func=command_examples)
     return parser
 
@@ -176,7 +211,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         return int(args.func(args))
-    except (OSError, ValueError, json.JSONDecodeError, ET.ParseError) as error:
+    except (OSError, RuntimeError, ValueError, json.JSONDecodeError, ET.ParseError) as error:
         print(json.dumps({"ok": False, "error": str(error)}, ensure_ascii=False), file=sys.stderr)
         return 1
 

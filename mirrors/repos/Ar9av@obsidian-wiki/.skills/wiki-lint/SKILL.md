@@ -338,8 +338,8 @@ Identify high-value synthesis opportunities the wiki is missing — concept pair
 - Pick 10-15 frequently linked concepts from `concepts/` and `entities/`
 - For each pair, run a quick grep to count pages that link to both:
   ```bash
-  grep -rl "\[\[ConceptA\]\]" "$OBSIDIAN_VAULT_PATH" --include="*.md" > /tmp/a.txt
-  grep -rl "\[\[ConceptB\]\]" "$OBSIDIAN_VAULT_PATH" --include="*.md" > /tmp/b.txt
+  rg -l --glob '*.md' "\[\[ConceptA\]\]" "$OBSIDIAN_VAULT_PATH" > /tmp/a.txt
+  rg -l --glob '*.md' "\[\[ConceptB\]\]" "$OBSIDIAN_VAULT_PATH" > /tmp/b.txt
   comm -12 <(sort /tmp/a.txt) <(sort /tmp/b.txt) | wc -l
   ```
 - Flag pairs with co-occurrence ≥ 3 that have no existing synthesis page

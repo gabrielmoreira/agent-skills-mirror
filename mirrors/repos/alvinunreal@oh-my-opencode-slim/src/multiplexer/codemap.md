@@ -2,7 +2,8 @@
 
 ## Responsibility
 
-Provides a unified abstraction for tmux, Zellij, Herdr, and cmux to spawn,
+Provides a unified abstraction for tmux, Zellij, Herdr, cmux, and kitty to
+spawn,
 manage, and close panes for child OpenCode agent sessions.
 
 ## Design
@@ -14,6 +15,7 @@ manage, and close panes for child OpenCode agent sessions.
   - `TmuxMultiplexer`: tmux-specific implementation using `tmux` CLI commands
   - `ZellijMultiplexer`: zellij-specific implementation using zellij plugin API
   - `HerdrMultiplexer`: herdr-specific implementation using `herdr` CLI commands
+  - `KittyMultiplexer`: kitty-specific implementation using `kitten @` CLI commands
   - `CmuxMultiplexer`: cmux UUID surface implementation using the cmux CLI
 - **Shared Utilities** (`shared.ts`): `quoteShellArg`, `buildOpencodeAttachCommand`, and `findBinary` — extracted from the three adapters to eliminate copy-paste duplication.
 - **Session Manager** (`session-manager.ts`): Tracks child session lifecycle and coordinates pane operations via event-driven architecture.
@@ -32,7 +34,7 @@ manage, and close panes for child OpenCode agent sessions.
 
 ```typescript
 export interface Multiplexer {
-  readonly type: 'tmux' | 'zellij' | 'herdr' | 'cmux';
+  readonly type: 'tmux' | 'zellij' | 'herdr' | 'cmux' | 'kitty';
   isAvailable(): Promise<boolean>;
   isInsideSession(): boolean;
   spawnPane(sessionId: string, description: string, serverUrl: string, directory: string): Promise<PaneResult>;
@@ -129,7 +131,7 @@ The session manager reacts to OpenCode session events:
 
 ```typescript
 interface MultiplexerConfig {
-  type: 'tmux' | 'zellij' | 'herdr' | 'cmux' | 'auto' | 'none';
+  type: 'tmux' | 'zellij' | 'herdr' | 'cmux' | 'kitty' | 'auto' | 'none';
   layout: MultiplexerLayout; // 'tiled' | 'main-horizontal' | 'main-vertical' | 'grid'
   main_pane_size?: number; // Percentage for main pane (0-100)
   zellij_pane_mode?: string; // Zellij-specific pane mode
@@ -138,9 +140,10 @@ interface MultiplexerConfig {
 
 ### Environment Detection
 
-- **Auto Mode**: Detects tmux (`TMUX`), Zellij (`ZELLIJ`), Herdr
-  (`HERDR_ENV`/`HERDR_PANE_ID`), or cmux (complete `CMUX_SOCKET_PATH`,
-  `CMUX_WORKSPACE_ID`, and `CMUX_SURFACE_ID` identity).
+- **Auto Mode**: Detects tmux (`TMUX`), Zellij (`ZELLIJ`), kitty
+  (`KITTY_PID`), Herdr (`HERDR_ENV`/`HERDR_PANE_ID`), or cmux
+  (complete `CMUX_SOCKET_PATH`, `CMUX_WORKSPACE_ID`, and `CMUX_SURFACE_ID`
+  identity).
 - **Availability Check**: Validates multiplexer binary is available before use
 
 ## Implementation Details
@@ -184,6 +187,7 @@ interface MultiplexerConfig {
 | `tmux/index.ts` | tmux-specific implementation |
 | `zellij/index.ts` | zellij-specific implementation |
 | `herdr/index.ts` | herdr-specific implementation |
+| `kitty/index.ts` | kitty-specific implementation |
 | `cmux/index.ts` | cmux adapter and encoded surface handles |
 | `cmux/session-lifecycle.ts` | cmux event, polling, spawn, close, orphan, and cleanup ownership |
 | `cmux/session-state.ts` | process-global cmux session registry |

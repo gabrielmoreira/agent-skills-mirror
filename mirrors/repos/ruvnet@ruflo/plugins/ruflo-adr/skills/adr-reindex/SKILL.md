@@ -2,7 +2,7 @@
 name: adr-reindex
 description: Reconcile the ADR index against a DELETED ADR file or relation line by dropping and rebuilding adr-patterns + adr-edges from scratch (scripts/reindex.mjs). Use when adr-index alone leaves stale rows behind.
 argument-hint: ""
-allowed-tools: Bash mcp__claude-flow__memory_list
+allowed-tools: Bash mcp__plugin_ruflo-core_ruflo__memory_list
 ---
 
 # ADR Reindex

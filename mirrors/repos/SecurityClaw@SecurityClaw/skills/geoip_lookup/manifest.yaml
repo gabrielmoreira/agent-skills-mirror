@@ -18,8 +18,8 @@ artifact_outputs:
   - city
   - timezone
 description: >
-  Downloads and maintains a local MaxMind GeoLite2-City MMDB file, then resolves
-  IP geolocation details such as city, subdivision/state, country, timezone, and coordinates.
+  Resolves IP geolocation through a local MaxMind GeoLite2-City MMDB when
+  available, or IPinfo Lite as a country/continent/ASN fallback.
 
 can_answer:
   - "IP geolocation lookup"
@@ -73,7 +73,14 @@ conditional_recovery:
 
 required_env_vars:
   - name: MAXMIND_LICENSE_KEY
-    description: "MaxMind License Key (required—for GeoIP database downloads)"
+    description: "MaxMind License Key (optional when IPINFO_TOKEN is configured)"
     env_key: MAXMIND_LICENSE_KEY
-    optional: false
+    optional: true
+    alternatives: [MAXMIND_LICENSE_KEY, IPINFO_TOKEN]
+    is_secret: true
+  - name: IPINFO_TOKEN
+    description: "IPinfo Lite token (optional fallback when MaxMind is unavailable)"
+    env_key: IPINFO_TOKEN
+    optional: true
+    alternatives: [MAXMIND_LICENSE_KEY, IPINFO_TOKEN]
     is_secret: true

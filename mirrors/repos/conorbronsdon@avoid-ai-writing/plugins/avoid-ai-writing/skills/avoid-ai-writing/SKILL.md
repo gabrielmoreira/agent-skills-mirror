@@ -1,7 +1,7 @@
 ---
 name: avoid-ai-writing
 description: Audit and rewrite content to remove AI writing patterns ("AI-isms"). Use this skill when asked to "remove AI-isms," "clean up AI writing," "edit writing for AI patterns," "audit writing for AI tells," or "make this sound less like AI." Supports a detect-only mode, an edit-in-place mode for files, an optional voice profile (casual / professional / technical / warm / blunt), and an iterate-to-convergence pass.
-version: 3.15.0
+version: 3.16.0
 license: MIT
 compatibility: Any AI coding assistant that supports agentskills.io SKILL.md format (Claude Code, Cursor, VS Code Copilot, Hermes Agent, OpenHands, etc.) or OpenClaw. No external tools or APIs required.
 metadata:
@@ -155,6 +155,11 @@ Words are organized into three tiers based on how reliably they signal AI-genera
 | genuinely / genuine (as intensifier) | (cut — just state the fact) |
 | symphony (metaphor) | (describe the actual coordination or combination) |
 | embrace (metaphor) | adopt, accept, use, switch to |
+| load-bearing *(metaphor)* | essential, critical, necessary — or say what breaks if you remove it |
+
+**Hyphen required:** unhyphenated "load bearing" is ordinary English ("the load bearing down on the bridge") — only the hyphenated compound is the tell.
+
+**Construction carve-out:** `load-bearing` before a literal structural noun (`wall`, `beam`, `column`, `joist`, `truss`, `member`, `footing`, `slab`, `stud`, `partition`, `masonry`, `lintel`, `pier`, `rafter`, `girder`, `capacity`), optionally with one material or position adjective in between (`load-bearing structural wall`), is standard building terminology — don't flag. Abstract-capable nouns (`structure`, `element`, `frame`, `foundation`) are excluded on purpose, so "the load-bearing structure of his argument" still flags. Known gap: predicative use ("the wall is load-bearing") still flags — see issue #56.
 
 #### Tier 2 — Flag when 2+ appear in the same paragraph
 

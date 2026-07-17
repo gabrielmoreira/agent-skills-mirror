@@ -94,6 +94,7 @@ Agent disambiguation → `reference/agent-disambiguation.md`
 - Routing adaptation that would replace a high-performing chain (`CES ≥ B`).
 - Chain designs with 5+ agents.
 - First-time use of a newly registered agent in a production chain.
+- Approving creation of a new skill via LADDER (`architect`'s gap-fill proposal, before it is registered) — see `reference/routing-matrix.md` § LADDER.
 - **Before the first `agy -p ... --dangerously-skip-permissions` Bash spawn of a session** — emit the Pre-flight Notification per `_common/CLI_COMPATIBILITY.md §9.1` (informational, does not block AUTORUN).
 - **On a Fable 5 hub, before executing a task that does not warrant Fable 5-tier reasoning** (classified `SIMPLE` / single trivial step, no multi-domain planning or high-reasoning design) — confirm before proceeding and recommend the cheaper path (delegate directly to a Sonnet 5 subagent, or re-run the hub on Sonnet 5 / Opus 4.8). Fable 5 hub is high-cost; this is the **Fable 5 cost gate (F8)**, contract-level — it blocks even in `AUTORUN`/`AUTORUN_FULL`. See `reference/hub-authoring.md` § Claude Code hub — Fable 5.
 
@@ -108,6 +109,7 @@ Agent disambiguation → `reference/agent-disambiguation.md`
 - Allow handoff loops (max-hop limit: 2 round-trips).
 - Propagate silent failures — require domain-specific semantic validation at each step (valid schema + wrong meaning amplifies downstream).
 - Share mutable state between concurrent parallel branches without ownership isolation.
+- Skip the compass→architect ladder before falling back to an ad-hoc chain on a true no-match to a **task-shaped request** (one that asks for work product — code, a document, an analysis, a chain of steps) — the ladder is mandatory, not optional, per `routing-matrix.md` § LADDER; the fallback taken (`compass-invoked` | `architect-invoked` | `neither`) is a required field in `NEXUS_COMPLETE`, never omitted. **Narrow carve-out**: a direct-answer request — a one-line **factual/lookup** question with a single correct answer, or a meta-question about the harness itself (e.g. "what does `classify` do?") — is answered directly, no ladder walk; a one-line judgment/decision question ("REST or GraphQL?") stays task-shaped (DECISION/Magi) and is NOT eligible. The carve-out is bounded to non-task-shaped requests only and must never be stretched to cover an actual no-match task (the generic catch-all this rule exists to prevent).
 
 ## Modes
 
@@ -141,7 +143,7 @@ The full table below is flat; these families group it by the axis that separates
 | Family | Recipes | Axis (one-line; full → `reference/recipes-detail.md` § Recipe Families) |
 |--------|---------|-----------------|
 | **Fix** | `bug` · `security` | defect vs vulnerability |
-| **Improve** (existing code) | `refactor` · `optimize` · `kaizen` · `anneal` · `restyle` | known restructure / perf number / polish one feature vs target / discover design weaknesses → behavior-preserving brush-up / **UI-visual-interaction design of an existing surface (direction+rubric-driven)**. `improve`/`polish`/`enhance` overloaded → REDIRECT; `improve the design` overloaded (code design → `anneal`; UI/look-and-feel → `restyle`) → REDIRECT |
+| **Improve** (existing code) | `refactor` · `optimize` · `kaizen` · `anneal` · `restyle` | known restructure / perf number / polish one feature vs target / discover design weaknesses → behavior-preserving brush-up / **UI-visual-interaction design of an existing surface (direction+rubric-driven)**. `improve`/`polish`/`enhance` overloaded → REDIRECT: UI-scoped (`polish the UI`, `improve the look and feel`) → `restyle`; plain feature-scoped (`polish X feature`) → `kaizen`. `improve the design` overloaded (code design → `anneal`; UI/look-and-feel → `restyle`) → REDIRECT |
 | **Loop** (autonomous / iterative) | `loop` · `goal` · `converge` | dispatcher (runner is `orbit`) / `/goal` setup only / in-session rubric loop. Underspecified "make a loop" → `loop`; explicit shape → sibling direct |
 | **Build** (new) | `feature` · `apex` · `playable` | single guided build / discovery→ship one-shot (8-25 agents) / game-specialized all-in-one (vertical-slice-first gate) |
 | **Discover → build pairs** | `spec`→`feature`/`apex` · `charter`→`enact` · `layer`→`sigil` | one feature spec / whole-repo team+work plan / whole-repo reusable operating layer. All stop at a design; the pair runs it |
@@ -149,18 +151,18 @@ The full table below is flat; these families group it by the axis that separates
 | **Comprehend** (reverse-engineer existing code → understanding artifact, no code) | `cartograph` · `chronicle` | **space vs time**: `cartograph` = multi-repo structure → bird's-eye diagrams + design doc (how it works *today*); `chronicle` = commit history → era timeline + narrative storylines (feature/fix/improvement/decision) + decision log + inferred ethos/worldview (how it *got here* & what it *believes*). vs `delve` (one shipped feature → evolution dialogue) / `charter` (one repo → team+work plan) / `pdm` (plan-vs-code status) / `clone` (black-box external → rebuild). Single repo/one diagram → `lens`/`atlas`/`canvas` direct; one period's PR report → `harvest` direct |
 | **Verdict** (which feature) | `essential` · `killer` · `trim` | THE must-have / THE differentiator / remove dead-weight (inverse). Shared gate: `reference/verdict-gate.md` |
 | **Reproduce & Synthesize** | `clone` · `fuse` · `graft` · `transmute` · `migrate` | 1 source faithful / ≥2 synthesized / host+donor concept / own-source cross-language / own-system change-completeness. Shared: `_common/DIFFERENTIAL_PARITY.md`. `differential parity` alone → REDIRECT |
-| **Quality-Max** (expensive, confirm) | `acceptance` · `growth-acceptance` · `summit` · `podium` · `wish` | proof-carrying merge (G1-10) / post-launch lifecycle (G11-15) / pre-merge quality tournament / content-slide quality / **once-in-a-lifetime one-shot ceiling — scarcity-gated, deliverable-agnostic, ACCEPT = all rubric dims = 3** |
+| **Quality-Max** (expensive, confirm) | `acceptance` · `growth-acceptance` · `summit` · `podium` · `wish` · `runway` · `hallmark` · `rebrand` · `marquee` | proof-carrying merge (G1-10) / post-launch lifecycle (G11-15) / pre-merge quality tournament / content-slide quality / **once-in-a-lifetime one-shot ceiling — scarcity-gated, deliverable-agnostic, ACCEPT = all rubric dims = 3** / **design-brand wing:** flagship *in-product UI* design tournament (`runway`) / *create* the brand identity — proof-carrying Brand Book (`hallmark`) / *propagate* a settled brand, completeness-proven (`rebrand`) / wish-grade one-shot *acquisition LP* with machine oracles, no Scarcity Gate (`marquee`). `runway` vs `marquee` = in-product surface vs conversion LP; `hallmark`→`rebrand` = create→propagate pair |
 | **Document package** | `package` (incl. `venture`) | 12-domain preset registry |
 | **Meta / control** | `classify` · `proactive` · `pack` | routing · project scan · skill-profile |
 
 | Recipe | Subcommand | Default? | When to Use | Chain Template | Read |
 |--------|-----------|---------|-------------|----------------|------|
-| Auto Classify | `classify` | ✓ | No Recipe specified — auto-classification. **Redirects to a curated Recipe when the resolved intent matches one; ad-hoc chain only for no-Recipe task types.** | `RESOLVE → GATE → REDIRECT? → SELECT → CHAIN_SELECT` | `reference/routing-matrix.md` (Classify Flow contract) |
-| Bug Fix | `bug` | | Bug reports and fix requests | `Scout[RCA] → Sherpa? → Radar[failing repro] → Builder[root-cause] → Radar[verify] → Guardian`| `reference/routing-quick-start.md`, `reference/routing-matrix.md` |
-| Feature | `feature` | | New web/backend/generic feature. **iOS/Android native → `MOBILE_NATIVE` (Native) instead.** | `Lens?[reuse] → Sherpa[spec+AC] → Forge? → Builder → Radar[+verify gate] → Guardian`| `reference/routing-quick-start.md`, `reference/routing-matrix.md` |
-| Security | `security` | | Security response | `Sentinel[triage] → Probe?[confirm-exploit] → Builder[root-cause] → Probe/Radar[verify-closed] → Vigil? → Guardian`| `reference/routing-quick-start.md`, `reference/routing-matrix.md` |
-| Refactor | `refactor` | | Internal-only refactor, no external behavior change | `Radar?[safety-net] → Zen → Radar[verify-equivalence] → Guardian`| `reference/routing-quick-start.md`, `reference/routing-matrix.md` |
-| Optimize | `optimize` | | Performance-only improvement | `Bolt/Tuner[measure→target→optimize] → Radar[verify-speedup] → Guardian`| `reference/routing-quick-start.md`, `reference/routing-matrix.md` |
+| Auto Classify | `classify` | ✓ | No Recipe specified — auto-classification. **Redirects to a curated Recipe when the resolved intent matches one; ad-hoc chain only for no-Recipe task types.** | `RESOLVE → GATE → MULTI? → REDIRECT? → SELECT → LADDER? → CHAIN_SELECT` | `reference/routing-matrix.md` (Classify Flow contract) |
+| Bug Fix | `bug` | | Bug reports and fix requests | `Scout[RCA] → Sherpa? → Radar[failing repro] → Builder[root-cause] → Radar[verify] → Guardian`| `reference/routing-matrix.md` |
+| Feature | `feature` | | New web/backend/generic feature. **iOS/Android native → `MOBILE_NATIVE` (Native) instead.** | `Lens?[reuse] → Sherpa[spec+AC] → Forge? → Builder → Radar[+verify gate] → Guardian`| `reference/routing-matrix.md` |
+| Security | `security` | | Security response | `Sentinel[triage] → Probe?[confirm-exploit] → Builder[root-cause] → Probe/Radar[verify-closed] → Vigil? → Guardian`| `reference/routing-matrix.md` |
+| Refactor | `refactor` | | Internal-only refactor, no external behavior change | `Radar?[safety-net] → Zen → Radar[verify-equivalence] → Guardian`| `reference/routing-matrix.md` |
+| Optimize | `optimize` | | Performance-only improvement on *correct* code — measure-first, prove-with-a-number. Defect-caused slowdown → `bug` | `Bolt/Tuner[measure→target→optimize] → Radar[verify-speedup] → Guardian`| `reference/routing-matrix.md` |
 | Kaizen | `kaizen` |  | Existing-feature continuous improvement covering perf / UX / code-quality / feature-extension. | See `reference/recipes-detail.md` | `reference/inline-recipes.md` |
 | Anneal | `anneal` |  | Codebase design audit → prioritized behavior-preserving brush-up. | See `reference/recipes-detail.md` | `reference/anneal-recipe.md` |
 | Restyle | `restyle` |  | UI/visual design improvement of an existing surface — audit → direction → rubric-looped implementation → walkthrough+a11y+no-regression verify. | See `reference/recipes-detail.md` | `reference/restyle-recipe.md` |
@@ -186,6 +188,10 @@ The full table below is flat; these families group it by the axis that separates
 | Summit | `summit` |  | Multi-engine **five-team** quality-maximization. | See `reference/recipes-detail.md` | `reference/summit-recipe.md` |
 | Podium | `podium` |  | Content-quality maximization. | See `reference/recipes-detail.md` | `reference/podium-recipe.md` |
 | Wish | `wish` |  | **Once-in-a-lifetime request** — scarcity-gated one-shot quality-ceiling delivery: crystallize the true wish → tournament → adversarial gauntlet + ceiling convergence (all dims = 3) → One-Shot Gate. **Always confirm.** | See `reference/recipes-detail.md` | `reference/wish-recipe.md` |
+| Runway | `runway` |  | **Flagship UI design tournament** — 3 parallel design directions → persona-panel judging → ceiling convergence (all dims = 3) for product-defining surfaces. **Always confirm.** | See `reference/recipes-detail.md` | `reference/runway-recipe.md` |
+| Hallmark | `hallmark` |  | Brand identity package quality-max — brand-core dialogue → identity tournament → persona-resonance + adversarial gauntlet → proof-carrying Brand Book + tokens. | See `reference/recipes-detail.md` | `reference/hallmark-recipe.md` |
+| Rebrand | `rebrand` |  | All-surface brand propagation with a proven-complete guarantee — RESIDUE-GATE × brand rubric; old-brand decommission gated on the completeness proof. | See `reference/recipes-detail.md` | `reference/rebrand-recipe.md` |
+| Marquee | `marquee` |  | **Wish-grade one-shot LP production** — crystallization → 3-direction tournament → gauntlet + ceiling convergence with machine oracles (Lighthouse/CWV/WCAG) → One-Shot Gate. **Always confirm.** | See `reference/recipes-detail.md` | `reference/marquee-recipe.md` |
 | Migrate | `migrate` |  | Change-completeness migration. | See `reference/recipes-detail.md` | `reference/migrate-recipe.md` |
 | Transmute | `transmute` |  | **Cross-language rewrite** preserving behavior (TS→Rust, Go→Rust, Python→Go, JS→TS, …). | See `reference/recipes-detail.md` | `reference/transmute-recipe.md` |
 | Clone | `clone` | | Faithful product reproduction — reverse-engineer an existing product's observable surface, rebuild it, and verify the copy by differential parity against a stamped captured baseline. | See `reference/recipes-detail.md` | `reference/clone-recipe.md`, `reference/research-grounding.md` |
@@ -206,7 +212,7 @@ For natural-language input without an explicit subcommand. **Subcommand match al
 | `feature`, `implement`, `build` | `feature` |
 | `security`, `vulnerability`, `CVE` | `security` |
 | `refactor`, `clean up`, `code smell` | `refactor` |
-| `optimize`, `slow`, `performance` | `optimize` |
+| `optimize`, `slow`, `performance`, `speed up`, `latency`, `slow query`, `bottleneck` | `optimize` (`memory leak` → `bug`; post-deploy slowdown, output still correct → `optimize +Trail`; full REDIRECT notes → `reference/signal-keywords.md`) |
 | `kaizen`, `improve`, `polish`, `enhance existing`, `refine` | `kaizen` |
 | `anneal`, `design audit`, `brush up the codebase`, `harden the architecture`, `design weaknesses` | `anneal` |
 | `restyle`, `redesign`, `UI refresh`, `visual polish`, `modernize the UI`, `improve the look and feel` | `restyle` (UI/visual — code-design improvement → `anneal`) |
@@ -214,6 +220,10 @@ For natural-language input without an explicit subcommand. **Subcommand match al
 | `cartograph`, `reverse-engineer across repos`, `bird's-eye diagram`, `overview diagram`, `architecture map`, `design doc from code`, `understand the system across repos` | `cartograph` |
 | `chronicle`, `repository history`, `commit history summary`, `how did we get here`, `evolution of the codebase`, `project timeline`, `git history narrative`, `history of the repo`, `feature/bug/decision history`, `decision log from history`, `design philosophy from history`, `project ethos/worldview` | `chronicle` (era timeline + storylines: feature/fix/improvement/decision + decision log + inferred ethos/worldview, from commit history) |
 | `wish`, `once-in-a-lifetime request`, `favor of a lifetime`, `your absolute best`, `spare nothing`, `no second chance`, `one shot to get this right` | `wish` (scarcity-gated one-shot ceiling; strategic code quality-max → `summit`, standard bar iteration → `converge`) |
+| `runway`, `design tournament`, `flagship screen design`, `best possible design` | `runway` (in-product flagship surface — single-direction improvement → `restyle`; acquisition LP → `marquee`) |
+| `hallmark`, `brand identity`, `brand book`, `brand voice`, `visual identity` | `hallmark` (creates the brand — propagation → `rebrand`; personal branding → `crest`) |
+| `rebrand`, `brand refresh`, `apply new brand everywhere`, `brand migration` | `rebrand` (completeness-proven propagation; no settled Brand Book → `hallmark` first) |
+| `marquee`, `best possible landing page`, `flagship LP`, `one-shot LP` | `marquee` (wish-grade one-shot LP; routine LP → `bazaar`/`funnel`; bare `landing page` overloaded → REDIRECT) |
 | `/Nexus` (no arguments) | `proactive` |
 | unclear or multi-domain request | `classify` → `reference/intent-clarification.md` |
 
@@ -224,7 +234,7 @@ Specialist anchors (Chain / Cull-Triage-Crypt / Sonar / Clause-Scribe / Rank-Mag
 Parse the first token of user input:
 - Matches a Recipe Subcommand → skip CLASSIFY, pass Chain Template directly to CHAIN_SELECT. Read the Recipe's `Read` reference for full phase contracts before executing.
 - `/Nexus` with no arguments → `proactive` Recipe (`reference/proactive-mode.md`).
-- Otherwise → `classify` (default) = `RESOLVE → GATE → REDIRECT? → SELECT → CHAIN_SELECT`. **REDIRECT step**: if the resolved intent semantically matches a Recipe, redirect to that Recipe instead of hand-rolling a chain. Full contract → `reference/routing-matrix.md` § Classify Flow.
+- Otherwise → `classify` (default) = `RESOLVE → GATE → MULTI? → REDIRECT? → SELECT → LADDER? → CHAIN_SELECT`. **REDIRECT step**: if the resolved intent semantically matches a Recipe, redirect to that Recipe instead of hand-rolling a chain. Full contract → `reference/routing-matrix.md` § Classify Flow.
 
 Execution-control Mode (AUTORUN_FULL / AUTORUN / GUIDED / INTERACTIVE) is applied after Recipe selection (orthogonal). Inline Recipes (`kaizen`, `essential`, `killer`, `trim`) have no top-level reference — full phase contracts in `reference/inline-recipes.md`.
 
@@ -358,11 +368,10 @@ Front-load acceptance criteria (P1) on every spawn. The output-length (P2), tool
 
 ## Routing Quick Start
 
-Canonical matrix: `reference/routing-matrix.md` defines **~95 task types**; the Recipes table exposes the most-used 20 as subcommands — the rest are reachable via the `classify` (default) flow. Legacy headline chains, Sherpa skip conditions, chain adjustment and clarification rules → `reference/routing-quick-start.md`.
+Canonical matrix: `reference/routing-matrix.md` defines **98 task types** (ground-truthed by row count, `grep -c` the Task Type table); the Recipes table exposes the most-used 20 as subcommands — the rest are reachable via the `classify` (default) flow. Phase contracts (BUG/FEATURE/SECURITY/REFACTOR/OPTIMIZE), Sherpa skip conditions, chain adjustment and clarification rules all live in `reference/routing-matrix.md` (merged from the retired `routing-quick-start.md` — see § Sherpa Skip & Chain Adjustment there).
 
 **Chain reference hierarchy (Source of Truth):**
-- `routing-matrix.md` — owns task type → default chain (95 types). **Primary SoT for "which agents fire for task X"**.
-- `routing-quick-start.md` — top-10 task summary + Sherpa skip + add/skip triggers. Subset view of routing-matrix.
+- `routing-matrix.md` — owns task type → default chain (98 types), the classify/LADDER flow, and the per-task-type phase contracts + Sherpa-skip/chain-adjustment rules. **Primary SoT for "which agents fire for task X"**.
 - `agent-chains.md` — owns chain *modifications*: parallel variants, Rally escalation, addition/skip triggers. **Primary SoT for "how to adjust a chain"**.
 - `recipes-detail.md` — owns Recipe-level phase contracts (apex/summit/etc.). **Primary SoT for "what phases a Recipe runs"**.
 
@@ -407,8 +416,7 @@ Read only the files that match the current decision point.
 
 | File | Read When |
 |------|-----------|
-| `reference/routing-matrix.md` | Canonical task-type → chain mapping beyond the quick-start |
-| `reference/routing-quick-start.md` | Full legacy task-type chain table, Sherpa skip / chain adjustment / clarification rules |
+| `reference/routing-matrix.md` | Canonical task-type → chain mapping, classify/LADDER flow, per-task-type phase contracts, Sherpa skip / chain adjustment / clarification rules |
 | `reference/agent-chains.md` | Full chain templates or add/skip rules |
 | `reference/agent-disambiguation.md` | Two or more agents plausibly fit the same request |
 | `reference/confidence-scoring.md` | Confidence scoring + autonomous decision thresholds |
@@ -433,7 +441,7 @@ Read only the files that match the current decision point.
 | `reference/execution-layers.md` | Per-CLI prereqs, runtime notes, agy headless mitigations + template |
 | `reference/hub-authoring.md` | Per-engine authoring (Claude/Codex/agy), spawn-template variants, model selection, execution-layer key rules, Fable 5 F-principles |
 | `reference/recipes-detail.md` | Recipe Families full axis prose + extended Recipe descriptions + full chain templates |
-| `reference/{anneal,restyle,apex,playable,charter,enact,layer,gedanken,delve,cartograph,chronicle,spec,migrate,clone,fuse,graft,converge,loop,goal,acceptance,growth-acceptance,summit,transmute,venture,package,podium,wish}-recipe.md`, `reference/apex-walkthrough.md` | Per-Recipe phase contracts, chain templates, cost profiles (+ apex Mermaid walkthroughs). Indexed per subcommand in the Recipes table Read column; open the matching `<recipe>-recipe.md` for full detail |
+| `reference/{anneal,restyle,apex,playable,charter,enact,layer,gedanken,delve,cartograph,chronicle,spec,migrate,clone,fuse,graft,converge,loop,goal,acceptance,growth-acceptance,summit,transmute,venture,package,podium,wish,runway,hallmark,rebrand,marquee}-recipe.md`, `reference/apex-walkthrough.md` | Per-Recipe phase contracts, chain templates, cost profiles (+ apex Mermaid walkthroughs). Indexed per subcommand in the Recipes table Read column; open the matching `<recipe>-recipe.md` for full detail |
 | `reference/inline-recipes.md` | Full phase contracts for `kaizen` / `essential` / `killer` / `trim` |
 | `reference/recipe-contract.md` | Authoring standard for nexus recipes — 8 required elements + canonical phrasing. Read when authoring/normalizing a recipe |
 | `reference/verdict-gate.md` | Shared contract for verdict recipes (`essential`/`killer`/`trim` + graft flag clause) |
@@ -441,6 +449,7 @@ Read only the files that match the current decision point.
 | `reference/autonomy-quality-protocol.md` | Any `AUTORUN`/`AUTORUN_FULL` chain — intent contract (Q1-Q3), Decision Ledger (Q4-Q6), drift control (Q7-Q8), independent verification + evidence-bound claims (Q9-Q11), quality budget + Acceptance Provenance (Q12-Q15) |
 | `reference/doc-quality-protocol.md` | Deliverable includes documents (`package`/`charter`/`layer`/`spec`/`delve`/`gedanken`/`podium`, any Scribe/Accord/Quill/Tome-authored step) — reader contract (W1-W3), grounding (W4-W6), coherence (W7-W9), readability (W10-W11), Doc Quality Gate (W12) |
 | `reference/signal-keywords.md` | Canonical full Signal Keywords → Recipe table (Core / Specialist / Mobile / Package / Fallback) |
+| `reference/task-battery.md` | Verifying a routing-machinery change (LADDER wiring, Recipe additions, Signal Keyword edits) before merge — standing regression battery |
 | `reference/official-skill-categories.md` | Official use case categories + 5 canonical patterns |
 | `reference/managed-agents-mapping.md` | Managed Agents / Outcomes / Dreaming / Webhooks mapping + Dynamic Workflows |
 | `_common/DIFFERENTIAL_PARITY.md` | Shared parity discipline for `transmute`/`clone`/`fuse`/`graft`/`migrate` — read when a recipe claims "verified by differential parity" |

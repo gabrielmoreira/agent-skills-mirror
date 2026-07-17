@@ -9,13 +9,13 @@
 > 想先理解「為什麼有的 agent 在 terminal、有的在 Telegram、有的在 Jetson」這層 mental model → 看 [`resources/agent-paradigms.md`](agent-paradigms.md)（5 種 agent 型態）。
 > 已經在用、想決定 / 比較 / 升級 → 留在這份。
 
-跨 5 個 branch + Track A 共用的參考——**Claude Code / Codex / OpenCode / Gemini CLI / goose / Aider / Hermes Agent 之間怎麼挑？** Track A（A1-A3）的 CLI workflow 設計、5 條 branch 內的 CLI 引用都連到這份；每個 branch 都會用到 CLI agent，但沒有一個 branch 真的「擁有」這份比較，所以放在 `resources/`。
+跨 5 個 branch + Track A 共用的參考——**Claude Code / Codex / OpenCode / Gemini CLI / goose / Aider / Hermes Agent / Grok Build 之間怎麼挑？** Track A（A1-A3）的 CLI workflow 設計、5 條 branch 內的 CLI 引用都連到這份；每個 branch 都會用到 CLI agent，但沒有一個 branch 真的「擁有」這份比較，所以放在 `resources/`。
 
 ---
 
-## 📋 7 個主流 CLI agent
+## 📋 8 個主流 CLI agent
 
-只列在 terminal 跑的（IDE-based 如 Cursor / Cline / Continue 不在這份；那些放在 [for-developer](../branches/for-developer.md)）。前 6 個數字 `gh api` 驗證於 2026-05-06；Hermes Agent 驗證於 2026-05-10。
+只列在 terminal 跑的（IDE-based 如 Cursor / Cline / Continue 不在這份；那些放在 [for-developer](../branches/for-developer.md)）。前 6 個數字 `gh api` 驗證於 2026-05-06；Hermes Agent 驗證於 2026-05-10；Grok Build 驗證於 2026-07-16（⚠️ 2026-07-14 才開源、非常新，數字與功能都還在快速變動）。
 
 | 工具 | 提供者 | License | 主推 LLM | 認證 / 計費 | Stars |
 |---|---|---|---|---|---|
@@ -26,6 +26,7 @@
 | [goose](https://github.com/block/goose) | Agentic AI Foundation（repo 已遷至 `aaif-goose/goose`） | Apache-2.0 | 15+ provider（含 Ollama） | BYO API key 或既有 Claude / ChatGPT / Gemini 訂閱（ACP） | ★ 47k+ |
 | [Aider](https://github.com/Aider-AI/aider) | Aider-AI（社群） | Apache-2.0 | 任意 | BYO API key | ★ 44k+ |
 | [Hermes Agent](https://github.com/NousResearch/hermes-agent) | Nous Research | MIT | 200+ via OpenRouter / NVIDIA NIM / 智譜 GLM / Kimi / 小米 MiMo / MiniMax / HF / OpenAI | BYO API key（多 provider） | ★ 213k+ |
+| [Grok Build](https://github.com/xai-org/grok-build) | SpaceXAI（xAI，官方） | Apache-2.0 | Grok | 首次啟動開瀏覽器完成登入 | ★ 10k+ |
 
 ---
 

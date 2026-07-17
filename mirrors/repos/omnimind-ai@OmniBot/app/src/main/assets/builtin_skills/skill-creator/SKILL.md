@@ -15,7 +15,7 @@ Omnibot skills live inside the workspace at `.omnibot/skills/<skill-id>/` and ar
 2. Keep the body short and procedural.
 3. Put detailed reference material into `references/` instead of bloating `SKILL.md`.
 4. Prefer reusable scripts or templates when the same steps will be repeated.
-5. Design for Omnibot's real runtime: Alpine shell, workspace files, built-in tools, and Android automation.
+5. Design for Omnibot's real runtime: Alpine shell, workspace files, built-in tools, and optional Shizuku-backed Android actions.
 
 ## Skill Shape
 
@@ -101,7 +101,7 @@ Use `assets/` when:
 
 - Assume the skill will run inside Omnibot's built-in Alpine environment.
 - Prefer workspace-relative guidance that matches `.omnibot/skills`, `.omnibot/memory`, and `/workspace`.
-- If a workflow depends on Android UI automation, state when to use automation tools versus terminal tools.
+- If a workflow depends on privileged Android actions, state when to use Shizuku tools versus terminal tools.
 - If a workflow depends on generated artifacts, say where they should be written in the workspace.
 - If a workflow should never use destructive commands, say so explicitly.
 

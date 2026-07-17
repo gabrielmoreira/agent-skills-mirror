@@ -156,6 +156,9 @@
       "source_port": "bottom",
       "target_port": "top",
       "flow": "read",
+      "motion_role": "global-route",
+      "motion_stage": 1,
+      "motion_order": 0,
       "via": "Route 53 health policy",
       "label_dy": -34
     },
@@ -166,6 +169,9 @@
       "source_port": "bottom",
       "target_port": "top",
       "flow": "read",
+      "motion_role": "global-route",
+      "motion_stage": 1,
+      "motion_order": 1,
       "via": "Route 53 health policy",
       "label_dy": -34
     },
@@ -175,7 +181,10 @@
       "target": "db-a",
       "source_port": "bottom",
       "target_port": "top",
-      "flow": "write"
+      "flow": "write",
+      "motion_role": "regional-write",
+      "motion_stage": 2,
+      "motion_order": 0
     },
     {
       "id": "write-b",
@@ -183,7 +192,10 @@
       "target": "db-b",
       "source_port": "bottom",
       "target_port": "top",
-      "flow": "write"
+      "flow": "write",
+      "motion_role": "regional-write",
+      "motion_stage": 2,
+      "motion_order": 1
     },
     {
       "id": "replicate-orders",
@@ -192,6 +204,9 @@
       "source_port": "right",
       "target_port": "left",
       "flow": "async",
+      "motion_role": "cross-region",
+      "motion_stage": 3,
+      "motion_order": 0,
       "via": "inter-region peering",
       "dashed": true
     }

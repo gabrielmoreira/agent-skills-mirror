@@ -138,12 +138,12 @@
     }
   ],
   "arrows": [
-    { "id": "rail-01", "source": "checkout-api", "target": "schema-gate", "source_port": "right", "target_port": "left", "flow": "control", "transit_type": "rail", "topic_id": "checkout.events" },
-    { "id": "rail-12", "source": "schema-gate", "target": "fraud-score", "source_port": "right", "target_port": "left", "flow": "control", "transit_type": "rail", "topic_id": "checkout.events" },
-    { "id": "rail-23", "source": "fraud-score", "target": "order-router", "source_port": "right", "target_port": "left", "flow": "control", "transit_type": "rail", "topic_id": "checkout.events" },
-    { "id": "rail-34", "source": "order-router", "target": "fulfilment", "source_port": "right", "target_port": "left", "flow": "control", "transit_type": "rail", "topic_id": "checkout.events" },
-    { "id": "to-dlq", "source": "fraud-score", "target": "checkout-dlq", "source_port": "bottom", "target_port": "top", "flow": "feedback", "transit_type": "dead_letter", "topic_id": "checkout.dlq", "dashed": true },
-    { "id": "materialize", "source": "order-router", "target": "order-state", "source_port": "bottom", "target_port": "top", "flow": "write", "transit_type": "state", "topic_id": "checkout.events" }
+    { "id": "rail-01", "source": "checkout-api", "target": "schema-gate", "source_port": "right", "target_port": "left", "flow": "control", "transit_type": "rail", "topic_id": "checkout.events", "motion_role": "topic-rail", "motion_stage": 1, "motion_order": 0 },
+    { "id": "rail-12", "source": "schema-gate", "target": "fraud-score", "source_port": "right", "target_port": "left", "flow": "control", "transit_type": "rail", "topic_id": "checkout.events", "motion_role": "topic-rail", "motion_stage": 2, "motion_order": 0 },
+    { "id": "rail-23", "source": "fraud-score", "target": "order-router", "source_port": "right", "target_port": "left", "flow": "control", "transit_type": "rail", "topic_id": "checkout.events", "motion_role": "topic-rail", "motion_stage": 3, "motion_order": 0 },
+    { "id": "rail-34", "source": "order-router", "target": "fulfilment", "source_port": "right", "target_port": "left", "flow": "control", "transit_type": "rail", "topic_id": "checkout.events", "motion_role": "topic-rail", "motion_stage": 4, "motion_order": 0 },
+    { "id": "to-dlq", "source": "fraud-score", "target": "checkout-dlq", "source_port": "bottom", "target_port": "top", "flow": "feedback", "transit_type": "dead_letter", "topic_id": "checkout.dlq", "motion_role": "dead-letter", "motion_stage": 5, "motion_order": 0, "dashed": true },
+    { "id": "materialize", "source": "order-router", "target": "order-state", "source_port": "bottom", "target_port": "top", "flow": "write", "transit_type": "state", "topic_id": "checkout.events", "motion_role": "state-project", "motion_stage": 5, "motion_order": 1 }
   ],
   "legend_orientation": "horizontal",
   "legend_x": 48,

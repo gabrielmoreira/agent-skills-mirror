@@ -121,6 +121,7 @@ tool-specific workflow below says to.
   - `items` (required): array of `{wing, room, content}`; content must be verbatim
   - `diary`: optional `{agent_name, entry, topic?, wing?}`; entry should use AAAK format
   - `dedup_threshold`: similarity threshold (default 0.9)
+  - `added_by`: optional filing agent label (defaults to the diary `agent_name`, else `checkpoint`)
 - `mempalace_update_drawer` — Update an existing drawer's content and/or move it to a different wing/room
   - `drawer_id` (required)
   - `content`, `wing`, `room`: at least one must be provided (no-op otherwise)

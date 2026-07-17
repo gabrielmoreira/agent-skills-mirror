@@ -1,6 +1,6 @@
 ---
 name: docs
-description: Documentation drift detection and sync via `oma-docs`. Verify mode finds broken refs in all repo markdown (default glob `**/*.md`), sync mode proposes patches for docs affected by a git diff.
+description: Documentation drift detection and sync via `oma-docs`. Verify mode finds broken refs in all repo markdown (default glob `**/*.md`), sync mode proposes patches for docs affected by a git diff, i18n mode surfaces stale translations, lint mode flags CJK style issues in translated docs.
 disable-model-invocation: true
 ---
 
@@ -31,6 +31,8 @@ Inspect the user's request to select a mode:
 | Mode | Triggers |
 |------|----------|
 | `sync` | Prompt mentions `sync`, "동기화", "patch docs", "update docs after change", or supplies a git diff range (e.g. `HEAD~1..HEAD`, `main..feature`). |
+| `i18n` | Prompt mentions translation drift, stale/missing translations, "번역 드리프트", "translations out of date". |
+| `lint` | Prompt mentions translated-doc style lint, em-dash cleanup, CJK style anti-patterns in translations. |
 | `verify` | Default. Use when the request is about checking, auditing, or validating docs. |
 
 If intent is ambiguous, ask once:
@@ -42,6 +44,8 @@ Run `oma docs verify` (drift check) or `oma docs sync` (propose patches for a gi
 Capture optional arguments from the prompt:
 - **verify**: glob path (e.g. `docs/**/*.md`, `cli/README.md`), `--no-urls`, `--urls-sync`, `--report-file <path>`.
 - **sync**: git diff range (default: staged, fallback `HEAD~1..HEAD`).
+- **i18n**: `--min-severity <CRITICAL|HIGH|MEDIUM|LOW>` (default `MEDIUM`).
+- **lint**: `--locales <list>` (default `ko,ja,zh`).
 
 ---
 
@@ -101,6 +105,22 @@ oma docs sync main..feature-branch --json
 ```
 
 The CLI emits a list of `{ doc, changedFiles, matchedRefs }` entries. **Do not auto-apply anything.** Patch synthesis is your responsibility (host-LLM contract).
+
+---
+
+## Step 3C: i18n / Lint Mode
+
+Both are report-only — the CLI never edits translations.
+
+```bash
+# Structural drift between web/docs (EN) and web/i18n/{lang}
+oma docs i18n --json --min-severity MEDIUM
+
+# Content-level style anti-patterns in CJK translations
+oma docs lint --json
+```
+
+Host-LLM contract: prioritize CRITICAL/HIGH drift pairs and hand each to `oma-translator` in diff-sync mode; for lint issues, restructure flagged sentences via `oma-translator` with per-file user confirmation. Never bulk-retranslate.
 
 ---
 
@@ -208,6 +228,8 @@ Tell the user:
 | `/docs sync` | Propose patches for staged changes. |
 | `/docs sync HEAD~5..HEAD` | Propose patches for a commit range. |
 | `/docs sync main..feature` | Propose patches for a branch diff. |
+| `/docs i18n` | Report stale/missing translations (severity ≥ MEDIUM). |
+| `/docs lint` | Report CJK style issues in translated docs. |
 
 ---
 

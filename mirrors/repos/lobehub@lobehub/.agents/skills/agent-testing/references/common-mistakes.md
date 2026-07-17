@@ -7,6 +7,32 @@
 
 ---
 
+## Case 25 — Building a surface's "twin" without walking the sibling implementation feature-by-feature
+
+**Wrong approach**: when asked to make surface B "consistent with" an existing surface A (a list
+panel, an evidence renderer, a link chip), skimming A for its visual language (colors, spacing,
+component choices) and rebuilding B from that impression — instead of walking A's implementation
+feature-by-feature and porting each one deliberately. In one round this dropped: A's search box,
+A's before/after comparison rendering, and A's authored-report field conventions (title / verdict /
+comparison labels), while a hover state contradicted the intended text-emphasis semantics.
+
+**Why it's wrong**: "consistency" is a checklist over the sibling's FEATURES, not a style match.
+Every capability the sibling has that the twin lacks is a bug the user will find one screenshot
+later. The ux skill's own line — "compose the canonical surface component, don't re-derive it" —
+covers exactly this, but it only bites if the sibling is actually enumerated before building.
+
+**What it breaks**: the user gets a surface that looks 90% right and is missing load-bearing
+features; a round of "为什么这里缺 X / 丢了 Y" feedback that a 10-minute sibling walk would have
+prevented; trust that "对齐" means aligned.
+
+**Correct approach**: before building a twin surface, enumerate the sibling's implementation —
+grep its component for every rendered affordance (search, empty states, comparison views, hover
+behaviors, drawer wiring) and its data conventions (which fields the author must supply) — and
+turn that list into the build checklist. After building, diff the two surfaces side by side in
+screenshots before publishing. For authored artifacts (result.json), re-read the field spec in
+references/report.md instead of writing from memory: `title` and `summary.verdict` are identity
+fields, and comparison pairs need per-side `label`s.
+
 ## Case 20 — Publishing a replacement as a second Acceptance row and passing UI from text-only evidence
 
 **Wrong approach**: giving a refined check a new id without declaring `supersedes`, then marking
@@ -230,7 +256,7 @@ false fail), on the wrong bundle entirely.
 
 **Correct approach**: to verify working-tree UI in the desktop shape, start an
 isolated dev instance that loads live code — `electron-dev.sh start <id>` runs
-`electron-vite dev` (its own CDP/Vite, copied login), which DOES bundle your src
+the dev orchestrator `scripts/dev.mjs` (its own CDP/Vite, copied login), which DOES bundle your src
 changes. Prove it's live by MEASURING a known-changed value (e.g. computed
 `::before` inset 10px vs old 28px) before trusting any screenshot. Don't kill the
 user's resident 9222 app — use a pool id. Also: `agent-browser open` mangles
@@ -624,3 +650,84 @@ tree, confirmed via one structured question and labeled as a guess (never
 executed on unconfirmed — Case 3) > an open question only as last resort. Read
 the living logs once the target is known, and never narrate skill-internal
 setup — the first visible message is about the user's test.
+
+---
+
+## Case 23 — Building an elaborate mock before checking whether the env already has the real thing
+
+**Wrong approach**: needing a working LLM for an agent-runtime test and finding no provider key in
+the shell env, I built an OpenAI-compatible mock server, wrote a key-vault encryption script, and
+seeded `user_settings.key_vaults` to point `deepseek` at it — then ran the agent and watched the
+mock receive **zero** requests while the run produced real, rich LLM output.
+
+**Why it's wrong**: the seeded test user _already had a real DeepSeek key_ configured — in
+`ai_providers`, which is what the runtime actually reads (not `user_settings.keyVaults`). Two
+wasted assumptions stacked: that no credential existed, and that I knew which table supplies it.
+Neither was measured; both were inferred from an `env | grep`.
+
+**What it breaks**: a chunk of the run spent building an apparatus the test didn't need, plus a
+fixture (mock server + an encrypted row) that had to be torn down afterwards. Worse, had the mock
+_partially_ worked, the run would have silently verified a fake path.
+
+**Correct approach**: before constructing any mock, **probe the env for the real capability** —
+query the provider tables (`select id, key_vaults is not null from ai_providers where user_id=…`),
+or just fire one cheap real turn and see whether it completes. Only mock what is provably absent.
+And when a mock records nothing while the feature clearly works, do not shrug — that is the signal
+that the mock is _not in the path_, and everything you "verified" through it is unverified.
+
+---
+
+## Case 24 — Asserting a fixture landed because the DB write succeeded
+
+**Wrong approach**: writing `agents.agency_config = NULL` directly in Postgres, reloading the page,
+and reading the "sub-agent model" the UI displayed — then treating the stale value it showed as a
+product bug in the fallback logic.
+
+**Why it's wrong**: the client's persisted SWR cache (IndexedDB + localStorage) kept serving the old
+`agencyConfig`, and even `internal_refreshAgentConfig` did not dislodge it. `UPDATE 1` in psql proves
+the row changed; it proves nothing about what the app _is running on_. A fixture bug in
+product-bug costume is the most expensive kind — I nearly filed my own fixture as a regression.
+
+**Correct approach**: after any direct-DB fixture write, cold-load (clear localStorage /
+sessionStorage / IndexedDB / caches, re-seed auth, reopen) and then **assert the fixture in the store
+before asserting anything downstream of it** (`__LOBE_STORES.agent().agentMap[id]`). See
+probe-mock-patterns C11. Rule of thumb: the DB is where you _wrote_ it; the store is where the
+behavior _reads_ it — verify at the layer the behavior reads.
+
+---
+
+## Case 26 — Applying dual scope to only one action in a bulk-maintenance menu
+
+**Wrong approach**: after introducing own-scope and workspace-scope variants for one
+bulk action, leave sibling maintenance actions owner-own-only because the review focused
+on restricting what regular members can do.
+
+**Why it's wrong**: the capability matrix was evaluated per menu entry instead of across
+role × action × scope. An owner can retain safe personal actions while also receiving
+explicit workspace-wide variants for every applicable maintenance action.
+
+**What it breaks**: owners must manually process other members' records for the omitted
+actions, and the menu presents an inconsistent authority model where only one bulk action
+can operate at workspace scope.
+
+**Correct approach**: enumerate the full role × bulk-action matrix before implementation
+and verification. Give members own-only actions; give owners both own and workspace
+variants for every applicable action; use elevated confirmation for destructive
+workspace-wide variants; and assert every matrix cell in UI tests and screenshots.
+## Case 27 — Labeling two steps of a flow as a before/after `comparison` pair
+
+**Wrong approach**: for a case whose evidence is two SEQUENTIAL steps of one flow (the reject
+dialog being filled in, then the feedback card rendered after submitting), attaching them as a
+`comparison` pair with `role: before` / `role: after`.
+
+**Why it's wrong**: the comparison rendering's semantics are "the SAME view in two states" — the
+red band reads as "defective old state", the green band as "the fix". Flow steps are neither: the
+first shot is not a defect and the second is not a remediation. The user immediately asked " 这种明明
+是步骤，为什么是优化前和优化后？".
+
+**What it breaks**: the report claims an optimization happened where none did; the red/green framing
+misleads reviewers about what they are looking at.
+
+**Correct approach**: `comparison` is ONLY for the same surface before vs after a change. For flow
+steps, attach plain ordered evidence items (the array preserves order) and give each a caption
+naming its step ("step 1 — dialog with region circled", "step 2 — feedback card after submit").

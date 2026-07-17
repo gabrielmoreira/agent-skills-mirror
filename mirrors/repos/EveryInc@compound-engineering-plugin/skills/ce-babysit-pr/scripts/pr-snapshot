@@ -33,9 +33,11 @@ import hashlib
 import json
 import os
 import re
+import signal
 import subprocess
 import tempfile
-import time
+import threading
+import uuid
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from urllib.parse import urlsplit
@@ -69,6 +71,10 @@ STREAM_REVIEW = "review"
 # workflow-registration lag or a paths-filtered run), but bound growth: evict entries
 # unseen for this many ticks.
 CHECK_HISTORY_TTL = 30
+
+
+class _WatchSuperseded(Exception):
+    """Internal control flow: this watch lost ownership and must unwind immediately."""
 
 
 def _now():
@@ -527,6 +533,7 @@ def _empty_state(pr, repo, url, now):
         "review_decision": None, "mergeable": None, "merge_state_status": None,
         "pr_chain": _default_pr_chain(),
         "last_change_at": None, "last_action": None, "stop_reason": None,
+        "watch_generation": None, "watch_pid": None, "watch_process_identity": None,
         "trajectory": _empty_trajectory(),
     }
 
@@ -878,6 +885,7 @@ def diff(state, cur, now=None, advance_trajectory=True):
         "quiet_seconds": quiet_seconds,
         "session_started_at": state.get("started_at"),
         "session_seconds": _elapsed(state.get("started_at"), now),
+        "watch_generation": state.get("watch_generation"),
         "tick": state["tick"],
         "trajectory": trajectory,
     }, state
@@ -954,25 +962,36 @@ def locked_state(state_dir, pr, repo, now):
         fcntl.flock(lf, fcntl.LOCK_UN)
 
 
-def _run_snapshot(args, now, advance_trajectory=True):
-    """One fetch -> diff -> persist. Returns the actionable/state dict."""
+def _fetch_snapshot(args):
+    """Fetch current PR state without mutating the persisted babysit state."""
     if args.fetch_file:
         with open(args.fetch_file) as f:
-            cur = json.load(f)
-    else:
-        cur = fetch(args.pr, args.repo)
+            return json.load(f)
+    return fetch(args.pr, args.repo)
+
+
+def _apply_snapshot(box, args, cur, now, advance_trajectory):
+    """Apply one fetched snapshot to a caller-owned locked state box."""
+    if box["state"].get("pr", {}).get("url") is None and cur.get("url"):
+        box["state"]["pr"]["url"] = cur["url"]
+    if getattr(args, "session_started_at", None):
+        # Carry one invocation-wide clock through watch re-arms and managed-stack layer state dirs.
+        box["state"]["started_at"] = args.session_started_at
+    elif getattr(args, "reset_session", False):
+        # A fresh babysit invocation starts the budget clock now. Without this, `started_at`
+        # persists from state creation, so resuming against day-old state would read
+        # session_seconds as huge and hand back before doing any work.
+        box["state"]["started_at"] = _iso(now)
+    return diff(box["state"], cur, now, advance_trajectory=advance_trajectory)
+
+
+def _run_snapshot(args, now, advance_trajectory=True, watch_generation=None):
+    """One fetch -> diff -> persist. Returns the actionable/state dict."""
+    cur = _fetch_snapshot(args)
     with locked_state(args.state_dir, args.pr, args.repo, now) as box:
-        if box["state"].get("pr", {}).get("url") is None and cur.get("url"):
-            box["state"]["pr"]["url"] = cur["url"]
-        if getattr(args, "session_started_at", None):
-            # Carry one invocation-wide clock through watch re-arms and managed-stack layer state dirs.
-            box["state"]["started_at"] = args.session_started_at
-        elif getattr(args, "reset_session", False):
-            # A fresh babysit invocation starts the budget clock now. Without this, `started_at`
-            # persists from state creation, so resuming against day-old state would read
-            # session_seconds as huge and hand back before doing any work.
-            box["state"]["started_at"] = _iso(now)
-        actionable, box["state"] = diff(box["state"], cur, now, advance_trajectory=advance_trajectory)
+        if watch_generation is not None and box["state"].get("watch_generation") != watch_generation:
+            raise _WatchSuperseded()
+        actionable, box["state"] = _apply_snapshot(box, args, cur, now, advance_trajectory)
     return actionable
 
 
@@ -1025,6 +1044,17 @@ def _emit_wake(reason, **fields):
     print(json.dumps({"event": "BABYSIT_WAKE", "reason": reason, **fields}), flush=True)
 
 
+def _persisted_watch_generation(args):
+    """Best-effort read of current ownership without creating or mutating watch state."""
+    try:
+        with open(os.path.join(args.state_dir, "state.json")) as f:
+            state = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return None
+    generation = state.get("watch_generation") if isinstance(state, dict) else None
+    return generation if isinstance(generation, str) and generation else None
+
+
 def _blocker_sig(a):
     """Identity of blockers the agent surfaces once but cannot self-clear — parked needs-human
     items, a dispatched terminally-red check, and a fork workflow awaiting maintainer approval. The
@@ -1047,6 +1077,130 @@ def _blocker_sig(a):
     return frozenset(sig)
 
 
+def _process_identity(pid):
+    """Best-effort PID-reuse guard for replacing a prior watcher. If process identity cannot be
+    proven, generation invalidation still suppresses its wake and we leave OS cleanup alone."""
+    r = subprocess.run(["ps", "-p", str(pid), "-o", "lstart=", "-o", "command="],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        return None
+    return (r.stdout or "").strip() or None
+
+
+@contextmanager
+def _watch_lock(state_dir, exclusive):
+    import fcntl
+    os.makedirs(state_dir, exist_ok=True)
+    with open(os.path.join(state_dir, "lock"), "w") as lf:
+        fcntl.flock(lf, fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH)
+        try:
+            yield
+        finally:
+            fcntl.flock(lf, fcntl.LOCK_UN)
+
+
+def _watch_candidate_path(args):
+    return os.path.join(args.state_dir, "watch-candidate.json")
+
+
+def _read_watch_candidate(args):
+    try:
+        with open(_watch_candidate_path(args)) as f:
+            candidate = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+    return candidate if isinstance(candidate, dict) else {}
+
+
+def _reserve_watch_candidate(args, generation):
+    """Make this invocation the newest candidate without displacing the active watcher."""
+    candidate = {
+        "generation": generation,
+        "pid": os.getpid(),
+        "process_identity": _process_identity(os.getpid()),
+    }
+    with _watch_lock(args.state_dir, exclusive=True):
+        previous = _read_watch_candidate(args)
+        tmp = tempfile.NamedTemporaryFile("w", dir=args.state_dir, delete=False)
+        json.dump(candidate, tmp)
+        tmp.flush()
+        os.fsync(tmp.fileno())
+        tmp.close()
+        os.replace(tmp.name, _watch_candidate_path(args))
+    return previous
+
+
+def _clear_watch_candidate(args, generation):
+    with _watch_lock(args.state_dir, exclusive=True):
+        if _read_watch_candidate(args).get("generation") != generation:
+            return
+        try:
+            os.unlink(_watch_candidate_path(args))
+        except FileNotFoundError:
+            pass
+
+
+def _activate_watch(args, generation, now, cur):
+    """Atomically activate this watcher and persist its successfully fetched preflight."""
+    identity = _process_identity(os.getpid())
+    with locked_state(args.state_dir, args.pr, args.repo, now) as box:
+        if _read_watch_candidate(args).get("generation") != generation:
+            return None, None
+        state = box["state"]
+        previous = {
+            "pid": state.get("watch_pid"),
+            "process_identity": state.get("watch_process_identity"),
+        }
+        state["watch_generation"] = generation
+        state["watch_pid"] = os.getpid()
+        state["watch_process_identity"] = identity
+        actionable, box["state"] = _apply_snapshot(box, args, cur, now, advance_trajectory=False)
+        try:
+            os.unlink(_watch_candidate_path(args))
+        except FileNotFoundError:
+            pass
+    return previous, actionable
+
+
+def _watch_is_current(args, generation):
+    """Read the ownership generation under the state lock without rewriting state.json."""
+    state_path = os.path.join(args.state_dir, "state.json")
+    with _watch_lock(args.state_dir, exclusive=False):
+        if not os.path.exists(state_path):
+            return False
+        with open(state_path) as f:
+            return json.load(f).get("watch_generation") == generation
+
+
+def _emit_wake_if_current(args, generation, reason, **fields):
+    """Serialize the final ownership check with takeover so an old generation cannot emit after
+    the new generation has become current. A wake emitted just before takeover is valid at emission
+    and will be recognized as stale against the next fresh snapshot."""
+    state_path = os.path.join(args.state_dir, "state.json")
+    with _watch_lock(args.state_dir, exclusive=False):
+        if not os.path.exists(state_path):
+            return False
+        with open(state_path) as f:
+            if json.load(f).get("watch_generation") != generation:
+                return False
+        _emit_wake(reason, watch_generation=generation, **fields)
+        return True
+
+
+def _terminate_replaced_watch(previous):
+    """Promptly stop the replaced process, but never signal a PID whose identity no longer matches."""
+    pid = previous.get("pid")
+    identity = previous.get("process_identity")
+    if not isinstance(pid, int) or pid == os.getpid() or not identity:
+        return
+    if _process_identity(pid) != identity:
+        return
+    try:
+        os.kill(pid, signal.SIGTERM)
+    except ProcessLookupError:
+        pass
+
+
 def cmd_watch(args):
     """Deterministic background change-detector (no agent tokens between changes): poll on an
     interval, print one wake sentinel line and exit when there is something for the agent to do
@@ -1054,28 +1208,86 @@ def cmd_watch(args):
     A residual already present at arm time (a parked needs-human, or a dispatched terminal-red the
     agent already handed back) does NOT re-wake the loop — it keeps watching the other streams;
     only a *new* blocker (signature grown past the baseline) wakes."""
-    armed = None  # baseline blocker signature captured on the first poll (already-surfaced residuals)
-    while True:
-        if args.stop_file and os.path.exists(args.stop_file):
-            _emit_wake("stop-signal")
+    stop_requested = threading.Event()
+    interrupt_immediately = True
+    superseded = False
+    generation = uuid.uuid4().hex
+
+    # An already-requested stop is authoritative before this invocation becomes a candidate. Use
+    # current ownership for the wake when one exists, but do not fetch, reserve, mutate watch state,
+    # or disturb that incumbent merely to report the stop condition.
+    if args.stop_file and os.path.exists(args.stop_file):
+        _emit_wake("stop-signal", watch_generation=_persisted_watch_generation(args) or generation)
+        return
+
+    def request_stop(_signum, _frame):
+        nonlocal superseded
+        superseded = True
+        stop_requested.set()
+        if interrupt_immediately:
+            raise _WatchSuperseded()
+
+    prior_sigterm = signal.getsignal(signal.SIGTERM)
+    signal.signal(signal.SIGTERM, request_stop)
+    try:
+        previous_candidate = _reserve_watch_candidate(args, generation)
+        _terminate_replaced_watch(previous_candidate)
+
+        # Preflight before takeover: an invalid fetch/auth/config must not displace a healthy watcher.
+        cur = _fetch_snapshot(args)
+        if stop_requested.is_set():
             return
-        actionable = _run_snapshot(args, _now(), advance_trajectory=False)  # a poll must not roll the trajectory
-        # `watch --reset-session` is a compatibility route for a direct fresh arm. It resets only
-        # the first poll; leaving the flag set would renew started_at forever and defeat max-runtime.
+
+        # Finish the handoff even if an even newer watcher arrives: otherwise that watcher could
+        # stop us between activation and terminating our predecessor, orphaning the oldest process.
+        interrupt_immediately = False
+        previous, actionable = _activate_watch(args, generation, _now(), cur)
+        if previous is None:
+            superseded = True
+            return
         args.reset_session = False
-        if armed is None:
-            armed = _blocker_sig(actionable)
-        reason = _wake_reason(actionable, args.settle_seconds)
-        if reason in ("needs-human", "blocked-failing", "blocked-external", "stack-blocked") and _blocker_sig(actionable) <= armed:
-            reason = None   # already-surfaced residual — keep watching, do not re-wake or terminate
-        if reason:
-            _emit_wake(reason, url=actionable.get("url"),
-                       pr_state=actionable.get("pr_state"), counts=actionable.get("counts"))
+        _terminate_replaced_watch(previous)
+        interrupt_immediately = True
+        if stop_requested.is_set():
             return
-        if args.max_runtime and actionable.get("session_seconds", 0) >= args.max_runtime:
-            _emit_wake("max-runtime", url=actionable.get("url"))
-            return
-        time.sleep(args.interval)
+
+        armed = _blocker_sig(actionable)  # blockers already surfaced when this generation armed
+        while True:
+            if stop_requested.is_set():
+                return
+            if not _watch_is_current(args, generation):
+                superseded = True
+                return
+            if args.stop_file and os.path.exists(args.stop_file):
+                _emit_wake_if_current(args, generation, "stop-signal")
+                return
+            reason = _wake_reason(actionable, args.settle_seconds)
+            if reason in ("needs-human", "blocked-failing", "blocked-external", "stack-blocked") and _blocker_sig(actionable) <= armed:
+                reason = None   # already-surfaced residual — keep watching, do not re-wake or terminate
+            if reason:
+                _emit_wake_if_current(args, generation, reason, url=actionable.get("url"),
+                                      pr_state=actionable.get("pr_state"), counts=actionable.get("counts"))
+                return
+            if args.max_runtime and actionable.get("session_seconds", 0) >= args.max_runtime:
+                _emit_wake_if_current(args, generation, "max-runtime", url=actionable.get("url"))
+                return
+            if stop_requested.wait(args.interval):
+                return
+            if not _watch_is_current(args, generation):
+                superseded = True
+                return
+            actionable = _run_snapshot(args, _now(), advance_trajectory=False,
+                                       watch_generation=generation)
+    except _WatchSuperseded:
+        superseded = True
+        return
+    finally:
+        interrupt_immediately = False
+        _clear_watch_candidate(args, generation)
+        # A newer owner can still signal our recorded PID after observing us stale but before this
+        # process has exited. Keep that late takeover signal harmless; ordinary wake/timeout/stop
+        # returns restore the embedding caller's handler as before.
+        signal.signal(signal.SIGTERM, signal.SIG_IGN if superseded else prior_sigterm)
 
 
 def _mark_thread_baseline(item_id, args, state):

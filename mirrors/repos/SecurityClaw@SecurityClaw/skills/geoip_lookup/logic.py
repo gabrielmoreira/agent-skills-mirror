@@ -1,7 +1,7 @@
 """
 skills/geoip_lookup/logic.py
 
-Minimal MaxMind GeoIP maintenance + lookup skill.
+GeoIP lookup skill with local MaxMind and IPinfo Lite providers.
 
 Behavior:
 - On first use, download the configured GeoLite2 MMDB if it is missing.
@@ -33,6 +33,7 @@ ROOT_DIR = Path(__file__).parents[2]
 DEFAULT_DB_PATH = ROOT_DIR / "data" / "geoip" / "GeoLite2-City.mmdb"
 # Use official MaxMind download API endpoint
 DEFAULT_DOWNLOAD_URL = "https://download.maxmind.com/app/geoip_download"
+DEFAULT_IPINFO_URL = "https://api.ipinfo.io/lite"
 # Alternative endpoint: https://updates.maxmind.com
 IP_PATTERN = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
 
@@ -58,6 +59,8 @@ def _settings_from_config(cfg: Any) -> dict[str, Any]:
         "db_path": db_path,
         "edition_id": _cfg_get(cfg, "geoip", "edition_id", default="GeoLite2-City"),
         "license_key": _cfg_get(cfg, "geoip", "license_key", default=os.getenv("MAXMIND_LICENSE_KEY")),
+        "ipinfo_token": _cfg_get(cfg, "geoip", "ipinfo_token", default=os.getenv("IPINFO_TOKEN")),
+        "ipinfo_url": _cfg_get(cfg, "geoip", "ipinfo_url", default=DEFAULT_IPINFO_URL),
         "download_url": _cfg_get(cfg, "geoip", "download_url", default=DEFAULT_DOWNLOAD_URL),
         "update_interval_days": int(_cfg_get(cfg, "geoip", "update_interval_days", default=7) or 7),
         "timeout_seconds": int(_cfg_get(cfg, "geoip", "timeout_seconds", default=60) or 60),
@@ -249,6 +252,40 @@ def _lookup_ip(db_path: Path, ip: str) -> dict[str, Any]:
     return {"status": "ok", "ip": ip, "geo": geo}
 
 
+def _lookup_ipinfo(settings: dict[str, Any], ip: str) -> dict[str, Any]:
+    """Resolve country/continent/ASN data through the IPinfo Lite API."""
+    token = settings.get("ipinfo_token")
+    if not token:
+        raise ValueError("IPINFO_TOKEN is required for the IPinfo provider")
+
+    response = requests.get(
+        f"{str(settings['ipinfo_url']).rstrip('/')}/{ip}",
+        headers={"Authorization": f"Bearer {token}"},
+        timeout=settings["timeout_seconds"],
+    )
+    response.raise_for_status()
+    payload = response.json()
+    geo = {
+        "continent": payload.get("continent"),
+        "continent_code": payload.get("continent_code"),
+        "country": payload.get("country"),
+        "country_iso_code": payload.get("country_code"),
+        "registered_country": None,
+        "subdivision": None,
+        "subdivision_iso_code": None,
+        "city": None,
+        "postal_code": None,
+        "timezone": None,
+        "latitude": None,
+        "longitude": None,
+        "accuracy_radius": None,
+        "asn": payload.get("asn"),
+        "as_name": payload.get("as_name"),
+        "as_domain": payload.get("as_domain"),
+    }
+    return {"status": "ok", "ip": ip, "provider": "ipinfo_lite", "geo": geo}
+
+
 def run(context: dict) -> dict:
     parameters = context.get("parameters", {}) or {}
     cfg = context.get("config")
@@ -259,11 +296,25 @@ def run(context: dict) -> dict:
 
     settings = _settings_from_config(cfg)
 
-    try:
-        maintenance = _ensure_database(settings, force_update=force_update)
-    except Exception as exc:
-        logger.error("[%s] Failed to ensure GeoIP DB: %s", SKILL_NAME, exc)
-        return {"status": "error", "error": str(exc), "checked_at": checked_at}
+    use_maxmind = settings["db_path"].exists() or bool(settings.get("license_key"))
+    if use_maxmind:
+        try:
+            maintenance = _ensure_database(settings, force_update=force_update)
+        except Exception as exc:
+            logger.error("[%s] Failed to ensure GeoIP DB: %s", SKILL_NAME, exc)
+            return {"status": "error", "error": str(exc), "checked_at": checked_at}
+        lookup_fn = lambda ip: _lookup_ip(settings["db_path"], ip)
+        provider = "maxmind"
+    elif settings.get("ipinfo_token"):
+        maintenance = {"action": "remote", "db_path": None}
+        lookup_fn = lambda ip: _lookup_ipinfo(settings, ip)
+        provider = "ipinfo_lite"
+    else:
+        return {
+            "status": "error",
+            "error": "Configure MAXMIND_LICENSE_KEY or IPINFO_TOKEN for GeoIP lookups",
+            "checked_at": checked_at,
+        }
 
     ips = _extract_ips(parameters, previous_results=previous_results)
     result = {
@@ -271,6 +322,7 @@ def run(context: dict) -> dict:
         "action": maintenance.get("action", "ready"),
         "db_path": maintenance.get("db_path", str(settings["db_path"])),
         "checked_at": checked_at,
+        "provider": provider,
     }
     if maintenance.get("warning"):
         result["warning"] = maintenance["warning"]
@@ -278,7 +330,7 @@ def run(context: dict) -> dict:
     if len(ips) == 1:
         ip = ips[0]
         try:
-            lookup = _lookup_ip(settings["db_path"], ip)
+            lookup = lookup_fn(ip)
             result.update(lookup)
         except Exception as exc:
             logger.error("[%s] GeoIP lookup failed for %s: %s", SKILL_NAME, ip, exc)
@@ -287,7 +339,7 @@ def run(context: dict) -> dict:
         lookups: list[dict[str, Any]] = []
         for ip in ips[:25]:
             try:
-                lookup = _lookup_ip(settings["db_path"], ip)
+                lookup = lookup_fn(ip)
             except Exception as exc:
                 logger.error("[%s] GeoIP lookup failed for %s: %s", SKILL_NAME, ip, exc)
                 lookup = {"status": "error", "ip": ip, "error": str(exc)}

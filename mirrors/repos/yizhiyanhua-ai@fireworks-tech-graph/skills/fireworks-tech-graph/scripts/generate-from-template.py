@@ -22,17 +22,17 @@ import os
 import re
 import sys
 from dataclasses import dataclass
-from typing import Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
+from typing import Dict, List, Mapping, Optional, Sequence, Tuple
 from xml.sax.saxutils import escape
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 if SCRIPT_DIR not in sys.path:
     sys.path.insert(0, SCRIPT_DIR)
 
-import fireworks_geometry as geometry
-import composition_quality as quality
-from diagram_ir import normalize_diagram
-from semantic_contracts import STYLE_NAMES, resolve_style_index
+import fireworks_geometry as geometry  # noqa: E402
+import composition_quality as quality  # noqa: E402
+from diagram_ir import normalize_diagram  # noqa: E402
+from semantic_contracts import STYLE_NAMES, resolve_style_index  # noqa: E402
 
 Point = Tuple[float, float]
 Bounds = Tuple[float, float, float, float]
@@ -311,7 +311,7 @@ STYLE_PROFILES: Dict[int, Dict[str, object]] = {
             "read": "#8c6f5a",
             "data": "#b45309",
             "async": "#9a6fb0",
-            "feedback": "#d97757",
+            "feedback": "#7c5c96",
             "neutral": "#8f8a80",
         },
         "arrow_label_bg": "#f8f6f3",
@@ -352,7 +352,7 @@ STYLE_PROFILES: Dict[int, Dict[str, object]] = {
             "read": "#0891b2",
             "data": "#f59e0b",
             "async": "#64748b",
-            "feedback": "#10a37f",
+            "feedback": "#475569",
             "neutral": "#94a3b8",
         },
         "arrow_label_bg": "#ffffff",
@@ -901,7 +901,7 @@ def render_style_signature(style_index: int, data: Dict[str, object], width: flo
         state_text, state_size = fit_single_line_text(state, badge_width - 46, preferred=8, minimum=6.2)
         return "\n".join(
             [
-                f'  <g id="style-signature" data-graph-role="decoration" data-style-signature="c4-review-board">',
+            '  <g id="style-signature" data-graph-role="decoration" data-style-signature="c4-review-board">',
                 f'    <rect x="{x}" y="{y}" width="{badge_width}" height="{badge_height}" rx="7" fill="#fffdf7" stroke="#8c7d68" stroke-width="1.2" stroke-dasharray="6 4"/>',
                 f'    <path d="M {x + 12} {y + 17} l 5 5 9 -11" fill="none" stroke="#365f56" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
                 f'    <text data-full-text="{normalize_attribute(top_raw)}" x="{x + 34}" y="{y + 14}" font-size="{top_size}" font-weight="800" fill="#8a6f43">{normalize_text(top_text)}</text>',
@@ -922,7 +922,7 @@ def render_style_signature(style_index: int, data: Dict[str, object], width: flo
         mode_text, mode_size = fit_single_line_text(mode, badge_width - 55, preferred=8, minimum=6.2)
         return "\n".join(
             [
-                f'  <g id="style-signature" data-graph-role="decoration" data-style-signature="cloud-ownership-map">',
+            '  <g id="style-signature" data-graph-role="decoration" data-style-signature="cloud-ownership-map">',
                 f'    <rect x="{x}" y="{y}" width="{badge_width}" height="{badge_height}" rx="9" fill="#ffffff" fill-opacity="0.82" stroke="#7fa3c2" stroke-width="1.1"/>',
                 f'    <rect x="{x + 11}" y="{y + 9}" width="14" height="14" rx="4" fill="#dbeafe" stroke="#2563eb" stroke-width="1"/>',
                 f'    <rect x="{x + 20}" y="{y + 13}" width="14" height="14" rx="4" fill="#dcfce7" stroke="#059669" stroke-width="1"/>',
@@ -946,7 +946,7 @@ def render_style_signature(style_index: int, data: Dict[str, object], width: flo
         )
         return "\n".join(
             [
-                f'  <g id="style-signature" data-graph-role="decoration" data-style-signature="event-metro-map">',
+            '  <g id="style-signature" data-graph-role="decoration" data-style-signature="event-metro-map">',
                 f'    <rect x="{signature_x}" y="{y}" width="{signature_width}" height="{badge_height}" rx="7" fill="#17213c" stroke="#514c43" stroke-width="1"/>',
                 f'    <line x1="{signature_x + 12}" y1="{y + 17}" x2="{signature_x + 36}" y2="{y + 17}" stroke="#e4475b" stroke-width="3"/>',
                 f'    <circle cx="{signature_x + 18}" cy="{y + 17}" r="4" fill="#fbf7ee" stroke="#e4475b" stroke-width="2"/>',
@@ -984,7 +984,7 @@ def render_style_signature(style_index: int, data: Dict[str, object], width: flo
     detail_text, detail_size = fit_single_line_text(detail_raw, badge_width - 70, preferred=8, minimum=6.2)
     return "\n".join(
         [
-            f'  <g id="style-signature" data-graph-role="decoration" data-style-signature="ops-live-investigation">',
+            '  <g id="style-signature" data-graph-role="decoration" data-style-signature="ops-live-investigation">',
             f'    <rect x="{x}" y="{y}" width="{badge_width}" height="{badge_height}" rx="7" fill="#0d1b2a" stroke="#29435d" stroke-width="1.1"/>',
             f'    <circle cx="{x + 15}" cy="{y + 17}" r="4" fill="{status_color}"/>',
             f'    <path d="M {x + 25} {y + 18} h 5 l 3 -6 5 12 4 -8 h 7" fill="none" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>',
@@ -2797,11 +2797,23 @@ def render_arrow(
     via = str(arrow.get("via", ""))
     critical_path_id = str(arrow.get("critical_path_id", ""))
     critical = "true" if arrow.get("critical") else "false"
+    flow = str(arrow.get("flow", ""))
+    motion_role = str(arrow.get("motion_role", ""))
+    motion_stage = str(arrow.get("motion_stage", ""))
+    motion_order = str(arrow.get("motion_order", ""))
+    critical_hop = str(arrow.get("critical_hop", ""))
+    critical_hops = str(arrow.get("critical_hops", ""))
     shared_attributes = (
         f'data-edge-id="{normalize_attribute(edge_id)}" data-source="{source_id}" data-target="{target_id}" '
         f'data-edge-kind="{normalize_attribute(edge_kind)}" data-topic-id="{normalize_attribute(topic_id)}" '
+        f'data-flow="{normalize_attribute(flow)}" '
+        f'data-motion-role="{normalize_attribute(motion_role)}" '
+        f'data-motion-stage="{normalize_attribute(motion_stage)}" '
+        f'data-motion-order="{normalize_attribute(motion_order)}" '
         f'data-protocol="{normalize_attribute(protocol)}" data-via="{normalize_attribute(via)}" '
         f'data-critical-path-id="{normalize_attribute(critical_path_id)}" '
+        f'data-critical-hop="{normalize_attribute(critical_hop)}" '
+        f'data-critical-hops="{normalize_attribute(critical_hops)}" '
         f'data-critical="{critical}" data-bends="{bends}" data-route-stretch="{round(stretch, 3)}"'
     )
     rendered_paths: List[str] = []
@@ -2936,7 +2948,7 @@ def render_legend(
         return ""
     legend_x, legend_y, bounds = layout
     lines = [
-        f'  <g id="legend" data-graph-role="legend">',
+        '  <g id="legend" data-graph-role="legend">',
         f'    <rect id="legend-zone" data-graph-role="reserved" data-reserved-kind="legend" '
         f'x="{geometry.format_number(bounds[0])}" y="{geometry.format_number(bounds[1])}" '
         f'width="{geometry.format_number(bounds[2] - bounds[0])}" height="{geometry.format_number(bounds[3] - bounds[1])}" '
@@ -3125,12 +3137,14 @@ def build_svg_with_report(template_type: str, data: Dict[str, object]) -> Tuple[
     visual_theme = STYLE_NAMES[style_index]
     semantic_profile = str(diagram.semantic_report.get("profile", "generic"))
     diagram_type = str(source_data.get("diagram_type", mode))
+    motion_scene = str(source_data.get("motion_scene", ""))
     lines = [
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {int(width)} {int(height)}" '
         f'width="{int(width)}" height="{int(height)}" data-generator="fireworks-tech-graph" '
         f'data-schema-version="1" data-text-metrics="heuristic-v1" '
         f'data-style-id="{style_index}" data-visual-theme="{normalize_attribute(visual_theme)}" '
         f'data-diagram-type="{normalize_attribute(diagram_type)}" '
+        f'data-motion-scene="{normalize_attribute(motion_scene)}" '
         f'data-semantic-profile="{normalize_attribute(semantic_profile)}" data-semantic-valid="true" '
         f'data-quality-profile="{normalize_attribute(composition_contract.profile)}" '
         f'data-max-bends-per-edge="{contract_data["max_bends_per_edge"]}" '
@@ -3192,10 +3206,18 @@ def build_svg_with_report(template_type: str, data: Dict[str, object]) -> Tuple[
             f'  <g id="{normalize_attribute(node_id)}" data-graph-role="node" '
             f'data-node-id="{normalize_attribute(node.node_id)}" '
             f'data-semantic-role="{normalize_attribute(semantic_role)}" '
+            f'data-motion-role="{normalize_attribute(node_data.get("motion_role", ""))}" '
+            f'data-motion-stage="{normalize_attribute(node_data.get("motion_stage", ""))}" '
+            f'data-motion-order="{normalize_attribute(node_data.get("motion_order", ""))}" '
             f'data-parent="{normalize_attribute(node_data.get("parent", ""))}" '
             f'data-deployment-id="{normalize_attribute(node_data.get("deployment_id", ""))}" '
             f'data-topic-id="{normalize_attribute(node_data.get("topic_id", ""))}" '
             f'data-span-id="{normalize_attribute(node_data.get("span_id", ""))}" '
+            f'data-station-order="{normalize_attribute(node_data.get("station_order", ""))}" '
+            f'data-status="{normalize_attribute(node_data.get("status", ""))}" '
+            f'data-start-ms="{normalize_attribute(node_data.get("start_ms", ""))}" '
+            f'data-duration-ms="{normalize_attribute(node_data.get("duration_ms", ""))}" '
+            f'data-parent-span="{normalize_attribute(node_data.get("parent_span", ""))}" '
             f'data-graph-bounds="{bounds_metadata(node.bounds)}">'
         )
         lines.append(render_node(node_data, style))

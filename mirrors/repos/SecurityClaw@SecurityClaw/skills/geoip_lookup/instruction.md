@@ -3,9 +3,8 @@
 schedule_cron_expr: "0 2 * * tue,fri"
 skill: geoip_lookup
 description: >
-  Maintains a local MaxMind GeoLite2-City database. On first activation it downloads
-  the MMDB file if missing, and every Tuesday/Friday it refreshes the file if it is 
-  older than the configured update interval (respecting MaxMind's official update schedule).
+  Resolves IP geolocation using a local MaxMind GeoLite2-City database when available,
+  with IPinfo Lite as a country, continent, and ASN fallback.
 ---
 
 # GeoIPLookup — Skill Instruction
@@ -18,7 +17,7 @@ Your responsibilities are intentionally narrow:
 1. Ensure the local MaxMind GeoLite2-City database exists.
 2. If the database file is missing on first use, download it using MaxMind's official API.
 3. On the GeoLite City update schedule (Tuesday/Friday), refresh if the DB is stale.
-4. If an IP address is supplied, return structured geolocation details from the local MMDB.
+4. If an IP address is supplied, prefer the local MMDB and otherwise use IPinfo Lite.
 5. Do not query OpenSearch or call the LLM for geolocation.
 
 ## Notes on MaxMind Updates
@@ -47,6 +46,8 @@ Read these values from config / env:
 - `geoip.download_url` → download endpoint
 - `geoip.timeout_seconds` → HTTP timeout
 - `geoip.license_key` or env `MAXMIND_LICENSE_KEY` → required for downloads
+- `geoip.ipinfo_token` or env `IPINFO_TOKEN` → optional IPinfo Lite fallback
+- `geoip.ipinfo_url` → IPinfo Lite endpoint
 
 ## Output Contract
 Return concise structured JSON only.
@@ -94,6 +95,7 @@ Return concise structured JSON only.
 ## Constraints
 - Keep logic minimal and deterministic.
 - Prefer local MMDB lookup over any external API.
+- IPinfo Lite only supplies country, continent, and ASN data; leave unsupported city-level fields empty.
 - Never re-download on every call; only download when missing or stale unless `force_update=true`.
-- If the DB is missing and no MaxMind license key is configured, return an actionable error.
+- If the DB and MaxMind key are unavailable, use IPinfo Lite when its token is configured.
 - Preserve the local DB path so scheduled runs and interactive runs use the same file.

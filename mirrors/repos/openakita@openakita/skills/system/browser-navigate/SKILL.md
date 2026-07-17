@@ -43,7 +43,7 @@ category: Browser
 
 ## Related Skills
 
-- `browser-status`: 检查浏览器状态
+- `browser-open`: 启动浏览器并检查状态
 - `browser-click`: 点击页面元素
 - `browser-type`: 在输入框输入文本
 
@@ -56,4 +56,3 @@ category: Browser
 ```python
 browser_task(task="打开百度搜索福建福州并截图")
 ```
-

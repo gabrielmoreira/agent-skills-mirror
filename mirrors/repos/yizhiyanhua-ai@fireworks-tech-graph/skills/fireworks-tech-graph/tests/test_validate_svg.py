@@ -134,6 +134,78 @@ class ValidateSvgTest(unittest.TestCase):
         self.assertFalse(ok)
         self.assertEqual(details, ["path#edge intersects rect#blocker"])
 
+    def test_multi_subpath_checks_drawn_segments_without_connecting_moves(self) -> None:
+        clear = self.write_svg(
+            '<rect id="blocker" x="180" y="90" width="40" height="60"/>'
+            '<path id="edge" data-graph-role="edge" d="M 20 40 H 100 M 300 180 H 380" '
+            'marker-end="url(#arrow-main)"/>'
+        )
+        colliding = self.write_svg(
+            '<rect id="blocker" x="180" y="90" width="40" height="60"/>'
+            '<path id="edge" data-graph-role="edge" d="M 20 40 H 100 M 160 120 H 240" '
+            'marker-end="url(#arrow-main)"/>'
+        )
+
+        self.assertTrue(validate_svg.run_check(clear, "collisions")[0])
+        self.assertTrue(validate_svg.run_check(clear, "geometry")[0])
+        self.assertTrue(validate_svg.run_check(clear, "composition")[0])
+        ok, details = validate_svg.run_check(colliding, "collisions")
+        self.assertFalse(ok)
+        self.assertEqual(details, ["path#edge intersects rect#blocker"])
+
+    def test_skew_transforms_are_applied_to_collision_geometry(self) -> None:
+        skew_x = self.write_svg(
+            '<rect id="blocker" x="160" y="90" width="60" height="50"/>'
+            '<g transform="skewX(45)">'
+            '<path id="edge" d="M 20 110 H 100" marker-end="url(#arrow-main)"/>'
+            '</g>'
+        )
+        skew_y = self.write_svg(
+            '<rect id="blocker" x="130" y="140" width="40" height="50"/>'
+            '<g transform="skewY(45)">'
+            '<path id="edge" d="M 110 20 H 180" marker-end="url(#arrow-main)"/>'
+            '</g>'
+        )
+
+        self.assertFalse(validate_svg.run_check(skew_x, "collisions")[0])
+        self.assertFalse(validate_svg.run_check(skew_y, "collisions")[0])
+
+    def test_negative_skew_uses_all_corners_for_strict_node_and_label_bounds(self) -> None:
+        skewed_node = self.write_svg(
+            '<g transform="skewX(-45)">'
+            '<rect id="node" data-graph-role="node" x="150" y="50" width="100" height="50"/>'
+            '</g>'
+            '<path id="edge" data-graph-role="edge" d="M 60 75 H 90" '
+            'marker-end="url(#arrow-main)"/>'
+        )
+        skewed_label = self.write_svg(
+            '<g transform="skewX(-45)">'
+            '<text id="label" data-graph-role="label" data-owner="other" '
+            'x="150" y="100" font-size="20">LABEL</text>'
+            '</g>'
+            '<path id="edge" data-graph-role="edge" d="M 50 94 H 65" '
+            'marker-end="url(#arrow-main)"/>'
+        )
+
+        node_ok, node_details = validate_svg.run_check(skewed_node, "geometry")
+        label_ok, label_details = validate_svg.run_check(skewed_label, "geometry")
+
+        self.assertFalse(node_ok)
+        self.assertIn("edge_node: path#edge intersects rect#node", node_details)
+        self.assertFalse(label_ok)
+        self.assertIn("label_edge: text#label intersects path#edge", label_details)
+
+    def test_multi_subpath_bridge_budget_counts_each_declared_bridge_once(self) -> None:
+        path = self.write_svg(
+            '<path id="edge" data-graph-role="edge" data-bridges="200,120" '
+            'd="M 20 40 H 100 M 300 180 H 380" marker-end="url(#arrow-main)"/>',
+            'data-quality-profile="standard" data-max-bridged-crossings="1"',
+        )
+
+        ok, details = validate_svg.run_check(path, "composition")
+
+        self.assertTrue(ok, details)
+
     def test_showcase_composition_rejects_more_than_two_bends(self) -> None:
         path = self.write_svg(
             '<path id="zigzag" data-graph-role="edge" d="M 20 20 H 80 V 60 H 140 V 120" '

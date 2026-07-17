@@ -9,13 +9,13 @@
 > First want to understand "why does one agent live in a terminal, another in Telegram, another on a Jetson board?" mental model → see [`resources/agent-paradigms.en.md`](agent-paradigms.en.md) (5 agent paradigms).
 > Already using one, want to decide / compare / upgrade → stay here.
 
-A cross-branch reference shared by Track A (A1-A3) + all 5 specialized branches: **how to choose between Claude Code / Codex / OpenCode / Gemini CLI / goose / Aider / Hermes Agent?** Every branch references CLI agents but no single branch "owns" this comparison, so it lives in `resources/`.
+A cross-branch reference shared by Track A (A1-A3) + all 5 specialized branches: **how to choose between Claude Code / Codex / OpenCode / Gemini CLI / goose / Aider / Hermes Agent / Grok Build?** Every branch references CLI agents but no single branch "owns" this comparison, so it lives in `resources/`.
 
 ---
 
-## 📋 7 Major Terminal CLI Agents
+## 📋 8 Major Terminal CLI Agents
 
-Only terminal-based CLI agents are included. IDE-based agents (Cursor / Cline / Continue) live in [for-developer](../branches/for-developer.en.md). The first 6 numbers verified via `gh api` on 2026-05-06; Hermes Agent verified on 2026-05-10.
+Only terminal-based CLI agents are included. IDE-based agents (Cursor / Cline / Continue) live in [for-developer](../branches/for-developer.en.md). The first 6 numbers verified via `gh api` on 2026-05-06; Hermes Agent verified on 2026-05-10; Grok Build verified on 2026-07-16 (⚠️ open-sourced 2026-07-14, very new; numbers and features are still moving fast).
 
 | Tool | Provider | License | Primary LLM | Auth / Pricing | Stars |
 |---|---|---|---|---|---|
@@ -26,6 +26,7 @@ Only terminal-based CLI agents are included. IDE-based agents (Cursor / Cline / 
 | [goose](https://github.com/block/goose) | Agentic AI Foundation (repo now at `aaif-goose/goose`) | Apache-2.0 | 15+ providers (incl. Ollama) | BYO API key, or existing Claude / ChatGPT / Gemini subscription via ACP | ★ 47k+ |
 | [Aider](https://github.com/Aider-AI/aider) | Aider-AI (community) | Apache-2.0 | Any | BYO API key | ★ 44k+ |
 | [Hermes Agent](https://github.com/NousResearch/hermes-agent) | Nous Research | MIT | 200+ via OpenRouter / NVIDIA NIM / Zhipu GLM / Kimi / Xiaomi MiMo / MiniMax / HF / OpenAI | BYO API key (multi-provider) | ★ 213k+ |
+| [Grok Build](https://github.com/xai-org/grok-build) | SpaceXAI (xAI, official) | Apache-2.0 | Grok | Browser sign-in on first launch | ★ 10k+ |
 
 ---
 

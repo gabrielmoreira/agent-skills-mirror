@@ -1,8 +1,8 @@
 ---
 name: openloomi-connectors
-description: "openloomi Connectors tools - manage platform integrations (OAuth connections, list accounts, check status). Triggers: connect platform, integration status, list accounts, disconnect"
+description: "openloomi Connectors tools - manage platform integrations (OAuth connections, list accounts, check status). Triggers: connect platform, integration status, list accounts, disconnect. Pair with the composio skill to also list composio-linked accounts."
 metadata:
-  version: 0.7.7
+  version: 0.7.9
 allowed-tools: Bash(node $SKILL_DIR/scripts/openloomi-connectors.cjs *)
 ---
 
@@ -11,6 +11,8 @@ allowed-tools: Bash(node $SKILL_DIR/scripts/openloomi-connectors.cjs *)
 # OpenLoomi Connectors Skill
 
 OpenLoomi Connectors provides access to 26 messaging and productivity platform integrations. It allows AI agents to manage OAuth connections, list connected accounts, check connection status, and disconnect platforms on behalf of the user.
+
+> **Pairing with the `composio` skill:** This skill covers openloomi's **native 26 integrations** listed below. For accounts connected through **Composio** (a broader 1000+ apps surface — e.g. X, LinkedIn, Notion, HubSpot, Linear, Jira, etc.), invoke the `composio` skill in parallel: use the `composio-cli` to list connections, or call `mcp__composio__COMPOSIO_MANAGE_CONNECTIONS` with `action: "list"`. When the user asks "what am I connected to?" or "list my accounts", run both — `list-accounts` here **and** the composio connection listing — and present the union. Keep auth, OAuth, and disconnect flows native to each skill.
 
 ---
 
@@ -159,8 +161,6 @@ Exchange OAuth code for Discord access.
 
 | Platform | Endpoint |
 |----------|----------|
-| GitHub | `GET /api/auth/callback/github` |
-| Google | `GET /api/auth/callback/google` |
 | Feishu | `POST /api/feishu/listener/init` |
 | DingTalk | `POST /api/dingtalk/listener/init` |
 | QQ Bot | `POST /api/qqbot/listener/init` |
@@ -317,6 +317,11 @@ node $SKILL_DIR/scripts/openloomi-connectors.cjs list-platforms
 # List all connected accounts (includes botId for send-reply)
 node $SKILL_DIR/scripts/openloomi-connectors.cjs list-accounts
 
+# Cross-source audit: openloomi-native + composio-linked accounts (run together, present union)
+node $SKILL_DIR/scripts/openloomi-connectors.cjs list-accounts
+# In parallel, invoke the `composio` skill (e.g. `composio list-connections` via composio-cli,
+# or `mcp__composio__COMPOSIO_MANAGE_CONNECTIONS` with action: "list")
+
 # Check connection status for a platform
 node $SKILL_DIR/scripts/openloomi-connectors.cjs status telegram
 
@@ -367,6 +372,7 @@ node $SKILL_DIR/scripts/openloomi-connectors.cjs send-reply --botId=bot_xxx --re
 4. Disconnecting - "disconnect my discord", "remove whatsapp"
 5. Querying contacts - "show my contacts", "find John in contacts"
 6. Sending messages - "send email to John", "reply to that message"
+7. Cross-source account audit - "show everything I'm connected to (openloomi + composio)", "list all linked accounts across both" → run `list-accounts` here **and** the `composio` skill in parallel, then present the union
 
 **Execution Flow:**
 

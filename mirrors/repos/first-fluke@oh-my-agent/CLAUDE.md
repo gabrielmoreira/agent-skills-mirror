@@ -106,5 +106,6 @@ When touching install/update/uninstall code, read `web/docs/guide/global-install
 - `bun run test` runs CLI tests (vitest).
 - `bun run lint` runs the linter.
 - `bun run build` builds the CLI.
+- **When manually exercising the CLI, always run the LOCAL code**: `bun cli/cli.ts <args>` (source) or `node cli/bin/cli.js <args>` (fresh build after `bun run build`). Never use `bun run oma` or bare `oma` — the repo root has no workspace bin link, so both silently fall back to the globally installed (likely stale) oma on PATH, and you end up debugging against the wrong version.
 - commitlint: conventional commits required (build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test)
 - Commit Co-Author: `First Fluke <our.first.fluke@gmail.com>`

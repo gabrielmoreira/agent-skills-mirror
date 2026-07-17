@@ -4,6 +4,22 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.212](https://github.com/Piebald-AI/claude-code-system-prompts/commit/1247a27)
+
+_+1,066 tokens_
+
+- **NEW:** Agent Prompt: /code-review workflow routing — Routes eligible reviews through the background workflow at the requested effort, forwards additional review instructions, and handles verified findings, optional GitHub comments or fixes, and artifact publishing after completion.
+- **NEW:** System Prompt: Persistent memory usage and writing guidance — Adds cross-session file-memory rules for validating recalled knowledge, keeping memories applicable, durable, and legible, and immediately recording durable user corrections or newly learned environment behavior.
+- **NEW:** Tool Description: Artifact publishing and update guidance — Splits Artifact redeployment, lookup, ownership, content-safety, self-containment, responsive design, theme, favicon, and anti-impersonation requirements into a dedicated prompt while retaining them outside the core Artifact description.
+- **NEW:** Tool Description: SendFeedback drafting guidance — Adds silent local drafting of factual Claude Code feedback after product failures, explicit frustration, or blocking capability gaps, with approval, privacy, sourcing, and deduplication constraints.
+- **REMOVED:** Agent Prompt: Context tip selector; Agent Prompt: Context tip reception evaluator; Data: Context tip situation — manual polling; Data: Context tip situation — persistent memory; and Data: Context tip situation — subagent fan-out — Remove contextual tip selection and reception scoring plus triggers for `/loop`, persistent memory, and parallel subagent suggestions.
+- **REMOVED:** Agent Prompt: Session search — Removes the transcript-scanning subagent for finding and ranking past Claude Code session IDs.
+- **REMOVED:** Data: Doctor checkup suggestion trigger — Removes the contextual `/doctor` suggestion trigger for Claude Code installation, update, startup, settings, and setup-drift problems.
+- Agent Prompt: /code-review part 10 ReportFindings output format — Requires each reported finding to include a `short_summary` that compresses the claim to at most 60 characters without rationale or consequence clauses.
+- Agent Prompt: Dream memory consolidation and System Prompt: Dream CLAUDE.md memory reconciliation — Adapt memory consolidation for a variant without typed memories and clarify that CLAUDE.md reconciliation applies to memories capturing feedback or project conventions, using `feedback` and `project` tags where available.
+- Tool Description: Agent (usage notes) — Stops describing the `mode` parameter as unavailable to in-process subagents and teammates while retaining synchronous-only and no-teammate-spawning constraints.
+- Data: Plan artifact HTML template — Clarifies that the injected client-side `hljsHighlight.ts` runtime, rather than the build-time fill, emits syntax-highlighting spans.
+
 # [2.1.211](https://github.com/Piebald-AI/claude-code-system-prompts/commit/2c464fc)
 
 _+3,890 tokens_

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 10 followed patterns, 12 file(s) materialized.
+Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 12 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 10 follow
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 10 |
-| Files         | 12 |
+| Followed pats | 12 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,8 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 10 follow
 - `docs/shared-memory.md`
 - `docs/checkpoint.md`
 - `docs/observability.md`
+- `docs/observability-migration.md`
+- `docs/observability-performance.md`
 - `docs/cli.md`
 
 ## File Index
@@ -70,16 +72,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
-| 4 | → | [`docs/checkpoint.md`](docs/checkpoint.md) |
-| 5 | → | [`docs/cli.md`](docs/cli.md) |
-| 6 | → | [`docs/context-management.md`](docs/context-management.md) |
-| 7 | → | [`docs/external-agents.md`](docs/external-agents.md) |
-| 8 | → | [`docs/observability.md`](docs/observability.md) |
-| 9 | → | [`docs/providers.md`](docs/providers.md) |
-| 10 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
-| 11 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
-| 12 | → | [`packages/core/README.md`](packages/core/README.md) |
+| 3 | ✓ | [`docs/observability-release-readiness.md`](docs/observability-release-readiness.md) |
+| 4 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
+| 5 | → | [`docs/checkpoint.md`](docs/checkpoint.md) |
+| 6 | → | [`docs/cli.md`](docs/cli.md) |
+| 7 | → | [`docs/context-management.md`](docs/context-management.md) |
+| 8 | → | [`docs/external-agents.md`](docs/external-agents.md) |
+| 9 | → | [`docs/observability-migration.md`](docs/observability-migration.md) |
+| 10 | → | [`docs/observability-performance.md`](docs/observability-performance.md) |
+| 11 | → | [`docs/observability.md`](docs/observability.md) |
+| 12 | → | [`docs/providers.md`](docs/providers.md) |
+| 13 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
+| 14 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
+| 15 | → | [`packages/core/README.md`](packages/core/README.md) |
 
 ---
 

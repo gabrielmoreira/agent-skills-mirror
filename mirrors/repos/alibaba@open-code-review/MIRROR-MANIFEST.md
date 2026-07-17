@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `alibaba/open-code-review` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `alibaba/open-code-review` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `alibaba/open-code-review` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`plugins/open-code-review/skills/open-code-review/SKILL.md`](plugins/open-code-review/skills/open-code-review/SKILL.md) |
-| 2 | ✓ | [`skills/open-code-review/SKILL.md`](skills/open-code-review/SKILL.md) |
+| 1 | ✓ | [`plugins/open-code-review/skills/open-code-review-delegate/SKILL.md`](plugins/open-code-review/skills/open-code-review-delegate/SKILL.md) |
+| 2 | ✓ | [`plugins/open-code-review/skills/open-code-review/SKILL.md`](plugins/open-code-review/skills/open-code-review/SKILL.md) |
+| 3 | ✓ | [`skills/open-code-review-delegate/SKILL.md`](skills/open-code-review-delegate/SKILL.md) |
+| 4 | ✓ | [`skills/open-code-review/SKILL.md`](skills/open-code-review/SKILL.md) |
 
 ---
 

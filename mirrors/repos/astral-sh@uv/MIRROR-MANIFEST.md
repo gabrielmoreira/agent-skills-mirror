@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 18 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,24 +59,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`agents/codex/config.toml`](agents/codex/config.toml) |
-| 3 | ✓ | [`agents/hooks/post-edit-format.py`](agents/hooks/post-edit-format.py) |
-| 4 | ✓ | [`agents/hooks/post-edit-format.py.lock`](agents/hooks/post-edit-format.py.lock) |
-| 5 | ✓ | [`agents/hooks/session-start-web.sh`](agents/hooks/session-start-web.sh) |
-| 6 | ✓ | [`agents/hooks/session-start.sh`](agents/hooks/session-start.sh) |
-| 7 | ✓ | [`agents/prompts/editorialize-changelog.md`](agents/prompts/editorialize-changelog.md) |
-| 8 | ✓ | [`agents/prompts/pull-request-security-review.md`](agents/prompts/pull-request-security-review.md) |
-| 9 | ✓ | [`agents/prompts/reproduce-bug.md`](agents/prompts/reproduce-bug.md) |
-| 10 | ✓ | [`agents/prompts/triage-issue.md`](agents/prompts/triage-issue.md) |
-| 11 | ✓ | [`agents/references/threat-model.md`](agents/references/threat-model.md) |
-| 12 | ✓ | [`agents/schemas/issue-triage-bug.json`](agents/schemas/issue-triage-bug.json) |
-| 13 | ✓ | [`agents/schemas/issue-triage.json`](agents/schemas/issue-triage.json) |
-| 14 | ✓ | [`agents/schemas/pull-request-security-review.json`](agents/schemas/pull-request-security-review.json) |
-| 15 | ✓ | [`agents/scripts/agent-review-to-github-comments.py`](agents/scripts/agent-review-to-github-comments.py) |
-| 16 | ✓ | [`agents/scripts/agent-review-to-github-comments.py.lock`](agents/scripts/agent-review-to-github-comments.py.lock) |
-| 17 | ✓ | [`agents/scripts/install-codex-security.sh`](agents/scripts/install-codex-security.sh) |
-| 18 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`.codex/skills/load-github-action-thread/SKILL.md`](.codex/skills/load-github-action-thread/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`agents/codex/config.toml`](agents/codex/config.toml) |
+| 4 | ✓ | [`agents/hooks/post-edit-format.py`](agents/hooks/post-edit-format.py) |
+| 5 | ✓ | [`agents/hooks/post-edit-format.py.lock`](agents/hooks/post-edit-format.py.lock) |
+| 6 | ✓ | [`agents/hooks/session-start-web.sh`](agents/hooks/session-start-web.sh) |
+| 7 | ✓ | [`agents/hooks/session-start.sh`](agents/hooks/session-start.sh) |
+| 8 | ✓ | [`agents/prompts/editorialize-changelog.md`](agents/prompts/editorialize-changelog.md) |
+| 9 | ✓ | [`agents/prompts/pull-request-security-review.md`](agents/prompts/pull-request-security-review.md) |
+| 10 | ✓ | [`agents/prompts/reproduce-bug.md`](agents/prompts/reproduce-bug.md) |
+| 11 | ✓ | [`agents/prompts/triage-issue.md`](agents/prompts/triage-issue.md) |
+| 12 | ✓ | [`agents/references/threat-model.md`](agents/references/threat-model.md) |
+| 13 | ✓ | [`agents/schemas/issue-triage-bug.json`](agents/schemas/issue-triage-bug.json) |
+| 14 | ✓ | [`agents/schemas/issue-triage.json`](agents/schemas/issue-triage.json) |
+| 15 | ✓ | [`agents/schemas/pull-request-security-review.json`](agents/schemas/pull-request-security-review.json) |
+| 16 | ✓ | [`agents/scripts/agent-review-to-github-comments.py`](agents/scripts/agent-review-to-github-comments.py) |
+| 17 | ✓ | [`agents/scripts/agent-review-to-github-comments.py.lock`](agents/scripts/agent-review-to-github-comments.py.lock) |
+| 18 | ✓ | [`agents/scripts/install-codex-security.sh`](agents/scripts/install-codex-security.sh) |
+| 19 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

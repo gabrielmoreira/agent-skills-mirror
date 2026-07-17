@@ -36,7 +36,7 @@ Use this skill when the user:
 1. Identify the domain and the concrete task.
 2. On the phone agent, search for candidate skills only by running a terminal command.
 3. Use `terminal_execute` to run `npx skills find <query>`.
-4. Search with concrete keywords such as `react performance`, `playwright e2e`, `pr review`, `android automation`, or `changelog`.
+4. Search with concrete keywords such as `react performance`, `playwright e2e`, `pr review`, `android diagnostics`, or `changelog`.
 
 Do not use browser search, repository browsing, or `skills.sh` as the primary search path for the phone agent. Skill discovery on phone should happen through the command line with `npx skills find`.
 

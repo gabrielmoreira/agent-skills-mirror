@@ -5,6 +5,7 @@ subtitle: 'AI assistant by Anthropic for helpful, harmless, and honest conversat
 slug: 'claude'
 description: 'Claude is Anthropic''s AI assistant, known for being thoughtful, nuanced, and safe for sensitive tasks. It excels at long-form writing, detailed analysis, coding assistance, and reasoning through complex problems, with a famously large context window that can process entire books or codebases. Claude is available on the web, via API, and through enterprise integrations for teams.'
 website: 'https://claude.ai'
+company: 'anthropic'
 logo_url: ''
 category: 'chatbots'
 category_name: 'Chatbots'
@@ -12,7 +13,6 @@ price: 'Freemium'
 featured: false
 rank: 10
 date: '2025-09-21'
-tags: [chatbot, text_generation, ai_assistant, conversational, nlp, dialogue, llm, general_ai, question_answering, api_available, collaboration, enterprise]
 alternatives:
   - chatgpt
   - gemini
@@ -22,6 +22,7 @@ alternatives:
   - notebooklm
   - perplexity-search
   - claude-code
+tags: [chatbot, text_generation, ai_assistant, conversational, nlp, dialogue, llm, general_ai, question_answering, api_available, collaboration, enterprise]
 ---
 
 Claude is built by Anthropic, a safety-focused AI company co-founded by former OpenAI researchers. Where many AI assistants optimise for engagement, Claude is designed to be genuinely helpful without being agreeable to the point of dishonesty: it pushes back, admits uncertainty, and declines requests it considers harmful. That combination of directness and reliability has made it a favourite among people who use AI for serious work rather than casual queries.

@@ -22,11 +22,20 @@ rules. The shared runner remains a plain shell entrypoint that the skill calls.
 
 ## Install
 
+On Linux/macOS:
 ```bash
 git clone https://github.com/microsoft/SkillOpt.git
 cd SkillOpt
 bash plugins/codex/install.sh          # installs the skill
 export SKILLOPT_SLEEP_REPO="$(pwd)"    # so the runner is found from anywhere
+```
+
+On Windows (PowerShell):
+```powershell
+git clone <repo-url> SkillOpt-Sleep
+cd SkillOpt-Sleep
+powershell -File plugins/codex/install.ps1
+[System.Environment]::SetEnvironmentVariable("SKILLOPT_SLEEP_REPO", "$(pwd)", "User")
 ```
 
 If a previous install created `~/.codex/prompts/sleep.md`, the installer moves

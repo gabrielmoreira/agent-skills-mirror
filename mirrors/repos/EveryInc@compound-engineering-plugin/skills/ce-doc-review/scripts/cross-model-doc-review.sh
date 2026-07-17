@@ -744,10 +744,14 @@ run_provider() {   # <provider>
     # stdout (grok's 402) or stderr (claude/cursor auth/quota). Bash builtins only
     # (the route sandbox has no tail/tr); both are small on a failed route.
     if [ -s "$PEERLOG" ]; then
-      _pt="$(< "$PEERLOG")"; _pt="${_pt//$'\n'/ }"; log "  peer skip evidence: ${_pt: -300}"
+      _pt="$(< "$PEERLOG")"; _pt="${_pt//$'\n'/ }"
+      [ "${#_pt}" -gt 300 ] && _pt="${_pt: -300}"
+      log "  peer skip evidence: $_pt"
     fi
     if [ -s "$PEERERR" ]; then
-      _pe="$(< "$PEERERR")"; _pe="${_pe//$'\n'/ }"; log "  peer skip evidence (stderr): ${_pe: -300}"
+      _pe="$(< "$PEERERR")"; _pe="${_pe//$'\n'/ }"
+      [ "${#_pe}" -gt 300 ] && _pe="${_pe: -300}"
+      log "  peer skip evidence (stderr): $_pe"
     fi
     rm -f "$OUT" "$RAW_OUT"
   fi

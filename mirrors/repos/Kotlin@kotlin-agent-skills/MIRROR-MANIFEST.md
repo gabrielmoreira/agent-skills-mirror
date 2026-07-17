@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Kotlin/kotlin-agent-skills` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
+Mirror of `Kotlin/kotlin-agent-skills` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Kotlin/kotlin-agent-skills` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 34 |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -93,6 +93,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 32 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/frameworks/SPRING.md`](skills/kotlin-tooling-java-to-kotlin/references/frameworks/SPRING.md) |
 | 33 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/references/KNOWN-ISSUES.md`](skills/kotlin-tooling-java-to-kotlin/references/KNOWN-ISSUES.md) |
 | 34 | ✓ | [`skills/kotlin-tooling-java-to-kotlin/SKILL.md`](skills/kotlin-tooling-java-to-kotlin/SKILL.md) |
+| 35 | ✓ | [`skills/kotlin-tooling-native-build-performance/evals/EVALUATION.md`](skills/kotlin-tooling-native-build-performance/evals/EVALUATION.md) |
+| 36 | ✓ | [`skills/kotlin-tooling-native-build-performance/references/artifacts-and-targets.md`](skills/kotlin-tooling-native-build-performance/references/artifacts-and-targets.md) |
+| 37 | ✓ | [`skills/kotlin-tooling-native-build-performance/references/caching-and-gradle.md`](skills/kotlin-tooling-native-build-performance/references/caching-and-gradle.md) |
+| 38 | ✓ | [`skills/kotlin-tooling-native-build-performance/references/experimental.md`](skills/kotlin-tooling-native-build-performance/references/experimental.md) |
+| 39 | ✓ | [`skills/kotlin-tooling-native-build-performance/references/exports-and-generated-code.md`](skills/kotlin-tooling-native-build-performance/references/exports-and-generated-code.md) |
+| 40 | ✓ | [`skills/kotlin-tooling-native-build-performance/scripts/audit-native-build.sh`](skills/kotlin-tooling-native-build-performance/scripts/audit-native-build.sh) |
+| 41 | ✓ | [`skills/kotlin-tooling-native-build-performance/SKILL.md`](skills/kotlin-tooling-native-build-performance/SKILL.md) |
 
 ---
 

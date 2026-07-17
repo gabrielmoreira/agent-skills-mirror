@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `axoviq-ai/synthadoc` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `axoviq-ai/synthadoc` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `axoviq-ai/synthadoc` — 26 default patterns, 0 followed patterns, 15
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,10 +70,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`synthadoc/skills/markdown/SKILL.md`](synthadoc/skills/markdown/SKILL.md) |
 | 10 | ✓ | [`synthadoc/skills/pdf/SKILL.md`](synthadoc/skills/pdf/SKILL.md) |
 | 11 | ✓ | [`synthadoc/skills/pptx/SKILL.md`](synthadoc/skills/pptx/SKILL.md) |
-| 12 | ✓ | [`synthadoc/skills/url/SKILL.md`](synthadoc/skills/url/SKILL.md) |
-| 13 | ✓ | [`synthadoc/skills/web_search/SKILL.md`](synthadoc/skills/web_search/SKILL.md) |
-| 14 | ✓ | [`synthadoc/skills/xlsx/SKILL.md`](synthadoc/skills/xlsx/SKILL.md) |
-| 15 | ✓ | [`synthadoc/skills/youtube/SKILL.md`](synthadoc/skills/youtube/SKILL.md) |
+| 12 | ✓ | [`synthadoc/skills/session/SKILL.md`](synthadoc/skills/session/SKILL.md) |
+| 13 | ✓ | [`synthadoc/skills/url/SKILL.md`](synthadoc/skills/url/SKILL.md) |
+| 14 | ✓ | [`synthadoc/skills/web_search/SKILL.md`](synthadoc/skills/web_search/SKILL.md) |
+| 15 | ✓ | [`synthadoc/skills/xlsx/SKILL.md`](synthadoc/skills/xlsx/SKILL.md) |
+| 16 | ✓ | [`synthadoc/skills/youtube/SKILL.md`](synthadoc/skills/youtube/SKILL.md) |
 
 ---
 

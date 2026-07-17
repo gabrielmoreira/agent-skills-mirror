@@ -10,7 +10,7 @@ Dashi PPT 生成静态 HTML 横向翻页 PPT。使用本 skill 时,先把用户�
 
 ## 版本
 
-当前版本: `0.4.1`
+当前版本: `0.4.3`
 
 每次完成用户请求、准备最终回复前,运行:
 
@@ -30,7 +30,8 @@ node <skill-root>/scripts/check_latest_version.mjs
 
 渲染脚本:
 
-`<skill-root>/scripts/render_goal_deck.sh`
+- macOS / Linux: `<skill-root>/scripts/render_goal_deck.sh`
+- Windows PowerShell: `<skill-root>/scripts/render_goal_deck.ps1`
 
 版本检查脚本:
 
@@ -46,7 +47,7 @@ node <skill-root>/scripts/check_latest_version.mjs
 
 ## 使用规则
 
-- 运行生成器需要 Node.js 20+ 和 npm;首次生成时渲染脚本会在 Skill 内置 `project/` 目录安装依赖。
+- 运行生成器需要 Node.js 20+ 和 npm;首次生成时渲染脚本会在 Skill 内置 `project/` 目录安装依赖。Windows 用 `render_goal_deck.ps1`(直接 PowerShell,不经 WSL/bash);macOS / Linux 用 `render_goal_deck.sh`。
 - 风格选择提问:用户可见回复必须嵌入 `<skill-root>/assets/skill/theme-style-grid.png` 的 Markdown 图片,先展开绝对路径;这是回复展示用内置风格图,不可写入 `goal.json` 或任何 media 字段;列出当前可选风格和极简“适合/人群”,不能只在内部进度提示中提到风格图。
 - 开工前确认两件事:主题风格、是否需要图片/视频。用户未明确表达且非整体委托时,先提问等答复,不得代选;无法提问的环境(脚本/批处理)才自选,并在交付说明中列出所选与理由。
 - 委托模式:仅当用户对整体明确委托(“都你来定”“不用问,直接开干”)时,才自选主题、默认 HTML、默认不使用 image-gen,最终说明假设。用户只说内容/文案“随意”“自拟”时,仅自拟内容;风格、页数、媒体等已给的不得擅自改变,未给的按上一条先问。
@@ -85,6 +86,7 @@ node <skill-root>/scripts/check_latest_version.mjs
 - 每套主题的前 5 页 `themeXX_page001` 到 `themeXX_page005` 都是封面候选。一个 deck 只能从前 5 页中选择 1 页作为封面,不要同时使用多个封面页;正文页从第 6 页以后选择。
 - 同一套 PPT 中不要出现重复的页面组件:最终 `slides[].layout` 必须唯一。选页时记录已用 `layout`,不同内容页要换同主题其它候选,不要通过改文案复用同一个 layout。
 - 面向用户交付的 deck 不能只写 `role` 后依赖页面默认文案。除非用户明确要默认 demo,每一页可见内容都必须写和用户主题对应的 `props` 文案。
+- 选定 layout 后,`copyKeys` / `fillPlan.text` 列出的文案槽必须**全部**覆写,不允许遗漏任何一项(封面的口径、日期、页脚元信息等小字段同样必填);漏填的槽会以模板演示文案交付,属于交付失败。
 - 优先只写 `layout:query` / `inspect:layout` 暴露的文案字段。字段是对象或数组时按 `fillPlan` 和 `propShapes` 填内部 key。`copyKeys` 已展开嵌套路径(如 `copy.quote`、`items[].label`),按列出的路径直接填。
 - `inspect:layout` 标 `contentLocked: true` 的页正文由组件固定、props 填不进:换一页能填正文的布局,或仅当用户接受其默认正文时使用。数组按 `fillPlan.arrays[].visibleCount` 填满可见项;`decorativeKeys` 是装饰位,不要填。
 - 不要改页面元数据、组件源码、className、CSS、样式字段或默认视觉结构来完成内容填充。只在 `props` 内填写内容和用户明确要求的页面属性。
@@ -130,12 +132,20 @@ node <skill-root>/scripts/check_latest_version.mjs
 
 浏览器 smoke check 只确认页面能打开、页数正确、首尾页不是空白。不要默认截图精修,不要因为普通换行问题反复改稿。
 
-示例命令:
+示例命令(macOS / Linux):
 
 ```bash
 <skill-root>/scripts/render_goal_deck.sh \
   output/client-review/goal.json \
   output/client-review/ppt/index.html
+```
+
+Windows PowerShell:
+
+```powershell
+& "<skill-root>/scripts/render_goal_deck.ps1" `
+  "output/client-review/goal.json" `
+  "output/client-review/ppt/index.html"
 ```
 
 ## JSON 结构
@@ -184,6 +194,7 @@ node <skill-root>/scripts/check_latest_version.mjs
 - `copyKeys`: 可安全改写的文案/数据字段。
 - `copyBudgets`: 文案长度预算;`display` / `metric` 超长会被 goal spec 拦截。
 - `propShapes`: `copyKeys` / 数组字段的内部形状;写 `copy`、`cells`、`items`、`rows` 等对象字段时只使用这里列出的 key。
+- `fillPlan.arrays[].itemFields[].enum`: 该字段为结构枚举,只能从列出的值中选,不是自由文案。
 - `mediaSlots`: 图片/视频写入字段、count key、默认数量和最大数量。
 - `countBindings`: 数量参数与数组字段的绑定。
 - `fillPlan` 里数值字段看 `numericBounds` 填数:`enforced:false` 是提示、真实数据可超出,`enforced:true` 必须遵守,`semantics:'normalized'` 填 0-1 比例;定长嵌套数组看 `fixedLength`/`fixedLengths` 按下标填,不试错。
