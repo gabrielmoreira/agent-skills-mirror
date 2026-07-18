@@ -22,6 +22,7 @@ This skill does not implement code. It explores, clarifies, and documents decisi
 4. **Keep implementation out of the Product Contract by default** - Do not include libraries, schemas, endpoints, file layouts, or code-level design unless the brainstorm itself is inherently about a technical or architectural change.
 5. **Right-size the artifact** - Simple work gets a compact requirements-only unified plan or brief alignment. Larger work gets a fuller Product Contract. Do not add ceremony that does not help planning.
 6. **Apply YAGNI to carrying cost, not coding effort** - Prefer the simplest approach that delivers meaningful value. Avoid speculative complexity and hypothetical future-proofing, but low-cost polish or delight is worth including when its ongoing cost is small and easy to maintain.
+7. **Do not turn coverage into decomposition** - For software brainstorms, treat named devices, providers, and data sources as coverage requirements, not automatically as separate integration workstreams. Split them only when a shared access path cannot satisfy a named requirement. Leave connector selection to planning unless that choice materially changes product scope or behavior.
 
 ## Interaction Rules
 
@@ -145,18 +146,17 @@ Product-tier triggers additional Phase 1.2 questions and additional Product Cont
 
 #### 0.4 Surface the Workflow Spine
 
-For **Standard and Deep** scope, create a task list with the platform's task tracking tool (`TaskCreate`/`TaskUpdate`/`TaskList` in Claude Code, `update_plan` in Codex, or the equivalent on other harnesses). Skip it entirely for Lightweight and on the Phase 0.1b non-software route. Create it here, not earlier — 0.1b and 0.1c exit before this point, and the tier is unknown until 0.3.
+For **Standard and Deep** scope, use the platform's task-tracking capability when available (`TaskCreate`/`TaskUpdate`/`TaskList` in Claude Code, `update_plan` in Codex, or the equivalent on other harnesses). Skip it entirely for Lightweight and on the Phase 0.1b non-software route. Create it here, not earlier — 0.1b and 0.1c exit before this point, and the tier is unknown until 0.3.
 
-If the harness exposes no task primitive — including `ToolSearch` or its equivalent returning no match — name the six tasks once in chat and continue without per-task updates, rather than dropping the spine silently. Do not restate the list to simulate progress you cannot track.
+If the harness exposes no task-tracking capability — including `ToolSearch` or its equivalent returning no match — continue normally without simulating a task list in chat.
 
-The spine is six tasks, in order:
+The spine is five tasks, in order:
 
 1. Check what already exists
 2. Ask scoping questions
 3. Weigh approaches and recommend
 4. Confirm scope before writing
 5. Write the requirements plan
-6. Offer next steps
 
 **Conditional work earns a task only when its gate fires** — never at creation, and never as a placeholder for a branch that may not run. A branch earns one when the user is either waiting on it or would be surprised to learn it happened: an accepted blindspot pass, a dispatched Slack researcher, a Phase 2.6 verifier working in the background. A step that fires per-decision rather than once does not — it would thrash the list. Insert it at the position where it runs.
 
@@ -176,16 +176,22 @@ Scan the repo before substantive brainstorming. Match depth to scope:
 
 **Standard and Deep** — Two passes:
 
-*Constraint Check (inline)* — Source the agnostic orientation (STRATEGY summary, CONCEPTS vocabulary, conventions) from the shared repo-grounding profile cache instead of re-reading those files every run. Set `SKILL_DIR` to this skill's directory and run the helper (full protocol in `references/repo-profile-cache.md`):
+*Constraint Check (inline)* — Use the project's active instructions and conventions already in your context. Read `STRATEGY.md` if it exists for product direction and `CONCEPTS.md` if it exists for canonical vocabulary. Use canonical names in dialogue, approaches, and the Product Contract; if a source adds nothing, move on.
+
+*Topic Scan (grounding scout)* — Create and retain the absolute scratch directory with this shell block, substituting the absolute path of this skill's directory and a short unique run slug:
 
 ```bash
-SKILL_DIR="<absolute path of the directory containing the SKILL.md you just read>";
-python3 "$SKILL_DIR/scripts/repo-profile-cache.py" get
+SCRATCH_ROOT="/tmp/compound-engineering-$(id -u)";
+if [ -L "$SCRATCH_ROOT" ]; then echo "unsafe scratch root symlink: $SCRATCH_ROOT" >&2; exit 1; fi;
+install -d -m 700 "$SCRATCH_ROOT" || exit 1;
+if [ -L "$SCRATCH_ROOT" ] || [ ! -O "$SCRATCH_ROOT" ]; then echo "scratch root is not owned by the current user: $SCRATCH_ROOT" >&2; exit 1; fi;
+chmod 700 "$SCRATCH_ROOT" || exit 1;
+SCRATCH_DIR="$SCRATCH_ROOT/ce-brainstorm/<run-id>";
+(umask 077; mkdir -p "$SCRATCH_DIR") || exit 1; chmod 700 "$SCRATCH_DIR" || exit 1;
+echo "$SCRATCH_DIR";
 ```
 
-On `HIT`, load the profile JSON and take the agnostic orientation from it — `conventions.strategy` for the STRATEGY summary, `vocabulary` for the CONCEPTS terms, and `conventions` (coding standards, testing, review process, instruction files) for workflow/product/scope constraints; do not re-read those files. On `MISS`, dispatch a generic subagent with `references/agents/repo-profiler.md` to derive the profile, write its JSON to a file, then persist with `python3 "$SKILL_DIR/scripts/repo-profile-cache.py" put <file>` (re-set `SKILL_DIR` in that call — shell vars don't persist between Bash invocations), and use the same fields. On `NO-CACHE`, derive the orientation inline and skip the `put`. The cache is an optimization, never a correctness dependency: if it is unavailable, or any cached field is absent/null, fall back to reading the source inline — the project's active instructions and conventions already in your context for workflow, product, or scope constraints (no need to open or name specific instruction files); `STRATEGY.md` if it exists — the product's target problem, approach, persona, and active tracks, which shape scope, success criteria, and which approaches are aligned vs out-of-scope; and `CONCEPTS.md` at repo root if it exists — the project's authoritative vocabulary. Use these names in dialogue, approaches, and the Product Contract; map user-offered synonyms back. If any of these add nothing, move on. This pass — including the cache resolution — stays in the main conversation; the dialogue needs this material in context to shape its questions.
-
-*Topic Scan (grounding scout)* — Create a scratch dir at `/tmp/compound-engineering/ce-brainstorm/<run-id>/` (short unique slug), then dispatch one extraction-tier sub-agent via the platform's subagent primitive where available (a Task/Agent-style dispatch on harnesses that expose one); otherwise run the work inline or serially. In harnesses that support background dispatch, proceed to Phase 1.2/1.3 **without waiting**: the scout runs during the user's think-time on the opening questions. Scout prompt:
+Then dispatch one extraction-tier sub-agent via the platform's subagent primitive where available (a Task/Agent-style dispatch on harnesses that expose one); otherwise run the work inline or serially. In harnesses that support background dispatch, proceed to Phase 1.2/1.3 **without waiting**: the scout runs during the user's think-time on the opening questions. Scout prompt:
 
 > Gather grounding for a requirements brainstorm about **{topic}** in this repo. Search first with the native file-search and content-search tools, then read targeted sections — budget ~20 reads, preferring ranges over whole files. Find: whether something similar already exists, the most relevant existing artifacts (brainstorms, plans, specs, feature docs), adjacent examples of similar behavior, and the current state of anything the topic would touch (tables, routes, config, dependencies). Write a **grounding dossier** to `{scratch-dir}/grounding.md`: at most 150 lines of verbatim quotes and short code snippets, each with a `file:line` pointer. Extraction only — quote what the repo says; do not interpret or propose. If the topic has little footprint, write less rather than padding. Return only a gist: 3-5 lines summarizing what the dossier holds, plus its absolute path.
 

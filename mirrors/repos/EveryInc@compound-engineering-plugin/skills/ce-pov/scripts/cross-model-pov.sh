@@ -25,9 +25,9 @@
 #                   grok-cli, grok-cursor, cursor, or composer. A route failure
 #                   returns no artifact; only the host may disclose and retry a
 #                   different recipient.
-#   <subject-payload> prepared framed question + verified project floor + subject
-#                     material. It must exclude credentials and raw secret-bearing
-#                     file contents because it is embedded into the peer prompt.
+#   <subject-payload> framed question plus any conversation-only subject material.
+#                     Point to repository files instead of copying their contents;
+#                     the peer grounds itself from the shared working tree.
 #   <run-dir>         existing private dir outside the repository; output ->
 #                     <run-dir>/pov-<provider>.json
 #
@@ -195,7 +195,7 @@ adapter_argv() {
       # and bounded public web checks. Mutating tools, Bash, MCP, and subagents are
       # absent from the allowlist.
       printf '%s\0' claude -p --model "$(route_model claude)" --effort high --permission-mode dontAsk \
-        --bare --tools Read,Glob,Grep,WebSearch,WebFetch \
+        --safe-mode --disable-slash-commands --tools Read,Glob,Grep,WebSearch,WebFetch \
         --max-turns 15 --no-session-persistence --json-schema "$SCHEMA_REF" --output-format json
       ;;
     grok-cli)
@@ -371,9 +371,9 @@ route_available "$FIXED_ROUTE" || skip "fixed route '$FIXED_ROUTE' is unavailabl
 log "fixed cross-model POV route: target=$TARGET route=$FIXED_ROUTE (host $HOST_PROVIDER excluded)"
 
 # --- compose the peer prompt from the canonical persona (single source) ----
-# The payload is prepared by ce-pov and embeds only the framed subject, verified
-# project-floor summary, and subject material needed for this round. It must not
-# contain credentials or raw secret-bearing file contents.
+# The payload is prepared by ce-pov and embeds the framed question plus any
+# conversation-only subject material needed for this round. Repository evidence
+# stays in the shared working tree for the peer to inspect directly.
 SCRATCH_PARENT="${CROSS_MODEL_SCRATCH_PARENT:-/tmp}"
 [ -d "$SCRATCH_PARENT" ] || mkdir -p "$SCRATCH_PARENT" 2>/dev/null || skip "private scratch parent '$SCRATCH_PARENT' unavailable"
 SCRATCH_PARENT="$(cd "$SCRATCH_PARENT" && pwd -P)" || skip "cannot resolve private scratch parent"
@@ -578,6 +578,33 @@ parse_structured() {   # <logfile> <outfile>
   recover_pov_json "$1" "$2"
 }
 
+bounded_failure_evidence() {   # <logfile>; prefer structured diagnostics, then bounded head+tail
+  local path="$1" human ancillary evidence
+  human="$(jq -r '
+    [
+      (.result? | select(type == "string" and length > 0)),
+      (.message? | select(type == "string" and length > 0)),
+      (.error?.message? | select(type == "string" and length > 0))
+    ] | unique | join(" | ")
+  ' "$path" 2>/dev/null)"
+  ancillary="$(jq -r '
+    [
+      (if .api_error_status? != null then "api_error_status=\(.api_error_status)" else empty end),
+      (.terminal_reason? | select(type == "string" and length > 0) | "terminal_reason=" + .)
+    ] | unique | join(" | ")
+  ' "$path" 2>/dev/null)"
+  # Ancillary fields describe the exit but are not the diagnostic itself. If
+  # no recognized human-readable field exists, retain bounded raw output so a
+  # CLI's newer or provider-specific error field is still visible.
+  [ -n "$human" ] && evidence="$human" || evidence="$(cat "$path")"
+  [ -n "$ancillary" ] && evidence="${evidence:+$evidence | }$ancillary"
+  evidence="${evidence//$'\n'/ }"
+  if [ "${#evidence}" -gt 300 ]; then
+    evidence="${evidence:0:147} ... ${evidence: -147}"
+  fi
+  printf '%s' "$evidence"
+}
+
 # Run one route for a provider; leaves a schema-shaped (pre-normalization) $RAW_OUT on success.
 attempt_route() {   # <provider> <route>
   local provider="$1" route="$2" note
@@ -677,21 +704,19 @@ run_fixed_route() {
     log "wrote peer POV to $OUT (voice peer-$provider)"
   else
     log "provider $provider produced no usable schema-shaped output; skipping fold-in"
-    # Surface a bounded tail of the peer's raw output so the orchestrator can
+    # Surface bounded, actionable peer evidence so the orchestrator can
     # reason about WHY it was skipped (quota/usage-limit exhaustion vs an ordinary
     # empty review) and, in a repeated-pass session, deprioritize an exhausted
-    # route. Harness-agnostic: the agent classifies from the text; this only makes
-    # the evidence visible in out.log. Surface BOTH streams -- the error can be on
-    # stdout (grok's 402) or stderr (claude/cursor auth/quota). The route sandbox
-    # has no tail/tr, so read the small failure output and slice it in Bash.
+    # route. Prefer structured CLI error fields before the bounded raw fallback;
+    # a useful `.result` can appear near the start of a long JSON envelope. Surface
+    # BOTH streams -- the error can be on stdout (grok's 402) or stderr
+    # (claude/cursor auth/quota).
     if [ -s "$PEERLOG" ]; then
-      _pt="$(cat "$PEERLOG")"; _pt="${_pt//$'\n'/ }"
-      [ "${#_pt}" -gt 300 ] && _pt="${_pt: -300}"
+      _pt="$(bounded_failure_evidence "$PEERLOG")"
       log "  peer skip evidence: $_pt"
     fi
     if [ -s "$PEERERR" ]; then
-      _pe="$(cat "$PEERERR")"; _pe="${_pe//$'\n'/ }"
-      [ "${#_pe}" -gt 300 ] && _pe="${_pe: -300}"
+      _pe="$(bounded_failure_evidence "$PEERERR")"
       log "  peer skip evidence (stderr): $_pe"
     fi
     rm -f "$OUT" "$RAW_OUT"

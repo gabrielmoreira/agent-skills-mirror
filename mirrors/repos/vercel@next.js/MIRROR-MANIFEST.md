@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
+Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 39 file
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 39 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,15 +89,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 29 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 30 | ✓ | [`packages/next/AGENTS.md`](packages/next/AGENTS.md) |
-| 31 | ✓ | [`skills/next-cache-components-adoption/references/per-page-decisions.md`](skills/next-cache-components-adoption/references/per-page-decisions.md) |
-| 32 | ✓ | [`skills/next-cache-components-adoption/SKILL.md`](skills/next-cache-components-adoption/SKILL.md) |
-| 33 | ✓ | [`skills/next-cache-components-optimizer/instant-nav-loop.md`](skills/next-cache-components-optimizer/instant-nav-loop.md) |
-| 34 | ✓ | [`skills/next-cache-components-optimizer/ppr-loop.md`](skills/next-cache-components-optimizer/ppr-loop.md) |
-| 35 | ✓ | [`skills/next-cache-components-optimizer/SKILL.md`](skills/next-cache-components-optimizer/SKILL.md) |
-| 36 | ✓ | [`skills/next-dev-loop/SKILL.md`](skills/next-dev-loop/SKILL.md) |
-| 37 | ✓ | [`skills/next-partial-prefetching-adoption/SKILL.md`](skills/next-partial-prefetching-adoption/SKILL.md) |
-| 38 | ✓ | [`turbopack/AGENTS.md`](turbopack/AGENTS.md) |
-| 39 | ✓ | [`turbopack/CLAUDE.md`](turbopack/CLAUDE.md) |
+| 31 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
+| 32 | ✓ | [`skills/next-cache-components-adoption/references/per-page-decisions.md`](skills/next-cache-components-adoption/references/per-page-decisions.md) |
+| 33 | ✓ | [`skills/next-cache-components-adoption/SKILL.md`](skills/next-cache-components-adoption/SKILL.md) |
+| 34 | ✓ | [`skills/next-cache-components-optimizer/instant-nav-loop.md`](skills/next-cache-components-optimizer/instant-nav-loop.md) |
+| 35 | ✓ | [`skills/next-cache-components-optimizer/ppr-loop.md`](skills/next-cache-components-optimizer/ppr-loop.md) |
+| 36 | ✓ | [`skills/next-cache-components-optimizer/SKILL.md`](skills/next-cache-components-optimizer/SKILL.md) |
+| 37 | ✓ | [`skills/next-dev-loop/SKILL.md`](skills/next-dev-loop/SKILL.md) |
+| 38 | ✓ | [`skills/next-partial-prefetching-adoption/SKILL.md`](skills/next-partial-prefetching-adoption/SKILL.md) |
+| 39 | ✓ | [`turbopack/AGENTS.md`](turbopack/AGENTS.md) |
+| 40 | ✓ | [`turbopack/CLAUDE.md`](turbopack/CLAUDE.md) |
 
 ---
 

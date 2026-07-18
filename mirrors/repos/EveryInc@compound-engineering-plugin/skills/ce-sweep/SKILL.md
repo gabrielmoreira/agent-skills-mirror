@@ -114,8 +114,22 @@ A failed ack write -> upsert the item as `ack_deferred` and hold the cursor (do 
 
 #### 2e. Media
 
+Resolve and create media scratch with this shell block, substituting the current run id:
+
+```bash
+SCRATCH_ROOT="/tmp/compound-engineering-$(id -u)";
+if [ -L "$SCRATCH_ROOT" ]; then echo "unsafe scratch root symlink: $SCRATCH_ROOT" >&2; exit 1; fi;
+install -d -m 700 "$SCRATCH_ROOT" || exit 1;
+if [ -L "$SCRATCH_ROOT" ] || [ ! -O "$SCRATCH_ROOT" ]; then echo "scratch root is not owned by the current user: $SCRATCH_ROOT" >&2; exit 1; fi;
+chmod 700 "$SCRATCH_ROOT" || exit 1;
+MEDIA_DIR="$SCRATCH_ROOT/ce-sweep/<run-id>";
+(umask 077; mkdir -p "$MEDIA_DIR") || exit 1; chmod 700 "$MEDIA_DIR" || exit 1;
+```
+
+Pass absolute artifact paths beneath `$MEDIA_DIR` to subagents.
+
 For each new item carrying `media`:
-- Download attachments into scratch `/tmp/compound-engineering/ce-sweep/<run-id>/`; raw media is never committed. A download failure -> set the item `needs_download` and continue.
+- Download attachments into `$MEDIA_DIR`; raw media is never committed. A download failure -> set the item `needs_download` and continue.
 - Dispatch one generic subagent per recording, in parallel, at the **generation tier**, using `references/subagent-template.md` filled from `references/agents/media-analyzer.md`. Fill the template's `{skill_dir}` slot with the same absolute ce-sweep skill directory you resolve for your own `SKILL_DIR` Bash calls (a fresh subagent does not inherit your shell state, so it cannot run the bundled analyzer without being told the path). Pass the absolute media PATHS, a scratch artifact path, and the item's `sensitive` flag; collect the compact 1-2 line summary each returns. A subagent failure -> set the item `needs_analysis`, retain the media, and continue.
 - Track attempts on the item (a `media_attempts` count upserted on each try). After 3 failed attempts across runs (`needs_download`/`needs_analysis`), set the item `manual_stuck` and list it separately — out of the routine nag.
 

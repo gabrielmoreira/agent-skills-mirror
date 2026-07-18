@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `codejunkie99/agentic-stack` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `codejunkie99/agentic-stack` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `codejunkie99/agentic-stack` — 26 default patterns, 0 followed patte
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,19 +67,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.agent/skills/deploy-checklist/SKILL.md`](.agent/skills/deploy-checklist/SKILL.md) |
 | 7 | ✓ | [`.agent/skills/design-md/SKILL.md`](.agent/skills/design-md/SKILL.md) |
 | 8 | ✓ | [`.agent/skills/git-proxy/SKILL.md`](.agent/skills/git-proxy/SKILL.md) |
-| 9 | ✓ | [`.agent/skills/memory-manager/SKILL.md`](.agent/skills/memory-manager/SKILL.md) |
-| 10 | ✓ | [`.agent/skills/skillforge/SKILL.md`](.agent/skills/skillforge/SKILL.md) |
-| 11 | ✓ | [`.agent/skills/tldraw/SKILL.md`](.agent/skills/tldraw/SKILL.md) |
-| 12 | ✓ | [`adapters/claude-code/CLAUDE.md`](adapters/claude-code/CLAUDE.md) |
-| 13 | ✓ | [`adapters/codex/AGENTS.md`](adapters/codex/AGENTS.md) |
-| 14 | ✓ | [`adapters/copilot-cli/AGENTS.md`](adapters/copilot-cli/AGENTS.md) |
-| 15 | ✓ | [`adapters/cursor/.cursor/rules/agentic-stack.mdc`](adapters/cursor/.cursor/rules/agentic-stack.mdc) |
-| 16 | ✓ | [`adapters/gemini/gemini.md`](adapters/gemini/gemini.md) |
-| 17 | ✓ | [`adapters/hermes/AGENTS.md`](adapters/hermes/AGENTS.md) |
-| 18 | ✓ | [`adapters/openclaw/AGENTS.md`](adapters/openclaw/AGENTS.md) |
-| 19 | ✓ | [`adapters/opencode/AGENTS.md`](adapters/opencode/AGENTS.md) |
-| 20 | ✓ | [`adapters/pi/AGENTS.md`](adapters/pi/AGENTS.md) |
-| 21 | ✓ | [`adapters/windsurf/.windsurfrules`](adapters/windsurf/.windsurfrules) |
+| 9 | ✓ | [`.agent/skills/loop-constraints/SKILL.md`](.agent/skills/loop-constraints/SKILL.md) |
+| 10 | ✓ | [`.agent/skills/loop-guard/SKILL.md`](.agent/skills/loop-guard/SKILL.md) |
+| 11 | ✓ | [`.agent/skills/loop-triage/SKILL.md`](.agent/skills/loop-triage/SKILL.md) |
+| 12 | ✓ | [`.agent/skills/loop-verifier/SKILL.md`](.agent/skills/loop-verifier/SKILL.md) |
+| 13 | ✓ | [`.agent/skills/memory-manager/SKILL.md`](.agent/skills/memory-manager/SKILL.md) |
+| 14 | ✓ | [`.agent/skills/skillforge/SKILL.md`](.agent/skills/skillforge/SKILL.md) |
+| 15 | ✓ | [`.agent/skills/tldraw/SKILL.md`](.agent/skills/tldraw/SKILL.md) |
+| 16 | ✓ | [`adapters/claude-code/CLAUDE.md`](adapters/claude-code/CLAUDE.md) |
+| 17 | ✓ | [`adapters/codex/AGENTS.md`](adapters/codex/AGENTS.md) |
+| 18 | ✓ | [`adapters/copilot-cli/AGENTS.md`](adapters/copilot-cli/AGENTS.md) |
+| 19 | ✓ | [`adapters/cursor/.cursor/rules/agentic-stack.mdc`](adapters/cursor/.cursor/rules/agentic-stack.mdc) |
+| 20 | ✓ | [`adapters/gemini/gemini.md`](adapters/gemini/gemini.md) |
+| 21 | ✓ | [`adapters/hermes/AGENTS.md`](adapters/hermes/AGENTS.md) |
+| 22 | ✓ | [`adapters/openclaw/AGENTS.md`](adapters/openclaw/AGENTS.md) |
+| 23 | ✓ | [`adapters/opencode/AGENTS.md`](adapters/opencode/AGENTS.md) |
+| 24 | ✓ | [`adapters/pi/AGENTS.md`](adapters/pi/AGENTS.md) |
+| 25 | ✓ | [`adapters/windsurf/.windsurfrules`](adapters/windsurf/.windsurfrules) |
 
 ---
 

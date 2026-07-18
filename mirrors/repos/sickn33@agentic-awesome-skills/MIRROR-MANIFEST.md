@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `sickn33/agentic-awesome-skills` — 26 default patterns, 26 followed patterns, 11347 file(s) materialized.
+Mirror of `sickn33/agentic-awesome-skills` — 26 default patterns, 26 followed patterns, 11358 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `sickn33/agentic-awesome-skills` — 26 default patterns, 26 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 26 |
-| Files         | 11347 |
+| Files         | 11358 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -11405,32 +11405,43 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11319 | ✓ | [`skills/zoho-crm-automation/SKILL.md`](skills/zoho-crm-automation/SKILL.md) |
 | 11320 | ✓ | [`skills/zoom-automation/SKILL.md`](skills/zoom-automation/SKILL.md) |
 | 11321 | ✓ | [`skills/zustand-store-ts/SKILL.md`](skills/zustand-store-ts/SKILL.md) |
-| 11322 | → | [`CATALOG.md`](CATALOG.md) |
-| 11323 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 11324 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 11325 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 11326 | → | [`docs/contributors/security-guardrails.md`](docs/contributors/security-guardrails.md) |
-| 11327 | → | [`docs/contributors/skill-template.md`](docs/contributors/skill-template.md) |
-| 11328 | → | [`docs/sources/sources.md`](docs/sources/sources.md) |
-| 11329 | → | [`docs/users/agent-overload-recovery.md`](docs/users/agent-overload-recovery.md) |
-| 11330 | → | [`docs/users/agentic-awesome-skills-vs-awesome-claude-skills.md`](docs/users/agentic-awesome-skills-vs-awesome-claude-skills.md) |
-| 11331 | → | [`docs/users/ai-agent-skills.md`](docs/users/ai-agent-skills.md) |
-| 11332 | → | [`docs/users/best-claude-code-skills-github.md`](docs/users/best-claude-code-skills-github.md) |
-| 11333 | → | [`docs/users/best-cursor-skills-github.md`](docs/users/best-cursor-skills-github.md) |
-| 11334 | → | [`docs/users/bundles.md`](docs/users/bundles.md) |
-| 11335 | → | [`docs/users/claude-code-skills.md`](docs/users/claude-code-skills.md) |
-| 11336 | → | [`docs/users/codex-cli-skills.md`](docs/users/codex-cli-skills.md) |
-| 11337 | → | [`docs/users/cursor-skills.md`](docs/users/cursor-skills.md) |
-| 11338 | → | [`docs/users/discovery-manifest.md`](docs/users/discovery-manifest.md) |
-| 11339 | → | [`docs/users/gemini-cli-skills.md`](docs/users/gemini-cli-skills.md) |
-| 11340 | → | [`docs/users/getting-started.md`](docs/users/getting-started.md) |
-| 11341 | → | [`docs/users/plugins.md`](docs/users/plugins.md) |
-| 11342 | → | [`docs/users/specialized-plugin-roadmap.md`](docs/users/specialized-plugin-roadmap.md) |
-| 11343 | → | [`docs/users/usage.md`](docs/users/usage.md) |
-| 11344 | → | [`docs/users/windows-truncation-recovery.md`](docs/users/windows-truncation-recovery.md) |
-| 11345 | → | [`docs/users/workflows.md`](docs/users/workflows.md) |
-| 11346 | → | [`README.md`](README.md) |
-| 11347 | → | [`SECURITY.md`](SECURITY.md) |
+| 11322 | ✓ | [`verification/aas-v1/baseline/v1/hostile/README.md`](verification/aas-v1/baseline/v1/hostile/README.md) |
+| 11323 | ✓ | [`verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/docs/README.md`](verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/docs/README.md) |
+| 11324 | ✓ | [`verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/skills/backend-dev-guidelines/SKILL.md`](verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/skills/backend-dev-guidelines/SKILL.md) |
+| 11325 | ✓ | [`verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/skills/debugging-helper/SKILL.md`](verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/skills/debugging-helper/SKILL.md) |
+| 11326 | ✓ | [`verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/skills/frontend-design/SKILL.md`](verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/skills/frontend-design/SKILL.md) |
+| 11327 | ✓ | [`verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/skills/game-development/2d-games/SKILL.md`](verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/skills/game-development/2d-games/SKILL.md) |
+| 11328 | ✓ | [`verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/skills/offensive-tool/SKILL.md`](verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/skills/offensive-tool/SKILL.md) |
+| 11329 | ✓ | [`verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/skills/tamigi-vecchia-edizione-game-development/2d-games/SKILL.md`](verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/skills/tamigi-vecchia-edizione-game-development/2d-games/SKILL.md) |
+| 11330 | ✓ | [`verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/skills/typescript-legacy-helper/SKILL.md`](verification/aas-v1/baseline/v1/legacy/14.6.0/fixture-repository/skills/typescript-legacy-helper/SKILL.md) |
+| 11331 | ✓ | [`verification/aas-v1/baseline/v1/legacy/14.6.0/README.md`](verification/aas-v1/baseline/v1/legacy/14.6.0/README.md) |
+| 11332 | ✓ | [`verification/aas-v1/README.md`](verification/aas-v1/README.md) |
+| 11333 | → | [`CATALOG.md`](CATALOG.md) |
+| 11334 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 11335 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 11336 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 11337 | → | [`docs/contributors/security-guardrails.md`](docs/contributors/security-guardrails.md) |
+| 11338 | → | [`docs/contributors/skill-template.md`](docs/contributors/skill-template.md) |
+| 11339 | → | [`docs/sources/sources.md`](docs/sources/sources.md) |
+| 11340 | → | [`docs/users/agent-overload-recovery.md`](docs/users/agent-overload-recovery.md) |
+| 11341 | → | [`docs/users/agentic-awesome-skills-vs-awesome-claude-skills.md`](docs/users/agentic-awesome-skills-vs-awesome-claude-skills.md) |
+| 11342 | → | [`docs/users/ai-agent-skills.md`](docs/users/ai-agent-skills.md) |
+| 11343 | → | [`docs/users/best-claude-code-skills-github.md`](docs/users/best-claude-code-skills-github.md) |
+| 11344 | → | [`docs/users/best-cursor-skills-github.md`](docs/users/best-cursor-skills-github.md) |
+| 11345 | → | [`docs/users/bundles.md`](docs/users/bundles.md) |
+| 11346 | → | [`docs/users/claude-code-skills.md`](docs/users/claude-code-skills.md) |
+| 11347 | → | [`docs/users/codex-cli-skills.md`](docs/users/codex-cli-skills.md) |
+| 11348 | → | [`docs/users/cursor-skills.md`](docs/users/cursor-skills.md) |
+| 11349 | → | [`docs/users/discovery-manifest.md`](docs/users/discovery-manifest.md) |
+| 11350 | → | [`docs/users/gemini-cli-skills.md`](docs/users/gemini-cli-skills.md) |
+| 11351 | → | [`docs/users/getting-started.md`](docs/users/getting-started.md) |
+| 11352 | → | [`docs/users/plugins.md`](docs/users/plugins.md) |
+| 11353 | → | [`docs/users/specialized-plugin-roadmap.md`](docs/users/specialized-plugin-roadmap.md) |
+| 11354 | → | [`docs/users/usage.md`](docs/users/usage.md) |
+| 11355 | → | [`docs/users/windows-truncation-recovery.md`](docs/users/windows-truncation-recovery.md) |
+| 11356 | → | [`docs/users/workflows.md`](docs/users/workflows.md) |
+| 11357 | → | [`README.md`](README.md) |
+| 11358 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

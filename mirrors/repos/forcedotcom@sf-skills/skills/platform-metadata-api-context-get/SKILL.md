@@ -1,6 +1,6 @@
 ---
 name: platform-metadata-api-context-get
-description: "Salesforce Metadata API reference for creating, understanding, or modifying metadata XML files (.object-meta.xml, .flow-meta.xml, etc.) and any of 604 metadata types (CustomObject, Flow, ApexClass, ApexTrigger, Profile, PermissionSet, Layout, ValidationRule, RecordType, EmailTemplate, ...). Use for questions about a type's fields or XML format, or Salesforce DX project structure (force-app/main/default). TRIGGER when: authoring or editing any *-meta.xml file, asking what fields/format a metadata type has, or whenever 'Salesforce metadata' or 'sfdx project' is mentioned. DO NOT TRIGGER when: SOQL/DML/runtime sObject access (use the Enterprise API skill), Tooling API developer records (ApexExecutionOverlayAction, TraceFlag), or non-XML logic (Apex code, LWC JS, Visualforce controllers)."
+description: "REQUIRED companion for Salesforce metadata generation — load this schema/API-context skill in the SAME turn as ANY metadata generation skill; if you load a generator, you ALSO load this. Use it whenever you create, generate, add, edit, or author metadata or a *-meta.xml file: custom object, custom field, formula field, picklist, lookup, master-detail, validation rule, permission set, profile, custom tab, lightning record page, flexipage, list view, custom application, flow, layout, record type, sharing rules, report, and 604 Metadata API types. It provides the authoritative schema, fields, field properties, required flags, allowed enum values, and XML structure so generated *-meta.xml deploys cleanly — skipping it causes hallucinated element names and deploy failures. Trigger on *-meta.xml, metadata schema, api context, 'Salesforce metadata', or 'sfdx project'. DO NOT use for SOQL, DML, runtime sObject access, or Tooling API records."
 metadata:
   version: "1.0"
   minApiVersion: "67.0"
@@ -53,12 +53,15 @@ To get information about a specific metadata type:
 
 ### Example Queries (Section-Specific)
 
-- ✅ "Show me only the 'fields' section from CustomObject.json"
-- ✅ "What fields are in the 'fields' section of Profile.json?"
-- ✅ "Load the 'description' and 'fields' sections from Flow.json"
-- ✅ "Give me just the 'declarative_metadata_sample_definition' from ApexClass.json"
-- ❌ "Show me the CustomObject metadata type" (too broad - entire file)
-- ❌ "Load CustomObject.json" (includes unnecessary WSDL and other sections)
+**Recommended:**
+- "Show me only the 'fields' section from CustomObject.json"
+- "What fields are in the 'fields' section of Profile.json?"
+- "Load the 'description' and 'fields' sections from Flow.json"
+- "Give me just the 'declarative_metadata_sample_definition' from ApexClass.json"
+
+**Avoid:**
+- "Show me the CustomObject metadata type" (too broad - entire file)
+- "Load CustomObject.json" (includes unnecessary WSDL and other sections)
 
 ## JSON File Structure
 
@@ -116,7 +119,7 @@ Some metadata types have additional sections specific to their functionality. Se
 
 ### Section-Specific Loading (BEST PRACTICE)
 
-**⚠️ CRITICAL WARNING: DO NOT use the `read_file` tool (or any whole-file reading tool) on these JSON files!**
+**CRITICAL WARNING: DO NOT use the `read_file` tool (or any whole-file reading tool) on these JSON files!**
 
 `read_file` loads the entire file content into your context, defeating the purpose of section-specific consumption. You will waste 60-80% of your token budget loading unnecessary WSDL segments and verbose sections. (Using `Read` on small files such as this SKILL.md or the index table is fine — this rule is only about the large metadata-type JSON files.)
 
@@ -140,13 +143,13 @@ See [`examples/README.md`](examples/README.md) for complete documentation and us
 
 ### What NOT to Do
 
-**❌ NEVER use the `read_file` tool on these JSON files**:
+**NEVER use the `read_file` tool on these JSON files**:
 ```text
 read_file assets/metadata_api/CustomObject.json  # Loads entire file into context!
 read_file assets/metadata_api/Flow.json          # Wastes 60-80% tokens!
 ```
 
-**❌ NEVER load all files**:
+**NEVER load all files**:
 ```text
 read_file assets/metadata_api/*.json  # This loads ~15MB of data!
 ```

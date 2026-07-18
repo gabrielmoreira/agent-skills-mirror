@@ -1,0 +1,25 @@
+{
+  "name": "upstox",
+  "version": "1.0.0",
+  "description": "Upstox API v2: portfolio, market data, orders, P&L (Indian F&O)",
+  "author": "local",
+  "license": "MIT",
+  "tools": [],
+  "trigger_phrases": [],
+  "compatible_agents": [
+    "aiden"
+  ],
+  "min_agent_version": "3.0.0",
+  "tags": [
+    "upstox",
+    "broker",
+    "india",
+    "trading",
+    "orders",
+    "portfolio",
+    "equity",
+    "fno",
+    "market"
+  ],
+  "created": "2026-04-27T17:11:40.979Z"
+}

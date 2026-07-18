@@ -1,7 +1,7 @@
 ---
 name: report
 description: Read-only evo run reporting. Use when the user invokes /evo:report, asks what happened overnight, asks what improved recently, asks for the best/frontier candidates, asks for a quick score chart without opening the dashboard, or wants the scatter plot in chat output. Never run benchmarks, gates, Slurm commands, evo run, or ad-hoc verification scripts for report requests.
-evo_version: 0.7.0
+evo_version: 0.8.0
 ---
 
 # Report

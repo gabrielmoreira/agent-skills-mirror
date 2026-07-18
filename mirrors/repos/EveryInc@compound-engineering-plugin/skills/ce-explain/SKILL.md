@@ -24,7 +24,7 @@ When you must ask the user a question, use the platform's blocking question tool
 
 Dispatch is tiered by task shape, never hardcoded to a model name:
 
-- **Extraction tier** — the work-recap scout and the repo-profiler: search-and-quote work. Use the platform's cheapest capable model when the harness exposes a known override; otherwise inherit.
+- **Extraction tier** — the work-recap scout: search-and-quote work. Use the platform's cheapest capable model when the harness exposes a known override; otherwise inherit.
 - **Ceiling tier** — the explainer composition, the check-in reasoning, and the corrections. These run in the main conversation on the orchestrator's model; nothing is dispatched for them.
 
 **Degradation rule.** When the platform's subagent primitive cannot select per-agent models, dispatch scouts on the inherited model and keep their read budgets. When the platform has no subagent primitive at all, run the scout work inline with the same budgets.
@@ -44,19 +44,17 @@ Read `references/intake.md` now and classify the request into one of the four in
 Match grounding to the input shape. Create the run directory first — every run gets one, before any artifact exists:
 
 ```bash
-RUN_DIR="/tmp/compound-engineering/ce-explain/$(date +%Y%m%d)-$(openssl rand -hex 3)"
-mkdir -p "$RUN_DIR"
-echo "$RUN_DIR"
+SCRATCH_ROOT="/tmp/compound-engineering-$(id -u)";
+if [ -L "$SCRATCH_ROOT" ]; then echo "unsafe scratch root symlink: $SCRATCH_ROOT" >&2; exit 1; fi;
+install -d -m 700 "$SCRATCH_ROOT" || exit 1;
+if [ -L "$SCRATCH_ROOT" ] || [ ! -O "$SCRATCH_ROOT" ]; then echo "scratch root is not owned by the current user: $SCRATCH_ROOT" >&2; exit 1; fi;
+chmod 700 "$SCRATCH_ROOT" || exit 1;
+RUN_DIR="$SCRATCH_ROOT/ce-explain/$(date +%Y%m%d)-$(openssl rand -hex 3)";
+(umask 077; mkdir -p "$RUN_DIR") || exit 1; chmod 700 "$RUN_DIR" || exit 1;
+echo "$RUN_DIR";
 ```
 
-**Repo-touching inputs** (a concept with footprint in this repo, a diff, a recap): resolve the question-agnostic project profile from the shared cache instead of re-deriving it. Set `SKILL_DIR` to this skill's directory and run the helper (full protocol in `references/repo-profile-cache.md`):
-
-```bash
-SKILL_DIR="<absolute path of the directory containing the SKILL.md you just read>";
-python3 "$SKILL_DIR/scripts/repo-profile-cache.py" get
-```
-
-On `HIT`, load the profile JSON — stack, conventions, vocabulary — and take orientation from it. On `MISS`, dispatch a generic subagent with `references/agents/repo-profiler.md` to derive the profile, write its JSON to a file, then persist with `python3 "$SKILL_DIR/scripts/repo-profile-cache.py" put <file>` (re-set `SKILL_DIR` in that call — shell vars don't persist between Bash invocations). On `NO-CACHE` — or if the call errors — derive orientation inline and skip the `put`. The cache is an optimization, never a correctness dependency. The topic-specific evidence (the diff, the concept's call-sites, the window's commits) is always gathered fresh.
+**Repo-touching inputs** (a concept with footprint in this repo, a diff, a recap): use the project's active instructions already in context and go directly to the diff, call-sites, current source, or commits. Read `CONCEPTS.md` when canonical vocabulary matters. If the topic cannot be scoped from the input and existing context, allow one targeted root or workspace probe.
 
 - **Diff mode:** resolve the change (the `diff:` ref, or the most recent substantial change when the request points at one implicitly) and gather its evidence — the diff itself, the files it touches, any plan or solution doc that motivated it. Gather silently: nothing learned here is narrated to the user until Phase 3's ordering rule is satisfied.
 - **Recap mode:** dispatch a generic subagent seeded with `references/agents/work-recap-scout.md` (extraction tier), passing the resolved window, the repo root, and `$RUN_DIR`. It returns an evidence summary with commit shas and `file:line` pointers. **Empty window** (no git activity, no doc changes): say so, offer to widen the window, write no artifact, and end the run after the user responds.

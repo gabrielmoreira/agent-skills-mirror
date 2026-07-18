@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/arquiteto-de-empresa/../../../c-level-advisor/skills/arquiteto-de-empresa/SKILL.md

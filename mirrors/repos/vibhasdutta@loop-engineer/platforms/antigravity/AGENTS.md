@@ -175,8 +175,3 @@ The Stop hook can prevent the agent from stopping mid-loop. In `.agents/hooks.js
 
 The hook returns `{"decision": "continue", "reason": "..."}` to keep the loop running,
 or `{"decision": ""}` to allow it to stop.
-
-## Resume
-
-If a loop is in progress (`loop-stack/*/STATUS.md` exists, not ending in `_DONE`),
-the skill offers to resume it before starting fresh.

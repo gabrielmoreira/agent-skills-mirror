@@ -11,17 +11,17 @@ dependencies = []
 [project.optional-dependencies]
 # Unit tests — pytest runner only, no API deps
 test = [
-    "pytest>=9.0.3",
+    "pytest>=9.1.1",
 ]
 # Eval harness — install separately: uv sync --extra eval
 eval = [
-    "anthropic>=0.98.1",
-    "deepeval>=3.9.9",
+    "anthropic>=0.116.0",
+    "deepeval>=4.1.1",
     "python-dotenv>=1.2.2",
 ]
 lint = [
-    "ruff>=0.15.12",
-    "mypy>=1.20.2",
+    "ruff>=0.15.21",
+    "mypy>=2.3.0",
 ]
 
 [tool.ruff]

@@ -1,6 +1,6 @@
 ---
 name: trimming
-description: 对异常样本执行截尾处理并评估偏差
+description: 对异常样本执行截尾处理并评估偏差（outlier 异常值）
 icon: 🔪
 allowedTools: [get_schema, profile_data, clean_data, query_data]
 ---

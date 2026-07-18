@@ -1,6 +1,6 @@
 ---
 name: asc-release-flow
-description: Determine whether an app is ready to submit, then drive the current App Store release flow with asc, including validation, staging, review submission, first-time availability, subscriptions, IAP, Game Center, and App Privacy checks.
+description: Determine whether an app is ready to submit, then drive the current App Store release flow with asc, including validation, staging, review submission, first-time availability, versioned subscriptions and IAPs, Game Center, and App Privacy checks.
 ---
 
 # Release flow (readiness-first)
@@ -177,10 +177,129 @@ asc web review subscriptions attach \
   --confirm
 ```
 
-For later reviews, submit subscriptions through the public review path:
+The product-scoped `asc subscriptions review submit` shortcut is deprecated.
+Do not build new workflows around it.
+
+The API 4.4.1 versioned workflow below is for a subsequent review or another
+existing review submission. It does not replace the web-session flow above for
+attaching a subscription or group to its first review. Prepare the
+version-scoped metadata and add that version—not the subscription product—to
+the existing submission:
 
 ```bash
-asc subscriptions review submit --subscription-id "SUB_ID" --confirm
+asc subscriptions versions list --subscription-id "SUB_ID" --state PREPARE_FOR_SUBMISSION --paginate --output json
+```
+
+Branch on the number of returned versions before any write:
+
+- Zero: create one version and capture `.data.id` as
+  `SUBSCRIPTION_VERSION_ID`.
+- One: reuse `.data[0].id` as `SUBSCRIPTION_VERSION_ID`; do not create.
+- More than one: stop and require the user to choose an explicit version ID.
+
+Run this only in the zero-result branch:
+
+```bash
+asc subscriptions versions create --subscription-id "SUB_ID" --output json
+```
+
+Resolve the intended locale before writing:
+
+```bash
+asc subscriptions versions localizations list --version-id "SUBSCRIPTION_VERSION_ID" --paginate --output json
+```
+
+If `en-US` is absent, create it:
+
+```bash
+asc subscriptions versions localizations create --version-id "SUBSCRIPTION_VERSION_ID" --locale "en-US" --name "Premium" --description "Premium access"
+```
+
+If the single resolved `en-US` localization exists but differs, update that
+resolved ID. If it already matches, reuse it and do nothing. Stop if locale
+resolution is ambiguous.
+
+```bash
+asc subscriptions versions localizations update --id "SUBSCRIPTION_LOC_ID" --name "Premium" --description "Premium access"
+```
+
+Resolve images before writing:
+
+```bash
+asc subscriptions versions images list --version-id "SUBSCRIPTION_VERSION_ID" --paginate --output json
+```
+
+If the intended image is already present, reuse it and do nothing. If no image
+is present, upload it:
+
+```bash
+asc subscriptions versions images upload --version-id "SUBSCRIPTION_VERSION_ID" --file "./promotional.png"
+```
+
+If a different image must be replaced, make that a separate, explicitly
+confirmed branch using its resolved ID, then upload the replacement:
+
+```bash
+asc subscriptions versions images delete --id "SUBSCRIPTION_IMAGE_ID" --confirm
+asc subscriptions versions images upload --version-id "SUBSCRIPTION_VERSION_ID" --file "./promotional.png"
+```
+
+Inspect the resolved version and children before adding the version to the
+existing review submission:
+
+```bash
+asc subscriptions versions view --id "SUBSCRIPTION_VERSION_ID" --output table
+asc subscriptions versions localizations list --version-id "SUBSCRIPTION_VERSION_ID" --paginate --output table
+asc subscriptions versions images primary --version-id "SUBSCRIPTION_VERSION_ID" --output table
+asc subscriptions versions images list --version-id "SUBSCRIPTION_VERSION_ID" --paginate --output table
+asc review items add --submission "SUBMISSION_ID" --item-type subscriptionVersions --item-id "SUBSCRIPTION_VERSION_ID"
+```
+
+Subscription group versions follow the same existing-submission model:
+
+```bash
+asc subscriptions groups versions list --group-id "GROUP_ID" --state PREPARE_FOR_SUBMISSION --paginate --output json
+```
+
+Branch on the number of returned group versions before any write:
+
+- Zero: create one version and capture `.data.id` as `GROUP_VERSION_ID`.
+- One: reuse `.data[0].id` as `GROUP_VERSION_ID`; do not create.
+- More than one: stop and require the user to choose an explicit version ID.
+
+Run this only in the zero-result branch:
+
+```bash
+asc subscriptions groups versions create --group-id "GROUP_ID" --output json
+```
+
+Resolve the intended locale before writing:
+
+```bash
+asc subscriptions groups versions localizations list --version-id "GROUP_VERSION_ID" --paginate --output json
+```
+
+If `en-US` is absent, create it:
+
+```bash
+asc subscriptions groups versions localizations create --version-id "GROUP_VERSION_ID" --locale "en-US" --name "Premium"
+```
+
+If the single resolved `en-US` localization exists but differs, update that
+resolved ID. If it already matches, reuse it and do nothing. Stop if locale
+resolution is ambiguous.
+
+```bash
+asc subscriptions groups versions localizations update --id "GROUP_LOC_ID" --name "Premium"
+```
+
+Inspect the resolved group version and localizations before adding it to the
+existing review submission:
+
+```bash
+asc subscriptions groups versions view --version-id "GROUP_VERSION_ID" --output table
+asc subscriptions groups versions localizations list --version-id "GROUP_VERSION_ID" --paginate --output table
+asc review items add --submission "SUBMISSION_ID" --item-type subscriptionGroupVersions --item-id "GROUP_VERSION_ID"
 ```
 
 ### In-app purchases need review readiness or first-version inclusion
@@ -195,10 +314,78 @@ Upload missing review screenshots:
 asc iap review-screenshots create --iap-id "IAP_ID" --file "./review.png"
 ```
 
-For IAPs on a published app:
+The product-scoped `asc iap submit` shortcut is deprecated. Use the versioned
+workflow below for new review submissions.
+
+For an API 4.4.1 IAP version, use its version ID throughout the v2 metadata,
+image, and review flow:
 
 ```bash
-asc iap submit --iap-id "IAP_ID" --confirm
+asc iap versions list --iap-id "IAP_ID" --state PREPARE_FOR_SUBMISSION --paginate --output json
+```
+
+Branch on the number of returned IAP versions before any write:
+
+- Zero: create one version and capture `.data.id` as `IAP_VERSION_ID`.
+- One: reuse `.data[0].id` as `IAP_VERSION_ID`; do not create.
+- More than one: stop and require the user to choose an explicit version ID.
+
+Run this only in the zero-result branch:
+
+```bash
+asc iap versions create --iap-id "IAP_ID" --output json
+```
+
+Resolve the intended locale before writing:
+
+```bash
+asc iap versions localizations list --version-id "IAP_VERSION_ID" --paginate --output json
+```
+
+If `en-US` is absent, create it:
+
+```bash
+asc iap versions localizations create --version-id "IAP_VERSION_ID" --locale "en-US" --name "Premium" --description "Unlock premium features"
+```
+
+If the single resolved `en-US` localization exists but differs, update that
+resolved ID. If it already matches, reuse it and do nothing. Stop if locale
+resolution is ambiguous.
+
+```bash
+asc iap versions localizations update --localization-id "IAP_LOC_ID" --name "Premium" --description "Unlock premium features"
+```
+
+Resolve images before writing:
+
+```bash
+asc iap versions images list --version-id "IAP_VERSION_ID" --paginate --output json
+```
+
+If the intended image is already present, reuse it and do nothing. If no image
+is present, create it:
+
+```bash
+asc iap versions images create --version-id "IAP_VERSION_ID" --file "./review.png"
+```
+
+If a different image must be replaced, make that a separate, explicitly
+confirmed branch using its resolved ID, then create the replacement:
+
+```bash
+asc iap versions images delete --image-id "IAP_IMAGE_ID" --confirm
+asc iap versions images create --version-id "IAP_VERSION_ID" --file "./review.png"
+```
+
+Inspect the resolved version and children before adding it to the existing
+review submission:
+
+```bash
+asc iap versions view --version-id "IAP_VERSION_ID" --output table
+asc iap versions localizations list --version-id "IAP_VERSION_ID" --paginate --output table
+asc iap versions image --version-id "IAP_VERSION_ID" --output table
+asc iap versions images list --version-id "IAP_VERSION_ID" --paginate --output table
+asc iap versions submit --version-id "IAP_VERSION_ID" --submission "SUBMISSION_ID" --confirm
 ```
 
 For the first IAP on an app, or the first time adding a new IAP type, Apple may require selecting the IAP from the app version's "In-App Purchases and Subscriptions" section before submitting the app version. Prepare the IAP with localization, pricing, and review screenshot data first.
@@ -224,6 +411,9 @@ If Game Center component versions must ship with the app version, use the explic
 asc review submissions-create --app "APP_ID" --platform IOS
 asc review items add --submission "SUBMISSION_ID" --item-type appStoreVersions --item-id "VERSION_ID"
 asc review items add --submission "SUBMISSION_ID" --item-type gameCenterLeaderboardVersions --item-id "GC_LEADERBOARD_VERSION_ID"
+asc review items add --submission "SUBMISSION_ID" --item-type inAppPurchaseVersions --item-id "IAP_VERSION_ID"
+asc review items add --submission "SUBMISSION_ID" --item-type subscriptionVersions --item-id "SUBSCRIPTION_VERSION_ID"
+asc review items add --submission "SUBMISSION_ID" --item-type subscriptionGroupVersions --item-id "GROUP_VERSION_ID"
 asc review submissions-submit --id "SUBMISSION_ID" --confirm
 ```
 

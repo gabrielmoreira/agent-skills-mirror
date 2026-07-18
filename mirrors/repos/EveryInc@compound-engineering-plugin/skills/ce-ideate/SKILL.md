@@ -249,57 +249,48 @@ Before generating ideas, gather grounding. The dispatch set depends on the mode 
 
 Generate a `<run-id>` once at the start of Phase 1 (8 hex chars). Reuse it for the V15 cache file (this phase) and the V17 checkpoints (Phases 2 and 4) so they share one per-run scratch directory.
 
-**Pre-resolve the scratch directory path.** Scratch lives directly under `/tmp` (not under `$TMPDIR` and not under `.context/`). `$TMPDIR` on macOS resolves to an obscure per-user path like `/var/folders/64/.../T/` that is hostile for users who want to inspect checkpoints, copy them elsewhere, or reference them later — `/tmp` is universally accessible on macOS, Linux, and WSL, and the per-user isolation `$TMPDIR` provides is not valuable for ephemeral ideation scratch. Run one bash command to create the directory and capture its absolute path for downstream use.
+**Pre-resolve the scratch directory path.** Scratch lives beneath the effective user's private CE root directly under `/tmp` (not under `$TMPDIR` and not under `.context/`). Run one bash command to validate the owner-private root, create the run directory, and capture its absolute path for downstream use.
 
 ```bash
-SCRATCH_DIR="/tmp/compound-engineering/ce-ideate/<run-id>"
-mkdir -p "$SCRATCH_DIR"
-echo "$SCRATCH_DIR"
+SCRATCH_ROOT="/tmp/compound-engineering-$(id -u)";
+if [ -L "$SCRATCH_ROOT" ]; then echo "unsafe scratch root symlink: $SCRATCH_ROOT" >&2; exit 1; fi;
+install -d -m 700 "$SCRATCH_ROOT" || exit 1;
+if [ -L "$SCRATCH_ROOT" ] || [ ! -O "$SCRATCH_ROOT" ]; then echo "scratch root is not owned by the current user: $SCRATCH_ROOT" >&2; exit 1; fi;
+chmod 700 "$SCRATCH_ROOT" || exit 1;
+SCRATCH_DIR="$SCRATCH_ROOT/ce-ideate/<run-id>";
+(umask 077; mkdir -p "$SCRATCH_DIR") || exit 1; chmod 700 "$SCRATCH_DIR" || exit 1;
+echo "$SCRATCH_DIR";
 ```
 
-Use the echoed absolute path (`/tmp/compound-engineering/ce-ideate/<run-id>`) as `<scratch-dir>` for every subsequent checkpoint write and cache read in this run. The run directory is not deleted on completion — the V15 cache is session-scoped and reused across run-ids, the checkpoints follow the cross-invocation-reusable convention, and in the no-repo case the deliverable itself is written here (see `references/post-ideation-workflow.md` Phase 4 and §5.5).
+Use the echoed absolute path (`<scratch-root>/ce-ideate/<run-id>`) as `<scratch-dir>` for every subsequent checkpoint write and cache read in this run. The run directory is not deleted on completion — the V15 cache is session-scoped and reused across run-ids, the checkpoints follow the cross-invocation-reusable convention, and in the no-repo case the deliverable itself is written here (see `references/post-ideation-workflow.md` Phase 4 and §5.5).
 
 Run grounding agents in parallel in the **foreground** (do not background — results are needed before Phase 2):
 
 **Repo mode dispatch:**
 
-**Resolve the project profile from the shared cache first.** The question-agnostic profile (stack, top-level layout, conventions, root instruction files) is identical whenever committed profile inputs match, so reuse it instead of re-deriving it in the codebase scan. Set `SKILL_DIR` to this skill's directory and run the helper (full protocol in `references/repo-profile-cache.md`):
-
-```bash
-SKILL_DIR="<absolute path of the directory containing the SKILL.md you just read>";
-python3 "$SKILL_DIR/scripts/repo-profile-cache.py" get
-```
-
-On `HIT`, load the profile JSON — that is your agnostic project shape (stack, top-level layout, conventions); do not re-derive it in the scan. On `MISS`, dispatch a generic subagent with `references/agents/repo-profiler.md` to derive the profile, write its JSON output to a file under `<scratch-dir>`, then persist with `python3 "$SKILL_DIR/scripts/repo-profile-cache.py" put <file>` (re-set `SKILL_DIR` in that call — shell vars don't persist between Bash invocations). On `NO-CACHE`, derive the agnostic shape inline (the codebase scan below covers it) and skip the `put`. The cache is an optimization, never a hard dependency — on any failure or unreadable output, degrade to the full scan. With the profile in hand, the codebase scan runs **only the question-specific slice** on top of it.
+Use the project's active instructions already in context. Send the codebase scan directly to focus-specific current patterns, pain points, and leverage points. If the focus cannot be scoped from the supplied context, allow one targeted root or workspace probe.
 
 1. **Quick context scan** — dispatch a general-purpose subagent using the platform's cheapest capable model when the harness exposes a known override; otherwise inherit. Before dispatching, apply the routing test from "User-Supplied Research Artifacts" below to any root-level `*.md` file the focus hint names: research artifacts (evidence) take that subsection's distillation path, so list them on the prompt's research-artifacts line to keep the scan from duplicating them into `User-named references`. Dispatch with this prompt:
 
-   > **Project profile handling (read first):** if a project profile is supplied at the end of this prompt, its agnostic shape — stack/language/framework, top-level directory layout, conventions, and root instruction-file content — is already established; do **not** re-derive it. Skip reading the instruction files and globbing the layout for those facts, and run only the question-specific slice (notable patterns bearing on the focus, pain points, leverage points; in surprise-me mode also sample a few representative files per area and surface recent PR/commit activity). If no profile is supplied, derive the full shape as described below.
+   > **Grounding scope:** use the supplied project context and go directly to current patterns bearing on the focus, pain points, leverage points, applicable workflow constraints, and in surprise-me mode representative files plus recent activity. If the focus cannot be scoped, use one targeted root or workspace probe.
    >
-   > Read the project's root agent-instruction file for this harness (e.g., `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, or `.cursor/rules`) and `README.md` when present, then discover the top-level directory layout using the native file-search/glob tool (e.g., `Glob` with pattern `*` or `*/*` in Claude Code). Also read `STRATEGY.md` if it exists — it captures the product's target problem, approach, persona, metrics, and tracks.
+   > Start with the files and areas named by the focus or caller context. Read the applicable current project instructions when operational rules affect the scan, `STRATEGY.md` when product alignment matters, and `CONCEPTS.md` when canonical vocabulary matters.
    >
-   > **Two paths for other root-level `*.md` files**, depending on whether the focus hint names them:
-   >
-   > - **User-named references** — if the focus hint names a specific root-level `*.md` file (e.g., focus is "ideate based on FEEDBACK.md", "use NOTES.md as input", "review the gaps in TODO.md"), fully read that file and include its content under a heading `User-named references`. Phase 2 treats these as *constraint*, so sub-agents need actual content, not a gist. Quote or summarize substantive sections; keep one-line gists for files that are mentioned but not the actual subject. Exception: skip this path for any file listed on the research-artifacts line below — a separate agent distills those; give each only a one-line gist under `Additional context`.
-   > - **Additional context** — for any other root-level `*.md` files (not named in the focus), read briefly and include a one-line gist under a heading `Additional context`. Phase 2 treats these as *background*, so a gist is sufficient.
+   > If the focus names a root-level `*.md` file, read it and include its relevant content under `User-named references`. When that file is listed on the research-artifacts line below, leave its full distillation to the research agent and include only a one-line gist here.
    >
    > Return a concise summary (under 40 lines, longer if user-named references include substantive content) covering:
    >
-   > - project shape (language, framework, top-level directory layout)
-   > - notable patterns or conventions
-   > - obvious pain points or gaps
-   > - likely leverage points for improvement
-   > - product strategy summary, if `STRATEGY.md` was present — include the approach and active tracks verbatim so ideation can weight toward strategy-aligned directions
+   > - current patterns and conventions relevant to the focus
+   > - pain points or gaps relevant to the focus
+   > - likely leverage points
+   > - relevant product strategy, if `STRATEGY.md` was read
    > - `User-named references` section (when the focus hint named root-level `*.md` files)
-   > - `Additional context` section (when other root-level `*.md` files exist that the focus did not name)
    >
-   > Keep the scan shallow otherwise — read only top-level documentation and directory structure. Do not analyze GitHub issues, templates, or contribution guidelines. Do not do deep code search.
+   > Keep the scan shallow. Do not analyze unrelated issues, templates, contribution guidelines, or code.
    >
    > Focus hint: {focus_hint}
    >
    > Research artifacts (gist-only under `Additional context` — do not fully read; a separate agent distills these): {research_artifact_files, or "none"}
-   >
-   > Project profile (agnostic shape — treat as established, do not re-derive; when "none", derive the full shape): {project_profile, or "none — derive the full shape"}
 
 2. **Learnings search** — read `references/agents/learnings-researcher.md` and dispatch a generic subagent seeded with that local prompt plus a brief summary of the ideation focus.
 

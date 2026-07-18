@@ -106,154 +106,13 @@ For plugin or Companion releases, follow `docs/release.md`. It documents the
 required diff inspection, companion asset workflow, GitHub release creation,
 tagging, verification, and npm publish order.
 
-## Tmux Session Lifecycle Management
-
-When working with tmux integration, understanding the session lifecycle is crucial for preventing orphaned processes and ghost panes.
-
-### Session Lifecycle Flow
-
-```
-Task Launch:
-  session.create() → tmux pane spawned → task runs
-
-Task Completes Normally:
-  session.status (idle) → extract results → session.abort()
-  → session.deleted event → tmux pane closed
-
-Task Cancelled:
-  cancel() → session.abort() → session.deleted event
-  → tmux pane closed
-
-Session Deleted Externally:
-  session.deleted event → task cleanup → tmux pane closed
-```
-
-### Key Implementation Details
-
-**1. Graceful Shutdown (src/multiplexer/tmux/index.ts)**
-```typescript
-// Always send Ctrl+C before killing pane
-spawn([tmux, "send-keys", "-t", paneId, "C-c"])
-await delay(250)
-spawn([tmux, "kill-pane", "-t", paneId])
-```
-
-**2. Session Abort Timing (src/council/council-manager.ts)**
-- Call `session.abort()` AFTER extracting task results
-- This ensures content is preserved before session termination
-- Triggers `session.deleted` event for cleanup
-
-**3. Event Handlers (src/index.ts)**
-The multiplexer session handler must stay wired up:
-- `multiplexerSessionManager.onSessionDeleted()` - closes tmux/zellij panes
-
-### Testing Tmux Integration
-
-After making changes to session management:
-
-```bash
-# 1. Build the plugin
-bun run build
-
-# 2. Run from local fork (in ~/.config/opencode/opencode.jsonc):
-# "plugin": ["file:///path/to/oh-my-opencode-slim"]
-
-# 3. Launch test tasks
-@explorer count files in src/
-@librarian search for Bun documentation
-
-# 4. Verify no orphans
-ps aux | grep "opencode attach" | grep -v grep
-# Should return 0 processes after tasks complete
-```
-
-### Common Issues
-
-**Ghost panes remaining open:**
-- Check that `session.abort()` is called after result extraction
-- Verify `session.deleted` handler is wired in src/index.ts
-
-**Orphaned opencode attach processes:**
-- Ensure graceful shutdown sends Ctrl+C before kill-pane
-- Check that tmux pane closes before process termination
-
 ## Pre-Push Code Review
 
-Before pushing changes to the repository, always run a code review to catch issues like:
+Before pushing changes to the repository, when makes sense run a code review to catch issues like:
 - Duplicate code
 - Redundant function calls
 - Race conditions
 - Logic errors
-
-### Using `/review` Command (Recommended)
-
-OpenCode has a built-in `/review` command that automatically performs comprehensive code reviews:
-
-```bash
-# Review uncommitted changes (default)
-/review
-
-# Review specific commit
-/review <commit-hash>
-
-# Review branch comparison
-/review <branch-name>
-
-# Review PR
-/review <pr-url-or-number>
-```
-
-**Why use `/review` instead of asking @oracle manually?**
-- Standardized review process with consistent focus areas (bugs, structure, performance)
-- Automatically handles git operations (diff, status, etc.)
-- Context-aware: reads full files and convention files (AGENTS.md, etc.)
-- Delegates to specialized @build subagent with proper permissions
-- Provides actionable, matter-of-fact feedback
-
-### Workflow Before Pushing
-
-1. **Make your changes**
-   ```bash
-   # ... edit files ...
-   ```
-
-2. **Stage changes**
-   ```bash
-   git add .
-   ```
-
-3. **Run code review**
-   ```
-   /review
-   ```
-
-4. **Address any issues found**
-
-5. **Run checks**
-   ```bash
-   bun run check:ci
-   bun test
-   ```
-
-6. **Commit and push**
-   ```bash
-   git commit -m "..."
-   git push origin <branch>
-   ```
-
-**Note:** The `/review` command found issues in our PR #127 (duplicate code, redundant abort calls) that neither linter nor tests caught. Always use it before pushing!
-
-## Common Patterns
-
-- This is an OpenCode plugin - most functionality lives in `src/`
-- The CLI entry point is `src/cli/index.ts`
-- The main plugin export is `src/index.ts`
-- Agent factories are in `src/agents/` - each agent has its own file + optional `.test.ts`
-- Skills are located in `src/skills/` (included in package publish)
-- Multiplexer session management is in `src/multiplexer/`
-- Council manager (multi-LLM orchestration) is in `src/council/`
-- Tmux utilities are in `src/multiplexer/tmux/`
-- 1426 tests across 83 files - run `bun test` to verify
 
 ## Repository Map
 
@@ -267,12 +126,14 @@ Before working on any task, read `codemap.md` to understand:
 For deep work on a specific folder, also read that folder's `codemap.md`.
 
 ## Debugging Issues
+
 ### OpenCode
 Log files are written to:
 macOS/Linux: ~/.local/share/opencode/log/
 Windows: Press WIN+R and paste %USERPROFILE%\.local\share\opencode\log
 Log files are named with timestamps (e.g., 2025-01-09T123456.log) and the most recent 10 log files are kept.
 You can set the log level with the --log-level command-line option to get more detailed debug information. For example, opencode --log-level DEBUG.
+
 ### Plugin
 ~/.local/share/opencode/log/oh-my-opencode-slim.<timestamp>.log
 

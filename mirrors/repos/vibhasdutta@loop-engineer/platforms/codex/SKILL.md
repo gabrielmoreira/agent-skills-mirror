@@ -1,10 +1,12 @@
 ﻿---
 name: loop-engineer
 description: >
-  Domain-agnostic autonomous loop for OpenAI Codex CLI. Asks 2 questions, scaffolds
+  Domain-agnostic autonomous loop for OpenAI Codex CLI. Asks 3 questions, scaffolds
   a parallel agent team as TOML files (resource-scout, researcher, planner, agent-factory,
   executor, verifier, auditor, memory-keeper), generates loop-stack/<LOOP_ID>/
   state files, and outputs the exact `codex /goal` command for the fully autonomous loop.
+  Modes: build (from scratch), research (investigate only), patch (fix/extend
+  existing code), audit (review only, no changes).
 ---
 
 # Loop Engineer (Codex)
@@ -13,52 +15,22 @@ You are running a loop engineering wizard for OpenAI Codex. Follow these phases 
 
 ---
 
-## Phase 0 — Resume Check
-
-Run the resume-check script FIRST — unconditionally. It is the source of truth; do not scan `loop-stack/` yourself.
-
-**PowerShell:** `& "$env:USERPROFILE\.codex\skills\loop-engineer\scripts\check-resume.ps1"`
-**Bash:** `bash ~/.codex/skills/loop-engineer/scripts/check-resume.sh`
-
-Read its output literally, then branch:
-
-**`ACTIVE <id> | State: ... | Task: ... | Progress: ...`:**
-- Continuation intent ("continue", "proceed", "finish", "resume", "pick up", "fix what", "audit findings", "where we left") → auto-resume to Phase 5 without asking, output the `/goal` prompt using existing files.
-- Otherwise show State/Current Task/Progress, ask: Resume or Fresh?
-  - Resume → skip to Phase 5, output `/goal` using existing files.
-  - Fresh → delete `loop-stack/<id>/` only (keep `.codex/agents/`), continue to Phase 1.
-- Multiple `ACTIVE` lines → list all, ask which to resume or 'fresh'. Continuation intent → auto-resume most recently modified.
-
-**`DONE <id>` or `EXTENDED_DONE <id>` (no `ACTIVE` line) + continuation intent:**
-→ **EXTEND SEQUENCE** — reopen in place, don't restart:
-1. Rename `loop-stack/<id>_DONE/` (or `_EXTENDED_DONE/`) → `loop-stack/<id>_EXTENDED/`.
-2. Reuse existing PLAN.md, RESEARCH.md, MEMORY.md, TOOLS.md, AGENTS.md, `agents/` as-is — do not re-run researchers, resource-scout, or agent-factory.
-3. Ask ONE question: "What's the next task for this loop?" Append under `## Extension {N} Goal` in PLAN.md.
-4. Spawn `planner` once against the new goal (existing RESEARCH.md/TOOLS.md as context) to append new `[GN]` tasks.
-5. Reset STATUS.md: State = IN_PROGRESS, Current Task = first new task, Task Progress updated.
-6. Output the `/goal` prompt directly for the outer loop (skip Phase 1–4).
-
-On completion of a loop directory containing `_EXTENDED`: rename it to `_EXTENDED_DONE` instead of plain `_DONE`.
-
-**`NONE`, or `DONE`/`EXTENDED_DONE` with no continuation intent:** → Phase 1 (fresh loop).
-
-**RESUME/EXTEND RULES — always apply when going to Phase 5 this way:**
-Skip Phase 2, 3, and 4 entirely. Read STATUS.md + PLAN.md to find where the loop stopped. Reuse existing RESEARCH.md, MEMORY.md, TOOLS.md, AGENTS.md — do not re-run startup agents.
-
 > **To update loop-engineer:** re-run `install.sh --update` / `install.ps1 -Update -Codex`. Updates are never applied automatically mid-loop.
 
 ---
 
 ## Phase 1 — Core Wizard
 
-**Q1:** "What do you want the loop to accomplish? (1-2 sentences)"
+**Q1 — Mode:** if invoked with an argument matching `build`/`research`/`patch`/`audit`, use it as MODE and skip this question. Otherwise ask: "Mode? build (new from scratch) / research (investigate and report, no code changes) / patch (fix or add a feature using the existing codebase) / audit (review existing code/output only, no changes)". Default to `build` if unclear.
+
+**Q2:** "What do you want the loop to accomplish? (1-2 sentences)"
 
 Generate LOOP_ID: lowercase slug, first 4 meaningful words, max 24 chars.
 Auto-set: `STOP_CONDITION` = "all tasks in loop-stack/<LOOP_ID>/PLAN.md checked", `MAX_TURNS` = 20.
 
-**Q2:** "Should the loop auto-commit after each verified task? (yes / no)"
+**Q3:** "Should the loop auto-commit after each verified task? (yes / no)"
 
-Store: `GOAL`, `LOOP_ID`, `STOP_CONDITION`, `MAX_TURNS`, `USE_GIT`.
+Store: `MODE`, `GOAL`, `LOOP_ID`, `STOP_CONDITION`, `MAX_TURNS`, `USE_GIT`.
 
 ---
 
@@ -73,6 +45,7 @@ Run the init script — creates all state files, copies TOML agent files + knowl
   -Goal "<GOAL>" `
   -Stop "all tasks in loop-stack/<LOOP_ID>/PLAN.md checked" `
   -Git <yes/no> `
+  -Mode <MODE> `
   -Platform codex
 ```
 
@@ -83,6 +56,7 @@ bash ~/.codex/skills/loop-engineer/scripts/init-loop.sh \
   --goal "<GOAL>" \
   --stop "all tasks in loop-stack/<LOOP_ID>/PLAN.md checked" \
   --git <yes/no> \
+  --mode <MODE> \
   --platform codex
 ```
 
@@ -106,6 +80,7 @@ Print with real values substituted — never print literal placeholders:
 
 Loop directory: loop-stack/<LOOP_ID>/
 Agent definitions: .codex/agents/
+Mode: {MODE}
 Budget: 20 turns
 FULLY AUTONOMOUS — never pause for user input.
 
@@ -146,6 +121,7 @@ Wait for resource-scout to complete.
 Step 3 — spawn_agent: planner
   Loop directory: loop-stack/<LOOP_ID>/
   Read RESEARCH.md (all sections) and TOOLS.md.
+  Task type depends on MODE: build/patch → implementation tasks; research → research/writing tasks only, no code changes; audit → review tasks only, no code changes.
   Create 3–7 tasks with parallel group tags [G1], [G2], etc.
   Same group = can run in parallel (independent files/modules).
   Different group = sequential dependency (later groups depend on earlier ones).
@@ -160,6 +136,8 @@ Write loop-stack/<LOOP_ID>/AGENTS.md with "# Specialized Agents\n## Status\nNONE
 Step 5 — Loop until all tasks in PLAN.md are checked or budget reached.
 Track: turns_used = 0, skipped_tasks = []
 Print per iteration: [Task X/N | Turn Y/20]
+
+Mode gating: build (default) — full flow, every step below runs. patch — same steps, but every researcher/executor prompt adds "existing codebase is ground truth — fix/extend, don't rewrite from scratch." research — skip step (d) executors and steps (e)-(f) audit entirely; the researcher (step c) writes each task's final deliverable directly; the verifier (step g) checks that instead of built code. audit — skip step (d) executors; the auditor step (e) IS the task (read-only review, findings to RESEARCH.md); a BLOCK verdict (step f) is just recorded, never auto-fixed, always proceeds to the verifier.
 
 Each iteration:
 
@@ -187,7 +165,15 @@ d. Read AGENTS.md — if specialized agents were created for any tasks in this b
      Goal output (code, documents, files) goes to the project directory, NOT inside loop-stack/. loop-stack/ is state-only.
    Wait for all. Increment turns_used.
 
-e. Spawn verifiers in parallel (one per task) — merged verifier does both jobs in one pass (researcher-criteria check + stop condition):
+e. Spawn auditors in parallel (one per task just built):
+   Wait for all.
+
+f. Process audit results per task:
+   - CLEAN/WARN → proceed to verifier
+   - BLOCK → AUTO-FIX: spawn executor once with BLOCK context, re-audit once.
+     Still BLOCK → auto-skip.
+
+g. Spawn verifiers in parallel (one per task that passed audit) — verifier is the final gate, checking both jobs in one pass (researcher-criteria check + stop condition):
    For each task: spawn_agent verifier with:
      Loop directory: loop-stack/<LOOP_ID>/
      Current task: {this_task}
@@ -195,18 +181,10 @@ e. Spawn verifiers in parallel (one per task) — merged verifier does both jobs
      Call report_agent_job_result when done.
    Wait for all. Increment turns_used.
 
-f. Process verifier results per task:
-   - VERIFIED_PASS → proceed to auditor
+h. Process verifier results per task:
+   - VERIFIED_PASS → proceed to memory-keeper
    - FAILED, attempts < 3 → increment attempts, retry from (c) with error context
    - FAILED, attempts >= 3 → AUTO-SKIP: add to skipped_tasks, skip this task
-
-g. Spawn auditors in parallel (one per passing task):
-   Wait for all.
-
-h. Process audit results per task:
-   - CLEAN/WARN → proceed
-   - BLOCK → AUTO-FIX: spawn executor once with BLOCK context, re-verify.
-     Still BLOCK → auto-skip.
 
 i. spawn_agent: memory-keeper (single, final consolidation)
    Distill all batch learnings to loop-stack/<LOOP_ID>/MEMORY.md.
@@ -216,13 +194,13 @@ i. spawn_agent: memory-keeper (single, final consolidation)
 
 j. Advance: mark [x] for passed tasks. If USE_GIT=yes: commit PLAN.md + STATUS.md.
    Find next unchecked group. If none → State = ALL DONE.
-   Rename: loop-stack/<LOOP_ID>/ → loop-stack/<LOOP_ID>_DONE/ (or _EXTENDED_DONE/ if this loop directory contained _EXTENDED)
+   Rename: loop-stack/<LOOP_ID>/ → loop-stack/<LOOP_ID>_DONE/
    Write REPORT.md in the renamed directory with goal, outcome, tasks, skipped, learnings.
    Stop.
 
 Step 6 — Budget reached:
    Update STATUS.md State to BUDGET_REACHED.
-   Rename: loop-stack/<LOOP_ID>/ → loop-stack/<LOOP_ID>_DONE/ (or _EXTENDED_DONE/ if applicable)
+   Rename: loop-stack/<LOOP_ID>/ → loop-stack/<LOOP_ID>_DONE/
    Write REPORT.md. Stop.
 
 HARD RULE — no plan-approval gate: proceed through this entire sequence without presenting a plan for approval or waiting for a "click proceed" confirmation. This loop is fully autonomous from here.
@@ -240,7 +218,6 @@ HARD RULE — no plan-approval gate: proceed through this entire sequence withou
 
 ## Rules
 
-- Phase 0 always first — run the check-resume script, never scan `loop-stack/` by hand.
 - **File copy**: shell commands only. Never write TOML agent files manually.
 - **Global data first**: every agent reads `.global/MEMORY.md` and `.global/TOOLS.md` before acting.
 - **Parallel first**: startup researchers parallel, per-task researchers parallel, on-demand agent-factory parallel, executors parallel, verifiers parallel, auditors parallel.
@@ -248,10 +225,12 @@ HARD RULE — no plan-approval gate: proceed through this entire sequence withou
 - **Agent-factory is on-demand, not a fixed startup step.** Invoke it only right before executing a task that clearly needs a specialist, and spawn it for all qualifying tasks in a batch simultaneously. Most loops never call it.
 - **knowledge-sources.md (`.codex/knowledge-sources/`) is a reference researchers consult on demand**, not a phase step.
 - **No watcher agent.** Check heartbeats yourself if an agent is slow; never spawn a dedicated watcher.
-- **No separate evaluator.** Verifier does both jobs in one pass — checks RESEARCH.md's "## Verification Criteria"/"## Requirements & Constraints" AND runs the stop condition.
-- **Memory-keeper runs once per task batch**: single final consolidation (local+global) after audit. Executors already append learnings to MEMORY.md inline, so no mid-batch checkpoint call is needed.
+- **No separate evaluator.** Verifier is the final gate — checks RESEARCH.md's "## Verification Criteria"/"## Requirements & Constraints" AND runs the stop condition.
+- **Audit before verify.** Auditor reviews the build first (step e); verifier runs last as the final pass/fail gate (step g) and is what triggers retry.
+- **Memory-keeper runs once per task batch**: single final consolidation (local+global) after verify. Executors already append learnings to MEMORY.md inline, so no mid-batch checkpoint call is needed. Its only job is capturing learnings/context — never executes the goal or writes goal output.
 - **Executors append to MEMORY.md directly** during work.
-- **Planner**: once at startup, and again (lightweight) for extended-loop follow-on tasks. Creates parallel-group-tagged task list.
-- **Fully autonomous**: no user pauses. 3 fails → auto-skip. BLOCK → auto-fix once → skip.
+- **Planner**: once at startup. Creates parallel-group-tagged task list.
+- **Fully autonomous**: no user pauses. Audit BLOCK → auto-fix once → skip. 3 verifier fails → auto-skip.
+- **Modes**: `build` (default), `research`, `patch`, `audit` — set once in Phase 1, gates the outer loop (see Mode gating above).
 - **HARD RULE — no plan-approval gate**: proceed through Phase 2 onward without presenting a plan for approval or waiting for a "click proceed" confirmation.
-- On completion: rename to `<LOOP_ID>_DONE/` or `<LOOP_ID>_EXTENDED_DONE/`.
+- No resume support: every invocation starts a fresh loop. On completion: rename to `<LOOP_ID>_DONE/` (bookkeeping only).

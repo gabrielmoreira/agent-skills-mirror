@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Fission-AI/OpenSpec` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `Fission-AI/OpenSpec` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Fission-AI/OpenSpec` — 26 default patterns, 0 followed patterns, 7 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,8 +64,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.agents/skills/release-openspec/SKILL.md`](.agents/skills/release-openspec/SKILL.md) |
 | 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 5 | ✓ | [`openspec/work/AGENTS.md`](openspec/work/AGENTS.md) |
-| 6 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 7 | ✓ | [`website/app/llms.txt/route.ts`](website/app/llms.txt/route.ts) |
+| 6 | ✓ | [`skills/openspec-apply-change/SKILL.md`](skills/openspec-apply-change/SKILL.md) |
+| 7 | ✓ | [`skills/openspec-archive-change/SKILL.md`](skills/openspec-archive-change/SKILL.md) |
+| 8 | ✓ | [`skills/openspec-bulk-archive-change/SKILL.md`](skills/openspec-bulk-archive-change/SKILL.md) |
+| 9 | ✓ | [`skills/openspec-continue-change/SKILL.md`](skills/openspec-continue-change/SKILL.md) |
+| 10 | ✓ | [`skills/openspec-explore/SKILL.md`](skills/openspec-explore/SKILL.md) |
+| 11 | ✓ | [`skills/openspec-ff-change/SKILL.md`](skills/openspec-ff-change/SKILL.md) |
+| 12 | ✓ | [`skills/openspec-new-change/SKILL.md`](skills/openspec-new-change/SKILL.md) |
+| 13 | ✓ | [`skills/openspec-onboard/SKILL.md`](skills/openspec-onboard/SKILL.md) |
+| 14 | ✓ | [`skills/openspec-propose/SKILL.md`](skills/openspec-propose/SKILL.md) |
+| 15 | ✓ | [`skills/openspec-sync-specs/SKILL.md`](skills/openspec-sync-specs/SKILL.md) |
+| 16 | ✓ | [`skills/openspec-update-change/SKILL.md`](skills/openspec-update-change/SKILL.md) |
+| 17 | ✓ | [`skills/openspec-verify-change/SKILL.md`](skills/openspec-verify-change/SKILL.md) |
+| 18 | ✓ | [`skills/README.md`](skills/README.md) |
+| 19 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 20 | ✓ | [`website/app/llms.txt/route.ts`](website/app/llms.txt/route.ts) |
 
 ---
 

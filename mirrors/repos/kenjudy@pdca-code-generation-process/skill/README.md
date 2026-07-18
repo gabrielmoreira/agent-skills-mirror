@@ -30,25 +30,9 @@ A disciplined framework for AI-assisted code generation with strict TDD:
 
 ---
 
-## Building from Source
-
-**Required before installation.** The `.skill` files are not included in the repository and must be built locally first.
-
-**pdca-framework:**
-```bash
-cd skill
-./build-skill.sh
-```
-
-**Windows:**
-```powershell
-cd skill
-.\build-skill.ps1
-```
-
-See [BUILD.md](BUILD.md) for full details, including troubleshooting and CI/CD automation.
-
 ## Installation
+
+**Most users should download the pre-built skill from [GitHub Releases](https://github.com/kenjudy/pdca-agentic-coding-framework/releases/latest)** rather than building from source. If you need the latest unreleased changes from `main` or are customizing the prompts, see the "Alternative: Install via Script" steps below (Claude Code or Codex) — they build from source before installing.
 
 **Important:** Claude.ai (web/desktop), Claude Code, and Codex use different installation methods.
 
@@ -84,40 +68,16 @@ This is the primary distribution path — upload `pdca-framework.skill` directly
 
 Claude Code uses a **directory-based** skill format, not the `.skill` package file.
 
-#### Quick Install (Recommended)
+[Download `pdca-framework.skill` from Releases](https://github.com/kenjudy/pdca-agentic-coding-framework/releases/latest) first.
 
-Use the installation script for automatic setup:
+#### Install - Personal Skills (Available Across All Projects)
+
+Just the downloaded `.skill` file — no repo clone needed:
 
 **macOS/Linux (Bash):**
 ```bash
-# From the skill directory
-./install-skill.sh
-
-# Optional: Specify scope as argument
-./install-skill.sh personal   # Install to ~/.claude/skills/ (default)
-./install-skill.sh project    # Install to current project's .claude/skills/
-./install-skill.sh codex      # Install to ~/.agents/skills/
-```
-
-**Windows (PowerShell):**
-```powershell
-# From the skill directory
-.\install-skill.ps1
-
-# Optional: Specify scope as argument
-.\install-skill.ps1 personal   # Install to ~/.claude/skills/ (default)
-.\install-skill.ps1 project    # Install to current project's .claude/skills/
-.\install-skill.ps1 codex      # Install to %USERPROFILE%\.agents\skills\
-```
-
-#### Manual Install - Personal Skills (Available Across All Projects)
-
-```bash
 # Create the parent directory
 mkdir -p ~/.claude/skills
-
-# Install pdca-framework
-unzip pdca-framework.skill -d ~/.claude/skills
 
 # Extract the skill package (zip contains pdca-framework/ at root)
 unzip pdca-framework.skill -d ~/.claude/skills
@@ -139,8 +99,23 @@ unzip pdca-framework.skill -d ~/.claude/skills
 #       └── beads-workflow.md      (optional — per-session beads reference)
 ```
 
-#### Manual Install - Project Skill (Shared with Team via Git)
+**Windows (PowerShell):**
+```powershell
+# Create the parent directory
+New-Item -ItemType Directory -Path "$HOME\.claude\skills" -Force | Out-Null
 
+# Extract the skill package (zip contains pdca-framework/ at root)
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+[System.IO.Compression.ZipFile]::ExtractToDirectory("pdca-framework.skill", "$HOME\.claude\skills")
+
+# Result: same pdca-framework/ layout as above, under %USERPROFILE%\.claude\skills\
+```
+
+#### Install - Project Skill (Shared with Team via Git)
+
+Use this instead of the personal install above when the skill should travel with a specific repo rather than depend on each teammate remembering to install it themselves. Claude Code auto-discovers skills committed under `.claude/skills/` in a project (no config needed), so anyone who clones the repo and runs `claude` there gets the PDCA workflow automatically — useful when a team wants to standardize how a particular codebase is worked on, not just how one person works everywhere. The tradeoff: it's scoped to this one repo (personal installs at `~/.claude/skills/` apply everywhere), and first-time cloners will see a one-time workspace-trust prompt for the committed `.claude/` config.
+
+**macOS/Linux (Bash):**
 ```bash
 # From your project directory
 mkdir -p .claude/skills
@@ -153,14 +128,68 @@ git add .claude/skills/
 git commit -m "Add PDCA framework skill"
 ```
 
+**Windows (PowerShell):**
+```powershell
+# From your project directory
+New-Item -ItemType Directory -Path ".claude\skills" -Force | Out-Null
+
+# Extract the skill package (zip contains pdca-framework/ at root)
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+[System.IO.Compression.ZipFile]::ExtractToDirectory("C:\path\to\pdca-framework.skill", ".claude\skills")
+
+# Commit to share with team
+git add .claude/skills/
+git commit -m "Add PDCA framework skill"
+```
+
+#### Alternative: Install via Script (Repo Clone Only)
+
+If you've cloned the repo (e.g. to build from source), `install-skill.sh` / `install-skill.ps1` wraps the same unzip steps and prompts for scope:
+
+**macOS/Linux (Bash):**
+```bash
+# From the skill directory
+./build-skill.sh
+
+# Optional: Specify scope as argument
+./install-skill.sh personal   # Install to ~/.claude/skills/ (default)
+./install-skill.sh project    # Install to current project's .claude/skills/
+./install-skill.sh codex      # Install to ~/.agents/skills/
+```
+
+**Windows (PowerShell):**
+```powershell
+# From the skill directory
+.\build-skill.ps1
+
+# Optional: Specify scope as argument
+.\install-skill.ps1 personal   # Install to ~/.claude/skills/ (default)
+.\install-skill.ps1 project    # Install to current project's .claude/skills/
+.\install-skill.ps1 codex      # Install to %USERPROFILE%\.agents\skills\
+```
+
+See [BUILD.md](BUILD.md) for full details, including troubleshooting and CI/CD automation.
+
 #### Verify Installation
 
+**macOS/Linux (Bash):**
 ```bash
 # For personal skills
 ls ~/.claude/skills/pdca-framework/
 
 # For project skills
 ls .claude/skills/pdca-framework/
+
+# Should show: SKILL.md and references/
+```
+
+**Windows (PowerShell):**
+```powershell
+# For personal skills
+dir "$HOME\.claude\skills\pdca-framework\"
+
+# For project skills
+dir ".claude\skills\pdca-framework\"
 
 # Should show: SKILL.md and references/
 ```
@@ -173,21 +202,42 @@ ls .claude/skills/pdca-framework/
 
 Codex discovers personal skills from `~/.agents/skills/`.
 
-```bash
-# From the skill directory
-./install-skill.sh codex
+[Download `pdca-framework.skill` from Releases](https://github.com/kenjudy/pdca-agentic-coding-framework/releases/latest) first.
 
-# Or manually
+#### Install - Personal Skills
+
+**macOS/Linux (Bash):**
+```bash
 mkdir -p ~/.agents/skills
 unzip pdca-framework.skill -d ~/.agents/skills
 ls ~/.agents/skills/pdca-framework/
 ```
 
-On Windows:
+**Windows (PowerShell):**
+```powershell
+New-Item -ItemType Directory -Path "$env:USERPROFILE\.agents\skills" -Force | Out-Null
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+[System.IO.Compression.ZipFile]::ExtractToDirectory("pdca-framework.skill", "$env:USERPROFILE\.agents\skills")
+dir "$env:USERPROFILE\.agents\skills\pdca-framework\"
+```
+
+#### Alternative: Install via Script (Repo Clone Only)
+
+```bash
+# macOS/Linux — from the skill directory
+cd skill
+./build-skill.sh
+./install-skill.sh codex
+```
 
 ```powershell
+# Windows — from the skill directory
+cd skill
+.\build-skill.ps1
 .\install-skill.ps1 codex
 ```
+
+See [BUILD.md](BUILD.md) for full details, including troubleshooting and CI/CD automation.
 
 ---
 

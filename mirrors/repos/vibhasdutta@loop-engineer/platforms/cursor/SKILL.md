@@ -1,11 +1,13 @@
 ﻿---
 name: loop-engineer
 description: >
-  Loop engineering wizard for Cursor. Asks 2 questions, then orchestrates
+  Loop engineering wizard for Cursor. Asks 3 questions, then orchestrates
   a fully autonomous parallel agent team (resource-scout, researcher, planner,
   agent-factory, executor, verifier, auditor, memory-keeper) for any goal.
   Multiple agents run in parallel — dynamic researcher count, multiple executors
-  on independent parts simultaneously. Persistent memory, git integration, resume support.
+  on independent parts simultaneously. Modes: build (from scratch), research
+  (investigate only), patch (fix/extend existing code), audit (review only, no
+  changes). Persistent memory, git integration.
 ---
 
 # Loop Engineer (Cursor)
@@ -14,50 +16,20 @@ You are running a loop engineering wizard. Follow these phases in order.
 
 ---
 
-## Phase 0 — Resume Check
-
-Run the resume-check script FIRST — unconditionally. It is the source of truth; do not scan `loop-stack/` yourself.
-
-**Bash:** `bash ~/.cursor/skills/loop-engineer/scripts/check-resume.sh`
-**PowerShell:** `& "$env:USERPROFILE\.cursor\skills\loop-engineer\scripts\check-resume.ps1"`
-
-Read its output literally, then branch:
-
-**`ACTIVE <id> | State: ... | Task: ... | Progress: ...`:**
-- Continuation intent ("continue", "proceed", "finish", "resume", "pick up", "fix what", "audit findings", "where we left") → auto-resume to Phase 5 without asking.
-- Otherwise show State/Current Task/Progress, ask: Resume or Fresh?
-  - Resume → skip to Phase 5 using existing files.
-  - Fresh → delete `loop-stack/<id>/` only (keep `.cursor/agents/`), continue to Phase 1.
-- Multiple `ACTIVE` lines → list all, ask which to resume or 'fresh'. Continuation intent → auto-resume most recently modified.
-
-**`DONE <id>` or `EXTENDED_DONE <id>` (no `ACTIVE` line) + continuation intent:**
-→ **EXTEND SEQUENCE** — reopen in place, don't restart:
-1. Rename `loop-stack/<id>_DONE/` (or `_EXTENDED_DONE/`) → `loop-stack/<id>_EXTENDED/`.
-2. Reuse existing PLAN.md, RESEARCH.md, MEMORY.md, TOOLS.md, AGENTS.md, `agents/` as-is — do not re-run researchers, resource-scout, or agent-factory.
-3. Ask ONE question: "What's the next task for this loop?" Append under `## Extension {N} Goal` in PLAN.md.
-4. Run planner once against the new goal (existing RESEARCH.md/TOOLS.md as context) to append new `[GN]` tasks.
-5. Reset STATUS.md: State = IN_PROGRESS, Current Task = first new task, Task Progress updated.
-6. Go directly to Phase 5 (skip Phase 1–4).
-
-On completion of a loop directory containing `_EXTENDED`: Phase 6 renames it to `_EXTENDED_DONE` instead of plain `_DONE`.
-
-**`NONE`, or `DONE`/`EXTENDED_DONE` with no continuation intent:** → Phase 1 (fresh loop).
-
-**RESUME/EXTEND RULES — always apply when going to Phase 5 this way:**
-Skip Phase 2, 3, and 4 entirely. Read STATUS.md + PLAN.md to find where the loop stopped. Reuse existing RESEARCH.md, MEMORY.md, TOOLS.md, AGENTS.md — do not re-run startup agents.
-
 > **To update loop-engineer:** re-run `install.sh --update` / `install.ps1 -Update -Cursor` (manual install). Updates are never applied automatically mid-loop.
 
 ---
 
 ## Phase 1 — Core Wizard
 
-**Q1:** "What do you want the loop to accomplish? (1-2 sentences)"
+**Q1 — Mode:** if invoked with an argument matching `build`/`research`/`patch`/`audit`, use it as MODE and skip this question. Otherwise ask: "Mode? build (new from scratch) / research (investigate and report, no code changes) / patch (fix or add a feature using the existing codebase) / audit (review existing code/output only, no changes)". Default to `build` if unclear.
+
+**Q2:** "What do you want the loop to accomplish? (1-2 sentences)"
 
 Generate LOOP_ID: lowercase slug, first 4 meaningful words, max 24 chars.
 Auto-set: `STOP_CONDITION` = "all tasks in loop-stack/<LOOP_ID>/PLAN.md checked", `MAX_TURNS` = 20.
 
-**Q2:** "Should the loop auto-commit after each verified task? (yes / no)"
+**Q3:** "Should the loop auto-commit after each verified task? (yes / no)"
 
 ---
 
@@ -72,6 +44,7 @@ bash ~/.cursor/skills/loop-engineer/scripts/init-loop.sh \
   --goal "<GOAL>" \
   --stop "all tasks in loop-stack/<LOOP_ID>/PLAN.md checked" \
   --git <yes/no> \
+  --mode <MODE> \
   --platform cursor
 ```
 
@@ -82,6 +55,7 @@ bash ~/.cursor/skills/loop-engineer/scripts/init-loop.sh \
   -Goal "<GOAL>" `
   -Stop "all tasks in loop-stack/<LOOP_ID>/PLAN.md checked" `
   -Git <yes/no> `
+  -Mode <MODE> `
   -Platform cursor
 ```
 
@@ -141,6 +115,7 @@ Follow .cursor/agents/resource-scout.md.
 ```
 Loop directory: loop-stack/<LOOP_ID>/
 Read RESEARCH.md (all sections) and TOOLS.md.
+Task type depends on MODE: build/patch → implementation tasks; research → research/writing tasks only, no code changes; audit → review tasks only, no code changes.
 Create 3–7 tasks with parallel group tags [G1], [G2], etc.
 Same group = can run in parallel (independent files/modules).
 Different group = sequential dependency.
@@ -167,6 +142,8 @@ Initialize: `turns_used = 0`, `skipped_tasks = []`, read total_tasks.
 
 Print per iteration: `[Task {done+1}/{total} — {pct}% | Turn {turn}/{MAX_TURNS}]`
 
+**Mode gating:** build (default) — full flow. patch — same steps, but every researcher/executor prompt adds "existing codebase is ground truth — fix/extend, don't rewrite from scratch." research — skip Step 4 (build) and Steps 5–6 (audit) entirely; the Step 3 researcher writes each task's final deliverable directly; Step 7's verifier checks that instead of built code. audit — skip Step 4; Step 5's auditor IS the task (read-only review, findings to RESEARCH.md); Step 6's BLOCK is just recorded, never auto-fixed, always proceeds to Step 7.
+
 ### Step 1 — Budget check → over MAX_TURNS → Phase 6.
 
 ### Step 2 — Read state. Identify current parallel group (all unchecked [GN] tasks).
@@ -190,26 +167,26 @@ Follow .cursor/agents/executor.md.
 ```
 Wait for all. Increment turns_used.
 
-### Step 5 — Parallel VERIFIERS
-Verifier now does both jobs in one pass: checks the task against RESEARCH.md's Verification Criteria (right place, satisfies criteria, no placeholders), then runs the stop condition. One per task. Wait for all.
+### Step 5 — Parallel AUDITORS (per task just built). Wait for all.
 
-### Step 6 — Process results
-- PASS → auditor
+### Step 6 — Process audit results
+- CLEAN/WARN → proceed to verifier
+- BLOCK → auto-fix (one executor retry + re-audit once). Still BLOCK → auto-skip.
+
+### Step 7 — Parallel VERIFIERS (per task that passed audit)
+Verifier is the final gate: checks the task against RESEARCH.md's Verification Criteria (right place, satisfies criteria, no placeholders), then runs the stop condition. One per task. Wait for all.
+
+### Step 8 — Process verifier results
+- PASS → memory-keeper
 - FAIL < 3 attempts → retry from Step 3
 - FAIL ≥ 3 → auto-skip
-
-### Step 7 — Parallel AUDITORS (per passing task). Wait for all.
-
-### Step 8 — Process audit results
-- CLEAN/WARN → proceed
-- BLOCK → auto-fix (one executor retry + re-verify). Still BLOCK → auto-skip.
 
 ### Step 9 — MEMORY-KEEPER consolidation (single)
 This is the only memory-keeper call per batch — executors already appended their raw learnings inline in Step 4. Distill all completed tasks. Write to MEMORY.md + loop-stack/.global/MEMORY.md.
 
 ### Step 10 — Advance
 Mark [x]. Git commit if enabled. Find next group. None → ALL DONE →
-rename `loop-stack/<LOOP_ID>/` → `loop-stack/<LOOP_ID>_DONE/` (or `_EXTENDED_DONE/` if this was an extended loop) → Phase 6.
+rename `loop-stack/<LOOP_ID>/` → `loop-stack/<LOOP_ID>_DONE/` → Phase 6.
 
 ---
 
@@ -221,7 +198,6 @@ Write `REPORT.md` inside the renamed loop directory and print summary.
 
 ## Rules
 
-- Phase 0 first — run the check-resume script, never scan `loop-stack/` by hand.
 - **File copy**: shell commands only. Never write agent files manually.
 - **Global data first**: every agent reads `.global/MEMORY.md` + `.global/TOOLS.md`.
 - **Parallel first**: same group = spawn simultaneously. Different group = sequential. Confirmed native mechanism (cursor.com/docs/subagents): multiple `Task` tool calls sent in one message run concurrently. One call, wait, another call runs sequentially — batching into a single message/response is what makes it parallel.
@@ -231,10 +207,12 @@ Write `REPORT.md` inside the renamed loop directory and print summary.
 - **Agent-factory is on-demand, not a fixed phase step.** Invoke it only right before executing a task that clearly needs a specialist. Most loops never call it.
 - **knowledge-sources.md is a reference file researchers consult on demand**, not a phase step.
 - **No watcher agent.** Check heartbeats yourself if an agent is slow; never spawn a dedicated watcher.
-- **No separate evaluator.** Verifier does both jobs in one pass: checks the task against RESEARCH.md's Verification Criteria, then runs the stop condition. One agent, one call, same rigor.
-- **Memory-keeper runs once per task batch** (after audit, local + global) — not a separate mid-batch checkpoint. Executors already append their own learnings to MEMORY.md directly as they work.
+- **No separate evaluator.** Verifier is the final gate: checks the task against RESEARCH.md's Verification Criteria, then runs the stop condition. One agent, one call, same rigor.
+- **Audit before verify.** Auditor reviews the build first (Step 5); verifier runs last as the final pass/fail gate (Step 7) and is what triggers retry.
+- **Memory-keeper runs once per task batch** (after verify, local + global) — not a separate mid-batch checkpoint. Executors already append their own learnings to MEMORY.md directly as they work. Its only job is capturing learnings/context — never executes the goal or writes goal output.
 - **Executors append to MEMORY.md directly** during work.
-- **Planner**: once at startup after researchers + resource-scout, and again (lightweight) for extended-loop follow-on tasks.
-- **Fully autonomous**: no pauses. 3 fails → auto-skip. BLOCK → auto-fix once → skip.
-- **HARD RULE — no plan-approval gate**: after Phase 1's two questions, proceed through Phase 2 onward without presenting a plan for approval or waiting for a "click proceed" confirmation.
-- On completion: rename to `<LOOP_ID>_DONE/` or `<LOOP_ID>_EXTENDED_DONE/`.
+- **Planner**: once at startup after researchers + resource-scout.
+- **Fully autonomous**: no pauses. Audit BLOCK → auto-fix once → skip. 3 verifier fails → auto-skip.
+- **Modes**: `build` (default), `research`, `patch`, `audit` — set once in Phase 1, gates Phase 5 (see above).
+- **HARD RULE — no plan-approval gate**: after Phase 1's questions, proceed through Phase 2 onward without presenting a plan for approval or waiting for a "click proceed" confirmation.
+- No resume support: every invocation starts a fresh loop. On completion: rename to `<LOOP_ID>_DONE/` (bookkeeping only).

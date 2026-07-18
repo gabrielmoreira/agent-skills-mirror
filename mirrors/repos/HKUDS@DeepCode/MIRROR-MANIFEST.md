@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/DeepCode` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `HKUDS/DeepCode` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HKUDS/DeepCode` — 26 default patterns, 0 followed patterns, 9 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,15 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`nanobot/nanobot/skills/cron/SKILL.md`](nanobot/nanobot/skills/cron/SKILL.md) |
-| 2 | ✓ | [`nanobot/nanobot/skills/deepcode/SKILL.md`](nanobot/nanobot/skills/deepcode/SKILL.md) |
-| 3 | ✓ | [`nanobot/nanobot/skills/github/SKILL.md`](nanobot/nanobot/skills/github/SKILL.md) |
-| 4 | ✓ | [`nanobot/nanobot/skills/skill-creator/SKILL.md`](nanobot/nanobot/skills/skill-creator/SKILL.md) |
-| 5 | ✓ | [`nanobot/nanobot/skills/summarize/SKILL.md`](nanobot/nanobot/skills/summarize/SKILL.md) |
-| 6 | ✓ | [`nanobot/nanobot/skills/tmux/SKILL.md`](nanobot/nanobot/skills/tmux/SKILL.md) |
-| 7 | ✓ | [`nanobot/nanobot/skills/weather/SKILL.md`](nanobot/nanobot/skills/weather/SKILL.md) |
-| 8 | ✓ | [`nanobot/workspace/AGENTS.md`](nanobot/workspace/AGENTS.md) |
-| 9 | ✓ | [`prompts/code_prompts.py`](prompts/code_prompts.py) |
+| 1 | ✓ | [`prompts/code_prompts.py`](prompts/code_prompts.py) |
 
 ---
 

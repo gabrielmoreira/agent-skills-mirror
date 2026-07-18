@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/agent-skills` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `openclaw/agent-skills` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/agent-skills` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,25 +71,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`skills/autoreview/scripts/test-review-harness.ps1`](skills/autoreview/scripts/test-review-harness.ps1) |
 | 11 | ✓ | [`skills/autoreview/scripts/test-review-harness.py`](skills/autoreview/scripts/test-review-harness.py) |
 | 12 | ✓ | [`skills/autoreview/SKILL.md`](skills/autoreview/SKILL.md) |
-| 13 | ✓ | [`skills/autoreview/tests/test_autoreview_hardening.py`](skills/autoreview/tests/test_autoreview_hardening.py) |
-| 14 | ✓ | [`skills/behavior-validator/agents/openai.yaml`](skills/behavior-validator/agents/openai.yaml) |
-| 15 | ✓ | [`skills/behavior-validator/references/contract-template.md`](skills/behavior-validator/references/contract-template.md) |
-| 16 | ✓ | [`skills/behavior-validator/references/report-schema.md`](skills/behavior-validator/references/report-schema.md) |
-| 17 | ✓ | [`skills/behavior-validator/SKILL.md`](skills/behavior-validator/SKILL.md) |
-| 18 | ✓ | [`skills/crabbox/SKILL.md`](skills/crabbox/SKILL.md) |
-| 19 | ✓ | [`skills/handoff/SKILL.md`](skills/handoff/SKILL.md) |
-| 20 | ✓ | [`skills/session-viewer/agents/openai.yaml`](skills/session-viewer/agents/openai.yaml) |
-| 21 | ✓ | [`skills/session-viewer/scripts/core/detect.ts`](skills/session-viewer/scripts/core/detect.ts) |
-| 22 | ✓ | [`skills/session-viewer/scripts/core/jsonl.ts`](skills/session-viewer/scripts/core/jsonl.ts) |
-| 23 | ✓ | [`skills/session-viewer/scripts/core/types.ts`](skills/session-viewer/scripts/core/types.ts) |
-| 24 | ✓ | [`skills/session-viewer/scripts/html.ts`](skills/session-viewer/scripts/html.ts) |
-| 25 | ✓ | [`skills/session-viewer/scripts/importers/claude.ts`](skills/session-viewer/scripts/importers/claude.ts) |
-| 26 | ✓ | [`skills/session-viewer/scripts/importers/codex.ts`](skills/session-viewer/scripts/importers/codex.ts) |
-| 27 | ✓ | [`skills/session-viewer/scripts/importers/pi-openclaw.ts`](skills/session-viewer/scripts/importers/pi-openclaw.ts) |
-| 28 | ✓ | [`skills/session-viewer/scripts/session-viewer.test.ts`](skills/session-viewer/scripts/session-viewer.test.ts) |
-| 29 | ✓ | [`skills/session-viewer/scripts/session-viewer.ts`](skills/session-viewer/scripts/session-viewer.ts) |
-| 30 | ✓ | [`skills/session-viewer/SKILL.md`](skills/session-viewer/SKILL.md) |
-| 31 | ✓ | [`skills/session-viewer/tsconfig.json`](skills/session-viewer/tsconfig.json) |
+| 13 | ✓ | [`skills/autoreview/tests/fixtures/typescript-benign-references.ts`](skills/autoreview/tests/fixtures/typescript-benign-references.ts) |
+| 14 | ✓ | [`skills/autoreview/tests/fixtures/typescript-sensitive-literals.ts`](skills/autoreview/tests/fixtures/typescript-sensitive-literals.ts) |
+| 15 | ✓ | [`skills/autoreview/tests/test_autoreview_hardening.py`](skills/autoreview/tests/test_autoreview_hardening.py) |
+| 16 | ✓ | [`skills/behavior-validator/agents/openai.yaml`](skills/behavior-validator/agents/openai.yaml) |
+| 17 | ✓ | [`skills/behavior-validator/references/contract-template.md`](skills/behavior-validator/references/contract-template.md) |
+| 18 | ✓ | [`skills/behavior-validator/references/report-schema.md`](skills/behavior-validator/references/report-schema.md) |
+| 19 | ✓ | [`skills/behavior-validator/SKILL.md`](skills/behavior-validator/SKILL.md) |
+| 20 | ✓ | [`skills/crabbox/SKILL.md`](skills/crabbox/SKILL.md) |
+| 21 | ✓ | [`skills/handoff/SKILL.md`](skills/handoff/SKILL.md) |
+| 22 | ✓ | [`skills/session-viewer/agents/openai.yaml`](skills/session-viewer/agents/openai.yaml) |
+| 23 | ✓ | [`skills/session-viewer/scripts/core/detect.ts`](skills/session-viewer/scripts/core/detect.ts) |
+| 24 | ✓ | [`skills/session-viewer/scripts/core/jsonl.ts`](skills/session-viewer/scripts/core/jsonl.ts) |
+| 25 | ✓ | [`skills/session-viewer/scripts/core/types.ts`](skills/session-viewer/scripts/core/types.ts) |
+| 26 | ✓ | [`skills/session-viewer/scripts/html.ts`](skills/session-viewer/scripts/html.ts) |
+| 27 | ✓ | [`skills/session-viewer/scripts/importers/claude.ts`](skills/session-viewer/scripts/importers/claude.ts) |
+| 28 | ✓ | [`skills/session-viewer/scripts/importers/codex.ts`](skills/session-viewer/scripts/importers/codex.ts) |
+| 29 | ✓ | [`skills/session-viewer/scripts/importers/pi-openclaw.ts`](skills/session-viewer/scripts/importers/pi-openclaw.ts) |
+| 30 | ✓ | [`skills/session-viewer/scripts/session-viewer.test.ts`](skills/session-viewer/scripts/session-viewer.test.ts) |
+| 31 | ✓ | [`skills/session-viewer/scripts/session-viewer.ts`](skills/session-viewer/scripts/session-viewer.ts) |
+| 32 | ✓ | [`skills/session-viewer/SKILL.md`](skills/session-viewer/SKILL.md) |
+| 33 | ✓ | [`skills/session-viewer/tsconfig.json`](skills/session-viewer/tsconfig.json) |
 
 ---
 

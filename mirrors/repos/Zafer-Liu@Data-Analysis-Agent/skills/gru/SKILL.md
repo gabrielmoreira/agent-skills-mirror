@@ -1,6 +1,6 @@
 ---
 name: gru
-description: 使用 GRU 对足量时间序列进行预测
+description: 使用 GRU 对足量时间序列进行预测（forecast deep learning）
 icon: 🧠
 allowedTools: [get_schema, query_data, run_analysis, generate_chart]
 ---

@@ -8,7 +8,7 @@
 - **Validation**: Zod
 - **Type utilities**: type-fest (`SetRequired`, `Merge`, `JsonValue`, `Promisable`, etc.; prefer over hand-rolled conditional-type gymnastics)
 - **Database**: PostgreSQL 16+, Redis 7+
-- **Auth**: jsonwebtoken, bcrypt
+- **Auth**: jsonwebtoken, argon2 (node-argon2)
 - **Testing**: Vitest, Supertest
 - **Migrations**: Prisma Migrate or Drizzle Kit
 
@@ -21,7 +21,7 @@ src/
 ```
 
 ## Security Requirements
-- Password hashing: bcrypt (cost factor 10-12)
+- Password hashing: Argon2id via `argon2` (bcrypt cost 10-12 acceptable for legacy compatibility)
 - JWT: 15min access tokens, 7 day refresh tokens
 - Rate limiting on auth endpoints
 - Input validation with Zod schemas

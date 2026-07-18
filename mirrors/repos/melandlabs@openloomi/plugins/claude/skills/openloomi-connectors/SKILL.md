@@ -8,9 +8,9 @@ allowed-tools: Bash(node $SKILL_DIR/scripts/openloomi-connectors.cjs *)
 
 # OpenLoomi Connectors Skill
 
-OpenLoomi Connectors provides access to 26 messaging and productivity platform integrations. It allows AI agents to manage OAuth connections, list connected accounts, check connection status, and disconnect platforms on behalf of the user.
+OpenLoomi Connectors provides access to 7 messaging and productivity platform integrations. It allows AI agents to manage OAuth connections, list connected accounts, check connection status, and disconnect platforms on behalf of the user.
 
-> **Pairing with the `composio` skill:** This skill covers openloomi's **native 26 integrations** listed below. For accounts connected through **Composio** (a broader 1000+ apps surface — e.g. X, LinkedIn, Notion, HubSpot, Linear, Jira, etc.), invoke the `composio` skill in parallel: use the `composio-cli` to list connections, or call `mcp__composio__COMPOSIO_MANAGE_CONNECTIONS` with `action: "list"`. When the user asks "what am I connected to?" or "list my accounts", run both — `list-accounts` here **and** the composio connection listing — and present the union. Keep auth, OAuth, and disconnect flows native to each skill.
+> **Pairing with the `composio` skill:** This skill covers openloomi's **native 7 integrations** listed below. For accounts connected through **Composio** (a broader 1000+ apps surface — e.g. X, LinkedIn, Notion, HubSpot, Linear, Jira, etc.), invoke the `composio` skill in parallel: use the `composio-cli` to list connections, or call `mcp__composio__COMPOSIO_MANAGE_CONNECTIONS` with `action: "list"`. When the user asks "what am I connected to?" or "list my accounts", run both — `list-accounts` here **and** the composio connection listing — and present the union. Keep auth, OAuth, and disconnect flows native to each skill.
 
 ---
 
@@ -37,31 +37,18 @@ openloomi runs a background agent on a continuous sync loop, actively gathering 
 
 ---
 
-## Supported Platforms (26)
+## Supported Platforms (7)
+
+The CLI `list-platforms` returns these 7 platforms. Other connectable
+platforms (Slack, Discord, X, Gmail, Outlook, LinkedIn, Google Calendar,
+Google Drive, Google Docs, HubSpot, Notion, etc.) are managed via the
+desktop UI or the `composio` skill — see "Platform Connection Methods"
+below for details.
 
 | ID | Display Name | Aliases |
 |----|-------------|---------|
 | `telegram` | Telegram | tg |
 | `whatsapp` | WhatsApp | |
-| `slack` | Slack | |
-| `discord` | Discord | |
-| `gmail` | Gmail | google_mail |
-| `outlook` | Outlook | outlook_mail |
-| `linkedin` | LinkedIn | |
-| `instagram` | Instagram | |
-| `twitter` | X/Twitter | x, tweet, tweets, 推特 |
-| `google_calendar` | Google Calendar | gcal |
-| `outlook_calendar` | Outlook Calendar | |
-| `teams` | Microsoft Teams | microsoft_teams |
-| `facebook_messenger` | Facebook Messenger | messenger |
-| `google_drive` | Google Drive | gdrive |
-| `google_docs` | Google Docs | gdocs |
-| `hubspot` | HubSpot | |
-| `notion` | Notion | |
-| `github` | GitHub | gh |
-| `asana` | Asana | |
-| `jira` | Jira | |
-| `linear` | Linear | |
 | `imessage` | iMessage | |
 | `feishu` | Lark/Feishu | lark, 飞书 |
 | `dingtalk` | DingTalk | 钉钉 |
@@ -264,13 +251,6 @@ Aliases are case-insensitive and support both English and Chinese:
 | Alias | Platform |
 |-------|----------|
 | `tg` | telegram |
-| `gh` | github |
-| `gc` | gmail |
-| `x` | twitter |
-| `tweet`, `tweets`, `推特` | twitter |
-| `gcal` | google_calendar |
-| `gdrive` | google_drive |
-| `gdocs` | google_docs |
 | `wechat`, `微信` | weixin |
 | `lark`, `飞书` | feishu |
 | `钉钉` | dingtalk |
@@ -340,7 +320,7 @@ node $SKILL_DIR/scripts/openloomi-connectors.cjs send-reply --botId=bot_xxx --re
 
 | Command | Description |
 |---------|-------------|
-| `list-platforms` | List all 26 supported platforms with IDs and aliases |
+| `list-platforms` | List all 7 supported platforms with IDs and aliases |
 | `list-accounts` | List all connected integration accounts (includes `botId`) |
 | `status <platform>` | Check if a platform is connected (e.g., telegram, slack) |
 | `connect <platform> [options]` | Connect a platform (OAuth, App Password, or App Credentials) |

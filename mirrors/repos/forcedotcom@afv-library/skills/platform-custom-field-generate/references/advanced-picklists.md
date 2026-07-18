@@ -21,7 +21,7 @@ A picklist field can either define its values **inline** or **reference an exist
 value set** (a Global Value Set or a Standard Value Set). The shared set is defined
 once and reused across many fields.
 
-### ⭐ HARD RULE: `<valueSet>` is EITHER a reference OR inline — never both
+### HARD RULE: `<valueSet>` is EITHER a reference OR inline — never both
 
 A `<valueSet>` element must contain **exactly one** of:
 
@@ -30,7 +30,7 @@ A `<valueSet>` element must contain **exactly one** of:
 
 Including both in the same `<valueSet>` is a deployment error.
 
-#### ❌ INCORRECT — both reference and inline definition:
+#### INCORRECT — both reference and inline definition:
 
 ```xml
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -54,7 +54,7 @@ Including both in the same `<valueSet>` is a deployment error.
 
 **Error:** `Value set must reference a value set name or define a value set, but not both.`
 
-#### ✅ CORRECT — reference a Global Value Set:
+#### CORRECT — reference a Global Value Set:
 
 ```xml
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -88,7 +88,7 @@ the name you put inside it differs.
 > local project" warning) is expected org-storage display — keep local metadata on the bare name.
 > Never append `__c` to a value-set name either.
 
-#### ✅ CORRECT — reference a Standard Value Set (bare name, no suffix):
+#### CORRECT — reference a Standard Value Set (bare name, no suffix):
 
 ```xml
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -126,7 +126,7 @@ A **dependent** picklist filters its available values based on the selected valu
 **dependent** field via a `<controllingField>` element plus one `<valueSettings>` block
 per (controlling value → dependent value) pair.
 
-### ⭐ Use the MODERN API 38.0+ form ONLY
+### Use the MODERN API 38.0+ form ONLY
 
 | Form | Elements | Status |
 |------|----------|--------|
@@ -136,7 +136,7 @@ per (controlling value → dependent value) pair.
 Never emit the legacy `<picklist>`, `<picklistValues>`, or `<controllingFieldValues>`
 tags. They are not valid against the modern Metadata API and will fail deployment.
 
-### ⭐ HARD RULE: both the controlling and dependent field must be `<restricted>true</restricted>`
+### HARD RULE: both the controlling and dependent field must be `<restricted>true</restricted>`
 
 A field dependency requires a fixed, admin-defined value set on **both** ends. **Always emit
 `<restricted>true</restricted>` inside the `<valueSet>` of the controlling field AND the
@@ -186,7 +186,7 @@ Inside the dependent field's `<valueSet>`, in this order:
 > EMEA→UK,Germany) you emit **one block for each (controllingValue, dependentValue) pair** — four
 > pairs = four `<valueSettings>` blocks. And remember: both fields carry `<restricted>true</restricted>`.
 
-### ✅ CORRECT — State dependent on Country (USA → California, Texas)
+### CORRECT — State dependent on Country (USA → California, Texas)
 
 **Controlling field — `Country__c` (a plain restricted picklist):**
 
@@ -258,7 +258,7 @@ Inside the dependent field's `<valueSet>`, in this order:
 > `<valueSettings>` block with that country's `<controllingFieldValue>` and
 > `<valueName>California</valueName>`.
 
-### ❌ INCORRECT — deprecated legacy form:
+### INCORRECT — deprecated legacy form:
 
 ```xml
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -282,7 +282,7 @@ legacy dependency elements are not valid in the modern `<valueSet>` structure.
 
 ## 3. Enhanced Value Attributes
 
-### ⭐ Value-name fidelity — do NOT underscore picklist value names
+### Value-name fidelity — do NOT underscore picklist value names
 
 A **picklist value's `<fullName>` is NOT a field API name** and must NOT be transformed.
 Use the value text **exactly as the user spelled it**, spaces and all. A value the user
@@ -315,7 +315,7 @@ Inline `<value>` entries (CustomValue subfields) support more than `<fullName>`,
 
 These are independent of `<default>` and `<label>` and may be combined freely.
 
-### ✅ CORRECT — Status picklist with colors and an inactive value
+### CORRECT — Status picklist with colors and an inactive value
 
 ```xml
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
@@ -367,7 +367,7 @@ The Metadata API rejects malformed picklist values at deploy time. Two common fa
 Two `<value>` entries with the same `<fullName>` inside one `<valueSetDefinition>` are
 rejected.
 
-#### ❌ INCORRECT — duplicate value:
+#### INCORRECT — duplicate value:
 
 ```xml
 <valueSetDefinition>
@@ -398,7 +398,7 @@ The stricter "only alphanumerics and single underscores, no leading digit, no do
 or trailing underscore" rule applies to the *field* `<fullName>` (the `__c`-suffixed
 API name), not to picklist value fullNames.
 
-#### ❌ INCORRECT — invalid value API name:
+#### INCORRECT — invalid value API name:
 
 ```xml
 <value>
@@ -410,7 +410,7 @@ API name), not to picklist value fullNames.
 
 **Error:** `Invalid fullName: must begin with a letter and use only alphanumeric characters and underscores`
 
-#### ✅ CORRECT:
+#### CORRECT:
 
 ```xml
 <value>
@@ -454,7 +454,7 @@ include a `<fullName>`** element — the record type's developer name (e.g. `<fu
 matching the filename `Internal.recordType-meta.xml`. It's bare (no object prefix); the object
 comes from the `objects/<Object>/` folder path.
 
-### ⭐ STEP 1 — Decide if this object needs a BusinessProcess (do this BEFORE writing files)
+### STEP 1 — Decide if this object needs a BusinessProcess (do this BEFORE writing files)
 
 A record type on a **BusinessProcess-gated object — Opportunity, Lead, Case, or Solution —
 will NOT deploy without a `<businessProcess>` reference**, even when it only filters a *custom*
@@ -472,7 +472,7 @@ developer name instead of generating a new one (confirm via the grounding MCP's 
 if available; otherwise generate a minimal one). For everything else, **do not invent a
 BusinessProcess** — adding one to a custom-object record type is wrong.
 
-#### ✅ CORRECT — Opportunity "Enterprise" record type, two deployable files
+#### CORRECT — Opportunity "Enterprise" record type, two deployable files
 
 ```xml
 <!-- File 1: objects/Opportunity/businessProcesses/Enterprise_Sales_Process.businessProcess-meta.xml -->
@@ -519,7 +519,7 @@ BusinessProcess** — adding one to a custom-object record type is wrong.
 </RecordType>
 ```
 
-#### ❌ INCORRECT — BusinessProcess file emitted but NOT referenced (most common failure)
+#### INCORRECT — BusinessProcess file emitted but NOT referenced (most common failure)
 
 ```xml
 <!-- File 1 (businessProcesses/Enterprise_Sales_Process...) was generated correctly, BUT -->
@@ -571,7 +571,7 @@ RecordType   (filters the field's values; references the BusinessProcess)
 - For Opportunity/Lead/Case/Solution, the `<businessProcess>` must exist (same package or
   already in the org) before the RecordType.
 
-### ⭐ UI-sync gotcha — values may not auto-display after API deploy
+### UI-sync gotcha — values may not auto-display after API deploy
 
 When `<picklistValues>` are loaded via the Metadata API, the values are correctly associated
 under the hood, **but they may not automatically appear as "Selected Values" in the Record

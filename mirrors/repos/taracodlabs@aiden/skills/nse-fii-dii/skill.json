@@ -1,0 +1,25 @@
+{
+  "name": "nse-fii-dii",
+  "version": "1.0.0",
+  "description": "NSE FII/DII daily flows — gauge institutional Indian equity activity",
+  "author": "local",
+  "license": "MIT",
+  "tools": [],
+  "trigger_phrases": [],
+  "compatible_agents": [
+    "aiden"
+  ],
+  "min_agent_version": "3.0.0",
+  "tags": [
+    "fii",
+    "dii",
+    "institutional",
+    "flow",
+    "nse",
+    "india",
+    "equity",
+    "market",
+    "foreign"
+  ],
+  "created": "2026-04-27T17:11:40.098Z"
+}

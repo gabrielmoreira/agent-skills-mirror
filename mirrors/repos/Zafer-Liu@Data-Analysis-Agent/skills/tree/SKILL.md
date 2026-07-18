@@ -1,6 +1,6 @@
 ---
 name: tree
-description: 使用决策树识别影响目标变量的关键规则
+description: 使用决策树识别影响目标变量的关键规则（decision tree 决策树）
 icon: 🌳
 allowedTools: [get_schema, query_data, run_analysis, generate_chart]
 ---

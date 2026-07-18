@@ -1,6 +1,6 @@
 ---
 name: kmeans
-description: 使用 K-Means 对业务对象进行聚类画像
+description: 使用 K-Means 对业务对象进行聚类画像（clustering 客户分群）
 icon: 🔵
 allowedTools: [get_schema, query_data, run_analysis, generate_chart]
 ---

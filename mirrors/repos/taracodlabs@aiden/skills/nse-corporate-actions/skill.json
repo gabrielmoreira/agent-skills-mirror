@@ -1,0 +1,25 @@
+{
+  "name": "nse-corporate-actions",
+  "version": "1.0.0",
+  "description": "NSE corp actions: dividends, bonus, splits, rights, buybacks",
+  "author": "local",
+  "license": "MIT",
+  "tools": [],
+  "trigger_phrases": [],
+  "compatible_agents": [
+    "aiden"
+  ],
+  "min_agent_version": "3.0.0",
+  "tags": [
+    "nse",
+    "corporate-actions",
+    "dividend",
+    "bonus",
+    "split",
+    "rights",
+    "buyback",
+    "india",
+    "equity"
+  ],
+  "created": "2026-04-27T17:11:40.025Z"
+}

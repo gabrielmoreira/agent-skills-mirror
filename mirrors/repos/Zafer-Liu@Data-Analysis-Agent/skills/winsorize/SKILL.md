@@ -1,6 +1,6 @@
 ---
 name: winsorize
-description: 对极端值执行缩尾处理并验证影响
+description: 对极端值执行缩尾处理并验证影响（outlier 缩尾）
 icon: ✂️
 allowedTools: [get_schema, profile_data, clean_data, query_data]
 ---

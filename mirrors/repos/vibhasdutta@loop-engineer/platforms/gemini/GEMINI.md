@@ -49,11 +49,6 @@ loop-stack/.global/ — shared across all loops in this project:
 - `/agents` — manage subagent configuration
 - `/restore` — list checkpoints (if checkpointing is enabled in settings)
 
-## Resume
-
-If a loop is in progress (loop-stack/*/STATUS.md exists, not ending in _DONE),
-the skill offers to resume it before starting fresh.
-
 ## Import syntax
 
 This GEMINI.md file supports `@file.md` to import content from other files:

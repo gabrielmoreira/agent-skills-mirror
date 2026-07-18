@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JSONbored/claudepro-directory` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `JSONbored/claudepro-directory` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JSONbored/claudepro-directory` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/contributing-to-awesome-claude/SKILL.md`](.claude/skills/contributing-to-awesome-claude/SKILL.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`.claude/skills/contributor-pipeline-gardening/SKILL.md`](.claude/skills/contributor-pipeline-gardening/SKILL.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

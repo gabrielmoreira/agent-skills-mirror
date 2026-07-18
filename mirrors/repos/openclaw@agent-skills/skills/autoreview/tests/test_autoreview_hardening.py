@@ -21,6 +21,9 @@ from pathlib import Path
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "autoreview"
+FIXTURES = Path(__file__).with_name("fixtures")
+PRIVATE_KEY_BEGIN_TEXT = "BEGIN " + "PRIVATE KEY"
+RSA_PRIVATE_KEY_BEGIN_TEXT = "BEGIN RSA " + "PRIVATE KEY"
 
 
 def load_helper() -> dict[str, object]:
@@ -2310,6 +2313,116 @@ class AutoreviewHardeningTests(unittest.TestCase):
             )
         )
 
+    def test_secret_detector_allows_typescript_credential_plumbing_fixture(self) -> None:
+        source = (FIXTURES / "typescript-benign-references.ts").read_text(
+            encoding="utf-8"
+        )
+
+        fragments = self.helper["review_secret_fragments"](
+            source,
+            javascript_dialect="typescript",
+        )
+        self.assertNotIn("filePassword", fragments)
+        self.assertNotIn("passwordResolution.password", fragments)
+        self.assertNotIn("tokenResolution.token", fragments)
+        self.assertNotIn("CredentialUnavailableDiagnostic", fragments)
+        patch = (
+            "diff --git a/src/credential-plumbing.ts b/src/credential-plumbing.ts\n"
+            "new file mode 100644\n"
+            "--- /dev/null\n"
+            "+++ b/src/credential-plumbing.ts\n"
+            f"@@ -0,0 +1,{len(source.splitlines())} @@\n"
+            + "".join(f"+{line}\n" for line in source.splitlines())
+        )
+        validated = self.helper["validate_review_patch"](
+            "typescript credential plumbing fixture",
+            ["src/credential-plumbing.ts"],
+            patch,
+        )
+        for reference in (
+            "filePassword",
+            "passwordResolution.password",
+            "tokenResolution.token",
+            "CredentialUnavailableDiagnostic",
+            "tokenRef",
+            "keyRef",
+        ):
+            self.assertIn(reference, validated)
+
+        token_term = "To" + "ken"
+        truncated_call_patch = (
+            "diff --git a/src/token.ts b/src/token.ts\n"
+            "--- a/src/token.ts\n"
+            "+++ b/src/token.ts\n"
+            "@@ -40,3 +40,4 @@ function resolveAccountToken() {\n"
+            f"+  const account{token_term} = resolveRuntime{token_term}Value({{\n"
+            "+    value: accountConfig.token,\n"
+            "@@ -70,3 +71,4 @@ function resolveConfigToken() {\n"
+            f"+  const config{token_term} = resolveRuntime{token_term}Value({{\n"
+            "+    value: merged.token,\n"
+        )
+        self.assertEqual(
+            self.helper["validate_review_patch"](
+                "typescript truncated credential calls fixture",
+                ["src/token.ts"],
+                truncated_call_patch,
+            ),
+            truncated_call_patch,
+        )
+
+    def test_secret_detector_rejects_sensitive_literal_fixture_corpus(self) -> None:
+        source = (FIXTURES / "typescript-sensitive-literals.ts").read_text(
+            encoding="utf-8"
+        )
+        corpus = [line for line in source.splitlines() if line.strip()]
+
+        self.assertGreaterEqual(len(corpus), 7)
+        for literal_assignment in corpus:
+            with self.subTest(literal_assignment=literal_assignment):
+                self.assertTrue(
+                    self.helper["secret_text_risk"](
+                        literal_assignment,
+                        javascript_dialect="typescript",
+                    )
+                )
+        truncated_literal = (
+            "const incompleteToken = resolveToken({ value: \""
+            + realistic_secret_value()
+            + "\";"
+        )
+        self.assertTrue(
+            self.helper["secret_text_risk"](
+                truncated_literal,
+                javascript_dialect="typescript",
+            )
+        )
+        truncated_short_literal = (
+            "const incompleteToken = resolveToken({ value: \""
+            + "short"
+            + "pwd"
+            + "\";"
+        )
+        self.assertTrue(
+            self.helper["secret_text_risk"](
+                truncated_short_literal,
+                javascript_dialect="typescript",
+            )
+        )
+
+    def test_known_secret_fragment_scan_handles_many_javascript_regexes(self) -> None:
+        fragment = "password file"
+        regex_count = 2_000
+        source = ";".join(f"/{fragment} {index}/" for index in range(regex_count))
+        pattern = self.helper["known_secret_fragment_pattern"]([fragment])
+
+        spans = self.helper["repeated_secret_fragment_spans"](
+            source,
+            pattern,
+            javascript_dialect="typescript",
+        )
+
+        self.assertEqual(len(spans), regex_count)
+
     def test_lifecycle_reference_scan_is_bounded_for_non_matching_identifier(self) -> None:
         source = "const value = resolved" + "A" * 100_000 + "X;"
 
@@ -3199,7 +3312,7 @@ class AutoreviewHardeningTests(unittest.TestCase):
         )
 
         self.assertIn('const key = ["redacted",', redacted)
-        self.assertNotIn("BEGIN PRIVATE KEY", redacted)
+        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted)
         self.assertNotIn("MIIEvQIBADANBgkqhkiG9w0BAQEFAASC1234567890", redacted)
         self.assertIn("+const timeout = 30_000;", redacted)
 
@@ -3224,20 +3337,22 @@ class AutoreviewHardeningTests(unittest.TestCase):
             patch,
         )
 
-        self.assertNotIn("BEGIN PRIVATE KEY", redacted)
+        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted)
         self.assertNotIn("MIIEowIBAAKCAQEArEmoved0123456789ABCDEF", redacted)
         self.assertNotIn("MIIEowIBAAKCAQEAdDed0123456789ABCDEF", redacted)
 
     def test_review_patch_redacts_markerless_tokens_beside_pem_markers(self) -> None:
         before = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCbefore1234567890ABCDE"
         after = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCafter0987654321FGHIJ"
+        private_key_begin = "-----BEGIN " + "PRIVATE KEY-----"
+        private_key_end = "-----END " + "PRIVATE KEY-----"
         patch = (
             "diff --git a/fixture.test.ts b/fixture.test.ts\n"
             "--- a/fixture.test.ts\n"
             "+++ b/fixture.test.ts\n"
             "@@ -1 +1 @@\n"
-            f'+const keys = ["{before}", "-----BEGIN PRIVATE KEY-----", '
-            '"AB12cd34EF56", "-----END PRIVATE KEY-----", '
+            f'+const keys = ["{before}", "{private_key_begin}", '
+            f'"AB12cd34EF56", "{private_key_end}", '
             f'"{after}"];\n'
         )
 
@@ -3250,7 +3365,7 @@ class AutoreviewHardeningTests(unittest.TestCase):
         self.assertNotIn(before, redacted)
         self.assertNotIn(after, redacted)
         self.assertNotIn("AB12cd34EF56", redacted)
-        self.assertNotIn("BEGIN PRIVATE KEY", redacted)
+        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted)
 
     def test_review_patch_fails_closed_after_added_unmatched_private_key_begin(self) -> None:
         patch = (
@@ -3282,6 +3397,7 @@ class AutoreviewHardeningTests(unittest.TestCase):
             + 'PRIVATE KEY-----",\n'
             '   "MIIEvQIBADANBgkqhkiG9w0BAQEFAASC1234567890",\n'
             '   "Q5pEdChn3fuWgi7gC+pvd5VQ1eAX/7qVE72fhx14NxhaiZU3hCzXjG2S",\n'
+            "+runDangerousOperation();\n"
             "@@ -20 +21 @@\n"
             "-const timeout = 0;\n"
             "+const timeout = 30_000;\n"
@@ -3293,17 +3409,43 @@ class AutoreviewHardeningTests(unittest.TestCase):
             patch,
         )
 
-        self.assertNotIn("BEGIN PRIVATE KEY", redacted)
+        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted)
         self.assertNotIn("MIIEvQIBADANBgkqhkiG9w0BAQEFAASC1234567890", redacted)
         self.assertIn("+expect(socket.closed).toBe(true);", redacted)
+        self.assertIn("+runDangerousOperation();", redacted)
         self.assertIn("+const timeout = 30_000;", redacted)
 
-    def test_review_patch_quarantines_interleaved_private_key_marker_edit(self) -> None:
+    def test_review_patch_reuses_fragments_from_truncated_private_key_context(self) -> None:
+        repeated = "AB12cd34EF56"
         patch = (
             "diff --git a/fixture.test.ts b/fixture.test.ts\n"
             "--- a/fixture.test.ts\n"
             "+++ b/fixture.test.ts\n"
             "@@ -1,3 +1,3 @@\n"
+            ' const key = ["-----BEGIN '
+            + 'PRIVATE KEY-----",\n'
+            f'   "{repeated}",\n'
+            '   "GH78ij90KL12",\n'
+            "@@ -20 +20,2 @@\n"
+            " const timeout = 30_000;\n"
+            f'+const duplicate = "{repeated}";\n'
+        )
+
+        redacted = self.helper["validate_review_patch"](
+            "local unstaged diff",
+            ["fixture.test.ts"],
+            patch,
+        )
+
+        self.assertNotIn(repeated, redacted)
+        self.assertIn('+const duplicate = "redacted";', redacted)
+
+    def test_review_patch_redacts_interleaved_balanced_private_key_marker_edit(self) -> None:
+        patch = (
+            "diff --git a/fixture.test.ts b/fixture.test.ts\n"
+            "--- a/fixture.test.ts\n"
+            "+++ b/fixture.test.ts\n"
+            "@@ -1,4 +1,4 @@\n"
             '-const key = "-----BEGIN RSA '
             + 'PRIVATE KEY-----";\n'
             '+const key = "-----BEGIN '
@@ -3311,6 +3453,7 @@ class AutoreviewHardeningTests(unittest.TestCase):
             ' const body = "AB12cd34EF56";\n'
             ' const end = "-----END '
             + 'PRIVATE KEY-----";\n'
+            ' const label = "visible";\n'
             "@@ -10 +10 @@\n"
             "-const timeout = 0;\n"
             "+const timeout = 30_000;\n"
@@ -3322,10 +3465,102 @@ class AutoreviewHardeningTests(unittest.TestCase):
             patch,
         )
 
-        self.assertNotIn("BEGIN PRIVATE KEY", redacted)
-        self.assertNotIn("BEGIN RSA PRIVATE KEY", redacted)
+        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted)
+        self.assertNotIn(RSA_PRIVATE_KEY_BEGIN_TEXT, redacted)
         self.assertNotIn("AB12cd34EF56", redacted)
+        self.assertIn('const label = "visible";', redacted)
         self.assertIn("+const timeout = 30_000;", redacted)
+
+    def test_review_patch_rejects_truncated_private_key_marker_replacement(self) -> None:
+        patch = (
+            "diff --git a/fixture.test.ts b/fixture.test.ts\n"
+            "--- a/fixture.test.ts\n"
+            "+++ b/fixture.test.ts\n"
+            "@@ -1,3 +1,3 @@\n"
+            '-const key = "-----BEGIN RSA '
+            + 'PRIVATE KEY-----";\n'
+            '+const key = "-----BEGIN '
+            + 'PRIVATE KEY-----";\n'
+            ' const body = "AB12cd34EF56";\n'
+            ' expect(key).toBeDefined();\n'
+            "@@ -20 +20 @@\n"
+            "-const timeout = 0;\n"
+            "+const timeout = 30_000;\n"
+        )
+
+        with self.assertRaisesRegex(SystemExit, "private-key"):
+            self.helper["validate_review_patch"](
+                "local unstaged diff",
+                ["fixture.test.ts"],
+                patch,
+            )
+
+    def test_review_patch_rejects_removed_private_key_end_marker(self) -> None:
+        replacement = "AB12cd34EF56gh78"
+        patch = (
+            "diff --git a/fixture.test.ts b/fixture.test.ts\n"
+            "--- a/fixture.test.ts\n"
+            "+++ b/fixture.test.ts\n"
+            "@@ -8,3 +8,3 @@\n"
+            ' const body = "ZX90yu12WV34";\n'
+            '-const end = "-----END '
+            + 'PRIVATE KEY-----";\n'
+            f'+const replacement = "{replacement}";\n'
+            "@@ -20 +20 @@\n"
+            "-const timeout = 0;\n"
+            "+const timeout = 30_000;\n"
+        )
+
+        with self.assertRaisesRegex(SystemExit, "private-key"):
+            self.helper["validate_review_patch"](
+                "local unstaged diff",
+                ["fixture.test.ts"],
+                patch,
+            )
+
+    def test_review_patch_rejects_removed_private_key_begin_marker(self) -> None:
+        replacement = "AB12cd34EF56gh78"
+        patch = (
+            "diff --git a/fixture.test.ts b/fixture.test.ts\n"
+            "--- a/fixture.test.ts\n"
+            "+++ b/fixture.test.ts\n"
+            "@@ -1,2 +1,2 @@\n"
+            '-const begin = "-----BEGIN '
+            + 'PRIVATE KEY-----";\n'
+            f'+const replacement = "{replacement}";\n'
+            ' const body = "ZX90yu12WV34";\n'
+            "@@ -20 +20 @@\n"
+            "-const timeout = 0;\n"
+            "+const timeout = 30_000;\n"
+        )
+
+        with self.assertRaisesRegex(SystemExit, "private-key"):
+            self.helper["validate_review_patch"](
+                "local unstaged diff",
+                ["fixture.test.ts"],
+                patch,
+            )
+
+    def test_review_patch_rejects_net_new_unmatched_private_key_marker(self) -> None:
+        patch = (
+            "diff --git a/fixture.test.ts b/fixture.test.ts\n"
+            "--- a/fixture.test.ts\n"
+            "+++ b/fixture.test.ts\n"
+            "@@ -1 +1,2 @@\n"
+            '-const first = "-----BEGIN RSA '
+            + 'PRIVATE KEY-----";\n'
+            '+const first = "-----BEGIN '
+            + 'PRIVATE KEY-----";\n'
+            '+const second = "-----BEGIN EC '
+            + 'PRIVATE KEY-----";\n'
+        )
+
+        with self.assertRaisesRegex(SystemExit, "private-key"):
+            self.helper["validate_review_patch"](
+                "local unstaged diff",
+                ["fixture.test.ts"],
+                patch,
+            )
 
     def test_review_patch_redacts_before_unmatched_private_key_end(self) -> None:
         patch = (
@@ -4248,6 +4483,31 @@ class AutoreviewHardeningTests(unittest.TestCase):
         self.assertNotIn(fixture_value, redacted_patch)
         self.assertIn("function rotate_redacted()", redacted_patch)
 
+    def test_review_patch_redacts_overlapping_known_secret_fragments(self) -> None:
+        prefix = "XAbcd" + "123"
+        longer = "Abcd123Sensitive" + "Tail9"
+        combined = "XAbcd123Sensitive" + "Tail9"
+        patch = (
+            "diff --git a/runtime.ts b/runtime.ts\n"
+            "--- a/runtime.ts\n"
+            "+++ b/runtime.ts\n"
+            "@@ -1,2 +1 @@\n"
+            + f'-api{"Key"} = "{prefix}"\n'
+            + f'-access{"Token"} = "{longer}"\n'
+            + f'+log("{combined}");\n'
+        )
+
+        redacted_patch = self.helper["validate_review_patch"](
+            "local unstaged diff",
+            ["runtime.ts"],
+            patch,
+        )
+
+        self.assertNotIn(prefix, redacted_patch)
+        self.assertNotIn(longer, redacted_patch)
+        self.assertNotIn("SensitiveTail9", redacted_patch)
+        self.assertIn('+log("redacted");', redacted_patch)
+
     def test_review_patch_learns_secret_from_hunk_header(self) -> None:
         fixture_value = realistic_secret_value()
         patch = (
@@ -4305,8 +4565,148 @@ class AutoreviewHardeningTests(unittest.TestCase):
         )
 
         self.assertNotIn(body, redacted_patch)
-        self.assertIn(self.helper["REVIEW_SECRET_REDACTION"], redacted_patch)
+        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted_patch)
         self.assertIn('+log("redacted");', redacted_patch)
+
+    def test_review_patch_redacts_escaped_alphabetic_explicit_pem_body(self) -> None:
+        body = "AbCdEfGh" + "IjKlMnOp"
+        patch = (
+            "diff --git a/runtime.ts b/runtime.ts\n"
+            "--- a/runtime.ts\n"
+            "+++ b/runtime.ts\n"
+            "@@ -0,0 +1 @@\n"
+            '+const fixture = "-----BEGIN '
+            + "PRIVATE KEY-----\\n"
+            + body
+            + "\\n-----END "
+            + 'PRIVATE KEY-----";\n'
+        )
+
+        redacted_patch = self.helper["validate_review_patch"](
+            "local unstaged diff",
+            ["runtime.ts"],
+            patch,
+        )
+
+        self.assertNotIn(body, redacted_patch)
+        self.assertNotIn("PRIVATE KEY", redacted_patch)
+
+    def test_review_patch_preserves_unwrapped_alphabetic_identifier(self) -> None:
+        identifier = "AbCdEfGh" + "IjKlMnOp"
+        patch = (
+            "diff --git a/runtime.ts b/runtime.ts\n"
+            "--- a/runtime.ts\n"
+            "+++ b/runtime.ts\n"
+            "@@ -0,0 +1 @@\n"
+            + f"+const {identifier} = true;\n"
+        )
+
+        redacted_patch = self.helper["validate_review_patch"](
+            "local unstaged diff",
+            ["runtime.ts"],
+            patch,
+        )
+
+        self.assertIn(identifier, redacted_patch)
+
+    def test_review_patch_preserves_punctuation_wrapped_alphabetic_identifier(self) -> None:
+        identifier = "AbCdEfGh" + "IjKlMnOp"
+        patch = (
+            "diff --git a/runtime.ts b/runtime.ts\n"
+            "--- a/runtime.ts\n"
+            "+++ b/runtime.ts\n"
+            "@@ -0,0 +1 @@\n"
+            + f"+  {identifier},\n"
+        )
+
+        redacted_patch = self.helper["validate_review_patch"](
+            "local unstaged diff",
+            ["runtime.ts"],
+            patch,
+        )
+
+        self.assertIn(identifier, redacted_patch)
+
+    def test_review_patch_preserves_escaped_newline_beside_alphabetic_identifier(self) -> None:
+        identifier = "AbCdEfGh" + "IjKlMnOp"
+        patch = (
+            "diff --git a/runtime.ts b/runtime.ts\n"
+            "--- a/runtime.ts\n"
+            "+++ b/runtime.ts\n"
+            "@@ -0,0 +1 @@\n"
+            + f'+[{identifier}, "\\\\n"];\n'
+        )
+
+        redacted_patch = self.helper["validate_review_patch"](
+            "local unstaged diff",
+            ["runtime.ts"],
+            patch,
+        )
+
+        self.assertIn(identifier, redacted_patch)
+
+    def test_review_patch_preserves_bare_identifier_in_escaped_pem_concatenation(self) -> None:
+        identifier = "AbCdEfGh" + "IjKlMnOp"
+        patch = (
+            "diff --git a/runtime.ts b/runtime.ts\n"
+            "--- a/runtime.ts\n"
+            "+++ b/runtime.ts\n"
+            "@@ -0,0 +1 @@\n"
+            '+const fixture = "-----BEGIN '
+            + "PRIVATE KEY-----\\n\" + "
+            + identifier
+            + ' + "\\n-----END '
+            + 'PRIVATE KEY-----";\n'
+        )
+
+        redacted_patch = self.helper["validate_review_patch"](
+            "local unstaged diff",
+            ["runtime.ts"],
+            patch,
+        )
+
+        self.assertIn(identifier, redacted_patch)
+
+    def test_review_patch_rejects_residual_hunk_header_secret_risk(self) -> None:
+        primary = "CorrectHorse7" + "Battery"
+        backup = "BackupHorse8" + "Battery"
+        patch = (
+            "diff --git a/runtime.ts b/runtime.ts\n"
+            "--- a/runtime.ts\n"
+            "+++ b/runtime.ts\n"
+            '@@ -1 +1 @@ function f(pass'
+            + 'word = getenv("PASSWORD") '
+            + f'|| choose("{primary}", "{backup}"))\n'
+            + f'+log("{primary}");\n'
+        )
+
+        with self.assertRaisesRegex(SystemExit, "review diff hunk header"):
+            self.helper["validate_review_patch"](
+                "local unstaged diff",
+                ["runtime.ts"],
+                patch,
+            )
+
+    def test_private_marker_redaction_does_not_hide_residual_header_risk(self) -> None:
+        primary = "CorrectHorse7" + "Battery"
+        backup = "BackupHorse8" + "Battery"
+        patch = (
+            "diff --git a/runtime.ts b/runtime.ts\n"
+            "--- a/runtime.ts\n"
+            "+++ b/runtime.ts\n"
+            '@@ -1 +1 @@ function f(pass'
+            + 'word = getenv("PASSWORD") '
+            + f'|| choose("{primary}", "{backup}")) {{ return "-----BEGIN '
+            + 'PRIVATE KEY-----"; }\n'
+            + f'+log("{primary}");\n'
+        )
+
+        with self.assertRaisesRegex(SystemExit, "review diff hunk header"):
+            self.helper["validate_review_patch"](
+                "local unstaged diff",
+                ["runtime.ts"],
+                patch,
+            )
 
     def test_review_patch_rejects_known_secret_in_diff_metadata(self) -> None:
         secret = realistic_secret_value()

@@ -1,8 +1,18 @@
 ---
 name: experience-ui-bundle-metadata-generate
-description: "MUST activate when the project contains a uiBundles/*/src/ directory and scaffolding a new UI bundle or app, or when editing ui-bundle.json, .uibundle-meta.xml, or CSP trusted site files. Use this skill when scaffolding with sf template generate ui-bundle, configuring ui-bundle.json (routing, headers, outputDir), or registering CSP Trusted Sites. Activate when the task involves files matching *.uibundle-meta.xml, ui-bundle.json, or cspTrustedSites/*.cspTrustedSite-meta.xml."
+description: "Use this skill when adding a front-end React UI bundle to an existing project or configuring UI bundle metadata and config files. TRIGGER when: adding or scaffolding a new UI bundle inside a project that already exists; running sf template generate ui-bundle; editing ui-bundle.json routing, headers, or output directory; working with *.uibundle-meta.xml files; or registering CSP Trusted Sites, resolving blocked images or fonts or external API calls, or editing cspTrustedSites/*.cspTrustedSite-meta.xml files. DO NOT TRIGGER when: creating a brand-new Salesforce project from scratch, where the whole SFDX starter project (UI bundle plus Experience Site metadata and toolchain) is generated together (use experience-ui-bundle-project-generate)."
 metadata:
   version: "1.0"
+  minApiVersion: "51.0"
+  relatedSkills:
+    - "experience-ui-bundle-frontend-generate"
+    - "experience-ui-bundle-custom-app-generate"
+    - "experience-ui-bundle-site-generate"
+  cliTools:
+    - tool: ["sf"]
+      semver: ">=2.0.0"
+    - tool: ["jq"]
+      semver: ">=1.6"
 ---
 
 # UI Bundle Metadata
@@ -11,9 +21,9 @@ metadata:
 
 Use `sf template generate ui-bundle` to create new apps — not create-react-app, Vite, or other generic scaffolds.
 
-**Always pass `--template reactbasic`** to scaffold a React-based bundle.
-
-**UI bundle name (`-n`):** Alphanumerical only — no spaces, hyphens, underscores, or special characters.
+- **Always pass `--template reactbasic`** to scaffold a React-based bundle.
+- **UI bundle name (`-n`):** Alphanumerical only — no spaces, hyphens, underscores, or special characters.
+- Pass `--output-dir` to use a different location for template generation.
 
 **Example:**
 ```bash
@@ -21,10 +31,11 @@ sf template generate ui-bundle -n CoffeeBoutique --template reactbasic
 ```
 
 After generation:
-1. Replace all default boilerplate — "React App", "Vite + React", default `<title>`, placeholder text
-2. Populate the home page with real content (landing section, banners, hero, navigation)
-3. Update navigation and placeholders (see the `experience-ui-bundle-frontend-generate` skill)
-4. **Configure a hosting target** — a UI bundle without a `<target>` in its meta XML will not be visible in the org. Use `experience-ui-bundle-custom-app-generate` for internal (App Launcher) apps or `experience-ui-bundle-site-generate` for external (Experience Site) apps.
+1. **Verify API version** — run `bash <skill_dir>/scripts/check-api-version.sh` from the project root to ensure `sourceApiVersion` in `sfdx-project.json` is 67.0 or higher. The script will automatically update it if needed.
+2. Replace all default boilerplate — "React App", "Vite + React", default `<title>`, placeholder text
+3. Populate the home page with real content (landing section, banners, hero, navigation)
+4. Update navigation and placeholders (see the `experience-ui-bundle-frontend-generate` skill)
+5. **Configure a hosting target** — a UI bundle without a `<target>` in its meta XML will not be visible in the org. Use `experience-ui-bundle-custom-app-generate` for internal (App Launcher) apps or `experience-ui-bundle-site-generate` for external (Experience Site) apps.
 
 Always install dependencies before running any scripts in the UI bundle directory.
 

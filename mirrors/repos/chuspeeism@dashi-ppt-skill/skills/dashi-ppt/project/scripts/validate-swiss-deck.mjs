@@ -270,7 +270,9 @@ if (!previewPanelSource) {
     }
   }
 
-  const expectedXiaohongshuHref = 'https://www.xiaohongshu.com/user/profile/62e0c2bb000000001501408c?xsec_token=ABrZskc1MUcZWWuuMx7Fw52HYKSmhrHM2leT3iiPnMmG8%3D&amp;xsec_source=pc_search';
+  // 无查询参数的裸 profile URL:xsec_token 是小红书分享链路的高熵反爬参数,直接访问
+  // profile 不需要它;带上会被安全扫描(Snyk W008)判为泄露凭证。
+  const expectedXiaohongshuHref = 'https://www.xiaohongshu.com/user/profile/62e0c2bb000000001501408c';
   const xiaohongshuAnchor = socialAnchors.find(([, , platform]) => platform === 'xiaohongshu');
   const xiaohongshuAttrs = xiaohongshuAnchor ? `${xiaohongshuAnchor[1]} ${xiaohongshuAnchor[3]}` : '';
   const xiaohongshuHref = xiaohongshuAttrs.match(/\bhref="([^"]+)"/)?.[1] || '';

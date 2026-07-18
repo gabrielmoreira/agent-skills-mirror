@@ -1,0 +1,25 @@
+{
+  "name": "excalidraw",
+  "version": "1.0.0",
+  "description": "Hand-drawn diagrams in Excalidraw JSON (architecture, flowcharts)",
+  "author": "aiden",
+  "license": "MIT",
+  "tools": [],
+  "trigger_phrases": [],
+  "compatible_agents": [
+    "aiden"
+  ],
+  "min_agent_version": "3.0.0",
+  "tags": [
+    "excalidraw",
+    "diagram",
+    "architecture",
+    "flowchart",
+    "sketch",
+    "visualization",
+    "json",
+    "drawing",
+    "design"
+  ],
+  "created": "2026-04-27T17:11:39.517Z"
+}

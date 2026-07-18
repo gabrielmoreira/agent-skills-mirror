@@ -102,6 +102,91 @@ class AutoreviewCursorTests(unittest.TestCase):
         self.assertIn("review engine result was not structured JSON", str(exc_info.exception))
 
 
+class AutoreviewSecretScannerTests(unittest.TestCase):
+    def test_boolean_declarations_are_not_credential_material(self) -> None:
+        secret_field = "is" + "Secret"
+        client_secret_field = "hasClient" + "Secret"
+        cases = (
+            (f"val {secret_field}: Boolean? = null,", None),
+            (f"var {client_secret_field}: Boolean = false", None),
+            (f"abstract val {secret_field}: Boolean?", None),
+            (f"val {secret_field}: Boolean?", None),
+            (f"const {client_secret_field}: boolean = true;", "typescript"),
+            (f"declare const {client_secret_field}: boolean;", "typescript"),
+            (f"let {secret_field}: Bool? = nil", None),
+            (f"let {secret_field}: Bool?", None),
+        )
+
+        for content, javascript_dialect in cases:
+            with self.subTest(content=content):
+                self.assertFalse(
+                    AUTOREVIEW.secret_text_risk(
+                        content,
+                        javascript_dialect=javascript_dialect,
+                    )
+                )
+
+    def test_boolean_and_null_literal_values_are_not_credentials(self) -> None:
+        cases = (
+            ("is" + "Secret", "true"),
+            ("requires" + "Password", "false"),
+            ("access" + "Token", "null"),
+        )
+        for field_name, literal in cases:
+            content = f"{field_name} = {literal}"
+            with self.subTest(content=content):
+                self.assertFalse(AUTOREVIEW.secret_text_risk(content))
+
+    def test_boolean_annotation_does_not_hide_real_credential_literal(self) -> None:
+        literal_value = "actual-production-" + "secret"
+        secret_field = "is" + "Secret"
+        client_secret_field = "hasClient" + "Secret"
+        cases = (
+            (f'val {secret_field}: Boolean? = "{literal_value}",', None),
+            (f'var {client_secret_field}: Boolean = "{literal_value}"', None),
+            (
+                f'const {client_secret_field}: boolean = "{literal_value}";',
+                "typescript",
+            ),
+            (f'let {secret_field}: Bool? = "{literal_value}"', None),
+        )
+
+        for content, javascript_dialect in cases:
+            with self.subTest(content=content):
+                self.assertTrue(
+                    AUTOREVIEW.secret_text_risk(
+                        content,
+                        javascript_dialect=javascript_dialect,
+                    )
+                )
+                self.assertIn(
+                    literal_value,
+                    AUTOREVIEW.review_secret_fragments(
+                        content,
+                        javascript_dialect=javascript_dialect,
+                    ),
+                )
+
+    def test_boolean_prefix_values_remain_credentials(self) -> None:
+        field_name = "client" + "Secret"
+        for prefix in ("Boolean", "boolean", "Bool"):
+            literal_value = prefix + "-prod-credential"
+            content = f"{field_name}: {literal_value}"
+            with self.subTest(content=content):
+                self.assertTrue(AUTOREVIEW.secret_text_risk(content))
+                self.assertIn(
+                    literal_value,
+                    AUTOREVIEW.review_secret_fragments(content),
+                )
+
+    def test_boolean_type_tokens_in_config_remain_credentials(self) -> None:
+        field_name = "client" + "Secret"
+        for literal_value in ("Boolean?", "Boolean?=abc1234"):
+            content = f"{field_name}: {literal_value}"
+            with self.subTest(content=content):
+                self.assertTrue(AUTOREVIEW.secret_text_risk(content))
+
+
 class AutoreviewCompatibilityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:

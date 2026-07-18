@@ -1,6 +1,6 @@
 ---
 name: ce-pov
-description: "Give a decisive, project-grounded point of view in the subject's own shape: a graded verdict on an external-adoption question, a holistic take on a document, or a position on a user-supplied approach set. Use for a solo POV, a mid-session second opinion, a named-peer cross-check, an `oracle` panel, or a correction-cost-gated proactive cross-check offer. Not for findings review (use ce-doc-review), neutral explainers, or generating options (use ce-ideate or ce-brainstorm)."
+description: "Give a decisive, project-grounded point of view in the subject's own shape: a graded verdict on an external-adoption question, a holistic take on a document, or a position on a user-supplied approach set. Use for a solo POV, a mid-session second opinion, a named-peer cross-check, any request to consult other models or reconcile their opinions, an `oracle` panel, or a correction-cost-gated proactive cross-check offer. Not for findings review (use ce-doc-review), neutral explainers, or generating options (use ce-ideate or ce-brainstorm)."
 argument-hint: "[adoption question, document, or supplied approaches] [compare/cross-check with peers or oracle] — or invoke bare mid-session"
 ---
 
@@ -17,6 +17,10 @@ The subject of this point of view — the thing to judge — is the input this s
 ## The one rule that is the whole moat
 
 **Do not issue a POV you did not earn against the project's own context.** Generic web research already covers "tell me about X"; the differentiator is never "research the web" — it is the refusal to answer in the abstract. Every subject must clear the **project floor** in `references/method.md`. An external-adoption verdict must also clear the full **external floor**; a document or approach-set POV must externally verify any external claim that is load-bearing to its bottom line. Neither the conversation nor the user's own assertions substitute for grounding.
+
+## User-facing communication
+
+Write user-facing messages for the person deciding what to do. Lead with the decision, question, or recommendation. Keep internal workflow vocabulary and mechanics out of chat unless the user asks or a detail materially changes their choice; translate any user-relevant consequence into ordinary language. Refer to the codebase as "this project" or "the repository" unless the user supplied a recognizable name; never promote a directory, worktree, checkout, branch, or path into the project name.
 
 ## Interaction Method
 
@@ -57,28 +61,26 @@ Dispatch is tiered by task shape, never hardcoded to a model name:
 
 Grounding searches code, git, the issue tracker, PRs, and docs — noisy work that would flood this context and crowd out the verdict reasoning. Dispatch it to scout sub-agents that search in their own context and return only a dossier path plus a short gist; read a dossier on demand, never inline the raw search.
 
-**Resolve the project profile from the shared cache first.** The question-agnostic profile (stack, dependency surface + licenses, conventions, structure) is identical whenever committed profile inputs match, so reuse it instead of re-deriving. Set `SKILL_DIR` to this skill's directory and run the helper (full protocol in `references/repo-profile-cache.md`):
-
-```bash
-SKILL_DIR="<absolute path of the directory containing the SKILL.md you just read>";
-python3 "$SKILL_DIR/scripts/repo-profile-cache.py" get
-```
-
-On `HIT`, load the profile JSON — that is your agnostic project orientation; do not re-derive it. On `MISS`, dispatch a generic subagent with `references/agents/repo-profiler.md` to derive the profile, write its JSON to a file, then persist with `python3 "$SKILL_DIR/scripts/repo-profile-cache.py" put <file>` (re-set `SKILL_DIR` in that call — shell vars don't persist between Bash invocations). On `NO-CACHE` — or if the call errors or returns nothing — derive it inline via that persona and skip the `put`; never block on the cache. The profile supplies the agnostic facts; the scouts below only run the **candidate-specific** slice on top of it.
+Use the project's active instructions already in context. Send scouts directly to candidate-specific current evidence. If the candidate cannot be scoped from the frame and existing context, allow one targeted root or workspace probe.
 
 Create the scratch dir once, and reuse the echoed path for every scout this run:
 
 ```bash
-SCRATCH_DIR="/tmp/compound-engineering/ce-pov/$(openssl rand -hex 4)"
-mkdir -p "$SCRATCH_DIR"
-echo "$SCRATCH_DIR"
+SCRATCH_ROOT="/tmp/compound-engineering-$(id -u)";
+if [ -L "$SCRATCH_ROOT" ]; then echo "unsafe scratch root symlink: $SCRATCH_ROOT" >&2; exit 1; fi;
+install -d -m 700 "$SCRATCH_ROOT" || exit 1;
+if [ -L "$SCRATCH_ROOT" ] || [ ! -O "$SCRATCH_ROOT" ]; then echo "scratch root is not owned by the current user: $SCRATCH_ROOT" >&2; exit 1; fi;
+chmod 700 "$SCRATCH_ROOT" || exit 1;
+SCRATCH_DIR="$SCRATCH_ROOT/ce-pov/$(openssl rand -hex 4)";
+(umask 077; mkdir -p "$SCRATCH_DIR") || exit 1; chmod 700 "$SCRATCH_DIR" || exit 1;
+echo "$SCRATCH_DIR";
 ```
 
 **Every scout payload carries the same context.** A fresh subagent does not inherit this conversation, so fill the persona files' `{subject}` / `{scratch-dir}` placeholders at dispatch: pass each scout the framed question (subject + intent), the named incumbent and the reversibility tier, and the resolved `<scratch-dir>` path — plus any user-supplied links for the external researcher. A scout seeded with only its generic persona grounds "some external thing" and can produce an empty or unfocused dossier.
 
-**Tier-sensitive dispatch.** For **Tier 1** (reversible), run a single combined grounding pass: seed one subagent with `references/agents/project-grounding-scout.md` covering the candidate-specific project facts (incumbent, call-sites) on top of the cached profile at a tight read budget, and one with `references/agents/external-evidence-researcher.md`; skip the standalone precedent scout — on this tier the project-grounding scout's **prior-decision scan** (`docs/solutions/`, ADRs, design docs) is the precedent check, so it must run. For **Tier 2/3**, dispatch the full fleet in parallel:
+**Tier-sensitive dispatch.** For **Tier 1** (reversible), run a single combined grounding pass: seed one subagent with `references/agents/project-grounding-scout.md` covering the candidate-specific project facts (incumbent, call-sites) at a tight read budget, and one with `references/agents/external-evidence-researcher.md`; skip the standalone precedent scout — on this tier the project-grounding scout's **prior-decision scan** (`docs/solutions/`, ADRs, design docs) is the precedent check, so it must run. For **Tier 2/3**, dispatch the full fleet in parallel:
 
-- **project-grounding scout** (extraction tier) — read `references/agents/project-grounding-scout.md` and seed a generic subagent with it. With the agnostic profile already loaded from the cache, this scout runs only the **candidate-specific** slice: the named incumbent for *this* candidate, its call-sites/footprint, incumbent-pain, and the license/compat check against the profile's dependency-license set. Do not re-derive stack, conventions, or structure — those are in the profile. But note the profile may *name* an incumbent dependency, and a named dep is only a **lead** — it does not satisfy the project floor (see `references/method.md`), which still requires a freshly verified call-site the cache never holds. Do not let a cache-named incumbent short-circuit the fresh touchpoint check.
+- **project-grounding scout** (extraction tier) — read `references/agents/project-grounding-scout.md` and seed a generic subagent with it. Run the **candidate-specific** slice fresh: the named incumbent for *this* candidate, its call-sites/footprint, incumbent-pain, exact runtime or framework constraints that materially affect compatibility, and the project/candidate/dependency license check. Do not start with generic shape discovery; the project floor (see `references/method.md`) still requires a freshly verified call-site and current compatibility evidence.
 - **precedent-&-activity scout** (extraction tier) — read `references/agents/precedent-activity-scout.md` and seed a generic subagent with it. Always run its **local-doc precedent pass** (`docs/solutions/`, ADRs, design docs — file reads, no tools needed); only its tracker/PR portion is capability-gated and degrades gracefully when those interfaces aren't reachable. Do **not** skip the whole scout for missing tracker access — that would drop the only path that surfaces a prior local adopt/reject decision.
 - **external-evidence researcher** (generation tier) — read `references/agents/external-evidence-researcher.md` and seed a generic subagent with it; capability-gated on web tools. **Scale the remit to the tier so Tier 3's deeper-workup promise is real, not nominal:** at **Tier 3**, seed it with a deeper brief — a wider source net, a larger read budget, and *mandatory* two-source corroboration on every load-bearing claim (at Tier 3 a single-source claim cannot anchor the verdict); **Tier 2** uses the persona's standard budget and its prefer-two-sources default.
 
@@ -92,11 +94,11 @@ echo "$SCRATCH_DIR"
 
 ### Phase 3: Point of View
 
-First form ce-pov's own independent POV under the active subject-shape contract in `references/method.md`, but do not emit it yet. This solo result is the panel payload's **independently formed position**; peers cross-check a completed ce-pov position rather than shaping its first draft.
+First form ce-pov's own independent POV under the active subject-shape contract in `references/method.md`, but do not emit it yet. Freeze that position so peer feedback cannot shape its first draft. Keep it out of an independent peer's initial context; expose it only when the requested task is to critique that position or when a later reconciliation round compares already-formed views.
 
 When a panel is named or summoned, or when a cold POV may qualify for a proactive offer, read
 `references/cross-model-panel.md` before resolving participation or deciding whether to offer.
-After the required egress disclosure and sanction, peers stay read-only and independently inspect the repository root or one identically normalized narrower scope. The panel protocol resolves a fixed actual route before content or repository access, keeps Cursor-default distinct from Composer-through-Cursor, revalidates repository identity between rounds, and attributes only receipt-supported independence.
+Invoking a named peer, an explicit cross-check, or `oracle` authorizes the panel protocol's normal read-only consultation against this project. Announce the selected peers before dispatch; ask only when a retry adds an unexpected recipient or intermediary, or an active instruction requires separate approval. Peers inspect the shared working tree directly and cannot edit it. The panel protocol preserves an unbiased initial round, bounds evidence-based reconciliation while honoring user-supplied pass limits, and attributes only receipt-supported independence.
 Resolve and finish the panel branch, including any fold-in or reconciliation, before composing the user-facing result. If no panel runs, keep the solo result unchanged.
 
 Only then emit the final contract for the active subject shape. For an external-adoption question, the existing grade vocabulary, schema fields, tier sizing, and output economy apply unchanged. A document take or approach-set position follows its own explicit contract. Every shape is a **compact chat block, not a research report**: lead with the grade, bottom line, or position named by its contract; keep each field terse; and never reprint scout dossiers or raw search output.

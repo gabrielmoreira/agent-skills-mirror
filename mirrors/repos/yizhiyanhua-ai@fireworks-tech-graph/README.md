@@ -1,5 +1,7 @@
 [English](README.md) | [中文](README.zh.md)
 
+[Release history](docs/releases/README.md) · [Changelog](CHANGELOG.md)
+
 # fireworks-tech-graph
 
 > **Stop drawing diagrams by hand.** Describe your system in English or Chinese — get geometry-safe SVG, PNG, focused SVG-to-GIF motion, and offline interactive technical diagrams.

@@ -3,6 +3,19 @@ name: data360-code-extension-generate
 description: "Develop and deploy Data Cloud Code Extensions using SF CLI plugin. Use this skill when creating custom Python transformations for Data Cloud, deploying code extensions, or testing data transformations. Supports init, run, scan, and deploy operations."
 metadata:
   version: "1.0"
+  relatedSkills:
+    - "data360-schema-get"
+  cliTools:
+    - tool: ["sf"]
+      semver: ">=2.0.0"
+    - tool: ["pip"]
+      semver: ">=21.0.0"
+    - tool: ["python3"]
+      semver: ">=3.11.0"
+    - tool: ["docker"]
+      semver: ">=20.0.0"
+    - tool: ["git"]
+      semver: ">=2.0.0"
 ---
 
 # data360-code-extension-generate Skill
@@ -30,7 +43,7 @@ Before executing any code extension commands, verify prerequisites:
    ```
    If not installed:
    ```bash
-   sf plugins install @salesforce/plugin-data-codeextension
+   sf plugins install @salesforce/plugin-data-code-extension
    ```
 
 2. **Python 3.11**
@@ -254,7 +267,7 @@ sf data-code-extension script deploy --target-org <org_alias> --name <name> --pa
 
 | Error | Solution |
 |-------|----------|
-| `command data-code-extension not found` | `sf plugins install @salesforce/plugin-data-codeextension` |
+| `command data-code-extension not found` | `sf plugins install @salesforce/plugin-data-code-extension` |
 | `datacustomcode CLI not found` | `pip install salesforce-data-customcode` |
 | `Python version mismatch` | Use pyenv: `pyenv install 3.11.0 && pyenv local 3.11.0` |
 | `Cannot connect to Docker daemon` | Start Docker Desktop |

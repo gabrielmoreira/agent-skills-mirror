@@ -45,7 +45,7 @@ Execute by naming the workflow in your prompt. Keywords are auto-detected via ho
 | design | `design.md` | Design system + DESIGN.md with anti-pattern enforcement |
 | review | `review.md` | QA audit |
 | debug | `debug.md` | Root cause + minimal fix |
-| deepsec | `deepsec.md` | Drive `oma-deepsec` end-to-end (setup / scan / pr-review / matchers / triage) |
+| deepsec | `deepsec.md` | Drive `oma-deepsec` end-to-end (setup / scan / pr-review / matchers / triage / config / troubleshoot) |
 | scm | `scm.md` | SCM + Git operations + Conventional Commits |
 | docs | `docs.md` | Documentation drift verify + sync |
 | recap | `recap.md` | Daily / period AI conversation recap |
@@ -106,6 +106,7 @@ When touching install/update/uninstall code, read `web/docs/guide/global-install
 - `bun run test` runs CLI tests (vitest).
 - `bun run lint` runs the linter.
 - `bun run build` builds the CLI.
+- `bun run typecheck` type-checks CLI and web. **Run it before every commit**: vitest (esbuild), biome, and `bun build` all skip tsc, so type errors otherwise surface only at the pre-push hook and reject the push late.
 - **When manually exercising the CLI, always run the LOCAL code**: `bun cli/cli.ts <args>` (source) or `node cli/bin/cli.js <args>` (fresh build after `bun run build`). Never use `bun run oma` or bare `oma` — the repo root has no workspace bin link, so both silently fall back to the globally installed (likely stale) oma on PATH, and you end up debugging against the wrong version.
 - commitlint: conventional commits required (build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test)
 - Commit Co-Author: `First Fluke <our.first.fluke@gmail.com>`

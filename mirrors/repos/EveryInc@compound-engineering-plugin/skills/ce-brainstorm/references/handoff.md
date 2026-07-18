@@ -43,12 +43,14 @@ What would you like to do next? (Pick a number or describe what you want.)
 **Preamble when blocking questions remain and user wants to pause:**
 
 ```
-Brainstorm paused. Planning is blocked until the remaining questions are resolved.
+Brainstorm paused. I'm holding planning until the remaining questions are resolved — say the word and I'll proceed anyway, recording each open item as an explicit assumption or a question deferred to planning.
 
 Plan artifact: <absolute path to requirements-only unified plan>  # omit line if no artifact was created
 
 What would you like to do next? (Pick a number or describe what you want.)
 ```
+
+The override sentence is load-bearing, not padding: the planning options are hidden while `Resolve Before Planning` is non-empty, so without it the user is told planning is blocked and is never told the block is theirs to lift. `Resolve Before Planning` is your own judgment call — an over-cautious read of it must not silently strand the user with no visible way forward. Hiding the option withholds the *recommendation*; it never withholds the *choice*.
 
 Present only the options that apply. Renumber so visible options stay contiguous starting at 1.
 
@@ -57,7 +59,7 @@ Present only the options that apply. Renumber so visible options stay contiguous
 3. **Pressure-test the requirements** - Dispatch reviewer agents with `ce-doc-review` to find gaps, conflicts, weak premises, and scope issues in the requirements; auto-apply safe fixes; route the rest interactively. Shown only when a markdown unified plan exists **and `OUTPUT_FORMAT=md`** — ce-doc-review's walkthrough applies markdown-only mutations (`##`/`###` heading inserts, single-file markdown edits via apply-set) and would corrupt an HTML artifact, so HTML brainstorms skip this option until ce-doc-review gains HTML-aware mutation support. Under HTML mode, surface a one-line note above the menu: `Requirements review unavailable in output:html mode — ce-doc-review is markdown-only today. Switch to output:md if you want a review pass.`
 4. **Publish to Proof — shareable link** - Publish the markdown unified plan to Every's Proof editor and get a shareable link to read, comment on, or share with others. One-way: the local doc stays canonical. Shown only when a markdown unified plan exists. **Render only when `OUTPUT_FORMAT=md`** (Proof operates on markdown and cannot ingest HTML).
 4. **Open in browser** — open the HTML unified plan locally for review and sharing. Shown only when an HTML unified plan exists. **Render only when `OUTPUT_FORMAT=html`.** Replaces "Publish to Proof" at the same slot under exclusive output mode — the artifact is either markdown OR HTML, never both, so exactly one of the two labels applies per run.
-5. **More clarifying questions to sharpen the doc** - Keep refining scope, edge cases, constraints, and preferences through further dialogue. Always shown.
+5. **More clarifying questions to sharpen the scope** - Keep refining scope, edge cases, constraints, and preferences through further dialogue. Always shown — so the label names the scope rather than the doc, which stays true on a run that correctly skipped doc creation.
 
 There is no "done" / "pause" option — the blocking question already waits, and the user ends by dismissing it (Esc) or saying they're finished. The unified plan artifact is already saved.
 
@@ -73,7 +75,7 @@ Immediately load the `ce-plan` skill in the current session. Pass the unified
 plan artifact path when one exists; otherwise pass a concise summary of the
 finalized brainstorm decisions. When the Phase 1.1 grounding scout produced a
 dossier and the file still exists, also pass its path
-(`/tmp/compound-engineering/ce-brainstorm/<run-id>/grounding.md`) — it gives
+(`<scratch-root>/ce-brainstorm/<run-id>/grounding.md`) — it gives
 planning verified quotes with `file:line` pointers to start from instead of
 re-scanning the repo. Do not print the closing summary first.
 
@@ -104,7 +106,7 @@ open a PR from this artifact.
 
 Do not print the closing summary first.
 
-**If user selects "More clarifying questions to sharpen the doc":** Return to Phase 1.3 (Collaborative Dialogue) and continue asking the user clarifying questions one at a time to further refine scope, edge cases, constraints, and preferences. Continue until the user is satisfied, then return to Phase 4. Do not show the closing summary yet.
+**If user selects "More clarifying questions to sharpen the scope":** Return to Phase 1.3 (Collaborative Dialogue) and continue asking the user clarifying questions one at a time to further refine scope, edge cases, constraints, and preferences. Continue until the user is satisfied, then return to Phase 4. Do not show the closing summary yet.
 
 **If user selects "Publish to Proof — shareable link":**
 
@@ -158,9 +160,9 @@ Brainstorm paused.
 
 Plan artifact: <absolute path to unified plan>  # omit line if no artifact was created
 
-Planning is blocked by:
+Planning is held on:
 - [Blocking question 1]
 - [Blocking question 2]
 
-Resume with `ce-brainstorm` when ready to resolve these before planning.
+Resume with `ce-brainstorm` to resolve these — or say to plan anyway, and I'll record each open item as an explicit assumption or a question deferred to planning.
 ```

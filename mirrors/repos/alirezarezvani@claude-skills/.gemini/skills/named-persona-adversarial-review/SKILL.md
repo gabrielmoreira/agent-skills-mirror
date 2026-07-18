@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/named-persona-adversarial-review/../../../engineering-team/skills/named-persona-adversarial-review/SKILL.md

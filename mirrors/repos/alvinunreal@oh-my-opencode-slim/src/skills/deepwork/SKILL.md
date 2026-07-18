@@ -49,6 +49,16 @@ Required behavior:
   UI/UX;
 - finish with final validation and a concise summary.
 
+## Phase Sizing
+
+Oracle review adds time and cost, so choose phase size deliberately during
+implementation planning. Phases that are too large can hide bugs, missed
+adjustments, and architecture decisions until they are expensive to change.
+Phases that are too small add review overhead with little useful feedback.
+
+Balance phase size so each Oracle review happens when its findings could
+meaningfully improve the work that follows.
+
 ## Designer Handoff Guardrail
 
 When a deepwork phase includes `@designer`, treat the delivered UI/UX as

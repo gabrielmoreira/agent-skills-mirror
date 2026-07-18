@@ -1,6 +1,6 @@
 ---
 name: openloomi-connectors
-description: "Use OpenLoomi connector readiness guidance from Codex for Slack, Gmail, Calendar, GitHub, and other integrations. Trigger when users ask whether connectors are configured, need setup, or block a Loomi workflow. Pair with the composio skill to also list composio-linked accounts."
+description: "Use OpenLoomi connector readiness guidance from Codex for native integrations (Telegram, WhatsApp, iMessage, Lark/Feishu, DingTalk, QQ, WeChat) and other connected platforms. Trigger when users ask whether connectors are configured, need setup, or block a Loomi workflow. Pair with the composio skill to also list composio-linked accounts."
 allowed-tools: "Bash(node $SKILL_DIR/../../scripts/loomi-bridge.mjs *)"
 ---
 
@@ -42,7 +42,7 @@ recommendation and hand the user to the reported OpenLoomi `/connectors` URL.
 Do not treat this as core runtime failure when `ready: true`.
 
 `setup-status` may merge Loop connector rows with OpenLoomi native integration
-accounts (for example Gmail or QQbot) as status-only connector rows. Report that
+accounts (for example QQbot or Feishu) as status-only connector rows. Report that
 connected state when present, but keep all authentication, sync, and account
 management inside OpenLoomi.
 

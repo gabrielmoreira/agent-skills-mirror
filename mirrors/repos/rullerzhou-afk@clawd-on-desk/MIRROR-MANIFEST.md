@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
+Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 25 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,14 +76,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`agents/kimi-log-monitor.js`](agents/kimi-log-monitor.js) |
 | 16 | ✓ | [`agents/kiro-cli.js`](agents/kiro-cli.js) |
 | 17 | ✓ | [`agents/openclaw.js`](agents/openclaw.js) |
-| 18 | ✓ | [`agents/opencode.js`](agents/opencode.js) |
-| 19 | ✓ | [`agents/pi.js`](agents/pi.js) |
-| 20 | ✓ | [`agents/qoder.js`](agents/qoder.js) |
-| 21 | ✓ | [`agents/qoderwork.js`](agents/qoderwork.js) |
-| 22 | ✓ | [`agents/qwen-code.js`](agents/qwen-code.js) |
-| 23 | ✓ | [`agents/reasonix.js`](agents/reasonix.js) |
-| 24 | ✓ | [`agents/registry.js`](agents/registry.js) |
-| 25 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 18 | ✓ | [`agents/opencode-family.js`](agents/opencode-family.js) |
+| 19 | ✓ | [`agents/opencode.js`](agents/opencode.js) |
+| 20 | ✓ | [`agents/pi.js`](agents/pi.js) |
+| 21 | ✓ | [`agents/qoder.js`](agents/qoder.js) |
+| 22 | ✓ | [`agents/qoderwork.js`](agents/qoderwork.js) |
+| 23 | ✓ | [`agents/qwen-code.js`](agents/qwen-code.js) |
+| 24 | ✓ | [`agents/reasonix.js`](agents/reasonix.js) |
+| 25 | ✓ | [`agents/registry.js`](agents/registry.js) |
+| 26 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

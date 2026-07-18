@@ -193,6 +193,9 @@ SECRET_ASSIGNMENT_KEY_PATTERN = (
     rf"|(?<![A-Za-z0-9]){SECRET_ASSIGNMENT_KEY_NAME_PATTERN}"
     rf"(?![A-Za-z0-9]))"
 )
+# A colon before an explicit Boolean type is an annotation, not a value.
+# Only scan the initializer after `=` so real credential literals still fail closed.
+SECRET_BOOLEAN_TYPE_PATTERN = r"(?-i:Boolean\??|boolean|Bool\??)"
 SECRET_ASSIGNMENT_PATTERN = re.compile(
     rf"(?i){SECRET_ASSIGNMENT_KEY_PATTERN}\s*[:=]\s*"
     r"(?:\"(?P<double_value>[^\"\r\n]{8,})\"|"
@@ -210,6 +213,14 @@ SECRET_ASSIGNMENT_PATTERN = re.compile(
 SECRET_ASSIGNMENT_PREFIX_PATTERN = re.compile(
     rf"(?i){SECRET_ASSIGNMENT_KEY_PATTERN}"
     r"\s*(?:=(?!=|>)|:(?![:=]))\s*"
+)
+SECRET_BOOLEAN_DECLARATION_PATTERN = re.compile(
+    r"(?im)^[ \t]*(?:(?:abstract|const|declare|export|final|internal|lateinit|"
+    r"open|override|private|protected|public|readonly|static)\s+)*"
+    rf"(?:val|var|let|const)\s+"
+    rf"(?P<boolean_key>{SECRET_ASSIGNMENT_KEY_PATTERN})\s*:\s*"
+    rf"(?P<boolean_type>{SECRET_BOOLEAN_TYPE_PATTERN})"
+    r"(?=\s*(?:=|[,;)\]}]|$))"
 )
 PRIVATE_KEY_BOUNDARY_PREFIX = r"-----"
 PRIVATE_KEY_BEGIN_PATTERN = re.compile(
@@ -450,7 +461,10 @@ CSHARP_METHOD_PREFIX_PATTERN = (
 )
 CSHARP_EVIDENCE_WINDOW = 8192
 SOURCE_CODE_REFERENCE_ROOT_VALUES = {
+    "accountConfig",
     "attemptAuthProfileStore",
+    "baseConfig",
+    "merged",
 }
 SOURCE_CODE_REFERENCE_ROOT_PATTERN = re.compile(
     r"(?<![A-Za-z0-9_$?.])(?:"
@@ -533,13 +547,26 @@ SOURCE_CODE_REFERENCE_PATTERN = re.compile(
         for value in sorted(SOURCE_CODE_REFERENCE_VALUES, key=len, reverse=True)
     ) + r")(?![A-Za-z0-9_$])"
 )
+SOURCE_CODE_SECRET_REFERENCE_TERM_PATTERN = (
+    r"(?:apiKey|ApiKey|key|Key|credential|Credential|credentials|Credentials"
+    r"|password|Password|secret|Secret|token|Token)"
+)
+SOURCE_CODE_SECRET_REFERENCE_SUFFIX_PATTERN = (
+    r"(?:Diagnostics?|File|Info|Reference|Ref|Resolution|Result)"
+)
 SOURCE_CODE_LIFECYCLE_REFERENCE_PATTERN = re.compile(
-    r"(?<![A-Za-z0-9_$?.])"
-    r"(?:(?:cached|current|existing|loaded|previous|resolved|saved|stored|successful)"
-    r"[A-Za-z0-9_$]*"
-    r"(?:ApiKey|Credential|Credentials|Password|Secret|Token)"
-    r"|(?:apiKey|credential|credentials|password|secret|token))(?:Info)?"
-    r"(?:(?:\?\.|\.)[A-Za-z_$][A-Za-z0-9_$]*)*"
+    r"(?<![A-Za-z0-9_$?.])(?:"
+    r"(?:account|base|cached|channel|current|existing|file|inline|loaded|merged"
+    r"|previous|resolved|saved|stored|successful)"
+    r"[A-Za-z0-9_$]{0,64}"
+    rf"{SOURCE_CODE_SECRET_REFERENCE_TERM_PATTERN}"
+    rf"(?:{SOURCE_CODE_SECRET_REFERENCE_SUFFIX_PATTERN})?"
+    r"|[A-Za-z0-9_$]{0,64}"
+    rf"{SOURCE_CODE_SECRET_REFERENCE_TERM_PATTERN}"
+    r"[A-Za-z0-9_$]{0,64}"
+    rf"{SOURCE_CODE_SECRET_REFERENCE_SUFFIX_PATTERN}"
+    rf"|{SOURCE_CODE_SECRET_REFERENCE_TERM_PATTERN}"
+    r")(?:(?:\?\.|\.)[A-Za-z_$][A-Za-z0-9_$]*)*"
     r"(?![A-Za-z0-9_$])"
 )
 DEFAULT_ENGINE_PATHS = ("/usr/local/bin", "/usr/bin", "/bin")
@@ -3885,6 +3912,13 @@ def secret_literal_risk(
                 continue
             if (
                 javascript_dialect is not None
+                and re.fullmatch(r"[A-Za-z_$][A-Za-z0-9_$]*:", value)
+            ):
+                # Object/type property names are syntax, not credential content.
+                # Any literal value after the colon is scanned independently.
+                continue
+            if (
+                javascript_dialect is not None
                 and SOURCE_CODE_REFERENCE_ROOT_PATTERN.fullmatch(value)
             ):
                 continue
@@ -4794,7 +4828,28 @@ def safe_secret_call_suffix(
     def safe_call_end(start: int, target: str) -> int | None:
         cursor = balanced_delimiter_end(text, start, "(", ")")
         if cursor is None:
-            return None
+            if javascript_dialect is None:
+                return None
+            boundary = re.search(r"(?m)^;\r?$", text[start + 1 :])
+            visible_end = (
+                start + 1 + boundary.start()
+                if boundary is not None
+                else len(text)
+            )
+            visible_arguments = text[start + 1 : visible_end]
+            return (
+                None
+                if any(
+                    pattern.search(visible_arguments)
+                    for pattern in SECRET_FALLBACK_LITERAL_PATTERNS
+                )
+                or fallback_secret_risk(
+                    visible_arguments,
+                    minimum_length=12,
+                    javascript_dialect=javascript_dialect,
+                )
+                else visible_end
+            )
         arguments = text[start + 1 : cursor - 1]
         return (
             None
@@ -5263,6 +5318,67 @@ def unsafe_multiline_self_reference_assignment(
     )
 
 
+def boolean_declaration_initializer_range(
+    text: str,
+    match: re.Match[str],
+    *,
+    javascript_dialect: str | None = None,
+) -> tuple[int, int] | None:
+    initializer = re.match(r"\s*=\s*", text[match.end() :])
+    if initializer is None:
+        return None
+    start = match.end() + initializer.end()
+    expression = fallback_expression(
+        text[start:],
+        typescript=javascript_dialect == "typescript",
+    )
+    return start, start + len(expression)
+
+
+def boolean_declaration_initializer_risk(
+    text: str,
+    match: re.Match[str],
+    *,
+    javascript_dialect: str | None = None,
+) -> bool:
+    initializer_range = boolean_declaration_initializer_range(
+        text,
+        match,
+        javascript_dialect=javascript_dialect,
+    )
+    if initializer_range is None:
+        return False
+    start, end = initializer_range
+    return secret_literal_risk(
+        text[start:end],
+        minimum_length=8,
+        javascript_dialect=javascript_dialect,
+    )
+
+
+def boolean_declaration_initializer_spans(
+    text: str,
+    match: re.Match[str],
+    *,
+    javascript_dialect: str | None = None,
+) -> list[tuple[int, int]]:
+    initializer_range = boolean_declaration_initializer_range(
+        text,
+        match,
+        javascript_dialect=javascript_dialect,
+    )
+    if initializer_range is None:
+        return []
+    start, end = initializer_range
+    if not secret_literal_risk(
+        text[start:end],
+        minimum_length=8,
+        javascript_dialect=javascript_dialect,
+    ):
+        return []
+    return top_level_fallback_value_spans(text, start, end)
+
+
 def secret_text_risk(
     text: str,
     *,
@@ -5271,6 +5387,19 @@ def secret_text_risk(
     uri_authorities = uri_authority_ranges(text)
     if credentialed_uri_risk(text, uri_authorities) or basic_authorization_risk(text) or any(
         pattern.search(text) for pattern in SECRET_VALUE_PATTERNS
+    ):
+        return True
+    boolean_declarations = tuple(SECRET_BOOLEAN_DECLARATION_PATTERN.finditer(text))
+    boolean_declaration_positions = {
+        match.start("boolean_key") for match in boolean_declarations
+    }
+    if any(
+        boolean_declaration_initializer_risk(
+            text,
+            match,
+            javascript_dialect=javascript_dialect,
+        )
+        for match in boolean_declarations
     ):
         return True
     safe_uri_credentials = interpolated_empty_password_uri_ranges(
@@ -5294,6 +5423,8 @@ def secret_text_risk(
         else frozenset()
     )
     for prefix in assignment_prefixes:
+        if prefix.start() in boolean_declaration_positions:
+            continue
         assignment = SECRET_ASSIGNMENT_PATTERN.match(text, prefix.start())
         if assignment is not None and safe_self_reference_assignment(
             text,
@@ -5325,6 +5456,8 @@ def secret_text_risk(
         assignment_scan_text,
         safe_uri_credentials,
     ):
+        if match.start() in boolean_declaration_positions:
+            continue
         quoted = any(
             match.group(name) is not None
             for name in ("double_value", "single_value", "backtick_value")
@@ -5804,7 +5937,6 @@ def review_call_literal_spans(
         for literal in candidates
         if len(literal.group("value")) >= 7
         and any(char.isalpha() for char in literal.group("value"))
-        and any(char.isdigit() for char in literal.group("value"))
         and literal.group("value").casefold() not in SECRET_PLACEHOLDER_VALUES
         and not any(
             pattern.fullmatch(literal.group("value"))
@@ -5818,8 +5950,22 @@ def review_repeatable_secret_spans(
     *,
     javascript_dialect: str | None = None,
 ) -> list[tuple[int, int]]:
-    spans: list[tuple[int, int]] = []
+    boolean_declarations = tuple(SECRET_BOOLEAN_DECLARATION_PATTERN.finditer(text))
+    boolean_declaration_positions = {
+        match.start("boolean_key") for match in boolean_declarations
+    }
+    spans = [
+        span
+        for match in boolean_declarations
+        for span in boolean_declaration_initializer_spans(
+            text,
+            match,
+            javascript_dialect=javascript_dialect,
+        )
+    ]
     for match in SECRET_ASSIGNMENT_PATTERN.finditer(text):
+        if match.start() in boolean_declaration_positions:
+            continue
         selected_name = next(
             (
                 name
@@ -5892,8 +6038,22 @@ def review_secret_value_spans(
     *,
     javascript_dialect: str | None = None,
 ) -> list[tuple[int, int]]:
-    spans: list[tuple[int, int]] = []
+    boolean_declarations = tuple(SECRET_BOOLEAN_DECLARATION_PATTERN.finditer(text))
+    boolean_declaration_positions = {
+        match.start("boolean_key") for match in boolean_declarations
+    }
+    spans = [
+        span
+        for match in boolean_declarations
+        for span in boolean_declaration_initializer_spans(
+            text,
+            match,
+            javascript_dialect=javascript_dialect,
+        )
+    ]
     for match in SECRET_ASSIGNMENT_PATTERN.finditer(text):
+        if match.start() in boolean_declaration_positions:
+            continue
         for name in (
             "double_value",
             "single_value",
@@ -5974,20 +6134,67 @@ def redact_review_spans(text: str, spans: list[tuple[int, int]]) -> str:
     return "".join(parts)
 
 
-def repeated_secret_fragment_spans(
+def known_secret_fragment_pattern(fragments: list[str]) -> re.Pattern[str] | None:
+    if not fragments:
+        return None
+    alternatives = "|".join(re.escape(fragment) for fragment in fragments)
+    return re.compile(rf"(?=(?P<fragment>{alternatives}))")
+
+
+def known_secret_fragment_spans(
     text: str,
     pattern: re.Pattern[str] | None,
 ) -> list[tuple[int, int]]:
     if pattern is None:
         return []
-    matches = list(pattern.finditer(text))
-    contexts = string_contexts_at(text, {match.start() for match in matches})
+    return [match.span("fragment") for match in pattern.finditer(text)]
+
+
+def javascript_regex_literal_ranges(text: str) -> list[tuple[int, int]]:
+    ranges: list[tuple[int, int]] = []
+    cursor = 0
+    while cursor < len(text):
+        end = javascript_regex_literal_end(text, cursor)
+        if end is None:
+            cursor += 1
+            continue
+        ranges.append((cursor, end))
+        cursor = end
+    return ranges
+
+
+def repeated_secret_fragment_spans(
+    text: str,
+    pattern: re.Pattern[str] | None,
+    *,
+    javascript_dialect: str | None = None,
+) -> list[tuple[int, int]]:
+    matches = known_secret_fragment_spans(text, pattern)
+    contexts = string_contexts_at(text, {start for start, _ in matches})
+    regex_ranges = (
+        javascript_regex_literal_ranges(text)
+        if javascript_dialect is not None
+        else []
+    )
+    regex_index = 0
     spans: list[tuple[int, int]] = []
-    for match in matches:
-        token_start = match.start()
+    for start, end in matches:
+        while (
+            regex_index < len(regex_ranges)
+            and regex_ranges[regex_index][1] <= start
+        ):
+            regex_index += 1
+        if (
+            regex_index < len(regex_ranges)
+            and regex_ranges[regex_index][0] <= start
+            and end <= regex_ranges[regex_index][1]
+        ):
+            spans.append((start, end))
+            continue
+        token_start = start
         while token_start > 0 and re.match(r"[A-Za-z0-9_$.-]", text[token_start - 1]):
             token_start -= 1
-        token_end = match.end()
+        token_end = end
         while token_end < len(text) and re.match(r"[A-Za-z0-9_$.-]", text[token_end]):
             token_end += 1
         key_position = re.match(
@@ -5995,21 +6202,21 @@ def repeated_secret_fragment_spans(
             text[token_end:],
         ) is not None
         unquoted_token_substring = (
-            contexts[match.start()] is None
-            and (token_start < match.start() or match.end() < token_end)
+            contexts[start] is None
+            and (token_start < start or end < token_end)
         )
         unquoted_identifier = (
-            contexts[match.start()] is None
-            and token_start == match.start()
-            and token_end == match.end()
-            and re.fullmatch(r"[A-Za-z_$][A-Za-z0-9_$.-]*", match.group(0))
+            contexts[start] is None
+            and token_start == start
+            and token_end == end
+            and re.fullmatch(r"[A-Za-z_$][A-Za-z0-9_$.-]*", text[start:end])
             is not None
         )
-        if contexts[match.start()] is None and (
+        if contexts[start] is None and (
             key_position or unquoted_token_substring or unquoted_identifier
         ):
             continue
-        spans.append(match.span())
+        spans.append((start, end))
     return spans
 
 
@@ -6127,18 +6334,56 @@ def orphan_private_key_body_spans(text: str) -> list[tuple[int, int]]:
     return [match.span() for match in matches]
 
 
-def explicit_private_key_body_spans(text: str) -> list[tuple[int, int]]:
+def bare_source_identifier_span(text: str, start: int, end: int) -> bool:
+    if re.fullmatch(r"[A-Za-z_$][A-Za-z0-9_$]*", text[start:end]) is None:
+        return False
+    before = text[:start].rstrip()[-1:]
+    after = text[end:].lstrip()[:1]
+    return before in {"=", "+", "(", "[", "{", ",", ":"} and after in {
+        "+",
+        ")",
+        "]",
+        "}",
+        ",",
+        ";",
+        ":",
+    }
+
+
+def explicit_private_key_body_spans(
+    text: str,
+    *,
+    in_pem: bool,
+) -> list[tuple[int, int]]:
+    if not in_pem:
+        return []
     candidates = private_key_token_spans(text)
     if not candidates:
         return []
+    wrapper_parts: list[str] = []
+    cursor = 0
+    for start, end in candidates:
+        wrapper_parts.append(text[cursor:start])
+        cursor = end
+    wrapper_parts.append(text[cursor:])
+    wrapper_text = "".join(wrapper_parts).strip()
+    escaped_body_only = ("\\n" in wrapper_text or "\\r" in wrapper_text) and re.fullmatch(
+        r"(?:(?:\\[nr])|\s)*",
+        wrapper_text,
+    ) is not None
+    if escaped_body_only:
+        return candidates
     contexts = string_contexts_at(text, {start for start, _ in candidates})
     wrapped = {match.span() for match in wrapped_private_key_body_matches(text)}
     return [
         (start, end)
         for start, end in candidates
-        if (start, end) in wrapped
-        or contexts[start] is not None
-        or any(char.isdigit() or char in "+/=" for char in text[start:end])
+        if not bare_source_identifier_span(text, start, end)
+        and (
+            (start, end) in wrapped
+            or contexts[start] is not None
+            or any(char.isdigit() or char in "+/=" for char in text[start:end])
+        )
     ]
 
 
@@ -6178,7 +6423,8 @@ def pem_line_body_spans(
             spans.extend(
                 (cursor + body_start, cursor + body_end)
                 for body_start, body_end in explicit_private_key_body_spans(
-                    text[cursor:start]
+                    text[cursor:start],
+                    in_pem=in_pem,
                 )
             )
         else:
@@ -6202,7 +6448,10 @@ def pem_line_body_spans(
     if in_pem:
         spans.extend(
             (cursor + body_start, cursor + body_end)
-            for body_start, body_end in explicit_private_key_body_spans(text[cursor:])
+            for body_start, body_end in explicit_private_key_body_spans(
+                text[cursor:],
+                in_pem=in_pem,
+            )
         )
     else:
         spans.extend(
@@ -6335,7 +6584,7 @@ def tolerant_pem_line_spans(text: str, depth: int) -> tuple[list[tuple[int, int]
     for start, end, delta in markers:
         segment = text[cursor:start]
         segment_matches = (
-            explicit_private_key_body_spans(segment)
+            explicit_private_key_body_spans(segment, in_pem=depth > 0)
             if depth > 0
             else []
         )
@@ -6346,15 +6595,19 @@ def tolerant_pem_line_spans(text: str, depth: int) -> tuple[list[tuple[int, int]
     if depth > 0:
         spans.extend(
             (cursor + start, cursor + end)
-            for start, end in explicit_private_key_body_spans(text[cursor:])
+            for start, end in explicit_private_key_body_spans(
+                text[cursor:],
+                in_pem=depth > 0,
+            )
         )
     return spans, depth
 
 
-def redact_unbalanced_private_key_hunks(section: str) -> str:
+def redact_unbalanced_private_key_hunks(section: str) -> tuple[str, set[str]]:
     """Redact inherited truncated PEM material while retaining changed code."""
     lines = literal_lf_lines(section)
     redacted = list(lines)
+    secret_fragments: set[str] = set()
     index = 0
     while index < len(lines):
         header = lines[index]
@@ -6370,7 +6623,7 @@ def redact_unbalanced_private_key_hunks(section: str) -> str:
         new_content: list[str] = []
         raw_content: list[str] = []
         hunk_lines: list[tuple[int, str, str, str]] = []
-        new_only_marker = False
+        has_changed_marker = False
         for line_index in range(index + 1, hunk_end):
             line = lines[line_index]
             body = line.rstrip("\r\n")
@@ -6381,11 +6634,11 @@ def redact_unbalanced_private_key_hunks(section: str) -> str:
             content = body[prefix_columns:]
             hunk_lines.append((line_index, prefix, content, ending))
             raw_content.append(content)
-            if "+" in prefix and "-" not in prefix and (
+            if set(prefix) != {" "} and (
                 PRIVATE_KEY_BEGIN_PATTERN.search(content) is not None
                 or PRIVATE_KEY_END_PATTERN.search(content) is not None
             ):
-                new_only_marker = True
+                has_changed_marker = True
             if set(prefix) == {" "} or "-" in prefix:
                 old_content.append(content)
             if set(prefix) == {" "} or "+" in prefix:
@@ -6399,7 +6652,7 @@ def redact_unbalanced_private_key_hunks(section: str) -> str:
         if old_balanced and new_balanced and raw_balanced:
             index = hunk_end
             continue
-        if new_only_marker and not new_balanced:
+        if has_changed_marker:
             index = hunk_end
             continue
         old_depth = private_key_initial_depth(old_text)
@@ -6412,11 +6665,23 @@ def redact_unbalanced_private_key_hunks(section: str) -> str:
             if set(prefix) == {" "} or "+" in prefix:
                 new_spans, new_depth = tolerant_pem_line_spans(content, new_depth)
                 spans.extend(new_spans)
+            marker_spans = {
+                match.span()
+                for pattern in (PRIVATE_KEY_BEGIN_PATTERN, PRIVATE_KEY_END_PATTERN)
+                for match in pattern.finditer(content)
+            }
+            secret_fragments.update(
+                fragment
+                for start, end in spans
+                if (start, end) not in marker_spans
+                and (fragment := normalized_private_key_fragment(content, start, end))
+                and fragment.casefold() not in SECRET_PLACEHOLDER_VALUES
+            )
             redacted[line_index] = (
                 f"{prefix}{redact_review_spans(content, spans)}{ending}"
             )
         index = hunk_end
-    return "".join(redacted)
+    return "".join(redacted), secret_fragments
 
 
 def redact_secret_like_hunk_headers(
@@ -6436,11 +6701,7 @@ def redact_secret_like_hunk_headers(
         known_secret_fragments or (),
         key=lambda fragment: (-len(fragment), fragment),
     )
-    fragment_pattern = (
-        re.compile("|".join(re.escape(fragment) for fragment in ordered_secret_fragments))
-        if ordered_secret_fragments
-        else None
-    )
+    fragment_pattern = known_secret_fragment_pattern(ordered_secret_fragments)
     redacted: list[str] = []
     for line in literal_lf_lines(section):
         body = line.rstrip("\r\n")
@@ -6453,23 +6714,24 @@ def redact_secret_like_hunk_headers(
             redacted.append(line)
             continue
         raw_header_section = header_match.group("section")
-        private_key_header = (
-            PRIVATE_KEY_BEGIN_PATTERN.search(raw_header_section) is not None
-            or PRIVATE_KEY_END_PATTERN.search(raw_header_section) is not None
-        )
+        marker_spans = [
+            match.span()
+            for pattern in (PRIVATE_KEY_BEGIN_PATTERN, PRIVATE_KEY_END_PATTERN)
+            for match in pattern.finditer(raw_header_section)
+        ]
         header_section = redact_review_spans(
             raw_header_section,
-            (
-                [match.span() for match in fragment_pattern.finditer(raw_header_section)]
-                if fragment_pattern is not None
-                else []
-            ),
+            marker_spans
+            + known_secret_fragment_spans(raw_header_section, fragment_pattern),
         )
-        if private_key_header or any(
-            secret_text_risk(header_section, javascript_dialect=dialect)
-            for dialect in dialects
-        ):
-            header_section = f" {REVIEW_SECRET_REDACTION}"
+        # Never replace a still-risky header wholesale: doing so can hide an
+        # unextracted value that repeats in otherwise innocuous diff content.
+        for dialect in dialects:
+            require_no_secret_values(
+                "review diff hunk header",
+                header_section,
+                javascript_dialect=dialect,
+            )
         redacted.append(
             f"{header_match.group('marker')} {header_match.group('ranges')} "
             f"{header_match.group('marker')}{header_section}{ending}"
@@ -6575,11 +6837,7 @@ def redact_secret_like_diff_section(
         secret_fragments,
         key=lambda fragment: (-len(fragment), fragment),
     )
-    fragment_pattern = (
-        re.compile("|".join(re.escape(fragment) for fragment in ordered_secret_fragments))
-        if ordered_secret_fragments
-        else None
-    )
+    fragment_pattern = known_secret_fragment_pattern(ordered_secret_fragments)
     redacted: list[str] = []
     lines = literal_lf_lines(section)
     index = 0
@@ -6627,7 +6885,18 @@ def redact_secret_like_diff_section(
                         javascript_dialect=dialect,
                     )
                 )
-            spans.extend(repeated_secret_fragment_spans(content, fragment_pattern))
+            fragment_dialect = (
+                old_dialect
+                if old_line and old_dialect is not None
+                else new_dialect if new_line else None
+            )
+            spans.extend(
+                repeated_secret_fragment_spans(
+                    content,
+                    fragment_pattern,
+                    javascript_dialect=fragment_dialect,
+                )
+            )
             spans.extend(match.span() for match in PRIVATE_KEY_END_PATTERN.finditer(content))
             if old_line:
                 old_spans, old_pem = pem_line_body_spans(content, old_pem)
@@ -6861,14 +7130,15 @@ def validate_review_patch(
         )
     expected_paths = set(paths)
     units = review_bundle_units(patch)
-    units = [
-        redact_unbalanced_private_key_hunks(unit)
-        if unit.startswith("diff --git ")
-        else unit
-        for unit in units
-    ]
-    patch = "".join(units)
+    redacted_units: list[str] = []
     known_secret_fragments: set[str] = set()
+    for unit in units:
+        if unit.startswith("diff --git "):
+            unit, fragments = redact_unbalanced_private_key_hunks(unit)
+            known_secret_fragments.update(fragments)
+        redacted_units.append(unit)
+    units = redacted_units
+    patch = "".join(units)
     for unit in units:
         if not unit.startswith("diff --git "):
             continue

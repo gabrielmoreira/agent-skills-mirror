@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `alibaba/page-agent` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `alibaba/page-agent` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `alibaba/page-agent` — 26 default patterns, 0 followed patterns, 7 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,12 +60,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/skills/git-cleanup/SKILL.md`](.agents/skills/git-cleanup/SKILL.md) |
-| 2 | ✓ | [`.agents/skills/pre-impl-discussion/SKILL.md`](.agents/skills/pre-impl-discussion/SKILL.md) |
-| 3 | ✓ | [`.agents/skills/submit-pr-from-current-changes/SKILL.md`](.agents/skills/submit-pr-from-current-changes/SKILL.md) |
-| 4 | ✓ | [`.agents/skills/update-changelog/SKILL.md`](.agents/skills/update-changelog/SKILL.md) |
-| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 7 | ✓ | [`packages/website/AGENTS.md`](packages/website/AGENTS.md) |
+| 2 | ✓ | [`.agents/skills/maintain-model-list/SKILL.md`](.agents/skills/maintain-model-list/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/pre-impl-discussion/SKILL.md`](.agents/skills/pre-impl-discussion/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/submit-pr-from-current-changes/SKILL.md`](.agents/skills/submit-pr-from-current-changes/SKILL.md) |
+| 5 | ✓ | [`.agents/skills/update-changelog/SKILL.md`](.agents/skills/update-changelog/SKILL.md) |
+| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 8 | ✓ | [`packages/website/AGENTS.md`](packages/website/AGENTS.md) |
 
 ---
 

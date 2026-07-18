@@ -1,6 +1,6 @@
 ---
 name: chart
-description: 根据当前数据选择并生成合适的业务图表
+description: 根据当前数据选择并生成合适的业务图表（visualization 可视化）
 icon: 📊
 allowedTools: [get_schema, query_data, select_chart, generate_chart]
 ---

@@ -1,0 +1,26 @@
+{
+  "name": "ascii-art",
+  "version": "1.0.0",
+  "description": "ASCII text banners and box art (pyfiglet, cowsay, boxes)",
+  "author": "aiden",
+  "license": "MIT",
+  "tools": [],
+  "trigger_phrases": [],
+  "compatible_agents": [
+    "aiden"
+  ],
+  "min_agent_version": "3.0.0",
+  "tags": [
+    "ascii",
+    "art",
+    "banner",
+    "text",
+    "figlet",
+    "cowsay",
+    "terminal",
+    "decoration",
+    "cli",
+    "creative"
+  ],
+  "created": "2026-04-27T17:11:39.195Z"
+}

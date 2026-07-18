@@ -1,6 +1,6 @@
 ---
 name: export
-description: 规划并确认 Excel 数据导出
+description: 规划并确认 Excel 数据导出（export 导出）
 icon: 📥
 allowedTools: [get_schema, query_data, propose_excel_export]
 ---

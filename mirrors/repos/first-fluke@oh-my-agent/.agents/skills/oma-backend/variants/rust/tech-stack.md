@@ -24,7 +24,7 @@ src/
 ```
 
 ## Security Requirements
-- Password hashing: argon2 (preferred) or bcrypt
+- Password hashing: Argon2id via `argon2` crate (bcrypt acceptable for legacy compatibility)
 - JWT: 15min access tokens, 7 day refresh tokens
 - Rate limiting via tower middleware
 - Input validation with serde + validator

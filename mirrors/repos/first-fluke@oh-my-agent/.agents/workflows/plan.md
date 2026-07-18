@@ -109,9 +109,9 @@ If the plan involves cross-boundary work (frontend ↔ backend, service ↔ serv
 
 // turbo
 Break down the project into actionable tasks. Each task must have:
-- Assigned agent (frontend/backend/mobile/qa/debug)
+- Assigned agent (backend/frontend/mobile/db/qa/debug/architecture/refactor/tf-infra/docs — see the agent mapping in `orchestrate.md`)
 - Title, acceptance criteria
-- Priority (P0–P3), dependencies
+- Priority tier (1 = independent, ascending; lower runs first), dependencies
 
 **Engineering-first decomposition:** prefer tasks that address root causes over tasks that patch individual symptoms. When a deliberate workaround or hotfix is included, record the reason in the Decision Log.
 
@@ -159,9 +159,9 @@ Generate `docs/plans/work/{NNN}-{name}.md` using this template (replace `{NNN}` 
 
 | # | Task | Agent | Priority | Status | Dependencies |
 |---|------|-------|----------|--------|--------------|
-| 1 | {task} | {agent} | P0 | TODO | — |
-| 2 | {task} | {agent} | P0 | TODO | 1 |
-| 3 | {task} | {agent} | P1 | TODO | 1, 2 |
+| 1 | {task} | {agent} | 1 | TODO | — |
+| 2 | {task} | {agent} | 1 | TODO | 1 |
+| 3 | {task} | {agent} | 2 | TODO | 1, 2 |
 
 ## Done When
 {Testable completion criteria}

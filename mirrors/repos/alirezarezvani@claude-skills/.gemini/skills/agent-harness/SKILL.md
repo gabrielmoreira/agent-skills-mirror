@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/agent-harness/../../../engineering/agent-harness/skills/agent-harness/SKILL.md

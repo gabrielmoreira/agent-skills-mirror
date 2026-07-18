@@ -127,9 +127,10 @@ Determine how to proceed based on what was provided in `<input_document>` (after
    - You plan to switch between branches frequently
 
 3. **Create Task List** _(skip if Phase 0 already built one, or if Phase 0 routed as Trivial)_
-   - Use the platform's task tracking tool (`TaskCreate`/`TaskUpdate`/`TaskList` in Claude Code, `update_plan` in Codex, or the equivalent on other harnesses) to break the plan into actionable tasks
+   - Use the platform's task-tracking capability when available (`TaskCreate`/`TaskUpdate`/`TaskList` in Claude Code, `update_plan` in Codex, or the equivalent on other harnesses) to break the plan into actionable tasks. If none is available, continue normally without simulating a task list in chat
    - Derive tasks from the plan's implementation units, dependencies, files, test targets, and verification criteria
-   - When the plan defines U-IDs for Implementation Units, preserve the unit's U-ID as a prefix in the task subject (e.g., "U3: Add parser coverage"). This keeps blocker references, deferred-work notes, and final summaries anchored to the same identifier the plan uses, so progress and traceability remain unambiguous across plan edits
+   - When the plan defines U-IDs for Implementation Units, name each task from a brief, outcome-led form of the unit's Goal and append the stable U-ID (e.g., "Add parser coverage (U3)"). Never use a bare U-ID or lead with the identifier; the user should understand the work before the traceability label. Aim for five words or fewer before the ID
+   - When the full unit list is visible, do not repeat ordinal counts such as "unit 1 of 5" in every task. Add an ordinal only when the harness exposes the current task without the surrounding list and the count materially improves orientation
    - Carry each unit's `Execution note` into the task when present
    - For each unit, read the `Patterns to follow` field before implementing — these point to specific files or conventions to mirror
    - Use each unit's `Verification` field as the primary "done" signal for that task

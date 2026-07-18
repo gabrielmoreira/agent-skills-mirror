@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openinterpreter/openinterpreter` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `openinterpreter/openinterpreter` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openinterpreter/openinterpreter` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -82,6 +82,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`codex-rs/skills/src/assets/samples/skill-installer/SKILL.md`](codex-rs/skills/src/assets/samples/skill-installer/SKILL.md) |
 | 22 | ✓ | [`codex-rs/tui/src/bottom_pane/AGENTS.md`](codex-rs/tui/src/bottom_pane/AGENTS.md) |
 | 23 | ✓ | [`docs/skills.md`](docs/skills.md) |
+| 24 | ✓ | [`docs/zh/skills.md`](docs/zh/skills.md) |
 
 ---
 

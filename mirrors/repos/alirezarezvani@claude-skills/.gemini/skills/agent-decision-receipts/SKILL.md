@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/agent-decision-receipts/../../../ra-qm-team/skills/agent-decision-receipts/SKILL.md

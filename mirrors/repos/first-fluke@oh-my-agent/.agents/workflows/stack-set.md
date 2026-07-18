@@ -180,7 +180,14 @@ verify:                          # consumed by `oma verify backend` (see _shared
   tests:
     cmd: "{test_cmd}"            # e.g. bun test
     skip_if_missing: "{optional_binary}"
+  raw_sql:                       # raw-SQL injection grep scan — omit only when the stack has no raw-query escape hatch
+    patterns:
+      - "{raw_sql_pattern}"      # ORM-appropriate ERE, e.g. "\\$queryRawUnsafe\\(" (Prisma), "f[\"'].*(SELECT|INSERT|UPDATE|DELETE)" (Python)
+    include_glob: "{source_glob}" # e.g. "*.ts", "*.py"
+    exclude_dirs: [{build_and_dep_dirs}]  # e.g. node_modules, dist, .venv, target
 ```
+
+Seed `raw_sql` patterns from the matching `variants/{language}/stack.yaml` when one exists (node/python/rust ship with tested patterns); otherwise derive patterns from the detected ORM's raw-query APIs.
 
 #### tech-stack.md
 Generate tech stack reference with these MANDATORY sections:
@@ -334,6 +341,7 @@ Confirm generated files meet requirements.
 ### Backend checks
 - [ ] `stack.yaml` has `language`, `framework`, `orm`, `validation` fields
 - [ ] `stack.yaml` has a `verify:` block with runnable `syntax.cmd` and `tests.cmd` (otherwise `oma verify backend` cannot dispatch)
+- [ ] `stack.yaml` `verify:` includes a `raw_sql` scan with ORM-appropriate patterns (without it `oma verify backend` silently skips the raw-SQL injection check); omit only when the stack has no raw-query escape hatch
 - [ ] `snippets.md` contains all 8 mandatory patterns
 - [ ] `tech-stack.md` contains all 6 mandatory sections
 - [ ] `api-template` file uses the correct language extension

@@ -62,7 +62,7 @@
 **代表**：[Aider](https://aider.chat) / [OpenCode](https://github.com/sst/opencode) / [goose](https://block.github.io/goose) / [Hermes Agent](https://github.com/NousResearch/hermes-agent)*
 
 **Hero example**：
-你想用 DeepSeek-V4-Pro（2026-04 preview、開源 MIT、前身 R1 reasoning lineage 已併入主線）寫 code（比 Claude Opus 便宜 10×）。Aider 設 `--model deepseek/deepseek-reasoner` + `OPENROUTER_API_KEY` 就能跑、git-aware、commit message 自動寫。
+你想用 DeepSeek-V4-Pro（前身 R1 reasoning lineage 已併入主線）寫 code（比 Claude Opus 便宜約 10×）。Aider 設 `--model deepseek/deepseek-v4-pro` + `OPENROUTER_API_KEY` 就能跑、git-aware、commit message 自動寫。
 
 **跟 Type 2 的差別**：Type 2 綁特定家、Type 3 你帶 API key、任何 OpenAI-compatible endpoint 都行。
 

@@ -1,6 +1,6 @@
 ---
 name: report
-description: 规划结构化业务分析报告
+description: 规划结构化业务分析报告（report 报告生成）
 icon: 📄
 allowedTools: [get_schema, query_data, propose_report_outline]
 ---

@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/local-seo-manager/../../../marketing-skill/skills/local-seo-manager/SKILL.md

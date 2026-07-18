@@ -1,6 +1,6 @@
 ---
 name: data
-description: 查看数据结构、质量和可分析性
+description: 查看数据结构、质量和可分析性（schema 数据概览 profiling）
 icon: 🔍
 allowedTools: [get_schema, get_table_detail, query_data, profile_data, generate_chart]
 ---

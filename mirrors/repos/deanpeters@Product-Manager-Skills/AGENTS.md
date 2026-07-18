@@ -122,6 +122,7 @@ These are product management coaching and artifact-generation workflows, not sof
 - **Pedagogic first:** The PM using this skill should know more when they finish than when they started.
 - Agent-ready, self-contained, and practical.
 - Include at least one concrete example that shows reasoning, not just output.
+- Optimally ship the full adornment: a `template.md` plus worked examples from two business domains (one SaaS, one industrial/non-SaaS) — see the "Fully adorned" checklist item in CONTRIBUTING.md. All example companies fictional; reuse the repo's two established universes.
 - Include at least one explicit anti-pattern — this is not optional decoration.
 - Define jargon on first use and keep tradeoffs explicit.
 - Do not remove explanation, anti-patterns, or examples in the name of brevity. That is the mission, not the padding.

@@ -50,6 +50,8 @@ If the problem is vague, start in Diagnostic Mode.
 ## Step 2: Analyze the Existing System
 
 // turbo
+Read prior decisions in `.agents/results/architecture/` first — new decisions supersede old ones explicitly (update the old ADR's `Status`), never contradict them silently.
+
 Use MCP code analysis tools to understand the current architecture:
 - `get_symbols_overview` for project structure and boundaries
 - `find_symbol` and `find_referencing_symbols` for ownership and coupling
@@ -98,13 +100,13 @@ Requirements:
 For cross-cutting decisions, read:
 - `.agents/skills/oma-architecture/resources/stakeholder-synthesis.md`
 
-Consult only the agents that matter to the decision:
-- `oma-pm` for business scope and priorities
-- `oma-backend` for service/API/domain tradeoffs
-- `oma-db` for data ownership and consistency
-- `oma-tf-infra` for deployment and operational architecture
-- `oma-qa` for security, performance, and testability risks
-- `oma-frontend` / `oma-mobile` for client complexity and integration impact
+Consult only the agents that matter to the decision (agent ids per the mapping table in `.agents/workflows/orchestrate.md`):
+- `pm` for business scope and priorities
+- `backend` for service/API/domain tradeoffs
+- `db` for data ownership and consistency
+- `tf-infra` for deployment and operational architecture
+- `qa` for security, performance, and testability risks
+- `frontend` / `mobile` for client complexity and integration impact
 
 Do not turn consultation into consensus theater. Synthesize and recommend explicitly.
 
@@ -131,11 +133,14 @@ If the decision remains user-owned, present the options with clear tradeoffs rat
 // turbo
 Save the architecture artifact to `.agents/results/architecture/`.
 
-Suggested filenames:
+Suggested filenames (kebab-case topic, no sequence numbers):
+- `adr-<topic>.md`
 - `architecture-recommendation-<topic>.md`
 - `architecture-review-<topic>.md`
-- `adr-<topic>.md`
 - `cbam-<topic>.md`
+- `diagnosis-<topic>.md`
+
+ADR lifecycle: set `Status` (`Proposed` / `Accepted` / `Superseded by <adr-file>`); when replacing an old ADR, update its `Status` in the same run.
 
 Emit and verify the required ADR/architecture completion decision:
 

@@ -11,6 +11,10 @@ If the lead sentence describes what was moved, renamed, or added rather than wha
 
 For user-facing bugs, run an extra before/after pass before writing the mechanism: name what the user would have seen before and what they now see instead. Only then mention the technical cause or fix, and only if it helps the reviewer understand risk. A lead like "Playback hooks now ignore late async responses" is still too mechanical if the visible bug was "old videos, thumbnails, or errors could appear after switching selections."
 
+## Project PR-body contract
+
+Before composing, resolve PR-body requirements from the project's active instructions and conventions already in context, then check the standard repository PR-template locations (the repository root, `docs/`, `.github/`, and `.github/PULL_REQUEST_TEMPLATE/`) and any contribution guidance they reference. Required headings, fields, order, checklists, and boilerplate define the structural contract. Treat a template as a minimum unless the project explicitly requires an exact/template-only body or forbids additions; only then add no sections beyond those the project permits. Within every permitted section, apply this reference's value-first, decision-cost, evidence, and editing rules. When those defaults conflict with the project's PR-body contract, the project contract wins.
+
 ---
 
 ## Step Pre-A: Resolve the range and base
@@ -74,6 +78,8 @@ Subtract fix-up commits (review fixes, lint, rebase resolutions) when sizing —
 | Medium feature or refactor | Narrative frame, then what changed and why. Call out design decisions. |
 | Large or architecturally significant | Narrative frame + 3-5 design-decision callouts + brief test summary. Target ~100 lines, cap ~150. For PRs with many mechanisms, use a Summary table; do not create an H3 per mechanism. |
 | Performance improvement | Include before/after measurements as a markdown table. |
+
+A project PR-body contract sets the structural floor; this table sizes the content within it, never against it.
 
 For small + simple PRs, the value-led sentence is the entire description.
 For small + non-trivial bugfixes, the 3-5 sentence target still needs a user-visible before/after lead when the bug affected UI, CLI output, workflow output, or any other user-observable behavior. Concision is not a reason to skip the visible symptom.
@@ -170,9 +176,9 @@ Lead with the point, then the mechanism, then the caveat. Dense is good; long is
 
 ## Step C: Assemble the body
 
-In order: opening → body sections that earn their keep → related references when they need their own block → test plan if non-obvious → session-settled provenance sentence when a labeled plan is in hand → New concepts section when Step B2 produced one → evidence block if one exists → branding block when Step D calls for one.
+When a project PR-body contract supplies headings or order, preserve that structure and place the applicable elements below within the sections it permits. Otherwise, assemble in order: opening → body sections that earn their keep → related references when they need their own block → test plan if non-obvious → session-settled provenance sentence when a labeled plan is in hand → New concepts section when Step B2 produced one → evidence block if one exists → branding block when Step D calls for one.
 
-The opening goes under `## Summary` if the body uses any `##` headings; bare paragraph otherwise. No orphaned opening paragraphs above the first heading.
+When the project PR-body contract supplies a heading or location for the opening, place it there without inventing or renaming a heading. Otherwise, the opening goes under `## Summary` if the body uses any `##` headings; bare paragraph otherwise. No orphaned opening paragraphs above the first heading.
 
 **Session-settled provenance:** when a plan for this change is in hand — a path passed by the caller (e.g., a pipeline threads it) or a plan already known from the conversation — and that plan contains `session-settled:`-labeled KTDs, include one static sentence naming the settled decisions and their classes, e.g. "Session-settled decisions carried from planning: X (user-directed, over Y); Z (user-approved)." Only when the caller's run flagged proceed-under-conflict notes, add a clause noting each such decision proceeded under a flagged concern. This is a point-in-time description element: never an outstanding-items ledger, never updated after the PR opens, no checklist. When no plan is in hand or it has no labeled KTDs, omit the element entirely — standalone runs without a plan simply never fire it; do not hunt for plans.
 
@@ -208,4 +214,4 @@ Before returning the body, check it against the material claims from Step A and 
 
 - Is every claim the diff can't establish present — and is any claim the diff *does* show restated needlessly?
 - Is decision-changing evidence stated as a result rather than collapsed into an unexplained "tests passed", with demonstrated results kept distinct from assumptions and from mixed or negative outcomes?
-- Can any sentence or section of the *description* be cut without lowering reviewer confidence? If so, cut it. For a new PR with branding enabled, retain the Step D footer; it is intentional attribution rather than descriptive content. Likewise retain the session-settled provenance sentence when Step C included one; it carries decision provenance the diff cannot show.
+- Can any sentence or section of the *description* be cut without lowering reviewer confidence? If so, cut it, except for headings, fields, checklists, or boilerplate the project's PR-body contract requires. For a new PR with branding enabled, retain the Step D footer; it is intentional attribution rather than descriptive content. Likewise retain the session-settled provenance sentence when Step C included one; it carries decision provenance the diff cannot show.

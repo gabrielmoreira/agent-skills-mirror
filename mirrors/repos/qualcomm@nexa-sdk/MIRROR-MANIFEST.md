@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `qualcomm/nexa-sdk` — 26 default patterns, 5 followed patterns, 9 file(s) materialized.
+Mirror of `qualcomm/nexa-sdk` — 26 default patterns, 9 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `qualcomm/nexa-sdk` — 26 default patterns, 5 followed patterns, 9 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 9 |
+| Followed pats | 9 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,10 @@ Mirror of `qualcomm/nexa-sdk` — 26 default patterns, 5 followed patterns, 9 fi
 - `.claude/commands/release.md`
 - `notes/release.md`
 - `notes/build.md`
+- `bindings/python/README.md`
+- `tests/README.md`
+- `SECURITY.md`
+- `CODE-OF-CONDUCT.md`
 
 ## File Index
 
@@ -66,12 +70,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.claude/commands/build.md`](.claude/commands/build.md) |
 | 2 | ✓ | [`.claude/skills/coverage/SKILL.md`](.claude/skills/coverage/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/reshape-pr-commits/SKILL.md`](.claude/skills/reshape-pr-commits/SKILL.md) |
-| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 5 | → | [`.claude/commands/release.md`](.claude/commands/release.md) |
-| 6 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 7 | → | [`notes/AI.md`](notes/AI.md) |
-| 8 | → | [`notes/build.md`](notes/build.md) |
-| 9 | → | [`notes/release.md`](notes/release.md) |
+| 4 | ✓ | [`bindings/python/BUILD.md`](bindings/python/BUILD.md) |
+| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 6 | → | [`.claude/commands/release.md`](.claude/commands/release.md) |
+| 7 | → | [`bindings/python/README.md`](bindings/python/README.md) |
+| 8 | → | [`CODE-OF-CONDUCT.md`](CODE-OF-CONDUCT.md) |
+| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 10 | → | [`notes/AI.md`](notes/AI.md) |
+| 11 | → | [`notes/build.md`](notes/build.md) |
+| 12 | → | [`notes/release.md`](notes/release.md) |
+| 13 | → | [`SECURITY.md`](SECURITY.md) |
+| 14 | → | [`tests/README.md`](tests/README.md) |
 
 ---
 

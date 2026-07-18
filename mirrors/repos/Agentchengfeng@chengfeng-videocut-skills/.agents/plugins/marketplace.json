@@ -1,0 +1,20 @@
+{
+  "name": "chengfeng-videocut",
+  "interface": {
+    "displayName": "chengfeng-videocut"
+  },
+  "plugins": [
+    {
+      "name": "chengfeng-videocut",
+      "source": {
+        "source": "local",
+        "path": "./plugins/chengfeng-videocut"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Design"
+    }
+  ]
+}

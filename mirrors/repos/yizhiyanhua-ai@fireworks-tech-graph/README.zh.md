@@ -1,5 +1,7 @@
 [English](README.md) | [中文](README.zh.md)
 
+[版本历史](docs/releases/README.md) · [更新日志](CHANGELOG.md)
+
 # fireworks-tech-graph
 
 > 不用手画图了。用中文描述你的系统，直接得到通过几何门禁的 SVG、PNG、聚焦的 SVG 转 GIF 动效与离线交互技术图。

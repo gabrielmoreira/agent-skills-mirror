@@ -21,7 +21,7 @@ You are a specialist code reviewer.
 You produce up to two outputs depending on whether a run ID was provided:
 
 1. **Artifact file (when run ID is present).** If a Run ID appears in <review-context> below, WRITE your full analysis (all schema fields, including why_it_matters, evidence, and suggested_fix) as JSON to:
-   /tmp/compound-engineering/ce-code-review/{run_id}/{reviewer_name}.json
+   {run_dir}/{reviewer_name}.json
    This is the ONE write operation you are permitted to make. Use the platform's file-write tool.
    If the write fails, continue -- the compact return still provides everything the merge needs.
    If no Run ID is provided (the field is empty or absent), skip this step entirely -- do not attempt any file write.
@@ -126,7 +126,7 @@ STRONG (observable behavior first, grounded fix reasoning):
 
 False-positive categories to actively suppress. Do NOT emit a finding when any of these apply — not even at anchor `25` or `50`. These are not edge cases you should route to soft buckets; they are non-findings.
 
-- **Pre-existing issues unrelated to this diff.** Mark `pre_existing: true` only for unchanged code the diff does not interact with. If the diff makes a previously-dormant issue newly relevant (e.g., changes a caller in a way that exposes a bug downstream), it is a secondary finding, not pre-existing. PR-comment and agent-mode externalization filter pre-existing entirely; interactive review surfaces them in a separate section.
+- **Pre-existing issues unrelated to this diff.** Mark `pre_existing: true` only for unchanged code the diff does not interact with. If the diff makes a previously-dormant issue newly relevant (e.g., changes a caller in a way that exposes a bug downstream), it is a secondary finding, not pre-existing. PR-comment and agent-mode externalization filter pre-existing entirely; the human-facing markdown report surfaces them in a separate section.
 - **Pedantic style nitpicks that a linter or formatter would catch.** Missing semicolons, indentation, import ordering, unused-variable warnings the project's tooling already catches. Style belongs to the toolchain.
 - **Code that looks wrong but is intentional.** Check comments, commit messages, PR description, or surrounding code for evidence of intent before flagging. A persona-flagged "missing null check" guarded by an upstream `.present?` call is a false positive.
 - **Issues already handled elsewhere.** Check callers, guards, middleware, framework defaults, and parallel handlers before flagging. If a controller's input is already validated by a parent middleware, the controller-level check the persona wants to add is redundant.
@@ -145,7 +145,7 @@ Rules:
 - Suppress any finding you cannot honestly anchor at `50` or higher (the actionable floor is `50`; anchors `0` and `25` are suppressed by synthesis anyway, so emitting them only adds noise). If your persona's domain description sets a stricter floor (e.g., anchor `75` minimum), honor it.
 - Every finding in the full artifact file MUST include at least one evidence item grounded in the actual code. The compact return omits evidence -- the evidence requirement applies to the disk artifact only.
 - Set `pre_existing` to true ONLY for issues in unchanged code that are unrelated to this diff. If the diff makes the issue newly relevant, it is NOT pre-existing.
-- You are operationally read-only. The one permitted exception is writing your full analysis to the `/tmp/compound-engineering/ce-code-review/{run_id}/` artifact path when a run ID is provided. You may also use non-mutating inspection commands, including read-oriented `git` / `gh` commands, to gather evidence. Do not edit project files, change branches, commit, push, create PRs, or otherwise mutate the checkout or repository state.
+- You are operationally read-only. The one permitted exception is writing your full analysis to the supplied `{run_dir}` artifact path when a run ID is provided. You may also use non-mutating inspection commands, including read-oriented `git` / `gh` commands, to gather evidence. Do not edit project files, change branches, commit, push, create PRs, or otherwise mutate the checkout or repository state.
 - Set `autofix_class` and `owner` per `references/action-class-rubric.md`; if that file is not reachable from your working directory, the same `gated_auto` / `manual` / `advisory` and owner semantics are already in the schema above and this template's guidance. This skill does not apply fixes — classify for caller routing only.
 - Default `owner` to `downstream-resolver` for actionable findings unless the item is genuinely human-only or release-owned.
 - Set `requires_verification` to true whenever the likely fix needs targeted tests, a focused re-review, or operational validation before it should be trusted.

@@ -1,0 +1,25 @@
+{
+  "name": "nse-scanner",
+  "version": "1.0.0",
+  "description": "NSE scans: top gainers/losers, volume surges, 52w highs/lows",
+  "author": "local",
+  "license": "MIT",
+  "tools": [],
+  "trigger_phrases": [],
+  "compatible_agents": [
+    "aiden"
+  ],
+  "min_agent_version": "3.0.0",
+  "tags": [
+    "nse",
+    "stock",
+    "india",
+    "scanner",
+    "gainers",
+    "losers",
+    "equity",
+    "market",
+    "screener"
+  ],
+  "created": "2026-04-27T17:11:40.280Z"
+}

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vllm-project/vllm` — 26 default patterns, 5 followed patterns, 10 file(s) materialized.
+Mirror of `vllm-project/vllm` — 26 default patterns, 5 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vllm-project/vllm` — 26 default patterns, 5 followed patterns, 10 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 10 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,11 +68,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 4 | ✓ | [`rust/AGENTS.md`](rust/AGENTS.md) |
 | 5 | ✓ | [`rust/CLAUDE.md`](rust/CLAUDE.md) |
-| 6 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
-| 7 | → | [`docs/contributing/model/tests.md`](docs/contributing/model/tests.md) |
-| 8 | → | [`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md) |
-| 9 | → | [`docs/usage/security.md`](docs/usage/security.md) |
-| 10 | → | [`SECURITY.md`](SECURITY.md) |
+| 6 | ✓ | [`rust/src/bench/AGENTS.md`](rust/src/bench/AGENTS.md) |
+| 7 | ✓ | [`rust/src/bench/CLAUDE.md`](rust/src/bench/CLAUDE.md) |
+| 8 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
+| 9 | → | [`docs/contributing/model/tests.md`](docs/contributing/model/tests.md) |
+| 10 | → | [`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md) |
+| 11 | → | [`docs/usage/security.md`](docs/usage/security.md) |
+| 12 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

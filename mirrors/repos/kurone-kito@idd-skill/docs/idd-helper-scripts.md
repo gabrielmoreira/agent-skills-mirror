@@ -97,6 +97,22 @@ In the idd-skill source repository, the following optional helpers were adopted:
   sub-gate (#1340): a deterministic `converged`/`ready` verdict with an
   exit-code contract via `--assert`, claim-independent so it also works
   as a required-check-able CI verdict
+- `scripts/rerun-advisory-convergence.mjs` (#1431) for a read-only
+  rerun-plan diagnosis of stuck `idd-advisory-convergence` check-run
+  rollups: fetches every check-run instance for a PR's current HEAD SHA
+  (paged commit check-runs API), classifies each as `pass` / `pending` /
+  `bot-gated-skip` / `unresolved` / `rerun-eligible`, and prints the
+  ordered, deduplicated `gh run rerun <id>` recovery plan for the
+  rerun-eligible instances (each command includes `-R owner/repo` when
+  the repository is known) — referenced from `idd-ci.instructions.md`
+  §Rerun mechanics as the preferred way to produce that plan. When no
+  instance is rerun-eligible but the rollup is stuck on a bot-gated
+  instance alongside an already-passing non-bot pull_request-family
+  instance, it additionally offers a `recoveryRefreshPlan`: rerunning
+  that already-passing instance is the documented way to force a fresh
+  non-bot evaluation and clear the stale rollup. Never calls
+  `gh run rerun` itself; a mutating `--apply` mode is a deliberate
+  follow-up.
 - `scripts/live-status-digest.mjs` for issue or PR live status digest
   discovery, rendering, dry-run, and claim-checked upsert
 - `scripts/audit-pr-cleanup.mjs` for post-merge comment cleanup auditing
@@ -228,9 +244,19 @@ default below is unchanged.
     **once** and is never double-counted.
   - **Opt-in leaf annotations** (additive; absent flags leave the leaf shape
     byte-stable and make no extra API call). `--with-claim-state` adds
-    `activeClaim` (always an object: `{ present, stale, claimId, agentId }`,
-    plus `ownedByCurrentSession` when `--current-claim-id` is passed) and
-    `claimEligible: boolean` on each open leaf. `--with-readiness` adds
+    `activeClaim` (always an object: `{ present, stale, claimId, agentId,`
+    `heartbeatOverdue }`, plus `ownedByCurrentSession` when
+    `--current-claim-id` is passed) and `claimEligible: boolean` on each
+    open leaf. Both `discover-roadmap-graph.mjs` and
+    `discover-orphan-filter.mjs` emit this exact shape under
+    `--with-claim-state`. `heartbeatOverdue` (#1433) is `true` when the
+    latest valid `claimed-by`/heartbeat `created_at` is at or past the
+    configured `claimTiming.heartbeatInterval` (default `PT12H`), with no
+    later trusted heartbeat; `false` otherwise, including whenever
+    `present` is `false`. It is **purely diagnostic**: unlike `stale`, it
+    never feeds `claimEligible` or `readiness.startable` below, and it
+    never changes the 24h stale-takeover threshold
+    (`idd-resume-stall.instructions.md` S3). `--with-readiness` adds
     `readiness: { ready: boolean, reasons: string[], authoringHeld: boolean,`
     `startable: boolean }` — the A3 startability of each open leaf (dependency
     resolution across visible `Blocked by #N` / `Depends on #N` / task-list refs
@@ -1042,6 +1068,31 @@ Interpretation rules:
 - it remains read-only; the command performs no reruns and posts no
   GitHub comment
 
+### Rerun-plan diagnosis (stuck advisory-convergence)
+
+- Source repo / vendored-node command:
+  `node scripts/rerun-advisory-convergence.mjs --pr <pr-number>`
+- Package-manager / ephemeral-npx command: use the
+  profile-selected `idd:rerun-advisory-convergence` command from the
+  helper runtime manifest wiring above
+- Read-only rerun-plan diagnosis (#1431) for a stuck `idd-advisory-convergence`
+  required-check rollup: fetches every check-run instance for the PR's
+  current HEAD SHA (paged commit check-runs API, `filter=all`), classifies
+  each as `pass` / `pending` / `bot-gated-skip` / `unresolved` /
+  `rerun-eligible`, and prints the ordered, deduplicated `gh run rerun <id>`
+  recovery plan for the rerun-eligible instances -- referenced from
+  `idd-ci.instructions.md` §Rerun mechanics as the preferred way to produce
+  that plan
+- Also reports a `recoveryRefreshPlan` when no instance is rerun-eligible but
+  the rollup is stuck on a bot-gated instance alongside an already-passing
+  non-bot pull_request-family instance, and honors the resolved
+  `ciWait.rerunPolicy`: a `"hold"` policy, or an instance whose own
+  `runAttempt` already exhausted the `"rerun-once"` budget, withholds the
+  corresponding plan entries with an explanatory `rerunPolicyHoldNotice`
+  instead of silently omitting them
+- it never calls `gh run rerun` (or any other mutating command) itself; a
+  mutating `--apply` mode is a deliberate follow-up (out of scope for #1431)
+
 ### Merge-gate evidence
 
 - When helper runtime is enabled, these commands are the preferred
@@ -1267,6 +1318,7 @@ Interpretation rules:
     "mergeStateStatus": "CLEAN",
     "branchState": "clean",
     "syncRecommendation": "none",
+    "baseAdvancedSinceMergeBase": false,
     "readOnly": true,
     "worktreeUnchanged": true,
     "diagnostics": {
@@ -1284,6 +1336,20 @@ Interpretation rules:
 - `syncRecommendation` values: `none`, `merge-main`, `policy-required-update`,
   `force-push-exception`, `recheck`, `hold-unknown` (`recheck` pairs with
   `computing`)
+- `baseAdvancedSinceMergeBase` (boolean): `true` when the base ref has moved
+  past this PR's merge-base, computed independently of `syncRecommendation` so
+  it does not change any existing `syncRecommendation` value. `false` is
+  **overloaded**: it means either a confirmed-unmoved base, or that the
+  check was skipped / the merge-base could not be resolved (e.g. missing
+  local history); the two are distinguished only via `diagnostics.notes`
+  (an "undetermined" entry marks the latter), never by this field alone. A
+  `clean` / `none` verdict is textual conflict-freeness only, not whole-tree
+  CI-invariant freedom (line-count budgets, generated-file drift, lockfile
+  consistency, and similar checks a full test suite enforces against the
+  whole tree); when this field is `true` alongside `syncRecommendation: none`,
+  `diagnostics.notes` also carries an advisory note naming the blind spot. A
+  `pull_request`-triggered CI run is pinned to a merge-ref computed at trigger
+  time, so a bare rerun after base moves can replay that stale state.
 - Stable fields consumed by D/E/F routing: `branchState`,
   `syncRecommendation`, `published`, `readOnly`, `worktreeUnchanged`
 - Read-only boundary: the helper never runs `git merge`, `git rebase`, or

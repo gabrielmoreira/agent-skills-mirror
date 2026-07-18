@@ -142,6 +142,6 @@
 
 ## 维护备注
 
-- 7 个 CLI 的 stars / license / pushed_at 由 `weekly-catalog-refresh` CI 每周自动更新（手动可跑 `python scripts/refresh-stars.py`）
-- CLI 工具市场变化快——新工具出现要评估是否加入这份比较（门槛：> 30k stars + 维护中 + 真的 CLI 不是 IDE）
+- 8 个 CLI 的 stars / license / pushed_at 由 `weekly-catalog-refresh` CI 每周自动更新（手动可跑 `python scripts/refresh-stars.py`）
+- CLI 工具市场变化快——新工具出现要评估是否加入这份比较（门槛：> 30k stars + 维护中 + 真的 CLI 不是 IDE；官方大厂或极新的 CLI 可破例、如 Grok Build）
 - 比较表格的“强项 / 弱项”栏位刻意没填——避免产生主观 bias，让 use case section 跟读者自己的判断做这件事

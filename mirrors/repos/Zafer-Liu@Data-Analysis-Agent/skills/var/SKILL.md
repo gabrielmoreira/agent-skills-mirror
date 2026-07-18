@@ -1,6 +1,6 @@
 ---
 name: var
-description: 使用 VAR 分析多个时间序列的动态关系
+description: 使用 VAR 分析多个时间序列的动态关系（forecast 向量自回归）
 icon: 🔗
 allowedTools: [get_schema, query_data, run_analysis, generate_chart]
 ---

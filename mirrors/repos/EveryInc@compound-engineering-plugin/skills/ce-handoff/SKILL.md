@@ -33,7 +33,19 @@ Create one immutable handoff at the destination the user requested, or use the m
 
 ### Default managed storage
 
-When the user did not choose another destination, write a Markdown snapshot at `/tmp/compound-engineering/ce-handoff/<repo-namespace>/<topic>.md`.
+When the user did not choose another destination, resolve the managed root with this shell block:
+
+```bash
+SCRATCH_ROOT="/tmp/compound-engineering-$(id -u)";
+if [ -L "$SCRATCH_ROOT" ]; then echo "unsafe scratch root symlink: $SCRATCH_ROOT" >&2; exit 1; fi;
+install -d -m 700 "$SCRATCH_ROOT" || exit 1;
+if [ -L "$SCRATCH_ROOT" ] || [ ! -O "$SCRATCH_ROOT" ]; then echo "scratch root is not owned by the current user: $SCRATCH_ROOT" >&2; exit 1; fi;
+chmod 700 "$SCRATCH_ROOT" || exit 1;
+HANDOFF_DIR="$SCRATCH_ROOT/ce-handoff/<repo-namespace>";
+(umask 077; mkdir -p "$HANDOFF_DIR") || exit 1; chmod 700 "$HANDOFF_DIR" || exit 1;
+```
+
+Write a Markdown snapshot at `$HANDOFF_DIR/<topic>.md`.
 
 Use a readable topic slug as the filename. When Git context exists, use a sanitized repository name plus a stable root-commit prefix as the repository namespace; otherwise use `general`. Worktrees from the same repository share the namespace and remain distinguishable through frontmatter. Do not put a timestamp or unique ID in the path by default; `created_at` carries chronology for discovery. Reserve the final candidate filename atomically and exclusively; on collision, retry with the smallest available numeric suffix rather than overwrite a handoff. Never check availability and then write. Keep the directory and file user-private where the platform supports permissions.
 
@@ -100,7 +112,7 @@ A supplied folder or collection is a discovery boundary, not a selected document
 
 ### Without an explicit source
 
-1. Search the folder or collection the user supplied; otherwise enumerate candidate files beneath `/tmp/compound-engineering/ce-handoff/`. Bound the candidate set before inspecting content; prefer recent files and current repository or working-directory affinity without making repository affinity mandatory.
+1. Search the folder or collection the user supplied; otherwise run the managed-root block above in the current shell call and enumerate candidate files beneath `$SCRATCH_ROOT/ce-handoff/`. Bound the candidate set before inspecting content; prefer recent files and current repository or working-directory affinity without making repository affinity mandatory.
 2. Before reading any candidate metadata or frontmatter, resolve the discovery boundary and exclude symlink candidates and candidates whose resolved path escapes that boundary. This discovery-only containment rule does not restrict an explicit selected source.
 3. During discovery, do not inspect the body of a candidate without frontmatter: check only its first line, then treat it as unindexed using its filename, location, and filesystem metadata. For a candidate beginning with the exact frontmatter opener `---`, read at most the first 64 lines or 16 KiB, whichever comes first, stopping sooner at the closing delimiter. If no closing delimiter appears within those bounds, treat the candidate as unindexed and do not read farther. Treat `ce-handoff/v1` metadata as an enriched index, not an eligibility gate. Never read an unselected body merely to rank it.
 4. Rank only available frontmatter, filename, location, and filesystem metadata using the user's keywords, title, summary, keyword overlap, repository or worktree affinity, working-directory affinity, and recency.

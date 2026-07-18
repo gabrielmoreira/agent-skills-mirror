@@ -10,8 +10,7 @@
 #
 # Independence is by PROVIDER, not CLI brand. A provider is reached by a ROUTE:
 # its dedicated CLI, or (for fixed grok-cursor / composer routes) cursor-agent. The peer
-# runs on ONE model per provider at HIGH reasoning (composer's -fast tier is its
-# ceiling, an accepted exception).
+# runs on ONE editorially selected model and reasoning tier per provider.
 #
 # Usage:
 #   cross-model-adversarial-review.sh <host-provider> <candidates> <base-ref> <run-dir>
@@ -67,14 +66,30 @@ log()  { printf '[cross-model] %s\n' "$*" >&2; }
 skip() { log "$*"; exit 0; }   # non-blocking: announce reason, exit clean, no output
 
 # --- model + reasoning per provider ----------------------------------------
-# ONE model at HIGH reasoning per provider. Concrete IDs are the CURRENT instance
-# of the tier principle and the single maintenance point when model families change.
+# ONE editorial model/reasoning mapping per provider. Concrete IDs are the CURRENT
+# instance of the tier principle and the single maintenance point when families change.
 # Keep these in sync with ce-doc-review's script (parity-tested in CI).
 M_CODEX="gpt-5.6-sol"          # codex CLI            (-c model_reasoning_effort="high")
 M_CLAUDE="opus"                # claude CLI, Opus 4.8 (--effort high)
 M_GROK="grok-4.5"              # grok CLI             (--effort high)
 M_GROK_CURSOR="cursor-grok-4.5-high"  # fixed cursor-agent Grok route (current id)
 M_COMPOSER="composer-2.5-fast" # cursor-agent composer (no high tier; -fast is the ceiling)
+
+route_effort() {
+  case "$1" in
+    codex|claude|grok-cli) printf 'high' ;;
+    grok-cursor) printf 'model-implied-high' ;;
+    composer) printf 'fast' ;;
+    cursor) printf 'unverified' ;;
+  esac
+}
+
+route_receipt_supported() {
+  case "$1" in
+    claude) printf 'true' ;;
+    *) printf 'false' ;;
+  esac
+}
 
 # --- model-identity receipt (R7/R8) -----------------------------------------
 # "Which model ran" is a claim that needs a serving-side receipt. Only the
@@ -176,7 +191,7 @@ extract_model_receipt() {   # <route>; reads the envelope in $PEERLOG, sets MODE
 adapter_argv() {
   case "$1" in
     codex)
-      printf '%s\0' codex exec - -C "$PEER_WORKDIR" --skip-git-repo-check -s read-only \
+      printf '%s\0' codex exec - -C "$PEER_WORKDIR" --skip-git-repo-check -s read-only --json \
         -o "$RAW_OUT" -m "$(route_model codex)" -c 'model_reasoning_effort="high"' -c 'hide_agent_reasoning=false'
       ;;
     claude)
@@ -549,7 +564,8 @@ attempt_route() {
   : > "$PEERLOG"; : > "$PEERERR"; rm -f "$RAW_OUT"
   build_cmd "$route"
   case "$route" in
-    codex|claude|grok-cli) note="$(route_model "$route") (effort high)" ;;
+    codex)                  note="$(route_model "$route") (effort high)" ;;
+    claude|grok-cli)        note="$(route_model "$route") (effort high)" ;;
     grok-cursor|composer)  note="$(route_model "$route")" ;;
     cursor)                note="auto (serving model unverified)" ;;
   esac
@@ -558,6 +574,9 @@ attempt_route() {
     codex)
       compose_prompt_codex
       run_codex_cmd
+      cp "$PEERLOG" "$RUN_DIR/adversarial-codex-events.jsonl" 2>/dev/null || true
+      jq -s '[.[] | select(.type == "turn.completed") | .usage] | last // empty' "$PEERLOG" \
+        > "$RUN_DIR/adversarial-codex-usage.json" 2>/dev/null || true
       if [ "$RUN_SUCCEEDED" = true ] && out_missing_or_invalid; then
         recover_findings_json "$PEERLOG" "$RAW_OUT" && log "recovered codex JSON from stdout (-o file unavailable)"
       fi
@@ -617,6 +636,8 @@ run_provider() {
          --arg target "$provider" --arg harness "$(route_harness "$ACTUAL_ROUTE")" \
          --arg family "$_target_family" --argjson independent "$_independent" \
          --arg mreq "$(route_model "$ACTUAL_ROUTE")" --arg mact "$MODEL_ACTUAL" \
+         --arg ereq "$(route_effort "$ACTUAL_ROUTE")" \
+         --argjson receipt "$(route_receipt_supported "$ACTUAL_ROUTE")" \
          'if (.findings|type)=="array"
           then { reviewer: $r,
                  cross_model_route: $route,
@@ -626,7 +647,16 @@ run_provider() {
                  independence_verified: $independent,
                  model_requested: $mreq,
                  model_actual: $mact,
-                 findings: [ .findings[] | if (.autofix_class? == "safe_auto") then .autofix_class = "gated_auto" else . end ],
+                 effort_requested: $ereq,
+                 effort_actual: "unverified",
+                 receipt_supported: $receipt,
+                 findings: [ .findings[]
+                   | if (.autofix_class? == "safe_auto") then .autofix_class = "gated_auto" else . end
+                   | if ((.first_evidence? // "") | type) == "string" and ((.first_evidence? // "") | length) > 0
+                     then .
+                     elif ((.evidence? // []) | type) == "array" and ((.evidence? // []) | length) > 0 and ((.evidence[0]) | type) == "string"
+                     then .first_evidence = .evidence[0]
+                     else . end ],
                  residual_risks: (.residual_risks // []),
                  testing_gaps: (.testing_gaps // []) }
           else empty end' \
@@ -642,25 +672,53 @@ run_provider() {
     log "wrote $n finding(s) to $OUT (reviewer adversarial-$provider)"
   else
     log "provider $provider produced no usable schema-shaped output; skipping fold-in"
-    # Surface a bounded tail of the peer's raw output so the orchestrator can
+    # Surface bounded peer output so the orchestrator can
     # reason about WHY it was skipped (quota/usage-limit exhaustion vs an ordinary
     # empty review) and, in a repeated-pass session, deprioritize an exhausted
     # route. Harness-agnostic: the agent classifies from the text; this only makes
     # the evidence visible in out.log. Surface BOTH streams -- the error can be on
     # stdout (grok's 402) or stderr (claude/cursor auth/quota). Bash builtins only
-    # (the route sandbox has no tail/tr); both are small on a failed route.
+    # (the route sandbox has no tail/tr). Prefer structured error fields because
+    # a raw tail can discard the actionable message in a large CLI envelope.
     if [ -s "$PEERLOG" ]; then
-      _pt="$(< "$PEERLOG")"; _pt="${_pt//$'\n'/ }"
-      [ "${#_pt}" -gt 300 ] && _pt="${_pt: -300}"
+      _pt="$(bounded_failure_evidence "$PEERLOG")"
       log "  peer skip evidence: $_pt"
     fi
     if [ -s "$PEERERR" ]; then
-      _pe="$(< "$PEERERR")"; _pe="${_pe//$'\n'/ }"
-      [ "${#_pe}" -gt 300 ] && _pe="${_pe: -300}"
+      _pe="$(bounded_failure_evidence "$PEERERR")"
       log "  peer skip evidence (stderr): $_pe"
     fi
     rm -f "$OUT" "$RAW_OUT"
   fi
+}
+
+# Prefer structured CLI diagnostics over a raw tail, which can hide the useful
+# error near the beginning of a large JSON envelope.
+bounded_failure_evidence() {   # <logfile>
+  local path="$1" human ancillary evidence
+  human="$(jq -r '
+    [
+      (.result? | select(type == "string" and length > 0)),
+      (.message? | select(type == "string" and length > 0)),
+      (.error?.message? | select(type == "string" and length > 0))
+    ] | unique | join(" | ")
+  ' "$path" 2>/dev/null)"
+  ancillary="$(jq -r '
+    [
+      (if .api_error_status? != null then "api_error_status=\(.api_error_status)" else empty end),
+      (.terminal_reason? | select(type == "string" and length > 0) | "terminal_reason=" + .)
+    ] | unique | join(" | ")
+  ' "$path" 2>/dev/null)"
+  # Ancillary fields describe the exit but are not the diagnostic itself. If
+  # no recognized human-readable field exists, retain bounded raw output so a
+  # CLI's newer or provider-specific error field is still visible.
+  [ -n "$human" ] && evidence="$human" || evidence="$(cat "$path")"
+  [ -n "$ancillary" ] && evidence="${evidence:+$evidence | }$ancillary"
+  evidence="${evidence//$'\n'/ }"
+  if [ "${#evidence}" -gt 300 ]; then
+    evidence="${evidence:0:147} ... ${evidence: -147}"
+  fi
+  printf '%s' "$evidence"
 }
 
 # Discovery preserves caller order and MAX_PEERS, but live egress is already

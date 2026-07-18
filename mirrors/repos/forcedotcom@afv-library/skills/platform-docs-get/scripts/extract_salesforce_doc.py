@@ -153,27 +153,53 @@ def extract_official_salesforce_doc(url: str, timeout_seconds: int, use_stealth:
             http_status = response.status if response else None
             page.wait_for_timeout(1500)
             try:
-                page.wait_for_function(
-                    r"""
-                    () => {
-                      const el = document.querySelector('main, article, [role="main"]');
-                      const text = (el?.innerText || el?.textContent || '').trim();
-                      return text.length > 200;
-                    }
-                    """,
-                    timeout=min(timeout_ms, 15000),
-                )
+                page.wait_for_load_state("networkidle", timeout=min(timeout_ms, 15000))
             except PlaywrightTimeoutError:
                 pass
+
+            # Wait for content: check both light DOM and shadow DOM content
+            is_developer = "developer.salesforce.com" in host
+            wait_js = r"""
+                    () => {
+                      // Light DOM check (works for most official sites)
+                      const el = document.querySelector('main, article, [role="main"]');
+                      const lightText = (el?.innerText || el?.textContent || '').trim();
+                      if (lightText.length > 200) return true;
+
+                      // Shadow DOM check (needed for developer.salesforce.com)
+                      function findDeepText(root, depth) {
+                        if (depth > 5 || !root) return '';
+                        let best = '';
+                        const els = root.querySelectorAll ? root.querySelectorAll('*') : [];
+                        for (const child of els) {
+                          if (child.shadowRoot) {
+                            // Check direct children of shadow root for text
+                            for (const sc of child.shadowRoot.children) {
+                              const t = (sc.innerText || '').trim();
+                              if (t.length > best.length) best = t;
+                            }
+                            const deeper = findDeepText(child.shadowRoot, depth + 1);
+                            if (deeper.length > best.length) best = deeper;
+                          }
+                        }
+                        return best;
+                      }
+                      const shadowText = findDeepText(document, 0);
+                      return shadowText.length > 200;
+                    }
+                    """
             try:
-                page.wait_for_load_state("networkidle", timeout=min(timeout_ms, 15000))
+                page.wait_for_function(
+                    wait_js,
+                    timeout=min(timeout_ms, 20000 if is_developer else 15000),
+                )
             except PlaywrightTimeoutError:
                 pass
             page.wait_for_timeout(500)
 
             payload = page.evaluate(
                 r"""
-                () => {
+                (host) => {
                   function normalize(text) {
                     return String(text || '')
                       .replace(/\u00a0/g, ' ')
@@ -233,6 +259,14 @@ def extract_official_salesforce_doc(url: str, timeout_seconds: int, use_stealth:
                     return Array.from(urls);
                   }
 
+                  // --- Noise removal: strip cookie/consent overlays before scoring ---
+                  document.querySelectorAll(
+                    '#onetrust-banner-sdk, #onetrust-consent-sdk, .onetrust-consent-sdk, ' +
+                    '[class*="onetrust-pc"], #onetrust-pc-sdk, ' +
+                    '[id*="cookie-consent"], [class*="cookie-banner"], ' +
+                    '.evidon-consent-button, #evidon-banner'
+                  ).forEach(function(el) { el.remove(); });
+
                   const title = document.title || normalize(document.querySelector('title')?.innerText || 'Untitled');
                   const childLinks = new Set();
                   for (const root of allRoots()) {
@@ -258,12 +292,42 @@ def extract_official_salesforce_doc(url: str, timeout_seconds: int, use_stealth:
                     { selector: 'main .content, article .content', strategy: 'nested-content', base: 140 },
                   ];
 
+                  // --- Host-aware selector overrides for developer.salesforce.com ---
+                  if (host.includes('developer.salesforce.com')) {
+                    selectorConfigs.unshift(
+                      { selector: 'doc-content', strategy: 'dev-doc-content', base: 295 },
+                      { selector: '#maincontent', strategy: 'dev-maincontent', base: 290 },
+                      { selector: '.doc-body', strategy: 'dev-doc-body', base: 285 },
+                      { selector: '#topic-content', strategy: 'dev-topic-content', base: 285 },
+                      { selector: '.topicContent', strategy: 'dev-topic', base: 280 },
+                      { selector: '[class*="docContent"]', strategy: 'dev-doc-content-class', base: 275 },
+                      { selector: 'doc-xml-content .content', strategy: 'dev-xml-content', base: 270 },
+                    );
+                  }
+
+                  // Extract text from an element, including shadow root content
+                  function extractText(el) {
+                    let text = (el.innerText || el.textContent || '').trim();
+                    // If element is a shadow host with no slotted light DOM text,
+                    // gather text from its shadow root's children
+                    if (text.length < 200 && el.shadowRoot) {
+                      let shadowText = '';
+                      for (const child of el.shadowRoot.children) {
+                        shadowText += (child.innerText || child.textContent || '') + '\n';
+                      }
+                      if (shadowText.trim().length > text.length) {
+                        text = shadowText.trim();
+                      }
+                    }
+                    return text;
+                  }
+
                   const candidates = [];
                   for (const cfg of selectorConfigs) {
                     const nodes = deepQueryAll(cfg.selector);
                     for (const node of nodes) {
                       if (!isVisible(node)) continue;
-                      const text = normalize(node.innerText || node.textContent || '');
+                      const text = normalize(extractText(node));
                       if (text.length < 200) continue;
                       let score = cfg.base + Math.min(text.length, 5000) / 30;
                       const lowered = text.toLowerCase();
@@ -306,7 +370,8 @@ def extract_official_salesforce_doc(url: str, timeout_seconds: int, use_stealth:
                     candidateCount: candidates.length,
                   };
                 }
-                """
+                """,
+                host,
             )
 
             text = normalize_text(payload.get("text", ""))

@@ -126,7 +126,7 @@ This saves context window and prevents confusion from irrelevant information.
 | Task Type                   | Required Resources                                                       |
 | --------------------------- | ------------------------------------------------------------------------ |
 | Design system creation      | reference/typography.md + reference/color-and-contrast.md + reference/spatial-design.md + design-md-spec.md |
-| Landing page design         | reference/component-patterns.md + reference/motion-design.md + prompt-enhancement.md + examples/landing-page-prompt.md |
+| Landing page design         | reference/component-patterns.md + reference/motion-design.md + prompt-enhancement.md |
 | Design audit                | checklist.md + anti-patterns.md                                          |
 | Design token export         | design-tokens.md                                                         |
 | Stitch MCP integration      | stitch-integration.md                                                    |

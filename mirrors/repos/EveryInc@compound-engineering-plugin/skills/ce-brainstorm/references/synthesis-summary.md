@@ -46,7 +46,11 @@ Each section answers a different question:
 - **What did we cut?** → deferred items a reader would expect to see acknowledged
 - **Where might you redirect?** → residual forks: post-dialogue consequences, silent inferences, late-cycle bets
 
-Then the confirmation: *"Confirm and I'll write the requirements-only plan next, drawing on our dialogue and this synthesis. Or tell me what to change."* The phrasing sets the expectation that confirm -> artifact-write, so the user knows what's about to happen and can interrupt without ambiguity.
+Then the confirmation, which names **what actually happens next** so the user knows what is coming and can interrupt without ambiguity. When a doc is expected — the common case — that is the artifact write: *"Confirm and I'll write the requirements-only plan next, drawing on our dialogue and this synthesis. Or tell me what to change."*
+
+When a doc is already ruled out — the user declined one, or `brainstorm-sections.md`'s "Decide whether a doc is warranted at all" criteria plainly hold — name where the decisions actually go instead, which is whichever of that rule's alternatives *this run* established (`ce-plan`, the user's commit message, `docs/solutions/`): *"Confirm and we're done here — the scope above carries straight into [the destination the dialogue established]. Or tell me what to change."* When the dialogue named none, drop the clause rather than picking one: *"Confirm and we're done here — no doc, as you asked. Or tell me what to change."*
+
+Do not hardcode a destination. This phase writes no commit message and hands off at Phase 4, so asserting a downstream action the run will not take is the same overreach as promising the doc. Phase 3, not this phase, owns the doc-warranted decision, so promising the write here makes a user who already declined a doc decline it a second time.
 
 ### Path A vs Path B: the gate that fires the confirmation question
 
@@ -157,7 +161,7 @@ Based on our dialogue, here's the scope I'm proposing for the Product Contract:
 - [scope-level fork or non-obvious consequence the user can affirm or redirect]
 - [same]
 
-Confirm and I'll write the requirements-only plan next, drawing on our dialogue and this synthesis. Or tell me what to change — even something I captured correctly earlier is fair game to revise (you may have changed your mind or want to correct an unstated assumption).
+[Closing line — name what actually happens next, per "the confirmation" above. Doc expected (the common case):] Confirm and I'll write the requirements-only plan next, drawing on our dialogue and this synthesis. Or tell me what to change — even something I captured correctly earlier is fair game to revise (you may have changed your mind or want to correct an unstated assumption). [Doc already ruled out — user declined one, or the skip criteria plainly hold:] Confirm and we're done here — the scope above carries straight into [the destination this run established; drop this clause when none was named]. Or tell me what to change — even something I captured correctly earlier is fair game to revise.
 ```
 
 ### Path A template (no questions were asked — typically Phase 0.2 short-circuit)

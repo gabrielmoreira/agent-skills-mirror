@@ -257,13 +257,27 @@ The check also self-heals on the next non-bot trigger -- a push, or a
 not a regular PR comment, since the workflow does not subscribe to
 `issue_comment`.
 
+**Helper-first**: prints this diagnosis and ordered rerun plan, read-only.
+
+```sh
+# source repo / vendored-node profile
+node scripts/rerun-advisory-convergence.mjs --pr <n>
+
+# package-manager / ephemeral-npx profile
+<profile-selected-rerun-advisory-convergence-command> --pr <n>
+```
+
+Resolve `<profile-selected-rerun-advisory-convergence-command>` from
+`docs/idd-helper-scripts.md`; do not hardcode `node scripts/...` for
+non-vendored profiles.
+
 ## Interpretation
 
 <!-- dprint-ignore-start -->
 | State (required checks only, normalized) | Action |
 | --- | --- |
 | All required checks are generated and pass-equivalent | → **on-success** (caller-defined) |
-| Any required check is non-pass `failure`, `action_required`, `startup_failure`, or `stale` | Inspect the log. If infra/flaky: apply `ciWait.rerunPolicy` (default `rerun-once`). If it resolves to rerun, rerun the exact failed run once and resume polling. If it resolves to hold, post a hold comment and stop. If code-caused: fix, run **fix-validate**, commit atomically, then return to caller's pre-push step. `action_required`, `startup_failure`, and `stale` rarely clear on a blind rerun: inspect, and if the check needs a maintainer action or a fresh run, post a hold comment and stop rather than looping reruns. Exception: `idd-advisory-convergence` stuck at `action_required` from a gated bot-triggered review run is recovered by rerunning the _existing_ PR-linked run, subject to `ciWait.rerunPolicy` (see §Rerun mechanics). |
+| Any required check is non-pass `failure`, `action_required`, `startup_failure`, or `stale` | Inspect the log. If infra/flaky: apply `ciWait.rerunPolicy` (default `rerun-once`). If it resolves to rerun, rerun the exact failed run once and resume polling. If it resolves to hold, post a hold comment and stop. If code-caused: fix, run **fix-validate**, commit atomically, then return to caller's pre-push step. `action_required`, `startup_failure`, and `stale` rarely clear on a blind rerun: inspect, and if the check needs a maintainer action or a fresh run, post a hold comment and stop rather than looping reruns. Exception: `idd-advisory-convergence` stuck at `action_required` from a gated bot run recovers by rerunning the existing run, subject to `ciWait.rerunPolicy` (see §Rerun mechanics). Exception 2: `idd-advisory-convergence` alone is non-pass, and its own verdict's `pending` field is `false` with outstanding review reasons — D4/E15 exit to E1 (both carve out a just-posted maintainer waiver, which still needs the rerun instead — see D4); F2/F3 (already in advisory-wait) are unaffected. |
 | Any required check is non-pass `cancelled` or `timed_out` | Investigate cause. If code-caused: fix, run **fix-validate**, commit atomically, then return to caller's pre-push step. If infra-caused: apply `ciWait.rerunPolicy`; rerun or re-push only when the current rerun budget allows it, otherwise post a hold comment and stop. |
 | Any required check is running (`pending`/`requested`/`waiting`/`expected`/...) | Continue waiting. After `ciWait.runningTimeout` — measured from the check's server `startedAt` (see the Polling algorithm) — elapses with no completion (default: 30 min), apply `ciWait.rerunPolicy`. If it resolves to rerun, rerun CI once and resume polling. If the same route recurs after that rerun, or if the policy is `hold`, post a hold comment and stop. |
 | Required checks are not generated after `ciWait.generationTimeout` | Treat as running. Default: 10 min. If the corresponding workflow run does not exist at all when that window elapses, post a hold comment and escalate to a maintainer, then stop. |
@@ -311,3 +325,7 @@ here.
 This trims only the wasteful dimensions (context re-read, CI minutes); it does
 **not** reduce review rounds, which remain valuable and run in full. This same
 discipline applies to the advisory-wait and review-fix wait points.
+
+**Known residual risk**: workers can still stall here — expected and
+budgeted, not broken. Recovery is one message citing live state first (PR
+number, check states, local worktree HEAD SHA).

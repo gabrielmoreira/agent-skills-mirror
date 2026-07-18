@@ -4,6 +4,7 @@ description: "Use this skill when users need to create, generate, or validate Sa
 metadata:
   version: "1.0"
   minApiVersion: "51.0"
+  relatedSkills: ["platform-value-set-generate", "platform-validation-rule-generate"]
 ---
 
 # Salesforce Custom Field Generator and Validator
@@ -20,7 +21,7 @@ Every generated field must include these tags:
 
 | Attribute | Requirement | Notes |
 |-----------|-------------|-------|
-| `<fullName>` | Required | **Field** name only: derive from `<label>` — capitalize each word, replace spaces with `_`, append `__c`. Must start with a letter. E.g., label `Total Contract Value` → `Total_Contract_Value__c`. ⚠️ This rule is for the FIELD name. **Picklist VALUE `<fullName>` is different — keep it exactly as the user spelled it, spaces and all, no `__c`** (e.g. `Closed Won`, NOT `Closed_Won`). See [`references/advanced-picklists.md`](references/advanced-picklists.md) (ref §3). |
+| `<fullName>` | Required | **Field** name only: derive from `<label>` — capitalize each word, replace spaces with `_`, append `__c`. Must start with a letter. E.g., label `Total Contract Value` → `Total_Contract_Value__c`. This rule is for the FIELD name. **Picklist VALUE `<fullName>` is different — keep it exactly as the user spelled it, spaces and all, no `__c`** (e.g. `Closed Won`, NOT `Closed_Won`). See [`references/advanced-picklists.md`](references/advanced-picklists.md) (ref §3). |
 | `<label>` | Required | The UI name (Title Case) |
 | `<description>` | Always include | Explain the business reason *why* this field exists. |
 | `<inlineHelpText>` | Always include | Actionable end-user guidance that adds value beyond the label (e.g., "Enter the value in USD including tax", not "The amount"). |
@@ -49,7 +50,7 @@ To ensure deployment success, follow these mathematical constraints:
 
 ### The "Fixed 255" Rule
 
-**TextArea: always include `<length>255</length>` exactly** — this literal value is required by the Metadata API and **omitting it fails deployment**, even though the UI exposes no length control. Unlike every other type where `length` is a value you calculate, TextArea's is a fixed constant.
+**TextArea: do NOT include `<length>`** — the Metadata API fixes the length at 255 implicitly and **rejects an explicit `<length>` value** with "Can not specify 'length' for a CustomField of type TextArea". Omit `<length>` entirely; the field only needs `<fullName>`, `<label>`, and `<type>TextArea</type>`.
 
 ### Visible Lines
 
@@ -76,7 +77,7 @@ Mandatory for Long/Rich text and Multi-select picklists to control UI height.
 | Phone | `Phone` | Standardizes phone number formatting |
 | Picklist | `Picklist` | `valueSet` containing EITHER `valueSetDefinition` (inline) OR `valueSetName` (reference); `restricted` (see "Picklist `restricted` default" below; advanced cases in §3.4) |
 | Text | `Text` | `length` (Max 255) |
-| Text Area | `TextArea` | `<length>255</length>` |
+| Text Area | `TextArea` | None — do NOT include `<length>`; the API fixes length at 255 implicitly |
 | Text (Long) | `LongTextArea` | `length`, `visibleLines` (default 3) |
 | Text (Rich) | `Html` | `length`, `visibleLines` (default 25) |
 | Time | `Time` | Stores time only (no date) |
@@ -112,7 +113,7 @@ Mandatory for Long/Rich text and Multi-select picklists to control UI height.
 
 ### 3.4 Advanced Picklists
 
-The inline `<valueSetDefinition>` above is the simple case. Full rules and worked ✅/❌
+The inline `<valueSetDefinition>` above is the simple case. Full rules and worked correct/incorrect
 examples for everything below are in
 [`references/advanced-picklists.md`](references/advanced-picklists.md) — load it for any
 non-trivial picklist. Section numbers in parentheses below (e.g. "ref §1") point to that
@@ -166,12 +167,12 @@ Master-Detail fields have **strict attribute restrictions** that differ from Loo
 
 | Attribute | Master-Detail | Lookup |
 |-----------|---------------|--------|
-| `<required>` | ❌ FORBIDDEN | ✅ Optional |
-| `<deleteConstraint>` | ❌ FORBIDDEN (always CASCADE) | ✅ Required (`SetNull`, `Restrict`, `Cascade`) |
-| `<lookupFilter>` | ❌ FORBIDDEN | ✅ Optional |
-| `<relationshipOrder>` | ✅ Required (0 or 1) | ❌ Not applicable |
-| `<reparentableMasterDetail>` | ✅ Optional | ❌ Not applicable |
-| `<writeRequiresMasterRead>` | ✅ Optional | ❌ Not applicable |
+| `<required>` | FORBIDDEN | Optional |
+| `<deleteConstraint>` | FORBIDDEN (always CASCADE) | Required (`SetNull`, `Restrict`, `Cascade`) |
+| `<lookupFilter>` | FORBIDDEN | Optional |
+| `<relationshipOrder>` | Required (0 or 1) | Not applicable |
+| `<reparentableMasterDetail>` | Optional | Not applicable |
+| `<writeRequiresMasterRead>` | Optional | Not applicable |
 
 ### INCORRECT — Master-Detail with forbidden attributes:
 
@@ -451,7 +452,7 @@ Before generating CustomField XML, verify:
 - [ ] Is `precision ≤ 18`?
 
 ### Text Area Checks
-- [ ] For TextArea: Is `<length>255</length>` explicitly included?
+- [ ] For TextArea: Is `<length>` **omitted**? (The API rejects an explicit `<length>` value on TextArea fields.)
 - [ ] For LongTextArea/Html: Is `<visibleLines>` set?
 
 ### Relationship Limit Checks

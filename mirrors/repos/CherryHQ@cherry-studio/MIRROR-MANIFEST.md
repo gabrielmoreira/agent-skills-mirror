@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 28 followed patterns, 202 file(s) materialized.
+Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 28 followed patterns, 203 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 28 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 28 |
-| Files         | 202 |
+| Files         | 203 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -246,48 +246,49 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 158 | ✓ | [`src/main/data/services/utils/README.md`](src/main/data/services/utils/README.md) |
 | 159 | ✓ | [`src/main/services/oauth/runtime/README.md`](src/main/services/oauth/runtime/README.md) |
 | 160 | ✓ | [`src/renderer/components/chat/messages/README.md`](src/renderer/components/chat/messages/README.md) |
-| 161 | ✓ | [`src/renderer/data/README.md`](src/renderer/data/README.md) |
-| 162 | ✓ | [`src/renderer/i18n/translate/README.md`](src/renderer/i18n/translate/README.md) |
-| 163 | ✓ | [`src/renderer/pages/settings/ProviderSettings/hooks/providerSetting/README.md`](src/renderer/pages/settings/ProviderSettings/hooks/providerSetting/README.md) |
-| 164 | ✓ | [`src/renderer/routes/README.md`](src/renderer/routes/README.md) |
-| 165 | ✓ | [`src/renderer/services/popup/README.md`](src/renderer/services/popup/README.md) |
-| 166 | ✓ | [`src/renderer/windows/migrationV2/README.md`](src/renderer/windows/migrationV2/README.md) |
-| 167 | ✓ | [`src/renderer/windows/README.md`](src/renderer/windows/README.md) |
-| 168 | ✓ | [`src/shared/data/api/README.md`](src/shared/data/api/README.md) |
-| 169 | ✓ | [`src/shared/data/presets/README.md`](src/shared/data/presets/README.md) |
-| 170 | ✓ | [`src/shared/data/README.md`](src/shared/data/README.md) |
-| 171 | ✓ | [`tests/e2e/README.md`](tests/e2e/README.md) |
-| 172 | ✓ | [`v2-refactor-temp/docs/ai/README.md`](v2-refactor-temp/docs/ai/README.md) |
-| 173 | ✓ | [`v2-refactor-temp/README.md`](v2-refactor-temp/README.md) |
-| 174 | ✓ | [`v2-refactor-temp/tools/data-classify/README.md`](v2-refactor-temp/tools/data-classify/README.md) |
-| 175 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 176 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 177 | → | [`DESIGN.md`](DESIGN.md) |
-| 178 | → | [`docs/guides/branching-strategy.md`](docs/guides/branching-strategy.md) |
-| 179 | → | [`docs/guides/development.md`](docs/guides/development.md) |
-| 180 | → | [`docs/guides/test-plan.md`](docs/guides/test-plan.md) |
-| 181 | → | [`docs/references/binary-manager/README.md`](docs/references/binary-manager/README.md) |
-| 182 | → | [`docs/references/data/boot-config-overview.md`](docs/references/data/boot-config-overview.md) |
-| 183 | → | [`docs/references/data/cache-overview.md`](docs/references/data/cache-overview.md) |
-| 184 | → | [`docs/references/data/data-api-overview.md`](docs/references/data/data-api-overview.md) |
-| 185 | → | [`docs/references/data/preference-overview.md`](docs/references/data/preference-overview.md) |
-| 186 | → | [`docs/references/data/README.md`](docs/references/data/README.md) |
-| 187 | → | [`docs/references/ipc/README.md`](docs/references/ipc/README.md) |
-| 188 | → | [`docs/references/lifecycle/lifecycle-decision-guide.md`](docs/references/lifecycle/lifecycle-decision-guide.md) |
-| 189 | → | [`docs/references/lifecycle/lifecycle-migration-guide.md`](docs/references/lifecycle/lifecycle-migration-guide.md) |
-| 190 | → | [`docs/references/lifecycle/lifecycle-usage.md`](docs/references/lifecycle/lifecycle-usage.md) |
-| 191 | → | [`docs/references/lifecycle/README.md`](docs/references/lifecycle/README.md) |
-| 192 | → | [`docs/references/main-process-architecture.md`](docs/references/main-process-architecture.md) |
-| 193 | → | [`docs/references/naming-conventions.md`](docs/references/naming-conventions.md) |
-| 194 | → | [`docs/references/renderer-architecture.md`](docs/references/renderer-architecture.md) |
-| 195 | → | [`docs/references/shared-layer-architecture.md`](docs/references/shared-layer-architecture.md) |
-| 196 | → | [`docs/references/testing/database-testing.md`](docs/references/testing/database-testing.md) |
-| 197 | → | [`docs/references/window-manager/README.md`](docs/references/window-manager/README.md) |
-| 198 | → | [`docs/sponsor.md`](docs/sponsor.md) |
-| 199 | → | [`README.md`](README.md) |
-| 200 | → | [`src/main/core/paths/README.md`](src/main/core/paths/README.md) |
-| 201 | → | [`tests/__mocks__/README.md`](tests/__mocks__/README.md) |
-| 202 | → | [`v2-refactor-temp/docs/breaking-changes/README.md`](v2-refactor-temp/docs/breaking-changes/README.md) |
+| 161 | ✓ | [`src/renderer/components/FilePreview/README.md`](src/renderer/components/FilePreview/README.md) |
+| 162 | ✓ | [`src/renderer/data/README.md`](src/renderer/data/README.md) |
+| 163 | ✓ | [`src/renderer/i18n/translate/README.md`](src/renderer/i18n/translate/README.md) |
+| 164 | ✓ | [`src/renderer/pages/settings/ProviderSettings/hooks/providerSetting/README.md`](src/renderer/pages/settings/ProviderSettings/hooks/providerSetting/README.md) |
+| 165 | ✓ | [`src/renderer/routes/README.md`](src/renderer/routes/README.md) |
+| 166 | ✓ | [`src/renderer/services/popup/README.md`](src/renderer/services/popup/README.md) |
+| 167 | ✓ | [`src/renderer/windows/migrationV2/README.md`](src/renderer/windows/migrationV2/README.md) |
+| 168 | ✓ | [`src/renderer/windows/README.md`](src/renderer/windows/README.md) |
+| 169 | ✓ | [`src/shared/data/api/README.md`](src/shared/data/api/README.md) |
+| 170 | ✓ | [`src/shared/data/presets/README.md`](src/shared/data/presets/README.md) |
+| 171 | ✓ | [`src/shared/data/README.md`](src/shared/data/README.md) |
+| 172 | ✓ | [`tests/e2e/README.md`](tests/e2e/README.md) |
+| 173 | ✓ | [`v2-refactor-temp/docs/ai/README.md`](v2-refactor-temp/docs/ai/README.md) |
+| 174 | ✓ | [`v2-refactor-temp/README.md`](v2-refactor-temp/README.md) |
+| 175 | ✓ | [`v2-refactor-temp/tools/data-classify/README.md`](v2-refactor-temp/tools/data-classify/README.md) |
+| 176 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 177 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 178 | → | [`DESIGN.md`](DESIGN.md) |
+| 179 | → | [`docs/guides/branching-strategy.md`](docs/guides/branching-strategy.md) |
+| 180 | → | [`docs/guides/development.md`](docs/guides/development.md) |
+| 181 | → | [`docs/guides/test-plan.md`](docs/guides/test-plan.md) |
+| 182 | → | [`docs/references/binary-manager/README.md`](docs/references/binary-manager/README.md) |
+| 183 | → | [`docs/references/data/boot-config-overview.md`](docs/references/data/boot-config-overview.md) |
+| 184 | → | [`docs/references/data/cache-overview.md`](docs/references/data/cache-overview.md) |
+| 185 | → | [`docs/references/data/data-api-overview.md`](docs/references/data/data-api-overview.md) |
+| 186 | → | [`docs/references/data/preference-overview.md`](docs/references/data/preference-overview.md) |
+| 187 | → | [`docs/references/data/README.md`](docs/references/data/README.md) |
+| 188 | → | [`docs/references/ipc/README.md`](docs/references/ipc/README.md) |
+| 189 | → | [`docs/references/lifecycle/lifecycle-decision-guide.md`](docs/references/lifecycle/lifecycle-decision-guide.md) |
+| 190 | → | [`docs/references/lifecycle/lifecycle-migration-guide.md`](docs/references/lifecycle/lifecycle-migration-guide.md) |
+| 191 | → | [`docs/references/lifecycle/lifecycle-usage.md`](docs/references/lifecycle/lifecycle-usage.md) |
+| 192 | → | [`docs/references/lifecycle/README.md`](docs/references/lifecycle/README.md) |
+| 193 | → | [`docs/references/main-process-architecture.md`](docs/references/main-process-architecture.md) |
+| 194 | → | [`docs/references/naming-conventions.md`](docs/references/naming-conventions.md) |
+| 195 | → | [`docs/references/renderer-architecture.md`](docs/references/renderer-architecture.md) |
+| 196 | → | [`docs/references/shared-layer-architecture.md`](docs/references/shared-layer-architecture.md) |
+| 197 | → | [`docs/references/testing/database-testing.md`](docs/references/testing/database-testing.md) |
+| 198 | → | [`docs/references/window-manager/README.md`](docs/references/window-manager/README.md) |
+| 199 | → | [`docs/sponsor.md`](docs/sponsor.md) |
+| 200 | → | [`README.md`](README.md) |
+| 201 | → | [`src/main/core/paths/README.md`](src/main/core/paths/README.md) |
+| 202 | → | [`tests/__mocks__/README.md`](tests/__mocks__/README.md) |
+| 203 | → | [`v2-refactor-temp/docs/breaking-changes/README.md`](v2-refactor-temp/docs/breaking-changes/README.md) |
 
 ---
 

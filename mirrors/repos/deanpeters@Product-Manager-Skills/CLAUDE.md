@@ -4,16 +4,29 @@
 
 ---
 
-## Project Status (Last updated: Wed Jul 8 2026)
+## Project Status (Last updated: Fri Jul 17 2026)
 
-### Current State: v0.82 (56 skills)
+### Current State: v0.83 (70 skills)
 
-**Released: 56 Skills**
-- 23 Component Skills (templates/artifacts + finance metrics + career frameworks + stakeholder tools)
-- 26 Interactive Skills (guided discovery + finance advisors + career advisors + growth + stakeholder engagement)
-- 7 Workflow Skills (end-to-end processes + meta skill-authoring + executive onboarding + company intel)
+**70 Skills**
+- 24 Component Skills (templates/artifacts + finance metrics + career frameworks + stakeholder tools + intelligence disciplines)
+- 27 Interactive Skills (guided discovery + finance advisors + career advisors + growth + stakeholder engagement + intel triage)
+- 19 Workflow Skills (end-to-end processes + meta skill-authoring + executive onboarding + company intel + market-intelligence investigations)
 - License: CC BY-NC-SA 4.0
 - All skills restructured to Anthropic-compliant format (`skills/skill-name/SKILL.md`)
+
+**Market Intelligence Suite (Phase 9, COMPLETE — released as v0.83, Jul 17 2026)** ✅
+- Release note: `docs/announcements/2026-07-17-v0-83-market-intelligence-suite.md`
+- ✅ **Wave 1 complete (Jul 16, 2026):** 6 new skills, `theme: market-intelligence`
+  - [`autonomous-investigation`](skills/autonomous-investigation/SKILL.md) (Workflow) — protocol skill for research that proceeds without the user: question budget, search-plan gate, **Fact/Inference/Assumption** labels (canonical vocabulary), do-not-invent lists, Just Enough Mode, diffable schemas, confidence stacking, SCIP guardrails. The `workshop-facilitation` counterpart for investigation skills
+  - [`intelligence-collection-disciplines`](skills/intelligence-collection-disciplines/SKILL.md) (Component) — eight intel disciplines (OSINT→MASINT + All-Source Fusion) with free/paid source tables, signal→inference chains, TAM/SAM/SOM recipe, fusion cadence, artifact mapping
+  - The chain: [`market-landscape-scan`](skills/market-landscape-scan/SKILL.md) → [`competitive-research-snapshot`](skills/competitive-research-snapshot/SKILL.md) → [`competitive-intel-watch`](skills/competitive-intel-watch/SKILL.md) → [`battle-card-builder`](skills/battle-card-builder/SKILL.md) (all Workflow) — each consumes the prior's stable schema
+- ✅ **Wave 2 complete (Jul 16, 2026):** [`competitive-analysis-process`](skills/competitive-analysis-process/SKILL.md) (Workflow) — six-step umbrella (landscape → product comparison → customer-need fulfillment → business baseline → perception/positioning → strategic direction) orchestrating the suite, from the Competitive Analysis Playbook. Plus two upgrades: `tam-sam-som-calculator` gained three entry modes (own numbers / guided interview / autonomous research with the GEOINT/DEMOINT bottom-up recipe); `company-intel` gained the Executive Signal Refresh rerun pattern (Then/Now diffs, **Dropped Language** — what leaders stop saying), the source priority ladder + do-not-sanitize rule, product-org heuristics (CPO tenure, PM job postings as culture documents), and an optional distress read (presenting vs. underlying problem) — techniques generalized (and anonymized) from internal research tooling. Library at 63
+- ✅ **Wave 3 complete (Jul 16, 2026):** 6 new Workflow skills — [`voice-of-customer-miner`](skills/voice-of-customer-miner/SKILL.md) (public-voice mining, need-themes, source-bias notes), [`pricing-packaging-tracker`](skills/pricing-packaging-tracker/SKILL.md) (diffable pricing time series; packaging moves before price), [`pestel-delta-monitor`](skills/pestel-delta-monitor/SKILL.md) (macro re-scan; broken assumptions are the output; pairs with `pestel-analysis`), [`swot-analysis`](skills/swot-analysis/SKILL.md) (evidence-cited quadrants + S-O/W-T crossings), [`porters-five-forces`](skills/porters-five-forces/SKILL.md) (rated forces with signals; AI substitution named; profit-pool close), [`ansoff-matrix`](skills/ansoff-matrix/SKILL.md) (evidence per quadrant; risk gradient; cross-referenced as the investigation sibling of `organic-growth-advisor`). Library at 69. Followed (Jul 17) by [`intel-discipline-advisor`](skills/intel-discipline-advisor/SKILL.md) (Interactive) — triage from decision to discipline mix + cadence + executing skill; the Component+Interactive pairing for the disciplines compendium. **Suite complete at 14 skills + 2 upgrades; library at 70**
+- 🎁 **Adornment pass (Jul 17, post-release):** all 14 suite skills + `company-intel` now ship `template.md` (extracted output schemas with quality checks) + **dual-domain worked examples** — a SaaS universe (Fieldlight/Wrenchline/DispatchCrow/Vantiga, FSM software; chain examples feed each other) and an industrial universe (Northfield Automation investigating Helix/Corvid/Meridian, retrofit automation; interlocks with `company-intel`'s Foresight refresh example). New standard baked into this file's Quality Checklist ("Fully adorned"), CONTRIBUTING.md, AGENTS.md, Building PM Skills, both authoring meta-skills, and `build-a-skill.sh`. README/docs now surface the suite (nav block, v0.83 What's New, `docs/Market Intelligence Suite Summary.md`, `06-market-intel-pack`). Plan + status: `docs/maintenance/2026-07-17-adornment-and-docs-plan.md`; remaining: Plan 4 back-catalog backfill
+- 🧹 **Also Jul 16:** `company-intel` examples fictionalized (real company names replaced with surrogates: Helix Motion Systems, Northfield Automation, Corvid Industrial, Brightwater Biologics) per the customer-anonymization protocol
+- **Sources:** `~/Code/product-manager-prompts/market-intelligence/` (12 prompts), Competitive Analysis Playbook, Competitive Research on Steroids compendium, M365 agent definitions (all Dean's; see session memory for anonymization protocol — no customer names or recognizable engagement scenarios, ever)
+- Free/paid two-column source tables are the sanctioned style for tool mentions
 
 **Streamlit (beta) Playground (Feb 27, 2026)**
 - Local app in `app/main.py` for browsing and running skills before install
@@ -474,6 +487,7 @@ Dean reviews. You iterate based on feedback.
 - [ ] **Agent-ready:** Could an AI agent apply this framework without asking clarifying questions?
 - [ ] **Self-contained:** Does it define its own terms and assumptions?
 - [ ] **Practical:** Does it include at least one concrete example?
+- [ ] **Fully adorned:** Does the skill folder ship a `template.md` (the output schema as a copy/paste fill-in) and worked examples from **two business domains** — one SaaS, one industrial/non-SaaS? A single-domain example quietly teaches "this is a SaaS technique." Use the repo's two fictional universes (Fieldlight/Wrenchline FSM for SaaS; Helix/Northfield/Corvid for industrial); suffix the second file with its domain (e.g. `sample-industrial.md`). This is the quality bar, not a hard gate — interactive advisors substitute a conversation-flow example per domain, and definitionally single-domain skills (e.g. SaaS metrics) are exempt.
 - [ ] **Opinionated:** Does it take a stance (not just "here are options")?
 - [ ] **Skimmable:** Can you skim the headings and bullets and get 80% of the value?
 - [ ] **Zero fluff:** Did you cut every word that doesn't earn its keep?

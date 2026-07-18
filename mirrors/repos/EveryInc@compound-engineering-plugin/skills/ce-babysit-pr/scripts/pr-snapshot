@@ -920,9 +920,15 @@ def _stack_blocker(chain):
     return None
 
 
+def _parse_iso8601(value):
+    if isinstance(value, str) and value.endswith("Z"):
+        value = value[:-1] + "+00:00"
+    return datetime.fromisoformat(value)
+
+
 def _elapsed(iso_str, now):
     try:
-        return int((now - datetime.fromisoformat(iso_str)).total_seconds())
+        return int((now - _parse_iso8601(iso_str)).total_seconds())
     except (ValueError, TypeError):
         return 0
 
@@ -930,7 +936,7 @@ def _elapsed(iso_str, now):
 def _session_started_at(value):
     """Parse one invocation-wide, timezone-aware budget anchor for reuse across state dirs."""
     try:
-        parsed = datetime.fromisoformat(value)
+        parsed = _parse_iso8601(value)
     except (ValueError, TypeError):
         raise argparse.ArgumentTypeError("must be an ISO-8601 timestamp")
     if parsed.tzinfo is None:

@@ -1,6 +1,6 @@
 ---
 name: ppt
-description: 规划数据分析演示文稿
+description: 规划数据分析演示文稿（presentation 幻灯片）
 icon: 🎯
 allowedTools: [get_schema, query_data, propose_ppt_outline]
 ---

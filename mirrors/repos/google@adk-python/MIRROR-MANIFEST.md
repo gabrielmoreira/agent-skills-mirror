@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 59 file(s) materialized.
+Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 60 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 59 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 59 |
+| Files         | 60 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,41 +83,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`.agents/skills/adk-architecture/references/architecture/node-runner.md`](.agents/skills/adk-architecture/references/architecture/node-runner.md) |
 | 23 | ✓ | [`.agents/skills/adk-architecture/references/architecture/observability.md`](.agents/skills/adk-architecture/references/architecture/observability.md) |
 | 24 | ✓ | [`.agents/skills/adk-architecture/references/architecture/runner-roles.md`](.agents/skills/adk-architecture/references/architecture/runner-roles.md) |
-| 25 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/agent.md`](.agents/skills/adk-architecture/references/interfaces/agent.md) |
-| 26 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/base-agent.md`](.agents/skills/adk-architecture/references/interfaces/base-agent.md) |
-| 27 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/base-node.md`](.agents/skills/adk-architecture/references/interfaces/base-node.md) |
-| 28 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/event.md`](.agents/skills/adk-architecture/references/interfaces/event.md) |
-| 29 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/runner.md`](.agents/skills/adk-architecture/references/interfaces/runner.md) |
-| 30 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/workflow.md`](.agents/skills/adk-architecture/references/interfaces/workflow.md) |
-| 31 | ✓ | [`.agents/skills/adk-architecture/references/principles/api-principles.md`](.agents/skills/adk-architecture/references/principles/api-principles.md) |
-| 32 | ✓ | [`.agents/skills/adk-architecture/SKILL.md`](.agents/skills/adk-architecture/SKILL.md) |
-| 33 | ✓ | [`.agents/skills/adk-debug/SKILL.md`](.agents/skills/adk-debug/SKILL.md) |
-| 34 | ✓ | [`.agents/skills/adk-git/SKILL.md`](.agents/skills/adk-git/SKILL.md) |
-| 35 | ✓ | [`.agents/skills/adk-review/SKILL.md`](.agents/skills/adk-review/SKILL.md) |
-| 36 | ✓ | [`.agents/skills/adk-sample-creator/SKILL.md`](.agents/skills/adk-sample-creator/SKILL.md) |
-| 37 | ✓ | [`.agents/skills/adk-setup/SKILL.md`](.agents/skills/adk-setup/SKILL.md) |
-| 38 | ✓ | [`.agents/skills/adk-style/references/async.md`](.agents/skills/adk-style/references/async.md) |
-| 39 | ✓ | [`.agents/skills/adk-style/references/documentation.md`](.agents/skills/adk-style/references/documentation.md) |
-| 40 | ✓ | [`.agents/skills/adk-style/references/file-organization.md`](.agents/skills/adk-style/references/file-organization.md) |
-| 41 | ✓ | [`.agents/skills/adk-style/references/formatting.md`](.agents/skills/adk-style/references/formatting.md) |
-| 42 | ✓ | [`.agents/skills/adk-style/references/imports.md`](.agents/skills/adk-style/references/imports.md) |
-| 43 | ✓ | [`.agents/skills/adk-style/references/logging.md`](.agents/skills/adk-style/references/logging.md) |
-| 44 | ✓ | [`.agents/skills/adk-style/references/pydantic.md`](.agents/skills/adk-style/references/pydantic.md) |
-| 45 | ✓ | [`.agents/skills/adk-style/references/testing.md`](.agents/skills/adk-style/references/testing.md) |
-| 46 | ✓ | [`.agents/skills/adk-style/references/typing.md`](.agents/skills/adk-style/references/typing.md) |
-| 47 | ✓ | [`.agents/skills/adk-style/references/visibility.md`](.agents/skills/adk-style/references/visibility.md) |
-| 48 | ✓ | [`.agents/skills/adk-style/SKILL.md`](.agents/skills/adk-style/SKILL.md) |
-| 49 | ✓ | [`.agents/skills/adk-unit-design/SKILL.md`](.agents/skills/adk-unit-design/SKILL.md) |
-| 50 | ✓ | [`.agents/skills/adk-unit-guide/SKILL.md`](.agents/skills/adk-unit-guide/SKILL.md) |
-| 51 | ✓ | [`.agents/skills/adk-verify-snippets/scripts/run.py`](.agents/skills/adk-verify-snippets/scripts/run.py) |
-| 52 | ✓ | [`.agents/skills/adk-verify-snippets/scripts/verify_md.py`](.agents/skills/adk-verify-snippets/scripts/verify_md.py) |
-| 53 | ✓ | [`.agents/skills/adk-verify-snippets/SKILL.md`](.agents/skills/adk-verify-snippets/SKILL.md) |
-| 54 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 55 | ✓ | [`contributing/samples/environment_and_skills/local_environment_skill/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/local_environment_skill/skills/weather-skill/SKILL.md) |
-| 56 | ✓ | [`contributing/samples/environment_and_skills/skills_agent/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/skills_agent/skills/weather-skill/SKILL.md) |
-| 57 | ✓ | [`contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md) |
-| 58 | ✓ | [`llms.txt`](llms.txt) |
-| 59 | ✓ | [`src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md`](src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md) |
+| 25 | ✓ | [`.agents/skills/adk-architecture/references/architecture/workflow-resumability.md`](.agents/skills/adk-architecture/references/architecture/workflow-resumability.md) |
+| 26 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/agent.md`](.agents/skills/adk-architecture/references/interfaces/agent.md) |
+| 27 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/base-agent.md`](.agents/skills/adk-architecture/references/interfaces/base-agent.md) |
+| 28 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/base-node.md`](.agents/skills/adk-architecture/references/interfaces/base-node.md) |
+| 29 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/event.md`](.agents/skills/adk-architecture/references/interfaces/event.md) |
+| 30 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/runner.md`](.agents/skills/adk-architecture/references/interfaces/runner.md) |
+| 31 | ✓ | [`.agents/skills/adk-architecture/references/interfaces/workflow.md`](.agents/skills/adk-architecture/references/interfaces/workflow.md) |
+| 32 | ✓ | [`.agents/skills/adk-architecture/references/principles/api-principles.md`](.agents/skills/adk-architecture/references/principles/api-principles.md) |
+| 33 | ✓ | [`.agents/skills/adk-architecture/SKILL.md`](.agents/skills/adk-architecture/SKILL.md) |
+| 34 | ✓ | [`.agents/skills/adk-debug/SKILL.md`](.agents/skills/adk-debug/SKILL.md) |
+| 35 | ✓ | [`.agents/skills/adk-git/SKILL.md`](.agents/skills/adk-git/SKILL.md) |
+| 36 | ✓ | [`.agents/skills/adk-review/SKILL.md`](.agents/skills/adk-review/SKILL.md) |
+| 37 | ✓ | [`.agents/skills/adk-sample-creator/SKILL.md`](.agents/skills/adk-sample-creator/SKILL.md) |
+| 38 | ✓ | [`.agents/skills/adk-setup/SKILL.md`](.agents/skills/adk-setup/SKILL.md) |
+| 39 | ✓ | [`.agents/skills/adk-style/references/async.md`](.agents/skills/adk-style/references/async.md) |
+| 40 | ✓ | [`.agents/skills/adk-style/references/documentation.md`](.agents/skills/adk-style/references/documentation.md) |
+| 41 | ✓ | [`.agents/skills/adk-style/references/file-organization.md`](.agents/skills/adk-style/references/file-organization.md) |
+| 42 | ✓ | [`.agents/skills/adk-style/references/formatting.md`](.agents/skills/adk-style/references/formatting.md) |
+| 43 | ✓ | [`.agents/skills/adk-style/references/imports.md`](.agents/skills/adk-style/references/imports.md) |
+| 44 | ✓ | [`.agents/skills/adk-style/references/logging.md`](.agents/skills/adk-style/references/logging.md) |
+| 45 | ✓ | [`.agents/skills/adk-style/references/pydantic.md`](.agents/skills/adk-style/references/pydantic.md) |
+| 46 | ✓ | [`.agents/skills/adk-style/references/testing.md`](.agents/skills/adk-style/references/testing.md) |
+| 47 | ✓ | [`.agents/skills/adk-style/references/typing.md`](.agents/skills/adk-style/references/typing.md) |
+| 48 | ✓ | [`.agents/skills/adk-style/references/visibility.md`](.agents/skills/adk-style/references/visibility.md) |
+| 49 | ✓ | [`.agents/skills/adk-style/SKILL.md`](.agents/skills/adk-style/SKILL.md) |
+| 50 | ✓ | [`.agents/skills/adk-unit-design/SKILL.md`](.agents/skills/adk-unit-design/SKILL.md) |
+| 51 | ✓ | [`.agents/skills/adk-unit-guide/SKILL.md`](.agents/skills/adk-unit-guide/SKILL.md) |
+| 52 | ✓ | [`.agents/skills/adk-verify-snippets/scripts/run.py`](.agents/skills/adk-verify-snippets/scripts/run.py) |
+| 53 | ✓ | [`.agents/skills/adk-verify-snippets/scripts/verify_md.py`](.agents/skills/adk-verify-snippets/scripts/verify_md.py) |
+| 54 | ✓ | [`.agents/skills/adk-verify-snippets/SKILL.md`](.agents/skills/adk-verify-snippets/SKILL.md) |
+| 55 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 56 | ✓ | [`contributing/samples/environment_and_skills/local_environment_skill/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/local_environment_skill/skills/weather-skill/SKILL.md) |
+| 57 | ✓ | [`contributing/samples/environment_and_skills/skills_agent/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/skills_agent/skills/weather-skill/SKILL.md) |
+| 58 | ✓ | [`contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md) |
+| 59 | ✓ | [`llms.txt`](llms.txt) |
+| 60 | ✓ | [`src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md`](src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md) |
 
 ---
 

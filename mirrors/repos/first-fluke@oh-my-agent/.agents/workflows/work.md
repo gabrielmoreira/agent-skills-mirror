@@ -67,7 +67,7 @@ Activate PM Agent to:
 
 Present the PM Agent's task breakdown to the user:
 
-- Priorities (P0, P1, P2)
+- Priority tiers (1, 2, 3 — lower runs first)
 - Agent assignments
 - Dependencies
 - **You MUST get user confirmation before proceeding to Step 4.** Do NOT proceed without confirmation.
@@ -77,7 +77,7 @@ Present the PM Agent's task breakdown to the user:
 ## Step 4: Spawn Agents by Priority Tier
 
 // turbo
-Spawn agents for each task by priority tier (P0 first, then P1, etc.).
+Spawn agents for each task by priority tier (lowest first: tier 1, then tier 2, etc.).
 Spawn all same-priority tasks in parallel. Assign separate workspaces to avoid file conflicts.
 
 ### Per-Agent Dispatch
@@ -113,7 +113,7 @@ wait
 
 ## Step 5: Monitor Agent Progress
 
-- Use memory read tool to poll `progress-{agent}.md` files
+- Use memory read tool to poll `progress-{agent}[-{sessionId}].md` files
 - Use MCP code analysis tools (`find_symbol` and `search_for_pattern`) to verify API contract alignment between agents
 - Use memory edit tool to record monitoring results
 

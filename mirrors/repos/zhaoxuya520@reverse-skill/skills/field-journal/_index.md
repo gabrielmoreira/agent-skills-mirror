@@ -6,9 +6,9 @@
 
 ## 统计
 
-- 真实项目数：8
+- 真实项目数：9
 - 种子参考数：17
-- 总条目数：24
+- 总条目数：25
 
 ## 按场景分类
 
@@ -30,6 +30,7 @@
 
 ### Web / API / 渗透测试
 
+- [2026-07-18_gin-juice-client-friction](./2026-07-18_gin-juice-client-friction.md)
 - [2026-07-05_dsl-vm-captcha-reverse](./2026-07-05_dsl-vm-captcha-reverse.md)
 - [2026-06-29_burp-mcp-full-test-and-fix](./2026-06-29_burp-mcp-full-test-and-fix.md)
 - [2026-05-26_pentest-newapi-rate-limit-bypass](./2026-05-26_pentest-newapi-rate-limit-bypass.md)

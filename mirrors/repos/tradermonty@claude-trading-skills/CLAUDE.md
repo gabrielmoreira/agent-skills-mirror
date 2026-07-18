@@ -224,6 +224,7 @@ The table below is **auto-generated** from `skills-index.yaml` by `scripts/gener
 | **Breakout Trade Planner** | ❌ Not used | ❌ Not used | ❌ Not used | Consumes VCP screener output; pure calculation + Alpaca order templates |
 | **CANSLIM Screener** | ✅ Required | ❌ Not used | ❌ Not used | US stock fundamentals via FMP |
 | **COT Contrarian Detector** | ✅ Required | ❌ Not used | ❌ Not used | CFTC COT data via FMP; requires Premium+ plan |
+| **Contrarian Setup Gate** | ❌ Not used | ❌ Not used | ❌ Not used | Reads the three upstream contrarian-pipeline report JSONs; works offline |
 | **Data Quality Checker** | ❌ Not used | ❌ Not used | ❌ Not used | Local markdown validation; works offline |
 | **Dividend Growth Pullback Screener** | ✅ Required | 🟡 Optional (Recommended) | ❌ Not used | Financial Modeling Prep API |
 | **Downtrend Duration Analyzer** | ❌ Not used | ❌ Not used | ❌ Not used | Duration analysis from market data; pure calculation |
@@ -242,6 +243,7 @@ The table below is **auto-generated** from `skills-index.yaml` by `scripts/gener
 | **Exposure Coach** | ❌ Not used | ❌ Not used | ❌ Not used | Synthesizes signals from other skills; pure calculation |
 | **FTD Detector** | ✅ Required | ❌ Not used | ❌ Not used | Daily QQQ/SPY OHLCV via FMP |
 | **Finviz Screener** | ❌ Not used | 🟡 Optional | ❌ Not used | FINVIZ Elite API |
+| **Futures Position Sizer** | ❌ Not used | ❌ Not used | ❌ Not used | Pure calculation; consumes contrarian-setup-gate's READY_FOR_PLAN report or explicit direction/entry/stop flags; works offline |
 | **IBD Distribution Day Monitor** | ✅ Required | ❌ Not used | ❌ Not used | Financial Modeling Prep API |
 | **Institutional Flow Tracker** | ✅ Required | ❌ Not used | ❌ Not used | Financial Modeling Prep API |
 | **Kanchi Dividend Review Monitor** | 🟡 Optional (Recommended) | ❌ Not used | ❌ Not used | Dividend / price monitoring via FMP |
@@ -592,6 +594,15 @@ python3 skills/trader-memory-core/scripts/trader_memory_cli.py store --state-dir
 # (close accepts ACTIVE or PARTIALLY_CLOSED)
 python3 skills/trader-memory-core/scripts/trader_memory_cli.py store --state-dir state/theses/ \
   close <id> --exit-reason target_hit --actual-price 165.00 --actual-date 2026-06-01
+
+# Futures thesis: attach a futures-position-sizer SIZED report (contracts/
+# multiplier/direction), then trim/close with --contracts-sold instead of
+# --shares-sold — close/terminate/trim/open-position dispatch automatically
+# on position.asset_type.
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py store --state-dir state/theses/ \
+  attach-futures-position <id> --report reports/futures_position_es_2026-05-10.json
+python3 skills/trader-memory-core/scripts/trader_memory_cli.py store --state-dir state/theses/ \
+  trim <id> --contracts-sold 1 --price 4950.00 --date 2026-05-12
 
 # Query theses
 python3 skills/trader-memory-core/scripts/trader_memory_cli.py store \

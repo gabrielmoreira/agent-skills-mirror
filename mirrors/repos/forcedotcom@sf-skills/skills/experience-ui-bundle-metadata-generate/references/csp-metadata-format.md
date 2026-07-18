@@ -2,7 +2,7 @@
 
 ## File location
 
-```
+```text
 force-app/main/default/cspTrustedSites/{Name}.cspTrustedSite-meta.xml
 ```
 
@@ -256,7 +256,7 @@ Some services split resources across multiple subdomains. Create one CSP Trusted
 
 If the browser console shows a CSP error like:
 
-```
+```text
 Refused to load the image 'https://example.com/image.png' because it violates
 the following Content Security Policy directive: "img-src 'self' ..."
 ```

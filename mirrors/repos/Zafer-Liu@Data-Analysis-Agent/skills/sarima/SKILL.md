@@ -1,6 +1,6 @@
 ---
 name: sarima
-description: 使用 SARIMA 建模季节性时间序列
+description: 使用 SARIMA 建模季节性时间序列预测（forecast）
 icon: 🌊
 allowedTools: [get_schema, query_data, run_analysis, generate_chart]
 ---

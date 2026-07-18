@@ -43,8 +43,3 @@ Agents: .opencode/agents/*.md
 Commands: .opencode/commands/*.md
 Global skills: ~/.config/opencode/skills/
 Claude-compat skills: ~/.claude/skills/ (also loaded by OpenCode)
-
-## Resume
-
-If a loop is in progress (loop-stack/*/STATUS.md exists, not ending in _DONE),
-the skill offers to resume it before starting fresh.

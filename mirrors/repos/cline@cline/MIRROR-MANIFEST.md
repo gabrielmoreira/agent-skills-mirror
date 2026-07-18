@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cline/cline` — 26 default patterns, 2 followed patterns, 53 file(s) materialized.
+Mirror of `cline/cline` — 26 default patterns, 2 followed patterns, 54 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cline/cline` — 26 default patterns, 2 followed patterns, 53 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 53 |
+| Files         | 54 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -104,15 +104,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`.agents/skills/opentui/references/testing/REFERENCE.md`](.agents/skills/opentui/references/testing/REFERENCE.md) |
 | 43 | ✓ | [`.agents/skills/opentui/SKILL.md`](.agents/skills/opentui/SKILL.md) |
 | 44 | ✓ | [`.cline/skills/publish-cli/SKILL.md`](.cline/skills/publish-cli/SKILL.md) |
-| 45 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 46 | ✓ | [`apps/examples/desktop-app/sidecar/ARCHITECTURE.md`](apps/examples/desktop-app/sidecar/ARCHITECTURE.md) |
-| 47 | ✓ | [`evals/ARCHITECTURE.md`](evals/ARCHITECTURE.md) |
-| 48 | ✓ | [`sdk/AGENTS.md`](sdk/AGENTS.md) |
-| 49 | ✓ | [`sdk/ARCHITECTURE.md`](sdk/ARCHITECTURE.md) |
-| 50 | ✓ | [`sdk/CONTRIBUTING.md`](sdk/CONTRIBUTING.md) |
-| 51 | ✓ | [`sdk/packages/llms/AGENTS.md`](sdk/packages/llms/AGENTS.md) |
-| 52 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 53 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 45 | ✓ | [`.cline/skills/publish-ui/SKILL.md`](.cline/skills/publish-ui/SKILL.md) |
+| 46 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 47 | ✓ | [`apps/examples/desktop-app/sidecar/ARCHITECTURE.md`](apps/examples/desktop-app/sidecar/ARCHITECTURE.md) |
+| 48 | ✓ | [`evals/ARCHITECTURE.md`](evals/ARCHITECTURE.md) |
+| 49 | ✓ | [`sdk/AGENTS.md`](sdk/AGENTS.md) |
+| 50 | ✓ | [`sdk/ARCHITECTURE.md`](sdk/ARCHITECTURE.md) |
+| 51 | ✓ | [`sdk/CONTRIBUTING.md`](sdk/CONTRIBUTING.md) |
+| 52 | ✓ | [`sdk/packages/llms/AGENTS.md`](sdk/packages/llms/AGENTS.md) |
+| 53 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 54 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `gastownhall/beads` — 26 default patterns, 27 followed patterns, 73 file(s) materialized.
+Mirror of `gastownhall/beads` — 26 default patterns, 26 followed patterns, 72 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `gastownhall/beads` — 26 default patterns, 27 followed patterns, 73 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 27 |
-| Files         | 73 |
+| Followed pats | 26 |
+| Files         | 72 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,7 +69,6 @@ Mirror of `gastownhall/beads` — 26 default patterns, 27 followed patterns, 73 
 - `docs/getting-started/installation.md`
 - `docs/reference/antivirus.md`
 - `docs/architecture/dolt.md`
-- `docs/architecture/storage-backends.md`
 - `docs/community-tools.md`
 - `docs/related-projects.md`
 - `docs/core-concepts/sync-concepts.md`
@@ -135,29 +134,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 48 | → | [`ARTICLES.md`](ARTICLES.md) |
 | 49 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 50 | → | [`docs/architecture/dolt.md`](docs/architecture/dolt.md) |
-| 51 | → | [`docs/architecture/storage-backends.md`](docs/architecture/storage-backends.md) |
-| 52 | → | [`docs/community-tools.md`](docs/community-tools.md) |
-| 53 | → | [`docs/core-concepts/sync-concepts.md`](docs/core-concepts/sync-concepts.md) |
-| 54 | → | [`docs/getting-started/ide-setup.md`](docs/getting-started/ide-setup.md) |
-| 55 | → | [`docs/getting-started/installation.md`](docs/getting-started/installation.md) |
-| 56 | → | [`docs/integrations/copilot-cli.md`](docs/integrations/copilot-cli.md) |
-| 57 | → | [`docs/integrations/github-copilot.md`](docs/integrations/github-copilot.md) |
-| 58 | → | [`docs/reference/advanced.md`](docs/reference/advanced.md) |
-| 59 | → | [`docs/reference/antivirus.md`](docs/reference/antivirus.md) |
-| 60 | → | [`docs/reference/faq.md`](docs/reference/faq.md) |
-| 61 | → | [`docs/reference/protected-branches.md`](docs/reference/protected-branches.md) |
-| 62 | → | [`docs/reference/troubleshooting.md`](docs/reference/troubleshooting.md) |
-| 63 | → | [`docs/related-projects.md`](docs/related-projects.md) |
-| 64 | → | [`engdocs/AGENT_SIGNING.md`](engdocs/AGENT_SIGNING.md) |
-| 65 | → | [`engdocs/ICU-POLICY.md`](engdocs/ICU-POLICY.md) |
-| 66 | → | [`engdocs/LINTING.md`](engdocs/LINTING.md) |
-| 67 | → | [`engdocs/PROJECT_CHARTER.md`](engdocs/PROJECT_CHARTER.md) |
-| 68 | → | [`engdocs/RELEASE-STABILITY-GATE.md`](engdocs/RELEASE-STABILITY-GATE.md) |
-| 69 | → | [`engdocs/TESTING_PHILOSOPHY.md`](engdocs/TESTING_PHILOSOPHY.md) |
-| 70 | → | [`engdocs/TESTING.md`](engdocs/TESTING.md) |
-| 71 | → | [`PR_MAINTAINER_GUIDELINES.md`](PR_MAINTAINER_GUIDELINES.md) |
-| 72 | → | [`README.md`](README.md) |
-| 73 | → | [`RELEASING.md`](RELEASING.md) |
+| 51 | → | [`docs/community-tools.md`](docs/community-tools.md) |
+| 52 | → | [`docs/core-concepts/sync-concepts.md`](docs/core-concepts/sync-concepts.md) |
+| 53 | → | [`docs/getting-started/ide-setup.md`](docs/getting-started/ide-setup.md) |
+| 54 | → | [`docs/getting-started/installation.md`](docs/getting-started/installation.md) |
+| 55 | → | [`docs/integrations/copilot-cli.md`](docs/integrations/copilot-cli.md) |
+| 56 | → | [`docs/integrations/github-copilot.md`](docs/integrations/github-copilot.md) |
+| 57 | → | [`docs/reference/advanced.md`](docs/reference/advanced.md) |
+| 58 | → | [`docs/reference/antivirus.md`](docs/reference/antivirus.md) |
+| 59 | → | [`docs/reference/faq.md`](docs/reference/faq.md) |
+| 60 | → | [`docs/reference/protected-branches.md`](docs/reference/protected-branches.md) |
+| 61 | → | [`docs/reference/troubleshooting.md`](docs/reference/troubleshooting.md) |
+| 62 | → | [`docs/related-projects.md`](docs/related-projects.md) |
+| 63 | → | [`engdocs/AGENT_SIGNING.md`](engdocs/AGENT_SIGNING.md) |
+| 64 | → | [`engdocs/ICU-POLICY.md`](engdocs/ICU-POLICY.md) |
+| 65 | → | [`engdocs/LINTING.md`](engdocs/LINTING.md) |
+| 66 | → | [`engdocs/PROJECT_CHARTER.md`](engdocs/PROJECT_CHARTER.md) |
+| 67 | → | [`engdocs/RELEASE-STABILITY-GATE.md`](engdocs/RELEASE-STABILITY-GATE.md) |
+| 68 | → | [`engdocs/TESTING_PHILOSOPHY.md`](engdocs/TESTING_PHILOSOPHY.md) |
+| 69 | → | [`engdocs/TESTING.md`](engdocs/TESTING.md) |
+| 70 | → | [`PR_MAINTAINER_GUIDELINES.md`](PR_MAINTAINER_GUIDELINES.md) |
+| 71 | → | [`README.md`](README.md) |
+| 72 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

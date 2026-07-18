@@ -1,0 +1,1 @@
+cache/repos/github.com/alirezarezvani@claude-skills/.gemini/skills/weekly-review/../../../productivity/weekly-review/skills/weekly-review/SKILL.md

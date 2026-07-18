@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `qf-studio/pilot` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `qf-studio/pilot` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `qf-studio/pilot` — 26 default patterns, 0 followed patterns, 4 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,9 +60,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/branch-audit/SKILL.md`](.claude/skills/branch-audit/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/pilot-debug/SKILL.md`](.claude/skills/pilot-debug/SKILL.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`llms.txt`](llms.txt) |
+| 2 | ✓ | [`.claude/skills/pilot-aws/SKILL.md`](.claude/skills/pilot-aws/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/pilot-debug/SKILL.md`](.claude/skills/pilot-debug/SKILL.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`llms.txt`](llms.txt) |
 
 ---
 

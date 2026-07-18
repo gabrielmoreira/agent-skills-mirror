@@ -1,0 +1,199 @@
+# geniex
+
+Python bindings for the **GenieX SDK** — run LLMs and VLMs locally on
+Qualcomm platforms (CPU, GPU, Hexagon NPU) with a single `pip install`.
+
+## Install
+
+Pick a distribution based on which native backend you need. Three
+distributions ship the same Python surface — they only differ in which
+plugin libraries the install-time SDK fetcher stages:
+
+| Command                        | Plugins staged           | Approx download |
+|--------------------------------|--------------------------|-----------------|
+| `pip install geniex`           | llama.cpp **and** QAIRT  | ~220 MB         |
+| `pip install geniex-llama-cpp` | llama.cpp only           | ~15 MB          |
+| `pip install geniex-qairt`     | QAIRT only               | ~210 MB         |
+
+```bash
+pip install geniex
+# or, e.g.:
+# pip install geniex-llama-cpp
+```
+
+The three distributions share the same top-level ``geniex`` package — they
+are **mutually exclusive**. Installing two into the same environment will
+have the second install overwrite the first; install the variant matching
+the backend you intend to use.
+
+Each installer contacts the GenieX SDK release mirror and pulls only the
+plugin slice it needs via HTTP Range requests, falling back to a full
+download if the mirror doesn't honor ranges.
+
+Supported platforms (the install-time fetcher auto-provisions the native SDK):
+
+| OS      | Arch      |
+|---------|-----------|
+| Linux   | aarch64   |
+| Windows | arm64     |
+
+Python 3.10+ required.
+
+> [!WARNING]
+> Do not install `llama-cpp-python` into the same environment. Both packages
+> embed their own llama.cpp shared libraries; loading both leads to symbol
+> conflicts — `DLL load failed` on Windows, segfaults, or wrong outputs.
+> Use a separate virtualenv, or uninstall `llama-cpp-python`
+> (`pip list | grep llama-cpp-python` to check).
+
+## Library usage
+
+```python
+from geniex import AutoModelForCausalLM
+
+model = AutoModelForCausalLM.from_pretrained(
+    "qwen3",               # short alias, HF repo id, or local GGUF path
+    device_map="auto",     # "auto" | "cpu" | "gpu" | "npu" | "hybrid"
+                           # | "<plugin>" | "<plugin>:<device>"
+)
+
+messages = [{"role": "user", "content": "What is 2+2?"}]
+prompt = model.tokenizer.apply_chat_template(
+    messages, tokenize=False, add_generation_prompt=True,
+)
+
+# One-shot
+output = model.generate(prompt, max_new_tokens=256)
+print(output.text)
+print(f"[{output.profile.generated_tokens} tok, "
+      f"{output.profile.decode_speed:.1f} tok/s, stop={output.profile.stop_reason}]")
+
+# Streaming
+streamer = model.generate(prompt, max_new_tokens=256, stream=True)
+for chunk in streamer:
+    print(chunk, end="", flush=True)
+
+model.close()
+```
+
+`from_pretrained` accepts any of: a short alias (resolved via the bundled
+registry), a HuggingFace `org/repo` (optionally `org/repo:precision`), or a
+local path to a `.gguf` file or a pre-downloaded directory.
+
+### VLM
+
+`AutoModelForCausalLM` auto-detects multimodal models and returns a `GenieXVLM`:
+
+```python
+from geniex import AutoModelForCausalLM
+
+model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3-VL-2B-Instruct-GGUF", device_map="auto")
+messages = [{
+    "role": "user",
+    "content": [
+        {"type": "image", "image": "/path/to/image.jpg"},
+        {"type": "text", "text": "Describe the image."},
+    ],
+}]
+prompt = model.tokenizer.apply_chat_template(
+    messages, tokenize=False, add_generation_prompt=True,
+)
+print(model.generate(prompt, images=["/path/to/image.jpg"]).text)
+```
+
+### Model management
+
+The same model manager the CLI uses is available programmatically:
+
+```python
+from geniex import model_manager as mm
+
+mm.pull("qwen3")                      # alias or "org/repo[:precision]"
+paths = mm.get_paths("qwen3")         # resolved local paths
+mm.list_models()                      # cached models
+mm.remove("qwen3")
+```
+
+### Plugin / device enumeration
+
+```python
+from geniex import get_plugin_list, get_device_list
+
+for plugin in get_plugin_list():
+    print(plugin, get_device_list(plugin))
+```
+
+Friendly aliases accepted by `device_map`:
+
+| Alias    | llama_cpp resolves to              | qairt resolves to | Notes                                                                                                                |
+|----------|------------------------------------|-------------------|----------------------------------------------------------------------------------------------------------------------|
+| `cpu`    | empty `device_id`, `ngl=0`         | `NPU` + warning   | Pure CPU for `llama_cpp`. QAIRT is NPU-only; other aliases are coerced with a stderr warning (no hard error).        |
+| `gpu`    | `GPUOpenCL`                        | `NPU` + warning   | Adreno via `ggml-opencl`.                                                                                            |
+| `npu`    | `HTP0`                             | `NPU`             | Pinned single-session HTP. Deterministic; slower than `hybrid` on LLMs (~30% TTFT).                                  |
+| `hybrid` | empty `device_id`, `ngl=-1`        | `NPU` + warning   | llama.cpp's per-tensor HTP+CPU scheduler — the fast path on Snapdragon.                                              |
+
+`device_map="auto"` (the default) picks `npu` for both `llama_cpp` and
+`qairt`. When the model was pulled via `geniex.model_manager`
+the manifest already records its plugin, so a bare alias binds to that
+plugin — `device_map="npu"` on a cached llama_cpp model resolves to
+`llama_cpp:HTP0`, not qairt. Pass a concrete id as
+`device_map="<plugin>:<device_id>"` for full control (e.g.
+`"llama_cpp:HTP0,HTP1,HTP2,HTP3"`). Run `geniex-py devices` or
+`geniex._ffi.get_device_list(plugin)` to enumerate what your host
+actually exposes.
+
+## CLI
+
+After install, the `geniex-py` console script is on your `$PATH` (the
+name avoids clashing with the Go `geniex` binary when both are
+installed):
+
+```bash
+geniex-py chat qwen3                       # interactive chat (auto-downloads)
+geniex-py chat unsloth/Qwen3-4B-GGUF --quant Q4_K_M
+geniex-py chat /path/to/model.gguf --system "You are a concise assistant."
+
+geniex-py pull qwen3                       # download into the cache only
+geniex-py ls                               # list cached models (table)
+geniex-py ls qwen3                         # show one model's geniex.json
+geniex-py rm qwen3                         # remove from cache
+geniex-py devices                          # list plugins and their devices
+```
+
+Inside chat: `/reset` clears history, `/exit` or Ctrl-D quits, Ctrl-C
+interrupts the current reply. `geniex-py <cmd> --help` for all flags.
+
+## Supported backends
+
+| Plugin      | Accelerators                          | Notes                                                                                |
+|-------------|---------------------------------------|--------------------------------------------------------------------------------------|
+| `llama_cpp` | CPU / GPU / NPU (via ggml backends)   | Default. Devices available depend on the host build (e.g. CUDA, Metal, Vulkan, HTP). |
+| `qairt`     | Hexagon NPU                           | Qualcomm Snapdragon only.                                                            |
+
+## Environment variables
+
+| Var                | Purpose                                              |
+|--------------------|------------------------------------------------------|
+| `GENIEX_DATADIR`   | Model cache directory (default: `~/.cache/geniex`).  |
+| `GENIEX_HFTOKEN`   | HuggingFace token for gated repos.                   |
+| `GENIEX_LIB_PATH`  | Point at a pre-built `libgeniex.so` / `geniex.dll`.  |
+| `GENIEX_LOG`       | Log level: `trace`/`debug`/`info`/`warn`/`error`/`none`. Default `info`. |
+
+## Logging
+
+SDK and binding logs flow through Python's stdlib `logging` under the
+`geniex` logger. Set `GENIEX_LOG` before `geniex.init()` or call
+`geniex.set_log_level("debug")` at runtime. If the `geniex` logger has no
+handlers configured, a default `StreamHandler` is attached when `GENIEX_LOG`
+is set; otherwise your own logging config takes precedence.
+
+## Building from source
+
+See [BUILD.md](BUILD.md) for dev-mode setup, building the SDK, building
+the sdist, and the TestPyPI smoke-test workflow.
+
+## License
+
+BSD 3-Clause — see [LICENSE](https://github.com/qualcomm/geniex/blob/main/LICENSE).
+
+Use of this package is also subject to Qualcomm's [Terms of Use](https://www.qualcomm.com/site/terms-of-use).

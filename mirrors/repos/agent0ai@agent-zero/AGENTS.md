@@ -27,7 +27,7 @@
 - Never commit secrets, `.env` files, API keys, tokens, or private user data.
 - Preserve authentication and CSRF protections.
 - Use Linux paths and commands in examples.
-- Treat the Docker container exposed at `localhost:32080` as the live plugin/backend runtime when that target is named.
+- When a live Dockerized Agent Zero target is explicitly named, verify that exact runtime instead of assuming a fixed localhost port.
 - Copy live core-plugin changes back into tracked source under `plugins/`.
 - Develop new custom plugins under ignored `usr/plugins/`; tracked bundled plugins live under `plugins/`.
 - Use the framework runtime for backend and plugin-hook verification, not the separate agent execution runtime.
@@ -86,7 +86,6 @@ Intentionally unindexed local or generated roots:
 | `.conda/`, `.venv/` | Local Python environments. |
 | `.pytest_cache/`, `__pycache__/` | Generated test and bytecode caches. |
 | `.vscode/`, `.windsurf/` | Editor-local configuration and assistant metadata. |
-| `logs/` | Runtime output. |
 | `tmp/` | Ignored runtime caches, uploads, and generated work. |
 | `usr/` | Ignored local user data, settings, plugins, chats, and workdirs. |
 | `python/` | Generated or legacy runtime mirror; current source is in root modules and tracked source directories. |

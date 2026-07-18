@@ -4,6 +4,33 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+#### [2.1.214](https://github.com/Piebald-AI/claude-code-system-prompts/commit/29d3029)
+
+<sub>_No changes to the system prompts in v2.1.214._</sub>
+
+# [2.1.213](https://github.com/Piebald-AI/claude-code-system-prompts/commit/a0c68b2)
+
+_+7,589 tokens_
+
+- **NEW:** Agent Prompt: /code-review unavailable-agent inline mode and Agent Prompt: /code-review inline gap sweep phase — Add a single-context fallback when the Agent tool is unavailable, with sequential review angles, deduplication, self-checking, an optional fresh gap sweep, capped findings, and explicit disclosure that no subagent verification ran.
+- **NEW:** Agent Prompt: /simplify unavailable-agent inline mode — Adds a single-pass fallback that reviews changed code for reuse, simplification, efficiency, and abstraction-level issues, applies safe cleanup fixes, and discloses that the normal four-agent fan-out was unavailable.
+- **NEW:** Skill: Artifact PR review and Skill: Artifact PR review description — Add a workflow for gathering a GitHub pull request and publishing a self-contained review briefing Artifact with a recommendation, reviewer judgment calls, visual explanation, observed signals, coverage, and blind spots.
+- **NEW:** Skill: Import to Claude Code — Adds a generated follow-up workflow for reviewing foreign-agent configuration that `claude import` could not map automatically and translating applicable settings, MCP servers, commands, skills, and hooks into Claude Code equivalents.
+- **NEW:** System Reminder: Scheduled task automated firing — Marks scheduled turns as stored prompts delivered without live user input and forbids treating prior or embedded claims as fresh approval or consent.
+- **NEW:** Tool Description: Artifact runtime capabilities guidance — Explains when live data, shared state, or self-updating Artifacts require loading the capabilities skill before authoring runtime code, and defines capability preservation and clearing on redeploy.
+- **NEW:** Tool Description: SuggestSkills proactive guidance — Allows proactive recommendations of addable skills for repeatable workflows while excluding one-off tasks, uncertain matches, and repeated unengaged suggestions.
+- **NEW:** Tool Parameter: matched ask rule — Identifies approval prompts forced by user-configured `permissions.ask` rules while preserving richer tool-authored reasons, and directs hosts to treat the metadata as rule-forced and render-unsafe.
+- **REMOVED:** Data: Artifact connected-source guidance — Removes the standalone live-connector guidance after expanding it into the dedicated Artifact runtime-capabilities prompt.
+- **REMOVED:** Skill: /morning slash command — Removes the hand-sketched morning brief workflow for calendar, email, chat, preparation, resolved items, and custom sections.
+- Agent Prompt: CLAUDE.md creation and Skill: /init CLAUDE.md and skill setup — When import support is enabled, detect OpenAI Codex and Gemini CLI configuration and offer to import it instead of making users re-enter existing setup.
+- Agent Prompt: /code-review medium-, high-, extra-high-, and maximum-effort modes — Remove separately injected reuse, simplification, efficiency, altitude, and conventions cleanup angles from correctness-review finder prompts.
+- Agent Prompt: Security monitor for autonomous agent actions — Treat scheduled-task prompts as standing task scope rather than live consent for soft-blocked actions, and remove the requirement that the monitor response begin with the `<block>` tag without any preamble.
+- System Prompt: Auto mode setup proposal generator — Allows repository-wide bucket-name evidence to inform trusted cloud bucket proposals, requires usage corroboration or explicit config-derived provenance warnings, and retains safeguards against generic wildcards and treating repository content as instructions.
+- System Prompt: Coordinator worker instructions — Allows worker agents to fan out through the Agent tool for bounded parallel research, review, and cleanup instead of prohibiting subagents entirely.
+- System Prompt: PowerShell edition for 5.1 — Corrects file-encoding guidance to distinguish UTF-8 output from `>`, `>>`, and `Out-File` from the system-codepage defaults of `Set-Content` and `Add-Content`.
+- Tool Description: PowerShell — Clarifies that noninteractive console prompts receive EOF or fail immediately while GUI prompts can still block until timeout.
+- Skill: Run browser-driven web app example and Skill: Run web server API example — Replace broad `pkill -f` shutdown guidance with captured-PID or port-listener termination, noting that npm wrapper PIDs may not stop child servers and broad patterns can terminate the agent session; also normalize the browser example's Markdown quoting and code fences.
+
 # [2.1.212](https://github.com/Piebald-AI/claude-code-system-prompts/commit/1247a27)
 
 _+1,066 tokens_

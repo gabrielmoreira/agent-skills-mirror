@@ -45,7 +45,9 @@ This check is read-only — F1 does not rebase, merge, or push.
 
 - **`clean`** (`mergeable` is `MERGEABLE` and `mergeStateStatus` is
   `CLEAN`) or **`behind-no-conflict`** when no up-to-date-head policy
-  applies: proceed to F2.
+  applies: proceed to F2. `clean` is conflict-freeness only; if
+  `baseAdvancedSinceMergeBase: true`, prefer a fresh CI result over an
+  old green check (base may have moved since the merge-base).
 - **`behind-no-conflict`** when branch protection or recorded repository
   policy requires an up-to-date head, or **`content-conflict`**
   (`mergeable` is `CONFLICTING`): return to the E-phase branch-sync check
@@ -155,9 +157,11 @@ returns the workflow to E1 instead of merging over it.
   re-covers them so this check passes on the refreshed watermark. If a
   return-to-E1 is triggered solely by those disposition replies, refresh
   the watermark rather than treating them as new reviewer activity.
-- **Advisory bot wait** (restart-safe enforcement): `PR_HEAD_SHA` is
-  already available from the review-currency check above. Apply the
-  advisory-wait protocol (`idd-advisory-wait.instructions.md`):
+- **Advisory bot wait** (restart-safe enforcement): schedule a wake, or
+  background only if the topology-safety condition holds (confirmed to
+  route completion back to this turn); otherwise wait synchronously.
+  `PR_HEAD_SHA` is already available from the review-currency check above.
+  Apply the advisory-wait protocol (`idd-advisory-wait.instructions.md`):
 
   1. Run **AW1**. If **SATISFIED** → this check is **satisfied**;
      continue to the **CI** check.

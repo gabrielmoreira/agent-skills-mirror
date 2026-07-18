@@ -1,6 +1,6 @@
 ---
 name: inset
-description: 诊断并处理缺失值
+description: 诊断并处理缺失值（missing value 缺失值处理）
 icon: 🩹
 allowedTools: [get_schema, profile_data, clean_data, query_data]
 ---

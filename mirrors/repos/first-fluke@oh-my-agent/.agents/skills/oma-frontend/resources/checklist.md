@@ -56,6 +56,7 @@ React 19 + recent `eslint-plugin-react-hooks` flag these as hard errors. They ar
 
 ## Performance
 - [ ] No unnecessary re-renders (check with React DevTools Profiler)
+- [ ] Memoization matches the project's React Compiler setting: compiler ON (`reactCompiler` in `next.config.*`) → no hand-written `useMemo`/`useCallback`/`React.memo` in new code; compiler OFF → memoize manually (see `tech-stack.md` §React Compiler)
 - [ ] Code splitting for route-level components
 - [ ] Images optimized and lazy-loaded
 

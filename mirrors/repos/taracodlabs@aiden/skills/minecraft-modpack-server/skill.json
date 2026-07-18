@@ -1,0 +1,25 @@
+{
+  "name": "minecraft-modpack-server",
+  "version": "1.0.0",
+  "description": "Set up a modded Minecraft server (NeoForge or Forge)",
+  "author": "aiden",
+  "license": "MIT",
+  "tools": [],
+  "trigger_phrases": [],
+  "compatible_agents": [
+    "aiden"
+  ],
+  "min_agent_version": "3.0.0",
+  "tags": [
+    "minecraft",
+    "neoforge",
+    "forge",
+    "modpack",
+    "server",
+    "java",
+    "gaming",
+    "mods",
+    "multiplayer"
+  ],
+  "created": "2026-04-27T17:11:39.921Z"
+}

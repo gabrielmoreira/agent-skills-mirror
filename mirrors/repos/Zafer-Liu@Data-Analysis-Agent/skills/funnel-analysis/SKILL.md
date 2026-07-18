@@ -1,6 +1,6 @@
 ---
 name: funnel-analysis
-description: 诊断业务漏斗各环节转化率，定位主要流失点并给出优先行动建议
+description: 诊断业务漏斗各环节转化率，定位主要流失点并给出优先行动建议（conversion 转化分析）
 icon: 🔻
 allowedTools: [get_schema, query_data, generate_chart]
 ---

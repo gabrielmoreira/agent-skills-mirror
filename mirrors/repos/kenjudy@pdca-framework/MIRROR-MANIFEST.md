@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kenjudy/pdca-framework` — 26 default patterns, 1 followed patterns, 55 file(s) materialized.
+Mirror of `kenjudy/pdca-framework` — 26 default patterns, 1 followed patterns, 56 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kenjudy/pdca-framework` — 26 default patterns, 1 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 55 |
+| Files         | 56 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`4. Act/README.md`](4.%20Act/README.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`skill/.env.example`](skill/.env.example) |
-| 5 | ✓ | [`skill/Agent.md`](skill/Agent.md) |
+| 1 | ✓ | [`.claude/skills/update-changelog/SKILL.md`](.claude/skills/update-changelog/SKILL.md) |
+| 2 | ✓ | [`4. Act/README.md`](4.%20Act/README.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`skill/.env.example`](skill/.env.example) |
 | 6 | ✓ | [`skill/build-skill.ps1`](skill/build-skill.ps1) |
 | 7 | ✓ | [`skill/build-skill.sh`](skill/build-skill.sh) |
 | 8 | ✓ | [`skill/BUILD.md`](skill/BUILD.md) |
@@ -106,14 +106,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | ✓ | [`skill/README.md`](skill/README.md) |
 | 46 | ✓ | [`skill/run-evals.sh`](skill/run-evals.sh) |
 | 47 | ✓ | [`skill/run-tests.sh`](skill/run-tests.sh) |
-| 48 | ✓ | [`skill/tests/test_build.py`](skill/tests/test_build.py) |
-| 49 | ✓ | [`skill/tests/test_evals_reporter.py`](skill/tests/test_evals_reporter.py) |
-| 50 | ✓ | [`skill/tests/test_evals.py`](skill/tests/test_evals.py) |
-| 51 | ✓ | [`skill/tests/test_executor.py`](skill/tests/test_executor.py) |
-| 52 | ✓ | [`skill/tests/test_mechanical.py`](skill/tests/test_mechanical.py) |
-| 53 | ✓ | [`skill/tests/test_schema.py`](skill/tests/test_schema.py) |
-| 54 | ✓ | [`skill/uv.lock`](skill/uv.lock) |
-| 55 | → | [`README.md`](README.md) |
+| 48 | ✓ | [`skill/SUPERVISION-PROTOCOL.md`](skill/SUPERVISION-PROTOCOL.md) |
+| 49 | ✓ | [`skill/tests/test_build.py`](skill/tests/test_build.py) |
+| 50 | ✓ | [`skill/tests/test_evals_reporter.py`](skill/tests/test_evals_reporter.py) |
+| 51 | ✓ | [`skill/tests/test_evals.py`](skill/tests/test_evals.py) |
+| 52 | ✓ | [`skill/tests/test_executor.py`](skill/tests/test_executor.py) |
+| 53 | ✓ | [`skill/tests/test_mechanical.py`](skill/tests/test_mechanical.py) |
+| 54 | ✓ | [`skill/tests/test_schema.py`](skill/tests/test_schema.py) |
+| 55 | ✓ | [`skill/uv.lock`](skill/uv.lock) |
+| 56 | → | [`README.md`](README.md) |
 
 ---
 

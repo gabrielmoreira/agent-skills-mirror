@@ -1,6 +1,6 @@
 ---
 name: sql
-description: 使用 SQL 安全查询当前已选择的数据表
+description: 使用 SQL 安全查询当前已选择的数据表（query 数据查询）
 icon: 🗄️
 allowedTools: [get_schema, get_table_detail, query_data]
 ---

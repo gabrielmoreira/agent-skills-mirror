@@ -5,6 +5,8 @@ description: Query the user's data via the local screenpipe REST API at localhos
 
 # Screenpipe API
 
+After completing a complex Screenpipe query, always delegate reusable learning to an asynchronous subagent: have it improve the most relevant existing skill after the user-visible answer so reflection adds no response latency. Create a new skill only when no existing skill fits, and never save one-off facts as skills.
+
 Local REST API at `http://localhost:3030`.
 
 ## Authentication

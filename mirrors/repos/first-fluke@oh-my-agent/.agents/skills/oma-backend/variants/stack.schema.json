@@ -8,8 +8,7 @@
     "$schema": { "type": "string" },
     "language": {
       "type": "string",
-      "enum": ["python", "node", "rust"],
-      "description": "Primary implementation language of the variant."
+      "description": "Primary implementation language. Shipped variants cover python, node, and rust; the stack-set workflow (`source: detected`) may also produce go, java, kotlin, elixir, ruby, csharp, and others."
     },
     "framework": {
       "type": "string",

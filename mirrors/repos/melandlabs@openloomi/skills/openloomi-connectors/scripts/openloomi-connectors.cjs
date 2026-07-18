@@ -9,28 +9,15 @@ const PORTS = [3515, 3415, 3414]; // dev, local fallback, prod
 const TOKEN_PATH = path.join(os.homedir(), '.openloomi', 'token');
 
 // Platform definitions matching connector-target.ts
+// Platforms listed here must be enabled in `platform-connectability.ts`
+// (`isIntegrationPlatformConnectable`). COMING_SOON / HIDDEN platforms
+// (e.g. github, instagram, facebook_messenger, teams, asana, jira, linear,
+// google_meet) are intentionally omitted — they cannot start a new
+// connection from the connector UI.
+// `outlook_calendar` is gated behind NEXT_PUBLIC_OUTLOOK_CALENDAR_ENABLED.
 const PLATFORMS = [
   { id: 'telegram', name: 'Telegram', aliases: ['tg'] },
   { id: 'whatsapp', name: 'WhatsApp', aliases: [] },
-  { id: 'slack', name: 'Slack', aliases: [] },
-  { id: 'discord', name: 'Discord', aliases: [] },
-  { id: 'gmail', name: 'Gmail', aliases: ['google_mail'] },
-  { id: 'outlook', name: 'Outlook', aliases: ['outlook_mail'] },
-  { id: 'linkedin', name: 'LinkedIn', aliases: [] },
-  { id: 'instagram', name: 'Instagram', aliases: [] },
-  { id: 'twitter', name: 'X/Twitter', aliases: ['x', 'tweet', 'tweets', '推特', 'x_twitter', 'xtwitter'] },
-  { id: 'google_calendar', name: 'Google Calendar', aliases: ['gcal'] },
-  { id: 'outlook_calendar', name: 'Outlook Calendar', aliases: [] },
-  { id: 'teams', name: 'Microsoft Teams', aliases: ['microsoft_teams'] },
-  { id: 'facebook_messenger', name: 'Facebook Messenger', aliases: ['messenger'] },
-  { id: 'google_drive', name: 'Google Drive', aliases: ['gdrive'] },
-  { id: 'google_docs', name: 'Google Docs', aliases: ['gdocs'] },
-  { id: 'hubspot', name: 'HubSpot', aliases: [] },
-  { id: 'notion', name: 'Notion', aliases: [] },
-  { id: 'github', name: 'GitHub', aliases: ['gh'] },
-  { id: 'asana', name: 'Asana', aliases: [] },
-  { id: 'jira', name: 'Jira', aliases: [] },
-  { id: 'linear', name: 'Linear', aliases: [] },
   { id: 'imessage', name: 'iMessage', aliases: [] },
   { id: 'feishu', name: 'Lark/Feishu', aliases: ['lark', '飞书'] },
   { id: 'dingtalk', name: 'DingTalk', aliases: ['钉钉'] },
@@ -67,7 +54,7 @@ function getAuthToken() {
 function apiRequest(endpoint, method = 'GET', body = null, portIndex = 0) {
   return new Promise((resolve, reject) => {
     if (portIndex >= PORTS.length) {
-      reject(new Error('openloomi server not running. Tried ports: ' + PORTS.join(', ')));
+      reject(new Error(`openloomi server not running. Tried ports: ${PORTS.join(', ')}`));
       return;
     }
 

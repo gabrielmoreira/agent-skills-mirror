@@ -63,6 +63,10 @@ Every plan should contain:
 
 A plan is ready when an implementer can start confidently without needing the plan to write the code for them.
 
+## Task Visibility
+
+After intake determines that `ce-plan` will perform a material multi-stage run, use the platform's task-tracking capability when available to show a short user-facing view derived from the selected route and remaining planning work. Track meaningful outcomes, not every phase, tool call, or microstep; add conditional work only when its gate fires, and update the view at meaningful transitions. Use short, outcome-led names. If no task-tracking capability is available, continue normally without simulating a task list in chat.
+
 ## Workflow
 
 ### Phase 0: Resume, Source, and Scope
@@ -293,18 +297,11 @@ Prepare a concise planning context summary (a paragraph or two) to pass as input
 - If `CONCEPTS.md` exists at repo root, read it — its definitions are the canonical names for domain entities, named processes, and status concepts. Plan with those terms rather than synonyms.
 - Include session-settled decisions with their rejected alternatives, plus the standing line "If you find evidence a settled decision cannot work, report it — do not suppress it." Do not pass the decision's advocacy or rationale, and keep any adversarial or validation lens blind to settlement markers.
 
-**Resolve the project profile from the shared cache first.** The agnostic profile (stack, deps, conventions, structure) is identical whenever committed profile inputs match, so reuse it instead of having `repo-research-analyst` re-derive `technology`/`architecture`/`conventions` every run. Set `SKILL_DIR` to this skill's directory and run the helper (protocol in `references/repo-profile-cache.md`):
-
-```bash
-SKILL_DIR="<absolute path of the directory containing the SKILL.md you just read>";
-python3 "$SKILL_DIR/scripts/repo-profile-cache.py" get
-```
-
-On `HIT`, load the profile JSON as your agnostic grounding. On `MISS`, dispatch a generic subagent with `references/agents/repo-profiler.md` to derive it, write its JSON to a file, then `python3 "$SKILL_DIR/scripts/repo-profile-cache.py" put <file>` (re-set `SKILL_DIR` in that call — shell vars don't persist between Bash invocations). On `NO-CACHE` — or if the call errors or returns nothing — derive it inline and skip the `put`; never block on the cache. Pass the resulting profile to `repo-research-analyst` below so it skips the agnostic scopes. The cached profile covers only *root* conventions — if the work targets a subdirectory with its own scoped instruction file (a nested `AGENTS.md`/`CLAUDE.md`), read that fresh; subdirectory-scoped instructions are deliberately excluded from the cache.
+Pass the project's active instructions and the planning context summary to `repo-research-analyst`, and send it directly to the requested current scopes. If the feature cannot be scoped from that context, allow one targeted root or workspace probe. Read an exact dependency or runtime version when the plan or an external-doc query materially depends on it.
 
 Run these agents in parallel:
 
-- `references/agents/repo-research-analyst.md` — scope: **patterns** (the question-specific slice; the agnostic `technology`/`architecture`/`conventions` grounding comes from the cached profile passed in its context — the profile's `stack`/`topology`/`conventions` keys cover those analyst scopes). Pass the planning context summary and the cached profile.
+- `references/agents/repo-research-analyst.md` — scope: **patterns**. Pass the planning context summary so it can go directly to current feature patterns and owning code.
 - `references/agents/learnings-researcher.md` — pass the planning context summary.
 
 **Agent-native planning triage** (conditional) — consider broadly, dispatch selectively. Dispatch a generic subagent with `references/agents/agent-native-planning-strategist.md` in parallel with the local research agents when the request, origin document, or repo research indicates any of:
@@ -317,10 +314,9 @@ Run these agents in parallel:
 Do **not** dispatch for cosmetic, layout-only, animation-only, brand, low-value preference, or narrow work in a product with no agent surface. If the signal is borderline, do not dispatch; carry only a short future parity consideration when it affects a high-value domain action. Include any resulting findings in consolidation as planning inputs, not as a standalone advice appendix.
 
 Collect:
-- Technology stack and versions (used in section 1.2 to make sharper external research decisions)
-- Architectural patterns and conventions to follow
-- Implementation patterns, relevant files, modules, and tests
-- AGENTS.md guidance that materially affects the plan, with CLAUDE.md used only as compatibility fallback when present
+- Exact dependency or runtime versions only when they materially affect the plan or an external research decision
+- Relevant architecture and implementation patterns, files, modules, and tests for the requested scope
+- Applicable constraints from the project's active instructions and context
 - Institutional learnings from `docs/solutions/`
 - Product strategy context when `STRATEGY.md` is present — flag any plan decisions that pull away from the active tracks or the stated approach
 - Agent-native planning findings when the conditional triage dispatched: action/context parity decisions, tool/workspace/execution-lifecycle choices, scope boundaries, and verification scenarios
@@ -366,7 +362,7 @@ Based on the origin document, user signals, and local findings, decide **whether
 
 **Leverage the repo research prompt's technology context:**
 
-The cached project profile's stack/versions (or, when uncached, the `repo-research-analyst` Technology & Infrastructure summary) gives you the technology context. Use it to make sharper external research decisions:
+Use technology facts already present in the project's active instructions, planning context, or task-specific repo research. Read any exact version fresh from the owning manifest when it materially affects an external-research decision:
 
 - If specific frameworks and versions were detected (e.g., Rails 7.2, Next.js 14, Go 1.22), pass those exact identifiers to the `framework-docs-researcher` local prompt so it fetches version-specific documentation
 - If the feature touches a technology layer the scan found well-established in the repo (e.g., existing Sidekiq jobs when planning a new background job), lean toward skipping external research -- local patterns are likely sufficient
