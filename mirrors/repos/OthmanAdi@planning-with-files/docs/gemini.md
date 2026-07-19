@@ -30,11 +30,19 @@ Or edit `~/.gemini/settings.json`:
 
 ## Installation Methods
 
-### Method 1: Install from GitHub (Recommended)
+### Method 1: The Agent Skills standard path (Recommended since v3.7.0)
+
+Gemini CLI reads the cross-tool `.agents/skills/` layout natively (the alias takes precedence over `.gemini/skills/`), and this repo ships the current, version-locked skill there. Either install route lands the up-to-date skill:
 
 ```bash
-gemini skills install https://github.com/OthmanAdi/planning-with-files --path .gemini/skills/planning-with-files
+# via the skills installer (targets Gemini among 70+ agents)
+npx skills add OthmanAdi/planning-with-files
+
+# or from GitHub, pointing at the standard layout
+gemini skills install https://github.com/OthmanAdi/planning-with-files --path .agents/skills/planning-with-files
 ```
+
+The historical `.gemini/skills/` variant in this repo is intentionally version-lagged and kept only for existing installs; new installs should use the standard path above, which is bumped with every release.
 
 ### Method 2: Manual Installation (User-level)
 
@@ -42,8 +50,8 @@ gemini skills install https://github.com/OthmanAdi/planning-with-files --path .g
 # Clone the repository
 git clone https://github.com/OthmanAdi/planning-with-files.git
 
-# Copy to Gemini skills folder
-cp -r planning-with-files/.gemini/skills/planning-with-files ~/.gemini/skills/
+# Copy the current skill from the standard layout to the Gemini skills folder
+cp -r planning-with-files/.agents/skills/planning-with-files ~/.gemini/skills/
 ```
 
 ### Method 3: Manual Installation (Workspace-level)
@@ -54,8 +62,8 @@ For project-specific installation:
 # In your project directory
 mkdir -p .gemini/skills
 
-# Copy skill
-cp -r /path/to/planning-with-files/.gemini/skills/planning-with-files .gemini/skills/
+# Copy the current skill from the standard layout
+cp -r /path/to/planning-with-files/.agents/skills/planning-with-files .gemini/skills/
 ```
 
 ## Verify Installation

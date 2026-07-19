@@ -825,18 +825,25 @@ the features:
 - **`curl_cffi` transport**: `NOTEBOOKLM_TRANSPORT=curl_cffi` requires the
   `curl_cffi` package; see the region / anti-abuse gate section above.
 
-### "Unknown tool" from the claude.ai connector after upgrading the server
+### "Unknown tool" from an MCP host (claude.ai, ChatGPT, …) after upgrading the server
 
-**Cause:** The claude.ai connector fetches the server's tool list (`tools/list`)
-when it connects and caches it. After you upgrade a deployed server to a version
-that **renamed or folded** a tool, the connector keeps advertising the *old*
-manifest, so a call to a since-removed tool reaches the server and fails cleanly
-with `Unknown tool: '<name>'`. This is expected MCP-host caching, not a server
-bug: a server can't notify a client that isn't connected, and
-`notifications/tools/list_changed` only reaches a *live* session.
+**Cause:** The MCP host fetches the server's tool list (`tools/list`) when it first
+connects and **caches it against the connector**. After you upgrade a deployed
+server to a version that **renamed or folded** a tool, the host keeps advertising
+the *old* manifest, so a call to a since-removed tool reaches the server and fails
+cleanly with `Unknown tool: '<name>'`. This is expected MCP-host caching, **not a
+server bug** — the server's live manifest is correct (you can confirm with
+`await Client(create_server()).list_tools()`). A server can't notify a host that
+isn't connected, and `notifications/tools/list_changed` only reaches a *live*
+session.
 
-**Solution:** Reconnect the connector in claude.ai — disconnect and reconnect, or
-toggle it off and back on — to refresh the manifest.
+**Solution: remove and re-add the connector** in the host's connector settings.
+A *reconnect* / re-auth / off-and-on toggle is often **not enough** — several
+hosts (notably ChatGPT) re-authenticate but keep the cached tool list and do not
+re-call `tools/list`, so the ghost tool persists across reconnects. Fully deleting
+the connector and adding it again forces a fresh `tools/list`. (Newly-added
+*optional parameters* on existing tools forward through the stale schema and keep
+working without any refresh — only *removed/renamed tools* ghost.)
 
 **Only removed or renamed _tools_ ghost this way — new _optional_ parameters
 forward through the stale schema.** For example, when `source_upload_bytes` was folded

@@ -258,8 +258,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 197 | ✓ | [`skills/todo-archive/scripts/archive_todo.py`](skills/todo-archive/scripts/archive_todo.py) |
 | 198 | ✓ | [`skills/todo-archive/SKILL.md`](skills/todo-archive/SKILL.md) |
 | 199 | ✓ | [`skills/vitest/agents/openai.yaml`](skills/vitest/agents/openai.yaml) |
-| 200 | ✓ | [`skills/vitest/references/mocking.md`](skills/vitest/references/mocking.md) |
-| 201 | ✓ | [`skills/vitest/references/monorepo-testing.md`](skills/vitest/references/monorepo-testing.md) |
+| 200 | ✓ | [`skills/vitest/references/configuration.md`](skills/vitest/references/configuration.md) |
+| 201 | ✓ | [`skills/vitest/references/mocking.md`](skills/vitest/references/mocking.md) |
 | 202 | ✓ | [`skills/vitest/references/testing-patterns.md`](skills/vitest/references/testing-patterns.md) |
 | 203 | ✓ | [`skills/vitest/references/troubleshooting.md`](skills/vitest/references/troubleshooting.md) |
 | 204 | ✓ | [`skills/vitest/SKILL.md`](skills/vitest/SKILL.md) |

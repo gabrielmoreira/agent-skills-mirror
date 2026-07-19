@@ -1,6 +1,6 @@
 # Configuration Reference
 
-All options for `~/.agent-deck/config.toml`.
+All options for `$XDG_CONFIG_HOME/agent-deck/config.toml` (default `~/.config/agent-deck/config.toml`; legacy `~/.agent-deck/config.toml` still honored).
 
 ## Table of Contents
 
@@ -167,7 +167,8 @@ env_file   = "~/.agent-deck/groups/work.env"
 command    = "claude-wrapper"        # Per-group claude command/wrapper
 model      = "claude-sonnet-4-6"     # Model default for sessions in this group
 env        = { AGENT_ROLE = "work", CLAUDE_CODE_EFFORT_LEVEL = "high" }
-skills     = ["my-store/loom"]       # Declarative loadout (skill source entries)
+skills     = ["my-store/loom"]       # Managed project-skill symlinks
+plugins    = ["octopus"]             # Top-level [plugins.X] catalog keys
 mcps       = ["memory"]              # Declarative loadout ([mcps.X] catalog names)
 
 [conductors.lilu.claude]
@@ -181,8 +182,9 @@ mcps       = ["memory"]              # Declarative loadout ([mcps.X] catalog nam
 | `command` | string | Claude command/wrapper for these sessions. Resolution: conductor > group (ancestor-walking) > `[claude].command` > `"claude"`. Like the global `command`, a non-`"claude"` value suppresses the `CLAUDE_CONFIG_DIR=` spawn prefix (the wrapper is assumed to handle it). |
 | `model` | string | Model default for these sessions. Resolution: explicit per-session model (`--model`, dialog) > conductor > group (ancestor-walking) > no flag (Claude's own default). Empty falls through — the global `default_model` remains a new-session-dialog prefill only. Resolved at every start/restart, so config edits apply without re-creating sessions. |
 | `env` | inline table | Env vars exported in the spawn command AFTER the `env_file` source — an inline key deterministically wins over the same key from the file. Merge order per key: ancestor groups (root-first) → exact group → conductor. Parent-only keys persist through the merge. |
-| `skills` | array | Declarative skill loadout (`"<source>/<name>"` entries against the `skill source` registry). Schema reserved; materialization ships separately. Group values union along the ancestor chain (floor semantics — a child adds, never subtracts). |
-| `mcps` | array | Declarative MCP loadout (`[mcps.X]` catalog names). Same semantics as `skills`. |
+| `skills` | array | Declarative project skills (`"<source>/<name>"` entries against the skill-source registry). Materialized at session create and re-asserted before every start/restart. Attach-only floor: config removal never detaches and foreign targets are never clobbered. Workspace trust is seeded only after an attachment succeeds. |
+| `plugins` | array | Top-level `[plugins.X]` catalog keys appended to `Instance.Plugins`. Existing manual plugin selections are preserved. Catalog refusal and validation rules remain authoritative. |
+| `mcps` | array | Declarative MCP loadout (`[mcps.X]` catalog names appended to the session's local `.mcp.json`). Same attach-only floor semantics; unknown catalog names skip with a warning. |
 
 Verify what a group actually resolves to — including whether the `env_file`
 exists and whether config.toml parsed at all:
@@ -536,7 +538,7 @@ claim_polling = true   # Opt-in: dedupe status polling across concurrent instanc
 
 ## Skills Registry (Outside config.toml)
 
-Skill source discovery and project attachment state are not stored in `~/.agent-deck/config.toml`.
+Skill source discovery and project attachment state are not stored in the agent-deck config file.
 
 **Global source registry:**
 - `~/.agent-deck/skills/sources.toml`
@@ -555,6 +557,25 @@ agent-deck skill source list
 agent-deck skill source add team ~/src/team-skills
 agent-deck skill source remove team
 ```
+
+**Declarative per-group/per-conductor loadout:** `[groups.X.claude].skills`,
+`.plugins`, and `.mcps` (and the conductor mirror) list entries that agent-deck attaches
+automatically — at session create (`add` / `launch`) and re-asserted before
+every start/restart — through this same registry and attach machinery,
+exactly as if `skill attach` / `mcp attach` had been run by hand. The
+loadout is an attach-only floor:
+
+- already attached and healthy → no-op; a deleted symlink re-materializes
+- a real directory or foreign symlink at the target → skip + warning,
+  never clobbered (a human-placed dir beats config)
+- an entry missing from the registry / `[mcps.*]` catalog → skip + warning
+- removing an entry from config does NOT detach — subtraction is a
+  deliberate `skill detach`
+
+Skill-store entries may be plain directory skills (`SKILL.md`) or full Claude
+Code plugins (`.claude-plugin/plugin.json`); both materialize as project
+skills. SSH sessions are skipped (no local project path). See
+[Per-group / per-conductor Claude overrides](#per-group--per-conductor-claude-overrides).
 
 ## [mcp_pool] Section
 

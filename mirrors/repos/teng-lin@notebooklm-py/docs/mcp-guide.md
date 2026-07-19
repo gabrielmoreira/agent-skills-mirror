@@ -125,6 +125,22 @@ before you start: the auth model and remote file transfer.
 Use a **dedicated/throwaway Google account** — the mounted `master_token.json` is a durable
 full-account credential. Multi-tenant hosting is out of scope for this single-tenant setup.
 
+**Where OAuth state lives.** The registered clients + issued tokens persist to a
+deployment-scoped file keyed on `NOTEBOOKLM_MCP_OAUTH_BASE_URL` (the OAuth issuer), **not**
+the served account profile: `<home>/oauth/<slug>.json` by default (the Docker deploy mounts
+this at `/data/oauth` — the `make` targets pre-create the host dir `0700`; direct `docker
+compose up` users must `mkdir -p ./oauth-state && chmod 700 ./oauth-state` first), or set
+`NOTEBOOKLM_MCP_OAUTH_STATE_PATH` to override. Because it's keyed on the base_url, **switching the served profile/account no longer
+orphans your registered clients** (ChatGPT/claude.ai stay connected), and two servers with
+different origins on one host keep separate registries. On first startup after upgrading, a
+legacy `oauth_state.json` in the **active profile dir** is migrated once (then renamed
+`.migrated`, so it's never re-read); if you keep OAuth state elsewhere or had already switched
+profiles, copy it across manually first — `cp <old-profile-dir>/oauth_state.json <new-path>`
+(Docker: into your `./oauth-state` mount). Treat the file as a full-account secret. Keying
+on the issuer also isolates two servers reachable via different origins (a token minted for
+one base_url is never routed through another), but it requires a **stable** hostname — an
+ephemeral tunnel URL that changes on restart shifts the slug and re-orphans clients.
+
 ### File upload & download (remote)
 
 The MCP/JSON-RPC channel can't carry large binaries, so over a remote connector
@@ -528,7 +544,7 @@ Client-actionable follow-ups are tracked in
 | **Studio** | `studio_list(notebook, item?, kind?, detail?, limit?, offset?)` (the unified Studio panel — **notes AND artifacts** merged into one `items` list; each item has `id`/`title`/`type` where `type` is `note` or a hyphenated artifact kind; artifacts add `status_label`/`url`; `detail=summary` (default) gives each note a bounded `content_preview` + full-body `char_count` to keep a discovery listing low-token and each **artifact** its `created_at` + `generation_prompt` (the free-text prompt it was generated from, `null` if none), `detail=full` returns the whole note `content`, `detail=compact` collapses every item to `id`/`title`/`type`/`status_label`/`created_at`; `kind` filters to one `type`; `item` fetches one note-or-artifact by ref as a 1-element list, always with the note's full `content` — or, for an artifact, its `generation_prompt`) · `studio_generate(notebook, artifact_type, …)` · `studio_status(notebook, task_id)` · `studio_download(notebook, artifact? \| artifact_type?, path?, output_format?, artifact_id?)` (target by `artifact` name-or-id ref **or** by `artifact_type` [+ `artifact_id` for a specific one, else latest]) · `studio_rename(notebook, item, new_title)` (cross-type: renames a note OR an artifact resolved from the merged list) · `studio_retry(notebook, artifact)` (re-run a failed artifact in place; task_id == artifact_id) · `studio_delete(notebook, item, confirm)` (cross-type: deletes a note OR an artifact resolved from the merged list) |
 | **Research** | `research_start(notebook, query, source, mode)` (returns `poll_task_id` — the one id status/import/cancel drive off) · `research_status(notebook, poll_task_id?, include_report?, report_max_chars?, source_limit?, source_offset?)` (report + per-source `report_markdown` omitted unless `include_report`) · `research_import(notebook, poll_task_id?, max_sources?, cited_only?)` (timeout-tolerant import; `cited_only` narrows to report-cited sources, `max_sources` caps the count) · `research_cancel(notebook, poll_task_id)` (sends the cancel unless the run is already terminal → `cancel_requested`). The old `task_id` / `run_id` param names are deprecated aliases for `poll_task_id`, removed in v0.9.0 |
 | **Sharing** | `share_status(notebook)` (is_public/access/share_url/shared_users; enums as string labels; `view_level` omitted — the read API can't report it) · `share_set_access(notebook, public?, view_level?, confirm)` (link settings; `view_level`: full\|chat, echoed back only when set; `confirm` gates public widening restricted→public) · `share_set_user(notebook, email, permission?, notify?, message?, confirm)` (upsert grant; `permission`: editor\|viewer; `notify` defaults `false`; `confirm` gates every grant) · `share_remove_user(notebook, email, confirm)` |
-| **Server** | `server_info(include_account?)` — version + local auth health; `include_account=true` adds an `account` block: signed-in identity (`email`, `authuser`) plus notebook/source limits, the subscription `tier` (opaque enum, e.g. `1`=Free/`2`=Pro, `null` on legacy responses; per-tier limits in [quota-limits.md](quota-limits.md)), and global `output_language` for quota pacing + language context (best-effort; identity is network-free from the profile, the quota fields need a live session). `email` is real account PII, returned only under this opt-in flag |
+| **Server** | `server_info(include_account?)` — version + local auth health; `include_account=true` adds an `account` block: signed-in identity (`email`, `authuser`) plus notebook/source limits, the subscription `tier` (opaque enum, e.g. `1`=Free/`2`=Pro, `null` on legacy responses; per-tier limits in [quota-limits.md](quota-limits.md)), and global `output_language` for quota pacing + language context (`null` with `output_language_is_default: true` when the account uses NotebookLM's default rather than an explicit code; best-effort; identity is network-free from the profile, the quota fields need a live session). `email` is real account PII, returned only under this opt-in flag |
 
 Tools that only read are annotated read-only; the destructive tools (the three `*_delete` tools plus `share_remove_user`) are annotated destructive
 and require `confirm`. A host that honors MCP annotations can auto-allow the read-only calls and
@@ -543,11 +559,12 @@ gate the destructive ones.
   searches common install dirs beyond `PATH`.
 - **Client doesn't see the tools.** Confirm the config was written (`notebooklm mcp install <client>`)
   and **restart the client** — most hosts only read MCP config at startup.
-- **`Unknown tool: '<name>'` after upgrading the server.** The claude.ai connector caches the tool
-  list from when it connected, so a version upgrade that **renamed or folded** a tool leaves the old
-  name callable-but-failing until you **reconnect the connector** (disconnect + reconnect, or toggle it
-  off/on). Newly-added *optional* parameters on existing tools forward through the stale schema and keep
-  working without a reconnect. See [troubleshooting.md](troubleshooting.md#unknown-tool-from-the-claudeai-connector-after-upgrading-the-server).
+- **`Unknown tool: '<name>'` after upgrading the server.** The MCP host (claude.ai, ChatGPT, …) caches
+  the tool list from when it connected, so a version upgrade that **renamed or folded** a tool leaves the
+  old name callable-but-failing. **Remove and re-add the connector** to refresh it — a reconnect / re-auth
+  is often *not* enough (some hosts, notably ChatGPT, keep the cached manifest across reconnects). The
+  server's live manifest is correct; only *removed/renamed tools* ghost — newly-added *optional* parameters
+  on existing tools forward through the stale schema and keep working. See [troubleshooting.md](troubleshooting.md#unknown-tool-from-an-mcp-host-claudeai-chatgpt--after-upgrading-the-server).
 - **Wrong account.** The server binds one profile per process. Start it with `--profile <name>`, or set
   `NOTEBOOKLM_PROFILE`. See [configuration.md](configuration.md#multiple-accounts).
 - **`RATE_LIMITED`.** NotebookLM enforces per-account quotas; the error is `retriable=true` — back off

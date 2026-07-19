@@ -34,7 +34,7 @@ Use this skill when the user:
 ## Discovery Workflow
 
 1. Identify the domain and the concrete task.
-2. On the phone agent, search for candidate skills only by running a terminal command.
+2. On the phone agent, search for candidate skills only by running a {{OMNIBOT_TERMINAL_DISTRIBUTION}} command.
 3. Use `terminal_execute` to run `npx skills find <query>`.
 4. Search with concrete keywords such as `react performance`, `playwright e2e`, `pr review`, `android diagnostics`, or `changelog`.
 

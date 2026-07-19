@@ -1,0 +1,47 @@
+# Semantic Convention Selection
+
+Pick the closest released semantic convention group before inventing custom keys.
+
+## Common Starting Groups
+
+- `http` for HTTP client and server operations
+- `db` for database operations
+- `messaging` for queues, streams, and pub-sub
+- `rpc` for remote procedure calls
+- `network` for transport-level details
+- `url` for URL components
+- `server` for server endpoint metadata
+- `error` for error classification
+- `user-agent` for client user-agent details
+- `service` and `cloud` for service and cloud resource metadata
+- `k8s` and `process` for Kubernetes and process entities or metrics
+- `otel`, `log`, and `exceptions` for OpenTelemetry SDK telemetry, log records, and exception telemetry
+
+## Selection Rules
+
+1. Start with one primary group that matches the boundary.
+2. Add related groups only when they add needed context.
+3. Prefer required and recommended attributes before optional ones.
+4. If no released key exists, use a stable custom namespace and keep values bounded.
+5. For `gen_ai.*`, OpenAI, or MCP conventions, use the dedicated OpenTelemetry GenAI semantic conventions repository; do not use deprecated GenAI-era stubs from the core repository as current guidance.
+
+## Lookup Workflow
+
+Use the bundled script instead of loading large spec files:
+
+1. `./scripts/query-otel-semantic-conventions.sh --groups`
+2. `./scripts/query-otel-semantic-conventions.sh <group>`
+3. `./scripts/query-otel-semantic-conventions.sh <group> <attribute-id>`
+
+Use the one-argument form first. Use the two-argument form only when you need the exact released upstream definition for a single attribute.
+To verify against a local upstream checkout, set `OTEL_SEMCONV_REPO=/path/to/semantic-conventions`.
+
+## Typical Group Pairings
+
+- HTTP server: `http`, then maybe `url`, `server`, `network`, `user-agent`, `error`
+- HTTP client: `http`, then maybe `url`, `server`, `network`, `error`
+- Database: `db`, then maybe `server`, `error`
+- Messaging: `messaging`, then maybe `network`, `server`, `error`
+- RPC: `rpc`, then maybe `server`, `network`, `error`
+
+If a domain is not listed by `./scripts/query-otel-semantic-conventions.sh --groups`, treat it as not available in the currently released semantic conventions and use a stable custom namespace.

@@ -3,7 +3,7 @@ name: openloomi-loop
 description: "openloomi's Loop — the proactive execution brain. Loop runs inside the main web app (apps/web/lib/loop/) and is reached through its HTTP API. Use this skill to inspect state, run a tick, schedule / cancel decision actions, tune preferences, and extend Loop with user-defined decision types, Composio-backed signal channels, or deterministic classifier rules. Triggers: 'openloomi loop', 'loop tick', 'loop schedule', 'loop inbox', 'loop run', 'proactive decisions', 'signal → decision → execute', 'pull signals', 'decision queue', 'register loop type', 'add loop decision type', 'register custom channel', 'add composio channel', 'add loop rule', 'register classifier rule', 'force loop type', 'dry-run loop rule', 'list my loop extensions', 'remove loop type', 'delete loop channel'"
 allowed-tools: Bash(curl *), Bash(jq *), Bash(cat ~/.openloomi/token *), Bash(base64 -d *), Bash(ls ~/.openloomi/loop/*), Read(~/.openloomi/loop/custom-types.json), Read(~/.openloomi/loop/custom-channels.json), Read(~/.openloomi/loop/classifier-rules.json)
 metadata:
-  version: 0.8.0
+  version: 0.8.1
 ---
 
 > **Note:** If you haven't downloaded or installed openloomi yet, please refer to [Getting Started](https://openloomi.ai/docs/getting-started) for installation instructions.
@@ -177,13 +177,13 @@ curl -sS -X PUT "$BASE/api/loop/types" \
 ```
 
 - `id` — snake_case, 2-41 chars, must NOT collide with a built-in
-  `DecisionType` (`rsvp`, `draft_reply`, `review_pr`, `todo`,
-  `slack_reply`, `deadline_reminder`, `release_plan`,
+  `DecisionType` (`rsvp`, `email_reply`, `review_pr`, `todo`,
+  `im_reply`, `deadline_reminder`, `release_plan`,
   `requirement_synthesis`, `linear_review`, `contact_update`,
   `doc_update`, `brief`, `wrap`, `quiet_digest`, `noop`,
   `tick_summary`, `unknown`).
 - `actionKind` — must be one of the 14 built-in `ActionKind` literals
-  (`calendar_rsvp`, `email_reply`, `slack_reply`, `github_review`,
+  (`calendar_rsvp`, `email_reply`, `im_reply`, `github_review`,
   `deadline_notify`, `todo`, `linear_review`,
   `requirement_synthesis`, `release_plan`, `contact_update`,
   `doc_update`, `brief`, `wrap`, `quiet_digest`). Custom types
@@ -249,7 +249,7 @@ curl -sS -X DELETE "$BASE/api/loop/channels/stripe_charges" -H "Authorization: B
 ### Register a deterministic classifier rule
 
 Sometimes the LLM's classification drifts — it might call a same-day
-birthday signal `draft_reply` when you really want it as a
+birthday signal `email_reply` when you really want it as a
 `birthday_wish` card. **Classifier rules** let you pin routing
 deterministically. Each rule is a small safe AST: a `when` array of
 field predicates (no eval, no JS — just a closed op set), plus a

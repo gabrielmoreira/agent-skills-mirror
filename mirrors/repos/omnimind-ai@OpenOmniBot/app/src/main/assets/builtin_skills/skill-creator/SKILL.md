@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: Guide for creating and updating effective Omnibot skills. Use when the user wants to add a new skill or improve an existing skill for the built-in Alpine workspace, tool workflows, or reusable domain knowledge.
+description: Guide for creating and updating effective Omnibot skills. Use when the user wants to add a new skill or improve an existing skill for the built-in {{OMNIBOT_TERMINAL_DISTRIBUTION}} workspace, tool workflows, or reusable domain knowledge.
 ---
 
 # Skill Creator
@@ -15,7 +15,7 @@ Omnibot skills live inside the workspace at `.omnibot/skills/<skill-id>/` and ar
 2. Keep the body short and procedural.
 3. Put detailed reference material into `references/` instead of bloating `SKILL.md`.
 4. Prefer reusable scripts or templates when the same steps will be repeated.
-5. Design for Omnibot's real runtime: Alpine shell, workspace files, built-in tools, and optional Shizuku-backed Android actions.
+5. Design for Omnibot's real runtime: the selected {{OMNIBOT_TERMINAL_DISTRIBUTION}} shell, workspace files, built-in tools, and optional Shizuku-backed Android actions.
 
 ## Skill Shape
 
@@ -59,7 +59,7 @@ Helpful utility for many tasks.
 Good description:
 
 ```text
-Create or update deployment runbooks for Omnibot workspaces. Use when the user asks to document Alpine setup, workspace paths, scheduled runs, or recovery steps for on-device agents.
+Create or update deployment runbooks for Omnibot workspaces. Use when the user asks to document {{OMNIBOT_TERMINAL_DISTRIBUTION}} setup, workspace paths, scheduled runs, or recovery steps for on-device agents.
 ```
 
 ## Body Guidance
@@ -99,9 +99,9 @@ Use `assets/` when:
 
 ## Omnibot-Specific Advice
 
-- Assume the skill will run inside Omnibot's built-in Alpine environment.
+- Assume the skill will run inside Omnibot's selected built-in {{OMNIBOT_TERMINAL_DISTRIBUTION}} environment.
 - Prefer workspace-relative guidance that matches `.omnibot/skills`, `.omnibot/memory`, and `/workspace`.
-- If a workflow depends on privileged Android actions, state when to use Shizuku tools versus terminal tools.
+- If a workflow depends on privileged Android actions, state when to use Shizuku tools versus {{OMNIBOT_TERMINAL_DISTRIBUTION}} tools.
 - If a workflow depends on generated artifacts, say where they should be written in the workspace.
 - If a workflow should never use destructive commands, say so explicitly.
 

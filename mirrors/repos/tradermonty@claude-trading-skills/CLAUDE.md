@@ -403,13 +403,13 @@ python3 value-dividend-screener/scripts/screen_dividend_stocks.py \
 **Dividend Growth Pullback Screener:** ⚠️ Requires FMP API key; FINVIZ Elite optional but recommended
 ```bash
 # Two-stage screening with RSI filter (RECOMMENDED)
-python3 dividend-growth-pullback-screener/scripts/screen_dividend_growth.py --use-finviz
+python3 dividend-growth-pullback-screener/scripts/screen_dividend_growth_rsi.py --use-finviz
 
 # FMP-only screening (limited to ~40 stocks due to API limits)
-python3 dividend-growth-pullback-screener/scripts/screen_dividend_growth.py --max-candidates 40
+python3 dividend-growth-pullback-screener/scripts/screen_dividend_growth_rsi.py --max-candidates 40
 
 # Custom RSI threshold and dividend growth requirements
-python3 dividend-growth-pullback-screener/scripts/screen_dividend_growth.py \
+python3 dividend-growth-pullback-screener/scripts/screen_dividend_growth_rsi.py \
   --use-finviz \
   --rsi-threshold 35 \
   --min-div-growth 15
@@ -797,6 +797,8 @@ These skills fetch future events via FMP API:
 | [`swing-opportunity-daily`](workflows/swing-opportunity-daily.yaml) | daily | vcp-screener, drawdown-circuit-breaker, technical-analyst, position-sizer, trader-memory-core, pre-trade-discipline-gate |
 | [`trade-memory-loop`](workflows/trade-memory-loop.yaml) | per closed trade | trader-memory-core, signal-postmortem |
 | [`monthly-performance-review`](workflows/monthly-performance-review.yaml) | monthly | trader-memory-core, signal-postmortem |
+| [`shapiro-contrarian`](workflows/shapiro-contrarian.yaml) | weekly | cot-contrarian-detector, news-reaction-failure-analyzer, technical-analyst, contrarian-setup-gate, futures-position-sizer, trader-memory-core |
+| [`kanchi-dividend-weekly`](workflows/kanchi-dividend-weekly.yaml) | weekly | kanchi-dividend-sop, trader-memory-core |
 
 ### Quickstart prose examples (NOT canonical)
 

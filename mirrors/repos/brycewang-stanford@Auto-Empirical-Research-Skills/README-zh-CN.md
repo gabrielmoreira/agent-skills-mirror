@@ -1,42 +1,37 @@
-# Auto-Empirical Research Skills (AERS) — README-zh-CN
+# AERS — README-zh-CN (DEPRECATED · 2026-07-19)
 
-> **📣 本 README 已合并到 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)。** GitHub 默认 README 见 [`README.md`](README.md)。
+> **本文件已弃用。** 自 2026-07-19 起，中文 README 内容（含 **73 行核心 Skills 总表**、**"从 idea 到论文"完整流水线叙事**、⭐ 7 个 Stanford REAP × CoPaper.AI 自研 skill 主干）已并入 GitHub 默认入口 [**`README.md`**](README.md)。
 >
-> 中文读者请直接阅读 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)，那里包含完整的"先看这里"段、70 合集一览、目录、按用途分组、精确数字、2 分钟验证、三层信用锚点、旗舰流水线、30 秒入口、信任面表、浏览全景、安全扫描、更新日志与贡献引用。
+> 本文件仅保留为**向后兼容的占位** —— GitHub 会自动重定向访问 `#README-zh-CN` 的旧链接，但读者会看到这个弃用提示。
 
----
+## 跳转到当前版
 
-## 关于本文件的去向（2026-07 P2.2 重构说明）
-
-本 README-zh-CN.md 与 README.md 历史上承载完全相同的中文正文（约 60 KB 各一份），维护成本极高（每个数据点要同步两份）。P2.2 重构把**所有中文正文抽到 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)**，本文件与 README.md 都退化为"入口 banner + 简短指引 + 底部脚注"：
-
-| 你想看 | 跳到这里 |
+| 你想看 | 点这里 |
 |---|---|
-| 完整中文内容（先看这里 / 70 合集 / 目录 / 信任 / 旗舰流水线 / 浏览全景 / 安全扫描 / 引用） | **[`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)** |
 | GitHub 默认 README（banner + badges + 简短入口） | [`README.md`](README.md) |
 | 英文版 | [`README-en.md`](README-en.md) |
 | 繁體中文 | [`README-zh-TW.md`](README-zh-TW.md) |
 | 日本語 | [`README-ja.md`](README-ja.md) |
 | 한국어 | [`README-ko.md`](README-ko.md) |
+| 🌟 **中文默认 README**（含 73 行总表 + 端到端流水线） | [**`README.md`**](README.md) |
+| 📘 中文详细正文（按用途分组 / 旗舰流水线 / 信任面 / 浏览全景 / 引用） | [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) |
+| 🇬🇧 English | [`README-en.md`](README-en.md) |
+| 🇹🇼 繁體中文 | [`README-zh-TW.md`](README-zh-TW.md) |
+| 🇯🇵 日本語 | [`README-ja.md`](README-ja.md) |
+| 🇰🇷 한국어 | [`README-ko.md`](README-ko.md) |
 
-### 维护规则
+## 为什么会有这个文件？
 
-- **改中文正文 → 改 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)**；
-- **改顶部 banner / badges / 简短入口 / 底部脚注 → 改 [`README.md`](README.md)**；
-- **本 README-zh-CN.md 只在以下情况需要改**：新增语言切换入口、或新增跨语言说明。
+| 时点 | 状态 |
+|---|---|
+| 2026-07 以前 | 本文件与 [`README.md`](README.md) 各自维护约 60 KB 中文正文（双源）。维护成本高。 |
+| 2026-07 P2.2 重构 | 把两份内容合并到 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)，本文件与 README.md 退化为"极简入口"。 |
+| 2026-07-19（本次） | [`README.md`](README.md) 升级为中文默认入口（含 73 行表 + 流水线）。本文件正式弃用，指向 README.md。 |
 
-### 选 A：彻底去重（已选择）
-
-任务要求在两个 README 之间做选择：
-
-- 选 A：**彻底去重，让 `README-zh-CN.md` 也指向 `CONTENT_ZH.md`** ✅
-- 选 B：保留 README-zh-CN.md 作为"完整中文 README"（不动它）
-
-本次采用选 A：README-zh-CN.md 与 README.md 互为等价入口，都指向 CONTENT_ZH.md。
+> **维护规则：** 改中文正文 → 改 [`README.md`](README.md)；改项目级说明 → 改 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)。本文件不再维护内容。
 
 ---
 
-<div align="center">
 
 **🌐 语言: [English](README-en.md) | 简体中文（默认，本文件等价指向 [CONTENT_ZH.md](docs/CONTENT_ZH.md)） | [繁體中文](README-zh-TW.md) | [日本語](README-ja.md) | [한국어](README-ko.md)**
 
@@ -121,3 +116,4 @@
 内置 20 个方法论 skill · 20 分钟完成实证论文 · 自研 <a href="https://github.com/brycewang-stanford/StatsPAI"><strong>StatsPAI</strong></a>（900+ 函数 / MIT 开源）
 
 </div>
+<sub>最后更新：2026-07-19 · 由 [README.md](README.md) 取代 · 继承自 [docs/CONTENT_ZH.md](docs/CONTENT_ZH.md)</sub>

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dataelement/bisheng` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `dataelement/bisheng` — 26 default patterns, 2 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `dataelement/bisheng` — 26 default patterns, 0 followed patterns, 3 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 3 |
+| Followed pats | 2 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,8 @@ Mirror of `dataelement/bisheng` — 26 default patterns, 0 followed patterns, 3 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/constitution.md`
+- `docs/SDD-Guide.md`
 
 ## File Index
 
@@ -59,9 +60,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`src/backend/.agents/skills/coding_guidelines/SKILL.md`](src/backend/.agents/skills/coding_guidelines/SKILL.md) |
-| 2 | ✓ | [`src/frontend/client/.agents/skills/i18n-localizer/SKILL.md`](src/frontend/client/.agents/skills/i18n-localizer/SKILL.md) |
-| 3 | ✓ | [`src/frontend/client/.agents/skills/react-component-refactor/SKILL.md`](src/frontend/client/.agents/skills/react-component-refactor/SKILL.md) |
+| 1 | ✓ | [`.claude/skills/approval-module/SKILL.md`](.claude/skills/approval-module/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/code-review/SKILL.md`](.claude/skills/code-review/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/e2e-test/SKILL.md`](.claude/skills/e2e-test/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/i18n-localizer/SKILL.md`](.claude/skills/i18n-localizer/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/react-component-refactor/SKILL.md`](.claude/skills/react-component-refactor/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/sdd-review/SKILL.md`](.claude/skills/sdd-review/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/task-review/SKILL.md`](.claude/skills/task-review/SKILL.md) |
+| 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`src/backend/.agents/skills/coding_guidelines/SKILL.md`](src/backend/.agents/skills/coding_guidelines/SKILL.md) |
+| 11 | ✓ | [`src/backend/AGENTS.md`](src/backend/AGENTS.md) |
+| 12 | ✓ | [`src/backend/bisheng/core/database/alembic/AGENTS.md`](src/backend/bisheng/core/database/alembic/AGENTS.md) |
+| 13 | ✓ | [`src/backend/bisheng/core/database/alembic/CLAUDE.md`](src/backend/bisheng/core/database/alembic/CLAUDE.md) |
+| 14 | ✓ | [`src/backend/CLAUDE.md`](src/backend/CLAUDE.md) |
+| 15 | ✓ | [`src/backend/scripts/AGENTS.md`](src/backend/scripts/AGENTS.md) |
+| 16 | ✓ | [`src/backend/scripts/CLAUDE.md`](src/backend/scripts/CLAUDE.md) |
+| 17 | ✓ | [`src/frontend/client/.agents/skills/i18n-localizer/SKILL.md`](src/frontend/client/.agents/skills/i18n-localizer/SKILL.md) |
+| 18 | ✓ | [`src/frontend/client/.agents/skills/react-component-refactor/SKILL.md`](src/frontend/client/.agents/skills/react-component-refactor/SKILL.md) |
+| 19 | ✓ | [`src/frontend/client/AGENTS.md`](src/frontend/client/AGENTS.md) |
+| 20 | ✓ | [`src/frontend/client/CLAUDE.md`](src/frontend/client/CLAUDE.md) |
+| 21 | ✓ | [`src/frontend/platform/AGENTS.md`](src/frontend/platform/AGENTS.md) |
+| 22 | ✓ | [`src/frontend/platform/CLAUDE.md`](src/frontend/platform/CLAUDE.md) |
+| 23 | → | [`docs/constitution.md`](docs/constitution.md) |
+| 24 | → | [`docs/SDD-Guide.md`](docs/SDD-Guide.md) |
 
 ---
 

@@ -1,13 +1,13 @@
 ---
 name: customer-email-draft-threads
-description: Draft-only Gmail customer support triage with per-draft Codex project threads. Use when the user asks to run the customer email automation, check unread/recent support emails, prepare Gmail draft replies, triage customer/person emails while skipping automated mail, or create agent/project threads for drafted email follow-up.
+description: Gmail customer support triage with a draft-only default, per-draft Codex project threads, and approval-gated operations for verified DreamCut Discord invite requests. Use when the user asks to run the customer email automation, check unread/recent support emails, prepare Gmail replies, triage customer/person emails while skipping automated mail, create agent/project threads for drafted follow-up, or fulfill DreamCut Discord access requests.
 ---
 
 # Customer Email Draft Threads
 
 ## Overview
 
-Run a safe support-email pass: inspect recent or requested Gmail messages, create unsent draft replies only for real customer/person emails, and create one Codex project thread for each drafted email. Treat approved affiliate-operation mail, such as PromoteKit notices and affiliate program applications, as a separate operations workflow rather than low-value automated mail.
+Run a safe support-email pass: inspect recent or requested Gmail messages, create unsent draft replies for real customer/person emails, and create one Codex project thread for each drafted email. Draft-only remains the default. Treat approved affiliate operations and verified DreamCut Discord invite requests as narrowly scoped workflows rather than ordinary support mail.
 
 Use the detailed workflow in [references/runbook.md](references/runbook.md) whenever drafting, classifying risk, or creating project-thread handoffs.
 
@@ -28,10 +28,12 @@ Use the detailed workflow in [references/runbook.md](references/runbook.md) when
    - Skip automated or low-value mail unless it clearly requires support action.
    - Treat inbound sponsorship, paid collaboration, partnership, creator campaign, and media-kit requests as actionable operations mail. Keep them approval-gated and route them through the workspace's trusted partnership or manual-review workflow instead of ordinary product-support drafting.
    - Do not skip PromoteKit "A new affiliate joined your program" notices or affiliate program "New Affiliate Application" emails when the workspace has a trusted affiliate workflow. Extract the affiliate name, email, platform, and promotion strategy, then run the affiliate operations workflow in the runbook instead of drafting a Gmail reply by default.
+   - Do not skip DreamCut Discord invite requests from `noreply@dreamcut.ai`. Run the verified DreamCut Discord workflow in the runbook; send automatically only when trusted workspace instructions document standing approval and the account, invite link, recipient, final message, and Sent mail all pass read-back.
    - Flag phishing, scams, impersonation, credential/payment requests, suspicious links/domains, unusual urgency, or attachment risk for manual review.
 
 4. Create Gmail drafts only when safe:
    - Draft only. Never send, forward, archive, delete, label, mark read/unread, click links, download attachments, or mutate Gmail state except creating an unsent draft.
+   - Exception: a verified DreamCut Discord invite may be sent only when trusted workspace instructions grant standing approval and every guardrail in the runbook passes. This does not authorize automatic sending for any other support category.
    - Preserve the thread recipient/subject context. Prefer in-thread drafts; if Gmail rejects threading, save a standalone draft and report that clearly.
    - Do not overpromise refunds, cancellations, account changes, legal/privacy actions, timelines, discounts, or technical fixes. Use safe acknowledgements when verification is needed.
 
@@ -55,7 +57,7 @@ Use the detailed workflow in [references/runbook.md](references/runbook.md) when
    - Highlight any row that requires a draft or has a draft by wrapping every cell value in bold Markdown, for example `| **Sender** | **Subject** | **Action** | **Draft Status** | **Risk** | **Next Step** |`.
    - Do not add extra columns to create the highlight.
    - Follow with: Ready for approval, Needs manual review, Skipped automated, Created threads.
-   - Never claim an email was sent.
+   - Never claim an email was sent without a successful Sent-mail read-back from an explicitly approved workflow.
 
 ## Memory And Commits
 

@@ -264,6 +264,15 @@ hold split, while `hold` is a stricter override that also stops E14 on
 cap exhaustion. Do not introduce an override that weakens the F2/F3
 merge hold.
 
+`advisoryWait.sameHeadRerollCap` (default 2) bounds AW6's same-HEAD
+advisory reroll carve-out (#1465 / #1511) — the number of fresh
+same-HEAD re-reviews the autonomous loop may request once the primary
+bot's review already covers current HEAD but still carries items every
+one of which triage has already dispositioned. It is scoped per HEAD
+(a new push resets it) and kept deliberately separate from
+`advisoryWait.requestCap`, so raising or lowering one never affects the
+other.
+
 Repositories that need a maintainer-authorized recovery path for stuck
 repo-external checks may record `ciGate.externalChecks.advisory`,
 `ciGate.externalChecks.waivable`, and `ciGate.externalCheckWaivers` in
@@ -1235,6 +1244,32 @@ per-PR multi-arch builds compound it. Levers to control the cost:
 - Remember that **re-sync cadence is the main cost lever**: the
   merge-from-`main` freshness model trades CI minutes for merge safety, so tune
   the heavy jobs rather than loosening the freshness gate.
+
+**Attribute the cost before optimizing.** Rank jobs by
+`runs × billed-minutes` over a representative window before changing
+anything — billing rounds each job up to the whole minute, so a
+frequently-triggered workflow with many short jobs can outweigh one
+long job, and a single slow step or test file often dominates a suite.
+Fix the measured hot spot, not the assumed one.
+
+When the heaviest per-PR job is a **test suite**, the same
+integration branch split applies:
+
+- **Coverage/reporting-only work runs on integration branch pushes,
+  not every PR head** — instrumenting every re-sync is pure overhead
+  when no gate (a coverage threshold, a required check) consumes the
+  result.
+- **Affected-only tests on PR heads, full suite on the integration
+  branch**, when the test runner supports change-based selection and
+  catching an out-of-range regression post-merge is acceptable.
+- **Fake or inject time in retry/backoff/polling tests** rather than
+  sleeping in real time — one real-timer test can dominate suite
+  wall-clock, and the fix is behavior-preserving.
+
+**Right-size the runner to the job**: lightweight automation (label
+hygiene, stale sweeps, advisory gates) on the smallest runner class,
+standard or larger runners reserved for genuinely heavyweight build or
+test jobs.
 
 These are repository-local optimizations; they do not change the IDD merge gate
 or the cross-agent workflow.

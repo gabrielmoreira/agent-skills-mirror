@@ -43,6 +43,8 @@ invoke the bridge.
 | `install-hooks` | `/openloomi:hooks install` | Merge hooks into `~/.claude/settings.json` |
 | `uninstall-hooks` | `/openloomi:hooks uninstall` | Strip only the plugin's hook block |
 | `hooks-status` | `/openloomi:hooks status` | Report hook merge state |
+| `loop` (doorway) | `/openloomi:loop` | Loop dashboard snapshot — delegates to the `openloomi-loop` sub-skill |
+| `memory <query>` (doorway) | `/openloomi:memory` | Search memory + KB + insights — delegates to the `openloomi-memory` sub-skill |
 | `version` | (internal) | Print plugin version |
 
 All subcommands emit JSON to stdout unless noted otherwise. All failure

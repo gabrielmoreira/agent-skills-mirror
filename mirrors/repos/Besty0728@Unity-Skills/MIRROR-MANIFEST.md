@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Besty0728/Unity-Skills` — 26 default patterns, 0 followed patterns, 116 file(s) materialized.
+Mirror of `Besty0728/Unity-Skills` — 26 default patterns, 0 followed patterns, 118 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Besty0728/Unity-Skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 116 |
+| Files         | 118 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -123,58 +123,60 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 62 | ✓ | [`SkillsForUnity/unity-skills~/skills/physics/SKILL.md`](SkillsForUnity/unity-skills~/skills/physics/SKILL.md) |
 | 63 | ✓ | [`SkillsForUnity/unity-skills~/skills/postprocess/SKILL.md`](SkillsForUnity/unity-skills~/skills/postprocess/SKILL.md) |
 | 64 | ✓ | [`SkillsForUnity/unity-skills~/skills/prefab/SKILL.md`](SkillsForUnity/unity-skills~/skills/prefab/SKILL.md) |
-| 65 | ✓ | [`SkillsForUnity/unity-skills~/skills/probuilder/SKILL.md`](SkillsForUnity/unity-skills~/skills/probuilder/SKILL.md) |
-| 66 | ✓ | [`SkillsForUnity/unity-skills~/skills/profiler/SKILL.md`](SkillsForUnity/unity-skills~/skills/profiler/SKILL.md) |
-| 67 | ✓ | [`SkillsForUnity/unity-skills~/skills/project-scout/SKILL.md`](SkillsForUnity/unity-skills~/skills/project-scout/SKILL.md) |
-| 68 | ✓ | [`SkillsForUnity/unity-skills~/skills/project/SKILL.md`](SkillsForUnity/unity-skills~/skills/project/SKILL.md) |
-| 69 | ✓ | [`SkillsForUnity/unity-skills~/skills/sample/SKILL.md`](SkillsForUnity/unity-skills~/skills/sample/SKILL.md) |
-| 70 | ✓ | [`SkillsForUnity/unity-skills~/skills/scene-contracts/SKILL.md`](SkillsForUnity/unity-skills~/skills/scene-contracts/SKILL.md) |
-| 71 | ✓ | [`SkillsForUnity/unity-skills~/skills/scene/SKILL.md`](SkillsForUnity/unity-skills~/skills/scene/SKILL.md) |
-| 72 | ✓ | [`SkillsForUnity/unity-skills~/skills/script-roles/SKILL.md`](SkillsForUnity/unity-skills~/skills/script-roles/SKILL.md) |
-| 73 | ✓ | [`SkillsForUnity/unity-skills~/skills/script/SKILL.md`](SkillsForUnity/unity-skills~/skills/script/SKILL.md) |
-| 74 | ✓ | [`SkillsForUnity/unity-skills~/skills/scriptableobject/SKILL.md`](SkillsForUnity/unity-skills~/skills/scriptableobject/SKILL.md) |
-| 75 | ✓ | [`SkillsForUnity/unity-skills~/skills/scriptdesign/SKILL.md`](SkillsForUnity/unity-skills~/skills/scriptdesign/SKILL.md) |
-| 76 | ✓ | [`SkillsForUnity/unity-skills~/skills/shader/SKILL.md`](SkillsForUnity/unity-skills~/skills/shader/SKILL.md) |
-| 77 | ✓ | [`SkillsForUnity/unity-skills~/skills/shadergraph-design/NODES.md`](SkillsForUnity/unity-skills~/skills/shadergraph-design/NODES.md) |
-| 78 | ✓ | [`SkillsForUnity/unity-skills~/skills/shadergraph-design/PITFALLS.md`](SkillsForUnity/unity-skills~/skills/shadergraph-design/PITFALLS.md) |
-| 79 | ✓ | [`SkillsForUnity/unity-skills~/skills/shadergraph-design/RECIPES.md`](SkillsForUnity/unity-skills~/skills/shadergraph-design/RECIPES.md) |
-| 80 | ✓ | [`SkillsForUnity/unity-skills~/skills/shadergraph-design/REVIEW.md`](SkillsForUnity/unity-skills~/skills/shadergraph-design/REVIEW.md) |
-| 81 | ✓ | [`SkillsForUnity/unity-skills~/skills/shadergraph-design/SKILL.md`](SkillsForUnity/unity-skills~/skills/shadergraph-design/SKILL.md) |
-| 82 | ✓ | [`SkillsForUnity/unity-skills~/skills/shadergraph-design/VERSIONS.md`](SkillsForUnity/unity-skills~/skills/shadergraph-design/VERSIONS.md) |
-| 83 | ✓ | [`SkillsForUnity/unity-skills~/skills/shadergraph/SKILL.md`](SkillsForUnity/unity-skills~/skills/shadergraph/SKILL.md) |
-| 84 | ✓ | [`SkillsForUnity/unity-skills~/skills/SKILL.md`](SkillsForUnity/unity-skills~/skills/SKILL.md) |
-| 85 | ✓ | [`SkillsForUnity/unity-skills~/skills/smart/SKILL.md`](SkillsForUnity/unity-skills~/skills/smart/SKILL.md) |
-| 86 | ✓ | [`SkillsForUnity/unity-skills~/skills/terrain/SKILL.md`](SkillsForUnity/unity-skills~/skills/terrain/SKILL.md) |
-| 87 | ✓ | [`SkillsForUnity/unity-skills~/skills/test/SKILL.md`](SkillsForUnity/unity-skills~/skills/test/SKILL.md) |
-| 88 | ✓ | [`SkillsForUnity/unity-skills~/skills/testability/SKILL.md`](SkillsForUnity/unity-skills~/skills/testability/SKILL.md) |
-| 89 | ✓ | [`SkillsForUnity/unity-skills~/skills/timeline/SKILL.md`](SkillsForUnity/unity-skills~/skills/timeline/SKILL.md) |
-| 90 | ✓ | [`SkillsForUnity/unity-skills~/skills/ui/SKILL.md`](SkillsForUnity/unity-skills~/skills/ui/SKILL.md) |
-| 91 | ✓ | [`SkillsForUnity/unity-skills~/skills/uitoolkit/SKILL.md`](SkillsForUnity/unity-skills~/skills/uitoolkit/SKILL.md) |
-| 92 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/ASYNCENUMERABLE.md`](SkillsForUnity/unity-skills~/skills/unitask-design/ASYNCENUMERABLE.md) |
-| 93 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/BASICS.md`](SkillsForUnity/unity-skills~/skills/unitask-design/BASICS.md) |
-| 94 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/CANCELLATION.md`](SkillsForUnity/unity-skills~/skills/unitask-design/CANCELLATION.md) |
-| 95 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/COMPOSITION.md`](SkillsForUnity/unity-skills~/skills/unitask-design/COMPOSITION.md) |
-| 96 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/CONVERSION.md`](SkillsForUnity/unity-skills~/skills/unitask-design/CONVERSION.md) |
-| 97 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/PITFALLS.md`](SkillsForUnity/unity-skills~/skills/unitask-design/PITFALLS.md) |
-| 98 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/PLAYERLOOP.md`](SkillsForUnity/unity-skills~/skills/unitask-design/PLAYERLOOP.md) |
-| 99 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/SKILL.md`](SkillsForUnity/unity-skills~/skills/unitask-design/SKILL.md) |
-| 100 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/TRIGGERS.md`](SkillsForUnity/unity-skills~/skills/unitask-design/TRIGGERS.md) |
-| 101 | ✓ | [`SkillsForUnity/unity-skills~/skills/urp/SKILL.md`](SkillsForUnity/unity-skills~/skills/urp/SKILL.md) |
-| 102 | ✓ | [`SkillsForUnity/unity-skills~/skills/validation/SKILL.md`](SkillsForUnity/unity-skills~/skills/validation/SKILL.md) |
-| 103 | ✓ | [`SkillsForUnity/unity-skills~/skills/volume/SKILL.md`](SkillsForUnity/unity-skills~/skills/volume/SKILL.md) |
-| 104 | ✓ | [`SkillsForUnity/unity-skills~/skills/workflow/SKILL.md`](SkillsForUnity/unity-skills~/skills/workflow/SKILL.md) |
-| 105 | ✓ | [`SkillsForUnity/unity-skills~/skills/xr/SKILL.md`](SkillsForUnity/unity-skills~/skills/xr/SKILL.md) |
-| 106 | ✓ | [`SkillsForUnity/unity-skills~/skills/yaml-editing/SKILL.md`](SkillsForUnity/unity-skills~/skills/yaml-editing/SKILL.md) |
-| 107 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/BUILD.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/BUILD.md) |
-| 108 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/FILESYSTEM.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/FILESYSTEM.md) |
-| 109 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/HANDLES.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/HANDLES.md) |
-| 110 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/INIT.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/INIT.md) |
-| 111 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/LOADING.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/LOADING.md) |
-| 112 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/PITFALLS.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/PITFALLS.md) |
-| 113 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/PLAYMODE.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/PLAYMODE.md) |
-| 114 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/SKILL.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/SKILL.md) |
-| 115 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/UPDATE.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/UPDATE.md) |
-| 116 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset/SKILL.md`](SkillsForUnity/unity-skills~/skills/yooasset/SKILL.md) |
+| 65 | ✓ | [`SkillsForUnity/unity-skills~/skills/primetween-design/SKILL.md`](SkillsForUnity/unity-skills~/skills/primetween-design/SKILL.md) |
+| 66 | ✓ | [`SkillsForUnity/unity-skills~/skills/primetween/SKILL.md`](SkillsForUnity/unity-skills~/skills/primetween/SKILL.md) |
+| 67 | ✓ | [`SkillsForUnity/unity-skills~/skills/probuilder/SKILL.md`](SkillsForUnity/unity-skills~/skills/probuilder/SKILL.md) |
+| 68 | ✓ | [`SkillsForUnity/unity-skills~/skills/profiler/SKILL.md`](SkillsForUnity/unity-skills~/skills/profiler/SKILL.md) |
+| 69 | ✓ | [`SkillsForUnity/unity-skills~/skills/project-scout/SKILL.md`](SkillsForUnity/unity-skills~/skills/project-scout/SKILL.md) |
+| 70 | ✓ | [`SkillsForUnity/unity-skills~/skills/project/SKILL.md`](SkillsForUnity/unity-skills~/skills/project/SKILL.md) |
+| 71 | ✓ | [`SkillsForUnity/unity-skills~/skills/sample/SKILL.md`](SkillsForUnity/unity-skills~/skills/sample/SKILL.md) |
+| 72 | ✓ | [`SkillsForUnity/unity-skills~/skills/scene-contracts/SKILL.md`](SkillsForUnity/unity-skills~/skills/scene-contracts/SKILL.md) |
+| 73 | ✓ | [`SkillsForUnity/unity-skills~/skills/scene/SKILL.md`](SkillsForUnity/unity-skills~/skills/scene/SKILL.md) |
+| 74 | ✓ | [`SkillsForUnity/unity-skills~/skills/script-roles/SKILL.md`](SkillsForUnity/unity-skills~/skills/script-roles/SKILL.md) |
+| 75 | ✓ | [`SkillsForUnity/unity-skills~/skills/script/SKILL.md`](SkillsForUnity/unity-skills~/skills/script/SKILL.md) |
+| 76 | ✓ | [`SkillsForUnity/unity-skills~/skills/scriptableobject/SKILL.md`](SkillsForUnity/unity-skills~/skills/scriptableobject/SKILL.md) |
+| 77 | ✓ | [`SkillsForUnity/unity-skills~/skills/scriptdesign/SKILL.md`](SkillsForUnity/unity-skills~/skills/scriptdesign/SKILL.md) |
+| 78 | ✓ | [`SkillsForUnity/unity-skills~/skills/shader/SKILL.md`](SkillsForUnity/unity-skills~/skills/shader/SKILL.md) |
+| 79 | ✓ | [`SkillsForUnity/unity-skills~/skills/shadergraph-design/NODES.md`](SkillsForUnity/unity-skills~/skills/shadergraph-design/NODES.md) |
+| 80 | ✓ | [`SkillsForUnity/unity-skills~/skills/shadergraph-design/PITFALLS.md`](SkillsForUnity/unity-skills~/skills/shadergraph-design/PITFALLS.md) |
+| 81 | ✓ | [`SkillsForUnity/unity-skills~/skills/shadergraph-design/RECIPES.md`](SkillsForUnity/unity-skills~/skills/shadergraph-design/RECIPES.md) |
+| 82 | ✓ | [`SkillsForUnity/unity-skills~/skills/shadergraph-design/REVIEW.md`](SkillsForUnity/unity-skills~/skills/shadergraph-design/REVIEW.md) |
+| 83 | ✓ | [`SkillsForUnity/unity-skills~/skills/shadergraph-design/SKILL.md`](SkillsForUnity/unity-skills~/skills/shadergraph-design/SKILL.md) |
+| 84 | ✓ | [`SkillsForUnity/unity-skills~/skills/shadergraph-design/VERSIONS.md`](SkillsForUnity/unity-skills~/skills/shadergraph-design/VERSIONS.md) |
+| 85 | ✓ | [`SkillsForUnity/unity-skills~/skills/shadergraph/SKILL.md`](SkillsForUnity/unity-skills~/skills/shadergraph/SKILL.md) |
+| 86 | ✓ | [`SkillsForUnity/unity-skills~/skills/SKILL.md`](SkillsForUnity/unity-skills~/skills/SKILL.md) |
+| 87 | ✓ | [`SkillsForUnity/unity-skills~/skills/smart/SKILL.md`](SkillsForUnity/unity-skills~/skills/smart/SKILL.md) |
+| 88 | ✓ | [`SkillsForUnity/unity-skills~/skills/terrain/SKILL.md`](SkillsForUnity/unity-skills~/skills/terrain/SKILL.md) |
+| 89 | ✓ | [`SkillsForUnity/unity-skills~/skills/test/SKILL.md`](SkillsForUnity/unity-skills~/skills/test/SKILL.md) |
+| 90 | ✓ | [`SkillsForUnity/unity-skills~/skills/testability/SKILL.md`](SkillsForUnity/unity-skills~/skills/testability/SKILL.md) |
+| 91 | ✓ | [`SkillsForUnity/unity-skills~/skills/timeline/SKILL.md`](SkillsForUnity/unity-skills~/skills/timeline/SKILL.md) |
+| 92 | ✓ | [`SkillsForUnity/unity-skills~/skills/ui/SKILL.md`](SkillsForUnity/unity-skills~/skills/ui/SKILL.md) |
+| 93 | ✓ | [`SkillsForUnity/unity-skills~/skills/uitoolkit/SKILL.md`](SkillsForUnity/unity-skills~/skills/uitoolkit/SKILL.md) |
+| 94 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/ASYNCENUMERABLE.md`](SkillsForUnity/unity-skills~/skills/unitask-design/ASYNCENUMERABLE.md) |
+| 95 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/BASICS.md`](SkillsForUnity/unity-skills~/skills/unitask-design/BASICS.md) |
+| 96 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/CANCELLATION.md`](SkillsForUnity/unity-skills~/skills/unitask-design/CANCELLATION.md) |
+| 97 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/COMPOSITION.md`](SkillsForUnity/unity-skills~/skills/unitask-design/COMPOSITION.md) |
+| 98 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/CONVERSION.md`](SkillsForUnity/unity-skills~/skills/unitask-design/CONVERSION.md) |
+| 99 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/PITFALLS.md`](SkillsForUnity/unity-skills~/skills/unitask-design/PITFALLS.md) |
+| 100 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/PLAYERLOOP.md`](SkillsForUnity/unity-skills~/skills/unitask-design/PLAYERLOOP.md) |
+| 101 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/SKILL.md`](SkillsForUnity/unity-skills~/skills/unitask-design/SKILL.md) |
+| 102 | ✓ | [`SkillsForUnity/unity-skills~/skills/unitask-design/TRIGGERS.md`](SkillsForUnity/unity-skills~/skills/unitask-design/TRIGGERS.md) |
+| 103 | ✓ | [`SkillsForUnity/unity-skills~/skills/urp/SKILL.md`](SkillsForUnity/unity-skills~/skills/urp/SKILL.md) |
+| 104 | ✓ | [`SkillsForUnity/unity-skills~/skills/validation/SKILL.md`](SkillsForUnity/unity-skills~/skills/validation/SKILL.md) |
+| 105 | ✓ | [`SkillsForUnity/unity-skills~/skills/volume/SKILL.md`](SkillsForUnity/unity-skills~/skills/volume/SKILL.md) |
+| 106 | ✓ | [`SkillsForUnity/unity-skills~/skills/workflow/SKILL.md`](SkillsForUnity/unity-skills~/skills/workflow/SKILL.md) |
+| 107 | ✓ | [`SkillsForUnity/unity-skills~/skills/xr/SKILL.md`](SkillsForUnity/unity-skills~/skills/xr/SKILL.md) |
+| 108 | ✓ | [`SkillsForUnity/unity-skills~/skills/yaml-editing/SKILL.md`](SkillsForUnity/unity-skills~/skills/yaml-editing/SKILL.md) |
+| 109 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/BUILD.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/BUILD.md) |
+| 110 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/FILESYSTEM.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/FILESYSTEM.md) |
+| 111 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/HANDLES.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/HANDLES.md) |
+| 112 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/INIT.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/INIT.md) |
+| 113 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/LOADING.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/LOADING.md) |
+| 114 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/PITFALLS.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/PITFALLS.md) |
+| 115 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/PLAYMODE.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/PLAYMODE.md) |
+| 116 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/SKILL.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/SKILL.md) |
+| 117 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset-design/UPDATE.md`](SkillsForUnity/unity-skills~/skills/yooasset-design/UPDATE.md) |
+| 118 | ✓ | [`SkillsForUnity/unity-skills~/skills/yooasset/SKILL.md`](SkillsForUnity/unity-skills~/skills/yooasset/SKILL.md) |
 
 ---
 

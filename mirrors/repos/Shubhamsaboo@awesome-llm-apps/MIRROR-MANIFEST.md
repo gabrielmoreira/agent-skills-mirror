@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Shubhamsaboo/awesome-llm-apps` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `Shubhamsaboo/awesome-llm-apps` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Shubhamsaboo/awesome-llm-apps` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,13 +60,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`agent_skills/advisor-orchestrator-worker/SKILL.md`](agent_skills/advisor-orchestrator-worker/SKILL.md) |
-| 2 | ✓ | [`agent_skills/project-graveyard/SKILL.md`](agent_skills/project-graveyard/SKILL.md) |
-| 3 | ✓ | [`agent_skills/scope-creep-detector/SKILL.md`](agent_skills/scope-creep-detector/SKILL.md) |
-| 4 | ✓ | [`generative_ui_agents/ai-dashboard-canvas-agent/AGENTS.md`](generative_ui_agents/ai-dashboard-canvas-agent/AGENTS.md) |
-| 5 | ✓ | [`generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md`](generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md) |
-| 6 | ✓ | [`generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md`](generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md) |
-| 7 | ✓ | [`generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md`](generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md) |
-| 8 | ✓ | [`generative_ui_agents/generative-ui-starter-project/CLAUDE.md`](generative_ui_agents/generative-ui-starter-project/CLAUDE.md) |
+| 2 | ✓ | [`agent_skills/commit-archaeologist/SKILL.md`](agent_skills/commit-archaeologist/SKILL.md) |
+| 3 | ✓ | [`agent_skills/project-graveyard/SKILL.md`](agent_skills/project-graveyard/SKILL.md) |
+| 4 | ✓ | [`agent_skills/scope-creep-detector/SKILL.md`](agent_skills/scope-creep-detector/SKILL.md) |
+| 5 | ✓ | [`generative_ui_agents/ai-dashboard-canvas-agent/AGENTS.md`](generative_ui_agents/ai-dashboard-canvas-agent/AGENTS.md) |
+| 6 | ✓ | [`generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md`](generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/chatgpt-app-builder/SKILL.md) |
+| 7 | ✓ | [`generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md`](generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-apps-builder/SKILL.md) |
+| 8 | ✓ | [`generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md`](generative_ui_agents/ai-mcp-app-builder/apps/mcp-use-server/.agent/skills/mcp-builder/SKILL.md) |
+| 9 | ✓ | [`generative_ui_agents/generative-ui-starter-project/CLAUDE.md`](generative_ui_agents/generative-ui-starter-project/CLAUDE.md) |
 
 ---
 

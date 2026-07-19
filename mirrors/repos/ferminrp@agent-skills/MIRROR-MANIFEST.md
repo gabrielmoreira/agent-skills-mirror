@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ferminrp/agent-skills` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `ferminrp/agent-skills` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ferminrp/agent-skills` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,27 +64,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`skills/cafci-fondos-comunes-argentina/parse_cafci.py`](skills/cafci-fondos-comunes-argentina/parse_cafci.py) |
 | 4 | ✓ | [`skills/cafci-fondos-comunes-argentina/SKILL.md`](skills/cafci-fondos-comunes-argentina/SKILL.md) |
 | 5 | ✓ | [`skills/cloudflare-workers-url-shortner/SKILL.md`](skills/cloudflare-workers-url-shortner/SKILL.md) |
-| 6 | ✓ | [`skills/cotizacion-dolar-argentina/SKILL.md`](skills/cotizacion-dolar-argentina/SKILL.md) |
-| 7 | ✓ | [`skills/cotizaciones-pix-comparapix/SKILL.md`](skills/cotizaciones-pix-comparapix/SKILL.md) |
-| 8 | ✓ | [`skills/crypto-prices-criptoya/SKILL.md`](skills/crypto-prices-criptoya/SKILL.md) |
-| 9 | ✓ | [`skills/data912-market-data/references/openapi-spec.json`](skills/data912-market-data/references/openapi-spec.json) |
-| 10 | ✓ | [`skills/data912-market-data/SKILL.md`](skills/data912-market-data/SKILL.md) |
-| 11 | ✓ | [`skills/dataroma-superinvestors/references/endpoints.md`](skills/dataroma-superinvestors/references/endpoints.md) |
-| 12 | ✓ | [`skills/dataroma-superinvestors/SKILL.md`](skills/dataroma-superinvestors/SKILL.md) |
-| 13 | ✓ | [`skills/dub-links-api/references/openapi-spec.json`](skills/dub-links-api/references/openapi-spec.json) |
-| 14 | ✓ | [`skills/dub-links-api/SKILL.md`](skills/dub-links-api/SKILL.md) |
-| 15 | ✓ | [`skills/inflacion-argentina-ipc/SKILL.md`](skills/inflacion-argentina-ipc/SKILL.md) |
-| 16 | ✓ | [`skills/mapcn/references/api-cheatsheet.md`](skills/mapcn/references/api-cheatsheet.md) |
-| 17 | ✓ | [`skills/mapcn/references/docs-pages.md`](skills/mapcn/references/docs-pages.md) |
-| 18 | ✓ | [`skills/mapcn/SKILL.md`](skills/mapcn/SKILL.md) |
-| 19 | ✓ | [`skills/product-shaping/references/prototype-guide.md`](skills/product-shaping/references/prototype-guide.md) |
-| 20 | ✓ | [`skills/product-shaping/references/shaping-doc-template.md`](skills/product-shaping/references/shaping-doc-template.md) |
-| 21 | ✓ | [`skills/product-shaping/SKILL.md`](skills/product-shaping/SKILL.md) |
-| 22 | ✓ | [`skills/riesgo-pais-argentina/SKILL.md`](skills/riesgo-pais-argentina/SKILL.md) |
-| 23 | ✓ | [`skills/travel-promos-argentina/SKILL.md`](skills/travel-promos-argentina/SKILL.md) |
-| 24 | ✓ | [`skills/workflowy/references/api-reference.md`](skills/workflowy/references/api-reference.md) |
-| 25 | ✓ | [`skills/workflowy/SKILL.md`](skills/workflowy/SKILL.md) |
-| 26 | ✓ | [`skills/writing-well/SKILL.md`](skills/writing-well/SKILL.md) |
+| 6 | ✓ | [`skills/coingecko-and-coinmarketcap-apis/references/keyless-apis.md`](skills/coingecko-and-coinmarketcap-apis/references/keyless-apis.md) |
+| 7 | ✓ | [`skills/coingecko-and-coinmarketcap-apis/SKILL.md`](skills/coingecko-and-coinmarketcap-apis/SKILL.md) |
+| 8 | ✓ | [`skills/cotizacion-dolar-argentina/SKILL.md`](skills/cotizacion-dolar-argentina/SKILL.md) |
+| 9 | ✓ | [`skills/cotizaciones-pix-comparapix/SKILL.md`](skills/cotizaciones-pix-comparapix/SKILL.md) |
+| 10 | ✓ | [`skills/crypto-prices-criptoya/SKILL.md`](skills/crypto-prices-criptoya/SKILL.md) |
+| 11 | ✓ | [`skills/data912-market-data/references/openapi-spec.json`](skills/data912-market-data/references/openapi-spec.json) |
+| 12 | ✓ | [`skills/data912-market-data/SKILL.md`](skills/data912-market-data/SKILL.md) |
+| 13 | ✓ | [`skills/dataroma-superinvestors/references/endpoints.md`](skills/dataroma-superinvestors/references/endpoints.md) |
+| 14 | ✓ | [`skills/dataroma-superinvestors/SKILL.md`](skills/dataroma-superinvestors/SKILL.md) |
+| 15 | ✓ | [`skills/dub-links-api/references/openapi-spec.json`](skills/dub-links-api/references/openapi-spec.json) |
+| 16 | ✓ | [`skills/dub-links-api/SKILL.md`](skills/dub-links-api/SKILL.md) |
+| 17 | ✓ | [`skills/inflacion-argentina-ipc/SKILL.md`](skills/inflacion-argentina-ipc/SKILL.md) |
+| 18 | ✓ | [`skills/mapcn/references/api-cheatsheet.md`](skills/mapcn/references/api-cheatsheet.md) |
+| 19 | ✓ | [`skills/mapcn/references/docs-pages.md`](skills/mapcn/references/docs-pages.md) |
+| 20 | ✓ | [`skills/mapcn/SKILL.md`](skills/mapcn/SKILL.md) |
+| 21 | ✓ | [`skills/product-shaping/references/prototype-guide.md`](skills/product-shaping/references/prototype-guide.md) |
+| 22 | ✓ | [`skills/product-shaping/references/shaping-doc-template.md`](skills/product-shaping/references/shaping-doc-template.md) |
+| 23 | ✓ | [`skills/product-shaping/SKILL.md`](skills/product-shaping/SKILL.md) |
+| 24 | ✓ | [`skills/riesgo-pais-argentina/SKILL.md`](skills/riesgo-pais-argentina/SKILL.md) |
+| 25 | ✓ | [`skills/ripio-wfiat/references/tokens.md`](skills/ripio-wfiat/references/tokens.md) |
+| 26 | ✓ | [`skills/ripio-wfiat/SKILL.md`](skills/ripio-wfiat/SKILL.md) |
+| 27 | ✓ | [`skills/travel-promos-argentina/SKILL.md`](skills/travel-promos-argentina/SKILL.md) |
+| 28 | ✓ | [`skills/uniswap-v4-subgraph/references/v4-queries.md`](skills/uniswap-v4-subgraph/references/v4-queries.md) |
+| 29 | ✓ | [`skills/uniswap-v4-subgraph/SKILL.md`](skills/uniswap-v4-subgraph/SKILL.md) |
+| 30 | ✓ | [`skills/workflowy/references/api-reference.md`](skills/workflowy/references/api-reference.md) |
+| 31 | ✓ | [`skills/workflowy/SKILL.md`](skills/workflowy/SKILL.md) |
+| 32 | ✓ | [`skills/writing-well/SKILL.md`](skills/writing-well/SKILL.md) |
 
 ---
 

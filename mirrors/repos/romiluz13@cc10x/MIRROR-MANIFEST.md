@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `romiluz13/cc10x` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `romiluz13/cc10x` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `romiluz13/cc10x` — 26 default patterns, 0 followed patterns, 24 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,10 +79,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`plugins/cc10x/skills/mcp-cli/SKILL.md`](plugins/cc10x/skills/mcp-cli/SKILL.md) |
 | 19 | ✓ | [`plugins/cc10x/skills/memory-and-handoff/SKILL.md`](plugins/cc10x/skills/memory-and-handoff/SKILL.md) |
 | 20 | ✓ | [`plugins/cc10x/skills/plan-review-gate/SKILL.md`](plugins/cc10x/skills/plan-review-gate/SKILL.md) |
-| 21 | ✓ | [`plugins/cc10x/skills/research/SKILL.md`](plugins/cc10x/skills/research/SKILL.md) |
-| 22 | ✓ | [`plugins/cc10x/skills/resolving-merge-conflicts/SKILL.md`](plugins/cc10x/skills/resolving-merge-conflicts/SKILL.md) |
-| 23 | ✓ | [`plugins/cc10x/skills/update/SKILL.md`](plugins/cc10x/skills/update/SKILL.md) |
-| 24 | ✓ | [`plugins/cc10x/skills/verification/SKILL.md`](plugins/cc10x/skills/verification/SKILL.md) |
+| 21 | ✓ | [`plugins/cc10x/skills/planning/SKILL.md`](plugins/cc10x/skills/planning/SKILL.md) |
+| 22 | ✓ | [`plugins/cc10x/skills/research/SKILL.md`](plugins/cc10x/skills/research/SKILL.md) |
+| 23 | ✓ | [`plugins/cc10x/skills/resolving-merge-conflicts/SKILL.md`](plugins/cc10x/skills/resolving-merge-conflicts/SKILL.md) |
+| 24 | ✓ | [`plugins/cc10x/skills/update/SKILL.md`](plugins/cc10x/skills/update/SKILL.md) |
+| 25 | ✓ | [`plugins/cc10x/skills/verification/SKILL.md`](plugins/cc10x/skills/verification/SKILL.md) |
 
 ---
 

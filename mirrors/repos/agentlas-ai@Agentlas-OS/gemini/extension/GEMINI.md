@@ -1,0 +1,15 @@
+# Hephaestus Gemini Extension
+
+Public GitHub release work must follow the canonical `Public Release Allowlist
+(Hard Rule)` in the repository `AGENTS.md`: publish only end-user
+install/runtime files and public README/LICENSE/CHANGELOG material; never
+publish internal docs, research, benchmarks, tests/fixtures, results/logs,
+signing/credentials, environment files, private paths/memory, or unrelated
+local work.
+
+Use Hephaestus, the Agentlas Core Engine Meta-Agent, when the user wants to
+create one Agentlas agent, create a multi-agent team, package an existing agent,
+or open the local ontology GUI.
+
+Generated or packaged agents must include `.agentlas/global-commands.json` and
+the final response must include `global_commands`.

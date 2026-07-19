@@ -237,15 +237,35 @@ def ingest_vcp(record: dict, input_file: str) -> dict:
 
 @_adapter("pead-screener")
 def ingest_pead(record: dict, input_file: str) -> dict:
-    """Transform pead-screener result into thesis data."""
+    """Transform pead-screener result into thesis data.
+
+    Field-name fix (money-adjacent, fail-closed): the real screen_pead.py
+    output carries `stage` (BREAKOUT / SIGNAL_READY / MONITORING /
+    EXPIRED — see screen_pead.py:364) and `stop_price` (screen_pead.py:373,
+    used as the actionable stop only in the BREAKOUT branch of
+    report_generator.py:223-232) — NOT `status`/`stop_loss`, which never
+    exist in a real record. Reading the wrong keys silently left every
+    thesis_statement as "status ?" and exit.stop_loss permanently unset.
+
+    `stage == "BREAKOUT"` is the only actionable tier here (mirrors
+    report_generator.py's own stage-gated stop display): a BREAKOUT
+    candidate with a missing/non-numeric/NaN/Infinity/non-positive
+    stop_price is rejected outright rather than silently registered
+    without a stop. Earlier stages (MONITORING/SIGNAL_READY/EXPIRED) have
+    no real stop yet by design (report_generator.py only shows one
+    tentative "if triggered" reference for SIGNAL_READY, off the red
+    candle, not stop_price) — those are still ingested as IDEA, just with
+    exit.stop_loss left unset rather than filled with an invalid value.
+    """
     ticker = record.get("symbol")
     if not ticker:
         raise ValueError("Missing required field 'symbol' in PEAD record")
 
+    stage = record.get("stage", "?")
     thesis_data = {
         "ticker": ticker,
         "thesis_type": "earnings_drift",
-        "thesis_statement": (f"{ticker} PEAD earnings drift — status {record.get('status', '?')}"),
+        "thesis_statement": (f"{ticker} PEAD earnings drift — stage {stage}"),
         "_register_reason": "screened by pead-screener",
         "entry": {},
         "exit": {},
@@ -260,8 +280,17 @@ def ingest_pead(record: dict, input_file: str) -> dict:
 
     if "entry_price" in record:
         thesis_data["entry"]["target_price"] = record["entry_price"]
-    if "stop_loss" in record:
-        thesis_data["exit"]["stop_loss"] = record["stop_loss"]
+
+    valid_stop = thesis_store._valid_finite_positive(record.get("stop_price"))
+    if stage == "BREAKOUT" and valid_stop is None:
+        raise ValueError(
+            f"PEAD record for {ticker!r} is stage=BREAKOUT (actionable) but "
+            f"stop_price is missing/non-numeric/non-finite/non-positive "
+            f"({record.get('stop_price')!r}) — refusing to register an "
+            f"actionable thesis without a valid stop"
+        )
+    if valid_stop is not None:
+        thesis_data["exit"]["stop_loss"] = valid_stop
 
     return thesis_data
 

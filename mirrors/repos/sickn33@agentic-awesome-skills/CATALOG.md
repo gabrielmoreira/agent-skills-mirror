@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-07-16T14:29:29.000Z
+Generated at: 2026-07-18T14:28:18.000Z
 
-Total skills: 1965
+Total skills: 1968
 
 ## agent-behavior (5)
 
@@ -797,11 +797,12 @@ Total skills: 1965
 | --- | --- | --- | --- | --- | --- |
 | `vscode-extension-guide-en` | Guide for VS Code extension development from scaffolding to Marketplace publication | safe | lewiswigmore/agent-skills | vscode, extension, ide, typescript, marketplace | vscode, extension, ide, typescript, marketplace, en, vs, code, development, scaffolding, publication |
 
-## creative (1)
+## creative (2)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
 | `article-illustrations` | Generate hand-drawn 16:9 article illustrations with the Grav character IP, sparse annotations, and absurd but clear visual metaphors. | safe | vipin-si/article-illustrations | illustration, article-graphics, visual-metaphors, image-generation, whiteboard-sketch | illustration, article-graphics, visual-metaphors, image-generation, whiteboard-sketch, article, illustrations, generate, hand, drawn, 16, grav |
+| `modellix` | Integrate Modellix unified API/CLI for async AI image and video generation (model run --wait, task download). | critical | Modellix/modellix-skill | image-generation, video-generation, modellix, cli, api | image-generation, video-generation, modellix, cli, api, integrate, unified, async, ai, image, video, generation |
 
 ## data (24)
 
@@ -1329,13 +1330,14 @@ Total skills: 1965
 | --- | --- | --- | --- | --- | --- |
 | `vibe-code-cleanup` | Safe production cleanup and hardening for vibe-coded fullstack apps (Next.js, React, Node.js, etc.). Removes dead imports, unused files, and broken reference... | safe | self | cleanup, refactor, nextjs, production, vibe-code, fullstack, nodejs | cleanup, refactor, nextjs, production, vibe-code, fullstack, nodejs, vibe, code, safe, hardening, coded |
 
-## game-development (17)
+## game-development (18)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
-| `game-development` | Game development orchestrator. Routes to platform-specific skills based on project needs. | unknown | community | game | game, development, orchestrator, routes, platform, specific, skills |
-| `game-development/2d-games` | 2D game development principles. Sprites, tilemaps, physics, camera. | none | community | game, development/2d, games | game, development/2d, games, 2d, development, principles, sprites, tilemaps, physics, camera |
+| `game-development` | Game development orchestrator. Routes by platform, dimension, and engine fit (web 2D/3D, hybrid DOM+canvas, narrative tools). Use when starting or structurin... | unknown | community | game | game, development, orchestrator, routes, platform, dimension, engine, fit, web, 2d, 3d, hybrid |
+| `game-development/2d-games` | 2D game development principles. Sprites, atlases, tilemaps, physics, cameras, and genre patterns (platformer, top-down). Use for canvas/Phaser/Kaplay/Pixi 2D... | none | community | game, development/2d, games | game, development/2d, games, 2d, development, principles, sprites, atlases, tilemaps, physics, cameras, genre |
 | `game-development/3d-games` | 3D game development principles. Rendering, shaders, physics, cameras. | unknown | community | game, development/3d, games | game, development/3d, games, 3d, development, principles, rendering, shaders, physics, cameras |
+| `game-development/engine-selection` | Selects game engines and frameworks by platform, genre, and architecture (full canvas shell vs hybrid DOM shell + guest viewport). Covers Phaser, PixiJS, Kap... | safe | self | game, development/engine, selection | game, development/engine, selection, engine, selects, engines, frameworks, platform, genre, architecture, full, canvas |
 | `game-development/game-art` | Game art principles. Visual style selection, asset pipeline, animation workflow. | unknown | community | game, development/game, art | game, development/game, art, principles, visual, style, selection, asset, pipeline, animation |
 | `game-development/game-audio` | Game audio principles. Sound design, music integration, adaptive audio systems. | unknown | community | game, development/game, audio | game, development/game, audio, principles, sound, music, integration, adaptive |
 | `game-development/game-design` | Game design principles. GDD structure, balancing, player psychology, progression. | unknown | community | game, development/game | game, development/game, principles, gdd, structure, balancing, player, psychology, progression |
@@ -1343,7 +1345,7 @@ Total skills: 1965
 | `game-development/multiplayer` | Multiplayer game development principles. Architecture, networking, synchronization. | unknown | community | game, development/multiplayer | game, development/multiplayer, multiplayer, development, principles, architecture, networking, synchronization |
 | `game-development/pc-games` | PC and console game development principles. Engine selection, platform features, optimization strategies. | safe | community | game, development/pc, games | game, development/pc, games, pc, console, development, principles, engine, selection, platform, features, optimization |
 | `game-development/vr-ar` | VR/AR development principles. Comfort, interaction, performance requirements. | unknown | community | game, development/vr, ar | game, development/vr, ar, vr, development, principles, comfort, interaction, performance, requirements |
-| `game-development/web-games` | Web browser game development principles. Framework selection, WebGPU, optimization, PWA. | unknown | community | game, development/web, games | game, development/web, games, web, browser, development, principles, framework, selection, webgpu, optimization, pwa |
+| `game-development/web-games` | Web browser game development. Framework selection (Phaser, PixiJS, Kaplay, Canvas/WebGL, Three.js, Babylon.js), hybrid DOM+canvas, WebGPU, optimization, PWA,... | unknown | community | game, development/web, games | game, development/web, games, web, browser, development, framework, selection, phaser, pixijs, kaplay, canvas |
 | `godot-4-migration` | Specialized guide for migrating Godot 3.x projects to Godot 4 (GDScript 2.0), covering syntax changes, Tweens, and exports. | safe | community | godot, 4, migration | godot, 4, migration, specialized, migrating, gdscript, covering, syntax, changes, tweens, exports |
 | `godot-gdscript-patterns` | Master Godot 4 GDScript patterns including signals, scenes, state machines, and optimization. Use when building Godot games, implementing game systems, or le... | safe | community | godot, gdscript | godot, gdscript, including, signals, scenes, state, machines, optimization, building, games, implementing, game |
 | `minecraft-bukkit-pro` | Master Minecraft server plugin development with Bukkit, Spigot, and Paper APIs. | safe | community | minecraft, bukkit | minecraft, bukkit, pro, server, plugin, development, spigot, paper, apis |
@@ -2007,7 +2009,7 @@ Total skills: 1965
 | --- | --- | --- | --- | --- | --- |
 | `android-cli` | Orchestrates Android development tasks including project creation, deployment, SDK management, and environment diagnostics using the `android` command-line t... | critical | self | android, cli, adb, mobile, build, emulator | android, cli, adb, mobile, build, emulator, orchestrates, development, tasks, including, creation, deployment |
 
-## uncategorized (283)
+## uncategorized (284)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -2025,6 +2027,7 @@ Total skills: 1965
 | `andrej-karpathy` | Behavioral guidelines to reduce common LLM coding mistakes. Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes... | safe | multica-ai/andrej-karpathy-skills | coding-guidelines, code-review, llm-coding, simplicity | coding-guidelines, code-review, llm-coding, simplicity, andrej, karpathy, behavioral, guidelines, reduce, common, llm, coding |
 | `anti-deception` | Use BEFORE responding when the user's request shows pressure to validate or agree ("tell them what they want", "make them happy", "convince them"), manufactu... | unknown | ejentum/ejentum-mcp | community, ai-tools, anti-deception, integrity, mcp | community, ai-tools, anti-deception, integrity, mcp, anti, deception, before, responding, user, request, shows |
 | `anti-sycophancy` | Eliminate sycophantic agreement patterns in AI responses. Load via /skill anti-sycophancy. | safe | mskadu/opencode-agent-skills | anti, sycophancy | anti, sycophancy, eliminate, sycophantic, agreement, ai, responses, load, via, skill |
+| `antigravity-maintainer-batch-release` | Run protected AAS maintainer sweeps, PR merge batches, canonical sync, Core preview checks, and scripted releases. Use for repository maintenance, main align... | critical | self | antigravity, maintainer, batch, release | antigravity, maintainer, batch, release, run, protected, aas, sweeps, pr, merge, batches, canonical |
 | `app-store-changelog` | Generate user-facing App Store release notes from git history since the last tag. | safe | Dimillian/Skills (MIT) | app, store, changelog | app, store, changelog, generate, user, facing, release, notes, git, history, since, last |
 | `apple-notes-search` | Semantic + keyword search and connection-discovery across the user's own Apple Notes via the apple-notes MCP server. Use when the user wants to find, recall,... | critical | connerkward/mcp-apple-notes | apple-notes, search, mcp, macos, semantic-search, knowledge | apple-notes, search, mcp, macos, semantic-search, knowledge, apple, notes, semantic, keyword, connection, discovery |
 | `atlas-ledger` | Companion to atlas-contract. Auto-invoked by its Final Audit on caught drift; also use after Post Reviews or user requests to record a mistake. Distills drif... | critical | wede-wx/atlas | atlas, ledger | atlas, ledger, companion, contract, auto, invoked, final, audit, caught, drift, after, post |
@@ -2404,7 +2407,7 @@ Total skills: 1965
 | `conductor-validator` | Validates Conductor project artifacts for completeness, consistency, and correctness. Use after setup, when diagnosing issues, or before implementation to ve... | safe | community | conductor, validator | conductor, validator, validates, artifacts, completeness, consistency, correctness, after, setup, diagnosing, issues, before |
 | `create-branch` | Create a git branch following Sentry naming conventions. Use when asked to "create a branch", "new branch", "start a branch", "make a branch", "switch to a n... | critical | community | create, branch | create, branch, git, following, sentry, naming, conventions, asked, new, start, switch, starting |
 | `create-issue-gate` | Use when starting a new implementation task and an issue must be created with strict acceptance criteria gating before execution. | safe | community | create, issue, gate | create, issue, gate, starting, new, task, must, created, strict, acceptance, criteria, gating |
-| `create-pr` | Alias for sentry-skills:pr-writer. Use when users explicitly ask for "create-pr" or reference the legacy skill name. Redirects to the canonical PR writing wo... | unknown | community | create, pr | create, pr, alias, sentry, skills, writer, users, explicitly, ask, reference, legacy, skill |
+| `create-pr` | Alias for pr-writer. Use when users explicitly ask for "create-pr" or reference the legacy skill name. Redirects to the canonical PR writing workflow. | unknown | community | create, pr | create, pr, alias, writer, users, explicitly, ask, reference, legacy, skill, name, redirects |
 | `crossframe` | Use when the user explicitly invokes CrossFrame or 跨尺度结构诊断 for Chinese-canonical structural diagnosis of complex relationships, organizations, institutions, ... | safe | xi-kari/crossframe-skill | crossframe, chinese, structural-diagnosis, reasoning, governance | crossframe, chinese, structural-diagnosis, reasoning, governance, user, explicitly, invokes, canonical, structural, diagnosis, complex |
 | `crossframe-public` | Use when CrossFrame Suite routes explicit Chinese analysis of public issues, platform governance, policy, institutional responsibility, appeals, or complianc... | safe | xi-kari/crossframe-skill | crossframe, chinese, public-policy, governance, evidence | crossframe, chinese, public-policy, governance, evidence, public, suite, routes, explicit, analysis, issues, platform |
 | `crossframe-review` | Use when explicit CrossFrame output needs review for reasoning fidelity, evidence boundaries, source anchors, concept drift, article collapse, or repair steps. | safe | xi-kari/crossframe-skill | crossframe, chinese, review, quality-gate, evidence | crossframe, chinese, review, quality-gate, evidence, explicit, output, reasoning, fidelity, boundaries, source, anchors |

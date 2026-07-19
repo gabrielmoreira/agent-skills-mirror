@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `KhazP/vibe-coding-prompt-template` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `KhazP/vibe-coding-prompt-template` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `KhazP/vibe-coding-prompt-template` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,7 +65,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.claude/skills/vibe-research/SKILL.md`](.claude/skills/vibe-research/SKILL.md) |
 | 5 | ✓ | [`.claude/skills/vibe-techdesign/SKILL.md`](.claude/skills/vibe-techdesign/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/vibe-workflow/SKILL.md`](.claude/skills/vibe-workflow/SKILL.md) |
-| 7 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
+| 7 | ✓ | [`examples/reddit-to-ai/AGENTS.md`](examples/reddit-to-ai/AGENTS.md) |
+| 8 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
+| 9 | ✓ | [`templates/tool-adapters/CLAUDE.md`](templates/tool-adapters/CLAUDE.md) |
 
 ---
 

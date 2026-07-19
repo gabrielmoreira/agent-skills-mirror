@@ -4,6 +4,16 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.215](https://github.com/Piebald-AI/claude-code-system-prompts/commit/c998138)
+
+_+645 tokens_
+
+- **NEW:** System Prompt: Subagent delegation restraint — Limits subagent use to genuinely independent, sizeable, or parallel work; keeps small tasks and inline verification in the parent agent; discourages redundant fan-out and duplicated work; and favors a few precisely briefed agents.
+- **REMOVED:** System Prompt: Action safety and truthful reporting — Removes general instructions to confirm irreversible or outward-facing actions, inspect targets before deletion or overwrite, and report failed, skipped, or verified outcomes plainly.
+- Tool Description: Agent (simple usage notes) and Tool Description: Agent (usage notes) — Make broad delegation, proactive-use, and parallel-launch guidance conditional on the default subagent steering mode, while injecting mode- and capability-specific fork, prompt-writing, example, and remote-isolation notes.
+- Tool Description: EnterPlanMode and Tool Description: Grep — Make suggestions to use the Agent tool for pure research and open-ended multi-round searches conditional on the active subagent steering mode.
+- Tool Description: Glob — Removes the unconditional recommendation to use the Agent tool for open-ended searches requiring multiple rounds of globbing and grepping.
+
 #### [2.1.214](https://github.com/Piebald-AI/claude-code-system-prompts/commit/29d3029)
 
 <sub>_No changes to the system prompts in v2.1.214._</sub>

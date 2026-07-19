@@ -13,7 +13,7 @@ official Codex package format.
 1. Extract the lowercase pet slug or collection slug from the request. Do not
    guess when no slug is present.
 2. Confirm `node`, `npm`, and `npx` are available. If they are missing, report
-   that the embedded Alpine runtime needs its base packages installed.
+   that the embedded {{OMNIBOT_TERMINAL_DISTRIBUTION}} environment needs its base packages installed.
 3. Point the official CLI at Omnibot's Codex-compatible pet root, then run the
    requested command:
 

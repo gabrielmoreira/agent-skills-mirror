@@ -68,12 +68,11 @@ oh-my-opencode-slim/
 │   ├── agents/       # Agent factories (orchestrator, explorer, oracle, etc.)
 │   ├── cli/          # CLI entry point
 │   ├── config/       # Constants, schemas, MCP defaults
-│   ├── council/      # Council manager (multi-LLM session orchestration)
 │   ├── hooks/        # OpenCode lifecycle hooks
 │   ├── mcp/          # MCP server definitions
 │   ├── multiplexer/  # Tmux/Zellij pane integration for child sessions
 │   ├── skills/       # Skill definitions (included in package publish)
-│   ├── tools/        # Tool definitions (council, webfetch, AST-grep, etc.)
+│   ├── tools/        # Tool definitions (webfetch, AST-grep, etc.)
 │   └── utils/        # Shared utilities (session, task, logger, env, etc.)
 ├── dist/             # Built JavaScript and declarations
 ├── docs/             # User-facing documentation
@@ -106,6 +105,42 @@ For plugin or Companion releases, follow `docs/release.md`. It documents the
 required diff inspection, companion asset workflow, GitHub release creation,
 tagging, verification, and npm publish order.
 
+## Prompt Cache Safety
+
+Provider prompt caches are exact byte-prefix matches over the rendered
+request (tools → system → messages). Any byte that changes earlier in the
+payload invalidates the cache for everything after it, so every request in
+the session re-pays full input cost and latency. Past regressions in this
+repo all came from hooks rewriting or repositioning earlier conversation
+content.
+
+Rules when touching anything that feeds the outgoing payload (hooks,
+agent prompts, config constants):
+
+- Inject content only through `src/hooks/cache-safe-injection.ts`:
+  deterministic content via `appendTaggedSyntheticPart` (tail of an existing
+  message), per-turn volatile content via `stripTaggedContent` +
+  `appendTrailingVolatileMessage` (trailing message, end of payload).
+- Never mutate or reorder earlier messages, and never let timestamps,
+  randomness, or per-request IDs reach content before the payload tail.
+- Keep system prompts and tool sets frozen for the lifetime of a session.
+
+Enforcement (all run in `bun test` / CI):
+
+- `src/hooks/cache-safety.property.test.ts` — prefix-stability and
+  determinism properties over the real transform pipeline, with a drift
+  guard pinned to the composition in `src/index.ts`. New transform steps
+  must be added to `src/hooks/cache-safety-harness.test.ts`.
+- `src/hooks/cache-payload.snapshot.test.ts` — golden snapshots of injected
+  prompt surfaces; failing means the change busts caches once fleet-wide and
+  must be updated deliberately via `bun test --update-snapshots`.
+- `src/cache-safety-tripwire.test.ts` — bans volatile-input patterns in
+  prompt-assembly directories outside a justified allowlist.
+- `src/hooks/cache-monitor/` — runtime watchdog that logs a warning when a
+  session that was hitting the provider cache reports zero cached tokens.
+
+See `docs/cache-verification.md` for the full verification story.
+
 ## Pre-Push Code Review
 
 Before pushing changes to the repository, when makes sense run a code review to catch issues like:
@@ -113,6 +148,8 @@ Before pushing changes to the repository, when makes sense run a code review to 
 - Redundant function calls
 - Race conditions
 - Logic errors
+- Cache safety: prompt-prefix rewrites, volatile content outside the
+  trailing zone, or injections bypassing `src/hooks/cache-safe-injection.ts`
 
 ## Repository Map
 

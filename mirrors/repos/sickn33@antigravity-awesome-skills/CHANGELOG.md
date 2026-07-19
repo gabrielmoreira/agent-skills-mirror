@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the **Agentic Awesome Skills** collection are documented in this file.
+All notable changes to **AAS Core** and its surrounding catalog, distribution, compatibility, and community surfaces are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -9,21 +9,104 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Make AAS Core recommendations domain-first for browser-extension projects: project profile evidence now promotes Manifest V3 architecture, permissions, and cross-context messaging to critical goals, backed by a reviewed Chrome-extension specialist rather than generic QA-only coverage.
+- Expanded natural AAS Core goals such as `build`, `test`, `security`, and `release` into versioned capability lanes before deterministic ranking, so real project profiles produce reviewable multi-skill stacks instead of empty or single-skill recommendations.
+- Clarified the MCP recommendation contract for natural goals and the `0.8`–`1.0` non-critical coverage ratio, and added a bundled VibePalette regression proving a five-to-eight-skill project stack remains available without weakening policy gates.
+
+## [15.0.0] - 2026-07-18 - "AAS Core: Local Composition and Reviewable Plans"
+
+> AAS Core becomes the primary product: a local, deterministic engine shared by the `aas` CLI and read-only `aas-mcp`, taking coding agents from an explicit project profile to an explainable recommendation, `aas-stack.json`, validation, and immutable plan preview before any target change.
+
 ### Added
 
-- Added an offline local skill reviewer for deterministic repository-wide triage, evidence-bound scoring, P0-P3 priorities, and Codex-assisted manual review. Its documented 74.5% validation agreement is not a claim of equivalence with Tessl, and Tessl remains an optional future sample audit rather than a runtime dependency.
+- Added a repository-canonical `antigravity-maintainer-batch-release` skill so external clones can follow the mandatory protected maintainer workflow without relying on a machine-local copy.
+- Added a public AAS Core guide covering the local agent-first MCP flow, `aas-stack.json`, CLI validation and immutable plan preview, Workbench review, privacy boundaries, and the current preview qualification.
 
 ### Changed
 
-- Made the local reviewer a mandatory maintainer pre-merge step for changed `SKILL.md` and bundle blobs, while preserving Tessl or exact-head maintainer attestation as the official merge gate.
+- Made the OSS Maintainer bundle self-contained, made the Git pushing helper portable outside this repository, and removed dead maintenance-skill references.
+- Aligned secondary user guides, hosted discovery copy, Workbench verification labels, and an ImageGen-produced social card with the AAS Core product hierarchy while preserving direct-distribution, contributor, governance, and historical content.
+- Clarified the first-screen AAS Core narrative with one primary product, an explicit project-profile trust boundary, a single Core CTA, and durable generator guards that keep future metadata syncs from restoring the legacy library-first headline.
+- Reduced the Core preview workflow to one packed Linux/Node LTS smoke path plus Workbench review, while retaining release-time validation for publication.
+- Recentered the README, user onboarding, host guides, package metadata, and hosted catalog narrative on AAS Core while preserving contributor, catalog, plugin, bundle, workflow, compatibility, community, and source-credit content.
 - Expanded the curated hosted sitemap from 42 to 180 deterministic skill routes and added crawlable static home/topic fallbacks so search engines can discover useful catalog hubs without mass-indexing the full library.
 - Enriched the four search-intent landing pages with real recommended skills, stronger internal links, and matching `ItemList` structured data while preserving canonical trailing-slash identities.
 - Replaced the marketing-only homepage heading with a descriptive AI-agent-skills heading while retaining the existing slogan as supporting copy.
 
 ### Fixed
 
+- Fixed invalid `aas stack validate` manifests so the CLI returns the documented structured error and non-zero exit status.
+- Corrected the AAS Core release boundary, Workbench artifact-review flow, localized and search-facing narrative, and npm packaging assertions without changing contributor, governance, community, or historical sections.
+- Removed the retired certified-v1 verifier corpus, six-job harnesses, tuning runner, paused optimization workflows, heuristic local reviewer, lexical risk inference, and quality-score merge regressions. Objective validation, reference, security, provenance, Tessl-or-exact-head semantic review, and protected canonical-sync gates remain.
+- Made the future AAS Core npm onboarding release-safe by linking the published README to the canonical Core guide and deriving the plan runtime version from the manifest catalog identity instead of hardcoding a release number.
 - Added the current Bing Webmaster verification identity and updated the legacy Pages redirect generator contract to cover the expanded 187-route sitemap.
-- Expanded the legacy Pages bridge to every one of the 1,965 current catalog skills plus seven structural routes, while keeping crawler discovery limited to the curated 187-route sitemap and making migration-readiness checks enforce the same exact catalog coverage.
+- Expanded the legacy Pages bridge to every one of the 1,968 current catalog skills plus seven structural routes, while keeping crawler discovery limited to the curated 187-route sitemap and making migration-readiness checks enforce the same exact catalog coverage.
+- Corrected public Workbench copy that implied browser-side install-command generation; Workbench reviews user-supplied Core stack and plan artifacts without filesystem access or installation.
+
+### Validation
+
+- Verified the published `15.0.0-rc.3` package end to end in a fresh real Codex client: official MCP configuration, native `search_skills`, `get_skill`, `recommend_stack`, and `inspect_stack` calls, a valid agent-proposed `aas-stack.json`, packaged CLI validation, and immutable read-only plan preview without apply or recovery.
+- Passed repository validation, reference and documentation-security checks, AAS Core tests, web-app coverage and build, package-content checks, protected CI, CodeQL, Dependency Review, Snyk, Socket, and npm publication verification.
+
+## [15.0.0-rc.3] - 2026-07-18 - "AAS Core Onboarding Candidate"
+
+> Supersedes `15.0.0-rc.2` after real Codex validation exposed three onboarding defects. This candidate remains on npm's `next` channel until the complete fresh-client flow passes without workarounds.
+
+### Fixed
+
+- Allowed the official runtime bootstrap to create a private AAS cache under a normal real user configuration directory without requiring the parent directory itself to be private.
+- Published exact nested MCP input schemas for recommendation profiles, targets, policy, and stack manifests, and aligned `projectType` with the Core recommendation contract.
+- Directed MCP clients to validate every proposed `aas-stack.json` with `inspect_stack` before handing it to the CLI, preventing malformed manifest contracts from reaching `stack validate`.
+
+### Validation
+
+- `15.0.0-rc.2` proved real Codex discovery and invocation of `search_skills`, `get_skill`, and `recommend_stack`, but stable promotion was stopped because bootstrap required a cache workaround and the agent-proposed manifest failed CLI validation.
+- Stable `15.0.0` remains gated on repeating the full fresh-client flow with the packaged `15.0.0-rc.3` runtime and packaged CLI, ending in successful manifest validation and read-only plan preview.
+
+## [15.0.0-rc.2] - 2026-07-18 - "AAS Core Release Candidate"
+
+> Supersedes the unpublished `15.0.0-rc.1` candidate after hardening prerelease metadata synchronization. This candidate is published on npm's `next` channel for real-client validation before the stable 15.0.0 release.
+
+### Fixed
+
+- Made prerelease metadata synchronization idempotent across the README and crawler-facing release metadata, including repeated RC syncs and the later RC-to-stable transition.
+- Reprepared the protected release candidate from the exact post-fix `main` lineage so the release tag, generated state, and published package share one verified source identity.
+
+### Validation
+
+- Stable `15.0.0` remains gated on a fresh Codex client discovering and invoking the packaged AAS MCP, followed by packaged CLI validation and read-only plan preview.
+
+## [15.0.0-rc.1] - 2026-07-18 - "AAS Core Release Candidate (Unpublished)"
+
+> Prepared as the first AAS Core release candidate but not tagged or published; superseded by `15.0.0-rc.2` after prerelease metadata synchronization was hardened.
+
+### Added
+
+- Added the local, deterministic AAS Core shared by the `aas` CLI and local stdio MCP, with catalog search, skill inspection, explainable stack recommendation, manifest validation, immutable plan preview, and read-only diagnosis.
+- Added the versioned `aas-stack.json` and plan contracts, integrity-bound offline catalog runtime, Codex and Claude MCP configuration flow, and browser-local Workbench artifact review.
+
+### Changed
+
+- Repositioned the repository around AAS Core while preserving the catalog, plugins, bundles, workflows, direct installers, compatibility documentation, contributor guidance, governance, community, credits, and historical release notes.
+- Raised the supported Node.js runtime to 22 or newer and made prereleases publish explicitly to npm's `next` channel while stable releases publish to `latest`.
+- Kept target mutation outside the supported preview claim: `stack apply` and `stack recover` remain experimental and opt-in.
+
+### Fixed
+
+- Removed obsolete heuristic reviewer, lexical risk classifier, score gates, certified-v1 evaluation corpus, and paused optimization machinery that produced false positives or unnecessary merge friction. Objective validation, reference, security, provenance, protected canonical synchronization, and Tessl-or-exact-head semantic review remain.
+- Made AAS Core release capability explicit in package metadata so future documentation and release synchronization no longer depend on hardcoded version strings.
+
+### Validation
+
+- This candidate is intentionally published before the stable release so a fresh Codex client can discover and invoke the packaged AAS MCP and the packaged CLI can validate and preview the proposed stack end to end.
+
+### Credits
+
+- **[@alen-hh](https://github.com/alen-hh)** for `modellix` (PR #867).
+- **[@Siphon880gh](https://github.com/Siphon880gh)** for `game-development/engine-selection` and related game-development updates (PR #879).
+- **[@kimtth](https://github.com/kimtth)** for the OOXML reference-deck analysis added to `pptx-deck-creation` (PR #871).
 
 ## [14.6.0] - 2026-07-16 - "Diagnostics, Review Efficiency, and Protected Maintenance"
 

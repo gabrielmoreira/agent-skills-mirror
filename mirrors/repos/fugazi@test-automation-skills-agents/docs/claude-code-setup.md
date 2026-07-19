@@ -28,7 +28,7 @@ Then install the plugin:
 /plugin install test-automation-skills-agents@fugazi-test-automation
 ```
 
-This will make all 13 specialized QA agents and 10 reusable skills available in your Claude Code session.
+This will make all 7 specialized QA agents and 11 reusable skills available in your Claude Code session.
 
 > **SSH errors?** The marketplace clones repos via SSH. If you don't have SSH keys set up on GitHub, either [add your SSH key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account) or switch to HTTPS for fetches only:
 > ```bash
@@ -99,7 +99,7 @@ Reference agents by name in your prompt:
 ```
 You: "Use the playwright-test-planner to create a test plan for the checkout flow"
 You: "Have the api-tester-specialist design tests for the /orders endpoint"
-You: "Ask the flaky-test-hunter to analyze this failing test"
+You: "Ask the playwright-test-healer to analyze this failing test"
 You: "Use the selenium-test-specialist to create Java tests for the profile page"
 ```
 
@@ -127,7 +127,7 @@ Include schema validation, auth testing, and error states.
 Example `.claude/commands/fix-flaky.md`:
 
 ```markdown
-Use the flaky-test-hunter agent to investigate and fix this flaky test: $ARGUMENTS
+Use the playwright-test-healer agent to investigate and fix this flaky test: $ARGUMENTS
 ```
 
 Then invoke them in Claude Code:

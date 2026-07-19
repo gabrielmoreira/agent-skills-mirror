@@ -15,7 +15,8 @@ Subcommands:
   snapshot --pr N [--repo O/R] --state-dir DIR [--fetch-file F]
            Fetch (or load F), diff against on-disk state, persist the
            observed state atomically, emit the actionable set as JSON.
-  mark     --state-dir DIR (--thread ID --disposition needs-human|dispatched
+  mark     --state-dir DIR --invocation-id ID --session-started-at TIME
+           --invocation-budget-seconds N (--thread ID --disposition needs-human|dispatched
            | --comment ID --disposition needs-human|dispatched | --check KEY)
            Record that the agent acted on an item. A `dispatched` thread is
            re-emitted when a later reviewer comment moves its last-comment
@@ -39,7 +40,7 @@ import tempfile
 import threading
 import uuid
 from contextlib import contextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from urllib.parse import urlsplit
 
 # Conclusions that mean "this check needs attention" (failing states).
@@ -48,6 +49,14 @@ FAILING = {"FAILURE", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED", "STARTUP_FAIL
 DISPOSITION_OPEN = "open"
 DISPOSITION_NEEDS_HUMAN = "needs-human"
 DISPOSITION_DISPATCHED = "dispatched"
+CURRENCY_CLAIMED = "claimed"
+CURRENCY_CONFIRMED = "confirmed"
+CURRENCY_OUTCOME_MUTATION_OBSERVED = "mutation-observed"
+CURRENCY_OUTCOME_PROVEN_NO_MUTATION = "proven-no-mutation"
+CURRENCY_OUTCOME_AMBIGUOUS = "ambiguous"
+CURRENCY_ATTENTION_CLAIM = "claim"
+CURRENCY_ATTENTION_INSPECT = "inspect"
+CURRENCY_ATTENTION_RECONCILE = "reconcile"
 
 MANAGER_CONFIRMED = "confirmed"
 MANAGER_ABSENT = "absent"
@@ -56,8 +65,8 @@ RELATIONSHIP_DEPENDENT = "dependent"
 RELATIONSHIP_INDEPENDENT = "independent"
 RELATIONSHIP_PROBE_ERROR = "probe-error"
 
-# A present in-progress review signal (👀) blocks a merge-ready read — but never terminally: after
-# this much quiet a stale/never-cleared signal is ignored so the PR can still be called ready.
+# First judgment point for an incomplete review lifecycle. The agent may extend once to 1800s when
+# concrete prior-round timing supports it; the skill contract owns that semantic decision.
 REVIEW_INPROGRESS_MAX_WAIT = 900
 
 # Trajectory check-history states (persisted, compared by ==).
@@ -72,9 +81,22 @@ STREAM_REVIEW = "review"
 # unseen for this many ticks.
 CHECK_HISTORY_TTL = 30
 
+# One invocation is a bounded monitoring shift, not the lifetime of the PR. Eight hours covers a
+# maximum-length GitHub-hosted Actions job (six hours) plus reaction and settle time. Callers may
+# choose another fixed value on the first snapshot; later commands must present the same value.
+DEFAULT_INVOCATION_BUDGET_SECONDS = 8 * 60 * 60
+CURRENCY_RETRY_BACKOFF_SECONDS = 30
+
 
 class _WatchSuperseded(Exception):
     """Internal control flow: this watch lost ownership and must unwind immediately."""
+
+
+class _InvocationSuperseded(Exception):
+    """Internal control flow: this watch belongs to an invocation that was replaced."""
+
+    def __init__(self, current_invocation_id):
+        self.current_invocation_id = current_invocation_id
 
 
 def _now():
@@ -138,6 +160,59 @@ def _host_args(host):
     return ["--hostname", host] if host else []
 
 
+def fetch_host_branch_update_capability(pr, owner, name, host=None):
+    """Read GitHub's operation-specific update-branch capability without mutating.
+
+    This fact intentionally says nothing about direct Git push authority, which DIRTY repair must
+    prove separately. Probe and response-shape uncertainty fail closed as `unknown`.
+    """
+    query = """
+query($owner:String!,$repo:String!,$pr:Int!){
+  repository(owner:$owner,name:$repo){
+    pullRequest(number:$pr){ viewerCanUpdateBranch }
+  }
+}"""
+    r = _run(["gh", "api", "graphql", *_host_args(host), "-f", f"owner={owner}",
+              "-f", f"repo={name}", "-F", f"pr={pr}", "-f", f"query={query}"])
+    if r.returncode != 0:
+        return "unknown"
+    try:
+        capability = json.loads(r.stdout)["data"]["repository"]["pullRequest"][
+            "viewerCanUpdateBranch"]
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+        return "unknown"
+    return capability if isinstance(capability, bool) else "unknown"
+
+
+def _eyes_reaction_identities(reaction_pages):
+    """Stable identities for current PR-body eyes reactors from paginated REST results."""
+    if not isinstance(reaction_pages, list):
+        return []
+    reactions = [reaction for page in reaction_pages for reaction in page] \
+        if reaction_pages and all(isinstance(page, list) for page in reaction_pages) else reaction_pages
+    identities = []
+    for reaction in reactions:
+        if not isinstance(reaction, dict) or reaction.get("content") not in (None, "eyes"):
+            continue
+        user = reaction.get("user") or {}
+        identity = user.get("node_id") or user.get("id") or user.get("login")
+        # Deleted-user reactions have no user identity. The reaction identity still lets an
+        # add/remove or same-count substitution move the lifecycle instead of becoming invisible.
+        identity = identity or reaction.get("node_id") or reaction.get("id")
+        if identity is not None:
+            identities.append(str(identity))
+    return sorted(set(identities))
+
+
+def fetch_eyes_reactors(pr, owner, name, host=None):
+    """Fetch every current PR-body eyes reactor; `gh pr view` exposes only their count."""
+    r = _run_checked([
+        "gh", "api", *_host_args(host), "--paginate", "--slurp",
+        f"repos/{owner}/{name}/issues/{pr}/reactions?content=eyes&per_page=100",
+    ], "gh api reactions")
+    return _eyes_reaction_identities(json.loads(r.stdout))
+
+
 def _stack_schema_unavailable(stderr):
     """Recognize only GraphQL schema errors for the private-preview PullRequest stack fields."""
     unavailable_markers = ("doesn't exist on type", "does not exist on type",
@@ -173,6 +248,7 @@ def _default_pr_chain():
         "manager_source": None,
         "relationship_status": RELATIONSHIP_INDEPENDENT,
         "trunk": None,
+        "default_branch": None,
         "current_branch": None,
         "target_position": None,
         "target_needs_rebase": None,
@@ -360,6 +436,7 @@ def fetch_pr_chain(pr, repo, url, base_ref_name, head_ref_name, owner, name, hos
 
     manager_status, chain, default_branch = _fetch_graphql_stack(pr, owner, name, host)
     if manager_status == MANAGER_CONFIRMED:
+        chain["default_branch"] = default_branch
         return chain
 
     relationship, parents, dependents = _manual_relationships(
@@ -368,6 +445,7 @@ def fetch_pr_chain(pr, repo, url, base_ref_name, head_ref_name, owner, name, hos
     result.update({
         "manager_status": manager_status,
         "relationship_status": relationship,
+        "default_branch": default_branch,
         "parent_prs": parents,
         "dependent_prs": dependents,
     })
@@ -378,8 +456,8 @@ def fetch(pr, repo):
     """Fetch both event streams via gh into one combined snapshot dict."""
     repo_args = ["--repo", repo] if repo else []
     view = _run_checked(["gh", "pr", "view", str(pr), *repo_args, "--json",
-                         "state,mergeable,mergeStateStatus,reviewDecision,headRefOid,baseRefName,headRefName,url,number,"
-                         "statusCheckRollup,author,comments,reviews,reactionGroups"],
+                         "state,mergeable,mergeStateStatus,reviewDecision,headRefOid,baseRefOid,baseRefName,headRefName,url,number,"
+                         "statusCheckRollup,author,comments,reviews"],
                         "gh pr view")
     v = json.loads(view.stdout)
 
@@ -406,15 +484,35 @@ def fetch(pr, repo):
                 "details_url": c.get("detailsUrl"),
             })
 
+    owner, name, host = _resolve_repo_ref(repo, v.get("url"))
+    base = {
+        "host": host or "github.com",
+        "repository": f"{owner}/{name}",
+        "ref": v.get("baseRefName"),
+        "oid": v.get("baseRefOid"),
+    }
+    pr_chain = fetch_pr_chain(v.get("number") or pr, repo, v.get("url"),
+                              v.get("baseRefName"), v.get("headRefName"), owner, name, host)
+    currency_probe = {
+        "mergeable": v.get("mergeable"),
+        "merge_state_status": v.get("mergeStateStatus"),
+        "base": base,
+        "pr_chain": pr_chain,
+    }
+    host_branch_update_capability = "unknown"
+    if (v.get("mergeStateStatus") == "BEHIND"
+            and _branch_currency_observation(currency_probe, v.get("headRefOid")) is not None):
+        host_branch_update_capability = fetch_host_branch_update_capability(
+            v.get("number") or pr, owner, name, host)
+
     # In-progress review signal: an 👀 (EYES) reaction on the PR body is how several review bots
     # (Codex among them) announce a review is *underway* — a present in-progress signal means the PR
     # is NOT settled, regardless of quiet time. A present signal is meaningful; absence tells us
     # nothing (many reviewers give no signal), so this only ever *delays* a merge-ready read.
-    review_in_progress = any(
-        g.get("content") == "EYES" and (g.get("users") or {}).get("totalCount", 0) > 0
-        for g in v.get("reactionGroups") or [])
+    review_signal_identities = fetch_eyes_reactors(v.get("number") or pr, owner, name, host)
+    review_signal_count = len(review_signal_identities)
+    review_in_progress = review_signal_count > 0
 
-    owner, name, host = _resolve_repo_ref(repo, v.get("url"))
     head = v.get("headRefOid")
     return {
         "pr_state": v.get("state"),
@@ -422,9 +520,13 @@ def fetch(pr, repo):
         "merge_state_status": v.get("mergeStateStatus"),
         "review_decision": v.get("reviewDecision") or None,
         "head_sha": head,
+        "base": base,
+        "host_branch_update_capability": host_branch_update_capability,
         "url": v.get("url"),
         "checks": checks,
         "review_in_progress": review_in_progress,
+        "review_signal_count": review_signal_count,
+        "review_signal_identities": review_signal_identities,
         "threads": fetch_threads(pr, owner, name, host),
         # Non-thread feedback: top-level PR comments + review submission bodies. ce-resolve-pr-feedback
         # handles these too, so a Changes-Requested review body or an actionable top-level comment with
@@ -432,8 +534,7 @@ def fetch(pr, repo):
         # resolver's judgment; this deterministic layer keeps every non-empty non-author body.
         "feedback": _extract_feedback(v),
         "awaiting_approval": fetch_awaiting_approval(owner, name, head, host),
-        "pr_chain": fetch_pr_chain(v.get("number") or pr, repo, v.get("url"),
-                                   v.get("baseRefName"), v.get("headRefName"), owner, name, host),
+        "pr_chain": pr_chain,
     }
 
 
@@ -526,16 +627,233 @@ query($owner:String!,$repo:String!,$pr:Int!,$cursor:String){
 
 def _empty_state(pr, repo, url, now):
     owner, name = _split_repo(repo)
+    created_at = _iso(now)
     return {
         "pr": {"owner": owner, "repo": name, "number": pr, "url": url},
-        "head_sha": None, "tick": 0, "started_at": _iso(now),
+        "head_sha": None, "tick": 0, "state_created_at": created_at,
+        "started_at": created_at, "invocation_id": None, "invocation_budget_seconds": None,
         "checks": {}, "threads": {}, "ci_dispatched": {},
         "review_decision": None, "mergeable": None, "merge_state_status": None,
+        "review_in_progress": False, "review_signal_count": 0, "review_signal_identities": [],
+        "review_signal_seen_on_head": False,
+        "review_signal_first_seen_at": None, "review_signal_last_changed_at": None,
         "pr_chain": _default_pr_chain(),
+        "base": None,
+        "branch_currency_state": _empty_branch_currency_state(),
         "last_change_at": None, "last_action": None, "stop_reason": None,
         "watch_generation": None, "watch_pid": None, "watch_process_identity": None,
         "trajectory": _empty_trajectory(),
     }
+
+
+def _empty_branch_currency_state():
+    return {"current_key": None, "items": {}, "semantic_parks": {}, "head_sha": None}
+
+
+def _load_branch_currency_state(state):
+    """Conservatively migrate durable state written before branch currency existed."""
+    currency = state.get("branch_currency_state")
+    if not isinstance(currency, dict):
+        currency = {}
+    defaults = _empty_branch_currency_state()
+    for key, value in defaults.items():
+        currency.setdefault(key, value)
+    if not isinstance(currency.get("items"), dict):
+        currency["items"] = {}
+    if not isinstance(currency.get("semantic_parks"), dict):
+        currency["semantic_parks"] = {}
+    state["branch_currency_state"] = currency
+    return currency
+
+
+def _mergeability_certain(mergeable, merge_state_status):
+    """GitHub computes mergeability asynchronously; UNKNOWN/incomplete values are not facts."""
+    if mergeable not in ("MERGEABLE", "CONFLICTING"):
+        return False
+    if not merge_state_status or merge_state_status == "UNKNOWN":
+        return False
+    if merge_state_status == "DIRTY":
+        return mergeable == "CONFLICTING"
+    if merge_state_status == "BEHIND":
+        return mergeable == "MERGEABLE"
+    return True
+
+
+def _normal_base_route(cur):
+    """Return the only route U1 may classify: an unmanaged PR rooted on its normal base.
+
+    Ordinary dependents are intentionally harmless. An open or unknown parent means this target is
+    itself in a manual dependency chain and therefore outside this unit's authority.
+    """
+    chain = cur.get("pr_chain") or _default_pr_chain()
+    base = cur.get("base") or {}
+    if chain.get("manager_status") != MANAGER_ABSENT:
+        return None
+    if chain.get("relationship_status") == RELATIONSHIP_PROBE_ERROR:
+        return None
+    if not chain.get("default_branch") or base.get("ref") != chain.get("default_branch"):
+        return None
+    parents = chain.get("parent_prs") or []
+    if any(not isinstance(parent, dict) or parent.get("state") not in ("CLOSED", "MERGED")
+           for parent in parents):
+        return None
+    return "normal-base"
+
+
+def _branch_currency_observation(cur, head):
+    status = cur.get("merge_state_status")
+    certain = _mergeability_certain(cur.get("mergeable"), status)
+    if not certain or status not in ("BEHIND", "DIRTY"):
+        return None
+    route = _normal_base_route(cur)
+    base = cur.get("base") or {}
+    if (route is None or not head
+            or not all(base.get(key) for key in ("host", "repository", "ref", "oid"))):
+        return None
+    identity = {
+        "host": base["host"],
+        "base_repository": base["repository"],
+        "base_ref": base["ref"],
+        "base_oid": base["oid"],
+        "head_sha": head,
+        "status": status,
+        "route": route,
+    }
+    encoded = json.dumps(identity, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return {"key": f"currency:{hashlib.sha256(encoded).hexdigest()}", **identity}
+
+
+def _claimed_currency_items(currency):
+    """Return unresolved mutation claims with the current item first.
+
+    Base or expected head movement may be the result of the claimed mutation. It is evidence to
+    reconcile, not permission to discard the claim and start another attempt.
+    """
+    items = currency.get("items") or {}
+    current_key = currency.get("current_key")
+    claimed = []
+    current = items.get(current_key)
+    if isinstance(current, dict) and current.get("disposition") == CURRENCY_CLAIMED:
+        claimed.append((current_key, current))
+    claimed.extend(
+        (key, item) for key, item in items.items()
+        if key != current_key and isinstance(item, dict)
+        and item.get("disposition") == CURRENCY_CLAIMED
+    )
+    return claimed
+
+
+def _prepare_claimed_currency_item(state, item, cur=None, head=None):
+    invocation_id = state.get("invocation_id")
+    already_handled_here = (
+        item.get("claimed_invocation_id") == invocation_id
+        or item.get("reconciled_invocation_id") == invocation_id
+    )
+    base = (cur or {}).get("base") or {}
+    async_evidence_moved = (
+        item.get("recovery_state") in (
+            CURRENCY_OUTCOME_MUTATION_OBSERVED, CURRENCY_OUTCOME_AMBIGUOUS)
+        and ((head and head != item.get("head_sha"))
+             or (base.get("oid") and base.get("oid") != item.get("base_oid")))
+    )
+    item["attention"] = (CURRENCY_ATTENTION_RECONCILE
+                         if async_evidence_moved or not already_handled_here else None)
+    item["reconciliation_only"] = True
+    return item
+
+
+def _apply_branch_currency(state, cur, head, head_changed, now):
+    currency = _load_branch_currency_state(state)
+    carried_claims = _claimed_currency_items(currency)
+    if head_changed or (currency.get("head_sha") not in (None, head)):
+        currency = _empty_branch_currency_state()
+        currency["items"] = dict(carried_claims)
+        state["branch_currency_state"] = currency
+    currency["head_sha"] = head
+
+    # An unresolved claim owns the branch-currency lane until it is explicitly reconciled. A base
+    # move or expected head move may be the mutation's result, so a new observation must not replace
+    # the old exact key or make the PR look clear in the meantime.
+    claimed_items = _claimed_currency_items(currency)
+    if claimed_items:
+        key, item = claimed_items[0]
+        currency["current_key"] = key
+        return _prepare_claimed_currency_item(state, item, cur, head)
+
+    observation = _branch_currency_observation(cur, head)
+    if observation is None:
+        currency["current_key"] = None
+        return None
+
+    key = observation["key"]
+    items = currency["items"]
+    item = items.get(key)
+    if not isinstance(item, dict):
+        item = {**observation, "disposition": DISPOSITION_OPEN}
+        prior_host_branch_update_capability = None
+    else:
+        prior_host_branch_update_capability = item.get(
+            "host_branch_update_capability", "unknown")
+        # Refresh non-identity facts without changing an invocation-fenced disposition.
+        item.update(observation)
+    item["host_branch_update_capability"] = cur.get(
+        "host_branch_update_capability", "unknown")
+    parks = currency.get("semantic_parks") or {}
+    item["parked_semantic_fingerprints"] = sorted(parks)
+    item.setdefault("retry_count", 0)
+    item.setdefault("mutation_consumed", False)
+    disposition = item.get("disposition", DISPOSITION_OPEN)
+    # A transient capability park is not a durable decision: the unchanged observation becomes
+    # claimable as soon as the host confirms that the branch-update operation is authorized.
+    if (disposition == DISPOSITION_NEEDS_HUMAN
+            and item.get("status") == "BEHIND"
+            and item.get("recovery_state") is None
+            and prior_host_branch_update_capability in (False, "unknown")
+            and item.get("host_branch_update_capability") is True):
+        item["disposition"] = DISPOSITION_OPEN
+        disposition = DISPOSITION_OPEN
+    if disposition == DISPOSITION_OPEN:
+        inspection_required = (item.get("status") == "DIRTY"
+                               and bool(parks)
+                               and item.get("inspection_result") != "changed")
+        item["inspection_required"] = inspection_required
+        retry_wait_seconds = 0
+        retry_not_before = item.get("retry_not_before")
+        if retry_not_before:
+            try:
+                retry_wait_seconds = max(
+                    0, int((_parse_iso8601(retry_not_before) - now).total_seconds()))
+            except (ValueError, TypeError):
+                retry_wait_seconds = 0
+        item["retry_wait_seconds"] = retry_wait_seconds
+        if inspection_required:
+            item["attention"] = CURRENCY_ATTENTION_INSPECT
+        elif retry_wait_seconds > 0:
+            item["attention"] = None
+        else:
+            item["attention"] = CURRENCY_ATTENTION_CLAIM
+        item["reconciliation_only"] = False
+    elif disposition == CURRENCY_CLAIMED:
+        _prepare_claimed_currency_item(state, item, cur, head)
+    else:
+        item["attention"] = None
+        item["reconciliation_only"] = False
+    items[key] = item
+    currency["current_key"] = key
+
+    # Old observations are useful only when they carry an unresolved claim or semantic park. Claims
+    # are never pruned; the small bounded tail applies only to parked base generations.
+    retained = {item_key: value for item_key, value in items.items()
+                if item_key == key
+                or value.get("disposition") in (CURRENCY_CLAIMED, DISPOSITION_NEEDS_HUMAN)}
+    if len(retained) > 8:
+        parked_keys = [item_key for item_key, value in retained.items()
+                       if item_key != key
+                       and value.get("disposition") == DISPOSITION_NEEDS_HUMAN]
+        for item_key in parked_keys[:-7]:
+            retained.pop(item_key, None)
+    currency["items"] = retained
+    return item
 
 
 def _empty_trajectory():
@@ -751,10 +1069,45 @@ def diff(state, cur, now=None, advance_trajectory=True):
     prior_threads = state.get("threads", {})
     prior_feedback = state.get("feedback", {})
     prior_change_sig = _change_sig(state)
+    prior_review_in_progress = bool(state.get("review_in_progress", False))
+    prior_review_signal_count = state.get("review_signal_count")
+    if prior_review_signal_count is None:
+        prior_review_signal_count = 1 if prior_review_in_progress else 0
+    review_in_progress = bool(cur.get("review_in_progress", False))
+    review_signal_count = cur.get("review_signal_count")
+    if review_signal_count is None:
+        review_signal_count = 1 if review_in_progress else 0
+    prior_review_signal_identities = state.get("review_signal_identities")
+    if not isinstance(prior_review_signal_identities, list):
+        prior_review_signal_identities = None
+    else:
+        prior_review_signal_identities = sorted(set(map(str, prior_review_signal_identities)))
+    review_signal_identities = cur.get("review_signal_identities")
+    if not isinstance(review_signal_identities, list):
+        review_signal_identities = None
+    else:
+        review_signal_identities = sorted(set(map(str, review_signal_identities)))
+        review_signal_count = len(review_signal_identities)
+    review_in_progress = review_signal_count > 0
 
     if head_changed:
         # SHA-scoped state is meaningless on a new head.
         state["ci_dispatched"] = {}
+        state["review_signal_seen_on_head"] = review_in_progress
+        state["review_signal_first_seen_at"] = _iso(now) if review_in_progress else None
+        state["review_signal_last_changed_at"] = _iso(now) if review_in_progress else None
+    else:
+        # Preserve a signal seen on this head after it disappears; the agent owns completion judgment,
+        # while this structural fact distinguishes an incomplete lifecycle from "no signal ever."
+        if (prior_review_in_progress or review_in_progress) and not state.get("review_signal_seen_on_head", False):
+            state["review_signal_seen_on_head"] = True
+            legacy_seen_at = state.get("last_change_at") if prior_review_in_progress else None
+            state["review_signal_first_seen_at"] = legacy_seen_at or _iso(now)
+        signal_changed = (review_signal_identities != prior_review_signal_identities
+                          if review_signal_identities is not None else
+                          review_signal_count != prior_review_signal_count)
+        if signal_changed:
+            state["review_signal_last_changed_at"] = _iso(now)
 
     # --- CI: a failing check on the current head is actionable until the agent
     # marks it dispatched (recorded in ci_dispatched[head]) or the head moves.
@@ -820,9 +1173,13 @@ def diff(state, cur, now=None, advance_trajectory=True):
     state["review_decision"] = cur["review_decision"]
     state["mergeable"] = cur["mergeable"]
     state["merge_state_status"] = cur["merge_state_status"]
-    state["review_in_progress"] = cur.get("review_in_progress", False)
+    state["review_in_progress"] = review_in_progress
+    state["review_signal_count"] = review_signal_count
+    state["review_signal_identities"] = review_signal_identities
     state["awaiting_approval"] = cur.get("awaiting_approval", 0)
     state["pr_chain"] = cur.get("pr_chain") or _default_pr_chain()
+    state["base"] = cur.get("base")
+    branch_currency = _apply_branch_currency(state, cur, head, head_changed, now)
 
     actionable = {"ci": actionable_ci, "threads": actionable_threads, "comments": actionable_feedback}
     if advance_trajectory:
@@ -858,6 +1215,7 @@ def diff(state, cur, now=None, advance_trajectory=True):
     all_checks_ok = checks_terminal and not has_failing and bool(cur["checks"]) and awaiting_approval == 0
     blocked_external = (awaiting_approval > 0 and not has_failing and checks_terminal
                         and not actionable_threads and not actionable_feedback)
+    invocation_elapsed = _elapsed(state.get("started_at"), now)
 
     return {
         "pr_state": cur["pr_state"],
@@ -866,12 +1224,27 @@ def diff(state, cur, now=None, advance_trajectory=True):
         "review_decision": cur["review_decision"],
         "head_sha": head,
         "head_changed": head_changed,
+        "base": state.get("base"),
+        "mergeability_certain": _mergeability_certain(
+            cur.get("mergeable"), cur.get("merge_state_status")),
+        "host_branch_update_capability": cur.get("host_branch_update_capability", "unknown"),
+        "branch_currency": branch_currency,
+        "branch_currency_blocker": ({
+            "key": branch_currency.get("key"),
+            "disposition": branch_currency.get("disposition"),
+            "recovery_state": branch_currency.get("recovery_state"),
+        } if branch_currency else None),
         "url": cur["url"],
         "has_failing_checks": has_failing,
         "checks_terminal": checks_terminal,
         "checks_present": bool(cur["checks"]),
         "all_checks_ok": all_checks_ok,
-        "review_in_progress": cur.get("review_in_progress", False),
+        "review_in_progress": review_in_progress,
+        "review_signal_count": review_signal_count,
+        "review_signal_identities": review_signal_identities,
+        "review_signal_seen_on_head": bool(state.get("review_signal_seen_on_head", False)),
+        "review_signal_first_seen_at": state.get("review_signal_first_seen_at"),
+        "review_signal_last_changed_at": state.get("review_signal_last_changed_at"),
         "checks_awaiting_approval": awaiting_approval,
         "blocked_external": blocked_external,
         "pr_chain": state["pr_chain"],
@@ -883,8 +1256,19 @@ def diff(state, cur, now=None, advance_trajectory=True):
                    "comments": len(actionable_feedback), "needs_human": open_needs_human},
         "changed_this_tick": changed_this_tick,
         "quiet_seconds": quiet_seconds,
+        "invocation_id": state.get("invocation_id"),
+        "invocation_started_at": state.get("started_at"),
+        "invocation_elapsed_seconds": invocation_elapsed,
+        "invocation_budget_seconds": state.get("invocation_budget_seconds"),
+        "invocation_remaining_seconds": max(
+            0,
+            (state.get("invocation_budget_seconds") or 0) - invocation_elapsed,
+        ),
+        "persisted_state_created_at": state.get("state_created_at"),
+        "persisted_state_age_seconds": _elapsed(state.get("state_created_at"), now),
+        # Compatibility aliases for callers migrating from the original single-clock contract.
         "session_started_at": state.get("started_at"),
-        "session_seconds": _elapsed(state.get("started_at"), now),
+        "session_seconds": invocation_elapsed,
         "watch_generation": state.get("watch_generation"),
         "tick": state["tick"],
         "trajectory": trajectory,
@@ -896,9 +1280,19 @@ def _change_sig(state):
     checks = {k: (v.get("status"), v.get("conclusion")) for k, v in state.get("checks", {}).items()}
     threads = {tid: _thread_identity(v) for tid, v in state.get("threads", {}).items()}
     feedback = {fid: v.get("disposition") for fid, v in state.get("feedback", {}).items()}
+    currency = _load_branch_currency_state(state)
+    current_currency = currency.get("items", {}).get(currency.get("current_key")) or {}
     return (checks, threads, feedback, state.get("review_decision"), state.get("mergeable"),
             state.get("merge_state_status"), state.get("review_in_progress"),
+            state.get("review_signal_count"),
+            tuple(state.get("review_signal_identities") or []),
             json.dumps(state.get("pr_chain") or _default_pr_chain(), sort_keys=True),
+            json.dumps(state.get("base"), sort_keys=True),
+            (current_currency.get("host_branch_update_capability")
+             if current_currency.get("status") == "BEHIND" else None),
+            currency.get("current_key"), current_currency.get("disposition"),
+            current_currency.get("attention"), current_currency.get("recovery_state"),
+            current_currency.get("retry_count"), current_currency.get("mutation_consumed"),
             # awaiting-approval clearing is movement: a fork gate lifting must reset the settle clock
             # so merge-ready waits for the now-imminent check-runs instead of firing on an empty rollup.
             bool(state.get("awaiting_approval")))
@@ -957,6 +1351,9 @@ def locked_state(state_dir, pr, repo, now):
                 state = json.load(f)
         else:
             state = _empty_state(pr, repo, None, now)
+        # Older state used `started_at` for both durable-state age and the active budget. Preserve
+        # that original value as the state birth time before a new invocation replaces the clock.
+        state.setdefault("state_created_at", state.get("started_at") or _iso(now))
         box = {"state": state}
         yield box
         tmp = tempfile.NamedTemporaryFile("w", dir=state_dir, delete=False)
@@ -976,33 +1373,96 @@ def _fetch_snapshot(args):
     return fetch(args.pr, args.repo)
 
 
+def _apply_invocation(box, args, now):
+    """Start explicitly, or reuse the one fixed clock named by an explicit invocation token."""
+    state = box["state"]
+    start_requested = bool(getattr(args, "start_invocation", False)
+                           or getattr(args, "reset_session", False))
+    continue_requested = bool(getattr(args, "continue_invocation", False))
+    invocation_id = getattr(args, "invocation_id", None)
+    requested_started_at = getattr(args, "session_started_at", None)
+    requested_budget = getattr(args, "invocation_budget_seconds", None)
+
+    if start_requested:
+        invocation_id = uuid.uuid4().hex
+        requested_started_at = _iso(now)
+        requested_budget = requested_budget or DEFAULT_INVOCATION_BUDGET_SECONDS
+        state["invocation_id"] = invocation_id
+        state["started_at"] = requested_started_at
+        state["invocation_budget_seconds"] = requested_budget
+        args.invocation_id = invocation_id
+        args.session_started_at = requested_started_at
+        args.invocation_budget_seconds = requested_budget
+        args._started_new_invocation = True
+        return
+
+    if not invocation_id:
+        raise SystemExit("pass --start-invocation on the first snapshot or --invocation-id to resume it")
+
+    if continue_requested:
+        if not requested_started_at or not requested_budget:
+            raise SystemExit("--continue-invocation requires its fixed start and budget")
+        if state.get("invocation_id") == invocation_id:
+            try:
+                same_anchor = (_parse_iso8601(state.get("started_at"))
+                               == _parse_iso8601(requested_started_at))
+            except (ValueError, TypeError):
+                same_anchor = False
+            if not same_anchor or state.get("invocation_budget_seconds") != requested_budget:
+                raise SystemExit("continuation cannot renew or extend an existing invocation")
+            return
+        state["invocation_id"] = invocation_id
+        state["started_at"] = requested_started_at
+        state["invocation_budget_seconds"] = requested_budget
+        return
+
+    persisted_id = state.get("invocation_id")
+    persisted_started_at = state.get("started_at")
+    persisted_budget = state.get("invocation_budget_seconds")
+    if persisted_id != invocation_id:
+        raise SystemExit("invocation token does not match persisted state; start or continue explicitly")
+    try:
+        anchors_match = (_parse_iso8601(persisted_started_at)
+                         == _parse_iso8601(requested_started_at))
+    except (ValueError, TypeError):
+        anchors_match = False
+    if not anchors_match:
+        raise SystemExit("invocation token does not match the persisted budget anchor")
+    if persisted_budget != requested_budget:
+        raise SystemExit("invocation token does not match the persisted fixed budget")
+
+
 def _apply_snapshot(box, args, cur, now, advance_trajectory):
     """Apply one fetched snapshot to a caller-owned locked state box."""
     if box["state"].get("pr", {}).get("url") is None and cur.get("url"):
         box["state"]["pr"]["url"] = cur["url"]
-    if getattr(args, "session_started_at", None):
-        # Carry one invocation-wide clock through watch re-arms and managed-stack layer state dirs.
-        box["state"]["started_at"] = args.session_started_at
-    elif getattr(args, "reset_session", False):
-        # A fresh babysit invocation starts the budget clock now. Without this, `started_at`
-        # persists from state creation, so resuming against day-old state would read
-        # session_seconds as huge and hand back before doing any work.
-        box["state"]["started_at"] = _iso(now)
+    _apply_invocation(box, args, now)
     return diff(box["state"], cur, now, advance_trajectory=advance_trajectory)
 
 
 def _run_snapshot(args, now, advance_trajectory=True, watch_generation=None):
     """One fetch -> diff -> persist. Returns the actionable/state dict."""
     cur = _fetch_snapshot(args)
+    if (getattr(args, "start_invocation", False)
+            or getattr(args, "reset_session", False)):
+        # A new invocation starts after preflight I/O; a slow first fetch must not consume its budget.
+        now = _now()
     with locked_state(args.state_dir, args.pr, args.repo, now) as box:
         if watch_generation is not None and box["state"].get("watch_generation") != watch_generation:
             raise _WatchSuperseded()
+        if (watch_generation is not None
+                and box["state"].get("invocation_id") != getattr(args, "invocation_id", None)):
+            raise _InvocationSuperseded(box["state"].get("invocation_id"))
         actionable, box["state"] = _apply_snapshot(box, args, cur, now, advance_trajectory)
     return actionable
 
 
 def cmd_snapshot(args):
-    print(json.dumps(_run_snapshot(args, _now()), indent=2))
+    result = _run_snapshot(args, _now())
+    if (getattr(args, "_started_new_invocation", False)
+            and _elapsed(result.get("invocation_started_at"), _now()) > 60):
+        raise SystemExit("new invocation unexpectedly inherited more than 60 seconds of elapsed time")
+    print(json.dumps(result, indent=2))
 
 
 def _wake_reason(a, settle_seconds):
@@ -1010,8 +1470,6 @@ def _wake_reason(a, settle_seconds):
     Ordered by precedence — a terminal/blocked/needs-human state outranks a merge-ready read."""
     if a.get("pr_state") in ("MERGED", "CLOSED"):
         return "terminal"
-    if a.get("blocked_external"):
-        return "blocked-external"
     c = a.get("counts") or {}
     if c.get("threads", 0) or c.get("ci", 0):
         return "actionable"
@@ -1021,18 +1479,28 @@ def _wake_reason(a, settle_seconds):
         return "feedback-candidate"
     if a.get("stack_blocker"):
         return "stack-blocked"
-    if a.get("open_needs_human", 0):
-        return "needs-human"         # parked items block ready; surface them
+    branch_currency = a.get("branch_currency") or {}
     if a.get("has_failing_checks") and a.get("checks_terminal"):
         # a dispatched check left terminally red (counts.ci is 0 — nothing new to dispatch) is a
         # blocker to hand back, not a reason to idle to max-runtime.
         return "blocked-failing"
-    # merge-ready candidate: green + settled AND no review in flight. An 👀-style in-progress signal
-    # means a review is underway, so the PR is NOT ready no matter how long it has been quiet — time
-    # is one component of "settled", not the gate. Honor the signal only up to a generous bound so a
-    # stale reaction that never clears cannot block ready forever (absence never blocks; presence
-    # only delays). Only wake once quiet has actually elapsed, so a stable green PR is not roused
-    # every poll while it cools off.
+    # Branch maintenance is a third attention stream. It runs only after new review/CI work and
+    # standing red blockers are clear, but a passive in-progress check or review signal does not
+    # delay a BEHIND update that will invalidate that work anyway. Claimed observations wake only
+    # for reconciliation; confirmed and parked residuals remain quiet.
+    if branch_currency.get("attention") in (CURRENCY_ATTENTION_CLAIM,
+                                             CURRENCY_ATTENTION_INSPECT,
+                                             CURRENCY_ATTENTION_RECONCILE):
+        return "branch-currency"
+    if a.get("blocked_external"):
+        return "blocked-external"
+    if (a.get("open_needs_human", 0)
+            or branch_currency.get("disposition") == DISPOSITION_NEEDS_HUMAN):
+        return "needs-human"         # parked items block ready; surface them
+    # merge-ready candidate: green + settled with no fresh review movement. A live 👀 blocks the
+    # ordinary 300s settle, but wakes the agent after 900 quiet seconds for the semantic stale-review
+    # judgment. The agent may extend once to 1800s by re-arming with that settle value; the detector
+    # never decides whether the reviewer is genuinely slow or stuck.
     review_blocking = a.get("review_in_progress") and a.get("quiet_seconds", 0) < REVIEW_INPROGRESS_MAX_WAIT
     # Interactive merge-ready does NOT require `all_checks_ok`'s "at least one observed check": a repo
     # with no configured checks has a CLEAN/MERGEABLE PR that should be callable ready. (That guard
@@ -1040,6 +1508,7 @@ def _wake_reason(a, settle_seconds):
     if (a.get("mergeable") == "MERGEABLE" and a.get("merge_state_status") == "CLEAN"
             and a.get("checks_terminal") and not a.get("has_failing_checks")
             and a.get("checks_awaiting_approval", 0) == 0
+            and a.get("branch_currency_blocker") is None
             and not review_blocking
             and a.get("quiet_seconds", 0) >= settle_seconds):
         return "merge-ready"
@@ -1074,6 +1543,13 @@ def _blocker_sig(a):
         sig.add("__blocked_external__")
     if a.get("stack_blocker"):
         sig.add(f"__stack__:{a['stack_blocker']}")
+    branch_currency = a.get("branch_currency") or {}
+    currency_disposition = branch_currency.get("disposition")
+    if (currency_disposition in (CURRENCY_CONFIRMED, DISPOSITION_NEEDS_HUMAN)
+            or (currency_disposition == CURRENCY_CLAIMED
+                and not branch_currency.get("attention"))):
+        sig.add(("currency", branch_currency.get("key"), currency_disposition,
+                 branch_currency.get("recovery_state")))
     # A new head is "context materially changed": a human may have pushed a commit that answers or
     # supersedes a parked residual, so the head is part of the baseline — when it moves, the residual
     # is no longer "already-surfaced against this state" and the watch wakes to give the agent a tick
@@ -1180,15 +1656,25 @@ def _watch_is_current(args, generation):
 
 def _emit_wake_if_current(args, generation, reason, **fields):
     """Serialize the final ownership check with takeover so an old generation cannot emit after
-    the new generation has become current. A wake emitted just before takeover is valid at emission
-    and will be recognized as stale against the next fresh snapshot."""
+    the new generation has become current. Invocation replacement also supersedes every ordinary
+    wake from the old budget, even when the replacement kept the same watch generation."""
     state_path = os.path.join(args.state_dir, "state.json")
     with _watch_lock(args.state_dir, exclusive=False):
         if not os.path.exists(state_path):
             return False
         with open(state_path) as f:
-            if json.load(f).get("watch_generation") != generation:
-                return False
+            state = json.load(f)
+        if state.get("watch_generation") != generation:
+            return False
+        current_invocation_id = state.get("invocation_id")
+        watcher_invocation_id = getattr(args, "invocation_id", None)
+        if current_invocation_id != watcher_invocation_id and reason != "invocation-superseded":
+            _emit_wake(
+                "invocation-superseded", watch_generation=generation,
+                superseded_invocation_id=watcher_invocation_id,
+                current_invocation_id=current_invocation_id,
+            )
+            return True
         _emit_wake(reason, watch_generation=generation, **fields)
         return True
 
@@ -1251,7 +1737,6 @@ def cmd_watch(args):
         if previous is None:
             superseded = True
             return
-        args.reset_session = False
         _terminate_replaced_watch(previous)
         interrupt_immediately = True
         if stop_requested.is_set():
@@ -1267,17 +1752,37 @@ def cmd_watch(args):
             if args.stop_file and os.path.exists(args.stop_file):
                 _emit_wake_if_current(args, generation, "stop-signal")
                 return
+            now = _now()
+            invocation_elapsed = _elapsed(actionable.get("invocation_started_at"), now)
+            budget = actionable.get("invocation_budget_seconds") or 0
+            actionable["invocation_elapsed_seconds"] = invocation_elapsed
+            actionable["invocation_remaining_seconds"] = max(0, budget - invocation_elapsed)
+            actionable["persisted_state_age_seconds"] = _elapsed(
+                actionable.get("persisted_state_created_at"), now)
             reason = _wake_reason(actionable, args.settle_seconds)
+            if reason in ("terminal", "merge-ready"):
+                _emit_wake_if_current(args, generation, reason, url=actionable.get("url"),
+                                      pr_state=actionable.get("pr_state"), counts=actionable.get("counts"))
+                return
+            if budget and invocation_elapsed >= budget:
+                _emit_wake_if_current(
+                    args, generation, "max-runtime", url=actionable.get("url"),
+                    invocation_id=actionable.get("invocation_id"),
+                    invocation_started_at=actionable.get("invocation_started_at"),
+                    invocation_elapsed_seconds=actionable.get("invocation_elapsed_seconds"),
+                    invocation_budget_seconds=budget,
+                    persisted_state_age_seconds=actionable.get("persisted_state_age_seconds"),
+                )
+                return
             if reason in ("needs-human", "blocked-failing", "blocked-external", "stack-blocked") and _blocker_sig(actionable) <= armed:
                 reason = None   # already-surfaced residual — keep watching, do not re-wake or terminate
             if reason:
                 _emit_wake_if_current(args, generation, reason, url=actionable.get("url"),
                                       pr_state=actionable.get("pr_state"), counts=actionable.get("counts"))
                 return
-            if args.max_runtime and actionable.get("session_seconds", 0) >= args.max_runtime:
-                _emit_wake_if_current(args, generation, "max-runtime", url=actionable.get("url"))
-                return
-            if stop_requested.wait(args.interval):
+            remaining = max(0, budget - invocation_elapsed) if budget else args.interval
+            wait_seconds = min(args.interval, remaining)
+            if stop_requested.wait(wait_seconds):
                 return
             if not _watch_is_current(args, generation):
                 superseded = True
@@ -1286,6 +1791,14 @@ def cmd_watch(args):
                                        watch_generation=generation)
     except _WatchSuperseded:
         superseded = True
+        return
+    except _InvocationSuperseded as exc:
+        superseded = True
+        _emit_wake_if_current(
+            args, generation, "invocation-superseded",
+            superseded_invocation_id=getattr(args, "invocation_id", None),
+            current_invocation_id=exc.current_invocation_id,
+        )
         return
     finally:
         interrupt_immediately = False
@@ -1316,11 +1829,150 @@ def _mark_thread_baseline(item_id, args, state):
     return None
 
 
+def _mark_branch_currency(args, state, now):
+    currency = _load_branch_currency_state(state)
+    key = args.currency_key
+    if not key or currency.get("current_key") != key:
+        raise SystemExit("currency mark requires the exact current observation key")
+    item = currency.get("items", {}).get(key)
+    if not isinstance(item, dict):
+        raise SystemExit("currency mark requires a current observed item")
+    prior = item.get("disposition", DISPOSITION_OPEN)
+    outcome = args.currency_outcome
+    inspected_fingerprint = args.currency_inspected_fingerprint
+
+    if outcome:
+        if prior != CURRENCY_CLAIMED:
+            raise SystemExit("currency outcomes require a claimed observation")
+        item["reconciled_invocation_id"] = state.get("invocation_id")
+        item["reconciled_at"] = _iso(now)
+        if outcome == CURRENCY_OUTCOME_MUTATION_OBSERVED:
+            item["mutation_consumed"] = True
+            item["mutation_observed_at"] = _iso(now)
+            item["recovery_state"] = CURRENCY_OUTCOME_MUTATION_OBSERVED
+        elif outcome == CURRENCY_OUTCOME_AMBIGUOUS:
+            item["recovery_state"] = CURRENCY_OUTCOME_AMBIGUOUS
+        elif outcome == CURRENCY_OUTCOME_PROVEN_NO_MUTATION:
+            if item.get("mutation_consumed"):
+                raise SystemExit("cannot record no mutation after mutation start was observed")
+            retries = int(item.get("retry_count", 0))
+            if retries < 1:
+                item["retry_count"] = retries + 1
+                item["disposition"] = DISPOSITION_OPEN
+                item["recovery_state"] = "retry-authorized"
+                item["retry_not_before"] = _iso(
+                    now + timedelta(seconds=CURRENCY_RETRY_BACKOFF_SECONDS))
+                item.pop("claimed_invocation_id", None)
+                item.pop("reconciled_invocation_id", None)
+            else:
+                item["disposition"] = DISPOSITION_NEEDS_HUMAN
+                item["recovery_state"] = "retry-exhausted"
+        state["last_action"] = f"{outcome} currency {key}"
+        return
+
+    if inspected_fingerprint:
+        if prior != DISPOSITION_OPEN:
+            raise SystemExit("currency inspection requires an open observation")
+        parks = currency.get("semantic_parks") or {}
+        if not parks:
+            raise SystemExit("currency inspection requires carried semantic conflict evidence")
+        item["inspected_semantic_conflict_fingerprint"] = inspected_fingerprint
+        item["inspected_at"] = _iso(now)
+        if inspected_fingerprint in parks:
+            item["disposition"] = DISPOSITION_NEEDS_HUMAN
+            item["semantic_conflict_fingerprint"] = inspected_fingerprint
+            item["recovery_state"] = "semantic-unchanged"
+            item["inspection_result"] = "unchanged"
+        else:
+            item["inspection_required"] = False
+            item["inspection_result"] = "changed"
+            item["recovery_state"] = "semantic-changed"
+            # The preview describes the current conflict set for this head. Once it differs, the
+            # carried fingerprints are no longer standing residuals and must not tax every later
+            # base generation with inspection of stale evidence.
+            currency["semantic_parks"] = {}
+            item["parked_semantic_fingerprints"] = []
+        state["last_action"] = f"inspected currency {key}"
+        return
+
+    disposition = args.currency_disposition
+    allowed = {
+        DISPOSITION_OPEN: {DISPOSITION_OPEN, CURRENCY_CLAIMED, DISPOSITION_NEEDS_HUMAN},
+        CURRENCY_CLAIMED: {CURRENCY_CLAIMED, CURRENCY_CONFIRMED, DISPOSITION_NEEDS_HUMAN},
+        CURRENCY_CONFIRMED: {CURRENCY_CONFIRMED, DISPOSITION_OPEN},
+        DISPOSITION_NEEDS_HUMAN: {DISPOSITION_NEEDS_HUMAN, DISPOSITION_OPEN},
+    }
+    if disposition not in allowed.get(prior, set()):
+        raise SystemExit(f"invalid currency transition: {prior} -> {disposition}")
+    if (prior == DISPOSITION_OPEN and disposition == CURRENCY_CLAIMED
+            and item.get("inspection_required")):
+        raise SystemExit("currency claim requires semantic-fingerprint inspection first")
+    if prior == DISPOSITION_OPEN and disposition == CURRENCY_CLAIMED:
+        retry_not_before = item.get("retry_not_before")
+        if retry_not_before:
+            try:
+                if _parse_iso8601(retry_not_before) > now:
+                    raise SystemExit("currency retry backoff has not elapsed")
+            except (ValueError, TypeError):
+                raise SystemExit("currency retry backoff is invalid")
+        budget = state.get("invocation_budget_seconds")
+        if budget is not None and _elapsed(state.get("started_at"), now) >= budget:
+            raise SystemExit("currency claim cannot start after max-runtime")
+    item["disposition"] = disposition
+    item["transitioned_at"] = _iso(now)
+    if disposition == CURRENCY_CLAIMED:
+        # A repeated claim is deliberately idempotent. It cannot transfer or renew an existing
+        # claim; a later invocation must reconcile it and record an explicit outcome.
+        if prior == DISPOSITION_OPEN:
+            item["claimed_invocation_id"] = state.get("invocation_id")
+            item["claimed_at"] = _iso(now)
+            item["attempt_number"] = int(item.get("retry_count", 0)) + 1
+            item["mutation_consumed"] = False
+            item["recovery_state"] = "claimed"
+            item.pop("reconciled_invocation_id", None)
+    elif disposition == CURRENCY_CONFIRMED:
+        item["confirmed_invocation_id"] = state.get("invocation_id")
+    elif disposition == DISPOSITION_NEEDS_HUMAN:
+        fingerprint = args.semantic_conflict_fingerprint
+        if fingerprint:
+            item["semantic_conflict_fingerprint"] = fingerprint
+            currency.setdefault("semantic_parks", {})[fingerprint] = {
+                "head_sha": item.get("head_sha"),
+                "status": item.get("status"),
+                "route": item.get("route"),
+                "observation_key": key,
+            }
+    elif disposition == DISPOSITION_OPEN:
+        old_fingerprint = item.pop("semantic_conflict_fingerprint", None)
+        if old_fingerprint:
+            currency.setdefault("semantic_parks", {}).pop(old_fingerprint, None)
+        item.pop("claimed_invocation_id", None)
+        item.pop("confirmed_invocation_id", None)
+        item.pop("reconciled_invocation_id", None)
+        item.pop("inspected_semantic_conflict_fingerprint", None)
+        item.pop("inspection_result", None)
+        item["retry_count"] = 0
+        item["mutation_consumed"] = False
+        item.pop("retry_not_before", None)
+        item.pop("recovery_state", None)
+    item["parked_semantic_fingerprints"] = sorted(currency.get("semantic_parks") or {})
+    state["last_action"] = f"{disposition} currency {key}"
+
+
 def cmd_mark(args):
     now = _now()
     with locked_state(args.state_dir, args.pr, args.repo, now) as box:
+        _apply_invocation(box, args, now)
         state = box["state"]
-        if args.check:
+        if (args.currency_key or args.currency_disposition or args.currency_outcome
+                or args.currency_inspected_fingerprint):
+            actions = sum(bool(value) for value in (
+                args.currency_disposition, args.currency_outcome,
+                args.currency_inspected_fingerprint))
+            if not args.currency_key or actions != 1:
+                raise SystemExit("currency marks require --currency-key and exactly one currency action")
+            _mark_branch_currency(args, state, now)
+        elif args.check:
             head = state.get("head_sha")
             if not head:
                 raise SystemExit("mark --check requires a prior snapshot (state has no head_sha)")
@@ -1347,7 +1999,7 @@ def cmd_mark(args):
                     # snapshot-time edit_id the agent passes is already the correct baseline (no fetch).
                     entry["acted_identity"] = [args.acted_edit_id]
             state["last_action"] = f"{args.disposition} {label} {item_id}"
-    print(json.dumps({"marked": args.check or args.thread or args.comment}))
+    print(json.dumps({"marked": args.currency_key or args.check or args.thread or args.comment}))
 
 
 def main():
@@ -1360,15 +2012,30 @@ def main():
     s.add_argument("--state-dir", required=True)
     s.add_argument("--fetch-file", default=None)
     sg = s.add_mutually_exclusive_group()
-    sg.add_argument("--reset-session", action="store_true")  # start the budget clock (a fresh invocation)
-    sg.add_argument("--session-started-at", type=_session_started_at,
-                    help="carry a prior invocation's ISO-8601 budget anchor")
+    sg.add_argument("--start-invocation", action="store_true",
+                    help="mint one new fixed budget (first snapshot only)")
+    sg.add_argument("--reset-session", action="store_true",
+                    help=argparse.SUPPRESS)  # deprecated alias for --start-invocation
+    sg.add_argument("--continue-invocation", action="store_true",
+                    help="carry the current fixed budget into a managed-stack layer state dir")
+    s.add_argument("--invocation-id", default=None,
+                   help="token emitted by the first snapshot; required on every resume")
+    s.add_argument("--session-started-at", type=_session_started_at,
+                   help="fixed anchor emitted by the first snapshot; required for a new state dir")
+    s.add_argument("--invocation-budget-seconds", type=float,
+                   help=f"fixed total budget; first snapshot default {DEFAULT_INVOCATION_BUDGET_SECONDS}")
     s.set_defaults(func=cmd_snapshot)
 
     m = sub.add_parser("mark")
     m.add_argument("--pr", type=int, default=0)
     m.add_argument("--repo", default=None)
     m.add_argument("--state-dir", required=True)
+    m.add_argument("--invocation-id", required=True,
+                   help="token emitted by the invocation's first snapshot")
+    m.add_argument("--session-started-at", type=_session_started_at, required=True,
+                   help="fixed anchor emitted by the invocation's first snapshot")
+    m.add_argument("--invocation-budget-seconds", type=float, required=True,
+                   help="fixed budget emitted by the invocation's first snapshot")
     m.add_argument("--thread", default=None)
     # `open` re-actionizes a parked thread — the explicit re-open the SKILL prose relies on when a
     # parked stream's context materially changes (a human pushed, the check universe moved).
@@ -1377,6 +2044,17 @@ def main():
     m.add_argument("--comment", default=None)
     m.add_argument("--fetch-file", default=None)  # reuse the tick's fetch for the at-mark baseline
     m.add_argument("--acted-edit-id", default=None)  # snapshot-time edit_id baseline for a --comment
+    m.add_argument("--currency-key", default=None,
+                   help="exact branch-currency observation key emitted by snapshot")
+    m.add_argument("--currency-disposition",
+                   choices=[DISPOSITION_OPEN, CURRENCY_CLAIMED, CURRENCY_CONFIRMED,
+                            DISPOSITION_NEEDS_HUMAN], default=None)
+    m.add_argument("--semantic-conflict-fingerprint", default=None)
+    m.add_argument("--currency-outcome",
+                   choices=[CURRENCY_OUTCOME_MUTATION_OBSERVED,
+                            CURRENCY_OUTCOME_PROVEN_NO_MUTATION,
+                            CURRENCY_OUTCOME_AMBIGUOUS], default=None)
+    m.add_argument("--currency-inspected-fingerprint", default=None)
     m.set_defaults(func=cmd_mark)
 
     w = sub.add_parser("watch")
@@ -1384,17 +2062,33 @@ def main():
     w.add_argument("--repo", default=None)
     w.add_argument("--state-dir", required=True)
     w.add_argument("--interval", type=float, default=150.0, help="poll cadence seconds")
-    w.add_argument("--max-runtime", type=float, default=14400.0, help="hard stop seconds (0 = unbounded)")
     w.add_argument("--settle-seconds", type=float, default=300.0, help="quiet window before a merge-ready wake")
     w.add_argument("--stop-file", default=None, help="path whose existence stops the watch")
     w.add_argument("--fetch-file", default=None)
-    wg = w.add_mutually_exclusive_group()
-    wg.add_argument("--reset-session", action="store_true")
-    wg.add_argument("--session-started-at", type=_session_started_at,
-                    help="carry the invocation-wide ISO-8601 budget anchor")
+    w.add_argument("--invocation-id", required=True,
+                   help="token emitted by the invocation's first snapshot")
+    w.add_argument("--session-started-at", type=_session_started_at, required=True,
+                   help="fixed anchor emitted by the first snapshot")
+    w.add_argument("--invocation-budget-seconds", type=float, required=True,
+                   help="fixed budget emitted by the invocation's first snapshot")
     w.set_defaults(func=cmd_watch)
 
     args = p.parse_args()
+    if (args.cmd in ("snapshot", "watch")
+            and args.invocation_budget_seconds is not None
+            and args.invocation_budget_seconds <= 0):
+        p.error("--invocation-budget-seconds must be positive")
+    if args.cmd == "snapshot":
+        starting = args.start_invocation or args.reset_session
+        continuing = args.continue_invocation
+        if starting and (args.invocation_id or args.session_started_at):
+            p.error("the first snapshot cannot combine --start-invocation with resume fields")
+        if continuing and not (args.invocation_id and args.session_started_at
+                               and args.invocation_budget_seconds):
+            p.error("--continue-invocation requires --invocation-id, --session-started-at, and --invocation-budget-seconds")
+        if not starting and not continuing and not (args.invocation_id and args.session_started_at
+                                                     and args.invocation_budget_seconds):
+            p.error("snapshot requires --start-invocation or --invocation-id")
     args.func(args)
 
 

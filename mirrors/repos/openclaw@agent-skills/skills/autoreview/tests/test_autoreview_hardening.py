@@ -2349,6 +2349,73 @@ class AutoreviewHardeningTests(unittest.TestCase):
         ):
             self.assertIn(reference, validated)
 
+    def test_secret_detector_allows_typescript_member_reference_assignment(self) -> None:
+        source = "legacyXSearchResolvedRecord.apiKey = resolution.value;"
+        patch = (
+            "diff --git a/src/runtime-web-tools.ts b/src/runtime-web-tools.ts\n"
+            "--- a/src/runtime-web-tools.ts\n"
+            "+++ b/src/runtime-web-tools.ts\n"
+            "@@ -20,2 +20,3 @@ function resolveLegacySearch() {\n"
+            f" {source}\n"
+            "+const contractDigest = digestRuntimeWebOwnerContract(contract);\n"
+        )
+
+        self.assertFalse(
+            self.helper["secret_text_risk"](
+                source,
+                javascript_dialect="typescript",
+            )
+        )
+        self.assertEqual(
+            self.helper["validate_review_patch"](
+                "typescript member reference assignment",
+                ["src/runtime-web-tools.ts"],
+                patch,
+            ),
+            patch,
+        )
+
+        fake_literal = next(
+            line
+            for line in (FIXTURES / "typescript-sensitive-literals.ts")
+            .read_text(encoding="utf-8")
+            .splitlines()
+            if line.strip()
+        )
+        self.assertTrue(
+            self.helper["secret_text_risk"](
+                fake_literal,
+                javascript_dialect="typescript",
+            )
+        )
+    def test_review_bundle_preserves_typescript_config_paths(self) -> None:
+        source = (FIXTURES / "typescript-benign-config-path-references.ts").read_text(
+            encoding="utf-8"
+        )
+        patch = (
+            "diff --git a/src/config-path-references.ts b/src/config-path-references.ts\n"
+            "new file mode 100644\n"
+            "--- /dev/null\n"
+            "+++ b/src/config-path-references.ts\n"
+            f"@@ -0,0 +1,{len(source.splitlines())} @@\n"
+            + "".join(f"+{line}\n" for line in source.splitlines())
+        )
+
+        validated = self.helper["validate_review_patch"](
+            "typescript config path references",
+            ["src/config-path-references.ts"],
+            patch,
+        )
+
+        for config_path in (
+            "channels.irc.accounts.${accountId}.passwordFile",
+            "channels.irc.accounts.${accountId}.nickserv.passwordFile",
+            "channels.nextcloud-talk.accounts.${accountId}.botSecret",
+            "channels.nextcloud-talk.accounts.${accountId}.botSecretFile",
+            "channels.telegram.accounts.${accountId}.tokenFile",
+        ):
+            self.assertIn(config_path, validated)
+
         token_term = "To" + "ken"
         truncated_call_patch = (
             "diff --git a/src/token.ts b/src/token.ts\n"
@@ -2405,6 +2472,116 @@ class AutoreviewHardeningTests(unittest.TestCase):
         self.assertTrue(
             self.helper["secret_text_risk"](
                 truncated_short_literal,
+                javascript_dialect="typescript",
+            )
+        )
+
+    def test_review_bundle_keeps_config_paths_but_redacts_values(self) -> None:
+        config_path = "channels.telegram.accounts.work.tokenFile"
+        literal_assignment_value = (
+            "channels.irc.accounts.default.pass" + "wordFile"
+        )
+        generic_path_value = "channels.telegram.accounts.generic.tokenFile"
+        reader_argument_value = "channels.telegram.accounts.reader.tokenFile"
+        sensitive_name = "pass" + "word"
+        token_name = "to" + "ken"
+        fake_secret = realistic_secret_value()
+        source = (
+            "const " + token_name + " = readSecretFile(path, {\n"
+            f'  configPath: "{config_path}",\n'
+            f'  value: "{fake_secret}",\n'
+            "});\n"
+            f'const {sensitive_name} = "{literal_assignment_value}";\n'
+            f'const file{token_name.title()} = tryReadSecretFileSync('
+            f'"{reader_argument_value}", "credential file label");\n'
+        )
+        patch = (
+            "diff --git a/src/config-paths.ts b/src/config-paths.ts\n"
+            "new file mode 100644\n"
+            "--- /dev/null\n"
+            "+++ b/src/config-paths.ts\n"
+            f"@@ -0,0 +1,{len(source.splitlines())} @@\n"
+            + "".join(f"+{line}\n" for line in source.splitlines())
+        )
+
+        validated = self.helper["validate_review_patch"](
+            "typescript config path references",
+            ["src/config-paths.ts"],
+            patch,
+        )
+
+        self.assertIn(f'configPath: "{config_path}"', validated)
+        self.assertNotIn(fake_secret, validated)
+        self.assertNotIn(
+            f'const {sensitive_name} = "{literal_assignment_value}"',
+            validated,
+        )
+        self.assertNotIn(reader_argument_value, validated)
+        generic_argument = f'{{ path: "{generic_path_value}" }}'
+        literal = next(
+            pattern.search(generic_argument)
+            for pattern in self.helper["SECRET_FALLBACK_LITERAL_PATTERNS"]
+            if pattern.search(generic_argument) is not None
+        )
+        self.assertFalse(
+            self.helper["safe_javascript_config_path_literal"](
+                generic_argument,
+                literal,
+                call_target="submit",
+                context_start=0,
+                context_end=len(generic_argument),
+                argument_index=0,
+                javascript_dialect="typescript",
+            )
+        )
+        nested_argument = f'{{ value: "{generic_path_value}" }}'
+        nested_literal = next(
+            pattern.search(nested_argument)
+            for pattern in self.helper["SECRET_FALLBACK_LITERAL_PATTERNS"]
+            if pattern.search(nested_argument) is not None
+        )
+        self.assertFalse(
+            self.helper["safe_javascript_config_path_literal"](
+                nested_argument,
+                nested_literal,
+                call_target="readSecretFile",
+                context_start=0,
+                context_end=len(nested_argument),
+                argument_index=1,
+                javascript_dialect="typescript",
+            )
+        )
+        comment_argument = (
+            f'{{ value: // configPath:\n "{generic_path_value}" }}'
+        )
+        comment_literal = next(
+            pattern.search(comment_argument)
+            for pattern in self.helper["SECRET_FALLBACK_LITERAL_PATTERNS"]
+            if pattern.search(comment_argument) is not None
+        )
+        self.assertFalse(
+            self.helper["safe_javascript_config_path_literal"](
+                comment_argument,
+                comment_literal,
+                call_target="readSecretFile",
+                context_start=0,
+                context_end=len(comment_argument),
+                argument_index=2,
+                javascript_dialect="typescript",
+            )
+        )
+        self.assertFalse(
+            self.helper["safe_javascript_config_path_literal"](
+                f'"{generic_path_value}"',
+                next(
+                    pattern.search(f'"{generic_path_value}"')
+                    for pattern in self.helper["SECRET_FALLBACK_LITERAL_PATTERNS"]
+                    if pattern.search(f'"{generic_path_value}"') is not None
+                ),
+                call_target="READSECRETFILE",
+                context_start=0,
+                context_end=len(generic_path_value) + 2,
+                argument_index=1,
                 javascript_dialect="typescript",
             )
         )
@@ -3137,6 +3314,11 @@ class AutoreviewHardeningTests(unittest.TestCase):
 
         self.assertTrue(self.helper["secret_text_risk"](content))
 
+    def test_secret_detector_allows_openclaw_redaction_sentinel(self) -> None:
+        self.assertFalse(
+            self.helper["secret_text_risk"]('token: "__OPENCLAW_REDACTED__"')
+        )
+
     def test_normalized_secret_scan_does_not_cross_hunks(self) -> None:
         patch = (
             "@@ -1 +1 @@\n"
@@ -3148,6 +3330,100 @@ class AutoreviewHardeningTests(unittest.TestCase):
         self.assertFalse(
             any(
                 self.helper["secret_text_risk"](content)
+                for content in self.helper["unified_diff_contents"](patch)
+            )
+        )
+
+    def test_typescript_credential_property_scan_does_not_cross_hunks(self) -> None:
+        patch = (
+            "diff --git a/src/runtime-web-tools.ts b/src/runtime-web-tools.ts\n"
+            "--- a/src/runtime-web-tools.ts\n"
+            "+++ b/src/runtime-web-tools.ts\n"
+            "@@ -85,12 +84,9 @@ type RuntimeWebProviderSelectionParams<\n"
+            "     toolConfig: TToolConfig;\n"
+            "   }) => { path: string; value: unknown } | undefined;\n"
+            "   /** Resolves inline/env/SecretRef credentials and reports the winning source. */\n"
+            "-  resolveSecretInput: (params: {\n"
+            "-    providerId: string;\n"
+            "-    value: unknown;\n"
+            "-    path: string;\n"
+            "-    envVars: string[];\n"
+            "-  }) => Promise<SecretResolutionResult<TSource>>;\n"
+            "+  resolveSecretInput: (\n"
+            "+    params: RuntimeWebResolveSecretInputParams,\n"
+            "+  ) => Promise<SecretResolutionResult<TSource>>;\n"
+            "   /** Writes the selected credential into the resolved runtime config snapshot. */\n"
+            "   setResolvedCredential: (params: {\n"
+            "     resolvedConfig: OpenClawConfig;\n"
+            "@@ -418,6 +414,7 @@ function resolveRuntimeWebProviderSelection() {\n"
+            "     let keylessFallbackProvider: TProvider | undefined;\n"
+            " \n"
+            "     for (const provider of candidates) {\n"
+            "+      const contractDigest = resolveProviderContractDigest(provider.id);\n"
+            "       const isKeyless = provider.requiresCredential === false;\n"
+            "       if (isKeyless) {\n"
+            "         if (!params.configuredProvider && !params.allowKeylessAutoSelect) {\n"
+            "@@ -440,6 +437,7 @@ function resolveRuntimeWebProviderSelection() {\n"
+            "         value,\n"
+            "         path,\n"
+            "         envVars: getProviderEnvVars(provider),\n"
+            "+        contractDigest,\n"
+            "       });\n"
+            "       let selectedCandidatePath = path;\n"
+            "       let selectedCandidateResolution = resolution;\n"
+            "@@ -457,6 +455,7 @@ function resolveRuntimeWebProviderSelection() {\n"
+            "             value: fallback.value,\n"
+            "             path: fallback.path,\n"
+            "             envVars: getProviderEnvVars(provider),\n"
+            "+            contractDigest,\n"
+            "           });\n"
+            "         }\n"
+            "       } else if (resolution.source === \"env\" && !resolution.secretRefConfigured) {\n"
+        )
+
+        old_content, new_content = self.helper["unified_diff_contents"](patch)
+        self.assertFalse(
+            self.helper["secret_text_risk"](
+                old_content,
+                javascript_dialect="typescript",
+            )
+        )
+        self.assertFalse(
+            self.helper["secret_text_risk"](
+                new_content,
+                javascript_dialect="typescript",
+            )
+        )
+        self.assertEqual(
+            self.helper["validate_review_patch"](
+                "typescript credential property diff",
+                ["src/runtime-web-tools.ts"],
+                patch,
+            ),
+            patch,
+        )
+
+    def test_typescript_hunk_scan_still_flags_sensitive_literal_fixture(self) -> None:
+        sensitive_line = next(
+            line
+            for line in (FIXTURES / "typescript-sensitive-literals.ts")
+            .read_text(encoding="utf-8")
+            .splitlines()
+            if line.strip()
+        )
+        patch = (
+            "@@ -1 +1 @@\n"
+            "+const tokenRef: SecretRef | undefined = candidate.tokenRef;\n"
+            "@@ -20 +20 @@\n"
+            f"+{sensitive_line}\n"
+        )
+
+        self.assertTrue(
+            any(
+                self.helper["secret_text_risk"](
+                    content,
+                    javascript_dialect="typescript",
+                )
                 for content in self.helper["unified_diff_contents"](patch)
             )
         )

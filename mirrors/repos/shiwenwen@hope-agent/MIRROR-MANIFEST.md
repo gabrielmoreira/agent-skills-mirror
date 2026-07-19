@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shiwenwen/hope-agent` — 26 default patterns, 49 followed patterns, 171 file(s) materialized.
+Mirror of `shiwenwen/hope-agent` — 26 default patterns, 50 followed patterns, 172 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `shiwenwen/hope-agent` — 26 default patterns, 49 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 49 |
-| Files         | 171 |
+| Followed pats | 50 |
+| Files         | 172 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,6 +79,7 @@ Mirror of `shiwenwen/hope-agent` — 26 default patterns, 49 followed patterns, 
 - `docs/architecture/browser.md`
 - `docs/architecture/background-jobs.md`
 - `docs/architecture/subagent.md`
+- `docs/architecture/media-generation.md`
 - `docs/architecture/file-operations.md`
 - `docs/architecture/hooks.md`
 - `docs/architecture/plan-mode.md`
@@ -117,12 +118,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`docs/architecture/coding-eval.md`](docs/architecture/coding-eval.md) |
 | 9 | ✓ | [`docs/architecture/coding-improvement-loop.md`](docs/architecture/coding-improvement-loop.md) |
 | 10 | ✓ | [`docs/architecture/git-control.md`](docs/architecture/git-control.md) |
-| 11 | ✓ | [`docs/architecture/image-generation.md`](docs/architecture/image-generation.md) |
-| 12 | ✓ | [`docs/architecture/logging.md`](docs/architecture/logging.md) |
-| 13 | ✓ | [`docs/architecture/lsp.md`](docs/architecture/lsp.md) |
-| 14 | ✓ | [`docs/architecture/reliability.md`](docs/architecture/reliability.md) |
-| 15 | ✓ | [`docs/architecture/review-engine.md`](docs/architecture/review-engine.md) |
-| 16 | ✓ | [`docs/architecture/slash-commands.md`](docs/architecture/slash-commands.md) |
+| 11 | ✓ | [`docs/architecture/logging.md`](docs/architecture/logging.md) |
+| 12 | ✓ | [`docs/architecture/lsp.md`](docs/architecture/lsp.md) |
+| 13 | ✓ | [`docs/architecture/reliability.md`](docs/architecture/reliability.md) |
+| 14 | ✓ | [`docs/architecture/review-engine.md`](docs/architecture/review-engine.md) |
+| 15 | ✓ | [`docs/architecture/slash-commands.md`](docs/architecture/slash-commands.md) |
+| 16 | ✓ | [`docs/architecture/stt.md`](docs/architecture/stt.md) |
 | 17 | ✓ | [`docs/architecture/verification-engine.md`](docs/architecture/verification-engine.md) |
 | 18 | ✓ | [`docs/architecture/worktree.md`](docs/architecture/worktree.md) |
 | 19 | ✓ | [`docs/macos-self-signing.md`](docs/macos-self-signing.md) |
@@ -258,26 +259,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 149 | → | [`docs/architecture/loop.md`](docs/architecture/loop.md) |
 | 150 | → | [`docs/architecture/mcp-server.md`](docs/architecture/mcp-server.md) |
 | 151 | → | [`docs/architecture/mcp.md`](docs/architecture/mcp.md) |
-| 152 | → | [`docs/architecture/memory.md`](docs/architecture/memory.md) |
-| 153 | → | [`docs/architecture/permission-system.md`](docs/architecture/permission-system.md) |
-| 154 | → | [`docs/architecture/plan-mode.md`](docs/architecture/plan-mode.md) |
-| 155 | → | [`docs/architecture/process-model.md`](docs/architecture/process-model.md) |
-| 156 | → | [`docs/architecture/project.md`](docs/architecture/project.md) |
-| 157 | → | [`docs/architecture/prompt-system.md`](docs/architecture/prompt-system.md) |
-| 158 | → | [`docs/architecture/provider-system.md`](docs/architecture/provider-system.md) |
-| 159 | → | [`docs/architecture/recap.md`](docs/architecture/recap.md) |
-| 160 | → | [`docs/architecture/sandbox.md`](docs/architecture/sandbox.md) |
-| 161 | → | [`docs/architecture/self-update.md`](docs/architecture/self-update.md) |
-| 162 | → | [`docs/architecture/session.md`](docs/architecture/session.md) |
-| 163 | → | [`docs/architecture/side-query.md`](docs/architecture/side-query.md) |
-| 164 | → | [`docs/architecture/skill-system.md`](docs/architecture/skill-system.md) |
-| 165 | → | [`docs/architecture/subagent.md`](docs/architecture/subagent.md) |
-| 166 | → | [`docs/architecture/tool-system.md`](docs/architecture/tool-system.md) |
-| 167 | → | [`docs/architecture/transport-modes.md`](docs/architecture/transport-modes.md) |
-| 168 | → | [`docs/architecture/ui-interaction-system.md`](docs/architecture/ui-interaction-system.md) |
-| 169 | → | [`docs/architecture/workflow.md`](docs/architecture/workflow.md) |
-| 170 | → | [`docs/README.md`](docs/README.md) |
-| 171 | → | [`docs/release-process.md`](docs/release-process.md) |
+| 152 | → | [`docs/architecture/media-generation.md`](docs/architecture/media-generation.md) |
+| 153 | → | [`docs/architecture/memory.md`](docs/architecture/memory.md) |
+| 154 | → | [`docs/architecture/permission-system.md`](docs/architecture/permission-system.md) |
+| 155 | → | [`docs/architecture/plan-mode.md`](docs/architecture/plan-mode.md) |
+| 156 | → | [`docs/architecture/process-model.md`](docs/architecture/process-model.md) |
+| 157 | → | [`docs/architecture/project.md`](docs/architecture/project.md) |
+| 158 | → | [`docs/architecture/prompt-system.md`](docs/architecture/prompt-system.md) |
+| 159 | → | [`docs/architecture/provider-system.md`](docs/architecture/provider-system.md) |
+| 160 | → | [`docs/architecture/recap.md`](docs/architecture/recap.md) |
+| 161 | → | [`docs/architecture/sandbox.md`](docs/architecture/sandbox.md) |
+| 162 | → | [`docs/architecture/self-update.md`](docs/architecture/self-update.md) |
+| 163 | → | [`docs/architecture/session.md`](docs/architecture/session.md) |
+| 164 | → | [`docs/architecture/side-query.md`](docs/architecture/side-query.md) |
+| 165 | → | [`docs/architecture/skill-system.md`](docs/architecture/skill-system.md) |
+| 166 | → | [`docs/architecture/subagent.md`](docs/architecture/subagent.md) |
+| 167 | → | [`docs/architecture/tool-system.md`](docs/architecture/tool-system.md) |
+| 168 | → | [`docs/architecture/transport-modes.md`](docs/architecture/transport-modes.md) |
+| 169 | → | [`docs/architecture/ui-interaction-system.md`](docs/architecture/ui-interaction-system.md) |
+| 170 | → | [`docs/architecture/workflow.md`](docs/architecture/workflow.md) |
+| 171 | → | [`docs/README.md`](docs/README.md) |
+| 172 | → | [`docs/release-process.md`](docs/release-process.md) |
 
 ---
 
